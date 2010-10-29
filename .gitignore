@@ -17,6 +17,10 @@ app-import/src/main/resources/arecaceae_old2.rdf
 app-import/src/main/resources/arecaceae_short.rdf
 app-import/src/main/resources/tmp
 /bin
+cdmlib-pesi/.classpath
+cdmlib-pesi/.project
+cdmlib-pesi/.settings
+cdmlib-pesi/target
 /eu.etaxonomy.cdm.model.common.DefinedTermBase
 /eu.etaxonomy.cdm.model.common.LanguageString
 /eu.etaxonomy.cdm.model.description.DescriptionBase
