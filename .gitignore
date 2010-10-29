@@ -3,6 +3,9 @@
 /.settings
 /.umlproject
 /app-import.uml
+app-import/.classpath
+app-import/.project
+app-import/.settings
 app-import/src/main/resources/TaxonX_all_to_rename_no_types.zip
 app-import/src/main/resources/TaxonX_all_to_rename_with_types.zip
 app-import/src/main/resources/TaxonX_to_rename_Nov2008.zip
@@ -16,6 +19,7 @@ app-import/src/main/resources/arecaceae_old.zip
 app-import/src/main/resources/arecaceae_old2.rdf
 app-import/src/main/resources/arecaceae_short.rdf
 app-import/src/main/resources/tmp
+app-import/target
 /bin
 cdmlib-eflora/.classpath
 cdmlib-eflora/.project
