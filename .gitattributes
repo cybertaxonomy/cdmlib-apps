@@ -1,4 +1,5 @@
 * text=auto !eol
+app-import/build.xml -text
 app-import/pom.xml -text
 app-import/src/main/java/eu/etaxonomy/cdm/app/abcdImport/SpecimenImport.java -text
 app-import/src/main/java/eu/etaxonomy/cdm/app/abcdImport/SynthesysCacheActivator.java -text
@@ -1191,4 +1192,3 @@ app-import/src/main/resources/taxonX/palm_tc_98882.xml -text
 app-import/src/main/resources/taxonX/palm_tc_98886.xml -text
 app-import/src/main/resources/tcs/Cichorium_tcs.xml -text
 app-import/src/main/resources/tcs/tcsXmlTest.xml -text
-/build.xml -text
