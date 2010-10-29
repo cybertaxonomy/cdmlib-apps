@@ -6,6 +6,7 @@
 app-import/.classpath
 app-import/.project
 app-import/.settings
+app-import/bin
 app-import/src/main/resources/TaxonX_all_to_rename_no_types.zip
 app-import/src/main/resources/TaxonX_all_to_rename_with_types.zip
 app-import/src/main/resources/TaxonX_to_rename_Nov2008.zip
