@@ -10,17 +10,11 @@
 
 package eu.etaxonomy.cdm.io.eflora.centralAfrica.ferns.validation;
 
-import java.sql.ResultSet;
-import java.sql.SQLException;
-
 import org.apache.log4j.Logger;
 
 import eu.etaxonomy.cdm.io.common.IOValidator;
-import eu.etaxonomy.cdm.io.common.Source;
 import eu.etaxonomy.cdm.io.eflora.centralAfrica.ferns.CentralAfricaFernsImportConfigurator;
 import eu.etaxonomy.cdm.io.eflora.centralAfrica.ferns.CentralAfricaFernsImportState;
-import eu.etaxonomy.cdm.io.erms.ErmsImportConfigurator;
-import eu.etaxonomy.cdm.io.erms.ErmsImportState;
 
 /**
  * @author a.mueller
