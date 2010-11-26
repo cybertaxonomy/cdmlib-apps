@@ -11,9 +11,12 @@ package eu.etaxonomy.cdm.app.sdd;
 
 import java.io.File;
 import java.net.URI;
+import java.net.URISyntaxException;
+import java.net.URL;
 
 import org.apache.log4j.Logger;
 
+import eu.etaxonomy.cdm.app.common.CdmDestinations;
 import eu.etaxonomy.cdm.database.CdmDataSource;
 import eu.etaxonomy.cdm.database.DbSchemaValidation;
 import eu.etaxonomy.cdm.database.ICdmDataSource;
@@ -26,9 +29,8 @@ import eu.etaxonomy.cdm.io.sdd.in.SDDImportConfigurator;
  * @created 24.10.2008
  * @version 1.0
  */
-public class CichorieaeActivator {
-	@SuppressWarnings("unused")
-	private static final Logger logger = Logger.getLogger(CichorieaeActivator.class);
+public class CichorieaeSDDActivator {
+	private static final Logger logger = Logger.getLogger(CichorieaeSDDActivator.class);
 	
 	
 
@@ -45,8 +47,9 @@ public class CichorieaeActivator {
 	 * 
 	 ********************************************************************************/
 
-	static String fileName = "C:\\Users\\lis\\Desktop\\workspace\\XperCdmIntegration\\Cichorieae-full.sdd.xml";
-	static ICdmDataSource cdmDestination = CdmDataSource.NewMySqlInstance("localhost", "cdmsdd", "root", "admin");
+	static String fileName = "/Cichorieae-full.sdd.xml";
+//	static ICdmDataSource cdmDestination = CdmDataSource.NewMySqlInstance("localhost", "cdmsdd", "root", "XXX");
+	static ICdmDataSource cdmDestination = CdmDestinations.cdm_test_local_xper();
 
 	static final String sourceSecId = "cichorieae-crepis-sdd-import";
 
@@ -61,30 +64,36 @@ public class CichorieaeActivator {
 	 */
 	public static void main(String[] args) {
 		
-		logger.info("Start import from SDD ("+ fileName + ") ...");
+		try {
+			logger.info("Start import from SDD ("+ fileName + ") ...");
 
-		//make Source
-		URI source;
-		File f = new File(fileName);
-		source = f.toURI();
-		ICdmDataSource destination = cdmDestination;
+			//make Source
+			URI source = getSource(fileName);
+			ICdmDataSource destination = cdmDestination;
 
-		SDDImportConfigurator sddImportConfigurator = SDDImportConfigurator.NewInstance(source,  destination);
+			SDDImportConfigurator sddImportConfigurator = SDDImportConfigurator.NewInstance(source,  destination);
 
-		sddImportConfigurator.setSourceSecId(sourceSecId);
+			sddImportConfigurator.setSourceSecId(sourceSecId);
 
-		sddImportConfigurator.setCheck(check);
-		sddImportConfigurator.setDbSchemaValidation(hbm2dll);
-		
-		sddImportConfigurator.setDoMatchTaxa(doMatchTaxa);
-		
+			sddImportConfigurator.setCheck(check);
+			sddImportConfigurator.setDbSchemaValidation(hbm2dll);
+			
+			sddImportConfigurator.setDoMatchTaxa(doMatchTaxa);
+			
 
-		// invoke import
-		CdmDefaultImport<SDDImportConfigurator> sddImport = new CdmDefaultImport<SDDImportConfigurator>();
-		sddImport.invoke(sddImportConfigurator);
+			// invoke import
+			CdmDefaultImport<SDDImportConfigurator> sddImport = new CdmDefaultImport<SDDImportConfigurator>();
+			sddImport.invoke(sddImportConfigurator);
 
-		logger.info("End import from SDD ("+ source.toString() + ")...");
+			logger.info("End import from SDD ("+ source.toString() + ")...");
+		} catch (URISyntaxException e) {
+			e.printStackTrace();
+		}
 	}
 
+	static URI getSource(String urlString) throws URISyntaxException{
+		URL resourceUrl = new CichorieaeSDDActivator().getClass().getResource(urlString);
+		return resourceUrl.toURI();
+	}
 
 }

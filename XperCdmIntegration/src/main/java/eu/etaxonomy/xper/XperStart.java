@@ -4,6 +4,7 @@ import xper2.fr_jussieu_snv_lis.Xper;
 import xper2.fr_jussieu_snv_lis.edition.XPDisplay;
 import xper2.fr_jussieu_snv_lis.utils.Utils;
 import eu.etaxonomy.cdm.api.application.CdmApplicationController;
+import eu.etaxonomy.cdm.app.common.CdmDestinations;
 import eu.etaxonomy.cdm.database.CdmDataSource;
 import eu.etaxonomy.cdm.database.DbSchemaValidation;
 import eu.etaxonomy.cdm.database.ICdmDataSource;
@@ -15,7 +16,7 @@ public class XperStart {
 	public XperStart(){
 		
 		DbSchemaValidation dbSchemaValidation = DbSchemaValidation.VALIDATE;
-		ICdmDataSource datasource = CdmDataSource.NewMySqlInstance("localhost", "cdmsdd", "root", "admin");
+		ICdmDataSource datasource = CdmDestinations.cdm_test_local_xper();
 
 		final CdmApplicationController appCtr = CdmApplicationController.NewInstance(datasource, dbSchemaValidation);
 		
@@ -38,7 +39,7 @@ public class XperStart {
 			AdaptaterCdmXper adaptaterCdmXper = new AdaptaterCdmXper();
 			
 			if (Utils.currentBase != null) {
-				//adaptaterCdmXper.createWorkingSet();
+//				adaptaterCdmXper.createWorkingSet();
 				adaptaterCdmXper.loadFeatures();
 				adaptaterCdmXper.loadTaxaAndDescription();
 			
@@ -52,9 +53,9 @@ public class XperStart {
 	 * @param args
 	 */
 	public static void main(String[] args) {
-		System.out.println("start");
+		System.out.println("cdm start");
 		XperStart start = new XperStart();
-		System.out.println("started :::");
+		System.out.println("cdm started :::");
 		
 		while(!Utils.xperReady){
 		}

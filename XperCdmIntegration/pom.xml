@@ -16,15 +16,16 @@
   <name>xper2 Cdm Integration</name>
   <description>The import-export package for EDIT's cdmLibrary</description>
   <scm>
-    <connection>scm:svn:http://dev.e-taxonomy.eu/svn/trunk/cdmlib/app-import/</connection>
-    <developerConnection>scm:svn:https://dev.e-taxonomy.eu/svn/trunk/cdmlib/app-import/</developerConnection>
-    <url>http://dev.e-taxonomy.eu/trac/browser/trunk/cdmlib/app-import/</url>
+    <connection>scm:svn:http://dev.e-taxonomy.eu/svn/trunk/cdmlib-apps/XperCdmIntegration/</connection>
+    <developerConnection>scm:svn:https://dev.e-taxonomy.eu/svn/trunk/cdmlib-apps/XperCdmIntegration/</developerConnection>
+    <url>http://dev.e-taxonomy.eu/trac/browser/trunk/cdmlib-apps/XperCdmIntegration/</url>
   </scm>
   
   <dependencies>
    	<dependency>
   		<groupId>eu.etaxonomy</groupId>
   		<artifactId>cdmlib-io</artifactId>
+  		<version>3.0</version>
   	</dependency>
    	<dependency>
   		<groupId>eu.etaxonomy</groupId>

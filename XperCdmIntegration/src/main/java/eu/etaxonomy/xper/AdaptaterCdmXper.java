@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.UUID;
 
+import org.apache.log4j.Logger;
 import org.springframework.transaction.TransactionStatus;
 
 import xper2.fr_jussieu_snv_lis.Xper;
@@ -27,19 +28,24 @@ import eu.etaxonomy.cdm.model.taxon.Taxon;
 import eu.etaxonomy.cdm.model.taxon.TaxonBase;
 
 public class AdaptaterCdmXper {
-
+	private static final Logger logger = Logger.getLogger(AdaptaterCdmXper.class);
+	
 	public AdaptaterCdmXper() {
 		
 	}
 
 	// Load the featureTree with the UUID 7027f0aa-ac00-4e78-a15e-1b3f8314884e
 	public void loadFeatures() {
-		UUID featureTreeUUID = UUID.fromString("7027f0aa-ac00-4e78-a15e-1b3f8314884e");
+		UUID featureTreeUUID = UUID.fromString("2e6d3fe1-59db-490e-9e1c-2d58ddbbff78");
 		List<String> featureTreeInit = Arrays.asList(new String[]{"root.children.feature.representations"});
 		
 		TransactionStatus tx = Xper.getCdmApplicationController().startTransaction();
 		FeatureTree featureTree = Xper.getCdmApplicationController().getFeatureTreeService().load(featureTreeUUID, featureTreeInit);
-		loadFeatureNode(featureTree.getRoot(), -1);
+		if (featureTree != null) {
+			loadFeatureNode(featureTree.getRoot(), -1);
+		}else{
+			logger.warn("Feature tree " + featureTreeUUID.toString() + " not found");
+		}
 		Xper.getCdmApplicationController().commitTransaction(tx);
 	}
 	
