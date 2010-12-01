@@ -28,7 +28,7 @@ import eu.etaxonomy.cdm.io.common.Source;
 import eu.etaxonomy.cdm.model.agent.Team;
 import eu.etaxonomy.cdm.model.agent.TeamOrPersonBase;
 import eu.etaxonomy.cdm.model.common.OriginalSourceBase;
-import eu.etaxonomy.cdm.model.reference.ReferenceBase;
+import eu.etaxonomy.cdm.model.reference.Reference;
 import eu.etaxonomy.cdm.model.reference.ReferenceFactory;
 
 
@@ -77,7 +77,7 @@ public class FaunaEuropaeaUsersImport extends FaunaEuropaeaImportBase {
 	protected boolean doInvoke(FaunaEuropaeaImportState state) {				
 
 		TransactionStatus txStatus = null;
-		Map<Integer, ReferenceBase> references = null;
+		Map<Integer, Reference> references = null;
 		Map<String,TeamOrPersonBase> authors = null;
 		Map<Integer, UUID> referenceUuids = new HashMap<Integer, UUID>();
 		int limit = state.getConfig().getLimitSave();
@@ -141,7 +141,7 @@ public class FaunaEuropaeaUsersImport extends FaunaEuropaeaImportBase {
 				if ((i++ % limit) == 0) {
 
 					txStatus = startTransaction();
-					references = new HashMap<Integer,ReferenceBase>(limit);
+					references = new HashMap<Integer,Reference>(limit);
 					authors = new HashMap<String,TeamOrPersonBase>(limit);
 					
 					if(logger.isInfoEnabled()) {
@@ -149,7 +149,7 @@ public class FaunaEuropaeaUsersImport extends FaunaEuropaeaImportBase {
 					}
 				}
 				
-				ReferenceBase<?> reference = null;
+				Reference<?> reference = null;
 				TeamOrPersonBase<Team> author = null;
 				reference = ReferenceFactory.newGeneric();
 
@@ -208,12 +208,12 @@ public class FaunaEuropaeaUsersImport extends FaunaEuropaeaImportBase {
 				
 				if (((i % limit) == 0 && i > 1 ) || i == count) { 
 					
-					Map <UUID, ReferenceBase> referenceMap =getReferenceService().save(references.values());
+					Map <UUID, Reference> referenceMap =getReferenceService().save(references.values());
 					logger.info("i = " + i + " - references saved"); 
 
-					Iterator<Entry<UUID, ReferenceBase>> it = referenceMap.entrySet().iterator();
+					Iterator<Entry<UUID, Reference>> it = referenceMap.entrySet().iterator();
 					while (it.hasNext()){
-						ReferenceBase ref = it.next().getValue();
+						Reference ref = it.next().getValue();
 						int refID = Integer.valueOf(((OriginalSourceBase)ref.getSources().iterator().next()).getIdInSource());
 						UUID uuid = ref.getUuid();
 						referenceUuids.put(refID, uuid);

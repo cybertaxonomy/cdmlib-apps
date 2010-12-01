@@ -9,6 +9,7 @@
 */
 package eu.etaxonomy.cdm.io.pesi.out;
 
+import java.net.URI;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
@@ -28,7 +29,7 @@ import eu.etaxonomy.cdm.model.description.TextData;
 import eu.etaxonomy.cdm.model.media.Media;
 import eu.etaxonomy.cdm.model.media.MediaRepresentation;
 import eu.etaxonomy.cdm.model.media.MediaRepresentationPart;
-import eu.etaxonomy.cdm.model.reference.ReferenceBase;
+import eu.etaxonomy.cdm.model.reference.Reference;
 import eu.etaxonomy.cdm.model.taxon.Taxon;
 import eu.etaxonomy.cdm.model.taxon.TaxonBase;
 
@@ -43,7 +44,7 @@ import eu.etaxonomy.cdm.model.taxon.TaxonBase;
 @SuppressWarnings("unchecked")
 public class PesiImageExport extends PesiExportBase {
 	private static final Logger logger = Logger.getLogger(PesiImageExport.class);
-	private static final Class<? extends CdmBase> standardMethodParameter = ReferenceBase.class;
+	private static final Class<? extends CdmBase> standardMethodParameter = Reference.class;
 
 	private static int modCount = 1000;
 	private static final String dbTableName = "Image";
@@ -134,7 +135,7 @@ public class PesiImageExport extends PesiExportBase {
 											List<MediaRepresentationPart> representationParts = representation.getParts();
 											
 											for (MediaRepresentationPart representationPart : representationParts) {
-												String mediaUri = representationPart.getUri();
+												URI mediaUri = representationPart.getUri();
 												
 												// Add image data
 												String thumb = null;
@@ -188,7 +189,7 @@ public class PesiImageExport extends PesiExportBase {
 	 * @param taxonFk
 	 * @param connection
 	 */
-	private void invokeImages(String thumb, String url, Integer taxonFk, Connection connection) {
+	private void invokeImages(String thumb, URI url, Integer taxonFk, Connection connection) {
 		String imagesSql = "INSERT INTO Image (taxonFk, img_thumb, img_url) VALUES" +
 				" (?, ?, ?)";
 		try {
@@ -207,7 +208,7 @@ public class PesiImageExport extends PesiExportBase {
 			}
 			
 			if (url != null) {
-				imagesStmt.setString(3, url);
+				imagesStmt.setString(3, url.toString());
 			} else {
 				imagesStmt.setObject(3, null);
 			}

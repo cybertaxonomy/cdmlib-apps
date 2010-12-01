@@ -35,7 +35,7 @@ import eu.etaxonomy.cdm.model.name.Rank;
 import eu.etaxonomy.cdm.model.name.TaxonNameBase;
 import eu.etaxonomy.cdm.model.name.ZoologicalName;
 import eu.etaxonomy.cdm.model.occurrence.Fossil;
-import eu.etaxonomy.cdm.model.reference.ReferenceBase;
+import eu.etaxonomy.cdm.model.reference.Reference;
 import eu.etaxonomy.cdm.model.reference.ReferenceType;
 import eu.etaxonomy.cdm.model.taxon.Synonym;
 import eu.etaxonomy.cdm.model.taxon.SynonymRelationshipType;
@@ -2974,10 +2974,10 @@ public final class PesiTransformer {
 		
 	/**
 	 * Returns the {@link SourceCategory SourceCategory} representation of the given {@link ReferenceType ReferenceType} in PESI.
-	 * @param reference The {@link ReferenceBase ReferenceBase}.
+	 * @param reference The {@link Reference Reference}.
 	 * @return The {@link SourceCategory SourceCategory} representation in PESI.
 	 */
-	public static Integer reference2SourceCategoryFK(ReferenceBase<?> reference) {
+	public static Integer reference2SourceCategoryFK(Reference<?> reference) {
 		if (reference == null){
 			return null;
 		} else if (reference.getType().equals(ReferenceType.Article)) {
@@ -3015,10 +3015,10 @@ public final class PesiTransformer {
 	
 	/**
 	 * Returns the {@link SourceCategoryCache SourceCategoryCache}.
-	 * @param reference The {@link ReferenceBase ReferenceBase}.
+	 * @param reference The {@link Reference Reference}.
 	 * @return The {@link SourceCategoryCache SourceCategoryCache}.
 	 */
-	public static String getSourceCategoryCache(ReferenceBase<?> reference) {
+	public static String getSourceCategoryCache(Reference<?> reference) {
 		if (reference == null){
 			return null;
 		} else if (reference.getType().equals(ReferenceType.Article)) {

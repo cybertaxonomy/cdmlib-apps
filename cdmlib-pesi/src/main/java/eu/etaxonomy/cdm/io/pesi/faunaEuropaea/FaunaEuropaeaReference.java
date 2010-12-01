@@ -11,7 +11,7 @@ package eu.etaxonomy.cdm.io.pesi.faunaEuropaea;
 
 import java.util.UUID;
 
-import eu.etaxonomy.cdm.model.reference.ReferenceBase;
+import eu.etaxonomy.cdm.model.reference.Reference;
 
 /**
  * @author a.babadshanjan
@@ -21,7 +21,7 @@ import eu.etaxonomy.cdm.model.reference.ReferenceBase;
 public class FaunaEuropaeaReference {
 	
 	private UUID taxonUuid;
-	//private ReferenceBase cdmReference;
+	//private Reference cdmReference;
 //	private int taxonId;
 	private int referenceId;
 	private String referenceAuthor;
@@ -118,13 +118,13 @@ public class FaunaEuropaeaReference {
 	/**
 	 * @return the cdmReference
 	 */
-	/*public ReferenceBase getCdmReference() {
+	/*public Reference getCdmReference() {
 		return cdmReference;
 	}*/
 	/**
 	 * @param cdmReference the cdmReference to set
 	 */
-	/*public void setCdmReference(ReferenceBase cdmReference) {
+	/*public void setCdmReference(Reference cdmReference) {
 		this.cdmReference = cdmReference;
 	}*/
 

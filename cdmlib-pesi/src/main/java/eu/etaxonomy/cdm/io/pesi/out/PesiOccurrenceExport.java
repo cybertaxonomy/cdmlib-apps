@@ -31,7 +31,7 @@ import eu.etaxonomy.cdm.model.description.DescriptionElementBase;
 import eu.etaxonomy.cdm.model.description.Distribution;
 import eu.etaxonomy.cdm.model.description.TaxonDescription;
 import eu.etaxonomy.cdm.model.location.NamedArea;
-import eu.etaxonomy.cdm.model.reference.ReferenceBase;
+import eu.etaxonomy.cdm.model.reference.Reference;
 import eu.etaxonomy.cdm.model.taxon.Taxon;
 import eu.etaxonomy.cdm.model.taxon.TaxonBase;
 import eu.etaxonomy.cdm.strategy.exceptions.UnknownCdmTypeException;
@@ -144,7 +144,7 @@ public class PesiOccurrenceExport extends PesiExportBase {
 										}
 									} else {
 										for (DescriptionElementSource elementSource : elementSources) {
-											ReferenceBase reference = elementSource.getCitation();
+											Reference reference = elementSource.getCitation();
 	
 											// Citations can be empty (null): Is it wrong data or just a normal case?
 											if (reference != null && state.getDbId(reference) != null) {
@@ -423,7 +423,7 @@ public class PesiOccurrenceExport extends PesiExportBase {
 	 */
 	private static String getSourceCache(AnnotatableEntity entity) {
 		String result = null;
-		ReferenceBase reference;
+		Reference reference;
 		if (entity != null && entity.isInstanceOf(Distribution.class)) {
 			Distribution distribution = CdmBase.deproxy(entity, Distribution.class);
 			Set<DescriptionElementSource> sources = distribution.getSources();

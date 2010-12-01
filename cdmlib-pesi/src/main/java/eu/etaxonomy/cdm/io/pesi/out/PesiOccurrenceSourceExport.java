@@ -28,7 +28,7 @@ import eu.etaxonomy.cdm.model.common.CdmBase;
 import eu.etaxonomy.cdm.model.common.DescriptionElementSource;
 import eu.etaxonomy.cdm.model.description.DescriptionElementBase;
 import eu.etaxonomy.cdm.model.description.TaxonDescription;
-import eu.etaxonomy.cdm.model.reference.ReferenceBase;
+import eu.etaxonomy.cdm.model.reference.Reference;
 import eu.etaxonomy.cdm.model.taxon.Taxon;
 import eu.etaxonomy.cdm.model.taxon.TaxonBase;
 
@@ -132,7 +132,7 @@ public class PesiOccurrenceSourceExport extends PesiExportBase {
 								// Focus on descriptionElements with sources.
 								if (elementSources.size() > 0) {
 									for (DescriptionElementSource elementSource : elementSources) {
-										ReferenceBase reference = elementSource.getCitation();
+										Reference reference = elementSource.getCitation();
 
 										// Citations can be empty (null): Is it wrong data or just a normal case?
 										if (reference != null) {
@@ -194,11 +194,11 @@ public class PesiOccurrenceSourceExport extends PesiExportBase {
 	/**
 	 * Inserts columns in the database table OccurrenceSource.
 	 * @param stmt The prepared statement.
-	 * @param reference {@link ReferenceBase Reference}.
+	 * @param reference {@link Reference Reference}.
 	 * @param sourceFk The SourceFk.
 	 * @param occurrenceIds A {@link java.util.Set Set} of OccurrenceId's.
 	 */
-	private void insertColumns(PreparedStatement stmt, ReferenceBase reference,
+	private void insertColumns(PreparedStatement stmt, Reference reference,
 			Integer sourceFk, Set<Integer> occurrenceIds) {
 		for (Integer occurrenceId : occurrenceIds) {
 			try {
@@ -290,8 +290,8 @@ public class PesiOccurrenceSourceExport extends PesiExportBase {
 	 */
 	private static Integer getSourceFk(AnnotatableEntity entity, PesiExportState state) {
 		Integer result = null;
-		if (state != null && entity != null && entity.isInstanceOf(ReferenceBase.class)) {
-			ReferenceBase reference = CdmBase.deproxy(entity, ReferenceBase.class);
+		if (state != null && entity != null && entity.isInstanceOf(Reference.class)) {
+			Reference reference = CdmBase.deproxy(entity, Reference.class);
 			result = state.getDbId(reference);
 		}
 		return result;
@@ -305,8 +305,8 @@ public class PesiOccurrenceSourceExport extends PesiExportBase {
 	 */
 	private static String getSourceNameCache(AnnotatableEntity entity) {
 		String result = null;
-		if (entity != null && entity.isInstanceOf(ReferenceBase.class)) {
-			ReferenceBase reference = CdmBase.deproxy(entity, ReferenceBase.class);
+		if (entity != null && entity.isInstanceOf(Reference.class)) {
+			Reference reference = CdmBase.deproxy(entity, Reference.class);
 			result = reference.getTitle();
 		}
 		return result;

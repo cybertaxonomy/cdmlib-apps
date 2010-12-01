@@ -16,7 +16,7 @@ import eu.etaxonomy.cdm.io.common.ImportConfiguratorBase;
 import eu.etaxonomy.cdm.io.common.Source;
 import eu.etaxonomy.cdm.io.common.mapping.IInputTransformer;
 import eu.etaxonomy.cdm.model.name.NomenclaturalCode;
-import eu.etaxonomy.cdm.model.reference.ReferenceBase;
+import eu.etaxonomy.cdm.model.reference.Reference;
 import eu.etaxonomy.cdm.model.reference.ReferenceFactory;
 
 /**
@@ -39,7 +39,7 @@ public class FaunaEuropaeaImportConfigurator extends ImportConfiguratorBase<Faun
 	
 	/* Max number of taxa to be saved with one service call */
 	private int limitSave = 900;
-	private ReferenceBase<?> auctReference;
+	private Reference<?> auctReference;
 	
 	@SuppressWarnings("unchecked")
 	protected void makeIoClassList() {
@@ -82,7 +82,7 @@ public class FaunaEuropaeaImportConfigurator extends ImportConfiguratorBase<Faun
 	 * @see eu.etaxonomy.cdm.io.common.ImportConfiguratorBase#getSourceReference()
 	 */
 	@Override
-	public ReferenceBase<?> getSourceReference() {
+	public Reference<?> getSourceReference() {
 		//TODO
 		if (this.sourceReference == null){
 			logger.warn("getSource Reference not yet fully implemented");
@@ -97,7 +97,7 @@ public class FaunaEuropaeaImportConfigurator extends ImportConfiguratorBase<Faun
 	/* (non-Javadoc)
 	 * @see eu.etaxonomy.cdm.io.common.ImportConfiguratorBase#getSourceReference()
 	 */
-	public ReferenceBase<?> getAuctReference() {
+	public Reference<?> getAuctReference() {
 		//TODO
 		if (auctReference == null){
 			auctReference = ReferenceFactory.newPersonalCommunication();
@@ -184,7 +184,7 @@ public class FaunaEuropaeaImportConfigurator extends ImportConfiguratorBase<Faun
 	/**
 	 * @param auctReference the auctReference to set
 	 */
-	public void setAuctReference(ReferenceBase<?> auctReference) {
+	public void setAuctReference(Reference<?> auctReference) {
 		this.auctReference = auctReference;
 	}
 

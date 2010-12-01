@@ -29,14 +29,14 @@ import eu.etaxonomy.cdm.io.common.IImportConfigurator;
 import eu.etaxonomy.cdm.io.common.ImportHelper;
 import eu.etaxonomy.cdm.io.common.MapWrapper;
 import eu.etaxonomy.cdm.io.common.Source;
-import eu.etaxonomy.cdm.model.reference.ReferenceBase;
-import eu.etaxonomy.cdm.model.taxon.TaxonomicTree;
+import eu.etaxonomy.cdm.model.reference.Reference;
+import eu.etaxonomy.cdm.model.taxon.Classification;
 import eu.etaxonomy.cdm.model.common.Annotation;
 import eu.etaxonomy.cdm.model.common.CdmBase;
 import eu.etaxonomy.cdm.model.common.IdentifiableEntity;
 import eu.etaxonomy.cdm.model.common.Language;
 import eu.etaxonomy.cdm.model.taxon.TaxonBase;
-import eu.etaxonomy.cdm.model.taxon.TaxonomicTree;
+import eu.etaxonomy.cdm.model.taxon.Classification;
 
 /**
  * @author a.babadshanjan
@@ -120,19 +120,19 @@ implements ICdmImport<FaunaEuropaeaImportConfigurator,FaunaEuropaeaImportState> 
 	 * @param state
 	 * @param sourceRef
 	 */
-	protected TaxonomicTree getTaxonomicTreeFor(FaunaEuropaeaImportState state, ReferenceBase<?> sourceRef) {
+	protected Classification getClassificationFor(FaunaEuropaeaImportState state, Reference<?> sourceRef) {
 		
-		TaxonomicTree tree;
+		Classification tree;
 		UUID treeUuid = state.getTreeUuid(sourceRef);
 		if (treeUuid == null){
-			if(logger.isInfoEnabled()) { logger.info(".. creating new taxonomic tree"); }
+			if(logger.isInfoEnabled()) { logger.info(".. creating new classification"); }
 			
 			TransactionStatus txStatus = startTransaction();
 			tree = makeTreeMemSave(state, sourceRef);
 			commitTransaction(txStatus);
 			
 		} else {
-			tree = getTaxonTreeService().getTaxonomicTreeByUuid(treeUuid);
+			tree = getClassificationService().getClassificationByUuid(treeUuid);
 		}
 		return tree;
 	}

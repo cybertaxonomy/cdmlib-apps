@@ -249,7 +249,6 @@ public class FaunaEuropaeaDistributionImport extends FaunaEuropaeaImportBase {
 									}
 									
 									Distribution newDistribution = Distribution.NewInstance(namedArea, presenceAbsenceStatus);
-									newDistribution.setType(Feature.DISTRIBUTION());
 									taxonDescription.addElement(newDistribution);
 								}
 							}

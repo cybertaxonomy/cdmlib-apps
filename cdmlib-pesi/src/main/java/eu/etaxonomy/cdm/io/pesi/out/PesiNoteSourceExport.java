@@ -247,7 +247,17 @@ public class PesiNoteSourceExport extends PesiExportBase {
 	 */
 	@SuppressWarnings("unused")
 	private static String getSourceDetail(DescriptionElementBase descriptionElement) {
-		return descriptionElement.getCitationMicroReference(); // TODO: What should be used instead?
+		//FIXME this is a replacement for the deprecated descriptionElement.getCitationMicroReference()
+		//it needs to be checked what should be done when multiple sources exist
+		if (descriptionElement.getSources().size() < 1){
+			return null;
+		}else{
+			if (descriptionElement.getSources().size() > 1){
+				logger.warn("Multiple sources exist");
+			}
+			return descriptionElement.getSources().iterator().next().getCitationMicroReference();
+		}
+//		return descriptionElement.getCitationMicroReference(); // TODO: What should be used instead?
 	}
 
 	/**

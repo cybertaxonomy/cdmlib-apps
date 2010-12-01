@@ -34,7 +34,7 @@ import eu.etaxonomy.cdm.model.common.CdmBase;
 import eu.etaxonomy.cdm.model.name.NomenclaturalCode;
 import eu.etaxonomy.cdm.model.name.NonViralName;
 import eu.etaxonomy.cdm.model.name.Rank;
-import eu.etaxonomy.cdm.model.reference.ReferenceBase;
+import eu.etaxonomy.cdm.model.reference.Reference;
 import eu.etaxonomy.cdm.model.taxon.Synonym;
 import eu.etaxonomy.cdm.model.taxon.Taxon;
 import eu.etaxonomy.cdm.model.taxon.TaxonBase;
@@ -234,9 +234,9 @@ public class ErmsTaxonImport  extends ErmsImportBase<TaxonBase> implements IMapp
 
 			//reference map
 //			nameSpace = "Reference";
-//			cdmClass = ReferenceBase.class;
+//			cdmClass = Reference.class;
 //			Map<String, Person> referenceMap = (Map<String, Person>)getCommonService().getSourcedObjectsByIdInSource(Person.class, teamIdSet, nameSpace);
-//			result.put(ReferenceBase.class, referenceMap);
+//			result.put(Reference.class, referenceMap);
 
 		} catch (SQLException e) {
 			throw new RuntimeException(e);
@@ -300,13 +300,13 @@ public class ErmsTaxonImport  extends ErmsImportBase<TaxonBase> implements IMapp
 		}
 		
 		//add original source for taxon name (taxon original source is added in mapper
-		ReferenceBase citation = state.getConfig().getSourceReference();
+		Reference citation = state.getConfig().getSourceReference();
 		addOriginalSource(rs, taxonName, "id", NAME_NAMESPACE, citation);
 		
 //		taxonName.setNameCache("Test");
 		
 		ErmsImportConfigurator config = state.getConfig();
-		ReferenceBase sec = config.getSourceReference();
+		Reference sec = config.getSourceReference();
 		if (statusId == 1){
 			return Taxon.NewInstance(taxonName, sec);
 		}else{

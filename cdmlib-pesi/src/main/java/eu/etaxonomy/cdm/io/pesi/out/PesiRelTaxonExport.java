@@ -36,7 +36,7 @@ import eu.etaxonomy.cdm.model.taxon.Taxon;
 import eu.etaxonomy.cdm.model.taxon.TaxonBase;
 import eu.etaxonomy.cdm.model.taxon.TaxonNode;
 import eu.etaxonomy.cdm.model.taxon.TaxonRelationship;
-import eu.etaxonomy.cdm.model.taxon.TaxonomicTree;
+import eu.etaxonomy.cdm.model.taxon.Classification;
 
 /**
  * The export class for relations between {@link eu.etaxonomy.cdm.model.taxon.TaxonBase TaxonBases}.<p>
@@ -114,7 +114,7 @@ public class PesiRelTaxonExport extends PesiExportBase {
 			mapping.initialize(state);
 
 			TransactionStatus txStatus = null;
-			List<TaxonomicTree> taxonomicTreeList = null;
+			List<Classification> classificationList = null;
 			
 			// Specify starting ranks for tree traversing
 			rankList.add(Rank.KINGDOM());
@@ -124,22 +124,22 @@ public class PesiRelTaxonExport extends PesiExportBase {
 			rankMap.put(Rank.GENUS(), null); // Since NULL does not match an existing Rank, traverse all the way down to the leaves
 			rankMap.put(Rank.KINGDOM(), Rank.GENUS()); // excludes rank genus
 			
-			// Retrieve list of Taxonomic Trees
+			// Retrieve list of classifications
 			txStatus = startTransaction(true);
-			logger.error("Started transaction. Fetching all Taxonomic Trees...");
-			taxonomicTreeList = getTaxonTreeService().listTaxonomicTrees(null, 0, null, null);
+			logger.error("Started transaction. Fetching all classifications...");
+			classificationList = getClassificationService().listClassifications(null, 0, null, null);
 			commitTransaction(txStatus);
 			logger.error("Committed transaction.");
 
-			logger.error("Fetched " + taxonomicTreeList.size() + " Taxonomic Tree.");
+			logger.error("Fetched " + classificationList.size() + " classification(s).");
 
-			for (TaxonomicTree taxonomicTree : taxonomicTreeList) {
+			for (Classification classification : classificationList) {
 				for (Rank rank : rankList) {
 					
 					txStatus = startTransaction(true);
 					logger.error("Started transaction to fetch all rootNodes specific to Rank " + rank.getLabel() + " ...");
 
-					List<TaxonNode> rankSpecificRootNodes = getTaxonTreeService().loadRankSpecificRootNodes(taxonomicTree, rank, null);
+					List<TaxonNode> rankSpecificRootNodes = getClassificationService().loadRankSpecificRootNodes(classification, rank, null);
 					logger.error("Fetched " + rankSpecificRootNodes.size() + " RootNodes for Rank " + rank.getLabel());
 
 					commitTransaction(txStatus);
@@ -179,7 +179,7 @@ public class PesiRelTaxonExport extends PesiExportBase {
 	}
 
 	/**
-	 * Traverses the TaxonTree recursively and stores determined values for every Taxon.
+	 * Traverses the classification recursively and stores determined values for every Taxon.
 	 * @param childNode
 	 * @param parentNode
 	 * @param treeIndex

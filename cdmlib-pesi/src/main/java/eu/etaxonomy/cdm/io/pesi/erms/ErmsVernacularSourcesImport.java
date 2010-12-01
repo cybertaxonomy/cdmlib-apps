@@ -27,7 +27,7 @@ import eu.etaxonomy.cdm.io.pesi.erms.validation.ErmsVernacularSourceImportValida
 import eu.etaxonomy.cdm.model.common.CdmBase;
 import eu.etaxonomy.cdm.model.common.DescriptionElementSource;
 import eu.etaxonomy.cdm.model.description.CommonTaxonName;
-import eu.etaxonomy.cdm.model.reference.ReferenceBase;
+import eu.etaxonomy.cdm.model.reference.Reference;
 
 /**
  * @author a.mueller
@@ -125,9 +125,9 @@ public class ErmsVernacularSourcesImport extends ErmsImportBase<CommonTaxonName>
 			
 			//reference map
 			nameSpace = ErmsReferenceImport.REFERENCE_NAMESPACE;
-			cdmClass = ReferenceBase.class;
+			cdmClass = Reference.class;
 			idSet = sourceIdSet;
-			Map<String, ReferenceBase> referenceMap = (Map<String, ReferenceBase>)getCommonService().getSourcedObjectsByIdInSource(cdmClass, idSet, nameSpace);
+			Map<String, Reference> referenceMap = (Map<String, Reference>)getCommonService().getSourcedObjectsByIdInSource(cdmClass, idSet, nameSpace);
 			result.put(nameSpace, referenceMap);
 	
 		} catch (SQLException e) {

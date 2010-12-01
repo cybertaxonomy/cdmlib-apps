@@ -47,7 +47,7 @@ import eu.etaxonomy.cdm.model.common.IdentifiableSource;
 import eu.etaxonomy.cdm.model.name.Rank;
 import eu.etaxonomy.cdm.model.name.TaxonNameBase;
 import eu.etaxonomy.cdm.model.name.ZoologicalName;
-import eu.etaxonomy.cdm.model.reference.ReferenceBase;
+import eu.etaxonomy.cdm.model.reference.Reference;
 import eu.etaxonomy.cdm.model.taxon.Synonym;
 import eu.etaxonomy.cdm.model.taxon.Taxon;
 import eu.etaxonomy.cdm.model.taxon.TaxonBase;
@@ -166,7 +166,7 @@ public class FaunaEuropaeaTaxonNameImport extends FaunaEuropaeaImportBase  {
 		Set<Synonym> synonymSet = null;
 
 		FaunaEuropaeaImportConfigurator fauEuConfig = state.getConfig();
-		ReferenceBase<?> sourceRef = fauEuConfig.getSourceReference();
+		Reference<?> sourceRef = fauEuConfig.getSourceReference();
 
 		Source source = fauEuConfig.getSource();
 		int i = 0;
@@ -371,8 +371,8 @@ public class FaunaEuropaeaTaxonNameImport extends FaunaEuropaeaImportBase  {
 					continue;
 				}
 
-				ReferenceBase<?> sourceReference = fauEuConfig.getSourceReference();
-				ReferenceBase<?> auctReference = fauEuConfig.getAuctReference();
+				Reference<?> sourceReference = fauEuConfig.getSourceReference();
+				Reference<?> auctReference = fauEuConfig.getAuctReference();
 
 				ZoologicalName zooName = ZoologicalName.NewInstance(rank);
 				TeamOrPersonBase<?> author = authorStore.get(autId);
@@ -656,7 +656,7 @@ public class FaunaEuropaeaTaxonNameImport extends FaunaEuropaeaImportBase  {
 
 
 	/* Build taxon title cache */
-	private String buildTaxonTitleCache(String nameCache, ReferenceBase<?> reference) {
+	private String buildTaxonTitleCache(String nameCache, Reference<?> reference) {
 		
 		StringBuilder titleCacheStringBuilder = new StringBuilder(nameCache);
 		titleCacheStringBuilder.append(" sec. ");

@@ -30,12 +30,12 @@ import eu.etaxonomy.cdm.io.common.Source;
 import eu.etaxonomy.cdm.io.profiler.ProfilerController;
 import eu.etaxonomy.cdm.model.agent.TeamOrPersonBase;
 import eu.etaxonomy.cdm.model.common.CdmBase;
-import eu.etaxonomy.cdm.model.reference.ReferenceBase;
+import eu.etaxonomy.cdm.model.reference.Reference;
 import eu.etaxonomy.cdm.model.taxon.Synonym;
 import eu.etaxonomy.cdm.model.taxon.SynonymRelationshipType;
 import eu.etaxonomy.cdm.model.taxon.Taxon;
 import eu.etaxonomy.cdm.model.taxon.TaxonBase;
-import eu.etaxonomy.cdm.model.taxon.TaxonomicTree;
+import eu.etaxonomy.cdm.model.taxon.Classification;
 
 
 
@@ -51,7 +51,7 @@ public class FaunaEuropaeaRelTaxonIncludeImport extends FaunaEuropaeaImportBase 
 	private static final Logger logger = Logger.getLogger(FaunaEuropaeaRelTaxonIncludeImport.class);
 	private static final String acceptedTaxonUUID = "A9C24E42-69F5-4681-9399-041E652CF338"; // any accepted taxon uuid, taken from original fauna europaea database
 	
-	private ReferenceBase<?> sourceRef;
+	private Reference<?> sourceRef;
 	private static String ALL_SYNONYM_FROM_CLAUSE = " FROM Taxon INNER JOIN Taxon AS Parent " +
 	" ON Taxon.TAX_TAX_IDPARENT = Parent.TAX_ID " +
 	" WHERE (Taxon.TAX_VALID = 0) " +
@@ -108,7 +108,7 @@ public class FaunaEuropaeaRelTaxonIncludeImport extends FaunaEuropaeaImportBase 
 		TaxonBase taxon = getTaxonService().find(UUID.fromString(acceptedTaxonUUID));
 		sourceRef = taxon.getSec();
 
-		TaxonomicTree tree = getTaxonomicTreeFor(state, sourceRef);
+		Classification tree = getClassificationFor(state, sourceRef);
 		commitTransaction(txStatus);
 		
 		//ProfilerController.memorySnapshot();
@@ -433,7 +433,7 @@ public class FaunaEuropaeaRelTaxonIncludeImport extends FaunaEuropaeaImportBase 
 		boolean success = true;
 		int limit = state.getConfig().getLimitSave();
 		
-			TaxonomicTree tree = getTaxonomicTreeFor(state, sourceRef);
+			Classification tree = getClassificationFor(state, sourceRef);
 			
 			Set<TaxonBase> childSet = new HashSet<TaxonBase>(limit);
 			

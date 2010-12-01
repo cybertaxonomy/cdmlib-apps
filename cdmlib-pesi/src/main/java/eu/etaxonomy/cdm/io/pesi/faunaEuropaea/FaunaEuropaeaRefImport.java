@@ -36,7 +36,7 @@ import eu.etaxonomy.cdm.model.description.Feature;
 import eu.etaxonomy.cdm.model.description.TaxonDescription;
 import eu.etaxonomy.cdm.model.description.TextData;
 import eu.etaxonomy.cdm.model.reference.IGeneric;
-import eu.etaxonomy.cdm.model.reference.ReferenceBase;
+import eu.etaxonomy.cdm.model.reference.Reference;
 import eu.etaxonomy.cdm.model.reference.ReferenceFactory;
 import eu.etaxonomy.cdm.model.taxon.Synonym;
 import eu.etaxonomy.cdm.model.taxon.Taxon;
@@ -91,9 +91,9 @@ public class FaunaEuropaeaRefImport extends FaunaEuropaeaImportBase {
 
 		TransactionStatus txStatus = null;
 		List<TaxonBase> taxonList = null;
-		List<ReferenceBase> referenceList = null;
+		List<Reference> referenceList = null;
 		Set<UUID> taxonUuids = null;
-		Map<Integer, ReferenceBase> references = null;
+		Map<Integer, Reference> references = null;
 		Map<String,TeamOrPersonBase> authors = null;
 		Map<UUID, FaunaEuropaeaReferenceTaxon> fauEuTaxonMap = null;
 		Map<Integer, UUID> referenceUuids = new HashMap<Integer, UUID>();
@@ -177,7 +177,7 @@ public class FaunaEuropaeaRefImport extends FaunaEuropaeaImportBase {
 				if ((i++ % limit) == 0) {
 
 					txStatus = startTransaction();
-					references = new HashMap<Integer,ReferenceBase>(limit);
+					references = new HashMap<Integer,Reference>(limit);
 					authors = new HashMap<String,TeamOrPersonBase>(limit);
 					
 					if(logger.isInfoEnabled()) {
@@ -185,7 +185,7 @@ public class FaunaEuropaeaRefImport extends FaunaEuropaeaImportBase {
 					}
 				}
 				
-				ReferenceBase<?> reference = null;
+				Reference<?> reference = null;
 				TeamOrPersonBase<Team> author = null;
 				//ReferenceFactory refFactory = ReferenceFactory.newInstance();
 				reference = ReferenceFactory.newGeneric();
@@ -240,12 +240,12 @@ public class FaunaEuropaeaRefImport extends FaunaEuropaeaImportBase {
 				
 				if (((i % limit) == 0 && i > 1 ) || i == count) { 
 					
-					Map <UUID, ReferenceBase> referenceMap =getReferenceService().save(references.values());
+					Map <UUID, Reference> referenceMap =getReferenceService().save(references.values());
 					logger.info("i = " + i + " - references saved"); 
 
-					Iterator<Entry<UUID, ReferenceBase>> it = referenceMap.entrySet().iterator();
+					Iterator<Entry<UUID, Reference>> it = referenceMap.entrySet().iterator();
 					while (it.hasNext()){
-						ReferenceBase ref = it.next().getValue();
+						Reference ref = it.next().getValue();
 						int refID = Integer.valueOf(((OriginalSourceBase)ref.getSources().iterator().next()).getIdInSource());
 						UUID uuid = ref.getUuid();
 						referenceUuids.put(refID, uuid);
@@ -376,8 +376,8 @@ public class FaunaEuropaeaRefImport extends FaunaEuropaeaImportBase {
 							uuidSet.add(uuid);
 						}
 						referenceList = getReferenceService().find(uuidSet);
-						references = new HashMap<Integer, ReferenceBase>(limit);
-						for (ReferenceBase ref : referenceList){
+						references = new HashMap<Integer, Reference>(limit);
+						for (Reference ref : referenceList){
 							references.put(Integer.valueOf(((OriginalSourceBase)ref.getSources().iterator().next()).getIdInSource()), ref);
 						}
 						for (TaxonBase taxonBase : taxonList) {
@@ -418,7 +418,7 @@ public class FaunaEuropaeaRefImport extends FaunaEuropaeaImportBase {
 	
 								UUID taxonUuid = taxonBase.getUuid();
 								FaunaEuropaeaReferenceTaxon fauEuHelperTaxon = fauEuTaxonMap.get(taxonUuid);
-								ReferenceBase citation;
+								Reference citation;
 								String microCitation;
 								DescriptionElementSource originalSource;
 								Synonym syn;

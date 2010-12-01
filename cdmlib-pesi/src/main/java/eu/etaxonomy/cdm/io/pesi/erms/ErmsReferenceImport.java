@@ -32,7 +32,7 @@ import eu.etaxonomy.cdm.model.common.AnnotationType;
 import eu.etaxonomy.cdm.model.common.CdmBase;
 import eu.etaxonomy.cdm.model.common.ExtensionType;
 import eu.etaxonomy.cdm.model.common.Language;
-import eu.etaxonomy.cdm.model.reference.ReferenceBase;
+import eu.etaxonomy.cdm.model.reference.Reference;
 import eu.etaxonomy.cdm.model.reference.ReferenceFactory;
 
 
@@ -42,7 +42,7 @@ import eu.etaxonomy.cdm.model.reference.ReferenceFactory;
  * @version 1.0
  */
 @Component
-public class ErmsReferenceImport  extends ErmsImportBase<ReferenceBase> implements IMappingImport<ReferenceBase, ErmsImportState>{
+public class ErmsReferenceImport  extends ErmsImportBase<Reference> implements IMappingImport<Reference, ErmsImportState>{
 	private static final Logger logger = Logger.getLogger(ErmsReferenceImport.class);
 	
 	private DbImportMapping mapping;
@@ -51,7 +51,7 @@ public class ErmsReferenceImport  extends ErmsImportBase<ReferenceBase> implemen
 	private int modCount = 10000;
 	private static final String pluralString = "sources";
 	private static final String dbTableName = "sources";
-	private static final Class cdmTargetClass = ReferenceBase.class;
+	private static final Class cdmTargetClass = Reference.class;
 
 	public ErmsReferenceImport(){
 		super(pluralString, dbTableName, cdmTargetClass);
@@ -98,10 +98,10 @@ public class ErmsReferenceImport  extends ErmsImportBase<ReferenceBase> implemen
 	/* (non-Javadoc)
 	 * @see eu.etaxonomy.cdm.io.common.mapping.IMappingImport#createObject(java.sql.ResultSet, eu.etaxonomy.cdm.io.common.ImportStateBase)
 	 */
-	public ReferenceBase createObject(ResultSet rs, ErmsImportState state)
+	public Reference createObject(ResultSet rs, ErmsImportState state)
 			throws SQLException {
 		int id = rs.getInt("id");
-		ReferenceBase ref = ReferenceFactory.newGeneric();
+		Reference ref = ReferenceFactory.newGeneric();
 		return ref;
 	}
 

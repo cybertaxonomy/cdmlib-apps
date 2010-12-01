@@ -16,7 +16,7 @@ import eu.etaxonomy.cdm.io.common.DbExportConfiguratorBase;
 import eu.etaxonomy.cdm.io.common.ExportStateBase;
 import eu.etaxonomy.cdm.io.common.IExportConfigurator;
 import eu.etaxonomy.cdm.io.common.Source;
-import eu.etaxonomy.cdm.model.reference.ReferenceBase;
+import eu.etaxonomy.cdm.model.reference.Reference;
 import eu.etaxonomy.cdm.model.reference.ReferenceFactory;
 
 /**
@@ -28,7 +28,7 @@ public class PesiExportConfigurator extends DbExportConfiguratorBase implements 
 	@SuppressWarnings("unused")
 	private static Logger logger = Logger.getLogger(PesiExportConfigurator.class);
 	private int limitSave = 1000;
-	private ReferenceBase<?> auctReference;
+	private Reference<?> auctReference;
 	private boolean doOccurrence = true;
 	private boolean doFacts = true;
 	private boolean doNameFacts = true;
@@ -90,7 +90,7 @@ public class PesiExportConfigurator extends DbExportConfiguratorBase implements 
 	 * Copied from FaunaEuropaeaImportConfigurator.
 	 * @return
 	 */
-	public ReferenceBase<?> getAuctReference() {
+	public Reference<?> getAuctReference() {
 		if (auctReference == null){
 			auctReference = ReferenceFactory.newGeneric();
 			

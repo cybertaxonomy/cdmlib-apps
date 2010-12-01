@@ -53,14 +53,14 @@ import eu.etaxonomy.cdm.model.name.NonViralName;
 import eu.etaxonomy.cdm.model.name.Rank;
 import eu.etaxonomy.cdm.model.name.TaxonNameBase;
 import eu.etaxonomy.cdm.model.name.ZoologicalName;
-import eu.etaxonomy.cdm.model.reference.ReferenceBase;
+import eu.etaxonomy.cdm.model.reference.Reference;
 import eu.etaxonomy.cdm.model.taxon.Synonym;
 import eu.etaxonomy.cdm.model.taxon.Taxon;
 import eu.etaxonomy.cdm.model.taxon.TaxonBase;
 import eu.etaxonomy.cdm.model.taxon.TaxonNode;
 import eu.etaxonomy.cdm.model.taxon.TaxonRelationship;
 import eu.etaxonomy.cdm.model.taxon.TaxonRelationshipType;
-import eu.etaxonomy.cdm.model.taxon.TaxonomicTree;
+import eu.etaxonomy.cdm.model.taxon.Classification;
 import eu.etaxonomy.cdm.persistence.query.MatchMode;
 
 /**
@@ -278,7 +278,7 @@ public class PesiTaxonExport extends PesiExportBase {
 
 			count = 0;
 			pastCount = 0;
-			List<TaxonomicTree> taxonomicTreeList = null;
+			List<Classification> classificationList = null;
 			// 2nd Round: Add ParentTaxonFk, TreeIndex to each Taxon
 			logger.error("PHASE 2: Add ParenTaxonFk and TreeIndex...");
 			
@@ -292,24 +292,24 @@ public class PesiTaxonExport extends PesiExportBase {
 			
 			StringBuffer treeIndex = new StringBuffer();
 			
-			// Retrieve list of Taxonomic Trees
+			// Retrieve list of classifications
 			txStatus = startTransaction(true);
-			logger.error("Started transaction. Fetching all Taxonomic Trees...");
-			taxonomicTreeList = getTaxonTreeService().listTaxonomicTrees(null, 0, null, null);
+			logger.error("Started transaction. Fetching all classifications...");
+			classificationList = getClassificationService().listClassifications(null, 0, null, null);
 			commitTransaction(txStatus);
 			logger.error("Committed transaction.");
 
-			logger.error("Fetched " + taxonomicTreeList.size() + " Taxonomic Tree.");
+			logger.error("Fetched " + classificationList.size() + " classification(s).");
 
 			setTreeIndexAnnotationType(getAnnotationType(uuidTreeIndex, "TreeIndex", "", "TI"));
 			
-			for (TaxonomicTree taxonomicTree : taxonomicTreeList) {
+			for (Classification classification : classificationList) {
 				for (Rank rank : rankList) {
 					
 					txStatus = startTransaction(true);
 					logger.error("Started transaction to fetch all rootNodes specific to Rank " + rank.getLabel() + " ...");
 
-					List<TaxonNode> rankSpecificRootNodes = getTaxonTreeService().loadRankSpecificRootNodes(taxonomicTree, rank, null);
+					List<TaxonNode> rankSpecificRootNodes = getClassificationService().loadRankSpecificRootNodes(classification, rank, null);
 					logger.error("Fetched " + rankSpecificRootNodes.size() + " RootNodes for Rank " + rank.getLabel());
 
 					commitTransaction(txStatus);
@@ -373,7 +373,7 @@ public class PesiTaxonExport extends PesiExportBase {
 			// Be sure to add rank information, KingdomFk, TypeNameFk, expertFk and speciesExpertFk to every taxonName
 			
 			// Start transaction
-			List<ReferenceBase> referenceList;
+			List<Reference> referenceList;
 			txStatus = startTransaction(true);
 			logger.error("Started new transaction. Fetching some " + pluralString + " (max: " + limit + ") ...");
 			while ((list = getNameService().list(null, limit, count, null, null)).size() > 0) {
@@ -458,7 +458,7 @@ public class PesiTaxonExport extends PesiExportBase {
 			String inferredSynonymPluralString = "Inferred Synonyms";
 			
 			// Start transaction
-			TaxonomicTree taxonTree = null;
+			Classification classification = null;
 			Taxon acceptedTaxon = null;
 			txStatus = startTransaction(true);
 			logger.error("Started new transaction. Fetching some " + parentPluralString + " first (max: " + limit + ") ...");
@@ -481,26 +481,26 @@ public class PesiTaxonExport extends PesiExportBase {
 							Set<TaxonNode> taxonNodes = acceptedTaxon.getTaxonNodes();
 							TaxonNode singleNode = null;
 							if (taxonNodes.size() > 0) {
-								// Determine the taxonomicTree of the current TaxonNode
+								// Determine the classification of the current TaxonNode
 								singleNode = taxonNodes.iterator().next();
 								if (singleNode != null) {
-									taxonTree = singleNode.getTaxonomicTree();
+									classification = singleNode.getClassification();
 								} else {
 									logger.error("A TaxonNode belonging to this accepted Taxon is NULL: " + acceptedTaxon.getUuid() + " (" + acceptedTaxon.getTitleCache() +")");
 								}
 							} else {
-								// TaxonomicTree could not be determined directly from this TaxonNode
-								// The stored taxonomicTree from another TaxonNode is used. It's a simple, but not a failsafe fallback solution.
-								if (taxonTree == null) {
-									logger.error("TaxonomicTree could not be determined directly from this TaxonNode: " + singleNode.getUuid() + "). " +
-											"This taxonomicTree stored from another TaxonNode is used: " + taxonTree.getTitleCache());
+								// Classification could not be determined directly from this TaxonNode
+								// The stored classification from another TaxonNode is used. It's a simple, but not a failsafe fallback solution.
+								if (classification == null) {
+									logger.error("Classification could not be determined directly from this TaxonNode: " + singleNode.getUuid() + "). " +
+											"This classification stored from another TaxonNode is used: " + classification.getTitleCache());
 								}
 							}
 							
-							if (taxonTree != null) {
-								inferredSynonyms  = getTaxonService().createAllInferredSynonyms(taxonTree, acceptedTaxon);
+							if (classification != null) {
+								inferredSynonyms  = getTaxonService().createAllInferredSynonyms(classification, acceptedTaxon);
 	
-//								inferredSynonyms = getTaxonService().createInferredSynonyms(taxonTree, acceptedTaxon, SynonymRelationshipType.INFERRED_GENUS_OF());
+//								inferredSynonyms = getTaxonService().createInferredSynonyms(classification, acceptedTaxon, SynonymRelationshipType.INFERRED_GENUS_OF());
 								if (inferredSynonyms != null) {
 									for (Synonym synonym : inferredSynonyms) {
 										TaxonNameBase synonymName = synonym.getName();
@@ -521,7 +521,7 @@ public class PesiTaxonExport extends PesiExportBase {
 									}
 								}
 							} else {
-								logger.error("TaxonomicTree is NULL. Inferred Synonyms could not be created for this Taxon: " + acceptedTaxon.getUuid() + " (" + acceptedTaxon.getTitleCache() + ")");
+								logger.error("Classification is NULL. Inferred Synonyms could not be created for this Taxon: " + acceptedTaxon.getUuid() + " (" + acceptedTaxon.getTitleCache() + ")");
 							}
 						} else {
 //							logger.error("TaxonName is not a ZoologicalName: " + taxonName.getUuid() + " (" + taxonName.getTitleCache() + ")");
@@ -703,7 +703,7 @@ public class PesiTaxonExport extends PesiExportBase {
 	}
 
 	/**
-	 * Traverses the TaxonTree recursively and stores determined values for every Taxon.
+	 * Traverses the classification recursively and stores determined values for every Taxon.
 	 * @param childNode The {@link TaxonNode TaxonNode} to process.
 	 * @param parentNode The parent {@link TaxonNode TaxonNode} of the childNode.
 	 * @param treeIndex The TreeIndex at the current level.
@@ -1158,7 +1158,7 @@ public class PesiTaxonExport extends PesiExportBase {
 					result += " ";
 				}
 				result += object;
-			} else if (object instanceof ReferenceBase) {
+			} else if (object instanceof Reference) {
 				if (openTag) {
 					result += "</i> ";
 					openTag = false;
@@ -1874,7 +1874,7 @@ public class PesiTaxonExport extends PesiExportBase {
 			if (sources.size() == 1) {
 				IdentifiableSource source = sources.iterator().next();
 				if (source != null) {
-					ReferenceBase citation = source.getCitation();
+					Reference citation = source.getCitation();
 					if (citation != null) {
 						result = PesiTransformer.databaseString2Abbreviation(citation.getTitleCache());
 					}
@@ -1882,7 +1882,7 @@ public class PesiTaxonExport extends PesiExportBase {
 			} else if (sources.size() > 1) {
 				int count = 1;
 				for (IdentifiableSource source : sources) {
-					ReferenceBase citation = source.getCitation();
+					Reference citation = source.getCitation();
 					if (citation != null) {
 						if (count > 1) {
 							result += "; ";
@@ -1982,7 +1982,7 @@ public class PesiTaxonExport extends PesiExportBase {
 	 * @return The <code>ExpertFk</code> attribute.
 	 * @see MethodMapper
 	 */
-	private static Integer getExpertFk(ReferenceBase reference, PesiExportState state) {
+	private static Integer getExpertFk(Reference reference, PesiExportState state) {
 		Integer result = state.getDbId(reference);
 		return result;
 	}
@@ -2011,12 +2011,12 @@ public class PesiTaxonExport extends PesiExportBase {
 	
 	/**
 	 * Returns the <code>SpeciesExpertFk</code> attribute.
-	 * @param reference The {@link ReferenceBase Reference}.
+	 * @param reference The {@link Reference Reference}.
 	 * @param state The {@link PesiExportState PesiExportState}.
 	 * @return The <code>SpeciesExpertFk</code> attribute.
 	 * @see MethodMapper
 	 */
-	private static Integer getSpeciesExpertFk(ReferenceBase reference, PesiExportState state) {
+	private static Integer getSpeciesExpertFk(Reference reference, PesiExportState state) {
 		Integer result = state.getDbId(reference);
 		return result;
 	}

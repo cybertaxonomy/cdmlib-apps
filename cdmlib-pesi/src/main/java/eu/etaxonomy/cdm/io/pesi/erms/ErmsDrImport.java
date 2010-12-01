@@ -33,7 +33,7 @@ import eu.etaxonomy.cdm.model.common.CdmBase;
 import eu.etaxonomy.cdm.model.description.Distribution;
 import eu.etaxonomy.cdm.model.description.PresenceTerm;
 import eu.etaxonomy.cdm.model.location.NamedArea;
-import eu.etaxonomy.cdm.model.reference.ReferenceBase;
+import eu.etaxonomy.cdm.model.reference.Reference;
 import eu.etaxonomy.cdm.model.taxon.TaxonBase;
 
 
@@ -148,9 +148,9 @@ public class ErmsDrImport  extends ErmsImportBase<Distribution> {
 			
 			//reference map
 			nameSpace = ErmsReferenceImport.REFERENCE_NAMESPACE;
-			cdmClass = ReferenceBase.class;
+			cdmClass = Reference.class;
 			idSet = sourceIdSet;
-			Map<String, ReferenceBase> referenceMap = (Map<String, ReferenceBase>)getCommonService().getSourcedObjectsByIdInSource(cdmClass, idSet, nameSpace);
+			Map<String, Reference> referenceMap = (Map<String, Reference>)getCommonService().getSourcedObjectsByIdInSource(cdmClass, idSet, nameSpace);
 			result.put(nameSpace, referenceMap);
 
 			
@@ -166,7 +166,7 @@ public class ErmsDrImport  extends ErmsImportBase<Distribution> {
 	 * @param state 
 	 */
 	private void addSource(Distribution distribution, Integer source_id, ErmsImportState state) {
-		ReferenceBase ref = (ReferenceBase)state.getRelatedObject(ErmsReferenceImport.REFERENCE_NAMESPACE, String.valueOf(source_id));
+		Reference ref = (Reference)state.getRelatedObject(ErmsReferenceImport.REFERENCE_NAMESPACE, String.valueOf(source_id));
 		distribution.addSource(null, null, ref, null);
 	}
 

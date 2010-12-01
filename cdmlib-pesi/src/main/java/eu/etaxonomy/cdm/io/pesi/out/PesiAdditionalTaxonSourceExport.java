@@ -26,12 +26,12 @@ import eu.etaxonomy.cdm.model.description.DescriptionElementBase;
 import eu.etaxonomy.cdm.model.description.TaxonDescription;
 import eu.etaxonomy.cdm.model.description.TextData;
 import eu.etaxonomy.cdm.model.name.TaxonNameBase;
-import eu.etaxonomy.cdm.model.reference.ReferenceBase;
+import eu.etaxonomy.cdm.model.reference.Reference;
 import eu.etaxonomy.cdm.model.taxon.Taxon;
 import eu.etaxonomy.cdm.model.taxon.TaxonBase;
 
 /**
- * The export class for additional information linked to {@link eu.etaxonomy.cdm.model.taxon.Taxon Taxa} and {@link eu.etaxonomy.cdm.model.reference.ReferenceBase References}.<p>
+ * The export class for additional information linked to {@link eu.etaxonomy.cdm.model.taxon.Taxon Taxa} and {@link eu.etaxonomy.cdm.model.reference.Reference References}.<p>
  * Inserts into DataWarehouse database table <code>AdditionalTaxonSource</code>.
  * @author e.-m.lee
  * @date 23.02.2010
@@ -41,7 +41,7 @@ import eu.etaxonomy.cdm.model.taxon.TaxonBase;
 @SuppressWarnings("unchecked")
 public class PesiAdditionalTaxonSourceExport extends PesiExportBase {
 	private static final Logger logger = Logger.getLogger(PesiAdditionalTaxonSourceExport.class);
-	private static final Class<? extends CdmBase> standardMethodParameter = ReferenceBase.class;
+	private static final Class<? extends CdmBase> standardMethodParameter = Reference.class;
 
 	private static int modCount = 1000;
 	private static final String dbTableName = "AdditionalTaxonSource";
@@ -147,7 +147,7 @@ public class PesiAdditionalTaxonSourceExport extends PesiExportBase {
 										setCitationMicroReference(elementSource.getCitationMicroReference());
 	
 										// Get the citation
-										ReferenceBase reference = elementSource.getCitation();
+										Reference reference = elementSource.getCitation();
 										
 										// Check whether it was a synonym originally
 										TaxonNameBase nameUsedInSource = elementSource.getNameUsedInSource();
@@ -204,7 +204,7 @@ public class PesiAdditionalTaxonSourceExport extends PesiExportBase {
 	 * Checks whether needed values for an entity are NULL.
 	 * @return
 	 */
-	private boolean neededValuesNotNull(ReferenceBase<?> reference, PesiExportState state) {
+	private boolean neededValuesNotNull(Reference<?> reference, PesiExportState state) {
 		boolean result = true;
 		if (getSourceFk(reference, state) == null) {
 			logger.error("SourceFk is NULL, but is not allowed to be. Therefore no record was written to export database for this reference: " + reference.getUuid());
@@ -247,12 +247,12 @@ public class PesiAdditionalTaxonSourceExport extends PesiExportBase {
 
 	/**
 	 * Returns the <code>TaxonFk</code> attribute.
-	 * @param reference The {@link ReferenceBase Reference}.
+	 * @param reference The {@link Reference Reference}.
 	 * @see MethodMapper
 	 */
 	@SuppressWarnings("unused")
-	private static Integer getTaxonFk(ReferenceBase<?> reference, PesiExportState state) {
-		// ReferenceBase parameter isn't needed, but the DbSingleAttributeExportMapperBase throws a type mismatch exception otherwise
+	private static Integer getTaxonFk(Reference<?> reference, PesiExportState state) {
+		// Reference parameter isn't needed, but the DbSingleAttributeExportMapperBase throws a type mismatch exception otherwise
 		// since it awaits two parameters if one of them is of instance DbExportStateBase.
 		Integer result = null;
 		if (state != null && currentTaxonName != null) {
@@ -263,11 +263,11 @@ public class PesiAdditionalTaxonSourceExport extends PesiExportBase {
 	
 	/**
 	 * Returns the <code>SourceFk</code> attribute.
-	 * @param reference The {@link ReferenceBase Reference}.
+	 * @param reference The {@link Reference Reference}.
 	 * @return The <code>SourceFk</code> attribute.
 	 * @see MethodMapper
 	 */
-	private static Integer getSourceFk(ReferenceBase<?> reference, PesiExportState state) {
+	private static Integer getSourceFk(Reference<?> reference, PesiExportState state) {
 		Integer result = null;
 		if (state != null && reference != null) {
 			result = state.getDbId(reference);
@@ -277,11 +277,11 @@ public class PesiAdditionalTaxonSourceExport extends PesiExportBase {
 	
 	/**
 	 * Returns the <code>SourceUseFk</code> attribute.
-	 * @param reference The {@link ReferenceBase Reference}.
+	 * @param reference The {@link Reference Reference}.
 	 * @return The <code>SourceUseFk</code> attribute.
 	 * @see MethodMapper
 	 */
-	private static Integer getSourceUseFk(ReferenceBase<?> reference) {
+	private static Integer getSourceUseFk(Reference<?> reference) {
 		// TODO
 		Integer result = null;
 		if (sourceUse_AdditionalSource) {
@@ -296,12 +296,12 @@ public class PesiAdditionalTaxonSourceExport extends PesiExportBase {
 	
 	/**
 	 * Returns the <code>SourceUseCache</code> attribute.
-	 * @param reference The {@link ReferenceBase Reference}.
+	 * @param reference The {@link Reference Reference}.
 	 * @return The <code>SourceUseCache</code> attribute.
 	 * @see MethodMapper
 	 */
 	@SuppressWarnings("unused")
-	private static String getSourceUseCache(ReferenceBase<?> reference) {
+	private static String getSourceUseCache(Reference<?> reference) {
 		// TODO
 		String result = null;
 		if (sourceUse_AdditionalSource) {
@@ -316,12 +316,12 @@ public class PesiAdditionalTaxonSourceExport extends PesiExportBase {
 	
 	/**
 	 * Returns the <code>SourceNameCache</code> attribute.
-	 * @param reference The {@link ReferenceBase Reference}.
+	 * @param reference The {@link Reference Reference}.
 	 * @return The <code>SourceNameCache</code> attribute.
 	 * @see MethodMapper
 	 */
 	@SuppressWarnings("unused")
-	private static String getSourceNameCache(ReferenceBase<?> reference) {
+	private static String getSourceNameCache(Reference<?> reference) {
 		String result = null;
 		if (reference != null) {
 			result = reference.getTitle();
@@ -331,12 +331,12 @@ public class PesiAdditionalTaxonSourceExport extends PesiExportBase {
 	
 	/**
 	 * Returns the <code>SourceDetail</code> attribute.
-	 * @param reference The {@link ReferenceBase Reference}.
+	 * @param reference The {@link Reference Reference}.
 	 * @return The <code>SourceDetail</code> attribute.
 	 * @see MethodMapper
 	 */
 	@SuppressWarnings("unused")
-	private static String getSourceDetail(ReferenceBase<?> reference) {
+	private static String getSourceDetail(Reference<?> reference) {
 		return PesiAdditionalTaxonSourceExport.citationMicroReference;
 	}
 

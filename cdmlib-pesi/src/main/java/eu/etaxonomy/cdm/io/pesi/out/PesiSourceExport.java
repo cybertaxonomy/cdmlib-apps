@@ -30,10 +30,10 @@ import eu.etaxonomy.cdm.model.agent.TeamOrPersonBase;
 import eu.etaxonomy.cdm.model.common.CdmBase;
 import eu.etaxonomy.cdm.model.common.ExtensionType;
 import eu.etaxonomy.cdm.model.common.IdentifiableSource;
-import eu.etaxonomy.cdm.model.reference.ReferenceBase;
+import eu.etaxonomy.cdm.model.reference.Reference;
 
 /**
- * The export class for {@link eu.etaxonomy.cdm.model.reference.ReferenceBase References}.<p>
+ * The export class for {@link eu.etaxonomy.cdm.model.reference.Reference References}.<p>
  * Inserts into DataWarehouse database table <code>Source</code>.
  * @author e.-m.lee
  * @date 11.02.2010
@@ -43,7 +43,7 @@ import eu.etaxonomy.cdm.model.reference.ReferenceBase;
 @SuppressWarnings("unchecked")
 public class PesiSourceExport extends PesiExportBase {
 	private static final Logger logger = Logger.getLogger(PesiSourceExport.class);
-	private static final Class<? extends CdmBase> standardMethodParameter = ReferenceBase.class;
+	private static final Class<? extends CdmBase> standardMethodParameter = Reference.class;
 
 	private static int modCount = 1000;
 	private static final String dbTableName = "Source";
@@ -123,7 +123,7 @@ public class PesiSourceExport extends PesiExportBase {
 			int count = 0;
 			int pastCount = 0;
 			TransactionStatus txStatus = null;
-			List<ReferenceBase> list = null;
+			List<Reference> list = null;
 
 //			logger.error("PHASE 1...");
 			// Start transaction
@@ -132,7 +132,7 @@ public class PesiSourceExport extends PesiExportBase {
 			while ((list = getReferenceService().list(null, limit, count, null, null)).size() > 0) {
 
 				logger.error("Fetched " + list.size() + " " + pluralString + ". Exporting...");
-				for (ReferenceBase<?> reference : list) {
+				for (Reference<?> reference : list) {
 					doCount(count++, modCount, pluralString);
 					success &= mapping.invoke(reference);
 				}
@@ -195,23 +195,23 @@ public class PesiSourceExport extends PesiExportBase {
 	
 	/**
 	 * Returns the <code>IMIS_Id</code> attribute.
-	 * @param reference The {@link ReferenceBase Reference}.
+	 * @param reference The {@link Reference Reference}.
 	 * @return The <code>IMIS_Id</code> attribute.
 	 * @see MethodMapper
 	 */
 	@SuppressWarnings("unused")
-	private static Integer getIMIS_Id(ReferenceBase<?> reference) {
+	private static Integer getIMIS_Id(Reference<?> reference) {
 		return null;
 	}
 	
 	/**
 	 * Returns the <code>SourceCategoryFK</code> attribute.
-	 * @param reference The {@link ReferenceBase Reference}.
+	 * @param reference The {@link Reference Reference}.
 	 * @return The <code>SourceCategoryFK</code> attribute.
 	 * @see MethodMapper
 	 */
 	@SuppressWarnings("unused")
-	private static Integer getSourceCategoryFK(ReferenceBase<?> reference) {
+	private static Integer getSourceCategoryFK(Reference<?> reference) {
 		Integer result = null;
 		try {
 		result = PesiTransformer.reference2SourceCategoryFK(reference);
@@ -223,12 +223,12 @@ public class PesiSourceExport extends PesiExportBase {
 	
 	/**
 	 * Returns the <code>SourceCategoryCache</code> attribute.
-	 * @param reference The {@link ReferenceBase Reference}.
+	 * @param reference The {@link Reference Reference}.
 	 * @return The <code>SourceCategoryCache</code> attribute.
 	 * @see MethodMapper
 	 */
 	@SuppressWarnings("unused")
-	private static String getSourceCategoryCache(ReferenceBase<?> reference) {
+	private static String getSourceCategoryCache(Reference<?> reference) {
 		String result = null;
 		try {
 		result = PesiTransformer.getSourceCategoryCache(reference);
@@ -240,12 +240,12 @@ public class PesiSourceExport extends PesiExportBase {
 
 	/**
 	 * Returns the <code>Name</code> attribute. The corresponding CDM attribute is <code>title</code>.
-	 * @param reference The {@link ReferenceBase Reference}.
+	 * @param reference The {@link Reference Reference}.
 	 * @return The <code>Name</code> attribute.
 	 * @see MethodMapper
 	 */
 	@SuppressWarnings("unused")
-	private static String getName(ReferenceBase<?> reference) {
+	private static String getName(Reference<?> reference) {
 		if (reference != null) {
 			return reference.getTitleCache(); // was getTitle()
 		} else {
@@ -255,12 +255,12 @@ public class PesiSourceExport extends PesiExportBase {
 	
 	/**
 	 * Returns the <code>AuthorString</code> attribute. The corresponding CDM attribute is the <code>titleCache</code> of an <code>authorTeam</code>.
-	 * @param reference The {@link ReferenceBase Reference}.
+	 * @param reference The {@link Reference Reference}.
 	 * @return The <code>AuthorString</code> attribute.
 	 * @see MethodMapper
 	 */
 	@SuppressWarnings("unused")
-	private static String getAuthorString(ReferenceBase<?> reference) {
+	private static String getAuthorString(Reference<?> reference) {
 		String result = null;
 
 		try {
@@ -282,12 +282,12 @@ public class PesiSourceExport extends PesiExportBase {
 
 	/**
 	 * Returns the <code>NomRefCache</code> attribute. The corresponding CDM attribute is <code>titleCache</code>.
-	 * @param reference The {@link ReferenceBase Reference}.
+	 * @param reference The {@link Reference Reference}.
 	 * @return The <code>NomRefCache</code> attribute.
 	 * @see MethodMapper
 	 */
 	@SuppressWarnings("unused")
-	private static String getNomRefCache(ReferenceBase<?> reference) {
+	private static String getNomRefCache(Reference<?> reference) {
 		return null;
 //		if (reference != null) {
 //			return reference.getTitleCache();
@@ -298,24 +298,24 @@ public class PesiSourceExport extends PesiExportBase {
 
 	/**
 	 * Returns the <code>Notes</code> attribute.
-	 * @param reference The {@link ReferenceBase Reference}.
+	 * @param reference The {@link Reference Reference}.
 	 * @return The <code>Notes</code> attribute.
 	 * @see MethodMapper
 	 */
 	@SuppressWarnings("unused")
-	private static String getNotes(ReferenceBase<?> reference) {
+	private static String getNotes(Reference<?> reference) {
 		// TODO
 		return null;
 	}
 
 	/**
 	 * Returns the <code>RefIdInSource</code> attribute.
-	 * @param reference The {@link ReferenceBase Reference}.
+	 * @param reference The {@link Reference Reference}.
 	 * @return The <code>RefIdInSource</code> attribute.
 	 * @see MethodMapper
 	 */
 	@SuppressWarnings("unused")
-	private static String getRefIdInSource(ReferenceBase<?> reference) {
+	private static String getRefIdInSource(Reference<?> reference) {
 		String result = null;
 
 		try {
@@ -344,19 +344,19 @@ public class PesiSourceExport extends PesiExportBase {
 
 	/**
 	 * Returns the <code>OriginalDB</code> attribute. The corresponding CDM attribute is the <code>titleCache</code> of a <code>citation</code>.
-	 * @param reference The {@link ReferenceBase Reference}.
+	 * @param reference The {@link Reference Reference}.
 	 * @return The <code>OriginalDB</code> attribute.
 	 * @see MethodMapper
 	 */
 	@SuppressWarnings("unused")
-	private static String getOriginalDB(ReferenceBase<?> reference) {
+	private static String getOriginalDB(Reference<?> reference) {
 		String result = "";
 
 		try {
 		if (reference != null) {
 			Set<IdentifiableSource> sources = reference.getSources();
 			if (sources.size() == 1) {
-				ReferenceBase citation = sources.iterator().next().getCitation();
+				Reference citation = sources.iterator().next().getCitation();
 				if (citation != null) {
 					result = PesiTransformer.databaseString2Abbreviation(citation.getTitleCache()); //or just title
 				} else {
@@ -366,7 +366,7 @@ public class PesiSourceExport extends PesiExportBase {
 				logger.warn("Taxon has multiple IdentifiableSources: " + reference.getUuid() + " (" + reference.getTitleCache() + ")");
 				int count = 1;
 				for (IdentifiableSource source : sources) {
-					ReferenceBase citation = source.getCitation();
+					Reference citation = source.getCitation();
 					if (citation != null) {
 						result += PesiTransformer.databaseString2Abbreviation(citation.getTitleCache());
 						if (count < sources.size()) {
