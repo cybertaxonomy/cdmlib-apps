@@ -33,10 +33,10 @@ import eu.etaxonomy.cdm.model.description.TaxonDescription;
 import eu.etaxonomy.cdm.model.description.TextData;
 import eu.etaxonomy.cdm.model.media.ImageFile;
 import eu.etaxonomy.cdm.model.media.Media;
-import eu.etaxonomy.cdm.model.reference.ReferenceBase;
+import eu.etaxonomy.cdm.model.reference.Reference;
 import eu.etaxonomy.cdm.model.taxon.Taxon;
 import eu.etaxonomy.cdm.model.taxon.TaxonBase;
-import eu.etaxonomy.cdm.model.taxon.TaxonomicTree;
+import eu.etaxonomy.cdm.model.taxon.Classification;
 
 /**
  * @author n.hoffmann
@@ -53,9 +53,9 @@ public class CichorieaeImageImport extends AbstractImageImporter {
 	 */
 	protected boolean invokeImageImport (ImageImportConfigurator config){
 		File source = new File(config.getSource());
-		UUID treeUuid = config.getTaxonomicTreeUuid();
-		TaxonomicTree tree = taxonTreeService.getTaxonomicTreeByUuid(treeUuid);
-		ReferenceBase sourceRef = config.getSourceReference();
+		UUID treeUuid = config.getClassificationUuid();
+		Classification tree = classificationService.getClassificationByUuid(treeUuid);
+		Reference sourceRef = config.getSourceReference();
 		
 		if (source.isDirectory()){
 			for (File file : source.listFiles() ){
@@ -133,7 +133,7 @@ public class CichorieaeImageImport extends AbstractImageImporter {
 	 * @param taxa
 	 * @param taxon
 	 */
-	private void handleTaxa(TaxonomicTree tree, ReferenceBase sourceRef, String fileName, String taxonName, List<TaxonBase> taxa) {
+	private void handleTaxa(Classification tree, Reference sourceRef, String fileName, String taxonName, List<TaxonBase> taxa) {
 		
 		Taxon taxon = getTaxon(tree, taxonName, taxa);
 		TaxonDescription imageGallery = taxon.getOrCreateImageGallery(sourceRef == null ? null :sourceRef.getTitleCache());
@@ -180,9 +180,8 @@ public class CichorieaeImageImport extends AbstractImageImporter {
 		DateTime mediaCreated = null;
 		AgentBase artist = null;
 		
-		 
-		ImageFile image = ImageFile.NewInstance(uriString, size, height, width);
-		Media media = ImageFile.NewMediaInstance(mediaCreated, artist, uriString, mimeType, suffix, size, height, width);
+//		ImageFile image = ImageFile.NewInstance(uri, size, height, width);
+		Media media = ImageFile.NewMediaInstance(mediaCreated, artist, uri, mimeType, suffix, size, height, width);
 		media.addTitle(LanguageString.NewInstance(taxonName, Language.LATIN()));
 		
 		return media;
@@ -194,7 +193,7 @@ public class CichorieaeImageImport extends AbstractImageImporter {
 	 * @param taxa
 	 * @return
 	 */
-	private Taxon getTaxon(TaxonomicTree tree, String taxonName,
+	private Taxon getTaxon(Classification tree, String taxonName,
 			List<TaxonBase> taxa) {
 		Taxon taxon = null;
 		if(taxa.size() > 1) {

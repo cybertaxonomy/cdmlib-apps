@@ -9,6 +9,8 @@
 
 package eu.etaxonomy.cdm.io;
 
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -81,18 +83,26 @@ public class PalmaeProtologueImport extends AbstractImageImporter {
 				logger.warn("no taxon with this name found: " + species + ", idInSource: " + taxonId);
 			}else{
 				
-				MediaRepresentationPart representationPart = MediaRepresentationPart.NewInstance(linkProto, 0);
-				MediaRepresentation representation = MediaRepresentation.NewInstance("text/html", null);
-				representation.addRepresentationPart(representationPart);
-				
-				Media media = Media.NewInstance();
-				media.addRepresentation(representation);
+				URI uri;
+				try {
+					uri = new URI(linkProto);
+					MediaRepresentationPart representationPart = MediaRepresentationPart.NewInstance(uri, 0);
+					MediaRepresentation representation = MediaRepresentation.NewInstance("text/html", null);
+					representation.addRepresentationPart(representationPart);
+					
+					Media media = Media.NewInstance();
+					media.addRepresentation(representation);
 								
-				TaxonNameDescription description = TaxonNameDescription.NewInstance();
-				TextData protolog = TextData.NewInstance(Feature.PROTOLOGUE());
-				protolog.addMedia(media);
-				description.addElement(protolog);
-				taxonNameBase.addDescription(description);
+					TaxonNameDescription description = TaxonNameDescription.NewInstance();
+					TextData protolog = TextData.NewInstance(Feature.PROTOLOGUE());
+					protolog.addMedia(media);
+					description.addElement(protolog);
+					taxonNameBase.addDescription(description);
+				} catch (URISyntaxException e) {
+					String message= "URISyntaxException when trying to convert: " + linkProto;
+					logger.error(message);
+					e.printStackTrace();
+				}
 				
 				taxonNameStore.add(taxonNameBase);
 				if(count % 50 == 0){

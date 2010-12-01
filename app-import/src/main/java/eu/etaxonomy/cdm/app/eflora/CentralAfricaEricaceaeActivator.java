@@ -35,7 +35,7 @@ import eu.etaxonomy.cdm.model.description.Feature;
 import eu.etaxonomy.cdm.model.description.FeatureNode;
 import eu.etaxonomy.cdm.model.description.FeatureTree;
 import eu.etaxonomy.cdm.model.description.PolytomousKey;
-import eu.etaxonomy.cdm.model.reference.ReferenceBase;
+import eu.etaxonomy.cdm.model.reference.Reference;
 import eu.etaxonomy.cdm.model.reference.ReferenceFactory;
 
 /**
@@ -51,13 +51,12 @@ public class CentralAfricaEricaceaeActivator {
 	static final URI source = EfloraSources.ericacea_local();
 
 	
-//	static final ICdmDataSource cdmDestination = CdmDestinations.cdm_test_andreasM();
+//	static final ICdmDataSource cdmDestination = CdmDestinations.cdm_test_andreasM3();
 //	static final ICdmDataSource cdmDestination = CdmDestinations.cdm_flora_central_africa_preview();
 //	static final ICdmDataSource cdmDestination = CdmDestinations.cdm_flora_central_africa_production();
-//	static final ICdmDataSource cdmDestination = CdmDestinations.localH2();
-	static final ICdmDataSource cdmDestination = CdmDestinations.cdm_local_postgres_CdmTest();
-	
-//	static final ICdmDataSource cdmDestination = CdmDestinations.cdm_local_postgres_CdmTest();	
+	static final ICdmDataSource cdmDestination = CdmDestinations.localH2();
+//	static final ICdmDataSource cdmDestination = CdmDestinations.cdm_local_postgres_CdmTest();
+//	static final ICdmDataSource cdmDestination = CdmDestinations.cdm_test_local_mysql();
 
 	//feature tree uuid
 	public static final UUID featureTreeUuid = UUID.fromString("051d35ee-22f1-42d8-be07-9e9bfec5bcf7");
@@ -82,9 +81,20 @@ public class CentralAfricaEricaceaeActivator {
 	
 	private void doImport(ICdmDataSource cdmDestination){
 		
+//		CdmUpdater su = CdmUpdater.NewInstance();
+//		
+//		try {
+//			//su.updateToCurrentVersion(cdmDestination, DefaultProgressMonitor.NewInstance());
+//		} catch (Exception e) {
+//			e.printStackTrace();
+//		}
+//		if (false){
+//			return;
+//		}
+		
 		//make Source
 		CentralAfricaEricaceaeImportConfigurator config= CentralAfricaEricaceaeImportConfigurator.NewInstance(source, cdmDestination);
-		config.setTaxonomicTreeUuid(classificationUuid);
+		config.setClassificationUuid(classificationUuid);
 		config.setDoTaxa(doTaxa);
 		config.setCheck(check);
 		config.setDefaultLanguageUuid(defaultLanguageUuid);
@@ -108,9 +118,9 @@ public class CentralAfricaEricaceaeActivator {
 		//check keys
 		if (doPrintKeys){
 			TransactionStatus tx = myImport.getCdmAppController().startTransaction();
-			List<FeatureTree> keys = myImport.getCdmAppController().getFeatureTreeService().list(PolytomousKey.class, null, null, null, null);
-			for(FeatureTree key : keys){
-				((PolytomousKey)key).print(System.out);
+			List<PolytomousKey> keys = myImport.getCdmAppController().getPolytomousKeyService().list(PolytomousKey.class, null, null, null, null);
+			for(PolytomousKey key : keys){
+				key.print(System.out);
 				System.out.println();
 			}
 			myImport.getCdmAppController().commitTransaction(tx);
@@ -123,13 +133,14 @@ public class CentralAfricaEricaceaeActivator {
 			logger.warn("Deduplicated " + count + " persons.");
 			count = app.getAgentService().deduplicate(Team.class, null, null);
 			logger.warn("Deduplicated " + count + " teams.");
-			count = app.getReferenceService().deduplicate(ReferenceBase.class, null, null);
+			count = app.getReferenceService().deduplicate(Reference.class, null, null);
 			logger.warn("Deduplicated " + count + " references.");
-		}		
 		}
 		
-	private ReferenceBase getSourceReference(String string) {
-		ReferenceBase result = ReferenceFactory.newGeneric();
+	}
+
+	private Reference getSourceReference(String string) {
+		Reference result = ReferenceFactory.newGeneric();
 		result.setTitleCache(string);
 		return result;
 	}

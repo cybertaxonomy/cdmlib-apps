@@ -55,7 +55,7 @@ public class CampanulaceaeActivator {
 	static final ICdmDataSource cdmDestination = CdmDestinations.cdm_campanulaceae_production();
 
 	static final UUID secUuid = UUID.fromString("ed7dd0ea-fcdd-405d-9fe1-52652aa06119");
-	static final UUID taxonomicTreeUuid = UUID.fromString("e305ddac-7200-4293-aa5d-d3426133ed9f");
+	static final UUID classificationUuid = UUID.fromString("e305ddac-7200-4293-aa5d-d3426133ed9f");
 	static final int sourceSecId = 100000;
 	
 	static final UUID featureTreeUuid = UUID.fromString("231809ce-ad9e-4a50-8a48-668bd336cb7e");
@@ -78,7 +78,7 @@ public class CampanulaceaeActivator {
 	//ignore null
 	static final boolean ignoreNull = true;
 	
-	static boolean useTaxonomicTree = true;
+	static boolean useClassification = true;
 
 
 // **************** ALL *********************	
@@ -137,7 +137,7 @@ public class CampanulaceaeActivator {
 				
 		BerlinModelImportConfigurator bmImportConfigurator = BerlinModelImportConfigurator.NewInstance(source,  destination);
 		
-		bmImportConfigurator.setTaxonomicTreeUuid(taxonomicTreeUuid);
+		bmImportConfigurator.setClassificationUuid(classificationUuid);
 		bmImportConfigurator.setSourceSecId(sourceSecId);
 		
 		bmImportConfigurator.setNomenclaturalCode(nomenclaturalCode);
@@ -150,7 +150,7 @@ public class CampanulaceaeActivator {
 		bmImportConfigurator.setDoNameStatus(doNameStatus);
 		bmImportConfigurator.setDoTypes(doTypes);
 		bmImportConfigurator.setDoNameFacts(doNameFacts);
-		bmImportConfigurator.setUseTaxonomicTree(useTaxonomicTree);
+		bmImportConfigurator.setUseClassification(useClassification);
 		
 		bmImportConfigurator.setDoTaxa(doTaxa);
 		bmImportConfigurator.setDoRelTaxa(doRelTaxa);

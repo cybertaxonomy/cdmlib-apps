@@ -19,7 +19,7 @@ import eu.etaxonomy.cdm.model.agent.AgentBase;
 import eu.etaxonomy.cdm.model.agent.TeamOrPersonBase;
 import eu.etaxonomy.cdm.model.name.BotanicalName;
 import eu.etaxonomy.cdm.model.name.Rank;
-import eu.etaxonomy.cdm.model.reference.ReferenceBase;
+import eu.etaxonomy.cdm.model.reference.Reference;
 import eu.etaxonomy.cdm.model.taxon.Taxon;
 import eu.etaxonomy.cdm.model.taxon.TaxonBase;
 
@@ -75,8 +75,8 @@ public class TestTransaction {
 	    	List<? extends AgentBase> agents = appCtr.getAgentService().list(null, MAX_ENTRIES, 0, null, null);
 	    	//List<TeamOrPersonBase> agents = appCtr.getAgentService().getAllAgents(MAX_ENTRIES, 0);
 	    	TeamOrPersonBase author = (TeamOrPersonBase) agents.get(0);
-	    	List<ReferenceBase> references = appCtr.getReferenceService().list(null, MAX_ENTRIES, 0, null, null);
-	    	ReferenceBase sec = references.get(0);
+	    	List<Reference> references = appCtr.getReferenceService().list(null, MAX_ENTRIES, 0, null, null);
+	    	Reference sec = references.get(0);
 	    	List<Taxon> taxa = appCtr.getTaxonService().getAllTaxa(MAX_ENTRIES, 0);
 
 			name1 = 
@@ -153,8 +153,8 @@ public class TestTransaction {
 	    	List<? extends AgentBase> agents = appCtr.getAgentService().list(null, MAX_ENTRIES, 0, null, null);
 	    	//List<TeamOrPersonBase> agents = appCtr.getAgentService().getAllAgents(MAX_ENTRIES, 0);
 	    	TeamOrPersonBase author = (TeamOrPersonBase) agents.get(0);
-	    	List<ReferenceBase> references = appCtr.getReferenceService().list(null, MAX_ENTRIES, 0, null, null);
-	    	ReferenceBase sec = references.get(0);
+	    	List<Reference> references = appCtr.getReferenceService().list(null, MAX_ENTRIES, 0, null, null);
+	    	Reference sec = references.get(0);
 	    	List<Taxon> taxa = appCtr.getTaxonService().getAllTaxa(MAX_ENTRIES, 0);
 
 			name1 = 
@@ -255,8 +255,8 @@ public class TestTransaction {
 	    	//List<TeamOrPersonBase> agents = appCtr.getAgentService().getAllAgents(MAX_ENTRIES, 0);
 	    	//Agent author = agents.get(0);
 	    	TeamOrPersonBase author = (TeamOrPersonBase) agents.get(0);
-	    	List<ReferenceBase> references = appCtr.getReferenceService().list(null, MAX_ENTRIES, 0, null, null);
-	    	ReferenceBase sec = references.get(0);
+	    	List<Reference> references = appCtr.getReferenceService().list(null, MAX_ENTRIES, 0, null, null);
+	    	Reference sec = references.get(0);
 
 			name1 = 
 				BotanicalName.NewInstance(rankSpecies, "NewTaxon1", null, "taxon1", null, author, null, "1", null);

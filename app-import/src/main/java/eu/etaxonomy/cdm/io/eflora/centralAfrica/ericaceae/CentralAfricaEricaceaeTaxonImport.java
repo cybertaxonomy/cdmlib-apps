@@ -34,7 +34,7 @@ import eu.etaxonomy.cdm.model.name.NonViralName;
 import eu.etaxonomy.cdm.model.name.SpecimenTypeDesignation;
 import eu.etaxonomy.cdm.model.name.TaxonNameBase;
 import eu.etaxonomy.cdm.model.name.TypeDesignationBase;
-import eu.etaxonomy.cdm.model.reference.ReferenceBase;
+import eu.etaxonomy.cdm.model.reference.Reference;
 import eu.etaxonomy.cdm.model.reference.ReferenceFactory;
 import eu.etaxonomy.cdm.model.taxon.Taxon;
 
@@ -55,7 +55,7 @@ public class CentralAfricaEricaceaeTaxonImport  extends EfloraTaxonImport  {
 	 */
 	@Override
 	protected TeamOrPersonBase handleNomenclaturalReference(NonViralName name, String value) {
-		ReferenceBase nomRef = ReferenceFactory.newGeneric();
+		Reference nomRef = ReferenceFactory.newGeneric();
 		nomRef.setTitleCache(value, true);
 		parseNomStatus(nomRef, name);
 		name.setNomenclaturalReference(nomRef);
@@ -87,7 +87,7 @@ public class CentralAfricaEricaceaeTaxonImport  extends EfloraTaxonImport  {
 	 * @param ref
 	 * @return
 	 */
-	protected String parseReferenceYearAndDetail(ReferenceBase ref){
+	protected String parseReferenceYearAndDetail(Reference ref){
 		String detailResult = null;
 		String titleToParse = ref.getTitleCache();
 		titleToParse = removeReferenceBracket(titleToParse, ref);
@@ -124,12 +124,12 @@ public class CentralAfricaEricaceaeTaxonImport  extends EfloraTaxonImport  {
 		
 	}
 
-	private String parseInRefrence(ReferenceBase ref, String author) {
+	private String parseInRefrence(Reference ref, String author) {
 		int pos = author.indexOf(" in ");
 		if (pos > -1){
 			String inAuthorString = author.substring(pos + 4);
 			String myAuthorString = author.substring(0, pos);
-			ReferenceBase inReference = ReferenceFactory.newGeneric();
+			Reference inReference = ReferenceFactory.newGeneric();
 			TeamOrPersonBase inAuthor = parseSingleTeam(inAuthorString);
 			inReference.setAuthorTeam(inAuthor);
 			ref.setInReference(inReference);
@@ -140,7 +140,7 @@ public class CentralAfricaEricaceaeTaxonImport  extends EfloraTaxonImport  {
 		
 	}
 
-	private String removeReferenceBracket(String refString, ReferenceBase ref) {
+	private String removeReferenceBracket(String refString, Reference ref) {
 		String titleToParse = refString;
 		String reBracket = "\\(.*\\).?";
 		Pattern patBracket = Pattern.compile(reBracket);
@@ -166,7 +166,7 @@ public class CentralAfricaEricaceaeTaxonImport  extends EfloraTaxonImport  {
 	 */
 	@Override
 	protected TeamOrPersonBase handleNameUsage(Taxon taxon, NonViralName name, String referenceTitle, TeamOrPersonBase lastTeam) {
-		ReferenceBase ref = ReferenceFactory.newGeneric();
+		Reference ref = ReferenceFactory.newGeneric();
 		
 		ref.setTitleCache(referenceTitle, true);
 		
@@ -177,7 +177,7 @@ public class CentralAfricaEricaceaeTaxonImport  extends EfloraTaxonImport  {
 		
 		TaxonDescription description = getDescription(taxon);
 		for (String singleReferenceString : multipleReferences){
-			ReferenceBase singleRef = ReferenceFactory.newGeneric();
+			Reference singleRef = ReferenceFactory.newGeneric();
 			singleRef.setTitleCache(singleReferenceString.trim(), true);
 			singleRef.setAuthorTeam(team);
 			
@@ -194,7 +194,7 @@ public class CentralAfricaEricaceaeTaxonImport  extends EfloraTaxonImport  {
 		return team;
 	}
 
-	private String parseReferenceYearAndDetailForUsage(ReferenceBase ref) {
+	private String parseReferenceYearAndDetailForUsage(Reference ref) {
 		String detailResult = null;
 		String titleToParse = ref.getTitleCache().trim();
 		
@@ -227,7 +227,7 @@ public class CentralAfricaEricaceaeTaxonImport  extends EfloraTaxonImport  {
 		
 	}
 
-	protected TeamOrPersonBase getReferenceAuthor (ReferenceBase ref, NonViralName name) {
+	protected TeamOrPersonBase getReferenceAuthor (Reference ref, NonViralName name) {
 		String titleString = ref.getTitleCache();
 		String re = "\\(.*\\)";
 		Pattern pattern = Pattern.compile(re);

@@ -27,10 +27,10 @@ import eu.etaxonomy.cdm.io.common.Source;
 import eu.etaxonomy.cdm.io.common.IImportConfigurator.CHECK;
 import eu.etaxonomy.cdm.io.common.IImportConfigurator.DO_REFERENCES;
 import eu.etaxonomy.cdm.model.name.NomenclaturalCode;
-import eu.etaxonomy.cdm.model.reference.ReferenceBase;
+import eu.etaxonomy.cdm.model.reference.Reference;
 import eu.etaxonomy.cdm.model.taxon.Taxon;
 import eu.etaxonomy.cdm.model.taxon.TaxonNode;
-import eu.etaxonomy.cdm.model.taxon.TaxonomicTree;
+import eu.etaxonomy.cdm.model.taxon.Classification;
 
 
 /**
@@ -130,7 +130,7 @@ public class TaraxacumActivator {
 		
 		BerlinModelImportConfigurator bmImportConfigurator = BerlinModelImportConfigurator.NewInstance(source,  destination);
 		
-		bmImportConfigurator.setTaxonomicTreeUuid(treeUuid);
+		bmImportConfigurator.setClassificationUuid(treeUuid);
 //		bmImportConfigurator.setSecUuid(secUuid);
 		bmImportConfigurator.setSourceSecId(sourceSecId);
 		
@@ -225,28 +225,28 @@ public class TaraxacumActivator {
 			
 			Set<TaxonNode> taxonNodesInTarax = taraxacumInTaraxTaxon.getTaxonNodes();
 			
-			TaxonomicTree treeInTaraxacum = null;
+			Classification treeInTaraxacum = null;
 			if (taxonNodesInTarax == null || taxonNodesInTarax.isEmpty()) {
 				logger.warn("No taxon nodes found for Taraxacum in taraxacum database");
 				success = false;
 			}else{
 				taxonNodeInTarax = taxonNodesInTarax.iterator().next();
-				treeInTaraxacum = taxonNodeInTarax.getTaxonomicTree();
+				treeInTaraxacum = taxonNodeInTarax.getClassification();
 			}
 	
 			//TODO reference
-			ReferenceBase citation = null;
+			Reference citation = null;
 			String microcitation = null;
 			
 			taxonNodeInTarax = parentNodeInCich.addChildNode(taxonNodeInTarax, citation, microcitation, null);
-			//parentNodeInCich.getTaxonomicTree().addParentChild(parentInCich, taraxacumInTaraxTaxon, null, null);
+			//parentNodeInCich.getClassification().addParentChild(parentInCich, taraxacumInTaraxTaxon, null, null);
 		
 			parentNodeInCich.deleteChildNode(taxonNodeInCich);
 			
 			app.getTaxonService().save(parentInCich);
 			app.getTaxonService().delete(taraxacumInCichTaxon);
 			try {
-//				app.getTaxonTreeService().delete(treeInTaraxacum); //throws exception
+//				app.getClassificationService().delete(treeInTaraxacum); //throws exception
 			} catch (Exception e) {
 				e.printStackTrace();
 				return false;

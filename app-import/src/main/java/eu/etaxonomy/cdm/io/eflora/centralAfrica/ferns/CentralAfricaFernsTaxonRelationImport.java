@@ -23,7 +23,7 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.springframework.stereotype.Component;
 
-import eu.etaxonomy.cdm.api.service.ITaxonTreeService;
+import eu.etaxonomy.cdm.api.service.IClassificationService;
 import eu.etaxonomy.cdm.io.common.IOValidator;
 import eu.etaxonomy.cdm.io.common.mapping.DbImportMapping;
 import eu.etaxonomy.cdm.io.common.mapping.DbImportMethodMapper;
@@ -37,13 +37,13 @@ import eu.etaxonomy.cdm.model.common.CdmBase;
 import eu.etaxonomy.cdm.model.name.BotanicalName;
 import eu.etaxonomy.cdm.model.name.NonViralName;
 import eu.etaxonomy.cdm.model.name.Rank;
-import eu.etaxonomy.cdm.model.reference.ReferenceBase;
+import eu.etaxonomy.cdm.model.reference.Reference;
 import eu.etaxonomy.cdm.model.taxon.Synonym;
 import eu.etaxonomy.cdm.model.taxon.SynonymRelationshipType;
 import eu.etaxonomy.cdm.model.taxon.Taxon;
 import eu.etaxonomy.cdm.model.taxon.TaxonBase;
 import eu.etaxonomy.cdm.model.taxon.TaxonNode;
-import eu.etaxonomy.cdm.model.taxon.TaxonomicTree;
+import eu.etaxonomy.cdm.model.taxon.Classification;
 
 
 /**
@@ -171,9 +171,9 @@ public class CentralAfricaFernsTaxonRelationImport  extends CentralAfricaFernsIm
 				
 			//reference map
 //			nameSpace = "Reference";
-//			cdmClass = ReferenceBase.class;
+//			cdmClass = Reference.class;
 //			Map<String, Person> referenceMap = (Map<String, Person>)getCommonService().getSourcedObjectsByIdInSource(Person.class, teamIdSet, nameSpace);
-//			result.put(ReferenceBase.class, referenceMap);
+//			result.put(Reference.class, referenceMap);
 
 		} catch (SQLException e) {
 			throw new RuntimeException(e);
@@ -292,7 +292,7 @@ public class CentralAfricaFernsTaxonRelationImport  extends CentralAfricaFernsIm
 
 		Taxon higherTaxon = getNextHigherTaxon(state, child, orderName, subOrderName, familyName, subFamilyName, tribusName, subTribusName, sectionName, subsectionName, genusName, subGenusName, seriesName, specificEpihet, subspeciesName, varietyName, subVariety, formaName, subFormaName);
 		
-		ReferenceBase citation = null;
+		Reference citation = null;
 		if (higherTaxon != null){
 			if (! includedRelationshipExists(child, higherTaxon)){
 				makeTaxonomicallyIncluded(state, null, child, higherTaxon, citation, null);
@@ -336,9 +336,9 @@ public class CentralAfricaFernsTaxonRelationImport  extends CentralAfricaFernsIm
 
 
 
-//	private boolean makeTaxonomicallyIncluded(CentralAfricaFernsImportState state, Taxon parent, Taxon child, ReferenceBase citation, String microCitation){
-//		ReferenceBase sec = child.getSec();
-//		TaxonomicTree tree = state.getTree(sec);
+//	private boolean makeTaxonomicallyIncluded(CentralAfricaFernsImportState state, Taxon parent, Taxon child, Reference citation, String microCitation){
+//		Reference sec = child.getSec();
+//		Classification tree = state.getTree(sec);
 //		if (tree == null){
 //			tree = makeTreeMemSave(state, sec);
 //		}
@@ -352,23 +352,23 @@ public class CentralAfricaFernsTaxonRelationImport  extends CentralAfricaFernsIm
 //	}
 	
 	//TODO use Mapper
-	private boolean makeTaxonomicallyIncluded(CentralAfricaFernsImportState state, Integer treeRefFk, Taxon child, Taxon parent, ReferenceBase citation, String microCitation){
+	private boolean makeTaxonomicallyIncluded(CentralAfricaFernsImportState state, Integer treeRefFk, Taxon child, Taxon parent, Reference citation, String microCitation){
 		String treeKey;
 		UUID treeUuid;
 		if (treeRefFk == null){
 			treeKey = "1";  // there is only one tree and it gets the map key '1'
-			treeUuid = state.getConfig().getTaxonomicTreeUuid();
+			treeUuid = state.getConfig().getClassificationUuid();
 		}else{
 			treeKey =String.valueOf(treeRefFk);
 			treeUuid = state.getTreeUuidByTreeKey(treeKey);
 		}
-		TaxonomicTree tree = (TaxonomicTree)state.getRelatedObject(DbImportTaxIncludedInMapper.TAXONOMIC_TREE_NAMESPACE, treeKey);
+		Classification tree = (Classification)state.getRelatedObject(DbImportTaxIncludedInMapper.TAXONOMIC_TREE_NAMESPACE, treeKey);
 		if (tree == null){
-			ITaxonTreeService service = state.getCurrentIO().getTaxonTreeService();
-			tree = service.getTaxonomicTreeByUuid(treeUuid);
+			IClassificationService service = state.getCurrentIO().getClassificationService();
+			tree = service.getClassificationByUuid(treeUuid);
 			if (tree == null){
-				String treeName = state.getConfig().getTaxonomicTreeName();
-				tree = TaxonomicTree.NewInstance(treeName);
+				String treeName = state.getConfig().getClassificationName();
+				tree = Classification.NewInstance(treeName);
 				tree.setUuid(treeUuid);
 				//FIXME tree reference
 				tree.setReference(citation);

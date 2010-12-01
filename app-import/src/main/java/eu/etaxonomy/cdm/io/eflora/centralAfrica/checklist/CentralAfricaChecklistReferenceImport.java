@@ -21,7 +21,7 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.springframework.stereotype.Component;
 
-import eu.etaxonomy.cdm.api.service.ITaxonTreeService;
+import eu.etaxonomy.cdm.api.service.IClassificationService;
 import eu.etaxonomy.cdm.common.CdmUtils;
 import eu.etaxonomy.cdm.io.common.IOValidator;
 import eu.etaxonomy.cdm.io.common.ResultSetPartitioner;
@@ -40,12 +40,12 @@ import eu.etaxonomy.cdm.model.location.NamedArea;
 import eu.etaxonomy.cdm.model.location.TdwgArea;
 import eu.etaxonomy.cdm.model.name.BotanicalName;
 import eu.etaxonomy.cdm.model.name.Rank;
-import eu.etaxonomy.cdm.model.reference.ReferenceBase;
+import eu.etaxonomy.cdm.model.reference.Reference;
 import eu.etaxonomy.cdm.model.reference.ReferenceFactory;
 import eu.etaxonomy.cdm.model.taxon.Taxon;
 import eu.etaxonomy.cdm.model.taxon.TaxonBase;
 import eu.etaxonomy.cdm.model.taxon.TaxonNode;
-import eu.etaxonomy.cdm.model.taxon.TaxonomicTree;
+import eu.etaxonomy.cdm.model.taxon.Classification;
 import eu.etaxonomy.cdm.strategy.parser.NonViralNameParserImpl;
 
 
@@ -55,7 +55,7 @@ import eu.etaxonomy.cdm.strategy.parser.NonViralNameParserImpl;
  * @version 1.0
  */
 @Component
-public class CentralAfricaChecklistReferenceImport  extends CentralAfricaChecklistImportBase<ReferenceBase> implements IMappingImport<ReferenceBase, CentralAfricaChecklistImportState>{
+public class CentralAfricaChecklistReferenceImport  extends CentralAfricaChecklistImportBase<Reference> implements IMappingImport<Reference, CentralAfricaChecklistImportState>{
 	private static final Logger logger = Logger.getLogger(CentralAfricaChecklistReferenceImport.class);
 	
 	private Map<UUID, Taxon> higherTaxonMap;
@@ -121,8 +121,8 @@ public class CentralAfricaChecklistReferenceImport  extends CentralAfricaCheckli
 	/* (non-Javadoc)
 	 * @see eu.etaxonomy.cdm.io.common.mapping.IMappingImport#createObject(java.sql.ResultSet)
 	 */
-	public ReferenceBase createObject(ResultSet rs, CentralAfricaChecklistImportState state) throws SQLException {
-		ReferenceBase ref = ReferenceFactory.newGeneric();
+	public Reference createObject(ResultSet rs, CentralAfricaChecklistImportState state) throws SQLException {
+		Reference ref = ReferenceFactory.newGeneric();
 		String sourceString = rs.getString("source");
 		ref.setTitle(sourceString);
 		return ref;

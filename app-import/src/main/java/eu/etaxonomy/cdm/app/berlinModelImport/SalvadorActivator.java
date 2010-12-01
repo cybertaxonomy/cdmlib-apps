@@ -52,7 +52,7 @@ public class SalvadorActivator {
 	static final Object[] featureKeyList = new Integer[]{302, 303, 306, 307, 309, 310, 311, 312, 350, 1500, 1800, 1900, 1950, 1980, 2000, 10299}; 
 	static boolean isIgnore0AuthorTeam = true;  //special case for Salvador. 
 	static boolean doExport = false;
-	static boolean useTaxonomicTree = true;
+	static boolean useClassification = true;
 	
 	//check - import
 	static final CHECK check = CHECK.CHECK_AND_IMPORT;
@@ -121,7 +121,7 @@ public class SalvadorActivator {
 		
 		BerlinModelImportConfigurator config = BerlinModelImportConfigurator.NewInstance(source,  destination);
 		
-		config.setTaxonomicTreeUuid(treeUuid);
+		config.setClassificationUuid(treeUuid);
 		config.setSecUuid(secUuid);
 		config.setSourceSecId(sourceSecId);
 		config.setNomenclaturalCode(nomenclaturalCode);
@@ -149,7 +149,7 @@ public class SalvadorActivator {
 		config.setCheck(check);
 		config.setEditor(editor);
 		config.setIgnore0AuthorTeam(isIgnore0AuthorTeam);
-		config.setUseTaxonomicTree(useTaxonomicTree);
+		config.setUseClassification(useClassification);
 		
 		config.setNamerelationshipTypeMethod(getHandleNameRelationshipTypeMethod());
 		config.setUserTransformationMethod(getTransformUsernameMethod());

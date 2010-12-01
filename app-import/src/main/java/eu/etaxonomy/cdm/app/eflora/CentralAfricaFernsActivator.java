@@ -26,7 +26,7 @@ import eu.etaxonomy.cdm.io.eflora.floraMalesiana.FloraMalesianaTransformer;
 import eu.etaxonomy.cdm.model.description.Feature;
 import eu.etaxonomy.cdm.model.description.FeatureNode;
 import eu.etaxonomy.cdm.model.description.FeatureTree;
-import eu.etaxonomy.cdm.model.reference.ReferenceBase;
+import eu.etaxonomy.cdm.model.reference.Reference;
 import eu.etaxonomy.cdm.model.reference.ReferenceFactory;
 
 /**
@@ -52,7 +52,7 @@ public class CentralAfricaFernsActivator {
 	
 	public static final String sourceReference = "Flora of Central Africa";
 
-	public static final String taxonomicTreeName = "Flora of Central Africa - Ferns"; 
+	public static final String classificationName = "Flora of Central Africa - Ferns"; 
 	
 	//classification
 	static final UUID classificationUuid = UUID.fromString("a90fa160-8f33-4a19-9c5a-ab05a1553017");
@@ -77,8 +77,8 @@ public class CentralAfricaFernsActivator {
 		
 //		mySource.getResultSet("SELECT * FROM tmp");
 		CentralAfricaFernsImportConfigurator config= CentralAfricaFernsImportConfigurator.NewInstance(source, cdmDestination);
-		config.setTaxonomicTreeUuid(classificationUuid);
-		config.setTaxonomicTreeName(taxonomicTreeName);
+		config.setClassificationUuid(classificationUuid);
+		config.setClassificationName(classificationName);
 		config.setDoTaxa(doTaxa);
 		config.setCheck(check);
 //		configsetDoPrintKeys(doPrintKeys);
@@ -112,8 +112,8 @@ public class CentralAfricaFernsActivator {
 		
 	}
 	
-	private ReferenceBase getSourceReference(String string) {
-		ReferenceBase result = ReferenceFactory.newGeneric();
+	private Reference getSourceReference(String string) {
+		Reference result = ReferenceFactory.newGeneric();
 		result.setTitleCache(string);
 		return result;
 	}

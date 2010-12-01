@@ -57,7 +57,7 @@ public class CichorieaeActivator {
 	static final ICdmDataSource cdmDestination = CdmDestinations.localH2Cichorieae();
 
 	static final UUID secUuid = UUID.fromString("6924c75d-e0d0-4a6d-afb7-3dd8c71195ca");
-	static final UUID taxonomicTreeUuid = UUID.fromString("534e190f-3339-49ba-95d9-fa27d5493e3e");
+	static final UUID classificationUuid = UUID.fromString("534e190f-3339-49ba-95d9-fa27d5493e3e");
 //	static final UUID treeUuid = UUID.fromString("00db28a7-50e1-4abc-86ec-b2a8ce870de9");
 	static final int sourceSecId = 7800000;
 	
@@ -97,7 +97,7 @@ public class CichorieaeActivator {
 	//ignore null
 	static final boolean ignoreNull = true;
 	
-	static boolean useTaxonomicTree = true;
+	static boolean useClassification = true;
 
 
 // **************** ALL *********************	
@@ -156,7 +156,7 @@ public class CichorieaeActivator {
 				
 		BerlinModelImportConfigurator bmImportConfigurator = BerlinModelImportConfigurator.NewInstance(source,  destination);
 		
-		bmImportConfigurator.setTaxonomicTreeUuid(taxonomicTreeUuid);
+		bmImportConfigurator.setClassificationUuid(classificationUuid);
 		bmImportConfigurator.setSourceSecId(sourceSecId);
 		
 		bmImportConfigurator.setNomenclaturalCode(nomenclaturalCode);
@@ -169,7 +169,7 @@ public class CichorieaeActivator {
 		bmImportConfigurator.setDoNameStatus(doNameStatus);
 		bmImportConfigurator.setDoTypes(doTypes);
 		bmImportConfigurator.setDoNameFacts(doNameFacts);
-		bmImportConfigurator.setUseTaxonomicTree(useTaxonomicTree);
+		bmImportConfigurator.setUseClassification(useClassification);
 		
 		bmImportConfigurator.setDoTaxa(doTaxa);
 		bmImportConfigurator.setDoRelTaxa(doRelTaxa);
@@ -259,7 +259,7 @@ public class CichorieaeActivator {
 				ImageImportConfigurator imageConfigurator = ImageImportConfigurator.NewInstance(
 						imageFolderCichorieae, destination, CichorieaeImageImport.class);
 				imageConfigurator.setSecUuid(secUuid);
-				imageConfigurator.setTaxonomicTreeUuid(taxonomicTreeUuid);
+				imageConfigurator.setClassificationUuid(classificationUuid);
 				success &= imageImporter.invoke(imageConfigurator);
 			} catch (URISyntaxException e) {
 				e.printStackTrace();

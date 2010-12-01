@@ -95,7 +95,7 @@ public class GlobisActivator {
 		
 		GlobisImportConfigurator config = GlobisImportConfigurator.NewInstance(source,  destination);
 		
-		config.setTaxonomicTreeUuid(treeUuid);
+		config.setClassificationUuid(treeUuid);
 		config.setNomenclaturalCode(nomenclaturalCode);
 
 		config.setIgnoreNull(ignoreNull);

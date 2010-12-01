@@ -28,7 +28,7 @@ import eu.etaxonomy.cdm.io.common.mapping.DbNotYetImplementedMapper;
 import eu.etaxonomy.cdm.io.common.mapping.IMappingImport;
 import eu.etaxonomy.cdm.io.globis.validation.GlobisReferenceImportValidator;
 import eu.etaxonomy.cdm.model.common.CdmBase;
-import eu.etaxonomy.cdm.model.reference.ReferenceBase;
+import eu.etaxonomy.cdm.model.reference.Reference;
 import eu.etaxonomy.cdm.model.reference.ReferenceFactory;
 
 
@@ -38,7 +38,7 @@ import eu.etaxonomy.cdm.model.reference.ReferenceFactory;
  * @version 1.0
  */
 @Component
-public class GlobisReferenceImport  extends GlobisImportBase<ReferenceBase> implements IMappingImport<ReferenceBase, GlobisImportState>{
+public class GlobisReferenceImport  extends GlobisImportBase<Reference> implements IMappingImport<Reference, GlobisImportState>{
 	private static final Logger logger = Logger.getLogger(GlobisReferenceImport.class);
 	
 	private DbImportMapping mapping;
@@ -47,7 +47,7 @@ public class GlobisReferenceImport  extends GlobisImportBase<ReferenceBase> impl
 	private int modCount = 10000;
 	private static final String pluralString = "references";
 	private static final String dbTableName = "literature";
-	private static final Class cdmTargetClass = ReferenceBase.class;
+	private static final Class cdmTargetClass = Reference.class;
 
 	public GlobisReferenceImport(){
 		super(pluralString, dbTableName, cdmTargetClass);
@@ -112,7 +112,7 @@ public class GlobisReferenceImport  extends GlobisImportBase<ReferenceBase> impl
 			
 			
 			
-			ReferenceBase ref = null;
+			Reference ref = null;
 //			ref.setP
 			
 		
@@ -136,9 +136,9 @@ public class GlobisReferenceImport  extends GlobisImportBase<ReferenceBase> impl
 	/* (non-Javadoc)
 	 * @see eu.etaxonomy.cdm.io.common.mapping.IMappingImport#createObject(java.sql.ResultSet, eu.etaxonomy.cdm.io.common.ImportStateBase)
 	 */
-	public ReferenceBase createObject(ResultSet rs, GlobisImportState state)
+	public Reference createObject(ResultSet rs, GlobisImportState state)
 			throws SQLException {
-		ReferenceBase ref;
+		Reference ref;
 		String refType = rs.getString("RefType");
 		if (refType == null){
 			ref = ReferenceFactory.newGeneric();

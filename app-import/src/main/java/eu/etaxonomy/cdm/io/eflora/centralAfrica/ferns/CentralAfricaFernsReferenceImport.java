@@ -26,7 +26,7 @@ import eu.etaxonomy.cdm.io.common.mapping.DbNotYetImplementedMapper;
 import eu.etaxonomy.cdm.io.common.mapping.IMappingImport;
 import eu.etaxonomy.cdm.io.eflora.centralAfrica.ferns.validation.CentralAfricaFernsReferenceImportValidator;
 import eu.etaxonomy.cdm.model.common.CdmBase;
-import eu.etaxonomy.cdm.model.reference.ReferenceBase;
+import eu.etaxonomy.cdm.model.reference.Reference;
 import eu.etaxonomy.cdm.model.reference.ReferenceFactory;
 
 
@@ -36,7 +36,7 @@ import eu.etaxonomy.cdm.model.reference.ReferenceFactory;
  * @version 1.0
  */
 @Component
-public class CentralAfricaFernsReferenceImport  extends CentralAfricaFernsImportBase<ReferenceBase> implements IMappingImport<ReferenceBase, CentralAfricaFernsImportState>{
+public class CentralAfricaFernsReferenceImport  extends CentralAfricaFernsImportBase<Reference> implements IMappingImport<Reference, CentralAfricaFernsImportState>{
 	private static final Logger logger = Logger.getLogger(CentralAfricaFernsReferenceImport.class);
 	
 	private DbImportMapping mapping;
@@ -45,7 +45,7 @@ public class CentralAfricaFernsReferenceImport  extends CentralAfricaFernsImport
 	private int modCount = 10000;
 	private static final String pluralString = "references";
 	private static final String dbTableName = "literature";
-	private static final Class cdmTargetClass = ReferenceBase.class;
+	private static final Class cdmTargetClass = Reference.class;
 
 	public CentralAfricaFernsReferenceImport(){
 		super(pluralString, dbTableName, cdmTargetClass);
@@ -105,7 +105,7 @@ public class CentralAfricaFernsReferenceImport  extends CentralAfricaFernsImport
 			
 			
 			
-			ReferenceBase ref = null;
+			Reference ref = null;
 //			ref.setP
 			
 		
@@ -129,9 +129,9 @@ public class CentralAfricaFernsReferenceImport  extends CentralAfricaFernsImport
 	/* (non-Javadoc)
 	 * @see eu.etaxonomy.cdm.io.common.mapping.IMappingImport#createObject(java.sql.ResultSet, eu.etaxonomy.cdm.io.common.ImportStateBase)
 	 */
-	public ReferenceBase createObject(ResultSet rs, CentralAfricaFernsImportState state)
+	public Reference createObject(ResultSet rs, CentralAfricaFernsImportState state)
 			throws SQLException {
-		ReferenceBase ref;
+		Reference ref;
 		String refType = rs.getString("RefType");
 		if (refType == null){
 			ref = ReferenceFactory.newGeneric();

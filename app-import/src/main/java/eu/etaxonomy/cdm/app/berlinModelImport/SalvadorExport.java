@@ -38,7 +38,7 @@ public class SalvadorExport {
 	static final UUID secUuid = UUID.fromString("d03ef02a-f226-4cb1-bdb4-f6c154f08a34");
 	static final int sourceSecId = 7331;
 	static final int isHomotypicId = 72;
-	static boolean useTaxonomicTree = true;
+	static boolean useClassification = true;
 	
 //	static final UUID featureTreeUuid = UUID.fromString("ae9615b8-bc60-4ed0-ad96-897f9226d568");
 //	static final Object[] featureKeyList = new Integer[]{302, 303, 306, 307, 309, 310, 311, 312, 350, 1500, 1800, 1900, 1950, 1980, 2000, 10299}; 
@@ -117,7 +117,7 @@ public class SalvadorExport {
 		bmExportConfigurator.setDoOccurrence(doOccurences);
 		bmExportConfigurator.setIsHomotypicId(isHomotypicId);
 		bmExportConfigurator.setCheck(check);
-		bmExportConfigurator.setUseTaxonomicTree(useTaxonomicTree);
+		bmExportConfigurator.setUseClassification(useClassification);
 
 		// invoke import
 		CdmDefaultExport<BerlinModelExportConfigurator> bmExport = new CdmDefaultExport<BerlinModelExportConfigurator>();

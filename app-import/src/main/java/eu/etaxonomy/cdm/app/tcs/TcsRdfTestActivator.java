@@ -25,7 +25,7 @@ import eu.etaxonomy.cdm.io.common.IImportConfigurator.DO_REFERENCES;
 import eu.etaxonomy.cdm.io.tcsrdf.TcsRdfImportConfigurator;
 import eu.etaxonomy.cdm.model.common.TimePeriod;
 import eu.etaxonomy.cdm.model.reference.IBook;
-import eu.etaxonomy.cdm.model.reference.ReferenceBase;
+import eu.etaxonomy.cdm.model.reference.Reference;
 import eu.etaxonomy.cdm.model.reference.ReferenceFactory;
 
 /**
@@ -71,7 +71,7 @@ public class TcsRdfTestActivator {
 			
 			TcsRdfImportConfigurator tcsImportConfigurator = TcsRdfImportConfigurator.NewInstance(source,  destination);
 			
-			tcsImportConfigurator.setTaxonomicTreeUuid(treeUuid);
+			tcsImportConfigurator.setClassificationUuid(treeUuid);
 			tcsImportConfigurator.setSourceSecId(sourceSecId);
 			
 			tcsImportConfigurator.setDoReferences(doReferences);
@@ -94,7 +94,7 @@ public class TcsRdfTestActivator {
 			IBook book = refFactory.newBook();
 			//book.setDatePublished(TimePeriod.NewInstance(1945));
 			book.setDatePublished(TimePeriod.NewInstance(1945).setEndDay(12).setEndMonth(4));
-			refService.saveOrUpdate((ReferenceBase)book);
+			refService.saveOrUpdate((Reference)book);
 			tcsImport.getCdmAppController().close();
 			logger.info("End");
 			System.out.println("End import from TCS ("+ source.toString() + ")...");

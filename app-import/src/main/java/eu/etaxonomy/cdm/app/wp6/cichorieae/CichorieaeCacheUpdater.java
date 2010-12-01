@@ -20,7 +20,7 @@ import eu.etaxonomy.cdm.database.ICdmDataSource;
 import eu.etaxonomy.cdm.io.common.CacheUpdaterConfigurator;
 import eu.etaxonomy.cdm.io.common.CdmDefaultImport;
 import eu.etaxonomy.cdm.model.name.TaxonNameBase;
-import eu.etaxonomy.cdm.model.reference.ReferenceBase;
+import eu.etaxonomy.cdm.model.reference.Reference;
 import eu.etaxonomy.cdm.model.taxon.TaxonBase;
 
 
@@ -91,7 +91,7 @@ public class CichorieaeCacheUpdater {
 //	static final boolean doZoologicalName = true;
 //	static final boolean doCultivarPlantName = true;
 //	
-//	static final boolean doTaxonomicTree = true;
+//	static final boolean doClassification = true;
 //	
 //	//TermBase
 //	static final boolean doFeatureTree = true;

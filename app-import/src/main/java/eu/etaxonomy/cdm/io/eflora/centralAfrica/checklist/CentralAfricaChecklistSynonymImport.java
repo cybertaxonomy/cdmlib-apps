@@ -28,7 +28,7 @@ import eu.etaxonomy.cdm.io.eflora.centralAfrica.checklist.validation.CentralAfri
 import eu.etaxonomy.cdm.model.common.CdmBase;
 import eu.etaxonomy.cdm.model.name.BotanicalName;
 import eu.etaxonomy.cdm.model.name.Rank;
-import eu.etaxonomy.cdm.model.reference.ReferenceBase;
+import eu.etaxonomy.cdm.model.reference.Reference;
 import eu.etaxonomy.cdm.model.taxon.Synonym;
 import eu.etaxonomy.cdm.model.taxon.SynonymRelationshipType;
 import eu.etaxonomy.cdm.model.taxon.Taxon;
@@ -141,7 +141,7 @@ public class CentralAfricaChecklistSynonymImport  extends CentralAfricaChecklist
 		Integer accId = rs.getInt("acc_id");
 		Taxon taxon = CdmBase.deproxy(state.getRelatedObject(TAXON_NAMESPACE, String.valueOf(accId)), Taxon.class);
 		
-		ReferenceBase sec = taxon.getSec();
+		Reference sec = taxon.getSec();
 		
 		String genusString = rs.getString("synonym genus");
 		String speciesString = rs.getString("synonym species");

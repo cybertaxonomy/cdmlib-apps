@@ -38,7 +38,7 @@ import eu.etaxonomy.cdm.model.name.NameRelationship;
 import eu.etaxonomy.cdm.model.name.Rank;
 import eu.etaxonomy.cdm.model.name.TaxonNameBase;
 import eu.etaxonomy.cdm.model.name.ZoologicalName;
-import eu.etaxonomy.cdm.model.reference.ReferenceBase;
+import eu.etaxonomy.cdm.model.reference.Reference;
 import eu.etaxonomy.cdm.model.taxon.Synonym;
 import eu.etaxonomy.cdm.model.taxon.SynonymRelationship;
 import eu.etaxonomy.cdm.model.taxon.Taxon;
@@ -496,7 +496,7 @@ public class FaunaEuErmsMergeActivator {
 	}
 	
 	//merged taxon should have a new sec reference
-	private void addNewSecForMergedTaxon(Taxon taxon, ReferenceBase sec){
+	private void addNewSecForMergedTaxon(Taxon taxon, Reference sec){
 		taxon.setSec(sec);
 		taxon.setUuid(UUID.randomUUID());
 	}

@@ -106,7 +106,7 @@ public class AlgaTerraActivator {
 		
 		BerlinModelImportConfigurator bmImportConfigurator = BerlinModelImportConfigurator.NewInstance(source,  destination);
 		
-		bmImportConfigurator.setTaxonomicTreeUuid(treeUuid);
+		bmImportConfigurator.setClassificationUuid(treeUuid);
 		bmImportConfigurator.setSourceSecId(sourceSecId);
 		bmImportConfigurator.setNomenclaturalCode(nomenclaturalCode);
 

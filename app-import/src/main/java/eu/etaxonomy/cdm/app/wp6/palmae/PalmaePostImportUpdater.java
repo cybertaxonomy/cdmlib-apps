@@ -28,8 +28,8 @@ import eu.etaxonomy.cdm.model.description.FeatureTree;
 import eu.etaxonomy.cdm.model.description.TaxonDescription;
 import eu.etaxonomy.cdm.model.description.TextData;
 import eu.etaxonomy.cdm.model.name.TaxonNameBase;
-import eu.etaxonomy.cdm.model.reference.IReferenceBase;
-import eu.etaxonomy.cdm.model.reference.ReferenceBase;
+import eu.etaxonomy.cdm.model.reference.IReference;
+import eu.etaxonomy.cdm.model.reference.Reference;
 import eu.etaxonomy.cdm.model.taxon.Synonym;
 import eu.etaxonomy.cdm.model.taxon.Taxon;
 import eu.etaxonomy.cdm.model.taxon.TaxonBase;
@@ -104,7 +104,7 @@ public class PalmaePostImportUpdater {
 			List<TaxonBase> taxonList = cdmApp.getTaxonService().list(TaxonBase.class, 100000, page, null, null);
 			int i = 0;
 			
-			IReferenceBase treatmentReference = (IReferenceBase) cdmApp.getCommonService().getSourcedObjectByIdInSource(ReferenceBase.class, "palm_pub_ed_999999", "PublicationCitation");
+			IReference treatmentReference = (IReference) cdmApp.getCommonService().getSourcedObjectByIdInSource(Reference.class, "palm_pub_ed_999999", "PublicationCitation");
 			if (treatmentReference == null){
 				logger.error("Treatment reference could not be found");
 				result = false;
@@ -164,7 +164,7 @@ public class PalmaePostImportUpdater {
 	 * @param nameUsage 
 	 * @return
 	 */
-	private Taxon getAcceptedTreatmentTaxon(TaxonBase nameUsage, IReferenceBase treatmentReference) {
+	private Taxon getAcceptedTreatmentTaxon(TaxonBase nameUsage, IReference treatmentReference) {
 		boolean hasSynonymInTreatment = false;
 		TaxonNameBase name = nameUsage.getName();
 		Set<TaxonBase> candidateList = name.getTaxonBases();
@@ -199,7 +199,7 @@ public class PalmaePostImportUpdater {
 	 * @param treatmentReference 
 	 * @return
 	 */
-	private boolean isInTreatment(TaxonBase taxonBase, IReferenceBase treatmentReference, boolean silent) {
+	private boolean isInTreatment(TaxonBase taxonBase, IReference treatmentReference, boolean silent) {
 		if (taxonBase.getSec().equals(treatmentReference)){
 			//treatment taxa
 			if (! silent){

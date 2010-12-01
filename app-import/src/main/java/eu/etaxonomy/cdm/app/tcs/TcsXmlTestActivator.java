@@ -71,7 +71,7 @@ public class TcsXmlTestActivator {
 			
 			TcsXmlImportConfigurator tcsImportConfigurator = TcsXmlImportConfigurator.NewInstance(source,  destination);
 			
-			tcsImportConfigurator.setTaxonomicTreeUuid(treeUuid);
+			tcsImportConfigurator.setClassificationUuid(treeUuid);
 			tcsImportConfigurator.setSourceSecId(sourceSecId);
 			
 			tcsImportConfigurator.setDoMetaData(doMetaData);
@@ -94,7 +94,7 @@ public class TcsXmlTestActivator {
 //			IReferenceService refService = tcsImport.getCdmAppController().getReferenceService();
 //			IBook book = ReferenceFactory.newBook();
 //			book.setDatePublished(TimePeriod.NewInstance(1945).setEndDay(12).setEndMonth(4));
-//			refService.saveOrUpdate((ReferenceBase)book);
+//			refService.saveOrUpdate((Reference)book);
 //			tcsImport.getCdmAppController().close();
 			
 			NormalExplicitTestActivator normExActivator = new NormalExplicitTestActivator();

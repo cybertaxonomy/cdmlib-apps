@@ -20,7 +20,7 @@ import eu.etaxonomy.cdm.io.common.ImportStateBase;
 import eu.etaxonomy.cdm.io.common.Source;
 import eu.etaxonomy.cdm.io.common.mapping.IInputTransformer;
 import eu.etaxonomy.cdm.model.name.NomenclaturalCode;
-import eu.etaxonomy.cdm.model.reference.ReferenceBase;
+import eu.etaxonomy.cdm.model.reference.Reference;
 import eu.etaxonomy.cdm.model.reference.ReferenceFactory;
 
 
@@ -79,7 +79,7 @@ public class CentralAfricaFernsImportConfigurator extends ImportConfiguratorBase
 	/* (non-Javadoc)
 	 * @see eu.etaxonomy.cdm.io.tcsrdf.IImportConfigurator#getSourceReference()
 	 */
-	public ReferenceBase getSourceReference() {
+	public Reference getSourceReference() {
 		ReferenceFactory refFactory = ReferenceFactory.newInstance();
 		if (sourceReference == null){
 			sourceReference =  refFactory.newDatabase();

@@ -9,6 +9,8 @@
 
 package eu.etaxonomy.cdm.app.viennaImport;
 
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.List;
@@ -30,7 +32,7 @@ import eu.etaxonomy.cdm.model.name.TaxonNameBase;
 import eu.etaxonomy.cdm.model.occurrence.DeterminationEvent;
 import eu.etaxonomy.cdm.model.occurrence.Specimen;
 import eu.etaxonomy.cdm.model.reference.IDatabase;
-import eu.etaxonomy.cdm.model.reference.ReferenceBase;
+import eu.etaxonomy.cdm.model.reference.Reference;
 import eu.etaxonomy.cdm.model.reference.ReferenceFactory;
 import eu.etaxonomy.cdm.model.taxon.Taxon;
 import eu.etaxonomy.cdm.strategy.parser.NonViralNameParserImpl;
@@ -98,7 +100,7 @@ public class ViennaActivator {
 					logger.warn("Family not Asteracea: ID= " + strId);
 				}
 				ReferenceFactory refFactory = ReferenceFactory.newInstance();
-				ReferenceBase sec = refFactory.newDatabase();
+				Reference sec = refFactory.newDatabase();
 				sec.setTitleCache("Vienna Asteraceae Images", true);
 				
 				TaxonNameBase taxonName = (BotanicalName)NonViralNameParserImpl.NewInstance().parseFullName(strTaxonName);
@@ -140,14 +142,20 @@ public class ViennaActivator {
 	
 	private Media getMedia(String uriPath, String id){
 		//"http://131.130.131.9/database/img/imgBrowser.php?ID=50599";
-		String uri = uriPath + id;
-		if (CdmUtils.urlExists(uri, false)){
+		String uriString = uriPath + id;
+		if (CdmUtils.urlExists(uriString, false)){
 			String suffix = "jpg";
 			String mimeType = "image/jpg";
+			URI uri = null;
+			try {
+				uri = new URI(uriString);
+			} catch (URISyntaxException e) {
+				e.printStackTrace();
+			}
 			Media media = ImageFile.NewMediaInstance(null, null, uri, mimeType, suffix,  null, null, null);
 			return media;
 		}else{
-			logger.warn("URI does not exist: " + uri);
+			logger.warn("URI does not exist: " + uriString);
 			return null;
 		}
 	}

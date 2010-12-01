@@ -44,7 +44,7 @@ import eu.etaxonomy.cdm.model.media.Media;
 import eu.etaxonomy.cdm.model.media.MediaRepresentation;
 import eu.etaxonomy.cdm.model.media.Rights;
 import eu.etaxonomy.cdm.model.media.RightsTerm;
-import eu.etaxonomy.cdm.model.reference.ReferenceBase;
+import eu.etaxonomy.cdm.model.reference.Reference;
 import eu.etaxonomy.cdm.model.taxon.Taxon;
 import eu.etaxonomy.cdm.model.taxon.TaxonBase;
 import eu.etaxonomy.cdm.strategy.match.DefaultMatchStrategy;
@@ -193,7 +193,7 @@ public class PalmaeImageImport extends AbstractImageImporter {
 					
 					
 					
-					ReferenceBase sec = referenceService.find(config.getSecUuid());
+					Reference sec = referenceService.find(config.getSecUuid());
 
 					List<TaxonBase> taxa = new ArrayList<TaxonBase>();
 					if (taxonName != null){
@@ -229,7 +229,7 @@ public class PalmaeImageImport extends AbstractImageImporter {
 						}
 						
 						
-						ImageFile imageFile = ImageFile.NewInstance(url.toString(),null, imageinfo.getHeight(), imageinfo.getWidth());
+						ImageFile imageFile = ImageFile.NewInstance(url.toURI(),null, imageinfo.getHeight(), imageinfo.getWidth());
 						
 						
 						MediaRepresentation representation = MediaRepresentation.NewInstance(mimeType, suffix);
@@ -281,7 +281,7 @@ public class PalmaeImageImport extends AbstractImageImporter {
 							media.addRights(copyright);
 						}
 						
-						ReferenceBase sourceRef = config.getSourceReference();
+						Reference sourceRef = config.getSourceReference();
 						TaxonDescription description = taxon.getOrCreateImageGallery(sourceRef == null ? null :sourceRef.getTitleCache());
 						
 						

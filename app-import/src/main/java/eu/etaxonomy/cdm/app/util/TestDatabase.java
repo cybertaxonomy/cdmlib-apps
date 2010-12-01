@@ -43,14 +43,14 @@ import eu.etaxonomy.cdm.model.name.Rank;
 import eu.etaxonomy.cdm.model.name.TaxonNameBase;
 import eu.etaxonomy.cdm.model.occurrence.Specimen;
 import eu.etaxonomy.cdm.model.occurrence.SpecimenOrObservationBase;
-import eu.etaxonomy.cdm.model.reference.ReferenceBase;
+import eu.etaxonomy.cdm.model.reference.Reference;
 import eu.etaxonomy.cdm.model.reference.ReferenceFactory;
 import eu.etaxonomy.cdm.model.taxon.Synonym;
 import eu.etaxonomy.cdm.model.taxon.SynonymRelationshipType;
 import eu.etaxonomy.cdm.model.taxon.Taxon;
 import eu.etaxonomy.cdm.model.taxon.TaxonBase;
 import eu.etaxonomy.cdm.model.taxon.TaxonNode;
-import eu.etaxonomy.cdm.model.taxon.TaxonomicTree;
+import eu.etaxonomy.cdm.model.taxon.Classification;
 
 /**
  * @author a.babadshanjan
@@ -97,7 +97,7 @@ public class TestDatabase {
     }
     
 	/**
-	 * This method constructs a small sample taxonomic tree to test JAXB marshaling.
+	 * This method constructs a small sample classification to test JAXB marshaling.
 	 * The sample tree contains four taxa. The root taxon has two children taxa, and
 	 * there is one "free" taxon without a parent and children.
 	 */
@@ -109,7 +109,7 @@ public class TestDatabase {
 	    
 	    //List<TermBase> terms = new ArrayList<TermBase>();
 	    List<DefinedTermBase> terms = new ArrayList<DefinedTermBase>();
-	    List<ReferenceBase> references = new ArrayList<ReferenceBase>();
+	    List<Reference> references = new ArrayList<Reference>();
 	    List<TaxonNameBase> taxonomicNames = new ArrayList<TaxonNameBase>();
 	    List<TaxonBase> taxonBases = new ArrayList<TaxonBase>();
 	    
@@ -145,14 +145,14 @@ public class TestDatabase {
 //	    List<Synonym> synonyms = new ArrayList<Synonym>();
 	    List<AnnotatableEntity> homotypicalGroups;
 
-		ReferenceBase citRef, sec;
+		Reference citRef, sec;
 		BotanicalName name1, name2, name21, nameRoot1, nameFree, synName11, synName12, synName2, synNameFree;
 		BotanicalName nameRoot2, nameR2_1, nameR2_2;
 		Taxon child1, child2, child21, root1T, root2T, freeT;
 		Taxon childR2_1, childR2_2;
 		TaxonNode child1Node, child2Node, child21Node, root1TNode, root2TNode, freeTNode;
 		TaxonNode childR2_1Node, childR2_2Node;
-		TaxonomicTree taxTree, taxTree2;
+		Classification taxTree, taxTree2;
 		Synonym syn11, syn12, syn2, synFree;
 		Rank rankSpecies, rankSubspecies, rankGenus;
 
@@ -299,15 +299,15 @@ public class TestDatabase {
 		
 		// taxonomic children
 		
-		//TODO: Adapt to taxonomic tree
-		taxTree = TaxonomicTree.NewInstance("TestTree");
+		//TODO: Adapt to classification
+		taxTree = Classification.NewInstance("TestTree");
 		
 		root1TNode = taxTree.addChildTaxon(root1T, sec, null, null);
 		child1Node = root1TNode.addChildTaxon(child1, null, null, null);
 		child2Node = root1TNode.addChildTaxon(child2, null, null, null);
 		child21Node = child2Node.addChildTaxon(child21, null, null, null);
 		
-		taxTree2 = TaxonomicTree.NewInstance("TestTree2");
+		taxTree2 = Classification.NewInstance("TestTree2");
 		
 		root2TNode = taxTree2.addChildTaxon(root2T, sec, null, null);
 		root2TNode.addChildTaxon(child1, sec, "p.1010", syn11);
@@ -335,7 +335,7 @@ public class TestDatabase {
 		
 		DataSet dataSet = new DataSet();
 	
-		logger.warn("WARNING: TestDatabase has been commented in parts. Mainly, must be adapted to taxonomic tree.");
+		logger.warn("WARNING: TestDatabase has been commented in parts. Mainly, must be adapted to classification.");
 		
 		dataSet.setTerms(terms);
 		dataSet.setAgents(agents);

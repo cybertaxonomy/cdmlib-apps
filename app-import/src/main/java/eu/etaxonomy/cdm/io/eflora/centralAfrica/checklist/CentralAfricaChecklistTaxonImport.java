@@ -21,7 +21,7 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.springframework.stereotype.Component;
 
-import eu.etaxonomy.cdm.api.service.ITaxonTreeService;
+import eu.etaxonomy.cdm.api.service.IClassificationService;
 import eu.etaxonomy.cdm.common.CdmUtils;
 import eu.etaxonomy.cdm.io.common.IOValidator;
 import eu.etaxonomy.cdm.io.common.ResultSetPartitioner;
@@ -40,12 +40,12 @@ import eu.etaxonomy.cdm.model.location.NamedArea;
 import eu.etaxonomy.cdm.model.location.TdwgArea;
 import eu.etaxonomy.cdm.model.name.BotanicalName;
 import eu.etaxonomy.cdm.model.name.Rank;
-import eu.etaxonomy.cdm.model.reference.ReferenceBase;
+import eu.etaxonomy.cdm.model.reference.Reference;
 import eu.etaxonomy.cdm.model.reference.ReferenceFactory;
 import eu.etaxonomy.cdm.model.taxon.Taxon;
 import eu.etaxonomy.cdm.model.taxon.TaxonBase;
 import eu.etaxonomy.cdm.model.taxon.TaxonNode;
-import eu.etaxonomy.cdm.model.taxon.TaxonomicTree;
+import eu.etaxonomy.cdm.model.taxon.Classification;
 import eu.etaxonomy.cdm.strategy.parser.NonViralNameParserImpl;
 
 
@@ -127,7 +127,7 @@ public class CentralAfricaChecklistTaxonImport  extends CentralAfricaChecklistIm
 	@Override
 	public boolean doPartition(ResultSetPartitioner partitioner, CentralAfricaChecklistImportState state) {
 		higherTaxonMap = new HashMap<UUID, Taxon>();
-		ReferenceBase genevaReference = getReferenceService().find(state.getConfig().getUuidGenevaReference());
+		Reference genevaReference = getReferenceService().find(state.getConfig().getUuidGenevaReference());
 		if (genevaReference == null){
 			genevaReference = makeGenevaReference(state);
 			getReferenceService().save(genevaReference);
@@ -158,9 +158,9 @@ public class CentralAfricaChecklistTaxonImport  extends CentralAfricaChecklistIm
 
 			//reference map
 			nameSpace = REFERENCE_NAMESPACE;
-			cdmClass = ReferenceBase.class;
+			cdmClass = Reference.class;
 			idSet = referenceIdSet;
-			Map<String, ReferenceBase> referenceMap = (Map<String, ReferenceBase>)getCommonService().getSourcedObjectsByIdInSource(cdmClass, referenceIdSet, nameSpace);
+			Map<String, Reference> referenceMap = (Map<String, Reference>)getCommonService().getSourcedObjectsByIdInSource(cdmClass, referenceIdSet, nameSpace);
 			result.put(REFERENCE_NAMESPACE, referenceMap);
 
 		} catch (SQLException e) {
@@ -176,7 +176,7 @@ public class CentralAfricaChecklistTaxonImport  extends CentralAfricaChecklistIm
 	public TaxonBase createObject(ResultSet rs, CentralAfricaChecklistImportState state) throws SQLException {
 		BotanicalName speciesName = BotanicalName.NewInstance(Rank.SPECIES());
 		
-		ReferenceBase sec = state.getConfig().getSourceReference();
+		Reference sec = state.getConfig().getSourceReference();
 		getReferenceService().saveOrUpdate(sec);
 		
 		String familyString = rs.getString("family");
@@ -224,12 +224,12 @@ public class CentralAfricaChecklistTaxonImport  extends CentralAfricaChecklistIm
 		String sourceString = rs.getString("source");
 		String sourceId = rs.getString("source_id");
 		
-		ReferenceBase sourceRef = state.getRelatedObject(REFERENCE_NAMESPACE, sourceString, ReferenceBase.class);
+		Reference sourceRef = state.getRelatedObject(REFERENCE_NAMESPACE, sourceString, Reference.class);
 		speciesTaxon.addSource(sourceId, REFERENCE_NAMESPACE, sourceRef, null);
 		
 		
 		//geneva id
-		ReferenceBase genevaReference = state.getGenevaReference();
+		Reference genevaReference = state.getGenevaReference();
 		Object genevaId = rs.getObject("geneva_ID");
 		speciesTaxon.addSource(String.valueOf(genevaId), null, genevaReference, null);
 		
@@ -304,10 +304,10 @@ public class CentralAfricaChecklistTaxonImport  extends CentralAfricaChecklistIm
 
 
 
-//	private boolean makeTaxonomicallyIncluded(CentralAfricaChecklistImportState state, Taxon parent, Taxon child, ReferenceBase citation, String microCitation){
-//		ReferenceBase sec = child.getSec();
+//	private boolean makeTaxonomicallyIncluded(CentralAfricaChecklistImportState state, Taxon parent, Taxon child, Reference citation, String microCitation){
+//		Reference sec = child.getSec();
 //		UUID uuid = state.getTreeUuid(sec);
-//		TaxonomicTree tree;
+//		Classification tree;
 //		tree = state.getTree(sec);
 //		
 //		if (tree == null){
@@ -323,23 +323,23 @@ public class CentralAfricaChecklistTaxonImport  extends CentralAfricaChecklistIm
 //	}
 	
 	//TODO use Mapper
-	private boolean makeTaxonomicallyIncluded(CentralAfricaChecklistImportState state, Integer treeRefFk, Taxon child, Taxon parent, ReferenceBase citation, String microCitation){
+	private boolean makeTaxonomicallyIncluded(CentralAfricaChecklistImportState state, Integer treeRefFk, Taxon child, Taxon parent, Reference citation, String microCitation){
 		String treeKey;
 		UUID treeUuid;
 		if (treeRefFk == null){
 			treeKey = "1";  // there is only one tree and it gets the map key '1'
-			treeUuid = state.getConfig().getTaxonomicTreeUuid();
+			treeUuid = state.getConfig().getClassificationUuid();
 		}else{
 			treeKey =String.valueOf(treeRefFk);
 			treeUuid = state.getTreeUuidByTreeKey(treeKey);
 		}
-		TaxonomicTree tree = (TaxonomicTree)state.getRelatedObject(DbImportTaxIncludedInMapper.TAXONOMIC_TREE_NAMESPACE, treeKey);
+		Classification tree = (Classification)state.getRelatedObject(DbImportTaxIncludedInMapper.TAXONOMIC_TREE_NAMESPACE, treeKey);
 		if (tree == null){
-			ITaxonTreeService service = state.getCurrentIO().getTaxonTreeService();
-			tree = service.getTaxonomicTreeByUuid(treeUuid);
+			IClassificationService service = state.getCurrentIO().getClassificationService();
+			tree = service.getClassificationByUuid(treeUuid);
 			if (tree == null){
-				String treeName = state.getConfig().getTaxonomicTreeName();
-				tree = TaxonomicTree.NewInstance(treeName);
+				String treeName = state.getConfig().getClassificationName();
+				tree = Classification.NewInstance(treeName);
 				tree.setUuid(treeUuid);
 				//FIXME tree reference
 				//tree.setReference(ref);
@@ -353,8 +353,8 @@ public class CentralAfricaChecklistTaxonImport  extends CentralAfricaChecklistIm
 	}
 
 
-	private ReferenceBase makeGenevaReference(CentralAfricaChecklistImportState state) {
-		ReferenceBase result = ReferenceFactory.newDatabase();
+	private Reference makeGenevaReference(CentralAfricaChecklistImportState state) {
+		Reference result = ReferenceFactory.newDatabase();
 		result.setTitleCache(state.getConfig().getGenevaReferenceTitle(), true);
 		result.setUuid(state.getConfig().getUuidGenevaReference());
 		return result;

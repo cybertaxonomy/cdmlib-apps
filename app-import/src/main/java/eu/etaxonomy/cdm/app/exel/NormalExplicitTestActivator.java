@@ -64,7 +64,7 @@ public class NormalExplicitTestActivator {
 		
 		NormalExplicitImportConfigurator config = NormalExplicitImportConfigurator.NewInstance(mySource,  destination, NomenclaturalCode.ICBN);
 		
-		config.setTaxonomicTreeUuid(treeUuid);
+		config.setClassificationUuid(treeUuid);
 		config.setSourceSecId(sourceSecId);
 		
 		config.setDoReferences(doReferences);

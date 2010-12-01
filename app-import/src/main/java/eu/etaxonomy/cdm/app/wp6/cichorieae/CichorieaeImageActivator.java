@@ -49,7 +49,7 @@ public class CichorieaeImageActivator  {
 			ImageImportConfigurator imageConfigurator = ImageImportConfigurator.NewInstance(
 					imageFolderCichorieae, destination, CichorieaeImageImport.class);
 			imageConfigurator.setSecUuid(secUuid);
-			imageConfigurator.setTaxonomicTreeUuid(treeUuid);
+			imageConfigurator.setClassificationUuid(treeUuid);
 			
 			CdmDefaultImport<IImportConfigurator> importer = new CdmDefaultImport<IImportConfigurator>();
 			importer.invoke(imageConfigurator);

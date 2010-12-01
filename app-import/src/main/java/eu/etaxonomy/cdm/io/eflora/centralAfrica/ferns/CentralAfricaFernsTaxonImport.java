@@ -39,7 +39,7 @@ import eu.etaxonomy.cdm.model.name.BotanicalName;
 import eu.etaxonomy.cdm.model.name.Rank;
 import eu.etaxonomy.cdm.model.name.SpecimenTypeDesignation;
 import eu.etaxonomy.cdm.model.name.TaxonNameBase;
-import eu.etaxonomy.cdm.model.reference.ReferenceBase;
+import eu.etaxonomy.cdm.model.reference.Reference;
 import eu.etaxonomy.cdm.model.taxon.Synonym;
 import eu.etaxonomy.cdm.model.taxon.Taxon;
 import eu.etaxonomy.cdm.model.taxon.TaxonBase;
@@ -186,9 +186,9 @@ public class CentralAfricaFernsTaxonImport  extends CentralAfricaFernsImportBase
 
 			//reference map
 //			nameSpace = "Reference";
-//			cdmClass = ReferenceBase.class;
+//			cdmClass = Reference.class;
 //			Map<String, Person> referenceMap = (Map<String, Person>)getCommonService().getSourcedObjectsByIdInSource(Person.class, teamIdSet, nameSpace);
-//			result.put(ReferenceBase.class, referenceMap);
+//			result.put(Reference.class, referenceMap);
 
 		} catch (SQLException e) {
 			throw new RuntimeException(e);
@@ -246,7 +246,7 @@ public class CentralAfricaFernsTaxonImport  extends CentralAfricaFernsImportBase
 	 */
 	public TaxonBase createObject(ResultSet rs, CentralAfricaFernsImportState state) throws SQLException {
 		BotanicalName taxonName = BotanicalName.NewInstance(null);
-		ReferenceBase sec = state.getConfig().getSourceReference();
+		Reference sec = state.getConfig().getSourceReference();
 		
 		String taxonNumber = rs.getString("Taxon number");
 		
@@ -301,7 +301,7 @@ public class CentralAfricaFernsTaxonImport  extends CentralAfricaFernsImportBase
 
 		
 		//add original source for taxon name (taxon original source is added in mapper
-		ReferenceBase citation = state.getConfig().getSourceReference();
+		Reference citation = state.getConfig().getSourceReference();
 //		addOriginalSource(taxonName, taxonNumber, TAXON_NAMESPACE, citation);
 		return taxon;
 		

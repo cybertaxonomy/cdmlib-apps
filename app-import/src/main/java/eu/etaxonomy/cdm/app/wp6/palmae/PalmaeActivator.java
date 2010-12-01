@@ -70,7 +70,7 @@ public class PalmaeActivator {
 	//check - import
 	static final CHECK check = CHECK.CHECK_AND_IMPORT;
 	
-	static boolean useTaxonomicTree = true;
+	static boolean useClassification = true;
 	
 	//authors
 	static final boolean doAuthors = true;
@@ -97,7 +97,7 @@ public class PalmaeActivator {
 		
 			TcsRdfImportConfigurator tcsImportConfigurator = TcsRdfImportConfigurator.NewInstance(source,  destination);
 			
-			tcsImportConfigurator.setTaxonomicTreeUuid(treeUuid);
+			tcsImportConfigurator.setClassificationUuid(treeUuid);
 			tcsImportConfigurator.setSecUuid(secUuid);
 			tcsImportConfigurator.setSourceSecId(sourceSecId);
 			
@@ -109,7 +109,7 @@ public class PalmaeActivator {
 			tcsImportConfigurator.setDoTaxa(doTaxa);
 			tcsImportConfigurator.setDoRelTaxa(doRelTaxa);
 			tcsImportConfigurator.setDoFacts(doFacts);
-			tcsImportConfigurator.setUseTaxonomicTree(useTaxonomicTree);
+			tcsImportConfigurator.setUseClassification(useClassification);
 			tcsImportConfigurator.setPublishReferences(pubishReferencesInBibliography);
 			
 			tcsImportConfigurator.setCheck(check);

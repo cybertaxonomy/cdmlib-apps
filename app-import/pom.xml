@@ -7,8 +7,8 @@
   <parent>
     <groupId>eu.etaxonomy</groupId>
     <artifactId>cdmlib-parent</artifactId>
-    <version>2.5</version>
-    <relativePath>../cdmlib-parent/pom.xml</relativePath>
+    <version>3.0</version>
+    <relativePath>../pom.xml</relativePath>
   </parent>
   
   <modelVersion>4.0.0</modelVersion>
@@ -30,9 +30,9 @@
   		<groupId>eu.etaxonomy</groupId>
   		<artifactId>cdmlib-ext</artifactId>
    	</dependency>
-    	<dependency>
-      		<groupId>aspectj</groupId>
-      		<artifactId>aspectjrt</artifactId>
+    <dependency>
+    	<groupId>aspectj</groupId>
+      	<artifactId>aspectjrt</artifactId>
 		<version>1.6.3</version>
-    	</dependency>
+    </dependency>
   </dependencies></project>

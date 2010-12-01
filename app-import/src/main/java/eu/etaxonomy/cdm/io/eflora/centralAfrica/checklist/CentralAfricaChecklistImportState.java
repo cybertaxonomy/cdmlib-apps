@@ -20,7 +20,7 @@ import eu.etaxonomy.cdm.io.common.DbImportStateBase;
 import eu.etaxonomy.cdm.model.common.DefinedTermBase;
 import eu.etaxonomy.cdm.model.common.MarkerType;
 import eu.etaxonomy.cdm.model.common.User;
-import eu.etaxonomy.cdm.model.reference.ReferenceBase;
+import eu.etaxonomy.cdm.model.reference.Reference;
 
 /**
  * @author a.mueller
@@ -37,7 +37,7 @@ public class CentralAfricaChecklistImportState extends DbImportStateBase<Central
 	private String lastGenus;
 	private Map<String, UUID> higherTaxonUuidMap = new HashMap<String, UUID>();
 
-	private ReferenceBase genevaReference;
+	private Reference genevaReference;
 
 
 	public boolean containsHigherTaxon(String higherName) {
@@ -92,10 +92,10 @@ public class CentralAfricaChecklistImportState extends DbImportStateBase<Central
 
 	
 	
-	public ReferenceBase getGenevaReference() {
+	public Reference getGenevaReference() {
 		return genevaReference;
 	}
-	public void setGenevaReference(ReferenceBase genevaReference) {
+	public void setGenevaReference(Reference genevaReference) {
 		this.genevaReference = genevaReference;
 	}
 	

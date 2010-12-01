@@ -12,14 +12,13 @@ package eu.etaxonomy.cdm.app.pesi;
 import java.util.UUID;
 
 import org.apache.log4j.Logger;
-import org.springframework.transaction.TransactionStatus;
 
 import eu.etaxonomy.cdm.app.common.CdmDestinations;
 import eu.etaxonomy.cdm.database.ICdmDataSource;
 import eu.etaxonomy.cdm.io.common.CdmDefaultExport;
-import eu.etaxonomy.cdm.io.common.Source;
 import eu.etaxonomy.cdm.io.common.IExportConfigurator.CHECK;
 import eu.etaxonomy.cdm.io.common.IImportConfigurator.DO_REFERENCES;
+import eu.etaxonomy.cdm.io.common.Source;
 import eu.etaxonomy.cdm.io.pesi.out.PesiExportConfigurator;
 import eu.etaxonomy.cdm.model.name.NomenclaturalCode;
 
@@ -40,7 +39,7 @@ public class PesiExportActivator {
 	static final UUID secUuid = UUID.fromString("d03ef02a-f226-4cb1-bdb4-f6c154f08a34");
 	static final int sourceSecId = 7331;
 	static final int isHomotypicId = 72;
-	static boolean useTaxonomicTree = true;
+	static boolean useClassification = true;
 	
 	//check - export
 	static final CHECK check = CHECK.EXPORT_WITHOUT_CHECK;
@@ -110,7 +109,7 @@ public class PesiExportActivator {
 		pesiExportConfigurator.setDoOccurrence(doOccurences);
 //		pesiExportConfigurator.setIsHomotypicId(isHomotypicId);
 		pesiExportConfigurator.setCheck(check);
-		pesiExportConfigurator.setUseTaxonomicTree(useTaxonomicTree);
+		pesiExportConfigurator.setUseClassification(useClassification);
 
 		// invoke export
 		CdmDefaultExport<PesiExportConfigurator> pesiExport = new CdmDefaultExport<PesiExportConfigurator>();

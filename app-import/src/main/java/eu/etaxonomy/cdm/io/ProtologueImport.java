@@ -11,6 +11,7 @@ package eu.etaxonomy.cdm.io;
 
 import java.io.File;
 import java.net.MalformedURLException;
+import java.net.URI;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -20,6 +21,7 @@ import org.springframework.transaction.TransactionStatus;
 
 import eu.etaxonomy.cdm.api.service.ICommonService;
 import eu.etaxonomy.cdm.app.wp6.palmae.config.PalmaeProtologueImportConfigurator;
+import eu.etaxonomy.cdm.common.CdmUtils;
 import eu.etaxonomy.cdm.io.common.CdmIoBase;
 import eu.etaxonomy.cdm.io.common.DefaultImportState;
 import eu.etaxonomy.cdm.model.description.Feature;
@@ -144,13 +146,14 @@ public class ProtologueImport extends CdmIoBase<DefaultImportState<PalmaeProtolo
 			String mimeTypePdf = "application/pdf"; 
 			String suffixPdf = "pdf"; 
 			String urlStringPdf = state.getConfig().getUrlString() + file.getName(); 
+			URI uri = CdmUtils.string2Uri(urlStringPdf);
 			Integer size = null;
 			
 			if (file.exists()){  
 				Media media = Media.NewInstance();
 			    
 				MediaRepresentation representationPdf = MediaRepresentation.NewInstance(mimeTypePdf, suffixPdf); 
-			    representationPdf.addRepresentationPart(MediaRepresentationPart.NewInstance(urlStringPdf, size)); 
+			    representationPdf.addRepresentationPart(MediaRepresentationPart.NewInstance(uri, size)); 
 			    media.addRepresentation(representationPdf); 
 			    return media;
 			}else{

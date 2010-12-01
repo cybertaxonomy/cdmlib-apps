@@ -30,7 +30,7 @@ import eu.etaxonomy.cdm.model.description.Feature;
 import eu.etaxonomy.cdm.model.description.FeatureNode;
 import eu.etaxonomy.cdm.model.description.FeatureTree;
 import eu.etaxonomy.cdm.model.description.PolytomousKey;
-import eu.etaxonomy.cdm.model.reference.ReferenceBase;
+import eu.etaxonomy.cdm.model.reference.Reference;
 import eu.etaxonomy.cdm.model.reference.ReferenceFactory;
 
 /**
@@ -79,7 +79,7 @@ public class FloraMalesianaActivator {
 		//make Source
 		URI source = fmSource1;
 		EfloraImportConfigurator floraMalesianaConfig= EfloraImportConfigurator.NewInstance(source, cdmDestination);
-		floraMalesianaConfig.setTaxonomicTreeUuid(classificationUuid);
+		floraMalesianaConfig.setClassificationUuid(classificationUuid);
 		floraMalesianaConfig.setDoTaxa(doTaxa);
 		floraMalesianaConfig.setCheck(check);
 		floraMalesianaConfig.setDoPrintKeys(doPrintKeys);
@@ -131,9 +131,9 @@ public class FloraMalesianaActivator {
 		//check keys
 		if (doPrintKeys){
 			TransactionStatus tx = myImport.getCdmAppController().startTransaction();
-			List<FeatureTree> keys = myImport.getCdmAppController().getFeatureTreeService().list(PolytomousKey.class, null, null, null, null);
-			for(FeatureTree key : keys){
-				((PolytomousKey)key).print(System.out);
+			List<PolytomousKey> keys = myImport.getCdmAppController().getPolytomousKeyService().list(PolytomousKey.class, null, null, null, null);
+			for(PolytomousKey key : keys){
+				key.print(System.out);
 				System.out.println();
 			}
 			myImport.getCdmAppController().commitTransaction(tx);
@@ -141,8 +141,8 @@ public class FloraMalesianaActivator {
 		
 	}
 	
-	private ReferenceBase getSourceReference(String string) {
-		ReferenceBase result = ReferenceFactory.newGeneric();
+	private Reference getSourceReference(String string) {
+		Reference result = ReferenceFactory.newGeneric();
 		result.setTitleCache(string);
 		return result;
 	}

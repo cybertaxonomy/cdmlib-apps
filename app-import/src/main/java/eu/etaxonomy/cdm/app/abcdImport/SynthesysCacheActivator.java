@@ -45,7 +45,7 @@ import eu.etaxonomy.cdm.model.occurrence.GatheringEvent;
 import eu.etaxonomy.cdm.model.occurrence.LivingBeing;
 import eu.etaxonomy.cdm.model.occurrence.Observation;
 import eu.etaxonomy.cdm.model.occurrence.Specimen;
-import eu.etaxonomy.cdm.model.reference.ReferenceBase;
+import eu.etaxonomy.cdm.model.reference.Reference;
 import eu.etaxonomy.cdm.model.reference.ReferenceFactory;
 import eu.etaxonomy.cdm.model.taxon.Taxon;
 import eu.etaxonomy.cdm.strategy.parser.NonViralNameParserImpl;
@@ -210,7 +210,7 @@ public class SynthesysCacheActivator {
 		tx = app.startTransaction();
 		try {
 			ReferenceFactory refFactory = ReferenceFactory.newInstance();
-			ReferenceBase sec = refFactory.newDatabase();
+			Reference sec = refFactory.newDatabase();
 			sec.setTitleCache("SYNTHESYS CACHE DATA", true);
 
 			/**

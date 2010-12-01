@@ -18,7 +18,7 @@ import eu.etaxonomy.cdm.api.service.ICommonService;
 import eu.etaxonomy.cdm.api.service.IDescriptionService;
 import eu.etaxonomy.cdm.api.service.IReferenceService;
 import eu.etaxonomy.cdm.api.service.ITaxonService;
-import eu.etaxonomy.cdm.api.service.ITaxonTreeService;
+import eu.etaxonomy.cdm.api.service.IClassificationService;
 import eu.etaxonomy.cdm.io.common.CdmIoBase;
 import eu.etaxonomy.cdm.io.common.ICdmIO;
 
@@ -35,7 +35,7 @@ public abstract class AbstractImageImporter extends CdmIoBase<ImageImportState> 
 	
 	protected CdmApplicationController cdmApp;
 	protected ITaxonService taxonService;
-	protected ITaxonTreeService taxonTreeService;
+	protected IClassificationService classificationService;
 	//TODO:
 	protected IAgentService agentService;
 	protected IDescriptionService descriptionService;
@@ -56,7 +56,7 @@ public abstract class AbstractImageImporter extends CdmIoBase<ImageImportState> 
 		agentService = getAgentService();
 		referenceService = getReferenceService();
 		commonService = getCommonService();
-		taxonTreeService = getTaxonTreeService();
+		classificationService = getClassificationService();
 
 		boolean result = invokeImageImport(state.getConfig());
 		

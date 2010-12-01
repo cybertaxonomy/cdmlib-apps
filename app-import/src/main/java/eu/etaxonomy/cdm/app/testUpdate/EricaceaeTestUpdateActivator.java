@@ -30,7 +30,7 @@ import eu.etaxonomy.cdm.io.eflora.centralAfrica.ericaceae.CentralAfricaEricaceae
 import eu.etaxonomy.cdm.model.common.Language;
 import eu.etaxonomy.cdm.model.description.FeatureNode;
 import eu.etaxonomy.cdm.model.description.FeatureTree;
-import eu.etaxonomy.cdm.model.reference.ReferenceBase;
+import eu.etaxonomy.cdm.model.reference.Reference;
 import eu.etaxonomy.cdm.model.reference.ReferenceFactory;
 
 /**
@@ -80,7 +80,7 @@ public class EricaceaeTestUpdateActivator {
 		
 		//make Source
 		CentralAfricaEricaceaeImportConfigurator config= CentralAfricaEricaceaeImportConfigurator.NewInstance(source, cdmDestination);
-		config.setTaxonomicTreeUuid(classificationUuid);
+		config.setClassificationUuid(classificationUuid);
 		config.setDoTaxa(doTaxa);
 		config.setCheck(check);
 		config.setDefaultLanguageUuid(defaultLanguageUuid);
@@ -129,8 +129,8 @@ public class EricaceaeTestUpdateActivator {
 		app.getFeatureTreeService().saveOrUpdate(tree);
 	}
 	
-	private ReferenceBase getSourceReference(String string) {
-		ReferenceBase result = ReferenceFactory.newGeneric();
+	private Reference getSourceReference(String string) {
+		Reference result = ReferenceFactory.newGeneric();
 		result.setTitleCache(string);
 		return result;
 	}

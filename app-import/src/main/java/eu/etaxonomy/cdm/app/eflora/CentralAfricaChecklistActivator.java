@@ -21,7 +21,7 @@ import eu.etaxonomy.cdm.io.common.CdmDefaultImport;
 import eu.etaxonomy.cdm.io.common.Source;
 import eu.etaxonomy.cdm.io.common.IImportConfigurator.CHECK;
 import eu.etaxonomy.cdm.io.eflora.centralAfrica.checklist.CentralAfricaChecklistImportConfigurator;
-import eu.etaxonomy.cdm.model.reference.ReferenceBase;
+import eu.etaxonomy.cdm.model.reference.Reference;
 import eu.etaxonomy.cdm.model.reference.ReferenceFactory;
 
 /**
@@ -68,7 +68,7 @@ public class CentralAfricaChecklistActivator {
 		Source source = mySource;
 		
 		CentralAfricaChecklistImportConfigurator config= CentralAfricaChecklistImportConfigurator.NewInstance(source, cdmDestination);
-		config.setTaxonomicTreeUuid(classificationUuid);
+		config.setClassificationUuid(classificationUuid);
 		config.setDoTaxa(doTaxa);
 		config.setCheck(check);
 		config.setDbSchemaValidation(hbm2dll);
@@ -90,8 +90,8 @@ public class CentralAfricaChecklistActivator {
 		
 	}
 	
-	private ReferenceBase getSourceReference(String string) {
-		ReferenceBase result = ReferenceFactory.newGeneric();
+	private Reference getSourceReference(String string) {
+		Reference result = ReferenceFactory.newGeneric();
 		result.setTitleCache(string);
 		return result;
 	}
