@@ -61,7 +61,7 @@ public class CentralAfricaEricaceaeActivator {
 	//feature tree uuid
 	public static final UUID featureTreeUuid = UUID.fromString("051d35ee-22f1-42d8-be07-9e9bfec5bcf7");
 	
-	public static UUID defaultLanguageUuid = Language.uuidEnglish;
+	public static UUID defaultLanguageUuid = Language.uuidFrench;
 	
 	//classification
 	static final UUID classificationUuid = UUID.fromString("10e5efcc-6e13-4abc-ad42-e0b46e50cbe7");
