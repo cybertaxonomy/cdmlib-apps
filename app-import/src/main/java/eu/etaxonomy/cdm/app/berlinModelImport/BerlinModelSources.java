@@ -40,6 +40,16 @@ public class BerlinModelSources {
 		return  makeSource(dbms, strServer, strDB, port, userName, null);
 	}
 	
+	public static Source ILDIS(){
+		//	BerlinModel - EditWP6
+		String dbms = Source.SQL_SERVER_2008;
+		String strServer = "BGBM42";
+		String strDB = "ILDIS_EM_BM";
+		int port = 1433;
+		String userName = "webUser";
+		return  makeSource(dbms, strServer, strDB, port, userName, null);
+	}
+	
 	public static Source EDIT_CICHORIEAE(){
 		//	BerlinModel - EditWP6
 		String dbms = Source.SQL_SERVER_2005;
