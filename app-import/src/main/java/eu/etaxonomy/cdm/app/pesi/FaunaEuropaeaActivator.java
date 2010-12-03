@@ -36,7 +36,7 @@ public class FaunaEuropaeaActivator {
 	private static final Logger logger = Logger.getLogger(FaunaEuropaeaActivator.class);
 
 	static final Source faunaEuropaeaSource = FaunaEuropaeaSources.faunaEu_1_3();
-	static final ICdmDataSource cdmDestination = CdmDestinations.cdm_test_eunmok();
+	static final ICdmDataSource cdmDestination = CdmDestinations.cdm_test_andreasM();
 	
 	static final int limitSave = 2000;
 
