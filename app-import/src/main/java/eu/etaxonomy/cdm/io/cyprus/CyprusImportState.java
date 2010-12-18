@@ -1,0 +1,135 @@
+// $Id$
+/**
+* Copyright (C) 2007 EDIT
+* European Distributed Institute of Taxonomy 
+* http://www.e-taxonomy.eu
+* 
+* The contents of this file are subject to the Mozilla Public License Version 1.1
+* See LICENSE.TXT at the top of this package for the full license terms.
+*/
+
+package eu.etaxonomy.cdm.io.cyprus;
+
+import java.util.HashMap;
+import java.util.Map;
+import java.util.UUID;
+
+import org.apache.log4j.Logger;
+
+import eu.etaxonomy.cdm.io.common.DbImportStateBase;
+import eu.etaxonomy.cdm.io.excel.common.ExcelImportState;
+import eu.etaxonomy.cdm.io.excel.taxa.NormalExplicitRow;
+import eu.etaxonomy.cdm.model.common.DefinedTermBase;
+import eu.etaxonomy.cdm.model.common.MarkerType;
+import eu.etaxonomy.cdm.model.common.User;
+import eu.etaxonomy.cdm.model.reference.Reference;
+import eu.etaxonomy.cdm.model.taxon.Taxon;
+
+/**
+ * @author a.mueller
+ * @created 11.05.2009
+ * @version 1.0
+ */
+public class CyprusImportState extends ExcelImportState{
+	@SuppressWarnings("unused")
+	private static final Logger logger = Logger.getLogger(CyprusImportState.class);
+
+	private Map<String, DefinedTermBase> dbCdmDefTermMap = new HashMap<String, DefinedTermBase>();
+	
+//	private String lastFamily;
+//	private String lastGenus;
+//	private Map<String, UUID> higherTaxonUuidMap = new HashMap<String, UUID>();
+	private Map<String, Taxon> higherTaxonTaxonMap = new HashMap<String, Taxon>();
+	
+	private CyprusRow cyprusRow;
+
+	public boolean containsHigherTaxon(String higherName) {
+		return higherTaxonTaxonMap.containsKey(higherName);
+	}
+
+	public Taxon putHigherTaxon(String higherName, Taxon taxon) {
+		return higherTaxonTaxonMap.put(higherName, taxon);
+	}
+
+	public Taxon removeHigherTaxon(String higherName) {
+		return higherTaxonTaxonMap.remove(higherName);
+	}
+
+	public Taxon getHigherTaxon(String higherName) {
+		return higherTaxonTaxonMap.get(higherName);
+	}
+
+
+	
+
+//	public boolean containsHigherTaxonUuid(String higherName) {
+//		return higherTaxonUuidMap.containsKey(higherName);
+//	}
+//
+//	public UUID putHigherTaxon(String higherName, UUID uuid) {
+//		return higherTaxonUuidMap.put(higherName, uuid);
+//	}
+//
+//	public UUID removeHigherTaxon(String higherName) {
+//		return higherTaxonUuidMap.remove(higherName);
+//	}
+//
+//	public UUID getHigherTaxon(String higherName) {
+//		return higherTaxonUuidMap.get(higherName);
+//	}
+
+	
+	
+	/**
+	 * @return the cyprusRow
+	 */
+	public CyprusRow getCyprusRow() {
+		return cyprusRow;
+	}
+
+	/**
+	 * @param cyprusRow the normalExplicitRow to set
+	 */
+	public void setCyprusRow(CyprusRow cyprusRow) {
+		this.cyprusRow = cyprusRow;
+	}
+
+	public CyprusImportState(CyprusImportConfigurator config) {
+		super(config);
+	}
+
+	public Map<String, DefinedTermBase> getDbCdmDefinedTermMap(){
+		return this.dbCdmDefTermMap;
+	}
+	
+	public void putDefinedTermToMap(String tableName, String id, DefinedTermBase term){
+		 this.dbCdmDefTermMap.put(tableName + "_" + id, term);
+	}
+	
+	public void putDefinedTermToMap(String tableName, int id, DefinedTermBase term){
+		putDefinedTermToMap(tableName, String.valueOf(id), term);
+	}
+
+	
+	
+	
+//	public void setLastFamily(String lastFamily) {
+//		this.lastFamily = lastFamily;
+//	}
+//
+//	public String getLastFamily() {
+//		return lastFamily;
+//	}
+//
+//	public void setLastGenus(String lastGenus) {
+//		this.lastGenus = lastGenus;
+//	}
+//
+//	public String getLastGenus() {
+//		return lastGenus;
+//	}
+
+
+
+    
+}
