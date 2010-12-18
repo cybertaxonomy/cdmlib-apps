@@ -41,7 +41,7 @@ public class NormalExplicitTestActivator {
 //	static final ICdmDataSource cdmDestination = CdmDestinations.cdm_local_postgres_CdmTest();
 
 	static final UUID treeUuid = UUID.fromString("00505000-0c97-48ac-8d33-6099ed68c625");
-	static final String sourceSecId = "TestTCS";
+	static final String sourceSecId = "TestNormalExplicit";
 	
 	//check - import
 	static final CHECK check = CHECK.CHECK_AND_IMPORT;
