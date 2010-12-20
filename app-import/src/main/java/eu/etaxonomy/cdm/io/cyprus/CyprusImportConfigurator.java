@@ -93,7 +93,7 @@ public class CyprusImportConfigurator extends ExcelImportConfiguratorBase implem
 		if (sourceReference == null){
 			sourceReference =  ReferenceFactory.newDatabase();
 			if (getSource() != null){
-				sourceReference.setTitleCache(getSource().getFragment(), true);
+				sourceReference.setTitleCache("Cyprus", true);
 			}
 		}
 		return sourceReference;

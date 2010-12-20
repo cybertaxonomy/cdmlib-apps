@@ -9,38 +9,26 @@
 
 package eu.etaxonomy.cdm.app.cyprus;
 
-import java.io.File;
-import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.net.URL;
-import java.util.List;
 import java.util.UUID;
 
 import org.apache.log4j.Logger;
-import org.springframework.transaction.TransactionStatus;
 
 import eu.etaxonomy.cdm.api.application.CdmApplicationController;
 import eu.etaxonomy.cdm.api.service.ITermService;
 import eu.etaxonomy.cdm.app.common.CdmDestinations;
 import eu.etaxonomy.cdm.database.DbSchemaValidation;
 import eu.etaxonomy.cdm.database.ICdmDataSource;
-import eu.etaxonomy.cdm.database.update.CdmUpdater;
 import eu.etaxonomy.cdm.io.common.CdmDefaultImport;
 import eu.etaxonomy.cdm.io.common.IImportConfigurator.CHECK;
-import eu.etaxonomy.cdm.io.common.mapping.IInputTransformer;
-import eu.etaxonomy.cdm.io.common.mapping.UndefinedTransformerMethodException;
 import eu.etaxonomy.cdm.io.cyprus.CyprusImportConfigurator;
-import eu.etaxonomy.cdm.io.eflora.EfloraImportConfigurator;
-import eu.etaxonomy.cdm.io.eflora.centralAfrica.ericaceae.CentralAfricaEricaceaeImportConfigurator;
-import eu.etaxonomy.cdm.io.eflora.centralAfrica.ericaceae.CentralAfricaEricaceaeTransformer;
+import eu.etaxonomy.cdm.io.cyprus.CyprusTransformer;
 import eu.etaxonomy.cdm.model.agent.Person;
 import eu.etaxonomy.cdm.model.agent.Team;
-import eu.etaxonomy.cdm.model.common.Language;
 import eu.etaxonomy.cdm.model.description.Feature;
 import eu.etaxonomy.cdm.model.description.FeatureNode;
 import eu.etaxonomy.cdm.model.description.FeatureTree;
-import eu.etaxonomy.cdm.model.description.PolytomousKey;
 import eu.etaxonomy.cdm.model.reference.Reference;
 import eu.etaxonomy.cdm.model.reference.ReferenceFactory;
 
@@ -61,7 +49,7 @@ public class CyprusActivator {
 //	static final ICdmDataSource cdmDestination = CdmDestinations.cdm_local_postgres_CdmTest();
 	static final ICdmDataSource cdmDestination = CdmDestinations.cdm_test_local_mysql();
 //	static final ICdmDataSource cdmDestination = CdmDestinations.cdm_cyprus_dev();
-//	static final ICdmDataSource cdmDestination = CdmDestinations.cdm_cyprus_production();
+//	static final ICdmDataSource cdmDestination = CdmDestinations.cdm_cyprus_dev_tunnel();
 
 	
 	//feature tree uuid
@@ -75,7 +63,7 @@ public class CyprusActivator {
 	
 	//taxa
 	static final boolean doTaxa = true;
-	static final boolean doDeduplicate = false;
+	static final boolean doDeduplicate = true;
 
 	
 	private void doImport(ICdmDataSource cdmDestination){
@@ -124,173 +112,22 @@ public class CyprusActivator {
 	}
 
 	private FeatureTree makeFeatureNode(ITermService service){
-		CentralAfricaEricaceaeTransformer transformer = new CentralAfricaEricaceaeTransformer();
+		CyprusTransformer transformer = new CyprusTransformer();
 		
 		FeatureTree result = FeatureTree.NewInstance(featureTreeUuid);
-		result.setTitleCache("Central Africa Ericaceae Feature Tree");
+		result.setTitleCache("Cyprus Feature Tree");
 		FeatureNode root = result.getRoot();
 		FeatureNode newNode;
-		
-		newNode = FeatureNode.NewInstance(Feature.DESCRIPTION());
-		root.addChild(newNode);
-		
-		addFeataureNodesByStringList(descriptionFeatureList, newNode, transformer, service);
-
-		addFeataureNodesByStringList(generellDescriptionsList, root, transformer, service);
-
 		
 		newNode = FeatureNode.NewInstance(Feature.DISTRIBUTION());
 		root.addChild(newNode);
 
-		newNode = FeatureNode.NewInstance(Feature.ECOLOGY());
-		root.addChild(newNode);
-		addFeataureNodesByStringList(habitatEcologyList, root, transformer, service);
-		
-		newNode = FeatureNode.NewInstance(Feature.USES());
-		root.addChild(newNode);
-		
-		addFeataureNodesByStringList(chomosomesList, root, transformer, service);
-
-		newNode = FeatureNode.NewInstance(Feature.COMMON_NAME());
-		root.addChild(newNode);
+//		addFeataureNodesByStringList(habitatEcologyList, root, transformer, service);
 		
 		newNode = FeatureNode.NewInstance(Feature.CITATION());
 		root.addChild(newNode);
 		
 		return result;
-	}
-	
-	private static String [] chomosomesList = new String[]{
-		"Chromosomes", 
-	};
-
-	
-	private static String [] habitatEcologyList = new String[]{
-		"Habitat",
-		"Habitat & Ecology"
-	};
-	
-	
-	private static String [] generellDescriptionsList = new String[]{
-		"Fossils",
-		"Morphology and anatomy",
-		"Morphology", 
-		"Vegetative morphology and anatomy",
-		"Flower morphology",
-		"Palynology",  
-		"Pollination",  
-		"Pollen morphology",
-		"Life cycle",
-		"Fruits and embryology",
-		"Dispersal",
-		"Wood anatomy",  
-		"Leaf anatomy",  
-		"Chromosome numbers", 
-		"Phytochemistry and Chemotaxonomy",
-		"Phytochemistry",
-		"Taxonomy",	
-	};
-
-	private static String [] descriptionFeatureList = new String[]{
-		"lifeform", 
-		"Bark",  
-		"Indumentum",  
-		"endophytic body",  
-		"flowering buds",  
-		"Branchlets",  
-		"Branches",  
-		"Branch",  
-		"Flowering branchlets",
-		"Trees",  
-		"Twigs",  
-		"stem",  
-		"Stems",  
-		"stem leaves", 
-		"Leaves",
-		"flower-bearing stems",  
-		"Petiole",  
-		"Petiolules",  
-		"Leaflets", 
-		"Thyrsus",  
-		"Thyrses",  
-		"Inflorescences",  
-		"Inflorescence",
-		"Young inflorescences", 
-		"Bracts",  
-		"Pedicels",  
-		"flowering buds",  
-		"scales",  
-		"Buds",  
-		"Flowers",  
-		"Flower",  
-		"Flowering",
-		"Stigma",  
-		"perianth",  
-		"Sepals",  
-		"Sepal",  
-		"Outer Sepals",  
-		"Axillary",  
-		"cymes",  
-		"Calyx",  
-		"Petal",  
-		"Petals",  
-		"perigone tube",
-		"Disc",  
-		"corolla",  
-		"Stamens",  
-		"Staminodes",  
-		"Ovary",  
-		"Anthers",
-		"anther",  
-		"Pistil",  
-		"Pistillode",  
-		"Ovules",  
-		"androecium",  
-		"gynoecium",  
-		"Filaments",  		
-		"Style",  
-		"annulus",  
-		"female flowers",  
-		"Male flowers",  
-		"Female",  
-		"Infructescences",    //order not consistent (sometimes before "Flowers")  
-		"Fruit",  
-		"Fruits",  
-		"fruiting axes",  
-		"drupes",  
-		"Arillode",  
-		"seed",  
-		"Seeds",  
-		"Seedling",  
-		"flower tube", 
-		"nutlets",  
-		"pollen",  
-		"secondary xylem",  
-		"chromosome number",  
-	
-		"figure",  
-		"fig",  
-		"figs",  
-
-
-
-		
-	};
-	
-	public void addFeataureNodesByStringList(String[] featureStringList, FeatureNode root, IInputTransformer transformer, ITermService termService){
-		try {
-			for (String featureString : featureStringList){
-			UUID featureUuid;
-			featureUuid = transformer.getFeatureUuid(featureString);
-			Feature feature = (Feature)termService.find(featureUuid);
-			if (feature != null){
-				FeatureNode child = FeatureNode.NewInstance(feature);
-				root.addChild(child);	
-			}
-		}
-		} catch (UndefinedTransformerMethodException e) {
-			logger.error("getFeatureUuid is not implemented in transformer. Features could not be added");
-		}
 	}
 	
 

@@ -14,6 +14,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.UUID;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
@@ -197,7 +198,61 @@ public class CyprusExcelImport extends ExcelImporterBase<CyprusImportState> {
 	
 	private static INonViralNameParser nameParser = NonViralNameParserImpl.NewInstance();
 	private static NomenclaturalCode nc = NomenclaturalCode.ICBN;
+	private Feature redBookCategory;
+	private PresenceTerm indigenous;
+	private PresenceTerm casual;
+	private PresenceTerm nonInvasive;
+	private PresenceTerm invasive;
+	private PresenceTerm questionable;
+
+	private void makeTerms(CyprusImportState state) {
+		
+		UUID redBookUuid = UUID.fromString("df59d44a-ee5a-4c01-8637-127cc804842d");
+		redBookCategory = this.getFeature(state, redBookUuid, "Red book category", "Red data book category", "Red book");
+		getTermService().save(redBookCategory);
+		
+		UUID indigenousUuid = UUID.fromString("b325859b-504b-45e0-9ef0-d5c1602fcc0f");
+		indigenous = this.getPresenceTerm(state, indigenousUuid, "Indigenous", "Indigenous", "IN");
+		getTermService().save(indigenous);
+		
+		UUID casualUuid = UUID.fromString("5e81353c-38a3-4ca6-b979-0d9abc93b877");
+		casual = this.getPresenceTerm(state, casualUuid, "Casual", "Casual", "CA");
+		getTermService().save(redBookCategory);
+		
+		UUID nonInvasiveUuid = UUID.fromString("1b025e8b-901a-42e8-9739-119b410c6f03");
+		nonInvasive = this.getPresenceTerm(state, nonInvasiveUuid, "Naturalized  non-invasive", "Naturalized  non-invasive", "NN");
+		getTermService().save(nonInvasive);
+
+		UUID invasiveUuid = UUID.fromString("faf2d271-868a-4bf7-b0b8-a1c5ab309de2");
+		invasive = this.getPresenceTerm(state, invasiveUuid, "Naturalized  invasive", "Naturalized  invasive", "NA");
+		getTermService().save(invasive);
+
+		
+		UUID questionableUuid = UUID.fromString("4b48f675-a6cf-49f3-a5ba-77e2c2979eb3");
+		questionable = this.getPresenceTerm(state, questionableUuid, "Questionable", "Questionable", "Q");
+		getTermService().save(questionable);
 	
+		
+//		UUID redBookUuid = UUID.fromString("d8416d46-b5b4-45d5-b26b-9bda4fa491c9");
+//		term = this.getPresenceTerm(state, redBookUuid, "Red book category", "Red data book category", "Red book");
+//		getTermService().save(term);
+//		
+//		UUID redBookUuid = UUID.fromString("813a58bd-f8ab-4a80-9029-87a112dbb59f");
+//		term = this.getPresenceTerm(state, redBookUuid, "Red book category", "Red data book category", "Red book");
+//		getTermService().save(term);
+		
+		
+		
+//		PresenceTerm status = null;
+//		}else if (statusString.contains("Cultivated")){
+//			status = PresenceTerm.CULTIVATED();
+//		}else if (statusString.contains("non-invasive")){
+//			//FIXME
+//			status = PresenceTerm.NATURALISED();
+//		}else if (statusString.contains("invasive")){
+//			//FIXME
+//			status = PresenceTerm.NATURALISED();
+	}
 	
 	/** 
 	 *  Stores taxa records in DB
@@ -205,7 +260,7 @@ public class CyprusExcelImport extends ExcelImporterBase<CyprusImportState> {
 	@Override
     protected boolean firstPass(CyprusImportState state) {
 		boolean success = true;
-		Rank rank = null;
+		makeTerms(state);
 		CyprusRow taxonLight = state.getCyprusRow();
 		Reference citation = null;
 		String microCitation = null;
@@ -312,7 +367,7 @@ public class CyprusExcelImport extends ExcelImporterBase<CyprusImportState> {
 		if (StringUtils.isNotBlank(systematicsString)){
 			TaxonDescription td = this.getTaxonDescription(mainTaxon, false, true);
 			//FIXME feature type
-			TextData textData = TextData.NewInstance(Feature.ANATOMY());
+			TextData textData = TextData.NewInstance(Feature.SYSTEMATICS());
 			textData.putText(systematicsString, Language.UNDETERMINED());
 			td.addElement(textData);
 		}
@@ -323,7 +378,7 @@ public class CyprusExcelImport extends ExcelImporterBase<CyprusImportState> {
 		//endemism
 		if (StringUtils.isNotBlank(endemismString)){
 			boolean flag;
-			if (endemismString.trim().equalsIgnoreCase("not endemic")){
+			if (endemismString.trim().equalsIgnoreCase("not endemic") || endemismString.trim().equalsIgnoreCase("ne?")){
 				flag = false;
 			}else if (endemismString.trim().equalsIgnoreCase("endemic")){
 				flag = true;
@@ -331,7 +386,7 @@ public class CyprusExcelImport extends ExcelImporterBase<CyprusImportState> {
 				throw new RuntimeException(endemismString + " is not a valid value for endemism");
 			}
 			//FIXME marker type
-			Marker marker = Marker.NewInstance(MarkerType.IS_DOUBTFUL(), flag);
+			Marker marker = Marker.NewInstance(MarkerType.ENDEMIC(), flag);
 			mainTaxon.addMarker(marker);
 		}
 	}
@@ -339,25 +394,22 @@ public class CyprusExcelImport extends ExcelImporterBase<CyprusImportState> {
 
 	private void makeStatus(String statusString, Taxon mainTaxon) {
 		//status
+		//FIXME doubtful
 		if (StringUtils.isNotBlank(statusString)){
 			PresenceTerm status = null;
 			if (statusString.contains("Indigenous")){
-				//FIXME 
-				status = PresenceTerm.INTRODUCED();
+				status = indigenous;
 			}else if (statusString.contains("Casual") || statusString.contains("Causal")){
-				//FIXME
-				status = PresenceTerm.CULTIVATED();
+				status = casual;
 			}else if (statusString.contains("Cultivated")){
 				status = PresenceTerm.CULTIVATED();
 			}else if (statusString.contains("non-invasive")){
-				//FIXME
-				status = PresenceTerm.NATURALISED();
+				status = nonInvasive;
 			}else if (statusString.contains("invasive")){
-				//FIXME
-				status = PresenceTerm.NATURALISED();
+				status = invasive;
 			}else if (statusString.contains("Questionable")){
-				//FIXME
-				status = PresenceTerm.NATIVE_PRESENCE_QUESTIONABLE();
+//				status = PresenceTerm.NATIVE_PRESENCE_QUESTIONABLE();
+				status = questionable;
 			}else if (statusString.startsWith("F")){
 				//FIXME
 				status = PresenceTerm.NATIVE_PRESENCE_QUESTIONABLE();
@@ -375,7 +427,7 @@ public class CyprusExcelImport extends ExcelImporterBase<CyprusImportState> {
 			
 			//text data
 			//FIXME feature 
-			TextData textData = TextData.NewInstance(Feature.DISTRIBUTION());
+			TextData textData = TextData.NewInstance(Feature.STATUS());
 			textData.putText(statusString, Language.ENGLISH());
 			td.addElement(textData);
 		}
@@ -387,7 +439,7 @@ public class CyprusExcelImport extends ExcelImporterBase<CyprusImportState> {
 		if (StringUtils.isNotBlank(redBookCategory)){
 			TaxonDescription td = this.getTaxonDescription(mainTaxon, false, true);
 			//FIXME feature type
-			TextData textData = TextData.NewInstance(Feature.DESCRIPTION());
+			TextData textData = TextData.NewInstance(this.redBookCategory);
 			textData.putText(redBookCategory, Language.ENGLISH());
 			td.addElement(textData);
 		}
@@ -402,55 +454,8 @@ public class CyprusExcelImport extends ExcelImporterBase<CyprusImportState> {
 	@Override
     protected boolean secondPass(CyprusImportState state) {
 		boolean success = true;
-		CyprusRow cyprusRow = state.getCyprusRow();
-//		try {
-//			String taxonNameStr = state.getTaxonLight().getScientificName();
-//			String nameStatus = state.getTaxonLight().getNameStatus();
-//			String commonNameStr = state.getTaxonLight().getCommonName();
-//			Integer parentId = state.getTaxonLight().getParentId();
-//			Integer childId = state.getTaxonLight().getId();
-//			
-//			Taxon parentTaxon = (Taxon)state.getTaxonBase(parentId);
-//			if (CdmUtils.isNotEmpty(taxonNameStr)) {
-//				nameStatus = CdmUtils.Nz(nameStatus).trim().toLowerCase();
-//				if (validMarkers.contains(nameStatus)){
-//					Taxon taxon = (Taxon)state.getTaxonBase(childId);
-//					// Add the parent relationship
-//					if (state.getTaxonLight().getParentId() != 0) {
-//						if (parentTaxon != null) {
-//							//Taxon taxon = (Taxon)state.getTaxonBase(childId);
-//							
-//							Reference citation = state.getConfig().getSourceReference();
-//							String microCitation = null;
-//							Taxon childTaxon = taxon;
-//							success &= makeParent(state, parentTaxon, childTaxon, citation, microCitation);
-//							getTaxonService().saveOrUpdate(parentTaxon);
-//						} else {
-//							logger.warn("Taxonomic parent not found for " + taxonNameStr);
-//							success = false;
-//						}
-//					}else{
-//						//do nothing (parent == 0) no parent exists
-//					}
-//				}else if (synonymMarkers.contains(nameStatus)){
-//					//add synonym relationship
-//					try {
-//						TaxonBase taxonBase = state.getTaxonBase(childId);
-//						Synonym synonym = CdmBase.deproxy(taxonBase,Synonym.class);
-//						parentTaxon.addSynonym(synonym, SynonymRelationshipType.SYNONYM_OF());
-//						getTaxonService().saveOrUpdate(parentTaxon);
-//					} catch (Exception e) {
-//						logger.warn("Child id = " + childId);
-//						e.printStackTrace();
-//					}
-//				}
-//			} 
-//			if (CdmUtils.isNotEmpty(commonNameStr)){			// add common name to taxon
-//				handleCommonName(state, taxonNameStr, commonNameStr, parentId);
-//			}
-//		} catch (Exception e) {
-//			e.printStackTrace();
-//		}
+//		CyprusRow cyprusRow = state.getCyprusRow();
+
 		return success;
 	}
 
@@ -478,7 +483,7 @@ public class CyprusExcelImport extends ExcelImporterBase<CyprusImportState> {
 			INonViralNameParser parser = nameParser;//NonViralNameParserImpl.NewInstance();
 			taxonNameBase = (NonViralName<BotanicalName>)parser.parseFullName(taxonNameStr, nc, rank);
 			
-			taxonNameBase.setNameCache(taxonNameStr);
+			//taxonNameBase.setNameCache(taxonNameStr);
 			
 		}
 
@@ -505,6 +510,7 @@ public class CyprusExcelImport extends ExcelImporterBase<CyprusImportState> {
 		Classification tree = state.getTree(sec);
 		if (tree == null){
 			tree = makeTree(state, sec);
+			tree.setTitleCache("Cyprus");
 		}
 		if (sec.equals(childTaxon.getSec())){
 			success &=  (null !=  tree.addParentChild(parentTaxon, childTaxon, citation, microCitation));

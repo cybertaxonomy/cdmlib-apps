@@ -147,6 +147,24 @@ public class CdmDestinations {
 		String cdmUserName = "edit";
 		return makeDestination(dbType, cdmServer, cdmDB, -1, cdmUserName, null);
 	}
+
+	public static ICdmDataSource cdm_cyprus_production_tunnel(){
+		DatabaseTypeEnum dbType = DatabaseTypeEnum.MySQL;
+		String cdmServer = "127.0.0.1";
+		int port = 13306;
+		String cdmDB = "cdm_production_cyprus";
+		String cdmUserName = "edit";
+		return makeDestination(dbType, cdmServer, cdmDB, port, cdmUserName, null);
+	}
+	
+	public static ICdmDataSource cdm_cyprus_dev_tunnel(){
+		DatabaseTypeEnum dbType = DatabaseTypeEnum.MySQL;
+		String cdmServer = "127.0.0.1";
+		int port = 13306;
+		String cdmDB = "cdm_cyprus";
+		String cdmUserName = "edit";
+		return makeDestination(dbType, cdmServer, cdmDB, port, cdmUserName, null);
+	}
 	
 	public static ICdmDataSource cdm_campanulaceae_production(){
 		DatabaseTypeEnum dbType = DatabaseTypeEnum.MySQL;
