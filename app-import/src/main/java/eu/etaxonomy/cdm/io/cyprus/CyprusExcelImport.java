@@ -207,41 +207,47 @@ public class CyprusExcelImport extends ExcelImporterBase<CyprusImportState> {
 	private PresenceTerm invasive;
 	private PresenceTerm questionable;
 
-	private boolean makeTerms(CyprusImportState state) {
-		IInputTransformer transformer = state.getTransformer();
-		
-		try {
-			UUID redBookUuid = transformer.getFeatureUuid("Red book");
-			redBookCategory = this.getFeature(state, redBookUuid, "Red book category", "Red data book category", "Red book");
-			getTermService().save(redBookCategory);
-			
-			UUID indigenousUuid = transformer.getPresenceTermUuid("IN");
-			indigenous = this.getPresenceTerm(state, indigenousUuid, "Indigenous", "Indigenous", "IN");
-			getTermService().save(indigenous);
-			
-			UUID casualUuid = transformer.getPresenceTermUuid("CA");
-			casual = this.getPresenceTerm(state, casualUuid, "Casual", "Casual", "CA");
-			getTermService().save(redBookCategory);
-			
-			UUID nonInvasiveUuid = transformer.getPresenceTermUuid("NN");
-			nonInvasive = this.getPresenceTerm(state, nonInvasiveUuid, "Naturalized  non-invasive", "Naturalized  non-invasive", "NN");
-			getTermService().save(nonInvasive);
-
-			UUID invasiveUuid = transformer.getPresenceTermUuid("NA");
-			invasive = this.getPresenceTerm(state, invasiveUuid, "Naturalized  invasive", "Naturalized  invasive", "NA");
-			getTermService().save(invasive);
-
-			
-			UUID questionableUuid = transformer.getPresenceTermUuid("Q");
-			questionable = this.getPresenceTerm(state, questionableUuid, "Questionable", "Questionable", "Q");
-			getTermService().save(questionable);
-			
-			return true;
-		} catch (UndefinedTransformerMethodException e) {
-			e.printStackTrace();
-			return false;
-		}
+	private boolean termsCreated = false;
 	
+	private boolean makeTerms(CyprusImportState state) {
+		if (termsCreated == false){
+			IInputTransformer transformer = state.getTransformer();
+			
+			try {
+				UUID redBookUuid = transformer.getFeatureUuid("Red book");
+				redBookCategory = this.getFeature(state, redBookUuid, "Red book category", "Red data book category", "Red book");
+				getTermService().save(redBookCategory);
+				
+				UUID indigenousUuid = transformer.getPresenceTermUuid("IN");
+				indigenous = this.getPresenceTerm(state, indigenousUuid, "Indigenous", "Indigenous", "IN");
+				getTermService().save(indigenous);
+				
+				UUID casualUuid = transformer.getPresenceTermUuid("CA");
+				casual = this.getPresenceTerm(state, casualUuid, "Casual", "Casual", "CA");
+				getTermService().save(redBookCategory);
+				
+				UUID nonInvasiveUuid = transformer.getPresenceTermUuid("NN");
+				nonInvasive = this.getPresenceTerm(state, nonInvasiveUuid, "Naturalized  non-invasive", "Naturalized  non-invasive", "NN");
+				getTermService().save(nonInvasive);
+	
+				UUID invasiveUuid = transformer.getPresenceTermUuid("NA");
+				invasive = this.getPresenceTerm(state, invasiveUuid, "Naturalized  invasive", "Naturalized  invasive", "NA");
+				getTermService().save(invasive);
+	
+				
+				UUID questionableUuid = transformer.getPresenceTermUuid("Q");
+				questionable = this.getPresenceTerm(state, questionableUuid, "Questionable", "Questionable", "Q");
+				getTermService().save(questionable);
+				
+				termsCreated = true;
+				
+				return true;
+			} catch (UndefinedTransformerMethodException e) {
+				e.printStackTrace();
+				return false;
+			}
+		}
+		return true;
 		
 //		UUID redBookUuid = UUID.fromString("d8416d46-b5b4-45d5-b26b-9bda4fa491c9");
 //		term = this.getPresenceTerm(state, redBookUuid, "Red book category", "Red data book category", "Red book");
