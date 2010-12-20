@@ -34,8 +34,6 @@ public class CyprusImportState extends ExcelImportState{
 	@SuppressWarnings("unused")
 	private static final Logger logger = Logger.getLogger(CyprusImportState.class);
 
-	private Map<String, DefinedTermBase> dbCdmDefTermMap = new HashMap<String, DefinedTermBase>();
-	
 //	private String lastFamily;
 //	private String lastGenus;
 //	private Map<String, UUID> higherTaxonUuidMap = new HashMap<String, UUID>();
@@ -97,39 +95,7 @@ public class CyprusImportState extends ExcelImportState{
 	public CyprusImportState(CyprusImportConfigurator config) {
 		super(config);
 	}
-
-	public Map<String, DefinedTermBase> getDbCdmDefinedTermMap(){
-		return this.dbCdmDefTermMap;
-	}
 	
-	public void putDefinedTermToMap(String tableName, String id, DefinedTermBase term){
-		 this.dbCdmDefTermMap.put(tableName + "_" + id, term);
-	}
-	
-	public void putDefinedTermToMap(String tableName, int id, DefinedTermBase term){
-		putDefinedTermToMap(tableName, String.valueOf(id), term);
-	}
-
-	
-	
-	
-//	public void setLastFamily(String lastFamily) {
-//		this.lastFamily = lastFamily;
-//	}
-//
-//	public String getLastFamily() {
-//		return lastFamily;
-//	}
-//
-//	public void setLastGenus(String lastGenus) {
-//		this.lastGenus = lastGenus;
-//	}
-//
-//	public String getLastGenus() {
-//		return lastGenus;
-//	}
-
-
 
     
 }

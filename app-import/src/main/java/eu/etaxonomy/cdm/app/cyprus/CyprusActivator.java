@@ -22,6 +22,8 @@ import eu.etaxonomy.cdm.database.DbSchemaValidation;
 import eu.etaxonomy.cdm.database.ICdmDataSource;
 import eu.etaxonomy.cdm.io.common.CdmDefaultImport;
 import eu.etaxonomy.cdm.io.common.IImportConfigurator.CHECK;
+import eu.etaxonomy.cdm.io.common.mapping.IInputTransformer;
+import eu.etaxonomy.cdm.io.common.mapping.UndefinedTransformerMethodException;
 import eu.etaxonomy.cdm.io.cyprus.CyprusImportConfigurator;
 import eu.etaxonomy.cdm.io.cyprus.CyprusTransformer;
 import eu.etaxonomy.cdm.model.agent.Person;
@@ -88,7 +90,7 @@ public class CyprusActivator {
 			System.out.println("End import from ("+ source.toString() + ")...");
 		}
 		
-		FeatureTree tree = makeFeatureNode(myImport.getCdmAppController().getTermService());
+		FeatureTree tree = makeFeatureNodes(myImport.getCdmAppController().getTermService());
 		myImport.getCdmAppController().getFeatureTreeService().saveOrUpdate(tree);
 		
 		
@@ -111,7 +113,7 @@ public class CyprusActivator {
 		return result;
 	}
 
-	private FeatureTree makeFeatureNode(ITermService service){
+	private FeatureTree makeFeatureNodes(ITermService service){
 		CyprusTransformer transformer = new CyprusTransformer();
 		
 		FeatureTree result = FeatureTree.NewInstance(featureTreeUuid);
@@ -122,10 +124,15 @@ public class CyprusActivator {
 		newNode = FeatureNode.NewInstance(Feature.DISTRIBUTION());
 		root.addChild(newNode);
 
-//		addFeataureNodesByStringList(habitatEcologyList, root, transformer, service);
-		
-		newNode = FeatureNode.NewInstance(Feature.CITATION());
+		newNode = FeatureNode.NewInstance(Feature.SYSTEMATICS());
 		root.addChild(newNode);
+
+		newNode = FeatureNode.NewInstance(Feature.STATUS());
+		root.addChild(newNode);
+
+		//red data book category
+		String [] featureList = new String[]{"Red Book"};
+		addFeataureNodesByStringList(featureList, root, transformer, service);
 		
 		return result;
 	}
@@ -140,6 +147,22 @@ public class CyprusActivator {
 		} catch (URISyntaxException e) {
 			e.printStackTrace();
 			return null;
+		}
+	}
+	
+	public void addFeataureNodesByStringList(String[] featureStringList, FeatureNode root, IInputTransformer transformer, ITermService termService){
+		try {
+			for (String featureString : featureStringList){
+			UUID featureUuid;
+			featureUuid = transformer.getFeatureUuid(featureString);
+			Feature feature = (Feature)termService.find(featureUuid);
+			if (feature != null){
+				FeatureNode child = FeatureNode.NewInstance(feature);
+				root.addChild(child);	
+			}
+		}
+		} catch (UndefinedTransformerMethodException e) {
+			logger.error("getFeatureUuid is not implemented in transformer. Features could not be added");
 		}
 	}
 	

@@ -30,11 +30,17 @@ public final class CyprusTransformer extends InputTransformerBase {
 	private static final Logger logger = Logger.getLogger(CyprusTransformer.class);
 	
 
-	public static final UUID uuidAcceptedKew = UUID.fromString("c980102c-2e57-4ed3-b608-51a5d9091d89");
-	public static final UUID uuidAcceptedGeneva = UUID.fromString("8c7a0544-c71b-4809-9a2d-0583ff32f833");
-	public static final UUID uuidAcceptedItis = UUID.fromString("0738c566-0219-4e3d-a8fd-8f3d82e2d20f");
+	//feature
+	public static final UUID redBookUuid =  UUID.fromString("df59d44a-ee5a-4c01-8637-127cc804842d");
 	
-
+	//presenceTerm
+	public static final UUID indigenousUuid = UUID.fromString("b325859b-504b-45e0-9ef0-d5c1602fcc0f");
+	public static final UUID casualUuid = UUID.fromString("5e81353c-38a3-4ca6-b979-0d9abc93b877");
+	public static final UUID nonInvasiveUuid = UUID.fromString("1b025e8b-901a-42e8-9739-119b410c6f03");
+	public static final UUID invasiveUuid = UUID.fromString("faf2d271-868a-4bf7-b0b8-a1c5ab309de2");
+	public static final UUID questionableUuid = UUID.fromString("4b48f675-a6cf-49f3-a5ba-77e2c2979eb3");
+	
+	
 	/* (non-Javadoc)
 	 * @see eu.etaxonomy.cdm.io.common.mapping.InputTransformerBase#getMarkerTypeByKey(java.lang.String)
 	 */
@@ -57,6 +63,32 @@ public final class CyprusTransformer extends InputTransformerBase {
 		}
 
 	}
+	
+	@Override
+	public UUID getPresenceTermUuid(String key) throws UndefinedTransformerMethodException {
+		if (CdmUtils.isEmpty(key)){return null;
+		}else if (key.equalsIgnoreCase("IN")){return indigenousUuid;
+		}else if (key.equalsIgnoreCase("CA")){return casualUuid;
+		}else if (key.equalsIgnoreCase("NN")){return nonInvasiveUuid;
+		}else if (key.equalsIgnoreCase("NA")){return invasiveUuid;
+		}else if (key.equalsIgnoreCase("Q")){return questionableUuid;
+		}else{
+			return null;
+		}
+
+	}
+	
+	@Override
+	public UUID getFeatureUuid(String key) throws UndefinedTransformerMethodException {
+		if (CdmUtils.isEmpty(key)){return null;
+		}else if (key.equalsIgnoreCase("Red book")){return redBookUuid;
+		}else{
+			return null;
+		}
+
+	}
+	
+	
 	
 	
 	

@@ -36,24 +36,15 @@ public class CyprusImportConfigurator extends ExcelImportConfiguratorBase implem
 
 	private UUID uuidCyprusReference = UUID.fromString("b5281cd3-9d5d-4ae2-8d55-b62a592ce846");
 	
-	private String cyprusReferenceTitle = null;
-	
-	public static CyprusImportConfigurator NewInstance(URI source, ICdmDataSource destination){
-			return new CyprusImportConfigurator(source, destination);
-	}
-
-	/* Max number of records to be saved with one service call */
-	private int recordsPerTransaction = 1000;  //defaultValue
-
-	//TODO needed ??
-	private Method userTransformationMethod;
-	
-	private boolean doVernaculars = true;
-	private boolean doLinks = true;
-	private boolean doNotes = true;
-	private boolean doImages = true;
+	private String cyprusReferenceTitle = "Cyprus";
 	
 	private static IInputTransformer defaultTransformer = new CyprusTransformer();
+	
+	public static CyprusImportConfigurator NewInstance(URI source, ICdmDataSource destination){
+		return new CyprusImportConfigurator(source, destination);
+}
+
+
 	
 	protected void makeIoClassList(){
 		ioClassList = new Class[]{
@@ -72,8 +63,8 @@ public class CyprusImportConfigurator extends ExcelImportConfiguratorBase implem
 
 
 	private CyprusImportConfigurator(URI source, ICdmDataSource destination) {
-	   super(source, destination);
-	   setNomenclaturalCode(NomenclaturalCode.ICZN); //default for ERMS
+	   super(source, destination, defaultTransformer);
+	   setNomenclaturalCode(NomenclaturalCode.ICBN); 
 	   setSource(source);
 	   setDestination(destination);
 	}
@@ -104,103 +95,6 @@ public class CyprusImportConfigurator extends ExcelImportConfiguratorBase implem
 	 */
 	public String getSourceNameString() {
 		return getSource().toString();
-	}
-
-	/**
-	 * @return the userTransformationMethod
-	 */
-	public Method getUserTransformationMethod() {
-		return userTransformationMethod;
-	}
-
-	/**
-	 * @param userTransformationMethod the userTransformationMethod to set
-	 */
-	public void setUserTransformationMethod(Method userTransformationMethod) {
-		this.userTransformationMethod = userTransformationMethod;
-	}
-
-	
-	/**
-	 * @return the limitSave
-	 */
-	public int getRecordsPerTransaction() {
-		return recordsPerTransaction;
-	}
-
-	/**
-	 * @param limitSave the limitSave to set
-	 */
-	public void setRecordsPerTransaction(int recordsPerTransaction) {
-		this.recordsPerTransaction = recordsPerTransaction;
-	}
-
-	/**
-	 * @param doVernaculars the doVernaculars to set
-	 */
-	public void setDoVernaculars(boolean doVernaculars) {
-		this.doVernaculars = doVernaculars;
-	}
-
-	/**
-	 * @return the doVernaculars
-	 */
-	public boolean isDoVernaculars() {
-		return doVernaculars;
-	}
-
-
-
-	/**
-	 * @param doLinks the doLinks to set
-	 */
-	public void setDoLinks(boolean doLinks) {
-		this.doLinks = doLinks;
-	}
-
-
-
-	/**
-	 * @return the doLinks
-	 */
-	public boolean isDoLinks() {
-		return doLinks;
-	}
-
-
-
-	/**
-	 * @param doNotes the doNotes to set
-	 */
-	public void setDoNotes(boolean doNotes) {
-		this.doNotes = doNotes;
-	}
-
-
-
-	/**
-	 * @return the doNotes
-	 */
-	public boolean isDoNotes() {
-		return doNotes;
-	}
-
-
-
-	/**
-	 * @param doImages the doImages to set
-	 */
-	public void setDoImages(boolean doImages) {
-		this.doImages = doImages;
-	}
-
-
-
-	/**
-	 * @return the doImages
-	 */
-	public boolean isDoImages() {
-		return doImages;
 	}
 
 

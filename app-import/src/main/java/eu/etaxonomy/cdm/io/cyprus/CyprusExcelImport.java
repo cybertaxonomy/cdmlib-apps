@@ -21,6 +21,8 @@ import org.apache.log4j.Logger;
 import org.springframework.stereotype.Component;
 
 import eu.etaxonomy.cdm.common.CdmUtils;
+import eu.etaxonomy.cdm.io.common.mapping.IInputTransformer;
+import eu.etaxonomy.cdm.io.common.mapping.UndefinedTransformerMethodException;
 import eu.etaxonomy.cdm.io.excel.common.ExcelImporterBase;
 import eu.etaxonomy.cdm.model.common.Language;
 import eu.etaxonomy.cdm.model.common.Marker;
@@ -205,32 +207,40 @@ public class CyprusExcelImport extends ExcelImporterBase<CyprusImportState> {
 	private PresenceTerm invasive;
 	private PresenceTerm questionable;
 
-	private void makeTerms(CyprusImportState state) {
+	private boolean makeTerms(CyprusImportState state) {
+		IInputTransformer transformer = state.getTransformer();
 		
-		UUID redBookUuid = UUID.fromString("df59d44a-ee5a-4c01-8637-127cc804842d");
-		redBookCategory = this.getFeature(state, redBookUuid, "Red book category", "Red data book category", "Red book");
-		getTermService().save(redBookCategory);
-		
-		UUID indigenousUuid = UUID.fromString("b325859b-504b-45e0-9ef0-d5c1602fcc0f");
-		indigenous = this.getPresenceTerm(state, indigenousUuid, "Indigenous", "Indigenous", "IN");
-		getTermService().save(indigenous);
-		
-		UUID casualUuid = UUID.fromString("5e81353c-38a3-4ca6-b979-0d9abc93b877");
-		casual = this.getPresenceTerm(state, casualUuid, "Casual", "Casual", "CA");
-		getTermService().save(redBookCategory);
-		
-		UUID nonInvasiveUuid = UUID.fromString("1b025e8b-901a-42e8-9739-119b410c6f03");
-		nonInvasive = this.getPresenceTerm(state, nonInvasiveUuid, "Naturalized  non-invasive", "Naturalized  non-invasive", "NN");
-		getTermService().save(nonInvasive);
+		try {
+			UUID redBookUuid = transformer.getFeatureUuid("Red book");
+			redBookCategory = this.getFeature(state, redBookUuid, "Red book category", "Red data book category", "Red book");
+			getTermService().save(redBookCategory);
+			
+			UUID indigenousUuid = transformer.getPresenceTermUuid("IN");
+			indigenous = this.getPresenceTerm(state, indigenousUuid, "Indigenous", "Indigenous", "IN");
+			getTermService().save(indigenous);
+			
+			UUID casualUuid = transformer.getPresenceTermUuid("CA");
+			casual = this.getPresenceTerm(state, casualUuid, "Casual", "Casual", "CA");
+			getTermService().save(redBookCategory);
+			
+			UUID nonInvasiveUuid = transformer.getPresenceTermUuid("NN");
+			nonInvasive = this.getPresenceTerm(state, nonInvasiveUuid, "Naturalized  non-invasive", "Naturalized  non-invasive", "NN");
+			getTermService().save(nonInvasive);
 
-		UUID invasiveUuid = UUID.fromString("faf2d271-868a-4bf7-b0b8-a1c5ab309de2");
-		invasive = this.getPresenceTerm(state, invasiveUuid, "Naturalized  invasive", "Naturalized  invasive", "NA");
-		getTermService().save(invasive);
+			UUID invasiveUuid = transformer.getPresenceTermUuid("NA");
+			invasive = this.getPresenceTerm(state, invasiveUuid, "Naturalized  invasive", "Naturalized  invasive", "NA");
+			getTermService().save(invasive);
 
-		
-		UUID questionableUuid = UUID.fromString("4b48f675-a6cf-49f3-a5ba-77e2c2979eb3");
-		questionable = this.getPresenceTerm(state, questionableUuid, "Questionable", "Questionable", "Q");
-		getTermService().save(questionable);
+			
+			UUID questionableUuid = transformer.getPresenceTermUuid("Q");
+			questionable = this.getPresenceTerm(state, questionableUuid, "Questionable", "Questionable", "Q");
+			getTermService().save(questionable);
+			
+			return true;
+		} catch (UndefinedTransformerMethodException e) {
+			e.printStackTrace();
+			return false;
+		}
 	
 		
 //		UUID redBookUuid = UUID.fromString("d8416d46-b5b4-45d5-b26b-9bda4fa491c9");
@@ -241,17 +251,6 @@ public class CyprusExcelImport extends ExcelImporterBase<CyprusImportState> {
 //		term = this.getPresenceTerm(state, redBookUuid, "Red book category", "Red data book category", "Red book");
 //		getTermService().save(term);
 		
-		
-		
-//		PresenceTerm status = null;
-//		}else if (statusString.contains("Cultivated")){
-//			status = PresenceTerm.CULTIVATED();
-//		}else if (statusString.contains("non-invasive")){
-//			//FIXME
-//			status = PresenceTerm.NATURALISED();
-//		}else if (statusString.contains("invasive")){
-//			//FIXME
-//			status = PresenceTerm.NATURALISED();
 	}
 	
 	/** 
@@ -366,7 +365,6 @@ public class CyprusExcelImport extends ExcelImporterBase<CyprusImportState> {
 		//Systematics
 		if (StringUtils.isNotBlank(systematicsString)){
 			TaxonDescription td = this.getTaxonDescription(mainTaxon, false, true);
-			//FIXME feature type
 			TextData textData = TextData.NewInstance(Feature.SYSTEMATICS());
 			textData.putText(systematicsString, Language.UNDETERMINED());
 			td.addElement(textData);
@@ -385,7 +383,6 @@ public class CyprusExcelImport extends ExcelImporterBase<CyprusImportState> {
 			}else{
 				throw new RuntimeException(endemismString + " is not a valid value for endemism");
 			}
-			//FIXME marker type
 			Marker marker = Marker.NewInstance(MarkerType.ENDEMIC(), flag);
 			mainTaxon.addMarker(marker);
 		}
