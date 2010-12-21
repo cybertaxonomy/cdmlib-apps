@@ -51,7 +51,7 @@ public class CyprusActivator {
 //	static final ICdmDataSource cdmDestination = CdmDestinations.cdm_local_postgres_CdmTest();
 	static final ICdmDataSource cdmDestination = CdmDestinations.cdm_test_local_mysql();
 //	static final ICdmDataSource cdmDestination = CdmDestinations.cdm_cyprus_dev();
-//	static final ICdmDataSource cdmDestination = CdmDestinations.cdm_cyprus_dev_tunnel();
+//	static final ICdmDataSource cdmDestination = CdmDestinations.cdm_cyprus_production();
 
 	
 	//feature tree uuid
@@ -87,11 +87,12 @@ public class CyprusActivator {
 			System.out.println("Start import from ("+ source.toString() + ") ...");
 			config.setSourceReference(getSourceReference(config.getSourceReferenceTitle()));
 			myImport.invoke(config);
+			FeatureTree tree = makeFeatureNodes(myImport.getCdmAppController().getTermService());
+			myImport.getCdmAppController().getFeatureTreeService().saveOrUpdate(tree);
+
 			System.out.println("End import from ("+ source.toString() + ")...");
 		}
 		
-		FeatureTree tree = makeFeatureNodes(myImport.getCdmAppController().getTermService());
-		myImport.getCdmAppController().getFeatureTreeService().saveOrUpdate(tree);
 		
 		
 		//deduplicate
@@ -99,8 +100,8 @@ public class CyprusActivator {
 			CdmApplicationController app = myImport.getCdmAppController();
 			int count = app.getAgentService().deduplicate(Person.class, null, null);
 			logger.warn("Deduplicated " + count + " persons.");
-			count = app.getAgentService().deduplicate(Team.class, null, null);
-			logger.warn("Deduplicated " + count + " teams.");
+//			count = app.getAgentService().deduplicate(Team.class, null, null);
+//			logger.warn("Deduplicated " + count + " teams.");
 			count = app.getReferenceService().deduplicate(Reference.class, null, null);
 			logger.warn("Deduplicated " + count + " references.");
 		}
@@ -120,6 +121,9 @@ public class CyprusActivator {
 		result.setTitleCache("Cyprus Feature Tree");
 		FeatureNode root = result.getRoot();
 		FeatureNode newNode;
+
+		newNode = FeatureNode.NewInstance(Feature.STATUS());
+		root.addChild(newNode);
 		
 		newNode = FeatureNode.NewInstance(Feature.DISTRIBUTION());
 		root.addChild(newNode);
@@ -127,11 +131,8 @@ public class CyprusActivator {
 		newNode = FeatureNode.NewInstance(Feature.SYSTEMATICS());
 		root.addChild(newNode);
 
-		newNode = FeatureNode.NewInstance(Feature.STATUS());
-		root.addChild(newNode);
-
-		//red data book category
-		String [] featureList = new String[]{"Red Book"};
+		//user defined features
+		String [] featureList = new String[]{"Red Book", "Endemism"};
 		addFeataureNodesByStringList(featureList, root, transformer, service);
 		
 		return result;
