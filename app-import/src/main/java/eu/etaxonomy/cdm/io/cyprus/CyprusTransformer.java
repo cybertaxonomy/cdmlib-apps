@@ -32,6 +32,7 @@ public final class CyprusTransformer extends InputTransformerBase {
 
 	//feature
 	public static final UUID redBookUuid =  UUID.fromString("df59d44a-ee5a-4c01-8637-127cc804842d");
+	public static final UUID endemismUuid =  UUID.fromString("dd343c31-1916-4786-a530-536ea995dce4");
 	
 	//presenceTerm
 	public static final UUID indigenousUuid = UUID.fromString("b325859b-504b-45e0-9ef0-d5c1602fcc0f");
@@ -39,6 +40,14 @@ public final class CyprusTransformer extends InputTransformerBase {
 	public static final UUID nonInvasiveUuid = UUID.fromString("1b025e8b-901a-42e8-9739-119b410c6f03");
 	public static final UUID invasiveUuid = UUID.fromString("faf2d271-868a-4bf7-b0b8-a1c5ab309de2");
 	public static final UUID questionableUuid = UUID.fromString("4b48f675-a6cf-49f3-a5ba-77e2c2979eb3");
+
+	public static final UUID indigenousDoubtfulUuid = UUID.fromString("17bc601f-53eb-4997-a4bc-c03ce5bfd1d3");
+	public static final UUID casualDoubtfulUuid = UUID.fromString("73f75493-1185-4a3e-af1e-9a1f2e8dadb7");
+	public static final UUID nonInvasiveDoubtfulUuid = UUID.fromString("11f56e2f-c16c-4b3d-a870-bb5d3b20e624");
+	public static final UUID invasiveDoubtfulUuid = UUID.fromString("ac429d5f-e8ad-49ae-a41c-e4779b58b96a");
+	public static final UUID questionableDoubtfulUuid = UUID.fromString("914e7393-1314-4632-bc45-5eff3dc1e424");
+
+	public static final UUID cultivatedDoubtfulUuid = UUID.fromString("4f31bfc8-3058-4d83-aea5-3a1fe9773f9f");
 	
 	
 	/* (non-Javadoc)
@@ -72,6 +81,12 @@ public final class CyprusTransformer extends InputTransformerBase {
 		}else if (key.equalsIgnoreCase("NN")){return nonInvasiveUuid;
 		}else if (key.equalsIgnoreCase("NA")){return invasiveUuid;
 		}else if (key.equalsIgnoreCase("Q")){return questionableUuid;
+		}else if (key.equalsIgnoreCase("IN?")){return indigenousDoubtfulUuid;
+		}else if (key.equalsIgnoreCase("CA?")){return casualDoubtfulUuid;
+		}else if (key.equalsIgnoreCase("NN?")){return nonInvasiveDoubtfulUuid;
+		}else if (key.equalsIgnoreCase("NA?")){return invasiveDoubtfulUuid;
+		}else if (key.equalsIgnoreCase("Q?")){return questionableDoubtfulUuid;
+		}else if (key.equalsIgnoreCase("CU?")){return cultivatedDoubtfulUuid;
 		}else{
 			return null;
 		}
@@ -82,6 +97,7 @@ public final class CyprusTransformer extends InputTransformerBase {
 	public UUID getFeatureUuid(String key) throws UndefinedTransformerMethodException {
 		if (CdmUtils.isEmpty(key)){return null;
 		}else if (key.equalsIgnoreCase("Red book")){return redBookUuid;
+		}else if (key.equalsIgnoreCase("Endemism")){return endemismUuid;
 		}else{
 			return null;
 		}

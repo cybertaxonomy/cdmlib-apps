@@ -9,7 +9,6 @@
 
 package eu.etaxonomy.cdm.io.cyprus;
 
-import java.lang.reflect.Method;
 import java.net.URI;
 import java.util.UUID;
 
@@ -48,6 +47,7 @@ public class CyprusImportConfigurator extends ExcelImportConfiguratorBase implem
 	
 	protected void makeIoClassList(){
 		ioClassList = new Class[]{
+				CyprusUserImport.class,
 				CyprusExcelImport.class ,
 		};	
 	}
@@ -84,7 +84,7 @@ public class CyprusImportConfigurator extends ExcelImportConfiguratorBase implem
 		if (sourceReference == null){
 			sourceReference =  ReferenceFactory.newDatabase();
 			if (getSource() != null){
-				sourceReference.setTitleCache("Cyprus", true);
+				sourceReference.setTitleCache(getCyprusReferenceTitle(), true);
 			}
 		}
 		return sourceReference;
