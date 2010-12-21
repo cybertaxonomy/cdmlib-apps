@@ -19,8 +19,10 @@ import org.springframework.transaction.TransactionStatus;
 import eu.etaxonomy.cdm.api.application.CdmApplicationController;
 import eu.etaxonomy.cdm.api.service.ITermService;
 import eu.etaxonomy.cdm.app.common.CdmDestinations;
+import eu.etaxonomy.cdm.common.DefaultProgressMonitor;
 import eu.etaxonomy.cdm.database.DbSchemaValidation;
 import eu.etaxonomy.cdm.database.ICdmDataSource;
+import eu.etaxonomy.cdm.database.update.CdmUpdater;
 import eu.etaxonomy.cdm.io.common.CdmDefaultImport;
 import eu.etaxonomy.cdm.io.common.IImportConfigurator.CHECK;
 import eu.etaxonomy.cdm.io.common.mapping.IInputTransformer;
@@ -57,6 +59,7 @@ public class CentralAfricaEricaceaeActivator {
 	static final ICdmDataSource cdmDestination = CdmDestinations.localH2();
 //	static final ICdmDataSource cdmDestination = CdmDestinations.cdm_local_postgres_CdmTest();
 //	static final ICdmDataSource cdmDestination = CdmDestinations.cdm_test_local_mysql();
+//	static final ICdmDataSource cdmDestination = CdmDestinations.cdm_test_jaxb();
 
 	//feature tree uuid
 	public static final UUID featureTreeUuid = UUID.fromString("051d35ee-22f1-42d8-be07-9e9bfec5bcf7");
@@ -84,7 +87,7 @@ public class CentralAfricaEricaceaeActivator {
 //		CdmUpdater su = CdmUpdater.NewInstance();
 //		
 //		try {
-//			//su.updateToCurrentVersion(cdmDestination, DefaultProgressMonitor.NewInstance());
+////			su.updateToCurrentVersion(cdmDestination, DefaultProgressMonitor.NewInstance());
 //		} catch (Exception e) {
 //			e.printStackTrace();
 //		}
@@ -131,8 +134,8 @@ public class CentralAfricaEricaceaeActivator {
 			CdmApplicationController app = myImport.getCdmAppController();
 			int count = app.getAgentService().deduplicate(Person.class, null, null);
 			logger.warn("Deduplicated " + count + " persons.");
-			count = app.getAgentService().deduplicate(Team.class, null, null);
-			logger.warn("Deduplicated " + count + " teams.");
+//			count = app.getAgentService().deduplicate(Team.class, null, null);
+//			logger.warn("Deduplicated " + count + " teams.");
 			count = app.getReferenceService().deduplicate(Reference.class, null, null);
 			logger.warn("Deduplicated " + count + " references.");
 		}
