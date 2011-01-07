@@ -9,7 +9,6 @@
 */
 package eu.etaxonomy.cdm.app.berlinModelImport;
 
-import java.io.File;
 import java.util.UUID;
 
 import org.apache.log4j.Logger;
@@ -36,37 +35,24 @@ import eu.etaxonomy.cdm.model.name.NomenclaturalCode;
  *
  */
 public class IldisActivator {
+	@SuppressWarnings("unused")
 	private static final Logger logger = Logger.getLogger(FaunaEuropaeaActivator.class);
 	//database validation status (create, update, validate ...)
 	static DbSchemaValidation hbm2dll = DbSchemaValidation.CREATE;
 	static final Source berlinModelSource = BerlinModelSources.ILDIS();
-	static final ICdmDataSource cdmDestination = CdmDestinations.cdm_ildis_dev();
+//	static final ICdmDataSource cdmDestination = CdmDestinations.cdm_ildis_dev();
+	static final ICdmDataSource cdmDestination = CdmDestinations.cdm_test_local_mysql();
+	
 
 	static final UUID secUuid = UUID.fromString("a7f29364-ce98-4c1d-ad2e-3d889cc5885c");
 	static final UUID classificationUuid = UUID.fromString("c7a4e447-ca1e-46e9-adb9-037dab039ccc");
-	static final int sourceSecId = 7800000;
+	static final int sourceSecId = 8500000;
 	
 	static final UUID featureTreeUuid = UUID.fromString("9703afa5-3104-4b3b-b498-f549c0df2d2a");
 	static final Object[] featureKeyList = new Integer[]{1, 43, 31, 4, 12, 98, 41}; 	
 	
-	/* --------- MEDIA recources ------------ */
-	static final boolean stopOnMediaErrors = true;
-	static final String protologueUrlString = "http://wp5.e-taxonomy.eu/dataportal/cichorieae/media/protolog/";
-	//Mac
-	//static final File protologuePath = new File("/Volumes/protolog/protolog/");
-	//Windows
-	public static final String imageFolderString  = "//media/editwp6/photos";
-	static final File protologuePath = new File("//media/editwp6/protolog");
-//	public static final File imageFolder  = new File("/media/photos");
-//	static final File protologuePath = new File("/media/protolog");
-	/* -------------------------------------- */
-	
 	// set to zero for unlimited nameFacts
 	static final int recordsPerTransaction = 2000;
-	
-	//should the other imports run as well?
-	static final boolean includeImages = true;
-	
 	
 	//check - import
 	static final CHECK check = CHECK.CHECK_AND_IMPORT;
@@ -162,29 +148,6 @@ public class IldisActivator {
 		bmImportConfigurator.setDbSchemaValidation(hbm2dll);
 		bmImportConfigurator.setRecordsPerTransaction(recordsPerTransaction);
 		
-
-//		// protologueResourceLocations
-//		if ( protologuePath.exists() && protologuePath.isDirectory()){
-//			bmImportConfigurator.setMediaUrl(protologueUrlString);
-//			bmImportConfigurator.setMediaPath(protologuePath);
-//		}else{
-//			if(stopOnMediaErrors){
-//				logger.error("Could not configure protologue ResourceLocations -> will quit.");
-//				System.exit(-1);
-//			}
-//			logger.error("Could not configure protologue ResourceLocations");
-//		}
-//		
-//		File imageFolder = new File(imageFolderString);
-//		// also check the image source folder
-//		if ( !imageFolder.exists() || !imageFolder.isDirectory()){
-//			if(stopOnMediaErrors){
-//				logger.error("Could not configure imageFolder  -> will quit.");
-//				System.exit(-1);
-//			}
-//			logger.error("Could not configure imageFolder");
-//		}
-		
 		bmImportConfigurator.setCheck(check);
 		bmImportConfigurator.setEditor(editor);
 		
@@ -206,26 +169,6 @@ public class IldisActivator {
 		
 		System.out.println("End import from BerlinModel ("+ source.getDatabase() + ")...");
 
-		
-//		if (includeImages) {
-//			System.out.println("Start importing images ...");
-//			CdmDefaultImport<IImportConfigurator> imageImporter = new CdmDefaultImport<IImportConfigurator>();
-//			URI imageFolderCichorieae;
-//			try {
-//				imageFolderCichorieae = new URI(CichorieaeActivator.imageFolderString);
-//				ImageImportConfigurator imageConfigurator = ImageImportConfigurator.NewInstance(
-//						imageFolderCichorieae, destination, CichorieaeImageImport.class);
-//				imageConfigurator.setSecUuid(secUuid);
-//				imageConfigurator.setClassificationUuid(classificationUuid);
-//				success &= imageImporter.invoke(imageConfigurator);
-//			} catch (URISyntaxException e) {
-//				e.printStackTrace();
-//			}
-//				System.out.println("End importing images ...");
-//		}
-
-		logger.warn("!!!! NOTE: RefDetail notes and RelPTaxon notes are not imported automatically. Please check for these notes and import them manually.");
-		
 		return success;
 		
 	}
