@@ -49,7 +49,7 @@ public class CentralAfricaEricaceaeActivator {
 	private static final Logger logger = Logger.getLogger(CentralAfricaEricaceaeActivator.class);
 	
 	//database validation status (create, update, validate ...)
-	static DbSchemaValidation hbm2dll = DbSchemaValidation.VALIDATE;
+	static DbSchemaValidation hbm2dll = DbSchemaValidation.CREATE;
 	static final URI source = EfloraSources.ericacea_local();
 
 	
@@ -86,13 +86,13 @@ public class CentralAfricaEricaceaeActivator {
 		
 		CdmUpdater su = CdmUpdater.NewInstance();
 		IProgressMonitor monitor = DefaultProgressMonitor.NewInstance();
-//		
+		
 //		try {
 //			su.updateToCurrentVersion(cdmDestination, monitor);
 //		} catch (Exception e) {
 //			e.printStackTrace();
 //		}
-//		if (false){
+//		if (true){
 //			return;
 //		}
 		

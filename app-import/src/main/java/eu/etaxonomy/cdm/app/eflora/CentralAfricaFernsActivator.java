@@ -42,10 +42,10 @@ public class CentralAfricaFernsActivator {
 	static DbSchemaValidation hbm2dll = DbSchemaValidation.CREATE;
 	static final Source mySource = CdmImportSources.AFRICA_FERNS_ACCESS();
 	
-	static final ICdmDataSource cdmDestination = CdmDestinations.cdm_test_andreasM2();
+//	static final ICdmDataSource cdmDestination = CdmDestinations.cdm_test_andreasM2();
 //	static final ICdmDataSource cdmDestination = CdmDestinations.cdm_flora_central_africa_preview();
 //	static final ICdmDataSource cdmDestination = CdmDestinations.cdm_flora_central_africa_production();
-//	static final ICdmDataSource cdmDestination = CdmDestinations.localH2();
+	static final ICdmDataSource cdmDestination = CdmDestinations.localH2();
 
 	//feature tree uuid
 	public static final UUID featureTreeUuid = UUID.fromString("62d930cb-aabb-461c-ad16-0fdbd2bae592");
