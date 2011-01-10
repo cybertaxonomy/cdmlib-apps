@@ -49,7 +49,7 @@ public class IldisActivator {
 	static final int sourceSecId = 8500000;
 	
 	static final UUID featureTreeUuid = UUID.fromString("9703afa5-3104-4b3b-b498-f549c0df2d2a");
-	static final Object[] featureKeyList = new Integer[]{1, 43, 31, 4, 12, 98, 41}; 	
+	static final Object[] featureKeyList = new Integer[]{1, 43, 31, 4, 12, 98, 253, 301, 302, 303}; 	
 	
 	// set to zero for unlimited nameFacts
 	static final int recordsPerTransaction = 2000;
