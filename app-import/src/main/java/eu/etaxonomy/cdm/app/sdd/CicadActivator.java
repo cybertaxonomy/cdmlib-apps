@@ -33,6 +33,7 @@ public class CicadActivator {
 	//database validation status (create, update, validate ...)
 	static DbSchemaValidation hbm2dll = DbSchemaValidation.CREATE;
 	static final String sddSource = SDDSources.Cicad_local();
+//	static final ICdmDataSource cdmDestination = CdmDestinations.cdm_test_local_mysql();
 	static final ICdmDataSource cdmDestination = CdmDestinations.localH2_Cicad();
 
 	//	static final ICdmDataSource cdmDestination = CdmDestinations.cdm_portal_test_localhost();
