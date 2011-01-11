@@ -67,7 +67,7 @@ public class CentralAfricaFernsTaxonRelationImport  extends CentralAfricaFernsIm
 	private static final String dbTableName = "[African pteridophytes]";
 	private static final Class cdmTargetClass = TaxonBase.class;
 
-	private Map<String, UUID> taxonMap3 = new HashMap<String, UUID>();
+	private Map<String, UUID> taxonMap = new HashMap<String, UUID>();
 
 	
 	public CentralAfricaFernsTaxonRelationImport(){
