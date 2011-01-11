@@ -32,6 +32,8 @@ public class CentralAfricaFernsImportState extends DbImportStateBase<CentralAfri
 	Map<String, DefinedTermBase> dbCdmDefTermMap = new HashMap<String, DefinedTermBase>();
 	
 	Map<String, User> usernameMap = new HashMap<String, User>();
+
+	private String taxonNumber;
 	
 	
 	/* (non-Javadoc)
@@ -67,6 +69,14 @@ public class CentralAfricaFernsImportState extends DbImportStateBase<CentralAfri
 
 	public void putUser(String username, User user){
 		usernameMap.put(username, user);
+	}
+
+	public void setTaxonNumber(String taxonNumber) {
+		this.taxonNumber = taxonNumber;
+	}
+
+	public String getTaxonNumber() {
+		return taxonNumber;
 	}
 
  

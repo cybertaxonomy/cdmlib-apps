@@ -28,6 +28,7 @@ import eu.etaxonomy.cdm.api.facade.DerivedUnitFacade.DerivedUnitType;
 import eu.etaxonomy.cdm.io.common.IOValidator;
 import eu.etaxonomy.cdm.io.common.mapping.DbImportAnnotationMapper;
 import eu.etaxonomy.cdm.io.common.mapping.DbImportMapping;
+import eu.etaxonomy.cdm.io.common.mapping.DbImportMethodMapper;
 import eu.etaxonomy.cdm.io.common.mapping.DbImportObjectCreationMapper;
 import eu.etaxonomy.cdm.io.common.mapping.DbNotYetImplementedMapper;
 import eu.etaxonomy.cdm.io.common.mapping.IMappingImport;
@@ -35,6 +36,11 @@ import eu.etaxonomy.cdm.io.eflora.centralAfrica.ferns.validation.CentralAfricaFe
 import eu.etaxonomy.cdm.model.agent.Team;
 import eu.etaxonomy.cdm.model.common.AnnotationType;
 import eu.etaxonomy.cdm.model.common.CdmBase;
+import eu.etaxonomy.cdm.model.common.Language;
+import eu.etaxonomy.cdm.model.description.CommonTaxonName;
+import eu.etaxonomy.cdm.model.description.Feature;
+import eu.etaxonomy.cdm.model.description.TaxonDescription;
+import eu.etaxonomy.cdm.model.description.TextData;
 import eu.etaxonomy.cdm.model.name.BotanicalName;
 import eu.etaxonomy.cdm.model.name.Rank;
 import eu.etaxonomy.cdm.model.name.SpecimenTypeDesignation;
@@ -57,14 +63,12 @@ public class CentralAfricaFernsTaxonImport  extends CentralAfricaFernsImportBase
 	
 	public static final UUID TNS_EXT_UUID = UUID.fromString("41cb0450-ac84-4d73-905e-9c7773c23b05");
 	
-	private NonViralNameParserImpl parser = NonViralNameParserImpl.NewInstance();
 	
 	private DbImportMapping mapping;
 	
 	//second path is not used anymore, there is now an ErmsTaxonRelationImport class instead
 	private boolean isSecondPath = false;
 	
-	private int modCount = 10000;
 	private static final String pluralString = "taxa";
 	private static final String dbTableName = "[African pteridophytes]";
 	private static final Class cdmTargetClass = TaxonBase.class;
@@ -98,11 +102,12 @@ public class CentralAfricaFernsTaxonImport  extends CentralAfricaFernsImportBase
 //			mapping.addMapper(DbImportMethodMapper.NewInstance(this, "makeTypes", ResultSet.class, TaxonBase.class, CentralAfricaFernsImportState.class));
 			mapping.addMapper(DbImportAnnotationMapper.NewInstance("Notes", AnnotationType.EDITORIAL()));
 
+			mapping.addMapper(DbImportMethodMapper.NewInstance(this, "makeCommonName", ResultSet.class, CentralAfricaFernsImportState.class));
+			
 			//not yet implemented or ignore
 			mapping.addMapper(DbNotYetImplementedMapper.NewInstance("Basionym of", "Needs better understanding"));
 			mapping.addMapper(DbNotYetImplementedMapper.NewInstance("Synonym of", "Needs better understanding. Strange values like "));
 			
-			mapping.addMapper(DbNotYetImplementedMapper.NewInstance("Common names", "Very view values. Needs parsing for author"));
 			
 			mapping.addMapper(DbNotYetImplementedMapper.NewInstance("Author/s - full", "Difference to Author/s abbreviated needs to be clarified. Do authors belong to reference? Sometimes authors are not equal to name authors"));
 			mapping.addMapper(DbNotYetImplementedMapper.NewInstance("Author/s abbreviated" , "Difference to Author/s - full needs to be clarified. Do authors belong to reference? Sometimes authors are not equal to name authors"));
@@ -134,7 +139,7 @@ public class CentralAfricaFernsTaxonImport  extends CentralAfricaFernsImportBase
 			mapping.addMapper(DbNotYetImplementedMapper.NewInstance("Reprint no" , "What's this?"));
 			mapping.addMapper(DbNotYetImplementedMapper.NewInstance("Date verified" , "Needed?"));
 			
-			mapping.addMapper(DbNotYetImplementedMapper.NewInstance("Ecology" , "Needs implementation"));
+			DbImportMethodMapper.NewInstance(this, "makeEcology", ResultSet.class, CentralAfricaFernsImportState.class);
 //			mapping.addMapper(DbImportTextDataCreationMapper.NewInstance(dbIdAttribute, objectToCreateNamespace, dbTaxonFkAttribute, taxonNamespace, dbTextAttribute, Language.ENGLISH(), Feature.ECOLOGY(), null));
 			
 			
@@ -162,7 +167,8 @@ public class CentralAfricaFernsTaxonImport  extends CentralAfricaFernsImportBase
 		String strSelect = " SELECT * ";
 		String strFrom = " FROM [African pteridophytes] as ap";
 		String strWhere = " WHERE ( ap.[taxon number] IN (" + ID_LIST_TOKEN + ") )";
-		String strRecordQuery = strSelect + strFrom + strWhere;
+		String strOrderBy = " ORDER BY [Taxon number]";
+		String strRecordQuery = strSelect + strFrom + strWhere + strOrderBy;
 		return strRecordQuery;
 	}
 
@@ -240,6 +246,51 @@ public class CentralAfricaFernsTaxonImport  extends CentralAfricaFernsImportBase
 	}
 
 
+	/**
+	 * for internal use only, used by MethodMapper
+	 */
+	private TaxonBase makeCommonName(ResultSet rs, CentralAfricaFernsImportState state) throws SQLException{
+		String taxonNumber = rs.getString("Taxon number");
+		String commonNames = rs.getString("Common names");
+		TaxonBase<?> taxonBase = state.getRelatedObject(state.CURRENT_OBJECT_NAMESPACE, state.CURRENT_OBJECT_ID, TaxonBase.class);
+		if (StringUtils.isNotBlank(commonNames)){
+			if (taxonBase.isInstanceOf(Taxon.class)){
+				Taxon taxon = (Taxon)taxonBase;
+				TaxonDescription description = getTaxonDescription(taxon, false, true);
+				String[] split = commonNames.split(",");
+				for (String commonNameString: split){
+					CommonTaxonName commonName = CommonTaxonName.NewInstance(commonNameString.trim(), Language.ENGLISH());
+					description.addElement(commonName);				
+				}
+			}else{
+				logger.warn("Taxon with common name is of type synonym but must be accepted taxon: " + taxonNumber);
+			}
+		}
+		return taxonBase;
+	}
+	
+	/**
+	 * for internal use only, used by MethodMapper
+	 * @param commonNames 
+	 */
+	private TaxonBase makeEcology(ResultSet rs, CentralAfricaFernsImportState state) throws SQLException{
+		String taxonNumber = rs.getString("Taxon number");
+		String ecologyString = rs.getString("Ecology");
+		TaxonBase<?> taxonBase = state.getRelatedObject(state.CURRENT_OBJECT_NAMESPACE, state.CURRENT_OBJECT_ID, TaxonBase.class);
+		if (StringUtils.isNotBlank(ecologyString)){
+			if (taxonBase.isInstanceOf(Taxon.class)){
+				Taxon taxon = (Taxon)taxonBase;
+				TaxonDescription description = getTaxonDescription(taxon, false, true);
+				TextData ecology = TextData.NewInstance(Feature.ECOLOGY());
+				ecology.putText(ecologyString.trim(), Language.ENGLISH());
+				description.addElement(ecology);				
+			}else{
+				logger.warn("Taxon with ecology is of type synonym but must be accepted taxon: " + taxonNumber);
+			}
+		}
+		return taxonBase;
+	}
+	
 
 	/* (non-Javadoc)
 	 * @see eu.etaxonomy.cdm.io.common.mapping.IMappingImport#createObject(java.sql.ResultSet)
@@ -271,21 +322,13 @@ public class CentralAfricaFernsTaxonImport  extends CentralAfricaFernsImportBase
 		
 		String status = rs.getString("Current/Synonym");
 		
-		TaxonBase taxon;
-		if ("c".equalsIgnoreCase(status)){
-			taxon = Taxon.NewInstance(taxonName, sec);
-		}else if ("s".equalsIgnoreCase(status)){
-			taxon = Synonym.NewInstance(taxonName, sec);
-		}else{
-			logger.warn(taxonNumber + ": Status not given for taxon " );
-			taxon = Taxon.NewUnknownStatusInstance(taxonName, sec);
-		}
+		TaxonBase taxon = makeTaxon(taxonName, sec, taxonNumber, status);
 		
 //			Integer parent3Rank = rs.getInt("parent3rank");
 		
 		//rank and epithets
-		Rank lowestRank = setLowestUninomial(taxonName, orderName,  subOrderName, familyName, subFamilyName, tribusName, subTribusName,sectionName, subsectionName, genusName);
-		lowestRank = setLowestInfraGeneric(taxonName, lowestRank, subGenusName,  seriesName);
+		Rank lowestRank = setLowestUninomial(taxonName, orderName,  subOrderName, familyName, subFamilyName, tribusName, subTribusName,genusName);
+		lowestRank = setLowestInfraGeneric(taxonName, lowestRank, subGenusName, sectionName, subsectionName, seriesName);
 		if (StringUtils.isNotBlank(specificEpihet)){
 			taxonName.setSpecificEpithet(specificEpihet);
 			lowestRank = Rank.SPECIES();
@@ -293,12 +336,9 @@ public class CentralAfricaFernsTaxonImport  extends CentralAfricaFernsImportBase
 		lowestRank = setLowestInfraSpecific(taxonName, lowestRank, subspeciesName,  varietyName, subVariety, formaName,subFormaName);
 		
 		taxonName.setRank(lowestRank);
-		setAuthor(taxonName, rs, taxonNumber);
-		
-		
+		setAuthor(taxonName, rs, taxonNumber, false);
 		
 		//set epithets
-
 		
 		//add original source for taxon name (taxon original source is added in mapper
 		Reference citation = state.getConfig().getSourceReference();
@@ -309,96 +349,30 @@ public class CentralAfricaFernsTaxonImport  extends CentralAfricaFernsImportBase
 
 
 
-	private void setAuthor(BotanicalName taxonName, ResultSet rs, String taxonNumber) throws SQLException {
-		
-		String orderAuthor = rs.getString("Order name author");
-		String subOrderAuthor = rs.getString("Suborder name author");
-		String familyAuthor = rs.getString("Family name author");
-		String subFamilyAuthor = rs.getString("Subfamily name author");
-		String tribusAuthor = rs.getString("Tribus author");
-		String subTribusAuthor = rs.getString("Subtribus author");
-		String sectionAuthor = rs.getString("Section name author");
-		String subsectionAuthor = rs.getString("Subsection author");
-		String genusAuthor = rs.getString("Genus name author");
-		String subGenusAuthor = rs.getString("Subgenus name author");
-		String seriesAuthor = rs.getString("Series name author");
-		String specificEpihetAuthor = rs.getString("Specific epithet author");
-		String subspeciesAuthor = rs.getString("Subspecies author");
-		String varietyAuthor = rs.getString("Variety name author");
-		String subVarietyAuthor = rs.getString("Subvariety author");
-		String formaAuthor = rs.getString("Forma name author");
-		String subFormaAuthor = rs.getString("Subforma author");
-		
-		String authorsFull = rs.getString("Author/s - full");
-		String authorsAbbrev = rs.getString("Author/s - abbreviated");
-		
-
-		Rank rank = taxonName.getRank();
-		String authorString;
-		if (rank != null){
-			if (rank.equals(Rank.ORDER())){
-				authorString = orderAuthor;
-			}else if (rank.equals(Rank.SUBORDER())){
-				authorString = subOrderAuthor;
-			}else if (rank.equals(Rank.FAMILY())){
-				authorString = familyAuthor;
-			}else if (rank.equals(Rank.SUBFAMILY())){
-				authorString = subFamilyAuthor;
-			}else if (rank.equals(Rank.TRIBE())){
-				authorString = tribusAuthor;
-			}else if (rank.equals(Rank.SUBTRIBE())){
-				authorString = subTribusAuthor;
-			}else if (rank.equals(Rank.SECTION_BOTANY())){
-				authorString = sectionAuthor;
-			}else if (rank.equals(Rank.SUBSECTION_BOTANY())){
-				authorString = subsectionAuthor;
-			}else if (rank.equals(Rank.GENUS())){
-				authorString = genusAuthor;
-			}else if (rank.equals(Rank.SUBGENUS())){
-				authorString = subGenusAuthor;
-			}else if (rank.equals(Rank.SERIES())){
-				authorString = seriesAuthor;
-			}else if (rank.equals(Rank.SPECIES())){
-				authorString = specificEpihetAuthor;
-			}else if (rank.equals(Rank.SUBSPECIES())){
-				authorString = subspeciesAuthor;
-			}else if (rank.equals(Rank.VARIETY())){
-				authorString = varietyAuthor;
-			}else if (rank.equals(Rank.SUBVARIETY())){
-				authorString = subVarietyAuthor;
-			}else if (rank.equals(Rank.FORM())){
-				authorString = formaAuthor;
-			}else if (rank.equals(Rank.SUBFORM())){
-				authorString = subFormaAuthor;
-			}else{
-				logger.warn("Author string could not be defined");
-				authorString = authorsAbbrev;
-				if (StringUtils.isBlank(authorString)){
-					logger.warn("Authors abbrev string could not be defined");
-					authorString = authorsFull;	
-				}
+	/**
+	 * Creates the taxon object depending on name, sec and status
+	 * @param taxonName
+	 * @param sec
+	 * @param taxonNumber
+	 * @param status
+	 * @return
+	 */
+	private TaxonBase makeTaxon(BotanicalName taxonName, Reference sec,
+			String taxonNumber, String status) {
+		TaxonBase taxon;
+		if ("c".equalsIgnoreCase(status)|| "incertus".equalsIgnoreCase(status) ){
+			taxon = Taxon.NewInstance(taxonName, sec);
+			if ("incertus".equalsIgnoreCase(status)){
+				taxon.setDoubtful(true);
 			}
+		}else if ("s".equalsIgnoreCase(status)){
+			taxon = Synonym.NewInstance(taxonName, sec);
 		}else{
-			logger.warn(taxonNumber + ": Rank is null");
-			authorString = authorsAbbrev;
-			if (StringUtils.isBlank(authorString)){
-				logger.warn(taxonNumber + ": Authors abbrev string could not be defined");
-				authorString = authorsFull;	
-			}
+			logger.warn(taxonNumber + ": Status not given for taxon " );
+			taxon = Taxon.NewUnknownStatusInstance(taxonName, sec);
 		}
-		
-		if (authorString != null){
-			parser.handleAuthors(taxonName, taxonName.getNameCache().trim() + " " + authorString, authorString);
-		}
-		if (StringUtils.isNotBlank(authorsAbbrev) && ! authorsAbbrev.equalsIgnoreCase(taxonName.getCombinationAuthorTeam()==null ? "" :taxonName.getCombinationAuthorTeam().getNomenclaturalTitle())){
-			logger.warn(taxonNumber + ": Rank author and abbrev author are not equal: " + authorString + "\t\t " + authorsAbbrev);
-		}
-//		if (StringUtils.isNotBlank(authorsFull) && ! authorsFull.equalsIgnoreCase(authorString)){
-//			logger.warn("Rank author and full author are not equal Rankauthor: " + authorString + ", full author " + authorsFull);
-//		}
-	
+		return taxon;
 	}
-
 
 
 	private Rank setLowestInfraSpecific(BotanicalName taxonName, Rank lowestRank, String subspeciesName, String varietyName,
@@ -425,10 +399,16 @@ public class CentralAfricaFernsTaxonImport  extends CentralAfricaFernsImportBase
 
 
 
-	private Rank setLowestInfraGeneric(BotanicalName taxonName, Rank lowestRank, String subGenusName, String seriesName) {
+	private Rank setLowestInfraGeneric(BotanicalName taxonName, Rank lowestRank, String subGenusName, String sectionName, String subSectionName, String seriesName) {
 		if (StringUtils.isNotBlank(seriesName)){
 			taxonName.setInfraGenericEpithet(seriesName);
 			return Rank.SERIES();
+		}else if (StringUtils.isNotBlank(subSectionName)){
+			taxonName.setInfraGenericEpithet(subSectionName);
+			return Rank.SUBSECTION_BOTANY();
+		}else if (StringUtils.isNotBlank(sectionName)){
+			taxonName.setInfraGenericEpithet(sectionName);
+			return Rank.SECTION_BOTANY();
 		}else if (StringUtils.isNotBlank(subGenusName)){
 			taxonName.setInfraGenericEpithet(subGenusName);
 			return Rank.SUBGENUS();
@@ -440,17 +420,11 @@ public class CentralAfricaFernsTaxonImport  extends CentralAfricaFernsImportBase
 
 
 	private Rank setLowestUninomial(BotanicalName taxonName, String orderName, String subOrderName, String familyName, String subFamilyName,
-			String tribusName, String subTribusName, String sectionName, String subsectionName, String genusName) {
+			String tribusName, String subTribusName, String genusName) {
 		
 		if (StringUtils.isNotBlank(genusName)){
 			taxonName.setGenusOrUninomial(genusName);
 			return Rank.GENUS();
-		}else if (StringUtils.isNotBlank(subsectionName)){
-			taxonName.setGenusOrUninomial(subsectionName);
-			return Rank.SUBSECTION_BOTANY();
-		}else if (StringUtils.isNotBlank(sectionName)){
-			taxonName.setGenusOrUninomial(sectionName);
-			return Rank.SECTION_BOTANY();
 		}else if (StringUtils.isNotBlank(subTribusName)){
 			taxonName.setGenusOrUninomial(subTribusName);
 			return Rank.SUBTRIBE();
