@@ -25,6 +25,7 @@ import org.springframework.stereotype.Component;
 
 import eu.etaxonomy.cdm.api.facade.DerivedUnitFacade;
 import eu.etaxonomy.cdm.api.facade.DerivedUnitFacade.DerivedUnitType;
+import eu.etaxonomy.cdm.common.CdmUtils;
 import eu.etaxonomy.cdm.io.common.IOValidator;
 import eu.etaxonomy.cdm.io.common.mapping.DbImportAnnotationMapper;
 import eu.etaxonomy.cdm.io.common.mapping.DbImportMapping;
@@ -32,24 +33,36 @@ import eu.etaxonomy.cdm.io.common.mapping.DbImportMethodMapper;
 import eu.etaxonomy.cdm.io.common.mapping.DbImportObjectCreationMapper;
 import eu.etaxonomy.cdm.io.common.mapping.DbNotYetImplementedMapper;
 import eu.etaxonomy.cdm.io.common.mapping.IMappingImport;
+import eu.etaxonomy.cdm.io.common.mapping.UndefinedTransformerMethodException;
 import eu.etaxonomy.cdm.io.eflora.centralAfrica.ferns.validation.CentralAfricaFernsTaxonImportValidator;
 import eu.etaxonomy.cdm.model.agent.Team;
+import eu.etaxonomy.cdm.model.agent.TeamOrPersonBase;
 import eu.etaxonomy.cdm.model.common.AnnotationType;
 import eu.etaxonomy.cdm.model.common.CdmBase;
+import eu.etaxonomy.cdm.model.common.ExtensionType;
 import eu.etaxonomy.cdm.model.common.Language;
+import eu.etaxonomy.cdm.model.common.TimePeriod;
 import eu.etaxonomy.cdm.model.description.CommonTaxonName;
+import eu.etaxonomy.cdm.model.description.Distribution;
 import eu.etaxonomy.cdm.model.description.Feature;
+import eu.etaxonomy.cdm.model.description.PresenceTerm;
 import eu.etaxonomy.cdm.model.description.TaxonDescription;
 import eu.etaxonomy.cdm.model.description.TextData;
+import eu.etaxonomy.cdm.model.location.NamedArea;
+import eu.etaxonomy.cdm.model.location.NamedAreaLevel;
+import eu.etaxonomy.cdm.model.location.NamedAreaType;
+import eu.etaxonomy.cdm.model.location.TdwgArea;
+import eu.etaxonomy.cdm.model.location.WaterbodyOrCountry;
 import eu.etaxonomy.cdm.model.name.BotanicalName;
+import eu.etaxonomy.cdm.model.name.NonViralName;
 import eu.etaxonomy.cdm.model.name.Rank;
 import eu.etaxonomy.cdm.model.name.SpecimenTypeDesignation;
 import eu.etaxonomy.cdm.model.name.TaxonNameBase;
 import eu.etaxonomy.cdm.model.reference.Reference;
+import eu.etaxonomy.cdm.model.reference.ReferenceFactory;
 import eu.etaxonomy.cdm.model.taxon.Synonym;
 import eu.etaxonomy.cdm.model.taxon.Taxon;
 import eu.etaxonomy.cdm.model.taxon.TaxonBase;
-import eu.etaxonomy.cdm.strategy.parser.NonViralNameParserImpl;
 
 
 /**
@@ -97,33 +110,25 @@ public class CentralAfricaFernsTaxonImport  extends CentralAfricaFernsImportBase
 			mapping = new DbImportMapping();
 			
 			mapping.addMapper(DbImportObjectCreationMapper.NewInstance(this, "Taxon number", TAXON_NAMESPACE)); //id + tu_status
-			mapping.addMapper(DbNotYetImplementedMapper.NewInstance("Types XXX", "Method Mapper does not work yet. Needs implementation for all 5 types. FIXMEs in implementation"));
 
 //			mapping.addMapper(DbImportMethodMapper.NewInstance(this, "makeTypes", ResultSet.class, TaxonBase.class, CentralAfricaFernsImportState.class));
 			mapping.addMapper(DbImportAnnotationMapper.NewInstance("Notes", AnnotationType.EDITORIAL()));
 
 			mapping.addMapper(DbImportMethodMapper.NewInstance(this, "makeCommonName", ResultSet.class, CentralAfricaFernsImportState.class));
+			mapping.addMapper(DbImportMethodMapper.NewInstance(this, "makeReferences", ResultSet.class, CentralAfricaFernsImportState.class));
+			mapping.addMapper(DbImportMethodMapper.NewInstance(this, "makeEcology", ResultSet.class, CentralAfricaFernsImportState.class));
+			mapping.addMapper(DbImportMethodMapper.NewInstance(this, "makeDistribution", ResultSet.class, CentralAfricaFernsImportState.class ));
 			
+//			mapping.addMapper(DbImportTextDataCreationMapper.NewInstance(dbIdAttribute, objectToCreateNamespace, dbTaxonFkAttribute, taxonNamespace, dbTextAttribute, Language.ENGLISH(), Feature.ECOLOGY(), null));
+
 			//not yet implemented or ignore
+			mapping.addMapper(DbNotYetImplementedMapper.NewInstance("Types XXX", "Method Mapper does not work yet. Needs implementation for all 5 types. FIXMEs in implementation"));
+
 			mapping.addMapper(DbNotYetImplementedMapper.NewInstance("Basionym of", "Needs better understanding"));
 			mapping.addMapper(DbNotYetImplementedMapper.NewInstance("Synonym of", "Needs better understanding. Strange values like "));
 			
 			
-			mapping.addMapper(DbNotYetImplementedMapper.NewInstance("Author/s - full", "Difference to Author/s abbreviated needs to be clarified. Do authors belong to reference? Sometimes authors are not equal to name authors"));
-			mapping.addMapper(DbNotYetImplementedMapper.NewInstance("Author/s abbreviated" , "Difference to Author/s - full needs to be clarified. Do authors belong to reference? Sometimes authors are not equal to name authors"));
-			
-			mapping.addMapper(DbNotYetImplementedMapper.NewInstance("Reference abbreviated" , "Clarify relationship to reference tables, authors and to Reference full"));
 			mapping.addMapper(DbNotYetImplementedMapper.NewInstance("Chromosome number" , "Wrong data. Seems to be 'reference full'"));
-			
-			mapping.addMapper(DbNotYetImplementedMapper.NewInstance("Book / Journal volume" , "no comment"));
-			mapping.addMapper(DbNotYetImplementedMapper.NewInstance("Book / Journal part" , "no comment"));
-			mapping.addMapper(DbNotYetImplementedMapper.NewInstance("Book / Journal fascicle" , "What is this?"));
-			
-			mapping.addMapper(DbNotYetImplementedMapper.NewInstance("Book / Journal pages" , "What is this?"));
-			
-			mapping.addMapper(DbNotYetImplementedMapper.NewInstance("Illustrations/s" , "What is this?"));
-
-			mapping.addMapper(DbNotYetImplementedMapper.NewInstance("Date published" , "Needs implementation for parsing"));
 			
 			mapping.addMapper(DbNotYetImplementedMapper.NewInstance("Book / Paper title" , "Needs implementation. Inreferences?"));
 			
@@ -131,17 +136,8 @@ public class CentralAfricaFernsTaxonImport  extends CentralAfricaFernsImportBase
 				
 			mapping.addMapper(DbNotYetImplementedMapper.NewInstance("Nom remarks" , "Needs parsing for status, homonyms etc., the rest goes to a name annotation"));
 			
-			mapping.addMapper(DbNotYetImplementedMapper.NewInstance("Distribution - Country" , "Needs mapping to TDWG or ISO"));
-			
-			mapping.addMapper(DbNotYetImplementedMapper.NewInstance("Distribution - Province" , "Very few. By hand. Mapping to TDWG4?"));
-			mapping.addMapper(DbNotYetImplementedMapper.NewInstance("Distribution - detailed" , "Few. Textdata. Sometimes similar to Distribution - Province entries"));
-			
 			mapping.addMapper(DbNotYetImplementedMapper.NewInstance("Reprint no" , "What's this?"));
 			mapping.addMapper(DbNotYetImplementedMapper.NewInstance("Date verified" , "Needed?"));
-			
-			DbImportMethodMapper.NewInstance(this, "makeEcology", ResultSet.class, CentralAfricaFernsImportState.class);
-//			mapping.addMapper(DbImportTextDataCreationMapper.NewInstance(dbIdAttribute, objectToCreateNamespace, dbTaxonFkAttribute, taxonNamespace, dbTextAttribute, Language.ENGLISH(), Feature.ECOLOGY(), null));
-			
 			
 			mapping.addMapper(DbNotYetImplementedMapper.NewInstance("Illustrations - non-original" , "What's this?"));
 			
@@ -245,12 +241,282 @@ public class CentralAfricaFernsTaxonImport  extends CentralAfricaFernsImportBase
 		}
 	}
 
+	/**
+	 * for internal use only, used by MethodMapper
+	 */
+	private TaxonBase makeDistribution(ResultSet rs, CentralAfricaFernsImportState state) throws SQLException{
+		try {
+			String taxonNumber = state.getTaxonNumber();
+//			logger.info(taxonNumber);
+			TaxonBase<?> taxonBase = state.getRelatedObject(state.CURRENT_OBJECT_NAMESPACE, state.CURRENT_OBJECT_ID, TaxonBase.class);
+			String countriesString = rs.getString("Distribution - Country");
+			String province = rs.getString("Distribution - Province");
+			String distributionDetailed = rs.getString("Distribution - detailed");
+			TaxonNameBase nameUsedInSource = taxonBase.getName();
+			Taxon taxon;
+			if (taxonBase.isInstanceOf(Taxon.class)){
+				taxon = CdmBase.deproxy(taxonBase, Taxon.class);
+			}else{
+				logger.warn("Distributions for synonyms not yet supported");
+				taxon = Taxon.NewInstance(null, null); 
+			}
+
+			if (StringUtils.isNotBlank(countriesString) ){
+				makeCountries(state, taxonNumber, taxon, nameUsedInSource, countriesString, province, distributionDetailed);
+			}
+			makeProvince(taxon, province);
+			makeDistributionDetailed(taxon, distributionDetailed);
+
+			return taxonBase;
+		} catch (Exception e) {
+			e.printStackTrace();
+			return null;
+		}
+	}
+
+
+
+	/**
+	 * @param state
+	 * @param taxonNumber
+	 * @param taxonBase
+	 * @param countriesString
+	 */
+	private void makeCountries(CentralAfricaFernsImportState state, String taxonNumber, Taxon taxon, TaxonNameBase nameUsedInSource, String countriesString, String province, String distributionDetailed) {
+		countriesString = countriesString.replaceAll("\\*", "");  
+		countriesString = countriesString.replace("  ", " ");
+		countriesString = countriesString.replace(", endemic", " - endemic");
+		countriesString = countriesString.replace("(endemic)", " - endemic");
+		countriesString = countriesString.replace("(introduced)", " - introduced");
+		countriesString = countriesString.replace("(naturalised)", " - naturalised");
+		countriesString = countriesString.replace("Madagascar-", "Madagascar -");
+		countriesString = countriesString.replace("Mahé", "Mahe");
+		 
+		String[] split = countriesString.split("[,;]");
+		String remainingString = null;
+		for (String countryString : split){
+			countryString = CdmUtils.concat(", ", remainingString , countryString);
+			if (countryString.matches(".*\\(.*") && ! countryString.matches(".*\\).*")){
+				remainingString = countryString;
+				continue;
+			}
+			remainingString = null;
+			try {
+				makeSingleCountry(state, taxonNumber, taxon, nameUsedInSource, countryString.trim());
+			} catch (UndefinedTransformerMethodException e) {
+				e.printStackTrace();
+			}
+		}
+	}
+	
+	private void makeDistributionDetailed(Taxon taxon, String distributionDetailed) {
+		if (StringUtils.isNotBlank(distributionDetailed)){
+			TaxonDescription description = getTaxonDescription(taxon, false, true);
+			TextData distribution = TextData.NewInstance(Feature.DISTRIBUTION());
+			description.addElement(distribution);
+			distribution.putText(distributionDetailed, Language.ENGLISH());
+		}
+	}
+	
+	private void makeProvince(Taxon taxon, String province) {
+		if (StringUtils.isNotBlank(province)){
+			TaxonDescription description = getTaxonDescription(taxon, false, true);
+			TextData distribution = TextData.NewInstance(Feature.DISTRIBUTION());
+			description.addElement(distribution);
+			distribution.putText(province, Language.ENGLISH());
+		}
+	}
+
+
+
+	private void makeSingleCountry(CentralAfricaFernsImportState state, String taxonNumber, Taxon taxon, TaxonNameBase nameUsedInSource, String country) throws UndefinedTransformerMethodException {
+		boolean areaDoubtful = false;
+		Distribution distribution = Distribution.NewInstance(null, PresenceTerm.PRESENT());
+		distribution.addSource(taxonNumber, "Distribution_Country", state.getConfig().getSourceReference(), null, nameUsedInSource, null);
+		NamedArea area = null;
+		//empty
+		if (StringUtils.isBlank(country)){
+			return;
+		}
+		country = country.trim();
+		//doubtful
+		if (country.startsWith("?")){
+			areaDoubtful = true;
+			country = country.substring(1).trim();
+		}
+		//status
+		country = makeCountryStatus(state, country, distribution);
+		
+		//brackets
+		country = makeCountryBrackets(state, taxonNumber, taxon, nameUsedInSource, country);
+		String countryWithoutIslands = null;
+		String countryWithoutDot = null;
+		if (country.endsWith(" Isl.") || country.endsWith(" isl.") ){
+			countryWithoutIslands = country.substring(0, country.length()-5);
+		}
+		if (country.endsWith(".")){
+			countryWithoutDot = country.substring(0, country.length()-1);
+		}
+		if (country.endsWith("*")){
+			country = country.substring(0, country.length()-1);
+		}
+		if (country.endsWith("Islands")){
+			country = country.replace("Islands", "Is.");
+		}
+		
+		
+		//areas
+		if (TdwgArea.isTdwgAreaLabel(country)){
+			//tdwg
+			area = TdwgArea.getAreaByTdwgLabel(country);
+		}else if (TdwgArea.isTdwgAreaLabel(countryWithoutIslands)){
+			//tdwg
+			area = TdwgArea.getAreaByTdwgLabel(countryWithoutIslands);
+		}else if (TdwgArea.isTdwgAreaLabel(countryWithoutDot)){
+			//tdwg
+			area = TdwgArea.getAreaByTdwgLabel(countryWithoutDot);
+		}else if ( (area = state.getTransformer().getNamedAreaByKey(country)) != null) {
+			//area already set
+		}else if (WaterbodyOrCountry.isWaterbodyOrCountryLabel(country)){
+			//iso
+			area = WaterbodyOrCountry.getWaterbodyOrCountryByLabel(country);
+		}else{
+			//others
+			NamedAreaLevel level = null;
+			NamedAreaType areaType = null;
+			
+			UUID uuid = state.getTransformer().getNamedAreaUuid(country);
+			if (uuid == null){
+				logger.error(taxonNumber + " - Unknown country: " + country);
+			}
+			area = getNamedArea(state, uuid, country, country, country, areaType, level);
+		}
+		
+		distribution.setArea(area);
+		if (areaDoubtful == true){
+			if (distribution.getStatus().equals(PresenceTerm.PRESENT())){
+				distribution.setStatus(PresenceTerm.PRESENT_DOUBTFULLY());
+			}
+		}
+		TaxonDescription description = getTaxonDescription(taxon, false, true);
+		description.addElement(distribution);
+	}
+
+
+
+	private String makeCountryBrackets(CentralAfricaFernsImportState state, String taxonNumber, Taxon taxon, TaxonNameBase nameUsedInSource, String country) {
+		String[] split = (country + " ").split("\\(.*\\)");
+		if (split.length == 2){
+			String bracket = country.substring(split[0].length()+1, country.indexOf(")"));
+			country = split[0].trim();
+			makeCountries(state, taxonNumber, taxon, nameUsedInSource, bracket, null, null);
+		}else if (split.length ==1){
+			//do nothing
+		}else{
+			logger.warn("Illegal length");
+		}
+		return country;
+	}
+
+
+
+	private String makeCountryStatus(CentralAfricaFernsImportState state, String country, Distribution distribution) throws UndefinedTransformerMethodException {
+		PresenceTerm status = null;
+		String[] split = country.split(" - ");
+		
+		if (split.length == 2){
+			country = split[0].trim();
+			String statusString = split[1];
+			statusString = statusString.replace(".", "");
+			status = state.getTransformer().getPresenceTermByKey(statusString);
+			if (status == null){
+				logger.warn("No status found: "+  statusString);
+			}
+//			UUID uuid = null;
+//			status = getPresenceTerm(state, uuid, statusString, statusString, null);
+		}else if (split.length == 1){
+			//nothing to do
+		}else{
+			logger.warn("Invalid length: " + split.length);
+		}
+		if (status != null){
+			distribution.setStatus(status);
+		}
+		return country;
+	}
+
+
+
+	/**
+	 * for internal use only, used by MethodMapper
+	 */
+	private TaxonBase makeReferences(ResultSet rs, CentralAfricaFernsImportState state) throws SQLException{
+		String taxonNumber = state.getTaxonNumber();
+		String referenceFullString = rs.getString("Reference full");
+		String referenceAbbreviatedString = rs.getString("Reference - abbreviated");
+		String volume = rs.getString("Book / Journal volume");
+		String pages = rs.getString("Book / Journal pages");
+		String illustrations = rs.getString("Illustration/s");
+		
+		String fascicle = rs.getString("Book / Journal fascicle");
+		String part = rs.getString("Book / Journal part");
+		String paperTitle = rs.getString("Book / Paper title");
+		
+		
+		
+		String datePublishedString = rs.getString("Date published");
+		String referenceString = referenceFullString;
+		if (StringUtils.isBlank(referenceString)){
+			referenceString = referenceAbbreviatedString;
+		}
+		
+		TaxonBase<?> taxonBase = state.getRelatedObject(state.CURRENT_OBJECT_NAMESPACE, state.CURRENT_OBJECT_ID, TaxonBase.class);
+		if (StringUtils.isNotBlank(referenceString) || StringUtils.isNotBlank(volume) || 
+					StringUtils.isNotBlank(pages) || StringUtils.isNotBlank(illustrations) || 
+					StringUtils.isNotBlank(datePublishedString) || StringUtils.isNotBlank(paperTitle)){
+			NonViralName name = CdmBase.deproxy(taxonBase.getName(), NonViralName.class);
+			Reference reference = ReferenceFactory.newGeneric();
+			reference.setAuthorTeam((TeamOrPersonBase)name.getCombinationAuthorTeam());
+			reference.setTitle(referenceString);
+			reference.setVolume(volume);
+			reference.setEdition(part);
+			Reference inrefernce = null;
+			//TODO parser
+			TimePeriod datePublished = TimePeriod.parseString(datePublishedString);
+			reference.setDatePublished(datePublished);
+			if (StringUtils.isNotBlank(paperTitle)){
+				Reference innerReference = ReferenceFactory.newGeneric();
+				innerReference.setDatePublished(datePublished);
+				name.setNomenclaturalReference(innerReference);
+				innerReference.setInReference(reference);
+				reference = innerReference;
+			}else{
+				name.setNomenclaturalReference(reference);
+			}
+			
+			//details
+			String details = CdmUtils.concat(", ", pages, illustrations);
+			details = StringUtils.isBlank(details) ? null : details.trim();
+			name.setNomenclaturalMicroReference(details);
+			try {
+				UUID uuidFascicle = state.getTransformer().getExtensionTypeUuid("fascicle");
+				ExtensionType extensionType = getExtensionType(state, uuidFascicle, "Fascicle", "Fascicle", null);
+				reference.addExtension(fascicle, extensionType);
+			} catch (UndefinedTransformerMethodException e) {
+				e.printStackTrace();
+			}
+			
+		}else{
+			logger.warn(taxonNumber + " - Taxon has no reference");
+		}
+		return taxonBase;
+	}
 
 	/**
 	 * for internal use only, used by MethodMapper
 	 */
 	private TaxonBase makeCommonName(ResultSet rs, CentralAfricaFernsImportState state) throws SQLException{
-		String taxonNumber = rs.getString("Taxon number");
+		String taxonNumber = state.getTaxonNumber();
 		String commonNames = rs.getString("Common names");
 		TaxonBase<?> taxonBase = state.getRelatedObject(state.CURRENT_OBJECT_NAMESPACE, state.CURRENT_OBJECT_ID, TaxonBase.class);
 		if (StringUtils.isNotBlank(commonNames)){
@@ -263,7 +529,7 @@ public class CentralAfricaFernsTaxonImport  extends CentralAfricaFernsImportBase
 					description.addElement(commonName);				
 				}
 			}else{
-				logger.warn("Taxon with common name is of type synonym but must be accepted taxon: " + taxonNumber);
+				logger.warn(taxonNumber + " - Taxon with common name is of type synonym but must be accepted taxon: " + taxonBase.getName().getTitleCache());
 			}
 		}
 		return taxonBase;
@@ -274,7 +540,7 @@ public class CentralAfricaFernsTaxonImport  extends CentralAfricaFernsImportBase
 	 * @param commonNames 
 	 */
 	private TaxonBase makeEcology(ResultSet rs, CentralAfricaFernsImportState state) throws SQLException{
-		String taxonNumber = rs.getString("Taxon number");
+		String taxonNumber = state.getTaxonNumber();
 		String ecologyString = rs.getString("Ecology");
 		TaxonBase<?> taxonBase = state.getRelatedObject(state.CURRENT_OBJECT_NAMESPACE, state.CURRENT_OBJECT_ID, TaxonBase.class);
 		if (StringUtils.isNotBlank(ecologyString)){
@@ -285,7 +551,7 @@ public class CentralAfricaFernsTaxonImport  extends CentralAfricaFernsImportBase
 				ecology.putText(ecologyString.trim(), Language.ENGLISH());
 				description.addElement(ecology);				
 			}else{
-				logger.warn("Taxon with ecology is of type synonym but must be accepted taxon: " + taxonNumber);
+				logger.warn(taxonNumber + " - Taxon with ecology is of type synonym but must be accepted taxon: " + taxonBase.getName().getTitleCache());
 			}
 		}
 		return taxonBase;
@@ -300,7 +566,7 @@ public class CentralAfricaFernsTaxonImport  extends CentralAfricaFernsImportBase
 		Reference sec = state.getConfig().getSourceReference();
 		
 		String taxonNumber = rs.getString("Taxon number");
-		
+		state.setTaxonNumber(taxonNumber);
 		
 		String orderName = rs.getString("Order name");
 		String subOrderName = rs.getString("Suborder name");
@@ -338,8 +604,6 @@ public class CentralAfricaFernsTaxonImport  extends CentralAfricaFernsImportBase
 		taxonName.setRank(lowestRank);
 		setAuthor(taxonName, rs, taxonNumber, false);
 		
-		//set epithets
-		
 		//add original source for taxon name (taxon original source is added in mapper
 		Reference citation = state.getConfig().getSourceReference();
 //		addOriginalSource(taxonName, taxonNumber, TAXON_NAMESPACE, citation);
@@ -357,8 +621,7 @@ public class CentralAfricaFernsTaxonImport  extends CentralAfricaFernsImportBase
 	 * @param status
 	 * @return
 	 */
-	private TaxonBase makeTaxon(BotanicalName taxonName, Reference sec,
-			String taxonNumber, String status) {
+	private TaxonBase makeTaxon(BotanicalName taxonName, Reference sec, String taxonNumber, String status) {
 		TaxonBase taxon;
 		if ("c".equalsIgnoreCase(status)|| "incertus".equalsIgnoreCase(status) ){
 			taxon = Taxon.NewInstance(taxonName, sec);
@@ -448,8 +711,9 @@ public class CentralAfricaFernsTaxonImport  extends CentralAfricaFernsImportBase
 		}
 	}
 	
+
 	/* (non-Javadoc)
-	 * @see eu.etaxonomy.cdm.io.common.CdmIoBase#doCheck(eu.etaxonomy.cdm.io.common.IImportConfigurator)
+	 * @see eu.etaxonomy.cdm.io.common.CdmIoBase#doCheck(eu.etaxonomy.cdm.io.common.IoStateBase)
 	 */
 	@Override
 	protected boolean doCheck(CentralAfricaFernsImportState state){
@@ -459,8 +723,9 @@ public class CentralAfricaFernsTaxonImport  extends CentralAfricaFernsImportBase
 	
 	
 	/* (non-Javadoc)
-	 * @see eu.etaxonomy.cdm.io.common.CdmIoBase#isIgnore(eu.etaxonomy.cdm.io.common.IImportConfigurator)
+	 * @see eu.etaxonomy.cdm.io.common.CdmIoBase#isIgnore(eu.etaxonomy.cdm.io.common.IoStateBase)
 	 */
+	@Override
 	protected boolean isIgnore(CentralAfricaFernsImportState state){
 		return ! state.getConfig().isDoTaxa();
 	}
