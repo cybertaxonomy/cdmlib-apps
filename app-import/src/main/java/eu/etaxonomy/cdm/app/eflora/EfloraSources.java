@@ -66,7 +66,7 @@ public class EfloraSources {
 	public static URI fm_13_1_local(){
 		URI sourceUrl;
 		try {
-			sourceUrl = new URI("file:C:/localCopy/Data/eflora/floraMalesiana/fm13_1_v8 final.xml");
+			sourceUrl = new URI("file:C:/localCopy/Data/eflora/floraMalesiana/fm13_1_v8_final.xml");
 			return sourceUrl;
 		} catch (URISyntaxException e) {
 			e.printStackTrace();
@@ -79,7 +79,7 @@ public class EfloraSources {
 	public static URI fm_13_2_local(){
 		URI sourceUrl;
 		try {
-			sourceUrl = new URI("file:C:/localCopy/Data/eflora/floraMalesiana/fm13_2_v8 final.xml");
+			sourceUrl = new URI("file:C:/localCopy/Data/eflora/floraMalesiana/fm13_2_v8_final.xml");
 			return sourceUrl;
 		} catch (URISyntaxException e) {
 			e.printStackTrace();
