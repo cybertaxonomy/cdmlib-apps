@@ -46,7 +46,9 @@ public class CentralAfricaFernsActivator {
 //	static final ICdmDataSource cdmDestination = CdmDestinations.cdm_flora_central_africa_preview();
 //	static final ICdmDataSource cdmDestination = CdmDestinations.cdm_flora_central_africa_production();
 	static final ICdmDataSource cdmDestination = CdmDestinations.localH2();
-
+//	static final ICdmDataSource cdmDestination = CdmDestinations.cdm_local_postgres_CdmTest();
+//	static final ICdmDataSource cdmDestination = CdmDestinations.cdm_test_local_mysql();
+	
 	//feature tree uuid
 	public static final UUID featureTreeUuid = UUID.fromString("62d930cb-aabb-461c-ad16-0fdbd2bae592");
 	
