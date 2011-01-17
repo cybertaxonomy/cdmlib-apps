@@ -34,7 +34,7 @@ public class CentralAfricaChecklistActivator {
 	private static final Logger logger = Logger.getLogger(CentralAfricaChecklistActivator.class);
 	
 	//database validation status (create, update, validate ...)
-	static DbSchemaValidation hbm2dll = DbSchemaValidation.CREATE;
+	static DbSchemaValidation hbm2dll = DbSchemaValidation.VALIDATE;
 	static final Source mySource = CdmImportSources.AFRICA_CHECKLIST_ACCESS();
 	
 //	static final ICdmDataSource cdmDestination = CdmDestinations.cdm_test_andreasM3();
