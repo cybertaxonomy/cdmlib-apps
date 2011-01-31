@@ -80,9 +80,8 @@ public class CentralAfricaFernsImportConfigurator extends ImportConfiguratorBase
 	 * @see eu.etaxonomy.cdm.io.tcsrdf.IImportConfigurator#getSourceReference()
 	 */
 	public Reference getSourceReference() {
-		ReferenceFactory refFactory = ReferenceFactory.newInstance();
 		if (sourceReference == null){
-			sourceReference =  refFactory.newDatabase();
+			sourceReference =  ReferenceFactory.newDatabase();
 			if (getSource() != null){
 				sourceReference.setTitleCache(getSource().getDatabase(), true);
 			}

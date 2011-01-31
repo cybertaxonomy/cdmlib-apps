@@ -36,6 +36,10 @@ public final class CentralAfricaFernsTransformer extends InputTransformerBase {
 	
 	//Extensions
 	public static UUID uuidFascicle = UUID.fromString("718bb2d6-dbcd-4e60-9cfa-154a59461ef4");
+	public static UUID uuidNomenclaturalRemarks = UUID.fromString("ea7ceb5c-1b31-47b2-8544-89c90aed3a44");
+	public static UUID uuidNamePublishedAs = UUID.fromString("8eb258aa-6342-49cd-ad7b-185a3e879031");
+	public static UUID uuidIllustrationsNonOriginal = UUID.fromString("b0beb324-76a6-4f76-9e0c-413383782329");
+		
 	
 	//NamedAreas
 	public static UUID uuidZanzibar = UUID.fromString("8d7dc5e2-43a6-4e7d-af29-a43cf62ca212");

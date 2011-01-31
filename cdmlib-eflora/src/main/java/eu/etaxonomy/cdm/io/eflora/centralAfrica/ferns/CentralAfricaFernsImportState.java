@@ -19,6 +19,7 @@ import eu.etaxonomy.cdm.io.common.DbImportStateBase;
 import eu.etaxonomy.cdm.model.common.DefinedTermBase;
 import eu.etaxonomy.cdm.model.common.MarkerType;
 import eu.etaxonomy.cdm.model.common.User;
+import eu.etaxonomy.cdm.model.name.Rank;
 
 /**
  * @author a.mueller
@@ -34,6 +35,7 @@ public class CentralAfricaFernsImportState extends DbImportStateBase<CentralAfri
 	Map<String, User> usernameMap = new HashMap<String, User>();
 
 	private String taxonNumber;
+	private Rank currentRank;
 	
 	
 	/* (non-Javadoc)
@@ -77,6 +79,14 @@ public class CentralAfricaFernsImportState extends DbImportStateBase<CentralAfri
 
 	public String getTaxonNumber() {
 		return taxonNumber;
+	}
+
+	public void setCurrentRank(Rank currentRank) {
+		this.currentRank = currentRank;
+	}
+
+	public Rank getCurrentRank() {
+		return currentRank;
 	}
 
  
