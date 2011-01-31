@@ -986,7 +986,7 @@ public class CentralAfricaFernsTaxonRelationImport  extends CentralAfricaFernsIm
 			TaxonDescription description = getTaxonDescription(taxon, false, true);
 			TextData distribution = TextData.NewInstance(Feature.DISTRIBUTION());
 			description.addElement(distribution);
-			distribution.putText(distributionDetailed, Language.ENGLISH());
+			distribution.putText(Language.ENGLISH(), distributionDetailed);
 		}
 	}
 

@@ -2095,7 +2095,7 @@ public class EfloraTaxonImport  extends EfloraImportBase implements ICdmIO<Eflor
 	private TextData addDescriptionElement(EfloraImportState state, Taxon taxon, String value, Feature feature, String references) {
 		TextData textData = TextData.NewInstance(feature);
 		Language textLanguage = getDefaultLanguage(state);
-		textData.putText(value, textLanguage);
+		textData.putText(textLanguage, value);
 		TaxonDescription description = getDescription(taxon);
 		description.addElement(textData);
 		if (references != null){
