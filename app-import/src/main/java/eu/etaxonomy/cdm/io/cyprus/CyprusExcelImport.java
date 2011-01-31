@@ -415,7 +415,7 @@ public class CyprusExcelImport extends ExcelImporterBase<CyprusImportState> {
 		if (StringUtils.isNotBlank(systematicsString)){
 			TaxonDescription td = this.getTaxonDescription(mainTaxon, false, true);
 			TextData textData = TextData.NewInstance(Feature.SYSTEMATICS());
-			textData.putText(systematicsString, Language.UNDETERMINED());
+			textData.putText(Language.UNDETERMINED(), systematicsString);
 			td.addElement(textData);
 		}
 	}
@@ -438,7 +438,7 @@ public class CyprusExcelImport extends ExcelImporterBase<CyprusImportState> {
 			//text data
 			TaxonDescription td = this.getTaxonDescription(mainTaxon, false, true);
 			TextData textData = TextData.NewInstance(endemism);
-			textData.putText(endemismString, Language.ENGLISH());
+			textData.putText(Language.ENGLISH(), endemismString);
 			td.addElement(textData);
 		}
 	}
@@ -487,7 +487,7 @@ public class CyprusExcelImport extends ExcelImporterBase<CyprusImportState> {
 			
 			//text data
 			TextData textData = TextData.NewInstance(Feature.STATUS());
-			textData.putText(statusString, Language.ENGLISH());
+			textData.putText(Language.ENGLISH(), statusString);
 			td.addElement(textData);
 		}
 	}
@@ -498,7 +498,7 @@ public class CyprusExcelImport extends ExcelImporterBase<CyprusImportState> {
 		if (StringUtils.isNotBlank(redBookCategory)){
 			TaxonDescription td = this.getTaxonDescription(mainTaxon, false, true);
 			TextData textData = TextData.NewInstance(this.redBookCategory);
-			textData.putText(redBookCategory, Language.ENGLISH());
+			textData.putText(Language.ENGLISH(), redBookCategory);
 			td.addElement(textData);
 		}
 	}

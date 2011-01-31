@@ -182,7 +182,7 @@ public class CichorieaeImageImport extends AbstractImageImporter {
 		
 //		ImageFile image = ImageFile.NewInstance(uri, size, height, width);
 		Media media = ImageFile.NewMediaInstance(mediaCreated, artist, uri, mimeType, suffix, size, height, width);
-		media.addTitle(LanguageString.NewInstance(taxonName, Language.LATIN()));
+		media.putTitle(LanguageString.NewInstance(taxonName, Language.LATIN()));
 		
 		return media;
 	}
