@@ -40,23 +40,11 @@ public class CdmImportSources {
 		String dbms = Source.ACCESS;
 		String strServer = null;
 		//String strDB = "fernsTest";
-		String strDB = "C:\\localCopy\\Data\\eflora\\africa\\Synopsis_Database_corrected.mdb";
+		String strDB = "C:\\localCopy\\Data\\eflora\\africa\\ferns\\Synopsis_Database_corrected.mdb";
 		int port = 1433;
 		String userName = "";
 		return  makeSource(dbms, strServer, strDB, port, userName, null);
 	}
-
-	public static Source AFRICA_FERNS_ACCESS_OLD(){
-		//	
-		String dbms = Source.ACCESS;
-		String strServer = null;
-		//String strDB = "fernsTest";
-		String strDB = "C:\\localCopy\\Data\\eflora\\africa\\Mail_2010_05_05\\test.mdb";
-		int port = 1433;
-		String userName = "";
-		return  makeSource(dbms, strServer, strDB, port, userName, null);
-	}
-
 	
 	public static Source GLOBIS(){
 		//	BerlinModel - Pesi-ERMS
