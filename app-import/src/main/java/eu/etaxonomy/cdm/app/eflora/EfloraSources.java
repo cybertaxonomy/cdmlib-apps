@@ -27,7 +27,7 @@ public class EfloraSources {
 	public static URI ericacea_local() {
 		URI sourceUrl;
 		try {
-			sourceUrl = new URI("file:C:/localCopy/Data/eflora/africa/ericaceae_v2.xml");
+			sourceUrl = new URI("file:C:/localCopy/Data/eflora/africa/Ericaceae/ericaceae_v2.xml");
 			return sourceUrl;
 		} catch (URISyntaxException e) {
 			e.printStackTrace();
