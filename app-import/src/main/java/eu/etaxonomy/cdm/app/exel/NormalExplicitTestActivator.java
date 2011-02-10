@@ -52,7 +52,6 @@ public class NormalExplicitTestActivator {
 	static final DO_REFERENCES doReferences =  DO_REFERENCES.ALL;
 	//names
 	static final boolean doTaxonNames = true;
-	static final boolean doRelNames = true;
 	
 	//taxa
 	static final boolean doTaxa = true;
@@ -69,7 +68,6 @@ public class NormalExplicitTestActivator {
 		
 		config.setDoReferences(doReferences);
 		config.setDoTaxonNames(doTaxonNames);
-		config.setDoRelNames(doRelNames);
 		
 		config.setDoMatchTaxa(doMatchTaxa);
 		config.setDoTaxa(doTaxa);
