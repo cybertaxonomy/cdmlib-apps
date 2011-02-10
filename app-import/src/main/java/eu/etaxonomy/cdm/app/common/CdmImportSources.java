@@ -9,7 +9,12 @@
 */
 package eu.etaxonomy.cdm.app.common;
 
+import java.net.URI;
+import java.net.URL;
+
 import org.apache.log4j.Logger;
+
+import eu.etaxonomy.cdm.app.tcs.TcsSources;
 import eu.etaxonomy.cdm.common.AccountStore;
 import eu.etaxonomy.cdm.io.common.Source;
 
@@ -66,6 +71,14 @@ public class CdmImportSources {
 		return  makeSource(dbms, strServer, strDB, port, userName, null);
 	}
 	
+	
+	public static URI SYNTHESYS_SPECIMEN(){
+		//		tcsXmlTest.xml
+		URL url = new TcsSources().getClass().getResource("/specimen/SynthesysSpecimenExample.xls");
+		String sourceUrl = url.toString();
+		URI uri = URI.create(sourceUrl);
+		return uri;	
+	}
 	
 	/**
 	 * Initializes the source.
