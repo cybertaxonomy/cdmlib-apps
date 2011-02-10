@@ -59,7 +59,6 @@ public class SalvadorExport {
 	//names
 	static final boolean doTaxonNames = true;
 	static final boolean doRelNames = true;
-	static final boolean doNameStatus = true;
 	static final boolean doTypes = false;  //Types do not exist in El_Salvador DB
 	static final boolean doNameFacts = false;  //Name Facts do not exist in El_Salvador DB
 	
@@ -78,8 +77,6 @@ public class SalvadorExport {
 //	static final DO_REFERENCES doReferences =  DO_REFERENCES.ALL;
 //	//names
 //	static final boolean doTaxonNames = true;
-//	static final boolean doRelNames = true;
-//	static final boolean doNameStatus = false;
 //	static final boolean doTypes = false;
 //	static final boolean doNameFacts = false;
 //	
@@ -107,7 +104,6 @@ public class SalvadorExport {
 		bmExportConfigurator.setDoReferences(doReferences);
 		bmExportConfigurator.setDoTaxonNames(doTaxonNames);
 		bmExportConfigurator.setDoRelNames(doRelNames);
-		bmExportConfigurator.setDoNameStatus(doNameStatus);
 		bmExportConfigurator.setDoTypes(doTypes);
 		bmExportConfigurator.setDoNameFacts(doNameFacts);
 		
