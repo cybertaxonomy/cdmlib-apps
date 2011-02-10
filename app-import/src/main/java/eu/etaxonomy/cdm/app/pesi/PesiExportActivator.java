@@ -55,8 +55,6 @@ public class PesiExportActivator {
 	static final DO_REFERENCES doReferences =  DO_REFERENCES.ALL;
 	//names
 	static final boolean doTaxonNames = true;
-	static final boolean doRelNames = true;
-	static final boolean doNameStatus = true;
 	static final boolean doTypes = false;
 	static final boolean doNameFacts = false;
 	
@@ -75,8 +73,6 @@ public class PesiExportActivator {
 //	static final DO_REFERENCES doReferences =  DO_REFERENCES.ALL;
 //	//names
 //	static final boolean doTaxonNames = true;
-//	static final boolean doRelNames = true;
-//	static final boolean doNameStatus = false;
 //	static final boolean doTypes = false;
 //	static final boolean doNameFacts = false;
 //	
@@ -98,8 +94,6 @@ public class PesiExportActivator {
 		pesiExportConfigurator.setDoAuthors(doAuthors);
 		pesiExportConfigurator.setDoReferences(doReferences);
 		pesiExportConfigurator.setDoTaxonNames(doTaxonNames);
-		pesiExportConfigurator.setDoRelNames(doRelNames);
-		pesiExportConfigurator.setDoNameStatus(doNameStatus);
 		pesiExportConfigurator.setDoTypes(doTypes);
 		pesiExportConfigurator.setDoNameFacts(doNameFacts);
 		
