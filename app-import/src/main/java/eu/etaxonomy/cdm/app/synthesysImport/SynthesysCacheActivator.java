@@ -24,8 +24,10 @@ import org.springframework.transaction.TransactionStatus;
 import eu.etaxonomy.cdm.api.application.CdmApplicationController;
 import eu.etaxonomy.cdm.api.service.pager.Pager;
 import eu.etaxonomy.cdm.app.common.CdmDestinations;
+import eu.etaxonomy.cdm.app.common.CdmImportSources;
 import eu.etaxonomy.cdm.common.ExcelUtils;
 import eu.etaxonomy.cdm.database.DbSchemaValidation;
+import eu.etaxonomy.cdm.database.ICdmDataSource;
 import eu.etaxonomy.cdm.model.agent.AgentBase;
 import eu.etaxonomy.cdm.model.agent.Institution;
 import eu.etaxonomy.cdm.model.agent.Person;
@@ -73,8 +75,10 @@ public class SynthesysCacheActivator {
 	protected ArrayList<String> gatheringAgentList = new ArrayList<String>();
 	protected ArrayList<String> identificationList = new ArrayList<String>();
 
-	static DbSchemaValidation hbm2dll = DbSchemaValidation.UPDATE;
-
+	static DbSchemaValidation hbm2dll = DbSchemaValidation.CREATE;
+	
+	static ICdmDataSource desitination = CdmDestinations.localH2();
+	
 	protected HSSFWorkbook hssfworkbook = null;
 
 
@@ -123,8 +127,8 @@ public class SynthesysCacheActivator {
 		} catch (Exception e) {
 		}
 		try {String coll =unit.get("collector");
-		coll=coll.replaceAll("None", null);
-		this.gatheringAgentList.add(coll);
+			coll=coll.replaceAll("None", null);
+			this.gatheringAgentList.add(coll);
 		} catch (Exception e) {
 		}
 		try {this.identificationList.add(taxonName+" "+author);
@@ -138,7 +142,7 @@ public class SynthesysCacheActivator {
 		CdmApplicationController app = null;
 		TransactionStatus tx = null;
 
-		app = CdmApplicationController.NewInstance(CdmDestinations.cdm_test_patricia(), hbm2dll);
+		app = CdmApplicationController.NewInstance(desitination, hbm2dll);
 		
 		tx = app.startTransaction();
 		try {
@@ -434,10 +438,10 @@ public class SynthesysCacheActivator {
 	 * @throws URISyntaxException 
 	 */
 	public static void main(String[] args) throws URISyntaxException {
-		URI uri = new URI("file:///home/patricia/Desktop/CDMtabular9c04a474e2_23_09_08.xls");
-		
+		URI uri = CdmImportSources.SYNTHESYS_SPECIMEN();		
 		logger.info("main method");
 		SynthesysCacheActivator abcdAct = new SynthesysCacheActivator();
+		
 		ArrayList<HashMap<String, String>> units;
 		try {
 			units = ExcelUtils.parseXLS(uri);

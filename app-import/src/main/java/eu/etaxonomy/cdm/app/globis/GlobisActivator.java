@@ -101,8 +101,8 @@ public class GlobisActivator {
 		config.setIgnoreNull(ignoreNull);
 		config.setDoReferences(doReferences);
 		
-		config.setDoTaxa(doTaxa);
-		config.setDoRelTaxa(doRelTaxa);
+//		config.setDoTaxa(doTaxa);
+//		config.setDoRelTaxa(doRelTaxa);
 		config.setDoLinks(doLinks);
 		config.setDoOccurrence(doOccurences);
 		config.setDbSchemaValidation(hbm2dll);

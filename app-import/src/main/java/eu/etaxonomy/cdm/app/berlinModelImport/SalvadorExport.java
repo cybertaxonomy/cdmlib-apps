@@ -19,7 +19,7 @@ import eu.etaxonomy.cdm.io.berlinModel.out.BerlinModelExportConfigurator;
 import eu.etaxonomy.cdm.io.common.CdmDefaultExport;
 import eu.etaxonomy.cdm.io.common.Source;
 import eu.etaxonomy.cdm.io.common.IExportConfigurator.CHECK;
-import eu.etaxonomy.cdm.io.common.IImportConfigurator.DO_REFERENCES;
+import eu.etaxonomy.cdm.io.common.IExportConfigurator.DO_REFERENCES;
 import eu.etaxonomy.cdm.model.name.NomenclaturalCode;
 
 
@@ -104,7 +104,6 @@ public class SalvadorExport {
 		bmExportConfigurator.setDoReferences(doReferences);
 		bmExportConfigurator.setDoTaxonNames(doTaxonNames);
 		bmExportConfigurator.setDoRelNames(doRelNames);
-		bmExportConfigurator.setDoTypes(doTypes);
 		bmExportConfigurator.setDoNameFacts(doNameFacts);
 		
 		bmExportConfigurator.setDoTaxa(doTaxa);

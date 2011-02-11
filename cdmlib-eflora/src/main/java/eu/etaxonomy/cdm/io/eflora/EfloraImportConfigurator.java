@@ -36,6 +36,9 @@ public class EfloraImportConfigurator extends ImportConfiguratorBase<EfloraImpor
 		return new EfloraImportConfigurator(uri, destination);
 	}
 	
+	private boolean doTaxa = true;
+
+	
 	//TODO
 	private static IInputTransformer defaultTransformer = null;
 	private String classificationTitle = "E-Flora Import";
@@ -180,7 +183,14 @@ public class EfloraImportConfigurator extends ImportConfiguratorBase<EfloraImpor
 	public void setDefaultLanguageUuid(UUID defaultLanguageUuid) {
 		this.defaultLanguageUuid = defaultLanguageUuid;
 	}
-	
+
+	public boolean isDoTaxa() {
+		return doTaxa;
+	}
+	public void setDoTaxa(boolean doTaxa) {
+		this.doTaxa = doTaxa;
+	}
+
 
 
 

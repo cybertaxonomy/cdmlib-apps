@@ -52,6 +52,9 @@ public class CentralAfricaChecklistImportConfigurator extends ImportConfigurator
 	private boolean doLinks = true;
 	private boolean doNotes = true;
 	private boolean doImages = true;
+	private DO_REFERENCES doReferences = DO_REFERENCES.ALL;
+	private boolean doTaxa = true;
+
 	
 	private static IInputTransformer defaultTransformer = new CentralAfricaChecklistTransformer();
 	
@@ -228,6 +231,21 @@ public class CentralAfricaChecklistImportConfigurator extends ImportConfigurator
 
 	public String getGenevaReferenceTitle() {
 		return genevaReferenceTitle;
+	}
+	
+	
+	public DO_REFERENCES getDoReferences() {
+		return doReferences;
+	}
+	public void setDoReferences(DO_REFERENCES doReferences) {
+		this.doReferences = doReferences;
+	}
+
+	public boolean isDoTaxa() {
+		return doTaxa;
+	}
+	public void setDoTaxa(boolean doTaxa) {
+		this.doTaxa = doTaxa;
 	}
 	
 	

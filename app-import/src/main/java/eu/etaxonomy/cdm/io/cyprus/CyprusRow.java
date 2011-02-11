@@ -11,13 +11,17 @@ package eu.etaxonomy.cdm.io.cyprus;
 
 import java.util.TreeMap;
 
+import org.apache.log4j.Logger;
+
 /**
  * @author a.babadshanjan
  * @created 13.01.2009
  * @version 1.0
  */
 public class CyprusRow {
-	
+	@SuppressWarnings("unused")
+	private static final Logger logger = Logger.getLogger(CyprusRow.class);
+
 	private String species;
 	private String subspecies;
 	private String homotypicSynonyms;

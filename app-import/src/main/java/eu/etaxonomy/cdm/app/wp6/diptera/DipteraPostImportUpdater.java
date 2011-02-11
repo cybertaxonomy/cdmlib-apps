@@ -88,7 +88,7 @@ public class DipteraPostImportUpdater {
 						String originalNameString = parseOriginalNameString(text);
 						String newText = parseNewText(text);
 						citation.removeText(language);
-						citation.putText(newText, language);
+						citation.putText(language, newText);
 						TaxonNameBase scientificName = getScientificName(originalNameString, nameMap, nameDuplicateMap);
 						
 						Set<DescriptionElementSource> sources = citation.getSources();

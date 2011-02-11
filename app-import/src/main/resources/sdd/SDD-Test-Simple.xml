@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<Datasets xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://rs.tdwg.org/UBIF/2006/" xsi:schemaLocation="http://rs.tdwg.org/UBIF/2006/ ../SDD.xsd">
+<Datasets xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://rs.tdwg.org/UBIF/2006/" xsi:schemaLocation="http://rs.tdwg.org/UBIF/2006/ C:/localCopy/schema/sdd/UBIF_TypeLib.xsd">
   <TechnicalMetadata created="2006-04-20T10:00:00">
     <Generator name="n/a, handcrafted instance document" version="n/a"/>
   </TechnicalMetadata>
@@ -80,7 +80,37 @@
         </Representation>
       </TextCharacter>
     </Characters>
-    <CodedDescriptions>
+    
+	<CharacterTrees>
+		<CharacterTree>
+			<Representation>
+				<Label>Main character list</Label>
+				<Detail>Default arrangement of characters; used for editing and identification purposes. Each character occurs only a single time and all characters should be present.</Detail>
+			</Representation>
+			<DesignedFor>
+				<Role>DescriptionEditing</Role>
+				<Role>InteractiveIdentification</Role>
+				<Role>TerminologyReporting</Role>
+				</DesignedFor>
+			<ShouldContainAllCharacters>true</ShouldContainAllCharacters>
+			<Nodes>
+				<CharNode>
+				<Character ref="c1"/>
+				</CharNode>
+				<CharNode>
+				<Character ref="c2"/>
+				</CharNode>
+				<CharNode>
+				<Character ref="c3"/>
+				</CharNode>
+				<CharNode>
+				<Character ref="c4"/>
+				</CharNode>
+		</Nodes>
+			
+		</CharacterTree>
+	  </CharacterTrees>
+	  <CodedDescriptions>
       <CodedDescription id="D101">
         <Representation>
           <Label>&lt;i&gt;Viola hederacea&lt;/i&gt; Labill. as revised by R. Morris April 8, 2006</Label>

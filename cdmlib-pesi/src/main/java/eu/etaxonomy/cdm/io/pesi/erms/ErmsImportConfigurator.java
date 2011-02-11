@@ -18,6 +18,7 @@ import eu.etaxonomy.cdm.io.common.IImportConfigurator;
 import eu.etaxonomy.cdm.io.common.ImportConfiguratorBase;
 import eu.etaxonomy.cdm.io.common.ImportStateBase;
 import eu.etaxonomy.cdm.io.common.Source;
+import eu.etaxonomy.cdm.io.common.IImportConfigurator.DO_REFERENCES;
 import eu.etaxonomy.cdm.io.common.mapping.IInputTransformer;
 import eu.etaxonomy.cdm.io.pesi.erms.validation.ErmsGeneralImportValidator;
 import eu.etaxonomy.cdm.model.name.NomenclaturalCode;
@@ -49,6 +50,10 @@ public class ErmsImportConfigurator extends ImportConfiguratorBase<ErmsImportSta
 	private boolean doNotes = true;
 	private boolean doImages = true;
 	private boolean doOccurrence = true;
+	private DO_REFERENCES doReferences = DO_REFERENCES.ALL;
+	private boolean doTaxa = true;
+	private boolean doRelTaxa = true;
+
 	
 	private static IInputTransformer defaultTransformer = new ErmsTransformer();
 	
@@ -232,5 +237,29 @@ public class ErmsImportConfigurator extends ImportConfiguratorBase<ErmsImportSta
 	public void setDoOccurrence(boolean doOccurrence) {
 		this.doOccurrence = doOccurrence;
 	}
+	
+	
+	public DO_REFERENCES getDoReferences() {
+		return doReferences;
+	}
+	public void setDoReferences(DO_REFERENCES doReferences) {
+		this.doReferences = doReferences;
+	}
+
+	public boolean isDoTaxa() {
+		return doTaxa;
+	}
+	public void setDoTaxa(boolean doTaxa) {
+		this.doTaxa = doTaxa;
+	}
+
+	public boolean isDoRelTaxa() {
+		return doRelTaxa;
+	}
+	public void setDoRelTaxa(boolean doRelTaxa) {
+		this.doRelTaxa = doRelTaxa;
+	}
+
+
 
 }

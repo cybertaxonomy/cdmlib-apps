@@ -14,6 +14,7 @@ import eu.etaxonomy.cdm.database.ICdmDataSource;
 import eu.etaxonomy.cdm.io.common.IImportConfigurator;
 import eu.etaxonomy.cdm.io.common.ImportConfiguratorBase;
 import eu.etaxonomy.cdm.io.common.Source;
+import eu.etaxonomy.cdm.io.common.IImportConfigurator.DO_REFERENCES;
 import eu.etaxonomy.cdm.io.common.mapping.IInputTransformer;
 import eu.etaxonomy.cdm.model.name.NomenclaturalCode;
 import eu.etaxonomy.cdm.model.reference.Reference;
@@ -230,4 +231,52 @@ public class FaunaEuropaeaImportConfigurator extends ImportConfiguratorBase<Faun
 	public void setDoOccurrence(boolean doOccurrence) {
 		this.doOccurrence = doOccurrence;
 	}
+
+	
+	private boolean doAuthors = true;
+	//references
+	private DO_REFERENCES doReferences = DO_REFERENCES.ALL;
+	//names
+	private boolean doTypes = true;
+	
+	//taxa
+	private boolean doTaxa = true;
+	private boolean doRelTaxa = true;
+
+	public boolean isDoAuthors() {
+		return doAuthors;
+	}
+	public void setDoAuthors(boolean doAuthors) {
+		this.doAuthors = doAuthors;
+	}
+
+	public DO_REFERENCES getDoReferences() {
+		return doReferences;
+	}
+	public void setDoReferences(DO_REFERENCES doReferences) {
+		this.doReferences = doReferences;
+	}
+
+//	public boolean isDoTypes() {
+//		return doTypes;
+//	}
+//	public void setDoTypes(boolean doTypes) {
+//		this.doTypes = doTypes;
+//	}
+
+	public boolean isDoTaxa() {
+		return doTaxa;
+	}
+	public void setDoTaxa(boolean doTaxa) {
+		this.doTaxa = doTaxa;
+	}
+
+	public boolean isDoRelTaxa() {
+		return doRelTaxa;
+	}
+	public void setDoRelTaxa(boolean doRelTaxa) {
+		this.doRelTaxa = doRelTaxa;
+	}
+
+	
 }

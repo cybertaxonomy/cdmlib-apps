@@ -16,6 +16,7 @@ import eu.etaxonomy.cdm.io.common.DbExportConfiguratorBase;
 import eu.etaxonomy.cdm.io.common.ExportStateBase;
 import eu.etaxonomy.cdm.io.common.IExportConfigurator;
 import eu.etaxonomy.cdm.io.common.Source;
+import eu.etaxonomy.cdm.io.common.IExportConfigurator.DO_REFERENCES;
 import eu.etaxonomy.cdm.model.reference.Reference;
 import eu.etaxonomy.cdm.model.reference.ReferenceFactory;
 
@@ -28,10 +29,15 @@ public class PesiExportConfigurator extends DbExportConfiguratorBase implements 
 	@SuppressWarnings("unused")
 	private static Logger logger = Logger.getLogger(PesiExportConfigurator.class);
 	private int limitSave = 1000;
+
 	private Reference<?> auctReference;
 	private boolean doOccurrence = true;
 	private boolean doFacts = true;
 	private boolean doNameFacts = true;
+	private DO_REFERENCES doReferences = DO_REFERENCES.ALL;
+	private boolean doTaxa = true;
+	private boolean doRelTaxa = true;
+
 
 	public static PesiExportConfigurator NewInstance(Source pesiDestination, ICdmDataSource source) {
 			return new PesiExportConfigurator(pesiDestination, source);
@@ -120,6 +126,31 @@ public class PesiExportConfigurator extends DbExportConfiguratorBase implements 
 	public void setDoNameFacts(boolean doNameFacts) {
 		this.doNameFacts = doNameFacts;
 	}
+	
+
+
+	public DO_REFERENCES getDoReferences() {
+		return doReferences;
+	}
+	public void setDoReferences(DO_REFERENCES doReferences) {
+		this.doReferences = doReferences;
+	}
+
+	public boolean isDoTaxa() {
+		return doTaxa;
+	}
+	public void setDoTaxa(boolean doTaxa) {
+		this.doTaxa = doTaxa;
+	}
+	
+	public boolean isDoRelTaxa() {
+		return doRelTaxa;
+	}
+	public void setDoRelTaxa(boolean doRelTaxa) {
+		this.doRelTaxa = doRelTaxa;
+	}
+
+
 
 
 

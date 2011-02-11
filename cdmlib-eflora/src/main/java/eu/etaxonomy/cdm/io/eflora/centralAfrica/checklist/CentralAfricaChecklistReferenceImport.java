@@ -23,6 +23,7 @@ import org.springframework.stereotype.Component;
 
 import eu.etaxonomy.cdm.api.service.IClassificationService;
 import eu.etaxonomy.cdm.common.CdmUtils;
+import eu.etaxonomy.cdm.io.common.IImportConfigurator;
 import eu.etaxonomy.cdm.io.common.IOValidator;
 import eu.etaxonomy.cdm.io.common.ResultSetPartitioner;
 import eu.etaxonomy.cdm.io.common.mapping.DbImportMapping;
@@ -143,7 +144,7 @@ public class CentralAfricaChecklistReferenceImport  extends CentralAfricaCheckli
 	 * @see eu.etaxonomy.cdm.io.common.CdmIoBase#isIgnore(eu.etaxonomy.cdm.io.common.IImportConfigurator)
 	 */
 	protected boolean isIgnore(CentralAfricaChecklistImportState state){
-		return ! state.getConfig().isDoTaxa();
+		return state.getConfig().getDoReferences().equals(IImportConfigurator.DO_REFERENCES.NONE);
 	}
 
 

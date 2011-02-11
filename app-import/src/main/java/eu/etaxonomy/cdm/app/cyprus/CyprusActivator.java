@@ -73,7 +73,6 @@ public class CyprusActivator {
 		//make Source
 		CyprusImportConfigurator config= CyprusImportConfigurator.NewInstance(source, cdmDestination);
 		config.setClassificationUuid(classificationUuid);
-		config.setDoTaxa(doTaxa);
 		config.setCheck(check);
 //		config.setDefaultLanguageUuid(defaultLanguageUuid);
 //		config.setDoPrintKeys(doPrintKeys);

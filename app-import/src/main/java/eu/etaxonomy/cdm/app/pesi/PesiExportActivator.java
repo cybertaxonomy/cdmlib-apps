@@ -91,10 +91,6 @@ public class PesiExportActivator {
 		
 		PesiExportConfigurator pesiExportConfigurator = PesiExportConfigurator.NewInstance(destination, source);
 		
-		pesiExportConfigurator.setDoAuthors(doAuthors);
-		pesiExportConfigurator.setDoReferences(doReferences);
-		pesiExportConfigurator.setDoTaxonNames(doTaxonNames);
-		pesiExportConfigurator.setDoTypes(doTypes);
 		pesiExportConfigurator.setDoNameFacts(doNameFacts);
 		
 		pesiExportConfigurator.setDoTaxa(doTaxa);

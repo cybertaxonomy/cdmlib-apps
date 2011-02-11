@@ -1181,7 +1181,7 @@ public class CentralAfricaFernsTaxonRelationImport  extends CentralAfricaFernsIm
 	 */
 	@Override
 	protected boolean isIgnore(CentralAfricaFernsImportState state){
-		return ! state.getConfig().isDoTaxa();
+		return ! state.getConfig().isDoRelTaxa();
 	}
 
 	

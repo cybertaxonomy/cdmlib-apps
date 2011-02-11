@@ -18,6 +18,7 @@ import eu.etaxonomy.cdm.io.common.IImportConfigurator;
 import eu.etaxonomy.cdm.io.common.ImportConfiguratorBase;
 import eu.etaxonomy.cdm.io.common.ImportStateBase;
 import eu.etaxonomy.cdm.io.common.Source;
+import eu.etaxonomy.cdm.io.common.IImportConfigurator.DO_REFERENCES;
 import eu.etaxonomy.cdm.io.common.mapping.IInputTransformer;
 import eu.etaxonomy.cdm.model.name.NomenclaturalCode;
 import eu.etaxonomy.cdm.model.reference.Reference;
@@ -47,6 +48,10 @@ public class CentralAfricaFernsImportConfigurator extends ImportConfiguratorBase
 	private boolean doLinks = true;
 	private boolean doNotes = true;
 	private boolean doImages = true;
+	private DO_REFERENCES doReferences = DO_REFERENCES.ALL;
+	private boolean doTaxa = true;
+	private boolean doRelTaxa = true;
+
 	
 	private static IInputTransformer defaultTransformer = new CentralAfricaFernsTransformer();
 	
@@ -122,7 +127,6 @@ public class CentralAfricaFernsImportConfigurator extends ImportConfiguratorBase
 	public int getRecordsPerTransaction() {
 		return recordsPerTransaction;
 	}
-
 	/**
 	 * @param limitSave the limitSave to set
 	 */
@@ -136,7 +140,6 @@ public class CentralAfricaFernsImportConfigurator extends ImportConfiguratorBase
 	public void setDoVernaculars(boolean doVernaculars) {
 		this.doVernaculars = doVernaculars;
 	}
-
 	/**
 	 * @return the doVernaculars
 	 */
@@ -152,9 +155,6 @@ public class CentralAfricaFernsImportConfigurator extends ImportConfiguratorBase
 	public void setDoLinks(boolean doLinks) {
 		this.doLinks = doLinks;
 	}
-
-
-
 	/**
 	 * @return the doLinks
 	 */
@@ -170,9 +170,6 @@ public class CentralAfricaFernsImportConfigurator extends ImportConfiguratorBase
 	public void setDoNotes(boolean doNotes) {
 		this.doNotes = doNotes;
 	}
-
-
-
 	/**
 	 * @return the doNotes
 	 */
@@ -180,17 +177,12 @@ public class CentralAfricaFernsImportConfigurator extends ImportConfiguratorBase
 		return doNotes;
 	}
 
-
-
 	/**
 	 * @param doImages the doImages to set
 	 */
 	public void setDoImages(boolean doImages) {
 		this.doImages = doImages;
 	}
-
-
-
 	/**
 	 * @return the doImages
 	 */
@@ -198,6 +190,27 @@ public class CentralAfricaFernsImportConfigurator extends ImportConfiguratorBase
 		return doImages;
 	}
 	
+
+	public DO_REFERENCES getDoReferences() {
+		return doReferences;
+	}
+	public void setDoReferences(DO_REFERENCES doReferences) {
+		this.doReferences = doReferences;
+	}
+
+	public boolean isDoTaxa() {
+		return doTaxa;
+	}
+	public void setDoTaxa(boolean doTaxa) {
+		this.doTaxa = doTaxa;
+	}
+
+	public boolean isDoRelTaxa() {
+		return doRelTaxa;
+	}
+	public void setDoRelTaxa(boolean doRelTaxa) {
+		this.doRelTaxa = doRelTaxa;
+	}
 	
 
 }

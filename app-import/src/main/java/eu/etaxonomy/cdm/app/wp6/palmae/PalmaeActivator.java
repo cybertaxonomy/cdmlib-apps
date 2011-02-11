@@ -101,7 +101,6 @@ public class PalmaeActivator {
 			tcsImportConfigurator.setSecUuid(secUuid);
 			tcsImportConfigurator.setSourceSecId(sourceSecId);
 			
-			tcsImportConfigurator.setDoAuthors(doAuthors);
 			tcsImportConfigurator.setDoReferences(doReferences);
 			tcsImportConfigurator.setDoTaxonNames(doTaxonNames);
 			tcsImportConfigurator.setDoRelNames(doRelNames);
