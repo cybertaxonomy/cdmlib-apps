@@ -79,6 +79,7 @@ app-import/src/main/java/eu/etaxonomy/cdm/app/util/TestTransaction.java -text
 app-import/src/main/java/eu/etaxonomy/cdm/app/viennaImport/ViennaActivator.java -text
 app-import/src/main/java/eu/etaxonomy/cdm/app/wp6/cichorieae/CichorieaeActivator.java -text
 app-import/src/main/java/eu/etaxonomy/cdm/app/wp6/cichorieae/CichorieaeCacheUpdater.java -text
+app-import/src/main/java/eu/etaxonomy/cdm/app/wp6/cichorieae/CichorieaeCommonNameActivator.java -text
 app-import/src/main/java/eu/etaxonomy/cdm/app/wp6/cichorieae/CichorieaeImageActivator.java -text
 app-import/src/main/java/eu/etaxonomy/cdm/app/wp6/cichorieae/TaraxacumActivator.java -text
 app-import/src/main/java/eu/etaxonomy/cdm/app/wp6/diptera/DipteraActivator.java -text
@@ -108,6 +109,11 @@ app-import/src/main/java/eu/etaxonomy/cdm/io/globis/GlobisImportState.java -text
 app-import/src/main/java/eu/etaxonomy/cdm/io/globis/GlobisReferenceImport.java -text
 app-import/src/main/java/eu/etaxonomy/cdm/io/globis/GlobisTransformer.java -text
 app-import/src/main/java/eu/etaxonomy/cdm/io/globis/validation/GlobisReferenceImportValidator.java -text
+app-import/src/main/java/eu/etaxonomy/cdm/io/wp6/CichorieaeCommonNameImportState.java -text
+app-import/src/main/java/eu/etaxonomy/cdm/io/wp6/CommonNameExcelImport.java -text
+app-import/src/main/java/eu/etaxonomy/cdm/io/wp6/CommonNameImportConfigurator.java -text
+app-import/src/main/java/eu/etaxonomy/cdm/io/wp6/CommonNameRow.java -text
+app-import/src/main/java/eu/etaxonomy/cdm/io/wp6/CommonNamesTransformer.java -text
 app-import/src/main/resources/Asteraceae[!!-~]Specimen[!!-~]Images[!!-~]Vienna.xls -text
 app-import/src/main/resources/AsteraceaeSpecimenImagesVienna.mdb -text
 app-import/src/main/resources/arecaceae.rdf -text
