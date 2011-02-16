@@ -52,7 +52,6 @@ public class CdmImportSources {
 	}
 	
 	public static Source GLOBIS(){
-		//	BerlinModel - Pesi-ERMS
 		String dbms = Source.SQL_SERVER_2005;
 		String strServer = "LENOVO-T61";
 		String strDB = "globis";
@@ -62,12 +61,20 @@ public class CdmImportSources {
 	}
 
 	public static Source GLOBIS_ODBC(){
-		//	BerlinModel - Pesi-ERMS
 		String dbms = Source.ODDBC;
 		String strServer = "LENOVO-T61";
 		String strDB = "globis";
 		int port = 1433;
 		String userName = "sa";
+		return  makeSource(dbms, strServer, strDB, port, userName, null);
+	}
+	
+	public static Source GLOBIS_MDB(){
+		String dbms = Source.ACCESS;
+		String strServer = null;
+		String strDB = "C:\\localCopy\\Data\\globis\\globis.mdb";
+		int port = -1;
+		String userName = "";
 		return  makeSource(dbms, strServer, strDB, port, userName, null);
 	}
 	
