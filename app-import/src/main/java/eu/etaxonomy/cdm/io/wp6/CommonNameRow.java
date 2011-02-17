@@ -36,6 +36,7 @@ public class CommonNameRow {
 	private String species;
 	private String reference;
 	private String area;
+	private String nameUsedInSource;
 	
 	private Map<String, List<String>> commonNames = new HashMap<String, List<String>>();
 	
@@ -50,6 +51,7 @@ public class CommonNameRow {
 // **************************** GETTER / SETTER *********************************/	
 	
 	public void setCommonNames(String commonNamesString){
+		commonNamesString = makeNameUsedInSource(commonNamesString);
 		String[] split = commonNamesString.split(";");
 		for (String oneLanguage : split){
 			oneLanguage = oneLanguage.trim();
@@ -86,6 +88,20 @@ public class CommonNameRow {
 		}
 	}
 	
+	private String makeNameUsedInSource(String commonNamesString) {
+		String[] split = commonNamesString.split(":");
+		if (split.length > 1){
+			logger.info("NameUsedInSource: " + split[0]);
+			this.nameUsedInSource = split[0].trim();
+			if (split.length > 2){
+				logger.warn("XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX:" + commonNamesString);
+			}
+			return split[1].trim();
+		}else{
+			return split[0].trim();
+		}
+	}
+
 	public Map<String, List<String>> getCommonNames() {
 		return commonNames;
 	}
@@ -112,7 +128,7 @@ public class CommonNameRow {
 		if (! reference.matches("\\d{7}")){
 			logger.warn("Unexpected reference");
 		}
-		this.reference = reference;
+		this.reference = reference.substring(0,6);
 	}
 
 	public String getReference() {
@@ -125,6 +141,14 @@ public class CommonNameRow {
 	
 	public String getArea() {
 		return area;
+	}
+
+	public void setNameUsedInSource(String nameUsedInSource) {
+		this.nameUsedInSource = nameUsedInSource;
+	}
+
+	public String getNameUsedInSource() {
+		return nameUsedInSource;
 	}
 
 

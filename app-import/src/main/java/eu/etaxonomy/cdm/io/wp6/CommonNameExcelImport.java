@@ -20,6 +20,7 @@ import org.apache.log4j.Logger;
 import org.hibernate.criterion.Criterion;
 import org.springframework.stereotype.Component;
 
+import eu.etaxonomy.cdm.api.service.pager.Pager;
 import eu.etaxonomy.cdm.common.CdmUtils;
 import eu.etaxonomy.cdm.io.common.mapping.UndefinedTransformerMethodException;
 import eu.etaxonomy.cdm.io.excel.common.ExcelImporterBase;
@@ -149,17 +150,43 @@ public class CommonNameExcelImport extends ExcelImporterBase<CichorieaeCommonNam
 		//species name
 		String speciesStr = taxonLight.getSpecies();
 		Taxon taxon = getTaxon(state, speciesStr);
-		NamedArea area = getArea(state, taxonLight.getArea());
+//		TaxonNameBase nameUsedInSource = getNameUsedInSource(state, taxonLight.getNameUsedInSource());
+//		NamedArea area = getArea(state, taxonLight.getArea());
 		Reference ref = getReference(state, taxonLight.getReference());
-		makeCommonNames(state, taxonLight.getCommonNames(), taxon, ref, area);
+
+//		makeCommonNames(state, taxonLight.getCommonNames(), taxon, ref, area, taxonLight.getNameUsedInSource());
 		
-		getTaxonService().save(taxon);
+//		getTaxonService().save(taxon);
 		return success;
     }
 
+//	private TaxonNameBase getNameUsedInSource(CichorieaeCommonNameImportState state, String nameUsedInSource) {
+//		if (StringUtils.isBlank(nameUsedInSource)){
+//			return null;
+//		}else{
+//			Pager<TaxonNameBase> list = getNameService().findByName(BotanicalName.class, nameUsedInSource, null, null, null, null, null, null);
+//			if (list.getCount() > 0){
+//				return list.getRecords().get(0);
+//			}else{
+//				return null;
+//			}
+//		}
+//		
+//	}
+
+
+	private Map<String, Reference> referenceStore = new HashMap<String, Reference>();
 	private Reference getReference(CichorieaeCommonNameImportState state, String reference) {
-		Reference result = ReferenceFactory.newBook();
-//		result = getCommonService().getSourcedObjectByIdInSource(Reference.class, reference, "");
+		Reference result = referenceStore.get(reference);
+		if (result == null){
+			result = (Reference)getCommonService().getSourcedObjectByIdInSource(Reference.class, reference, "import to Berlin Model");
+			if (result == null){
+				logger.warn("Reference not found: " + reference);
+				result = ReferenceFactory.newGeneric();
+				result.setTitleCache(reference);
+			}
+			referenceStore.put(reference, result);
+		}
 		return result;
 	}
 
@@ -211,20 +238,25 @@ public class CommonNameExcelImport extends ExcelImporterBase<CichorieaeCommonNam
 	
 	private Taxon getTaxon(CichorieaeCommonNameImportState state, String taxonNameStr) {
 		Taxon result;
+
 		if (taxonStore.get(taxonNameStr) != null){
 			result = taxonStore.get(taxonNameStr);
 		}else{
-			TaxonNameBase name = BotanicalName.NewInstance(Rank.SPECIES());
-			name.setTitleCache(taxonNameStr, true);
-//			result = getTaxonService().findBestMatchingTaxon(taxonNameStr);
-			
-			result = Taxon.NewInstance(name, null);
-			taxonStore.put(taxonNameStr, result);
+			result = getTaxonService().findBestMatchingTaxon(taxonNameStr);
+//			TaxonNameBase name = BotanicalName.NewInstance(Rank.SPECIES());
+//			name.setTitleCache(taxonNameStr, true);
+//			
+//			result = Taxon.NewInstance(name, null);
+			if (result == null){
+				logger.warn("Taxon not found: " +  taxonNameStr);
+			}else{
+				taxonStore.put(taxonNameStr, result);
+			}
 		}
 		return result;
 	}
 
-	private void makeCommonNames(CichorieaeCommonNameImportState state, Map<String, List<String>> commonNamesMap, Taxon mainTaxon, Reference ref, NamedArea area) {
+	private void makeCommonNames(CichorieaeCommonNameImportState state, Map<String, List<String>> commonNamesMap, Taxon mainTaxon, Reference ref, NamedArea area, String nameUsedInSource) {
 		//Common Names
 		TaxonDescription td = this.getTaxonDescription(mainTaxon, false, true);
 		for (String languageKey : commonNamesMap.keySet()){
@@ -234,6 +266,7 @@ public class CommonNameExcelImport extends ExcelImporterBase<CichorieaeCommonNam
 				CommonTaxonName commonName = CommonTaxonName.NewInstance(strCommonName, language, area);
 				if (ref != null){
 					DescriptionElementSource source = DescriptionElementSource.NewInstance(ref, null);
+					source.setOriginalNameString(nameUsedInSource);
 					commonName.addSource(source);
 				}else{
 					logger.warn("No reference defined");
