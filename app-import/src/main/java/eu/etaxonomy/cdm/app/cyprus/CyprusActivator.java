@@ -76,6 +76,7 @@ public class CyprusActivator {
 		config.setClassificationUuid(classificationUuid);
 		config.setCheck(check);
 		config.setDoDistribution(doDistribution);
+		config.setDoTaxa(doTaxa);
 //		config.setDefaultLanguageUuid(defaultLanguageUuid);
 //		config.setDoPrintKeys(doPrintKeys);
 		config.setDbSchemaValidation(hbm2dll);
@@ -88,8 +89,10 @@ public class CyprusActivator {
 			System.out.println("Start import from ("+ source.toString() + ") ...");
 			config.setSourceReference(getSourceReference(config.getSourceReferenceTitle()));
 			myImport.invoke(config);
-			FeatureTree tree = makeFeatureNodes(myImport.getCdmAppController().getTermService());
-			myImport.getCdmAppController().getFeatureTreeService().saveOrUpdate(tree);
+			if (doTaxa){
+				FeatureTree tree = makeFeatureNodes(myImport.getCdmAppController().getTermService());
+				myImport.getCdmAppController().getFeatureTreeService().saveOrUpdate(tree);
+			}
 
 			System.out.println("End import from ("+ source.toString() + ")...");
 		}

@@ -27,13 +27,17 @@ public class CyprusImportState extends ExcelImportState<CyprusImportConfigurator
 	@SuppressWarnings("unused")
 	private static final Logger logger = Logger.getLogger(CyprusImportState.class);
 
-//	private String lastFamily;
-//	private String lastGenus;
-//	private Map<String, UUID> higherTaxonUuidMap = new HashMap<String, UUID>();
 	private Map<String, Taxon> higherTaxonTaxonMap = new HashMap<String, Taxon>();
 	
 	private CyprusRow cyprusRow;
+	private CyprusDistributionRow cyprusDistributionRow;
 
+
+	public CyprusImportState(CyprusImportConfigurator config) {
+		super(config);
+	}
+
+	
 	public boolean containsHigherTaxon(String higherName) {
 		return higherTaxonTaxonMap.containsKey(higherName);
 	}
@@ -85,9 +89,21 @@ public class CyprusImportState extends ExcelImportState<CyprusImportConfigurator
 		this.cyprusRow = cyprusRow;
 	}
 
-	public CyprusImportState(CyprusImportConfigurator config) {
-		super(config);
+	
+	/**
+	 * @return the cyprusRow
+	 */
+	public CyprusDistributionRow getCyprusDistributionRow() {
+		return cyprusDistributionRow;
 	}
+
+	/**
+	 * @param cyprusRow the normalExplicitRow to set
+	 */
+	public void setCyprusDistributionRow(CyprusDistributionRow cyprusRow) {
+		this.cyprusDistributionRow = cyprusRow;
+	}
+
 	
 
     

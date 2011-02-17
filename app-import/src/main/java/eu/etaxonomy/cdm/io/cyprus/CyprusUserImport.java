@@ -30,7 +30,7 @@ public class CyprusUserImport extends CdmImportBase<CyprusImportConfigurator, Cy
 	
 	@Override
 	protected boolean isIgnore(CyprusImportState state) {
-		return false;
+		return ! state.getConfig().isDoTaxa();
 	}
 	
 	

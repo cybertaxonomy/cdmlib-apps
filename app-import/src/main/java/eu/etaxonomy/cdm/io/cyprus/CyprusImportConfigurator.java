@@ -52,6 +52,8 @@ public class CyprusImportConfigurator extends ExcelImportConfiguratorBase implem
 		ioClassList = new Class[]{
 				CyprusUserImport.class,
 				CyprusExcelImport.class ,
+				CyprusDistributionImport.class ,
+				
 		};	
 	}
 	

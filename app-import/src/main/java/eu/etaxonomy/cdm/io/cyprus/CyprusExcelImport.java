@@ -61,7 +61,7 @@ public class CyprusExcelImport extends ExcelImporterBase<CyprusImportState> {
 	
 	@Override
 	protected boolean isIgnore(CyprusImportState state) {
-		return state.getConfig().isDoTaxa();
+		return ! state.getConfig().isDoTaxa();
 	}
 	
 	
