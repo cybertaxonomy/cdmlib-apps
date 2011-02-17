@@ -36,7 +36,7 @@ public class CichorieaeCommonNameActivator {
 
 	//database validation status (create, update, validate ...)
 	static DbSchemaValidation hbm2dll = DbSchemaValidation.CREATE;
-	static final ICdmDataSource cdmDestination = CdmDestinations.cdm_test_local_mysql();
+	static final ICdmDataSource cdmDestination = CdmDestinations.cdm_cichorieae_preview();
 	static String source = "C:/localCopy/Data/wp6/cich/Common names-Ueberarbeitung_AM.xls";
 
 // **************** ALL *********************	
