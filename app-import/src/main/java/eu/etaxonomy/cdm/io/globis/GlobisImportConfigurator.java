@@ -18,7 +18,6 @@ import eu.etaxonomy.cdm.io.common.IImportConfigurator;
 import eu.etaxonomy.cdm.io.common.ImportConfiguratorBase;
 import eu.etaxonomy.cdm.io.common.ImportStateBase;
 import eu.etaxonomy.cdm.io.common.Source;
-import eu.etaxonomy.cdm.io.common.IImportConfigurator.DO_REFERENCES;
 import eu.etaxonomy.cdm.io.common.mapping.IInputTransformer;
 import eu.etaxonomy.cdm.model.name.NomenclaturalCode;
 import eu.etaxonomy.cdm.model.reference.Reference;
@@ -142,49 +141,6 @@ public class GlobisImportConfigurator extends ImportConfiguratorBase<GlobisImpor
 		this.recordsPerTransaction = recordsPerTransaction;
 	}
 
-	/**
-	 * @param doVernaculars the doVernaculars to set
-	 */
-	public void setDoVernaculars(boolean doVernaculars) {
-		this.doVernaculars = doVernaculars;
-	}
-
-	/**
-	 * @return the doVernaculars
-	 */
-	public boolean isDoVernaculars() {
-		return doVernaculars;
-	}
-
-
-
-	/**
-	 * @param doLinks the doLinks to set
-	 */
-	public void setDoLinks(boolean doLinks) {
-		this.doLinks = doLinks;
-	}
-	/**
-	 * @return the doLinks
-	 */
-	public boolean isDoLinks() {
-		return doLinks;
-	}
-
-
-
-	/**
-	 * @param doNotes the doNotes to set
-	 */
-	public void setDoNotes(boolean doNotes) {
-		this.doNotes = doNotes;
-	}
-	/**
-	 * @return the doNotes
-	 */
-	public boolean isDoNotes() {
-		return doNotes;
-	}
 
 	/**
 	 * @param doImages the doImages to set
@@ -199,15 +155,6 @@ public class GlobisImportConfigurator extends ImportConfiguratorBase<GlobisImpor
 		return doImages;
 	}
 	
-	
-	public boolean isDoOccurrence() {
-		return doOccurrence;
-	}
-	public void setDoOccurrence(boolean doOccurrence) {
-		this.doOccurrence = doOccurrence;
-	}
-	
-
 	public DO_REFERENCES getDoReferences() {
 		return doReferences;
 	}

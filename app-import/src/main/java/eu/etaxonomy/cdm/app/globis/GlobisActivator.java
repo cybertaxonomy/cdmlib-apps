@@ -38,7 +38,7 @@ public class GlobisActivator {
 
 	//database validation status (create, update, validate ...)
 	static DbSchemaValidation hbm2dll = DbSchemaValidation.CREATE;
-	static final Source globisSource = CdmImportSources.GLOBIS();
+	static final Source globisSource = CdmImportSources.GLOBIS_MDB();
 	static final ICdmDataSource cdmDestination = CdmDestinations.localH2();
 	static final UUID treeUuid = UUID.fromString("8bd27d84-fd4f-4bfa-bde0-3e6b7311b334");
 	static final UUID featureTreeUuid = UUID.fromString("33cbf7a8-0c47-4d47-bd11-b7d77a38d0f6");
@@ -64,8 +64,6 @@ public class GlobisActivator {
 	//taxa
 	static final boolean doTaxa = true;
 	static final boolean doRelTaxa = true;
-	static final boolean doLinks = true;
-	static final boolean doOccurences = true;
 	static final boolean doImages = true;
 	
 	
@@ -78,8 +76,7 @@ public class GlobisActivator {
 //	//taxa
 //	static final boolean doTaxa = false;
 //	static final boolean doRelTaxa = false;
-//	static final boolean doLinks = false;
-//	static final boolean doOccurences = false;
+
 //	
 	
 	
@@ -89,7 +86,7 @@ public class GlobisActivator {
 	public static void main(String[] args) {
 		System.out.println("Start import from ("+ globisSource.getDatabase() + ") ...");
 		
-		//make ERMS Source
+		//make Globis Source
 		Source source = globisSource;
 		ICdmDataSource destination = CdmDestinations.chooseDestination(args) != null ? CdmDestinations.chooseDestination(args) : cdmDestination;
 		
@@ -103,8 +100,6 @@ public class GlobisActivator {
 		
 //		config.setDoTaxa(doTaxa);
 //		config.setDoRelTaxa(doRelTaxa);
-		config.setDoLinks(doLinks);
-		config.setDoOccurrence(doOccurences);
 		config.setDbSchemaValidation(hbm2dll);
 
 		config.setCheck(check);

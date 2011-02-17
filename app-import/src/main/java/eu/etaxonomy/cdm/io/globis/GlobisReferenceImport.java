@@ -101,8 +101,8 @@ public class GlobisReferenceImport  extends GlobisImportBase<Reference> implemen
 //			mapping.addMapper(DbImportExtensionTypeCreationMapper.NewInstance(dbIdAttribute, extensionTypeNamespace, dbTermAttribute, dbLabelAttribute, dbLabelAbbrevAttribute)
 			mapping.addMapper(DbImportExtensionMapper.NewInstance("RefEdition", GlobisTransformer.uuidEdition, "Edition", "Edition", "Ed."));
 			mapping.addMapper(DbImportExtensionMapper.NewInstance("RefEdition", GlobisTransformer.uuidEditor, "Editor", "Editor", "Editor"));
-			mapping.addMapper(DbImportExtensionMapper.NewInstance("GeneralKeywords", GlobisTransformer.uuidGeneralKeywords, "General Keywords", "General Keywords", "gen. keyw."));
-			mapping.addMapper(DbImportExtensionMapper.NewInstance("GeneralKeywords", GlobisTransformer.uuidGeoKeywords, "Geographic Keywords", "Geo Keywords", "geo. keyw."));
+			mapping.addMapper(DbImportExtensionMapper.NewInstance("RefGeneralKeywords", GlobisTransformer.uuidGeneralKeywords, "General Keywords", "General Keywords", "gen. keyw."));
+			mapping.addMapper(DbImportExtensionMapper.NewInstance("RefGeoKeywords", GlobisTransformer.uuidGeoKeywords, "Geographic Keywords", "Geo Keywords", "geo. keyw."));
 			mapping.addMapper(DbNotYetImplementedMapper.NewInstance("RefIll only"));
 			mapping.addMapper(DbImportStringMapper.NewInstance("ISSN", "issn", false));
 			mapping.addMapper(DbImportExtensionMapper.NewInstance("RefLibrary", GlobisTransformer.uuidLibrary, "Library", "Library", "Libr."));
