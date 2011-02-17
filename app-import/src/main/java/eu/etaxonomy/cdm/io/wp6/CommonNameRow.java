@@ -96,6 +96,7 @@ public class CommonNameRow {
 		if (name.isProtectedTitleCache()){
 			logger.warn("Name could not be parsed: " + species);
 		}
+		this.species = species;
 	}
 
 	public String getSpecies() {
