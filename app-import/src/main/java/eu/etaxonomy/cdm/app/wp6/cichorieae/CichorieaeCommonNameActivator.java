@@ -11,7 +11,6 @@ package eu.etaxonomy.cdm.app.wp6.cichorieae;
 
 import java.io.File;
 import java.net.URI;
-import java.net.URISyntaxException;
 
 import org.apache.log4j.Logger;
 
@@ -35,7 +34,7 @@ public class CichorieaeCommonNameActivator {
 	private static final Logger logger = Logger.getLogger(CichorieaeCommonNameActivator.class);
 
 	//database validation status (create, update, validate ...)
-	static DbSchemaValidation hbm2dll = DbSchemaValidation.CREATE;
+	static DbSchemaValidation hbm2dll = DbSchemaValidation.VALIDATE;
 	static final ICdmDataSource cdmDestination = CdmDestinations.cdm_cichorieae_preview();
 	static String source = "C:/localCopy/Data/wp6/cich/Common names-Ueberarbeitung_AM.xls";
 
