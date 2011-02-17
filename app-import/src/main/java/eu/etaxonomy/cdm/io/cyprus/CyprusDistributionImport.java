@@ -52,8 +52,8 @@ import eu.etaxonomy.cdm.strategy.parser.NonViralNameParserImpl;
  */
 
 @Component
-public class CyprusExcelImport extends ExcelImporterBase<CyprusImportState> {
-	private static final Logger logger = Logger.getLogger(CyprusExcelImport.class);
+public class CyprusDistributionImport extends ExcelImporterBase<CyprusImportState> {
+	private static final Logger logger = Logger.getLogger(CyprusDistributionImport.class);
 	
 	public static Set<String> validMarkers = new HashSet<String>(Arrays.asList(new String[]{"", "valid", "accepted", "a", "v", "t"}));
 	public static Set<String> synonymMarkers = new HashSet<String>(Arrays.asList(new String[]{"", "invalid", "synonym", "s", "i"}));
@@ -61,7 +61,7 @@ public class CyprusExcelImport extends ExcelImporterBase<CyprusImportState> {
 	
 	@Override
 	protected boolean isIgnore(CyprusImportState state) {
-		return state.getConfig().isDoTaxa();
+		return false;
 	}
 	
 	

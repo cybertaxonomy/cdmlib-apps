@@ -1,12 +1,11 @@
 package eu.etaxonomy.cdm.io.wp6;
 
-import eu.etaxonomy.cdm.io.excel.common.ExcelImportConfiguratorBase;
 import eu.etaxonomy.cdm.io.excel.common.ExcelImportState;
 
-public class CichorieaeCommonNameImportState extends ExcelImportState {
+public class CichorieaeCommonNameImportState extends ExcelImportState<CommonNameImportConfigurator> {
 	CommonNameRow row;
 	
-	public CichorieaeCommonNameImportState(ExcelImportConfiguratorBase config) {
+	public CichorieaeCommonNameImportState(CommonNameImportConfigurator config) {
 		super(config);
 	}
 

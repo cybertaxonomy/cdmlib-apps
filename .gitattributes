@@ -97,6 +97,8 @@ app-import/src/main/java/eu/etaxonomy/cdm/io/CichorieaeImageImport.java -text
 app-import/src/main/java/eu/etaxonomy/cdm/io/PalmaeImageImport.java -text
 app-import/src/main/java/eu/etaxonomy/cdm/io/PalmaeProtologueImport.java -text
 app-import/src/main/java/eu/etaxonomy/cdm/io/ProtologueImport.java -text
+app-import/src/main/java/eu/etaxonomy/cdm/io/cyprus/CyprusDistributionImport.java -text
+app-import/src/main/java/eu/etaxonomy/cdm/io/cyprus/CyprusDistributionRow.java -text
 app-import/src/main/java/eu/etaxonomy/cdm/io/cyprus/CyprusExcelImport.java -text
 app-import/src/main/java/eu/etaxonomy/cdm/io/cyprus/CyprusImportConfigurator.java -text
 app-import/src/main/java/eu/etaxonomy/cdm/io/cyprus/CyprusImportState.java -text

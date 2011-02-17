@@ -36,6 +36,9 @@ public class CyprusImportConfigurator extends ExcelImportConfiguratorBase implem
 	private UUID uuidCyprusReference = UUID.fromString("b5281cd3-9d5d-4ae2-8d55-b62a592ce846");
 	
 	private String cyprusReferenceTitle = "Cyprus";
+
+	private boolean doDistribution;
+	private boolean isDoTaxa;
 	
 	private static IInputTransformer defaultTransformer = new CyprusTransformer();
 	
@@ -115,6 +118,25 @@ public class CyprusImportConfigurator extends ExcelImportConfiguratorBase implem
 
 	public String getCyprusReferenceTitle() {
 		return cyprusReferenceTitle;
+	}
+
+
+
+	public void setDoDistribution(boolean doDistribution) {
+		this.doDistribution = doDistribution;
+	}
+	
+	public boolean isDoDistribution(){
+		return this.doDistribution;
+	}
+	
+
+	public void setDoTaxa(boolean isDoTaxa) {
+		this.isDoTaxa = isDoTaxa;
+	}
+
+	public boolean isDoTaxa() {
+		return isDoTaxa;
 	}
 	
 	

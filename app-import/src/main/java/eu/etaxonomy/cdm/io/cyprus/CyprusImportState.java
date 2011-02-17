@@ -23,7 +23,7 @@ import eu.etaxonomy.cdm.model.taxon.Taxon;
  * @created 11.05.2009
  * @version 1.0
  */
-public class CyprusImportState extends ExcelImportState{
+public class CyprusImportState extends ExcelImportState<CyprusImportConfigurator>{
 	@SuppressWarnings("unused")
 	private static final Logger logger = Logger.getLogger(CyprusImportState.class);
 

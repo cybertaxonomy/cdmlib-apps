@@ -44,7 +44,7 @@ public class CyprusActivator {
 	
 	//database validation status (create, update, validate ...)
 	static DbSchemaValidation hbm2dll = DbSchemaValidation.CREATE;
-	static final URI source = cyprus_local();
+	static final URI source = cyprus_distribution();
 
 	
 //	static final ICdmDataSource cdmDestination = CdmDestinations.localH2();
@@ -64,8 +64,9 @@ public class CyprusActivator {
 	static final CHECK check = CHECK.IMPORT_WITHOUT_CHECK;
 	
 	//taxa
-	static final boolean doTaxa = true;
-	static final boolean doDeduplicate = true;
+	static final boolean doTaxa = false;
+	static final boolean doDeduplicate = false;
+	static final boolean doDistribution = true;
 
 	
 	private void doImport(ICdmDataSource cdmDestination){
@@ -74,6 +75,7 @@ public class CyprusActivator {
 		CyprusImportConfigurator config= CyprusImportConfigurator.NewInstance(source, cdmDestination);
 		config.setClassificationUuid(classificationUuid);
 		config.setCheck(check);
+		config.setDoDistribution(doDistribution);
 //		config.setDefaultLanguageUuid(defaultLanguageUuid);
 //		config.setDoPrintKeys(doPrintKeys);
 		config.setDbSchemaValidation(hbm2dll);
@@ -143,6 +145,17 @@ public class CyprusActivator {
 		URI sourceUrl;
 		try {
 			sourceUrl = new URI("file:/C:/localCopy/Data/zypern/Zypern.xls");
+			return sourceUrl;
+		} catch (URISyntaxException e) {
+			e.printStackTrace();
+			return null;
+		}
+	}
+	//Cyprus distriution
+	public static URI cyprus_distribution() {
+		URI sourceUrl;
+		try {
+			sourceUrl = new URI("file:/C:/localCopy/Data/zypern/Zypern_distribution.xls");
 			return sourceUrl;
 		} catch (URISyntaxException e) {
 			e.printStackTrace();
