@@ -20,14 +20,13 @@ import org.apache.log4j.Logger;
 import org.hibernate.criterion.Criterion;
 import org.springframework.stereotype.Component;
 
-import eu.etaxonomy.cdm.api.service.pager.Pager;
 import eu.etaxonomy.cdm.common.CdmUtils;
 import eu.etaxonomy.cdm.io.common.mapping.UndefinedTransformerMethodException;
 import eu.etaxonomy.cdm.io.excel.common.ExcelImporterBase;
 import eu.etaxonomy.cdm.model.common.DefinedTermBase;
 import eu.etaxonomy.cdm.model.common.DescriptionElementSource;
 import eu.etaxonomy.cdm.model.common.Language;
-import eu.etaxonomy.cdm.model.common.Representation;
+import eu.etaxonomy.cdm.model.common.TermVocabulary;
 import eu.etaxonomy.cdm.model.description.CommonTaxonName;
 import eu.etaxonomy.cdm.model.description.TaxonDescription;
 import eu.etaxonomy.cdm.model.location.NamedArea;
@@ -208,11 +207,20 @@ public class CommonNameExcelImport extends ExcelImporterBase<CichorieaeCommonNam
 	}
 
 
+	Map<String, Taxon> taxonStore = new HashMap<String, Taxon>();
+	
 	private Taxon getTaxon(CichorieaeCommonNameImportState state, String taxonNameStr) {
-		TaxonNameBase name = BotanicalName.NewInstance(Rank.SPECIES());
-		name.setTitleCache(taxonNameStr, true);
-		Taxon result = Taxon.NewInstance(name, null);
-//		result = getTaxonService().findBestMatchingTaxon(taxonNameStr);
+		Taxon result;
+		if (taxonStore.get(taxonNameStr) != null){
+			result = taxonStore.get(taxonNameStr);
+		}else{
+			TaxonNameBase name = BotanicalName.NewInstance(Rank.SPECIES());
+			name.setTitleCache(taxonNameStr, true);
+//			result = getTaxonService().findBestMatchingTaxon(taxonNameStr);
+			
+			result = Taxon.NewInstance(name, null);
+			taxonStore.put(taxonNameStr, result);
+		}
 		return result;
 	}
 
@@ -240,10 +248,21 @@ public class CommonNameExcelImport extends ExcelImporterBase<CichorieaeCommonNam
 			return null;
 		}
 		Language result;
+		languageKey = languageKey.replace(", no ISO-Code", "");
 		result = languageStore.get(languageKey);
 		if (result == null){
 			try{
-				result = getTermService().getLanguageByIso(languageKey);
+				if (languageKey.length()<4){
+					try {
+						result = getTermService().getLanguageByIso(languageKey);
+					} catch (Exception e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+				}else{
+					UUID uuid = state.getTransformer().getLanguageUuid(languageKey);
+					result = (Language)getTermService().find(uuid);
+				}
 				if (result == null){
 					result = state.getTransformer().getLanguageByKey(languageKey);
 					if (result == null){
@@ -256,6 +275,14 @@ public class CommonNameExcelImport extends ExcelImporterBase<CichorieaeCommonNam
 						if (result == null){
 							logger.warn("Language not defined: " + languageKey)  ;
 						}
+					}else if (result.getId() == 0){
+//						UUID uuidLanguageVoc = UUID.fromString("45ac7043-7f5e-4f37-92f2-3874aaaef2de"); 
+						UUID uuidLanguageVoc = UUID.fromString("434ceae9-9052-4567-b2db-ff77f42e9084"); 
+						TermVocabulary<Language> voc = getVocabulary(uuidLanguageVoc, "User defined languages", "User defined languages", null);
+//						TermVocabulary<Language> voc = getVocabularyService().find(uuidLanguageVoc);
+						voc.addTerm(result);
+						getTermService().saveOrUpdate(result);
+						state.putLanguage(result);
 					}
 				}
 				languageStore.put(languageKey, result);

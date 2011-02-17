@@ -53,7 +53,7 @@ public class CommonNameRow {
 		String[] split = commonNamesString.split(";");
 		for (String oneLanguage : split){
 			oneLanguage = oneLanguage.trim();
-			String reLangPattern = "\\((\\*|[a-z]{3}|.{2,},\\sno\\sISO-Code)\\)$";
+			String reLangPattern = "\\((\\*|[a-z]{2,3}|.{2,},\\sno\\sISO-Code)\\)$";
 			String pattern = ".+" + reLangPattern;
 			if (! oneLanguage.matches(pattern)){
 				logger.warn("Common name does not match: "  + oneLanguage);
