@@ -25,6 +25,7 @@ import eu.etaxonomy.cdm.io.common.mapping.IInputTransformer;
 import eu.etaxonomy.cdm.io.common.mapping.UndefinedTransformerMethodException;
 import eu.etaxonomy.cdm.io.excel.common.ExcelImporterBase;
 import eu.etaxonomy.cdm.model.common.CdmBase;
+import eu.etaxonomy.cdm.model.common.TermVocabulary;
 import eu.etaxonomy.cdm.model.description.DescriptionElementBase;
 import eu.etaxonomy.cdm.model.description.Distribution;
 import eu.etaxonomy.cdm.model.description.PresenceAbsenceTermBase;
@@ -144,9 +145,12 @@ public class CyprusDistributionImport extends ExcelImporterBase<CyprusImportStat
 				NamedAreaLevel areaLevel = NamedAreaLevel.NewInstance("Cyprus Division", "Cyprus Division", null);
 				getTermService().save(areaLevel);
 				
+				TermVocabulary areaVocabulary = TermVocabulary.NewInstance("Cyprus devisions", "Cyprus divisions", null, null);
+				getVocabularyService().save(areaVocabulary);
+				
 				for(int i = 1; i <= 8; i++){
 					UUID divisionUuid = transformer.getNamedAreaUuid(String.valueOf(i));
-					NamedArea division = this.getNamedArea(state, divisionUuid, "Division " + i, "Cyprus: Division " + i, "1", areaType, areaLevel);
+					NamedArea division = this.getNamedArea(state, divisionUuid, "Division " + i, "Cyprus: Division " + i, "1", areaType, areaLevel, areaVocabulary);
 					divisions.put(String.valueOf(i), division);
 					getTermService().save(division);
 				}
@@ -276,14 +280,12 @@ public class CyprusDistributionImport extends ExcelImporterBase<CyprusImportStat
 	@Override
     protected boolean secondPass(CyprusImportState state) {
 		boolean success = true;
-//		CyprusRow cyprusRow = state.getCyprusRow();
-
 		return success;
 	}
 	
 	@Override
 	protected boolean isIgnore(CyprusImportState state) {
-		return state.getConfig().isDoDistribution();
+		return ! state.getConfig().isDoDistribution();
 	}
 	
 }

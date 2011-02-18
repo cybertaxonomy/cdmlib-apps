@@ -49,6 +49,18 @@ public final class CyprusTransformer extends InputTransformerBase {
 
 	public static final UUID cultivatedDoubtfulUuid = UUID.fromString("4f31bfc8-3058-4d83-aea5-3a1fe9773f9f");
 	
+	//Named Area - divisions 
+	public static final UUID uuidDivision1 = UUID.fromString("ab17eee9-1abb-4ce9-a9a2-563f840cdbfc");
+	public static final UUID uuidDivision2 = UUID.fromString("c3606165-efb7-4224-a168-63e009eb4aa5");
+	public static final UUID uuidDivision3 = UUID.fromString("750d4e07-e34b-491f-a7b7-09723afdc960");
+	public static final UUID uuidDivision4 = UUID.fromString("8a858922-e8e5-4791-ad53-906e50633ec7");
+	public static final UUID uuidDivision5 = UUID.fromString("16057133-d541-4ebd-81d4-cb92265ec54c");
+	public static final UUID uuidDivision6 = UUID.fromString("fbf21230-4a42-4f4c-9af8-5da52123c264");
+	public static final UUID uuidDivision7 = UUID.fromString("d31dd96a-36ea-4428-871c-d8552a9565ca");
+	public static final UUID uuidDivision8 = UUID.fromString("236ea447-c3ab-486d-9e06-cc5907861acc");
+	
+	
+
 	
 	/* (non-Javadoc)
 	 * @see eu.etaxonomy.cdm.io.common.mapping.InputTransformerBase#getMarkerTypeByKey(java.lang.String)
@@ -103,6 +115,21 @@ public final class CyprusTransformer extends InputTransformerBase {
 		}
 
 	}
+
+	@Override
+	public UUID getNamedAreaUuid(String key) throws UndefinedTransformerMethodException {
+		if (CdmUtils.isEmpty(key)){return null;
+		}else if (key.equalsIgnoreCase("1")){return uuidDivision1;
+		}else if (key.equalsIgnoreCase("2")){return uuidDivision2;
+		}else if (key.equalsIgnoreCase("3")){return uuidDivision3;
+		}else if (key.equalsIgnoreCase("4")){return uuidDivision4;
+		}else if (key.equalsIgnoreCase("5")){return uuidDivision5;
+		}else if (key.equalsIgnoreCase("6")){return uuidDivision6;
+		}else if (key.equalsIgnoreCase("7")){return uuidDivision7;
+		}else if (key.equalsIgnoreCase("8")){return uuidDivision8;
+		}else{
+			return null;
+		}	}
 	
 	
 	
