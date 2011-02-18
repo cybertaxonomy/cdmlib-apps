@@ -12,6 +12,7 @@ package eu.etaxonomy.cdm.io.cyprus;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
@@ -29,6 +30,7 @@ import eu.etaxonomy.cdm.model.common.TermVocabulary;
 import eu.etaxonomy.cdm.model.description.DescriptionElementBase;
 import eu.etaxonomy.cdm.model.description.Distribution;
 import eu.etaxonomy.cdm.model.description.PresenceAbsenceTermBase;
+import eu.etaxonomy.cdm.model.description.PresenceTerm;
 import eu.etaxonomy.cdm.model.description.TaxonDescription;
 import eu.etaxonomy.cdm.model.location.NamedArea;
 import eu.etaxonomy.cdm.model.location.NamedAreaLevel;
@@ -159,6 +161,11 @@ public class CyprusDistributionImport extends ExcelImporterBase<CyprusImportStat
 //				refMeikle1985 = getReferenceService().findByTitle(Reference.class, "Meikle 1977", null, null, null, null, null, null);
 
 				areasCreated = true;
+				indigenousStatus = (PresenceTerm)getTermService().find(CyprusTransformer.indigenousUuid);
+				casualStatus = (PresenceTerm)getTermService().find(CyprusTransformer.casualUuid);
+				nonInvasiveStatus = (PresenceTerm)getTermService().find(CyprusTransformer.nonInvasiveUuid);
+				invasiveStatus = (PresenceTerm)getTermService().find(CyprusTransformer.invasiveUuid);
+				questionableStatus = (PresenceTerm)getTermService().find(CyprusTransformer.questionableUuid);
 				
 				return true;
 			} catch (UndefinedTransformerMethodException e) {
@@ -206,6 +213,8 @@ public class CyprusDistributionImport extends ExcelImporterBase<CyprusImportStat
 			if (distributionStr.contains(String.valueOf(i))){
 				NamedArea area = this.divisions.get(String.valueOf(i));
 				PresenceAbsenceTermBase<?> status = getStatus(taxon);
+				status = removeDoubtfulStatus(status);
+				removeDistributions(taxon);
 				Distribution distribution = Distribution.NewInstance(area, status);
 				distribution.addSource(null, null, ref, null);
 				description.addElement(distribution);
@@ -213,19 +222,41 @@ public class CyprusDistributionImport extends ExcelImporterBase<CyprusImportStat
 		}
 	}
 
+	private PresenceAbsenceTermBase<?> indigenousStatus;
+	private PresenceAbsenceTermBase<?> casualStatus;
+	private PresenceAbsenceTermBase<?> nonInvasiveStatus;
+	private PresenceAbsenceTermBase<?> invasiveStatus;
+	private PresenceAbsenceTermBase<?> questionableStatus;
+	
+	private PresenceAbsenceTermBase<?> removeDoubtfulStatus(PresenceAbsenceTermBase<?> status) {
+		if (status.getUuid().equals(CyprusTransformer.indigenousDoubtfulUuid)){
+			status = indigenousStatus;
+		}else if (status.getUuid().equals(CyprusTransformer.casualDoubtfulUuid)){
+			status = casualStatus;
+		}else if (status.getUuid().equals(CyprusTransformer.nonInvasiveDoubtfulUuid)){
+			status = nonInvasiveStatus;
+		}else if (status.getUuid().equals(CyprusTransformer.invasiveDoubtfulUuid)){
+			status = invasiveStatus;
+		}else if (status.getUuid().equals(CyprusTransformer.questionableDoubtfulUuid)){
+			status = questionableStatus;
+		}else if (status.getUuid().equals(CyprusTransformer.cultivatedDoubtfulUuid)){
+			status = PresenceTerm.CULTIVATED();
+		}
+		
+		return status;
+	}
+
 	private PresenceAbsenceTermBase<?> getStatus(Taxon taxon) {
 		Set<PresenceAbsenceTermBase<?>> statusSet = new HashSet<PresenceAbsenceTermBase<?>>();
-		for (TaxonDescription desc : taxon.getDescriptions()){
-			if (desc.isImageGallery() == NO_IMAGE_GALLERY ){
-				for (DescriptionElementBase element : desc.getElements()){
-					if (element.isInstanceOf(Distribution.class)){
-						Distribution distribution = CdmBase.deproxy(element, Distribution.class);
-						PresenceAbsenceTermBase<?> status = distribution.getStatus();
-						statusSet.add(status);
-					}
-				}
-			}
+		Set<Distribution> existingDistributions = getExistingDistributions(taxon);
+		if (existingDistributions.size() > 1){
+			logger.warn("There is more than 1 distribution: " + taxon.getTitleCache());
 		}
+		for (Distribution distribution: existingDistributions){
+			PresenceAbsenceTermBase<?> status = distribution.getStatus();
+			statusSet.add(status);
+		}
+		
 		if (statusSet.size() == 0){
 			logger.warn("No status found for: " +  taxon.getTitleCache());
 			return null;
@@ -235,6 +266,45 @@ public class CyprusDistributionImport extends ExcelImporterBase<CyprusImportStat
 			logger.warn("More than 1 status found. Return first: " +  taxon.getTitleCache());
 			return statusSet.iterator().next();
 		}
+	}
+
+	/**
+	 * @param taxon
+	 * @param statusSet
+	 */
+	private Set<Distribution> removeDistributions(Taxon taxon) {
+		Set<Distribution> result = new HashSet<Distribution>();
+		for (TaxonDescription desc : taxon.getDescriptions()){
+			if (desc.isImageGallery() == NO_IMAGE_GALLERY ){
+				Iterator<DescriptionElementBase> iterator = desc.getElements().iterator();
+				while (iterator.hasNext()){
+					DescriptionElementBase element = iterator.next();
+					if (element.isInstanceOf(Distribution.class)){
+						iterator.remove();
+					}
+				}
+			}
+		}
+		return result;
+	}
+	
+	/**
+	 * @param taxon
+	 * @param statusSet
+	 */
+	private Set<Distribution> getExistingDistributions(Taxon taxon) {
+		Set<Distribution> result = new HashSet<Distribution>();
+		for (TaxonDescription desc : taxon.getDescriptions()){
+			if (desc.isImageGallery() == NO_IMAGE_GALLERY ){
+				for (DescriptionElementBase element : desc.getElements()){
+					if (element.isInstanceOf(Distribution.class)){
+						Distribution distribution = CdmBase.deproxy(element, Distribution.class);
+						result.add(distribution);
+					}
+				}
+			}
+		}
+		return result;
 	}
 	
 	private Reference getReference(String referenceStr) {

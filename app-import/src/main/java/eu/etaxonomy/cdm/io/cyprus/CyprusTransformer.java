@@ -129,7 +129,8 @@ public final class CyprusTransformer extends InputTransformerBase {
 		}else if (key.equalsIgnoreCase("8")){return uuidDivision8;
 		}else{
 			return null;
-		}	}
+		}	
+	}
 	
 	
 	
