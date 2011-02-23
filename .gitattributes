@@ -93,7 +93,6 @@ app-import/src/main/java/eu/etaxonomy/cdm/app/wp6/palmae/PalmaePostImportUpdater
 app-import/src/main/java/eu/etaxonomy/cdm/app/wp6/palmae/PalmaeProtologueImportActivator.java -text
 app-import/src/main/java/eu/etaxonomy/cdm/app/wp6/palmae/PalmaeTaxonXImportActivator.java -text
 app-import/src/main/java/eu/etaxonomy/cdm/app/wp6/palmae/config/PalmaeProtologueImportConfigurator.java -text
-app-import/src/main/java/eu/etaxonomy/cdm/io/CichorieaeImageImport.java -text
 app-import/src/main/java/eu/etaxonomy/cdm/io/PalmaeImageImport.java -text
 app-import/src/main/java/eu/etaxonomy/cdm/io/PalmaeProtologueImport.java -text
 app-import/src/main/java/eu/etaxonomy/cdm/io/ProtologueImport.java -text
@@ -112,6 +111,7 @@ app-import/src/main/java/eu/etaxonomy/cdm/io/globis/GlobisReferenceImport.java -
 app-import/src/main/java/eu/etaxonomy/cdm/io/globis/GlobisTransformer.java -text
 app-import/src/main/java/eu/etaxonomy/cdm/io/globis/validation/GlobisReferenceImportValidator.java -text
 app-import/src/main/java/eu/etaxonomy/cdm/io/wp6/CichorieaeCommonNameImportState.java -text
+app-import/src/main/java/eu/etaxonomy/cdm/io/wp6/CichorieaeImageImport.java -text
 app-import/src/main/java/eu/etaxonomy/cdm/io/wp6/CommonNameExcelImport.java -text
 app-import/src/main/java/eu/etaxonomy/cdm/io/wp6/CommonNameImportConfigurator.java -text
 app-import/src/main/java/eu/etaxonomy/cdm/io/wp6/CommonNameRow.java -text

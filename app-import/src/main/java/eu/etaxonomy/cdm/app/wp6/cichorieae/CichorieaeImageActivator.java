@@ -18,9 +18,9 @@ import org.apache.log4j.Logger;
 import eu.etaxonomy.cdm.app.common.CdmDestinations;
 import eu.etaxonomy.cdm.app.images.ImageImportConfigurator;
 import eu.etaxonomy.cdm.database.ICdmDataSource;
-import eu.etaxonomy.cdm.io.CichorieaeImageImport;
 import eu.etaxonomy.cdm.io.common.CdmDefaultImport;
 import eu.etaxonomy.cdm.io.common.IImportConfigurator;
+import eu.etaxonomy.cdm.io.wp6.CichorieaeImageImport;
 
 /**
  * @author n.hoffmann
