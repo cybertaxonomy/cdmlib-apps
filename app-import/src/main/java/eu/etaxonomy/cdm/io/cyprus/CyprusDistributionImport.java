@@ -148,11 +148,12 @@ public class CyprusDistributionImport extends ExcelImporterBase<CyprusImportStat
 				getTermService().save(areaLevel);
 				
 				TermVocabulary areaVocabulary = TermVocabulary.NewInstance("Cyprus devisions", "Cyprus divisions", null, null);
+				areaVocabulary.setUuid(CyprusTransformer.uuidCyprusDivisionsVocabulary);
 				getVocabularyService().save(areaVocabulary);
 				
 				for(int i = 1; i <= 8; i++){
 					UUID divisionUuid = transformer.getNamedAreaUuid(String.valueOf(i));
-					NamedArea division = this.getNamedArea(state, divisionUuid, "Division " + i, "Cyprus: Division " + i, "1", areaType, areaLevel, areaVocabulary);
+					NamedArea division = this.getNamedArea(state, divisionUuid, "Division " + i, "Cyprus: Division " + i, String.valueOf(i), areaType, areaLevel, areaVocabulary);
 					divisions.put(String.valueOf(i), division);
 					getTermService().save(division);
 				}
