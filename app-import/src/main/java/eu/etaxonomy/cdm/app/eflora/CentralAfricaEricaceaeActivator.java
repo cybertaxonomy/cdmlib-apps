@@ -58,7 +58,7 @@ public class CentralAfricaEricaceaeActivator {
 //	static final ICdmDataSource cdmDestination = CdmDestinations.cdm_flora_central_africa_production();
 //	static final ICdmDataSource cdmDestination = CdmDestinations.localH2();
 //	static final ICdmDataSource cdmDestination = CdmDestinations.cdm_local_postgres_CdmTest();
-	static final ICdmDataSource cdmDestination = CdmDestinations.cdm_test_local_mysql_test();
+	static final ICdmDataSource cdmDestination = CdmDestinations.cdm_test_local_mysql();
 //	static final ICdmDataSource cdmDestination = CdmDestinations.cdm_test_jaxb();
 
 	//feature tree uuid
