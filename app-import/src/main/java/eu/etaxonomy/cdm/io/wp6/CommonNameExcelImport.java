@@ -31,13 +31,9 @@ import eu.etaxonomy.cdm.model.description.CommonTaxonName;
 import eu.etaxonomy.cdm.model.description.TaxonDescription;
 import eu.etaxonomy.cdm.model.location.NamedArea;
 import eu.etaxonomy.cdm.model.location.WaterbodyOrCountry;
-import eu.etaxonomy.cdm.model.name.NomenclaturalCode;
 import eu.etaxonomy.cdm.model.reference.Reference;
-import eu.etaxonomy.cdm.model.reference.ReferenceFactory;
 import eu.etaxonomy.cdm.model.taxon.Taxon;
 import eu.etaxonomy.cdm.persistence.query.OrderHint;
-import eu.etaxonomy.cdm.strategy.parser.INonViralNameParser;
-import eu.etaxonomy.cdm.strategy.parser.NonViralNameParserImpl;
 
 /**
  * @author a.babadshanjan
@@ -49,9 +45,6 @@ import eu.etaxonomy.cdm.strategy.parser.NonViralNameParserImpl;
 public class CommonNameExcelImport extends ExcelImporterBase<CichorieaeCommonNameImportState> {
 	private static final Logger logger = Logger.getLogger(CommonNameExcelImport.class);
 
-	private static NomenclaturalCode nc = NomenclaturalCode.ICBN;
-	private static INonViralNameParser nameParser = NonViralNameParserImpl.NewInstance();
-	
 	protected static final String SPECIES_COLUMN = "Art";
 	protected static final String COMMON_NAME_COLUMN = "common name";
 	protected static final String REFERENCE_COLUMN = "Literaturnummer";
@@ -88,14 +81,13 @@ public class CommonNameExcelImport extends ExcelImporterBase<CichorieaeCommonNam
     	state.setCommonNameRow(row);
     	
     	for (String originalKey: keys) {
-    		Integer index = 0;
     		String indexedKey = CdmUtils.removeDuplicateWhitespace(originalKey.trim()).toString();
     		String[] split = indexedKey.split("_");
     		String key = split[0];
     		if (split.length > 1){
     			String indexString = split[1];
     			try {
-					index = Integer.valueOf(indexString);
+    				Integer.valueOf(indexString);
 				} catch (NumberFormatException e) {
 					String message = "Index must be integer";
 					logger.error(message);
@@ -145,43 +137,35 @@ public class CommonNameExcelImport extends ExcelImporterBase<CichorieaeCommonNam
 
 		//species name
 		String speciesStr = taxonLight.getSpecies();
-		Taxon taxon = getTaxon(state, speciesStr);
-//		TaxonNameBase nameUsedInSource = getNameUsedInSource(state, taxonLight.getNameUsedInSource());
-//		NamedArea area = getArea(state, taxonLight.getArea());
-		Reference ref = getReference(state, taxonLight.getReference());
+		TaxonDescription taxonDesc = getTaxon(state, speciesStr);
+		Reference ref = getReference(state, taxonLight);
 
-//		makeCommonNames(state, taxonLight.getCommonNames(), taxon, ref, area, taxonLight.getNameUsedInSource());
+		NamedArea area = getArea(state, taxonLight.getArea());
 		
-//		getTaxonService().save(taxon);
+		makeCommonNames(state, taxonLight.getCommonNames(), taxonDesc, ref, area, taxonLight.getNameUsedInSource());
+
+//		OLD 
+//		TaxonNameBase nameUsedInSource = getNameUsedInSource(state, taxonLight.getNameUsedInSource());
+
+		getTaxonService().save(taxonDesc.getTaxon());
 		return success;
     }
 
-//	private TaxonNameBase getNameUsedInSource(CichorieaeCommonNameImportState state, String nameUsedInSource) {
-//		if (StringUtils.isBlank(nameUsedInSource)){
-//			return null;
-//		}else{
-//			Pager<TaxonNameBase> list = getNameService().findByName(BotanicalName.class, nameUsedInSource, null, null, null, null, null, null);
-//			if (list.getCount() > 0){
-//				return list.getRecords().get(0);
-//			}else{
-//				return null;
-//			}
-//		}
-//		
-//	}
 
 
 	private Map<String, Reference> referenceStore = new HashMap<String, Reference>();
-	private Reference getReference(CichorieaeCommonNameImportState state, String reference) {
+	private Reference getReference(CichorieaeCommonNameImportState state, CommonNameRow taxonLight) {
+		String reference = taxonLight.getReference();
 		Reference result = referenceStore.get(reference);
 		if (result == null){
 			result = (Reference)getCommonService().getSourcedObjectByIdInSource(Reference.class, reference, "import to Berlin Model");
 			if (result == null){
-				logger.warn("Reference not found: " + reference);
-				result = ReferenceFactory.newGeneric();
-				result.setTitleCache(reference);
+				logger.warn("Reference not found: " + reference + " for taxon " + taxonLight.getSpecies());
+//				result = ReferenceFactory.newGeneric();
+//				result.setTitleCache(reference);
+			}else{
+				referenceStore.put(reference, result);
 			}
-			referenceStore.put(reference, result);
 		}
 		return result;
 	}
@@ -230,44 +214,56 @@ public class CommonNameExcelImport extends ExcelImporterBase<CichorieaeCommonNam
 	}
 
 
-	Map<String, Taxon> taxonStore = new HashMap<String, Taxon>();
+	Map<String, TaxonDescription> taxonStore = new HashMap<String, TaxonDescription>();
 	
-	private Taxon getTaxon(CichorieaeCommonNameImportState state, String taxonNameStr) {
-		Taxon result;
+	private TaxonDescription getTaxon(CichorieaeCommonNameImportState state, String taxonNameStr) {
+		TaxonDescription desc;
+		Taxon taxon;
 
 		if (taxonStore.get(taxonNameStr) != null){
-			result = taxonStore.get(taxonNameStr);
+			desc = taxonStore.get(taxonNameStr);
 		}else{
-			result = getTaxonService().findBestMatchingTaxon(taxonNameStr);
+			taxon = getTaxonService().findBestMatchingTaxon(taxonNameStr);
 //			TaxonNameBase name = BotanicalName.NewInstance(Rank.SPECIES());
 //			name.setTitleCache(taxonNameStr, true);
 //			
 //			result = Taxon.NewInstance(name, null);
-			if (result == null){
+			if (taxon == null){
 				logger.warn("Taxon not found: " +  taxonNameStr);
+				desc = null;
 			}else{
-				taxonStore.put(taxonNameStr, result);
+				desc = getNewDescription(state, taxon);
+				taxonStore.put(taxonNameStr, desc);
 			}
 		}
-		return result;
+		return desc;
 	}
 
-	private void makeCommonNames(CichorieaeCommonNameImportState state, Map<String, List<String>> commonNamesMap, Taxon mainTaxon, Reference ref, NamedArea area, String nameUsedInSource) {
+	private TaxonDescription getNewDescription(CichorieaeCommonNameImportState state, Taxon taxon) {
+		Reference excelRef = state.getConfig().getSourceReference();
+		TaxonDescription desc = TaxonDescription.NewInstance(taxon, false);
+		desc.setTitleCache("Common Names Excel import", true);
+		desc.addSource(null, null, excelRef, null);
+		return desc;
+	}
+
+
+	private void makeCommonNames(CichorieaeCommonNameImportState state, Map<String, List<String>> commonNamesMap, TaxonDescription description, Reference ref, NamedArea area, String nameUsedInSource) {
 		//Common Names
-		TaxonDescription td = this.getTaxonDescription(mainTaxon, false, true);
+//		TaxonDescription td = this.getTaxonDescription(mainTaxon, false, true);
 		for (String languageKey : commonNamesMap.keySet()){
 			Language language = getLanguage(state, languageKey);
 			List<String> commonNamesList = commonNamesMap.get(languageKey);
 			for (String strCommonName : commonNamesList){
 				CommonTaxonName commonName = CommonTaxonName.NewInstance(strCommonName, language, area);
-				if (ref != null){
+				if (ref != null || StringUtils.isNotBlank(nameUsedInSource)){
 					DescriptionElementSource source = DescriptionElementSource.NewInstance(ref, null);
 					source.setOriginalNameString(nameUsedInSource);
 					commonName.addSource(source);
 				}else{
-					logger.warn("No reference defined");
+					logger.debug("No reference defined");
 				}
-				td.addElement(commonName);
+				description.addElement(commonName);
 			}
 		}
 	}
@@ -335,6 +331,19 @@ public class CommonNameExcelImport extends ExcelImporterBase<CichorieaeCommonNam
 
 
 
+//	private TaxonNameBase getNameUsedInSource(CichorieaeCommonNameImportState state, String nameUsedInSource) {
+//		if (StringUtils.isBlank(nameUsedInSource)){
+//			return null;
+//		}else{
+//			Pager<TaxonNameBase> list = getNameService().findByName(BotanicalName.class, nameUsedInSource, null, null, null, null, null, null);
+//			if (list.getCount() > 0){
+//				return list.getRecords().get(0);
+//			}else{
+//				return null;
+//			}
+//		}
+//		
+//	}
 
 
 	

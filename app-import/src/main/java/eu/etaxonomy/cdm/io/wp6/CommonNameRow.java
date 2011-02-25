@@ -91,7 +91,7 @@ public class CommonNameRow {
 	private String makeNameUsedInSource(String commonNamesString) {
 		String[] split = commonNamesString.split(":");
 		if (split.length > 1){
-			logger.info("NameUsedInSource: " + split[0]);
+			logger.debug("NameUsedInSource: " + split[0]);
 			this.nameUsedInSource = split[0].trim();
 			if (split.length > 2){
 				logger.warn("XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX:" + commonNamesString);
