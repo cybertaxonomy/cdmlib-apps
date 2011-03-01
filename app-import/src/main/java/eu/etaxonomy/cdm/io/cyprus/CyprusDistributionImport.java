@@ -158,7 +158,7 @@ public class CyprusDistributionImport extends ExcelImporterBase<CyprusImportStat
 		}
 	}
 	
-	private TaxonDescription getNewDescription_OLD(CyprusImportState state, Taxon taxon) {
+	private TaxonDescription getNewDescription(CyprusImportState state, Taxon taxon) {
 		Reference excelRef = state.getConfig().getSourceReference();
 		TaxonDescription desc = TaxonDescription.NewInstance(taxon, false);
 		desc.setTitleCache(excelRef.getTitleCache() + " for " + taxon.getTitleCache(), true);
@@ -166,30 +166,6 @@ public class CyprusDistributionImport extends ExcelImporterBase<CyprusImportStat
 		return desc;
 	}
 
-	Reference excelRef = null; 
-	private TaxonDescription getNewDescription(CyprusImportState state, Taxon taxon) {
-		if (excelRef == null){
-			excelRef = getReferenceService().find(UUID.fromString("362c2360-4053-4189-9f53-9d8b1112612e"));
-		}
-//		Reference excelRef = state.getConfig().getSourceReference();
-		for (TaxonDescription desc : taxon.getDescriptions()){
-			if (desc.getSources().size() > 0){
-				Reference ref = desc.getSources().iterator().next().getCitation();
-				if (ref.equals(excelRef)){
-					return desc;
-				}
-			}
-		}
-		logger.warn("Description not found for taxon: " +  taxon.getTitleCache());
-		
-		
-		TaxonDescription desc = TaxonDescription.NewInstance(taxon, false);
-		desc.setTitleCache(excelRef.getTitleCache() + " for " + taxon.getTitleCache(), true);
-		desc.addSource(null, null, excelRef, null);
-		return desc;
-	}
-
-	
 	private PresenceAbsenceTermBase<?> indigenousStatus;
 	private PresenceAbsenceTermBase<?> casualStatus;
 	private PresenceAbsenceTermBase<?> nonInvasiveStatus;
@@ -385,23 +361,23 @@ public class CyprusDistributionImport extends ExcelImporterBase<CyprusImportStat
 	private void makeNewDivisions(CyprusImportState state,
 			IInputTransformer transformer)
 			throws UndefinedTransformerMethodException {
-//		NamedAreaType areaType = NamedAreaType.NATURAL_AREA();
-//		NamedAreaLevel areaLevel = (NamedAreaLevel)getTermService().find(CyprusTransformer.uuidCyprusDivisionsAreaLevel);
-//		if (areaLevel == null){
-//			areaLevel = NamedAreaLevel.NewInstance("Cyprus Division", "Cyprus Division", null);
-//			getTermService().save(areaLevel);
-//		}
-//		
-//		TermVocabulary areaVocabulary = getVocabulary(CyprusTransformer.uuidCyprusDivisionsVocabulary, "Cyprus devisions", "Cyprus divisions", null, null, true);
-//		TdwgArea tdwg4Cyprus = (TdwgArea)getTermService().find(UUID.fromString("9d447b51-e363-4dde-ae40-84c55679983c"));
-//		WaterbodyOrCountry isoCountryCyprus = (WaterbodyOrCountry)getTermService().find(UUID.fromString("4b13d6b8-7eca-4d42-8172-f2018051ca19"));
+		NamedAreaType areaType = NamedAreaType.NATURAL_AREA();
+		NamedAreaLevel areaLevel = (NamedAreaLevel)getTermService().find(CyprusTransformer.uuidCyprusDivisionsAreaLevel);
+		if (areaLevel == null){
+			areaLevel = NamedAreaLevel.NewInstance("Cyprus Division", "Cyprus Division", null);
+			getTermService().save(areaLevel);
+		}
+		
+		TermVocabulary areaVocabulary = getVocabulary(CyprusTransformer.uuidCyprusDivisionsVocabulary, "Cyprus devisions", "Cyprus divisions", null, null, true);
+		TdwgArea tdwg4Cyprus = (TdwgArea)getTermService().find(UUID.fromString("9d447b51-e363-4dde-ae40-84c55679983c"));
+		WaterbodyOrCountry isoCountryCyprus = (WaterbodyOrCountry)getTermService().find(UUID.fromString("4b13d6b8-7eca-4d42-8172-f2018051ca19"));
 		
 		for(int i = 1; i <= 8; i++){
 			UUID divisionUuid = transformer.getNamedAreaUuid(String.valueOf(i));
-			NamedArea division = this.getNamedArea(state, divisionUuid, "Division " + i, "Cyprus: Division " + i, String.valueOf(i), null, null, null);
+			NamedArea division = this.getNamedArea(state, divisionUuid, "Division " + i, "Cyprus: Division " + i, String.valueOf(i), areaType, areaLevel, areaVocabulary);
 			divisions.put(String.valueOf(i), division);
-//			tdwg4Cyprus.addIncludes(division);
-//			isoCountryCyprus.addIncludes(division);
+			tdwg4Cyprus.addIncludes(division);
+			isoCountryCyprus.addIncludes(division);
 			getTermService().save(division);
 		}
 	}
