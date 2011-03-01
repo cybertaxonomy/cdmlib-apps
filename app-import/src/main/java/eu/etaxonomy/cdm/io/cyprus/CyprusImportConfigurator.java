@@ -35,7 +35,7 @@ public class CyprusImportConfigurator extends ExcelImportConfiguratorBase implem
 
 	private UUID uuidCyprusReference = UUID.fromString("b5281cd3-9d5d-4ae2-8d55-b62a592ce846");
 	
-	private String cyprusReferenceTitle = "Cyprus";
+	private String cyprusReferenceTitle = "Cyprus Distributions Excel Import";
 
 	private boolean doDistribution;
 	private boolean isDoTaxa;

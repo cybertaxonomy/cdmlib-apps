@@ -27,7 +27,6 @@ import eu.etaxonomy.cdm.io.common.mapping.UndefinedTransformerMethodException;
 import eu.etaxonomy.cdm.io.cyprus.CyprusImportConfigurator;
 import eu.etaxonomy.cdm.io.cyprus.CyprusTransformer;
 import eu.etaxonomy.cdm.model.agent.Person;
-import eu.etaxonomy.cdm.model.agent.Team;
 import eu.etaxonomy.cdm.model.description.Feature;
 import eu.etaxonomy.cdm.model.description.FeatureNode;
 import eu.etaxonomy.cdm.model.description.FeatureTree;
@@ -43,15 +42,16 @@ public class CyprusActivator {
 	private static final Logger logger = Logger.getLogger(CyprusActivator.class);
 	
 	//database validation status (create, update, validate ...)
-	static DbSchemaValidation hbm2dll = DbSchemaValidation.CREATE;
+	static DbSchemaValidation hbm2dll = DbSchemaValidation.VALIDATE;
 	static final URI source = cyprus_distribution();
+//	static final URI source = cyprus_local();
 
 	
-//	static final ICdmDataSource cdmDestination = CdmDestinations.localH2();
+//	static final ICdmDataBSource cdmDestination = CdmDestinations.localH2();
 //	static final ICdmDataSource cdmDestination = CdmDestinations.cdm_local_postgres_CdmTest();
-	static final ICdmDataSource cdmDestination = CdmDestinations.cdm_test_local_mysql();
+//	static final ICdmDataSource cdmDestination = CdmDestinations.cdm_test_local_mysql();
 //	static final ICdmDataSource cdmDestination = CdmDestinations.cdm_cyprus_dev();
-//	static final ICdmDataSource cdmDestination = CdmDestinations.cdm_cyprus_production();
+	static final ICdmDataSource cdmDestination = CdmDestinations.cdm_cyprus_production();
 
 	
 	//feature tree uuid
@@ -77,8 +77,6 @@ public class CyprusActivator {
 		config.setCheck(check);
 		config.setDoDistribution(doDistribution);
 		config.setDoTaxa(doTaxa);
-//		config.setDefaultLanguageUuid(defaultLanguageUuid);
-//		config.setDoPrintKeys(doPrintKeys);
 		config.setDbSchemaValidation(hbm2dll);
 		
 		CdmDefaultImport myImport = new CdmDefaultImport();
@@ -158,7 +156,7 @@ public class CyprusActivator {
 	public static URI cyprus_distribution() {
 		URI sourceUrl;
 		try {
-			sourceUrl = new URI("file:/C:/localCopy/Data/zypern/Zypern_distribution.xls");
+			sourceUrl = new URI("file:/C:/localCopy/Data/zypern/Zypern_distribution_RH_corr.xls");
 			return sourceUrl;
 		} catch (URISyntaxException e) {
 			e.printStackTrace();
