@@ -9,17 +9,20 @@ import java.util.UUID;
 import org.apache.log4j.Logger;
 import org.springframework.transaction.TransactionStatus;
 
-import xper2.fr_jussieu_snv_lis.Xper;
-import xper2.fr_jussieu_snv_lis.base.Individual;
-import xper2.fr_jussieu_snv_lis.base.Mode;
-import xper2.fr_jussieu_snv_lis.base.Variable;
-import xper2.fr_jussieu_snv_lis.utils.Utils;
+import fr_jussieu_snv_lis.Xper;
+import fr_jussieu_snv_lis.base.BaseObjectResource;
+import fr_jussieu_snv_lis.base.Individual;
+import fr_jussieu_snv_lis.base.Mode;
+import fr_jussieu_snv_lis.base.Variable;
+import fr_jussieu_snv_lis.base.XPResource;
+import fr_jussieu_snv_lis.utils.Utils;
 import eu.etaxonomy.cdm.api.service.pager.Pager;
 import eu.etaxonomy.cdm.model.common.TermVocabulary;
 import eu.etaxonomy.cdm.model.description.CategoricalData;
 import eu.etaxonomy.cdm.model.description.DescriptionElementBase;
 import eu.etaxonomy.cdm.model.description.FeatureNode;
 import eu.etaxonomy.cdm.model.description.FeatureTree;
+import eu.etaxonomy.cdm.model.description.QuantitativeData;
 import eu.etaxonomy.cdm.model.description.State;
 import eu.etaxonomy.cdm.model.description.StateData;
 import eu.etaxonomy.cdm.model.description.TaxonDescription;
@@ -34,9 +37,9 @@ public class AdaptaterCdmXper {
 		
 	}
 
-	// Load the featureTree with the UUID 7027f0aa-ac00-4e78-a15e-1b3f8314884e
+	// Load the featureTree with the UUID
 	public void loadFeatures() {
-		UUID featureTreeUUID = UUID.fromString("2e6d3fe1-59db-490e-9e1c-2d58ddbbff78");
+		UUID featureTreeUUID = UUID.fromString("43ab1efd-fa15-419a-8cd6-05477e4b37bc");
 		List<String> featureTreeInit = Arrays.asList(new String[]{"root.children.feature.representations"});
 		
 		TransactionStatus tx = Xper.getCdmApplicationController().startTransaction();
@@ -63,16 +66,23 @@ public class AdaptaterCdmXper {
 						alreadyExist = true;
 				}
 				
-				if(!alreadyExist && child.getFeature().isSupportsCategoricalData()){
+				if(!alreadyExist && (child.getFeature().isSupportsCategoricalData() || child.getFeature().isSupportsQuantitativeData())){
+					
 					Utils.currentBase.addVariable(variable);
-					// Add states to the character
-					Set<TermVocabulary<State>> termVocabularySet = child.getFeature().getSupportedCategoricalEnumerations();
-					for(TermVocabulary<State> termVocabulary : termVocabularySet){
-						for(State sate : termVocabulary.getTerms()){
-							Mode mode = new Mode(sate.getLabel());
-							mode.setUuid(sate.getUuid());
-							variable.addMode(mode);
+					
+					if(child.getFeature().isSupportsCategoricalData()){
+						// Add states to the character
+						Set<TermVocabulary<State>> termVocabularySet = child.getFeature().getSupportedCategoricalEnumerations();
+						for(TermVocabulary<State> termVocabulary : termVocabularySet){
+							for(State sate : termVocabulary.getTerms()){
+								Mode mode = new Mode(sate.getLabel());
+								mode.setUuid(sate.getUuid());
+								variable.addMode(mode);
+							}
 						}
+					}else if (child.getFeature().isSupportsQuantitativeData()) {
+						// Specify the character type (numerical)
+						variable.setType(Utils.numType);
 					}
 					
 					if(indiceParent != -1 && Utils.currentBase.getVariableAt(indiceParent) != null){
@@ -95,6 +105,11 @@ public class AdaptaterCdmXper {
 			if (Utils.currentBase != null) {
 				Individual individual = new Individual(taxonBase.getName().toString());
 				individual.setUuid(taxonBase.getUuid());
+				
+				// Add a image to the taxon
+				BaseObjectResource bor = new BaseObjectResource(new XPResource("http://www.cheloniophilie.com/Images/Photos/Chelonia-mydas/tortue-marine.JPG"));
+                individual.addResource(bor); 
+                
 				// Add an empty description
 				List<Variable> vars = Utils.currentBase.getVariables();
 				for(Variable var : vars){
@@ -137,6 +152,35 @@ public class AdaptaterCdmXper {
 						}
 					}
 				}
+			}else if(descriptionElementBase instanceof QuantitativeData){
+				// find the xper variable corresponding
+				Variable variable = null;
+				List<Variable> vars = Utils.currentBase.getVariables();
+				for(Variable var : vars){
+					if(var.getUuid().equals(((QuantitativeData)descriptionElementBase).getFeature().getUuid())){
+						variable = var;
+					}
+				}
+				if(variable != null){
+					fr_jussieu_snv_lis.base.QuantitativeData qdXper = new fr_jussieu_snv_lis.base.QuantitativeData();
+					QuantitativeData qdCDM = ((QuantitativeData)descriptionElementBase);
+					
+					if(qdCDM.getMax() != null)
+						qdXper.setMax(new Double(qdCDM.getMax()));
+					if(qdCDM.getMin() != null)
+					qdXper.setMin(new Double(qdCDM.getMin()));
+					if(qdCDM.getTypicalLowerBoundary() != null)
+					qdXper.setUmethLower(new Double(qdCDM.getTypicalLowerBoundary()));
+					if(qdCDM.getTypicalUpperBoundary() != null)
+					qdXper.setUmethUpper(new Double(qdCDM.getTypicalUpperBoundary()));
+					
+					//qdXper.setMean(new Double(qdCDM.getAverage()));
+					//qdXper.setSd(new Double(qdCDM.getStandardDeviation()));
+					//qdXper.setNSample(new Double(qdCDM.getSampleSize()));
+					
+					individual.addNumMatrix(variable, qdXper);
+				}
+				
 			}
 		}
 	}
@@ -147,7 +191,7 @@ public class AdaptaterCdmXper {
 		if(Xper.getCdmApplicationController().getWorkingSetService().list(WorkingSet.class, null, null, null, null).size() <= 0){
 			WorkingSet ws = WorkingSet.NewInstance();
 			
-			UUID featureTreeUUID = UUID.fromString("7027f0aa-ac00-4e78-a15e-1b3f8314884e");
+			UUID featureTreeUUID = UUID.fromString("47eda782-89c7-4c69-9295-e4052ebe16c6");
 			List<String> featureTreeInit = Arrays.asList(new String[]{"root.children.feature.representations"});
 			
 			FeatureTree featureTree = Xper.getCdmApplicationController().getFeatureTreeService().load(featureTreeUUID, featureTreeInit);

@@ -1,8 +1,10 @@
 package eu.etaxonomy.xper;
 
-import xper2.fr_jussieu_snv_lis.Xper;
-import xper2.fr_jussieu_snv_lis.edition.XPDisplay;
-import xper2.fr_jussieu_snv_lis.utils.Utils;
+import java.io.File;
+
+import fr_jussieu_snv_lis.Xper;
+import fr_jussieu_snv_lis.edition.XPDisplay;
+import fr_jussieu_snv_lis.utils.Utils;
 import eu.etaxonomy.cdm.api.application.CdmApplicationController;
 import eu.etaxonomy.cdm.app.common.CdmDestinations;
 import eu.etaxonomy.cdm.database.CdmDataSource;
@@ -32,10 +34,19 @@ public class XperStart {
 	public static void xperloadDataFromCdm(){
 		// create a new empty base and load data from CDM
 		if(Xper.getCdmApplicationController() != null){
+			// create a new base
 			Xper.getMainframe().newBase("baseTest");
+			// specify that the current base is not new (needed to be able to add images)
+			Utils.isNewBase = false;
+			// use the current directory as working directory for Xper2
+			XPDisplay.getControler().getBase().setPathName(System.getProperty("user.dir") + Utils.sep);
+			// create a _thumbnail directory to store thumbnails
+			new File(System.getProperty("user.dir") + Utils.sep + "images" + Utils.sep + "_thumbnails").mkdirs();
+			// delete the variable create by default and update the frame
 			XPDisplay.getControler().getBase().deleteVariable(XPDisplay.getControler().getBase().getVariableAt(0));
 			XPDisplay.displayNbVariable();
 			XPDisplay.getControler().displayJifVarTree();
+			
 			AdaptaterCdmXper adaptaterCdmXper = new AdaptaterCdmXper();
 			
 			if (Utils.currentBase != null) {
@@ -60,8 +71,18 @@ public class XperStart {
 		while(!Utils.xperReady){
 		}
 		System.out.println("start load data");
+		// display a loading gif
+		Utils.displayLoadingGif(true);
+		// load the data from CDM
 		xperloadDataFromCdm();
+		// undisplay a loading gif
+		Utils.displayLoadingGif(false);
 		System.out.println("stop load data");
+		System.out.println("start generate thumbnails");
+		// generate all thumbnails (a loading gif is automatically displayed
+		Utils.generateThumbnailsFromImageURL(XPDisplay.getControler().getBase().getAllResources());
+		System.out.println("stop generate thumbnails");
+		
 	}
 
 }
