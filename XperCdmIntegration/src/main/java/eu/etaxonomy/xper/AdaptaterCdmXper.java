@@ -168,12 +168,13 @@ public class AdaptaterCdmXper {
 					if(qdCDM.getMax() != null)
 						qdXper.setMax(new Double(qdCDM.getMax()));
 					if(qdCDM.getMin() != null)
-					qdXper.setMin(new Double(qdCDM.getMin()));
+						qdXper.setMin(new Double(qdCDM.getMin()));
 					if(qdCDM.getTypicalLowerBoundary() != null)
-					qdXper.setUmethLower(new Double(qdCDM.getTypicalLowerBoundary()));
+						qdXper.setUmethLower(new Double(qdCDM.getTypicalLowerBoundary()));
 					if(qdCDM.getTypicalUpperBoundary() != null)
-					qdXper.setUmethUpper(new Double(qdCDM.getTypicalUpperBoundary()));
+						qdXper.setUmethUpper(new Double(qdCDM.getTypicalUpperBoundary()));
 					
+					// Does not work
 					//qdXper.setMean(new Double(qdCDM.getAverage()));
 					//qdXper.setSd(new Double(qdCDM.getStandardDeviation()));
 					//qdXper.setNSample(new Double(qdCDM.getSampleSize()));
