@@ -23,7 +23,7 @@ public class BerlinModelSources {
 	public static Source euroMed(){
 		//	BerlinModel - Euro+Med
 		String dbms = Source.SQL_SERVER_2005;
-		String strServer = "BGBM111";
+		String strServer = "BGBM42";
 		String strDB = "EuroPlusMed_00_Edit";
 		int port = 1247;
 		String userName = "webUser";
@@ -33,7 +33,7 @@ public class BerlinModelSources {
 	public static Source Campanulaceae(){
 		//	BerlinModel - Campanulaceae
 		String dbms = Source.SQL_SERVER_2005;
-		String strServer = "BGBM111";
+		String strServer = "BGBM42";
 		String strDB = "Campanulaceae";
 		int port = 1247;
 		String userName = "webUser";
@@ -53,7 +53,7 @@ public class BerlinModelSources {
 	public static Source EDIT_CICHORIEAE(){
 		//	BerlinModel - EditWP6
 		String dbms = Source.SQL_SERVER_2005;
-		String strServer = "BGBM111";
+		String strServer = "BGBM42";
 		String strDB = "EditWP6";
 		int port = 1247;
 		String userName = "webUser";
@@ -63,7 +63,7 @@ public class BerlinModelSources {
 	public static Source EDIT_Taraxacum(){
 		//	BerlinModel - EditWP6
 		String dbms = Source.SQL_SERVER_2005;
-		String strServer = "BGBM111";
+		String strServer = "BGBM42";
 		String strDB = "Edit_Taraxacum";
 		int port = 1247;
 		String userName = "webUser";
@@ -73,23 +73,13 @@ public class BerlinModelSources {
 	public static Source EDIT_Diptera(){
 		//	BerlinModel - EDIT_Diptera
 		String dbms = Source.SQL_SERVER_2005;
-		String strServer = "BGBM111";
+		String strServer = "BGBM42";
 		String strDB = "EDIT_Diptera";
 		int port = 1247;
 		String userName = "webUser";
 		return  makeSource(dbms, strServer, strDB, port, userName, null);
 	}
 	
-	public static Source EDIT_Palmae(){
-		//	BerlinModel - EDIT_Palmae
-		String dbms = Source.SQL_SERVER_2005;
-		String strServer = "BGBM111";
-		String strDB = "EDIT_Palmae";
-		int port = 1247;
-		String userName = "webUser";
-		return  makeSource(dbms, strServer, strDB, port, userName, null);
-	}
-
 	public static Source El_Salvador(){
 		//	BerlinModel - El_Salvador
 		String dbms = Source.SQL_SERVER_2005;
