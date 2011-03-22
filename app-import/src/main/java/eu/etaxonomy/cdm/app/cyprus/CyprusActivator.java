@@ -42,16 +42,16 @@ public class CyprusActivator {
 	private static final Logger logger = Logger.getLogger(CyprusActivator.class);
 	
 	//database validation status (create, update, validate ...)
-	static DbSchemaValidation hbm2dll = DbSchemaValidation.VALIDATE;
-	static final URI source = cyprus_distribution();
-//	static final URI source = cyprus_local();
+	static DbSchemaValidation hbm2dll = DbSchemaValidation.CREATE;
+//	static final URI source = cyprus_distribution();
+	static final URI source = cyprus_local();
 
 	
 //	static final ICdmDataBSource cdmDestination = CdmDestinations.localH2();
 //	static final ICdmDataSource cdmDestination = CdmDestinations.cdm_local_postgres_CdmTest();
-//	static final ICdmDataSource cdmDestination = CdmDestinations.cdm_test_local_mysql();
+	static final ICdmDataSource cdmDestination = CdmDestinations.cdm_test_local_mysql();
 //	static final ICdmDataSource cdmDestination = CdmDestinations.cdm_cyprus_dev();
-	static final ICdmDataSource cdmDestination = CdmDestinations.cdm_cyprus_production();
+//	static final ICdmDataSource cdmDestination = CdmDestinations.cdm_cyprus_production();
 
 	
 	//feature tree uuid
