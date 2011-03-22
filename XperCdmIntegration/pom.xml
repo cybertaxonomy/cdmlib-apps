@@ -38,5 +38,5 @@
 		<artifactId>aspectjrt</artifactId>
 	<version>1.6.3</version>
 	</dependency>
-	  </dependencies>
+	</dependencies>
 </project>

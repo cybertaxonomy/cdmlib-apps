@@ -54,45 +54,43 @@ public class AdaptaterCdmXper {
 	
 	// Recursive methode to load FeatureNode and all its children
 	public void loadFeatureNode(FeatureNode featureNode, int indiceParent){
-		if(featureNode.getChildCount() > 0){
-			List<FeatureNode> featureList = featureNode.getChildren();
-			for(FeatureNode child : featureList){
-				boolean alreadyExist = false;
-				Variable variable = new Variable(child.getFeature().getLabel());
-				variable.setUuid(child.getFeature().getUuid());
-				List<Variable> vars = Utils.currentBase.getVariables();
-				for(Variable var : vars){
-					if(var.getName().equals(variable.getName()))
-						alreadyExist = true;
+		List<FeatureNode> featureList = featureNode.getChildren();
+		for(FeatureNode child : featureList){
+			boolean alreadyExist = false;
+			Variable variable = new Variable(child.getFeature().getLabel());
+			variable.setUuid(child.getFeature().getUuid());
+			List<Variable> vars = Utils.currentBase.getVariables();
+			for(Variable var : vars){
+				if(var.getName().equals(variable.getName()))
+					alreadyExist = true;
+			}
+			
+			if(!alreadyExist && (child.getFeature().isSupportsCategoricalData() || child.getFeature().isSupportsQuantitativeData())){
+				
+				Utils.currentBase.addVariable(variable);
+				
+				if(child.getFeature().isSupportsCategoricalData()){
+					// Add states to the character
+					Set<TermVocabulary<State>> termVocabularySet = child.getFeature().getSupportedCategoricalEnumerations();
+					for(TermVocabulary<State> termVocabulary : termVocabularySet){
+						for(State sate : termVocabulary.getTerms()){
+							Mode mode = new Mode(sate.getLabel());
+							mode.setUuid(sate.getUuid());
+							variable.addMode(mode);
+						}
+					}
+				}else if (child.getFeature().isSupportsQuantitativeData()) {
+					// Specify the character type (numerical)
+					variable.setType(Utils.numType);
 				}
 				
-				if(!alreadyExist && (child.getFeature().isSupportsCategoricalData() || child.getFeature().isSupportsQuantitativeData())){
-					
-					Utils.currentBase.addVariable(variable);
-					
-					if(child.getFeature().isSupportsCategoricalData()){
-						// Add states to the character
-						Set<TermVocabulary<State>> termVocabularySet = child.getFeature().getSupportedCategoricalEnumerations();
-						for(TermVocabulary<State> termVocabulary : termVocabularySet){
-							for(State sate : termVocabulary.getTerms()){
-								Mode mode = new Mode(sate.getLabel());
-								mode.setUuid(sate.getUuid());
-								variable.addMode(mode);
-							}
-						}
-					}else if (child.getFeature().isSupportsQuantitativeData()) {
-						// Specify the character type (numerical)
-						variable.setType(Utils.numType);
-					}
-					
-					if(indiceParent != -1 && Utils.currentBase.getVariableAt(indiceParent) != null){
-						variable.addMother(((Variable)Utils.currentBase.getVariableAt(indiceParent -1)));
-					}
-					
-					loadFeatureNode(child, variable.getIndexInt());
-				}else{
-					loadFeatureNode(child, indiceParent);
+				if(indiceParent != -1 && Utils.currentBase.getVariableAt(indiceParent) != null){
+					variable.addMother(((Variable)Utils.currentBase.getVariableAt(indiceParent -1)));
 				}
+				
+				loadFeatureNode(child, variable.getIndexInt());
+			}else{
+				loadFeatureNode(child, indiceParent);
 			}
 		}
 	}

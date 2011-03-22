@@ -65,7 +65,7 @@ public class XperStart {
 	 */
 	public static void main(String[] args) {
 		System.out.println("cdm start");
-		XperStart start = new XperStart();
+		new XperStart();
 		System.out.println("cdm started :::");
 		
 		while(!Utils.xperReady){
