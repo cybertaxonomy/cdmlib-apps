@@ -76,7 +76,7 @@ public class CentralAfricaEricaceaeActivator {
 	
 	//taxa
 	static final boolean doTaxa = true;
-	static final boolean doDeduplicate = false;
+	static final boolean doDeduplicate = true;
 
 	private boolean includeEricaceae = true;
 
