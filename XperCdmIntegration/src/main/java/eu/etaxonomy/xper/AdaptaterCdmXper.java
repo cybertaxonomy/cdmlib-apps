@@ -36,6 +36,7 @@ import eu.etaxonomy.cdm.model.taxon.TaxonBase;
 import fr_jussieu_snv_lis.Xper;
 import fr_jussieu_snv_lis.IO.ICdmAdapter;
 import fr_jussieu_snv_lis.base.BaseObjectResource;
+import fr_jussieu_snv_lis.base.IPersistenceSaveList;
 import fr_jussieu_snv_lis.base.Individual;
 import fr_jussieu_snv_lis.base.Mode;
 import fr_jussieu_snv_lis.base.Variable;
@@ -87,7 +88,7 @@ public class AdaptaterCdmXper implements ICdmAdapter{
 			boolean alreadyExist = false;
 			Variable variable = new Variable(child.getFeature().getLabel());
 			variable.setUuid(child.getFeature().getUuid());
-			List<Variable> vars = Utils.currentBase.getVariables();
+			IPersistenceSaveList<Variable> vars = Utils.currentBase.getVariables();
 			for(Variable var : vars){
 				if(var.getName().equals(variable.getName()))
 					alreadyExist = true;
@@ -137,7 +138,7 @@ public class AdaptaterCdmXper implements ICdmAdapter{
                 individual.addResource(bor); 
                 
 				// Add an empty description
-				List<Variable> vars = Utils.currentBase.getVariables();
+                IPersistenceSaveList<Variable> vars = Utils.currentBase.getVariables();
 				for(Variable var : vars){
 					individual.addMatrix(var, new ArrayList<Mode>());
 				}
@@ -159,7 +160,7 @@ public class AdaptaterCdmXper implements ICdmAdapter{
 			if(descriptionElementBase instanceof CategoricalData){
 				// find the xper variable corresponding
 				Variable variable = null;
-				List<Variable> vars = Utils.currentBase.getVariables();
+				IPersistenceSaveList<Variable> vars = Utils.currentBase.getVariables();
 				for(Variable var : vars){
 					if(var.getUuid().equals(((CategoricalData)descriptionElementBase).getFeature().getUuid())){
 						variable = var;
@@ -181,7 +182,7 @@ public class AdaptaterCdmXper implements ICdmAdapter{
 			}else if(descriptionElementBase instanceof QuantitativeData){
 				// find the xper variable corresponding
 				Variable variable = null;
-				List<Variable> vars = Utils.currentBase.getVariables();
+				IPersistenceSaveList<Variable> vars = Utils.currentBase.getVariables();
 				for(Variable var : vars){
 					if(var.getUuid().equals(((QuantitativeData)descriptionElementBase).getFeature().getUuid())){
 						variable = var;
@@ -239,20 +240,20 @@ public class AdaptaterCdmXper implements ICdmAdapter{
 
 	@Override
 	public void save() {
-		List<Variable> vars = Utils.currentBase.getVariables();
+		IPersistenceSaveList<Variable> vars = Utils.currentBase.getVariables();
 		saveFeatureTree(vars);
 		saveFeatures(vars);
 	}
 
 
-	private void saveFeatureTree(List<Variable> vars) {
+	private void saveFeatureTree(IPersistenceSaveList<Variable> vars) {
 		logger.warn("Save feature tree  not yet implemented");
 	}
 
 	/**
 	 * @param vars
 	 */
-	private void saveFeatures(List<Variable> vars) {
+	private void saveFeatures(IPersistenceSaveList<Variable> vars) {
 		tx = Xper.getCdmApplicationController().startTransaction();
 		for (Variable variable : vars){
 			Feature feature = getFeature(variable);
