@@ -2,26 +2,30 @@ package eu.etaxonomy.xper;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Set;
 import java.util.UUID;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.springframework.transaction.TransactionStatus;
 
-import fr_jussieu_snv_lis.Xper;
-import fr_jussieu_snv_lis.base.BaseObjectResource;
-import fr_jussieu_snv_lis.base.Individual;
-import fr_jussieu_snv_lis.base.Mode;
-import fr_jussieu_snv_lis.base.Variable;
-import fr_jussieu_snv_lis.base.XPResource;
-import fr_jussieu_snv_lis.utils.Utils;
+import eu.etaxonomy.cdm.api.service.ITermService;
+import eu.etaxonomy.cdm.api.service.IVocabularyService;
 import eu.etaxonomy.cdm.api.service.pager.Pager;
+import eu.etaxonomy.cdm.common.CdmUtils;
+import eu.etaxonomy.cdm.model.common.CdmBase;
+import eu.etaxonomy.cdm.model.common.DefinedTermBase;
+import eu.etaxonomy.cdm.model.common.Language;
+import eu.etaxonomy.cdm.model.common.Representation;
 import eu.etaxonomy.cdm.model.common.TermVocabulary;
 import eu.etaxonomy.cdm.model.description.CategoricalData;
 import eu.etaxonomy.cdm.model.description.DescriptionElementBase;
+import eu.etaxonomy.cdm.model.description.Feature;
 import eu.etaxonomy.cdm.model.description.FeatureNode;
 import eu.etaxonomy.cdm.model.description.FeatureTree;
+import eu.etaxonomy.cdm.model.description.MeasurementUnit;
 import eu.etaxonomy.cdm.model.description.QuantitativeData;
 import eu.etaxonomy.cdm.model.description.State;
 import eu.etaxonomy.cdm.model.description.StateData;
@@ -29,17 +33,36 @@ import eu.etaxonomy.cdm.model.description.TaxonDescription;
 import eu.etaxonomy.cdm.model.description.WorkingSet;
 import eu.etaxonomy.cdm.model.taxon.Taxon;
 import eu.etaxonomy.cdm.model.taxon.TaxonBase;
+import fr_jussieu_snv_lis.Xper;
+import fr_jussieu_snv_lis.IO.ICdmAdapter;
+import fr_jussieu_snv_lis.base.BaseObjectResource;
+import fr_jussieu_snv_lis.base.Individual;
+import fr_jussieu_snv_lis.base.Mode;
+import fr_jussieu_snv_lis.base.Variable;
+import fr_jussieu_snv_lis.base.XPResource;
+import fr_jussieu_snv_lis.utils.Utils;
 
-public class AdaptaterCdmXper {
+public class AdaptaterCdmXper implements ICdmAdapter{
 	private static final Logger logger = Logger.getLogger(AdaptaterCdmXper.class);
+	
+	TransactionStatus tx = Xper.getCdmApplicationController().startTransaction();
 	
 	public AdaptaterCdmXper() {
 		
 	}
+	
+	
+	public void load(){
+		loadFeatures();
+		loadTaxaAndDescription();
+
+	}
 
 	// Load the featureTree with the UUID
 	public void loadFeatures() {
-		UUID featureTreeUUID = UUID.fromString("43ab1efd-fa15-419a-8cd6-05477e4b37bc");
+		
+		UUID featureTreeUUID = UUID.fromString("1045f91b-6f1a-4a7d-8783-82a58a01ab25");
+//		UUID featureTreeUUID = UUID.fromString("43ab1efd-fa15-419a-8cd6-05477e4b37bc");
 		List<String> featureTreeInit = Arrays.asList(new String[]{"root.children.feature.representations"});
 		
 		TransactionStatus tx = Xper.getCdmApplicationController().startTransaction();
@@ -52,7 +75,12 @@ public class AdaptaterCdmXper {
 		Xper.getCdmApplicationController().commitTransaction(tx);
 	}
 	
-	// Recursive methode to load FeatureNode and all its children
+	/**
+	 * Recursive methode to load FeatureNode and all its children
+	 * 
+	 * @param featureNode
+	 * @param indiceParent
+	 */
 	public void loadFeatureNode(FeatureNode featureNode, int indiceParent){
 		List<FeatureNode> featureList = featureNode.getChildren();
 		for(FeatureNode child : featureList){
@@ -73,9 +101,9 @@ public class AdaptaterCdmXper {
 					// Add states to the character
 					Set<TermVocabulary<State>> termVocabularySet = child.getFeature().getSupportedCategoricalEnumerations();
 					for(TermVocabulary<State> termVocabulary : termVocabularySet){
-						for(State sate : termVocabulary.getTerms()){
-							Mode mode = new Mode(sate.getLabel());
-							mode.setUuid(sate.getUuid());
+						for(State state : termVocabulary.getTerms()){
+							Mode mode = new Mode(state.getLabel());
+							mode.setUuid(state.getUuid());
 							variable.addMode(mode);
 						}
 					}
@@ -208,4 +236,246 @@ public class AdaptaterCdmXper {
 			Xper.getCdmApplicationController().getWorkingSetService().save(ws);
 		}
 	}
+
+	@Override
+	public void save() {
+		List<Variable> vars = Utils.currentBase.getVariables();
+		saveFeatureTree(vars);
+		saveFeatures(vars);
+	}
+
+
+	private void saveFeatureTree(List<Variable> vars) {
+		logger.warn("Save feature tree  not yet implemented");
+	}
+
+	/**
+	 * @param vars
+	 */
+	private void saveFeatures(List<Variable> vars) {
+		tx = Xper.getCdmApplicationController().startTransaction();
+		for (Variable variable : vars){
+			Feature feature = getFeature(variable);
+			if (Utils.numType.equals(variable.getType())){
+				saveNumericalFeature(variable, feature);
+			}else if (Utils.catType.equals(variable.getType())){
+				saveCategoricalFeature(variable, feature);
+			}else{
+				logger.warn("variable type undefined");
+			}
+		}
+		Xper.getCdmApplicationController().commitTransaction(tx);
+	}
+
+
+	/**
+	 * @param variable
+	 * @return
+	 */
+	private Feature getFeature(Variable variable) {
+		UUID uuid = variable.getUuid();
+		ITermService termService = Xper.getCdmApplicationController().getTermService();
+		DefinedTermBase<?> term = termService.find(uuid);
+		Feature feature = CdmBase.deproxy(term, Feature.class);
+		return feature;
+	}
+
+	private void saveCategoricalFeature(Variable variable, Feature feature) {
+		ITermService termService = Xper.getCdmApplicationController().getTermService();
+		IVocabularyService vocService = Xper.getCdmApplicationController().getVocabularyService();
+		if (feature == null){
+			saveNewFeature(variable, termService, vocService);
+		}else{
+			if (isChanged(feature, variable)){
+				feature.setLabel(variable.getName());
+				termService.save(feature);
+			}else{
+				logger.info("No change for variable: " + variable.getName());
+			}
+			int numberOfVocs = feature.getSupportedCategoricalEnumerations().size();
+			HashMap<UUID, State> allStates = getAllSupportedStates(feature);
+			for (Mode mode : variable.getModes()){
+				State state = allStates.get(mode.getUuid());
+				if (state == null){
+					saveNewState(mode, numberOfVocs, feature, termService, vocService);
+				}else{
+					allStates.remove(state.getUuid());
+					if (modeHasChanged(mode, state)){
+						String stateDescription = null;
+						String stateLabel = mode.getName();
+						String stateAbbrev = null;
+						Language lang = Language.DEFAULT();
+						Representation rep = state.getRepresentation(lang);
+						rep.setLabel(stateLabel);
+						termService.saveOrUpdate(state);
+//						State state = State.NewInstance(stateDescription, stateLabel, stateAbbrev);
+//						termService.save(state);
+//						voc.addTerm(state);
+//						vocService.save(voc);
+					}
+				}
+			}
+			for (State state : allStates.values()){
+				logger.warn("There is a state to delete: " + feature.getLabel() + "-" + state.getLabel());
+				for (TermVocabulary<State> voc :feature.getSupportedCategoricalEnumerations()){
+					voc.removeTerm(state);
+				}
+			}
+		}
+	}
+
+
+	private boolean modeHasChanged(Mode mode, State state) {
+		if (CdmUtils.nullSafeEqual(mode.getName(), state.getLabel())){
+			return false;
+		}else{
+			return true;
+		}
+	}
+
+
+	private void saveNewState(Mode mode, int numberOfVocs, Feature feature, ITermService termService, IVocabularyService vocService) {
+		TermVocabulary<State> voc;
+		if (numberOfVocs <= 0){
+			//new voc
+			String vocDescription = null;
+			String vocLabel = "Vocabulary for feature " + feature.getLabel();
+			String vocAbbrev = null;
+			String termSourceUri = null;
+			voc = TermVocabulary.NewInstance(vocDescription, vocLabel, vocAbbrev, termSourceUri);
+		}else if (numberOfVocs == 1){
+			voc = feature.getSupportedCategoricalEnumerations().iterator().next();
+		}else{
+			//numberOfVocs > 1
+			//FIXME preliminary
+			voc = feature.getSupportedCategoricalEnumerations().iterator().next();
+		}
+		saveNewModeToVoc(termService, vocService, voc, mode);
+	}
+	
+
+	/**
+	 * @param variable
+	 * @param termService
+	 * @param vocService
+	 */
+	private void saveNewFeature(Variable variable, ITermService termService,
+			IVocabularyService vocService) {
+		Feature feature;
+		//new feature
+		String description = null;
+		String label = variable.getName();
+		String labelAbbrev = null;
+		feature = Feature.NewInstance(description, label, labelAbbrev);
+		variable.setUuid(feature.getUuid());
+		termService.save(feature);
+		//new voc
+		String vocDescription = null;
+		String vocLabel = "Vocabulary for feature " + label;
+		String vocAbbrev = null;
+		String termSourceUri = null;
+		TermVocabulary<State> voc = TermVocabulary.NewInstance(vocDescription, vocLabel, vocAbbrev, termSourceUri);
+		for (Mode mode:variable.getModes()){
+			saveNewModeToVoc(termService, vocService, voc, mode);
+		}
+		feature.addSupportedCategoricalEnumeration(voc);
+		termService.saveOrUpdate(feature);
+	}
+
+
+	/**
+	 * @param termService
+	 * @param vocService
+	 * @param voc
+	 * @param mode
+	 */
+	private void saveNewModeToVoc(ITermService termService, IVocabularyService vocService, TermVocabulary<State> voc, Mode mode) {
+		String stateDescription = null;
+		String stateLabel = mode.getName();
+		String stateAbbrev = null;
+		State state = State.NewInstance(stateDescription, stateLabel, stateAbbrev);
+		mode.setUuid(state.getUuid());
+		termService.save(state);
+		voc.addTerm(state);
+		vocService.saveOrUpdate(voc);
+	}
+
+
+
+	private HashMap<UUID, State> getAllSupportedStates(Feature feature) {
+		HashMap<UUID, State> result = new HashMap<UUID,State>();
+		Set<TermVocabulary<State>> vocs = feature.getSupportedCategoricalEnumerations();
+		for (TermVocabulary<State> voc : vocs){
+			for (State state : voc.getTerms()){
+				result.put(state.getUuid(), state);
+			}
+		}
+		return result;
+	}
+
+
+	private boolean isChanged(Feature feature, Variable variable) {
+		//preliminary
+		return ! variable.getName().equals(feature.getLabel());
+	}
+
+
+
+	private void saveNumericalFeature(Variable variable, Feature feature) {
+		ITermService termService = Xper.getCdmApplicationController().getTermService();
+		IVocabularyService vocService = Xper.getCdmApplicationController().getVocabularyService();
+		String variableUnit = variable.getUnit();
+		Set<MeasurementUnit> units = feature.getRecommendedMeasurementUnits();
+		//preliminary
+		if (StringUtils.isBlank(variableUnit) ){
+			//unit is empty
+			if (!units.isEmpty()){
+				feature.getRecommendedMeasurementUnits().clear();
+			}
+		}else{
+			// unit is not empty
+			boolean unitExists = false;
+			for (MeasurementUnit measurementUnit: units){
+				//TODO ??
+				String labelOfUnit = measurementUnit.getLabel();
+				if (variableUnit.equals(labelOfUnit)){
+					unitExists = true;
+					break;
+				}
+			}
+			if (! unitExists){
+				units.clear();
+				MeasurementUnit existingUnit = findExistingUnit(variableUnit, termService);
+				if (existingUnit == null){
+					String unitDescription = null;
+					String unitLabel = variableUnit;
+					String labelAbbrev = null;
+					MeasurementUnit newUnit = MeasurementUnit.NewInstance(unitDescription, unitLabel, labelAbbrev);
+					termService.save(newUnit);
+					UUID defaultMeasurmentUnitVocabularyUuid = UUID.fromString("3b82c375-66bb-4636-be74-dc9cd087292a");
+					TermVocabulary voc = vocService.find(defaultMeasurmentUnitVocabularyUuid);
+					if (voc == null){
+						logger.warn("Could not find MeasurementService vocabulary");
+					}else{
+						voc.addTerm(newUnit);
+						vocService.saveOrUpdate(voc);
+					}
+					existingUnit = newUnit;
+				}
+				feature.addRecommendedMeasurementUnit(existingUnit);
+			}
+		}
+	}
+
+
+	private MeasurementUnit findExistingUnit(String variableUnit, ITermService termService) {
+		Pager<MeasurementUnit> existingUnits = termService.findByRepresentationText(variableUnit, MeasurementUnit.class, null, null);
+		for (MeasurementUnit exUnit : existingUnits.getRecords()){
+			if (variableUnit.equals(exUnit.getLabel())){
+				return exUnit;
+			}
+		}
+		return null;
+	}
+
 }

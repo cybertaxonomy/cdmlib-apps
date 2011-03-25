@@ -2,14 +2,13 @@ package eu.etaxonomy.xper;
 
 import java.io.File;
 
+import eu.etaxonomy.cdm.api.application.CdmApplicationController;
+import eu.etaxonomy.cdm.app.common.CdmDestinations;
+import eu.etaxonomy.cdm.database.DbSchemaValidation;
+import eu.etaxonomy.cdm.database.ICdmDataSource;
 import fr_jussieu_snv_lis.Xper;
 import fr_jussieu_snv_lis.edition.XPDisplay;
 import fr_jussieu_snv_lis.utils.Utils;
-import eu.etaxonomy.cdm.api.application.CdmApplicationController;
-import eu.etaxonomy.cdm.app.common.CdmDestinations;
-import eu.etaxonomy.cdm.database.CdmDataSource;
-import eu.etaxonomy.cdm.database.DbSchemaValidation;
-import eu.etaxonomy.cdm.database.ICdmDataSource;
 
 public class XperStart {
 	
@@ -47,13 +46,13 @@ public class XperStart {
 			XPDisplay.displayNbVariable();
 			XPDisplay.getControler().displayJifVarTree();
 			
-			AdaptaterCdmXper adaptaterCdmXper = new AdaptaterCdmXper();
+			AdaptaterCdmXper adapterCdmXper = new AdaptaterCdmXper();
+			Utils.cdmAdapter = adapterCdmXper;
 			
 			if (Utils.currentBase != null) {
 //				adaptaterCdmXper.createWorkingSet();
-				adaptaterCdmXper.loadFeatures();
-				adaptaterCdmXper.loadTaxaAndDescription();
-			
+				adapterCdmXper.load();
+
 				XPDisplay.displayNbVariable();
 				XPDisplay.getControler().displayJifVarTree();
 			}
@@ -69,11 +68,13 @@ public class XperStart {
 		System.out.println("cdm started :::");
 		
 		while(!Utils.xperReady){
+			//TODO wait
 		}
 		System.out.println("start load data");
 		// display a loading gif
 		Utils.displayLoadingGif(true);
 		// load the data from CDM
+		
 		xperloadDataFromCdm();
 		// undisplay a loading gif
 		Utils.displayLoadingGif(false);
