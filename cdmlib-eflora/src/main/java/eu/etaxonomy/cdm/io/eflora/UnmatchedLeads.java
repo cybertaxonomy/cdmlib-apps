@@ -17,6 +17,7 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 
 import eu.etaxonomy.cdm.api.service.IFeatureTreeService;
+import eu.etaxonomy.cdm.api.service.IPolytomousKeyNodeService;
 import eu.etaxonomy.cdm.api.service.IPolytomousKeyService;
 import eu.etaxonomy.cdm.common.CdmUtils;
 import eu.etaxonomy.cdm.model.description.FeatureNode;
@@ -155,12 +156,12 @@ public class UnmatchedLeads {
 		return false;
 	}
 	
-	public void saveToSession(IPolytomousKeyService service){
+	public void saveToSession(IPolytomousKeyNodeService service){
 		Set<PolytomousKeyNode> allNodes = new HashSet<PolytomousKeyNode>();
 		for (Set<PolytomousKeyNode> set :map.values()){
 			allNodes.addAll(set);
 		}
-		service.saveOrUpdatePolytomousKeyNodesAll(allNodes);
+		service.saveOrUpdate(allNodes);
 	}
 	
 //********************** toString()******************************/

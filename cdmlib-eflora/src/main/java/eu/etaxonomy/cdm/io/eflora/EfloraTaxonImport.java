@@ -121,7 +121,7 @@ public class EfloraTaxonImport  extends EfloraImportBase implements ICdmIO<Eflor
 		state.setUnmatchedLeads(unmatchedLeads);
 		
 		TransactionStatus tx = startTransaction();
-		unmatchedLeads.saveToSession(getPolytomousKeyService());
+		unmatchedLeads.saveToSession(getPolytomousKeyNodeService());
 		
 		
 		//TODO generally do not store the reference object in the config
