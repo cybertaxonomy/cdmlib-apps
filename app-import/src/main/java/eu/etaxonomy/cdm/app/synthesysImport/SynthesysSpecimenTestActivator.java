@@ -23,7 +23,7 @@ import eu.etaxonomy.cdm.io.common.CdmDefaultImport;
 import eu.etaxonomy.cdm.io.common.IImportConfigurator.CHECK;
 import eu.etaxonomy.cdm.io.common.IImportConfigurator.DO_REFERENCES;
 import eu.etaxonomy.cdm.io.excel.taxa.NormalExplicitImportConfigurator;
-import eu.etaxonomy.cdm.io.specimen.excel.in.SpecimenExcelImportConfigurator;
+import eu.etaxonomy.cdm.io.specimen.excel.in.SpecimenSynthesysExcelImportConfigurator;
 import eu.etaxonomy.cdm.model.name.NomenclaturalCode;
 
 /**
@@ -64,7 +64,7 @@ public class SynthesysSpecimenTestActivator {
 	public void doImport(ICdmDataSource destination, DbSchemaValidation hbm2dll){
 		System.out.println("Start import from Tcs("+ mySource.toString() + ") ...");
 		
-		SpecimenExcelImportConfigurator config = SpecimenExcelImportConfigurator.NewInstance(mySource,  destination);
+		SpecimenSynthesysExcelImportConfigurator config = SpecimenSynthesysExcelImportConfigurator.NewInstance(mySource,  destination);
 		
 		config.setClassificationUuid(treeUuid);
 		config.setSourceSecId(sourceSecId);
@@ -80,7 +80,7 @@ public class SynthesysSpecimenTestActivator {
 		config.setDbSchemaValidation(hbm2dll);
 
 		// invoke import
-		CdmDefaultImport<SpecimenExcelImportConfigurator> myImport = new CdmDefaultImport<SpecimenExcelImportConfigurator>();
+		CdmDefaultImport<SpecimenSynthesysExcelImportConfigurator> myImport = new CdmDefaultImport<SpecimenSynthesysExcelImportConfigurator>();
 		//new Test().invoke(tcsImportConfigurator);
 		myImport.invoke(config);
 		
