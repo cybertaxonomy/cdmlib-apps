@@ -1,4 +1,4 @@
-package eu.etaxonomy.xper;
+package eu.etaxonomy.cdm.io.xper;
 
 import java.io.File;
 
