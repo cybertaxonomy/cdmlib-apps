@@ -81,7 +81,7 @@ public class XperStart {
 		System.out.println("stop load data");
 		System.out.println("start generate thumbnails");
 		// generate all thumbnails (a loading gif is automatically displayed
-		Utils.generateThumbnailsFromImageURL(XPDisplay.getControler().getBase().getAllResources());
+		Utils.generateThumbnailsFromURLImage(XPDisplay.getControler().getBase().getAllResources());
 		System.out.println("stop generate thumbnails");
 		
 	}
