@@ -6,15 +6,16 @@ import eu.etaxonomy.cdm.api.application.CdmApplicationController;
 import eu.etaxonomy.cdm.app.common.CdmDestinations;
 import eu.etaxonomy.cdm.database.DbSchemaValidation;
 import eu.etaxonomy.cdm.database.ICdmDataSource;
+import eu.etaxonomy.cdm.io.xper.AdaptaterCdmXper;
 import fr_jussieu_snv_lis.Xper;
 import fr_jussieu_snv_lis.edition.XPDisplay;
 import fr_jussieu_snv_lis.utils.Utils;
 
-public class XperStart {
+public class TestAdapterCdmXper {
 	
 	
 	
-	public XperStart(){
+	public TestAdapterCdmXper(){
 		
 		DbSchemaValidation dbSchemaValidation = DbSchemaValidation.VALIDATE;
 		ICdmDataSource datasource = CdmDestinations.cdm_test_local_xper();
@@ -64,7 +65,7 @@ public class XperStart {
 	 */
 	public static void main(String[] args) {
 		System.out.println("cdm start");
-		new XperStart();
+		new TestAdapterCdmXper();
 		System.out.println("cdm started :::");
 		
 		while(!Utils.xperReady){
