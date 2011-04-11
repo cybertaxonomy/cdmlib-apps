@@ -7,6 +7,7 @@ import eu.etaxonomy.cdm.app.common.CdmDestinations;
 import eu.etaxonomy.cdm.database.DbSchemaValidation;
 import eu.etaxonomy.cdm.database.ICdmDataSource;
 import eu.etaxonomy.cdm.io.xper.AdaptaterCdmXper;
+import fr_jussieu_snv_lis.XPApp;
 import fr_jussieu_snv_lis.Xper;
 import fr_jussieu_snv_lis.edition.XPDisplay;
 import fr_jussieu_snv_lis.utils.Utils;
@@ -34,7 +35,7 @@ public class TestAdapterCdmXper {
 		};
 		System.out.println("xper2 start");
 		t.start();
-		while(!Utils.xperReady){
+		while(!XPApp.xperReady){
 			//TODO wait
 		}
 		System.out.println("xper2 started :::");
@@ -47,22 +48,22 @@ public class TestAdapterCdmXper {
 		
 		
 		// create a new empty base and load data from CDM
-		if(Utils.cdmAdapter != null){
+		if(XPApp.cdmAdapter != null){
 			// create a new base
-			Xper.getMainframe().newBase("baseTest");
+			XPApp.getMainframe().newBase("baseTest");
 			// specify that the current base is not new (needed to be able to add images)
-			Utils.isNewBase = false;
+			XPApp.isNewBase = false;
 			// delete the variable create by default and update the frame
-			Xper.getMainframe().getControler().getBase().deleteVariable(Xper.getMainframe().getControler().getBase().getVariableAt(0));
-			Xper.getMainframe().displayNbVariable();
-			Xper.getMainframe().getControler().displayJifVarTree();
+			XPApp.getCurrentBase().deleteVariable(XPApp.getMainframe().getControler().getBase().getVariableAt(0));
+			XPApp.getMainframe().displayNbVariable();
+			XPApp.getMainframe().getControler().displayJifVarTree();
 			
-			if (Utils.currentBase != null) {
+			if (XPApp.getCurrentBase() != null) {
 //				adaptaterCdmXper.createWorkingSet();
 				adapterCdmXper.load();
 
-				Xper.getMainframe().displayNbVariable();
-				Xper.getMainframe().getControler().displayJifVarTree();
+				XPApp.getMainframe().displayNbVariable();
+				XPApp.getMainframe().getControler().displayJifVarTree();
 			}
 		}
 		// undisplay a loading gif
@@ -84,7 +85,7 @@ public class TestAdapterCdmXper {
 	private void generateThumbnails() {
 		System.out.println("start generate thumbnails");
 		// generate all thumbnails (a loading gif is automatically displayed
-		Utils.generateThumbnailsFromURLImage(Xper.getMainframe().getControler().getBase().getAllResources());
+		XPApp.generateThumbnailsFromURLImage(XPApp.getCurrentBase().getAllResources());
 		System.out.println("stop generate thumbnails");
 	}
 	
@@ -109,7 +110,7 @@ public class TestAdapterCdmXper {
 			// load the data from CDM
 			testAdapter.xperloadDataFromCdm();
 			// use the current directory as working directory for Xper2
-			Xper.getMainframe().getControler().getBase().setPathName(System.getProperty("user.dir") + Utils.sep);
+			XPApp.getCurrentBase().setPathName(System.getProperty("user.dir") + Utils.sep);
 			
 			testAdapter.generateThumbnails();
 		}
