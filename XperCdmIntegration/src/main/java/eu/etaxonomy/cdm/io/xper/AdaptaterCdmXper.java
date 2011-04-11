@@ -34,6 +34,7 @@ import eu.etaxonomy.cdm.model.description.TaxonDescription;
 import eu.etaxonomy.cdm.model.description.WorkingSet;
 import eu.etaxonomy.cdm.model.taxon.Taxon;
 import eu.etaxonomy.cdm.model.taxon.TaxonBase;
+import fr_jussieu_snv_lis.XPApp;
 import fr_jussieu_snv_lis.Xper;
 import fr_jussieu_snv_lis.IO.ICdmAdapter;
 import fr_jussieu_snv_lis.base.BaseObjectResource;
@@ -101,7 +102,7 @@ public class AdaptaterCdmXper implements ICdmAdapter{
 			boolean alreadyExist = false;
 			Variable variable = new Variable(child.getFeature().getLabel());
 			variable.setUuid(child.getFeature().getUuid());
-			List<Variable> vars = Utils.currentBase.getVariables();
+			List<Variable> vars = XPApp.getCurrentBase().getVariables();
 			for(Variable var : vars){
 				if(var.getName().equals(variable.getName()))
 					alreadyExist = true;
@@ -109,7 +110,7 @@ public class AdaptaterCdmXper implements ICdmAdapter{
 			
 			if(!alreadyExist && (child.getFeature().isSupportsCategoricalData() || child.getFeature().isSupportsQuantitativeData())){
 				
-				Utils.currentBase.addVariable(variable);
+				XPApp.getCurrentBase().addVariable(variable);
 				
 				if(child.getFeature().isSupportsCategoricalData()){
 					// Add states to the character
@@ -126,8 +127,8 @@ public class AdaptaterCdmXper implements ICdmAdapter{
 					variable.setType(Utils.numType);
 				}
 				
-				if(indiceParent != -1 && Utils.currentBase.getVariableAt(indiceParent) != null){
-					variable.addMother(((Variable)Utils.currentBase.getVariableAt(indiceParent -1)));
+				if(indiceParent != -1 && XPApp.getCurrentBase().getVariableAt(indiceParent) != null){
+					variable.addMother(((Variable)XPApp.getCurrentBase().getVariableAt(indiceParent -1)));
 				}
 				
 				loadFeatureNode(child, variable.getIndexInt());
@@ -142,7 +143,7 @@ public class AdaptaterCdmXper implements ICdmAdapter{
 		TransactionStatus tx = cdmApplicationController.startTransaction();
 		List<TaxonBase> taxonList = cdmApplicationController.getTaxonService().list(Taxon.class , null, null, null, null);
 		for(TaxonBase taxonBase : taxonList){
-			if (Utils.currentBase != null) {
+			if (XPApp.getCurrentBase() != null) {
 				Individual individual = new Individual(taxonBase.getName().toString());
 				individual.setUuid(taxonBase.getUuid());
 				
@@ -151,12 +152,12 @@ public class AdaptaterCdmXper implements ICdmAdapter{
                 individual.addResource(bor); 
                 
 				// Add an empty description
-                List<Variable> vars = Utils.currentBase.getVariables();
+                List<Variable> vars = XPApp.getCurrentBase().getVariables();
 				for(Variable var : vars){
 					individual.addMatrix(var, new ArrayList<Mode>());
 				}
 				loadDescription(individual, taxonBase);
-				Utils.currentBase.addIndividual(individual);
+				XPApp.getCurrentBase().addIndividual(individual);
 			}
 		}
 		cdmApplicationController.commitTransaction(tx);
@@ -173,7 +174,7 @@ public class AdaptaterCdmXper implements ICdmAdapter{
 			if(descriptionElementBase instanceof CategoricalData){
 				// find the xper variable corresponding
 				Variable variable = null;
-				List<Variable> vars = Utils.currentBase.getVariables();
+				List<Variable> vars = XPApp.getCurrentBase().getVariables();
 				for(Variable var : vars){
 					if(var.getUuid().equals(((CategoricalData)descriptionElementBase).getFeature().getUuid())){
 						variable = var;
@@ -195,7 +196,7 @@ public class AdaptaterCdmXper implements ICdmAdapter{
 			}else if(descriptionElementBase instanceof QuantitativeData){
 				// find the xper variable corresponding
 				Variable variable = null;
-				List<Variable> vars = Utils.currentBase.getVariables();
+				List<Variable> vars = XPApp.getCurrentBase().getVariables();
 				for(Variable var : vars){
 					if(var.getUuid().equals(((QuantitativeData)descriptionElementBase).getFeature().getUuid())){
 						variable = var;
@@ -253,7 +254,7 @@ public class AdaptaterCdmXper implements ICdmAdapter{
 
 	@Override
 	public void save() {
-		List<Variable> vars = Utils.currentBase.getVariables();
+		List<Variable> vars = XPApp.getCurrentBase().getVariables();
 		saveFeatureTree(vars);
 		saveFeatures(vars);
 	}
