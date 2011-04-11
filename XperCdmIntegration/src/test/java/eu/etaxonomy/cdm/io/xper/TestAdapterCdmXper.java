@@ -53,16 +53,16 @@ public class TestAdapterCdmXper {
 			// specify that the current base is not new (needed to be able to add images)
 			Utils.isNewBase = false;
 			// delete the variable create by default and update the frame
-			XPDisplay.getControler().getBase().deleteVariable(XPDisplay.getControler().getBase().getVariableAt(0));
-			XPDisplay.displayNbVariable();
-			XPDisplay.getControler().displayJifVarTree();
+			Xper.getMainframe().getControler().getBase().deleteVariable(Xper.getMainframe().getControler().getBase().getVariableAt(0));
+			Xper.getMainframe().displayNbVariable();
+			Xper.getMainframe().getControler().displayJifVarTree();
 			
 			if (Utils.currentBase != null) {
 //				adaptaterCdmXper.createWorkingSet();
 				adapterCdmXper.load();
 
-				XPDisplay.displayNbVariable();
-				XPDisplay.getControler().displayJifVarTree();
+				Xper.getMainframe().displayNbVariable();
+				Xper.getMainframe().getControler().displayJifVarTree();
 			}
 		}
 		// undisplay a loading gif
@@ -84,7 +84,7 @@ public class TestAdapterCdmXper {
 	private void generateThumbnails() {
 		System.out.println("start generate thumbnails");
 		// generate all thumbnails (a loading gif is automatically displayed
-		Utils.generateThumbnailsFromURLImage(XPDisplay.getControler().getBase().getAllResources());
+		Utils.generateThumbnailsFromURLImage(Xper.getMainframe().getControler().getBase().getAllResources());
 		System.out.println("stop generate thumbnails");
 	}
 	
@@ -109,7 +109,7 @@ public class TestAdapterCdmXper {
 			// load the data from CDM
 			testAdapter.xperloadDataFromCdm();
 			// use the current directory as working directory for Xper2
-			XPDisplay.getControler().getBase().setPathName(System.getProperty("user.dir") + Utils.sep);
+			Xper.getMainframe().getControler().getBase().setPathName(System.getProperty("user.dir") + Utils.sep);
 			
 			testAdapter.generateThumbnails();
 		}
