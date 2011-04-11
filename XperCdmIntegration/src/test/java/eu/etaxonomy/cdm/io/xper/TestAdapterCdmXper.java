@@ -54,7 +54,7 @@ public class TestAdapterCdmXper {
 			// specify that the current base is not new (needed to be able to add images)
 			XPApp.isNewBase = false;
 			// delete the variable create by default and update the frame
-			XPApp.getCurrentBase().deleteVariable(XPApp.getMainframe().getControler().getBase().getVariableAt(0));
+			XPApp.getCurrentBase().deleteVariable(XPApp.getCurrentBase().getVariableAt(0));
 			XPApp.getMainframe().displayNbVariable();
 			XPApp.getMainframe().getControler().displayJifVarTree();
 			
