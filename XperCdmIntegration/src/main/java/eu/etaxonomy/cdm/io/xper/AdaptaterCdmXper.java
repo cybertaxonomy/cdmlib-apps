@@ -11,6 +11,7 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.springframework.transaction.TransactionStatus;
 
+import eu.etaxonomy.cdm.api.application.CdmApplicationController;
 import eu.etaxonomy.cdm.api.service.ITermService;
 import eu.etaxonomy.cdm.api.service.IVocabularyService;
 import eu.etaxonomy.cdm.api.service.pager.Pager;
@@ -45,12 +46,25 @@ import fr_jussieu_snv_lis.utils.Utils;
 public class AdaptaterCdmXper implements ICdmAdapter{
 	private static final Logger logger = Logger.getLogger(AdaptaterCdmXper.class);
 	
-	TransactionStatus tx = Xper.getCdmApplicationController().startTransaction();
+	TransactionStatus tx;
+
+	private CdmApplicationController cdmApplicationController;
 	
-	public AdaptaterCdmXper() {
-		
+	public AdaptaterCdmXper(CdmApplicationController appCtr) {
+		setCdmApplicationController(appCtr);
 	}
 	
+
+	public void setCdmApplicationController(CdmApplicationController appCtr) {
+		this.cdmApplicationController = appCtr;
+		 tx = cdmApplicationController.startTransaction();
+	}
+
+
+	public CdmApplicationController getCdmApplicationController() {
+		return cdmApplicationController;
+	}
+
 	
 	public void load(){
 		loadFeatures();
@@ -65,14 +79,14 @@ public class AdaptaterCdmXper implements ICdmAdapter{
 //		UUID featureTreeUUID = UUID.fromString("43ab1efd-fa15-419a-8cd6-05477e4b37bc");
 		List<String> featureTreeInit = Arrays.asList(new String[]{"root.children.feature.representations"});
 		
-		TransactionStatus tx = Xper.getCdmApplicationController().startTransaction();
-		FeatureTree featureTree = Xper.getCdmApplicationController().getFeatureTreeService().load(featureTreeUUID, featureTreeInit);
+		TransactionStatus tx = cdmApplicationController.startTransaction();
+		FeatureTree featureTree =cdmApplicationController.getFeatureTreeService().load(featureTreeUUID, featureTreeInit);
 		if (featureTree != null) {
 			loadFeatureNode(featureTree.getRoot(), -1);
 		}else{
 			logger.warn("Feature tree " + featureTreeUUID.toString() + " not found");
 		}
-		Xper.getCdmApplicationController().commitTransaction(tx);
+		cdmApplicationController.commitTransaction(tx);
 	}
 	
 	/**
@@ -125,8 +139,8 @@ public class AdaptaterCdmXper implements ICdmAdapter{
 	
 	// Load all the taxa and 1 description
 	public void loadTaxaAndDescription() {
-		TransactionStatus tx = Xper.getCdmApplicationController().startTransaction();
-		List<TaxonBase> taxonList = Xper.getCdmApplicationController().getTaxonService().list(Taxon.class , null, null, null, null);
+		TransactionStatus tx = cdmApplicationController.startTransaction();
+		List<TaxonBase> taxonList = cdmApplicationController.getTaxonService().list(Taxon.class , null, null, null, null);
 		for(TaxonBase taxonBase : taxonList){
 			if (Utils.currentBase != null) {
 				Individual individual = new Individual(taxonBase.getName().toString());
@@ -145,13 +159,13 @@ public class AdaptaterCdmXper implements ICdmAdapter{
 				Utils.currentBase.addIndividual(individual);
 			}
 		}
-		Xper.getCdmApplicationController().commitTransaction(tx);
+		cdmApplicationController.commitTransaction(tx);
 	}
 
 	// Load the first taxonDescription
 	public void loadDescription(Individual individual, TaxonBase taxonBase) {
 		
-		Pager<TaxonDescription> taxonDescriptionPager = Xper.getCdmApplicationController().getDescriptionService().getTaxonDescriptions((Taxon)taxonBase, null, null, null, 0, Arrays.asList(new String[]{"elements.states", "elements.feature"} ));
+		Pager<TaxonDescription> taxonDescriptionPager = cdmApplicationController.getDescriptionService().getTaxonDescriptions((Taxon)taxonBase, null, null, null, 0, Arrays.asList(new String[]{"elements.states", "elements.feature"} ));
 		List<TaxonDescription> taxonDescriptionList = taxonDescriptionPager.getRecords();
 		TaxonDescription taxonDescription = taxonDescriptionList.get(0);
 		Set<DescriptionElementBase> DescriptionElementBaseList = taxonDescription.getElements();
@@ -215,25 +229,25 @@ public class AdaptaterCdmXper implements ICdmAdapter{
 	// Create a workingSet if not exist
 	public void createWorkingSet(){
 		
-		if(Xper.getCdmApplicationController().getWorkingSetService().list(WorkingSet.class, null, null, null, null).size() <= 0){
+		if(cdmApplicationController.getWorkingSetService().list(WorkingSet.class, null, null, null, null).size() <= 0){
 			WorkingSet ws = WorkingSet.NewInstance();
 			
 			UUID featureTreeUUID = UUID.fromString("47eda782-89c7-4c69-9295-e4052ebe16c6");
 			List<String> featureTreeInit = Arrays.asList(new String[]{"root.children.feature.representations"});
 			
-			FeatureTree featureTree = Xper.getCdmApplicationController().getFeatureTreeService().load(featureTreeUUID, featureTreeInit);
+			FeatureTree featureTree = cdmApplicationController.getFeatureTreeService().load(featureTreeUUID, featureTreeInit);
 			ws.setDescriptiveSystem(featureTree);
 			
-			List<TaxonBase> taxonList = Xper.getCdmApplicationController().getTaxonService().list(Taxon.class , null, null, null, null);
+			List<TaxonBase> taxonList = cdmApplicationController.getTaxonService().list(Taxon.class , null, null, null, null);
 			for(TaxonBase taxonBase : taxonList){
-				Pager<TaxonDescription> taxonDescriptionPager = Xper.getCdmApplicationController().getDescriptionService().getTaxonDescriptions((Taxon)taxonBase, null, null, null, 0, Arrays.asList(new String[]{"elements.states", "elements.feature"} ));
+				Pager<TaxonDescription> taxonDescriptionPager = cdmApplicationController.getDescriptionService().getTaxonDescriptions((Taxon)taxonBase, null, null, null, 0, Arrays.asList(new String[]{"elements.states", "elements.feature"} ));
 				List<TaxonDescription> taxonDescriptionList = taxonDescriptionPager.getRecords();
 				TaxonDescription taxonDescription = taxonDescriptionList.get(0);
 				ws.addDescription(taxonDescription);
 				System.out.println(taxonDescription.getUuid());
 			}
 			
-			Xper.getCdmApplicationController().getWorkingSetService().save(ws);
+			cdmApplicationController.getWorkingSetService().save(ws);
 		}
 	}
 
@@ -253,7 +267,7 @@ public class AdaptaterCdmXper implements ICdmAdapter{
 	 * @param vars
 	 */
 	private void saveFeatures(List<Variable> vars) {
-		tx = Xper.getCdmApplicationController().startTransaction();
+		tx = cdmApplicationController.startTransaction();
 		for (Variable variable : vars){
 			Feature feature = getFeature(variable);
 			if (Utils.numType.equals(variable.getType())){
@@ -264,7 +278,7 @@ public class AdaptaterCdmXper implements ICdmAdapter{
 				logger.warn("variable type undefined");
 			}
 		}
-		Xper.getCdmApplicationController().commitTransaction(tx);
+		cdmApplicationController.commitTransaction(tx);
 	}
 
 
@@ -274,15 +288,15 @@ public class AdaptaterCdmXper implements ICdmAdapter{
 	 */
 	private Feature getFeature(Variable variable) {
 		UUID uuid = variable.getUuid();
-		ITermService termService = Xper.getCdmApplicationController().getTermService();
+		ITermService termService = cdmApplicationController.getTermService();
 		DefinedTermBase<?> term = termService.find(uuid);
 		Feature feature = CdmBase.deproxy(term, Feature.class);
 		return feature;
 	}
 
 	private void saveCategoricalFeature(Variable variable, Feature feature) {
-		ITermService termService = Xper.getCdmApplicationController().getTermService();
-		IVocabularyService vocService = Xper.getCdmApplicationController().getVocabularyService();
+		ITermService termService = cdmApplicationController.getTermService();
+		IVocabularyService vocService = cdmApplicationController.getVocabularyService();
 		if (feature == null){
 			saveNewFeature(variable, termService, vocService);
 		}else{
@@ -422,8 +436,8 @@ public class AdaptaterCdmXper implements ICdmAdapter{
 
 
 	private void saveNumericalFeature(Variable variable, Feature feature) {
-		ITermService termService = Xper.getCdmApplicationController().getTermService();
-		IVocabularyService vocService = Xper.getCdmApplicationController().getVocabularyService();
+		ITermService termService = cdmApplicationController.getTermService();
+		IVocabularyService vocService = cdmApplicationController.getVocabularyService();
 		String variableUnit = variable.getUnit();
 		Set<MeasurementUnit> units = feature.getRecommendedMeasurementUnits();
 		//preliminary
@@ -477,5 +491,9 @@ public class AdaptaterCdmXper implements ICdmAdapter{
 		}
 		return null;
 	}
+
+
+
+
 
 }
