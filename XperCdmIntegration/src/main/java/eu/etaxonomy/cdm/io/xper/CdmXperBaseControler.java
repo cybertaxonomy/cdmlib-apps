@@ -13,7 +13,13 @@ import java.util.List;
 
 import org.apache.log4j.Logger;
 
+import eu.etaxonomy.cdm.model.description.Feature;
+import eu.etaxonomy.cdm.model.description.FeatureTree;
+import eu.etaxonomy.cdm.model.description.State;
+import eu.etaxonomy.cdm.model.description.WorkingSet;
+import fr_jussieu_snv_lis.XPApp;
 import fr_jussieu_snv_lis.base.Base;
+import fr_jussieu_snv_lis.base.ControlerBase;
 import fr_jussieu_snv_lis.base.Group;
 import fr_jussieu_snv_lis.base.IBase;
 import fr_jussieu_snv_lis.base.IControlerBase;
@@ -26,14 +32,39 @@ import fr_jussieu_snv_lis.base.Variable;
  * @date 12.04.2011
  *
  */
-public class CdmXperBaseControler implements IControlerBase {
+public class CdmXperBaseControler extends ControlerBase implements IControlerBase {
 	private static final Logger logger = Logger.getLogger(CdmXperBaseControler.class);
 	
-	private IBase base;
+//	private IBase base;
+	private CdmXperAdapter cdmXperAdapter;
 
-	public CdmXperBaseControler(IBase base) {
-		this.base = base;
+	public CdmXperBaseControler(BaseCdm base, CdmXperAdapter cdmXperAdapter) {
+		super(base);
+		this.cdmXperAdapter = cdmXperAdapter;
+//		this.base = base;
+		base.setBaseControler(this);
 	}
+	
+
+	protected CdmXperAdapter getAdapter() {
+		return cdmXperAdapter;
+	}
+	
+
+	private WorkingSet getWorkingSet() {
+		return cdmXperAdapter.getWorkingSet();
+	}
+	
+	private FeatureTree getFeatureTree() {
+		return getWorkingSet().getDescriptiveSystem();
+	}
+	
+
+	public void loadFeatures() {
+		this.cdmXperAdapter.loadFeatures();
+	}
+	
+//*********************** IControlerBase ********************************************/	
 
 	/* (non-Javadoc)
 	 * @see fr_jussieu_snv_lis.base.IControlerBase#createBase(java.lang.String, java.lang.String)
@@ -83,7 +114,7 @@ public class CdmXperBaseControler implements IControlerBase {
 	 */
 	@Override
 	public void closeBase() {
-		logger.warn("Not yet implemented");
+		logger.warn("closeBase Not yet implemented");
 	}
 
 	/* (non-Javadoc)
@@ -91,7 +122,7 @@ public class CdmXperBaseControler implements IControlerBase {
 	 */
 	@Override
 	public Group createNewGroup(String name) {
-		logger.warn("Not yet implemented");
+		logger.warn("createNewGroup Not yet implemented");
 		return null;
 	}
 
@@ -100,7 +131,7 @@ public class CdmXperBaseControler implements IControlerBase {
 	 */
 	@Override
 	public boolean addGroup(Group group) {
-		logger.warn("Not yet implemented");
+		logger.warn("addGroup Not yet implemented");
 		return false;
 	}
 
@@ -109,7 +140,7 @@ public class CdmXperBaseControler implements IControlerBase {
 	 */
 	@Override
 	public boolean addGroupToBase(Group group, IBase b) {
-		logger.warn("Not yet implemented");
+		logger.warn("addGroupToBase Not yet implemented");
 		return false;
 	}
 
@@ -118,7 +149,7 @@ public class CdmXperBaseControler implements IControlerBase {
 	 */
 	@Override
 	public boolean addGroupAndVariablesToBase(Group group, IBase b) {
-		logger.warn("Not yet implemented");
+		logger.warn("addGroupAndVariablesToBase Not yet implemented");
 		return false;
 	}
 
@@ -127,7 +158,7 @@ public class CdmXperBaseControler implements IControlerBase {
 	 */
 	@Override
 	public void addGroupAt(int i, Group g) {
-		logger.warn("Not yet implemented");
+		logger.warn("addGroupAt Not yet implemented");
 
 	}
 
@@ -136,7 +167,7 @@ public class CdmXperBaseControler implements IControlerBase {
 	 */
 	@Override
 	public void addGroupToBaseAt(Group g, IBase b, int i) {
-		logger.warn("Not yet implemented");
+		logger.warn("addGroupToBaseAt Not yet implemented");
 
 	}
 
@@ -145,7 +176,7 @@ public class CdmXperBaseControler implements IControlerBase {
 	 */
 	@Override
 	public void deleteGroupFromBase(Group g, IBase b) {
-		logger.warn("Not yet implemented");
+		logger.warn("deleteGroupFromBase Not yet implemented");
 
 	}
 
@@ -154,7 +185,7 @@ public class CdmXperBaseControler implements IControlerBase {
 	 */
 	@Override
 	public void deleteGroups(Object[] tab) {
-		logger.warn("Not yet implemented");
+		logger.warn("deleteGroups Not yet implemented");
 
 	}
 
@@ -163,7 +194,7 @@ public class CdmXperBaseControler implements IControlerBase {
 	 */
 	@Override
 	public void deleteGroup(Group g) {
-		logger.warn("Not yet implemented");
+		logger.warn("deleteGroup Not yet implemented");
 
 	}
 
@@ -172,7 +203,7 @@ public class CdmXperBaseControler implements IControlerBase {
 	 */
 	@Override
 	public void deleteGroupFromVariable(Variable v, Group g) {
-		logger.warn("Not yet implemented");
+		logger.warn("deleteGroupFromVariable Not yet implemented");
 
 	}
 
@@ -181,7 +212,7 @@ public class CdmXperBaseControler implements IControlerBase {
 	 */
 	@Override
 	public void deleteGroupFromVariables(Object[] tab, Group g) {
-		logger.warn("Not yet implemented");
+		logger.warn("deleteGroupFromVariables Not yet implemented");
 
 	}
 
@@ -190,7 +221,7 @@ public class CdmXperBaseControler implements IControlerBase {
 	 */
 	@Override
 	public void deleteAllGroups(IBase b) {
-		logger.warn("Not yet implemented");
+		logger.warn("deleteAllGroups Not yet implemented");
 
 	}
 
@@ -199,7 +230,7 @@ public class CdmXperBaseControler implements IControlerBase {
 	 */
 	@Override
 	public List<Group> getGroupsNoBelongingToVariable(Variable v) {
-		logger.warn("Not yet implemented");
+		logger.warn("getGroupsNoBelongingToVariable Not yet implemented");
 		return null;
 	}
 
@@ -208,7 +239,7 @@ public class CdmXperBaseControler implements IControlerBase {
 	 */
 	@Override
 	public List<Group> getGroupsNoBelongingToVariables(Object[] tab) {
-		logger.warn("Not yet implemented");
+		logger.warn("getGroupsNoBelongingToVariables Not yet implemented");
 		return null;
 	}
 
@@ -217,7 +248,7 @@ public class CdmXperBaseControler implements IControlerBase {
 	 */
 	@Override
 	public List<Group> getGroupsBelongingToVariable(Variable v) {
-		logger.warn("Not yet implemented");
+		logger.warn("getGroupsBelongingToVariable Not yet implemented");
 		return null;
 	}
 
@@ -226,7 +257,7 @@ public class CdmXperBaseControler implements IControlerBase {
 	 */
 	@Override
 	public List<Group> getGroupsBelongingToVariables(Object[] tab) {
-		logger.warn("Not yet implemented");
+		logger.warn("getGroupsBelongingToVariables Not yet implemented");
 		return null;
 	}
 
@@ -235,8 +266,7 @@ public class CdmXperBaseControler implements IControlerBase {
 	 */
 	@Override
 	public List<Group> getAllGroups() {
-		logger.warn("Not yet implemented");
-		return null;
+		return base.getGroups();
 	}
 
 	/* (non-Javadoc)
@@ -244,7 +274,7 @@ public class CdmXperBaseControler implements IControlerBase {
 	 */
 	@Override
 	public Group findGroupByName(String n) {
-		logger.warn("Not yet implemented");
+		logger.warn("findGroupByName Not yet implemented");
 		return null;
 	}
 
@@ -253,7 +283,7 @@ public class CdmXperBaseControler implements IControlerBase {
 	 */
 	@Override
 	public boolean checkExistanceGroup() {
-		logger.warn("Not yet implemented");
+		logger.warn("checkExistanceGroup Not yet implemented");
 		return false;
 	}
 
@@ -262,7 +292,7 @@ public class CdmXperBaseControler implements IControlerBase {
 	 */
 	@Override
 	public void addGroupToVariableAt(Group g, Variable v, int i) {
-		logger.warn("Not yet implemented");
+		logger.warn("addGroupToVariableAt Not yet implemented");
 
 	}
 
@@ -271,7 +301,7 @@ public class CdmXperBaseControler implements IControlerBase {
 	 */
 	@Override
 	public void addGroupToVariable(Group g, Variable v) {
-		logger.warn("Not yet implemented");
+		logger.warn("addGroupToVariable Not yet implemented");
 
 	}
 
@@ -280,7 +310,7 @@ public class CdmXperBaseControler implements IControlerBase {
 	 */
 	@Override
 	public void addGroupToVariables(Group g, Object[] al) {
-		logger.warn("Not yet implemented");
+		logger.warn("addGroupToVariables Not yet implemented");
 
 	}
 
@@ -289,7 +319,7 @@ public class CdmXperBaseControler implements IControlerBase {
 	 */
 	@Override
 	public void addVariableToGroups(Variable v, List<Group> al) {
-		logger.warn("Not yet implemented");
+		logger.warn("addVariableToGroups Not yet implemented");
 
 	}
 
@@ -298,7 +328,7 @@ public class CdmXperBaseControler implements IControlerBase {
 	 */
 	@Override
 	public boolean checkExistanceGroup(String s) {
-		logger.warn("Not yet implemented");
+		logger.warn("checkExistanceGroup Not yet implemented");
 		return false;
 	}
 
@@ -307,7 +337,7 @@ public class CdmXperBaseControler implements IControlerBase {
 	 */
 	@Override
 	public boolean checkExistanceGroup(Variable var, Group g) {
-		logger.warn("Not yet implemented");
+		logger.warn("checkExistanceGroup Not yet implemented");
 		return false;
 	}
 
@@ -316,7 +346,7 @@ public class CdmXperBaseControler implements IControlerBase {
 	 */
 	@Override
 	public Mode findModeByName(String str, Variable var) {
-		logger.warn("Not yet implemented");
+		logger.warn("findModeByName Not yet implemented");
 		return null;
 	}
 
@@ -324,9 +354,8 @@ public class CdmXperBaseControler implements IControlerBase {
 	 * @see fr_jussieu_snv_lis.base.IControlerBase#addModeToVariable(fr_jussieu_snv_lis.base.Mode, fr_jussieu_snv_lis.base.Variable)
 	 */
 	@Override
-	public void addModeToVariable(Mode m, Variable v) {
-		logger.warn("Not yet implemented");
-
+	public boolean addModeToVariable(Mode m, Variable v) {
+		return super.addModeToVariable(m, v);
 	}
 
 	/* (non-Javadoc)
@@ -334,7 +363,7 @@ public class CdmXperBaseControler implements IControlerBase {
 	 */
 	@Override
 	public void addModeToVariableAt(Mode m, Variable v, int i) {
-		logger.warn("Not yet implemented");
+		logger.warn("addModeToVariableAt Not yet implemented");
 
 	}
 
@@ -343,7 +372,7 @@ public class CdmXperBaseControler implements IControlerBase {
 	 */
 	@Override
 	public void moveUpModeFromVariable(Variable v, Mode m) {
-		logger.warn("Not yet implemented");
+		logger.warn("moveUpModeFromVariable Not yet implemented");
 
 	}
 
@@ -352,7 +381,7 @@ public class CdmXperBaseControler implements IControlerBase {
 	 */
 	@Override
 	public void moveDownModeFromVariable(Variable v, Mode m) {
-		logger.warn("Not yet implemented");
+		logger.warn("moveDownModeFromVariable Not yet implemented");
 
 	}
 
@@ -361,7 +390,7 @@ public class CdmXperBaseControler implements IControlerBase {
 	 */
 	@Override
 	public void deleteModeFromVariable(Variable v, Mode m) {
-		logger.warn("Not yet implemented");
+		logger.warn("deleteModeFromVariable Not yet implemented");
 
 	}
 
@@ -370,7 +399,7 @@ public class CdmXperBaseControler implements IControlerBase {
 	 */
 	@Override
 	public Mode fusionModeFromvariable(Variable var, Object[] tab) {
-		logger.warn("Not yet implemented");
+		logger.warn("fusionModeFromvariable Not yet implemented");
 		return null;
 	}
 
@@ -379,8 +408,8 @@ public class CdmXperBaseControler implements IControlerBase {
 	 */
 	@Override
 	public boolean checkExistanceMode(Variable v, String s) {
-		logger.warn("Not yet implemented");
-		return false;
+		logger.warn("checkExistanceMode only implemented as super");
+		return super.checkExistanceMode(v, s);
 	}
 
 	/* (non-Javadoc)
@@ -388,7 +417,7 @@ public class CdmXperBaseControler implements IControlerBase {
 	 */
 	@Override
 	public boolean checkExistanceMode(Individual ind, Variable var, String s) {
-		logger.warn("Not yet implemented");
+		logger.warn("checkExistanceMode Not yet implemented");
 		return false;
 	}
 
@@ -398,7 +427,7 @@ public class CdmXperBaseControler implements IControlerBase {
 	@Override
 	public boolean matchModes(Individual ind, Variable var, List<Mode> modes,
 			int operator) {
-		logger.warn("Not yet implemented");
+		logger.warn("matchModes Not yet implemented");
 		return false;
 	}
 
@@ -407,7 +436,7 @@ public class CdmXperBaseControler implements IControlerBase {
 	 */
 	@Override
 	public boolean matchNumValue(Individual ind, Variable var, Double value) {
-		logger.warn("Not yet implemented");
+		logger.warn("matchNumValue Not yet implemented");
 		return false;
 	}
 
@@ -416,8 +445,16 @@ public class CdmXperBaseControler implements IControlerBase {
 	 */
 	@Override
 	public Mode createNewMode(Variable va, String name) {
-		logger.warn("Not yet implemented");
-		return null;
+		Mode newMode = new Mode(name);
+		
+		boolean hasChanged = addModeToVariable(newMode, va); // Add the new Mode to the list f Mode of the Variable
+
+		if (hasChanged){
+			XPApp.baseChanged = true;
+		}
+		Feature feature = getAdapter().getFeature(va);
+		getAdapter().saveNewState(newMode, feature);
+		return newMode;
 	}
 
 	/* (non-Javadoc)
@@ -426,7 +463,7 @@ public class CdmXperBaseControler implements IControlerBase {
 	@Override
 	public void controlModeExVariable(boolean selected, Variable v,
 			Mode modeException) {
-		logger.warn("Not yet implemented");
+		logger.warn("controlModeExVariable Not yet implemented");
 
 	}
 
@@ -435,7 +472,7 @@ public class CdmXperBaseControler implements IControlerBase {
 	 */
 	@Override
 	public void deleteModeExFromVariable(Variable v, Mode m) {
-		logger.warn("Not yet implemented");
+		logger.warn("deleteModeExFromVariable Not yet implemented");
 
 	}
 
@@ -444,7 +481,7 @@ public class CdmXperBaseControler implements IControlerBase {
 	 */
 	@Override
 	public boolean checkExistIndividual() {
-		logger.warn("Not yet implemented");
+		logger.warn("checkExistIndividual Not yet implemented");
 		return false;
 	}
 
@@ -453,7 +490,7 @@ public class CdmXperBaseControler implements IControlerBase {
 	 */
 	@Override
 	public void deleteIndividualFromBase(Individual ind, IBase b) {
-		logger.warn("Not yet implemented");
+		logger.warn("deleteIndividualFromBase Not yet implemented");
 
 	}
 
@@ -462,7 +499,7 @@ public class CdmXperBaseControler implements IControlerBase {
 	 */
 	@Override
 	public void deleteIndividual(Individual ind) {
-		logger.warn("Not yet implemented");
+		logger.warn("deleteIndividual Not yet implemented");
 
 	}
 
@@ -471,7 +508,7 @@ public class CdmXperBaseControler implements IControlerBase {
 	 */
 	@Override
 	public void addIndividual(Individual ind) {
-		logger.warn("Not yet implemented");
+		logger.warn("addIndividual Not yet implemented");
 
 	}
 
@@ -480,7 +517,7 @@ public class CdmXperBaseControler implements IControlerBase {
 	 */
 	@Override
 	public void addIndividualToBaseAt(Individual ind, IBase b, int i) {
-		logger.warn("Not yet implemented");
+		logger.warn("addIndividualToBaseAt Not yet implemented");
 
 	}
 
@@ -489,7 +526,7 @@ public class CdmXperBaseControler implements IControlerBase {
 	 */
 	@Override
 	public Individual findIndividualByName(String ind) {
-		logger.warn("Not yet implemented");
+		logger.warn("findIndividualByName Not yet implemented");
 		return null;
 	}
 
@@ -498,7 +535,7 @@ public class CdmXperBaseControler implements IControlerBase {
 	 */
 	@Override
 	public boolean checkExistanceOneIndividual(String s) {
-		logger.warn("Not yet implemented");
+		logger.warn("checkExistanceOneIndividual Not yet implemented");
 		return false;
 	}
 
@@ -507,7 +544,7 @@ public class CdmXperBaseControler implements IControlerBase {
 	 */
 	@Override
 	public Individual createNewIndividual(String name) {
-		logger.warn("Not yet implemented");
+		logger.warn("createNewIndividual Not yet implemented");
 		return null;
 	}
 
@@ -516,7 +553,7 @@ public class CdmXperBaseControler implements IControlerBase {
 	 */
 	@Override
 	public Individual copyIndividual(Individual indtocopy, String name) {
-		logger.warn("Not yet implemented");
+		logger.warn("copyIndividual Not yet implemented");
 		return null;
 	}
 
@@ -525,7 +562,7 @@ public class CdmXperBaseControler implements IControlerBase {
 	 */
 	@Override
 	public Variable copyVariable(Variable vartocopy, String name) {
-		logger.warn("Not yet implemented");
+		logger.warn("copyVariable Not yet implemented");
 		return null;
 	}
 
@@ -534,7 +571,7 @@ public class CdmXperBaseControler implements IControlerBase {
 	 */
 	@Override
 	public Variable mergeVariables(Object[] tab, String name) {
-		logger.warn("Not yet implemented");
+		logger.warn("mergeVariables Not yet implemented");
 		return null;
 	}
 
@@ -543,7 +580,7 @@ public class CdmXperBaseControler implements IControlerBase {
 	 */
 	@Override
 	public Individual mergeIndividuals(Object[] tab, String name) {
-		logger.warn("Not yet implemented");
+		logger.warn("mergeIndividuals Not yet implemented");
 		return null;
 	}
 
@@ -551,9 +588,8 @@ public class CdmXperBaseControler implements IControlerBase {
 	 * @see fr_jussieu_snv_lis.base.IControlerBase#controlModeIndVar(boolean, fr_jussieu_snv_lis.base.Variable, fr_jussieu_snv_lis.base.Individual, fr_jussieu_snv_lis.base.Mode)
 	 */
 	@Override
-	public void controlModeIndVar(boolean selected, Variable v, Individual i,
-			Mode m) {
-		logger.warn("Not yet implemented");
+	public void controlModeIndVar(boolean selected, Variable v, Individual i, Mode m) {
+		logger.warn("controlModeIndVar Not yet implemented");
 
 	}
 
@@ -561,9 +597,8 @@ public class CdmXperBaseControler implements IControlerBase {
 	 * @see fr_jussieu_snv_lis.base.IControlerBase#controlModeIndVarRec(boolean, fr_jussieu_snv_lis.base.Variable, fr_jussieu_snv_lis.base.Individual, fr_jussieu_snv_lis.base.Mode)
 	 */
 	@Override
-	public void controlModeIndVarRec(boolean selected, Variable v,
-			Individual i, Mode m) {
-		logger.warn("Not yet implemented");
+	public void controlModeIndVarRec(boolean selected, Variable v, Individual i, Mode m) {
+		logger.warn("controlModeIndVarRec Not yet implemented");
 
 	}
 
@@ -572,7 +607,7 @@ public class CdmXperBaseControler implements IControlerBase {
 	 */
 	@Override
 	public void checkBadDescription(Variable var, Individual ind) {
-		logger.warn("Not yet implemented");
+		logger.warn("checkBadDescription Not yet implemented");
 
 	}
 
@@ -581,7 +616,7 @@ public class CdmXperBaseControler implements IControlerBase {
 	 */
 	@Override
 	public boolean checkingUnknown(Variable var, Individual ind) {
-		logger.warn("Not yet implemented");
+		logger.warn("checkingUnknown Not yet implemented");
 		return false;
 	}
 
@@ -589,9 +624,8 @@ public class CdmXperBaseControler implements IControlerBase {
 	 * @see fr_jussieu_snv_lis.base.IControlerBase#checkUnknown(fr_jussieu_snv_lis.base.Variable, fr_jussieu_snv_lis.base.Individual, boolean, boolean)
 	 */
 	@Override
-	public void checkUnknown(Variable var, Individual ind, boolean b,
-			boolean withDaughters) {
-		logger.warn("Not yet implemented");
+	public void checkUnknown(Variable var, Individual ind, boolean b, boolean withDaughters) {
+		logger.warn("checkUnknown Not yet implemented");
 
 	}
 
@@ -601,7 +635,7 @@ public class CdmXperBaseControler implements IControlerBase {
 	@Override
 	public void checkUnknown(Variable var, Individual[] tab, boolean b,
 			boolean withDaughters) {
-		logger.warn("Not yet implemented");
+		logger.warn("checkUnknown(var,tab, b, withDaughters) Not yet implemented");
 
 	}
 
@@ -610,7 +644,7 @@ public class CdmXperBaseControler implements IControlerBase {
 	 */
 	@Override
 	public void buildIndividualsBitSetMatrix() {
-		logger.warn("Not yet implemented");
+		logger.warn("buildIndividualsBitSetMatrix Not yet implemented");
 
 	}
 
@@ -619,7 +653,7 @@ public class CdmXperBaseControler implements IControlerBase {
 	 */
 	@Override
 	public void buildIndividualsIntegerBitMatrix() {
-		logger.warn("Not yet implemented");
+		logger.warn("buildIndividualsIntegerBitMatrix Not yet implemented");
 
 	}
 
@@ -628,7 +662,7 @@ public class CdmXperBaseControler implements IControlerBase {
 	 */
 	@Override
 	public boolean addVariable(Variable variable) {
-		logger.warn("Not yet implemented");
+		logger.warn("addVariable Not yet implemented");
 		return false;
 	}
 
@@ -637,7 +671,7 @@ public class CdmXperBaseControler implements IControlerBase {
 	 */
 	@Override
 	public void addVariableToBase(Variable variable, IBase b) {
-		logger.warn("Not yet implemented");
+		logger.warn("addVariableToBase Not yet implemented");
 
 	}
 
@@ -646,7 +680,7 @@ public class CdmXperBaseControler implements IControlerBase {
 	 */
 	@Override
 	public boolean addMother(Variable current, Variable mother) {
-		logger.warn("Not yet implemented");
+		logger.warn("addMother Not yet implemented");
 		return false;
 	}
 
@@ -655,7 +689,7 @@ public class CdmXperBaseControler implements IControlerBase {
 	 */
 	@Override
 	public void removeMother(Variable current) {
-		logger.warn("Not yet implemented");
+		logger.warn("removeMother Not yet implemented");
 
 	}
 
@@ -664,7 +698,7 @@ public class CdmXperBaseControler implements IControlerBase {
 	 */
 	@Override
 	public void changeMother(Variable current, Variable mother) {
-		logger.warn("Not yet implemented");
+		logger.warn("changeMother Not yet implemented");
 
 	}
 
@@ -673,7 +707,7 @@ public class CdmXperBaseControler implements IControlerBase {
 	 */
 	@Override
 	public boolean checkExistVariable() {
-		logger.warn("Not yet implemented");
+		logger.warn("checkExistVariable Not yet implemented");
 		return false;
 	}
 
@@ -682,7 +716,7 @@ public class CdmXperBaseControler implements IControlerBase {
 	 */
 	@Override
 	public boolean checkExistVariable(Variable v) {
-		logger.warn("Not yet implemented");
+		logger.warn("checkExistVariable Not yet implemented");
 		return false;
 	}
 
@@ -691,7 +725,7 @@ public class CdmXperBaseControler implements IControlerBase {
 	 */
 	@Override
 	public Variable findVariableByName(String str) {
-		logger.warn("Not yet implemented");
+		logger.warn("findVariableByName Not yet implemented");
 		return null;
 	}
 
@@ -700,7 +734,7 @@ public class CdmXperBaseControler implements IControlerBase {
 	 */
 	@Override
 	public boolean checkExistanceOneVariable(String s) {
-		logger.warn("Not yet implemented");
+		logger.warn("checkExistanceOneVariable Not yet implemented");
 		return false;
 	}
 
@@ -709,7 +743,7 @@ public class CdmXperBaseControler implements IControlerBase {
 	 */
 	@Override
 	public boolean checkCommunModeName(Variable[] tab) {
-		logger.warn("Not yet implemented");
+		logger.warn("checkCommunModeName Not yet implemented");
 		return false;
 	}
 
@@ -718,7 +752,7 @@ public class CdmXperBaseControler implements IControlerBase {
 	 */
 	@Override
 	public boolean checkNumericalType(Variable[] tab) {
-		logger.warn("Not yet implemented");
+		logger.warn("checkNumericalType Not yet implemented");
 		return false;
 	}
 
@@ -727,7 +761,7 @@ public class CdmXperBaseControler implements IControlerBase {
 	 */
 	@Override
 	public boolean checkStateNumber(Variable[] tab) {
-		logger.warn("Not yet implemented");
+		logger.warn("checkStateNumber Not yet implemented");
 		return false;
 	}
 
@@ -736,7 +770,7 @@ public class CdmXperBaseControler implements IControlerBase {
 	 */
 	@Override
 	public Variable createNewVariable(String name) {
-		logger.warn("Not yet implemented");
+		logger.warn("createNewVariable Not yet implemented");
 		return null;
 	}
 
@@ -745,7 +779,7 @@ public class CdmXperBaseControler implements IControlerBase {
 	 */
 	@Override
 	public Variable createNewVariableNumOrEnum(String name, String type) {
-		logger.warn("Not yet implemented");
+		logger.warn("createNewVariableNumOrEnum Not yet implemented");
 		return null;
 	}
 
@@ -754,7 +788,7 @@ public class CdmXperBaseControler implements IControlerBase {
 	 */
 	@Override
 	public void addNewVariableAndItsModesToMatrix(Variable newVariable) {
-		logger.warn("Not yet implemented");
+		logger.warn("addNewVariableAndItsModesToMatrix Not yet implemented");
 
 	}
 
@@ -763,7 +797,7 @@ public class CdmXperBaseControler implements IControlerBase {
 	 */
 	@Override
 	public void addNewVariableNumAndItsModesToMatrix(Variable newVariable) {
-		logger.warn("Not yet implemented");
+		logger.warn("addNewVariableNumAndItsModesToMatrix Not yet implemented");
 
 	}
 
@@ -772,7 +806,7 @@ public class CdmXperBaseControler implements IControlerBase {
 	 */
 	@Override
 	public void deleteVariableFromMatrix(Variable variable) {
-		logger.warn("Not yet implemented");
+		logger.warn("deleteVariableFromMatrix Not yet implemented");
 
 	}
 
@@ -781,7 +815,7 @@ public class CdmXperBaseControler implements IControlerBase {
 	 */
 	@Override
 	public void deleteVariable(Variable va) {
-		logger.warn("Not yet implemented");
+		logger.warn("deleteVariable Not yet implemented");
 
 	}
 
@@ -790,7 +824,7 @@ public class CdmXperBaseControler implements IControlerBase {
 	 */
 	@Override
 	public void deleteVariableAndAllDaughters(Variable v) {
-		logger.warn("Not yet implemented");
+		logger.warn("deleteVariableAndAllDaughters Not yet implemented");
 
 	}
 
@@ -799,7 +833,7 @@ public class CdmXperBaseControler implements IControlerBase {
 	 */
 	@Override
 	public void deleteVariablesAndAllDaughters(Variable[] tab) {
-		logger.warn("Not yet implemented");
+		logger.warn("deleteVariablesAndAllDaughters Not yet implemented");
 
 	}
 
@@ -808,7 +842,7 @@ public class CdmXperBaseControler implements IControlerBase {
 	 */
 	@Override
 	public void deleteVariableWithoutDaughters(Variable v) {
-		logger.warn("Not yet implemented");
+		logger.warn("deleteVariableWithoutDaughters Not yet implemented");
 
 	}
 
@@ -817,7 +851,7 @@ public class CdmXperBaseControler implements IControlerBase {
 	 */
 	@Override
 	public void deleteVariablesWithoutDaughters(Variable[] tab) {
-		logger.warn("Not yet implemented");
+		logger.warn("deleteVariablesWithoutDaughters Not yet implemented");
 
 	}
 
@@ -827,7 +861,7 @@ public class CdmXperBaseControler implements IControlerBase {
 	@Override
 	public List<Variable> getVariableDescendant(List<Variable> listDescendant,
 			Variable v) {
-		logger.warn("Not yet implemented");
+		logger.warn("getVariableDescendant Not yet implemented");
 		return null;
 	}
 
@@ -837,7 +871,7 @@ public class CdmXperBaseControler implements IControlerBase {
 	@Override
 	public List<Variable> getVariableDaughters(List<Variable> listDaugther,
 			Variable v) {
-		logger.warn("Not yet implemented");
+		logger.warn("getVariableDaughters Not yet implemented");
 		return null;
 	}
 
@@ -846,7 +880,7 @@ public class CdmXperBaseControler implements IControlerBase {
 	 */
 	@Override
 	public List<Variable> getVariableDaughters(Variable v) {
-		logger.warn("Not yet implemented");
+		logger.warn("getVariableDaughters Not yet implemented");
 		return null;
 	}
 
@@ -855,8 +889,7 @@ public class CdmXperBaseControler implements IControlerBase {
 	 */
 	@Override
 	public List<Variable> getVariablesWithoutMother() {
-		logger.warn("Not yet implemented");
-		return null;
+		return super.getVariablesWithoutMother();
 	}
 
 	/* (non-Javadoc)
@@ -864,8 +897,7 @@ public class CdmXperBaseControler implements IControlerBase {
 	 */
 	@Override
 	public List<Variable> getVariablesWithoutMother(List<Variable> variables) {
-		logger.warn("Not yet implemented");
-		return null;
+		return super.getVariablesWithoutMother(variables);
 	}
 
 	/* (non-Javadoc)
@@ -873,7 +905,7 @@ public class CdmXperBaseControler implements IControlerBase {
 	 */
 	@Override
 	public List<Variable> getVariablesWithoutDaughter(List<Variable> variables) {
-		logger.warn("Not yet implemented");
+		logger.warn("getVariablesWithoutDaughter Not yet implemented");
 		return null;
 	}
 
@@ -882,8 +914,10 @@ public class CdmXperBaseControler implements IControlerBase {
 	 */
 	@Override
 	public List<Variable> getListVariable() {
-		logger.warn("getListVariable() Not yet implemented");
-		return null;
+		List<Variable> result = base.getVariables();
+//		List<FeatureNode> rootChildren = getFeatureTree().getRootChildren();
+//		List<Variable> result = cdmXperAdapter.adaptFeatureListToVariableList(-1, rootChildren);
+		return result;  //base.getVariables();
 	}
 
 	/* (non-Javadoc)
@@ -891,7 +925,7 @@ public class CdmXperBaseControler implements IControlerBase {
 	 */
 	@Override
 	public List<Variable> getVariablesByGroup(List<Variable> variables,	Group group) {
-		logger.warn("Not yet implemented");
+		logger.warn("getVariablesByGroup Not yet implemented");
 		return null;
 	}
 
@@ -900,44 +934,17 @@ public class CdmXperBaseControler implements IControlerBase {
 	 */
 	@Override
 	public List<Variable> getVariablesWithoutGroup(List<Variable> variables) {
-		logger.warn("Not yet implemented");
-		return null;
+		logger.warn("getVariablesWithoutGroup only implemented as super");
+		return super.getVariablesWithoutGroup(variables);
 	}
 
-	/* (non-Javadoc)
-	 * @see fr_jussieu_snv_lis.base.IControlerBase#setCurrentInd(fr_jussieu_snv_lis.base.Individual)
-	 */
-	@Override
-	public void setCurrentInd(Individual ind) {
-		logger.warn("Not yet implemented");
-
-	}
-
-	/* (non-Javadoc)
-	 * @see fr_jussieu_snv_lis.base.IControlerBase#setCurrentIndArray(fr_jussieu_snv_lis.base.Individual[])
-	 */
-	@Override
-	public void setCurrentIndArray(Individual[] tab) {
-		logger.warn("Not yet implemented");
-
-	}
-
-	/* (non-Javadoc)
-	 * @see fr_jussieu_snv_lis.base.IControlerBase#setCurrentIndArray(java.lang.Object[])
-	 */
-	@Override
-	public void setCurrentIndArray(Object[] tab) {
-		logger.warn("Not yet implemented");
-
-	}
 
 	/* (non-Javadoc)
 	 * @see fr_jussieu_snv_lis.base.IControlerBase#getCurrentVar()
 	 */
 	@Override
 	public Variable getCurrentVar() {
-		logger.warn("Not yet implemented");
-		return null;
+		return super.getCurrentVar();
 	}
 
 	/* (non-Javadoc)
@@ -945,8 +952,7 @@ public class CdmXperBaseControler implements IControlerBase {
 	 */
 	@Override
 	public void setCurrentVar(Variable var) {
-		logger.warn("Not yet implemented");
-
+		super.setCurrentVar(var);
 	}
 
 	/* (non-Javadoc)
@@ -954,8 +960,7 @@ public class CdmXperBaseControler implements IControlerBase {
 	 */
 	@Override
 	public Individual getCurrentInd() {
-		logger.warn("Not yet implemented");
-		return null;
+		return super.getCurrentInd();
 	}
 
 	/* (non-Javadoc)
@@ -963,16 +968,40 @@ public class CdmXperBaseControler implements IControlerBase {
 	 */
 	@Override
 	public Individual[] getCurrentIndArray() {
-		logger.warn("Not yet implemented");
-		return null;
+		return super.getCurrentIndArray();
 	}
+	
+	/* (non-Javadoc)
+	 * @see fr_jussieu_snv_lis.base.IControlerBase#setCurrentInd(fr_jussieu_snv_lis.base.Individual)
+	 */
+	@Override
+	public void setCurrentInd(Individual ind) {
+		super.setCurrentInd(ind);
+	}
+
+	/* (non-Javadoc)
+	 * @see fr_jussieu_snv_lis.base.IControlerBase#setCurrentIndArray(fr_jussieu_snv_lis.base.Individual[])
+	 */
+	@Override
+	public void setCurrentIndArray(Individual[] tab) {
+		super.setCurrentIndArray(tab);
+	}
+
+	/* (non-Javadoc)
+	 * @see fr_jussieu_snv_lis.base.IControlerBase#setCurrentIndArray(java.lang.Object[])
+	 */
+	@Override
+	public void setCurrentIndArray(Object[] tab) {
+		super.setCurrentIndArray(tab);
+	}
+
 
 	/* (non-Javadoc)
 	 * @see fr_jussieu_snv_lis.base.IControlerBase#getSortedIndividuals()
 	 */
 	@Override
 	public List<Individual> getSortedIndividuals() {
-		logger.warn("Not yet implemented");
+		logger.warn("getSortedIndividuals Not yet implemented");
 		return null;
 	}
 
@@ -981,7 +1010,7 @@ public class CdmXperBaseControler implements IControlerBase {
 	 */
 	@Override
 	public List<Group> getSortedGroups() {
-		logger.warn("Not yet implemented");
+		logger.warn("getSortedGroups Not yet implemented");
 		return null;
 	}
 
@@ -990,7 +1019,7 @@ public class CdmXperBaseControler implements IControlerBase {
 	 */
 	@Override
 	public void moveIndividualTo(int i, Individual ind) {
-		logger.warn("Not yet implemented");
+		logger.warn("moveIndividualTo Not yet implemented");
 
 	}
 
@@ -999,7 +1028,7 @@ public class CdmXperBaseControler implements IControlerBase {
 	 */
 	@Override
 	public void moveVariableTo(int i, Variable v) {
-		logger.warn("Not yet implemented");
+		logger.warn("moveVariableTo Not yet implemented");
 
 	}
 
@@ -1008,7 +1037,7 @@ public class CdmXperBaseControler implements IControlerBase {
 	 */
 	@Override
 	public void moveVariablesTo(int i, List<Variable> a) {
-		logger.warn("Not yet implemented");
+		logger.warn("moveVariablesTo Not yet implemented");
 
 	}
 
@@ -1017,7 +1046,7 @@ public class CdmXperBaseControler implements IControlerBase {
 	 */
 	@Override
 	public void moveGroupTo(int i, Group g) {
-		logger.warn("Not yet implemented");
+		logger.warn("moveGroupTo Not yet implemented");
 
 	}
 

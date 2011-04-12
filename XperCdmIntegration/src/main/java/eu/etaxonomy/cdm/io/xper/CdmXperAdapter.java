@@ -37,26 +37,28 @@ import eu.etaxonomy.cdm.model.taxon.TaxonBase;
 import fr_jussieu_snv_lis.XPApp;
 import fr_jussieu_snv_lis.IO.IExternalAdapter;
 import fr_jussieu_snv_lis.base.BaseObjectResource;
-import fr_jussieu_snv_lis.base.IBase;
 import fr_jussieu_snv_lis.base.Individual;
 import fr_jussieu_snv_lis.base.Mode;
 import fr_jussieu_snv_lis.base.Variable;
 import fr_jussieu_snv_lis.base.XPResource;
 import fr_jussieu_snv_lis.utils.Utils;
 
-public class AdaptaterCdmXper implements IExternalAdapter{
-	private static final Logger logger = Logger.getLogger(AdaptaterCdmXper.class);
+public class CdmXperAdapter implements IExternalAdapter{
+	private static final Logger logger = Logger.getLogger(CdmXperAdapter.class);
 	
 	TransactionStatus tx;
 
 	private CdmApplicationController cdmApplicationController;
 	private CdmXperBaseControler baseController;
+	private UUID uuidWorkingSet;
+	private WorkingSet workingSet; 
 	
 	
-	public AdaptaterCdmXper(CdmApplicationController appCtr) {
+	public CdmXperAdapter(CdmApplicationController appCtr, UUID uuidWorkingSet) {
+		this.uuidWorkingSet = uuidWorkingSet;
 		setCdmApplicationController(appCtr);
-		IBase base = new BaseCdm(); 
-		setBaseController(new CdmXperBaseControler(base));
+		BaseCdm base = new BaseCdm(); 
+		setBaseController(new CdmXperBaseControler(base, this));
 	}
 	
 //************************* GETTER /SETTER **********************/	
@@ -67,10 +69,31 @@ public class AdaptaterCdmXper implements IExternalAdapter{
 	}
 
 
-	public CdmApplicationController getCdmApplicationController() {
-		return cdmApplicationController;
+//	public CdmApplicationController getCdmApplicationController() {
+//		return cdmApplicationController;
+//	}
+
+
+	public void setBaseController(CdmXperBaseControler baseController) {
+		this.baseController = baseController;
 	}
 
+	/* (non-Javadoc)
+	 * @see fr_jussieu_snv_lis.IO.IExternalAdapter#getBaseController()
+	 */
+	public CdmXperBaseControler getBaseController() {
+		return baseController;
+	}
+
+	public WorkingSet getWorkingSet() {
+		if (this.workingSet == null){
+			this.workingSet = cdmApplicationController.getWorkingSetService().find(uuidWorkingSet);
+		}
+		return workingSet;
+	}
+	
+	
+	
 	
 //*********************** METHODS **********************/	
 	
@@ -82,20 +105,26 @@ public class AdaptaterCdmXper implements IExternalAdapter{
 
 	// Load the featureTree with the UUID
 	public void loadFeatures() {
+		TransactionStatus tx = startTransaction();
 		
-		UUID featureTreeUUID = UUID.fromString("1045f91b-6f1a-4a7d-8783-82a58a01ab25");
-//		UUID featureTreeUUID = UUID.fromString("43ab1efd-fa15-419a-8cd6-05477e4b37bc");
-		List<String> featureTreeInit = Arrays.asList(new String[]{"root.children.feature.representations"});
+		FeatureTree featureTree = getWorkingSet().getDescriptiveSystem();
+		this.cdmApplicationController.getWorkingSetService().saveOrUpdate(workingSet);
 		
-		TransactionStatus tx = cdmApplicationController.startTransaction();
-		FeatureTree featureTree =cdmApplicationController.getFeatureTreeService().load(featureTreeUUID, featureTreeInit);
+//		UUID featureTreeUUID = UUID.fromString("1045f91b-6f1a-4a7d-8783-82a58a01ab25");
+////		UUID featureTreeUUID = UUID.fromString("43ab1efd-fa15-419a-8cd6-05477e4b37bc");
+//		List<String> featureTreeInit = Arrays.asList(new String[]{"root.children.feature.representations"});
+//		
+//		TransactionStatus tx = cdmApplicationController.startTransaction();
+//		FeatureTree featureTree = cdmApplicationController.getFeatureTreeService().load(featureTreeUUID, featureTreeInit);
 		if (featureTree != null) {
 			loadFeatureNode(featureTree.getRoot(), -1);
 		}else{
-			logger.warn("Feature tree " + featureTreeUUID.toString() + " not found");
+			logger.warn("No feature tree available");
 		}
-		cdmApplicationController.commitTransaction(tx);
+		commitTransaction(tx);
 	}
+
+
 	
 	/**
 	 * Recursive methode to load FeatureNode and all its children
@@ -105,11 +134,23 @@ public class AdaptaterCdmXper implements IExternalAdapter{
 	 */
 	public void loadFeatureNode(FeatureNode featureNode, int indiceParent){
 		List<FeatureNode> featureList = featureNode.getChildren();
+		
+		adaptFeatureListToVariableList(indiceParent, featureList);
+	}
+
+	/**
+	 * @param indiceParent
+	 * @param featureList
+	 */
+	public void adaptFeatureListToVariableList(int indiceParent, List<FeatureNode> featureList) {
+//		List<Variable> result = new ArrayList<Variable>(featureList.size()); 
 		for(FeatureNode child : featureList){
 			boolean alreadyExist = false;
-			Variable variable = new Variable(child.getFeature().getLabel());
-			variable.setUuid(child.getFeature().getUuid());
+			Variable variable = adaptFeatureNodeToVariable(child);
+			
+			//?? TODO
 			List<Variable> vars = XPApp.getCurrentBase().getVariables();
+			
 			for(Variable var : vars){
 				if(var.getName().equals(variable.getName()))
 					alreadyExist = true;
@@ -118,14 +159,14 @@ public class AdaptaterCdmXper implements IExternalAdapter{
 			if(!alreadyExist && (child.getFeature().isSupportsCategoricalData() || child.getFeature().isSupportsQuantitativeData())){
 				
 				XPApp.getCurrentBase().addVariable(variable);
+//				result.add(variable);
 				
 				if(child.getFeature().isSupportsCategoricalData()){
 					// Add states to the character
 					Set<TermVocabulary<State>> termVocabularySet = child.getFeature().getSupportedCategoricalEnumerations();
 					for(TermVocabulary<State> termVocabulary : termVocabularySet){
 						for(State state : termVocabulary.getTerms()){
-							Mode mode = new Mode(state.getLabel());
-							mode.setUuid(state.getUuid());
+							Mode mode = adaptStateToMode(state);
 							variable.addMode(mode);
 						}
 					}
@@ -135,19 +176,48 @@ public class AdaptaterCdmXper implements IExternalAdapter{
 				}
 				
 				if(indiceParent != -1 && XPApp.getCurrentBase().getVariableAt(indiceParent) != null){
-					variable.addMother(((Variable)XPApp.getCurrentBase().getVariableAt(indiceParent -1)));
+//				if(indiceParent != -1 && result.get(indiceParent) != null){
+					variable.addMother((XPApp.getCurrentBase().getVariableAt(indiceParent -1)));
+//					variable.addMother(result.get(indiceParent -1 ));
 				}
 				
-				loadFeatureNode(child, variable.getIndexInt());
+				adaptFeatureListToVariableList(variable.getIndexInt(), child.getChildren());
 			}else{
-				loadFeatureNode(child, indiceParent);
+				adaptFeatureListToVariableList(indiceParent, child.getChildren());
 			}
 		}
+		return;
+	}
+
+	/**
+	 * @param child
+	 * @return
+	 */
+	private Variable adaptFeatureNodeToVariable(FeatureNode child) {
+		Variable variable = new Variable(child.getFeature().getLabel());
+		variable.setUuid(child.getFeature().getUuid());
+		return variable;
 	}
 	
+// ******************** STATE - MODE ***********************************/
+	private Mode adaptStateToMode(State state) {
+		Mode result =  new Mode(state.getLabel());
+		result.setUuid(state.getUuid());
+		return result;	
+	}
+	
+
+	public State adaptModeToState(Mode mode) {
+		State state = State.NewInstance(mode.getDescription(), mode.getName(), null);
+		mode.setUuid(state.getUuid());
+		return state;
+	}
+	
+// ******************************** ******************************************/	
+
 	// Load all the taxa and 1 description
 	public void loadTaxaAndDescription() {
-		TransactionStatus tx = cdmApplicationController.startTransaction();
+		TransactionStatus tx = startTransaction();
 		List<TaxonBase> taxonList = cdmApplicationController.getTaxonService().list(Taxon.class , null, null, null, null);
 		for(TaxonBase taxonBase : taxonList){
 			if (XPApp.getCurrentBase() != null) {
@@ -167,7 +237,7 @@ public class AdaptaterCdmXper implements IExternalAdapter{
 				XPApp.getCurrentBase().addIndividual(individual);
 			}
 		}
-		cdmApplicationController.commitTransaction(tx);
+		commitTransaction(tx);
 	}
 
 	// Load the first taxonDescription
@@ -294,7 +364,7 @@ public class AdaptaterCdmXper implements IExternalAdapter{
 	 * @param variable
 	 * @return
 	 */
-	private Feature getFeature(Variable variable) {
+	public Feature getFeature(Variable variable) {
 		UUID uuid = variable.getUuid();
 		ITermService termService = cdmApplicationController.getTermService();
 		DefinedTermBase<?> term = termService.find(uuid);
@@ -314,12 +384,12 @@ public class AdaptaterCdmXper implements IExternalAdapter{
 			}else{
 				logger.info("No change for variable: " + variable.getName());
 			}
-			int numberOfVocs = feature.getSupportedCategoricalEnumerations().size();
+			
 			HashMap<UUID, State> allStates = getAllSupportedStates(feature);
 			for (Mode mode : variable.getModes()){
 				State state = allStates.get(mode.getUuid());
 				if (state == null){
-					saveNewState(mode, numberOfVocs, feature, termService, vocService);
+					saveNewState(mode, feature);
 				}else{
 					allStates.remove(state.getUuid());
 					if (modeHasChanged(mode, state)){
@@ -356,12 +426,19 @@ public class AdaptaterCdmXper implements IExternalAdapter{
 	}
 
 
-	private void saveNewState(Mode mode, int numberOfVocs, Feature feature, ITermService termService, IVocabularyService vocService) {
+	public void saveNewState(Mode mode, Feature feature) {
+		TransactionStatus ta = startTransaction();
+		ITermService termService = cdmApplicationController.getTermService();
+		IVocabularyService vocService = cdmApplicationController.getVocabularyService();
+		
+		termService.saveOrUpdate(feature);
+		int numberOfVocs = feature.getSupportedCategoricalEnumerations().size();
+		
 		TermVocabulary<State> voc;
 		if (numberOfVocs <= 0){
 			//new voc
-			String vocDescription = null;
 			String vocLabel = "Vocabulary for feature " + feature.getLabel();
+			String vocDescription = vocLabel + ". Automatically created by Xper.";
 			String vocAbbrev = null;
 			String termSourceUri = null;
 			voc = TermVocabulary.NewInstance(vocDescription, vocLabel, vocAbbrev, termSourceUri);
@@ -370,9 +447,11 @@ public class AdaptaterCdmXper implements IExternalAdapter{
 		}else{
 			//numberOfVocs > 1
 			//FIXME preliminary
+			logger.warn("Multiple supported vocabularies not yet correctly implemented");
 			voc = feature.getSupportedCategoricalEnumerations().iterator().next();
 		}
 		saveNewModeToVoc(termService, vocService, voc, mode);
+		commitTransaction(ta);
 	}
 	
 
@@ -412,11 +491,7 @@ public class AdaptaterCdmXper implements IExternalAdapter{
 	 * @param mode
 	 */
 	private void saveNewModeToVoc(ITermService termService, IVocabularyService vocService, TermVocabulary<State> voc, Mode mode) {
-		String stateDescription = null;
-		String stateLabel = mode.getName();
-		String stateAbbrev = null;
-		State state = State.NewInstance(stateDescription, stateLabel, stateAbbrev);
-		mode.setUuid(state.getUuid());
+		State state = adaptModeToState(mode);
 		termService.save(state);
 		voc.addTerm(state);
 		vocService.saveOrUpdate(voc);
@@ -500,15 +575,21 @@ public class AdaptaterCdmXper implements IExternalAdapter{
 		return null;
 	}
 
-	public void setBaseController(CdmXperBaseControler baseController) {
-		this.baseController = baseController;
+
+	/**
+	 * @param tx
+	 */
+	private void commitTransaction(TransactionStatus tx) {
+		cdmApplicationController.commitTransaction(tx);
 	}
 
-	/* (non-Javadoc)
-	 * @see fr_jussieu_snv_lis.IO.IExternalAdapter#getBaseController()
+	/**
+	 * @return
 	 */
-	public CdmXperBaseControler getBaseController() {
-		return baseController;
+	private TransactionStatus startTransaction() {
+		TransactionStatus tx = cdmApplicationController.startTransaction();
+		return tx;
 	}
+	
 
 }

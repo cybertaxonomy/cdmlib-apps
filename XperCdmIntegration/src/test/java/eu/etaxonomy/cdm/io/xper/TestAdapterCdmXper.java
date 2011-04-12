@@ -1,30 +1,45 @@
 package eu.etaxonomy.cdm.io.xper;
 
 import java.io.File;
+import java.util.List;
+import java.util.UUID;
+
+import org.apache.log4j.Logger;
 
 import eu.etaxonomy.cdm.api.application.CdmApplicationController;
 import eu.etaxonomy.cdm.app.common.CdmDestinations;
 import eu.etaxonomy.cdm.database.DbSchemaValidation;
 import eu.etaxonomy.cdm.database.ICdmDataSource;
+import eu.etaxonomy.cdm.model.description.WorkingSet;
 import fr_jussieu_snv_lis.XPApp;
 import fr_jussieu_snv_lis.Xper;
 import fr_jussieu_snv_lis.utils.Utils;
 
 public class TestAdapterCdmXper {
+	private static final Logger logger = Logger.getLogger(TestAdapterCdmXper.class);
 	
-	AdaptaterCdmXper adapterCdmXper;
+	CdmXperAdapter adapterCdmXper;
 	
 	/**
 	 * 
 	 */
-	private void startApplications() {
+	private boolean startApplications() {
 		DbSchemaValidation dbSchemaValidation = DbSchemaValidation.VALIDATE;
 		ICdmDataSource datasource = CdmDestinations.cdm_test_local_xper();
 		System.out.println("cdm start");
 		CdmApplicationController appCtr = CdmApplicationController.NewInstance(datasource, dbSchemaValidation);
 		System.out.println("cdm started :::");
 		
-		adapterCdmXper = new AdaptaterCdmXper(appCtr);
+		List<WorkingSet> workingSets = appCtr.getWorkingSetService().list(null, 1, 0, null, null);
+		if (workingSets.isEmpty()){
+			logger.warn("There is no working set");
+			return false;
+		}else{
+			UUID uuidWorkingSet =  workingSets.iterator().next().getUuid();
+			adapterCdmXper = new CdmXperAdapter(appCtr, uuidWorkingSet);
+		}
+		
+		
 		
 		Thread t = new Thread() {
 			public void run() {
@@ -37,6 +52,7 @@ public class TestAdapterCdmXper {
 			//TODO wait
 		}
 		System.out.println("xper2 started :::");
+		return true;
 	}
 	
 	public void xperloadDataFromCdm(){
@@ -104,13 +120,13 @@ public class TestAdapterCdmXper {
 			XPApp.getMainframe().displayNbVariable();
 			XPApp.getMainframe().getControler().displayJifVarTree();
 			
-			if (XPApp.getCurrentBase() != null) {
-//				adaptaterCdmXper.createWorkingSet();
-				adapterCdmXper.load();
-
-				XPApp.getMainframe().displayNbVariable();
-				XPApp.getMainframe().getControler().displayJifVarTree();
-			}
+//			if (XPApp.getCurrentBase() != null) {
+////				adaptaterCdmXper.createWorkingSet();
+//				adapterCdmXper.load();
+//
+//				XPApp.getMainframe().displayNbVariable();
+//				XPApp.getMainframe().getControler().displayJifVarTree();
+//			}
 		}
 		// undisplay a loading gif
 		Utils.displayLoadingGif(false);
@@ -126,19 +142,22 @@ public class TestAdapterCdmXper {
 		System.out.println("start test");
 		//start CDM and Xper
 		TestAdapterCdmXper testAdapter = new TestAdapterCdmXper();
-		testAdapter.startApplications();
-		testAdapter.createThumbnailDirectory();
-		if (args.length >= 1 && "-p".equals(args[0]) ){
-			testAdapter.startPartialCdm();
+		boolean success = testAdapter.startApplications();
+		if (success){
+			testAdapter.createThumbnailDirectory();
+			if (args.length >= 1 && "-p".equals(args[0]) ){
+				testAdapter.startPartialCdm();
+			}else{
+				// load the data from CDM
+				testAdapter.xperloadDataFromCdm();
+				// use the current directory as working directory for Xper2
+				XPApp.getCurrentBase().setPathName(System.getProperty("user.dir") + Utils.sep);
+				
+				testAdapter.generateThumbnails();
+			}
 		}else{
-			// load the data from CDM
-			testAdapter.xperloadDataFromCdm();
-			// use the current directory as working directory for Xper2
-			XPApp.getCurrentBase().setPathName(System.getProperty("user.dir") + Utils.sep);
-			
-			testAdapter.generateThumbnails();
+			System.exit(-1);
 		}
-
 
 		
 	}

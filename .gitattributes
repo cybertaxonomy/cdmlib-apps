@@ -1,7 +1,7 @@
 * text=auto !eol
 XperCdmIntegration/pom.xml -text
-XperCdmIntegration/src/main/java/eu/etaxonomy/cdm/io/xper/AdaptaterCdmXper.java -text
 XperCdmIntegration/src/main/java/eu/etaxonomy/cdm/io/xper/BaseCdm.java -text
+XperCdmIntegration/src/main/java/eu/etaxonomy/cdm/io/xper/CdmXperAdapter.java -text
 XperCdmIntegration/src/main/java/eu/etaxonomy/cdm/io/xper/CdmXperBaseControler.java -text
 XperCdmIntegration/src/main/resources/log4j.properties -text
 XperCdmIntegration/src/test/java/eu/etaxonomy/cdm/app/common/CdmDestinations.java -text

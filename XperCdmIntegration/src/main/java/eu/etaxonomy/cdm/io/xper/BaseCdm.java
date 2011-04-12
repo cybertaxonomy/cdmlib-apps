@@ -9,13 +9,20 @@
 */
 package eu.etaxonomy.cdm.io.xper;
 
+import java.io.File;
+import java.io.IOException;
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
+import org.hibernate.validator.util.GetConstructor;
 
+import eu.etaxonomy.cdm.api.application.CdmApplicationUtils;
+import eu.etaxonomy.cdm.common.CdmUtils;
 import fr_jussieu_snv_lis.base.BaseObject;
 import fr_jussieu_snv_lis.base.BaseObjectResource;
 import fr_jussieu_snv_lis.base.Group;
@@ -31,14 +38,37 @@ import fr_jussieu_snv_lis.base.XPResource;
  */
 public class BaseCdm implements IBase {
 	private static final Logger logger = Logger.getLogger(BaseCdm.class);
+	private CdmXperBaseControler baseControler;
+	
+	//temporary store
+	private List<Variable> cdmVariables; // A set of Variable
+	private List<Individual> cdmIndividuals;
+	//FIXME mapping for groups not yet decided
+	private List<Group> groups = new ArrayList<Group>();
+
+
+	protected void setBaseControler(CdmXperBaseControler cdmXperBaseControler) {
+		this.baseControler = cdmXperBaseControler; 
+	}
+
+	protected CdmXperBaseControler getBaseControler() {
+		return baseControler;
+	}
+	
+	private CdmXperAdapter getAdapter(){
+		return getBaseControler().getAdapter();
+	}
+	
+//******************* IBase *****************************************************/	
+	
 	
 	/* (non-Javadoc)
 	 * @see fr_jussieu_snv_lis.base.IBase#getGroups()
 	 */
 	@Override
 	public List<Group> getGroups() {
-		logger.warn("Not yet implemented");
-		return null;
+		logger.warn("getGroups Not yet implemented (groups not yet implemented)");
+		return groups;
 	}
 
 	/* (non-Javadoc)
@@ -46,7 +76,7 @@ public class BaseCdm implements IBase {
 	 */
 	@Override
 	public Group getGroupAt(int i) {
-		logger.warn("Not yet implemented");
+		logger.warn("getGroupAt Not yet implemented (groups not yet implemented)");
 		return null;
 	}
 
@@ -55,8 +85,7 @@ public class BaseCdm implements IBase {
 	 */
 	@Override
 	public void setGroups(List<Group> n) {
-		logger.warn("Not yet implemented");
-
+		logger.warn("setGroups Not yet implemented");
 	}
 
 	/* (non-Javadoc)
@@ -64,7 +93,7 @@ public class BaseCdm implements IBase {
 	 */
 	@Override
 	public boolean addGroup(Group obj) {
-		logger.warn("Not yet implemented");
+		logger.warn("addGroup Not yet implemented");
 		return false;
 	}
 
@@ -73,7 +102,7 @@ public class BaseCdm implements IBase {
 	 */
 	@Override
 	public void addGroupAt(int i, Group group) {
-		logger.warn("Not yet implemented");
+		logger.warn("addGroupAt Not yet implemented");
 
 	}
 
@@ -82,7 +111,7 @@ public class BaseCdm implements IBase {
 	 */
 	@Override
 	public boolean deleteGroup(Group group) {
-		logger.warn("Not yet implemented");
+		logger.warn("deleteGroup Not yet implemented");
 		return false;
 	}
 
@@ -91,8 +120,11 @@ public class BaseCdm implements IBase {
 	 */
 	@Override
 	public List<Variable> getVariables() {
-		logger.warn("Not yet implemented");
-		return null;
+		if (cdmVariables == null){
+			cdmVariables = new ArrayList<Variable>();
+			getBaseControler().loadFeatures();
+		}
+		return cdmVariables;
 	}
 
 	/* (non-Javadoc)
@@ -100,8 +132,11 @@ public class BaseCdm implements IBase {
 	 */
 	@Override
 	public Variable getVariableAt(int i) {
-		logger.warn("Not yet implemented");
-		return null;
+		try {
+			return getVariables().get(i);
+		} catch (IndexOutOfBoundsException ioobe) {
+			return null;
+		}
 	}
 
 	/* (non-Javadoc)
@@ -109,7 +144,7 @@ public class BaseCdm implements IBase {
 	 */
 	@Override
 	public void setVariables(List<Variable> al) {
-		logger.warn("Not yet implemented");
+		logger.warn("setVariables Not yet implemented");
 
 	}
 
@@ -118,7 +153,11 @@ public class BaseCdm implements IBase {
 	 */
 	@Override
 	public boolean deleteVariable(Variable variable) {
-		logger.warn("Not yet implemented");
+		logger.warn("deleteVariable should be handled by controler");
+		if (getVariables().remove(variable)) {
+			BaseObject.checkIndex(getVariables());
+			return true;
+		}
 		return false;
 	}
 
@@ -127,7 +166,18 @@ public class BaseCdm implements IBase {
 	 */
 	@Override
 	public boolean addVariable(Variable variable) {
-		logger.warn("Not yet implemented");
+		getVariables();
+		if (!getVariables().contains(variable)) {
+			if (getVariables().add(variable)) {
+				// int i = variables.lastIndexOf(variable);
+				// ((BaseObject) variable).setIndex("" + (i + 1)); // index ++
+				BaseObject.checkIndex(getVariables());
+				return true;
+			}
+
+			return false;
+		}
+
 		return false;
 	}
 
@@ -136,7 +186,7 @@ public class BaseCdm implements IBase {
 	 */
 	@Override
 	public void addVariableAt(Variable variable, int i) {
-		logger.warn("Not yet implemented");
+		logger.warn("addVariableAt Not yet implemented");
 
 	}
 
@@ -145,7 +195,16 @@ public class BaseCdm implements IBase {
 	 */
 	@Override
 	public boolean addIndividual(Individual individual) {
-		logger.warn("Not yet implemented");
+		if (!this.getIndividuals().contains(individual)) {
+			if (this.getIndividuals().add(individual)) {
+				// int index = individuals.lastIndexOf(obj);
+				// ((BaseObject) obj).setIndex("" + (index + 1));
+				BaseObject.checkIndex(this.getIndividuals());
+				return true;
+			}
+
+			return false;
+		}
 		return false;
 	}
 
@@ -154,7 +213,7 @@ public class BaseCdm implements IBase {
 	 */
 	@Override
 	public boolean addIndividualAt(int i, Individual ind) {
-		logger.warn("Not yet implemented");
+		logger.warn("addIndividualAt Not yet implemented");
 		return false;
 	}
 
@@ -163,7 +222,7 @@ public class BaseCdm implements IBase {
 	 */
 	@Override
 	public boolean deleteIndividual(Individual obj) {
-		logger.warn("Not yet implemented");
+		logger.warn("deleteIndividual Not yet implemented");
 		return false;
 	}
 
@@ -172,8 +231,11 @@ public class BaseCdm implements IBase {
 	 */
 	@Override
 	public List<Individual> getIndividuals() {
-		logger.warn("Not yet implemented");
-		return null;
+		if (cdmIndividuals == null){
+			cdmIndividuals = new ArrayList<Individual>();
+			getAdapter().loadTaxaAndDescription();
+		}
+		return cdmIndividuals;
 	}
 
 	/* (non-Javadoc)
@@ -181,7 +243,7 @@ public class BaseCdm implements IBase {
 	 */
 	@Override
 	public Individual getIndividualAt(int i) {
-		logger.warn("Not yet implemented");
+		logger.warn("getIndividualAt Not yet implemented");
 		return null;
 	}
 
@@ -190,7 +252,7 @@ public class BaseCdm implements IBase {
 	 */
 	@Override
 	public void setIndividualList(List<Individual> n) {
-		logger.warn("Not yet implemented");
+		logger.warn("setIndividualList Not yet implemented");
 
 	}
 
@@ -199,7 +261,7 @@ public class BaseCdm implements IBase {
 	 */
 	@Override
 	public Set<String> getAuthors() {
-		logger.warn("Not yet implemented");
+		logger.warn("getAuthors Not yet implemented");
 		return null;
 	}
 
@@ -208,7 +270,7 @@ public class BaseCdm implements IBase {
 	 */
 	@Override
 	public String getAuthorAt(int i) {
-		logger.warn("Not yet implemented");
+		logger.warn("getAuthorAt Not yet implemented");
 		return null;
 	}
 
@@ -217,7 +279,7 @@ public class BaseCdm implements IBase {
 	 */
 	@Override
 	public void setAuthors(Object[] list) {
-		logger.warn("Not yet implemented");
+		logger.warn("setAuthors Not yet implemented");
 
 	}
 
@@ -226,7 +288,7 @@ public class BaseCdm implements IBase {
 	 */
 	@Override
 	public boolean addAuthor(String s) {
-		logger.warn("Not yet implemented");
+		logger.warn("addAuthor Not yet implemented");
 		return false;
 	}
 
@@ -235,7 +297,7 @@ public class BaseCdm implements IBase {
 	 */
 	@Override
 	public boolean deleteAuthor(String s) {
-		logger.warn("Not yet implemented");
+		logger.warn("deleteAuthor Not yet implemented");
 		return false;
 	}
 
@@ -244,8 +306,9 @@ public class BaseCdm implements IBase {
 	 */
 	@Override
 	public String getName() {
-		logger.warn("GetName not yet full implemented for BaseCdm");
-		return "A Cdm Database";
+		String result = this.getAdapter().getWorkingSet().getLabel();
+		result = StringUtils.isBlank(result)? "<no title>": result;
+		return result;
 	}
 
 	/* (non-Javadoc)
@@ -253,7 +316,7 @@ public class BaseCdm implements IBase {
 	 */
 	@Override
 	public void setName(String n) {
-		logger.warn("Not yet implemented");
+		logger.warn("setName Not yet implemented");
 
 	}
 
@@ -262,8 +325,16 @@ public class BaseCdm implements IBase {
 	 */
 	@Override
 	public String getPathName() {
-		logger.warn("Not yet implemented");
-		return null;
+		File directory;
+		try {
+			directory = CdmApplicationUtils.getWritableResourceDir();
+		} catch (IOException e) {
+			String message = "Application directory could not be found.";
+			throw new RuntimeException(message);
+		}
+		String result = directory.getAbsolutePath() + File.separator + "xper" + File.separator;
+		logger.info("pathname is " + result);
+		return result;
 	}
 
 	/* (non-Javadoc)
@@ -271,8 +342,7 @@ public class BaseCdm implements IBase {
 	 */
 	@Override
 	public void setPathName(String n) {
-		logger.warn("Not yet implemented");
-
+		logger.warn("setPathName Not yet implemented");
 	}
 
 	/* (non-Javadoc)
@@ -280,8 +350,8 @@ public class BaseCdm implements IBase {
 	 */
 	@Override
 	public String getShortname() {
-		logger.warn("Not yet implemented");
-		return null;
+		logger.warn("getShortname Not yet implemented");
+		return "";
 	}
 
 	/* (non-Javadoc)
@@ -289,7 +359,7 @@ public class BaseCdm implements IBase {
 	 */
 	@Override
 	public void setShortname(String string) {
-		logger.warn("Not yet implemented");
+		logger.warn("setShortname Not yet implemented");
 
 	}
 
@@ -298,8 +368,8 @@ public class BaseCdm implements IBase {
 	 */
 	@Override
 	public String getDescription() {
-		logger.warn("Not yet implemented");
-		return null;
+		logger.warn("getDescription Not yet implemented");
+		return "";
 	}
 
 	/* (non-Javadoc)
@@ -307,7 +377,7 @@ public class BaseCdm implements IBase {
 	 */
 	@Override
 	public void setDescription(String string) {
-		logger.warn("Not yet implemented");
+		logger.warn("setDescription Not yet implemented");
 
 	}
 
@@ -316,7 +386,7 @@ public class BaseCdm implements IBase {
 	 */
 	@Override
 	public void setLastEdition(String s) {
-		logger.warn("Not yet implemented");
+		logger.warn("setLastEdition Not yet implemented");
 
 	}
 
@@ -325,8 +395,8 @@ public class BaseCdm implements IBase {
 	 */
 	@Override
 	public String getLastEdition() {
-		logger.warn("Not yet implemented");
-		return null;
+		logger.warn("getLastEdition Not yet implemented");
+		return "";
 	}
 
 	/* (non-Javadoc)
@@ -334,7 +404,7 @@ public class BaseCdm implements IBase {
 	 */
 	@Override
 	public void setFirstEdition(String s) {
-		logger.warn("Not yet implemented");
+		logger.warn("setFirstEdition Not yet implemented");
 
 	}
 
@@ -343,26 +413,17 @@ public class BaseCdm implements IBase {
 	 */
 	@Override
 	public String getFirstEdition() {
-		logger.warn("Not yet implemented");
-		return null;
+		logger.warn("getFirstEdition Not yet implemented");
+		return "";
 	}
 
-	/* (non-Javadoc)
-	 * @see fr_jussieu_snv_lis.base.IBase#checkIndex(java.util.List)
-	 */
-	@Override
-	public void checkIndex(List<? extends BaseObject> al) {
-		logger.warn("Not yet implemented");
-
-	}
-
+	/***** Base management operations *****/
 	/* (non-Javadoc)
 	 * @see fr_jussieu_snv_lis.base.IBase#getNbVariables()
 	 */
 	@Override
 	public int getNbVariables() {
-		logger.warn("Not yet implemented");
-		return 0;
+		return getVariables().size();
 	}
 
 	/* (non-Javadoc)
@@ -370,7 +431,7 @@ public class BaseCdm implements IBase {
 	 */
 	@Override
 	public void setNbVariables(int n) {
-		logger.warn("Not yet implemented");
+		logger.warn("setNbVariables Not yet implemented");
 
 	}
 
@@ -379,7 +440,7 @@ public class BaseCdm implements IBase {
 	 */
 	@Override
 	public int getNbIndividuals() {
-		logger.warn("Not yet implemented");
+		logger.warn("getNbIndividuals Not yet implemented");
 		return 0;
 	}
 
@@ -388,7 +449,7 @@ public class BaseCdm implements IBase {
 	 */
 	@Override
 	public void setNbIndividuals(int n) {
-		logger.warn("Not yet implemented");
+		logger.warn("setNbIndividuals Not yet implemented");
 
 	}
 
@@ -397,7 +458,7 @@ public class BaseCdm implements IBase {
 	 */
 	@Override
 	public int getNbModes() {
-		logger.warn("Not yet implemented");
+		logger.warn("getNbModes Not yet implemented");
 		return 0;
 	}
 
@@ -406,8 +467,8 @@ public class BaseCdm implements IBase {
 	 */
 	@Override
 	public int getNbGroups() {
-		logger.warn("Not yet implemented");
-		return 0;
+		logger.info("getNbGroups Not yet implemented (groups not yet implemented)");
+		return groups.size();
 	}
 
 	/* (non-Javadoc)
@@ -415,7 +476,7 @@ public class BaseCdm implements IBase {
 	 */
 	@Override
 	public void setNbGroups(int n) {
-		logger.warn("Not yet implemented");
+		logger.warn("setNbGroups Not yet implemented");
 
 	}
 
@@ -424,7 +485,7 @@ public class BaseCdm implements IBase {
 	 */
 	@Override
 	public int getNbAuthors() {
-		logger.warn("Not yet implemented");
+		logger.warn("getNbAuthors Not yet implemented");
 		return 0;
 	}
 
@@ -433,8 +494,8 @@ public class BaseCdm implements IBase {
 	 */
 	@Override
 	public boolean hasGroups() {
-		logger.warn("Not yet implemented");
-		return false;
+		logger.warn("hasGroups Not yet implemented (groups not yet implemented)");
+		return ! groups.isEmpty();
 	}
 
 	/* (non-Javadoc)
@@ -442,7 +503,7 @@ public class BaseCdm implements IBase {
 	 */
 	@Override
 	public boolean hasAuthors() {
-		logger.warn("Not yet implemented");
+		//TODO
 		return false;
 	}
 
@@ -451,7 +512,7 @@ public class BaseCdm implements IBase {
 	 */
 	@Override
 	public boolean hasVariables() {
-		logger.warn("Not yet implemented");
+		logger.warn("hasVariables Not yet implemented");
 		return false;
 	}
 
@@ -460,7 +521,7 @@ public class BaseCdm implements IBase {
 	 */
 	@Override
 	public boolean hasIndividuals() {
-		logger.warn("Not yet implemented");
+		logger.warn("hasIndividuals Not yet implemented");
 		return false;
 	}
 
@@ -469,7 +530,7 @@ public class BaseCdm implements IBase {
 	 */
 	@Override
 	public boolean isIllustrated() {
-		logger.warn("Not yet implemented");
+		logger.warn("isIllustrated Not yet implemented");
 		return false;
 	}
 
@@ -478,7 +539,7 @@ public class BaseCdm implements IBase {
 	 */
 	@Override
 	public boolean isIllustrated(BaseObject[] bo) {
-		logger.warn("Not yet implemented");
+		logger.warn("isIllustrated Not yet implemented");
 		return false;
 	}
 
@@ -487,7 +548,7 @@ public class BaseCdm implements IBase {
 	 */
 	@Override
 	public List<BaseObject> getIllustratedBo(XPResource xpr) {
-		logger.warn("Not yet implemented");
+		logger.warn("getIllustratedBo Not yet implemented");
 		return null;
 	}
 
@@ -496,7 +557,7 @@ public class BaseCdm implements IBase {
 	 */
 	@Override
 	public List<BaseObjectResource> getAllResources() {
-		logger.warn("Not yet implemented");
+		logger.warn("getAllResources Not yet implemented");
 		return null;
 	}
 
@@ -505,7 +566,7 @@ public class BaseCdm implements IBase {
 	 */
 	@Override
 	public HashSet<Object> getAllResources(String str) {
-		logger.warn("Not yet implemented");
+		logger.warn("getAllResources Not yet implemented");
 		return null;
 	}
 
@@ -514,7 +575,7 @@ public class BaseCdm implements IBase {
 	 */
 	@Override
 	public boolean containsBaseObject(BaseObject bo) {
-		logger.warn("Not yet implemented");
+		logger.warn("containsBaseObject Not yet implemented");
 		return false;
 	}
 
@@ -523,7 +584,7 @@ public class BaseCdm implements IBase {
 	 */
 	@Override
 	public List<Variable> getVariablesWithoutGroup() {
-		logger.warn("Not yet implemented");
+		logger.warn("getVariablesWithoutGroup Not yet implemented");
 		return null;
 	}
 
@@ -532,7 +593,7 @@ public class BaseCdm implements IBase {
 	 */
 	@Override
 	public int compareTo(Object arg0) {
-		logger.warn("Not yet implemented");
+		logger.warn("compareTo Not yet implemented");
 		return 0;
 	}
 
@@ -541,7 +602,7 @@ public class BaseCdm implements IBase {
 	 */
 	@Override
 	public void free() {
-		logger.warn("Not yet implemented");
+		logger.warn("free Not yet implemented");
 
 	}
 
@@ -550,7 +611,7 @@ public class BaseCdm implements IBase {
 	 */
 	@Override
 	public boolean isComplete() {
-		logger.warn("Not yet implemented");
+		logger.warn("isComplete Not yet implemented");
 		return false;
 	}
 
@@ -559,7 +620,7 @@ public class BaseCdm implements IBase {
 	 */
 	@Override
 	public float getCompletePercentage() {
-		logger.warn("Not yet implemented");
+		logger.warn("getCompletePercentage Not yet implemented");
 		return 0;
 	}
 
@@ -568,7 +629,7 @@ public class BaseCdm implements IBase {
 	 */
 	@Override
 	public String toTabFile() {
-		logger.warn("Not yet implemented");
+		logger.warn("toTabFile Not yet implemented");
 		return null;
 	}
 
@@ -577,7 +638,7 @@ public class BaseCdm implements IBase {
 	 */
 	@Override
 	public String toHtml() {
-		logger.warn("Not yet implemented");
+		logger.warn("toHtml Not yet implemented");
 		return null;
 	}
 
@@ -586,7 +647,7 @@ public class BaseCdm implements IBase {
 	 */
 	@Override
 	public BaseObjectResource getResource() {
-		logger.warn("Not yet implemented");
+		logger.warn("getResource Not yet implemented");
 		return null;
 	}
 
@@ -595,7 +656,7 @@ public class BaseCdm implements IBase {
 	 */
 	@Override
 	public void setResource(BaseObjectResource b) {
-		logger.warn("Not yet implemented");
+		logger.warn("setResource Not yet implemented");
 
 	}
 
@@ -604,7 +665,7 @@ public class BaseCdm implements IBase {
 	 */
 	@Override
 	public void removeResource() {
-		logger.warn("Not yet implemented");
+		logger.warn("removeResource Not yet implemented");
 
 	}
 
@@ -613,7 +674,7 @@ public class BaseCdm implements IBase {
 	 */
 	@Override
 	public boolean hasAnIllustration() {
-		logger.warn("Not yet implemented");
+		logger.warn("hasAnIllustration Not yet implemented");
 		return false;
 	}
 
@@ -622,8 +683,8 @@ public class BaseCdm implements IBase {
 	 */
 	@Override
 	public String getLanguage() {
-		logger.warn("Not yet implemented");
-		return null;
+		logger.warn("getLanguage Not yet implemented");
+		return "";
 	}
 
 	/* (non-Javadoc)
@@ -631,7 +692,7 @@ public class BaseCdm implements IBase {
 	 */
 	@Override
 	public void setLanguage(String language) {
-		logger.warn("Not yet implemented");
+		logger.warn("setLanguage Not yet implemented");
 
 	}
 
@@ -640,7 +701,7 @@ public class BaseCdm implements IBase {
 	 */
 	@Override
 	public void setLinks(Object[] objects) {
-		logger.warn("Not yet implemented");
+		logger.warn("setLinks Not yet implemented");
 
 	}
 
@@ -649,7 +710,7 @@ public class BaseCdm implements IBase {
 	 */
 	@Override
 	public Set<String> getLinks() {
-		logger.warn("Not yet implemented");
+		logger.warn("getLinks Not yet implemented");
 		return null;
 	}
 
@@ -658,7 +719,7 @@ public class BaseCdm implements IBase {
 	 */
 	@Override
 	public String getLinkAt(int i) {
-		logger.warn("Not yet implemented");
+		logger.warn("getLinkAt Not yet implemented");
 		return null;
 	}
 
@@ -667,7 +728,7 @@ public class BaseCdm implements IBase {
 	 */
 	@Override
 	public boolean addLinks(String link) {
-		logger.warn("Not yet implemented");
+		logger.warn("addLinks Not yet implemented");
 		return false;
 	}
 
@@ -676,7 +737,7 @@ public class BaseCdm implements IBase {
 	 */
 	@Override
 	public boolean removeLinks(String link) {
-		logger.warn("Not yet implemented");
+		logger.warn("removeLinks Not yet implemented");
 		return false;
 	}
 
@@ -685,8 +746,8 @@ public class BaseCdm implements IBase {
 	 */
 	@Override
 	public String getLicense() {
-		logger.warn("Not yet implemented");
-		return null;
+		logger.warn("getLicense Not yet implemented");
+		return "";
 	}
 
 	/* (non-Javadoc)
@@ -694,7 +755,7 @@ public class BaseCdm implements IBase {
 	 */
 	@Override
 	public void setLicense(String license) {
-		logger.warn("Not yet implemented");
+		logger.warn("setLicense Not yet implemented");
 
 	}
 
@@ -703,7 +764,7 @@ public class BaseCdm implements IBase {
 	 */
 	@Override
 	public int getNbLinks() {
-		logger.warn("Not yet implemented");
+		logger.warn("getNbLinks Not yet implemented");
 		return 0;
 	}
 
@@ -712,7 +773,7 @@ public class BaseCdm implements IBase {
 	 */
 	@Override
 	public Map<Individual, Variable> getUnknownData() {
-		logger.warn("Not yet implemented");
+		logger.warn("getUnknownData Not yet implemented");
 		return null;
 	}
 
@@ -721,7 +782,7 @@ public class BaseCdm implements IBase {
 	 */
 	@Override
 	public Map<Individual, Variable> getEmptyData() {
-		logger.warn("Not yet implemented");
+		logger.warn("getEmptyData Not yet implemented");
 		return null;
 	}
 
@@ -730,8 +791,8 @@ public class BaseCdm implements IBase {
 	 */
 	@Override
 	public String getHelp() {
-		logger.warn("Not yet implemented");
-		return null;
+		logger.warn("getHelp Not yet implemented");
+		return "";
 	}
 
 	/* (non-Javadoc)
@@ -739,7 +800,7 @@ public class BaseCdm implements IBase {
 	 */
 	@Override
 	public void setHelp(String help) {
-		logger.warn("Not yet implemented");
+		logger.warn("setHelp Not yet implemented");
 
 	}
 
@@ -748,7 +809,7 @@ public class BaseCdm implements IBase {
 	 */
 	@Override
 	public boolean isPresentNumVariable() {
-		logger.warn("Not yet implemented");
+		logger.warn("isPresentNumVariable Not yet implemented");
 		return false;
 	}
 
@@ -757,8 +818,9 @@ public class BaseCdm implements IBase {
 	 */
 	@Override
 	public boolean addResource(BaseObject bo, BaseObjectResource rsc) {
-		logger.warn("Not yet implemented");
+		logger.warn("addResource(bo, rsc) Not yet implemented");
 		return false;
 	}
+
 
 }
