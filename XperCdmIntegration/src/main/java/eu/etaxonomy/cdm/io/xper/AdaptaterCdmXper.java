@@ -35,26 +35,31 @@ import eu.etaxonomy.cdm.model.description.WorkingSet;
 import eu.etaxonomy.cdm.model.taxon.Taxon;
 import eu.etaxonomy.cdm.model.taxon.TaxonBase;
 import fr_jussieu_snv_lis.XPApp;
-import fr_jussieu_snv_lis.Xper;
-import fr_jussieu_snv_lis.IO.ICdmAdapter;
+import fr_jussieu_snv_lis.IO.IExternalAdapter;
 import fr_jussieu_snv_lis.base.BaseObjectResource;
+import fr_jussieu_snv_lis.base.IBase;
 import fr_jussieu_snv_lis.base.Individual;
 import fr_jussieu_snv_lis.base.Mode;
 import fr_jussieu_snv_lis.base.Variable;
 import fr_jussieu_snv_lis.base.XPResource;
 import fr_jussieu_snv_lis.utils.Utils;
 
-public class AdaptaterCdmXper implements ICdmAdapter{
+public class AdaptaterCdmXper implements IExternalAdapter{
 	private static final Logger logger = Logger.getLogger(AdaptaterCdmXper.class);
 	
 	TransactionStatus tx;
 
 	private CdmApplicationController cdmApplicationController;
+	private CdmXperBaseControler baseController;
+	
 	
 	public AdaptaterCdmXper(CdmApplicationController appCtr) {
 		setCdmApplicationController(appCtr);
+		IBase base = new BaseCdm(); 
+		setBaseController(new CdmXperBaseControler(base));
 	}
 	
+//************************* GETTER /SETTER **********************/	
 
 	public void setCdmApplicationController(CdmApplicationController appCtr) {
 		this.cdmApplicationController = appCtr;
@@ -66,6 +71,8 @@ public class AdaptaterCdmXper implements ICdmAdapter{
 		return cdmApplicationController;
 	}
 
+	
+//*********************** METHODS **********************/	
 	
 	public void load(){
 		loadFeatures();
@@ -493,8 +500,15 @@ public class AdaptaterCdmXper implements ICdmAdapter{
 		return null;
 	}
 
+	public void setBaseController(CdmXperBaseControler baseController) {
+		this.baseController = baseController;
+	}
 
-
-
+	/* (non-Javadoc)
+	 * @see fr_jussieu_snv_lis.IO.IExternalAdapter#getBaseController()
+	 */
+	public CdmXperBaseControler getBaseController() {
+		return baseController;
+	}
 
 }

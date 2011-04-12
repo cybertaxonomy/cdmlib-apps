@@ -6,10 +6,8 @@ import eu.etaxonomy.cdm.api.application.CdmApplicationController;
 import eu.etaxonomy.cdm.app.common.CdmDestinations;
 import eu.etaxonomy.cdm.database.DbSchemaValidation;
 import eu.etaxonomy.cdm.database.ICdmDataSource;
-import eu.etaxonomy.cdm.io.xper.AdaptaterCdmXper;
 import fr_jussieu_snv_lis.XPApp;
 import fr_jussieu_snv_lis.Xper;
-import fr_jussieu_snv_lis.edition.XPDisplay;
 import fr_jussieu_snv_lis.utils.Utils;
 
 public class TestAdapterCdmXper {
@@ -91,7 +89,33 @@ public class TestAdapterCdmXper {
 	
 
 	private void startPartialCdm() {
-		// TODO Auto-generated method stub
+		System.out.println("start load data");
+		// display a loading gif
+//		Utils.displayLoadingGif(true);
+		
+		
+		// create a new empty base and load data from CDM
+		if(XPApp.cdmAdapter != null){
+			// create a new base
+//			XPApp.getMainframe().newBase("baseTest");
+			// specify that the current base is not new (needed to be able to add images), not really needed
+			XPApp.isNewBase = false;
+
+			XPApp.getMainframe().displayNbVariable();
+			XPApp.getMainframe().getControler().displayJifVarTree();
+			
+			if (XPApp.getCurrentBase() != null) {
+//				adaptaterCdmXper.createWorkingSet();
+				adapterCdmXper.load();
+
+				XPApp.getMainframe().displayNbVariable();
+				XPApp.getMainframe().getControler().displayJifVarTree();
+			}
+		}
+		// undisplay a loading gif
+		Utils.displayLoadingGif(false);
+		System.out.println("data loaded :::");
+
 		
 	}
 
