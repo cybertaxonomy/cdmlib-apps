@@ -490,7 +490,7 @@ public class CdmXperAdapter extends CdmIoBase implements IExternalAdapter{
 		tx = startTransaction();
 		for (Variable variable : vars){
 			Feature feature = getFeature(variable);
-			if (Utils.numType.equals(variable.getType())){
+			if (variable.isNumType()){
 				saveNumericalFeature(variable, feature);
 			}else if (Utils.catType.equals(variable.getType())){
 				saveCategoricalFeature(variable, feature);
