@@ -24,6 +24,7 @@ public class TestAdapterCdmXper {
 	 * 
 	 */
 	private boolean startApplications() {
+		boolean result = false;
 		DbSchemaValidation dbSchemaValidation = DbSchemaValidation.VALIDATE;
 		ICdmDataSource datasource = CdmDestinations.cdm_test_local_xper();
 		System.out.println("cdm start");
@@ -36,23 +37,14 @@ public class TestAdapterCdmXper {
 			return false;
 		}else{
 			UUID uuidWorkingSet =  workingSets.iterator().next().getUuid();
-			adapterCdmXper = new CdmXperAdapter(appCtr, uuidWorkingSet);
+			
+			adapterCdmXper = (CdmXperAdapter)appCtr.getBean("cdmXperAdapter");
+//			adapterCdmXper = new CdmXperAdapter(appCtr, uuidWorkingSet);
+			result =  adapterCdmXper.startXper(uuidWorkingSet);
 		}
+
+		return result;
 		
-		
-		
-		Thread t = new Thread() {
-			public void run() {
-				new Xper(adapterCdmXper);
-			}
-		};
-		System.out.println("xper2 start");
-		t.start();
-		while(!XPApp.xperReady){
-			//TODO wait
-		}
-		System.out.println("xper2 started :::");
-		return true;
 	}
 	
 	public void xperloadDataFromCdm(){
@@ -139,10 +131,18 @@ public class TestAdapterCdmXper {
 	 * @param args
 	 */
 	public static void main(String[] args) {
-		System.out.println("start test");
+		System.out.println("start test adapter");
 		//start CDM and Xper
 		TestAdapterCdmXper testAdapter = new TestAdapterCdmXper();
 		boolean success = testAdapter.startApplications();
+		while(!XPApp.xperReady){
+			try {
+				Thread.sleep(200);
+			} catch (InterruptedException e) {
+				e.printStackTrace();
+			}
+		}
+		System.out.println("xper2 started :::");
 		if (success){
 			testAdapter.createThumbnailDirectory();
 			if (args.length >= 1 && "-p".equals(args[0]) ){
@@ -156,8 +156,11 @@ public class TestAdapterCdmXper {
 				testAdapter.generateThumbnails();
 			}
 		}else{
+			System.out.println("end test adapter with errors");
 			System.exit(-1);
+
 		}
+		System.out.println("end test adapter");
 
 		
 	}

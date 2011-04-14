@@ -19,10 +19,8 @@ import java.util.Set;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
-import org.hibernate.validator.util.GetConstructor;
 
 import eu.etaxonomy.cdm.api.application.CdmApplicationUtils;
-import eu.etaxonomy.cdm.common.CdmUtils;
 import fr_jussieu_snv_lis.base.BaseObject;
 import fr_jussieu_snv_lis.base.BaseObjectResource;
 import fr_jussieu_snv_lis.base.Group;
@@ -233,7 +231,7 @@ public class BaseCdm implements IBase {
 	public List<Individual> getIndividuals() {
 		if (cdmIndividuals == null){
 			cdmIndividuals = new ArrayList<Individual>();
-			getAdapter().loadTaxaAndDescription();
+			getAdapter().loadTaxa();
 		}
 		return cdmIndividuals;
 	}
@@ -243,8 +241,7 @@ public class BaseCdm implements IBase {
 	 */
 	@Override
 	public Individual getIndividualAt(int i) {
-		logger.warn("getIndividualAt Not yet implemented");
-		return null;
+		return this.cdmIndividuals.get(i);
 	}
 
 	/* (non-Javadoc)
@@ -440,8 +437,7 @@ public class BaseCdm implements IBase {
 	 */
 	@Override
 	public int getNbIndividuals() {
-		logger.warn("getNbIndividuals Not yet implemented");
-		return 0;
+		return this.cdmIndividuals.size();
 	}
 
 	/* (non-Javadoc)
@@ -450,7 +446,6 @@ public class BaseCdm implements IBase {
 	@Override
 	public void setNbIndividuals(int n) {
 		logger.warn("setNbIndividuals Not yet implemented");
-
 	}
 
 	/* (non-Javadoc)
@@ -710,17 +705,8 @@ public class BaseCdm implements IBase {
 	 */
 	@Override
 	public Set<String> getLinks() {
-		logger.warn("getLinks Not yet implemented");
-		return null;
-	}
-
-	/* (non-Javadoc)
-	 * @see fr_jussieu_snv_lis.base.IBase#getLinkAt(int)
-	 */
-	@Override
-	public String getLinkAt(int i) {
-		logger.warn("getLinkAt Not yet implemented");
-		return null;
+		logger.warn("getLinks Not yet implemented. Returns empty list");
+		return new HashSet<String>();
 	}
 
 	/* (non-Javadoc)

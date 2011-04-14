@@ -1,28 +1,29 @@
 package eu.etaxonomy.cdm.io.xper;
 
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
+import org.springframework.stereotype.Component;
 import org.springframework.transaction.TransactionStatus;
 
-import eu.etaxonomy.cdm.api.application.CdmApplicationController;
 import eu.etaxonomy.cdm.api.service.ITermService;
 import eu.etaxonomy.cdm.api.service.IVocabularyService;
 import eu.etaxonomy.cdm.api.service.pager.Pager;
 import eu.etaxonomy.cdm.common.CdmUtils;
+import eu.etaxonomy.cdm.io.common.CdmIoBase;
+import eu.etaxonomy.cdm.io.common.IoStateBase;
 import eu.etaxonomy.cdm.model.common.CdmBase;
 import eu.etaxonomy.cdm.model.common.DefinedTermBase;
 import eu.etaxonomy.cdm.model.common.Language;
 import eu.etaxonomy.cdm.model.common.Representation;
 import eu.etaxonomy.cdm.model.common.TermVocabulary;
+import eu.etaxonomy.cdm.model.common.UuidAndTitleCache;
 import eu.etaxonomy.cdm.model.description.CategoricalData;
-import eu.etaxonomy.cdm.model.description.DescriptionElementBase;
 import eu.etaxonomy.cdm.model.description.Feature;
 import eu.etaxonomy.cdm.model.description.FeatureNode;
 import eu.etaxonomy.cdm.model.description.FeatureTree;
@@ -30,49 +31,60 @@ import eu.etaxonomy.cdm.model.description.MeasurementUnit;
 import eu.etaxonomy.cdm.model.description.QuantitativeData;
 import eu.etaxonomy.cdm.model.description.State;
 import eu.etaxonomy.cdm.model.description.StateData;
-import eu.etaxonomy.cdm.model.description.TaxonDescription;
 import eu.etaxonomy.cdm.model.description.WorkingSet;
-import eu.etaxonomy.cdm.model.taxon.Taxon;
 import eu.etaxonomy.cdm.model.taxon.TaxonBase;
 import fr_jussieu_snv_lis.XPApp;
+import fr_jussieu_snv_lis.Xper;
 import fr_jussieu_snv_lis.IO.IExternalAdapter;
-import fr_jussieu_snv_lis.base.BaseObjectResource;
 import fr_jussieu_snv_lis.base.Individual;
 import fr_jussieu_snv_lis.base.Mode;
 import fr_jussieu_snv_lis.base.Variable;
-import fr_jussieu_snv_lis.base.XPResource;
 import fr_jussieu_snv_lis.utils.Utils;
 
-public class CdmXperAdapter implements IExternalAdapter{
+@Component
+public class CdmXperAdapter extends CdmIoBase implements IExternalAdapter{
 	private static final Logger logger = Logger.getLogger(CdmXperAdapter.class);
 	
 	TransactionStatus tx;
+	
+	private CdmXperAdapter  adapter = this;
 
-	private CdmApplicationController cdmApplicationController;
+//	private CdmApplicationController cdmApplicationController;
 	private CdmXperBaseControler baseController;
 	private UUID uuidWorkingSet;
-	private WorkingSet workingSet; 
+//	private WorkingSet workingSet; 
 	
+	//TODO preliminary
+	//CONFIGURATION
+	private boolean isLazyModes = false;
+	private boolean isLazyIndMatrix = true;
+	private boolean useSecInTaxonName = false;
 	
-	public CdmXperAdapter(CdmApplicationController appCtr, UUID uuidWorkingSet) {
-		this.uuidWorkingSet = uuidWorkingSet;
-		setCdmApplicationController(appCtr);
-		BaseCdm base = new BaseCdm(); 
-		setBaseController(new CdmXperBaseControler(base, this));
+	public CdmXperAdapter(){
+		BaseCdm base = new BaseCdm();
+		CdmXperBaseControler baseController = new CdmXperBaseControler(base, this);
+		setBaseController(baseController);
 	}
+	
+	public boolean startXper(UUID uuidWorkingSet){
+		this.uuidWorkingSet = uuidWorkingSet;
+		Thread t = new Thread() {
+			public void run() {
+				new Xper(adapter);
+			}
+			
+		};
+		System.out.println("xper2 start");
+		t.start();
+//		while(!XPApp.xperReady){
+//			//TODO
+//		}
+//		System.out.println("xper2 started :::");
+		return true;
+	}
+
 	
 //************************* GETTER /SETTER **********************/	
-
-	public void setCdmApplicationController(CdmApplicationController appCtr) {
-		this.cdmApplicationController = appCtr;
-		 tx = cdmApplicationController.startTransaction();
-	}
-
-
-//	public CdmApplicationController getCdmApplicationController() {
-//		return cdmApplicationController;
-//	}
-
 
 	public void setBaseController(CdmXperBaseControler baseController) {
 		this.baseController = baseController;
@@ -86,12 +98,19 @@ public class CdmXperAdapter implements IExternalAdapter{
 	}
 
 	public WorkingSet getWorkingSet() {
-		if (this.workingSet == null){
-			this.workingSet = cdmApplicationController.getWorkingSetService().find(uuidWorkingSet);
-		}
+//		if (this.workingSet == null){
+			WorkingSet workingSet = getWorkingSetService().find(uuidWorkingSet);
+//		}
 		return workingSet;
 	}
 	
+	public WorkingSet getLanguage() {
+		
+//		if (this.workingSet == null){
+			WorkingSet workingSet = getWorkingSetService().find(uuidWorkingSet);
+//		}
+		return workingSet;
+	}
 	
 	
 	
@@ -99,29 +118,24 @@ public class CdmXperAdapter implements IExternalAdapter{
 	
 	public void load(){
 		loadFeatures();
-		loadTaxaAndDescription();
-
+		loadTaxa();
 	}
 
 	// Load the featureTree with the UUID
 	public void loadFeatures() {
+		logger.warn("load features start");
 		TransactionStatus tx = startTransaction();
 		
 		FeatureTree featureTree = getWorkingSet().getDescriptiveSystem();
-		this.cdmApplicationController.getWorkingSetService().saveOrUpdate(workingSet);
+		getFeatureTreeService().saveOrUpdate(featureTree);
 		
-//		UUID featureTreeUUID = UUID.fromString("1045f91b-6f1a-4a7d-8783-82a58a01ab25");
-////		UUID featureTreeUUID = UUID.fromString("43ab1efd-fa15-419a-8cd6-05477e4b37bc");
-//		List<String> featureTreeInit = Arrays.asList(new String[]{"root.children.feature.representations"});
-//		
-//		TransactionStatus tx = cdmApplicationController.startTransaction();
-//		FeatureTree featureTree = cdmApplicationController.getFeatureTreeService().load(featureTreeUUID, featureTreeInit);
 		if (featureTree != null) {
 			loadFeatureNode(featureTree.getRoot(), -1);
 		}else{
 			logger.warn("No feature tree available");
 		}
 		commitTransaction(tx);
+		logger.warn("load features end :::");
 	}
 
 
@@ -162,17 +176,10 @@ public class CdmXperAdapter implements IExternalAdapter{
 //				result.add(variable);
 				
 				if(child.getFeature().isSupportsCategoricalData()){
-					// Add states to the character
-					Set<TermVocabulary<State>> termVocabularySet = child.getFeature().getSupportedCategoricalEnumerations();
-					for(TermVocabulary<State> termVocabulary : termVocabularySet){
-						for(State state : termVocabulary.getTerms()){
-							Mode mode = adaptStateToMode(state);
-							variable.addMode(mode);
-						}
+					// Add states to the feature
+					if (! isLazyModes){
+						addModesToVariable(child, variable);
 					}
-				}else if (child.getFeature().isSupportsQuantitativeData()) {
-					// Specify the character type (numerical)
-					variable.setType(Utils.numType);
 				}
 				
 				if(indiceParent != -1 && XPApp.getCurrentBase().getVariableAt(indiceParent) != null){
@@ -191,11 +198,31 @@ public class CdmXperAdapter implements IExternalAdapter{
 
 	/**
 	 * @param child
+	 * @param variable
+	 */
+	private void addModesToVariable(FeatureNode child, Variable variable) {
+		Set<TermVocabulary<State>> termVocabularySet = child.getFeature().getSupportedCategoricalEnumerations();
+		for(TermVocabulary<State> termVocabulary : termVocabularySet){
+			for(State state : termVocabulary.getTerms()){
+				Mode mode = adaptStateToMode(state);
+				variable.addMode(mode);
+			}
+		}
+	}
+
+	/**
+	 * @param child
 	 * @return
 	 */
 	private Variable adaptFeatureNodeToVariable(FeatureNode child) {
 		Variable variable = new Variable(child.getFeature().getLabel());
 		variable.setUuid(child.getFeature().getUuid());
+		if (child.getFeature().isSupportsQuantitativeData()){
+			// Specify the character type (numerical)
+			variable.setType(Utils.numType);
+		}else if (child.getFeature().isSupportsCategoricalData()){
+			variable.setType(Utils.catType);
+		}
 		return variable;
 	}
 	
@@ -213,122 +240,237 @@ public class CdmXperAdapter implements IExternalAdapter{
 		return state;
 	}
 	
-// ******************************** ******************************************/	
+// ******************** TAXON - INDIVIDUAL ***********************************/
 
-	// Load all the taxa and 1 description
-	public void loadTaxaAndDescription() {
-		TransactionStatus tx = startTransaction();
-		List<TaxonBase> taxonList = cdmApplicationController.getTaxonService().list(Taxon.class , null, null, null, null);
-		for(TaxonBase taxonBase : taxonList){
-			if (XPApp.getCurrentBase() != null) {
-				Individual individual = new Individual(taxonBase.getName().toString());
-				individual.setUuid(taxonBase.getUuid());
-				
-				// Add a image to the taxon
-				BaseObjectResource bor = new BaseObjectResource(new XPResource("http://www.cheloniophilie.com/Images/Photos/Chelonia-mydas/tortue-marine.JPG"));
-                individual.addResource(bor); 
-                
-				// Add an empty description
-                List<Variable> vars = XPApp.getCurrentBase().getVariables();
-				for(Variable var : vars){
-					individual.addMatrix(var, new ArrayList<Mode>());
-				}
-				loadDescription(individual, taxonBase);
-				XPApp.getCurrentBase().addIndividual(individual);
-			}
-		}
-		commitTransaction(tx);
+	/**
+	 * @param taxonBase
+	 * @return
+	 */
+	public Individual adaptTaxonToIndividual(TaxonBase taxonBase) {
+		String name = useSecInTaxonName? taxonBase.getTitleCache() : taxonBase.getName().getTitleCache();
+		Individual individual = new Individual(name);
+		individual.setUuid(taxonBase.getUuid());
+		return individual;
+	}
+	
+// ******************************** ******************************************/	
+//    // OLD
+//	// Load all the taxa and 1 description
+//	public void loadTaxaAndDescription() {
+//		logger.warn("load taxa start");
+//		//fill all variables with empty lists
+//
+//		
+//		TransactionStatus tx = startTransaction();
+//		
+//		getWorkingSet().getDescriptions();
+//		
+//		logger.warn("load taxa from CDM");
+//		List<TaxonBase> taxonList = getTaxonService().list(Taxon.class , null, null, null, null);
+//		
+//		for(TaxonBase taxonBase : taxonList){
+//			if (XPApp.getCurrentBase() != null) {
+//				
+//				// Add a image to the taxon
+//				BaseObjectResource bor = new BaseObjectResource(new XPResource("http://www.cheloniophilie.com/Images/Photos/Chelonia-mydas/tortue-marine.JPG"));
+//                individual.addResource(bor); 
+//                
+//				// Add an empty description
+//                
+//                loadDescription(individual, taxonBase);
+//                
+//			}
+//		}
+//		commitTransaction(tx);
+//		logger.warn("load taxa end :::");
+//	}
+
+
+	/**
+	 * Load taxa and convert to individuals.
+	 * Loads the 
+	 *  - uuid
+	 *  - name
+	 *  - varModMatrix, 
+	 *  - varNumValuesMatrix
+	 *  - varComment (TODO)
+	 *  - varUnknown (TODO)
+	 */
+	public void loadTaxa(){
+		//categorical data
+		logger.warn("load categorical data");
+		Map<UuidAndTitleCache, Map<UUID, Set<CategoricalData>>> categoricalData = getCategoricalData();
+		handleCategoricalData(categoricalData);
+		logger.warn("load categorical data :::");
+		
+		//quantitative data
+		logger.warn("load quantitative data");
+		Map<UuidAndTitleCache, Map<UUID, Set<QuantitativeData>>> quantitativeData = getQuantitativeData();
+		handleQuantitativeData(quantitativeData);
+		logger.warn("load quantitative data :::");
+		
+		//TODO
+		//descriptions with no data
+		
+		//TODO varComment
+		
+		//TODO varUnknown
+		
+		//TODO Resources
+		
+//		TODO private String index;
+//		TODO private String description;
+
+		
+		
 	}
 
-	// Load the first taxonDescription
-	public void loadDescription(Individual individual, TaxonBase taxonBase) {
-		
-		Pager<TaxonDescription> taxonDescriptionPager = cdmApplicationController.getDescriptionService().getTaxonDescriptions((Taxon)taxonBase, null, null, null, 0, Arrays.asList(new String[]{"elements.states", "elements.feature"} ));
-		List<TaxonDescription> taxonDescriptionList = taxonDescriptionPager.getRecords();
-		TaxonDescription taxonDescription = taxonDescriptionList.get(0);
-		Set<DescriptionElementBase> DescriptionElementBaseList = taxonDescription.getElements();
-		for(DescriptionElementBase descriptionElementBase : DescriptionElementBaseList){
-			if(descriptionElementBase instanceof CategoricalData){
-				// find the xper variable corresponding
-				Variable variable = null;
-				List<Variable> vars = XPApp.getCurrentBase().getVariables();
-				for(Variable var : vars){
-					if(var.getUuid().equals(((CategoricalData)descriptionElementBase).getFeature().getUuid())){
-						variable = var;
-					}
-				}
-				if(variable != null){
+	/**
+	 * @return
+	 */
+	private Map<UuidAndTitleCache, Map<UUID, Set<CategoricalData>>> getCategoricalData() {
+		Map<UuidAndTitleCache, Map<UUID, Set<CategoricalData>>> data = getWorkingSetService().getTaxonFeatureDescriptionElementMap(
+				CategoricalData.class, uuidWorkingSet, null, null, null, null);
+		return data;
+	}
+
+	private Map<UuidAndTitleCache, Map<UUID, Set<QuantitativeData>>> getQuantitativeData() {
+		Map<UuidAndTitleCache, Map<UUID, Set<QuantitativeData>>> data = getWorkingSetService().getTaxonFeatureDescriptionElementMap(
+				QuantitativeData.class, uuidWorkingSet, null, null, null, null);
+		return data;
+	}
+
+
+
+	private void handleCategoricalData(Map<UuidAndTitleCache, Map<UUID, Set<CategoricalData>>> categoricalData) {
+		for (UuidAndTitleCache taxon : categoricalData.keySet()){
+			Map<UUID, Set<CategoricalData>> variableMap = categoricalData.get(taxon);
+			Individual individual = getIndividualByUuidAndTitleCache(taxon);
+			
+			handleCategoricalData(variableMap, individual);
+		}
+	}
+	
+	private void handleQuantitativeData(Map<UuidAndTitleCache, Map<UUID, Set<QuantitativeData>>> quantitativeData) {
+		for (UuidAndTitleCache taxon : quantitativeData.keySet()){
+			Map<UUID, Set<QuantitativeData>> variableMap = quantitativeData.get(taxon);
+			Individual individual = getIndividualByUuidAndTitleCache(taxon);
+			handleQuantitativeData(variableMap, individual);
+		}
+	}
+
+
+	private void handleCategoricalData(Map<UUID, Set<CategoricalData>> variableMap, Individual individual) {
+		for (UUID featureUuid : variableMap.keySet()){
+			Variable variable = baseController.findVariableByUuid(featureUuid);
+			if (variable != null){
+				for (CategoricalData categorical : variableMap.get(featureUuid)) {
 					// create a list of xper Mode corresponding
 					List<Mode> modesList = variable.getModes();
-					List<StateData> stateList = ((CategoricalData)descriptionElementBase).getStates();
-					for(StateData state : stateList){
-						for(Mode mode : modesList){
-							if(state.getState().getUuid().equals(mode.getUuid())){
+					List<StateData> stateDataList = categorical.getStates();
+					for (StateData state : stateDataList) {
+						for (Mode mode : modesList) {
+							if (state.getState().getUuid().equals(mode.getUuid())) {
 								// Add state to the Description
 								individual.addModeMatrix(variable, mode);
 							}
 						}
 					}
 				}
-			}else if(descriptionElementBase instanceof QuantitativeData){
-				// find the xper variable corresponding
-				Variable variable = null;
-				List<Variable> vars = XPApp.getCurrentBase().getVariables();
-				for(Variable var : vars){
-					if(var.getUuid().equals(((QuantitativeData)descriptionElementBase).getFeature().getUuid())){
-						variable = var;
-					}
-				}
-				if(variable != null){
-					fr_jussieu_snv_lis.base.QuantitativeData qdXper = new fr_jussieu_snv_lis.base.QuantitativeData();
-					QuantitativeData qdCDM = ((QuantitativeData)descriptionElementBase);
-					
-					if(qdCDM.getMax() != null)
-						qdXper.setMax(new Double(qdCDM.getMax()));
-					if(qdCDM.getMin() != null)
-						qdXper.setMin(new Double(qdCDM.getMin()));
-					if(qdCDM.getTypicalLowerBoundary() != null)
-						qdXper.setUmethLower(new Double(qdCDM.getTypicalLowerBoundary()));
-					if(qdCDM.getTypicalUpperBoundary() != null)
-						qdXper.setUmethUpper(new Double(qdCDM.getTypicalUpperBoundary()));
-					
-					// Does not work
-					//qdXper.setMean(new Double(qdCDM.getAverage()));
-					//qdXper.setSd(new Double(qdCDM.getStandardDeviation()));
-					//qdXper.setNSample(new Double(qdCDM.getSampleSize()));
-					
-					individual.addNumMatrix(variable, qdXper);
-				}
-				
+			}else{
+				logger.warn("Variable not found for uuid " +  featureUuid.toString());
 			}
 		}
 	}
 	
-	// Create a workingSet if not exist
-	public void createWorkingSet(){
-		
-		if(cdmApplicationController.getWorkingSetService().list(WorkingSet.class, null, null, null, null).size() <= 0){
-			WorkingSet ws = WorkingSet.NewInstance();
-			
-			UUID featureTreeUUID = UUID.fromString("47eda782-89c7-4c69-9295-e4052ebe16c6");
-			List<String> featureTreeInit = Arrays.asList(new String[]{"root.children.feature.representations"});
-			
-			FeatureTree featureTree = cdmApplicationController.getFeatureTreeService().load(featureTreeUUID, featureTreeInit);
-			ws.setDescriptiveSystem(featureTree);
-			
-			List<TaxonBase> taxonList = cdmApplicationController.getTaxonService().list(Taxon.class , null, null, null, null);
-			for(TaxonBase taxonBase : taxonList){
-				Pager<TaxonDescription> taxonDescriptionPager = cdmApplicationController.getDescriptionService().getTaxonDescriptions((Taxon)taxonBase, null, null, null, 0, Arrays.asList(new String[]{"elements.states", "elements.feature"} ));
-				List<TaxonDescription> taxonDescriptionList = taxonDescriptionPager.getRecords();
-				TaxonDescription taxonDescription = taxonDescriptionList.get(0);
-				ws.addDescription(taxonDescription);
-				System.out.println(taxonDescription.getUuid());
+	
+	private void handleQuantitativeData(Map<UUID, Set<QuantitativeData>> variableMap, Individual individual) {
+		for (UUID featureUuid : variableMap.keySet()){
+			Variable variable = baseController.findVariableByUuid(featureUuid);
+			if (variable != null){
+				for (QuantitativeData qdCDM : variableMap.get(featureUuid)){
+					fr_jussieu_snv_lis.base.QuantitativeData qdXper = adaptQdCdm2QdXper(qdCDM);
+					individual.addNumMatrix(variable, qdXper);
+				}
+			}else{
+				logger.warn("Variable not found for uuid " +  featureUuid.toString());
 			}
-			
-			cdmApplicationController.getWorkingSetService().save(ws);
 		}
 	}
 
+	/**
+	 * @param qdCDM
+	 * @return
+	 */
+	private fr_jussieu_snv_lis.base.QuantitativeData adaptQdCdm2QdXper(
+			QuantitativeData qdCDM) {
+		fr_jussieu_snv_lis.base.QuantitativeData qdXper = new fr_jussieu_snv_lis.base.QuantitativeData();
+		
+		if (qdCDM.getMax() != null){
+			qdXper.setMax(new Double(qdCDM.getMax()));
+		}
+		if (qdCDM.getMin() != null){
+			qdXper.setMin(new Double(qdCDM.getMin()));
+		}
+		if (qdCDM.getTypicalLowerBoundary() != null){
+			qdXper.setUmethLower(new Double(qdCDM
+					.getTypicalLowerBoundary()));
+		}
+		if (qdCDM.getTypicalUpperBoundary() != null){
+			qdXper.setUmethUpper(new Double(qdCDM
+					.getTypicalUpperBoundary()));
+		}
+		if (qdCDM.getAverage() != null){
+			qdXper.setMean(new Double(qdCDM.getAverage()));
+		}
+		if (qdCDM.getStandardDeviation() != null){
+			qdXper.setSd(new Double(qdCDM.getStandardDeviation()));
+		}
+		if (qdCDM.getSampleSize() != null){
+			qdXper.setNSample(new Integer(Math.round(qdCDM.getSampleSize())));
+		}
+		return qdXper;
+	}
+	
+	
+	private Individual getIndividualByUuidAndTitleCache(UuidAndTitleCache taxon) {
+		Individual result = this.getBaseController().findIndividualByName(taxon.getTitleCache());
+		if (result == null){
+			result= new Individual(taxon.getTitleCache());
+			result.setUuid(taxon.getUuid());
+			this.getBaseController().addIndividual(result);
+		}
+		return result;
+	}
+
+
+//	// Create a workingSet if not exist
+//	public void createWorkingSet(){
+//		
+//		if(getWorkingSetService().list(WorkingSet.class, null, null, null, null).size() <= 0){
+//			WorkingSet ws = WorkingSet.NewInstance();
+//			
+//			UUID featureTreeUUID = UUID.fromString("47eda782-89c7-4c69-9295-e4052ebe16c6");
+//			List<String> featureTreeInit = Arrays.asList(new String[]{"root.children.feature.representations"});
+//			
+//			FeatureTree featureTree = getFeatureTreeService().load(featureTreeUUID, featureTreeInit);
+//			ws.setDescriptiveSystem(featureTree);
+//			
+//			List<TaxonBase> taxonList = getTaxonService().list(Taxon.class , null, null, null, null);
+//			for(TaxonBase taxonBase : taxonList){
+//				Pager<TaxonDescription> taxonDescriptionPager = getDescriptionService().getTaxonDescriptions((Taxon)taxonBase, null, null, null, 0, Arrays.asList(new String[]{"elements.states", "elements.feature"} ));
+//				List<TaxonDescription> taxonDescriptionList = taxonDescriptionPager.getRecords();
+//				TaxonDescription taxonDescription = taxonDescriptionList.get(0);
+//				ws.addDescription(taxonDescription);
+//				System.out.println(taxonDescription.getUuid());
+//			}
+//			
+//			getWorkingSetService().save(ws);
+//		}
+//	}
+
+// ************************************ SAVE *************************************/	
+	
 	@Override
 	public void save() {
 		List<Variable> vars = XPApp.getCurrentBase().getVariables();
@@ -345,7 +487,7 @@ public class CdmXperAdapter implements IExternalAdapter{
 	 * @param vars
 	 */
 	private void saveFeatures(List<Variable> vars) {
-		tx = cdmApplicationController.startTransaction();
+		tx = startTransaction();
 		for (Variable variable : vars){
 			Feature feature = getFeature(variable);
 			if (Utils.numType.equals(variable.getType())){
@@ -356,7 +498,7 @@ public class CdmXperAdapter implements IExternalAdapter{
 				logger.warn("variable type undefined");
 			}
 		}
-		cdmApplicationController.commitTransaction(tx);
+		commitTransaction(tx);
 	}
 
 
@@ -366,15 +508,15 @@ public class CdmXperAdapter implements IExternalAdapter{
 	 */
 	public Feature getFeature(Variable variable) {
 		UUID uuid = variable.getUuid();
-		ITermService termService = cdmApplicationController.getTermService();
+		ITermService termService = getTermService();
 		DefinedTermBase<?> term = termService.find(uuid);
 		Feature feature = CdmBase.deproxy(term, Feature.class);
 		return feature;
 	}
 
 	private void saveCategoricalFeature(Variable variable, Feature feature) {
-		ITermService termService = cdmApplicationController.getTermService();
-		IVocabularyService vocService = cdmApplicationController.getVocabularyService();
+		ITermService termService = getTermService();
+		IVocabularyService vocService = getVocabularyService();
 		if (feature == null){
 			saveNewFeature(variable, termService, vocService);
 		}else{
@@ -428,8 +570,8 @@ public class CdmXperAdapter implements IExternalAdapter{
 
 	public void saveNewState(Mode mode, Feature feature) {
 		TransactionStatus ta = startTransaction();
-		ITermService termService = cdmApplicationController.getTermService();
-		IVocabularyService vocService = cdmApplicationController.getVocabularyService();
+		ITermService termService = getTermService();
+		IVocabularyService vocService = getVocabularyService();
 		
 		termService.saveOrUpdate(feature);
 		int numberOfVocs = feature.getSupportedCategoricalEnumerations().size();
@@ -519,8 +661,7 @@ public class CdmXperAdapter implements IExternalAdapter{
 
 
 	private void saveNumericalFeature(Variable variable, Feature feature) {
-		ITermService termService = cdmApplicationController.getTermService();
-		IVocabularyService vocService = cdmApplicationController.getVocabularyService();
+//		IVocabularyService vocService = getVocabularyService();
 		String variableUnit = variable.getUnit();
 		Set<MeasurementUnit> units = feature.getRecommendedMeasurementUnits();
 		//preliminary
@@ -542,20 +683,20 @@ public class CdmXperAdapter implements IExternalAdapter{
 			}
 			if (! unitExists){
 				units.clear();
-				MeasurementUnit existingUnit = findExistingUnit(variableUnit, termService);
+				MeasurementUnit existingUnit = findExistingUnit(variableUnit);
 				if (existingUnit == null){
 					String unitDescription = null;
 					String unitLabel = variableUnit;
 					String labelAbbrev = null;
 					MeasurementUnit newUnit = MeasurementUnit.NewInstance(unitDescription, unitLabel, labelAbbrev);
-					termService.save(newUnit);
+					getTermService().save(newUnit);
 					UUID defaultMeasurmentUnitVocabularyUuid = UUID.fromString("3b82c375-66bb-4636-be74-dc9cd087292a");
-					TermVocabulary voc = vocService.find(defaultMeasurmentUnitVocabularyUuid);
+					TermVocabulary voc = getVocabularyService().find(defaultMeasurmentUnitVocabularyUuid);
 					if (voc == null){
 						logger.warn("Could not find MeasurementService vocabulary");
 					}else{
 						voc.addTerm(newUnit);
-						vocService.saveOrUpdate(voc);
+						getVocabularyService().saveOrUpdate(voc);
 					}
 					existingUnit = newUnit;
 				}
@@ -565,8 +706,8 @@ public class CdmXperAdapter implements IExternalAdapter{
 	}
 
 
-	private MeasurementUnit findExistingUnit(String variableUnit, ITermService termService) {
-		Pager<MeasurementUnit> existingUnits = termService.findByRepresentationText(variableUnit, MeasurementUnit.class, null, null);
+	private MeasurementUnit findExistingUnit(String variableUnit) {
+		Pager<MeasurementUnit> existingUnits = getTermService().findByRepresentationText(variableUnit, MeasurementUnit.class, null, null);
 		for (MeasurementUnit exUnit : existingUnits.getRecords()){
 			if (variableUnit.equals(exUnit.getLabel())){
 				return exUnit;
@@ -576,20 +717,33 @@ public class CdmXperAdapter implements IExternalAdapter{
 	}
 
 
-	/**
-	 * @param tx
-	 */
-	private void commitTransaction(TransactionStatus tx) {
-		cdmApplicationController.commitTransaction(tx);
+// ************************** Override ********************************/	
+	
+	@Override
+	protected boolean doInvoke(IoStateBase state) {
+		//not needed
+		return false;
 	}
 
-	/**
-	 * @return
-	 */
-	private TransactionStatus startTransaction() {
-		TransactionStatus tx = cdmApplicationController.startTransaction();
-		return tx;
+	@Override
+	protected boolean doCheck(IoStateBase state) {
+		//not needed
+		return false;
 	}
+
+	@Override
+	protected boolean isIgnore(IoStateBase state) {
+		//not needed
+		return false;
+	}
+
+	@Override
+	public String toString() {
+		String ws = uuidWorkingSet == null ?"-" : uuidWorkingSet.toString();
+		return "CdmXperAdapter (" + ws + ")";
+	}
+	
+	
 	
 
 }

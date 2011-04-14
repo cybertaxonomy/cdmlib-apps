@@ -10,6 +10,7 @@
 package eu.etaxonomy.cdm.io.xper;
 
 import java.util.List;
+import java.util.UUID;
 
 import org.apache.log4j.Logger;
 
@@ -436,8 +437,8 @@ public class CdmXperBaseControler extends ControlerBase implements IControlerBas
 	 */
 	@Override
 	public boolean matchNumValue(Individual ind, Variable var, Double value) {
-		logger.warn("matchNumValue Not yet implemented");
-		return false;
+		logger.info("matchNumValue implemented by using super");
+		return super.matchNumValue(ind, var, value);
 	}
 
 	/* (non-Javadoc)
@@ -508,8 +509,7 @@ public class CdmXperBaseControler extends ControlerBase implements IControlerBas
 	 */
 	@Override
 	public void addIndividual(Individual ind) {
-		logger.warn("addIndividual Not yet implemented");
-
+		super.addIndividual(ind);
 	}
 
 	/* (non-Javadoc)
@@ -526,8 +526,7 @@ public class CdmXperBaseControler extends ControlerBase implements IControlerBas
 	 */
 	@Override
 	public Individual findIndividualByName(String ind) {
-		logger.warn("findIndividualByName Not yet implemented");
-		return null;
+		return super.findIndividualByName(ind);
 	}
 
 	/* (non-Javadoc)
@@ -616,8 +615,7 @@ public class CdmXperBaseControler extends ControlerBase implements IControlerBas
 	 */
 	@Override
 	public boolean checkingUnknown(Variable var, Individual ind) {
-		logger.warn("checkingUnknown Not yet implemented");
-		return false;
+		return super.checkingUnknown(var, ind);
 	}
 
 	/* (non-Javadoc)
@@ -625,18 +623,15 @@ public class CdmXperBaseControler extends ControlerBase implements IControlerBas
 	 */
 	@Override
 	public void checkUnknown(Variable var, Individual ind, boolean b, boolean withDaughters) {
-		logger.warn("checkUnknown Not yet implemented");
-
+		super.checkUnknown(var, ind, b, withDaughters);
 	}
 
 	/* (non-Javadoc)
 	 * @see fr_jussieu_snv_lis.base.IControlerBase#checkUnknown(fr_jussieu_snv_lis.base.Variable, fr_jussieu_snv_lis.base.Individual[], boolean, boolean)
 	 */
 	@Override
-	public void checkUnknown(Variable var, Individual[] tab, boolean b,
-			boolean withDaughters) {
-		logger.warn("checkUnknown(var,tab, b, withDaughters) Not yet implemented");
-
+	public void checkUnknown(Variable var, Individual[] tab, boolean b, boolean withDaughters) {
+		super.checkUnknown(var, tab, b, withDaughters);
 	}
 
 	/* (non-Javadoc)
@@ -725,7 +720,28 @@ public class CdmXperBaseControler extends ControlerBase implements IControlerBas
 	 */
 	@Override
 	public Variable findVariableByName(String str) {
-		logger.warn("findVariableByName Not yet implemented");
+		logger.warn("findVariableByName implemented as super");
+		return super.findVariableByName(str);
+	}
+	
+	/**
+	 * Returns the variable with variable.uuid equal to uuid. 
+	 * Returns <code>null</code> if no such variable exists or
+	 * if <code>uuid == null</code>
+	 * @param uuid
+	 * @return
+	 */
+	public Variable findVariableByUuid(UUID uuid) {
+		if (uuid == null){
+			return null;
+		}
+		//TODO improve performance by storing variables also in a
+		//hashmap
+		for (Variable var : base.getVariables()) {
+			if (uuid.equals(var.getUuid())) {
+				return var;
+			}
+		}
 		return null;
 	}
 
@@ -734,8 +750,8 @@ public class CdmXperBaseControler extends ControlerBase implements IControlerBas
 	 */
 	@Override
 	public boolean checkExistanceOneVariable(String s) {
-		logger.warn("checkExistanceOneVariable Not yet implemented");
-		return false;
+		logger.warn("checkExistanceOneVariable implemented as super");
+		return super.checkExistanceOneVariable(s);
 	}
 
 	/* (non-Javadoc)
@@ -789,7 +805,6 @@ public class CdmXperBaseControler extends ControlerBase implements IControlerBas
 	@Override
 	public void addNewVariableAndItsModesToMatrix(Variable newVariable) {
 		logger.warn("addNewVariableAndItsModesToMatrix Not yet implemented");
-
 	}
 
 	/* (non-Javadoc)
@@ -798,7 +813,6 @@ public class CdmXperBaseControler extends ControlerBase implements IControlerBas
 	@Override
 	public void addNewVariableNumAndItsModesToMatrix(Variable newVariable) {
 		logger.warn("addNewVariableNumAndItsModesToMatrix Not yet implemented");
-
 	}
 
 	/* (non-Javadoc)
@@ -807,7 +821,6 @@ public class CdmXperBaseControler extends ControlerBase implements IControlerBas
 	@Override
 	public void deleteVariableFromMatrix(Variable variable) {
 		logger.warn("deleteVariableFromMatrix Not yet implemented");
-
 	}
 
 	/* (non-Javadoc)
@@ -816,7 +829,6 @@ public class CdmXperBaseControler extends ControlerBase implements IControlerBas
 	@Override
 	public void deleteVariable(Variable va) {
 		logger.warn("deleteVariable Not yet implemented");
-
 	}
 
 	/* (non-Javadoc)
@@ -825,7 +837,6 @@ public class CdmXperBaseControler extends ControlerBase implements IControlerBas
 	@Override
 	public void deleteVariableAndAllDaughters(Variable v) {
 		logger.warn("deleteVariableAndAllDaughters Not yet implemented");
-
 	}
 
 	/* (non-Javadoc)
@@ -834,7 +845,6 @@ public class CdmXperBaseControler extends ControlerBase implements IControlerBas
 	@Override
 	public void deleteVariablesAndAllDaughters(Variable[] tab) {
 		logger.warn("deleteVariablesAndAllDaughters Not yet implemented");
-
 	}
 
 	/* (non-Javadoc)
@@ -852,7 +862,6 @@ public class CdmXperBaseControler extends ControlerBase implements IControlerBas
 	@Override
 	public void deleteVariablesWithoutDaughters(Variable[] tab) {
 		logger.warn("deleteVariablesWithoutDaughters Not yet implemented");
-
 	}
 
 	/* (non-Javadoc)
@@ -866,22 +875,11 @@ public class CdmXperBaseControler extends ControlerBase implements IControlerBas
 	}
 
 	/* (non-Javadoc)
-	 * @see fr_jussieu_snv_lis.base.IControlerBase#getVariableDaughters(java.util.List, fr_jussieu_snv_lis.base.Variable)
-	 */
-	@Override
-	public List<Variable> getVariableDaughters(List<Variable> listDaugther,
-			Variable v) {
-		logger.warn("getVariableDaughters Not yet implemented");
-		return null;
-	}
-
-	/* (non-Javadoc)
 	 * @see fr_jussieu_snv_lis.base.IControlerBase#getVariableDaughters(fr_jussieu_snv_lis.base.Variable)
 	 */
 	@Override
 	public List<Variable> getVariableDaughters(Variable v) {
-		logger.warn("getVariableDaughters Not yet implemented");
-		return null;
+		return super.getVariableDaughters(v);
 	}
 
 	/* (non-Javadoc)
