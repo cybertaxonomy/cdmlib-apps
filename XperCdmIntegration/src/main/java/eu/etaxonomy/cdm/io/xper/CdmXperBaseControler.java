@@ -588,8 +588,7 @@ public class CdmXperBaseControler extends ControlerBase implements IControlerBas
 	 */
 	@Override
 	public void controlModeIndVar(boolean selected, Variable v, Individual i, Mode m) {
-		logger.warn("controlModeIndVar Not yet implemented");
-
+		this.cdmXperAdapter.controlModeIndVar(selected, v, i, m);
 	}
 
 	/* (non-Javadoc)
@@ -598,7 +597,6 @@ public class CdmXperBaseControler extends ControlerBase implements IControlerBas
 	@Override
 	public void controlModeIndVarRec(boolean selected, Variable v, Individual i, Mode m) {
 		logger.warn("controlModeIndVarRec Not yet implemented");
-
 	}
 
 	/* (non-Javadoc)

@@ -1,6 +1,7 @@
 package eu.etaxonomy.cdm.io.xper;
 
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -31,7 +32,9 @@ import eu.etaxonomy.cdm.model.description.MeasurementUnit;
 import eu.etaxonomy.cdm.model.description.QuantitativeData;
 import eu.etaxonomy.cdm.model.description.State;
 import eu.etaxonomy.cdm.model.description.StateData;
+import eu.etaxonomy.cdm.model.description.TaxonDescription;
 import eu.etaxonomy.cdm.model.description.WorkingSet;
+import eu.etaxonomy.cdm.model.taxon.Taxon;
 import eu.etaxonomy.cdm.model.taxon.TaxonBase;
 import fr_jussieu_snv_lis.XPApp;
 import fr_jussieu_snv_lis.Xper;
@@ -44,8 +47,6 @@ import fr_jussieu_snv_lis.utils.Utils;
 @Component
 public class CdmXperAdapter extends CdmIoBase implements IExternalAdapter{
 	private static final Logger logger = Logger.getLogger(CdmXperAdapter.class);
-	
-	TransactionStatus tx;
 	
 	private CdmXperAdapter  adapter = this;
 
@@ -330,13 +331,13 @@ public class CdmXperAdapter extends CdmIoBase implements IExternalAdapter{
 	 */
 	private Map<UuidAndTitleCache, Map<UUID, Set<CategoricalData>>> getCategoricalData() {
 		Map<UuidAndTitleCache, Map<UUID, Set<CategoricalData>>> data = getWorkingSetService().getTaxonFeatureDescriptionElementMap(
-				CategoricalData.class, uuidWorkingSet, null, null, null, null);
+				CategoricalData.class, uuidWorkingSet, null);
 		return data;
 	}
 
 	private Map<UuidAndTitleCache, Map<UUID, Set<QuantitativeData>>> getQuantitativeData() {
 		Map<UuidAndTitleCache, Map<UUID, Set<QuantitativeData>>> data = getWorkingSetService().getTaxonFeatureDescriptionElementMap(
-				QuantitativeData.class, uuidWorkingSet, null, null, null, null);
+				QuantitativeData.class, uuidWorkingSet, null);
 		return data;
 	}
 
@@ -368,9 +369,9 @@ public class CdmXperAdapter extends CdmIoBase implements IExternalAdapter{
 					// create a list of xper Mode corresponding
 					List<Mode> modesList = variable.getModes();
 					List<StateData> stateDataList = categorical.getStates();
-					for (StateData state : stateDataList) {
+					for (StateData stateData : stateDataList) {
 						for (Mode mode : modesList) {
-							if (state.getState().getUuid().equals(mode.getUuid())) {
+							if (stateData.getState().getUuid().equals(mode.getUuid())) {
 								// Add state to the Description
 								individual.addModeMatrix(variable, mode);
 							}
@@ -487,7 +488,7 @@ public class CdmXperAdapter extends CdmIoBase implements IExternalAdapter{
 	 * @param vars
 	 */
 	private void saveFeatures(List<Variable> vars) {
-		tx = startTransaction();
+		TransactionStatus tx = startTransaction();
 		for (Variable variable : vars){
 			Feature feature = getFeature(variable);
 			if (variable.isNumType()){
@@ -741,6 +742,60 @@ public class CdmXperAdapter extends CdmIoBase implements IExternalAdapter{
 	public String toString() {
 		String ws = uuidWorkingSet == null ?"-" : uuidWorkingSet.toString();
 		return "CdmXperAdapter (" + ws + ")";
+	}
+
+	public void controlModeIndVar(boolean selected, Variable v, Individual i, Mode m) {
+//		(boolean selected, Variable v, Individual i, Mode m);
+		TransactionStatus txStatus = startTransaction();
+		Taxon taxon = (Taxon)getTaxonService().find(i.getUuid());
+		Feature feature = (Feature)getTermService().find(v.getUuid());
+		Set<Feature> features = new HashSet<Feature>();
+		features.add(feature);
+		List<CategoricalData> catData = getDescriptionService().getDescriptionElementsForTaxon(taxon, features, CategoricalData.class, null, null, null);
+		if (catData.size()>1){
+			logger.warn("There is more than one categorical data for the same taxon and the same feature");
+		}
+		if (selected && catData.size() == 0 ){
+			CategoricalData data = CategoricalData.NewInstance();
+			data.setFeature(feature);
+			TaxonDescription desc = taxon.getDescriptions().iterator().next();
+			desc.addElement(data);
+			addModeToCategoricalData(m, data);
+			getDescriptionService().saveDescriptionElement(data);
+		}else{
+			for (CategoricalData data: catData){
+				State tmpState = adaptModeToState(m);
+				StateData existingState = null;
+				//test data exists
+				for (StateData sd : data.getStates()){
+					if (tmpState.equals(sd.getState())){
+						existingState = sd;
+						break;
+					}
+				}
+				if (selected && existingState == null){
+					//selected
+					addModeToCategoricalData(m, data);
+				}else if (!selected && existingState != null){
+					//unselected
+					data.getStates().remove(existingState);
+				}
+				getDescriptionService().saveDescriptionElement(data);
+			}
+		}
+		commitTransaction(txStatus);
+		
+	}
+
+	/**
+	 * @param m
+	 * @param data
+	 */
+	private void addModeToCategoricalData(Mode m, CategoricalData data) {
+		StateData sd =  StateData.NewInstance();
+		State state = (State)getTermService().find(m.getUuid());
+		sd.setState(state);
+		data.getStates().add(sd);
 	}
 	
 	
