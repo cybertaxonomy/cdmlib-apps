@@ -239,7 +239,7 @@ public class CdmXperBaseControler extends ControlerBase implements IControlerBas
 	 * @see fr_jussieu_snv_lis.base.IControlerBase#getGroupsNoBelongingToVariables(java.lang.Object[])
 	 */
 	@Override
-	public List<Group> getGroupsNoBelongingToVariables(Object[] tab) {
+	public List<Group> getGroupsNoBelongingToVariables(Variable[] tab) {
 		logger.warn("getGroupsNoBelongingToVariables Not yet implemented");
 		return null;
 	}
@@ -257,7 +257,7 @@ public class CdmXperBaseControler extends ControlerBase implements IControlerBas
 	 * @see fr_jussieu_snv_lis.base.IControlerBase#getGroupsBelongingToVariables(java.lang.Object[])
 	 */
 	@Override
-	public List<Group> getGroupsBelongingToVariables(Object[] tab) {
+	public List<Group> getGroupsBelongingToVariables(Variable[] tab) {
 		logger.warn("getGroupsBelongingToVariables Not yet implemented");
 		return null;
 	}
