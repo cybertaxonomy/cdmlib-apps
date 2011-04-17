@@ -275,10 +275,10 @@ public class FaunaEuErmsMergeActivator {
 			features.add(Feature.DISTRIBUTION());
 			List<String> propertyPaths = new ArrayList<String>();
 			propertyPaths.add("inDescription.Taxon.*");
-			List<DescriptionElementBase> distributions = appCtrInit.getDescriptionService().getDescriptionElementsForTaxon(taxonFaunaEu, features, Distribution.class, 10, 0, null);
+			List<Distribution> distributions = appCtrInit.getDescriptionService().getDescriptionElementsForTaxon(taxonFaunaEu, features, Distribution.class, 10, 0, null);
 			
 			
-			for(DescriptionElementBase distribution: distributions){
+			for(Distribution distribution: distributions){
 				TaxonDescription description = (TaxonDescription)distribution.getInDescription();
 				TaxonDescription newDescription = TaxonDescription.NewInstance(taxonErms);
 				newDescription.addElement(distribution);
