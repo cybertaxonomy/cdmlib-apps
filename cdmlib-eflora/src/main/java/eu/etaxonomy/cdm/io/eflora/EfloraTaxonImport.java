@@ -2065,7 +2065,7 @@ public class EfloraTaxonImport  extends EfloraImportBase implements ICdmIO<Eflor
 				logger.warn("No classification uuid is defined");
 				result = getNewClassification(state);
 			}else{
-				result = getClassificationService().getClassificationByUuid(uuid);
+				result = getClassificationService().find(uuid);
 				if (result == null){
 					result = getNewClassification(state);
 					result.setUuid(uuid);

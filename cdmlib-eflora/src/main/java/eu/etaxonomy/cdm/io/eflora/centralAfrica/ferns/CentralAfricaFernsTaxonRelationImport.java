@@ -739,7 +739,7 @@ public class CentralAfricaFernsTaxonRelationImport  extends CentralAfricaFernsIm
 		Classification tree = (Classification)state.getRelatedObject(DbImportTaxIncludedInMapper.TAXONOMIC_TREE_NAMESPACE, treeKey);
 		if (tree == null){
 			IClassificationService service = state.getCurrentIO().getClassificationService();
-			tree = service.getClassificationByUuid(treeUuid);
+			tree = service.find(treeUuid);
 			if (tree == null){
 				String treeName = state.getConfig().getClassificationName();
 				tree = Classification.NewInstance(treeName);
