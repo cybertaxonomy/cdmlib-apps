@@ -589,6 +589,7 @@ public class CdmXperBaseControler extends ControlerBase implements IControlerBas
 	@Override
 	public void controlModeIndVar(boolean selected, Variable v, Individual i, Mode m) {
 		this.cdmXperAdapter.controlModeIndVar(selected, v, i, m);
+		super.controlModeIndVar(selected, v, i, m);
 	}
 
 	/* (non-Javadoc)
@@ -597,6 +598,16 @@ public class CdmXperBaseControler extends ControlerBase implements IControlerBas
 	@Override
 	public void controlModeIndVarRec(boolean selected, Variable v, Individual i, Mode m) {
 		logger.warn("controlModeIndVarRec Not yet implemented");
+	}
+	
+	@Override
+	public void controlNumValue(Individual ind, Variable var, Double min,
+			Double max, Double mean, Double sd, Double umethLower,
+			Double umethUpper, Integer nSample) {
+		this.cdmXperAdapter.controlModeIndVar(ind, var, min, max, mean, sd, 
+				umethLower, umethUpper, nSample);
+		super.controlNumValue(ind, var, min, max, mean, sd, umethLower, umethUpper,
+				nSample);
 	}
 
 	/* (non-Javadoc)
@@ -1025,7 +1036,6 @@ public class CdmXperBaseControler extends ControlerBase implements IControlerBas
 	@Override
 	public void moveVariableTo(int i, Variable v) {
 		logger.warn("moveVariableTo Not yet implemented");
-
 	}
 
 	/* (non-Javadoc)
@@ -1034,7 +1044,6 @@ public class CdmXperBaseControler extends ControlerBase implements IControlerBas
 	@Override
 	public void moveVariablesTo(int i, List<Variable> a) {
 		logger.warn("moveVariablesTo Not yet implemented");
-
 	}
 
 	/* (non-Javadoc)
@@ -1043,7 +1052,7 @@ public class CdmXperBaseControler extends ControlerBase implements IControlerBas
 	@Override
 	public void moveGroupTo(int i, Group g) {
 		logger.warn("moveGroupTo Not yet implemented");
-
 	}
+
 
 }

@@ -9,6 +9,7 @@ import java.util.UUID;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
+import org.hsqldb.NumberSequence;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.TransactionStatus;
 
@@ -32,6 +33,7 @@ import eu.etaxonomy.cdm.model.description.MeasurementUnit;
 import eu.etaxonomy.cdm.model.description.QuantitativeData;
 import eu.etaxonomy.cdm.model.description.State;
 import eu.etaxonomy.cdm.model.description.StateData;
+import eu.etaxonomy.cdm.model.description.StatisticalMeasurementValue;
 import eu.etaxonomy.cdm.model.description.TaxonDescription;
 import eu.etaxonomy.cdm.model.description.WorkingSet;
 import eu.etaxonomy.cdm.model.taxon.Taxon;
@@ -237,7 +239,11 @@ public class CdmXperAdapter extends CdmIoBase implements IExternalAdapter{
 
 	public State adaptModeToState(Mode mode) {
 		State state = State.NewInstance(mode.getDescription(), mode.getName(), null);
-		mode.setUuid(state.getUuid());
+		if (mode.getUuid() == null){
+			mode.setUuid(state.getUuid());
+		}else{
+			state.setUuid(mode.getUuid());
+		}
 		return state;
 	}
 	
@@ -516,14 +522,14 @@ public class CdmXperAdapter extends CdmIoBase implements IExternalAdapter{
 	}
 
 	private void saveCategoricalFeature(Variable variable, Feature feature) {
-		ITermService termService = getTermService();
-		IVocabularyService vocService = getVocabularyService();
+//		ITermService termService = getTermService();
+//		IVocabularyService vocService = getVocabularyService();
 		if (feature == null){
-			saveNewFeature(variable, termService, vocService);
+			saveNewFeature(variable);
 		}else{
 			if (isChanged(feature, variable)){
 				feature.setLabel(variable.getName());
-				termService.save(feature);
+				getTermService().save(feature);
 			}else{
 				logger.info("No change for variable: " + variable.getName());
 			}
@@ -542,7 +548,7 @@ public class CdmXperAdapter extends CdmIoBase implements IExternalAdapter{
 						Language lang = Language.DEFAULT();
 						Representation rep = state.getRepresentation(lang);
 						rep.setLabel(stateLabel);
-						termService.saveOrUpdate(state);
+						getTermService().saveOrUpdate(state);
 //						State state = State.NewInstance(stateDescription, stateLabel, stateAbbrev);
 //						termService.save(state);
 //						voc.addTerm(state);
@@ -593,7 +599,7 @@ public class CdmXperAdapter extends CdmIoBase implements IExternalAdapter{
 			logger.warn("Multiple supported vocabularies not yet correctly implemented");
 			voc = feature.getSupportedCategoricalEnumerations().iterator().next();
 		}
-		saveNewModeToVoc(termService, vocService, voc, mode);
+		saveNewModeToVoc(termService, voc, mode);
 		commitTransaction(ta);
 	}
 	
@@ -603,8 +609,7 @@ public class CdmXperAdapter extends CdmIoBase implements IExternalAdapter{
 	 * @param termService
 	 * @param vocService
 	 */
-	private void saveNewFeature(Variable variable, ITermService termService,
-			IVocabularyService vocService) {
+	private void saveNewFeature(Variable variable) {
 		Feature feature;
 		//new feature
 		String description = null;
@@ -612,7 +617,7 @@ public class CdmXperAdapter extends CdmIoBase implements IExternalAdapter{
 		String labelAbbrev = null;
 		feature = Feature.NewInstance(description, label, labelAbbrev);
 		variable.setUuid(feature.getUuid());
-		termService.save(feature);
+		getTermService().save(feature);
 		//new voc
 		String vocDescription = null;
 		String vocLabel = "Vocabulary for feature " + label;
@@ -620,10 +625,10 @@ public class CdmXperAdapter extends CdmIoBase implements IExternalAdapter{
 		String termSourceUri = null;
 		TermVocabulary<State> voc = TermVocabulary.NewInstance(vocDescription, vocLabel, vocAbbrev, termSourceUri);
 		for (Mode mode:variable.getModes()){
-			saveNewModeToVoc(termService, vocService, voc, mode);
+			saveNewModeToVoc(getTermService(), voc, mode);
 		}
 		feature.addSupportedCategoricalEnumeration(voc);
-		termService.saveOrUpdate(feature);
+		getTermService().saveOrUpdate(feature);
 	}
 
 
@@ -633,11 +638,11 @@ public class CdmXperAdapter extends CdmIoBase implements IExternalAdapter{
 	 * @param voc
 	 * @param mode
 	 */
-	private void saveNewModeToVoc(ITermService termService, IVocabularyService vocService, TermVocabulary<State> voc, Mode mode) {
+	private void saveNewModeToVoc(ITermService termService, TermVocabulary<State> voc, Mode mode) {
 		State state = adaptModeToState(mode);
 		termService.save(state);
 		voc.addTerm(state);
-		vocService.saveOrUpdate(voc);
+		getVocabularyService().saveOrUpdate(voc);
 	}
 
 
@@ -744,11 +749,11 @@ public class CdmXperAdapter extends CdmIoBase implements IExternalAdapter{
 		return "CdmXperAdapter (" + ws + ")";
 	}
 
-	public void controlModeIndVar(boolean selected, Variable v, Individual i, Mode m) {
+	public void controlModeIndVar(boolean selected, Variable var, Individual ind, Mode m) {
 //		(boolean selected, Variable v, Individual i, Mode m);
 		TransactionStatus txStatus = startTransaction();
-		Taxon taxon = (Taxon)getTaxonService().find(i.getUuid());
-		Feature feature = (Feature)getTermService().find(v.getUuid());
+		Taxon taxon = (Taxon)getTaxonService().find(ind.getUuid());
+		Feature feature = (Feature)getTermService().find(var.getUuid());
 		Set<Feature> features = new HashSet<Feature>();
 		features.add(feature);
 		List<CategoricalData> catData = getDescriptionService().getDescriptionElementsForTaxon(taxon, features, CategoricalData.class, null, null, null);
@@ -794,11 +799,86 @@ public class CdmXperAdapter extends CdmIoBase implements IExternalAdapter{
 	private void addModeToCategoricalData(Mode m, CategoricalData data) {
 		StateData sd =  StateData.NewInstance();
 		State state = (State)getTermService().find(m.getUuid());
+		if (state == null){
+			logger.warn("State not found: " + m.getName() + "; " + m.getUuid());
+		}
 		sd.setState(state);
 		data.getStates().add(sd);
 	}
-	
-	
-	
+
+	public void controlModeIndVar(Individual ind, Variable var, Double min,
+			Double max, Double mean, Double sd, Double umethLower,
+			Double umethUpper, Integer nSample) {
+//		(boolean selected, Variable v, Individual i, Mode m);
+		TransactionStatus txStatus = startTransaction();
+		Taxon taxon = (Taxon)getTaxonService().find(ind.getUuid());
+		Feature feature = (Feature)getTermService().find(var.getUuid());
+		Set<Feature> features = new HashSet<Feature>();
+		features.add(feature);
+		List<QuantitativeData> quantData = getDescriptionService().getDescriptionElementsForTaxon(taxon, features, QuantitativeData.class, null, null, null);
+		if (quantData.size()>1){
+			logger.warn("There are more than one quantitative data for the same taxon and the same feature");
+		}
+		fr_jussieu_snv_lis.base.QuantitativeData qdXper = ind.getNumMatrix().get(var);
+		if (qdXper == null ){
+			//TODO needed?
+		}
+		
+		
+		if (quantData.size() == 0 ){
+			QuantitativeData data = QuantitativeData.NewInstance();
+			data.setFeature(feature);
+			TaxonDescription desc = taxon.getDescriptions().iterator().next();
+			desc.addElement(data);
+//			addValuesToQuantitativeData(qdXper, data, min, max, 
+//					mean, sd, umethLower, umethUpper, nSample);
+			setQdValues(qdXper, data, min, max, mean, sd, umethLower, umethUpper, nSample);
+			
+			getDescriptionService().saveDescriptionElement(data);
+		}else{
+			for (QuantitativeData data: quantData){
+				//TODO handle existing data better
+				setQdValues(qdXper, data, min, max, mean, sd, umethLower, umethUpper, nSample);
+
+				//test data exists
+//				for (StateData sd : data.getStates()){
+//					if (tmpState.equals(sd.getState())){
+//						existingState = sd;
+//						break;
+//					}
+//				}
+				getDescriptionService().saveDescriptionElement(data);
+			}
+		}
+		commitTransaction(txStatus);
+		
+	}
+
+	/**
+	 * @param qdXper
+	 * @param data
+	 * @param nSample 
+	 * @param umethUpper 
+	 * @param umethLower 
+	 * @param sd 
+	 * @param mean 
+	 * @param max 
+	 * @param min 
+	 */
+	private void setQdValues(fr_jussieu_snv_lis.base.QuantitativeData qdXper,
+			QuantitativeData data, Double min, Double max, Double mean, Double sd, Double umethLower, Double umethUpper, Integer nSample) {
+		data.setMinimum(getFloat(min), null);
+		data.setMaximum(getFloat(max), null);
+		data.setAverage(getFloat(mean), null);
+		data.setStandardDeviation(getFloat(sd), null);
+		data.setTypicalLowerBoundary(getFloat(umethLower), null);
+		data.setTypicalUpperBoundary(getFloat(umethUpper), null);
+		data.setSampleSize(getFloat(nSample), null);
+	}
+
+	private Float getFloat(Number myNumber) {
+		Float result = (myNumber == null) ? null : myNumber.floatValue();
+		return result;
+	}
 
 }
