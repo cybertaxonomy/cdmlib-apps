@@ -39,45 +39,11 @@ public class DwcaExportActivator {
 	//check - import
 	private static final CHECK check = CHECK.EXPORT_WITHOUT_CHECK;
 
-	//NomeclaturalCode
-	private static final NomenclaturalCode nomenclaturalCode  = NomenclaturalCode.ICBN;
-
 // ****************** ALL *****************************************
 	
-	//authors
-	static final boolean doAuthors = true;
-	//references
-	static final DO_REFERENCES doReferences =  DO_REFERENCES.ALL;
-	//names
-	static final boolean doTaxonNames = true;
-	static final boolean doRelNames = true;
-	static final boolean doTypes = false;  //Types do not exist in El_Salvador DB
-	static final boolean doNameFacts = false;  //Name Facts do not exist in El_Salvador DB
-	
-	//taxa
-	static final boolean doTaxa = true;
-	static final boolean doRelTaxa = true;
-	static final boolean doFacts = true;
-	static final boolean doOccurences = false; //occurrences do not exist in Salvador
 
 // ************************ NONE **************************************** //
 	
-//	//authors
-//	static final boolean doAuthors = false;
-//	static final boolean doAuthorTeams = false;
-//	//references
-//	static final DO_REFERENCES doReferences =  DO_REFERENCES.ALL;
-//	//names
-//	static final boolean doTaxonNames = true;
-//	static final boolean doTypes = false;
-//	static final boolean doNameFacts = false;
-//	
-//	//taxa
-//	static final boolean doTaxa = false;
-//	static final boolean doRelTaxa = false;
-//	static final boolean doFacts = false;
-//	static final boolean doOccurences = false;
-//	
 	
 	public boolean 	doExport(ICdmDataSource source){
 		System.out.println("Start export to DWC-A ("+ fileDestination + ") ...");
@@ -100,19 +66,6 @@ public class DwcaExportActivator {
 		DwcaTaxExportConfigurator config = DwcaTaxExportConfigurator.NewInstance(source, destination);
 		
 //		config.setDoAuthors.setSecUuid(secUuid);
-//		config.setDoAuthors(sourceSecId);
-//		config.setDoAuthors.setNomenclaturalCode(nomenclaturalCode);
-
-//		config.setDoAuthors(doAuthors);
-//		config.setDoReferences(doReferences);
-//		config.setDoTaxonNames(doTaxonNames);
-//		config.setDoRelNames(doRelNames);
-//		config.setDoNameFacts(doNameFacts);
-//		
-//		config.setDoTaxa(doTaxa);
-//		config.setDoRelTaxa(doRelTaxa);
-//		config.setDoFacts(doFacts);
-//		config.setDoOccurrence(doOccurences);
 		config.setCheck(check);
 		
 		// invoke import
