@@ -12,15 +12,10 @@ package eu.etaxonomy.cdm.app.dwca;
 import org.apache.log4j.Logger;
 
 import eu.etaxonomy.cdm.app.common.CdmDestinations;
-import eu.etaxonomy.cdm.common.DefaultProgressMonitor;
-import eu.etaxonomy.cdm.common.IProgressMonitor;
 import eu.etaxonomy.cdm.database.ICdmDataSource;
-import eu.etaxonomy.cdm.database.update.CdmUpdater;
 import eu.etaxonomy.cdm.io.common.CdmDefaultExport;
 import eu.etaxonomy.cdm.io.common.IExportConfigurator.CHECK;
-import eu.etaxonomy.cdm.io.common.IExportConfigurator.DO_REFERENCES;
 import eu.etaxonomy.cdm.io.dwca.out.DwcaTaxExportConfigurator;
-import eu.etaxonomy.cdm.model.name.NomenclaturalCode;
 
 
 /**
