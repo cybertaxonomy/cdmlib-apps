@@ -29,16 +29,33 @@ public class DwcaExportActivator {
 
 	//database validation status (create, update, validate ...)
 	private static final String fileDestination = "C:\\tmp\\dwcaTmp";
-	private static final ICdmDataSource cdmSource = CdmDestinations.cdm_test_local_mysql();
+//	private static final ICdmDataSource cdmSource = CdmDestinations.cdm_test_local_mysql();
+	private static final ICdmDataSource cdmSource = CdmDestinations.cdm_production_cichorieae();
 	
 	//check - import
 	private static final CHECK check = CHECK.EXPORT_WITHOUT_CHECK;
 
 // ****************** ALL *****************************************
-	
+	private boolean doTaxa = false;
+	private boolean doResourceRelation = true;
+	private boolean doTypesAndSpecimen = true;
+	private boolean doVernacularNames = true;
+	private boolean doReferences = false;
+	private boolean doDescription = true;
+	private boolean doDistributions = true;
+	private boolean doImages = true;
+
 
 // ************************ NONE **************************************** //
-	
+//	private boolean doTaxa = false;
+//	private boolean doResourceRelation = false;
+//	private boolean doTypesAndSpecimen = false;
+//	private boolean doVernacularNames = false;
+//	private boolean doReferences = false;
+//	private boolean doDescription = false;
+//	private boolean doDistributions = false;
+//	private boolean doImages = false;
+
 	
 	public boolean 	doExport(ICdmDataSource source){
 		System.out.println("Start export to DWC-A ("+ fileDestination + ") ...");
@@ -60,7 +77,14 @@ public class DwcaExportActivator {
 		
 		DwcaTaxExportConfigurator config = DwcaTaxExportConfigurator.NewInstance(source, destination);
 		
-//		config.setDoAuthors.setSecUuid(secUuid);
+		config.setDoTaxa(doTaxa);
+		config.setDoResourceRelation(doResourceRelation);
+		config.setDoTypesAndSpecimen(doTypesAndSpecimen);
+		config.setDoVernacularNames(doVernacularNames);
+		config.setDoReferences(doReferences);
+		config.setDoDescription(doDescription);
+		config.setDoDistributions(doDistributions);
+		config.setDoImages(doImages);
 		config.setCheck(check);
 		
 		// invoke import
