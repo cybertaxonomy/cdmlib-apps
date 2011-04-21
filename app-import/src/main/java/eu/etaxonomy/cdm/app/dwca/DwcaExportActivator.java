@@ -9,6 +9,12 @@
 
 package eu.etaxonomy.cdm.app.dwca;
 
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+import java.util.UUID;
+
 import org.apache.log4j.Logger;
 
 import eu.etaxonomy.cdm.app.common.CdmDestinations;
@@ -35,26 +41,32 @@ public class DwcaExportActivator {
 	//check - import
 	private static final CHECK check = CHECK.EXPORT_WITHOUT_CHECK;
 
+	private static List<UUID> featureExclusions = Arrays.asList(new UUID[]{
+			UUID.fromString("5deff505-1a32-4817-9a74-50e6936fd630"),   //occurrences
+			UUID.fromString("8075074c-ace8-496b-ac82-47c14553f7fd")    //Editor_Parenthesis
+	});
+	
+	
 // ****************** ALL *****************************************
-	private boolean doTaxa = false;
-	private boolean doResourceRelation = true;
-	private boolean doTypesAndSpecimen = true;
-	private boolean doVernacularNames = true;
-	private boolean doReferences = false;
-	private boolean doDescription = true;
-	private boolean doDistributions = true;
-	private boolean doImages = true;
+//	private boolean doTaxa = false;
+//	private boolean doResourceRelation = true;
+//	private boolean doTypesAndSpecimen = true;
+//	private boolean doVernacularNames = true;
+//	private boolean doReferences = true;
+//	private boolean doDescription = true;
+//	private boolean doDistributions = true;
+//	private boolean doImages = true;
 
 
 // ************************ NONE **************************************** //
-//	private boolean doTaxa = false;
-//	private boolean doResourceRelation = false;
-//	private boolean doTypesAndSpecimen = false;
-//	private boolean doVernacularNames = false;
-//	private boolean doReferences = false;
-//	private boolean doDescription = false;
-//	private boolean doDistributions = false;
-//	private boolean doImages = false;
+	private boolean doTaxa = false;
+	private boolean doResourceRelation = false;
+	private boolean doTypesAndSpecimen = false;
+	private boolean doVernacularNames = false;
+	private boolean doReferences = false;
+	private boolean doDescription = true;
+	private boolean doDistributions = false;
+	private boolean doImages = false;
 
 	
 	public boolean 	doExport(ICdmDataSource source){
@@ -87,6 +99,7 @@ public class DwcaExportActivator {
 		config.setDoImages(doImages);
 		config.setCheck(check);
 		
+		config.setFeatureExclusions(featureExclusions);
 		// invoke import
 		CdmDefaultExport<DwcaTaxExportConfigurator> bmExport = new CdmDefaultExport<DwcaTaxExportConfigurator>();
 		boolean result = bmExport.invoke(config);
@@ -95,8 +108,7 @@ public class DwcaExportActivator {
 		return result;
 	}
 
-	
-	
+
 	/**
 	 * @param args
 	 */
