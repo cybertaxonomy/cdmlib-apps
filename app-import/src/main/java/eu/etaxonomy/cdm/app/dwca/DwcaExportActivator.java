@@ -43,7 +43,8 @@ public class DwcaExportActivator {
 
 	private static List<UUID> featureExclusions = Arrays.asList(new UUID[]{
 			UUID.fromString("5deff505-1a32-4817-9a74-50e6936fd630"),   //occurrences
-			UUID.fromString("8075074c-ace8-496b-ac82-47c14553f7fd")    //Editor_Parenthesis
+			UUID.fromString("8075074c-ace8-496b-ac82-47c14553f7fd"),    //Editor_Parenthesis
+			UUID.fromString("c0cc5ebe-1f0c-4c31-af53-d486858ea415")   //Image Sources
 	});
 	
 	

@@ -13,15 +13,14 @@ import java.util.UUID;
 
 import org.apache.log4j.Logger;
 
-import eu.etaxonomy.cdm.api.application.CdmApplicationController;
+import eu.etaxonomy.cdm.api.application.ICdmApplicationConfiguration;
 import eu.etaxonomy.cdm.app.common.CdmDestinations;
 import eu.etaxonomy.cdm.database.DbSchemaValidation;
 import eu.etaxonomy.cdm.database.ICdmDataSource;
+import eu.etaxonomy.cdm.io.common.CdmDefaultImport;
 import eu.etaxonomy.cdm.io.common.IImportConfigurator.CHECK;
 import eu.etaxonomy.cdm.io.common.IImportConfigurator.DO_REFERENCES;
-import eu.etaxonomy.cdm.io.common.CdmDefaultImport;
 import eu.etaxonomy.cdm.io.common.Source;
-
 import eu.etaxonomy.cdm.io.pesi.faunaEuropaea.FaunaEuropaeaImportConfigurator;
 import eu.etaxonomy.cdm.model.description.Feature;
 import eu.etaxonomy.cdm.model.description.FeatureNode;
@@ -33,6 +32,7 @@ import eu.etaxonomy.cdm.model.name.NomenclaturalCode;
  * @created 12.05.2009
  */
 public class FaunaEuropaeaActivator {
+	@SuppressWarnings("unused")
 	private static final Logger logger = Logger.getLogger(FaunaEuropaeaActivator.class);
 
 	static final Source faunaEuropaeaSource = FaunaEuropaeaSources.faunaEu_1_3();
@@ -147,7 +147,7 @@ public class FaunaEuropaeaActivator {
 			FeatureTree featureTree = FeatureTree.NewInstance(UUID.fromString("ff59b9ad-1fb8-4aa4-a8ba-79d62123d0fb"));
 			FeatureNode root = featureTree.getRoot();
 
-			CdmApplicationController app = fauEuImport.getCdmAppController();
+			ICdmApplicationConfiguration app = fauEuImport.getCdmAppController();
 			Feature citationFeature = (Feature)app.getTermService().find(UUID.fromString("99b2842f-9aa7-42fa-bd5f-7285311e0101"));
 			FeatureNode citationNode = FeatureNode.NewInstance(citationFeature);
 			root.addChild(citationNode);

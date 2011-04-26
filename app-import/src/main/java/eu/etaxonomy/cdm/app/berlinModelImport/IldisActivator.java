@@ -13,7 +13,7 @@ import java.util.UUID;
 
 import org.apache.log4j.Logger;
 
-import eu.etaxonomy.cdm.api.application.CdmApplicationController;
+import eu.etaxonomy.cdm.api.application.ICdmApplicationConfiguration;
 import eu.etaxonomy.cdm.app.common.CdmDestinations;
 import eu.etaxonomy.cdm.app.pesi.FaunaEuropaeaActivator;
 import eu.etaxonomy.cdm.database.DbSchemaValidation;
@@ -156,7 +156,7 @@ public class IldisActivator {
 		success &= bmImport.invoke(bmImportConfigurator);
 		
 		if (doFacts && (bmImportConfigurator.getCheck().equals(CHECK.CHECK_AND_IMPORT)  || bmImportConfigurator.getCheck().equals(CHECK.IMPORT_WITHOUT_CHECK) )   ){
-			CdmApplicationController app = bmImport.getCdmAppController();
+			ICdmApplicationConfiguration app = bmImport.getCdmAppController();
 			
 			//make feature tree
 			FeatureTree tree = TreeCreator.flatTree(featureTreeUuid, bmImportConfigurator.getFeatureMap(), featureKeyList);

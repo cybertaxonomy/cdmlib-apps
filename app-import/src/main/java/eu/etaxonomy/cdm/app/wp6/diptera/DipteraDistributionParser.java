@@ -27,6 +27,7 @@ import org.apache.log4j.Logger;
 import org.springframework.transaction.TransactionStatus;
 
 import eu.etaxonomy.cdm.api.application.CdmApplicationController;
+import eu.etaxonomy.cdm.api.application.ICdmApplicationConfiguration;
 import eu.etaxonomy.cdm.app.common.CdmDestinations;
 import eu.etaxonomy.cdm.database.DbSchemaValidation;
 import eu.etaxonomy.cdm.database.ICdmDataSource;
@@ -57,7 +58,7 @@ public class DipteraDistributionParser {
 	final static String epiSplitter = "(\\s+|\\[|\\]|\\(|\\))"; //( ' '+| '(' | ')'| '[' | ']' )
 	static Pattern pattern = null;
 	
-	protected void doDistribution(CdmApplicationController app){
+	protected void doDistribution(ICdmApplicationConfiguration app){
 		pattern = Pattern.compile(epiSplitter); 
 	    TransactionStatus txStatus = app.startTransaction();
 		List<TaxonBase> taxa = app.getTaxonService().list(null, null, null, null, null);

@@ -95,7 +95,6 @@ public class TcsRdfTestActivator {
 			//book.setDatePublished(TimePeriod.NewInstance(1945));
 			book.setDatePublished(TimePeriod.NewInstance(1945).setEndDay(12).setEndMonth(4));
 			refService.saveOrUpdate((Reference)book);
-			tcsImport.getCdmAppController().close();
 			logger.info("End");
 			System.out.println("End import from TCS ("+ source.toString() + ")...");
 		} catch (URISyntaxException e) {
