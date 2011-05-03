@@ -1,5 +1,6 @@
 package eu.etaxonomy.cdm.io.xper;
 
+import java.net.URI;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -589,7 +590,7 @@ public class CdmXperAdapter extends CdmIoBase implements IExternalAdapter{
 			String vocLabel = "Vocabulary for feature " + feature.getLabel();
 			String vocDescription = vocLabel + ". Automatically created by Xper.";
 			String vocAbbrev = null;
-			String termSourceUri = null;
+			URI termSourceUri = null;
 			voc = TermVocabulary.NewInstance(vocDescription, vocLabel, vocAbbrev, termSourceUri);
 		}else if (numberOfVocs == 1){
 			voc = feature.getSupportedCategoricalEnumerations().iterator().next();
@@ -622,7 +623,7 @@ public class CdmXperAdapter extends CdmIoBase implements IExternalAdapter{
 		String vocDescription = null;
 		String vocLabel = "Vocabulary for feature " + label;
 		String vocAbbrev = null;
-		String termSourceUri = null;
+		URI termSourceUri = null;
 		TermVocabulary<State> voc = TermVocabulary.NewInstance(vocDescription, vocLabel, vocAbbrev, termSourceUri);
 		for (Mode mode:variable.getModes()){
 			saveNewModeToVoc(getTermService(), voc, mode);
