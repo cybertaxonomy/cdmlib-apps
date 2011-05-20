@@ -17,7 +17,7 @@ import org.apache.log4j.Logger;
 
 import eu.etaxonomy.cdm.api.application.CdmApplicationController;
 import eu.etaxonomy.cdm.api.service.config.ITaxonServiceConfigurator;
-import eu.etaxonomy.cdm.api.service.config.impl.TaxonServiceConfiguratorImpl;
+import eu.etaxonomy.cdm.api.service.config.TaxonServiceConfiguratorImpl;
 import eu.etaxonomy.cdm.api.service.pager.Pager;
 import eu.etaxonomy.cdm.database.DbSchemaValidation;
 import eu.etaxonomy.cdm.database.ICdmDataSource;
@@ -63,11 +63,11 @@ public class TestActivator {
 		app.changeDataSource(destination);
 		ICdmDataSource cdmDestination = CdmDestinations.cdm_edit_cichorieae_a();
 		app.changeDataSource(cdmDestination);
-		ITaxonServiceConfigurator conf = TaxonServiceConfiguratorImpl.NewInstance();
+		ITaxonServiceConfigurator<?> conf = TaxonServiceConfiguratorImpl.NewInstance();
 		conf.setDoSynonyms(true);
 		conf.setDoTaxa(true);
 		conf.setMatchMode(MatchMode.BEGINNING);
-		conf.setSearchString("L*");
+		conf.setTitleSearchString("L*");
 		conf.setPageNumber(0);
 		conf.setPageSize(50);
 		Set<NamedArea> areas = new HashSet<NamedArea>();
@@ -77,7 +77,7 @@ public class TestActivator {
 		Pager<IdentifiableEntity> taxaAndSyn = app.getTaxonService().findTaxaAndNames(conf);
 		List<IdentifiableEntity> taxList = taxaAndSyn.getRecords();
 		
-		for (IdentifiableEntity ent: taxList){
+		for (IdentifiableEntity<?> ent: taxList){
 			
 			System.err.println(ent.getTitleCache());
 		}
