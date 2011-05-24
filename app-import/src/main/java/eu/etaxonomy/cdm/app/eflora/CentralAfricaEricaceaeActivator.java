@@ -33,11 +33,16 @@ import eu.etaxonomy.cdm.io.eflora.EfloraImportConfigurator;
 import eu.etaxonomy.cdm.io.eflora.centralAfrica.ericaceae.CentralAfricaEricaceaeImportConfigurator;
 import eu.etaxonomy.cdm.io.eflora.centralAfrica.ericaceae.CentralAfricaEricaceaeTransformer;
 import eu.etaxonomy.cdm.model.agent.Person;
+import eu.etaxonomy.cdm.model.agent.Team;
 import eu.etaxonomy.cdm.model.common.Language;
+import eu.etaxonomy.cdm.model.common.OrderedTermVocabulary;
 import eu.etaxonomy.cdm.model.description.Feature;
 import eu.etaxonomy.cdm.model.description.FeatureNode;
 import eu.etaxonomy.cdm.model.description.FeatureTree;
 import eu.etaxonomy.cdm.model.description.PolytomousKey;
+import eu.etaxonomy.cdm.model.location.NamedArea;
+import eu.etaxonomy.cdm.model.location.NamedAreaLevel;
+import eu.etaxonomy.cdm.model.location.NamedAreaType;
 import eu.etaxonomy.cdm.model.reference.Reference;
 import eu.etaxonomy.cdm.model.reference.ReferenceFactory;
 
@@ -59,7 +64,7 @@ public class CentralAfricaEricaceaeActivator {
 //	static final ICdmDataSource cdmDestination = CdmDestinations.cdm_flora_central_africa_production();
 //	static final ICdmDataSource cdmDestination = CdmDestinations.localH2();
 //	static final ICdmDataSource cdmDestination = CdmDestinations.cdm_local_postgres_CdmTest();
-	static final ICdmDataSource cdmDestination = CdmDestinations.cdm_test_local_mysql();
+	static final ICdmDataSource cdmDestination = CdmDestinations.cdm_test_local_mysql_test();
 //	static final ICdmDataSource cdmDestination = CdmDestinations.cdm_test_jaxb();
 
 	//feature tree uuid
@@ -76,10 +81,12 @@ public class CentralAfricaEricaceaeActivator {
 	static boolean doPrintKeys = false;
 	
 	//taxa
-	static final boolean doTaxa = true;
+	static final boolean doTaxa = false;
 	static final boolean doDeduplicate = true;
 
-	private boolean includeEricaceae = true;
+	private boolean includeEricaceae = false;
+	private boolean doNewNamedAreas = false;
+	private boolean doFeatureTree = false;
 
 
 	
@@ -117,8 +124,10 @@ public class CentralAfricaEricaceaeActivator {
 			System.out.println("End import from ("+ source.toString() + ")...");
 		}
 		
-		FeatureTree tree = makeFeatureNode(myImport.getCdmAppController().getTermService());
-		myImport.getCdmAppController().getFeatureTreeService().saveOrUpdate(tree);
+		if (doFeatureTree){
+			FeatureTree tree = makeFeatureNode(myImport.getCdmAppController().getTermService());
+			myImport.getCdmAppController().getFeatureTreeService().saveOrUpdate(tree);
+		}
 		
 		//check keys
 		if (doPrintKeys){
@@ -134,14 +143,112 @@ public class CentralAfricaEricaceaeActivator {
 		//deduplicate
 		if (doDeduplicate){
 			ICdmApplicationConfiguration app = myImport.getCdmAppController();
-			int count = app.getAgentService().deduplicate(Person.class, null, null);
-			logger.warn("Deduplicated " + count + " persons.");
-//			count = app.getAgentService().deduplicate(Team.class, null, null);
-//			logger.warn("Deduplicated " + count + " teams.");
-			count = app.getReferenceService().deduplicate(Reference.class, null, null);
-			logger.warn("Deduplicated " + count + " references.");
+			if (app == null){
+				app = CdmApplicationController.NewInstance(cdmDestination, hbm2dll, false);
+			}
+			app.getAgentService().updateTitleCache(Team.class, null, null, null);
+			return;
+//			int count = app.getAgentService().deduplicate(Person.class, null, null);
+//			
+//			logger.warn("Deduplicated " + count + " persons.");
+////			count = app.getAgentService().deduplicate(Team.class, null, null);
+////			logger.warn("Deduplicated " + count + " teams.");
+//			count = app.getReferenceService().deduplicate(Reference.class, null, null);
+//			logger.warn("Deduplicated " + count + " references.");
 		}
 		
+		if(doNewNamedAreas){
+			newNamedAreas(myImport);
+		}
+		
+	}
+
+	private void newNamedAreas(CdmDefaultImport<EfloraImportConfigurator> myImport) {
+		ICdmApplicationConfiguration app = myImport.getCdmAppController();
+		if (app == null){
+			app = CdmApplicationController.NewInstance(cdmDestination, hbm2dll, false);
+		}
+		TransactionStatus tx = app.startTransaction();
+		
+		OrderedTermVocabulary<NamedArea> voc = OrderedTermVocabulary.NewInstance("Phytogeographic Regions of Central Africa", "Phytogeographic Regions of Central Africa", "FdAC regions", null);
+		app.getVocabularyService().save(voc);
+		
+		NamedAreaLevel level = NamedAreaLevel.NewInstance("Phytogeographic Regions of Central Africa", "Phytogeographic Regions of Central Africa", "FdAC regions");
+		ITermService termService = app.getTermService();
+		
+		termService.save(level);
+		
+		NamedArea area = NamedArea.NewInstance("Côtier", "Côtier", "I");
+		area.setLevel(level);
+		area.setType(NamedAreaType.NATURAL_AREA());
+		voc.addTerm(area);
+		termService.save(area);
+		
+
+		area = NamedArea.NewInstance("Mayumbe", "Mayumbe", "II");
+		area.setLevel(level);
+		area.setType(NamedAreaType.NATURAL_AREA());
+		voc.addTerm(area);
+		termService.save(area);
+
+		area = NamedArea.NewInstance("Bas-Congo", "Bas-Congo", "III");
+		area.setLevel(level);
+		area.setType(NamedAreaType.NATURAL_AREA());
+		voc.addTerm(area);
+		termService.save(area);
+
+		area = NamedArea.NewInstance("Kasai", "Kasai", "IV");
+		area.setLevel(level);
+		area.setType(NamedAreaType.NATURAL_AREA());
+		voc.addTerm(area);
+		termService.save(area);
+
+		area = NamedArea.NewInstance("Bas-Katanga", "Bas-Katanga", "V");
+		area.setLevel(level);
+		area.setType(NamedAreaType.NATURAL_AREA());
+		voc.addTerm(area);
+		termService.save(area);
+
+		area = NamedArea.NewInstance("Forestier Central", "Forestier Central", "VI");
+		area.setLevel(level);
+		area.setType(NamedAreaType.NATURAL_AREA());
+		voc.addTerm(area);
+		termService.save(area);
+
+		area = NamedArea.NewInstance("Ubangi-Uele", "Ubangi-Uele", "VII");
+		area.setLevel(level);
+		area.setType(NamedAreaType.NATURAL_AREA());
+		voc.addTerm(area);
+		termService.save(area);
+
+		area = NamedArea.NewInstance("Lac Albert", "Lac Albert", "VIII");
+		area.setLevel(level);
+		area.setType(NamedAreaType.NATURAL_AREA());
+		voc.addTerm(area);
+		termService.save(area);
+
+		area = NamedArea.NewInstance("Lacs Édouard et Kivu", "Lacs Édouard et Kivu", "IX");
+		area.setLevel(level);
+		area.setType(NamedAreaType.NATURAL_AREA());
+		voc.addTerm(area);
+		termService.save(area);
+
+		area = NamedArea.NewInstance("Rwanda-Burundi", "Rwanda-Burundi", "X");
+		area.setLevel(level);
+		area.setType(NamedAreaType.NATURAL_AREA());
+		voc.addTerm(area);
+		termService.save(area);
+
+		area = NamedArea.NewInstance("Haut-Katanga", "Haut-Katanga", "XI");
+		area.setLevel(level);
+		area.setType(NamedAreaType.NATURAL_AREA());
+		voc.addTerm(area);
+		termService.save(area);
+		
+		app.getVocabularyService().save(voc);
+		
+		app.commitTransaction(tx);
+
 	}
 
 	private Reference getSourceReference(String string) {
