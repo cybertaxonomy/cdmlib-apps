@@ -10,7 +10,6 @@
 package eu.etaxonomy.cdm.app.eflora;
 
 import java.net.URI;
-import java.net.URISyntaxException;
 
 import org.apache.log4j.Logger;
 
@@ -25,67 +24,31 @@ public class EfloraSources {
 
 	//Ericaceae
 	public static URI ericacea_local() {
-		URI sourceUrl;
-		try {
-			sourceUrl = new URI("file:C:/localCopy/Data/eflora/africa/Ericaceae/ericaceae_v2.xml");
-			return sourceUrl;
-		} catch (URISyntaxException e) {
-			e.printStackTrace();
-			return null;
-		}
+		return URI.create("file:C:/localCopy/Data/eflora/africa/Ericaceae/ericaceae_v2.xml");
+	}
+	
+	public static URI ericacea_specimen_local() {
+		return URI.create("file:/C:/localCopy/Data/eflora/africa/Specimen/Ericaceae/Ericaceae_CDM_specimen.xls");
 	}
 	
 	//Sapindaceae
 	public static URI fm_sapindaceae_local(){
-		String sourceUrl = "file:C:/localCopy/Data/eflora/floraMalesiana/sapindaceae-01v25.xml";
-		try {
-			URI uri = new URI(sourceUrl);
-			return uri;
-		} catch (URISyntaxException e) {
-			e.printStackTrace();
-			return null;
-		}
-		
+		return URI.create("file:C:/localCopy/Data/eflora/floraMalesiana/sapindaceae-01v25.xml");
 	}
 	
 	//Sapindaceae2
 	public static URI fm_sapindaceae2_local(){
-		String sourceUrl = "file:C:/localCopy/Data/eflora/floraMalesiana/sapindaceae-02final2.xml";
-		URI uri;
-		try {
-			uri = new URI(sourceUrl);
-			return uri;
-		} catch (URISyntaxException e) {
-			e.printStackTrace();
-			return null;
-		}
-		
+		return URI.create("file:C:/localCopy/Data/eflora/floraMalesiana/sapindaceae-02final2.xml");
 	}
 	
 	//Flora Malesiana Vol 13-1
 	public static URI fm_13_1_local(){
-		URI sourceUrl;
-		try {
-			sourceUrl = new URI("file:C:/localCopy/Data/eflora/floraMalesiana/fm13_1_v8_final.xml");
-			return sourceUrl;
-		} catch (URISyntaxException e) {
-			e.printStackTrace();
-			return null;
-		}
-		
+		return URI.create("file:C:/localCopy/Data/eflora/floraMalesiana/fm13_1_v8_final.xml");
 	}
 
 	//Flora Malesiana Vol 13-2
 	public static URI fm_13_2_local(){
-		URI sourceUrl;
-		try {
-			sourceUrl = new URI("file:C:/localCopy/Data/eflora/floraMalesiana/fm13_2_v8_final.xml");
-			return sourceUrl;
-		} catch (URISyntaxException e) {
-			e.printStackTrace();
-			return null;
-		}
-		
+		return URI.create("file:C:/localCopy/Data/eflora/floraMalesiana/fm13_2_v8_final.xml");
 	}
 
 
