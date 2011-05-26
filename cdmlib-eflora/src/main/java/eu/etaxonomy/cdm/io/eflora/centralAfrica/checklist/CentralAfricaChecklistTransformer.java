@@ -12,13 +12,12 @@ package eu.etaxonomy.cdm.io.eflora.centralAfrica.checklist;
 
 import java.util.UUID;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 
-import eu.etaxonomy.cdm.common.CdmUtils;
 import eu.etaxonomy.cdm.io.common.mapping.InputTransformerBase;
 import eu.etaxonomy.cdm.io.common.mapping.UndefinedTransformerMethodException;
 import eu.etaxonomy.cdm.model.common.MarkerType;
-import eu.etaxonomy.cdm.model.description.Feature;
 
 /**
  * @author a.mueller
@@ -40,7 +39,7 @@ public final class CentralAfricaChecklistTransformer extends InputTransformerBas
 	 */
 	@Override
 	public MarkerType getMarkerTypeByKey(String key) throws UndefinedTransformerMethodException {
-		if (CdmUtils.isEmpty(key)){return null;
+		if (StringUtils.isBlank(key)){return null;
 //		}else if (key.equalsIgnoreCase("distribution")){return MarkerType.;
 //		}else if (key.equalsIgnoreCase("habitatecology")){return Feature.ECOLOGY();
 		}else{
@@ -50,7 +49,7 @@ public final class CentralAfricaChecklistTransformer extends InputTransformerBas
 
 	@Override
 	public UUID getMarkerTypeUuid(String key) throws UndefinedTransformerMethodException {
-		if (CdmUtils.isEmpty(key)){return null;
+		if (StringUtils.isBlank(key)){return null;
 //		}else if (key.equalsIgnoreCase("IMPERFECTLY KNOWN SPECIES")){return uuidIncompleteTaxon;
 		}else{
 			return null;
