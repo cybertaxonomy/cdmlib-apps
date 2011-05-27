@@ -26,13 +26,14 @@ import eu.etaxonomy.cdm.database.DbSchemaValidation;
 import eu.etaxonomy.cdm.database.ICdmDataSource;
 import eu.etaxonomy.cdm.database.update.CdmUpdater;
 import eu.etaxonomy.cdm.io.common.CdmDefaultImport;
+import eu.etaxonomy.cdm.io.common.CdmImportBase.TermMatchMode;
 import eu.etaxonomy.cdm.io.common.IImportConfigurator.CHECK;
 import eu.etaxonomy.cdm.io.common.mapping.IInputTransformer;
 import eu.etaxonomy.cdm.io.common.mapping.UndefinedTransformerMethodException;
 import eu.etaxonomy.cdm.io.eflora.EfloraImportConfigurator;
 import eu.etaxonomy.cdm.io.eflora.centralAfrica.ericaceae.CentralAfricaEricaceaeImportConfigurator;
 import eu.etaxonomy.cdm.io.eflora.centralAfrica.ericaceae.CentralAfricaEricaceaeTransformer;
-import eu.etaxonomy.cdm.model.agent.Person;
+import eu.etaxonomy.cdm.io.specimen.excel.in.SpecimenCdmExcelImportConfigurator;
 import eu.etaxonomy.cdm.model.agent.Team;
 import eu.etaxonomy.cdm.model.common.Language;
 import eu.etaxonomy.cdm.model.common.OrderedTermVocabulary;
@@ -55,8 +56,10 @@ public class CentralAfricaEricaceaeActivator {
 	private static final Logger logger = Logger.getLogger(CentralAfricaEricaceaeActivator.class);
 	
 	//database validation status (create, update, validate ...)
-	static DbSchemaValidation hbm2dll = DbSchemaValidation.VALIDATE;
+	static DbSchemaValidation hbm2dll = DbSchemaValidation.CREATE;
 	static final URI source = EfloraSources.ericacea_local();
+	
+	static final URI specimenSource = EfloraSources.ericacea_specimen_local();
 
 	
 //	static final ICdmDataSource cdmDestination = CdmDestinations.cdm_test_andreasM3();
@@ -64,7 +67,7 @@ public class CentralAfricaEricaceaeActivator {
 //	static final ICdmDataSource cdmDestination = CdmDestinations.cdm_flora_central_africa_production();
 //	static final ICdmDataSource cdmDestination = CdmDestinations.localH2();
 //	static final ICdmDataSource cdmDestination = CdmDestinations.cdm_local_postgres_CdmTest();
-	static final ICdmDataSource cdmDestination = CdmDestinations.cdm_test_local_mysql_test();
+	static final ICdmDataSource cdmDestination = CdmDestinations.cdm_test_local_mysql();
 //	static final ICdmDataSource cdmDestination = CdmDestinations.cdm_test_jaxb();
 
 	//feature tree uuid
@@ -81,13 +84,16 @@ public class CentralAfricaEricaceaeActivator {
 	static boolean doPrintKeys = false;
 	
 	//taxa
-	static final boolean doTaxa = false;
-	static final boolean doDeduplicate = true;
+	static final boolean doTaxa = true;
+	static final boolean doDeduplicate = false;
 
-	private boolean includeEricaceae = false;
+	private boolean includeEricaceae = true;
+	
 	private boolean doNewNamedAreas = false;
 	private boolean doFeatureTree = false;
-
+	
+	private boolean doSpecimen = true;
+	private TermMatchMode specimenAreaMatchMode = TermMatchMode.UUID_ABBREVLABEL;
 
 	
 	private void doImport(ICdmDataSource cdmDestination){
@@ -160,6 +166,26 @@ public class CentralAfricaEricaceaeActivator {
 		if(doNewNamedAreas){
 			newNamedAreas(myImport);
 		}
+
+		if (doSpecimen){
+			logger.warn("Start specimen import");
+			ICdmApplicationConfiguration app = myImport.getCdmAppController();
+			SpecimenCdmExcelImportConfigurator specimenConfig= SpecimenCdmExcelImportConfigurator.NewInstance(specimenSource, cdmDestination);
+			specimenConfig.setCdmAppController((CdmApplicationController)app);
+			specimenConfig.setAreaMatchMode(specimenAreaMatchMode);
+			
+			config.setDbSchemaValidation(DbSchemaValidation.VALIDATE);
+			specimenConfig.setSourceReference(getSourceReference(specimenConfig.getSourceReferenceTitle()));
+			
+			CdmDefaultImport<SpecimenCdmExcelImportConfigurator> specimenImport = new CdmDefaultImport<SpecimenCdmExcelImportConfigurator>();
+			specimenImport.setCdmAppController(app);
+			specimenImport.invoke(specimenConfig);
+			
+			
+		}
+		return;
+	
+
 		
 	}
 

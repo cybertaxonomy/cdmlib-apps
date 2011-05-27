@@ -374,7 +374,7 @@ public class CyprusDistributionImport extends ExcelImporterBase<CyprusImportStat
 		
 		for(int i = 1; i <= 8; i++){
 			UUID divisionUuid = transformer.getNamedAreaUuid(String.valueOf(i));
-			NamedArea division = this.getNamedArea(state, divisionUuid, "Division " + i, "Cyprus: Division " + i, String.valueOf(i), areaType, areaLevel, areaVocabulary);
+			NamedArea division = this.getNamedArea(state, divisionUuid, "Division " + i, "Cyprus: Division " + i, String.valueOf(i), areaType, areaLevel, areaVocabulary, null);
 			divisions.put(String.valueOf(i), division);
 			tdwg4Cyprus.addIncludes(division);
 			isoCountryCyprus.addIncludes(division);
