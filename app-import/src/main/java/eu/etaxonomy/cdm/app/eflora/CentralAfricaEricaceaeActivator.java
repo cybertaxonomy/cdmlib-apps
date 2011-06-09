@@ -56,7 +56,7 @@ public class CentralAfricaEricaceaeActivator {
 	private static final Logger logger = Logger.getLogger(CentralAfricaEricaceaeActivator.class);
 	
 	//database validation status (create, update, validate ...)
-	static DbSchemaValidation hbm2dll = DbSchemaValidation.CREATE;
+	static DbSchemaValidation hbm2dll = DbSchemaValidation.VALIDATE;
 	static final URI source = EfloraSources.ericacea_local();
 	
 	static final URI specimenSource = EfloraSources.ericacea_specimen_local();
@@ -84,15 +84,15 @@ public class CentralAfricaEricaceaeActivator {
 	static boolean doPrintKeys = false;
 	
 	//taxa
-	static final boolean doTaxa = true;
+	static final boolean doTaxa = false;
 	static final boolean doDeduplicate = false;
 
-	private boolean includeEricaceae = true;
+	private boolean includeEricaceae = false;
 	
 	private boolean doNewNamedAreas = false;
 	private boolean doFeatureTree = false;
 	
-	private boolean doSpecimen = true;
+	private boolean doSpecimen = false;
 	private TermMatchMode specimenAreaMatchMode = TermMatchMode.UUID_ABBREVLABEL;
 
 	
