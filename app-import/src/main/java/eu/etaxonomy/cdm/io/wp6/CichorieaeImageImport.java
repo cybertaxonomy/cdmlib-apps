@@ -25,7 +25,7 @@ import org.springframework.stereotype.Component;
 import eu.etaxonomy.cdm.app.images.AbstractImageImporter;
 import eu.etaxonomy.cdm.app.images.ImageImportConfigurator;
 import eu.etaxonomy.cdm.common.CdmUtils;
-import eu.etaxonomy.cdm.common.mediaMetaData.ImageMetaData;
+import eu.etaxonomy.cdm.common.media.ImageInfo;
 import eu.etaxonomy.cdm.model.agent.AgentBase;
 import eu.etaxonomy.cdm.model.common.Language;
 import eu.etaxonomy.cdm.model.common.LanguageString;
@@ -55,7 +55,7 @@ public class CichorieaeImageImport extends AbstractImageImporter {
 		File source = new File(config.getSource());
 		UUID treeUuid = config.getClassificationUuid();
 		Classification tree = classificationService.find(treeUuid);
-		Reference sourceRef = config.getSourceReference();
+		Reference<?> sourceRef = config.getSourceReference();
 		
 		if (source.isDirectory()){
 			for (File file : source.listFiles() ){
@@ -133,7 +133,7 @@ public class CichorieaeImageImport extends AbstractImageImporter {
 	 * @param taxa
 	 * @param taxon
 	 */
-	private void handleTaxa(Classification tree, Reference sourceRef, String fileName, String taxonName, List<TaxonBase> taxa) {
+	private void handleTaxa(Classification tree, Reference<?> sourceRef, String fileName, String taxonName, List<TaxonBase> taxa) {
 		
 		Taxon taxon = getTaxon(tree, taxonName, taxa);
 		TaxonDescription imageGallery = taxon.getOrCreateImageGallery(sourceRef == null ? null :sourceRef.getTitleCache());
@@ -166,19 +166,17 @@ public class CichorieaeImageImport extends AbstractImageImporter {
 		logger.info(urlString);
 		URL url = new URL(urlString);
 		URI uri = CdmUtils.string2Uri(urlString);
-		ImageMetaData imageMetaData =ImageMetaData.newInstance();
-		imageMetaData.readImageInfo(uri, 0);
+		ImageInfo imageMetaData =ImageInfo.NewInstance(uri, 0);
 		
 		//String uri = url.toString();
 		
-		String uriString = url.toString();
 		String mimeType = imageMetaData.getMimeType();
 		String suffix = null;
 		int height = imageMetaData.getHeight();
 		int width = imageMetaData.getWidth();
 		Integer size = null;
 		DateTime mediaCreated = null;
-		AgentBase artist = null;
+		AgentBase<?> artist = null;
 		
 //		ImageFile image = ImageFile.NewInstance(uri, size, height, width);
 		Media media = ImageFile.NewMediaInstance(mediaCreated, artist, uri, mimeType, suffix, size, height, width);
