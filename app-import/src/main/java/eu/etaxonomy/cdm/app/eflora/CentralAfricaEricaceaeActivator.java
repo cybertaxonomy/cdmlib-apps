@@ -56,7 +56,7 @@ public class CentralAfricaEricaceaeActivator {
 	private static final Logger logger = Logger.getLogger(CentralAfricaEricaceaeActivator.class);
 	
 	//database validation status (create, update, validate ...)
-	static DbSchemaValidation hbm2dll = DbSchemaValidation.VALIDATE;
+	static DbSchemaValidation hbm2dll = DbSchemaValidation.CREATE;
 	static final URI source = EfloraSources.ericacea_local();
 	
 	static final URI specimenSource = EfloraSources.ericacea_specimen_local();
@@ -65,9 +65,9 @@ public class CentralAfricaEricaceaeActivator {
 //	static final ICdmDataSource cdmDestination = CdmDestinations.cdm_test_andreasM3();
 //	static final ICdmDataSource cdmDestination = CdmDestinations.cdm_flora_central_africa_preview();
 //	static final ICdmDataSource cdmDestination = CdmDestinations.cdm_flora_central_africa_production();
-//	static final ICdmDataSource cdmDestination = CdmDestinations.localH2();
+	static final ICdmDataSource cdmDestination = CdmDestinations.localH2();
 //	static final ICdmDataSource cdmDestination = CdmDestinations.cdm_local_postgres_CdmTest();
-	static final ICdmDataSource cdmDestination = CdmDestinations.cdm_test_local_mysql();
+//	static final ICdmDataSource cdmDestination = CdmDestinations.cdm_test_local_mysql();
 //	static final ICdmDataSource cdmDestination = CdmDestinations.cdm_test_jaxb();
 
 	//feature tree uuid
@@ -84,10 +84,10 @@ public class CentralAfricaEricaceaeActivator {
 	static boolean doPrintKeys = false;
 	
 	//taxa
-	static final boolean doTaxa = false;
+	private boolean includeEricaceae = true;
+	static final boolean doTaxa = true;
 	static final boolean doDeduplicate = false;
 
-	private boolean includeEricaceae = false;
 	
 	private boolean doNewNamedAreas = false;
 	private boolean doFeatureTree = false;

@@ -9,6 +9,7 @@
 */
 package eu.etaxonomy.cdm.app.eflora;
 
+import java.io.File;
 import java.net.URI;
 
 import org.apache.log4j.Logger;
@@ -49,6 +50,18 @@ public class EfloraSources {
 	//Flora Malesiana Vol 13-2
 	public static URI fm_13_2_local(){
 		return URI.create("file:C:/localCopy/Data/eflora/floraMalesiana/fm13_2_v8_final.xml");
+	}
+	
+	//Flora Malesiana Vol 13 - small families
+	public static URI fm_13_small_families(){
+		URI uri = URI.create("file:/C:/localCopy/Data/eflora/floraMalesiana/vol_13/vol_13_small_families.xml");
+		File file = new File(uri);
+		return uri;
+	}
+
+	//Flora Malesiana Vol 13 - large families
+	public static URI fm_13_large_families(){
+		return URI.create("file:C:/localCopy/Data/eflora/floraMalesiana/vol_13/xmlv8_large_families_vol_13.xml");
 	}
 
 

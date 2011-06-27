@@ -19,6 +19,8 @@ import org.apache.log4j.Logger;
 import org.joda.time.DateTime;
 
 import eu.etaxonomy.cdm.app.common.CdmDestinations;
+import eu.etaxonomy.cdm.common.DefaultProgressMonitor;
+import eu.etaxonomy.cdm.common.IProgressMonitor;
 import eu.etaxonomy.cdm.database.ICdmDataSource;
 import eu.etaxonomy.cdm.io.common.CdmDefaultExport;
 import eu.etaxonomy.cdm.io.common.IExportConfigurator.CHECK;
@@ -40,8 +42,20 @@ public class DwcaExportActivator {
 
 	//database validation status (create, update, validate ...)
 	private static final String fileDestination = "C:\\tmp\\dwcaTmp\\";
-	private static final ICdmDataSource cdmSource = CdmDestinations.cdm_test_local_mysql();
-//	private static final ICdmDataSource cdmSource = CdmDestinations.cdm_production_cichorieae();
+//	private static final ICdmDataSource cdmSource = CdmDestinations.cdm_local_cichorieae();
+//	private static final ICdmDataSource cdmSource = CdmDestinations.cdm_test_local_mysql();
+	private static final ICdmDataSource cdmSource = CdmDestinations.cdm_production_cichorieae();
+//	private static final ICdmDataSource cdmSource = CdmDestinations.cdm_flora_central_africa_production();
+
+	private IProgressMonitor monitor = DefaultProgressMonitor.NewInstance();
+	
+	private static DateTime dateTime = new DateTime();
+	private static String date = dateTime.getYear() + "-" + dateTime.getMonthOfYear() + "-" + dateTime.getDayOfMonth();
+	
+	private static final String defaultBibliographicCitation = "ICN (Hand, R., Kilian, N. & Raab-Straube, E. von; general editors) 2009+ (continuously updated): International Cichorieae Network: Cichorieae Portal. Published on the Internet at http://wp6-cichorieae.e-taxonomy.eu/portal/; " + 
+		"accessed ["+date+"].";
+
+	private static final String taxonSourceDefault = "http://wp6-cichorieae.e-taxonomy.eu/portal/?q=cdm_dataportal/taxon/{id}";
 	
 	//check - import
 	private static final CHECK check = CHECK.EXPORT_WITHOUT_CHECK;
@@ -49,7 +63,10 @@ public class DwcaExportActivator {
 	private static List<UUID> featureExclusions = Arrays.asList(new UUID[]{
 			UUID.fromString("5deff505-1a32-4817-9a74-50e6936fd630"),   //occurrences
 			UUID.fromString("8075074c-ace8-496b-ac82-47c14553f7fd"),    //Editor_Parenthesis
-			UUID.fromString("c0cc5ebe-1f0c-4c31-af53-d486858ea415")   //Image Sources
+			UUID.fromString("c0cc5ebe-1f0c-4c31-af53-d486858ea415"),   //Image Sources
+			UUID.fromString("9f6c551d-0f19-45ea-a855-4946f6fc1093"),		//Credits
+			UUID.fromString("cbf12c6c-94e6-4724-9c48-0f6f10d83e1c"),   //Editor Brackets
+			UUID.fromString("0508114d-4158-48b5-9100-369fa75120d3")     //inedited
 	});
 	
 	
@@ -62,7 +79,7 @@ public class DwcaExportActivator {
 	private boolean doReferences = true;
 	private boolean doDescription = true;
 	private boolean doDistributions = true;
-	private boolean doImages = true;
+	private boolean doImages = false;
 	private boolean doMetaData = true;
 	private boolean doEml = true;
 
@@ -111,6 +128,10 @@ public class DwcaExportActivator {
 		config.setDoMetaData(doMetaData);
 		config.setDoEml(doEml);
 		config.setCheck(check);
+		config.setProgressMonitor(monitor);
+		config.setDefaultBibliographicCitation(defaultBibliographicCitation);
+		config.setDefaultTaxonSource(taxonSourceDefault);
+		monitor.beginTask("DwcA-Export", 10);
 		
 		config.setFeatureExclusions(featureExclusions);
 		// invoke import
