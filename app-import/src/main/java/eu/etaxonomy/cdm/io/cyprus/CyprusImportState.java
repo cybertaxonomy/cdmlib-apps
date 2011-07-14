@@ -16,6 +16,7 @@ import java.util.Map;
 import org.apache.log4j.Logger;
 
 import eu.etaxonomy.cdm.io.excel.common.ExcelImportState;
+import eu.etaxonomy.cdm.io.excel.common.ExcelRowBase;
 import eu.etaxonomy.cdm.model.taxon.Taxon;
 
 /**
@@ -23,7 +24,7 @@ import eu.etaxonomy.cdm.model.taxon.Taxon;
  * @created 11.05.2009
  * @version 1.0
  */
-public class CyprusImportState extends ExcelImportState<CyprusImportConfigurator>{
+public class CyprusImportState extends ExcelImportState<CyprusImportConfigurator, ExcelRowBase>{
 	@SuppressWarnings("unused")
 	private static final Logger logger = Logger.getLogger(CyprusImportState.class);
 
