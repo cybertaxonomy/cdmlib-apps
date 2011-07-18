@@ -33,7 +33,7 @@ public class UseSummaryActivator {
 	private static final Logger logger = Logger.getLogger(UseSummaryActivator.class);
     
 	private static String fileName = new String("C:\\tmp\\temp\\UseSummary.xls");
-	private static DbSchemaValidation dbSchemaValidation = DbSchemaValidation.CREATE;
+	private static DbSchemaValidation dbSchemaValidation = DbSchemaValidation.VALIDATE;
 
 	private static final ICdmDataSource destinationDb = CdmDestinations.cdm_test_useSummary();
     
@@ -46,7 +46,7 @@ public class UseSummaryActivator {
 			uri = file.toURI();
 //			uri = new URI(fileName);
 			NormalExplicitImportConfigurator normalExplicitImportConfigurator = 
-	    		NormalExplicitImportConfigurator.NewInstance(uri, destinationDb, code, dbSchemaValidation);
+				NormalExplicitImportConfigurator.NewInstance(uri, destinationDb, code, dbSchemaValidation);
 	
 			CdmDefaultImport<NormalExplicitImportConfigurator> normalExplicitImport = 
 				new CdmDefaultImport<NormalExplicitImportConfigurator>();
