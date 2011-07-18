@@ -30,7 +30,7 @@ import eu.etaxonomy.cdm.model.name.NomenclaturalCode;
 public class UseSummaryActivator {
 	private static final Logger logger = Logger.getLogger(UseSummaryActivator.class);
     
-	private static String fileName = new String("C:\\xxx\\NormalExplicit.xls");
+	private static String fileName = new String("C:\\temp\\NormalExplicit.xls");
 	
 	private static final ICdmDataSource destinationDb = CdmDestinations.cdm_test_alex();
     
