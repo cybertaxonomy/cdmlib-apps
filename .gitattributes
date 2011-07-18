@@ -1196,6 +1196,7 @@ app-import/src/main/resources/taxonX/palm_tc_98882.xml -text
 app-import/src/main/resources/taxonX/palm_tc_98886.xml -text
 app-import/src/main/resources/tcs/Cichorium_tcs.xml -text
 app-import/src/main/resources/tcs/tcsXmlTest.xml -text
+cdmlib-col/format/meta.xml -text
 cdmlib-eflora/LICENSE.TXT -text
 cdmlib-eflora/README.TXT -text
 cdmlib-eflora/pom.xml -text
