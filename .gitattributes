@@ -35,6 +35,7 @@ app-import/src/main/java/eu/etaxonomy/cdm/app/eflora/FloraMalesianaActivator.jav
 app-import/src/main/java/eu/etaxonomy/cdm/app/eflora/FloraMalesianaVol13Activator.java -text
 app-import/src/main/java/eu/etaxonomy/cdm/app/excelImport/distribution/CichorieaeDistributionActivator.java -text
 app-import/src/main/java/eu/etaxonomy/cdm/app/excelImport/taxa/NormalExplicitActivator.java -text
+app-import/src/main/java/eu/etaxonomy/cdm/app/excelImport/taxa/UseSummaryActivator.java -text
 app-import/src/main/java/eu/etaxonomy/cdm/app/exel/NormalExplicitTestActivator.java -text
 app-import/src/main/java/eu/etaxonomy/cdm/app/globis/GlobisActivator.java -text
 app-import/src/main/java/eu/etaxonomy/cdm/app/images/AbstractImageImporter.java -text
