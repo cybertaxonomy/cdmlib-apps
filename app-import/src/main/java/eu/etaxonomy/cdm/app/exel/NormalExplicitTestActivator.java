@@ -59,9 +59,9 @@ public class NormalExplicitTestActivator {
 
 	
 	public void doImport(ICdmDataSource destination, DbSchemaValidation hbm2dll){
-		System.out.println("Start import from Tcs("+ mySource.toString() + ") ...");
+		System.out.println("Start import from Excel("+ mySource.toString() + ") ...");
 		
-		NormalExplicitImportConfigurator config = NormalExplicitImportConfigurator.NewInstance(mySource,  destination, NomenclaturalCode.ICBN);
+		NormalExplicitImportConfigurator config = NormalExplicitImportConfigurator.NewInstance(mySource,  destination, NomenclaturalCode.ICBN, null);
 		
 		config.setClassificationUuid(treeUuid);
 		config.setSourceSecId(sourceSecId);

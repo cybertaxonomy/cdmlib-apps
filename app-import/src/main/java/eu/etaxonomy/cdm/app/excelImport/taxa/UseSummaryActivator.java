@@ -9,12 +9,14 @@
 
 package eu.etaxonomy.cdm.app.excelImport.taxa;
 
+import java.io.File;
 import java.net.URI;
 import java.net.URISyntaxException;
 
 import org.apache.log4j.Logger;
 
 import eu.etaxonomy.cdm.app.common.CdmDestinations;
+import eu.etaxonomy.cdm.database.DbSchemaValidation;
 import eu.etaxonomy.cdm.database.ICdmDataSource;
 import eu.etaxonomy.cdm.io.common.CdmDefaultImport;
 import eu.etaxonomy.cdm.io.excel.taxa.NormalExplicitImportConfigurator;
@@ -30,18 +32,21 @@ import eu.etaxonomy.cdm.model.name.NomenclaturalCode;
 public class UseSummaryActivator {
 	private static final Logger logger = Logger.getLogger(UseSummaryActivator.class);
     
-	private static String fileName = new String("C:\\temp\\NormalExplicit.xls");
-	
-	private static final ICdmDataSource destinationDb = CdmDestinations.cdm_test_alex();
+	private static String fileName = new String("C:\\tmp\\temp\\UseSummary.xls");
+	private static DbSchemaValidation dbSchemaValidation = DbSchemaValidation.CREATE;
+
+	private static final ICdmDataSource destinationDb = CdmDestinations.cdm_test_useSummary();
     
     public static void main(String[] args) {
 
     	NomenclaturalCode code = NomenclaturalCode.ICBN;
     	URI uri;
-		try {
-			uri = new URI(fileName);
+//		try {
+			File file = new File(fileName);
+			uri = file.toURI();
+//			uri = new URI(fileName);
 			NormalExplicitImportConfigurator normalExplicitImportConfigurator = 
-	    		NormalExplicitImportConfigurator.NewInstance(uri, destinationDb, code);
+	    		NormalExplicitImportConfigurator.NewInstance(uri, destinationDb, code, dbSchemaValidation);
 	
 			CdmDefaultImport<NormalExplicitImportConfigurator> normalExplicitImport = 
 				new CdmDefaultImport<NormalExplicitImportConfigurator>();
@@ -49,9 +54,9 @@ public class UseSummaryActivator {
 			// invoke import
 			logger.debug("Invoking Normal Explicit Excel import");
 			normalExplicitImport.invoke(normalExplicitImportConfigurator);
-		} catch (URISyntaxException e) {
-			e.printStackTrace();
-		}
+//		} catch (URISyntaxException e) {
+//			e.printStackTrace();
+//		}
     	    	
     }
 }

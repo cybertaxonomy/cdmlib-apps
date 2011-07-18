@@ -37,7 +37,16 @@ public class CdmDestinations {
 	public static ICdmDataSource cdm_test_alex(){
 		DatabaseTypeEnum dbType = DatabaseTypeEnum.MySQL;
 		String cdmServer = "192.168.2.10";
-		String cdmDB = "cdm_productioin_palmae"; 
+		String cdmDB = "cdm_production_palmae"; 
+		String cdmUserName = "edit";
+		return makeDestination(dbType, cdmServer, cdmDB, -1, cdmUserName, null);
+	}
+	
+
+	public static ICdmDataSource cdm_test_useSummary(){
+		DatabaseTypeEnum dbType = DatabaseTypeEnum.MySQL;
+		String cdmServer = "localhost";
+		String cdmDB = "palmae_2011_07_17"; 
 		String cdmUserName = "edit";
 		return makeDestination(dbType, cdmServer, cdmDB, -1, cdmUserName, null);
 	}
