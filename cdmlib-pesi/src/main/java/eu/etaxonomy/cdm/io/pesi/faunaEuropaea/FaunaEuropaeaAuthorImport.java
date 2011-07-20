@@ -53,7 +53,7 @@ public class FaunaEuropaeaAuthorImport extends FaunaEuropaeaImportBase {
 	 * @see eu.etaxonomy.cdm.io.common.CdmIoBase#doInvoke(eu.etaxonomy.cdm.io.common.IImportConfigurator, eu.etaxonomy.cdm.api.application.CdmApplicationController, java.util.Map)
 	 */
 	@Override
-	protected boolean doInvoke(FaunaEuropaeaImportState state){ 
+	protected void doInvoke(FaunaEuropaeaImportState state){ 
 		Map<String, MapWrapper<? extends CdmBase>> stores = state.getStores();
 		MapWrapper<TeamOrPersonBase> authorStore = (MapWrapper<TeamOrPersonBase>)stores.get(ICdmIO.TEAM_STORE);
 		TransactionStatus txStatus = null;
@@ -122,11 +122,11 @@ public class FaunaEuropaeaAuthorImport extends FaunaEuropaeaImportBase {
 			
 			if(logger.isInfoEnabled()) { logger.info("End making authors ..."); }
 
-			return true;
+			return;
 
 		} catch (SQLException e) {
 			logger.error("SQLException:" +  e);
-			return false;
+			state.setUnsuccessfull();
 		}
 	}
 	

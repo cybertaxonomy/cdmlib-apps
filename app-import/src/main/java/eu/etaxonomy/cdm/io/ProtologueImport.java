@@ -49,8 +49,7 @@ public class ProtologueImport extends CdmIoBase<DefaultImportState<PalmaeProtolo
 		super();
 	}
 
-	public boolean doInvoke(DefaultImportState<PalmaeProtologueImportConfigurator> state){
-		boolean success = true;
+	public void doInvoke(DefaultImportState<PalmaeProtologueImportConfigurator> state){
 		logger.info("start make Protologues from files ...");
 		
 		Set<TaxonNameBase> nameStore = new HashSet<TaxonNameBase>();
@@ -65,27 +64,28 @@ public class ProtologueImport extends CdmIoBase<DefaultImportState<PalmaeProtolo
 				if (file.isFile()){
 					doCount(count++, modCount, pluralString);
 					name = importFile(file, state);
-					success &= storeName(nameStore, name);
+					storeName(nameStore, name, state);
 				}
 			}
 		}else{
 			if (source.isFile()){
 				name = importFile(source, state);
-				success &= storeName(nameStore, name);
+				storeName(nameStore, name, state);
 			}
 		}
 		getNameService().save(nameStore);
 		commitTransaction(txStatus);
 		logger.info("end make Protologues from files ...");
-		return success;
+		return;
 	}
 	
-	private boolean storeName(Set<TaxonNameBase> nameStore, TaxonNameBase name){
+	private void storeName(Set<TaxonNameBase> nameStore, TaxonNameBase name, DefaultImportState<PalmaeProtologueImportConfigurator> state){
 		if (name != null){
 			nameStore.add(name);
-			return true;
+			return;
 		}else{
-			return false;
+			state.setUnsuccessfull();
+			return;
 		}
 	}
 		

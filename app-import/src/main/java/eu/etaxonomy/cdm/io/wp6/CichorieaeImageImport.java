@@ -24,6 +24,7 @@ import org.springframework.stereotype.Component;
 
 import eu.etaxonomy.cdm.app.images.AbstractImageImporter;
 import eu.etaxonomy.cdm.app.images.ImageImportConfigurator;
+import eu.etaxonomy.cdm.app.images.ImageImportState;
 import eu.etaxonomy.cdm.common.CdmUtils;
 import eu.etaxonomy.cdm.common.media.ImageInfo;
 import eu.etaxonomy.cdm.model.agent.AgentBase;
@@ -51,11 +52,11 @@ public class CichorieaeImageImport extends AbstractImageImporter {
 	/** 
 	 * Imports images from a directory.
 	 */
-	protected boolean invokeImageImport (ImageImportConfigurator config){
-		File source = new File(config.getSource());
-		UUID treeUuid = config.getClassificationUuid();
+	protected void invokeImageImport (ImageImportState state){
+		File source = new File(state.getConfig().getSource());
+		UUID treeUuid = state.getConfig().getClassificationUuid();
 		Classification tree = classificationService.find(treeUuid);
-		Reference<?> sourceRef = config.getSourceReference();
+		Reference<?> sourceRef = state.getConfig().getSourceReference();
 		
 		if (source.isDirectory()){
 			for (File file : source.listFiles() ){
@@ -65,7 +66,7 @@ public class CichorieaeImageImport extends AbstractImageImporter {
 					if (taxonName == null){
 						continue;
 					}
-					List<TaxonBase> taxa = taxonService.searchTaxaByName(taxonName, config.getSourceReference());			
+					List<TaxonBase> taxa = taxonService.searchTaxaByName(taxonName, state.getConfig().getSourceReference());			
 					if(taxa.size() == 0){
 						logger.warn("no taxon with this name found: " + taxonName);
 					} else {
@@ -79,7 +80,7 @@ public class CichorieaeImageImport extends AbstractImageImporter {
 			logger.warn("Source is not a directory!" + source.toString());
 		}
 	
-		return true;
+		return;
 		
 	}
 	

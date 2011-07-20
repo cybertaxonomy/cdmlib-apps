@@ -34,7 +34,7 @@ public abstract class EfloraImportBase  extends CdmImportBase<EfloraImportConfig
 	private static final Logger logger = Logger.getLogger(EfloraImportBase.class);
 
 	
-	protected abstract boolean doInvoke(EfloraImportState state);
+	protected abstract void doInvoke(EfloraImportState state);
 
 	
 	

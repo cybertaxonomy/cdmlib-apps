@@ -88,7 +88,7 @@ public class PesiNoteExport extends PesiExportBase {
 	 * @see eu.etaxonomy.cdm.io.common.CdmIoBase#doInvoke(eu.etaxonomy.cdm.io.common.IoStateBase)
 	 */
 	@Override
-	protected boolean doInvoke(PesiExportState state) {
+	protected void doInvoke(PesiExportState state) {
 		try {
 			logger.error("*** Started Making " + pluralString + " ...");
 
@@ -215,11 +215,14 @@ public class PesiNoteExport extends PesiExportBase {
 
 			logger.error("*** Finished Making " + pluralString + " ..." + getSuccessString(success));
 			
-			return success;
+			if (!success){
+				state.setUnsuccessfull();
+			}
+			return;
 		} catch (SQLException e) {
 			e.printStackTrace();
 			logger.error(e.getMessage());
-			return false;
+			state.setUnsuccessfull();
 		}
 	}
 

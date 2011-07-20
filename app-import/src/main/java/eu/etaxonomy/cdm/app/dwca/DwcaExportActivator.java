@@ -72,29 +72,29 @@ public class DwcaExportActivator {
 	
 // ****************** ALL *****************************************
 	
-	private boolean doTaxa = true;
+//	private boolean doTaxa = true;
+//	private boolean doResourceRelation = true;
+//	private boolean doTypesAndSpecimen = true;
+//	private boolean doVernacularNames = true;
+//	private boolean doReferences = true;
+//	private boolean doDescription = true;
+//	private boolean doDistributions = true;
+//	private boolean doImages = false;
+//	private boolean doMetaData = true;
+//	private boolean doEml = true;
+
+// ************************ NONE **************************************** //
+	
+	private boolean doTaxa = false;
 	private boolean doResourceRelation = true;
-	private boolean doTypesAndSpecimen = true;
-	private boolean doVernacularNames = true;
+	private boolean doTypesAndSpecimen = false;
+	private boolean doVernacularNames = false;
 	private boolean doReferences = true;
 	private boolean doDescription = true;
 	private boolean doDistributions = true;
 	private boolean doImages = false;
-	private boolean doMetaData = true;
-	private boolean doEml = true;
-
-// ************************ NONE **************************************** //
-	
-//	private boolean doTaxa = false;
-//	private boolean doResourceRelation = false;
-//	private boolean doTypesAndSpecimen = false;
-//	private boolean doVernacularNames = false;
-//	private boolean doReferences = false;
-//	private boolean doDescription = false;
-//	private boolean doDistributions = false;
-//	private boolean doImages = false;
-//	private boolean doMetaData = false;
-//	private boolean doEml = false;
+	private boolean doMetaData = false;
+	private boolean doEml = false;
 	
 	public boolean 	doExport(ICdmDataSource source){
 		System.out.println("Start export to DWC-A ("+ fileDestination + ") ...");

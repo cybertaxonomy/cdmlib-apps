@@ -74,9 +74,8 @@ public abstract class CentralAfricaChecklistImportBase<CDM_BASE extends CdmBase>
 		this.cdmTargetClass = cdmTargetClass;
 	}
 
-	protected boolean doInvoke(CentralAfricaChecklistImportState state){
+	protected void doInvoke(CentralAfricaChecklistImportState state){
 		logger.info("start make " + getPluralString() + " ...");
-		boolean success = true ;
 		CentralAfricaChecklistImportConfigurator config = state.getConfig();
 		Source source = config.getSource();
 			
@@ -91,11 +90,12 @@ public abstract class CentralAfricaChecklistImportBase<CDM_BASE extends CdmBase>
 			}
 		} catch (SQLException e) {
 			logger.error("SQLException:" +  e);
-			return false;
+			state.setUnsuccessfull();
+			return;
 		}
 		
-		logger.info("end make " + getPluralString() + " ... " + getSuccessString(success));
-		return success;
+		logger.info("end make " + getPluralString() + " ... " + getSuccessString(true));
+		return;
 	}
 	
 	public boolean doPartition(ResultSetPartitioner partitioner, CentralAfricaChecklistImportState state) {

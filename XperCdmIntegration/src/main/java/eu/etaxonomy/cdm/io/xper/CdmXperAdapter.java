@@ -10,7 +10,6 @@ import java.util.UUID;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
-import org.hsqldb.NumberSequence;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.TransactionStatus;
 
@@ -34,7 +33,6 @@ import eu.etaxonomy.cdm.model.description.MeasurementUnit;
 import eu.etaxonomy.cdm.model.description.QuantitativeData;
 import eu.etaxonomy.cdm.model.description.State;
 import eu.etaxonomy.cdm.model.description.StateData;
-import eu.etaxonomy.cdm.model.description.StatisticalMeasurementValue;
 import eu.etaxonomy.cdm.model.description.TaxonDescription;
 import eu.etaxonomy.cdm.model.description.WorkingSet;
 import eu.etaxonomy.cdm.model.taxon.Taxon;
@@ -727,9 +725,9 @@ public class CdmXperAdapter extends CdmIoBase implements IExternalAdapter{
 // ************************** Override ********************************/	
 	
 	@Override
-	protected boolean doInvoke(IoStateBase state) {
+	protected void doInvoke(IoStateBase state) {
 		//not needed
-		return false;
+		return;
 	}
 
 	@Override

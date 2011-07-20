@@ -26,11 +26,11 @@ import org.joda.time.DateTime;
 import eu.etaxonomy.cdm.common.CdmUtils;
 import eu.etaxonomy.cdm.io.common.CdmImportBase;
 import eu.etaxonomy.cdm.io.common.ICdmIO;
+import eu.etaxonomy.cdm.io.common.IImportConfigurator.EDITOR;
 import eu.etaxonomy.cdm.io.common.IPartitionedIO;
 import eu.etaxonomy.cdm.io.common.ImportHelper;
 import eu.etaxonomy.cdm.io.common.ResultSetPartitioner;
 import eu.etaxonomy.cdm.io.common.Source;
-import eu.etaxonomy.cdm.io.common.IImportConfigurator.EDITOR;
 import eu.etaxonomy.cdm.io.common.mapping.DbImportMapping;
 import eu.etaxonomy.cdm.model.common.AnnotatableEntity;
 import eu.etaxonomy.cdm.model.common.Annotation;
@@ -87,9 +87,8 @@ public abstract class GlobisImportBase<CDM_BASE extends CdmBase> extends CdmImpo
 		this.cdmTargetClass = cdmTargetClass;
 	}
 
-	protected boolean doInvoke(GlobisImportState state){
+	protected void doInvoke(GlobisImportState state){
 		logger.info("start make " + getPluralString() + " ...");
-		boolean success = true ;
 		GlobisImportConfigurator config = state.getConfig();
 		Source source = config.getSource();
 			
@@ -104,11 +103,11 @@ public abstract class GlobisImportBase<CDM_BASE extends CdmBase> extends CdmImpo
 			}
 		} catch (SQLException e) {
 			logger.error("SQLException:" +  e);
-			return false;
+			state.setUnsuccessfull();
 		}
 		
-		logger.info("end make " + getPluralString() + " ... " + getSuccessString(success));
-		return success;
+		logger.info("end make " + getPluralString() + " ... " + getSuccessString(true));
+		return;
 	}
 	
 	public boolean doPartition(ResultSetPartitioner partitioner, GlobisImportState state) {

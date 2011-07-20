@@ -21,6 +21,7 @@ import org.springframework.stereotype.Component;
 
 import eu.etaxonomy.cdm.app.images.AbstractImageImporter;
 import eu.etaxonomy.cdm.app.images.ImageImportConfigurator;
+import eu.etaxonomy.cdm.app.images.ImageImportState;
 import eu.etaxonomy.cdm.common.ExcelUtils;
 import eu.etaxonomy.cdm.model.description.Feature;
 import eu.etaxonomy.cdm.model.description.TaxonNameDescription;
@@ -47,14 +48,15 @@ public class PalmaeProtologueImport extends AbstractImageImporter {
 	 * @see eu.etaxonomy.cdm.app.images.AbstractImageImporter#invokeImageImport(eu.etaxonomy.cdm.io.common.IImportConfigurator)
 	 */
 	@Override
-	protected boolean invokeImageImport(ImageImportConfigurator config) {
+	protected void invokeImageImport(ImageImportState state) {
 		
 		ArrayList<HashMap<String, String>> contents;
 		try {
-			contents = ExcelUtils.parseXLS(config.getSource());
+			contents = ExcelUtils.parseXLS(state.getConfig().getSource());
 		} catch (/*FileNotFound*/Exception e) {
-			logger.error("FileNotFound: " + config.getSource().toString());
-			return false;
+			logger.error("FileNotFound: " + state.getConfig().getSource().toString());
+			state.setUnsuccessfull();
+			return;
 		}
 		
 		Set<TaxonNameBase> taxonNameStore = new HashSet<TaxonNameBase>();
@@ -115,7 +117,7 @@ public class PalmaeProtologueImport extends AbstractImageImporter {
 		getNameService().save(taxonNameStore);
 		logger.info(count + " protologues imported to CDM store.");
 		
-		return true;
+		return;
 	}
 	
 }

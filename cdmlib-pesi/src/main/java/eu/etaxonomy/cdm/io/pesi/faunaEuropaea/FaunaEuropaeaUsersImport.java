@@ -15,8 +15,8 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
-import java.util.UUID;
 import java.util.Map.Entry;
+import java.util.UUID;
 
 import org.apache.log4j.Logger;
 import org.springframework.stereotype.Component;
@@ -74,7 +74,7 @@ public class FaunaEuropaeaUsersImport extends FaunaEuropaeaImportBase {
 	 * @see eu.etaxonomy.cdm.io.common.CdmIoBase#doInvoke(eu.etaxonomy.cdm.io.common.IImportConfigurator, eu.etaxonomy.cdm.api.application.CdmApplicationController, java.util.Map)
 	 */
 	@Override
-	protected boolean doInvoke(FaunaEuropaeaImportState state) {				
+	protected void doInvoke(FaunaEuropaeaImportState state) {				
 
 		TransactionStatus txStatus = null;
 		Map<Integer, Reference> references = null;
@@ -86,7 +86,6 @@ public class FaunaEuropaeaUsersImport extends FaunaEuropaeaImportBase {
 		Source source = fauEuConfig.getSource();
 
 		String namespace = "Reference";
-		boolean success = true;
 		int i = 0;
 
 		String selectCountUsers = 
@@ -228,12 +227,12 @@ public class FaunaEuropaeaUsersImport extends FaunaEuropaeaImportBase {
 	        }
 		}catch(SQLException e) {
 			logger.error("SQLException:" +  e);
-			success = false;
+			state.setUnsuccessfull();
 		}
 
 		if(logger.isInfoEnabled()) { logger.info("End making References (Users) ..."); }
 		
-		return success;
+		return;
 	}
 
 	/**

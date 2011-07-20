@@ -60,10 +60,9 @@ public class ErmsGeneralImportValidator extends ErmsImportBase<CdmBase> implemen
 		return result;
 	}
 	
-	protected boolean doInvoke(ErmsImportState state){
-		boolean success = true;
+	protected void doInvoke(ErmsImportState state){
 		//do nothing
-		return success;
+		return;
 		
 	}
 	

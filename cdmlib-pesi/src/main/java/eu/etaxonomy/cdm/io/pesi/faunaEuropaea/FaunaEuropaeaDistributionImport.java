@@ -22,11 +22,8 @@ import org.apache.log4j.Logger;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.TransactionStatus;
 
-import eu.etaxonomy.cdm.io.common.CdmImportBase;
-import eu.etaxonomy.cdm.io.common.ImportConfiguratorBase;
 import eu.etaxonomy.cdm.io.common.Source;
 import eu.etaxonomy.cdm.model.description.Distribution;
-import eu.etaxonomy.cdm.model.description.Feature;
 import eu.etaxonomy.cdm.model.description.PresenceAbsenceTermBase;
 import eu.etaxonomy.cdm.model.description.PresenceTerm;
 import eu.etaxonomy.cdm.model.description.TaxonDescription;
@@ -75,7 +72,7 @@ public class FaunaEuropaeaDistributionImport extends FaunaEuropaeaImportBase {
 	 * @see eu.etaxonomy.cdm.io.common.CdmIoBase#doInvoke(eu.etaxonomy.cdm.io.common.IImportConfigurator, eu.etaxonomy.cdm.api.application.CdmApplicationController, java.util.Map)
 	 */
 	@Override
-	protected boolean doInvoke(FaunaEuropaeaImportState state) {	
+	protected void doInvoke(FaunaEuropaeaImportState state) {	
 		
 		int limit = state.getConfig().getLimitSave();
 		UUID noData;
@@ -271,11 +268,11 @@ public class FaunaEuropaeaDistributionImport extends FaunaEuropaeaImportBase {
 			}		
 		} catch (SQLException e) {
 			logger.error("SQLException:" +  e);
-			return false;
+			state.setUnsuccessfull();
 		}
 		if(logger.isInfoEnabled()) { logger.info("End making distributions..."); }
 		
-		return success;
+		return;
 	}
 
 	

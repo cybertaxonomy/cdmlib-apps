@@ -80,10 +80,9 @@ public class CyprusDistributionImport extends ExcelImporterBase<CyprusImportStat
 	private boolean areasCreated = false;
 	private Map<String, NamedArea> divisions = new HashMap<String, NamedArea>();
 	
-	private boolean makeAreasAndReference(CyprusImportState state) {
+	private void makeAreasAndReference(CyprusImportState state) {
 		if (areasCreated == false){
 			IInputTransformer transformer = state.getTransformer();
-			
 			try {
 				//divisions
 				makeNewDivisions(state, transformer);
@@ -93,36 +92,29 @@ public class CyprusDistributionImport extends ExcelImporterBase<CyprusImportStat
 				loadTaxa();
 				
 				areasCreated = true;
-				
-				return true;
-
+				return;
 			} catch (Exception e) {
 				e.printStackTrace();
-				return false;
+				state.setUnsuccessfull();
+				return;
 			}
-			
 		}
-		
-		
-		return true;
-		
 	}
 
 	/** 
 	 *  Stores taxa records in DB
 	 */
 	@Override
-    protected boolean firstPass(CyprusImportState state) {
+    protected void firstPass(CyprusImportState state) {
 		
-		boolean success = true;
-		success &= makeAreasAndReference(state);
+		makeAreasAndReference(state);
 		
 		CyprusDistributionRow taxonLight = state.getCyprusDistributionRow();
 		//species name
 		String taxonStr = taxonLight.getSpecies();
 		if ("#entfällt#".equalsIgnoreCase(taxonStr)){
 			logger.warn("entfällt");
-			return success;
+			return;
 		}
 		Taxon taxon = getTaxon(state, taxonStr);
 		Reference ref = getReference(taxonLight.getReference());
@@ -131,7 +123,7 @@ public class CyprusDistributionImport extends ExcelImporterBase<CyprusImportStat
 			getTaxonService().save(taxon);
 		}	
 			
-		return success;
+		return;
     }
 
 	
@@ -387,11 +379,9 @@ public class CyprusDistributionImport extends ExcelImporterBase<CyprusImportStat
 	 * @see eu.etaxonomy.cdm.io.excel.common.ExcelImporterBase#analyzeRecord(java.util.HashMap, eu.etaxonomy.cdm.io.excel.common.ExcelImportState)
 	 */
 	@Override
-    protected boolean analyzeRecord(HashMap<String, String> record, CyprusImportState state) {
+    protected void analyzeRecord(HashMap<String, String> record, CyprusImportState state) {
 		
-		boolean success = true;
     	Set<String> keys = record.keySet();
-    	
     	CyprusDistributionRow cyprusDistributionRow = new CyprusDistributionRow();
     	state.setCyprusDistributionRow(cyprusDistributionRow);
     	
@@ -429,11 +419,11 @@ public class CyprusDistributionImport extends ExcelImporterBase<CyprusImportStat
 				cyprusDistributionRow.setReference(value);
     			
 			} else {
-				success = false;
+				state.setUnsuccessfull();
 				logger.error("Unexpected column header " + key);
 			}
     	}
-    	return success;
+    	return;
     }
 	
 	
@@ -441,9 +431,9 @@ public class CyprusDistributionImport extends ExcelImporterBase<CyprusImportStat
 	 *  
 	 */
 	@Override
-    protected boolean secondPass(CyprusImportState state) {
-		boolean success = true;
-		return success;
+    protected void secondPass(CyprusImportState state) {
+		//no second pass for this import
+		return;
 	}
 	
 	@Override

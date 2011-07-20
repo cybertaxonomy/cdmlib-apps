@@ -12,14 +12,13 @@ package eu.etaxonomy.cdm.io;
 import java.io.File;
 import java.io.IOException;
 import java.net.MalformedURLException;
-import java.net.URI;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.Map.Entry;
+import java.util.Set;
 
 import org.apache.log4j.Logger;
 import org.apache.sanselan.ImageInfo;
@@ -31,7 +30,7 @@ import org.apache.sanselan.formats.jpeg.JpegImageMetadata;
 import org.springframework.stereotype.Component;
 
 import eu.etaxonomy.cdm.app.images.AbstractImageImporter;
-import eu.etaxonomy.cdm.app.images.ImageImportConfigurator;
+import eu.etaxonomy.cdm.app.images.ImageImportState;
 import eu.etaxonomy.cdm.model.agent.AgentBase;
 import eu.etaxonomy.cdm.model.agent.Person;
 import eu.etaxonomy.cdm.model.common.CdmBase;
@@ -166,11 +165,11 @@ public class PalmaeImageImport extends AbstractImageImporter {
 		
 	
 
-	protected boolean invokeImageImport (ImageImportConfigurator config){
+	protected void invokeImageImport (ImageImportState state){
 		
-		logger.info("Importing images from directory: " + config.getSourceNameString());
+		logger.info("Importing images from directory: " + state.getConfig().getSourceNameString());
 		
-		File sourceFolder = new File(config.getSource());
+		File sourceFolder = new File(state.getConfig().getSource());
 		String taxonName;
 		if(sourceFolder.isDirectory()){
 			int count = 0;
@@ -193,7 +192,7 @@ public class PalmaeImageImport extends AbstractImageImporter {
 					
 					
 					
-					Reference sec = referenceService.find(config.getSecUuid());
+					Reference sec = referenceService.find(state.getConfig().getSecUuid());
 
 					List<TaxonBase> taxa = new ArrayList<TaxonBase>();
 					if (taxonName != null){
@@ -223,7 +222,7 @@ public class PalmaeImageImport extends AbstractImageImporter {
 						// URL for this image
 						URL url = null;
 						try {
-							url = new URL(config.getMediaUrlString() + file.getName());
+							url = new URL(state.getConfig().getMediaUrlString() + file.getName());
 						} catch (MalformedURLException e) {
 							logger.warn("URL is malformed: "+ url);
 						}
@@ -281,7 +280,7 @@ public class PalmaeImageImport extends AbstractImageImporter {
 							media.addRights(copyright);
 						}
 						
-						Reference sourceRef = config.getSourceReference();
+						Reference sourceRef = state.getConfig().getSourceReference();
 						TaxonDescription description = taxon.getOrCreateImageGallery(sourceRef == null ? null :sourceRef.getTitleCache());
 						
 						
@@ -312,7 +311,7 @@ public class PalmaeImageImport extends AbstractImageImporter {
 		}else{
 			logger.error("given source folder is not a directory");
 		}
-		return true;
+		return;
 	}
 	
 	private String getFirstName(String artist){

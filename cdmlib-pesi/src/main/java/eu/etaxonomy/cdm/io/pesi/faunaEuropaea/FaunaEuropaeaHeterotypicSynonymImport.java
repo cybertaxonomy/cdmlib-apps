@@ -55,7 +55,7 @@ implements ICdmImport<FaunaEuropaeaImportConfigurator, FaunaEuropaeaImportState>
 	 * @see eu.etaxonomy.cdm.io.common.CdmIoBase#doInvoke(eu.etaxonomy.cdm.io.common.IoStateBase)
 	 */
 	@Override
-	protected boolean doInvoke(FaunaEuropaeaImportState state) {
+	protected void doInvoke(FaunaEuropaeaImportState state) {
 		
 		TransactionStatus txStatus = null;
 		List<Synonym> synonymList = null;
@@ -137,7 +137,7 @@ implements ICdmImport<FaunaEuropaeaImportConfigurator, FaunaEuropaeaImportState>
 				e.printStackTrace();
 			}
 		}
-		return true;
+		return;
 	}
 
 	/* (non-Javadoc)

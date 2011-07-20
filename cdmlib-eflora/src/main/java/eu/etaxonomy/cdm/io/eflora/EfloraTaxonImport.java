@@ -107,7 +107,7 @@ public class EfloraTaxonImport  extends EfloraImportBase implements ICdmIO<Eflor
 	private UnmatchedLeads unmatchedLeads;
 	
 	@Override
-	public boolean doInvoke(EfloraImportState state){
+	public void doInvoke(EfloraImportState state){
 		logger.info("start make Taxa ...");
 		
 		//FIXME reset state
@@ -189,7 +189,10 @@ public class EfloraTaxonImport  extends EfloraImportBase implements ICdmIO<Eflor
 //		invokeDoKey(state);
 		logger.info("end makeKey ...");
 		
-		return success.getValue();
+		if (! success.getValue()){
+			state.setUnsuccessfull();
+		}
+		return ;
 	}
 
 

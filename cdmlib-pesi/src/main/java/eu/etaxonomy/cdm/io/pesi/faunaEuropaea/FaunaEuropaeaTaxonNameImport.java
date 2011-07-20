@@ -104,17 +104,12 @@ public class FaunaEuropaeaTaxonNameImport extends FaunaEuropaeaImportBase  {
 	/** 
 	 * Import taxa from FauEU DB
 	 */
-	protected boolean doInvoke(FaunaEuropaeaImportState state) {				
-		
-		boolean success = true;
+	protected void doInvoke(FaunaEuropaeaImportState state) {				
 		if(logger.isInfoEnabled()) { logger.info("Start making taxa..."); }
 		
-		
-		
-		success = processTaxa(state);
-		
+		processTaxa(state);
 		logger.info("End making taxa...");
-		return success;
+		return;
 	}
 
 	/**
@@ -151,7 +146,7 @@ public class FaunaEuropaeaTaxonNameImport extends FaunaEuropaeaImportBase  {
 	}
 
 	/** Retrieve taxa from FauEu DB, process in blocks */
-	private boolean processTaxa(FaunaEuropaeaImportState state) {
+	private void processTaxa(FaunaEuropaeaImportState state) {
 
 		int limit = state.getConfig().getLimitSave();
 
@@ -170,8 +165,7 @@ public class FaunaEuropaeaTaxonNameImport extends FaunaEuropaeaImportBase  {
 
 		Source source = fauEuConfig.getSource();
 		int i = 0;
-		boolean success = true;
-
+		
 		String selectCount = 
 			" SELECT count(*) ";
 
@@ -464,7 +458,7 @@ public class FaunaEuropaeaTaxonNameImport extends FaunaEuropaeaImportBase  {
 
 				if (((i % limit) == 0 && i != 1 ) || i == count) { 
 
-					success = processTaxaSecondPass(state, taxonMap, fauEuTaxonMap, synonymSet);
+					processTaxaSecondPass(state, taxonMap, fauEuTaxonMap, synonymSet);
 					if(logger.isDebugEnabled()) { logger.debug("Saving taxa ..."); }
 					getTaxonService().save((Collection)taxonMap.values());
 					getTaxonService().save((Collection)synonymSet);
@@ -482,10 +476,10 @@ public class FaunaEuropaeaTaxonNameImport extends FaunaEuropaeaImportBase  {
 			}
 		} catch (SQLException e) {
 			logger.error("SQLException:" +  e);
-			success = false;
+			state.setUnsuccessfull();
 		}
 
-		return success;
+		return;
 	}
 
 	/**
@@ -510,15 +504,12 @@ public class FaunaEuropaeaTaxonNameImport extends FaunaEuropaeaImportBase  {
 	/**
 	 * Processes taxa from complete taxon store
 	 */
-	private boolean processTaxaSecondPass(FaunaEuropaeaImportState state, Map<Integer, TaxonBase<?>> taxonMap,
+	private void processTaxaSecondPass(FaunaEuropaeaImportState state, Map<Integer, TaxonBase<?>> taxonMap,
 			Map<Integer, FaunaEuropaeaTaxon> fauEuTaxonMap, Set<Synonym> synonymSet) {
-
 		if(logger.isDebugEnabled()) { logger.debug("Processing taxa second pass..."); }
 
 		FaunaEuropaeaImportConfigurator fauEuConfig = state.getConfig();
 		
-		boolean success = true;
-
 		for (int id : taxonMap.keySet())
 		{
 			if (logger.isDebugEnabled()) { logger.debug("Taxon # " + id); }
@@ -550,7 +541,7 @@ public class FaunaEuropaeaTaxonNameImport extends FaunaEuropaeaImportBase  {
 				}
 				
 				if (actualGenusId.intValue() != originalGenusId.intValue() && taxonBase.isInstanceOf(Taxon.class)) {
-					success = createBasionym(fauEuTaxon, taxonBase, taxonName, fauEuConfig, synonymSet);
+					createBasionym(fauEuTaxon, taxonBase, taxonName, fauEuConfig, synonymSet);
 				} else if (fauEuTaxon.isParenthesis()) {
 					//the authorteam should be set in parenthesis because there should be a basionym, but we do not know it?
 					ZoologicalName zooName = taxonName.deproxy(taxonName, ZoologicalName.class);
@@ -562,15 +553,13 @@ public class FaunaEuropaeaTaxonNameImport extends FaunaEuropaeaImportBase  {
 				
 			}
 		}
-		return success;	
+		return;	
 	}
 
 	
-	private boolean createBasionym(FaunaEuropaeaTaxon fauEuTaxon, TaxonBase<?> taxonBase, 
+	private void createBasionym(FaunaEuropaeaTaxon fauEuTaxon, TaxonBase<?> taxonBase, 
 			TaxonNameBase<?,?>taxonName, FaunaEuropaeaImportConfigurator fauEuConfig,
 			Set<Synonym> synonymSet) {
-
-		boolean success = true;
 
 		try {
 			ZoologicalName zooName = taxonName.deproxy(taxonName, ZoologicalName.class);
@@ -630,7 +619,7 @@ public class FaunaEuropaeaTaxonNameImport extends FaunaEuropaeaImportBase  {
 		}
 		
 		
-		return success;
+		return;
 	}
 	
 	

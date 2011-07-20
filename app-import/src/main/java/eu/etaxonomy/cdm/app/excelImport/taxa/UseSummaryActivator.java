@@ -45,15 +45,17 @@ public class UseSummaryActivator {
 			File file = new File(fileName);
 			uri = file.toURI();
 //			uri = new URI(fileName);
-			NormalExplicitImportConfigurator normalExplicitImportConfigurator = 
+			NormalExplicitImportConfigurator config = 
 				NormalExplicitImportConfigurator.NewInstance(uri, destinationDb, code, dbSchemaValidation);
 	
+			config.setSourceReferenceTitle("Use Summary Excel Import");
+			
 			CdmDefaultImport<NormalExplicitImportConfigurator> normalExplicitImport = 
 				new CdmDefaultImport<NormalExplicitImportConfigurator>();
 	
 			// invoke import
 			logger.debug("Invoking Normal Explicit Excel import");
-			normalExplicitImport.invoke(normalExplicitImportConfigurator);
+			normalExplicitImport.invoke(config);
 //		} catch (URISyntaxException e) {
 //			e.printStackTrace();
 //		}

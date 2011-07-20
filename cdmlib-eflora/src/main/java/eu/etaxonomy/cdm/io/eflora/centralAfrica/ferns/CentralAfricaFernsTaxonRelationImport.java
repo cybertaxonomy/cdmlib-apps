@@ -132,11 +132,11 @@ public class CentralAfricaFernsTaxonRelationImport  extends CentralAfricaFernsIm
 	 * @see eu.etaxonomy.cdm.io.eflora.centralAfrica.ferns.CentralAfricaFernsImportBase#doInvoke(eu.etaxonomy.cdm.io.eflora.centralAfrica.ferns.CentralAfricaFernsImportState)
 	 */
 	@Override
-	protected boolean doInvoke(CentralAfricaFernsImportState state) {
+	protected void doInvoke(CentralAfricaFernsImportState state) {
 		this.state = state;
 		fillTaxonMap();
-		boolean success = super.doInvoke(state);
-		return success;
+		super.doInvoke(state);
+		return;
 	}
 
 

@@ -72,10 +72,8 @@ public class CommonNameExcelImport extends ExcelImporterBase<CichorieaeCommonNam
 
 	
 	@Override
-    protected boolean analyzeRecord(HashMap<String, String> record, CichorieaeCommonNameImportState state) {
-		
-		boolean success = true;
-    	Set<String> keys = record.keySet();
+    protected void analyzeRecord(HashMap<String, String> record, CichorieaeCommonNameImportState state) {
+		Set<String> keys = record.keySet();
     	
     	CommonNameRow row = new CommonNameRow();
     	state.setCommonNameRow(row);
@@ -118,11 +116,11 @@ public class CommonNameExcelImport extends ExcelImporterBase<CichorieaeCommonNam
 			} else if(key.equalsIgnoreCase(AREA_COLUMN)) {
 				row.setArea(value);
  			} else {
-				success = false;
+				state.setUnsuccessfull();
 				logger.error("Unexpected column header " + key);
 			}
     	}
-    	return success;
+    	return;
     }
 	
 	
@@ -130,11 +128,9 @@ public class CommonNameExcelImport extends ExcelImporterBase<CichorieaeCommonNam
 	 *  Stores taxa records in DB
 	 */
 	@Override
-    protected boolean firstPass(CichorieaeCommonNameImportState state) {
+    protected void firstPass(CichorieaeCommonNameImportState state) {
 		
-		boolean success = true;
 		CommonNameRow taxonLight = state.getCommonNameRow();
-
 		//species name
 		String speciesStr = taxonLight.getSpecies();
 		TaxonDescription taxonDesc = getTaxon(state, speciesStr);
@@ -148,7 +144,7 @@ public class CommonNameExcelImport extends ExcelImporterBase<CichorieaeCommonNam
 //		TaxonNameBase nameUsedInSource = getNameUsedInSource(state, taxonLight.getNameUsedInSource());
 
 		getTaxonService().save(taxonDesc.getTaxon());
-		return success;
+		return;
     }
 
 
@@ -324,9 +320,9 @@ public class CommonNameExcelImport extends ExcelImporterBase<CichorieaeCommonNam
 	 *  Stores parent-child, synonym and common name relationships
 	 */
 	@Override
-    protected boolean secondPass(CichorieaeCommonNameImportState state) {
-		boolean success = true;
-		return success;
+    protected void secondPass(CichorieaeCommonNameImportState state) {
+		//no second pass
+		return;
 	}
 
 

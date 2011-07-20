@@ -78,17 +78,16 @@ public class FaunaEuropaeaAdditionalTaxonDataImport extends FaunaEuropaeaImportB
 	/** 
 	 * Import taxa from FauEU DB
 	 */
-	protected boolean doInvoke(FaunaEuropaeaImportState state) {				
+	protected void doInvoke(FaunaEuropaeaImportState state) {				
 		
-		boolean success = true;
 		if(logger.isInfoEnabled()) {
 			logger.info("Started creating " + pluralString + "...");
 		}
 		
-		success = processAdditionalInfraGenericEpithets(state);
+		processAdditionalInfraGenericEpithets(state);
 		
 		logger.info("The End is Nigh... " + pluralString + "...");
-		return success;
+		return;
 	}
 
 	/**
@@ -96,8 +95,7 @@ public class FaunaEuropaeaAdditionalTaxonDataImport extends FaunaEuropaeaImportB
 	 * @param state
 	 * @return
 	 */
-	private boolean processAdditionalInfraGenericEpithets(FaunaEuropaeaImportState state) {
-		boolean success = true;
+	private void processAdditionalInfraGenericEpithets(FaunaEuropaeaImportState state) {
 		int count = 0;
 		int pageSize = 1000;
 		Set<UUID> uuidSet = new HashSet<UUID>();
@@ -171,7 +169,7 @@ public class FaunaEuropaeaAdditionalTaxonDataImport extends FaunaEuropaeaImportB
 		commitTransaction(txStatus);
 		logger.info("Committed transaction.");
 		
-		return success;
+		return;
 	}
 
 }

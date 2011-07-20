@@ -46,7 +46,7 @@ public abstract class AbstractImageImporter extends CdmIoBase<ImageImportState> 
 	 * @see eu.etaxonomy.cdm.io.common.CdmIoBase#doInvoke(eu.etaxonomy.cdm.io.common.IImportConfigurator, java.util.Map)
 	 */
 	@Override
-	public boolean doInvoke(ImageImportState state) {
+	public void doInvoke(ImageImportState state) {
 		//cdmApp = config.getCdmAppController();
 		//if (config instanceof ImageImportConfigurator){
 		
@@ -58,11 +58,11 @@ public abstract class AbstractImageImporter extends CdmIoBase<ImageImportState> 
 		commonService = getCommonService();
 		classificationService = getClassificationService();
 
-		boolean result = invokeImageImport(state.getConfig());
+		invokeImageImport(state);
 		
 		commitTransaction(status);
 		
-		return result;
+		return;
 	}
 
 	/**
@@ -71,7 +71,7 @@ public abstract class AbstractImageImporter extends CdmIoBase<ImageImportState> 
 	 * 
 	 * @param config
 	 */
-	protected abstract boolean invokeImageImport(ImageImportConfigurator config);
+	protected abstract void invokeImageImport(ImageImportState state);
 
 
 	/* (non-Javadoc)

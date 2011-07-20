@@ -82,9 +82,8 @@ public abstract class CentralAfricaFernsImportBase<CDM_BASE extends CdmBase> ext
 		this.cdmTargetClass = cdmTargetClass;
 	}
 
-	protected boolean doInvoke(CentralAfricaFernsImportState state){
+	protected void doInvoke(CentralAfricaFernsImportState state){
 		logger.info("start make " + getPluralString() + " ...");
-		boolean success = true ;
 		CentralAfricaFernsImportConfigurator config = state.getConfig();
 		Source source = config.getSource();
 			
@@ -99,11 +98,12 @@ public abstract class CentralAfricaFernsImportBase<CDM_BASE extends CdmBase> ext
 			}
 		} catch (SQLException e) {
 			logger.error("SQLException:" +  e);
-			return false;
+			state.setUnsuccessfull();
+			return;
 		}
 		
-		logger.info("end make " + getPluralString() + " ... " + getSuccessString(success));
-		return success;
+		logger.info("end make " + getPluralString() + " ... " + getSuccessString(true));
+		return;
 	}
 	
 	public boolean doPartition(ResultSetPartitioner partitioner, CentralAfricaFernsImportState state) {

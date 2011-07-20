@@ -21,7 +21,6 @@ import eu.etaxonomy.cdm.io.berlinModel.out.mapper.MethodMapper;
 import eu.etaxonomy.cdm.io.common.Source;
 import eu.etaxonomy.cdm.model.common.CdmBase;
 import eu.etaxonomy.cdm.model.common.DescriptionElementSource;
-import eu.etaxonomy.cdm.model.description.DescriptionBase;
 import eu.etaxonomy.cdm.model.description.DescriptionElementBase;
 import eu.etaxonomy.cdm.model.description.TaxonDescription;
 import eu.etaxonomy.cdm.model.description.TextData;
@@ -78,7 +77,7 @@ public class PesiAdditionalTaxonSourceExport extends PesiExportBase {
 	 * @see eu.etaxonomy.cdm.io.common.CdmIoBase#doInvoke(eu.etaxonomy.cdm.io.common.IoStateBase)
 	 */
 	@Override
-	protected boolean doInvoke(PesiExportState state) {
+	protected void doInvoke(PesiExportState state) {
 		try {
 			logger.error("*** Started Making " + pluralString + " ...");
 
@@ -192,11 +191,12 @@ public class PesiAdditionalTaxonSourceExport extends PesiExportBase {
 	
 			logger.error("*** Finished Making " + pluralString + " ..." + getSuccessString(success));
 			
-			return success;
+			return;
 		} catch (SQLException e) {
 			e.printStackTrace();
 			logger.error(e.getMessage());
-			return false;
+			state.setUnsuccessfull();
+			return;
 		}
 	}
 

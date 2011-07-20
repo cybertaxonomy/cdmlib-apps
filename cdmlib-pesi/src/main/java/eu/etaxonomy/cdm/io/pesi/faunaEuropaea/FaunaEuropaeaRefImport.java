@@ -17,6 +17,7 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Set;
 import java.util.UUID;
 
@@ -35,14 +36,11 @@ import eu.etaxonomy.cdm.model.common.OriginalSourceBase;
 import eu.etaxonomy.cdm.model.description.Feature;
 import eu.etaxonomy.cdm.model.description.TaxonDescription;
 import eu.etaxonomy.cdm.model.description.TextData;
-import eu.etaxonomy.cdm.model.reference.IGeneric;
 import eu.etaxonomy.cdm.model.reference.Reference;
 import eu.etaxonomy.cdm.model.reference.ReferenceFactory;
 import eu.etaxonomy.cdm.model.taxon.Synonym;
 import eu.etaxonomy.cdm.model.taxon.Taxon;
 import eu.etaxonomy.cdm.model.taxon.TaxonBase;
-
-import java.util.Map.Entry;
 
 
 /**
@@ -87,7 +85,7 @@ public class FaunaEuropaeaRefImport extends FaunaEuropaeaImportBase {
 	 * @see eu.etaxonomy.cdm.io.common.CdmIoBase#doInvoke(eu.etaxonomy.cdm.io.common.IImportConfigurator, eu.etaxonomy.cdm.api.application.CdmApplicationController, java.util.Map)
 	 */
 	@Override
-	protected boolean doInvoke(FaunaEuropaeaImportState state) {				
+	protected void doInvoke(FaunaEuropaeaImportState state) {				
 
 		TransactionStatus txStatus = null;
 		List<TaxonBase> taxonList = null;
@@ -104,7 +102,6 @@ public class FaunaEuropaeaRefImport extends FaunaEuropaeaImportBase {
 		Source source = fauEuConfig.getSource();
 
 		String namespace = "Reference";
-		boolean success = true;
 		int i = 0;
 
 		String selectCountTaxRefs = 
@@ -261,7 +258,7 @@ public class FaunaEuropaeaRefImport extends FaunaEuropaeaImportBase {
 	        }
 		}catch(SQLException e) {
 			logger.error("SQLException:" +  e);
-			success = false;
+			state.setUnsuccessfull();
 		}
 	        
 	        
@@ -463,12 +460,12 @@ public class FaunaEuropaeaRefImport extends FaunaEuropaeaImportBase {
 			rsTaxRefs.close();
 		} catch (SQLException e) {
 			logger.error("SQLException:" +  e);
-			success = false;
+			state.setUnsuccessfull();
 		}
 		
 		if(logger.isInfoEnabled()) { logger.info("End making references ..."); }
 		
-		return success;
+		return;
 	}
 
 	

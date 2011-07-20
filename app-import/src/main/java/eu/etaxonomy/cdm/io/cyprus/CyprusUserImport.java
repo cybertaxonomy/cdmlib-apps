@@ -45,7 +45,7 @@ public class CyprusUserImport extends CdmImportBase<CyprusImportConfigurator, Cy
 
 
 	@Override
-	protected boolean doInvoke(CyprusImportState state) {
+	protected void doInvoke(CyprusImportState state) {
 		this.getAuthenticationManager();
 		
 		String username = "cmi";
@@ -69,7 +69,7 @@ public class CyprusUserImport extends CdmImportBase<CyprusImportConfigurator, Cy
 		
 		
 
-		return true;
+		return;
 	}
 
 

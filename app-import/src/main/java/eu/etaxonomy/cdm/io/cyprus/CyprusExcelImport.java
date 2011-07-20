@@ -121,10 +121,9 @@ public class CyprusExcelImport extends ExcelImporterBase<CyprusImportState> {
 	
 	
 	@Override
-    protected boolean analyzeRecord(HashMap<String, String> record, CyprusImportState state) {
+    protected void analyzeRecord(HashMap<String, String> record, CyprusImportState state) {
 		
-		boolean success = true;
-    	Set<String> keys = record.keySet();
+		Set<String> keys = record.keySet();
     	
     	CyprusRow cyprusRow = new CyprusRow();
     	state.setCyprusRow(cyprusRow);
@@ -189,11 +188,11 @@ public class CyprusExcelImport extends ExcelImporterBase<CyprusImportState> {
 				cyprusRow.setDivision(value);
     			
 			} else {
-				success = false;
+				state.setUnsuccessfull();
 				logger.error("Unexpected column header " + key);
 			}
     	}
-    	return success;
+    	return;
     }
 	
 	private static INonViralNameParser nameParser = NonViralNameParserImpl.NewInstance();
@@ -288,9 +287,8 @@ public class CyprusExcelImport extends ExcelImporterBase<CyprusImportState> {
 	 *  Stores taxa records in DB
 	 */
 	@Override
-    protected boolean firstPass(CyprusImportState state) {
+    protected void firstPass(CyprusImportState state) {
 		
-		boolean success = true;
 		makeTerms(state);
 		CyprusRow taxonLight = state.getCyprusRow();
 		Reference citation = null;
@@ -346,7 +344,7 @@ public class CyprusExcelImport extends ExcelImporterBase<CyprusImportState> {
 //			state.putHigherTaxon(higherName, uuid);//(speciesStr, mainTaxon);
 			getTaxonService().save(mainTaxon);
 		}
-		return success;
+		return;
     }
 
 
@@ -501,11 +499,9 @@ public class CyprusExcelImport extends ExcelImporterBase<CyprusImportState> {
 	 *  Stores parent-child, synonym and common name relationships
 	 */
 	@Override
-    protected boolean secondPass(CyprusImportState state) {
-		boolean success = true;
+    protected void secondPass(CyprusImportState state) {
 //		CyprusRow cyprusRow = state.getCyprusRow();
-
-		return success;
+		return;
 	}
 
 

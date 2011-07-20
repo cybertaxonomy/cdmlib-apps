@@ -27,15 +27,14 @@ import org.springframework.transaction.TransactionStatus;
 import eu.etaxonomy.cdm.io.common.ICdmIO;
 import eu.etaxonomy.cdm.io.common.MapWrapper;
 import eu.etaxonomy.cdm.io.common.Source;
-import eu.etaxonomy.cdm.io.profiler.ProfilerController;
 import eu.etaxonomy.cdm.model.agent.TeamOrPersonBase;
 import eu.etaxonomy.cdm.model.common.CdmBase;
 import eu.etaxonomy.cdm.model.reference.Reference;
+import eu.etaxonomy.cdm.model.taxon.Classification;
 import eu.etaxonomy.cdm.model.taxon.Synonym;
 import eu.etaxonomy.cdm.model.taxon.SynonymRelationshipType;
 import eu.etaxonomy.cdm.model.taxon.Taxon;
 import eu.etaxonomy.cdm.model.taxon.TaxonBase;
-import eu.etaxonomy.cdm.model.taxon.Classification;
 
 
 
@@ -91,10 +90,8 @@ public class FaunaEuropaeaRelTaxonIncludeImport extends FaunaEuropaeaImportBase 
 //		}
 	}
 	
-	protected boolean doInvoke(FaunaEuropaeaImportState state) {				
+	protected void doInvoke(FaunaEuropaeaImportState state) {				
 		
-		boolean success = true;
-
 		Map<String, MapWrapper<? extends CdmBase>> stores = state.getStores();
 
 		MapWrapper<TeamOrPersonBase> authorStore = (MapWrapper<TeamOrPersonBase>)stores.get(ICdmIO.TEAM_STORE);
@@ -113,28 +110,28 @@ public class FaunaEuropaeaRelTaxonIncludeImport extends FaunaEuropaeaImportBase 
 		
 		//ProfilerController.memorySnapshot();
 		if (state.getConfig().isDoTaxonomicallyIncluded()) {
-			success = processParentsChildren(state);
+			processParentsChildren(state);
 		}
 		//ProfilerController.memorySnapshot();
 		if (state.getConfig().isDoMisappliedNames()) {
-			success = processMisappliedNames(state);
+			processMisappliedNames(state);
 		}
 		//ProfilerController.memorySnapshot();
 		if (state.getConfig().isDoHeterotypicSynonyms()) {
 			if(logger.isInfoEnabled()) { 
 				logger.info("Start making heterotypic synonym relationships..."); 
 			}
-			success = processHeterotypicSynonyms(state, ALL_SYNONYM_FROM_CLAUSE);
+			processHeterotypicSynonyms(state, ALL_SYNONYM_FROM_CLAUSE);
 		}
 		//ProfilerController.memorySnapshot();
 
 		logger.info("End making taxa...");
 
-		return success;
+		return;
 	}
 
 	/** Retrieve child-parent uuid map from CDM DB */
-	private boolean processParentsChildren(FaunaEuropaeaImportState state) {
+	private void processParentsChildren(FaunaEuropaeaImportState state) {
 
 		int limit = state.getConfig().getLimitSave();
 
@@ -144,8 +141,7 @@ public class FaunaEuropaeaRelTaxonIncludeImport extends FaunaEuropaeaImportBase 
 		FaunaEuropaeaImportConfigurator fauEuConfig = state.getConfig();
 		Source source = fauEuConfig.getSource();
 		int i = 0;
-		boolean success = true;
-
+		
 		String selectCount = 
 			" SELECT count(*) ";
 
@@ -207,7 +203,7 @@ public class FaunaEuropaeaRelTaxonIncludeImport extends FaunaEuropaeaImportBase 
 				}
 				if (((i % limit) == 0 && i != 1 ) || i == count) { 
 
-					success = createParentChildRelationships(state, childParentMap);
+					createParentChildRelationships(state, childParentMap);
 
 					childParentMap = null;
 					commitTransaction(txStatus);
@@ -220,14 +216,14 @@ public class FaunaEuropaeaRelTaxonIncludeImport extends FaunaEuropaeaImportBase 
 
 		} catch (SQLException e) {
 			logger.error("SQLException:" +  e);
-			success = false;
+			state.setUnsuccessfull();
 		}
-		return success;		
+		return;		
 	}
 	
 
 	/** Retrieve misapplied name / accepted taxon uuid map from CDM DB */
-	private boolean processMisappliedNames(FaunaEuropaeaImportState state) {
+	private void processMisappliedNames(FaunaEuropaeaImportState state) {
 
 		int limit = state.getConfig().getLimitSave();
 
@@ -237,8 +233,7 @@ public class FaunaEuropaeaRelTaxonIncludeImport extends FaunaEuropaeaImportBase 
 		FaunaEuropaeaImportConfigurator fauEuConfig = state.getConfig();
 		Source source = fauEuConfig.getSource();
 		int i = 0;
-		boolean success = true;
-
+		
 		String selectCount = 
 			" SELECT count(*) ";
 
@@ -301,7 +296,7 @@ public class FaunaEuropaeaRelTaxonIncludeImport extends FaunaEuropaeaImportBase 
 
 				if (((i % limit) == 0 && i != 1 ) || i == count) { 
 
-					success = createMisappliedNameRelationships(state, childParentMap);
+					createMisappliedNameRelationships(state, childParentMap);
 
 					childParentMap = null;
 					commitTransaction(txStatus);
@@ -314,20 +309,19 @@ public class FaunaEuropaeaRelTaxonIncludeImport extends FaunaEuropaeaImportBase 
 
 		} catch (SQLException e) {
 			logger.error("SQLException:" +  e);
-			success = false;
+			state.setUnsuccessfull();
 		}
-		return success;		
+		return;		
 	}
 
 
 
 	/** Retrieve synonyms from FauEuDB DB */
-	private boolean processHeterotypicSynonyms(FaunaEuropaeaImportState state, String fromClause) {
+	private void processHeterotypicSynonyms(FaunaEuropaeaImportState state, String fromClause) {
 
 		FaunaEuropaeaImportConfigurator fauEuConfig = state.getConfig();
 		Source source = fauEuConfig.getSource();
-		boolean success = true;
-
+		
 		String selectCount = 
 			" SELECT count(*) ";
 
@@ -356,25 +350,24 @@ public class FaunaEuropaeaRelTaxonIncludeImport extends FaunaEuropaeaImportBase 
 				logger.info("Select Query: " + selectQuery);
 			}
 	        
-	        success = storeSynonymRelationships(rs, count, state);
+	        storeSynonymRelationships(rs, count, state);
 
 		} catch (SQLException e) {
 			logger.error("SQLException:" +  e);
-			success = false;
+			state.setUnsuccessfull();
 		}
-		return success;		
+		return;		
 	}
 	
 	
 
 	
-	private boolean storeSynonymRelationships(ResultSet rs, int count, FaunaEuropaeaImportState state) 
+	private void storeSynonymRelationships(ResultSet rs, int count, FaunaEuropaeaImportState state) 
 	throws SQLException {
 
 		TransactionStatus txStatus = null;
 		Map<UUID, UUID> synonymAcceptedMap = null;
 		int i = 0;
-		boolean success = true;
 		int limit = state.getConfig().getLimitSave();
 
 		while (rs.next()) {
@@ -406,7 +399,7 @@ public class FaunaEuropaeaRelTaxonIncludeImport extends FaunaEuropaeaImportBase 
 
 			if (((i % limit) == 0 && i != 1 ) || i == count) { 
 
-				success = createHeterotypicSynonyms(state, synonymAcceptedMap);
+				createHeterotypicSynonyms(state, synonymAcceptedMap);
 
 				synonymAcceptedMap = null;
 				commitTransaction(txStatus);
@@ -416,7 +409,7 @@ public class FaunaEuropaeaRelTaxonIncludeImport extends FaunaEuropaeaImportBase 
 				}
 			}
 		}
-		return success;
+		return;
 	}
 	
 	
@@ -426,11 +419,10 @@ public class FaunaEuropaeaRelTaxonIncludeImport extends FaunaEuropaeaImportBase 
 	/* Creates parent-child relationships.
 	 * Parent-child pairs are retrieved in blocks via findByUUID(Set<UUID>) from CDM DB. 
 	 */
-	private boolean createParentChildRelationships(FaunaEuropaeaImportState state, Map<UUID, UUID> childParentMap) {
+	private void createParentChildRelationships(FaunaEuropaeaImportState state, Map<UUID, UUID> childParentMap) {
 		//gets the taxon "Hydroscaphidae"(family)
 		TaxonBase taxon = getTaxonService().find(UUID.fromString(acceptedTaxonUUID));
 		sourceRef = taxon.getSec();
-		boolean success = true;
 		int limit = state.getConfig().getLimitSave();
 		
 			Classification tree = getClassificationFor(state, sourceRef);
@@ -538,19 +530,18 @@ public class FaunaEuropaeaRelTaxonIncludeImport extends FaunaEuropaeaImportBase 
 			parents = null;
 			tree = null;
 		
-		return success;
+		return;
 	}
 
 	/* Creates misapplied name relationships.
 	 * Misapplied name-accepted taxon pairs are retrieved in blocks via findByUUID(Set<UUID>) from CDM DB. 
 	 */
-	private boolean createMisappliedNameRelationships(FaunaEuropaeaImportState state, Map<UUID, UUID> fromToMap) {
+	private void createMisappliedNameRelationships(FaunaEuropaeaImportState state, Map<UUID, UUID> fromToMap) {
 
 		//gets the taxon "Hydroscaphidae" (family)
 		
 		TaxonBase taxon = getTaxonService().find(UUID.fromString(acceptedTaxonUUID));
 		sourceRef = taxon.getSec();
-		boolean success = true;
 		int limit = state.getConfig().getLimitSave();
 		
 			Set<TaxonBase> misappliedNameSet = new HashSet<TaxonBase>(limit);
@@ -662,18 +653,17 @@ public class FaunaEuropaeaRelTaxonIncludeImport extends FaunaEuropaeaImportBase 
 			misappliedNames = null;
 			acceptedTaxa = null;
 		
-		return success;
+		return;
 	}
 
 	
 	/* Creates heterotypic synonym relationships.
 	 * Synonym-accepted taxon pairs are retrieved in blocks via findByUUID(Set<UUID>) from CDM DB. 
 	 */
-	private boolean createHeterotypicSynonyms(FaunaEuropaeaImportState state, Map<UUID, UUID> fromToMap) {
+	private void createHeterotypicSynonyms(FaunaEuropaeaImportState state, Map<UUID, UUID> fromToMap) {
 
 		int limit = state.getConfig().getLimitSave();
-		boolean success = true;
-
+		
 		Set<TaxonBase> synonymSet = new HashSet<TaxonBase>(limit);
 
 		Set<UUID> synonymUuidSet = fromToMap.keySet();
@@ -770,7 +760,7 @@ public class FaunaEuropaeaRelTaxonIncludeImport extends FaunaEuropaeaImportBase 
 		synonyms = null;
 		acceptedTaxa = null;
 
-		return success;
+		return;
 	}
 
 }

@@ -87,9 +87,8 @@ public abstract class ErmsImportBase<CDM_BASE extends CdmBase> extends CdmImport
 		this.cdmTargetClass = cdmTargetClass;
 	}
 
-	protected boolean doInvoke(ErmsImportState state){
+	protected void doInvoke(ErmsImportState state){
 		logger.info("start make " + getPluralString() + " ...");
-		boolean success = true ;
 		ErmsImportConfigurator config = state.getConfig();
 		Source source = config.getSource();
 			
@@ -104,11 +103,12 @@ public abstract class ErmsImportBase<CDM_BASE extends CdmBase> extends CdmImport
 			}
 		} catch (SQLException e) {
 			logger.error("SQLException:" +  e);
-			return false;
+			state.setUnsuccessfull();
+			return;
 		}
 		
-		logger.info("end make " + getPluralString() + " ... " + getSuccessString(success));
-		return success;
+		logger.info("end make " + getPluralString() + " ... " + getSuccessString(true));
+		return;
 	}
 	
 	public boolean doPartition(ResultSetPartitioner partitioner, ErmsImportState state) {

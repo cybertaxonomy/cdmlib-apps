@@ -183,9 +183,9 @@ public class ErmsTaxonImport  extends ErmsImportBase<TaxonBase> implements IMapp
 	 * @see eu.etaxonomy.cdm.io.erms.ErmsImportBase#doInvoke(eu.etaxonomy.cdm.io.erms.ErmsImportState)
 	 */
 	@Override
-	protected boolean doInvoke(ErmsImportState state) {
+	protected void doInvoke(ErmsImportState state) {
 		//first path
-		boolean success = super.doInvoke(state);
+		super.doInvoke(state);
 		
 //		//second path
 //		isSecondPath = true;
@@ -209,7 +209,7 @@ public class ErmsTaxonImport  extends ErmsImportBase<TaxonBase> implements IMapp
 //		isSecondPath = false;
 //
 //		logger.info("end make " + getPluralString() + " ... " + getSuccessString(success));
-		return success;
+		return;
 
 	}
 

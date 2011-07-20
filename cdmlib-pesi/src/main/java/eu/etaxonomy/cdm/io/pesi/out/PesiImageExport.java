@@ -76,16 +76,13 @@ public class PesiImageExport extends PesiExportBase {
 	 * @see eu.etaxonomy.cdm.io.common.CdmIoBase#doInvoke(eu.etaxonomy.cdm.io.common.IoStateBase)
 	 */
 	@Override
-	protected boolean doInvoke(PesiExportState state) {
+	protected void doInvoke(PesiExportState state) {
 
 		logger.error("*** Started Making " + pluralString + " ...");
 
 		// Get the limit for objects to save within a single transaction.
 //			int limit = state.getConfig().getLimitSave();
 		int limit = 1000;
-
-		// Stores whether this invoke was successful or not.
-		boolean success = true;
 
 		// PESI: Clear the database table Image.
 		doDelete(state);
@@ -177,9 +174,9 @@ public class PesiImageExport extends PesiExportBase {
 		commitTransaction(txStatus);
 		logger.error("Committed transaction.");
 
-		logger.error("*** Finished Making " + pluralString + " ..." + getSuccessString(success));
+		logger.error("*** Finished Making " + pluralString + " ..." + getSuccessString(true));
 		
-		return success;
+		return;
 	}
 
 	/**
