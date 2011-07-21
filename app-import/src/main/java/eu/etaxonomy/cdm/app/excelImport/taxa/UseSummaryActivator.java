@@ -36,6 +36,7 @@ public class UseSummaryActivator {
 	private static DbSchemaValidation dbSchemaValidation = DbSchemaValidation.VALIDATE;
 
 	private static final ICdmDataSource destinationDb = CdmDestinations.cdm_test_useSummary();
+//	private static final ICdmDataSource destinationDb = CdmDestinations.cdm_production_palmae();
     
     public static void main(String[] args) {
 
