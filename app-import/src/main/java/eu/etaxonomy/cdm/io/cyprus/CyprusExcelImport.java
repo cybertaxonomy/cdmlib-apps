@@ -221,11 +221,11 @@ public class CyprusExcelImport extends ExcelImporterBase<CyprusImportState> {
 			try {
 				//feature
 				UUID redBookUuid = transformer.getFeatureUuid("Red book");
-				redBookCategory = this.getFeature(state, redBookUuid, "Red book category", "Red data book category", "Red book");
+				redBookCategory = this.getFeature(state, redBookUuid, "Red book category", "Red data book category", "Red book", null);
 				getTermService().save(redBookCategory);
 				
 				UUID endemismUuid = transformer.getFeatureUuid("Endemism");
-				endemism = this.getFeature(state, endemismUuid, "Endemism", "Endemism", "Endemism");
+				endemism = this.getFeature(state, endemismUuid, "Endemism", "Endemism", "Endemism", null);
 				getTermService().save(endemism);
 				
 				//status
