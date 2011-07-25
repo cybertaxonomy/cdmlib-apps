@@ -1877,7 +1877,8 @@ public class EfloraTaxonImport  extends EfloraImportBase implements ICdmIO<Eflor
 				logger.info("Uuid is null for " + classValue);
 			}
 			String featureText = StringUtils.capitalize(classValue);
-			Feature feature = getFeature(state, uuid, featureText, featureText, classValue);
+			//TODO eFlora feature vocabulary
+			Feature feature = getFeature(state, uuid, featureText, featureText, classValue, null);
 			if (feature == null){
 				throw new NullPointerException(classValue + " not recognized as a feature");
 			}
