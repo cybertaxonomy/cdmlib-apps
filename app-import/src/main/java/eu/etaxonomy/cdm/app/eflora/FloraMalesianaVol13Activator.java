@@ -226,6 +226,8 @@ public class FloraMalesianaVol13Activator {
 		"Inflorescences",  
 		"Inflorescence",
 		"Young inflorescences", 
+		"male inflorescences", 
+		"female inflorescences", 
 		"Bracts",  
 		"Pedicels",  
 		"flowering buds",  
