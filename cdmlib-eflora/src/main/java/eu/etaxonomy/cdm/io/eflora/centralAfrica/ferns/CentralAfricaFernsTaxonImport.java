@@ -289,6 +289,7 @@ public class CentralAfricaFernsTaxonImport  extends CentralAfricaFernsImportBase
 				String typeString, String typeCollectorString, String typeLocationPart) {
 		List<SpecimenTypeDesignation> result = new ArrayList<SpecimenTypeDesignation>();
 		String[] splits = typeLocationPart.split(","); 
+		//see also SpecimenTypeParser
 		String typeTypePattern = "(holo.|lecto.|iso.|isolecto.|syn.|isosyn.|neo.|isoneo.)";
 		String collectionPattern = "^[A-Z]+(\\-[A-Z]+)?";
 		String numberPattern = "([0-9]+([\\-\\s\\.\\/][0-9]+)?)?";
