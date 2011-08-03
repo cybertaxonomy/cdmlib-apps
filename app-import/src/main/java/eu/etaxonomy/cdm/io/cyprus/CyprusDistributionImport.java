@@ -70,8 +70,8 @@ public class CyprusDistributionImport extends ExcelImporterBase<CyprusImportStat
 	protected static final String REFERENCE_COLUMN = "source";
 	
 
-	private Reference refMeikle1977 = ReferenceFactory.newGeneric();
-	private Reference refMeikle1985 = ReferenceFactory.newGeneric();
+	private Reference<?> refMeikle1977 = ReferenceFactory.newGeneric();
+	private Reference<?> refMeikle1985 = ReferenceFactory.newGeneric();
 	
 	private Map<String, Taxon> taxonWithAuthorStore = new HashMap<String, Taxon>(); 
 	private Map<String, Taxon> taxonNameOnlyStore = new HashMap<String, Taxon>();
@@ -117,7 +117,7 @@ public class CyprusDistributionImport extends ExcelImporterBase<CyprusImportStat
 			return;
 		}
 		Taxon taxon = getTaxon(state, taxonStr);
-		Reference ref = getReference(taxonLight.getReference());
+		Reference<?> ref = getReference(taxonLight.getReference());
 		if (taxon != null){
 			makeDistribution(state, taxon, taxonLight.getDistribution(), ref);
 			getTaxonService().save(taxon);
@@ -132,7 +132,7 @@ public class CyprusDistributionImport extends ExcelImporterBase<CyprusImportStat
 	protected static final boolean NO_IMAGE_GALLERY = false;
 	protected static final boolean IMAGE_GALLERY = false;
 	
-	private void makeDistribution(CyprusImportState state, Taxon taxon, String distributionStr, Reference ref) {
+	private void makeDistribution(CyprusImportState state, Taxon taxon, String distributionStr, Reference<?> ref) {
 		
 //		TaxonDescription description = getTaxonDescription(taxon, NO_IMAGE_GALLERY, CREATE);
 		TaxonDescription description = getNewDescription(state, taxon);
@@ -151,7 +151,7 @@ public class CyprusDistributionImport extends ExcelImporterBase<CyprusImportStat
 	}
 	
 	private TaxonDescription getNewDescription(CyprusImportState state, Taxon taxon) {
-		Reference excelRef = state.getConfig().getSourceReference();
+		Reference<?> excelRef = state.getConfig().getSourceReference();
 		TaxonDescription desc = TaxonDescription.NewInstance(taxon, false);
 		desc.setTitleCache(excelRef.getTitleCache() + " for " + taxon.getTitleCache(), true);
 		desc.addSource(null, null, excelRef, null);
@@ -226,7 +226,7 @@ public class CyprusDistributionImport extends ExcelImporterBase<CyprusImportStat
 			}
 		}
 		for (Distribution distribution : toRemove){
-			DescriptionBase desc = distribution.getInDescription();
+			DescriptionBase<?> desc = distribution.getInDescription();
 			desc.removeElement(distribution);
 			getDescriptionService().saveOrUpdate(desc);
 		}
@@ -252,8 +252,8 @@ public class CyprusDistributionImport extends ExcelImporterBase<CyprusImportStat
 		return result;
 	}
 	
-	private Reference getReference(String referenceStr) {
-		Reference result;
+	private Reference<?> getReference(String referenceStr) {
+		Reference<?> result;
 		if ("Meikle 1977".equals(referenceStr)){
 			result = refMeikle1977;
 		}else if("Meikle 1985".equals(referenceStr)){
@@ -294,7 +294,7 @@ public class CyprusDistributionImport extends ExcelImporterBase<CyprusImportStat
 	 * 
 	 */
 	private void loadTaxa() {
-		List<String> propertyPaths = new ArrayList();
+		List<String> propertyPaths = new ArrayList<String>();
 		propertyPaths.add("*.name");
 		List<Taxon> taxonList = (List)getTaxonService().list(Taxon.class, null, null, null, propertyPaths);
 		for (Taxon taxon: taxonList){
@@ -360,7 +360,7 @@ public class CyprusDistributionImport extends ExcelImporterBase<CyprusImportStat
 			getTermService().save(areaLevel);
 		}
 		
-		TermVocabulary areaVocabulary = getVocabulary(CyprusTransformer.uuidCyprusDivisionsVocabulary, "Cyprus devisions", "Cyprus divisions", null, null, true);
+		TermVocabulary<NamedArea> areaVocabulary = getVocabulary(CyprusTransformer.uuidCyprusDivisionsVocabulary, "Cyprus devisions", "Cyprus divisions", null, null, true, NamedArea.NewInstance());
 		TdwgArea tdwg4Cyprus = (TdwgArea)getTermService().find(UUID.fromString("9d447b51-e363-4dde-ae40-84c55679983c"));
 		WaterbodyOrCountry isoCountryCyprus = (WaterbodyOrCountry)getTermService().find(UUID.fromString("4b13d6b8-7eca-4d42-8172-f2018051ca19"));
 		
