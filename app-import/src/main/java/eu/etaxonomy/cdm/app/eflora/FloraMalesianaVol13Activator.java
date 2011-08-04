@@ -65,7 +65,7 @@ public class FloraMalesianaVol13Activator {
 	static final UUID classificationUuid = UUID.fromString("ca4e4bcb-a1d1-4124-a358-a3d3c41dd450");
 	
 	//check - import
-	static final CHECK check = CHECK.CHECK_AND_IMPORT;
+	static CHECK check = CHECK.IMPORT_WITHOUT_CHECK;
 	
 	static boolean doPrintKeys = false;
 	
@@ -81,6 +81,9 @@ public class FloraMalesianaVol13Activator {
 	
 	private void doImport(ICdmDataSource cdmDestination){
 		observerList.add(observer);
+		if (cdmDestination.getDatabaseType().equals(CdmDestinations.localH2().getDatabaseType())){
+			check = CHECK.CHECK_ONLY;
+		}
 		
 		//make Source
 		URI source = fmSource13_small;
@@ -190,6 +193,8 @@ public class FloraMalesianaVol13Activator {
 		"Palynology",  
 		"Pollination",  
 		"Pollen morphology",
+		"embryology",
+		"cytology",
 		"Life cycle",
 		"Fruits and embryology",
 		"Dispersal",
@@ -198,12 +203,15 @@ public class FloraMalesianaVol13Activator {
 		"Chromosome numbers", 
 		"Phytochemistry and Chemotaxonomy",
 		"Phytochemistry",
-		"Taxonomy",	
+		"Taxonomy",
+		"Notes"
 	};
 
 	private static String [] descriptionFeatureList = new String[]{
 		"lifeform", 
-		"Bark",  
+		"Bark",
+		//new
+		"wood",
 		"Indumentum",  
 		"endophytic body",  
 		"flowering buds",  
@@ -283,7 +291,6 @@ public class FloraMalesianaVol13Activator {
 		"figure",  
 		"fig",  
 		"figs",  
-
 
 
 		
