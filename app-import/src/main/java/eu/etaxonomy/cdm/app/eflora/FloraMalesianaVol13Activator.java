@@ -46,7 +46,7 @@ public class FloraMalesianaVol13Activator {
 	private static final Logger logger = Logger.getLogger(FloraMalesianaVol13Activator.class);
 	
 	//database validation status (create, update, validate ...)
-	static DbSchemaValidation hbm2dll = DbSchemaValidation.VALIDATE;
+	static DbSchemaValidation hbm2dll = DbSchemaValidation.CREATE;
 	static final URI fmSource13_small = EfloraSources.fm_13_small_families();
 	static final URI fmSource13_large = EfloraSources.fm_13_large_families();
 	
@@ -61,7 +61,7 @@ public class FloraMalesianaVol13Activator {
 	private boolean includeVol13_small = true;
 	private boolean includeVol13_large = true;
 	
-	private boolean h2ForCheck = false;
+	private boolean h2ForCheck = true;
 	
 
 	//feature tree uuid
