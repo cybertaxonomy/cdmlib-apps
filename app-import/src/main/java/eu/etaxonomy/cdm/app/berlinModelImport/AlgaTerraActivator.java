@@ -39,11 +39,13 @@ public class AlgaTerraActivator {
 	//database validation status (create, update, validate ...)
 	static DbSchemaValidation hbm2dll = DbSchemaValidation.CREATE;
 	static final Source berlinModelSource = BerlinModelSources.AlgaTerra();
-	static final ICdmDataSource cdmDestination = CdmDestinations.localH2();
-	static final UUID treeUuid = UUID.fromString("d03ef02a-f226-4cb1-bdb4-f6c154f08a34");
+//	static final ICdmDataSource cdmDestination = CdmDestinations.localH2();
+	static final ICdmDataSource cdmDestination = CdmDestinations.cdm_algaterra_preview();
+	
+	static final UUID treeUuid = UUID.fromString("1f617402-78dc-4bf1-ac77-d260600a8879");
 	static final int sourceSecId = 7331;
 	
-	static final UUID featureTreeUuid = UUID.fromString("ae9615b8-bc60-4ed0-ad96-897f9226d568");
+	static final UUID featureTreeUuid = UUID.fromString("a970168a-36fd-4c7c-931e-87214a965c14");
 	static final Object[] featureKeyList = new Integer[]{7,201,202,203,204,205,206,207}; 
 	
 	//check - import

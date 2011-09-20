@@ -103,7 +103,7 @@ public class BerlinModelSources {
 	
 	public static Source AlgaTerra(){
 		//	BerlinModel - AlgaTerra
-		String dbms = Source.SQL_SERVER_2005;
+		String dbms = Source.SQL_SERVER_2008;
 		String strServer = "BGBM17";
 		String strDB = "Algaterra";
 		int port = 1433;
