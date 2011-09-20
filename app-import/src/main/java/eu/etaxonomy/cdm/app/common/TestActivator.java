@@ -36,7 +36,7 @@ public class TestActivator {
 	private static final Logger logger = Logger.getLogger(TestActivator.class);
 
 	//static final Source faunaEuropaeaSource = FaunaEuropaeaSources.faunEu();
-	static final ICdmDataSource cdmDestination = CdmDestinations.cdm_edit_cichorieae_a();
+	static final ICdmDataSource cdmDestination = CdmDestinations.cdm_edit_cichorieae_preview_B();
 	
 	static final int limitSave = 2000;
 
@@ -61,7 +61,7 @@ public class TestActivator {
 		
 		
 		app.changeDataSource(destination);
-		ICdmDataSource cdmDestination = CdmDestinations.cdm_edit_cichorieae_a();
+		ICdmDataSource cdmDestination = CdmDestinations.cdm_edit_cichorieae_preview_B();
 		app.changeDataSource(cdmDestination);
 		ITaxonServiceConfigurator<?> conf = TaxonServiceConfiguratorImpl.NewInstance();
 		conf.setDoSynonyms(true);

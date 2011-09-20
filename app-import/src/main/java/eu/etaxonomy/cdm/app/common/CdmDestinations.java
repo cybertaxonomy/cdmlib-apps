@@ -407,6 +407,14 @@ public class CdmDestinations {
 		String cdmUserName = "edit";
 		return makeDestination(dbType, cdmServer, cdmDB, -1, cdmUserName, null);
 	}
+
+	public static ICdmDataSource cdm_algaterra_preview(){
+		DatabaseTypeEnum dbType = DatabaseTypeEnum.MySQL;
+		String cdmServer = "160.45.63.201";
+		String cdmDB = "cdm_edit_algaterra"; 
+		String cdmUserName = "edit";
+		return makeDestination(dbType, cdmServer, cdmDB, -1, cdmUserName, null);
+	}
 	
 	public static ICdmDataSource cdm_edit_cichorieae_PG(){
 		DatabaseTypeEnum dbType = DatabaseTypeEnum.PostgreSQL;
@@ -415,14 +423,6 @@ public class CdmDestinations {
 		String cdmUserName = "edit";
 		int port = 15432;
 		return makeDestination(dbType, cdmServer, cdmDB, port, cdmUserName, null);
-	}
-	
-	public static ICdmDataSource cdm_edit_cichorieae_a(){
-		DatabaseTypeEnum dbType = DatabaseTypeEnum.MySQL;
-		String cdmServer = "192.168.2.10";
-		String cdmDB = "cdm_edit_cichorieae_a"; 
-		String cdmUserName = "edit";
-		return makeDestination(dbType, cdmServer, cdmDB, -1, cdmUserName, null);
 	}
 
 	public static ICdmDataSource cdm_cichorieae_preview(){
