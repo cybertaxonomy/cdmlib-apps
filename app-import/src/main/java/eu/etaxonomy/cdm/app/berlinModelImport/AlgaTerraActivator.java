@@ -13,6 +13,7 @@ import java.util.UUID;
 
 import org.apache.log4j.Logger;
 
+import eu.etaxonomy.cdm.api.application.ICdmApplicationConfiguration;
 import eu.etaxonomy.cdm.app.common.CdmDestinations;
 import eu.etaxonomy.cdm.database.DbSchemaValidation;
 import eu.etaxonomy.cdm.database.ICdmDataSource;
@@ -21,7 +22,12 @@ import eu.etaxonomy.cdm.io.common.CdmDefaultImport;
 import eu.etaxonomy.cdm.io.common.Source;
 import eu.etaxonomy.cdm.io.common.IImportConfigurator.CHECK;
 import eu.etaxonomy.cdm.io.common.IImportConfigurator.DO_REFERENCES;
+import eu.etaxonomy.cdm.model.common.ISourceable;
+import eu.etaxonomy.cdm.model.description.Feature;
+import eu.etaxonomy.cdm.model.description.FeatureNode;
+import eu.etaxonomy.cdm.model.description.FeatureTree;
 import eu.etaxonomy.cdm.model.name.NomenclaturalCode;
+import eu.etaxonomy.cdm.model.name.ZoologicalName;
 
 
 /**
@@ -95,11 +101,7 @@ public class AlgaTerraActivator {
 //	static final boolean doOccurences = false;
 	
 	
-	
-	/**
-	 * @param args
-	 */
-	public static void main(String[] args) {
+	public void invoke(String[] args){
 		System.out.println("Start import from BerlinModel("+ berlinModelSource.getDatabase() + ") ...");
 		logger.debug("Start");
 		//make BerlinModel Source
@@ -134,8 +136,29 @@ public class AlgaTerraActivator {
 		CdmDefaultImport<BerlinModelImportConfigurator> bmImport = new CdmDefaultImport<BerlinModelImportConfigurator>();
 		bmImport.invoke(bmImportConfigurator);
 
+		if (doFacts && (bmImportConfigurator.getCheck().equals(CHECK.CHECK_AND_IMPORT)  || bmImportConfigurator.getCheck().equals(CHECK.IMPORT_WITHOUT_CHECK) )   ){
+			ICdmApplicationConfiguration app = bmImport.getCdmAppController();
+			
+			//make feature tree
+			FeatureTree tree = TreeCreator.flatTree(featureTreeUuid, bmImportConfigurator.getFeatureMap(), featureKeyList);
+			FeatureNode imageNode = FeatureNode.NewInstance(Feature.IMAGE());
+			tree.getRoot().addChild(imageNode);
+			FeatureNode distributionNode = FeatureNode.NewInstance(Feature.DISTRIBUTION());
+			tree.getRoot().addChild(distributionNode, 2); 
+			app.getFeatureTreeService().saveOrUpdate(tree);
+		}
+		
 		
 		System.out.println("End import from BerlinModel ("+ source.getDatabase() + ")...");
+	}
+	
+	
+	/**
+	 * @param args
+	 */
+	public static void main(String[] args) {
+		AlgaTerraActivator activator = new AlgaTerraActivator();
+		activator.invoke(args);
 	}
 
 }
