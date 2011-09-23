@@ -32,7 +32,6 @@ import eu.etaxonomy.cdm.io.common.mapping.DbImportTaxIncludedInMapper;
 import eu.etaxonomy.cdm.io.common.mapping.IMappingImport;
 import eu.etaxonomy.cdm.io.eflora.centralAfrica.checklist.validation.CentralAfricaChecklistTaxonImportValidator;
 import eu.etaxonomy.cdm.model.common.CdmBase;
-import eu.etaxonomy.cdm.model.common.IdentifiableSource;
 import eu.etaxonomy.cdm.model.description.Distribution;
 import eu.etaxonomy.cdm.model.description.PresenceTerm;
 import eu.etaxonomy.cdm.model.description.TaxonDescription;
@@ -42,10 +41,10 @@ import eu.etaxonomy.cdm.model.name.BotanicalName;
 import eu.etaxonomy.cdm.model.name.Rank;
 import eu.etaxonomy.cdm.model.reference.Reference;
 import eu.etaxonomy.cdm.model.reference.ReferenceFactory;
+import eu.etaxonomy.cdm.model.taxon.Classification;
 import eu.etaxonomy.cdm.model.taxon.Taxon;
 import eu.etaxonomy.cdm.model.taxon.TaxonBase;
 import eu.etaxonomy.cdm.model.taxon.TaxonNode;
-import eu.etaxonomy.cdm.model.taxon.Classification;
 import eu.etaxonomy.cdm.strategy.parser.NonViralNameParserImpl;
 
 
@@ -99,13 +98,13 @@ public class CentralAfricaChecklistTaxonImport  extends CentralAfricaChecklistIm
  			mapping.addMapper(DbImportObjectCreationMapper.NewInstance(this, "pk", TAXON_NAMESPACE)); //id + tu_status
 		
 			UUID uuidKew = CentralAfricaChecklistTransformer.uuidAcceptedKew;
-			mapping.addMapper(DbImportMarkerMapper.NewInstance("accepted kew", uuidKew, "Accepted Kew", "Accepted Kew", "Kew"));
+			mapping.addMapper(DbImportMarkerMapper.NewInstance("accepted kew", uuidKew, "Accepted Kew", "Accepted Kew", "Kew", null));
 			
 			UUID uuidGeneva = CentralAfricaChecklistTransformer.uuidAcceptedGeneva;
-			mapping.addMapper(DbImportMarkerMapper.NewInstance("accepted geneva", uuidGeneva, "Accepted Geneva", "Accepted Geneva", "Geneva"));
+			mapping.addMapper(DbImportMarkerMapper.NewInstance("accepted geneva", uuidGeneva, "Accepted Geneva", "Accepted Geneva", "Geneva", null));
 
 			UUID uuidItis = CentralAfricaChecklistTransformer.uuidAcceptedItis;
-			mapping.addMapper(DbImportMarkerMapper.NewInstance("accepted itis", uuidItis, "Accepted ITIS", "Accepted ITIS", "ITIS"));
+			mapping.addMapper(DbImportMarkerMapper.NewInstance("accepted itis", uuidItis, "Accepted ITIS", "Accepted ITIS", "ITIS", null));
 		}
 		
 		return mapping;
