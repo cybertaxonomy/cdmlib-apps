@@ -45,8 +45,8 @@ public class AlgaTerraActivator {
 	//database validation status (create, update, validate ...)
 	static DbSchemaValidation hbm2dll = DbSchemaValidation.CREATE;
 	static final Source berlinModelSource = BerlinModelSources.AlgaTerra();
-//	static final ICdmDataSource cdmDestination = CdmDestinations.localH2();
-	static final ICdmDataSource cdmDestination = CdmDestinations.cdm_algaterra_preview();
+	static final ICdmDataSource cdmDestination = CdmDestinations.localH2();
+//	static final ICdmDataSource cdmDestination = CdmDestinations.cdm_algaterra_preview();
 	
 	static final UUID treeUuid = UUID.fromString("1f617402-78dc-4bf1-ac77-d260600a8879");
 	static final int sourceSecId = 7331;
@@ -72,14 +72,14 @@ public class AlgaTerraActivator {
 	static final boolean doRelNames = true;
 	static final boolean doNameStatus = true;
 	static final boolean doTypes = false;  
-	static final boolean doNameFacts = false;  
+	static final boolean doNameFacts = false;    //do not exist in Alga Terra
 	
 	//taxa
 	static final boolean doTaxa = true;
 	static final boolean doRelTaxa = true;
 	static final boolean doFacts = true;
 	static final boolean doOccurences = false;
-	static final boolean doCommonNames = false;
+	static final boolean doCommonNames = false; //do not exist in Alga Terra
 
 // ************************ NONE **************************************** //
 	
@@ -88,7 +88,7 @@ public class AlgaTerraActivator {
 //	//references
 //	static final DO_REFERENCES doReferences =  DO_REFERENCES.NONE;
 //	//names
-//	static final boolean doTaxonNames = true;
+//	static final boolean doTaxonNames = false;
 //	static final boolean doRelNames = false;
 //	static final boolean doNameStatus = false;
 //	static final boolean doTypes = false;
@@ -97,8 +97,9 @@ public class AlgaTerraActivator {
 //	//taxa
 //	static final boolean doTaxa = false;
 //	static final boolean doRelTaxa = false;
-//	static final boolean doFacts = true;
+//	static final boolean doFacts = false;
 //	static final boolean doOccurences = false;
+//	static final boolean doCommonNames = false;
 	
 	
 	public void invoke(String[] args){
