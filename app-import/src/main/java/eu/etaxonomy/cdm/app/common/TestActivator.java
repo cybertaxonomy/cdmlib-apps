@@ -33,6 +33,7 @@ import eu.etaxonomy.cdm.persistence.query.MatchMode;
  * @created 12.05.2009
  */
 public class TestActivator {
+	@SuppressWarnings("unused")
 	private static final Logger logger = Logger.getLogger(TestActivator.class);
 
 	//static final Source faunaEuropaeaSource = FaunaEuropaeaSources.faunEu();
