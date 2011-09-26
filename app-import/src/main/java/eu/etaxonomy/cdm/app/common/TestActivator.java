@@ -36,7 +36,8 @@ public class TestActivator {
 	private static final Logger logger = Logger.getLogger(TestActivator.class);
 
 	//static final Source faunaEuropaeaSource = FaunaEuropaeaSources.faunEu();
-	static final ICdmDataSource cdmDestination = CdmDestinations.cdm_edit_cichorieae_preview_B();
+//	static final ICdmDataSource cdmDestination = CdmDestinations.cdm_edit_cichorieae_preview_B();
+	static final ICdmDataSource cdmDestination = CdmDestinations.localH2();
 	
 	static final int limitSave = 2000;
 
