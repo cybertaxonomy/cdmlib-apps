@@ -9,16 +9,15 @@
 
 package eu.etaxonomy.cdm.app.common;
 
-import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
 import org.apache.log4j.Logger;
-import org.springframework.context.ApplicationListener;
 import org.springframework.core.io.ClassPathResource;
 
 import eu.etaxonomy.cdm.api.application.CdmApplicationController;
+import eu.etaxonomy.cdm.api.application.CdmIoApplicationController;
 import eu.etaxonomy.cdm.api.service.config.ITaxonServiceConfigurator;
 import eu.etaxonomy.cdm.api.service.config.TaxonServiceConfiguratorImpl;
 import eu.etaxonomy.cdm.api.service.pager.Pager;
@@ -66,14 +65,14 @@ public class TestActivator {
 		CdmApplicationController app;
 		
 //		applicationEventMulticaster
-//		app = CdmApplicationController.NewInstance(destination, dbSchemaValidation);
+//		app = CdmIoApplicationController.NewInstance(destination, dbSchemaValidation);
 		
 		IProgressMonitor progressMonitor = DefaultProgressMonitor.NewInstance();
 		String resourcePath= "/eu/etaxonomy/cdm/appimportTestApplicationContext.xml";
 		ClassPathResource resource = new ClassPathResource(resourcePath);
-		ApplicationListener<?> listener = new AppImportApplicationListener();
-		List<ApplicationListener> listeners = new ArrayList<ApplicationListener>();
-		listeners.add(listener);
+//		ApplicationListener<?> listener = new AppImportApplicationListener();
+//		List<ApplicationListener> listeners = new ArrayList<ApplicationListener>();
+//		listeners.add(listener);
 //		app = CdmApplicationController.NewInstance(resource, destination, dbSchemaValidation, false, progressMonitor, listeners);
 		app = CdmApplicationController.NewInstance(resource, destination, dbSchemaValidation, false, progressMonitor);
 		
