@@ -20,6 +20,7 @@ app-import/src/main/java/eu/etaxonomy/cdm/app/berlinModelImport/IldisActivator.j
 app-import/src/main/java/eu/etaxonomy/cdm/app/berlinModelImport/SalvadorActivator.java -text
 app-import/src/main/java/eu/etaxonomy/cdm/app/berlinModelImport/SalvadorExport.java -text
 app-import/src/main/java/eu/etaxonomy/cdm/app/berlinModelImport/TreeCreator.java -text
+app-import/src/main/java/eu/etaxonomy/cdm/app/common/AppImportApplicationListener.java -text
 app-import/src/main/java/eu/etaxonomy/cdm/app/common/CacheUpdater.java -text
 app-import/src/main/java/eu/etaxonomy/cdm/app/common/CdmDestinations.java -text
 app-import/src/main/java/eu/etaxonomy/cdm/app/common/CdmImportSources.java -text

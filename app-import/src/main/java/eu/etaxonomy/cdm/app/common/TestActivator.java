@@ -9,16 +9,21 @@
 
 package eu.etaxonomy.cdm.app.common;
 
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
 import org.apache.log4j.Logger;
+import org.springframework.context.ApplicationListener;
+import org.springframework.core.io.ClassPathResource;
 
 import eu.etaxonomy.cdm.api.application.CdmApplicationController;
 import eu.etaxonomy.cdm.api.service.config.ITaxonServiceConfigurator;
 import eu.etaxonomy.cdm.api.service.config.TaxonServiceConfiguratorImpl;
 import eu.etaxonomy.cdm.api.service.pager.Pager;
+import eu.etaxonomy.cdm.common.DefaultProgressMonitor;
+import eu.etaxonomy.cdm.common.IProgressMonitor;
 import eu.etaxonomy.cdm.database.DbSchemaValidation;
 import eu.etaxonomy.cdm.database.ICdmDataSource;
 import eu.etaxonomy.cdm.io.common.IImportConfigurator.CHECK;
@@ -43,11 +48,11 @@ public class TestActivator {
 	static final int limitSave = 2000;
 
 //	static final CHECK check = CHECK.CHECK_AND_IMPORT;
-	static final CHECK check = CHECK.IMPORT_WITHOUT_CHECK;
-	static DbSchemaValidation dbSchemaValidation = DbSchemaValidation.VALIDATE;
+	static final CHECK check = CHECK.CHECK_ONLY;
+	static DbSchemaValidation dbSchemaValidation = DbSchemaValidation.CREATE;
 //	static DbSchemaValidation dbSchemaValidation = DbSchemaValidation.UPDATE;
 //	static DbSchemaValidation dbSchemaValidation = DbSchemaValidation.VALIDATE;
-	static final NomenclaturalCode nomenclaturalCode  = NomenclaturalCode.ICZN;
+	static final NomenclaturalCode nomenclaturalCode  = NomenclaturalCode.ICBN;
 
 
 	
@@ -59,8 +64,22 @@ public class TestActivator {
 		ICdmDataSource destination = cdmDestination;
 		
 		CdmApplicationController app;
-		app = CdmApplicationController.NewInstance(destination, dbSchemaValidation);
 		
+//		applicationEventMulticaster
+//		app = CdmApplicationController.NewInstance(destination, dbSchemaValidation);
+		
+		IProgressMonitor progressMonitor = DefaultProgressMonitor.NewInstance();
+		String resourcePath= "/eu/etaxonomy/cdm/appimportTestApplicationContext.xml";
+		ClassPathResource resource = new ClassPathResource(resourcePath);
+		ApplicationListener<?> listener = new AppImportApplicationListener();
+		List<ApplicationListener> listeners = new ArrayList<ApplicationListener>();
+		listeners.add(listener);
+//		app = CdmApplicationController.NewInstance(resource, destination, dbSchemaValidation, false, progressMonitor, listeners);
+		app = CdmApplicationController.NewInstance(resource, destination, dbSchemaValidation, false, progressMonitor);
+		
+		if (true){
+			return;
+		}
 		
 		app.changeDataSource(destination);
 		ICdmDataSource cdmDestination = CdmDestinations.cdm_edit_cichorieae_preview_B();
