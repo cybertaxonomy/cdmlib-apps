@@ -41,16 +41,17 @@ public class TestActivator {
 	private static final Logger logger = Logger.getLogger(TestActivator.class);
 
 	//static final Source faunaEuropaeaSource = FaunaEuropaeaSources.faunEu();
-//	static final ICdmDataSource cdmDestination = CdmDestinations.cdm_edit_cichorieae_preview_B();
 	static final ICdmDataSource cdmDestination = CdmDestinations.localH2();
+//	static final ICdmDataSource cdmDestination = CdmDestinations.cdm_edit_cichorieae_preview();
+	
 	
 	static final int limitSave = 2000;
 
 //	static final CHECK check = CHECK.CHECK_AND_IMPORT;
 	static final CHECK check = CHECK.CHECK_ONLY;
-	static DbSchemaValidation dbSchemaValidation = DbSchemaValidation.CREATE;
+//	static DbSchemaValidation dbSchemaValidation = DbSchemaValidation.NONE;
 //	static DbSchemaValidation dbSchemaValidation = DbSchemaValidation.UPDATE;
-//	static DbSchemaValidation dbSchemaValidation = DbSchemaValidation.VALIDATE;
+	static DbSchemaValidation dbSchemaValidation = DbSchemaValidation.VALIDATE;
 	static final NomenclaturalCode nomenclaturalCode  = NomenclaturalCode.ICBN;
 
 
@@ -76,13 +77,13 @@ public class TestActivator {
 //		app = CdmApplicationController.NewInstance(resource, destination, dbSchemaValidation, false, progressMonitor, listeners);
 		app = CdmApplicationController.NewInstance(resource, destination, dbSchemaValidation, false, progressMonitor);
 		
-		if (true){
-			return;
-		}
+//		if (true){
+//			return;
+//		}
 		
-		app.changeDataSource(destination);
-		ICdmDataSource cdmDestination = CdmDestinations.cdm_edit_cichorieae_preview_B();
-		app.changeDataSource(cdmDestination);
+//		app.changeDataSource(destination);
+//		ICdmDataSource cdmDestination = CdmDestinations.cdm_edit_cichorieae_preview();
+//		app.changeDataSource(cdmDestination);
 		ITaxonServiceConfigurator<?> conf = TaxonServiceConfiguratorImpl.NewInstance();
 		conf.setDoSynonyms(true);
 		conf.setDoTaxa(true);
