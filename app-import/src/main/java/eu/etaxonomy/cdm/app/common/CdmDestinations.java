@@ -493,10 +493,10 @@ public class CdmDestinations {
 		return makeDestination(dbType, cdmServer, cdmDB, port, cdmUserName, null);
 	}
 	
-	public static ICdmDataSource cdm_edit_cichorieae_preview_B(){
+	public static ICdmDataSource cdm_edit_cichorieae_preview(){
 		DatabaseTypeEnum dbType = DatabaseTypeEnum.MySQL;
 		String cdmServer = "127.0.0.1";
-		String cdmDB = "cdm_edit_cichorieae_b"; 
+		String cdmDB = "cdm_edit_cichorieae"; 
 		String cdmUserName = "edit";
 		int port = 13306;
 		return makeDestination(dbType, cdmServer, cdmDB, port, cdmUserName, null);
