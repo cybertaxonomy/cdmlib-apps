@@ -502,23 +502,14 @@ public class CdmDestinations {
 		return makeDestination(dbType, cdmServer, cdmDB, port, cdmUserName, null);
 	}
 
-	public static ICdmDataSource cdm_edit_palmae_preview_A(){
+	public static ICdmDataSource cdm_edit_palmae_preview(){
 		DatabaseTypeEnum dbType = DatabaseTypeEnum.MySQL;
 		String cdmServer = "127.0.0.1";
-		String cdmDB = "cdm_edit_palmae_a"; 
+		String cdmDB = "cdm_edit_palmae"; 
 		String cdmUserName = "edit";
 		int port = 13306;
 		return makeDestination(dbType, cdmServer, cdmDB, port, cdmUserName, null);
 	}		
-	
-	public static ICdmDataSource cdm_edit_palmae_preview_B(){
-		DatabaseTypeEnum dbType = DatabaseTypeEnum.MySQL;
-		String cdmServer = "127.0.0.1";
-		String cdmDB = "cdm_edit_palmae_b"; 
-		String cdmUserName = "edit";
-		int port = 13306;
-		return makeDestination(dbType, cdmServer, cdmDB, port, cdmUserName, null);
-	}
 	
 	public static ICdmDataSource cdm_edit_salvador(){
 		DatabaseTypeEnum dbType = DatabaseTypeEnum.MySQL;
