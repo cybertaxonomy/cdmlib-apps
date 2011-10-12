@@ -42,7 +42,7 @@ public class DipteraCollectionImport {
 
 	public static final File acronymsFile = new File("src/main/resources/collections/Acronyms.tab");
 	//datasource for use from local main()
-	static final ICdmDataSource cdmDestination = CdmDestinations.cdm_edit_diptera_a();
+	static final ICdmDataSource cdmDestination = CdmDestinations.cdm_edit_diptera_preview_B();
 	
 
 	public boolean invoke(ICdmDataSource dataSource) {
