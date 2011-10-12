@@ -39,6 +39,7 @@ import eu.etaxonomy.cdm.model.reference.ReferenceFactory;
  * @version 1.0
  */
 public class EricaceaeTestUpdateActivator {
+	@SuppressWarnings("unused")
 	private static final Logger logger = Logger.getLogger(EricaceaeTestUpdateActivator.class);
 	
 	//database validation status (create, update, validate ...)
