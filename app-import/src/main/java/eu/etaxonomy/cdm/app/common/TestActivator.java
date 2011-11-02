@@ -9,12 +9,15 @@
 
 package eu.etaxonomy.cdm.app.common;
 
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.UUID;
 
 import org.apache.log4j.Logger;
 import org.springframework.core.io.ClassPathResource;
+import org.springframework.transaction.TransactionStatus;
 
 import eu.etaxonomy.cdm.api.application.CdmApplicationController;
 import eu.etaxonomy.cdm.api.application.CdmIoApplicationController;
@@ -27,9 +30,15 @@ import eu.etaxonomy.cdm.database.DbSchemaValidation;
 import eu.etaxonomy.cdm.database.ICdmDataSource;
 import eu.etaxonomy.cdm.io.common.IImportConfigurator.CHECK;
 import eu.etaxonomy.cdm.model.common.IdentifiableEntity;
+import eu.etaxonomy.cdm.model.description.Distribution;
+import eu.etaxonomy.cdm.model.description.PresenceTerm;
+import eu.etaxonomy.cdm.model.description.TaxonDescription;
 import eu.etaxonomy.cdm.model.location.NamedArea;
 import eu.etaxonomy.cdm.model.location.TdwgArea;
 import eu.etaxonomy.cdm.model.name.NomenclaturalCode;
+import eu.etaxonomy.cdm.model.taxon.Taxon;
+import eu.etaxonomy.cdm.model.taxon.TaxonBase;
+import eu.etaxonomy.cdm.model.taxon.TaxonNode;
 import eu.etaxonomy.cdm.persistence.query.MatchMode;
 
 /**
@@ -42,6 +51,7 @@ public class TestActivator {
 
 	//static final Source faunaEuropaeaSource = FaunaEuropaeaSources.faunEu();
 	static final ICdmDataSource cdmDestination = CdmDestinations.localH2();
+//	static final ICdmDataSource cdmDestination = CdmDestinations.cdm_flora_central_africa_production();
 //	static final ICdmDataSource cdmDestination = CdmDestinations.cdm_edit_cichorieae_preview();
 	
 	
@@ -77,9 +87,29 @@ public class TestActivator {
 //		app = CdmApplicationController.NewInstance(resource, destination, dbSchemaValidation, false, progressMonitor, listeners);
 		app = CdmApplicationController.NewInstance(resource, destination, dbSchemaValidation, false, progressMonitor);
 		
-//		if (true){
-//			return;
-//		}
+		TransactionStatus txStatus = app.startTransaction();
+		List<TaxonNode> nodeList = app.getTaxonNodeService().list(null, null, null, null, null);
+		List<TaxonBase> taxonList = new ArrayList<TaxonBase>();
+//		UUID uuidArea = UUID.fromString("c6a2c418-1aee-448f-9836-44d85f9dd139");
+		UUID uuidArea = UUID.fromString("1ca78cd4-7c24-46e9-a45a-ea96a2bb0ecd");
+		NamedArea area = (NamedArea)app.getTermService().find(uuidArea);
+		PresenceTerm status = (PresenceTerm)app.getTermService().find(UUID.fromString("cef81d25-501c-48d8-bbea-542ec50de2c2"));
+ 		for (TaxonNode node:nodeList){
+			if (node.getClassification() != null){
+				Taxon taxon = node.getTaxon();
+				TaxonDescription desc = TaxonDescription.NewInstance(taxon, false);
+				desc.setTitleCache("Full area distribution", true);
+				//only for test
+				Distribution distr = Distribution.NewInstance(area, status);
+				desc.addElement(distr);
+				taxonList.add(taxon);
+			}
+		}
+		app.getTaxonService().saveOrUpdate(taxonList);
+		app.commitTransaction(txStatus);
+		if (true){
+			return;
+		}
 		
 //		app.changeDataSource(destination);
 //		ICdmDataSource cdmDestination = CdmDestinations.cdm_edit_cichorieae_preview();
