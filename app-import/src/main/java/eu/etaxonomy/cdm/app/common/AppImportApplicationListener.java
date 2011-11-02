@@ -23,7 +23,7 @@ public class AppImportApplicationListener implements ApplicationListener<Applica
 
 	@Override
 	public void onApplicationEvent(ApplicationEvent event) {
-		logger.warn(event);
+		if (logger.isDebugEnabled())logger.debug(event);
 	}
 
 }
