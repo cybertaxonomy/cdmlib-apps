@@ -56,7 +56,7 @@ public class CentralAfricaEricaceaeActivator {
 	private static final Logger logger = Logger.getLogger(CentralAfricaEricaceaeActivator.class);
 	
 	//database validation status (create, update, validate ...)
-	static DbSchemaValidation hbm2dll = DbSchemaValidation.CREATE;
+	static DbSchemaValidation hbm2dll = DbSchemaValidation.VALIDATE;
 	static final URI source = EfloraSources.ericacea_local();
 	
 	static final URI specimenSource = EfloraSources.ericacea_specimen_local();
@@ -69,7 +69,9 @@ public class CentralAfricaEricaceaeActivator {
 //	static final ICdmDataSource cdmDestination = CdmDestinations.cdm_local_postgres_CdmTest();
 //	static final ICdmDataSource cdmDestination = CdmDestinations.cdm_test_local_mysql();
 //	static final ICdmDataSource cdmDestination = CdmDestinations.cdm_test_jaxb();
-
+//	static final ICdmDataSource cdmDestination = CdmDestinations.cdm_edit_cichorieae_preview();
+//	static final ICdmDataSource cdmDestination = CdmDestinations.cdm_campanulaceae_production();
+	
 	//feature tree uuid
 	public static final UUID featureTreeUuid = UUID.fromString("051d35ee-22f1-42d8-be07-9e9bfec5bcf7");
 	
@@ -100,7 +102,7 @@ public class CentralAfricaEricaceaeActivator {
 		
 		CdmUpdater su = CdmUpdater.NewInstance();
 		IProgressMonitor monitor = DefaultProgressMonitor.NewInstance();
-		
+//		
 //		try {
 //			su.updateToCurrentVersion(cdmDestination, monitor);
 //		} catch (Exception e) {
