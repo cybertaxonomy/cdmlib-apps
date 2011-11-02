@@ -15,7 +15,6 @@ import java.util.UUID;
 
 import org.apache.log4j.Logger;
 
-import eu.etaxonomy.cdm.api.application.CdmApplicationController;
 import eu.etaxonomy.cdm.api.application.ICdmApplicationConfiguration;
 import eu.etaxonomy.cdm.api.service.ITermService;
 import eu.etaxonomy.cdm.app.common.CdmDestinations;
@@ -48,9 +47,9 @@ public class CyprusActivator {
 	static final URI source = cyprus_local();
 
 	
-//	static final ICdmDataBSource cdmDestination = CdmDestinations.localH2();
+	static final ICdmDataSource cdmDestination = CdmDestinations.localH2();
 //	static final ICdmDataSource cdmDestination = CdmDestinations.cdm_local_postgres_CdmTest();
-	static final ICdmDataSource cdmDestination = CdmDestinations.cdm_test_local_mysql();
+//	static final ICdmDataSource cdmDestination = CdmDestinations.cdm_test_local_mysql();
 //	static final ICdmDataSource cdmDestination = CdmDestinations.cdm_cyprus_dev();
 //	static final ICdmDataSource cdmDestination = CdmDestinations.cdm_cyprus_production();
 
@@ -65,9 +64,9 @@ public class CyprusActivator {
 	static final CHECK check = CHECK.IMPORT_WITHOUT_CHECK;
 	
 	//taxa
-	static final boolean doTaxa = false;
+	static final boolean doTaxa = true;
 	static final boolean doDeduplicate = false;
-	static final boolean doDistribution = true;
+	static final boolean doDistribution = false;
 
 	
 	private void doImport(ICdmDataSource cdmDestination){
