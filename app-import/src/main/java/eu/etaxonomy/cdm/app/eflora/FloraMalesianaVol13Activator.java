@@ -49,6 +49,9 @@ public class FloraMalesianaVol13Activator {
 	static DbSchemaValidation hbm2dll = DbSchemaValidation.CREATE;
 	static final URI fmSource13_small = EfloraSources.fm_13_small_families();
 	static final URI fmSource13_large = EfloraSources.fm_13_large_families();
+	static final URI fmSource12 = EfloraSources.fm_12();
+	static final URI fmSource2_2 = EfloraSources.fm_2_2();
+	
 	
 	
 //	static final ICdmDataSource cdmDestination = CdmDestinations.cdm_test_andreasM3();
@@ -58,8 +61,10 @@ public class FloraMalesianaVol13Activator {
 //	static final ICdmDataSource cdmDestination = CdmDestinations.cdm_test_local_mysql();
 //	static final ICdmDataSource cdmDestination = CdmDestinations.cdm_test_local_mysql_test();
 	
-	private boolean includeVol13_small = true;
-	private boolean includeVol13_large = true;
+	private boolean includeVol13_small = false;
+	private boolean includeVol13_large = false;
+	private boolean includeVol12 = true;
+	private boolean includeVol2_2 = true;
 	
 	private boolean h2ForCheck = true;
 	
@@ -125,6 +130,23 @@ public class FloraMalesianaVol13Activator {
 			System.out.println("End import from ("+ fmSource13_small.toString() + ")...");
 		}
 
+		//Vol12
+		if (includeVol12){
+			source = fmSource12;
+			System.out.println("\nStart import from ("+ source.toString() + ") ...");
+			markupConfig.setSource(source);
+			myImport.invoke(markupConfig);
+			System.out.println("End import from ("+ source.toString() + ")...");
+		}
+		//Vol_2_2
+		if (includeVol2_2){
+			source = fmSource2_2;
+			System.out.println("\nStart import from ("+ source.toString() + ") ...");
+			markupConfig.setSource(source);
+			myImport.invoke(markupConfig);
+			System.out.println("End import from ("+ source.toString() + ")...");
+		}
+		
 		
 //		makeGeoService();
 		

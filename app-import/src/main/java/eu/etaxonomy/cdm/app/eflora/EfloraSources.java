@@ -65,4 +65,14 @@ public class EfloraSources {
 	}
 
 
+	//Flora Malesiana Vol 12
+	public static URI fm_12(){
+		return URI.create("file:C:/localCopy/Data/eflora/floraMalesiana/vol_12/xml_1995_vol_12_all_final_5.xml");
+	}
+
+	//Flora Malesiana Series 2 - Vol 2
+	public static URI fm_2_2(){
+		return URI.create("file:C:/localCopy/Data/eflora/floraMalesiana/ser2_vol2/ser2vol2final1.xml");
+	}
+
 }
