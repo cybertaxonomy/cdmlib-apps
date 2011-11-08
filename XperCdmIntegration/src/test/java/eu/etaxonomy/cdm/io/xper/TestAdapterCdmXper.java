@@ -10,9 +10,9 @@ import eu.etaxonomy.cdm.api.application.CdmApplicationController;
 import eu.etaxonomy.cdm.app.common.CdmDestinations;
 import eu.etaxonomy.cdm.database.DbSchemaValidation;
 import eu.etaxonomy.cdm.database.ICdmDataSource;
+import eu.etaxonomy.cdm.io.api.application.CdmIoApplicationController;
 import eu.etaxonomy.cdm.model.description.WorkingSet;
 import fr_jussieu_snv_lis.XPApp;
-import fr_jussieu_snv_lis.Xper;
 import fr_jussieu_snv_lis.utils.Utils;
 
 public class TestAdapterCdmXper {
@@ -28,7 +28,7 @@ public class TestAdapterCdmXper {
 		DbSchemaValidation dbSchemaValidation = DbSchemaValidation.VALIDATE;
 		ICdmDataSource datasource = CdmDestinations.cdm_test_local_xper();
 		System.out.println("cdm start");
-		CdmApplicationController appCtr = CdmApplicationController.NewInstance(datasource, dbSchemaValidation);
+		CdmApplicationController appCtr = CdmIoApplicationController.NewInstance(datasource, dbSchemaValidation);
 		System.out.println("cdm started :::");
 		
 		List<WorkingSet> workingSets = appCtr.getWorkingSetService().list(null, 1, 0, null, null);
