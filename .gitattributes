@@ -1236,6 +1236,7 @@ cdm-eflora/src/main/java/eu/etaxonomy/cdm/io/eflora/floraMalesiana/FloraMalesian
 cdm-eflora/src/main/java/eu/etaxonomy/cdm/io/eflora/floraMalesiana/FloraMalesianaTaxonImport.java -text
 cdm-eflora/src/main/java/eu/etaxonomy/cdm/io/eflora/floraMalesiana/FloraMalesianaTransformer.java -text
 cdm-pesi/LICENSE.TXT -text
+cdm-pesi/pom.xml -text
 cdm-pesi/src/main/java/eu/etaxonomy/cdm/io/pesi/erms/ErmsAreaImport.java -text
 cdm-pesi/src/main/java/eu/etaxonomy/cdm/io/pesi/erms/ErmsDrImport.java -text
 cdm-pesi/src/main/java/eu/etaxonomy/cdm/io/pesi/erms/ErmsImageImport.java -text
@@ -1298,4 +1299,3 @@ cdm-pesi/src/main/java/eu/etaxonomy/cdm/io/pesi/out/PesiTaxonExport.java -text
 cdm-pesi/src/main/java/eu/etaxonomy/cdm/io/pesi/out/PesiTransformer.java -text
 cdm-pesi/src/test/java/eu/etaxonomy/cdm/io/erms/ermsErrors.txt -text
 cdmlib-pesi/README.TXT -text
-cdmlib-pesi/pom.xml -text
