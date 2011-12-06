@@ -15,7 +15,6 @@ import org.apache.log4j.Logger;
 
 import eu.etaxonomy.cdm.api.application.ICdmApplicationConfiguration;
 import eu.etaxonomy.cdm.app.common.CdmDestinations;
-import eu.etaxonomy.cdm.app.pesi.FaunaEuropaeaActivator;
 import eu.etaxonomy.cdm.database.DbSchemaValidation;
 import eu.etaxonomy.cdm.database.ICdmDataSource;
 import eu.etaxonomy.cdm.io.berlinModel.in.BerlinModelImportConfigurator;
@@ -36,7 +35,7 @@ import eu.etaxonomy.cdm.model.name.NomenclaturalCode;
  */
 public class IldisActivator {
 	@SuppressWarnings("unused")
-	private static final Logger logger = Logger.getLogger(FaunaEuropaeaActivator.class);
+	private static final Logger logger = Logger.getLogger(IldisActivator.class);
 	//database validation status (create, update, validate ...)
 	static DbSchemaValidation hbm2dll = DbSchemaValidation.CREATE;
 	static final Source berlinModelSource = BerlinModelSources.ILDIS();
