@@ -50,7 +50,7 @@ public class EuroMedActivator {
 //	static final Source berlinModelSource = BerlinModelSources.EDIT_CICHORIEAE();
 //	static final Source berlinModelSource = BerlinModelSources.EDIT_Diptera();
 	
-	static final ICdmDataSource cdmDestination = CdmDestinations.cdm_test_andreasM();
+	static final ICdmDataSource cdmDestination = CdmDestinations.cdm_euroMed_dev();
 	static final int sourceSecId = 7000000; //500000
 	
 	static final UUID classificationUuid = UUID.fromString("314a68f9-8449-495a-91c2-92fde8bcf344");

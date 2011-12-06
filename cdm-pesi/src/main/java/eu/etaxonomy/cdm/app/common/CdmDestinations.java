@@ -424,6 +424,15 @@ public class CdmDestinations {
 		int port = 15432;
 		return makeDestination(dbType, cdmServer, cdmDB, port, cdmUserName, null);
 	}
+	
+
+	public static ICdmDataSource cdm_euroMed_dev(){
+		DatabaseTypeEnum dbType = DatabaseTypeEnum.MySQL;
+		String cdmServer = "160.45.63.201";
+		String cdmDB = "cdm_euromed_dev"; 
+		String cdmUserName = "edit";
+		return makeDestination(dbType, cdmServer, cdmDB, -1, cdmUserName, null);
+	}
 
 	public static ICdmDataSource cdm_cichorieae_preview(){
 		DatabaseTypeEnum dbType = DatabaseTypeEnum.MySQL;
