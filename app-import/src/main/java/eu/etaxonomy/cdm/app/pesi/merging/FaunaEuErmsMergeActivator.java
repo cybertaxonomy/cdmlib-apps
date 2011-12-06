@@ -234,7 +234,7 @@ public class FaunaEuErmsMergeActivator {
 			UUID faunaUUID = UUID.fromString(rowList.get(faunaEuUuid));
 			//UUID ermsUUID = UUID.fromString(rowList.get(ermsUuid));
 			Synonym syn = (Synonym)appCtrInit.getTaxonService().find(faunaUUID);
-			appCtrInit.getTaxonService().deleteSynonymRelationships(syn);
+			appCtrInit.getTaxonService().deleteSynonymRelationships(syn, null);
 		}
 		
 		//merge the infos of 
