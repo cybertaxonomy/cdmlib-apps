@@ -32,10 +32,6 @@ app-import/src/main/resources/arecaceae_short.rdf
 app-import/src/main/resources/tmp
 app-import/target
 /bin
-cdmlib-eflora/.classpath
-cdmlib-eflora/.project
-cdmlib-eflora/.settings
-cdmlib-eflora/target
 cdmlib-pesi/.classpath
 cdmlib-pesi/.project
 cdmlib-pesi/.settings
