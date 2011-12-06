@@ -63,7 +63,7 @@ public class FloraMalesianaVol13Activator {
 	
 	private boolean includeVol13_small = false;
 	private boolean includeVol13_large = false;
-	private boolean includeVol12 = true;
+	private boolean includeVol12 = false;
 	private boolean includeVol2_2 = true;
 	
 	private boolean h2ForCheck = true;
