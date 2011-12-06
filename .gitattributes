@@ -29,12 +29,6 @@ app-import/src/main/java/eu/etaxonomy/cdm/app/common/TestActivator.java -text
 app-import/src/main/java/eu/etaxonomy/cdm/app/cyprus/CyprusActivator.java -text
 app-import/src/main/java/eu/etaxonomy/cdm/app/cyprus/CyprusSpecimenActivator.java -text
 app-import/src/main/java/eu/etaxonomy/cdm/app/dwca/DwcaExportActivator.java -text
-app-import/src/main/java/eu/etaxonomy/cdm/app/eflora/CentralAfricaChecklistActivator.java -text
-app-import/src/main/java/eu/etaxonomy/cdm/app/eflora/CentralAfricaEricaceaeActivator.java -text
-app-import/src/main/java/eu/etaxonomy/cdm/app/eflora/CentralAfricaFernsActivator.java -text
-app-import/src/main/java/eu/etaxonomy/cdm/app/eflora/EfloraSources.java -text
-app-import/src/main/java/eu/etaxonomy/cdm/app/eflora/FloraMalesianaActivator.java -text
-app-import/src/main/java/eu/etaxonomy/cdm/app/eflora/FloraMalesianaVol13Activator.java -text
 app-import/src/main/java/eu/etaxonomy/cdm/app/excelImport/distribution/CichorieaeDistributionActivator.java -text
 app-import/src/main/java/eu/etaxonomy/cdm/app/excelImport/taxa/NormalExplicitActivator.java -text
 app-import/src/main/java/eu/etaxonomy/cdm/app/excelImport/taxa/UseSummaryActivator.java -text
