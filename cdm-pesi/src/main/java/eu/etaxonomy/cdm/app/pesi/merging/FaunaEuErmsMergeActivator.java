@@ -234,7 +234,7 @@ public class FaunaEuErmsMergeActivator {
 			UUID faunaUUID = UUID.fromString(rowList.get(faunaEuUuid));
 			//UUID ermsUUID = UUID.fromString(rowList.get(ermsUuid));
 			Synonym syn = (Synonym)appCtrInit.getTaxonService().find(faunaUUID);
-			appCtrInit.getTaxonService().deleteSynonymRelationships(syn, null);
+			appCtrInit.getTaxonService().deleteSynonymRelationships(syn);
 		}
 		
 		//merge the infos of 
@@ -243,8 +243,8 @@ public class FaunaEuErmsMergeActivator {
 	}
 	
 	private  void mergeErmsSynFaunaEuAcc (List<List<String>> ermsAccFaEuSyn){
-		//occurence: verknüpfe statt dem Fauna Europaea Taxon das akzeptierte Taxon, des Synonyms mit der Occurence (CDM -> distribution)
-		//suche distribution (über das Taxon der TaxonDescription), dessen Taxon, das entsprechende Fauna Eu Taxon ist und verknüpfe es mit dem akzeptieren Taxon des Erms Syn
+		//occurence: verknï¿½pfe statt dem Fauna Europaea Taxon das akzeptierte Taxon, des Synonyms mit der Occurence (CDM -> distribution)
+		//suche distribution (ï¿½ber das Taxon der TaxonDescription), dessen Taxon, das entsprechende Fauna Eu Taxon ist und verknï¿½pfe es mit dem akzeptieren Taxon des Erms Syn
 		Taxon taxonFaunaEu = null;
 		Taxon taxonErms = null;
 		Synonym synErms = null;
@@ -320,7 +320,7 @@ public class FaunaEuErmsMergeActivator {
 	private void updateNameRelationships(List<List<String>> ermsAccFaEuSyn){
 		//suche alle NameRelationships aus FaunaEu und Erms, wo (faunaEu)relatedFrom.name.titleCache = (erms)relatedFrom.name.titleCache und ersetze in der faunaEu Relationship den relatedTo.name durch den relatedTo.name der erms-relationship
 		//wenn es diese relationship noch nicht gibt und der typ der gleiche ist!!
-		//wenn der relatedTo Name zu einem Erms Taxon und einem FaunaEu Synonym gehört
+		//wenn der relatedTo Name zu einem Erms Taxon und einem FaunaEu Synonym gehï¿½rt
 		
 		Synonym synFaunaEu;
 		Taxon taxonErms;
@@ -391,7 +391,7 @@ public class FaunaEuErmsMergeActivator {
 					boolean createNewRelationship = true;
 					for (SynonymRelationship relErms: relTaxonErms){
 						if (relErms.getSynonym().getTitleCache().equals(relFauEu.getSynonym().getTitleCache())){
-							//es gibt schon eine Relationship zu einem Synonym mit dem gleichen Namen wie das FaunaEu Synonym, also Relationship löschen.
+							//es gibt schon eine Relationship zu einem Synonym mit dem gleichen Namen wie das FaunaEu Synonym, also Relationship lï¿½schen.
 							createNewRelationship = false;
 							break;
 						}

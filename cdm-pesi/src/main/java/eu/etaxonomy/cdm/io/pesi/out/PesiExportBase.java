@@ -19,6 +19,7 @@ import eu.etaxonomy.cdm.io.common.DbExportBase;
  *
  */
 public abstract class PesiExportBase extends DbExportBase<PesiExportConfigurator, PesiExportState> {
+	@SuppressWarnings("unused")
 	private static final Logger logger = Logger.getLogger(PesiExportBase.class);
 	
 	public PesiExportBase() {
