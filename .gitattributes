@@ -1195,6 +1195,14 @@ cdm-col/format/meta.tpl.txt -text
 cdm-eflora/LICENSE.TXT -text
 cdm-eflora/README.TXT -text
 cdm-eflora/pom.xml -text
+cdm-eflora/src/main/java/eu/etaxonomy/cdm/app/eflora/CdmDestinations.java -text
+cdm-eflora/src/main/java/eu/etaxonomy/cdm/app/eflora/CdmImportSources.java -text
+cdm-eflora/src/main/java/eu/etaxonomy/cdm/app/eflora/CentralAfricaChecklistActivator.java -text
+cdm-eflora/src/main/java/eu/etaxonomy/cdm/app/eflora/CentralAfricaEricaceaeActivator.java -text
+cdm-eflora/src/main/java/eu/etaxonomy/cdm/app/eflora/CentralAfricaFernsActivator.java -text
+cdm-eflora/src/main/java/eu/etaxonomy/cdm/app/eflora/EfloraSources.java -text
+cdm-eflora/src/main/java/eu/etaxonomy/cdm/app/eflora/FloraMalesianaActivator.java -text
+cdm-eflora/src/main/java/eu/etaxonomy/cdm/app/eflora/FloraMalesianaVol13Activator.java -text
 cdm-eflora/src/main/java/eu/etaxonomy/cdm/io/eflora/EfloraImportBase.java -text
 cdm-eflora/src/main/java/eu/etaxonomy/cdm/io/eflora/EfloraImportConfigurator.java -text
 cdm-eflora/src/main/java/eu/etaxonomy/cdm/io/eflora/EfloraImportState.java -text
