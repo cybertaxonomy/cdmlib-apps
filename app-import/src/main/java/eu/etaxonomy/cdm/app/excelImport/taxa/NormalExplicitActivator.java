@@ -10,7 +10,6 @@
 package eu.etaxonomy.cdm.app.excelImport.taxa;
 
 import java.net.URI;
-import java.net.URISyntaxException;
 
 import org.apache.log4j.Logger;
 
@@ -29,31 +28,30 @@ import eu.etaxonomy.cdm.model.name.NomenclaturalCode;
 public class NormalExplicitActivator {
 	private static final Logger logger = Logger.getLogger(NormalExplicitActivator.class);
     
-	private static String fileName = 
-		new String("D:\\_Tagungen\\2010-09 TDWG 2010\\Workshop\\data\\NormalExplicit.xls");
+//	private static String fileName = 
+//		new String("D:\\_Tagungen\\2010-09 TDWG 2010\\Workshop\\data\\NormalExplicit.xls");
 	
+	private static URI source  = 
+		URI.create("file:/C:/localCopy/meetings_workshops/2011_Göttingen/GermanSL12/GermanSL.xls");
+
 	private static DbSchemaValidation dbSchemaValidation = DbSchemaValidation.CREATE;
 	
-	private static final ICdmDataSource destinationDb = CdmDestinations.cdm_test_jaxb();
+//	private static final ICdmDataSource destinationDb = CdmDestinations.cdm_test_jaxb();
+	private static final ICdmDataSource destinationDb = CdmDestinations.cdm_test_local_mysql();
     
     public static void main(String[] args) {
 
     	NomenclaturalCode code = NomenclaturalCode.ICBN;
-    	URI uri;
-		try {
-			uri = new URI(fileName);
-			NormalExplicitImportConfigurator normalExplicitImportConfigurator = 
-	    		NormalExplicitImportConfigurator.NewInstance(uri, destinationDb, code,dbSchemaValidation);
-	
-			CdmDefaultImport<NormalExplicitImportConfigurator> normalExplicitImport = 
-				new CdmDefaultImport<NormalExplicitImportConfigurator>();
-	
-			// invoke import
-			logger.debug("Invoking Normal Explicit Excel import");
-			normalExplicitImport.invoke(normalExplicitImportConfigurator);
-		} catch (URISyntaxException e) {
-			e.printStackTrace();
-		}
+    	URI uri = source;
+		NormalExplicitImportConfigurator normalExplicitImportConfigurator = 
+    		NormalExplicitImportConfigurator.NewInstance(uri, destinationDb, code,dbSchemaValidation);
+
+		CdmDefaultImport<NormalExplicitImportConfigurator> normalExplicitImport = 
+			new CdmDefaultImport<NormalExplicitImportConfigurator>();
+
+		// invoke import
+		logger.debug("Invoking Normal Explicit Excel import");
+		normalExplicitImport.invoke(normalExplicitImportConfigurator);
     	    	
     }
 }
