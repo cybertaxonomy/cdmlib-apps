@@ -47,7 +47,6 @@ public class EuroMedActivator {
 	//database validation status (create, update, validate ...)
 	static DbSchemaValidation hbm2dll = DbSchemaValidation.CREATE;
 	static final Source berlinModelSource = BerlinModelSources.euroMed();
-//	static final Source berlinModelSource = BerlinModelSources.EDIT_CICHORIEAE();
 //	static final Source berlinModelSource = BerlinModelSources.EDIT_Diptera();
 	
 	static final ICdmDataSource cdmDestination = CdmDestinations.cdm_euroMed_dev();
