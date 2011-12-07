@@ -25,7 +25,7 @@ public class BerlinModelSources {
 		String dbms = Source.SQL_SERVER_2008;
 		String strServer = "BGBM42";
 		String strDB = "EDIT_Diptera";
-		int port = 1247;
+		int port = 1433;
 		String userName = "webUser";
 		return  makeSource(dbms, strServer, strDB, port, userName, null);
 	}
