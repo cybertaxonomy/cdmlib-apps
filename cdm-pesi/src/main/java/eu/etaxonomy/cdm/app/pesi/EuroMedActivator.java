@@ -175,6 +175,7 @@ public class EuroMedActivator {
 //		filter
 		bmImportConfigurator.setTaxonTable(taxonTable);
 		bmImportConfigurator.setClassificationQuery(classificationQuery);
+		bmImportConfigurator.setRelTaxaIdQuery(relPTaxonIdQuery);
 		
 		bmImportConfigurator.setCheck(check);
 		bmImportConfigurator.setEditor(editor);
