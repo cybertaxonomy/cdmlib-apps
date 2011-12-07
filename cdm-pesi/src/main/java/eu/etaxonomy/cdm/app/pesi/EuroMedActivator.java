@@ -76,8 +76,9 @@ public class EuroMedActivator {
 	
 	static boolean useClassification = true;
 	
-	String taxonTable = "_EM_CDM_exp_accTaxa";
-
+	static String taxonTable = "_EM_CDM_exp_accTaxa";
+	
+	static String classificationQuery = " SELECT DISTINCT t.PTRefFk, r.RefCache FROM _EM_CDM_exp_accTaxa t INNER JOIN Reference r ON t.PTRefFk = r.RefId "; 
 
 // **************** ALL *********************	
 //
@@ -168,6 +169,10 @@ public class EuroMedActivator {
 		
 		// maximum number of name facts to import
 		bmImportConfigurator.setMaximumNumberOfNameFacts(maximumNumberOfNameFacts);
+		
+//		filter
+		bmImportConfigurator.setTaxonTable(taxonTable);
+		bmImportConfigurator.setClassificationQuery(classificationQuery);
 		
 		bmImportConfigurator.setCheck(check);
 		bmImportConfigurator.setEditor(editor);
