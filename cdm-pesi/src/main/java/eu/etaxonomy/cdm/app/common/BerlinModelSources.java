@@ -19,6 +19,26 @@ import eu.etaxonomy.cdm.io.common.Source;
 public class BerlinModelSources {
 	@SuppressWarnings("unused")
 	private static final Logger logger = Logger.getLogger(BerlinModelSources.class);
+
+	public static Source EDIT_Diptera(){
+		//	BerlinModel - EDIT_Diptera
+		String dbms = Source.SQL_SERVER_2008;
+		String strServer = "BGBM42";
+		String strDB = "EDIT_Diptera";
+		int port = 1247;
+		String userName = "webUser";
+		return  makeSource(dbms, strServer, strDB, port, userName, null);
+	}
+	
+	public static Source euroMed_local(){
+		//	BerlinModel - Euro+Med
+		String dbms = Source.SQL_SERVER_2005;
+		String strServer = "LENOVO-T61";
+		String strDB = "euroMed";
+		int port = 1433;
+		String userName = "webUser";
+		return  makeSource(dbms, strServer, strDB, port, userName, null);
+	}
 	
 	public static Source euroMed(){
 		//	BerlinModel - Euro+Med
