@@ -80,6 +80,8 @@ public class EuroMedActivator {
 	
 	static String classificationQuery = " SELECT DISTINCT t.PTRefFk, r.RefCache FROM _EM_CDM_exp_accTaxa t INNER JOIN Reference r ON t.PTRefFk = r.RefId "; 
 
+	static String relPTaxonIdQuery = " SELECT r.RelPTaxonId " + 
+					" FROM RelPTaxon AS r INNER JOIN _EM_CDM_exp_accTaxa AS a ON r.PTNameFk2 = a.PTNameFk AND r.PTRefFk2 = a.PTRefFk ";
 // **************** ALL *********************	
 //
 	static final boolean doUser = true;
