@@ -76,7 +76,7 @@ public class EuroMedActivator {
 	
 	static boolean useClassification = true;
 	
-	static String taxonTable = "_EM_CDM_exp_accTaxa";
+	static String taxonTable = "_EM_CDM_exp_allTaxa";
 	
 	static String classificationQuery = " SELECT DISTINCT t.PTRefFk, r.RefCache FROM _EM_CDM_exp_accTaxa t INNER JOIN Reference r ON t.PTRefFk = r.RefId "; 
 
