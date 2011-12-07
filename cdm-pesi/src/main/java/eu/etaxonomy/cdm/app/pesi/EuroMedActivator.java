@@ -75,6 +75,8 @@ public class EuroMedActivator {
 	static final boolean ignoreNull = true;
 	
 	static boolean useClassification = true;
+	
+	String taxonTable = "_EM_CDM_exp_accTaxa";
 
 
 // **************** ALL *********************	
