@@ -66,7 +66,6 @@ app-import/src/main/java/eu/etaxonomy/cdm/app/synthesysImport/SynthesysSpecimenT
 app-import/src/main/java/eu/etaxonomy/cdm/app/tcs/TcsRdfTestActivator.java -text
 app-import/src/main/java/eu/etaxonomy/cdm/app/tcs/TcsSources.java -text
 app-import/src/main/java/eu/etaxonomy/cdm/app/tcs/TcsXmlTestActivator.java -text
-app-import/src/main/java/eu/etaxonomy/cdm/app/testUpdate/EricaceaeTestUpdateActivator.java -text
 app-import/src/main/java/eu/etaxonomy/cdm/app/util/TestDatabase.java -text
 app-import/src/main/java/eu/etaxonomy/cdm/app/util/TestTransaction.java -text
 app-import/src/main/java/eu/etaxonomy/cdm/app/viennaImport/ViennaActivator.java -text
@@ -1197,6 +1196,7 @@ cdm-eflora/src/main/java/eu/etaxonomy/cdm/app/eflora/CentralAfricaFernsActivator
 cdm-eflora/src/main/java/eu/etaxonomy/cdm/app/eflora/EfloraSources.java -text
 cdm-eflora/src/main/java/eu/etaxonomy/cdm/app/eflora/FloraMalesianaActivator.java -text
 cdm-eflora/src/main/java/eu/etaxonomy/cdm/app/eflora/FloraMalesianaVol13Activator.java -text
+cdm-eflora/src/main/java/eu/etaxonomy/cdm/app/testUpdate/EricaceaeTestUpdateActivator.java -text
 cdm-eflora/src/main/java/eu/etaxonomy/cdm/io/eflora/EfloraImportBase.java -text
 cdm-eflora/src/main/java/eu/etaxonomy/cdm/io/eflora/EfloraImportConfigurator.java -text
 cdm-eflora/src/main/java/eu/etaxonomy/cdm/io/eflora/EfloraImportState.java -text

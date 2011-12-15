@@ -17,7 +17,7 @@ import org.apache.log4j.Logger;
 import org.springframework.transaction.TransactionStatus;
 
 import eu.etaxonomy.cdm.api.application.ICdmApplicationConfiguration;
-import eu.etaxonomy.cdm.app.common.CdmDestinations;
+import eu.etaxonomy.cdm.app.eflora.CdmDestinations;
 import eu.etaxonomy.cdm.app.eflora.EfloraSources;
 import eu.etaxonomy.cdm.common.monitor.DefaultProgressMonitor;
 import eu.etaxonomy.cdm.database.DbSchemaValidation;
