@@ -1239,9 +1239,9 @@ cdm-pesi/src/main/java/eu/etaxonomy/cdm/app/common/TreeCreator.java -text
 cdm-pesi/src/main/java/eu/etaxonomy/cdm/app/pesi/ErmsActivator.java -text
 cdm-pesi/src/main/java/eu/etaxonomy/cdm/app/pesi/EuroMedActivator.java -text
 cdm-pesi/src/main/java/eu/etaxonomy/cdm/app/pesi/FaunaEuropaeaActivator.java -text
-cdm-pesi/src/main/java/eu/etaxonomy/cdm/app/pesi/FaunaEuropaeaSources.java -text
 cdm-pesi/src/main/java/eu/etaxonomy/cdm/app/pesi/PesiDestinations.java -text
 cdm-pesi/src/main/java/eu/etaxonomy/cdm/app/pesi/PesiExportActivator.java -text
+cdm-pesi/src/main/java/eu/etaxonomy/cdm/app/pesi/PesiSources.java -text
 cdm-pesi/src/main/java/eu/etaxonomy/cdm/app/pesi/erms/ErmsActivator.java -text
 cdm-pesi/src/main/java/eu/etaxonomy/cdm/app/pesi/merging/FaunaEuErmsFindIdenticalNamesActivator.java -text
 cdm-pesi/src/main/java/eu/etaxonomy/cdm/app/pesi/merging/FaunaEuErmsMergeActivator.java -text

@@ -19,9 +19,9 @@ import eu.etaxonomy.cdm.io.common.Source;
  * @author a.babadshanjan
  * @created 12.05.2009
  */
-public class FaunaEuropaeaSources {
+public class PesiSources {
 	@SuppressWarnings("unused")
-	private static final Logger logger = Logger.getLogger(FaunaEuropaeaSources.class);
+	private static final Logger logger = Logger.getLogger(PesiSources.class);
 	
 	public static Source faunEu(){
 		//	Fauna Europaea
