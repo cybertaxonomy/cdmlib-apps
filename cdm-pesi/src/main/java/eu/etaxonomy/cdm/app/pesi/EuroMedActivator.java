@@ -89,8 +89,7 @@ public class EuroMedActivator {
 	
 	static String referenceFilter = "SELECT refId FROM v_cdm_exp_allReferences";
 	
-	static String factFilter = " FactID IN (SELECT factID FROM fact f " +
-			" INNER JOIN v_cdm_exp_allTaxa t ON f.PTNameFk = t.PTNameFk AND f.PTRefFk = t.PTRefFk )";
+	static String factFilter = " SELECT factId FROM v_cdm_exp_factsAll ";
 	
 	
 	
