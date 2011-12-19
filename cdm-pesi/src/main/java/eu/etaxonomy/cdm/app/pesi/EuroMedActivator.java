@@ -89,6 +89,9 @@ public class EuroMedActivator {
 	
 	static String referenceFilter = "SELECT refId FROM v_cdm_exp_allReferences";
 	
+	static String factFilter = " FactID IN (SELECT factID FROM fact f " +
+			" INNER JOIN v_cdm_exp_allTaxa t ON f.PTNameFk = t.PTNameFk AND f.PTRefFk = t.PTRefFk )";
+	
 	
 	
 	
@@ -189,6 +192,9 @@ public class EuroMedActivator {
 		config.setTaxonTable(taxonTable);
 		config.setClassificationQuery(classificationQuery);
 		config.setRelTaxaIdQuery(relPTaxonIdQuery);
+		config.setNameIdTable(nameIdTable);
+		config.setReferenceFilter(referenceFilter);
+		config.setFactFilter(factFilter);
 		
 		
 		config.setCheck(check);
