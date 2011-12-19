@@ -90,6 +90,8 @@ public class EuroMedActivator {
 	static String referenceFilter = "SELECT refId FROM v_cdm_exp_allReferences";
 	
 	
+
+	
 // **************** ALL *********************	
 
 	static final boolean doUser = true;
