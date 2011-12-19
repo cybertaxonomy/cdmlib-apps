@@ -87,7 +87,7 @@ public class EuroMedActivator {
 
 	static String nameIdTable = "v_cdm_exp_allNames";
 	
-	static String referenceFilter = "SELECT refId FROM v_cdm_exp_allReferences";
+	static String referenceFilter = " ( Reference.RefId IN (SELECT refId FROM v_cdm_exp_allReferences) ) ";
 	
 	static String factFilter = " SELECT factId FROM v_cdm_exp_factsAll ";
 	
