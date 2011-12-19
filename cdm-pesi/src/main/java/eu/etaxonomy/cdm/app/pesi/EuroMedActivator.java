@@ -90,6 +90,8 @@ public class EuroMedActivator {
 	static String referenceFilter = "SELECT refId FROM v_cdm_exp_allReferences";
 	
 	
+	
+	
 
 	
 // **************** ALL *********************	
@@ -152,55 +154,56 @@ public class EuroMedActivator {
 		Source source = berlinModelSource;
 		ICdmDataSource destination = CdmDestinations.chooseDestination(args) != null ? CdmDestinations.chooseDestination(args) : cdmDestination;
 				
-		BerlinModelImportConfigurator bmImportConfigurator = BerlinModelImportConfigurator.NewInstance(source,  destination);
+		BerlinModelImportConfigurator config = BerlinModelImportConfigurator.NewInstance(source,  destination);
 		
-		bmImportConfigurator.setClassificationUuid(classificationUuid);
-		bmImportConfigurator.setSourceSecId(sourceSecId);
+		config.setClassificationUuid(classificationUuid);
+		config.setSourceSecId(sourceSecId);
 		
-		bmImportConfigurator.setNomenclaturalCode(nomenclaturalCode);
+		config.setNomenclaturalCode(nomenclaturalCode);
 
-		bmImportConfigurator.setIgnoreNull(ignoreNull);
-		bmImportConfigurator.setDoAuthors(doAuthors);
-		bmImportConfigurator.setDoReferences(doReferences);
-		bmImportConfigurator.setDoTaxonNames(doTaxonNames);
-		bmImportConfigurator.setDoRelNames(doRelNames);
-		bmImportConfigurator.setDoNameStatus(doNameStatus);
-		bmImportConfigurator.setDoTypes(doTypes);
-		bmImportConfigurator.setDoNameFacts(doNameFacts);
-		bmImportConfigurator.setUseClassification(useClassification);
+		config.setIgnoreNull(ignoreNull);
+		config.setDoAuthors(doAuthors);
+		config.setDoReferences(doReferences);
+		config.setDoTaxonNames(doTaxonNames);
+		config.setDoRelNames(doRelNames);
+		config.setDoNameStatus(doNameStatus);
+		config.setDoTypes(doTypes);
+		config.setDoNameFacts(doNameFacts);
+		config.setUseClassification(useClassification);
 		
-		bmImportConfigurator.setDoTaxa(doTaxa);
-		bmImportConfigurator.setDoRelTaxa(doRelTaxa);
-		bmImportConfigurator.setDoFacts(doFacts);
-		bmImportConfigurator.setDoOccurrence(doOccurences);
-		bmImportConfigurator.setDoCommonNames(doCommonNames);
+		config.setDoTaxa(doTaxa);
+		config.setDoRelTaxa(doRelTaxa);
+		config.setDoFacts(doFacts);
+		config.setDoOccurrence(doOccurences);
+		config.setDoCommonNames(doCommonNames);
 		
-		bmImportConfigurator.setDoMarker(doMarker);
-		bmImportConfigurator.setDoUser(doUser);
-		bmImportConfigurator.setEditor(editor);
-		bmImportConfigurator.setDbSchemaValidation(hbm2dll);
+		config.setDoMarker(doMarker);
+		config.setDoUser(doUser);
+		config.setEditor(editor);
+		config.setDbSchemaValidation(hbm2dll);
 		
 		// maximum number of name facts to import
-		bmImportConfigurator.setMaximumNumberOfNameFacts(maximumNumberOfNameFacts);
+		config.setMaximumNumberOfNameFacts(maximumNumberOfNameFacts);
 		
 //		filter
-		bmImportConfigurator.setTaxonTable(taxonTable);
-		bmImportConfigurator.setClassificationQuery(classificationQuery);
-		bmImportConfigurator.setRelTaxaIdQuery(relPTaxonIdQuery);
+		config.setTaxonTable(taxonTable);
+		config.setClassificationQuery(classificationQuery);
+		config.setRelTaxaIdQuery(relPTaxonIdQuery);
 		
-		bmImportConfigurator.setCheck(check);
-		bmImportConfigurator.setEditor(editor);
-		bmImportConfigurator.setRecordsPerTransaction(partitionSize);
+		
+		config.setCheck(check);
+		config.setEditor(editor);
+		config.setRecordsPerTransaction(partitionSize);
 		
 		// invoke import
 		CdmDefaultImport<BerlinModelImportConfigurator> bmImport = new CdmDefaultImport<BerlinModelImportConfigurator>();
-		bmImport.invoke(bmImportConfigurator);
+		bmImport.invoke(config);
 		
-		if (doFacts && bmImportConfigurator.getCheck().equals(CHECK.CHECK_AND_IMPORT)  || bmImportConfigurator.getCheck().equals(CHECK.IMPORT_WITHOUT_CHECK)    ){
+		if (doFacts && config.getCheck().equals(CHECK.CHECK_AND_IMPORT)  || config.getCheck().equals(CHECK.IMPORT_WITHOUT_CHECK)    ){
 			ICdmApplicationConfiguration app = bmImport.getCdmAppController();
 			
 			//make feature tree
-			FeatureTree tree = TreeCreator.flatTree(featureTreeUuid, bmImportConfigurator.getFeatureMap(), featureKeyList);
+			FeatureTree tree = TreeCreator.flatTree(featureTreeUuid, config.getFeatureMap(), featureKeyList);
 			FeatureNode imageNode = FeatureNode.NewInstance(Feature.IMAGE());
 			tree.getRoot().addChild(imageNode);
 			FeatureNode distributionNode = FeatureNode.NewInstance(Feature.DISTRIBUTION());
