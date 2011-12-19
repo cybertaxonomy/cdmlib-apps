@@ -49,7 +49,9 @@ public class EuroMedActivator {
 	static final Source berlinModelSource = BerlinModelSources.euroMed();
 //	static final Source berlinModelSource = BerlinModelSources.EDIT_Diptera();
 	
-	static final ICdmDataSource cdmDestination = CdmDestinations.cdm_euroMed_dev();
+//	static final ICdmDataSource cdmDestination = CdmDestinations.cdm_euroMed_dev();
+	static final ICdmDataSource cdmDestination = CdmDestinations.cdm_test_local_mysql();
+	
 	static final int sourceSecId = 7000000; //500000
 	
 	static final UUID classificationUuid = UUID.fromString("314a68f9-8449-495a-91c2-92fde8bcf344");
@@ -63,7 +65,7 @@ public class EuroMedActivator {
 	static final int partitionSize = 2000;
 	
 	//check - import
-	static final CHECK check = CHECK.CHECK_AND_IMPORT;
+	static final CHECK check = CHECK.IMPORT_WITHOUT_CHECK;
 
 	//editor - import
 	static final EDITOR editor = EDITOR.EDITOR_AS_EDITOR;
@@ -87,8 +89,9 @@ public class EuroMedActivator {
 	
 	static String referenceFilter = "SELECT refId FROM v_cdm_exp_allReferences";
 	
+	
 // **************** ALL *********************	
-//
+
 	static final boolean doUser = true;
 	//authors
 	static final boolean doAuthors = true;
@@ -131,6 +134,7 @@ public class EuroMedActivator {
 //	static final boolean doRelTaxa = false;
 //	static final boolean doFacts = false;
 //	static final boolean doOccurences = false;
+//	static final boolean doCommonNames = false;
 //	
 //	//etc.
 //	static final boolean doMarker = false;
