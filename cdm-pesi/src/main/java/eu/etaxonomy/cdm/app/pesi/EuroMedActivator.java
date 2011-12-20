@@ -49,7 +49,7 @@ public class EuroMedActivator {
 	static final Source berlinModelSource = BerlinModelSources.euroMed();
 //	static final Source berlinModelSource = BerlinModelSources.EDIT_Diptera();
 	
-//	static final ICdmDataSource cdmDestination = CdmDestinations.cdm_euroMed_dev();
+//	static final ICdmDataSource cdmDestination = CdmDestinations.cdm_pesi_euroMed();
 	static final ICdmDataSource cdmDestination = CdmDestinations.cdm_test_local_mysql();
 	
 	static final int sourceSecId = 7000000; //500000
@@ -78,16 +78,16 @@ public class EuroMedActivator {
 	
 	static boolean useClassification = true;
 	
-	static String taxonTable = "v_cdm_exp_allTaxa";
+	static String taxonTable = "v_cdm_exp_taxaAll";
 	
-	static String classificationQuery = " SELECT DISTINCT t.PTRefFk, r.RefCache FROM _EM_CDM_exp_accTaxa t INNER JOIN Reference r ON t.PTRefFk = r.RefId "; 
+	static String classificationQuery = " SELECT DISTINCT t.PTRefFk, r.RefCache FROM _EM_CDM_exp_taxaDirect t INNER JOIN Reference r ON t.PTRefFk = r.RefId "; 
 
 	static String relPTaxonIdQuery = " SELECT r.RelPTaxonId " + 
-					" FROM RelPTaxon AS r INNER JOIN v_cdm_exp_accTaxa AS a ON r.PTNameFk2 = a.PTNameFk AND r.PTRefFk2 = a.PTRefFk ";
+					" FROM RelPTaxon AS r INNER JOIN v_cdm_exp_taxaDirect AS a ON r.PTNameFk2 = a.PTNameFk AND r.PTRefFk2 = a.PTRefFk ";
 
-	static String nameIdTable = "v_cdm_exp_allNames";
+	static String nameIdTable = " v_cdm_exp_namesAll ";
 	
-	static String referenceFilter = " ( Reference.RefId IN (SELECT refId FROM v_cdm_exp_allReferences) ) ";
+	static String referenceIdTable = " v_cdm_exp_refAll ";
 	
 	static String factFilter = " SELECT factId FROM v_cdm_exp_factsAll ";
 	
@@ -192,7 +192,7 @@ public class EuroMedActivator {
 		config.setClassificationQuery(classificationQuery);
 		config.setRelTaxaIdQuery(relPTaxonIdQuery);
 		config.setNameIdTable(nameIdTable);
-		config.setReferenceFilter(referenceFilter);
+		config.setReferenceIdTable(referenceIdTable);
 		config.setFactFilter(factFilter);
 		
 		
