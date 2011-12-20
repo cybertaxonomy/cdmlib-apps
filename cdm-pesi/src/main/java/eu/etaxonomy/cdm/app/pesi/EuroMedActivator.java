@@ -91,6 +91,9 @@ public class EuroMedActivator {
 	
 	static String factFilter = " factId IN ( SELECT factId FROM v_cdm_exp_factsAll )";
 	
+	static String occurrenceFilter = " occurrenceId IN ( SELECT occurrenceId FROM v_cdm_exp_occurrenceAll )";
+	
+	
 	
 	
 	
@@ -194,6 +197,7 @@ public class EuroMedActivator {
 		config.setNameIdTable(nameIdTable);
 		config.setReferenceIdTable(referenceIdTable);
 		config.setFactFilter(factFilter);
+		config.setOccurrenceFilter(occurrenceFilter);
 		
 		
 		config.setCheck(check);
