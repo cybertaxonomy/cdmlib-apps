@@ -79,21 +79,14 @@ public class EuroMedActivator {
 	static boolean useClassification = true;
 	
 	static String taxonTable = "v_cdm_exp_taxaAll";
-	
 	static String classificationQuery = " SELECT DISTINCT t.PTRefFk, r.RefCache FROM _EM_CDM_exp_taxaDirect t INNER JOIN Reference r ON t.PTRefFk = r.RefId "; 
-
 	static String relPTaxonIdQuery = " SELECT r.RelPTaxonId " + 
 					" FROM RelPTaxon AS r INNER JOIN v_cdm_exp_taxaDirect AS a ON r.PTNameFk2 = a.PTNameFk AND r.PTRefFk2 = a.PTRefFk ";
-
 	static String nameIdTable = " v_cdm_exp_namesAll ";
-	
 	static String referenceIdTable = " v_cdm_exp_refAll ";
-	
 	static String factFilter = " factId IN ( SELECT factId FROM v_cdm_exp_factsAll )";
-	
 	static String occurrenceFilter = " occurrenceId IN ( SELECT occurrenceId FROM v_cdm_exp_occurrenceAll )";
-	
-	
+	static String commonNameFilter = " commonNameId IN ( SELECT commonNameId FROM v_cdm_exp_commonNamesAll )";
 	
 	
 	
@@ -198,6 +191,7 @@ public class EuroMedActivator {
 		config.setReferenceIdTable(referenceIdTable);
 		config.setFactFilter(factFilter);
 		config.setOccurrenceFilter(occurrenceFilter);
+		config.setCommonNameFilter(commonNameFilter);
 		
 		
 		config.setCheck(check);
