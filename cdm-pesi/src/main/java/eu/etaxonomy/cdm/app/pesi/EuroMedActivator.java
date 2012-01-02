@@ -86,7 +86,9 @@ public class EuroMedActivator {
 	static String referenceIdTable = " v_cdm_exp_refAll ";
 	static String factFilter = " factId IN ( SELECT factId FROM v_cdm_exp_factsAll )";
 	static String occurrenceFilter = " occurrenceId IN ( SELECT occurrenceId FROM v_cdm_exp_occurrenceAll )";
+	static String occurrenceSourceFilter = " occurrenceFk IN ( SELECT occurrenceId FROM v_cdm_exp_occurrenceAll )"; 
 	static String commonNameFilter = " commonNameId IN ( SELECT commonNameId FROM v_cdm_exp_commonNamesAll )";
+	static String webMarkerFilter = " TableNameFk <> 500 OR ( RIdentifierFk IN (SELECT RIdentifier FROM v_cdm_exp_taxaAll)) ";
 	
 	
 	
@@ -190,8 +192,10 @@ public class EuroMedActivator {
 		config.setNameIdTable(nameIdTable);
 		config.setReferenceIdTable(referenceIdTable);
 		config.setFactFilter(factFilter);
-		config.setOccurrenceFilter(occurrenceFilter);
 		config.setCommonNameFilter(commonNameFilter);
+		config.setOccurrenceFilter(occurrenceFilter);
+		config.setOccurrenceSourceFilter(occurrenceSourceFilter);
+		config.setWebMarkerFilter(webMarkerFilter);
 		
 		
 		config.setCheck(check);
