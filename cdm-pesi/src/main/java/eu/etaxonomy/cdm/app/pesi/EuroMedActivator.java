@@ -196,6 +196,7 @@ public class EuroMedActivator {
 		config.setOccurrenceFilter(occurrenceFilter);
 		config.setOccurrenceSourceFilter(occurrenceSourceFilter);
 		config.setWebMarkerFilter(webMarkerFilter);
+		config.setUseSingleClassification(useSingleClassification);
 		
 		
 		config.setCheck(check);
