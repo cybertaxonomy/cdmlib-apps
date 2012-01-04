@@ -62,7 +62,7 @@ public class EuroMedActivator {
 	// set to zero for unlimited nameFacts
 	static final int maximumNumberOfNameFacts = 0;
 	
-	static final int partitionSize = 2000;
+	static final int partitionSize = 5000;
 	
 	//check - import
 	static final CHECK check = CHECK.IMPORT_WITHOUT_CHECK;
@@ -89,8 +89,8 @@ public class EuroMedActivator {
 	static String occurrenceSourceFilter = " occurrenceFk IN ( SELECT occurrenceId FROM v_cdm_exp_occurrenceAll )"; 
 	static String commonNameFilter = " commonNameId IN ( SELECT commonNameId FROM v_cdm_exp_commonNamesAll )";
 	static String webMarkerFilter = " TableNameFk <> 500 OR ( RIdentifierFk IN (SELECT RIdentifier FROM v_cdm_exp_taxaAll)) ";
-	
-	
+	static String authorTeamFilter = " authorTeamId IN (SELECT authorTeamId FROM v_cdm_exp_authorTeamsAll) ";
+	static String authorFilter = " authorId IN (SELECT authorId FROM v_cdm_exp_authorsAll) "; 
 	
 
 	
@@ -191,6 +191,8 @@ public class EuroMedActivator {
 		config.setRelTaxaIdQuery(relPTaxonIdQuery);
 		config.setNameIdTable(nameIdTable);
 		config.setReferenceIdTable(referenceIdTable);
+		config.setAuthorTeamFilter(authorTeamFilter);
+		config.setAuthorFilter(authorFilter);
 		config.setFactFilter(factFilter);
 		config.setCommonNameFilter(commonNameFilter);
 		config.setOccurrenceFilter(occurrenceFilter);
