@@ -43,7 +43,7 @@ public class ErmsActivator {
 	static DbSchemaValidation hbm2dll = DbSchemaValidation.CREATE;
 	static final Source ermsSource = PesiSources.PESI_ERMS();
 //	static final ICdmDataSource cdmDestination = CdmDestinations.cdm_pesi_erms();
-	static final ICdmDataSource cdmDestination = CdmDestinations.cdm_test_local_mysql();
+	static final ICdmDataSource cdmDestination = CdmDestinations.cdm_test_local_mysql_test();
 	static final UUID treeUuid = UUID.fromString("8bd27d84-fd4f-4bfa-bde0-3e6b7311b334");
 	static final UUID featureTreeUuid = UUID.fromString("33cbf7a8-0c47-4d47-bd11-b7d77a38d0f6");
 	//static final Object[] featureKeyList = new Integer[]{1,4,5,10,11,12,13,14, 249, 250, 251, 252, 253}; 
@@ -51,7 +51,7 @@ public class ErmsActivator {
 	//check - import
 	static final CHECK check = CHECK.CHECK_AND_IMPORT;
 
-	static final int partitionSize = 2000;
+	static final int partitionSize = 5000;
 
 
 	//NomeclaturalCode
