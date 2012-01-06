@@ -20,8 +20,6 @@ import eu.etaxonomy.cdm.common.CdmUtils;
 import eu.etaxonomy.cdm.io.common.mapping.InputTransformerBase;
 import eu.etaxonomy.cdm.io.common.mapping.UndefinedTransformerMethodException;
 import eu.etaxonomy.cdm.model.common.ExtensionType;
-import eu.etaxonomy.cdm.io.common.mapping.InputTransformerBase;
-import eu.etaxonomy.cdm.io.common.mapping.UndefinedTransformerMethodException;
 import eu.etaxonomy.cdm.model.common.Language;
 import eu.etaxonomy.cdm.model.description.Feature;
 import eu.etaxonomy.cdm.model.name.NameTypeDesignationStatus;
@@ -318,6 +316,20 @@ public final class ErmsTransformer extends InputTransformerBase {
 			unhandledLanguages.add("tm");
 			unhandledLanguages.add("sh");
 			unhandledLanguages.add("yu");
+			
+			unhandledLanguages.add("ab");
+			unhandledLanguages.add("bl");
+			unhandledLanguages.add("cu");
+			unhandledLanguages.add("ki");
+			unhandledLanguages.add("mo");
+			unhandledLanguages.add("mr");
+			unhandledLanguages.add("mt");
+			unhandledLanguages.add("nn");
+			unhandledLanguages.add("sa");
+			unhandledLanguages.add("sl");
+			unhandledLanguages.add("nb");
+			unhandledLanguages.add("lt");
+			
 			
 			if (unhandledLanguages.contains(ermsAbbrev)){
 				logger.warn("Unhandled language '" + ermsAbbrev + "' replaced by 'UNDETERMINED'" );
