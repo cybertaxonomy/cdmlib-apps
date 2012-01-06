@@ -99,12 +99,6 @@ public class ErmsTaxonImport  extends ErmsImportBase<TaxonBase> implements IMapp
 			mapping.addMapper(DbImportExtensionMapper.NewInstance("fossil_name", fossilStatusUuid, "fossil status", "fossil status", "fos. stat."));
 //			mapping.addMapper(DbImportExtensionTypeCreationMapper.NewInstance("fossil_name", EXTENSION_TYPE_NAMESPACE, "fossil_name", "fossil_name", "fossil_name"));
 			
-			UUID credibilityUuid = ErmsTransformer.uuidCredibility;
-			mapping.addMapper(DbImportExtensionMapper.NewInstance("tu_credibility", credibilityUuid, "credibility", "credibility", "credibility")); //Werte: null, unknown, marked for deletion
-			
-			UUID completenessUuid = ErmsTransformer.uuidCompleteness;
-			mapping.addMapper(DbImportExtensionMapper.NewInstance("tu_completeness", completenessUuid, "completeness", "completeness", "completeness")); //null, unknown, tmpflag, tmp2, tmp3, complete
-			
 			UUID unacceptUuid = ErmsTransformer.uuidUnacceptReason;
 			mapping.addMapper(DbImportExtensionMapper.NewInstance("tu_unacceptreason", unacceptUuid, "unaccept reason", "unaccept reason", "reason"));
 			
@@ -114,6 +108,10 @@ public class ErmsTaxonImport  extends ErmsImportBase<TaxonBase> implements IMapp
 //			UUID hiddenUuid = ErmsTransformer.uuidHidden;
 //			mapping.addMapper(DbImportMarkerCreationMapper.Mapper.NewInstance("qualitystatus_name", qualityUuid, "quality status", "quality status", "quality status")); //checked by Tax Editor ERMS1.1, Added by db management team (2x), checked by Tax Editor
 			
+			//not yet implemented
+			mapping.addMapper(DbNotYetImplementedMapper.NewInstance("GUID", "GUID mapper")); 
+			mapping.addMapper(DbNotYetImplementedMapper.NewInstance("tu_sp", "included in rank/object creation")); 
+			
 			
 			//ignore
 			mapping.addMapper(DbIgnoreMapper.NewInstance("tu_marine", "marine flag not implemented in PESI"));
@@ -122,11 +120,18 @@ public class ErmsTaxonImport  extends ErmsImportBase<TaxonBase> implements IMapp
 			mapping.addMapper(DbIgnoreMapper.NewInstance("tu_terrestrial", "terrestrial flag not implemented in PESI"));
 			mapping.addMapper(DbIgnoreMapper.NewInstance("tu_fossil", "tu_fossil implemented as foreign key"));
 			mapping.addMapper(DbIgnoreMapper.NewInstance("cache_citation", "citation cache not needed in PESI"));
-			mapping.addMapper(DbNotYetImplementedMapper.NewInstance("tu_sp", "included in rank/object creation")); 
 			
 			
-			//not yet implemented or ignore
-			mapping.addMapper(DbNotYetImplementedMapper.NewInstance("tu_hidden", "Needs DbImportMarkerMapper implemented"));
+			
+			
+			//not in current version anymore
+//			mapping.addMapper(DbNotYetImplementedMapper.NewInstance("tu_hidden", "Needs DbImportMarkerMapper implemented"));
+//			UUID completenessUuid = ErmsTransformer.uuidCompleteness;
+//	x		mapping.addMapper(DbImportExtensionMapper.NewInstance("tu_completeness", completenessUuid, "completeness", "completeness", "completeness")); //null, unknown, tmpflag, tmp2, tmp3, complete
+//			UUID credibilityUuid = ErmsTransformer.uuidCredibility;
+//	x		mapping.addMapper(DbImportExtensionMapper.NewInstance("tu_credibility", credibilityUuid, "credibility", "credibility", "credibility")); //Werte: null, unknown, marked for deletion
+
+			
 			
 //			//second path / implemented in ErmsTaxonRelationImport
 //			DbImportMapping secondPathMapping = new DbImportMapping();
