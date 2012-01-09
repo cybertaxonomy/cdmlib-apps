@@ -95,6 +95,16 @@ public final class ErmsTransformer extends InputTransformerBase {
 	public static final UUID uuidTurkishExclusiveEconomicZone = UUID.fromString("3d552e73-2bf5-4f36-8a91-94fbead970e5");
 	public static final UUID uuidDanishExclusiveEconomicZone = UUID.fromString("53d5a8bd-804b-4cbb-b5ad-f47ff6433db0");
 
+	public static final UUID uuidBayOfBiscay = UUID.fromString("36ffc01e-85a2-4f71-91fd-012d0b1eeff5");
+	public static final UUID uuidGreekExclusiveEconomicZone = UUID.fromString("6e587a2b-d681-46d3-bede-30411b0707a9");
+	public static final UUID uuidTyrrhenianSea = UUID.fromString("26c39604-b7fd-425a-93a5-958774261d04");
+	public static final UUID uuidBaeltSea = UUID.fromString("66ebf77f-77c1-4aea-8610-7c679835caee");
+	public static final UUID uuidSeaOfMarmara = UUID.fromString("326da4d1-0c6c-4621-baf5-fdd04b0dc26c");
+	public static final UUID uuidAzoresExclusiveEconomicZone = UUID.fromString("e0297e2c-d28a-46aa-8b30-694148b0640d");
+	public static final UUID uuidIsraeliExclusiveEconomicZoneMediterranean = UUID.fromString("d947e1c1-6d7b-47e1-ad91-703d15c5c55b");
+	public static final UUID uuidPolishExclusiveEconomicZone = UUID.fromString("dc7f8339-528b-49ec-a8d9-c2be0441e933");
+
+	
 
 	//feature uuids
 	public static final UUID uuidRemark = UUID.fromString("648eab77-8469-4139-bbf4-3fb26ec15864");
@@ -193,6 +203,7 @@ public final class ErmsTransformer extends InputTransformerBase {
 	public Language getLanguageByKey(String ermsAbbrev) throws IllegalArgumentException {
 		Set<String> unhandledLanguages = new HashSet<String>();
 		if (CdmUtils.isEmpty(ermsAbbrev)){return null;
+		}else if (ermsAbbrev.equals("ab")){return Language.ALBANIAN();
 		}else if (ermsAbbrev.equals("af")){return Language.AFRIKAANS();
 		}else if (ermsAbbrev.equals("al")){return Language.ALEUT();
 		}else if (ermsAbbrev.equals("ar")){return Language.ARABIC();
@@ -202,6 +213,7 @@ public final class ErmsTransformer extends InputTransformerBase {
 		}else if (ermsAbbrev.equals("ba")){return Language.BASQUE();
 		}else if (ermsAbbrev.equals("be")){return Language.BELORUSSIAN();
 		}else if (ermsAbbrev.equals("bg")){return Language.BULGARIAN();
+		}else if (ermsAbbrev.equals("bl")){return Language.BALUCHI();
 		}else if (ermsAbbrev.equals("bn")){return Language.BENGALI();
 		}else if (ermsAbbrev.equals("br")){return Language.BRETON();
 		}else if (ermsAbbrev.equals("bu")){return Language.BURMESE();
@@ -211,6 +223,7 @@ public final class ErmsTransformer extends InputTransformerBase {
 //		}else if (ermsAbbrev.equals("cl")){return Language.CHUKCHI(); // (LOURAVETLANY)(); //iso639-3: ckt //also known as Luoravetlan, Chukot and Chukcha is a Palaeosiberian language spoken by Chukchi people in the easternmost extremity of Siberia, mainly in Chukotka Autonomous Okrug.
 		}else if (ermsAbbrev.equals("cr")){return Language.CROATIAN();
 		}else if (ermsAbbrev.equals("cs")){return Language.CZECH();
+//		}else if (ermsAbbrev.equals("cu")){return Language.CHLEUH();
 		}else if (ermsAbbrev.equals("da")){return Language.DANISH();
 		}else if (ermsAbbrev.equals("de")){return Language.GERMAN();
 //		}else if (ermsAbbrev.equals("ec")){return Language.ENGLISH-CANADIAN();  //no iso
@@ -253,12 +266,17 @@ public final class ErmsTransformer extends InputTransformerBase {
 		}else if (ermsAbbrev.equals("li")){return Language.LITHUANIAN();
 //		}else if (ermsAbbrev.equals("lp")){return Language.LAPP();      //??
 		}else if (ermsAbbrev.equals("lv")){return Language.LATVIAN();
+		}else if (ermsAbbrev.equals("lt")){return Language.LITHUANIAN();
 		}else if (ermsAbbrev.equals("ma")){return Language.MACEDONIAN();
 //		}else if (ermsAbbrev.equals("mh")){return Language.MAHR();   //Marathi ; Mari ??
 //		}else if (ermsAbbrev.equals("mk")){return Language.MAKAH (QWIQWIDICCIAT)();  //iso639-3: myh
 		}else if (ermsAbbrev.equals("ml")){return Language.MALAY();
+		}else if (ermsAbbrev.equals("mr")){return Language.MAORI();
+		}else if (ermsAbbrev.equals("mt")){return Language.MALTESE();
+		}else if (ermsAbbrev.equals("nb")){return Language.NORWEGIAN_BOKMOL();
 //		}else if (ermsAbbrev.equals("ne")){return Language.NENETS();   iso639-3 yrk; iso639-2: mis
 		}else if (ermsAbbrev.equals("nl")){return Language.DUTCH_FLEMISH();
+		}else if (ermsAbbrev.equals("nn")){return Language.NORWEGIAN_NYNORSK();
 		}else if (ermsAbbrev.equals("no")){return Language.NORWEGIAN();
 		}else if (ermsAbbrev.equals("np")){return Language.NEPALI();
 //		}else if (ermsAbbrev.equals("os")){return Language.OSTYAK();   //Ostyak on its own or in combination, can refer, especially in older literature, to several Siberian peoples and languages:
@@ -268,12 +286,14 @@ public final class ErmsTransformer extends InputTransformerBase {
 		}else if (ermsAbbrev.equals("pt")){return Language.PORTUGUESE();
 		}else if (ermsAbbrev.equals("ro")){return Language.ROMANIAN();
 		}else if (ermsAbbrev.equals("ru")){return Language.RUSSIAN();
+		}else if (ermsAbbrev.equals("sa")){return Language.SAMOAN();
 		}else if (ermsAbbrev.equals("sc")){return Language.SCOTS();
 		}else if (ermsAbbrev.equals("sd")){return Language.SINDHI();
 //		}else if (ermsAbbrev.equals("sh")){return Language.SERBO_CROATIAN();  //hbs
 		}else if (ermsAbbrev.equals("si")){return Language.SINHALA_SINHALESE();
 		}else if (ermsAbbrev.equals("sk")){return Language.SLOVAK();
-		}else if (ermsAbbrev.equals("sn")){return Language.SLOVENIAN();
+		}else if (ermsAbbrev.equals("sl")){return Language.SLOVENIAN();
+		}else if (ermsAbbrev.equals("sn")){return Language.SLOVENIAN();  //not used anymore
 		}else if (ermsAbbrev.equals("sr")){return Language.SERBIAN();
 		}else if (ermsAbbrev.equals("st")){return Language.SRANAN_TONGO();
 		}else if (ermsAbbrev.equals("sv")){return Language.SWEDISH();
@@ -317,18 +337,11 @@ public final class ErmsTransformer extends InputTransformerBase {
 			unhandledLanguages.add("sh");
 			unhandledLanguages.add("yu");
 			
-			unhandledLanguages.add("ab");
-			unhandledLanguages.add("bl");
-			unhandledLanguages.add("cu");
-			unhandledLanguages.add("ki");
-			unhandledLanguages.add("mo");
-			unhandledLanguages.add("mr");
-			unhandledLanguages.add("mt");
-			unhandledLanguages.add("nn");
-			unhandledLanguages.add("sa");
-			unhandledLanguages.add("sl");
-			unhandledLanguages.add("nb");
-			unhandledLanguages.add("lt");
+			unhandledLanguages.add("cu");   //Chleuh
+			unhandledLanguages.add("ki");  //Krio
+			unhandledLanguages.add("mo");  //Monégasque
+
+
 			
 			
 			if (unhandledLanguages.contains(ermsAbbrev)){
@@ -435,6 +448,16 @@ public final class ErmsTransformer extends InputTransformerBase {
 		}else if (guName.equalsIgnoreCase("Balear Sea")){ return uuidBalearSea;
 		}else if (guName.equalsIgnoreCase("Turkish Exclusive Economic Zone")){ return uuidTurkishExclusiveEconomicZone;
 		}else if (guName.equalsIgnoreCase("Danish Exclusive Economic Zone")){ return uuidDanishExclusiveEconomicZone;
+		
+		}else if (guName.equalsIgnoreCase("Bay of Biscay")){ return uuidBayOfBiscay;
+		}else if (guName.equalsIgnoreCase("Greek Exclusive Economic Zone")){ return uuidGreekExclusiveEconomicZone;
+		}else if (guName.equalsIgnoreCase("Tyrrhenian Sea")){ return uuidTyrrhenianSea;
+		}else if (guName.equalsIgnoreCase("Baelt Sea")){ return uuidBaeltSea;
+		}else if (guName.equalsIgnoreCase("Sea of Marmara")){ return uuidSeaOfMarmara;
+		}else if (guName.equalsIgnoreCase("Azores Exclusive Economic Zone")){ return uuidAzoresExclusiveEconomicZone;
+		}else if (guName.equalsIgnoreCase("Israeli Exclusive Economic Zone [Mediterranean part]")){ return uuidIsraeliExclusiveEconomicZoneMediterranean;
+		}else if (guName.equalsIgnoreCase("Polish Exclusive Economic Zone")){ return uuidPolishExclusiveEconomicZone;
+		
 		}else{
 			throw new IllegalArgumentException("Unknown area " + guName);
 		}

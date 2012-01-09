@@ -24,6 +24,7 @@ import eu.etaxonomy.cdm.common.CdmUtils;
 import eu.etaxonomy.cdm.io.common.IOValidator;
 import eu.etaxonomy.cdm.io.common.mapping.DbIgnoreMapper;
 import eu.etaxonomy.cdm.io.common.mapping.DbImportExtensionMapper;
+import eu.etaxonomy.cdm.io.common.mapping.DbImportLsidMapper;
 import eu.etaxonomy.cdm.io.common.mapping.DbImportMapping;
 import eu.etaxonomy.cdm.io.common.mapping.DbImportObjectCreationMapper;
 import eu.etaxonomy.cdm.io.common.mapping.DbImportStringMapper;
@@ -86,6 +87,8 @@ public class ErmsTaxonImport  extends ErmsImportBase<TaxonBase> implements IMapp
 			
 			mapping.addMapper(DbImportObjectCreationMapper.NewInstance(this, "id", TAXON_NAMESPACE)); //id + tu_status
 			UUID tsnUuid = ErmsTransformer.uuidTsn;
+			mapping.addMapper(DbImportLsidMapper.NewInstance("GUID", "lsid")); 
+
 			mapping.addMapper(DbImportExtensionMapper.NewInstance("tsn", tsnUuid, "TSN", "TSN", "TSN"));
 //			mapping.addMapper(DbImportStringMapper.NewInstance("tu_name", "(NonViralName)name.nameCache"));
 			
@@ -98,18 +101,18 @@ public class ErmsTaxonImport  extends ErmsImportBase<TaxonBase> implements IMapp
 			UUID fossilStatusUuid = ErmsTransformer.uuidFossilStatus;
 			mapping.addMapper(DbImportExtensionMapper.NewInstance("fossil_name", fossilStatusUuid, "fossil status", "fossil status", "fos. stat."));
 //			mapping.addMapper(DbImportExtensionTypeCreationMapper.NewInstance("fossil_name", EXTENSION_TYPE_NAMESPACE, "fossil_name", "fossil_name", "fossil_name"));
-			
+
 			UUID unacceptUuid = ErmsTransformer.uuidUnacceptReason;
 			mapping.addMapper(DbImportExtensionMapper.NewInstance("tu_unacceptreason", unacceptUuid, "unaccept reason", "unaccept reason", "reason"));
 			
 			UUID qualityUuid = ErmsTransformer.uuidQualityStatus;
 			mapping.addMapper(DbImportExtensionMapper.NewInstance("qualitystatus_name", qualityUuid, "quality status", "quality status", "quality status")); //checked by Tax Editor ERMS1.1, Added by db management team (2x), checked by Tax Editor
 			
+			
 //			UUID hiddenUuid = ErmsTransformer.uuidHidden;
 //			mapping.addMapper(DbImportMarkerCreationMapper.Mapper.NewInstance("qualitystatus_name", qualityUuid, "quality status", "quality status", "quality status")); //checked by Tax Editor ERMS1.1, Added by db management team (2x), checked by Tax Editor
 			
 			//not yet implemented
-			mapping.addMapper(DbNotYetImplementedMapper.NewInstance("GUID", "GUID mapper")); 
 			mapping.addMapper(DbNotYetImplementedMapper.NewInstance("tu_sp", "included in rank/object creation")); 
 			
 			
