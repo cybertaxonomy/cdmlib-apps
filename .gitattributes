@@ -1304,4 +1304,5 @@ cdm-pesi/src/main/java/eu/etaxonomy/cdm/io/pesi/out/PesiRelTaxonExport.java -tex
 cdm-pesi/src/main/java/eu/etaxonomy/cdm/io/pesi/out/PesiSourceExport.java -text
 cdm-pesi/src/main/java/eu/etaxonomy/cdm/io/pesi/out/PesiTaxonExport.java -text
 cdm-pesi/src/main/java/eu/etaxonomy/cdm/io/pesi/out/PesiTransformer.java -text
+cdm-pesi/src/test/java/eu/etaxonomy/cdm/io/common/TestConnection.java -text
 cdm-pesi/src/test/java/eu/etaxonomy/cdm/io/erms/ermsErrors.txt -text
