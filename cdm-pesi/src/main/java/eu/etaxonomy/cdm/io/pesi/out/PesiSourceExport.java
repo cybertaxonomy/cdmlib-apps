@@ -11,6 +11,7 @@ package eu.etaxonomy.cdm.io.pesi.out;
 
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -21,16 +22,18 @@ import org.springframework.transaction.TransactionStatus;
 import eu.etaxonomy.cdm.io.berlinModel.out.mapper.DbExtensionMapper;
 import eu.etaxonomy.cdm.io.berlinModel.out.mapper.DbStringMapper;
 import eu.etaxonomy.cdm.io.berlinModel.out.mapper.DbTimePeriodMapper;
+import eu.etaxonomy.cdm.io.berlinModel.out.mapper.DbUriMapper;
 import eu.etaxonomy.cdm.io.berlinModel.out.mapper.IdMapper;
 import eu.etaxonomy.cdm.io.berlinModel.out.mapper.MethodMapper;
 import eu.etaxonomy.cdm.io.common.Source;
-import eu.etaxonomy.cdm.io.common.IImportConfigurator.DO_REFERENCES;
+import eu.etaxonomy.cdm.io.common.IExportConfigurator.DO_REFERENCES;
 import eu.etaxonomy.cdm.io.pesi.erms.ErmsTransformer;
 import eu.etaxonomy.cdm.model.agent.TeamOrPersonBase;
 import eu.etaxonomy.cdm.model.common.CdmBase;
 import eu.etaxonomy.cdm.model.common.ExtensionType;
 import eu.etaxonomy.cdm.model.common.IdentifiableSource;
 import eu.etaxonomy.cdm.model.reference.Reference;
+import eu.etaxonomy.cdm.model.reference.ReferenceType;
 
 /**
  * The export class for {@link eu.etaxonomy.cdm.model.reference.Reference References}.<p>
@@ -40,7 +43,6 @@ import eu.etaxonomy.cdm.model.reference.Reference;
  *
  */
 @Component
-@SuppressWarnings("unchecked")
 public class PesiSourceExport extends PesiExportBase {
 	private static final Logger logger = Logger.getLogger(PesiSourceExport.class);
 	private static final Class<? extends CdmBase> standardMethodParameter = Reference.class;
@@ -100,7 +102,7 @@ public class PesiSourceExport extends PesiExportBase {
 	@Override
 	protected void doInvoke(PesiExportState state) {
 		try{
-			logger.error("*** Started Making " + pluralString + " ...");
+			logger.info("*** Started Making " + pluralString + " ...");
 
 			PesiExportConfigurator pesiExportConfigurator = state.getConfig();
 			
@@ -128,10 +130,10 @@ public class PesiSourceExport extends PesiExportBase {
 //			logger.error("PHASE 1...");
 			// Start transaction
 			txStatus = startTransaction(true);
-			logger.error("Started new transaction. Fetching some " + pluralString + " (max: " + limit + ") ...");
+			logger.info("Started new transaction. Fetching some " + pluralString + " (max: " + limit + ") ...");
 			while ((list = getReferenceService().list(null, limit, count, null, null)).size() > 0) {
 
-				logger.error("Fetched " + list.size() + " " + pluralString + ". Exporting...");
+				logger.debug("Fetched " + list.size() + " " + pluralString + ". Exporting...");
 				for (Reference<?> reference : list) {
 					doCount(count++, modCount, pluralString);
 					success &= mapping.invoke(reference);
@@ -139,22 +141,22 @@ public class PesiSourceExport extends PesiExportBase {
 
 				// Commit transaction
 				commitTransaction(txStatus);
-				logger.error("Committed transaction.");
-				logger.error("Exported " + (count - pastCount) + " " + pluralString + ". Total: " + count);
+				logger.debug("Committed transaction.");
+				logger.info("Exported " + (count - pastCount) + " " + pluralString + ". Total: " + count);
 				pastCount = count;
 
 				// Start transaction
 				txStatus = startTransaction(true);
-				logger.error("Started new transaction. Fetching some " + pluralString + " (max: " + limit + ") ...");
+				logger.info("Started new transaction. Fetching some " + pluralString + " (max: " + limit + ") ...");
 			}
 			if (list.size() == 0) {
-				logger.error("No " + pluralString + " left to fetch.");
+				logger.info("No " + pluralString + " left to fetch.");
 			}
 			// Commit transaction
 			commitTransaction(txStatus);
-			logger.error("Committed transaction.");
+			logger.info("Committed transaction.");
 			
-			logger.error("*** Finished Making " + pluralString + " ..." + getSuccessString(success));
+			logger.info("*** Finished Making " + pluralString + " ..." + getSuccessString(success));
 
 			if (!success){
 				state.setUnsuccessfull();
@@ -324,19 +326,21 @@ public class PesiSourceExport extends PesiExportBase {
 
 		try {
 		if (reference != null) {
-			Set<IdentifiableSource> sources = reference.getSources();
-			if (sources.size() == 1) {
-				result = sources.iterator().next().getIdInSource();
-			} else if (sources.size() > 1) {
-				logger.warn("Reference has multiple IdentifiableSources: " + reference.getUuid() + " (" + reference.getTitleCache() + ")");
+			Set<IdentifiableSource> sourceAll = reference.getSources();
+			Set<IdentifiableSource> sourceCandidates = filterOriginalPesiDbSources(sourceAll);
+			
+			if (sourceCandidates.size() == 1) {
+				result = sourceCandidates.iterator().next().getIdInSource();
+			} else if (sourceCandidates.size() > 1) {
+				logger.warn("Reference for RefIdInSource has multiple IdentifiableSources which are candidates for a PESI originalDbSource. RefIdInSource can't be determined correctly and will be left out: " + reference.getUuid() + " (" + reference.getTitleCache() + ")");
 				int count = 1;
-				for (IdentifiableSource source : sources) {
-					result += source.getIdInSource();
-					if (count < sources.size()) {
-						result += "; ";
-					}
-					count++;
-				}
+//				for (IdentifiableSource source : sources) {
+//					result += source.getIdInSource();
+//					if (count < sources.size()) {
+//						result += "; ";
+//					}
+//					count++;
+//				}
 			}
 		}
 		} catch (Exception e) {
@@ -344,6 +348,22 @@ public class PesiSourceExport extends PesiExportBase {
 		}
 
 		return result;
+	}
+
+	private static Set<IdentifiableSource> filterOriginalPesiDbSources(
+			Set<IdentifiableSource> sourceAll) {
+		Set<IdentifiableSource> sourceCandidates = new HashSet<IdentifiableSource>();
+		for (IdentifiableSource source : sourceAll){
+			if (isOriginalPesiDbSource(source)){
+				sourceCandidates.add(source);
+			}
+		}
+		return sourceCandidates;
+	}
+
+	private static boolean isOriginalPesiDbSource(IdentifiableSource source) {
+		return (source.getCitation() != null) &&
+				source.getCitation().getType().equals(ReferenceType.Database);
 	}
 
 	/**
@@ -358,22 +378,24 @@ public class PesiSourceExport extends PesiExportBase {
 
 		try {
 		if (reference != null) {
-			Set<IdentifiableSource> sources = reference.getSources();
-			if (sources.size() == 1) {
-				Reference citation = sources.iterator().next().getCitation();
+			Set<IdentifiableSource> sourcesAll = reference.getSources();
+			Set<IdentifiableSource> sourceCandidates = filterOriginalPesiDbSources(sourcesAll); 
+			
+			if (sourceCandidates.size() == 1) {
+				Reference citation = sourceCandidates.iterator().next().getCitation();
 				if (citation != null) {
 					result = PesiTransformer.databaseString2Abbreviation(citation.getTitleCache()); //or just title
 				} else {
-					logger.warn("OriginalDB can not be determined because the citation of this source is NULL: " + sources.iterator().next().getUuid());
+					logger.warn("OriginalDB can not be determined because the citation of this source is NULL: " + sourceCandidates.iterator().next().getUuid());
 				}
-			} else if (sources.size() > 1) {
+			} else if (sourceCandidates.size() > 1) {
 				logger.warn("Taxon has multiple IdentifiableSources: " + reference.getUuid() + " (" + reference.getTitleCache() + ")");
 				int count = 1;
-				for (IdentifiableSource source : sources) {
+				for (IdentifiableSource source : sourceCandidates) {
 					Reference citation = source.getCitation();
 					if (citation != null) {
 						result += PesiTransformer.databaseString2Abbreviation(citation.getTitleCache());
-						if (count < sources.size()) {
+						if (count < sourceCandidates.size()) {
 							result += "; ";
 						}
 						count++;
@@ -395,7 +417,7 @@ public class PesiSourceExport extends PesiExportBase {
 	 */
 	@Override
 	protected boolean isIgnore(PesiExportState state) {
-		return ! (((PesiExportConfigurator) state.getConfig()).getDoReferences().equals(DO_REFERENCES.ALL));
+		return ! state.getConfig().getDoReferences().equals(DO_REFERENCES.ALL);
 	}
 
 	/**
@@ -424,7 +446,7 @@ public class PesiSourceExport extends PesiExportBase {
 		mapping.addMapper(MethodMapper.NewInstance("AuthorString", this));
 		mapping.addMapper(DbTimePeriodMapper.NewInstance("datePublished", "RefYear"));
 		mapping.addMapper(MethodMapper.NewInstance("NomRefCache", this));
-		mapping.addMapper(DbStringMapper.NewInstance("uri", "Link"));
+		mapping.addMapper(DbUriMapper.NewInstance("uri", "Link"));
 		mapping.addMapper(MethodMapper.NewInstance("Notes", this));
 		mapping.addMapper(MethodMapper.NewInstance("RefIdInSource", this));
 		mapping.addMapper(MethodMapper.NewInstance("OriginalDB", this));

@@ -77,7 +77,7 @@ public class PesiExportMapping extends CdmIoMapping {
 			boolean result = true;
 			for (CdmAttributeMapperBase mapper : this.mapperList){
 				if (mapper instanceof IDbExportMapper){
-					IDbExportMapper<DbExportStateBase<?>> dbMapper = (IDbExportMapper)mapper;
+					IDbExportMapper<DbExportStateBase<?>> dbMapper = (IDbExportMapper<DbExportStateBase<?>>)mapper;
 					try {
 						result &= dbMapper.invoke(cdmBase);
 					} catch (Exception e) {

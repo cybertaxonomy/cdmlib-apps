@@ -2289,6 +2289,8 @@ public final class PesiTransformer {
 			return NoteCategory_Common_names;
 		} else if (feature.equals(Feature.OCCURRENCE())) {
 			return NoteCategory_Occurrence;
+		} else if (feature.equals(Feature.DISTRIBUTION())) {
+			return NoteCategory_Distribution;
 		} else if (feature.getUuid().equals(ErmsTransformer.uuidRemark)) {
 			return NoteCategory_Remark;
 		} else if (feature.getUuid().equals(ErmsTransformer.uuidAdditionalinformation)) {
@@ -2364,7 +2366,7 @@ public final class PesiTransformer {
 //			NoteCategory_Host = 283;
 
 		}else{
-			logger.warn("Unknown Feature.");
+			logger.warn("Unknown Feature: " + feature.getTitleCache());
 			return null;
 		}
 	}
@@ -2983,6 +2985,8 @@ public final class PesiTransformer {
 			return REF_ARTICLE_IN_PERIODICAL;
 		} else if (reference.getType().equals(ReferenceType.Book)) {
 			return REF_BOOK;
+		} else if (reference.getType().equals(ReferenceType.BookSection)) {
+			return REF_PART_OF_OTHER;
 		} else if (reference.getType().equals(ReferenceType.Database)) {
 			return REF_DATABASE;
 		} else if (reference.getType().equals(ReferenceType.WebPage)) {
@@ -3006,8 +3010,7 @@ public final class PesiTransformer {
 		} else if (reference.getType().equals(ReferenceType.Thesis)) {
 			return REF_NOT_APPLICABLE;
 		} else {
-			//TODO Figure out a way to handle this gracefully.
-			logger.warn("Reference type not yet supported in PESI: "+ reference.getClass().getSimpleName());
+			logger.warn("Reference type not yet supported in PESI: "+ reference.getType());
 			return null;
 		}
 	}
@@ -3024,6 +3027,8 @@ public final class PesiTransformer {
 			return REF_STR_ARTICLE_IN_PERIODICAL;
 		} else if (reference.getType().equals(ReferenceType.Book)) {
 			return REF_STR_BOOK;
+		} else if (reference.getType().equals(ReferenceType.BookSection)) {
+			return REF_STR_PART_OF_OTHER;
 		} else if (reference.getType().equals(ReferenceType.Database)) {
 			return REF_STR_DATABASE;
 		} else if (reference.getType().equals(ReferenceType.WebPage)) {
@@ -3047,8 +3052,7 @@ public final class PesiTransformer {
 		} else if (reference.getType().equals(ReferenceType.Thesis)) {
 			return REF_STR_NOT_APPLICABLE;
 		} else {
-			//TODO Figure out a way to handle this gracefully.
-			logger.warn("Reference type not yet supported in PESI: "+ reference.getClass().getSimpleName());
+			logger.warn("Reference type not yet supported in PESI: "+ reference.getType());
 			return null;
 		}
 	}
