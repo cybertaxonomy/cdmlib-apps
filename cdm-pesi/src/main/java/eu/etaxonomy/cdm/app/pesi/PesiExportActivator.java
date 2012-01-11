@@ -64,12 +64,10 @@ public class PesiExportActivator {
 	
 //	//authors
 //	static final boolean doAuthors = false;
-//	static final boolean doAuthorTeams = false;
+//	
 //	//references
 //	static final DO_REFERENCES doReferences =  DO_REFERENCES.ALL;
 //	//names
-//	static final boolean doTaxonNames = true;
-//	static final boolean doTypes = false;
 //	static final boolean doNameFacts = false;
 //	
 //	//taxa
