@@ -17,7 +17,7 @@ import eu.etaxonomy.cdm.app.common.CdmDestinations;
 import eu.etaxonomy.cdm.database.ICdmDataSource;
 import eu.etaxonomy.cdm.io.common.CdmDefaultExport;
 import eu.etaxonomy.cdm.io.common.IExportConfigurator.CHECK;
-import eu.etaxonomy.cdm.io.common.IImportConfigurator.DO_REFERENCES;
+import eu.etaxonomy.cdm.io.common.IExportConfigurator.DO_REFERENCES;
 import eu.etaxonomy.cdm.io.common.Source;
 import eu.etaxonomy.cdm.io.pesi.out.PesiExportConfigurator;
 import eu.etaxonomy.cdm.model.name.NomenclaturalCode;
@@ -29,7 +29,6 @@ import eu.etaxonomy.cdm.model.name.NomenclaturalCode;
  *
  */
 public class PesiExportActivator {
-
 	@SuppressWarnings("unused")
 	private static final Logger logger = Logger.getLogger(PesiExportActivator.class);
 
@@ -52,9 +51,7 @@ public class PesiExportActivator {
 	static final boolean doAuthors = true;
 	//references
 	static final DO_REFERENCES doReferences =  DO_REFERENCES.ALL;
-	//names
-	static final boolean doTaxonNames = true;
-	static final boolean doTypes = false;
+	
 	static final boolean doNameFacts = false;
 	
 	//taxa
@@ -96,8 +93,10 @@ public class PesiExportActivator {
 		pesiExportConfigurator.setDoRelTaxa(doRelTaxa);
 		pesiExportConfigurator.setDoFacts(doFacts);
 		pesiExportConfigurator.setDoOccurrence(doOccurences);
+		pesiExportConfigurator.setDoReferences(doReferences);
 //		pesiExportConfigurator.setIsHomotypicId(isHomotypicId);
 		pesiExportConfigurator.setCheck(check);
+		
 
 
 		// invoke export
