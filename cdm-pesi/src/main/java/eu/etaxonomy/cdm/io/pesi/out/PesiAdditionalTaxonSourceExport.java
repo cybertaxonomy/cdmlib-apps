@@ -223,7 +223,7 @@ public class PesiAdditionalTaxonSourceExport extends PesiExportBase {
 	 * @return Whether the delete operation was successful or not.
 	 */
 	protected boolean doDelete(PesiExportState state) {
-		PesiExportConfigurator pesiConfig = (PesiExportConfigurator) state.getConfig();
+		PesiExportConfigurator pesiConfig = state.getConfig();
 		
 		String sql;
 		Source destination =  pesiConfig.getDestination();

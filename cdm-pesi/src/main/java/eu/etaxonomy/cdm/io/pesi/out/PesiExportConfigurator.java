@@ -13,10 +13,8 @@ import org.apache.log4j.Logger;
 
 import eu.etaxonomy.cdm.database.ICdmDataSource;
 import eu.etaxonomy.cdm.io.common.DbExportConfiguratorBase;
-import eu.etaxonomy.cdm.io.common.ExportStateBase;
 import eu.etaxonomy.cdm.io.common.IExportConfigurator;
 import eu.etaxonomy.cdm.io.common.Source;
-import eu.etaxonomy.cdm.io.common.IExportConfigurator.DO_REFERENCES;
 import eu.etaxonomy.cdm.model.reference.Reference;
 import eu.etaxonomy.cdm.model.reference.ReferenceFactory;
 
@@ -25,10 +23,10 @@ import eu.etaxonomy.cdm.model.reference.ReferenceFactory;
  * @date 12.02.2010
  *
  */
-public class PesiExportConfigurator extends DbExportConfiguratorBase implements IExportConfigurator {
+public class PesiExportConfigurator extends DbExportConfiguratorBase<PesiExportState> implements IExportConfigurator<PesiExportState> {
 	@SuppressWarnings("unused")
 	private static Logger logger = Logger.getLogger(PesiExportConfigurator.class);
-	private int limitSave = 1000;
+	private int limitSave = 2000;
 
 	private Reference<?> auctReference;
 	private boolean doOccurrence = true;
@@ -72,8 +70,7 @@ public class PesiExportConfigurator extends DbExportConfiguratorBase implements 
 	/* (non-Javadoc)
 	 * @see eu.etaxonomy.cdm.io.common.IExportConfigurator#getNewState()
 	 */
-	@SuppressWarnings("unchecked")
-	public ExportStateBase getNewState() {
+	public PesiExportState getNewState() {
 		return new PesiExportState(this);
 	}
 	
