@@ -34,12 +34,11 @@ public class PesiExportActivator {
 	private static final Logger logger = Logger.getLogger(PesiExportActivator.class);
 
 	//database validation status (create, update, validate ...)
-	static final Source pesiDestination = PesiDestinations.pesi_test_local_PESI_V10();
-	static final ICdmDataSource cdmSource = CdmDestinations.cdm_test_jaxb2();
+	static final Source pesiDestination = PesiDestinations.pesi_test_local_PESI_V12();
+	static final ICdmDataSource cdmSource = CdmDestinations.cdm_test_local_mysql();
 	static final UUID secUuid = UUID.fromString("d03ef02a-f226-4cb1-bdb4-f6c154f08a34");
 	static final int sourceSecId = 7331;
 	static final int isHomotypicId = 72;
-	static boolean useClassification = true;
 	
 	//check - export
 	static final CHECK check = CHECK.EXPORT_WITHOUT_CHECK;
@@ -99,7 +98,7 @@ public class PesiExportActivator {
 		pesiExportConfigurator.setDoOccurrence(doOccurences);
 //		pesiExportConfigurator.setIsHomotypicId(isHomotypicId);
 		pesiExportConfigurator.setCheck(check);
-		pesiExportConfigurator.setUseClassification(useClassification);
+
 
 		// invoke export
 		CdmDefaultExport<PesiExportConfigurator> pesiExport = new CdmDefaultExport<PesiExportConfigurator>();
