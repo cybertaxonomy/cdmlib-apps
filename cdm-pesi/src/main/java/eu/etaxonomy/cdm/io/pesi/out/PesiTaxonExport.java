@@ -28,10 +28,10 @@ import org.springframework.stereotype.Component;
 import org.springframework.transaction.TransactionStatus;
 
 import eu.etaxonomy.cdm.common.CdmUtils;
-import eu.etaxonomy.cdm.io.berlinModel.out.mapper.DbExtensionMapper;
-import eu.etaxonomy.cdm.io.berlinModel.out.mapper.IdMapper;
-import eu.etaxonomy.cdm.io.berlinModel.out.mapper.MethodMapper;
 import eu.etaxonomy.cdm.io.common.Source;
+import eu.etaxonomy.cdm.io.common.mapping.out.DbExtensionMapper;
+import eu.etaxonomy.cdm.io.common.mapping.out.IdMapper;
+import eu.etaxonomy.cdm.io.common.mapping.out.MethodMapper;
 import eu.etaxonomy.cdm.io.pesi.erms.ErmsTransformer;
 import eu.etaxonomy.cdm.model.common.Annotation;
 import eu.etaxonomy.cdm.model.common.AnnotationType;
