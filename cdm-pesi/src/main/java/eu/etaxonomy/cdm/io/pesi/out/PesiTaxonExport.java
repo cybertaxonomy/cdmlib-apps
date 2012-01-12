@@ -85,7 +85,7 @@ public class PesiTaxonExport extends PesiExportBase {
 	private static final String pluralString = "Taxa";
 	private static final String parentPluralString = "Taxa";
 	private PreparedStatement parentTaxonFk_TreeIndex_KingdomFkStmt;
-	private PreparedStatement sqlStmt;
+	private PreparedStatement rankTypeExpertsUpdateStmt;
 	private PreparedStatement rankSqlStmt;
 	private NomenclaturalCode nomenclaturalCode;
 	private Integer kingdomFk;
@@ -157,9 +157,8 @@ public class PesiTaxonExport extends PesiExportBase {
 			String parentTaxonFk_TreeIndex_KingdomFkSql = "UPDATE Taxon SET ParentTaxonFk = ?, TreeIndex = ? WHERE TaxonId = ?"; 
 			parentTaxonFk_TreeIndex_KingdomFkStmt = connection.prepareStatement(parentTaxonFk_TreeIndex_KingdomFkSql);
 			
-			String sql = "UPDATE Taxon SET RankFk = ?, RankCache = ?, TypeNameFk = ?, KingdomFk = ?, " +
-					"ExpertFk = ?, SpeciesExpertFk = ? WHERE TaxonId = ?";
-			sqlStmt = connection.prepareStatement(sql);
+			
+			initRankExpertsUpdateStmt(connection);
 			
 			String rankSql = "UPDATE Taxon SET RankFk = ?, RankCache = ?, KingdomFk = ? WHERE TaxonId = ?";
 			rankSqlStmt = connection.prepareStatement(rankSql);
@@ -209,6 +208,15 @@ public class PesiTaxonExport extends PesiExportBase {
 			state.setUnsuccessfull();
 			return;
 		}
+	}
+
+	private void initRankExpertsUpdateStmt(Connection connection) throws SQLException {
+//		String sql_old = "UPDATE Taxon SET RankFk = ?, RankCache = ?, TypeNameFk = ?, KingdomFk = ?, " +
+//				"ExpertFk = ?, SpeciesExpertFk = ? WHERE TaxonId = ?";
+		//TODO handle experts GUIDs
+		String sql = "UPDATE Taxon SET RankFk = ?, RankCache = ?, TypeNameFk = ?, KingdomFk = ? " +
+				" WHERE TaxonId = ?";
+		rankTypeExpertsUpdateStmt = connection.prepareStatement(sql);
 	}
 
 	private boolean doPhaseOne(PesiExportState state, PesiExportMapping mapping) throws SQLException {
@@ -930,49 +938,50 @@ public class PesiTaxonExport extends PesiExportBase {
 		try {
 			Integer rankFk = getRankFk(taxonName, nomenclaturalCode);
 			if (rankFk != null) {
-				sqlStmt.setInt(1, rankFk);
+				rankTypeExpertsUpdateStmt.setInt(1, rankFk);
 			} else {
-				sqlStmt.setObject(1, null);
+				rankTypeExpertsUpdateStmt.setObject(1, null);
 			}
 	
 			String rankCache = getRankCache(taxonName, nomenclaturalCode);
 			if (rankCache != null) {
-				sqlStmt.setString(2, rankCache);
+				rankTypeExpertsUpdateStmt.setString(2, rankCache);
 			} else {
-				sqlStmt.setObject(2, null);
+				rankTypeExpertsUpdateStmt.setObject(2, null);
 			}
 			
 			if (typeNameFk != null) {
-				sqlStmt.setInt(3, typeNameFk);
+				rankTypeExpertsUpdateStmt.setInt(3, typeNameFk);
 			} else {
-				sqlStmt.setObject(3, null);
+				rankTypeExpertsUpdateStmt.setObject(3, null);
 			}
 			
 			if (kingdomFk != null) {
-				sqlStmt.setInt(4, kingdomFk);
+				rankTypeExpertsUpdateStmt.setInt(4, kingdomFk);
 			} else {
-				sqlStmt.setObject(4, null);
+				rankTypeExpertsUpdateStmt.setObject(4, null);
 			}
 			
 			if (expertFk != null) {
-				sqlStmt.setInt(5, expertFk);
+				rankTypeExpertsUpdateStmt.setInt(5, expertFk);
 			} else {
-				sqlStmt.setObject(5, null);
+				rankTypeExpertsUpdateStmt.setObject(5, null);
 			}
+
+			//TODO handle experts GUIDS
+//			if (speciesExpertFk != null) {
+//				rankTypeExpertsUpdateStmt.setInt(6, speciesExpertFk);
+//			} else {
+//				rankTypeExpertsUpdateStmt.setObject(6, null);
+//			}
+//			
+//			if (taxonFk != null) {
+//				rankTypeExpertsUpdateStmt.setInt(7, taxonFk);
+//			} else {
+//				rankTypeExpertsUpdateStmt.setObject(7, null);
+//			}
 			
-			if (speciesExpertFk != null) {
-				sqlStmt.setInt(6, speciesExpertFk);
-			} else {
-				sqlStmt.setObject(6, null);
-			}
-			
-			if (taxonFk != null) {
-				sqlStmt.setInt(7, taxonFk);
-			} else {
-				sqlStmt.setObject(7, null);
-			}
-			
-			sqlStmt.executeUpdate();
+			rankTypeExpertsUpdateStmt.executeUpdate();
 			return true;
 		} catch (SQLException e) {
 			logger.error("Data could not be inserted into database: " + e.getMessage());
@@ -1101,10 +1110,10 @@ public class PesiTaxonExport extends PesiExportBase {
 	private static String getSpecificEpithet(TaxonNameBase<?,?> taxonName) {
 		String result = null;
 		try {
-		if (taxonName != null && (taxonName.isInstanceOf(NonViralName.class))) {
-			NonViralName<?> nonViralName = CdmBase.deproxy(taxonName, NonViralName.class);
-			result = nonViralName.getSpecificEpithet();
-		}
+			if (taxonName != null && (taxonName.isInstanceOf(NonViralName.class))) {
+				NonViralName<?> nonViralName = CdmBase.deproxy(taxonName, NonViralName.class);
+				result = nonViralName.getSpecificEpithet();
+			}
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
