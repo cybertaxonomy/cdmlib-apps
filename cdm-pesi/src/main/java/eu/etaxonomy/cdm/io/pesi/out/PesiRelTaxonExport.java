@@ -29,13 +29,13 @@ import eu.etaxonomy.cdm.model.name.NameRelationship;
 import eu.etaxonomy.cdm.model.name.NomenclaturalCode;
 import eu.etaxonomy.cdm.model.name.Rank;
 import eu.etaxonomy.cdm.model.name.TaxonNameBase;
+import eu.etaxonomy.cdm.model.taxon.Classification;
 import eu.etaxonomy.cdm.model.taxon.Synonym;
 import eu.etaxonomy.cdm.model.taxon.SynonymRelationship;
 import eu.etaxonomy.cdm.model.taxon.Taxon;
 import eu.etaxonomy.cdm.model.taxon.TaxonBase;
 import eu.etaxonomy.cdm.model.taxon.TaxonNode;
 import eu.etaxonomy.cdm.model.taxon.TaxonRelationship;
-import eu.etaxonomy.cdm.model.taxon.Classification;
 
 /**
  * The export class for relations between {@link eu.etaxonomy.cdm.model.taxon.TaxonBase TaxonBases}.<p>
@@ -45,7 +45,6 @@ import eu.etaxonomy.cdm.model.taxon.Classification;
  *
  */
 @Component
-@SuppressWarnings("unchecked")
 public class PesiRelTaxonExport extends PesiExportBase {
 	private static final Logger logger = Logger.getLogger(PesiRelTaxonExport.class);
 	private static final Class<? extends CdmBase> standardMethodParameter = RelationshipBase.class;
@@ -58,7 +57,6 @@ public class PesiRelTaxonExport extends PesiExportBase {
 	private List<Rank> rankList = new ArrayList<Rank>();
 	private PesiExportMapping mapping;
 	private int count = 0;
-	private boolean success = true;
 	private static NomenclaturalCode nomenclaturalCode;
 	
 	public PesiRelTaxonExport() {
@@ -93,12 +91,6 @@ public class PesiRelTaxonExport extends PesiExportBase {
 			Connection connection = state.getConfig().getDestination().getConnection();
 			String synonymsSql = "UPDATE Taxon SET KingdomFk = ?, RankFk = ?, RankCache = ? WHERE TaxonId = ?"; 
 			synonymsStmt = connection.prepareStatement(synonymsSql);
-			
-			// Get the limit for objects to save within a single transaction.
-			int pageSize = 1000;
-
-			// Get the limit for objects to save within a single transaction.
-			int limit = state.getConfig().getLimitSave();
 
 			// Stores whether this invoke was successful or not.
 			boolean success = true;
@@ -157,10 +149,10 @@ public class PesiRelTaxonExport extends PesiExportBase {
 
 						TaxonNode parentNode = newNode.getParent();
 
-						traverseTree(newNode, parentNode, rankMap.get(rank), state);
+						success &=traverseTree(newNode, parentNode, rankMap.get(rank), state);
 
 						commitTransaction(txStatus);
-						logger.error("Committed transaction.");
+						logger.debug("Committed transaction.");
 
 					}
 				}
@@ -188,24 +180,25 @@ public class PesiRelTaxonExport extends PesiExportBase {
 	 * @param fetchLevel
 	 * @param state
 	 */
-	private void traverseTree(TaxonNode childNode, TaxonNode parentNode, Rank fetchLevel, PesiExportState state) {
+	private boolean  traverseTree(TaxonNode childNode, TaxonNode parentNode, Rank fetchLevel, PesiExportState state) {
+		boolean success = true;
 		// Traverse all branches from this childNode until specified fetchLevel is reached.
 		if (childNode.getTaxon() != null) {
-			TaxonNameBase taxonName = childNode.getTaxon().getName();
+			TaxonNameBase<?,?> taxonName = childNode.getTaxon().getName();
 			if (taxonName != null) {
 				Rank childTaxonNameRank = taxonName.getRank();
 				if (childTaxonNameRank != null) {
 					if (! childTaxonNameRank.equals(fetchLevel)) {
 
-						saveData(childNode, parentNode, state);
+						success &= saveData(childNode, parentNode, state);
 
 						for (TaxonNode newNode : childNode.getChildNodes()) {
-							traverseTree(newNode, childNode, fetchLevel, state);
+							success &= traverseTree(newNode, childNode, fetchLevel, state);
 						}
 						
 					} else {
 //						logger.error("Target Rank " + fetchLevel.getLabel() + " reached");
-						return;
+						return success;
 					}
 				} else {
 					logger.error("Rank is NULL. FetchLevel can not be checked: " + taxonName.getUuid() + " (" + taxonName.getTitleCache() + ")");
@@ -217,6 +210,7 @@ public class PesiRelTaxonExport extends PesiExportBase {
 		} else {
 			logger.error("Taxon is NULL for TaxonNode: " + childNode.getUuid());
 		}
+		return success;
 	}
 
 	/**
@@ -227,10 +221,11 @@ public class PesiRelTaxonExport extends PesiExportBase {
 	 * @param state
 	 * @param currentTaxonFk
 	 */
-	private void saveData(TaxonNode childNode, TaxonNode parentNode, PesiExportState state) {
+	private boolean saveData(TaxonNode childNode, TaxonNode parentNode, PesiExportState state) {
+		boolean success = true;
 		Taxon childNodeTaxon = childNode.getTaxon();
 		if (childNodeTaxon != null) {
-			TaxonNameBase childNodeTaxonName = childNodeTaxon.getName();
+			TaxonNameBase<?,?> childNodeTaxonName = childNodeTaxon.getName();
 			nomenclaturalCode = PesiTransformer.getNomenclaturalCode(childNodeTaxonName);
 
 			if (childNodeTaxonName != null) {
@@ -238,7 +233,7 @@ public class PesiRelTaxonExport extends PesiExportBase {
 				// TaxonRelationships
 				Set<Taxon> taxa = childNodeTaxonName.getTaxa(); // accepted taxa
 				if (taxa.size() == 1) {
-					Taxon taxon = CdmBase.deproxy(taxa.iterator().next(), Taxon.class);
+					Taxon taxon =taxa.iterator().next();
 					Set<TaxonRelationship> taxonRelations = taxon.getRelationsToThisTaxon();
 					for (TaxonRelationship taxonRelationship : taxonRelations) {
 						try {
@@ -251,7 +246,7 @@ public class PesiRelTaxonExport extends PesiExportBase {
 						}
 					}
 				} else if (taxa.size() > 1) {
-					logger.error("TaxonRelationship could not be created. This TaxonNode has " + taxa.size() + " Taxa: " + childNodeTaxon.getUuid() + " (" + childNodeTaxon.getTitleCache() + ")");
+					logger.error("TaxonRelationship could not be created. This TaxonNode's taxon name has " + taxa.size() + " Taxa: " + childNodeTaxon.getUuid() + " (" + childNodeTaxon.getTitleCache() + ")");
 				}
 				
 				// TaxonNameRelationships
@@ -272,7 +267,7 @@ public class PesiRelTaxonExport extends PesiExportBase {
 			// SynonymRelationships
 			Set<Synonym> synonyms = childNodeTaxon.getSynonyms(); // synonyms of accepted taxon
 			for (Synonym synonym : synonyms) {
-				TaxonNameBase synonymTaxonName = synonym.getName();
+				TaxonNameBase<?,?> synonymTaxonName = synonym.getName();
 				
 				// Store synonym data in Taxon table
 				invokeSynonyms(state, synonymTaxonName);
@@ -306,6 +301,7 @@ public class PesiRelTaxonExport extends PesiExportBase {
 			}
 			
 		}
+		return success;
 		
 	}
 

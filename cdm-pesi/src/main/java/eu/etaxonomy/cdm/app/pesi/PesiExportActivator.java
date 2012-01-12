@@ -39,6 +39,8 @@ public class PesiExportActivator {
 	static final int sourceSecId = 7331;
 	static final int isHomotypicId = 72;
 	
+	static final int partitionSize = 5000;
+	
 	//check - export
 	static final CHECK check = CHECK.EXPORT_WITHOUT_CHECK;
 
@@ -83,23 +85,24 @@ public class PesiExportActivator {
 		//make PESI Source
 		Source destination = pesiDestination;
 		
-		PesiExportConfigurator pesiExportConfigurator = PesiExportConfigurator.NewInstance(destination, source);
+		PesiExportConfigurator config = PesiExportConfigurator.NewInstance(destination, source);
 		
-		pesiExportConfigurator.setDoNameFacts(doNameFacts);
+		config.setDoNameFacts(doNameFacts);
 		
-		pesiExportConfigurator.setDoTaxa(doTaxa);
-		pesiExportConfigurator.setDoRelTaxa(doRelTaxa);
-		pesiExportConfigurator.setDoFacts(doFacts);
-		pesiExportConfigurator.setDoOccurrence(doOccurences);
-		pesiExportConfigurator.setDoReferences(doReferences);
+		config.setDoTaxa(doTaxa);
+		config.setDoRelTaxa(doRelTaxa);
+		config.setDoFacts(doFacts);
+		config.setDoOccurrence(doOccurences);
+		config.setDoReferences(doReferences);
 //		pesiExportConfigurator.setIsHomotypicId(isHomotypicId);
-		pesiExportConfigurator.setCheck(check);
+		config.setCheck(check);
+		config.setLimitSave(partitionSize);
 		
 
 
 		// invoke export
 		CdmDefaultExport<PesiExportConfigurator> pesiExport = new CdmDefaultExport<PesiExportConfigurator>();
-		boolean result = pesiExport.invoke(pesiExportConfigurator);
+		boolean result = pesiExport.invoke(config);
 		
 		System.out.println("End export to PESI ("+ destination.getDatabase() + ")..." + (result? "(successful)":"(with errors)"));
 		return result;

@@ -164,9 +164,6 @@ public class PesiTaxonExport extends PesiExportBase {
 			String rankSql = "UPDATE Taxon SET RankFk = ?, RankCache = ?, KingdomFk = ? WHERE TaxonId = ?";
 			rankSqlStmt = connection.prepareStatement(rankSql);
 			
-			// Get the limit for objects to save within a single transaction.
-			int limit = state.getConfig().getLimitSave();
-
 			// Stores whether this invoke was successful or not.
 			boolean success = true;
 	
@@ -188,374 +185,18 @@ public class PesiTaxonExport extends PesiExportBase {
 			expertUserIdExtensionType = (ExtensionType)getTermService().find(PesiTransformer.expertUserIdUuid);
 			speciesExpertUserIdExtensionType = (ExtensionType)getTermService().find(PesiTransformer.speciesExpertUserIdUuid);
 
-			int count = 0;
-			int pastCount = 0;
-			TransactionStatus txStatus = null;
-			List<TaxonNameBase> list = null;
-			
-			logger.info("PHASE 1: Export Taxa...");
-			// Start transaction
-			txStatus = startTransaction(true);
-			logger.info("Started new transaction. Fetching some " + pluralString + " (max: " + limit + ") ...");
-			while ((list = getNameService().list(null, limit, count, null, null)).size() > 0) {
+			//Export Taxa..
+			success &= doPhaseOne(state, mapping);
 
-				logger.info("Fetched " + list.size() + " " + pluralString + ". Exporting...");
-				for (TaxonNameBase<?,?> taxonName : list) {
-					doCount(count++, modCount, pluralString);
-					success &= mapping.invoke(taxonName);
-					
-					// Check whether some rules are violated
-					nomenclaturalCode = PesiTransformer.getNomenclaturalCode(taxonName);
-					String genusOrUninomial = getGenusOrUninomial(taxonName);
-					String specificEpithet = getSpecificEpithet(taxonName);
-					String infraSpecificEpithet = getInfraSpecificEpithet(taxonName);
-					String infraGenericEpithet = getInfraGenericEpithet(taxonName);
-					Integer rank = getRankFk(taxonName, nomenclaturalCode);
-					
-					if (rank == null) {
-						logger.error("Rank was not determined: " + taxonName.getUuid() + " (" + taxonName.getTitleCache() + ")");
-					} else {
-						
-						// Check whether infraGenericEpithet is set correctly
-						// 1. Childs of an accepted taxon of rank subgenus that are accepted taxa of rank species have to have an infraGenericEpithet
-						// 2. Grandchilds of an accepted taxon of rank subgenus that are accepted taxa of rank subspecies have to have an infraGenericEpithet
-						
-						int ancestorLevel = 0;
-						if (taxonName.getRank().equals(Rank.SUBSPECIES())) {
-							// The accepted taxon two rank levels above should be of rank subgenus
-							ancestorLevel  = 2;
-						}
-						if (taxonName.getRank().equals(Rank.SPECIES())) {
-							// The accepted taxon one rank level above should be of rank subgenus
-							ancestorLevel = 1;
-						}
-						if (ancestorLevel > 0) {
-							if (ancestorOfSpecificRank(taxonName, ancestorLevel, Rank.SUBGENUS())) {
-								// The child (species or subspecies) of this parent (subgenus) has to have an infraGenericEpithet
-								if (infraGenericEpithet == null) {
-									logger.error("InfraGenericEpithet does not exist even though it should for: " + taxonName.getUuid() + " (" + taxonName.getTitleCache() + ")");
-									// maybe the taxon could be named here
-								}
-							}
-						}
-						
-						if (infraGenericEpithet == null && rank.intValue() == 190) {
-							logger.error("InfraGenericEpithet was not determined although it should exist for rank 190: " + taxonName.getUuid() + " (" + taxonName.getTitleCache() + ")");
-						}
-						if (specificEpithet != null && rank.intValue() < 220) {
-							logger.error("SpecificEpithet was determined for rank " + rank + " although it should only exist for ranks higher or equal to 220: " + taxonName.getUuid() + " (" + taxonName.getTitleCache() + ")");
-						}
-						if (infraSpecificEpithet != null && rank.intValue() < 230) {
-							logger.error("InfraSpecificEpithet was determined for rank " + rank + " although it should only exist for ranks higher or equal to 230: "  + taxonName.getUuid() + " (" + taxonName.getTitleCache() + ")");
-						}
-					}
-					if (infraSpecificEpithet != null && specificEpithet == null) {
-						logger.error("An infraSpecificEpithet was determined, but a specificEpithet was not determined: "  + taxonName.getUuid() + " (" + taxonName.getTitleCache() + ")");
-					}
-					if (genusOrUninomial == null) {
-						logger.error("GenusOrUninomial was not determined: " + taxonName.getUuid() + " (" + taxonName.getTitleCache() + ")");
-					}
-					
-				}
-
-				// Commit transaction
-				commitTransaction(txStatus);
-				logger.debug("Committed transaction.");
-				logger.info("Exported " + (count - pastCount) + " " + pluralString + ". Total: " + count);
-				pastCount = count;
-
-				// Start transaction
-				txStatus = startTransaction(true);
-				logger.info("Started new transaction. Fetching some " + pluralString + " (max: " + limit + ") ...");
-			}
-			if (list.size() == 0) {
-				logger.info("No " + pluralString + " left to fetch.");
-			}
-			// Commit transaction
-			commitTransaction(txStatus);
-			logger.debug("Committed transaction.");
-
-			count = 0;
-			pastCount = 0;
-			List<Classification> classificationList = null;
 			// 2nd Round: Add ParentTaxonFk, TreeIndex to each Taxon
-			logger.info("PHASE 2: Add ParenTaxonFk and TreeIndex...");
+			success &= doPhaseTwo(state);
+
+			//PHASE 3: Add Rank data, KingdomFk, TypeNameFk, expertFk and speciesExpertFk...
+			success &= doPhaseThree(state);
 			
-			// Specify starting ranks for tree traversing
-			rankList.add(Rank.KINGDOM());
-			rankList.add(Rank.GENUS());
+			//"PHASE 4: Creating Inferred Synonyms...
+			success &= doPhaseFour(state, mapping);
 
-			// Specify where to stop traversing (value) when starting at a specific Rank (key)
-			rankMap.put(Rank.GENUS(), null); // Since NULL does not match an existing Rank, traverse all the way down to the leaves
-			rankMap.put(Rank.KINGDOM(), Rank.GENUS()); // excludes rank genus
-			
-			StringBuffer treeIndex = new StringBuffer();
-			
-			// Retrieve list of classifications
-			txStatus = startTransaction(true);
-			logger.info("Started transaction. Fetching all classifications...");
-			classificationList = getClassificationService().listClassifications(null, 0, null, null);
-			commitTransaction(txStatus);
-			logger.debug("Committed transaction.");
-
-			logger.info("Fetched " + classificationList.size() + " classification(s).");
-
-			setTreeIndexAnnotationType(getAnnotationType(uuidTreeIndex, "TreeIndex", "", "TI"));
-			
-			for (Classification classification : classificationList) {
-				for (Rank rank : rankList) {
-					
-					txStatus = startTransaction(true);
-					logger.info("Started transaction to fetch all rootNodes specific to Rank " + rank.getLabel() + " ...");
-
-					List<TaxonNode> rankSpecificRootNodes = getClassificationService().loadRankSpecificRootNodes(classification, rank, null);
-					logger.info("Fetched " + rankSpecificRootNodes.size() + " RootNodes for Rank " + rank.getLabel());
-
-					commitTransaction(txStatus);
-					logger.debug("Committed transaction.");
-
-					for (TaxonNode rootNode : rankSpecificRootNodes) {
-						txStatus = startTransaction(false);
-						Rank endRank = rankMap.get(rank);
-						if (endRank != null) {
-							logger.info("Started transaction to traverse childNodes of rootNode (" + rootNode.getUuid() + ") till Rank " + endRank.getLabel() + " ...");
-						} else {
-							logger.info("Started transaction to traverse childNodes of rootNode (" + rootNode.getUuid() + ") till leaves are reached ...");
-						}
-
-						TaxonNode newNode = getTaxonNodeService().load(rootNode.getUuid());
-
-						TaxonNode parentNode = newNode.getParent();
-						if (rank.equals(Rank.KINGDOM())) {
-							treeIndex = new StringBuffer();
-							treeIndex.append("#");
-						} else {
-							// Get treeIndex from parentNode
-							if (parentNode != null) {
-								boolean annotationFound = false;
-								Set<Annotation> annotations = parentNode.getAnnotations();
-								for (Annotation annotation : annotations) {
-									AnnotationType annotationType = annotation.getAnnotationType();
-									if (annotationType != null && annotationType.equals(getTreeIndexAnnotationType())) {
-										treeIndex = new StringBuffer(CdmUtils.Nz(annotation.getText()));
-										annotationFound = true;
-//										logger.error("treeIndex: " + treeIndex);
-										break;
-									}
-								}
-								if (!annotationFound) {
-									// This should not happen because it means that the treeIndex was not set correctly as an annotation to parentNode
-									logger.error("TreeIndex could not be read from annotation of this TaxonNode: " + parentNode.getUuid());
-									treeIndex = new StringBuffer();
-									treeIndex.append("#");
-								}
-							} else {
-								// TreeIndex could not be determined, but it's unclear how to proceed to generate a correct treeIndex if the parentNode is NULL
-								logger.error("ParentNode for RootNode is NULL. TreeIndex could not be determined: " + newNode.getUuid());
-								treeIndex = new StringBuffer(); // This just prevents growing of the treeIndex in a wrong manner
-								treeIndex.append("#");
-							}
-						}
-						
-						nomenclaturalCode = PesiTransformer.getNomenclaturalCode(newNode.getTaxon().getName());
-						kingdomFk = PesiTransformer.nomenClaturalCode2Kingdom(nomenclaturalCode);
-						traverseTree(newNode, parentNode, treeIndex, rankMap.get(rank), state);
-						
-						commitTransaction(txStatus);
-						logger.debug("Committed transaction.");
-
-					}
-				}
-			}
-
-			logger.info("PHASE 3: Add Rank data, KingdomFk, TypeNameFk, expertFk and speciesExpertFk...");
-			// Be sure to add rank information, KingdomFk, TypeNameFk, expertFk and speciesExpertFk to every taxonName
-			
-			// Start transaction
-			List<Reference> referenceList;
-			txStatus = startTransaction(true);
-			logger.info("Started new transaction. Fetching some " + pluralString + " (max: " + limit + ") ...");
-			while ((list = getNameService().list(null, limit, count, null, null)).size() > 0) {
-
-				logger.info("Fetched " + list.size() + " " + pluralString + ". Exporting...");
-				for (TaxonNameBase<?,?> taxonName : list) {
-
-					// Determine expertFk
-					Integer expertFk = null;
-					String expertUserId = getExpertUserId(taxonName);
-					if (expertUserId != null) {
-
-						// The expertUserId was stored in the field 'title' of the corresponding Reference during FaEu import
-						referenceList = getReferenceService().listByReferenceTitle(null, expertUserId, MatchMode.EXACT, null, null, null, null, null);
-						if (referenceList.size() == 1) {
-							expertFk  = getExpertFk(referenceList.iterator().next(), state);
-						} else if (referenceList.size() > 1) {
-							logger.error("Found more than one match using listByReferenceTitle() searching for a Reference with this expertUserId as title: " + expertUserId);
-						} else if (referenceList.size() == 0) {
-							logger.error("Found no match using listByReferenceTitle() searching for a Reference with this expertUserId as title: " + expertUserId);
-						}
-					} else {
-						logger.error("ExpertName is NULL for this TaxonName: " + taxonName.getUuid() + " (" + taxonName.getTitleCache() + ")");
-					}
-
-					// Determine speciesExpertFk
-					Integer speciesExpertFk = null;
-					String speciesExpertUserId = getSpeciesExpertUserId(taxonName);
-					if (speciesExpertUserId != null) {
-						
-						// The speciesExpertUserId was stored in the field 'title' of the corresponding Reference during FaEu import
-						referenceList = getReferenceService().listByReferenceTitle(null, speciesExpertUserId, MatchMode.EXACT, null, null, null, null, null);
-						if (referenceList.size() == 1) {
-							speciesExpertFk  = getSpeciesExpertFk(referenceList.iterator().next(), state);
-						} else if (referenceList.size() > 1) {
-							logger.error("Found more than one match using listByTitle() searching for a Reference with this speciesExpertUserId as title: " + speciesExpertUserId);
-						} else if (referenceList.size() == 0) {
-							logger.error("Found no match using listByReferenceTitle() searching for a Reference with this speciesExpertUserId as title: " + speciesExpertUserId);
-						}
-					} else {
-						logger.error("SpeciesExpertName is NULL for this TaxonName: " + taxonName.getUuid() + " (" + taxonName.getTitleCache() + ")");
-					}
-
-
-					doCount(count++, modCount, pluralString);
-					Integer typeNameFk = getTypeNameFk(taxonName, state);
-					if (expertFk != null || speciesExpertFk != null) {
-						invokeRankDataAndTypeNameFkAndKingdomFk(taxonName, nomenclaturalCode, state.getDbId(taxonName), typeNameFk, kingdomFk,
-								expertFk, speciesExpertFk);
-					}
-				}
-
-				// Commit transaction
-				commitTransaction(txStatus);
-				logger.debug("Committed transaction.");
-				logger.info("Exported " + (count - pastCount) + " " + pluralString + ". Total: " + count);
-				pastCount = count;
-
-				// Start transaction
-				txStatus = startTransaction(true);
-				logger.info("Started new transaction. Fetching some " + pluralString + " (max: " + limit + ") ...");
-			}
-			if (list.size() == 0) {
-				logger.info("No " + pluralString + " left to fetch.");
-			}
-			// Commit transaction
-			commitTransaction(txStatus);
-			logger.debug("Committed transaction.");
-			
-			
-			// Create inferred synonyms for accepted taxa
-			logger.info("PHASE 4: Creating Inferred Synonyms...");
-
-			// Determine the count of elements in datawarehouse database table Taxon
-			Integer currentTaxonId = determineTaxonCount(state);
-			currentTaxonId++;
-
-			count = 0;
-			pastCount = 0;
-			int pageSize = limit;
-			int pageNumber = 1;
-			String inferredSynonymPluralString = "Inferred Synonyms";
-			
-			// Start transaction
-			Classification classification = null;
-			Taxon acceptedTaxon = null;
-			txStatus = startTransaction(true);
-			logger.info("Started new transaction. Fetching some " + parentPluralString + " first (max: " + limit + ") ...");
-			List<TaxonBase> taxonList = null;
-			List<Synonym> inferredSynonyms = null;
-			while ((taxonList  = getTaxonService().listTaxaByName(Taxon.class, "*", "*", "*", "*", null, pageSize, pageNumber)).size() > 0) {
-				HashMap<Integer, TaxonNameBase<?,?>> inferredSynonymsDataToBeSaved = new HashMap<Integer, TaxonNameBase<?,?>>();
-
-				logger.info("Fetched " + taxonList.size() + " " + parentPluralString + ". Exporting...");
-				for (TaxonBase<?> taxonBase : taxonList) {
-
-					if (taxonBase.isInstanceOf(Taxon.class)) { // this should always be the case since we should have fetched accepted taxon only, but you never know...
-						acceptedTaxon = CdmBase.deproxy(taxonBase, Taxon.class);
-						TaxonNameBase<?,?> taxonName = acceptedTaxon.getName();
-						
-						if (taxonName.isInstanceOf(ZoologicalName.class)) {
-							nomenclaturalCode  = PesiTransformer.getNomenclaturalCode(taxonName);
-							kingdomFk = PesiTransformer.nomenClaturalCode2Kingdom(nomenclaturalCode);
-	
-							Set<TaxonNode> taxonNodes = acceptedTaxon.getTaxonNodes();
-							TaxonNode singleNode = null;
-							if (taxonNodes.size() > 0) {
-								// Determine the classification of the current TaxonNode
-								singleNode = taxonNodes.iterator().next();
-								if (singleNode != null) {
-									classification = singleNode.getClassification();
-								} else {
-									logger.error("A TaxonNode belonging to this accepted Taxon is NULL: " + acceptedTaxon.getUuid() + " (" + acceptedTaxon.getTitleCache() +")");
-								}
-							} else {
-								// Classification could not be determined directly from this TaxonNode
-								// The stored classification from another TaxonNode is used. It's a simple, but not a failsafe fallback solution.
-								if (classification == null) {
-									logger.error("Classification could not be determined directly from this TaxonNode: " + singleNode.getUuid() + "). " +
-											"This classification stored from another TaxonNode is used: " + classification.getTitleCache());
-								}
-							}
-							
-							if (classification != null) {
-								inferredSynonyms  = getTaxonService().createAllInferredSynonyms(classification, acceptedTaxon);
-	
-//								inferredSynonyms = getTaxonService().createInferredSynonyms(classification, acceptedTaxon, SynonymRelationshipType.INFERRED_GENUS_OF());
-								if (inferredSynonyms != null) {
-									for (Synonym synonym : inferredSynonyms) {
-										TaxonNameBase<?,?> synonymName = synonym.getName();
-										if (synonymName != null) {
-											
-											// Both Synonym and its TaxonName have no valid Id yet
-											synonym.setId(currentTaxonId++);
-											synonymName.setId(currentTaxonId++);
-											
-											doCount(count++, modCount, inferredSynonymPluralString);
-											success &= mapping.invoke(synonymName);
-											
-											// Add Rank Data and KingdomFk to hashmap for later saving
-											inferredSynonymsDataToBeSaved.put(synonymName.getId(), synonymName);
-										} else {
-											logger.error("TaxonName of this Synonym is NULL: " + synonym.getUuid() + " (" + synonym.getTitleCache() + ")");
-										}
-									}
-								}
-							} else {
-								logger.error("Classification is NULL. Inferred Synonyms could not be created for this Taxon: " + acceptedTaxon.getUuid() + " (" + acceptedTaxon.getTitleCache() + ")");
-							}
-						} else {
-//							logger.error("TaxonName is not a ZoologicalName: " + taxonName.getUuid() + " (" + taxonName.getTitleCache() + ")");
-						}
-					} else {
-						logger.error("This TaxonBase is not a Taxon even though it should be: " + taxonBase.getUuid() + " (" + taxonBase.getTitleCache() + ")");
-					}
-				}
-
-				// Commit transaction
-				commitTransaction(txStatus);
-				logger.debug("Committed transaction.");
-				logger.info("Exported " + (count - pastCount) + " " + inferredSynonymPluralString + ". Total: " + count);
-				pastCount = count;
-				
-				// Save Rank Data and KingdomFk for inferred synonyms
-				for (Integer taxonFk : inferredSynonymsDataToBeSaved.keySet()) {
-					invokeRankDataAndKingdomFk(inferredSynonymsDataToBeSaved.get(taxonFk), nomenclaturalCode, taxonFk, kingdomFk);
-				}
-
-				// Start transaction
-				txStatus = startTransaction(true);
-				logger.info("Started new transaction. Fetching some " + parentPluralString + " first (max: " + limit + ") ...");
-				
-				// Increment pageNumber
-				pageNumber++;
-			}
-			if (taxonList.size() == 0) {
-				logger.info("No " + parentPluralString + " left to fetch.");
-			}
-			// Commit transaction
-			commitTransaction(txStatus);
-			logger.debug("Committed transaction.");
-
-			
 			logger.info("*** Finished Making " + pluralString + " ..." + getSuccessString(success));
 
 			if (!success){
@@ -568,6 +209,413 @@ public class PesiTaxonExport extends PesiExportBase {
 			state.setUnsuccessfull();
 			return;
 		}
+	}
+
+	private boolean doPhaseOne(PesiExportState state, PesiExportMapping mapping) throws SQLException {
+		int count = 0;
+		int pastCount = 0;
+		List<TaxonNameBase> list;
+		boolean success = true;
+		// Get the limit for objects to save within a single transaction.
+		int limit = state.getConfig().getLimitSave();
+
+		
+		logger.info("PHASE 1: Export Taxa...");
+		// Start transaction
+		TransactionStatus txStatus = startTransaction(true);
+		logger.info("Started new transaction. Fetching some " + pluralString + " (max: " + limit + ") ...");
+		while ((list = getNameService().list(null, limit, count, null, null)).size() > 0) {
+
+			logger.info("Fetched " + list.size() + " " + pluralString + ". Exporting...");
+			for (TaxonNameBase<?,?> taxonName : list) {
+				doCount(count++, modCount, pluralString);
+				success &= mapping.invoke(taxonName);
+				
+				// Check whether some rules are violated
+				nomenclaturalCode = PesiTransformer.getNomenclaturalCode(taxonName);
+				String genusOrUninomial = getGenusOrUninomial(taxonName);
+				String specificEpithet = getSpecificEpithet(taxonName);
+				String infraSpecificEpithet = getInfraSpecificEpithet(taxonName);
+				String infraGenericEpithet = getInfraGenericEpithet(taxonName);
+				Integer rank = getRankFk(taxonName, nomenclaturalCode);
+				
+				if (rank == null) {
+					logger.error("Rank was not determined: " + taxonName.getUuid() + " (" + taxonName.getTitleCache() + ")");
+				} else {
+					
+					// Check whether infraGenericEpithet is set correctly
+					// 1. Childs of an accepted taxon of rank subgenus that are accepted taxa of rank species have to have an infraGenericEpithet
+					// 2. Grandchilds of an accepted taxon of rank subgenus that are accepted taxa of rank subspecies have to have an infraGenericEpithet
+					
+					int ancestorLevel = 0;
+					if (taxonName.getRank().equals(Rank.SUBSPECIES())) {
+						// The accepted taxon two rank levels above should be of rank subgenus
+						ancestorLevel  = 2;
+					}
+					if (taxonName.getRank().equals(Rank.SPECIES())) {
+						// The accepted taxon one rank level above should be of rank subgenus
+						ancestorLevel = 1;
+					}
+					if (ancestorLevel > 0) {
+						if (ancestorOfSpecificRank(taxonName, ancestorLevel, Rank.SUBGENUS())) {
+							// The child (species or subspecies) of this parent (subgenus) has to have an infraGenericEpithet
+							if (infraGenericEpithet == null) {
+								logger.error("InfraGenericEpithet does not exist even though it should for: " + taxonName.getUuid() + " (" + taxonName.getTitleCache() + ")");
+								// maybe the taxon could be named here
+							}
+						}
+					}
+					
+					if (infraGenericEpithet == null && rank.intValue() == 190) {
+						logger.error("InfraGenericEpithet was not determined although it should exist for rank 190: " + taxonName.getUuid() + " (" + taxonName.getTitleCache() + ")");
+					}
+					if (specificEpithet != null && rank.intValue() < 220) {
+						logger.error("SpecificEpithet was determined for rank " + rank + " although it should only exist for ranks higher or equal to 220: " + taxonName.getUuid() + " (" + taxonName.getTitleCache() + ")");
+					}
+					if (infraSpecificEpithet != null && rank.intValue() < 230) {
+						logger.error("InfraSpecificEpithet was determined for rank " + rank + " although it should only exist for ranks higher or equal to 230: "  + taxonName.getUuid() + " (" + taxonName.getTitleCache() + ")");
+					}
+				}
+				if (infraSpecificEpithet != null && specificEpithet == null) {
+					logger.error("An infraSpecificEpithet was determined, but a specificEpithet was not determined: "  + taxonName.getUuid() + " (" + taxonName.getTitleCache() + ")");
+				}
+				if (genusOrUninomial == null) {
+					logger.error("GenusOrUninomial was not determined: " + taxonName.getUuid() + " (" + taxonName.getTitleCache() + ")");
+				}
+				
+			}
+
+			// Commit transaction
+			commitTransaction(txStatus);
+			logger.debug("Committed transaction.");
+			logger.info("Exported " + (count - pastCount) + " " + pluralString + ". Total: " + count);
+			pastCount = count;
+
+			// Start transaction
+			txStatus = startTransaction(true);
+			logger.info("Started new transaction. Fetching some " + pluralString + " (max: " + limit + ") ...");
+		}
+		if (list.size() == 0) {
+			logger.info("No " + pluralString + " left to fetch.");
+		}
+		// Commit transaction
+		commitTransaction(txStatus);
+		logger.debug("Committed transaction.");
+		return success;
+	}
+
+	// 2nd Round: Add ParentTaxonFk, TreeIndex to each Taxon
+	private boolean doPhaseTwo(PesiExportState state) {
+		boolean success = true;
+		List<Classification> classificationList = null;
+		logger.info("PHASE 2: Add ParenTaxonFk and TreeIndex...");
+		
+		// Specify starting ranks for tree traversing
+		rankList.add(Rank.KINGDOM());
+		rankList.add(Rank.GENUS());
+
+		// Specify where to stop traversing (value) when starting at a specific Rank (key)
+		rankMap.put(Rank.GENUS(), null); // Since NULL does not match an existing Rank, traverse all the way down to the leaves
+		rankMap.put(Rank.KINGDOM(), Rank.GENUS()); // excludes rank genus
+		
+		StringBuffer treeIndex = new StringBuffer();
+		
+		// Retrieve list of classifications
+		TransactionStatus txStatus = startTransaction(true);
+		logger.info("Started transaction. Fetching all classifications...");
+		classificationList = getClassificationService().listClassifications(null, 0, null, null);
+		commitTransaction(txStatus);
+		logger.debug("Committed transaction.");
+
+		logger.info("Fetched " + classificationList.size() + " classification(s).");
+
+		setTreeIndexAnnotationType(getAnnotationType(uuidTreeIndex, "TreeIndex", "", "TI"));
+		
+		for (Classification classification : classificationList) {
+			for (Rank rank : rankList) {
+				
+				txStatus = startTransaction(true);
+				logger.info("Started transaction to fetch all rootNodes specific to Rank " + rank.getLabel() + " ...");
+
+				List<TaxonNode> rankSpecificRootNodes = getClassificationService().loadRankSpecificRootNodes(classification, rank, null);
+				logger.info("Fetched " + rankSpecificRootNodes.size() + " RootNodes for Rank " + rank.getLabel());
+
+				commitTransaction(txStatus);
+				logger.debug("Committed transaction.");
+
+				for (TaxonNode rootNode : rankSpecificRootNodes) {
+					txStatus = startTransaction(false);
+					Rank endRank = rankMap.get(rank);
+					if (endRank != null) {
+						logger.info("Started transaction to traverse childNodes of rootNode (" + rootNode.getUuid() + ") till Rank " + endRank.getLabel() + " ...");
+					} else {
+						logger.info("Started transaction to traverse childNodes of rootNode (" + rootNode.getUuid() + ") till leaves are reached ...");
+					}
+
+					TaxonNode newNode = getTaxonNodeService().load(rootNode.getUuid());
+
+					TaxonNode parentNode = newNode.getParent();
+					if (rank.equals(Rank.KINGDOM())) {
+						treeIndex = new StringBuffer();
+						treeIndex.append("#");
+					} else {
+						// Get treeIndex from parentNode
+						if (parentNode != null) {
+							boolean annotationFound = false;
+							Set<Annotation> annotations = parentNode.getAnnotations();
+							for (Annotation annotation : annotations) {
+								AnnotationType annotationType = annotation.getAnnotationType();
+								if (annotationType != null && annotationType.equals(getTreeIndexAnnotationType())) {
+									treeIndex = new StringBuffer(CdmUtils.Nz(annotation.getText()));
+									annotationFound = true;
+//										logger.error("treeIndex: " + treeIndex);
+									break;
+								}
+							}
+							if (!annotationFound) {
+								// This should not happen because it means that the treeIndex was not set correctly as an annotation to parentNode
+								logger.error("TreeIndex could not be read from annotation of this TaxonNode: " + parentNode.getUuid());
+								treeIndex = new StringBuffer();
+								treeIndex.append("#");
+							}
+						} else {
+							// TreeIndex could not be determined, but it's unclear how to proceed to generate a correct treeIndex if the parentNode is NULL
+							logger.error("ParentNode for RootNode is NULL. TreeIndex could not be determined: " + newNode.getUuid());
+							treeIndex = new StringBuffer(); // This just prevents growing of the treeIndex in a wrong manner
+							treeIndex.append("#");
+						}
+					}
+					
+					nomenclaturalCode = PesiTransformer.getNomenclaturalCode(newNode.getTaxon().getName());
+					kingdomFk = PesiTransformer.nomenClaturalCode2Kingdom(nomenclaturalCode);
+					traverseTree(newNode, parentNode, treeIndex, rankMap.get(rank), state);
+					
+					commitTransaction(txStatus);
+					logger.debug("Committed transaction.");
+
+				}
+			}
+		}
+		return success;
+	}	
+
+	private boolean doPhaseThree(PesiExportState state) {
+		int count = 0;
+		int pastCount = 0;
+		boolean success = true;
+		// Get the limit for objects to save within a single transaction.
+		int limit = state.getConfig().getLimitSave();
+
+		List<TaxonNameBase> list;
+		logger.info("PHASE 3: Add Rank data, KingdomFk, TypeNameFk, expertFk and speciesExpertFk...");
+		// Be sure to add rank information, KingdomFk, TypeNameFk, expertFk and speciesExpertFk to every taxonName
+		
+		// Start transaction
+		TransactionStatus txStatus = startTransaction(true);
+		logger.info("Started new transaction. Fetching some " + pluralString + " (max: " + limit + ") ...");
+		while ((list = getNameService().list(null, limit, count, null, null)).size() > 0) {
+
+			logger.info("Fetched " + list.size() + " " + pluralString + ". Exporting...");
+			for (TaxonNameBase<?,?> taxonName : list) {
+
+				// Determine expertFk
+				Integer expertFk = makeExpertFk(state, taxonName);
+
+				// Determine speciesExpertFk
+				Integer speciesExpertFk = makeSpeciesExpertFk(state, taxonName);
+
+				doCount(count++, modCount, pluralString);
+				Integer typeNameFk = getTypeNameFk(taxonName, state);
+				
+				//TODO why are expertFks needed? (Andreas M.)
+//				if (expertFk != null || speciesExpertFk != null) {
+					invokeRankDataAndTypeNameFkAndKingdomFk(taxonName, nomenclaturalCode, state.getDbId(taxonName), 
+							typeNameFk, kingdomFk, expertFk, speciesExpertFk);
+//				}
+			}
+
+			// Commit transaction
+			commitTransaction(txStatus);
+			logger.debug("Committed transaction.");
+			logger.info("Exported " + (count - pastCount) + " " + pluralString + ". Total: " + count);
+			pastCount = count;
+
+			// Start transaction
+			txStatus = startTransaction(true);
+			logger.info("Started new transaction. Fetching some " + pluralString + " (max: " + limit + ") ...");
+		}
+		if (list.size() == 0) {
+			logger.info("No " + pluralString + " left to fetch.");
+		}
+		// Commit transaction
+		commitTransaction(txStatus);
+		logger.debug("Committed transaction.");
+		return success;
+	}
+
+	private Integer makeSpeciesExpertFk(PesiExportState state,
+			TaxonNameBase<?, ?> taxonName) {
+		List<Reference> referenceList;
+		Integer speciesExpertFk = null;
+		String speciesExpertUserId = getSpeciesExpertUserId(taxonName);
+		if (speciesExpertUserId != null) {
+			
+			// The speciesExpertUserId was stored in the field 'title' of the corresponding Reference during FaEu import
+			referenceList = getReferenceService().listByReferenceTitle(null, speciesExpertUserId, MatchMode.EXACT, null, null, null, null, null);
+			if (referenceList.size() == 1) {
+				speciesExpertFk  = getSpeciesExpertFk(referenceList.iterator().next(), state);
+			} else if (referenceList.size() > 1) {
+				logger.error("Found more than one match using listByTitle() searching for a Reference with this speciesExpertUserId as title: " + speciesExpertUserId);
+			} else if (referenceList.size() == 0) {
+				logger.error("Found no match using listByReferenceTitle() searching for a Reference with this speciesExpertUserId as title: " + speciesExpertUserId);
+			}
+		} else {
+			logger.debug("SpeciesExpertName is NULL for this TaxonName: " + taxonName.getUuid() + " (" + taxonName.getTitleCache() + ")");
+		}
+		return speciesExpertFk;
+	}
+
+	private Integer makeExpertFk(PesiExportState state,
+			TaxonNameBase<?, ?> taxonName) {
+		List<Reference> referenceList;
+		Integer expertFk = null;
+		String expertUserId = getExpertUserId(taxonName);
+		if (expertUserId != null) {
+
+			// The expertUserId was stored in the field 'title' of the corresponding Reference during FaEu import
+			referenceList = getReferenceService().listByReferenceTitle(null, expertUserId, MatchMode.EXACT, null, null, null, null, null);
+			if (referenceList.size() == 1) {
+				expertFk  = getExpertFk(referenceList.iterator().next(), state);
+			} else if (referenceList.size() > 1) {
+				logger.error("Found more than one match using listByReferenceTitle() searching for a Reference with this expertUserId as title: " + expertUserId);
+			} else if (referenceList.size() == 0) {
+				logger.error("Found no match using listByReferenceTitle() searching for a Reference with this expertUserId as title: " + expertUserId);
+			}
+		} else {
+			logger.debug("ExpertName is NULL for this TaxonName: " + taxonName.getUuid() + " (" + taxonName.getTitleCache() + ")");
+		}
+		return expertFk;
+	}
+	
+	private boolean doPhaseFour(PesiExportState state, PesiExportMapping mapping) throws SQLException {
+		int count;
+		int pastCount;
+		boolean success = true;
+		// Get the limit for objects to save within a single transaction.
+		int limit = state.getConfig().getLimitSave();
+
+		// Create inferred synonyms for accepted taxa
+		logger.info("PHASE 4: Creating Inferred Synonyms...");
+
+		// Determine the count of elements in datawarehouse database table Taxon
+		Integer currentTaxonId = determineTaxonCount(state);
+		currentTaxonId++;
+
+		count = 0;
+		pastCount = 0;
+		int pageSize = limit;
+		int pageNumber = 1;
+		String inferredSynonymPluralString = "Inferred Synonyms";
+		
+		// Start transaction
+		Classification classification = null;
+		Taxon acceptedTaxon = null;
+		TransactionStatus txStatus = startTransaction(true);
+		logger.info("Started new transaction. Fetching some " + parentPluralString + " first (max: " + limit + ") ...");
+		List<TaxonBase> taxonList = null;
+		List<Synonym> inferredSynonyms = null;
+		while ((taxonList  = getTaxonService().listTaxaByName(Taxon.class, "*", "*", "*", "*", null, pageSize, pageNumber)).size() > 0) {
+			HashMap<Integer, TaxonNameBase<?,?>> inferredSynonymsDataToBeSaved = new HashMap<Integer, TaxonNameBase<?,?>>();
+
+			logger.info("Fetched " + taxonList.size() + " " + parentPluralString + ". Exporting...");
+			for (TaxonBase<?> taxonBase : taxonList) {
+
+				if (taxonBase.isInstanceOf(Taxon.class)) { // this should always be the case since we should have fetched accepted taxon only, but you never know...
+					acceptedTaxon = CdmBase.deproxy(taxonBase, Taxon.class);
+					TaxonNameBase<?,?> taxonName = acceptedTaxon.getName();
+					
+					if (taxonName.isInstanceOf(ZoologicalName.class)) {
+						nomenclaturalCode  = PesiTransformer.getNomenclaturalCode(taxonName);
+						kingdomFk = PesiTransformer.nomenClaturalCode2Kingdom(nomenclaturalCode);
+
+						Set<TaxonNode> taxonNodes = acceptedTaxon.getTaxonNodes();
+						TaxonNode singleNode = null;
+						if (taxonNodes.size() > 0) {
+							// Determine the classification of the current TaxonNode
+							singleNode = taxonNodes.iterator().next();
+							if (singleNode != null) {
+								classification = singleNode.getClassification();
+							} else {
+								logger.error("A TaxonNode belonging to this accepted Taxon is NULL: " + acceptedTaxon.getUuid() + " (" + acceptedTaxon.getTitleCache() +")");
+							}
+						} else {
+							// Classification could not be determined directly from this TaxonNode
+							// The stored classification from another TaxonNode is used. It's a simple, but not a failsafe fallback solution.
+							if (classification == null) {
+								logger.error("Classification could not be determined directly from this TaxonNode: " + singleNode.getUuid() + "). " +
+										"This classification stored from another TaxonNode is used: " + classification.getTitleCache());
+							}
+						}
+						
+						if (classification != null) {
+							inferredSynonyms  = getTaxonService().createAllInferredSynonyms(classification, acceptedTaxon);
+
+//								inferredSynonyms = getTaxonService().createInferredSynonyms(classification, acceptedTaxon, SynonymRelationshipType.INFERRED_GENUS_OF());
+							if (inferredSynonyms != null) {
+								for (Synonym synonym : inferredSynonyms) {
+									TaxonNameBase<?,?> synonymName = synonym.getName();
+									if (synonymName != null) {
+										
+										// Both Synonym and its TaxonName have no valid Id yet
+										synonym.setId(currentTaxonId++);
+										synonymName.setId(currentTaxonId++);
+										
+										doCount(count++, modCount, inferredSynonymPluralString);
+										success &= mapping.invoke(synonymName);
+										
+										// Add Rank Data and KingdomFk to hashmap for later saving
+										inferredSynonymsDataToBeSaved.put(synonymName.getId(), synonymName);
+									} else {
+										logger.error("TaxonName of this Synonym is NULL: " + synonym.getUuid() + " (" + synonym.getTitleCache() + ")");
+									}
+								}
+							}
+						} else {
+							logger.error("Classification is NULL. Inferred Synonyms could not be created for this Taxon: " + acceptedTaxon.getUuid() + " (" + acceptedTaxon.getTitleCache() + ")");
+						}
+					} else {
+//							logger.error("TaxonName is not a ZoologicalName: " + taxonName.getUuid() + " (" + taxonName.getTitleCache() + ")");
+					}
+				} else {
+					logger.error("This TaxonBase is not a Taxon even though it should be: " + taxonBase.getUuid() + " (" + taxonBase.getTitleCache() + ")");
+				}
+			}
+
+			// Commit transaction
+			commitTransaction(txStatus);
+			logger.debug("Committed transaction.");
+			logger.info("Exported " + (count - pastCount) + " " + inferredSynonymPluralString + ". Total: " + count);
+			pastCount = count;
+			
+			// Save Rank Data and KingdomFk for inferred synonyms
+			for (Integer taxonFk : inferredSynonymsDataToBeSaved.keySet()) {
+				invokeRankDataAndKingdomFk(inferredSynonymsDataToBeSaved.get(taxonFk), nomenclaturalCode, taxonFk, kingdomFk);
+			}
+
+			// Start transaction
+			txStatus = startTransaction(true);
+			logger.info("Started new transaction. Fetching some " + parentPluralString + " first (max: " + limit + ") ...");
+			
+			// Increment pageNumber
+			pageNumber++;
+		}
+		if (taxonList.size() == 0) {
+			logger.info("No " + parentPluralString + " left to fetch.");
+		}
+		// Commit transaction
+		commitTransaction(txStatus);
+		logger.debug("Committed transaction.");
+		return success;
 	}
 
 	/**
@@ -602,12 +650,12 @@ public class PesiTaxonExport extends PesiExportBase {
 	private String getExpertUserId(TaxonNameBase<?,?> taxonName) {
 		String result = null;
 		try {
-		Set<Extension> extensions = taxonName.getExtensions();
-		for (Extension extension : extensions) {
-			if (extension.getType().equals(expertUserIdExtensionType)) {
-				result = extension.getValue();
+			Set<Extension> extensions = taxonName.getExtensions();
+			for (Extension extension : extensions) {
+				if (extension.getType().equals(expertUserIdExtensionType)) {
+					result = extension.getValue();
+				}
 			}
-		}
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -622,12 +670,12 @@ public class PesiTaxonExport extends PesiExportBase {
 	private String getSpeciesExpertUserId(TaxonNameBase<?,?> taxonName) {
 		String result = null;
 		try {
-		Set<Extension> extensions = taxonName.getExtensions();
-		for (Extension extension : extensions) {
-			if (extension.getType().equals(speciesExpertUserIdExtensionType)) {
-				result = extension.getValue();
+			Set<Extension> extensions = taxonName.getExtensions();
+			for (Extension extension : extensions) {
+				if (extension.getType().equals(speciesExpertUserIdExtensionType)) {
+					result = extension.getValue();
+				}
 			}
-		}
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -1015,10 +1063,10 @@ public class PesiTaxonExport extends PesiExportBase {
 	private static String getGenusOrUninomial(TaxonNameBase<?,?> taxonName) {
 		String result = null;
 		try {
-		if (taxonName != null && (taxonName.isInstanceOf(NonViralName.class))) {
-			NonViralName<?> nonViralName = CdmBase.deproxy(taxonName, NonViralName.class);
-			result = nonViralName.getGenusOrUninomial();
-		}
+			if (taxonName != null && (taxonName.isInstanceOf(NonViralName.class))) {
+				NonViralName<?> nonViralName = CdmBase.deproxy(taxonName, NonViralName.class);
+				result = nonViralName.getGenusOrUninomial();
+			}
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -2042,11 +2090,11 @@ public class PesiTaxonExport extends PesiExportBase {
 		Integer result = null;
 		
 		try {
-		TaxonBase<?> taxonBase = getSourceTaxonBase(taxonName);
-
-		if (taxonBase != null) {
-			result = state.getDbId(taxonBase.getSec());
-		}
+			TaxonBase<?> taxonBase = getSourceTaxonBase(taxonName);
+	
+			if (taxonBase != null) {
+				result = state.getDbId(taxonBase.getSec());
+			}
 		} catch (Exception e) {
 			e.printStackTrace();
 		}

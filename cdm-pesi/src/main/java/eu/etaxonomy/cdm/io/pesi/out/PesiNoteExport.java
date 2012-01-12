@@ -12,7 +12,6 @@ package eu.etaxonomy.cdm.io.pesi.out;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
-import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -168,7 +167,7 @@ public class PesiNoteExport extends PesiExportBase {
 			while ((taxonNameList = getNameService().list(null, limit, count, null, null)).size() > 0) {
 
 				logger.error("Fetched " + list.size() + " " + parentPluralString + ". Exporting...");
-				for (TaxonNameBase taxonName : taxonNameList) {
+				for (TaxonNameBase<?,?> taxonName : taxonNameList) {
 					Set<Extension> extensions = taxonName.getExtensions();
 					for (Extension extension : extensions) {
 						if (extension.getType().equals(taxCommentExtensionType)) {
@@ -386,33 +385,7 @@ public class PesiNoteExport extends PesiExportBase {
 	 */
 	@SuppressWarnings("unused")
 	private static Integer getLanguageFk(DescriptionElementBase descriptionElement) {
-		Language language = null;
-
-		Map<Language, LanguageString> multilanguageText = null;
-		if (descriptionElement.isInstanceOf(CommonTaxonName.class)) {
-			CommonTaxonName commonTaxonName = CdmBase.deproxy(descriptionElement, CommonTaxonName.class);
-			language = commonTaxonName.getLanguage();
-		} else if (descriptionElement.isInstanceOf(TextData.class)) {
-			TextData textData = CdmBase.deproxy(descriptionElement, TextData.class);
-			multilanguageText = textData.getMultilanguageText();
-		} else if (descriptionElement.isInstanceOf(IndividualsAssociation.class)) {
-			IndividualsAssociation individualsAssociation = CdmBase.deproxy(descriptionElement, IndividualsAssociation.class);
-			multilanguageText = individualsAssociation.getDescription();
-		} else if (descriptionElement.isInstanceOf(TaxonInteraction.class)) {
-			TaxonInteraction taxonInteraction = CdmBase.deproxy(descriptionElement, TaxonInteraction.class);
-			multilanguageText = taxonInteraction.getDescriptions();
-		} else {
-			logger.warn("Given descriptionElement is not of appropriate instance. Hence LanguageCache could not be determined: " + descriptionElement.getUuid());
-		}
-		
-		if (multilanguageText != null) {
-			Set<Language> languages = multilanguageText.keySet();
-
-			// TODO: Think of something more sophisticated than this
-			if (languages.size() > 0) {
-				language = languages.iterator().next();
-			}
-		}
+		Language language = getLanguage(descriptionElement);
 
 		return PesiTransformer.language2LanguageId(language);
 	}
@@ -425,6 +398,12 @@ public class PesiNoteExport extends PesiExportBase {
 	 */
 	@SuppressWarnings("unused")
 	private static String getLanguageCache(DescriptionElementBase descriptionElement) {
+		Language language = getLanguage(descriptionElement);
+
+		return PesiTransformer.language2LanguageCache(language);
+	}
+
+	private static Language getLanguage(DescriptionElementBase descriptionElement) {
 		Language language = null;
 
 		Map<Language, LanguageString> multilanguageText = null;
@@ -441,7 +420,7 @@ public class PesiNoteExport extends PesiExportBase {
 			TaxonInteraction taxonInteraction = CdmBase.deproxy(descriptionElement, TaxonInteraction.class);
 			multilanguageText = taxonInteraction.getDescriptions();
 		} else {
-			logger.warn("Given descriptionElement is not of appropriate instance. Hence LanguageCache could not be determined: " + descriptionElement.getUuid());
+			logger.debug("Given descriptionElement does not support languages. Hence LanguageCache could not be determined: " + descriptionElement.getUuid());
 		}
 		
 		if (multilanguageText != null) {
@@ -451,9 +430,11 @@ public class PesiNoteExport extends PesiExportBase {
 			if (languages.size() > 0) {
 				language = languages.iterator().next();
 			}
+			if (languages.size() > 1){
+				logger.warn("There is more than 1 language for a given description (" + descriptionElement.getClass().getSimpleName() + "):" + descriptionElement.getUuid());
+			}
 		}
-
-		return PesiTransformer.language2LanguageCache(language);
+		return language;
 	}
 
 	/**
@@ -465,7 +446,7 @@ public class PesiNoteExport extends PesiExportBase {
 	@SuppressWarnings("unused")
 	private static String getRegion(DescriptionElementBase descriptionElement) {
 		String result = null;
-		DescriptionBase inDescription = descriptionElement.getInDescription();
+		DescriptionBase<?> inDescription = descriptionElement.getInDescription();
 		
 		// Area information are associated to TaxonDescriptions and Distributions.
 		if (descriptionElement.isInstanceOf(Distribution.class)) {
@@ -493,7 +474,7 @@ public class PesiNoteExport extends PesiExportBase {
 	@SuppressWarnings("unused")
 	private static Integer getTaxonFk(DescriptionElementBase descriptionElement, DbExportStateBase<?> state) {
 		Integer result = null;
-		DescriptionBase inDescription = descriptionElement.getInDescription();
+		DescriptionBase<?> inDescription = descriptionElement.getInDescription();
 		if (inDescription != null && inDescription.isInstanceOf(TaxonDescription.class)) {
 			TaxonDescription taxonDescription = CdmBase.deproxy(inDescription, TaxonDescription.class);
 			Taxon taxon = taxonDescription.getTaxon();
@@ -508,7 +489,7 @@ public class PesiNoteExport extends PesiExportBase {
 	 * @param state The {@link DbExportStateBase DbExportState}.
 	 * @return
 	 */
-	private static Integer getTaxonFk(TaxonNameBase taxonName, DbExportStateBase<?> state) {
+	private static Integer getTaxonFk(TaxonNameBase<?,?> taxonName, DbExportStateBase<?> state) {
 		return state.getDbId(taxonName);
 	}
 	
