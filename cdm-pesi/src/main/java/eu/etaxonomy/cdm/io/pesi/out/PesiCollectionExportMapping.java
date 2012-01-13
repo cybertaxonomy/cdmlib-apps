@@ -14,13 +14,13 @@ import java.util.Collection;
 
 import org.apache.log4j.Logger;
 
-import eu.etaxonomy.cdm.io.common.mapping.CdmAttributeMapperBase;
+import eu.etaxonomy.cdm.io.common.DbExportStateBase;
+import eu.etaxonomy.cdm.io.common.ImportHelper;
+import eu.etaxonomy.cdm.io.common.mapping.CdmMapperBase;
 import eu.etaxonomy.cdm.io.common.mapping.out.CollectionExportMapping;
 import eu.etaxonomy.cdm.io.common.mapping.out.DbSequenceMapper;
 import eu.etaxonomy.cdm.io.common.mapping.out.IDbExportMapper;
 import eu.etaxonomy.cdm.io.common.mapping.out.IdMapper;
-import eu.etaxonomy.cdm.io.common.DbExportStateBase;
-import eu.etaxonomy.cdm.io.common.ImportHelper;
 import eu.etaxonomy.cdm.model.common.CdmBase;
 
 /**
@@ -74,7 +74,7 @@ public class PesiCollectionExportMapping extends PesiExportMapping {
 					result = false;
 					continue;
 				}
-				for (CdmAttributeMapperBase mapper : this.mapperList){
+				for (CdmMapperBase mapper : this.mapperList){
 					if (mapper == this.parentMapper){
 						parentMapper.invoke(parent);
 					}else if (mapper == this.sequenceMapper){

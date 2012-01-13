@@ -2818,8 +2818,11 @@ public final class PesiTransformer {
 				result = Plantae_Series;
 			} else if (rank.equals(Rank.SUBSERIES())) {
 				result = Plantae_Subseries;
-//			} else if (rank.equals(Rank.)) { // not yet specified
-//				result = Plantae_Aggregate;
+			} else if (rank.equals(Rank.SPECIESAGGREGATE() )) {
+				result = Plantae_Aggregate;
+			} else if (rank.equals(Rank.SPECIESGROUP())) {
+				logger.warn("Rank Species Group not yet implemented");
+				result = null;
 //			} else if (rank.equals(Rank.)) { // not yet specified
 //				result = Plantae_Coll_Species;
 			} else if (rank.equals(Rank.SPECIES())) {
@@ -2830,6 +2833,9 @@ public final class PesiTransformer {
 //				result = Plantae_Proles;
 //			} else if (rank.equals(Rank.)) { // not yet specified
 //				result = Plantae_Race;
+			} else if (rank.equals(Rank.GREX())) { // not yet specified
+				logger.warn("Rank Grex not yet implemented");
+				result = null;
 			} else if (rank.equals(Rank.CONVAR())) {
 				result = Plantae_Convarietas;
 			} else if (rank.equals(Rank.VARIETY())) {
@@ -2842,10 +2848,10 @@ public final class PesiTransformer {
 				result = Plantae_Subforma;
 //			} else if (rank.equals(Rank.)) { // not yet specified
 //				result = Plantae_Forma_spec;
-//			} else if (rank.equals(Rank.)) { // not yet specified
-//				result = Plantae_Taxa_infragen;
-//			} else if (rank.equals(Rank.)) { // not yet specified
-//				result = Plantae_Taxa_infraspec;
+			} else if (rank.equals(Rank.INFRAGENERICTAXON())) { 
+				result = Plantae_Taxa_infragen;
+			} else if (rank.equals(Rank.INFRASPECIFICTAXON())) { 
+				result = Plantae_Taxa_infraspec;
 			} else {
 				//TODO Exception
 				logger.warn("Rank for Kingdom Plantae not yet supported in CDM: "+ rank.getLabel());
