@@ -94,7 +94,6 @@ public class PesiExportActivator {
 		config.setDoFacts(doFacts);
 		config.setDoOccurrence(doOccurences);
 		config.setDoReferences(doReferences);
-//		pesiExportConfigurator.setIsHomotypicId(isHomotypicId);
 		config.setCheck(check);
 		config.setLimitSave(partitionSize);
 		
