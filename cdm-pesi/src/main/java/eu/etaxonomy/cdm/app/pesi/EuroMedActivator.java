@@ -50,7 +50,8 @@ public class EuroMedActivator {
 //	static final Source berlinModelSource = BerlinModelSources.EDIT_Diptera();
 	
 //	static final ICdmDataSource cdmDestination = CdmDestinations.cdm_pesi_euroMed();
-	static final ICdmDataSource cdmDestination = CdmDestinations.cdm_test_local_mysql();
+//	static final ICdmDataSource cdmDestination = CdmDestinations.cdm_test_local_mysql();
+	static final ICdmDataSource cdmDestination = CdmDestinations.cdm_test_local_mysql_test();
 	
 	static final int sourceSecId = 7000000; //500000
 	static final UUID classificationUuid = UUID.fromString("314a68f9-8449-495a-91c2-92fde8bcf344");
@@ -89,8 +90,8 @@ public class EuroMedActivator {
 	static String occurrenceSourceFilter = " occurrenceFk IN ( SELECT occurrenceId FROM v_cdm_exp_occurrenceAll )"; 
 	static String commonNameFilter = " commonNameId IN ( SELECT commonNameId FROM v_cdm_exp_commonNamesAll )";
 	static String webMarkerFilter = " TableNameFk <> 500 OR ( RIdentifierFk IN (SELECT RIdentifier FROM v_cdm_exp_taxaAll)) ";
-	static String authorTeamFilter = /*null;*/ " authorTeamId IN (SELECT authorTeamId FROM v_cdm_exp_authorTeamsAll) ";
-	static String authorFilter = /*null;*/" authorId IN (SELECT authorId FROM v_cdm_exp_authorsAll) "; 
+	static String authorTeamFilter = null; // " authorTeamId IN (SELECT authorTeamId FROM v_cdm_exp_authorTeamsAll) ";
+	static String authorFilter = null;  // " authorId IN (SELECT authorId FROM v_cdm_exp_authorsAll) "; 
 	
 
 	
