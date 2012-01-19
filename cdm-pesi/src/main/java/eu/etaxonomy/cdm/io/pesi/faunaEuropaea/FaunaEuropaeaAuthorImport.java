@@ -17,10 +17,12 @@ import org.apache.log4j.Logger;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.TransactionStatus;
 
+import eu.etaxonomy.cdm.app.common.ImportUtils;
 import eu.etaxonomy.cdm.io.common.ICdmIO;
 import eu.etaxonomy.cdm.io.common.ImportHelper;
 import eu.etaxonomy.cdm.io.common.MapWrapper;
 import eu.etaxonomy.cdm.io.common.Source;
+import eu.etaxonomy.cdm.io.profiler.ProfilerController;
 import eu.etaxonomy.cdm.model.agent.Team;
 import eu.etaxonomy.cdm.model.agent.TeamOrPersonBase;
 import eu.etaxonomy.cdm.model.common.CdmBase;
@@ -54,6 +56,9 @@ public class FaunaEuropaeaAuthorImport extends FaunaEuropaeaImportBase {
 	 */
 	@Override
 	protected void doInvoke(FaunaEuropaeaImportState state){ 
+		logger.warn("Start author doInvoke");
+		ProfilerController.memorySnapshot();
+		
 		Map<String, MapWrapper<? extends CdmBase>> stores = state.getStores();
 		MapWrapper<TeamOrPersonBase> authorStore = (MapWrapper<TeamOrPersonBase>)stores.get(ICdmIO.TEAM_STORE);
 		TransactionStatus txStatus = null;
@@ -77,14 +82,30 @@ public class FaunaEuropaeaAuthorImport extends FaunaEuropaeaImportBase {
 			while (rs.next()) {
 
 				if ((i++ % modCount) == 0 && i!= 1 ) { 
-					if(logger.isInfoEnabled()) {
-						logger.info("Authors retrieved: " + (i-1)); 
+					if(logger.isDebugEnabled()) {
+						logger.debug("Authors retrieved: " + (i-1)); 
 					}
 				}
 
 				int authorId = rs.getInt("aut_id");
 				String authorName = rs.getString("aut_name");
 
+				String auctWithNecRegEx = "\\bauct\\.?\\b\\s\\bnec\\.?\\b";
+				String necAuctRegEx = "\\bnec\\.?\\b\\s\\bauct\\.?\\b";
+				
+				boolean auctWithNecFound = ImportUtils.expressionMatches(auctWithNecRegEx, authorName);
+				boolean necAuctFound = ImportUtils.expressionMatches(necAuctRegEx, authorName);
+				if (auctWithNecFound){
+					logger.debug("authorName before auct nec string is removed" + authorName);
+					authorName = authorName.substring(ImportUtils.expressionEnd(auctWithNecRegEx, authorName)+1, authorName.length());
+					logger.debug("authorName after auct nec string is removed" + authorName);
+				}
+				
+				if (necAuctFound){
+					logger.debug("authorName before nec auct string is removed" + authorName);
+					authorName = authorName.substring(0, authorName.indexOf("nec")-1);
+					logger.debug("authorName before nec auct string is removed" + authorName);
+				}
 				TeamOrPersonBase<Team> author = null;
 
 				try {

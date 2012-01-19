@@ -124,45 +124,49 @@ public class FaunaEuropaeaAdditionalTaxonDataImport extends FaunaEuropaeaImportB
 		}
 
 		// Fetch TaxonName objects for UUIDs
-		taxonNames = getNameService().find(uuidSet);
-		
-		for (TaxonNameBase taxonName : taxonNames) {
+		if (!uuidSet.isEmpty()){
+			taxonNames = getNameService().find(uuidSet);
 			
-			// Check whether its taxonName has an infraGenericEpithet
-			if (taxonName != null && (taxonName.isInstanceOf(NonViralName.class))) {
-				NonViralName targetNonViralName = CdmBase.deproxy(taxonName, NonViralName.class);
-				String infraGenericEpithet = targetNonViralName.getInfraGenericEpithet();
-				if (infraGenericEpithet == null) {
-					String genusOrUninomial = targetNonViralName.getGenusOrUninomial();
-					String specificEpithet = targetNonViralName.getSpecificEpithet();
-					List<TaxonBase> foundTaxa = getTaxonService().listTaxaByName(Taxon.class, genusOrUninomial, "*", specificEpithet, 
-							"*", null, pageSize, 1);
-					if (foundTaxa.size() == 1) {
-						// one matching Taxon found
-						TaxonBase taxon = foundTaxa.iterator().next();
-						if (taxon != null) {
-							TaxonNameBase name = taxon.getName();
-							if (name != null && name.isInstanceOf(NonViralName.class)) {
-								NonViralName nonViralName = CdmBase.deproxy(name, NonViralName.class);
-								infraGenericEpithet = nonViralName.getInfraGenericEpithet();
-								
-								// set infraGenericEpithet
-//									targetNonViralName.setInfraGenericEpithet(infraGenericEpithet);
-								logger.info("Added an InfraGenericEpithet to this TaxonName: " + taxonName.getUuid() + " (" + taxonName.getTitleCache() + ")");
-								count++;
-							}
-						}
-					} else if (foundTaxa.size() > 1) {
-						logger.warn("Multiple taxa match search criteria: " + taxonName.getUuid() + " (" + taxonName.getTitleCache() + ")");
-						for (TaxonBase foundTaxon : foundTaxa) {
-							logger.warn(foundTaxon.getUuid() + ", " + foundTaxon.getTitleCache());
-						}
-					} else if (foundTaxa.size() == 0) {
-//							logger.error("No matches for search criteria: " + taxonName.getUuid() + " (" + taxonName.getTitleCache() + ")");
-					}
-				}
+			for (TaxonNameBase taxonName : taxonNames) {
 				
+				// Check whether its taxonName has an infraGenericEpithet
+				if (taxonName != null && (taxonName.isInstanceOf(NonViralName.class))) {
+					NonViralName targetNonViralName = CdmBase.deproxy(taxonName, NonViralName.class);
+					String infraGenericEpithet = targetNonViralName.getInfraGenericEpithet();
+					if (infraGenericEpithet == null) {
+						String genusOrUninomial = targetNonViralName.getGenusOrUninomial();
+						String specificEpithet = targetNonViralName.getSpecificEpithet();
+						List<TaxonBase> foundTaxa = getTaxonService().listTaxaByName(Taxon.class, genusOrUninomial, "*", specificEpithet, 
+								"*", null, pageSize, 1);
+						if (foundTaxa.size() == 1) {
+							// one matching Taxon found
+							TaxonBase taxon = foundTaxa.iterator().next();
+							if (taxon != null) {
+								TaxonNameBase name = taxon.getName();
+								if (name != null && name.isInstanceOf(NonViralName.class)) {
+									NonViralName nonViralName = CdmBase.deproxy(name, NonViralName.class);
+									infraGenericEpithet = nonViralName.getInfraGenericEpithet();
+									
+									// set infraGenericEpithet
+	//									targetNonViralName.setInfraGenericEpithet(infraGenericEpithet);
+									logger.debug("Added an InfraGenericEpithet to this TaxonName: " + taxonName.getUuid() + " (" + taxonName.getTitleCache() + ")");
+									count++;
+								}
+							}
+						} else if (foundTaxa.size() > 1) {
+							logger.warn("Multiple taxa match search criteria: " + taxonName.getUuid() + " (" + taxonName.getTitleCache() + ")");
+							for (TaxonBase foundTaxon : foundTaxa) {
+								logger.warn(foundTaxon.getUuid() + ", " + foundTaxon.getTitleCache());
+							}
+						} else if (foundTaxa.size() == 0) {
+	//							logger.error("No matches for search criteria: " + taxonName.getUuid() + " (" + taxonName.getTitleCache() + ")");
+						}
+					}
+					
+				}
 			}
+		}else {
+			logger.debug("There are no additional infrageneric epithets!");
 		}
 
 		// Commit transaction

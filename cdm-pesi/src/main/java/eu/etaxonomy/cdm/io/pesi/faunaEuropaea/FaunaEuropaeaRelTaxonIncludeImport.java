@@ -27,6 +27,7 @@ import org.springframework.transaction.TransactionStatus;
 import eu.etaxonomy.cdm.io.common.ICdmIO;
 import eu.etaxonomy.cdm.io.common.MapWrapper;
 import eu.etaxonomy.cdm.io.common.Source;
+import eu.etaxonomy.cdm.io.profiler.ProfilerController;
 import eu.etaxonomy.cdm.model.agent.TeamOrPersonBase;
 import eu.etaxonomy.cdm.model.common.CdmBase;
 import eu.etaxonomy.cdm.model.reference.Reference;
@@ -48,7 +49,9 @@ public class FaunaEuropaeaRelTaxonIncludeImport extends FaunaEuropaeaImportBase 
 	
 	public static final String OS_NAMESPACE_TAXON = "Taxon";
 	private static final Logger logger = Logger.getLogger(FaunaEuropaeaRelTaxonIncludeImport.class);
-	private static final String acceptedTaxonUUID = "A9C24E42-69F5-4681-9399-041E652CF338"; // any accepted taxon uuid, taken from original fauna europaea database
+	//private static final String acceptedTaxonUUID = "A9C24E42-69F5-4681-9399-041E652CF338"; // any accepted taxon uuid, taken from original fauna europaea database
+	//private static final String acceptedTaxonUUID = "E23E6295-836A-4332-BF72-7D29949C7C60"; //faunaEu_1_3
+	private static final String acceptedTaxonUUID = "BB9CDF6C-BBA3-4AC7-A3FD-648A14F518A0"; //for faunEu (2.4)
 	
 	private Reference<?> sourceRef;
 	private static String ALL_SYNONYM_FROM_CLAUSE = " FROM Taxon INNER JOIN Taxon AS Parent " +
@@ -92,6 +95,8 @@ public class FaunaEuropaeaRelTaxonIncludeImport extends FaunaEuropaeaImportBase 
 	
 	protected void doInvoke(FaunaEuropaeaImportState state) {				
 		
+		logger.warn("Start RelTaxon doInvoke");
+		ProfilerController.memorySnapshot();
 		Map<String, MapWrapper<? extends CdmBase>> stores = state.getStores();
 
 		MapWrapper<TeamOrPersonBase> authorStore = (MapWrapper<TeamOrPersonBase>)stores.get(ICdmIO.TEAM_STORE);
@@ -108,22 +113,26 @@ public class FaunaEuropaeaRelTaxonIncludeImport extends FaunaEuropaeaImportBase 
 		Classification tree = getClassificationFor(state, sourceRef);
 		commitTransaction(txStatus);
 		
-		//ProfilerController.memorySnapshot();
+		logger.warn("Before processParentsChildren");
+		ProfilerController.memorySnapshot();
 		if (state.getConfig().isDoTaxonomicallyIncluded()) {
 			processParentsChildren(state);
 		}
-		//ProfilerController.memorySnapshot();
+		logger.warn("Before processMissappliedNames");
+		ProfilerController.memorySnapshot();
 		if (state.getConfig().isDoMisappliedNames()) {
 			processMisappliedNames(state);
 		}
-		//ProfilerController.memorySnapshot();
+		logger.warn("Before heterotypic synonyms");
+		ProfilerController.memorySnapshot();
 		if (state.getConfig().isDoHeterotypicSynonyms()) {
 			if(logger.isInfoEnabled()) { 
 				logger.info("Start making heterotypic synonym relationships..."); 
 			}
 			processHeterotypicSynonyms(state, ALL_SYNONYM_FROM_CLAUSE);
 		}
-		//ProfilerController.memorySnapshot();
+		logger.warn("End RelTaxon doInvoke");
+		ProfilerController.memorySnapshot();
 
 		logger.info("End making taxa...");
 
@@ -201,18 +210,23 @@ public class FaunaEuropaeaRelTaxonIncludeImport extends FaunaEuropaeaImportBase 
 						logger.debug("Duplicated child UUID (" + childUuid + ")");
 					}
 				}
-				if (((i % limit) == 0 && i != 1 ) || i == count) { 
+				if (((i % limit) == 0 && i != 1 ) || i == count ) { 
 
-					createParentChildRelationships(state, childParentMap);
-
+					createAndCommitParentChildRelationships(
+							state, txStatus, childParentMap);
 					childParentMap = null;
-					commitTransaction(txStatus);
 
 					if(logger.isInfoEnabled()) {
 						logger.info("i = " + i + " - Transaction committed"); 
 					}
 				}
 			}
+	        
+	        if (childParentMap != null){
+	        	createAndCommitParentChildRelationships(
+						state, txStatus, childParentMap);
+	        	childParentMap = null;
+	        }
 
 		} catch (SQLException e) {
 			logger.error("SQLException:" +  e);
@@ -220,11 +234,21 @@ public class FaunaEuropaeaRelTaxonIncludeImport extends FaunaEuropaeaImportBase 
 		}
 		return;		
 	}
+
+	private Map<UUID, UUID> createAndCommitParentChildRelationships(
+			FaunaEuropaeaImportState state, TransactionStatus txStatus,
+			Map<UUID, UUID> childParentMap) {
+		createParentChildRelationships(state, childParentMap);
+
+		
+		commitTransaction(txStatus);
+		return childParentMap;
+	}
 	
 
 	/** Retrieve misapplied name / accepted taxon uuid map from CDM DB */
 	private void processMisappliedNames(FaunaEuropaeaImportState state) {
-
+//TODO: there are some misapplied names containing a "nec" in their name, they are listed as synonyms in Fauna Europaea, but should be handled as misapplied names??, the AUT_ID is not A_AUCT but the name contains auct. and the author name of the taxon that is not meant or other way round...
 		int limit = state.getConfig().getLimitSave();
 
 		TransactionStatus txStatus = null;
@@ -241,10 +265,20 @@ public class FaunaEuropaeaRelTaxonIncludeImport extends FaunaEuropaeaImportBase 
 		
 		String fromClause = " FROM Taxon INNER JOIN Taxon AS Parent " +
 		" ON Taxon.TAX_TAX_IDPARENT = Parent.TAX_ID " +
-		" WHERE (Taxon.TAX_VALID = 0) AND (Taxon.TAX_AUT_ID = " + A_AUCT + ")";
-		
+		" WHERE (Taxon.TAX_VALID = 0) AND (Taxon.TAX_AUT_ID = " + A_AUCT + ")";		
 		String orderClause = " ORDER BY dbo.Taxon.TAX_RNK_ID ASC ";
 
+		/*
+		 * misapplied names with auct. nec.
+		 * 
+		 * String selectColumns = "SELECT Taxon.UUID AS MisappliedUuid, Parent.UUID AS AcceptedUuid";		
+	 		String fromClause = "FROM [FaunEu].[dbo].[Taxon] INNER JOIN [FaunEu].[dbo].[Taxon] AS Parent "+
+		"ON Taxon.TAX_TAX_IDPARENT = Parent.TAX_ID "+
+		"INNER JOIN [FaunEu].[dbo].[author] AS author ON Taxon.Tax_Aut_Id = author.aut_id "+
+		"WHERE (Taxon.TAX_VALID = 0) AND ((Taxon.TAX_AUT_ID = 1) or author.aut_name like '%auct%nec%' )	";
+		 */
+		
+		
 		String countQuery = 
 			selectCount + fromClause;
 
@@ -296,15 +330,20 @@ public class FaunaEuropaeaRelTaxonIncludeImport extends FaunaEuropaeaImportBase 
 
 				if (((i % limit) == 0 && i != 1 ) || i == count) { 
 
-					createMisappliedNameRelationships(state, childParentMap);
-
+					createAndCommitMisappliedNameRelationships(state, txStatus,
+							childParentMap);
 					childParentMap = null;
-					commitTransaction(txStatus);
+					
 
 					if(logger.isInfoEnabled()) {
 						logger.info("i = " + i + " - Transaction committed"); 
 					}
 				}
+			}
+			if (childParentMap != null){
+				createAndCommitMisappliedNameRelationships(state, txStatus,
+						childParentMap);
+				childParentMap = null;
 			}
 
 		} catch (SQLException e) {
@@ -312,6 +351,13 @@ public class FaunaEuropaeaRelTaxonIncludeImport extends FaunaEuropaeaImportBase 
 			state.setUnsuccessfull();
 		}
 		return;		
+	}
+
+	private void createAndCommitMisappliedNameRelationships(
+			FaunaEuropaeaImportState state, TransactionStatus txStatus,
+			Map<UUID, UUID> childParentMap) {
+		createMisappliedNameRelationships(state, childParentMap);
+		commitTransaction(txStatus);
 	}
 
 
@@ -397,19 +443,31 @@ public class FaunaEuropaeaRelTaxonIncludeImport extends FaunaEuropaeaImportBase 
 				}
 			}
 
-			if (((i % limit) == 0 && i != 1 ) || i == count) { 
+			if (((i % limit) == 0 && i != 1 ) || i == count ) { 
 
-				createHeterotypicSynonyms(state, synonymAcceptedMap);
-
-				synonymAcceptedMap = null;
-				commitTransaction(txStatus);
+				synonymAcceptedMap = createAndCommitHeterotypicSynonyms(state,
+						txStatus, synonymAcceptedMap);
 
 				if(logger.isInfoEnabled()) {
 					logger.info("i = " + i + " - Transaction committed"); 
 				}
 			}
 		}
+		if (synonymAcceptedMap != null){
+			synonymAcceptedMap = createAndCommitHeterotypicSynonyms(state,
+					txStatus, synonymAcceptedMap);
+		}
 		return;
+	}
+
+	private Map<UUID, UUID> createAndCommitHeterotypicSynonyms(
+			FaunaEuropaeaImportState state, TransactionStatus txStatus,
+			Map<UUID, UUID> synonymAcceptedMap) {
+		createHeterotypicSynonyms(state, synonymAcceptedMap);
+
+		synonymAcceptedMap = null;
+		commitTransaction(txStatus);
+		return synonymAcceptedMap;
 	}
 	
 	
@@ -425,110 +483,111 @@ public class FaunaEuropaeaRelTaxonIncludeImport extends FaunaEuropaeaImportBase 
 		sourceRef = taxon.getSec();
 		int limit = state.getConfig().getLimitSave();
 		
-			Classification tree = getClassificationFor(state, sourceRef);
-			
-			Set<TaxonBase> childSet = new HashSet<TaxonBase>(limit);
-			
-			Set<UUID> childKeysSet = childParentMap.keySet();
-			Set<UUID> parentValuesSet = new HashSet<UUID>(childParentMap.values());
-			
-			if (logger.isTraceEnabled()) {
-				logger.trace("Start reading children and parents");
+		Classification tree = getClassificationFor(state, sourceRef);
+		
+		Set<TaxonBase> childSet = new HashSet<TaxonBase>(limit);
+		
+		Set<UUID> childKeysSet = childParentMap.keySet();
+		Set<UUID> parentValuesSet = new HashSet<UUID>(childParentMap.values());
+		
+		if (logger.isTraceEnabled()) {
+			logger.trace("Start reading children and parents");
+		}
+		List<TaxonBase> children = getTaxonService().find(childKeysSet);
+		List<TaxonBase> parents = getTaxonService().find(parentValuesSet);
+		Map<UUID, TaxonBase> parentsMap = new HashMap<UUID, TaxonBase>(parents.size());
+		
+		for (TaxonBase taxonBase : parents){
+			parentsMap.put(taxonBase.getUuid(), taxonBase);
+		}
+		
+		if (logger.isTraceEnabled()) {
+			logger.debug("End reading children and parents");
+			for (UUID uuid : childKeysSet) {
+				logger.trace("child uuid query: " + uuid);
 			}
-			List<TaxonBase> children = getTaxonService().find(childKeysSet);
-			List<TaxonBase> parents = getTaxonService().find(parentValuesSet);
-			Map<UUID, TaxonBase> parentsMap = new HashMap<UUID, TaxonBase>(parents.size());
-			for (TaxonBase taxonBase : parents){
-				parentsMap.put(taxonBase.getUuid(), taxonBase);
+			for (UUID uuid : parentValuesSet) {
+				logger.trace("parent uuid query: " + uuid);
 			}
-			
-			if (logger.isTraceEnabled()) {
-				logger.debug("End reading children and parents");
-				for (UUID uuid : childKeysSet) {
-					logger.trace("child uuid query: " + uuid);
-				}
-				for (UUID uuid : parentValuesSet) {
-					logger.trace("parent uuid query: " + uuid);
-				}
-				for (TaxonBase tb : children) {
-					logger.trace("child uuid result: " + tb.getUuid());
-				}
-				for (TaxonBase tb : parents) {
-					logger.trace("parent uuid result: " + tb.getUuid());
-				}
+			for (TaxonBase tb : children) {
+				logger.trace("child uuid result: " + tb.getUuid());
 			}
+			for (TaxonBase tb : parents) {
+				logger.trace("parent uuid result: " + tb.getUuid());
+			}
+		}
 
-			UUID mappedParentUuid = null;
-			UUID childUuid = null;
+		UUID mappedParentUuid = null;
+		UUID childUuid = null;
 
-			for (TaxonBase child : children) {
+		for (TaxonBase child : children) {
 
-				try {
-					Taxon childTaxon = child.deproxy(child, Taxon.class);
-					childUuid = childTaxon.getUuid();
-					mappedParentUuid = childParentMap.get(childUuid);
-					TaxonBase parent = null;
-					
-					TaxonBase potentialParent = parentsMap.get(mappedParentUuid);
+			try {
+				Taxon childTaxon = child.deproxy(child, Taxon.class);
+				childUuid = childTaxon.getUuid();
+				mappedParentUuid = childParentMap.get(childUuid);
+				TaxonBase parent = null;
+				
+				TaxonBase potentialParent = parentsMap.get(mappedParentUuid);
 //					for (TaxonBase potentialParent : parents ) {
 //						parentUuid = potentialParent.getUuid();
 //						if(parentUuid.equals(mappedParentUuid)) {
-							parent = potentialParent;
-							if (logger.isDebugEnabled()) {
-								logger.debug("Parent (" + mappedParentUuid + ") found for child (" + childUuid + ")");
-							}
+						parent = potentialParent;
+						if (logger.isDebugEnabled()) {
+							logger.debug("Parent (" + mappedParentUuid + ") found for child (" + childUuid + ")");
+						}
 //							break;
 //						}
 //					}
+				
+				Taxon parentTaxon = parent.deproxy(parent, Taxon.class);
+				
+				if (childTaxon != null && parentTaxon != null) {
 					
-					Taxon parentTaxon = parent.deproxy(parent, Taxon.class);
+					tree.addParentChild(parentTaxon, childTaxon, sourceRef, null);
 					
-					if (childTaxon != null && parentTaxon != null) {
+					if (logger.isDebugEnabled()) {
+						logger.debug("Parent-child (" + mappedParentUuid + "-" + childUuid + 
+						") relationship created");
+					}
+					if (childTaxon != null && !childSet.contains(childTaxon)) {
 						
-						tree.addParentChild(parentTaxon, childTaxon, sourceRef, null);
+						childSet.add(childTaxon);
 						
-						if (logger.isDebugEnabled()) {
-							logger.debug("Parent-child (" + mappedParentUuid + "-" + childUuid + 
-							") relationship created");
+						if (logger.isTraceEnabled()) {
+							logger.trace("Child taxon (" + childUuid + ") added to Set");
 						}
-						if (childTaxon != null && !childSet.contains(childTaxon)) {
-							
-							childSet.add(childTaxon);
-							
-							if (logger.isTraceEnabled()) {
-								logger.trace("Child taxon (" + childUuid + ") added to Set");
-							}
-							
-						} else {
-							if (logger.isDebugEnabled()) {
-								logger.debug("Duplicated child taxon (" + childUuid + ")");
-							}
-						}
+						
 					} else {
 						if (logger.isDebugEnabled()) {
-							logger.debug("Parent(" + mappedParentUuid + ") or child (" + childUuid + " is null");
+							logger.debug("Duplicated child taxon (" + childUuid + ")");
 						}
 					}
-					
-				} catch (Exception e) {
-					logger.error("Error creating taxonomically included relationship parent-child (" + 
-						mappedParentUuid + " <----> " + childUuid + ")", e);
+				} else {
+					if (logger.isDebugEnabled()) {
+						logger.debug("Parent(" + mappedParentUuid + ") or child (" + childUuid + " is null");
+					}
 				}
-
-			}
-			if (logger.isTraceEnabled()) {
-				logger.trace("Start saving childSet");
-			}
-			getTaxonService().save(childSet);
-			if (logger.isTraceEnabled()) {
-				logger.trace("End saving childSet");
+				
+			} catch (Exception e) {
+				logger.error("Error creating taxonomically included relationship parent-child (" + 
+					mappedParentUuid + " <----> " + childUuid + ")", e);
 			}
 
-			parentValuesSet = null;
-			childSet = null;
-			children = null;
-			parents = null;
-			tree = null;
+		}
+		if (logger.isTraceEnabled()) {
+			logger.trace("Start saving childSet");
+		}
+		getTaxonService().save(childSet);
+		if (logger.isTraceEnabled()) {
+			logger.trace("End saving childSet");
+		}
+
+		parentValuesSet = null;
+		childSet = null;
+		children = null;
+		parents = null;
+		tree = null;
 		
 		return;
 	}
@@ -704,7 +763,16 @@ public class FaunaEuropaeaRelTaxonIncludeImport extends FaunaEuropaeaImportBase 
 		for (TaxonBase synonymTaxonBase : synonyms) {
 
 			try {
-				synonym = synonymTaxonBase.deproxy(synonymTaxonBase, Synonym.class);
+				//check for misapplied names with nec (in Fauna Europaea they have a synonym relationship to the accepted taxon)
+				if (synonymTaxonBase instanceof Taxon ){
+					if (((Taxon)synonymTaxonBase).isMisapplication()){
+						if (logger.isDebugEnabled()) {
+							logger.debug("misapplied name with exclusion" +  synonymTaxonBase.getTitleCache());
+						}
+					}
+					continue;
+				}
+				synonym = CdmBase.deproxy(synonymTaxonBase, Synonym.class);
 				synonymUuid = synonym.getUuid();
 				mappedAcceptedTaxonUuid = fromToMap.get(synonymUuid);
 				acceptedTaxonBase = null;
@@ -713,7 +781,7 @@ public class FaunaEuropaeaRelTaxonIncludeImport extends FaunaEuropaeaImportBase 
 				if (logger.isDebugEnabled()) {
 					logger.debug("Parent (" + mappedAcceptedTaxonUuid + ") found for child (" + synonymUuid + ")");
 				}
-				acceptedTaxon = acceptedTaxonBase.deproxy(acceptedTaxonBase, Taxon.class);
+				acceptedTaxon = CdmBase.deproxy(acceptedTaxonBase, Taxon.class);
 
 				if (synonym != null && acceptedTaxon != null) {
 
@@ -744,7 +812,7 @@ public class FaunaEuropaeaRelTaxonIncludeImport extends FaunaEuropaeaImportBase 
 				}
 			} catch (Exception e) {
 				logger.error("Error creating synonym relationship: accepted taxon-synonym (" + 
-						mappedAcceptedTaxonUuid + "-" + synonymUuid + ")", e);
+						mappedAcceptedTaxonUuid + "-" + synonymUuid + ": "+ synonymTaxonBase.getTitleCache() +")", e);
 			}
 		}
 		if (logger.isTraceEnabled()) {

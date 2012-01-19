@@ -39,7 +39,7 @@ public class FaunaEuropaeaImportConfigurator extends ImportConfiguratorBase<Faun
 	private boolean doOccurrence = true;
 	
 	/* Max number of taxa to be saved with one service call */
-	private int limitSave = 900;
+	private int limitSave = 5000;
 	private Reference<?> auctReference;
 	
 	@SuppressWarnings("unchecked")

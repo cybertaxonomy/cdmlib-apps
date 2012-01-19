@@ -35,8 +35,10 @@ public class FaunaEuropaeaActivator {
 	@SuppressWarnings("unused")
 	private static final Logger logger = Logger.getLogger(FaunaEuropaeaActivator.class);
 
-	static final Source faunaEuropaeaSource = PesiSources.faunaEu_1_3();
-	static final ICdmDataSource cdmDestination = CdmDestinations.cdm_test_jaxb2();
+
+	static final Source faunaEuropaeaSource = FaunaEuropaeaSources.faunEu();
+	static final ICdmDataSource cdmDestination = CdmDestinations.cdm_test_local_mysql();
+
 	
 	static final int limitSave = 2000;
 

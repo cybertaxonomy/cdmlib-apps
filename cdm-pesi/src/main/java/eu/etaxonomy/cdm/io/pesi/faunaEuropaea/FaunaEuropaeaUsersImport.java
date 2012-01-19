@@ -25,6 +25,7 @@ import org.springframework.transaction.TransactionStatus;
 import eu.etaxonomy.cdm.io.common.IImportConfigurator;
 import eu.etaxonomy.cdm.io.common.ImportHelper;
 import eu.etaxonomy.cdm.io.common.Source;
+import eu.etaxonomy.cdm.io.profiler.ProfilerController;
 import eu.etaxonomy.cdm.model.agent.Team;
 import eu.etaxonomy.cdm.model.agent.TeamOrPersonBase;
 import eu.etaxonomy.cdm.model.common.OriginalSourceBase;
@@ -75,7 +76,9 @@ public class FaunaEuropaeaUsersImport extends FaunaEuropaeaImportBase {
 	 */
 	@Override
 	protected void doInvoke(FaunaEuropaeaImportState state) {				
-
+		logger.warn("Start User doInvoke");
+		ProfilerController.memorySnapshot();
+		
 		TransactionStatus txStatus = null;
 		Map<Integer, Reference> references = null;
 		Map<String,TeamOrPersonBase> authors = null;
@@ -205,34 +208,51 @@ public class FaunaEuropaeaUsersImport extends FaunaEuropaeaImportBase {
 					//continue;
 				}
 				
-				if (((i % limit) == 0 && i > 1 ) || i == count) { 
+				if (((i % limit) == 0 && i > 1 ) || i == count ) { 
 					
-					Map <UUID, Reference> referenceMap =getReferenceService().save(references.values());
-					logger.info("i = " + i + " - references saved"); 
-
-					Iterator<Entry<UUID, Reference>> it = referenceMap.entrySet().iterator();
-					while (it.hasNext()){
-						Reference ref = it.next().getValue();
-						int refID = Integer.valueOf(((OriginalSourceBase)ref.getSources().iterator().next()).getIdInSource());
-						UUID uuid = ref.getUuid();
-						referenceUuids.put(refID, uuid);
-					}
+					commitReferences(txStatus, references, authors,
+							referenceUuids, i);
+					
+					authors = null;					
 					references= null;
-					getAgentService().save((Collection)authors.values());
-					
-					authors = null;
-					commitTransaction(txStatus);
 				}
 	        	
+	        }
+	        if (references != null){
+	        	commitReferences(txStatus, references, authors, referenceUuids, i);
+	        	authors = null;					
+				references= null;
 	        }
 		}catch(SQLException e) {
 			logger.error("SQLException:" +  e);
 			state.setUnsuccessfull();
 		}
 
+		logger.warn("End User doInvoke");
+		ProfilerController.memorySnapshot();
+		
 		if(logger.isInfoEnabled()) { logger.info("End making References (Users) ..."); }
 		
 		return;
+	}
+
+	private void commitReferences(TransactionStatus txStatus,
+			Map<Integer, Reference> references,
+			Map<String, TeamOrPersonBase> authors,
+			Map<Integer, UUID> referenceUuids, int i) {
+		Map <UUID, Reference> referenceMap =getReferenceService().save(references.values());
+		logger.info("i = " + i + " - references saved"); 
+
+		Iterator<Entry<UUID, Reference>> it = referenceMap.entrySet().iterator();
+		while (it.hasNext()){
+			Reference ref = it.next().getValue();
+			int refID = Integer.valueOf(((OriginalSourceBase)ref.getSources().iterator().next()).getIdInSource());
+			UUID uuid = ref.getUuid();
+			referenceUuids.put(refID, uuid);
+		}
+		
+		getAgentService().save((Collection)authors.values());
+		commitTransaction(txStatus);
 	}
 
 	/**

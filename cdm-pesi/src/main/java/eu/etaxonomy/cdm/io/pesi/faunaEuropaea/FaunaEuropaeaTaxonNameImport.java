@@ -33,6 +33,7 @@ import org.apache.log4j.Logger;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.TransactionStatus;
 
+import eu.etaxonomy.cdm.app.common.ImportUtils;
 import eu.etaxonomy.cdm.common.CdmUtils;
 import eu.etaxonomy.cdm.io.common.ICdmIO;
 import eu.etaxonomy.cdm.io.common.ImportHelper;
@@ -44,6 +45,7 @@ import eu.etaxonomy.cdm.model.common.CdmBase;
 import eu.etaxonomy.cdm.model.common.Extension;
 import eu.etaxonomy.cdm.model.common.ExtensionType;
 import eu.etaxonomy.cdm.model.common.IdentifiableSource;
+import eu.etaxonomy.cdm.model.common.LSID;
 import eu.etaxonomy.cdm.model.name.Rank;
 import eu.etaxonomy.cdm.model.name.TaxonNameBase;
 import eu.etaxonomy.cdm.model.name.ZoologicalName;
@@ -308,7 +310,8 @@ public class FaunaEuropaeaTaxonNameImport extends FaunaEuropaeaImportBase  {
 				int parenthesis = rs.getInt("TAX_PARENTHESIS");
 				UUID taxonBaseUuid = null;
 				if (resultSetHasColumn(rs,"UUID")){
-					taxonBaseUuid = UUID.fromString(rs.getString("UUID"));
+					String uuid = rs.getString("UUID");
+					taxonBaseUuid = UUID.fromString(uuid);
 				} else {
 					taxonBaseUuid = UUID.randomUUID();
 				}
@@ -398,9 +401,17 @@ public class FaunaEuropaeaTaxonNameImport extends FaunaEuropaeaImportBase  {
 				try {
 					// check for occurrence of the auct string in auctName
 					String auctRegEx = "\\bauct\\.?\\b"; // The word "auct" with or without "."
-					boolean auctWordFound = expressionMatches(auctRegEx, autName);
-
-					if (status == T_STATUS_ACCEPTED || auctWordFound) {
+					
+					String auctWithNecRegEx = "\\bauct\\.?\\b\\s\\bnec\\.?\\b";
+					String necAuctRegEx = "\\bnec\\.?\\b\\s\\bauct\\.?\\b";
+					
+					boolean auctNecFound = ImportUtils.expressionMatches(auctWithNecRegEx, autName);
+					boolean necAuctFound = ImportUtils.expressionMatches(auctWithNecRegEx, autName);
+					boolean auctWordFound = ImportUtils.expressionMatches(auctRegEx, autName);
+					
+						
+					
+					if (status == T_STATUS_ACCEPTED || (auctWordFound && !(necAuctFound ||auctNecFound))) {
 
 						if (auctWordFound) { // misapplied name
 							zooName.setCombinationAuthorTeam(null);
@@ -423,12 +434,20 @@ public class FaunaEuropaeaTaxonNameImport extends FaunaEuropaeaImportBase  {
 							logger.debug("Synonym created (" + taxonId + ")");
 						}
 						taxonBase = synonym;
-					} else {
+					} else if (status == T_STATUS_NOT_ACCEPTED && (necAuctFound ||auctNecFound)){
+						synonym = Synonym.NewInstance(zooName, sourceReference);
+						synonym.setDoubtful(false);
+						taxonBase = synonym;
+						
+					}else{
+						
 						logger.warn("Unknown taxon status " + status + ". Taxon (" + taxonId + ") ignored.");
 						continue;
 					}
 
 					taxonBase.setUuid(taxonBaseUuid);
+					taxonBase.setLsid(new LSID( "urn:lsid:faunaeur.org:taxname:"+taxonId));
+					
 
 					ImportHelper.setOriginalSource(taxonBase, fauEuConfig.getSourceReference(), taxonId, OS_NAMESPACE_TAXON);
 					ImportHelper.setOriginalSource(zooName, fauEuConfig.getSourceReference(), taxonId, "TaxonName");
@@ -456,23 +475,28 @@ public class FaunaEuropaeaTaxonNameImport extends FaunaEuropaeaImportBase  {
 					e.printStackTrace();
 				}
 
-				if (((i % limit) == 0 && i != 1 ) || i == count) { 
+				if (((i % limit) == 0 && i != 1 )) { 
 
-					processTaxaSecondPass(state, taxonMap, fauEuTaxonMap, synonymSet);
-					if(logger.isDebugEnabled()) { logger.debug("Saving taxa ..."); }
-					getTaxonService().save((Collection)taxonMap.values());
-					getTaxonService().save((Collection)synonymSet);
+					commitTaxa(state, txStatus, taxonMap, fauEuTaxonMap,
+							synonymSet);
 					
 					taxonMap = null;
 					synonymSet = null;
 					fauEuTaxonMap = null;
-					commitTransaction(txStatus);
+					
 					
 					if(logger.isInfoEnabled()) {
 						logger.info("i = " + i + " - Transaction committed"); 
 					}
 				}
 
+			}
+			if (taxonMap != null){
+				commitTaxa(state, txStatus, taxonMap, fauEuTaxonMap,
+						synonymSet);
+				taxonMap = null;
+				synonymSet = null;
+				fauEuTaxonMap = null;
 			}
 		} catch (SQLException e) {
 			logger.error("SQLException:" +  e);
@@ -482,24 +506,18 @@ public class FaunaEuropaeaTaxonNameImport extends FaunaEuropaeaImportBase  {
 		return;
 	}
 
-	/**
-	 * Returns whether a regular expression is found in a given target string.
-	 * @param regEx
-	 * @param targetString
-	 * @return
-	 */
-	private static boolean expressionMatches(String regEx, String targetString) {
-		if (targetString == null) {
-			return false;
-		}
-		Pattern pattern = Pattern.compile(regEx);
-		Matcher matcher = pattern.matcher(targetString);
-		if (matcher.find()) {
-			return true;
-		} else {
-			return false;
-		}
+	private void commitTaxa(FaunaEuropaeaImportState state,
+			TransactionStatus txStatus, Map<Integer, TaxonBase<?>> taxonMap,
+			Map<Integer, FaunaEuropaeaTaxon> fauEuTaxonMap,
+			Set<Synonym> synonymSet) {
+		processTaxaSecondPass(state, taxonMap, fauEuTaxonMap, synonymSet);
+		if(logger.isDebugEnabled()) { logger.debug("Saving taxa ... " + taxonMap.size()); }
+		getTaxonService().save((Collection)taxonMap.values());
+		
+		commitTransaction(txStatus);
 	}
+
+	
 	
 	/**
 	 * Processes taxa from complete taxon store
@@ -526,7 +544,7 @@ public class FaunaEuropaeaTaxonNameImport extends FaunaEuropaeaImportBase  {
 				buildTaxonName(fauEuTaxon, taxonBase, taxonName, useOriginalGenus, fauEuConfig);
 			
 			if (taxonBase instanceof Synonym){
-				logger.info("Name of Synonym: " + nameString);
+				logger.debug("Name of Synonym: " + nameString);
 			}
 			
 			if (fauEuConfig.isDoBasionyms() 

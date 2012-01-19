@@ -103,7 +103,7 @@ implements ICdmImport<FaunaEuropaeaImportConfigurator, FaunaEuropaeaImportState>
 							if (nameRelations != null && nameRelations.iterator().hasNext()) {
 								nameRelation = nameRelations.iterator().next();
 								acceptedName = nameRelation.getToName();
-								logger.info("SynonymName: " + synonymName + " titleCache of synonym: "+synonym.getTitleCache() + " name of acceptedTaxon: " + acceptedName.getTitleCache());
+								logger.debug("SynonymName: " + synonymName + " titleCache of synonym: "+synonym.getTitleCache() + " name of acceptedTaxon: " + acceptedName.getTitleCache());
 								if (logger.isTraceEnabled()) {
 									logger.trace("toName: " + acceptedName);
 									logger.trace("fromName: " + nameRelation.getFromName());

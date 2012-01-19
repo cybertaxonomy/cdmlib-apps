@@ -28,6 +28,7 @@ import org.springframework.transaction.TransactionStatus;
 import eu.etaxonomy.cdm.io.common.IImportConfigurator;
 import eu.etaxonomy.cdm.io.common.ImportHelper;
 import eu.etaxonomy.cdm.io.common.Source;
+import eu.etaxonomy.cdm.io.profiler.ProfilerController;
 import eu.etaxonomy.cdm.model.agent.Team;
 import eu.etaxonomy.cdm.model.agent.TeamOrPersonBase;
 import eu.etaxonomy.cdm.model.common.CdmBase;
@@ -86,8 +87,9 @@ public class FaunaEuropaeaRefImport extends FaunaEuropaeaImportBase {
 	 */
 	@Override
 	protected void doInvoke(FaunaEuropaeaImportState state) {				
-
-		TransactionStatus txStatus = null;
+		logger.warn("Start RefImport doInvoke");
+		ProfilerController.memorySnapshot();
+		
 		List<TaxonBase> taxonList = null;
 		List<Reference> referenceList = null;
 		Set<UUID> taxonUuids = null;
@@ -137,9 +139,39 @@ public class FaunaEuropaeaRefImport extends FaunaEuropaeaImportBase {
 		String selectQueryRefs = 
 			selectColumnsRefs;
 		
-		int count;
+		
 		if(logger.isInfoEnabled()) { logger.info("Start making References..."); }
 //first add all References to CDM
+		processReferences(state, references, authors,
+				referenceUuids, limit, fauEuConfig, source, namespace, i,
+				countQueryRefs, selectQueryRefs);
+	        
+	        
+		logger.warn("Start ref taxon relationships");
+		ProfilerController.memorySnapshot();
+	 //create the relationships between references and taxa       
+	        
+        createTaxonReferenceRel(state, taxonUuids, fauEuTaxonMap,
+				referenceUuids, referenceIDs, limit, source,
+				countQueryTaxRefs, selectQueryTaxRefs);
+        
+        
+		logger.warn("End RefImport doInvoke");
+		ProfilerController.memorySnapshot();
+		if(logger.isInfoEnabled()) { logger.info("End making references ..."); }
+		
+		return;
+	}
+
+	private void processReferences(FaunaEuropaeaImportState state,
+			Map<Integer, Reference> references,
+			Map<String, TeamOrPersonBase> authors,
+			Map<Integer, UUID> referenceUuids, int limit,
+			FaunaEuropaeaImportConfigurator fauEuConfig, Source source,
+			String namespace, int i, String countQueryRefs,
+			String selectQueryRefs) {
+		TransactionStatus txStatus = null;
+		int count;
 		try {
 			ResultSet rsRefs = source.getResultSet(countQueryRefs);
 			rsRefs.next();
@@ -235,237 +267,278 @@ public class FaunaEuropaeaRefImport extends FaunaEuropaeaImportBase {
 					//continue;
 				}
 				
-				if (((i % limit) == 0 && i > 1 ) || i == count) { 
+				if (((i % limit) == 0 && i > 1 ) || i == count ) { 
 					
-					Map <UUID, Reference> referenceMap =getReferenceService().save(references.values());
-					logger.info("i = " + i + " - references saved"); 
-
-					Iterator<Entry<UUID, Reference>> it = referenceMap.entrySet().iterator();
-					while (it.hasNext()){
-						Reference ref = it.next().getValue();
-						int refID = Integer.valueOf(((OriginalSourceBase)ref.getSources().iterator().next()).getIdInSource());
-						UUID uuid = ref.getUuid();
-						referenceUuids.put(refID, uuid);
-					}
+					commitReferences(references, authors, referenceUuids, i,
+							txStatus);
 					references= null;
-					getAgentService().save((Collection)authors.values());
-					
 					authors = null;
 				}
 				
 	        	
 	        	
 	        }
+	        if (references != null){
+	        	commitReferences(references, authors, referenceUuids, i, txStatus);
+	        	references= null;
+				authors = null;
+	        }
 		}catch(SQLException e) {
 			logger.error("SQLException:" +  e);
 			state.setUnsuccessfull();
 		}
-	        
-	        
-	 //create the relationships between references and taxa       
-	        
-	        Taxon taxon = null;
-	        i = 0;
-	        try{
-	        	ResultSet rsTaxRefs = source.getResultSet(countQueryTaxRefs);
-	        	rsTaxRefs.next();
-				count = rsTaxRefs.getInt(1);
-				
-				rsTaxRefs = source.getResultSet(selectQueryTaxRefs);
-	        
-				logger.info("Start taxon reference-relationships");
-				FaunaEuropaeaReference fauEuReference;
-				FaunaEuropaeaReferenceTaxon fauEuReferenceTaxon;
-				while (rsTaxRefs.next()) {
-					
-					
-					if ((i++ % limit) == 0) {
-	
-						txStatus = startTransaction();
-						taxonUuids = new HashSet<UUID>(limit);
-						referenceIDs = new HashSet<Integer>(limit);
-						authors = new HashMap<String,TeamOrPersonBase>(limit);
-						fauEuTaxonMap = new HashMap<UUID, FaunaEuropaeaReferenceTaxon>(limit);
-	
-						if(logger.isInfoEnabled()) {
-							logger.info("i = " + i + " - Reference import transaction started"); 
-						}
-					}
-					
-	
-					int taxonId = rsTaxRefs.getInt("trf_tax_id");
-					int refId = rsTaxRefs.getInt("ref_id");
-					String refAuthor = rsTaxRefs.getString("ref_author");
-					String year = rsTaxRefs.getString("ref_year");
-					String title = rsTaxRefs.getString("ref_title");
-					
-					if (year == null){
-						try{		
-							year = String.valueOf((Integer.parseInt(title)));
-						}
-						catch(Exception ex)   
-						{
-							logger.info("year is empty and " +title + " contains no integer");
-					    }
-					}
-					String refSource = rsTaxRefs.getString("ref_source");
-					String page = rsTaxRefs.getString("trf_page");
-					UUID currentTaxonUuid = null;
-					if (resultSetHasColumn(rsTaxRefs, "UUID")){
-						currentTaxonUuid = UUID.fromString(rsTaxRefs.getString("UUID"));
-					} else {
-						logger.error("Taxon (" + taxonId + ") without UUID ignored");
-						continue;
-					}
-	
-					fauEuReference = new FaunaEuropaeaReference();
-					fauEuReference.setTaxonUuid(currentTaxonUuid);
-					fauEuReference.setReferenceId(refId);
-					fauEuReference.setReferenceAuthor(refAuthor);
-					fauEuReference.setReferenceYear(year);
-					fauEuReference.setReferenceTitle(title);
-					fauEuReference.setReferenceSource(refSource);
-					fauEuReference.setPage(page);
-	
-					if (!taxonUuids.contains(currentTaxonUuid)) {
-						taxonUuids.add(currentTaxonUuid);
-						fauEuReferenceTaxon = 
-							new FaunaEuropaeaReferenceTaxon(currentTaxonUuid);
-						fauEuTaxonMap.put(currentTaxonUuid, fauEuReferenceTaxon);
-					} else {
-						if (logger.isTraceEnabled()) { 
-							logger.trace("Taxon (" + currentTaxonUuid + ") already stored.");
-							//continue; ein Taxon kann mehr als eine Referenz haben
-						}
-					}
-	
-					if (!referenceIDs.contains(refId)) {
-	
-						
-						referenceIDs.add(refId);
-						if (logger.isTraceEnabled()) { 
-							logger.trace("Stored reference (" + refAuthor + ")"); 
-						}
-					} else {
-						if (logger.isDebugEnabled()) { 
-							logger.debug("Duplicated reference (" + refId + ", " + refAuthor + ")");
-						}
-						//continue;
-					}
-	
-					
-					fauEuTaxonMap.get(currentTaxonUuid).addReference(fauEuReference);
-	
-					
-				
-			
-				if (((i % limit) == 0 && i > 1 ) || i == count) { 
-	
-					try {
-	
-						taxonList = getTaxonService().find(taxonUuids);
-						//get UUIDs of used references
-						Iterator itRefs = referenceIDs.iterator();
-						Set<UUID> uuidSet = new HashSet<UUID>(referenceIDs.size());
-						UUID uuid;
-						while (itRefs.hasNext()){
-							uuid = referenceUuids.get(itRefs.next());
-							uuidSet.add(uuid);
-						}
-						referenceList = getReferenceService().find(uuidSet);
-						references = new HashMap<Integer, Reference>(limit);
-						for (Reference ref : referenceList){
-							references.put(Integer.valueOf(((OriginalSourceBase)ref.getSources().iterator().next()).getIdInSource()), ref);
-						}
-						for (TaxonBase taxonBase : taxonList) {
-	
-							// Create descriptions
-	
-							if (taxonBase == null) { 
-								if (logger.isDebugEnabled()) { 
-									logger.debug("TaxonBase is null ");
-								}
-								continue; 
-							}
-							boolean isSynonym = taxonBase.isInstanceOf(Synonym.class);
-							if (isSynonym) {
-								Synonym syn = CdmBase.deproxy(taxonBase, Synonym.class);
-								Set<Taxon> acceptedTaxa = syn.getAcceptedTaxa();
-								if (acceptedTaxa.size() > 0) {
-									taxon = syn.getAcceptedTaxa().iterator().next();
-								} else {
-	//								if (logger.isDebugEnabled()) { 
-										logger.warn("Synonym (" + taxonBase.getUuid() + ") does not have accepted taxa");
-	//								}
-								}
-							} else {
-								taxon = CdmBase.deproxy(taxonBase, Taxon.class);
-							}
-	
-							if (taxon != null) {
-								TaxonDescription taxonDescription = null;
-								Set<TaxonDescription> descriptions = taxon.getDescriptions();
-								if (descriptions.size() > 0) {
-									taxonDescription = descriptions.iterator().next(); 
-								} else {
-									taxonDescription = TaxonDescription.NewInstance();
-									taxon.addDescription(taxonDescription);
-								}
-	
-	
-								UUID taxonUuid = taxonBase.getUuid();
-								FaunaEuropaeaReferenceTaxon fauEuHelperTaxon = fauEuTaxonMap.get(taxonUuid);
-								Reference citation;
-								String microCitation;
-								DescriptionElementSource originalSource;
-								Synonym syn;
-								for (FaunaEuropaeaReference storedReference : fauEuHelperTaxon.getReferences()) {
-	
-									TextData textData = TextData.NewInstance(Feature.CITATION());
-									
-									citation = references.get(storedReference.getReferenceId());
-									microCitation = storedReference.getPage();
-									originalSource = DescriptionElementSource.NewInstance(null, null, citation, microCitation, null, null);
-									if (isSynonym){
-										syn = CdmBase.deproxy(taxonBase, Synonym.class);
-										originalSource.setNameUsedInSource(syn.getName());
-									}
-									textData.addSource(originalSource);
-									taxonDescription.addElement(textData);
-								}
-							}
-						}
-						if(logger.isInfoEnabled()) { 
-							logger.info("i = " + i + " - Transaction committed"); 
-						}
-	
-						// save taxa
-						getTaxonService().save(taxonList);
-						
-	
-						taxonUuids = null;
-						references = null;
-						taxonList = null;
-						fauEuTaxonMap = null;
-						referenceIDs = null;
-						referenceList = null;
-						uuidSet = null;
-						commitTransaction(txStatus);
-	
-					} catch (Exception e) {
-						logger.warn("An exception occurred when creating reference, reference could not be saved.");
-					}
-				}
-				}
-			rsTaxRefs.close();
-		} catch (SQLException e) {
-			logger.error("SQLException:" +  e);
-			state.setUnsuccessfull();
+		
+	}
+
+	private void commitReferences(Map<Integer, Reference> references,
+			Map<String, TeamOrPersonBase> authors,
+			Map<Integer, UUID> referenceUuids, int i, TransactionStatus txStatus) {
+		Map <UUID, Reference> referenceMap =getReferenceService().save(references.values());
+		logger.info("i = " + i + " - references saved"); 
+
+		Iterator<Entry<UUID, Reference>> it = referenceMap.entrySet().iterator();
+		while (it.hasNext()){
+			Reference ref = it.next().getValue();
+			int refID = Integer.valueOf(((OriginalSourceBase)ref.getSources().iterator().next()).getIdInSource());
+			UUID uuid = ref.getUuid();
+			referenceUuids.put(refID, uuid);
 		}
 		
-		if(logger.isInfoEnabled()) { logger.info("End making references ..."); }
+		getAgentService().save((Collection)authors.values());
+		commitTransaction(txStatus);
+	}
+
+	private void createTaxonReferenceRel(FaunaEuropaeaImportState state,
+			Set<UUID> taxonUuids,
+			Map<UUID, FaunaEuropaeaReferenceTaxon> fauEuTaxonMap,
+			Map<Integer, UUID> referenceUuids, Set<Integer> referenceIDs,
+			int limit, Source source, String countQueryTaxRefs,
+			String selectQueryTaxRefs) {
 		
-		return;
+		TransactionStatus txStatus = null;
+		List<TaxonBase> taxonList;
+		List<Reference> referenceList;
+		Map<Integer, Reference> references;
+		Map<String, TeamOrPersonBase> authors;
+		int i;
+		int count;
+		Taxon taxon = null;
+		i = 0;
+		try{
+			ResultSet rsTaxRefs = source.getResultSet(countQueryTaxRefs);
+			rsTaxRefs.next();
+			count = rsTaxRefs.getInt(1);
+			
+			rsTaxRefs = source.getResultSet(selectQueryTaxRefs);
+		
+			logger.info("Start taxon reference-relationships");
+			FaunaEuropaeaReference fauEuReference;
+			FaunaEuropaeaReferenceTaxon fauEuReferenceTaxon;
+			while (rsTaxRefs.next()) {
+				
+				
+				if ((i++ % limit) == 0) {
+
+					txStatus = startTransaction();
+					taxonUuids = new HashSet<UUID>(limit);
+					referenceIDs = new HashSet<Integer>(limit);
+					authors = new HashMap<String,TeamOrPersonBase>(limit);
+					fauEuTaxonMap = new HashMap<UUID, FaunaEuropaeaReferenceTaxon>(limit);
+
+					if(logger.isInfoEnabled()) {
+						logger.info("i = " + i + " - Reference import transaction started"); 
+					}
+				}
+				
+
+				int taxonId = rsTaxRefs.getInt("trf_tax_id");
+				int refId = rsTaxRefs.getInt("ref_id");
+				String refAuthor = rsTaxRefs.getString("ref_author");
+				String year = rsTaxRefs.getString("ref_year");
+				String title = rsTaxRefs.getString("ref_title");
+				
+				if (year == null){
+					try{		
+						year = String.valueOf((Integer.parseInt(title)));
+					}
+					catch(Exception ex)   
+					{
+						logger.info("year is empty and " +title + " contains no integer");
+				    }
+				}
+				String refSource = rsTaxRefs.getString("ref_source");
+				String page = rsTaxRefs.getString("trf_page");
+				UUID currentTaxonUuid = null;
+				if (resultSetHasColumn(rsTaxRefs, "UUID")){
+					currentTaxonUuid = UUID.fromString(rsTaxRefs.getString("UUID"));
+				} else {
+					logger.error("Taxon (" + taxonId + ") without UUID ignored");
+					continue;
+				}
+
+				fauEuReference = new FaunaEuropaeaReference();
+				fauEuReference.setTaxonUuid(currentTaxonUuid);
+				fauEuReference.setReferenceId(refId);
+				fauEuReference.setReferenceAuthor(refAuthor);
+				fauEuReference.setReferenceYear(year);
+				fauEuReference.setReferenceTitle(title);
+				fauEuReference.setReferenceSource(refSource);
+				fauEuReference.setPage(page);
+
+				if (!taxonUuids.contains(currentTaxonUuid)) {
+					taxonUuids.add(currentTaxonUuid);
+					fauEuReferenceTaxon = 
+						new FaunaEuropaeaReferenceTaxon(currentTaxonUuid);
+					fauEuTaxonMap.put(currentTaxonUuid, fauEuReferenceTaxon);
+				} else {
+					if (logger.isTraceEnabled()) { 
+						logger.trace("Taxon (" + currentTaxonUuid + ") already stored.");
+						//continue; ein Taxon kann mehr als eine Referenz haben
+					}
+				}
+
+				if (!referenceIDs.contains(refId)) {
+
+					
+					referenceIDs.add(refId);
+					if (logger.isTraceEnabled()) { 
+						logger.trace("Stored reference (" + refAuthor + ")"); 
+					}
+				} else {
+					if (logger.isDebugEnabled()) { 
+						logger.debug("Duplicated reference (" + refId + ", " + refAuthor + ")");
+					}
+					//continue;
+				}
+
+				
+				fauEuTaxonMap.get(currentTaxonUuid).addReference(fauEuReference);
+
+				
+			
+		
+			if (((i % limit) == 0 && i > 1 ) || i == count) { 
+
+				try {
+
+					Set<UUID> uuidSet;
+					commitTaxaReferenceRel(taxonUuids, fauEuTaxonMap,
+							referenceUuids, referenceIDs, limit, txStatus, i,
+							taxon);
+
+					taxonUuids = null;
+					references = null;
+					taxonList = null;
+					fauEuTaxonMap = null;
+					referenceIDs = null;
+					referenceList = null;
+					uuidSet = null;
+					
+
+				} catch (Exception e) {
+					logger.warn("An exception occurred when creating reference, reference could not be saved.");
+				}
+			}
+		}
+		if (taxonUuids != null){
+			commitTaxaReferenceRel(taxonUuids, fauEuTaxonMap,
+					referenceUuids, referenceIDs, limit, txStatus, i,
+					taxon);
+		}
+		rsTaxRefs.close();
+} catch (SQLException e) {
+		logger.error("SQLException:" +  e);
+		state.setUnsuccessfull();
+}
+	}
+
+	private void commitTaxaReferenceRel(Set<UUID> taxonUuids,
+			Map<UUID, FaunaEuropaeaReferenceTaxon> fauEuTaxonMap,
+			Map<Integer, UUID> referenceUuids, Set<Integer> referenceIDs,
+			int limit, TransactionStatus txStatus, int i, Taxon taxon) {
+		List<TaxonBase> taxonList;
+		List<Reference> referenceList;
+		Map<Integer, Reference> references;
+		taxonList = getTaxonService().find(taxonUuids);
+		//get UUIDs of used references
+		Iterator itRefs = referenceIDs.iterator();
+		Set<UUID> uuidSet = new HashSet<UUID>(referenceIDs.size());
+		UUID uuid;
+		while (itRefs.hasNext()){
+			uuid = referenceUuids.get(itRefs.next());
+			uuidSet.add(uuid);
+		}
+		referenceList = getReferenceService().find(uuidSet);
+		references = new HashMap<Integer, Reference>(limit);
+		for (Reference ref : referenceList){
+			references.put(Integer.valueOf(((OriginalSourceBase)ref.getSources().iterator().next()).getIdInSource()), ref);
+		}
+		for (TaxonBase taxonBase : taxonList) {
+
+			// Create descriptions
+
+			if (taxonBase == null) { 
+				if (logger.isDebugEnabled()) { 
+					logger.debug("TaxonBase is null ");
+				}
+				continue; 
+			}
+			boolean isSynonym = taxonBase.isInstanceOf(Synonym.class);
+			if (isSynonym) {
+				Synonym syn = CdmBase.deproxy(taxonBase, Synonym.class);
+				Set<Taxon> acceptedTaxa = syn.getAcceptedTaxa();
+				if (acceptedTaxa.size() > 0) {
+					taxon = syn.getAcceptedTaxa().iterator().next();
+				} else {
+//								if (logger.isDebugEnabled()) { 
+						logger.warn("Synonym (" + taxonBase.getUuid() + ") does not have accepted taxa");
+//								}
+				}
+			} else {
+				taxon = CdmBase.deproxy(taxonBase, Taxon.class);
+			}
+
+			if (taxon != null) {
+				TaxonDescription taxonDescription = null;
+				Set<TaxonDescription> descriptions = taxon.getDescriptions();
+				if (descriptions.size() > 0) {
+					taxonDescription = descriptions.iterator().next(); 
+				} else {
+					taxonDescription = TaxonDescription.NewInstance();
+					taxon.addDescription(taxonDescription);
+				}
+
+
+				UUID taxonUuid = taxonBase.getUuid();
+				FaunaEuropaeaReferenceTaxon fauEuHelperTaxon = fauEuTaxonMap.get(taxonUuid);
+				Reference citation;
+				String microCitation;
+				DescriptionElementSource originalSource;
+				Synonym syn;
+				for (FaunaEuropaeaReference storedReference : fauEuHelperTaxon.getReferences()) {
+
+					TextData textData = TextData.NewInstance(Feature.CITATION());
+					
+					citation = references.get(storedReference.getReferenceId());
+					microCitation = storedReference.getPage();
+					originalSource = DescriptionElementSource.NewInstance(null, null, citation, microCitation, null, null);
+					if (isSynonym){
+						syn = CdmBase.deproxy(taxonBase, Synonym.class);
+						originalSource.setNameUsedInSource(syn.getName());
+					}
+					textData.addSource(originalSource);
+					taxonDescription.addElement(textData);
+				}
+			}
+		}
+		if(logger.isInfoEnabled()) { 
+			logger.info("i = " + i + " - Transaction committed"); 
+		}
+
+		// save taxa
+		getTaxonService().save(taxonList);
+		commitTransaction(txStatus);
+		
 	}
 
 	

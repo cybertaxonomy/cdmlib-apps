@@ -98,8 +98,8 @@ public final class FaunaEuropaeaTransformer {
 		
 	}
 	}
-	public static void setUUIDs(HashMap<String,UUID> uuids){
-		noData = uuids.get("noData");
+	public static void setUUIDs(UUID uuid){
+		noData = uuid;
 		//doubtfull_present = uuids.get("doubtfullPresent");
 	
 	}
