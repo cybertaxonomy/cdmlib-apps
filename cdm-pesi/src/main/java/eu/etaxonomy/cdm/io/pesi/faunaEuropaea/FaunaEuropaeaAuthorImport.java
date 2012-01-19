@@ -93,11 +93,11 @@ public class FaunaEuropaeaAuthorImport extends FaunaEuropaeaImportBase {
 				String auctWithNecRegEx = "\\bauct\\.?\\b\\s\\bnec\\.?\\b";
 				String necAuctRegEx = "\\bnec\\.?\\b\\s\\bauct\\.?\\b";
 				
-				boolean auctWithNecFound = ImportUtils.expressionMatches(auctWithNecRegEx, authorName);
-				boolean necAuctFound = ImportUtils.expressionMatches(necAuctRegEx, authorName);
+				boolean auctWithNecFound = expressionMatches(auctWithNecRegEx, authorName);
+				boolean necAuctFound = expressionMatches(necAuctRegEx, authorName);
 				if (auctWithNecFound){
 					logger.debug("authorName before auct nec string is removed" + authorName);
-					authorName = authorName.substring(ImportUtils.expressionEnd(auctWithNecRegEx, authorName)+1, authorName.length());
+					authorName = authorName.substring(expressionEnd(auctWithNecRegEx, authorName)+1, authorName.length());
 					logger.debug("authorName after auct nec string is removed" + authorName);
 				}
 				
