@@ -44,38 +44,6 @@ public class ImportUtils {
 		return source;
 	}
 	
-	/**
-	 * Returns whether a regular expression is found in a given target string.
-	 * @param regEx
-	 * @param targetString
-	 * @return
-	 */
-	public static boolean expressionMatches(String regEx, String targetString) {
-		
-		Matcher matcher = createMatcher(regEx, targetString);
-		if (matcher == null) return false;
-		if (matcher.find()) {
-			return true;
-		} else {
-			return false;
-		}
-	}
 	
-	public static int expressionEnd(String regEx, String targetString){
-		Matcher matcher = createMatcher(regEx, targetString);
-		if (matcher == null) return -1;
-		if (matcher.find()){
-			return matcher.end();
-		}else return -1;
-	}
-	
-	private static Matcher createMatcher (String regEx, String targetString){
-		if (targetString == null) {
-			return null;
-		}
-		Pattern pattern = Pattern.compile(regEx);
-		Matcher matcher = pattern.matcher(targetString);
-		return matcher;
-	}
 
 }

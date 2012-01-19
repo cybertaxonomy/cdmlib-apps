@@ -15,6 +15,8 @@ import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import org.apache.log4j.Logger;
 import org.springframework.transaction.TransactionStatus;
@@ -123,6 +125,40 @@ implements ICdmImport<FaunaEuropaeaImportConfigurator,FaunaEuropaeaImportState> 
 			tree = getClassificationService().find(treeUuid);
 		}
 		return tree;
+	}
+	
+	/**
+	 * Returns whether a regular expression is found in a given target string.
+	 * @param regEx
+	 * @param targetString
+	 * @return
+	 */
+	protected static boolean expressionMatches(String regEx, String targetString) {
+		
+		Matcher matcher = createMatcher(regEx, targetString);
+		if (matcher == null) return false;
+		if (matcher.find()) {
+			return true;
+		} else {
+			return false;
+		}
+	}
+	
+	protected static int expressionEnd(String regEx, String targetString){
+		Matcher matcher = createMatcher(regEx, targetString);
+		if (matcher == null) return -1;
+		if (matcher.find()){
+			return matcher.end();
+		}else return -1;
+	}
+	
+	private static Matcher createMatcher (String regEx, String targetString){
+		if (targetString == null) {
+			return null;
+		}
+		Pattern pattern = Pattern.compile(regEx);
+		Matcher matcher = pattern.matcher(targetString);
+		return matcher;
 	}
 
 }

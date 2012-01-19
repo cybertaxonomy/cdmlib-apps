@@ -405,9 +405,9 @@ public class FaunaEuropaeaTaxonNameImport extends FaunaEuropaeaImportBase  {
 					String auctWithNecRegEx = "\\bauct\\.?\\b\\s\\bnec\\.?\\b";
 					String necAuctRegEx = "\\bnec\\.?\\b\\s\\bauct\\.?\\b";
 					
-					boolean auctNecFound = ImportUtils.expressionMatches(auctWithNecRegEx, autName);
-					boolean necAuctFound = ImportUtils.expressionMatches(auctWithNecRegEx, autName);
-					boolean auctWordFound = ImportUtils.expressionMatches(auctRegEx, autName);
+					boolean auctNecFound = expressionMatches(auctWithNecRegEx, autName);
+					boolean necAuctFound = expressionMatches(auctWithNecRegEx, autName);
+					boolean auctWordFound = expressionMatches(auctRegEx, autName);
 					
 						
 					
