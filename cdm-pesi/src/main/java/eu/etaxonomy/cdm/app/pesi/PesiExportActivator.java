@@ -33,7 +33,10 @@ public class PesiExportActivator {
 	private static final Logger logger = Logger.getLogger(PesiExportActivator.class);
 
 	//database validation status (create, update, validate ...)
-	static final Source pesiDestination = PesiDestinations.pesi_test_local_PESI_V12();
+	static final Source pesiDestination = PesiDestinations.pesi_test_local_CDM_EM2PESI();
+//	static final Source pesiDestination = PesiDestinations.pesi_test_local_CDM_FE2PESI();
+//	static final Source pesiDestination = PesiDestinations.pesi_test_local_CDM_ERMS2PESI();
+	
 	static final ICdmDataSource cdmSource = CdmDestinations.cdm_test_local_mysql();
 	static final UUID secUuid = UUID.fromString("d03ef02a-f226-4cb1-bdb4-f6c154f08a34");
 	static final int sourceSecId = 7331;

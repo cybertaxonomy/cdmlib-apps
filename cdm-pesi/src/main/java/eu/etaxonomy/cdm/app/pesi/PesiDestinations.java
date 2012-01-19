@@ -24,11 +24,31 @@ public class PesiDestinations {
 	@SuppressWarnings("unused")
 	private static final Logger logger = Logger.getLogger(PesiDestinations.class);
 	
-	public static Source pesi_test_local_PESI_V12(){
+	public static Source pesi_test_local_CDM_EM2PESI(){
 		//	CDM - PESI
 		String dbms = Source.SQL_SERVER_2008;
 		String strServer = "localhost";
-		String strDB = "PESI_V12";
+		String strDB = "CDM_EM2PESI";
+		int port = 1433;
+		String userName = "pesiexport";
+		return makeSource(dbms, strServer, strDB, port, userName, null);
+	}
+	
+	public static Source pesi_test_local_CDM_FE2PESI(){
+		//	CDM - PESI
+		String dbms = Source.SQL_SERVER_2008;
+		String strServer = "localhost";
+		String strDB = "CDM_FE2PESI";
+		int port = 1433;
+		String userName = "pesiexport";
+		return makeSource(dbms, strServer, strDB, port, userName, null);
+	}
+	
+	public static Source pesi_test_local_CDM_ERMS2PESI(){
+		//	CDM - PESI
+		String dbms = Source.SQL_SERVER_2008;
+		String strServer = "localhost";
+		String strDB = "CDM_ERMS2PESI";
 		int port = 1433;
 		String userName = "pesiexport";
 		return makeSource(dbms, strServer, strDB, port, userName, null);
