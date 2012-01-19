@@ -396,8 +396,8 @@ public class PesiTaxonExport extends PesiExportBase {
 			if (infraGenericEpithet == null && rank.intValue() == 190) {
 				logger.warn("InfraGenericEpithet was not determined although it should exist for rank 190: " + taxonName.getUuid() + " (" + taxonName.getTitleCache() + ")");
 			}
-			if (specificEpithet != null && rank.intValue() < 220) {
-				logger.warn("SpecificEpithet was determined for rank " + rank + " although it should only exist for ranks higher or equal to 220: " + taxonName.getUuid() + " (" + taxonName.getTitleCache() + ")");
+			if (specificEpithet != null && rank.intValue() < 216) {
+				logger.warn("SpecificEpithet was determined for rank " + rank + " although it should only exist for ranks higher or equal to 220: TaxonName " + taxonName.getUuid() + " (" + taxonName.getTitleCache() + ")");
 			}
 			if (infraSpecificEpithet != null && rank.intValue() < 230) {
 				String message = "InfraSpecificEpithet '" +infraSpecificEpithet + "' was determined for rank " + rank + " although it should only exist for ranks higher or equal to 230: "  + taxonName.getUuid() + " (" + taxonName.getTitleCache() + ")"; 
@@ -459,9 +459,9 @@ public class PesiTaxonExport extends PesiExportBase {
 					txStatus = startTransaction(false);
 					Rank endRank = rankMap.get(rank);
 					if (endRank != null) {
-						logger.info("Started transaction to traverse childNodes of rootNode (" + rootNode.getUuid() + ") till Rank " + endRank.getLabel() + " ...");
+						logger.debug("Started transaction to traverse childNodes of rootNode (" + rootNode.getUuid() + ") till Rank " + endRank.getLabel() + " ...");
 					} else {
-						logger.info("Started transaction to traverse childNodes of rootNode (" + rootNode.getUuid() + ") till leaves are reached ...");
+						logger.debug("Started transaction to traverse childNodes of rootNode (" + rootNode.getUuid() + ") till leaves are reached ...");
 					}
 
 					TaxonNode newNode = getTaxonNodeService().load(rootNode.getUuid());
@@ -928,15 +928,13 @@ public class PesiTaxonExport extends PesiExportBase {
 		// This needs to be handled in a better way as soon as we know how to differentiate between more kingdoms.
 		Taxon childTaxon = childNode.getTaxon();
 		if (isPesiTaxon(childTaxon)) {
-			TaxonNameBase<?,?> parentName = null;
+			TaxonBase<?> parentTaxon = null;
 			if (parentNode != null) {
-				Taxon parentTaxon = parentNode.getTaxon();
-				if (parentTaxon != null) {
-					parentName  = parentTaxon.getName();
-				}
+				parentTaxon = parentNode.getTaxon();
+				
 			}
 
-			invokeParentTaxonFkAndTreeIndex(state.getDbId(parentName), currentTaxonFk,	treeIndex);
+			invokeParentTaxonFkAndTreeIndex(state.getDbId(parentTaxon), currentTaxonFk,	treeIndex);
 		}
 		
 	}

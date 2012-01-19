@@ -13,6 +13,7 @@ import java.util.UUID;
 
 import org.apache.log4j.Logger;
 
+import eu.etaxonomy.cdm.io.berlinModel.BerlinModelTransformer;
 import eu.etaxonomy.cdm.io.pesi.erms.ErmsTransformer;
 import eu.etaxonomy.cdm.model.common.CdmBase;
 import eu.etaxonomy.cdm.model.common.Language;
@@ -343,6 +344,7 @@ public final class PesiTransformer {
 	public static int Plantae_Aggregate	= 216;
 	public static int Plantae_Coll_Species = 218;
 	public static int Plantae_Species = 220;
+	public static int Plantae_Grex = 225;
 	public static int Plantae_Subspecies = 230;
 	public static int Plantae_Proles = 232;
 	public static int Plantae_Race = 234;
@@ -376,6 +378,7 @@ public final class PesiTransformer {
 	public static String Plantae_STR_Aggregate	= "Aggregate";
 	public static String Plantae_STR_Coll_Species = "Coll. Species";
 	public static String Plantae_STR_Species = "Species";
+	public static String Plantae_STR_Grex = "Grex";
 	public static String Plantae_STR_Subspecies = "Subspecies";
 	public static String Plantae_STR_Proles = "Proles";
 	public static String Plantae_STR_Race = "Race";
@@ -410,6 +413,7 @@ public final class PesiTransformer {
 	public static String Plantae_Abbrev_Aggregate	= "aggr.";
 	public static String Plantae_Abbrev_Coll_Species = "coll. sp.";
 	public static String Plantae_Abbrev_Species = "sp.";
+	public static String Plantae_Abbrev_Grex = "grex";
 	public static String Plantae_Abbrev_Subspecies = "subsp.";
 	public static String Plantae_Abbrev_Proles = "prol.";
 	public static String Plantae_Abbrev_Race = "race";
@@ -2485,14 +2489,19 @@ public final class PesiTransformer {
 				result = Plantae_STR_Series;
 			} else if (rank.equals(Rank.SUBSERIES())) {
 				result = Plantae_STR_Subseries;
-//			} else if (rank.equals(Rank.)) { // not yet specified
-//				result = Plantae_STR_Aggregate;
-//			} else if (rank.equals(Rank.)) { // not yet specified
-//				result = Plantae_STR_Coll_Species;
+			} else if (rank.equals(Rank.SPECIESAGGREGATE() )) {
+				result = Plantae_STR_Aggregate;
+			} else if (rank.equals(Rank.SPECIESGROUP())) {
+				logger.warn("Rank Species Group not yet implemented");
+				result = null;
+			} else if (rank.getUuid().equals(BerlinModelTransformer.uuidRankCollSpecies)) { 
+				result = Plantae_STR_Coll_Species;
 			} else if (rank.equals(Rank.SPECIES())) {
 				result = Plantae_STR_Species;
 			} else if (rank.equals(Rank.SUBSPECIES())) {
 				result = Plantae_STR_Subspecies;
+			} else if (rank.equals(Rank.GREX())) {
+				result = Plantae_STR_Grex;
 //			} else if (rank.equals(Rank.)) { // not yet specified
 //				result = Plantae_STR_Proles;
 //			} else if (rank.equals(Rank.)) { // not yet specified
@@ -2620,12 +2629,14 @@ public final class PesiTransformer {
 				result = Plantae_Abbrev_Series;
 			} else if (rank.equals(Rank.SUBSERIES())) {
 				result = Plantae_Abbrev_Subseries;
-//			} else if (rank.equals(Rank.)) { // not yet specified
-//				result = Plantae_Abbrev_Aggregate;
-//			} else if (rank.equals(Rank.)) { // not yet specified
-//				result = Plantae_Abbrev_Coll_Species;
+			} else if (rank.equals(Rank.SPECIESAGGREGATE() )) { 
+				result = Plantae_Abbrev_Aggregate;
+			} else if (rank.getUuid().equals(BerlinModelTransformer.uuidRankCollSpecies)) { 
+				result = Plantae_Abbrev_Coll_Species;
 			} else if (rank.equals(Rank.SPECIES())) {
 				result = Plantae_Abbrev_Species;
+			} else if (rank.equals(Rank.GREX())) {
+				result = Plantae_Abbrev_Grex;
 			} else if (rank.equals(Rank.SUBSPECIES())) {
 				result = Plantae_Abbrev_Subspecies;
 //			} else if (rank.equals(Rank.)) { // not yet specified
@@ -2823,19 +2834,18 @@ public final class PesiTransformer {
 			} else if (rank.equals(Rank.SPECIESGROUP())) {
 				logger.warn("Rank Species Group not yet implemented");
 				result = null;
-//			} else if (rank.equals(Rank.)) { // not yet specified
-//				result = Plantae_Coll_Species;
+			} else if (rank.getUuid().equals(BerlinModelTransformer.uuidRankCollSpecies)) { 
+				result = Plantae_Coll_Species;
 			} else if (rank.equals(Rank.SPECIES())) {
 				result = Plantae_Species;
 			} else if (rank.equals(Rank.SUBSPECIES())) {
 				result = Plantae_Subspecies;
+			} else if (rank.equals(Rank.GREX())) {
+				result = Plantae_Grex;
 //			} else if (rank.equals(Rank.)) { // not yet specified
 //				result = Plantae_Proles;
 //			} else if (rank.equals(Rank.)) { // not yet specified
 //				result = Plantae_Race;
-			} else if (rank.equals(Rank.GREX())) { // not yet specified
-				logger.warn("Rank Grex not yet implemented");
-				result = null;
 			} else if (rank.equals(Rank.CONVAR())) {
 				result = Plantae_Convarietas;
 			} else if (rank.equals(Rank.VARIETY())) {
@@ -3145,8 +3155,10 @@ public final class PesiTransformer {
 		}else if (status.equals(NomenclaturalStatusType.COMBINATION_INVALID())) {return NAME_ST_COMB_INVAL;
 		}else if (status.equals(NomenclaturalStatusType.LEGITIMATE())) {return NAME_ST_LEGITIMATE;
 		
+		}else if (status.getUuid().equals(BerlinModelTransformer.uuidRelNameCombIned)) {return NAME_ST_COMB_INED;
+		
+		
 		// The following are non-existent in CDM
-//		}else if (status.equals(NomenclaturalStatusType.)) {return NAME_ST_COMB_INED;
 //		}else if (status.equals(NomenclaturalStatusType.)) {return NAME_ST_COMB_AND_STAT_INED;
 //		}else if (status.equals(NomenclaturalStatusType.)) {return NAME_ST_NOM_AND_ORTH_CONS;
 //		}else if (status.equals(NomenclaturalStatusType.)) {return NAME_ST_NOM_NOV_INED;

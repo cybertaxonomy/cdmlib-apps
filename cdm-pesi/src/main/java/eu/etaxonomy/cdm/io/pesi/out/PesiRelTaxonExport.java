@@ -117,24 +117,24 @@ public class PesiRelTaxonExport extends PesiExportBase {
 			
 			// Retrieve list of classifications
 			txStatus = startTransaction(true);
-			logger.error("Started transaction. Fetching all classifications...");
+			logger.info("Started transaction. Fetching all classifications...");
 			classificationList = getClassificationService().listClassifications(null, 0, null, null);
 			commitTransaction(txStatus);
-			logger.error("Committed transaction.");
+			logger.debug("Committed transaction.");
 
-			logger.error("Fetched " + classificationList.size() + " classification(s).");
+			logger.info("Fetched " + classificationList.size() + " classification(s).");
 
 			for (Classification classification : classificationList) {
 				for (Rank rank : rankList) {
 					
 					txStatus = startTransaction(true);
-					logger.error("Started transaction to fetch all rootNodes specific to Rank " + rank.getLabel() + " ...");
+					logger.info("Started transaction to fetch all rootNodes specific to Rank " + rank.getLabel() + " ...");
 
 					List<TaxonNode> rankSpecificRootNodes = getClassificationService().loadRankSpecificRootNodes(classification, rank, null);
-					logger.error("Fetched " + rankSpecificRootNodes.size() + " RootNodes for Rank " + rank.getLabel());
+					logger.info("Fetched " + rankSpecificRootNodes.size() + " RootNodes for Rank " + rank.getLabel());
 
 					commitTransaction(txStatus);
-					logger.error("Committed transaction.");
+					logger.debug("Committed transaction.");
 
 					for (TaxonNode rootNode : rankSpecificRootNodes) {
 						txStatus = startTransaction(false);
@@ -183,28 +183,32 @@ public class PesiRelTaxonExport extends PesiExportBase {
 	private boolean  traverseTree(TaxonNode childNode, TaxonNode parentNode, Rank fetchLevel, PesiExportState state) {
 		boolean success = true;
 		// Traverse all branches from this childNode until specified fetchLevel is reached.
-		if (childNode.getTaxon() != null) {
-			TaxonNameBase<?,?> taxonName = childNode.getTaxon().getName();
-			if (taxonName != null) {
-				Rank childTaxonNameRank = taxonName.getRank();
-				if (childTaxonNameRank != null) {
-					if (! childTaxonNameRank.equals(fetchLevel)) {
-
-						success &= saveData(childNode, parentNode, state);
-
-						for (TaxonNode newNode : childNode.getChildNodes()) {
-							success &= traverseTree(newNode, childNode, fetchLevel, state);
+		TaxonBase<?> childTaxon = childNode.getTaxon();
+		if (childTaxon != null) {
+			if (isPesiTaxon(childTaxon)){
+				if (childTaxon.getName() != null) {
+					Rank childTaxonNameRank = childTaxon.getName().getRank();
+					if (childTaxonNameRank != null) {
+						if (! childTaxonNameRank.equals(fetchLevel)) {
+	
+							success &= saveData(childNode, parentNode, state);
+	
+							for (TaxonNode newNode : childNode.getChildNodes()) {
+								success &= traverseTree(newNode, childNode, fetchLevel, state);
+							}
+							
+						} else {
+	//						logger.error("Target Rank " + fetchLevel.getLabel() + " reached");
+							return success;
 						}
-						
 					} else {
-//						logger.error("Target Rank " + fetchLevel.getLabel() + " reached");
-						return success;
+						logger.error("Rank is NULL. FetchLevel can not be checked: " + childTaxon.getUuid() + " (" + childTaxon.getTitleCache() + ")");
 					}
 				} else {
-					logger.error("Rank is NULL. FetchLevel can not be checked: " + taxonName.getUuid() + " (" + taxonName.getTitleCache() + ")");
+					logger.error("TaxonName is NULL for taxon: " + childTaxon.getUuid());
 				}
-			} else {
-				logger.error("TaxonName is NULL for this node: " + childNode.getUuid());
+			}else{
+				logger.debug("Taxon is not a PESI taxon: " + childTaxon.getUuid());
 			}
 
 		} else {
@@ -488,7 +492,7 @@ public class PesiRelTaxonExport extends PesiExportBase {
 			return state.getDbId(taxonName);
 		}
 		if (taxon != null) {
-			return state.getDbId(taxon.getName());
+			return state.getDbId(taxon);
 		}
 		logger.warn("No taxon found in state for relationship: " + relationship.toString());
 		return null;
