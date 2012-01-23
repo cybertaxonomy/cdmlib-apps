@@ -2518,10 +2518,10 @@ public final class PesiTransformer {
 				result = Plantae_STR_Subforma;
 //			} else if (rank.equals(Rank.)) { // not yet specified
 //				result = Plantae_STR_Forma_spec;
-//			} else if (rank.equals(Rank.)) { // not yet specified
-//				result = Plantae_STR_Taxa_infragen;
-//			} else if (rank.equals(Rank.)) { // not yet specified
-//				result = Plantae_STR_Taxa_infraspec;
+			} else if (rank.equals(Rank.INFRAGENERICTAXON())) { 
+				result = Plantae_STR_Taxa_infragen;
+			} else if (rank.equals(Rank.INFRASPECIFICTAXON())) { 
+				result = Plantae_STR_Taxa_infraspec;
 			} else {
 				//TODO Exception
 				logger.warn("Rank for Kingdom Plantae not yet supported in CDM: "+ rank.getLabel());
@@ -2655,10 +2655,10 @@ public final class PesiTransformer {
 				result = Plantae_Abbrev_Subforma;
 //			} else if (rank.equals(Rank.)) { // not yet specified
 //				result = Plantae_Abbrev_Forma_spec;
-//			} else if (rank.equals(Rank.)) { // not yet specified
-//				result = Plantae_Abbrev_Taxa_infragen;
-//			} else if (rank.equals(Rank.)) { // not yet specified
-//				result = Plantae_Abbrev_Taxa_infraspec;
+			} else if (rank.equals(Rank.INFRAGENERICTAXON())) { 
+				result = Plantae_Abbrev_Taxa_infragen;
+			} else if (rank.equals(Rank.INFRASPECIFICTAXON())) { 
+				result = Plantae_Abbrev_Taxa_infraspec;
 			} else {
 				//TODO Exception
 				logger.warn("Abbreviation for Rank of Kingdom Plantae not supported in CDM: "+ rank.getLabel());
@@ -3104,6 +3104,9 @@ public final class PesiTransformer {
 		}else if (status.equals(NomenclaturalStatusType.ALTERNATIVE())) {return NAME_ST_STR_NOM_ALTERN;
 		}else if (status.equals(NomenclaturalStatusType.COMBINATION_INVALID())) {return NAME_ST_STR_COMB_INVAL;
 		}else if (status.equals(NomenclaturalStatusType.LEGITIMATE())) {return NAME_ST_STR_LEGITIMATE;
+		
+		}else if (status.getUuid().equals(BerlinModelTransformer.uuidRelNameCombIned)) {return NAME_ST_STR_COMB_INED;
+		
 		
 		// The following are non-existent in CDM
 //		}else if (status.equals(NomenclaturalStatusType.)) {return NAME_ST_STR_COMB_INED;
