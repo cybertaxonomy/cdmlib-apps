@@ -53,11 +53,11 @@ public class PesiRelTaxonExport extends PesiExportBase {
 	private static final String dbTableName = "RelTaxon";
 	private static final String pluralString = "Relationships";
 	private static PreparedStatement synonymsStmt;
-	private HashMap<Rank, Rank> rankMap = new HashMap<Rank, Rank>();
+	private HashMap<Rank, Rank> rank2endRankMap = new HashMap<Rank, Rank>();
 	private List<Rank> rankList = new ArrayList<Rank>();
 	private PesiExportMapping mapping;
 	private int count = 0;
-	private static NomenclaturalCode nomenclaturalCode;
+	private static NomenclaturalCode nomenclaturalCode2;
 	
 	public PesiRelTaxonExport() {
 		super();
@@ -86,7 +86,7 @@ public class PesiRelTaxonExport extends PesiExportBase {
 	@Override
 	protected void doInvoke(PesiExportState state) {
 		try {
-			logger.error("*** Started Making " + pluralString + " ...");
+			logger.info("*** Started Making " + pluralString + " ...");
 	
 			Connection connection = state.getConfig().getDestination().getConnection();
 			String synonymsSql = "UPDATE Taxon SET KingdomFk = ?, RankFk = ?, RankCache = ? WHERE TaxonId = ?"; 
@@ -112,8 +112,8 @@ public class PesiRelTaxonExport extends PesiExportBase {
 			rankList.add(Rank.GENUS());
 
 			// Specify where to stop traversing (value) when starting at a specific Rank (key)
-			rankMap.put(Rank.GENUS(), null); // Since NULL does not match an existing Rank, traverse all the way down to the leaves
-			rankMap.put(Rank.KINGDOM(), Rank.GENUS()); // excludes rank genus
+			rank2endRankMap.put(Rank.GENUS(), null); // Since NULL does not match an existing Rank, traverse all the way down to the leaves
+			rank2endRankMap.put(Rank.KINGDOM(), Rank.GENUS()); // excludes rank genus
 			
 			// Retrieve list of classifications
 			txStatus = startTransaction(true);
@@ -138,7 +138,7 @@ public class PesiRelTaxonExport extends PesiExportBase {
 
 					for (TaxonNode rootNode : rankSpecificRootNodes) {
 						txStatus = startTransaction(false);
-						Rank endRank = rankMap.get(rank);
+						Rank endRank = rank2endRankMap.get(rank);
 						if (endRank != null) {
 							logger.info("Started transaction to traverse childNodes of rootNode (" + rootNode.getUuid() + ") till Rank " + endRank.getLabel() + " ...");
 						} else {
@@ -147,12 +147,17 @@ public class PesiRelTaxonExport extends PesiExportBase {
 
 						TaxonNode newNode = getTaxonNodeService().load(rootNode.getUuid());
 
-						TaxonNode parentNode = newNode.getParent();
-
-						success &=traverseTree(newNode, parentNode, rankMap.get(rank), state);
-
-						commitTransaction(txStatus);
-						logger.debug("Committed transaction.");
+						if (isPesiTaxon(newNode.getTaxon())){
+							
+							TaxonNode parentNode = newNode.getParent();
+	
+							success &=traverseTree(newNode, parentNode, endRank, state);
+	
+							commitTransaction(txStatus);
+							logger.debug("Committed transaction.");
+						}else{
+							logger.debug("Taxon is not in PESI");
+						}
 
 					}
 				}
@@ -229,44 +234,39 @@ public class PesiRelTaxonExport extends PesiExportBase {
 		boolean success = true;
 		Taxon childNodeTaxon = childNode.getTaxon();
 		if (childNodeTaxon != null) {
-			TaxonNameBase<?,?> childNodeTaxonName = childNodeTaxon.getName();
-			nomenclaturalCode = PesiTransformer.getNomenclaturalCode(childNodeTaxonName);
-
-			if (childNodeTaxonName != null) {
-
-				// TaxonRelationships
-				Set<Taxon> taxa = childNodeTaxonName.getTaxa(); // accepted taxa
-				if (taxa.size() == 1) {
-					Taxon taxon =taxa.iterator().next();
-					Set<TaxonRelationship> taxonRelations = taxon.getRelationsToThisTaxon();
-					for (TaxonRelationship taxonRelationship : taxonRelations) {
-						try {
-							if (neededValuesNotNull(taxonRelationship, state)) {
-								doCount(count++, modCount, pluralString);
-								success &= mapping.invoke(taxonRelationship);
-							}
-						} catch (SQLException e) {
-							logger.error("TaxonRelationship could not be created for this TaxonRelation (" + taxonRelationship.getUuid() + "): " + e.getMessage());
-						}
+			// TaxonRelationships
+			Taxon taxon = childNodeTaxon;
+			Set<TaxonRelationship> taxonRelations = taxon.getRelationsToThisTaxon();
+			for (TaxonRelationship taxonRelationship : taxonRelations) {
+				try {
+					if (neededValuesNotNull(taxonRelationship, state)) {
+						doCount(count++, modCount, pluralString);
+						success &= mapping.invoke(taxonRelationship);
 					}
-				} else if (taxa.size() > 1) {
-					logger.error("TaxonRelationship could not be created. This TaxonNode's taxon name has " + taxa.size() + " Taxa: " + childNodeTaxon.getUuid() + " (" + childNodeTaxon.getTitleCache() + ")");
+				} catch (SQLException e) {
+					logger.error("TaxonRelationship could not be created for this TaxonRelation (" + taxonRelationship.getUuid() + "): " + e.getMessage());
 				}
-				
-				// TaxonNameRelationships
-				Set<NameRelationship> nameRelations = childNodeTaxonName.getRelationsFromThisName();
-				for (NameRelationship nameRelation : nameRelations) {
-					try {
-						if (neededValuesNotNull(nameRelation, state)) {
-							doCount(count++, modCount, pluralString);
-							success &= mapping.invoke(nameRelation);
-						}
-					} catch (SQLException e) {
-						logger.error("NameRelationship could not be created: " + e.getMessage());
-					}
-				}
-
 			}
+			
+//			// TaxonNameRelationships
+//			TaxonNameBase<?,?> childNodeTaxonName = childNodeTaxon.getName();
+//			nomenclaturalCode = PesiTransformer.getNomenclaturalCode(childNodeTaxonName);
+//
+//			if (childNodeTaxonName != null) {
+//
+//				Set<NameRelationship> nameRelations = childNodeTaxonName.getRelationsFromThisName();
+//				for (NameRelationship nameRelation : nameRelations) {
+//					try {
+//						if (neededValuesNotNull(nameRelation, state)) {
+//							doCount(count++, modCount, pluralString);
+//							success &= mapping.invoke(nameRelation);
+//						}
+//					} catch (SQLException e) {
+//						logger.error("NameRelationship could not be created: " + e.getMessage());
+//					}
+//				}
+//
+//			}
 			
 			// SynonymRelationships
 			Set<Synonym> synonyms = childNodeTaxon.getSynonyms(); // synonyms of accepted taxon
@@ -289,18 +289,18 @@ public class PesiRelTaxonExport extends PesiExportBase {
 					}
 				}
 
-				// SynonymNameRelationship
-				Set<NameRelationship> nameRelations = synonymTaxonName.getRelationsFromThisName();
-				for (NameRelationship nameRelation : nameRelations) {
-					try {
-						if (neededValuesNotNull(nameRelation, state)) {
-							doCount(count++, modCount, pluralString);
-							success &= mapping.invoke(nameRelation);
-						}
-					} catch (SQLException e) {
-						logger.error("NameRelationship could not be created for this NameRelation (" + nameRelation.getUuid() + "): " + e.getMessage());
-					}
-				}
+//				// SynonymNameRelationship
+//				Set<NameRelationship> nameRelations = synonymTaxonName.getRelationsFromThisName();
+//				for (NameRelationship nameRelation : nameRelations) {
+//					try {
+//						if (neededValuesNotNull(nameRelation, state)) {
+//							doCount(count++, modCount, pluralString);
+//							success &= mapping.invoke(nameRelation);
+//						}
+//					} catch (SQLException e) {
+//						logger.error("NameRelationship could not be created for this NameRelation (" + nameRelation.getUuid() + "): " + e.getMessage());
+//					}
+//				}
 
 			}
 			
@@ -316,10 +316,10 @@ public class PesiRelTaxonExport extends PesiExportBase {
 	 */
 	private static void invokeSynonyms(PesiExportState state, TaxonNameBase synonymTaxonName) {
 		// Store KingdomFk and Rank information in Taxon table
-		Integer kingdomFk = PesiTransformer.nomenClaturalCode2Kingdom(nomenclaturalCode);
+		Integer kingdomFk = PesiTransformer.nomenClaturalCode2Kingdom(synonymTaxonName.getNomenclaturalCode());
 		Integer synonymFk = state.getDbId(synonymTaxonName);
 
-		saveSynonymData(synonymTaxonName, nomenclaturalCode, kingdomFk, synonymFk);
+		saveSynonymData(synonymTaxonName, synonymTaxonName.getNomenclaturalCode(), kingdomFk, synonymFk);
 	}
 
 	/**
@@ -447,8 +447,14 @@ public class PesiRelTaxonExport extends PesiExportBase {
 	@SuppressWarnings("unused")
 	private static String getRelQualifierCache(RelationshipBase<?, ?, ?> relationship) {
 		String result = null;
-		if (nomenclaturalCode != null) {
-			if (nomenclaturalCode.equals(NomenclaturalCode.ICZN)) {
+		NomenclaturalCode code = null;
+		if (relationship.isInstanceOf(TaxonRelationship.class)){
+			code = CdmBase.deproxy(relationship, TaxonRelationship.class).getToTaxon().getName().getNomenclaturalCode();
+		}else if (relationship.isInstanceOf(SynonymRelationship.class)){
+			code = CdmBase.deproxy(relationship, SynonymRelationship.class).getAcceptedTaxon().getName().getNomenclaturalCode();
+		} 
+		if (code != null) {
+			if (code.equals(NomenclaturalCode.ICZN)) {
 				result = PesiTransformer.zoologicalTaxonRelation2RelTaxonQualifierCache(relationship);
 			} else {
 				result = PesiTransformer.taxonRelation2RelTaxonQualifierCache(relationship);
