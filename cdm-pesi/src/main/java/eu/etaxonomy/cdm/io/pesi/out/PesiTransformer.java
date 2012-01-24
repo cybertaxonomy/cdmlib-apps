@@ -2693,28 +2693,6 @@ public final class PesiTransformer {
 		}
 		return result;
 	}
-
-	/**
-	 * Returns the NomenclaturalCode for a given TaxonNameBase.
-	 * @param taxonName
-	 * @return
-	 */
-	public static NomenclaturalCode getNomenclaturalCode(TaxonNameBase taxonName) {
-		NomenclaturalCode code = null;
-		if (taxonName.isInstanceOf(ZoologicalName.class)) {
-			code = NomenclaturalCode.ICZN;
-		} else if (taxonName.isInstanceOf(BotanicalName.class)) {
-			code = NomenclaturalCode.ICBN;
-		} else if (taxonName.isInstanceOf(BacterialName.class)) {
-			code = NomenclaturalCode.ICNB;
-//		} else if (taxonName.isInstanceOf(NonViralName.class)) { // Biota
-//			code = NomenclaturalCode.
-		} else {
-			logger.error("NomenclaturalCode could not be determined for this TaxonName: " + taxonName.getUuid() + " (" + taxonName.getTitleCache() + ")");
-			logger.error("");
-		}
-		return code;
-	}
 	
 	/**
 	 * Returns the RankId for a Rank.

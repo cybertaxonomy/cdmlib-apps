@@ -181,6 +181,47 @@ public class PesiTaxonExport extends PesiExportBase {
 		
 		
 		mapping.addMapper(ObjectChangeMapper.NewInstance(TaxonBase.class, TaxonNameBase.class, "Name"));
+		
+		addNameMappers(mapping);
+
+		return mapping;
+	}
+	
+	/**
+	 * Returns the CDM to PESI specific export mappings.
+	 * @return The {@link PesiExportMapping PesiExportMapping}.
+	 */
+	private PesiExportMapping getNameMapping() {
+		PesiExportMapping mapping = new PesiExportMapping(dbTableName);
+		ExtensionType extensionType = null;
+		
+//		mapping.addMapper(IdMapper.NewInstance("TaxonId"));
+//		mapping.addMapper(DbObjectMapper.NewInstance("sec", "sourceFk")); //OLD:mapping.addMapper(MethodMapper.NewInstance("SourceFK", this.getClass(), "getSourceFk", standardMethodParameter, PesiExportState.class));
+//		mapping.addMapper(MethodMapper.NewInstance("TaxonStatusFk", this.getClass(), "getTaxonStatusFk", standardMethodParameter, PesiExportState.class));
+//		mapping.addMapper(MethodMapper.NewInstance("TaxonStatusCache", this.getClass(), "getTaxonStatusCache", standardMethodParameter, PesiExportState.class));
+//		mapping.addMapper(MethodMapper.NewInstance("QualityStatusFk", this)); // PesiTransformer.QualityStatusCache2QualityStatusFk?
+//
+//		mapping.addMapper(MethodMapper.NewInstance("GUID", this));
+//		//TODO implement again
+////		mapping.addMapper(MethodMapper.NewInstance("IdInSource", this));
+//
+//		mapping.addMapper(MethodMapper.NewInstance("DerivedFromGuid", this));
+//		mapping.addMapper(MethodMapper.NewInstance("CacheCitation", this));
+//		mapping.addMapper(MethodMapper.NewInstance("OriginalDB", this));
+//		mapping.addMapper(MethodMapper.NewInstance("LastAction", this));
+//		mapping.addMapper(MethodMapper.NewInstance("LastActionDate", this));
+//		mapping.addMapper(MethodMapper.NewInstance("ExpertName", this));
+//		mapping.addMapper(MethodMapper.NewInstance("SpeciesExpertName", this));
+//
+//		mapping.addMapper(MethodMapper.NewInstance("AuthorString", this));  //For Taxon because Misapplied Names are handled differently
+		
+		addNameMappers(mapping);
+
+		return mapping;
+	}
+
+	private void addNameMappers(PesiExportMapping mapping) {
+		ExtensionType extensionType;
 		mapping.addMapper(DbStringMapper.NewInstance("GenusOrUninomial", "GenusOrUninomial"));
 		mapping.addMapper(DbStringMapper.NewInstance("InfraGenericEpithet", "InfraGenericEpithet"));
 		mapping.addMapper(DbStringMapper.NewInstance("SpecificEpithet", "SpecificEpithet"));
@@ -213,8 +254,6 @@ public class PesiTaxonExport extends PesiExportBase {
 			mapping.addMapper(MethodMapper.NewInstance("FossilStatusCache", this, TaxonNameBase.class));
 		}
 		mapping.addMapper(MethodMapper.NewInstance("FossilStatusFk", this, TaxonNameBase.class)); // PesiTransformer.FossilStatusCache2FossilStatusFk?
-
-		return mapping;
 	}
 
 	/* (non-Javadoc)
@@ -259,6 +298,8 @@ public class PesiTaxonExport extends PesiExportBase {
 			
 			//"PHASE 4: Creating Inferred Synonyms...
 			success &= doPhase04(state, mapping);
+			
+			success &= doNames(state, mapping);
 
 			logger.info("*** Finished Making " + pluralString + " ..." + getSuccessString(success));
 
@@ -355,7 +396,7 @@ public class PesiTaxonExport extends PesiExportBase {
 
 	private void validatePhaseOne(TaxonBase<?> taxon, TaxonNameBase<?, ?> taxonName) {
 		// Check whether some rules are violated
-		nomenclaturalCode = PesiTransformer.getNomenclaturalCode(taxonName);
+		nomenclaturalCode = taxonName.getNomenclaturalCode();
 		if (! taxonName.isInstanceOf(NonViralName.class)){
 			logger.warn("Viral names can't be validated");
 		}
@@ -498,7 +539,7 @@ public class PesiTaxonExport extends PesiExportBase {
 								treeIndex.append("#");
 							}
 						}
-						nomenclaturalCode = PesiTransformer.getNomenclaturalCode(newNode.getTaxon().getName());
+						nomenclaturalCode = newNode.getTaxon().getName().getNomenclaturalCode();
 						kingdomFk = PesiTransformer.nomenClaturalCode2Kingdom(nomenclaturalCode);
 						traverseTree(newNode, parentNode, treeIndex, endRank, state);
 					}else{
@@ -654,7 +695,7 @@ public class PesiTaxonExport extends PesiExportBase {
 					TaxonNameBase<?,?> taxonName = acceptedTaxon.getName();
 					
 					if (taxonName.isInstanceOf(ZoologicalName.class)) {
-						nomenclaturalCode  = PesiTransformer.getNomenclaturalCode(taxonName);
+						nomenclaturalCode  = taxonName.getNomenclaturalCode();
 						kingdomFk = PesiTransformer.nomenClaturalCode2Kingdom(nomenclaturalCode);
 
 						Set<TaxonNode> taxonNodes = acceptedTaxon.getTaxonNodes();
@@ -730,6 +771,58 @@ public class PesiTaxonExport extends PesiExportBase {
 		}
 		if (taxonList.size() == 0) {
 			logger.info("No " + parentPluralString + " left to fetch.");
+		}
+		// Commit transaction
+		commitTransaction(txStatus);
+		logger.debug("Committed transaction.");
+		return success;
+	}
+	
+
+	/**
+	 * Handles names that do not appear in taxa
+	 * @param state
+	 * @param mapping
+	 * @return
+	 */
+	private boolean doNames(PesiExportState state, PesiExportMapping mapping)  throws SQLException {
+		
+		int count = 0;
+		int pastCount = 0;
+		List<NonViralName> list;
+		boolean success = true;
+		// Get the limit for objects to save within a single transaction.
+		int limit = state.getConfig().getLimitSave();
+
+		
+		logger.info("PHASE 1: Export Taxa...");
+		// Start transaction
+		TransactionStatus txStatus = startTransaction(true);
+		logger.info("Started new transaction. Fetching some " + pluralString + " (max: " + limit + ") ...");
+		
+		
+		int partitionCount = 0;
+		while ((list = getNextPureNamePartition(null, limit, partitionCount++)).size() > 0   ) {
+
+			logger.info("Fetched " + list.size() + " " + pluralString + ". Exporting...");
+			for (NonViralName<?> taxonName : list) {
+				doCount(count++, modCount, pluralString);
+				success &= mapping.invoke(taxonName);
+				
+			}
+
+			// Commit transaction
+			commitTransaction(txStatus);
+			logger.debug("Committed transaction.");
+			logger.info("Exported " + (count - pastCount) + " " + pluralString + ". Total: " + count);
+			pastCount = count;
+
+			// Start transaction
+			txStatus = startTransaction(true);
+			logger.info("Started new transaction. Fetching some " + pluralString + " (max: " + limit + ") ...");
+		}
+		if (list.size() == 0) {
+			logger.info("No " + pluralString + " left to fetch.");
 		}
 		// Commit transaction
 		commitTransaction(txStatus);

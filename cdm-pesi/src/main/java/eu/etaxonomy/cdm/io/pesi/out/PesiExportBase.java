@@ -17,6 +17,8 @@ import org.apache.log4j.Logger;
 import eu.etaxonomy.cdm.io.common.DbExportBase;
 import eu.etaxonomy.cdm.model.common.Marker;
 import eu.etaxonomy.cdm.model.common.MarkerType;
+import eu.etaxonomy.cdm.model.name.NonViralName;
+import eu.etaxonomy.cdm.model.name.TaxonNameBase;
 import eu.etaxonomy.cdm.model.taxon.Taxon;
 import eu.etaxonomy.cdm.model.taxon.TaxonBase;
 
@@ -48,7 +50,26 @@ public abstract class PesiExportBase extends DbExportBase<PesiExportConfigurator
 	}
 	
 
-	protected boolean isPesiTaxon(TaxonBase taxonBase) {
+	protected List<NonViralName> getNextPureNamePartition(Class<? extends NonViralName> clazz,int limit, int partitionCount) {
+		List<NonViralName> list = (List)getNameService().list(clazz, limit, partitionCount * limit, null, null);
+		
+		Iterator<NonViralName> it = list.iterator();
+		while (it.hasNext()){
+			NonViralName<?> taxonName = it.next();
+			if (! hasNoTaxon(taxonName)){
+				it.remove();
+			}
+		}
+		return list;
+	}
+	
+
+	private boolean hasNoTaxon(NonViralName<?> taxonName) {
+		return taxonName.getTaxonBases().isEmpty();
+	}
+
+
+	protected static boolean isPesiTaxon(TaxonBase taxonBase) {
 		for (Marker marker : taxonBase.getMarkers()){
 			if (marker.getValue() == false && marker.getMarkerType().equals(MarkerType.PUBLISH())){
 				return false;

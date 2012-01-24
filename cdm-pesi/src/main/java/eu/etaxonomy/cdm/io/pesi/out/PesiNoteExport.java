@@ -12,6 +12,7 @@ package eu.etaxonomy.cdm.io.pesi.out;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -37,9 +38,11 @@ import eu.etaxonomy.cdm.model.description.Distribution;
 import eu.etaxonomy.cdm.model.description.IndividualsAssociation;
 import eu.etaxonomy.cdm.model.description.TaxonDescription;
 import eu.etaxonomy.cdm.model.description.TaxonInteraction;
+import eu.etaxonomy.cdm.model.description.TaxonNameDescription;
 import eu.etaxonomy.cdm.model.description.TextData;
 import eu.etaxonomy.cdm.model.location.NamedArea;
 import eu.etaxonomy.cdm.model.name.TaxonNameBase;
+import eu.etaxonomy.cdm.model.occurrence.Collection;
 import eu.etaxonomy.cdm.model.taxon.Taxon;
 
 /**
@@ -89,7 +92,7 @@ public class PesiNoteExport extends PesiExportBase {
 	@Override
 	protected void doInvoke(PesiExportState state) {
 		try {
-			logger.error("*** Started Making " + pluralString + " ...");
+			logger.info("*** Started Making " + pluralString + " ...");
 
 			// Get the limit for objects to save within a single transaction.
 			int limit = state.getConfig().getLimitSave();
@@ -117,17 +120,19 @@ public class PesiNoteExport extends PesiExportBase {
 			List<DescriptionElementBase> list = null;
 			
 			// Start transaction
-			logger.error("PHASE 1...");
+			logger.info("PHASE 1...");
 			txStatus = startTransaction(true);
-			logger.error("Started new transaction. Fetching some " + pluralString + " (max: " + pageSize + ") ...");
-			while ((list = getDescriptionService().listDescriptionElements(null, null, null, pageSize, pageNumber, null)).size() > 0) {
+			logger.info("Started new transaction. Fetching some " + pluralString + " (max: " + pageSize + ") ...");
+			List<String> propPath = Arrays.asList(new String[]{"inDescription.taxon"});
+			while ((list = getDescriptionService().listDescriptionElements(null, null, null, pageSize, pageNumber, propPath)).size() > 0) {
 
-				logger.error("Fetched " + list.size() + " " + pluralString + ". Exporting...");
-				for (DescriptionElementBase description : list) {
-					
-					if (getNoteCategoryFk(description) != null) {
+				logger.info("Fetched " + list.size() + " " + pluralString + ". Exporting...");
+				for (DescriptionElementBase descriptionElement : list) {
+					if (descriptionElement.getInDescription().isInstanceOf(TaxonNameDescription.class)){
+						logger.info("TaxonNameDescriptions not yet handled");
+					}else if (getNoteCategoryFk(descriptionElement) != null) {
 						doCount(count++, modCount, pluralString);
-						success &= mapping.invoke(description);
+						success &= mapping.invoke(descriptionElement);
 					}
 				}
 
@@ -354,6 +359,7 @@ public class PesiNoteExport extends PesiExportBase {
 	 */
 	private static Integer getNoteCategoryFk(DescriptionElementBase descriptionElement) {
 		Integer result = null;
+		Taxon taxon = CdmBase.deproxy(descriptionElement.getInDescription(), TaxonDescription.class).getTaxon();
 		
 		result = PesiTransformer.textData2NodeCategoryFk(descriptionElement.getFeature());
 

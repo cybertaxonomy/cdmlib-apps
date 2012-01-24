@@ -163,7 +163,7 @@ public class PesiRelTaxonExport extends PesiExportBase {
 				}
 			}
 
-			logger.error("*** Finished Making " + pluralString + " ..." + getSuccessString(success));
+			logger.warn("*** Finished Making " + pluralString + " ..." + getSuccessString(success));
 
 			if (!success){
 				state.setUnsuccessfull();
@@ -207,7 +207,7 @@ public class PesiRelTaxonExport extends PesiExportBase {
 							return success;
 						}
 					} else {
-						logger.error("Rank is NULL. FetchLevel can not be checked: " + childTaxon.getUuid() + " (" + childTaxon.getTitleCache() + ")");
+						logger.warn("Rank is NULL. FetchLevel can not be checked: " + childTaxon.getUuid() + " (" + childTaxon.getTitleCache() + ")");
 					}
 				} else {
 					logger.error("TaxonName is NULL for taxon: " + childTaxon.getUuid());
@@ -249,24 +249,23 @@ public class PesiRelTaxonExport extends PesiExportBase {
 			}
 			
 //			// TaxonNameRelationships
-//			TaxonNameBase<?,?> childNodeTaxonName = childNodeTaxon.getName();
-//			nomenclaturalCode = PesiTransformer.getNomenclaturalCode(childNodeTaxonName);
-//
-//			if (childNodeTaxonName != null) {
-//
-//				Set<NameRelationship> nameRelations = childNodeTaxonName.getRelationsFromThisName();
-//				for (NameRelationship nameRelation : nameRelations) {
-//					try {
-//						if (neededValuesNotNull(nameRelation, state)) {
-//							doCount(count++, modCount, pluralString);
-//							success &= mapping.invoke(nameRelation);
-//						}
-//					} catch (SQLException e) {
-//						logger.error("NameRelationship could not be created: " + e.getMessage());
-//					}
-//				}
-//
-//			}
+			TaxonNameBase<?,?> childNodeTaxonName = childNodeTaxon.getName();
+			
+			if (childNodeTaxonName != null) {
+
+				Set<NameRelationship> nameRelations = childNodeTaxonName.getRelationsFromThisName();
+				for (NameRelationship nameRelation : nameRelations) {
+					try {
+						if (neededValuesNotNull(nameRelation, state)) {
+							doCount(count++, modCount, pluralString);
+							success &= mapping.invoke(nameRelation);
+						}
+					} catch (SQLException e) {
+						logger.error("NameRelationship " + nameRelation.getUuid() + " for " + nameRelation.getFromName().getTitleCache() + " and " + nameRelation.getToName().getTitleCache() + " could not be created: " + e.getMessage());
+					}
+				}
+
+			}
 			
 			// SynonymRelationships
 			Set<Synonym> synonyms = childNodeTaxon.getSynonyms(); // synonyms of accepted taxon
@@ -369,11 +368,11 @@ public class PesiRelTaxonExport extends PesiExportBase {
 	private boolean neededValuesNotNull(RelationshipBase<?, ?, ?> relationship, PesiExportState state) {
 		boolean result = true;
 		if (getTaxonFk1(relationship, state) == null) {
-			logger.error("TaxonFk1 is NULL, but is not allowed to be. Therefore no record was written to export database for this relationship: " + relationship.getUuid());
+			logger.warn("TaxonFk1 is NULL, but is not allowed to be. Therefore no record was written to export database for this relationship: " + relationship.getUuid());
 			result = false;
 		}
 		if (getTaxonFk2(relationship, state) == null) {
-			logger.error("TaxonFk2 is NULL, but is not allowed to be. Therefore no record was written to export database for this relationship: " + relationship.getUuid());
+			logger.warn("TaxonFk2 is NULL, but is not allowed to be. Therefore no record was written to export database for this relationship: " + relationship.getUuid());
 			result = false;
 		}
 		return result;
@@ -494,11 +493,17 @@ public class PesiRelTaxonExport extends PesiExportBase {
 			taxon = (isFrom) ? sr.getSynonym() : sr.getAcceptedTaxon();
 		} else if (relationship.isInstanceOf(NameRelationship.class)) {
 			NameRelationship nr = (NameRelationship)relationship;
-			TaxonNameBase taxonName = (isFrom) ? nr.getFromName() : nr.getToName();
+			TaxonNameBase<?,?> taxonName = (isFrom) ? nr.getFromName() : nr.getToName();
 			return state.getDbId(taxonName);
 		}
 		if (taxon != null) {
-			return state.getDbId(taxon);
+			if (! isPesiTaxon(taxon)){
+				logger.warn("Related taxon is not a PESI taxon. Taxon: " + taxon.getId() + "/" + taxon.getUuid() + "; TaxonRel: " +  relationship.getId() + "(" + relationship.getType().getTitleCache() + ")");
+				return null;
+			}else{
+				return state.getDbId(taxon);	
+			}
+			
 		}
 		logger.warn("No taxon found in state for relationship: " + relationship.toString());
 		return null;
