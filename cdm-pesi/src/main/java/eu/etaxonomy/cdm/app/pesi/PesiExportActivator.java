@@ -105,7 +105,7 @@ public class PesiExportActivator {
 		config.setLimitSave(partitionSize);
 		config.setNameIdStart(nameIdStart);
 		if (deleteAll){
-			destination.update("EXEC sp_deleteAllData()");
+			destination.update("EXEC sp_deleteAllData");
 		}
 
 		// invoke export
