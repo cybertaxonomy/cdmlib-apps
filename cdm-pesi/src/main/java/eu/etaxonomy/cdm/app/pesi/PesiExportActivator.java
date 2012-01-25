@@ -9,6 +9,7 @@
 */
 package eu.etaxonomy.cdm.app.pesi;
 
+import java.sql.SQLException;
 import java.util.UUID;
 
 import org.apache.log4j.Logger;
@@ -41,6 +42,7 @@ public class PesiExportActivator {
 	static final UUID secUuid = UUID.fromString("d03ef02a-f226-4cb1-bdb4-f6c154f08a34");
 	static final int sourceSecId = 7331;
 	static final int isHomotypicId = 72;
+	static final int nameIdStart = 10000000;
 	
 	static final int partitionSize = 5000;
 	
@@ -49,6 +51,8 @@ public class PesiExportActivator {
 
 	//NomeclaturalCode
 	static final NomenclaturalCode nomenclaturalCode  = NomenclaturalCode.ICBN;
+	
+	static final boolean deleteAll = true;
 
 // ****************** ALL *****************************************
 	
@@ -99,8 +103,10 @@ public class PesiExportActivator {
 		config.setDoReferences(doReferences);
 		config.setCheck(check);
 		config.setLimitSave(partitionSize);
-		
-
+		config.setNameIdStart(nameIdStart);
+		if (deleteAll){
+			destination.update("EXEC sp_deleteAllData()");
+		}
 
 		// invoke export
 		CdmDefaultExport<PesiExportConfigurator> pesiExport = new CdmDefaultExport<PesiExportConfigurator>();

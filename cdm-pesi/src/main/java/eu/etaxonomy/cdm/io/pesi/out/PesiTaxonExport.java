@@ -41,6 +41,7 @@ import eu.etaxonomy.cdm.model.common.AnnotationType;
 import eu.etaxonomy.cdm.model.common.CdmBase;
 import eu.etaxonomy.cdm.model.common.Extension;
 import eu.etaxonomy.cdm.model.common.ExtensionType;
+import eu.etaxonomy.cdm.model.common.IdentifiableEntity;
 import eu.etaxonomy.cdm.model.common.IdentifiableSource;
 import eu.etaxonomy.cdm.model.common.Language;
 import eu.etaxonomy.cdm.model.name.NameTypeDesignation;
@@ -171,7 +172,9 @@ public class PesiTaxonExport extends PesiExportBase {
 
 		mapping.addMapper(MethodMapper.NewInstance("DerivedFromGuid", this));
 		mapping.addMapper(MethodMapper.NewInstance("CacheCitation", this));
-		mapping.addMapper(MethodMapper.NewInstance("OriginalDB", this));
+//		mapping.addMapper(MethodMapper.NewInstance("OriginalDB", this));
+		mapping.addMapper(MethodMapper.NewInstance("OriginalDB", this.getClass(), "getOriginalDB", IdentifiableEntity.class) );
+		
 		mapping.addMapper(MethodMapper.NewInstance("LastAction", this));
 		mapping.addMapper(MethodMapper.NewInstance("LastActionDate", this));
 		mapping.addMapper(MethodMapper.NewInstance("ExpertName", this));
@@ -193,29 +196,20 @@ public class PesiTaxonExport extends PesiExportBase {
 	 */
 	private PesiExportMapping getNameMapping() {
 		PesiExportMapping mapping = new PesiExportMapping(dbTableName);
-		ExtensionType extensionType = null;
 		
 //		mapping.addMapper(IdMapper.NewInstance("TaxonId"));
-//		mapping.addMapper(DbObjectMapper.NewInstance("sec", "sourceFk")); //OLD:mapping.addMapper(MethodMapper.NewInstance("SourceFK", this.getClass(), "getSourceFk", standardMethodParameter, PesiExportState.class));
-//		mapping.addMapper(MethodMapper.NewInstance("TaxonStatusFk", this.getClass(), "getTaxonStatusFk", standardMethodParameter, PesiExportState.class));
-//		mapping.addMapper(MethodMapper.NewInstance("TaxonStatusCache", this.getClass(), "getTaxonStatusCache", standardMethodParameter, PesiExportState.class));
-//		mapping.addMapper(MethodMapper.NewInstance("QualityStatusFk", this)); // PesiTransformer.QualityStatusCache2QualityStatusFk?
-//
-//		mapping.addMapper(MethodMapper.NewInstance("GUID", this));
-//		//TODO implement again
-////		mapping.addMapper(MethodMapper.NewInstance("IdInSource", this));
-//
-//		mapping.addMapper(MethodMapper.NewInstance("DerivedFromGuid", this));
-//		mapping.addMapper(MethodMapper.NewInstance("CacheCitation", this));
-//		mapping.addMapper(MethodMapper.NewInstance("OriginalDB", this));
-//		mapping.addMapper(MethodMapper.NewInstance("LastAction", this));
-//		mapping.addMapper(MethodMapper.NewInstance("LastActionDate", this));
-//		mapping.addMapper(MethodMapper.NewInstance("ExpertName", this));
-//		mapping.addMapper(MethodMapper.NewInstance("SpeciesExpertName", this));
-//
-//		mapping.addMapper(MethodMapper.NewInstance("AuthorString", this));  //For Taxon because Misapplied Names are handled differently
-		
+
+		//		mapping.addMapper(MethodMapper.NewInstance("TaxonStatusFk", this.getClass(), "getTaxonStatusFk", standardMethodParameter, PesiExportState.class));
+
+		mapping.addMapper(MethodMapper.NewInstance("LastAction", this));
+		mapping.addMapper(MethodMapper.NewInstance("LastActionDate", this));
+		mapping.addMapper(MethodMapper.NewInstance("OriginalDB", this.getClass(), "getOriginalDB", IdentifiableEntity.class) );
 		addNameMappers(mapping);
+		
+		//TODO add author mapper, taxonStatusFk, TaxonStatusCache, TypeNameFk
+//		mapping.addMapper(MethodMapper.NewInstance("IdInSource", this));
+//	immer 2 für E+M ?	mapping.addMapper(MethodMapper.NewInstance("QualityStatusFk", this)); // PesiTransformer.QualityStatusCache2QualityStatusFk?
+//		mapping.addMapper(MethodMapper.NewInstance("TaxonStatusCache", this.getClass(), "getTaxonStatusCache", standardMethodParameter, PesiExportState.class));
 
 		return mapping;
 	}
@@ -228,6 +222,7 @@ public class PesiTaxonExport extends PesiExportBase {
 		mapping.addMapper(DbStringMapper.NewInstance("InfraSpecificEpithet", "InfraSpecificEpithet"));
 		mapping.addMapper(DbStringMapper.NewInstance("NameCache", "WebSearchName"));
 		mapping.addMapper(DbStringMapper.NewInstance("TitleCache", "FullName"));
+		//TODO FIXME incorrect mapping -> should be ref +  microref but is only microref
 		mapping.addMapper(DbStringMapper.NewInstance("NomenclaturalMicroReference", "NomRefString"));
 		mapping.addMapper(MethodMapper.NewInstance("WebShowName", this, TaxonNameBase.class));
 		
@@ -242,10 +237,8 @@ public class PesiTaxonExport extends PesiExportBase {
 		mapping.addMapper(MethodMapper.NewInstance("NameStatusFk", this, TaxonNameBase.class));
 		mapping.addMapper(MethodMapper.NewInstance("NameStatusCache", this, TaxonNameBase.class));
 		mapping.addMapper(MethodMapper.NewInstance("TypeFullnameCache", this, TaxonNameBase.class));
-
-//		mapping.addMapper(MethodMapper.NewInstance("TypeDesignationStatusFk", this, TaxonNameBase.class));
-//		mapping.addMapper(MethodMapper.NewInstance("TypeDesignationStatusCache", this, TaxonNameBase.class));
-
+		//TODO TypeNameFk
+		
 		// FossilStatus (Fk, Cache)
 		extensionType = (ExtensionType)getTermService().find(ErmsTransformer.uuidFossilStatus);
 		if (extensionType != null) {
@@ -299,7 +292,7 @@ public class PesiTaxonExport extends PesiExportBase {
 			//"PHASE 4: Creating Inferred Synonyms...
 			success &= doPhase04(state, mapping);
 			
-			success &= doNames(state, mapping);
+			success &= doNames(state);
 
 			logger.info("*** Finished Making " + pluralString + " ..." + getSuccessString(success));
 
@@ -785,8 +778,9 @@ public class PesiTaxonExport extends PesiExportBase {
 	 * @param mapping
 	 * @return
 	 */
-	private boolean doNames(PesiExportState state, PesiExportMapping mapping)  throws SQLException {
+	private boolean doNames(PesiExportState state)  throws SQLException {
 		
+		PesiExportMapping mapping = getNameMapping();
 		int count = 0;
 		int pastCount = 0;
 		List<NonViralName> list;
@@ -795,7 +789,7 @@ public class PesiTaxonExport extends PesiExportBase {
 		int limit = state.getConfig().getLimitSave();
 
 		
-		logger.info("PHASE 1: Export Taxa...");
+		logger.info("PHASE 5: Export Pure Names ...");
 		// Start transaction
 		TransactionStatus txStatus = startTransaction(true);
 		logger.info("Started new transaction. Fetching some " + pluralString + " (max: " + limit + ") ...");
@@ -808,7 +802,6 @@ public class PesiTaxonExport extends PesiExportBase {
 			for (NonViralName<?> taxonName : list) {
 				doCount(count++, modCount, pluralString);
 				success &= mapping.invoke(taxonName);
-				
 			}
 
 			// Commit transaction
@@ -1967,13 +1960,13 @@ public class PesiTaxonExport extends PesiExportBase {
 	 * @return The <code>OriginalDB</code> attribute.
 	 * @see MethodMapper
 	 */
-	private static String getOriginalDB(TaxonBase<?> taxonBase) {
+	private static String getOriginalDB(IdentifiableEntity identEntity) {
 		String result = "";
 		try {
 
 		// Sources from TaxonName
 //		Set<IdentifiableSource> sources = taxonName.getSources();
-		Set<IdentifiableSource>  sources  = taxonBase.getSources();
+		Set<IdentifiableSource>  sources  = identEntity.getSources();
 		
 //		IdentifiableEntity<?> taxonBase = null;
 //		if (sources != null && sources.isEmpty()) {

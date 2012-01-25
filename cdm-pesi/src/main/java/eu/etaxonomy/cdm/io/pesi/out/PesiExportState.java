@@ -16,6 +16,7 @@ import org.apache.log4j.Logger;
 
 import eu.etaxonomy.cdm.io.common.DbExportStateBase;
 import eu.etaxonomy.cdm.model.common.CdmBase;
+import eu.etaxonomy.cdm.model.name.TaxonNameBase;
 
 /**
  * The export state class.
@@ -58,7 +59,9 @@ public class PesiExportState extends DbExportStateBase<PesiExportConfigurator>{
 		// We use the Cdm.id for Datawarehouse.id
 		if (cdmBase == null) {
 			return null;
-		} else {
+		} else if (cdmBase.isInstanceOf(TaxonNameBase.class)){
+			return cdmBase.getId() + this.getConfig().getNameIdStart();
+		}else{
 			return cdmBase.getId();
 		}
 	}

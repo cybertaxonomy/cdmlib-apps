@@ -35,6 +35,7 @@ public class PesiExportConfigurator extends DbExportConfiguratorBase<PesiExportS
 	private DO_REFERENCES doReferences = DO_REFERENCES.ALL;
 	private boolean doTaxa = true;
 	private boolean doRelTaxa = true;
+	private int nameIdStart = 10000000;
 
 
 	public static PesiExportConfigurator NewInstance(Source pesiDestination, ICdmDataSource source) {
@@ -145,6 +146,19 @@ public class PesiExportConfigurator extends DbExportConfiguratorBase<PesiExportS
 	}
 	public void setDoRelTaxa(boolean doRelTaxa) {
 		this.doRelTaxa = doRelTaxa;
+	}
+
+	/**
+	 * Number that is added to the cdm id in case a name is stored by its own id
+	 * not the taxons id.
+	 * @return
+	 */
+	public int getNameIdStart() {
+		return nameIdStart;
+	}
+
+	public void setNameIdStart(int nameIdStart) {
+		this.nameIdStart = nameIdStart;
 	}
 
 
