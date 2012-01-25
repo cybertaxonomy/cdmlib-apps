@@ -175,8 +175,8 @@ public class PesiTaxonExport extends PesiExportBase {
 //		mapping.addMapper(MethodMapper.NewInstance("OriginalDB", this));
 		mapping.addMapper(MethodMapper.NewInstance("OriginalDB", this.getClass(), "getOriginalDB", IdentifiableEntity.class) );
 		
-		mapping.addMapper(MethodMapper.NewInstance("LastAction", this));
-		mapping.addMapper(MethodMapper.NewInstance("LastActionDate", this));
+		mapping.addMapper(MethodMapper.NewInstance("LastAction", this.getClass(), "getLastAction",  IdentifiableEntity.class));
+		mapping.addMapper(MethodMapper.NewInstance("LastActionDate", this.getClass(), "getLastActionDate",  IdentifiableEntity.class));
 		mapping.addMapper(MethodMapper.NewInstance("ExpertName", this));
 		mapping.addMapper(MethodMapper.NewInstance("SpeciesExpertName", this));
 
@@ -197,12 +197,12 @@ public class PesiTaxonExport extends PesiExportBase {
 	private PesiExportMapping getNameMapping() {
 		PesiExportMapping mapping = new PesiExportMapping(dbTableName);
 		
-//		mapping.addMapper(IdMapper.NewInstance("TaxonId"));
+		mapping.addMapper(IdMapper.NewInstance("TaxonId"));
 
 		//		mapping.addMapper(MethodMapper.NewInstance("TaxonStatusFk", this.getClass(), "getTaxonStatusFk", standardMethodParameter, PesiExportState.class));
 
-		mapping.addMapper(MethodMapper.NewInstance("LastAction", this));
-		mapping.addMapper(MethodMapper.NewInstance("LastActionDate", this));
+		mapping.addMapper(MethodMapper.NewInstance("LastAction", this.getClass(), "getLastAction", IdentifiableEntity.class));
+		mapping.addMapper(MethodMapper.NewInstance("LastActionDate",  this.getClass(), "getLastAction", IdentifiableEntity.class));
 		mapping.addMapper(MethodMapper.NewInstance("OriginalDB", this.getClass(), "getOriginalDB", IdentifiableEntity.class) );
 		addNameMappers(mapping);
 		
@@ -280,6 +280,10 @@ public class PesiTaxonExport extends PesiExportBase {
 			expertUserIdExtensionType = (ExtensionType)getTermService().find(PesiTransformer.expertUserIdUuid);
 			speciesExpertUserIdExtensionType = (ExtensionType)getTermService().find(PesiTransformer.speciesExpertUserIdUuid);
 
+			//"PHASE 5: Handle names without taxa ...
+			success &= doNames(state);
+
+			
 			//Export Taxa..
 			success &= doPhase01(state, mapping);
 
@@ -292,8 +296,7 @@ public class PesiTaxonExport extends PesiExportBase {
 			//"PHASE 4: Creating Inferred Synonyms...
 			success &= doPhase04(state, mapping);
 			
-			success &= doNames(state);
-
+			
 			logger.info("*** Finished Making " + pluralString + " ..." + getSuccessString(success));
 
 			if (!success){
@@ -781,6 +784,7 @@ public class PesiTaxonExport extends PesiExportBase {
 	private boolean doNames(PesiExportState state)  throws SQLException {
 		
 		PesiExportMapping mapping = getNameMapping();
+		mapping.initialize(state);
 		int count = 0;
 		int pastCount = 0;
 		List<NonViralName> list;
@@ -798,7 +802,7 @@ public class PesiTaxonExport extends PesiExportBase {
 		int partitionCount = 0;
 		while ((list = getNextPureNamePartition(null, limit, partitionCount++)).size() > 0   ) {
 
-			logger.info("Fetched " + list.size() + " " + pluralString + ". Exporting...");
+			logger.info("Fetched " + list.size() + " names without taxa. Exporting...");
 			for (NonViralName<?> taxonName : list) {
 				doCount(count++, modCount, pluralString);
 				success &= mapping.invoke(taxonName);
@@ -2030,10 +2034,10 @@ public class PesiTaxonExport extends PesiExportBase {
 	 * @see MethodMapper
 	 */
 	@SuppressWarnings("unused")
-	private static String getLastAction(TaxonBase<?> taxon) {
+	private static String getLastAction(IdentifiableEntity<?> identEntity) {
 		String result = null;
 		try {
-		Set<Extension> extensions = taxon.getExtensions();
+		Set<Extension> extensions = identEntity.getExtensions();
 		for (Extension extension : extensions) {
 			if (extension.getType().equals(lastActionExtensionType)) {
 				result = extension.getValue();
@@ -2052,10 +2056,10 @@ public class PesiTaxonExport extends PesiExportBase {
 	 * @see MethodMapper
 	 */
 	@SuppressWarnings({ "unused" })
-	private static DateTime getLastActionDate(TaxonBase<?> taxon) {
+	private static DateTime getLastActionDate(IdentifiableEntity identEntity) {
 		DateTime result = null;
 		try {
-			Set<Extension> extensions = taxon.getExtensions();
+			Set<Extension> extensions = identEntity.getExtensions();
 			for (Extension extension : extensions) {
 				if (extension.getType().equals(lastActionDateExtensionType)) {
 					String dateTime = extension.getValue();

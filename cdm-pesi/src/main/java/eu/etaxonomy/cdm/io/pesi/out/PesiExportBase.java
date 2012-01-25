@@ -15,6 +15,7 @@ import java.util.List;
 import org.apache.log4j.Logger;
 
 import eu.etaxonomy.cdm.io.common.DbExportBase;
+import eu.etaxonomy.cdm.model.common.CdmBase;
 import eu.etaxonomy.cdm.model.common.Marker;
 import eu.etaxonomy.cdm.model.common.MarkerType;
 import eu.etaxonomy.cdm.model.name.NonViralName;
@@ -76,5 +77,13 @@ public abstract class PesiExportBase extends DbExportBase<PesiExportConfigurator
 			}
 		}
 		return true;
+	}
+	
+	protected Object getDbIdCdmWithExceptions(CdmBase cdmBase, PesiExportState state) {
+		if (cdmBase.isInstanceOf(TaxonNameBase.class)){
+			return ( cdmBase.getId() + state.getConfig().getNameIdStart() );
+		}else{
+			return super.getDbIdCdmWithExceptions(cdmBase, state);
+		}
 	}
 }
