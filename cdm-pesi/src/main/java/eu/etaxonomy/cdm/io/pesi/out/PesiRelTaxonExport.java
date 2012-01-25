@@ -451,13 +451,11 @@ public class PesiRelTaxonExport extends PesiExportBase {
 			code = CdmBase.deproxy(relationship, TaxonRelationship.class).getToTaxon().getName().getNomenclaturalCode();
 		}else if (relationship.isInstanceOf(SynonymRelationship.class)){
 			code = CdmBase.deproxy(relationship, SynonymRelationship.class).getAcceptedTaxon().getName().getNomenclaturalCode();
-		} 
+		}else if (relationship.isInstanceOf(NameRelationship.class)){
+			code = CdmBase.deproxy(relationship,  NameRelationship.class).getFromName().getNomenclaturalCode();
+		}
 		if (code != null) {
-			if (code.equals(NomenclaturalCode.ICZN)) {
-				result = PesiTransformer.zoologicalTaxonRelation2RelTaxonQualifierCache(relationship);
-			} else {
-				result = PesiTransformer.taxonRelation2RelTaxonQualifierCache(relationship);
-			}
+			result = PesiTransformer.taxonRelation2RelTaxonQualifierCache(relationship, code);
 		} else {
 			logger.error("NomenclaturalCode is NULL while creating the following relationship: " + relationship.getUuid());
 		}

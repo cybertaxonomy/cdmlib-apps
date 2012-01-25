@@ -9,7 +9,6 @@
 */
 package eu.etaxonomy.cdm.app.pesi;
 
-import java.sql.SQLException;
 import java.util.UUID;
 
 import org.apache.log4j.Logger;
@@ -17,6 +16,7 @@ import org.apache.log4j.Logger;
 import eu.etaxonomy.cdm.app.common.CdmDestinations;
 import eu.etaxonomy.cdm.database.ICdmDataSource;
 import eu.etaxonomy.cdm.io.common.CdmDefaultExport;
+import eu.etaxonomy.cdm.io.common.DbExportConfiguratorBase.IdType;
 import eu.etaxonomy.cdm.io.common.IExportConfigurator.CHECK;
 import eu.etaxonomy.cdm.io.common.IExportConfigurator.DO_REFERENCES;
 import eu.etaxonomy.cdm.io.common.Source;
@@ -53,6 +53,8 @@ public class PesiExportActivator {
 	static final NomenclaturalCode nomenclaturalCode  = NomenclaturalCode.ICBN;
 	
 	static final boolean deleteAll = true;
+	
+	static final IdType idType = IdType.CDM_ID_WITH_EXCEPTIONS;
 
 // ****************** ALL *****************************************
 	
@@ -103,6 +105,7 @@ public class PesiExportActivator {
 		config.setDoReferences(doReferences);
 		config.setCheck(check);
 		config.setLimitSave(partitionSize);
+		config.setIdType(idType);
 		config.setNameIdStart(nameIdStart);
 		if (deleteAll){
 			destination.update("EXEC sp_deleteAllData");

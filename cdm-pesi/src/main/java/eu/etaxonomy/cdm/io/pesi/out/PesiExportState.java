@@ -49,6 +49,7 @@ public class PesiExportState extends DbExportStateBase<PesiExportConfigurator>{
 	}
 
 	/**
+	 * TODO -> move to PesiExportBase
 	 * Gets the Datawarehouse.id to a specific CDM object originally.
 	 * Here it just returns the CDM object's id.
 	 * @param cdmBase
@@ -56,14 +57,7 @@ public class PesiExportState extends DbExportStateBase<PesiExportConfigurator>{
 	 */
 	@Override
 	public Integer getDbId(CdmBase cdmBase) {
-		// We use the Cdm.id for Datawarehouse.id
-		if (cdmBase == null) {
-			return null;
-		} else if (cdmBase.isInstanceOf(TaxonNameBase.class)){
-			return cdmBase.getId() + this.getConfig().getNameIdStart();
-		}else{
-			return cdmBase.getId();
-		}
+		return (Integer)getCurrentIO().getDbId(cdmBase, this);
 	}
 	
 	/**

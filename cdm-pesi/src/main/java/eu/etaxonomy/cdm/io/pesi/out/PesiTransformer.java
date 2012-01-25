@@ -50,6 +50,7 @@ import eu.etaxonomy.cdm.strategy.exceptions.UnknownCdmTypeException;
  *
  */
 public final class PesiTransformer {
+	
 	private static final Logger logger = Logger.getLogger(PesiTransformer.class);
 
 	public static final String auctString = "auct.";
@@ -210,6 +211,7 @@ public final class PesiTransformer {
 	public static int IS_POTENTIAL_COMBINATION_FOR = 303;
 
 	public static String STR_IS_BASIONYM_FOR = "is basionym for";
+	public static String STR_IS_BASIONYM_FOR_ZOOL = "is original combination for";
 	public static String STR_IS_LATER_HOMONYM_OF = "is later homonym of";
 	public static String STR_IS_REPLACED_SYNONYM_FOR = "is replaced synonym for";
 	public static String STR_IS_VALIDATION_OF = "is validation of";
@@ -235,7 +237,9 @@ public final class PesiTransformer {
 	public static String STR_IS_PRO_PARTE_SYNONYM_OF = "is pro parte synonym of";
 	public static String STR_IS_PARTIAL_SYNONYM_OF = "is partial synonym of";
 	public static String STR_IS_HETEROTYPIC_SYNONYM_OF = "is heterotypic synonym of";
+	public static String STR_IS_HETEROTYPIC_SYNONYM_OF_ZOOL = "is subjective synonym of";
 	public static String STR_IS_HOMOTYPIC_SYNONYM_OF = "is homotypic synonym of";
+	private static final String STR_IS_HOMOTYPIC_SYNONYM_OF_ZOOL = "is objective synonym of";
 	public static String STR_IS_PRO_PARTE_AND_HOMOTYPIC_SYNONYM_OF = "is pro parte and homotypic synonym of";
 	public static String STR_IS_PRO_PARTE_AND_HETEROTYPIC_SYNONYM_OF = "is pro parte and heterotypic synonym of";
 	public static String STR_IS_PARTIAL_AND_HOMOTYPIC_SYNONYM_OF = "is partial and homotypic synonym of";
@@ -3161,7 +3165,7 @@ public final class PesiTransformer {
 	 * @param relation
 	 * @return
 	 */
-	public static String taxonRelation2RelTaxonQualifierCache(RelationshipBase<?,?,?> relation){
+	public static String taxonRelation2RelTaxonQualifierCache(RelationshipBase<?,?,?> relation, NomenclaturalCode code){
 		if (relation == null) {
 			return null;
 		}
@@ -3171,9 +3175,17 @@ public final class PesiTransformer {
 		} else if (type.equals(SynonymRelationshipType.SYNONYM_OF())) {
 			return STR_IS_SYNONYM_OF;
 		} else if (type.equals(SynonymRelationshipType.HOMOTYPIC_SYNONYM_OF())) {
-			return STR_IS_HOMOTYPIC_SYNONYM_OF;
+			if (code.equals(NomenclaturalCode.ICZN)){
+				return STR_IS_HOMOTYPIC_SYNONYM_OF_ZOOL;
+			}else{
+				return STR_IS_HOMOTYPIC_SYNONYM_OF;
+			}
 		} else if (type.equals(SynonymRelationshipType.HETEROTYPIC_SYNONYM_OF())) {
-			return STR_IS_HETEROTYPIC_SYNONYM_OF;
+			if (code.equals(NomenclaturalCode.ICZN)){
+				return STR_IS_HETEROTYPIC_SYNONYM_OF_ZOOL;
+			}else{
+				return STR_IS_HETEROTYPIC_SYNONYM_OF;
+			}
 		} else if (type.equals(SynonymRelationshipType.INFERRED_EPITHET_OF())) {
 			return STR_IS_INFERRED_EPITHET_FOR;
 		} else if (type.equals(SynonymRelationshipType.INFERRED_GENUS_OF())) {
@@ -3181,75 +3193,11 @@ public final class PesiTransformer {
 		} else if (type.equals(SynonymRelationshipType.POTENTIAL_COMBINATION_OF())) {
 			return STR_IS_POTENTIAL_COMBINATION_FOR;
 		} else if (type.equals(NameRelationshipType.BASIONYM())) {
-			return STR_IS_BASIONYM_FOR;
-		} else if (type.equals(NameRelationshipType.LATER_HOMONYM())) {
-			return STR_IS_LATER_HOMONYM_OF;
-		} else if (type.equals(NameRelationshipType.REPLACED_SYNONYM())) {
-			return STR_IS_REPLACED_SYNONYM_FOR;
-		} else if (type.equals(NameRelationshipType.VALIDATED_BY_NAME())) {
-			return STR_IS_VALIDATION_OF;
-		} else if (type.equals(NameRelationshipType.LATER_VALIDATED_BY_NAME())) {
-			return STR_IS_LATER_VALIDATION_OF;
-		} else if (type.equals(NameRelationshipType.CONSERVED_AGAINST())) {
-			return STR_IS_CONSERVED_AGAINST;
-		} else if (type.equals(NameRelationshipType.TREATED_AS_LATER_HOMONYM())) {
-			return STR_IS_TREATED_AS_LATER_HOMONYM_OF;
-		} else if (type.equals(NameRelationshipType.ORTHOGRAPHIC_VARIANT())) {
-			return STR_IS_ORTHOGRAPHIC_VARIANT_OF;
-		} else if (type.equals(NameRelationshipType.ALTERNATIVE_NAME())) {
-			return STR_IS_ALTERNATIVE_NAME_FOR;
-		} else {
-			logger.warn("No equivalent RelationshipType found in datawarehouse for: " + type.getTitleCache());
-		}
-			
-		// The following have no equivalent attribute in CDM
-//		IS_TYPE_OF
-//		IS_CONSERVED_TYPE_OF
-//		IS_REJECTED_TYPE_OF
-//		IS_FIRST_PARENT_OF
-//		IS_SECOND_PARENT_OF
-//		IS_FEMALE_PARENT_OF
-//		IS_MALE_PARENT_OF
-//		IS_REJECTED_IN_FAVOUR_OF
-//		HAS_SAME_TYPE_AS
-//		IS_LECTOTYPE_OF
-//		TYPE_NOT_DESIGNATED
-//		IS_PRO_PARTE_SYNONYM_OF
-//		IS_PARTIAL_SYNONYM_OF
-//		IS_PRO_PARTE_AND_HOMOTYPIC_SYNONYM_OF
-//		IS_PRO_PARTE_AND_HETEROTYPIC_SYNONYM_OF
-//		IS_PARTIAL_AND_HOMOTYPIC_SYNONYM_OF
-//		IS_PARTIAL_AND_HETEROTYPIC_SYNONYM_OF
-
-		return null;
-	}
-	
-	/**
-	 * Returns the RelTaxonQualifierCache for a given zoological taxonRelation.
-	 * @param relation
-	 * @return
-	 */
-	public static String zoologicalTaxonRelation2RelTaxonQualifierCache(RelationshipBase<?,?,?> relation){
-		if (relation == null) {
-			return null;
-		}
-		RelationshipTermBase<?> type = relation.getType();
-		if (type.equals(TaxonRelationshipType.MISAPPLIED_NAME_FOR())) {
-			return STR_IS_MISAPPLIED_NAME_FOR;
-		} else if (type.equals(SynonymRelationshipType.SYNONYM_OF())) {
-			return STR_IS_SYNONYM_OF;
-		} else if (type.equals(SynonymRelationshipType.HOMOTYPIC_SYNONYM_OF())) {
-			return "is objective synonym of";
-		} else if (type.equals(SynonymRelationshipType.HETEROTYPIC_SYNONYM_OF())) {
-			return "is subjective synonym of";
-		} else if (type.equals(SynonymRelationshipType.INFERRED_EPITHET_OF())) {
-			return STR_IS_INFERRED_EPITHET_FOR;
-		} else if (type.equals(SynonymRelationshipType.INFERRED_GENUS_OF())) {
-			return STR_IS_INFERRED_GENUS_FOR;
-		} else if (type.equals(SynonymRelationshipType.POTENTIAL_COMBINATION_OF())) {
-			return STR_IS_POTENTIAL_COMBINATION_FOR;
-		} else if (type.equals(NameRelationshipType.BASIONYM())) {
-			return "is original combination for";
+			if (code.equals(NomenclaturalCode.ICZN)){
+				return STR_IS_BASIONYM_FOR_ZOOL;
+			}else{
+				return STR_IS_BASIONYM_FOR;
+			}
 		} else if (type.equals(NameRelationshipType.LATER_HOMONYM())) {
 			return STR_IS_LATER_HOMONYM_OF;
 		} else if (type.equals(NameRelationshipType.REPLACED_SYNONYM())) {
