@@ -783,47 +783,54 @@ public class PesiTaxonExport extends PesiExportBase {
 	 */
 	private boolean doNames(PesiExportState state)  throws SQLException {
 		
-		PesiExportMapping mapping = getNameMapping();
-		mapping.initialize(state);
-		int count = 0;
-		int pastCount = 0;
-		List<NonViralName> list;
-		boolean success = true;
-		// Get the limit for objects to save within a single transaction.
-		int limit = state.getConfig().getLimitSave();
+		boolean success;
+		try {
+			PesiExportMapping mapping = getNameMapping();
+			mapping.initialize(state);
+			int count = 0;
+			int pastCount = 0;
+			List<NonViralName<?>> list;
+			success = true;
+			// Get the limit for objects to save within a single transaction.
+			int limit = state.getConfig().getLimitSave();
 
-		
-		logger.info("PHASE 5: Export Pure Names ...");
-		// Start transaction
-		TransactionStatus txStatus = startTransaction(true);
-		logger.info("Started new transaction. Fetching some " + pluralString + " (max: " + limit + ") ...");
-		
-		
-		int partitionCount = 0;
-		while ((list = getNextPureNamePartition(null, limit, partitionCount++)).size() > 0   ) {
+			
+			logger.info("PHASE 5: Export Pure Names ...");
+			// Start transaction
+			TransactionStatus txStatus = startTransaction(true);
+			logger.info("Started new transaction. Fetching some " + pluralString + " (max: " + limit + ") ...");
+			
+			
+			int partitionCount = 0;
+			while ((list = getNextPureNamePartition(null, limit, partitionCount++)) != null   ) {
 
-			logger.info("Fetched " + list.size() + " names without taxa. Exporting...");
-			for (NonViralName<?> taxonName : list) {
-				doCount(count++, modCount, pluralString);
-				success &= mapping.invoke(taxonName);
+				logger.info("Fetched " + list.size() + " names without taxa. Exporting...");
+				for (NonViralName<?> taxonName : list) {
+					doCount(count++, modCount, pluralString);
+					success &= mapping.invoke(taxonName);
+				}
+
+				// Commit transaction
+				commitTransaction(txStatus);
+				logger.debug("Committed transaction.");
+				logger.info("Exported " + (count - pastCount) + " " + pluralString + ". Total: " + count);
+				pastCount = count;
+
+				// Start transaction
+				txStatus = startTransaction(true);
+				logger.info("Started new transaction. Fetching some " + pluralString + " (max: " + limit + ") ...");
 			}
-
+			if (list == null) {
+				logger.info("No " + pluralString + " left to fetch.");
+			}
 			// Commit transaction
 			commitTransaction(txStatus);
 			logger.debug("Committed transaction.");
-			logger.info("Exported " + (count - pastCount) + " " + pluralString + ". Total: " + count);
-			pastCount = count;
-
-			// Start transaction
-			txStatus = startTransaction(true);
-			logger.info("Started new transaction. Fetching some " + pluralString + " (max: " + limit + ") ...");
+		} catch (Exception e) {
+			logger.error("Error occurred in pure name export");
+			e.printStackTrace();
+			success = false;
 		}
-		if (list.size() == 0) {
-			logger.info("No " + pluralString + " left to fetch.");
-		}
-		// Commit transaction
-		commitTransaction(txStatus);
-		logger.debug("Committed transaction.");
 		return success;
 	}
 

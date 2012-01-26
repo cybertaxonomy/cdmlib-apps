@@ -18,6 +18,7 @@ import org.springframework.transaction.TransactionStatus;
 
 import eu.etaxonomy.cdm.io.common.DbExportStateBase;
 import eu.etaxonomy.cdm.io.common.Source;
+import eu.etaxonomy.cdm.io.common.IExportConfigurator.DO_REFERENCES;
 import eu.etaxonomy.cdm.io.common.mapping.out.MethodMapper;
 import eu.etaxonomy.cdm.model.common.CdmBase;
 import eu.etaxonomy.cdm.model.description.DescriptionBase;
@@ -33,7 +34,6 @@ import eu.etaxonomy.cdm.model.taxon.Taxon;
  *
  */
 @Component
-@SuppressWarnings("unchecked")
 public class PesiNoteSourceExport extends PesiExportBase {
 	private static final Logger logger = Logger.getLogger(PesiNoteSourceExport.class);
 	private static final Class<? extends CdmBase> standardMethodParameter = DescriptionElementBase.class;
@@ -98,10 +98,10 @@ public class PesiNoteSourceExport extends PesiExportBase {
 			
 			// Start transaction
 			txStatus = startTransaction(true);
-			logger.error("Started new transaction. Fetching some " + pluralString + " (max: " + pageSize + ") ...");
+			logger.info("Started new transaction. Fetching some " + pluralString + " (max: " + pageSize + ") ...");
 			while ((list = getDescriptionService().listDescriptionElements(null, null, null, pageSize, pageNumber, null)).size() > 0) {
 
-				logger.error("Fetched " + list.size() + " " + pluralString + ". Exporting...");
+				logger.info("Fetched " + list.size() + " " + pluralString + ". Exporting...");
 				for (DescriptionElementBase descriptionElement : list) {
 					
 					if (getNoteCategoryFk(descriptionElement) != null && neededValuesNotNull(descriptionElement, state)) {
@@ -112,25 +112,25 @@ public class PesiNoteSourceExport extends PesiExportBase {
 
 				// Commit transaction
 				commitTransaction(txStatus);
-				logger.error("Committed transaction.");
-				logger.error("Exported " + (count - pastCount) + " " + pluralString + ". Total: " + count);
+				logger.debug("Committed transaction.");
+				logger.info("Exported " + (count - pastCount) + " " + pluralString + ". Total: " + count);
 				pastCount = count;
 	
 				// Start transaction
 				txStatus = startTransaction(true);
-				logger.error("Started new transaction. Fetching some " + pluralString + " (max: " + pageSize + ") ...");
+				logger.info("Started new transaction. Fetching some " + pluralString + " (max: " + pageSize + ") ...");
 
 				// Increment pageNumber
 				pageNumber++;
 			}
 			if (list.size() == 0) {
-				logger.error("No " + pluralString + " left to fetch.");
+				logger.info("No " + pluralString + " left to fetch.");
 			}
 			// Commit transaction
 			commitTransaction(txStatus);
-			logger.error("Committed transaction.");
+			logger.debug("Committed transaction.");
 	
-			logger.error("*** Finished Making " + pluralString + " ..." + getSuccessString(success));
+			logger.info("*** Finished Making " + pluralString + " ..." + getSuccessString(success));
 			
 			if (!success){
 				state.setUnsuccessfull();
@@ -180,9 +180,7 @@ public class PesiNoteSourceExport extends PesiExportBase {
 	 */
 	@Override
 	protected boolean isIgnore(PesiExportState state) {
-		// TODO
-//		return ! state.getConfig().isDoNoteSource();
-		return false;
+		return ! ( state.getConfig().isDoNoteSources() && state.getConfig().isDoNotes() && state.getConfig().getDoReferences().equals(DO_REFERENCES.ALL));
 	}
 
 	/**
@@ -192,7 +190,7 @@ public class PesiNoteSourceExport extends PesiExportBase {
 	 */
 	private static Integer getNoteCategoryFk(DescriptionElementBase descriptionElement) {
 		Integer result = null;
-		result = PesiTransformer.textData2NodeCategoryFk(descriptionElement.getFeature());
+		result = PesiTransformer.feature2NodeCategoryFk(descriptionElement.getFeature());
 		return result;
 	}
 
@@ -233,7 +231,7 @@ public class PesiNoteSourceExport extends PesiExportBase {
 	private static String getSourceNameCache(DescriptionElementBase descriptionElement) {
 		String result = null;
 
-		DescriptionBase inDescription = descriptionElement.getInDescription();
+		DescriptionBase<?> inDescription = descriptionElement.getInDescription();
 		if (inDescription != null && inDescription.isInstanceOf(TaxonDescription.class)) {
 			TaxonDescription taxonDescription = CdmBase.deproxy(inDescription, TaxonDescription.class);
 			Taxon taxon = taxonDescription.getTaxon();

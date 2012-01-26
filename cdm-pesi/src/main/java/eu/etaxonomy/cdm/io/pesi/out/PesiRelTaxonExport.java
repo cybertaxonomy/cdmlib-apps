@@ -24,6 +24,7 @@ import org.springframework.transaction.TransactionStatus;
 import eu.etaxonomy.cdm.io.common.Source;
 import eu.etaxonomy.cdm.io.common.mapping.out.MethodMapper;
 import eu.etaxonomy.cdm.model.common.CdmBase;
+import eu.etaxonomy.cdm.model.common.IdentifiableEntity;
 import eu.etaxonomy.cdm.model.common.RelationshipBase;
 import eu.etaxonomy.cdm.model.name.NameRelationship;
 import eu.etaxonomy.cdm.model.name.NomenclaturalCode;
@@ -235,77 +236,119 @@ public class PesiRelTaxonExport extends PesiExportBase {
 		Taxon childNodeTaxon = childNode.getTaxon();
 		if (childNodeTaxon != null) {
 			// TaxonRelationships
-			Taxon taxon = childNodeTaxon;
-			Set<TaxonRelationship> taxonRelations = taxon.getRelationsToThisTaxon();
-			for (TaxonRelationship taxonRelationship : taxonRelations) {
-				try {
-					if (neededValuesNotNull(taxonRelationship, state)) {
-						doCount(count++, modCount, pluralString);
-						success &= mapping.invoke(taxonRelationship);
-					}
-				} catch (SQLException e) {
-					logger.error("TaxonRelationship could not be created for this TaxonRelation (" + taxonRelationship.getUuid() + "): " + e.getMessage());
-				}
-			}
-			
-//			// TaxonNameRelationships
-			TaxonNameBase<?,?> childNodeTaxonName = childNodeTaxon.getName();
-			
-			if (childNodeTaxonName != null) {
-
-				Set<NameRelationship> nameRelations = childNodeTaxonName.getRelationsFromThisName();
-				for (NameRelationship nameRelation : nameRelations) {
-					try {
-						if (neededValuesNotNull(nameRelation, state)) {
-							doCount(count++, modCount, pluralString);
-							success &= mapping.invoke(nameRelation);
-						}
-					} catch (SQLException e) {
-						logger.error("NameRelationship " + nameRelation.getUuid() + " for " + nameRelation.getFromName().getTitleCache() + " and " + nameRelation.getToName().getTitleCache() + " could not be created: " + e.getMessage());
-					}
-				}
-
-			}
-			
+			success &= saveTaxonRelationships(state, childNodeTaxon);
+			// TaxonNameRelationships
+			success &= saveNameRelationships(state, childNodeTaxon);
 			// SynonymRelationships
-			Set<Synonym> synonyms = childNodeTaxon.getSynonyms(); // synonyms of accepted taxon
-			for (Synonym synonym : synonyms) {
-				TaxonNameBase<?,?> synonymTaxonName = synonym.getName();
-				
-				// Store synonym data in Taxon table
-				invokeSynonyms(state, synonymTaxonName);
-
-				Set<SynonymRelationship> synonymRelations = synonym.getSynonymRelations();
-				for (SynonymRelationship synonymRelationship : synonymRelations) {
-					try {
-						if (neededValuesNotNull(synonymRelationship, state)) {
-							doCount(count++, modCount, pluralString);
-							success &= mapping.invoke(synonymRelationship);
-							
-						}
-					} catch (SQLException e) {
-						logger.error("SynonymRelationship could not be created for this SynonymRelation (" + synonymRelationship.getUuid() + "): " + e.getMessage());
-					}
-				}
-
-//				// SynonymNameRelationship
-//				Set<NameRelationship> nameRelations = synonymTaxonName.getRelationsFromThisName();
-//				for (NameRelationship nameRelation : nameRelations) {
-//					try {
-//						if (neededValuesNotNull(nameRelation, state)) {
-//							doCount(count++, modCount, pluralString);
-//							success &= mapping.invoke(nameRelation);
-//						}
-//					} catch (SQLException e) {
-//						logger.error("NameRelationship could not be created for this NameRelation (" + nameRelation.getUuid() + "): " + e.getMessage());
-//					}
-//				}
-
-			}
-			
+			success &= saveSynonymAndSynNameRelationships(state, childNodeTaxon);
 		}
 		return success;
 		
+	}
+
+	private boolean saveSynonymAndSynNameRelationships(PesiExportState state, Taxon childNodeTaxon) {
+		boolean success = true;
+		for (SynonymRelationship synRel : childNodeTaxon.getSynonymRelations()) { // synonyms of accepted taxon
+			Synonym synonym = synRel.getSynonym();
+			TaxonNameBase<?,?> synonymTaxonName = synonym.getName();
+			if (! isPesiTaxon(synonym)){
+				logger.warn("Synonym " + synonym.getId() + " of synonym relation " + synRel.getId() + " is not a PESI taxon. Can't export relationship");
+				continue;
+			}
+			
+			// Store synonym data in Taxon table
+			invokeSynonyms(state, synonymTaxonName);
+
+			
+			
+			Set<SynonymRelationship> synonymRelations = synonym.getSynonymRelations();
+			state.setCurrentFromObject(synonym);
+			for (SynonymRelationship synonymRelationship : synonymRelations) {  //needed? Maybe to make sure that there are no partial synonym relations missed ??
+				try {
+					if (neededValuesNotNull(synonymRelationship, state)) {
+						doCount(count++, modCount, pluralString);
+						success &= mapping.invoke(synonymRelationship);
+						
+					}
+				} catch (SQLException e) {
+					logger.error("SynonymRelationship (" + synonymRelationship.getUuid() + ") could not be stored : " + e.getMessage());
+				}
+			}
+
+			// SynonymNameRelationship
+			success &= saveNameRelationships(state, synonym);
+		}
+		return success;
+	}
+
+	private boolean saveNameRelationships(PesiExportState state, TaxonBase taxonBase) {
+		boolean success = true;
+		TaxonNameBase<?,?> childNodeTaxonName = taxonBase.getName();
+
+		//from relations
+		Set<NameRelationship> nameRelations = childNodeTaxonName.getRelationsFromThisName();
+		state.setCurrentFromObject(taxonBase);
+		boolean isFrom = true;
+		success &= saveOneSideNameRelation(state, isFrom, nameRelations);
+		
+		//toRelations
+		nameRelations = childNodeTaxonName.getRelationsToThisName();
+		state.setCurrentToObject(taxonBase);
+		isFrom = false;
+		success &= saveOneSideNameRelation(state, isFrom, nameRelations);
+		
+		return success;
+	}
+
+	private boolean saveOneSideNameRelation(PesiExportState state, boolean isFrom, Set<NameRelationship> nameRelations) {
+		boolean success = true;
+		for (NameRelationship nameRelation : nameRelations) {
+			try {
+				TaxonNameBase<?,?> relatedName = isFrom ? nameRelation.getToName(): nameRelation.getFromName();
+				if ( isPurePesiName(relatedName)){
+					success &= checkAndInvokeNameRelation(state, nameRelation, relatedName, isFrom);
+				}else{
+					for (TaxonBase<?> relatedTaxon : getPesiTaxa(relatedName)){
+						success &= checkAndInvokeNameRelation(state, nameRelation, relatedTaxon, isFrom);
+					}
+				}
+			} catch (SQLException e) {
+				logger.error("NameRelationship " + nameRelation.getUuid() + " for " + nameRelation.getFromName().getTitleCache() + " and " + nameRelation.getToName().getTitleCache() + " could not be created: " + e.getMessage());
+				success = false;
+			}
+		}
+		return success;
+	}
+
+	private boolean checkAndInvokeNameRelation(PesiExportState state, NameRelationship nameRelation, IdentifiableEntity<?> relatedObject, boolean isFrom) throws SQLException {
+		boolean success = true;
+		if (isFrom){
+			state.setCurrentToObject(relatedObject);
+		}else{
+			state.setCurrentFromObject(relatedObject);
+		}
+		if (neededValuesNotNull(nameRelation, state)) {
+			doCount(count++, modCount, pluralString);
+			success &= mapping.invoke(nameRelation);
+		}
+		return success;
+	}
+
+	private boolean saveTaxonRelationships(PesiExportState state, Taxon childNodeTaxon) {
+		boolean success = true;
+		Taxon taxon = childNodeTaxon;
+		Set<TaxonRelationship> taxonRelations = taxon.getRelationsToThisTaxon();
+		for (TaxonRelationship taxonRelationship : taxonRelations) {
+			try {
+				if (neededValuesNotNull(taxonRelationship, state)) {
+					doCount(count++, modCount, pluralString);
+					success &= mapping.invoke(taxonRelationship);
+				}
+			} catch (SQLException e) {
+				logger.error("TaxonRelationship could not be created for this TaxonRelation (" + taxonRelationship.getUuid() + "): " + e.getMessage());
+			}
+		}
+		return success;
 	}
 
 	/**
@@ -482,24 +525,26 @@ public class PesiRelTaxonExport extends PesiExportBase {
 	 * @return The database key of an object in the given relationship.
 	 */
 	private static Integer getObjectFk(RelationshipBase<?, ?, ?> relationship, PesiExportState state, boolean isFrom) {
-		TaxonBase<?> taxon = null;
+		TaxonBase<?> taxonBase = null;
 		if (relationship.isInstanceOf(TaxonRelationship.class)) {
 			TaxonRelationship tr = (TaxonRelationship)relationship;
-			taxon = (isFrom) ? tr.getFromTaxon():  tr.getToTaxon();
+			taxonBase = (isFrom) ? tr.getFromTaxon():  tr.getToTaxon();
 		} else if (relationship.isInstanceOf(SynonymRelationship.class)) {
 			SynonymRelationship sr = (SynonymRelationship)relationship;
-			taxon = (isFrom) ? sr.getSynonym() : sr.getAcceptedTaxon();
+			taxonBase = (isFrom) ? sr.getSynonym() : sr.getAcceptedTaxon();
 		} else if (relationship.isInstanceOf(NameRelationship.class)) {
-			NameRelationship nr = (NameRelationship)relationship;
-			TaxonNameBase<?,?> taxonName = (isFrom) ? nr.getFromName() : nr.getToName();
-			return state.getDbId(taxonName);
+			if (isFrom){
+				return state.getDbId(state.getCurrentFromObject());
+			}else{
+				return state.getDbId(state.getCurrentToObject());
+			}
 		}
-		if (taxon != null) {
-			if (! isPesiTaxon(taxon)){
-				logger.warn("Related taxon is not a PESI taxon. Taxon: " + taxon.getId() + "/" + taxon.getUuid() + "; TaxonRel: " +  relationship.getId() + "(" + relationship.getType().getTitleCache() + ")");
+		if (taxonBase != null) {
+			if (! isPesiTaxon(taxonBase)){
+				logger.warn("Related taxonBase is not a PESI taxon. Taxon: " + taxonBase.getId() + "/" + taxonBase.getUuid() + "; TaxonRel: " +  relationship.getId() + "(" + relationship.getType().getTitleCache() + ")");
 				return null;
 			}else{
-				return state.getDbId(taxon);	
+				return state.getDbId(taxonBase);	
 			}
 			
 		}

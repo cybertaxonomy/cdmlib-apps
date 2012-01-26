@@ -21,6 +21,7 @@ import org.apache.log4j.Logger;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.TransactionStatus;
 
+import eu.etaxonomy.cdm.io.common.IExportConfigurator.DO_REFERENCES;
 import eu.etaxonomy.cdm.io.common.Source;
 import eu.etaxonomy.cdm.io.common.mapping.out.MethodMapper;
 import eu.etaxonomy.cdm.model.common.AnnotatableEntity;
@@ -266,9 +267,7 @@ public class PesiOccurrenceSourceExport extends PesiExportBase {
 	 */
 	@Override
 	protected boolean isIgnore(PesiExportState state) {
-		// TODO
-//		return ! state.getConfig().isDoOccurrenceSource();
-		return false;
+		return ! ( state.getConfig().isDoOccurrenceSource() && state.getConfig().isDoOccurrence() && state.getConfig().getDoReferences().equals(DO_REFERENCES.ALL));
 	}
 
 	/**

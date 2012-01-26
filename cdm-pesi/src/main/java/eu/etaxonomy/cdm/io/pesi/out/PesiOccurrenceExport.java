@@ -21,7 +21,6 @@ import org.apache.log4j.Logger;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.TransactionStatus;
 
-import eu.etaxonomy.cdm.io.common.DbExportStateBase;
 import eu.etaxonomy.cdm.io.common.Source;
 import eu.etaxonomy.cdm.io.common.mapping.out.MethodMapper;
 import eu.etaxonomy.cdm.model.common.AnnotatableEntity;
@@ -44,7 +43,6 @@ import eu.etaxonomy.cdm.strategy.exceptions.UnknownCdmTypeException;
  *
  */
 @Component
-@SuppressWarnings("unchecked")
 public class PesiOccurrenceExport extends PesiExportBase {
 	private static final Logger logger = Logger.getLogger(PesiOccurrenceExport.class);
 	private static final Class<? extends CdmBase> standardMethodParameter = AnnotatableEntity.class;

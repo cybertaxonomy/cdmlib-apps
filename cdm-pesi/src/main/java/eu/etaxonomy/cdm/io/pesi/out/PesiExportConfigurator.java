@@ -29,12 +29,18 @@ public class PesiExportConfigurator extends DbExportConfiguratorBase<PesiExportS
 	private int limitSave = 2000;
 
 	private Reference<?> auctReference;
-	private boolean doOccurrence = true;
-	private boolean doFacts = true;
-	private boolean doNameFacts = true;
+	
+	
 	private DO_REFERENCES doReferences = DO_REFERENCES.ALL;
 	private boolean doTaxa = true;
 	private boolean doRelTaxa = true;
+	private boolean doNotes = true;
+	private boolean doNoteSources = true;
+	private boolean doAdditionalTaxonSource = true;
+	private boolean doOccurrence = true;
+	private boolean doOccurrenceSource = true;
+	private boolean doImages = true;
+	
 	private int nameIdStart = 10000000;
 
 
@@ -111,18 +117,11 @@ public class PesiExportConfigurator extends DbExportConfiguratorBase<PesiExportS
 	}
 	
 	
-	public boolean isDoFacts() {
-		return doFacts;
+	public boolean isDoImages() {
+		return doImages;
 	}
-	public void setDoFacts(boolean doFacts) {
-		this.doFacts = doFacts;
-	}
-	
-	public boolean isDoNameFacts() {
-		return doNameFacts;
-	}
-	public void setDoNameFacts(boolean doNameFacts) {
-		this.doNameFacts = doNameFacts;
+	public void setDoImages(boolean doImages) {
+		this.doImages = doImages;
 	}
 	
 
@@ -159,6 +158,38 @@ public class PesiExportConfigurator extends DbExportConfiguratorBase<PesiExportS
 
 	public void setNameIdStart(int nameIdStart) {
 		this.nameIdStart = nameIdStart;
+	}
+
+	public boolean isDoNotes() {
+		return doNotes;
+	}
+
+	public void setDoNotes(boolean doNotes) {
+		this.doNotes = doNotes;
+	}
+
+	public boolean isDoNoteSources() {
+		return doNoteSources;
+	}
+
+	public void setDoNoteSources(boolean doNoteSources) {
+		this.doNoteSources = doNoteSources;
+	}
+
+	public boolean isDoAdditionalTaxonSource() {
+		return doAdditionalTaxonSource;
+	}
+
+	public void setDoAdditionalTaxonSource(boolean doAdditionalTaxonSource) {
+		this.doAdditionalTaxonSource = doAdditionalTaxonSource;
+	}
+
+	public boolean isDoOccurrenceSource() {
+		return doOccurrenceSource;
+	}
+
+	public void setDoOccurrenceSource(boolean doOccurrenceSource) {
+		this.doOccurrenceSource = doOccurrenceSource;
 	}
 
 

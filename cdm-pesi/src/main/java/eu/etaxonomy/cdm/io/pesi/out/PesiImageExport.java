@@ -21,6 +21,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.transaction.TransactionStatus;
 
 import eu.etaxonomy.cdm.io.common.Source;
+import eu.etaxonomy.cdm.io.common.IExportConfigurator.DO_REFERENCES;
 import eu.etaxonomy.cdm.io.common.mapping.out.IdMapper;
 import eu.etaxonomy.cdm.model.common.CdmBase;
 import eu.etaxonomy.cdm.model.description.DescriptionElementBase;
@@ -241,9 +242,7 @@ public class PesiImageExport extends PesiExportBase {
 	 */
 	@Override
 	protected boolean isIgnore(PesiExportState state) {
-		// TODO
-//		return state.getConfig().isDoAdditionalTaxonSource()
-		return false;
+		return ! ( state.getConfig().isDoImages());
 	}
 
 }

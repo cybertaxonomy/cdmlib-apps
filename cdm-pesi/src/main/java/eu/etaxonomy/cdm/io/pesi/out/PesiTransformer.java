@@ -2282,7 +2282,7 @@ public final class PesiTransformer {
 	 * @param feature
 	 * @return
 	 */
-	public static Integer textData2NodeCategoryFk(Feature feature) {
+	public static Integer feature2NodeCategoryFk(Feature feature) {
 		if (feature == null) {
 			return null;
 		}
@@ -2349,8 +2349,8 @@ public final class PesiTransformer {
 			return NoteCategory_Identification;
 		} else if (feature.getUuid().equals(ErmsTransformer.uuidSynonymy)) {
 			return NoteCategory_Synonymy;
-//		} else if (feature.equals(Feature.CITATION())) {
-//			return;
+		} else if (feature.equals(Feature.CITATION())) {
+			return null;  //citations are handled differently
 			
 			// TODO: Unknown NodeCategories
 //			NoteCategory_general_distribution_euromed = 10;
@@ -2374,7 +2374,7 @@ public final class PesiTransformer {
 //			NoteCategory_Host = 283;
 
 		}else{
-			logger.warn("Unknown Feature: " + feature.getTitleCache());
+			logger.warn("Unhandled Feature: " + feature.getTitleCache());
 			return null;
 		}
 	}

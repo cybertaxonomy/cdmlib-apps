@@ -58,35 +58,35 @@ public class PesiExportActivator {
 
 // ****************** ALL *****************************************
 	
-	//authors
-	static final boolean doAuthors = true;
 	//references
 	static final DO_REFERENCES doReferences =  DO_REFERENCES.ALL;
-	
-	static final boolean doNameFacts = false;
 	
 	//taxa
 	static final boolean doTaxa = true;
 	static final boolean doRelTaxa = true;
-	static final boolean doFacts = true;
-	static final boolean doOccurences = true;
+	static final boolean doNotes = true;
+	static final boolean doNoteSources = true;
+	static final boolean doAdditionalTaxonSource = true;
+	static final boolean doOccurrence = true;
+	static final boolean doOccurrenceSource = true;
+	static final boolean doImage = true;
+	
 
 // ************************ NONE **************************************** //
 	
-//	//authors
-//	static final boolean doAuthors = false;
-//	
 //	//references
-//	static final DO_REFERENCES doReferences =  DO_REFERENCES.ALL;
-//	//names
-//	static final boolean doNameFacts = false;
+//	static final DO_REFERENCES doReferences =  DO_REFERENCES.NONE;
 //	
 //	//taxa
 //	static final boolean doTaxa = false;
 //	static final boolean doRelTaxa = false;
-//	static final boolean doFacts = false;
-//	static final boolean doOccurences = false;
-//	
+//	static final boolean doNotes = false;
+//	static final boolean doNoteSources = false;
+//	static final boolean doAdditionalTaxonSource = false;
+//	static final boolean doOccurrence = false;
+//	static final boolean doOccurrenceSource = false;
+//	static final boolean doImage = false;
+	
 	
 	public boolean 	doExport(ICdmDataSource source){
 		System.out.println("Start export to PESI ("+ pesiDestination.getDatabase() + ") ...");
@@ -96,13 +96,15 @@ public class PesiExportActivator {
 		
 		PesiExportConfigurator config = PesiExportConfigurator.NewInstance(destination, source);
 		
-		config.setDoNameFacts(doNameFacts);
-		
 		config.setDoTaxa(doTaxa);
 		config.setDoRelTaxa(doRelTaxa);
-		config.setDoFacts(doFacts);
-		config.setDoOccurrence(doOccurences);
+		config.setDoOccurrence(doOccurrence);
 		config.setDoReferences(doReferences);
+		config.setDoImages(doImage);
+		config.setDoNotes(doNotes);
+		config.setDoNoteSources(doNoteSources);
+		config.setDoOccurrenceSource(doOccurrenceSource);
+		
 		config.setCheck(check);
 		config.setLimitSave(partitionSize);
 		config.setIdType(idType);

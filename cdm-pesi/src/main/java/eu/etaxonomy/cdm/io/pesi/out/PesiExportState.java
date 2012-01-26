@@ -16,7 +16,7 @@ import org.apache.log4j.Logger;
 
 import eu.etaxonomy.cdm.io.common.DbExportStateBase;
 import eu.etaxonomy.cdm.model.common.CdmBase;
-import eu.etaxonomy.cdm.model.name.TaxonNameBase;
+import eu.etaxonomy.cdm.model.common.IdentifiableEntity;
 
 /**
  * The export state class.
@@ -26,8 +26,14 @@ import eu.etaxonomy.cdm.model.name.TaxonNameBase;
  *
  */
 public class PesiExportState extends DbExportStateBase<PesiExportConfigurator>{
+	@SuppressWarnings("unused")
 	private static final Logger logger = Logger.getLogger(PesiExportState.class);
+	
 	private static List<Integer> processedSourceList = new ArrayList<Integer>();
+	
+	private IdentifiableEntity<?> currentToObject;
+	private IdentifiableEntity<?> currentFromObject;
+	
 
 	/**
 	 * @param config
@@ -89,6 +95,26 @@ public class PesiExportState extends DbExportStateBase<PesiExportConfigurator>{
 	 */
 	public void clearAlreadyProcessedSources() {
 		processedSourceList.clear();
+	}
+
+
+	public IdentifiableEntity<?> getCurrentToObject() {
+		return currentToObject;
+	}
+
+
+	public void setCurrentToObject(IdentifiableEntity<?> currentToObject) {
+		this.currentToObject = currentToObject;
+	}
+
+
+	public IdentifiableEntity<?> getCurrentFromObject() {
+		return currentFromObject;
+	}
+
+
+	public void setCurrentFromObject(IdentifiableEntity<?> currentFromObject) {
+		this.currentFromObject = currentFromObject;
 	}
 
 }
