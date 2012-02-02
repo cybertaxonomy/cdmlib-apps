@@ -2171,7 +2171,7 @@ public class EfloraTaxonImport  extends EfloraImportBase implements ICdmIO<Eflor
 	protected void parseNomStatus(Reference ref, NonViralName nonViralName) {
 		String titleToParse = ref.getTitleCache();
 		
-		String noStatusTitle = parser.parseNomStatus(titleToParse, nonViralName);
+		String noStatusTitle = parser.parseNomStatus(titleToParse, nonViralName, true);
 		if (! noStatusTitle.equals(titleToParse)){
 			ref.setTitleCache(noStatusTitle, true);
 		}
