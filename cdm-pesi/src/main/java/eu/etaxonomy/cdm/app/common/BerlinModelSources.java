@@ -42,13 +42,26 @@ public class BerlinModelSources {
 	
 	public static Source euroMed(){
 		//	BerlinModel - Euro+Med
-		String dbms = Source.SQL_SERVER_2005;
+		String dbms = Source.SQL_SERVER_2008;
 		String strServer = "BGBM42";
 		String strDB = "EuroPlusMed_00_Edit";
 		int port = 1433;
 		String userName = "webUser";
 		return  makeSource(dbms, strServer, strDB, port, userName, null);
 	}
+
+	public static Source PESI3_euroMed(){
+		//	BerlinModel - Euro+Med
+		String dbms = Source.SQL_SERVER_2008;
+		String strServer = "PESIIMPORT3";
+		String strDB = "EuroPlusMed_01";
+		int port = 1433;
+		String userName = "pesiexport";
+		return  makeSource(dbms, strServer, strDB, port, userName, null);
+	}
+
+	
+	
 	
 	public static Source PESI_ERMS(){
 		//	BerlinModel - Pesi-ERMS

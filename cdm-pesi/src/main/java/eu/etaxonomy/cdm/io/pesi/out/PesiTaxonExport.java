@@ -357,7 +357,7 @@ public class PesiTaxonExport extends PesiExportBase {
 		
 		
 		int partitionCount = 0;
-		while ((list = getNextTaxonPartition(null, limit, partitionCount++)).size() > 0   ) {
+		while ((list = getNextTaxonPartition(null, limit, partitionCount++, null)).size() > 0   ) {
 
 			logger.info("Fetched " + list.size() + " " + pluralString + ". Exporting...");
 			for (TaxonBase<?> taxon : list) {
@@ -456,6 +456,11 @@ public class PesiTaxonExport extends PesiExportBase {
 	// 2nd Round: Add ParentTaxonFk, TreeIndex to each Taxon
 	private boolean doPhase02(PesiExportState state) {
 		boolean success = true;
+		if (! state.getConfig().isDoTreeIndex()){
+			logger.info ("Ignore PHASE 2: ParentTaxonFk and TreeIndex");
+			return success;
+		}
+		
 		List<Classification> classificationList = null;
 		logger.info("PHASE 2: Add ParenTaxonFk and TreeIndex...");
 		
@@ -558,6 +563,10 @@ public class PesiTaxonExport extends PesiExportBase {
 		int count = 0;
 		int pastCount = 0;
 		boolean success = true;
+		if (! state.getConfig().isDoTreeIndex()){
+			logger.info ("Ignore PHASE 3: Add Rank data, KingdomFk, TypeNameFk, expertFk and speciesExpertFk...");
+			return success;
+		}
 		// Get the limit for objects to save within a single transaction.
 		int limit = state.getConfig().getLimitSave();
 
@@ -569,7 +578,7 @@ public class PesiTaxonExport extends PesiExportBase {
 		TransactionStatus txStatus = startTransaction(true);
 		logger.info("Started new transaction. Fetching some " + pluralString + " (max: " + limit + ") ...");
 		int partitionCount = 0;
-		while ((list = getNextTaxonPartition(null, limit, partitionCount++)).size() > 0) {
+		while ((list = getNextTaxonPartition(TaxonBase.class, limit, partitionCount++, null)).size() > 0) {
 
 			logger.info("Fetched " + list.size() + " " + pluralString + ". Exporting...");
 			for (TaxonBase<?> taxon : list) {
@@ -658,8 +667,12 @@ public class PesiTaxonExport extends PesiExportBase {
 		int pastCount;
 		boolean success = true;
 		// Get the limit for objects to save within a single transaction.
+		if (! state.getConfig().isDoTreeIndex()){
+			logger.info ("Ignore PHASE 4: Creating Inferred Synonyms...");
+			return success;
+		}
+		
 		int limit = state.getConfig().getLimitSave();
-
 		// Create inferred synonyms for accepted taxa
 		logger.info("PHASE 4: Creating Inferred Synonyms...");
 

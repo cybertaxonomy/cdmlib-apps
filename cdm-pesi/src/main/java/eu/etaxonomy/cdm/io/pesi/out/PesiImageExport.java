@@ -21,8 +21,6 @@ import org.springframework.stereotype.Component;
 import org.springframework.transaction.TransactionStatus;
 
 import eu.etaxonomy.cdm.io.common.Source;
-import eu.etaxonomy.cdm.io.common.IExportConfigurator.DO_REFERENCES;
-import eu.etaxonomy.cdm.io.common.mapping.out.IdMapper;
 import eu.etaxonomy.cdm.model.common.CdmBase;
 import eu.etaxonomy.cdm.model.description.DescriptionElementBase;
 import eu.etaxonomy.cdm.model.description.TaxonDescription;
@@ -42,7 +40,6 @@ import eu.etaxonomy.cdm.model.taxon.TaxonBase;
  *
  */
 @Component
-@SuppressWarnings("unchecked")
 public class PesiImageExport extends PesiExportBase {
 	private static final Logger logger = Logger.getLogger(PesiImageExport.class);
 	private static final Class<? extends CdmBase> standardMethodParameter = Reference.class;

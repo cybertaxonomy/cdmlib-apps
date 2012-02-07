@@ -20,6 +20,7 @@ import eu.etaxonomy.cdm.io.common.DbExportBase;
 import eu.etaxonomy.cdm.model.common.CdmBase;
 import eu.etaxonomy.cdm.model.common.Marker;
 import eu.etaxonomy.cdm.model.common.MarkerType;
+import eu.etaxonomy.cdm.model.description.DescriptionElementBase;
 import eu.etaxonomy.cdm.model.name.NameRelationship;
 import eu.etaxonomy.cdm.model.name.NonViralName;
 import eu.etaxonomy.cdm.model.name.TaxonNameBase;
@@ -39,10 +40,10 @@ public abstract class PesiExportBase extends DbExportBase<PesiExportConfigurator
 	}
 	
 
-	protected List<TaxonBase> getNextTaxonPartition(Class<? extends TaxonBase> clazz,int limit, int partitionCount) {
-		List<TaxonBase> list = getTaxonService().list(clazz, limit, partitionCount * limit, null, null);
+	protected <CLASS extends TaxonBase<?>> List<CLASS> getNextTaxonPartition(Class<CLASS> clazz,int limit, int partitionCount, List<String> propertyPath) {
+		List<CLASS> list = (List<CLASS>)getTaxonService().list(clazz, limit, partitionCount * limit, null, propertyPath);
 		
-		Iterator<TaxonBase> it = list.iterator();
+		Iterator<CLASS> it = list.iterator();
 		while (it.hasNext()){
 			TaxonBase<?> taxonBase = it.next();
 			if (! isPesiTaxon(taxonBase)){
@@ -74,6 +75,20 @@ public abstract class PesiExportBase extends DbExportBase<PesiExportConfigurator
 		}
 		return list;
 	}
+
+//	protected List<TaxonBase> getNextDescriptionPartition(Class<? extends DescriptionElementBase> clazz,int limit, int partitionCount) {
+//		List<DescriptionElementBase> list = getDescriptionService().listDescriptionElements(null, null, pageSize, pageNumber, propPath);
+//		
+//		Iterator<TaxonBase> it = list.iterator();
+//		while (it.hasNext()){
+//			TaxonBase<?> taxonBase = it.next();
+//			if (! isPesiTaxon(taxonBase)){
+//				it.remove();
+//			}
+//		}
+//		return list;
+//	}
+
 	
 	protected boolean isPurePesiName(TaxonNameBase<?,?> taxonName){
 		if (hasPesiTaxon(taxonName)){
@@ -111,6 +126,13 @@ public abstract class PesiExportBase extends DbExportBase<PesiExportConfigurator
 	}
 
 
+	/**
+	 * Checks if this taxon is taxon that is to be exported to PESI. This is generally the case
+	 * except for those taxa marked as "DON't PUBLISH".
+	 * The list of conditions may change in future.
+	 * @param taxonBase
+	 * @return
+	 */
 	protected static boolean isPesiTaxon(TaxonBase taxonBase) {
 		for (Marker marker : taxonBase.getMarkers()){
 			if (marker.getValue() == false && marker.getMarkerType().equals(MarkerType.PUBLISH())){

@@ -14,6 +14,9 @@ import java.util.UUID;
 import org.apache.log4j.Logger;
 
 import eu.etaxonomy.cdm.io.berlinModel.BerlinModelTransformer;
+import eu.etaxonomy.cdm.io.common.mapping.UndefinedTransformerMethodException;
+import eu.etaxonomy.cdm.io.common.mapping.out.ExportTransformerBase;
+import eu.etaxonomy.cdm.io.common.mapping.out.IExportTransformer;
 import eu.etaxonomy.cdm.io.pesi.erms.ErmsTransformer;
 import eu.etaxonomy.cdm.model.common.CdmBase;
 import eu.etaxonomy.cdm.model.common.Language;
@@ -45,7 +48,7 @@ import eu.etaxonomy.cdm.strategy.exceptions.UnknownCdmTypeException;
  * @date 16.02.2010
  *
  */
-public final class PesiTransformer {
+public final class PesiTransformer extends ExportTransformerBase implements IExportTransformer{
 	
 	private static final Logger logger = Logger.getLogger(PesiTransformer.class);
 
@@ -1252,7 +1255,9 @@ public final class PesiTransformer {
 	 */
 	public static String presenceAbsenceTerm2OccurrenceStatusCache(PresenceAbsenceTermBase<?> term) {
 		String result = null;
-		if (term.isInstanceOf(PresenceTerm.class)) {
+		if (term == null){
+			return null;
+		}else if (term.isInstanceOf(PresenceTerm.class)) {
 			PresenceTerm presenceTerm = CdmBase.deproxy(term, PresenceTerm.class);
 			if (presenceTerm.equals(PresenceTerm.PRESENT())) {
 				result = STR_STATUS_PRESENT;
@@ -1290,7 +1295,9 @@ public final class PesiTransformer {
 	 */
 	public static Integer presenceAbsenceTerm2OccurrenceStatusId(PresenceAbsenceTermBase<?> term) {
 		Integer result = null;
-		if (term.isInstanceOf(PresenceTerm.class)) {
+		if (term == null){
+			return null;
+		}else if (term.isInstanceOf(PresenceTerm.class)) {
 			PresenceTerm presenceTerm = CdmBase.deproxy(term, PresenceTerm.class);
 			if (presenceTerm.equals(PresenceTerm.PRESENT())) {
 				result = STATUS_PRESENT;
@@ -1583,6 +1590,30 @@ public final class PesiTransformer {
 		return null; // Actually the export has to stop here because AreaFk's are not allowed to be NULL.
 		
 	}
+
+	@Override
+	public String getCacheByPresenceAbsenceTerm(PresenceAbsenceTermBase status) throws UndefinedTransformerMethodException {
+		return presenceAbsenceTerm2OccurrenceStatusCache(status);
+	}
+	
+	@Override
+	public Object getKeyByPresenceAbsenceTerm(PresenceAbsenceTermBase status) throws UndefinedTransformerMethodException {
+		return presenceAbsenceTerm2OccurrenceStatusId(status);
+	}
+	
+	
+	
+	@Override
+	public String getCacheByNamedArea(NamedArea area) throws UndefinedTransformerMethodException {
+		return area2AreaCache(area);
+	}
+	
+	
+	@Override
+	public Object getKeyByNamedArea(NamedArea area) throws UndefinedTransformerMethodException {
+		return area2AreaId(area);
+	}
+	
 	
 	/**
 	 * Returns the AreaId for a given Area.

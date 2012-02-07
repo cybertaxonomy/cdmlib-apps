@@ -9,8 +9,7 @@
 
 package eu.etaxonomy.cdm.app.jaxb;
 
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
+import java.net.URI;
 
 import org.apache.log4j.Logger;
 
@@ -20,10 +19,7 @@ import eu.etaxonomy.cdm.app.util.TestDatabase;
 import eu.etaxonomy.cdm.database.DbSchemaValidation;
 import eu.etaxonomy.cdm.database.ICdmDataSource;
 import eu.etaxonomy.cdm.io.common.CdmDefaultExport;
-import eu.etaxonomy.cdm.io.common.CdmDefaultImport;
-import eu.etaxonomy.cdm.io.common.IImportConfigurator.DO_REFERENCES;
 import eu.etaxonomy.cdm.io.jaxb.JaxbExportConfigurator;
-import eu.etaxonomy.cdm.io.jaxb.JaxbImportConfigurator;
 
 /**
  * @author a.babadshanjan
@@ -36,8 +32,7 @@ public class JaxbExportActivator {
 	private static final ICdmDataSource cdmSource = CdmDestinations.localH2Diptera();
 	
 	// Export:
-	private static String exportFileName = 
-		"C:\\export_test_app_import.xml";
+	private static String exportFileName = "C:\\export_test_app_import.xml";
 
 	/** NUMBER_ROWS_TO_RETRIEVE = 0 is the default case to retrieve all rows.
 	 * For testing purposes: If NUMBER_ROWS_TO_RETRIEVE >0 then retrieve 
@@ -47,16 +42,16 @@ public class JaxbExportActivator {
 
 	private static final Logger logger = Logger.getLogger(JaxbImportActivator.class);
 
-	private void invokeExport(ICdmDataSource sourceParam, String exportFile) {
+	private void invokeExport(ICdmDataSource sourceParam, URI uri) {
 		JaxbExportConfigurator jaxbExportConfigurator;
-		if (exportFile !=null && sourceParam != null){
-			jaxbExportConfigurator = JaxbExportConfigurator.NewInstance(sourceParam, exportFile);
+		if (uri !=null && sourceParam != null){
+			jaxbExportConfigurator = JaxbExportConfigurator.NewInstance(sourceParam, uri);
 		}else if (sourceParam != null){			
-			jaxbExportConfigurator = JaxbExportConfigurator.NewInstance(sourceParam, exportFileName);
-		} else if (exportFile !=null ){
-			jaxbExportConfigurator = JaxbExportConfigurator.NewInstance(cdmSource, exportFile);
+			jaxbExportConfigurator = JaxbExportConfigurator.NewInstance(sourceParam, URI.create(exportFileName));
+		} else if (uri !=null ){
+			jaxbExportConfigurator = JaxbExportConfigurator.NewInstance(cdmSource, uri);
 		} else{
-			jaxbExportConfigurator = JaxbExportConfigurator.NewInstance(cdmSource, exportFileName);
+			jaxbExportConfigurator = JaxbExportConfigurator.NewInstance(cdmSource, URI.create(exportFileName));
 		}
 		
 		
@@ -109,10 +104,11 @@ public class JaxbExportActivator {
 		JaxbExportActivator sc = new JaxbExportActivator();
 		ICdmDataSource source = CdmDestinations.chooseDestination(args) != null ? CdmDestinations.chooseDestination(args) : cdmSource;
 		String file = chooseFile(args);
+		URI uri = URI.create(file);
 		CdmApplicationController appCtr = null;
 		appCtr = sc.initDb(source);
 				
-		sc.invokeExport(source, file);
+		sc.invokeExport(source, uri);
 		
 	}
 

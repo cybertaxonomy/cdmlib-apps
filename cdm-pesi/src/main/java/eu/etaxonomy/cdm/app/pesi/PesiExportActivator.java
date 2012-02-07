@@ -42,6 +42,7 @@ public class PesiExportActivator {
 	static final UUID secUuid = UUID.fromString("d03ef02a-f226-4cb1-bdb4-f6c154f08a34");
 	static final int sourceSecId = 7331;
 	static final int isHomotypicId = 72;
+	//Taxon names can't be mapped to their CDM ids as PESI Taxon table mainly holds taxa and there IDs. We ad nameIdStart to the TaxonName id to get a unique id
 	static final int nameIdStart = 10000000;
 	
 	static final int partitionSize = 5000;
@@ -63,13 +64,16 @@ public class PesiExportActivator {
 	
 	//taxa
 	static final boolean doTaxa = true;
-	static final boolean doRelTaxa = true;
+	static final boolean doRelTaxa = false;
 	static final boolean doNotes = true;
 	static final boolean doNoteSources = true;
 	static final boolean doAdditionalTaxonSource = true;
 	static final boolean doOccurrence = true;
 	static final boolean doOccurrenceSource = true;
 	static final boolean doImage = true;
+	static final boolean doTreeIndex = false;
+	static final boolean doRank = false;
+	static final boolean doInferredSynonyms = false;
 	
 
 // ************************ NONE **************************************** //
@@ -86,6 +90,9 @@ public class PesiExportActivator {
 //	static final boolean doOccurrence = false;
 //	static final boolean doOccurrenceSource = false;
 //	static final boolean doImage = false;
+//	static final boolean doTreeIndex = true;
+//	static final boolean doRank = true;
+//	static final boolean doInferredSynonyms = true;
 	
 	
 	public boolean 	doExport(ICdmDataSource source){
@@ -104,6 +111,9 @@ public class PesiExportActivator {
 		config.setDoNotes(doNotes);
 		config.setDoNoteSources(doNoteSources);
 		config.setDoOccurrenceSource(doOccurrenceSource);
+		config.setDoTreeIndex(doTreeIndex);
+		config.setDoRank(doRank);
+		config.setDoInferredSynonyms(doInferredSynonyms);
 		
 		config.setCheck(check);
 		config.setLimitSave(partitionSize);

@@ -15,6 +15,7 @@ import eu.etaxonomy.cdm.database.ICdmDataSource;
 import eu.etaxonomy.cdm.io.common.DbExportConfiguratorBase;
 import eu.etaxonomy.cdm.io.common.IExportConfigurator;
 import eu.etaxonomy.cdm.io.common.Source;
+import eu.etaxonomy.cdm.io.common.mapping.out.IExportTransformer;
 import eu.etaxonomy.cdm.model.reference.Reference;
 import eu.etaxonomy.cdm.model.reference.ReferenceFactory;
 
@@ -40,8 +41,15 @@ public class PesiExportConfigurator extends DbExportConfiguratorBase<PesiExportS
 	private boolean doOccurrence = true;
 	private boolean doOccurrenceSource = true;
 	private boolean doImages = true;
+	private boolean doTreeIndex = true;
+	private boolean doInferredSynonyms = true;
+	private boolean doRank = true;
 	
 	private int nameIdStart = 10000000;
+
+	//TODO
+	private static IExportTransformer defaultTransformer = new PesiTransformer();
+
 
 
 	public static PesiExportConfigurator NewInstance(Source pesiDestination, ICdmDataSource source) {
@@ -54,12 +62,13 @@ public class PesiExportConfigurator extends DbExportConfiguratorBase<PesiExportS
 				PesiSourceExport.class,
 				PesiTaxonExport.class,
 				PesiRelTaxonExport.class, // RelTaxonId's could be deleted from state hashmap
-				PesiNoteExport.class,
-				PesiNoteSourceExport.class, // NoteId's could be deleted from state hashmap
-				PesiAdditionalTaxonSourceExport.class,
-				PesiOccurrenceExport.class,
-				PesiOccurrenceSourceExport.class,
-				PesiImageExport.class,
+				PesiDescriptionExport.class,
+//				PesiNoteExport.class,
+//				PesiNoteSourceExport.class, // NoteId's could be deleted from state hashmap
+//				PesiAdditionalTaxonSourceExport.class,
+//				PesiOccurrenceExport.class,
+//				PesiOccurrenceSourceExport.class,
+//				PesiImageExport.class,
 		};
 
 	}
@@ -69,7 +78,7 @@ public class PesiExportConfigurator extends DbExportConfiguratorBase<PesiExportS
 	 * @param cdmSource
 	 */
 	private PesiExportConfigurator(Source pesiSource, ICdmDataSource cdmSource) {
-	   super();
+	   super(defaultTransformer);
 	   setSource(cdmSource);
 	   setDestination(pesiSource);
 	}
@@ -192,6 +201,29 @@ public class PesiExportConfigurator extends DbExportConfiguratorBase<PesiExportS
 		this.doOccurrenceSource = doOccurrenceSource;
 	}
 
+	public boolean isDoTreeIndex() {
+		return this.doTreeIndex;
+	}
+
+	public void setDoTreeIndex(boolean doTreeIndex) {
+		this.doTreeIndex = doTreeIndex;
+	}
+
+	public boolean isDoInferredSynonyms() {
+		return doInferredSynonyms;
+	}
+
+	public void setDoInferredSynonyms(boolean doInferredSynonyms) {
+		this.doInferredSynonyms = doInferredSynonyms;
+	}
+
+	public boolean isDoRank() {
+		return doRank;
+	}
+
+	public void setDoRank(boolean doRank) {
+		this.doRank = doRank;
+	}
 
 
 

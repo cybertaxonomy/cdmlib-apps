@@ -1289,8 +1289,10 @@ cdm-pesi/src/main/java/eu/etaxonomy/cdm/io/pesi/faunaEuropaea/FaunaEuropaeaTaxon
 cdm-pesi/src/main/java/eu/etaxonomy/cdm/io/pesi/faunaEuropaea/FaunaEuropaeaTransformer.java -text
 cdm-pesi/src/main/java/eu/etaxonomy/cdm/io/pesi/faunaEuropaea/FaunaEuropaeaUsersImport.java -text
 cdm-pesi/src/main/java/eu/etaxonomy/cdm/io/pesi/merging/FaunaEuErmsMerging.java -text
+cdm-pesi/src/main/java/eu/etaxonomy/cdm/io/pesi/out/ExpertsAndLastActionMapper.java -text
 cdm-pesi/src/main/java/eu/etaxonomy/cdm/io/pesi/out/PesiAdditionalTaxonSourceExport.java -text
 cdm-pesi/src/main/java/eu/etaxonomy/cdm/io/pesi/out/PesiCollectionExportMapping.java -text
+cdm-pesi/src/main/java/eu/etaxonomy/cdm/io/pesi/out/PesiDescriptionExport.java -text
 cdm-pesi/src/main/java/eu/etaxonomy/cdm/io/pesi/out/PesiExportBase.java -text
 cdm-pesi/src/main/java/eu/etaxonomy/cdm/io/pesi/out/PesiExportConfigurator.java -text
 cdm-pesi/src/main/java/eu/etaxonomy/cdm/io/pesi/out/PesiExportMapping.java -text
