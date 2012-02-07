@@ -91,7 +91,6 @@ public class JaxbExportActivator {
 	
 	// Load test data to DB
 	private void loadTestData(CdmApplicationController appCtrInit) {
-
 		TestDatabase.loadTestData("", appCtrInit);
 	}
 
