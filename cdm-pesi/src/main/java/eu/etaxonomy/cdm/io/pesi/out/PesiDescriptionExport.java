@@ -21,6 +21,7 @@ import org.apache.log4j.Logger;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.TransactionStatus;
 
+import eu.etaxonomy.cdm.io.berlinModel.BerlinModelTransformer;
 import eu.etaxonomy.cdm.io.common.DbExportStateBase;
 import eu.etaxonomy.cdm.io.common.Source;
 import eu.etaxonomy.cdm.io.common.mapping.UndefinedTransformerMethodException;
@@ -48,6 +49,7 @@ import eu.etaxonomy.cdm.model.description.TaxonDescription;
 import eu.etaxonomy.cdm.model.description.TaxonInteraction;
 import eu.etaxonomy.cdm.model.description.TextData;
 import eu.etaxonomy.cdm.model.location.NamedArea;
+import eu.etaxonomy.cdm.model.location.TdwgArea;
 import eu.etaxonomy.cdm.model.name.TaxonNameBase;
 import eu.etaxonomy.cdm.model.taxon.Taxon;
 
@@ -227,6 +229,32 @@ public class PesiDescriptionExport extends PesiExportBase {
 
 	private boolean isPesiDistribution(PesiExportState state, Distribution distribution) {
 		Integer key;
+		//area filter
+		NamedArea area = distribution.getArea();
+		if (area == null){
+			logger.warn("Area is null for distribution " +  distribution.getUuid());
+			return false;
+		}else if (area.getUuid().equals(BerlinModelTransformer.euroMedUuid)){
+			//E+M area only holds endemic status information and therefore is not exported to PESI
+			return false;
+		}else if (area.equals(TdwgArea.getAreaByTdwgAbbreviation("1"))){
+			//Europe area never holds status information (may probably deleted in E+M)
+			return false;
+		}else if (area.equals(TdwgArea.getAreaByTdwgAbbreviation("21"))){
+			//Macaronesia records should not be exported to PESI
+			return false;
+		} else
+			try {
+				if (state.getTransformer().getKeyByNamedArea(area) == null){
+					logger.warn("Area not available in PESI transformer " +  area.getTitleCache() + ", " + area.getRepresentation(Language.ENGLISH()).getAbbreviatedLabel());
+					return false;
+				}
+			} catch (UndefinedTransformerMethodException e1) {
+				logger.warn("Area not available in PESI transformer " +  area.getTitleCache());
+				return false;
+			}
+		
+		//status
 		PresenceAbsenceTermBase<?> status = distribution.getStatus();
 		if (status == null){
 			logger.warn("No status for distribution: " +  distribution.getUuid());
@@ -237,6 +265,7 @@ public class PesiDescriptionExport extends PesiExportBase {
 			if (key != null){
 				return true;
 			}else{
+				logger.warn("PresenceAbsenceTerm " + status.getTitleCache() + "not handled in transformer");
 				return false;
 			}
 		} catch (UndefinedTransformerMethodException e) {
