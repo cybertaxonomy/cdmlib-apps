@@ -29,6 +29,8 @@ import eu.etaxonomy.cdm.io.common.mapping.out.DbAreaMapper;
 import eu.etaxonomy.cdm.io.common.mapping.out.DbDescriptionElementTaxonMapper;
 import eu.etaxonomy.cdm.io.common.mapping.out.DbDistributionStatusMapper;
 import eu.etaxonomy.cdm.io.common.mapping.out.DbExportNotYetImplementedMapper;
+import eu.etaxonomy.cdm.io.common.mapping.out.DbLanguageMapper;
+import eu.etaxonomy.cdm.io.common.mapping.out.DbSingleSourceMapper;
 import eu.etaxonomy.cdm.io.common.mapping.out.DbStringMapper;
 import eu.etaxonomy.cdm.io.common.mapping.out.DbTextDataMapper;
 import eu.etaxonomy.cdm.io.common.mapping.out.IdMapper;
@@ -52,7 +54,7 @@ import eu.etaxonomy.cdm.model.location.NamedArea;
 import eu.etaxonomy.cdm.model.location.TdwgArea;
 import eu.etaxonomy.cdm.model.name.TaxonNameBase;
 import eu.etaxonomy.cdm.model.taxon.Taxon;
-
+import static java.util.EnumSet.of;
 /**
  * The export class for {@link eu.etaxonomy.cdm.model.description.DescriptionElementBase DescriptionElements}.<p>
  * Inserts into DataWarehouse database table <code>Note</code>.<p>
@@ -228,6 +230,12 @@ public class PesiDescriptionExport extends PesiExportBase {
 	}
 
 	private boolean isPesiDistribution(PesiExportState state, Distribution distribution) {
+		//currently we use the E+M summary status to decide if a distribution should be exported
+		if (distribution.getStatus() == null){
+			return false;
+		}
+		
+		//...this may change in future so we keep the following code
 		Integer key;
 		//area filter
 		NamedArea area = distribution.getArea();
@@ -238,11 +246,13 @@ public class PesiDescriptionExport extends PesiExportBase {
 			//E+M area only holds endemic status information and therefore is not exported to PESI
 			return false;
 		}else if (area.equals(TdwgArea.getAreaByTdwgAbbreviation("1"))){
-			//Europe area never holds status information (may probably deleted in E+M)
+			//Europe area never holds status information (may probably be deleted in E+M)
 			return false;
-		}else if (area.equals(TdwgArea.getAreaByTdwgAbbreviation("21"))){
-			//Macaronesia records should not be exported to PESI
-			return false;
+//		}else if (area.equals(TdwgArea.getAreaByTdwgAbbreviation("21"))){
+//			//Macaronesia records should not be exported to PESI
+//			return false;
+//		//TODO exclude Russion areas Rs*, and maybe ohters
+		
 		} else
 			try {
 				if (state.getTransformer().getKeyByNamedArea(area) == null){
@@ -253,25 +263,27 @@ public class PesiDescriptionExport extends PesiExportBase {
 				logger.warn("Area not available in PESI transformer " +  area.getTitleCache());
 				return false;
 			}
+		return true;
 		
-		//status
-		PresenceAbsenceTermBase<?> status = distribution.getStatus();
-		if (status == null){
-			logger.warn("No status for distribution: " +  distribution.getUuid());
-			return false;
-		}
-		try {
-			key = (Integer)state.getTransformer().getKeyByPresenceAbsenceTerm(status);
-			if (key != null){
-				return true;
-			}else{
-				logger.warn("PresenceAbsenceTerm " + status.getTitleCache() + "not handled in transformer");
-				return false;
-			}
-		} catch (UndefinedTransformerMethodException e) {
-			logger.warn("PresenceAbsenceTerm " + status.getTitleCache() + "not handled in transformer");
-			return false;
-		}
+//		
+//		//status
+//		PresenceAbsenceTermBase<?> status = distribution.getStatus();
+//		if (status == null){
+//			logger.warn("No status for distribution: " +  distribution.getUuid());
+//			return false;
+//		}
+//		try {
+//			key = (Integer)state.getTransformer().getKeyByPresenceAbsenceTerm(status);
+//			if (key != null){
+//				return true;
+//			}else{
+//				logger.warn("PresenceAbsenceTerm " + status.getTitleCache() + "not handled in transformer");
+//				return false;
+//			}
+//		} catch (UndefinedTransformerMethodException e) {
+//			logger.warn("PresenceAbsenceTerm " + status.getTitleCache() + "not handled in transformer");
+//			return false;
+//		}
 	}
 
 	private boolean isPesiNote(DescriptionElementBase element) {
@@ -630,8 +642,11 @@ public class PesiDescriptionExport extends PesiExportBase {
 		mapping.addMapper(DbDistributionStatusMapper.NewInstance("OccurrenceStatusFk", ! IS_CACHE));
 		mapping.addMapper(DbDistributionStatusMapper.NewInstance("OccurrenceStatusCache", IS_CACHE));
 		
-		mapping.addMapper(DbExportNotYetImplementedMapper.NewInstance("SourceFk", "Needs reimplementation in description export"));
-		mapping.addMapper(DbExportNotYetImplementedMapper.NewInstance("SourceCache", "Needs reimplementation in description export"));
+//		Use Occurrence source instead
+//		mapping.addMapper(DbSingleSourceMapper.NewInstance("SourceFk", DbSingleSourceMapper.EXCLUDE_WITH_ID , ! IS_CACHE));
+//		mapping.addMapper(DbSingleSourceMapper.NewInstance("SourceNameCache", DbSingleSourceMapper.EXCLUDE_WITH_ID , ! IS_CACHE));
+		
+		
 		mapping.addMapper(DbExportNotYetImplementedMapper.NewInstance("Notes", "Needs reimplementation in description export"));
 		mapping.addMapper(ExpertsAndLastActionMapper.NewInstance());
 		return mapping;
@@ -645,9 +660,12 @@ public class PesiDescriptionExport extends PesiExportBase {
 		PesiExportMapping mapping = new PesiExportMapping(dbAdditionalSourceTableName);
 		
 		mapping.addMapper(DbDescriptionElementTaxonMapper.NewInstance("taxonFk"));
-//		mapping.addMapper(MethodMapper.NewInstance("SourceFk", this.getClass(), "getSourceFk", standardMethodParameter, PesiExportState.class));
+		mapping.addMapper(DbSingleSourceMapper.NewInstance("SourceFk", of (DbSingleSourceMapper.EXCLUDE.WITH_ID) , ! IS_CACHE));
+		mapping.addMapper(DbSingleSourceMapper.NewInstance("SourceNameCache", of(DbSingleSourceMapper.EXCLUDE.WITH_ID) , ! IS_CACHE));
+		
 //		mapping.addMapper(MethodMapper.NewInstance("SourceUseFk", this));
 //		mapping.addMapper(MethodMapper.NewInstance("SourceUseCache", this));
+//		mapping.addMapper(MethodMapper.NewInstance("SourceFk", this.getClass(), "getSourceFk", standardMethodParameter, PesiExportState.class));
 //		mapping.addMapper(MethodMapper.NewInstance("SourceNameCache", this));
 //		mapping.addMapper(MethodMapper.NewInstance("SourceDetail", this));
 		
@@ -666,10 +684,11 @@ public class PesiDescriptionExport extends PesiExportBase {
 		mapping.addMapper(DbAreaMapper.NewInstance(CommonTaxonName.class, "Area", "Region", IS_CACHE));
 		mapping.addMapper(DbDescriptionElementTaxonMapper.NewInstance("taxonFk"));
 		
-//		mapping.addMapper(MethodMapper.NewInstance("LanguageFk", this));
-//		mapping.addMapper(MethodMapper.NewInstance("LanguageCache", this));
-		mapping.addMapper(DbExportNotYetImplementedMapper.NewInstance("SourceFk", "Needsimplementation in description export"));
-		mapping.addMapper(DbExportNotYetImplementedMapper.NewInstance("SourceNameCache", "Needs implementation in description export"));
+		mapping.addMapper(DbLanguageMapper.NewInstance(CommonTaxonName.class, "Language", "LanguageFk", ! IS_CACHE));
+		mapping.addMapper(DbLanguageMapper.NewInstance(CommonTaxonName.class, "Language", "LanguageCache", IS_CACHE));
+		
+		mapping.addMapper(DbSingleSourceMapper.NewInstance("SourceFk", of ( DbSingleSourceMapper.EXCLUDE.WITH_ID) , ! IS_CACHE));
+		mapping.addMapper(DbSingleSourceMapper.NewInstance("SourceNameCache", of ( DbSingleSourceMapper.EXCLUDE.WITH_ID) , ! IS_CACHE));
 		mapping.addMapper(ExpertsAndLastActionMapper.NewInstance());
 		return mapping;
 
@@ -678,6 +697,8 @@ public class PesiDescriptionExport extends PesiExportBase {
 	private PesiExportMapping getImageMapping() {
 		PesiExportMapping mapping = new PesiExportMapping(dbImageTableName);
 		mapping.addMapper(DbDescriptionElementTaxonMapper.NewInstance("taxonFk"));
+		
+		//TODO xxx
 		
 		return mapping;
 	}

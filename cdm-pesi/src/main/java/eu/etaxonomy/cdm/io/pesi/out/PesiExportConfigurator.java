@@ -47,13 +47,8 @@ public class PesiExportConfigurator extends DbExportConfiguratorBase<PesiExportS
 	
 	private int nameIdStart = 10000000;
 
-	//TODO
-	private static IExportTransformer defaultTransformer = new PesiTransformer();
-
-
-
-	public static PesiExportConfigurator NewInstance(Source pesiDestination, ICdmDataSource source) {
-			return new PesiExportConfigurator(pesiDestination, source);
+	public static PesiExportConfigurator NewInstance(Source pesiDestination, ICdmDataSource source, IExportTransformer transformer) {
+			return new PesiExportConfigurator(pesiDestination, source, transformer);
 	}
 	
 	@SuppressWarnings("unchecked")
@@ -76,9 +71,10 @@ public class PesiExportConfigurator extends DbExportConfiguratorBase<PesiExportS
 	/**
 	 * @param pesiSource
 	 * @param cdmSource
+	 * @param transformer 
 	 */
-	private PesiExportConfigurator(Source pesiSource, ICdmDataSource cdmSource) {
-	   super(defaultTransformer);
+	private PesiExportConfigurator(Source pesiSource, ICdmDataSource cdmSource, IExportTransformer transformer) {
+	   super(transformer);
 	   setSource(cdmSource);
 	   setDestination(pesiSource);
 	}

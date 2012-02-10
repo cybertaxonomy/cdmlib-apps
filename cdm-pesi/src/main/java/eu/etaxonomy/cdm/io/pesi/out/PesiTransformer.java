@@ -9,11 +9,17 @@
 */
 package eu.etaxonomy.cdm.io.pesi.out;
 
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.UUID;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 
 import eu.etaxonomy.cdm.io.berlinModel.BerlinModelTransformer;
+import eu.etaxonomy.cdm.io.common.Source;
 import eu.etaxonomy.cdm.io.common.mapping.UndefinedTransformerMethodException;
 import eu.etaxonomy.cdm.io.common.mapping.out.ExportTransformerBase;
 import eu.etaxonomy.cdm.io.common.mapping.out.IExportTransformer;
@@ -46,6 +52,7 @@ import eu.etaxonomy.cdm.strategy.exceptions.UnknownCdmTypeException;
 
 /**
  * @author e.-m.lee
+ * @author a.mueller (update)
  * @date 16.02.2010
  *
  */
@@ -1235,6 +1242,35 @@ public final class PesiTransformer extends ExportTransformerBase implements IExp
 	public static String STR_STATUS_MANAGED = "Managed";
 	public static String STR_STATUS_DOUBTFUL = "Doubtful";
 
+	private Map<String, Integer> tdwgKeyMap = new HashMap<String, Integer>();
+	private Map<String, String> tdwgLabelMap = new HashMap<String, String>();
+	private Source destination;
+	
+	public PesiTransformer(Source destination) {
+		super();
+		this.destination = destination;
+		fillMaps();
+	}
+
+	private void fillMaps() {
+		String sql = " SELECT AreaId, AreaName, AreaTdwgCode, AreaEmCode, AreaFaEuCode FROM Area";
+		ResultSet rs = destination.getResultSet(sql);
+		try {
+			while (rs.next()){
+				String tdwg = rs.getString("AreaTdwgCode");
+				Integer id = rs.getInt("AreaId");
+				String label = rs.getString("AreaName");
+				
+				if (StringUtils.isNotBlank(tdwg)){
+					this.tdwgKeyMap.put(tdwg, id);
+					this.tdwgLabelMap.put(tdwg, label);
+				}
+			}
+		} catch (SQLException e) {
+			logger.error("SQLException when trying to read area map", e);
+			e.printStackTrace();
+		}
+	}
 
 	/**
 	 * Converts the databaseString to its abbreviation if its known.
@@ -1251,7 +1287,7 @@ public final class PesiTransformer extends ExportTransformerBase implements IExp
 	}
 	
 	/**
-	 * Returns the OccurrenceStatusCache for a given PresenceAbsenceTerm.
+	 * Returns the OccurrenceStatusId for a given PresenceAbsenceTerm.
 	 * @param term
 	 * @return
 	 * @throws UnknownCdmTypeException 
@@ -1260,28 +1296,39 @@ public final class PesiTransformer extends ExportTransformerBase implements IExp
 		String result = null;
 		if (term == null){
 			return null;
+		//present
 		}else if (term.isInstanceOf(PresenceTerm.class)) {
 			PresenceTerm presenceTerm = CdmBase.deproxy(term, PresenceTerm.class);
-			if (presenceTerm.equals(PresenceTerm.PRESENT())) {
+			if (presenceTerm.equals(PresenceTerm.PRESENT()) || 
+					presenceTerm.equals(PresenceTerm.INTRODUCED_DOUBTFULLY_INTRODUCED()) || 
+					presenceTerm.equals(PresenceTerm.NATIVE_DOUBTFULLY_NATIVE())) {
 				result = STR_STATUS_PRESENT;
 			} else if (presenceTerm.equals(PresenceTerm.NATIVE())) {
 				result = STR_STATUS_NATIVE;
-			} else if (presenceTerm.equals(PresenceTerm.INTRODUCED())) {
+			} else if (presenceTerm.equals(PresenceTerm.INTRODUCED()) || 
+					presenceTerm.equals(PresenceTerm.INTRODUCED_ADVENTITIOUS()) ||
+					presenceTerm.equals(PresenceTerm.INTRODUCED_UNCERTAIN_DEGREE_OF_NATURALISATION())) {
 				result = STR_STATUS_INTRODUCED;
-			} else if (presenceTerm.equals(PresenceTerm.NATURALISED())) {
+			} else if (presenceTerm.equals(PresenceTerm.NATURALISED()) 
+					|| presenceTerm.equals(PresenceTerm.INTRODUCED_NATURALIZED())) {
 				result = STR_STATUS_NATURALISED;
 			} else if (presenceTerm.equals(PresenceTerm.INVASIVE())) {
 				result = STR_STATUS_INVASIVE;
-			} else if (presenceTerm.equals(PresenceTerm.INTRODUCED_CULTIVATED())) {
+			} else if (presenceTerm.equals(PresenceTerm.CULTIVATED())) {
 				result = STR_STATUS_MANAGED;
-			} else if (presenceTerm.equals(PresenceTerm.PRESENT_DOUBTFULLY())) {
+			} else if (presenceTerm.equals(PresenceTerm.PRESENT_DOUBTFULLY())||
+					presenceTerm.equals(PresenceTerm.INTRODUCED_PRESENCE_QUESTIONABLE()) ||
+					presenceTerm.equals(PresenceTerm.NATIVE_PRESENCE_QUESTIONABLE() )) {
 				result = STR_STATUS_DOUBTFUL;
 			} else {
 				logger.error("PresenceTerm could not be translated to datawarehouse occurrence status id: " + presenceTerm.getLabel());
 			}
+		//absent	
 		} else if (term.isInstanceOf(AbsenceTerm.class)) {
 			AbsenceTerm absenceTerm = CdmBase.deproxy(term, AbsenceTerm.class);
-			if (absenceTerm.equals(AbsenceTerm.ABSENT())) {
+			if (absenceTerm.equals(AbsenceTerm.ABSENT()) || absenceTerm.equals(AbsenceTerm.NATIVE_FORMERLY_NATIVE()) ||
+					absenceTerm.equals(AbsenceTerm.CULTIVATED_REPORTED_IN_ERROR()) || absenceTerm.equals(AbsenceTerm.INTRODUCED_REPORTED_IN_ERROR()) ||
+					absenceTerm.equals(AbsenceTerm.INTRODUCED_FORMERLY_INTRODUCED()) || absenceTerm.equals(AbsenceTerm.NATIVE_REPORTED_IN_ERROR() ) ) {
 				result = STR_STATUS_ABSENT;
 			} else {
 				logger.error("AbsenceTerm could not be translated to datawarehouse occurrence status id: " + absenceTerm.getLabel());
@@ -1289,7 +1336,7 @@ public final class PesiTransformer extends ExportTransformerBase implements IExp
 		}
 		return result;
 	}
-
+	
 	/**
 	 * Returns the OccurrenceStatusId for a given PresenceAbsenceTerm.
 	 * @param term
@@ -1300,28 +1347,39 @@ public final class PesiTransformer extends ExportTransformerBase implements IExp
 		Integer result = null;
 		if (term == null){
 			return null;
+		//present
 		}else if (term.isInstanceOf(PresenceTerm.class)) {
 			PresenceTerm presenceTerm = CdmBase.deproxy(term, PresenceTerm.class);
-			if (presenceTerm.equals(PresenceTerm.PRESENT())) {
+			if (presenceTerm.equals(PresenceTerm.PRESENT()) || 
+					presenceTerm.equals(PresenceTerm.INTRODUCED_DOUBTFULLY_INTRODUCED()) || 
+					presenceTerm.equals(PresenceTerm.NATIVE_DOUBTFULLY_NATIVE())) {
 				result = STATUS_PRESENT;
 			} else if (presenceTerm.equals(PresenceTerm.NATIVE())) {
 				result = STATUS_NATIVE;
-			} else if (presenceTerm.equals(PresenceTerm.INTRODUCED())) {
+			} else if (presenceTerm.equals(PresenceTerm.INTRODUCED()) || 
+					presenceTerm.equals(PresenceTerm.INTRODUCED_ADVENTITIOUS()) ||
+					presenceTerm.equals(PresenceTerm.INTRODUCED_UNCERTAIN_DEGREE_OF_NATURALISATION())) {
 				result = STATUS_INTRODUCED;
-			} else if (presenceTerm.equals(PresenceTerm.NATURALISED())) {
+			} else if (presenceTerm.equals(PresenceTerm.NATURALISED()) 
+					|| presenceTerm.equals(PresenceTerm.INTRODUCED_NATURALIZED())) {
 				result = STATUS_NATURALISED;
 			} else if (presenceTerm.equals(PresenceTerm.INVASIVE())) {
 				result = STATUS_INVASIVE;
 			} else if (presenceTerm.equals(PresenceTerm.CULTIVATED())) {
 				result = STATUS_MANAGED;
-			} else if (presenceTerm.equals(PresenceTerm.PRESENT_DOUBTFULLY())) {
+			} else if (presenceTerm.equals(PresenceTerm.PRESENT_DOUBTFULLY())||
+					presenceTerm.equals(PresenceTerm.INTRODUCED_PRESENCE_QUESTIONABLE()) ||
+					presenceTerm.equals(PresenceTerm.NATIVE_PRESENCE_QUESTIONABLE() )) {
 				result = STATUS_DOUBTFUL;
 			} else {
 				logger.error("PresenceTerm could not be translated to datawarehouse occurrence status id: " + presenceTerm.getLabel());
 			}
+		//absent	
 		} else if (term.isInstanceOf(AbsenceTerm.class)) {
 			AbsenceTerm absenceTerm = CdmBase.deproxy(term, AbsenceTerm.class);
-			if (absenceTerm.equals(AbsenceTerm.ABSENT())) {
+			if (absenceTerm.equals(AbsenceTerm.ABSENT()) || absenceTerm.equals(AbsenceTerm.NATIVE_FORMERLY_NATIVE()) ||
+					absenceTerm.equals(AbsenceTerm.CULTIVATED_REPORTED_IN_ERROR()) || absenceTerm.equals(AbsenceTerm.INTRODUCED_REPORTED_IN_ERROR()) ||
+					absenceTerm.equals(AbsenceTerm.INTRODUCED_FORMERLY_INTRODUCED()) || absenceTerm.equals(AbsenceTerm.NATIVE_REPORTED_IN_ERROR() ) ) {
 				result = STATUS_ABSENT;
 			} else {
 				logger.error("AbsenceTerm could not be translated to datawarehouse occurrence status id: " + absenceTerm.getLabel());
@@ -1342,8 +1400,7 @@ public final class PesiTransformer extends ExportTransformerBase implements IExp
 		} else if (area.isInstanceOf(TdwgArea.class)) {
 			
 			// TODO: Areas identified by the string "TODO" (for now) have to be identified correctly after additions have been made to the list of NamedArea's according to specific imports, i.e. euro+med
-			if ((namedArea.getRepresentation(Language.DEFAULT()).getAbbreviatedLabel()).equals("TODO")) { return STR_AREA_EAST_AEGEAN_ISLANDS; }
-			else if ((namedArea.getRepresentation(Language.DEFAULT()).getAbbreviatedLabel()).equals("EAI")) { return STR_AREA_GREEK_EAST_AEGEAN_ISLANDS; }
+			if ((namedArea.getRepresentation(Language.DEFAULT()).getAbbreviatedLabel()).equals("EAI")) { return STR_AREA_GREEK_EAST_AEGEAN_ISLANDS; }
 			else if ((namedArea.getRepresentation(Language.DEFAULT()).getAbbreviatedLabel()).equals("EAI-OO")) { return STR_AREA_GREEK_EAST_AEGEAN_ISLANDS; }
 			else if ((namedArea.getRepresentation(Language.DEFAULT()).getAbbreviatedLabel()).equals("TODO")) { return STR_AREA_TURKISH_EAST_AEGEAN_ISLANDS; }
 			else if ((namedArea.getRepresentation(Language.DEFAULT()).getAbbreviatedLabel()).equals("ALB")) { return STR_AREA_ALBANIA; }
@@ -1488,7 +1545,6 @@ public final class PesiTransformer extends ExportTransformerBase implements IExp
 			else if ((namedArea.getRepresentation(Language.DEFAULT()).getAbbreviatedLabel()).equals("ITA-VC")) { return STR_AREA_VATICAN_CITY; }
 			else if ((namedArea.getRepresentation(Language.DEFAULT()).getAbbreviatedLabel()).equals("TODO")) { return STR_AREA_FRANZ_JOSEF_LAND; }
 			else if ((namedArea.getRepresentation(Language.DEFAULT()).getAbbreviatedLabel()).equals("TODO")) { return STR_AREA_NOVAYA_ZEMLYA; }
-			else if ((namedArea.getRepresentation(Language.DEFAULT()).getAbbreviatedLabel()).equals("AZ")) { return STR_AREA_AZERBAIJAN_INCLUDING_NAKHICHEVAN; }
 			else if ((namedArea.getRepresentation(Language.DEFAULT()).getAbbreviatedLabel()).equals("TCS-AZ")) { return STR_AREA_AZERBAIJAN; }
 			else if ((namedArea.getRepresentation(Language.DEFAULT()).getAbbreviatedLabel()).equals("TCS-NA")) { return STR_AREA_NAKHICHEVAN; }
 			else if ((namedArea.getRepresentation(Language.DEFAULT()).getAbbreviatedLabel()).equals("ALG")) { return STR_AREA_ALGERIA; }
@@ -1497,7 +1553,6 @@ public final class PesiTransformer extends ExportTransformerBase implements IExp
 			else if ((namedArea.getRepresentation(Language.DEFAULT()).getAbbreviatedLabel()).equals("33")) { return STR_AREA_CAUCASUS_REGION; }
 			else if ((namedArea.getRepresentation(Language.DEFAULT()).getAbbreviatedLabel()).equals("EGY")) { return STR_AREA_EGYPT; }
 			else if ((namedArea.getRepresentation(Language.DEFAULT()).getAbbreviatedLabel()).equals("EGY-OO")) { return STR_AREA_EGYPT; }
-			else if ((namedArea.getRepresentation(Language.DEFAULT()).getAbbreviatedLabel()).equals("TODO")) { return STR_AREA_GEORGIA; }
 			else if ((namedArea.getRepresentation(Language.DEFAULT()).getAbbreviatedLabel()).equals("PAL")) { return STR_AREA_ISRAEL_JORDAN; }
 			else if ((namedArea.getRepresentation(Language.DEFAULT()).getAbbreviatedLabel()).equals("PAL-IS")) { return STR_AREA_ISRAEL; }
 			else if ((namedArea.getRepresentation(Language.DEFAULT()).getAbbreviatedLabel()).equals("PAL-JO")) { return STR_AREA_JORDAN; }
@@ -1511,10 +1566,7 @@ public final class PesiTransformer extends ExportTransformerBase implements IExp
 			else if ((namedArea.getRepresentation(Language.DEFAULT()).getAbbreviatedLabel()).equals("LBS-SY")) { return STR_AREA_SYRIA; }
 			else if ((namedArea.getRepresentation(Language.DEFAULT()).getAbbreviatedLabel()).equals("TUN")) { return STR_AREA_TUNISIA; }
 			else if ((namedArea.getRepresentation(Language.DEFAULT()).getAbbreviatedLabel()).equals("TUN-OO")) { return STR_AREA_TUNISIA; }
-			else if ((namedArea.getRepresentation(Language.DEFAULT()).getAbbreviatedLabel()).equals("TODO")) { return STR_AREA_ASIATIC_TURKEY; }
-			else if ((namedArea.getRepresentation(Language.DEFAULT()).getAbbreviatedLabel()).equals("TODO")) { return STR_AREA_ASIATIC_TURKEY; }
-			else if ((namedArea.getRepresentation(Language.DEFAULT()).getAbbreviatedLabel()).equals("TUR")) { return STR_AREA_TURKEY; }
-			else if ((namedArea.getRepresentation(Language.DEFAULT()).getAbbreviatedLabel()).equals("TUR-OO")) { return STR_AREA_TURKEY; }
+			else if ((namedArea.getRepresentation(Language.DEFAULT()).getAbbreviatedLabel()).equals("TUR-OO")) { return STR_AREA_ASIATIC_TURKEY; }
 			else if ((namedArea.getRepresentation(Language.DEFAULT()).getAbbreviatedLabel()).equals("20")) { return STR_AREA_NORTHERN_AFRICA; }
 			else if ((namedArea.getRepresentation(Language.DEFAULT()).getAbbreviatedLabel()).equals("AFR")) { return STR_AREA_AFRO_TROPICAL_REGION; }
 			else if ((namedArea.getRepresentation(Language.DEFAULT()).getAbbreviatedLabel()).equals("AUS")) { return STR_AREA_AUSTRALIAN_REGION; }
@@ -1581,25 +1633,32 @@ public final class PesiTransformer extends ExportTransformerBase implements IExp
 			else if (namedArea.getUuid().equals(ErmsTransformer.uuidDanishExclusiveEconomicZone)) { return STR_AREA_DANISH_EXCLUSIVE_ECONOMIC_ZONE; }
 			else {
 				logger.error("Unknown NamedArea Area: " + area.getTitleCache());
-				return null; // Actually the export has to stop here because AreaFk's are not allowed to be NULL.
+			}
+		}else if (namedArea.isInstanceOf(WaterbodyOrCountry.class)){
+			if ((namedArea.equals(WaterbodyOrCountry.UKRAINE()))) { return STR_AREA_UKRAINE_INCLUDING_CRIMEA; }
+			else if (namedArea.equals(WaterbodyOrCountry.AZERBAIJANREPUBLICOF())) { return STR_AREA_AZERBAIJAN_INCLUDING_NAKHICHEVAN; }
+			else if (namedArea.equals(WaterbodyOrCountry.GEORGIA())) { return STR_AREA_GEORGIA; }
+			else {
+				logger.warn("Unknown NamedArea Area: " + area.getTitleCache());
 			}
 		}else {
 			if ((namedArea.getUuid().equals(BerlinModelTransformer.uuidMadeira))){ return STR_AREA_MADEIRA; }
 			else if ((namedArea.getUuid().equals(BerlinModelTransformer.uuidDesertas))) { return STR_AREA_DESERTAS; }
 			else if ((namedArea.getUuid().equals(BerlinModelTransformer.uuidPortoSanto))) { return STR_AREA_PORTO_SANTO; }
-			else if ((namedArea.equals(WaterbodyOrCountry.UKRAINE()))) { return STR_AREA_UKRAINE_INCLUDING_CRIMEA; }
 			else if ((namedArea.getUuid().equals(BerlinModelTransformer.uuidRussiaBaltic))) { return STR_AREA_RUSSIA_BALTIC; }
 			else if ((namedArea.getUuid().equals(BerlinModelTransformer.uuidRussiaSouthEast))) { return STR_AREA_RUSSIA_SOUTHEAST; }
 			else if ((namedArea.getUuid().equals(BerlinModelTransformer.uuidRussiaSouthWest))) { return STR_AREA_RUSSIA_SOUTHWEST; }
 			else if ((namedArea.getUuid().equals(BerlinModelTransformer.uuidUssr))) { return STR_AREA_FORMER_USSR; }
 			else if ((namedArea.getUuid().equals(BerlinModelTransformer.uuidRussiaCentral))) { return STR_AREA_RUSSIA_CENTRAL; }
 			else if ((namedArea.getUuid().equals(BerlinModelTransformer.uuidRussiaNorthern))) { return STR_AREA_RUSSIA_NORTHERN; }
+			else if ((namedArea.getUuid().equals(BerlinModelTransformer.uuidTurkey))) { return STR_AREA_TURKEY; }
+			else if ((namedArea.getUuid().equals(BerlinModelTransformer.uuidEastAegeanIslands))) { return STR_AREA_EAST_AEGEAN_ISLANDS; }
 			
 			else {
-				logger.error("Unknown NamedArea Area: " + area.getTitleCache());
-				return null; // Actually the export has to stop here because AreaFk's are not allowed to be NULL.
+				logger.warn("Unknown NamedArea Area: " + area.getTitleCache());
 			}
 		}
+		return null; // Actually the export has to stop here because AreaFk's are not allowed to be NULL.
 	}
 
 	@Override
@@ -1616,13 +1675,104 @@ public final class PesiTransformer extends ExportTransformerBase implements IExp
 	
 	@Override
 	public String getCacheByNamedArea(NamedArea area) throws UndefinedTransformerMethodException {
-		return area2AreaCache(area);
+		NamedArea namedArea = CdmBase.deproxy(area, NamedArea.class);
+
+		if (namedArea == null) {
+			return null;
+		//TDWG areas
+		} else if (namedArea.isInstanceOf(TdwgArea.class)) {
+			String abbrevLabel = namedArea.getRepresentation(Language.DEFAULT()).getAbbreviatedLabel();
+			String result = this.tdwgLabelMap.get(abbrevLabel);
+			if (result == null){
+				logger.warn("Unknown TDWGArea: " + namedArea.getTitleCache());
+			}
+			return result;
+		//countries & Waterbodies
+		}else if (namedArea.isInstanceOf(WaterbodyOrCountry.class)){
+			if (namedArea.equals(WaterbodyOrCountry.UKRAINE())) { return STR_AREA_UKRAINE_INCLUDING_CRIMEA; }
+			else if (namedArea.equals(WaterbodyOrCountry.AZERBAIJANREPUBLICOF())) { return STR_AREA_AZERBAIJAN_INCLUDING_NAKHICHEVAN; }
+			else if (namedArea.equals(WaterbodyOrCountry.GEORGIA())) { return STR_AREA_GEORGIA; }
+			else if (namedArea.equals(WaterbodyOrCountry.RUSSIANFEDERATION())) { return STR_AREA_THE_RUSSIAN_FEDERATION; }
+			else {
+				logger.warn("Unknown Waterbody/Country: " + namedArea.getTitleCache());
+			}
+		}else{  //Non TDWG, non country
+			if ( namedArea.getUuid().equals(BerlinModelTransformer.uuidMadeira)){ return STR_AREA_MADEIRA; }
+			else if (namedArea.getUuid().equals(BerlinModelTransformer.uuidDesertas)) { return STR_AREA_DESERTAS; }
+			else if (namedArea.getUuid().equals(BerlinModelTransformer.uuidPortoSanto)) { return STR_AREA_PORTO_SANTO; }
+			
+			else if (namedArea.getUuid().equals(BerlinModelTransformer.uuidUssr)) { return STR_AREA_FORMER_USSR; }
+			else if (namedArea.getUuid().equals(BerlinModelTransformer.uuidRussiaBaltic)) { return STR_AREA_RUSSIA_BALTIC; }
+			else if (namedArea.getUuid().equals(BerlinModelTransformer.uuidRussiaSouthEast)) { return STR_AREA_RUSSIA_SOUTHEAST; }
+			else if (namedArea.getUuid().equals(BerlinModelTransformer.uuidRussiaSouthWest)) { return STR_AREA_RUSSIA_SOUTHWEST; }
+			else if (namedArea.getUuid().equals(BerlinModelTransformer.uuidRussiaCentral)) { return STR_AREA_RUSSIA_CENTRAL; }
+			else if (namedArea.getUuid().equals(BerlinModelTransformer.uuidRussiaNorthern)) { return STR_AREA_RUSSIA_NORTHERN; }
+			
+			else if (namedArea.getUuid().equals(BerlinModelTransformer.uuidTurkey)) { return STR_AREA_TURKEY; }
+			else if (namedArea.getUuid().equals(BerlinModelTransformer.uuidEastAegeanIslands)) { return STR_AREA_EAST_AEGEAN_ISLANDS; }
+			else if (namedArea.getUuid().equals(BerlinModelTransformer.uuidFlores)) { return STR_AREA_FLORES; }
+			
+//			else if (namedArea.getUuid().equals(BerlinModelTransformer.uuidEasternEuropeanRussia)) { return STR_AREA_EASTERN_EUROPEAN_RUSSIA; }
+//			else if (namedArea.getUuid().equals(BerlinModelTransformer.uuidBalticStates)) { return STR_AREA_BALTIC_STATES_ESTONIA_LATVIA_LITHUANIA_AND_KALININGRAD_REGION; }
+
+			else {
+				logger.warn("Unknown NamedArea Area: " + namedArea.getTitleCache());
+			}
+
+		}
+		return null;
 	}
 	
 	
 	@Override
 	public Object getKeyByNamedArea(NamedArea area) throws UndefinedTransformerMethodException {
-		return area2AreaId(area);
+		NamedArea namedArea = CdmBase.deproxy(area, NamedArea.class);
+
+		if (area == null) {
+			return null;
+		//TDWG areas
+		} else if (area.isInstanceOf(TdwgArea.class)) {
+			String abbrevLabel = namedArea.getRepresentation(Language.DEFAULT()).getAbbreviatedLabel();
+			Integer result = this.tdwgKeyMap.get(abbrevLabel);
+			if (result == null){
+				logger.warn("Unknown TDWGArea: " + area.getTitleCache());
+			}
+			return result;
+		//countries & Waterbodies
+		}else if (namedArea.isInstanceOf(WaterbodyOrCountry.class)){
+			if (namedArea.equals(WaterbodyOrCountry.UKRAINE())) { return AREA_UKRAINE_INCLUDING_CRIMEA; }
+			else if (namedArea.equals(WaterbodyOrCountry.AZERBAIJANREPUBLICOF())) { return AREA_AZERBAIJAN_INCLUDING_NAKHICHEVAN; }
+			else if (namedArea.equals(WaterbodyOrCountry.GEORGIA())) { return AREA_GEORGIA; }
+			else if (namedArea.equals(WaterbodyOrCountry.RUSSIANFEDERATION())) { return AREA_THE_RUSSIAN_FEDERATION; }
+			else {
+				logger.warn("Unknown Waterbody/Country: " + area.getTitleCache());
+			}
+		}else{  //Non TDWG, non country
+			if ( namedArea.getUuid().equals(BerlinModelTransformer.uuidMadeira)){ return AREA_MADEIRA; }
+			else if (namedArea.getUuid().equals(BerlinModelTransformer.uuidDesertas)) { return AREA_DESERTAS; }
+			else if (namedArea.getUuid().equals(BerlinModelTransformer.uuidPortoSanto)) { return AREA_PORTO_SANTO; }
+			
+			else if (namedArea.getUuid().equals(BerlinModelTransformer.uuidUssr)) { return AREA_FORMER_USSR; }
+			else if (namedArea.getUuid().equals(BerlinModelTransformer.uuidRussiaBaltic)) { return AREA_RUSSIA_BALTIC; }
+			else if (namedArea.getUuid().equals(BerlinModelTransformer.uuidRussiaSouthEast)) { return AREA_RUSSIA_SOUTHEAST; }
+			else if (namedArea.getUuid().equals(BerlinModelTransformer.uuidRussiaSouthWest)) { return AREA_RUSSIA_SOUTHWEST; }
+			else if (namedArea.getUuid().equals(BerlinModelTransformer.uuidRussiaCentral)) { return AREA_RUSSIA_CENTRAL; }
+			else if (namedArea.getUuid().equals(BerlinModelTransformer.uuidRussiaNorthern)) { return AREA_RUSSIA_NORTHERN; }
+			
+			else if (namedArea.getUuid().equals(BerlinModelTransformer.uuidTurkey)) { return AREA_TURKEY; }
+			else if (namedArea.getUuid().equals(BerlinModelTransformer.uuidEastAegeanIslands)) { return AREA_EAST_AEGEAN_ISLANDS; }
+			else if (namedArea.getUuid().equals(BerlinModelTransformer.uuidFlores)) { return AREA_FLORES; }
+			
+//			else if (namedArea.getUuid().equals(BerlinModelTransformer.uuidEasternEuropeanRussia)) { return AREA_EASTERN_EUROPEAN_RUSSIA; }
+//			else if (namedArea.getUuid().equals(BerlinModelTransformer.uuidBalticStates)) { return AREA_BALTIC_STATES_ESTONIA_LATVIA_LITHUANIA_AND_KALININGRAD_REGION; }
+			
+			
+			else {
+				logger.warn("Unknown NamedArea Area: " + area.getTitleCache());
+			}
+
+		}
+		return null;
 	}
 	
 	
@@ -1639,8 +1789,7 @@ public final class PesiTransformer extends ExportTransformerBase implements IExp
 		} else if (area.isInstanceOf(TdwgArea.class)) {
 			
 			// TODO: Areas identified by the string "TODO" (for now) have to be identified correctly after additions have been made to the list of NamedArea's according to specific imports, i.e. euro+med
-			if ((namedArea.getRepresentation(Language.DEFAULT()).getAbbreviatedLabel()).equals("TODO")) { return AREA_EAST_AEGEAN_ISLANDS; }
-			else if ((namedArea.getRepresentation(Language.DEFAULT()).getAbbreviatedLabel()).equals("EAI")) { return AREA_GREEK_EAST_AEGEAN_ISLANDS; }
+			if ((namedArea.getRepresentation(Language.DEFAULT()).getAbbreviatedLabel()).equals("EAI")) { return AREA_GREEK_EAST_AEGEAN_ISLANDS; }
 			else if ((namedArea.getRepresentation(Language.DEFAULT()).getAbbreviatedLabel()).equals("EAI-OO")) { return AREA_GREEK_EAST_AEGEAN_ISLANDS; }
 			else if ((namedArea.getRepresentation(Language.DEFAULT()).getAbbreviatedLabel()).equals("TODO")) { return AREA_TURKISH_EAST_AEGEAN_ISLANDS; }
 			else if ((namedArea.getRepresentation(Language.DEFAULT()).getAbbreviatedLabel()).equals("ALB")) { return AREA_ALBANIA; }
@@ -1785,7 +1934,6 @@ public final class PesiTransformer extends ExportTransformerBase implements IExp
 			else if ((namedArea.getRepresentation(Language.DEFAULT()).getAbbreviatedLabel()).equals("ITA-VC")) { return AREA_VATICAN_CITY; }
 			else if ((namedArea.getRepresentation(Language.DEFAULT()).getAbbreviatedLabel()).equals("TODO")) { return AREA_FRANZ_JOSEF_LAND; }
 			else if ((namedArea.getRepresentation(Language.DEFAULT()).getAbbreviatedLabel()).equals("TODO")) { return AREA_NOVAYA_ZEMLYA; }
-			else if ((namedArea.getRepresentation(Language.DEFAULT()).getAbbreviatedLabel()).equals("AZ")) { return AREA_AZERBAIJAN_INCLUDING_NAKHICHEVAN; }
 			else if ((namedArea.getRepresentation(Language.DEFAULT()).getAbbreviatedLabel()).equals("TCS-AZ")) { return AREA_AZERBAIJAN; }
 			else if ((namedArea.getRepresentation(Language.DEFAULT()).getAbbreviatedLabel()).equals("TCS-NA")) { return AREA_NAKHICHEVAN; }
 			else if ((namedArea.getRepresentation(Language.DEFAULT()).getAbbreviatedLabel()).equals("ALG")) { return AREA_ALGERIA; }
@@ -1794,7 +1942,6 @@ public final class PesiTransformer extends ExportTransformerBase implements IExp
 			else if ((namedArea.getRepresentation(Language.DEFAULT()).getAbbreviatedLabel()).equals("33")) { return AREA_CAUCASUS_REGION; }
 			else if ((namedArea.getRepresentation(Language.DEFAULT()).getAbbreviatedLabel()).equals("EGY")) { return AREA_EGYPT; }
 			else if ((namedArea.getRepresentation(Language.DEFAULT()).getAbbreviatedLabel()).equals("EGY-OO")) { return AREA_EGYPT; }
-			else if ((namedArea.getRepresentation(Language.DEFAULT()).getAbbreviatedLabel()).equals("TODO")) { return AREA_GEORGIA; }
 			else if ((namedArea.getRepresentation(Language.DEFAULT()).getAbbreviatedLabel()).equals("PAL")) { return AREA_ISRAEL_JORDAN; }
 			else if ((namedArea.getRepresentation(Language.DEFAULT()).getAbbreviatedLabel()).equals("PAL-IS")) { return AREA_ISRAEL; }
 			else if ((namedArea.getRepresentation(Language.DEFAULT()).getAbbreviatedLabel()).equals("PAL-JO")) { return AREA_JORDAN; }
@@ -1802,6 +1949,7 @@ public final class PesiTransformer extends ExportTransformerBase implements IExp
 			else if ((namedArea.getRepresentation(Language.DEFAULT()).getAbbreviatedLabel()).equals("LBY-OO")) { return AREA_LIBYA; }
 			else if ((namedArea.getRepresentation(Language.DEFAULT()).getAbbreviatedLabel()).equals("LBS")) { return AREA_LEBANON_SYRIA; }
 			else if ((namedArea.getRepresentation(Language.DEFAULT()).getAbbreviatedLabel()).equals("MOR")) { return AREA_MOROCCO; }
+			else if ((namedArea.getRepresentation(Language.DEFAULT()).getAbbreviatedLabel()).equals("MOR-OO")) { return AREA_MOROCCO; }
 			else if ((namedArea.getRepresentation(Language.DEFAULT()).getAbbreviatedLabel()).equals("NCS")) { return AREA_NORTH_CAUCASUS; }
 			else if ((namedArea.getRepresentation(Language.DEFAULT()).getAbbreviatedLabel()).equals("SIN")) { return AREA_SINAI; }
 			else if ((namedArea.getRepresentation(Language.DEFAULT()).getAbbreviatedLabel()).equals("SIN-OO")) { return AREA_SINAI; }
@@ -1809,9 +1957,7 @@ public final class PesiTransformer extends ExportTransformerBase implements IExp
 			else if ((namedArea.getRepresentation(Language.DEFAULT()).getAbbreviatedLabel()).equals("TUN")) { return AREA_TUNISIA; }
 			else if ((namedArea.getRepresentation(Language.DEFAULT()).getAbbreviatedLabel()).equals("TUN-OO")) { return AREA_TUNISIA; }
 			else if ((namedArea.getRepresentation(Language.DEFAULT()).getAbbreviatedLabel()).equals("TODO")) { return AREA_ASIATIC_TURKEY; }
-			else if ((namedArea.getRepresentation(Language.DEFAULT()).getAbbreviatedLabel()).equals("TODO")) { return AREA_ASIATIC_TURKEY; }
-			else if ((namedArea.getRepresentation(Language.DEFAULT()).getAbbreviatedLabel()).equals("TUR")) { return AREA_TURKEY; }
-			else if ((namedArea.getRepresentation(Language.DEFAULT()).getAbbreviatedLabel()).equals("TUR-OO")) { return AREA_TURKEY; }
+			else if ((namedArea.getRepresentation(Language.DEFAULT()).getAbbreviatedLabel()).equals("TUR-OO")) { return AREA_ASIATIC_TURKEY; }
 			else if ((namedArea.getRepresentation(Language.DEFAULT()).getAbbreviatedLabel()).equals("20")) { return AREA_NORTHERN_AFRICA; }
 			else if ((namedArea.getRepresentation(Language.DEFAULT()).getAbbreviatedLabel()).equals("AFR")) { return AREA_AFRO_TROPICAL_REGION; }
 			else if ((namedArea.getRepresentation(Language.DEFAULT()).getAbbreviatedLabel()).equals("AUS")) { return AREA_AUSTRALIAN_REGION; }
@@ -1877,22 +2023,30 @@ public final class PesiTransformer extends ExportTransformerBase implements IExp
 			else if (namedArea.getUuid().equals(ErmsTransformer.uuidTurkishExclusiveEconomicZone)) { return AREA_TURKISH_EXCLUSIVE_ECONOMIC_ZONE; }
 			else if (namedArea.getUuid().equals(ErmsTransformer.uuidDanishExclusiveEconomicZone)) { return AREA_DANISH_EXCLUSIVE_ECONOMIC_ZONE; }
 			else {
-				logger.error("Unknown TDWGArea: " + area.getTitleCache());
+				logger.warn("Unknown TDWGArea: " + area.getTitleCache());
+			}
+		}else if (namedArea.isInstanceOf(WaterbodyOrCountry.class)){
+			if (namedArea.equals(WaterbodyOrCountry.UKRAINE())) { return AREA_UKRAINE_INCLUDING_CRIMEA; }
+			else if (namedArea.equals(WaterbodyOrCountry.AZERBAIJANREPUBLICOF())) { return AREA_AZERBAIJAN_INCLUDING_NAKHICHEVAN; }
+			else if (namedArea.equals(WaterbodyOrCountry.GEORGIA())) { return AREA_GEORGIA; }
+			else {
+				logger.warn("Unknown Waterbody/Country: " + area.getTitleCache());
 			}
 		}else{  //Non TDWG
-			if ((namedArea.getUuid().equals(BerlinModelTransformer.uuidMadeira))){ return AREA_MADEIRA; }
-			else if ((namedArea.getUuid().equals(BerlinModelTransformer.uuidDesertas))) { return AREA_DESERTAS; }
-			else if ((namedArea.getUuid().equals(BerlinModelTransformer.uuidPortoSanto))) { return AREA_PORTO_SANTO; }
-			else if ((namedArea.getUuid().equals(BerlinModelTransformer.uuidRussiaBaltic))) { return AREA_RUSSIA_BALTIC; }
-			else if ((namedArea.equals(WaterbodyOrCountry.UKRAINE()))) { return AREA_UKRAINE_INCLUDING_CRIMEA; }
-			else if ((namedArea.getUuid().equals(BerlinModelTransformer.uuidRussiaSouthEast))) { return AREA_RUSSIA_SOUTHEAST; }
-			else if ((namedArea.getUuid().equals(BerlinModelTransformer.uuidRussiaSouthWest))) { return AREA_RUSSIA_SOUTHWEST; }
-			else if ((namedArea.getUuid().equals(BerlinModelTransformer.uuidUssr))) { return AREA_FORMER_USSR; }
-			else if ((namedArea.getUuid().equals(BerlinModelTransformer.uuidRussiaCentral))) { return AREA_RUSSIA_CENTRAL; }
-			else if ((namedArea.getUuid().equals(BerlinModelTransformer.uuidRussiaNorthern))) { return AREA_RUSSIA_NORTHERN; }
+			if ( namedArea.getUuid().equals(BerlinModelTransformer.uuidMadeira)){ return AREA_MADEIRA; }
+			else if (namedArea.getUuid().equals(BerlinModelTransformer.uuidDesertas)) { return AREA_DESERTAS; }
+			else if (namedArea.getUuid().equals(BerlinModelTransformer.uuidPortoSanto)) { return AREA_PORTO_SANTO; }
+			else if (namedArea.getUuid().equals(BerlinModelTransformer.uuidRussiaBaltic)) { return AREA_RUSSIA_BALTIC; }
+			else if (namedArea.getUuid().equals(BerlinModelTransformer.uuidRussiaSouthEast)) { return AREA_RUSSIA_SOUTHEAST; }
+			else if (namedArea.getUuid().equals(BerlinModelTransformer.uuidRussiaSouthWest)) { return AREA_RUSSIA_SOUTHWEST; }
+			else if (namedArea.getUuid().equals(BerlinModelTransformer.uuidUssr)) { return AREA_FORMER_USSR; }
+			else if (namedArea.getUuid().equals(BerlinModelTransformer.uuidRussiaCentral)) { return AREA_RUSSIA_CENTRAL; }
+			else if (namedArea.getUuid().equals(BerlinModelTransformer.uuidRussiaNorthern)) { return AREA_RUSSIA_NORTHERN; }
+			else if (namedArea.getUuid().equals(BerlinModelTransformer.uuidTurkey)) { return AREA_TURKEY; }
+			else if (namedArea.getUuid().equals(BerlinModelTransformer.uuidEastAegeanIslands)) { return AREA_EAST_AEGEAN_ISLANDS; }
 			
 			else {
-				logger.error("Unknown NamedArea Area: " + area.getTitleCache());
+				logger.warn("Unknown NamedArea Area: " + area.getTitleCache());
 			}
 
 		}
@@ -1952,6 +2106,18 @@ public final class PesiTransformer extends ExportTransformerBase implements IExp
 		return result;
 	}
 	
+	
+	
+	@Override
+	public Object getKeyByLanguage(Language language) throws UndefinedTransformerMethodException {
+		return language2LanguageId(language);
+	}
+
+	@Override
+	public String getCacheByLanguage(Language language) throws UndefinedTransformerMethodException {
+		return language2LanguageCache(language);
+	}
+
 	/**
 	 * Returns the LanguageCache to a given Language.
 	 * @param language

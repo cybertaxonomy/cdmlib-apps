@@ -20,7 +20,6 @@ import eu.etaxonomy.cdm.io.common.DbExportBase;
 import eu.etaxonomy.cdm.model.common.CdmBase;
 import eu.etaxonomy.cdm.model.common.Marker;
 import eu.etaxonomy.cdm.model.common.MarkerType;
-import eu.etaxonomy.cdm.model.description.DescriptionElementBase;
 import eu.etaxonomy.cdm.model.name.NameRelationship;
 import eu.etaxonomy.cdm.model.name.NonViralName;
 import eu.etaxonomy.cdm.model.name.TaxonNameBase;
@@ -40,7 +39,7 @@ public abstract class PesiExportBase extends DbExportBase<PesiExportConfigurator
 	}
 	
 
-	protected <CLASS extends TaxonBase<?>> List<CLASS> getNextTaxonPartition(Class<CLASS> clazz,int limit, int partitionCount, List<String> propertyPath) {
+	protected <CLASS extends TaxonBase<?>> List<CLASS> getNextTaxonPartition(Class<CLASS> clazz, int limit, int partitionCount, List<String> propertyPath) {
 		List<CLASS> list = (List<CLASS>)getTaxonService().list(clazz, limit, partitionCount * limit, null, propertyPath);
 		
 		Iterator<CLASS> it = list.iterator();

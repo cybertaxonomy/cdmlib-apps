@@ -20,7 +20,9 @@ import eu.etaxonomy.cdm.io.common.DbExportConfiguratorBase.IdType;
 import eu.etaxonomy.cdm.io.common.IExportConfigurator.CHECK;
 import eu.etaxonomy.cdm.io.common.IExportConfigurator.DO_REFERENCES;
 import eu.etaxonomy.cdm.io.common.Source;
+import eu.etaxonomy.cdm.io.common.mapping.out.IExportTransformer;
 import eu.etaxonomy.cdm.io.pesi.out.PesiExportConfigurator;
+import eu.etaxonomy.cdm.io.pesi.out.PesiTransformer;
 import eu.etaxonomy.cdm.model.name.NomenclaturalCode;
 
 /**
@@ -38,7 +40,7 @@ public class PesiExportActivator {
 //	static final Source pesiDestination = PesiDestinations.pesi_test_local_CDM_FE2PESI();
 //	static final Source pesiDestination = PesiDestinations.pesi_test_local_CDM_ERMS2PESI();
 	
-	static final ICdmDataSource cdmSource = CdmDestinations.cdm_test_local_mysql();
+	static final ICdmDataSource cdmSource = CdmDestinations.cdm_test_local_mysql_test();
 	static final UUID secUuid = UUID.fromString("d03ef02a-f226-4cb1-bdb4-f6c154f08a34");
 	static final int sourceSecId = 7331;
 	static final int isHomotypicId = 72;
@@ -100,8 +102,9 @@ public class PesiExportActivator {
 		
 		//make PESI Source
 		Source destination = pesiDestination;
+		IExportTransformer transformer = new PesiTransformer(destination);
 		
-		PesiExportConfigurator config = PesiExportConfigurator.NewInstance(destination, source);
+		PesiExportConfigurator config = PesiExportConfigurator.NewInstance(destination, source, transformer);
 		
 		config.setDoTaxa(doTaxa);
 		config.setDoRelTaxa(doRelTaxa);
