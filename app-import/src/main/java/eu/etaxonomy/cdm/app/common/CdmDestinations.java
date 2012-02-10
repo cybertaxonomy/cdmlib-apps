@@ -416,7 +416,7 @@ public class CdmDestinations {
 		return makeDestination(dbType, cdmServer, cdmDB, -1, cdmUserName, null);
 	}
 	
-	public static ICdmDataSource cdm_edit_cichorieae_PG(){
+	public static ICdmDataSource cdm_edit_cichorieae_local_PG(){
 		DatabaseTypeEnum dbType = DatabaseTypeEnum.PostgreSQL;
 		String cdmServer = "127.0.0.1";
 		String cdmDB = "cdm_edit_cichorieae_a"; 
