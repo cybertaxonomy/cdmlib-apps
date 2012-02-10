@@ -18,6 +18,7 @@ import eu.etaxonomy.cdm.database.DbSchemaValidation;
 import eu.etaxonomy.cdm.database.ICdmDataSource;
 import eu.etaxonomy.cdm.io.common.CacheUpdaterConfigurator;
 import eu.etaxonomy.cdm.io.common.CdmDefaultImport;
+import eu.etaxonomy.cdm.model.name.TaxonNameBase;
 import eu.etaxonomy.cdm.model.taxon.TaxonBase;
 
 
@@ -35,12 +36,13 @@ public class CacheUpdater {
 
 	//database validation status (create, update, validate ...)
 	static DbSchemaValidation hbm2dll = DbSchemaValidation.VALIDATE;
-	static final ICdmDataSource cdmDestination = CdmDestinations.cdm_flora_central_africa_production();
+//	static final ICdmDataSource cdmDestination = CdmDestinations.cdm_production_cichorieae();
+	static final ICdmDataSource cdmDestination = CdmDestinations.localH2();
 
 	static final List<String> classListStrings =  Arrays.asList(new String[]{
 			//IdentifiableEntity.class.getName(),
 //			IdentifiableEntity.class.getName(),
-//			TaxonNameBase.class.getName(),
+			TaxonNameBase.class.getName(),
 			TaxonBase.class.getName()
 	});
 	//new ArrayList<Class<? extends IdentifiableEntity>>();
