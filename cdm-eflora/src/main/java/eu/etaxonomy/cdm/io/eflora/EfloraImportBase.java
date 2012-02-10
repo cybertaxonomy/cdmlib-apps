@@ -41,8 +41,8 @@ public abstract class EfloraImportBase  extends CdmImportBase<EfloraImportConfig
 	protected Element getBodyElement(EfloraImportConfigurator config){
 		Element root = config.getSourceRoot();
 		
-		if (! "body".equalsIgnoreCase(root.getName())){
-			logger.error("Root element is not 'body'");
+		if (! "publication".equalsIgnoreCase(root.getName())){
+			logger.error("Root element is not 'publication'");
 			return null;
 		}
 		//TODO prevent multiple elements

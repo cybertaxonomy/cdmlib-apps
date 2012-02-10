@@ -74,5 +74,10 @@ public class EfloraSources {
 	public static URI fm_2_2(){
 		return URI.create("file:C:/localCopy/Data/eflora/floraMalesiana/ser2_vol2/ser2vol2final1.xml");
 	}
+	
+	//Flora Malesiana Vol 13-1
+	public static URI fg_sample(){
+		return URI.create("file:/E:/opt/data/floreGabon/sample.xml");
+	}
 
 }
