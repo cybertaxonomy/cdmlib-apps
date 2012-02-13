@@ -24,6 +24,7 @@ import org.springframework.transaction.TransactionStatus;
 
 import eu.etaxonomy.cdm.io.common.DbExportStateBase;
 import eu.etaxonomy.cdm.io.common.Source;
+import eu.etaxonomy.cdm.io.common.mapping.UndefinedTransformerMethodException;
 import eu.etaxonomy.cdm.io.common.mapping.out.IdMapper;
 import eu.etaxonomy.cdm.io.common.mapping.out.MethodMapper;
 import eu.etaxonomy.cdm.model.common.CdmBase;
@@ -460,18 +461,27 @@ public class PesiNoteExport extends PesiExportBase {
 		String result = null;
 		DescriptionBase<?> inDescription = descriptionElement.getInDescription();
 		
-		// Area information are associated to TaxonDescriptions and Distributions.
-		if (descriptionElement.isInstanceOf(Distribution.class)) {
-			Distribution distribution = CdmBase.deproxy(descriptionElement, Distribution.class);
-			result = PesiTransformer.area2AreaCache(distribution.getArea());
-		} else if (inDescription != null && inDescription.isInstanceOf(TaxonDescription.class)) {
-			TaxonDescription taxonDescription = CdmBase.deproxy(inDescription, TaxonDescription.class);
-			Set<NamedArea> namedAreas = taxonDescription.getGeoScopes();
-			if (namedAreas.size() == 1) {
-				result = PesiTransformer.area2AreaCache(namedAreas.iterator().next());
-			} else if (namedAreas.size() > 1) {
-				logger.warn("This TaxonDescription contains more than one NamedArea: " + taxonDescription.getTitleCache());
+		try {
+			// Area information are associated to TaxonDescriptions and Distributions.
+			if (descriptionElement.isInstanceOf(Distribution.class)) {
+				Distribution distribution = CdmBase.deproxy(descriptionElement, Distribution.class);
+				//TODO not working any more after transformer refactoring
+				result = new PesiTransformer(null).getCacheByNamedArea(distribution.getArea());
+			} else if (inDescription != null && inDescription.isInstanceOf(TaxonDescription.class)) {
+				TaxonDescription taxonDescription = CdmBase.deproxy(inDescription, TaxonDescription.class);
+				Set<NamedArea> namedAreas = taxonDescription.getGeoScopes();
+				if (namedAreas.size() == 1) {
+					result = new PesiTransformer(null).getCacheByNamedArea(namedAreas.iterator().next());
+				} else if (namedAreas.size() > 1) {
+					logger.warn("This TaxonDescription contains more than one NamedArea: " + taxonDescription.getTitleCache());
+				}
 			}
+		} catch (ClassCastException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (UndefinedTransformerMethodException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
 		}
 		return result;
 	}

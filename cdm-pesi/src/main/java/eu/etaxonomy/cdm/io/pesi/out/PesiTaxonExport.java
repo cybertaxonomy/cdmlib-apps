@@ -62,6 +62,9 @@ import eu.etaxonomy.cdm.model.taxon.TaxonRelationship;
 import eu.etaxonomy.cdm.model.taxon.TaxonRelationshipType;
 import eu.etaxonomy.cdm.persistence.query.MatchMode;
 import eu.etaxonomy.cdm.strategy.cache.TaggedText;
+import eu.etaxonomy.cdm.strategy.cache.name.INonViralNameCacheStrategy;
+import eu.etaxonomy.cdm.strategy.cache.name.ZooNameDefaultCacheStrategy;
+import eu.etaxonomy.cdm.strategy.cache.name.ZoologicalNameCacheStrategyTest;
 
 /**
  * The export class for {@link eu.etaxonomy.cdm.model.name.TaxonNameBase TaxonNames}.<p>
@@ -100,6 +103,7 @@ public class PesiTaxonExport extends PesiExportBase {
 	private static ExtensionType cacheCitationExtensionType;
 	private static ExtensionType expertUserIdExtensionType;
 	private static ExtensionType speciesExpertUserIdExtensionType;
+	private static INonViralNameCacheStrategy<ZoologicalName> zooNameStrategy;
 	
 	/**
 	 * @return the treeIndexAnnotationType
@@ -258,6 +262,9 @@ public class PesiTaxonExport extends PesiExportBase {
 			logger.info("*** Started Making " + pluralString + " ...");
 
 			initPreparedStatements(state);
+			
+			zooNameStrategy = ZooNameDefaultCacheStrategy.NewInstance(ZoologicalName.class);
+//			zooNameStrategy.
 			
 			// Stores whether this invoke was successful or not.
 			boolean success = true;

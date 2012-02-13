@@ -17,11 +17,11 @@ import org.apache.log4j.Logger;
 
 import eu.etaxonomy.cdm.io.common.DbExportStateBase;
 import eu.etaxonomy.cdm.io.common.mapping.MultipleAttributeMapperBase;
-import eu.etaxonomy.cdm.io.common.mapping.out.DbDateMapper;
+import eu.etaxonomy.cdm.io.common.mapping.out.DbExportNotYetImplementedMapper;
+import eu.etaxonomy.cdm.io.common.mapping.out.DbLastActionMapper;
 import eu.etaxonomy.cdm.io.common.mapping.out.DbSingleAttributeExportMapperBase;
 import eu.etaxonomy.cdm.io.common.mapping.out.IDbExportMapper;
 import eu.etaxonomy.cdm.io.common.mapping.out.IndexCounter;
-import eu.etaxonomy.cdm.io.common.mapping.out.MethodMapper;
 import eu.etaxonomy.cdm.model.common.CdmBase;
 
 /**
@@ -33,8 +33,10 @@ public class ExpertsAndLastActionMapper extends MultipleAttributeMapperBase<DbSi
 	@SuppressWarnings("unused")
 	private static final Logger logger = Logger.getLogger(ExpertsAndLastActionMapper.class);
 	
+	private static final boolean IS_ACTION_TYPE = true;
+	
 	public static ExpertsAndLastActionMapper NewInstance(){
-		return new ExpertsAndLastActionMapper(true);
+		return new ExpertsAndLastActionMapper();
 	}
 	
 
@@ -42,14 +44,11 @@ public class ExpertsAndLastActionMapper extends MultipleAttributeMapperBase<DbSi
 	 * @param dbAttributString
 	 * @param cdmAttributeString
 	 */
-	private ExpertsAndLastActionMapper(boolean withUpdate) {
-//		singleMappers.add(DbUserMapper.NewInstance("createdBy", "Created_Who"));
-//		singleMappers.add(DbDateMapper.NewInstance("created", "Created_When"));
-//		singleMappers.add(MethodMapper.NewInstance("Notes", this.getClass(), "getNotes", AnnotatableEntity.class));
-//		if (withUpdate){
-//			singleMappers.add(DbUserMapper.NewInstance("updatedBy", "Updated_Who"));
-//			singleMappers.add(DbDateMapper.NewInstance("updated", "Updated_When"));
-//		}
+	private ExpertsAndLastActionMapper() {
+		singleMappers.add(DbLastActionMapper.NewInstance("LastActionDate", ! IS_ACTION_TYPE));
+		singleMappers.add(DbLastActionMapper.NewInstance("LastAction", IS_ACTION_TYPE));
+		singleMappers.add(DbExportNotYetImplementedMapper.NewInstance("SpeciesExpertName", "Need to better understand what the species expert name is"));
+		singleMappers.add(DbExportNotYetImplementedMapper.NewInstance("SpeciesExpertGUID", "SpeciesExpertGUID derives from an external mapeing list: name to GUID from expertsDB"));
 	}
 
 
@@ -73,20 +72,6 @@ public class ExpertsAndLastActionMapper extends MultipleAttributeMapperBase<DbSi
 		}
 		return result;
 	}
-	
-//	//used by MethodMapper
-//	@SuppressWarnings("unused")
-//	private static String getNotes(AnnotatableEntity obj){
-//		String result = "";
-//		String separator = ";";
-//		for (Annotation annotation :obj.getAnnotations()){
-//			if (! AnnotationType.TECHNICAL().equals(annotation.getAnnotationType())){
-//				if (! ( annotation.getText() != null && annotation.getText().startsWith("ORDER:"))){  //TODO casus Salvador, should be stored in Extension ones extensions are also for annotatable entities
-//					result = CdmUtils.concat(separator, result, annotation.getText());
-//				}
-//			}
-//		}
-//		return (result.trim().equals("")? null : result);
-//	}
+
 	
 }

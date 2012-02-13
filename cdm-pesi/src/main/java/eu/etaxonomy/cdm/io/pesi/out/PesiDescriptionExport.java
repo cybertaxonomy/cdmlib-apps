@@ -22,14 +22,22 @@ import org.springframework.stereotype.Component;
 import org.springframework.transaction.TransactionStatus;
 
 import eu.etaxonomy.cdm.io.berlinModel.BerlinModelTransformer;
+import eu.etaxonomy.cdm.io.berlinModel.out.mapper.RefDetailMapper;
 import eu.etaxonomy.cdm.io.common.DbExportStateBase;
 import eu.etaxonomy.cdm.io.common.Source;
 import eu.etaxonomy.cdm.io.common.mapping.UndefinedTransformerMethodException;
+import eu.etaxonomy.cdm.io.common.mapping.out.CollectionExportMapping;
+import eu.etaxonomy.cdm.io.common.mapping.out.CreatedAndNotesMapper;
 import eu.etaxonomy.cdm.io.common.mapping.out.DbAreaMapper;
 import eu.etaxonomy.cdm.io.common.mapping.out.DbDescriptionElementTaxonMapper;
 import eu.etaxonomy.cdm.io.common.mapping.out.DbDistributionStatusMapper;
+import eu.etaxonomy.cdm.io.common.mapping.out.DbExportIgnoreMapper;
 import eu.etaxonomy.cdm.io.common.mapping.out.DbExportNotYetImplementedMapper;
 import eu.etaxonomy.cdm.io.common.mapping.out.DbLanguageMapper;
+import eu.etaxonomy.cdm.io.common.mapping.out.DbMarkerMapper;
+import eu.etaxonomy.cdm.io.common.mapping.out.DbObjectMapper;
+import eu.etaxonomy.cdm.io.common.mapping.out.DbOriginalNameMapper;
+import eu.etaxonomy.cdm.io.common.mapping.out.DbSimpleFilterMapper;
 import eu.etaxonomy.cdm.io.common.mapping.out.DbSingleSourceMapper;
 import eu.etaxonomy.cdm.io.common.mapping.out.DbStringMapper;
 import eu.etaxonomy.cdm.io.common.mapping.out.DbTextDataMapper;
@@ -40,6 +48,7 @@ import eu.etaxonomy.cdm.model.common.Extension;
 import eu.etaxonomy.cdm.model.common.ExtensionType;
 import eu.etaxonomy.cdm.model.common.Language;
 import eu.etaxonomy.cdm.model.common.LanguageString;
+import eu.etaxonomy.cdm.model.common.MarkerType;
 import eu.etaxonomy.cdm.model.description.CommonTaxonName;
 import eu.etaxonomy.cdm.model.description.DescriptionBase;
 import eu.etaxonomy.cdm.model.description.DescriptionElementBase;
@@ -52,6 +61,7 @@ import eu.etaxonomy.cdm.model.description.TaxonInteraction;
 import eu.etaxonomy.cdm.model.description.TextData;
 import eu.etaxonomy.cdm.model.location.NamedArea;
 import eu.etaxonomy.cdm.model.location.TdwgArea;
+import eu.etaxonomy.cdm.model.name.NomenclaturalStatus;
 import eu.etaxonomy.cdm.model.name.TaxonNameBase;
 import eu.etaxonomy.cdm.model.taxon.Taxon;
 import static java.util.EnumSet.of;
@@ -565,32 +575,32 @@ public class PesiDescriptionExport extends PesiExportBase {
 		return language;
 	}
 
-	/**
-	 * Returns the <code>Region</code> attribute.
-	 * @param descriptionElement The {@link DescriptionElementBase DescriptionElement}.
-	 * @return The <code>Region</code> attribute.
-	 * @see MethodMapper
-	 */
-	@SuppressWarnings("unused")
-	private static String getRegion(DescriptionElementBase descriptionElement) {
-		String result = null;
-		DescriptionBase<?> inDescription = descriptionElement.getInDescription();
-		
-		// Area information are associated to TaxonDescriptions and Distributions.
-		if (descriptionElement.isInstanceOf(Distribution.class)) {
-			Distribution distribution = CdmBase.deproxy(descriptionElement, Distribution.class);
-			result = PesiTransformer.area2AreaCache(distribution.getArea());
-		} else if (inDescription != null && inDescription.isInstanceOf(TaxonDescription.class)) {
-			TaxonDescription taxonDescription = CdmBase.deproxy(inDescription, TaxonDescription.class);
-			Set<NamedArea> namedAreas = taxonDescription.getGeoScopes();
-			if (namedAreas.size() == 1) {
-				result = PesiTransformer.area2AreaCache(namedAreas.iterator().next());
-			} else if (namedAreas.size() > 1) {
-				logger.warn("This TaxonDescription contains more than one NamedArea: " + taxonDescription.getTitleCache());
-			}
-		}
-		return result;
-	}
+//	/**
+//	 * Returns the <code>Region</code> attribute.
+//	 * @param descriptionElement The {@link DescriptionElementBase DescriptionElement}.
+//	 * @return The <code>Region</code> attribute.
+//	 * @see MethodMapper
+//	 */
+//	@SuppressWarnings("unused")
+//	private static String getRegion(DescriptionElementBase descriptionElement) {
+//		String result = null;
+//		DescriptionBase<?> inDescription = descriptionElement.getInDescription();
+//		
+//		// Area information are associated to TaxonDescriptions and Distributions.
+//		if (descriptionElement.isInstanceOf(Distribution.class)) {
+//			Distribution distribution = CdmBase.deproxy(descriptionElement, Distribution.class);
+//			result = PesiTransformer.area2AreaCache(distribution.getArea());
+//		} else if (inDescription != null && inDescription.isInstanceOf(TaxonDescription.class)) {
+//			TaxonDescription taxonDescription = CdmBase.deproxy(inDescription, TaxonDescription.class);
+//			Set<NamedArea> namedAreas = taxonDescription.getGeoScopes();
+//			if (namedAreas.size() == 1) {
+//				result = PesiTransformer.area2AreaCache(namedAreas.iterator().next());
+//			} else if (namedAreas.size() > 1) {
+//				logger.warn("This TaxonDescription contains more than one NamedArea: " + taxonDescription.getTitleCache());
+//			}
+//		}
+//		return result;
+//	}
 
 	
 	/**
@@ -619,10 +629,8 @@ public class PesiDescriptionExport extends PesiExportBase {
 		mapping.addMapper(MethodMapper.NewInstance("NoteCategoryCache", this));
 		mapping.addMapper(MethodMapper.NewInstance("LanguageFk", this));
 		mapping.addMapper(MethodMapper.NewInstance("LanguageCache", this));
-		mapping.addMapper(MethodMapper.NewInstance("Region", this));
+//		mapping.addMapper(MethodMapper.NewInstance("Region", this));
 		mapping.addMapper(DbDescriptionElementTaxonMapper.NewInstance("taxonFk"));
-//		mapping.addMapper(MethodMapper.NewInstance("LastAction", this));
-//		mapping.addMapper(MethodMapper.NewInstance("LastActionDate", this));
 		mapping.addMapper(ExpertsAndLastActionMapper.NewInstance());
 		return mapping;
 	}
@@ -635,6 +643,7 @@ public class PesiDescriptionExport extends PesiExportBase {
 	private PesiExportMapping getOccurrenceMapping() {
 		PesiExportMapping mapping = new PesiExportMapping(dbOccurrenceTableName);
 		
+		mapping.addMapper(IdMapper.NewInstance("OccurrenceId"));
 		mapping.addMapper(DbDescriptionElementTaxonMapper.NewInstance("taxonFk"));
 		mapping.addMapper(DbDescriptionElementTaxonMapper.NewInstance("TaxonFullNameCache", true, true, null));
 		mapping.addMapper(DbAreaMapper.NewInstance(Distribution.class, "Area", "AreaFk", ! IS_CACHE));
@@ -643,12 +652,27 @@ public class PesiDescriptionExport extends PesiExportBase {
 		mapping.addMapper(DbDistributionStatusMapper.NewInstance("OccurrenceStatusCache", IS_CACHE));
 		
 //		Use Occurrence source instead
-//		mapping.addMapper(DbSingleSourceMapper.NewInstance("SourceFk", DbSingleSourceMapper.EXCLUDE_WITH_ID , ! IS_CACHE));
-//		mapping.addMapper(DbSingleSourceMapper.NewInstance("SourceNameCache", DbSingleSourceMapper.EXCLUDE_WITH_ID , ! IS_CACHE));
+		mapping.addMapper(DbExportIgnoreMapper.NewInstance("SourceFk", "Use OccurrenceSource table for sources instead"));
+		mapping.addMapper(DbExportIgnoreMapper.NewInstance("SourceNameCache", "Use OccurrenceSource table for sources instead"));
 		
 		
 		mapping.addMapper(DbExportNotYetImplementedMapper.NewInstance("Notes", "Needs reimplementation in description export"));
 		mapping.addMapper(ExpertsAndLastActionMapper.NewInstance());
+		mapping.addCollectionMapping(getOccurrenceSourceMapping());
+		
+		return mapping;
+	}
+
+	private CollectionExportMapping<PesiExportState, PesiExportConfigurator> getOccurrenceSourceMapping() {
+		String tableName = "OccurrenceSource";
+		String collectionAttribute = "sources";
+		IdMapper parentMapper = IdMapper.NewInstance("OccurrenceFk");
+		CollectionExportMapping<PesiExportState, PesiExportConfigurator> mapping = CollectionExportMapping.NewInstance(tableName, collectionAttribute, parentMapper);
+		mapping.addMapper(DbSimpleFilterMapper.NewSingleNullAttributeInstance("idInSource", "Sources with idInSource currently handle data lineage"));
+		mapping.addMapper(DbObjectMapper.NewInstance("Citation", "SourceFk"));
+		mapping.addMapper(DbObjectMapper.NewInstance("Citation", "SourceNameCache", IS_CACHE));
+		mapping.addMapper(DbOriginalNameMapper.NewInstance("OldTaxonName", IS_CACHE, null));
+
 		return mapping;
 	}
 
@@ -688,7 +712,7 @@ public class PesiDescriptionExport extends PesiExportBase {
 		mapping.addMapper(DbLanguageMapper.NewInstance(CommonTaxonName.class, "Language", "LanguageCache", IS_CACHE));
 		
 		mapping.addMapper(DbSingleSourceMapper.NewInstance("SourceFk", of ( DbSingleSourceMapper.EXCLUDE.WITH_ID) , ! IS_CACHE));
-		mapping.addMapper(DbSingleSourceMapper.NewInstance("SourceNameCache", of ( DbSingleSourceMapper.EXCLUDE.WITH_ID) , ! IS_CACHE));
+		mapping.addMapper(DbSingleSourceMapper.NewInstance("SourceNameCache", of ( DbSingleSourceMapper.EXCLUDE.WITH_ID) , IS_CACHE));
 		mapping.addMapper(ExpertsAndLastActionMapper.NewInstance());
 		return mapping;
 

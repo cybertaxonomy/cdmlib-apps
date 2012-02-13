@@ -22,6 +22,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.transaction.TransactionStatus;
 
 import eu.etaxonomy.cdm.io.common.Source;
+import eu.etaxonomy.cdm.io.common.mapping.UndefinedTransformerMethodException;
 import eu.etaxonomy.cdm.io.common.mapping.out.MethodMapper;
 import eu.etaxonomy.cdm.model.common.AnnotatableEntity;
 import eu.etaxonomy.cdm.model.common.CdmBase;
@@ -312,7 +313,12 @@ public class PesiOccurrenceExport extends PesiExportBase {
 	private static Integer getAreaFk(AnnotatableEntity entity) {
 		Integer result = null;
 		if (getNamedArea() != null) {
-			result = PesiTransformer.area2AreaId(namedArea);
+			//TODO not working any more after transformer refactoring
+			try {
+				result = (Integer)new PesiTransformer(null).getKeyByNamedArea(namedArea);
+			} catch (UndefinedTransformerMethodException e) {
+				e.printStackTrace();
+			}
 		} else {
 			logger.warn("This should never happen, but a NamedArea could not be found for entity: " + entity.getUuid());
 		}
@@ -329,7 +335,12 @@ public class PesiOccurrenceExport extends PesiExportBase {
 	private static String getAreaNameCache(AnnotatableEntity entity) {
 		String result = null;
 		if (getNamedArea() != null) {
-			result = PesiTransformer.area2AreaCache(namedArea);
+			//TODO not working any more after transformer refactoring
+			try {
+				result = new PesiTransformer(null).getCacheByNamedArea(namedArea);
+			} catch (UndefinedTransformerMethodException e) {
+				e.printStackTrace();
+			}
 		} else {
 			logger.warn("This should never happen, but a NamedArea could not be found for entity: " + entity.getUuid());
 		}
