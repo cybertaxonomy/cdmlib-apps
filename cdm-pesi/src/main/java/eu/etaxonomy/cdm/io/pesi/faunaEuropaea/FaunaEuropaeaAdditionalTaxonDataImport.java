@@ -21,7 +21,6 @@ import org.springframework.stereotype.Component;
 import org.springframework.transaction.TransactionStatus;
 
 import eu.etaxonomy.cdm.database.ICdmDataSource;
-import eu.etaxonomy.cdm.io.common.Source;
 import eu.etaxonomy.cdm.model.common.CdmBase;
 import eu.etaxonomy.cdm.model.name.NonViralName;
 import eu.etaxonomy.cdm.model.name.TaxonNameBase;
@@ -50,30 +49,11 @@ public class FaunaEuropaeaAdditionalTaxonDataImport extends FaunaEuropaeaImportB
 		boolean result = true;
 		FaunaEuropaeaImportConfigurator fauEuConfig = state.getConfig();
 		logger.warn("Checking for Taxa not yet fully implemented");
-		result &= checkTaxonStatus(fauEuConfig);
+//		result &= checkTaxonStatus(fauEuConfig);
 		
 		return result;
 	}
-	
-	/* (non-Javadoc)
-	 * @see eu.etaxonomy.cdm.io.common.CdmIoBase#isIgnore(eu.etaxonomy.cdm.io.common.IImportConfigurator)
-	 */
-	protected boolean isIgnore(FaunaEuropaeaImportState state) {
-		return ! state.getConfig().isDoTaxa();
-	}
 
-	private boolean checkTaxonStatus(FaunaEuropaeaImportConfigurator fauEuConfig) {
-		boolean result = true;
-//		try {
-			Source source = fauEuConfig.getSource();
-			String sqlStr = "";
-			ResultSet rs = source.getResultSet(sqlStr);
-			return result;
-//		} catch (SQLException e) {
-//			e.printStackTrace();
-//			return false;
-//		}
-	}
 	
 	/** 
 	 * Import taxa from FauEU DB
@@ -174,6 +154,14 @@ public class FaunaEuropaeaAdditionalTaxonDataImport extends FaunaEuropaeaImportB
 		logger.info("Committed transaction.");
 		
 		return;
+	}
+	
+	
+	/* (non-Javadoc)
+	 * @see eu.etaxonomy.cdm.io.common.CdmIoBase#isIgnore(eu.etaxonomy.cdm.io.common.IoStateBase)
+	 */
+	protected boolean isIgnore(FaunaEuropaeaImportState state) {
+		return ! state.getConfig().isDoTaxa();
 	}
 
 }

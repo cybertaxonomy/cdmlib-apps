@@ -23,7 +23,8 @@ import org.springframework.stereotype.Component;
 import org.springframework.transaction.TransactionStatus;
 
 import eu.etaxonomy.cdm.io.common.Source;
-import eu.etaxonomy.cdm.io.profiler.ProfilerController;
+//import eu.etaxonomy.cdm.io.profiler.ProfilerController;
+import eu.etaxonomy.cdm.model.common.CdmBase;
 import eu.etaxonomy.cdm.model.description.Distribution;
 import eu.etaxonomy.cdm.model.description.PresenceAbsenceTermBase;
 import eu.etaxonomy.cdm.model.description.PresenceTerm;
@@ -31,7 +32,7 @@ import eu.etaxonomy.cdm.model.description.TaxonDescription;
 import eu.etaxonomy.cdm.model.location.NamedArea;
 import eu.etaxonomy.cdm.model.taxon.Taxon;
 import eu.etaxonomy.cdm.model.taxon.TaxonBase;
-import com.yourkit.api.Controller;
+//import com.yourkit.api.Controller;
 
 
 /**
@@ -60,8 +61,8 @@ public class FaunaEuropaeaDistributionImport extends FaunaEuropaeaImportBase {
 	private boolean checkReferenceStatus(FaunaEuropaeaImportConfigurator fauEuConfig) {
 		boolean result = true;
 //		try {
-			Source source = fauEuConfig.getSource();
-			String sqlStr = "";
+//			Source source = fauEuConfig.getSource();
+//			String sqlStr = "";
 	//		ResultSet rs = source.getResultSet(sqlStr);
 			return result;
 //		} catch (SQLException e) {
@@ -70,9 +71,6 @@ public class FaunaEuropaeaDistributionImport extends FaunaEuropaeaImportBase {
 //		}
 	}
 	
-	/* (non-Javadoc)
-	 * @see eu.etaxonomy.cdm.io.common.CdmIoBase#doInvoke(eu.etaxonomy.cdm.io.common.IImportConfigurator, eu.etaxonomy.cdm.api.application.CdmApplicationController, java.util.Map)
-	 */
 	/* (non-Javadoc)
 	 * @see eu.etaxonomy.cdm.io.common.CdmIoBase#doInvoke(eu.etaxonomy.cdm.io.common.IoStateBase)
 	 */
@@ -195,25 +193,18 @@ public class FaunaEuropaeaDistributionImport extends FaunaEuropaeaImportBase {
 
 				if (((i % limit) == 0 && i != 1 ) || i == count ) { 
 
-					
-
-						try {
-							commitTaxaAndDistribution(state,
-									noDataUuid, taxonUuids, fauEuTaxonMap, txStatus);
-						
+					try {
+						commitTaxaAndDistribution(state, noDataUuid, taxonUuids, fauEuTaxonMap, txStatus);
 						taxonUuids = null;
 						taxonList = null;
 						fauEuTaxonMap = null;
 						
-						
-						} catch (Exception e) {
-							logger.error("Commit of taxa and distributions failed");
-							e.printStackTrace();
-						}
-						
-						if(logger.isInfoEnabled()) { 
-							logger.info("i = " + i + " - Transaction committed"); 
-						}
+					} catch (Exception e) {
+						logger.error("Commit of taxa and distributions failed");
+						e.printStackTrace();
+					}
+					
+					if(logger.isInfoEnabled()) { logger.info("i = " + i + " - Transaction committed");}
 				}
 
 					
@@ -244,8 +235,7 @@ public class FaunaEuropaeaDistributionImport extends FaunaEuropaeaImportBase {
 			Set<UUID> taxonUuids,
 			Map<UUID, FaunaEuropaeaDistributionTaxon> fauEuTaxonMap,
 			TransactionStatus txStatus) throws Exception {
-		List<TaxonBase> taxonList;
-		taxonList = prepareTaxaAndDistribution(getTaxonService().find(taxonUuids), fauEuTaxonMap, noDataUuid, state);
+		 List<TaxonBase> taxonList = prepareTaxaAndDistribution(getTaxonService().find(taxonUuids), fauEuTaxonMap, noDataUuid, state);
 
 		getTaxonService().save(taxonList);
 		commitTransaction(txStatus);
@@ -261,12 +251,12 @@ public class FaunaEuropaeaDistributionImport extends FaunaEuropaeaImportBase {
 		UUID taxonUuid;
 		TaxonDescription taxonDescription;
 		Taxon taxon;
-		for (TaxonBase taxonBase : taxonList) {
+		for (TaxonBase<?> taxonBase : taxonList) {
 
 			if (taxonBase != null) {
 				
 				if (taxonBase instanceof Taxon) {
-					taxon = taxonBase.deproxy(taxonBase, Taxon.class);
+					taxon = CdmBase.deproxy(taxonBase, Taxon.class);
 				} else {
 					logger.warn("TaxonBase (" + taxonBase.getId() + " is not of type Taxon but: " 
 							+ taxonBase.getClass().getSimpleName());
@@ -291,18 +281,18 @@ public class FaunaEuropaeaDistributionImport extends FaunaEuropaeaImportBase {
 					presenceAbsenceStatus = null;
 					
 					if (fauEuHelperDistribution.getOccurrenceStatusId() != 0 && fauEuHelperDistribution.getOccurrenceStatusId() != 2 && fauEuHelperDistribution.getOccurrenceStatusId() != 1){
-						presenceAbsenceStatus = (PresenceAbsenceTermBase)getTermService().find(noData);
+						presenceAbsenceStatus = (PresenceAbsenceTermBase<?>)getTermService().find(noData);
 					}else{
-						presenceAbsenceStatus 
-						= FaunaEuropaeaTransformer.occStatus2PresenceAbsence(fauEuHelperDistribution.getOccurrenceStatusId());
+						presenceAbsenceStatus = FaunaEuropaeaTransformer.occStatus2PresenceAbsence(fauEuHelperDistribution.getOccurrenceStatusId());
 					}
-					
-					
-					
+
 					namedArea = FaunaEuropaeaTransformer.areaId2TdwgArea(fauEuHelperDistribution);
 					
 					if (namedArea == null){
 						UUID areaUuid= FaunaEuropaeaTransformer.getUUIDByAreaAbbr(fauEuHelperDistribution.getAreaCode());
+						if (areaUuid == null){
+							logger.warn("Area " + fauEuHelperDistribution.getAreaCode() + "not found in FE transformer");
+						}
 						namedArea = getNamedArea(state, areaUuid, fauEuHelperDistribution.getAreaName(), fauEuHelperDistribution.getAreaName(), fauEuHelperDistribution.getAreaCode(), null, null);
 						
 					}

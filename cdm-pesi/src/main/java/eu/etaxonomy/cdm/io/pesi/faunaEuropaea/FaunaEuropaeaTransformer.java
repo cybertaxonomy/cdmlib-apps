@@ -12,7 +12,6 @@ package eu.etaxonomy.cdm.io.pesi.faunaEuropaea;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.HashMap;
-import java.util.Map;
 import java.util.UUID;
 
 import org.apache.log4j.Logger;
@@ -77,8 +76,6 @@ public final class FaunaEuropaeaTransformer {
 	public static final int R_SPECIES = 21;
 	public static final int R_SUBSPECIES = 22;
 	
-	private static Map<String, String> tdwgAreas = null;
-
 	public static PresenceAbsenceTermBase<?> occStatus2PresenceAbsence(int occStatusId)  throws UnknownCdmTypeException{
 	
 		if (Integer.valueOf(occStatusId) == null) {
@@ -300,20 +297,32 @@ public final class FaunaEuropaeaTransformer {
 		return tdwgArea;
 	}
 	
+	public static UUID uuidAreaAUS = UUID.fromString("cf979ca8-8cb6-42df-b2ce-1f432ec7c26b");
+	public static UUID uuidAreaAFR = UUID.fromString("07ac5e75-9fc9-4aa0-938c-1324c9618b97");
+	public static UUID uuidAreaEPA = UUID.fromString("e83446d7-7379-4beb-be05-295f8da6f5ae");
+	public static UUID uuidAreaGR_AEG = UUID.fromString("6bd422aa-9911-4b80-8595-0f6d1ecd5eee");
+	public static UUID uuidAreaGR_CYC = UUID.fromString("8e7d7f1e-3e4d-4f7c-96ec-93ec91e528d6");
+	public static UUID uuidAreaGR_DOD = UUID.fromString("6d6f6842-924e-440b-9e7e-3df1922bf4a6");
+	public static UUID uuidAreaNAF = UUID.fromString("d2c54b1e-5f9f-455d-b308-6859cb153c7b");
+	public static UUID uuidAreaNEA = UUID.fromString("aa87f6b8-110b-44b5-a329-91a08f1a4cc9");
+	public static UUID uuidAreaNEO = UUID.fromString("0e6e0ce9-c6ab-46bc-80b9-aee4a0620e78");
+	public static UUID uuidAreaNRE = UUID.fromString("d51876c2-eaf6-4c7f-963e-337dd3e0d729");
+	public static UUID uuidAreaORR = UUID.fromString("04cab4f8-b316-4e21-9bcc-236a45e4e83d");
+	
 	public final static HashMap<String, UUID> abbrToUUID = new HashMap<String,UUID>();
 	 	static
 	 	{	
-	 		abbrToUUID.put("AUS", UUID.fromString("cf979ca8-8cb6-42df-b2ce-1f432ec7c26b"));
-	 		abbrToUUID.put("AFR", UUID.fromString("07ac5e75-9fc9-4aa0-938c-1324c9618b97"));
-	 		abbrToUUID.put("EPA", UUID.fromString("e83446d7-7379-4beb-be05-295f8da6f5ae"));
-	 		abbrToUUID.put("GR-AEG", UUID.fromString("6bd422aa-9911-4b80-8595-0f6d1ecd5eee"));
-	 		abbrToUUID.put("GR-CYC", UUID.fromString("8e7d7f1e-3e4d-4f7c-96ec-93ec91e528d6"));
-	 		abbrToUUID.put("GR-DOD", UUID.fromString("6d6f6842-924e-440b-9e7e-3df1922bf4a6"));
-	 		abbrToUUID.put("NAF", UUID.fromString("d2c54b1e-5f9f-455d-b308-6859cb153c7b"));
-	 		abbrToUUID.put("NEA", UUID.fromString("aa87f6b8-110b-44b5-a329-91a08f1a4cc9"));
-	 		abbrToUUID.put("NEO", UUID.fromString("0e6e0ce9-c6ab-46bc-80b9-aee4a0620e78"));
-	 		abbrToUUID.put("NRE", UUID.fromString("d51876c2-eaf6-4c7f-963e-337dd3e0d729"));
-	 		abbrToUUID.put("ORR", UUID.fromString("04cab4f8-b316-4e21-9bcc-236a45e4e83d"));
+	 		abbrToUUID.put("AUS", uuidAreaAUS);
+	 		abbrToUUID.put("AFR", uuidAreaAFR);
+	 		abbrToUUID.put("EPA", uuidAreaEPA);
+	 		abbrToUUID.put("GR-AEG", uuidAreaGR_AEG);
+	 		abbrToUUID.put("GR-CYC", uuidAreaGR_CYC);
+	 		abbrToUUID.put("GR-DOD", uuidAreaGR_DOD);
+	 		abbrToUUID.put("NAF", uuidAreaNAF);
+	 		abbrToUUID.put("NEA", uuidAreaNEA);
+	 		abbrToUUID.put("NEO", uuidAreaNEO);
+	 		abbrToUUID.put("NRE", uuidAreaNRE);
+	 		abbrToUUID.put("ORR", uuidAreaORR);
 	 	}
 	public static UUID getUUIDByAreaAbbr(String abbr){
 		return abbrToUUID.get(abbr);

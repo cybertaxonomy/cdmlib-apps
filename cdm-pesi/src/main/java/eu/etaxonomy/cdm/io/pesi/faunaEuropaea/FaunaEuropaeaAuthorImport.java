@@ -17,12 +17,10 @@ import org.apache.log4j.Logger;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.TransactionStatus;
 
-import eu.etaxonomy.cdm.app.common.ImportUtils;
 import eu.etaxonomy.cdm.io.common.ICdmIO;
 import eu.etaxonomy.cdm.io.common.ImportHelper;
 import eu.etaxonomy.cdm.io.common.MapWrapper;
 import eu.etaxonomy.cdm.io.common.Source;
-import eu.etaxonomy.cdm.io.profiler.ProfilerController;
 import eu.etaxonomy.cdm.model.agent.Team;
 import eu.etaxonomy.cdm.model.agent.TeamOrPersonBase;
 import eu.etaxonomy.cdm.model.common.CdmBase;
@@ -68,7 +66,6 @@ public class FaunaEuropaeaAuthorImport extends FaunaEuropaeaImportBase {
 		Source source = fauEuConfig.getSource();
 		
 		String namespace = "AuthorTeam";
-		boolean success = true;
 		
 		if(logger.isInfoEnabled()) { logger.info("Start making Authors..."); }
 		
@@ -116,20 +113,13 @@ public class FaunaEuropaeaAuthorImport extends FaunaEuropaeaImportBase {
 					ImportHelper.setOriginalSource(author, fauEuConfig.getSourceReference(), authorId, namespace);
 
 					if (!authorStore.containsId(authorId)) {
-						if (author == null) {
-							logger.warn("Author is null");
-						}
 						authorStore.put(authorId, author);
-						if (logger.isDebugEnabled()) { 
-							logger.debug("Stored author (" + authorId + ") " + authorName); 
-						}
+						if (logger.isDebugEnabled()) { logger.debug("Stored author (" + authorId + ") " + authorName); }
 					} else {
-						logger.warn("Not imported author with duplicated aut_id (" + authorId + 
-								") " + authorName);
+						logger.warn("Not imported author with duplicated aut_id (" + authorId + ") " + authorName);
 					}
 				} catch (Exception e) {
-					logger.warn("An exception occurred when creating author with id " + authorId + 
-					". Author could not be saved.");
+					logger.warn("An exception occurred when creating author with id " + authorId + ". Author could not be saved.");
 				}
 			}
 			

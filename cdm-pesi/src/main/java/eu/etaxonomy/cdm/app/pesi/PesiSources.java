@@ -23,6 +23,16 @@ public class PesiSources {
 	@SuppressWarnings("unused")
 	private static final Logger logger = Logger.getLogger(PesiSources.class);
 	
+	public static Source faunEu_pesi3(){
+		//	Fauna Europaea auf pesiimport3
+		String dbms = Source.SQL_SERVER_2008;
+        String strServer = "pesiimport3";
+        String strDB = "FaunEu";
+		int port = 1433;
+		String userName = "pesiexport";
+		return  ImportUtils.makeSource(dbms, strServer, strDB, port, userName, null);
+	}
+	
 	public static Source faunEu(){
 		//	Fauna Europaea
 		
