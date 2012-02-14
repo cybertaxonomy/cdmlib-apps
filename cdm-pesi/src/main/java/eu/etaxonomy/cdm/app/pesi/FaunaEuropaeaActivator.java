@@ -36,11 +36,11 @@ public class FaunaEuropaeaActivator {
 	private static final Logger logger = Logger.getLogger(FaunaEuropaeaActivator.class);
 
 
-	static final Source faunaEuropaeaSource = PesiSources.faunEu();
-	static final ICdmDataSource cdmDestination = CdmDestinations.cdm_test_local_mysql();
+	static final Source faunaEuropaeaSource = PesiSources.faunEu_pesi3();
+	static final ICdmDataSource cdmDestination = CdmDestinations.cdm_test_local_faunaEu_mysql();
 
 	
-	static final int limitSave = 2000;
+	static final int limitSave = 5000;
 
 //	static final CHECK check = CHECK.CHECK_AND_IMPORT;
 	static final CHECK check = CHECK.IMPORT_WITHOUT_CHECK;
