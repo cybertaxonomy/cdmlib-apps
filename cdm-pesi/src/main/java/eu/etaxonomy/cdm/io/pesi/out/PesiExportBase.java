@@ -9,6 +9,8 @@
 */
 package eu.etaxonomy.cdm.io.pesi.out;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
@@ -24,6 +26,7 @@ import eu.etaxonomy.cdm.model.name.NameRelationship;
 import eu.etaxonomy.cdm.model.name.NonViralName;
 import eu.etaxonomy.cdm.model.name.TaxonNameBase;
 import eu.etaxonomy.cdm.model.taxon.TaxonBase;
+import eu.etaxonomy.cdm.persistence.query.OrderHint;
 
 /**
  * @author e.-m.lee
@@ -40,7 +43,9 @@ public abstract class PesiExportBase extends DbExportBase<PesiExportConfigurator
 	
 
 	protected <CLASS extends TaxonBase<?>> List<CLASS> getNextTaxonPartition(Class<CLASS> clazz, int limit, int partitionCount, List<String> propertyPath) {
-		List<CLASS> list = (List<CLASS>)getTaxonService().list(clazz, limit, partitionCount * limit, null, propertyPath);
+		List<OrderHint> orderHints = new ArrayList<OrderHint>();
+		orderHints.add(new OrderHint("id", OrderHint.SortOrder.ASCENDING ));
+		List<CLASS> list = (List<CLASS>)getTaxonService().list(clazz, limit, partitionCount * limit, orderHints, propertyPath);
 		
 		Iterator<CLASS> it = list.iterator();
 		while (it.hasNext()){
@@ -61,7 +66,11 @@ public abstract class PesiExportBase extends DbExportBase<PesiExportConfigurator
 	 * @return
 	 */
 	protected List<NonViralName<?>> getNextPureNamePartition(Class<? extends NonViralName> clazz,int limit, int partitionCount) {
-		List<NonViralName<?>> list = (List)getNameService().list(clazz, limit, partitionCount * limit, null, null);
+		List<OrderHint> orderHints = new ArrayList<OrderHint>();
+		orderHints.add(new OrderHint("id", OrderHint.SortOrder.ASCENDING ));
+		List<String> propPath = Arrays.asList(new String[]{"taxonBases"});
+		
+		List<NonViralName<?>> list = (List)getNameService().list(clazz, limit, partitionCount * limit, orderHints, null);
 		if (list.isEmpty()){
 			return null;
 		}
