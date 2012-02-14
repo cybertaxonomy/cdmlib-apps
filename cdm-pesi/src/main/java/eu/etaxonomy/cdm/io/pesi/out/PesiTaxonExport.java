@@ -1299,89 +1299,8 @@ public class PesiTaxonExport extends PesiExportBase {
 	 */
 	@SuppressWarnings("unused")
 	private static String getWebShowName(TaxonNameBase<?,?> taxonName) {
-		String result = "";
-		
-		try {
-			List<TaggedText> taggedName = taxonName.getTaggedName();
-			boolean openTag = false;
-			boolean start = true;
-			for (TaggedText taggedText : taggedName) {
-				if (taggedText.isName() || taggedText.isHybridSign()  ) {
-					// Name
-					if (! openTag) {
-						if (start) {
-							result = "<i>";
-							start = false;
-						} else {
-							result += " <i>";
-						}
-						openTag = true;
-					} else {
-						result += " ";
-					}
-					result += taggedText.getText();
-				} else if (taggedText.isSeparator()) {
-					//Separator
-					if (! openTag) {
-						logger.warn("Semantics of separator outside name not yet defined: "+ taxonName.getUuid() + " (" + taxonName.getTitleCache() + ")");
-					}
-					result += taggedText.getText();
-				} else if (taggedText.isRank()) {
-					// Rank
-					String rankAbbrev = taggedText.getText();
-					
-					if (StringUtils.isBlank(rankAbbrev)) {
-						logger.error("Rank abbreviation is an empty string: " + taxonName.getUuid() + " (" + taxonName.getTitleCache() + ")");
-					} else {
-						if (openTag) {
-							result += "</i> ";
-							openTag = false;
-						} else {
-							result += " ";
-						}
-						result +=rankAbbrev;
-					}
-				} else if (taggedText.isAuthors()) {
-					//Team
-					if (openTag) {
-						result += "</i> ";
-						openTag = false;
-					} else {
-						result += " ";
-					}
-					result += taggedText.getText();
-				} else if (taggedText.isYear()) {
-					if (openTag) {
-						result += "</i> ";
-						openTag = false;
-					} else {
-						result += " ";
-					}
-					result += taggedText.getText();
-				} else if (taggedText.isReference()) {
-					if (openTag) {
-						result += "</i> ";
-						openTag = false;
-					} else {
-						result += " ";
-					}
-					result += taggedText.getText();
-				} else {
-					if (taggedText.getText() == null) {
-						logger.warn("TaggedName for " + taggedText.getType() +" is NULL for this TaxonName: " + taxonName.getUuid() + " (" + taxonName.getTitleCache() +")");
-					} else {
-						logger.error("TaggedText typ is unknown. Tag type: " + taggedText.getType() + ", TaxonName: " + taxonName.getUuid() + " (" + taxonName.getTitleCache() + ")");
-					}
-				}
-			}
-			if (openTag) {
-				result += "</i>";
-			}
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-
-		return result;
+		//TODO extensions?
+		return getDisplayName(taxonName);   //currently they are same
 	}
 
 	/**
@@ -1494,20 +1413,13 @@ public class PesiTaxonExport extends PesiExportBase {
 			return null;
 		}
 		
-		INonViralNameCacheStrategy cacheStrategy;
-		boolean isZoological = false;
-		if (taxonName.isInstanceOf(ZoologicalName.class)){
-			cacheStrategy = zooNameStrategy;
-			isZoological = true;
-		}else{
-			cacheStrategy = botanicalNameStrategy;
-		}
+		INonViralNameCacheStrategy cacheStrategy = getCacheStrategy(taxonName);
 		
 		HTMLTagRules tagRules = new HTMLTagRules().addRule(TagEnum.name, "i");
 		NonViralName<?> nvn = CdmBase.deproxy(taxonName, NonViralName.class);
 		return cacheStrategy.getTitleCache(nvn, tagRules);
-	
 	}
+
 	
 	/**
 	 * Returns the <code>NameStatusFk</code> attribute.
@@ -2185,6 +2097,19 @@ public class PesiTaxonExport extends PesiExportBase {
 	private static Integer getSpeciesExpertFk(Reference<?> reference, PesiExportState state) {
 		Integer result = state.getDbId(reference);
 		return result;
+	}
+	
+	
+	private static INonViralNameCacheStrategy getCacheStrategy(TaxonNameBase<?, ?> taxonName) {
+		INonViralNameCacheStrategy cacheStrategy;
+		boolean isZoological = false;
+		if (taxonName.isInstanceOf(ZoologicalName.class)){
+			cacheStrategy = zooNameStrategy;
+			isZoological = true;
+		}else{
+			cacheStrategy = botanicalNameStrategy;
+		}
+		return cacheStrategy;
 	}
 
 //	/**
