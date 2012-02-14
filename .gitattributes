@@ -1243,6 +1243,7 @@ cdm-pesi/src/main/java/eu/etaxonomy/cdm/app/pesi/FaunaEuropaeaActivator.java -te
 cdm-pesi/src/main/java/eu/etaxonomy/cdm/app/pesi/PesiDestinations.java -text
 cdm-pesi/src/main/java/eu/etaxonomy/cdm/app/pesi/PesiExportActivator.java -text
 cdm-pesi/src/main/java/eu/etaxonomy/cdm/app/pesi/PesiExportActivatorEM.java -text
+cdm-pesi/src/main/java/eu/etaxonomy/cdm/app/pesi/PesiExportActivatorFE.java -text
 cdm-pesi/src/main/java/eu/etaxonomy/cdm/app/pesi/PesiSources.java -text
 cdm-pesi/src/main/java/eu/etaxonomy/cdm/app/pesi/merging/FaunaEuErmsFindIdenticalNamesActivator.java -text
 cdm-pesi/src/main/java/eu/etaxonomy/cdm/app/pesi/merging/FaunaEuErmsMergeActivator.java -text
