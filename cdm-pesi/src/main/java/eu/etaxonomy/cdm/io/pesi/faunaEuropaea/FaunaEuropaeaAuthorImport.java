@@ -56,9 +56,10 @@ public class FaunaEuropaeaAuthorImport extends FaunaEuropaeaImportBase {
 	 */
 	@Override
 	protected void doInvoke(FaunaEuropaeaImportState state){ 
+		/*
 		logger.warn("Start author doInvoke");
 		ProfilerController.memorySnapshot();
-		
+		*/
 		Map<String, MapWrapper<? extends CdmBase>> stores = state.getStores();
 		MapWrapper<TeamOrPersonBase> authorStore = (MapWrapper<TeamOrPersonBase>)stores.get(ICdmIO.TEAM_STORE);
 		TransactionStatus txStatus = null;
@@ -90,14 +91,14 @@ public class FaunaEuropaeaAuthorImport extends FaunaEuropaeaImportBase {
 				int authorId = rs.getInt("aut_id");
 				String authorName = rs.getString("aut_name");
 
-				String auctWithNecRegEx = "\\bauct\\.?\\b\\s\\bnec\\.?\\b";
-				String necAuctRegEx = "\\bnec\\.?\\b\\s\\bauct\\.?\\b";
+				String auctWithNecRegEx = "\\bauct\\b\\.?.*\\bnec\\b\\.?.*";
+				String necAuctRegEx = "\\bnec\\b\\.?.*\\bauct\\b\\.?.*";
 				
 				boolean auctWithNecFound = expressionMatches(auctWithNecRegEx, authorName);
 				boolean necAuctFound = expressionMatches(necAuctRegEx, authorName);
 				if (auctWithNecFound){
 					logger.debug("authorName before auct nec string is removed" + authorName);
-					authorName = authorName.substring(expressionEnd(auctWithNecRegEx, authorName)+1, authorName.length());
+					authorName = authorName.substring(expressionEnd("nec\\.?", authorName)+1, authorName.length());
 					logger.debug("authorName after auct nec string is removed" + authorName);
 				}
 				

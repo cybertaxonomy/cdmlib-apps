@@ -76,9 +76,10 @@ public class FaunaEuropaeaUsersImport extends FaunaEuropaeaImportBase {
 	 */
 	@Override
 	protected void doInvoke(FaunaEuropaeaImportState state) {				
+		/*
 		logger.warn("Start User doInvoke");
 		ProfilerController.memorySnapshot();
-		
+		*/
 		TransactionStatus txStatus = null;
 		Map<Integer, Reference> references = null;
 		Map<String,TeamOrPersonBase> authors = null;
@@ -227,10 +228,10 @@ public class FaunaEuropaeaUsersImport extends FaunaEuropaeaImportBase {
 			logger.error("SQLException:" +  e);
 			state.setUnsuccessfull();
 		}
-
+		/*
 		logger.warn("End User doInvoke");
 		ProfilerController.memorySnapshot();
-		
+		*/
 		if(logger.isInfoEnabled()) { logger.info("End making References (Users) ..."); }
 		
 		return;

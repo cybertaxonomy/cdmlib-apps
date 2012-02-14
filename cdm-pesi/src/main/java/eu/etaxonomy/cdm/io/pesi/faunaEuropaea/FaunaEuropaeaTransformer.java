@@ -211,7 +211,7 @@ public final class FaunaEuropaeaTransformer {
 			//else if (areaCode.equals("AFR")) tdwgArea = TdwgArea.getAreaByTdwgAbbreviation("24"); // Afro-tropical region - Northeast Tropical Africa
 			else if (areaCode.equals("AL")) tdwgArea = TdwgArea.getAreaByTdwgAbbreviation("ALB-OO");
 			else if (areaCode.equals("AT")) tdwgArea = TdwgArea.getAreaByTdwgAbbreviation("AUT-AU");
-			//else if (areaCode.equals("AUS")) tdwgArea = TdwgArea.getAreaByTdwgAbbreviation("50"); // Australian region - Australia
+			else if (areaCode.equals("AUS")) tdwgArea = TdwgArea.getAreaByTdwgAbbreviation("AUS"); // Australian region - Australia
 			else if (areaCode.equals("BA")) tdwgArea = TdwgArea.getAreaByTdwgAbbreviation("YUG-BH"); 
 			else if (areaCode.equals("BE")) tdwgArea = TdwgArea.getAreaByTdwgAbbreviation("BGM-BE");
 			else if (areaCode.equals("BG")) tdwgArea = TdwgArea.getAreaByTdwgAbbreviation("BUL-OO");

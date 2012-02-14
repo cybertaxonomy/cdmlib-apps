@@ -389,43 +389,36 @@ public class FaunaEuropaeaTaxonNameImport extends FaunaEuropaeaImportBase  {
 				Extension.NewInstance(zooName, lastAction, getExtensionType(PesiTransformer.lastActionUuid, "LastAction", "LastAction", "LA"));
 				Extension.NewInstance(zooName, lastActionDate, getExtensionType(PesiTransformer.lastActionDateUuid, "LastActionDate", "LastActionDate", "LAD"));
 
-				// Add Note extensions to this zooName
+				/* Add Note extensions to this zooName
 				Extension.NewInstance(zooName, taxComment, getExtensionType(PesiTransformer.taxCommentUuid, "TaxComment", "TaxComment", "TC"));
 				Extension.NewInstance(zooName, fauComment, getExtensionType(PesiTransformer.fauCommentUuid, "FauComment", "FauComment", "FC"));
 				Extension.NewInstance(zooName, fauExtraCodes, getExtensionType(PesiTransformer.fauExtraCodesUuid, "FauExtraCodes", "FauExtraCodes", "FEC"));
-				
+				*/
 				TaxonBase<?> taxonBase;
 
 				Synonym synonym = null;
 				Taxon taxon;
 				try {
 					// check for occurrence of the auct string in auctName
-					String auctRegEx = "\\bauct\\.?\\b"; // The word "auct" with or without "."
+					String auctRegEx = "\\bauct\\b\\.?"; // The word "auct" with or without "."
 					
-					String auctWithNecRegEx = "\\bauct\\.?\\b\\s\\bnec\\.?\\b";
-					String necAuctRegEx = "\\bnec\\.?\\b\\s\\bauct\\.?\\b";
+					String auctWithNecRegEx = "\\bauct\\b\\.?.*\\bnec\\b\\.?.*";
+					String necAuctRegEx = ".*\\bnec\\b\\.?.*\\bauct\\b\\.?";
 					
 					boolean auctNecFound = expressionMatches(auctWithNecRegEx, autName);
-					boolean necAuctFound = expressionMatches(auctWithNecRegEx, autName);
+					boolean necAuctFound = expressionMatches(necAuctRegEx, autName);
 					boolean auctWordFound = expressionMatches(auctRegEx, autName);
 					
 						
 					
-					if (status == T_STATUS_ACCEPTED || (auctWordFound && !(necAuctFound ||auctNecFound))) {
-
-						if (auctWordFound) { // misapplied name
-							zooName.setCombinationAuthorTeam(null);
-							zooName.setPublicationYear(null);
-							taxon = Taxon.NewInstance(zooName, auctReference);
-							if (logger.isDebugEnabled()) {
-								logger.debug("Misapplied name created (" + taxonId + ")");
-							}
-						} else { // accepted taxon
+					if (status == T_STATUS_ACCEPTED ) {
+						
 							taxon = Taxon.NewInstance(zooName, sourceReference);
 							if (logger.isDebugEnabled()) {
 								logger.debug("Taxon created (" + taxonId + ")");
 							}
-						}
+							
+						
 						taxonBase = taxon;
 					} else if ((status == T_STATUS_NOT_ACCEPTED) && ! auctWordFound) { // synonym
 						synonym = Synonym.NewInstance(zooName, sourceReference);
@@ -434,11 +427,21 @@ public class FaunaEuropaeaTaxonNameImport extends FaunaEuropaeaImportBase  {
 							logger.debug("Synonym created (" + taxonId + ")");
 						}
 						taxonBase = synonym;
-					} else if (status == T_STATUS_NOT_ACCEPTED && (necAuctFound ||auctNecFound)){
+					} else if (status == T_STATUS_NOT_ACCEPTED && (necAuctFound || auctNecFound)){
 						synonym = Synonym.NewInstance(zooName, sourceReference);
-						synonym.setDoubtful(false);
+						synonym.setDoubtful(true);
 						taxonBase = synonym;
-						
+						logger.info("Misapplied name created ("+ taxonId + ") " + autName);
+					}else if (status == T_STATUS_NOT_ACCEPTED && auctWordFound){
+							// misapplied name
+								zooName.setCombinationAuthorTeam(null);
+								zooName.setPublicationYear(null);
+								taxon = Taxon.NewInstance(zooName, auctReference);
+								taxonBase = taxon;
+								logger.info("Misapplied name created ("+ taxonId + ") " + autName);
+								if (logger.isDebugEnabled()) {
+									logger.debug("Misapplied name created (" + taxonId + ")");
+									}
 					}else{
 						
 						logger.warn("Unknown taxon status " + status + ". Taxon (" + taxonId + ") ignored.");
@@ -447,6 +450,11 @@ public class FaunaEuropaeaTaxonNameImport extends FaunaEuropaeaImportBase  {
 
 					taxonBase.setUuid(taxonBaseUuid);
 					taxonBase.setLsid(new LSID( "urn:lsid:faunaeur.org:taxname:"+taxonId));
+					
+					// Add Note extensions to this taxon
+					Extension.NewInstance(taxonBase, taxComment, getExtensionType(PesiTransformer.taxCommentUuid, "TaxComment", "TaxComment", "TC"));
+					Extension.NewInstance(taxonBase, fauComment, getExtensionType(PesiTransformer.fauCommentUuid, "FauComment", "FauComment", "FC"));
+					Extension.NewInstance(taxonBase, fauExtraCodes, getExtensionType(PesiTransformer.fauExtraCodesUuid, "FauExtraCodes", "FauExtraCodes", "FEC"));
 					
 
 					ImportHelper.setOriginalSource(taxonBase, fauEuConfig.getSourceReference(), taxonId, OS_NAMESPACE_TAXON);

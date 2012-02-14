@@ -78,9 +78,10 @@ public class FaunaEuropaeaDistributionImport extends FaunaEuropaeaImportBase {
 	 */
 	@Override
 	protected void doInvoke(FaunaEuropaeaImportState state) {	
+		/*
 		logger.warn("Start distribution doInvoke");
 		ProfilerController.memorySnapshot();
-		
+		*/
 		int limit = state.getConfig().getLimitSave();
 		UUID noDataUuid;
 		/* Taxon store for retrieving taxa from and saving taxa to CDM */
@@ -204,13 +205,7 @@ public class FaunaEuropaeaDistributionImport extends FaunaEuropaeaImportBase {
 						taxonList = null;
 						fauEuTaxonMap = null;
 						
-						//TODO: DELETE!!!!!!
-						if (i >= 199999  && i<=200001){
-							System.gc();
-							final Controller controller = new Controller();
-							 controller.captureMemorySnapshot();
-//							 return;
-						}
+						
 						} catch (Exception e) {
 							logger.error("Commit of taxa and distributions failed");
 							e.printStackTrace();
@@ -231,6 +226,7 @@ public class FaunaEuropaeaDistributionImport extends FaunaEuropaeaImportBase {
 					fauEuTaxonMap = null;
 				} catch (Exception e) {
 					logger.error("Commit of taxa and distributions failed");
+					logger.error(e.getMessage());
 					e.printStackTrace();
 				}
 			}

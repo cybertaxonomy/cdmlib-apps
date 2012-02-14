@@ -95,8 +95,9 @@ public class FaunaEuropaeaRelTaxonIncludeImport extends FaunaEuropaeaImportBase 
 	
 	protected void doInvoke(FaunaEuropaeaImportState state) {				
 		
-		logger.warn("Start RelTaxon doInvoke");
+		/*logger.warn("Start RelTaxon doInvoke");
 		ProfilerController.memorySnapshot();
+		*/
 		Map<String, MapWrapper<? extends CdmBase>> stores = state.getStores();
 
 		MapWrapper<TeamOrPersonBase> authorStore = (MapWrapper<TeamOrPersonBase>)stores.get(ICdmIO.TEAM_STORE);
@@ -112,28 +113,36 @@ public class FaunaEuropaeaRelTaxonIncludeImport extends FaunaEuropaeaImportBase 
 
 		Classification tree = getClassificationFor(state, sourceRef);
 		commitTransaction(txStatus);
-		
+		/*
 		logger.warn("Before processParentsChildren");
+		
 		ProfilerController.memorySnapshot();
+		*/
 		if (state.getConfig().isDoTaxonomicallyIncluded()) {
 			processParentsChildren(state);
 		}
+		/*
 		logger.warn("Before processMissappliedNames");
+		
 		ProfilerController.memorySnapshot();
+		*/
 		if (state.getConfig().isDoMisappliedNames()) {
 			processMisappliedNames(state);
 		}
+		/*
 		logger.warn("Before heterotypic synonyms");
 		ProfilerController.memorySnapshot();
+		*/
 		if (state.getConfig().isDoHeterotypicSynonyms()) {
 			if(logger.isInfoEnabled()) { 
 				logger.info("Start making heterotypic synonym relationships..."); 
 			}
 			processHeterotypicSynonyms(state, ALL_SYNONYM_FROM_CLAUSE);
 		}
+		/*
 		logger.warn("End RelTaxon doInvoke");
 		ProfilerController.memorySnapshot();
-
+		*/
 		logger.info("End making taxa...");
 
 		return;
@@ -223,6 +232,7 @@ public class FaunaEuropaeaRelTaxonIncludeImport extends FaunaEuropaeaImportBase 
 			}
 	        
 	        if (childParentMap != null){
+	        	logger.info("processParentsChildren... last commit");
 	        	createAndCommitParentChildRelationships(
 						state, txStatus, childParentMap);
 	        	childParentMap = null;
@@ -248,7 +258,7 @@ public class FaunaEuropaeaRelTaxonIncludeImport extends FaunaEuropaeaImportBase 
 
 	/** Retrieve misapplied name / accepted taxon uuid map from CDM DB */
 	private void processMisappliedNames(FaunaEuropaeaImportState state) {
-//TODO: there are some misapplied names containing a "nec" in their name, they are listed as synonyms in Fauna Europaea, but should be handled as misapplied names??, the AUT_ID is not A_AUCT but the name contains auct. and the author name of the taxon that is not meant or other way round...
+
 		int limit = state.getConfig().getLimitSave();
 
 		TransactionStatus txStatus = null;
@@ -268,15 +278,7 @@ public class FaunaEuropaeaRelTaxonIncludeImport extends FaunaEuropaeaImportBase 
 		" WHERE (Taxon.TAX_VALID = 0) AND (Taxon.TAX_AUT_ID = " + A_AUCT + ")";		
 		String orderClause = " ORDER BY dbo.Taxon.TAX_RNK_ID ASC ";
 
-		/*
-		 * misapplied names with auct. nec.
-		 * 
-		 * String selectColumns = "SELECT Taxon.UUID AS MisappliedUuid, Parent.UUID AS AcceptedUuid";		
-	 		String fromClause = "FROM [FaunEu].[dbo].[Taxon] INNER JOIN [FaunEu].[dbo].[Taxon] AS Parent "+
-		"ON Taxon.TAX_TAX_IDPARENT = Parent.TAX_ID "+
-		"INNER JOIN [FaunEu].[dbo].[author] AS author ON Taxon.Tax_Aut_Id = author.aut_id "+
-		"WHERE (Taxon.TAX_VALID = 0) AND ((Taxon.TAX_AUT_ID = 1) or author.aut_name like '%auct%nec%' )	";
-		 */
+		
 		
 		
 		String countQuery = 
@@ -341,6 +343,7 @@ public class FaunaEuropaeaRelTaxonIncludeImport extends FaunaEuropaeaImportBase 
 				}
 			}
 			if (childParentMap != null){
+				logger.info("processMisappliedNames... last commit");
 				createAndCommitMisappliedNameRelationships(state, txStatus,
 						childParentMap);
 				childParentMap = null;
@@ -454,6 +457,7 @@ public class FaunaEuropaeaRelTaxonIncludeImport extends FaunaEuropaeaImportBase 
 			}
 		}
 		if (synonymAcceptedMap != null){
+			logger.info("processHeterotypicSynonyms... last commit");
 			synonymAcceptedMap = createAndCommitHeterotypicSynonyms(state,
 					txStatus, synonymAcceptedMap);
 		}

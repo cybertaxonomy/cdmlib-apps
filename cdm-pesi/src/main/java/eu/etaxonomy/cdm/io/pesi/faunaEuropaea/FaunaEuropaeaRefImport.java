@@ -36,6 +36,7 @@ import eu.etaxonomy.cdm.model.common.DescriptionElementSource;
 import eu.etaxonomy.cdm.model.common.OriginalSourceBase;
 import eu.etaxonomy.cdm.model.description.Feature;
 import eu.etaxonomy.cdm.model.description.TaxonDescription;
+import eu.etaxonomy.cdm.model.description.TaxonNameDescription;
 import eu.etaxonomy.cdm.model.description.TextData;
 import eu.etaxonomy.cdm.model.reference.Reference;
 import eu.etaxonomy.cdm.model.reference.ReferenceFactory;
@@ -87,9 +88,10 @@ public class FaunaEuropaeaRefImport extends FaunaEuropaeaImportBase {
 	 */
 	@Override
 	protected void doInvoke(FaunaEuropaeaImportState state) {				
+		/*
 		logger.warn("Start RefImport doInvoke");
 		ProfilerController.memorySnapshot();
-		
+		*/
 		List<TaxonBase> taxonList = null;
 		List<Reference> referenceList = null;
 		Set<UUID> taxonUuids = null;
@@ -146,18 +148,20 @@ public class FaunaEuropaeaRefImport extends FaunaEuropaeaImportBase {
 				referenceUuids, limit, fauEuConfig, source, namespace, i,
 				countQueryRefs, selectQueryRefs);
 	        
-	        
+	    /*    
 		logger.warn("Start ref taxon relationships");
 		ProfilerController.memorySnapshot();
+	 	*/
 	 //create the relationships between references and taxa       
 	        
         createTaxonReferenceRel(state, taxonUuids, fauEuTaxonMap,
 				referenceUuids, referenceIDs, limit, source,
 				countQueryTaxRefs, selectQueryTaxRefs);
         
-        
+        /*
 		logger.warn("End RefImport doInvoke");
 		ProfilerController.memorySnapshot();
+		*/
 		if(logger.isInfoEnabled()) { logger.info("End making references ..."); }
 		
 		return;
@@ -497,15 +501,15 @@ public class FaunaEuropaeaRefImport extends FaunaEuropaeaImportBase {
 			} else {
 				taxon = CdmBase.deproxy(taxonBase, Taxon.class);
 			}
-
+//TODO: statt TaxonDescription TaxonNameDescription und an den Namen anstatt ans Taxon hängen!!!
 			if (taxon != null) {
-				TaxonDescription taxonDescription = null;
-				Set<TaxonDescription> descriptions = taxon.getDescriptions();
+				TaxonNameDescription taxonNameDescription = null;
+				Set<TaxonNameDescription> descriptions = taxon.getName().getDescriptions();
 				if (descriptions.size() > 0) {
-					taxonDescription = descriptions.iterator().next(); 
+					taxonNameDescription = descriptions.iterator().next(); 
 				} else {
-					taxonDescription = TaxonDescription.NewInstance();
-					taxon.addDescription(taxonDescription);
+					taxonNameDescription = TaxonNameDescription.NewInstance();
+					taxon.getName().addDescription(taxonNameDescription);
 				}
 
 
@@ -527,7 +531,7 @@ public class FaunaEuropaeaRefImport extends FaunaEuropaeaImportBase {
 						originalSource.setNameUsedInSource(syn.getName());
 					}
 					textData.addSource(originalSource);
-					taxonDescription.addElement(textData);
+					taxonNameDescription.addElement(textData);
 				}
 			}
 		}
