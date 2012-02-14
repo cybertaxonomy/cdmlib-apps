@@ -44,6 +44,7 @@ public class PesiExportConfigurator extends DbExportConfiguratorBase<PesiExportS
 	private boolean doTreeIndex = true;
 	private boolean doInferredSynonyms = true;
 	private boolean doRank = true;
+	private boolean doPureNames = true;
 	
 	private int nameIdStart = 10000000;
 
@@ -219,6 +220,14 @@ public class PesiExportConfigurator extends DbExportConfiguratorBase<PesiExportS
 
 	public void setDoRank(boolean doRank) {
 		this.doRank = doRank;
+	}
+
+	public boolean isDoPureNames() {
+		return doPureNames;
+	}
+
+	public void setDoPureNames(boolean doPureNames) {
+		this.doPureNames = doPureNames;
 	}
 
 

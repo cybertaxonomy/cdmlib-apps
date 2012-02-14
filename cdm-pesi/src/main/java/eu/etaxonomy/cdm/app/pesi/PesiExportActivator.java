@@ -79,6 +79,7 @@ public class PesiExportActivator {
 	static final boolean doTreeIndex = true;
 	static final boolean doRank = true;
 	static final boolean doInferredSynonyms = true;
+	static final boolean doPureNames = true;
 	
 
 // ************************ NONE **************************************** //
@@ -120,6 +121,7 @@ public class PesiExportActivator {
 		config.setDoTreeIndex(doTreeIndex);
 		config.setDoRank(doRank);
 		config.setDoInferredSynonyms(doInferredSynonyms);
+		config.setDoPureNames(doPureNames);
 		
 		config.setCheck(check);
 		config.setLimitSave(partitionSize);

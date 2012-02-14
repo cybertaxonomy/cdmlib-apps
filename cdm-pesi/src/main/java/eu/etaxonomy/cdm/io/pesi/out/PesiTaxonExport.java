@@ -739,26 +739,21 @@ public class PesiTaxonExport extends PesiExportBase {
 						}
 						
 						if (classification != null) {
-							inferredSynonyms  = getTaxonService().createAllInferredSynonyms(classification, acceptedTaxon);
+							inferredSynonyms  = getTaxonService().createAllInferredSynonyms(acceptedTaxon, classification);
 
 //								inferredSynonyms = getTaxonService().createInferredSynonyms(classification, acceptedTaxon, SynonymRelationshipType.INFERRED_GENUS_OF());
 							if (inferredSynonyms != null) {
 								for (Synonym synonym : inferredSynonyms) {
-									TaxonNameBase<?,?> synonymName = synonym.getName();
-									if (synonymName != null) {
+//									TaxonNameBase<?,?> synonymName = synonym.getName();
 										
-										// Both Synonym and its TaxonName have no valid Id yet
-										synonym.setId(currentTaxonId++);
-										synonymName.setId(currentTaxonId++);
-										
-										doCount(count++, modCount, inferredSynonymPluralString);
-										success &= mapping.invoke(synonymName);
-										
-										// Add Rank Data and KingdomFk to hashmap for later saving
-										inferredSynonymsDataToBeSaved.put(synonymName.getId(), synonymName);
-									} else {
-										logger.error("TaxonName of this Synonym is NULL: " + synonym.getUuid() + " (" + synonym.getTitleCache() + ")");
-									}
+									// Both Synonym and its TaxonName have no valid Id yet
+									synonym.setId(currentTaxonId++);
+									
+									doCount(count++, modCount, inferredSynonymPluralString);
+									success &= mapping.invoke(synonym);
+									
+									// Add Rank Data and KingdomFk to hashmap for later saving
+									inferredSynonymsDataToBeSaved.put(synonym.getId(), synonym.getName());
 								}
 							}
 						} else {
@@ -808,7 +803,12 @@ public class PesiTaxonExport extends PesiExportBase {
 	 */
 	private boolean doNames(PesiExportState state)  throws SQLException {
 		
-		boolean success;
+		boolean success = true;
+		if (! state.getConfig().isDoPureNames()){
+			logger.info ("Ignore PHASE 1b: PureNames");
+			return success;
+		}
+		
 		try {
 			PesiExportMapping mapping = getNameMapping();
 			mapping.initialize(state);
@@ -870,7 +870,7 @@ public class PesiTaxonExport extends PesiExportBase {
 		
 		String sql;
 		Source destination =  pesiConfig.getDestination();
-		sql = "SELECT COUNT(*) FROM Taxon";
+		sql = "SELECT max(taxonId) FROM Taxon";
 		destination.setQuery(sql);
 		ResultSet resultSet = destination.getResultSet();
 		try {
@@ -1110,8 +1110,7 @@ public class PesiTaxonExport extends PesiExportBase {
 	 * @param kindomFk The KingdomFk.
 	 * @return Whether save was successful or not.
 	 */
-	private boolean invokeRankDataAndKingdomFk(TaxonNameBase<?,?> taxonName, NomenclaturalCode nomenclaturalCode, 
-			Integer taxonFk, Integer kingdomFk) {
+	private boolean invokeRankDataAndKingdomFk(TaxonNameBase<?,?> taxonName, NomenclaturalCode nomenclaturalCode, Integer taxonFk, Integer kingdomFk) {
 		try {
 			Integer rankFk = getRankFk(taxonName, nomenclaturalCode);
 			if (rankFk != null) {
@@ -1298,6 +1297,7 @@ public class PesiTaxonExport extends PesiExportBase {
 	 * @return The <code>WebShowName</code> attribute.
 	 * @see MethodMapper
 	 */
+	@SuppressWarnings("unused")
 	private static String getWebShowName(TaxonNameBase<?,?> taxonName) {
 		String result = "";
 		
