@@ -44,6 +44,7 @@ import eu.etaxonomy.cdm.model.common.ExtensionType;
 import eu.etaxonomy.cdm.model.common.IdentifiableEntity;
 import eu.etaxonomy.cdm.model.common.IdentifiableSource;
 import eu.etaxonomy.cdm.model.common.Language;
+import eu.etaxonomy.cdm.model.name.BotanicalName;
 import eu.etaxonomy.cdm.model.name.NameTypeDesignation;
 import eu.etaxonomy.cdm.model.name.NameTypeDesignationStatus;
 import eu.etaxonomy.cdm.model.name.NomenclaturalCode;
@@ -61,10 +62,13 @@ import eu.etaxonomy.cdm.model.taxon.TaxonNode;
 import eu.etaxonomy.cdm.model.taxon.TaxonRelationship;
 import eu.etaxonomy.cdm.model.taxon.TaxonRelationshipType;
 import eu.etaxonomy.cdm.persistence.query.MatchMode;
+import eu.etaxonomy.cdm.strategy.cache.HTMLTagRules;
+import eu.etaxonomy.cdm.strategy.cache.TagEnum;
 import eu.etaxonomy.cdm.strategy.cache.TaggedText;
+import eu.etaxonomy.cdm.strategy.cache.name.BotanicNameDefaultCacheStrategy;
 import eu.etaxonomy.cdm.strategy.cache.name.INonViralNameCacheStrategy;
 import eu.etaxonomy.cdm.strategy.cache.name.ZooNameDefaultCacheStrategy;
-import eu.etaxonomy.cdm.strategy.cache.name.ZoologicalNameCacheStrategyTest;
+import eu.etaxonomy.cdm.strategy.cache.name.ZooNameNoMarkerCacheStrategy;
 
 /**
  * The export class for {@link eu.etaxonomy.cdm.model.name.TaxonNameBase TaxonNames}.<p>
@@ -103,7 +107,9 @@ public class PesiTaxonExport extends PesiExportBase {
 	private static ExtensionType cacheCitationExtensionType;
 	private static ExtensionType expertUserIdExtensionType;
 	private static ExtensionType speciesExpertUserIdExtensionType;
-	private static INonViralNameCacheStrategy<ZoologicalName> zooNameStrategy;
+	private static INonViralNameCacheStrategy<ZoologicalName> zooNameStrategy = ZooNameNoMarkerCacheStrategy.NewInstance();
+	private static INonViralNameCacheStrategy<BotanicalName> botanicalNameStrategy = BotanicNameDefaultCacheStrategy.NewInstance();
+	
 	
 	/**
 	 * @return the treeIndexAnnotationType
@@ -263,9 +269,6 @@ public class PesiTaxonExport extends PesiExportBase {
 
 			initPreparedStatements(state);
 			
-			zooNameStrategy = ZooNameDefaultCacheStrategy.NewInstance(ZoologicalName.class);
-//			zooNameStrategy.
-			
 			// Stores whether this invoke was successful or not.
 			boolean success = true;
 	
@@ -287,13 +290,15 @@ public class PesiTaxonExport extends PesiExportBase {
 			expertUserIdExtensionType = (ExtensionType)getTermService().find(PesiTransformer.expertUserIdUuid);
 			speciesExpertUserIdExtensionType = (ExtensionType)getTermService().find(PesiTransformer.speciesExpertUserIdUuid);
 
-			//"PHASE 5: Handle names without taxa ...
-			success &= doNames(state);
 
 			
 			//Export Taxa..
 			success &= doPhase01(state, mapping);
 
+			//"PHASE 1b: Handle names without taxa ...
+			success &= doNames(state);
+
+			
 			// 2nd Round: Add ParentTaxonFk, TreeIndex to each Taxon
 			success &= doPhase02(state);
 
@@ -1485,11 +1490,23 @@ public class PesiTaxonExport extends PesiExportBase {
 	@SuppressWarnings("unused")
 	private static String getDisplayName(TaxonNameBase<?,?> taxonName) {
 		// TODO: extension?
-		if (taxonName != null) {
-			return taxonName.getFullTitleCache();
-		} else {
+		if (taxonName == null) {
 			return null;
 		}
+		
+		INonViralNameCacheStrategy cacheStrategy;
+		boolean isZoological = false;
+		if (taxonName.isInstanceOf(ZoologicalName.class)){
+			cacheStrategy = zooNameStrategy;
+			isZoological = true;
+		}else{
+			cacheStrategy = botanicalNameStrategy;
+		}
+		
+		HTMLTagRules tagRules = new HTMLTagRules().addRule(TagEnum.name, "i");
+		NonViralName<?> nvn = CdmBase.deproxy(taxonName, NonViralName.class);
+		return cacheStrategy.getTitleCache(nvn, tagRules);
+	
 	}
 	
 	/**
