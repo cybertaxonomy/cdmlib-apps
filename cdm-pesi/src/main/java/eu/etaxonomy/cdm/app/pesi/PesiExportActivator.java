@@ -36,11 +36,14 @@ public class PesiExportActivator {
 	private static final Logger logger = Logger.getLogger(PesiExportActivator.class);
 
 	//database validation status (create, update, validate ...)
-	static final Source pesiDestination = PesiDestinations.pesi_test_local_CDM_EM2PESI();
+//	static final Source pesiDestination = PesiDestinations.pesi_test_local_CDM_EM2PESI();
 //	static final Source pesiDestination = PesiDestinations.pesi_test_local_CDM_FE2PESI();
-//	static final Source pesiDestination = PesiDestinations.pesi_test_local_CDM_ERMS2PESI();
+	static final Source pesiDestination = PesiDestinations.pesi_test_local_CDM_ERMS2PESI();
 	
-	static final ICdmDataSource cdmSource = CdmDestinations.cdm_test_local_mysql_test();
+	static final ICdmDataSource cdmSource = CdmDestinations.cdm_test_local_faunaEu_mysql();
+//	static final ICdmDataSource cdmSource = CdmDestinations.cdm_test_local_mysql();
+//	static final ICdmDataSource cdmSource = CdmDestinations.cdm_test_local_mysql_test();
+
 	static final UUID secUuid = UUID.fromString("d03ef02a-f226-4cb1-bdb4-f6c154f08a34");
 	static final int sourceSecId = 7331;
 	static final int isHomotypicId = 72;
@@ -66,16 +69,16 @@ public class PesiExportActivator {
 	
 	//taxa
 	static final boolean doTaxa = true;
-	static final boolean doRelTaxa = false;
+	static final boolean doRelTaxa = true;
 	static final boolean doNotes = true;
 	static final boolean doNoteSources = true;
 	static final boolean doAdditionalTaxonSource = true;
 	static final boolean doOccurrence = true;
 	static final boolean doOccurrenceSource = true;
 	static final boolean doImage = true;
-	static final boolean doTreeIndex = false;
-	static final boolean doRank = false;
-	static final boolean doInferredSynonyms = false;
+	static final boolean doTreeIndex = true;
+	static final boolean doRank = true;
+	static final boolean doInferredSynonyms = true;
 	
 
 // ************************ NONE **************************************** //
