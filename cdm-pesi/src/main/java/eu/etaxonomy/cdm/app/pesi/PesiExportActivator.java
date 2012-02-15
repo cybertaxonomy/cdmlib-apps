@@ -80,6 +80,7 @@ public class PesiExportActivator {
 	static final boolean doRank = true;
 	static final boolean doInferredSynonyms = true;
 	static final boolean doPureNames = true;
+	static final boolean doDescription = true;
 	
 
 // ************************ NONE **************************************** //
@@ -99,7 +100,7 @@ public class PesiExportActivator {
 //	static final boolean doTreeIndex = true;
 //	static final boolean doRank = true;
 //	static final boolean doInferredSynonyms = true;
-	
+//	static final boolean doDescription = false;	
 	
 	public boolean 	doExport(ICdmDataSource source){
 		System.out.println("Start export to PESI ("+ pesiDestination.getDatabase() + ") ...");
@@ -122,6 +123,7 @@ public class PesiExportActivator {
 		config.setDoRank(doRank);
 		config.setDoInferredSynonyms(doInferredSynonyms);
 		config.setDoPureNames(doPureNames);
+		config.setDoDescription(doDescription);
 		
 		config.setCheck(check);
 		config.setLimitSave(partitionSize);

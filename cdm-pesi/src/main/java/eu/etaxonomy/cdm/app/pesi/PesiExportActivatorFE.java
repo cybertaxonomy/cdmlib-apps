@@ -99,6 +99,7 @@ public class PesiExportActivatorFE {
 //	static final boolean doTreeIndex = true;
 //	static final boolean doRank = true;
 //	static final boolean doInferredSynonyms = true;
+//	static final boolean doDescription = false;
 	
 	
 	public boolean 	doExport(ICdmDataSource source){
