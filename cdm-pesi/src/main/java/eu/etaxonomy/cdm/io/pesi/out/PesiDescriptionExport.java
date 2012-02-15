@@ -470,7 +470,7 @@ public class PesiDescriptionExport extends PesiExportBase {
 	 */
 	@Override
 	protected boolean isIgnore(PesiExportState state) {
-		return ! state.getConfig().isDoNotes();
+		return ! state.getConfig().isDoDescription();
 	}
 
 
