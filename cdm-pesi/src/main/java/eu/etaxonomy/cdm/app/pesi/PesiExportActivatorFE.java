@@ -9,8 +9,6 @@
 */
 package eu.etaxonomy.cdm.app.pesi;
 
-import java.util.UUID;
-
 import org.apache.log4j.Logger;
 
 import eu.etaxonomy.cdm.app.common.CdmDestinations;
@@ -23,7 +21,6 @@ import eu.etaxonomy.cdm.io.common.Source;
 import eu.etaxonomy.cdm.io.common.mapping.out.IExportTransformer;
 import eu.etaxonomy.cdm.io.pesi.out.PesiExportConfigurator;
 import eu.etaxonomy.cdm.io.pesi.out.PesiTransformer;
-import eu.etaxonomy.cdm.model.name.NomenclaturalCode;
 
 /**
  * @author a.mueller
@@ -46,7 +43,7 @@ public class PesiExportActivatorFE {
 	//Taxon names can't be mapped to their CDM ids as PESI Taxon table mainly holds taxa and there IDs. We ad nameIdStart to the TaxonName id to get a unique id
 	static final int nameIdStart = 10000000;
 	
-	static final int partitionSize = 5000;
+	static final int partitionSize = 2000;
 	
 	//check - export
 	static final CHECK check = CHECK.EXPORT_WITHOUT_CHECK;
@@ -73,7 +70,7 @@ public class PesiExportActivatorFE {
 	static final boolean doRank = true;
 	static final boolean doInferredSynonyms = true;
 	static final boolean doPureNames = false; // !!!
-	static final boolean doDescription = true;
+	static final boolean doDescription = false;
 	
 
 // ************************ NONE **************************************** //
