@@ -90,6 +90,9 @@ public class FaunaEuropaeaImportConfigurator extends ImportConfiguratorBase<Faun
 			sourceReference = ReferenceFactory.newDatabase();
 			
 			sourceReference.setTitleCache("Fauna Europaea database", true);
+			if (this.getSourceRefUuid() != null){
+				sourceReference.setUuid(this.getSourceRefUuid());
+			}
 		}
 		return sourceReference;
 	}

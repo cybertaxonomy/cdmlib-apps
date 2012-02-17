@@ -18,7 +18,6 @@ import eu.etaxonomy.cdm.io.common.IImportConfigurator;
 import eu.etaxonomy.cdm.io.common.ImportConfiguratorBase;
 import eu.etaxonomy.cdm.io.common.ImportStateBase;
 import eu.etaxonomy.cdm.io.common.Source;
-import eu.etaxonomy.cdm.io.common.IImportConfigurator.DO_REFERENCES;
 import eu.etaxonomy.cdm.io.common.mapping.IInputTransformer;
 import eu.etaxonomy.cdm.io.pesi.erms.validation.ErmsGeneralImportValidator;
 import eu.etaxonomy.cdm.model.name.NomenclaturalCode;
@@ -111,11 +110,13 @@ public class ErmsImportConfigurator extends ImportConfiguratorBase<ErmsImportSta
 	 * @see eu.etaxonomy.cdm.io.tcsrdf.IImportConfigurator#getSourceReference()
 	 */
 	public Reference getSourceReference() {
-		ReferenceFactory refFactory = ReferenceFactory.newInstance();
 		if (sourceReference == null){
-			sourceReference =  refFactory.newDatabase();
+			sourceReference =  ReferenceFactory.newDatabase();
 			if (getSource() != null){
 				sourceReference.setTitleCache(getSource().getDatabase(), true);
+			}
+			if (this.getSourceRefUuid() != null){
+				sourceReference.setUuid(this.getSourceRefUuid());
 			}
 		}
 		return sourceReference;

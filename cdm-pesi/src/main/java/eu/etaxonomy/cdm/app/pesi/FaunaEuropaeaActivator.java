@@ -22,6 +22,7 @@ import eu.etaxonomy.cdm.io.common.IImportConfigurator.CHECK;
 import eu.etaxonomy.cdm.io.common.IImportConfigurator.DO_REFERENCES;
 import eu.etaxonomy.cdm.io.common.Source;
 import eu.etaxonomy.cdm.io.pesi.faunaEuropaea.FaunaEuropaeaImportConfigurator;
+import eu.etaxonomy.cdm.io.pesi.out.PesiTransformer;
 import eu.etaxonomy.cdm.model.description.Feature;
 import eu.etaxonomy.cdm.model.description.FeatureNode;
 import eu.etaxonomy.cdm.model.description.FeatureTree;
@@ -106,6 +107,7 @@ public class FaunaEuropaeaActivator {
 		fauEuImportConfigurator.setDoMisappliedNames(doMisappliedNames);
 		fauEuImportConfigurator.setDoHeterotypicSynonyms(doHeterotypicSynonyms);
 		fauEuImportConfigurator.setDoHeterotypicSynonymsForBasionyms(doHeterotypicSynonymsForBasionyms);
+		fauEuImportConfigurator.setSourceRefUuid(PesiTransformer.uuidSourceRefFaunaEuropaea);
 		
 		CdmDefaultImport<FaunaEuropaeaImportConfigurator> fauEuImport = 
 			new CdmDefaultImport<FaunaEuropaeaImportConfigurator>();
