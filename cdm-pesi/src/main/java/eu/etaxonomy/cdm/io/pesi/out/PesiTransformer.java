@@ -63,6 +63,14 @@ public final class PesiTransformer extends ExportTransformerBase implements IExp
 
 	public static final String auctString = "auct.";
 	
+	
+	//sourceRefUUIDs
+	public static final UUID uuidSourceRefEuroMed = UUID.fromString("0603a84a-f024-4454-ab92-9e2ac0139126");
+	public static final UUID uuidSourceRefFaunaEuropaea = UUID.fromString("6786d863-75d4-4796-b916-c1c3dff4cb70");
+	public static final UUID uuidSourceRefErms = UUID.fromString("7744bc26-f914-42c4-b54a-dd2a030a8bb7");
+	public static final UUID uuidSourceRefIndexFungorum = UUID.fromString("8de25d27-7d40-47f4-af3b-59d64935a843");
+	
+	
 	public static final UUID cacheCitationUuid = UUID.fromString("29656168-32d6-4301-9067-d57c63be5c67");
 	public static final UUID expertUserIdUuid = UUID.fromString("e25813d3-c67c-4585-9aa0-970fafde50b4");
 	public static final UUID speciesExpertUserIdUuid = UUID.fromString("6d42abd8-8894-4980-ae07-e918affd4172");

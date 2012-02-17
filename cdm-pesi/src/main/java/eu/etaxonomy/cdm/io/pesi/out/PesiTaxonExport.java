@@ -27,6 +27,9 @@ import org.joda.time.format.DateTimeFormatter;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.TransactionStatus;
 
+import eu.etaxonomy.cdm.app.pesi.ErmsActivator;
+import eu.etaxonomy.cdm.app.pesi.EuroMedActivator;
+import eu.etaxonomy.cdm.app.pesi.FaunaEuropaeaActivator;
 import eu.etaxonomy.cdm.common.CdmUtils;
 import eu.etaxonomy.cdm.io.common.Source;
 import eu.etaxonomy.cdm.io.common.mapping.out.DbExtensionMapper;
@@ -1645,7 +1648,20 @@ public class PesiTaxonExport extends PesiExportBase {
 		try {
 			Set<IdentifiableSource> sources = getSources(taxonName);
 			for (IdentifiableSource source : sources) {
-				result = "TAX_ID: " + source.getIdInSource();
+				Reference ref = source.getCitation();
+				UUID refUuid = ref.getUuid();
+				if (refUuid.equals(PesiTransformer.uuidSourceRefEuroMed)){
+					result = "NameId: " + source.getIdInSource();
+				}else if (refUuid.equals(PesiTransformer.uuidSourceRefFaunaEuropaea)){
+					result = "TAX_ID: " + source.getIdInSource();
+				}else if (refUuid.equals(PesiTransformer.uuidSourceRefErms)){
+					result = "tu_id: " + source.getIdInSource();
+				}else if (refUuid.equals(PesiTransformer.uuidSourceRefIndexFungorum)){  //INdex Fungorum
+					result = "if_id: " + source.getIdInSource();
+				}else{
+					if (logger.isDebugEnabled()){logger.debug("Not a PESI source");};
+				}
+				
 				String sourceIdNameSpace = source.getIdNamespace();
 				if (sourceIdNameSpace != null) {
 					if (sourceIdNameSpace.equals("originalGenusId")) {
@@ -1657,7 +1673,7 @@ public class PesiTaxonExport extends PesiExportBase {
 					} else if (sourceIdNameSpace.equals("PotentialCombinationOf")) {
 						result = "Potential combination from TAX_ID: " + source.getIdInSource();
 					} else {
-						result = "TAX_ID: " + source.getIdInSource();
+//						result = "TAX_ID: " + source.getIdInSource();
 					}
 				}
 			}
@@ -2123,9 +2139,7 @@ public class PesiTaxonExport extends PesiExportBase {
 		mapping.addMapper(MethodMapper.NewInstance("QualityStatusFk", this)); // PesiTransformer.QualityStatusCache2QualityStatusFk?
 
 		mapping.addMapper(MethodMapper.NewInstance("GUID", this));
-		//TODO implement again
-		mapping.addMapper(MethodMapper.NewInstance("IdInSource", this, IdentifiableEntity.class));
-
+		
 		mapping.addMapper(MethodMapper.NewInstance("DerivedFromGuid", this));
 		mapping.addMapper(MethodMapper.NewInstance("CacheCitation", this));
 		mapping.addMapper(MethodMapper.NewInstance("OriginalDB", this.getClass(), "getOriginalDB", IdentifiableEntity.class) );
@@ -2158,11 +2172,9 @@ public class PesiTaxonExport extends PesiExportBase {
 
 		mapping.addMapper(MethodMapper.NewInstance("LastAction", this.getClass(), "getLastAction", IdentifiableEntity.class));
 		mapping.addMapper(MethodMapper.NewInstance("LastActionDate",  this.getClass(), "getLastAction", IdentifiableEntity.class));
+		
 		mapping.addMapper(MethodMapper.NewInstance("OriginalDB", this.getClass(), "getOriginalDB", IdentifiableEntity.class) );
 		
-		//TODO for names
-		mapping.addMapper(MethodMapper.NewInstance("IdInSource", this));
-
 		addNameMappers(mapping);
 		
 		//TODO add author mapper, taxonStatusFk, TaxonStatusCache, TypeNameFk
@@ -2180,10 +2192,10 @@ public class PesiTaxonExport extends PesiExportBase {
 		mapping.addMapper(DbStringMapper.NewInstance("SpecificEpithet", "SpecificEpithet"));
 		mapping.addMapper(DbStringMapper.NewInstance("InfraSpecificEpithet", "InfraSpecificEpithet"));
 		
-//		mapping.addMapper(DbStringMapper.NewInstance("NameCache", "WebSearchName"));
+//		mapping.addMapper(DbStringMapper.NewInstance("NameCache", "WebSearchName"));  //does not work as we need other cache strategy
 		mapping.addMapper(MethodMapper.NewInstance("WebSearchName", this, TaxonNameBase.class));
 		
-//		mapping.addMapper(DbStringMapper.NewInstance("TitleCache", "FullName"));
+//		mapping.addMapper(DbStringMapper.NewInstance("TitleCache", "FullName"));    //does not work as we need other cache strategy
 		mapping.addMapper(MethodMapper.NewInstance("FullName", this, TaxonNameBase.class));
 		
 		
@@ -2212,6 +2224,10 @@ public class PesiTaxonExport extends PesiExportBase {
 			mapping.addMapper(MethodMapper.NewInstance("FossilStatusCache", this, TaxonNameBase.class));
 		}
 		mapping.addMapper(MethodMapper.NewInstance("FossilStatusFk", this, TaxonNameBase.class)); // PesiTransformer.FossilStatusCache2FossilStatusFk?
+		
+		mapping.addMapper(MethodMapper.NewInstance("IdInSource", this, IdentifiableEntity.class));
+		mapping.addMapper(ExpertsAndLastActionMapper.NewInstance());
+
 	}
 
 }
