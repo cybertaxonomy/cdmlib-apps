@@ -9,8 +9,6 @@
 */
 package eu.etaxonomy.cdm.app.pesi;
 
-import java.util.UUID;
-
 import org.apache.log4j.Logger;
 
 import eu.etaxonomy.cdm.app.common.CdmDestinations;
@@ -23,7 +21,6 @@ import eu.etaxonomy.cdm.io.common.Source;
 import eu.etaxonomy.cdm.io.common.mapping.out.IExportTransformer;
 import eu.etaxonomy.cdm.io.pesi.out.PesiExportConfigurator;
 import eu.etaxonomy.cdm.io.pesi.out.PesiTransformer;
-import eu.etaxonomy.cdm.model.name.NomenclaturalCode;
 
 /**
  * @author a.mueller
@@ -44,9 +41,6 @@ public class PesiExportActivator {
 //	static final ICdmDataSource cdmSource = CdmDestinations.cdm_test_local_mysql();
 //	static final ICdmDataSource cdmSource = CdmDestinations.cdm_test_local_mysql_test();
 
-	static final UUID secUuid = UUID.fromString("d03ef02a-f226-4cb1-bdb4-f6c154f08a34");
-	static final int sourceSecId = 7331;
-	static final int isHomotypicId = 72;
 	//Taxon names can't be mapped to their CDM ids as PESI Taxon table mainly holds taxa and there IDs. We ad nameIdStart to the TaxonName id to get a unique id
 	static final int nameIdStart = 10000000;
 	
@@ -55,9 +49,6 @@ public class PesiExportActivator {
 	//check - export
 	static final CHECK check = CHECK.EXPORT_WITHOUT_CHECK;
 
-	//NomeclaturalCode
-	static final NomenclaturalCode nomenclaturalCode  = NomenclaturalCode.ICBN;
-	
 	static final boolean deleteAll = true;
 	
 	static final IdType idType = IdType.CDM_ID_WITH_EXCEPTIONS;

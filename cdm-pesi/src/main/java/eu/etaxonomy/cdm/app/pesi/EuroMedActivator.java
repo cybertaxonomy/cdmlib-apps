@@ -25,6 +25,8 @@ import eu.etaxonomy.cdm.io.common.IImportConfigurator.CHECK;
 import eu.etaxonomy.cdm.io.common.IImportConfigurator.DO_REFERENCES;
 import eu.etaxonomy.cdm.io.common.IImportConfigurator.EDITOR;
 import eu.etaxonomy.cdm.io.common.Source;
+import eu.etaxonomy.cdm.io.pesi.out.PesiTaxonExport;
+import eu.etaxonomy.cdm.io.pesi.out.PesiTransformer;
 import eu.etaxonomy.cdm.model.description.Feature;
 import eu.etaxonomy.cdm.model.description.FeatureNode;
 import eu.etaxonomy.cdm.model.description.FeatureTree;
@@ -173,6 +175,7 @@ public class EuroMedActivator {
 		config.setDoTypes(doTypes);
 		config.setDoNameFacts(doNameFacts);
 		config.setUseClassification(useClassification);
+		config.setSourceRefUuid(PesiTransformer.uuidSourceRefEuroMed);
 		
 		config.setDoTaxa(doTaxa);
 		config.setDoRelTaxa(doRelTaxa);
