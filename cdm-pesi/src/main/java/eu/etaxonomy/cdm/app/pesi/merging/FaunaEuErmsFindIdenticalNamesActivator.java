@@ -23,7 +23,7 @@ import eu.etaxonomy.cdm.model.taxon.TaxonNode;
 
 public class FaunaEuErmsFindIdenticalNamesActivator {
 
-	static final ICdmDataSource faunaEuropaeaSource = CdmDestinations.cdm_test_jaxb2();
+	static final ICdmDataSource faunaEuropaeaSource = CdmDestinations.localH2();
 	//static final ICdmDataSource ermsSource = CdmDestinations.cdm_test_andreasM();
 	
 	//TODO hole aus beiden DB alle TaxonNameBases

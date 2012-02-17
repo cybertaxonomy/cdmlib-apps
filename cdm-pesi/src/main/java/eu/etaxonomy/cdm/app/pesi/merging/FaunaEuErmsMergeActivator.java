@@ -43,7 +43,8 @@ import eu.etaxonomy.cdm.model.taxon.TaxonNode;
 
 public class FaunaEuErmsMergeActivator {
 	
-	static final ICdmDataSource faunaEuropaeaSource = CdmDestinations.cdm_test_patricia();
+//	static final ICdmDataSource faunaEuropaeaSource = CdmDestinations.cdm_test_patricia();
+	static final ICdmDataSource faunaEuropaeaSource = CdmDestinations.localH2();
 	
 	static final int faunaEuUuid = 0;
 	static final int ermsUuid = 9;
