@@ -43,6 +43,7 @@ import eu.etaxonomy.cdm.model.description.TextData;
 import eu.etaxonomy.cdm.model.location.NamedArea;
 import eu.etaxonomy.cdm.model.name.TaxonNameBase;
 import eu.etaxonomy.cdm.model.taxon.Taxon;
+import eu.etaxonomy.cdm.model.taxon.TaxonBase;
 
 /**
  * The export class for {@link eu.etaxonomy.cdm.model.description.DescriptionElementBase DescriptionElements}.<p>
@@ -179,44 +180,44 @@ public class PesiNoteExport extends PesiExportBase {
 		return success;
 	}
 
-	//PHASE 02: Name extensions
+	//PHASE 02: Taxa extensions
 	private void doPhase02(PesiExportState state, int limit) {
 		TransactionStatus txStatus;
 		txStatus = startTransaction(true);
 		ExtensionType taxCommentExtensionType = (ExtensionType)getTermService().find(PesiTransformer.taxCommentUuid);
 		ExtensionType fauCommentExtensionType = (ExtensionType)getTermService().find(PesiTransformer.fauCommentUuid);
 		ExtensionType fauExtraCodesExtensionType = (ExtensionType)getTermService().find(PesiTransformer.fauExtraCodesUuid);
-		List<TaxonNameBase> taxonNameList = null;
+		List<TaxonBase> taxonBaseList = null;
 		
 		int count = 0;
 		int pastCount = 0;
 		Connection connection = state.getConfig().getDestination().getConnection();
 		logger.info("Started new transaction. Fetching some " + parentPluralString + " first (max: " + limit + ") ...");
-		logger.warn("TODO handle extensions on taxon level, not name level (");
-		while ((taxonNameList = getNameService().list(null, limit, count, null, null)).size() > 0) {
+		//logger.warn("TODO handle extensions on taxon level, not name level (");
+		while ((taxonBaseList = getTaxonService().list(null, limit, count, null, null)).size() > 0) {
 
-			logger.info("Fetched " + taxonNameList.size() + " names. Exporting...");
-			for (TaxonNameBase<?,?> taxonName : taxonNameList) {
-				Set<Extension> extensions = taxonName.getExtensions();
+			logger.info("Fetched " + taxonBaseList.size() + " names. Exporting...");
+			for (TaxonBase<?> taxon : taxonBaseList) {
+				Set<Extension> extensions = taxon.getExtensions();
 				for (Extension extension : extensions) {
 					if (extension.getType().equals(taxCommentExtensionType)) {
 						String taxComment = extension.getValue();
 						invokeNotes(taxComment, 
 								PesiTransformer.getNoteCategoryFk(PesiTransformer.taxCommentUuid), 
 								PesiTransformer.getNoteCategoryCache(PesiTransformer.taxCommentUuid),
-								null, null, getTaxonFk(taxonName, state),connection);
+								null, null, getTaxonFk(taxon.getName(), state),connection);
 					} else if (extension.getType().equals(fauCommentExtensionType)) {
 						String fauComment = extension.getValue();
 						invokeNotes(fauComment, 
 								PesiTransformer.getNoteCategoryFk(PesiTransformer.fauCommentUuid), 
 								PesiTransformer.getNoteCategoryCache(PesiTransformer.fauCommentUuid),
-								null, null, getTaxonFk(taxonName, state),connection);
+								null, null, getTaxonFk(taxon.getName(), state),connection);
 					} else if (extension.getType().equals(fauExtraCodesExtensionType)) {
 						String fauExtraCodes = extension.getValue();
 						invokeNotes(fauExtraCodes, 
 								PesiTransformer.getNoteCategoryFk(PesiTransformer.fauExtraCodesUuid), 
 								PesiTransformer.getNoteCategoryCache(PesiTransformer.fauExtraCodesUuid),
-								null, null, getTaxonFk(taxonName, state),connection);
+								null, null, getTaxonFk(taxon.getName(), state),connection);
 					}
 				}
 				
@@ -231,10 +232,10 @@ public class PesiNoteExport extends PesiExportBase {
 
 			// Start transaction
 			txStatus = startTransaction(true);
-			logger.info("Started new transaction. Fetching some names first (max: " + limit + ") ...");
+			logger.info("Started new transaction. Fetching some taxa first (max: " + limit + ") ...");
 		}
-		if (taxonNameList.size() == 0) {
-			logger.info("No names left to fetch.");
+		if (taxonBaseList.size() == 0) {
+			logger.info("No taxa left to fetch.");
 		}
 		// Commit transaction
 		commitTransaction(txStatus);
