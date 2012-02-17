@@ -23,23 +23,6 @@ public class CdmDestinations {
 	@SuppressWarnings("unused")
 	private static Logger logger = Logger.getLogger(CdmDestinations.class);
 
-	
-	public static ICdmDataSource cdm_test_jaxb2(){
-		DatabaseTypeEnum dbType = DatabaseTypeEnum.MySQL;
-		String cdmServer = "192.168.2.10";
-		String cdmDB = "cdm_test_jaxb2"; 
-		String cdmUserName = "edit";
-		return makeDestination(dbType, cdmServer, cdmDB, -1, cdmUserName, null);
-	}
-	
-	public static ICdmDataSource cdm_test_patricia(){
-		DatabaseTypeEnum dbType = DatabaseTypeEnum.MySQL;
-		String cdmServer = "192.168.2.10";
-		String cdmDB = "cdm_test_patricia";
-		String cdmUserName = "edit";
-		return makeDestination(dbType, cdmServer, cdmDB, -1, cdmUserName, null);
-	}
-	
 	public static ICdmDataSource cdm_test_local_mysql(){
 		DatabaseTypeEnum dbType = DatabaseTypeEnum.MySQL;
 		String cdmServer = "127.0.0.1";
@@ -107,9 +90,6 @@ public class CdmDestinations {
 	
 	public static ICdmDataSource localH2(String database, String username, String filePath){
 		return CdmDataSource.NewH2EmbeddedInstance(database, "sa", "", filePath, null);
-	}
-	public static ICdmDataSource localH2Cichorieae(){
-		return CdmDataSource.NewH2EmbeddedInstance("cichorieae", "sa", "");
 	}
 
 	
