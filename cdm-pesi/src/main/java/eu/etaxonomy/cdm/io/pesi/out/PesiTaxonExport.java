@@ -1207,7 +1207,15 @@ public class PesiTaxonExport extends PesiExportBase {
 	@SuppressWarnings("unused")
 	private static String getWebShowName(TaxonNameBase<?,?> taxonName) {
 		//TODO extensions?
-		return getDisplayName(taxonName);   //currently they are same
+		if (taxonName == null) {
+			return null;
+		}else{
+			INonViralNameCacheStrategy cacheStrategy = getCacheStrategy(taxonName);
+		
+			HTMLTagRules tagRules = new HTMLTagRules().addRule(TagEnum.name, "i");
+			NonViralName<?> nvn = CdmBase.deproxy(taxonName, NonViralName.class);
+			return cacheStrategy.getTitleCache(nvn, tagRules);
+		}
 	}
 
 	/**
@@ -1335,13 +1343,14 @@ public class PesiTaxonExport extends PesiExportBase {
 		// TODO: extension?
 		if (taxonName == null) {
 			return null;
+		}else{
+		
+			INonViralNameCacheStrategy cacheStrategy = getCacheStrategy(taxonName);
+			
+			HTMLTagRules tagRules = new HTMLTagRules().addRule(TagEnum.name, "i");
+			NonViralName<?> nvn = CdmBase.deproxy(taxonName, NonViralName.class);
+			return cacheStrategy.getFullTitleCache(nvn, tagRules);
 		}
-		
-		INonViralNameCacheStrategy cacheStrategy = getCacheStrategy(taxonName);
-		
-		HTMLTagRules tagRules = new HTMLTagRules().addRule(TagEnum.name, "i");
-		NonViralName<?> nvn = CdmBase.deproxy(taxonName, NonViralName.class);
-		return cacheStrategy.getTitleCache(nvn, tagRules);
 	}
 
 	
