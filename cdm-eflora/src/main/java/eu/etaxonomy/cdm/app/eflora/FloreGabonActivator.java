@@ -49,9 +49,9 @@ public class FloreGabonActivator {
 	static final URI fg_sample = EfloraSources.fg_sample();
 	
 	
-	static final ICdmDataSource cdmDestination = CdmDestinations.cdm_flore_gabon_preview();
+//	static final ICdmDataSource cdmDestination = CdmDestinations.cdm_flore_gabon_preview();
 //	static final ICdmDataSource cdmDestination = CdmDestinations.cdm_flore_gabon_production();
-//	static final ICdmDataSource cdmDestination = CdmDestinations.localH2();
+	static final ICdmDataSource cdmDestination = CdmDestinations.localH2();
 //	static final ICdmDataSource cdmDestination = CdmDestinations.cdm_test_local_mysql();
 	
 
