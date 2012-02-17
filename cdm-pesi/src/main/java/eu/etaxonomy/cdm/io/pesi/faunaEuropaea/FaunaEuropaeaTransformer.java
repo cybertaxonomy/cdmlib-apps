@@ -347,6 +347,7 @@ public final class FaunaEuropaeaTransformer {
 				nomStatusTempNamed.addRepresentation(repLatin);
 				nomStatusTempNamed.setUuid(uuidNomStatusTempNamed);
 				NomenclaturalStatusType.ALTERNATIVE().getVocabulary().addTerm(nomStatusTempNamed);
+				termService.save(nomStatusTempNamed);
 			}
 		}
 		return nomStatusTempNamed;
