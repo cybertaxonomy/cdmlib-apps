@@ -2144,10 +2144,13 @@ public class PesiTaxonExport extends PesiExportBase {
 		mapping.addMapper(MethodMapper.NewInstance("CacheCitation", this));
 		mapping.addMapper(MethodMapper.NewInstance("OriginalDB", this.getClass(), "getOriginalDB", IdentifiableEntity.class) );
 		
-		mapping.addMapper(MethodMapper.NewInstance("LastAction", this.getClass(), "getLastAction",  IdentifiableEntity.class));
-		mapping.addMapper(MethodMapper.NewInstance("LastActionDate", this.getClass(), "getLastActionDate",  IdentifiableEntity.class));
+		//handled by name mapping
+//		mapping.addMapper(MethodMapper.NewInstance("LastAction", this.getClass(), "getLastAction",  IdentifiableEntity.class));
+//		mapping.addMapper(MethodMapper.NewInstance("LastActionDate", this.getClass(), "getLastActionDate",  IdentifiableEntity.class));
+//		mapping.addMapper(MethodMapper.NewInstance("SpeciesExpertName", this));
+
+		
 		mapping.addMapper(MethodMapper.NewInstance("ExpertName", this));
-		mapping.addMapper(MethodMapper.NewInstance("SpeciesExpertName", this));
 
 		mapping.addMapper(MethodMapper.NewInstance("AuthorString", this));  //For Taxon because Misallied Names are handled differently
 		
@@ -2170,8 +2173,8 @@ public class PesiTaxonExport extends PesiExportBase {
 
 		//		mapping.addMapper(MethodMapper.NewInstance("TaxonStatusFk", this.getClass(), "getTaxonStatusFk", standardMethodParameter, PesiExportState.class));
 
-		mapping.addMapper(MethodMapper.NewInstance("LastAction", this.getClass(), "getLastAction", IdentifiableEntity.class));
-		mapping.addMapper(MethodMapper.NewInstance("LastActionDate",  this.getClass(), "getLastAction", IdentifiableEntity.class));
+//		mapping.addMapper(MethodMapper.NewInstance("LastAction", this.getClass(), "getLastAction", IdentifiableEntity.class));
+//		mapping.addMapper(MethodMapper.NewInstance("LastActionDate",  this.getClass(), "getLastAction", IdentifiableEntity.class));
 		
 		mapping.addMapper(MethodMapper.NewInstance("OriginalDB", this.getClass(), "getOriginalDB", IdentifiableEntity.class) );
 		
