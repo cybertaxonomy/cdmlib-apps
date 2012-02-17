@@ -16,11 +16,15 @@ import java.util.UUID;
 
 import org.apache.log4j.Logger;
 
+import eu.etaxonomy.cdm.api.service.ITermService;
+import eu.etaxonomy.cdm.model.common.Language;
+import eu.etaxonomy.cdm.model.common.Representation;
 import eu.etaxonomy.cdm.model.description.AbsenceTerm;
 import eu.etaxonomy.cdm.model.description.PresenceAbsenceTermBase;
 import eu.etaxonomy.cdm.model.description.PresenceTerm;
 import eu.etaxonomy.cdm.model.location.NamedArea;
 import eu.etaxonomy.cdm.model.location.TdwgArea;
+import eu.etaxonomy.cdm.model.name.NomenclaturalStatusType;
 import eu.etaxonomy.cdm.model.name.Rank;
 import eu.etaxonomy.cdm.strategy.exceptions.UnknownCdmTypeException;
 
@@ -326,6 +330,26 @@ public final class FaunaEuropaeaTransformer {
 	 	}
 	public static UUID getUUIDByAreaAbbr(String abbr){
 		return abbrToUUID.get(abbr);
+	}
+	
+	public static UUID uuidNomStatusTempNamed = UUID.fromString("aa6ada5a-ca21-4fef-b76f-9ae237e9c4ae");
+	
+	static NomenclaturalStatusType nomStatusTempNamed;
+	
+	public static NomenclaturalStatusType getNomStatusTempNamed(ITermService termService){
+		if (nomStatusTempNamed == null){
+			nomStatusTempNamed = (NomenclaturalStatusType)termService.find(uuidNomStatusTempNamed);
+			if (nomStatusTempNamed == null){
+				nomStatusTempNamed = new NomenclaturalStatusType();
+				Representation representation = Representation.NewInstance("temporary named", "temporary named", "temp. named", Language.ENGLISH());
+				Representation repLatin = Representation.NewInstance("", "", "", Language.LATIN());
+				nomStatusTempNamed.addRepresentation(representation);
+				nomStatusTempNamed.addRepresentation(repLatin);
+				nomStatusTempNamed.setUuid(uuidNomStatusTempNamed);
+				NomenclaturalStatusType.ALTERNATIVE().getVocabulary().addTerm(nomStatusTempNamed);
+			}
+		}
+		return nomStatusTempNamed;
 	}
 	
 }

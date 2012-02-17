@@ -9,7 +9,6 @@
 
 package eu.etaxonomy.cdm.io.pesi.faunaEuropaea;
 
-import static eu.etaxonomy.cdm.io.pesi.faunaEuropaea.FaunaEuropaeaTransformer.A_AUCT;
 import static eu.etaxonomy.cdm.io.pesi.faunaEuropaea.FaunaEuropaeaTransformer.P_PARENTHESIS;
 import static eu.etaxonomy.cdm.io.pesi.faunaEuropaea.FaunaEuropaeaTransformer.R_GENUS;
 import static eu.etaxonomy.cdm.io.pesi.faunaEuropaea.FaunaEuropaeaTransformer.R_SPECIES;
@@ -18,22 +17,22 @@ import static eu.etaxonomy.cdm.io.pesi.faunaEuropaea.FaunaEuropaeaTransformer.R_
 import static eu.etaxonomy.cdm.io.pesi.faunaEuropaea.FaunaEuropaeaTransformer.T_STATUS_ACCEPTED;
 import static eu.etaxonomy.cdm.io.pesi.faunaEuropaea.FaunaEuropaeaTransformer.T_STATUS_NOT_ACCEPTED;
 
+import java.sql.Date;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Timestamp;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 import org.apache.log4j.Logger;
+import org.joda.time.DateTime;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.TransactionStatus;
 
-import eu.etaxonomy.cdm.app.common.ImportUtils;
 import eu.etaxonomy.cdm.common.CdmUtils;
 import eu.etaxonomy.cdm.io.common.ICdmIO;
 import eu.etaxonomy.cdm.io.common.ImportHelper;
@@ -46,6 +45,8 @@ import eu.etaxonomy.cdm.model.common.Extension;
 import eu.etaxonomy.cdm.model.common.ExtensionType;
 import eu.etaxonomy.cdm.model.common.IdentifiableSource;
 import eu.etaxonomy.cdm.model.common.LSID;
+import eu.etaxonomy.cdm.model.name.NomenclaturalStatus;
+import eu.etaxonomy.cdm.model.name.NomenclaturalStatusType;
 import eu.etaxonomy.cdm.model.name.Rank;
 import eu.etaxonomy.cdm.model.name.TaxonNameBase;
 import eu.etaxonomy.cdm.model.name.ZoologicalName;
@@ -78,7 +79,7 @@ public class FaunaEuropaeaTaxonNameImport extends FaunaEuropaeaImportBase  {
 		boolean result = true;
 		FaunaEuropaeaImportConfigurator fauEuConfig = state.getConfig();
 		logger.warn("Checking for Taxa not yet fully implemented");
-		result &= checkTaxonStatus(fauEuConfig);
+//		result &= checkTaxonStatus(fauEuConfig);
 		
 		return result;
 	}
@@ -90,19 +91,6 @@ public class FaunaEuropaeaTaxonNameImport extends FaunaEuropaeaImportBase  {
 		return ! state.getConfig().isDoTaxa();
 	}
 
-	private boolean checkTaxonStatus(FaunaEuropaeaImportConfigurator fauEuConfig) {
-		boolean result = true;
-//		try {
-			Source source = fauEuConfig.getSource();
-			String sqlStr = "";
-			ResultSet rs = source.getResultSet(sqlStr);
-			return result;
-//		} catch (SQLException e) {
-//			e.printStackTrace();
-//			return false;
-//		}
-	}
-	
 	/** 
 	 * Import taxa from FauEU DB
 	 */
@@ -114,24 +102,6 @@ public class FaunaEuropaeaTaxonNameImport extends FaunaEuropaeaImportBase  {
 		return;
 	}
 
-	/**
-	 * Returns the ExtensionType for a given UUID.
-	 * @param uuid
-	 * @param label
-	 * @param text
-	 * @param labelAbbrev
-	 * @return
-	 */
-	protected ExtensionType getExtensionType(UUID uuid, String label, String text, String labelAbbrev){
-		ExtensionType extensionType = (ExtensionType)getTermService().find(uuid);
-		if (extensionType == null) {
-			extensionType = ExtensionType.NewInstance(label, text, labelAbbrev);
-			extensionType.setUuid(uuid);
-//			annotationType.setVocabulary(AnnotationType.EDITORIAL().getVocabulary());
-			getTermService().save(extensionType);
-		}
-		return extensionType;
-	}
 
 	/**
 	 * Returns an empty string in case of a null string.
@@ -252,6 +222,7 @@ public class FaunaEuropaeaTaxonNameImport extends FaunaEuropaeaImportBase  {
 				int originalGenusId = rs.getInt("TAX_TAX_IDGENUS");
 				int autId = rs.getInt("TAX_AUT_ID");
 				int status = rs.getInt("TAX_VALID");
+				
 
 				// user related
 				String expertUsrTitle = rs.getString("ExpertUsrTitle");
@@ -288,10 +259,15 @@ public class FaunaEuropaeaTaxonNameImport extends FaunaEuropaeaImportBase  {
 				}
 				
 				// date related
-				String createdDate = rs.getString("TAX_CREATEDAT");
-				String modifiedDate = rs.getString("TAX_MODIFIEDAT");
-				String lastAction = createdDate.equals(modifiedDate) ? "created" : "modified";
-				String lastActionDate = createdDate.equals(modifiedDate) ? createdDate : modifiedDate;
+				Timestamp createdTimeStamp = rs.getTimestamp("TAX_CREATEDAT");
+				Timestamp modifiedTimeStamp = rs.getTimestamp("TAX_MODIFIEDAT");
+				boolean isCreated = createdTimeStamp.equals(modifiedTimeStamp);
+				String lastAction = isCreated ? "created" : "modified";
+				DateTime created = new DateTime(createdTimeStamp);
+				DateTime modified = isCreated ? null : new DateTime(modifiedTimeStamp);
+				DateTime lastActionDate = isCreated ?  created : modified;
+				String lastActionDateStr = isCreated ? createdTimeStamp.toString() : modifiedTimeStamp.toString();
+				
 				
 				// note related
 				String taxComment = rs.getString("TAX_TAXCOMMENT");
@@ -377,18 +353,13 @@ public class FaunaEuropaeaTaxonNameImport extends FaunaEuropaeaImportBase  {
 				zooName.setCombinationAuthorTeam(author);
 				zooName.setPublicationYear(year);
 				
-				// Add UserId extensions to this zooName
-				Extension.NewInstance(zooName, expertUserId, getExtensionType(PesiTransformer.expertUserIdUuid, "expertUserId", "expertUserId", "EUID"));
-				Extension.NewInstance(zooName, speciesExpertUserId, getExtensionType(PesiTransformer.speciesExpertUserIdUuid, "speciesExpertUserId", "speciesExpertUserId", "SEUID"));
 				
-				// Add Expert extensions to this zooName
-				Extension.NewInstance(zooName, expertName, getExtensionType(PesiTransformer.expertNameUuid, "ExpertName", "ExpertName", "EN"));
-				Extension.NewInstance(zooName, speciesExpertName, getExtensionType(PesiTransformer.speciesExpertNameUuid, "SpeciesExpertName", "SpeciesExpertName", "SEN"));
-
 				// Add Date extensions to this zooName
-				Extension.NewInstance(zooName, lastAction, getExtensionType(PesiTransformer.lastActionUuid, "LastAction", "LastAction", "LA"));
-				Extension.NewInstance(zooName, lastActionDate, getExtensionType(PesiTransformer.lastActionDateUuid, "LastActionDate", "LastActionDate", "LAD"));
-
+				Extension.NewInstance(zooName, lastAction, getExtensionType(state, PesiTransformer.lastActionUuid, "LastAction", "LastAction", "LA"));
+//				Extension.NewInstance(zooName, lastActionDateStr, getExtensionType(state, PesiTransformer.lastActionDateUuid, "LastActionDate", "LastActionDate", "LAD"));
+				zooName.setCreated(created);
+				zooName.setUpdated(modified);
+				
 				/* Add Note extensions to this zooName
 				Extension.NewInstance(zooName, taxComment, getExtensionType(PesiTransformer.taxCommentUuid, "TaxComment", "TaxComment", "TC"));
 				Extension.NewInstance(zooName, fauComment, getExtensionType(PesiTransformer.fauCommentUuid, "FauComment", "FauComment", "FC"));
@@ -429,13 +400,16 @@ public class FaunaEuropaeaTaxonNameImport extends FaunaEuropaeaImportBase  {
 						taxonBase = synonym;
 					} else if (status == T_STATUS_NOT_ACCEPTED && (necAuctFound || auctNecFound)){
 						synonym = Synonym.NewInstance(zooName, sourceReference);
-						synonym.setDoubtful(true);
+						NomenclaturalStatus tempNameNomStatus = NomenclaturalStatus.NewInstance(FaunaEuropaeaTransformer.getNomStatusTempNamed(getTermService()));
+						zooName.addStatus(tempNameNomStatus);
 						taxonBase = synonym;
-						logger.info("Misapplied name created ("+ taxonId + ") " + autName);
+						logger.info("temporary named name created ("+ taxonId + ") " + zooName.getTitleCache()+ zooName.getStatus().toString());
 					}else if (status == T_STATUS_NOT_ACCEPTED && auctWordFound){
 							// misapplied name
 								zooName.setCombinationAuthorTeam(null);
 								zooName.setPublicationYear(null);
+								// in cdm misapplied names are accepted taxa
+								fauEuTaxon.setValid(true);
 								taxon = Taxon.NewInstance(zooName, auctReference);
 								taxonBase = taxon;
 								logger.info("Misapplied name created ("+ taxonId + ") " + autName);
@@ -450,13 +424,23 @@ public class FaunaEuropaeaTaxonNameImport extends FaunaEuropaeaImportBase  {
 
 					taxonBase.setUuid(taxonBaseUuid);
 					taxonBase.setLsid(new LSID( "urn:lsid:faunaeur.org:taxname:"+taxonId));
+					taxonBase.setCreated(created);
+					taxonBase.setUpdated(modified);
 					
 					// Add Note extensions to this taxon
-					Extension.NewInstance(taxonBase, taxComment, getExtensionType(PesiTransformer.taxCommentUuid, "TaxComment", "TaxComment", "TC"));
-					Extension.NewInstance(taxonBase, fauComment, getExtensionType(PesiTransformer.fauCommentUuid, "FauComment", "FauComment", "FC"));
-					Extension.NewInstance(taxonBase, fauExtraCodes, getExtensionType(PesiTransformer.fauExtraCodesUuid, "FauExtraCodes", "FauExtraCodes", "FEC"));
+					Extension.NewInstance(taxonBase, taxComment, getExtensionType(state, PesiTransformer.taxCommentUuid, "TaxComment", "TaxComment", "TC"));
+					Extension.NewInstance(taxonBase, fauComment, getExtensionType(state, PesiTransformer.fauCommentUuid, "FauComment", "FauComment", "FC"));
+					Extension.NewInstance(taxonBase, fauExtraCodes, getExtensionType(state, PesiTransformer.fauExtraCodesUuid, "FauExtraCodes", "FauExtraCodes", "FEC"));
 					
+					// Add UserId extensions to this zooName
+					Extension.NewInstance(zooName, expertUserId, getExtensionType(state, PesiTransformer.expertUserIdUuid, "expertUserId", "expertUserId", "EUID"));
+					Extension.NewInstance(zooName, speciesExpertUserId, getExtensionType(state, PesiTransformer.speciesExpertUserIdUuid, "speciesExpertUserId", "speciesExpertUserId", "SEUID"));
+					
+					// Add Expert extensions to this zooName
+					Extension.NewInstance(zooName, expertName, getExtensionType(state, PesiTransformer.expertNameUuid, "ExpertName", "ExpertName", "EN"));
+					Extension.NewInstance(zooName, speciesExpertName, getExtensionType(state, PesiTransformer.speciesExpertNameUuid, "SpeciesExpertName", "SpeciesExpertName", "SEN"));
 
+					
 					ImportHelper.setOriginalSource(taxonBase, fauEuConfig.getSourceReference(), taxonId, OS_NAMESPACE_TAXON);
 					ImportHelper.setOriginalSource(zooName, fauEuConfig.getSourceReference(), taxonId, "TaxonName");
 
@@ -622,6 +606,7 @@ public class FaunaEuropaeaTaxonNameImport extends FaunaEuropaeaImportBase  {
 				// homotypic synonym
 				Taxon taxon = taxonBase.deproxy(taxonBase, Taxon.class);
 				taxon.addHomotypicSynonym(synonym, fauEuConfig.getSourceReference(), null);
+				
 				if (logger.isDebugEnabled()) {
 					logger.debug("Homotypic synonym created (" + fauEuTaxon.getId() + ")");
 				}
@@ -639,6 +624,13 @@ public class FaunaEuropaeaTaxonNameImport extends FaunaEuropaeaImportBase  {
 			
 			
 			buildTaxonName(fauEuTaxon, synonym, basionym, true, fauEuConfig);
+			
+			//originalSources zufügen
+			
+			ImportHelper.setOriginalSource(synonym, fauEuConfig.getSourceReference(), fauEuTaxon.getId(), PesiTransformer.STR_NAMESPACE_NOMINAL_TAXON);
+			ImportHelper.setOriginalSource(synonym.getName(), fauEuConfig.getSourceReference(), fauEuTaxon.getId(), PesiTransformer.STR_NAMESPACE_NOMINAL_TAXON);
+			
+			
 		} catch (Exception e) {
 			logger.warn("Exception occurred when creating basionym for " + fauEuTaxon.getId());
 			e.printStackTrace();

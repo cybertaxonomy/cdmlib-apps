@@ -61,7 +61,7 @@ public final class PesiTransformer extends ExportTransformerBase implements IExp
 	
 	private static final Logger logger = Logger.getLogger(PesiTransformer.class);
 
-	public static final String auctString = "auct.";
+	public static final String AUCT_STRING = "auct.";
 	
 	
 	//sourceRefUUIDs
@@ -263,6 +263,11 @@ public final class PesiTransformer extends ExportTransformerBase implements IExp
 	public static String STR_IS_INFERRED_EPITHET_FOR = "is inferred epithet for";
 	public static String STR_IS_INFERRED_GENUS_FOR = "is inferred genus for";
 	public static String STR_IS_POTENTIAL_COMBINATION_FOR = "is potential combination for";
+	
+	public static String STR_NAMESPACE_NOMINAL_TAXON = "Nominal taxon from TAX_ID:";
+	public static String STR_NAMESPACE_INFERRED_EPITHET = "Inferred epithet from TAX_ID:";
+	public static String STR_NAMESPACE_INFERRED_GENUS = "Inferred genus from TAX_ID:";
+	public static String STR_NAMESPACE_POTENTIAL_COMBINATION = "Potential combination from TAX_ID:";
 
 	// Kingdoms
 	public static int KINGDOM_NULL = 0;

@@ -649,22 +649,27 @@ public class PesiTaxonExport extends PesiExportBase {
 						}
 						
 						if (classification != null) {
-							inferredSynonyms  = getTaxonService().createAllInferredSynonyms(acceptedTaxon, classification);
-
-//								inferredSynonyms = getTaxonService().createInferredSynonyms(classification, acceptedTaxon, SynonymRelationshipType.INFERRED_GENUS_OF());
-							if (inferredSynonyms != null) {
-								for (Synonym synonym : inferredSynonyms) {
-//									TaxonNameBase<?,?> synonymName = synonym.getName();
+							try{
+								inferredSynonyms  = getTaxonService().createAllInferredSynonyms(acceptedTaxon, classification);
+	
+	//								inferredSynonyms = getTaxonService().createInferredSynonyms(classification, acceptedTaxon, SynonymRelationshipType.INFERRED_GENUS_OF());
+								if (inferredSynonyms != null) {
+									for (Synonym synonym : inferredSynonyms) {
+	//									TaxonNameBase<?,?> synonymName = synonym.getName();
+											
+										// Both Synonym and its TaxonName have no valid Id yet
+										synonym.setId(currentTaxonId++);
 										
-									// Both Synonym and its TaxonName have no valid Id yet
-									synonym.setId(currentTaxonId++);
-									
-									doCount(count++, modCount, inferredSynonymPluralString);
-									success &= mapping.invoke(synonym);
-									
-									// Add Rank Data and KingdomFk to hashmap for later saving
-									inferredSynonymsDataToBeSaved.put(synonym.getId(), synonym.getName());
+										doCount(count++, modCount, inferredSynonymPluralString);
+										success &= mapping.invoke(synonym);
+										
+										// Add Rank Data and KingdomFk to hashmap for later saving
+										inferredSynonymsDataToBeSaved.put(synonym.getId(), synonym.getName());
+									}
 								}
+							}catch(Exception e){
+								logger.error(e.getMessage());
+								e.printStackTrace();
 							}
 						} else {
 							logger.error("Classification is NULL. Inferred Synonyms could not be created for this Taxon: " + acceptedTaxon.getUuid() + " (" + acceptedTaxon.getTitleCache() + ")");
@@ -1272,7 +1277,7 @@ public class PesiTaxonExport extends PesiExportBase {
 			// For a misapplied name without an authorshipCache the authorString should be set to "auct."
 			if (isMisappliedName(taxon) && authorshipCache == null) {
 				// Set authorshipCache to "auct."
-				result = PesiTransformer.auctString;
+				result = PesiTransformer.AUCT_STRING;
 			}else{
 				result = authorshipCache;
 			}
