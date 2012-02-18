@@ -18,6 +18,7 @@ import java.util.Set;
 
 import org.apache.log4j.Logger;
 
+import eu.etaxonomy.cdm.io.berlinModel.BerlinModelTransformer;
 import eu.etaxonomy.cdm.io.common.DbExportBase;
 import eu.etaxonomy.cdm.model.common.CdmBase;
 import eu.etaxonomy.cdm.model.common.Marker;
@@ -144,6 +145,8 @@ public abstract class PesiExportBase extends DbExportBase<PesiExportConfigurator
 	protected static boolean isPesiTaxon(TaxonBase taxonBase) {
 		for (Marker marker : taxonBase.getMarkers()){
 			if (marker.getValue() == false && marker.getMarkerType().equals(MarkerType.PUBLISH())){
+				return false;
+			}else if (marker.getValue() == true && marker.getMarkerType().getUuid().equals(BerlinModelTransformer.uuidMisappliedCommonName)){
 				return false;
 			}
 		}
