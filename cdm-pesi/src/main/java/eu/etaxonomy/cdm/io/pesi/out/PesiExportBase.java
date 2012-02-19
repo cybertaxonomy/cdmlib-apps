@@ -26,7 +26,11 @@ import eu.etaxonomy.cdm.model.common.MarkerType;
 import eu.etaxonomy.cdm.model.name.NameRelationship;
 import eu.etaxonomy.cdm.model.name.NonViralName;
 import eu.etaxonomy.cdm.model.name.TaxonNameBase;
+import eu.etaxonomy.cdm.model.taxon.Synonym;
+import eu.etaxonomy.cdm.model.taxon.Taxon;
 import eu.etaxonomy.cdm.model.taxon.TaxonBase;
+import eu.etaxonomy.cdm.model.taxon.TaxonRelationship;
+import eu.etaxonomy.cdm.model.taxon.TaxonRelationshipType;
 import eu.etaxonomy.cdm.persistence.query.OrderHint;
 
 /**
@@ -85,20 +89,15 @@ public abstract class PesiExportBase extends DbExportBase<PesiExportConfigurator
 		return list;
 	}
 
-//	protected List<TaxonBase> getNextDescriptionPartition(Class<? extends DescriptionElementBase> clazz,int limit, int partitionCount) {
-//		List<DescriptionElementBase> list = getDescriptionService().listDescriptionElements(null, null, pageSize, pageNumber, propPath);
-//		
-//		Iterator<TaxonBase> it = list.iterator();
-//		while (it.hasNext()){
-//			TaxonBase<?> taxonBase = it.next();
-//			if (! isPesiTaxon(taxonBase)){
-//				it.remove();
-//			}
-//		}
-//		return list;
-//	}
-
 	
+	/**
+	 * Decides if a name is not used as the name part of a PESI taxon (and therefore is
+	 * exported to PESI as taxon already) but is related to a name used as a PESI taxon
+	 * (e.g. as basionym, orthographic variant, etc.) and therefore should be exported
+	 * to PESI as part of the name relationship.
+	 * @param taxonName
+	 * @return
+	 */
 	protected boolean isPurePesiName(TaxonNameBase<?,?> taxonName){
 		if (hasPesiTaxon(taxonName)){
 			return false;
@@ -115,6 +114,14 @@ public abstract class PesiExportBase extends DbExportBase<PesiExportConfigurator
 	}
 	
 
+	/**
+	 * Decides if a given name has "PESI taxa" attached.
+	 * 
+	 * @see #getPesiTaxa(TaxonNameBase)
+	 * @see #isPesiTaxon(TaxonBase)
+	 * @param taxonName
+	 * @return
+	 */
 	protected boolean hasPesiTaxon(TaxonNameBase<?,?> taxonName) {
 		for (TaxonBase<?> taxon : taxonName.getTaxonBases()){
 			if (isPesiTaxon(taxon)){
@@ -124,6 +131,14 @@ public abstract class PesiExportBase extends DbExportBase<PesiExportConfigurator
 		return false;
 	}
 	
+	/**
+	 * Returns those concepts (taxon bases) for the given name that
+	 * are pesi taxa.
+	 * 
+	 *  @see #isPesiTaxon(TaxonBase)
+	 * @param name
+	 * @return
+	 */
 	protected Set<TaxonBase<?>> getPesiTaxa(TaxonNameBase<?,?> name){
 		Set<TaxonBase<?>> result = new HashSet<TaxonBase<?>>();
 		for (TaxonBase<?> taxonBase : name.getTaxonBases()){
@@ -136,23 +151,70 @@ public abstract class PesiExportBase extends DbExportBase<PesiExportConfigurator
 
 
 	/**
-	 * Checks if this taxon is taxon that is to be exported to PESI. This is generally the case
-	 * except for those taxa marked as "DON't PUBLISH".
+	 * Checks if this taxon base is a taxon that is to be exported to PESI. This is generally the case
+	 * but not for taxa that are marked as "unpublish". Synonyms and misapplied names are exported if they are
+	 * related at least to one accepted taxon that is also exported, except for those misapplied names 
+	 * marked as misapplied names created by Euro+Med common names ({@linkplain http://dev.e-taxonomy.eu/trac/ticket/2786} ).
 	 * The list of conditions may change in future.
 	 * @param taxonBase
 	 * @return
 	 */
 	protected static boolean isPesiTaxon(TaxonBase taxonBase) {
-		for (Marker marker : taxonBase.getMarkers()){
-			if (marker.getValue() == false && marker.getMarkerType().equals(MarkerType.PUBLISH())){
-				return false;
-			}else if (marker.getValue() == true && marker.getMarkerType().getUuid().equals(BerlinModelTransformer.uuidMisappliedCommonName)){
+		//handle accepted taxa
+		if (taxonBase.isInstanceOf(Taxon.class)){
+			Taxon taxon = CdmBase.deproxy(taxonBase, Taxon.class);
+			for (Marker marker : taxon.getMarkers()){
+				if (marker.getValue() == false && marker.getMarkerType().equals(MarkerType.PUBLISH())){
+					return false;
+				}else if (marker.getValue() == true && marker.getMarkerType().getUuid().equals(BerlinModelTransformer.uuidMisappliedCommonName)){
+					return false;
+				}
+				
+			}
+			//handle PESI accepted taxa
+			if (! taxon.isMisapplication()){
+				for (Marker marker : taxon.getMarkers()){
+					if (marker.getValue() == false && marker.getMarkerType().equals(MarkerType.PUBLISH())){
+						return false;
+					}
+				}
+				return true;
+			//handle misapplied names
+			}else{
+				for (Marker marker : taxon.getMarkers()){
+					if (marker.getValue() == true && marker.getMarkerType().getUuid().equals(BerlinModelTransformer.uuidMisappliedCommonName)){
+						return false;
+					}
+				}
+				for (TaxonRelationship taxRel : taxon.getRelationsFromThisTaxon()){
+					if (taxRel.getType().equals(TaxonRelationshipType.MISAPPLIED_NAME_FOR())){
+						if (isPesiTaxon(taxRel.getToTaxon())){
+							return true;
+						}
+					}
+				}
+				logger.info("Misapplied name has no accepted PESI taxon: " +  taxon.getUuid() + ", (" +  taxon.getTitleCache() + ")");
 				return false;
 			}
+		//handle synonyms
+		}else if (taxonBase.isInstanceOf(Synonym.class)){
+			Synonym synonym = CdmBase.deproxy(taxonBase, Synonym.class);
+			boolean hasAcceptedPesiTaxon = false;
+			for (Taxon accTaxon : synonym.getAcceptedTaxa()){
+				if (isPesiTaxon(accTaxon)){
+					hasAcceptedPesiTaxon = true;
+				}
+			}
+			if (!hasAcceptedPesiTaxon) {if (logger.isDebugEnabled()){logger.debug("Synonym has no accepted PESI taxon: " +  synonym.getUuid() + ", (" +  synonym.getTitleCache() + ")");}}
+			return hasAcceptedPesiTaxon;
+		}else {
+			throw new RuntimeException("Unknown taxon base type: " + taxonBase.getClass());
 		}
-		return true;
 	}
 	
+	/* (non-Javadoc)
+	 * @see eu.etaxonomy.cdm.io.common.DbExportBase#getDbIdCdmWithExceptions(eu.etaxonomy.cdm.model.common.CdmBase, eu.etaxonomy.cdm.io.common.ExportStateBase)
+	 */
 	protected Object getDbIdCdmWithExceptions(CdmBase cdmBase, PesiExportState state) {
 		if (cdmBase.isInstanceOf(TaxonNameBase.class)){
 			return ( cdmBase.getId() + state.getConfig().getNameIdStart() );
@@ -160,4 +222,19 @@ public abstract class PesiExportBase extends DbExportBase<PesiExportConfigurator
 			return super.getDbIdCdmWithExceptions(cdmBase, state);
 		}
 	}
+	
+
+//	protected List<TaxonBase> getNextDescriptionPartition(Class<? extends DescriptionElementBase> clazz,int limit, int partitionCount) {
+//		List<DescriptionElementBase> list = getDescriptionService().listDescriptionElements(null, null, pageSize, pageNumber, propPath);
+//		
+//		Iterator<TaxonBase> it = list.iterator();
+//		while (it.hasNext()){
+//			TaxonBase<?> taxonBase = it.next();
+//			if (! isPesiTaxon(taxonBase)){
+//				it.remove();
+//			}
+//		}
+//		return list;
+//	}
+
 }
