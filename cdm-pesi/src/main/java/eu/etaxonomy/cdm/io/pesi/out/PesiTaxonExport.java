@@ -15,6 +15,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.UUID;
@@ -27,6 +28,7 @@ import org.joda.time.format.DateTimeFormatter;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.TransactionStatus;
 
+import eu.etaxonomy.cdm.api.service.TaxonServiceImpl;
 import eu.etaxonomy.cdm.app.pesi.ErmsActivator;
 import eu.etaxonomy.cdm.app.pesi.EuroMedActivator;
 import eu.etaxonomy.cdm.app.pesi.FaunaEuropaeaActivator;
@@ -1651,7 +1653,7 @@ public class PesiTaxonExport extends PesiExportBase {
 		String result = null;
 		
 		try {
-			Set<IdentifiableSource> sources = getSources(taxonName);
+			Set<IdentifiableSource> sources = getPesiSources(taxonName);
 			for (IdentifiableSource source : sources) {
 				Reference ref = source.getCitation();
 				UUID refUuid = ref.getUuid();
@@ -1671,14 +1673,15 @@ public class PesiTaxonExport extends PesiExportBase {
 				if (sourceIdNameSpace != null) {
 					if (sourceIdNameSpace.equals("originalGenusId")) {
 						result = "Nominal Taxon from TAX_ID: " + source.getIdInSource();
-					} else if (sourceIdNameSpace.equals("InferredEpithetOf")) {
+					} else if (sourceIdNameSpace.equals(TaxonServiceImpl.INFERRED_EPITHET_NAMESPACE)) {
 						result = "Inferred epithet from TAX_ID: " + source.getIdInSource();
-					} else if (sourceIdNameSpace.equals("InferredGenusOf")) {
+					} else if (sourceIdNameSpace.equals(TaxonServiceImpl.INFERRED_GENUS_NAMESPACE)) {
 						result = "Inferred genus from TAX_ID: " + source.getIdInSource();
-					} else if (sourceIdNameSpace.equals("PotentialCombinationOf")) {
+					} else if (sourceIdNameSpace.equals(TaxonServiceImpl.POTENTIAL_COMBINATION_NAMESPACE)) {
 						result = "Potential combination from TAX_ID: " + source.getIdInSource();
 					} else {
 //						result = "TAX_ID: " + source.getIdInSource();
+						result = sourceIdNameSpace + source.getIdInSource();
 					}
 				}
 			}
@@ -1701,7 +1704,7 @@ public class PesiTaxonExport extends PesiExportBase {
 		String result = null;
 		
 		// Get the sources first
-		Set<IdentifiableSource> sources = getSources(identEntity);
+		Set<IdentifiableSource> sources = getPesiSources(identEntity);
 
 		// Determine the idInSource
 		if (sources.size() == 1) {
@@ -1730,55 +1733,56 @@ public class PesiTaxonExport extends PesiExportBase {
 	 * @param taxonName The {@link TaxonNameBase TaxonName}.
 	 * @return The Sources.
 	 */
-	private static Set<IdentifiableSource> getSources(IdentifiableEntity identEntity) {
-		Set<IdentifiableSource> sources = null;
+	private static Set<IdentifiableSource> getPesiSources(IdentifiableEntity identEntity) {
+		Set<IdentifiableSource> sources = new java.util.HashSet<IdentifiableSource>();
 
 		//Taxon Names
 		if (identEntity.isInstanceOf(TaxonNameBase.class)){
 			// Sources from TaxonName
 			TaxonNameBase taxonName = CdmBase.deproxy(identEntity, TaxonNameBase.class);
-			Set<IdentifiableSource> nameSources = identEntity.getSources();
-			sources = nameSources;
-			if (nameSources.size() > 1) {
+			sources = filterPesiSources(identEntity.getSources());
+			if (sources.size() > 1) {
 				logger.warn("This TaxonName has more than one Source: " + identEntity.getUuid() + " (" + identEntity.getTitleCache() + ")");
 			}
 			
-			// Sources from TaxonBase
+			// name has no PESI source, take sources from TaxonBase
 			if (sources == null || sources.isEmpty()) {
-				Set<Taxon> taxa = taxonName.getTaxa();
-				Set<Synonym> synonyms = taxonName.getSynonyms();
-				if (taxa.size() == 1) {
-					Taxon taxon = taxa.iterator().next();
-
-					if (taxon != null) {
-						sources = taxon.getSources();
-					}
-				} else if (taxa.size() > 1) {
-					logger.warn("This TaxonName has " + taxa.size() + " Taxa: " + identEntity.getUuid() + " (" + identEntity.getTitleCache() +")");
-				}
-				if (synonyms.size() == 1) {
-					Synonym synonym = synonyms.iterator().next();
-					
-					if (synonym != null) {
-						sources = synonym.getSources();
-					}
-				} else if (synonyms.size() > 1) {
-					logger.warn("This TaxonName has " + synonyms.size() + " Synonyms: " + identEntity.getUuid() + " (" + identEntity.getTitleCache() +")");
+				Set<TaxonBase> taxa = taxonName.getTaxonBases();
+				for (TaxonBase taxonBase: taxa){
+					sources.addAll(filterPesiSources(taxonBase.getSources()));
 				}
 			}
 
 		//for TaxonBases
 		}else if (identEntity.isInstanceOf(TaxonBase.class)){
-			sources = identEntity.getSources();	
+			sources = filterPesiSources(identEntity.getSources());	
 		}
 
 		
 		if (sources == null || sources.isEmpty()) {
-			logger.warn("This TaxonName has no Sources: " + identEntity.getUuid() + " (" + identEntity.getTitleCache() +")");
+			logger.warn("This TaxonName has no PESI Sources: " + identEntity.getUuid() + " (" + identEntity.getTitleCache() +")");
+		}else if (sources.size() > 1){
+			logger.warn("This Taxon(Name) has more than 1 PESI source: " + identEntity.getUuid() + " (" + identEntity.getTitleCache() +")");
 		}
 		return sources;
 	}
 	
+	// return all sources with a PESI reference	
+	private static Set<IdentifiableSource> filterPesiSources(Set<? extends IdentifiableSource> sources) {
+		Set<IdentifiableSource> result = new HashSet<IdentifiableSource>();
+		for (IdentifiableSource source : sources){
+			Reference ref = source.getCitation();
+			UUID refUuid = ref.getUuid();
+			if (refUuid.equals(PesiTransformer.uuidSourceRefEuroMed) || 
+				refUuid.equals(PesiTransformer.uuidSourceRefFaunaEuropaea)||
+				refUuid.equals(PesiTransformer.uuidSourceRefErms)||
+				refUuid.equals(PesiTransformer.uuidSourceRefIndexFungorum) ){
+				result.add(source);
+			}
+		}
+		return result;
+	}
+
 	/**
 	 * Returns the <code>GUID</code> attribute.
 	 * @param taxonName The {@link TaxonNameBase TaxonName}.
