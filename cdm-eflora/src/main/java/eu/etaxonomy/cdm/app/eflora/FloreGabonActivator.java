@@ -132,8 +132,8 @@ public class FloreGabonActivator {
 		
 	}
 	
-	private Reference getSourceReference(String string) {
-		Reference result = ReferenceFactory.newGeneric();
+	private Reference<?> getSourceReference(String string) {
+		Reference<?> result = ReferenceFactory.newGeneric();
 		result.setTitleCache(string);
 		return result;
 	}
