@@ -400,14 +400,14 @@ public class PesiTaxonExport extends PesiExportBase {
 		
 		// Retrieve list of classifications
 		TransactionStatus txStatus = startTransaction(true);
-		logger.info("Started transaction. Fetching all classifications...");
+		logger.info("Started transaction for parentFk and treeIndex. Fetching all classifications...");
 		classificationList = getClassificationService().listClassifications(null, 0, null, null);
 		commitTransaction(txStatus);
 		logger.debug("Committed transaction.");
 
 		logger.info("Fetched " + classificationList.size() + " classification(s).");
 
-		setTreeIndexAnnotationType(getAnnotationType(uuidTreeIndex, "TreeIndex", "", "TI"));
+		setTreeIndexAnnotationType(getAnnotationType(uuidTreeIndex, "TreeIndex", "TreeIndex", "TI"));
 		
 		for (Classification classification : classificationList) {
 			for (Rank rank : rankList) {
@@ -500,7 +500,7 @@ public class PesiTaxonExport extends PesiExportBase {
 		
 		// Start transaction
 		TransactionStatus txStatus = startTransaction(true);
-		logger.info("Started new transaction. Fetching some " + pluralString + " (max: " + limit + ") ...");
+		logger.info("Started new transaction for rank, kingdom, typeName, expertFk and speciesExpertFK. Fetching some " + pluralString + " (max: " + limit + ") ...");
 		int partitionCount = 0;
 		while ((list = getNextTaxonPartition(TaxonBase.class, limit, partitionCount++, null)).size() > 0) {
 
@@ -531,7 +531,7 @@ public class PesiTaxonExport extends PesiExportBase {
 
 			// Start transaction
 			txStatus = startTransaction(true);
-			logger.info("Started new transaction. Fetching some " + pluralString + " (max: " + limit + ") ...");
+			logger.info("Started new transaction for rank, kingdom, typeName, expertFk and speciesExpertFK. Fetching some " + pluralString + " (max: " + limit + ") ...");
 		}
 		if (list.size() == 0) {
 			logger.info("No " + pluralString + " left to fetch.");
@@ -737,10 +737,10 @@ public class PesiTaxonExport extends PesiExportBase {
 			int limit = state.getConfig().getLimitSave();
 
 			
-			logger.info("PHASE 5: Export Pure Names ...");
+			logger.info("PHASE 1b: Export Pure Names ...");
 			// Start transaction
 			TransactionStatus txStatus = startTransaction(true);
-			logger.info("Started new transaction. Fetching some " + pluralString + " (max: " + limit + ") ...");
+			logger.info("Started new transaction for Pure Names. Fetching some " + pluralString + " (max: " + limit + ") ...");
 			
 			
 			int partitionCount = 0;
@@ -760,7 +760,7 @@ public class PesiTaxonExport extends PesiExportBase {
 
 				// Start transaction
 				txStatus = startTransaction(true);
-				logger.info("Started new transaction. Fetching some " + pluralString + " (max: " + limit + ") ...");
+				logger.info("Started new transaction for PureNames. Fetching some " + pluralString + " (max: " + limit + ") ...");
 			}
 			if (list == null) {
 				logger.info("No " + pluralString + " left to fetch.");
