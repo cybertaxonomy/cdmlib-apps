@@ -17,7 +17,6 @@ import static eu.etaxonomy.cdm.io.pesi.faunaEuropaea.FaunaEuropaeaTransformer.R_
 import static eu.etaxonomy.cdm.io.pesi.faunaEuropaea.FaunaEuropaeaTransformer.T_STATUS_ACCEPTED;
 import static eu.etaxonomy.cdm.io.pesi.faunaEuropaea.FaunaEuropaeaTransformer.T_STATUS_NOT_ACCEPTED;
 
-import java.sql.Date;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Timestamp;
@@ -42,11 +41,9 @@ import eu.etaxonomy.cdm.io.pesi.out.PesiTransformer;
 import eu.etaxonomy.cdm.model.agent.TeamOrPersonBase;
 import eu.etaxonomy.cdm.model.common.CdmBase;
 import eu.etaxonomy.cdm.model.common.Extension;
-import eu.etaxonomy.cdm.model.common.ExtensionType;
 import eu.etaxonomy.cdm.model.common.IdentifiableSource;
 import eu.etaxonomy.cdm.model.common.LSID;
 import eu.etaxonomy.cdm.model.name.NomenclaturalStatus;
-import eu.etaxonomy.cdm.model.name.NomenclaturalStatusType;
 import eu.etaxonomy.cdm.model.name.Rank;
 import eu.etaxonomy.cdm.model.name.TaxonNameBase;
 import eu.etaxonomy.cdm.model.name.ZoologicalName;
@@ -581,13 +578,6 @@ public class FaunaEuropaeaTaxonNameImport extends FaunaEuropaeaImportBase  {
 			zooName.setOriginalPublicationYear(zooName.getPublicationYear());
 			basionym.setPublicationYear(zooName.getPublicationYear());
 
-			// add originalGenusId as source
-			String originalGenusIdString = "" + fauEuTaxon.getId();
-			IdentifiableSource basionymSource = IdentifiableSource.NewInstance(originalGenusIdString, "originalGenusId");
-			basionym.addSource(basionymSource);
-			
-			// add original database reference
-			ImportHelper.setOriginalSource(basionym, fauEuConfig.getSourceReference(), fauEuTaxon.getId(), "TaxonName");
 			
 			zooName.addBasionym(basionym, fauEuConfig.getSourceReference(), null, null);
 			zooName.setBasionymAuthorTeam(zooName.getCombinationAuthorTeam());
@@ -629,6 +619,14 @@ public class FaunaEuropaeaTaxonNameImport extends FaunaEuropaeaImportBase  {
 			
 			ImportHelper.setOriginalSource(synonym, fauEuConfig.getSourceReference(), fauEuTaxon.getId(), PesiTransformer.STR_NAMESPACE_NOMINAL_TAXON);
 			ImportHelper.setOriginalSource(synonym.getName(), fauEuConfig.getSourceReference(), fauEuTaxon.getId(), PesiTransformer.STR_NAMESPACE_NOMINAL_TAXON);
+
+			// add originalGenusId as source
+//			String originalGenusIdString = String.valueOf(fauEuTaxon.getId());
+//			IdentifiableSource basionymSource = IdentifiableSource.NewInstance(originalGenusIdString, "originalGenusId");
+//			basionym.addSource(basionymSource);
+//			
+//			// add original database reference
+//			ImportHelper.setOriginalSource(basionym, fauEuConfig.getSourceReference(), fauEuTaxon.getId(), "TaxonName");
 			
 			
 		} catch (Exception e) {
