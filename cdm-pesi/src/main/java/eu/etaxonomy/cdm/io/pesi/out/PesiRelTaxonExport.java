@@ -140,12 +140,8 @@ public class PesiRelTaxonExport extends PesiExportBase {
 					for (TaxonNode rootNode : rankSpecificRootNodes) {
 						txStatus = startTransaction(false);
 						Rank endRank = rank2endRankMap.get(rank);
-						if (endRank != null) {
-							logger.info("Started transaction to traverse childNodes of rootNode (" + rootNode.getUuid() + ") till Rank " + endRank.getLabel() + " ...");
-						} else {
-							logger.info("Started transaction to traverse childNodes of rootNode (" + rootNode.getUuid() + ") till leaves are reached ...");
-						}
-
+						logger.debug("Started transaction to traverse childNodes of rootNode (" + rootNode.getUuid() + ") till " + (endRank == null ? "leaves are reached ..." : "Rank " + endRank.getLabel() + " ..."));
+						
 						TaxonNode newNode = getTaxonNodeService().load(rootNode.getUuid());
 
 						if (isPesiTaxon(newNode.getTaxon())){
