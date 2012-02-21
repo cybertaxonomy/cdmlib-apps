@@ -9,8 +9,6 @@
 */
 package eu.etaxonomy.cdm.app.pesi;
 
-import java.util.UUID;
-
 import org.apache.log4j.Logger;
 
 import eu.etaxonomy.cdm.app.common.CdmDestinations;
@@ -36,7 +34,7 @@ public class PesiExportActivatorEM {
 	private static final Logger logger = Logger.getLogger(PesiExportActivatorEM.class);
 
 	//database validation status (create, update, validate ...)
-	static final Source pesiDestination = PesiDestinations.pesi_test_local_CDM_EM2PESI_tmp();
+	static final Source pesiDestination = PesiDestinations.pesi_test_local_CDM_EM2PESI();
 //	static final Source pesiDestination = PesiDestinations.pesi_test_local_CDM_FE2PESI();
 //	static final Source pesiDestination = PesiDestinations.pesi_test_local_CDM_ERMS2PESI();
 	

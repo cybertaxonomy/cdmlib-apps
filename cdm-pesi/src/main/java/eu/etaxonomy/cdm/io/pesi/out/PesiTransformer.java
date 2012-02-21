@@ -14,7 +14,6 @@ import java.sql.SQLException;
 import java.util.BitSet;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Set;
 import java.util.UUID;
 
 import org.apache.commons.lang.StringUtils;
@@ -29,7 +28,6 @@ import eu.etaxonomy.cdm.io.common.mapping.out.IExportTransformer;
 import eu.etaxonomy.cdm.io.pesi.erms.ErmsTransformer;
 import eu.etaxonomy.cdm.io.pesi.faunaEuropaea.FaunaEuropaeaTransformer;
 import eu.etaxonomy.cdm.model.common.CdmBase;
-import eu.etaxonomy.cdm.model.common.IdentifiableSource;
 import eu.etaxonomy.cdm.model.common.Language;
 import eu.etaxonomy.cdm.model.common.RelationshipBase;
 import eu.etaxonomy.cdm.model.common.RelationshipTermBase;
@@ -79,10 +77,10 @@ public final class PesiTransformer extends ExportTransformerBase implements IExp
 	public static final UUID uuidSourceRefErms = UUID.fromString("7744bc26-f914-42c4-b54a-dd2a030a8bb7");
 	public static final UUID uuidSourceRefIndexFungorum = UUID.fromString("8de25d27-7d40-47f4-af3b-59d64935a843");
 	
-	private static final String SOURCE_STR_EM = "E+M";
-	private static final String SOURCE_STR_FE = "FaEu";
-	private static final String SOURCE_STR_IF = "IF";
-	private static final String SOURCE_STR_ERMS = "ERMS";
+	public static final String SOURCE_STR_EM = "E+M";
+	public static final String SOURCE_STR_FE = "FaEu";
+	public static final String SOURCE_STR_IF = "IF";
+	public static final String SOURCE_STR_ERMS = "ERMS";
 
 	// status keys
 	public static int QUALITY_STATUS_CHECKED_EDITOR_ERMS_1_1 = 0;

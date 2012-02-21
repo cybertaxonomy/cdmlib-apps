@@ -207,13 +207,17 @@ public class PesiTaxonExport extends PesiExportBase {
 			
 			// 2nd Round: Add ParentTaxonFk, TreeIndex to each Taxon
 			success &= doPhase02(state);
-
+			
 			//PHASE 3: Add Rank data, KingdomFk, TypeNameFk, expertFk and speciesExpertFk...
 			success &= doPhase03(state);
+			
 			
 			//"PHASE 4: Creating Inferred Synonyms...
 			success &= doPhase04(state, mapping);
 			
+			//updates to TaxonStatus
+			success &= doPhaseUpdates(state);
+
 			
 			logger.info("*** Finished Making " + pluralString + " ..." + getSuccessString(success));
 
@@ -227,6 +231,59 @@ public class PesiTaxonExport extends PesiExportBase {
 			state.setUnsuccessfull();
 			return;
 		}
+	}
+
+	//TODO check if this can all be done by getTaxonStatus
+	private boolean doPhaseUpdates(PesiExportState state) {
+		
+		
+		String oldStatusFilter = "= '" + PesiTransformer.T_STATUS_STR_UNACCEPTED + "' ";
+		String emStr = PesiTransformer.SOURCE_STR_EM;
+		String feStr = PesiTransformer.SOURCE_STR_FE;
+		String ifStr = PesiTransformer.SOURCE_STR_IF;
+		
+		//NOT ACCEPTED names
+		String updateNotAccepted = " UPDATE Taxon SET TaxonStatusFk = %d, TaxonStatusCache = '%s' " +
+				" WHERE OriginalDB = '%s' AND taxonstatusfk = 1 AND ParentTaxonFk %s AND RankFk > 180 ";
+		updateNotAccepted = String.format(updateNotAccepted, 8, "NOT ACCEPTED: TAXONOMICALLY VALUELESS LOCAL OR SINGULAR BIOTYPE", emStr, oldStatusFilter);
+		int updated = state.getConfig().getDestination().update(updateNotAccepted);
+		
+		//alternative names
+		String updateAlternativeName = "UPDATE Taxon SET TaxonStatusFk = 1, TaxonStatusCache = 'accepted' " + 
+				" FROM RelTaxon RIGHT OUTER JOIN Taxon ON RelTaxon.TaxonFk1 = Taxon.TaxonId " +
+				" WHERE (RelTaxon.RelTaxonQualifierFk = 17) AND (Taxon.TaxonStatusFk %s) ";
+		updateAlternativeName = String.format(updateAlternativeName, oldStatusFilter);
+		updated = state.getConfig().getDestination().update(updateAlternativeName);
+		
+		String updateSynonyms = " UPDATE Taxon SET TaxonStatusFk = 2, TaxonStatusCache = 'synonym' " + 
+					" FROM RelTaxon RIGHT OUTER JOIN Taxon ON RelTaxon.TaxonFk1 = Taxon.TaxonId " + 
+					" WHERE (RelTaxon.RelTaxonQualifierFk in (1, 3)) AND (Taxon.TaxonStatusFk %S)";
+		updateSynonyms = String.format(updateSynonyms, oldStatusFilter);
+		updated = state.getConfig().getDestination().update(updateSynonyms);
+		
+		// cache citation  - check if this can't be done in getCacheCitation
+		// cache citation - FE
+//		String updateCacheCitationFE = " UPDATE Taxon " +
+//				" SET CacheCitation = IsNull(SpeciesExpertName + '. ', '') + WebShowName + '. Accessed through: Fauna Europaea at http://www.faunaeur.org/full_results.php?id=' + cast(TempFE_Id as varchar) " +
+//				" WHERE OriginalDb = '%s'";
+//		updateCacheCitationFE = String.format(updateCacheCitationFE, feStr);
+//		updated = state.getConfig().getDestination().update(updateCacheCitationFE);
+		
+		// cache citation - EM
+		String updateCacheCitationEM = " UPDATE Taxon " +
+				" SET CacheCitation = SpeciesExpertName + ' ' + WebShowName + '. Accessed through: Euro+Med PlantBase at http://ww2.bgbm.org/euroPlusMed/PTaxonDetail.asp?UUID=' + GUID " +
+				" WHERE OriginalDb = '%s'";
+		updateCacheCitationEM = String.format(updateCacheCitationEM, emStr);
+		updated = state.getConfig().getDestination().update(updateCacheCitationEM);
+		
+		// cache citation - IF
+//		String updateCacheCitationIF = " UPDATE Taxon " +
+//				" SET CacheCitation = IsNull(SpeciesExpertName + ' ', '') + WebShowName + '. Accessed through: Index Fungorum at http://www.indexfungorum.org/names/NamesRecord.asp?RecordID=' + cast(TempIF_Id as varchar) " +
+//				" WHERE OriginalDb = '%s'";
+//		updateCacheCitationIF = String.format(updateCacheCitationIF, ifStr);
+//		updated = state.getConfig().getDestination().update(updateCacheCitationIF);
+		
+		return true;
 	}
 
 	private void initPreparedStatements(PesiExportState state) throws SQLException {
@@ -1854,6 +1911,8 @@ public class PesiTaxonExport extends PesiExportBase {
 	 */
 	@SuppressWarnings("unused")
 	private static String getCacheCitation(TaxonBase taxon) {
+		// !!! See also doPhaseUpdates
+		
 		TaxonNameBase<?,?> taxonName = taxon.getName();
 		String result = "";
 		//TODO implement anew for taxa
