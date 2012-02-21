@@ -25,7 +25,6 @@ import eu.etaxonomy.cdm.io.common.IImportConfigurator.CHECK;
 import eu.etaxonomy.cdm.io.common.IImportConfigurator.DO_REFERENCES;
 import eu.etaxonomy.cdm.io.common.IImportConfigurator.EDITOR;
 import eu.etaxonomy.cdm.io.common.Source;
-import eu.etaxonomy.cdm.io.pesi.out.PesiTaxonExport;
 import eu.etaxonomy.cdm.io.pesi.out.PesiTransformer;
 import eu.etaxonomy.cdm.model.description.Feature;
 import eu.etaxonomy.cdm.model.description.FeatureNode;
@@ -53,7 +52,7 @@ public class EuroMedActivator {
 	
 //	static final ICdmDataSource cdmDestination = CdmDestinations.cdm_pesi_euroMed();
 //	static final ICdmDataSource cdmDestination = CdmDestinations.cdm_test_local_mysql();
-	static final ICdmDataSource cdmDestination = CdmDestinations.cdm_test_local_mysql();
+	static final ICdmDataSource cdmDestination = CdmDestinations.cdm_test_local_mysql_test();
 	
 	static final int sourceSecId = 7000000; //500000
 	static final UUID classificationUuid = UUID.fromString("314a68f9-8449-495a-91c2-92fde8bcf344");
@@ -83,6 +82,8 @@ public class EuroMedActivator {
 	
 	static boolean useClassification = true;
 	
+	static boolean 	isSplitTdwgCodes = false;
+	
 	static String taxonTable = "v_cdm_exp_taxaAll";
 	static String classificationQuery = " SELECT DISTINCT t.PTRefFk, r.RefCache FROM _EM_CDM_exp_taxaDirect t INNER JOIN Reference r ON t.PTRefFk = r.RefId "; 
 	static String relPTaxonIdQuery = " SELECT r.RelPTaxonId " + 
@@ -110,7 +111,7 @@ public class EuroMedActivator {
 	static final boolean doTaxonNames = true;
 	static final boolean doRelNames = true;
 	static final boolean doNameStatus = true;
-	static final boolean doTypes = true;
+	static final boolean doTypes = false;  //serious types do not exist in E+M
 	static final boolean doNameFacts = true;
 	
 	//taxa
@@ -205,6 +206,9 @@ public class EuroMedActivator {
 		config.setOccurrenceSourceFilter(occurrenceSourceFilter);
 		config.setWebMarkerFilter(webMarkerFilter);
 		config.setUseSingleClassification(useSingleClassification);
+		
+		//TDWG codes
+		config.setSplitTdwgCodes(isSplitTdwgCodes);
 		
 		
 		config.setCheck(check);
