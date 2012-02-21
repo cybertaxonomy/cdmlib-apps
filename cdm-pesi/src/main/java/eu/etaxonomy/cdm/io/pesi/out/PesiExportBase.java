@@ -18,6 +18,7 @@ import java.util.Set;
 
 import org.apache.log4j.Logger;
 
+import eu.etaxonomy.cdm.hibernate.HibernateProxyHelper;
 import eu.etaxonomy.cdm.io.berlinModel.BerlinModelTransformer;
 import eu.etaxonomy.cdm.io.common.DbExportBase;
 import eu.etaxonomy.cdm.model.common.CdmBase;
@@ -81,7 +82,7 @@ public abstract class PesiExportBase extends DbExportBase<PesiExportConfigurator
 		}
 		Iterator<NonViralName<?>> it = list.iterator();
 		while (it.hasNext()){
-			NonViralName<?> taxonName = it.next();
+			NonViralName<?> taxonName = HibernateProxyHelper.deproxy(it.next(), NonViralName.class);
 			if (! isPurePesiName(taxonName)){
 				it.remove();
 			}

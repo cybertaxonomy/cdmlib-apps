@@ -11,13 +11,16 @@ package eu.etaxonomy.cdm.io.pesi.out;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.BitSet;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Set;
 import java.util.UUID;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 
+import eu.etaxonomy.cdm.common.CdmUtils;
 import eu.etaxonomy.cdm.io.berlinModel.BerlinModelTransformer;
 import eu.etaxonomy.cdm.io.common.Source;
 import eu.etaxonomy.cdm.io.common.mapping.UndefinedTransformerMethodException;
@@ -26,6 +29,7 @@ import eu.etaxonomy.cdm.io.common.mapping.out.IExportTransformer;
 import eu.etaxonomy.cdm.io.pesi.erms.ErmsTransformer;
 import eu.etaxonomy.cdm.io.pesi.faunaEuropaea.FaunaEuropaeaTransformer;
 import eu.etaxonomy.cdm.model.common.CdmBase;
+import eu.etaxonomy.cdm.model.common.IdentifiableSource;
 import eu.etaxonomy.cdm.model.common.Language;
 import eu.etaxonomy.cdm.model.common.RelationshipBase;
 import eu.etaxonomy.cdm.model.common.RelationshipTermBase;
@@ -58,11 +62,16 @@ import eu.etaxonomy.cdm.strategy.exceptions.UnknownCdmTypeException;
  *
  */
 public final class PesiTransformer extends ExportTransformerBase implements IExportTransformer{
-	
 	private static final Logger logger = Logger.getLogger(PesiTransformer.class);
 
 	public static final String AUCT_STRING = "auct.";
 	
+	
+	//source identifiers
+	public static final int SOURCE_EM = 1;
+	public static final int SOURCE_FE = 2;
+	public static final int SOURCE_IF = 3;
+	public static final int SOURCE_ERMS = 4;
 	
 	//sourceRefUUIDs
 	public static final UUID uuidSourceRefEuroMed = UUID.fromString("0603a84a-f024-4454-ab92-9e2ac0139126");
@@ -70,7 +79,20 @@ public final class PesiTransformer extends ExportTransformerBase implements IExp
 	public static final UUID uuidSourceRefErms = UUID.fromString("7744bc26-f914-42c4-b54a-dd2a030a8bb7");
 	public static final UUID uuidSourceRefIndexFungorum = UUID.fromString("8de25d27-7d40-47f4-af3b-59d64935a843");
 	
+	private static final String SOURCE_STR_EM = "E+M";
+	private static final String SOURCE_STR_FE = "FaEu";
+	private static final String SOURCE_STR_IF = "IF";
+	private static final String SOURCE_STR_ERMS = "ERMS";
+
+	// status keys
+	public static int QUALITY_STATUS_CHECKED_EDITOR_ERMS_1_1 = 0;
+	public static int QUALITY_STATUS_ADD_BY_DBMT= 2;
+	public static int QUALITY_STATUS_CHECKED_EDITOR = 3;
+	public static int QUALITY_STATUS_EDITED_BY_DBMT = 4;
 	
+	
+	
+	//extension type uuids
 	public static final UUID cacheCitationUuid = UUID.fromString("29656168-32d6-4301-9067-d57c63be5c67");
 	public static final UUID expertUserIdUuid = UUID.fromString("e25813d3-c67c-4585-9aa0-970fafde50b4");
 	public static final UUID speciesExpertUserIdUuid = UUID.fromString("6d42abd8-8894-4980-ae07-e918affd4172");
@@ -137,35 +159,6 @@ public final class PesiTransformer extends ExportTransformerBase implements IExp
 	public static int NAME_ST_TEMPORARY_NAME = 27;
 	public static int NAME_ST_SPECIES_INQUIRENDA = 28;
 
-	public static String NAME_ST_STR_NOM_INVAL = "Nom. Inval.";
-	public static String NAME_ST_STR_NOM_ILLEG = "Nom. Illeg.";
-	public static String NAME_ST_STR_NOM_NUD = "Nom. Nud.";
-	public static String NAME_ST_STR_NOM_REJ = "Nom. Rej.";
-	public static String NAME_ST_STR_NOM_REJ_PROP = "Nom. Rej. Prop.";
-	public static String NAME_ST_STR_NOM_UTIQUE_REJ = "Nom. Utique Rej.";
-	public static String NAME_ST_STR_NOM_UTIQUE_REJ_PROP = "Nom. Utique Rej. Prop.";
-	public static String NAME_ST_STR_NOM_CONS = "Nom. Cons.";
-	public static String NAME_ST_STR_NOM_CONS_PROP = "Nom. Cons. Prop.";
-	public static String NAME_ST_STR_ORTH_CONS = "Orth. Cons.";
-	public static String NAME_ST_STR_ORTH_CONS_PROP = "Orth. Cons. Prop.";
-	public static String NAME_ST_STR_NOM_SUPERFL = "Nom. Superfl.";
-	public static String NAME_ST_STR_NOM_AMBIG = "Nom. Ambig.";
-	public static String NAME_ST_STR_NOM_PROVIS = "Nom. Provis.";
-	public static String NAME_ST_STR_NOM_DUB = "Nom. Dub.";
-	public static String NAME_ST_STR_NOM_NOV = "Nom. Nov.";
-	public static String NAME_ST_STR_NOM_CONFUS = "Nom. Confus.";
-	public static String NAME_ST_STR_NOM_ALTERN = "Nom. Altern.";
-	public static String NAME_ST_STR_COMB_INVAL = "Comb. Inval.";
-	public static String NAME_ST_STR_LEGITIMATE = "Legitim"; 
-	public static String NAME_ST_STR_COMB_INED = "Comb. Ined."; // PESI specific from here
-	public static String NAME_ST_STR_COMB_AND_STAT_INED = "Comb. & Stat. Ined.";
-	public static String NAME_ST_STR_NOM_AND_ORTH_CONS = "Nom. & Orth. Cons.";
-	public static String NAME_ST_STR_NOM_NOV_INED = "Nom. Nov. Ined.";
-	public static String NAME_ST_STR_SP_NOV_INED = "Sp. Nov. Ined.";
-	public static String NAME_ST_STR_ALTERNATE_REPRESENTATION = "Alternate Representation";
-	public static String NAME_ST_STR_TEMPORARY_NAME = "Temporary Name";
-	public static String NAME_ST_STR_SPECIES_INQUIRENDA = "Species Inquirenda";
-
 	// TaxonStatus
 	public static int T_STATUS_ACCEPTED = 1;
 	public static int T_STATUS_SYNONYM = 2;
@@ -173,6 +166,7 @@ public final class PesiTransformer extends ExportTransformerBase implements IExp
 	public static int T_STATUS_PRO_PARTE_SYN = 4;
 	public static int T_STATUS_UNRESOLVED = 5;
 	public static int T_STATUS_ORPHANED = 6;
+	public static int T_STATUS_UNACCEPTED = 7;
 	
 	public static String T_STATUS_STR_ACCEPTED = "Accepted";
 	public static String T_STATUS_STR_SYNONYM = "Synonym";
@@ -180,6 +174,7 @@ public final class PesiTransformer extends ExportTransformerBase implements IExp
 	public static String T_STATUS_STR_PRO_PARTE_SYN = "Pro Parte Synonym";
 	public static String T_STATUS_STR_UNRESOLVED = "Unresolved";
 	public static String T_STATUS_STR_ORPHANED = "Orphaned";
+	public static String T_STATUS_STR_UNACCEPTED = "Unaccepted";
 	
 	// TypeDesginationStatus
 	public static int TYPE_BY_ORIGINAL_DESIGNATION = 1;
@@ -407,14 +402,14 @@ public final class PesiTransformer extends ExportTransformerBase implements IExp
 	public static String Plantae_STR_Subspecies = "Subspecies";
 	public static String Plantae_STR_Proles = "Proles";
 	public static String Plantae_STR_Race = "Race";
-	public static String Plantae_STR_Convarietas = "Convarietas";
+	public static String Plantae_STR_Convarietas = "Convariety";
 	public static String Plantae_STR_Variety = "Variety";
 	public static String Plantae_STR_Subvariety = "Subvariety";
 	public static String Plantae_STR_Forma	= "Forma";
 	public static String Plantae_STR_Subforma = "Subforma";
 	public static String Plantae_STR_Forma_spec = "Forma spec.";
-	public static String Plantae_STR_Taxa_infragen = "Taxa infragen.";
-	public static String Plantae_STR_Taxa_infraspec = "Taxa infraspec.";
+	public static String Plantae_STR_Taxa_infragen = "Tax. infragen.";
+	public static String Plantae_STR_Taxa_infraspec = "Tax. infraspec.";
 	
 	// Plantae Rank Abbreviations
 	public static String Plantae_Abbrev_Kingdom = "reg.";
@@ -1258,6 +1253,10 @@ public final class PesiTransformer extends ExportTransformerBase implements IExp
 
 	private Map<String, Integer> tdwgKeyMap = new HashMap<String, Integer>();
 	private Map<String, String> tdwgLabelMap = new HashMap<String, String>();
+	private Map<Integer, String> nameStatusCacheMap  = new HashMap<Integer, String>();
+	private Map<Integer, String> qualityStatusCacheMap  = new HashMap<Integer, String>();
+	
+	
 	private Source destination;
 	
 	public PesiTransformer(Source destination) {
@@ -1267,9 +1266,10 @@ public final class PesiTransformer extends ExportTransformerBase implements IExp
 	}
 
 	private void fillMaps() {
-		String sql = " SELECT AreaId, AreaName, AreaTdwgCode, AreaEmCode, AreaFaEuCode FROM Area";
-		ResultSet rs = destination.getResultSet(sql);
+		//TDWG
 		try {
+			String sql = " SELECT AreaId, AreaName, AreaTdwgCode, AreaEmCode, AreaFaEuCode FROM Area";
+			ResultSet rs = destination.getResultSet(sql);
 			while (rs.next()){
 				String tdwg = rs.getString("AreaTdwgCode");
 				Integer id = rs.getInt("AreaId");
@@ -1280,10 +1280,32 @@ public final class PesiTransformer extends ExportTransformerBase implements IExp
 					this.tdwgLabelMap.put(tdwg, label);
 				}
 			}
+			//nameStatusCache
+			sql = " SELECT NomStatusId, NomStatus FROM NameStatus ";
+			rs = destination.getResultSet(sql);
+			while (rs.next()){
+				Integer key = rs.getInt("NomStatusId");
+				String cache = rs.getString("NomStatus");
+				if (StringUtils.isNotBlank(cache)){
+					this.nameStatusCacheMap.put(key, cache);
+				} 
+			}
+			//qualityStatusCache
+			sql = " SELECT QualityStatusId,QualityStatus FROM QualityStatus ";
+			rs = destination.getResultSet(sql);
+			while (rs.next()){
+				Integer key = rs.getInt("QualityStatusId");
+				String cache = rs.getString("QualityStatus");
+				if (StringUtils.isNotBlank(cache)){
+					this.qualityStatusCacheMap.put(key, cache);
+				} 
+			}
+					
 		} catch (SQLException e) {
 			logger.error("SQLException when trying to read area map", e);
 			e.printStackTrace();
 		}
+		
 	}
 
 	/**
@@ -2870,10 +2892,10 @@ public final class PesiTransformer extends ExportTransformerBase implements IExp
 				result = Plantae_STR_Subspecies;
 			} else if (rank.equals(Rank.GREX())) {
 				result = Plantae_STR_Grex;
-//			} else if (rank.equals(Rank.)) { // not yet specified
-//				result = Plantae_STR_Proles;
-//			} else if (rank.equals(Rank.)) { // not yet specified
-//				result = Plantae_STR_Race;
+			} else if (rank.getUuid().equals(BerlinModelTransformer.uuidRankProles)) {
+				result = Plantae_STR_Proles;
+			} else if (rank.getUuid().equals(BerlinModelTransformer.uuidRankRace)) {
+				result = Plantae_STR_Race;
 			} else if (rank.equals(Rank.CONVAR())) {
 				result = Plantae_STR_Convarietas;
 			} else if (rank.equals(Rank.VARIETY())) {
@@ -3007,10 +3029,10 @@ public final class PesiTransformer extends ExportTransformerBase implements IExp
 				result = Plantae_Abbrev_Grex;
 			} else if (rank.equals(Rank.SUBSPECIES())) {
 				result = Plantae_Abbrev_Subspecies;
-//			} else if (rank.equals(Rank.)) { // not yet specified
-//				result = Plantae_Abbrev_Proles;
-//			} else if (rank.equals(Rank.)) { // not yet specified
-//				result = Plantae_Abbrev_Race;
+			} else if (rank.getUuid().equals(BerlinModelTransformer.uuidRankProles)) {
+				result = Plantae_Abbrev_Proles;
+			} else if (rank.getUuid().equals(BerlinModelTransformer.uuidRankRace)) {
+				result = Plantae_Abbrev_Race;
 			} else if (rank.equals(Rank.CONVAR())) {
 				result = Plantae_Abbrev_Convarietas;
 			} else if (rank.equals(Rank.VARIETY())) {
@@ -3188,10 +3210,10 @@ public final class PesiTransformer extends ExportTransformerBase implements IExp
 				result = Plantae_Subspecies;
 			} else if (rank.equals(Rank.GREX())) {
 				result = Plantae_Grex;
-//			} else if (rank.equals(Rank.)) { // not yet specified
-//				result = Plantae_Proles;
-//			} else if (rank.equals(Rank.)) { // not yet specified
-//				result = Plantae_Race;
+			} else if (rank.getUuid().equals(BerlinModelTransformer.uuidRankProles) ) {
+				result = Plantae_Proles;
+			} else if (rank.getUuid().equals(BerlinModelTransformer.uuidRankRace)) {
+				result = Plantae_Race;
 			} else if (rank.equals(Rank.CONVAR())) {
 				result = Plantae_Convarietas;
 			} else if (rank.equals(Rank.VARIETY())) {
@@ -3424,51 +3446,12 @@ public final class PesiTransformer extends ExportTransformerBase implements IExp
 	 * @param status
 	 * @return
 	 */
-	public static String nomStatus2NomStatusCache(NomenclaturalStatusType status) {
+	public String getCacheByNomStatus(NomenclaturalStatusType status) {
 		if (status == null){
 			return null;
+		}else{
+			return this.nameStatusCacheMap.get(nomStatus2nomStatusFk(status)); 
 		}
-		if (status.equals(NomenclaturalStatusType.INVALID())) {return NAME_ST_STR_NOM_INVAL;
-		}else if (status.equals(NomenclaturalStatusType.ILLEGITIMATE())) {return NAME_ST_STR_NOM_ILLEG;
-		}else if (status.equals(NomenclaturalStatusType.NUDUM())) {return NAME_ST_STR_NOM_NUD;
-		}else if (status.equals(NomenclaturalStatusType.REJECTED())) {return NAME_ST_STR_NOM_REJ;
-		}else if (status.equals(NomenclaturalStatusType.REJECTED_PROP())) {return NAME_ST_STR_NOM_REJ_PROP;
-		}else if (status.equals(NomenclaturalStatusType.UTIQUE_REJECTED())) {return NAME_ST_STR_NOM_UTIQUE_REJ;
-		}else if (status.equals(NomenclaturalStatusType.UTIQUE_REJECTED_PROP())) {return NAME_ST_STR_NOM_UTIQUE_REJ_PROP;
-		}else if (status.equals(NomenclaturalStatusType.CONSERVED())) {return NAME_ST_STR_NOM_CONS;
-	
-		}else if (status.equals(NomenclaturalStatusType.CONSERVED_PROP())) {return NAME_ST_STR_NOM_CONS_PROP;
-		}else if (status.equals(NomenclaturalStatusType.ORTHOGRAPHY_CONSERVED())) {return NAME_ST_STR_ORTH_CONS;
-		}else if (status.equals(NomenclaturalStatusType.ORTHOGRAPHY_CONSERVED_PROP())) {return NAME_ST_STR_ORTH_CONS_PROP;
-		}else if (status.equals(NomenclaturalStatusType.SUPERFLUOUS())) {return NAME_ST_STR_NOM_SUPERFL;
-		}else if (status.equals(NomenclaturalStatusType.AMBIGUOUS())) {return NAME_ST_STR_NOM_AMBIG;
-		}else if (status.equals(NomenclaturalStatusType.PROVISIONAL())) {return NAME_ST_STR_NOM_PROVIS;
-		}else if (status.equals(NomenclaturalStatusType.DOUBTFUL())) {return NAME_ST_STR_NOM_DUB;
-		}else if (status.equals(NomenclaturalStatusType.NOVUM())) {return NAME_ST_STR_NOM_NOV;
-	
-		}else if (status.equals(NomenclaturalStatusType.CONFUSUM())) {return NAME_ST_STR_NOM_CONFUS;
-		}else if (status.equals(NomenclaturalStatusType.ALTERNATIVE())) {return NAME_ST_STR_NOM_ALTERN;
-		}else if (status.equals(NomenclaturalStatusType.COMBINATION_INVALID())) {return NAME_ST_STR_COMB_INVAL;
-		}else if (status.equals(NomenclaturalStatusType.LEGITIMATE())) {return NAME_ST_STR_LEGITIMATE;
-		
-		}else if (status.getUuid().equals(BerlinModelTransformer.uuidNomStatusCombIned)) {return NAME_ST_STR_COMB_INED;
-		}else if (status.getUuid().equals(BerlinModelTransformer.uuidNomStatusNomOrthCons)) {return NAME_ST_STR_NOM_AND_ORTH_CONS;
-		}else if (status.getUuid().equals(BerlinModelTransformer.uuidNomStatusSpNovIned)) {return NAME_ST_STR_SP_NOV_INED;
-		
-		// The following are non-existent in CDM
-//		}else if (status.equals(NomenclaturalStatusType.)) {return NAME_ST_STR_COMB_AND_STAT_INED;
-
-//		}else if (status.equals(NomenclaturalStatusType.)) {return NAME_ST_STR_NOM_NOV_INED;
-//		}else if (status.equals(NomenclaturalStatusType.)) {return NAME_ST_STR_ALTERNATE_REPRESENTATION;
-//		}else if (status.equals(NomenclaturalStatusType.)) {return NAME_ST_STR_TEMPORARY_NAME;
-//		}else if (status.equals(NomenclaturalStatusType.)) {return NAME_ST_STR_SPECIES_INQUIRENDA;
-
-		//TODO
-		}else {
-			//TODO Exception
-			logger.warn("NomStatus type not yet supported by PESI export: "+ status);
-		return null;
-	}
 	}
 	
 	/**
@@ -3672,22 +3655,22 @@ public final class PesiTransformer extends ExportTransformerBase implements IExp
 	}
 	
 	/**
-	 * Returns the QualityStatusFk for a given QualityStatusCache.
-	 * @param qualityStatusCache
+	 * Returns the StatusFk for a given StatusCache.
+	 * @param StatusCache
 	 * @return
 	 */
-	public Integer QualityStatusCache2QualityStatusFk(String qualityStatusCache) {
+	public Integer StatusCache2StatusFk(String StatusCache) {
 		Integer result = null;
-		if (qualityStatusCache.equalsIgnoreCase("Checked by Taxonomic Editor: included in ERMS 1.1")) {
+		if (StatusCache.equalsIgnoreCase("Checked by Taxonomic Editor: included in ERMS 1.1")) {
 			return 0;
-		} else if (qualityStatusCache.equalsIgnoreCase("Added by Database Management Team")) {
+		} else if (StatusCache.equalsIgnoreCase("Added by Database Management Team")) {
 			return 2;
-		} else if (qualityStatusCache.equalsIgnoreCase("Checked by Taxonomic Editor")) {
+		} else if (StatusCache.equalsIgnoreCase("Checked by Taxonomic Editor")) {
 			return 3;
-		} else if (qualityStatusCache.equalsIgnoreCase("Edited by Database Management Team")) {
+		} else if (StatusCache.equalsIgnoreCase("Edited by Database Management Team")) {
 			return 4;
 		} else {
-			logger.error("QualityStatusFk could not be determined. QualityStatusCache unknown: " + qualityStatusCache);
+			logger.error("StatusFk could not be determined. StatusCache unknown: " + StatusCache);
 		}
 		
 		return result;
@@ -3746,5 +3729,42 @@ public final class PesiTransformer extends ExportTransformerBase implements IExp
 		}
 		return result;
 	}
+
+	public static Integer getQualityStatusKeyBySource(BitSet sources) {
+		if (sources.get(SOURCE_EM)){
+			return QUALITY_STATUS_ADD_BY_DBMT;
+		}else{
+			return null;   // TODO needs to be implemented for others 
+		}
+	}
+	
+	@Override
+	public String getQualityStatusCacheByKey(Integer qualityStatusId) throws UndefinedTransformerMethodException {
+		if (qualityStatusId == null){
+			return null;
+		}else{
+			return this.qualityStatusCacheMap.get(qualityStatusId); 
+		}
+
+	}
+
+	public static String getOriginalDbBySources(BitSet sources) {
+		String result = "";
+		if (sources.get(SOURCE_EM)){
+			result = CdmUtils.concat(",", result,  SOURCE_STR_EM);
+		}
+		if (sources.get(SOURCE_FE)){
+			result = CdmUtils.concat(",", result,  SOURCE_STR_FE);
+		}
+		if (sources.get(SOURCE_IF)){
+			result = CdmUtils.concat(",", result,  SOURCE_STR_IF);
+		}
+		if (sources.get(SOURCE_ERMS)){
+			result = CdmUtils.concat(",", result,  SOURCE_STR_ERMS);
+		}
+		
+		return result;
+	}
+
 	
 }
