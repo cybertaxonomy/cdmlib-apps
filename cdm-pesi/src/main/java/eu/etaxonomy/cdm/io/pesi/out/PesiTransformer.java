@@ -95,7 +95,7 @@ public final class PesiTransformer extends ExportTransformerBase implements IExp
 	public static final UUID expertUserIdUuid = UUID.fromString("e25813d3-c67c-4585-9aa0-970fafde50b4");
 	public static final UUID speciesExpertUserIdUuid = UUID.fromString("6d42abd8-8894-4980-ae07-e918affd4172");
 	public static final UUID expertNameUuid = UUID.fromString("24becb79-a90c-47d3-be35-efc87bb48fd3");
-	public static final UUID speciesExpertNameUuid = UUID.fromString("2e8153d2-7412-49e4-87e1-5c38f4c5153a");
+	public static final UUID speciesExpertNameUuid = BerlinModelTransformer.uuidSpeciesExpert; 
 	public static final UUID lastActionDateUuid = UUID.fromString("8d0a7d81-bb83-4576-84c3-8c906ef039b2");
 	public static final UUID lastActionUuid = UUID.fromString("bc20d5bc-6161-4279-9499-89ea26ce5f6a");
 	public static final UUID taxCommentUuid = UUID.fromString("8041a752-0479-4626-ab1b-b266b751f816");
