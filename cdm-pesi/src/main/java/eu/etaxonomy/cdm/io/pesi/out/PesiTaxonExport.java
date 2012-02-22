@@ -39,6 +39,7 @@ import eu.etaxonomy.cdm.io.common.Source;
 import eu.etaxonomy.cdm.io.common.mapping.UndefinedTransformerMethodException;
 import eu.etaxonomy.cdm.io.common.mapping.out.DbConstantMapper;
 import eu.etaxonomy.cdm.io.common.mapping.out.DbExtensionMapper;
+import eu.etaxonomy.cdm.io.common.mapping.out.DbLastActionMapper;
 import eu.etaxonomy.cdm.io.common.mapping.out.DbObjectMapper;
 import eu.etaxonomy.cdm.io.common.mapping.out.DbStringMapper;
 import eu.etaxonomy.cdm.io.common.mapping.out.IdMapper;
@@ -237,7 +238,7 @@ public class PesiTaxonExport extends PesiExportBase {
 	private boolean doPhaseUpdates(PesiExportState state) {
 		
 		
-		String oldStatusFilter = "= '" + PesiTransformer.T_STATUS_STR_UNACCEPTED + "' ";
+		String oldStatusFilter = "= 7 ";  //"= '" + PesiTransformer.T_STATUS_STR_UNACCEPTED + "' ";
 		String emStr = PesiTransformer.SOURCE_STR_EM;
 		String feStr = PesiTransformer.SOURCE_STR_FE;
 		String ifStr = PesiTransformer.SOURCE_STR_IF;
@@ -1367,13 +1368,26 @@ public class PesiTaxonExport extends PesiExportBase {
 				authorshipCache = CdmBase.deproxy(taxonName, NonViralName.class).getAuthorshipCache();
 				isNonViralName = true;
 			}
-			// For a misapplied name without an authorshipCache the authorString should be set to "auct."
-			if (isMisappliedName(taxon) && authorshipCache == null) {
-				// Set authorshipCache to "auct."
-				result = PesiTransformer.AUCT_STRING;
-			}else{
-				result = authorshipCache;
+			result = authorshipCache;
+			
+			// For a misapplied names there are special rules
+			Taxon misappliedTaxon = getAcceptedTaxonForMisappliedName(taxon);
+			if (misappliedTaxon != null){
+				if (misappliedTaxon.getSec() != null){
+					String secTitle = misappliedTaxon.getSec().getTitleCache();
+					if (! secTitle.startsWith("auct")){
+						secTitle = "sensu " + secTitle;
+					}
+					return secTitle;
+				}else if (StringUtils.isBlank(authorshipCache)) {
+					// Set authorshipCache to "auct."
+					result = PesiTransformer.AUCT_STRING;
+				}else{
+					result = PesiTransformer.AUCT_STRING;
+//					result = authorshipCache;
+				}
 			}
+			
 			if (taxonName == null){
 				logger.warn("TaxonName does not exist for taxon: " + taxon.getUuid() + " (" + taxon.getTitleCache() + ")");
 			}else if (! isNonViralName){
@@ -1408,28 +1422,34 @@ public class PesiTaxonExport extends PesiExportBase {
 		return result;
 	}
 		
-	
-	
-
 	/**
-	 * Checks whether a given Taxon is a misapplied name.
-	 * @param taxonName The {@link TaxonNameBase TaxonName}.
+	 * Checks whether a given taxon is a misapplied name.
+	 * @param taxon The {@link TaxonBase Taxon}.
 	 * @return Whether the given TaxonName is a misapplied name or not.
 	 */
 	private static boolean isMisappliedName(TaxonBase<?> taxon) {
-		boolean result = false;
+		return getAcceptedTaxonForMisappliedName(taxon) == null;
 		
+	}
+	
+
+	/**
+	 * Returns the first accepted taxon for this misapplied name.
+	 * If this misapplied name is not a misapplied name, <code>null</code> is returned. 
+	 * @param taxon The {@link TaxonBase Taxon}.
+	 */
+	private static Taxon getAcceptedTaxonForMisappliedName(TaxonBase<?> taxon) {
 		if (! taxon.isInstanceOf(Taxon.class)){
-			return false;
+			return null;
 		}
 		Set<TaxonRelationship> taxonRelations = CdmBase.deproxy(taxon, Taxon.class).getRelationsFromThisTaxon();
 		for (TaxonRelationship taxonRelationship : taxonRelations) {
 			TaxonRelationshipType taxonRelationshipType = taxonRelationship.getType();
 			if (taxonRelationshipType.equals(TaxonRelationshipType.MISAPPLIED_NAME_FOR())) {
-				result = true;
+				return taxonRelationship.getToTaxon();
 			}
 		}
-		return result;
+		return null;
 	}
 
 	
@@ -1448,9 +1468,13 @@ public class PesiTaxonExport extends PesiExportBase {
 		
 			INonViralNameCacheStrategy cacheStrategy = getCacheStrategy(taxonName);
 			
-			HTMLTagRules tagRules = new HTMLTagRules().addRule(TagEnum.name, "i");
+			HTMLTagRules tagRules = new HTMLTagRules().
+					addRule(TagEnum.name, "i").
+					addRule(TagEnum.nomStatus, "@status@");
+			
 			NonViralName<?> nvn = CdmBase.deproxy(taxonName, NonViralName.class);
-			return cacheStrategy.getFullTitleCache(nvn, tagRules);
+			String result = cacheStrategy.getFullTitleCache(nvn, tagRules);
+			return result.replaceAll("\\<@status@\\>.*\\</@status@\\>", "");
 		}
 	}
 
@@ -2215,6 +2239,9 @@ public class PesiTaxonExport extends PesiExportBase {
 		mapping.addMapper(MethodMapper.NewInstance("CacheCitation", this));
 		
 		//handled by name mapping
+		mapping.addMapper(DbLastActionMapper.NewInstance("LastActionDate", false));
+		mapping.addMapper(DbLastActionMapper.NewInstance("LastAction", true));
+		
 //		mapping.addMapper(MethodMapper.NewInstance("LastAction", this.getClass(), "getLastAction",  IdentifiableEntity.class));
 //		mapping.addMapper(MethodMapper.NewInstance("LastActionDate", this.getClass(), "getLastActionDate",  IdentifiableEntity.class));
 //		mapping.addMapper(MethodMapper.NewInstance("SpeciesExpertName", this));
@@ -2250,6 +2277,11 @@ public class PesiTaxonExport extends PesiExportBase {
 		mapping.addMapper(MethodMapper.NewInstance("RankCache", this, TaxonNameBase.class));
 		mapping.addMapper(DbConstantMapper.NewInstance("TaxonStatusFk", Types.INTEGER , PesiTransformer.T_STATUS_UNACCEPTED));
 		mapping.addMapper(DbConstantMapper.NewInstance("TaxonStatusCache", Types.VARCHAR , PesiTransformer.T_STATUS_STR_UNACCEPTED));
+		mapping.addMapper(DbStringMapper.NewInstance("AuthorshipCache", "AuthorString"));  
+		
+		mapping.addMapper(DbLastActionMapper.NewInstance("LastActionDate", false));
+		mapping.addMapper(DbLastActionMapper.NewInstance("LastAction", true));
+		
 		
 		addNameMappers(mapping);
 		//TODO add author mapper, TypeNameFk
@@ -2303,7 +2335,7 @@ public class PesiTaxonExport extends PesiExportBase {
 		mapping.addMapper(MethodMapper.NewInstance("IdInSource", this, IdentifiableEntity.class));
 		mapping.addMapper(MethodMapper.NewInstance("OriginalDB", this, IdentifiableEntity.class) );
 
-		mapping.addMapper(ExpertsAndLastActionMapper.NewInstance());
+		//mapping.addMapper(ExpertsAndLastActionMapper.NewInstance());
 
 	}
 
