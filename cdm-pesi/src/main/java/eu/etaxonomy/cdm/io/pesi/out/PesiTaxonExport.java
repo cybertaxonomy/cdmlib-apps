@@ -1371,10 +1371,9 @@ public class PesiTaxonExport extends PesiExportBase {
 			result = authorshipCache;
 			
 			// For a misapplied names there are special rules
-			Taxon misappliedTaxon = getAcceptedTaxonForMisappliedName(taxon);
-			if (misappliedTaxon != null){
-				if (misappliedTaxon.getSec() != null){
-					String secTitle = misappliedTaxon.getSec().getTitleCache();
+			if (isMisappliedName(taxon)){
+				if (taxon.getSec() != null){
+					String secTitle = taxon.getSec().getTitleCache();
 					if (! secTitle.startsWith("auct")){
 						secTitle = "sensu " + secTitle;
 					}
