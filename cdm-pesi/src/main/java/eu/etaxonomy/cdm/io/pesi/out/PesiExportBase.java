@@ -167,6 +167,7 @@ public abstract class PesiExportBase extends DbExportBase<PesiExportConfigurator
 			for (Marker marker : taxon.getMarkers()){
 				if (marker.getValue() == false && marker.getMarkerType().equals(MarkerType.PUBLISH())){
 					return false;
+				//probably not needed any more after #2786 was fixed
 				}else if (marker.getValue() == true && marker.getMarkerType().getUuid().equals(BerlinModelTransformer.uuidMisappliedCommonName)){
 					return false;
 				}
@@ -183,6 +184,7 @@ public abstract class PesiExportBase extends DbExportBase<PesiExportConfigurator
 			//handle misapplied names
 			}else{
 				for (Marker marker : taxon.getMarkers()){
+					//probably not needed any more after #2786 was fixed
 					if (marker.getValue() == true && marker.getMarkerType().getUuid().equals(BerlinModelTransformer.uuidMisappliedCommonName)){
 						return false;
 					}
