@@ -35,6 +35,7 @@ import eu.etaxonomy.cdm.app.pesi.ErmsActivator;
 import eu.etaxonomy.cdm.app.pesi.EuroMedActivator;
 import eu.etaxonomy.cdm.app.pesi.FaunaEuropaeaActivator;
 import eu.etaxonomy.cdm.common.CdmUtils;
+import eu.etaxonomy.cdm.io.berlinModel.BerlinModelTransformer;
 import eu.etaxonomy.cdm.io.common.Source;
 import eu.etaxonomy.cdm.io.common.mapping.UndefinedTransformerMethodException;
 import eu.etaxonomy.cdm.io.common.mapping.out.DbConstantMapper;
@@ -1359,8 +1360,8 @@ public class PesiTaxonExport extends PesiExportBase {
 	 */
 	@SuppressWarnings("unused")
 	private static String getAuthorString(TaxonBase<?> taxon) {
-		String result = null;
 		try {
+			String result = null;
 			boolean isNonViralName = false;
 			String authorshipCache = null;
 			TaxonNameBase<?,?> taxonName = taxon.getName();
@@ -1393,33 +1394,18 @@ public class PesiTaxonExport extends PesiExportBase {
 				logger.warn("TaxonName is not of instance NonViralName: " + taxonName.getUuid() + " (" + taxonName.getTitleCache() + ")");
 			}
 			
+			if (StringUtils.isBlank(result)) {
+				return null;
+			} else {
+				return result;
+			}
 		} catch (Exception e) {
 			e.printStackTrace();
+			return null;
 		}
 		
-		if (StringUtils.isBlank(result)) {
-			return null;
-		} else {
-			return result;
-		}
 	}
 
-	
-	/**
-	 * Checks whether a given TaxonName is a misapplied name.
-	 * @param taxonName The {@link TaxonNameBase TaxonName}.
-	 * @return Whether the given TaxonName is a misapplied name or not.
-	 */	
-	private static boolean isMisappliedName(TaxonNameBase taxonName) {
-		boolean result = false;
-		Set<Taxon> taxa = taxonName.getTaxa();
-		if (taxa.size() == 1){
-			return isMisappliedName(taxa.iterator().next());
-		}else if (taxa.size() > 1){
-			logger.warn("TaxonNameBase has " + taxa.size() + " taxa attached. Can't define if it is a misapplied name.");
-		}
-		return result;
-	}
 		
 	/**
 	 * Checks whether a given taxon is a misapplied name.
@@ -1427,7 +1413,7 @@ public class PesiTaxonExport extends PesiExportBase {
 	 * @return Whether the given TaxonName is a misapplied name or not.
 	 */
 	private static boolean isMisappliedName(TaxonBase<?> taxon) {
-		return getAcceptedTaxonForMisappliedName(taxon) == null;
+		return getAcceptedTaxonForMisappliedName(taxon) != null;
 		
 	}
 	
@@ -2236,18 +2222,22 @@ public class PesiTaxonExport extends PesiExportBase {
 		
 		mapping.addMapper(MethodMapper.NewInstance("DerivedFromGuid", this));
 		mapping.addMapper(MethodMapper.NewInstance("CacheCitation", this));
+		mapping.addMapper(MethodMapper.NewInstance("AuthorString", this));  //For Taxon because Misallied Names are handled differently
 		
 		//handled by name mapping
 		mapping.addMapper(DbLastActionMapper.NewInstance("LastActionDate", false));
 		mapping.addMapper(DbLastActionMapper.NewInstance("LastAction", true));
 		
+
+		
+		ExtensionType extensionTypeSpeciesExpertName = (ExtensionType)getTermService().find(BerlinModelTransformer.uuidSpeciesExpert);
+		mapping.addMapper(DbExtensionMapper.NewInstance(extensionTypeSpeciesExpertName, "SpeciesExpertName"));
+		mapping.addMapper(DbExtensionMapper.NewInstance(extensionTypeSpeciesExpertName, "ExpertName"));
+		
+//		mapping.addMapper(MethodMapper.NewInstance("ExpertName", this));
 //		mapping.addMapper(MethodMapper.NewInstance("LastAction", this.getClass(), "getLastAction",  IdentifiableEntity.class));
 //		mapping.addMapper(MethodMapper.NewInstance("LastActionDate", this.getClass(), "getLastActionDate",  IdentifiableEntity.class));
 //		mapping.addMapper(MethodMapper.NewInstance("SpeciesExpertName", this));
-
-		
-		mapping.addMapper(MethodMapper.NewInstance("ExpertName", this));
-		mapping.addMapper(MethodMapper.NewInstance("AuthorString", this));  //For Taxon because Misallied Names are handled differently
 		
 		
 		mapping.addMapper(ObjectChangeMapper.NewInstance(TaxonBase.class, TaxonNameBase.class, "Name"));
@@ -2268,19 +2258,15 @@ public class PesiTaxonExport extends PesiExportBase {
 
 		//		mapping.addMapper(MethodMapper.NewInstance("TaxonStatusFk", this.getClass(), "getTaxonStatusFk", standardMethodParameter, PesiExportState.class));
 
-//		mapping.addMapper(MethodMapper.NewInstance("LastAction", this.getClass(), "getLastAction", IdentifiableEntity.class));
-//		mapping.addMapper(MethodMapper.NewInstance("LastActionDate",  this.getClass(), "getLastAction", IdentifiableEntity.class));
-		
 		mapping.addMapper(MethodMapper.NewInstance("KingdomFk", this, TaxonNameBase.class));
 		mapping.addMapper(MethodMapper.NewInstance("RankFk", this, TaxonNameBase.class));
 		mapping.addMapper(MethodMapper.NewInstance("RankCache", this, TaxonNameBase.class));
 		mapping.addMapper(DbConstantMapper.NewInstance("TaxonStatusFk", Types.INTEGER , PesiTransformer.T_STATUS_UNACCEPTED));
 		mapping.addMapper(DbConstantMapper.NewInstance("TaxonStatusCache", Types.VARCHAR , PesiTransformer.T_STATUS_STR_UNACCEPTED));
-		mapping.addMapper(DbStringMapper.NewInstance("AuthorshipCache", "AuthorString"));  
+		mapping.addMapper(DbStringMapper.NewInstance("AuthorshipCache", "AuthorString").setBlankToNull(true));  
 		
 		mapping.addMapper(DbLastActionMapper.NewInstance("LastActionDate", false));
 		mapping.addMapper(DbLastActionMapper.NewInstance("LastAction", true));
-		
 		
 		addNameMappers(mapping);
 		//TODO add author mapper, TypeNameFk
