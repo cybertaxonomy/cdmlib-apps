@@ -64,6 +64,7 @@ import eu.etaxonomy.cdm.model.name.NonViralName;
 import eu.etaxonomy.cdm.model.name.Rank;
 import eu.etaxonomy.cdm.model.name.TaxonNameBase;
 import eu.etaxonomy.cdm.model.name.ZoologicalName;
+import eu.etaxonomy.cdm.model.reference.INomenclaturalReference;
 import eu.etaxonomy.cdm.model.reference.Reference;
 import eu.etaxonomy.cdm.model.taxon.Classification;
 import eu.etaxonomy.cdm.model.taxon.Synonym;
@@ -1307,7 +1308,6 @@ public class PesiTaxonExport extends PesiExportBase {
 	 * @return The <code>WebShowName</code> attribute.
 	 * @see MethodMapper
 	 */
-	@SuppressWarnings("unused")
 	private static String getWebShowName(TaxonNameBase<?,?> taxonName) {
 		//TODO extensions?
 		if (taxonName == null) {
@@ -1321,6 +1321,23 @@ public class PesiTaxonExport extends PesiExportBase {
 		}
 	}
 
+	/**
+	 * Returns the <code>WebShowName</code> attribute for a taxon.
+	 * @param taxonName The {@link TaxonNameBase TaxonName}.
+	 * @return The <code>WebShowName</code> attribute.
+	 * @see MethodMapper
+	 */
+	@SuppressWarnings("unused")
+	private static String getWebShowName(TaxonBase<?> taxon) {
+		TaxonNameBase<?,?> taxonName = taxon.getName();
+		String result = getWebSearchName(taxonName);
+		if (isMisappliedName(taxon)){
+			result = result + " " + getAuthorString(taxon);
+		}
+		return result;
+	}
+
+	
 	/**
 	 * Returns the <code>WebSearchName</code> attribute.
 	 * @param taxonName The {@link NonViralName NonViralName}.
@@ -1353,6 +1370,20 @@ public class PesiTaxonExport extends PesiExportBase {
 
 	
 	/**
+	 * Returns the nomenclatural reference which is the reference
+	 * including the detail (microreference).
+	 * @param taxonName The {@link TaxonNameBase TaxonName}.
+	 * @return The <code>AuthorString</code> attribute.
+	 * @see MethodMapper
+	 */
+	@SuppressWarnings("unused")
+	private static String getNomRefString(TaxonNameBase<?,?> taxonName) {
+		INomenclaturalReference ref = taxonName.getNomenclaturalReference();
+		return ref == null ? null : ref.getNomenclaturalCitation(taxonName.getNomenclaturalMicroReference());
+	}
+	
+	
+	/**
 	 * Returns the <code>AuthorString</code> attribute.
 	 * @param taxonName The {@link TaxonNameBase TaxonName}.
 	 * @return The <code>AuthorString</code> attribute.
@@ -1377,6 +1408,8 @@ public class PesiTaxonExport extends PesiExportBase {
 					String secTitle = taxon.getSec().getTitleCache();
 					if (! secTitle.startsWith("auct")){
 						secTitle = "sensu " + secTitle;
+					}else if (secTitle.equals("auct")){  //may be removed once the title cache is generated correctly for references with title auct. #
+						secTitle = "auct.";
 					}
 					return secTitle;
 				}else if (StringUtils.isBlank(authorshipCache)) {
@@ -2223,6 +2256,7 @@ public class PesiTaxonExport extends PesiExportBase {
 		mapping.addMapper(MethodMapper.NewInstance("DerivedFromGuid", this));
 		mapping.addMapper(MethodMapper.NewInstance("CacheCitation", this));
 		mapping.addMapper(MethodMapper.NewInstance("AuthorString", this));  //For Taxon because Misallied Names are handled differently
+		mapping.addMapper(MethodMapper.NewInstance("WebShowName", this));
 		
 		//handled by name mapping
 		mapping.addMapper(DbLastActionMapper.NewInstance("LastActionDate", false));
@@ -2264,6 +2298,8 @@ public class PesiTaxonExport extends PesiExportBase {
 		mapping.addMapper(DbConstantMapper.NewInstance("TaxonStatusFk", Types.INTEGER , PesiTransformer.T_STATUS_UNACCEPTED));
 		mapping.addMapper(DbConstantMapper.NewInstance("TaxonStatusCache", Types.VARCHAR , PesiTransformer.T_STATUS_STR_UNACCEPTED));
 		mapping.addMapper(DbStringMapper.NewInstance("AuthorshipCache", "AuthorString").setBlankToNull(true));  
+		mapping.addMapper(MethodMapper.NewInstance("WebShowName", this, TaxonNameBase.class));
+		
 		
 		mapping.addMapper(DbLastActionMapper.NewInstance("LastActionDate", false));
 		mapping.addMapper(DbLastActionMapper.NewInstance("LastAction", true));
@@ -2288,9 +2324,7 @@ public class PesiTaxonExport extends PesiExportBase {
 		mapping.addMapper(MethodMapper.NewInstance("FullName", this, TaxonNameBase.class));
 		
 		
-		//TODO FIXME incorrect mapping -> should be ref +  microref but is only microref
-		mapping.addMapper(DbStringMapper.NewInstance("NomenclaturalMicroReference", "NomRefString"));
-		mapping.addMapper(MethodMapper.NewInstance("WebShowName", this, TaxonNameBase.class));
+		mapping.addMapper(MethodMapper.NewInstance("NomRefString", this, TaxonNameBase.class));
 		
 		// DisplayName
 		extensionType = (ExtensionType)getTermService().find(ErmsTransformer.uuidDisplayName);		
