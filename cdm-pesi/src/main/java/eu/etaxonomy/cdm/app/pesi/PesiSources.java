@@ -81,6 +81,15 @@ public class PesiSources {
 		return  makeSource(dbms, strServer, strDB, port, userName, null);
 	}
 	
+	public static Source PESI_IF(){
+		//	BerlinModel - Pesi-IF
+		String dbms = Source.SQL_SERVER_2008;
+		String strServer = "BGBM42";
+		String strDB = "IF";
+		int port = 1433;
+		String userName = "WebUser";
+		return  makeSource(dbms, strServer, strDB, port, userName, null);
+	}
 	
 	/**
 	 * Initializes the source.
