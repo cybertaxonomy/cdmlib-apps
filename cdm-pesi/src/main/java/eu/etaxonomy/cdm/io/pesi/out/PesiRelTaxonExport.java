@@ -26,6 +26,7 @@ import eu.etaxonomy.cdm.io.common.mapping.out.MethodMapper;
 import eu.etaxonomy.cdm.model.common.CdmBase;
 import eu.etaxonomy.cdm.model.common.IdentifiableEntity;
 import eu.etaxonomy.cdm.model.common.RelationshipBase;
+import eu.etaxonomy.cdm.model.name.HybridRelationship;
 import eu.etaxonomy.cdm.model.name.NameRelationship;
 import eu.etaxonomy.cdm.model.name.NomenclaturalCode;
 import eu.etaxonomy.cdm.model.name.Rank;
@@ -54,11 +55,11 @@ public class PesiRelTaxonExport extends PesiExportBase {
 	private static final String dbTableName = "RelTaxon";
 	private static final String pluralString = "Relationships";
 	private static PreparedStatement synonymsStmt;
+	
 	private HashMap<Rank, Rank> rank2endRankMap = new HashMap<Rank, Rank>();
 	private List<Rank> rankList = new ArrayList<Rank>();
 	private PesiExportMapping mapping;
 	private int count = 0;
-	private static NomenclaturalCode nomenclaturalCode2;
 	
 	public PesiRelTaxonExport() {
 		super();
@@ -81,11 +82,144 @@ public class PesiRelTaxonExport extends PesiExportBase {
 		return result;
 	}
 
+	
 	/* (non-Javadoc)
 	 * @see eu.etaxonomy.cdm.io.common.CdmIoBase#doInvoke(eu.etaxonomy.cdm.io.common.IoStateBase)
 	 */
 	@Override
 	protected void doInvoke(PesiExportState state) {
+		try {
+			logger.info("*** Started Making " + pluralString + " ...");
+	
+			Connection connection = state.getConfig().getDestination().getConnection();
+			String synonymsSql = "UPDATE Taxon SET KingdomFk = ?, RankFk = ?, RankCache = ? WHERE TaxonId = ?"; 
+			synonymsStmt = connection.prepareStatement(synonymsSql);
+
+			// Stores whether this invoke was successful or not.
+			boolean success = true;
+
+			// PESI: Clear the database table RelTaxon.
+			doDelete(state);
+	
+			// Get specific mappings: (CDM) Relationship -> (PESI) RelTaxon
+			mapping = getMapping();
+
+			// Initialize the db mapper
+			mapping.initialize(state);
+			
+			//Export Taxa..
+//			success &= doPhase01(state, mapping);
+
+			
+			
+			// 2nd Round: Add ParentTaxonFk, TreeIndex to each Taxon
+			success &= doPhase02(state, mapping);
+
+		} catch (SQLException e) {
+			e.printStackTrace();
+			logger.error(e.getMessage());
+			state.setUnsuccessfull();
+			return;
+		}
+	}
+	
+	
+	private boolean doPhase01(PesiExportState state, PesiExportMapping mapping2) throws SQLException {
+		logger.info("PHASE 1: Relationships ...");
+		boolean success = true;
+		
+		int limit = state.getConfig().getLimitSave();
+		// Start transaction
+		TransactionStatus txStatus = startTransaction(true);
+		logger.info("Started new transaction. Fetching some " + pluralString + " (max: " + limit + ") ...");
+		
+		List<RelationshipBase> list;
+		
+		//taxon relations
+		int partitionCount = 0;
+		while ((list = getNextTaxonRelationshipPartition(null, limit, partitionCount++, null)).size() > 0   ) {
+			for (RelationshipBase rel : list){
+				try {
+					mapping.invoke(rel);
+				} catch (Exception e) {
+					logger.error(e.getMessage() + ". Relationship: " +  rel.getUuid());
+					e.printStackTrace();
+				}
+			}
+		}
+		
+		return success;
+	}
+	
+	private boolean doPhase02(PesiExportState state, PesiExportMapping mapping2) throws SQLException {
+		logger.info("PHASE 1: Relationships ...");
+		boolean success = true;
+		
+		int limit = state.getConfig().getLimitSave();
+		// Start transaction
+		TransactionStatus txStatus = startTransaction(true);
+		logger.info("Started new transaction. Fetching some " + pluralString + " (max: " + limit + ") ...");
+		
+		List<RelationshipBase> list;
+		
+		//name relations
+		int partitionCount = 0;
+		while ((list = getNextNameRelationshipPartition(null, limit, partitionCount++, null)).size() > 0   ) {
+			for (RelationshipBase rel : list){
+				try {
+					TaxonNameBase<?,?> name1;
+					TaxonNameBase<?,?> name2;
+					if (rel.isInstanceOf(HybridRelationship.class)){
+						HybridRelationship hybridRel = CdmBase.deproxy(rel, HybridRelationship.class);
+						name1 = hybridRel.getParentName();
+						name2 = hybridRel.getHybridName();
+					}else if (rel.isInstanceOf(NameRelationship.class)){
+						NameRelationship nameRel = CdmBase.deproxy(rel, NameRelationship.class);
+						name1 = nameRel.getFromName();
+						name2 = nameRel.getToName();
+					}else{
+						logger.warn ("Only hybrid- and name-relationships alowed here");
+						continue;
+					}
+					List<IdentifiableEntity> fromList = new ArrayList<IdentifiableEntity>();
+					List<IdentifiableEntity> toList = new ArrayList<IdentifiableEntity>();
+					makeList(name1, fromList);
+					makeList(name2, toList);
+					
+					for (IdentifiableEntity fromEntity : fromList){
+						for (IdentifiableEntity toEntity : toList){
+							//TODO set entities to state
+							state.setCurrentFromObject(fromEntity);
+							state.setCurrentToObject(toEntity);
+							mapping.invoke(rel);
+						}
+					}
+					
+				} catch (Exception e) {
+					logger.error(e.getMessage() + ". Relationship: " +  rel.getUuid());
+					e.printStackTrace();
+				}
+			}
+		}
+
+		
+		return success;
+	}
+
+	private void makeList(TaxonNameBase<?, ?> name, List<IdentifiableEntity> list) {
+		if (! hasPesiTaxon(name)){
+			list.add(name);
+		}else{
+			for (TaxonBase taxon:  getPesiTaxa(name)){
+				list.add(taxon);
+			}
+		}
+	}
+
+	/* (non-Javadoc)
+	 * @see eu.etaxonomy.cdm.io.common.CdmIoBase#doInvoke(eu.etaxonomy.cdm.io.common.IoStateBase)
+	 */
+	protected void doInvoke_Old(PesiExportState state) {
 		try {
 			logger.info("*** Started Making " + pluralString + " ...");
 	
@@ -483,7 +617,7 @@ public class PesiRelTaxonExport extends PesiExportBase {
 	 * @see MethodMapper
 	 */
 	@SuppressWarnings("unused")
-	private static String getRelQualifierCache(RelationshipBase<?, ?, ?> relationship) {
+	private static String getRelQualifierCache(RelationshipBase<?, ?, ?> relationship, PesiExportState state) {
 		String result = null;
 		NomenclaturalCode code = null;
 		if (relationship.isInstanceOf(TaxonRelationship.class)){
@@ -494,7 +628,7 @@ public class PesiRelTaxonExport extends PesiExportBase {
 			code = CdmBase.deproxy(relationship,  NameRelationship.class).getFromName().getNomenclaturalCode();
 		}
 		if (code != null) {
-			result = PesiTransformer.taxonRelation2RelTaxonQualifierCache(relationship, code);
+			result = state.getConfig().getTransformer().getCacheByRelationshipType(relationship, code);
 		} else {
 			logger.error("NomenclaturalCode is NULL while creating the following relationship: " + relationship.getUuid());
 		}
@@ -528,7 +662,7 @@ public class PesiRelTaxonExport extends PesiExportBase {
 		} else if (relationship.isInstanceOf(SynonymRelationship.class)) {
 			SynonymRelationship sr = (SynonymRelationship)relationship;
 			taxonBase = (isFrom) ? sr.getSynonym() : sr.getAcceptedTaxon();
-		} else if (relationship.isInstanceOf(NameRelationship.class)) {
+		} else if (relationship.isInstanceOf(NameRelationship.class) ||  relationship.isInstanceOf(HybridRelationship.class)) {
 			if (isFrom){
 				return state.getDbId(state.getCurrentFromObject());
 			}else{
@@ -594,7 +728,7 @@ public class PesiRelTaxonExport extends PesiExportBase {
 		mapping.addMapper(MethodMapper.NewInstance("TaxonFk1", this.getClass(), "getTaxonFk1", standardMethodParameter, PesiExportState.class));
 		mapping.addMapper(MethodMapper.NewInstance("TaxonFk2", this.getClass(), "getTaxonFk2", standardMethodParameter, PesiExportState.class));
 		mapping.addMapper(MethodMapper.NewInstance("RelTaxonQualifierFk", this));
-		mapping.addMapper(MethodMapper.NewInstance("RelQualifierCache", this));
+		mapping.addMapper(MethodMapper.NewInstance("RelQualifierCache", this, RelationshipBase.class, PesiExportState.class));
 		mapping.addMapper(MethodMapper.NewInstance("Notes", this));
 
 		return mapping;

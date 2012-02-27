@@ -98,7 +98,7 @@ public class PesiExportActivatorFE {
 		
 		//make PESI Source
 		Source destination = pesiDestination;
-		IExportTransformer transformer = new PesiTransformer(destination);
+		PesiTransformer transformer = new PesiTransformer(destination);
 		
 		PesiExportConfigurator config = PesiExportConfigurator.NewInstance(destination, source, transformer);
 		

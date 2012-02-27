@@ -24,7 +24,7 @@ import eu.etaxonomy.cdm.model.reference.ReferenceFactory;
  * @date 12.02.2010
  *
  */
-public class PesiExportConfigurator extends DbExportConfiguratorBase<PesiExportState> implements IExportConfigurator<PesiExportState> {
+public class PesiExportConfigurator extends DbExportConfiguratorBase<PesiExportState, PesiTransformer> implements IExportConfigurator<PesiExportState, PesiTransformer> {
 	@SuppressWarnings("unused")
 	private static Logger logger = Logger.getLogger(PesiExportConfigurator.class);
 	private int limitSave = 2000;
@@ -49,7 +49,7 @@ public class PesiExportConfigurator extends DbExportConfiguratorBase<PesiExportS
 	
 	private int nameIdStart = 10000000;
 
-	public static PesiExportConfigurator NewInstance(Source pesiDestination, ICdmDataSource source, IExportTransformer transformer) {
+	public static PesiExportConfigurator NewInstance(Source pesiDestination, ICdmDataSource source, PesiTransformer transformer) {
 			return new PesiExportConfigurator(pesiDestination, source, transformer);
 	}
 	
@@ -75,7 +75,7 @@ public class PesiExportConfigurator extends DbExportConfiguratorBase<PesiExportS
 	 * @param cdmSource
 	 * @param transformer 
 	 */
-	private PesiExportConfigurator(Source pesiSource, ICdmDataSource cdmSource, IExportTransformer transformer) {
+	private PesiExportConfigurator(Source pesiSource, ICdmDataSource cdmSource, PesiTransformer transformer) {
 	   super(transformer);
 	   setSource(cdmSource);
 	   setDestination(pesiSource);

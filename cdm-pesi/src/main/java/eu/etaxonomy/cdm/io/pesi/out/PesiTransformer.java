@@ -38,6 +38,7 @@ import eu.etaxonomy.cdm.model.description.PresenceTerm;
 import eu.etaxonomy.cdm.model.location.NamedArea;
 import eu.etaxonomy.cdm.model.location.TdwgArea;
 import eu.etaxonomy.cdm.model.location.WaterbodyOrCountry;
+import eu.etaxonomy.cdm.model.name.HybridRelationshipType;
 import eu.etaxonomy.cdm.model.name.NameRelationshipType;
 import eu.etaxonomy.cdm.model.name.NameTypeDesignationStatus;
 import eu.etaxonomy.cdm.model.name.NomenclaturalCode;
@@ -47,6 +48,7 @@ import eu.etaxonomy.cdm.model.occurrence.Fossil;
 import eu.etaxonomy.cdm.model.reference.Reference;
 import eu.etaxonomy.cdm.model.reference.ReferenceType;
 import eu.etaxonomy.cdm.model.taxon.Synonym;
+import eu.etaxonomy.cdm.model.taxon.SynonymRelationship;
 import eu.etaxonomy.cdm.model.taxon.SynonymRelationshipType;
 import eu.etaxonomy.cdm.model.taxon.Taxon;
 import eu.etaxonomy.cdm.model.taxon.TaxonBase;
@@ -219,48 +221,17 @@ public final class PesiTransformer extends ExportTransformerBase implements IExp
 	public static int IS_INFERRED_GENUS_FOR = 302;
 	public static int IS_POTENTIAL_COMBINATION_FOR = 303;
 
-	public static String STR_IS_BASIONYM_FOR = "is basionym for";
 	public static String STR_IS_BASIONYM_FOR_ZOOL = "is original combination for";
-	public static String STR_IS_LATER_HOMONYM_OF = "is later homonym of";
-	public static String STR_IS_REPLACED_SYNONYM_FOR = "is replaced synonym for";
-	public static String STR_IS_VALIDATION_OF = "is validation of";
-	public static String STR_IS_LATER_VALIDATION_OF = "is later validation of";
-	public static String STR_IS_TYPE_OF = "is type of";
-	public static String STR_IS_CONSERVED_TYPE_OF = "is conserved type of";
-	public static String STR_IS_REJECTED_TYPE_OF = "is rejected type of";
-	public static String STR_IS_FIRST_PARENT_OF = "is first parent of";
-	public static String STR_IS_SECOND_PARENT_OF = "is second parent of";
-	public static String STR_IS_FEMALE_PARENT_OF = "is female parent of";
-	public static String STR_IS_MALE_PARENT_OF = "is male parent of";
-	public static String STR_IS_CONSERVED_AGAINST = "is conserved against";
-	public static String STR_IS_REJECTED_IN_FAVOUR_OF = "is rejected in favour of";
-	public static String STR_IS_TREATED_AS_LATER_HOMONYM_OF = "is treated as later homonym of";
-	public static String STR_IS_ORTHOGRAPHIC_VARIANT_OF = "is orthographic variant of";
-	public static String STR_IS_ALTERNATIVE_NAME_FOR = "is alternative name for";
-	public static String STR_HAS_SAME_TYPE_AS = "has same type as";
-	public static String STR_IS_LECTOTYPE_OF = "is lectotype of";
-	public static String STR_TYPE_NOT_DESIGNATED = "type not designated";
-	public static String STR_IS_TAXONOMICALLY_INCLUDED_IN  = "is taxonomically included in";
-	public static String STR_IS_SYNONYM_OF = "is synonym of";
-	public static String STR_IS_MISAPPLIED_NAME_FOR = "is misapplied name for";
-	public static String STR_IS_PRO_PARTE_SYNONYM_OF = "is pro parte synonym of";
-	public static String STR_IS_PARTIAL_SYNONYM_OF = "is partial synonym of";
-	public static String STR_IS_HETEROTYPIC_SYNONYM_OF = "is heterotypic synonym of";
 	public static String STR_IS_HETEROTYPIC_SYNONYM_OF_ZOOL = "is subjective synonym of";
-	public static String STR_IS_HOMOTYPIC_SYNONYM_OF = "is homotypic synonym of";
 	private static final String STR_IS_HOMOTYPIC_SYNONYM_OF_ZOOL = "is objective synonym of";
-	public static String STR_IS_PRO_PARTE_AND_HOMOTYPIC_SYNONYM_OF = "is pro parte and homotypic synonym of";
-	public static String STR_IS_PRO_PARTE_AND_HETEROTYPIC_SYNONYM_OF = "is pro parte and heterotypic synonym of";
-	public static String STR_IS_PARTIAL_AND_HOMOTYPIC_SYNONYM_OF = "is partial and homotypic synonym of";
-	public static String STR_IS_PARTIAL_AND_HETEROTYPIC_SYNONYM_OF = "is partial and heterotypic synonym of";
-	public static String STR_IS_INFERRED_EPITHET_FOR = "is inferred epithet for";
-	public static String STR_IS_INFERRED_GENUS_FOR = "is inferred genus for";
-	public static String STR_IS_POTENTIAL_COMBINATION_FOR = "is potential combination for";
 	
+	
+	//namespaces
 	public static String STR_NAMESPACE_NOMINAL_TAXON = "Nominal taxon from TAX_ID:";
 	public static String STR_NAMESPACE_INFERRED_EPITHET = "Inferred epithet from TAX_ID:";
 	public static String STR_NAMESPACE_INFERRED_GENUS = "Inferred genus from TAX_ID:";
 	public static String STR_NAMESPACE_POTENTIAL_COMBINATION = "Potential combination from TAX_ID:";
+
 
 	// Kingdoms
 	public static int KINGDOM_NULL = 0;
@@ -1253,6 +1224,7 @@ public final class PesiTransformer extends ExportTransformerBase implements IExp
 	private Map<String, String> tdwgLabelMap = new HashMap<String, String>();
 	private Map<Integer, String> nameStatusCacheMap  = new HashMap<Integer, String>();
 	private Map<Integer, String> qualityStatusCacheMap  = new HashMap<Integer, String>();
+	private Map<Integer, String> taxRelQualifierCacheMap  = new HashMap<Integer, String>();
 	
 	
 	private Source destination;
@@ -1298,6 +1270,18 @@ public final class PesiTransformer extends ExportTransformerBase implements IExp
 					this.qualityStatusCacheMap.put(key, cache);
 				} 
 			}
+			//qualityStatusCache
+			sql = " SELECT QualifierId, Qualifier FROM RelTaxonQualifier ";
+			rs = destination.getResultSet(sql);
+			while (rs.next()){
+				Integer key = rs.getInt("QualifierId");
+				String cache = rs.getString("Qualifier");
+				if (StringUtils.isNotBlank(cache)){
+					this.taxRelQualifierCacheMap.put(key, cache);
+				} 
+			}
+			
+			
 					
 		} catch (SQLException e) {
 			logger.error("SQLException when trying to read area map", e);
@@ -3514,79 +3498,26 @@ public final class PesiTransformer extends ExportTransformerBase implements IExp
 	 * @param relation
 	 * @return
 	 */
-	public static String taxonRelation2RelTaxonQualifierCache(RelationshipBase<?,?,?> relation, NomenclaturalCode code){
-		if (relation == null) {
+	public String getCacheByRelationshipType(RelationshipBase relation, NomenclaturalCode code){
+		if (relation == null){
 			return null;
-		}
-		RelationshipTermBase<?> type = relation.getType();
-		if (type.equals(TaxonRelationshipType.MISAPPLIED_NAME_FOR())) {
-			return STR_IS_MISAPPLIED_NAME_FOR;
-		} else if (type.equals(SynonymRelationshipType.SYNONYM_OF())) {
-			return STR_IS_SYNONYM_OF;
-		} else if (type.equals(SynonymRelationshipType.HOMOTYPIC_SYNONYM_OF())) {
+		}else{
+			//preliminary until #2816 is fixed
+			RelationshipTermBase<?> type = relation.getType();
 			if (code.equals(NomenclaturalCode.ICZN)){
-				return STR_IS_HOMOTYPIC_SYNONYM_OF_ZOOL;
-			}else{
-				return STR_IS_HOMOTYPIC_SYNONYM_OF;
+				if (type.equals(NameRelationshipType.BASIONYM())) {
+					return STR_IS_BASIONYM_FOR_ZOOL;
+				}else if (type.equals(SynonymRelationshipType.HOMOTYPIC_SYNONYM_OF())) {
+					return STR_IS_HOMOTYPIC_SYNONYM_OF_ZOOL;
+				} else if (type.equals(SynonymRelationshipType.HETEROTYPIC_SYNONYM_OF())) {
+					return STR_IS_HETEROTYPIC_SYNONYM_OF_ZOOL;
+				} 
 			}
-		} else if (type.equals(SynonymRelationshipType.HETEROTYPIC_SYNONYM_OF())) {
-			if (code.equals(NomenclaturalCode.ICZN)){
-				return STR_IS_HETEROTYPIC_SYNONYM_OF_ZOOL;
-			}else{
-				return STR_IS_HETEROTYPIC_SYNONYM_OF;
-			}
-		} else if (type.equals(SynonymRelationshipType.INFERRED_EPITHET_OF())) {
-			return STR_IS_INFERRED_EPITHET_FOR;
-		} else if (type.equals(SynonymRelationshipType.INFERRED_GENUS_OF())) {
-			return STR_IS_INFERRED_GENUS_FOR;
-		} else if (type.equals(SynonymRelationshipType.POTENTIAL_COMBINATION_OF())) {
-			return STR_IS_POTENTIAL_COMBINATION_FOR;
-		} else if (type.equals(NameRelationshipType.BASIONYM())) {
-			if (code.equals(NomenclaturalCode.ICZN)){
-				return STR_IS_BASIONYM_FOR_ZOOL;
-			}else{
-				return STR_IS_BASIONYM_FOR;
-			}
-		} else if (type.equals(NameRelationshipType.LATER_HOMONYM())) {
-			return STR_IS_LATER_HOMONYM_OF;
-		} else if (type.equals(NameRelationshipType.REPLACED_SYNONYM())) {
-			return STR_IS_REPLACED_SYNONYM_FOR;
-		} else if (type.equals(NameRelationshipType.VALIDATED_BY_NAME())) {
-			return STR_IS_VALIDATION_OF;
-		} else if (type.equals(NameRelationshipType.LATER_VALIDATED_BY_NAME())) {
-			return STR_IS_LATER_VALIDATION_OF;
-		} else if (type.equals(NameRelationshipType.CONSERVED_AGAINST())) {
-			return STR_IS_CONSERVED_AGAINST;
-		} else if (type.equals(NameRelationshipType.TREATED_AS_LATER_HOMONYM())) {
-			return STR_IS_TREATED_AS_LATER_HOMONYM_OF;
-		} else if (type.equals(NameRelationshipType.ORTHOGRAPHIC_VARIANT())) {
-			return STR_IS_ORTHOGRAPHIC_VARIANT_OF;
-		} else if (type.equals(NameRelationshipType.ALTERNATIVE_NAME())) {
-			return STR_IS_ALTERNATIVE_NAME_FOR;
-		} else {
-			logger.warn("No equivalent RelationshipType found in datawarehouse for: " + type.getTitleCache());
-		}
+			//end preliminary
 			
-		// The following have no equivalent attribute in CDM
-//		IS_TYPE_OF
-//		IS_CONSERVED_TYPE_OF
-//		IS_REJECTED_TYPE_OF
-//		IS_FIRST_PARENT_OF
-//		IS_SECOND_PARENT_OF
-//		IS_FEMALE_PARENT_OF
-//		IS_MALE_PARENT_OF
-//		IS_REJECTED_IN_FAVOUR_OF
-//		HAS_SAME_TYPE_AS
-//		IS_LECTOTYPE_OF
-//		TYPE_NOT_DESIGNATED
-//		IS_PRO_PARTE_SYNONYM_OF
-//		IS_PARTIAL_SYNONYM_OF
-//		IS_PRO_PARTE_AND_HOMOTYPIC_SYNONYM_OF
-//		IS_PRO_PARTE_AND_HETEROTYPIC_SYNONYM_OF
-//		IS_PARTIAL_AND_HOMOTYPIC_SYNONYM_OF
-//		IS_PARTIAL_AND_HETEROTYPIC_SYNONYM_OF
-
-		return null;
+			Integer key = taxonRelation2RelTaxonQualifierFk(relation);
+			return this.taxRelQualifierCacheMap.get(key); 
+		}
 	}
 	
 	/**
@@ -3602,11 +3533,32 @@ public final class PesiTransformer extends ExportTransformerBase implements IExp
 		if (type.equals(TaxonRelationshipType.MISAPPLIED_NAME_FOR())) {
 			return IS_MISAPPLIED_NAME_FOR;
 		} else if (type.equals(SynonymRelationshipType.SYNONYM_OF())) {
-			return IS_SYNONYM_OF;
+			SynonymRelationship synRel = CdmBase.deproxy(relation, SynonymRelationship.class);
+			if (synRel.isProParte()){
+				return IS_PRO_PARTE_SYNONYM_OF;
+			}else if (synRel.isPartial()){
+				return IS_PARTIAL_SYNONYM_OF;
+			}else{
+				return IS_SYNONYM_OF;
+			}
 		} else if (type.equals(SynonymRelationshipType.HOMOTYPIC_SYNONYM_OF())) {
-			return IS_HOMOTYPIC_SYNONYM_OF;
+			SynonymRelationship synRel = CdmBase.deproxy(relation, SynonymRelationship.class);
+			if (synRel.isProParte()){
+				return IS_PRO_PARTE_AND_HOMOTYPIC_SYNONYM_OF;
+			}else if (synRel.isPartial()){
+				return IS_PARTIAL_AND_HOMOTYPIC_SYNONYM_OF;
+			}else{
+				return IS_HOMOTYPIC_SYNONYM_OF;
+			}
 		} else if (type.equals(SynonymRelationshipType.HETEROTYPIC_SYNONYM_OF())) {
-			return IS_HETEROTYPIC_SYNONYM_OF;
+			SynonymRelationship synRel = CdmBase.deproxy(relation, SynonymRelationship.class);
+			if (synRel.isProParte()){
+				return IS_PRO_PARTE_AND_HETEROTYPIC_SYNONYM_OF;
+			}else if (synRel.isPartial()){
+				return IS_PARTIAL_AND_HETEROTYPIC_SYNONYM_OF;
+			}else{
+				return IS_HETEROTYPIC_SYNONYM_OF;
+			}
 		} else if (type.equals(SynonymRelationshipType.INFERRED_EPITHET_OF())) {
 			return IS_INFERRED_EPITHET_FOR;
 		} else if (type.equals(SynonymRelationshipType.INFERRED_GENUS_OF())) {
@@ -3631,6 +3583,15 @@ public final class PesiTransformer extends ExportTransformerBase implements IExp
 			return IS_ORTHOGRAPHIC_VARIANT_OF;
 		} else if (type.equals(NameRelationshipType.ALTERNATIVE_NAME())) {
 			return IS_ALTERNATIVE_NAME_FOR;
+		} else if (type.equals(HybridRelationshipType.FEMALE_PARENT())) {
+			return IS_FEMALE_PARENT_OF;
+		} else if (type.equals(HybridRelationshipType.MALE_PARENT())) {
+			return IS_MALE_PARENT_OF;
+		} else if (type.equals(HybridRelationshipType.FIRST_PARENT())) {
+			return IS_FIRST_PARENT_OF;
+		} else if (type.equals(HybridRelationshipType.SECOND_PARENT())) {
+			return IS_SECOND_PARENT_OF;
+		
 		} else {
 			logger.warn("No equivalent RelationshipType found in datawarehouse for: " + type.getTitleCache());
 		}
@@ -3639,20 +3600,11 @@ public final class PesiTransformer extends ExportTransformerBase implements IExp
 //		IS_TYPE_OF
 //		IS_CONSERVED_TYPE_OF
 //		IS_REJECTED_TYPE_OF
-//		IS_FIRST_PARENT_OF
-//		IS_SECOND_PARENT_OF
-//		IS_FEMALE_PARENT_OF
-//		IS_MALE_PARENT_OF
 //		IS_REJECTED_IN_FAVOUR_OF
 //		HAS_SAME_TYPE_AS
 //		IS_LECTOTYPE_OF
 //		TYPE_NOT_DESIGNATED
-//		IS_PRO_PARTE_SYNONYM_OF
-//		IS_PARTIAL_SYNONYM_OF
-//		IS_PRO_PARTE_AND_HOMOTYPIC_SYNONYM_OF
-//		IS_PRO_PARTE_AND_HETEROTYPIC_SYNONYM_OF
-//		IS_PARTIAL_AND_HOMOTYPIC_SYNONYM_OF
-//		IS_PARTIAL_AND_HETEROTYPIC_SYNONYM_OF
+
 
 		return null;
 	}
@@ -3748,7 +3700,6 @@ public final class PesiTransformer extends ExportTransformerBase implements IExp
 		}else{
 			return this.qualityStatusCacheMap.get(qualityStatusId); 
 		}
-
 	}
 
 	public static String getOriginalDbBySources(BitSet sources) {

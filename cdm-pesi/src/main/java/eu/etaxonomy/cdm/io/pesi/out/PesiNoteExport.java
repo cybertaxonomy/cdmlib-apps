@@ -495,7 +495,7 @@ public class PesiNoteExport extends PesiExportBase {
 	 * @see MethodMapper
 	 */
 	@SuppressWarnings("unused")
-	private static Integer getTaxonFk(DescriptionElementBase descriptionElement, DbExportStateBase<?> state) {
+	private static Integer getTaxonFk(DescriptionElementBase descriptionElement, DbExportStateBase<?, PesiTransformer> state) {
 		Integer result = null;
 		DescriptionBase<?> inDescription = descriptionElement.getInDescription();
 		if (inDescription != null && inDescription.isInstanceOf(TaxonDescription.class)) {
@@ -512,7 +512,7 @@ public class PesiNoteExport extends PesiExportBase {
 	 * @param state The {@link DbExportStateBase DbExportState}.
 	 * @return
 	 */
-	private static Integer getTaxonFk(TaxonNameBase<?,?> taxonName, DbExportStateBase<?> state) {
+	private static Integer getTaxonFk(TaxonNameBase<?,?> taxonName, DbExportStateBase<?, PesiTransformer> state) {
 		return state.getDbId(taxonName);
 	}
 	

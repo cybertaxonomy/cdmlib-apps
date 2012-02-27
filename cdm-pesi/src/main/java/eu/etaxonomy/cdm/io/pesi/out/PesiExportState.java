@@ -25,7 +25,7 @@ import eu.etaxonomy.cdm.model.common.IdentifiableEntity;
  * @date 12.02.2010
  *
  */
-public class PesiExportState extends DbExportStateBase<PesiExportConfigurator>{
+public class PesiExportState extends DbExportStateBase<PesiExportConfigurator, PesiTransformer>{
 	@SuppressWarnings("unused")
 	private static final Logger logger = Logger.getLogger(PesiExportState.class);
 	

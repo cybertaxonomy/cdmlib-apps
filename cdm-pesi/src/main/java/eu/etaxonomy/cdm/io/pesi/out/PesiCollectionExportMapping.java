@@ -80,7 +80,7 @@ public class PesiCollectionExportMapping extends PesiExportMapping {
 					}else if (mapper == this.sequenceMapper){
 						this.sequenceMapper.invoke(null);
 					}else if (mapper instanceof IDbExportMapper){
-						IDbExportMapper<DbExportStateBase<?>> dbMapper = (IDbExportMapper)mapper;
+						IDbExportMapper<DbExportStateBase<?, PesiTransformer>, PesiTransformer> dbMapper = (IDbExportMapper)mapper;
 						try {
 							result &= dbMapper.invoke(collectionObject);
 						} catch (Exception e) {

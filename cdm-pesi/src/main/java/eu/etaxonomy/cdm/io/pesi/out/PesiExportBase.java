@@ -24,10 +24,13 @@ import eu.etaxonomy.cdm.io.common.DbExportBase;
 import eu.etaxonomy.cdm.model.common.CdmBase;
 import eu.etaxonomy.cdm.model.common.Marker;
 import eu.etaxonomy.cdm.model.common.MarkerType;
+import eu.etaxonomy.cdm.model.common.RelationshipBase;
+import eu.etaxonomy.cdm.model.name.HybridRelationship;
 import eu.etaxonomy.cdm.model.name.NameRelationship;
 import eu.etaxonomy.cdm.model.name.NonViralName;
 import eu.etaxonomy.cdm.model.name.TaxonNameBase;
 import eu.etaxonomy.cdm.model.taxon.Synonym;
+import eu.etaxonomy.cdm.model.taxon.SynonymRelationship;
 import eu.etaxonomy.cdm.model.taxon.Taxon;
 import eu.etaxonomy.cdm.model.taxon.TaxonBase;
 import eu.etaxonomy.cdm.model.taxon.TaxonRelationship;
@@ -39,8 +42,7 @@ import eu.etaxonomy.cdm.persistence.query.OrderHint;
  * @date 12.02.2010
  *
  */
-public abstract class PesiExportBase extends DbExportBase<PesiExportConfigurator, PesiExportState> {
-	@SuppressWarnings("unused")
+public abstract class PesiExportBase extends DbExportBase<PesiExportConfigurator, PesiExportState, PesiTransformer> {
 	private static final Logger logger = Logger.getLogger(PesiExportBase.class);
 	
 	public PesiExportBase() {
@@ -89,8 +91,77 @@ public abstract class PesiExportBase extends DbExportBase<PesiExportConfigurator
 		}
 		return list;
 	}
+	
+	protected <CLASS extends RelationshipBase> List<CLASS> getNextNameRelationshipPartition(Class<CLASS> clazz, int limit, int partitionCount, List<String> propertyPath) {
+		List<CLASS> result = new ArrayList<CLASS>();
+		String[] propertyPaths = null;
+		String orderHints = null;
+		List<CLASS> list = (List<CLASS>)getNameService().getAllRelationships(limit, partitionCount * limit);
+		for (CLASS rel : list){
+			if (isPesiNameRelationship(rel)){
+				result.add(rel);
+			}
+		}
+		return result;
+	}
+	
+	protected <CLASS extends RelationshipBase> List<CLASS> getNextTaxonRelationshipPartition(Class<CLASS> clazz, int limit, int partitionCount, List<String> propertyPath) {
+		List<CLASS> result = new ArrayList<CLASS>();
+		String[] propertyPaths = null;
+		String orderHints = null;
+		List<CLASS> list = (List<CLASS>)getTaxonService().getAllRelationships(limit, partitionCount * limit);
+		for (CLASS rel : list){
+			if (isPesiTaxonOrSynonymRelationship(rel)){
+				result.add(rel);
+			}
+		}
+		return result;
+	}
+	
+	protected boolean isPesiNameRelationship(RelationshipBase rel){
+		TaxonNameBase<?,?> name1;
+		TaxonNameBase<?,?> name2;
+		if (rel.isInstanceOf(HybridRelationship.class)){
+			HybridRelationship hybridRel = CdmBase.deproxy(rel, HybridRelationship.class);
+			name1 = hybridRel.getParentName();
+			name2 = hybridRel.getHybridName();
+		}else if (rel.isInstanceOf(NameRelationship.class)){
+			NameRelationship nameRel = CdmBase.deproxy(rel, NameRelationship.class);
+			name1 = nameRel.getFromName();
+			name2 = nameRel.getToName();
+		}else{
+			logger.warn ("Only hybrid- and name-relationships alowed here");
+			return false;
+		}
+		return (isPesiName(name1) && isPesiName(name2));
+		
+	}
+	
+	private boolean isPesiName(TaxonNameBase<?,?> name) {
+		return hasPesiTaxon(name) || isPurePesiName(name);
+	}
+
+	protected boolean isPesiTaxonOrSynonymRelationship(RelationshipBase rel){
+		TaxonBase<?> taxonBase;
+		Taxon taxon;
+		if (rel.isInstanceOf(SynonymRelationship.class)){
+			SynonymRelationship synRel = CdmBase.deproxy(rel, SynonymRelationship.class);
+			taxonBase = synRel.getSynonym();
+			taxon = synRel.getAcceptedTaxon();
+		}else if (rel.isInstanceOf(TaxonRelationship.class)){
+			TaxonRelationship taxRel = CdmBase.deproxy(rel, TaxonRelationship.class);
+			taxonBase = taxRel.getFromTaxon();
+			taxon = taxRel.getToTaxon();
+		}else{
+			logger.warn ("Only synonym - and taxon-relationships alowed here");
+			return false;
+		}
+		return (isPesiTaxon(taxonBase) && isPesiTaxon(taxon));
+		
+	}
 
 	
+
 	/**
 	 * Decides if a name is not used as the name part of a PESI taxon (and therefore is
 	 * exported to PESI as taxon already) but is related to a name used as a PESI taxon

@@ -18,7 +18,7 @@ import eu.etaxonomy.cdm.io.common.mapping.out.CdmDbExportMapping;
  * @date 24.02.2010
  *
  */
-public class PesiExportMapping extends CdmDbExportMapping<PesiExportState,PesiExportConfigurator> {
+public class PesiExportMapping extends CdmDbExportMapping<PesiExportState,PesiExportConfigurator, PesiTransformer> {
 	private static final Logger logger = Logger.getLogger(PesiExportMapping.class);
 	
 	public PesiExportMapping(String tableName) {

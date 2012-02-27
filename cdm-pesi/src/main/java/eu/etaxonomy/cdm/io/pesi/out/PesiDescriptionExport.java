@@ -9,6 +9,8 @@
 */
 package eu.etaxonomy.cdm.io.pesi.out;
 
+import static java.util.EnumSet.of;
+
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
@@ -22,19 +24,16 @@ import org.springframework.stereotype.Component;
 import org.springframework.transaction.TransactionStatus;
 
 import eu.etaxonomy.cdm.io.berlinModel.BerlinModelTransformer;
-import eu.etaxonomy.cdm.io.berlinModel.out.mapper.RefDetailMapper;
 import eu.etaxonomy.cdm.io.common.DbExportStateBase;
 import eu.etaxonomy.cdm.io.common.Source;
 import eu.etaxonomy.cdm.io.common.mapping.UndefinedTransformerMethodException;
 import eu.etaxonomy.cdm.io.common.mapping.out.CollectionExportMapping;
-import eu.etaxonomy.cdm.io.common.mapping.out.CreatedAndNotesMapper;
 import eu.etaxonomy.cdm.io.common.mapping.out.DbAreaMapper;
 import eu.etaxonomy.cdm.io.common.mapping.out.DbDescriptionElementTaxonMapper;
 import eu.etaxonomy.cdm.io.common.mapping.out.DbDistributionStatusMapper;
 import eu.etaxonomy.cdm.io.common.mapping.out.DbExportIgnoreMapper;
 import eu.etaxonomy.cdm.io.common.mapping.out.DbExportNotYetImplementedMapper;
 import eu.etaxonomy.cdm.io.common.mapping.out.DbLanguageMapper;
-import eu.etaxonomy.cdm.io.common.mapping.out.DbMarkerMapper;
 import eu.etaxonomy.cdm.io.common.mapping.out.DbObjectMapper;
 import eu.etaxonomy.cdm.io.common.mapping.out.DbOriginalNameMapper;
 import eu.etaxonomy.cdm.io.common.mapping.out.DbSimpleFilterMapper;
@@ -48,23 +47,18 @@ import eu.etaxonomy.cdm.model.common.Extension;
 import eu.etaxonomy.cdm.model.common.ExtensionType;
 import eu.etaxonomy.cdm.model.common.Language;
 import eu.etaxonomy.cdm.model.common.LanguageString;
-import eu.etaxonomy.cdm.model.common.MarkerType;
 import eu.etaxonomy.cdm.model.description.CommonTaxonName;
-import eu.etaxonomy.cdm.model.description.DescriptionBase;
 import eu.etaxonomy.cdm.model.description.DescriptionElementBase;
 import eu.etaxonomy.cdm.model.description.Distribution;
 import eu.etaxonomy.cdm.model.description.Feature;
 import eu.etaxonomy.cdm.model.description.IndividualsAssociation;
-import eu.etaxonomy.cdm.model.description.PresenceAbsenceTermBase;
 import eu.etaxonomy.cdm.model.description.TaxonDescription;
 import eu.etaxonomy.cdm.model.description.TaxonInteraction;
 import eu.etaxonomy.cdm.model.description.TextData;
 import eu.etaxonomy.cdm.model.location.NamedArea;
 import eu.etaxonomy.cdm.model.location.TdwgArea;
-import eu.etaxonomy.cdm.model.name.NomenclaturalStatus;
 import eu.etaxonomy.cdm.model.name.TaxonNameBase;
 import eu.etaxonomy.cdm.model.taxon.Taxon;
-import static java.util.EnumSet.of;
 /**
  * The export class for {@link eu.etaxonomy.cdm.model.description.DescriptionElementBase DescriptionElements}.<p>
  * Inserts into DataWarehouse database table <code>Note</code>.<p>
@@ -609,7 +603,7 @@ public class PesiDescriptionExport extends PesiExportBase {
 	 * @param state The {@link DbExportStateBase DbExportState}.
 	 * @return
 	 */
-	private static Integer getTaxonFk(TaxonNameBase<?,?> taxonName, DbExportStateBase<?> state) {
+	private static Integer getTaxonFk(TaxonNameBase<?,?> taxonName, DbExportStateBase<?, PesiTransformer> state) {
 		return state.getDbId(taxonName);
 	}
 
@@ -632,6 +626,19 @@ public class PesiDescriptionExport extends PesiExportBase {
 //		mapping.addMapper(MethodMapper.NewInstance("Region", this));
 		mapping.addMapper(DbDescriptionElementTaxonMapper.NewInstance("taxonFk"));
 		mapping.addMapper(ExpertsAndLastActionMapper.NewInstance());
+		mapping.addCollectionMapping(getNoteSourceMapping());
+		return mapping;
+	}
+	
+	private CollectionExportMapping<PesiExportState, PesiExportConfigurator,PesiTransformer> getNoteSourceMapping() {
+		String tableName = "NoteSource";
+		String collectionAttribute = "sources";
+		IdMapper parentMapper = IdMapper.NewInstance("NoteFk");
+		CollectionExportMapping<PesiExportState, PesiExportConfigurator, PesiTransformer> mapping = CollectionExportMapping.NewInstance(tableName, collectionAttribute, parentMapper);
+		mapping.addMapper(DbSimpleFilterMapper.NewSingleNullAttributeInstance("idInSource", "Sources with idInSource currently handle data lineage"));
+		mapping.addMapper(DbObjectMapper.NewInstance("Citation", "SourceFk"));
+		mapping.addMapper(DbObjectMapper.NewInstance("Citation", "SourceNameCache", IS_CACHE));
+		mapping.addMapper(DbStringMapper.NewInstance("CitationMicroReference", "SourceDetail"));
 		return mapping;
 	}
 	
@@ -663,11 +670,11 @@ public class PesiDescriptionExport extends PesiExportBase {
 		return mapping;
 	}
 
-	private CollectionExportMapping<PesiExportState, PesiExportConfigurator> getOccurrenceSourceMapping() {
+	private CollectionExportMapping<PesiExportState, PesiExportConfigurator, PesiTransformer> getOccurrenceSourceMapping() {
 		String tableName = "OccurrenceSource";
 		String collectionAttribute = "sources";
 		IdMapper parentMapper = IdMapper.NewInstance("OccurrenceFk");
-		CollectionExportMapping<PesiExportState, PesiExportConfigurator> mapping = CollectionExportMapping.NewInstance(tableName, collectionAttribute, parentMapper);
+		CollectionExportMapping<PesiExportState, PesiExportConfigurator, PesiTransformer> mapping = CollectionExportMapping.NewInstance(tableName, collectionAttribute, parentMapper);
 		mapping.addMapper(DbSimpleFilterMapper.NewSingleNullAttributeInstance("idInSource", "Sources with idInSource currently handle data lineage"));
 		mapping.addMapper(DbObjectMapper.NewInstance("Citation", "SourceFk"));
 		mapping.addMapper(DbObjectMapper.NewInstance("Citation", "SourceNameCache", IS_CACHE));
