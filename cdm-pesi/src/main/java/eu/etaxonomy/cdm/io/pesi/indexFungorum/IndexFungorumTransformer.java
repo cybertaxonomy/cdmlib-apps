@@ -10,18 +10,22 @@
 
 package eu.etaxonomy.cdm.io.pesi.indexFungorum;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 
 import eu.etaxonomy.cdm.io.common.mapping.InputTransformerBase;
+import eu.etaxonomy.cdm.io.common.mapping.UndefinedTransformerMethodException;
 import eu.etaxonomy.cdm.model.name.NomenclaturalCode;
+import eu.etaxonomy.cdm.model.name.Rank;
 
 /**
  * @author a.mueller
  * @created 01.03.2010
  * @version 1.0
  */
-public final class IndesFungorumTransformer extends InputTransformerBase {
-	private static final Logger logger = Logger.getLogger(IndesFungorumTransformer.class);
+public final class IndexFungorumTransformer extends InputTransformerBase {
+	@SuppressWarnings("unused")
+	private static final Logger logger = Logger.getLogger(IndexFungorumTransformer.class);
 	
 
 
@@ -38,8 +42,32 @@ public final class IndesFungorumTransformer extends InputTransformerBase {
 			default: return null;
 	
 		}
-	
 	}
+
+
+
+	@Override
+	public Rank getRankByKey(String key) throws UndefinedTransformerMethodException {
+		if (StringUtils.isBlank(key)){
+			return null;
+		}
+		Integer rankFk = Integer.valueOf(key);
+		switch (rankFk){
+			case 30: return Rank.DIVISION();
+			case 40: return Rank.SUBDIVISION();
+			case 60: return Rank.CLASS();
+			case 70: return Rank.SUBCLASS();
+			case 100: return Rank.ORDER();
+			case 110: return Rank.SUBORDER();  //not needed
+			case 140: return Rank.FAMILY();
+			default:
+				logger.warn("Unhandled rank: " + rankFk);
+				return null;
+		}
+		
+	}
+	
+	
 
 
 

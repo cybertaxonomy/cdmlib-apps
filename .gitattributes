@@ -1292,11 +1292,15 @@ cdm-pesi/src/main/java/eu/etaxonomy/cdm/io/pesi/faunaEuropaea/FaunaEuropaeaTaxon
 cdm-pesi/src/main/java/eu/etaxonomy/cdm/io/pesi/faunaEuropaea/FaunaEuropaeaTaxonNameImport.java -text
 cdm-pesi/src/main/java/eu/etaxonomy/cdm/io/pesi/faunaEuropaea/FaunaEuropaeaTransformer.java -text
 cdm-pesi/src/main/java/eu/etaxonomy/cdm/io/pesi/faunaEuropaea/FaunaEuropaeaUsersImport.java -text
-cdm-pesi/src/main/java/eu/etaxonomy/cdm/io/pesi/indexFungorum/IndesFungorumTransformer.java -text
+cdm-pesi/src/main/java/eu/etaxonomy/cdm/io/pesi/indexFungorum/IndexFungorumDistributionImport.java -text
+cdm-pesi/src/main/java/eu/etaxonomy/cdm/io/pesi/indexFungorum/IndexFungorumGeneraImport.java -text
 cdm-pesi/src/main/java/eu/etaxonomy/cdm/io/pesi/indexFungorum/IndexFungorumHigherClassificationImport.java -text
 cdm-pesi/src/main/java/eu/etaxonomy/cdm/io/pesi/indexFungorum/IndexFungorumImportBase.java -text
 cdm-pesi/src/main/java/eu/etaxonomy/cdm/io/pesi/indexFungorum/IndexFungorumImportConfigurator.java -text
 cdm-pesi/src/main/java/eu/etaxonomy/cdm/io/pesi/indexFungorum/IndexFungorumImportState.java -text
+cdm-pesi/src/main/java/eu/etaxonomy/cdm/io/pesi/indexFungorum/IndexFungorumSpeciesImport.java -text
+cdm-pesi/src/main/java/eu/etaxonomy/cdm/io/pesi/indexFungorum/IndexFungorumSupraGeneraImport.java -text
+cdm-pesi/src/main/java/eu/etaxonomy/cdm/io/pesi/indexFungorum/IndexFungorumTransformer.java -text
 cdm-pesi/src/main/java/eu/etaxonomy/cdm/io/pesi/merging/FaunaEuErmsMerging.java -text
 cdm-pesi/src/main/java/eu/etaxonomy/cdm/io/pesi/out/ExpertsAndLastActionMapper.java -text
 cdm-pesi/src/main/java/eu/etaxonomy/cdm/io/pesi/out/PesiAdditionalTaxonSourceExport.java -text

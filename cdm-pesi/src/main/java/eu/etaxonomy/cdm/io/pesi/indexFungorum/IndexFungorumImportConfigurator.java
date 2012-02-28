@@ -14,7 +14,6 @@ import org.apache.log4j.Logger;
 import eu.etaxonomy.cdm.database.ICdmDataSource;
 import eu.etaxonomy.cdm.io.common.IImportConfigurator;
 import eu.etaxonomy.cdm.io.common.ImportConfiguratorBase;
-import eu.etaxonomy.cdm.io.common.ImportStateBase;
 import eu.etaxonomy.cdm.io.common.Source;
 import eu.etaxonomy.cdm.io.common.mapping.IInputTransformer;
 import eu.etaxonomy.cdm.model.name.NomenclaturalCode;
@@ -44,11 +43,14 @@ public class IndexFungorumImportConfigurator extends ImportConfiguratorBase<Inde
 	private boolean doRelTaxa = true;
 
 	
-	private static IInputTransformer defaultTransformer = new IndesFungorumTransformer();
+	private static IInputTransformer defaultTransformer = new IndexFungorumTransformer();
 	
 	protected void makeIoClassList(){
 		ioClassList = new Class[]{
-				IndexFungorumHigherClassificationImport.class
+				IndexFungorumSupraGeneraImport.class
+				, IndexFungorumHigherClassificationImport.class
+				, IndexFungorumGeneraImport.class
+				, IndexFungorumSpeciesImport.class
 //				, IfTaxonImport.class
 //				, IfTaxonRelationImport.class
 //				, IfOccurrenceImport.class
@@ -59,7 +61,7 @@ public class IndexFungorumImportConfigurator extends ImportConfiguratorBase<Inde
 	/* (non-Javadoc)
 	 * @see eu.etaxonomy.cdm.io.common.IImportConfigurator#getNewState()
 	 */
-	public ImportStateBase getNewState() {
+	public IndexFungorumImportState getNewState() {
 		return new IndexFungorumImportState(this);
 	}
 

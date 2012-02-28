@@ -13,15 +13,17 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
 
 import org.apache.log4j.Logger;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.TransactionStatus;
 
+import eu.etaxonomy.cdm.io.pesi.out.PesiTransformer;
 import eu.etaxonomy.cdm.model.common.CdmBase;
-import eu.etaxonomy.cdm.model.description.Distribution;
 import eu.etaxonomy.cdm.model.location.NamedArea;
 import eu.etaxonomy.cdm.model.name.BotanicalName;
 import eu.etaxonomy.cdm.model.name.NonViralName;
@@ -34,11 +36,10 @@ import eu.etaxonomy.cdm.model.taxon.TaxonBase;
 
 /**
  * @author a.mueller
- * @created 20.02.2010
- * @version 1.0
+ * @created 27.02.2012
  */
 @Component
-public class IndexFungorumHigherClassificationImport  extends IndexFungorumImportBase<Distribution> {
+public class IndexFungorumHigherClassificationImport  extends IndexFungorumImportBase {
 	private static final Logger logger = Logger.getLogger(IndexFungorumHigherClassificationImport.class);
 	
 	private static final String pluralString = "higher classifications";
@@ -55,10 +56,11 @@ public class IndexFungorumHigherClassificationImport  extends IndexFungorumImpor
 	@Override
 	protected String getRecordQuery(IndexFungorumImportConfigurator config) {
 		String strRecordQuery = 
-			" SELECT * " + 
-			" FROM [tblPESIfungi-Classification] c" +
+			" SELECT DISTINCT KingdomName, PhylumName, SubphylumName, ClassName, SubclassName, OrderName, FamilyName, g.PreferredName as GenusName, c.PreferredName as SpeciesName " + 
+			" FROM [tblPESIfungi-Classification] c  LEFT OUTER JOIN " +
+                      " tblGenera g ON c.PreferredNameFDCnumber = g.RECORD_NUMBER" +
 //			" WHERE ( dr.id IN (" + ID_LIST_TOKEN + ") )";
-			" ORDER BY KingdomName, PhylumName, SubphylumName, ClassName, SubclassName, OrderName, FamilyName ";
+			" ORDER BY KingdomName, PhylumName, SubphylumName, ClassName, SubclassName, OrderName, FamilyName, GenusName, SpeciesName ";
 		return strRecordQuery;
 	}
 
@@ -71,6 +73,8 @@ public class IndexFungorumHigherClassificationImport  extends IndexFungorumImpor
 		String sql = getRecordQuery(state.getConfig());
 		ResultSet rs = state.getConfig().getSource().getResultSet(sql);
 		
+		//only 1 partition here
+		
 		String lastKingdom = "";
 		String lastPhylum = "";
 		String lastSubphylum = "";
@@ -78,6 +82,8 @@ public class IndexFungorumHigherClassificationImport  extends IndexFungorumImpor
 		String lastSubclass = "";
 		String lastOrder = "";
 		String lastFamily = "";
+		String lastGenus = "";
+		String lastSpecies = "";
 		
 		Taxon taxonKingdom = null;
 		Taxon taxonPhylum = null;
@@ -86,6 +92,17 @@ public class IndexFungorumHigherClassificationImport  extends IndexFungorumImpor
 		Taxon taxonSubclass = null;
 		Taxon taxonOrder = null;
 		Taxon taxonFamily = null;
+		Taxon taxonGenus = null;
+		Taxon taxonSpecies = null;
+		
+		Taxon higherTaxon = null;
+		
+		
+		TransactionStatus tx = startTransaction();
+		ResultSet rsRelatedObjects = state.getConfig().getSource().getResultSet(sql);
+		state.setRelatedObjects((Map)getRelatedObjectsForPartition(rsRelatedObjects));
+		
+		Classification classification = getClassification(state);
 		
 		try {
 			while (rs.next()){
@@ -96,60 +113,142 @@ public class IndexFungorumHigherClassificationImport  extends IndexFungorumImpor
 				String subclass = rs.getString("SubclassName");
 				String order = rs.getString("OrderName");
 				String family = rs.getString("FamilyName");
+				String genus = rs.getString("GenusName");
+				String species = rs.getString("SpeciesName");
 				
-				if (!family.equalsIgnoreCase(lastFamily)){
-					if (!order.equalsIgnoreCase(lastOrder)){
-						if (!subclass.equalsIgnoreCase(lastSubclass)){
-							if (!classname.equalsIgnoreCase(lastClassname)){
-								if (!subphylum.equalsIgnoreCase(lastSubphylum)){
-									if (! phylum.equalsIgnoreCase(lastPhylum)){
-										if (! kingdom.equalsIgnoreCase(lastKingdom)){
+//				if (isNewTaxon(species, lastSpecies)){
+//					if (isNewTaxon(genus, lastGenus)){
+				if (isNewTaxon(family, lastFamily)){
+					if (isNewTaxon(order,lastOrder)){
+						if (isNewTaxon(subclass,lastSubclass)){
+							if (isNewTaxon(classname,lastClassname)){
+								if (isNewTaxon(subphylum, lastSubphylum)){
+									if (isNewTaxon(phylum,lastPhylum)){
+										if (isNewTaxon(kingdom,lastKingdom)){
 											taxonKingdom = makeTaxon(state, kingdom, Rank.KINGDOM());
+											lastKingdom = kingdom;
+											logger.info("Import kingdom " +  kingdom);
+											getTaxonService().saveOrUpdate(taxonKingdom);
+										}else{
+											higherTaxon = taxonKingdom;
 										}
+										higherTaxon = isIncertisSedis(kingdom) ? higherTaxon : taxonKingdom;
 										taxonPhylum = makeTaxon(state, phylum, Rank.PHYLUM());
-										getClassification(state).addParentChild(taxonKingdom, taxonPhylum, null, null);
+										if (taxonPhylum != null){
+											classification.addParentChild(higherTaxon, taxonPhylum, null, null);
+										}
+										higherTaxon = isIncertisSedis(phylum) ? higherTaxon : taxonPhylum;
+										lastPhylum = phylum;
+										logger.info("Import Phylum " +  phylum);
+									}else{
+										higherTaxon = taxonPhylum;
 									}
 									taxonSubphylum = makeTaxon(state, subphylum, Rank.SUBPHYLUM());
-									getClassification(state).addParentChild(taxonPhylum,taxonSubphylum, null, null);
+									if (taxonSubphylum != null){
+										getClassification(state).addParentChild(higherTaxon,taxonSubphylum, null, null);
+									}
+									higherTaxon = isIncertisSedis(subphylum) ? higherTaxon : taxonSubphylum;
+									lastSubphylum = subphylum;
+								}else{
+									higherTaxon = taxonSubphylum;
 								}
 								taxonClass = makeTaxon(state, classname, Rank.CLASS());
-								getClassification(state).addParentChild(taxonSubphylum, taxonClass, null, null);
+								if (taxonClass != null){
+									getClassification(state).addParentChild(higherTaxon, taxonClass, null, null);
+								}
+								higherTaxon = isIncertisSedis(classname) ? higherTaxon : taxonClass;
+								lastClassname = classname;
+							}else{
+								higherTaxon = taxonClass;
 							}
 							taxonSubclass = makeTaxon(state, subclass, Rank.SUBCLASS());
-							getClassification(state).addParentChild(taxonClass, taxonSubclass,null, null);
+							if (taxonSubclass != null){
+								getClassification(state).addParentChild(higherTaxon, taxonSubclass,null, null);
+							}
+							higherTaxon = isIncertisSedis(subclass) ? higherTaxon : taxonSubclass;
+							lastSubclass = subclass;
+						}else{
+							higherTaxon = taxonSubclass;
 						}
 						taxonOrder = makeTaxon(state, order, Rank.ORDER());
-						getClassification(state).addParentChild(taxonSubclass, taxonOrder, null, null);
+						if (taxonOrder != null){
+							getClassification(state).addParentChild(higherTaxon, taxonOrder, null, null);
+						}
+						higherTaxon = isIncertisSedis(order) ? higherTaxon : taxonOrder;
+						lastOrder = order;
+					}else{
+						higherTaxon = taxonOrder;
 					}
 					taxonFamily = makeTaxon(state, family, Rank.FAMILY());
-					getClassification(state).addParentChild(taxonOrder, taxonFamily, null, null);
+					if (taxonFamily != null){
+						getClassification(state).addParentChild(higherTaxon, taxonFamily, null, null);
+					}
+					higherTaxon = isIncertisSedis(family) ? higherTaxon : taxonFamily;
+					lastFamily = family;
+					getTaxonService().saveOrUpdate(higherTaxon);
 				}
+//						else{
+//							higherTaxon = taxonFamily;
+//						}
+//						taxonGenus = makeTaxon(state, genus, Rank.GENUS());
+//						if (taxonGenus != null){
+//							getClassification(state).addParentChild(higherTaxon, taxonGenus, null, null);
+//						}
+//						higherTaxon = isIncertisSedis(genus) ? higherTaxon : taxonGenus;
+//						lastGenus = genus;
+//					}else{
+//						higherTaxon = taxonGenus;
+//					}
+//					taxonSpecies = makeTaxon(state, species, Rank.SPECIES());
+//					if (taxonSpecies != null){
+//						getClassification(state).addParentChild(higherTaxon, taxonSpecies, null, null);
+//					}
+//					higherTaxon = isIncertisSedis(species) ? higherTaxon : taxonSpecies;
+//					lastSpecies = species;
+//					getTaxonService().saveOrUpdate(higherTaxon);
+//				}
+				getTaxonService().saveOrUpdate(higherTaxon);
 			}
+
+			
 		} catch (SQLException e) {
 			e.printStackTrace();
 			logger.error(e.getMessage());
+			tx.setRollbackOnly();
+			state.setSuccess(false);
 		}
+		commitTransaction(tx);
 		return;
 		
 	}
 
 
-	private Classification getClassification(IndexFungorumImportState state) {
-		Classification result;
-		UUID classificationUuid = state.getTreeUuid(state.getConfig().getSourceReference());
-		if (classificationUuid == null){
-			result = makeTreeMemSave(state, state.getConfig().getSourceReference());
-		} else {
-			result = getClassificationService().find(classificationUuid);
-		} 
-		return result;
+	private boolean isIncertisSedis(String uninomial) {
+		return  uninomial.equalsIgnoreCase(INCERTAE_SEDIS);
 	}
 
 
+	private boolean isNewTaxon(String uninomial, String lastUninomial) {
+		boolean result =  !uninomial.equalsIgnoreCase(lastUninomial);
+		result |= lastUninomial.equalsIgnoreCase(INCERTAE_SEDIS);
+		return result;
+	}
+
 	private Taxon makeTaxon(IndexFungorumImportState state, String uninomial, Rank rank) {
-		NonViralName<?> name = BotanicalName.NewInstance(rank);
-		name.setGenusOrUninomial(uninomial);
-		return Taxon.NewInstance(name, state.getConfig().getSourceReference());
+		if (uninomial.equalsIgnoreCase(INCERTAE_SEDIS)){
+			return null;
+		}
+		Taxon taxon = state.getRelatedObject(IndexFungorumSupraGeneraImport.NAMESPACE_SUPRAGENERIC_NAMES, uninomial, Taxon.class);
+		if (taxon == null){
+			if (! rank.equals(Rank.KINGDOM())){
+				logger.warn("Taxon not found for " + uninomial);
+			}
+			NonViralName<?> name = BotanicalName.NewInstance(rank);
+			name.setGenusOrUninomial(uninomial);
+			Reference<?> sourceReference = state.getRelatedObject(NAMESPACE_REFERENCE, SOURCE_REFERENCE, Reference.class);
+			taxon = Taxon.NewInstance(name, sourceReference);
+		}
+		return taxon;
 	}
 
 
@@ -163,38 +262,29 @@ public class IndexFungorumHigherClassificationImport  extends IndexFungorumImpor
 		Map<Object, Map<String, ? extends CdmBase>> result = new HashMap<Object, Map<String, ? extends CdmBase>>();
 		
 		try{
-			Set<String> taxonIdSet = new HashSet<String>();
-			Set<String> areaIdSet = new HashSet<String>();
-			Set<String> sourceIdSet = new HashSet<String>();
-			while (rs.next()){
-				handleForeignKey(rs, taxonIdSet,"tu_acctaxon" );
-				handleForeignKey(rs, areaIdSet, "gu_id");
-				handleForeignKey(rs, sourceIdSet, "source_id");
-			}
+			Set<String> taxonNameSet = new HashSet<String>();
+//			while (rs.next()){
+//				handleForeignKey(rs, taxonIdSet,"tu_acctaxon" );
+//			}
 			
 			//taxon map
-			nameSpace = "" ;
+			nameSpace = IndexFungorumSupraGeneraImport.NAMESPACE_SUPRAGENERIC_NAMES ;
 			cdmClass = TaxonBase.class;
-			idSet = taxonIdSet;
-			Map<String, TaxonBase> taxonMap = (Map<String, TaxonBase>)getCommonService().getSourcedObjectsByIdInSource(cdmClass, idSet, nameSpace);
+//			idSet = taxonNameSet;
+			Map<String, TaxonBase<?>> taxonMap = new HashMap<String, TaxonBase<?>>();
+			List<TaxonBase> list = getTaxonService().list(Taxon.class, null, null, null, null);
+			for (TaxonBase<?> taxon : list){
+				taxonMap.put(CdmBase.deproxy(taxon.getName(), NonViralName.class).getGenusOrUninomial(), taxon);
+			}
 			result.put(nameSpace, taxonMap);
 			
-			//areas
-//			nameSpace = ErmsAreaImport.AREA_NAMESPACE;
-			cdmClass = NamedArea.class;
-			idSet = areaIdSet;
-			Map<String, NamedArea> areaMap = (Map<String, NamedArea>)getCommonService().getSourcedObjectsByIdInSource(cdmClass, idSet, nameSpace);
-			result.put(nameSpace, areaMap);
+			//source reference
+			Reference<?> sourceReference = getReferenceService().find(PesiTransformer.uuidSourceRefIndexFungorum);
+			Map<String, Reference> referenceMap = new HashMap<String, Reference>();
+			referenceMap.put(SOURCE_REFERENCE, sourceReference);
+			result.put(NAMESPACE_REFERENCE, referenceMap);
 			
-			//reference map
-//			nameSpace = ErmsReferenceImport.REFERENCE_NAMESPACE;
-			cdmClass = Reference.class;
-			idSet = sourceIdSet;
-			Map<String, Reference> referenceMap = (Map<String, Reference>)getCommonService().getSourcedObjectsByIdInSource(cdmClass, idSet, nameSpace);
-			result.put(nameSpace, referenceMap);
-
-			
-		} catch (SQLException e) {
+		} catch (Exception e) {
 			throw new RuntimeException(e);
 		}
 		return result;
@@ -214,7 +304,7 @@ public class IndexFungorumHigherClassificationImport  extends IndexFungorumImpor
 	 * @see eu.etaxonomy.cdm.io.common.CdmIoBase#isIgnore(eu.etaxonomy.cdm.io.common.IImportConfigurator)
 	 */
 	protected boolean isIgnore(IndexFungorumImportState state){
-		return ! state.getConfig().isDoOccurrence();
+		return ! state.getConfig().isDoRelTaxa();
 	}
 
 

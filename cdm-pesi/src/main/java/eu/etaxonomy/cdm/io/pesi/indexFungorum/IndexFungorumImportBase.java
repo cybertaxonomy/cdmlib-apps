@@ -18,6 +18,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 
 import eu.etaxonomy.cdm.common.CdmUtils;
@@ -27,21 +28,37 @@ import eu.etaxonomy.cdm.io.common.IPartitionedIO;
 import eu.etaxonomy.cdm.io.common.ResultSetPartitioner;
 import eu.etaxonomy.cdm.io.common.Source;
 import eu.etaxonomy.cdm.io.common.mapping.DbImportMapping;
+import eu.etaxonomy.cdm.model.agent.Team;
 import eu.etaxonomy.cdm.model.common.CdmBase;
+import eu.etaxonomy.cdm.model.common.IdentifiableSource;
+import eu.etaxonomy.cdm.model.common.TimePeriod;
+import eu.etaxonomy.cdm.model.name.NonViralName;
+import eu.etaxonomy.cdm.model.reference.Reference;
+import eu.etaxonomy.cdm.model.reference.ReferenceFactory;
+import eu.etaxonomy.cdm.model.taxon.Classification;
+import eu.etaxonomy.cdm.model.taxon.Taxon;
+import eu.etaxonomy.cdm.strategy.exceptions.StringNotParsableException;
+import eu.etaxonomy.cdm.strategy.parser.NonViralNameParserImpl;
 
 /**
  * @author a.mueller
  * @created 27.02.2012
  */
-public abstract class IndexFungorumImportBase<CDM_BASE extends CdmBase> extends CdmImportBase<IndexFungorumImportConfigurator, IndexFungorumImportState> implements ICdmIO<IndexFungorumImportState>, IPartitionedIO<IndexFungorumImportState> {
+public abstract class IndexFungorumImportBase extends CdmImportBase<IndexFungorumImportConfigurator, IndexFungorumImportState> implements ICdmIO<IndexFungorumImportState>, IPartitionedIO<IndexFungorumImportState> {
 	private static final Logger logger = Logger.getLogger(IndexFungorumImportBase.class);
 	
 	//NAMESPACES
+	protected static final String NAMESPACE_REFERENCE = "reference";
+	protected static final String NAMESPACE_TAXON = "Taxon";
+	protected static final String NAMESPACE_SUPRAGENERIC_NAMES = "SupragenericNames";
+	protected static final String NAMESPACE_GENERA = "Genera";
+	protected static final String NAMESPACE_SPECIES = "Species";
 	
-	protected static final String REFERENCE_NAMESPACE = "Source";
-	protected static final String TAXON_NAMESPACE = "Taxon";
+	
+	protected static final String INCERTAE_SEDIS = "Incertae sedis";
+	protected static final String SOURCE_REFERENCE = "SOURCE_REFERENCE";
 
-	
+
 	
 
 	private String pluralString;
@@ -84,6 +101,10 @@ public abstract class IndexFungorumImportBase<CDM_BASE extends CdmBase> extends 
 		logger.info("end make " + getPluralString() + " ... " + getSuccessString(true));
 		return;
 	}
+	
+
+
+	
 	
 	public boolean doPartition(ResultSetPartitioner partitioner, IndexFungorumImportState state) {
 		boolean success = true ;
@@ -225,6 +246,117 @@ public abstract class IndexFungorumImportBase<CDM_BASE extends CdmBase> extends 
 	protected void doLogPerLoop(int count, int recordsPerLog, String pluralString){
 		if ((count % recordsPerLog ) == 0 && count!= 0 ){ logger.info(pluralString + " handled: " + (count));}
 	}
+	
+
+	protected void makeAuthorAndPublication(IndexFungorumImportState state, ResultSet rs, NonViralName name) throws SQLException {
+		//authors
+		NonViralNameParserImpl parser = NonViralNameParserImpl.NewInstance();
+		String authorStr = rs.getString("AUTHORS");
+		if (StringUtils.isNotBlank(authorStr)){
+			try {
+				parser.parseAuthors(name, authorStr);
+			} catch (StringNotParsableException e){ 
+				logger.warn("Authorstring not parsable: " + authorStr);
+				name.setAuthorshipCache(authorStr);
+			}
+		}
+		
+		//page
+		String page = rs.getString("PAGE");
+		if (StringUtils.isNotBlank(page)){
+			name.setNomenclaturalMicroReference(page);
+		}
+		
+		//Reference
+		Reference<?> ref = ReferenceFactory.newGeneric();
+		boolean hasInReference = false;
+		//publishing authors
+		Team pubAuthor = null;
+		String pubAuthorStr = rs.getString("PUBLISHING_AUTHORS");
+		if (StringUtils.isNotBlank(pubAuthorStr)){
+			if (StringUtils.isNotBlank(authorStr)){
+				if (! pubAuthorStr.equals(authorStr)){
+					pubAuthor = Team.NewInstance();
+					pubAuthor.setNomenclaturalTitle(pubAuthorStr);
+					
+				}
+			}else{
+				logger.warn("'AUTHORS' is blank for not empty PUBLISHING_AUTHORS. This is not yet handled.");
+			}
+		}
+		if (pubAuthor != null){
+			Reference<?> inRef = ReferenceFactory.newGeneric();
+			ref.setInReference(inRef);
+			hasInReference = true;
+		}
+		//location
+		String location = rs.getString("pubIMIAbbrLoc");
+		if (StringUtils.isNotBlank(location)){
+			if (hasInReference){
+				ref.getInReference().setTitle(location);
+			}else{
+				ref.setPlacePublished(location);
+			}
+		}
+		//title
+		String titleMain = rs.getString("pubIMIAbbr");
+		String supTitle = rs.getString("pubIMISupAbbr");
+		String title = CdmUtils.concat(" ", titleMain, supTitle);
+		if (StringUtils.isNotBlank(title)){
+			if (hasInReference){
+				ref.getInReference().setTitle(title);
+			}else{
+				ref.setTitle(title);
+			}
+		}
+		//Volume
+		String volume = rs.getString("VOLUME");
+		String part = rs.getString("PART");
+		if (StringUtils.isNotBlank(volume)){
+			if (StringUtils.isNotBlank(part)){
+				volume = volume + "(" + part + ")";
+			}
+			ref.setVolume(volume);
+		}else if (StringUtils.isNotBlank(part)){
+			logger.warn("'Part' is not blank for empty volume. This is not yet handled.");
+		}
+		//year
+		String yearOfPubl = rs.getString("YEAR_OF_PUBLICATION");
+		
+		String yearOnPubl = rs.getString("YEAR_ON_PUBLICATION");
+		if (StringUtils.isNotEmpty(yearOfPubl)){
+			String year = yearOfPubl.trim();
+			if (StringUtils.isNotBlank(yearOnPubl)){
+				year = year + "[" + yearOnPubl + "]";
+			}
+			ref.setDatePublished(TimePeriod.parseString(year));
+		}else if (StringUtils.isNotEmpty(yearOnPubl)){
+			logger.warn("'YEAR_ON_PUBLICATION' is not blank for blank YEAR_ON_PUBLICATION. This is not yet handled by import.");
+		}
+		
+		name.setNomenclaturalReference(ref);
+	}
+	
+
+	protected void makeSource(IndexFungorumImportState state, Taxon taxon, Integer id, String namespace) {
+		Reference<?> sourceReference = state.getRelatedObject(NAMESPACE_REFERENCE, SOURCE_REFERENCE, Reference.class);
+		IdentifiableSource source = IdentifiableSource.NewInstance(String.valueOf(id), namespace, sourceReference, null);
+		taxon.addSource(source);	
+	}
+	
+
+	protected Classification getClassification(IndexFungorumImportState state) {
+		Classification result;
+		UUID classificationUuid = state.getTreeUuid(state.getConfig().getSourceReference());
+		if (classificationUuid == null){
+			Reference<?> sourceReference = state.getRelatedObject(NAMESPACE_REFERENCE, SOURCE_REFERENCE, Reference.class);
+			result = makeTreeMemSave(state, sourceReference);
+		} else {
+			result = getClassificationService().find(classificationUuid);
+		} 
+		return result;
+	}
+
 	
 
 

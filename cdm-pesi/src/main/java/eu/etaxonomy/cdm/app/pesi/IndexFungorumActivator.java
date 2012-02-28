@@ -48,7 +48,7 @@ public class IndexFungorumActivator {
 	//check - import
 	static final CHECK check = CHECK.CHECK_AND_IMPORT;
 
-	static final int partitionSize = 5000;
+	static final int partitionSize = 1000;
 
 
 	//NomeclaturalCode
