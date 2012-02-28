@@ -16,21 +16,20 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
-import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.springframework.stereotype.Component;
 
 import eu.etaxonomy.cdm.io.common.ResultSetPartitioner;
 import eu.etaxonomy.cdm.io.pesi.out.PesiTransformer;
 import eu.etaxonomy.cdm.model.common.CdmBase;
-import eu.etaxonomy.cdm.model.name.NomenclaturalCode;
-import eu.etaxonomy.cdm.model.name.NonViralName;
-import eu.etaxonomy.cdm.model.name.Rank;
+import eu.etaxonomy.cdm.model.description.Distribution;
+import eu.etaxonomy.cdm.model.description.PresenceTerm;
+import eu.etaxonomy.cdm.model.description.TaxonDescription;
+import eu.etaxonomy.cdm.model.location.NamedArea;
 import eu.etaxonomy.cdm.model.reference.Reference;
 import eu.etaxonomy.cdm.model.taxon.Classification;
 import eu.etaxonomy.cdm.model.taxon.Taxon;
 import eu.etaxonomy.cdm.model.taxon.TaxonBase;
-import eu.etaxonomy.cdm.strategy.parser.NonViralNameParserImpl;
 
 
 /**
@@ -41,8 +40,8 @@ import eu.etaxonomy.cdm.strategy.parser.NonViralNameParserImpl;
 public class IndexFungorumDistributionImport  extends IndexFungorumImportBase {
 	private static final Logger logger = Logger.getLogger(IndexFungorumDistributionImport.class);
 	
-	private static final String pluralString = "species";
-	private static final String dbTableName = "[tblPESIfungi-IFdata]";
+	private static final String pluralString = "distributions";
+	private static final String dbTableName = "[tblPESIfungi]";
 
 	public IndexFungorumDistributionImport(){
 		super(pluralString, dbTableName, null);
@@ -53,8 +52,8 @@ public class IndexFungorumDistributionImport  extends IndexFungorumImportBase {
 	
 	@Override
 	protected String getIdQuery() {
-		String result = " SELECT RECORD_NUMBER FROM " + getTableName() +
-				" ORDER BY PreferredName ";
+		String result = " SELECT PreferredNameIFnumber FROM " + getTableName() +
+				" ORDER BY PreferredNameIFnumber ";
 		return result;
 	}
 
@@ -67,9 +66,9 @@ public class IndexFungorumDistributionImport  extends IndexFungorumImportBase {
 	@Override
 	protected String getRecordQuery(IndexFungorumImportConfigurator config) {
 		String strRecordQuery = 
-				" SELECT DISTINCT distribution.PreferredNameFDCnumber, species.* " +
-				" FROM tblPESIfungi AS distribution RIGHT OUTER JOIN  dbo.[tblPESIfungi-IFdata] AS species ON distribution.PreferredNameIFnumber = species.RECORD_NUMBER " +
-			" WHERE ( species.RECORD_NUMBER IN (" + ID_LIST_TOKEN + ") )" +
+				" SELECT distribution.* " +
+				" FROM tblPESIfungi AS distribution  " +
+			" WHERE ( distribution.PreferredNameIFnumber  IN (" + ID_LIST_TOKEN + ") )" +
 			"";
 		return strRecordQuery;
 	}
@@ -120,29 +119,34 @@ public class IndexFungorumDistributionImport  extends IndexFungorumImportBase {
 //			  FROM [IF].[dbo].[tblPESIfungi]
 		
 		try {
+			//column names that do not hold distribution information
+			Set<String> excludedColumns = new HashSet<String>();
+			excludedColumns.add("PreferredName");
+			excludedColumns.add("PreferredNameIFnumber");
+			excludedColumns.add("PreferredNameFDCnumber");
+			
+			PresenceTerm status = PresenceTerm.PRESENT();
 			while (rs.next()){
 
-				//TODO
-				//DisplayName, NomRefCache
-
-				Integer id = rs.getInt("RECORD_NUMBER");
+				//get taxon description
+				Integer id = rs.getInt("PreferredNameIFnumber");
+				Taxon taxon = state.getRelatedObject(NAMESPACE_SPECIES, String.valueOf(id), Taxon.class);
+				Reference<?> ref = null;
+				TaxonDescription description = getTaxonDescription(taxon, ref, false, true);
 				
-				String preferredName = rs.getString("PreferredName");
-				if (StringUtils.isBlank(preferredName)){
-					logger.warn("Preferred name is blank. This case is not yet handled by IF import. RECORD_NUMBER" + id);
+				//handle single distributions
+				int count = rs.getMetaData().getColumnCount();
+				for (int i=1; i <= count; i++ ){
+					String colName = rs.getMetaData().getColumnName(i);
+					//exclude non distribution columns
+					if (! excludedColumns.contains(colName)){
+						String distributionKey = rs.getString(i);
+						NamedArea area = state.getTransformer().getNamedAreaByKey(distributionKey);
+						Distribution distribution = Distribution.NewInstance(area, status);
+						description.addElement(distribution);
+					}
 				}
 				
-				Rank rank = Rank.SPECIES();
-				
-				NonViralNameParserImpl parser = NonViralNameParserImpl.NewInstance();
-				NonViralName<?> name = parser.parseSimpleName(preferredName, NomenclaturalCode.ICBN, rank);
-				
-				Taxon taxon = Taxon.NewInstance(name, sourceReference);
-				Taxon parent = getParentTaxon(state, rs);
-				classification.addParentChild(parent, taxon, null, null);
-				
-				//author + publication
-				makeAuthorAndPublication(state, rs, name);
 				//source
 				makeSource(state, taxon, id, NAMESPACE_SPECIES );
 				
@@ -182,11 +186,11 @@ public class IndexFungorumDistributionImport  extends IndexFungorumImportBase {
 		try{
 			Set<String> taxonIdSet = new HashSet<String>();
 			while (rs.next()){
-				handleForeignKey(rs, taxonIdSet,"PreferredNameFDCnumber" );
+				handleForeignKey(rs, taxonIdSet, "PreferredNameIFnumber" );
 			}
 			
 			//taxon map
-			nameSpace = NAMESPACE_GENERA;
+			nameSpace = NAMESPACE_SPECIES;
 			cdmClass = TaxonBase.class;
 			idSet = taxonIdSet;
 			Map<String, TaxonBase> taxonMap = (Map<String, TaxonBase>)getCommonService().getSourcedObjectsByIdInSource(cdmClass, idSet, nameSpace);
@@ -218,7 +222,7 @@ public class IndexFungorumDistributionImport  extends IndexFungorumImportBase {
 	 * @see eu.etaxonomy.cdm.io.common.CdmIoBase#isIgnore(eu.etaxonomy.cdm.io.common.IImportConfigurator)
 	 */
 	protected boolean isIgnore(IndexFungorumImportState state){
-		return ! state.getConfig().isDoTaxa();
+		return ! state.getConfig().isDoOccurrence();
 	}
 
 

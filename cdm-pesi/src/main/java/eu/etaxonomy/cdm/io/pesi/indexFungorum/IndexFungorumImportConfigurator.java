@@ -51,9 +51,7 @@ public class IndexFungorumImportConfigurator extends ImportConfiguratorBase<Inde
 				, IndexFungorumHigherClassificationImport.class
 				, IndexFungorumGeneraImport.class
 				, IndexFungorumSpeciesImport.class
-//				, IfTaxonImport.class
-//				, IfTaxonRelationImport.class
-//				, IfOccurrenceImport.class
+				, IndexFungorumDistributionImport.class
 		};	
 	}
 	
