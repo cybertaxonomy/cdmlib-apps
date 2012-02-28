@@ -82,6 +82,43 @@ public class IndexFungorumDistributionImport  extends IndexFungorumImportBase {
 		ResultSet rs = partitioner.getResultSet();
 		Classification classification = getClassification(state);
 		
+//		SELECT TOP 1000 [PreferredName]
+//			      ,[PreferredNameIFnumber]
+//			      ,[PreferredNameFDCnumber]
+//			      ,[UK]
+//			      ,[DK]
+//			      ,[TR]
+//			      ,[DE]
+//			      ,[IE]
+//			      ,[FR]
+//			      ,[IT]
+//			      ,[ES]
+//			      ,[SK]
+//			      ,[GR]
+//			      ,[NL]
+//			      ,[LT]
+//			      ,[SE]
+//			      ,[NO]
+//			      ,[UA]
+//			      ,[PL]
+//			      ,[CH]
+//			      ,[GE]
+//			      ,[BG]
+//			      ,[RO]
+//			      ,[LV]
+//			      ,[IL]
+//			      ,[RU]
+//			      ,[LU]
+//			      ,[MT]
+//			      ,[HU]
+//			      ,[PT]
+//			      ,[EE]
+//			      ,[AT]
+//			      ,[AM]
+//			      ,[BA]
+//			      ,[RS]
+//			  FROM [IF].[dbo].[tblPESIfungi]
+		
 		try {
 			while (rs.next()){
 
