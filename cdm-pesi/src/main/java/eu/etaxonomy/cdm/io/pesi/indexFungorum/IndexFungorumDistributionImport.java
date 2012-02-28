@@ -16,6 +16,7 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.springframework.stereotype.Component;
 
@@ -27,7 +28,6 @@ import eu.etaxonomy.cdm.model.description.PresenceTerm;
 import eu.etaxonomy.cdm.model.description.TaxonDescription;
 import eu.etaxonomy.cdm.model.location.NamedArea;
 import eu.etaxonomy.cdm.model.reference.Reference;
-import eu.etaxonomy.cdm.model.taxon.Classification;
 import eu.etaxonomy.cdm.model.taxon.Taxon;
 import eu.etaxonomy.cdm.model.taxon.TaxonBase;
 
@@ -77,46 +77,8 @@ public class IndexFungorumDistributionImport  extends IndexFungorumImportBase {
 	@Override
 	public boolean doPartition(ResultSetPartitioner partitioner, IndexFungorumImportState state) {
 		boolean success = true;
-		Reference<?> sourceReference = state.getRelatedObject(NAMESPACE_REFERENCE, SOURCE_REFERENCE, Reference.class);
+//		Reference<?> sourceReference = state.getRelatedObject(NAMESPACE_REFERENCE, SOURCE_REFERENCE, Reference.class);
 		ResultSet rs = partitioner.getResultSet();
-		Classification classification = getClassification(state);
-		
-//		SELECT TOP 1000 [PreferredName]
-//			      ,[PreferredNameIFnumber]
-//			      ,[PreferredNameFDCnumber]
-//			      ,[UK]
-//			      ,[DK]
-//			      ,[TR]
-//			      ,[DE]
-//			      ,[IE]
-//			      ,[FR]
-//			      ,[IT]
-//			      ,[ES]
-//			      ,[SK]
-//			      ,[GR]
-//			      ,[NL]
-//			      ,[LT]
-//			      ,[SE]
-//			      ,[NO]
-//			      ,[UA]
-//			      ,[PL]
-//			      ,[CH]
-//			      ,[GE]
-//			      ,[BG]
-//			      ,[RO]
-//			      ,[LV]
-//			      ,[IL]
-//			      ,[RU]
-//			      ,[LU]
-//			      ,[MT]
-//			      ,[HU]
-//			      ,[PT]
-//			      ,[EE]
-//			      ,[AT]
-//			      ,[AM]
-//			      ,[BA]
-//			      ,[RS]
-//			  FROM [IF].[dbo].[tblPESIfungi]
 		
 		try {
 			//column names that do not hold distribution information
@@ -140,10 +102,16 @@ public class IndexFungorumDistributionImport  extends IndexFungorumImportBase {
 					String colName = rs.getMetaData().getColumnName(i);
 					//exclude non distribution columns
 					if (! excludedColumns.contains(colName)){
-						String distributionKey = rs.getString(i);
-						NamedArea area = state.getTransformer().getNamedAreaByKey(distributionKey);
-						Distribution distribution = Distribution.NewInstance(area, status);
-						description.addElement(distribution);
+						String distributionValue = rs.getString(i);
+						if (StringUtils.isNotBlank(distributionValue)){
+							if (! distributionValue.equals("X")){
+								logger.warn("Unexpected distribution value '" + distributionValue + "' for area " + colName);
+							}
+							NamedArea area = state.getTransformer().getNamedAreaByKey(colName);
+							Distribution distribution = Distribution.NewInstance(area, status);
+							description.addElement(distribution);
+						}
+						
 					}
 				}
 				

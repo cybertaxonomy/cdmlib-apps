@@ -53,6 +53,17 @@ public class PesiDestinations {
 		String userName = "pesiexport";
 		return makeSource(dbms, strServer, strDB, port, userName, null);
 	}
+
+	
+	public static Source pesi_test_local_CDM_IF2PESI(){
+		//	CDM - PESI
+		String dbms = Source.SQL_SERVER_2008;
+		String strServer = "pesiimport3"; //192.168.1.223
+		String strDB = "CDM_IF2PESI";
+		int port = 1433;
+		String userName = "pesiexport";
+		return makeSource(dbms, strServer, strDB, port, userName, null);
+	}
 	
 	public static Source pesi_test_local_CDM_ERMS2PESI(){
 		//	CDM - PESI
