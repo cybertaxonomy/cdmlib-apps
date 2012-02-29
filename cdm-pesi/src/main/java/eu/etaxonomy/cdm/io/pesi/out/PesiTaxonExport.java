@@ -2170,20 +2170,12 @@ public class PesiTaxonExport extends PesiExportBase {
 		mapping.addMapper(DbLastActionMapper.NewInstance("LastActionDate", false));
 		mapping.addMapper(DbLastActionMapper.NewInstance("LastAction", true));
 		
-
-		
-		ExtensionType extensionTypeSpeciesExpertName = (ExtensionType)getTermService().find(BerlinModelTransformer.uuidSpeciesExpertName);
+		ExtensionType extensionTypeSpeciesExpertName = (ExtensionType)getTermService().find(PesiTransformer.speciesExpertNameUuid);
 		mapping.addMapper(DbExtensionMapper.NewInstance(extensionTypeSpeciesExpertName, "SpeciesExpertName"));
-		
-		ExtensionType extensionTypeExpertName = (ExtensionType)getTermService().find(BerlinModelTransformer.uuidExpertName);
+		ExtensionType extensionTypeExpertName = (ExtensionType)getTermService().find(PesiTransformer.expertNameUuid);
 		mapping.addMapper(DbExtensionMapper.NewInstance(extensionTypeExpertName, "ExpertName"));
 		
-//		mapping.addMapper(MethodMapper.NewInstance("ExpertName", this));
-//		mapping.addMapper(MethodMapper.NewInstance("LastAction", this.getClass(), "getLastAction",  IdentifiableEntity.class));
-//		mapping.addMapper(MethodMapper.NewInstance("LastActionDate", this.getClass(), "getLastActionDate",  IdentifiableEntity.class));
-//		mapping.addMapper(MethodMapper.NewInstance("SpeciesExpertName", this));
-		
-		
+
 		mapping.addMapper(ObjectChangeMapper.NewInstance(TaxonBase.class, TaxonNameBase.class, "Name"));
 		
 		addNameMappers(mapping);
