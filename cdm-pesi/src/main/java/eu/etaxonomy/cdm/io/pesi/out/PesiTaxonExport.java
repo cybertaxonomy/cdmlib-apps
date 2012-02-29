@@ -960,11 +960,11 @@ public class PesiTaxonExport extends PesiExportBase {
 	 */
 	protected boolean invokeParentTaxonFkAndTreeIndex(Integer parentTaxonFk, Integer currentTaxonFk, StringBuffer treeIndex) {
 		try {
-//			if (parentTaxonFk != null) {
-//				parentTaxonFk_TreeIndex_KingdomFkStmt.setInt(1, parentTaxonFk);
-//			} else {
-//				parentTaxonFk_TreeIndex_KingdomFkStmt.setObject(1, null);
-//			}
+			if (parentTaxonFk != null) {
+				parentTaxonFk_TreeIndex_KingdomFkStmt.setInt(1, parentTaxonFk);
+			} else {
+				parentTaxonFk_TreeIndex_KingdomFkStmt.setObject(1, null);
+			}
 
 			if (treeIndex != null) {
 				parentTaxonFk_TreeIndex_KingdomFkStmt.setString(2, treeIndex.toString());
