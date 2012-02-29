@@ -1732,6 +1732,7 @@ public final class PesiTransformer extends ExportTransformerBase implements IExp
 			else if (namedArea.getUuid().equals(BerlinModelTransformer.uuidFlores)) { return STR_AREA_FLORES; }
 			else if (namedArea.getUuid().equals(BerlinModelTransformer.uuidTurkishEastAegeanIslands)) { return STR_AREA_TURKISH_EAST_AEGEAN_ISLANDS; }
 			else if (namedArea.getUuid().equals(BerlinModelTransformer.uuidSerbiaMontenegro)) { return STR_AREA_SERBIA_WITH_MONTENEGRO; }
+			else if (namedArea.getUuid().equals(BerlinModelTransformer.uuidSerbia)) { return STR_AREA_SERBIA_INCLUDING_VOJVODINA_AND_WITH_KOSOVO; }
 			else if (namedArea.getUuid().equals(BerlinModelTransformer.uuidCaucasia)) { return STR_AREA_CAUCASUS_REGION; }
 			
 			
@@ -1854,6 +1855,7 @@ public final class PesiTransformer extends ExportTransformerBase implements IExp
 			else if (namedArea.getUuid().equals(BerlinModelTransformer.uuidTurkishEastAegeanIslands)) { return AREA_TURKISH_EAST_AEGEAN_ISLANDS; }
 			else if (namedArea.getUuid().equals(BerlinModelTransformer.uuidFlores)) { return AREA_FLORES; }
 			else if (namedArea.getUuid().equals(BerlinModelTransformer.uuidSerbiaMontenegro)) { return AREA_SERBIA_WITH_MONTENEGRO; }
+			else if (namedArea.getUuid().equals(BerlinModelTransformer.uuidSerbia)) { return AREA_SERBIA_INCLUDING_VOJVODINA_AND_WITH_KOSOVO; }
 			else if (namedArea.getUuid().equals(BerlinModelTransformer.uuidCaucasia)) { return AREA_CAUCASUS_REGION; }
 			
 			//FE
