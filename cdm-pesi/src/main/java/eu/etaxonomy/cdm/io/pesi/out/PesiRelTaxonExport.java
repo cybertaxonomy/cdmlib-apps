@@ -107,10 +107,11 @@ public class PesiRelTaxonExport extends PesiExportBase {
 			// Initialize the db mapper
 			mapping.initialize(state);
 			
-			//Export Taxa..
+			//Export taxon relations
 			success &= doPhase01(state, mapping);
 
-			//name relations
+			
+			// Export name relations
 			success &= doPhase02(state, mapping);
 
 		} catch (SQLException e) {
