@@ -108,7 +108,7 @@ public class PesiRelTaxonExport extends PesiExportBase {
 			mapping.initialize(state);
 			
 			//Export Taxa..
-//			success &= doPhase01(state, mapping);
+			success &= doPhase01(state, mapping);
 
 			
 			
