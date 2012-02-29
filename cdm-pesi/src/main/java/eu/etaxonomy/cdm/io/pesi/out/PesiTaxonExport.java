@@ -32,7 +32,6 @@ import org.springframework.transaction.TransactionStatus;
 
 import eu.etaxonomy.cdm.api.service.TaxonServiceImpl;
 import eu.etaxonomy.cdm.common.CdmUtils;
-import eu.etaxonomy.cdm.io.berlinModel.BerlinModelTransformer;
 import eu.etaxonomy.cdm.io.common.Source;
 import eu.etaxonomy.cdm.io.common.mapping.UndefinedTransformerMethodException;
 import eu.etaxonomy.cdm.io.common.mapping.out.DbConstantMapper;
@@ -112,8 +111,8 @@ public class PesiTaxonExport extends PesiExportBase {
 	private static ExtensionType expertNameExtensionType;
 	private static ExtensionType speciesExpertNameExtensionType;
 	private static ExtensionType cacheCitationExtensionType;
-	private static NonViralNameDefaultCacheStrategy zooNameStrategy = ZooNameNoMarkerCacheStrategy.NewInstance();
-	private static NonViralNameDefaultCacheStrategy botanicalNameStrategy = BotanicNameDefaultCacheStrategy.NewInstance();
+	private static NonViralNameDefaultCacheStrategy<?> zooNameStrategy = ZooNameNoMarkerCacheStrategy.NewInstance();
+	private static NonViralNameDefaultCacheStrategy<?> botanicalNameStrategy = BotanicNameDefaultCacheStrategy.NewInstance();
 	
 	
 	/**
@@ -188,29 +187,25 @@ public class PesiTaxonExport extends PesiExportBase {
 			expertNameExtensionType = (ExtensionType)getTermService().find(PesiTransformer.expertNameUuid);
 			speciesExpertNameExtensionType = (ExtensionType)getTermService().find(PesiTransformer.speciesExpertNameUuid);
 			cacheCitationExtensionType = (ExtensionType)getTermService().find(PesiTransformer.cacheCitationUuid);
-			//expertUserIdExtensionType = (ExtensionType)getTermService().find(PesiTransformer.expertUserIdUuid);
-			//speciesExpertUserIdExtensionType = (ExtensionType)getTermService().find(PesiTransformer.speciesExpertUserIdUuid);
-
+			
+			//Export Taxa..
+			success &= doPhase01(state, mapping);
 
 			//"PHASE 1b: Handle names without taxa ...
 			success &= doNames(state);
 
-			//Export Taxa..
-			success &= doPhase01(state, mapping);
-
-			
 			
 			// 2nd Round: Add ParentTaxonFk, TreeIndex to each Taxon
 			success &= doPhase02(state);
 			
-			//PHASE 3: Add Rank data, KingdomFk, TypeNameFk, expertFk and speciesExpertFk...
+			//PHASE 3: Add Rank data, KingdomFk, TypeNameFk ...
 			success &= doPhase03(state);
 			
 			
 			//"PHASE 4: Creating Inferred Synonyms...
 			success &= doPhase04(state, mapping);
 			
-			//updates to TaxonStatus
+			//updates to TaxonStatus and others
 			success &= doPhaseUpdates(state);
 
 			
@@ -401,7 +396,7 @@ public class PesiTaxonExport extends PesiExportBase {
 				ancestorLevel = 1;
 			}
 			if (ancestorLevel > 0) {
-				if (ancestorOfSpecificRank(taxon, ancestorLevel, Rank.SUBGENUS())) {
+				if (validateAncestorOfSpecificRank(taxon, ancestorLevel, Rank.SUBGENUS())) {
 					// The child (species or subspecies) of this parent (subgenus) has to have an infraGenericEpithet
 					if (infraGenericEpithet == null) {
 						logger.warn("InfraGenericEpithet does not exist even though it should for: " + taxon.getUuid() + " (" + taxon.getTitleCache() + ")");
@@ -820,7 +815,7 @@ public class PesiTaxonExport extends PesiExportBase {
 	 * @param ancestorRank The ancestor rank.
 	 * @return Whether a parent at a specific level has a specific Rank.
 	 */
-	private boolean ancestorOfSpecificRank(TaxonBase<?> taxonBase, int level, Rank ancestorRank) {
+	private boolean validateAncestorOfSpecificRank(TaxonBase<?> taxonBase, int level, Rank ancestorRank) {
 		boolean result = false;
 		TaxonNode parentNode = null;
 		if (taxonBase.isInstanceOf(Taxon.class)){
@@ -965,11 +960,11 @@ public class PesiTaxonExport extends PesiExportBase {
 	 */
 	protected boolean invokeParentTaxonFkAndTreeIndex(Integer parentTaxonFk, Integer currentTaxonFk, StringBuffer treeIndex) {
 		try {
-			if (parentTaxonFk != null) {
-				parentTaxonFk_TreeIndex_KingdomFkStmt.setInt(1, parentTaxonFk);
-			} else {
-				parentTaxonFk_TreeIndex_KingdomFkStmt.setObject(1, null);
-			}
+//			if (parentTaxonFk != null) {
+//				parentTaxonFk_TreeIndex_KingdomFkStmt.setInt(1, parentTaxonFk);
+//			} else {
+//				parentTaxonFk_TreeIndex_KingdomFkStmt.setObject(1, null);
+//			}
 
 			if (treeIndex != null) {
 				parentTaxonFk_TreeIndex_KingdomFkStmt.setString(2, treeIndex.toString());
@@ -1133,11 +1128,42 @@ public class PesiTaxonExport extends PesiExportBase {
 	}
 
 	
+	/**
+	 * Creates the kingdom fk.
+	 * @param taxonName
+	 * @return
+	 */
+	@SuppressWarnings("unused")  //used by mapper
 	private static Integer getKingdomFk(TaxonNameBase taxonName){
 		return PesiTransformer.nomenClaturalCode2Kingdom(taxonName.getNomenclaturalCode());
 	}
-
 	
+	/**
+	 * Creates the parent fk.
+	 * @param taxonName
+	 * @return
+	 */
+	@SuppressWarnings("unused")  //used by mapper
+	private static Integer getParentTaxonFk(TaxonBase<?> taxonBase, PesiExportState state){
+		if (taxonBase.isInstanceOf(Taxon.class)){
+			Taxon taxon = CdmBase.deproxy(taxonBase, Taxon.class);
+			if (! isMisappliedName(taxon)){
+				Set<TaxonNode> nodes = taxon.getTaxonNodes();
+				if (nodes.size() == 0){
+					if (taxon.getName().getRank().isLower(Rank.KINGDOM())){
+						logger.warn("Accepted taxon has no parent. " + taxon.getTitleCache() + ", " +  taxon.getUuid());
+					}
+				}else if (nodes.size() > 1){
+					logger.warn("Taxon has more than 1 node attached. This is not supported by PESI export." +  taxon.getTitleCache() + ", " +  taxon.getUuid());
+				}else{
+					Taxon parent =nodes.iterator().next().getParent().getTaxon();
+					return state.getDbId(parent);
+				}
+			}
+		}
+		return null;
+	}
+
 	/**
 	 * Returns the rankFk for the taxon name based on the names nomenclatural code.
 	 * You may not use this method for kingdoms other then Animalia, Plantae and Bacteria.
@@ -2143,7 +2169,6 @@ public class PesiTaxonExport extends PesiExportBase {
 	 */
 	private PesiExportMapping getMapping() {
 		PesiExportMapping mapping = new PesiExportMapping(dbTableName);
-		ExtensionType extensionType = null;
 		
 		mapping.addMapper(IdMapper.NewInstance("TaxonId"));
 		mapping.addMapper(DbObjectMapper.NewInstance("sec", "sourceFk")); //OLD:mapping.addMapper(MethodMapper.NewInstance("SourceFK", this.getClass(), "getSourceFk", standardMethodParameter, PesiExportState.class));
@@ -2175,7 +2200,7 @@ public class PesiTaxonExport extends PesiExportBase {
 		ExtensionType extensionTypeExpertName = (ExtensionType)getTermService().find(PesiTransformer.expertNameUuid);
 		mapping.addMapper(DbExtensionMapper.NewInstance(extensionTypeExpertName, "ExpertName"));
 		
-
+		mapping.addMapper(MethodMapper.NewInstance("ParentTaxonFk", this, TaxonBase.class, PesiExportState.class));
 		mapping.addMapper(ObjectChangeMapper.NewInstance(TaxonBase.class, TaxonNameBase.class, "Name"));
 		
 		addNameMappers(mapping);
