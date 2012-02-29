@@ -82,8 +82,8 @@ public class IndexFungorumHigherClassificationImport  extends IndexFungorumImpor
 		String lastSubclass = "";
 		String lastOrder = "";
 		String lastFamily = "";
-		String lastGenus = "";
-		String lastSpecies = "";
+//		String lastGenus = "";
+//		String lastSpecies = "";
 		
 		Taxon taxonKingdom = null;
 		Taxon taxonPhylum = null;
@@ -92,8 +92,8 @@ public class IndexFungorumHigherClassificationImport  extends IndexFungorumImpor
 		Taxon taxonSubclass = null;
 		Taxon taxonOrder = null;
 		Taxon taxonFamily = null;
-		Taxon taxonGenus = null;
-		Taxon taxonSpecies = null;
+//		Taxon taxonGenus = null;
+//		Taxon taxonSpecies = null;
 		
 		Taxon higherTaxon = null;
 		
@@ -113,8 +113,8 @@ public class IndexFungorumHigherClassificationImport  extends IndexFungorumImpor
 				String subclass = rs.getString("SubclassName");
 				String order = rs.getString("OrderName");
 				String family = rs.getString("FamilyName");
-				String genus = rs.getString("GenusName");
-				String species = rs.getString("SpeciesName");
+//				String genus = rs.getString("GenusName");
+//				String species = rs.getString("SpeciesName");
 				
 //				if (isNewTaxon(species, lastSpecies)){
 //					if (isNewTaxon(genus, lastGenus)){
@@ -133,7 +133,8 @@ public class IndexFungorumHigherClassificationImport  extends IndexFungorumImpor
 											higherTaxon = taxonKingdom;
 										}
 										higherTaxon = isIncertisSedis(kingdom) ? higherTaxon : taxonKingdom;
-										taxonPhylum = makeTaxon(state, phylum, Rank.PHYLUM());
+										Rank rank = (lastKingdom.equals("Fungi") ? Rank.DIVISION() : Rank.PHYLUM());
+										taxonPhylum = makeTaxon(state, phylum, rank);
 										if (taxonPhylum != null){
 											classification.addParentChild(higherTaxon, taxonPhylum, null, null);
 										}
@@ -143,7 +144,8 @@ public class IndexFungorumHigherClassificationImport  extends IndexFungorumImpor
 									}else{
 										higherTaxon = taxonPhylum;
 									}
-									taxonSubphylum = makeTaxon(state, subphylum, Rank.SUBPHYLUM());
+									Rank rank = (lastKingdom.equals("Fungi") ? Rank.SUBDIVISION() : Rank.SUBPHYLUM());
+									taxonSubphylum = makeTaxon(state, subphylum, rank);
 									if (taxonSubphylum != null){
 										getClassification(state).addParentChild(higherTaxon,taxonSubphylum, null, null);
 									}

@@ -104,6 +104,7 @@ public class IndexFungorumDistributionImport  extends IndexFungorumImportBase {
 					if (! excludedColumns.contains(colName)){
 						String distributionValue = rs.getString(i);
 						if (StringUtils.isNotBlank(distributionValue)){
+							//create distribution for existing occurrences
 							if (! distributionValue.equals("X")){
 								logger.warn("Unexpected distribution value '" + distributionValue + "' for area " + colName);
 							}
@@ -115,9 +116,7 @@ public class IndexFungorumDistributionImport  extends IndexFungorumImportBase {
 					}
 				}
 				
-				//source
-				makeSource(state, taxon, id, NAMESPACE_SPECIES );
-				
+				//save
 				getTaxonService().saveOrUpdate(taxon);
 			}
 
