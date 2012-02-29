@@ -110,9 +110,7 @@ public class PesiRelTaxonExport extends PesiExportBase {
 			//Export Taxa..
 			success &= doPhase01(state, mapping);
 
-			
-			
-			// 2nd Round: Add ParentTaxonFk, TreeIndex to each Taxon
+			//name relations
 			success &= doPhase02(state, mapping);
 
 		} catch (SQLException e) {
@@ -125,7 +123,7 @@ public class PesiRelTaxonExport extends PesiExportBase {
 	
 	
 	private boolean doPhase01(PesiExportState state, PesiExportMapping mapping2) throws SQLException {
-		logger.info("PHASE 1: Relationships ...");
+		logger.info("PHASE 1: Taxon Relationships ...");
 		boolean success = true;
 		
 		int limit = state.getConfig().getLimitSave();
@@ -152,7 +150,7 @@ public class PesiRelTaxonExport extends PesiExportBase {
 	}
 	
 	private boolean doPhase02(PesiExportState state, PesiExportMapping mapping2) throws SQLException {
-		logger.info("PHASE 1: Relationships ...");
+		logger.info("PHASE 2: Name Relationships ...");
 		boolean success = true;
 		
 		int limit = state.getConfig().getLimitSave();
