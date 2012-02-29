@@ -70,7 +70,7 @@ public class PesiExportActivatorFE {
 	static final boolean doRank = true;
 	static final boolean doInferredSynonyms = true;
 	static final boolean doPureNames = false; // !!!
-	static final boolean doDescription = false;
+	static final boolean doDescription = true;
 	
 
 // ************************ NONE **************************************** //

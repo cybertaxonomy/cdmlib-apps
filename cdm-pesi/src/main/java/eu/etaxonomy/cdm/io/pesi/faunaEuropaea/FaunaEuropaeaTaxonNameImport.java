@@ -405,8 +405,7 @@ public class FaunaEuropaeaTaxonNameImport extends FaunaEuropaeaImportBase  {
 							// misapplied name
 								zooName.setCombinationAuthorTeam(null);
 								zooName.setPublicationYear(null);
-								// in cdm misapplied names are accepted taxa
-								fauEuTaxon.setValid(true);
+								
 								taxon = Taxon.NewInstance(zooName, auctReference);
 								taxonBase = taxon;
 								logger.info("Misapplied name created ("+ taxonId + ") " + autName);
@@ -430,8 +429,8 @@ public class FaunaEuropaeaTaxonNameImport extends FaunaEuropaeaImportBase  {
 					Extension.NewInstance(taxonBase, fauExtraCodes, getExtensionType(state, PesiTransformer.fauExtraCodesUuid, "FauExtraCodes", "FauExtraCodes", "FEC"));
 					
 					// Add UserId extensions to this zooName
-					Extension.NewInstance(zooName, expertUserId, getExtensionType(state, PesiTransformer.expertUserIdUuid, "expertUserId", "expertUserId", "EUID"));
-					Extension.NewInstance(zooName, speciesExpertUserId, getExtensionType(state, PesiTransformer.speciesExpertUserIdUuid, "speciesExpertUserId", "speciesExpertUserId", "SEUID"));
+					//Extension.NewInstance(zooName, expertUserId, getExtensionType(state, PesiTransformer.expertUserIdUuid, "expertUserId", "expertUserId", "EUID"));
+					//Extension.NewInstance(zooName, speciesExpertUserId, getExtensionType(state, PesiTransformer.speciesExpertUserIdUuid, "speciesExpertUserId", "speciesExpertUserId", "SEUID"));
 					
 					// Add Expert extensions to this zooName
 					Extension.NewInstance(zooName, expertName, getExtensionType(state, PesiTransformer.expertNameUuid, "ExpertName", "ExpertName", "EN"));
@@ -525,7 +524,8 @@ public class FaunaEuropaeaTaxonNameImport extends FaunaEuropaeaImportBase  {
 			TaxonNameBase<?,?> taxonName = taxonBase.getName();
 			FaunaEuropaeaTaxon fauEuTaxon = fauEuTaxonMap.get(id);
 			boolean useOriginalGenus = false;
-			if (taxonBase instanceof Synonym){
+			//if (taxonBase instanceof Synonym){
+			if (fauEuTaxon.isValid()){
 				useOriginalGenus = true;
 			}
 			
@@ -823,7 +823,7 @@ public class FaunaEuropaeaTaxonNameImport extends FaunaEuropaeaImportBase  {
 				specificEpithet.append(parentName);
 				infraSpecificEpithet.append(localName);
 			}
-		} else { // Synonym
+		} else { // Synonym or misapplied name
 			
 			if (rank == R_SPECIES) {
 
@@ -900,10 +900,11 @@ public class FaunaEuropaeaTaxonNameImport extends FaunaEuropaeaImportBase  {
 		
 		// determine genus: this also works for cases of synonyms since the accepted taxon is its parent
 		String originalGenusString = null;
-		if (useOriginalGenus && ! "".equals(fauEuTaxon.getOriginalGenusName())) {
+		String tempOriginalGenusString = determineOriginalGenus(fauEuTaxon);
+		if (useOriginalGenus && ! "".equals(fauEuTaxon.getOriginalGenusName()) && fauEuTaxon.getOriginalGenusName().equals(tempOriginalGenusString) ) {
 			originalGenusString  = fauEuTaxon.getOriginalGenusName();
 		} else {
-			originalGenusString = determineOriginalGenus(fauEuTaxon);
+			originalGenusString = tempOriginalGenusString;
 		}
 
 		if (originalGenusString != null) {

@@ -31,9 +31,6 @@ import org.springframework.stereotype.Component;
 import org.springframework.transaction.TransactionStatus;
 
 import eu.etaxonomy.cdm.api.service.TaxonServiceImpl;
-import eu.etaxonomy.cdm.app.pesi.ErmsActivator;
-import eu.etaxonomy.cdm.app.pesi.EuroMedActivator;
-import eu.etaxonomy.cdm.app.pesi.FaunaEuropaeaActivator;
 import eu.etaxonomy.cdm.common.CdmUtils;
 import eu.etaxonomy.cdm.io.berlinModel.BerlinModelTransformer;
 import eu.etaxonomy.cdm.io.common.Source;
@@ -73,14 +70,11 @@ import eu.etaxonomy.cdm.model.taxon.TaxonBase;
 import eu.etaxonomy.cdm.model.taxon.TaxonNode;
 import eu.etaxonomy.cdm.model.taxon.TaxonRelationship;
 import eu.etaxonomy.cdm.model.taxon.TaxonRelationshipType;
-import eu.etaxonomy.cdm.persistence.query.MatchMode;
 import eu.etaxonomy.cdm.strategy.cache.HTMLTagRules;
 import eu.etaxonomy.cdm.strategy.cache.TagEnum;
-import eu.etaxonomy.cdm.strategy.cache.TaggedText;
 import eu.etaxonomy.cdm.strategy.cache.name.BotanicNameDefaultCacheStrategy;
 import eu.etaxonomy.cdm.strategy.cache.name.INonViralNameCacheStrategy;
 import eu.etaxonomy.cdm.strategy.cache.name.NonViralNameDefaultCacheStrategy;
-import eu.etaxonomy.cdm.strategy.cache.name.ZooNameDefaultCacheStrategy;
 import eu.etaxonomy.cdm.strategy.cache.name.ZooNameNoMarkerCacheStrategy;
 
 /**
@@ -118,8 +112,6 @@ public class PesiTaxonExport extends PesiExportBase {
 	private static ExtensionType expertNameExtensionType;
 	private static ExtensionType speciesExpertNameExtensionType;
 	private static ExtensionType cacheCitationExtensionType;
-	private static ExtensionType expertUserIdExtensionType;
-	private static ExtensionType speciesExpertUserIdExtensionType;
 	private static NonViralNameDefaultCacheStrategy zooNameStrategy = ZooNameNoMarkerCacheStrategy.NewInstance();
 	private static NonViralNameDefaultCacheStrategy botanicalNameStrategy = BotanicNameDefaultCacheStrategy.NewInstance();
 	
@@ -196,8 +188,8 @@ public class PesiTaxonExport extends PesiExportBase {
 			expertNameExtensionType = (ExtensionType)getTermService().find(PesiTransformer.expertNameUuid);
 			speciesExpertNameExtensionType = (ExtensionType)getTermService().find(PesiTransformer.speciesExpertNameUuid);
 			cacheCitationExtensionType = (ExtensionType)getTermService().find(PesiTransformer.cacheCitationUuid);
-			expertUserIdExtensionType = (ExtensionType)getTermService().find(PesiTransformer.expertUserIdUuid);
-			speciesExpertUserIdExtensionType = (ExtensionType)getTermService().find(PesiTransformer.speciesExpertUserIdUuid);
+			//expertUserIdExtensionType = (ExtensionType)getTermService().find(PesiTransformer.expertUserIdUuid);
+			//speciesExpertUserIdExtensionType = (ExtensionType)getTermService().find(PesiTransformer.speciesExpertUserIdUuid);
 
 
 			//"PHASE 1b: Handle names without taxa ...
@@ -572,10 +564,10 @@ public class PesiTaxonExport extends PesiExportBase {
 			for (TaxonBase<?> taxon : list) {
 				TaxonNameBase<?,?> taxonName = taxon.getName();
 				// Determine expertFk
-				Integer expertFk = makeExpertFk(state, taxonName);
-
-				// Determine speciesExpertFk
-				Integer speciesExpertFk = makeSpeciesExpertFk(state, taxonName);
+//				Integer expertFk = makeExpertFk(state, taxonName);
+//
+//				// Determine speciesExpertFk
+//				Integer speciesExpertFk = makeSpeciesExpertFk(state, taxonName);
 
 				doCount(count++, modCount, pluralString);
 				Integer typeNameFk = getTypeNameFk(taxonName, state);
@@ -583,7 +575,7 @@ public class PesiTaxonExport extends PesiExportBase {
 				//TODO why are expertFks needed? (Andreas M.)
 //				if (expertFk != null || speciesExpertFk != null) {
 					invokeRankDataAndTypeNameFkAndKingdomFk(taxonName, nomenclaturalCode, state.getDbId(taxon), 
-							typeNameFk, kingdomFk, expertFk, speciesExpertFk);
+							typeNameFk, kingdomFk);
 //				}
 			}
 
@@ -604,49 +596,6 @@ public class PesiTaxonExport extends PesiExportBase {
 		commitTransaction(txStatus);
 		logger.debug("Committed transaction.");
 		return success;
-	}
-
-	private Integer makeSpeciesExpertFk(PesiExportState state, TaxonNameBase<?, ?> taxonName) {
-		List<Reference> referenceList;
-		Integer speciesExpertFk = null;
-		String speciesExpertUserId = getSpeciesExpertUserId(taxonName);
-		if (speciesExpertUserId != null) {
-			
-			// The speciesExpertUserId was stored in the field 'title' of the corresponding Reference during FaEu import
-			referenceList = getReferenceService().listByReferenceTitle(null, speciesExpertUserId, MatchMode.EXACT, null, null, null, null, null);
-			if (referenceList.size() == 1) {
-				speciesExpertFk  = getSpeciesExpertFk(referenceList.iterator().next(), state);
-			} else if (referenceList.size() > 1) {
-				logger.error("Found more than one match using listByTitle() searching for a Reference with this speciesExpertUserId as title: " + speciesExpertUserId);
-			} else if (referenceList.size() == 0) {
-				logger.error("Found no match using listByReferenceTitle() searching for a Reference with this speciesExpertUserId as title: " + speciesExpertUserId);
-			}
-		} else {
-			logger.debug("SpeciesExpertName is NULL for this TaxonName: " + taxonName.getUuid() + " (" + taxonName.getTitleCache() + ")");
-		}
-		return speciesExpertFk;
-	}
-
-	private Integer makeExpertFk(PesiExportState state,
-			TaxonNameBase<?, ?> taxonName) {
-		List<Reference> referenceList;
-		Integer expertFk = null;
-		String expertUserId = getExpertUserId(taxonName);
-		if (expertUserId != null) {
-
-			// The expertUserId was stored in the field 'title' of the corresponding Reference during FaEu import
-			referenceList = getReferenceService().listByReferenceTitle(null, expertUserId, MatchMode.EXACT, null, null, null, null, null);
-			if (referenceList.size() == 1) {
-				expertFk  = getExpertFk(referenceList.iterator().next(), state);
-			} else if (referenceList.size() > 1) {
-				logger.error("Found more than one match using listByReferenceTitle() searching for a Reference with this expertUserId as title: " + expertUserId);
-			} else if (referenceList.size() == 0) {
-				logger.error("Found no match using listByReferenceTitle() searching for a Reference with this expertUserId as title: " + expertUserId);
-			}
-		} else {
-			logger.debug("ExpertName is NULL for this TaxonName: " + taxonName.getUuid() + " (" + taxonName.getTitleCache() + ")");
-		}
-		return expertFk;
 	}
 	
 	//	"PHASE 4: Creating Inferred Synonyms..."
@@ -859,46 +808,6 @@ public class PesiTaxonExport extends PesiExportBase {
 			result = resultSet.getInt(1);
 		} catch (SQLException e) {
 			logger.error("TaxonCount could not be determined: " + e.getMessage());
-			e.printStackTrace();
-		}
-		return result;
-	}
-
-	/**
-	 * Returns the userId of the expert associated with the given TaxonName.
-	 * @param taxonName A {@link TaxonNameBase TaxonName}.
-	 * @return The userId.
-	 */
-	private String getExpertUserId(TaxonNameBase<?,?> taxonName) {
-		String result = null;
-		try {
-			Set<Extension> extensions = taxonName.getExtensions();
-			for (Extension extension : extensions) {
-				if (extension.getType().equals(expertUserIdExtensionType)) {
-					result = extension.getValue();
-				}
-			}
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-		return result;
-	}
-
-	/**
-	 * Returns the userId of the speciesExpert associated with the given TaxonName.
-	 * @param taxonName A {@link TaxonNameBase TaxonName}.
-	 * @return The userId.
-	 */
-	private String getSpeciesExpertUserId(TaxonNameBase<?,?> taxonName) {
-		String result = null;
-		try {
-			Set<Extension> extensions = taxonName.getExtensions();
-			for (Extension extension : extensions) {
-				if (extension.getType().equals(speciesExpertUserIdExtensionType)) {
-					result = extension.getValue();
-				}
-			}
-		} catch (Exception e) {
 			e.printStackTrace();
 		}
 		return result;
@@ -1140,8 +1049,7 @@ public class PesiTaxonExport extends PesiExportBase {
 	 * @return Whether save was successful or not.
 	 */
 	private boolean invokeRankDataAndTypeNameFkAndKingdomFk(TaxonNameBase<?,?> taxonName, NomenclaturalCode nomenclaturalCode, 
-			Integer taxonFk, Integer typeNameFk, Integer kingdomFk,
-			Integer expertFk, Integer speciesExpertFk) {
+			Integer taxonFk, Integer typeNameFk, Integer kingdomFkk) {
 		try {
 			int index = 1;
 			Integer rankFk = getRankFk(taxonName, nomenclaturalCode);
@@ -2264,9 +2172,11 @@ public class PesiTaxonExport extends PesiExportBase {
 		
 
 		
-		ExtensionType extensionTypeSpeciesExpertName = (ExtensionType)getTermService().find(BerlinModelTransformer.uuidSpeciesExpert);
+		ExtensionType extensionTypeSpeciesExpertName = (ExtensionType)getTermService().find(BerlinModelTransformer.uuidSpeciesExpertName);
 		mapping.addMapper(DbExtensionMapper.NewInstance(extensionTypeSpeciesExpertName, "SpeciesExpertName"));
-		mapping.addMapper(DbExtensionMapper.NewInstance(extensionTypeSpeciesExpertName, "ExpertName"));
+		
+		ExtensionType extensionTypeExpertName = (ExtensionType)getTermService().find(BerlinModelTransformer.uuidExpertName);
+		mapping.addMapper(DbExtensionMapper.NewInstance(extensionTypeExpertName, "ExpertName"));
 		
 //		mapping.addMapper(MethodMapper.NewInstance("ExpertName", this));
 //		mapping.addMapper(MethodMapper.NewInstance("LastAction", this.getClass(), "getLastAction",  IdentifiableEntity.class));
