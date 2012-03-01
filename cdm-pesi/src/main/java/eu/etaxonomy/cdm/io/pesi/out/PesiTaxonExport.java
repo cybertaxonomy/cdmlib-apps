@@ -1237,6 +1237,63 @@ public class PesiTaxonExport extends PesiExportBase {
 
 	
 	/**
+	 * Returns the <code>DisplayName</code> attribute.
+	 * @param taxon The {@link TaxonBase Taxon}.
+	 * @return The <code>DisplayName</code> attribute.
+	 * @see MethodMapper
+	 */
+	@SuppressWarnings("unused")  //used by Mapper
+	private static String getDisplayName(TaxonBase<?> taxon) {
+		TaxonNameBase<?,?> taxonName = taxon.getName();
+		String result = getDisplayName(taxonName);
+		if (isMisappliedName(taxon)){
+			result = result + " " + getAuthorString(taxon);
+		}
+		return result;
+	}
+		
+	
+	/**
+	 * Returns the <code>DisplayName</code> attribute.
+	 * @param taxonName The {@link TaxonNameBase TaxonName}.
+	 * @return The <code>DisplayName</code> attribute.
+	 * @see MethodMapper
+	 */
+	@SuppressWarnings("unused")  //used by Mapper
+	private static String getDisplayName(TaxonNameBase<?,?> taxonName) {
+		// TODO: extension?
+		if (taxonName == null) {
+			return null;
+		}else{
+			INonViralNameCacheStrategy cacheStrategy = getCacheStrategy(taxonName);
+			HTMLTagRules tagRules = new HTMLTagRules().
+					addRule(TagEnum.name, "i").
+					addRule(TagEnum.nomStatus, "@status@");
+			
+			NonViralName<?> nvn = CdmBase.deproxy(taxonName, NonViralName.class);
+			String result = cacheStrategy.getFullTitleCache(nvn, tagRules);
+			return result.replaceAll("\\<@status@\\>.*\\</@status@\\>", "");
+		}
+	}
+	
+
+	/**
+	 * Returns the <code>WebShowName</code> attribute for a taxon.
+	 * @param taxonName The {@link TaxonNameBase TaxonName}.
+	 * @return The <code>WebShowName</code> attribute.
+	 * @see MethodMapper
+	*/
+	@SuppressWarnings("unused")
+	private static String getWebShowName(TaxonBase<?> taxon) {
+		TaxonNameBase<?,?> taxonName = taxon.getName();
+		String result = getWebShowName(taxonName);
+		if (isMisappliedName(taxon)){
+			result = result + " " + getAuthorString(taxon);
+		}
+		return result;
+	}
+	
+	/**
 	 * Returns the <code>WebShowName</code> attribute.
 	 * @param taxonName The {@link TaxonNameBase TaxonName}.
 	 * @return The <code>WebShowName</code> attribute.
@@ -1255,21 +1312,6 @@ public class PesiTaxonExport extends PesiExportBase {
 		}
 	}
 
-	/**
-	 * Returns the <code>WebShowName</code> attribute for a taxon.
-	 * @param taxonName The {@link TaxonNameBase TaxonName}.
-	 * @return The <code>WebShowName</code> attribute.
-	 * @see MethodMapper
-	*/
-	@SuppressWarnings("unused")
-	private static String getWebShowName(TaxonBase<?> taxon) {
-		TaxonNameBase<?,?> taxonName = taxon.getName();
-		String result = getWebShowName(taxonName);
-		if (isMisappliedName(taxon)){
-			result = result + " " + getAuthorString(taxon);
-		}
-		return result;
-	}
  	
 	/**
 	 * Returns the <code>WebSearchName</code> attribute.
@@ -1403,33 +1445,7 @@ public class PesiTaxonExport extends PesiExportBase {
 		return null;
 	}
 
-	
-	/**
-	 * Returns the <code>DisplayName</code> attribute.
-	 * @param taxonName The {@link TaxonNameBase TaxonName}.
-	 * @return The <code>DisplayName</code> attribute.
-	 * @see MethodMapper
-	 */
-	@SuppressWarnings("unused")
-	private static String getDisplayName(TaxonNameBase<?,?> taxonName) {
-		// TODO: extension?
-		if (taxonName == null) {
-			return null;
-		}else{
-		
-			INonViralNameCacheStrategy cacheStrategy = getCacheStrategy(taxonName);
-			
-			HTMLTagRules tagRules = new HTMLTagRules().
-					addRule(TagEnum.name, "i").
-					addRule(TagEnum.nomStatus, "@status@");
-			
-			NonViralName<?> nvn = CdmBase.deproxy(taxonName, NonViralName.class);
-			String result = cacheStrategy.getFullTitleCache(nvn, tagRules);
-			
-			
-			return result.replaceAll("\\<@status@\\>.*\\</@status@\\>", "");
-		}
-	}
+
 
 	
 	/**
@@ -2192,6 +2208,14 @@ public class PesiTaxonExport extends PesiExportBase {
 		mapping.addMapper(MethodMapper.NewInstance("AuthorString", this));  //For Taxon because Misallied Names are handled differently
 		mapping.addMapper(MethodMapper.NewInstance("WebShowName", this));
 		
+		// DisplayName
+		ExtensionType extensionType = (ExtensionType)getTermService().find(ErmsTransformer.uuidDisplayName);		
+		if (extensionType != null) {
+			mapping.addMapper(DbExtensionMapper.NewInstance(extensionType, "DisplayName"));
+		} else {
+			mapping.addMapper(MethodMapper.NewInstance("DisplayName", this, TaxonNameBase.class));
+		}
+		
 		//handled by name mapping
 		mapping.addMapper(DbLastActionMapper.NewInstance("LastActionDate", false));
 		mapping.addMapper(DbLastActionMapper.NewInstance("LastAction", true));
@@ -2228,6 +2252,13 @@ public class PesiTaxonExport extends PesiExportBase {
 		mapping.addMapper(DbStringMapper.NewInstance("AuthorshipCache", "AuthorString").setBlankToNull(true));  
 		mapping.addMapper(MethodMapper.NewInstance("WebShowName", this, TaxonNameBase.class));
 		
+		// DisplayName
+		ExtensionType extensionType = (ExtensionType)getTermService().find(ErmsTransformer.uuidDisplayName);		
+		if (extensionType != null) {
+			mapping.addMapper(DbExtensionMapper.NewInstance(extensionType, "DisplayName"));
+		} else {
+			mapping.addMapper(MethodMapper.NewInstance("DisplayName", this, TaxonNameBase.class));
+		}
 		
 		mapping.addMapper(DbLastActionMapper.NewInstance("LastActionDate", false));
 		mapping.addMapper(DbLastActionMapper.NewInstance("LastAction", true));
@@ -2254,13 +2285,7 @@ public class PesiTaxonExport extends PesiExportBase {
 		
 		mapping.addMapper(MethodMapper.NewInstance("NomRefString", this, TaxonNameBase.class));
 		
-		// DisplayName
-		extensionType = (ExtensionType)getTermService().find(ErmsTransformer.uuidDisplayName);		
-		if (extensionType != null) {
-			mapping.addMapper(DbExtensionMapper.NewInstance(extensionType, "DisplayName"));
-		} else {
-			mapping.addMapper(MethodMapper.NewInstance("DisplayName", this, TaxonNameBase.class));
-		}
+
 
 		mapping.addMapper(MethodMapper.NewInstance("NameStatusFk", this, TaxonNameBase.class));
 		mapping.addMapper(MethodMapper.NewInstance("NameStatusCache", this, TaxonNameBase.class, PesiExportState.class));
