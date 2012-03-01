@@ -2213,7 +2213,7 @@ public class PesiTaxonExport extends PesiExportBase {
 		if (extensionType != null) {
 			mapping.addMapper(DbExtensionMapper.NewInstance(extensionType, "DisplayName"));
 		} else {
-			mapping.addMapper(MethodMapper.NewInstance("DisplayName", this, TaxonNameBase.class));
+			mapping.addMapper(MethodMapper.NewInstance("DisplayName", this));
 		}
 		
 		//handled by name mapping
