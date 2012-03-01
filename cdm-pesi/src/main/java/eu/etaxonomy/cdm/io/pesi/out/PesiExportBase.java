@@ -27,6 +27,7 @@ import eu.etaxonomy.cdm.model.common.MarkerType;
 import eu.etaxonomy.cdm.model.common.RelationshipBase;
 import eu.etaxonomy.cdm.model.name.HybridRelationship;
 import eu.etaxonomy.cdm.model.name.NameRelationship;
+import eu.etaxonomy.cdm.model.name.NameRelationshipType;
 import eu.etaxonomy.cdm.model.name.NonViralName;
 import eu.etaxonomy.cdm.model.name.TaxonNameBase;
 import eu.etaxonomy.cdm.model.taxon.Synonym;
@@ -44,6 +45,8 @@ import eu.etaxonomy.cdm.persistence.query.OrderHint;
  */
 public abstract class PesiExportBase extends DbExportBase<PesiExportConfigurator, PesiExportState, PesiTransformer> {
 	private static final Logger logger = Logger.getLogger(PesiExportBase.class);
+	
+	private static Set<NameRelationshipType> excludedRelTypes = new HashSet<NameRelationshipType>();
 	
 	public PesiExportBase() {
 		super();
@@ -110,6 +113,7 @@ public abstract class PesiExportBase extends DbExportBase<PesiExportConfigurator
 		String[] propertyPaths = null;
 		String orderHints = null;
 		List<CLASS> list = (List<CLASS>)getTaxonService().getAllRelationships(limit, partitionCount * limit);
+		
 		for (CLASS rel : list){
 			if (isPesiTaxonOrSynonymRelationship(rel)){
 				result.add(rel);
@@ -175,9 +179,34 @@ public abstract class PesiExportBase extends DbExportBase<PesiExportConfigurator
 			return false;
 		}
 		
-		for (NameRelationship rel :taxonName.getNameRelations()){
-			TaxonNameBase<?,?> relatedName = (rel.getFromName().equals(taxonName)? rel.getToName(): rel.getFromName());
+		//from names
+		for (NameRelationship rel :taxonName.getRelationsFromThisName()){
+			TaxonNameBase<?,?> relatedName = rel.getToName();
 			if (hasPesiTaxon(relatedName)){
+				return true;
+			}
+		}
+		
+		//excluded relationships on to-side
+		initExcludedRelTypes();
+		
+		//to names
+		for (NameRelationship rel :taxonName.getRelationsToThisName()){
+			//exclude certain types
+			if (excludedRelTypes.contains(rel.getType())){
+				continue;
+			}
+			TaxonNameBase<?,?> relatedName = rel.getFromName();
+			if (hasPesiTaxon(relatedName)){
+				return true;
+			}
+		}
+		
+		//include hybrid parents, but no childs
+		NonViralName nvn = CdmBase.deproxy(taxonName, NonViralName.class);
+		for (HybridRelationship rel : (Set<HybridRelationship>)nvn.getHybridParentRelations()){
+			NonViralName<?> child = rel.getHybridName();
+			if (hasPesiTaxon(child)){
 				return true;
 			}
 		}
@@ -185,6 +214,15 @@ public abstract class PesiExportBase extends DbExportBase<PesiExportConfigurator
 		return false;
 	}
 	
+
+	private void initExcludedRelTypes() {
+		if (excludedRelTypes.isEmpty()){
+			excludedRelTypes.add(NameRelationshipType.BASIONYM());
+			excludedRelTypes.add(NameRelationshipType.REPLACED_SYNONYM());
+			excludedRelTypes.add(NameRelationshipType.ORTHOGRAPHIC_VARIANT());
+		}		
+	}
+
 
 	/**
 	 * Decides if a given name has "PESI taxa" attached.
@@ -240,6 +278,7 @@ public abstract class PesiExportBase extends DbExportBase<PesiExportConfigurator
 					return false;
 				//probably not needed any more after #2786 was fixed
 				}else if (marker.getValue() == true && marker.getMarkerType().getUuid().equals(BerlinModelTransformer.uuidMisappliedCommonName)){
+					logger.warn("Misapplied common name still exists");
 					return false;
 				}
 				
@@ -257,6 +296,7 @@ public abstract class PesiExportBase extends DbExportBase<PesiExportConfigurator
 				for (Marker marker : taxon.getMarkers()){
 					//probably not needed any more after #2786 was fixed
 					if (marker.getValue() == true && marker.getMarkerType().getUuid().equals(BerlinModelTransformer.uuidMisappliedCommonName)){
+						logger.warn("Misapplied common name still exists");
 						return false;
 					}
 				}
