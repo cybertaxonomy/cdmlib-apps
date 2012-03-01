@@ -1260,18 +1260,17 @@ public class PesiTaxonExport extends PesiExportBase {
 	 * @param taxonName The {@link TaxonNameBase TaxonName}.
 	 * @return The <code>WebShowName</code> attribute.
 	 * @see MethodMapper
-	 */
+	*/
 	@SuppressWarnings("unused")
 	private static String getWebShowName(TaxonBase<?> taxon) {
 		TaxonNameBase<?,?> taxonName = taxon.getName();
-		String result = getWebSearchName(taxonName);
+		String result = getWebShowName(taxonName);
 		if (isMisappliedName(taxon)){
 			result = result + " " + getAuthorString(taxon);
 		}
 		return result;
 	}
-
-	
+ 	
 	/**
 	 * Returns the <code>WebSearchName</code> attribute.
 	 * @param taxonName The {@link NonViralName NonViralName}.
@@ -1426,6 +1425,8 @@ public class PesiTaxonExport extends PesiExportBase {
 			
 			NonViralName<?> nvn = CdmBase.deproxy(taxonName, NonViralName.class);
 			String result = cacheStrategy.getFullTitleCache(nvn, tagRules);
+			
+			
 			return result.replaceAll("\\<@status@\\>.*\\</@status@\\>", "");
 		}
 	}
