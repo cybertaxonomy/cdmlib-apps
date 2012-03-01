@@ -136,7 +136,13 @@ public class PesiRelTaxonExport extends PesiExportBase {
 		
 		//taxon relations
 		int partitionCount = 0;
+		int totalCount = 0;
 		while ((list = getNextTaxonRelationshipPartition(null, limit, partitionCount++, null)).size() > 0   ) {
+			totalCount = totalCount + list.size();
+			logger.info("Read " + list.size() + " PESI relations. Limit: " + limit + ". Total: " + totalCount );
+//			if (list.size() > 0){
+//				logger.warn("First relation type is " + list.get(0).getType().getTitleCache());
+//			}
 			for (RelationshipBase rel : list){
 				try {
 					mapping.invoke(rel);
@@ -166,6 +172,7 @@ public class PesiRelTaxonExport extends PesiExportBase {
 		while ((list = getNextNameRelationshipPartition(null, limit, partitionCount++, null)).size() > 0   ) {
 			for (RelationshipBase rel : list){
 				try {
+					
 					TaxonNameBase<?,?> name1;
 					TaxonNameBase<?,?> name2;
 					if (rel.isInstanceOf(HybridRelationship.class)){
