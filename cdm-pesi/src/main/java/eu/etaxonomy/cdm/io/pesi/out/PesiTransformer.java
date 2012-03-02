@@ -221,11 +221,7 @@ public final class PesiTransformer extends ExportTransformerBase implements IExp
 	public static int IS_INFERRED_GENUS_FOR = 302;
 	public static int IS_POTENTIAL_COMBINATION_FOR = 303;
 
-	public static String STR_IS_BASIONYM_FOR_ZOOL = "is original combination for";
-	public static String STR_IS_HETEROTYPIC_SYNONYM_OF_ZOOL = "is subjective synonym of";
-	private static final String STR_IS_HOMOTYPIC_SYNONYM_OF_ZOOL = "is objective synonym of";
-	
-	
+		
 	//namespaces
 	public static String STR_NAMESPACE_NOMINAL_TAXON = "Nominal taxon from TAX_ID:";
 	public static String STR_NAMESPACE_INFERRED_EPITHET = "Inferred epithet from TAX_ID:";
@@ -1225,6 +1221,7 @@ public final class PesiTransformer extends ExportTransformerBase implements IExp
 	private Map<Integer, String> nameStatusCacheMap  = new HashMap<Integer, String>();
 	private Map<Integer, String> qualityStatusCacheMap  = new HashMap<Integer, String>();
 	private Map<Integer, String> taxRelQualifierCacheMap  = new HashMap<Integer, String>();
+	private Map<Integer, String> taxRelZooQualifierCacheMap  = new HashMap<Integer, String>();
 	
 	
 	private Source destination;
@@ -1271,14 +1268,18 @@ public final class PesiTransformer extends ExportTransformerBase implements IExp
 				} 
 			}
 			//qualityStatusCache
-			sql = " SELECT QualifierId, Qualifier FROM RelTaxonQualifier ";
+			sql = " SELECT QualifierId, Qualifier, ZoologQualifier FROM RelTaxonQualifier ";
 			rs = destination.getResultSet(sql);
 			while (rs.next()){
 				Integer key = rs.getInt("QualifierId");
 				String cache = rs.getString("Qualifier");
 				if (StringUtils.isNotBlank(cache)){
 					this.taxRelQualifierCacheMap.put(key, cache);
-				} 
+				}
+				String zoologCache = rs.getString("ZoologQualifier");
+				if (StringUtils.isNotBlank(zoologCache)){
+					this.taxRelZooQualifierCacheMap.put(key, zoologCache);
+				}
 			}
 			
 			
@@ -3504,21 +3505,17 @@ public final class PesiTransformer extends ExportTransformerBase implements IExp
 		if (relation == null){
 			return null;
 		}else{
-			//preliminary until #2816 is fixed
-			RelationshipTermBase<?> type = relation.getType();
-			if (code.equals(NomenclaturalCode.ICZN)){
-				if (type.equals(NameRelationshipType.BASIONYM())) {
-					return STR_IS_BASIONYM_FOR_ZOOL;
-				}else if (type.equals(SynonymRelationshipType.HOMOTYPIC_SYNONYM_OF())) {
-					return STR_IS_HOMOTYPIC_SYNONYM_OF_ZOOL;
-				} else if (type.equals(SynonymRelationshipType.HETEROTYPIC_SYNONYM_OF())) {
-					return STR_IS_HETEROTYPIC_SYNONYM_OF_ZOOL;
-				} 
-			}
-			//end preliminary
-			
+			String result; 
 			Integer key = taxonRelation2RelTaxonQualifierFk(relation);
-			return this.taxRelQualifierCacheMap.get(key); 
+			if (code.equals(NomenclaturalCode.ICZN)){
+				result = this.taxRelZooQualifierCacheMap.get(key);
+				if (result == null){
+					this.taxRelQualifierCacheMap.get(key); 
+				}
+			}else{
+				result = this.taxRelQualifierCacheMap.get(key); 
+			}
+			return result;
 		}
 	}
 	

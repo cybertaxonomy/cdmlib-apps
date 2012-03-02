@@ -632,6 +632,8 @@ public class PesiRelTaxonExport extends PesiExportBase {
 			code = CdmBase.deproxy(relationship, SynonymRelationship.class).getAcceptedTaxon().getName().getNomenclaturalCode();
 		}else if (relationship.isInstanceOf(NameRelationship.class)){
 			code = CdmBase.deproxy(relationship,  NameRelationship.class).getFromName().getNomenclaturalCode();
+		}else if (relationship.isInstanceOf(HybridRelationship.class)){
+			code = CdmBase.deproxy(relationship,  HybridRelationship.class).getParentName().getNomenclaturalCode();
 		}
 		if (code != null) {
 			result = state.getConfig().getTransformer().getCacheByRelationshipType(relationship, code);
