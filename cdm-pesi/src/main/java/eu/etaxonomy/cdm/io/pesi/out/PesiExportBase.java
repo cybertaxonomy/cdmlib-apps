@@ -120,6 +120,10 @@ public abstract class PesiExportBase extends DbExportBase<PesiExportConfigurator
 		String orderHints = null;
 		List<CLASS> list = (List<CLASS>)getTaxonService().getAllRelationships(limit, partitionCount * limit);
 		
+		if (list.isEmpty()){
+			return null;
+		}
+		
 		for (CLASS rel : list){
 			if (isPesiTaxonOrSynonymRelationship(rel)){
 				result.add(rel);
@@ -313,7 +317,7 @@ public abstract class PesiExportBase extends DbExportBase<PesiExportConfigurator
 						}
 					}
 				}
-				logger.info("Misapplied name has no accepted PESI taxon: " +  taxon.getUuid() + ", (" +  taxon.getTitleCache() + ")");
+				if (logger.isDebugEnabled()){ logger.debug("Misapplied name has no accepted PESI taxon: " +  taxon.getUuid() + ", (" +  taxon.getTitleCache() + ")");}
 				return false;
 			}
 		//handle synonyms

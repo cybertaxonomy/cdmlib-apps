@@ -137,7 +137,7 @@ public class PesiRelTaxonExport extends PesiExportBase {
 		//taxon relations
 		int partitionCount = 0;
 		int totalCount = 0;
-		while ((list = getNextTaxonRelationshipPartition(null, limit, partitionCount++, null)).size() > 0   ) {
+		while ((list = getNextTaxonRelationshipPartition(null, limit, partitionCount++, null)) != null ) {
 			totalCount = totalCount + list.size();
 			logger.info("Read " + list.size() + " PESI relations. Limit: " + limit + ". Total: " + totalCount );
 //			if (list.size() > 0){
@@ -206,8 +206,9 @@ public class PesiRelTaxonExport extends PesiExportBase {
 				}
 			}
 		}
-
 		
+		logger.info("End PHASE 2: Name Relationships ...");
+				
 		return success;
 	}
 
