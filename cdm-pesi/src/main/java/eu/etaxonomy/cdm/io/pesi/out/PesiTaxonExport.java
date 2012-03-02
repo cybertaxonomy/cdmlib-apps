@@ -322,7 +322,7 @@ public class PesiTaxonExport extends PesiExportBase {
 		
 		
 		int partitionCount = 0;
-		while ((list = getNextTaxonPartition(null, limit, partitionCount++, null)).size() > 0   ) {
+		while ((list = getNextTaxonPartition(null, limit, partitionCount++, null)) != null   ) {
 
 			logger.info("Fetched " + list.size() + " " + pluralString + ". Exporting...");
 			for (TaxonBase<?> taxon : list) {
@@ -524,8 +524,13 @@ public class PesiTaxonExport extends PesiExportBase {
 					
 					
 					
-					commitTransaction(txStatus);
-					logger.debug("Committed transaction.");
+					try {
+						commitTransaction(txStatus);
+						logger.debug("Committed transaction.");
+					} catch (Exception e) {
+						logger.error(e.getMessage());
+						e.printStackTrace();
+					}
 
 				}
 			}
@@ -553,7 +558,7 @@ public class PesiTaxonExport extends PesiExportBase {
 		TransactionStatus txStatus = startTransaction(true);
 		logger.info("Started new transaction for rank, kingdom, typeName, expertFk and speciesExpertFK. Fetching some " + pluralString + " (max: " + limit + ") ...");
 		int partitionCount = 0;
-		while ((list = getNextTaxonPartition(TaxonBase.class, limit, partitionCount++, null)).size() > 0) {
+		while ((list = getNextTaxonPartition(TaxonBase.class, limit, partitionCount++, null)) != null) {
 
 			logger.info("Fetched " + list.size() + " " + pluralString + ". Exporting...");
 			for (TaxonBase<?> taxon : list) {

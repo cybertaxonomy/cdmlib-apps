@@ -177,7 +177,7 @@ public class PesiDescriptionExport extends PesiExportBase {
 		List<String> propPath = Arrays.asList(new String[]{"descriptions.elements.*"});
 		
 		int partitionCount = 0;
-		while ((list = getNextTaxonPartition(Taxon.class, limit, partitionCount++, propPath )).size() > 0   ) {
+		while ((list = getNextTaxonPartition(Taxon.class, limit, partitionCount++, propPath )) != null   ) {
 
 			logger.info("Fetched " + list.size() + " " + pluralString + ". Exporting...");
 			

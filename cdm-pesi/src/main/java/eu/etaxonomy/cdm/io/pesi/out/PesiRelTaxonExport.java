@@ -169,10 +169,9 @@ public class PesiRelTaxonExport extends PesiExportBase {
 		
 		//name relations
 		int partitionCount = 0;
-		while ((list = getNextNameRelationshipPartition(null, limit, partitionCount++, null)).size() > 0   ) {
+		while ((list = getNextNameRelationshipPartition(null, limit, partitionCount++, null)) != null   ) {
 			for (RelationshipBase rel : list){
 				try {
-					
 					TaxonNameBase<?,?> name1;
 					TaxonNameBase<?,?> name2;
 					if (rel.isInstanceOf(HybridRelationship.class)){

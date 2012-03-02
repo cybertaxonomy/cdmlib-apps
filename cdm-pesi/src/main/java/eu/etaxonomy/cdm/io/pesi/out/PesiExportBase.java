@@ -57,6 +57,9 @@ public abstract class PesiExportBase extends DbExportBase<PesiExportConfigurator
 		List<OrderHint> orderHints = new ArrayList<OrderHint>();
 		orderHints.add(new OrderHint("id", OrderHint.SortOrder.ASCENDING ));
 		List<CLASS> list = (List<CLASS>)getTaxonService().list(clazz, limit, partitionCount * limit, orderHints, propertyPath);
+		if (list.isEmpty()){
+			return null;
+		}
 		
 		Iterator<CLASS> it = list.iterator();
 		while (it.hasNext()){
@@ -100,6 +103,9 @@ public abstract class PesiExportBase extends DbExportBase<PesiExportConfigurator
 		String[] propertyPaths = null;
 		String orderHints = null;
 		List<CLASS> list = (List<CLASS>)getNameService().getAllRelationships(limit, partitionCount * limit);
+		if (list.isEmpty()){
+			return null;
+		}
 		for (CLASS rel : list){
 			if (isPesiNameRelationship(rel)){
 				result.add(rel);
