@@ -29,7 +29,7 @@ import eu.etaxonomy.cdm.model.name.Rank;
 public final class IndexFungorumTransformer extends InputTransformerBase {
 	private static final Logger logger = Logger.getLogger(IndexFungorumTransformer.class);
 	
-
+	public static final String LSID_PREFIX = "urn:lsid:indexfungorum.org:names:";
 
 	public static NomenclaturalCode kingdomId2NomCode(Integer kingdomId){
 		switch (kingdomId){

@@ -21,6 +21,8 @@ import java.util.UUID;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 
+import com.ibm.lsid.MalformedLSIDException;
+
 import eu.etaxonomy.cdm.common.CdmUtils;
 import eu.etaxonomy.cdm.io.common.CdmImportBase;
 import eu.etaxonomy.cdm.io.common.ICdmIO;
@@ -28,9 +30,11 @@ import eu.etaxonomy.cdm.io.common.IPartitionedIO;
 import eu.etaxonomy.cdm.io.common.ResultSetPartitioner;
 import eu.etaxonomy.cdm.io.common.Source;
 import eu.etaxonomy.cdm.io.common.mapping.DbImportMapping;
+import eu.etaxonomy.cdm.io.pesi.out.PesiTransformer;
 import eu.etaxonomy.cdm.model.agent.Team;
 import eu.etaxonomy.cdm.model.common.CdmBase;
 import eu.etaxonomy.cdm.model.common.IdentifiableSource;
+import eu.etaxonomy.cdm.model.common.LSID;
 import eu.etaxonomy.cdm.model.common.TimePeriod;
 import eu.etaxonomy.cdm.model.name.NonViralName;
 import eu.etaxonomy.cdm.model.reference.Reference;
@@ -340,8 +344,20 @@ public abstract class IndexFungorumImportBase extends CdmImportBase<IndexFungoru
 
 	protected void makeSource(IndexFungorumImportState state, Taxon taxon, Integer id, String namespace) {
 		Reference<?> sourceReference = state.getRelatedObject(NAMESPACE_REFERENCE, SOURCE_REFERENCE, Reference.class);
-		IdentifiableSource source = IdentifiableSource.NewInstance(String.valueOf(id), namespace, sourceReference, null);
-		taxon.addSource(source);	
+		String strId = String.valueOf(id);
+		IdentifiableSource source = IdentifiableSource.NewInstance(strId, namespace, sourceReference, null);
+		taxon.addSource(source);
+		
+		try {
+			if (strId != null){
+				LSID lsid = new LSID(IndexFungorumTransformer.LSID_PREFIX + strId);
+				taxon.setLsid(lsid);
+			}else{
+				logger.warn("No ID available for taxon " + taxon.getTitleCache() + ", " +  taxon.getUuid());
+			}
+		} catch (MalformedLSIDException e) {
+			logger.error(e.getMessage());
+		}
 	}
 	
 
