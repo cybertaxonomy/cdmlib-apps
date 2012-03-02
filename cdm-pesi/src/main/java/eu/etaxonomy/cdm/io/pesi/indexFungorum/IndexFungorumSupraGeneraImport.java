@@ -17,6 +17,7 @@ import org.apache.log4j.Logger;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.TransactionStatus;
 
+import eu.etaxonomy.cdm.common.CdmUtils;
 import eu.etaxonomy.cdm.io.pesi.out.PesiTransformer;
 import eu.etaxonomy.cdm.model.common.CdmBase;
 import eu.etaxonomy.cdm.model.name.BotanicalName;
@@ -79,7 +80,7 @@ public class IndexFungorumSupraGeneraImport  extends IndexFungorumImportBase {
 				//TODO
 				//DisplayName, NomRefCache
 
-				Integer id = rs.getInt("RECORD_NUMBER");
+				Integer id = (Integer)rs.getObject("RECORD_NUMBER");
 				
 				String supragenericNames = rs.getString("SupragenericNames");
 				String preferredName = rs.getString("PreferredName");
@@ -90,7 +91,7 @@ public class IndexFungorumSupraGeneraImport  extends IndexFungorumImportBase {
 				NonViralName<?> name = BotanicalName.NewInstance(rank);
 				name.setGenusOrUninomial(supragenericNames);
 				if (preferredName != null && !preferredName.equals(supragenericNames)){
-					logger.warn("Suprageneric names and preferredName is not equal. This case is not yet handled by IF import. I take SupragenericNames for import. RECORD_NUMBER" + id);
+					logger.warn("Suprageneric names and preferredName is not equal. This case is not yet handled by IF import. I take SupragenericNames for import. RECORD_NUMBER" + CdmUtils.Nz(id));
 				}
 				
 				//taxon

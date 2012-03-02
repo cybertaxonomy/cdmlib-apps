@@ -20,6 +20,7 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.springframework.stereotype.Component;
 
+import eu.etaxonomy.cdm.common.CdmUtils;
 import eu.etaxonomy.cdm.io.common.ResultSetPartitioner;
 import eu.etaxonomy.cdm.io.pesi.out.PesiTransformer;
 import eu.etaxonomy.cdm.model.common.CdmBase;
@@ -88,11 +89,11 @@ public class IndexFungorumSpeciesImport  extends IndexFungorumImportBase {
 				//TODO
 				//DisplayName, NomRefCache
 
-				Integer id = rs.getInt("RECORD_NUMBER");
+				Integer id = (Integer)rs.getObject("RECORD_NUMBER");
 				
 				String preferredName = rs.getString("PreferredName");
 				if (StringUtils.isBlank(preferredName)){
-					logger.warn("Preferred name is blank. This case is not yet handled by IF import. RECORD_NUMBER" + id);
+					logger.warn("Preferred name is blank. This case is not yet handled by IF import. RECORD_NUMBER" + CdmUtils.Nz(id));
 				}
 				
 				Rank rank = Rank.SPECIES();

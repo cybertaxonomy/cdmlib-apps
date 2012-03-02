@@ -30,11 +30,14 @@ import eu.etaxonomy.cdm.io.common.IPartitionedIO;
 import eu.etaxonomy.cdm.io.common.ResultSetPartitioner;
 import eu.etaxonomy.cdm.io.common.Source;
 import eu.etaxonomy.cdm.io.common.mapping.DbImportMapping;
+import eu.etaxonomy.cdm.io.common.mapping.out.DbLastActionMapper;
 import eu.etaxonomy.cdm.io.pesi.out.PesiTransformer;
 import eu.etaxonomy.cdm.model.agent.Team;
 import eu.etaxonomy.cdm.model.common.CdmBase;
 import eu.etaxonomy.cdm.model.common.IdentifiableSource;
 import eu.etaxonomy.cdm.model.common.LSID;
+import eu.etaxonomy.cdm.model.common.Marker;
+import eu.etaxonomy.cdm.model.common.MarkerType;
 import eu.etaxonomy.cdm.model.common.TimePeriod;
 import eu.etaxonomy.cdm.model.name.NonViralName;
 import eu.etaxonomy.cdm.model.reference.Reference;
@@ -343,11 +346,22 @@ public abstract class IndexFungorumImportBase extends CdmImportBase<IndexFungoru
 	
 
 	protected void makeSource(IndexFungorumImportState state, Taxon taxon, Integer id, String namespace) {
+		//source reference
 		Reference<?> sourceReference = state.getRelatedObject(NAMESPACE_REFERENCE, SOURCE_REFERENCE, Reference.class);
+		//source
 		String strId = String.valueOf(id);
 		IdentifiableSource source = IdentifiableSource.NewInstance(strId, namespace, sourceReference, null);
 		taxon.addSource(source);
 		
+		//no last action
+		MarkerType hasNoLastAction = getMarkerType(state, DbLastActionMapper.uuidMarkerTypeHasNoLastAction, 
+				"has no last action", "No last action information available", "no last action");
+		taxon.addMarker(Marker.NewInstance(hasNoLastAction, true));
+		//LSID
+		makeLSID(taxon, strId);
+	}
+
+	private void makeLSID(Taxon taxon, String strId) {
 		try {
 			if (strId != null){
 				LSID lsid = new LSID(IndexFungorumTransformer.LSID_PREFIX + strId);
