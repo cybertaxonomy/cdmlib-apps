@@ -2115,9 +2115,9 @@ public class PesiTaxonExport extends PesiExportBase {
 			}else if (refUuid.equals(PesiTransformer.uuidSourceRefFaunaEuropaea)){
 				bitSet.set(PesiTransformer.SOURCE_FE);
 			}else if (refUuid.equals(PesiTransformer.uuidSourceRefErms)){
-				bitSet.set(PesiTransformer.SOURCE_IF);
-			}else if (refUuid.equals(PesiTransformer.uuidSourceRefIndexFungorum)){  //INdex Fungorum
 				bitSet.set(PesiTransformer.SOURCE_ERMS);
+			}else if (refUuid.equals(PesiTransformer.uuidSourceRefIndexFungorum)){
+				bitSet.set(PesiTransformer.SOURCE_IF);
 			}else{
 				if (logger.isDebugEnabled()){logger.debug("Not a PESI source");};
 			}
