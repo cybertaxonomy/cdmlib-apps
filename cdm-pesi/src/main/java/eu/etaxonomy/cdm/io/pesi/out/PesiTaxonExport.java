@@ -1743,17 +1743,21 @@ public class PesiTaxonExport extends PesiExportBase {
 		
 		try {
 			Set<IdentifiableSource> sources = getPesiSources(taxonName);
+			if (sources.size() > 1){
+				logger.warn("There is > 1 Pesi source. This is not yet handled.");
+			}
 			for (IdentifiableSource source : sources) {
 				Reference<?> ref = source.getCitation();
 				UUID refUuid = ref.getUuid();
+				String idInSource = source.getIdInSource();
 				if (refUuid.equals(PesiTransformer.uuidSourceRefEuroMed)){
-					result = "NameId: " + source.getIdInSource();
+					result = idInSource != null ? ("NameId: " + source.getIdInSource()) : null;
 				}else if (refUuid.equals(PesiTransformer.uuidSourceRefFaunaEuropaea)){
-					result = "TAX_ID: " + source.getIdInSource();
+					result = idInSource != null ? ("TAX_ID: " + source.getIdInSource()) : null;
 				}else if (refUuid.equals(PesiTransformer.uuidSourceRefErms)){
-					result = "tu_id: " + source.getIdInSource();
-				}else if (refUuid.equals(PesiTransformer.uuidSourceRefIndexFungorum)){  //INdex Fungorum
-					result = "if_id: " + source.getIdInSource();
+					result = idInSource != null ? ("tu_id: " + source.getIdInSource()) : null;
+				}else if (refUuid.equals(PesiTransformer.uuidSourceRefIndexFungorum)){  //Index Fungorum
+					result = idInSource != null ? ("if_id: " + source.getIdInSource()) : null;
 				}else{
 					if (logger.isDebugEnabled()){logger.debug("Not a PESI source");};
 				}
@@ -1761,13 +1765,13 @@ public class PesiTaxonExport extends PesiExportBase {
 				String sourceIdNameSpace = source.getIdNamespace();
 				if (sourceIdNameSpace != null) {
 					if (sourceIdNameSpace.equals("originalGenusId")) {
-						result = "Nominal Taxon from TAX_ID: " + source.getIdInSource();
+						result =  idInSource != null ? ("Nominal Taxon from TAX_ID: " + source.getIdInSource()):null;
 					} else if (sourceIdNameSpace.equals(TaxonServiceImpl.INFERRED_EPITHET_NAMESPACE)) {
-						result = "Inferred epithet from TAX_ID: " + source.getIdInSource();
+						result =  idInSource != null ? ("Inferred epithet from TAX_ID: " + source.getIdInSource()) : null;
 					} else if (sourceIdNameSpace.equals(TaxonServiceImpl.INFERRED_GENUS_NAMESPACE)) {
-						result = "Inferred genus from TAX_ID: " + source.getIdInSource();
+						result =  idInSource != null ? ("Inferred genus from TAX_ID: " + source.getIdInSource()):null;
 					} else if (sourceIdNameSpace.equals(TaxonServiceImpl.POTENTIAL_COMBINATION_NAMESPACE)) {
-						result = "Potential combination from TAX_ID: " + source.getIdInSource();
+						result =  idInSource != null ? ("Potential combination from TAX_ID: " + source.getIdInSource()):null;
 					} 
 				}
 			}
