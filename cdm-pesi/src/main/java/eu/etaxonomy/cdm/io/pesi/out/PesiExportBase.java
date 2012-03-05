@@ -18,6 +18,7 @@ import java.util.Set;
 
 import org.apache.log4j.Logger;
 
+import eu.etaxonomy.cdm.api.service.pager.Pager;
 import eu.etaxonomy.cdm.hibernate.HibernateProxyHelper;
 import eu.etaxonomy.cdm.io.berlinModel.BerlinModelTransformer;
 import eu.etaxonomy.cdm.io.common.DbExportBase;
@@ -25,6 +26,7 @@ import eu.etaxonomy.cdm.model.common.CdmBase;
 import eu.etaxonomy.cdm.model.common.Marker;
 import eu.etaxonomy.cdm.model.common.MarkerType;
 import eu.etaxonomy.cdm.model.common.RelationshipBase;
+import eu.etaxonomy.cdm.model.description.TaxonNameDescription;
 import eu.etaxonomy.cdm.model.name.HybridRelationship;
 import eu.etaxonomy.cdm.model.name.NameRelationship;
 import eu.etaxonomy.cdm.model.name.NameRelationshipType;
@@ -71,6 +73,42 @@ public abstract class PesiExportBase extends DbExportBase<PesiExportConfigurator
 		return list;
 	}
 	
+	protected List<TaxonNameDescription> getNextNameDescriptionPartition(int limit, int partitionCount, List<String> propertyPath) {
+		List<OrderHint> orderHints = new ArrayList<OrderHint>();
+		orderHints.add(new OrderHint("id", OrderHint.SortOrder.ASCENDING ));
+		Pager<TaxonNameDescription> l = getDescriptionService().getTaxonNameDescriptions(null, limit, partitionCount, propertyPath);
+		List<TaxonNameDescription> list = l.getRecords();
+		if (list.isEmpty()){
+			return null;
+		}
+		
+		Iterator<TaxonNameDescription> it = list.iterator();
+		while (it.hasNext()){
+			TaxonNameDescription nameDescription = it.next();
+			if (! isPesiNameDescriptionTaxon(nameDescription)){
+				it.remove();
+			}
+		}
+		return list;
+	}
+	
+
+	private boolean isPesiNameDescriptionTaxon(TaxonNameDescription nameDescription) {
+		TaxonNameBase name = nameDescription.getTaxonName();
+		if (isPurePesiName(name)){
+			return true;
+		}else{
+			Set<TaxonBase> taxa = name.getTaxonBases();
+			for (TaxonBase taxonBase : taxa){
+				if (isPesiTaxon(taxonBase)){
+					return true;
+				}
+			}
+			
+		}
+		return false;
+	}
+
 
 	/**
 	 * Returns the next list of pure names. If finished result will be null. If list is empty there may be result in further partitions.
