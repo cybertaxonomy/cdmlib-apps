@@ -33,6 +33,7 @@ public class PesiExportState extends DbExportStateBase<PesiExportConfigurator, P
 	
 	private IdentifiableEntity<?> currentToObject;
 	private IdentifiableEntity<?> currentFromObject;
+	private IdentifiableEntity<?> currentTaxon;
 	
 
 	/**
@@ -116,5 +117,16 @@ public class PesiExportState extends DbExportStateBase<PesiExportConfigurator, P
 	public void setCurrentFromObject(IdentifiableEntity<?> currentFromObject) {
 		this.currentFromObject = currentFromObject;
 	}
+
+
+	public IdentifiableEntity<?> getCurrentTaxon() {
+		return currentTaxon;
+	}
+
+
+	public void setCurrentTaxon(IdentifiableEntity<?> currentTaxon) {
+		this.currentTaxon = currentTaxon;
+	}
+
 
 }
