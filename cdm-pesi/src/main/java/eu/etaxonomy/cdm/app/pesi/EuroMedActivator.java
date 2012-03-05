@@ -54,6 +54,8 @@ public class EuroMedActivator {
 //	static final ICdmDataSource cdmDestination = CdmDestinations.cdm_test_local_mysql();
 	static final ICdmDataSource cdmDestination = CdmDestinations.cdm_test_local_mysql_test();
 	
+	static final boolean includePesiExport = false;
+	
 	static final int sourceSecId = 7000000; //500000
 	static final UUID classificationUuid = UUID.fromString("314a68f9-8449-495a-91c2-92fde8bcf344");
 	static final boolean useSingleClassification = true;
@@ -150,15 +152,9 @@ public class EuroMedActivator {
 //	static final boolean doMarker = false;
 	
 	
-	/**
-	 * @param args
-	 */
-	public static void main(String[] args) {
+	public void importEm2CDM (Source source, ICdmDataSource destination){
 		System.out.println("Start import from BerlinModel("+ berlinModelSource.getDatabase() + ") to " + cdmDestination.getDatabase() + " ...");
-		
 		//make BerlinModel Source
-		Source source = berlinModelSource;
-		ICdmDataSource destination = CdmDestinations.chooseDestination(args) != null ? CdmDestinations.chooseDestination(args) : cdmDestination;
 				
 		BerlinModelImportConfigurator config = BerlinModelImportConfigurator.NewInstance(source,  destination);
 		
@@ -234,6 +230,22 @@ public class EuroMedActivator {
 		}
 		
 		System.out.println("End import from BerlinModel ("+ source.getDatabase() + ")...");
+		
+	}
+	
+	/**
+	 * @param args
+	 */
+	public static void main(String[] args) {
+		EuroMedActivator importActivator = new EuroMedActivator();
+		Source source = berlinModelSource;
+		ICdmDataSource cdmRepository = CdmDestinations.chooseDestination(args) != null ? CdmDestinations.chooseDestination(args) : cdmDestination;
+		
+		importActivator.importEm2CDM(source, cdmRepository);
+		if (includePesiExport){
+			PesiExportActivatorEM exportActivator = new PesiExportActivatorEM();
+			exportActivator.doExport(cdmRepository);
+		}
 
 	}
 
