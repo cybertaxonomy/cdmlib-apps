@@ -18,7 +18,6 @@ import eu.etaxonomy.cdm.io.common.DbExportConfiguratorBase.IdType;
 import eu.etaxonomy.cdm.io.common.IExportConfigurator.CHECK;
 import eu.etaxonomy.cdm.io.common.IExportConfigurator.DO_REFERENCES;
 import eu.etaxonomy.cdm.io.common.Source;
-import eu.etaxonomy.cdm.io.common.mapping.out.IExportTransformer;
 import eu.etaxonomy.cdm.io.pesi.out.PesiExportConfigurator;
 import eu.etaxonomy.cdm.io.pesi.out.PesiTransformer;
 
