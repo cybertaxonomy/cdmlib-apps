@@ -33,11 +33,11 @@ public class PesiExportActivatorEM {
 	private static final Logger logger = Logger.getLogger(PesiExportActivatorEM.class);
 
 	//database validation status (create, update, validate ...)
-	static final Source pesiDestination = PesiDestinations.pesi_test_local_CDM_EM2PESI_tmp();
+	static final Source pesiDestination = PesiDestinations.pesi_test_local_CDM_EM2PESI();
 //	static final Source pesiDestination = PesiDestinations.pesi_test_local_CDM_FE2PESI();
 //	static final Source pesiDestination = PesiDestinations.pesi_test_local_CDM_ERMS2PESI();
 	
-	static final ICdmDataSource cdmSource = CdmDestinations.cdm_test_local_mysql();
+	static final ICdmDataSource cdmSource = CdmDestinations.cdm_test_local_mysql_test();
 	//Taxon names can't be mapped to their CDM ids as PESI Taxon table mainly holds taxa and there IDs. We ad nameIdStart to the TaxonName id to get a unique id
 	static final int nameIdStart = 10000000;
 	static final IdType idType = IdType.CDM_ID_WITH_EXCEPTIONS;
@@ -60,10 +60,10 @@ public class PesiExportActivatorEM {
 	
 	//taxa
 	static final boolean doTaxa = true;
-	static final boolean doRelTaxa = true;
 	static final boolean doTreeIndex = true;
 	static final boolean doRank = true;
 	static final boolean doInferredSynonyms = false;
+	static final boolean doRelTaxa = true;
 	static final boolean doDescriptions = true;
 	
 	static final boolean doNotes = true;
