@@ -48,11 +48,11 @@ import eu.etaxonomy.cdm.model.common.ExtensionType;
 import eu.etaxonomy.cdm.model.common.Language;
 import eu.etaxonomy.cdm.model.common.LanguageString;
 import eu.etaxonomy.cdm.model.description.CommonTaxonName;
+import eu.etaxonomy.cdm.model.description.DescriptionBase;
 import eu.etaxonomy.cdm.model.description.DescriptionElementBase;
 import eu.etaxonomy.cdm.model.description.Distribution;
 import eu.etaxonomy.cdm.model.description.Feature;
 import eu.etaxonomy.cdm.model.description.IndividualsAssociation;
-import eu.etaxonomy.cdm.model.description.TaxonDescription;
 import eu.etaxonomy.cdm.model.description.TaxonInteraction;
 import eu.etaxonomy.cdm.model.description.TextData;
 import eu.etaxonomy.cdm.model.location.NamedArea;
@@ -85,6 +85,18 @@ public class PesiDescriptionExport extends PesiExportBase {
 	private static final String pluralString = "attached infos";
 	private static final String parentPluralString = "Taxa";
 
+	//debugging
+	private static int countDescriptions;
+	private static int countTaxa;
+	private static int countDistribution;
+	private static int countAdditionalSources;
+	private static int countImages;
+	private static int countNotes;
+	
+	private static int countCommonName;
+	private static int countOccurrence;
+	private static int countOthers;
+	
 	public PesiDescriptionExport() {
 		super();
 	}
@@ -181,7 +193,9 @@ public class PesiDescriptionExport extends PesiExportBase {
 
 			logger.info("Fetched " + list.size() + " " + pluralString + ". Exporting...");
 			
+			
 			for (Taxon taxon : list) {
+				countTaxa++;
 				doCount(count++, modCount, pluralString);
 				success &= handleSingleTaxon(taxon, state, notesMapping, occurrenceMapping, addittionalSourceMapping, vernacularMapping, imageMapping);	
 			}
@@ -198,34 +212,59 @@ public class PesiDescriptionExport extends PesiExportBase {
 		}
 		if (list == null) {
 			logger.info("No " + pluralString + " left to fetch.");
+			logger.info("Partition: " + partitionCount);
+			logger.info("Taxa: " + countTaxa);
+			logger.info("Desc: " + countDescriptions);
+			logger.info("Distr: " + countDistribution);
+			logger.info("Occur: " + countOccurrence);
+			logger.info("Commons: " + countCommonName);
+			logger.info("AddSrc: " + countAdditionalSources);
+			logger.info("Images: " + countImages);
+			logger.info("Notes: " + countNotes);
+			logger.info("Others: " + countOthers);
+
 		}
 		// Commit transaction
 		commitTransaction(txStatus);
 		logger.debug("Committed transaction.");
 		return success;
-}
+	}
 
 	private boolean handleSingleTaxon(Taxon taxon, PesiExportState state, PesiExportMapping notesMapping, PesiExportMapping occurrenceMapping,
 			PesiExportMapping addittionalSourceMapping, PesiExportMapping vernacularMapping, PesiExportMapping imageMapping) throws SQLException {
 		boolean success = true;
-		for (TaxonDescription desc : taxon.getDescriptions()){
+//		Set<DescriptionBase<?>> descriptions = new HashSet<DescriptionBase<?>>();
+//		descriptions.addAll(taxon.getDescriptions());
+		
+//		descriptions.addAll(taxon.getName().getDescriptions());
+		
+		for (DescriptionBase<?> desc : taxon.getDescriptions()){
+			countDescriptions++;
+
 			boolean isImageGallery = desc.isImageGallery();
 			for (DescriptionElementBase element : desc.getElements()){
 				if (isImageGallery){
 					//TODO handle Images
+					countImages++;
 					success &= imageMapping.invoke(element);
 				}else if (isCommonName(element)){
+					countCommonName++;
 					success &= vernacularMapping.invoke(element);
 				}else if (isOccurrence(element)){
+					countOccurrence++;
 					Distribution distribution = CdmBase.deproxy(element, Distribution.class);
 					if (isPesiDistribution(state, distribution)){
+						countDistribution++;
 						success &=occurrenceMapping.invoke(element);
 					}
 				}else if (isAdditionalTaxonSource(element)){
+					countAdditionalSources++;
 					success &= addittionalSourceMapping.invoke(element);
 				}else if (isPesiNote(element)){
+					countNotes++;
 					success &= notesMapping.invoke(element);
 				}else{
+					countOthers++;
 					logger.warn("Description element type not yet handled by PESI export: " + element.getUuid() + ", " +  element.getClass() + ", " +  element.getFeature().getTitleCache());
 				}
 			}
@@ -301,7 +340,14 @@ public class PesiDescriptionExport extends PesiExportBase {
 
 	private boolean isOccurrence(DescriptionElementBase element) {
 		Feature feature = element.getFeature();
-		return (feature.equals(Feature.DISTRIBUTION()));
+		if (feature.equals(Feature.DISTRIBUTION())){
+			return true;
+		}else if (element.isInstanceOf(Distribution.class)){
+			logger.warn("Description element has class 'Distribution' but has no feature 'Distribution'");
+			return true;
+		}else{
+			return false;
+		}
 	}
 
 	private boolean isCommonName(DescriptionElementBase element) {
