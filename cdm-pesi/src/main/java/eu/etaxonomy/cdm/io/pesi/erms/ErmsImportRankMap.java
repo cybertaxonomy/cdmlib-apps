@@ -23,6 +23,7 @@ import eu.etaxonomy.cdm.io.common.Source;
 import eu.etaxonomy.cdm.io.common.mapping.DbImportMapping;
 import eu.etaxonomy.cdm.io.pesi.erms.validation.ErmsRankImportValidator;
 import eu.etaxonomy.cdm.model.common.CdmBase;
+import eu.etaxonomy.cdm.model.common.OrderedTermVocabulary;
 import eu.etaxonomy.cdm.model.name.NomenclaturalCode;
 import eu.etaxonomy.cdm.model.name.Rank;
 import eu.etaxonomy.cdm.strategy.exceptions.UnknownCdmTypeException;
@@ -65,7 +66,12 @@ public class ErmsImportRankMap extends ErmsImportBase<Rank>{
 				Map<Integer, Rank> kingdomMap = makeKingdomMap(rankMap, rankId);			
 				try {
 					rankName = rankName.replace("Forma", "Form").replace("Subforma", "Subform");
-					Rank rank = Rank.getRankByEnglishName(rankName, nc, false);
+					Rank rank;
+					if (nc == null && kingdomId == 1){
+						rank = getRank(state, ErmsTransformer.uuidRankSuperdomain, "Superdomain", "Superdomain", null, CdmBase.deproxy(Rank.GENUS().getVocabulary(), OrderedTermVocabulary.class), Rank.KINGDOM());
+					}else{
+						rank = Rank.getRankByEnglishName(rankName, nc, false);
+					}
 					if (rank == null){
 						logger.warn("Rank is null: " + rankName);
 					}

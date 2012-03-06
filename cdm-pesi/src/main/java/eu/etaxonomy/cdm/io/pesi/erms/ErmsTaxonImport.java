@@ -60,7 +60,7 @@ public class ErmsTaxonImport  extends ErmsImportBase<TaxonBase> implements IMapp
 	private int modCount = 10000;
 	private static final String pluralString = "taxa";
 	private static final String dbTableName = "tu";
-	private static final Class cdmTargetClass = TaxonBase.class;
+	private static final Class<TaxonBase> cdmTargetClass = TaxonBase.class;
 
 	public ErmsTaxonImport(){
 		super(pluralString, dbTableName, cdmTargetClass);

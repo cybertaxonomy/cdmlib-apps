@@ -42,6 +42,10 @@ public final class ErmsTransformer extends InputTransformerBase {
 	public static final int SOURCE_USE_STATUS_SOURCE = 7;
 	public static final int SOURCE_USE_EMENDATION = 8;
 	
+	//rank uuids
+	public static final UUID uuidRankSuperdomain = UUID.fromString("66d4d773-4946-4e02-b758-8903563eaa26");
+	
+	
 	//language uuids
 	public static final UUID uuidEuropeanMarineWaters = UUID.fromString("47389e42-3b3c-4873-bded-ac030db86462");
 	public static final UUID uuidMediterraneanSea = UUID.fromString("bde8a624-23c4-4ac3-b381-11287f5d656a");
