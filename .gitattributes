@@ -1267,14 +1267,17 @@ cdm-pesi/src/main/java/eu/etaxonomy/cdm/io/pesi/erms/ErmsTransformer.java -text
 cdm-pesi/src/main/java/eu/etaxonomy/cdm/io/pesi/erms/ErmsVernacularImport.java -text
 cdm-pesi/src/main/java/eu/etaxonomy/cdm/io/pesi/erms/ErmsVernacularSourcesImport.java -text
 cdm-pesi/src/main/java/eu/etaxonomy/cdm/io/pesi/erms/validation/ErmsAreaImportValidator.java -text
+cdm-pesi/src/main/java/eu/etaxonomy/cdm/io/pesi/erms/validation/ErmsDrImportValidator.java -text
 cdm-pesi/src/main/java/eu/etaxonomy/cdm/io/pesi/erms/validation/ErmsGeneralImportValidator.java -text
 cdm-pesi/src/main/java/eu/etaxonomy/cdm/io/pesi/erms/validation/ErmsImageImportValidator.java -text
 cdm-pesi/src/main/java/eu/etaxonomy/cdm/io/pesi/erms/validation/ErmsLinkImportValidator.java -text
 cdm-pesi/src/main/java/eu/etaxonomy/cdm/io/pesi/erms/validation/ErmsNoteImportValidator.java -text
+cdm-pesi/src/main/java/eu/etaxonomy/cdm/io/pesi/erms/validation/ErmsNoteSourceImportValidator.java -text
 cdm-pesi/src/main/java/eu/etaxonomy/cdm/io/pesi/erms/validation/ErmsRankImportValidator.java -text
 cdm-pesi/src/main/java/eu/etaxonomy/cdm/io/pesi/erms/validation/ErmsReferenceImportValidator.java -text
 cdm-pesi/src/main/java/eu/etaxonomy/cdm/io/pesi/erms/validation/ErmsSourceUsesImportValidator.java -text
 cdm-pesi/src/main/java/eu/etaxonomy/cdm/io/pesi/erms/validation/ErmsTaxonImportValidator.java -text
+cdm-pesi/src/main/java/eu/etaxonomy/cdm/io/pesi/erms/validation/ErmsVernacularImportValidator.java -text
 cdm-pesi/src/main/java/eu/etaxonomy/cdm/io/pesi/erms/validation/ErmsVernacularSourceImportValidator.java -text
 cdm-pesi/src/main/java/eu/etaxonomy/cdm/io/pesi/faunaEuropaea/FaunaEuropaeaAdditionalTaxonDataImport.java -text
 cdm-pesi/src/main/java/eu/etaxonomy/cdm/io/pesi/faunaEuropaea/FaunaEuropaeaAuthorImport.java -text
