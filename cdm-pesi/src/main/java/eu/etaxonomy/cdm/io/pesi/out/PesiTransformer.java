@@ -1757,6 +1757,8 @@ public final class PesiTransformer extends ExportTransformerBase implements IExp
 			else if (namedArea.getUuid().equals(BerlinModelTransformer.uuidSerbiaMontenegro)) { return STR_AREA_SERBIA_WITH_MONTENEGRO; }
 			else if (namedArea.getUuid().equals(BerlinModelTransformer.uuidSerbia)) { return STR_AREA_SERBIA_INCLUDING_VOJVODINA_AND_WITH_KOSOVO; }
 			else if (namedArea.getUuid().equals(BerlinModelTransformer.uuidCaucasia)) { return STR_AREA_CAUCASUS_REGION; }
+			else if (namedArea.getUuid().equals(BerlinModelTransformer.uuidUkraineAndCrimea)) { return STR_AREA_UKRAINE_INCLUDING_CRIMEA; }
+			else if (namedArea.getUuid().equals(BerlinModelTransformer.uuidAzerbaijanNakhichevan)) { return STR_AREA_AZERBAIJAN_INCLUDING_NAKHICHEVAN; }
 			
 			
 			//FE
@@ -1902,6 +1904,8 @@ public final class PesiTransformer extends ExportTransformerBase implements IExp
 			else if (namedArea.getUuid().equals(BerlinModelTransformer.uuidSerbiaMontenegro)) { return AREA_SERBIA_WITH_MONTENEGRO; }
 			else if (namedArea.getUuid().equals(BerlinModelTransformer.uuidSerbia)) { return AREA_SERBIA_INCLUDING_VOJVODINA_AND_WITH_KOSOVO; }
 			else if (namedArea.getUuid().equals(BerlinModelTransformer.uuidCaucasia)) { return AREA_CAUCASUS_REGION; }
+			else if (namedArea.getUuid().equals(BerlinModelTransformer.uuidUkraineAndCrimea)) { return AREA_UKRAINE_INCLUDING_CRIMEA; }
+			else if (namedArea.getUuid().equals(BerlinModelTransformer.uuidAzerbaijanNakhichevan)) { return AREA_AZERBAIJAN_INCLUDING_NAKHICHEVAN; }
 			
 			//FE
 			else if (namedArea.getUuid().equals(FaunaEuropaeaTransformer.uuidAreaAFR)) { return AREA_AFRO_TROPICAL_REGION; }
