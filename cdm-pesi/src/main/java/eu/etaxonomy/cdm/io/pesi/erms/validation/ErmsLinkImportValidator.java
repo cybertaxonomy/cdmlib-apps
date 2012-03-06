@@ -27,7 +27,7 @@ public class ErmsLinkImportValidator implements IOValidator<ErmsImportState>{
 	public boolean validate(ErmsImportState state){
 		boolean result = true;
 		ErmsImportConfigurator config = state.getConfig();
-		logger.warn("Checking for links not yet fully implemented");
+		logger.info("Checking for links not yet implemented");
 //		result &= checkTaxonStatus(config);
 		return result;
 	}

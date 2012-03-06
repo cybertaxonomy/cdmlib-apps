@@ -27,7 +27,7 @@ public class ErmsImageImportValidator implements IOValidator<ErmsImportState>{
 	public boolean validate(ErmsImportState state){
 		boolean result = true;
 		ErmsImportConfigurator config = state.getConfig();
-		logger.warn("Checking for images not yet fully implemented");
+		logger.info("Checking for images not yet fully implemented");
 
 		return result;
 	}

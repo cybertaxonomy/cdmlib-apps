@@ -32,7 +32,7 @@ public class ErmsTaxonImportValidator implements IOValidator<ErmsImportState>{
 	public boolean validate(ErmsImportState state){
 		boolean result = true;
 		ErmsImportConfigurator config = state.getConfig();
-		logger.warn("Checking for Taxa not yet fully implemented");
+		logger.info("Checking for Taxa not yet fully implemented");
 //		result &= checkParentTaxonStatus(config);
 		result &= checkAccParentTaxonStatus(config);
 		result &= checkSynonymsAcceptedTaxonStatus(config);

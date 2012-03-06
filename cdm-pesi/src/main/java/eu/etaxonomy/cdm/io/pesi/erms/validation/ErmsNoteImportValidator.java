@@ -27,7 +27,7 @@ public class ErmsNoteImportValidator implements IOValidator<ErmsImportState>{
 	public boolean validate(ErmsImportState state){
 		boolean result = true;
 		ErmsImportConfigurator config = state.getConfig();
-		logger.warn("Checking for notes not yet fully implemented");
+		logger.info("Checking for notes not yet fully implemented");
 //		result &= checkTaxonStatus(config);
 		return result;
 	}

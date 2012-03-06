@@ -32,7 +32,7 @@ public class ErmsSourceUsesImportValidator implements IOValidator<ErmsImportStat
 	public boolean validate(ErmsImportState state){
 		boolean result = true;
 		ErmsImportConfigurator config = state.getConfig();
-		logger.warn("Checking for source uses not yet fully implemented");
+		logger.info("Checking for source uses not yet fully implemented");
 //		result &= checkTaxonStatus(config);
 //		result &= checkInactivated(config);
 		return result;

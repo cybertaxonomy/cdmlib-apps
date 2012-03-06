@@ -27,7 +27,7 @@ public class ErmsVernacularSourceImportValidator  implements IOValidator<ErmsImp
 	public boolean validate(ErmsImportState state){
 		boolean result = true;
 		ErmsImportConfigurator config = state.getConfig();
-		logger.warn("Checking for vernacular sources not yet implemented");
+		logger.info("Checking for vernacular sources not yet implemented");
 
 		return result;
 	}

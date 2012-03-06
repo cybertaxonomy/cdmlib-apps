@@ -32,7 +32,7 @@ public class ErmsRankImportValidator implements IOValidator<ErmsImportState>{
 	public boolean validate(ErmsImportState state){
 		boolean result = true;
 		ErmsImportConfigurator config = state.getConfig();
-		logger.warn("Checking for ranks not yet fully implemented");
+		logger.info("Checking for ranks not yet fully implemented");
 		//TODO ranks with not existing kingdoms (e.g. kingdom_id = 8)
 		
 		return result;
