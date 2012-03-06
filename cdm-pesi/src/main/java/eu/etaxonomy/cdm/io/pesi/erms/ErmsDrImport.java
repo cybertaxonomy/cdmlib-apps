@@ -22,12 +22,10 @@ import org.springframework.stereotype.Component;
 import eu.etaxonomy.cdm.io.common.IOValidator;
 import eu.etaxonomy.cdm.io.common.mapping.DbIgnoreMapper;
 import eu.etaxonomy.cdm.io.common.mapping.DbImportAnnotationMapper;
-import eu.etaxonomy.cdm.io.common.mapping.DbImportDescriptionElementSourceCreationMapper;
 import eu.etaxonomy.cdm.io.common.mapping.DbImportDistributionCreationMapper;
 import eu.etaxonomy.cdm.io.common.mapping.DbImportMapping;
 import eu.etaxonomy.cdm.io.common.mapping.DbImportObjectMapper;
-import eu.etaxonomy.cdm.io.common.mapping.DbNotYetImplementedMapper;
-import eu.etaxonomy.cdm.io.pesi.erms.validation.ErmsReferenceImportValidator;
+import eu.etaxonomy.cdm.io.pesi.erms.validation.ErmsDrImportValidator;
 import eu.etaxonomy.cdm.model.common.AnnotationType;
 import eu.etaxonomy.cdm.model.common.CdmBase;
 import eu.etaxonomy.cdm.model.description.Distribution;
@@ -184,7 +182,7 @@ public class ErmsDrImport  extends ErmsImportBase<Distribution> {
 	 */
 	@Override
 	protected boolean doCheck(ErmsImportState state){
-		IOValidator<ErmsImportState> validator = new ErmsReferenceImportValidator();
+		IOValidator<ErmsImportState> validator = new ErmsDrImportValidator();
 		return validator.validate(state);
 	}
 	

@@ -23,6 +23,7 @@ import org.springframework.stereotype.Component;
 import eu.etaxonomy.cdm.io.common.IOValidator;
 import eu.etaxonomy.cdm.io.common.mapping.DbImportDescriptionElementSourceCreationMapper;
 import eu.etaxonomy.cdm.io.common.mapping.DbImportMapping;
+import eu.etaxonomy.cdm.io.pesi.erms.validation.ErmsNoteSourceImportValidator;
 import eu.etaxonomy.cdm.io.pesi.erms.validation.ErmsVernacularSourceImportValidator;
 import eu.etaxonomy.cdm.model.common.CdmBase;
 import eu.etaxonomy.cdm.model.common.DescriptionElementSource;
@@ -143,7 +144,7 @@ public class ErmsNotesSourcesImport extends ErmsImportBase<CommonTaxonName> {
 	 */
 	@Override
 	protected boolean doCheck(ErmsImportState state) {
-		IOValidator<ErmsImportState> validator = new ErmsVernacularSourceImportValidator();
+		IOValidator<ErmsImportState> validator = new ErmsNoteSourceImportValidator();
 		return validator.validate(state);
 	}
 	

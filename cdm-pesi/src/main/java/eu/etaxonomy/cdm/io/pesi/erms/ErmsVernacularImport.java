@@ -25,7 +25,7 @@ import eu.etaxonomy.cdm.io.common.mapping.DbImportCommonNameCreationMapper;
 import eu.etaxonomy.cdm.io.common.mapping.DbImportMapping;
 import eu.etaxonomy.cdm.io.common.mapping.DbImportObjectMapper;
 import eu.etaxonomy.cdm.io.common.mapping.DbImportStringMapper;
-import eu.etaxonomy.cdm.io.pesi.erms.validation.ErmsReferenceImportValidator;
+import eu.etaxonomy.cdm.io.pesi.erms.validation.ErmsVernacularImportValidator;
 import eu.etaxonomy.cdm.model.common.AnnotationType;
 import eu.etaxonomy.cdm.model.common.CdmBase;
 import eu.etaxonomy.cdm.model.common.Language;
@@ -134,7 +134,7 @@ public class ErmsVernacularImport  extends ErmsImportBase<CommonTaxonName> {
 	 */
 	@Override
 	protected boolean doCheck(ErmsImportState state){
-		IOValidator<ErmsImportState> validator = new ErmsReferenceImportValidator();
+		IOValidator<ErmsImportState> validator = new ErmsVernacularImportValidator();
 		return validator.validate(state);
 	}
 	
