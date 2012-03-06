@@ -111,13 +111,13 @@ public class PesiAdditionalTaxonSourceExport extends PesiExportBase {
 
 			// Start transaction
 			txStatus = startTransaction(true);
-			logger.error("Started new transaction. Fetching some " + parentPluralString + " first (max: " + limit + ") ...");
+			logger.info("Started new transaction. Fetching some " + parentPluralString + " first (max: " + limit + ") ...");
 			while ((list = getTaxonService().list(null, limit, taxonCount, null, null)).size() > 0) {
 
 				taxonCount += list.size();
-				logger.error("Fetched " + list.size() + " " + parentPluralString + ".");
+				logger.info("Fetched " + list.size() + " " + parentPluralString + ".");
 				
-				logger.error("PHASE 2: Check for SourceUse 'Additional Source'");
+				logger.info("PHASE 2: Check for SourceUse 'Additional Source'");
 				sourceUse_AdditionalSource = true;
 				for (TaxonBase taxonBase : list) {
 					
@@ -147,10 +147,10 @@ public class PesiAdditionalTaxonSourceExport extends PesiExportBase {
 										setCitationMicroReference(elementSource.getCitationMicroReference());
 	
 										// Get the citation
-										Reference reference = elementSource.getCitation();
+										Reference<?> reference = elementSource.getCitation();
 										
 										// Check whether it was a synonym originally
-										TaxonNameBase nameUsedInSource = elementSource.getNameUsedInSource();
+										TaxonNameBase<?,?> nameUsedInSource = elementSource.getNameUsedInSource();
 										if (nameUsedInSource != null) {
 											// It was a synonym originally: Set currentTaxonName to synonym's taxonName
 											currentTaxonName = nameUsedInSource;
