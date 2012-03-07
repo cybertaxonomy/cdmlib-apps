@@ -19,6 +19,7 @@ import org.springframework.stereotype.Component;
 
 import eu.etaxonomy.cdm.io.common.IImportConfigurator;
 import eu.etaxonomy.cdm.io.common.IOValidator;
+import eu.etaxonomy.cdm.io.common.mapping.DbIgnoreMapper;
 import eu.etaxonomy.cdm.io.common.mapping.DbImportAnnotationMapper;
 import eu.etaxonomy.cdm.io.common.mapping.DbImportExtensionMapper;
 import eu.etaxonomy.cdm.io.common.mapping.DbImportMapping;
@@ -78,7 +79,8 @@ public class ErmsReferenceImport  extends ErmsImportBase<Reference> implements I
 			mapping = new DbImportMapping();
 			
 			mapping.addMapper(DbImportObjectCreationMapper.NewInstance(this, "id", REFERENCE_NAMESPACE)); //id
-			mapping.addMapper(DbImportExtensionMapper.NewInstance("imis_id", ErmsTransformer.IMIS_UUID, "imis", "imis", "imis"));
+			ExtensionType imisExtType = getExtensionType( ErmsTransformer.IMIS_UUID, "imis", "imis", "imis");
+			mapping.addMapper(DbImportExtensionMapper.NewInstance("imis_id", imisExtType));
 			
 			mapping.addMapper(DbImportTruncatedStringMapper.NewInstance("source_name", "titleCache", "title"));
 			mapping.addMapper(DbImportStringMapper.NewInstance("source_abstract", "referenceAbstract"));
@@ -88,8 +90,9 @@ public class ErmsReferenceImport  extends ErmsImportBase<Reference> implements I
 			mapping.addMapper(DbImportExtensionMapper.NewInstance("source_link", ExtensionType.URL()));
 			
 			//not yet implemented
-			mapping.addMapper(DbNotYetImplementedMapper.NewInstance("source_type"));
-			mapping.addMapper(DbNotYetImplementedMapper.NewInstance("source_orig_fn"));
+			mapping.addMapper(DbIgnoreMapper.NewInstance("source_type", "Handled by ObjectCreateMapper - but mapping not yet fully correct. See comments there."));
+			mapping.addMapper(DbIgnoreMapper.NewInstance("source_orig_fn", "Currently not needed. Holds information about pdf files."));
+			mapping.addMapper(DbIgnoreMapper.NewInstance("source_openaccess", "Currently not needed. Holds information about open access of the source."));
 
 		}
 		return mapping;
@@ -98,10 +101,26 @@ public class ErmsReferenceImport  extends ErmsImportBase<Reference> implements I
 	/* (non-Javadoc)
 	 * @see eu.etaxonomy.cdm.io.common.mapping.IMappingImport#createObject(java.sql.ResultSet, eu.etaxonomy.cdm.io.common.ImportStateBase)
 	 */
-	public Reference createObject(ResultSet rs, ErmsImportState state)
-			throws SQLException {
+	public Reference createObject(ResultSet rs, ErmsImportState state) throws SQLException {
 		int id = rs.getInt("id");
-		Reference ref = ReferenceFactory.newGeneric();
+		String type = rs.getString("source_type");
+		Reference ref;
+		if (type.equalsIgnoreCase("p")){
+			//TDOO is this correct? maybe mark as 'publication'
+			ref = ReferenceFactory.newGeneric();
+		}else if (type.equalsIgnoreCase("d")){
+			ref = ReferenceFactory.newDatabase();
+		}else if (type.equalsIgnoreCase("e")){
+			//TODO is this correct, maybe mark as "informal"
+			ref = ReferenceFactory.newGeneric();  
+		}else if (type.equalsIgnoreCase("i")){
+			//TODO is this correct?
+			ref = ReferenceFactory.newGeneric();
+		}else{
+			ref = ReferenceFactory.newGeneric();
+			logger.warn("Unknown reference type: " + type + ". Created generic instead.");
+		}
+
 		return ref;
 	}
 

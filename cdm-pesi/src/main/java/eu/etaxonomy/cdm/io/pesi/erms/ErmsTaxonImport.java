@@ -32,6 +32,7 @@ import eu.etaxonomy.cdm.io.common.mapping.DbNotYetImplementedMapper;
 import eu.etaxonomy.cdm.io.common.mapping.IMappingImport;
 import eu.etaxonomy.cdm.io.pesi.erms.validation.ErmsTaxonImportValidator;
 import eu.etaxonomy.cdm.model.common.CdmBase;
+import eu.etaxonomy.cdm.model.common.ExtensionType;
 import eu.etaxonomy.cdm.model.name.NomenclaturalCode;
 import eu.etaxonomy.cdm.model.name.NonViralName;
 import eu.etaxonomy.cdm.model.name.Rank;
@@ -62,6 +63,9 @@ public class ErmsTaxonImport  extends ErmsImportBase<TaxonBase> implements IMapp
 	private static final String dbTableName = "tu";
 	private static final Class<TaxonBase> cdmTargetClass = TaxonBase.class;
 
+	//TODO make state variable
+	private Set<Integer> acceptedTaxaKeys;
+	
 	public ErmsTaxonImport(){
 		super(pluralString, dbTableName, cdmTargetClass);
 	}
@@ -89,24 +93,25 @@ public class ErmsTaxonImport  extends ErmsImportBase<TaxonBase> implements IMapp
 			UUID tsnUuid = ErmsTransformer.uuidTsn;
 			mapping.addMapper(DbImportLsidMapper.NewInstance("GUID", "lsid")); 
 
-			mapping.addMapper(DbImportExtensionMapper.NewInstance("tsn", tsnUuid, "TSN", "TSN", "TSN"));
+			ExtensionType tsnExtType = getExtensionType(tsnUuid, "TSN", "TSN", "TSN"); 
+			mapping.addMapper(DbImportExtensionMapper.NewInstance("tsn", tsnExtType));
 //			mapping.addMapper(DbImportStringMapper.NewInstance("tu_name", "(NonViralName)name.nameCache"));
 			
-			UUID displayNameUuid = ErmsTransformer.uuidDisplayName;
-			mapping.addMapper(DbImportExtensionMapper.NewInstance("tu_displayname", displayNameUuid, "display name", "display name", "display name"));
-			UUID fuzzyNameUuid = ErmsTransformer.uuidFuzzyName;
-			mapping.addMapper(DbImportExtensionMapper.NewInstance("tu_fuzzyname", fuzzyNameUuid, "fuzzy name", "fuzzy name", "fuzzy name"));
+			ExtensionType displayNameExtType = getExtensionType(ErmsTransformer.uuidDisplayName, "display name", "display name", "display name"); 
+			mapping.addMapper(DbImportExtensionMapper.NewInstance("tu_displayname", displayNameExtType));
+			ExtensionType fuzzyNameExtType = getExtensionType(ErmsTransformer.uuidFuzzyName, "fuzzy name", "fuzzy name", "fuzzy name"); 
+			mapping.addMapper(DbImportExtensionMapper.NewInstance("tu_fuzzyname", fuzzyNameExtType));
 			mapping.addMapper(DbImportStringMapper.NewInstance("tu_authority", "(NonViralName)name.authorshipCache"));
 			
-			UUID fossilStatusUuid = ErmsTransformer.uuidFossilStatus;
-			mapping.addMapper(DbImportExtensionMapper.NewInstance("fossil_name", fossilStatusUuid, "fossil status", "fossil status", "fos. stat."));
+			ExtensionType fossilStatusExtType = getExtensionType(ErmsTransformer.uuidFossilStatus, "fossil status", "fossil status", "fos. stat."); 
+			mapping.addMapper(DbImportExtensionMapper.NewInstance("fossil_name", fossilStatusExtType));
 //			mapping.addMapper(DbImportExtensionTypeCreationMapper.NewInstance("fossil_name", EXTENSION_TYPE_NAMESPACE, "fossil_name", "fossil_name", "fossil_name"));
 
-			UUID unacceptUuid = ErmsTransformer.uuidUnacceptReason;
-			mapping.addMapper(DbImportExtensionMapper.NewInstance("tu_unacceptreason", unacceptUuid, "unaccept reason", "unaccept reason", "reason"));
+			ExtensionType unacceptExtType = getExtensionType(ErmsTransformer.uuidUnacceptReason, "unaccept reason", "unaccept reason", "reason"); 
+			mapping.addMapper(DbImportExtensionMapper.NewInstance("tu_unacceptreason", unacceptExtType));
 			
-			UUID qualityUuid = ErmsTransformer.uuidQualityStatus;
-			mapping.addMapper(DbImportExtensionMapper.NewInstance("qualitystatus_name", qualityUuid, "quality status", "quality status", "quality status")); //checked by Tax Editor ERMS1.1, Added by db management team (2x), checked by Tax Editor
+			ExtensionType qualityStatusExtType = getExtensionType(ErmsTransformer.uuidQualityStatus, "quality status", "quality status", "quality status"); 
+			mapping.addMapper(DbImportExtensionMapper.NewInstance("qualitystatus_name", qualityStatusExtType)); //checked by Tax Editor ERMS1.1, Added by db management team (2x), checked by Tax Editor
 			
 			
 //			UUID hiddenUuid = ErmsTransformer.uuidHidden;
@@ -114,6 +119,7 @@ public class ErmsTaxonImport  extends ErmsImportBase<TaxonBase> implements IMapp
 			
 			//not yet implemented
 			mapping.addMapper(DbNotYetImplementedMapper.NewInstance("tu_sp", "included in rank/object creation")); 
+			mapping.addMapper(DbIgnoreMapper.NewInstance("cache_citation", "Needs check if this is needed in PESI"));
 			
 			
 			//ignore
@@ -122,18 +128,6 @@ public class ErmsTaxonImport  extends ErmsImportBase<TaxonBase> implements IMapp
 			mapping.addMapper(DbIgnoreMapper.NewInstance("tu_fresh", "freshwater flag not implemented in PESI"));
 			mapping.addMapper(DbIgnoreMapper.NewInstance("tu_terrestrial", "terrestrial flag not implemented in PESI"));
 			mapping.addMapper(DbIgnoreMapper.NewInstance("tu_fossil", "tu_fossil implemented as foreign key"));
-			mapping.addMapper(DbIgnoreMapper.NewInstance("cache_citation", "citation cache not needed in PESI"));
-			
-			
-			
-			
-			//not in current version anymore
-//			mapping.addMapper(DbNotYetImplementedMapper.NewInstance("tu_hidden", "Needs DbImportMarkerMapper implemented"));
-//			UUID completenessUuid = ErmsTransformer.uuidCompleteness;
-//	x		mapping.addMapper(DbImportExtensionMapper.NewInstance("tu_completeness", completenessUuid, "completeness", "completeness", "completeness")); //null, unknown, tmpflag, tmp2, tmp3, complete
-//			UUID credibilityUuid = ErmsTransformer.uuidCredibility;
-//	x		mapping.addMapper(DbImportExtensionMapper.NewInstance("tu_credibility", credibilityUuid, "credibility", "credibility", "credibility")); //Werte: null, unknown, marked for deletion
-
 			
 			
 //			//second path / implemented in ErmsTaxonRelationImport
@@ -167,58 +161,41 @@ public class ErmsTaxonImport  extends ErmsImportBase<TaxonBase> implements IMapp
 		return strRecordQuery;
 	}
 	
-
-//	/**
-//	 * @param config
-//	 * @return
-//	 */
-//	private String getSecondPathRecordQuery(ErmsImportConfigurator config) {
-//		//TODO get automatic by second path mappers
-//		String selectAttributes = "id, tu_parent, tu_typetaxon, tu_typetaxon, tu_typedesignation, tu_acctaxon, tu_status"; 
-//		String strRecordQuery = 
-//			" SELECT  " + selectAttributes + 
-//			" FROM tu " +
-//			" WHERE ( tu.id IN (" + ID_LIST_TOKEN + ") )";
-//		return strRecordQuery;
-//	}
-
-
-//	private String getSecondPathIdQuery(){
-//		return getIdQuery();
-//	}
 	
 	/* (non-Javadoc)
 	 * @see eu.etaxonomy.cdm.io.erms.ErmsImportBase#doInvoke(eu.etaxonomy.cdm.io.erms.ErmsImportState)
 	 */
 	@Override
 	protected void doInvoke(ErmsImportState state) {
+		acceptedTaxaKeys = getAcceptedTaxaKeys(state);
+		
 		//first path
 		super.doInvoke(state);
-		
-//		//second path
-//		isSecondPath = true;
-//		ErmsImportConfigurator config = state.getConfig();
-//		Source source = config.getSource();
-//			
-//		String strIdQuery = getSecondPathIdQuery();
-//		String strRecordQuery = getSecondPathRecordQuery(config);
-//
-//		int recordsPerTransaction = config.getRecordsPerTransaction();
-//		try{
-//			ResultSetPartitioner partitioner = ResultSetPartitioner.NewInstance(source, strIdQuery, strRecordQuery, recordsPerTransaction);
-//			while (partitioner.nextPartition()){
-//				partitioner.doPartition(this, state);
-//			}
-//		} catch (SQLException e) {
-//			logger.error("SQLException:" +  e);
-//			return false;
-//		}
-//		
-//		isSecondPath = false;
-//
-//		logger.info("end make " + getPluralString() + " ... " + getSuccessString(success));
 		return;
 
+	}
+
+
+
+	private Set<Integer> getAcceptedTaxaKeys(ErmsImportState state) {
+		Set<Integer> result = new HashSet<Integer>();
+		String parentCol = "tu_parent";
+		String accCol = " tu_acctaxon";
+		String taxonTable = "tu";
+		String sql = " SELECT DISTINCT %s FROM %s UNION SELECT id FROM %s WHERE %s = id ";
+		sql = String.format(sql, parentCol, taxonTable, taxonTable, accCol);
+		ResultSet rs = state.getConfig().getSource().getResultSet(sql);
+		try {
+			while (rs.next()){
+				Integer id;
+				id = rs.getInt(parentCol);
+				result.add(id);
+			}
+			return result;
+		} catch (SQLException e) {
+			e.printStackTrace();
+			throw new RuntimeException(e);
+		}
 	}
 
 
@@ -258,6 +235,9 @@ public class ErmsTaxonImport  extends ErmsImportBase<TaxonBase> implements IMapp
 	 */
 	public TaxonBase createObject(ResultSet rs, ErmsImportState state) throws SQLException {
 		int statusId = rs.getInt("status_id");
+		Object accTaxonId = rs.getObject("tu_acctaxon");
+		Integer meId = rs.getInt("id");
+		
 		String tuName = rs.getString("tu_name");
 		String displayName = rs.getString("tu_displayname");
 		
@@ -308,17 +288,17 @@ public class ErmsTaxonImport  extends ErmsImportBase<TaxonBase> implements IMapp
 		}
 		
 		//add original source for taxon name (taxon original source is added in mapper
-		Reference citation = state.getConfig().getSourceReference();
+		Reference citation = state.getTransactionalSourceReference();
 		addOriginalSource(rs, taxonName, "id", NAME_NAMESPACE, citation);
 		
-//		taxonName.setNameCache("Test");
-		
-		ErmsImportConfigurator config = state.getConfig();
-		Reference sec = config.getSourceReference();
-		if (statusId == 1){
-			return Taxon.NewInstance(taxonName, sec);
+		//old: if (statusId == 1){
+		if (this.acceptedTaxaKeys.contains(meId)){
+			if (statusId != 1){
+				logger.info("Taxon created as taxon but has status <> 1: " + meId);
+			}
+			return Taxon.NewInstance(taxonName, citation);
 		}else{
-			return Synonym.NewInstance(taxonName, sec);
+			return Synonym.NewInstance(taxonName, citation);
 		}
 	}
 
@@ -364,6 +344,7 @@ public class ErmsTaxonImport  extends ErmsImportBase<TaxonBase> implements IMapp
 	}
 
 	/**
+	 * Returns an empty Taxon Name instance according to the given rank and kingdom.
 	 * @param rs
 	 * @return
 	 * @throws SQLException 

@@ -28,6 +28,7 @@ import eu.etaxonomy.cdm.io.common.mapping.IMappingImport;
 import eu.etaxonomy.cdm.io.pesi.erms.validation.ErmsAreaImportValidator;
 import eu.etaxonomy.cdm.model.common.AnnotationType;
 import eu.etaxonomy.cdm.model.common.CdmBase;
+import eu.etaxonomy.cdm.model.common.ExtensionType;
 import eu.etaxonomy.cdm.model.location.NamedArea;
 import eu.etaxonomy.cdm.model.location.NamedAreaLevel;
 import eu.etaxonomy.cdm.model.location.NamedAreaType;
@@ -76,7 +77,8 @@ public class ErmsAreaImport  extends ErmsImportBase<NamedArea> implements IMappi
 			
 			mapping.addMapper(DbImportObjectCreationMapper.NewInstance(this, "id", AREA_NAMESPACE)); //id
 			mapping.addMapper(DbImportStringMapper.NewInstance("gu_name", "titleCache"));
-			mapping.addMapper(DbImportExtensionMapper.NewInstance("gazetteer_id", ErmsTransformer.GAZETTEER_UUID, "Gazetteer ID", "Gazetteer ID", "G-ID"));
+			ExtensionType extensionType = getExtensionType( ErmsTransformer.GAZETTEER_UUID, "Gazetteer ID", "Gazetteer ID", "G-ID");
+			mapping.addMapper(DbImportExtensionMapper.NewInstance("gazetteer_id",extensionType));
 			mapping.addMapper(DbImportAnnotationMapper.NewInstance("note", AnnotationType.EDITORIAL()));
 
 		}

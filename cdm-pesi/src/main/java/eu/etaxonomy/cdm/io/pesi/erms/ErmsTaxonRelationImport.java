@@ -60,12 +60,13 @@ private DbImportMapping mapping;
 			mapping = new DbImportMapping();
 			
 			mapping.addMapper(DbImportTaxIncludedInMapper.NewInstance("id", TAXON_NAMESPACE, "parentId", TAXON_NAMESPACE, "accParentId", TAXON_NAMESPACE, null));//there is only one tree
-			mapping.addMapper(DbImportSynonymMapper.NewInstance("id", "tu_acctaxon", TAXON_NAMESPACE, null)); 			
+			mapping.addMapper(DbImportSynonymMapper.NewInstance("id", "tu_acctaxon", TAXON_NAMESPACE, null, true)); 			
 			mapping.addMapper(DbImportNameTypeDesignationMapper.NewInstance("id", "tu_typetaxon", ErmsTaxonImport.NAME_NAMESPACE, "tu_typedesignationstatus"));
 //			mapping.addMapper(DbNotYetImplementedMapper.NewInstance("tu_acctaxon"));
 		}
 		return mapping;
 	}
+	
 
 	/* (non-Javadoc)
 	 * @see eu.etaxonomy.cdm.io.erms.ErmsImportBase#getRecordQuery(eu.etaxonomy.cdm.io.erms.ErmsImportConfigurator)
