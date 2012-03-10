@@ -45,7 +45,9 @@ public class DwcaImportActivator {
 	
 	//database validation status (create, update, validate ...)
 	static DbSchemaValidation hbm2dll = DbSchemaValidation.CREATE;
-	static final URI source = dwca_test_in();
+//	static final URI source = dwca_test_in();
+	static final URI source = dwca_test_cich();
+	
 
 	
 //	static final ICdmDataSource cdmDestination = CdmDestinations.localH2();
@@ -112,6 +114,13 @@ public class DwcaImportActivator {
 	public static URI dwca_test_in() {
 //		URI sourceUrl = URI.create("http://dev.e-taxonomy.eu/trac/export/14463/trunk/cdmlib/cdmlib-io/src/test/resources/eu/etaxonomy/cdm/io/dwca/in/DwcaZipToStreamConverterTest-input.zip");
 		URI sourceUrl = URI.create("file:///C:/Users/pesiimport/Documents/pesi_cdmlib/cdmlib-io/src/test/resources/eu/etaxonomy/cdm/io/dwca/in/DwcaZipToStreamConverterTest-input.zip");
+		return sourceUrl;
+	}
+	
+	
+	//Dwca
+	public static URI dwca_test_cich() {
+		URI sourceUrl = URI.create("file:///E:/opt/data/dwca/20110621_1400_cichorieae_dwca.zip");
 		return sourceUrl;
 	}
 
