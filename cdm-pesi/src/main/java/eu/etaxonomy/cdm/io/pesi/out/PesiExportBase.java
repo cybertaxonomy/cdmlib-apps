@@ -15,6 +15,7 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
+import java.util.UUID;
 
 import org.apache.log4j.Logger;
 
@@ -26,6 +27,7 @@ import eu.etaxonomy.cdm.model.common.CdmBase;
 import eu.etaxonomy.cdm.model.common.Marker;
 import eu.etaxonomy.cdm.model.common.MarkerType;
 import eu.etaxonomy.cdm.model.common.RelationshipBase;
+import eu.etaxonomy.cdm.model.description.Feature;
 import eu.etaxonomy.cdm.model.description.TaxonNameDescription;
 import eu.etaxonomy.cdm.model.name.HybridRelationship;
 import eu.etaxonomy.cdm.model.name.NameRelationship;
@@ -208,7 +210,7 @@ public abstract class PesiExportBase extends DbExportBase<PesiExportConfigurator
 			logger.warn ("Only synonym - and taxon-relationships alowed here");
 			return false;
 		}
-		return (isPesiTaxon(taxonBase) && isPesiTaxon(taxon));
+		return (isPesiTaxon(taxonBase, true) && isPesiTaxon(taxon, true));
 		
 	}
 
@@ -308,6 +310,11 @@ public abstract class PesiExportBase extends DbExportBase<PesiExportConfigurator
 	}
 
 
+	protected static boolean isPesiTaxon(TaxonBase taxonBase) {
+		return isPesiTaxon(taxonBase, false);
+	}
+
+	
 	/**
 	 * Checks if this taxon base is a taxon that is to be exported to PESI. This is generally the case
 	 * but not for taxa that are marked as "unpublish". Synonyms and misapplied names are exported if they are
@@ -317,7 +324,7 @@ public abstract class PesiExportBase extends DbExportBase<PesiExportConfigurator
 	 * @param taxonBase
 	 * @return
 	 */
-	protected static boolean isPesiTaxon(TaxonBase taxonBase) {
+	protected static boolean isPesiTaxon(TaxonBase taxonBase, boolean excludeMisappliedNames) {
 		//handle accepted taxa
 		if (taxonBase.isInstanceOf(Taxon.class)){
 			Taxon taxon = CdmBase.deproxy(taxonBase, Taxon.class);
@@ -341,6 +348,9 @@ public abstract class PesiExportBase extends DbExportBase<PesiExportConfigurator
 				return true;
 			//handle misapplied names
 			}else{
+				if (excludeMisappliedNames){
+					return false;
+				}
 				for (Marker marker : taxon.getMarkers()){
 					//probably not needed any more after #2786 was fixed
 					if (marker.getValue() == true && marker.getMarkerType().getUuid().equals(BerlinModelTransformer.uuidMisappliedCommonName)){
@@ -350,7 +360,8 @@ public abstract class PesiExportBase extends DbExportBase<PesiExportConfigurator
 				}
 				for (TaxonRelationship taxRel : taxon.getRelationsFromThisTaxon()){
 					if (taxRel.getType().equals(TaxonRelationshipType.MISAPPLIED_NAME_FOR())){
-						if (isPesiTaxon(taxRel.getToTaxon())){
+//						logger.warn(taxRel.getUuid() + "; " + taxRel.getToTaxon().getUuid() + " + " + taxRel.getToTaxon().getTitleCache());
+						if (isPesiTaxon(taxRel.getToTaxon(), true)){
 							return true;
 						}
 					}
