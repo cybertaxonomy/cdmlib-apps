@@ -1777,15 +1777,15 @@ public final class PesiTransformer extends ExportTransformerBase implements IExp
 			
 			//ERMS
 			else if (namedArea.getUuid().equals(ErmsTransformer.uuidEuropeanMarineWaters)) { return STR_AREA_EUROPEAN_MARINE_WATERS; }
-			else if ((namedArea.getRepresentation(Language.DEFAULT()).getAbbreviatedLabel()).equals("MES") ||
+			else if ( //(namedArea.getRepresentation(Language.DEFAULT()).getAbbreviatedLabel()).equals("MES") ||    !! NPE
 					(namedArea.getUuid().equals(ErmsTransformer.uuidMediterraneanSea))) { return STR_AREA_MEDITERRANEAN_SEA; } // abbreviated label missing
 			else if (namedArea.getUuid().equals(ErmsTransformer.uuidWhiteSea)) { return STR_AREA_WHITE_SEA; }
 			else if (namedArea.getUuid().equals(ErmsTransformer.uuidNorthSea)) { return STR_AREA_NORTH_SEA; }
 			else if (namedArea.getUuid().equals(ErmsTransformer.uuidBalticSea)) { return STR_AREA_BALTIC_SEA; }
-			else if ((namedArea.getRepresentation(Language.DEFAULT()).getAbbreviatedLabel()).equals("BLS") ||
+			else if ( //(namedArea.getRepresentation(Language.DEFAULT()).getAbbreviatedLabel()).equals("BLS") ||      !! NPE
 					(namedArea.getUuid().equals(ErmsTransformer.uuidBlackSea))) { return STR_AREA_BLACK_SEA; } // abbreviated label missing
 			else if (namedArea.getUuid().equals(ErmsTransformer.uuidBarentsSea)) { return STR_AREA_BARENTS_SEA; }
-			else if ((namedArea.getRepresentation(Language.DEFAULT()).getAbbreviatedLabel()).equals("CAS") ||
+			else if ( // (namedArea.getRepresentation(Language.DEFAULT()).getAbbreviatedLabel()).equals("CAS") ||      !! NPE
 					(namedArea.getUuid().equals(ErmsTransformer.uuidCaspianSea))) { return STR_AREA_CASPIAN_SEA; } // abbreviated label missing
 			else if (namedArea.getUuid().equals(ErmsTransformer.uuidPortugueseExclusiveEconomicZone)) { return STR_AREA_PORTUGUESE_EXCLUSIVE_ECONOMIC_ZONE; }
 			else if (namedArea.getUuid().equals(ErmsTransformer.uuidBelgianExclusiveEconomicZone)) { return STR_AREA_BELGIAN_EXCLUSIVE_ECONOMIC_ZONE; }
