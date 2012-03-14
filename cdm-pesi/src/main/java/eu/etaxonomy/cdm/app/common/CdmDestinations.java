@@ -39,11 +39,12 @@ public class CdmDestinations {
 		return makeDestination(dbType, cdmServer, cdmDB, -1, cdmUserName, null);
 	}
 
-	public static ICdmDataSource cdm_test_local_mysql_fdac(){
+	
+	public static ICdmDataSource cdm_test_local_indexFungorum(){
 		DatabaseTypeEnum dbType = DatabaseTypeEnum.MySQL;
 		String cdmServer = "127.0.0.1";
-		String cdmDB = "fdac"; 
-		String cdmUserName = "edit";
+		String cdmDB = "indexFungorum"; 
+		String cdmUserName = "root";
 		return makeDestination(dbType, cdmServer, cdmDB, -1, cdmUserName, null);
 	}
 	
