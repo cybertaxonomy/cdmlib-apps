@@ -29,7 +29,6 @@ import eu.etaxonomy.cdm.io.common.ICdmIO;
 import eu.etaxonomy.cdm.io.common.IPartitionedIO;
 import eu.etaxonomy.cdm.io.common.ResultSetPartitioner;
 import eu.etaxonomy.cdm.io.common.Source;
-import eu.etaxonomy.cdm.io.common.mapping.DbImportMapping;
 import eu.etaxonomy.cdm.io.common.mapping.out.DbLastActionMapper;
 import eu.etaxonomy.cdm.io.pesi.out.PesiTransformer;
 import eu.etaxonomy.cdm.model.agent.Team;
@@ -286,22 +285,25 @@ public abstract class IndexFungorumImportBase extends CdmImportBase<IndexFungoru
 		if (StringUtils.isNotBlank(pubAuthorStr)){
 			if (StringUtils.isNotBlank(authorStr)){
 				if (! pubAuthorStr.equals(authorStr)){
-					pubAuthor = Team.NewInstance();
-					pubAuthor.setNomenclaturalTitle(pubAuthorStr);
-					
+					pubAuthor = Team.NewTitledInstance(pubAuthorStr,pubAuthorStr);
 				}
 			}else{
 				logger.warn("'AUTHORS' is blank for not empty PUBLISHING_AUTHORS. This is not yet handled.");
 			}
 		}
+		//inRef + inRefAuthor
 		if (pubAuthor != null){
 			Reference<?> inRef = ReferenceFactory.newGeneric();
 			inRef.setAuthorTeam(pubAuthor);
 			ref.setInReference(inRef);
 			hasInReference = true;
-		}else{
-			ref.setAuthorTeam(CdmBase.deproxy(name.getCombinationAuthorTeam(), TeamOrPersonBase.class));
 		}
+		//refAuthor
+		TeamOrPersonBase<?> refAuthor = CdmBase.deproxy(name.getCombinationAuthorTeam(), TeamOrPersonBase.class);
+		if (refAuthor == null){
+			refAuthor = Team.NewTitledInstance(authorStr, authorStr);
+		}
+		ref.setAuthorTeam(refAuthor);
 		//location
 		String location = rs.getString("pubIMIAbbrLoc");
 		if (StringUtils.isNotBlank(location)){
@@ -360,11 +362,16 @@ public abstract class IndexFungorumImportBase extends CdmImportBase<IndexFungoru
 		taxon.addSource(source);
 		
 		//no last action
-		MarkerType hasNoLastAction = getMarkerType(state, DbLastActionMapper.uuidMarkerTypeHasNoLastAction, 
-				"has no last action", "No last action information available", "no last action");
+		MarkerType hasNoLastAction = getNoLastActionMarkerType(state);
 		taxon.addMarker(Marker.NewInstance(hasNoLastAction, true));
 		//LSID
 		makeLSID(taxon, strId, state);
+	}
+
+	public MarkerType getNoLastActionMarkerType(IndexFungorumImportState state) {
+		MarkerType hasNoLastAction = getMarkerType(state, DbLastActionMapper.uuidMarkerTypeHasNoLastAction, 
+				"has no last action", "No last action information available", "no last action");
+		return hasNoLastAction;
 	}
 
 	private void makeLSID(Taxon taxon, String strId, IndexFungorumImportState state) {

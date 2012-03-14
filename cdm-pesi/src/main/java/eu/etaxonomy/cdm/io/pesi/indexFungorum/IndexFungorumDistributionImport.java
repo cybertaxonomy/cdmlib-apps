@@ -23,6 +23,8 @@ import org.springframework.stereotype.Component;
 import eu.etaxonomy.cdm.io.common.ResultSetPartitioner;
 import eu.etaxonomy.cdm.io.pesi.out.PesiTransformer;
 import eu.etaxonomy.cdm.model.common.CdmBase;
+import eu.etaxonomy.cdm.model.common.Marker;
+import eu.etaxonomy.cdm.model.common.MarkerType;
 import eu.etaxonomy.cdm.model.description.Distribution;
 import eu.etaxonomy.cdm.model.description.PresenceTerm;
 import eu.etaxonomy.cdm.model.description.TaxonDescription;
@@ -88,6 +90,7 @@ public class IndexFungorumDistributionImport  extends IndexFungorumImportBase {
 			excludedColumns.add("PreferredNameFDCnumber");
 			
 			PresenceTerm status = PresenceTerm.PRESENT();
+			MarkerType noLastActionMarkerType = getNoLastActionMarkerType(state);
 			while (rs.next()){
 
 				//get taxon description
@@ -111,6 +114,8 @@ public class IndexFungorumDistributionImport  extends IndexFungorumImportBase {
 							NamedArea area = state.getTransformer().getNamedAreaByKey(colName);
 							Distribution distribution = Distribution.NewInstance(area, status);
 							description.addElement(distribution);
+							//no last action
+							distribution.addMarker(Marker.NewInstance(noLastActionMarkerType, true));
 						}
 						
 					}
