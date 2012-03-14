@@ -1707,15 +1707,19 @@ public class PesiTaxonExport extends PesiExportBase {
 	 * @see MethodMapper
 	 */
 	@SuppressWarnings("unused")
-	private static Integer getFossilStatusFk(TaxonNameBase<?,?> taxonNameBase) {
+	private static Integer getFossilStatusFk(IdentifiableEntity<?> identEntity, PesiExportState state) {
 		Integer result = null;
-//		Taxon taxon;
-//		if (taxonBase.isInstanceOf(Taxon.class)) {
-//			taxon = CdmBase.deproxy(taxonBase, Taxon.class);
-//			Set<TaxonDescription> specimenDescription = taxon.;
-//			result = PesiTransformer.fossil2FossilStatusId(fossil);
-//		}
-		return result;
+		
+		Set<String> fossilStatuus = identEntity.getExtensions(ErmsTransformer.uuidFossilStatus);
+		if (fossilStatuus.size() == 0){
+			return null;
+		}else if (fossilStatuus.size() > 1){
+			logger.warn("More than 1 fossil status given for " +  identEntity.getTitleCache() + " " + identEntity.getUuid());
+		}
+		String fossilStatus = fossilStatuus.iterator().next();
+		
+		int statusFk = state.getTransformer().FossilStatusCache2FossilStatusFk(fossilStatus);
+		return statusFk;
 	}
 	
 	/**
@@ -1725,9 +1729,15 @@ public class PesiTaxonExport extends PesiExportBase {
 	 * @see MethodMapper
 	 */
 	@SuppressWarnings("unused")
-	private static String getFossilStatusCache(TaxonNameBase<?,?> taxonName) {
-		// TODO
+	private static String getFossilStatusCache(IdentifiableEntity<?> identEntity, PesiExportState state) {
 		String result = null;
+		Set<String> fossilStatuus = identEntity.getExtensions(ErmsTransformer.uuidFossilStatus);
+		if (fossilStatuus.size() == 0){
+			return null;
+		}
+		for (String strFossilStatus : fossilStatuus){
+			result = CdmUtils.concat(";", result, strFossilStatus);
+		}
 		return result;
 	}
 	
@@ -2227,6 +2237,10 @@ public class PesiTaxonExport extends PesiExportBase {
 			mapping.addMapper(MethodMapper.NewInstance("DisplayName", this));
 		}
 		
+		// FossilStatus (Fk, Cache)
+		mapping.addMapper(MethodMapper.NewInstance("FossilStatusCache", this, IdentifiableEntity.class, PesiExportState.class));
+		mapping.addMapper(MethodMapper.NewInstance("FossilStatusFk", this, IdentifiableEntity.class, PesiExportState.class)); // PesiTransformer.FossilStatusCache2FossilStatusFk?
+		
 		//handled by name mapping
 		mapping.addMapper(DbLastActionMapper.NewInstance("LastActionDate", false));
 		mapping.addMapper(DbLastActionMapper.NewInstance("LastAction", true));
@@ -2296,24 +2310,12 @@ public class PesiTaxonExport extends PesiExportBase {
 		
 		mapping.addMapper(MethodMapper.NewInstance("NomRefString", this, TaxonNameBase.class));
 		
-
-
 		mapping.addMapper(MethodMapper.NewInstance("NameStatusFk", this, TaxonNameBase.class));
 		mapping.addMapper(MethodMapper.NewInstance("NameStatusCache", this, TaxonNameBase.class, PesiExportState.class));
 		mapping.addMapper(MethodMapper.NewInstance("TypeFullnameCache", this, TaxonNameBase.class));
 		//TODO TypeNameFk
 		mapping.addMapper(MethodMapper.NewInstance("QualityStatusFk", this, TaxonNameBase.class));
 		mapping.addMapper(MethodMapper.NewInstance("QualityStatusCache", this, TaxonNameBase.class, PesiExportState.class));
-		
-		
-		// FossilStatus (Fk, Cache)
-		extensionType = (ExtensionType)getTermService().find(ErmsTransformer.uuidFossilStatus);
-		if (extensionType != null) {
-			mapping.addMapper(DbExtensionMapper.NewInstance(extensionType, "FossilStatusCache"));
-		} else {
-			mapping.addMapper(MethodMapper.NewInstance("FossilStatusCache", this, TaxonNameBase.class));
-		}
-		mapping.addMapper(MethodMapper.NewInstance("FossilStatusFk", this, TaxonNameBase.class)); // PesiTransformer.FossilStatusCache2FossilStatusFk?
 		
 		mapping.addMapper(MethodMapper.NewInstance("IdInSource", this, IdentifiableEntity.class));
 		mapping.addMapper(MethodMapper.NewInstance("OriginalDB", this, IdentifiableEntity.class) );
