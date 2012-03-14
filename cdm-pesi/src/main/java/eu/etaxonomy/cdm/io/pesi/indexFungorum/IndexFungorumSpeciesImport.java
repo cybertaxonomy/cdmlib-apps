@@ -22,8 +22,12 @@ import org.springframework.stereotype.Component;
 
 import eu.etaxonomy.cdm.common.CdmUtils;
 import eu.etaxonomy.cdm.io.common.ResultSetPartitioner;
+import eu.etaxonomy.cdm.io.pesi.erms.ErmsTransformer;
 import eu.etaxonomy.cdm.io.pesi.out.PesiTransformer;
 import eu.etaxonomy.cdm.model.common.CdmBase;
+import eu.etaxonomy.cdm.model.common.Extension;
+import eu.etaxonomy.cdm.model.common.ExtensionType;
+import eu.etaxonomy.cdm.model.common.MarkerType;
 import eu.etaxonomy.cdm.model.name.NomenclaturalCode;
 import eu.etaxonomy.cdm.model.name.NonViralName;
 import eu.etaxonomy.cdm.model.name.Rank;
@@ -68,9 +72,10 @@ public class IndexFungorumSpeciesImport  extends IndexFungorumImportBase {
 	@Override
 	protected String getRecordQuery(IndexFungorumImportConfigurator config) {
 		String strRecordQuery = 
-				" SELECT DISTINCT distribution.PreferredNameFDCnumber, species.* " +
+				" SELECT DISTINCT distribution.PreferredNameFDCnumber, species.* , cl.PhylumName" +
 				" FROM tblPESIfungi AS distribution RIGHT OUTER JOIN  dbo.[tblPESIfungi-IFdata] AS species ON distribution.PreferredNameIFnumber = species.RECORD_NUMBER " +
-			" WHERE ( species.RECORD_NUMBER IN (" + ID_LIST_TOKEN + ") )" +
+					" LEFT OUTER JOIN [tblPESIfungi-Classification] cl ON species.PreferredName   = cl.PreferredName " +
+				" WHERE ( species.RECORD_NUMBER IN (" + ID_LIST_TOKEN + ") )" +
 			"";
 		return strRecordQuery;
 	}
@@ -86,10 +91,10 @@ public class IndexFungorumSpeciesImport  extends IndexFungorumImportBase {
 		try {
 			while (rs.next()){
 
-				//TODO
-				//DisplayName, NomRefCache
+				//DisplayName, NomRefCache -> don't use, created by Marc
 
 				Integer id = (Integer)rs.getObject("RECORD_NUMBER");
+				String phylumName = rs.getString("PhylumName");
 				
 				String preferredName = rs.getString("PreferredName");
 				if (StringUtils.isBlank(preferredName)){
@@ -110,6 +115,12 @@ public class IndexFungorumSpeciesImport  extends IndexFungorumImportBase {
 				//source
 				makeSource(state, taxon, id, NAMESPACE_SPECIES );
 				
+				//fossil
+				if (FOSSIL_FUNGI.equalsIgnoreCase(phylumName)){
+					ExtensionType fossilExtType = getExtensionType(state, ErmsTransformer.uuidFossilStatus, "fossil status", "fossil status", "fos. stat.");
+					Extension.NewInstance(taxon, PesiTransformer.STR_FOSSIL_ONLY, fossilExtType); 
+				}
+				//save
 				getTaxonService().saveOrUpdate(taxon);
 			}
 

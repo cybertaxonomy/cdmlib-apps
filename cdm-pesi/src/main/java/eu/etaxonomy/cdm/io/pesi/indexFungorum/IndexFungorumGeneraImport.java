@@ -20,7 +20,6 @@ import java.util.Set;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.springframework.stereotype.Component;
-import org.springframework.transaction.TransactionStatus;
 
 import eu.etaxonomy.cdm.common.CdmUtils;
 import eu.etaxonomy.cdm.io.common.ResultSetPartitioner;
@@ -145,7 +144,7 @@ public class IndexFungorumGeneraImport  extends IndexFungorumImportBase {
 						parentName = rs.getString("SubphylumName");
 						if (parentName.equalsIgnoreCase(INCERTAE_SEDIS)){
 							parentName = rs.getString("PhylumName");
-							if (parentName.equalsIgnoreCase(INCERTAE_SEDIS)){
+							if (parentName.equalsIgnoreCase(INCERTAE_SEDIS) || parentName.equalsIgnoreCase(FOSSIL_FUNGI) ){
 								parentName = rs.getString("KingdomName");
 							}
 						}

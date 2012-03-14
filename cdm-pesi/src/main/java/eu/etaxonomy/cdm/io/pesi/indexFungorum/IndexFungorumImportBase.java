@@ -33,6 +33,7 @@ import eu.etaxonomy.cdm.io.common.mapping.DbImportMapping;
 import eu.etaxonomy.cdm.io.common.mapping.out.DbLastActionMapper;
 import eu.etaxonomy.cdm.io.pesi.out.PesiTransformer;
 import eu.etaxonomy.cdm.model.agent.Team;
+import eu.etaxonomy.cdm.model.agent.TeamOrPersonBase;
 import eu.etaxonomy.cdm.model.common.CdmBase;
 import eu.etaxonomy.cdm.model.common.IdentifiableSource;
 import eu.etaxonomy.cdm.model.common.LSID;
@@ -63,6 +64,8 @@ public abstract class IndexFungorumImportBase extends CdmImportBase<IndexFungoru
 	
 	
 	protected static final String INCERTAE_SEDIS = "Incertae sedis";
+	protected static final String FOSSIL_FUNGI = "Fossil Fungi";
+
 	protected static final String SOURCE_REFERENCE = "SOURCE_REFERENCE";
 
 
@@ -293,8 +296,11 @@ public abstract class IndexFungorumImportBase extends CdmImportBase<IndexFungoru
 		}
 		if (pubAuthor != null){
 			Reference<?> inRef = ReferenceFactory.newGeneric();
+			inRef.setAuthorTeam(pubAuthor);
 			ref.setInReference(inRef);
 			hasInReference = true;
+		}else{
+			ref.setAuthorTeam(CdmBase.deproxy(name.getCombinationAuthorTeam(), TeamOrPersonBase.class));
 		}
 		//location
 		String location = rs.getString("pubIMIAbbrLoc");
@@ -329,16 +335,16 @@ public abstract class IndexFungorumImportBase extends CdmImportBase<IndexFungoru
 		}
 		//year
 		String yearOfPubl = rs.getString("YEAR_OF_PUBLICATION");
-		
+		String year = null;
 		String yearOnPubl = rs.getString("YEAR_ON_PUBLICATION");
-		if (StringUtils.isNotEmpty(yearOfPubl)){
-			String year = yearOfPubl.trim();
-			if (StringUtils.isNotBlank(yearOnPubl)){
-				year = year + "[" + yearOnPubl + "]";
-			}
+		if (StringUtils.isNotBlank(yearOfPubl)){
+			year = yearOfPubl.trim();
+		}
+		if (StringUtils.isNotBlank(yearOnPubl)){
+			year = CdmUtils.concat(" ", year, "[" + yearOnPubl + "]");
+		}
+		if (year == null){
 			ref.setDatePublished(TimePeriod.parseString(year));
-		}else if (StringUtils.isNotEmpty(yearOnPubl)){
-			logger.warn("'YEAR_ON_PUBLICATION' is not blank for blank YEAR_ON_PUBLICATION. This is not yet handled by import.");
 		}
 		
 		name.setNomenclaturalReference(ref);
@@ -358,16 +364,18 @@ public abstract class IndexFungorumImportBase extends CdmImportBase<IndexFungoru
 				"has no last action", "No last action information available", "no last action");
 		taxon.addMarker(Marker.NewInstance(hasNoLastAction, true));
 		//LSID
-		makeLSID(taxon, strId);
+		makeLSID(taxon, strId, state);
 	}
 
-	private void makeLSID(Taxon taxon, String strId) {
+	private void makeLSID(Taxon taxon, String strId, IndexFungorumImportState state) {
 		try {
-			if (strId != null){
+			if (StringUtils.isNotBlank(strId) && ! "null".equalsIgnoreCase(strId)){
 				LSID lsid = new LSID(IndexFungorumTransformer.LSID_PREFIX + strId);
 				taxon.setLsid(lsid);
 			}else{
 				logger.warn("No ID available for taxon " + taxon.getTitleCache() + ", " +  taxon.getUuid());
+				MarkerType missingGUID = getMarkerType(state, PesiTransformer.uuidMarkerGuidIsMissing, "GUID is missing", "GUID is missing", null);
+				taxon.addMarker(Marker.NewInstance(missingGUID, true));
 			}
 		} catch (MalformedLSIDException e) {
 			logger.error(e.getMessage());

@@ -1882,6 +1882,8 @@ public class PesiTaxonExport extends PesiExportBase {
 	private static String getGUID(TaxonBase<?> taxon) {
 		if (taxon.getLsid() != null ){
 			return taxon.getLsid().getLsid();
+		}else if (taxon.hasMarker(PesiTransformer.uuidMarkerGuidIsMissing, true)){
+			return null;
 		}else{
 			return taxon.getUuid().toString();
 		}

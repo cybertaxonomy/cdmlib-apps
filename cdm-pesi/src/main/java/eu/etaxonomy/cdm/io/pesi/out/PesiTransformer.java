@@ -90,6 +90,9 @@ public final class PesiTransformer extends ExportTransformerBase implements IExp
 	public static int QUALITY_STATUS_CHECKED_EDITOR = 3;
 	public static int QUALITY_STATUS_EDITED_BY_DBMT = 4;
 	
+	// marker type
+	public static final UUID uuidMarkerGuidIsMissing = UUID.fromString("24e70843-05e2-44db-954b-84df0d23ea20");
+//	public static final UUID uuidMarkerFossil = UUID.fromString("761ce108-031a-4e07-b444-f8d757070312");
 	
 	
 	//extension type uuids

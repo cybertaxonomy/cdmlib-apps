@@ -226,18 +226,19 @@ public class IndexFungorumHigherClassificationImport  extends IndexFungorumImpor
 
 
 	private boolean isIncertisSedis(String uninomial) {
-		return  uninomial.equalsIgnoreCase(INCERTAE_SEDIS);
+		return  uninomial.equalsIgnoreCase(INCERTAE_SEDIS) || uninomial.equalsIgnoreCase(FOSSIL_FUNGI);
 	}
 
 
 	private boolean isNewTaxon(String uninomial, String lastUninomial) {
 		boolean result =  !uninomial.equalsIgnoreCase(lastUninomial);
 		result |= lastUninomial.equalsIgnoreCase(INCERTAE_SEDIS);
+		result |= lastUninomial.equalsIgnoreCase(FOSSIL_FUNGI);
 		return result;
 	}
 
 	private Taxon makeTaxon(IndexFungorumImportState state, String uninomial, Rank rank) {
-		if (uninomial.equalsIgnoreCase(INCERTAE_SEDIS)){
+		if (uninomial.equalsIgnoreCase(INCERTAE_SEDIS) || uninomial.equalsIgnoreCase(FOSSIL_FUNGI)){
 			return null;
 		}
 		Taxon taxon = state.getRelatedObject(IndexFungorumSupraGeneraImport.NAMESPACE_SUPRAGENERIC_NAMES, uninomial, Taxon.class);
