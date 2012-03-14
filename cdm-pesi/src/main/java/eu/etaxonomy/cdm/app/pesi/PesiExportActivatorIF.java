@@ -34,7 +34,7 @@ public class PesiExportActivatorIF {
 	//database validation status (create, update, validate ...)
 	static final Source pesiDestination = PesiDestinations.pesi_test_local_CDM_IF2PESI();
 	
-	static final ICdmDataSource cdmSource = CdmDestinations.cdm_test_local_mysql();
+	static final ICdmDataSource cdmSource = CdmDestinations.cdm_test_local_indexFungorum();
 //	static final ICdmDataSource cdmSource = CdmDestinations.cdm_test_local_mysql_test();
 
 	static final int partitionSize = 2000;
