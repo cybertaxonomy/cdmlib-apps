@@ -16,7 +16,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.UUID;
 
 import org.apache.log4j.Logger;
 import org.springframework.stereotype.Component;
@@ -24,7 +23,7 @@ import org.springframework.transaction.TransactionStatus;
 
 import eu.etaxonomy.cdm.io.pesi.out.PesiTransformer;
 import eu.etaxonomy.cdm.model.common.CdmBase;
-import eu.etaxonomy.cdm.model.location.NamedArea;
+import eu.etaxonomy.cdm.model.common.Marker;
 import eu.etaxonomy.cdm.model.name.BotanicalName;
 import eu.etaxonomy.cdm.model.name.NonViralName;
 import eu.etaxonomy.cdm.model.name.Rank;
@@ -133,8 +132,8 @@ public class IndexFungorumHigherClassificationImport  extends IndexFungorumImpor
 											higherTaxon = taxonKingdom;
 										}
 										higherTaxon = isIncertisSedis(kingdom) ? higherTaxon : taxonKingdom;
-										Rank rank = (lastKingdom.equals("Fungi") ? Rank.DIVISION() : Rank.PHYLUM());
-										taxonPhylum = makeTaxon(state, phylum, rank);
+										Rank newRank = (lastKingdom.equals("Fungi") ? null : Rank.PHYLUM());
+										taxonPhylum = makeTaxon(state, phylum, newRank);
 										if (taxonPhylum != null){
 											classification.addParentChild(higherTaxon, taxonPhylum, null, null);
 										}
@@ -144,8 +143,8 @@ public class IndexFungorumHigherClassificationImport  extends IndexFungorumImpor
 									}else{
 										higherTaxon = taxonPhylum;
 									}
-									Rank rank = (lastKingdom.equals("Fungi") ? Rank.SUBDIVISION() : Rank.SUBPHYLUM());
-									taxonSubphylum = makeTaxon(state, subphylum, rank);
+									Rank newRank = (lastKingdom.equals("Fungi") ? null : Rank.SUBPHYLUM());
+									taxonSubphylum = makeTaxon(state, subphylum, newRank);
 									if (taxonSubphylum != null){
 										getClassification(state).addParentChild(higherTaxon,taxonSubphylum, null, null);
 									}
@@ -237,19 +236,22 @@ public class IndexFungorumHigherClassificationImport  extends IndexFungorumImpor
 		return result;
 	}
 
-	private Taxon makeTaxon(IndexFungorumImportState state, String uninomial, Rank rank) {
+	private Taxon makeTaxon(IndexFungorumImportState state, String uninomial, Rank newRank) {
 		if (uninomial.equalsIgnoreCase(INCERTAE_SEDIS) || uninomial.equalsIgnoreCase(FOSSIL_FUNGI)){
 			return null;
 		}
 		Taxon taxon = state.getRelatedObject(IndexFungorumSupraGeneraImport.NAMESPACE_SUPRAGENERIC_NAMES, uninomial, Taxon.class);
 		if (taxon == null){
-			if (! rank.equals(Rank.KINGDOM())){
+			if (! newRank.equals(Rank.KINGDOM())){
 				logger.warn("Taxon not found for " + uninomial);
 			}
-			NonViralName<?> name = BotanicalName.NewInstance(rank);
+			NonViralName<?> name = BotanicalName.NewInstance(newRank);
 			name.setGenusOrUninomial(uninomial);
 			Reference<?> sourceReference = state.getRelatedObject(NAMESPACE_REFERENCE, SOURCE_REFERENCE, Reference.class);
 			taxon = Taxon.NewInstance(name, sourceReference);
+			taxon.addMarker(Marker.NewInstance(getMissingGUIDMarkerType(state), true));
+		}else if (newRank != null){
+			taxon.getName().setRank(newRank);
 		}
 		return taxon;
 	}

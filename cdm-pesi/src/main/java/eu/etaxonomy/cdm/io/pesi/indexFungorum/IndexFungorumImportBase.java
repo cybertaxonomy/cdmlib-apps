@@ -308,7 +308,7 @@ public abstract class IndexFungorumImportBase extends CdmImportBase<IndexFungoru
 		String location = rs.getString("pubIMIAbbrLoc");
 		if (StringUtils.isNotBlank(location)){
 			if (hasInReference){
-				ref.getInReference().setTitle(location);
+				ref.getInReference().setPlacePublished(location);
 			}else{
 				ref.setPlacePublished(location);
 			}
@@ -316,7 +316,12 @@ public abstract class IndexFungorumImportBase extends CdmImportBase<IndexFungoru
 		//title
 		String titleMain = rs.getString("pubIMIAbbr");
 		String supTitle = rs.getString("pubIMISupAbbr");
-		String title = CdmUtils.concat(" ", titleMain, supTitle);
+		String title = CdmUtils.concat(", ", titleMain, supTitle);
+		//preliminary to comply with current Index Fungorum display
+		if (StringUtils.isNotBlank(location)){
+			title += "(" + location +")";
+		}
+		//end preliminary
 		if (StringUtils.isNotBlank(title)){
 			if (hasInReference){
 				ref.getInReference().setTitle(title);
@@ -337,15 +342,15 @@ public abstract class IndexFungorumImportBase extends CdmImportBase<IndexFungoru
 		}
 		//year
 		String yearOfPubl = rs.getString("YEAR_OF_PUBLICATION");
-		String year = null;
 		String yearOnPubl = rs.getString("YEAR_ON_PUBLICATION");
+		String year = null;
 		if (StringUtils.isNotBlank(yearOfPubl)){
 			year = yearOfPubl.trim();
 		}
 		if (StringUtils.isNotBlank(yearOnPubl)){
 			year = CdmUtils.concat(" ", year, "[" + yearOnPubl + "]");
 		}
-		if (year == null){
+		if (year != null){
 			ref.setDatePublished(TimePeriod.parseString(year));
 		}
 		
@@ -353,11 +358,17 @@ public abstract class IndexFungorumImportBase extends CdmImportBase<IndexFungoru
 	}
 	
 
+	protected MarkerType getNoLastActionMarkerType(IndexFungorumImportState state) {
+		return getMarkerType(state, DbLastActionMapper.uuidMarkerTypeHasNoLastAction, 
+				"has no last action", "No last action information available", "no last action");
+	}
+
+
 	protected void makeSource(IndexFungorumImportState state, Taxon taxon, Integer id, String namespace) {
 		//source reference
 		Reference<?> sourceReference = state.getRelatedObject(NAMESPACE_REFERENCE, SOURCE_REFERENCE, Reference.class);
 		//source
-		String strId = String.valueOf(id);
+		String strId = (id == null ? null : String.valueOf(id));
 		IdentifiableSource source = IdentifiableSource.NewInstance(strId, namespace, sourceReference, null);
 		taxon.addSource(source);
 		
@@ -368,25 +379,24 @@ public abstract class IndexFungorumImportBase extends CdmImportBase<IndexFungoru
 		makeLSID(taxon, strId, state);
 	}
 
-	public MarkerType getNoLastActionMarkerType(IndexFungorumImportState state) {
-		MarkerType hasNoLastAction = getMarkerType(state, DbLastActionMapper.uuidMarkerTypeHasNoLastAction, 
-				"has no last action", "No last action information available", "no last action");
-		return hasNoLastAction;
-	}
-
 	private void makeLSID(Taxon taxon, String strId, IndexFungorumImportState state) {
 		try {
-			if (StringUtils.isNotBlank(strId) && ! "null".equalsIgnoreCase(strId)){
+			if (StringUtils.isNotBlank(strId) &&  strId != null){
 				LSID lsid = new LSID(IndexFungorumTransformer.LSID_PREFIX + strId);
 				taxon.setLsid(lsid);
 			}else{
 				logger.warn("No ID available for taxon " + taxon.getTitleCache() + ", " +  taxon.getUuid());
-				MarkerType missingGUID = getMarkerType(state, PesiTransformer.uuidMarkerGuidIsMissing, "GUID is missing", "GUID is missing", null);
+				MarkerType missingGUID = getMissingGUIDMarkerType(state);
 				taxon.addMarker(Marker.NewInstance(missingGUID, true));
 			}
 		} catch (MalformedLSIDException e) {
 			logger.error(e.getMessage());
 		}
+	}
+
+	protected MarkerType getMissingGUIDMarkerType(IndexFungorumImportState state) {
+		MarkerType missingGUID = getMarkerType(state, PesiTransformer.uuidMarkerGuidIsMissing, "GUID is missing", "GUID is missing", null);
+		return missingGUID;
 	}
 	
 
