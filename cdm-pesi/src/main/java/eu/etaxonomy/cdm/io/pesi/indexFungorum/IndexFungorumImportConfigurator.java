@@ -38,7 +38,6 @@ public class IndexFungorumImportConfigurator extends ImportConfiguratorBase<Inde
 	private int recordsPerTransaction = 1000;  //defaultValue
 	
 	private boolean doOccurrence = true;
-	private DO_REFERENCES doReferences = DO_REFERENCES.ALL;
 	private boolean doTaxa = true;
 	private boolean doRelTaxa = true;
 
@@ -128,21 +127,8 @@ public class IndexFungorumImportConfigurator extends ImportConfiguratorBase<Inde
 	public void setRecordsPerTransaction(int recordsPerTransaction) {
 		this.recordsPerTransaction = recordsPerTransaction;
 	}
-	
-	public boolean isDoOccurrence() {
-		return doOccurrence;
-	}
-	public void setDoOccurrence(boolean doOccurrence) {
-		this.doOccurrence = doOccurrence;
-	}
-	
-	
-	public DO_REFERENCES getDoReferences() {
-		return doReferences;
-	}
-	public void setDoReferences(DO_REFERENCES doReferences) {
-		this.doReferences = doReferences;
-	}
+
+
 
 	public boolean isDoTaxa() {
 		return doTaxa;
@@ -151,12 +137,26 @@ public class IndexFungorumImportConfigurator extends ImportConfiguratorBase<Inde
 		this.doTaxa = doTaxa;
 	}
 
+
+	public boolean isDoOccurrence() {
+		return doOccurrence;
+	}
+
+
+	public void setDoOccurrence(boolean doOccurrence) {
+		this.doOccurrence = doOccurrence;
+	}
+
+
 	public boolean isDoRelTaxa() {
 		return doRelTaxa;
 	}
+
+
 	public void setDoRelTaxa(boolean doRelTaxa) {
 		this.doRelTaxa = doRelTaxa;
 	}
+
 
 
 

@@ -291,6 +291,7 @@ public abstract class IndexFungorumImportBase extends CdmImportBase<IndexFungoru
 				logger.warn("'AUTHORS' is blank for not empty PUBLISHING_AUTHORS. This is not yet handled.");
 			}
 		}
+		
 		//inRef + inRefAuthor
 		if (pubAuthor != null){
 			Reference<?> inRef = ReferenceFactory.newGeneric();
@@ -298,6 +299,7 @@ public abstract class IndexFungorumImportBase extends CdmImportBase<IndexFungoru
 			ref.setInReference(inRef);
 			hasInReference = true;
 		}
+		
 		//refAuthor
 		TeamOrPersonBase<?> refAuthor = CdmBase.deproxy(name.getCombinationAuthorTeam(), TeamOrPersonBase.class);
 		if (refAuthor == null){
@@ -319,7 +321,7 @@ public abstract class IndexFungorumImportBase extends CdmImportBase<IndexFungoru
 		String title = CdmUtils.concat(", ", titleMain, supTitle);
 		//preliminary to comply with current Index Fungorum display
 		if (StringUtils.isNotBlank(location)){
-			title += "(" + location +")";
+			title += " (" + location +")";
 		}
 		//end preliminary
 		if (StringUtils.isNotBlank(title)){
@@ -330,16 +332,16 @@ public abstract class IndexFungorumImportBase extends CdmImportBase<IndexFungoru
 			}
 		}
 		//Volume
-		String volume = rs.getString("VOLUME");
+		String volume = CdmUtils.Nz(rs.getString("VOLUME")).trim();
 		String part = rs.getString("PART");
-		if (StringUtils.isNotBlank(volume)){
-			if (StringUtils.isNotBlank(part)){
-				volume = volume + "(" + part + ")";
+		if (StringUtils.isNotBlank(part)){
+			volume = volume + "(" + part + ")";
+			if (StringUtils.isBlank(volume)){
+				logger.warn("'Part' is not blank for blank volume. This may be an inconsistency.");
 			}
-			ref.setVolume(volume);
-		}else if (StringUtils.isNotBlank(part)){
-			logger.warn("'Part' is not blank for empty volume. This is not yet handled.");
 		}
+		ref.setVolume(volume);
+		
 		//year
 		String yearOfPubl = rs.getString("YEAR_OF_PUBLICATION");
 		String yearOnPubl = rs.getString("YEAR_ON_PUBLICATION");
@@ -354,7 +356,20 @@ public abstract class IndexFungorumImportBase extends CdmImportBase<IndexFungoru
 			ref.setDatePublished(TimePeriod.parseString(year));
 		}
 		
-		name.setNomenclaturalReference(ref);
+		//preliminary, set protected titlecache as Generic Cache Generation with in references currently doesn't fully work yet
+		String titleCache = CdmUtils.concat(", ", pubAuthorStr, title);
+		if  ( StringUtils.isNotBlank(pubAuthorStr)){
+			titleCache = "in " + titleCache;
+		}
+		titleCache = CdmUtils.concat(" ", titleCache, volume);
+		titleCache = CdmUtils.concat(": ", titleCache, page);
+		titleCache = CdmUtils.concat(". ", titleCache, year);
+		ref.setTitleCache(titleCache, true);
+		
+		//set nom ref
+		if (StringUtils.isNotBlank(titleCache)){
+			name.setNomenclaturalReference(ref);
+		}
 	}
 	
 
