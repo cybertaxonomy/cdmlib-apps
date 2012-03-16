@@ -52,7 +52,7 @@ public class EuroMedActivator {
 	
 //	static final ICdmDataSource cdmDestination = CdmDestinations.cdm_pesi_euroMed();
 //	static final ICdmDataSource cdmDestination = CdmDestinations.cdm_test_local_mysql();
-	static final ICdmDataSource cdmDestination = CdmDestinations.cdm_test_local_mysql_test();
+	static final ICdmDataSource cdmDestination = CdmDestinations.cdm_test_local_mysql();
 	
 	static final boolean includePesiExport = false;
 	
@@ -152,7 +152,7 @@ public class EuroMedActivator {
 //	static final boolean doMarker = false;
 	
 	
-	public void importEm2CDM (Source source, ICdmDataSource destination){
+	public void importEm2CDM (Source source, ICdmDataSource destination, DbSchemaValidation hbm2dll){
 		System.out.println("Start import from BerlinModel("+ berlinModelSource.getDatabase() + ") to " + cdmDestination.getDatabase() + " ...");
 		//make BerlinModel Source
 				
@@ -241,7 +241,7 @@ public class EuroMedActivator {
 		Source source = berlinModelSource;
 		ICdmDataSource cdmRepository = CdmDestinations.chooseDestination(args) != null ? CdmDestinations.chooseDestination(args) : cdmDestination;
 		
-		importActivator.importEm2CDM(source, cdmRepository);
+		importActivator.importEm2CDM(source, cdmRepository, hbm2dll);
 		if (includePesiExport){
 			PesiExportActivatorEM exportActivator = new PesiExportActivatorEM();
 			exportActivator.doExport(cdmRepository);

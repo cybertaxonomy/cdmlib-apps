@@ -124,7 +124,7 @@ public class IopiActivator {
 	static final boolean doCommonNames = false;
 
 	
-	public void importIopi (Source source, ICdmDataSource destination){
+	public void importIopi (Source source, ICdmDataSource destination, DbSchemaValidation hbm2dll){
 		System.out.println("Start import from BerlinModel("+ berlinModelSource.getDatabase() + ") to " + cdmDestination.getDatabase() + " ...");
 		//make BerlinModel Source
 				
@@ -183,7 +183,7 @@ public class IopiActivator {
 		Source source = berlinModelSource;
 		ICdmDataSource cdmRepository = CdmDestinations.chooseDestination(args) != null ? CdmDestinations.chooseDestination(args) : cdmDestination;
 		
-		importActivator.importIopi(source, cdmRepository);
+		importActivator.importIopi(source, cdmRepository, hbm2dll);
 
 	}
 	

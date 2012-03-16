@@ -120,7 +120,7 @@ public class MclActivator {
 	static final boolean doMarker = false;   //not available in MCL
 	
 	
-	public void importMcl (Source source, ICdmDataSource destination){
+	public void importMcl (Source source, ICdmDataSource destination, DbSchemaValidation hbm2dll){
 		System.out.println("Start import from BerlinModel("+ berlinModelSource.getDatabase() + ") to " + cdmDestination.getDatabase() + " ...");
 		//make BerlinModel Source
 				
@@ -180,7 +180,7 @@ public class MclActivator {
 		Source source = berlinModelSource;
 		ICdmDataSource cdmRepository = CdmDestinations.chooseDestination(args) != null ? CdmDestinations.chooseDestination(args) : cdmDestination;
 		
-		importActivator.importMcl(source, cdmRepository);
+		importActivator.importMcl(source, cdmRepository, hbm2dll);
 
 	}
 	
