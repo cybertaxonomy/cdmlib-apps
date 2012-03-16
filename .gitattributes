@@ -1242,8 +1242,6 @@ cdm-pesi/src/main/java/eu/etaxonomy/cdm/app/pesi/ErmsActivator.java -text
 cdm-pesi/src/main/java/eu/etaxonomy/cdm/app/pesi/EuroMedActivator.java -text
 cdm-pesi/src/main/java/eu/etaxonomy/cdm/app/pesi/FaunaEuropaeaActivator.java -text
 cdm-pesi/src/main/java/eu/etaxonomy/cdm/app/pesi/IndexFungorumActivator.java -text
-cdm-pesi/src/main/java/eu/etaxonomy/cdm/app/pesi/IopiActivator.java -text
-cdm-pesi/src/main/java/eu/etaxonomy/cdm/app/pesi/MclActivator.java -text
 cdm-pesi/src/main/java/eu/etaxonomy/cdm/app/pesi/PesiDestinations.java -text
 cdm-pesi/src/main/java/eu/etaxonomy/cdm/app/pesi/PesiExportActivator.java -text
 cdm-pesi/src/main/java/eu/etaxonomy/cdm/app/pesi/PesiExportActivatorEM.java -text
@@ -1253,6 +1251,8 @@ cdm-pesi/src/main/java/eu/etaxonomy/cdm/app/pesi/PesiExportActivatorIF.java -tex
 cdm-pesi/src/main/java/eu/etaxonomy/cdm/app/pesi/PesiSources.java -text
 cdm-pesi/src/main/java/eu/etaxonomy/cdm/app/pesi/merging/FaunaEuErmsFindIdenticalNamesActivator.java -text
 cdm-pesi/src/main/java/eu/etaxonomy/cdm/app/pesi/merging/FaunaEuErmsMergeActivator.java -text
+cdm-pesi/src/main/java/eu/etaxonomy/cdm/app/vibrant/IopiActivator.java -text
+cdm-pesi/src/main/java/eu/etaxonomy/cdm/app/vibrant/MclActivator.java -text
 cdm-pesi/src/main/java/eu/etaxonomy/cdm/io/pesi/erms/ErmsAreaImport.java -text
 cdm-pesi/src/main/java/eu/etaxonomy/cdm/io/pesi/erms/ErmsDrImport.java -text
 cdm-pesi/src/main/java/eu/etaxonomy/cdm/io/pesi/erms/ErmsImageImport.java -text

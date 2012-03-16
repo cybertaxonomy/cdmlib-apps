@@ -7,7 +7,7 @@
 * See LICENSE.TXT at the top of this package for the full license terms.
 */
 
-package eu.etaxonomy.cdm.app.pesi;
+package eu.etaxonomy.cdm.app.vibrant;
 
 import java.util.UUID;
 
@@ -74,7 +74,6 @@ public class IopiActivator {
 	
 // **************** ALL *********************	
 
-	static final boolean doUser = true;
 	//authors
 	static final boolean doAuthors = true;
 	//references
@@ -90,8 +89,6 @@ public class IopiActivator {
 	static final boolean doTaxa = true;
 	static final boolean doRelTaxa = true;
 	static final boolean doFacts = true;
-	static final boolean doOccurences = true;
-	static final boolean doCommonNames = true;
 
 	//etc.
 	static final boolean doMarker = true;
@@ -115,12 +112,17 @@ public class IopiActivator {
 //	static final boolean doTaxa = false;
 //	static final boolean doRelTaxa = false;
 //	static final boolean doFacts = false;
-//	static final boolean doOccurences = false;
-//	static final boolean doCommonNames = false;
 //	
 //	//etc.
 //	static final boolean doMarker = false;
+
 	
+//******** ALWAYS IGNORE *****************************
+	
+	static final boolean doUser = false;
+	static final boolean doOccurences = false;
+	static final boolean doCommonNames = false;
+
 	
 	public void importIopi (Source source, ICdmDataSource destination){
 		System.out.println("Start import from BerlinModel("+ berlinModelSource.getDatabase() + ") to " + cdmDestination.getDatabase() + " ...");
