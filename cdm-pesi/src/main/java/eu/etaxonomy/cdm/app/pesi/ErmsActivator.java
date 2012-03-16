@@ -24,7 +24,6 @@ import eu.etaxonomy.cdm.io.common.Source;
 import eu.etaxonomy.cdm.io.pesi.erms.ErmsImportConfigurator;
 import eu.etaxonomy.cdm.io.pesi.out.PesiTransformer;
 import eu.etaxonomy.cdm.model.common.ISourceable;
-import eu.etaxonomy.cdm.model.name.NomenclaturalCode;
 import eu.etaxonomy.cdm.model.name.ZoologicalName;
 
 
@@ -44,19 +43,13 @@ public class ErmsActivator {
 	static DbSchemaValidation hbm2dll = DbSchemaValidation.CREATE;
 	static final Source ermsSource = PesiSources.PESI_ERMS();
 //	static final ICdmDataSource cdmDestination = CdmDestinations.cdm_pesi_erms();
-	static final ICdmDataSource cdmDestination = CdmDestinations.cdm_test_local_mysql_test();
-	static final UUID treeUuid = UUID.fromString("8bd27d84-fd4f-4bfa-bde0-3e6b7311b334");
-	static final UUID featureTreeUuid = UUID.fromString("33cbf7a8-0c47-4d47-bd11-b7d77a38d0f6");
-	//static final Object[] featureKeyList = new Integer[]{1,4,5,10,11,12,13,14, 249, 250, 251, 252, 253}; 
+	static final ICdmDataSource cdmDestination = CdmDestinations.cdm_test_local_mysql_erms();
+	static final UUID treeUuid = UUID.fromString("6fa988a9-10b7-48b0-a370-2586fbc066eb");
 	
 	//check - import
-	static final CHECK check = CHECK.CHECK_AND_IMPORT;
+	static final CHECK check = CHECK.IMPORT_WITHOUT_CHECK;
 
 	static final int partitionSize = 5000;
-
-
-	//NomeclaturalCode
-	static final NomenclaturalCode nomenclaturalCode = NomenclaturalCode.ICZN;
 
 	//ignore null
 	static final boolean ignoreNull = true;
@@ -98,29 +91,28 @@ public class ErmsActivator {
 		Source source = ermsSource;
 		ICdmDataSource destination = CdmDestinations.chooseDestination(args) != null ? CdmDestinations.chooseDestination(args) : cdmDestination;
 		
-		ErmsImportConfigurator ermsImportConfigurator = ErmsImportConfigurator.NewInstance(source,  destination);
+		ErmsImportConfigurator config = ErmsImportConfigurator.NewInstance(source,  destination);
 		
-		ermsImportConfigurator.setClassificationUuid(treeUuid);
-		ermsImportConfigurator.setNomenclaturalCode(nomenclaturalCode);
-
-		ermsImportConfigurator.setIgnoreNull(ignoreNull);
-		ermsImportConfigurator.setDoReferences(doReferences);
+		config.setClassificationUuid(treeUuid);
 		
-		ermsImportConfigurator.setDoTaxa(doTaxa);
-		ermsImportConfigurator.setDoRelTaxa(doRelTaxa);
-		ermsImportConfigurator.setDoLinks(doLinks);
-		ermsImportConfigurator.setDoOccurrence(doOccurences);
-		ermsImportConfigurator.setDbSchemaValidation(hbm2dll);
+		config.setIgnoreNull(ignoreNull);
+		config.setDoReferences(doReferences);
+		
+		config.setDoTaxa(doTaxa);
+		config.setDoRelTaxa(doRelTaxa);
+		config.setDoLinks(doLinks);
+		config.setDoOccurrence(doOccurences);
+		config.setDbSchemaValidation(hbm2dll);
 
-		ermsImportConfigurator.setCheck(check);
-		ermsImportConfigurator.setRecordsPerTransaction(partitionSize);
-		ermsImportConfigurator.setSourceRefUuid(PesiTransformer.uuidSourceRefErms);
+		config.setCheck(check);
+		config.setRecordsPerTransaction(partitionSize);
+		config.setSourceRefUuid(PesiTransformer.uuidSourceRefErms);
 
 		// invoke import
 		CdmDefaultImport<ErmsImportConfigurator> ermsImport = new CdmDefaultImport<ErmsImportConfigurator>();
-		ermsImport.invoke(ermsImportConfigurator);
+		ermsImport.invoke(config);
 		
-		if (ermsImportConfigurator.getCheck().equals(CHECK.CHECK_AND_IMPORT)  || ermsImportConfigurator.getCheck().equals(CHECK.IMPORT_WITHOUT_CHECK)    ){
+		if (config.getCheck().equals(CHECK.CHECK_AND_IMPORT)  || config.getCheck().equals(CHECK.IMPORT_WITHOUT_CHECK)    ){
 			ICdmApplicationConfiguration app = ermsImport.getCdmAppController();
 			ISourceable obj = app.getCommonService().getSourcedObjectByIdInSource(ZoologicalName.class, "1000027", null);
 			logger.info(obj);

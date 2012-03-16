@@ -996,6 +996,13 @@ public final class PesiTransformer extends ExportTransformerBase implements IExp
 	public static int AREA_TURKISH_EXCLUSIVE_ECONOMIC_ZONE = 197;
 	public static int AREA_DANISH_EXCLUSIVE_ECONOMIC_ZONE = 198;
 	public static int AREA_TRANSCAUCASUS = 199;
+	
+	public static int AREA_UNITED_KINGDOM = 203;
+	public static int AREA_DENMARK_COUNTRY = 204;
+	public static int AREA_TURKEY_COUNTRY = 205;
+	public static int AREA_SPAIN_COUNTRY = 206;
+	public static int AREA_GREECE_COUNTRY = 207;
+	public static int AREA_PORTUGAL_COUNTRY = 208;
 
 
 	public static String STR_AREA_EAST_AEGEAN_ISLANDS = "East Aegean Islands";
@@ -1197,6 +1204,13 @@ public final class PesiTransformer extends ExportTransformerBase implements IExp
 	public static String STR_AREA_TURKISH_EXCLUSIVE_ECONOMIC_ZONE = "Turkish Exclusive Economic Zone";
 	public static String STR_AREA_DANISH_EXCLUSIVE_ECONOMIC_ZONE = "Danish Exclusive Economic Zone";
 	public static String STR_AREA_TRANSCAUCASUS = "Transcaucasus";
+	
+	public static String STR_AREA_UNITED_KINGDOM = "United Kingdom";
+	public static String STR_AREA_DENMARK = "Denmark";
+	public static String STR_AREA_TURKEY_COUNTRY = "Turkey (country)";
+	public static String STR_AREA_SPAIN_COUNTRY = "Spain (country)";
+	public static String STR_AREA_GREECE_COUNTRY = "Greece (country)";
+	public static String STR_AREA_PORTUGAL_COUNTRY = "Portugal (country)";
 
 
 	
@@ -1715,9 +1729,9 @@ public final class PesiTransformer extends ExportTransformerBase implements IExp
 			else if (namedArea.equals(WaterbodyOrCountry.AZERBAIJANREPUBLICOF())) { return STR_AREA_AZERBAIJAN_INCLUDING_NAKHICHEVAN; }
 			else if (namedArea.equals(WaterbodyOrCountry.GEORGIA())) { return STR_AREA_GEORGIA; }
 			else if (namedArea.equals(WaterbodyOrCountry.RUSSIANFEDERATION())) { return STR_AREA_THE_RUSSIAN_FEDERATION; }
-			else if (namedArea.equals(WaterbodyOrCountry.UNITEDKINGDOMOFGREATBRITAINANDNORTHERNIRELAND())) { return STR_AREA_GREAT_BRITAIN; }
-			else if (namedArea.equals(WaterbodyOrCountry.DENMARKKINGDOMOF())) { return STR_AREA_DENMARK_WITH_BORNHOLM; }
-			else if (namedArea.equals(WaterbodyOrCountry.TURKEYREPUBLICOF())) { return STR_AREA_TURKEY; }
+			else if (namedArea.equals(WaterbodyOrCountry.UNITEDKINGDOMOFGREATBRITAINANDNORTHERNIRELAND())) { return STR_AREA_UNITED_KINGDOM; }
+			else if (namedArea.equals(WaterbodyOrCountry.DENMARKKINGDOMOF())) { return STR_AREA_DENMARK; }
+			else if (namedArea.equals(WaterbodyOrCountry.TURKEYREPUBLICOF())) { return STR_AREA_TURKEY_COUNTRY; }
 			else {
 				logger.warn("Unknown Waterbody/Country: " + namedArea.getTitleCache());
 			}
@@ -1863,9 +1877,9 @@ public final class PesiTransformer extends ExportTransformerBase implements IExp
 			else if (namedArea.equals(WaterbodyOrCountry.AZERBAIJANREPUBLICOF())) { return AREA_AZERBAIJAN_INCLUDING_NAKHICHEVAN; }
 			else if (namedArea.equals(WaterbodyOrCountry.GEORGIA())) { return AREA_GEORGIA; }
 			else if (namedArea.equals(WaterbodyOrCountry.RUSSIANFEDERATION())) { return AREA_THE_RUSSIAN_FEDERATION; }
-			else if (namedArea.equals(WaterbodyOrCountry.UNITEDKINGDOMOFGREATBRITAINANDNORTHERNIRELAND())) { return AREA_GREAT_BRITAIN; }
-			else if (namedArea.equals(WaterbodyOrCountry.DENMARKKINGDOMOF())) { return AREA_DENMARK_WITH_BORNHOLM; }
-			else if (namedArea.equals(WaterbodyOrCountry.TURKEYREPUBLICOF())) { return AREA_TURKEY; }
+			else if (namedArea.equals(WaterbodyOrCountry.UNITEDKINGDOMOFGREATBRITAINANDNORTHERNIRELAND())) { return AREA_UNITED_KINGDOM; }
+			else if (namedArea.equals(WaterbodyOrCountry.DENMARKKINGDOMOF())) { return AREA_DENMARK_COUNTRY; }
+			else if (namedArea.equals(WaterbodyOrCountry.TURKEYREPUBLICOF())) { return AREA_TURKEY_COUNTRY; }
 			else {
 				logger.warn("Unknown Waterbody/Country: " + area.getTitleCache());
 			}
@@ -1923,9 +1937,6 @@ public final class PesiTransformer extends ExportTransformerBase implements IExp
 			else if (namedArea.getUuid().equals(FaunaEuropaeaTransformer.uuidAreaNRE)) { return AREA_NEAR_EAST; }
 			else if (namedArea.getUuid().equals(FaunaEuropaeaTransformer.uuidAreaORR)) { return AREA_ORIENTAL_REGION; }
 
-			//IF
-
-			
 			//ERMS
 			else if (namedArea.getUuid().equals(ErmsTransformer.uuidEuropeanMarineWaters)) { return AREA_EUROPEAN_MARINE_WATERS; }
 			else if ((namedArea.getRepresentation(Language.DEFAULT()).getAbbreviatedLabel()).equals("MES") ||

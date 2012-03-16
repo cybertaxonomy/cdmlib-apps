@@ -14,6 +14,7 @@ import java.util.UUID;
 import org.apache.log4j.Logger;
 
 import eu.etaxonomy.cdm.app.common.CdmDestinations;
+import eu.etaxonomy.cdm.database.DatabaseTypeEnum;
 import eu.etaxonomy.cdm.database.DbSchemaValidation;
 import eu.etaxonomy.cdm.database.ICdmDataSource;
 import eu.etaxonomy.cdm.io.common.CdmDefaultImport;
@@ -46,62 +47,40 @@ public class IndexFungorumActivator {
 	static final UUID treeUuid = UUID.fromString("4bea48c3-eb10-41d1-b708-b5ee625ed243");
 	
 	//check - import
-	static final CHECK check = CHECK.CHECK_AND_IMPORT;
+	static final CHECK check = CHECK.IMPORT_WITHOUT_CHECK;
 
-	static final int partitionSize = 1000;
-
+	static final int partitionSize = 2000;
+	
+	static final boolean doPesiExport = true;
+	
 
 	//NomeclaturalCode
 	static final NomenclaturalCode nomenclaturalCode = NomenclaturalCode.ICBN;
 
-	//ignore null
-	static final boolean ignoreNull = true;
 	
 // ***************** ALL ************************************************//
 	
-	//references
-	static final DO_REFERENCES doReferences =  DO_REFERENCES.ALL;
-	
 	//taxa
 	static final boolean doTaxa = true;
-	static final boolean doRelTaxa = true;
-	static final boolean doOccurences = true;
+
 	
 	
 //******************** NONE ***************************************//
 	
-
-//	//references
-//	static final DO_REFERENCES doReferences =  DO_REFERENCES.NONE;
 //	
 //	//taxa
 //	static final boolean doTaxa = false;
-//	static final boolean doRelTaxa = false;
-//	static final boolean doOccurences = false;
-//	
+
 	
-	
-	/**
-	 * @param args
-	 */
-	public static void main(String[] args) {
+	public void doImport(Source source, ICdmDataSource destination){
 		System.out.println("Start import from ("+ indexFungorumSource.getDatabase() + ") ...");
-		
-		//make IF Source
-		Source source = indexFungorumSource;
-		ICdmDataSource destination = CdmDestinations.chooseDestination(args) != null ? CdmDestinations.chooseDestination(args) : cdmDestination;
 		
 		IndexFungorumImportConfigurator ifImportConfigurator = IndexFungorumImportConfigurator.NewInstance(source,  destination);
 		
 		ifImportConfigurator.setClassificationUuid(treeUuid);
 		ifImportConfigurator.setNomenclaturalCode(nomenclaturalCode);
 
-		ifImportConfigurator.setIgnoreNull(ignoreNull);
-		ifImportConfigurator.setDoReferences(doReferences);
-		
 		ifImportConfigurator.setDoTaxa(doTaxa);
-		ifImportConfigurator.setDoRelTaxa(doRelTaxa);
-		ifImportConfigurator.setDoOccurrence(doOccurences);
 		ifImportConfigurator.setDbSchemaValidation(hbm2dll);
 
 		ifImportConfigurator.setCheck(check);
@@ -124,5 +103,25 @@ public class IndexFungorumActivator {
 		}
 		System.out.println("End import from ("+ source.getDatabase() + ")...");
 	}
+	
+	
+	/**
+	 * @param args
+	 */
+	public static void main(String[] args) {
+		
+		//make IF Source
+		Source source = indexFungorumSource;
+		ICdmDataSource destination = CdmDestinations.chooseDestination(args) != null ? CdmDestinations.chooseDestination(args) : cdmDestination;
+		IndexFungorumActivator ifActivator = new IndexFungorumActivator();
+		ifActivator.doImport(source, destination);
+		
+		if (doPesiExport){
+			PesiExportActivatorIF ifExportActivator = new PesiExportActivatorIF();
+			ifExportActivator.doExport(destination);
+		}
+	}
+	
+
 
 }
