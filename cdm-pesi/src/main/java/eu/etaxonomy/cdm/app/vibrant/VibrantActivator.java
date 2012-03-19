@@ -45,14 +45,14 @@ public class VibrantActivator {
 	//database validation status (create, update, validate ...)
 	static DbSchemaValidation hbm2dll = DbSchemaValidation.CREATE;
 	static final Source iopiSource = BerlinModelSources.iopi();
-	static final Source mclSource = BerlinModelSources.iopi();
-	static final Source emSource = BerlinModelSources.iopi();
+	static final Source mclSource = BerlinModelSources.mcl();
+	static final Source emSource = BerlinModelSources.euroMed_local();
 	
 //	static final ICdmDataSource cdmDestination = CdmDestinations.cdm_test_local_mysql();
 	static final ICdmDataSource cdmDestination = cdm_test_local_vibrant();
 
 	static final boolean doMcl = true;
-	static final boolean doEuroMed = true;
+	static final boolean doEuroMed = false;
 	static final boolean doIopi = true;
 	
 	
@@ -64,7 +64,7 @@ public class VibrantActivator {
 		
 		if (doMcl){
 			MclActivator mclActivator = new MclActivator();
-			mclActivator.importMcl(iopiSource, cdmRepository, hbm2dll);
+			mclActivator.importMcl(mclSource, cdmRepository, hbm2dll);
 			hbm2dll = DbSchemaValidation.NONE;
 		}
 		
@@ -85,7 +85,7 @@ public class VibrantActivator {
 	public static ICdmDataSource cdm_test_local_vibrant(){
 		DatabaseTypeEnum dbType = DatabaseTypeEnum.MySQL;
 		String cdmServer = "127.0.0.1";
-		String cdmDB = "iopi"; 
+		String cdmDB = "vibrant"; 
 		String cdmUserName = "root";
 		return CdmDestinations.makeDestination(dbType, cdmServer, cdmDB, -1, cdmUserName, null);
 	}

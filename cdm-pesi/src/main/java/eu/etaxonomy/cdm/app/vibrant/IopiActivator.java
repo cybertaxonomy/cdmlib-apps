@@ -52,10 +52,12 @@ public class IopiActivator {
 	static final Integer sourceSecId = null; //7000000; 
 	static final UUID classificationUuid = null; //UUID.fromString("aa3fbaeb-f5dc-4e75-8d60-c8f93beb7ba6");
 	
+	static final UUID sourceRefUuid = UUID.fromString("df68c748-3c64-4b96-9a47-db51fb9d387e");
+	
 	// set to zero for unlimited nameFacts
 	static final int maximumNumberOfNameFacts = 0;
 	
-	static final int partitionSize = 5000;
+	static final int partitionSize = 1500;
 	
 	//check - import
 	static final CHECK check = CHECK.CHECK_AND_IMPORT;
@@ -82,8 +84,6 @@ public class IopiActivator {
 	static final boolean doTaxonNames = true;
 	static final boolean doRelNames = true;
 	static final boolean doNameStatus = true;
-	static final boolean doTypes = true;  //serious types do not exist in E+M
-	static final boolean doNameFacts = true;
 	
 	//taxa
 	static final boolean doTaxa = true;
@@ -91,7 +91,6 @@ public class IopiActivator {
 	static final boolean doFacts = true;
 
 	//etc.
-	static final boolean doMarker = true;
 
 	
 // **************** SELECTED *********************
@@ -122,6 +121,9 @@ public class IopiActivator {
 	static final boolean doUser = false;
 	static final boolean doOccurences = false;
 	static final boolean doCommonNames = false;
+	static final boolean doTypes = false;  
+	static final boolean doNameFacts = false;
+	static final boolean doMarker = false;
 
 	
 	public void importIopi (Source source, ICdmDataSource destination, DbSchemaValidation hbm2dll){
@@ -144,7 +146,7 @@ public class IopiActivator {
 		config.setDoTypes(doTypes);
 		config.setDoNameFacts(doNameFacts);
 		config.setUseClassification(useClassification);
-		config.setSourceRefUuid(PesiTransformer.uuidSourceRefEuroMed);
+		config.setSourceRefUuid(sourceRefUuid);
 		
 		config.setDoTaxa(doTaxa);
 		config.setDoRelTaxa(doRelTaxa);
@@ -194,5 +196,6 @@ public class IopiActivator {
 		String cdmUserName = "root";
 		return CdmDestinations.makeDestination(dbType, cdmServer, cdmDB, -1, cdmUserName, null);
 	}
+	
 
 }

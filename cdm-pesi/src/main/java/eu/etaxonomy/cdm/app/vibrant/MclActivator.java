@@ -52,6 +52,8 @@ public class MclActivator {
 	static final int sourceSecId = 1272;
 	static final UUID classificationUuid = UUID.fromString("ba6efd26-5b45-4ce6-915d-4f9576e0bf0a");
 	
+	static final UUID sourceRefUuid = UUID.fromString("ca8b25d6-e251-4d2b-8b45-142e1e6448f7");
+	
 	// set to zero for unlimited nameFacts
 	static final int maximumNumberOfNameFacts = 0;
 	
@@ -140,7 +142,7 @@ public class MclActivator {
 		config.setDoTypes(doTypes);
 		config.setDoNameFacts(doNameFacts);
 		config.setUseClassification(useClassification);
-		config.setSourceRefUuid(PesiTransformer.uuidSourceRefEuroMed);
+		config.setSourceRefUuid(sourceRefUuid);
 		
 		config.setDoTaxa(doTaxa);
 		config.setDoRelTaxa(doRelTaxa);
