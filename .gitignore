@@ -47,7 +47,3 @@ cdm-pesi/target
 /eu.etaxonomy.cdm.model.name.TaxonNameBase
 /eu.etaxonomy.cdm.model.taxon.TaxonBase
 /target
-vibrant-webapp/.classpath
-vibrant-webapp/.project
-vibrant-webapp/.settings
-vibrant-webapp/target

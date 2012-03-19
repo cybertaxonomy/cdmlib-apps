@@ -1331,30 +1331,3 @@ cdm-pesi/src/main/java/eu/etaxonomy/cdm/io/pesi/out/PesiTransformer.java -text
 cdm-pesi/src/main/resources/log4j.properties -text
 cdm-pesi/src/test/java/eu/etaxonomy/cdm/io/common/TestConnection.java -text
 cdm-pesi/src/test/java/eu/etaxonomy/cdm/io/erms/ermsErrors.txt -text
-vibrant-webapp/LICENSE.TXT -text
-vibrant-webapp/README.TXT -text
-vibrant-webapp/ide/eclipse/cdmlib-remote[!!-~]-[!!-~]remote[!!-~]debug.launch -text svneol=unset#application/xml
-vibrant-webapp/ide/eclipse/cdmserver[!!-~]-[!!-~]profile.launch -text
-vibrant-webapp/ide/eclipse/cdmserver[!!-~]-[!!-~]run.launch -text svneol=unset#application/xml
-vibrant-webapp/pom.xml -text
-vibrant-webapp/src/main/java/eu/etaxonomy/cdm/remote/config/AbstractWebApplicationConfigurer.java -text
-vibrant-webapp/src/main/java/eu/etaxonomy/cdm/remote/config/DataSourceConfigurer.java -text
-vibrant-webapp/src/main/java/eu/etaxonomy/cdm/remote/config/LoggingConfigurer.java -text
-vibrant-webapp/src/main/resources/log4j.properties -text
-vibrant-webapp/src/main/webapp/WEB-INF/applicationContext.views.xml -text
-vibrant-webapp/src/main/webapp/WEB-INF/applicationContext.xml -text
-vibrant-webapp/src/main/webapp/WEB-INF/cdmlib-remote-servlet.xml -text
-vibrant-webapp/src/main/webapp/WEB-INF/datasources/configurable.xml -text
-vibrant-webapp/src/main/webapp/WEB-INF/datasources/datasources-local.xml -text
-vibrant-webapp/src/main/webapp/WEB-INF/datasources/empty-default-datasource.xml -text
-vibrant-webapp/src/main/webapp/WEB-INF/datasources/p6spy.xml -text
-vibrant-webapp/src/main/webapp/WEB-INF/datasources/routing-datasource.xml -text
-vibrant-webapp/src/main/webapp/WEB-INF/json-views.xml -text
-vibrant-webapp/src/main/webapp/WEB-INF/jsp/index.jsp -text
-vibrant-webapp/src/main/webapp/WEB-INF/oai-views.xml -text
-vibrant-webapp/src/main/webapp/WEB-INF/web.xml -text
-vibrant-webapp/src/main/webapp/WEB-INF/xml-views.xml -text
-vibrant-webapp/src/main/webapp/human.xsl -text
-vibrant-webapp/src/main/webapp/oai2.xsl -text
-vibrant-webapp/src/test/java/eu/etaxonomy/AppTest.java -text
-vibrant-webapp/src/test/resources/log4j.properties -text
