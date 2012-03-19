@@ -87,7 +87,7 @@ public class EuroMedActivator {
 	static boolean 	isSplitTdwgCodes = false;
 	
 	static String taxonTable = "v_cdm_exp_taxaAll";
-	static String classificationQuery = " SELECT DISTINCT t.PTRefFk, r.RefCache FROM _EM_CDM_exp_taxaDirect t INNER JOIN Reference r ON t.PTRefFk = r.RefId "; 
+	static String classificationQuery = " SELECT DISTINCT t.PTRefFk, r.RefCache FROM PTaxon t INNER JOIN Reference r ON t.PTRefFk = r.RefId WHERE t.PTRefFk = " + sourceSecId; 
 	static String relPTaxonIdQuery = " SELECT r.RelPTaxonId " + 
 					" FROM RelPTaxon AS r INNER JOIN v_cdm_exp_taxaDirect AS a ON r.PTNameFk2 = a.PTNameFk AND r.PTRefFk2 = a.PTRefFk ";
 	static String nameIdTable = " v_cdm_exp_namesAll ";
