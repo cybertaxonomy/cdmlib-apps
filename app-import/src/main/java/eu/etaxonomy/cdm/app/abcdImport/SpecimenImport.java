@@ -34,7 +34,7 @@ private static Logger logger = Logger.getLogger(SpecimenImport.class);
 	
 	
 	
-	static final ICdmDataSource cdmDestination = CdmDestinations.local_cdm_edit_cichorieae_b();
+	static final ICdmDataSource cdmDestination = CdmDestinations.cdm_local_dipera();
 	//check - import
 	static final CHECK check = CHECK.IMPORT_WITHOUT_CHECK;
 	

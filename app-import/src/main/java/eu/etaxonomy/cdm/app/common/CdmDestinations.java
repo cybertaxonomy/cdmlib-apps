@@ -474,14 +474,6 @@ public class CdmDestinations {
 		String cdmUserName = "edit";
 		return makeDestination(dbType, cdmServer, cdmDB, -1, cdmUserName, null);
 	}
-	
-	public static ICdmDataSource local_cdm_edit_cichorieae_b(){
-		DatabaseTypeEnum dbType = DatabaseTypeEnum.MySQL;
-		String cdmServer = "127.0.0.1";
-		String cdmDB = "cdm_edit_cichorieae_b"; 
-		String cdmUserName = "edit";
-		return makeDestination(dbType, cdmServer, cdmDB, -1, cdmUserName, null);
-	}
 
 	public static ICdmDataSource cdm_edit_palmae_a(){
 		DatabaseTypeEnum dbType = DatabaseTypeEnum.MySQL;
@@ -489,15 +481,6 @@ public class CdmDestinations {
 		String cdmDB = "cdm_edit_palmae_a";
 		String cdmUserName = "edit";
 		return makeDestination(dbType, cdmServer, cdmDB, -1, cdmUserName, null);
-	}
-
-	public static ICdmDataSource cdm_edit_diptera_preview_B(){
-		DatabaseTypeEnum dbType = DatabaseTypeEnum.MySQL;
-		String cdmServer = "127.0.0.1";
-		String cdmDB = "cdm_edit_diptera_b"; 
-		String cdmUserName = "edit";
-		int port = 13306;
-		return makeDestination(dbType, cdmServer, cdmDB, port, cdmUserName, null);
 	}
 	
 	public static ICdmDataSource cdm_edit_cichorieae_preview(){
@@ -566,7 +549,7 @@ public class CdmDestinations {
 	 * @param pwd
 	 * @return
 	 */
-	private static ICdmDataSource makeDestination(DatabaseTypeEnum dbType, String cdmServer, String cdmDB, int port, String cdmUserName, String pwd ){
+	public static ICdmDataSource makeDestination(DatabaseTypeEnum dbType, String cdmServer, String cdmDB, int port, String cdmUserName, String pwd ){
 		//establish connection
 		pwd = AccountStore.readOrStorePassword(cdmServer, cdmDB, cdmUserName, pwd);
 		ICdmDataSource destination;
