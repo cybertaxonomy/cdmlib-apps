@@ -1254,9 +1254,6 @@ cdm-pesi/src/main/java/eu/etaxonomy/cdm/app/pesi/PesiExportActivatorIF.java -tex
 cdm-pesi/src/main/java/eu/etaxonomy/cdm/app/pesi/PesiSources.java -text
 cdm-pesi/src/main/java/eu/etaxonomy/cdm/app/pesi/merging/FaunaEuErmsFindIdenticalNamesActivator.java -text
 cdm-pesi/src/main/java/eu/etaxonomy/cdm/app/pesi/merging/FaunaEuErmsMergeActivator.java -text
-cdm-pesi/src/main/java/eu/etaxonomy/cdm/app/vibrant/IopiActivator.java -text
-cdm-pesi/src/main/java/eu/etaxonomy/cdm/app/vibrant/MclActivator.java -text
-cdm-pesi/src/main/java/eu/etaxonomy/cdm/app/vibrant/VibrantActivator.java -text
 cdm-pesi/src/main/java/eu/etaxonomy/cdm/io/pesi/erms/ErmsAreaImport.java -text
 cdm-pesi/src/main/java/eu/etaxonomy/cdm/io/pesi/erms/ErmsDrImport.java -text
 cdm-pesi/src/main/java/eu/etaxonomy/cdm/io/pesi/erms/ErmsImageImport.java -text
