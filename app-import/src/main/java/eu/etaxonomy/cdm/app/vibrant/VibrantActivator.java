@@ -29,7 +29,6 @@ import eu.etaxonomy.cdm.io.common.Source;
  *
  */
 public class VibrantActivator {
-	@SuppressWarnings("unused")
 	private static final Logger logger = Logger.getLogger(VibrantActivator.class);
 
 	//database validation status (create, update, validate ...)

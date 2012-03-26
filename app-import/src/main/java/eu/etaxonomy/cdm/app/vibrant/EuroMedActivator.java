@@ -88,7 +88,6 @@ public class EuroMedActivator {
 	
 	static boolean useClassification = true;
 	
-	static boolean 	isSplitTdwgCodes = false;
 	
 	static String taxonTable = "v_cdm_exp_taxaAll";
 	static String classificationQuery = " SELECT DISTINCT t.PTRefFk, r.RefCache FROM PTaxon t INNER JOIN Reference r ON t.PTRefFk = r.RefId WHERE t.PTRefFk = " + sourceSecId; 
@@ -117,7 +116,6 @@ public class EuroMedActivator {
 	static final boolean doTaxonNames = true;
 	static final boolean doRelNames = true;
 	static final boolean doNameStatus = true;
-	static final boolean doTypes = false;  //serious types do not exist in E+M
 	static final boolean doNameFacts = true;
 	
 	//taxa
@@ -125,10 +123,8 @@ public class EuroMedActivator {
 	static final boolean doRelTaxa = true;
 	static final boolean doFacts = true;
 	static final boolean doOccurences = true;
-	static final boolean doCommonNames = true;
+	static final boolean doCommonNames = false;  //currently creates errors
 
-	//etc.
-	static final boolean doMarker = true;
 
 	
 // **************** SELECTED *********************
@@ -154,7 +150,11 @@ public class EuroMedActivator {
 //	
 //	//etc.
 //	static final boolean doMarker = false;
-	
+
+	//always false
+	static final boolean doTypes = false;  
+	static final boolean doMarker = false;
+
 	
 	public void importEm2CDM (Source source, ICdmDataSource destination, DbSchemaValidation hbm2dll){
 		System.out.println("Start import from BerlinModel("+ source.getDatabase() + ") to " + destination.getDatabase() + " ...");
@@ -215,10 +215,6 @@ public class EuroMedActivator {
 		config.setOccurrenceSourceFilter(occurrenceSourceFilter);
 		config.setWebMarkerFilter(webMarkerFilter);
 		config.setUseSingleClassification(useSingleClassification);
-		
-		//TDWG codes
-		config.setSplitTdwgCodes(isSplitTdwgCodes);
-		
 		
 		config.setCheck(check);
 		config.setEditor(editor);
