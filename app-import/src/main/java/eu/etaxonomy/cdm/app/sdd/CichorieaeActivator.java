@@ -19,7 +19,6 @@ import eu.etaxonomy.cdm.database.DbSchemaValidation;
 import eu.etaxonomy.cdm.database.ICdmDataSource;
 import eu.etaxonomy.cdm.io.common.CdmDefaultImport;
 import eu.etaxonomy.cdm.io.common.IImportConfigurator.CHECK;
-import eu.etaxonomy.cdm.io.common.IImportConfigurator.DO_REFERENCES;
 import eu.etaxonomy.cdm.io.sdd.in.SDDImportConfigurator;
 
 /**
@@ -28,7 +27,6 @@ import eu.etaxonomy.cdm.io.sdd.in.SDDImportConfigurator;
  * @version 1.0
  */
 public class CichorieaeActivator {
-	@SuppressWarnings("unused")
 	private static final Logger logger = Logger.getLogger(CichorieaeActivator.class);
 
 	//database validation status (create, update, validate ...)
