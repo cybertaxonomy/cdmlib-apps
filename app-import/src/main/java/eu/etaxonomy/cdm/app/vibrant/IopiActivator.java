@@ -9,6 +9,9 @@
 
 package eu.etaxonomy.cdm.app.vibrant;
 
+import java.lang.reflect.Method;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.UUID;
 
 import org.apache.log4j.Logger;
@@ -25,7 +28,13 @@ import eu.etaxonomy.cdm.io.common.IImportConfigurator.DO_REFERENCES;
 import eu.etaxonomy.cdm.io.common.IImportConfigurator.EDITOR;
 import eu.etaxonomy.cdm.io.common.Source;
 import eu.etaxonomy.cdm.io.pesi.out.PesiTransformer;
+import eu.etaxonomy.cdm.model.common.CdmBase;
+import eu.etaxonomy.cdm.model.common.ExtensionType;
 import eu.etaxonomy.cdm.model.name.NomenclaturalCode;
+import eu.etaxonomy.cdm.model.name.NonViralName;
+import eu.etaxonomy.cdm.model.name.Rank;
+import eu.etaxonomy.cdm.model.name.TaxonNameBase;
+import eu.etaxonomy.cdm.model.taxon.TaxonBase;
 
 
 /**
@@ -38,7 +47,6 @@ import eu.etaxonomy.cdm.model.name.NomenclaturalCode;
  *
  */
 public class IopiActivator {
-	@SuppressWarnings("unused")
 	private static final Logger logger = Logger.getLogger(IopiActivator.class);
 
 	//database validation status (create, update, validate ...)
@@ -48,8 +56,8 @@ public class IopiActivator {
 //	static final ICdmDataSource cdmDestination = CdmDestinations.cdm_test_local_mysql();
 	static final ICdmDataSource cdmDestination = cdm_test_local_iopi();
 	
-	static final boolean useSingleClassification = false;
-	static final Integer sourceSecId = null; //7000000; 
+	static final boolean useSingleClassification = true;
+	static final Integer sourceSecId = 1892; //7000000; 
 	static final UUID classificationUuid = null; //UUID.fromString("aa3fbaeb-f5dc-4e75-8d60-c8f93beb7ba6");
 	
 	static final UUID sourceRefUuid = UUID.fromString("df68c748-3c64-4b96-9a47-db51fb9d387e");
@@ -72,6 +80,23 @@ public class IopiActivator {
 	static final boolean ignoreNull = true;
 	
 	static boolean useClassification = true;
+	
+	
+	//filter
+	static String taxonTable = "v_cdm_exp_taxaAll";
+	static String classificationQuery = " SELECT DISTINCT t.PTRefFk, r.RefCache FROM PTaxon t INNER JOIN Reference r ON t.PTRefFk = r.RefId WHERE t.PTRefFk = " + sourceSecId; 
+	static String relPTaxonIdQuery = " SELECT r.RelPTaxonId " + 
+					" FROM RelPTaxon AS r INNER JOIN v_cdm_exp_taxaDirect AS a ON r.PTNameFk2 = a.PTNameFk AND r.PTRefFk2 = a.PTRefFk ";
+	static String nameIdTable = " v_cdm_exp_namesAll ";
+	static String referenceIdTable = " v_cdm_exp_refAll ";
+	static String factFilter = " factId IN ( SELECT factId FROM v_cdm_exp_factsAll )";
+	static String authorTeamFilter = null; // " authorTeamId IN (SELECT authorTeamId FROM v_cdm_exp_authorTeamsAll) ";
+	static String authorFilter = null;  // " authorId IN (SELECT authorId FROM v_cdm_exp_authorsAll) "; 
+	//not used
+	static String occurrenceFilter = " occurrenceId IN ( SELECT occurrenceId FROM v_cdm_exp_occurrenceAll )";
+	static String occurrenceSourceFilter = " occurrenceFk IN ( SELECT occurrenceId FROM v_cdm_exp_occurrenceAll )"; 
+	static String commonNameFilter = " commonNameId IN ( SELECT commonNameId FROM v_cdm_exp_commonNamesAll )";
+
 	
 	
 // **************** ALL *********************	
@@ -137,6 +162,14 @@ public class IopiActivator {
 		
 		config.setNomenclaturalCode(nomenclaturalCode);
 
+		try {
+			Method makeUrlMethod = MclActivator.class.getDeclaredMethod("makeUrlForTaxon", TaxonBase.class, ResultSet.class);
+			config.setMakeUrlForTaxon(makeUrlMethod);
+		} catch (Exception e) {
+			e.printStackTrace();
+			return;
+		}
+		
 		config.setIgnoreNull(ignoreNull);
 		config.setDoAuthors(doAuthors);
 		config.setDoReferences(doReferences);
@@ -167,6 +200,21 @@ public class IopiActivator {
 		config.setCheck(check);
 		config.setEditor(editor);
 		config.setRecordsPerTransaction(partitionSize);
+		
+//		filter
+		config.setTaxonTable(taxonTable);
+		config.setClassificationQuery(classificationQuery);
+		config.setRelTaxaIdQuery(relPTaxonIdQuery);
+		config.setNameIdTable(nameIdTable);
+		config.setReferenceIdTable(referenceIdTable);
+		config.setAuthorTeamFilter(authorTeamFilter);
+		config.setAuthorFilter(authorFilter);
+		config.setFactFilter(factFilter);
+		config.setCommonNameFilter(commonNameFilter);
+		config.setOccurrenceFilter(occurrenceFilter);
+		config.setOccurrenceSourceFilter(occurrenceSourceFilter);
+		config.setUseSingleClassification(useSingleClassification);
+	
 
 		
 		// invoke import
@@ -195,6 +243,85 @@ public class IopiActivator {
 		String cdmDB = "iopi"; 
 		String cdmUserName = "root";
 		return CdmDestinations.makeDestination(dbType, cdmServer, cdmDB, -1, cdmUserName, null);
+	}
+	
+	
+	//for FAUNA Europaea (http://rbg-web2.rbge.org.uk/FE/fe.html)
+	private static final String URLbase = "http://rbg-web2.rbge.org.uk/cgi-bin/nph-readbtree.pl/feout?FAMILY_XREF=%s&GENUS_XREF=%s&SPECIES_XREF=%s&TAXON_NAME_XREF=%s&RANK=%s";
+	public static Method makeUrlForTaxon(TaxonBase<?> taxon, ResultSet rs){
+		Method result = null;
+		ExtensionType urlExtensionType = ExtensionType.URL();
+		
+		String family = "";
+		String genus = "";
+		String species = "";
+		String taxonName = "";
+		String rankStr = "";
+			
+		NonViralName<?>  name = CdmBase.deproxy(taxon.getName(), NonViralName.class);
+		Rank rank = name.getRank();
+		rankStr = transformFeRanks(rank);
+			
+		
+		if (rank.equals(Rank.FAMILY())){
+			family = name.getGenusOrUninomial();
+			taxonName = name.getGenusOrUninomial();
+		}else if (rank.isHigher(Rank.GENUS())){
+			taxonName = name.getGenusOrUninomial();
+		}else if (rank.isGenus()){
+			genus = name.getGenusOrUninomial();
+			rankStr = "genus";
+		}else if (rank.isInfraGeneric()){
+			genus = name.getGenusOrUninomial();
+			taxonName = name.getInfraGenericEpithet();
+		}else if (rank.isSpecies()){
+			genus = name.getGenusOrUninomial();
+			species = name.getSpecificEpithet();
+			rankStr = "species";
+		}else if (rank.isInfraSpecific()){
+			genus = name.getGenusOrUninomial();
+			species = name.getSpecificEpithet();
+			taxonName = name.getInfraSpecificEpithet();
+		}
+		
+		
+		String url = String.format(URLbase ,family, genus, species, taxonName, rankStr);
+		taxon.addExtension(url, urlExtensionType);
+		
+		return result;
+	}
+	
+	private static String transformFeRanks(Rank rank){
+		if (rank.equals(Rank.SPECIESAGGREGATE())){ return "agg.";
+		}else if (rank.equals(Rank.CLASS())){ return "Class";
+		}else if (rank.equals(Rank.DIVISION())){ return "Division";
+		}else if (rank.equals(Rank.FAMILY())){ return "family";
+		}else if (rank.equals(Rank.FORM())){ return "forma";
+		}else if (rank.equals(Rank.GENUS())){ return "genus";
+		}else if (rank.equals(Rank.GREX())){ return "grex";
+		}else if (rank.equals(Rank.SPECIESGROUP())){ return "group";
+		}else if (rank.equals(Rank.ORDER())){ return "Order";
+//		}else if (rank.equals(Rank.PROL())){ return "proles";
+//--		}else if (rank.equals(Rank.RACE())){ return "race";
+		}else if (rank.equals(Rank.SECTION_BOTANY())){ return "Sect.";
+		}else if (rank.equals(Rank.SERIES())){ return "Ser.";
+		}else if (rank.equals(Rank.SPECIES())){ return "species";
+		}else if (rank.equals(Rank.SUBCLASS())){ return "Subclass";
+		}else if (rank.equals(Rank.SUBDIVISION())){ return "Subdivision";
+		}else if (rank.equals(Rank.SUBFORM())){ return "Subf.";
+		}else if (rank.equals(Rank.SUBGENUS())){ return "Subgen.";
+		}else if (rank.equals(Rank.SUBORDER())){ return "Suborder";
+		}else if (rank.equals(Rank.SUBSECTION_BOTANY())){ return "Subsect.";
+		}else if (rank.equals(Rank.SUBSERIES())){ return "Subser.";
+		}else if (rank.equals(Rank.SUBSPECIES())){ return "subsp";
+		}else if (rank.equals(Rank.SUBVARIETY())){ return "subvar.";
+		}else if (rank.equals(Rank.SUPERORDER())){ return "Superorder";
+		}else if (rank.equals(Rank.TRIBE())){ return "Tribe";
+		}else if (rank.equals(Rank.VARIETY())){ return "var.";
+		}else{
+			logger.debug("Rank not found: " + rank.getTitleCache());
+			return "";
+		}	
 	}
 	
 

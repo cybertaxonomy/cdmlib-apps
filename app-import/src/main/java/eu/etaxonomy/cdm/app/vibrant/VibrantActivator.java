@@ -33,7 +33,7 @@ public class VibrantActivator {
 	private static final Logger logger = Logger.getLogger(VibrantActivator.class);
 
 	//database validation status (create, update, validate ...)
-	static DbSchemaValidation hbm2dll = DbSchemaValidation.VALIDATE;
+	static DbSchemaValidation hbm2dll = DbSchemaValidation.CREATE;
 	static final Source iopiSource = BerlinModelSources.iopi();
 	static final Source mclSource = BerlinModelSources.mcl();
 	static final Source emSource = BerlinModelSources.PESI3_euroMed();
@@ -68,6 +68,11 @@ public class VibrantActivator {
 			IopiActivator iopiActivator = new IopiActivator();
 			iopiActivator.importIopi(iopiSource, cdmRepository, hbm2dll);
 			hbm2dll = DbSchemaValidation.NONE;
+		}
+		
+		if (doEuroMed){
+			logger.warn("DON'T FORGET to reset E+M filter");
+			System.out.println("DON'T FORGET to reset E+M filter");
 		}
 
 	}
