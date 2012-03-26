@@ -20,6 +20,28 @@ public class BerlinModelSources {
 	@SuppressWarnings("unused")
 	private static final Logger logger = Logger.getLogger(BerlinModelSources.class);
 	
+	
+
+	public static Source PESI3_euroMed(){
+		//	BerlinModel - Euro+Med
+		String dbms = Source.SQL_SERVER_2008;
+		String strServer = "PESIIMPORT3";
+		String strDB = "EuroPlusMed_01";
+		int port = 1433;
+		String userName = "pesiexport";
+		return  makeSource(dbms, strServer, strDB, port, userName, null);
+	}
+	
+	public static Source iopi(){
+		//	BerlinModel - Euro+Med
+		String dbms = Source.SQL_SERVER_2008;
+		String strServer = "BGBM17";
+		String strDB = "IOPIBM";
+		int port = 1433;
+		String userName = "WebUser";
+		return  makeSource(dbms, strServer, strDB, port, userName, null);
+	}
+	
 	public static Source euroMed(){
 		//	BerlinModel - Euro+Med
 		String dbms = Source.SQL_SERVER_2005;
@@ -27,6 +49,16 @@ public class BerlinModelSources {
 		String strDB = "EuroPlusMed_00_Edit";
 		int port = 1247;
 		String userName = "webUser";
+		return  makeSource(dbms, strServer, strDB, port, userName, null);
+	}
+	
+	public static Source mcl(){
+		//	BerlinModel - Euro+Med
+		String dbms = Source.SQL_SERVER_2008;
+		String strServer = "BGBM42";
+		String strDB = "MCL";
+		int port = 1433;
+		String userName = "WebUser";
 		return  makeSource(dbms, strServer, strDB, port, userName, null);
 	}
 	

@@ -17,9 +17,9 @@ import java.util.UUID;
 import org.apache.log4j.Logger;
 
 import eu.etaxonomy.cdm.api.application.ICdmApplicationConfiguration;
-import eu.etaxonomy.cdm.app.common.BerlinModelSources;
+import eu.etaxonomy.cdm.app.berlinModelImport.BerlinModelSources;
+import eu.etaxonomy.cdm.app.berlinModelImport.TreeCreator;
 import eu.etaxonomy.cdm.app.common.CdmDestinations;
-import eu.etaxonomy.cdm.app.common.TreeCreator;
 import eu.etaxonomy.cdm.database.DbSchemaValidation;
 import eu.etaxonomy.cdm.database.ICdmDataSource;
 import eu.etaxonomy.cdm.io.berlinModel.in.BerlinModelImportConfigurator;
@@ -28,7 +28,6 @@ import eu.etaxonomy.cdm.io.common.IImportConfigurator.CHECK;
 import eu.etaxonomy.cdm.io.common.IImportConfigurator.DO_REFERENCES;
 import eu.etaxonomy.cdm.io.common.IImportConfigurator.EDITOR;
 import eu.etaxonomy.cdm.io.common.Source;
-import eu.etaxonomy.cdm.io.pesi.out.PesiTransformer;
 import eu.etaxonomy.cdm.model.common.ExtensionType;
 import eu.etaxonomy.cdm.model.description.Feature;
 import eu.etaxonomy.cdm.model.description.FeatureNode;
@@ -63,6 +62,9 @@ public class EuroMedActivator {
 	static final int sourceSecId = 7000000; //500000
 	static final UUID classificationUuid = UUID.fromString("5e05ebc5-6075-45ff-81df-4cefafafa4a3");
 	static final boolean useSingleClassification = true;
+	
+	//from PESI-transformer
+	static UUID uuidSourceRefEuroMed = UUID.fromString("0603a84a-f024-4454-ab92-9e2ac0139126");
 	
 	static final UUID featureTreeUuid = UUID.fromString("eff345e7-0619-4ec3-955d-997c1fafffc3");
 	static final Object[] featureKeyList = new Integer[]{1, 31, 4, 98, 41}; 	
@@ -185,7 +187,7 @@ public class EuroMedActivator {
 		config.setDoTypes(doTypes);
 		config.setDoNameFacts(doNameFacts);
 		config.setUseClassification(useClassification);
-		config.setSourceRefUuid(PesiTransformer.uuidSourceRefEuroMed);
+		config.setSourceRefUuid(uuidSourceRefEuroMed);
 		
 		config.setDoTaxa(doTaxa);
 		config.setDoRelTaxa(doRelTaxa);
