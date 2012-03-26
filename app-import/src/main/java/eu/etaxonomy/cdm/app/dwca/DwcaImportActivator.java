@@ -37,12 +37,12 @@ public class DwcaImportActivator {
 	//database validation status (create, update, validate ...)
 	static DbSchemaValidation hbm2dll = DbSchemaValidation.CREATE;
 //	static final URI source = dwca_test_in();
-	static final URI source = dwca_test_cich();
+	static final URI source = dwca_test_cich_len();
 	
-
 	
 //	static final ICdmDataSource cdmDestination = CdmDestinations.localH2();
-	static final ICdmDataSource cdmDestination = CdmDestinations.cdm_test_local_mysql_dwca();
+//	static final ICdmDataSource cdmDestination = CdmDestinations.cdm_test_local_mysql_dwca();
+	static final ICdmDataSource cdmDestination = CdmDestinations.cdm_test_local_mysql();
 
 	
 	//feature tree uuid
@@ -114,6 +114,14 @@ public class DwcaImportActivator {
 		URI sourceUrl = URI.create("file:///E:/opt/data/dwca/20110621_1400_cichorieae_dwca.zip");
 		return sourceUrl;
 	}
+	
+	//Dwca
+	public static URI dwca_test_cich_len() {
+		URI sourceUrl = URI.create("file:///C:/localCopy/Data/dwca/export/20110621_1400_cichorieae_dwca.zip");
+		return sourceUrl;
+	}
+	
+	
 
 
 	
