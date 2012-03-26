@@ -36,7 +36,7 @@ public class VibrantActivator {
 	static DbSchemaValidation hbm2dll = DbSchemaValidation.VALIDATE;
 	static final Source iopiSource = BerlinModelSources.iopi();
 	static final Source mclSource = BerlinModelSources.mcl();
-	static final Source emSource = BerlinModelSources.euroMed_local();
+	static final Source emSource = BerlinModelSources.PESI3_euroMed();
 	
 //	static final ICdmDataSource cdmDestination = CdmDestinations.cdm_test_local_mysql();
 	static final ICdmDataSource cdmDestination = cdm_test_local_vibrant();
