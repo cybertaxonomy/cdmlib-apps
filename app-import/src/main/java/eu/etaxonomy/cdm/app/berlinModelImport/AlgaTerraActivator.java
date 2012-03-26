@@ -43,17 +43,18 @@ public class AlgaTerraActivator {
 	//database validation status (create, update, validate ...)
 	static DbSchemaValidation hbm2dll = DbSchemaValidation.CREATE;
 	static final Source berlinModelSource = BerlinModelSources.AlgaTerra();
-	static final ICdmDataSource cdmDestination = CdmDestinations.localH2();
-//	static final ICdmDataSource cdmDestination = CdmDestinations.cdm_algaterra_preview();
+//	static final ICdmDataSource cdmDestination = CdmDestinations.localH2();
+	static final ICdmDataSource cdmDestination = CdmDestinations.cdm_algaterra_preview();
 	
 	static final UUID treeUuid = UUID.fromString("1f617402-78dc-4bf1-ac77-d260600a8879");
 	static final int sourceSecId = 7331;
+	static final UUID sourceRefUuid = UUID.fromString("7e1a2500-93a5-40c2-ba34-0213d7822379");
 	
 	static final UUID featureTreeUuid = UUID.fromString("a970168a-36fd-4c7c-931e-87214a965c14");
 	static final Object[] featureKeyList = new Integer[]{7,201,202,203,204,205,206,207}; 
 	
 	//check - import
-	static final CHECK check = CHECK.CHECK_AND_IMPORT;
+	static final CHECK check = CHECK.IMPORT_WITHOUT_CHECK;
 
 
 	//NomeclaturalCode
@@ -126,6 +127,7 @@ public class AlgaTerraActivator {
 		bmImportConfigurator.setDoFacts(doFacts);
 		bmImportConfigurator.setDoOccurrence(doOccurences);
 		bmImportConfigurator.setDoCommonNames(doCommonNames);
+		bmImportConfigurator.setSourceRefUuid(sourceRefUuid);
 		
 		bmImportConfigurator.setDbSchemaValidation(hbm2dll);
 
