@@ -16,9 +16,10 @@ import java.util.UUID;
 
 import org.apache.log4j.Logger;
 
+import eu.etaxonomy.cdm.api.application.ICdmApplicationConfiguration;
 import eu.etaxonomy.cdm.app.common.BerlinModelSources;
 import eu.etaxonomy.cdm.app.common.CdmDestinations;
-import eu.etaxonomy.cdm.database.DatabaseTypeEnum;
+import eu.etaxonomy.cdm.app.common.TreeCreator;
 import eu.etaxonomy.cdm.database.DbSchemaValidation;
 import eu.etaxonomy.cdm.database.ICdmDataSource;
 import eu.etaxonomy.cdm.io.berlinModel.in.BerlinModelImportConfigurator;
@@ -27,7 +28,11 @@ import eu.etaxonomy.cdm.io.common.IImportConfigurator.CHECK;
 import eu.etaxonomy.cdm.io.common.IImportConfigurator.DO_REFERENCES;
 import eu.etaxonomy.cdm.io.common.IImportConfigurator.EDITOR;
 import eu.etaxonomy.cdm.io.common.Source;
+import eu.etaxonomy.cdm.io.pesi.out.PesiTransformer;
 import eu.etaxonomy.cdm.model.common.ExtensionType;
+import eu.etaxonomy.cdm.model.description.Feature;
+import eu.etaxonomy.cdm.model.description.FeatureNode;
+import eu.etaxonomy.cdm.model.description.FeatureTree;
 import eu.etaxonomy.cdm.model.name.NomenclaturalCode;
 import eu.etaxonomy.cdm.model.taxon.TaxonBase;
 
@@ -41,29 +46,34 @@ import eu.etaxonomy.cdm.model.taxon.TaxonBase;
  * @author a.mueller
  *
  */
-public class MclActivator {
-	private static final Logger logger = Logger.getLogger(MclActivator.class);
+public class EuroMedActivator {
+	private static final Logger logger = Logger.getLogger(EuroMedActivator.class);
 
 	//database validation status (create, update, validate ...)
 	static DbSchemaValidation hbm2dll = DbSchemaValidation.CREATE;
-	static final Source berlinModelSource = BerlinModelSources.mcl();
+//	static final Source berlinModelSource = BerlinModelSources.euroMed();
+	static final Source berlinModelSource = BerlinModelSources.PESI3_euroMed();
 	
-	static final ICdmDataSource cdmDestination = VibrantActivator.cdm_test_local_vibrant();
+//	static final ICdmDataSource cdmDestination = CdmDestinations.cdm_pesi_euroMed();
 //	static final ICdmDataSource cdmDestination = CdmDestinations.cdm_test_local_mysql();
+	static final ICdmDataSource cdmDestination = CdmDestinations.cdm_test_local_mysql();
 	
+	static final boolean includePesiExport = false;
+	
+	static final int sourceSecId = 7000000; //500000
+	static final UUID classificationUuid = UUID.fromString("5e05ebc5-6075-45ff-81df-4cefafafa4a3");
 	static final boolean useSingleClassification = true;
-	static final int sourceSecId = 1272;
-	static final UUID classificationUuid = UUID.fromString("ba6efd26-5b45-4ce6-915d-4f9576e0bf0a");
 	
-	static final UUID sourceRefUuid = UUID.fromString("ca8b25d6-e251-4d2b-8b45-142e1e6448f7");
+	static final UUID featureTreeUuid = UUID.fromString("eff345e7-0619-4ec3-955d-997c1fafffc3");
+	static final Object[] featureKeyList = new Integer[]{1, 31, 4, 98, 41}; 	
 	
 	// set to zero for unlimited nameFacts
 	static final int maximumNumberOfNameFacts = 0;
 	
-	static final int partitionSize = 5000;
+	static final int partitionSize = 2500;
 	
 	//check - import
-	static final CHECK check = CHECK.CHECK_AND_IMPORT;
+	static final CHECK check = CHECK.IMPORT_WITHOUT_CHECK;
 
 	//editor - import
 	static final EDITOR editor = EDITOR.EDITOR_AS_EDITOR;
@@ -74,12 +84,31 @@ public class MclActivator {
 	//ignore null
 	static final boolean ignoreNull = true;
 	
+	static final boolean switchSpeciesGroup = true;
+	
 	static boolean useClassification = true;
 	
+	static boolean 	isSplitTdwgCodes = false;
+	
+	static String taxonTable = "v_cdm_exp_taxaAll";
+	static String classificationQuery = " SELECT DISTINCT t.PTRefFk, r.RefCache FROM PTaxon t INNER JOIN Reference r ON t.PTRefFk = r.RefId WHERE t.PTRefFk = " + sourceSecId; 
+	static String relPTaxonIdQuery = " SELECT r.RelPTaxonId " + 
+					" FROM RelPTaxon AS r INNER JOIN v_cdm_exp_taxaDirect AS a ON r.PTNameFk2 = a.PTNameFk AND r.PTRefFk2 = a.PTRefFk ";
+	static String nameIdTable = " v_cdm_exp_namesAll ";
+	static String referenceIdTable = " v_cdm_exp_refAll ";
+	static String factFilter = " factId IN ( SELECT factId FROM v_cdm_exp_factsAll )";
+	static String occurrenceFilter = " occurrenceId IN ( SELECT occurrenceId FROM v_cdm_exp_occurrenceAll )";
+	static String occurrenceSourceFilter = " occurrenceFk IN ( SELECT occurrenceId FROM v_cdm_exp_occurrenceAll )"; 
+	static String commonNameFilter = " commonNameId IN ( SELECT commonNameId FROM v_cdm_exp_commonNamesAll )";
+	static String webMarkerFilter = " TableNameFk <> 500 OR ( RIdentifierFk IN (SELECT RIdentifier FROM v_cdm_exp_taxaAll)) ";
+	static String authorTeamFilter = null; // " authorTeamId IN (SELECT authorTeamId FROM v_cdm_exp_authorTeamsAll) ";
+	static String authorFilter = null;  // " authorId IN (SELECT authorId FROM v_cdm_exp_authorsAll) "; 
+	
+
 	
 // **************** ALL *********************	
 
-
+	static final boolean doUser = true;
 	//authors
 	static final boolean doAuthors = true;
 	//references
@@ -88,16 +117,23 @@ public class MclActivator {
 	static final boolean doTaxonNames = true;
 	static final boolean doRelNames = true;
 	static final boolean doNameStatus = true;
+	static final boolean doTypes = false;  //serious types do not exist in E+M
+	static final boolean doNameFacts = true;
 	
 	//taxa
 	static final boolean doTaxa = true;
 	static final boolean doRelTaxa = true;
 	static final boolean doFacts = true;
+	static final boolean doOccurences = true;
+	static final boolean doCommonNames = true;
 
+	//etc.
+	static final boolean doMarker = true;
 
 	
 // **************** SELECTED *********************
 
+//	static final boolean doUser = true;
 //	//authors
 //	static final boolean doAuthors = false;
 //	//references
@@ -106,31 +142,31 @@ public class MclActivator {
 //	static final boolean doTaxonNames = false;
 //	static final boolean doRelNames = false;
 //	static final boolean doNameStatus = false;
+//	static final boolean doTypes = false;
+//	static final boolean doNameFacts = false;
 //	
 //	//taxa 
 //	static final boolean doTaxa = false;
-//	static final boolean doRelTaxa = true;
+//	static final boolean doRelTaxa = false;
 //	static final boolean doFacts = false;
-
+//	static final boolean doOccurences = false;
+//	static final boolean doCommonNames = false;
+//	
+//	//etc.
+//	static final boolean doMarker = false;
 	
 	
-// **********Always IGNORE:***********************************************
-	
-	//etc.
-	static final boolean doUser = false;
-	static final boolean doTypes = false;   //not available in MCL
-	static final boolean doNameFacts = false;  //not available in MCL
-	static final boolean doOccurences = false;     //not available in MCL
-	static final boolean doCommonNames = false;   //not available in MCL
-	static final boolean doMarker = false;   //not available in MCL
-	
-	
-	public void importMcl (Source source, ICdmDataSource destination, DbSchemaValidation hbm2dll){
-		System.out.println("Start import from BerlinModel("+ berlinModelSource.getDatabase() + ") to " + cdmDestination.getDatabase() + " ...");
+	public void importEm2CDM (Source source, ICdmDataSource destination, DbSchemaValidation hbm2dll){
+		System.out.println("Start import from BerlinModel("+ source.getDatabase() + ") to " + destination.getDatabase() + " ...");
 		//make BerlinModel Source
 				
 		BerlinModelImportConfigurator config = BerlinModelImportConfigurator.NewInstance(source,  destination);
 		
+		config.setClassificationUuid(classificationUuid);
+		config.setSourceSecId(sourceSecId);
+		
+		config.setNomenclaturalCode(nomenclaturalCode);
+
 		try {
 			Method makeUrlMethod = MclActivator.class.getDeclaredMethod("makeUrlForTaxon", TaxonBase.class, ResultSet.class);
 			config.setMakeUrlForTaxon(makeUrlMethod);
@@ -138,13 +174,8 @@ public class MclActivator {
 			e.printStackTrace();
 			return;
 		}
-
 		
-		config.setClassificationUuid(classificationUuid);
-		config.setSourceSecId(sourceSecId);
 		
-		config.setNomenclaturalCode(nomenclaturalCode);
-
 		config.setIgnoreNull(ignoreNull);
 		config.setDoAuthors(doAuthors);
 		config.setDoReferences(doReferences);
@@ -154,7 +185,7 @@ public class MclActivator {
 		config.setDoTypes(doTypes);
 		config.setDoNameFacts(doNameFacts);
 		config.setUseClassification(useClassification);
-		config.setSourceRefUuid(sourceRefUuid);
+		config.setSourceRefUuid(PesiTransformer.uuidSourceRefEuroMed);
 		
 		config.setDoTaxa(doTaxa);
 		config.setDoRelTaxa(doRelTaxa);
@@ -169,18 +200,47 @@ public class MclActivator {
 		
 		// maximum number of name facts to import
 		config.setMaximumNumberOfNameFacts(maximumNumberOfNameFacts);
-
+		
+//		filter
+		config.setTaxonTable(taxonTable);
+		config.setClassificationQuery(classificationQuery);
+		config.setRelTaxaIdQuery(relPTaxonIdQuery);
+		config.setNameIdTable(nameIdTable);
+		config.setReferenceIdTable(referenceIdTable);
+		config.setAuthorTeamFilter(authorTeamFilter);
+		config.setAuthorFilter(authorFilter);
+		config.setFactFilter(factFilter);
+		config.setCommonNameFilter(commonNameFilter);
+		config.setOccurrenceFilter(occurrenceFilter);
+		config.setOccurrenceSourceFilter(occurrenceSourceFilter);
+		config.setWebMarkerFilter(webMarkerFilter);
 		config.setUseSingleClassification(useSingleClassification);
-
+		
+		//TDWG codes
+		config.setSplitTdwgCodes(isSplitTdwgCodes);
+		
 		
 		config.setCheck(check);
 		config.setEditor(editor);
 		config.setRecordsPerTransaction(partitionSize);
-
+		
+		config.setSwitchSpeciesGroup(switchSpeciesGroup);
 		
 		// invoke import
 		CdmDefaultImport<BerlinModelImportConfigurator> bmImport = new CdmDefaultImport<BerlinModelImportConfigurator>();
 		bmImport.invoke(config);
+		
+		if (doFacts && config.getCheck().equals(CHECK.CHECK_AND_IMPORT)  || config.getCheck().equals(CHECK.IMPORT_WITHOUT_CHECK)    ){
+			ICdmApplicationConfiguration app = bmImport.getCdmAppController();
+			
+			//make feature tree
+			FeatureTree tree = TreeCreator.flatTree(featureTreeUuid, config.getFeatureMap(), featureKeyList);
+			FeatureNode imageNode = FeatureNode.NewInstance(Feature.IMAGE());
+			tree.getRoot().addChild(imageNode);
+			FeatureNode distributionNode = FeatureNode.NewInstance(Feature.DISTRIBUTION());
+			tree.getRoot().addChild(distributionNode, 2); 
+			app.getFeatureTreeService().saveOrUpdate(tree);
+		}
 		
 		System.out.println("End import from BerlinModel ("+ source.getDatabase() + ")...");
 		
@@ -190,23 +250,14 @@ public class MclActivator {
 	 * @param args
 	 */
 	public static void main(String[] args) {
-		MclActivator importActivator = new MclActivator();
+		EuroMedActivator importActivator = new EuroMedActivator();
 		Source source = berlinModelSource;
 		ICdmDataSource cdmRepository = CdmDestinations.chooseDestination(args) != null ? CdmDestinations.chooseDestination(args) : cdmDestination;
 		
-		importActivator.importMcl(source, cdmRepository, hbm2dll);
-
+		importActivator.importEm2CDM(source, cdmRepository, hbm2dll);
 	}
 	
-	public static ICdmDataSource cdm_test_local_mcl(){
-		DatabaseTypeEnum dbType = DatabaseTypeEnum.MySQL;
-		String cdmServer = "127.0.0.1";
-		String cdmDB = "mcl"; 
-		String cdmUserName = "root";
-		return CdmDestinations.makeDestination(dbType, cdmServer, cdmDB, -1, cdmUserName, null);
-	}
-	
-	private static final String URLbase = "http://ww2.bgbm.org/mcl/PTaxonDetail.asp?";
+	private static final String URLbase = "http://ww2.bgbm.org/EuroPlusMed/PTaxonDetail.asp?";
 	public static Method makeUrlForTaxon(TaxonBase<?> taxon, ResultSet rs){
 		Method result = null;
 		ExtensionType urlExtensionType = ExtensionType.URL();

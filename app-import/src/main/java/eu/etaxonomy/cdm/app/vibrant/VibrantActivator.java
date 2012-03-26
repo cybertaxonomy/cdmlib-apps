@@ -9,24 +9,14 @@
 
 package eu.etaxonomy.cdm.app.vibrant;
 
-import java.util.UUID;
-
 import org.apache.log4j.Logger;
 
 import eu.etaxonomy.cdm.app.common.BerlinModelSources;
 import eu.etaxonomy.cdm.app.common.CdmDestinations;
-import eu.etaxonomy.cdm.app.pesi.EuroMedActivator;
 import eu.etaxonomy.cdm.database.DatabaseTypeEnum;
 import eu.etaxonomy.cdm.database.DbSchemaValidation;
 import eu.etaxonomy.cdm.database.ICdmDataSource;
-import eu.etaxonomy.cdm.io.berlinModel.in.BerlinModelImportConfigurator;
-import eu.etaxonomy.cdm.io.common.CdmDefaultImport;
-import eu.etaxonomy.cdm.io.common.IImportConfigurator.CHECK;
-import eu.etaxonomy.cdm.io.common.IImportConfigurator.DO_REFERENCES;
-import eu.etaxonomy.cdm.io.common.IImportConfigurator.EDITOR;
 import eu.etaxonomy.cdm.io.common.Source;
-import eu.etaxonomy.cdm.io.pesi.out.PesiTransformer;
-import eu.etaxonomy.cdm.model.name.NomenclaturalCode;
 
 
 /**
@@ -43,7 +33,7 @@ public class VibrantActivator {
 	private static final Logger logger = Logger.getLogger(VibrantActivator.class);
 
 	//database validation status (create, update, validate ...)
-	static DbSchemaValidation hbm2dll = DbSchemaValidation.CREATE;
+	static DbSchemaValidation hbm2dll = DbSchemaValidation.VALIDATE;
 	static final Source iopiSource = BerlinModelSources.iopi();
 	static final Source mclSource = BerlinModelSources.mcl();
 	static final Source emSource = BerlinModelSources.euroMed_local();
@@ -51,9 +41,9 @@ public class VibrantActivator {
 //	static final ICdmDataSource cdmDestination = CdmDestinations.cdm_test_local_mysql();
 	static final ICdmDataSource cdmDestination = cdm_test_local_vibrant();
 
-	static final boolean doMcl = true;
-	static final boolean doEuroMed = false;
-	static final boolean doIopi = true;
+	static final boolean doMcl = false;
+	static final boolean doEuroMed = true;
+	static final boolean doIopi = false;
 	
 	
 	/**
