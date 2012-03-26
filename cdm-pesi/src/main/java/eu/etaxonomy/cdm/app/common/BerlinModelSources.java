@@ -30,7 +30,7 @@ public class BerlinModelSources {
 		return  makeSource(dbms, strServer, strDB, port, userName, null);
 	}
 	
-	public static Source euroMed_local(){
+	public static Source euroMed_local_lenovo(){
 		//	BerlinModel - Euro+Med
 		String dbms = Source.SQL_SERVER_2005;
 		String strServer = "LENOVO-T61";
