@@ -37,7 +37,9 @@ public class DwcaImportActivator {
 	//database validation status (create, update, validate ...)
 	static DbSchemaValidation hbm2dll = DbSchemaValidation.CREATE;
 //	static final URI source = dwca_test_in();
-	static final URI source = dwca_test_cich_len();
+//	static final URI source = dwca_test_cich_len();
+//	static final URI source = dwca_test_col_cichorium();
+	static final URI source = dwca_test_col_All();
 	
 	
 //	static final ICdmDataSource cdmDestination = CdmDestinations.localH2();
@@ -121,7 +123,17 @@ public class DwcaImportActivator {
 		return sourceUrl;
 	}
 	
+	//Dwca
+	public static URI dwca_test_col_cichorium() {
+		URI sourceUrl = URI.create("file:///C:/localCopy/Data/dwca/import/CoL/Cichorium/archive-genus-Cichorium-bl3.zip");
+		return sourceUrl;
+	}
 	
+	//CoL
+	public static URI dwca_test_col_All() {
+		URI sourceUrl = URI.create("file:///C:/localCopy/Data/dwca/import/CoL/All/archive-complete.zip");
+		return sourceUrl;
+	}
 
 
 	
