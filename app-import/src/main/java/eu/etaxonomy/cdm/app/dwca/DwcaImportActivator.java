@@ -22,6 +22,8 @@ import eu.etaxonomy.cdm.io.common.CdmDefaultImport;
 import eu.etaxonomy.cdm.io.common.IImportConfigurator.CHECK;
 import eu.etaxonomy.cdm.io.common.events.LoggingIoObserver;
 import eu.etaxonomy.cdm.io.dwca.in.DwcaImportConfigurator;
+import eu.etaxonomy.cdm.io.dwca.in.IImportMapping;
+import eu.etaxonomy.cdm.io.dwca.in.IImportMapping.MappingType;
 import eu.etaxonomy.cdm.model.agent.Person;
 import eu.etaxonomy.cdm.model.reference.Reference;
 import eu.etaxonomy.cdm.model.reference.ReferenceFactory;
@@ -39,7 +41,8 @@ public class DwcaImportActivator {
 //	static final URI source = dwca_test_in();
 //	static final URI source = dwca_test_cich_len();
 //	static final URI source = dwca_test_col_cichorium();
-	static final URI source = dwca_test_col_All();
+//	static final URI source = dwca_test_col_All();
+	static final URI source = dwca_test_col_All_Pesi2();
 	
 	
 //	static final ICdmDataSource cdmDestination = CdmDestinations.localH2();
@@ -61,6 +64,7 @@ public class DwcaImportActivator {
 	static final boolean doDeduplicate = false;
 	static final boolean doDistribution = false;
 
+	static final MappingType mappingType = MappingType.InMemoryMapping;
 	
 	private void doImport(ICdmDataSource cdmDestination){
 		
@@ -70,6 +74,7 @@ public class DwcaImportActivator {
 		config.setClassificationUuid(classificationUuid);
 		config.setCheck(check);
 		config.setDbSchemaValidation(hbm2dll);
+		config.setMappingType(mappingType);
 		
 		CdmDefaultImport myImport = new CdmDefaultImport();
 
@@ -135,7 +140,11 @@ public class DwcaImportActivator {
 		return sourceUrl;
 	}
 
-
+	//CoL
+	public static URI dwca_test_col_All_Pesi2() {
+		URI sourceUrl = URI.create("file:///C:/opt/data/CoL/All/archive-complete.zip");
+		return sourceUrl;
+	}
 	
 
 	/**
