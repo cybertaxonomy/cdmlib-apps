@@ -132,7 +132,7 @@ public class MclActivator {
 		BerlinModelImportConfigurator config = BerlinModelImportConfigurator.NewInstance(source,  destination);
 		
 		try {
-			Method makeUrlMethod = MclActivator.class.getDeclaredMethod("makeUrlForTaxon", TaxonBase.class, ResultSet.class);
+			Method makeUrlMethod = this.getClass().getDeclaredMethod("makeUrlForTaxon", TaxonBase.class, ResultSet.class);
 			config.setMakeUrlForTaxon(makeUrlMethod);
 		} catch (Exception e) {
 			e.printStackTrace();
