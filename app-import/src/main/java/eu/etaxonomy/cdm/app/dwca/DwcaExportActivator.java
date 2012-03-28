@@ -41,11 +41,12 @@ public class DwcaExportActivator {
 	private static final Logger logger = Logger.getLogger(DwcaExportActivator.class);
 
 	//database validation status (create, update, validate ...)
-	private static final String fileDestination = "C:\\tmp\\dwcaTmp\\";
+	private static final String fileDestination = "C:\\tmp\\dwcaTmp\\cyprus\\";
 //	private static final ICdmDataSource cdmSource = CdmDestinations.cdm_local_cichorieae();
 //	private static final ICdmDataSource cdmSource = CdmDestinations.cdm_test_local_mysql();
-	private static final ICdmDataSource cdmSource = CdmDestinations.cdm_production_cichorieae();
+//	private static final ICdmDataSource cdmSource = CdmDestinations.cdm_production_cichorieae();
 //	private static final ICdmDataSource cdmSource = CdmDestinations.cdm_flora_central_africa_production();
+	private static final ICdmDataSource cdmSource = CdmDestinations.cdm_cyprus_production();
 
 	private IProgressMonitor monitor = DefaultProgressMonitor.NewInstance();
 	
@@ -146,13 +147,13 @@ public class DwcaExportActivator {
 	private DwcaEmlRecord getEmlRecord() {
 		DwcaEmlRecord emlRecord = new DwcaEmlRecord();
 		emlRecord.setIdentifier("My Identifier");
-		emlRecord.setTitle("Cich DB");
+		emlRecord.setTitle("Flora of cyprus");
 		emlRecord.setPublicationDate(new DateTime());
 		emlRecord.setExpectedCitation("Expected Citation");
 		emlRecord.setAbstractInfo("The abstract");
 		emlRecord.setAdditionalInformation("Add info");
 		emlRecord.setResourceLanguage(null);
-		emlRecord.setResourceUrl(URI.create("http://wp6-cichorieae.e-taxonomy.eu/portal/"));
+		emlRecord.setResourceUrl(URI.create("http://www.flora-of-cyprus.eu//portal/"));
 		emlRecord.setMetaDataLanguage(null);
 		emlRecord.setResourceLogoUri(null);
 		emlRecord.setCreativeCommonsLicensing(null);
