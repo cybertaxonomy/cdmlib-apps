@@ -49,26 +49,7 @@ public class BerlinModelSources {
 		String userName = "webUser";
 		return  makeSource(dbms, strServer, strDB, port, userName, null);
 	}
-	
-	public static Source mcl(){
-		//	BerlinModel - Euro+Med
-		String dbms = Source.SQL_SERVER_2008;
-		String strServer = "BGBM42";
-		String strDB = "MCL";
-		int port = 1433;
-		String userName = "WebUser";
-		return  makeSource(dbms, strServer, strDB, port, userName, null);
-	}
-	
-	public static Source iopi(){
-		//	BerlinModel - Euro+Med
-		String dbms = Source.SQL_SERVER_2008;
-		String strServer = "BGBM17";
-		String strDB = "IOPIBM";
-		int port = 1433;
-		String userName = "WebUser";
-		return  makeSource(dbms, strServer, strDB, port, userName, null);
-	}
+
 
 	public static Source PESI3_euroMed(){
 		//	BerlinModel - Euro+Med
