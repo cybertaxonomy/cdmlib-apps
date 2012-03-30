@@ -40,7 +40,7 @@ public class VibrantActivator {
 //	static final ICdmDataSource cdmDestination = CdmDestinations.cdm_test_local_mysql();
 	static final ICdmDataSource cdmDestination = cdm_test_local_vibrant();
 
-	static final boolean doMcl = false;
+	static final boolean doMcl = true;
 	static final boolean doEuroMed = true;
 	static final boolean doIopi = false;
 	
