@@ -161,7 +161,9 @@ public class EuroMedActivator {
 	public void importEm2CDM (Source source, ICdmDataSource destination, DbSchemaValidation hbm2dll){
 		System.out.println("Start import from BerlinModel("+ source.getDatabase() + ") to " + destination.getDatabase() + " ...");
 		//make BerlinModel Source
-				
+		
+		logger.warn("REMIND: Set publishFlag = 1 filter in 'v_cdm_exp_taxaDirect' view !! ");
+		
 		BerlinModelImportConfigurator config = BerlinModelImportConfigurator.NewInstance(source,  destination);
 		
 		config.setClassificationUuid(classificationUuid);
@@ -241,6 +243,9 @@ public class EuroMedActivator {
 		}
 		
 		System.out.println("End import from BerlinModel ("+ source.getDatabase() + ")...");
+
+		logger.warn("REMIND: Set publishFlag back to <= 1  in 'v_cdm_exp_taxaDirect' view !! ");
+
 		
 	}
 	
