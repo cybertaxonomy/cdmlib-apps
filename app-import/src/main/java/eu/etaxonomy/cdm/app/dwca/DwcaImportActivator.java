@@ -22,7 +22,6 @@ import eu.etaxonomy.cdm.io.common.CdmDefaultImport;
 import eu.etaxonomy.cdm.io.common.IImportConfigurator.CHECK;
 import eu.etaxonomy.cdm.io.common.events.LoggingIoObserver;
 import eu.etaxonomy.cdm.io.dwca.in.DwcaImportConfigurator;
-import eu.etaxonomy.cdm.io.dwca.in.IImportMapping;
 import eu.etaxonomy.cdm.io.dwca.in.IImportMapping.MappingType;
 import eu.etaxonomy.cdm.model.agent.Person;
 import eu.etaxonomy.cdm.model.reference.Reference;
@@ -46,24 +45,32 @@ public class DwcaImportActivator {
 	
 	
 //	static final ICdmDataSource cdmDestination = CdmDestinations.localH2();
-//	static final ICdmDataSource cdmDestination = CdmDestinations.cdm_test_local_mysql_dwca();
-	static final ICdmDataSource cdmDestination = CdmDestinations.cdm_test_local_mysql();
+	static final ICdmDataSource cdmDestination = CdmDestinations.cdm_test_local_mysql_pesi_test();
+//	static final ICdmDataSource cdmDestination = CdmDestinations.cdm_test_local_mysql_test();
 
 	
-	//feature tree uuid
-	public static final UUID featureTreeUuid = UUID.fromString("14d1e912-5ec2-4d10-878b-828788b70a87");
-	
 	//classification
-	static final UUID classificationUuid = UUID.fromString("d964c855-3916-4c8d-bdb6-acf9cd736b87");
+	static final UUID classificationUuid = UUID.fromString("29d4011f-a6dd-4081-beb8-559ba6b84a6b");
 	
 	//check - import
 	static final CHECK check = CHECK.IMPORT_WITHOUT_CHECK;
 	
+	//config
+	static boolean datasetAsClassification = false;
+	static boolean scientificNameIdAsOriginalSourceId = true;
+	
+	//validate
+	static boolean validateRankConsistency = false;
+	
+	
 	//taxa
 	static final boolean doTaxa = true;
-	static final boolean doDeduplicate = false;
 	static final boolean doDistribution = false;
-
+	//deduplicate
+	static final boolean doDeduplicate = false;
+	
+	
+	
 	static final MappingType mappingType = MappingType.InMemoryMapping;
 	
 	private void doImport(ICdmDataSource cdmDestination){
@@ -75,6 +82,9 @@ public class DwcaImportActivator {
 		config.setCheck(check);
 		config.setDbSchemaValidation(hbm2dll);
 		config.setMappingType(mappingType);
+		config.setDatasetsAsClassifications(datasetAsClassification);
+		config.setScientificNameIdAsOriginalSourceId(scientificNameIdAsOriginalSourceId);
+		config.setValidateRankConsistency(validateRankConsistency);
 		
 		CdmDefaultImport myImport = new CdmDefaultImport();
 
