@@ -22,8 +22,10 @@ import eu.etaxonomy.cdm.io.common.CdmDefaultImport;
 import eu.etaxonomy.cdm.io.common.IImportConfigurator.CHECK;
 import eu.etaxonomy.cdm.io.common.events.LoggingIoObserver;
 import eu.etaxonomy.cdm.io.dwca.in.DwcaImportConfigurator;
+import eu.etaxonomy.cdm.io.dwca.in.DwcaImportConfigurator.DatasetUse;
 import eu.etaxonomy.cdm.io.dwca.in.IImportMapping.MappingType;
 import eu.etaxonomy.cdm.model.agent.Person;
+import eu.etaxonomy.cdm.model.name.NomenclaturalCode;
 import eu.etaxonomy.cdm.model.reference.Reference;
 import eu.etaxonomy.cdm.model.reference.ReferenceFactory;
 
@@ -52,11 +54,15 @@ public class DwcaImportActivator {
 	//classification
 	static final UUID classificationUuid = UUID.fromString("29d4011f-a6dd-4081-beb8-559ba6b84a6b");
 	
+	//default nom code is ICZN as it allows adding publication year 
+	static final NomenclaturalCode defaultNomCode = NomenclaturalCode.ICZN;
+
+	
 	//check - import
 	static final CHECK check = CHECK.IMPORT_WITHOUT_CHECK;
 	
 	//config
-	static boolean datasetAsClassification = false;
+	static DatasetUse datasetUse = DatasetUse.SECUNDUM;
 	static boolean scientificNameIdAsOriginalSourceId = true;
 	
 	//validate
@@ -82,9 +88,9 @@ public class DwcaImportActivator {
 		config.setCheck(check);
 		config.setDbSchemaValidation(hbm2dll);
 		config.setMappingType(mappingType);
-		config.setDatasetsAsClassifications(datasetAsClassification);
 		config.setScientificNameIdAsOriginalSourceId(scientificNameIdAsOriginalSourceId);
 		config.setValidateRankConsistency(validateRankConsistency);
+		config.setNomenclaturalCode(defaultNomCode);
 		
 		CdmDefaultImport myImport = new CdmDefaultImport();
 
@@ -112,8 +118,8 @@ public class DwcaImportActivator {
 		
 	}
 
-	private Reference getSourceReference(String string) {
-		Reference result = ReferenceFactory.newGeneric();
+	private Reference<?> getSourceReference(String string) {
+		Reference<?> result = ReferenceFactory.newGeneric();
 		result.setTitleCache(string);
 		return result;
 	}
