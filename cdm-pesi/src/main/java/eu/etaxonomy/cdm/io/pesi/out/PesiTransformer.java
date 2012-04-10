@@ -3550,7 +3550,7 @@ public final class PesiTransformer extends ExportTransformerBase implements IExp
 //		}else if (status.equals(NomenclaturalStatusType.)) {return NAME_ST_COMB_AND_STAT_INED;
 //		}else if (status.equals(NomenclaturalStatusType.)) {return NAME_ST_NOM_NOV_INED;
 //		}else if (status.equals(NomenclaturalStatusType.)) {return NAME_ST_ALTERNATE_REPRESENTATION;
-//		}else if (status.equals(NomenclaturalStatusType.)) {return NAME_ST_TEMPORARY_NAME;
+		}else if (status.getUuid().equals(FaunaEuropaeaTransformer.uuidNomStatusTempNamed)) {return NAME_ST_TEMPORARY_NAME;
 //		}else if (status.equals(NomenclaturalStatusType.)) {return NAME_ST_SPECIES_INQUIRENDA;
 
 		//TODO

@@ -137,7 +137,7 @@ public class PesiRelTaxonExport extends PesiExportBase {
 		//taxon relations
 		int partitionCount = 0;
 		int totalCount = 0;
-		while ((list = getNextTaxonRelationshipPartition(null, limit, partitionCount++, null)) != null ) {
+		while ((list = getNextTaxonRelationshipPartition( limit, partitionCount++, null)) != null ) {
 			totalCount = totalCount + list.size();
 			logger.info("Read " + list.size() + " PESI relations. Limit: " + limit + ". Total: " + totalCount );
 //			if (list.size() > 0){
@@ -152,6 +152,7 @@ public class PesiRelTaxonExport extends PesiExportBase {
 				}
 			}
 		}
+		list = null;
 		
 		return success;
 	}
@@ -206,7 +207,7 @@ public class PesiRelTaxonExport extends PesiExportBase {
 				}
 			}
 		}
-		
+		list = null;
 		logger.info("End PHASE 2: Name Relationships ...");
 				
 		return success;
@@ -730,7 +731,7 @@ public class PesiRelTaxonExport extends PesiExportBase {
 	 * Returns the CDM to PESI specific export mappings.
 	 * @return The {@link PesiExportMapping PesiExportMapping}.
 	 */
-	private PesiExportMapping getMapping() {
+	PesiExportMapping getMapping() {
 		PesiExportMapping mapping = new PesiExportMapping(dbTableName);
 		
 		mapping.addMapper(MethodMapper.NewInstance("TaxonFk1", this.getClass(), "getTaxonFk1", standardMethodParameter, PesiExportState.class));

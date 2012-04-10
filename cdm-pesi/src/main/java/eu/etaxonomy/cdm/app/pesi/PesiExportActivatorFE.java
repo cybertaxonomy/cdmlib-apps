@@ -12,6 +12,7 @@ package eu.etaxonomy.cdm.app.pesi;
 import org.apache.log4j.Logger;
 
 import eu.etaxonomy.cdm.app.common.CdmDestinations;
+import eu.etaxonomy.cdm.database.DbSchemaValidation;
 import eu.etaxonomy.cdm.database.ICdmDataSource;
 import eu.etaxonomy.cdm.io.common.CdmDefaultExport;
 import eu.etaxonomy.cdm.io.common.DbExportConfiguratorBase.IdType;
@@ -21,6 +22,7 @@ import eu.etaxonomy.cdm.io.common.Source;
 import eu.etaxonomy.cdm.io.common.mapping.out.IExportTransformer;
 import eu.etaxonomy.cdm.io.pesi.out.PesiExportConfigurator;
 import eu.etaxonomy.cdm.io.pesi.out.PesiTransformer;
+import eu.etaxonomy.cdm.io.profiler.ProfilerController;
 
 /**
  * @author a.mueller
@@ -36,14 +38,13 @@ public class PesiExportActivatorFE {
 	static final Source pesiDestination = PesiDestinations.pesi_test_local_CDM_FE2PESI();
 //	static final Source pesiDestination = PesiDestinations.pesi_test_local_CDM_ERMS2PESI();
 	
-	static final ICdmDataSource cdmSource = CdmDestinations.cdm_test_local_faunaEu_mysql();
-//	static final ICdmDataSource cdmSource = CdmDestinations.cdm_test_local_mysql();
-//	static final ICdmDataSource cdmSource = CdmDestinations.cdm_test_local_mysql_test();
+//	static final ICdmDataSource cdmSource = CdmDestinations.cdm_test_local_faunaEu_mysql();
+	static final ICdmDataSource cdmSource = CdmDestinations.cdm_test_local_mysql();
 
 	//Taxon names can't be mapped to their CDM ids as PESI Taxon table mainly holds taxa and there IDs. We ad nameIdStart to the TaxonName id to get a unique id
 	static final int nameIdStart = 10000000;
 	
-	static final int partitionSize = 2000;
+	static final int partitionSize = 1000;
 	
 	//check - export
 	static final CHECK check = CHECK.EXPORT_WITHOUT_CHECK;
@@ -123,9 +124,11 @@ public class PesiExportActivatorFE {
 		if (deleteAll){
 			destination.update("EXEC sp_deleteAllData");
 		}
+		
 
 		// invoke export
 		CdmDefaultExport<PesiExportConfigurator> pesiExport = new CdmDefaultExport<PesiExportConfigurator>();
+		
 		boolean result = pesiExport.invoke(config);
 		
 		System.out.println("End export to PESI ("+ destination.getDatabase() + ")..." + (result? "(successful)":"(with errors)"));

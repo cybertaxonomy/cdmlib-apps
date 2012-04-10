@@ -525,7 +525,7 @@ public class FaunaEuropaeaTaxonNameImport extends FaunaEuropaeaImportBase  {
 			FaunaEuropaeaTaxon fauEuTaxon = fauEuTaxonMap.get(id);
 			boolean useOriginalGenus = false;
 			//if (taxonBase instanceof Synonym){
-			if (fauEuTaxon.isValid()){
+			if (!fauEuTaxon.isValid() ){
 				useOriginalGenus = true;
 			}
 			
@@ -580,10 +580,15 @@ public class FaunaEuropaeaTaxonNameImport extends FaunaEuropaeaImportBase  {
 
 			
 			zooName.addBasionym(basionym, fauEuConfig.getSourceReference(), null, null);
-			zooName.setBasionymAuthorTeam(zooName.getCombinationAuthorTeam());
-			zooName.setCombinationAuthorTeam(null);
+			//TODO:this is a workaround for fauna europaea, may be this should be fixed in NonViralNameCacheStrategy
+			if (fauEuTaxon.isParenthesis()){
+				zooName.setBasionymAuthorTeam(null);
+			} else{
+				zooName.setBasionymAuthorTeam(zooName.getCombinationAuthorTeam());
+				zooName.setCombinationAuthorTeam(null);
+			}
 			zooName.setPublicationYear(null);
-			zooName.setTitleCache(null); // This should (re)generate the titleCache automagically
+			zooName.setTitleCache(null); // This should (re)generate the titleCache automatically
 			if (logger.isDebugEnabled()) {
 				logger.debug("Basionym created (" + fauEuTaxon.getId() + ")");
 			}
@@ -888,7 +893,7 @@ public class FaunaEuropaeaTaxonNameImport extends FaunaEuropaeaImportBase  {
 		/* Concatenated taxon name string */
 		String completeString = "";
 
-		StringBuilder originalGenus = new StringBuilder("");
+		StringBuilder acceptedGenus = new StringBuilder("");
 		
 		StringBuilder genusOrUninomial = new StringBuilder();
 		StringBuilder infraGenericEpithet = new StringBuilder(); 
@@ -899,16 +904,16 @@ public class FaunaEuropaeaTaxonNameImport extends FaunaEuropaeaImportBase  {
 		int rank = fauEuTaxon.getRankId();
 		
 		// determine genus: this also works for cases of synonyms since the accepted taxon is its parent
-		String originalGenusString = null;
-		String tempOriginalGenusString = determineOriginalGenus(fauEuTaxon);
-		if (useOriginalGenus && ! "".equals(fauEuTaxon.getOriginalGenusName()) && fauEuTaxon.getOriginalGenusName().equals(tempOriginalGenusString) ) {
-			originalGenusString  = fauEuTaxon.getOriginalGenusName();
+		String acceptedGenusString = null;
+		String tempAcceptedGenusString = determineAcceptedGenus(fauEuTaxon);
+		if (useOriginalGenus && ! "".equals(fauEuTaxon.getOriginalGenusName()) && !fauEuTaxon.getOriginalGenusName().equals(tempAcceptedGenusString) ) {
+			acceptedGenusString  = fauEuTaxon.getOriginalGenusName();
 		} else {
-			originalGenusString = tempOriginalGenusString;
+			acceptedGenusString = tempAcceptedGenusString;
 		}
 
-		if (originalGenusString != null) {
-			originalGenus = new StringBuilder(originalGenusString);
+		if (acceptedGenusString != null) {
+			acceptedGenus = new StringBuilder(acceptedGenusString);
 		}
 
 		if(logger.isDebugEnabled()) { 
@@ -924,9 +929,9 @@ public class FaunaEuropaeaTaxonNameImport extends FaunaEuropaeaImportBase  {
 				infraGenericEpithet.append(localString);
 				
 				// genus part
-				genusOrUninomial.append(originalGenus);
+				genusOrUninomial.append(acceptedGenus);
 				
-				completeString = originalGenus + " ("+ localString + ")";
+				completeString = acceptedGenus + " ("+ localString + ")";
 			} else {
 				// genus or above
 				genusOrUninomial.append(localString);
@@ -938,7 +943,7 @@ public class FaunaEuropaeaTaxonNameImport extends FaunaEuropaeaImportBase  {
 			taxonBase = taxonBase.deproxy(taxonBase, TaxonBase.class);
 
 			completeString = 
-				buildLowerTaxonName(originalGenus, useOriginalGenus, 
+				buildLowerTaxonName(acceptedGenus, useOriginalGenus, 
 						genusOrUninomial, infraGenericEpithet, specificEpithet, infraSpecificEpithet,
 						fauEuTaxon);
 			
@@ -958,7 +963,7 @@ public class FaunaEuropaeaTaxonNameImport extends FaunaEuropaeaImportBase  {
 	 * @param fauEuTaxon
 	 * @return
 	 */
-	private String determineOriginalGenus(FaunaEuropaeaTaxon fauEuTaxon) {
+	private String determineAcceptedGenus(FaunaEuropaeaTaxon fauEuTaxon) {
 		String originalGenus = null;
 
 		HashMap<Integer, String> ranks = new HashMap<Integer, String>();

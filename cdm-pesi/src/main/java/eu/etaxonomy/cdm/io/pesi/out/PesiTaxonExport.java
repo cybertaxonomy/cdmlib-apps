@@ -32,6 +32,7 @@ import org.springframework.transaction.TransactionStatus;
 
 import eu.etaxonomy.cdm.api.service.TaxonServiceImpl;
 import eu.etaxonomy.cdm.common.CdmUtils;
+import eu.etaxonomy.cdm.io.common.CdmImportBase;
 import eu.etaxonomy.cdm.io.common.Source;
 import eu.etaxonomy.cdm.io.common.mapping.UndefinedTransformerMethodException;
 import eu.etaxonomy.cdm.io.common.mapping.out.DbConstantMapper;
@@ -43,6 +44,7 @@ import eu.etaxonomy.cdm.io.common.mapping.out.IdMapper;
 import eu.etaxonomy.cdm.io.common.mapping.out.MethodMapper;
 import eu.etaxonomy.cdm.io.common.mapping.out.ObjectChangeMapper;
 import eu.etaxonomy.cdm.io.pesi.erms.ErmsTransformer;
+import eu.etaxonomy.cdm.io.pesi.indexFungorum.IndexFungorumImportState;
 import eu.etaxonomy.cdm.model.common.Annotation;
 import eu.etaxonomy.cdm.model.common.AnnotationType;
 import eu.etaxonomy.cdm.model.common.CdmBase;
@@ -51,7 +53,12 @@ import eu.etaxonomy.cdm.model.common.ExtensionType;
 import eu.etaxonomy.cdm.model.common.IdentifiableEntity;
 import eu.etaxonomy.cdm.model.common.IdentifiableSource;
 import eu.etaxonomy.cdm.model.common.Language;
+import eu.etaxonomy.cdm.model.common.Marker;
+import eu.etaxonomy.cdm.model.common.MarkerType;
+import eu.etaxonomy.cdm.model.common.RelationshipBase;
 import eu.etaxonomy.cdm.model.name.BotanicalName;
+import eu.etaxonomy.cdm.model.name.HybridRelationship;
+import eu.etaxonomy.cdm.model.name.NameRelationship;
 import eu.etaxonomy.cdm.model.name.NameTypeDesignation;
 import eu.etaxonomy.cdm.model.name.NameTypeDesignationStatus;
 import eu.etaxonomy.cdm.model.name.NomenclaturalCode;
@@ -64,6 +71,8 @@ import eu.etaxonomy.cdm.model.reference.INomenclaturalReference;
 import eu.etaxonomy.cdm.model.reference.Reference;
 import eu.etaxonomy.cdm.model.taxon.Classification;
 import eu.etaxonomy.cdm.model.taxon.Synonym;
+import eu.etaxonomy.cdm.model.taxon.SynonymRelationship;
+import eu.etaxonomy.cdm.model.taxon.SynonymRelationshipType;
 import eu.etaxonomy.cdm.model.taxon.Taxon;
 import eu.etaxonomy.cdm.model.taxon.TaxonBase;
 import eu.etaxonomy.cdm.model.taxon.TaxonNode;
@@ -95,6 +104,7 @@ public class PesiTaxonExport extends PesiExportBase {
 
 	private static int modCount = 1000;
 	private static final String dbTableName = "Taxon";
+	private static final String dbTableNameSynRel = "RelTaxon";
 	private static final String pluralString = "Taxa";
 	private static final String parentPluralString = "Taxa";
 	private PreparedStatement parentTaxonFk_TreeIndex_KingdomFkStmt;
@@ -177,10 +187,11 @@ public class PesiTaxonExport extends PesiExportBase {
 			
 			// Get specific mappings: (CDM) Taxon -> (PESI) Taxon
 			PesiExportMapping mapping = getMapping();
+			PesiExportMapping synonymRelMapping = getSynRelMapping();
 	
 			// Initialize the db mapper
 			mapping.initialize(state);
-
+			synonymRelMapping.initialize(state);
 			// Find extensionTypes
 			lastActionExtensionType = (ExtensionType)getTermService().find(PesiTransformer.lastActionUuid);
 			lastActionDateExtensionType = (ExtensionType)getTermService().find(PesiTransformer.lastActionDateUuid);
@@ -203,7 +214,7 @@ public class PesiTaxonExport extends PesiExportBase {
 			
 			
 			//"PHASE 4: Creating Inferred Synonyms...
-			success &= doPhase04(state, mapping);
+			success &= doPhase04(state, mapping, synonymRelMapping);
 			
 			//updates to TaxonStatus and others
 			success &= doPhaseUpdates(state);
@@ -223,6 +234,7 @@ public class PesiTaxonExport extends PesiExportBase {
 		}
 	}
 
+	
 	//TODO check if this can all be done by getTaxonStatus
 	private boolean doPhaseUpdates(PesiExportState state) {
 		
@@ -362,6 +374,8 @@ public class PesiTaxonExport extends PesiExportBase {
 		if (list == null ) {
 			logger.info("No " + pluralString + " left to fetch.");
 		}
+		
+		list = null;
 		// Commit transaction
 		commitTransaction(txStatus);
 		logger.debug("Committed transaction.");
@@ -599,7 +613,7 @@ public class PesiTaxonExport extends PesiExportBase {
 	}
 	
 	//	"PHASE 4: Creating Inferred Synonyms..."
-	private boolean doPhase04(PesiExportState state, PesiExportMapping mapping) throws SQLException {
+	private boolean doPhase04(PesiExportState state, PesiExportMapping mapping, PesiExportMapping synRelMapping) throws SQLException {
 		int count;
 		int pastCount;
 		boolean success = true;
@@ -665,18 +679,42 @@ public class PesiTaxonExport extends PesiExportBase {
 						
 						if (classification != null) {
 							try{
-								inferredSynonyms  = getTaxonService().createAllInferredSynonyms(acceptedTaxon, classification);
-	
+								TaxonNameBase name = acceptedTaxon.getName();
+								if (name.isSpecies() || name.isInfraSpecific()){
+									inferredSynonyms  = getTaxonService().createAllInferredSynonyms(acceptedTaxon, classification, true);
+								}
 	//								inferredSynonyms = getTaxonService().createInferredSynonyms(classification, acceptedTaxon, SynonymRelationshipType.INFERRED_GENUS_OF());
 								if (inferredSynonyms != null) {
 									for (Synonym synonym : inferredSynonyms) {
 	//									TaxonNameBase<?,?> synonymName = synonym.getName();
-											
+										MarkerType markerType =getUuidisMissingMarkerType(PesiTransformer.uuidMarkerGuidIsMissing, state);
+										synonym.addMarker(Marker.NewInstance(markerType, true));
 										// Both Synonym and its TaxonName have no valid Id yet
 										synonym.setId(currentTaxonId++);
 										
 										doCount(count++, modCount, inferredSynonymPluralString);
 										success &= mapping.invoke(synonym);
+										//get SynonymRelationship and export
+										if (synonym.getSynonymRelations().isEmpty() ){
+											SynonymRelationship synRel;					
+											IdentifiableSource source = synonym.getSources().iterator().next();
+											if (source.getIdNamespace().contains("Potential combination")){
+												synRel = acceptedTaxon.addSynonym(synonym, SynonymRelationshipType.POTENTIAL_COMBINATION_OF());
+											} else if (source.getIdNamespace().contains("Inferred Genus")){
+												synRel = acceptedTaxon.addSynonym(synonym, SynonymRelationshipType.INFERRED_GENUS_OF());
+											} else if (source.getIdNamespace().contains("Inferred Epithet")){
+												synRel = acceptedTaxon.addSynonym(synonym, SynonymRelationshipType.INFERRED_EPITHET_OF());
+											} else{
+												synRel = acceptedTaxon.addSynonym(synonym, SynonymRelationshipType.INFERRED_SYNONYM_OF());
+											}
+											
+											success &= synRelMapping.invoke(synRel);
+										} else {
+											for (SynonymRelationship synRel: synonym.getSynonymRelations()){
+												success &= synRelMapping.invoke(synRel);
+											}
+										}
+										
 										
 										// Add Rank Data and KingdomFk to hashmap for later saving
 										inferredSynonymsDataToBeSaved.put(synonym.getId(), synonym.getName());
@@ -1277,6 +1315,8 @@ public class PesiTaxonExport extends PesiExportBase {
 			
 			NonViralName<?> nvn = CdmBase.deproxy(taxonName, NonViralName.class);
 			String result = cacheStrategy.getFullTitleCache(nvn, tagRules);
+			
+			
 			return result.replaceAll("\\<@status@\\>.*\\</@status@\\>", "");
 		}
 	}
@@ -1345,6 +1385,25 @@ public class PesiTaxonExport extends PesiExportBase {
 		//TODO extensions?
 		NonViralName<?> nvn = CdmBase.deproxy(taxonName, NonViralName.class);
 		String result = getCacheStrategy(nvn).getTitleCache(nvn);
+		
+		return result;
+	}
+	
+	/**
+	 * Returns the <code>FullName</code> attribute.
+	 * @param taxon The {@link TaxonBase taxon}.
+	 * @return The <code>FullName</code> attribute.
+	 * @see MethodMapper
+	 */
+	@SuppressWarnings("unused")
+	private static String getFullName(TaxonBase taxon) {
+		//TODO extensions?
+		TaxonNameBase name = taxon.getName();
+		String result = getFullName(name);
+		if (isMisappliedName(taxon)){
+			result = result + " " + getAuthorString(taxon);
+		}
+		
 		return result;
 	}
 
@@ -1774,7 +1833,7 @@ public class PesiTaxonExport extends PesiExportBase {
 				
 				String sourceIdNameSpace = source.getIdNamespace();
 				if (sourceIdNameSpace != null) {
-					if (sourceIdNameSpace.equals("originalGenusId")) {
+					if (sourceIdNameSpace.equals(PesiTransformer.STR_NAMESPACE_NOMINAL_TAXON)) {
 						result =  idInSource != null ? ("Nominal Taxon from TAX_ID: " + source.getIdInSource()):null;
 					} else if (sourceIdNameSpace.equals(TaxonServiceImpl.INFERRED_EPITHET_NAMESPACE)) {
 						result =  idInSource != null ? ("Inferred epithet from TAX_ID: " + source.getIdInSource()) : null;
@@ -1898,6 +1957,9 @@ public class PesiTaxonExport extends PesiExportBase {
 			return taxon.getUuid().toString();
 		}
 	}
+	
+	
+	
 	
 	/**
 	 * Returns the <code>DerivedFromGuid</code> attribute.
@@ -2154,6 +2216,113 @@ public class PesiTaxonExport extends PesiExportBase {
 		}
 		return cacheStrategy;
 	}
+	
+	/**
+	 * Returns the <code>TaxonFk1</code> attribute. It corresponds to a CDM <code>TaxonRelationship</code>.
+	 * @param relationship The {@link RelationshipBase Relationship}.
+	 * @param state The {@link PesiExportState PesiExportState}.
+	 * @return The <code>TaxonFk1</code> attribute.
+	 * @see MethodMapper
+	 */
+	private static Integer getTaxonFk1(RelationshipBase<?, ?, ?> relationship, PesiExportState state) {
+		
+		return getObjectFk(relationship, state, true);
+	}
+	
+	/**
+	 * Returns the <code>TaxonFk2</code> attribute. It corresponds to a CDM <code>SynonymRelationship</code>.
+	 * @param relationship The {@link RelationshipBase Relationship}.
+	 * @param state The {@link PesiExportState PesiExportState}.
+	 * @return The <code>TaxonFk2</code> attribute.
+	 * @see MethodMapper
+	 */
+	private static Integer getTaxonFk2(RelationshipBase<?, ?, ?> relationship, PesiExportState state) {
+		return getObjectFk(relationship, state, false);
+	}
+	
+	/**
+	 * Returns the database key of an object in the given relationship.
+	 * @param relationship {@link RelationshipBase RelationshipBase}.
+	 * @param state {@link PesiExportState PesiExportState}.
+	 * @param isFrom A boolean value indicating whether the database key of the parent or child in this relationship is searched. <code>true</code> means the child is searched. <code>false</code> means the parent is searched.
+	 * @return The database key of an object in the given relationship.
+	 */
+	private static Integer getObjectFk(RelationshipBase<?, ?, ?> relationship, PesiExportState state, boolean isFrom) {
+		TaxonBase<?> taxonBase = null;
+		if (relationship.isInstanceOf(TaxonRelationship.class)) {
+			TaxonRelationship tr = (TaxonRelationship)relationship;
+			taxonBase = (isFrom) ? tr.getFromTaxon():  tr.getToTaxon();
+		} else if (relationship.isInstanceOf(SynonymRelationship.class)) {
+			SynonymRelationship sr = (SynonymRelationship)relationship;
+			taxonBase = (isFrom) ? sr.getSynonym() : sr.getAcceptedTaxon();
+		} else if (relationship.isInstanceOf(NameRelationship.class) ||  relationship.isInstanceOf(HybridRelationship.class)) {
+			if (isFrom){
+				return state.getDbId(state.getCurrentFromObject());
+			}else{
+				return state.getDbId(state.getCurrentToObject());
+			}
+		}
+		if (taxonBase != null) {
+			if (! isPesiTaxon(taxonBase)){
+				logger.warn("Related taxonBase is not a PESI taxon. Taxon: " + taxonBase.getId() + "/" + taxonBase.getUuid() + "; TaxonRel: " +  relationship.getId() + "(" + relationship.getType().getTitleCache() + ")");
+				return null;
+			}else{
+				return state.getDbId(taxonBase);	
+			}
+			
+		}
+		logger.warn("No taxon found in state for relationship: " + relationship.toString());
+		return null;
+	}
+	
+	/**
+	 * Returns the <code>RelQualifierCache</code> attribute.
+	 * @param relationship The {@link RelationshipBase Relationship}.
+	 * @return The <code>RelQualifierCache</code> attribute.
+	 * @see MethodMapper
+	 */
+	@SuppressWarnings("unused")
+	private static String getRelQualifierCache(RelationshipBase<?, ?, ?> relationship, PesiExportState state) {
+		String result = null;
+		NomenclaturalCode code = null;
+		if (relationship.isInstanceOf(TaxonRelationship.class)){
+			code = CdmBase.deproxy(relationship, TaxonRelationship.class).getToTaxon().getName().getNomenclaturalCode();
+		}else if (relationship.isInstanceOf(SynonymRelationship.class)){
+			code = CdmBase.deproxy(relationship, SynonymRelationship.class).getAcceptedTaxon().getName().getNomenclaturalCode();
+		}else if (relationship.isInstanceOf(NameRelationship.class)){
+			code = CdmBase.deproxy(relationship,  NameRelationship.class).getFromName().getNomenclaturalCode();
+		}else if (relationship.isInstanceOf(HybridRelationship.class)){
+			code = CdmBase.deproxy(relationship,  HybridRelationship.class).getParentName().getNomenclaturalCode();
+		}
+		if (code != null) {
+			result = state.getConfig().getTransformer().getCacheByRelationshipType(relationship, code);
+		} else {
+			logger.error("NomenclaturalCode is NULL while creating the following relationship: " + relationship.getUuid());
+		}
+		return result;
+	}
+	
+	/**
+	 * Returns the <code>RelTaxonQualifierFk</code> attribute.
+	 * @param relationship The {@link RelationshipBase Relationship}.
+	 * @return The <code>RelTaxonQualifierFk</code> attribute.
+	 * @see MethodMapper
+	 */
+	@SuppressWarnings("unused")
+	private static Integer getRelTaxonQualifierFk(RelationshipBase<?, ?, ?> relationship) {
+		return PesiTransformer.taxonRelation2RelTaxonQualifierFk(relationship);
+	}
+	/**
+	 * Returns the <code>Notes</code> attribute.
+	 * @param relationship The {@link RelationshipBase Relationship}.
+	 * @return The <code>Notes</code> attribute.
+	 * @see MethodMapper
+	 */
+	@SuppressWarnings("unused")
+	private static String getNotes(RelationshipBase<?, ?, ?> relationship) {
+		// TODO
+		return null;
+	}
 
 //	/**
 //	 * Returns the <code>SourceFk</code> attribute.
@@ -2323,5 +2492,18 @@ public class PesiTaxonExport extends PesiExportBase {
 		//mapping.addMapper(ExpertsAndLastActionMapper.NewInstance());
 
 	}
+	
+	private PesiExportMapping getSynRelMapping() {
+		PesiExportMapping mapping = new PesiExportMapping(dbTableNameSynRel);
+		
+		mapping.addMapper(MethodMapper.NewInstance("TaxonFk1", this.getClass(), "getTaxonFk1", RelationshipBase.class, PesiExportState.class));
+		mapping.addMapper(MethodMapper.NewInstance("TaxonFk2", this.getClass(), "getTaxonFk2", RelationshipBase.class, PesiExportState.class));
+		mapping.addMapper(MethodMapper.NewInstance("RelTaxonQualifierFk", this,  RelationshipBase.class));
+		mapping.addMapper(MethodMapper.NewInstance("RelQualifierCache", this, RelationshipBase.class, PesiExportState.class));
+		mapping.addMapper(MethodMapper.NewInstance("Notes", this,  RelationshipBase.class));
+
+		return mapping;
+	}
+
 
 }

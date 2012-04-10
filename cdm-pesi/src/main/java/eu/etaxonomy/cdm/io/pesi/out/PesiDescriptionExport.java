@@ -43,6 +43,7 @@ import eu.etaxonomy.cdm.io.common.mapping.out.DbStringMapper;
 import eu.etaxonomy.cdm.io.common.mapping.out.DbTextDataMapper;
 import eu.etaxonomy.cdm.io.common.mapping.out.IdMapper;
 import eu.etaxonomy.cdm.io.common.mapping.out.MethodMapper;
+//import eu.etaxonomy.cdm.io.profiler.ProfilerController;
 import eu.etaxonomy.cdm.model.common.CdmBase;
 import eu.etaxonomy.cdm.model.common.Extension;
 import eu.etaxonomy.cdm.model.common.ExtensionType;
@@ -60,7 +61,7 @@ import eu.etaxonomy.cdm.model.description.TextData;
 import eu.etaxonomy.cdm.model.location.NamedArea;
 import eu.etaxonomy.cdm.model.location.TdwgArea;
 import eu.etaxonomy.cdm.model.name.TaxonNameBase;
-import eu.etaxonomy.cdm.model.reference.Reference;
+
 import eu.etaxonomy.cdm.model.taxon.Taxon;
 /**
  * The export class for {@link eu.etaxonomy.cdm.model.description.DescriptionElementBase DescriptionElements}.<p>
@@ -191,12 +192,15 @@ public class PesiDescriptionExport extends PesiExportBase {
 		logger.info("Started new transaction. Fetching some " + pluralString + " (max: " + limit + ") ...");
 		List<String> propPath = Arrays.asList(new String[]{"descriptions.elements.*"});
 		
+		logger.warn("Start snapshot, before starting loop");
+		//ProfilerController.memorySnapshot();
 		//taxon descriptions
 		int partitionCount = 0;
 		while ((list = getNextTaxonPartition(Taxon.class, limit, partitionCount++, propPath )) != null   ) {
 
 			logger.info("Fetched " + list.size() + " " + pluralString + ". Exporting...");
-			
+			logger.warn("Start snapshot, beginning of loop, fetched " + list.size() + " " + pluralString);
+			//ProfilerController.memorySnapshot();
 			
 			for (Taxon taxon : list) {
 				countTaxa++;
@@ -213,6 +217,8 @@ public class PesiDescriptionExport extends PesiExportBase {
 			// Start transaction
 			txStatus = startTransaction(true);
 			logger.info("Started new transaction. Fetching some " + pluralString + " (max: " + limit + ") for description import ...");
+			logger.warn("Start snapshot, end of loop");
+			//ProfilerController.memorySnapshot();
 		}
 		
 //		//name descriptions
@@ -254,6 +260,8 @@ public class PesiDescriptionExport extends PesiExportBase {
 			logger.info("Others: " + countOthers);
 
 		}
+		
+		list = null;
 		// Commit transaction
 		commitTransaction(txStatus);
 		logger.debug("Committed transaction.");
@@ -449,6 +457,7 @@ public class PesiDescriptionExport extends PesiExportBase {
 		if (taxonNameList.size() == 0) {
 			logger.info("No names left to fetch.");
 		}
+		taxonNameList = null;
 		// Commit transaction
 		commitTransaction(txStatus);
 		logger.debug("Committed transaction.");

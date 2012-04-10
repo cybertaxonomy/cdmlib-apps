@@ -178,6 +178,8 @@ public class PesiOccurrenceSourceExport extends PesiExportBase {
 			if (list.size() == 0) {
 				logger.error("No " + pluralString + " left to fetch.");
 			}
+			
+			list = null;
 			// Commit transaction
 			commitTransaction(txStatus);
 			logger.error("Committed transaction.");

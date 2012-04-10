@@ -126,6 +126,8 @@ public class PesiNoteSourceExport extends PesiExportBase {
 			if (list.size() == 0) {
 				logger.info("No " + pluralString + " left to fetch.");
 			}
+			
+			list = null;
 			// Commit transaction
 			commitTransaction(txStatus);
 			logger.debug("Committed transaction.");

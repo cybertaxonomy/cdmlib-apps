@@ -10,13 +10,20 @@
 package eu.etaxonomy.cdm.io.pesi.out;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.UUID;
 
 import org.apache.log4j.Logger;
+import org.springframework.beans.factory.annotation.Autowired;
 
+import eu.etaxonomy.cdm.api.service.ITermService;
 import eu.etaxonomy.cdm.io.common.DbExportStateBase;
 import eu.etaxonomy.cdm.model.common.CdmBase;
 import eu.etaxonomy.cdm.model.common.IdentifiableEntity;
+import eu.etaxonomy.cdm.model.common.MarkerType;
+import eu.etaxonomy.cdm.model.common.TermVocabulary;
 
 /**
  * The export state class.
@@ -35,6 +42,13 @@ public class PesiExportState extends DbExportStateBase<PesiExportConfigurator, P
 	private IdentifiableEntity<?> currentFromObject;
 	private IdentifiableEntity<?> currentTaxon;
 	
+	private Map<UUID, MarkerType> markerTypeMap = new HashMap<UUID, MarkerType>();
+	public static final UUID uuidUserDefinedMarkerTypeVocabulary = UUID.fromString("5f02a261-fd7d-4fce-bbe4-21472de8cd51");
+	
+	@Autowired
+	//@Qualifier("termService")
+	private ITermService termService;
+
 
 	/**
 	 * @param config
@@ -65,6 +79,10 @@ public class PesiExportState extends DbExportStateBase<PesiExportConfigurator, P
 	@Override
 	public Integer getDbId(CdmBase cdmBase) {
 		return (Integer)getCurrentIO().getDbId(cdmBase, this);
+	}
+	
+	private ITermService getTermService(){
+		return this.termService;
 	}
 	
 	/**
@@ -127,6 +145,19 @@ public class PesiExportState extends DbExportStateBase<PesiExportConfigurator, P
 	public void setCurrentTaxon(IdentifiableEntity<?> currentTaxon) {
 		this.currentTaxon = currentTaxon;
 	}
+
+	public void putMarkerType(MarkerType markerType) {
+		
+		markerTypeMap.put(markerType.getUuid(), markerType);
+		
+	}
+
+
+	public MarkerType getMarkerType(UUID uuid){
+		return markerTypeMap.get(uuid);
+	}
+
+
 
 
 }

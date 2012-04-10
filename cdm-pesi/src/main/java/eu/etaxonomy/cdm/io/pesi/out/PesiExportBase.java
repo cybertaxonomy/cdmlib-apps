@@ -23,6 +23,7 @@ import eu.etaxonomy.cdm.api.service.pager.Pager;
 import eu.etaxonomy.cdm.hibernate.HibernateProxyHelper;
 import eu.etaxonomy.cdm.io.berlinModel.BerlinModelTransformer;
 import eu.etaxonomy.cdm.io.common.DbExportBase;
+import eu.etaxonomy.cdm.io.pesi.indexFungorum.IndexFungorumImportState;
 import eu.etaxonomy.cdm.model.common.CdmBase;
 import eu.etaxonomy.cdm.model.common.Marker;
 import eu.etaxonomy.cdm.model.common.MarkerType;
@@ -72,6 +73,7 @@ public abstract class PesiExportBase extends DbExportBase<PesiExportConfigurator
 				it.remove();
 			}
 		}
+		
 		return list;
 	}
 	
@@ -154,7 +156,7 @@ public abstract class PesiExportBase extends DbExportBase<PesiExportConfigurator
 		return result;
 	}
 	
-	protected <CLASS extends RelationshipBase> List<CLASS> getNextTaxonRelationshipPartition(Class<CLASS> clazz, int limit, int partitionCount, List<String> propertyPath) {
+	protected <CLASS extends RelationshipBase> List<CLASS> getNextTaxonRelationshipPartition( int limit, int partitionCount, List<String> propertyPath) {
 		List<CLASS> result = new ArrayList<CLASS>();
 		String[] propertyPaths = null;
 		String orderHints = null;
@@ -395,6 +397,29 @@ public abstract class PesiExportBase extends DbExportBase<PesiExportConfigurator
 			return super.getDbIdCdmWithExceptions(cdmBase, state);
 		}
 	}
+	
+	
+	
+	protected MarkerType getUuidisMissingMarkerType(UUID uuid, PesiExportState state){
+		if (uuid == null){
+			uuid = UUID.randomUUID();
+		}
+		
+		MarkerType markerType = state.getMarkerType(uuid);
+			if (markerType == null){
+				markerType = MarkerType.NewInstance("Uuid is Missing", "Uuid is missing", null);
+				markerType.setUuid(uuid);
+			}
+
+			state.putMarkerType(markerType);
+			return markerType;
+		}
+
+
+
+
+	
+	
 	
 
 //	protected List<TaxonBase> getNextDescriptionPartition(Class<? extends DescriptionElementBase> clazz,int limit, int partitionCount) {
