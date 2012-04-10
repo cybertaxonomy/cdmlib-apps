@@ -20,8 +20,9 @@ import eu.etaxonomy.cdm.io.common.CdmDefaultImport;
 import eu.etaxonomy.cdm.io.common.IImportConfigurator.CHECK;
 import eu.etaxonomy.cdm.io.specimen.excel.in.SpecimenSynthesysExcelImportConfigurator;
 
-public class SpecimenImport {
-private static Logger logger = Logger.getLogger(SpecimenImport.class);
+public class SpecimenImportActivator {
+	@SuppressWarnings("unused")
+	private static Logger logger = Logger.getLogger(SpecimenImportActivator.class);
 	
 	//database validation status (create, update, validate ...)
 	static DbSchemaValidation hbm2dll = DbSchemaValidation.CREATE;
@@ -29,7 +30,7 @@ private static Logger logger = Logger.getLogger(SpecimenImport.class);
 //	final static String xmlSource = "C:\\localCopy\\eclipse\\cdmlib\\app-import\\src\\main\\resources\\specimenABCD\\CDMtabular9c04a474e2_23_09_08.xls";	
 	
 	
-	static final ICdmDataSource cdmDestination = CdmDestinations.cdm_test_patricia();
+	static final ICdmDataSource cdmDestination = CdmDestinations.localH2();
 	//check - import
 	static final CHECK check = CHECK.IMPORT_WITHOUT_CHECK;
 	

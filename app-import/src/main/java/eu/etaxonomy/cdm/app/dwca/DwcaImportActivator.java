@@ -41,14 +41,14 @@ public class DwcaImportActivator {
 	static DbSchemaValidation hbm2dll = DbSchemaValidation.CREATE;
 //	static final URI source = dwca_test_in();
 //	static final URI source = dwca_test_cich_len();
-//	static final URI source = dwca_test_col_cichorium();
+	static final URI source = dwca_test_col_cichorium();
 //	static final URI source = dwca_test_col_All();
-	static final URI source = dwca_test_col_All_Pesi2();
+//	static final URI source = dwca_test_col_All_Pesi2();
 	
 	
 //	static final ICdmDataSource cdmDestination = CdmDestinations.localH2();
-	static final ICdmDataSource cdmDestination = CdmDestinations.cdm_test_local_mysql_pesi_test();
-//	static final ICdmDataSource cdmDestination = CdmDestinations.cdm_test_local_mysql_test();
+//	static final ICdmDataSource cdmDestination = CdmDestinations.cdm_test_local_mysql_pesi_test();
+	static final ICdmDataSource cdmDestination = CdmDestinations.cdm_test_local_mysql_test();
 
 	
 	//classification
@@ -64,6 +64,8 @@ public class DwcaImportActivator {
 	//config
 	static DatasetUse datasetUse = DatasetUse.SECUNDUM;
 	static boolean scientificNameIdAsOriginalSourceId = true;
+	static boolean guessNomRef = true;
+	private boolean handleAllRefsAsCitation = true;
 	
 	//validate
 	static boolean validateRankConsistency = false;
@@ -88,9 +90,13 @@ public class DwcaImportActivator {
 		config.setCheck(check);
 		config.setDbSchemaValidation(hbm2dll);
 		config.setMappingType(mappingType);
+		
 		config.setScientificNameIdAsOriginalSourceId(scientificNameIdAsOriginalSourceId);
 		config.setValidateRankConsistency(validateRankConsistency);
 		config.setNomenclaturalCode(defaultNomCode);
+		config.setDatasetUse(datasetUse);
+		config.setGuessNomenclaturalReferences(guessNomRef);
+		config.setHandleAllRefsAsCitation(handleAllRefsAsCitation);
 		
 		CdmDefaultImport myImport = new CdmDefaultImport();
 

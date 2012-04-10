@@ -36,7 +36,7 @@ public class JaxbImportActivator {
 
 	/* SerializeFrom DB **/
 	//private static final ICdmDataSource cdmSource = CdmDestinations.localH2Diptera();
-	private static final ICdmDataSource cdmDestination = CdmDestinations.cdm_test_jaxb();
+	private static final ICdmDataSource cdmDestination = CdmDestinations.localH2();
 	
 	// Import:
 	private static String importFileNameString = 

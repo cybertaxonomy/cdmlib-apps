@@ -28,7 +28,7 @@ public class CdmDiffActivator {
 
 	static DbSchemaValidation hbm2dll = DbSchemaValidation.CREATE;
 
-	static final ICdmDataSource cdmSourceOne = CdmDestinations.cdm_test_jaxb();
-	static final ICdmDataSource cdmSourceTwo = CdmDestinations.cdm_test_jaxb2();
+	static final ICdmDataSource cdmSourceOne = CdmDestinations.localH2();
+	static final ICdmDataSource cdmSourceTwo = CdmDestinations.localH2();
 
 }

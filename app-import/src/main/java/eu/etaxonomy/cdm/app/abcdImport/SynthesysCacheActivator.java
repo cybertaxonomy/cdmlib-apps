@@ -205,7 +205,7 @@ public class SynthesysCacheActivator {
 		TransactionStatus tx = null;
 
 
-		app = CdmApplicationController.NewInstance(CdmDestinations.cdm_test_patricia(), hbm2dll);
+		app = CdmApplicationController.NewInstance(CdmDestinations.localH2(), hbm2dll);
 		
 		tx = app.startTransaction();
 		try {

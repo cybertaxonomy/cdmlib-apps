@@ -66,7 +66,7 @@ public class ViennaActivator {
 		
 		try {
 			if (withCdm){
-				app = CdmApplicationController.NewInstance(CdmDestinations.cdm_test_patricia());
+				app = CdmApplicationController.NewInstance(CdmDestinations.localH2());
 			}else{
 				//app = CdmApplicationController.NewInstance(DbSchemaValidation.VALIDATE);
 			}
