@@ -42,13 +42,18 @@ public class DwcaImportActivator {
 //	static final URI source = dwca_test_in();
 //	static final URI source = dwca_test_cich_len();
 	static final URI source = dwca_test_col_cichorium();
+//	static final URI source = dwca_test_scratch_test();
+//	static final URI source = dwca_test_col_All_Pesi2();
 //	static final URI source = dwca_test_col_All();
 //	static final URI source = dwca_test_col_All_Pesi2();
 	
 	
+	static final ICdmDataSource cdmDestination = CdmDestinations.localH2();
+//	static final ICdmDataSource cdmDestination = CdmDestinations.cdm_test_local_mysql_dwca();
+//	static final ICdmDataSource cdmDestination = CdmDestinations.cdm_test_local_mysql_test();
 //	static final ICdmDataSource cdmDestination = CdmDestinations.localH2();
 //	static final ICdmDataSource cdmDestination = CdmDestinations.cdm_test_local_mysql_pesi_test();
-	static final ICdmDataSource cdmDestination = CdmDestinations.cdm_test_local_mysql_test();
+//	static final ICdmDataSource cdmDestination = CdmDestinations.cdm_test_local_mysql_test();
 
 	
 	//classification
@@ -165,6 +170,12 @@ public class DwcaImportActivator {
 	//CoL
 	public static URI dwca_test_col_All_Pesi2() {
 		URI sourceUrl = URI.create("file:///C:/opt/data/CoL/All/archive-complete.zip");
+		return sourceUrl;
+	}
+	
+	//Scratchpads test
+	public static URI dwca_test_scratch_test() {
+		URI sourceUrl = URI.create("file:////PESIIMPORT3/vibrant/dwca/dwca_export_scratchpads_test.zip");
 		return sourceUrl;
 	}
 	
