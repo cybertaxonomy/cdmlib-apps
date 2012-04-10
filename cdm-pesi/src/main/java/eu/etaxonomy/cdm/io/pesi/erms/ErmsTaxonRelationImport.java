@@ -40,13 +40,12 @@ public class ErmsTaxonRelationImport extends ErmsImportBase<TaxonBase> implement
 	@SuppressWarnings("unused")
 	private static final Logger logger = Logger.getLogger(ErmsTaxonRelationImport.class);
 	
-private DbImportMapping mapping;
+private DbImportMapping<ErmsImportState, ErmsImportConfigurator> mapping;
 	
-	private int modCount = 10000;
 	private static final String pluralString = "taxon relations";
 	private static final String dbTableName = "tu";
 
-	private static final Class cdmTargetClass = TaxonBase.class;
+	private static final Class<?> cdmTargetClass = TaxonBase.class;
 
 	public ErmsTaxonRelationImport(){
 		super(pluralString, dbTableName, cdmTargetClass);
@@ -55,9 +54,9 @@ private DbImportMapping mapping;
 	/* (non-Javadoc)
 	 * @see eu.etaxonomy.cdm.io.erms.ErmsImportBase#getMapping()
 	 */
-	protected DbImportMapping getMapping() {
+	protected DbImportMapping<ErmsImportState, ErmsImportConfigurator> getMapping() {
 		if (mapping == null){
-			mapping = new DbImportMapping();
+			mapping = new DbImportMapping<ErmsImportState, ErmsImportConfigurator>();
 			
 			mapping.addMapper(DbImportTaxIncludedInMapper.NewInstance("id", TAXON_NAMESPACE, "parentId", TAXON_NAMESPACE, "accParentId", TAXON_NAMESPACE, null));//there is only one tree
 			mapping.addMapper(DbImportSynonymMapper.NewInstance("id", "tu_acctaxon", TAXON_NAMESPACE, null, true)); 			
@@ -91,7 +90,7 @@ private DbImportMapping mapping;
 	 */
 	public Map<Object, Map<String, ? extends CdmBase>> getRelatedObjectsForPartition(ResultSet rs) {
 		String nameSpace;
-		Class cdmClass;
+		Class<?> cdmClass;
 		Set<String> idSet;
 		Map<Object, Map<String, ? extends CdmBase>> result = new HashMap<Object, Map<String, ? extends CdmBase>>();
 		
