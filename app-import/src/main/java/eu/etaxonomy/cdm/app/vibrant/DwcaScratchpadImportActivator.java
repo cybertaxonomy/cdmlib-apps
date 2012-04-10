@@ -46,7 +46,7 @@ public class DwcaScratchpadImportActivator {
 
 	
 	//default nom code is ICZN as it allows adding publication year 
-	static final NomenclaturalCode defaultNomCode = NomenclaturalCode.ICZN;
+	static final NomenclaturalCode defaultNomCode = null;
 
 	
 	//check - import
