@@ -123,6 +123,7 @@ public class PesiTaxonExport extends PesiExportBase {
 	private static ExtensionType cacheCitationExtensionType;
 	private static NonViralNameDefaultCacheStrategy<?> zooNameStrategy = ZooNameNoMarkerCacheStrategy.NewInstance();
 	private static NonViralNameDefaultCacheStrategy<?> botanicalNameStrategy = BotanicNameDefaultCacheStrategy.NewInstance();
+	private static NonViralNameDefaultCacheStrategy<?> nonViralNameStrategy = NonViralNameDefaultCacheStrategy.NewInstance();
 	
 	
 	/**
@@ -2210,6 +2211,8 @@ public class PesiTaxonExport extends PesiExportBase {
 			cacheStrategy = zooNameStrategy;
 		}else if (taxonName.isInstanceOf(BotanicalName.class)) {
 			cacheStrategy = botanicalNameStrategy;
+		}else if (taxonName.getClass().equals(NonViralName.class)) {
+			cacheStrategy = nonViralNameStrategy;
 		}else{
 			logger.error("Unhandled taxon name type. Can't define strategy class");
 			cacheStrategy = botanicalNameStrategy;
