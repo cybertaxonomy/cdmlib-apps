@@ -46,7 +46,6 @@ public final class ErmsTransformer extends InputTransformerBase {
 	//rank uuids
 	public static final UUID uuidRankSuperdomain = UUID.fromString("66d4d773-4946-4e02-b758-8903563eaa26");
 	
-	
 	//language uuids
 	public static final UUID uuidEuropeanMarineWaters = UUID.fromString("47389e42-3b3c-4873-bded-ac030db86462");
 	public static final UUID uuidMediterraneanSea = UUID.fromString("bde8a624-23c4-4ac3-b381-11287f5d656a");
@@ -141,6 +140,8 @@ public final class ErmsTransformer extends InputTransformerBase {
 	public static final UUID uuidSynonymy = UUID.fromString("f5c8be5f-8d33-47df-838e-55fc7999fc81");
 
 	//extension type uuids
+	public static final UUID uuidErmsTaxonStatus = UUID.fromString("859eee7f-5240-48a0-8edc-7af63557fa6e");
+
 	public static final UUID GAZETTEER_UUID = UUID.fromString("dcfa124a-1028-49cd-aea5-fdf9bd396c1a");
 	public static final UUID IMIS_UUID = UUID.fromString("ee2ac2ca-b60c-4e6f-9cad-720fcdb0a6ae");
 	public static final UUID uuidFossilStatus = UUID.fromString("ec3dffbe-a0c8-4d76-845f-5fc166a33d5b");
@@ -177,6 +178,7 @@ public final class ErmsTransformer extends InputTransformerBase {
 	public static final UUID uuidLangOstyak = UUID.fromString("c3fda8b6-a7ce-4846-8d18-b112477316fb");//os
 	public static final UUID uuidLangTamul = UUID.fromString("9f55f493-9f2b-427c-bb55-d970822726c9");   //tm
 	public static final UUID uuidLangNentsiNenets = UUID.fromString("4697b87e-2718-4986-8f9b-361dd47b0c90");   //ne
+
 	
 	
 	//...

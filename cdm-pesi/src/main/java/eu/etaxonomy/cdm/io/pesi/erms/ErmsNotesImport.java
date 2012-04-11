@@ -74,7 +74,7 @@ public class ErmsNotesImport  extends ErmsImportBase<Annotation> {
 		if (mapping == null){
 			mapping = new DbImportMapping<ErmsImportState, ErmsImportConfigurator>();
 			mapping.addMapper(DbImportTextDataCreationMapper.NewInstance("id", NOTES_NAMESPACE, "tu_id", TAXON_NAMESPACE));
-			mapping.addMapper(DbImportMultiLanguageTextMapper.NewInstance("note", "lan_id", LANGUAGE_NAMESPACE, "multilanguageText"));
+			mapping.addMapper(DbImportMultiLanguageTextMapper.NewInstance("note", "lan_id", LANGUAGE_NAMESPACE, "Text"));
 			Language notesNoteLanguage = null;
 			mapping.addMapper(DbImportAnnotationMapper.NewInstance("note", AnnotationType.EDITORIAL(), notesNoteLanguage));
 			mapping.addMapper(DbImportFeatureCreationMapper.NewInstance("type", FEATURE_NAMESPACE, "type", "type", "type"));			

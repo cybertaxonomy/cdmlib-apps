@@ -36,7 +36,7 @@ import eu.etaxonomy.cdm.model.taxon.TaxonBase;
  * @version 1.0
  */
 @Component
-public class ErmsTaxonRelationImport extends ErmsImportBase<TaxonBase> implements ICheckIgnoreMapper{
+public class ErmsTaxonRelationImport extends ErmsImportBase<TaxonBase<?>> implements ICheckIgnoreMapper{
 	@SuppressWarnings("unused")
 	private static final Logger logger = Logger.getLogger(ErmsTaxonRelationImport.class);
 	
@@ -119,7 +119,7 @@ public class ErmsTaxonRelationImport extends ErmsImportBase<TaxonBase> implement
 			nameSpace = ErmsTaxonImport.NAME_NAMESPACE;
 			cdmClass = TaxonNameBase.class;
 			idSet = nameIdSet;
-			Map<String, TaxonNameBase> nameMap = (Map<String, TaxonNameBase>)getCommonService().getSourcedObjectsByIdInSource(cdmClass, idSet, nameSpace);
+			Map<String, TaxonNameBase<?,?>> nameMap = (Map<String, TaxonNameBase<?,?>>)getCommonService().getSourcedObjectsByIdInSource(cdmClass, idSet, nameSpace);
 			result.put(nameSpace, nameMap);
 			
 			
@@ -127,7 +127,7 @@ public class ErmsTaxonRelationImport extends ErmsImportBase<TaxonBase> implement
 			nameSpace = ErmsTaxonImport.TAXON_NAMESPACE;
 			cdmClass = TaxonBase.class;
 			idSet = taxonIdSet;
-			Map<String, TaxonBase> taxonMap = (Map<String, TaxonBase>)getCommonService().getSourcedObjectsByIdInSource(cdmClass, idSet, nameSpace);
+			Map<String, TaxonBase<?>> taxonMap = (Map<String, TaxonBase<?>>)getCommonService().getSourcedObjectsByIdInSource(cdmClass, idSet, nameSpace);
 			result.put(nameSpace, taxonMap);
 
 		} catch (SQLException e) {
@@ -184,7 +184,7 @@ public class ErmsTaxonRelationImport extends ErmsImportBase<TaxonBase> implement
 	/* (non-Javadoc)
 	 * @see eu.etaxonomy.cdm.io.common.mapping.IMappingImport#createObject(java.sql.ResultSet, eu.etaxonomy.cdm.io.common.ImportStateBase)
 	 */
-	public TaxonBase createObject(ResultSet rs, ErmsImportState state) throws SQLException {
+	public TaxonBase<?> createObject(ResultSet rs, ErmsImportState state) throws SQLException {
 		// not needed
 		return null;
 	}
