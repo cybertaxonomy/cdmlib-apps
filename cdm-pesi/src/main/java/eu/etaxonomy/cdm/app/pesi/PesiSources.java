@@ -35,12 +35,9 @@ public class PesiSources {
 	
 	public static Source faunEu(){
 		//	Fauna Europaea
-		
 		String dbms = Source.SQL_SERVER_2008;
-           
-		String strServer = "BGBM42";               // "192.168.1.36";
-            
-		String strDB = "FaunEu";
+       	String strServer = "BGBM42";               // "192.168.1.36";
+        String strDB = "FaunEu";
 		int port = 1433;
 		String userName = "WebUser";
 		return  ImportUtils.makeSource(dbms, strServer, strDB, port, userName, null);
@@ -48,23 +45,17 @@ public class PesiSources {
 	
 	public static Source faunaEu_previous(){
 		//	Fauna Europaea
-		
 		String dbms = Source.SQL_SERVER_2008;
-           
-		String strServer = "BGBM42";               // "192.168.1.36";
-            
-		String strDB = "FaunEu_2_2";
+ 		String strServer = "BGBM42";               // "192.168.1.36";
+ 		String strDB = "FaunEu_2_2";
 		int port = 1433;
 		String userName = "WebUser";
 		return  ImportUtils.makeSource(dbms, strServer, strDB, port, userName, null);
 	}
 	public static Source faunaEu_old(){
 		//	Fauna Europaea
-		
 		String dbms = Source.SQL_SERVER_2008;
-           
 		String strServer = "BGBM42";               // "192.168.1.36";
-            
 		String strDB = "FaunaEu_1_3";
 		int port = 1433;
 		String userName = "WebUser";
@@ -78,6 +69,17 @@ public class PesiSources {
 		String strDB = "ERMS";
 		int port = 1433;
 		String userName = "WebUser";
+		return  makeSource(dbms, strServer, strDB, port, userName, null);
+	}
+	
+	
+	public static Source PESI3_ERMS(){
+		//	BerlinModel - Pesi-ERMS
+		String dbms = Source.SQL_SERVER_2008;
+		String strServer = "Pesiimport3";
+		String strDB = "ERMS";
+		int port = 1433;
+		String userName = "pesiexport";
 		return  makeSource(dbms, strServer, strDB, port, userName, null);
 	}
 	
