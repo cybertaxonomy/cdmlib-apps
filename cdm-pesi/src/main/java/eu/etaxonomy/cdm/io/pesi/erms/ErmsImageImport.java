@@ -40,13 +40,12 @@ public class ErmsImageImport  extends ErmsImportBase<TextData> {
 	@SuppressWarnings("unused")
 	private static final Logger logger = Logger.getLogger(ErmsImageImport.class);
 
-	private DbImportMapping mapping;
+	private DbImportMapping<ErmsImportState, ErmsImportConfigurator> mapping;
 	
-	
-	private int modCount = 10000;
 	private static final String pluralString = "images";
 	private static final String dbTableName = "images";
-	private static final Class cdmTargetClass = Media.class;
+	private static final Class<?> cdmTargetClass = Media.class;
+	private static final int devideCountBy = 10;
 
 	public ErmsImageImport(){
 		super(pluralString, dbTableName, cdmTargetClass);
@@ -82,9 +81,9 @@ public class ErmsImageImport  extends ErmsImportBase<TextData> {
 	/* (non-Javadoc)
 	 * @see eu.etaxonomy.cdm.io.erms.ErmsImportBase#getMapping()
 	 */
-	protected DbImportMapping getMapping() {
+	protected DbImportMapping<ErmsImportState, ErmsImportConfigurator> getMapping() {
 		if (mapping == null){
-			mapping = new DbImportMapping();
+			mapping = new DbImportMapping<ErmsImportState, ErmsImportConfigurator>();
 			//TODO do we need to add to TaxonNameBase too?
 			String idAttribute = null;
 			boolean isOneTextData = true;
@@ -99,13 +98,12 @@ public class ErmsImageImport  extends ErmsImportBase<TextData> {
 	 */
 	public Map<Object, Map<String, ? extends CdmBase>> getRelatedObjectsForPartition(ResultSet rs) {
 		String nameSpace;
-		Class cdmClass;
+		Class<?> cdmClass;
 		Set<String> idSet;
 		Map<Object, Map<String, ? extends CdmBase>> result = new HashMap<Object, Map<String, ? extends CdmBase>>();
 		
 		try{
 			Set<String> taxonIdSet = new HashSet<String>();
-			Set<String> languageIdSet = new HashSet<String>();
 			while (rs.next()){
 				handleForeignKey(rs, taxonIdSet, "tu_id");
 			}
@@ -114,7 +112,7 @@ public class ErmsImageImport  extends ErmsImportBase<TextData> {
 			nameSpace = ErmsTaxonImport.TAXON_NAMESPACE;
 			cdmClass = TaxonBase.class;
 			idSet = taxonIdSet;
-			Map<String, TaxonBase> taxonMap = (Map<String, TaxonBase>)getCommonService().getSourcedObjectsByIdInSource(cdmClass, idSet, nameSpace);
+			Map<String, TaxonBase<?>> taxonMap = (Map<String, TaxonBase<?>>)getCommonService().getSourcedObjectsByIdInSource(cdmClass, idSet, nameSpace);
 			result.put(nameSpace, taxonMap);
 			
 		} catch (SQLException e) {
@@ -122,6 +120,9 @@ public class ErmsImageImport  extends ErmsImportBase<TextData> {
 		}
 		return result;
 	}
+	
+	@Override
+	protected int divideCountBy() { return devideCountBy;}
 	
 	/* (non-Javadoc)
 	 * @see eu.etaxonomy.cdm.io.common.CdmIoBase#doCheck(eu.etaxonomy.cdm.io.common.IImportConfigurator)

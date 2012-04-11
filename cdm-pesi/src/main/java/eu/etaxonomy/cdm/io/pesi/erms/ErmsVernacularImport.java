@@ -118,10 +118,13 @@ public class ErmsVernacularImport  extends ErmsImportBase<CommonTaxonName> {
 				Language language = null;
 				try {
 					language = transformer.getLanguageByKey(lanAbbrev);
-					if (language == null){
+					if (language == null || language.equals(Language.UNDETERMINED())){
 						UUID uuidLang = transformer.getLanguageUuid(lanAbbrev);
-						language = getLanguage(state, uuidLang, lanAbbrev, lanAbbrev, lanAbbrev);
-						if (language == null || uuidLang == null){
+						if (uuidLang != null){
+							language = getLanguage(state, uuidLang, lanAbbrev, lanAbbrev, lanAbbrev);
+							
+						}
+						if (language == null || language.equals(Language.UNDETERMINED() )){
 							logger.warn("Langauge undefined: " + lanAbbrev);
 						}
 					}

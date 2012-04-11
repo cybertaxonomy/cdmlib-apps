@@ -44,12 +44,11 @@ public class ErmsNotesImport  extends ErmsImportBase<Annotation> {
 	@SuppressWarnings("unused")
 	private static final Logger logger = Logger.getLogger(ErmsNotesImport.class);
 
-	private DbImportMapping mapping;
+	private DbImportMapping<ErmsImportState, ErmsImportConfigurator> mapping;
 	
-	private int modCount = 10000;
 	private static final String pluralString = "notes";
 	private static final String dbTableName = "notes";
-	private static final Class cdmTargetClass = TextData.class;
+	private static final Class<?> cdmTargetClass = TextData.class;
 
 	public ErmsNotesImport(){
 		super(pluralString, dbTableName, cdmTargetClass);
@@ -71,9 +70,9 @@ public class ErmsNotesImport  extends ErmsImportBase<Annotation> {
 	/* (non-Javadoc)
 	 * @see eu.etaxonomy.cdm.io.erms.ErmsImportBase#getMapping()
 	 */
-	protected DbImportMapping getMapping() {
+	protected DbImportMapping<ErmsImportState, ErmsImportConfigurator> getMapping() {
 		if (mapping == null){
-			mapping = new DbImportMapping();
+			mapping = new DbImportMapping<ErmsImportState, ErmsImportConfigurator>();
 			mapping.addMapper(DbImportTextDataCreationMapper.NewInstance("id", NOTES_NAMESPACE, "tu_id", TAXON_NAMESPACE));
 			mapping.addMapper(DbImportMultiLanguageTextMapper.NewInstance("note", "lan_id", LANGUAGE_NAMESPACE, "multilanguageText"));
 			Language notesNoteLanguage = null;
@@ -89,7 +88,7 @@ public class ErmsNotesImport  extends ErmsImportBase<Annotation> {
 	 */
 	public Map<Object, Map<String, ? extends CdmBase>> getRelatedObjectsForPartition(ResultSet rs) {
 		String nameSpace;
-		Class cdmClass;
+		Class<?> cdmClass;
 		Set<String> idSet;
 		Map<Object, Map<String, ? extends CdmBase>> result = new HashMap<Object, Map<String, ? extends CdmBase>>();
 		
@@ -105,7 +104,7 @@ public class ErmsNotesImport  extends ErmsImportBase<Annotation> {
 			nameSpace = ErmsTaxonImport.TAXON_NAMESPACE;
 			cdmClass = TaxonBase.class;
 			idSet = taxonIdSet;
-			Map<String, TaxonBase> taxonMap = (Map<String, TaxonBase>)getCommonService().getSourcedObjectsByIdInSource(cdmClass, idSet, nameSpace);
+			Map<String, TaxonBase<?>> taxonMap = (Map<String, TaxonBase<?>>)getCommonService().getSourcedObjectsByIdInSource(cdmClass, idSet, nameSpace);
 			result.put(nameSpace, taxonMap);
 			
 			//language map

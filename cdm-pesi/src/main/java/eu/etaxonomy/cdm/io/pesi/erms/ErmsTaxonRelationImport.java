@@ -143,10 +143,12 @@ public class ErmsTaxonRelationImport extends ErmsImportBase<TaxonBase> implement
 	public boolean checkIgnoreMapper(IDbImportMapper mapper, ResultSet rs) throws SQLException{
 		boolean result = false;
 		if (mapper instanceof DbImportTaxIncludedInMapper){
+			//old
 //			int tu_status = rs.getInt("tu_status");
 //			if (tu_status != 1){
 //				result = true;
 //			}
+			
 			int id = rs.getInt("id");
 			if (state.getAcceptedTaxaKeys().contains(id)){
 				return false;
@@ -154,17 +156,21 @@ public class ErmsTaxonRelationImport extends ErmsImportBase<TaxonBase> implement
 				return true;
 			}
 		}else if (mapper instanceof DbImportSynonymMapper){
+			//old
 //			int tu_status = rs.getInt("tu_status");
 //			if (tu_status == 1){
 //				result = true;
 //			}else{
 //				return false;
-//			}
+//			}t.tu_acctaxon <> t.id
+			
 			int id = rs.getInt("id");
-			if (state.getAcceptedTaxaKeys().contains(id)){
+			Object accTaxonId = rs.getObject("tu_acctaxon");
+			if (accTaxonId == null){
 				return true;
 			}else{
-				return false;
+				int accId = Integer.valueOf(String.valueOf(accTaxonId));
+				return accId == id;
 			}
 		}else if (mapper instanceof DbImportNameTypeDesignationMapper){
 			Object tu_typeTaxon = rs.getObject("tu_typetaxon");

@@ -380,7 +380,7 @@ public final class ErmsTransformer extends InputTransformerBase {
 			
 			
 			if (unhandledLanguages.contains(ermsAbbrev)){
-				logger.warn("Unhandled language '" + ermsAbbrev + "' replaced by 'UNDETERMINED'" );
+				logger.info("Unhandled language '" + ermsAbbrev + "' replaced by 'UNDETERMINED'" );
 				return Language.UNDETERMINED();
 			}
 			String warning = "New language abbreviation " + ermsAbbrev;

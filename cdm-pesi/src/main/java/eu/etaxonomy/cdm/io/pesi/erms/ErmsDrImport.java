@@ -45,12 +45,11 @@ public class ErmsDrImport  extends ErmsImportBase<Distribution> {
 	@SuppressWarnings("unused")
 	private static final Logger logger = Logger.getLogger(ErmsDrImport.class);
 	
-	private DbImportMapping mapping;
+	private DbImportMapping<ErmsImportState, ErmsImportConfigurator> mapping;
 	
-	private int modCount = 10000;
 	private static final String pluralString = "distributions";
 	private static final String dbTableName = "dr";
-	private static final Class cdmTargetClass = Distribution.class;
+	private static final Class<?> cdmTargetClass = Distribution.class;
 
 	public ErmsDrImport(){
 		super(pluralString, dbTableName, cdmTargetClass);
@@ -72,9 +71,9 @@ public class ErmsDrImport  extends ErmsImportBase<Distribution> {
 	/* (non-Javadoc)
 	 * @see eu.etaxonomy.cdm.io.erms.ErmsImportBase#getMapping()
 	 */
-	protected DbImportMapping getMapping() {
+	protected DbImportMapping<ErmsImportState, ErmsImportConfigurator> getMapping() {
 		if (mapping == null){
-			mapping = new DbImportMapping();
+			mapping = new DbImportMapping<ErmsImportState, ErmsImportConfigurator>();
 			
 			PresenceTerm status = PresenceTerm.PRESENT();
 			DbImportDistributionCreationMapper<?> distributionMapper = DbImportDistributionCreationMapper.NewFixedStatusInstance("id", DR_NAMESPACE, "tu_acctaxon", ErmsTaxonImport.TAXON_NAMESPACE, status);
@@ -116,7 +115,7 @@ public class ErmsDrImport  extends ErmsImportBase<Distribution> {
 	 */
 	public Map<Object, Map<String, ? extends CdmBase>> getRelatedObjectsForPartition(ResultSet rs) {
 		String nameSpace;
-		Class cdmClass;
+		Class<?> cdmClass;
 		Set<String> idSet;
 		Map<Object, Map<String, ? extends CdmBase>> result = new HashMap<Object, Map<String, ? extends CdmBase>>();
 		
@@ -134,7 +133,7 @@ public class ErmsDrImport  extends ErmsImportBase<Distribution> {
 			nameSpace = ErmsTaxonImport.TAXON_NAMESPACE;
 			cdmClass = TaxonBase.class;
 			idSet = taxonIdSet;
-			Map<String, TaxonBase> taxonMap = (Map<String, TaxonBase>)getCommonService().getSourcedObjectsByIdInSource(cdmClass, idSet, nameSpace);
+			Map<String, TaxonBase<?>> taxonMap = (Map<String, TaxonBase<?>>)getCommonService().getSourcedObjectsByIdInSource(cdmClass, idSet, nameSpace);
 			result.put(nameSpace, taxonMap);
 			
 			//areas
@@ -148,7 +147,7 @@ public class ErmsDrImport  extends ErmsImportBase<Distribution> {
 			nameSpace = ErmsReferenceImport.REFERENCE_NAMESPACE;
 			cdmClass = Reference.class;
 			idSet = sourceIdSet;
-			Map<String, Reference> referenceMap = (Map<String, Reference>)getCommonService().getSourcedObjectsByIdInSource(cdmClass, idSet, nameSpace);
+			Map<String, Reference<?>> referenceMap = (Map<String, Reference<?>>)getCommonService().getSourcedObjectsByIdInSource(cdmClass, idSet, nameSpace);
 			result.put(nameSpace, referenceMap);
 
 			
@@ -164,7 +163,7 @@ public class ErmsDrImport  extends ErmsImportBase<Distribution> {
 	 * @param state 
 	 */
 	private void addSource(Distribution distribution, Integer source_id, ErmsImportState state) {
-		Reference ref = (Reference)state.getRelatedObject(ErmsReferenceImport.REFERENCE_NAMESPACE, String.valueOf(source_id));
+		Reference<?> ref = (Reference)state.getRelatedObject(ErmsReferenceImport.REFERENCE_NAMESPACE, String.valueOf(source_id));
 		distribution.addSource(null, null, ref, null);
 	}
 

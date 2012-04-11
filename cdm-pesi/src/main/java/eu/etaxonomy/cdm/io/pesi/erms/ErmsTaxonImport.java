@@ -171,9 +171,19 @@ public class ErmsTaxonImport  extends ErmsImportBase<TaxonBase> implements IMapp
 		Set<Integer> result = new HashSet<Integer>();
 		String parentCol = "tu_parent";
 		String accCol = " tu_acctaxon";
+		String tuFk = "tu_id";
 		String taxonTable = "tu";
-		String sql = " SELECT DISTINCT %s FROM %s UNION SELECT DISTINCT %s FROM %s ";
-		sql = String.format(sql, parentCol, taxonTable, accCol, taxonTable);
+		String vernacularsTable = "vernaculars";
+		String distributionTable = "dr";
+		String sql = " SELECT DISTINCT %s FROM %s  " +
+				" UNION  SELECT DISTINCT %s FROM %s " +
+				" UNION  SELECT DISTINCT %s FROM %s " +
+				" UNION  SELECT DISTINCT %s FROM %s ";
+		sql = String.format(sql, 
+				parentCol, taxonTable, 
+				accCol, taxonTable,
+				tuFk, vernacularsTable,
+				tuFk, distributionTable);
 		ResultSet rs = state.getConfig().getSource().getResultSet(sql);
 		try {
 			while (rs.next()){
@@ -278,7 +288,7 @@ public class ErmsTaxonImport  extends ErmsImportBase<TaxonBase> implements IMapp
 		}
 		
 		//add original source for taxon name (taxon original source is added in mapper
-		Reference citation = state.getTransactionalSourceReference();
+		Reference<?> citation = state.getTransactionalSourceReference();
 		addOriginalSource(rs, taxonName, "id", NAME_NAMESPACE, citation);
 		
 		//old: if (statusId == 1){

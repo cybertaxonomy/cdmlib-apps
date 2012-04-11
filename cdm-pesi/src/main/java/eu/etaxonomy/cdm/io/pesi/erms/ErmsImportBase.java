@@ -26,11 +26,11 @@ import org.joda.time.DateTime;
 import eu.etaxonomy.cdm.common.CdmUtils;
 import eu.etaxonomy.cdm.io.common.CdmImportBase;
 import eu.etaxonomy.cdm.io.common.ICdmIO;
+import eu.etaxonomy.cdm.io.common.IImportConfigurator.EDITOR;
 import eu.etaxonomy.cdm.io.common.IPartitionedIO;
 import eu.etaxonomy.cdm.io.common.ImportHelper;
 import eu.etaxonomy.cdm.io.common.ResultSetPartitioner;
 import eu.etaxonomy.cdm.io.common.Source;
-import eu.etaxonomy.cdm.io.common.IImportConfigurator.EDITOR;
 import eu.etaxonomy.cdm.io.common.mapping.DbImportMapping;
 import eu.etaxonomy.cdm.model.common.AnnotatableEntity;
 import eu.etaxonomy.cdm.model.common.Annotation;
@@ -96,6 +96,8 @@ public abstract class ErmsImportBase<CDM_BASE extends CdmBase> extends CdmImport
 		String strRecordQuery = getRecordQuery(config);
 
 		int recordsPerTransaction = config.getRecordsPerTransaction();
+		recordsPerTransaction = recordsPerTransaction / divideCountBy();
+		
 		try{
 			ResultSetPartitioner partitioner = ResultSetPartitioner.NewInstance(source, strIdQuery, strRecordQuery, recordsPerTransaction);
 			while (partitioner.nextPartition()){
@@ -393,6 +395,8 @@ public abstract class ErmsImportBase<CDM_BASE extends CdmBase> extends CdmImport
 			idSet.add(id);
 		}
 	}
+	
+	protected int divideCountBy() { return 1;}
 	
 	/**
 	 * Returns true if i is a multiple of recordsPerTransaction
