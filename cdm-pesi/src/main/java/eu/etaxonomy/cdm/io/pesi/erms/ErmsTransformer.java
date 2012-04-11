@@ -14,6 +14,7 @@ import java.util.HashSet;
 import java.util.Set;
 import java.util.UUID;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 
 import eu.etaxonomy.cdm.common.CdmUtils;
@@ -151,6 +152,35 @@ public final class ErmsTransformer extends InputTransformerBase {
 	public static final UUID uuidUnacceptReason = UUID.fromString("3883fb79-374d-4120-964b-9666307e3567");
 	public static final UUID uuidQualityStatus = UUID.fromString("4de84c6e-41bd-4a0e-894d-77e9ec3103d2");
 	
+	//MarkerTypes
+	public static final UUID uuidMarkerMarine = UUID.fromString("5da78a28-5668-4ed5-b788-10c69343f91e");
+	public static final UUID uuidMarkerBrackish = UUID.fromString("2da39f5d-67d6-4779-b40d-923dca85fe14");
+	public static final UUID uuidMarkerFreshwater = UUID.fromString("1190b182-e1d3-4986-8cc3-a6de3c115cf7");
+	public static final UUID uuidMarkerTerrestrial = UUID.fromString("5ed92edb-e2c6-48da-8367-6e82071c888f");
+	
+	
+	//language uuids
+	public static final UUID uuidLangAuns = UUID.fromString("7bb29f8f-d74b-4f7d-b673-c52debb7ae20");     //au
+	public static final UUID uuidLangChukchiLouravetlany = UUID.fromString("f85797cc-5ab3-454d-b9eb-beb75bc8eb37");   //cl
+	public static final UUID uuidLangChleuh = UUID.fromString("85132635-d696-4fc0-af12-207175b11773");    //cu 
+	public static final UUID uuidLangEnglishCanadian = UUID.fromString("43d244c4-e8cb-4c7f-951a-14d71666999c");   //ec
+	public static final UUID uuidLangEnglishUs = UUID.fromString("037bc818-b992-48ce-a40b-994980bc46d7");  //eu
+	public static final UUID uuidLangEvenKamchatcka= UUID.fromString("6ff3e21e-cabe-4583-b416-11b7120c5c0a");   //ek
+	public static final UUID uuidLangEvenki = UUID.fromString("2773fa25-8b37-4c58-8936-b666ccbb8e1c");  //ev
+	public static final UUID uuidLangFrenchCanadian = UUID.fromString("2b9a24d1-df9d-45bf-9310-11afa1256b9a");   //fc
+	public static final UUID uuidLangHassanya = UUID.fromString("ece61834-448c-4897-98ed-a90d1253a215");    //ha
+	public static final UUID uuidLangKamchadal = UUID.fromString("61671224-9fc5-4e59-a29b-04fc3e9ffab2");  //ka
+	public static final UUID uuidLangKrio = UUID.fromString("93a1899a-dd23-4d55-b159-a427dc44ab19");   //  ki
+	public static final UUID uuidLangKoryak = UUID.fromString("e5c71f03-691c-440c-ad5c-2e120b2795d7");    //kr
+	public static final UUID uuidLangLapp = UUID.fromString("8405e039-a45c-491e-84dd-6779d1980e53");   //lp
+	public static final UUID uuidLangMonegasque = UUID.fromString("05dbbcdd-6ea1-4091-8a8b-ed023dff8070");   //mo
+	public static final UUID uuidLangOstyak = UUID.fromString("c3fda8b6-a7ce-4846-8d18-b112477316fb");//os
+	public static final UUID uuidLangTamul = UUID.fromString("9f55f493-9f2b-427c-bb55-d970822726c9");   //tm
+	public static final UUID uuidLangNentsiNenets = UUID.fromString("4697b87e-2718-4986-8f9b-361dd47b0c90");   //ne
+	
+	
+	//...
+	
 	
 	public static NomenclaturalCode kingdomId2NomCode(Integer kingdomId){
 		switch (kingdomId){
@@ -264,6 +294,7 @@ public final class ErmsTransformer extends InputTransformerBase {
 		}else if (ermsAbbrev.equals("ja")){return Language.JAPANESE();
 //		}else if (ermsAbbrev.equals("ji")){return Language.JIVARA();   		//??
 //		}else if (ermsAbbrev.equals("ka")){return Language.KAMCHADAL();   iso 639-3:itl //Itelmen, formerly also known as Kamchadal, is a language belonging to the Chukotko-Kamchatkan family traditionally spoken in the Kamchatka Peninsula.    
+//		}else if (ermsAbbrev.equals("ki")){return Language.CREOLES_PIDGINS_ENGLISH_BASED_OTHER()
 		}else if (ermsAbbrev.equals("ko")){return Language.KOREAN();
 //		}else if (ermsAbbrev.equals("kr")){return Language.KORYAK();    //iso639-3: kpy
 		}else if (ermsAbbrev.equals("la")){return Language.LATIN();
@@ -306,7 +337,7 @@ public final class ErmsTransformer extends InputTransformerBase {
 		}else if (ermsAbbrev.equals("te")){return Language.TELUGU();
 		}else if (ermsAbbrev.equals("tg")){return Language.TAGALOG();
 		}else if (ermsAbbrev.equals("th")){return Language.THAI();
-//		}else if (ermsAbbrev.equals("tm")){return Language.TAMUL();			//??
+//		}else if (ermsAbbrev.equals("tm")){return Language.TAM			//??
 		}else if (ermsAbbrev.equals("tr")){return Language.TURKISH();
 		}else if (ermsAbbrev.equals("tu")){return Language.TUPIS();
 		}else if (ermsAbbrev.equals("uk")){return Language.UKRAINIAN();
@@ -342,7 +373,7 @@ public final class ErmsTransformer extends InputTransformerBase {
 			unhandledLanguages.add("yu");
 			
 			unhandledLanguages.add("cu");   //Chleuh
-			unhandledLanguages.add("ki");  //Krio
+			unhandledLanguages.add("ki");  //Krio, subset of Language.CREOLES_PIDGINS_ENGLISH_BASED_OTHER()
 			unhandledLanguages.add("mo");  //Monégasque
 
 
@@ -356,22 +387,36 @@ public final class ErmsTransformer extends InputTransformerBase {
 			logger.warn(warning);
 			throw new IllegalArgumentException(warning);
 		}
-		
-		
-		
 	}
 	
 	/* (non-Javadoc)
 	 * @see eu.etaxonomy.cdm.io.common.mapping.InputTransformerBase#getLanguageUuid(java.lang.String)
 	 */
 	@Override
-	public UUID getLanguageUuid(String key)
-			throws UndefinedTransformerMethodException {
+	public UUID getLanguageUuid(String key) throws UndefinedTransformerMethodException {
+		if (key == null){
+			return null;
+		}else if (key.equalsIgnoreCase("au")){return uuidLangAuns;
+		}else if (key.equalsIgnoreCase("cl")){return uuidLangChukchiLouravetlany;
+		}else if (key.equalsIgnoreCase("cu")){return uuidLangChleuh;
+		}else if (key.equalsIgnoreCase("ec")){return uuidLangEnglishCanadian;
+		}else if (key.equalsIgnoreCase("ek")){return uuidLangEvenKamchatcka;
+		}else if (key.equalsIgnoreCase("eu")){return uuidLangEnglishUs;
+		}else if (key.equalsIgnoreCase("ev")){return uuidLangEvenki;
+		}else if (key.equalsIgnoreCase("fc")){return uuidLangFrenchCanadian;
+		}else if (key.equalsIgnoreCase("ha")){return uuidLangHassanya;
+		}else if (key.equalsIgnoreCase("ka")){return uuidLangKamchadal;
+		}else if (key.equalsIgnoreCase("ki")){return uuidLangKrio;
+		}else if (key.equalsIgnoreCase("kr")){return uuidLangKoryak;
+		}else if (key.equalsIgnoreCase("lp")){return uuidLangLapp;
+		}else if (key.equalsIgnoreCase("mo")){return uuidLangMonegasque;
+		}else if (key.equalsIgnoreCase("ne")){return uuidLangNentsiNenets;
+		}else if (key.equalsIgnoreCase("os")){return uuidLangOstyak;
+		}else if (key.equalsIgnoreCase("tm")){return uuidLangTamul;
+		}
+		
 		return super.getLanguageUuid(key);
 	}
-	
-	
-	
 	
 	
 
@@ -591,7 +636,7 @@ public final class ErmsTransformer extends InputTransformerBase {
 	@Override
 	public UUID getFeatureUuid(String key)
 			throws UndefinedTransformerMethodException {
-		if (CdmUtils.isEmpty(key)){return null;
+		if (StringUtils.isBlank(key)){return null;
 		}else if (key.equalsIgnoreCase("Remark")){return uuidRemark;
 		}else if (key.equalsIgnoreCase("Additional information")){return uuidAdditionalinformation;
 		}else if (key.equalsIgnoreCase("Spelling")){return uuidSpelling;

@@ -12,6 +12,7 @@ package eu.etaxonomy.cdm.io.pesi.erms;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Set;
 
 import org.apache.log4j.Logger;
 
@@ -30,11 +31,13 @@ public class ErmsImportState extends DbImportStateBase<ErmsImportConfigurator, E
 	@SuppressWarnings("unused")
 	private static final Logger logger = Logger.getLogger(ErmsImportState.class);
 
-	Map<String, DefinedTermBase> dbCdmDefTermMap = new HashMap<String, DefinedTermBase>();
+	private Map<String, DefinedTermBase> dbCdmDefTermMap = new HashMap<String, DefinedTermBase>();
 	
-	Map<String, User> usernameMap = new HashMap<String, User>();
+	private Map<String, User> usernameMap = new HashMap<String, User>();
 	
 	private Map<Integer, Map<Integer,Rank>> rankMap;
+	
+	private Set<Integer> acceptedTaxaKeys;
 	
 	/* (non-Javadoc)
 	 * @see eu.etaxonomy.cdm.io.common.IoStateBase#initialize(eu.etaxonomy.cdm.io.common.IoConfiguratorBase)
@@ -109,6 +112,14 @@ public class ErmsImportState extends DbImportStateBase<ErmsImportConfigurator, E
 			}
 		}
 		return result;
+	}
+
+	public Set<Integer> getAcceptedTaxaKeys() {
+		return acceptedTaxaKeys;
+	}
+
+	public void setAcceptedTaxaKeys(Set<Integer> acceptedTaxaKeys) {
+		this.acceptedTaxaKeys = acceptedTaxaKeys;
 	}
 
     

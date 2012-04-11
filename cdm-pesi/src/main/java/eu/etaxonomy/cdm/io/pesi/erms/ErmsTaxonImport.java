@@ -26,6 +26,7 @@ import eu.etaxonomy.cdm.io.common.mapping.DbIgnoreMapper;
 import eu.etaxonomy.cdm.io.common.mapping.DbImportExtensionMapper;
 import eu.etaxonomy.cdm.io.common.mapping.DbImportLsidMapper;
 import eu.etaxonomy.cdm.io.common.mapping.DbImportMapping;
+import eu.etaxonomy.cdm.io.common.mapping.DbImportMarkerMapper;
 import eu.etaxonomy.cdm.io.common.mapping.DbImportObjectCreationMapper;
 import eu.etaxonomy.cdm.io.common.mapping.DbImportStringMapper;
 import eu.etaxonomy.cdm.io.common.mapping.DbNotYetImplementedMapper;
@@ -58,14 +59,10 @@ public class ErmsTaxonImport  extends ErmsImportBase<TaxonBase> implements IMapp
 	//second path is not used anymore, there is now an ErmsTaxonRelationImport class instead
 	private boolean isSecondPath = false;
 	
-	private int modCount = 10000;
 	private static final String pluralString = "taxa";
 	private static final String dbTableName = "tu";
 	private static final Class<TaxonBase> cdmTargetClass = TaxonBase.class;
 
-	//TODO make state variable
-	private Set<Integer> acceptedTaxaKeys;
-	
 	public ErmsTaxonImport(){
 		super(pluralString, dbTableName, cdmTargetClass);
 	}
@@ -112,7 +109,12 @@ public class ErmsTaxonImport  extends ErmsImportBase<TaxonBase> implements IMapp
 			
 			ExtensionType qualityStatusExtType = getExtensionType(ErmsTransformer.uuidQualityStatus, "quality status", "quality status", "quality status"); 
 			mapping.addMapper(DbImportExtensionMapper.NewInstance("qualitystatus_name", qualityStatusExtType)); //checked by Tax Editor ERMS1.1, Added by db management team (2x), checked by Tax Editor
-			
+
+			mapping.addMapper(DbImportMarkerMapper.NewInstance("tu_marine", ErmsTransformer.uuidMarkerMarine, "marine", "marine", "marine", null));
+			mapping.addMapper(DbImportMarkerMapper.NewInstance("tu_brackish", ErmsTransformer.uuidMarkerBrackish, "brackish", "brackish", "brackish", null));
+			mapping.addMapper(DbImportMarkerMapper.NewInstance("tu_fresh", ErmsTransformer.uuidMarkerFreshwater, "freshwater", "fresh", "fresh", null));
+			mapping.addMapper(DbImportMarkerMapper.NewInstance("tu_terrestrial", ErmsTransformer.uuidMarkerTerrestrial, "terrestrial", "terrestrial", "terrestrial", null));
+
 			
 //			UUID hiddenUuid = ErmsTransformer.uuidHidden;
 //			mapping.addMapper(DbImportMarkerCreationMapper.Mapper.NewInstance("qualitystatus_name", qualityUuid, "quality status", "quality status", "quality status")); //checked by Tax Editor ERMS1.1, Added by db management team (2x), checked by Tax Editor
@@ -123,22 +125,10 @@ public class ErmsTaxonImport  extends ErmsImportBase<TaxonBase> implements IMapp
 			
 			
 			//ignore
-			mapping.addMapper(DbIgnoreMapper.NewInstance("tu_marine", "marine flag not implemented in PESI"));
-			mapping.addMapper(DbIgnoreMapper.NewInstance("tu_brackish", "brackish flag not implemented in PESI"));
-			mapping.addMapper(DbIgnoreMapper.NewInstance("tu_fresh", "freshwater flag not implemented in PESI"));
-			mapping.addMapper(DbIgnoreMapper.NewInstance("tu_terrestrial", "terrestrial flag not implemented in PESI"));
 			mapping.addMapper(DbIgnoreMapper.NewInstance("tu_fossil", "tu_fossil implemented as foreign key"));
 			
-			
-//			//second path / implemented in ErmsTaxonRelationImport
-//			DbImportMapping secondPathMapping = new DbImportMapping();
-//			secondPathMapping.addMapper(DbImportTaxIncludedInMapper.NewInstance("id", "tu_parent", TAXON_NAMESPACE, null)); //there is only one tree
-//			secondPathMapping.addMapper(DbImportSynonymMapper.NewInstance("id", "tu_acctaxon", TAXON_NAMESPACE, null)); 			
-//			secondPathMapping.addMapper(DbImportNameTypeDesignationMapper.NewInstance("id", "tu_typetaxon", NAME_NAMESPACE, "tu_typedesignationstatus"));
-//			secondPathMapping.addMapper(DbNotYetImplementedMapper.NewInstance("tu_acctaxon"));
-//			mapping.setSecondPathMapping(secondPathMapping);
-			
 		}
+
 		return mapping;
 	}
 
@@ -167,7 +157,7 @@ public class ErmsTaxonImport  extends ErmsImportBase<TaxonBase> implements IMapp
 	 */
 	@Override
 	protected void doInvoke(ErmsImportState state) {
-		acceptedTaxaKeys = getAcceptedTaxaKeys(state);
+		state.setAcceptedTaxaKeys(getAcceptedTaxaKeys(state));
 		
 		//first path
 		super.doInvoke(state);
@@ -177,13 +167,13 @@ public class ErmsTaxonImport  extends ErmsImportBase<TaxonBase> implements IMapp
 
 
 
-	private Set<Integer> getAcceptedTaxaKeys(ErmsImportState state) {
+	public Set<Integer> getAcceptedTaxaKeys(ErmsImportState state) {
 		Set<Integer> result = new HashSet<Integer>();
 		String parentCol = "tu_parent";
 		String accCol = " tu_acctaxon";
 		String taxonTable = "tu";
-		String sql = " SELECT DISTINCT %s FROM %s UNION SELECT id FROM %s WHERE %s = id ";
-		sql = String.format(sql, parentCol, taxonTable, taxonTable, accCol);
+		String sql = " SELECT DISTINCT %s FROM %s UNION SELECT DISTINCT %s FROM %s ";
+		sql = String.format(sql, parentCol, taxonTable, accCol, taxonTable);
 		ResultSet rs = state.getConfig().getSource().getResultSet(sql);
 		try {
 			while (rs.next()){
@@ -263,7 +253,7 @@ public class ErmsTaxonImport  extends ErmsImportBase<TaxonBase> implements IMapp
 			getGenusAndInfraGenus(parent1Name, parent2Name, parent1Rank, taxonName);
 		}else if (taxonName.isInfraSpecific()){
 			if (parent1Rank < 220){
-				handleException(parent1Rank, taxonName, displayName);
+				handleException(parent1Rank, taxonName, displayName, meId);
 			}
 			taxonName.setInfraSpecificEpithet(tuName);
 			taxonName.setSpecificEpithet(parent1Name);
@@ -284,7 +274,7 @@ public class ErmsTaxonImport  extends ErmsImportBase<TaxonBase> implements IMapp
 		//e.g. Leucon [Platyhelminthes] ornatus
 		if (containsBrackets(displayName)){
 			taxonName.setNameCache(displayName);
-			logger.warn("Set name cache: " +  displayName);
+			logger.warn("Set name cache: " +  displayName + ";id =" + meId);
 		}
 		
 		//add original source for taxon name (taxon original source is added in mapper
@@ -292,7 +282,7 @@ public class ErmsTaxonImport  extends ErmsImportBase<TaxonBase> implements IMapp
 		addOriginalSource(rs, taxonName, "id", NAME_NAMESPACE, citation);
 		
 		//old: if (statusId == 1){
-		if (this.acceptedTaxaKeys.contains(meId)){
+		if (state.getAcceptedTaxaKeys().contains(meId)){
 			if (statusId != 1){
 				logger.info("Taxon created as taxon but has status <> 1: " + meId);
 			}
@@ -308,9 +298,10 @@ public class ErmsTaxonImport  extends ErmsImportBase<TaxonBase> implements IMapp
 	 * @param parent1Rank
 	 * @param displayName 
 	 * @param taxonName 
+	 * @param meId 
 	 */
-	private void handleException(Integer parent1Rank, NonViralName taxonName, String displayName) {
-		logger.warn("Parent of infra specific taxon is higher than species. Used nameCache: " + displayName) ;
+	private void handleException(Integer parent1Rank, NonViralName taxonName, String displayName, Integer meId) {
+		logger.warn("Parent of infra specific taxon is higher than species. Used nameCache: " + displayName +  "; id=" + meId) ;
 		taxonName.setNameCache(displayName);
 	}
 

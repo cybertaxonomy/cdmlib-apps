@@ -40,13 +40,15 @@ public class ErmsTaxonRelationImport extends ErmsImportBase<TaxonBase> implement
 	@SuppressWarnings("unused")
 	private static final Logger logger = Logger.getLogger(ErmsTaxonRelationImport.class);
 	
-private DbImportMapping<ErmsImportState, ErmsImportConfigurator> mapping;
+	private DbImportMapping<ErmsImportState, ErmsImportConfigurator> mapping;
 	
 	private static final String pluralString = "taxon relations";
 	private static final String dbTableName = "tu";
 
 	private static final Class<?> cdmTargetClass = TaxonBase.class;
-
+	
+	private ErmsImportState state;  //ERMS import will never run in more then one instance
+	
 	public ErmsTaxonRelationImport(){
 		super(pluralString, dbTableName, cdmTargetClass);
 	}
@@ -83,6 +85,13 @@ private DbImportMapping<ErmsImportState, ErmsImportConfigurator> mapping;
 				" tu AS parent ON accParent.id = parent.tu_acctaxon ON myTaxon.tu_parent = parent.id " +
 			" WHERE ( myTaxon.id IN (" + ID_LIST_TOKEN + ") )";
 		return strRecordQuery;
+	}
+	
+
+	@Override
+	protected void doInvoke(ErmsImportState state) {
+		this.state = state;
+		super.doInvoke(state);
 	}
 	
 	/* (non-Javadoc)
@@ -134,14 +143,26 @@ private DbImportMapping<ErmsImportState, ErmsImportConfigurator> mapping;
 	public boolean checkIgnoreMapper(IDbImportMapper mapper, ResultSet rs) throws SQLException{
 		boolean result = false;
 		if (mapper instanceof DbImportTaxIncludedInMapper){
-			int tu_status = rs.getInt("tu_status");
-			if (tu_status != 1){
-				result = true;
+//			int tu_status = rs.getInt("tu_status");
+//			if (tu_status != 1){
+//				result = true;
+//			}
+			int id = rs.getInt("id");
+			if (state.getAcceptedTaxaKeys().contains(id)){
+				return false;
+			}else{
+				return true;
 			}
 		}else if (mapper instanceof DbImportSynonymMapper){
-			int tu_status = rs.getInt("tu_status");
-			if (tu_status == 1){
-				result = true;
+//			int tu_status = rs.getInt("tu_status");
+//			if (tu_status == 1){
+//				result = true;
+//			}else{
+//				return false;
+//			}
+			int id = rs.getInt("id");
+			if (state.getAcceptedTaxaKeys().contains(id)){
+				return true;
 			}else{
 				return false;
 			}
@@ -161,6 +182,7 @@ private DbImportMapping<ErmsImportState, ErmsImportConfigurator> mapping;
 		// not needed
 		return null;
 	}
+	
 	
 
 	/* (non-Javadoc)

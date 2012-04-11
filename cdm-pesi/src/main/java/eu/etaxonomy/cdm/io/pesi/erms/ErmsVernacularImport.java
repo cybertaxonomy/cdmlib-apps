@@ -15,6 +15,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
+import java.util.UUID;
 
 import org.apache.log4j.Logger;
 import org.springframework.stereotype.Component;
@@ -25,6 +26,7 @@ import eu.etaxonomy.cdm.io.common.mapping.DbImportCommonNameCreationMapper;
 import eu.etaxonomy.cdm.io.common.mapping.DbImportMapping;
 import eu.etaxonomy.cdm.io.common.mapping.DbImportObjectMapper;
 import eu.etaxonomy.cdm.io.common.mapping.DbImportStringMapper;
+import eu.etaxonomy.cdm.io.common.mapping.UndefinedTransformerMethodException;
 import eu.etaxonomy.cdm.io.pesi.erms.validation.ErmsVernacularImportValidator;
 import eu.etaxonomy.cdm.model.common.AnnotationType;
 import eu.etaxonomy.cdm.model.common.CdmBase;
@@ -43,13 +45,13 @@ public class ErmsVernacularImport  extends ErmsImportBase<CommonTaxonName> {
 	@SuppressWarnings("unused")
 	private static final Logger logger = Logger.getLogger(ErmsVernacularImport.class);
 
-	private DbImportMapping mapping;
+	private DbImportMapping<ErmsImportState, ErmsImportConfigurator> mapping;
+	private ErmsImportState state;   //import instance is never used more than once for Erms ; dirty
 	
 	
-	private int modCount = 10000;
 	private static final String pluralString = "vernaculars";
 	private static final String dbTableName = "vernaculars";
-	private static final Class cdmTargetClass = CommonTaxonName.class;
+	private static final Class<?> cdmTargetClass = CommonTaxonName.class;
 
 	public ErmsVernacularImport(){
 		super(pluralString, dbTableName, cdmTargetClass);
@@ -71,9 +73,9 @@ public class ErmsVernacularImport  extends ErmsImportBase<CommonTaxonName> {
 	/* (non-Javadoc)
 	 * @see eu.etaxonomy.cdm.io.erms.ErmsImportBase#getMapping()
 	 */
-	protected DbImportMapping getMapping() {
+	protected DbImportMapping<ErmsImportState, ErmsImportConfigurator> getMapping() {
 		if (mapping == null){
-			mapping = new DbImportMapping();
+			mapping = new DbImportMapping<ErmsImportState, ErmsImportConfigurator>();
 			
 			mapping.addMapper(DbImportCommonNameCreationMapper.NewInstance("id", VERNACULAR_NAMESPACE, "tu_id", ErmsTaxonImport.TAXON_NAMESPACE));
 			
@@ -89,7 +91,7 @@ public class ErmsVernacularImport  extends ErmsImportBase<CommonTaxonName> {
 	 */
 	public Map<Object, Map<String, ? extends CdmBase>> getRelatedObjectsForPartition(ResultSet rs) {
 		String nameSpace;
-		Class cdmClass;
+		Class<?> cdmClass;
 		Set<String> idSet;
 		Map<Object, Map<String, ? extends CdmBase>> result = new HashMap<Object, Map<String, ? extends CdmBase>>();
 		
@@ -105,7 +107,7 @@ public class ErmsVernacularImport  extends ErmsImportBase<CommonTaxonName> {
 			nameSpace = ErmsTaxonImport.TAXON_NAMESPACE;
 			cdmClass = TaxonBase.class;
 			idSet = taxonIdSet;
-			Map<String, TaxonBase> taxonMap = (Map<String, TaxonBase>)getCommonService().getSourcedObjectsByIdInSource(cdmClass, idSet, nameSpace);
+			Map<String, TaxonBase<?>> taxonMap = (Map<String, TaxonBase<?>>)getCommonService().getSourcedObjectsByIdInSource(cdmClass, idSet, nameSpace);
 			result.put(nameSpace, taxonMap);
 			
 			//language map
@@ -116,7 +118,17 @@ public class ErmsVernacularImport  extends ErmsImportBase<CommonTaxonName> {
 				Language language = null;
 				try {
 					language = transformer.getLanguageByKey(lanAbbrev);
+					if (language == null){
+						UUID uuidLang = transformer.getLanguageUuid(lanAbbrev);
+						language = getLanguage(state, uuidLang, lanAbbrev, lanAbbrev, lanAbbrev);
+						if (language == null || uuidLang == null){
+							logger.warn("Langauge undefined: " + lanAbbrev);
+						}
+					}
+					
 				} catch (IllegalArgumentException e) {
+					e.printStackTrace();
+				} catch (UndefinedTransformerMethodException e) {
 					e.printStackTrace();
 				}
 				languageMap.put(lanAbbrev, language);
@@ -144,6 +156,13 @@ public class ErmsVernacularImport  extends ErmsImportBase<CommonTaxonName> {
 	 */
 	protected boolean isIgnore(ErmsImportState state){
 		return ! state.getConfig().isDoVernaculars();
+	}
+
+
+	@Override
+	protected void doInvoke(ErmsImportState state) {
+		this.state = state;
+		super.doInvoke(state);
 	}
 
 
