@@ -167,7 +167,7 @@ public class ErmsTaxonImport  extends ErmsImportBase<TaxonBase> implements IMapp
 
 
 
-	public Set<Integer> getAcceptedTaxaKeys(ErmsImportState state) {
+	private Set<Integer> getAcceptedTaxaKeys(ErmsImportState state) {
 		Set<Integer> result = new HashSet<Integer>();
 		String parentCol = "tu_parent";
 		String accCol = " tu_acctaxon";
