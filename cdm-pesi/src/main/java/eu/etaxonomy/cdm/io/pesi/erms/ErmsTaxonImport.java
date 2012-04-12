@@ -168,16 +168,19 @@ public class ErmsTaxonImport  extends ErmsImportBase<TaxonBase<?>> implements IM
 		Set<Integer> result = new HashSet<Integer>();
 		String parentCol = "tu_parent";
 		String accCol = " tu_acctaxon";
+		String idCol = " id ";
 		String tuFk = "tu_id";
 		String taxonTable = "tu";
 		String vernacularsTable = "vernaculars";
 		String distributionTable = "dr";
 		String sql = " SELECT DISTINCT %s FROM %s  " +
+				" UNION  SELECT %s FROM %s WHERE %s is NULL" +
 				" UNION  SELECT DISTINCT %s FROM %s " +
 				" UNION  SELECT DISTINCT %s FROM %s " +
 				" UNION  SELECT DISTINCT %s FROM %s ";
 		sql = String.format(sql, 
 				parentCol, taxonTable, 
+				idCol, taxonTable, accCol,  
 				accCol, taxonTable,
 				tuFk, vernacularsTable,
 				tuFk, distributionTable);

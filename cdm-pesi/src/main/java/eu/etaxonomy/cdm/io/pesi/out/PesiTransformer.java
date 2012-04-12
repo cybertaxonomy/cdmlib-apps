@@ -13,7 +13,9 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.BitSet;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 import java.util.UUID;
 
 import org.apache.commons.lang.StringUtils;
@@ -28,6 +30,7 @@ import eu.etaxonomy.cdm.io.common.mapping.out.IExportTransformer;
 import eu.etaxonomy.cdm.io.pesi.erms.ErmsTransformer;
 import eu.etaxonomy.cdm.io.pesi.faunaEuropaea.FaunaEuropaeaTransformer;
 import eu.etaxonomy.cdm.model.common.CdmBase;
+import eu.etaxonomy.cdm.model.common.Extension;
 import eu.etaxonomy.cdm.model.common.Language;
 import eu.etaxonomy.cdm.model.common.RelationshipBase;
 import eu.etaxonomy.cdm.model.common.RelationshipTermBase;
@@ -44,6 +47,7 @@ import eu.etaxonomy.cdm.model.name.NameTypeDesignationStatus;
 import eu.etaxonomy.cdm.model.name.NomenclaturalCode;
 import eu.etaxonomy.cdm.model.name.NomenclaturalStatusType;
 import eu.etaxonomy.cdm.model.name.Rank;
+import eu.etaxonomy.cdm.model.name.TaxonNameBase;
 import eu.etaxonomy.cdm.model.occurrence.Fossil;
 import eu.etaxonomy.cdm.model.reference.Reference;
 import eu.etaxonomy.cdm.model.reference.ReferenceType;
@@ -3655,7 +3659,8 @@ public final class PesiTransformer extends ExportTransformerBase implements IExp
 			return IS_FIRST_PARENT_OF;
 		} else if (type.equals(HybridRelationshipType.SECOND_PARENT())) {
 			return IS_SECOND_PARENT_OF;
-		
+		} else if (type.getUuid().equals(ErmsTransformer.uuidTaxRelTypeIsTaxonSynonymOf)) {
+			return IS_SYNONYM_OF;
 		} else {
 			logger.warn("No equivalent RelationshipType found in datawarehouse for: " + type.getTitleCache());
 		}
@@ -3749,14 +3754,40 @@ public final class PesiTransformer extends ExportTransformerBase implements IExp
 		return result;
 	}
 
-	public static Integer getQualityStatusKeyBySource(BitSet sources) {
+	public static Integer getQualityStatusKeyBySource(BitSet sources, TaxonNameBase<?,?> taxonName) {
 		if (sources.get(SOURCE_EM)){
 			return QUALITY_STATUS_ADD_BY_DBMT;
+		}else if (sources.get(SOURCE_ERMS)){
+			Set<String> statusSet = getAllQualityStatus(taxonName);
+			if (statusSet.size() > 1){
+				logger.warn("ERMS TaxonName has more than 1 quality status: " + taxonName.getTitleCache() + "; lisd=" + taxonName.getLsid());
+			}
+			if (statusSet.contains("Checked by Taxonomic Editor: included in ERMS 1.1")){
+				return QUALITY_STATUS_CHECKED_EDITOR_ERMS_1_1;
+			}else if (statusSet.contains("Added by Database Management Team")){
+				return QUALITY_STATUS_ADD_BY_DBMT;
+			}else if (statusSet.contains("Checked by Taxonomic Editor")){
+				return QUALITY_STATUS_CHECKED_EDITOR;
+			}else if (statusSet.contains("Edited by Database Management Team")){
+				return QUALITY_STATUS_EDITED_BY_DBMT;
+			}else{
+				logger.warn("Unknown ERMS quality status: " + statusSet.iterator().next() + " for taxon name " + taxonName.getTitleCache());
+				return null;
+			}
 		}else{
 			return null;   // TODO needs to be implemented for others 
 		}
 	}
+
 	
+	private static Set<String> getAllQualityStatus(TaxonNameBase<?, ?> taxonName) {
+		Set<String> result = new HashSet<String>();
+		for (TaxonBase<?> taxonBase : taxonName.getTaxonBases()){
+			result.addAll(taxonBase.getExtensions(ErmsTransformer.uuidQualityStatus));
+		}
+		return result;
+	}
+
 	@Override
 	public String getQualityStatusCacheByKey(Integer qualityStatusId) throws UndefinedTransformerMethodException {
 		if (qualityStatusId == null){

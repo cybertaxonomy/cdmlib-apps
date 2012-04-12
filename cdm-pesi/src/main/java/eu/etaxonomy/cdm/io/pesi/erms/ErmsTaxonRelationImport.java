@@ -29,6 +29,7 @@ import eu.etaxonomy.cdm.io.common.mapping.IDbImportMapper;
 import eu.etaxonomy.cdm.model.common.CdmBase;
 import eu.etaxonomy.cdm.model.name.TaxonNameBase;
 import eu.etaxonomy.cdm.model.taxon.TaxonBase;
+import eu.etaxonomy.cdm.model.taxon.TaxonRelationshipType;
 
 /**
  * @author a.mueller
@@ -61,7 +62,9 @@ public class ErmsTaxonRelationImport extends ErmsImportBase<TaxonBase<?>> implem
 			mapping = new DbImportMapping<ErmsImportState, ErmsImportConfigurator>();
 			
 			mapping.addMapper(DbImportTaxIncludedInMapper.NewInstance("id", TAXON_NAMESPACE, "parentId", TAXON_NAMESPACE, "accParentId", TAXON_NAMESPACE, null));//there is only one tree
-			mapping.addMapper(DbImportSynonymMapper.NewInstance("id", "tu_acctaxon", TAXON_NAMESPACE, null, true)); 			
+			
+			TaxonRelationshipType taxonRelationshipType = getTaxonRelationshipType(state, ErmsTransformer.uuidTaxRelTypeIsTaxonSynonymOf, "is taxon synonym of", "is synonym of relation used by synonym that are of class Taxon as they can not be handled differently", null, null);
+			mapping.addMapper(DbImportSynonymMapper.NewInstance("id", "tu_acctaxon", TAXON_NAMESPACE, null, taxonRelationshipType)); 			
 			mapping.addMapper(DbImportNameTypeDesignationMapper.NewInstance("id", "tu_typetaxon", ErmsTaxonImport.NAME_NAMESPACE, "tu_typedesignationstatus"));
 //			mapping.addMapper(DbNotYetImplementedMapper.NewInstance("tu_acctaxon"));
 		}

@@ -68,7 +68,7 @@ public class ErmsImportRankMap extends ErmsImportBase<Rank>{
 					rankName = rankName.replace("Forma", "Form").replace("Subforma", "Subform");
 					Rank rank;
 					if (nc == null && kingdomId == 1){
-						rank = getRank(state, ErmsTransformer.uuidRankSuperdomain, "Superdomain", "Superdomain", null, CdmBase.deproxy(Rank.GENUS().getVocabulary(), OrderedTermVocabulary.class), Rank.KINGDOM());
+						rank = getRank(state, ErmsTransformer.uuidRankSuperdomain, "Superdomain", "Superdomain", "Superdomain", CdmBase.deproxy(Rank.GENUS().getVocabulary(), OrderedTermVocabulary.class), Rank.DOMAIN());
 					}else{
 						rank = Rank.getRankByEnglishName(rankName, nc, false);
 					}

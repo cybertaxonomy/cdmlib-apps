@@ -32,7 +32,6 @@ import org.springframework.transaction.TransactionStatus;
 
 import eu.etaxonomy.cdm.api.service.TaxonServiceImpl;
 import eu.etaxonomy.cdm.common.CdmUtils;
-import eu.etaxonomy.cdm.io.common.CdmImportBase;
 import eu.etaxonomy.cdm.io.common.Source;
 import eu.etaxonomy.cdm.io.common.mapping.UndefinedTransformerMethodException;
 import eu.etaxonomy.cdm.io.common.mapping.out.DbConstantMapper;
@@ -44,7 +43,6 @@ import eu.etaxonomy.cdm.io.common.mapping.out.IdMapper;
 import eu.etaxonomy.cdm.io.common.mapping.out.MethodMapper;
 import eu.etaxonomy.cdm.io.common.mapping.out.ObjectChangeMapper;
 import eu.etaxonomy.cdm.io.pesi.erms.ErmsTransformer;
-import eu.etaxonomy.cdm.io.pesi.indexFungorum.IndexFungorumImportState;
 import eu.etaxonomy.cdm.model.common.Annotation;
 import eu.etaxonomy.cdm.model.common.AnnotationType;
 import eu.etaxonomy.cdm.model.common.CdmBase;
@@ -56,6 +54,7 @@ import eu.etaxonomy.cdm.model.common.Language;
 import eu.etaxonomy.cdm.model.common.Marker;
 import eu.etaxonomy.cdm.model.common.MarkerType;
 import eu.etaxonomy.cdm.model.common.RelationshipBase;
+import eu.etaxonomy.cdm.model.name.BacterialName;
 import eu.etaxonomy.cdm.model.name.BotanicalName;
 import eu.etaxonomy.cdm.model.name.HybridRelationship;
 import eu.etaxonomy.cdm.model.name.NameRelationship;
@@ -80,6 +79,7 @@ import eu.etaxonomy.cdm.model.taxon.TaxonRelationship;
 import eu.etaxonomy.cdm.model.taxon.TaxonRelationshipType;
 import eu.etaxonomy.cdm.strategy.cache.HTMLTagRules;
 import eu.etaxonomy.cdm.strategy.cache.TagEnum;
+import eu.etaxonomy.cdm.strategy.cache.name.BacterialNameDefaultCacheStrategy;
 import eu.etaxonomy.cdm.strategy.cache.name.BotanicNameDefaultCacheStrategy;
 import eu.etaxonomy.cdm.strategy.cache.name.INonViralNameCacheStrategy;
 import eu.etaxonomy.cdm.strategy.cache.name.NonViralNameDefaultCacheStrategy;
@@ -124,6 +124,7 @@ public class PesiTaxonExport extends PesiExportBase {
 	private static NonViralNameDefaultCacheStrategy<?> zooNameStrategy = ZooNameNoMarkerCacheStrategy.NewInstance();
 	private static NonViralNameDefaultCacheStrategy<?> botanicalNameStrategy = BotanicNameDefaultCacheStrategy.NewInstance();
 	private static NonViralNameDefaultCacheStrategy<?> nonViralNameStrategy = NonViralNameDefaultCacheStrategy.NewInstance();
+	private static NonViralNameDefaultCacheStrategy<?> bacterialNameStrategy = BacterialNameDefaultCacheStrategy.NewInstance();
 	
 	
 	/**
@@ -1142,6 +1143,10 @@ public class PesiTaxonExport extends PesiExportBase {
 			logger.error("Data could not be inserted into database: " + e.getMessage());
 			e.printStackTrace();
 			return false;
+		} catch (Exception e) {
+			logger.error("Some exception occurred: " + e.getMessage());
+			e.printStackTrace();
+			return false;
 		}
 	}
 
@@ -1309,7 +1314,7 @@ public class PesiTaxonExport extends PesiExportBase {
 		if (taxonName == null) {
 			return null;
 		}else{
-			INonViralNameCacheStrategy cacheStrategy = getCacheStrategy(taxonName);
+			INonViralNameCacheStrategy<NonViralName<?>> cacheStrategy = getCacheStrategy(taxonName);
 			HTMLTagRules tagRules = new HTMLTagRules().
 					addRule(TagEnum.name, "i").
 					addRule(TagEnum.nomStatus, "@status@");
@@ -1688,7 +1693,7 @@ public class PesiTaxonExport extends PesiExportBase {
 	 */
 	private static Integer getQualityStatusFk(TaxonNameBase taxonName) {
 		BitSet sources = getSources(taxonName);
-		return PesiTransformer.getQualityStatusKeyBySource(sources);
+		return PesiTransformer.getQualityStatusKeyBySource(sources, taxonName);
 	}
 
 	
@@ -1703,6 +1708,7 @@ public class PesiTaxonExport extends PesiExportBase {
 	private static String getQualityStatusCache(TaxonNameBase taxonName, PesiExportState state) throws UndefinedTransformerMethodException {
 		return state.getTransformer().getQualityStatusCacheByKey(getQualityStatusFk(taxonName));
 	}
+
 	
 	/**
 	 * Returns the <code>TypeDesignationStatusFk</code> attribute.
@@ -2206,13 +2212,16 @@ public class PesiTaxonExport extends PesiExportBase {
 	}
 	
 	private static NonViralNameDefaultCacheStrategy getCacheStrategy(TaxonNameBase<?, ?> taxonName) {
-		NonViralNameDefaultCacheStrategy cacheStrategy;
+		taxonName = CdmBase.deproxy(taxonName, TaxonNameBase.class);
+		NonViralNameDefaultCacheStrategy<?> cacheStrategy;
 		if (taxonName.isInstanceOf(ZoologicalName.class)){
 			cacheStrategy = zooNameStrategy;
 		}else if (taxonName.isInstanceOf(BotanicalName.class)) {
 			cacheStrategy = botanicalNameStrategy;
 		}else if (taxonName.getClass().equals(NonViralName.class)) {
 			cacheStrategy = nonViralNameStrategy;
+		}else if (taxonName.getClass().equals(BacterialName.class)) {
+			cacheStrategy = bacterialNameStrategy;
 		}else{
 			logger.error("Unhandled taxon name type. Can't define strategy class");
 			cacheStrategy = botanicalNameStrategy;
@@ -2385,15 +2394,6 @@ public class PesiTaxonExport extends PesiExportBase {
 		mapping.addMapper(MethodMapper.NewInstance("TaxonStatusFk", this.getClass(), "getTaxonStatusFk", standardMethodParameter, PesiExportState.class));
 		mapping.addMapper(MethodMapper.NewInstance("TaxonStatusCache", this.getClass(), "getTaxonStatusCache", standardMethodParameter, PesiExportState.class));
 		
-		// QualityStatus (Fk, Cache)
-//		extensionType = (ExtensionType)getTermService().find(ErmsTransformer.uuidQualityStatus);
-//		if (extensionType != null) {
-//			mapping.addMapper(DbExtensionMapper.NewInstance(extensionType, "QualityStatusCache"));
-//		} else {
-//			mapping.addMapper(MethodMapper.NewInstance("QualityStatusCache", this));
-//		}
-//		mapping.addMapper(MethodMapper.NewInstance("QualityStatusFk", this)); // PesiTransformer.QualityStatusCache2QualityStatusFk?
-
 		mapping.addMapper(MethodMapper.NewInstance("GUID", this));
 		
 		mapping.addMapper(MethodMapper.NewInstance("DerivedFromGuid", this));
@@ -2402,13 +2402,8 @@ public class PesiTaxonExport extends PesiExportBase {
 		mapping.addMapper(MethodMapper.NewInstance("WebShowName", this));
 		
 		// DisplayName
-		ExtensionType extensionType = (ExtensionType)getTermService().find(ErmsTransformer.uuidDisplayName);		
-		if (extensionType != null) {
-			mapping.addMapper(DbExtensionMapper.NewInstance(extensionType, "DisplayName"));
-		} else {
-			mapping.addMapper(MethodMapper.NewInstance("DisplayName", this));
-		}
-		
+		mapping.addMapper(MethodMapper.NewInstance("DisplayName", this));
+
 		// FossilStatus (Fk, Cache)
 		mapping.addMapper(MethodMapper.NewInstance("FossilStatusCache", this, IdentifiableEntity.class, PesiExportState.class));
 		mapping.addMapper(MethodMapper.NewInstance("FossilStatusFk", this, IdentifiableEntity.class, PesiExportState.class)); // PesiTransformer.FossilStatusCache2FossilStatusFk?
@@ -2417,12 +2412,13 @@ public class PesiTaxonExport extends PesiExportBase {
 		mapping.addMapper(DbLastActionMapper.NewInstance("LastActionDate", false));
 		mapping.addMapper(DbLastActionMapper.NewInstance("LastAction", true));
 		
+		//experts
 		ExtensionType extensionTypeSpeciesExpertName = (ExtensionType)getTermService().find(PesiTransformer.speciesExpertNameUuid);
 		mapping.addMapper(DbExtensionMapper.NewInstance(extensionTypeSpeciesExpertName, "SpeciesExpertName"));
 		ExtensionType extensionTypeExpertName = (ExtensionType)getTermService().find(PesiTransformer.expertNameUuid);
 		mapping.addMapper(DbExtensionMapper.NewInstance(extensionTypeExpertName, "ExpertName"));
 		
-//		mapping.addMapper(MethodMapper.NewInstance("ParentTaxonFk", this, TaxonBase.class, PesiExportState.class));  //doesn't work, FK exceptioni
+//		mapping.addMapper(MethodMapper.NewInstance("ParentTaxonFk", this, TaxonBase.class, PesiExportState.class));  //by AM, doesn't work, FK exception
 		mapping.addMapper(ObjectChangeMapper.NewInstance(TaxonBase.class, TaxonNameBase.class, "Name"));
 		
 		addNameMappers(mapping);
@@ -2450,12 +2446,7 @@ public class PesiTaxonExport extends PesiExportBase {
 		mapping.addMapper(MethodMapper.NewInstance("WebShowName", this, TaxonNameBase.class));
 		
 		// DisplayName
-		ExtensionType extensionType = (ExtensionType)getTermService().find(ErmsTransformer.uuidDisplayName);		
-		if (extensionType != null) {
-			mapping.addMapper(DbExtensionMapper.NewInstance(extensionType, "DisplayName"));
-		} else {
-			mapping.addMapper(MethodMapper.NewInstance("DisplayName", this, TaxonNameBase.class));
-		}
+		mapping.addMapper(MethodMapper.NewInstance("DisplayName", this, TaxonNameBase.class));
 		
 		mapping.addMapper(DbLastActionMapper.NewInstance("LastActionDate", false));
 		mapping.addMapper(DbLastActionMapper.NewInstance("LastAction", true));
@@ -2467,7 +2458,6 @@ public class PesiTaxonExport extends PesiExportBase {
 	}
 
 	private void addNameMappers(PesiExportMapping mapping) {
-		ExtensionType extensionType;
 		mapping.addMapper(DbStringMapper.NewInstance("GenusOrUninomial", "GenusOrUninomial"));
 		mapping.addMapper(DbStringMapper.NewInstance("InfraGenericEpithet", "InfraGenericEpithet"));
 		mapping.addMapper(DbStringMapper.NewInstance("SpecificEpithet", "SpecificEpithet"));
@@ -2486,6 +2476,8 @@ public class PesiTaxonExport extends PesiExportBase {
 		mapping.addMapper(MethodMapper.NewInstance("NameStatusCache", this, TaxonNameBase.class, PesiExportState.class));
 		mapping.addMapper(MethodMapper.NewInstance("TypeFullnameCache", this, TaxonNameBase.class));
 		//TODO TypeNameFk
+		
+		//quality status
 		mapping.addMapper(MethodMapper.NewInstance("QualityStatusFk", this, TaxonNameBase.class));
 		mapping.addMapper(MethodMapper.NewInstance("QualityStatusCache", this, TaxonNameBase.class, PesiExportState.class));
 		
