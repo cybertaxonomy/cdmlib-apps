@@ -31,8 +31,7 @@ import eu.etaxonomy.cdm.model.reference.ReferenceFactory;
 
 /**
  * @author a.mueller
- * @created 16.12.2010
- * @version 1.0
+ * @created 10.11.2011
  */
 public class DwcaImportActivator {
 	private static final Logger logger = Logger.getLogger(DwcaImportActivator.class);
@@ -41,7 +40,8 @@ public class DwcaImportActivator {
 	static DbSchemaValidation hbm2dll = DbSchemaValidation.CREATE;
 //	static final URI source = dwca_test_in();
 //	static final URI source = dwca_test_cich_len();
-	static final URI source = dwca_test_col_cichorium();
+	static final URI source = dwca_test_col_sapindaceae();
+//	static final URI source = dwca_test_col_cichorium();
 //	static final URI source = dwca_test_scratch_test();
 //	static final URI source = dwca_test_col_All_Pesi2();
 //	static final URI source = dwca_test_col_All();
@@ -53,7 +53,7 @@ public class DwcaImportActivator {
 //	static final ICdmDataSource cdmDestination = CdmDestinations.cdm_test_local_mysql_test();
 //	static final ICdmDataSource cdmDestination = CdmDestinations.localH2();
 //	static final ICdmDataSource cdmDestination = CdmDestinations.cdm_test_local_mysql_pesi_test();
-//	static final ICdmDataSource cdmDestination = CdmDestinations.cdm_test_local_mysql_test();
+//	static final ICdmDataSource cdmDestination = CdmDestinations.cdm_test_local_mysql();
 
 	
 	//classification
@@ -65,6 +65,7 @@ public class DwcaImportActivator {
 	
 	//check - import
 	static final CHECK check = CHECK.IMPORT_WITHOUT_CHECK;
+	static int partitionSize = 5;
 	
 	//config
 	static DatasetUse datasetUse = DatasetUse.SECUNDUM;
@@ -98,6 +99,7 @@ public class DwcaImportActivator {
 		
 		config.setScientificNameIdAsOriginalSourceId(scientificNameIdAsOriginalSourceId);
 		config.setValidateRankConsistency(validateRankConsistency);
+		config.setDefaultPartitionSize(partitionSize);
 		config.setNomenclaturalCode(defaultNomCode);
 		config.setDatasetUse(datasetUse);
 		config.setGuessNomenclaturalReferences(guessNomRef);
@@ -158,6 +160,12 @@ public class DwcaImportActivator {
 	//Dwca
 	public static URI dwca_test_col_cichorium() {
 		URI sourceUrl = URI.create("file:///C:/localCopy/Data/dwca/import/CoL/Cichorium/archive-genus-Cichorium-bl3.zip");
+		return sourceUrl;
+	}
+	
+	//Dwca
+	public static URI dwca_test_col_sapindaceae() {
+		URI sourceUrl = URI.create("file:///C:/localCopy/Data/dwca/import/CoL/Sapindaceae/archive-family-Sapindaceae-bl3.zip");
 		return sourceUrl;
 	}
 	
