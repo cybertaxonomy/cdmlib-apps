@@ -121,10 +121,10 @@ public class PesiTaxonExport extends PesiExportBase {
 	private static ExtensionType expertNameExtensionType;
 	private static ExtensionType speciesExpertNameExtensionType;
 	private static ExtensionType cacheCitationExtensionType;
-	private static NonViralNameDefaultCacheStrategy<?> zooNameStrategy = ZooNameNoMarkerCacheStrategy.NewInstance();
-	private static NonViralNameDefaultCacheStrategy<?> botanicalNameStrategy = BotanicNameDefaultCacheStrategy.NewInstance();
-	private static NonViralNameDefaultCacheStrategy<?> nonViralNameStrategy = NonViralNameDefaultCacheStrategy.NewInstance();
-	private static NonViralNameDefaultCacheStrategy<?> bacterialNameStrategy = BacterialNameDefaultCacheStrategy.NewInstance();
+	public static NonViralNameDefaultCacheStrategy<?> zooNameStrategy = ZooNameNoMarkerCacheStrategy.NewInstance();
+	public static NonViralNameDefaultCacheStrategy<?> botanicalNameStrategy = BotanicNameDefaultCacheStrategy.NewInstance();
+	public static NonViralNameDefaultCacheStrategy<?> nonViralNameStrategy = NonViralNameDefaultCacheStrategy.NewInstance();
+	public static NonViralNameDefaultCacheStrategy<?> bacterialNameStrategy = BacterialNameDefaultCacheStrategy.NewInstance();
 	
 	
 	/**
@@ -620,7 +620,7 @@ public class PesiTaxonExport extends PesiExportBase {
 		int pastCount;
 		boolean success = true;
 		// Get the limit for objects to save within a single transaction.
-		if (! state.getConfig().isDoTreeIndex()){
+		if (! state.getConfig().isDoInferredSynonyms()){
 			logger.info ("Ignore PHASE 4: Creating Inferred Synonyms...");
 			return success;
 		}
