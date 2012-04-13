@@ -39,13 +39,11 @@ import eu.etaxonomy.cdm.model.taxon.TaxonBase;
 public class ErmsLinkImport  extends ErmsImportBase<TaxonBase> {
 	private static final Logger logger = Logger.getLogger(ErmsLinkImport.class);
 
-	private DbImportMapping mapping;
+	private DbImportMapping<ErmsImportState,ErmsImportConfigurator> mapping;
 	
-	
-	private int modCount = 10000;
 	private static final String pluralString = "links";
 	private static final String dbTableName = "links";
-	private static final Class cdmTargetClass = Extension.class;
+	private static final Class<?> cdmTargetClass = Extension.class;
 
 	public ErmsLinkImport(){
 		super(pluralString, dbTableName, cdmTargetClass);
@@ -67,9 +65,9 @@ public class ErmsLinkImport  extends ErmsImportBase<TaxonBase> {
 	/* (non-Javadoc)
 	 * @see eu.etaxonomy.cdm.io.erms.ErmsImportBase#getMapping()
 	 */
-	protected DbImportMapping getMapping() {
+	protected DbImportMapping<ErmsImportState,ErmsImportConfigurator> getMapping() {
 		if (mapping == null){
-			mapping = new DbImportMapping();
+			mapping = new DbImportMapping<ErmsImportState,ErmsImportConfigurator>();
 			ExtensionType extensionType = ExtensionType.URL();
 			//TODO do we need to add to TaxonNameBase too?
 			mapping.addMapper(DbImportExtensionCreationMapper.NewInstance("tu_id", ErmsTaxonImport.TAXON_NAMESPACE, "link_url", "id", extensionType)); 

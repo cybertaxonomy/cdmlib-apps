@@ -32,15 +32,18 @@ import eu.etaxonomy.cdm.io.common.mapping.DbImportStringMapper;
 import eu.etaxonomy.cdm.io.common.mapping.DbNotYetImplementedMapper;
 import eu.etaxonomy.cdm.io.common.mapping.IMappingImport;
 import eu.etaxonomy.cdm.io.pesi.erms.validation.ErmsTaxonImportValidator;
+import eu.etaxonomy.cdm.io.pesi.out.PesiTaxonExport;
 import eu.etaxonomy.cdm.model.common.CdmBase;
 import eu.etaxonomy.cdm.model.common.ExtensionType;
 import eu.etaxonomy.cdm.model.name.NomenclaturalCode;
 import eu.etaxonomy.cdm.model.name.NonViralName;
 import eu.etaxonomy.cdm.model.name.Rank;
+import eu.etaxonomy.cdm.model.name.ZoologicalName;
 import eu.etaxonomy.cdm.model.reference.Reference;
 import eu.etaxonomy.cdm.model.taxon.Synonym;
 import eu.etaxonomy.cdm.model.taxon.Taxon;
 import eu.etaxonomy.cdm.model.taxon.TaxonBase;
+import eu.etaxonomy.cdm.strategy.cache.name.NonViralNameDefaultCacheStrategy;
 
 
 /**
@@ -381,6 +384,11 @@ public class ErmsTaxonImport  extends ErmsImportBase<TaxonBase<?>> implements IM
 			result = (NonViralName<?>)nc.getNewTaxonNameInstance(rank);
 		}else{
 			result = NonViralName.NewInstance(rank);
+		}
+		//cache strategy
+		if (result instanceof ZoologicalName){
+			NonViralNameDefaultCacheStrategy<?> cacheStrategy = PesiTaxonExport.zooNameStrategy;
+			result.setCacheStrategy(cacheStrategy);
 		}
 		
 		return result;
