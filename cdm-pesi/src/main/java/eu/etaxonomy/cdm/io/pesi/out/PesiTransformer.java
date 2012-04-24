@@ -96,6 +96,7 @@ public final class PesiTransformer extends ExportTransformerBase implements IExp
 	
 	// marker type
 	public static final UUID uuidMarkerGuidIsMissing = UUID.fromString("24e70843-05e2-44db-954b-84df0d23ea20");
+	public static final UUID uuidMarkerTypeHasNoLastAction = UUID.fromString("99652d5a-bc92-4251-b57d-0fec4d258ab7");
 //	public static final UUID uuidMarkerFossil = UUID.fromString("761ce108-031a-4e07-b444-f8d757070312");
 	
 	
@@ -1789,11 +1790,16 @@ public final class PesiTransformer extends ExportTransformerBase implements IExp
 			else if (namedArea.getUuid().equals(FaunaEuropaeaTransformer.uuidAreaGR_AEG)) { return STR_AREA_NORTH_AEGEAN_ISLANDS; }
 			else if (namedArea.getUuid().equals(FaunaEuropaeaTransformer.uuidAreaGR_CYC)) { return STR_AREA_CYCLADES_ISLANDS; }
 			else if (namedArea.getUuid().equals(FaunaEuropaeaTransformer.uuidAreaGR_DOD)) { return STR_AREA_DODECANESE_ISLANDS; }
+			else if (namedArea.getUuid().equals(FaunaEuropaeaTransformer.uuidAreaGR_CR)){ return STR_AREA_CRETE;}
 			else if (namedArea.getUuid().equals(FaunaEuropaeaTransformer.uuidAreaNAF)) { return STR_AREA_NORTHERN_AFRICA; }
 			else if (namedArea.getUuid().equals(FaunaEuropaeaTransformer.uuidAreaNEA)) { return STR_AREA_NEARCTIC_REGION; }
 			else if (namedArea.getUuid().equals(FaunaEuropaeaTransformer.uuidAreaNEO)) { return STR_AREA_NEOTROPICAL_REGION; }
 			else if (namedArea.getUuid().equals(FaunaEuropaeaTransformer.uuidAreaNRE)) { return STR_AREA_NEAR_EAST; }
 			else if (namedArea.getUuid().equals(FaunaEuropaeaTransformer.uuidAreaORR)) { return STR_AREA_ORIENTAL_REGION; }
+			else if (namedArea.getUuid().equals(FaunaEuropaeaTransformer.uuidAreaUA)){ return STR_AREA_UKRAINE;}
+			else if (namedArea.getUuid().equals(FaunaEuropaeaTransformer.uuidAreaRU_NOZ)) { return STR_AREA_NOVAYA_ZEMLYA;}
+			else if (namedArea.getUuid().equals(FaunaEuropaeaTransformer.uuidAreaRU_FJL)){ return STR_AREA_FRANZ_JOSEF_LAND;}
+			
 			
 			
 			//ERMS
@@ -1935,11 +1941,17 @@ public final class PesiTransformer extends ExportTransformerBase implements IExp
 			else if (namedArea.getUuid().equals(FaunaEuropaeaTransformer.uuidAreaGR_AEG)) { return AREA_NORTH_AEGEAN_ISLANDS; }
 			else if (namedArea.getUuid().equals(FaunaEuropaeaTransformer.uuidAreaGR_CYC)) { return AREA_CYCLADES_ISLANDS; }
 			else if (namedArea.getUuid().equals(FaunaEuropaeaTransformer.uuidAreaGR_DOD)) { return AREA_DODECANESE_ISLANDS; }
+			else if (namedArea.getUuid().equals(FaunaEuropaeaTransformer.uuidAreaGR_CR)) { return AREA_CRETE; }
+			else if (namedArea.getUuid().equals(FaunaEuropaeaTransformer.uuidAreaGR_GRC)) { return AREA_GREEK_MAINLAND; }
 			else if (namedArea.getUuid().equals(FaunaEuropaeaTransformer.uuidAreaNAF)) { return AREA_NORTHERN_AFRICA; }
 			else if (namedArea.getUuid().equals(FaunaEuropaeaTransformer.uuidAreaNEA)) { return AREA_NEARCTIC_REGION; }
 			else if (namedArea.getUuid().equals(FaunaEuropaeaTransformer.uuidAreaNEO)) { return AREA_NEOTROPICAL_REGION; }
 			else if (namedArea.getUuid().equals(FaunaEuropaeaTransformer.uuidAreaNRE)) { return AREA_NEAR_EAST; }
 			else if (namedArea.getUuid().equals(FaunaEuropaeaTransformer.uuidAreaORR)) { return AREA_ORIENTAL_REGION; }
+			else if (namedArea.getUuid().equals(FaunaEuropaeaTransformer.uuidAreaUA)) { return AREA_UKRAINE_INCLUDING_CRIMEA; }
+			else if (namedArea.getUuid().equals(FaunaEuropaeaTransformer.uuidAreaRU_FJL)) { return AREA_FRANZ_JOSEF_LAND; }
+			else if (namedArea.getUuid().equals(FaunaEuropaeaTransformer.uuidAreaRU_NOZ)) { return AREA_NOVAYA_ZEMLYA; }
+			
 
 			//ERMS
 			else if (namedArea.getUuid().equals(ErmsTransformer.uuidEuropeanMarineWaters)) { return AREA_EUROPEAN_MARINE_WATERS; }

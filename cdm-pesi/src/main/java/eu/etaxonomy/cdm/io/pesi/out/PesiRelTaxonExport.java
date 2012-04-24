@@ -200,6 +200,12 @@ public class PesiRelTaxonExport extends PesiExportBase {
 							mapping.invoke(rel);
 						}
 					}
+					fromList = null;
+					toList = null;
+					name1 = null;
+					name2 = null;
+					rel = null;
+					
 					
 				} catch (Exception e) {
 					logger.error(e.getMessage() + ". Relationship: " +  rel.getUuid());

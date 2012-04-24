@@ -11,6 +11,8 @@ package eu.etaxonomy.cdm.io.pesi.faunaEuropaea;
 
 import java.util.UUID;
 
+import org.joda.time.DateTime;
+
 /**
  * @author a.babadshanjan
  * @created 11.09.2009
@@ -26,6 +28,8 @@ public class FaunaEuropaeaDistribution {
 	private String areaName;
 	private String areaCode;
 	private int extraLimital;
+	
+	
 	
 	
 //	/**

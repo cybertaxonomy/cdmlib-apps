@@ -17,12 +17,14 @@ import java.util.List;
 import java.util.Set;
 import java.util.UUID;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 
 import eu.etaxonomy.cdm.api.service.pager.Pager;
 import eu.etaxonomy.cdm.hibernate.HibernateProxyHelper;
 import eu.etaxonomy.cdm.io.berlinModel.BerlinModelTransformer;
 import eu.etaxonomy.cdm.io.common.DbExportBase;
+import eu.etaxonomy.cdm.io.common.mapping.out.MethodMapper;
 import eu.etaxonomy.cdm.io.pesi.indexFungorum.IndexFungorumImportState;
 import eu.etaxonomy.cdm.model.common.CdmBase;
 import eu.etaxonomy.cdm.model.common.Marker;
@@ -30,11 +32,13 @@ import eu.etaxonomy.cdm.model.common.MarkerType;
 import eu.etaxonomy.cdm.model.common.RelationshipBase;
 import eu.etaxonomy.cdm.model.description.Feature;
 import eu.etaxonomy.cdm.model.description.TaxonNameDescription;
+import eu.etaxonomy.cdm.model.name.BotanicalName;
 import eu.etaxonomy.cdm.model.name.HybridRelationship;
 import eu.etaxonomy.cdm.model.name.NameRelationship;
 import eu.etaxonomy.cdm.model.name.NameRelationshipType;
 import eu.etaxonomy.cdm.model.name.NonViralName;
 import eu.etaxonomy.cdm.model.name.TaxonNameBase;
+import eu.etaxonomy.cdm.model.name.ZoologicalName;
 import eu.etaxonomy.cdm.model.taxon.Synonym;
 import eu.etaxonomy.cdm.model.taxon.SynonymRelationship;
 import eu.etaxonomy.cdm.model.taxon.Taxon;
@@ -42,6 +46,9 @@ import eu.etaxonomy.cdm.model.taxon.TaxonBase;
 import eu.etaxonomy.cdm.model.taxon.TaxonRelationship;
 import eu.etaxonomy.cdm.model.taxon.TaxonRelationshipType;
 import eu.etaxonomy.cdm.persistence.query.OrderHint;
+import eu.etaxonomy.cdm.strategy.cache.name.BotanicNameDefaultCacheStrategy;
+import eu.etaxonomy.cdm.strategy.cache.name.NonViralNameDefaultCacheStrategy;
+import eu.etaxonomy.cdm.strategy.cache.name.ZooNameNoMarkerCacheStrategy;
 
 /**
  * @author e.-m.lee
@@ -52,6 +59,9 @@ public abstract class PesiExportBase extends DbExportBase<PesiExportConfigurator
 	private static final Logger logger = Logger.getLogger(PesiExportBase.class);
 	
 	private static Set<NameRelationshipType> excludedRelTypes = new HashSet<NameRelationshipType>();
+	
+	private static NonViralNameDefaultCacheStrategy<?> zooNameStrategy = ZooNameNoMarkerCacheStrategy.NewInstance();
+	private static NonViralNameDefaultCacheStrategy<?> botanicalNameStrategy = BotanicNameDefaultCacheStrategy.NewInstance();
 	
 	public PesiExportBase() {
 		super();
@@ -400,20 +410,74 @@ public abstract class PesiExportBase extends DbExportBase<PesiExportConfigurator
 	
 	
 	
-	protected MarkerType getUuidisMissingMarkerType(UUID uuid, PesiExportState state){
+	protected MarkerType getUuidMarkerType(UUID uuid, PesiExportState state){
 		if (uuid == null){
 			uuid = UUID.randomUUID();
 		}
 		
 		MarkerType markerType = state.getMarkerType(uuid);
 			if (markerType == null){
-				markerType = MarkerType.NewInstance("Uuid is Missing", "Uuid is missing", null);
-				markerType.setUuid(uuid);
+				if (uuid.equals(PesiTransformer.uuidMarkerGuidIsMissing)){
+					markerType = MarkerType.NewInstance("Uuid is Missing", "Uuid is missing", null);
+					markerType.setUuid(uuid);
+				} else if (uuid.equals(PesiTransformer.uuidMarkerTypeHasNoLastAction)){
+					markerType = MarkerType.NewInstance("Has no last Action", "Has no last action", null);
+					markerType.setUuid(uuid);
+				}
 			}
 
 			state.putMarkerType(markerType);
 			return markerType;
 		}
+	
+	
+	
+	static NonViralNameDefaultCacheStrategy getCacheStrategy(TaxonNameBase<?, ?> taxonName) {
+		NonViralNameDefaultCacheStrategy cacheStrategy;
+		if (taxonName.isInstanceOf(ZoologicalName.class)){
+			cacheStrategy = zooNameStrategy;
+		}else if (taxonName.isInstanceOf(BotanicalName.class)) {
+			cacheStrategy = botanicalNameStrategy;
+		}else{
+			logger.error("Unhandled taxon name type. Can't define strategy class");
+			cacheStrategy = botanicalNameStrategy;
+		}
+		return cacheStrategy;
+	}
+	
+
+	
+	
+	/**
+	 * Checks whether a given taxon is a misapplied name.
+	 * @param taxon The {@link TaxonBase Taxon}.
+	 * @return Whether the given TaxonName is a misapplied name or not.
+	 */
+	protected static boolean isMisappliedName(TaxonBase<?> taxon) {
+		return getAcceptedTaxonForMisappliedName(taxon) != null;
+		
+	}
+	
+
+	/**
+	 * Returns the first accepted taxon for this misapplied name.
+	 * If this misapplied name is not a misapplied name, <code>null</code> is returned. 
+	 * @param taxon The {@link TaxonBase Taxon}.
+	 */
+	private static Taxon getAcceptedTaxonForMisappliedName(TaxonBase<?> taxon) {
+		if (! taxon.isInstanceOf(Taxon.class)){
+			return null;
+		}
+		Set<TaxonRelationship> taxonRelations = CdmBase.deproxy(taxon, Taxon.class).getRelationsFromThisTaxon();
+		for (TaxonRelationship taxonRelationship : taxonRelations) {
+			TaxonRelationshipType taxonRelationshipType = taxonRelationship.getType();
+			if (taxonRelationshipType.equals(TaxonRelationshipType.MISAPPLIED_NAME_FOR())) {
+				return taxonRelationship.getToTaxon();
+			}
+		}
+		return null;
+	}
+
 
 
 

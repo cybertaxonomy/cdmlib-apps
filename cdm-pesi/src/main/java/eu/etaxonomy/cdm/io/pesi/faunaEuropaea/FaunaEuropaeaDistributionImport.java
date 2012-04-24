@@ -200,7 +200,7 @@ public class FaunaEuropaeaDistributionImport extends FaunaEuropaeaImportBase {
 						fauEuTaxonMap = null;
 						
 					} catch (Exception e) {
-						logger.error("Commit of taxa and distributions failed");
+						logger.error("Commit of taxa and distributions failed" + e.getMessage());
 						e.printStackTrace();
 					}
 					
@@ -298,6 +298,8 @@ public class FaunaEuropaeaDistributionImport extends FaunaEuropaeaImportBase {
 					}
 					
 					newDistribution = Distribution.NewInstance(namedArea, presenceAbsenceStatus);
+					newDistribution.setCreated(null);
+					
 					taxonDescription.addElement(newDistribution);
 				}
 			}

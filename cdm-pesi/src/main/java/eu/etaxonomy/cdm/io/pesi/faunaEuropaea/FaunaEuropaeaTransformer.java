@@ -24,6 +24,7 @@ import eu.etaxonomy.cdm.model.description.PresenceAbsenceTermBase;
 import eu.etaxonomy.cdm.model.description.PresenceTerm;
 import eu.etaxonomy.cdm.model.location.NamedArea;
 import eu.etaxonomy.cdm.model.location.TdwgArea;
+import eu.etaxonomy.cdm.model.location.WaterbodyOrCountry;
 import eu.etaxonomy.cdm.model.name.NomenclaturalStatusType;
 import eu.etaxonomy.cdm.model.name.Rank;
 import eu.etaxonomy.cdm.strategy.exceptions.UnknownCdmTypeException;
@@ -239,7 +240,7 @@ public final class FaunaEuropaeaTransformer {
 			//else if (areaCode.equals("GR-CYC")) tdwgArea = TdwgArea.getAreaByTdwgAbbreviation("GRC-OO"); // Cyclades Is. - Greece
 			//else if (areaCode.equals("GR-DOD")) tdwgArea = TdwgArea.getAreaByTdwgAbbreviation("EAI-OO"); // Dodecanese Is. - East Aegean Is.
 			else if (areaCode.equals("GR-GRC")) tdwgArea = TdwgArea.getAreaByTdwgAbbreviation("GRC-OO");
-			else if (areaCode.equals("GR-KRI")) tdwgArea = TdwgArea.getAreaByTdwgAbbreviation("KRI-OO");
+			//else if (areaCode.equals("GR-KRI")) tdwgArea = TdwgArea.getAreaByTdwgAbbreviation("KRI-OO");//only Crete
 			else if (areaCode.equals("HR")) tdwgArea = TdwgArea.getAreaByTdwgAbbreviation("YUG-CR");
 			else if (areaCode.equals("HU")) tdwgArea = TdwgArea.getAreaByTdwgAbbreviation("HUN-OO");
 			else if (areaCode.equals("IE")) tdwgArea = TdwgArea.getAreaByTdwgAbbreviation("IRE-IR");
@@ -269,9 +270,9 @@ public final class FaunaEuropaeaTransformer {
 			else if (areaCode.equals("PT-POR")) tdwgArea = TdwgArea.getAreaByTdwgAbbreviation("POR-OO");
 			else if (areaCode.equals("PT-SEL")) tdwgArea = TdwgArea.getAreaByTdwgAbbreviation("SEL-OO");
 			else if (areaCode.equals("RO")) tdwgArea = TdwgArea.getAreaByTdwgAbbreviation("ROM-OO");
-			else if (areaCode.equals("RU-FJL")) tdwgArea = TdwgArea.getAreaByTdwgAbbreviation("WSB-OO");
+			//else if (areaCode.equals("RU-FJL")) tdwgArea = TdwgArea.getAreaByTdwgAbbreviation("WSB-OO"); Franz Josef Land
 			else if (areaCode.equals("RU-KGD")) tdwgArea = TdwgArea.getAreaByTdwgAbbreviation("BLT-KA");
-			else if (areaCode.equals("RU-NOZ")) tdwgArea = TdwgArea.getAreaByTdwgAbbreviation("WSB-OO");
+			//else if (areaCode.equals("RU-NOZ")) tdwgArea = TdwgArea.getAreaByTdwgAbbreviation("WSB-OO"); Novaya Zemla
 			else if (areaCode.equals("RU-RUC")) tdwgArea = TdwgArea.getAreaByTdwgAbbreviation("RUC-OO");
 			else if (areaCode.equals("RU-RUE")) tdwgArea = TdwgArea.getAreaByTdwgAbbreviation("RUE-OO");
 			else if (areaCode.equals("RU-RUN")) tdwgArea = TdwgArea.getAreaByTdwgAbbreviation("RUN-OO");
@@ -282,7 +283,8 @@ public final class FaunaEuropaeaTransformer {
 			else if (areaCode.equals("SK")) tdwgArea = TdwgArea.getAreaByTdwgAbbreviation("CZE-SK");
 			else if (areaCode.equals("SM")) tdwgArea = TdwgArea.getAreaByTdwgAbbreviation("ITA-SM");
 			else if (areaCode.equals("TR-TUE")) tdwgArea = TdwgArea.getAreaByTdwgAbbreviation("TUE-OO");
-			else if (areaCode.equals("UA")) tdwgArea = TdwgArea.getAreaByTdwgAbbreviation("UKR-UK");
+			//else if (areaCode.equals("UA")) tdwgArea = TdwgArea.getAreaByTdwgAbbreviation("UKR-UK"); //UKraine including Crimea
+			
 			else if (areaCode.equals("VA")) tdwgArea = TdwgArea.getAreaByTdwgAbbreviation("ITA-VC");
 			else if (areaCode.equals("YU")) tdwgArea = TdwgArea.getAreaByTdwgAbbreviation("YUG");
 			else 					
@@ -312,6 +314,12 @@ public final class FaunaEuropaeaTransformer {
 	public static UUID uuidAreaNEO = UUID.fromString("0e6e0ce9-c6ab-46bc-80b9-aee4a0620e78");
 	public static UUID uuidAreaNRE = UUID.fromString("d51876c2-eaf6-4c7f-963e-337dd3e0d729");
 	public static UUID uuidAreaORR = UUID.fromString("04cab4f8-b316-4e21-9bcc-236a45e4e83d");
+	public static UUID uuidAreaGR_CR = UUID.fromString("2ef9fa6c-7c3f-431a-96c9-5980c55fc440");
+	public static UUID uuidAreaGR_GRC = UUID.fromString("b5d33c78-91e7-467a-9c2d-6c337b78d31a");
+	public static UUID uuidAreaUA = UUID.fromString("859cf055-a208-4f30-8e6e-361f165c6fa9");
+	public static UUID uuidAreaRU_FJL = UUID.fromString("84671068-2f18-40cb-933a-e7e1c0e37cc8");
+	public static UUID uuidAreaRU_NOZ = UUID.fromString("64cce0aa-0222-4740-8fa2-dbf0330e9266");
+	
 	
 	public final static HashMap<String, UUID> abbrToUUID = new HashMap<String,UUID>();
 	 	static
@@ -327,6 +335,13 @@ public final class FaunaEuropaeaTransformer {
 	 		abbrToUUID.put("NEO", uuidAreaNEO);
 	 		abbrToUUID.put("NRE", uuidAreaNRE);
 	 		abbrToUUID.put("ORR", uuidAreaORR);
+	 		abbrToUUID.put("GR-KRI", uuidAreaGR_CR);
+	 		abbrToUUID.put("GR-GRC", uuidAreaGR_GRC);
+	 		abbrToUUID.put("UA", uuidAreaUA);
+	 		abbrToUUID.put("RU-FJL", uuidAreaRU_FJL);
+	 		abbrToUUID.put("RU-NOZ", uuidAreaRU_NOZ);
+	 		
+	 		
 	 	}
 	public static UUID getUUIDByAreaAbbr(String abbr){
 		return abbrToUUID.get(abbr);

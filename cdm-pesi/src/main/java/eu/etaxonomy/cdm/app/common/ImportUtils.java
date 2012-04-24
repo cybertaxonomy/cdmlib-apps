@@ -14,9 +14,7 @@ import java.util.regex.Pattern;
 
 import eu.etaxonomy.cdm.common.AccountStore;
 import eu.etaxonomy.cdm.io.common.Source;
-import eu.etaxonomy.cdm.io.pesi.indexFungorum.IndexFungorumImportState;
-import eu.etaxonomy.cdm.io.pesi.out.PesiTransformer;
-import eu.etaxonomy.cdm.model.common.MarkerType;
+
 
 /**
  * @author a.babadshanjan

@@ -25,6 +25,9 @@ import eu.etaxonomy.cdm.common.CdmUtils;
 import eu.etaxonomy.cdm.io.common.CdmImportBase;
 import eu.etaxonomy.cdm.io.common.ICdmImport;
 import eu.etaxonomy.cdm.io.common.Source;
+import eu.etaxonomy.cdm.io.pesi.out.PesiExportState;
+import eu.etaxonomy.cdm.io.pesi.out.PesiTransformer;
+import eu.etaxonomy.cdm.model.common.MarkerType;
 import eu.etaxonomy.cdm.model.reference.Reference;
 import eu.etaxonomy.cdm.model.taxon.Classification;
 
@@ -160,5 +163,7 @@ implements ICdmImport<FaunaEuropaeaImportConfigurator,FaunaEuropaeaImportState> 
 		Matcher matcher = pattern.matcher(targetString);
 		return matcher;
 	}
+	
+	
 
 }

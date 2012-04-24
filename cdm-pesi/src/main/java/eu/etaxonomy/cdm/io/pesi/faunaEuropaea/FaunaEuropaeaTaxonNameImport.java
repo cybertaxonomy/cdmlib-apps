@@ -37,12 +37,15 @@ import eu.etaxonomy.cdm.io.common.ICdmIO;
 import eu.etaxonomy.cdm.io.common.ImportHelper;
 import eu.etaxonomy.cdm.io.common.MapWrapper;
 import eu.etaxonomy.cdm.io.common.Source;
+import eu.etaxonomy.cdm.io.pesi.out.PesiExportState;
 import eu.etaxonomy.cdm.io.pesi.out.PesiTransformer;
 import eu.etaxonomy.cdm.model.agent.TeamOrPersonBase;
 import eu.etaxonomy.cdm.model.common.CdmBase;
 import eu.etaxonomy.cdm.model.common.Extension;
 import eu.etaxonomy.cdm.model.common.IdentifiableSource;
 import eu.etaxonomy.cdm.model.common.LSID;
+import eu.etaxonomy.cdm.model.common.Marker;
+import eu.etaxonomy.cdm.model.common.MarkerType;
 import eu.etaxonomy.cdm.model.name.NomenclaturalStatus;
 import eu.etaxonomy.cdm.model.name.Rank;
 import eu.etaxonomy.cdm.model.name.TaxonNameBase;
@@ -63,6 +66,7 @@ import eu.etaxonomy.cdm.strategy.exceptions.UnknownCdmTypeException;
 public class FaunaEuropaeaTaxonNameImport extends FaunaEuropaeaImportBase  {
 	
 	public static final String OS_NAMESPACE_TAXON = "Taxon";
+	
 	private static final Logger logger = Logger.getLogger(FaunaEuropaeaTaxonNameImport.class);
 
 	/* Max number of taxa to retrieve (for test purposes) */
@@ -441,18 +445,10 @@ public class FaunaEuropaeaTaxonNameImport extends FaunaEuropaeaImportBase  {
 					ImportHelper.setOriginalSource(zooName, fauEuConfig.getSourceReference(), taxonId, "TaxonName");
 
 					if (!taxonMap.containsKey(taxonId)) {
-						if (taxonBase == null) {
-							if (logger.isDebugEnabled()) { 
-								logger.debug("Taxon base is null. Taxon (" + taxonId + ") ignored.");
-							}
-							continue;
-						}
+						
 						taxonMap.put(taxonId, taxonBase);
 						fauEuTaxonMap.put(taxonId, fauEuTaxon);
 						
-//						if (logger.isDebugEnabled()) { 
-//						logger.debug("Stored taxon base (" + taxonId + ") " + localName); 
-//						}
 					} else {
 						logger.warn("Not imported taxon base with duplicated TAX_ID (" + taxonId + 
 								") " + localName);
@@ -548,7 +544,7 @@ public class FaunaEuropaeaTaxonNameImport extends FaunaEuropaeaImportBase  {
 				}
 				
 				if (actualGenusId.intValue() != originalGenusId.intValue() && taxonBase.isInstanceOf(Taxon.class)) {
-					createBasionym(fauEuTaxon, taxonBase, taxonName, fauEuConfig, synonymSet);
+					createBasionym(fauEuTaxon, taxonBase, taxonName, fauEuConfig, synonymSet, state);
 				} else if (fauEuTaxon.isParenthesis()) {
 					//the authorteam should be set in parenthesis because there should be a basionym, but we do not know it?
 					ZoologicalName zooName = taxonName.deproxy(taxonName, ZoologicalName.class);
@@ -566,7 +562,7 @@ public class FaunaEuropaeaTaxonNameImport extends FaunaEuropaeaImportBase  {
 	
 	private void createBasionym(FaunaEuropaeaTaxon fauEuTaxon, TaxonBase<?> taxonBase, 
 			TaxonNameBase<?,?>taxonName, FaunaEuropaeaImportConfigurator fauEuConfig,
-			Set<Synonym> synonymSet) {
+			Set<Synonym> synonymSet, FaunaEuropaeaImportState state) {
 
 		try {
 			ZoologicalName zooName = taxonName.deproxy(taxonName, ZoologicalName.class);
@@ -580,11 +576,13 @@ public class FaunaEuropaeaTaxonNameImport extends FaunaEuropaeaImportBase  {
 
 			
 			zooName.addBasionym(basionym, fauEuConfig.getSourceReference(), null, null);
-			//TODO:this is a workaround for fauna europaea, may be this should be fixed in NonViralNameCacheStrategy
+			//TODO:this is a workaround for fauna europaea, this should be fixed in cdm model. this should be not a basionym but an orthographic variant (original spelling)
 			if (fauEuTaxon.isParenthesis()){
-				zooName.setBasionymAuthorTeam(null);
-			} else{
 				zooName.setBasionymAuthorTeam(zooName.getCombinationAuthorTeam());
+				zooName.setCombinationAuthorTeam(null);
+			} else{
+				zooName.setBasionymAuthorTeam(null);
+				zooName.setAuthorshipCache(zooName.getAuthorshipCache(), true);
 				zooName.setCombinationAuthorTeam(null);
 			}
 			zooName.setPublicationYear(null);
@@ -595,6 +593,8 @@ public class FaunaEuropaeaTaxonNameImport extends FaunaEuropaeaImportBase  {
 
 			// create synonym
 			Synonym synonym = Synonym.NewInstance(basionym, fauEuConfig.getSourceReference());
+			MarkerType markerType =getMarkerType(state, PesiTransformer.uuidMarkerGuidIsMissing, "Uuid is missing", "Uuid is missing", null);
+			synonym.addMarker(Marker.NewInstance(markerType, true));
 			
 			if (fauEuTaxon.isValid()) { // Taxon
 
@@ -1050,5 +1050,7 @@ public class FaunaEuropaeaTaxonNameImport extends FaunaEuropaeaImportBase  {
 			return text;
 		}
 	}
+	
+	
 
 }

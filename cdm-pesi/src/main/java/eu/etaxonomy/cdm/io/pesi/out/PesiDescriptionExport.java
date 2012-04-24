@@ -43,6 +43,7 @@ import eu.etaxonomy.cdm.io.common.mapping.out.DbStringMapper;
 import eu.etaxonomy.cdm.io.common.mapping.out.DbTextDataMapper;
 import eu.etaxonomy.cdm.io.common.mapping.out.IdMapper;
 import eu.etaxonomy.cdm.io.common.mapping.out.MethodMapper;
+import eu.etaxonomy.cdm.io.profiler.ProfilerController;
 //import eu.etaxonomy.cdm.io.profiler.ProfilerController;
 import eu.etaxonomy.cdm.model.common.CdmBase;
 import eu.etaxonomy.cdm.model.common.Extension;
@@ -50,6 +51,8 @@ import eu.etaxonomy.cdm.model.common.ExtensionType;
 import eu.etaxonomy.cdm.model.common.IdentifiableEntity;
 import eu.etaxonomy.cdm.model.common.Language;
 import eu.etaxonomy.cdm.model.common.LanguageString;
+import eu.etaxonomy.cdm.model.common.Marker;
+import eu.etaxonomy.cdm.model.common.MarkerType;
 import eu.etaxonomy.cdm.model.description.CommonTaxonName;
 import eu.etaxonomy.cdm.model.description.DescriptionBase;
 import eu.etaxonomy.cdm.model.description.DescriptionElementBase;
@@ -60,9 +63,11 @@ import eu.etaxonomy.cdm.model.description.TaxonInteraction;
 import eu.etaxonomy.cdm.model.description.TextData;
 import eu.etaxonomy.cdm.model.location.NamedArea;
 import eu.etaxonomy.cdm.model.location.TdwgArea;
+import eu.etaxonomy.cdm.model.name.NonViralName;
 import eu.etaxonomy.cdm.model.name.TaxonNameBase;
 
 import eu.etaxonomy.cdm.model.taxon.Taxon;
+import eu.etaxonomy.cdm.model.taxon.TaxonBase;
 /**
  * The export class for {@link eu.etaxonomy.cdm.model.description.DescriptionElementBase DescriptionElements}.<p>
  * Inserts into DataWarehouse database table <code>Note</code>.<p>
@@ -193,20 +198,22 @@ public class PesiDescriptionExport extends PesiExportBase {
 		List<String> propPath = Arrays.asList(new String[]{"descriptions.elements.*"});
 		
 		logger.warn("Start snapshot, before starting loop");
-		//ProfilerController.memorySnapshot();
+		ProfilerController.memorySnapshot();
 		//taxon descriptions
 		int partitionCount = 0;
 		while ((list = getNextTaxonPartition(Taxon.class, limit, partitionCount++, propPath )) != null   ) {
 
 			logger.info("Fetched " + list.size() + " " + pluralString + ". Exporting...");
 			logger.warn("Start snapshot, beginning of loop, fetched " + list.size() + " " + pluralString);
-			//ProfilerController.memorySnapshot();
-			
+			if (partitionCount % 10 == 0){
+				ProfilerController.memorySnapshot();
+			}
 			for (Taxon taxon : list) {
 				countTaxa++;
 				doCount(count++, modCount, pluralString);
 				success &= handleSingleTaxon(taxon, state, notesMapping, occurrenceMapping, addittionalSourceMapping, vernacularMapping, imageMapping);	
 			}
+			list = null;
 			state.setCurrentTaxon(null);
 
 			// Commit transaction
@@ -217,8 +224,7 @@ public class PesiDescriptionExport extends PesiExportBase {
 			// Start transaction
 			txStatus = startTransaction(true);
 			logger.info("Started new transaction. Fetching some " + pluralString + " (max: " + limit + ") for description import ...");
-			logger.warn("Start snapshot, end of loop");
-			//ProfilerController.memorySnapshot();
+					
 		}
 		
 //		//name descriptions
@@ -293,6 +299,9 @@ public class PesiDescriptionExport extends PesiExportBase {
 				}else if (isOccurrence(element)){
 					countOccurrence++;
 					Distribution distribution = CdmBase.deproxy(element, Distribution.class);
+					MarkerType markerType = getUuidMarkerType(PesiTransformer.uuidMarkerTypeHasNoLastAction, state);
+					
+					distribution.addMarker(Marker.NewInstance(markerType, true));
 					if (isPesiDistribution(state, distribution)){
 						countDistribution++;
 						success &=occurrenceMapping.invoke(element);
@@ -707,6 +716,24 @@ public class PesiDescriptionExport extends PesiExportBase {
 	private static Integer getTaxonKey(TaxonNameBase<?,?> taxonName, DbExportStateBase<?, PesiTransformer> state) {
 		return state.getDbId(taxonName);
 	}
+	
+	/**
+	 * Returns the <code>FullName</code> attribute.
+	 * @param taxonName The {@link NonViralName NonViralName}.
+	 * @return The <code>FullName</code> attribute.
+	 * @see MethodMapper
+	 */
+	@SuppressWarnings("unused")
+	private static String getTaxonFullNameCache(DescriptionElementBase deb, PesiExportState state) {
+		
+		IdentifiableEntity<?> taxon = state.getCurrentTaxon();
+		TaxonBase<?> taxonDeproxy = CdmBase.deproxy(taxon, TaxonBase.class);
+		TaxonNameBase<?,?> taxonName = taxonDeproxy.getName();
+		NonViralName<?> nvn = CdmBase.deproxy(taxonName, NonViralName.class);
+		String result = getCacheStrategy(nvn).getTitleCache(nvn);
+		
+		return result;
+	}
 
 
 	/**
@@ -753,7 +780,8 @@ public class PesiDescriptionExport extends PesiExportBase {
 		
 		mapping.addMapper(IdMapper.NewInstance("OccurrenceId"));
 		mapping.addMapper(DbDescriptionElementTaxonMapper.NewInstance("taxonFk"));
-		mapping.addMapper(DbDescriptionElementTaxonMapper.NewInstance("TaxonFullNameCache", true, true, null));
+		mapping.addMapper(DbDescriptionElementTaxonMapper.NewInstance("TaxonFullNameCache", true, false, null)); 
+		
 		mapping.addMapper(DbAreaMapper.NewInstance(Distribution.class, "Area", "AreaFk", ! IS_CACHE));
 		mapping.addMapper(DbAreaMapper.NewInstance(Distribution.class, "Area", "AreaNameCache", IS_CACHE));
 		mapping.addMapper(DbDistributionStatusMapper.NewInstance("OccurrenceStatusFk", ! IS_CACHE));
