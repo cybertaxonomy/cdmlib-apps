@@ -215,7 +215,8 @@ public class PesiRelTaxonExport extends PesiExportBase {
 		}
 		list = null;
 		logger.info("End PHASE 2: Name Relationships ...");
-				
+		state.setCurrentFromObject(null);
+		state.setCurrentToObject(null);	
 		return success;
 	}
 
@@ -421,6 +422,7 @@ public class PesiRelTaxonExport extends PesiExportBase {
 			// SynonymNameRelationship
 			success &= saveNameRelationships(state, synonym);
 		}
+		state.setCurrentFromObject(null);
 		return success;
 	}
 
@@ -439,7 +441,7 @@ public class PesiRelTaxonExport extends PesiExportBase {
 		state.setCurrentToObject(taxonBase);
 		isFrom = false;
 		success &= saveOneSideNameRelation(state, isFrom, nameRelations);
-		
+		state.setCurrentToObject(null);
 		return success;
 	}
 
@@ -474,6 +476,8 @@ public class PesiRelTaxonExport extends PesiExportBase {
 			doCount(count++, modCount, pluralString);
 			success &= mapping.invoke(nameRelation);
 		}
+		state.setCurrentFromObject(null);
+		state.setCurrentToObject(null);
 		return success;
 	}
 

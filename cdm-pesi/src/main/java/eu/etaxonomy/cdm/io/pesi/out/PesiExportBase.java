@@ -82,6 +82,7 @@ public abstract class PesiExportBase extends DbExportBase<PesiExportConfigurator
 			if (! isPesiTaxon(taxonBase)){
 				it.remove();
 			}
+			taxonBase = null;
 		}
 		
 		return list;
@@ -214,10 +215,12 @@ public abstract class PesiExportBase extends DbExportBase<PesiExportConfigurator
 			SynonymRelationship synRel = CdmBase.deproxy(rel, SynonymRelationship.class);
 			taxonBase = synRel.getSynonym();
 			taxon = synRel.getAcceptedTaxon();
+			synRel = null;
 		}else if (rel.isInstanceOf(TaxonRelationship.class)){
 			TaxonRelationship taxRel = CdmBase.deproxy(rel, TaxonRelationship.class);
 			taxonBase = taxRel.getFromTaxon();
 			taxon = taxRel.getToTaxon();
+			taxRel = null;
 		}else{
 			logger.warn ("Only synonym - and taxon-relationships alowed here");
 			return false;
@@ -342,10 +345,12 @@ public abstract class PesiExportBase extends DbExportBase<PesiExportConfigurator
 			Taxon taxon = CdmBase.deproxy(taxonBase, Taxon.class);
 			for (Marker marker : taxon.getMarkers()){
 				if (marker.getValue() == false && marker.getMarkerType().equals(MarkerType.PUBLISH())){
+					taxon = null;
 					return false;
 				//probably not needed any more after #2786 was fixed
 				}else if (marker.getValue() == true && marker.getMarkerType().getUuid().equals(BerlinModelTransformer.uuidMisappliedCommonName)){
 					logger.warn("Misapplied common name still exists");
+					taxon = null;
 					return false;
 				}
 				
@@ -354,6 +359,7 @@ public abstract class PesiExportBase extends DbExportBase<PesiExportConfigurator
 			if (! taxon.isMisapplication()){
 				for (Marker marker : taxon.getMarkers()){
 					if (marker.getValue() == false && marker.getMarkerType().equals(MarkerType.PUBLISH())){
+						taxon = null;
 						return false;
 					}
 				}
@@ -361,12 +367,14 @@ public abstract class PesiExportBase extends DbExportBase<PesiExportConfigurator
 			//handle misapplied names
 			}else{
 				if (excludeMisappliedNames){
+					taxon = null;
 					return false;
 				}
 				for (Marker marker : taxon.getMarkers()){
 					//probably not needed any more after #2786 was fixed
 					if (marker.getValue() == true && marker.getMarkerType().getUuid().equals(BerlinModelTransformer.uuidMisappliedCommonName)){
 						logger.warn("Misapplied common name still exists");
+						taxon = null;
 						return false;
 					}
 				}
@@ -374,11 +382,13 @@ public abstract class PesiExportBase extends DbExportBase<PesiExportConfigurator
 					if (taxRel.getType().equals(TaxonRelationshipType.MISAPPLIED_NAME_FOR())){
 //						logger.warn(taxRel.getUuid() + "; " + taxRel.getToTaxon().getUuid() + " + " + taxRel.getToTaxon().getTitleCache());
 						if (isPesiTaxon(taxRel.getToTaxon(), true)){
+							taxon = null;
 							return true;
 						}
 					}
 				}
 				if (logger.isDebugEnabled()){ logger.debug("Misapplied name has no accepted PESI taxon: " +  taxon.getUuid() + ", (" +  taxon.getTitleCache() + ")");}
+				taxon = null;
 				return false;
 			}
 		//handle synonyms
@@ -391,6 +401,7 @@ public abstract class PesiExportBase extends DbExportBase<PesiExportConfigurator
 				}
 			}
 			if (!hasAcceptedPesiTaxon) {if (logger.isDebugEnabled()){logger.debug("Synonym has no accepted PESI taxon: " +  synonym.getUuid() + ", (" +  synonym.getTitleCache() + ")");}}
+			synonym = null;
 			return hasAcceptedPesiTaxon;
 		}else {
 			throw new RuntimeException("Unknown taxon base type: " + taxonBase.getClass());
@@ -432,7 +443,7 @@ public abstract class PesiExportBase extends DbExportBase<PesiExportConfigurator
 	
 	
 	
-	static NonViralNameDefaultCacheStrategy getCacheStrategy(TaxonNameBase<?, ?> taxonName) {
+	protected static NonViralNameDefaultCacheStrategy getCacheStrategy(TaxonNameBase<?, ?> taxonName) {
 		NonViralNameDefaultCacheStrategy cacheStrategy;
 		if (taxonName.isInstanceOf(ZoologicalName.class)){
 			cacheStrategy = zooNameStrategy;

@@ -204,8 +204,9 @@ public class PesiDescriptionExport extends PesiExportBase {
 		while ((list = getNextTaxonPartition(Taxon.class, limit, partitionCount++, propPath )) != null   ) {
 
 			logger.info("Fetched " + list.size() + " " + pluralString + ". Exporting...");
-			logger.warn("Start snapshot, beginning of loop, fetched " + list.size() + " " + pluralString);
+			
 			if (partitionCount % 10 == 0){
+				logger.warn("Start snapshot, beginning of loop, fetched " + list.size() + " " + pluralString);
 				ProfilerController.memorySnapshot();
 			}
 			for (Taxon taxon : list) {
