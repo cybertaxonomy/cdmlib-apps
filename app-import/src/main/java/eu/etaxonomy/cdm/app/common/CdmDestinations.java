@@ -47,7 +47,7 @@ public class CdmDestinations {
 		DatabaseTypeEnum dbType = DatabaseTypeEnum.MySQL;
 		String cdmServer = "localhost";
 		String cdmDB = "palmae_2011_07_17"; 
-		String cdmUserName = "edit";
+		String cdmUserName = "root";
 		return makeDestination(dbType, cdmServer, cdmDB, -1, cdmUserName, null);
 	}
 	
