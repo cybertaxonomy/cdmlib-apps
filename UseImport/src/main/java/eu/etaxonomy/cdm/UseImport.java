@@ -73,7 +73,8 @@ public class UseImport {
 		String cdmServer = "localhost";
 		String cdmDB = "palm_use_cdm_db";
 		String cdmUserName = "root";
-		return makeDestination(dbType, cdmServer, cdmDB, -1, cdmUserName, null);
+		String cdmPWD = "root";
+		return makeDestination(dbType, cdmServer, cdmDB, -1, cdmUserName, cdmPWD);
 	}
 
 	private static ICdmDataSource makeDestination(DatabaseTypeEnum dbType,
@@ -254,16 +255,15 @@ public class UseImport {
 	private boolean loadUses() {
 		boolean success = true;
 		//String xslUseSummaryPathString = "C://workspace//Matched_UseSummary_referenceIdTaxEd_TaxonName.xls";
-		String xslUseSummaryPathString = "C://workspace//testUseSummaries.xls";
+		//String xslUseSummaryPathString = "C://workspace//testUseSummaries.xls";
 		
 		
-		//String xslUseSummaryPathString = "//Users//alextheys//Projects//CDM_Trunk//Palm_Use_Data_Extension//UseImport//Matched_UseSummary_referenceIdTaxEd_TaxonName.xls";
+		String xslUseSummaryPathString = "//Users//alextheys//Projects//CDM_Trunk//Palm_Use_Data_Extension//CDMLib-apps//cdmlib-apps//UseImport//src//main//resources//Matched_UseSummary_referenceIdTaxEd_TaxonName.xls";
 		
 		//String xslUseRecordPathString = "C://workspace//UseRecordTerms_UseSummaryId.xls";
-		String xslUseRecordPathString = "C://workspace//testUseRecords.xls";
-		
+		//String xslUseRecordPathString = "C://workspace//testUseRecords.xls";
 		//String xslUseRecordPathString = "C://workspace//test_useRecord.xls";
-		//String xslUseRecordPathString = "//Users//alextheys//Projects//CDM_Trunk//Palm_Use_Data_Extension//UseImport//UseRecordTerms_UseSummaryId.xls";
+		String xslUseRecordPathString = "//Users//alextheys//Projects//CDM_Trunk//Palm_Use_Data_Extension//CDMLib-apps//cdmlib-apps//UseImport//src//main//resources//UseRecordTerms_UseSummaryId.xls";
 		
 		InputStream inputStream = null;
 		
@@ -489,8 +489,8 @@ public class UseImport {
 	private boolean loadTerms() {
 		boolean success = true;
 		
-		String xslPathString = "C://workspace//terms.xls";
-		//String xslPathString = "//Users//alextheys//Projects//CDM_Trunk//Palm_Use_Data_Extension//UseImport//terms.xls";
+		//String xslPathString = "C://workspace//terms.xls";
+		String xslPathString = "//Users//alextheys//Projects//CDM_Trunk//Palm_Use_Data_Extension//CDMLib-apps//cdmlib-apps//UseImport//src//main//resources//terms.xls";
 		
 		CdmApplicationController applicationController = CdmApplicationController.NewInstance(dataSource());
 		ConversationHolder conversation = applicationController.NewConversation();
