@@ -744,8 +744,14 @@ public class PesiTaxonExport extends PesiExportBase {
 		taxonList = null;
 		logger.warn("Taking snapshot at the end of phase 4 of taxonExport");
 		ProfilerController.memorySnapshot();
+		
 		// Commit transaction
 		commitTransaction(txStatus);
+		logger.warn("Taking snapshot at the end of phase 4 after commit of taxonExport");
+		ProfilerController.memorySnapshot();
+		System.gc();
+		logger.warn("Taking snapshot at the end of phase 4 after gc() of taxonExport");
+		ProfilerController.memorySnapshot();
 		logger.debug("Committed transaction.");
 		return success;
 	}
@@ -2051,7 +2057,8 @@ public class PesiTaxonExport extends PesiExportBase {
 			if (refUuid.equals(PesiTransformer.uuidSourceRefEuroMed) || 
 				refUuid.equals(PesiTransformer.uuidSourceRefFaunaEuropaea)||
 				refUuid.equals(PesiTransformer.uuidSourceRefErms)||
-				refUuid.equals(PesiTransformer.uuidSourceRefIndexFungorum) ){
+				refUuid.equals(PesiTransformer.uuidSourceRefIndexFungorum) ||
+				refUuid.equals(PesiTransformer.uuidSourceRefAuct)){
 				result.add(source);
 			}
 		}

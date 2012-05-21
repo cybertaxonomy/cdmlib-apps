@@ -205,10 +205,9 @@ public class PesiDescriptionExport extends PesiExportBase {
 
 			logger.info("Fetched " + list.size() + " " + pluralString + ". Exporting...");
 			
-			if (partitionCount % 10 == 0){
-				logger.warn("Start snapshot, beginning of loop, fetched " + list.size() + " " + pluralString);
+			logger.warn("Start snapshot, beginning of loop, fetched " + list.size() + " " + pluralString);
 				ProfilerController.memorySnapshot();
-			}
+			
 			for (Taxon taxon : list) {
 				countTaxa++;
 				doCount(count++, modCount, pluralString);
@@ -225,7 +224,8 @@ public class PesiDescriptionExport extends PesiExportBase {
 			// Start transaction
 			txStatus = startTransaction(true);
 			logger.info("Started new transaction. Fetching some " + pluralString + " (max: " + limit + ") for description import ...");
-					
+			logger.warn("Start snapshot, end of loop, fetched " + " " + pluralString);
+			ProfilerController.memorySnapshot();	
 		}
 		
 //		//name descriptions
@@ -642,15 +642,19 @@ public class PesiDescriptionExport extends PesiExportBase {
 		if (descriptionElement.isInstanceOf(CommonTaxonName.class)) {
 			CommonTaxonName commonTaxonName = CdmBase.deproxy(descriptionElement, CommonTaxonName.class);
 			language = commonTaxonName.getLanguage();
+			commonTaxonName = null;
 		} else if (descriptionElement.isInstanceOf(TextData.class)) {
 			TextData textData = CdmBase.deproxy(descriptionElement, TextData.class);
 			multilanguageText = textData.getMultilanguageText();
+			textData = null;
 		} else if (descriptionElement.isInstanceOf(IndividualsAssociation.class)) {
 			IndividualsAssociation individualsAssociation = CdmBase.deproxy(descriptionElement, IndividualsAssociation.class);
 			multilanguageText = individualsAssociation.getDescription();
+			individualsAssociation = null;
 		} else if (descriptionElement.isInstanceOf(TaxonInteraction.class)) {
 			TaxonInteraction taxonInteraction = CdmBase.deproxy(descriptionElement, TaxonInteraction.class);
 			multilanguageText = taxonInteraction.getDescriptions();
+			taxonInteraction = null;
 		} else {
 			logger.debug("Given descriptionElement does not support languages. Hence LanguageCache could not be determined: " + descriptionElement.getUuid());
 		}
@@ -730,9 +734,10 @@ public class PesiDescriptionExport extends PesiExportBase {
 		IdentifiableEntity<?> taxon = state.getCurrentTaxon();
 		TaxonBase<?> taxonDeproxy = CdmBase.deproxy(taxon, TaxonBase.class);
 		TaxonNameBase<?,?> taxonName = taxonDeproxy.getName();
+		taxonDeproxy = null;
 		NonViralName<?> nvn = CdmBase.deproxy(taxonName, NonViralName.class);
 		String result = getCacheStrategy(nvn).getTitleCache(nvn);
-		
+		nvn = null;
 		return result;
 	}
 

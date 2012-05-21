@@ -16,6 +16,7 @@ import eu.etaxonomy.cdm.io.common.ImportConfiguratorBase;
 import eu.etaxonomy.cdm.io.common.Source;
 import eu.etaxonomy.cdm.io.common.IImportConfigurator.DO_REFERENCES;
 import eu.etaxonomy.cdm.io.common.mapping.IInputTransformer;
+import eu.etaxonomy.cdm.io.pesi.out.PesiTransformer;
 import eu.etaxonomy.cdm.model.name.NomenclaturalCode;
 import eu.etaxonomy.cdm.model.reference.Reference;
 import eu.etaxonomy.cdm.model.reference.ReferenceFactory;
@@ -107,6 +108,7 @@ public class FaunaEuropaeaImportConfigurator extends ImportConfiguratorBase<Faun
 			auctReference = ReferenceFactory.newPersonalCommunication();
 			
 			auctReference.setTitleCache("auct.", true);
+			auctReference.setUuid(PesiTransformer.uuidSourceRefAuct);
 		}
 		return auctReference;
 	}

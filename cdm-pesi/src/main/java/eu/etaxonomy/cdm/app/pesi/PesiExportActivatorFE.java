@@ -44,7 +44,7 @@ public class PesiExportActivatorFE {
 	//Taxon names can't be mapped to their CDM ids as PESI Taxon table mainly holds taxa and there IDs. We ad nameIdStart to the TaxonName id to get a unique id
 	static final int nameIdStart = 10000000;
 	
-	static final int partitionSize = 5000;
+	static final int partitionSize = 2000;
 	
 	//check - export
 	static final CHECK check = CHECK.EXPORT_WITHOUT_CHECK;

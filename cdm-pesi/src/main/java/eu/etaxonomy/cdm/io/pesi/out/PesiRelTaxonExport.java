@@ -151,9 +151,12 @@ public class PesiRelTaxonExport extends PesiExportBase {
 					e.printStackTrace();
 				}
 			}
+			
+			commitTransaction(txStatus);
+			txStatus = startTransaction();
 		}
 		list = null;
-		
+		commitTransaction(txStatus);
 		return success;
 	}
 	
@@ -179,10 +182,12 @@ public class PesiRelTaxonExport extends PesiExportBase {
 						HybridRelationship hybridRel = CdmBase.deproxy(rel, HybridRelationship.class);
 						name1 = hybridRel.getParentName();
 						name2 = hybridRel.getHybridName();
+						hybridRel = null;
 					}else if (rel.isInstanceOf(NameRelationship.class)){
 						NameRelationship nameRel = CdmBase.deproxy(rel, NameRelationship.class);
 						name1 = nameRel.getFromName();
 						name2 = nameRel.getToName();
+						nameRel = null;
 					}else{
 						logger.warn ("Only hybrid- and name-relationships alowed here");
 						continue;
@@ -205,7 +210,8 @@ public class PesiRelTaxonExport extends PesiExportBase {
 					name1 = null;
 					name2 = null;
 					rel = null;
-					
+					commitTransaction(txStatus);
+					txStatus = startTransaction();
 					
 				} catch (Exception e) {
 					logger.error(e.getMessage() + ". Relationship: " +  rel.getUuid());
@@ -213,6 +219,7 @@ public class PesiRelTaxonExport extends PesiExportBase {
 				}
 			}
 		}
+		commitTransaction(txStatus);
 		list = null;
 		logger.info("End PHASE 2: Name Relationships ...");
 		state.setCurrentFromObject(null);
@@ -637,15 +644,36 @@ public class PesiRelTaxonExport extends PesiExportBase {
 	private static String getRelQualifierCache(RelationshipBase<?, ?, ?> relationship, PesiExportState state) {
 		String result = null;
 		NomenclaturalCode code = null;
+		Taxon taxon = null;
+		TaxonNameBase name= null;
 		if (relationship.isInstanceOf(TaxonRelationship.class)){
-			code = CdmBase.deproxy(relationship, TaxonRelationship.class).getToTaxon().getName().getNomenclaturalCode();
+			TaxonRelationship rel = CdmBase.deproxy(relationship, TaxonRelationship.class);
+			taxon = rel.getToTaxon();
+			name = taxon.getName();
+			code = name.getNomenclaturalCode();
+			rel = null;
+			
 		}else if (relationship.isInstanceOf(SynonymRelationship.class)){
-			code = CdmBase.deproxy(relationship, SynonymRelationship.class).getAcceptedTaxon().getName().getNomenclaturalCode();
+			SynonymRelationship rel = CdmBase.deproxy(relationship, SynonymRelationship.class);
+			taxon = rel.getAcceptedTaxon();
+			name = taxon.getName();
+			code = name.getNomenclaturalCode();
+			rel = null;
+
 		}else if (relationship.isInstanceOf(NameRelationship.class)){
-			code = CdmBase.deproxy(relationship,  NameRelationship.class).getFromName().getNomenclaturalCode();
+			NameRelationship rel = CdmBase.deproxy(relationship,  NameRelationship.class);
+			name = rel.getFromName();
+			code =name.getNomenclaturalCode();
+			rel = null;
+						
 		}else if (relationship.isInstanceOf(HybridRelationship.class)){
-			code = CdmBase.deproxy(relationship,  HybridRelationship.class).getParentName().getNomenclaturalCode();
+			HybridRelationship rel =  CdmBase.deproxy(relationship,  HybridRelationship.class);
+			name = rel.getParentName();
+			code = name.getNomenclaturalCode();
+			rel = null;
 		}
+		taxon = null;
+		name = null;
 		if (code != null) {
 			result = state.getConfig().getTransformer().getCacheByRelationshipType(relationship, code);
 		} else {
