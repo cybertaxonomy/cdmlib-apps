@@ -46,7 +46,8 @@ public class FloreGabonActivator {
 	
 	//database validation status (create, update, validate ...)
 	static DbSchemaValidation hbm2dll = DbSchemaValidation.CREATE;
-	static final URI fg_sample = EfloraSources.fg_sample();
+//	static final URI source = EfloraSources.fdg_sample();
+	static final URI fdg1 = EfloraSources.fdg_1();
 	
 	
 //	static final ICdmDataSource cdmDestination = CdmDestinations.cdm_flore_gabon_preview();
@@ -70,7 +71,7 @@ public class FloreGabonActivator {
 	//taxa
 	static final boolean doTaxa = true;
 	
-	private boolean includeFgSample = true;
+	private boolean includeFdg1 = true;
 	
 
 		
@@ -86,8 +87,8 @@ public class FloreGabonActivator {
 			check = CHECK.CHECK_ONLY;
 		}
 		
-		//make Source
-		URI source = fg_sample;
+		//make config
+		URI source = fdg1;
 		MarkupImportConfigurator markupConfig= MarkupImportConfigurator.NewInstance(source, cdmDestination);
 		markupConfig.setClassificationUuid(classificationUuid);
 		markupConfig.setDoTaxa(doTaxa);
@@ -102,13 +103,13 @@ public class FloreGabonActivator {
 		
 		CdmDefaultImport<MarkupImportConfigurator> myImport = new CdmDefaultImport<MarkupImportConfigurator>(); 
 		
-		//Vol13_2
-		if (includeFgSample){
-			System.out.println("\nStart import from ("+ fg_sample.toString() + ") ...");
-			source = fg_sample;
+		//Vol1
+		if (includeFdg1){
+			System.out.println("\nStart import from ("+ fdg1.toString() + ") ...");
+			source = fdg1;
 			markupConfig.setSource(source);
 			myImport.invoke(markupConfig);
-			System.out.println("End import from ("+ fg_sample.toString() + ")...");
+			System.out.println("End import from ("+ fdg1.toString() + ")...");
 		}
 		
 
