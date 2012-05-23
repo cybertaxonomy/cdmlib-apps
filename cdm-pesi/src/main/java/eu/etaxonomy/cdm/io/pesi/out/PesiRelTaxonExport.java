@@ -210,14 +210,15 @@ public class PesiRelTaxonExport extends PesiExportBase {
 					name1 = null;
 					name2 = null;
 					rel = null;
-					commitTransaction(txStatus);
-					txStatus = startTransaction();
+					
 					
 				} catch (Exception e) {
 					logger.error(e.getMessage() + ". Relationship: " +  rel.getUuid());
 					e.printStackTrace();
 				}
 			}
+			commitTransaction(txStatus);
+			txStatus = startTransaction();
 		}
 		commitTransaction(txStatus);
 		list = null;
