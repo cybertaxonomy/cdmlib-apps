@@ -1492,7 +1492,7 @@ public class PesiTaxonExport extends PesiExportBase {
 			String result = cacheStrategy.getFullTitleCache(nvn, tagRules);
 			cacheStrategy = null;
 			nvn = null;
-			return result.replaceAll("\\<@status@\\>.*\\</@status@\\>", "");
+			return result.replaceAll(",?\\<@status@\\>.*\\</@status@\\>", "");
 		}
 	}
 	

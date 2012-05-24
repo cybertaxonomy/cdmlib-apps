@@ -176,6 +176,7 @@ public final class PesiTransformer extends ExportTransformerBase implements IExp
 	public static int T_STATUS_UNRESOLVED = 5;
 	public static int T_STATUS_ORPHANED = 6;
 	public static int T_STATUS_UNACCEPTED = 7;
+	public static int T_STATUS_NOT_ACCEPTED = 8;
 	
 	public static String T_STATUS_STR_ACCEPTED = "Accepted";
 	public static String T_STATUS_STR_SYNONYM = "Synonym";
@@ -184,6 +185,8 @@ public final class PesiTransformer extends ExportTransformerBase implements IExp
 	public static String T_STATUS_STR_UNRESOLVED = "Unresolved";
 	public static String T_STATUS_STR_ORPHANED = "Orphaned";
 	public static String T_STATUS_STR_UNACCEPTED = "Unaccepted";
+	public static String T_STATUS_STR_NOT_ACCEPTED = "NOT ACCEPTED: TAXONOMICALLY VALUELESS LOCAL OR SINGULAR BIOTYPE";
+	
 	
 	// TypeDesginationStatus
 	public static int TYPE_BY_ORIGINAL_DESIGNATION = 1;
@@ -3393,7 +3396,12 @@ public final class PesiTransformer extends ExportTransformerBase implements IExp
 	public static Integer taxonBase2statusFk (TaxonBase<?> taxonBase){
 		if (taxonBase == null){return null;}		
 		if (taxonBase.isInstanceOf(Taxon.class)){
-			return T_STATUS_ACCEPTED;
+			Taxon taxon = CdmBase.deproxy(taxonBase, Taxon.class);
+			if (taxon.getTaxonNodes().size() == 0){
+				return T_STATUS_NOT_ACCEPTED;
+			}else{
+				return T_STATUS_ACCEPTED;
+			}
 		}else if (taxonBase.isInstanceOf(Synonym.class)){
 			return T_STATUS_SYNONYM;
 		}else{
@@ -3415,7 +3423,12 @@ public final class PesiTransformer extends ExportTransformerBase implements IExp
 	public static String taxonBase2statusCache (TaxonBase<?> taxonBase){
 		if (taxonBase == null){return null;}
 		if (taxonBase.isInstanceOf(Taxon.class)){
-			return T_STATUS_STR_ACCEPTED;
+			Taxon taxon = CdmBase.deproxy(taxonBase, Taxon.class);
+			if (taxon.getTaxonNodes().size() == 0){
+				return T_STATUS_STR_NOT_ACCEPTED;
+			}else{
+				return T_STATUS_STR_ACCEPTED;
+			}
 		}else if (taxonBase.isInstanceOf(Synonym.class)){
 			return T_STATUS_STR_SYNONYM;
 		}else{
