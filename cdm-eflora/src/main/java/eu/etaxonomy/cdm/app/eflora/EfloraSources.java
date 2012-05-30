@@ -100,4 +100,9 @@ public class EfloraSources {
 		return URI.create("file://PESIIMPORT3/gabon/markupData/fdgvol4_9.xml");
 	}
 	
+	//Flora of the Guianas Sample
+	public static URI fgu_1(){
+		return URI.create("file://PESIIMPORT3/guianas/markupData/79THEOPHRASTACEAE.xml");
+	}
+	
 }

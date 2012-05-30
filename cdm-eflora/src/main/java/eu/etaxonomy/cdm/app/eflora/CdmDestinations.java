@@ -87,7 +87,7 @@ public class CdmDestinations {
 		DatabaseTypeEnum dbType = DatabaseTypeEnum.MySQL;
 		String cdmServer = "127.0.0.1";
 		String cdmDB = "cdm_test"; 
-		String cdmUserName = "edit";
+		String cdmUserName = "root";
 		return makeDestination(dbType, cdmServer, cdmDB, -1, cdmUserName, null);
 	}
 
@@ -231,6 +231,22 @@ public class CdmDestinations {
 		DatabaseTypeEnum dbType = DatabaseTypeEnum.MySQL;
 		String cdmServer = "160.45.63.151";
 		String cdmDB = "cdm_production_flora_malesiana";
+		String cdmUserName = "edit";
+		return makeDestination(dbType, cdmServer, cdmDB, -1, cdmUserName, null);
+	}
+	
+	public static ICdmDataSource cdm_flora_guianas_preview(){
+		DatabaseTypeEnum dbType = DatabaseTypeEnum.MySQL;
+		String cdmServer = "160.45.63.201";
+		String cdmDB = "cdm_flora_guianas";
+		String cdmUserName = "edit";
+		return makeDestination(dbType, cdmServer, cdmDB, -1, cdmUserName, null);
+	}
+
+	public static ICdmDataSource cdm_flora_guianas_production(){
+		DatabaseTypeEnum dbType = DatabaseTypeEnum.MySQL;
+		String cdmServer = "160.45.63.151";
+		String cdmDB = "cdm_production_flora_guianas";
 		String cdmUserName = "edit";
 		return makeDestination(dbType, cdmServer, cdmDB, -1, cdmUserName, null);
 	}

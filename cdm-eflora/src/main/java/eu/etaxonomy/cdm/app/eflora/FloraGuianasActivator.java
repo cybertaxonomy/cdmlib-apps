@@ -41,32 +41,32 @@ import eu.etaxonomy.cdm.model.reference.ReferenceFactory;
  * @created 20.06.2008
  * @version 1.0
  */
-public class FloreGabonActivator {
-	private static final Logger logger = Logger.getLogger(FloreGabonActivator.class);
+public class FloraGuianasActivator {
+	private static final Logger logger = Logger.getLogger(FloraGuianasActivator.class);
 	
 	//database validation status (create, update, validate ...)
 	static DbSchemaValidation hbm2dll = DbSchemaValidation.CREATE;
 //	static final URI source = EfloraSources.fdg_sample();
-	static final URI fdg1 = EfloraSources.fdg_1();
-	static final URI fdg2 = EfloraSources.fdg_2();
-	static final URI fdg3 = EfloraSources.fdg_3();
-	static final URI fdg4 = EfloraSources.fdg_4();
+	static final URI fgu1 = EfloraSources.fgu_1();
+//	static final URI fgu2 = EfloraSources.fgu_2();
+//	static final URI fgu3 = EfloraSources.fgu_3();
+//	static final URI fgu4 = EfloraSources.fgu_4();
 	
 	
-//	static final ICdmDataSource cdmDestination = CdmDestinations.cdm_flore_gabon_preview();
-	static final ICdmDataSource cdmDestination = CdmDestinations.cdm_flore_gabon_production();
+//	static final ICdmDataSource cdmDestination = CdmDestinations.cdm_flora_guianas_preview();
+//	static final ICdmDataSource cdmDestination = CdmDestinations.cdm_flora_guianas_production();
 //	static final ICdmDataSource cdmDestination = CdmDestinations.localH2();
-//	static final ICdmDataSource cdmDestination = CdmDestinations.cdm_test_local_mysql();
+	static final ICdmDataSource cdmDestination = CdmDestinations.cdm_test_local_mysql();
 	
 
 	//feature tree uuid
-	public static final UUID featureTreeUuid = UUID.fromString("ee688973-2595-4d4d-b11e-6df71e96a5c2");
+	public static final UUID featureTreeUuid = UUID.fromString("2be99595-92fc-4f80-b9c4-b48d38505f5d");
 	
 	//classification
-	static final UUID classificationUuid = UUID.fromString("2f892452-ff49-48cf-834f-52ca29600719");
+	static final UUID classificationUuid = UUID.fromString("5e3a1b07-2609-4597-bbda-7b02dfe8c2b3");
 	
 	//check - import
-	private boolean h2ForCheck = false;
+	private boolean h2ForCheck = true;
 	static CHECK check = CHECK.IMPORT_WITHOUT_CHECK;
 	
 	static boolean doPrintKeys = false;
@@ -74,10 +74,10 @@ public class FloreGabonActivator {
 	//taxa
 	static final boolean doTaxa = true;
 	
-	private boolean includeFdg1 = true;
-	private boolean includeFdg2 = true;
-	private boolean includeFdg3 = true;
-	private boolean includeFdg4 = true;
+	private boolean includeFgu1 = true;
+	private boolean includeFgu2 = false;
+	private boolean includeFgu3 = false;
+	private boolean includeFgu4 = false;
 	
 		
 	private boolean replaceStandardKeyTitles = false;
@@ -93,7 +93,7 @@ public class FloreGabonActivator {
 		}
 		
 		//make config
-		URI source = fdg1;
+		URI source = fgu1;
 		MarkupImportConfigurator markupConfig= MarkupImportConfigurator.NewInstance(source, cdmDestination);
 		markupConfig.setClassificationUuid(classificationUuid);
 		markupConfig.setDoTaxa(doTaxa);
@@ -109,40 +109,40 @@ public class FloreGabonActivator {
 		CdmDefaultImport<MarkupImportConfigurator> myImport = new CdmDefaultImport<MarkupImportConfigurator>(); 
 		
 		//Vol1
-		if (includeFdg1){
-			System.out.println("\nStart import from ("+ fdg1.toString() + ") ...");
-			source = fdg1;
+		if (includeFgu1){
+			source = fgu1;
+			System.out.println("\nStart import from ("+ fgu1.toString() + ") ...");
 			markupConfig.setSource(source);
 			myImport.invoke(markupConfig);
-			System.out.println("End import from ("+ fdg1.toString() + ")...");
+			System.out.println("End import from ("+ fgu1.toString() + ")...");
 		}
 		
-		//Vol2
-		if (includeFdg2){
-			source = fdg2;
-			System.out.println("\nStart import from ("+ source.toString() + ") ...");
-			markupConfig.setSource(source);
-			myImport.invoke(markupConfig);
-			System.out.println("End import from ("+ source.toString() + ")...");
-		}
-		
-		//Vol3
-		if (includeFdg3){
-			source = fdg3;
-			System.out.println("\nStart import from ("+ source.toString() + ") ...");
-			markupConfig.setSource(source);
-			myImport.invoke(markupConfig);
-			System.out.println("End import from ("+ source.toString() + ")...");
-		}
-
-		//Vol4
-		if (includeFdg4){
-			source = fdg4;
-			System.out.println("\nStart import from ("+ source.toString() + ") ...");
-			markupConfig.setSource(source);
-			myImport.invoke(markupConfig);
-			System.out.println("End import from ("+ source.toString() + ")...");
-		}
+//		//Vol2
+//		if (includeFgu2){
+//			source = fgu2;
+//			System.out.println("\nStart import from ("+ source.toString() + ") ...");
+//			markupConfig.setSource(source);
+//			myImport.invoke(markupConfig);
+//			System.out.println("End import from ("+ source.toString() + ")...");
+//		}
+//		
+//		//Vol3
+//		if (includeFgu3){
+//			source = fgu3;
+//			System.out.println("\nStart import from ("+ source.toString() + ") ...");
+//			markupConfig.setSource(source);
+//			myImport.invoke(markupConfig);
+//			System.out.println("End import from ("+ source.toString() + ")...");
+//		}
+//
+//		//Vol4
+//		if (includeFgu4){
+//			source = fgu4;
+//			System.out.println("\nStart import from ("+ source.toString() + ") ...");
+//			markupConfig.setSource(source);
+//			myImport.invoke(markupConfig);
+//			System.out.println("End import from ("+ source.toString() + ")...");
+//		}
 		
 		FeatureTree tree = makeFeatureNode(myImport.getCdmAppController().getTermService());
 		myImport.getCdmAppController().getFeatureTreeService().saveOrUpdate(tree);
@@ -381,7 +381,7 @@ public class FloreGabonActivator {
 	 * @param args
 	 */
 	public static void main(String[] args) {
-		FloreGabonActivator me = new FloreGabonActivator();
+		FloraGuianasActivator me = new FloraGuianasActivator();
 		me.doImport(cdmDestination);
 	}
 }

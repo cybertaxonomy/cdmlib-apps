@@ -1211,6 +1211,7 @@ cdm-eflora/src/main/java/eu/etaxonomy/cdm/app/eflora/CentralAfricaChecklistActiv
 cdm-eflora/src/main/java/eu/etaxonomy/cdm/app/eflora/CentralAfricaEricaceaeActivator.java -text
 cdm-eflora/src/main/java/eu/etaxonomy/cdm/app/eflora/CentralAfricaFernsActivator.java -text
 cdm-eflora/src/main/java/eu/etaxonomy/cdm/app/eflora/EfloraSources.java -text
+cdm-eflora/src/main/java/eu/etaxonomy/cdm/app/eflora/FloraGuianasActivator.java -text
 cdm-eflora/src/main/java/eu/etaxonomy/cdm/app/eflora/FloraMalesianaActivator.java -text
 cdm-eflora/src/main/java/eu/etaxonomy/cdm/app/eflora/FloraMalesianaVol13Activator.java -text
 cdm-eflora/src/main/java/eu/etaxonomy/cdm/app/eflora/FloreGabonActivator.java -text
