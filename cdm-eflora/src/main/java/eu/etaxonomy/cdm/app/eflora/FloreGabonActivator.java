@@ -29,6 +29,7 @@ import eu.etaxonomy.cdm.io.common.mapping.IInputTransformer;
 import eu.etaxonomy.cdm.io.common.mapping.UndefinedTransformerMethodException;
 import eu.etaxonomy.cdm.io.eflora.floraMalesiana.FloraMalesianaTransformer;
 import eu.etaxonomy.cdm.io.markup.MarkupImportConfigurator;
+import eu.etaxonomy.cdm.io.markup.MarkupTransformer;
 import eu.etaxonomy.cdm.model.description.Feature;
 import eu.etaxonomy.cdm.model.description.FeatureNode;
 import eu.etaxonomy.cdm.model.description.FeatureTree;
@@ -167,7 +168,7 @@ public class FloreGabonActivator {
 	}
 
 	private FeatureTree makeFeatureNode(ITermService service){
-		FloraMalesianaTransformer transformer = new FloraMalesianaTransformer();
+		MarkupTransformer transformer = new MarkupTransformer();
 		
 		FeatureTree result = FeatureTree.NewInstance(featureTreeUuid);
 		result.setTitleCache("Flore Gabon Presentation Feature Tree");
