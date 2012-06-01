@@ -905,7 +905,6 @@ public class PesiTaxonExport extends PesiExportBase {
 			TransactionStatus txStatus = startTransaction(true);
 			logger.info("Started new transaction for Pure Names. Fetching some " + pluralString + " (max: " + limit + ") ...");
 			
-			
 			int partitionCount = 0;
 			while ((list = getNextPureNamePartition(null, limit, partitionCount++)) != null   ) {
 
