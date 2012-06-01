@@ -178,15 +178,15 @@ public final class PesiTransformer extends ExportTransformerBase implements IExp
 	public static int T_STATUS_UNACCEPTED = 7;
 	public static int T_STATUS_NOT_ACCEPTED = 8;
 	
-	public static String T_STATUS_STR_ACCEPTED = "Accepted";
-	public static String T_STATUS_STR_SYNONYM = "Synonym";
-	public static String T_STATUS_STR_PARTIAL_SYN = "Partial Synonym";
-	public static String T_STATUS_STR_PRO_PARTE_SYN = "Pro Parte Synonym";
-	public static String T_STATUS_STR_UNRESOLVED = "Unresolved";
-	public static String T_STATUS_STR_ORPHANED = "Orphaned";
-	public static String T_STATUS_STR_UNACCEPTED = "Unaccepted";
-	public static String T_STATUS_STR_NOT_ACCEPTED = "NOT ACCEPTED: TAXONOMICALLY VALUELESS LOCAL OR SINGULAR BIOTYPE";
-	
+//	public static String T_STATUS_STR_ACCEPTED = "Accepted";
+//	public static String T_STATUS_STR_SYNONYM = "Synonym";
+//	public static String T_STATUS_STR_PARTIAL_SYN = "Partial Synonym";
+//	public static String T_STATUS_STR_PRO_PARTE_SYN = "Pro Parte Synonym";
+//	public static String T_STATUS_STR_UNRESOLVED = "Unresolved";
+//	public static String T_STATUS_STR_ORPHANED = "Orphaned";
+//	public static String T_STATUS_STR_UNACCEPTED = "Unaccepted";
+//	public static String T_STATUS_STR_NOT_ACCEPTED = "NOT ACCEPTED: TAXONOMICALLY VALUELESS LOCAL OR SINGULAR BIOTYPE";
+//	
 	
 	// TypeDesginationStatus
 	public static int TYPE_BY_ORIGINAL_DESIGNATION = 1;
@@ -1246,6 +1246,7 @@ public final class PesiTransformer extends ExportTransformerBase implements IExp
 	private Map<String, String> tdwgLabelMap = new HashMap<String, String>();
 	private Map<Integer, String> nameStatusCacheMap  = new HashMap<Integer, String>();
 	private Map<Integer, String> qualityStatusCacheMap  = new HashMap<Integer, String>();
+	private Map<Integer, String> taxonStatusCacheMap  = new HashMap<Integer, String>();
 	private Map<Integer, String> taxRelQualifierCacheMap  = new HashMap<Integer, String>();
 	private Map<Integer, String> taxRelZooQualifierCacheMap  = new HashMap<Integer, String>();
 	
@@ -1293,7 +1294,17 @@ public final class PesiTransformer extends ExportTransformerBase implements IExp
 					this.qualityStatusCacheMap.put(key, cache);
 				} 
 			}
-			//qualityStatusCache
+			//taxonStatusCache
+			sql = " SELECT StatusId,Status FROM TaxonStatus ";
+			rs = destination.getResultSet(sql);
+			while (rs.next()){
+				Integer key = rs.getInt("TaxonStatusId");
+				String cache = rs.getString("Status");
+				if (StringUtils.isNotBlank(cache)){
+					this.taxonStatusCacheMap.put(key, cache);
+				} 
+			}
+			//RelTaxonQualifier
 			sql = " SELECT QualifierId, Qualifier, ZoologQualifier FROM RelTaxonQualifier ";
 			rs = destination.getResultSet(sql);
 			while (rs.next()){
@@ -3389,12 +3400,14 @@ public final class PesiTransformer extends ExportTransformerBase implements IExp
 	}
 
 	/**
-	 * 
+	 * @see PesiTaxonExport#doPhaseUpdates(PesiExportState) for further transformation
 	 * @param taxonBase
 	 * @return
 	 */
 	public static Integer taxonBase2statusFk (TaxonBase<?> taxonBase){
-		if (taxonBase == null){return null;}		
+		if (taxonBase == null){
+			return null;
+		}		
 		if (taxonBase.isInstanceOf(Taxon.class)){
 			Taxon taxon = CdmBase.deproxy(taxonBase, Taxon.class);
 			if (taxon.getTaxonNodes().size() == 0){
@@ -3415,32 +3428,32 @@ public final class PesiTransformer extends ExportTransformerBase implements IExp
 //		public static int T_STATUS_ORPHANED = 6;
 	}
 
-	/**
-	 * 
-	 * @param taxonBase
-	 * @return
-	 */
-	public static String taxonBase2statusCache (TaxonBase<?> taxonBase){
-		if (taxonBase == null){return null;}
-		if (taxonBase.isInstanceOf(Taxon.class)){
-			Taxon taxon = CdmBase.deproxy(taxonBase, Taxon.class);
-			if (taxon.getTaxonNodes().size() == 0){
-				return T_STATUS_STR_NOT_ACCEPTED;
-			}else{
-				return T_STATUS_STR_ACCEPTED;
-			}
-		}else if (taxonBase.isInstanceOf(Synonym.class)){
-			return T_STATUS_STR_SYNONYM;
-		}else{
-			logger.warn("Unknown ");
-			return T_STATUS_STR_UNRESOLVED;
-		}
-		//TODO 
+//	/**
+//	 * 
+//	 * @param taxonBase
+//	 * @return
+//	 */
+//	public static String taxonBase2statusCache (TaxonBase<?> taxonBase){
+//		if (taxonBase == null){return null;}
+//		if (taxonBase.isInstanceOf(Taxon.class)){
+//			Taxon taxon = CdmBase.deproxy(taxonBase, Taxon.class);
+//			if (taxon.getTaxonNodes().size() == 0){
+//				return T_STATUS_STR_NOT_ACCEPTED;
+//			}else{
+//				return T_STATUS_STR_ACCEPTED;
+//			}
+//		}else if (taxonBase.isInstanceOf(Synonym.class)){
+//			return T_STATUS_STR_SYNONYM;
+//		}else{
+//			logger.warn("Unknown ");
+//			return T_STATUS_STR_UNRESOLVED;
+//		}
+//		//TODO 
 //		public static int T_STATUS_STR_PARTIAL_SYN = 3;
 //		public static int T_STATUS_STR_PRO_PARTE_SYN = 4;
 //		public static int T_STATUS_STR_UNRESOLVED = 5;
 //		public static int T_STATUS_STR_ORPHANED = 6;
-	}
+//	}
 		
 	/**
 	 * Returns the {@link SourceCategory SourceCategory} representation of the given {@link ReferenceType ReferenceType} in PESI.
@@ -3820,6 +3833,15 @@ public final class PesiTransformer extends ExportTransformerBase implements IExp
 			return null;
 		}else{
 			return this.qualityStatusCacheMap.get(qualityStatusId); 
+		}
+	}
+	
+	@Override
+	public String getTaxonStatusCacheByKey(Integer taxonStatusId) throws UndefinedTransformerMethodException {
+		if (taxonStatusId == null){
+			return null;
+		}else{
+			return this.taxonStatusCacheMap.get(taxonStatusId); 
 		}
 	}
 
