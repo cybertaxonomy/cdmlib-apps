@@ -15,7 +15,6 @@ import eu.etaxonomy.cdm.database.ICdmDataSource;
 import eu.etaxonomy.cdm.io.common.DbExportConfiguratorBase;
 import eu.etaxonomy.cdm.io.common.IExportConfigurator;
 import eu.etaxonomy.cdm.io.common.Source;
-import eu.etaxonomy.cdm.io.common.mapping.out.IExportTransformer;
 import eu.etaxonomy.cdm.model.reference.Reference;
 import eu.etaxonomy.cdm.model.reference.ReferenceFactory;
 
@@ -60,6 +59,7 @@ public class PesiExportConfigurator extends DbExportConfiguratorBase<PesiExportS
 				PesiTaxonExport.class,
 				PesiRelTaxonExport.class, // RelTaxonId's could be deleted from state hashmap
 				PesiDescriptionExport.class,
+				PesiFinalUpdateExport.class
 //				PesiNoteExport.class,
 //				PesiNoteSourceExport.class, // NoteId's could be deleted from state hashmap
 //				PesiAdditionalTaxonSourceExport.class,

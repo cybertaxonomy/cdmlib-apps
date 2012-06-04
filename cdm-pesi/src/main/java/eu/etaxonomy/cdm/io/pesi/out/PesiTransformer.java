@@ -1298,7 +1298,7 @@ public final class PesiTransformer extends ExportTransformerBase implements IExp
 			sql = " SELECT StatusId,Status FROM TaxonStatus ";
 			rs = destination.getResultSet(sql);
 			while (rs.next()){
-				Integer key = rs.getInt("TaxonStatusId");
+				Integer key = rs.getInt("StatusId");
 				String cache = rs.getString("Status");
 				if (StringUtils.isNotBlank(cache)){
 					this.taxonStatusCacheMap.put(key, cache);
