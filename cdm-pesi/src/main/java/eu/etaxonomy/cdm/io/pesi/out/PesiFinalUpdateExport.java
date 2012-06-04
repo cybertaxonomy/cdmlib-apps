@@ -96,7 +96,7 @@ public class PesiFinalUpdateExport extends PesiExportBase {
 		
 		//NOT ACCEPTED names
 		String updateNotAccepted = " UPDATE Taxon SET TaxonStatusFk = %d, TaxonStatusCache = '%s' " +
-				" WHERE OriginalDB = '%s' AND taxonstatusfk = 1 AND ParentTaxonFk %s AND RankFk > 180 ";
+				" WHERE OriginalDB = '%s' AND taxonstatusfk = 1 AND ParentTaxonFk = %s AND RankFk > 180 ";
 		updateNotAccepted = String.format(updateNotAccepted, 8, "NOT ACCEPTED: TAXONOMICALLY VALUELESS LOCAL OR SINGULAR BIOTYPE", emStr, oldStatusFilter);
 		int updated = state.getConfig().getDestination().update(updateNotAccepted);
 		
