@@ -786,7 +786,7 @@ public class PesiDescriptionExport extends PesiExportBase {
 		
 		mapping.addMapper(IdMapper.NewInstance("OccurrenceId"));
 		mapping.addMapper(DbDescriptionElementTaxonMapper.NewInstance("taxonFk"));
-		mapping.addMapper(DbDescriptionElementTaxonMapper.NewInstance("TaxonFullNameCache", true, false, null)); 
+		mapping.addMapper(DbDescriptionElementTaxonMapper.NewInstance("TaxonFullNameCache", true, true, null)); 
 		
 		mapping.addMapper(DbAreaMapper.NewInstance(Distribution.class, "Area", "AreaFk", ! IS_CACHE));
 		mapping.addMapper(DbAreaMapper.NewInstance(Distribution.class, "Area", "AreaNameCache", IS_CACHE));
