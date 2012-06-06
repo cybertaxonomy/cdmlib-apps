@@ -423,7 +423,11 @@ public class PesiTaxonExport extends PesiExportBase {
 
 	
 	
-	// 2nd Round: Add ParentTaxonFk, TreeIndex to each Taxon
+	/**
+	 * 2nd Round: Add ParentTaxonFk to each taxon and add Biota if not exists
+	 * @param state
+	 * @return
+	 */
 	private boolean doPhase02(PesiExportState state) {
 		int count = 0;
 		int pastCount = 0;
@@ -432,6 +436,7 @@ public class PesiTaxonExport extends PesiExportBase {
 		// Get the limit for objects to save within a single transaction.
 		int limit = state.getConfig().getLimitSave();
 
+		insertBiota(state);
 		
 		logger.info("PHASE 2: Make ParentFk and TreeIndex ... limit is " + limit);
 		// Start transaction
@@ -474,13 +479,36 @@ public class PesiTaxonExport extends PesiExportBase {
 		return success;
 		
 	}
+
+	/**
+	 * Inserts the Biota Taxon if not yet exists.
+	 * @param state
+	 * @throws SQLException
+	 */
+	private void insertBiota(PesiExportState state) {
+		try {
+			ResultSet rs = state.getConfig().getDestination().getResultSet("SELECT * FROM Taxon WHERE GenusOrUninomial = 'Biota' ");
+			if (rs.next() == false){
+				int biotaId = state.getConfig().getNameIdStart() -1 ;
+				String sqlInsertBiota = "INSERT INTO Taxon (TaxonId, KingdomFk, RankFk, RankCache, GenusOrUninomial, WebSearchName, WebShowName, FullName, DisplayName, TaxonStatusFk, TaxonStatusCache) " +
+									       " VALUES (" + biotaId + ",    0,    0,   'Superdomain',   'Biota',          'Biota',  '<i>Biota</i>',   'Biota', '<i>Biota</i>',  1 ,      'accepted')";
+				state.getConfig().getDestination().update(sqlInsertBiota);
+			}
+		} catch (SQLException e) {
+			logger.warn ("Biota could not be requested or inserted");
+		}
+	}
 	
 	// 4th round: Add TreeIndex to each taxon
 	private boolean doPhase04(PesiExportState state) {
 		boolean success = true;
 		
-		logger.info("PHASE 2: Make TreeIndex ... ");
+		logger.info("PHASE 4: Make TreeIndex ... ");
 	
+		String sql = " UPDATE Taxon SET ParentTaxonFk = (Select TaxonId from Taxon where RankFk = 0) " +
+				" WHERE (RankFk = 10) and TaxonStatusFk = 1 ";
+		state.getConfig().getDestination().update(sql);
+		
 		state.getConfig().getDestination().update("EXEC dbo.recalculateallstoredpaths");
 		
 		return success;
