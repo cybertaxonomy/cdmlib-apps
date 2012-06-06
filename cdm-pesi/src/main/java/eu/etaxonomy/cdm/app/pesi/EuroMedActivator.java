@@ -52,7 +52,7 @@ public class EuroMedActivator {
 	
 //	static final ICdmDataSource cdmDestination = CdmDestinations.cdm_pesi_euroMed();
 //	static final ICdmDataSource cdmDestination = CdmDestinations.cdm_test_local_mysql();
-	static final ICdmDataSource cdmDestination = CdmDestinations.cdm_test_local_mysql();
+	static final ICdmDataSource cdmDestination = CdmDestinations.localH2();
 	
 	static final boolean includePesiExport = false;
 	
@@ -85,6 +85,13 @@ public class EuroMedActivator {
 	static boolean useClassification = true;
 	
 	static boolean 	isSplitTdwgCodes = false;
+	
+	private boolean removeHttpMapsAnchor = true;
+
+	
+	static final String infrGenericRankAbbrev = "[unranked]";
+	static final String infrSpecificRankAbbrev = "[unranked]";
+	
 	
 	static String taxonTable = "v_cdm_exp_taxaAll";
 	static String classificationQuery = " SELECT DISTINCT t.PTRefFk, r.RefCache FROM PTaxon t INNER JOIN Reference r ON t.PTRefFk = r.RefId WHERE t.PTRefFk = " + sourceSecId; 
@@ -121,7 +128,7 @@ public class EuroMedActivator {
 	static final boolean doRelTaxa = true;
 	static final boolean doFacts = true;
 	static final boolean doOccurences = true;
-	static final boolean doCommonNames = true;
+	static final boolean doCommonNames = false; //FIXME currently common names throw errors and make later imports not work
 
 	//etc.
 	static final boolean doMarker = true;
@@ -187,6 +194,10 @@ public class EuroMedActivator {
 		
 		// maximum number of name facts to import
 		config.setMaximumNumberOfNameFacts(maximumNumberOfNameFacts);
+		
+		config.setInfrGenericRankAbbrev(infrGenericRankAbbrev);
+		config.setInfrSpecificRankAbbrev(infrSpecificRankAbbrev);
+		config.setRemoveHttpMapsAnchor(removeHttpMapsAnchor);
 		
 //		filter
 		config.setTaxonTable(taxonTable);
