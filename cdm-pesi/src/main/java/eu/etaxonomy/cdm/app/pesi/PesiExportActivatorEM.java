@@ -82,6 +82,7 @@ public class PesiExportActivatorEM {
 //	
 //	//taxa
 //	static final boolean doTaxa = false;
+//	static final boolean doPureNames = false;
 //	static final boolean doRelTaxa = false;
 //	static final boolean doNotes = false;
 //	static final boolean doNoteSources = false;
