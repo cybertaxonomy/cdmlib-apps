@@ -30,17 +30,17 @@ public class PesiDestinations {
 		String strServer = "localhost";
 		String strDB = "CDM_EM2PESI";
 		int port = 1433;
-		String userName = "pesiexport";
+		String userName = "pesiexport3";
 		return makeSource(dbms, strServer, strDB, port, userName, null);
 	}
 	
 	public static Source pesi_test_local_CDM_EM2PESI_tmp(){
 		//	CDM - PESI
 		String dbms = Source.SQL_SERVER_2008;
-		String strServer = "pesiimport3";
+		String strServer = "localhost";
 		String strDB = "CDMTMP_EM2PESI";
 		int port = 1433;
-		String userName = "pesiexport";
+		String userName = "pesiexport2";
 		return makeSource(dbms, strServer, strDB, port, userName, null);
 	}
 	
