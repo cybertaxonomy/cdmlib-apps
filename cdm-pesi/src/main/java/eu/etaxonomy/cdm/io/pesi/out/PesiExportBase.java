@@ -58,6 +58,8 @@ import eu.etaxonomy.cdm.strategy.cache.name.ZooNameNoMarkerCacheStrategy;
 public abstract class PesiExportBase extends DbExportBase<PesiExportConfigurator, PesiExportState, PesiTransformer> {
 	private static final Logger logger = Logger.getLogger(PesiExportBase.class);
 	
+	protected static final boolean IS_CACHE = true;
+	
 	private static Set<NameRelationshipType> excludedRelTypes = new HashSet<NameRelationshipType>();
 	
 	private static NonViralNameDefaultCacheStrategy<?> zooNameStrategy = ZooNameNoMarkerCacheStrategy.NewInstance();

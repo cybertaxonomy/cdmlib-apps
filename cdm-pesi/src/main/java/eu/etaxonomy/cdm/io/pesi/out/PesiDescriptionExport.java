@@ -82,7 +82,6 @@ import eu.etaxonomy.cdm.model.taxon.TaxonBase;
 public class PesiDescriptionExport extends PesiExportBase {
 	private static final Logger logger = Logger.getLogger(PesiDescriptionExport.class);
 	
-	private static final boolean IS_CACHE = true;
 	private static final Class<? extends CdmBase> standardMethodParameter = DescriptionElementBase.class;
 
 	private static int modCount = 1000;
