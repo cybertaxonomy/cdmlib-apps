@@ -600,56 +600,10 @@ public final class PesiTransformer extends ExportTransformerBase implements IExp
 	public static int NoteCategory_Taxonomic_Remark = 286;
 	public static int NoteCategory_Taxonomic_Remarks = 287;
 
-	
-	public static String NoteCategory_STR_description = "description";
-	public static String NoteCategory_STR_ecology = "ecology";
-	public static String NoteCategory_STR_phenology	= "phenology";
-	public static String NoteCategory_STR_general_distribution_euromed = "general distribution (Euro+Med)";
-	public static String NoteCategory_STR_general_distribution_world = "general distribution (world)";
-	public static String NoteCategory_STR_Common_names = "Common names";
-	public static String NoteCategory_STR_Occurrence = "Occurrence";
-	public static String NoteCategory_STR_Maps = "Maps";
-	public static String NoteCategory_STR_Link_to_maps = "Link to maps";
-	public static String NoteCategory_STR_Link_to_images = "Link to images";
-	public static String NoteCategory_STR_Link_to_taxonomy = "Link to taxonomy";
-	public static String NoteCategory_STR_Link_to_general_information = "Link to general information";
-	public static String NoteCategory_STR_undefined_link = "undefined link";
-	public static String NoteCategory_STR_Editor_Braces = "Editor_Braces";
-	public static String NoteCategory_STR_Editor_Brackets = "Editor_Brackets";
-	public static String NoteCategory_STR_Editor_Parenthesis = "Editor_Parenthesis";
-	public static String NoteCategory_STR_Inedited = "Inedited";
-	public static String NoteCategory_STR_Comments_on_editing_process = "Comments on editing process";
-	public static String NoteCategory_STR_Publication_date = "Publication date";
-	public static String NoteCategory_STR_Morphology = "Morphology";
-	public static String NoteCategory_STR_Acknowledgments = "Acknowledgments";
-	public static String NoteCategory_STR_Original_publication = "Original publication";
-	public static String NoteCategory_STR_Type_locality	= "Type locality";
-	public static String NoteCategory_STR_Environment = "Environment";
-	public static String NoteCategory_STR_Spelling = "Spelling";
-	public static String NoteCategory_STR_Systematics = "Systematics";
-	public static String NoteCategory_STR_Remark = "Remark";
-	public static String NoteCategory_STR_Date_of_publication = "Date of publication";
-	public static String NoteCategory_STR_Additional_information = "Additional information";
-	public static String NoteCategory_STR_Status = "Status";
-	public static String NoteCategory_STR_Nomenclature = "Nomenclature";
-	public static String NoteCategory_STR_Homonymy = "Homonymy";
-	public static String NoteCategory_STR_Taxonomy = "Taxonomy";
-	public static String NoteCategory_STR_Taxonomic_status = "Taxonomic status";
-	public static String NoteCategory_STR_Authority	= "Authority";
-	public static String NoteCategory_STR_Identification = "Identification";
-	public static String NoteCategory_STR_Validity = "Validity";
-	public static String NoteCategory_STR_Classification = "Classification";
-	public static String NoteCategory_STR_Distribution = "Distribution";
-	public static String NoteCategory_STR_Synonymy = "Synonymy";
-	public static String NoteCategory_STR_Habitat = "Habitat";
-	public static String NoteCategory_STR_Biology = "Biology";
-	public static String NoteCategory_STR_Diagnosis	= "Diagnosis";
-	public static String NoteCategory_STR_Host = "Host";
-	public static String NoteCategory_STR_Note = "Note";
-	public static String NoteCategory_STR_Rank = "Rank";
-	public static String NoteCategory_STR_Taxonomic_Remark = "Taxonomic Remark";
-	public static String NoteCategory_STR_Taxonomic_Remarks = "Taxonomic Remarks";
-	
+	public static int NoteCategory_Conservation_Status= 301;
+	public static int NoteCategory_Use = 302;
+	public static int NoteCategory_Comments = 303;
+
 	
 	// Language
 	public static int Language_Albanian = 1;
@@ -795,15 +749,6 @@ public final class PesiTransformer extends ExportTransformerBase implements IExp
 	public static int NEW_COMBINATION_REFERENCE = 6;
 	public static int STATUS_SOURCE = 7;
 	public static int NOMENCLATURAL_REFERENCE = 8;
-	
-	public static String STR_ORIGINAL_DESCRIPTION = "original description";
-	public static String STR_BASIS_OF_RECORD = "basis of record";
-	public static String STR_ADDITIONAL_SOURCE = "additional source";
-	public static String STR_SOURCE_OF_SYNONYMY = "source of synonymy";
-	public static String STR_REDESCRIPTION = "redescription";
-	public static String STR_NEW_COMBINATION_REFERENCE = "new combination reference";
-	public static String STR_STATUS_SOURCE = "status source";
-	public static String STR_NOMENCLATURAL_REFERENCE = "nomenclatural reference";
 
 	// Area
 	public static int AREA_EAST_AEGEAN_ISLANDS = 1;
@@ -1014,214 +959,6 @@ public final class PesiTransformer extends ExportTransformerBase implements IExp
 	public static int AREA_PORTUGAL_COUNTRY = 208;
 
 
-	public static String STR_AREA_EAST_AEGEAN_ISLANDS = "East Aegean Islands";
-	public static String STR_AREA_GREEK_EAST_AEGEAN_ISLANDS = "Greek East Aegean Islands";
-	public static String STR_AREA_TURKISH_EAST_AEGEAN_ISLANDS = "Turkish East Aegean Islands";
-	public static String STR_AREA_ALBANIA = "Albania";
-	public static String STR_AREA_AUSTRIA_WITH_LIECHTENSTEIN = "Austria with Liechtenstein";
-	public static String STR_AREA_AUSTRIA = "Austria";
-	public static String STR_AREA_LIECHTENSTEIN = "Liechtenstein";
-	public static String STR_AREA_AZORES = "Azores";
-	public static String STR_AREA_CORVO = "Corvo";
-	public static String STR_AREA_FAIAL = "Faial";
-	public static String STR_AREA_GRACIOSA = "Graciosa";
-	public static String STR_AREA_SAO_JORGE = "São Jorge";
-	public static String STR_AREA_FLORES = "Flores";
-	public static String STR_AREA_SAO_MIGUEL = "São Miguel";
-	public static String STR_AREA_PICO = "Pico";
-	public static String STR_AREA_SANTA_MARIA = "Santa Maria";
-	public static String STR_AREA_TERCEIRA = "Terceira";
-	public static String STR_AREA_BELGIUM_WITH_LUXEMBOURG = "Belgium with Luxembourg";
-	public static String STR_AREA_BELGIUM = "Belgium";
-	public static String STR_AREA_LUXEMBOURG = "Luxembourg";
-	public static String STR_AREA_BOSNIA_HERZEGOVINA = "Bosnia-Herzegovina";
-	public static String STR_AREA_BALEARES = "Baleares";
-	public static String STR_AREA_IBIZA_WITH_FORMENTERA = "Ibiza with Formentera";
-	public static String STR_AREA_MALLORCA = "Mallorca";
-	public static String STR_AREA_MENORCA = "Menorca";
-	public static String STR_AREA_GREAT_BRITAIN = "Great Britain";
-	public static String STR_AREA_BALTIC_STATES_ESTONIA_LATVIA_LITHUANIA_AND_KALININGRAD_REGION = "Baltic states (Estonia, Latvia, Lithuania) and Kaliningrad region";
-	public static String STR_AREA_BULGARIA = "Bulgaria";
-	public static String STR_AREA_BELARUS = "Belarus";
-	public static String STR_AREA_CANARY_ISLANDS = "Canary Islands";
-	public static String STR_AREA_GRAN_CANARIA = "Gran Canaria";
-	public static String STR_AREA_FUERTEVENTURA_WITH_LOBOS = "Fuerteventura with Lobos";
-	public static String STR_AREA_GOMERA = "Gomera";
-	public static String STR_AREA_HIERRO = "Hierro";
-	public static String STR_AREA_LANZAROTE_WITH_GRACIOSA = "Lanzarote with Graciosa";
-	public static String STR_AREA_LA_PALMA = "La Palma";
-	public static String STR_AREA_TENERIFE = "Tenerife";
-	public static String STR_AREA_MONTENEGRO = "Montenegro";
-	public static String STR_AREA_CORSE = "Corse";
-	public static String STR_AREA_CRETE_WITH_KARPATHOS_KASOS_AND_GAVDHOS = "Crete with Karpathos, Kasos & Gavdhos";
-	public static String STR_AREA_CZECH_REPUBLIC = "Czech Republic";
-	public static String STR_AREA_CROATIA = "Croatia";
-	public static String STR_AREA_CYPRUS = "Cyprus";
-	public static String STR_AREA_FORMER_CZECHOSLOVAKIA = "Former Czechoslovakia";
-	public static String STR_AREA_DENMARK_WITH_BORNHOLM = "Denmark with Bornholm";
-	public static String STR_AREA_ESTONIA = "Estonia";
-	public static String STR_AREA_FAROE_ISLANDS = "Faroe Islands";
-	public static String STR_AREA_FINLAND_WITH_AHVENANMAA = "Finland with Ahvenanmaa";
-	public static String STR_AREA_FRANCE = "France";
-	public static String STR_AREA_CHANNEL_ISLANDS = "Channel Islands";
-	public static String STR_AREA_FRENCH_MAINLAND = "French mainland";
-	public static String STR_AREA_MONACO = "Monaco";
-	public static String STR_AREA_GERMANY = "Germany";
-	public static String STR_AREA_GREECE_WITH_CYCLADES_AND_MORE_ISLANDS = "Greece with Cyclades and more islands";
-	public static String STR_AREA_IRELAND = "Ireland";
-	public static String STR_AREA_REPUBLIC_OF_IRELAND = "Republic of Ireland";
-	public static String STR_AREA_NORTHERN_IRELAND = "Northern Ireland";
-	public static String STR_AREA_SWITZERLAND = "Switzerland";
-	public static String STR_AREA_NETHERLANDS = "Netherlands";
-	public static String STR_AREA_SPAIN = "Spain";
-	public static String STR_AREA_ANDORRA = "Andorra";
-	public static String STR_AREA_GIBRALTAR = "Gibraltar";
-	public static String STR_AREA_KINGDOM_OF_SPAIN = "Kingdom of Spain";
-	public static String STR_AREA_HUNGARY = "Hungary";
-	public static String STR_AREA_ICELAND = "Iceland";
-	public static String STR_AREA_ITALY = "Italy";
-	public static String STR_AREA_ITALIAN_MAINLAND = "Italian mainland";
-	public static String STR_AREA_SAN_MARINO = "San Marino";
-	public static String STR_AREA_FORMER_JUGOSLAVIA = "Former Jugoslavia";
-	public static String STR_AREA_LATVIA = "Latvia";
-	public static String STR_AREA_LITHUANIA = "Lithuania";
-	public static String STR_AREA_PORTUGUESE_MAINLAND = "Portuguese mainland";
-	public static String STR_AREA_MADEIRA_ARCHIPELAGO = "Madeira";
-	public static String STR_AREA_DESERTAS = "Desertas";
-	public static String STR_AREA_MADEIRA = "Madeira";
-	public static String STR_AREA_PORTO_SANTO = "Porto Santo";
-	public static String STR_AREA_THE_FORMER_JUGOSLAV_REPUBLIC_OF_MAKEDONIJA = "The former Jugoslav Republic of Makedonija";
-	public static String STR_AREA_MOLDOVA = "Moldova";
-	public static String STR_AREA_NORWEGIAN_MAINLAND = "Norwegian mainland";
-	public static String STR_AREA_POLAND = "Poland";
-	public static String STR_AREA_THE_RUSSIAN_FEDERATION = "The Russian Federation";
-	public static String STR_AREA_NOVAYA_ZEMLYA_AND_FRANZ_JOSEPH_LAND = "Novaya Zemlya & Franz-Joseph Land";
-	public static String STR_AREA_CENTRAL_EUROPEAN_RUSSIA = "Central European Russia";
-	public static String STR_AREA_EASTERN_EUROPEAN_RUSSIA = "Eastern European Russia";
-	public static String STR_AREA_KALININGRAD = "Kaliningrad";
-	public static String STR_AREA_NORTHERN_EUROPEAN_RUSSIA = "Northern European Russia";
-	public static String STR_AREA_NORTHWEST_EUROPEAN_RUSSIA = "Northwest European Russia";
-	public static String STR_AREA_SOUTH_EUROPEAN_RUSSIA = "South European Russia";
-	public static String STR_AREA_ROMANIA = "Romania";
-	public static String STR_AREA_FORMER_USSR = "Former USSR";
-	public static String STR_AREA_RUSSIA_BALTIC = "Russia Baltic";
-	public static String STR_AREA_RUSSIA_CENTRAL = "Russia Central";
-	public static String STR_AREA_RUSSIA_SOUTHEAST = "Russia Southeast";
-	public static String STR_AREA_RUSSIA_NORTHERN = "Russia Northern";
-	public static String STR_AREA_RUSSIA_SOUTHWEST = "Russia Southwest";
-	public static String STR_AREA_SARDEGNA = "Sardegna";
-	public static String STR_AREA_SVALBARD_WITH_BJORNOYA_AND_JAN_MAYEN = "Svalbard with Björnöya and Jan Mayen";
-	public static String STR_AREA_SELVAGENS_ISLANDS = "Selvagens Islands";
-	public static String STR_AREA_SICILY_WITH_MALTA = "Sicily with Malta";
-	public static String STR_AREA_MALTA = "Malta";
-	public static String STR_AREA_SICILY = "Sicily";
-	public static String STR_AREA_SLOVAKIA = "Slovakia";
-	public static String STR_AREA_SLOVENIA = "Slovenia";
-	public static String STR_AREA_SERBIA_WITH_MONTENEGRO = "Serbia with Montenegro";
-	public static String STR_AREA_SERBIA_INCLUDING_VOJVODINA_AND_WITH_KOSOVO = "Serbia including Vojvodina and with Kosovo";
-	public static String STR_AREA_SWEDEN = "Sweden";
-	public static String STR_AREA_EUROPEAN_TURKEY = "European Turkey";
-	public static String STR_AREA_UKRAINE_INCLUDING_CRIMEA = "Ukraine including Crimea";
-	public static String STR_AREA_CRIMEA = "Crimea";
-	public static String STR_AREA_UKRAINE = "Ukraine";
-	public static String STR_AREA_GREEK_MAINLAND = "Greek mainland";
-	public static String STR_AREA_CRETE = "Crete";
-	public static String STR_AREA_DODECANESE_ISLANDS = "Dodecanese Islands";
-	public static String STR_AREA_CYCLADES_ISLANDS = "Cyclades Islands";
-	public static String STR_AREA_NORTH_AEGEAN_ISLANDS = "North Aegean Islands";
-	public static String STR_AREA_VATICAN_CITY = "Vatican City";
-	public static String STR_AREA_FRANZ_JOSEF_LAND = "Franz Josef Land";
-	public static String STR_AREA_NOVAYA_ZEMLYA = "Novaya Zemlya";
-	public static String STR_AREA_AZERBAIJAN_INCLUDING_NAKHICHEVAN = "Azerbaijan including Nakhichevan";
-	public static String STR_AREA_AZERBAIJAN = "Azerbaijan";
-	public static String STR_AREA_NAKHICHEVAN = "Nakhichevan";
-	public static String STR_AREA_ALGERIA = "Algeria";
-	public static String STR_AREA_ARMENIA = "Armenia";
-	public static String STR_AREA_CAUCASUS_REGION = "Caucasus region";
-	public static String STR_AREA_EGYPT = "Egypt";
-	public static String STR_AREA_GEORGIA = "Georgia";
-	public static String STR_AREA_ISRAEL_JORDAN = "Israel-Jordan";
-	public static String STR_AREA_ISRAEL = "Israel";
-	public static String STR_AREA_JORDAN = "Jordan";
-	public static String STR_AREA_LEBANON = "Lebanon";
-	public static String STR_AREA_LIBYA = "Libya";
-	public static String STR_AREA_LEBANON_SYRIA = "Lebanon-Syria";
-	public static String STR_AREA_MOROCCO = "Morocco";
-	public static String STR_AREA_NORTH_CAUCASUS = "North Caucasus";
-	public static String STR_AREA_SINAI = "Sinai";
-	public static String STR_AREA_SYRIA = "Syria";
-	public static String STR_AREA_TUNISIA = "Tunisia";
-	public static String STR_AREA_ASIATIC_TURKEY = "Asiatic Turkey";
-	public static String STR_AREA_TURKEY = "Turkey";
-	public static String STR_AREA_NORTHERN_AFRICA = "Northern Africa";
-	public static String STR_AREA_AFRO_TROPICAL_REGION = "Afro-tropical region";
-	public static String STR_AREA_AUSTRALIAN_REGION = "Australian region";
-	public static String STR_AREA_EAST_PALAEARCTIC = "East Palaearctic";
-	public static String STR_AREA_NEARCTIC_REGION = "Nearctic region";
-	public static String STR_AREA_NEOTROPICAL_REGION = "Neotropical region";
-	public static String STR_AREA_NEAR_EAST = "Near East";
-	public static String STR_AREA_ORIENTAL_REGION = "Oriental region";
-	public static String STR_AREA_EUROPEAN_MARINE_WATERS = "European Marine Waters";
-	public static String STR_AREA_MEDITERRANEAN_SEA = "Mediterranean Sea";
-	public static String STR_AREA_WHITE_SEA = "White Sea";
-	public static String STR_AREA_NORTH_SEA = "North Sea";
-	public static String STR_AREA_BALTIC_SEA = "Baltic Sea";
-	public static String STR_AREA_BLACK_SEA = "Black Sea";
-	public static String STR_AREA_BARENTS_SEA = "Barents Sea";
-	public static String STR_AREA_CASPIAN_SEA = "Caspian Sea";
-	public static String STR_AREA_PORTUGUESE_EXCLUSIVE_ECONOMIC_ZONE = "Portuguese Exclusive Economic Zone";
-	public static String STR_AREA_BELGIAN_EXCLUSIVE_ECONOMIC_ZONE = "Belgian Exclusive Economic Zone";
-	public static String STR_AREA_FRENCH_EXCLUSIVE_ECONOMIC_ZONE = "French Exclusive Economic Zone";
-	public static String STR_AREA_ENGLISH_CHANNEL = "English Channel";
-	public static String STR_AREA_ADRIATIC_SEA = "Adriatic Sea";
-	public static String STR_AREA_BISCAY_BAY = "Biscay Bay";
-	public static String STR_AREA_DUTCH_EXCLUSIVE_ECONOMIC_ZONE = "Dutch Exclusive Economic Zone";
-	public static String STR_AREA_UNITED_KINGDOM_EXCLUSIVE_ECONOMIC_ZONE = "United Kingdom Exclusive Economic Zone";
-	public static String STR_AREA_SPANISH_EXCLUSIVE_ECONOMIC_ZONE = "Spanish Exclusive Economic Zone";
-	public static String STR_AREA_EGYPTIAN_EXCLUSIVE_ECONOMIC_ZONE = "Egyptian Exclusive Economic Zone";
-	public static String STR_AREA_GRECIAN_EXCLUSIVE_ECONOMIC_ZONE = "Grecian Exclusive Economic Zone";
-	public static String STR_AREA_TIRRENO_SEA = "Tirreno Sea";
-	public static String STR_AREA_ICELANDIC_EXCLUSIVE_ECONOMIC_ZONE = "Icelandic Exclusive Economic Zone";
-	public static String STR_AREA_IRISH_EXCLUSIVE_ECONOMIC_ZONE = "Irish Exclusive economic Zone";
-	public static String STR_AREA_IRISH_SEA = "Irish Sea";
-	public static String STR_AREA_ITALIAN_EXCLUSIVE_ECONOMIC_ZONE = "Italian Exclusive Economic Zone";
-	public static String STR_AREA_NORWEGIAN_SEA = "Norwegian Sea";
-	public static String STR_AREA_MOROCCAN_EXCLUSIVE_ECONOMIC_ZONE = "Moroccan Exclusive Economic Zone";
-	public static String STR_AREA_NORWEGIAN_EXCLUSIVE_ECONOMIC_ZONE = "Norwegian Exclusive Economic Zone";
-	public static String STR_AREA_SKAGERRAK = "Skagerrak";
-	public static String STR_AREA_TUNISIAN_EXCLUSIVE_ECONOMIC_ZONE = "Tunisian Exclusive Economic Zone";
-	public static String STR_AREA_WADDEN_SEA = "Wadden Sea";
-	public static String STR_AREA_BELT_SEA = "Belt Sea";
-	public static String STR_AREA_MARMARA_SEA = "Marmara Sea";
-	public static String STR_AREA_SEA_OF_AZOV = "Sea of Azov";
-	public static String STR_AREA_AEGEAN_SEA = "Aegean Sea";
-	public static String STR_AREA_BULGARIAN_EXCLUSIVE_ECONOMIC_ZONE = "Bulgarian Exclusive Economic Zone";
-	public static String STR_AREA_SOUTH_BALTIC_PROPER = "South Baltic proper";
-	public static String STR_AREA_BALTIC_PROPER = "Baltic Proper";
-	public static String STR_AREA_NORTH_BALTIC_PROPER = "North Baltic proper";
-	public static String STR_AREA_ARCHIPELAGO_SEA = "Archipelago Sea";
-	public static String STR_AREA_BOTHNIAN_SEA = "Bothnian Sea";
-	public static String STR_AREA_GERMAN_EXCLUSIVE_ECONOMIC_ZONE = "German Exclusive Economic Zone";
-	public static String STR_AREA_SWEDISH_EXCLUSIVE_ECONOMIC_ZONE = "Swedish Exclusive Economic Zone";
-	public static String STR_AREA_UKRAINIAN_EXCLUSIVE_ECONOMIC_ZONE = "Ukrainian Exclusive Economic Zone";
-	public static String STR_AREA_MADEIRAN_EXCLUSIVE_ECONOMIC_ZONE = "Madeiran Exclusive Economic Zone";
-	public static String STR_AREA_LEBANESE_EXCLUSIVE_ECONOMIC_ZONE = "Lebanese Exclusive Economic Zone";
-	public static String STR_AREA_SPANISH_EXCLUSIVE_ECONOMIC_ZONE_MEDITERRANEAN_PART = "Spanish Exclusive Economic Zone [Mediterranean part]";
-	public static String STR_AREA_ESTONIAN_EXCLUSIVE_ECONOMIC_ZONE = "Estonian Exclusive Economic Zone";
-	public static String STR_AREA_CROATIAN_EXCLUSIVE_ECONOMIC_ZONE = "Croatian Exclusive Economic Zone";
-	public static String STR_AREA_BALEAR_SEA = "Balear Sea";
-	public static String STR_AREA_TURKISH_EXCLUSIVE_ECONOMIC_ZONE = "Turkish Exclusive Economic Zone";
-	public static String STR_AREA_DANISH_EXCLUSIVE_ECONOMIC_ZONE = "Danish Exclusive Economic Zone";
-	public static String STR_AREA_TRANSCAUCASUS = "Transcaucasus";
-	
-	public static String STR_AREA_UNITED_KINGDOM = "United Kingdom";
-	public static String STR_AREA_DENMARK = "Denmark";
-	public static String STR_AREA_TURKEY_COUNTRY = "Turkey (country)";
-	public static String STR_AREA_SPAIN_COUNTRY = "Spain (country)";
-	public static String STR_AREA_GREECE_COUNTRY = "Greece (country)";
-	public static String STR_AREA_PORTUGAL_COUNTRY = "Portugal (country)";
-
-
 	
 	// OccurrenceStatus
 	public static int STATUS_PRESENT = 1;
@@ -1243,12 +980,15 @@ public final class PesiTransformer extends ExportTransformerBase implements IExp
 	public static String STR_STATUS_DOUBTFUL = "Doubtful";
 
 	private Map<String, Integer> tdwgKeyMap = new HashMap<String, Integer>();
-	private Map<String, String> tdwgLabelMap = new HashMap<String, String>();
+	private Map<Integer, String> areaCacheMap = new HashMap<Integer, String>();
+	private Map<Integer, String> languageCacheMap  = new HashMap<Integer, String>();
+	private Map<Integer, String> featureCacheMap  = new HashMap<Integer, String>();
 	private Map<Integer, String> nameStatusCacheMap  = new HashMap<Integer, String>();
 	private Map<Integer, String> qualityStatusCacheMap  = new HashMap<Integer, String>();
 	private Map<Integer, String> taxonStatusCacheMap  = new HashMap<Integer, String>();
 	private Map<Integer, String> taxRelQualifierCacheMap  = new HashMap<Integer, String>();
 	private Map<Integer, String> taxRelZooQualifierCacheMap  = new HashMap<Integer, String>();
+	private Map<Integer, String> sourceUseCacheMap  = new HashMap<Integer, String>();
 	
 	
 	private Source destination;
@@ -1271,8 +1011,29 @@ public final class PesiTransformer extends ExportTransformerBase implements IExp
 				
 				if (StringUtils.isNotBlank(tdwg)){
 					this.tdwgKeyMap.put(tdwg, id);
-					this.tdwgLabelMap.put(tdwg, label);
 				}
+				this.areaCacheMap.put(id, label);
+			}
+			
+			//languageCache
+			sql = " SELECT AreaId, AreaName FROM Area ";
+			rs = destination.getResultSet(sql);
+			while (rs.next()){
+				Integer key = rs.getInt("AreaId");
+				String cache = rs.getString("AreaName");
+				if (StringUtils.isNotBlank(cache)){
+					this.languageCacheMap.put(key, cache);
+				} 
+			}
+			//feature / note category
+			sql = " SELECT NoteCategoryId, NoteCategory FROM NoteCategory ";
+			rs = destination.getResultSet(sql);
+			while (rs.next()){
+				Integer key = rs.getInt("NoteCategoryId");
+				String cache = rs.getString("NoteCategory");
+				if (StringUtils.isNotBlank(cache)){
+					this.featureCacheMap.put(key, cache);
+				} 
 			}
 			//nameStatusCache
 			sql = " SELECT NomStatusId, NomStatus FROM NameStatus ";
@@ -1317,6 +1078,16 @@ public final class PesiTransformer extends ExportTransformerBase implements IExp
 				if (StringUtils.isNotBlank(zoologCache)){
 					this.taxRelZooQualifierCacheMap.put(key, zoologCache);
 				}
+			}
+			//sourceUse
+			sql = " SELECT SourceUseId,SourceUse FROM SourceUse ";
+			rs = destination.getResultSet(sql);
+			while (rs.next()){
+				Integer key = rs.getInt("SourceUseId");
+				String cache = rs.getString("SourceUse");
+				if (StringUtils.isNotBlank(cache)){
+					this.sourceUseCacheMap.put(key, cache);
+				} 
 			}
 			
 			
@@ -1444,278 +1215,6 @@ public final class PesiTransformer extends ExportTransformerBase implements IExp
 		return result;
 	}
 	
-//	/**
-//	 * Returns the AreaCache for a given Area.
-//	 * @param area
-//	 * @return
-//	 */
-//	public static String area2AreaCache(NamedArea area) {
-//		NamedArea namedArea = CdmBase.deproxy(area, NamedArea.class);
-//		if (area == null) {
-//			return null;
-//		} else if (area.isInstanceOf(TdwgArea.class)) {
-//			
-//			// TODO: Areas identified by the string "TODO" (for now) have to be identified correctly after additions have been made to the list of NamedArea's according to specific imports, i.e. euro+med
-//			if ((namedArea.getRepresentation(Language.DEFAULT()).getAbbreviatedLabel()).equals("EAI")) { return STR_AREA_GREEK_EAST_AEGEAN_ISLANDS; }
-//			else if ((namedArea.getRepresentation(Language.DEFAULT()).getAbbreviatedLabel()).equals("EAI-OO")) { return STR_AREA_GREEK_EAST_AEGEAN_ISLANDS; }
-//			else if ((namedArea.getRepresentation(Language.DEFAULT()).getAbbreviatedLabel()).equals("TODO")) { return STR_AREA_TURKISH_EAST_AEGEAN_ISLANDS; }
-//			else if ((namedArea.getRepresentation(Language.DEFAULT()).getAbbreviatedLabel()).equals("ALB")) { return STR_AREA_ALBANIA; }
-//			else if ((namedArea.getRepresentation(Language.DEFAULT()).getAbbreviatedLabel()).equals("ALB-OO")) { return STR_AREA_ALBANIA; }
-//			else if ((namedArea.getRepresentation(Language.DEFAULT()).getAbbreviatedLabel()).equals("AUT")) { return STR_AREA_AUSTRIA_WITH_LIECHTENSTEIN; }
-//			else if ((namedArea.getRepresentation(Language.DEFAULT()).getAbbreviatedLabel()).equals("AUT-AU")) { return STR_AREA_AUSTRIA; }
-//			else if ((namedArea.getRepresentation(Language.DEFAULT()).getAbbreviatedLabel()).equals("AUT-LI")) { return STR_AREA_LIECHTENSTEIN; }
-//			else if ((namedArea.getRepresentation(Language.DEFAULT()).getAbbreviatedLabel()).equals("AZO")) { return STR_AREA_AZORES; }
-//			else if ((namedArea.getRepresentation(Language.DEFAULT()).getAbbreviatedLabel()).equals("AZO-OO")) { return STR_AREA_AZORES; }
-//			else if ((namedArea.getRepresentation(Language.DEFAULT()).getAbbreviatedLabel()).equals("TODO")) { return STR_AREA_CORVO; }
-//			else if ((namedArea.getRepresentation(Language.DEFAULT()).getAbbreviatedLabel()).equals("TODO")) { return STR_AREA_FAIAL; }
-//			else if ((namedArea.getRepresentation(Language.DEFAULT()).getAbbreviatedLabel()).equals("TODO")) { return STR_AREA_GRACIOSA; }
-//			else if ((namedArea.getRepresentation(Language.DEFAULT()).getAbbreviatedLabel()).equals("TODO")) { return STR_AREA_SAO_JORGE; }
-//			else if ((namedArea.getRepresentation(Language.DEFAULT()).getAbbreviatedLabel()).equals("TODO")) { return STR_AREA_FLORES; }
-//			else if ((namedArea.getRepresentation(Language.DEFAULT()).getAbbreviatedLabel()).equals("TODO")) { return STR_AREA_SAO_MIGUEL; }
-//			else if ((namedArea.getRepresentation(Language.DEFAULT()).getAbbreviatedLabel()).equals("TODO")) { return STR_AREA_PICO; }
-//			else if ((namedArea.getRepresentation(Language.DEFAULT()).getAbbreviatedLabel()).equals("TODO")) { return STR_AREA_SANTA_MARIA; }
-//			else if ((namedArea.getRepresentation(Language.DEFAULT()).getAbbreviatedLabel()).equals("TODO")) { return STR_AREA_TERCEIRA; }
-//			else if ((namedArea.getRepresentation(Language.DEFAULT()).getAbbreviatedLabel()).equals("BGM")) { return STR_AREA_BELGIUM_WITH_LUXEMBOURG; }
-//			else if ((namedArea.getRepresentation(Language.DEFAULT()).getAbbreviatedLabel()).equals("BGM-BE")) { return STR_AREA_BELGIUM; }
-//			else if ((namedArea.getRepresentation(Language.DEFAULT()).getAbbreviatedLabel()).equals("BGM-LU")) { return STR_AREA_LUXEMBOURG; }
-//			else if ((namedArea.getRepresentation(Language.DEFAULT()).getAbbreviatedLabel()).equals("YUG-BH")) { return STR_AREA_BOSNIA_HERZEGOVINA; }
-//			else if ((namedArea.getRepresentation(Language.DEFAULT()).getAbbreviatedLabel()).equals("BAL")) { return STR_AREA_BALEARES; }
-//			else if ((namedArea.getRepresentation(Language.DEFAULT()).getAbbreviatedLabel()).equals("BAL-OO")) { return STR_AREA_BALEARES; }
-//			else if ((namedArea.getRepresentation(Language.DEFAULT()).getAbbreviatedLabel()).equals("TODO")) { return STR_AREA_IBIZA_WITH_FORMENTERA; }
-//			else if ((namedArea.getRepresentation(Language.DEFAULT()).getAbbreviatedLabel()).equals("TODO")) { return STR_AREA_MALLORCA; }
-//			else if ((namedArea.getRepresentation(Language.DEFAULT()).getAbbreviatedLabel()).equals("TODO")) { return STR_AREA_MENORCA; }
-//			else if ((namedArea.getRepresentation(Language.DEFAULT()).getAbbreviatedLabel()).equals("GRB")) { return STR_AREA_GREAT_BRITAIN; }
-//			else if ((namedArea.getRepresentation(Language.DEFAULT()).getAbbreviatedLabel()).equals("GRB-OO")) { return STR_AREA_GREAT_BRITAIN; }
-//			else if ((namedArea.getRepresentation(Language.DEFAULT()).getAbbreviatedLabel()).equals("BLT")) { return STR_AREA_BALTIC_STATES_ESTONIA_LATVIA_LITHUANIA_AND_KALININGRAD_REGION; }
-//			else if ((namedArea.getRepresentation(Language.DEFAULT()).getAbbreviatedLabel()).equals("BUL")) { return STR_AREA_BULGARIA; }
-//			else if ((namedArea.getRepresentation(Language.DEFAULT()).getAbbreviatedLabel()).equals("BUL-OO")) { return STR_AREA_BULGARIA; }
-//			else if ((namedArea.getRepresentation(Language.DEFAULT()).getAbbreviatedLabel()).equals("BLR")) { return STR_AREA_BELARUS; }
-//			else if ((namedArea.getRepresentation(Language.DEFAULT()).getAbbreviatedLabel()).equals("BLR-OO")) { return STR_AREA_BELARUS; }
-//			else if ((namedArea.getRepresentation(Language.DEFAULT()).getAbbreviatedLabel()).equals("CNY")) { return STR_AREA_CANARY_ISLANDS; }
-//			else if ((namedArea.getRepresentation(Language.DEFAULT()).getAbbreviatedLabel()).equals("CNY-OO")) { return STR_AREA_CANARY_ISLANDS; }
-//			else if ((namedArea.getRepresentation(Language.DEFAULT()).getAbbreviatedLabel()).equals("TODO")) { return STR_AREA_GRAN_CANARIA; }
-//			else if ((namedArea.getRepresentation(Language.DEFAULT()).getAbbreviatedLabel()).equals("TODO")) { return STR_AREA_FUERTEVENTURA_WITH_LOBOS; }
-//			else if ((namedArea.getRepresentation(Language.DEFAULT()).getAbbreviatedLabel()).equals("TODO")) { return STR_AREA_GOMERA; }
-//			else if ((namedArea.getRepresentation(Language.DEFAULT()).getAbbreviatedLabel()).equals("TODO")) { return STR_AREA_HIERRO; }
-//			else if ((namedArea.getRepresentation(Language.DEFAULT()).getAbbreviatedLabel()).equals("TODO")) { return STR_AREA_LANZAROTE_WITH_GRACIOSA; }
-//			else if ((namedArea.getRepresentation(Language.DEFAULT()).getAbbreviatedLabel()).equals("TODO")) { return STR_AREA_LA_PALMA; }
-//			else if ((namedArea.getRepresentation(Language.DEFAULT()).getAbbreviatedLabel()).equals("TODO")) { return STR_AREA_TENERIFE; }
-//			else if ((namedArea.getRepresentation(Language.DEFAULT()).getAbbreviatedLabel()).equals("YUG-MN")) { return STR_AREA_MONTENEGRO; }
-//			else if ((namedArea.getRepresentation(Language.DEFAULT()).getAbbreviatedLabel()).equals("COR")) { return STR_AREA_CORSE; }
-//			else if ((namedArea.getRepresentation(Language.DEFAULT()).getAbbreviatedLabel()).equals("COR-OO")) { return STR_AREA_CORSE; }
-//			else if ((namedArea.getRepresentation(Language.DEFAULT()).getAbbreviatedLabel()).equals("KRI")) { return STR_AREA_CRETE_WITH_KARPATHOS_KASOS_AND_GAVDHOS; }
-//			else if ((namedArea.getRepresentation(Language.DEFAULT()).getAbbreviatedLabel()).equals("KRI-OO")) { return STR_AREA_CRETE_WITH_KARPATHOS_KASOS_AND_GAVDHOS; }
-//			else if ((namedArea.getRepresentation(Language.DEFAULT()).getAbbreviatedLabel()).equals("CZE-CZ")) { return STR_AREA_CZECH_REPUBLIC; }
-//			else if ((namedArea.getRepresentation(Language.DEFAULT()).getAbbreviatedLabel()).equals("YUG-CR")) { return STR_AREA_CROATIA; }
-//			else if ((namedArea.getRepresentation(Language.DEFAULT()).getAbbreviatedLabel()).equals("CYP")) { return STR_AREA_CYPRUS; }
-//			else if ((namedArea.getRepresentation(Language.DEFAULT()).getAbbreviatedLabel()).equals("CYP-OO")) { return STR_AREA_CYPRUS; }
-//			else if ((namedArea.getRepresentation(Language.DEFAULT()).getAbbreviatedLabel()).equals("CZE")) { return STR_AREA_FORMER_CZECHOSLOVAKIA; }
-//			else if ((namedArea.getRepresentation(Language.DEFAULT()).getAbbreviatedLabel()).equals("DEN")) { return STR_AREA_DENMARK_WITH_BORNHOLM; }
-//			else if ((namedArea.getRepresentation(Language.DEFAULT()).getAbbreviatedLabel()).equals("DEN-OO")) { return STR_AREA_DENMARK_WITH_BORNHOLM; }
-//			else if ((namedArea.getRepresentation(Language.DEFAULT()).getAbbreviatedLabel()).equals("BLT-ES")) { return STR_AREA_ESTONIA; }
-//			else if ((namedArea.getRepresentation(Language.DEFAULT()).getAbbreviatedLabel()).equals("FOR")) { return STR_AREA_FAROE_ISLANDS; }
-//			else if ((namedArea.getRepresentation(Language.DEFAULT()).getAbbreviatedLabel()).equals("FOR-OO")) { return STR_AREA_FAROE_ISLANDS; }
-//			else if ((namedArea.getRepresentation(Language.DEFAULT()).getAbbreviatedLabel()).equals("FIN")) { return STR_AREA_FINLAND_WITH_AHVENANMAA; }
-//			else if ((namedArea.getRepresentation(Language.DEFAULT()).getAbbreviatedLabel()).equals("FIN-OO")) { return STR_AREA_FINLAND_WITH_AHVENANMAA; }
-//			else if ((namedArea.getRepresentation(Language.DEFAULT()).getAbbreviatedLabel()).equals("FRA")) { return STR_AREA_FRANCE; }
-//			else if ((namedArea.getRepresentation(Language.DEFAULT()).getAbbreviatedLabel()).equals("FRA-CI")) { return STR_AREA_CHANNEL_ISLANDS; }
-//			else if ((namedArea.getRepresentation(Language.DEFAULT()).getAbbreviatedLabel()).equals("FRA-FR")) { return STR_AREA_FRENCH_MAINLAND; }
-//			else if ((namedArea.getRepresentation(Language.DEFAULT()).getAbbreviatedLabel()).equals("FRA-MO")) { return STR_AREA_MONACO; }
-//			else if ((namedArea.getRepresentation(Language.DEFAULT()).getAbbreviatedLabel()).equals("GER")) { return STR_AREA_GERMANY; }
-//			else if ((namedArea.getRepresentation(Language.DEFAULT()).getAbbreviatedLabel()).equals("GER-OO")) { return STR_AREA_GERMANY; }
-//			else if ((namedArea.getRepresentation(Language.DEFAULT()).getAbbreviatedLabel()).equals("GRC")) { return STR_AREA_GREECE_WITH_CYCLADES_AND_MORE_ISLANDS; }
-//			else if ((namedArea.getRepresentation(Language.DEFAULT()).getAbbreviatedLabel()).equals("GRC-OO")) { return STR_AREA_GREECE_WITH_CYCLADES_AND_MORE_ISLANDS; }
-//			else if ((namedArea.getRepresentation(Language.DEFAULT()).getAbbreviatedLabel()).equals("IRE")) { return STR_AREA_IRELAND; }
-//			else if ((namedArea.getRepresentation(Language.DEFAULT()).getAbbreviatedLabel()).equals("IRE-IR")) { return STR_AREA_REPUBLIC_OF_IRELAND; }
-//			else if ((namedArea.getRepresentation(Language.DEFAULT()).getAbbreviatedLabel()).equals("IRE-NI")) { return STR_AREA_NORTHERN_IRELAND; }
-//			else if ((namedArea.getRepresentation(Language.DEFAULT()).getAbbreviatedLabel()).equals("SWI")) { return STR_AREA_SWITZERLAND; }
-//			else if ((namedArea.getRepresentation(Language.DEFAULT()).getAbbreviatedLabel()).equals("SWI-OO")) { return STR_AREA_SWITZERLAND; }
-//			else if ((namedArea.getRepresentation(Language.DEFAULT()).getAbbreviatedLabel()).equals("NET")) { return STR_AREA_NETHERLANDS; }
-//			else if ((namedArea.getRepresentation(Language.DEFAULT()).getAbbreviatedLabel()).equals("NET-OO")) { return STR_AREA_NETHERLANDS; }
-//			else if ((namedArea.getRepresentation(Language.DEFAULT()).getAbbreviatedLabel()).equals("SPA")) { return STR_AREA_SPAIN; }
-//			else if ((namedArea.getRepresentation(Language.DEFAULT()).getAbbreviatedLabel()).equals("SPA-AN")) { return STR_AREA_ANDORRA; }
-//			else if ((namedArea.getRepresentation(Language.DEFAULT()).getAbbreviatedLabel()).equals("SPA-GI")) { return STR_AREA_GIBRALTAR; }
-//			else if ((namedArea.getRepresentation(Language.DEFAULT()).getAbbreviatedLabel()).equals("SPA-SP")) { return STR_AREA_KINGDOM_OF_SPAIN; }
-//			else if ((namedArea.getRepresentation(Language.DEFAULT()).getAbbreviatedLabel()).equals("HUN")) { return STR_AREA_HUNGARY; }
-//			else if ((namedArea.getRepresentation(Language.DEFAULT()).getAbbreviatedLabel()).equals("HUN-OO")) { return STR_AREA_HUNGARY; }
-//			else if ((namedArea.getRepresentation(Language.DEFAULT()).getAbbreviatedLabel()).equals("ICE")) { return STR_AREA_ICELAND; }
-//			else if ((namedArea.getRepresentation(Language.DEFAULT()).getAbbreviatedLabel()).equals("ICE-OO")) { return STR_AREA_ICELAND; }
-//			else if ((namedArea.getRepresentation(Language.DEFAULT()).getAbbreviatedLabel()).equals("ITA")) { return STR_AREA_ITALY; }
-//			else if ((namedArea.getRepresentation(Language.DEFAULT()).getAbbreviatedLabel()).equals("ITA-IT")) { return STR_AREA_ITALIAN_MAINLAND; }
-//			else if ((namedArea.getRepresentation(Language.DEFAULT()).getAbbreviatedLabel()).equals("ITA-SM")) { return STR_AREA_SAN_MARINO; }
-//			else if ((namedArea.getRepresentation(Language.DEFAULT()).getAbbreviatedLabel()).equals("YUG")) { return STR_AREA_FORMER_JUGOSLAVIA; }
-//			else if ((namedArea.getRepresentation(Language.DEFAULT()).getAbbreviatedLabel()).equals("BLT-LA")) { return STR_AREA_LATVIA; }
-//			else if ((namedArea.getRepresentation(Language.DEFAULT()).getAbbreviatedLabel()).equals("BLT-LI")) { return STR_AREA_LITHUANIA; }
-//			else if ((namedArea.getRepresentation(Language.DEFAULT()).getAbbreviatedLabel()).equals("POR")) { return STR_AREA_PORTUGUESE_MAINLAND; }
-//			else if ((namedArea.getRepresentation(Language.DEFAULT()).getAbbreviatedLabel()).equals("POR-OO")) { return STR_AREA_PORTUGUESE_MAINLAND; }
-//			else if ((namedArea.getRepresentation(Language.DEFAULT()).getAbbreviatedLabel()).equals("MDR")) { return STR_AREA_MADEIRA_ARCHIPELAGO; }
-//			else if ((namedArea.getRepresentation(Language.DEFAULT()).getAbbreviatedLabel()).equals("MDR-OO")) { return STR_AREA_MADEIRA_ARCHIPELAGO; }
-//			else if ((namedArea.getRepresentation(Language.DEFAULT()).getAbbreviatedLabel()).equals("YUG-MA")) { return STR_AREA_THE_FORMER_JUGOSLAV_REPUBLIC_OF_MAKEDONIJA; }
-//			else if ((namedArea.getRepresentation(Language.DEFAULT()).getAbbreviatedLabel()).equals("UKR-MO")) { return STR_AREA_MOLDOVA; }
-//			else if ((namedArea.getRepresentation(Language.DEFAULT()).getAbbreviatedLabel()).equals("NOR")) { return STR_AREA_NORWEGIAN_MAINLAND; }
-//			else if ((namedArea.getRepresentation(Language.DEFAULT()).getAbbreviatedLabel()).equals("NOR-OO")) { return STR_AREA_NORWEGIAN_MAINLAND; }
-//			else if ((namedArea.getRepresentation(Language.DEFAULT()).getAbbreviatedLabel()).equals("POL")) { return STR_AREA_POLAND; }
-//			else if ((namedArea.getRepresentation(Language.DEFAULT()).getAbbreviatedLabel()).equals("POL-OO")) { return STR_AREA_POLAND; }
-//			else if ((namedArea.getRepresentation(Language.DEFAULT()).getAbbreviatedLabel()).equals("RUS")) { return STR_AREA_THE_RUSSIAN_FEDERATION; }
-//			else if ((namedArea.getRepresentation(Language.DEFAULT()).getAbbreviatedLabel()).equals("WSB")) { return STR_AREA_NOVAYA_ZEMLYA_AND_FRANZ_JOSEPH_LAND; }
-//			else if ((namedArea.getRepresentation(Language.DEFAULT()).getAbbreviatedLabel()).equals("WSB-OO")) { return STR_AREA_NOVAYA_ZEMLYA_AND_FRANZ_JOSEPH_LAND; }
-//			else if ((namedArea.getRepresentation(Language.DEFAULT()).getAbbreviatedLabel()).equals("RUC")) { return STR_AREA_CENTRAL_EUROPEAN_RUSSIA; }
-//			else if ((namedArea.getRepresentation(Language.DEFAULT()).getAbbreviatedLabel()).equals("RUC-OO")) { return STR_AREA_CENTRAL_EUROPEAN_RUSSIA; }
-//			else if ((namedArea.getRepresentation(Language.DEFAULT()).getAbbreviatedLabel()).equals("RUE")) { return STR_AREA_EASTERN_EUROPEAN_RUSSIA; }
-//			else if ((namedArea.getRepresentation(Language.DEFAULT()).getAbbreviatedLabel()).equals("RUE-OO")) { return STR_AREA_EASTERN_EUROPEAN_RUSSIA; }
-//			else if ((namedArea.getRepresentation(Language.DEFAULT()).getAbbreviatedLabel()).equals("BLT-KA")) { return STR_AREA_KALININGRAD; }
-//			else if ((namedArea.getRepresentation(Language.DEFAULT()).getAbbreviatedLabel()).equals("RUN")) { return STR_AREA_NORTHERN_EUROPEAN_RUSSIA; }
-//			else if ((namedArea.getRepresentation(Language.DEFAULT()).getAbbreviatedLabel()).equals("RUN-OO")) { return STR_AREA_NORTHERN_EUROPEAN_RUSSIA; }
-//			else if ((namedArea.getRepresentation(Language.DEFAULT()).getAbbreviatedLabel()).equals("RUW")) { return STR_AREA_NORTHWEST_EUROPEAN_RUSSIA; }
-//			else if ((namedArea.getRepresentation(Language.DEFAULT()).getAbbreviatedLabel()).equals("RUW-OO")) { return STR_AREA_NORTHWEST_EUROPEAN_RUSSIA; }
-//			else if ((namedArea.getRepresentation(Language.DEFAULT()).getAbbreviatedLabel()).equals("RUS")) { return STR_AREA_SOUTH_EUROPEAN_RUSSIA; }
-//			else if ((namedArea.getRepresentation(Language.DEFAULT()).getAbbreviatedLabel()).equals("RUS-OO")) { return STR_AREA_SOUTH_EUROPEAN_RUSSIA; }
-//			else if ((namedArea.getRepresentation(Language.DEFAULT()).getAbbreviatedLabel()).equals("ROM")) { return STR_AREA_ROMANIA; }
-//			else if ((namedArea.getRepresentation(Language.DEFAULT()).getAbbreviatedLabel()).equals("ROM-OO")) { return STR_AREA_ROMANIA; }
-//			
-//			else if ((namedArea.getRepresentation(Language.DEFAULT()).getAbbreviatedLabel()).equals("SAR")) { return STR_AREA_SARDEGNA; }
-//			else if ((namedArea.getRepresentation(Language.DEFAULT()).getAbbreviatedLabel()).equals("SAR-OO")) { return STR_AREA_SARDEGNA; }
-//			else if ((namedArea.getRepresentation(Language.DEFAULT()).getAbbreviatedLabel()).equals("SVA")) { return STR_AREA_SVALBARD_WITH_BJORNOYA_AND_JAN_MAYEN; }
-//			else if ((namedArea.getRepresentation(Language.DEFAULT()).getAbbreviatedLabel()).equals("SVA-OO")) { return STR_AREA_SVALBARD_WITH_BJORNOYA_AND_JAN_MAYEN; }
-//			else if ((namedArea.getRepresentation(Language.DEFAULT()).getAbbreviatedLabel()).equals("SEL")) { return STR_AREA_SELVAGENS_ISLANDS; }
-//			else if ((namedArea.getRepresentation(Language.DEFAULT()).getAbbreviatedLabel()).equals("SEL-OO")) { return STR_AREA_SELVAGENS_ISLANDS; }
-//			else if ((namedArea.getRepresentation(Language.DEFAULT()).getAbbreviatedLabel()).equals("SIC")) { return STR_AREA_SICILY_WITH_MALTA; }
-//			else if ((namedArea.getRepresentation(Language.DEFAULT()).getAbbreviatedLabel()).equals("SIC-MA")) { return STR_AREA_MALTA; }
-//			else if ((namedArea.getRepresentation(Language.DEFAULT()).getAbbreviatedLabel()).equals("SIC-SI")) { return STR_AREA_SICILY; }
-//			else if ((namedArea.getRepresentation(Language.DEFAULT()).getAbbreviatedLabel()).equals("CZE-SK")) { return STR_AREA_SLOVAKIA; }
-//			else if ((namedArea.getRepresentation(Language.DEFAULT()).getAbbreviatedLabel()).equals("YUG-SL")) { return STR_AREA_SLOVENIA; }
-//			else if ((namedArea.getRepresentation(Language.DEFAULT()).getAbbreviatedLabel()).equals("CS")) { return STR_AREA_SERBIA_WITH_MONTENEGRO; }
-//			else if ((namedArea.getRepresentation(Language.DEFAULT()).getAbbreviatedLabel()).equals("YUG-SE")) { return STR_AREA_SERBIA_INCLUDING_VOJVODINA_AND_WITH_KOSOVO; }
-//			else if ((namedArea.getRepresentation(Language.DEFAULT()).getAbbreviatedLabel()).equals("SWE")) { return STR_AREA_SWEDEN; }
-//			else if ((namedArea.getRepresentation(Language.DEFAULT()).getAbbreviatedLabel()).equals("SWE-OO")) { return STR_AREA_SWEDEN; }
-//			else if ((namedArea.getRepresentation(Language.DEFAULT()).getAbbreviatedLabel()).equals("TUE")) { return STR_AREA_EUROPEAN_TURKEY; }
-//			else if ((namedArea.getRepresentation(Language.DEFAULT()).getAbbreviatedLabel()).equals("TUE-OO")) { return STR_AREA_EUROPEAN_TURKEY; }
-//			else if ((namedArea.getRepresentation(Language.DEFAULT()).getAbbreviatedLabel()).equals("KRY")) { return STR_AREA_CRIMEA; }
-//			else if ((namedArea.getRepresentation(Language.DEFAULT()).getAbbreviatedLabel()).equals("KRY-OO")) { return STR_AREA_CRIMEA; }
-//			else if ((namedArea.getRepresentation(Language.DEFAULT()).getAbbreviatedLabel()).equals("UKR-UK")) { return STR_AREA_UKRAINE; }
-//			else if ((namedArea.getRepresentation(Language.DEFAULT()).getAbbreviatedLabel()).equals("GRE")) { return STR_AREA_GREEK_MAINLAND; }
-//			else if ((namedArea.getRepresentation(Language.DEFAULT()).getAbbreviatedLabel()).equals("GR-KRI")) { return STR_AREA_CRETE; }
-//			else if ((namedArea.getRepresentation(Language.DEFAULT()).getAbbreviatedLabel()).equals("GR-DOD")) { return STR_AREA_DODECANESE_ISLANDS; }
-//			else if ((namedArea.getRepresentation(Language.DEFAULT()).getAbbreviatedLabel()).equals("GR-CYC")) { return STR_AREA_CYCLADES_ISLANDS; }
-//			else if ((namedArea.getRepresentation(Language.DEFAULT()).getAbbreviatedLabel()).equals("GR-AEG")) { return STR_AREA_NORTH_AEGEAN_ISLANDS; }
-//			else if ((namedArea.getRepresentation(Language.DEFAULT()).getAbbreviatedLabel()).equals("ITA-VC")) { return STR_AREA_VATICAN_CITY; }
-//			else if ((namedArea.getRepresentation(Language.DEFAULT()).getAbbreviatedLabel()).equals("TODO")) { return STR_AREA_FRANZ_JOSEF_LAND; }
-//			else if ((namedArea.getRepresentation(Language.DEFAULT()).getAbbreviatedLabel()).equals("TODO")) { return STR_AREA_NOVAYA_ZEMLYA; }
-//			else if ((namedArea.getRepresentation(Language.DEFAULT()).getAbbreviatedLabel()).equals("TCS-AZ")) { return STR_AREA_AZERBAIJAN; }
-//			else if ((namedArea.getRepresentation(Language.DEFAULT()).getAbbreviatedLabel()).equals("TCS-NA")) { return STR_AREA_NAKHICHEVAN; }
-//			else if ((namedArea.getRepresentation(Language.DEFAULT()).getAbbreviatedLabel()).equals("ALG")) { return STR_AREA_ALGERIA; }
-//			else if ((namedArea.getRepresentation(Language.DEFAULT()).getAbbreviatedLabel()).equals("ALG-OO")) { return STR_AREA_ALGERIA; }
-//			else if ((namedArea.getRepresentation(Language.DEFAULT()).getAbbreviatedLabel()).equals("TCS-AR")) { return STR_AREA_ARMENIA; }
-//			else if ((namedArea.getRepresentation(Language.DEFAULT()).getAbbreviatedLabel()).equals("33")) { return STR_AREA_CAUCASUS_REGION; }
-//			else if ((namedArea.getRepresentation(Language.DEFAULT()).getAbbreviatedLabel()).equals("EGY")) { return STR_AREA_EGYPT; }
-//			else if ((namedArea.getRepresentation(Language.DEFAULT()).getAbbreviatedLabel()).equals("EGY-OO")) { return STR_AREA_EGYPT; }
-//			else if ((namedArea.getRepresentation(Language.DEFAULT()).getAbbreviatedLabel()).equals("PAL")) { return STR_AREA_ISRAEL_JORDAN; }
-//			else if ((namedArea.getRepresentation(Language.DEFAULT()).getAbbreviatedLabel()).equals("PAL-IS")) { return STR_AREA_ISRAEL; }
-//			else if ((namedArea.getRepresentation(Language.DEFAULT()).getAbbreviatedLabel()).equals("PAL-JO")) { return STR_AREA_JORDAN; }
-//			else if ((namedArea.getRepresentation(Language.DEFAULT()).getAbbreviatedLabel()).equals("LBS-LB")) { return STR_AREA_LEBANON; }
-//			else if ((namedArea.getRepresentation(Language.DEFAULT()).getAbbreviatedLabel()).equals("LBY-OO")) { return STR_AREA_LIBYA; }
-//			else if ((namedArea.getRepresentation(Language.DEFAULT()).getAbbreviatedLabel()).equals("LBS")) { return STR_AREA_LEBANON_SYRIA; }
-//			else if ((namedArea.getRepresentation(Language.DEFAULT()).getAbbreviatedLabel()).equals("MOR")) { return STR_AREA_MOROCCO; }
-//			else if ((namedArea.getRepresentation(Language.DEFAULT()).getAbbreviatedLabel()).equals("NCS")) { return STR_AREA_NORTH_CAUCASUS; }
-//			else if ((namedArea.getRepresentation(Language.DEFAULT()).getAbbreviatedLabel()).equals("SIN")) { return STR_AREA_SINAI; }
-//			else if ((namedArea.getRepresentation(Language.DEFAULT()).getAbbreviatedLabel()).equals("SIN-OO")) { return STR_AREA_SINAI; }
-//			else if ((namedArea.getRepresentation(Language.DEFAULT()).getAbbreviatedLabel()).equals("LBS-SY")) { return STR_AREA_SYRIA; }
-//			else if ((namedArea.getRepresentation(Language.DEFAULT()).getAbbreviatedLabel()).equals("TUN")) { return STR_AREA_TUNISIA; }
-//			else if ((namedArea.getRepresentation(Language.DEFAULT()).getAbbreviatedLabel()).equals("TUN-OO")) { return STR_AREA_TUNISIA; }
-//			else if ((namedArea.getRepresentation(Language.DEFAULT()).getAbbreviatedLabel()).equals("TUR-OO")) { return STR_AREA_ASIATIC_TURKEY; }
-//			else if ((namedArea.getRepresentation(Language.DEFAULT()).getAbbreviatedLabel()).equals("20")) { return STR_AREA_NORTHERN_AFRICA; }
-//			else if ((namedArea.getRepresentation(Language.DEFAULT()).getAbbreviatedLabel()).equals("AFR")) { return STR_AREA_AFRO_TROPICAL_REGION; }
-//			else if ((namedArea.getRepresentation(Language.DEFAULT()).getAbbreviatedLabel()).equals("AUS")) { return STR_AREA_AUSTRALIAN_REGION; }
-//			else if ((namedArea.getRepresentation(Language.DEFAULT()).getAbbreviatedLabel()).equals("TODO")) { return STR_AREA_EAST_PALAEARCTIC; }
-//			else if ((namedArea.getRepresentation(Language.DEFAULT()).getAbbreviatedLabel()).equals("NEA")) { return STR_AREA_NEARCTIC_REGION; }
-//			else if ((namedArea.getRepresentation(Language.DEFAULT()).getAbbreviatedLabel()).equals("NEO")) { return STR_AREA_NEOTROPICAL_REGION; }
-//			else if ((namedArea.getRepresentation(Language.DEFAULT()).getAbbreviatedLabel()).equals("NRE")) { return STR_AREA_NEAR_EAST; }
-//			else if ((namedArea.getRepresentation(Language.DEFAULT()).getAbbreviatedLabel()).equals("ORR")) { return STR_AREA_ORIENTAL_REGION; }
-//			else if ((namedArea.getRepresentation(Language.DEFAULT()).getAbbreviatedLabel()).equals("TCS")) { return STR_AREA_TRANSCAUCASUS; }
-//			
-//			else if (namedArea.getUuid().equals(ErmsTransformer.uuidEuropeanMarineWaters)) { return STR_AREA_EUROPEAN_MARINE_WATERS; }
-//			else if ((namedArea.getRepresentation(Language.DEFAULT()).getAbbreviatedLabel()).equals("MES") ||
-//					(namedArea.getUuid().equals(ErmsTransformer.uuidMediterraneanSea))) { return STR_AREA_MEDITERRANEAN_SEA; } // abbreviated label missing
-//			else if (namedArea.getUuid().equals(ErmsTransformer.uuidWhiteSea)) { return STR_AREA_WHITE_SEA; }
-//			else if (namedArea.getUuid().equals(ErmsTransformer.uuidNorthSea)) { return STR_AREA_NORTH_SEA; }
-//			else if (namedArea.getUuid().equals(ErmsTransformer.uuidBalticSea)) { return STR_AREA_BALTIC_SEA; }
-//			else if ((namedArea.getRepresentation(Language.DEFAULT()).getAbbreviatedLabel()).equals("BLS") ||
-//					(namedArea.getUuid().equals(ErmsTransformer.uuidBlackSea))) { return STR_AREA_BLACK_SEA; } // abbreviated label missing
-//			else if (namedArea.getUuid().equals(ErmsTransformer.uuidBarentsSea)) { return STR_AREA_BARENTS_SEA; }
-//			else if ((namedArea.getRepresentation(Language.DEFAULT()).getAbbreviatedLabel()).equals("CAS") ||
-//					(namedArea.getUuid().equals(ErmsTransformer.uuidCaspianSea))) { return STR_AREA_CASPIAN_SEA; } // abbreviated label missing
-//			else if (namedArea.getUuid().equals(ErmsTransformer.uuidPortugueseExclusiveEconomicZone)) { return STR_AREA_PORTUGUESE_EXCLUSIVE_ECONOMIC_ZONE; }
-//			else if (namedArea.getUuid().equals(ErmsTransformer.uuidBelgianExclusiveEconomicZone)) { return STR_AREA_BELGIAN_EXCLUSIVE_ECONOMIC_ZONE; }
-//			else if (namedArea.getUuid().equals(ErmsTransformer.uuidFrenchExclusiveEconomicZone)) { return STR_AREA_FRENCH_EXCLUSIVE_ECONOMIC_ZONE; }
-//			else if (namedArea.getUuid().equals(ErmsTransformer.uuidEnglishChannel)) { return STR_AREA_ENGLISH_CHANNEL; }
-//			else if (namedArea.getUuid().equals(ErmsTransformer.uuidAdriaticSea)) { return STR_AREA_ADRIATIC_SEA; }
-//			else if (namedArea.getUuid().equals(ErmsTransformer.uuidBiscayBay)) { return STR_AREA_BISCAY_BAY; }
-//			else if (namedArea.getUuid().equals(ErmsTransformer.uuidDutchExclusiveEconomicZone)) { return STR_AREA_DUTCH_EXCLUSIVE_ECONOMIC_ZONE; }
-//			else if (namedArea.getUuid().equals(ErmsTransformer.uuidUnitedKingdomExclusiveEconomicZone)) { return STR_AREA_UNITED_KINGDOM_EXCLUSIVE_ECONOMIC_ZONE; }
-//			else if (namedArea.getUuid().equals(ErmsTransformer.uuidSpanishExclusiveEconomicZone)) { return STR_AREA_SPANISH_EXCLUSIVE_ECONOMIC_ZONE; }
-//			else if (namedArea.getUuid().equals(ErmsTransformer.uuidEgyptianExclusiveEconomicZone)) { return STR_AREA_EGYPTIAN_EXCLUSIVE_ECONOMIC_ZONE; }
-//			else if (namedArea.getUuid().equals(ErmsTransformer.uuidGrecianExclusiveEconomicZone)) { return STR_AREA_GRECIAN_EXCLUSIVE_ECONOMIC_ZONE; }
-//			else if (namedArea.getUuid().equals(ErmsTransformer.uuidTirrenoSea)) { return STR_AREA_TIRRENO_SEA; }
-//			else if (namedArea.getUuid().equals(ErmsTransformer.uuidIcelandicExclusiveEconomicZone)) { return STR_AREA_ICELANDIC_EXCLUSIVE_ECONOMIC_ZONE; }
-//			else if (namedArea.getUuid().equals(ErmsTransformer.uuidIrishExclusiveeconomicZone)) { return STR_AREA_IRISH_EXCLUSIVE_ECONOMIC_ZONE; }
-//			else if (namedArea.getUuid().equals(ErmsTransformer.uuidIrishSea)) { return STR_AREA_IRISH_SEA; }
-//			else if (namedArea.getUuid().equals(ErmsTransformer.uuidItalianExclusiveEconomicZone)) { return STR_AREA_ITALIAN_EXCLUSIVE_ECONOMIC_ZONE; }
-//			else if (namedArea.getUuid().equals(ErmsTransformer.uuidNorwegianSea)) { return STR_AREA_NORWEGIAN_SEA; }
-//			else if (namedArea.getUuid().equals(ErmsTransformer.uuidMoroccanExclusiveEconomicZone)) { return STR_AREA_MOROCCAN_EXCLUSIVE_ECONOMIC_ZONE; }
-//			else if (namedArea.getUuid().equals(ErmsTransformer.uuidNorwegianExclusiveEconomicZone)) { return STR_AREA_NORWEGIAN_EXCLUSIVE_ECONOMIC_ZONE; }
-//			else if (namedArea.getUuid().equals(ErmsTransformer.uuidSkagerrak)) { return STR_AREA_SKAGERRAK; }
-//			else if (namedArea.getUuid().equals(ErmsTransformer.uuidTunisianExclusiveEconomicZone)) { return STR_AREA_TUNISIAN_EXCLUSIVE_ECONOMIC_ZONE; }
-//			else if (namedArea.getUuid().equals(ErmsTransformer.uuidWaddenSea)) { return STR_AREA_WADDEN_SEA; }
-//			else if (namedArea.getUuid().equals(ErmsTransformer.uuidBeltSea)) { return STR_AREA_BELT_SEA; }
-//			else if (namedArea.getUuid().equals(ErmsTransformer.uuidMarmaraSea)) { return STR_AREA_MARMARA_SEA; }
-//			else if (namedArea.getUuid().equals(ErmsTransformer.uuidSeaofAzov)) { return STR_AREA_SEA_OF_AZOV; }
-//			else if (namedArea.getUuid().equals(ErmsTransformer.uuidAegeanSea)) { return STR_AREA_AEGEAN_SEA; }
-//			else if (namedArea.getUuid().equals(ErmsTransformer.uuidBulgarianExclusiveEconomicZone)) { return STR_AREA_BULGARIAN_EXCLUSIVE_ECONOMIC_ZONE; }
-//			else if (namedArea.getUuid().equals(ErmsTransformer.uuidSouthBalticproper)) { return STR_AREA_SOUTH_BALTIC_PROPER; }
-//			else if (namedArea.getUuid().equals(ErmsTransformer.uuidBalticProper)) { return STR_AREA_BALTIC_PROPER; }
-//			else if (namedArea.getUuid().equals(ErmsTransformer.uuidNorthBalticproper)) { return STR_AREA_NORTH_BALTIC_PROPER; }
-//			else if (namedArea.getUuid().equals(ErmsTransformer.uuidArchipelagoSea)) { return STR_AREA_ARCHIPELAGO_SEA; }
-//			else if (namedArea.getUuid().equals(ErmsTransformer.uuidBothnianSea)) { return STR_AREA_BOTHNIAN_SEA; }
-//			else if (namedArea.getUuid().equals(ErmsTransformer.uuidGermanExclusiveEconomicZone)) { return STR_AREA_GERMAN_EXCLUSIVE_ECONOMIC_ZONE; }
-//			else if (namedArea.getUuid().equals(ErmsTransformer.uuidSwedishExclusiveEconomicZone)) { return STR_AREA_SWEDISH_EXCLUSIVE_ECONOMIC_ZONE; }
-//			else if (namedArea.getUuid().equals(ErmsTransformer.uuidUkrainianExclusiveEconomicZone)) { return STR_AREA_UKRAINIAN_EXCLUSIVE_ECONOMIC_ZONE; }
-//			else if (namedArea.getUuid().equals(ErmsTransformer.uuidMadeiranExclusiveEconomicZone)) { return STR_AREA_MADEIRAN_EXCLUSIVE_ECONOMIC_ZONE; }
-//			else if (namedArea.getUuid().equals(ErmsTransformer.uuidLebaneseExclusiveEconomicZone)) { return STR_AREA_LEBANESE_EXCLUSIVE_ECONOMIC_ZONE; }
-//			else if (namedArea.getUuid().equals(ErmsTransformer.uuidSpanishExclusiveEconomicZoneMediterraneanpart)) { return STR_AREA_SPANISH_EXCLUSIVE_ECONOMIC_ZONE_MEDITERRANEAN_PART; }
-//			else if (namedArea.getUuid().equals(ErmsTransformer.uuidEstonianExclusiveEconomicZone)) { return STR_AREA_ESTONIAN_EXCLUSIVE_ECONOMIC_ZONE; }
-//			else if (namedArea.getUuid().equals(ErmsTransformer.uuidCroatianExclusiveEconomicZone)) { return STR_AREA_CROATIAN_EXCLUSIVE_ECONOMIC_ZONE; }
-//			else if (namedArea.getUuid().equals(ErmsTransformer.uuidBalearSea)) { return STR_AREA_BALEAR_SEA; }
-//			else if (namedArea.getUuid().equals(ErmsTransformer.uuidTurkishExclusiveEconomicZone)) { return STR_AREA_TURKISH_EXCLUSIVE_ECONOMIC_ZONE; }
-//			else if (namedArea.getUuid().equals(ErmsTransformer.uuidDanishExclusiveEconomicZone)) { return STR_AREA_DANISH_EXCLUSIVE_ECONOMIC_ZONE; }
-//			else {
-//				logger.error("Unknown NamedArea Area: " + area.getTitleCache());
-//			}
-//		}else if (namedArea.isInstanceOf(WaterbodyOrCountry.class)){
-//			if ((namedArea.equals(WaterbodyOrCountry.UKRAINE()))) { return STR_AREA_UKRAINE_INCLUDING_CRIMEA; }
-//			else if (namedArea.equals(WaterbodyOrCountry.AZERBAIJANREPUBLICOF())) { return STR_AREA_AZERBAIJAN_INCLUDING_NAKHICHEVAN; }
-//			else if (namedArea.equals(WaterbodyOrCountry.GEORGIA())) { return STR_AREA_GEORGIA; }
-//			else {
-//				logger.warn("Unknown NamedArea Area: " + area.getTitleCache());
-//			}
-//		}else {
-//			if ((namedArea.getUuid().equals(BerlinModelTransformer.uuidMadeira))){ return STR_AREA_MADEIRA; }
-//			else if ((namedArea.getUuid().equals(BerlinModelTransformer.uuidDesertas))) { return STR_AREA_DESERTAS; }
-//			else if ((namedArea.getUuid().equals(BerlinModelTransformer.uuidPortoSanto))) { return STR_AREA_PORTO_SANTO; }
-//			else if ((namedArea.getUuid().equals(BerlinModelTransformer.uuidRussiaBaltic))) { return STR_AREA_RUSSIA_BALTIC; }
-//			else if ((namedArea.getUuid().equals(BerlinModelTransformer.uuidRussiaSouthEast))) { return STR_AREA_RUSSIA_SOUTHEAST; }
-//			else if ((namedArea.getUuid().equals(BerlinModelTransformer.uuidRussiaSouthWest))) { return STR_AREA_RUSSIA_SOUTHWEST; }
-//			else if ((namedArea.getUuid().equals(BerlinModelTransformer.uuidUssr))) { return STR_AREA_FORMER_USSR; }
-//			else if ((namedArea.getUuid().equals(BerlinModelTransformer.uuidRussiaCentral))) { return STR_AREA_RUSSIA_CENTRAL; }
-//			else if ((namedArea.getUuid().equals(BerlinModelTransformer.uuidRussiaNorthern))) { return STR_AREA_RUSSIA_NORTHERN; }
-//			else if ((namedArea.getUuid().equals(BerlinModelTransformer.uuidTurkey))) { return STR_AREA_TURKEY; }
-//			else if ((namedArea.getUuid().equals(BerlinModelTransformer.uuidEastAegeanIslands))) { return STR_AREA_EAST_AEGEAN_ISLANDS; }
-//			
-//			else {
-//				logger.warn("Unknown NamedArea Area: " + area.getTitleCache());
-//			}
-//		}
-//		return null; // Actually the export has to stop here because AreaFk's are not allowed to be NULL.
-//	}
 
 	@Override
 	public String getCacheByPresenceAbsenceTerm(PresenceAbsenceTermBase status) throws UndefinedTransformerMethodException {
@@ -1730,155 +1229,13 @@ public final class PesiTransformer extends ExportTransformerBase implements IExp
 	
 	
 	@Override
-	public String getCacheByNamedArea(NamedArea area) throws UndefinedTransformerMethodException {
-		NamedArea namedArea = CdmBase.deproxy(area, NamedArea.class);
-
-		if (namedArea == null) {
+	public String getCacheByNamedArea(NamedArea namedArea) throws UndefinedTransformerMethodException {
+		NamedArea area = CdmBase.deproxy(namedArea, NamedArea.class);
+		if (area == null){
 			return null;
-		//TDWG areas
-		} else if (namedArea.isInstanceOf(TdwgArea.class)) {
-			String abbrevLabel = namedArea.getRepresentation(Language.DEFAULT()).getAbbreviatedLabel();
-			String result = this.tdwgLabelMap.get(abbrevLabel);
-			if (result == null){
-				logger.warn("Unknown TDWGArea: " + namedArea.getTitleCache());
-			}
-			return result;
-		//countries & Waterbodies
-		}else if (namedArea.isInstanceOf(WaterbodyOrCountry.class)){
-			if (namedArea.equals(WaterbodyOrCountry.UKRAINE())) { return STR_AREA_UKRAINE_INCLUDING_CRIMEA; }
-			else if (namedArea.equals(WaterbodyOrCountry.AZERBAIJANREPUBLICOF())) { return STR_AREA_AZERBAIJAN_INCLUDING_NAKHICHEVAN; }
-			else if (namedArea.equals(WaterbodyOrCountry.GEORGIA())) { return STR_AREA_GEORGIA; }
-			else if (namedArea.equals(WaterbodyOrCountry.RUSSIANFEDERATION())) { return STR_AREA_THE_RUSSIAN_FEDERATION; }
-			else if (namedArea.equals(WaterbodyOrCountry.UNITEDKINGDOMOFGREATBRITAINANDNORTHERNIRELAND())) { return STR_AREA_UNITED_KINGDOM; }
-			else if (namedArea.equals(WaterbodyOrCountry.DENMARKKINGDOMOF())) { return STR_AREA_DENMARK; }
-			else if (namedArea.equals(WaterbodyOrCountry.TURKEYREPUBLICOF())) { return STR_AREA_TURKEY_COUNTRY; }
-			else {
-				logger.warn("Unknown Waterbody/Country: " + namedArea.getTitleCache());
-			}
-		}else{  //Non TDWG, non country
-			//E+M
-			if ( namedArea.getUuid().equals(BerlinModelTransformer.uuidMadeira)){ return STR_AREA_MADEIRA; }
-			else if (namedArea.getUuid().equals(BerlinModelTransformer.uuidDesertas)) { return STR_AREA_DESERTAS; }
-			else if (namedArea.getUuid().equals(BerlinModelTransformer.uuidPortoSanto)) { return STR_AREA_PORTO_SANTO; }
-			else if (namedArea.getUuid().equals(BerlinModelTransformer.uuidFlores)) { return STR_AREA_FLORES; }
-			else if (namedArea.getUuid().equals(BerlinModelTransformer.uuidCorvo)) { return STR_AREA_CORVO; }
-			else if (namedArea.getUuid().equals(BerlinModelTransformer.uuidFaial)) { return STR_AREA_FAIAL; }
-			else if (namedArea.getUuid().equals(BerlinModelTransformer.uuidGraciosa)) { return STR_AREA_GRACIOSA; }
-			else if (namedArea.getUuid().equals(BerlinModelTransformer.uuidSaoJorge)) { return STR_AREA_SAO_JORGE; }
-			else if (namedArea.getUuid().equals(BerlinModelTransformer.uuidSaoMiguel)) { return STR_AREA_SAO_MIGUEL; }
-			else if (namedArea.getUuid().equals(BerlinModelTransformer.uuidPico)) { return STR_AREA_PICO; }
-			else if (namedArea.getUuid().equals(BerlinModelTransformer.uuidSantaMaria)) { return STR_AREA_SANTA_MARIA; }
-			else if (namedArea.getUuid().equals(BerlinModelTransformer.uuidTerceira)) { return STR_AREA_TERCEIRA; }
-			else if (namedArea.getUuid().equals(BerlinModelTransformer.uuidGranCanaria)) { return STR_AREA_GRAN_CANARIA; }
-			else if (namedArea.getUuid().equals(BerlinModelTransformer.uuidFuerteventura)) { return STR_AREA_FUERTEVENTURA_WITH_LOBOS; }
-			else if (namedArea.getUuid().equals(BerlinModelTransformer.uuidGomera)) { return STR_AREA_GOMERA; }
-			else if (namedArea.getUuid().equals(BerlinModelTransformer.uuidHierro)) { return STR_AREA_HIERRO; }
-			else if (namedArea.getUuid().equals(BerlinModelTransformer.uuidLanzaroteWithGraciosa)) { return STR_AREA_LANZAROTE_WITH_GRACIOSA; }
-			else if (namedArea.getUuid().equals(BerlinModelTransformer.uuidLaPalma)) { return STR_AREA_LA_PALMA; }
-			else if (namedArea.getUuid().equals(BerlinModelTransformer.uuidTenerife)) { return STR_AREA_TENERIFE; }
-			else if (namedArea.getUuid().equals(BerlinModelTransformer.uuidIbizaWithFormentera)) { return STR_AREA_IBIZA_WITH_FORMENTERA; }
-			else if (namedArea.getUuid().equals(BerlinModelTransformer.uuidMallorca)) { return STR_AREA_MALLORCA; }
-			else if (namedArea.getUuid().equals(BerlinModelTransformer.uuidMenorca)) { return STR_AREA_MENORCA; }
-			
-			else if (namedArea.getUuid().equals(BerlinModelTransformer.uuidUssr)) { return STR_AREA_FORMER_USSR; }
-			else if (namedArea.getUuid().equals(BerlinModelTransformer.uuidRussiaBaltic)) { return STR_AREA_RUSSIA_BALTIC; }
-			else if (namedArea.getUuid().equals(BerlinModelTransformer.uuidRussiaSouthEast)) { return STR_AREA_RUSSIA_SOUTHEAST; }
-			else if (namedArea.getUuid().equals(BerlinModelTransformer.uuidRussiaSouthWest)) { return STR_AREA_RUSSIA_SOUTHWEST; }
-			else if (namedArea.getUuid().equals(BerlinModelTransformer.uuidRussiaCentral)) { return STR_AREA_RUSSIA_CENTRAL; }
-			else if (namedArea.getUuid().equals(BerlinModelTransformer.uuidRussiaNorthern)) { return STR_AREA_RUSSIA_NORTHERN; }
-			
-			else if (namedArea.getUuid().equals(BerlinModelTransformer.uuidTurkey)) { return STR_AREA_TURKEY; }
-			else if (namedArea.getUuid().equals(BerlinModelTransformer.uuidEastAegeanIslands)) { return STR_AREA_EAST_AEGEAN_ISLANDS; }
-			else if (namedArea.getUuid().equals(BerlinModelTransformer.uuidFlores)) { return STR_AREA_FLORES; }
-			else if (namedArea.getUuid().equals(BerlinModelTransformer.uuidTurkishEastAegeanIslands)) { return STR_AREA_TURKISH_EAST_AEGEAN_ISLANDS; }
-			else if (namedArea.getUuid().equals(BerlinModelTransformer.uuidSerbiaMontenegro)) { return STR_AREA_SERBIA_WITH_MONTENEGRO; }
-			else if (namedArea.getUuid().equals(BerlinModelTransformer.uuidSerbia)) { return STR_AREA_SERBIA_INCLUDING_VOJVODINA_AND_WITH_KOSOVO; }
-			else if (namedArea.getUuid().equals(BerlinModelTransformer.uuidCaucasia)) { return STR_AREA_CAUCASUS_REGION; }
-			else if (namedArea.getUuid().equals(BerlinModelTransformer.uuidUkraineAndCrimea)) { return STR_AREA_UKRAINE_INCLUDING_CRIMEA; }
-			else if (namedArea.getUuid().equals(BerlinModelTransformer.uuidAzerbaijanNakhichevan)) { return STR_AREA_AZERBAIJAN_INCLUDING_NAKHICHEVAN; }
-			
-			
-			//FE
-			else if (namedArea.getUuid().equals(FaunaEuropaeaTransformer.uuidAreaAFR)) { return STR_AREA_AFRO_TROPICAL_REGION; }
-			else if (namedArea.getUuid().equals(FaunaEuropaeaTransformer.uuidAreaAUS)) { return STR_AREA_AUSTRALIAN_REGION; }
-			else if (namedArea.getUuid().equals(FaunaEuropaeaTransformer.uuidAreaEPA)) { return STR_AREA_EAST_PALAEARCTIC; }
-			else if (namedArea.getUuid().equals(FaunaEuropaeaTransformer.uuidAreaGR_AEG)) { return STR_AREA_NORTH_AEGEAN_ISLANDS; }
-			else if (namedArea.getUuid().equals(FaunaEuropaeaTransformer.uuidAreaGR_CYC)) { return STR_AREA_CYCLADES_ISLANDS; }
-			else if (namedArea.getUuid().equals(FaunaEuropaeaTransformer.uuidAreaGR_DOD)) { return STR_AREA_DODECANESE_ISLANDS; }
-			else if (namedArea.getUuid().equals(FaunaEuropaeaTransformer.uuidAreaGR_CR)){ return STR_AREA_CRETE;}
-			else if (namedArea.getUuid().equals(FaunaEuropaeaTransformer.uuidAreaNAF)) { return STR_AREA_NORTHERN_AFRICA; }
-			else if (namedArea.getUuid().equals(FaunaEuropaeaTransformer.uuidAreaNEA)) { return STR_AREA_NEARCTIC_REGION; }
-			else if (namedArea.getUuid().equals(FaunaEuropaeaTransformer.uuidAreaNEO)) { return STR_AREA_NEOTROPICAL_REGION; }
-			else if (namedArea.getUuid().equals(FaunaEuropaeaTransformer.uuidAreaNRE)) { return STR_AREA_NEAR_EAST; }
-			else if (namedArea.getUuid().equals(FaunaEuropaeaTransformer.uuidAreaORR)) { return STR_AREA_ORIENTAL_REGION; }
-			else if (namedArea.getUuid().equals(FaunaEuropaeaTransformer.uuidAreaUA)){ return STR_AREA_UKRAINE;}
-			else if (namedArea.getUuid().equals(FaunaEuropaeaTransformer.uuidAreaRU_NOZ)) { return STR_AREA_NOVAYA_ZEMLYA;}
-			else if (namedArea.getUuid().equals(FaunaEuropaeaTransformer.uuidAreaRU_FJL)){ return STR_AREA_FRANZ_JOSEF_LAND;}
-			
-			
-			
-			//ERMS
-			else if (namedArea.getUuid().equals(ErmsTransformer.uuidEuropeanMarineWaters)) { return STR_AREA_EUROPEAN_MARINE_WATERS; }
-			else if ( //(namedArea.getRepresentation(Language.DEFAULT()).getAbbreviatedLabel()).equals("MES") ||    !! NPE
-					(namedArea.getUuid().equals(ErmsTransformer.uuidMediterraneanSea))) { return STR_AREA_MEDITERRANEAN_SEA; } // abbreviated label missing
-			else if (namedArea.getUuid().equals(ErmsTransformer.uuidWhiteSea)) { return STR_AREA_WHITE_SEA; }
-			else if (namedArea.getUuid().equals(ErmsTransformer.uuidNorthSea)) { return STR_AREA_NORTH_SEA; }
-			else if (namedArea.getUuid().equals(ErmsTransformer.uuidBalticSea)) { return STR_AREA_BALTIC_SEA; }
-			else if ( //(namedArea.getRepresentation(Language.DEFAULT()).getAbbreviatedLabel()).equals("BLS") ||      !! NPE
-					(namedArea.getUuid().equals(ErmsTransformer.uuidBlackSea))) { return STR_AREA_BLACK_SEA; } // abbreviated label missing
-			else if (namedArea.getUuid().equals(ErmsTransformer.uuidBarentsSea)) { return STR_AREA_BARENTS_SEA; }
-			else if ( // (namedArea.getRepresentation(Language.DEFAULT()).getAbbreviatedLabel()).equals("CAS") ||      !! NPE
-					(namedArea.getUuid().equals(ErmsTransformer.uuidCaspianSea))) { return STR_AREA_CASPIAN_SEA; } // abbreviated label missing
-			else if (namedArea.getUuid().equals(ErmsTransformer.uuidPortugueseExclusiveEconomicZone)) { return STR_AREA_PORTUGUESE_EXCLUSIVE_ECONOMIC_ZONE; }
-			else if (namedArea.getUuid().equals(ErmsTransformer.uuidBelgianExclusiveEconomicZone)) { return STR_AREA_BELGIAN_EXCLUSIVE_ECONOMIC_ZONE; }
-			else if (namedArea.getUuid().equals(ErmsTransformer.uuidFrenchExclusiveEconomicZone)) { return STR_AREA_FRENCH_EXCLUSIVE_ECONOMIC_ZONE; }
-			else if (namedArea.getUuid().equals(ErmsTransformer.uuidEnglishChannel)) { return STR_AREA_ENGLISH_CHANNEL; }
-			else if (namedArea.getUuid().equals(ErmsTransformer.uuidAdriaticSea)) { return STR_AREA_ADRIATIC_SEA; }
-			else if (namedArea.getUuid().equals(ErmsTransformer.uuidBiscayBay)) { return STR_AREA_BISCAY_BAY; }
-			else if (namedArea.getUuid().equals(ErmsTransformer.uuidDutchExclusiveEconomicZone)) { return STR_AREA_DUTCH_EXCLUSIVE_ECONOMIC_ZONE; }
-			else if (namedArea.getUuid().equals(ErmsTransformer.uuidUnitedKingdomExclusiveEconomicZone)) { return STR_AREA_UNITED_KINGDOM_EXCLUSIVE_ECONOMIC_ZONE; }
-			else if (namedArea.getUuid().equals(ErmsTransformer.uuidSpanishExclusiveEconomicZone)) { return STR_AREA_SPANISH_EXCLUSIVE_ECONOMIC_ZONE; }
-			else if (namedArea.getUuid().equals(ErmsTransformer.uuidEgyptianExclusiveEconomicZone)) { return STR_AREA_EGYPTIAN_EXCLUSIVE_ECONOMIC_ZONE; }
-			else if (namedArea.getUuid().equals(ErmsTransformer.uuidGrecianExclusiveEconomicZone)) { return STR_AREA_GRECIAN_EXCLUSIVE_ECONOMIC_ZONE; }
-			else if (namedArea.getUuid().equals(ErmsTransformer.uuidTirrenoSea)) { return STR_AREA_TIRRENO_SEA; }
-			else if (namedArea.getUuid().equals(ErmsTransformer.uuidIcelandicExclusiveEconomicZone)) { return STR_AREA_ICELANDIC_EXCLUSIVE_ECONOMIC_ZONE; }
-			else if (namedArea.getUuid().equals(ErmsTransformer.uuidIrishExclusiveeconomicZone)) { return STR_AREA_IRISH_EXCLUSIVE_ECONOMIC_ZONE; }
-			else if (namedArea.getUuid().equals(ErmsTransformer.uuidIrishSea)) { return STR_AREA_IRISH_SEA; }
-			else if (namedArea.getUuid().equals(ErmsTransformer.uuidItalianExclusiveEconomicZone)) { return STR_AREA_ITALIAN_EXCLUSIVE_ECONOMIC_ZONE; }
-			else if (namedArea.getUuid().equals(ErmsTransformer.uuidNorwegianSea)) { return STR_AREA_NORWEGIAN_SEA; }
-			else if (namedArea.getUuid().equals(ErmsTransformer.uuidMoroccanExclusiveEconomicZone)) { return STR_AREA_MOROCCAN_EXCLUSIVE_ECONOMIC_ZONE; }
-			else if (namedArea.getUuid().equals(ErmsTransformer.uuidNorwegianExclusiveEconomicZone)) { return STR_AREA_NORWEGIAN_EXCLUSIVE_ECONOMIC_ZONE; }
-			else if (namedArea.getUuid().equals(ErmsTransformer.uuidSkagerrak)) { return STR_AREA_SKAGERRAK; }
-			else if (namedArea.getUuid().equals(ErmsTransformer.uuidTunisianExclusiveEconomicZone)) { return STR_AREA_TUNISIAN_EXCLUSIVE_ECONOMIC_ZONE; }
-			else if (namedArea.getUuid().equals(ErmsTransformer.uuidWaddenSea)) { return STR_AREA_WADDEN_SEA; }
-			else if (namedArea.getUuid().equals(ErmsTransformer.uuidBeltSea)) { return STR_AREA_BELT_SEA; }
-			else if (namedArea.getUuid().equals(ErmsTransformer.uuidMarmaraSea)) { return STR_AREA_MARMARA_SEA; }
-			else if (namedArea.getUuid().equals(ErmsTransformer.uuidSeaofAzov)) { return STR_AREA_SEA_OF_AZOV; }
-			else if (namedArea.getUuid().equals(ErmsTransformer.uuidAegeanSea)) { return STR_AREA_AEGEAN_SEA; }
-			else if (namedArea.getUuid().equals(ErmsTransformer.uuidBulgarianExclusiveEconomicZone)) { return STR_AREA_BULGARIAN_EXCLUSIVE_ECONOMIC_ZONE; }
-			else if (namedArea.getUuid().equals(ErmsTransformer.uuidSouthBalticproper)) { return STR_AREA_SOUTH_BALTIC_PROPER; }
-			else if (namedArea.getUuid().equals(ErmsTransformer.uuidBalticProper)) { return STR_AREA_BALTIC_PROPER; }
-			else if (namedArea.getUuid().equals(ErmsTransformer.uuidNorthBalticproper)) { return STR_AREA_NORTH_BALTIC_PROPER; }
-			else if (namedArea.getUuid().equals(ErmsTransformer.uuidArchipelagoSea)) { return STR_AREA_ARCHIPELAGO_SEA; }
-			else if (namedArea.getUuid().equals(ErmsTransformer.uuidBothnianSea)) { return STR_AREA_BOTHNIAN_SEA; }
-			else if (namedArea.getUuid().equals(ErmsTransformer.uuidGermanExclusiveEconomicZone)) { return STR_AREA_GERMAN_EXCLUSIVE_ECONOMIC_ZONE; }
-			else if (namedArea.getUuid().equals(ErmsTransformer.uuidSwedishExclusiveEconomicZone)) { return STR_AREA_SWEDISH_EXCLUSIVE_ECONOMIC_ZONE; }
-			else if (namedArea.getUuid().equals(ErmsTransformer.uuidUkrainianExclusiveEconomicZone)) { return STR_AREA_UKRAINIAN_EXCLUSIVE_ECONOMIC_ZONE; }
-			else if (namedArea.getUuid().equals(ErmsTransformer.uuidMadeiranExclusiveEconomicZone)) { return STR_AREA_MADEIRAN_EXCLUSIVE_ECONOMIC_ZONE; }
-			else if (namedArea.getUuid().equals(ErmsTransformer.uuidLebaneseExclusiveEconomicZone)) { return STR_AREA_LEBANESE_EXCLUSIVE_ECONOMIC_ZONE; }
-			else if (namedArea.getUuid().equals(ErmsTransformer.uuidSpanishExclusiveEconomicZoneMediterraneanpart)) { return STR_AREA_SPANISH_EXCLUSIVE_ECONOMIC_ZONE_MEDITERRANEAN_PART; }
-			else if (namedArea.getUuid().equals(ErmsTransformer.uuidEstonianExclusiveEconomicZone)) { return STR_AREA_ESTONIAN_EXCLUSIVE_ECONOMIC_ZONE; }
-			else if (namedArea.getUuid().equals(ErmsTransformer.uuidCroatianExclusiveEconomicZone)) { return STR_AREA_CROATIAN_EXCLUSIVE_ECONOMIC_ZONE; }
-			else if (namedArea.getUuid().equals(ErmsTransformer.uuidBalearSea)) { return STR_AREA_BALEAR_SEA; }
-			else if (namedArea.getUuid().equals(ErmsTransformer.uuidTurkishExclusiveEconomicZone)) { return STR_AREA_TURKISH_EXCLUSIVE_ECONOMIC_ZONE; }
-			else if (namedArea.getUuid().equals(ErmsTransformer.uuidDanishExclusiveEconomicZone)) { return STR_AREA_DANISH_EXCLUSIVE_ECONOMIC_ZONE; }
-			
-			else {
-				logger.warn("Unknown NamedArea Area: " + namedArea.getTitleCache());
-			}
-
+		}else{
+			return this.areaCacheMap.get(getKeyByNamedArea(area)); 
 		}
-		return null;
 	}
 	
 	
@@ -2032,284 +1389,6 @@ public final class PesiTransformer extends ExportTransformerBase implements IExp
 		return null;
 	}
 	
-	
-//	/**
-//	 * Returns the AreaId for a given Area.
-//	 * @param area
-//	 * @return
-//	 */
-//	public static Integer area2AreaId(NamedArea area) {
-//		NamedArea namedArea = CdmBase.deproxy(area, NamedArea.class);
-//
-//		if (area == null) {
-//			return null;
-//		} else if (area.isInstanceOf(TdwgArea.class)) {
-//			
-//			// TODO: Areas identified by the string "TODO" (for now) have to be identified correctly after additions have been made to the list of NamedArea's according to specific imports, i.e. euro+med
-//			if ((namedArea.getRepresentation(Language.DEFAULT()).getAbbreviatedLabel()).equals("EAI")) { return AREA_GREEK_EAST_AEGEAN_ISLANDS; }
-//			else if ((namedArea.getRepresentation(Language.DEFAULT()).getAbbreviatedLabel()).equals("EAI-OO")) { return AREA_GREEK_EAST_AEGEAN_ISLANDS; }
-//			else if ((namedArea.getRepresentation(Language.DEFAULT()).getAbbreviatedLabel()).equals("TODO")) { return AREA_TURKISH_EAST_AEGEAN_ISLANDS; }
-//			else if ((namedArea.getRepresentation(Language.DEFAULT()).getAbbreviatedLabel()).equals("ALB")) { return AREA_ALBANIA; }
-//			else if ((namedArea.getRepresentation(Language.DEFAULT()).getAbbreviatedLabel()).equals("ALB-OO")) { return AREA_ALBANIA; }
-//			else if ((namedArea.getRepresentation(Language.DEFAULT()).getAbbreviatedLabel()).equals("AUT")) { return AREA_AUSTRIA_WITH_LIECHTENSTEIN; }
-//			else if ((namedArea.getRepresentation(Language.DEFAULT()).getAbbreviatedLabel()).equals("AUT-AU")) { return AREA_AUSTRIA; }
-//			else if ((namedArea.getRepresentation(Language.DEFAULT()).getAbbreviatedLabel()).equals("AUT-LI")) { return AREA_LIECHTENSTEIN; }
-//			else if ((namedArea.getRepresentation(Language.DEFAULT()).getAbbreviatedLabel()).equals("AZO")) { return AREA_AZORES; }
-//			else if ((namedArea.getRepresentation(Language.DEFAULT()).getAbbreviatedLabel()).equals("AZO-OO")) { return AREA_AZORES; }
-//			else if ((namedArea.getRepresentation(Language.DEFAULT()).getAbbreviatedLabel()).equals("TODO")) { return AREA_CORVO; }
-//			else if ((namedArea.getRepresentation(Language.DEFAULT()).getAbbreviatedLabel()).equals("TODO")) { return AREA_FAIAL; }
-//			else if ((namedArea.getRepresentation(Language.DEFAULT()).getAbbreviatedLabel()).equals("TODO")) { return AREA_GRACIOSA; }
-//			else if ((namedArea.getRepresentation(Language.DEFAULT()).getAbbreviatedLabel()).equals("TODO")) { return AREA_SAO_JORGE; }
-//			else if ((namedArea.getRepresentation(Language.DEFAULT()).getAbbreviatedLabel()).equals("TODO")) { return AREA_FLORES; }
-//			else if ((namedArea.getRepresentation(Language.DEFAULT()).getAbbreviatedLabel()).equals("TODO")) { return AREA_SAO_MIGUEL; }
-//			else if ((namedArea.getRepresentation(Language.DEFAULT()).getAbbreviatedLabel()).equals("TODO")) { return AREA_PICO; }
-//			else if ((namedArea.getRepresentation(Language.DEFAULT()).getAbbreviatedLabel()).equals("TODO")) { return AREA_SANTA_MARIA; }
-//			else if ((namedArea.getRepresentation(Language.DEFAULT()).getAbbreviatedLabel()).equals("TODO")) { return AREA_TERCEIRA; }
-//			else if ((namedArea.getRepresentation(Language.DEFAULT()).getAbbreviatedLabel()).equals("BGM")) { return AREA_BELGIUM_WITH_LUXEMBOURG; }
-//			else if ((namedArea.getRepresentation(Language.DEFAULT()).getAbbreviatedLabel()).equals("BGM-BE")) { return AREA_BELGIUM; }
-//			else if ((namedArea.getRepresentation(Language.DEFAULT()).getAbbreviatedLabel()).equals("BGM-LU")) { return AREA_LUXEMBOURG; }
-//			else if ((namedArea.getRepresentation(Language.DEFAULT()).getAbbreviatedLabel()).equals("YUG-BH")) { return AREA_BOSNIA_HERZEGOVINA; }
-//			else if ((namedArea.getRepresentation(Language.DEFAULT()).getAbbreviatedLabel()).equals("BAL")) { return AREA_BALEARES; }
-//			else if ((namedArea.getRepresentation(Language.DEFAULT()).getAbbreviatedLabel()).equals("BAL-OO")) { return AREA_BALEARES; }
-//			else if ((namedArea.getRepresentation(Language.DEFAULT()).getAbbreviatedLabel()).equals("TODO")) { return AREA_IBIZA_WITH_FORMENTERA; }
-//			else if ((namedArea.getRepresentation(Language.DEFAULT()).getAbbreviatedLabel()).equals("TODO")) { return AREA_MALLORCA; }
-//			else if ((namedArea.getRepresentation(Language.DEFAULT()).getAbbreviatedLabel()).equals("TODO")) { return AREA_MENORCA; }
-//			else if ((namedArea.getRepresentation(Language.DEFAULT()).getAbbreviatedLabel()).equals("GRB")) { return AREA_GREAT_BRITAIN; }
-//			else if ((namedArea.getRepresentation(Language.DEFAULT()).getAbbreviatedLabel()).equals("GRB-OO")) { return AREA_GREAT_BRITAIN; }
-//			else if ((namedArea.getRepresentation(Language.DEFAULT()).getAbbreviatedLabel()).equals("BLT")) { return AREA_BALTIC_STATES_ESTONIA_LATVIA_LITHUANIA_AND_KALININGRAD_REGION; }
-//			else if ((namedArea.getRepresentation(Language.DEFAULT()).getAbbreviatedLabel()).equals("BUL")) { return AREA_BULGARIA; }
-//			else if ((namedArea.getRepresentation(Language.DEFAULT()).getAbbreviatedLabel()).equals("BUL-OO")) { return AREA_BULGARIA; }
-//			else if ((namedArea.getRepresentation(Language.DEFAULT()).getAbbreviatedLabel()).equals("BLR")) { return AREA_BELARUS; }
-//			else if ((namedArea.getRepresentation(Language.DEFAULT()).getAbbreviatedLabel()).equals("BLR-OO")) { return AREA_BELARUS; }
-//			else if ((namedArea.getRepresentation(Language.DEFAULT()).getAbbreviatedLabel()).equals("CNY")) { return AREA_CANARY_ISLANDS; }
-//			else if ((namedArea.getRepresentation(Language.DEFAULT()).getAbbreviatedLabel()).equals("CNY-OO")) { return AREA_CANARY_ISLANDS; }
-//			else if ((namedArea.getRepresentation(Language.DEFAULT()).getAbbreviatedLabel()).equals("TODO")) { return AREA_GRAN_CANARIA; }
-//			else if ((namedArea.getRepresentation(Language.DEFAULT()).getAbbreviatedLabel()).equals("TODO")) { return AREA_FUERTEVENTURA_WITH_LOBOS; }
-//			else if ((namedArea.getRepresentation(Language.DEFAULT()).getAbbreviatedLabel()).equals("TODO")) { return AREA_GOMERA; }
-//			else if ((namedArea.getRepresentation(Language.DEFAULT()).getAbbreviatedLabel()).equals("TODO")) { return AREA_HIERRO; }
-//			else if ((namedArea.getRepresentation(Language.DEFAULT()).getAbbreviatedLabel()).equals("TODO")) { return AREA_LANZAROTE_WITH_GRACIOSA; }
-//			else if ((namedArea.getRepresentation(Language.DEFAULT()).getAbbreviatedLabel()).equals("TODO")) { return AREA_LA_PALMA; }
-//			else if ((namedArea.getRepresentation(Language.DEFAULT()).getAbbreviatedLabel()).equals("TODO")) { return AREA_TENERIFE; }
-//			else if ((namedArea.getRepresentation(Language.DEFAULT()).getAbbreviatedLabel()).equals("YUG-MN")) { return AREA_MONTENEGRO; }
-//			else if ((namedArea.getRepresentation(Language.DEFAULT()).getAbbreviatedLabel()).equals("COR")) { return AREA_CORSE; }
-//			else if ((namedArea.getRepresentation(Language.DEFAULT()).getAbbreviatedLabel()).equals("COR-OO")) { return AREA_CORSE; }
-//			else if ((namedArea.getRepresentation(Language.DEFAULT()).getAbbreviatedLabel()).equals("KRI")) { return AREA_CRETE_WITH_KARPATHOS_KASOS_AND_GAVDHOS; }
-//			else if ((namedArea.getRepresentation(Language.DEFAULT()).getAbbreviatedLabel()).equals("KRI-OO")) { return AREA_CRETE_WITH_KARPATHOS_KASOS_AND_GAVDHOS; }
-//			else if ((namedArea.getRepresentation(Language.DEFAULT()).getAbbreviatedLabel()).equals("CZE-CZ")) { return AREA_CZECH_REPUBLIC; }
-//			else if ((namedArea.getRepresentation(Language.DEFAULT()).getAbbreviatedLabel()).equals("YUG-CR")) { return AREA_CROATIA; }
-//			else if ((namedArea.getRepresentation(Language.DEFAULT()).getAbbreviatedLabel()).equals("CYP")) { return AREA_CYPRUS; }
-//			else if ((namedArea.getRepresentation(Language.DEFAULT()).getAbbreviatedLabel()).equals("CYP-OO")) { return AREA_CYPRUS; }
-//			else if ((namedArea.getRepresentation(Language.DEFAULT()).getAbbreviatedLabel()).equals("CZE")) { return AREA_FORMER_CZECHOSLOVAKIA; }
-//			else if ((namedArea.getRepresentation(Language.DEFAULT()).getAbbreviatedLabel()).equals("DEN")) { return AREA_DENMARK_WITH_BORNHOLM; }
-//			else if ((namedArea.getRepresentation(Language.DEFAULT()).getAbbreviatedLabel()).equals("DEN-OO")) { return AREA_DENMARK_WITH_BORNHOLM; }
-//			else if ((namedArea.getRepresentation(Language.DEFAULT()).getAbbreviatedLabel()).equals("BLT-ES")) { return AREA_ESTONIA; }
-//			else if ((namedArea.getRepresentation(Language.DEFAULT()).getAbbreviatedLabel()).equals("FOR")) { return AREA_FAROE_ISLANDS; }
-//			else if ((namedArea.getRepresentation(Language.DEFAULT()).getAbbreviatedLabel()).equals("FOR-OO")) { return AREA_FAROE_ISLANDS; }
-//			else if ((namedArea.getRepresentation(Language.DEFAULT()).getAbbreviatedLabel()).equals("FIN")) { return AREA_FINLAND_WITH_AHVENANMAA; }
-//			else if ((namedArea.getRepresentation(Language.DEFAULT()).getAbbreviatedLabel()).equals("FIN-OO")) { return AREA_FINLAND_WITH_AHVENANMAA; }
-//			else if ((namedArea.getRepresentation(Language.DEFAULT()).getAbbreviatedLabel()).equals("FRA")) { return AREA_FRANCE; }
-//			else if ((namedArea.getRepresentation(Language.DEFAULT()).getAbbreviatedLabel()).equals("FRA-CI")) { return AREA_CHANNEL_ISLANDS; }
-//			else if ((namedArea.getRepresentation(Language.DEFAULT()).getAbbreviatedLabel()).equals("FRA-FR")) { return AREA_FRENCH_MAINLAND; }
-//			else if ((namedArea.getRepresentation(Language.DEFAULT()).getAbbreviatedLabel()).equals("FRA-MO")) { return AREA_MONACO; }
-//			else if ((namedArea.getRepresentation(Language.DEFAULT()).getAbbreviatedLabel()).equals("GER")) { return AREA_GERMANY; }
-//			else if ((namedArea.getRepresentation(Language.DEFAULT()).getAbbreviatedLabel()).equals("GER-OO")) { return AREA_GERMANY; }
-//			else if ((namedArea.getRepresentation(Language.DEFAULT()).getAbbreviatedLabel()).equals("GRC")) { return AREA_GREECE_WITH_CYCLADES_AND_MORE_ISLANDS; }
-//			else if ((namedArea.getRepresentation(Language.DEFAULT()).getAbbreviatedLabel()).equals("GRC-OO")) { return AREA_GREECE_WITH_CYCLADES_AND_MORE_ISLANDS; }
-//			else if ((namedArea.getRepresentation(Language.DEFAULT()).getAbbreviatedLabel()).equals("IRE")) { return AREA_IRELAND; }
-//			else if ((namedArea.getRepresentation(Language.DEFAULT()).getAbbreviatedLabel()).equals("IRE-IR")) { return AREA_REPUBLIC_OF_IRELAND; }
-//			else if ((namedArea.getRepresentation(Language.DEFAULT()).getAbbreviatedLabel()).equals("IRE-NI")) { return AREA_NORTHERN_IRELAND; }
-//			else if ((namedArea.getRepresentation(Language.DEFAULT()).getAbbreviatedLabel()).equals("SWI")) { return AREA_SWITZERLAND; }
-//			else if ((namedArea.getRepresentation(Language.DEFAULT()).getAbbreviatedLabel()).equals("SWI-OO")) { return AREA_SWITZERLAND; }
-//			else if ((namedArea.getRepresentation(Language.DEFAULT()).getAbbreviatedLabel()).equals("NET")) { return AREA_NETHERLANDS; }
-//			else if ((namedArea.getRepresentation(Language.DEFAULT()).getAbbreviatedLabel()).equals("NET-OO")) { return AREA_NETHERLANDS; }
-//			else if ((namedArea.getRepresentation(Language.DEFAULT()).getAbbreviatedLabel()).equals("SPA")) { return AREA_SPAIN; }
-//			else if ((namedArea.getRepresentation(Language.DEFAULT()).getAbbreviatedLabel()).equals("SPA-AN")) { return AREA_ANDORRA; }
-//			else if ((namedArea.getRepresentation(Language.DEFAULT()).getAbbreviatedLabel()).equals("SPA-GI")) { return AREA_GIBRALTAR; }
-//			else if ((namedArea.getRepresentation(Language.DEFAULT()).getAbbreviatedLabel()).equals("SPA-SP")) { return AREA_KINGDOM_OF_SPAIN; }
-//			else if ((namedArea.getRepresentation(Language.DEFAULT()).getAbbreviatedLabel()).equals("HUN")) { return AREA_HUNGARY; }
-//			else if ((namedArea.getRepresentation(Language.DEFAULT()).getAbbreviatedLabel()).equals("HUN-OO")) { return AREA_HUNGARY; }
-//			else if ((namedArea.getRepresentation(Language.DEFAULT()).getAbbreviatedLabel()).equals("ICE")) { return AREA_ICELAND; }
-//			else if ((namedArea.getRepresentation(Language.DEFAULT()).getAbbreviatedLabel()).equals("ICE-OO")) { return AREA_ICELAND; }
-//			else if ((namedArea.getRepresentation(Language.DEFAULT()).getAbbreviatedLabel()).equals("ITA")) { return AREA_ITALY; }
-//			else if ((namedArea.getRepresentation(Language.DEFAULT()).getAbbreviatedLabel()).equals("ITA-IT")) { return AREA_ITALIAN_MAINLAND; }
-//			else if ((namedArea.getRepresentation(Language.DEFAULT()).getAbbreviatedLabel()).equals("ITA-SM")) { return AREA_SAN_MARINO; }
-//			else if ((namedArea.getRepresentation(Language.DEFAULT()).getAbbreviatedLabel()).equals("YUG")) { return AREA_FORMER_JUGOSLAVIA; }
-//			else if ((namedArea.getRepresentation(Language.DEFAULT()).getAbbreviatedLabel()).equals("BLT-LA")) { return AREA_LATVIA; }
-//			else if ((namedArea.getRepresentation(Language.DEFAULT()).getAbbreviatedLabel()).equals("BLT-LI")) { return AREA_LITHUANIA; }
-//			else if ((namedArea.getRepresentation(Language.DEFAULT()).getAbbreviatedLabel()).equals("POR")) { return AREA_PORTUGUESE_MAINLAND; }
-//			else if ((namedArea.getRepresentation(Language.DEFAULT()).getAbbreviatedLabel()).equals("POR-OO")) { return AREA_PORTUGUESE_MAINLAND; }
-//			else if ((namedArea.getRepresentation(Language.DEFAULT()).getAbbreviatedLabel()).equals("MDR")) { return AREA_MADEIRA_ARCHIPELAGO; }
-//			else if ((namedArea.getRepresentation(Language.DEFAULT()).getAbbreviatedLabel()).equals("MDR-OO")) { return AREA_MADEIRA_ARCHIPELAGO; }
-//			else if ((namedArea.getRepresentation(Language.DEFAULT()).getAbbreviatedLabel()).equals("YUG-MA")) { return AREA_THE_FORMER_JUGOSLAV_REPUBLIC_OF_MAKEDONIJA; }
-//			else if ((namedArea.getRepresentation(Language.DEFAULT()).getAbbreviatedLabel()).equals("UKR-MO")) { return AREA_MOLDOVA; }
-//			else if ((namedArea.getRepresentation(Language.DEFAULT()).getAbbreviatedLabel()).equals("NOR")) { return AREA_NORWEGIAN_MAINLAND; }
-//			else if ((namedArea.getRepresentation(Language.DEFAULT()).getAbbreviatedLabel()).equals("NOR-OO")) { return AREA_NORWEGIAN_MAINLAND; }
-//			else if ((namedArea.getRepresentation(Language.DEFAULT()).getAbbreviatedLabel()).equals("POL")) { return AREA_POLAND; }
-//			else if ((namedArea.getRepresentation(Language.DEFAULT()).getAbbreviatedLabel()).equals("POL-OO")) { return AREA_POLAND; }
-//			else if ((namedArea.getRepresentation(Language.DEFAULT()).getAbbreviatedLabel()).equals("RUS")) { return AREA_THE_RUSSIAN_FEDERATION; }
-//			else if ((namedArea.getRepresentation(Language.DEFAULT()).getAbbreviatedLabel()).equals("WSB")) { return AREA_NOVAYA_ZEMLYA_AND_FRANZ_JOSEPH_LAND; }
-//			else if ((namedArea.getRepresentation(Language.DEFAULT()).getAbbreviatedLabel()).equals("WSB-OO")) { return AREA_NOVAYA_ZEMLYA_AND_FRANZ_JOSEPH_LAND; }
-//			else if ((namedArea.getRepresentation(Language.DEFAULT()).getAbbreviatedLabel()).equals("RUC")) { return AREA_CENTRAL_EUROPEAN_RUSSIA; }
-//			else if ((namedArea.getRepresentation(Language.DEFAULT()).getAbbreviatedLabel()).equals("RUC-OO")) { return AREA_CENTRAL_EUROPEAN_RUSSIA; }
-//			else if ((namedArea.getRepresentation(Language.DEFAULT()).getAbbreviatedLabel()).equals("RUE")) { return AREA_EASTERN_EUROPEAN_RUSSIA; }
-//			else if ((namedArea.getRepresentation(Language.DEFAULT()).getAbbreviatedLabel()).equals("RUE-OO")) { return AREA_EASTERN_EUROPEAN_RUSSIA; }
-//			else if ((namedArea.getRepresentation(Language.DEFAULT()).getAbbreviatedLabel()).equals("BLT-KA")) { return AREA_KALININGRAD; }
-//			else if ((namedArea.getRepresentation(Language.DEFAULT()).getAbbreviatedLabel()).equals("RUN")) { return AREA_NORTHERN_EUROPEAN_RUSSIA; }
-//			else if ((namedArea.getRepresentation(Language.DEFAULT()).getAbbreviatedLabel()).equals("RUN-OO")) { return AREA_NORTHERN_EUROPEAN_RUSSIA; }
-//			else if ((namedArea.getRepresentation(Language.DEFAULT()).getAbbreviatedLabel()).equals("RUW")) { return AREA_NORTHWEST_EUROPEAN_RUSSIA; }
-//			else if ((namedArea.getRepresentation(Language.DEFAULT()).getAbbreviatedLabel()).equals("RUW-OO")) { return AREA_NORTHWEST_EUROPEAN_RUSSIA; }
-//			else if ((namedArea.getRepresentation(Language.DEFAULT()).getAbbreviatedLabel()).equals("RUS")) { return AREA_SOUTH_EUROPEAN_RUSSIA; }
-//			else if ((namedArea.getRepresentation(Language.DEFAULT()).getAbbreviatedLabel()).equals("RUS-OO")) { return AREA_SOUTH_EUROPEAN_RUSSIA; }
-//			else if ((namedArea.getRepresentation(Language.DEFAULT()).getAbbreviatedLabel()).equals("ROM")) { return AREA_ROMANIA; }
-//			else if ((namedArea.getRepresentation(Language.DEFAULT()).getAbbreviatedLabel()).equals("ROM-OO")) { return AREA_ROMANIA; }
-//			
-//			else if ((namedArea.getRepresentation(Language.DEFAULT()).getAbbreviatedLabel()).equals("SAR")) { return AREA_SARDEGNA; }
-//			else if ((namedArea.getRepresentation(Language.DEFAULT()).getAbbreviatedLabel()).equals("SAR-OO")) { return AREA_SARDEGNA; }
-//			else if ((namedArea.getRepresentation(Language.DEFAULT()).getAbbreviatedLabel()).equals("SVA")) { return AREA_SVALBARD_WITH_BJORNOYA_AND_JAN_MAYEN; }
-//			else if ((namedArea.getRepresentation(Language.DEFAULT()).getAbbreviatedLabel()).equals("SVA-OO")) { return AREA_SVALBARD_WITH_BJORNOYA_AND_JAN_MAYEN; }
-//			else if ((namedArea.getRepresentation(Language.DEFAULT()).getAbbreviatedLabel()).equals("SEL")) { return AREA_SELVAGENS_ISLANDS; }
-//			else if ((namedArea.getRepresentation(Language.DEFAULT()).getAbbreviatedLabel()).equals("SEL-OO")) { return AREA_SELVAGENS_ISLANDS; }
-//			else if ((namedArea.getRepresentation(Language.DEFAULT()).getAbbreviatedLabel()).equals("SIC")) { return AREA_SICILY_WITH_MALTA; }
-//			else if ((namedArea.getRepresentation(Language.DEFAULT()).getAbbreviatedLabel()).equals("SIC-MA")) { return AREA_MALTA; }
-//			else if ((namedArea.getRepresentation(Language.DEFAULT()).getAbbreviatedLabel()).equals("SIC-SI")) { return AREA_SICILY; }
-//			else if ((namedArea.getRepresentation(Language.DEFAULT()).getAbbreviatedLabel()).equals("CZE-SK")) { return AREA_SLOVAKIA; }
-//			else if ((namedArea.getRepresentation(Language.DEFAULT()).getAbbreviatedLabel()).equals("YUG-SL")) { return AREA_SLOVENIA; }
-//			else if ((namedArea.getRepresentation(Language.DEFAULT()).getAbbreviatedLabel()).equals("CS")) { return AREA_SERBIA_WITH_MONTENEGRO; }
-//			else if ((namedArea.getRepresentation(Language.DEFAULT()).getAbbreviatedLabel()).equals("YUG-SE")) { return AREA_SERBIA_INCLUDING_VOJVODINA_AND_WITH_KOSOVO; }
-//			else if ((namedArea.getRepresentation(Language.DEFAULT()).getAbbreviatedLabel()).equals("SWE")) { return AREA_SWEDEN; }
-//			else if ((namedArea.getRepresentation(Language.DEFAULT()).getAbbreviatedLabel()).equals("SWE-OO")) { return AREA_SWEDEN; }
-//			else if ((namedArea.getRepresentation(Language.DEFAULT()).getAbbreviatedLabel()).equals("TUE")) { return AREA_EUROPEAN_TURKEY; }
-//			else if ((namedArea.getRepresentation(Language.DEFAULT()).getAbbreviatedLabel()).equals("TUE-OO")) { return AREA_EUROPEAN_TURKEY; }
-//			else if ((namedArea.getRepresentation(Language.DEFAULT()).getAbbreviatedLabel()).equals("KRY")) { return AREA_CRIMEA; }
-//			else if ((namedArea.getRepresentation(Language.DEFAULT()).getAbbreviatedLabel()).equals("KRY-OO")) { return AREA_CRIMEA; }
-//			else if ((namedArea.getRepresentation(Language.DEFAULT()).getAbbreviatedLabel()).equals("UKR-UK")) { return AREA_UKRAINE; }
-//			else if ((namedArea.getRepresentation(Language.DEFAULT()).getAbbreviatedLabel()).equals("GRE")) { return AREA_GREEK_MAINLAND; }
-//			else if ((namedArea.getRepresentation(Language.DEFAULT()).getAbbreviatedLabel()).equals("GR-KRI")) { return AREA_CRETE; }
-//			else if ((namedArea.getRepresentation(Language.DEFAULT()).getAbbreviatedLabel()).equals("GR-DOD")) { return AREA_DODECANESE_ISLANDS; }
-//			else if ((namedArea.getRepresentation(Language.DEFAULT()).getAbbreviatedLabel()).equals("GR-CYC")) { return AREA_CYCLADES_ISLANDS; }
-//			else if ((namedArea.getRepresentation(Language.DEFAULT()).getAbbreviatedLabel()).equals("GR-AEG")) { return AREA_NORTH_AEGEAN_ISLANDS; }
-//			else if ((namedArea.getRepresentation(Language.DEFAULT()).getAbbreviatedLabel()).equals("ITA-VC")) { return AREA_VATICAN_CITY; }
-//			else if ((namedArea.getRepresentation(Language.DEFAULT()).getAbbreviatedLabel()).equals("TODO")) { return AREA_FRANZ_JOSEF_LAND; }
-//			else if ((namedArea.getRepresentation(Language.DEFAULT()).getAbbreviatedLabel()).equals("TODO")) { return AREA_NOVAYA_ZEMLYA; }
-//			else if ((namedArea.getRepresentation(Language.DEFAULT()).getAbbreviatedLabel()).equals("TCS-AZ")) { return AREA_AZERBAIJAN; }
-//			else if ((namedArea.getRepresentation(Language.DEFAULT()).getAbbreviatedLabel()).equals("TCS-NA")) { return AREA_NAKHICHEVAN; }
-//			else if ((namedArea.getRepresentation(Language.DEFAULT()).getAbbreviatedLabel()).equals("ALG")) { return AREA_ALGERIA; }
-//			else if ((namedArea.getRepresentation(Language.DEFAULT()).getAbbreviatedLabel()).equals("ALG-OO")) { return AREA_ALGERIA; }
-//			else if ((namedArea.getRepresentation(Language.DEFAULT()).getAbbreviatedLabel()).equals("TCS-AR")) { return AREA_ARMENIA; }
-//			else if ((namedArea.getRepresentation(Language.DEFAULT()).getAbbreviatedLabel()).equals("33")) { return AREA_CAUCASUS_REGION; }
-//			else if ((namedArea.getRepresentation(Language.DEFAULT()).getAbbreviatedLabel()).equals("EGY")) { return AREA_EGYPT; }
-//			else if ((namedArea.getRepresentation(Language.DEFAULT()).getAbbreviatedLabel()).equals("EGY-OO")) { return AREA_EGYPT; }
-//			else if ((namedArea.getRepresentation(Language.DEFAULT()).getAbbreviatedLabel()).equals("PAL")) { return AREA_ISRAEL_JORDAN; }
-//			else if ((namedArea.getRepresentation(Language.DEFAULT()).getAbbreviatedLabel()).equals("PAL-IS")) { return AREA_ISRAEL; }
-//			else if ((namedArea.getRepresentation(Language.DEFAULT()).getAbbreviatedLabel()).equals("PAL-JO")) { return AREA_JORDAN; }
-//			else if ((namedArea.getRepresentation(Language.DEFAULT()).getAbbreviatedLabel()).equals("LBS-LB")) { return AREA_LEBANON; }
-//			else if ((namedArea.getRepresentation(Language.DEFAULT()).getAbbreviatedLabel()).equals("LBY-OO")) { return AREA_LIBYA; }
-//			else if ((namedArea.getRepresentation(Language.DEFAULT()).getAbbreviatedLabel()).equals("LBS")) { return AREA_LEBANON_SYRIA; }
-//			else if ((namedArea.getRepresentation(Language.DEFAULT()).getAbbreviatedLabel()).equals("MOR")) { return AREA_MOROCCO; }
-//			else if ((namedArea.getRepresentation(Language.DEFAULT()).getAbbreviatedLabel()).equals("MOR-OO")) { return AREA_MOROCCO; }
-//			else if ((namedArea.getRepresentation(Language.DEFAULT()).getAbbreviatedLabel()).equals("NCS")) { return AREA_NORTH_CAUCASUS; }
-//			else if ((namedArea.getRepresentation(Language.DEFAULT()).getAbbreviatedLabel()).equals("SIN")) { return AREA_SINAI; }
-//			else if ((namedArea.getRepresentation(Language.DEFAULT()).getAbbreviatedLabel()).equals("SIN-OO")) { return AREA_SINAI; }
-//			else if ((namedArea.getRepresentation(Language.DEFAULT()).getAbbreviatedLabel()).equals("LBS-SY")) { return AREA_SYRIA; }
-//			else if ((namedArea.getRepresentation(Language.DEFAULT()).getAbbreviatedLabel()).equals("TUN")) { return AREA_TUNISIA; }
-//			else if ((namedArea.getRepresentation(Language.DEFAULT()).getAbbreviatedLabel()).equals("TUN-OO")) { return AREA_TUNISIA; }
-//			else if ((namedArea.getRepresentation(Language.DEFAULT()).getAbbreviatedLabel()).equals("TODO")) { return AREA_ASIATIC_TURKEY; }
-//			else if ((namedArea.getRepresentation(Language.DEFAULT()).getAbbreviatedLabel()).equals("TUR-OO")) { return AREA_ASIATIC_TURKEY; }
-//			else if ((namedArea.getRepresentation(Language.DEFAULT()).getAbbreviatedLabel()).equals("20")) { return AREA_NORTHERN_AFRICA; }
-//			else if ((namedArea.getRepresentation(Language.DEFAULT()).getAbbreviatedLabel()).equals("AFR")) { return AREA_AFRO_TROPICAL_REGION; }
-//			else if ((namedArea.getRepresentation(Language.DEFAULT()).getAbbreviatedLabel()).equals("AUS")) { return AREA_AUSTRALIAN_REGION; }
-//			else if ((namedArea.getRepresentation(Language.DEFAULT()).getAbbreviatedLabel()).equals("TODO")) { return AREA_EAST_PALAEARCTIC; }
-//			else if ((namedArea.getRepresentation(Language.DEFAULT()).getAbbreviatedLabel()).equals("NEA")) { return AREA_NEARCTIC_REGION; }
-//			else if ((namedArea.getRepresentation(Language.DEFAULT()).getAbbreviatedLabel()).equals("NEO")) { return AREA_NEOTROPICAL_REGION; }
-//			else if ((namedArea.getRepresentation(Language.DEFAULT()).getAbbreviatedLabel()).equals("NRE")) { return AREA_NEAR_EAST; }
-//			else if ((namedArea.getRepresentation(Language.DEFAULT()).getAbbreviatedLabel()).equals("ORR")) { return AREA_ORIENTAL_REGION; }
-//			else if ((namedArea.getRepresentation(Language.DEFAULT()).getAbbreviatedLabel()).equals("TCS")) { return AREA_TRANSCAUCASUS; }
-//			
-//			else if (namedArea.getUuid().equals(ErmsTransformer.uuidEuropeanMarineWaters)) { return AREA_EUROPEAN_MARINE_WATERS; }
-//			else if ((namedArea.getRepresentation(Language.DEFAULT()).getAbbreviatedLabel()).equals("MES") ||
-//					(namedArea.getUuid().equals(ErmsTransformer.uuidMediterraneanSea))) { return AREA_MEDITERRANEAN_SEA; } // abbreviated label missing
-//			else if (namedArea.getUuid().equals(ErmsTransformer.uuidWhiteSea)) { return AREA_WHITE_SEA; }
-//			else if (namedArea.getUuid().equals(ErmsTransformer.uuidNorthSea)) { return AREA_NORTH_SEA; }
-//			else if (namedArea.getUuid().equals(ErmsTransformer.uuidBalticSea)) { return AREA_BALTIC_SEA; }
-//			else if ((namedArea.getRepresentation(Language.DEFAULT()).getAbbreviatedLabel()).equals("BLS") ||
-//					(namedArea.getUuid().equals(ErmsTransformer.uuidBlackSea))) { return AREA_BLACK_SEA; } // abbreviated label missing
-//			else if (namedArea.getUuid().equals(ErmsTransformer.uuidBarentsSea)) { return AREA_BARENTS_SEA; }
-//			else if ((namedArea.getRepresentation(Language.DEFAULT()).getAbbreviatedLabel()).equals("CAS") ||
-//					(namedArea.getUuid().equals(ErmsTransformer.uuidCaspianSea))) { return AREA_CASPIAN_SEA; } // abbreviated label missing
-//			else if (namedArea.getUuid().equals(ErmsTransformer.uuidPortugueseExclusiveEconomicZone)) { return AREA_PORTUGUESE_EXCLUSIVE_ECONOMIC_ZONE; }
-//			else if (namedArea.getUuid().equals(ErmsTransformer.uuidBelgianExclusiveEconomicZone)) { return AREA_BELGIAN_EXCLUSIVE_ECONOMIC_ZONE; }
-//			else if (namedArea.getUuid().equals(ErmsTransformer.uuidFrenchExclusiveEconomicZone)) { return AREA_FRENCH_EXCLUSIVE_ECONOMIC_ZONE; }
-//			else if (namedArea.getUuid().equals(ErmsTransformer.uuidEnglishChannel)) { return AREA_ENGLISH_CHANNEL; }
-//			else if (namedArea.getUuid().equals(ErmsTransformer.uuidAdriaticSea)) { return AREA_ADRIATIC_SEA; }
-//			else if (namedArea.getUuid().equals(ErmsTransformer.uuidBiscayBay)) { return AREA_BISCAY_BAY; }
-//			else if (namedArea.getUuid().equals(ErmsTransformer.uuidDutchExclusiveEconomicZone)) { return AREA_DUTCH_EXCLUSIVE_ECONOMIC_ZONE; }
-//			else if (namedArea.getUuid().equals(ErmsTransformer.uuidUnitedKingdomExclusiveEconomicZone)) { return AREA_UNITED_KINGDOM_EXCLUSIVE_ECONOMIC_ZONE; }
-//			else if (namedArea.getUuid().equals(ErmsTransformer.uuidSpanishExclusiveEconomicZone)) { return AREA_SPANISH_EXCLUSIVE_ECONOMIC_ZONE; }
-//			else if (namedArea.getUuid().equals(ErmsTransformer.uuidEgyptianExclusiveEconomicZone)) { return AREA_EGYPTIAN_EXCLUSIVE_ECONOMIC_ZONE; }
-//			else if (namedArea.getUuid().equals(ErmsTransformer.uuidGrecianExclusiveEconomicZone)) { return AREA_GRECIAN_EXCLUSIVE_ECONOMIC_ZONE; }
-//			else if (namedArea.getUuid().equals(ErmsTransformer.uuidTirrenoSea)) { return AREA_TIRRENO_SEA; }
-//			else if (namedArea.getUuid().equals(ErmsTransformer.uuidIcelandicExclusiveEconomicZone)) { return AREA_ICELANDIC_EXCLUSIVE_ECONOMIC_ZONE; }
-//			else if (namedArea.getUuid().equals(ErmsTransformer.uuidIrishExclusiveeconomicZone)) { return AREA_IRISH_EXCLUSIVE_ECONOMIC_ZONE; }
-//			else if (namedArea.getUuid().equals(ErmsTransformer.uuidIrishSea)) { return AREA_IRISH_SEA; }
-//			else if (namedArea.getUuid().equals(ErmsTransformer.uuidItalianExclusiveEconomicZone)) { return AREA_ITALIAN_EXCLUSIVE_ECONOMIC_ZONE; }
-//			else if (namedArea.getUuid().equals(ErmsTransformer.uuidNorwegianSea)) { return AREA_NORWEGIAN_SEA; }
-//			else if (namedArea.getUuid().equals(ErmsTransformer.uuidMoroccanExclusiveEconomicZone)) { return AREA_MOROCCAN_EXCLUSIVE_ECONOMIC_ZONE; }
-//			else if (namedArea.getUuid().equals(ErmsTransformer.uuidNorwegianExclusiveEconomicZone)) { return AREA_NORWEGIAN_EXCLUSIVE_ECONOMIC_ZONE; }
-//			else if (namedArea.getUuid().equals(ErmsTransformer.uuidSkagerrak)) { return AREA_SKAGERRAK; }
-//			else if (namedArea.getUuid().equals(ErmsTransformer.uuidTunisianExclusiveEconomicZone)) { return AREA_TUNISIAN_EXCLUSIVE_ECONOMIC_ZONE; }
-//			else if (namedArea.getUuid().equals(ErmsTransformer.uuidWaddenSea)) { return AREA_WADDEN_SEA; }
-//			else if (namedArea.getUuid().equals(ErmsTransformer.uuidBeltSea)) { return AREA_BELT_SEA; }
-//			else if (namedArea.getUuid().equals(ErmsTransformer.uuidMarmaraSea)) { return AREA_MARMARA_SEA; }
-//			else if (namedArea.getUuid().equals(ErmsTransformer.uuidSeaofAzov)) { return AREA_SEA_OF_AZOV; }
-//			else if (namedArea.getUuid().equals(ErmsTransformer.uuidAegeanSea)) { return AREA_AEGEAN_SEA; }
-//			else if (namedArea.getUuid().equals(ErmsTransformer.uuidBulgarianExclusiveEconomicZone)) { return AREA_BULGARIAN_EXCLUSIVE_ECONOMIC_ZONE; }
-//			else if (namedArea.getUuid().equals(ErmsTransformer.uuidSouthBalticproper)) { return AREA_SOUTH_BALTIC_PROPER; }
-//			else if (namedArea.getUuid().equals(ErmsTransformer.uuidBalticProper)) { return AREA_BALTIC_PROPER; }
-//			else if (namedArea.getUuid().equals(ErmsTransformer.uuidNorthBalticproper)) { return AREA_NORTH_BALTIC_PROPER; }
-//			else if (namedArea.getUuid().equals(ErmsTransformer.uuidArchipelagoSea)) { return AREA_ARCHIPELAGO_SEA; }
-//			else if (namedArea.getUuid().equals(ErmsTransformer.uuidBothnianSea)) { return AREA_BOTHNIAN_SEA; }
-//			else if (namedArea.getUuid().equals(ErmsTransformer.uuidGermanExclusiveEconomicZone)) { return AREA_GERMAN_EXCLUSIVE_ECONOMIC_ZONE; }
-//			else if (namedArea.getUuid().equals(ErmsTransformer.uuidSwedishExclusiveEconomicZone)) { return AREA_SWEDISH_EXCLUSIVE_ECONOMIC_ZONE; }
-//			else if (namedArea.getUuid().equals(ErmsTransformer.uuidUkrainianExclusiveEconomicZone)) { return AREA_UKRAINIAN_EXCLUSIVE_ECONOMIC_ZONE; }
-//			else if (namedArea.getUuid().equals(ErmsTransformer.uuidMadeiranExclusiveEconomicZone)) { return AREA_MADEIRAN_EXCLUSIVE_ECONOMIC_ZONE; }
-//			else if (namedArea.getUuid().equals(ErmsTransformer.uuidLebaneseExclusiveEconomicZone)) { return AREA_LEBANESE_EXCLUSIVE_ECONOMIC_ZONE; }
-//			else if (namedArea.getUuid().equals(ErmsTransformer.uuidSpanishExclusiveEconomicZoneMediterraneanpart)) { return AREA_SPANISH_EXCLUSIVE_ECONOMIC_ZONE_MEDITERRANEAN_PART; }
-//			else if (namedArea.getUuid().equals(ErmsTransformer.uuidEstonianExclusiveEconomicZone)) { return AREA_ESTONIAN_EXCLUSIVE_ECONOMIC_ZONE; }
-//			else if (namedArea.getUuid().equals(ErmsTransformer.uuidCroatianExclusiveEconomicZone)) { return AREA_CROATIAN_EXCLUSIVE_ECONOMIC_ZONE; }
-//			else if (namedArea.getUuid().equals(ErmsTransformer.uuidBalearSea)) { return AREA_BALEAR_SEA; }
-//			else if (namedArea.getUuid().equals(ErmsTransformer.uuidTurkishExclusiveEconomicZone)) { return AREA_TURKISH_EXCLUSIVE_ECONOMIC_ZONE; }
-//			else if (namedArea.getUuid().equals(ErmsTransformer.uuidDanishExclusiveEconomicZone)) { return AREA_DANISH_EXCLUSIVE_ECONOMIC_ZONE; }
-//			else {
-//				logger.warn("Unknown TDWGArea: " + area.getTitleCache());
-//			}
-//		}else if (namedArea.isInstanceOf(WaterbodyOrCountry.class)){
-//			if (namedArea.equals(WaterbodyOrCountry.UKRAINE())) { return AREA_UKRAINE_INCLUDING_CRIMEA; }
-//			else if (namedArea.equals(WaterbodyOrCountry.AZERBAIJANREPUBLICOF())) { return AREA_AZERBAIJAN_INCLUDING_NAKHICHEVAN; }
-//			else if (namedArea.equals(WaterbodyOrCountry.GEORGIA())) { return AREA_GEORGIA; }
-//			else {
-//				logger.warn("Unknown Waterbody/Country: " + area.getTitleCache());
-//			}
-//		}else{  //Non TDWG
-//			if ( namedArea.getUuid().equals(BerlinModelTransformer.uuidMadeira)){ return AREA_MADEIRA; }
-//			else if (namedArea.getUuid().equals(BerlinModelTransformer.uuidDesertas)) { return AREA_DESERTAS; }
-//			else if (namedArea.getUuid().equals(BerlinModelTransformer.uuidPortoSanto)) { return AREA_PORTO_SANTO; }
-//			else if (namedArea.getUuid().equals(BerlinModelTransformer.uuidRussiaBaltic)) { return AREA_RUSSIA_BALTIC; }
-//			else if (namedArea.getUuid().equals(BerlinModelTransformer.uuidRussiaSouthEast)) { return AREA_RUSSIA_SOUTHEAST; }
-//			else if (namedArea.getUuid().equals(BerlinModelTransformer.uuidRussiaSouthWest)) { return AREA_RUSSIA_SOUTHWEST; }
-//			else if (namedArea.getUuid().equals(BerlinModelTransformer.uuidUssr)) { return AREA_FORMER_USSR; }
-//			else if (namedArea.getUuid().equals(BerlinModelTransformer.uuidRussiaCentral)) { return AREA_RUSSIA_CENTRAL; }
-//			else if (namedArea.getUuid().equals(BerlinModelTransformer.uuidRussiaNorthern)) { return AREA_RUSSIA_NORTHERN; }
-//			else if (namedArea.getUuid().equals(BerlinModelTransformer.uuidTurkey)) { return AREA_TURKEY; }
-//			else if (namedArea.getUuid().equals(BerlinModelTransformer.uuidEastAegeanIslands)) { return AREA_EAST_AEGEAN_ISLANDS; }
-//			
-//			else {
-//				logger.warn("Unknown NamedArea Area: " + area.getTitleCache());
-//			}
-//
-//		}
-//		return null;
-//
-//	}
 
 	/**
 	 * Returns the PESI SourceUseId for a given CDM sourceUseId.
@@ -2326,22 +1405,7 @@ public final class PesiTransformer extends ExportTransformerBase implements IExp
 		}
 		return result;
 	}
-	
-	/**
-	 * Returns the SourceUseCache for a tiven sourceUseId.
-	 * @param sourceUseId
-	 * @return
-	 */
-	public static String sourceUseId2SourceUseCache(Integer sourceUseId) {
-		// TODO: CDM sourceUseId and PESI sourceUseId are equal for now.
-		String result = null;
-		switch (sourceUseId) {
-			case 3: return STR_ADDITIONAL_SOURCE;
-			case 4: return STR_SOURCE_OF_SYNONYMY;
-			case 8: return STR_NOMENCLATURAL_REFERENCE;
-		}
-		return result;
-	}
+
 	
 	/**
 	 * Returns the FossilStatusCache to a given Fossil.
@@ -2372,7 +1436,11 @@ public final class PesiTransformer extends ExportTransformerBase implements IExp
 
 	@Override
 	public String getCacheByLanguage(Language language) throws UndefinedTransformerMethodException {
-		return language2LanguageCache(language);
+		if (language == null){
+			return null;
+		}else{
+			return this.languageCacheMap.get(getKeyByLanguage(language)); 
+		}
 	}
 
 	/**
@@ -2654,98 +1722,11 @@ public final class PesiTransformer extends ExportTransformerBase implements IExp
 	 * @param feature
 	 * @return
 	 */
-	public static String textData2NodeCategoryCache(Feature feature) {
-		if (feature == null) {
+	public String getCacheByFeature(Feature feature) {
+		if (feature == null){
 			return null;
-		}
-		
-		if (feature.equals(Feature.DESCRIPTION())) {
-			return NoteCategory_STR_description;
-		} else if (feature.equals(Feature.ECOLOGY())) {
-			return NoteCategory_STR_ecology;
-		} else if (feature.equals(Feature.PHENOLOGY())) {
-			return NoteCategory_STR_phenology;
-		} else if (feature.equals(Feature.COMMON_NAME())) {
-			return NoteCategory_STR_Common_names;
-		} else if (feature.equals(Feature.OCCURRENCE())) {
-			return NoteCategory_STR_Occurrence;
-		} else if (feature.getUuid().equals(ErmsTransformer.uuidRemark)) {
-			return NoteCategory_STR_Remark;
-		} else if (feature.getUuid().equals(ErmsTransformer.uuidAdditionalinformation)) {
-			return NoteCategory_STR_Additional_information;
-		} else if (feature.getUuid().equals(ErmsTransformer.uuidSpelling)) {
-			return NoteCategory_STR_Spelling;
-		} else if (feature.getUuid().equals(ErmsTransformer.uuidDateofPublication)) {
-			return NoteCategory_STR_Date_of_publication;
-		} else if (feature.getUuid().equals(ErmsTransformer.uuidSystematics)) {
-			return NoteCategory_STR_Systematics;
-		} else if (feature.getUuid().equals(ErmsTransformer.uuidClassification)) {
-			return NoteCategory_STR_Classification;
-		} else if (feature.getUuid().equals(ErmsTransformer.uuidEnvironment)) {
-			return NoteCategory_STR_Environment;
-		} else if (feature.getUuid().equals(ErmsTransformer.uuidHabitat)) {
-			return NoteCategory_STR_Habitat;
-		} else if (feature.getUuid().equals(ErmsTransformer.uuidAuthority)) {
-			return NoteCategory_STR_Authority;
-		} else if (feature.getUuid().equals(ErmsTransformer.uuidMorphology)) {
-			return NoteCategory_STR_Morphology;
-		} else if (feature.getUuid().equals(ErmsTransformer.uuidTaxonomicRemarks)) {
-			return NoteCategory_STR_Taxonomic_Remarks;
-		} else if (feature.getUuid().equals(ErmsTransformer.uuidNote)){
-			return NoteCategory_STR_Note;
-		} else if (feature.getUuid().equals(ErmsTransformer.uuidTaxonomy)) {
-			return NoteCategory_STR_Taxonomy;
-		} else if (feature.getUuid().equals(ErmsTransformer.uuidTaxonomicstatus)) {
-			return NoteCategory_STR_Taxonomic_status;
-		} else if (feature.getUuid().equals(ErmsTransformer.uuidStatus)){
-			return NoteCategory_STR_Status;
-		} else if (feature.getUuid().equals(ErmsTransformer.uuidRank)) {
-			return NoteCategory_STR_Rank;
-		} else if (feature.getUuid().equals(ErmsTransformer.uuidHomonymy)) {
-			return NoteCategory_STR_Homonymy;
-		} else if (feature.getUuid().equals(ErmsTransformer.uuidNomenclature)) {
-			return NoteCategory_STR_Nomenclature;
-		} else if (feature.getUuid().equals(ErmsTransformer.uuidTaxonomicRemark)) {
-			return NoteCategory_STR_Taxonomic_Remark;
-		} else if (feature.getUuid().equals(ErmsTransformer.uuidAcknowledgments)){
-			return NoteCategory_STR_Acknowledgments;
-		} else if (feature.getUuid().equals(ErmsTransformer.uuidOriginalpublication)) {
-			return NoteCategory_STR_Original_publication;
-		} else if (feature.getUuid().equals(ErmsTransformer.uuidTypelocality)) {
-			return NoteCategory_STR_Type_locality;
-		} else if (feature.getUuid().equals(ErmsTransformer.uuidValidity)) {
-			return NoteCategory_STR_Validity;
-		} else if (feature.getUuid().equals(ErmsTransformer.uuidIdentification)) {
-			return NoteCategory_STR_Identification;
-		} else if (feature.getUuid().equals(ErmsTransformer.uuidSynonymy)) {
-			return NoteCategory_STR_Synonymy;
-//		} else if (feature.equals(Feature.CITATION())) {
-//			return;
-			
-			// TODO: Unknown NodeCategories
-//			NoteCategory_STR_general_distribution_euromed = 10;
-//			NoteCategory_STR_general_distribution_world = 11;
-//			NoteCategory_STR_Common_names = 12;
-//			NoteCategory_STR_Maps =14;
-//			NoteCategory_STR_Link_to_maps = 20;
-//			NoteCategory_STR_Link_to_images = 21;
-//			NoteCategory_STR_Link_to_taxonomy = 22;
-//			NoteCategory_STR_Link_to_general_information = 23;
-//			NoteCategory_STR_undefined_link = 24;
-//			NoteCategory_STR_Editor_Braces = 249;
-//			NoteCategory_STR_Editor_Brackets = 250;
-//			NoteCategory_STR_Editor_Parenthesis = 251;
-//			NoteCategory_STR_Inedited = 252;
-//			NoteCategory_STR_Comments_on_editing_process = 253;
-//			NoteCategory_STR_Publication_date = 254;
-//			NoteCategory_STR_Distribution = 278;
-//			NoteCategory_STR_Biology = 281;
-//			NoteCategory_STR_Diagnosis	= 282;
-//			NoteCategory_STR_Host = 283;
-		
- 		} else {
-			logger.debug("Unknown Feature.");
-			return null;
+		}else{
+			return this.featureCacheMap.get(feature2NoteCategoryFk(feature)); 
 		}
 	}
 
@@ -2754,7 +1735,7 @@ public final class PesiTransformer extends ExportTransformerBase implements IExp
 	 * @param feature
 	 * @return
 	 */
-	public static Integer feature2NodeCategoryFk(Feature feature) {
+	public static Integer feature2NoteCategoryFk(Feature feature) {
 		if (feature == null) {
 			return null;
 		}
@@ -2825,11 +1806,14 @@ public final class PesiTransformer extends ExportTransformerBase implements IExp
 			return null;  //citations are handled differently
 		} else if (feature.getUuid().equals(BerlinModelTransformer.uuidFeatureMaps)){
 			return NoteCategory_Link_to_maps = 20;
-//		} else if (feature.getUuid().equals(obj)){
-//			return NoteCategory_Editor_Parenthesis;
-//			
+		} else if (feature.getUuid().equals(BerlinModelTransformer.uuidFeatureUse)){
+			return NoteCategory_Use;
+		} else if (feature.getUuid().equals(BerlinModelTransformer.uuidFeatureComments)){
+			return NoteCategory_Comments;
+		} else if (feature.getUuid().equals(BerlinModelTransformer.uuidFeatureConservationStatus)){
+			return NoteCategory_Conservation_Status;
 		
-			// TODO: Unknown NodeCategories
+			// TODO: Unknown NoteCategories
 //			NoteCategory_general_distribution_euromed = 10;
 //			NoteCategory_general_distribution_world = 11;
 //			NoteCategory_Common_names = 12;
@@ -3841,6 +2825,15 @@ public final class PesiTransformer extends ExportTransformerBase implements IExp
 		}
 	}
 	
+
+	public Object getSourceUseCacheByKey(Integer sourceUseFk) {
+		if (sourceUseFk == null){
+			return null;
+		}else{
+			return this.sourceUseCacheMap.get(sourceUseFk); 
+		}
+	}
+	
 	@Override
 	public String getTaxonStatusCacheByKey(Integer taxonStatusId) throws UndefinedTransformerMethodException {
 		if (taxonStatusId == null){
@@ -3867,6 +2860,7 @@ public final class PesiTransformer extends ExportTransformerBase implements IExp
 		
 		return result;
 	}
+
 
 	
 }

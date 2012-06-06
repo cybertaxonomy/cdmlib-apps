@@ -370,7 +370,7 @@ public class PesiNoteExport extends PesiExportBase {
 	 */
 	private static Integer getNoteCategoryFk(DescriptionElementBase descriptionElement) {
 		Integer result = null;
-		result = PesiTransformer.feature2NodeCategoryFk(descriptionElement.getFeature());
+		result = PesiTransformer.feature2NoteCategoryFk(descriptionElement.getFeature());
 		return result;
 	}
 	
@@ -381,14 +381,8 @@ public class PesiNoteExport extends PesiExportBase {
 	 * @see MethodMapper
 	 */
 	@SuppressWarnings("unused")
-	private static String getNoteCategoryCache(DescriptionElementBase descriptionElement) {
-		String result = null;
-
-		if (descriptionElement.isInstanceOf(TextData.class)) {
-			result = PesiTransformer.textData2NodeCategoryCache(descriptionElement.getFeature());
-		}
-
-		return result;
+	private static String getNoteCategoryCache(DescriptionElementBase descriptionElement, PesiExportState state) {
+		return state.getTransformer().getCacheByFeature(descriptionElement.getFeature());
 	}
 
 	/**

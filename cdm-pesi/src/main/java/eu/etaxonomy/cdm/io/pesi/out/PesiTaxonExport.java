@@ -106,6 +106,7 @@ public class PesiTaxonExport extends PesiExportBase {
 	private static int modCount = 1000;
 	private static final String dbTableName = "Taxon";
 	private static final String dbTableNameSynRel = "RelTaxon";
+	private static final String dbTableAdditionalSourceRel = "AdditionalTaxonSource";
 	private static final String pluralString = "Taxa";
 	private static final String parentPluralString = "Taxa";
 	private PreparedStatement parentTaxonFk_TreeIndex_KingdomFkStmt;
@@ -193,10 +194,13 @@ public class PesiTaxonExport extends PesiExportBase {
 			// Get specific mappings: (CDM) Taxon -> (PESI) Taxon
 			PesiExportMapping mapping = getMapping();
 			PesiExportMapping synonymRelMapping = getSynRelMapping();
-	
+			PesiExportMapping additionalSourceMapping = getAdditionalSourceMapping(state); 
+			
 			// Initialize the db mapper
 			mapping.initialize(state);
 			synonymRelMapping.initialize(state);
+			additionalSourceMapping.initialize(state);
+			
 			// Find extensionTypes
 			lastActionExtensionType = (ExtensionType)getTermService().find(PesiTransformer.lastActionUuid);
 			lastActionDateExtensionType = (ExtensionType)getTermService().find(PesiTransformer.lastActionDateUuid);
@@ -205,10 +209,10 @@ public class PesiTaxonExport extends PesiExportBase {
 			cacheCitationExtensionType = (ExtensionType)getTermService().find(PesiTransformer.cacheCitationUuid);
 			
 			//Export Taxa..
-			success &= doPhase01(state, mapping);
+			success &= doPhase01(state, mapping, additionalSourceMapping);
 
 			//"PHASE 1b: Handle names without taxa ...
-			success &= doNames(state);
+			success &= doNames(state, additionalSourceMapping);
 
 			
 			// 2nd Round: Add ParentTaxonFk to each taxon
@@ -230,16 +234,14 @@ public class PesiTaxonExport extends PesiExportBase {
 				state.setUnsuccessfull();
 			}
 			return;
-		} catch (SQLException e) {
+		} catch (Exception e) {
 			e.printStackTrace();
 			logger.error(e.getMessage());
 			state.setUnsuccessfull();
-			return;
 		}
 	}
 
 	
-
 	private void initPreparedStatements(PesiExportState state) throws SQLException {
 		initTreeIndexStatement(state);
 		initRankExpertsUpdateStmt(state);
@@ -279,7 +281,7 @@ public class PesiTaxonExport extends PesiExportBase {
 		rankTypeExpertsUpdateStmt = connection.prepareStatement(sql);
 	}
 
-	private boolean doPhase01(PesiExportState state, PesiExportMapping mapping) throws SQLException {
+	private boolean doPhase01(PesiExportState state, PesiExportMapping mapping, PesiExportMapping additionalSourceMapping) throws SQLException {
 		int count = 0;
 		int pastCount = 0;
 		List<TaxonBase> list;
@@ -297,11 +299,11 @@ public class PesiTaxonExport extends PesiExportBase {
 		
 		int partitionCount = 0;
 
-		logger.warn("Taking snapshot at the beginning of phase 1 of taxonExport");
+		logger.info("Taking snapshot at the beginning of phase 1 of taxonExport");
 		ProfilerController.memorySnapshot();
 		while ((list = getNextTaxonPartition(null, limit, partitionCount++, null)) != null   ) {
 			
-			logger.info("Fetched " + list.size() + " " + pluralString + ". Exporting...");
+			logger.debug("Fetched " + list.size() + " " + pluralString + ". Exporting...");
 			for (TaxonBase<?> taxon : list) {
 				doCount(count++, modCount, pluralString);
 				TaxonNameBase<?,?> taxonName = taxon.getName();
@@ -320,7 +322,12 @@ public class PesiTaxonExport extends PesiExportBase {
 					nvn.setAuthorshipCache(null, false);	
 				}
 				
+				//core mapping
 				success &= mapping.invoke(taxon);
+				//additional source
+				if (nvn.getNomenclaturalReference() != null || StringUtils.isNotBlank(nvn.getNomenclaturalMicroReference() )){
+					additionalSourceMapping.invoke(taxon);
+				}
 				
 				validatePhaseOne(taxon, nvn);
 				taxon = null;
@@ -655,7 +662,7 @@ public class PesiTaxonExport extends PesiExportBase {
 		int partitionCount = 0;
 		while ((list = getNextTaxonPartition(TaxonBase.class, limit, partitionCount++, null)) != null) {
 
-			logger.info("Fetched " + list.size() + " " + pluralString + ". Exporting...");
+			logger.debug("Fetched " + list.size() + " " + pluralString + ". Exporting...");
 			for (TaxonBase<?> taxon : list) {
 				TaxonNameBase<?,?> taxonName = taxon.getName();
 				// Determine expertFk
@@ -697,19 +704,19 @@ public class PesiTaxonExport extends PesiExportBase {
 		commitTransaction(txStatus);
 		
 		logger.debug("Committed transaction.");
-		logger.warn("Taking snapshot at the end of phase 3 of taxonExport, number of partitions: " + partitionCount);
+		logger.debug("Try to take snapshot at the end of phase 3 of taxonExport, number of partitions: " + partitionCount);
 		ProfilerController.memorySnapshot();
 		return success;
 	}
 	
-	//	"PHASE 4: Creating Inferred Synonyms..."
+	//	"PHASE 5: Creating Inferred Synonyms..."
 	private boolean doPhase05(PesiExportState state, PesiExportMapping mapping, PesiExportMapping synRelMapping) throws SQLException {
 		int count;
 		int pastCount;
 		boolean success = true;
 		// Get the limit for objects to save within a single transaction.
 		if (! state.getConfig().isDoInferredSynonyms()){
-			logger.info ("Ignore PHASE 4: Creating Inferred Synonyms...");
+			logger.info ("Ignore PHASE 5: Creating Inferred Synonyms...");
 			return success;
 		}
 		
@@ -933,7 +940,7 @@ public class PesiTaxonExport extends PesiExportBase {
 	 * @param mapping
 	 * @return
 	 */
-	private boolean doNames(PesiExportState state)  throws SQLException {
+	private boolean doNames(PesiExportState state, PesiExportMapping additionalSourceMapping)  throws SQLException {
 		
 		boolean success = true;
 		if (! state.getConfig().isDoPureNames()){
@@ -964,6 +971,10 @@ public class PesiTaxonExport extends PesiExportBase {
 				for (TaxonNameBase<?,?> taxonName : list) {
 					doCount(count++, modCount, pluralString);
 					success &= mapping.invoke(taxonName);
+					//additional source
+					if (taxonName.getNomenclaturalReference() != null || StringUtils.isNotBlank(taxonName.getNomenclaturalMicroReference() )){
+						additionalSourceMapping.invoke(taxonName);
+					}
 				}
 
 				// Commit transaction
@@ -2613,5 +2624,22 @@ public class PesiTaxonExport extends PesiExportBase {
 		return mapping;
 	}
 
+	private PesiExportMapping getAdditionalSourceMapping(PesiExportState state)  throws UndefinedTransformerMethodException{
+		PesiExportMapping mapping = new PesiExportMapping(dbTableAdditionalSourceRel);
+		
+		mapping.addMapper(IdMapper.NewInstance("TaxonFk"));
+		mapping.addMapper(ObjectChangeMapper.NewInstance(TaxonBase.class, TaxonNameBase.class, "Name"));
+		
+		mapping.addMapper(DbObjectMapper.NewInstance("NomenclaturalReference", "SourceFk"));
+		mapping.addMapper(DbObjectMapper.NewInstance("NomenclaturalReference", "SourceNameCache", IS_CACHE));
+
+		//we have only nomenclatural references here
+		mapping.addMapper(DbConstantMapper.NewInstance("SourceUseFk", Types.INTEGER , PesiTransformer.NOMENCLATURAL_REFERENCE));
+		mapping.addMapper(DbConstantMapper.NewInstance("SourceUseCache", Types.VARCHAR, state.getTransformer().getSourceUseCacheByKey( PesiTransformer.NOMENCLATURAL_REFERENCE)));
+		
+		mapping.addMapper(DbStringMapper.NewInstance("NomenclaturalMicroReference", "SourceDetail"));
+		
+		return mapping;
+	}
 
 }

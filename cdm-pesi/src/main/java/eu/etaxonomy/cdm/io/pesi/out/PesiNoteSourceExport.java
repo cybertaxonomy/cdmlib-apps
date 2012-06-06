@@ -192,7 +192,7 @@ public class PesiNoteSourceExport extends PesiExportBase {
 	 */
 	private static Integer getNoteCategoryFk(DescriptionElementBase descriptionElement) {
 		Integer result = null;
-		result = PesiTransformer.feature2NodeCategoryFk(descriptionElement.getFeature());
+		result = PesiTransformer.feature2NoteCategoryFk(descriptionElement.getFeature());
 		return result;
 	}
 

@@ -305,13 +305,14 @@ public class PesiAdditionalTaxonSourceExport extends PesiExportBase {
 	private static String getSourceUseCache(Reference<?> reference) {
 		// TODO
 		String result = null;
-		if (sourceUse_AdditionalSource) {
-			result = PesiTransformer.sourceUseId2SourceUseCache(3);
-		} else if (sourceUse_SourceOfSynonymy) {
-			result = PesiTransformer.sourceUseId2SourceUseCache(4);
-		} else if (sourceUse_NomenclaturalReference) {
-			result = PesiTransformer.sourceUseId2SourceUseCache(8);
-		}
+		//CHANGED, use PesiTransformer.getAdditionalSourceCacheByKey instead
+//		if (sourceUse_AdditionalSource) {
+//			result = PesiTransformer.sourceUseId2SourceUseCache(3);
+//		} else if (sourceUse_SourceOfSynonymy) {
+//			result = PesiTransformer.sourceUseId2SourceUseCache(4);
+//		} else if (sourceUse_NomenclaturalReference) {
+//			result = PesiTransformer.sourceUseId2SourceUseCache(8);
+//		}
 		return result;
 	}
 	

@@ -196,7 +196,7 @@ public class PesiDescriptionExport extends PesiExportBase {
 		logger.info("Started new transaction. Fetching some " + pluralString + " (max: " + limit + ") ...");
 		List<String> propPath = Arrays.asList(new String[]{"descriptions.elements.*"});
 		
-		logger.warn("Start snapshot, before starting loop");
+		logger.debug("Start snapshot, before starting loop");
 		ProfilerController.memorySnapshot();
 		//taxon descriptions
 		int partitionCount = 0;
@@ -204,8 +204,8 @@ public class PesiDescriptionExport extends PesiExportBase {
 
 			logger.info("Fetched " + list.size() + " " + pluralString + ". Exporting...");
 			
-			logger.warn("Start snapshot, beginning of loop, fetched " + list.size() + " " + pluralString);
-				ProfilerController.memorySnapshot();
+			logger.debug("Start snapshot, beginning of loop, fetched " + list.size() + " " + pluralString);
+			ProfilerController.memorySnapshot();
 			
 			for (Taxon taxon : list) {
 				countTaxa++;
@@ -223,7 +223,7 @@ public class PesiDescriptionExport extends PesiExportBase {
 			// Start transaction
 			txStatus = startTransaction(true);
 			logger.info("Started new transaction. Fetching some " + pluralString + " (max: " + limit + ") for description import ...");
-			logger.warn("Start snapshot, end of loop, fetched " + " " + pluralString);
+			logger.debug("Start snapshot, end of loop, fetched " + " " + pluralString);
 			ProfilerController.memorySnapshot();	
 		}
 		
@@ -588,7 +588,7 @@ public class PesiDescriptionExport extends PesiExportBase {
 	 */
 	private static Integer getNoteCategoryFk(DescriptionElementBase descriptionElement) {
 		Integer result = null;
-		result = PesiTransformer.feature2NodeCategoryFk(descriptionElement.getFeature());
+		result = PesiTransformer.feature2NoteCategoryFk(descriptionElement.getFeature());
 		return result;
 	}
 	
@@ -599,14 +599,8 @@ public class PesiDescriptionExport extends PesiExportBase {
 	 * @see MethodMapper
 	 */
 	@SuppressWarnings("unused")
-	private static String getNoteCategoryCache(DescriptionElementBase descriptionElement) {
-		String result = null;
-
-		if (descriptionElement.isInstanceOf(TextData.class)) {
-			result = PesiTransformer.textData2NodeCategoryCache(descriptionElement.getFeature());
-		}
-
-		return result;
+	private static String getNoteCategoryCache(DescriptionElementBase descriptionElement, PesiExportState state) {
+		return state.getTransformer().getCacheByFeature(descriptionElement.getFeature());
 	}
 	
 	
@@ -634,7 +628,6 @@ public class PesiDescriptionExport extends PesiExportBase {
 	@SuppressWarnings("unused")
 	private static String getLanguageCache(DescriptionElementBase descriptionElement) {
 		Language language = getLanguage(descriptionElement);
-
 		return PesiTransformer.language2LanguageCache(language);
 	}
 
@@ -756,10 +749,16 @@ public class PesiDescriptionExport extends PesiExportBase {
 		mapping.addMapper(DbTextDataMapper.NewInstance(Language.ENGLISH(), "Note_1"));
 		//TODO
 		mapping.addMapper(DbExportNotYetImplementedMapper.NewInstance("Note_2", "Need to research what Note_2 is for"));
-		mapping.addMapper(MethodMapper.NewInstance("NoteCategoryFk", this));
+		mapping.addMapper(MethodMapper.NewInstance("NoteCategoryFk", this, DescriptionElementBase.class , PesiExportState.class));
+		
 		mapping.addMapper(MethodMapper.NewInstance("NoteCategoryCache", this));
 		mapping.addMapper(MethodMapper.NewInstance("LanguageFk", this));
 		mapping.addMapper(MethodMapper.NewInstance("LanguageCache", this));
+		
+//		mapping.addMapper(DbLanguageMapper.NewInstance(CommonTaxonName.class, "Language", "LanguageFk", ! IS_CACHE));
+//		mapping.addMapper(DbLanguageMapper.NewInstance(CommonTaxonName.class, "Language", "LanguageCache", IS_CACHE));
+		
+		
 //		mapping.addMapper(MethodMapper.NewInstance("Region", this));
 		mapping.addMapper(DbDescriptionElementTaxonMapper.NewInstance("taxonFk"));
 		mapping.addMapper(ExpertsAndLastActionMapper.NewInstance());
