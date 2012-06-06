@@ -516,18 +516,19 @@ public class PesiRelTaxonExport extends PesiExportBase {
 		Integer kingdomFk = PesiTransformer.nomenClaturalCode2Kingdom(synonymTaxonName.getNomenclaturalCode());
 		Integer synonymFk = state.getDbId(synonymTaxonName);
 
-		saveSynonymData(synonymTaxonName, synonymTaxonName.getNomenclaturalCode(), kingdomFk, synonymFk);
+		saveSynonymData(state, synonymTaxonName, synonymTaxonName.getNomenclaturalCode(), kingdomFk, synonymFk);
 	}
 
 	/**
 	 * Stores synonym data.
+	 * @param state 
 	 * @param taxonName
 	 * @param nomenclaturalCode
 	 * @param kingdomFk
 	 * @param synonymParentTaxonFk
 	 * @param currentTaxonFk
 	 */
-	private static boolean saveSynonymData(TaxonNameBase taxonName,
+	private static boolean saveSynonymData(PesiExportState state, TaxonNameBase taxonName,
 			NomenclaturalCode nomenclaturalCode, Integer kingdomFk,
 			Integer currentSynonymFk) {
 		try {
@@ -543,7 +544,7 @@ public class PesiRelTaxonExport extends PesiExportBase {
 			} else {
 				synonymsStmt.setObject(2, null);
 			}
-			synonymsStmt.setString(3, getRankCache(taxonName, nomenclaturalCode));
+			synonymsStmt.setString(3, getRankCache(taxonName, nomenclaturalCode, state));
 			
 			if (currentSynonymFk != null) {
 				synonymsStmt.setInt(4, currentSynonymFk);
@@ -755,15 +756,17 @@ public class PesiRelTaxonExport extends PesiExportBase {
 	 * Returns the <code>RankCache</code> attribute.
 	 * @param taxonName The {@link TaxonNameBase TaxonName}.
 	 * @param nomenclaturalCode The {@link NomenclaturalCode NomenclaturalCode}.
+	 * @param state 
 	 * @return The <code>RankCache</code> attribute.
 	 * @see MethodMapper
 	 */
-	private static String getRankCache(TaxonNameBase taxonName, NomenclaturalCode nomenclaturalCode) {
-		String result = null;
+	private static String getRankCache(TaxonNameBase taxonName, NomenclaturalCode nomenclaturalCode, PesiExportState state) {
 		if (nomenclaturalCode != null) {
-			result = PesiTransformer.rank2RankCache(taxonName.getRank(), PesiTransformer.nomenClaturalCode2Kingdom(nomenclaturalCode));
+			return state.getTransformer().rank2RankCache(taxonName.getRank(), PesiTransformer.nomenClaturalCode2Kingdom(nomenclaturalCode));
+		}else{
+			logger.warn("No nomenclatural code defined for rank cache search");
+			return null;
 		}
-		return result;
 	}
 
 	/**

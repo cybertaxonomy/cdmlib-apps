@@ -30,7 +30,6 @@ import eu.etaxonomy.cdm.io.common.mapping.out.IExportTransformer;
 import eu.etaxonomy.cdm.io.pesi.erms.ErmsTransformer;
 import eu.etaxonomy.cdm.io.pesi.faunaEuropaea.FaunaEuropaeaTransformer;
 import eu.etaxonomy.cdm.model.common.CdmBase;
-import eu.etaxonomy.cdm.model.common.Extension;
 import eu.etaxonomy.cdm.model.common.Language;
 import eu.etaxonomy.cdm.model.common.RelationshipBase;
 import eu.etaxonomy.cdm.model.common.RelationshipTermBase;
@@ -258,44 +257,6 @@ public final class PesiTransformer extends ExportTransformerBase implements IExp
 	public static int Animalia_Subvariety = 250;
 	public static int Animalia_Forma = 260;
 
-	public static String Animalia_STR_Kingdom = "Kingdom";
-	public static String Animalia_STR_Subkingdom = "Subkingdom";
-	public static String Animalia_STR_Superphylum = "Superphylum";
-	public static String Animalia_STR_Phylum = "Phylum";
-	public static String Animalia_STR_Subphylum = "Subphylum";
-	public static String Animalia_STR_Infraphylum = "Infraphylum";
-	public static String Animalia_STR_Superclass = "Superclass";
-	public static String Animalia_STR_Class = "Class";
-	public static String Animalia_STR_Subclass = "Subclass";
-	public static String Animalia_STR_Infraclass = "Infraclass";
-	public static String Animalia_STR_Superorder = "Superorder";
-	public static String Animalia_STR_Order = "Order";
-	public static String Animalia_STR_Suborder = "Suborder";
-	public static String Animalia_STR_Infraorder = "Infraorder";
-	public static String Animalia_STR_Section = "Section";
-	public static String Animalia_STR_Subsection = "Subsection";
-	public static String Animalia_STR_Superfamily = "Superfamily";
-	public static String Animalia_STR_Family = "Family";
-	public static String Animalia_STR_Subfamily = "Subfamily";
-	public static String Animalia_STR_Tribe = "Tribe";
-	public static String Animalia_STR_Subtribe = "Subtribe";
-	public static String Animalia_STR_Genus = "Genus";
-	public static String Animalia_STR_Subgenus = "Subgenus";
-	public static String Animalia_STR_Species = "Species";
-	public static String Animalia_STR_Subspecies = "Subspecies";
-	public static String Animalia_STR_Natio = "Natio";
-	public static String Animalia_STR_Variety = "Variety";
-	public static String Animalia_STR_Subvariety = "Subvariety";
-	public static String Animalia_STR_Forma = "Forma";
-	
-	// Animalia Rank Abbreviations only for used Ranks
-	public static String Animalia_Abbrev_Subgenus = "subg.";
-	public static String Animalia_Abbrev_Species = "sp.";
-	public static String Animalia_Abbrev_Subspecies = "subsp.";
-	public static String Animalia_Abbrev_Variety = "var.";
-	public static String Animalia_Abbrev_Subvariety = "subvar.";
-	public static String Animalia_Abbrev_Forma = "f.";
-
 	// Plantae Ranks
 	public static int Plantae_Kingdom = 10;
 	public static int Plantae_Subkingdom = 20;
@@ -330,75 +291,6 @@ public final class PesiTransformer extends ExportTransformerBase implements IExp
 	public static int Plantae_Forma_spec = 275;
 	public static int Plantae_Taxa_infragen = 280;
 	public static int Plantae_Taxa_infraspec = 285;
-	
-	public static String Plantae_STR_Kingdom = "Kingdom";
-	public static String Plantae_STR_Subkingdom = "Subkingdom";
-	public static String Plantae_STR_Division = "Division";
-	public static String Plantae_STR_Subdivision = "Subdivision";
-	public static String Plantae_STR_Class = "Class";
-	public static String Plantae_STR_Subclass = "Subclass";
-	public static String Plantae_STR_Order = "Order";
-	public static String Plantae_STR_Suborder = "Suborder";
-	public static String Plantae_STR_Family = "Family";
-	public static String Plantae_STR_Subfamily = "Subfamily";
-	public static String Plantae_STR_Tribe	= "Tribe";
-	public static String Plantae_STR_Subtribe = "Subtribe";
-	public static String Plantae_STR_Genus = "Genus";
-	public static String Plantae_STR_Subgenus = "Subgenus";
-	public static String Plantae_STR_Section = "Section";
-	public static String Plantae_STR_Subsection = "Subsection";
-	public static String Plantae_STR_Series = "Series";
-	public static String Plantae_STR_Subseries	= "Subseries";
-	public static String Plantae_STR_Aggregate	= "Aggregate";
-	public static String Plantae_STR_Coll_Species = "Coll. Species";
-	public static String Plantae_STR_Species = "Species";
-	public static String Plantae_STR_Grex = "Grex";
-	public static String Plantae_STR_Subspecies = "Subspecies";
-	public static String Plantae_STR_Proles = "Proles";
-	public static String Plantae_STR_Race = "Race";
-	public static String Plantae_STR_Convarietas = "Convariety";
-	public static String Plantae_STR_Variety = "Variety";
-	public static String Plantae_STR_Subvariety = "Subvariety";
-	public static String Plantae_STR_Forma	= "Forma";
-	public static String Plantae_STR_Subforma = "Subforma";
-	public static String Plantae_STR_Forma_spec = "Forma spec.";
-	public static String Plantae_STR_Taxa_infragen = "Tax. infragen.";
-	public static String Plantae_STR_Taxa_infraspec = "Tax. infraspec.";
-	
-	// Plantae Rank Abbreviations
-	public static String Plantae_Abbrev_Kingdom = "reg.";
-	public static String Plantae_Abbrev_Subkingdom = "subreg.";
-	public static String Plantae_Abbrev_Division = "div.";
-	public static String Plantae_Abbrev_Subdivision = "subdiv.";
-	public static String Plantae_Abbrev_Class = "cl.";
-	public static String Plantae_Abbrev_Subclass = "subcl.";
-	public static String Plantae_Abbrev_Order = "ordo";
-	public static String Plantae_Abbrev_Suborder = "subor.";
-	public static String Plantae_Abbrev_Family = "fam.";
-	public static String Plantae_Abbrev_Subfamily = "subfam.";
-	public static String Plantae_Abbrev_Tribe	= "trib.";
-	public static String Plantae_Abbrev_Subtribe = "subtrib.";
-	public static String Plantae_Abbrev_Genus = "gen.";
-	public static String Plantae_Abbrev_Subgenus = "subg.";
-	public static String Plantae_Abbrev_Section = "sect.";
-	public static String Plantae_Abbrev_Subsection = "subsect.";
-	public static String Plantae_Abbrev_Series = "ser.";
-	public static String Plantae_Abbrev_Subseries	= "subser.";
-	public static String Plantae_Abbrev_Aggregate	= "aggr.";
-	public static String Plantae_Abbrev_Coll_Species = "coll. sp.";
-	public static String Plantae_Abbrev_Species = "sp.";
-	public static String Plantae_Abbrev_Grex = "grex";
-	public static String Plantae_Abbrev_Subspecies = "subsp.";
-	public static String Plantae_Abbrev_Proles = "prol.";
-	public static String Plantae_Abbrev_Race = "race";
-	public static String Plantae_Abbrev_Convarietas = "convar.";
-	public static String Plantae_Abbrev_Variety = "var.";
-	public static String Plantae_Abbrev_Subvariety = "subvar.";
-	public static String Plantae_Abbrev_Forma	= "f.";
-	public static String Plantae_Abbrev_Subforma = "subf.";
-	public static String Plantae_Abbrev_Forma_spec = "f.spec.";
-	public static String Plantae_Abbrev_Taxa_infragen = "t.infgen.";
-	public static String Plantae_Abbrev_Taxa_infraspec = "t.infr.";
 	
 	// Fungi Ranks
 	public static int Fungi_Kingdom = 10;
@@ -473,30 +365,6 @@ public final class PesiTransformer extends ExportTransformerBase implements IExp
 	public static int Bacteria_Subspecies = 230;
 	public static int Bacteria_Variety = 240;
 	public static int Bacteria_Forma	= 260;
-
-	public static String Bacteria_STR_Kingdom = "Kingdom";
-	public static String Bacteria_STR_Subkingdom = "Subkingdom";
-	public static String Bacteria_STR_Phylum = "Phylum";
-	public static String Bacteria_STR_Subphylum = "Subphylum";
-	public static String Bacteria_STR_Superclass = "Superclass";
-	public static String Bacteria_STR_Class = "Class";
-	public static String Bacteria_STR_Subclass = "Subclass";
-	public static String Bacteria_STR_Infraclass = "Infraclass";
-	public static String Bacteria_STR_Superorder = "Superorder";
-	public static String Bacteria_STR_Order = "Order";
-	public static String Bacteria_STR_Suborder = "Suborder";
-	public static String Bacteria_STR_Infraorder = "Infraorder";
-	public static String Bacteria_STR_Superfamily = "Superfamily";
-	public static String Bacteria_STR_Family = "Family";
-	public static String Bacteria_STR_Subfamily = "Subfamily";
-	public static String Bacteria_STR_Tribe = "Tribe";
-	public static String Bacteria_STR_Subtribe = "Subtribe";
-	public static String Bacteria_STR_Genus = "Genus";
-	public static String Bacteria_STR_Subgenus = "Subgenus";
-	public static String Bacteria_STR_Species = "Species";
-	public static String Bacteria_STR_Subspecies = "Subspecies";
-	public static String Bacteria_STR_Variety = "Variety";
-	public static String Bacteria_STR_Forma = "Forma";
 
 	// Chromista Ranks
 	public static int Chromista_Kingdom = 10;
@@ -869,8 +737,6 @@ public final class PesiTransformer extends ExportTransformerBase implements IExp
 	public static int AREA_GREECE_COUNTRY = 207;
 	public static int AREA_PORTUGAL_COUNTRY = 208;
 
-
-	
 	// OccurrenceStatus
 	public static int STATUS_PRESENT = 1;
 	public static int STATUS_ABSENT = 2;
@@ -895,6 +761,8 @@ public final class PesiTransformer extends ExportTransformerBase implements IExp
 	private Map<Integer, String> typeDesigStatusCacheMap  = new HashMap<Integer, String>();
 	private Map<Integer, String> sourceCategoryCacheMap  = new HashMap<Integer, String>();
 	private Map<Integer, String> occurrenceStatusCacheMap  = new HashMap<Integer, String>();
+	private Map<Integer, Map<Integer, String>> rankCacheMap  = new  HashMap<Integer, Map<Integer, String>>();
+	private Map<Integer, Map<Integer, String>> rankAbbrevCacheMap  = new  HashMap<Integer, Map<Integer, String>>();
 	
 	
 	private Source destination;
@@ -920,6 +788,36 @@ public final class PesiTransformer extends ExportTransformerBase implements IExp
 				}
 				this.areaCacheMap.put(id, label);
 			}
+			
+			//rankCache
+			sql = " SELECT KingdomId, RankId, Rank, RankAbbrev  FROM Rank";
+			rs = destination.getResultSet(sql);
+			while (rs.next()){
+				String rank = rs.getString("Rank");
+				String abbrev = rs.getString("RankAbbrev");
+				Integer rankId = rs.getInt("RankId");
+				Integer kingdomId = rs.getInt("KingdomId");
+				
+				//rank str
+				Map<Integer, String> kingdomMap = rankCacheMap.get(kingdomId);
+				if (kingdomMap == null){
+					kingdomMap = new HashMap<Integer, String>();
+					rankCacheMap.put(kingdomId, kingdomMap);
+				}
+				kingdomMap.put(rankId, rank);
+				
+				//rank abbrev
+				Map<Integer, String> kingdomAbbrevMap = rankAbbrevCacheMap.get(kingdomId);
+				if (kingdomAbbrevMap == null){
+					kingdomAbbrevMap = new HashMap<Integer, String>();
+					rankAbbrevCacheMap.put(kingdomId, kingdomAbbrevMap);
+				}
+				if (StringUtils.isNotBlank(abbrev)){
+					kingdomAbbrevMap.put(rankId, abbrev);
+				}
+				
+			}
+
 			
 			//languageCache
 			fillSingleMap(languageCacheMap,"Area", "AreaName", "AreaId");
@@ -1561,182 +1459,12 @@ public final class PesiTransformer extends ExportTransformerBase implements IExp
 	 * @param pesiKingdomId
 	 * @return
 	 */
-	public static String rank2RankCache(Rank rank, Integer pesiKingdomId) {
-		String result = null;
-		if (rank == null) {
+	public String rank2RankCache(Rank rank, Integer pesiKingdomId) {
+		if (rank == null){
 			return null;
+		}else{
+			return this.rankCacheMap.get(pesiKingdomId).get(rank2RankId(rank, pesiKingdomId)); 
 		}
-		
-		// We differentiate between Animalia and Plantae only for now.
-		if (pesiKingdomId != null && pesiKingdomId.intValue() == KINGDOM_ANIMALIA) {
-			if (rank.equals(Rank.KINGDOM())) {
-				result = Animalia_STR_Kingdom;
-			} else if (rank.equals(Rank.SUBKINGDOM())) {
-				result = Animalia_STR_Subkingdom;
-			} else if (rank.equals(Rank.SUPERPHYLUM())) {
-				result = Animalia_STR_Superphylum;
-			} else if (rank.equals(Rank.PHYLUM())) {
-				result = Animalia_STR_Phylum;
-			} else if (rank.equals(Rank.SUBPHYLUM())) {
-				result = Animalia_STR_Subphylum;
-			} else if (rank.equals(Rank.INFRAPHYLUM())) {
-				result = Animalia_STR_Infraphylum;
-			} else if (rank.equals(Rank.SUPERCLASS())) {
-				result = Animalia_STR_Superclass;
-			} else if (rank.equals(Rank.CLASS())) {
-				result = Animalia_STR_Class;
-			} else if (rank.equals(Rank.SUBCLASS())) {
-				result = Animalia_STR_Subclass;
-			} else if (rank.equals(Rank.INFRACLASS())) {
-				result = Animalia_STR_Infraclass;
-			} else if (rank.equals(Rank.SUPERORDER())) {
-				result = Animalia_STR_Superorder;
-			} else if (rank.equals(Rank.ORDER())) {
-				result = Animalia_STR_Order;
-			} else if (rank.equals(Rank.SUBORDER())) {
-				result = Animalia_STR_Suborder;
-			} else if (rank.equals(Rank.INFRAORDER())) {
-				result = Animalia_STR_Infraorder;
-			} else if (rank.equals(Rank.SECTION_ZOOLOGY())) {
-				result = Animalia_STR_Section;
-			} else if (rank.equals(Rank.SUBSECTION_ZOOLOGY())) {
-				result = Animalia_STR_Subsection;
-			} else if (rank.equals(Rank.SUPERFAMILY())) {
-				result = Animalia_STR_Superfamily;
-			} else if (rank.equals(Rank.FAMILY())) {
-				result = Animalia_STR_Family;
-			} else if (rank.equals(Rank.SUBFAMILY())) {
-				result = Animalia_STR_Subfamily;
-			} else if (rank.equals(Rank.TRIBE())) {
-				result = Animalia_STR_Tribe;
-			} else if (rank.equals(Rank.SUBTRIBE())) {
-				result = Animalia_STR_Subtribe;
-			} else if (rank.equals(Rank.GENUS())) {
-				result = Animalia_STR_Genus;
-			} else if (rank.equals(Rank.SUBGENUS())) {
-				result = Animalia_STR_Subgenus;
-			} else if (rank.equals(Rank.SPECIES())) {
-				result = Animalia_STR_Species;
-			} else if (rank.equals(Rank.SUBSPECIES())) {
-				result = Animalia_STR_Subspecies;
-//			} else if (rank.equals(Rank.)) { // not yet specified
-//				result = Animalia_STR_Natio;
-			} else if (rank.equals(Rank.VARIETY())) {
-				result = Animalia_STR_Variety;
-			} else if (rank.equals(Rank.SUBVARIETY())) {
-				result = Animalia_STR_Subvariety;
-			} else if (rank.equals(Rank.FORM())) {
-				result = Animalia_STR_Forma;
-			} else {
-				//TODO Exception
-				logger.warn("Rank for Kingdom Animalia not yet supported in CDM: "+ rank.getLabel());
-				return null;
-			}
-		} else if (pesiKingdomId != null && pesiKingdomId.intValue() == KINGDOM_PLANTAE) {
-			if (rank.equals(Rank.KINGDOM())) {
-				result = Plantae_STR_Kingdom;
-			} else if (rank.equals(Rank.SUBKINGDOM())) {
-				result = Plantae_STR_Subkingdom;
-			} else if (rank.equals(Rank.DIVISION())) {
-				result = Plantae_STR_Division;
-			} else if (rank.equals(Rank.SUBDIVISION())) {
-				result = Plantae_STR_Subdivision;
-			} else if (rank.equals(Rank.CLASS())) {
-				result = Plantae_STR_Class;
-			} else if (rank.equals(Rank.SUBCLASS())) {
-				result = Plantae_STR_Subclass;
-			} else if (rank.equals(Rank.ORDER())) {
-				result = Plantae_STR_Order;
-			} else if (rank.equals(Rank.SUBORDER())) {
-				result = Plantae_STR_Suborder;
-			} else if (rank.equals(Rank.FAMILY())) {
-				result = Plantae_STR_Family;
-			} else if (rank.equals(Rank.SUBFAMILY())) {
-				result = Plantae_STR_Subfamily;
-			} else if (rank.equals(Rank.TRIBE())) {
-				result = Plantae_STR_Tribe;
-			} else if (rank.equals(Rank.SUBTRIBE())) {
-				result = Plantae_STR_Subtribe;
-			} else if (rank.equals(Rank.GENUS())) {
-				result = Plantae_STR_Genus;
-			} else if (rank.equals(Rank.SUBGENUS())) {
-				result = Plantae_STR_Subgenus;
-			} else if (rank.equals(Rank.SECTION_BOTANY())) {
-				result = Plantae_STR_Section;
-			} else if (rank.equals(Rank.SUBSECTION_BOTANY())) {
-				result = Plantae_STR_Subsection;
-			} else if (rank.equals(Rank.SERIES())) {
-				result = Plantae_STR_Series;
-			} else if (rank.equals(Rank.SUBSERIES())) {
-				result = Plantae_STR_Subseries;
-			} else if (rank.equals(Rank.SPECIESAGGREGATE() )) {
-				result = Plantae_STR_Aggregate;
-			} else if (rank.equals(Rank.SPECIESGROUP())) {
-				logger.warn("Rank Species Group not yet implemented");
-				result = null;
-			} else if (rank.getUuid().equals(BerlinModelTransformer.uuidRankCollSpecies)) { 
-				result = Plantae_STR_Coll_Species;
-			} else if (rank.equals(Rank.SPECIES())) {
-				result = Plantae_STR_Species;
-			} else if (rank.equals(Rank.SUBSPECIES())) {
-				result = Plantae_STR_Subspecies;
-			} else if (rank.equals(Rank.GREX())) {
-				result = Plantae_STR_Grex;
-			} else if (rank.getUuid().equals(BerlinModelTransformer.uuidRankProles)) {
-				result = Plantae_STR_Proles;
-			} else if (rank.getUuid().equals(BerlinModelTransformer.uuidRankRace)) {
-				result = Plantae_STR_Race;
-			} else if (rank.equals(Rank.CONVAR())) {
-				result = Plantae_STR_Convarietas;
-			} else if (rank.equals(Rank.VARIETY())) {
-				result = Plantae_STR_Variety;
-			} else if (rank.equals(Rank.SUBVARIETY())) {
-				result = Plantae_STR_Subvariety;
-			} else if (rank.equals(Rank.FORM())) {
-				result = Plantae_STR_Forma;
-			} else if (rank.equals(Rank.SUBFORM())) {
-				result = Plantae_STR_Subforma;
-//			} else if (rank.equals(Rank.)) { // not yet specified
-//				result = Plantae_STR_Forma_spec;
-			} else if (rank.equals(Rank.INFRAGENERICTAXON())) { 
-				result = Plantae_STR_Taxa_infragen;
-			} else if (rank.equals(Rank.INFRASPECIFICTAXON())) { 
-				result = Plantae_STR_Taxa_infraspec;
-			} else {
-				//TODO Exception
-				logger.warn("Rank for Kingdom Plantae not yet supported in CDM: "+ rank.getLabel());
-				return null;
-			}
-		} else if (pesiKingdomId != null && pesiKingdomId.intValue() == KINGDOM_BACTERIA) {
-			if (rank.equals(Rank.KINGDOM())) { result = Bacteria_STR_Kingdom; }
-			else if (rank.equals(Rank.SUBKINGDOM())) { result = Bacteria_STR_Subkingdom; }
-			else if (rank.equals(Rank.PHYLUM())) { result = Bacteria_STR_Phylum; }
-			else if (rank.equals(Rank.SUBPHYLUM())) { result = Bacteria_STR_Subphylum; }
-			else if (rank.equals(Rank.SUPERCLASS())) { result = Bacteria_STR_Superclass; }
-			else if (rank.equals(Rank.CLASS())) { result = Bacteria_STR_Class; }
-			else if (rank.equals(Rank.SUBCLASS())) { result = Bacteria_STR_Subclass; }
-			else if (rank.equals(Rank.INFRACLASS())) { result = Bacteria_STR_Infraclass; }
-			else if (rank.equals(Rank.SUPERORDER())) { result = Bacteria_STR_Superorder; }
-			else if (rank.equals(Rank.ORDER())) { result = Bacteria_STR_Order; }
-			else if (rank.equals(Rank.SUBORDER())) { result = Bacteria_STR_Suborder; }
-			else if (rank.equals(Rank.INFRAORDER())) { result = Bacteria_STR_Infraorder; }
-			else if (rank.equals(Rank.SUPERFAMILY())) { result = Bacteria_STR_Superfamily; }
-			else if (rank.equals(Rank.FAMILY())) { result = Bacteria_STR_Family; }
-			else if (rank.equals(Rank.SUBFAMILY())) { result = Bacteria_STR_Subfamily; }
-			else if (rank.equals(Rank.TRIBE())) { result = Bacteria_STR_Tribe; }
-			else if (rank.equals(Rank.SUBTRIBE())) { result = Bacteria_STR_Subtribe; }
-			else if (rank.equals(Rank.GENUS())) { result = Bacteria_STR_Genus; }
-			else if (rank.equals(Rank.SUBGENUS())) { result = Bacteria_STR_Subgenus; }
-			else if (rank.equals(Rank.SPECIES())) { result = Bacteria_STR_Species; }
-			else if (rank.equals(Rank.SUBSPECIES())) { result = Bacteria_STR_Subspecies; }
-			else if (rank.equals(Rank.VARIETY())) { result = Bacteria_STR_Variety; }
-			else if (rank.equals(Rank.FORM())) { result = Bacteria_STR_Forma; }
-		} else {
-			//TODO Exception
-			logger.warn("Kingdom not yet supported in CDM: "+ pesiKingdomId);
-			return null;
-		}
-		return result;
 	}
 	
 	/**
@@ -1745,111 +1473,12 @@ public final class PesiTransformer extends ExportTransformerBase implements IExp
 	 * @param pesiKingdomId
 	 * @return
 	 */
-	public static String rank2RankAbbrev(Rank rank, Integer pesiKingdomId) {
-		String result = null;
-		if (rank == null) {
+	public String rank2RankAbbrev(Rank rank, Integer pesiKingdomId) {
+		if (rank == null){
 			return null;
+		}else{
+			return this.rankAbbrevCacheMap.get(pesiKingdomId).get(rank2RankId(rank, pesiKingdomId)); 
 		}
-		
-		// We differentiate between Animalia and Plantae only for now.
-		if (pesiKingdomId != null && pesiKingdomId.intValue() == KINGDOM_ANIMALIA) {
-			if (rank.equals(Rank.SUBGENUS())) {
-				result = Animalia_Abbrev_Subgenus;
-			} else if (rank.equals(Rank.SPECIES())) {
-				result = Animalia_Abbrev_Species;
-			} else if (rank.equals(Rank.SUBSPECIES())) {
-				result = Animalia_Abbrev_Subspecies;
-//			} else if (rank.equals(Rank.)) { // not yet specified
-//				result = Animalia_STR_Natio;
-			} else if (rank.equals(Rank.VARIETY())) {
-				result = Animalia_Abbrev_Variety;
-			} else if (rank.equals(Rank.SUBVARIETY())) {
-				result = Animalia_Abbrev_Subvariety;
-			} else if (rank.equals(Rank.FORM())) {
-				result = Animalia_Abbrev_Forma;
-			} else {
-				//TODO Exception
-				logger.warn("Abbreviation for Rank of Kingdom Animalia not supported in CDM: "+ rank.getLabel());
-				return null;
-			}
-		} else if (pesiKingdomId != null && pesiKingdomId.intValue() == KINGDOM_PLANTAE) {
-			if (rank.equals(Rank.KINGDOM())) {
-				result = Plantae_Abbrev_Kingdom;
-			} else if (rank.equals(Rank.SUBKINGDOM())) {
-				result = Plantae_Abbrev_Subkingdom;
-			} else if (rank.equals(Rank.DIVISION())) {
-				result = Plantae_Abbrev_Division;
-			} else if (rank.equals(Rank.SUBDIVISION())) {
-				result = Plantae_Abbrev_Subdivision;
-			} else if (rank.equals(Rank.CLASS())) {
-				result = Plantae_Abbrev_Class;
-			} else if (rank.equals(Rank.SUBCLASS())) {
-				result = Plantae_Abbrev_Subclass;
-			} else if (rank.equals(Rank.ORDER())) {
-				result = Plantae_Abbrev_Order;
-			} else if (rank.equals(Rank.SUBORDER())) {
-				result = Plantae_Abbrev_Suborder;
-			} else if (rank.equals(Rank.FAMILY())) {
-				result = Plantae_Abbrev_Family;
-			} else if (rank.equals(Rank.SUBFAMILY())) {
-				result = Plantae_Abbrev_Subfamily;
-			} else if (rank.equals(Rank.TRIBE())) {
-				result = Plantae_Abbrev_Tribe;
-			} else if (rank.equals(Rank.SUBTRIBE())) {
-				result = Plantae_Abbrev_Subtribe;
-			} else if (rank.equals(Rank.GENUS())) {
-				result = Plantae_Abbrev_Genus;
-			} else if (rank.equals(Rank.SUBGENUS())) {
-				result = Plantae_Abbrev_Subgenus;
-			} else if (rank.equals(Rank.SECTION_BOTANY())) {
-				result = Plantae_Abbrev_Section;
-			} else if (rank.equals(Rank.SUBSECTION_BOTANY())) {
-				result = Plantae_Abbrev_Subsection;
-			} else if (rank.equals(Rank.SERIES())) {
-				result = Plantae_Abbrev_Series;
-			} else if (rank.equals(Rank.SUBSERIES())) {
-				result = Plantae_Abbrev_Subseries;
-			} else if (rank.equals(Rank.SPECIESAGGREGATE() )) { 
-				result = Plantae_Abbrev_Aggregate;
-			} else if (rank.getUuid().equals(BerlinModelTransformer.uuidRankCollSpecies)) { 
-				result = Plantae_Abbrev_Coll_Species;
-			} else if (rank.equals(Rank.SPECIES())) {
-				result = Plantae_Abbrev_Species;
-			} else if (rank.equals(Rank.GREX())) {
-				result = Plantae_Abbrev_Grex;
-			} else if (rank.equals(Rank.SUBSPECIES())) {
-				result = Plantae_Abbrev_Subspecies;
-			} else if (rank.getUuid().equals(BerlinModelTransformer.uuidRankProles)) {
-				result = Plantae_Abbrev_Proles;
-			} else if (rank.getUuid().equals(BerlinModelTransformer.uuidRankRace)) {
-				result = Plantae_Abbrev_Race;
-			} else if (rank.equals(Rank.CONVAR())) {
-				result = Plantae_Abbrev_Convarietas;
-			} else if (rank.equals(Rank.VARIETY())) {
-				result = Plantae_Abbrev_Variety;
-			} else if (rank.equals(Rank.SUBVARIETY())) {
-				result = Plantae_Abbrev_Subvariety;
-			} else if (rank.equals(Rank.FORM())) {
-				result = Plantae_Abbrev_Forma;
-			} else if (rank.equals(Rank.SUBFORM())) {
-				result = Plantae_Abbrev_Subforma;
-//			} else if (rank.equals(Rank.)) { // not yet specified
-//				result = Plantae_Abbrev_Forma_spec;
-			} else if (rank.equals(Rank.INFRAGENERICTAXON())) { 
-				result = Plantae_Abbrev_Taxa_infragen;
-			} else if (rank.equals(Rank.INFRASPECIFICTAXON())) { 
-				result = Plantae_Abbrev_Taxa_infraspec;
-			} else {
-				//TODO Exception
-				logger.warn("Abbreviation for Rank of Kingdom Plantae not supported in CDM: "+ rank.getLabel());
-				return null;
-			}
-		} else {
-			//TODO Exception
-			logger.warn("Kingdom not yet supported in CDM: "+ pesiKingdomId);
-			return null;
-		}
-		return result;
 	}
 
 	/**

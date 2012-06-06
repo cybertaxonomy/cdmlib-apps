@@ -677,7 +677,7 @@ public class PesiTaxonExport extends PesiExportBase {
 				//TODO why are expertFks needed? (Andreas M.)
 //				if (expertFk != null || speciesExpertFk != null) {
 					invokeRankDataAndTypeNameFkAndKingdomFk(taxonName, nomenclaturalCode, state.getDbId(taxon), 
-							typeNameFk, kingdomFk);
+							typeNameFk, kingdomFk, state);
 //				}
 					
 					taxon = null;
@@ -757,7 +757,7 @@ public class PesiTaxonExport extends PesiExportBase {
 			
 			// Save Rank Data and KingdomFk for inferred synonyms
 			for (Integer taxonFk : inferredSynonymsDataToBeSaved.keySet()) {
-				invokeRankDataAndKingdomFk(inferredSynonymsDataToBeSaved.get(taxonFk), nomenclaturalCode, taxonFk, kingdomFk);
+				invokeRankDataAndKingdomFk(inferredSynonymsDataToBeSaved.get(taxonFk), nomenclaturalCode, taxonFk, kingdomFk, state);
 			}
 
 			// Start transaction
@@ -784,7 +784,7 @@ public class PesiTaxonExport extends PesiExportBase {
 			
 			// Save Rank Data and KingdomFk for inferred synonyms
 			for (Integer taxonFk : inferredSynonymsDataToBeSaved.keySet()) {
-				invokeRankDataAndKingdomFk(inferredSynonymsDataToBeSaved.get(taxonFk), nomenclaturalCode, taxonFk, kingdomFk);
+				invokeRankDataAndKingdomFk(inferredSynonymsDataToBeSaved.get(taxonFk), nomenclaturalCode, taxonFk, kingdomFk, state);
 			}
 
 			// Start transaction
@@ -1223,10 +1223,11 @@ public class PesiTaxonExport extends PesiExportBase {
 	 * @param taxonName The {@link TaxonNameBase TaxonName}.
 	 * @param nomenclaturalCode The {@link NomenclaturalCode NomenclaturalCode}.
 	 * @param taxonFk The TaxonFk to store the values for.
+	 * @param state 
 	 * @param kindomFk The KingdomFk.
 	 * @return Whether save was successful or not.
 	 */
-	private boolean invokeRankDataAndKingdomFk(TaxonNameBase<?,?> taxonName, NomenclaturalCode nomenclaturalCode, Integer taxonFk, Integer kingdomFk) {
+	private boolean invokeRankDataAndKingdomFk(TaxonNameBase<?,?> taxonName, NomenclaturalCode nomenclaturalCode, Integer taxonFk, Integer kingdomFk, PesiExportState state) {
 		try {
 			Integer rankFk = getRankFk(taxonName, nomenclaturalCode);
 			if (rankFk != null) {
@@ -1235,7 +1236,7 @@ public class PesiTaxonExport extends PesiExportBase {
 				rankUpdateStmt.setObject(1, null);
 			}
 	
-			String rankCache = getRankCache(taxonName, nomenclaturalCode);
+			String rankCache = getRankCache(taxonName, nomenclaturalCode, state);
 			if (rankCache != null) {
 				rankUpdateStmt.setString(2, rankCache);
 			} else {
@@ -1269,13 +1270,14 @@ public class PesiTaxonExport extends PesiExportBase {
 	 * @param nomenclaturalCode The {@link NomenclaturalCode NomenclaturalCode}.
 	 * @param taxonFk The TaxonFk to store the values for.
 	 * @param typeNameFk The TypeNameFk.
+	 * @param state 
 	 * @param kindomFk The KingdomFk.
 	 * @param expertFk The ExpertFk.
 	 * @param speciesExpertFk The SpeciesExpertFk.
 	 * @return Whether save was successful or not.
 	 */
 	private boolean invokeRankDataAndTypeNameFkAndKingdomFk(TaxonNameBase<?,?> taxonName, NomenclaturalCode nomenclaturalCode, 
-			Integer taxonFk, Integer typeNameFk, Integer kingdomFkk) {
+			Integer taxonFk, Integer typeNameFk, Integer kingdomFkk, PesiExportState state) {
 		try {
 			int index = 1;
 			Integer rankFk = getRankFk(taxonName, nomenclaturalCode);
@@ -1285,7 +1287,7 @@ public class PesiTaxonExport extends PesiExportBase {
 				rankTypeExpertsUpdateStmt.setObject(index++, null);
 			}
 	
-			String rankCache = getRankCache(taxonName, nomenclaturalCode);
+			String rankCache = getRankCache(taxonName, nomenclaturalCode, state);
 			if (rankCache != null) {
 				rankTypeExpertsUpdateStmt.setString(index++, rankCache);
 			} else {
@@ -1446,8 +1448,8 @@ public class PesiTaxonExport extends PesiExportBase {
 	 * @return
 	 */
 	@SuppressWarnings("unused")  //used by mapper
-	private static String getRankCache(TaxonNameBase<?,?> taxonName) {
-		return getRankCache(taxonName, taxonName.getNomenclaturalCode());
+	private static String getRankCache(TaxonNameBase<?,?> taxonName, PesiExportState state) {
+		return getRankCache(taxonName, taxonName.getNomenclaturalCode(), state);
 	}
 
 	
@@ -1455,19 +1457,18 @@ public class PesiTaxonExport extends PesiExportBase {
 	 * Returns the <code>RankCache</code> attribute.
 	 * @param taxonName The {@link TaxonNameBase TaxonName}.
 	 * @param nomenclaturalCode The {@link NomenclaturalCode NomenclaturalCode}.
+	 * @param state 
 	 * @return The <code>RankCache</code> attribute.
 	 * @see MethodMapper
 	 */
-	private static String getRankCache(TaxonNameBase<?,?> taxonName, NomenclaturalCode nomenclaturalCode) {
-		String result = null;
-		try {
-			if (nomenclaturalCode != null) {
-				result = PesiTransformer.rank2RankCache(taxonName.getRank(), PesiTransformer.nomenClaturalCode2Kingdom(nomenclaturalCode));
-			}
-		} catch (Exception e) {
-			e.printStackTrace();
+	private static String getRankCache(TaxonNameBase<?,?> taxonName, NomenclaturalCode nomenclaturalCode, PesiExportState state) {
+		if (nomenclaturalCode != null) {
+			return state.getTransformer().rank2RankCache(taxonName.getRank(), PesiTransformer.nomenClaturalCode2Kingdom(nomenclaturalCode));
+		}else{
+			logger.warn("No nomenclatural code defined for name " + taxonName.getUuid());
+			return null;
 		}
-		return result;
+		
 	}
 
 	
@@ -2563,7 +2564,7 @@ public class PesiTaxonExport extends PesiExportBase {
 
 		mapping.addMapper(MethodMapper.NewInstance("KingdomFk", this, TaxonNameBase.class));
 		mapping.addMapper(MethodMapper.NewInstance("RankFk", this, TaxonNameBase.class));
-		mapping.addMapper(MethodMapper.NewInstance("RankCache", this, TaxonNameBase.class));
+		mapping.addMapper(MethodMapper.NewInstance("RankCache", this, TaxonNameBase.class, PesiExportState.class));
 		mapping.addMapper(DbConstantMapper.NewInstance("TaxonStatusFk", Types.INTEGER , PesiTransformer.T_STATUS_UNACCEPTED));
 		mapping.addMapper(DbConstantMapper.NewInstance("TaxonStatusCache", Types.VARCHAR , state.getTransformer().getTaxonStatusCacheByKey( PesiTransformer.T_STATUS_UNACCEPTED)));
 		mapping.addMapper(DbStringMapper.NewInstance("AuthorshipCache", "AuthorString").setBlankToNull(true));  
