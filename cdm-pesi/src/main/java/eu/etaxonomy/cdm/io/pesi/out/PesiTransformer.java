@@ -2823,7 +2823,12 @@ public final class PesiTransformer extends ExportTransformerBase implements IExp
 			return NoteCategory_Synonymy;
 		} else if (feature.equals(Feature.CITATION())) {
 			return null;  //citations are handled differently
-			
+		} else if (feature.getUuid().equals(BerlinModelTransformer.uuidFeatureMaps)){
+			return NoteCategory_Link_to_maps = 20;
+//		} else if (feature.getUuid().equals(obj)){
+//			return NoteCategory_Editor_Parenthesis;
+//			
+		
 			// TODO: Unknown NodeCategories
 //			NoteCategory_general_distribution_euromed = 10;
 //			NoteCategory_general_distribution_world = 11;
