@@ -125,18 +125,6 @@ public final class PesiTransformer extends ExportTransformerBase implements IExp
 	public static int REF_JOURNAL = 9;
 	public static int REF_UNRESOLVED = 10;
 	public static int REF_PUBLICATION = 11;
-
-//	public static String REF_STR_ARTICLE_IN_PERIODICAL = "Article in periodical";
-//	public static String REF_STR_PART_OF_OTHER = "Part of other";
-//	public static String REF_STR_BOOK = "Book";
-//	public static String REF_STR_DATABASE = "Database";
-//	public static String REF_STR_INFORMAL = "Informal";
-//	public static String REF_STR_NOT_APPLICABLE = "Not applicable";
-//	public static String REF_STR_WEBSITE = "Website";
-//	public static String REF_STR_PUBLISHED = "Published";
-//	public static String REF_STR_JOURNAL = "Journal";
-//	public static String REF_STR_UNRESOLVED = "Unresolved";
-//	public static String REF_STR_PUBLICATION = "Publication";
 	
 	// NameStatus
 	public static int NAME_ST_NOM_INVAL = 1;
@@ -893,15 +881,6 @@ public final class PesiTransformer extends ExportTransformerBase implements IExp
 	public static int STATUS_MANAGED = 7;
 	public static int STATUS_DOUBTFUL = 8;
 
-	public static String STR_STATUS_PRESENT = "Present";
-	public static String STR_STATUS_ABSENT = "Absent";
-	public static String STR_STATUS_NATIVE = "Native";
-	public static String STR_STATUS_INTRODUCED = "Introduced";
-	public static String STR_STATUS_NATURALISED = "Naturalised";
-	public static String STR_STATUS_INVASIVE = "Invasive";
-	public static String STR_STATUS_MANAGED = "Managed";
-	public static String STR_STATUS_DOUBTFUL = "Doubtful";
-
 	private Map<String, Integer> tdwgKeyMap = new HashMap<String, Integer>();
 	private Map<Integer, String> areaCacheMap = new HashMap<Integer, String>();
 	private Map<Integer, String> languageCacheMap  = new HashMap<Integer, String>();
@@ -915,6 +894,8 @@ public final class PesiTransformer extends ExportTransformerBase implements IExp
 	private Map<Integer, String> fossilStatusCacheMap  = new HashMap<Integer, String>();
 	private Map<Integer, String> typeDesigStatusCacheMap  = new HashMap<Integer, String>();
 	private Map<Integer, String> sourceCategoryCacheMap  = new HashMap<Integer, String>();
+	private Map<Integer, String> occurrenceStatusCacheMap  = new HashMap<Integer, String>();
+	
 	
 	private Source destination;
 	
@@ -963,6 +944,9 @@ public final class PesiTransformer extends ExportTransformerBase implements IExp
 			
 			//fossil status
 			fillSingleMap(typeDesigStatusCacheMap,"FossilStatus");
+
+			//fossil status
+			fillSingleMap(occurrenceStatusCacheMap,"OccurrenceStatus");
 			
 			//source category
 			fillSingleMap(sourceCategoryCacheMap,"SourceCategory", "Category", "SourceCategoryId");
@@ -1025,57 +1009,7 @@ public final class PesiTransformer extends ExportTransformerBase implements IExp
 		}
 		return result;
 	}
-	
-	/**
-	 * Returns the OccurrenceStatusId for a given PresenceAbsenceTerm.
-	 * @param term
-	 * @return
-	 * @throws UnknownCdmTypeException 
-	 */
-	public static String presenceAbsenceTerm2OccurrenceStatusCache(PresenceAbsenceTermBase<?> term) {
-		String result = null;
-		if (term == null){
-			return null;
-		//present
-		}else if (term.isInstanceOf(PresenceTerm.class)) {
-			PresenceTerm presenceTerm = CdmBase.deproxy(term, PresenceTerm.class);
-			if (presenceTerm.equals(PresenceTerm.PRESENT()) || 
-					presenceTerm.equals(PresenceTerm.INTRODUCED_DOUBTFULLY_INTRODUCED()) || 
-					presenceTerm.equals(PresenceTerm.NATIVE_DOUBTFULLY_NATIVE())) {
-				result = STR_STATUS_PRESENT;
-			} else if (presenceTerm.equals(PresenceTerm.NATIVE())) {
-				result = STR_STATUS_NATIVE;
-			} else if (presenceTerm.equals(PresenceTerm.INTRODUCED()) || 
-					presenceTerm.equals(PresenceTerm.INTRODUCED_ADVENTITIOUS()) ||
-					presenceTerm.equals(PresenceTerm.INTRODUCED_UNCERTAIN_DEGREE_OF_NATURALISATION())) {
-				result = STR_STATUS_INTRODUCED;
-			} else if (presenceTerm.equals(PresenceTerm.NATURALISED()) 
-					|| presenceTerm.equals(PresenceTerm.INTRODUCED_NATURALIZED())) {
-				result = STR_STATUS_NATURALISED;
-			} else if (presenceTerm.equals(PresenceTerm.INVASIVE())) {
-				result = STR_STATUS_INVASIVE;
-			} else if (presenceTerm.equals(PresenceTerm.CULTIVATED())) {
-				result = STR_STATUS_MANAGED;
-			} else if (presenceTerm.equals(PresenceTerm.PRESENT_DOUBTFULLY())||
-					presenceTerm.equals(PresenceTerm.INTRODUCED_PRESENCE_QUESTIONABLE()) ||
-					presenceTerm.equals(PresenceTerm.NATIVE_PRESENCE_QUESTIONABLE() )) {
-				result = STR_STATUS_DOUBTFUL;
-			} else {
-				logger.error("PresenceTerm could not be translated to datawarehouse occurrence status id: " + presenceTerm.getLabel());
-			}
-		//absent	
-		} else if (term.isInstanceOf(AbsenceTerm.class)) {
-			AbsenceTerm absenceTerm = CdmBase.deproxy(term, AbsenceTerm.class);
-			if (absenceTerm.equals(AbsenceTerm.ABSENT()) || absenceTerm.equals(AbsenceTerm.NATIVE_FORMERLY_NATIVE()) ||
-					absenceTerm.equals(AbsenceTerm.CULTIVATED_REPORTED_IN_ERROR()) || absenceTerm.equals(AbsenceTerm.INTRODUCED_REPORTED_IN_ERROR()) ||
-					absenceTerm.equals(AbsenceTerm.INTRODUCED_FORMERLY_INTRODUCED()) || absenceTerm.equals(AbsenceTerm.NATIVE_REPORTED_IN_ERROR() ) ) {
-				result = STR_STATUS_ABSENT;
-			} else {
-				logger.error("AbsenceTerm could not be translated to datawarehouse occurrence status id: " + absenceTerm.getLabel());
-			}
-		}
-		return result;
-	}
+
 	
 	/**
 	 * Returns the OccurrenceStatusId for a given PresenceAbsenceTerm.
@@ -1131,7 +1065,11 @@ public final class PesiTransformer extends ExportTransformerBase implements IExp
 
 	@Override
 	public String getCacheByPresenceAbsenceTerm(PresenceAbsenceTermBase status) throws UndefinedTransformerMethodException {
-		return presenceAbsenceTerm2OccurrenceStatusCache(status);
+		if (status == null){
+			return null;
+		}else{
+			return this.occurrenceStatusCacheMap.get(getKeyByPresenceAbsenceTerm(status)); 
+		}
 	}
 	
 	@Override

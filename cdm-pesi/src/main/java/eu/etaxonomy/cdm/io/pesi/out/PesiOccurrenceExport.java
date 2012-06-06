@@ -395,14 +395,15 @@ public class PesiOccurrenceExport extends PesiExportBase {
 	 * Returns the <code>OccurrenceStatusCache</code> attribute.
 	 * @param entity An {@link AnnotatableEntity AnnotatableEntity}.
 	 * @return The <code>OccurrenceStatusCache</code> attribute.
+	 * @throws UndefinedTransformerMethodException 
 	 * @throws UnknownCdmTypeException 
 	 * @see MethodMapper
 	 */
 	@SuppressWarnings("unused")
-	private static String getOccurrenceStatusCache(AnnotatableEntity entity) {
+	private static String getOccurrenceStatusCache(AnnotatableEntity entity, PesiExportState state) throws UndefinedTransformerMethodException {
 		String result = null;
 		if (getDistribution() != null) {
-			result = PesiTransformer.presenceAbsenceTerm2OccurrenceStatusCache(getDistribution().getStatus());
+			result = state.getTransformer().getCacheByPresenceAbsenceTerm(getDistribution().getStatus());
 		}
 		return result;
 	}
@@ -478,7 +479,7 @@ public class PesiOccurrenceExport extends PesiExportBase {
 		mapping.addMapper(MethodMapper.NewInstance("TaxonFullNameCache", this));
 		mapping.addMapper(MethodMapper.NewInstance("AreaNameCache", this));
 		mapping.addMapper(MethodMapper.NewInstance("OccurrenceStatusFk", this));
-		mapping.addMapper(MethodMapper.NewInstance("OccurrenceStatusCache", this));
+		mapping.addMapper(MethodMapper.NewInstance("OccurrenceStatusCache", this, AnnotatableEntity.class, PesiExportState.class));
 		mapping.addMapper(MethodMapper.NewInstance("SourceFk", this.getClass(), "getSourceFk", standardMethodParameter, PesiExportState.class));
 		mapping.addMapper(MethodMapper.NewInstance("SourceCache", this));
 		mapping.addMapper(MethodMapper.NewInstance("Notes", this));
