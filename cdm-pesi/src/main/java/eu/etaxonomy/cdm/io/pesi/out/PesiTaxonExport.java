@@ -505,6 +505,7 @@ public class PesiTaxonExport extends PesiExportBase {
 		
 		logger.info("PHASE 4: Make TreeIndex ... ");
 	
+		//TODO test if possible to move to phase 02 
 		String sql = " UPDATE Taxon SET ParentTaxonFk = (Select TaxonId from Taxon where RankFk = 0) " +
 				" WHERE (RankFk = 10) and TaxonStatusFk = 1 ";
 		state.getConfig().getDestination().update(sql);
