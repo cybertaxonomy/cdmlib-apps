@@ -109,6 +109,7 @@ public class PesiTaxonExport extends PesiExportBase {
 	private static final String pluralString = "Taxa";
 	private static final String parentPluralString = "Taxa";
 	private PreparedStatement parentTaxonFk_TreeIndex_KingdomFkStmt;
+	private PreparedStatement parentTaxonFkStmt;
 	private PreparedStatement rankTypeExpertsUpdateStmt;
 	private PreparedStatement rankUpdateStmt;
 	private NomenclaturalCode nomenclaturalCode;
@@ -210,15 +211,18 @@ public class PesiTaxonExport extends PesiExportBase {
 			success &= doNames(state);
 
 			
-			// 2nd Round: Add ParentTaxonFk, TreeIndex to each Taxon
+			// 2nd Round: Add ParentTaxonFk to each taxon
 			success &= doPhase02(state);
 			
 			//PHASE 3: Add Rank data, KingdomFk, TypeNameFk ...
 			success &= doPhase03(state);
 			
+			// 4nd Round: Add TreeIndex to each taxon
+			success &= doPhase04(state);
+						
 			
 			//"PHASE 4: Creating Inferred Synonyms...
-			success &= doPhase04(state, mapping, synonymRelMapping);
+			success &= doPhase05(state, mapping, synonymRelMapping);
 			
 			logger.info("*** Finished Making " + pluralString + " ..." + getSuccessString(success));
 
@@ -240,6 +244,8 @@ public class PesiTaxonExport extends PesiExportBase {
 		initTreeIndexStatement(state);
 		initRankExpertsUpdateStmt(state);
 		initRankUpdateStatement(state);
+		
+		initParentFkStatement(state);
 	}
 
 	// Prepare TreeIndex-And-KingdomFk-Statement
@@ -249,6 +255,13 @@ public class PesiTaxonExport extends PesiExportBase {
 		parentTaxonFk_TreeIndex_KingdomFkStmt = connection.prepareStatement(parentTaxonFk_TreeIndex_KingdomFkSql);
 	}
 
+	// Prepare TreeIndex-And-KingdomFk-Statement
+	private void initParentFkStatement(PesiExportState state) throws SQLException {
+		Connection connection = state.getConfig().getDestination().getConnection();
+		String parentTaxonFkSql = "UPDATE Taxon SET ParentTaxonFk = ? WHERE TaxonId = ?"; 
+		parentTaxonFkStmt = connection.prepareStatement(parentTaxonFkSql);
+	}
+	
 	private void initRankUpdateStatement(PesiExportState state) throws SQLException {
 		Connection connection = state.getConfig().getDestination().getConnection();
 		String rankSql = "UPDATE Taxon SET RankFk = ?, RankCache = ?, KingdomFk = ? WHERE TaxonId = ?";
@@ -408,8 +421,75 @@ public class PesiTaxonExport extends PesiExportBase {
 		}
 	}
 
+	
+	
 	// 2nd Round: Add ParentTaxonFk, TreeIndex to each Taxon
 	private boolean doPhase02(PesiExportState state) {
+		int count = 0;
+		int pastCount = 0;
+		List<Taxon> list;
+		boolean success = true;
+		// Get the limit for objects to save within a single transaction.
+		int limit = state.getConfig().getLimitSave();
+
+		
+		logger.info("PHASE 2: Make ParentFk and TreeIndex ... limit is " + limit);
+		// Start transaction
+		TransactionStatus txStatus = startTransaction(true);
+		int partitionCount = 0;
+
+//		ProfilerController.memorySnapshot();
+		while ((list = getNextTaxonPartition(Taxon.class, limit, partitionCount++, null)) != null   ) {
+			
+			logger.info("Fetched " + list.size() + " " + pluralString + ". Exporting...");
+			for (Taxon taxon : list) {
+				for (TaxonNode node : taxon.getTaxonNodes()){
+					doCount(count++, modCount, pluralString);
+					TaxonNode parentNode = node.getParent();
+					if (parentNode != null){
+						int childId = state.getDbId( taxon); 
+						int parentId = state.getDbId(parentNode.getTaxon());
+						success &= invokeParentTaxonFk(parentId, childId);
+					}
+				}
+				
+			}
+			
+			// Commit transaction
+			commitTransaction(txStatus);
+			logger.info("Exported " + (count - pastCount) + " " + pluralString + ". Total: " + count);
+			pastCount = count;
+			// Start transaction
+			txStatus = startTransaction(true);
+			logger.info("Started new transaction. Fetching some " + pluralString + " (max: " + limit + ") ...");
+			
+		}
+		if (list == null ) {
+			logger.info("No " + pluralString + " left to fetch.");
+		}
+		
+		// Commit transaction
+		commitTransaction(txStatus);
+		
+		return success;
+		
+	}
+	
+	// 4th round: Add TreeIndex to each taxon
+	private boolean doPhase04(PesiExportState state) {
+		boolean success = true;
+		
+		logger.info("PHASE 2: Make TreeIndex ... ");
+	
+		state.getConfig().getDestination().update("EXEC dbo.recalculateallstoredpaths");
+		
+		return success;
+		
+	}
+	
+	
+	// 2nd Round: Add ParentTaxonFk, TreeIndex to each Taxon
+	private boolean doPhase02_OLD(PesiExportState state) {
 		boolean success = true;
 		if (! state.getConfig().isDoTreeIndex()){
 			logger.info ("Ignore PHASE 2: ParentTaxonFk and TreeIndex");
@@ -594,7 +674,7 @@ public class PesiTaxonExport extends PesiExportBase {
 	}
 	
 	//	"PHASE 4: Creating Inferred Synonyms..."
-	private boolean doPhase04(PesiExportState state, PesiExportMapping mapping, PesiExportMapping synRelMapping) throws SQLException {
+	private boolean doPhase05(PesiExportState state, PesiExportMapping mapping, PesiExportMapping synRelMapping) throws SQLException {
 		int count;
 		int pastCount;
 		boolean success = true;
@@ -707,8 +787,7 @@ public class PesiTaxonExport extends PesiExportBase {
 	 * @return
 	 */
 	private HashMap<Integer, TaxonNameBase<?, ?>> createInferredSynonymsForTaxonList(PesiExportState state,
-			PesiExportMapping mapping, PesiExportMapping synRelMapping,
-			 List<TaxonBase> taxonList) {
+			PesiExportMapping mapping, PesiExportMapping synRelMapping,	 List<TaxonBase> taxonList) {
 		
 		Taxon acceptedTaxon;
 		Classification classification = null;
@@ -1084,6 +1163,20 @@ public class PesiTaxonExport extends PesiExportBase {
 			return false;
 		}
 	}
+	
+	protected boolean invokeParentTaxonFk(Integer parentId, Integer childId) {
+		try {
+			parentTaxonFkStmt.setInt(1, parentId);
+			parentTaxonFkStmt.setInt(2, childId);
+			parentTaxonFkStmt.executeUpdate();
+			return true;
+		} catch (SQLException e) {
+			logger.warn("ParentTaxonFk (" + parentId ==null? "-":parentId + ") could not be inserted into database for taxon "+ (childId == null? "-" :childId) + ": " + e.getMessage());
+			e.printStackTrace();
+			return false;
+		}
+	}
+
 
 	/**
 	 * Inserts Rank data and KingdomFk into the Taxon database table.
