@@ -762,7 +762,7 @@ public class PesiRelTaxonExport extends PesiExportBase {
 	 */
 	private static String getRankCache(TaxonNameBase taxonName, NomenclaturalCode nomenclaturalCode, PesiExportState state) {
 		if (nomenclaturalCode != null) {
-			return state.getTransformer().rank2RankCache(taxonName.getRank(), PesiTransformer.nomenClaturalCode2Kingdom(nomenclaturalCode));
+			return state.getTransformer().getCacheByRankAndKingdom(taxonName.getRank(), PesiTransformer.nomenClaturalCode2Kingdom(nomenclaturalCode));
 		}else{
 			logger.warn("No nomenclatural code defined for rank cache search");
 			return null;

@@ -1459,7 +1459,7 @@ public final class PesiTransformer extends ExportTransformerBase implements IExp
 	 * @param pesiKingdomId
 	 * @return
 	 */
-	public String rank2RankCache(Rank rank, Integer pesiKingdomId) {
+	public String getCacheByRankAndKingdom(Rank rank, Integer pesiKingdomId) {
 		if (rank == null){
 			return null;
 		}else{
@@ -1469,11 +1469,12 @@ public final class PesiTransformer extends ExportTransformerBase implements IExp
 	
 	/**
 	 * Returns the abbreviation for a given rank.
+	 * Currently unused.
 	 * @param rank
 	 * @param pesiKingdomId
 	 * @return
 	 */
-	public String rank2RankAbbrev(Rank rank, Integer pesiKingdomId) {
+	public String getCacheAbbrevByRankAndKingdom(Rank rank, Integer pesiKingdomId) {
 		if (rank == null){
 			return null;
 		}else{
