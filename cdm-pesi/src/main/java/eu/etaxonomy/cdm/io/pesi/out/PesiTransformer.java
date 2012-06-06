@@ -126,17 +126,17 @@ public final class PesiTransformer extends ExportTransformerBase implements IExp
 	public static int REF_UNRESOLVED = 10;
 	public static int REF_PUBLICATION = 11;
 
-	public static String REF_STR_ARTICLE_IN_PERIODICAL = "Article in periodical";
-	public static String REF_STR_PART_OF_OTHER = "Part of other";
-	public static String REF_STR_BOOK = "Book";
-	public static String REF_STR_DATABASE = "Database";
-	public static String REF_STR_INFORMAL = "Informal";
-	public static String REF_STR_NOT_APPLICABLE = "Not applicable";
-	public static String REF_STR_WEBSITE = "Website";
-	public static String REF_STR_PUBLISHED = "Published";
-	public static String REF_STR_JOURNAL = "Journal";
-	public static String REF_STR_UNRESOLVED = "Unresolved";
-	public static String REF_STR_PUBLICATION = "Publication";
+//	public static String REF_STR_ARTICLE_IN_PERIODICAL = "Article in periodical";
+//	public static String REF_STR_PART_OF_OTHER = "Part of other";
+//	public static String REF_STR_BOOK = "Book";
+//	public static String REF_STR_DATABASE = "Database";
+//	public static String REF_STR_INFORMAL = "Informal";
+//	public static String REF_STR_NOT_APPLICABLE = "Not applicable";
+//	public static String REF_STR_WEBSITE = "Website";
+//	public static String REF_STR_PUBLISHED = "Published";
+//	public static String REF_STR_JOURNAL = "Journal";
+//	public static String REF_STR_UNRESOLVED = "Unresolved";
+//	public static String REF_STR_PUBLICATION = "Publication";
 	
 	// NameStatus
 	public static int NAME_ST_NOM_INVAL = 1;
@@ -178,21 +178,10 @@ public final class PesiTransformer extends ExportTransformerBase implements IExp
 	public static int T_STATUS_UNACCEPTED = 7;
 	public static int T_STATUS_NOT_ACCEPTED = 8;
 	
-//	public static String T_STATUS_STR_ACCEPTED = "Accepted";
-//	public static String T_STATUS_STR_SYNONYM = "Synonym";
-//	public static String T_STATUS_STR_PARTIAL_SYN = "Partial Synonym";
-//	public static String T_STATUS_STR_PRO_PARTE_SYN = "Pro Parte Synonym";
-//	public static String T_STATUS_STR_UNRESOLVED = "Unresolved";
-//	public static String T_STATUS_STR_ORPHANED = "Orphaned";
-//	public static String T_STATUS_STR_UNACCEPTED = "Unaccepted";
-//	public static String T_STATUS_STR_NOT_ACCEPTED = "NOT ACCEPTED: TAXONOMICALLY VALUELESS LOCAL OR SINGULAR BIOTYPE";
-//	
-	
-	// TypeDesginationStatus
+	// TypeDesginationStatus //	 -> not a table anymore
 	public static int TYPE_BY_ORIGINAL_DESIGNATION = 1;
 	public static int TYPE_BY_SUBSEQUENT_DESIGNATION = 2;
 	public static int TYPE_BY_MONOTYPY = 3;
-	
 	public static String TYPE_STR_BY_ORIGINAL_DESIGNATION = "Type by original designation";
 	public static String TYPE_STR_BY_SUBSEQUENT_DESIGNATION = "Type by subsequent designation";
 	public static String TYPE_STR_BY_MONOTYPY = "Type by monotypy";
@@ -668,78 +657,12 @@ public final class PesiTransformer extends ExportTransformerBase implements IExp
 	public static int Language_Welsh = 60;
 	public static int Language_Corsican = 61;
 
-	public static String STR_LANGUAGE_ALBANIAN = "Albanian";
-	public static String STR_LANGUAGE_ARABIC = "Arabic";
-	public static String STR_LANGUAGE_ARMENIAN = "Armenian";
-	public static String STR_LANGUAGE_AZERBAIJAN = "Azerbaijan";
-	public static String STR_LANGUAGE_BELARUSIAN = "Belarusian";
-	public static String STR_LANGUAGE_BULGARIAN = "Bulgarian";
-	public static String STR_LANGUAGE_CATALAN = "Catalan";
-	public static String STR_LANGUAGE_CROAT = "Croat";
-	public static String STR_LANGUAGE_CZECH = "Czech";
-	public static String STR_LANGUAGE_DANISH = "Danish";
-	public static String STR_LANGUAGE_DUTCH = "Dutch";
-	public static String STR_LANGUAGE_ENGLISH = "English";
-	public static String STR_LANGUAGE_EUSKERA = "Euskera";
-	public static String STR_LANGUAGE_ESTONIAN = "Estonian";
-	public static String STR_LANGUAGE_FINNISH = "Finnish";
-	public static String STR_LANGUAGE_FRENCH = "French";
-	public static String STR_LANGUAGE_GEORGIAN = "Georgian";
-	public static String STR_LANGUAGE_GERMAN = "German";
-	public static String STR_LANGUAGE_GREEK = "Greek";
-	public static String STR_LANGUAGE_HUNGARIAN = "Hungarian";
-	public static String STR_LANGUAGE_ICELANDIC = "Icelandic";
-	public static String STR_LANGUAGE_IRISH_GAELIC = "Irish Gaelic";
-	public static String STR_LANGUAGE_ISRAEL_HEBREW = "Israel (Hebrew)";
-	public static String STR_LANGUAGE_ITALIAN = "Italian";
-	public static String STR_LANGUAGE_LATVIAN = "Latvian";
-	public static String STR_LANGUAGE_LITHUANIAN = "Lithuanian";
-	public static String STR_LANGUAGE_MACEDONIAN = "Macedonian";
-	public static String STR_LANGUAGE_MALTESE = "Maltese";
-	public static String STR_LANGUAGE_MOLDOVIAN = "Moldovian";
-	public static String STR_LANGUAGE_NORWEGIAN = "Norwegian";
-	public static String STR_LANGUAGE_POLISH = "Polish";
-	public static String STR_LANGUAGE_PORTUGUESE = "Portuguese";
-	public static String STR_LANGUAGE_ROUMANIAN = "Roumanian";
-	public static String STR_LANGUAGE_RUSSIAN = "Russian";
-	public static String STR_LANGUAGE_RUSSIAN_CAUCASIAN = "Russian Caucasian";
-	public static String STR_LANGUAGE_RUSSIAN_ALTAIC_KALMYK_OIRAT = "Russian (Altaic, kalmyk-oirat)";
-	public static String STR_LANGUAGE_RUSSIAN_ALTAIC_KARACHAY_BALKAR = "Russian (Altaic, karachay-balkar)";
-	public static String STR_LANGUAGE_RUSSIAN_ALTAIC_KUMYK = "Russian (Altaic, kumyk)";
-	public static String STR_LANGUAGE_RUSSIAN_ALTAIC_NOGAI = "Russian (Altaic, nogai)";
-	public static String STR_LANGUAGE_RUSSIAN_ALTAIC_NORTH_AZERBAIJANI = "Russian (Altaic, north azerbaijani)";
-	public static String STR_LANGUAGE_RUSSIAN_INDO_EUROPEAN_RUSSIAN = "Russian (Indo-european, russian)";
-	public static String STR_LANGUAGE_RUSSIAN_INDO_EUROPEAN_KALMYK_OIRAT = "Russian (Indo-european, kalmyk-oirat)";
-	public static String STR_LANGUAGE_RUSSIAN_INDO_EUROPEAN_OSETIN = "Russian (Indo-european, osetin)";
-	public static String STR_LANGUAGE_RUSSIAN_NORTH_CAUCASIAN_ABAZA = "Russian (North caucasian, abaza)";
-	public static String STR_LANGUAGE_RUSSIAN_NORTH_CAUCASIAN_ADYGHE = "Russian (North caucasian, adyghe)";
-	public static String STR_LANGUAGE_RUSSIAN_NORTH_CAUCASIAN_CHECHEN = "Russian (North caucasian, chechen)";
-	public static String STR_LANGUAGE_RUSSIAN_NORTH_CAUCASIAN_KABARDIAN = "Russian (North caucasian, kabardian)";
-	public static String STR_LANGUAGE_RUSSIAN_NORTH_CAUCASIAN_LAK = "Russian (North caucasian, lak)";
-	public static String STR_LANGUAGE_RUSSIAN_NORTH_CAUCASIAN_AVAR = "Russian (North caucasian, avar)";
-	public static String STR_LANGUAGE_RUSSIAN_NORTH_CAUCASIAN_IN = "Russian (North caucasian, in)";
-	public static String STR_LANGUAGE_RUSSIAN_URALIC_CHUVASH = "Russian (Uralic, chuvash)";
-	public static String STR_LANGUAGE_RUSSIAN_URALIC_UDMURT = "Russian (Uralic, udmurt)";
-	public static String STR_LANGUAGE_SERBIAN = "Serbian";
-	public static String STR_LANGUAGE_SLOVAK = "Slovak";
-	public static String STR_LANGUAGE_SLOVENE = "Slovene";
-	public static String STR_LANGUAGE_SPANISH_CASTILLIAN = "Spanish, Castillian";
-	public static String STR_LANGUAGE_SWEDISH = "Swedish";
-	public static String STR_LANGUAGE_TURKISH = "Turkish";
-	public static String STR_LANGUAGE_UKRAINE = "Ukraine";
-	public static String STR_LANGUAGE_WELSH = "Welsh";
-	public static String STR_LANGUAGE_CORSICAN = "Corsican";
-
-	
 	// FossilStatus
 	public static int FOSSILSTATUS_RECENT_ONLY = 1;
 	public static int FOSSILSTATUS_FOSSIL_ONLY = 2;
 	public static int FOSSILSTATUS_RECENT_FOSSIL = 3;
+	public static String STR_FOSSIL_ONLY = "fossil only";  //still used for Index Fungorum
 	
-	public static String STR_RECENT_ONLY = "recent only";
-	public static String STR_FOSSIL_ONLY = "fossil only";
-	public static String STR_RECENT_FOSSIL = "recent + fossil";
-
 	// SourceUse
 	public static int ORIGINAL_DESCRIPTION = 1;
 	public static int BASIS_OF_RECORD = 2;
@@ -989,7 +912,9 @@ public final class PesiTransformer extends ExportTransformerBase implements IExp
 	private Map<Integer, String> taxRelQualifierCacheMap  = new HashMap<Integer, String>();
 	private Map<Integer, String> taxRelZooQualifierCacheMap  = new HashMap<Integer, String>();
 	private Map<Integer, String> sourceUseCacheMap  = new HashMap<Integer, String>();
-	
+	private Map<Integer, String> fossilStatusCacheMap  = new HashMap<Integer, String>();
+	private Map<Integer, String> typeDesigStatusCacheMap  = new HashMap<Integer, String>();
+	private Map<Integer, String> sourceCategoryCacheMap  = new HashMap<Integer, String>();
 	
 	private Source destination;
 	
@@ -1016,55 +941,32 @@ public final class PesiTransformer extends ExportTransformerBase implements IExp
 			}
 			
 			//languageCache
-			sql = " SELECT AreaId, AreaName FROM Area ";
-			rs = destination.getResultSet(sql);
-			while (rs.next()){
-				Integer key = rs.getInt("AreaId");
-				String cache = rs.getString("AreaName");
-				if (StringUtils.isNotBlank(cache)){
-					this.languageCacheMap.put(key, cache);
-				} 
-			}
+			fillSingleMap(languageCacheMap,"Area", "AreaName", "AreaId");
+
 			//feature / note category
-			sql = " SELECT NoteCategoryId, NoteCategory FROM NoteCategory ";
-			rs = destination.getResultSet(sql);
-			while (rs.next()){
-				Integer key = rs.getInt("NoteCategoryId");
-				String cache = rs.getString("NoteCategory");
-				if (StringUtils.isNotBlank(cache)){
-					this.featureCacheMap.put(key, cache);
-				} 
-			}
+			fillSingleMap(featureCacheMap,"NoteCategory");
+			
 			//nameStatusCache
-			sql = " SELECT NomStatusId, NomStatus FROM NameStatus ";
-			rs = destination.getResultSet(sql);
-			while (rs.next()){
-				Integer key = rs.getInt("NomStatusId");
-				String cache = rs.getString("NomStatus");
-				if (StringUtils.isNotBlank(cache)){
-					this.nameStatusCacheMap.put(key, cache);
-				} 
-			}
+			fillSingleMap(nameStatusCacheMap,"NameStatus", "NomStatus");
+
 			//qualityStatusCache
-			sql = " SELECT QualityStatusId,QualityStatus FROM QualityStatus ";
-			rs = destination.getResultSet(sql);
-			while (rs.next()){
-				Integer key = rs.getInt("QualityStatusId");
-				String cache = rs.getString("QualityStatus");
-				if (StringUtils.isNotBlank(cache)){
-					this.qualityStatusCacheMap.put(key, cache);
-				} 
-			}
+			fillSingleMap(qualityStatusCacheMap,"QualityStatus");
+
 			//taxonStatusCache
-			sql = " SELECT StatusId,Status FROM TaxonStatus ";
-			rs = destination.getResultSet(sql);
-			while (rs.next()){
-				Integer key = rs.getInt("StatusId");
-				String cache = rs.getString("Status");
-				if (StringUtils.isNotBlank(cache)){
-					this.taxonStatusCacheMap.put(key, cache);
-				} 
-			}
+			fillSingleMap(taxonStatusCacheMap,"TaxonStatus", "Status");
+			
+			//sourceUse
+			fillSingleMap(sourceUseCacheMap,"SourceUse");
+
+			//fossil status
+			fillSingleMap(fossilStatusCacheMap,"FossilStatus");
+			
+			//fossil status
+			fillSingleMap(typeDesigStatusCacheMap,"FossilStatus");
+			
+			//source category
+			fillSingleMap(sourceCategoryCacheMap,"SourceCategory", "Category", "SourceCategoryId");
+			
 			//RelTaxonQualifier
 			sql = " SELECT QualifierId, Qualifier, ZoologQualifier FROM RelTaxonQualifier ";
 			rs = destination.getResultSet(sql);
@@ -1079,24 +981,35 @@ public final class PesiTransformer extends ExportTransformerBase implements IExp
 					this.taxRelZooQualifierCacheMap.put(key, zoologCache);
 				}
 			}
-			//sourceUse
-			sql = " SELECT SourceUseId,SourceUse FROM SourceUse ";
-			rs = destination.getResultSet(sql);
-			while (rs.next()){
-				Integer key = rs.getInt("SourceUseId");
-				String cache = rs.getString("SourceUse");
-				if (StringUtils.isNotBlank(cache)){
-					this.sourceUseCacheMap.put(key, cache);
-				} 
-			}
-			
-			
 					
 		} catch (SQLException e) {
 			logger.error("SQLException when trying to read area map", e);
 			e.printStackTrace();
 		}
 		
+	}
+
+	private void fillSingleMap(Map<Integer, String> map, String tableName) throws SQLException {
+		fillSingleMap(map, tableName, tableName,  tableName + "Id");
+	}
+	
+	private void fillSingleMap(Map<Integer, String> map, String tableName, String attr) throws SQLException {
+			fillSingleMap(map, tableName, attr,  attr + "Id");
+	}
+	
+	private void fillSingleMap(Map<Integer, String> map, String tableName, String attr, String idAttr) throws SQLException {
+		String sql;
+		ResultSet rs;
+		sql = " SELECT %s, %s FROM %s ";
+		sql = String.format(sql, idAttr, attr, tableName);
+		rs = destination.getResultSet(sql);
+		while (rs.next()){
+			Integer key = rs.getInt(idAttr);
+			String cache = rs.getString(attr);
+			if (StringUtils.isNotBlank(cache)){
+				map.put(key, cache);
+			} 
+		}
 	}
 
 	/**
@@ -1443,142 +1356,6 @@ public final class PesiTransformer extends ExportTransformerBase implements IExp
 		}
 	}
 
-	/**
-	 * Returns the LanguageCache to a given Language.
-	 * @param language
-	 * @return
-	 */
-	public static String language2LanguageCache(Language language) {
-		if (language == null ) {
-			return null;
-		}
-		if (language.equals(Language.ALBANIAN())) {
-			return STR_LANGUAGE_ALBANIAN;
-		} else if (language.equals(Language.ARABIC())) {
-			return STR_LANGUAGE_ARABIC;
-		} else if (language.equals(Language.ARMENIAN())) {
-			return STR_LANGUAGE_ARMENIAN;
-		} else if (language.equals(Language.AZERBAIJANI())) {
-			return STR_LANGUAGE_AZERBAIJAN;
-		} else if (language.equals(Language.BELORUSSIAN())) {
-			return STR_LANGUAGE_BELARUSIAN;
-		} else if (language.equals(Language.BULGARIAN())) {
-			return STR_LANGUAGE_BULGARIAN;
-		} else if (language.equals(Language.CATALAN_VALENCIAN())) {
-			return STR_LANGUAGE_CATALAN;
-		} else if (language.equals(Language.CROATIAN())) {
-			return STR_LANGUAGE_CROAT;
-		} else if (language.equals(Language.CZECH())) {
-			return STR_LANGUAGE_CZECH;
-		} else if (language.equals(Language.DANISH())) {
-			return STR_LANGUAGE_DANISH;
-		} else if (language.equals(Language.DUTCH_MIDDLE())) {
-			return STR_LANGUAGE_DUTCH;
-		} else if (language.equals(Language.ENGLISH())) {
-			return STR_LANGUAGE_ENGLISH;
-//		} else if (language.equals(Language.)) {
-//			return STR_LANGUAGE_EUSKERA;
-		} else if (language.equals(Language.ESTONIAN())) {
-			return STR_LANGUAGE_ESTONIAN;
-		} else if (language.equals(Language.FINNISH())) {
-			return STR_LANGUAGE_FINNISH;
-		} else if (language.equals(Language.FRENCH())) {
-			return STR_LANGUAGE_FRENCH;
-		} else if (language.equals(Language.GEORGIAN())) {
-			return STR_LANGUAGE_GEORGIAN;
-		} else if (language.equals(Language.GERMAN())) {
-			return STR_LANGUAGE_GERMAN;
-		} else if (language.equals(Language.GREEK_MODERN())) {
-			return STR_LANGUAGE_GREEK;
-		} else if (language.equals(Language.HUNGARIAN())) {
-			return STR_LANGUAGE_HUNGARIAN;
-		} else if (language.equals(Language.ICELANDIC())) {
-			return STR_LANGUAGE_ICELANDIC;
-		} else if (language.equals(Language.IRISH())) {
-			return STR_LANGUAGE_IRISH_GAELIC;
-		} else if (language.equals(Language.HEBREW())) {
-			return STR_LANGUAGE_ISRAEL_HEBREW;
-		} else if (language.equals(Language.ITALIAN())) {
-			return STR_LANGUAGE_ITALIAN;
-		} else if (language.equals(Language.LATVIAN())) {
-			return STR_LANGUAGE_LATVIAN;
-		} else if (language.equals(Language.LITHUANIAN())) {
-			return STR_LANGUAGE_LITHUANIAN;
-		} else if (language.equals(Language.MACEDONIAN())) {
-			return STR_LANGUAGE_MACEDONIAN;
-		} else if (language.equals(Language.MALTESE())) {
-			return STR_LANGUAGE_MALTESE;
-		} else if (language.equals(Language.MOLDAVIAN())) {
-			return STR_LANGUAGE_MOLDOVIAN;
-		} else if (language.equals(Language.NORWEGIAN())) {
-			return STR_LANGUAGE_NORWEGIAN;
-		} else if (language.equals(Language.POLISH())) {
-			return STR_LANGUAGE_POLISH;
-		} else if (language.equals(Language.PORTUGUESE())) {
-			return STR_LANGUAGE_PORTUGUESE;
-		} else if (language.equals(Language.ROMANIAN())) {
-			return STR_LANGUAGE_ROUMANIAN;
-		} else if (language.equals(Language.RUSSIAN())) {
-			return STR_LANGUAGE_RUSSIAN;
-//		} else if (language.equals(Language.)) {
-//			return STR_LANGUAGE_RUSSIAN_CAUCASIAN;
-//		} else if (language.equals(Language.)) {
-//			return STR_LANGUAGE_RUSSIAN_ALTAIC_KALMYK_OIRAT;
-//		} else if (language.equals(Language.)) {
-//			return STR_LANGUAGE_RUSSIAN_ALTAIC_KARACHAY_BALKAR;
-//		} else if (language.equals(Language.)) {
-//			return STR_LANGUAGE_RUSSIAN_ALTAIC_KUMYK;
-//		} else if (language.equals(Language.)) {
-//			return STR_LANGUAGE_RUSSIAN_ALTAIC_NOGAI;
-//		} else if (language.equals(Language.)) {
-//			return STR_LANGUAGE_RUSSIAN_ALTAIC_NORTH_AZERBAIJANI;
-//		} else if (language.equals(Language.)) {
-//			return STR_LANGUAGE_RUSSIAN_INDO_EUROPEAN_RUSSIAN;
-//		} else if (language.equals(Language.)) {
-//			return STR_LANGUAGE_RUSSIAN_INDO_EUROPEAN_KALMYK_OIRAT;
-//		} else if (language.equals(Language.)) {
-//			return STR_LANGUAGE_RUSSIAN_INDO_EUROPEAN_OSETIN;
-//		} else if (language.equals(Language.)) {
-//			return STR_LANGUAGE_RUSSIAN_NORTH_CAUCASIAN_ABAZA;
-//		} else if (language.equals(Language.)) {
-//			return STR_LANGUAGE_RUSSIAN_NORTH_CAUCASIAN_ADYGHE;
-//		} else if (language.equals(Language.)) {
-//			return STR_LANGUAGE_RUSSIAN_NORTH_CAUCASIAN_CHECHEN;
-//		} else if (language.equals(Language.)) {
-//			return STR_LANGUAGE_RUSSIAN_NORTH_CAUCASIAN_KABARDIAN;
-//		} else if (language.equals(Language.)) {
-//			return STR_LANGUAGE_RUSSIAN_NORTH_CAUCASIAN_LAK;
-//		} else if (language.equals(Language.)) {
-//			return STR_LANGUAGE_RUSSIAN_NORTH_CAUCASIAN_AVAR;
-//		} else if (language.equals(Language.)) {
-//			return STR_LANGUAGE_RUSSIAN_NORTH_CAUCASIAN_IN;
-//		} else if (language.equals(Language.)) {
-//			return STR_LANGUAGE_RUSSIAN_URALIC_CHUVASH;
-//		} else if (language.equals(Language.)) {
-//			return STR_LANGUAGE_RUSSIAN_URALIC_UDMURT;
-		} else if (language.equals(Language.SERBIAN())) {
-			return STR_LANGUAGE_SERBIAN;
-		} else if (language.equals(Language.SLOVAK())) {
-			return STR_LANGUAGE_SLOVAK;
-		} else if (language.equals(Language.SLOVENIAN())) {
-			return STR_LANGUAGE_SLOVENE;
-		} else if (language.equals(Language.SPANISH_CATALAN())) {
-			return STR_LANGUAGE_SPANISH_CASTILLIAN;
-		} else if (language.equals(Language.SWEDISH())) {
-			return STR_LANGUAGE_SWEDISH;
-		} else if (language.equals(Language.TURKISH())) {
-			return STR_LANGUAGE_TURKISH;
-		} else if (language.equals(Language.UKRAINIAN())) {
-			return STR_LANGUAGE_UKRAINE;
-		} else if (language.equals(Language.WELSH())) {
-			return STR_LANGUAGE_WELSH;
-		} else if (language.equals(Language.CORSICAN())) {
-			return STR_LANGUAGE_CORSICAN;
-		} else {
-			logger.debug("Unknown Language: " + language.getTitleCache());
-			return null;
-		}
-	}
 	
 	/**
 	 * Returns the identifier of the given Language.
@@ -2491,40 +2268,11 @@ public final class PesiTransformer extends ExportTransformerBase implements IExp
 	 * @param reference The {@link Reference Reference}.
 	 * @return The {@link SourceCategoryCache SourceCategoryCache}.
 	 */
-	public static String getSourceCategoryCache(Reference<?> reference) {
+	public String getCacheByReference(Reference<?> reference) {
 		if (reference == null){
 			return null;
-		} else if (reference.getType().equals(ReferenceType.Article)) {
-			return REF_STR_ARTICLE_IN_PERIODICAL;
-		} else if (reference.getType().equals(ReferenceType.Book)) {
-			return REF_STR_BOOK;
-		} else if (reference.getType().equals(ReferenceType.BookSection)) {
-			return REF_STR_PART_OF_OTHER;
-		} else if (reference.getType().equals(ReferenceType.Database)) {
-			return REF_STR_DATABASE;
-		} else if (reference.getType().equals(ReferenceType.WebPage)) {
-			return REF_STR_WEBSITE;
-		} else if (reference.getType().equals(ReferenceType.CdDvd)) {
-			return REF_STR_NOT_APPLICABLE;
-		} else if (reference.getType().equals(ReferenceType.Journal)) {
-			return REF_STR_JOURNAL;
-		} else if (reference.getType().equals(ReferenceType.Generic)) {
-			return REF_STR_UNRESOLVED;
-		} else if (reference.getType().equals(ReferenceType.PrintSeries)) {
-			return REF_STR_PUBLISHED;
-		} else if (reference.getType().equals(ReferenceType.Proceedings)) {
-			return REF_STR_PUBLISHED;
-		} else if (reference.getType().equals(ReferenceType.Patent)) {
-			return REF_STR_NOT_APPLICABLE;
-		} else if (reference.getType().equals(ReferenceType.PersonalCommunication)) {
-			return REF_STR_INFORMAL;
-		} else if (reference.getType().equals(ReferenceType.Report)) {
-			return REF_STR_NOT_APPLICABLE;
-		} else if (reference.getType().equals(ReferenceType.Thesis)) {
-			return REF_STR_NOT_APPLICABLE;
-		} else {
-			logger.warn("Reference type not yet supported in PESI: "+ reference.getType());
-			return null;
+		}else{
+			return this.sourceCategoryCacheMap.get(reference2SourceCategoryFK(reference)); 
 		}
 	}
 

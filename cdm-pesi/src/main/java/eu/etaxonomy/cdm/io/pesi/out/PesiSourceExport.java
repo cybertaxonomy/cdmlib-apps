@@ -234,14 +234,8 @@ public class PesiSourceExport extends PesiExportBase {
 	 * @see MethodMapper
 	 */
 	@SuppressWarnings("unused")
-	private static String getSourceCategoryCache(Reference<?> reference) {
-		String result = null;
-		try {
-		result = PesiTransformer.getSourceCategoryCache(reference);
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-		return result;
+	private static String getSourceCategoryCache(Reference<?> reference, PesiExportState state) {
+		return state.getTransformer().getCacheByReference(reference);
 	}
 
 	/**
@@ -439,7 +433,7 @@ public class PesiSourceExport extends PesiExportBase {
 		}
 		
 		mapping.addMapper(MethodMapper.NewInstance("SourceCategoryFK", this));
-		mapping.addMapper(MethodMapper.NewInstance("SourceCategoryCache", this));
+		mapping.addMapper(MethodMapper.NewInstance("SourceCategoryCache", this, Reference.class, PesiExportState.class));
 		mapping.addMapper(MethodMapper.NewInstance("Name", this));
 		mapping.addMapper(DbStringMapper.NewInstance("referenceAbstract", "Abstract"));
 		mapping.addMapper(DbStringMapper.NewInstance("title", "Title"));

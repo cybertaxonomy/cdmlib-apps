@@ -623,12 +623,13 @@ public class PesiDescriptionExport extends PesiExportBase {
 	 * Returns the <code>LanguageCache</code> attribute.
 	 * @param descriptionElement The {@link DescriptionElementBase DescriptionElement}.
 	 * @return The <code>LanguageCache</code> attribute.
+	 * @throws UndefinedTransformerMethodException 
 	 * @see MethodMapper
 	 */
 	@SuppressWarnings("unused")
-	private static String getLanguageCache(DescriptionElementBase descriptionElement) {
+	private static String getLanguageCache(DescriptionElementBase descriptionElement, PesiExportState state) throws UndefinedTransformerMethodException {
 		Language language = getLanguage(descriptionElement);
-		return PesiTransformer.language2LanguageCache(language);
+		return state.getTransformer().getCacheByLanguage(language);
 	}
 
 	private static Language getLanguage(DescriptionElementBase descriptionElement) {
@@ -638,19 +639,15 @@ public class PesiDescriptionExport extends PesiExportBase {
 		if (descriptionElement.isInstanceOf(CommonTaxonName.class)) {
 			CommonTaxonName commonTaxonName = CdmBase.deproxy(descriptionElement, CommonTaxonName.class);
 			language = commonTaxonName.getLanguage();
-			commonTaxonName = null;
 		} else if (descriptionElement.isInstanceOf(TextData.class)) {
 			TextData textData = CdmBase.deproxy(descriptionElement, TextData.class);
 			multilanguageText = textData.getMultilanguageText();
-			textData = null;
 		} else if (descriptionElement.isInstanceOf(IndividualsAssociation.class)) {
 			IndividualsAssociation individualsAssociation = CdmBase.deproxy(descriptionElement, IndividualsAssociation.class);
 			multilanguageText = individualsAssociation.getDescription();
-			individualsAssociation = null;
 		} else if (descriptionElement.isInstanceOf(TaxonInteraction.class)) {
 			TaxonInteraction taxonInteraction = CdmBase.deproxy(descriptionElement, TaxonInteraction.class);
 			multilanguageText = taxonInteraction.getDescriptions();
-			taxonInteraction = null;
 		} else {
 			logger.debug("Given descriptionElement does not support languages. Hence LanguageCache could not be determined: " + descriptionElement.getUuid());
 		}
@@ -753,11 +750,7 @@ public class PesiDescriptionExport extends PesiExportBase {
 		
 		mapping.addMapper(MethodMapper.NewInstance("NoteCategoryCache", this));
 		mapping.addMapper(MethodMapper.NewInstance("LanguageFk", this));
-		mapping.addMapper(MethodMapper.NewInstance("LanguageCache", this));
-		
-//		mapping.addMapper(DbLanguageMapper.NewInstance(CommonTaxonName.class, "Language", "LanguageFk", ! IS_CACHE));
-//		mapping.addMapper(DbLanguageMapper.NewInstance(CommonTaxonName.class, "Language", "LanguageCache", IS_CACHE));
-		
+		mapping.addMapper(MethodMapper.NewInstance("LanguageCache", this, DescriptionElementBase.class, PesiExportState.class));
 		
 //		mapping.addMapper(MethodMapper.NewInstance("Region", this));
 		mapping.addMapper(DbDescriptionElementTaxonMapper.NewInstance("taxonFk"));

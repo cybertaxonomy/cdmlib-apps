@@ -402,13 +402,13 @@ public class PesiNoteExport extends PesiExportBase {
 	 * Returns the <code>LanguageCache</code> attribute.
 	 * @param descriptionElement The {@link DescriptionElementBase DescriptionElement}.
 	 * @return The <code>LanguageCache</code> attribute.
+	 * @throws UndefinedTransformerMethodException 
 	 * @see MethodMapper
 	 */
 	@SuppressWarnings("unused")
-	private static String getLanguageCache(DescriptionElementBase descriptionElement) {
+	private static String getLanguageCache(DescriptionElementBase descriptionElement, PesiExportState state) throws UndefinedTransformerMethodException {
 		Language language = getLanguage(descriptionElement);
-
-		return PesiTransformer.language2LanguageCache(language);
+		return state.getTransformer().getCacheByLanguage(language);
 	}
 
 	private static Language getLanguage(DescriptionElementBase descriptionElement) {
