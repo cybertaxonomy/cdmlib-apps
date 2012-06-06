@@ -209,23 +209,23 @@ public abstract class PesiExportBase extends DbExportBase<PesiExportConfigurator
 	}
 
 	protected boolean isPesiTaxonOrSynonymRelationship(RelationshipBase rel){
-		TaxonBase<?> taxonBase;
-		Taxon taxon;
+		TaxonBase<?> fromTaxon;
+		Taxon toTaxon;
 		if (rel.isInstanceOf(SynonymRelationship.class)){
 			SynonymRelationship synRel = CdmBase.deproxy(rel, SynonymRelationship.class);
-			taxonBase = synRel.getSynonym();
-			taxon = synRel.getAcceptedTaxon();
+			fromTaxon = synRel.getSynonym();
+			toTaxon = synRel.getAcceptedTaxon();
 			synRel = null;
 		}else if (rel.isInstanceOf(TaxonRelationship.class)){
 			TaxonRelationship taxRel = CdmBase.deproxy(rel, TaxonRelationship.class);
-			taxonBase = taxRel.getFromTaxon();
-			taxon = taxRel.getToTaxon();
+			fromTaxon = taxRel.getFromTaxon();
+			toTaxon = taxRel.getToTaxon();
 			taxRel = null;
 		}else{
-			logger.warn ("Only synonym - and taxon-relationships alowed here");
+			logger.warn ("Only synonym - and taxon-relationships allowed here");
 			return false;
 		}
-		return (isPesiTaxon(taxonBase, true) && isPesiTaxon(taxon, true));
+		return (isPesiTaxon(fromTaxon, false) && isPesiTaxon(toTaxon, true));
 		
 	}
 
