@@ -296,7 +296,11 @@ public class PesiDescriptionExport extends PesiExportBase {
 					success &= imageMapping.invoke(element);
 				}else if (isCommonName(element)){
 					countCommonName++;
-					success &= vernacularMapping.invoke(element);
+					if (element.isInstanceOf(TextData.class)){
+						//
+					}else{
+						success &= vernacularMapping.invoke(element);
+					}
 				}else if (isOccurrence(element)){
 					countOccurrence++;
 					Distribution distribution = CdmBase.deproxy(element, Distribution.class);
