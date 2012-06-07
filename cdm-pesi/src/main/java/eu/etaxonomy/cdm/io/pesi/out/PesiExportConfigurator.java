@@ -41,6 +41,7 @@ public class PesiExportConfigurator extends DbExportConfiguratorBase<PesiExportS
 	private boolean doOccurrenceSource = true;
 	private boolean doImages = true;
 	private boolean doTreeIndex = true;
+	private boolean doParentAndBiota = true;
 	private boolean doInferredSynonyms = true;
 	private boolean doRank = true;
 	private boolean doPureNames = true;
@@ -237,6 +238,14 @@ public class PesiExportConfigurator extends DbExportConfiguratorBase<PesiExportS
 
 	public void setDoDescription(boolean doDescription) {
 		this.doDescription = doDescription;
+	}
+
+	public boolean isDoParentAndBiota() {
+		return doParentAndBiota;
+	}
+
+	public void setDoParentAndBiota(boolean doParentAndBiota) {
+		this.doParentAndBiota = doParentAndBiota;
 	}
 
 
