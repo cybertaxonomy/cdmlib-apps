@@ -351,7 +351,7 @@ public class PesiDescriptionExport extends PesiExportBase {
 	}
 
 	private boolean isExcludedNote(DescriptionElementBase element) {
-		int categoryFk = PesiTransformer.feature2NoteCategoryFk(element.getFeature());
+		Integer categoryFk = PesiTransformer.feature2NoteCategoryFk(element.getFeature());
 		//TODO decide where to handle them best (configurator, transformer, single method, ...)
 		return (excludedNoteCategories.contains(categoryFk));
 	}
