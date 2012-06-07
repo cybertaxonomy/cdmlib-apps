@@ -20,6 +20,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import javax.persistence.ExcludeDefaultListeners;
+
 import org.apache.log4j.Logger;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.TransactionStatus;
@@ -93,6 +95,10 @@ public class PesiDescriptionExport extends PesiExportBase {
 	private static final String pluralString = "attached infos";
 	private static final String parentPluralString = "Taxa";
 
+	//decide where to handle them best (configurator, transformer, single method, ...)
+	private static Set<Integer> excludedNoteCategories = new HashSet<Integer>(Arrays.asList(new Integer[]{250,251,252,253,10,11}));
+
+	
 	//debugging
 	private static int countDescriptions;
 	private static int countTaxa;
@@ -325,9 +331,12 @@ public class PesiDescriptionExport extends PesiExportBase {
 			}else if (isAdditionalTaxonSource(element)){
 				countAdditionalSources++;
 //					success &= addittionalSourceMapping.invoke(element);
+			}else if (isExcludedNote(element)){
+				//do nothing
 			}else if (isPesiNote(element)){
 				countNotes++;
 				success &= notesMapping.invoke(element);
+			
 			}else{
 				countOthers++;
 				String featureTitle = element.getFeature() == null ? "no feature" :element.getFeature().getTitleCache();
@@ -339,6 +348,12 @@ public class PesiDescriptionExport extends PesiExportBase {
 			e.printStackTrace();
 			return false;
 		}
+	}
+
+	private boolean isExcludedNote(DescriptionElementBase element) {
+		int categoryFk = PesiTransformer.feature2NoteCategoryFk(element.getFeature());
+		//TODO decide where to handle them best (configurator, transformer, single method, ...)
+		return (excludedNoteCategories.contains(categoryFk));
 	}
 
 	private boolean isPesiDistribution(PesiExportState state, Distribution distribution) {
@@ -611,6 +626,10 @@ public class PesiDescriptionExport extends PesiExportBase {
 	private static Integer getNoteCategoryFk(DescriptionElementBase descriptionElement) {
 		Integer result = null;
 		result = PesiTransformer.feature2NoteCategoryFk(descriptionElement.getFeature());
+		//TODO decide where to handle them best (configurator, transformer, single method, ...)
+		if (excludedNoteCategories.contains(result)){
+			result = null;
+		}
 		return result;
 	}
 	
