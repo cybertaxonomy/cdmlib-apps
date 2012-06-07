@@ -289,40 +289,56 @@ public class PesiDescriptionExport extends PesiExportBase {
 
 			boolean isImageGallery = desc.isImageGallery();
 			for (DescriptionElementBase element : desc.getElements()){
-				if (isImageGallery){
-					//TODO handle Images
-					countImages++;
-					success &= imageMapping.invoke(element);
-				}else if (isCommonName(element)){
-					countCommonName++;
-					if (element.isInstanceOf(TextData.class)){
-						//
-					}else{
-						success &= vernacularMapping.invoke(element);
-					}
-				}else if (isOccurrence(element)){
-					countOccurrence++;
-					Distribution distribution = CdmBase.deproxy(element, Distribution.class);
-					MarkerType markerType = getUuidMarkerType(PesiTransformer.uuidMarkerTypeHasNoLastAction, state);
-					
-					distribution.addMarker(Marker.NewInstance(markerType, true));
-					if (isPesiDistribution(state, distribution)){
-						countDistribution++;
-						success &=occurrenceMapping.invoke(element);
-					}
-				}else if (isAdditionalTaxonSource(element)){
-					countAdditionalSources++;
-//					success &= addittionalSourceMapping.invoke(element);
-				}else if (isPesiNote(element)){
-					countNotes++;
-					success &= notesMapping.invoke(element);
-				}else{
-					countOthers++;
-					logger.warn("Description element type not yet handled by PESI export: " + element.getUuid() + ", " +  element.getClass() + ", " +  element.getFeature().getTitleCache());
-				}
+				success &= handleDescriptionElement(state, notesMapping, occurrenceMapping, vernacularMapping, imageMapping,
+						isImageGallery, element);
 			}
 		}
 		return success;
+	}
+
+	private boolean handleDescriptionElement(PesiExportState state, PesiExportMapping notesMapping,
+			PesiExportMapping occurrenceMapping, PesiExportMapping vernacularMapping, PesiExportMapping imageMapping, 
+			boolean isImageGallery, DescriptionElementBase element) throws SQLException {
+		try {
+			boolean success = true;
+			if (isImageGallery){
+				//TODO handle Images
+				countImages++;
+				success &= imageMapping.invoke(element);
+			}else if (isCommonName(element)){
+				countCommonName++;
+				if (element.isInstanceOf(TextData.class)){
+					//
+				}else{
+					success &= vernacularMapping.invoke(element);
+				}
+			}else if (isOccurrence(element)){
+				countOccurrence++;
+				Distribution distribution = CdmBase.deproxy(element, Distribution.class);
+				MarkerType markerType = getUuidMarkerType(PesiTransformer.uuidMarkerTypeHasNoLastAction, state);
+				
+				distribution.addMarker(Marker.NewInstance(markerType, true));
+				if (isPesiDistribution(state, distribution)){
+					countDistribution++;
+					success &=occurrenceMapping.invoke(element);
+				}
+			}else if (isAdditionalTaxonSource(element)){
+				countAdditionalSources++;
+//					success &= addittionalSourceMapping.invoke(element);
+			}else if (isPesiNote(element)){
+				countNotes++;
+				success &= notesMapping.invoke(element);
+			}else{
+				countOthers++;
+				String featureTitle = element.getFeature() == null ? "no feature" :element.getFeature().getTitleCache();
+				logger.warn("Description element type not yet handled by PESI export: " + element.getUuid() + ", " +  element.getClass() + ", " +  featureTitle);
+			}
+			return success;
+		} catch (Exception e) {
+			logger.warn("Exception appeared in description element handling: " + e);
+			e.printStackTrace();
+			return false;
+		}
 	}
 
 	private boolean isPesiDistribution(PesiExportState state, Distribution distribution) {
@@ -388,11 +404,17 @@ public class PesiDescriptionExport extends PesiExportBase {
 
 	private boolean isAdditionalTaxonSource(DescriptionElementBase element) {
 		Feature feature = element.getFeature();
+		if (feature == null){
+			return false;
+		}
 		return (feature.equals(Feature.CITATION()));
 	}
 
 	private boolean isOccurrence(DescriptionElementBase element) {
 		Feature feature = element.getFeature();
+		if (feature == null){
+			return false;
+		}
 		if (feature.equals(Feature.DISTRIBUTION())){
 			return true;
 		}else if (element.isInstanceOf(Distribution.class)){
@@ -405,6 +427,9 @@ public class PesiDescriptionExport extends PesiExportBase {
 
 	private boolean isCommonName(DescriptionElementBase element) {
 		Feature feature = element.getFeature();
+		if (feature == null){
+			return false;
+		}
 		return (feature.equals(Feature.COMMON_NAME()));
 	}
 
