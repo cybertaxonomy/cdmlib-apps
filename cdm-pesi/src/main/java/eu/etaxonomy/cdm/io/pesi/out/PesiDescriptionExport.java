@@ -859,7 +859,6 @@ public class PesiDescriptionExport extends PesiExportBase {
 		
 		mapping.addMapper(MethodMapper.NewInstance("TaxonFk", this, DescriptionElementBase.class, PesiExportState.class));
 		
-		
 		mapping.addMapper(DbSingleSourceMapper.NewInstance("SourceFk", of (DbSingleSourceMapper.EXCLUDE.WITH_ID) , ! IS_CACHE));
 		mapping.addMapper(DbSingleSourceMapper.NewInstance("SourceNameCache", of(DbSingleSourceMapper.EXCLUDE.WITH_ID) , ! IS_CACHE));
 		
