@@ -746,9 +746,9 @@ public class PesiDescriptionExport extends PesiExportBase {
 		mapping.addMapper(DbTextDataMapper.NewInstance(Language.ENGLISH(), "Note_1"));
 		//TODO
 		mapping.addMapper(DbExportNotYetImplementedMapper.NewInstance("Note_2", "Need to research what Note_2 is for"));
-		mapping.addMapper(MethodMapper.NewInstance("NoteCategoryFk", this, DescriptionElementBase.class , PesiExportState.class));
+		mapping.addMapper(MethodMapper.NewInstance("NoteCategoryFk", this, DescriptionElementBase.class ));
 		
-		mapping.addMapper(MethodMapper.NewInstance("NoteCategoryCache", this));
+		mapping.addMapper(MethodMapper.NewInstance("NoteCategoryCache", this, DescriptionElementBase.class, PesiExportState.class ));
 		mapping.addMapper(MethodMapper.NewInstance("LanguageFk", this));
 		mapping.addMapper(MethodMapper.NewInstance("LanguageCache", this, DescriptionElementBase.class, PesiExportState.class));
 		
