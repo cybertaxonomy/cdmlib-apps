@@ -412,10 +412,7 @@ public class PesiDescriptionExport extends PesiExportBase {
 
 	private boolean isOccurrence(DescriptionElementBase element) {
 		Feature feature = element.getFeature();
-		if (feature == null){
-			return false;
-		}
-		if (feature.equals(Feature.DISTRIBUTION())){
+		if (feature != null && feature.equals(Feature.DISTRIBUTION())){
 			return true;
 		}else if (element.isInstanceOf(Distribution.class)){
 			logger.warn("Description element has class 'Distribution' but has no feature 'Distribution'");
