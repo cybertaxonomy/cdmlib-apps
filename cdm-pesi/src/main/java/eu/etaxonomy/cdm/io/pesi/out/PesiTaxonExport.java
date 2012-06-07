@@ -438,14 +438,20 @@ public class PesiTaxonExport extends PesiExportBase {
 	private boolean doPhase02(PesiExportState state) {
 		int count = 0;
 		int pastCount = 0;
-		List<Taxon> list;
 		boolean success = true;
+		if (! state.getConfig().isDoParentAndBiota()){
+			logger.info ("Ignore PHASE 2: Make ParentFk and Biota...");
+			return success;
+		}
+		
+		List<Taxon> list;
+		
 		// Get the limit for objects to save within a single transaction.
 		int limit = state.getConfig().getLimitSave();
-
+		
 		insertBiota(state);
 		
-		logger.info("PHASE 2: Make ParentFk and TreeIndex ... limit is " + limit);
+		logger.info("PHASE 2: Make ParentFk and Biota ... limit is " + limit);
 		// Start transaction
 		TransactionStatus txStatus = startTransaction(true);
 		int partitionCount = 0;
