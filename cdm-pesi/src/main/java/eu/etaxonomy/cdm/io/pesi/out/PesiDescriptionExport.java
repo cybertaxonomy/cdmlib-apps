@@ -20,8 +20,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import javax.persistence.ExcludeDefaultListeners;
-
 import org.apache.log4j.Logger;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.TransactionStatus;
@@ -46,7 +44,6 @@ import eu.etaxonomy.cdm.io.common.mapping.out.DbTextDataMapper;
 import eu.etaxonomy.cdm.io.common.mapping.out.IdMapper;
 import eu.etaxonomy.cdm.io.common.mapping.out.MethodMapper;
 import eu.etaxonomy.cdm.io.profiler.ProfilerController;
-//import eu.etaxonomy.cdm.io.profiler.ProfilerController;
 import eu.etaxonomy.cdm.model.common.CdmBase;
 import eu.etaxonomy.cdm.model.common.Extension;
 import eu.etaxonomy.cdm.model.common.ExtensionType;
@@ -67,7 +64,6 @@ import eu.etaxonomy.cdm.model.location.NamedArea;
 import eu.etaxonomy.cdm.model.location.TdwgArea;
 import eu.etaxonomy.cdm.model.name.NonViralName;
 import eu.etaxonomy.cdm.model.name.TaxonNameBase;
-
 import eu.etaxonomy.cdm.model.taxon.Taxon;
 import eu.etaxonomy.cdm.model.taxon.TaxonBase;
 /**
@@ -96,7 +92,7 @@ public class PesiDescriptionExport extends PesiExportBase {
 	private static final String parentPluralString = "Taxa";
 
 	//decide where to handle them best (configurator, transformer, single method, ...)
-	private static Set<Integer> excludedNoteCategories = new HashSet<Integer>(Arrays.asList(new Integer[]{250,251,252,253,10,11}));
+	private static Set<Integer> excludedNoteCategories = new HashSet<Integer>(Arrays.asList(new Integer[]{250,251,252,253,10,11,13}));
 
 	
 	//debugging

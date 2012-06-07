@@ -817,10 +817,9 @@ public final class PesiTransformer extends ExportTransformerBase implements IExp
 				}
 				
 			}
-
 			
 			//languageCache
-			fillSingleMap(languageCacheMap,"Area", "AreaName", "AreaId");
+			fillSingleMap(languageCacheMap,"Language");
 
 			//feature / note category
 			fillSingleMap(featureCacheMap,"NoteCategory");
