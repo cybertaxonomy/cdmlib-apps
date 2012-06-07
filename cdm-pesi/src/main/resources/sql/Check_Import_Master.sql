@@ -306,113 +306,6 @@ BEGIN
 	ISNULL(bm_t.TaxonStatusCache, '') <> ISNULL(cdm_t.TaxonStatusCache, '')
 	*/
 
--- Parents
-	SELECT @n_bm = COUNT(*) FROM [EM2PESI].[DBO].TAXON WHERE ParentTaxonFk IS NOT NULL
-	SELECT @n_cdm = COUNT(*) FROM [CDM_EM2PESI].[DBO].TAXON WHERE ParentTaxonFk IS NOT NULL
-	SET @n = @n_bm - @n_cdm
-
-	SET @str_n_bm = Cast(@n_bm AS NVARCHAR)
-	SET @str_n_cdm = Cast(@n_cdm AS NVARCHAR)
-	SET @str_n = Cast(@n AS NVARCHAR)
-
-	IF @n = 0 BEGIN
-		PRINT ('Both databases have the same number of taxa which have a parent = ' + @str_n_bm)
-	END ELSE PRINT ('WARNING: Both databases DO NOT have the same number of taxa that have a parent, n_bm = ' + @str_n_bm + ' and n_cdm = '+ @str_n_cdm)
-
-		SELECT @n = COUNT(*) -- in both databases parents exist but are different
-			FROM [EM2PESI].[DBO].TAXON bm_t INNER JOIN
-			[CDM_EM2PESI].[DBO].TAXON cdm_t
-			ON bm_t.IdInSource = cdm_t.IdInSource AND ISNULL(bm_t.GUID, '') = ISNULL(cdm_t.GUID, '') INNER JOIN
-			[EM2PESI].[DBO].TAXON bm_pt ON bm_t.ParentTaxonFk = bm_pt.TaxonId INNER JOIN
-			[CDM_EM2PESI].[DBO].TAXON cdm_pt ON cdm_t.ParentTaxonFk = cdm_pt.TaxonId
-			WHERE bm_pt.IdInSource <> cdm_pt.IdInSource OR ISNULL(bm_pt.GUID, '') <> ISNULL(cdm_pt.GUID, '')
-		SET @str_n = Cast(@n AS NVARCHAR)
-		IF @n = 0 BEGIN
-			PRINT ('All identical taxa that have parents have the same parent')
-		END ELSE PRINT ('WARNING: ' + @str_n + ' identical taxa have different parents')
-	/*
-		SELECT  cdm_t.FullName as Child_CDM, cdm_pt.Fullname as Parent_CDM_EM2PESI, bm_t.FullName as child_sql,  bm_pt.Fullname as Parent_EM2PESI
-		FROM [EM2PESI].[DBO].TAXON bm_t INNER JOIN
-			[CDM_EM2PESI].[DBO].TAXON cdm_t ON bm_t.IdInSource = cdm_t.IdInSource AND ISNULL(bm_t.GUID, '') = ISNULL(cdm_t.GUID, '') INNER JOIN
-			[EM2PESI].[DBO].TAXON bm_pt ON bm_t.ParentTaxonFk = bm_pt.TaxonId INNER JOIN
-		[	CDM_EM2PESI].[DBO].TAXON cdm_pt ON cdm_t.ParentTaxonFk = cdm_pt.TaxonId
-		WHERE bm_pt.IdInSource <> cdm_pt.IdInSource OR ISNULL(bm_pt.GUID, '') <> ISNULL(cdm_pt.GUID, '')
-	*/
-		SELECT @n_bm = COUNT(*) -- taxa with parent only in EM2PESI
-			FROM [EM2PESI].[DBO].TAXON bm_t INNER JOIN
-			[CDM_EM2PESI].[DBO].TAXON cdm_t
-			ON bm_t.IdInSource = cdm_t.IdInSource AND ISNULL(bm_t.GUID, '') = ISNULL(cdm_t.GUID, '') INNER JOIN
-			[EM2PESI].[DBO].TAXON bm_pt ON bm_t.ParentTaxonFk = bm_pt.TaxonId
-			WHERE NOT EXISTS
-				(SELECT * FROM [CDM_EM2PESI].[DBO].TAXON
-				WHERE IdInSource = bm_pt.IdInSource AND ISNULL(GUID, '') = ISNULL(bm_pt.GUID, ''))
-		SET @str_n_bm = Cast(@n_bm AS NVARCHAR)
-		IF @n_bm > 0 BEGIN 
-			PRINT ('WARNING: ' + @str_n_bm + ' identical taxa have parents in EM2PESI but not in CDM_EM2PESI')
-		END ELSE PRINT ('All identical taxa that have parents in EM2PESI do have parents in CDM_EM2PESI')
-
-	/*
-		SELECT cdm_t.Fullname ChildName, bm_pt.Fullname as Parent_EM2PESI, 'in EM2PESI but not in CDM_EM2PESI'
-		FROM [EM2PESI].[DBO].TAXON bm_t 
-			INNER JOIN [EM2PESI].[DBO].TAXON bm_pt ON bm_t.ParentTaxonFk = bm_pt.TaxonId
-			INNER JOIN [CDM_EM2PESI].[DBO].TAXON cdm_t ON ISNULL(bm_t.GUID, '') = ISNULL(cdm_t.GUID, '') 
-		
-		WHERE cdm_t.ParentTaxonFk  IS NULL AND NOT EXISTS 
-		(SELECT * FROM [CDM_EM2PESI].[DBO].TAXON cdm_pt
-		WHERE (cdm_pt.IdInSource = bm_pt.IdInSource OR cdm_pt.IdInSource IS NULL AND bm_pt.IdInSource IS NULL) 
-				AND ISNULL(cdm_pt.GUID, '') = ISNULL(bm_pt.GUID, '')
-				AND cdm_t.ParentTaxonFk = cdm_pt.TaxonId)
-		ORDER BY cdm_t.Fullname
-
-	*/
-		SELECT @n_cdm = COUNT(*) -- taxa with parent only in CDM_EM2PESI
-			FROM [EM2PESI].[DBO].TAXON bm_t INNER JOIN
-			[CDM_EM2PESI].[DBO].TAXON cdm_t
-			ON bm_t.IdInSource = cdm_t.IdInSource AND ISNULL(bm_t.GUID, '') = ISNULL(cdm_t.GUID, '') INNER JOIN
-			[CDM_EM2PESI].[DBO].TAXON cdm_pt ON cdm_t.ParentTaxonFk = cdm_pt.TaxonId
-			WHERE NOT EXISTS
-				(SELECT * FROM [EM2PESI].[DBO].TAXON
-				WHERE IdInSource = cdm_pt.IdInSource AND ISNULL(GUID, '') = ISNULL(cdm_pt.GUID, ''))
-		SET @str_n_cdm = Cast(@n_cdm AS NVARCHAR)
-		IF @n_cdm > 0 BEGIN 
-			PRINT ('WARNING: ' + @str_n_cdm + ' identical taxa have parents in CDM_EM2PESI but not in EM2PESI')
-		END ELSE PRINT('All identical taxa that have parents in CDM_EM2PESI do have parents in EM2PESI')
-		
-	/*
-		SELECT bm_t.Fullname ChildName, cdm_pt.Fullname as Parent_CDM, 'in CDM_EM2PESI but not in EM2PESI'
-		FROM [CDM_EM2PESI].[DBO].TAXON cdm_t 
-			INNER JOIN [CDM_EM2PESI].[DBO].TAXON cdm_pt ON cdm_t.ParentTaxonFk = cdm_pt.TaxonId
-			INNER JOIN [EM2PESI].[DBO].TAXON bm_t ON ISNULL(cdm_t.GUID, '') = ISNULL(bm_t.GUID, '') 
-		
-		WHERE bm_t.ParentTaxonFk  IS NULL AND NOT EXISTS 
-		(SELECT * FROM [EM2PESI].[DBO].TAXON bm_pt
-		WHERE (bm_pt.IdInSource = cdm_pt.IdInSource OR bm_pt.IdInSource IS NULL AND cdm_pt.IdInSource IS NULL) 
-				AND ISNULL(bm_pt.GUID, '') = ISNULL(cdm_pt.GUID, '')
-				AND bm_t.ParentTaxonFk = bm_pt.TaxonId)
-		ORDER BY bm_t.Fullname
-	*/
-		IF @n = 0 AND @n_cdm = 0 AND @n_bm = 0 BEGIN
-			PRINT ('All identical taxa have the same parent')
-		END
-
--- TreeIndex
-/* This is not checked. This field should be created by the PESI-Procedure recalculateallstoredpaths.
-	Actually checking the parents of the same taxa is enough to ensure the compatibility of the taxonomical tree as a whole.
-	See the Parent section
-*/
-	SELECT @n_bm = COUNT(*) FROM [EM2PESI].[DBO].TAXON WHERE TreeIndex IS NOT NULL
-	SELECT @n_cdm = COUNT(*) FROM [CDM_EM2PESI].[DBO].TAXON WHERE TreeIndex IS NOT NULL
-	SET @n = @n_bm - @n_cdm
-
-	SET @str_n_bm = Cast(@n_bm AS NVARCHAR)
-	SET @str_n_cdm = Cast(@n_cdm AS NVARCHAR)
-	SET @str_n = Cast(@n AS NVARCHAR)
-
-	IF @n = 0 BEGIN
-		PRINT ('Both databases have the same number of taxa which have a tree index = ' + @str_n_bm)
-	END ELSE PRINT ('WARNING: Both databases DO NOT have the same number of taxa that have a tree index, n_bm = ' + @str_n_bm + ' and n_cdm = '+ @str_n_cdm)
-
-
 -- Types
 	SELECT @n_bm = COUNT(*) FROM [EM2PESI].[DBO].TAXON WHERE TypeNameFk IS NOT NULL
 	SELECT @n_cdm = COUNT(*) FROM [CDM_EM2PESI].[DBO].TAXON WHERE TypeNameFk IS NOT NULL
@@ -590,6 +483,117 @@ BEGIN
 	convert(smalldatetime, ISNULL(cdm_t.LastActionDate, '00:00:00'))
 	*/
 
+
+	
+-- Parents
+
+	PRINT ' '
+	PRINT 'PARENTS'
+	SELECT @n_bm = COUNT(*) FROM [EM2PESI].[DBO].TAXON WHERE ParentTaxonFk IS NOT NULL
+	SELECT @n_cdm = COUNT(*) FROM [CDM_EM2PESI].[DBO].TAXON WHERE ParentTaxonFk IS NOT NULL
+	SET @n = @n_bm - @n_cdm
+
+	SET @str_n_bm = Cast(@n_bm AS NVARCHAR)
+	SET @str_n_cdm = Cast(@n_cdm AS NVARCHAR)
+	SET @str_n = Cast(@n AS NVARCHAR)
+
+	IF @n = 0 BEGIN
+		PRINT ('Both databases have the same number of taxa which have a parent = ' + @str_n_bm)
+	END ELSE PRINT ('WARNING: Both databases DO NOT have the same number of taxa that have a parent, n_bm = ' + @str_n_bm + ' and n_cdm = '+ @str_n_cdm)
+
+		SELECT @n = COUNT(*) -- in both databases parents exist but are different
+			FROM [EM2PESI].[DBO].TAXON bm_t INNER JOIN
+			[CDM_EM2PESI].[DBO].TAXON cdm_t
+			ON bm_t.IdInSource = cdm_t.IdInSource AND ISNULL(bm_t.GUID, '') = ISNULL(cdm_t.GUID, '') INNER JOIN
+			[EM2PESI].[DBO].TAXON bm_pt ON bm_t.ParentTaxonFk = bm_pt.TaxonId INNER JOIN
+			[CDM_EM2PESI].[DBO].TAXON cdm_pt ON cdm_t.ParentTaxonFk = cdm_pt.TaxonId
+			WHERE bm_pt.IdInSource <> cdm_pt.IdInSource OR ISNULL(bm_pt.GUID, '') <> ISNULL(cdm_pt.GUID, '')
+		SET @str_n = Cast(@n AS NVARCHAR)
+		IF @n = 0 BEGIN
+			PRINT ('All identical taxa that have parents have the same parent')
+		END ELSE PRINT ('WARNING: ' + @str_n + ' identical taxa have different parents')
+	/*
+		SELECT  cdm_t.FullName as Child_CDM, cdm_pt.Fullname as Parent_CDM_EM2PESI, bm_t.FullName as child_sql,  bm_pt.Fullname as Parent_EM2PESI
+		FROM [EM2PESI].[DBO].TAXON bm_t INNER JOIN
+			[CDM_EM2PESI].[DBO].TAXON cdm_t ON bm_t.IdInSource = cdm_t.IdInSource AND ISNULL(bm_t.GUID, '') = ISNULL(cdm_t.GUID, '') INNER JOIN
+			[EM2PESI].[DBO].TAXON bm_pt ON bm_t.ParentTaxonFk = bm_pt.TaxonId INNER JOIN
+		[	CDM_EM2PESI].[DBO].TAXON cdm_pt ON cdm_t.ParentTaxonFk = cdm_pt.TaxonId
+		WHERE bm_pt.IdInSource <> cdm_pt.IdInSource OR ISNULL(bm_pt.GUID, '') <> ISNULL(cdm_pt.GUID, '')
+	*/
+		SELECT @n_bm = COUNT(*) -- taxa with parent only in EM2PESI
+			FROM [EM2PESI].[DBO].TAXON bm_t INNER JOIN
+			[CDM_EM2PESI].[DBO].TAXON cdm_t
+			ON bm_t.IdInSource = cdm_t.IdInSource AND ISNULL(bm_t.GUID, '') = ISNULL(cdm_t.GUID, '') INNER JOIN
+			[EM2PESI].[DBO].TAXON bm_pt ON bm_t.ParentTaxonFk = bm_pt.TaxonId
+			WHERE NOT EXISTS
+				(SELECT * FROM [CDM_EM2PESI].[DBO].TAXON
+				WHERE IdInSource = bm_pt.IdInSource AND ISNULL(GUID, '') = ISNULL(bm_pt.GUID, ''))
+		SET @str_n_bm = Cast(@n_bm AS NVARCHAR)
+		IF @n_bm > 0 BEGIN 
+			PRINT ('WARNING: ' + @str_n_bm + ' identical taxa have parents in EM2PESI but not in CDM_EM2PESI')
+		END ELSE PRINT ('All identical taxa that have parents in EM2PESI do have parents in CDM_EM2PESI')
+
+	/*
+		SELECT cdm_t.Fullname ChildName, bm_pt.Fullname as Parent_EM2PESI, 'in EM2PESI but not in CDM_EM2PESI'
+		FROM [EM2PESI].[DBO].TAXON bm_t 
+			INNER JOIN [EM2PESI].[DBO].TAXON bm_pt ON bm_t.ParentTaxonFk = bm_pt.TaxonId
+			INNER JOIN [CDM_EM2PESI].[DBO].TAXON cdm_t ON ISNULL(bm_t.GUID, '') = ISNULL(cdm_t.GUID, '') 
+		
+		WHERE cdm_t.ParentTaxonFk  IS NULL AND NOT EXISTS 
+		(SELECT * FROM [CDM_EM2PESI].[DBO].TAXON cdm_pt
+		WHERE (cdm_pt.IdInSource = bm_pt.IdInSource OR cdm_pt.IdInSource IS NULL AND bm_pt.IdInSource IS NULL) 
+				AND ISNULL(cdm_pt.GUID, '') = ISNULL(bm_pt.GUID, '')
+				AND cdm_t.ParentTaxonFk = cdm_pt.TaxonId)
+		ORDER BY cdm_t.Fullname
+
+	*/
+		SELECT @n_cdm = COUNT(*) -- taxa with parent only in CDM_EM2PESI
+			FROM [EM2PESI].[DBO].TAXON bm_t INNER JOIN
+			[CDM_EM2PESI].[DBO].TAXON cdm_t
+			ON bm_t.IdInSource = cdm_t.IdInSource AND ISNULL(bm_t.GUID, '') = ISNULL(cdm_t.GUID, '') INNER JOIN
+			[CDM_EM2PESI].[DBO].TAXON cdm_pt ON cdm_t.ParentTaxonFk = cdm_pt.TaxonId
+			WHERE NOT EXISTS
+				(SELECT * FROM [EM2PESI].[DBO].TAXON
+				WHERE IdInSource = cdm_pt.IdInSource AND ISNULL(GUID, '') = ISNULL(cdm_pt.GUID, ''))
+		SET @str_n_cdm = Cast(@n_cdm AS NVARCHAR)
+		IF @n_cdm > 0 BEGIN 
+			PRINT ('WARNING: ' + @str_n_cdm + ' identical taxa have parents in CDM_EM2PESI but not in EM2PESI')
+		END ELSE PRINT('All identical taxa that have parents in CDM_EM2PESI do have parents in EM2PESI')
+		
+	/*
+		SELECT bm_t.Fullname ChildName, cdm_pt.Fullname as Parent_CDM, 'in CDM_EM2PESI but not in EM2PESI'
+		FROM [CDM_EM2PESI].[DBO].TAXON cdm_t 
+			INNER JOIN [CDM_EM2PESI].[DBO].TAXON cdm_pt ON cdm_t.ParentTaxonFk = cdm_pt.TaxonId
+			INNER JOIN [EM2PESI].[DBO].TAXON bm_t ON ISNULL(cdm_t.GUID, '') = ISNULL(bm_t.GUID, '') 
+		
+		WHERE bm_t.ParentTaxonFk  IS NULL AND NOT EXISTS 
+		(SELECT * FROM [EM2PESI].[DBO].TAXON bm_pt
+		WHERE (bm_pt.IdInSource = cdm_pt.IdInSource OR bm_pt.IdInSource IS NULL AND cdm_pt.IdInSource IS NULL) 
+				AND ISNULL(bm_pt.GUID, '') = ISNULL(cdm_pt.GUID, '')
+				AND bm_t.ParentTaxonFk = bm_pt.TaxonId)
+		ORDER BY bm_t.Fullname
+	*/
+		IF @n = 0 AND @n_cdm = 0 AND @n_bm = 0 BEGIN
+			PRINT ('All identical taxa have the same parent')
+		END
+
+-- TreeIndex
+/* This is not checked. This field should be created by the PESI-Procedure recalculateallstoredpaths.
+	Actually checking the parents of the same taxa is enough to ensure the compatibility of the taxonomical tree as a whole.
+	See the Parent section
+*/
+	SELECT @n_bm = COUNT(*) FROM [EM2PESI].[DBO].TAXON WHERE TreeIndex IS NOT NULL
+	SELECT @n_cdm = COUNT(*) FROM [CDM_EM2PESI].[DBO].TAXON WHERE TreeIndex IS NOT NULL
+	SET @n = @n_bm - @n_cdm
+
+	SET @str_n_bm = Cast(@n_bm AS NVARCHAR)
+	SET @str_n_cdm = Cast(@n_cdm AS NVARCHAR)
+	SET @str_n = Cast(@n AS NVARCHAR)
+
+	IF @n = 0 BEGIN
+		PRINT ('Both databases have the same number of taxa which have a tree index = ' + @str_n_bm)
+	END ELSE PRINT ('WARNING: Both databases DO NOT have the same number of taxa that have a tree index, n_bm = ' + @str_n_bm + ' and n_cdm = '+ @str_n_cdm)
+	
 ------------------------------------------- RelTaxon -------------------------------
 	PRINT ' '
 	PRINT 'RELATIONSHIP'
@@ -795,7 +799,7 @@ BEGIN
 
 ------------------------------------------- AdditionalTaxonSource -------------------------------
 	PRINT ' '
-	PRINT 'AdditionalTaxonSource'
+	PRINT 'ADDITIONAL TAXON SOURCE'
 	
 	SELECT @n_bm = COUNT(*) FROM [EM2PESI].[DBO].AdditionalTaxonSource
 	SELECT @n_cdm = COUNT(*) FROM [CDM_EM2PESI].[DBO].AdditionalTaxonSource
@@ -816,7 +820,8 @@ BEGIN
 			ON bm_t.IdInSource = cdm_t.IdInSource AND ISNULL(bm_t.GUID, '') = ISNULL(cdm_t.GUID, '')
 			WHERE NOT EXISTS
 			(SELECT * FROM [CDM_EM2PESI].[DBO].AdditionalTaxonSource
-			WHERE TaxonFk = cdm_t.TaxonId AND ISNULL(SourceUseCache,'') = ISNULL(bm_ats.SourceUseCache,'')
+			WHERE TaxonFk = cdm_t.TaxonId 
+			AND ISNULL(SourceUseCache,'') = ISNULL(bm_ats.SourceUseCache,'')
 			AND ISNULL(SourceNameCache,'') = ISNULL(bm_ats.SourceNameCache,'')
 			AND ISNULL(SourceDetail,'') = ISNULL(bm_ats.SourceDetail,'')
 			)
@@ -833,10 +838,13 @@ BEGIN
 		ON bm_t.IdInSource = cdm_t.IdInSource AND ISNULL(bm_t.GUID, '') = ISNULL(cdm_t.GUID, '')
 		WHERE NOT EXISTS
 		(SELECT * FROM [CDM_EM2PESI].[DBO].AdditionalTaxonSource
-		WHERE TaxonFk = cdm_t.TaxonId AND ISNULL(SourceUseCache,'') = ISNULL(bm_ats.SourceUseCache,'')
+		WHERE TaxonFk = cdm_t.TaxonId 
+		AND ISNULL(SourceUseCache,'') = ISNULL(bm_ats.SourceUseCache,'')
 		AND ISNULL(SourceNameCache,'') = ISNULL(bm_ats.SourceNameCache,'')
 		AND ISNULL(SourceDetail,'') = ISNULL(bm_ats.SourceDetail,'')
 		)
+		ORDER BY bm_t.Fullname, bm_ats.SourceUseCache, bm_ats.SourceNameCache
+		
 	*/
 		SELECT @n_cdm = COUNT(*) -- additional sources only in CDM_EM2PESI
 			FROM [CDM_EM2PESI].[DBO].AdditionalTaxonSource cdm_ats INNER JOIN
@@ -845,7 +853,8 @@ BEGIN
 			ON bm_t.IdInSource = cdm_t.IdInSource AND ISNULL(bm_t.GUID, '') = ISNULL(cdm_t.GUID, '')
 			WHERE NOT EXISTS
 			(SELECT * FROM [EM2PESI].[DBO].AdditionalTaxonSource
-			WHERE TaxonFk = cdm_t.TaxonId AND ISNULL(SourceUseCache,'') = ISNULL(cdm_ats.SourceUseCache,'')
+			WHERE TaxonFk = bm_t.TaxonId 
+			AND ISNULL(SourceUseCache,'') = ISNULL(cdm_ats.SourceUseCache,'')
 			AND ISNULL(SourceNameCache,'') = ISNULL(cdm_ats.SourceNameCache,'')
 			AND ISNULL(SourceDetail,'') = ISNULL(cdm_ats.SourceDetail,'')
 			)
@@ -862,10 +871,12 @@ BEGIN
 		ON bm_t.IdInSource = cdm_t.IdInSource AND ISNULL(bm_t.GUID, '') = ISNULL(cdm_t.GUID, '')
 		WHERE NOT EXISTS
 		(SELECT * FROM [EM2PESI].[DBO].AdditionalTaxonSource
-		WHERE TaxonFk = cdm_t.TaxonId AND ISNULL(SourceUseCache,'') = ISNULL(cdm_ats.SourceUseCache,'')
+		WHERE TaxonFk = bm_t.TaxonId 
+		AND ISNULL(SourceUseCache,'') = ISNULL(cdm_ats.SourceUseCache,'')
 		AND ISNULL(SourceNameCache,'') = ISNULL(cdm_ats.SourceNameCache,'')
 		AND ISNULL(SourceDetail,'') = ISNULL(cdm_ats.SourceDetail,'')
 		)
+		ORDER BY bm_t.Fullname, cdm_ats.SourceUseCache, cdm_ats.SourceNameCache
 	*/
 		IF @n_cdm = 0 AND @n_bm = 0 BEGIN
 			PRINT ('All additional sources are identical in both databases')
@@ -970,13 +981,14 @@ BEGIN
 			WHERE NOT EXISTS
 			(SELECT * FROM [CDM_EM2PESI].[DBO].Note LEFT OUTER JOIN [CDM_EM2PESI].[DBO].NoteSource
 			ON [CDM_EM2PESI].[DBO].Note.NoteId = [CDM_EM2PESI].[DBO].NoteSource.NoteFk
-			WHERE TaxonFk = cdm_t.TaxonId AND ISNULL(Note_1,'') = ISNULL(bm_n.Note_1,'')
+			WHERE TaxonFk = cdm_t.TaxonId 
+			AND ISNULL(Note_1,'') = ISNULL(bm_n.Note_1,'')
 			AND ISNULL(Note_2,'') = ISNULL(bm_n.Note_2,'')
 			AND ISNULL(NoteCategoryCache,'') = ISNULL(bm_n.NoteCategoryCache,'')
 			AND ISNULL(LanguageCache,'') = ISNULL(bm_n.LanguageCache,'')
 			AND ISNULL(SpeciesExpertName,'') = ISNULL(bm_n.SpeciesExpertName,'')
 			AND ISNULL(LastAction,'') = ISNULL(bm_n.LastAction,'')
-			AND ISNULL(LastActionDate,'00:00:00') = ISNULL(bm_n.LastActionDate,'00:00:00')
+			AND Left(ISNULL(LastActionDate,'00:00:00'),18) = Left(ISNULL(bm_n.LastActionDate,'00:00:00'),18)
 			AND ISNULL(SourceNameCache,'') = ISNULL(bm_ns.SourceNameCache,'')
 			AND ISNULL(SourceDetail,'') = ISNULL(bm_ns.SourceDetail,'')
 			)
@@ -985,6 +997,11 @@ BEGIN
 			PRINT ('All note * notesource results in EM2PESI exist also in CDM_EM2PESI')
 		END ELSE PRINT ('WARNING: ' + @str_n_bm + ' existing note * notesource results for identical taxa in EM2PESI DO NOT exist in CDM_EM2PESI')
 	/*
+		Typical Problems: 
+		Duplicate entries during E+M SQL import for taxa using the same name object.
+		Missing source info by E+M SQL import
+		Last Action date automatically created (but wrong) by CDM import
+		
 		SELECT bm_t.Fullname, bm_n.Note_1, bm_n.Note_2, bm_n.NoteCategoryCache, bm_n.LanguageCache,
 		bm_n.SpeciesExpertName, bm_n.LastAction, bm_n.LastActionDate, bm_ns.SourceNameCache, bm_ns.SourceDetail,
 		'in EM2PESI but not in CDM_EM2PESI'
@@ -996,16 +1013,18 @@ BEGIN
 		WHERE NOT EXISTS
 		(SELECT * FROM [CDM_EM2PESI].[DBO].Note LEFT OUTER JOIN [CDM_EM2PESI].[DBO].NoteSource
 		ON [CDM_EM2PESI].[DBO].Note.NoteId = [CDM_EM2PESI].[DBO].NoteSource.NoteFk
-		WHERE TaxonFk = cdm_t.TaxonId AND ISNULL(Note_1,'') = ISNULL(bm_n.Note_1,'')
+		WHERE TaxonFk = cdm_t.TaxonId 
+		AND ISNULL(Note_1,'') = ISNULL(bm_n.Note_1,'')
 		AND ISNULL(Note_2,'') = ISNULL(bm_n.Note_2,'')
 		AND ISNULL(NoteCategoryCache,'') = ISNULL(bm_n.NoteCategoryCache,'')
 		AND ISNULL(LanguageCache,'') = ISNULL(bm_n.LanguageCache,'')
 		AND ISNULL(SpeciesExpertName,'') = ISNULL(bm_n.SpeciesExpertName,'')
 		AND ISNULL(LastAction,'') = ISNULL(bm_n.LastAction,'')
-		AND ISNULL(LastActionDate,'00:00:00') = ISNULL(bm_n.LastActionDate,'00:00:00')
+		AND Left(ISNULL(LastActionDate,'00:00:00'),18) = Left(ISNULL(bm_n.LastActionDate,'00:00:00'),18)
 		AND ISNULL(SourceNameCache,'') = ISNULL(bm_ns.SourceNameCache,'')
 		AND ISNULL(SourceDetail,'') = ISNULL(bm_ns.SourceDetail,'')
 		)
+		ORDER BY bm_n.NoteCategoryFk, bm_t.Fullname, bm_n.Note_1
 	*/
 		SELECT @n_cdm = COUNT(*) -- note * notesource results only in CDM_EM2PESI
 			FROM [CDM_EM2PESI].[DBO].Note cdm_n INNER JOIN
@@ -1016,13 +1035,14 @@ BEGIN
 			WHERE NOT EXISTS
 			(SELECT * FROM [EM2PESI].[DBO].Note LEFT OUTER JOIN [EM2PESI].[DBO].NoteSource
 			ON [EM2PESI].[DBO].Note.NoteId = [EM2PESI].[DBO].NoteSource.NoteFk
-			WHERE TaxonFk = bm_t.TaxonId AND ISNULL(Note_1,'') = ISNULL(cdm_n.Note_1,'')
+			WHERE TaxonFk = bm_t.TaxonId 
+			AND ISNULL(Note_1,'') = ISNULL(cdm_n.Note_1,'')
 			AND ISNULL(Note_2,'') = ISNULL(cdm_n.Note_2,'')
 			AND ISNULL(NoteCategoryCache,'') = ISNULL(cdm_n.NoteCategoryCache,'')
 			AND ISNULL(LanguageCache,'') = ISNULL(cdm_n.LanguageCache,'')
 			AND ISNULL(SpeciesExpertName,'') = ISNULL(cdm_n.SpeciesExpertName,'')
 			AND ISNULL(LastAction,'') = ISNULL(cdm_n.LastAction,'')
-			AND ISNULL(LastActionDate,'00:00:00') = ISNULL(cdm_n.LastActionDate,'00:00:00')
+			AND LEFT(ISNULL(LastActionDate,'00:00:00'),18) = LEFT(ISNULL(cdm_n.LastActionDate,'00:00:00'),18)
 			AND ISNULL(SourceNameCache,'') = ISNULL(cdm_ns.SourceNameCache,'')
 			AND ISNULL(SourceDetail,'') = ISNULL(cdm_ns.SourceDetail,'')
 			)
@@ -1042,16 +1062,19 @@ BEGIN
 		WHERE NOT EXISTS
 		(SELECT * FROM [EM2PESI].[DBO].Note LEFT OUTER JOIN [EM2PESI].[DBO].NoteSource
 		ON [EM2PESI].[DBO].Note.NoteId = [EM2PESI].[DBO].NoteSource.NoteFk
-		WHERE TaxonFk = bm_t.TaxonId AND ISNULL(Note_1,'') = ISNULL(cdm_n.Note_1,'')
+		WHERE TaxonFk = bm_t.TaxonId 
+		AND ISNULL(Note_1,'') = ISNULL(cdm_n.Note_1,'')
 		AND ISNULL(Note_2,'') = ISNULL(cdm_n.Note_2,'')
 		AND ISNULL(NoteCategoryCache,'') = ISNULL(cdm_n.NoteCategoryCache,'')
 		AND ISNULL(LanguageCache,'') = ISNULL(cdm_n.LanguageCache,'')
 		AND ISNULL(SpeciesExpertName,'') = ISNULL(cdm_n.SpeciesExpertName,'')
 		AND ISNULL(LastAction,'') = ISNULL(cdm_n.LastAction,'')
-		AND ISNULL(LastActionDate,'00:00:00') = ISNULL(cdm_n.LastActionDate,'00:00:00')
+		AND LEFT(ISNULL(LastActionDate,'00:00:00'),18) = LEFT(ISNULL(cdm_n.LastActionDate,'00:00:00'),18)
 		AND ISNULL(SourceNameCache,'') = ISNULL(cdm_ns.SourceNameCache,'')
 		AND ISNULL(SourceDetail,'') = ISNULL(cdm_ns.SourceDetail,'')
 		)
+		ORDER BY cdm_n.NoteCategoryFk, cdm_t.Fullname,cdm_n.Note_1
+		
 	*/
 		IF @n_cdm = 0 AND @n_bm = 0 BEGIN
 			PRINT ('All note * notesource results are identical in both databases')
@@ -1111,7 +1134,8 @@ BEGIN
 		WHERE NOT EXISTS
 		(SELECT * FROM [CDM_EM2PESI].[DBO].Occurrence LEFT OUTER JOIN [CDM_EM2PESI].[DBO].OccurrenceSource
 		ON [CDM_EM2PESI].[DBO].Occurrence.OccurrenceId = [CDM_EM2PESI].[DBO].OccurrenceSource.OccurrenceFk
-		WHERE TaxonFk = cdm_t.TaxonId AND ISNULL(TaxonFullNameCache,'') = ISNULL(bm_o.TaxonFullNameCache,'')
+		WHERE TaxonFk = cdm_t.TaxonId 
+		AND ISNULL(TaxonFullNameCache,'') = ISNULL(bm_o.TaxonFullNameCache,'')
 		AND ISNULL(AreaNameCache,'') = ISNULL(bm_o.AreaNameCache,'')
 		AND ISNULL(OccurrenceStatusCache,'') = ISNULL(bm_o.OccurrenceStatusCache,'')
 		AND ISNULL(Notes,'') = ISNULL(bm_o.Notes,'')
@@ -1121,6 +1145,7 @@ BEGIN
 		AND ISNULL(SourceNameCache,'') = ISNULL(bm_os.SourceNameCache,'')
 		AND ISNULL(OldTaxonName,'') = ISNULL(bm_os.OldTaxonName,'')
 		)
+		ORDER BY bm_t.Fullname, AreaNameCache 
 	*/
 		SELECT @n_cdm = COUNT(*) -- occurrence * occurrencesource results only in CDM_EM2PESI
 			FROM [CDM_EM2PESI].[DBO].Occurrence cdm_o INNER JOIN
@@ -1147,7 +1172,7 @@ BEGIN
 			PRINT ('All occurrence * occurrencesource results in CDM_EM2PESI exist also in EM2PESI')
 		END ELSE PRINT ('WARNING: ' + @str_n_cdm + ' existing occurrence * occurrencesource results for identical taxa in CDM_EM2PESI DO NOT exist in EM2PESI')
 	/*
-		SELECT cdm_t.TaxonId as cdmTID, bm_t.TaxonId bmTID, bm_t.Fullname, cdm_o.TaxonFullNameCache, cdm_o.AreaNameCache, cdm_o.OccurrenceStatusCache, cdm_o.Notes,
+		SELECT cdm_t.TaxonId as cdmTID, bm_t.TaxonId bmTID, cdm_t.Fullname, cdm_o.TaxonFullNameCache, cdm_o.AreaNameCache, cdm_o.OccurrenceStatusCache, cdm_o.Notes,
 		cdm_o.SpeciesExpertName, cdm_o.LastAction, cdm_o.LastActionDate, cdm_os.SourceNameCache, cdm_os.OldTaxonName,
 		'in CDM_EM2PESI but not in EM2PESI'
 		FROM [CDM_EM2PESI].[DBO].Occurrence cdm_o INNER JOIN
@@ -1158,7 +1183,8 @@ BEGIN
 		WHERE NOT EXISTS
 		(SELECT * FROM [EM2PESI].[DBO].Occurrence LEFT OUTER JOIN [EM2PESI].[DBO].OccurrenceSource
 		ON [EM2PESI].[DBO].Occurrence.OccurrenceId = [EM2PESI].[DBO].OccurrenceSource.OccurrenceFk
-		WHERE TaxonFk = bm_t.TaxonId AND ISNULL(TaxonFullNameCache,'') = ISNULL(cdm_o.TaxonFullNameCache,'')
+		WHERE TaxonFk = bm_t.TaxonId 
+		AND ISNULL(TaxonFullNameCache,'') = ISNULL(cdm_o.TaxonFullNameCache,'')
 		AND ISNULL(AreaNameCache,'') = ISNULL(cdm_o.AreaNameCache,'')
 		AND ISNULL(OccurrenceStatusCache,'') = ISNULL(cdm_o.OccurrenceStatusCache,'')
 		AND ISNULL(Notes,'') = ISNULL(cdm_o.Notes,'')
@@ -1168,6 +1194,7 @@ BEGIN
 		AND ISNULL(SourceNameCache,'') = ISNULL(cdm_os.SourceNameCache,'')
 		AND ISNULL(OldTaxonName,'') = ISNULL(cdm_os.OldTaxonName,'')
 		)
+		ORDER BY bm_t.Fullname, AreaNameCache 
 	*/
 		IF @n_cdm = 0 AND @n_bm = 0 BEGIN
 			PRINT ('All occurrence * occurrencesource results are identical in both databases')
