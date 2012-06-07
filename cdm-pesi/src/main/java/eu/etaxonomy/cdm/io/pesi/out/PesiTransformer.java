@@ -1418,7 +1418,7 @@ public final class PesiTransformer extends ExportTransformerBase implements IExp
 		} else if (feature.equals(Feature.CITATION())) {
 			return null;  //citations are handled differently
 		} else if (feature.getUuid().equals(BerlinModelTransformer.uuidFeatureMaps)){
-			return NoteCategory_Link_to_maps = 20;
+			return NoteCategory_Link_to_maps;
 		} else if (feature.getUuid().equals(BerlinModelTransformer.uuidFeatureUse)){
 			return NoteCategory_Use;
 		} else if (feature.getUuid().equals(BerlinModelTransformer.uuidFeatureComments)){
@@ -1426,21 +1426,31 @@ public final class PesiTransformer extends ExportTransformerBase implements IExp
 		} else if (feature.getUuid().equals(BerlinModelTransformer.uuidFeatureConservationStatus)){
 			return NoteCategory_Conservation_Status;
 		
+		//E+M
+		} else if (feature.getUuid().equals(BerlinModelTransformer.uuidFeatureDistrEM)){
+			return NoteCategory_general_distribution_euromed;
+		} else if (feature.getUuid().equals(BerlinModelTransformer.uuidFeatureDistrWorld)){
+			return NoteCategory_general_distribution_world;
+		} else if (feature.getUuid().equals(BerlinModelTransformer.uuidFeatureEditorBrackets)){
+			return NoteCategory_Editor_Brackets;
+		} else if (feature.getUuid().equals(BerlinModelTransformer.uuidFeatureEditorParenthesis)){
+			return NoteCategory_Editor_Parenthesis;
+		} else if (feature.getUuid().equals(BerlinModelTransformer.uuidFeatureInedited)){
+			return NoteCategory_Inedited;
+		} else if (feature.getUuid().equals(BerlinModelTransformer.uuidFeatureCommentsEditing)){
+			return NoteCategory_Comments_on_editing_process;
+			
+			
 			// TODO: Unknown NoteCategories
-//			NoteCategory_general_distribution_euromed = 10;
-//			NoteCategory_general_distribution_world = 11;
 //			NoteCategory_Common_names = 12;
 //			NoteCategory_Maps =14;
-//			NoteCategory_Link_to_maps = 20;
+
 //			NoteCategory_Link_to_images = 21;
 //			NoteCategory_Link_to_taxonomy = 22;
 //			NoteCategory_Link_to_general_information = 23;
 //			NoteCategory_undefined_link = 24;
 //			NoteCategory_Editor_Braces = 249;
-//			NoteCategory_Editor_Brackets = 250;
-//			NoteCategory_Editor_Parenthesis = 251;
-//			NoteCategory_Inedited = 252;
-//			NoteCategory_Comments_on_editing_process = 253;
+
 //			NoteCategory_Publication_date = 254;
 //			NoteCategory_Distribution = 278;
 //			NoteCategory_Biology = 281;
