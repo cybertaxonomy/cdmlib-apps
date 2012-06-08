@@ -27,8 +27,8 @@ import eu.etaxonomy.cdm.io.common.events.IIoObserver;
 import eu.etaxonomy.cdm.io.common.events.LoggingIoObserver;
 import eu.etaxonomy.cdm.io.common.mapping.IInputTransformer;
 import eu.etaxonomy.cdm.io.common.mapping.UndefinedTransformerMethodException;
-import eu.etaxonomy.cdm.io.eflora.floraMalesiana.FloraMalesianaTransformer;
 import eu.etaxonomy.cdm.io.markup.MarkupImportConfigurator;
+import eu.etaxonomy.cdm.io.markup.MarkupTransformer;
 import eu.etaxonomy.cdm.model.description.Feature;
 import eu.etaxonomy.cdm.model.description.FeatureNode;
 import eu.etaxonomy.cdm.model.description.FeatureTree;
@@ -55,8 +55,8 @@ public class FloraGuianasActivator {
 	
 //	static final ICdmDataSource cdmDestination = CdmDestinations.cdm_flora_guianas_preview();
 //	static final ICdmDataSource cdmDestination = CdmDestinations.cdm_flora_guianas_production();
-//	static final ICdmDataSource cdmDestination = CdmDestinations.localH2();
-	static final ICdmDataSource cdmDestination = CdmDestinations.cdm_test_local_mysql();
+	static final ICdmDataSource cdmDestination = CdmDestinations.localH2();
+//	static final ICdmDataSource cdmDestination = CdmDestinations.cdm_test_local_mysql();
 	
 
 	//feature tree uuid
@@ -65,6 +65,9 @@ public class FloraGuianasActivator {
 	//classification
 	static final UUID classificationUuid = UUID.fromString("5e3a1b07-2609-4597-bbda-7b02dfe8c2b3");
 	
+	private static final String SOURCE_REFERENCE_TITLE = "Flora of the Guianas";
+	private static final String FEATURE_TREE_TITLE = "Flora of the Guianas Feature Tree";
+
 	//check - import
 	private boolean h2ForCheck = true;
 	static CHECK check = CHECK.IMPORT_WITHOUT_CHECK;
@@ -80,7 +83,7 @@ public class FloraGuianasActivator {
 	private boolean includeFgu4 = false;
 	
 		
-	private boolean replaceStandardKeyTitles = false;
+	private boolean replaceStandardKeyTitles = true;
 
 	private IIoObserver observer = new LoggingIoObserver();
 	private Set<IIoObserver> observerList = new HashSet<IIoObserver>();
@@ -104,7 +107,7 @@ public class FloraGuianasActivator {
 		markupConfig.setReplaceStandardKeyTitles(replaceStandardKeyTitles);
 		
 		
-		markupConfig.setSourceReference(getSourceReference("Flore du Gabon"));
+		markupConfig.setSourceReference(getSourceReference(SOURCE_REFERENCE_TITLE));
 		
 		CdmDefaultImport<MarkupImportConfigurator> myImport = new CdmDefaultImport<MarkupImportConfigurator>(); 
 		
@@ -167,10 +170,10 @@ public class FloraGuianasActivator {
 	}
 
 	private FeatureTree makeFeatureNode(ITermService service){
-		FloraMalesianaTransformer transformer = new FloraMalesianaTransformer();
+		MarkupTransformer transformer = new MarkupTransformer();
 		
 		FeatureTree result = FeatureTree.NewInstance(featureTreeUuid);
-		result.setTitleCache("Flore Gabon Presentation Feature Tree");
+		result.setTitleCache(FEATURE_TREE_TITLE);
 		FeatureNode root = result.getRoot();
 		FeatureNode newNode;
 		
@@ -192,6 +195,12 @@ public class FloraGuianasActivator {
 		newNode = FeatureNode.NewInstance(Feature.DISTRIBUTION());
 		root.addChild(newNode);
 
+		newNode = FeatureNode.NewInstance(Feature.COMMON_NAME());
+		root.addChild(newNode);
+
+		newNode = FeatureNode.NewInstance(Feature.PHENOLOGY());
+		root.addChild(newNode);
+		
 		newNode = FeatureNode.NewInstance(Feature.ECOLOGY());
 		root.addChild(newNode);
 		addFeataureNodesByStringList(habitatEcologyList, root, transformer, service);
@@ -203,6 +212,14 @@ public class FloraGuianasActivator {
 
 		newNode = FeatureNode.NewInstance(Feature.CITATION());
 		root.addChild(newNode);
+		
+		String sql = "\nSELECT feature.titleCache " +
+				" FROM DescriptionElementBase deb INNER JOIN DefinedTermBase feature ON deb.feature_id = feature.id " + 
+				" GROUP BY feature.id " + 
+				" HAVING feature.id NOT IN (SELECT DISTINCT fn.feature_id " +
+				" FROM FeatureNode fn " +
+				" WHERE fn.feature_id IS NOT NULL) ";
+		logger.warn("Check for missing features in feature tree: " + sql);
 		
 		return result;
 	}
@@ -267,6 +284,7 @@ public class FloraGuianasActivator {
 	
 	private static String [] descriptionFeatureList = new String[]{
 		"lifeform", 
+		"Juvenile parts",
 		"Bark",
 		//new
 		"wood",
@@ -283,10 +301,13 @@ public class FloraGuianasActivator {
 		"Stems",  
 		"stem leaves", 
 		"Leaves",
+		"extraxylary sclerenchyma",
 		"flower-bearing stems",  
 		"Petiole",  
 		"Petiolules",  
 		"Leaflets", 
+		"Lamina",
+		"Veins",
 		"Thyrsus",  
 		"Thyrses",  
 		"Inflorescences",  
@@ -294,8 +315,9 @@ public class FloraGuianasActivator {
 		"Young inflorescences", 
 		"Male inflorescences", 
 		"Female inflorescences", 
-		"Bracts",  
+		"rachises",
 		"Pedicels",  
+		"Bracts",  
 		"flowering buds",  
 		"scales",  
 		"Buds",  

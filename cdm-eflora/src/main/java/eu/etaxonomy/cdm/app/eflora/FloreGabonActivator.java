@@ -27,7 +27,6 @@ import eu.etaxonomy.cdm.io.common.events.IIoObserver;
 import eu.etaxonomy.cdm.io.common.events.LoggingIoObserver;
 import eu.etaxonomy.cdm.io.common.mapping.IInputTransformer;
 import eu.etaxonomy.cdm.io.common.mapping.UndefinedTransformerMethodException;
-import eu.etaxonomy.cdm.io.eflora.floraMalesiana.FloraMalesianaTransformer;
 import eu.etaxonomy.cdm.io.markup.MarkupImportConfigurator;
 import eu.etaxonomy.cdm.io.markup.MarkupTransformer;
 import eu.etaxonomy.cdm.model.description.Feature;
@@ -55,8 +54,8 @@ public class FloreGabonActivator {
 	
 	
 //	static final ICdmDataSource cdmDestination = CdmDestinations.cdm_flore_gabon_preview();
-	static final ICdmDataSource cdmDestination = CdmDestinations.cdm_flore_gabon_production();
-//	static final ICdmDataSource cdmDestination = CdmDestinations.localH2();
+//	static final ICdmDataSource cdmDestination = CdmDestinations.cdm_flore_gabon_production();
+	static final ICdmDataSource cdmDestination = CdmDestinations.localH2();
 //	static final ICdmDataSource cdmDestination = CdmDestinations.cdm_test_local_mysql();
 	
 
@@ -189,6 +188,8 @@ public class FloreGabonActivator {
 
 		newNode = addFeataureNodesByStringList(generellDescriptionsFromPhytoChemoList, root, transformer, service);
 		
+		newNode = FeatureNode.NewInstance(Feature.COMMON_NAME());
+		root.addChild(newNode);
 		
 		newNode = FeatureNode.NewInstance(Feature.DISTRIBUTION());
 		root.addChild(newNode);
@@ -268,11 +269,13 @@ public class FloreGabonActivator {
 	
 	private static String [] descriptionFeatureList = new String[]{
 		"lifeform", 
+		"Juvenile parts",
 		"Bark",
 		//new
 		"wood",
 		"Indumentum",  
 		"endophytic body",  
+		"apical buds",
 		"flowering buds",  
 		"Branchlets",  
 		"Branches",  
@@ -284,10 +287,17 @@ public class FloreGabonActivator {
 		"Stems",  
 		"stem leaves", 
 		"Leaves",
+		"extraxylary sclerenchyma",
 		"flower-bearing stems",  
 		"Petiole",  
 		"Petiolules",  
 		"Leaflets", 
+		"Lamina",
+		"Veins",
+		"Lateral veins",
+		"secondary veins",
+		"Intersecondary veins",
+		"veinlets",
 		"Thyrsus",  
 		"Thyrses",  
 		"Inflorescences",  
@@ -295,6 +305,7 @@ public class FloreGabonActivator {
 		"Young inflorescences", 
 		"Male inflorescences", 
 		"Female inflorescences", 
+		"rachises",
 		"Bracts",  
 		"Pedicels",  
 		"flowering buds",  
@@ -311,6 +322,7 @@ public class FloreGabonActivator {
 		"Axillary",  
 		"cymes",  
 		"Calyx",  
+		"Androgynophore",
 		"Petal",  
 		"Petals",
 		"perigone",
@@ -332,7 +344,8 @@ public class FloreGabonActivator {
 		"Style",  
 		"annulus",  
 		"female flowers",  
-		"Male flowers",  
+		"Male flowers", 
+		"Androphore",
 		"Female",  
 		"Infructescences",    //order not consistent (sometimes before "Flowers")  
 		"Fruit",  
@@ -351,7 +364,7 @@ public class FloreGabonActivator {
 	
 		"figure",  
 		"fig",  
-		"figs",  
+		"figs",   
 
 
 		
