@@ -363,8 +363,10 @@ public class PesiTaxonExport extends PesiExportBase {
 		txStatus = null;
 		logger.debug("Committed transaction.");
 		list = null;
-		logger.warn("Taking snapshot at the end of phase 1 of taxonExport");
-		ProfilerController.memorySnapshot();
+		if (logger.isDebugEnabled()){
+			logger.debug("Taking snapshot at the end of phase 1 of taxonExport");
+			ProfilerController.memorySnapshot();
+		}
 		return success;
 	}
 
@@ -805,15 +807,13 @@ public class PesiTaxonExport extends PesiExportBase {
 		}
 		
 		taxonList = null;
-		logger.warn("Taking snapshot at the end of phase 4 of taxonExport");
-		ProfilerController.memorySnapshot();
+//		logger.warn("Taking snapshot at the end of phase 4 of taxonExport");
+//		ProfilerController.memorySnapshot();
 		
 		// Commit transaction
 		commitTransaction(txStatus);
-		logger.warn("Taking snapshot at the end of phase 4 after commit of taxonExport");
-		ProfilerController.memorySnapshot();
 		System.gc();
-		logger.warn("Taking snapshot at the end of phase 4 after gc() of taxonExport");
+		logger.debug("Taking snapshot at the end of phase 4 after gc() of taxonExport");
 		ProfilerController.memorySnapshot();
 		logger.debug("Committed transaction.");
 		return success;
