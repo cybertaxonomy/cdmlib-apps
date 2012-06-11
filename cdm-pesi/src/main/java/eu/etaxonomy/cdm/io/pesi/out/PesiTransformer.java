@@ -124,6 +124,7 @@ public final class PesiTransformer extends ExportTransformerBase implements IExp
 	public static int REF_JOURNAL = 9;
 	public static int REF_UNRESOLVED = 10;
 	public static int REF_PUBLICATION = 11;
+	public static String REF_STR_UNRESOLVED = "unresolved";
 	
 	// NameStatus
 	public static int NAME_ST_NOM_INVAL = 1;
@@ -528,6 +529,7 @@ public final class PesiTransformer extends ExportTransformerBase implements IExp
 	public static int NEW_COMBINATION_REFERENCE = 6;
 	public static int STATUS_SOURCE = 7;
 	public static int NOMENCLATURAL_REFERENCE = 8;
+	public static String STR_NOMENCLATURAL_REFERENCE = "nomenclatural reference";
 
 	// Area
 	public static int AREA_EAST_AEGEAN_ISLANDS = 1;

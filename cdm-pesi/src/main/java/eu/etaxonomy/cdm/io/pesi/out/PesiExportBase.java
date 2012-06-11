@@ -31,7 +31,9 @@ import eu.etaxonomy.cdm.model.common.Marker;
 import eu.etaxonomy.cdm.model.common.MarkerType;
 import eu.etaxonomy.cdm.model.common.RelationshipBase;
 import eu.etaxonomy.cdm.model.description.Feature;
+import eu.etaxonomy.cdm.model.description.TaxonDescription;
 import eu.etaxonomy.cdm.model.description.TaxonNameDescription;
+import eu.etaxonomy.cdm.model.description.TextData;
 import eu.etaxonomy.cdm.model.name.BotanicalName;
 import eu.etaxonomy.cdm.model.name.HybridRelationship;
 import eu.etaxonomy.cdm.model.name.NameRelationship;
@@ -416,6 +418,8 @@ public abstract class PesiExportBase extends DbExportBase<PesiExportConfigurator
 	protected Object getDbIdCdmWithExceptions(CdmBase cdmBase, PesiExportState state) {
 		if (cdmBase.isInstanceOf(TaxonNameBase.class)){
 			return ( cdmBase.getId() + state.getConfig().getNameIdStart() );
+		}if (isAdditionalSource(cdmBase) ){
+			return ( cdmBase.getId() + 2 * state.getConfig().getNameIdStart() );  //make it a separate variable if conflicts occur.
 		}else{
 			return super.getDbIdCdmWithExceptions(cdmBase, state);
 		}
@@ -423,6 +427,18 @@ public abstract class PesiExportBase extends DbExportBase<PesiExportConfigurator
 	
 	
 	
+	private boolean isAdditionalSource(CdmBase cdmBase) {
+		if (cdmBase.isInstanceOf(TextData.class)){
+			TextData textData = CdmBase.deproxy(cdmBase, TextData.class);
+			if (textData.getFeature().equals(Feature.ADDITIONAL_PUBLICATION()) ||
+					textData.getFeature().equals(Feature.CITATION())){
+				return true;
+			}
+		}
+		return false;
+	}
+
+
 	protected MarkerType getUuidMarkerType(UUID uuid, PesiExportState state){
 		if (uuid == null){
 			uuid = UUID.randomUUID();

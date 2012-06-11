@@ -14,6 +14,7 @@ import static java.util.EnumSet.of;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
+import java.sql.Types;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
@@ -27,9 +28,11 @@ import org.springframework.transaction.TransactionStatus;
 import eu.etaxonomy.cdm.io.berlinModel.BerlinModelTransformer;
 import eu.etaxonomy.cdm.io.common.DbExportStateBase;
 import eu.etaxonomy.cdm.io.common.Source;
+import eu.etaxonomy.cdm.io.common.mapping.DbIgnoreMapper;
 import eu.etaxonomy.cdm.io.common.mapping.UndefinedTransformerMethodException;
 import eu.etaxonomy.cdm.io.common.mapping.out.CollectionExportMapping;
 import eu.etaxonomy.cdm.io.common.mapping.out.DbAreaMapper;
+import eu.etaxonomy.cdm.io.common.mapping.out.DbConstantMapper;
 import eu.etaxonomy.cdm.io.common.mapping.out.DbDescriptionElementTaxonMapper;
 import eu.etaxonomy.cdm.io.common.mapping.out.DbDistributionStatusMapper;
 import eu.etaxonomy.cdm.io.common.mapping.out.DbExportIgnoreMapper;
@@ -41,6 +44,7 @@ import eu.etaxonomy.cdm.io.common.mapping.out.DbSimpleFilterMapper;
 import eu.etaxonomy.cdm.io.common.mapping.out.DbSingleSourceMapper;
 import eu.etaxonomy.cdm.io.common.mapping.out.DbStringMapper;
 import eu.etaxonomy.cdm.io.common.mapping.out.DbTextDataMapper;
+import eu.etaxonomy.cdm.io.common.mapping.out.DbTimePeriodMapper;
 import eu.etaxonomy.cdm.io.common.mapping.out.IdMapper;
 import eu.etaxonomy.cdm.io.common.mapping.out.MethodMapper;
 import eu.etaxonomy.cdm.io.profiler.ProfilerController;
@@ -64,6 +68,7 @@ import eu.etaxonomy.cdm.model.location.NamedArea;
 import eu.etaxonomy.cdm.model.location.TdwgArea;
 import eu.etaxonomy.cdm.model.name.NonViralName;
 import eu.etaxonomy.cdm.model.name.TaxonNameBase;
+import eu.etaxonomy.cdm.model.reference.Reference;
 import eu.etaxonomy.cdm.model.taxon.Taxon;
 import eu.etaxonomy.cdm.model.taxon.TaxonBase;
 /**
@@ -180,8 +185,10 @@ public class PesiDescriptionExport extends PesiExportBase {
 		occurrenceMapping.initialize(state);
 
 		// Get specific mappings: (CDM) DescriptionElement -> (PESI) Additional taxon source
-		PesiExportMapping addittionalSourceMapping = getAdditionalTaxonSourceMapping();
-		addittionalSourceMapping.initialize(state);
+		PesiExportMapping addSourceSourceMapping = getAddTaxonSourceSourceMapping();
+		addSourceSourceMapping.initialize(state);
+		PesiExportMapping additionalSourceMapping = getAdditionalTaxonSourceMapping();
+		additionalSourceMapping.initialize(state);
 
 		// Get specific mappings: (CDM) DescriptionElement -> (PESI) Additional taxon source
 		PesiExportMapping vernacularMapping = getVernacularNamesMapping();
@@ -212,7 +219,8 @@ public class PesiDescriptionExport extends PesiExportBase {
 			for (Taxon taxon : list) {
 				countTaxa++;
 				doCount(count++, modCount, pluralString);
-				success &= handleSingleTaxon(taxon, state, notesMapping, occurrenceMapping, addittionalSourceMapping, vernacularMapping, imageMapping);	
+				success &= handleSingleTaxon(taxon, state, notesMapping, occurrenceMapping, addSourceSourceMapping, 
+						additionalSourceMapping, vernacularMapping, imageMapping);	
 			}
 			list = null;
 			state.setCurrentTaxon(null);
@@ -277,7 +285,8 @@ public class PesiDescriptionExport extends PesiExportBase {
 	}
 
 	private boolean handleSingleTaxon(Taxon taxon, PesiExportState state, PesiExportMapping notesMapping, PesiExportMapping occurrenceMapping,
-			PesiExportMapping addittionalSourceMapping, PesiExportMapping vernacularMapping, PesiExportMapping imageMapping) throws SQLException {
+			PesiExportMapping addSourceSourceMapping, PesiExportMapping additionalSourceMapping, 
+			PesiExportMapping vernacularMapping, PesiExportMapping imageMapping) throws SQLException {
 		boolean success = true;
 		Set<DescriptionBase<?>> descriptions = new HashSet<DescriptionBase<?>>();
 		descriptions.addAll(taxon.getDescriptions());
@@ -292,7 +301,7 @@ public class PesiDescriptionExport extends PesiExportBase {
 			boolean isImageGallery = desc.isImageGallery();
 			for (DescriptionElementBase element : desc.getElements()){
 				success &= handleDescriptionElement(state, notesMapping, occurrenceMapping, vernacularMapping, imageMapping,
-						isImageGallery, element);
+						addSourceSourceMapping, additionalSourceMapping, isImageGallery, element);
 			}
 		}
 		return success;
@@ -300,7 +309,7 @@ public class PesiDescriptionExport extends PesiExportBase {
 
 	private boolean handleDescriptionElement(PesiExportState state, PesiExportMapping notesMapping,
 			PesiExportMapping occurrenceMapping, PesiExportMapping vernacularMapping, PesiExportMapping imageMapping, 
-			boolean isImageGallery, DescriptionElementBase element) throws SQLException {
+			PesiExportMapping addSourceSourceMapping, PesiExportMapping additionalSourceMapping, boolean isImageGallery, DescriptionElementBase element) throws SQLException {
 		try {
 			boolean success = true;
 			if (isImageGallery){
@@ -310,7 +319,7 @@ public class PesiDescriptionExport extends PesiExportBase {
 			}else if (isCommonName(element)){
 				countCommonName++;
 				if (element.isInstanceOf(TextData.class)){
-					//
+					//we do not import text data common names
 				}else{
 					success &= vernacularMapping.invoke(element);
 				}
@@ -326,7 +335,8 @@ public class PesiDescriptionExport extends PesiExportBase {
 				}
 			}else if (isAdditionalTaxonSource(element)){
 				countAdditionalSources++;
-//					success &= addittionalSourceMapping.invoke(element);
+				success &= addSourceSourceMapping.invoke(element);
+				success &= additionalSourceMapping.invoke(element);
 			}else if (isExcludedNote(element)){
 				//do nothing
 			}else if (isPesiNote(element)){
@@ -418,7 +428,7 @@ public class PesiDescriptionExport extends PesiExportBase {
 		if (feature == null){
 			return false;
 		}
-		return (feature.equals(Feature.CITATION()));
+		return (feature.equals(Feature.CITATION()) || feature.equals(Feature.ADDITIONAL_PUBLICATION()));
 	}
 
 	private boolean isOccurrence(DescriptionElementBase element) {
@@ -607,9 +617,15 @@ public class PesiDescriptionExport extends PesiExportBase {
 	 * @return The <code>Note_2</code> attribute.
 	 * @see MethodMapper
 	 */
-	@SuppressWarnings("unused")
-	private static String getNote_2(DescriptionElementBase descriptionElement) {
-		logger.warn("Not yet implemented");
+	@SuppressWarnings("unused") //used for mapper
+	private static String getNote_2(DescriptionElementBase element) {
+		//E+M map links -> medium
+		if (element.getFeature() != null && element.getFeature().getUuid().equals(BerlinModelTransformer.uuidFeatureMaps)){
+			String text = CdmBase.deproxy(element, TextData.class).getText(Language.ENGLISH());
+			if (text.contains("medium")){
+				return "medium";
+			}
+		}
 		return null;
 	}
 
@@ -782,7 +798,7 @@ public class PesiDescriptionExport extends PesiExportBase {
 		mapping.addMapper(IdMapper.NewInstance("NoteId"));
 		mapping.addMapper(DbTextDataMapper.NewInstance(Language.ENGLISH(), "Note_1"));
 		//TODO
-		mapping.addMapper(DbExportNotYetImplementedMapper.NewInstance("Note_2", "Need to research what Note_2 is for"));
+		mapping.addMapper(MethodMapper.NewInstance("Note_2", this, DescriptionElementBase.class));
 		mapping.addMapper(MethodMapper.NewInstance("NoteCategoryFk", this, DescriptionElementBase.class ));
 		
 		mapping.addMapper(MethodMapper.NewInstance("NoteCategoryCache", this, DescriptionElementBase.class, PesiExportState.class ));
@@ -849,24 +865,47 @@ public class PesiDescriptionExport extends PesiExportBase {
 
 		return mapping;
 	}
+	
 
 	/**
+	 * Returns the CDM to PESI specific export mappings for additional taxon sources to create a new
+	 * source for the additional source
+	 * @see #{@link PesiDescriptionExport#getAdditionalTaxonSourceMapping()}
+	 * @return The {@link PesiExportMapping PesiExportMapping}.
+	 */
+	private PesiExportMapping getAddTaxonSourceSourceMapping() {
+		PesiExportMapping sourceMapping = new PesiExportMapping(PesiSourceExport.dbTableName);
+		
+		sourceMapping.addMapper(IdMapper.NewInstance("SourceId"));
+		sourceMapping.addMapper(DbConstantMapper.NewInstance("SourceCategoryFk", Types.INTEGER, PesiTransformer.REF_UNRESOLVED));
+		sourceMapping.addMapper(DbConstantMapper.NewInstance("SourceCategoryCache", Types.VARCHAR, PesiTransformer.REF_STR_UNRESOLVED));
+		
+//		sourceMapping.addMapper(MethodMapper.NewInstance("NomRefCache", PesiSourceExport.class, "getNomRefCache", Reference.class));
+		
+		sourceMapping.addMapper(DbTextDataMapper.NewInstance(Language.ENGLISH(), "NomRefCache"));
+		
+		return sourceMapping;
+	}
+
+	
+	/**
 	 * Returns the CDM to PESI specific export mappings for additional taxon sources.
+	 * @see #{@link PesiDescriptionExport#getAddTaxonSourceSourceMapping()}
 	 * @return The {@link PesiExportMapping PesiExportMapping}.
 	 */
 	private PesiExportMapping getAdditionalTaxonSourceMapping() {
+	
 		PesiExportMapping mapping = new PesiExportMapping(dbAdditionalSourceTableName);
 		
 		mapping.addMapper(MethodMapper.NewInstance("TaxonFk", this, DescriptionElementBase.class, PesiExportState.class));
 		
-		mapping.addMapper(DbSingleSourceMapper.NewInstance("SourceFk", of (DbSingleSourceMapper.EXCLUDE.WITH_ID) , ! IS_CACHE));
-		mapping.addMapper(DbSingleSourceMapper.NewInstance("SourceNameCache", of(DbSingleSourceMapper.EXCLUDE.WITH_ID) , ! IS_CACHE));
+		mapping.addMapper(IdMapper.NewInstance("SourceFk"));
+		mapping.addMapper(DbTextDataMapper.NewInstance(Language.ENGLISH(), "SourceNameCache"));
 		
-//		mapping.addMapper(MethodMapper.NewInstance("SourceUseFk", this));
-//		mapping.addMapper(MethodMapper.NewInstance("SourceUseCache", this));
-//		mapping.addMapper(MethodMapper.NewInstance("SourceFk", this.getClass(), "getSourceFk", standardMethodParameter, PesiExportState.class));
-//		mapping.addMapper(MethodMapper.NewInstance("SourceNameCache", this));
-//		mapping.addMapper(MethodMapper.NewInstance("SourceDetail", this));
+		mapping.addMapper(DbConstantMapper.NewInstance("SourceUseFk", Types.INTEGER, PesiTransformer.NOMENCLATURAL_REFERENCE));
+		mapping.addMapper(DbConstantMapper.NewInstance("SourceUseCache", Types.VARCHAR, PesiTransformer.STR_NOMENCLATURAL_REFERENCE));
+		
+//		mapping.addMapper(DbIgnoreMapper.NewInstance("SourceDetail", "SourceDetails not available for additional sources"));
 		
 		return mapping;
 	}

@@ -48,7 +48,7 @@ public class PesiSourceExport extends PesiExportBase {
 	private static final Class<? extends CdmBase> standardMethodParameter = Reference.class;
 
 	private static int modCount = 1000;
-	private static final String dbTableName = "Source";
+	public static final String dbTableName = "Source";
 	private static final String pluralString = "Sources";
 	List<Integer> storedSourceIds = new ArrayList<Integer>();
 
