@@ -107,6 +107,13 @@ public class CdmDestinations {
 		return makeDestination(dbType, cdmServer, cdmDB, -1, cdmUserName, null);
 	}
 
+	public static ICdmDataSource cdm_test_local_fdac(){
+		DatabaseTypeEnum dbType = DatabaseTypeEnum.MySQL;
+		String cdmServer = "127.0.0.1";
+		String cdmDB = "fdac"; 
+		String cdmUserName = "root";
+		return makeDestination(dbType, cdmServer, cdmDB, -1, cdmUserName, null);
+	}
 	
 	public static ICdmDataSource cdm_portal(){
 		DatabaseTypeEnum dbType = DatabaseTypeEnum.MySQL;
