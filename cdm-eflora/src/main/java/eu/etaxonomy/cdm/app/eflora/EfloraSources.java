@@ -32,6 +32,8 @@ public class EfloraSources {
 		return URI.create("file:/C:/localCopy/Data/eflora/africa/Specimen/Ericaceae/Ericaceae_CDM_specimen.xls");
 	}
 	
+//******************* MALESIANA ************************************************************/
+	
 	//Sapindaceae
 	public static URI fm_sapindaceae_local(){
 		return URI.create("file:C:/localCopy/Data/eflora/floraMalesiana/sapindaceae-01v25.xml");
@@ -51,29 +53,55 @@ public class EfloraSources {
 	public static URI fm_13_2_local(){
 		return URI.create("file:C:/localCopy/Data/eflora/floraMalesiana/fm13_2_v8_final.xml");
 	}
+
+  //***** FM NEW */	
+	
+	//Flora Malesiana Vol 12
+	public static URI fm_12(){
+		return URI.create("file://PESIIMPORT3/malesiana/vol_12/xml_1995_vol_12_all_final_5.xml");
+	}
 	
 	//Flora Malesiana Vol 13 - small families
 	public static URI fm_13_small_families(){
-		URI uri = URI.create("file:/C:/localCopy/Data/eflora/floraMalesiana/vol_13/vol_13_small_families.xml");
-		File file = new File(uri);
-		return uri;
+		return URI.create("file://PESIIMPORT3/malesiana/vol_13/vol_13_small_families.xml");
 	}
 
 	//Flora Malesiana Vol 13 - large families
 	public static URI fm_13_large_families(){
-		return URI.create("file:C:/localCopy/Data/eflora/floraMalesiana/vol_13/xmlv9_large_families_vol_13.xml");
+		return URI.create("file://PESIIMPORT3/malesiana/vol_13/xmlv9_large_families_vol_13.xml");
 	}
 
-
-	//Flora Malesiana Vol 12
-	public static URI fm_12(){
-		return URI.create("file:C:/localCopy/Data/eflora/floraMalesiana/vol_12/xml_1995_vol_12_all_final_5.xml");
+	//Flora Malesiana Vol 15
+	public static URI fm_15(){
+		return URI.create("file://PESIIMPORT3/malesiana/vol_15/vol15_final.xml");
 	}
 
+	//Flora Malesiana Vol 16
+	public static URI fm_16(){
+		return URI.create("file://PESIIMPORT3/malesiana/vol_16/vol16_final.xml");
+	}
+
+	//Flora Malesiana Vol 17, part1
+	public static URI fm_17_1(){
+		return URI.create("file://PESIIMPORT3/malesiana/vol_17/fmvol17_part1_final.xml");
+	}
+	
+	//Flora Malesiana Vol 17, part2
+	public static URI fm_17_2(){
+		return URI.create("file://PESIIMPORT3/malesiana/vol_17/fmvol17_part2_final.xml");
+	}
+	
 	//Flora Malesiana Series 2 - Vol 2
-	public static URI fm_2_2(){
-		return URI.create("file:C:/localCopy/Data/eflora/floraMalesiana/ser2_vol2/ser2vol2final1.xml");
+	public static URI fm_ser2_2(){
+		return URI.create("file://PESIIMPORT3/malesiana/ser2/vol_02/ser2vol2final1.xml");
 	}
+
+	//Flora Malesiana Series 2 - Vol 3
+	public static URI fm_ser2_3(){
+		return URI.create("file://PESIIMPORT3/malesiana/ser2/vol_03/IIvol3_final.xml");
+	}
+
+//************************* GABON ************************************************/
 	
 	//Flore du Gabon sample 
 	public static URI fdg_sample(){
@@ -99,6 +127,8 @@ public class EfloraSources {
 	public static URI fdg_4(){
 		return URI.create("file://PESIIMPORT3/gabon/markupData/fdgvol4_9.xml");
 	}
+	
+//************************* GUIANAS **********************************************/	
 	
 	//Flora of the Guianas Sample
 	public static URI fgu_1(){

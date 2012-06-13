@@ -10,7 +10,9 @@
 package eu.etaxonomy.cdm.app.eflora;
 
 import java.net.URI;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.UUID;
 
 import org.apache.log4j.Logger;
@@ -21,10 +23,12 @@ import eu.etaxonomy.cdm.database.DbSchemaValidation;
 import eu.etaxonomy.cdm.database.ICdmDataSource;
 import eu.etaxonomy.cdm.io.common.CdmDefaultImport;
 import eu.etaxonomy.cdm.io.common.IImportConfigurator.CHECK;
+import eu.etaxonomy.cdm.io.common.events.IIoObserver;
+import eu.etaxonomy.cdm.io.common.events.LoggingIoObserver;
 import eu.etaxonomy.cdm.io.common.mapping.IInputTransformer;
 import eu.etaxonomy.cdm.io.common.mapping.UndefinedTransformerMethodException;
-import eu.etaxonomy.cdm.io.eflora.EfloraImportConfigurator;
 import eu.etaxonomy.cdm.io.eflora.floraMalesiana.FloraMalesianaTransformer;
+import eu.etaxonomy.cdm.io.markup.MarkupImportConfigurator;
 import eu.etaxonomy.cdm.model.description.Feature;
 import eu.etaxonomy.cdm.model.description.FeatureNode;
 import eu.etaxonomy.cdm.model.description.FeatureTree;
@@ -42,17 +46,36 @@ public class FloraMalesianaActivator {
 	
 	//database validation status (create, update, validate ...)
 	static DbSchemaValidation hbm2dll = DbSchemaValidation.CREATE;
-	static final URI fmSource1 = EfloraSources.fm_sapindaceae_local();
-	static final URI fmSource2 = EfloraSources.fm_sapindaceae2_local();
-	static final URI fmSource13_1 = EfloraSources.fm_13_1_local();
-	static final URI fmSource13_2 = EfloraSources.fm_13_2_local();
+	
+	static final URI fmSource12 = EfloraSources.fm_12();
+	static final URI fmSource13_small = EfloraSources.fm_13_small_families();
+	static final URI fmSource13_large = EfloraSources.fm_13_large_families();
+	static final URI fmSource15 = EfloraSources.fm_15();
+	static final URI fmSource16 = EfloraSources.fm_16();
+	static final URI fmSource17_1 = EfloraSources.fm_17_1();
+	static final URI fmSource17_2 = EfloraSources.fm_17_2();
+	static final URI fmSource_Ser2_02 = EfloraSources.fm_ser2_2();
+	static final URI fmSource_Ser2_03 = EfloraSources.fm_ser2_3();
 	
 	
-//	static final ICdmDataSource cdmDestination = CdmDestinations.cdm_test_andreasM3();
 //	static final ICdmDataSource cdmDestination = CdmDestinations.cdm_flora_malesiana_preview();
 //	static final ICdmDataSource cdmDestination = CdmDestinations.cdm_flora_malesiana_production();
 	static final ICdmDataSource cdmDestination = CdmDestinations.localH2();
 //	static final ICdmDataSource cdmDestination = CdmDestinations.cdm_test_local_mysql();
+//	static final ICdmDataSource cdmDestination = CdmDestinations.cdm_test_local_mysql_test();
+	
+	private boolean includeBase = true;
+	private boolean includeVol12 = includeBase;
+	private boolean includeVol13_small = includeBase;
+	private boolean includeVol13_large = includeBase;
+	private boolean includeVol15 = includeBase;
+	private boolean includeVol16 = includeBase;
+	private boolean includeVol17_1 = includeBase;
+	private boolean includeVol17_2 = includeBase;
+	private boolean includeVol2_2 = includeBase;
+	private boolean includeVol2_3 = includeBase;
+	
+	private boolean h2ForCheck = true;
 	
 
 	//feature tree uuid
@@ -62,69 +85,75 @@ public class FloraMalesianaActivator {
 	static final UUID classificationUuid = UUID.fromString("ca4e4bcb-a1d1-4124-a358-a3d3c41dd450");
 	
 	//check - import
-	static final CHECK check = CHECK.IMPORT_WITHOUT_CHECK;
+	static CHECK check = CHECK.IMPORT_WITHOUT_CHECK;
 	
 	static boolean doPrintKeys = false;
 	
 	//taxa
 	static final boolean doTaxa = true;
 
-	private boolean includeSapindaceae1 = true;
-	private boolean includeSapindaceae2 = true;
-	private boolean includeVol13_1 = false;
-	private boolean includeVol13_2 = false;
+	
+	private boolean replaceStandardKeyTitles = false;
 
+	private IIoObserver observer = new LoggingIoObserver();
+	private Set<IIoObserver> observerList = new HashSet<IIoObserver>();
+	
 	
 	private void doImport(ICdmDataSource cdmDestination){
+		observerList.add(observer);
+		if (h2ForCheck && cdmDestination.getDatabaseType().equals(CdmDestinations.localH2().getDatabaseType())){
+			check = CHECK.CHECK_ONLY;
+		}
 		
 		//make Source
-		URI source = fmSource1;
-		EfloraImportConfigurator floraMalesianaConfig= EfloraImportConfigurator.NewInstance(source, cdmDestination);
-		floraMalesianaConfig.setClassificationUuid(classificationUuid);
-		floraMalesianaConfig.setDoTaxa(doTaxa);
-		floraMalesianaConfig.setCheck(check);
-		floraMalesianaConfig.setDoPrintKeys(doPrintKeys);
-		floraMalesianaConfig.setDbSchemaValidation(hbm2dll);
+//		URI source = fmSource13_small;
+		URI source = null;
 		
-		CdmDefaultImport<EfloraImportConfigurator> myImport = new CdmDefaultImport<EfloraImportConfigurator>();
+		MarkupImportConfigurator markupConfig= MarkupImportConfigurator.NewInstance(source, cdmDestination);
+		markupConfig.setClassificationUuid(classificationUuid);
+		markupConfig.setDoTaxa(doTaxa);
+		markupConfig.setCheck(check);
+		markupConfig.setDoPrintKeys(doPrintKeys);
+		markupConfig.setDbSchemaValidation(hbm2dll);
+		markupConfig.setObservers(observerList);
+		markupConfig.setReplaceStandardKeyTitles(replaceStandardKeyTitles);
+		
+		
+		markupConfig.setSourceReference(getSourceReference("Flora Malesiana - Vol. 13"));
+		
+		CdmDefaultImport<MarkupImportConfigurator> myImport = new CdmDefaultImport<MarkupImportConfigurator>(); 
+
+
+		//Vol12
+		doSource(includeVol12, fmSource12, "Flora Malesiana - vol. 12", markupConfig, myImport);
+
+		//Vol13_large
+		doSource(includeVol13_large, fmSource13_large, "Flora Malesiana - vol. 13", markupConfig, myImport);
+		
+		//Vol13_small
+		doSource(includeVol13_small, fmSource13_small, "Flora Malesiana - vol. 13", markupConfig, myImport);
+
+		//Vol15
+		doSource(includeVol15, fmSource15, "Flora Malesiana - vol. 15", markupConfig, myImport);
+
+		//Vol16
+		doSource(includeVol16, fmSource16, "Flora Malesiana - vol. 16", markupConfig, myImport);
+		
+		//Vol17, part1
+		doSource(includeVol17_1, fmSource17_1, "Flora Malesiana - vol. 17, part I", markupConfig, myImport);
+
+		//Vol12
+		doSource(includeVol17_2, fmSource17_2, "Flora Malesiana - vol. 17, part II", markupConfig, myImport);
+		
+		//Vol_2_2
+		doSource(includeVol2_2, fmSource_Ser2_02, "Flora Malesiana - Ser.2, vol. 2", markupConfig, myImport);
+
+		//Vol_2_3
+		doSource(includeVol2_3, fmSource_Ser2_03, "Flora Malesiana - Ser.2, vol. 3", markupConfig, myImport);
 
 		
-		//Sapindaceae1
-		if (includeSapindaceae1){
-			System.out.println("Start import from ("+ fmSource1.toString() + ") ...");
-			floraMalesianaConfig.setSourceReference(getSourceReference("Flora Malesiana - Sapindaceae I"));
-			myImport.invoke(floraMalesianaConfig);
-			System.out.println("End import from ("+ fmSource1.toString() + ")...");
-		}
 		
-		//Sapindaceae2
-		if (includeSapindaceae2){
-			System.out.println("\nStart import from ("+ fmSource2.toString() + ") ...");
-			source = fmSource2;
-			floraMalesianaConfig.setSource(source);
-			floraMalesianaConfig.setSourceReference(getSourceReference("Flora Malesiana - Sapindaceae II"));
-			myImport.invoke(floraMalesianaConfig);
-			System.out.println("End import from ("+ fmSource2.toString() + ")...");
-		}
-		
-		floraMalesianaConfig.setSourceReference(getSourceReference("Flora Malesiana - Vol. 13"));
-		//Vol13_1
-		if (includeVol13_1){
-			System.out.println("\nStart import from ("+ fmSource13_1.toString() + ") ...");
-			source = fmSource13_1;
-			floraMalesianaConfig.setSource(source);
-			myImport.invoke(floraMalesianaConfig);
-			System.out.println("End import from ("+ fmSource13_1.toString() + ")...");
-		}
-
-		//Vol13_2
-		if (includeVol13_2){
-			System.out.println("\nStart import from ("+ fmSource13_2.toString() + ") ...");
-			source = fmSource13_2;
-			floraMalesianaConfig.setSource(source);
-			myImport.invoke(floraMalesianaConfig);
-			System.out.println("End import from ("+ fmSource13_2.toString() + ")...");
-		}
+//		makeGeoService();
 		
 		FeatureTree tree = makeFeatureNode(myImport.getCdmAppController().getTermService());
 		myImport.getCdmAppController().getFeatureTreeService().saveOrUpdate(tree);
@@ -141,9 +170,20 @@ public class FloraMalesianaActivator {
 		}
 		
 	}
+
+	private void doSource(boolean doInclude, URI source, String sourceTitle, MarkupImportConfigurator markupConfig,
+			CdmDefaultImport<MarkupImportConfigurator> myImport) {
+		if (doInclude){
+			System.out.println("\nStart import from ("+ source.toString() + ") ...");
+			markupConfig.setSource(source);
+			markupConfig.setSourceReference(getSourceReference(sourceTitle));
+			myImport.invoke(markupConfig);
+			System.out.println("End import from ("+ source.toString() + ")...");
+		}
+	}
 	
-	private Reference getSourceReference(String string) {
-		Reference result = ReferenceFactory.newGeneric();
+	private Reference<?> getSourceReference(String string) {
+		Reference<?> result = ReferenceFactory.newGeneric();
 		result.setTitleCache(string);
 		return result;
 	}
@@ -161,8 +201,15 @@ public class FloraMalesianaActivator {
 		
 		addFeataureNodesByStringList(descriptionFeatureList, newNode, transformer, service);
 
-		addFeataureNodesByStringList(generellDescriptionsList, root, transformer, service);
+		addFeataureNodesByStringList(generellDescriptionsUpToAnatomyList, root, transformer, service);
+		newNode = FeatureNode.NewInstance(Feature.ANATOMY());
+		addFeataureNodesByStringList(anatomySubfeatureList, newNode, transformer, service);
+		
+		newNode = addFeataureNodesByStringList(generellDescriptionsFromAnatomyToPhytoChemoList, root, transformer, service);
+		addFeataureNodesByStringList(phytoChemoSubFeaturesList, newNode, transformer, service);
 
+		newNode = addFeataureNodesByStringList(generellDescriptionsFromPhytoChemoList, root, transformer, service);
+		
 		
 		newNode = FeatureNode.NewInstance(Feature.DISTRIBUTION());
 		root.addChild(newNode);
@@ -193,29 +240,58 @@ public class FloraMalesianaActivator {
 	};
 	
 	
-	private static String [] generellDescriptionsList = new String[]{
+	private static String [] generellDescriptionsUpToAnatomyList = new String[]{
 		"Fossils",
 		"Morphology and anatomy",
 		"Morphology", 
 		"Vegetative morphology and anatomy",
+	};
+
+	
+	private static String [] anatomySubfeatureList = new String[]{
+		"Leaf anatomy",
+		"Wood anatomy"
+	};
+
+	private static String [] generellDescriptionsFromAnatomyToPhytoChemoList = new String[]{
 		"Flower morphology",
 		"Palynology",  
 		"Pollination",  
 		"Pollen morphology",
+		"embryology",
+		"cytology",
 		"Life cycle",
 		"Fruits and embryology",
 		"Dispersal",
-		"Wood anatomy",  
-		"Leaf anatomy",  
 		"Chromosome numbers", 
 		"Phytochemistry and Chemotaxonomy",
+	};
+	
+	
+	private static String [] phytoChemoSubFeaturesList = new String[]{
+		"Alkaloids",
+		"Iridoid glucosides",
+		"Leaf phenolics",
+		"Storage products of seeds",
+		"Aluminium",
+		"Chemotaxonomy",
+	};
+	
+
+	private static String [] generellDescriptionsFromPhytoChemoList = new String[]{
 		"Phytochemistry",
-		"Taxonomy",	
+		"Taxonomy",
+		"history",
+		"cultivation",
+		"Notes"
 	};
 
+	
 	private static String [] descriptionFeatureList = new String[]{
 		"lifeform", 
-		"Bark",  
+		"Bark",
+		//new
+		"wood",
 		"Indumentum",  
 		"endophytic body",  
 		"flowering buds",  
@@ -238,6 +314,8 @@ public class FloraMalesianaActivator {
 		"Inflorescences",  
 		"Inflorescence",
 		"Young inflorescences", 
+		"Male inflorescences", 
+		"Female inflorescences", 
 		"Bracts",  
 		"Pedicels",  
 		"flowering buds",  
@@ -255,7 +333,9 @@ public class FloraMalesianaActivator {
 		"cymes",  
 		"Calyx",  
 		"Petal",  
-		"Petals",  
+		"Petals",
+		"perigone",
+		"perigone lobes",
 		"perigone tube",
 		"Disc",  
 		"corolla",  
@@ -295,24 +375,26 @@ public class FloraMalesianaActivator {
 		"figs",  
 
 
-
 		
 	};
 	
-	public void addFeataureNodesByStringList(String[] featureStringList, FeatureNode root, IInputTransformer transformer, ITermService termService){
+	public FeatureNode addFeataureNodesByStringList(String[] featureStringList, FeatureNode root, IInputTransformer transformer, ITermService termService){
+		FeatureNode lastChild = null;
 		try {
 			for (String featureString : featureStringList){
-			UUID featureUuid;
-			featureUuid = transformer.getFeatureUuid(featureString);
-			Feature feature = (Feature)termService.find(featureUuid);
-			if (feature != null){
-				FeatureNode child = FeatureNode.NewInstance(feature);
-				root.addChild(child);	
+				UUID featureUuid;
+				featureUuid = transformer.getFeatureUuid(featureString);
+				Feature feature = (Feature)termService.find(featureUuid);
+				if (feature != null){
+					FeatureNode child = FeatureNode.NewInstance(feature);
+					root.addChild(child);	
+				}
 			}
-		}
+			
 		} catch (UndefinedTransformerMethodException e) {
 			logger.error("getFeatureUuid is not implemented in transformer. Features could not be added");
 		}
+		return lastChild;
 	}
 	
 

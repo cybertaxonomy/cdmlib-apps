@@ -35,14 +35,17 @@ public class CentralAfricaFernsFdacImportActivator {
 	private static final Logger logger = Logger.getLogger(CentralAfricaFernsFdacImportActivator.class);
 	
 	//database validation status (create, update, validate ...)
-	static DbSchemaValidation hbm2dll = DbSchemaValidation.CREATE;
+	static DbSchemaValidation hbm2dll = DbSchemaValidation.VALIDATE;
 	static final URI source = dwca_ferns();
 	
 	
 //	static final ICdmDataSource cdmDestination = CdmDestinations.localH2();
-	static final ICdmDataSource cdmDestination = CdmDestinations.cdm_test_local_fdac();
+//	static final ICdmDataSource cdmDestination = CdmDestinations.cdm_test_local_fdac();
+	static final ICdmDataSource cdmDestination = CdmDestinations.cdm_flora_central_africa_preview();
+//	static final ICdmDataSource cdmDestination = CdmDestinations.cdm_flora_central_africa_production();
 
 	static final String sourceReferenceTitle = "Ferns import(Dwc-A)";
+	static boolean useSourceReferenceAsSec = true; 
 	
 	//default nom code is ICZN as it allows adding publication year 
 	static final NomenclaturalCode defaultNomCode = NomenclaturalCode.ICBN;
@@ -76,6 +79,7 @@ public class CentralAfricaFernsFdacImportActivator {
 		config.setValidateRankConsistency(validateRankConsistency);
 		config.setNomenclaturalCode(defaultNomCode);
 		config.setSourceReferenceTitle(sourceReferenceTitle);
+		config.setUseSourceReferenceAsSec(useSourceReferenceAsSec);
 		
 		CdmDefaultImport myImport = new CdmDefaultImport();
 
