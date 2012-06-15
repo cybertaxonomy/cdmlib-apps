@@ -11,7 +11,6 @@ package eu.etaxonomy.cdm.app.excelImport.taxa;
 
 import java.io.File;
 import java.net.URI;
-import java.net.URISyntaxException;
 
 import org.apache.log4j.Logger;
 
