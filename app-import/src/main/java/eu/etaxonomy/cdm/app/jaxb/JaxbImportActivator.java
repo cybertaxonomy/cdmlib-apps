@@ -9,8 +9,6 @@
 
 package eu.etaxonomy.cdm.app.jaxb;
 
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
 import java.net.URI;
 import java.net.URISyntaxException;
 
@@ -21,10 +19,7 @@ import eu.etaxonomy.cdm.app.common.CdmDestinations;
 import eu.etaxonomy.cdm.app.util.TestDatabase;
 import eu.etaxonomy.cdm.database.DbSchemaValidation;
 import eu.etaxonomy.cdm.database.ICdmDataSource;
-import eu.etaxonomy.cdm.io.common.CdmDefaultExport;
 import eu.etaxonomy.cdm.io.common.CdmDefaultImport;
-import eu.etaxonomy.cdm.io.common.IImportConfigurator.DO_REFERENCES;
-import eu.etaxonomy.cdm.io.jaxb.JaxbExportConfigurator;
 import eu.etaxonomy.cdm.io.jaxb.JaxbImportConfigurator;
 
 /**
@@ -36,12 +31,15 @@ public class JaxbImportActivator {
 
 	/* SerializeFrom DB **/
 	//private static final ICdmDataSource cdmSource = CdmDestinations.localH2Diptera();
-	private static final ICdmDataSource cdmDestination = CdmDestinations.localH2();
+//	private static final ICdmDataSource cdmDestination = CdmDestinations.cdm_test_local_mysql_test();
+	private static final ICdmDataSource cdmDestination = CdmDestinations.cdm_corvidae_dev();
+	
 	
 	// Import:
 	private static String importFileNameString = 
 		//"C:\\workspace\\cdmlib_2.2\\cdmlib-io\\src\\test\\resources\\eu\\etaxonomy\\cdm\\io\\jaxb\\export_test_app_import.xml";
-		"file:/C:/export_test_app_import.xml";
+//		"file:/C:/export_test_app_import.xml";
+	"file:/C:/localCopy/Data/krähen/201206141338-jaxb_export-cdm.xml";
 	
 
 	/** NUMBER_ROWS_TO_RETRIEVE = 0 is the default case to retrieve all rows.
@@ -121,13 +119,13 @@ public class JaxbImportActivator {
 	 */
 	public static void main(String[] args) {
 
-		JaxbImportActivator sc = new JaxbImportActivator();
+		JaxbImportActivator jia = new JaxbImportActivator();
 		ICdmDataSource destination = CdmDestinations.chooseDestination(args) != null ? CdmDestinations.chooseDestination(args) : cdmDestination;
 		String file = chooseFile(args)!= null ? chooseFile(args) : importFileNameString;
 		CdmApplicationController appCtr = null;
-		appCtr = sc.initDb(destination);
+//		appCtr = jia.initDb(destination);
 				
-		sc.invokeImport(file, destination);
+		jia.invokeImport(file, destination);
 	}
 
 }
