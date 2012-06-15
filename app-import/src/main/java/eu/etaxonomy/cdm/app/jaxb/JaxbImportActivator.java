@@ -31,8 +31,7 @@ public class JaxbImportActivator {
 
 	/* SerializeFrom DB **/
 	//private static final ICdmDataSource cdmSource = CdmDestinations.localH2Diptera();
-//	private static final ICdmDataSource cdmDestination = CdmDestinations.cdm_test_local_mysql_test();
-	private static final ICdmDataSource cdmDestination = CdmDestinations.cdm_corvidae_dev();
+	private static final ICdmDataSource cdmDestination = CdmDestinations.cdm_test_local_mysql_test();
 	
 	
 	// Import:
