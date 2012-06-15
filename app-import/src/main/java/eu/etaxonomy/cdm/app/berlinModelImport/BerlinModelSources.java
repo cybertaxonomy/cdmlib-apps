@@ -87,7 +87,7 @@ public class BerlinModelSources {
 		String dbms = Source.SQL_SERVER_2005;
 		String strServer = "BGBM42";
 		String strDB = "EditWP6";
-		int port = 1247;
+		int port = 1433;
 		String userName = "webUser";
 		return  makeSource(dbms, strServer, strDB, port, userName, null);
 	}
@@ -148,6 +148,24 @@ public class BerlinModelSources {
 		String dbms = Source.SQL_SERVER_2005;
 		String strServer = "SQL2000Intern\\SQL2005";
 		String strDB = "BM_ERMS";
+		int port = 1433;
+		String userName = "WebUser";
+		return  makeSource(dbms, strServer, strDB, port, userName, null);
+	}
+	
+	public static Source MT_MOOSE(){
+		String dbms = Source.SQL_SERVER_2005;
+		String strServer = "SQL2000Intern";
+		String strDB = "MTMOOSE";
+		int port = 1433;
+		String userName = "WebUser";
+		return  makeSource(dbms, strServer, strDB, port, userName, null);
+	}
+	
+	public static Source MT_Standardliste(){
+		String dbms = Source.SQL_SERVER_2005;
+		String strServer = "SQL2000Intern";
+		String strDB = "MTStandardliste";
 		int port = 1433;
 		String userName = "WebUser";
 		return  makeSource(dbms, strServer, strDB, port, userName, null);

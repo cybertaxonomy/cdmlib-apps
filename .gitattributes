@@ -28,6 +28,8 @@ app-import/src/main/java/eu/etaxonomy/cdm/app/berlinModelImport/BerlinModelDesti
 app-import/src/main/java/eu/etaxonomy/cdm/app/berlinModelImport/BerlinModelSources.java -text
 app-import/src/main/java/eu/etaxonomy/cdm/app/berlinModelImport/CampanulaceaeActivator.java -text
 app-import/src/main/java/eu/etaxonomy/cdm/app/berlinModelImport/IldisActivator.java -text
+app-import/src/main/java/eu/etaxonomy/cdm/app/berlinModelImport/MTMooseActivator.java -text
+app-import/src/main/java/eu/etaxonomy/cdm/app/berlinModelImport/MTStandardlisteActivator.java -text
 app-import/src/main/java/eu/etaxonomy/cdm/app/berlinModelImport/SalvadorActivator.java -text
 app-import/src/main/java/eu/etaxonomy/cdm/app/berlinModelImport/SalvadorExport.java -text
 app-import/src/main/java/eu/etaxonomy/cdm/app/berlinModelImport/TreeCreator.java -text
