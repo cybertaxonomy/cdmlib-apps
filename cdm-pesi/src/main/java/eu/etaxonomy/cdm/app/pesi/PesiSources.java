@@ -29,7 +29,7 @@ public class PesiSources {
         String strServer = "pesiimport3";
         String strDB = "FaunEu";
 		int port = 1433;
-		String userName = "pesiexport";
+		String userName = "pesiExportFaunaEu";
 		return  ImportUtils.makeSource(dbms, strServer, strDB, port, userName, null);
 	}
 	
