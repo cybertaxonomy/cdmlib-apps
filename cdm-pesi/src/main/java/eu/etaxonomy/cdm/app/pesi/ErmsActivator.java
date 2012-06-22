@@ -54,6 +54,8 @@ public class ErmsActivator {
 	//ignore null
 	static final boolean ignoreNull = true;
 	
+	static final boolean includeExport = true;
+	
 // ***************** ALL ************************************************//
 	
 	//references
@@ -81,15 +83,10 @@ public class ErmsActivator {
 //	
 	
 	
-	/**
-	 * @param args
-	 */
-	public static void main(String[] args) {
+	private void doImport(Source source, ICdmDataSource destination, DbSchemaValidation hbm2dll){
 		System.out.println("Start import from ("+ ermsSource.getDatabase() + ") ...");
 		
 		//make ERMS Source
-		Source source = ermsSource;
-		ICdmDataSource destination = CdmDestinations.chooseDestination(args) != null ? CdmDestinations.chooseDestination(args) : cdmDestination;
 		
 		ErmsImportConfigurator config = ErmsImportConfigurator.NewInstance(source,  destination);
 		
@@ -123,6 +120,20 @@ public class ErmsActivator {
 //			app.getFeatureTreeService().saveOrUpdate(tree);
 		}
 		System.out.println("End import from ("+ source.getDatabase() + ")...");
+	}
+	
+	/**
+	 * @param args
+	 */
+	public static void main(String[] args) {
+		ICdmDataSource cdmDB = CdmDestinations.chooseDestination(args) != null ? CdmDestinations.chooseDestination(args) : cdmDestination;
+		ErmsActivator ermsImport = new ErmsActivator();
+		ermsImport.doImport(ermsSource, cdmDB, hbm2dll);
+		
+		if (includeExport){
+			PesiExportActivatorERMS ermsExport = new PesiExportActivatorERMS();
+			ermsExport.doExport(cdmDB);
+		}
 	}
 
 }
