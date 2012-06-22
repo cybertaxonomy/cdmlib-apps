@@ -136,7 +136,7 @@ public final class GlobisTransformer extends InputTransformerBase {
 //		}else if (ermsAbbrev.equals("ek")){return Language.EVEN-KAMCHATKA(); //iso639-3: eve    Lamut, Ewen, Eben, Orich, Ilqan; Russian: ???�????? ???�?, earlier also ????????? ???�?) is a Tungusic language spoken by the Evens in Siberia
 		}else if (ermsAbbrev.equals("en")){return Language.ENGLISH();
 		}else if (ermsAbbrev.equals("ep")){return Language.ESPERANTO();
-		}else if (ermsAbbrev.equals("es")){return Language.SPANISH_CATALAN();
+		}else if (ermsAbbrev.equals("es")){return Language.SPANISH_CASTILIAN();
 //		}else if (ermsAbbrev.equals("eu")){return Language.ENGLISH-UNITED STATES();  no iso //ENGLISH();
 //		}else if (ermsAbbrev.equals("ev")){return Language.EVENKI();   iso: evn  //languages of Tungusic family 
 		}else if (ermsAbbrev.equals("fa")){return Language.PERSIAN(); 

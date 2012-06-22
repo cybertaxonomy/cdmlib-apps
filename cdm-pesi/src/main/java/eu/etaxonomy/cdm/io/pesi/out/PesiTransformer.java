@@ -1313,7 +1313,7 @@ public final class PesiTransformer extends ExportTransformerBase implements IExp
 			return Language_Slovak;
 		} else if (language.equals(Language.SLOVENIAN())) {
 			return Language_Slovene;
-		} else if (language.equals(Language.SPANISH_CATALAN())) {
+		} else if (language.equals(Language.SPANISH_CASTILIAN())) {
 			return Language_Spanish_Castillian;
 		} else if (language.equals(Language.SWEDISH())) {
 			return Language_Swedish;
