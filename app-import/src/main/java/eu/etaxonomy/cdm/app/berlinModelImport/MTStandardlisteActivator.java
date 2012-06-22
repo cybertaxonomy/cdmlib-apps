@@ -50,8 +50,8 @@ public class MTStandardlisteActivator {
 		//database validation status (create, update, validate ...)
 		static DbSchemaValidation hbm2dll = DbSchemaValidation.CREATE;
 		static final Source berlinModelSource = BerlinModelSources.MT_Standardliste();
-//		static final ICdmDataSource cdmDestination = CdmDestinations.localH2();
-		static final ICdmDataSource cdmDestination = CdmDestinations.cdm_mt_standardliste();
+		static final ICdmDataSource cdmDestination = CdmDestinations.localH2();
+//		static final ICdmDataSource cdmDestination = CdmDestinations.cdm_mt_standardliste();
 		
 		static final UUID treeUuid = UUID.fromString("1f617402-78dc-4bf1-ac77-d260600a8879");
 		static final int sourceSecId = 7331;
