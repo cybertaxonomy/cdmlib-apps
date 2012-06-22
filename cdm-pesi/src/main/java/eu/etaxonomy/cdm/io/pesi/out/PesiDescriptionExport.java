@@ -63,6 +63,7 @@ import eu.etaxonomy.cdm.model.description.Distribution;
 import eu.etaxonomy.cdm.model.description.Feature;
 import eu.etaxonomy.cdm.model.description.IndividualsAssociation;
 import eu.etaxonomy.cdm.model.description.TaxonInteraction;
+import eu.etaxonomy.cdm.model.description.TaxonNameDescription;
 import eu.etaxonomy.cdm.model.description.TextData;
 import eu.etaxonomy.cdm.model.location.NamedArea;
 import eu.etaxonomy.cdm.model.location.TdwgArea;
@@ -144,11 +145,33 @@ public class PesiDescriptionExport extends PesiExportBase {
 			// Stores whether this invoke was successful or not.
 			boolean success = true;
 	
-			// PESI: Clear the database table Note.
-//			doDelete(state);
-		
+			// Get specific mappings: (CDM) DescriptionElement -> (PESI) Note
+			PesiExportMapping notesMapping = getNotesMapping();
+			notesMapping.initialize(state);
+
+			// Get specific mappings: (CDM) DescriptionElement -> (PESI) Occurrence
+			PesiExportMapping occurrenceMapping = getOccurrenceMapping();
+			occurrenceMapping.initialize(state);
+
+			// Get specific mappings: (CDM) DescriptionElement -> (PESI) Additional taxon source
+			PesiExportMapping addSourceSourceMapping = getAddTaxonSourceSourceMapping();
+			addSourceSourceMapping.initialize(state);
+			PesiExportMapping additionalSourceMapping = getAdditionalTaxonSourceMapping();
+			additionalSourceMapping.initialize(state);
+
+			// Get specific mappings: (CDM) DescriptionElement -> (PESI) Additional taxon source
+			PesiExportMapping vernacularMapping = getVernacularNamesMapping();
+			vernacularMapping.initialize(state);
+			
+			// Get specific mappings: (CDM) DescriptionElement -> (PESI) Additional taxon source
+			PesiExportMapping imageMapping = getImageMapping();
+			imageMapping.initialize(state);
+			
 			// Start transaction
-			success &= doPhase01(state);
+			success &= doPhase01(state, notesMapping, occurrenceMapping, addSourceSourceMapping, additionalSourceMapping, vernacularMapping, imageMapping);
+
+			// Start transaction
+			success &= doPhase01b(state, notesMapping, occurrenceMapping, addSourceSourceMapping, additionalSourceMapping, vernacularMapping, imageMapping);
 
 			
 			logger.info("PHASE 2...");
@@ -169,37 +192,15 @@ public class PesiDescriptionExport extends PesiExportBase {
 	}
 
 	//PHASE 01: Description Elements
-	private boolean doPhase01(PesiExportState state) throws SQLException {
+	private boolean doPhase01(PesiExportState state, PesiExportMapping notesMapping, PesiExportMapping occurrenceMapping, PesiExportMapping addSourceSourceMapping, 
+			PesiExportMapping additionalSourceMapping, PesiExportMapping vernacularMapping, PesiExportMapping imageMapping) throws SQLException {
 		logger.info("PHASE 1...");
 		int count = 0;
 		int pastCount = 0;
 		boolean success = true;
 		int limit = state.getConfig().getLimitSave();
 
-		// Get specific mappings: (CDM) DescriptionElement -> (PESI) Note
-		PesiExportMapping notesMapping = getNotesMapping();
-		notesMapping.initialize(state);
-
-		// Get specific mappings: (CDM) DescriptionElement -> (PESI) Occurrence
-		PesiExportMapping occurrenceMapping = getOccurrenceMapping();
-		occurrenceMapping.initialize(state);
-
-		// Get specific mappings: (CDM) DescriptionElement -> (PESI) Additional taxon source
-		PesiExportMapping addSourceSourceMapping = getAddTaxonSourceSourceMapping();
-		addSourceSourceMapping.initialize(state);
-		PesiExportMapping additionalSourceMapping = getAdditionalTaxonSourceMapping();
-		additionalSourceMapping.initialize(state);
-
-		// Get specific mappings: (CDM) DescriptionElement -> (PESI) Additional taxon source
-		PesiExportMapping vernacularMapping = getVernacularNamesMapping();
-		vernacularMapping.initialize(state);
-		
-		// Get specific mappings: (CDM) DescriptionElement -> (PESI) Additional taxon source
-		PesiExportMapping imageMapping = getImageMapping();
-		imageMapping.initialize(state);
-				
-		
-		List<Taxon> list = null;
+		List<Taxon> taxonList = null;
 		
 		TransactionStatus txStatus = startTransaction(true);
 		logger.info("Started new transaction. Fetching some " + pluralString + " (max: " + limit + ") ...");
@@ -209,20 +210,18 @@ public class PesiDescriptionExport extends PesiExportBase {
 		ProfilerController.memorySnapshot();
 		//taxon descriptions
 		int partitionCount = 0;
-		while ((list = getNextTaxonPartition(Taxon.class, limit, partitionCount++, propPath )) != null   ) {
+		while ((taxonList = getNextTaxonPartition(Taxon.class, limit, partitionCount++, propPath )) != null   ) {
 
-			logger.info("Fetched " + list.size() + " " + pluralString + ". Exporting...");
+			logger.info("Fetched " + taxonList.size() + " " + pluralString + ". Exporting...");
 			
-			logger.debug("Start snapshot, beginning of loop, fetched " + list.size() + " " + pluralString);
-			ProfilerController.memorySnapshot();
-			
-			for (Taxon taxon : list) {
+			for (Taxon taxon : taxonList) {
 				countTaxa++;
 				doCount(count++, modCount, pluralString);
+				state.setCurrentTaxon(taxon);
 				success &= handleSingleTaxon(taxon, state, notesMapping, occurrenceMapping, addSourceSourceMapping, 
 						additionalSourceMapping, vernacularMapping, imageMapping);	
 			}
-			list = null;
+			taxonList = null;
 			state.setCurrentTaxon(null);
 
 			// Commit transaction
@@ -233,51 +232,97 @@ public class PesiDescriptionExport extends PesiExportBase {
 			// Start transaction
 			txStatus = startTransaction(true);
 			logger.info("Started new transaction. Fetching some " + pluralString + " (max: " + limit + ") for description import ...");
-			logger.debug("Start snapshot, end of loop, fetched " + " " + pluralString);
-			ProfilerController.memorySnapshot();	
 		}
 		
-//		//name descriptions
-//		while ((list = getNextNameDescriptionPartition( limit, partitionCount++, propPath )) != null   ) {
-//
-//			logger.info("Fetched " + list.size() + " " + pluralString + ". Exporting...");
-//			
-//			
-//			for (Taxon taxon : list) {
-//				countTaxa++;
-//				doCount(count++, modCount, pluralString);
-//				success &= handleSingleTaxon(taxon, state, notesMapping, occurrenceMapping, addittionalSourceMapping, vernacularMapping, imageMapping);	
-//			}
-//			state.setCurrentTaxon(null);
-//
-//			// Commit transaction
-//			commitTransaction(txStatus);
-//			logger.info("Exported " + (count - pastCount) + " " + pluralString + ". Total: " + count);
-//			pastCount = count;
-//
-//			// Start transaction
-//			txStatus = startTransaction(true);
-//			logger.info("Started new transaction. Fetching some " + pluralString + " (max: " + limit + ") for description import ...");
-//		}
-
+	
+		logger.info("No " + pluralString + " left to fetch.");
+		logger.info("Partition: " + partitionCount);
+		logger.info("Taxa: " + countTaxa);
+		logger.info("Desc: " + countDescriptions);
+		logger.info("Distr: " + countDistribution);
+		logger.info("Occur: " + countOccurrence);
+		logger.info("Commons: " + countCommonName);
+		logger.info("AddSrc: " + countAdditionalSources);
+		logger.info("Images: " + countImages);
+		logger.info("Notes: " + countNotes);
+		logger.info("Others: " + countOthers);
 		
+		// Commit transaction
+		commitTransaction(txStatus);
+		logger.debug("Committed transaction.");
+		return success;
+	}
+	
+	//PHASE 01b: Name Descriptions
+	private boolean doPhase01b(PesiExportState state, PesiExportMapping notesMapping, PesiExportMapping occurrenceMapping, PesiExportMapping addSourceSourceMapping, 
+			PesiExportMapping additionalSourceMapping, PesiExportMapping vernacularMapping, PesiExportMapping imageMapping) throws SQLException {
+		logger.info("PHASE 1b...");
+		int count = 0;
+		int pastCount = 0;
+		boolean success = true;
+		int limit = state.getConfig().getLimitSave();
 		
-		if (list == null) {
-			logger.info("No " + pluralString + " left to fetch.");
-			logger.info("Partition: " + partitionCount);
-			logger.info("Taxa: " + countTaxa);
-			logger.info("Desc: " + countDescriptions);
-			logger.info("Distr: " + countDistribution);
-			logger.info("Occur: " + countOccurrence);
-			logger.info("Commons: " + countCommonName);
-			logger.info("AddSrc: " + countAdditionalSources);
-			logger.info("Images: " + countImages);
-			logger.info("Notes: " + countNotes);
-			logger.info("Others: " + countOthers);
+		List<TaxonNameDescription> nameDescList = null;
+		
+		TransactionStatus txStatus = startTransaction(true);
+		logger.info("Started new transaction. Fetching some name descriptions (max: " + limit + ") ...");
+		List<String> propPath = Arrays.asList(new String[]{"descriptions.elements.*"});
+		
+		//name descriptions
+		int partitionCount = 0;
+		while ((nameDescList = getNextNameDescriptionPartition( limit, partitionCount++, propPath )) != null   ) {
+			
+			logger.info("Fetched " + nameDescList.size() + " name descriptions. Exporting...");
+			
+			for (TaxonNameDescription desc : nameDescList) {
+				countTaxa++;
+				doCount(count++, modCount, "name descriptions");
+				boolean isImageGallery = desc.isImageGallery();
+				
+				TaxonNameBase<?,?> name = desc.getTaxonName();
+				
+				for (DescriptionElementBase element : desc.getElements()){
+					if (isPurePesiName(name)){
+						success &= handleDescriptionElement(state, notesMapping, occurrenceMapping, vernacularMapping, imageMapping,
+								addSourceSourceMapping, additionalSourceMapping, isImageGallery, element);
+					}else{
+						for (TaxonBase<?> taxonBase : name.getTaxonBases()){
+							if (isPesiTaxon(taxonBase)){
+								state.setCurrentTaxon(taxonBase);
+								success &= handleDescriptionElement(state, notesMapping, occurrenceMapping, vernacularMapping, imageMapping,
+										addSourceSourceMapping, additionalSourceMapping, isImageGallery, element);
+								state.setSourceForAdditionalSourceCreated(true);
+							}
+						}
+						state.setSourceForAdditionalSourceCreated(false);
+					}
+				}
+			}
+			nameDescList = null;
+			state.setCurrentTaxon(null);
 
+			// Commit transaction
+			commitTransaction(txStatus);
+			logger.info("Exported " + (count - pastCount) + " name descriptions. Total: " + count);
+			pastCount = count;
+
+			// Start transaction
+			txStatus = startTransaction(true);
+			logger.info("Started new transaction. Fetching some name descriptions (max: " + limit + ") for description import ...");
 		}
 		
-		list = null;
+		logger.info("No " + pluralString + " left to fetch.");
+		logger.info("Partition: " + partitionCount);
+		logger.info("Taxa: " + countTaxa);
+		logger.info("Desc: " + countDescriptions);
+		logger.info("Distr: " + countDistribution);
+		logger.info("Occur: " + countOccurrence);
+		logger.info("Commons: " + countCommonName);
+		logger.info("AddSrc: " + countAdditionalSources);
+		logger.info("Images: " + countImages);
+		logger.info("Notes: " + countNotes);
+		logger.info("Others: " + countOthers);
+		
 		// Commit transaction
 		commitTransaction(txStatus);
 		logger.debug("Committed transaction.");
@@ -291,10 +336,6 @@ public class PesiDescriptionExport extends PesiExportBase {
 		Set<DescriptionBase<?>> descriptions = new HashSet<DescriptionBase<?>>();
 		descriptions.addAll(taxon.getDescriptions());
 		
-		//FIXME incorrect as this creates duplicates
-		descriptions.addAll(taxon.getName().getDescriptions());
-		
-		state.setCurrentTaxon(taxon);
 		for (DescriptionBase<?> desc : descriptions){
 			countDescriptions++;
 
@@ -335,7 +376,9 @@ public class PesiDescriptionExport extends PesiExportBase {
 				}
 			}else if (isAdditionalTaxonSource(element)){
 				countAdditionalSources++;
-				success &= addSourceSourceMapping.invoke(element);
+				if (! state.isSourceForAdditionalSourceCreated()){
+					success &= addSourceSourceMapping.invoke(element);
+				}
 				success &= additionalSourceMapping.invoke(element);
 			}else if (isExcludedNote(element)){
 				//do nothing
@@ -389,7 +432,10 @@ public class PesiDescriptionExport extends PesiExportBase {
 		} else
 			try {
 				if (state.getTransformer().getKeyByNamedArea(area) == null){
-					logger.warn("Area not available in PESI transformer " +  area.getTitleCache() + ", " + area.getRepresentation(Language.ENGLISH()).getAbbreviatedLabel());
+					String warning = "Area (%s,%s) not available in PESI transformer for taxon %S: ";
+					TaxonBase<?> taxon =  state.getCurrentTaxon();
+					warning = String.format(warning, area.getTitleCache(), area.getRepresentation(Language.ENGLISH()).getAbbreviatedLabel(),taxon ==null? "-" : taxon.getTitleCache());
+					logger.warn(warning);
 					return false;
 				}
 			} catch (UndefinedTransformerMethodException e1) {
@@ -754,7 +800,7 @@ public class PesiDescriptionExport extends PesiExportBase {
 	 */
 	@SuppressWarnings("unused")  //used by mapper
 	private static Integer getTaxonFk(DescriptionElementBase deb, PesiExportState state) {
-		IdentifiableEntity<?> entity = state.getCurrentTaxon();
+		TaxonBase<?> entity = state.getCurrentTaxon();
 		return state.getDbId(entity);
 	}
 	
@@ -777,13 +823,10 @@ public class PesiDescriptionExport extends PesiExportBase {
 	@SuppressWarnings("unused")
 	private static String getTaxonFullNameCache(DescriptionElementBase deb, PesiExportState state) {
 		
-		IdentifiableEntity<?> taxon = state.getCurrentTaxon();
-		TaxonBase<?> taxonDeproxy = CdmBase.deproxy(taxon, TaxonBase.class);
-		TaxonNameBase<?,?> taxonName = taxonDeproxy.getName();
-		taxonDeproxy = null;
+		TaxonBase<?> taxon =  state.getCurrentTaxon();
+		TaxonNameBase<?,?> taxonName = taxon.getName();
 		NonViralName<?> nvn = CdmBase.deproxy(taxonName, NonViralName.class);
 		String result = getCacheStrategy(nvn).getTitleCache(nvn);
-		nvn = null;
 		return result;
 	}
 
@@ -905,7 +948,7 @@ public class PesiDescriptionExport extends PesiExportBase {
 		mapping.addMapper(DbConstantMapper.NewInstance("SourceUseFk", Types.INTEGER, PesiTransformer.NOMENCLATURAL_REFERENCE));
 		mapping.addMapper(DbConstantMapper.NewInstance("SourceUseCache", Types.VARCHAR, PesiTransformer.STR_NOMENCLATURAL_REFERENCE));
 		
-//		mapping.addMapper(DbIgnoreMapper.NewInstance("SourceDetail", "SourceDetails not available for additional sources"));
+		mapping.addMapper(DbExportIgnoreMapper.NewInstance("SourceDetail", "SourceDetails not available for additional sources"));
 		
 		return mapping;
 	}

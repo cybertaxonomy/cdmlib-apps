@@ -23,6 +23,7 @@ import eu.etaxonomy.cdm.io.common.DbExportStateBase;
 import eu.etaxonomy.cdm.model.common.CdmBase;
 import eu.etaxonomy.cdm.model.common.IdentifiableEntity;
 import eu.etaxonomy.cdm.model.common.MarkerType;
+import eu.etaxonomy.cdm.model.taxon.TaxonBase;
 
 /**
  * The export state class.
@@ -39,7 +40,8 @@ public class PesiExportState extends DbExportStateBase<PesiExportConfigurator, P
 	
 	private IdentifiableEntity<?> currentToObject;
 	private IdentifiableEntity<?> currentFromObject;
-	private IdentifiableEntity<?> currentTaxon;
+	private TaxonBase<?> currentTaxon;
+	private boolean sourceForAdditionalSourceCreated = false;
 	
 	private Map<UUID, MarkerType> markerTypeMap = new HashMap<UUID, MarkerType>();
 	public static final UUID uuidUserDefinedMarkerTypeVocabulary = UUID.fromString("5f02a261-fd7d-4fce-bbe4-21472de8cd51");
@@ -136,12 +138,12 @@ public class PesiExportState extends DbExportStateBase<PesiExportConfigurator, P
 	}
 
 
-	public IdentifiableEntity<?> getCurrentTaxon() {
+	public TaxonBase<?> getCurrentTaxon() {
 		return currentTaxon;
 	}
 
 
-	public void setCurrentTaxon(IdentifiableEntity<?> currentTaxon) {
+	public void setCurrentTaxon(TaxonBase<?> currentTaxon) {
 		this.currentTaxon = currentTaxon;
 	}
 
@@ -154,6 +156,17 @@ public class PesiExportState extends DbExportStateBase<PesiExportConfigurator, P
 
 	public MarkerType getMarkerType(UUID uuid){
 		return markerTypeMap.get(uuid);
+	}
+
+
+	public boolean isSourceForAdditionalSourceCreated() {
+		return sourceForAdditionalSourceCreated;
+	}
+
+
+	public void setSourceForAdditionalSourceCreated(
+			boolean sourceForAdditionalSourceCreated) {
+		this.sourceForAdditionalSourceCreated = sourceForAdditionalSourceCreated;
 	}
 
 

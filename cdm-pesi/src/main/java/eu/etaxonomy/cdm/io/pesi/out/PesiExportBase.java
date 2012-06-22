@@ -113,12 +113,12 @@ public abstract class PesiExportBase extends DbExportBase<PesiExportConfigurator
 	
 
 	private boolean isPesiNameDescriptionTaxon(TaxonNameDescription nameDescription) {
-		TaxonNameBase name = nameDescription.getTaxonName();
+		TaxonNameBase<?,?> name = nameDescription.getTaxonName();
 		if (isPurePesiName(name)){
 			return true;
 		}else{
 			Set<TaxonBase> taxa = name.getTaxonBases();
-			for (TaxonBase taxonBase : taxa){
+			for (TaxonBase<?> taxonBase : taxa){
 				if (isPesiTaxon(taxonBase)){
 					return true;
 				}
@@ -329,6 +329,11 @@ public abstract class PesiExportBase extends DbExportBase<PesiExportConfigurator
 	}
 
 
+	/**
+	 * @see #isPesiTaxon(TaxonBase, boolean)
+	 * @param taxonBase
+	 * @return
+	 */
 	protected static boolean isPesiTaxon(TaxonBase taxonBase) {
 		return isPesiTaxon(taxonBase, false);
 	}
