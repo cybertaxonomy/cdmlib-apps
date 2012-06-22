@@ -33,7 +33,7 @@ public class PesiExportActivatorEM {
 	private static final Logger logger = Logger.getLogger(PesiExportActivatorEM.class);
 
 	//database validation status (create, update, validate ...)
-	static final Source pesiDestination = PesiDestinations.pesi_test_local_CDM_EM2PESI_tmp();
+	static final Source pesiDestination = PesiDestinations.pesi_test_local_CDM_EM2PESI();
 //	static final Source pesiDestination = PesiDestinations.pesi_test_local_CDM_FE2PESI();
 //	static final Source pesiDestination = PesiDestinations.pesi_test_local_CDM_ERMS2PESI();
 	
@@ -60,12 +60,12 @@ public class PesiExportActivatorEM {
 	
 	//taxa
 	static final boolean doTaxa = true;
-	static final boolean doPureNames = false;
-	static final boolean doTreeIndex = false;
-	static final boolean doParentAndBiota = false;
-	static final boolean doRank = false;
-	static final boolean doInferredSynonyms = false;
-	static final boolean doRelTaxa = false;
+	static final boolean doPureNames = true;
+	static final boolean doTreeIndex = true;
+	static final boolean doParentAndBiota = true;
+	static final boolean doRank = true;
+	static final boolean doInferredSynonyms = false;   //no inferred synonyms in E+M
+	static final boolean doRelTaxa = true;
 	static final boolean doDescriptions = true;
 	
 	static final boolean doNotes = true;
@@ -91,7 +91,7 @@ public class PesiExportActivatorEM {
 //	static final boolean doOccurrence = false;
 //	static final boolean doOccurrenceSource = false;
 //	static final boolean doImage = false;
-//	static final boolean doTreeIndex = true;
+//	static final boolean doTreeIndex = false;
 //	static final boolean doRank = true;
 //	static final boolean doInferredSynonyms = true;
 	
