@@ -27,10 +27,14 @@ import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.joda.time.DateTime;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.TransactionStatus;
+
+
+
 
 import eu.etaxonomy.cdm.common.CdmUtils;
 import eu.etaxonomy.cdm.io.common.ICdmIO;
@@ -428,17 +432,23 @@ public class FaunaEuropaeaTaxonNameImport extends FaunaEuropaeaImportBase  {
 					taxonBase.setUpdated(modified);
 					
 					// Add Note extensions to this taxon
-					Extension.NewInstance(taxonBase, taxComment, getExtensionType(state, PesiTransformer.taxCommentUuid, "TaxComment", "TaxComment", "TC"));
-					Extension.NewInstance(taxonBase, fauComment, getExtensionType(state, PesiTransformer.fauCommentUuid, "FauComment", "FauComment", "FC"));
-					Extension.NewInstance(taxonBase, fauExtraCodes, getExtensionType(state, PesiTransformer.fauExtraCodesUuid, "FauExtraCodes", "FauExtraCodes", "FEC"));
 					
+					if (!StringUtils.isBlank(taxComment)){
+						Extension.NewInstance(taxonBase, taxComment, getExtensionType(state, PesiTransformer.taxCommentUuid, "TaxComment", "TaxComment", "TC"));
+					}
+					if (!StringUtils.isBlank(fauComment)){
+						Extension.NewInstance(taxonBase, fauComment, getExtensionType(state, PesiTransformer.fauCommentUuid, "FauComment", "FauComment", "FC"));
+					}
+					if (!StringUtils.isBlank(fauExtraCodes)){
+						Extension.NewInstance(taxonBase, fauExtraCodes, getExtensionType(state, PesiTransformer.fauExtraCodesUuid, "FauExtraCodes", "FauExtraCodes", "FEC"));
+					}
 					// Add UserId extensions to this zooName
 					//Extension.NewInstance(zooName, expertUserId, getExtensionType(state, PesiTransformer.expertUserIdUuid, "expertUserId", "expertUserId", "EUID"));
 					//Extension.NewInstance(zooName, speciesExpertUserId, getExtensionType(state, PesiTransformer.speciesExpertUserIdUuid, "speciesExpertUserId", "speciesExpertUserId", "SEUID"));
 					
 					// Add Expert extensions to this zooName
-					Extension.NewInstance(zooName, expertName, getExtensionType(state, PesiTransformer.expertNameUuid, "ExpertName", "ExpertName", "EN"));
-					Extension.NewInstance(zooName, speciesExpertName, getExtensionType(state, PesiTransformer.speciesExpertNameUuid, "SpeciesExpertName", "SpeciesExpertName", "SEN"));
+					Extension.NewInstance(taxonBase, expertName, getExtensionType(state, PesiTransformer.expertNameUuid, "ExpertName", "ExpertName", "EN"));
+					Extension.NewInstance(taxonBase, speciesExpertName, getExtensionType(state, PesiTransformer.speciesExpertNameUuid, "SpeciesExpertName", "SpeciesExpertName", "SEN"));
 
 					
 					ImportHelper.setOriginalSource(taxonBase, fauEuConfig.getSourceReference(), taxonId, OS_NAMESPACE_TAXON);
@@ -570,14 +580,13 @@ public class FaunaEuropaeaTaxonNameImport extends FaunaEuropaeaImportBase  {
 			// create basionym
 			ZoologicalName basionym = ZoologicalName.NewInstance(taxonName.getRank());
 			basionym.setCombinationAuthorTeam(zooName.getCombinationAuthorTeam());
-			
-			zooName.setOriginalPublicationYear(zooName.getPublicationYear());
 			basionym.setPublicationYear(zooName.getPublicationYear());
 
 			
 			zooName.addBasionym(basionym, fauEuConfig.getSourceReference(), null, null);
 			//TODO:this is a workaround for fauna europaea, this should be fixed in cdm model. this should be not a basionym but an orthographic variant (original spelling)
 			if (fauEuTaxon.isParenthesis()){
+				zooName.setOriginalPublicationYear(zooName.getPublicationYear());
 				zooName.setBasionymAuthorTeam(zooName.getCombinationAuthorTeam());
 				zooName.setCombinationAuthorTeam(null);
 			} else{
