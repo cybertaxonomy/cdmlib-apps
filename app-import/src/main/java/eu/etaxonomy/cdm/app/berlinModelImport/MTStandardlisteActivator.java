@@ -53,11 +53,11 @@ public class MTStandardlisteActivator {
 		static final ICdmDataSource cdmDestination = CdmDestinations.localH2();
 //		static final ICdmDataSource cdmDestination = CdmDestinations.cdm_mt_standardliste();
 		
-		static final UUID treeUuid = UUID.fromString("1f617402-78dc-4bf1-ac77-d260600a8879");
+		static final UUID treeUuid = UUID.fromString("70549f1a-3d30-42ae-8257-c8367e2703b0");
 		static final int sourceSecId = 7331;
-		static final UUID sourceRefUuid = UUID.fromString("7e1a2500-93a5-40c2-ba34-0213d7822379");
+		static final UUID sourceRefUuid = UUID.fromString("33baaf62-f5c4-4260-aacb-090fe4d24206");
 		
-		static final UUID featureTreeUuid = UUID.fromString("a970168a-36fd-4c7c-931e-87214a965c14");
+		static final UUID featureTreeUuid = UUID.fromString("2b592057-de3a-4782-a6f3-90a87e2a004d");
 		static final Object[] featureKeyList = new Integer[]{7,201,202,203,204,205,206,207}; 
 		
 		//check - import

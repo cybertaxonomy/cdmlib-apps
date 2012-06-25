@@ -46,11 +46,11 @@ public class MTMooseActivator {
 	static final ICdmDataSource cdmDestination = CdmDestinations.localH2();
 //	static final ICdmDataSource cdmDestination = CdmDestinations.cdm_mt_moose();
 	
-	static final UUID treeUuid = UUID.fromString("1f617402-78dc-4bf1-ac77-d260600a8879");
+	static final UUID classificationUuid = UUID.fromString("601d8a00-cffe-4509-af93-b15b543ccf8d");
 	static final int sourceSecId = 7331;
-	static final UUID sourceRefUuid = UUID.fromString("7e1a2500-93a5-40c2-ba34-0213d7822379");
+	static final UUID sourceRefUuid = UUID.fromString("601d8a00-cffe-4509-af93-b15b543ccf8d");
 	
-	static final UUID featureTreeUuid = UUID.fromString("a970168a-36fd-4c7c-931e-87214a965c14");
+	static final UUID featureTreeUuid = UUID.fromString("4c5b5bbe-6fef-4607-96b2-1b0104eac19e");
 	static final Object[] featureKeyList = new Integer[]{7,201,202,203,204,205,206,207}; 
 	
 	//check - import
@@ -110,7 +110,7 @@ public class MTMooseActivator {
 		
 		BerlinModelImportConfigurator bmImportConfigurator = BerlinModelImportConfigurator.NewInstance(source,  destination);
 		
-		bmImportConfigurator.setClassificationUuid(treeUuid);
+		bmImportConfigurator.setClassificationUuid(classificationUuid);
 		bmImportConfigurator.setSourceSecId(sourceSecId);
 		bmImportConfigurator.setNomenclaturalCode(nomenclaturalCode);
 
