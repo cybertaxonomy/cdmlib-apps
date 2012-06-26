@@ -59,21 +59,23 @@ public class CdmDestinations {
 		return makeDestination(dbType, cdmServer, cdmDB, -1, cdmUserName, null);
 	}
 	
-	public static ICdmDataSource cdm_test_local_mysql_pesi(){
+	
+	public static ICdmDataSource cdm_test_local_mysql_moose(){
 		DatabaseTypeEnum dbType = DatabaseTypeEnum.MySQL;
 		String cdmServer = "127.0.0.1";
-		String cdmDB = "cdm_test"; 
+		String cdmDB = "moose"; 
 		String cdmUserName = "root";
 		return makeDestination(dbType, cdmServer, cdmDB, -1, cdmUserName, null);
 	}
 	
-	public static ICdmDataSource cdm_test_local_mysql_pesi_test(){
+	public static ICdmDataSource cdm_test_local_mysql_standardliste(){
 		DatabaseTypeEnum dbType = DatabaseTypeEnum.MySQL;
 		String cdmServer = "127.0.0.1";
-		String cdmDB = "test"; 
+		String cdmDB = "standardliste"; 
 		String cdmUserName = "root";
 		return makeDestination(dbType, cdmServer, cdmDB, -1, cdmUserName, null);
 	}
+	
 
 	public static ICdmDataSource cdm_test_local_mysql_dwca(){
 		DatabaseTypeEnum dbType = DatabaseTypeEnum.MySQL;
