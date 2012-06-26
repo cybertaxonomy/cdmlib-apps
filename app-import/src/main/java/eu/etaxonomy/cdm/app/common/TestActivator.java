@@ -10,6 +10,7 @@
 package eu.etaxonomy.cdm.app.common;
 
 import java.net.URI;
+import java.util.List;
 import java.util.UUID;
 
 import org.apache.log4j.Logger;
@@ -25,10 +26,19 @@ import eu.etaxonomy.cdm.io.common.CdmDefaultImport;
 import eu.etaxonomy.cdm.io.common.IImportConfigurator.CHECK;
 import eu.etaxonomy.cdm.io.sdd.in.SDDImportConfigurator;
 import eu.etaxonomy.cdm.model.description.CategoricalData;
+import eu.etaxonomy.cdm.model.description.DescriptionElementBase;
 import eu.etaxonomy.cdm.model.description.Modifier;
 import eu.etaxonomy.cdm.model.description.State;
 import eu.etaxonomy.cdm.model.description.StateData;
+import eu.etaxonomy.cdm.model.description.TaxonDescription;
+import eu.etaxonomy.cdm.model.media.Media;
+import eu.etaxonomy.cdm.model.media.MediaRepresentation;
+import eu.etaxonomy.cdm.model.media.MediaRepresentationPart;
 import eu.etaxonomy.cdm.model.name.NomenclaturalCode;
+import eu.etaxonomy.cdm.model.name.NonViralName;
+import eu.etaxonomy.cdm.model.name.TaxonNameBase;
+import eu.etaxonomy.cdm.model.taxon.Taxon;
+import eu.etaxonomy.cdm.persistence.query.MatchMode;
 
 /**
  * @author a.babadshanjan
@@ -39,11 +49,12 @@ public class TestActivator {
 	private static final Logger logger = Logger.getLogger(TestActivator.class);
 
 	//static final Source faunaEuropaeaSource = FaunaEuropaeaSources.faunEu();
-	static final ICdmDataSource cdmDestination = CdmDestinations.cdm_test_local_mysql();
+//	static final ICdmDataSource cdmDestination = CdmDestinations.cdm_test_local_mysql();
 //	static final ICdmDataSource cdmDestination = CdmDestinations.localH2();
 //	static final ICdmDataSource cdmDestination = CdmDestinations.cdm_flora_central_africa_production();
 //	static final ICdmDataSource cdmDestination = CdmDestinations.cdm_edit_cichorieae_preview();
-	
+	static final ICdmDataSource cdmDestination = CdmDestinations.cdm_cyprus_production();
+
 	
 	static final int limitSave = 2000;
 
@@ -77,7 +88,14 @@ public class TestActivator {
 //		app = CdmApplicationController.NewInstance(resource, destination, dbSchemaValidation, false, progressMonitor, listeners);
 		app = CdmApplicationController.NewInstance(resource, destination, dbSchemaValidation, false, progressMonitor);
 		
+		
+		
+		if (1==1){
+			return;
+		}
+		
 		TransactionStatus tx = app.startTransaction();
+		
 		State state = (State)app.getTermService().find(UUID.fromString("881b9c80-626d-47a6-b308-a63ee5f4178f"));
 		Modifier modifier = (Modifier)app.getTermService().find(UUID.fromString("efc38dad-205c-4028-ad9d-ae509a14b37a"));
 		CategoricalData cd = CategoricalData.NewInstance();
@@ -135,5 +153,7 @@ public class TestActivator {
 		
 		System.out.println("End importing Fauna Europaea data");
 	}
+
+
 
 }
