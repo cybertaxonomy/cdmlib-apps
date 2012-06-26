@@ -43,18 +43,19 @@ public class MTMooseActivator {
 	//database validation status (create, update, validate ...)
 	static DbSchemaValidation hbm2dll = DbSchemaValidation.CREATE;
 	static final Source berlinModelSource = BerlinModelSources.MT_MOOSE();
-	static final ICdmDataSource cdmDestination = CdmDestinations.localH2();
+//	static final ICdmDataSource cdmDestination = CdmDestinations.localH2();
 //	static final ICdmDataSource cdmDestination = CdmDestinations.cdm_mt_moose();
+	static final ICdmDataSource cdmDestination = CdmDestinations.cdm_test_local_mysql_moose();
+	
 	
 	static final UUID classificationUuid = UUID.fromString("601d8a00-cffe-4509-af93-b15b543ccf8d");
-	static final int sourceSecId = 7331;
 	static final UUID sourceRefUuid = UUID.fromString("601d8a00-cffe-4509-af93-b15b543ccf8d");
 	
 	static final UUID featureTreeUuid = UUID.fromString("4c5b5bbe-6fef-4607-96b2-1b0104eac19e");
 	static final Object[] featureKeyList = new Integer[]{7,201,202,203,204,205,206,207}; 
 	
 	//check - import
-	static final CHECK check = CHECK.IMPORT_WITHOUT_CHECK;
+	static final CHECK check = CHECK.CHECK_AND_IMPORT;
 
 
 	//NomeclaturalCode
@@ -111,7 +112,7 @@ public class MTMooseActivator {
 		BerlinModelImportConfigurator bmImportConfigurator = BerlinModelImportConfigurator.NewInstance(source,  destination);
 		
 		bmImportConfigurator.setClassificationUuid(classificationUuid);
-		bmImportConfigurator.setSourceSecId(sourceSecId);
+//		bmImportConfigurator.setSourceSecId(sourceSecId);
 		bmImportConfigurator.setNomenclaturalCode(nomenclaturalCode);
 
 		bmImportConfigurator.setDoAuthors(doAuthors);
@@ -142,10 +143,8 @@ public class MTMooseActivator {
 			
 			//make feature tree
 			FeatureTree tree = TreeCreator.flatTree(featureTreeUuid, bmImportConfigurator.getFeatureMap(), featureKeyList);
-			FeatureNode imageNode = FeatureNode.NewInstance(Feature.IMAGE());
-			tree.getRoot().addChild(imageNode);
 			FeatureNode distributionNode = FeatureNode.NewInstance(Feature.DISTRIBUTION());
-			tree.getRoot().addChild(distributionNode, 2); 
+			tree.getRoot().addChild(distributionNode, 0); 
 			app.getFeatureTreeService().saveOrUpdate(tree);
 		}
 		
