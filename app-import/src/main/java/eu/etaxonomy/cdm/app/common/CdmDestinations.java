@@ -119,7 +119,7 @@ public class CdmDestinations {
 //
 //	public static ICdmDataSource cdm_ildis_production(){
 //		DatabaseTypeEnum dbType = DatabaseTypeEnum.MySQL;
-//		String cdmServer = "160.45.63.151";
+//		String cdmServer = "160.45.63.171";
 //		String cdmDB = "cdm_edit_ildis";
 //		String cdmUserName = "edit";
 //		return makeDestination(dbType, cdmServer, cdmDB, -1, cdmUserName, null);
@@ -152,7 +152,7 @@ public class CdmDestinations {
 	
 	public static ICdmDataSource cdm_cyprus_production(){
 		DatabaseTypeEnum dbType = DatabaseTypeEnum.MySQL;
-		String cdmServer = "160.45.63.151";
+		String cdmServer = "160.45.63.171";
 		String cdmDB = "cdm_production_cyprus";
 		String cdmUserName = "edit";
 		return makeDestination(dbType, cdmServer, cdmDB, -1, cdmUserName, null);
@@ -178,7 +178,7 @@ public class CdmDestinations {
 	
 	public static ICdmDataSource cdm_campanulaceae_production(){
 		DatabaseTypeEnum dbType = DatabaseTypeEnum.MySQL;
-		String cdmServer = "160.45.63.151";
+		String cdmServer = "160.45.63.171";
 		String cdmDB = "cdm_production_campanulaceae";
 		String cdmUserName = "edit";
 		return makeDestination(dbType, cdmServer, cdmDB, -1, cdmUserName, null);
@@ -194,7 +194,7 @@ public class CdmDestinations {
 
 	public static ICdmDataSource cdm_flora_malesiana_production(){
 		DatabaseTypeEnum dbType = DatabaseTypeEnum.MySQL;
-		String cdmServer = "160.45.63.151";
+		String cdmServer = "160.45.63.171";
 		String cdmDB = "cdm_production_flora_malesiana";
 		String cdmUserName = "edit";
 		return makeDestination(dbType, cdmServer, cdmDB, -1, cdmUserName, null);
@@ -210,7 +210,7 @@ public class CdmDestinations {
 	
 	public static ICdmDataSource cdm_flora_central_africa_production(){
 		DatabaseTypeEnum dbType = DatabaseTypeEnum.MySQL;
-		String cdmServer = "160.45.63.151";
+		String cdmServer = "160.45.63.171";
 		String cdmDB = "cdm_production_flora_central_africa";
 		String cdmUserName = "edit";
 		return makeDestination(dbType, cdmServer, cdmDB, -1, cdmUserName, null);
@@ -403,7 +403,7 @@ public class CdmDestinations {
 	
 	public static ICdmDataSource cdm_production_palmae(){
 		DatabaseTypeEnum dbType = DatabaseTypeEnum.MySQL;
-		String cdmServer = "160.45.63.151";
+		String cdmServer = "160.45.63.171";
 		String cdmDB = "cdm_production_palmae"; 
 		String cdmUserName = "edit";
 		return makeDestination(dbType, cdmServer, cdmDB, -1, cdmUserName, null);
@@ -412,7 +412,7 @@ public class CdmDestinations {
 	
 	public static ICdmDataSource cdm_production_diptera(){
 		DatabaseTypeEnum dbType = DatabaseTypeEnum.MySQL;
-		String cdmServer = "160.45.63.151";
+		String cdmServer = "160.45.63.171";
 		String cdmDB = "cdm_production_diptera"; 
 		String cdmUserName = "edit";
 		return makeDestination(dbType, cdmServer, cdmDB, -1, cdmUserName, null);
