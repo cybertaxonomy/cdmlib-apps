@@ -1,6 +1,5 @@
 * text=auto !eol
 UseImport/pom.xml -text
-UseImport/src/main/resources/Matched_UseSummary_referenceIdTaxEd_TaxonName.xls -text
 UseImport/src/main/resources/UseRecordTerms_UseSummaryId.xls -text
 UseImport/src/main/resources/terms.xls -text
 UseImport/src/main/resources/toLoad.xlsx -text
@@ -148,6 +147,7 @@ app-import/src/main/resources/palmae/taxonX/palm_tc_101023.xml -text
 app-import/src/main/resources/palmae/taxonX/palm_tc_101024.xml -text
 app-import/src/main/resources/palmae/taxonX/palm_tc_101025.xml -text
 app-import/src/main/resources/palmae/taxonX/palm_tc_101026.xml -text
+app-import/src/main/resources/palmae/useImport/Matched_UseSummary_referenceIdTaxEd_TaxonName.xls -text
 app-import/src/main/resources/sdd/Cicad.sdd11.xml -text
 app-import/src/main/resources/sdd/Cicad2.sdd11.xml -text
 app-import/src/main/resources/sdd/Cichorieae-DA-export-sdd.xml -text
