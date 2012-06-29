@@ -1,6 +1,5 @@
 * text=auto !eol
 UseImport/pom.xml -text
-UseImport/src/main/java/eu/etaxonomy/cdm/UseImport.java -text
 UseImport/src/main/resources/Matched_UseSummary_referenceIdTaxEd_TaxonName.xls -text
 UseImport/src/main/resources/UseRecordTerms_UseSummaryId.xls -text
 UseImport/src/main/resources/terms.xls -text
@@ -99,6 +98,7 @@ app-import/src/main/java/eu/etaxonomy/cdm/app/wp6/palmae/PalmaeImageActivator.ja
 app-import/src/main/java/eu/etaxonomy/cdm/app/wp6/palmae/PalmaePostImportUpdater.java -text
 app-import/src/main/java/eu/etaxonomy/cdm/app/wp6/palmae/PalmaeProtologueImportActivator.java -text
 app-import/src/main/java/eu/etaxonomy/cdm/app/wp6/palmae/PalmaeTaxonXImportActivator.java -text
+app-import/src/main/java/eu/etaxonomy/cdm/app/wp6/palmae/UseImport.java -text
 app-import/src/main/java/eu/etaxonomy/cdm/app/wp6/palmae/config/PalmaeProtologueImportConfigurator.java -text
 app-import/src/main/java/eu/etaxonomy/cdm/io/PalmaeImageImport.java -text
 app-import/src/main/java/eu/etaxonomy/cdm/io/PalmaeProtologueImport.java -text
