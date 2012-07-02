@@ -47,7 +47,7 @@ public class CichorieaeSDDActivator {
 
 	static String fileName = "/Cichorieae-full.sdd.xml";
 //	static ICdmDataSource cdmDestination = CdmDataSource.NewMySqlInstance("localhost", "cdmsdd", "root", "XXX");
-	static ICdmDataSource cdmDestination = CdmDestinations.cdm_test_local_xper();
+	static ICdmDataSource cdmDestination = CdmDestinations.cdm_test_local_xper_root();
 
 	static final String sourceSecId = "cichorieae-crepis-sdd-import";
 

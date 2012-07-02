@@ -26,7 +26,7 @@ public class TestAdapterCdmXper {
 	private boolean startApplications() {
 		boolean result = false;
 		DbSchemaValidation dbSchemaValidation = DbSchemaValidation.VALIDATE;
-		ICdmDataSource datasource = CdmDestinations.cdm_test_local_xper();
+		ICdmDataSource datasource = CdmDestinations.cdm_test_local_xper_root();
 		System.out.println("cdm start");
 		CdmApplicationController appCtr = CdmIoApplicationController.NewInstance(datasource, dbSchemaValidation);
 		System.out.println("cdm started :::");
