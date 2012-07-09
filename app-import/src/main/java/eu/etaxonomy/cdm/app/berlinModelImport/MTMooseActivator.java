@@ -43,9 +43,9 @@ public class MTMooseActivator {
 	//database validation status (create, update, validate ...)
 	static DbSchemaValidation hbm2dll = DbSchemaValidation.CREATE;
 	static final Source berlinModelSource = BerlinModelSources.MT_MOOSE();
-//	static final ICdmDataSource cdmDestination = CdmDestinations.localH2();
+	static final ICdmDataSource cdmDestination = CdmDestinations.localH2();
 //	static final ICdmDataSource cdmDestination = CdmDestinations.cdm_mt_moose();
-	static final ICdmDataSource cdmDestination = CdmDestinations.cdm_test_local_mysql_moose();
+//	static final ICdmDataSource cdmDestination = CdmDestinations.cdm_test_local_mysql_moose();
 	
 	
 	static final UUID classificationUuid = UUID.fromString("601d8a00-cffe-4509-af93-b15b543ccf8d");
@@ -72,14 +72,14 @@ public class MTMooseActivator {
 	static final boolean doRelNames = true;
 	static final boolean doNameStatus = true;
 	static final boolean doTypes = true;  
-	static final boolean doNameFacts = false;   
+	static final boolean doNameFacts = false;   //no name facts exist  
 	
 	//taxa
 	static final boolean doTaxa = true;
 	static final boolean doRelTaxa = true;
-	static final boolean doFacts = true;
-	static final boolean doOccurences = true;
-	static final boolean doCommonNames = false; 
+	static final boolean doFacts = false;    //no facts exist
+	static final boolean doOccurences = false;   //no occurrences exist
+	static final boolean doCommonNames = false;  //nocommon names exist
 
 // ************************ NONE **************************************** //
 	
