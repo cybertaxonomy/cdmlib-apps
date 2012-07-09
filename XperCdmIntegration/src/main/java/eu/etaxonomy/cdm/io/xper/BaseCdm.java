@@ -26,6 +26,10 @@ import fr_jussieu_snv_lis.base.BaseObjectResource;
 import fr_jussieu_snv_lis.base.Group;
 import fr_jussieu_snv_lis.base.IBase;
 import fr_jussieu_snv_lis.base.Individual;
+import fr_jussieu_snv_lis.base.IndividualGroupNode;
+import fr_jussieu_snv_lis.base.IndividualGroupTree;
+import fr_jussieu_snv_lis.base.IndividualNode;
+import fr_jussieu_snv_lis.base.IndividualTree;
 import fr_jussieu_snv_lis.base.Variable;
 import fr_jussieu_snv_lis.base.XPResource;
 
@@ -808,5 +812,219 @@ public class BaseCdm implements IBase {
 		return false;
 	}
 
+	@Override
+	public int getNbIndividualNodes() {
+		logger.warn ("getNbIndividualNodes not yet implemented (added Xper 2.3)");
+		return 0;
+	}
 
+	@Override
+	public IndividualNode getIndividualNodeAt(int i) {
+		logger.warn ("getIndividualNodeAt not yet implemented (added Xper 2.3)");
+		return null;
+	}
+
+	@Override
+	public boolean addIndividualNode(IndividualNode node) {
+		logger.warn ("addIndividualNode not yet implemented (added Xper 2.3)");
+		
+		return false;
+	}
+
+	@Override
+	public IndividualTree getIndividualtree() {
+		logger.warn ("getIndividualtree not yet implemented (added Xper 2.3)");
+		
+		return null;
+	}
+
+	@Override
+	public void setIndividualTree(IndividualTree individualTree) {
+		logger.warn ("setIndividualTree not yet implemented (added Xper 2.3)");
+		
+	}
+
+	@Override
+	public int getNbIndividualNodes(IndividualNode idNode) {
+		logger.warn ("getNbIndividualNodes not yet implemented (added Xper 2.3)");
+		
+		return 0;
+	}
+
+	@Override
+	public boolean deleteIndividualNode(IndividualNode individualNode) {
+		logger.warn ("deleteIndividualNode not yet implemented (added Xper 2.3)");
+		
+		return false;
+	}
+
+	@Override
+	public boolean moveIndividualNode(IndividualNode nodeToMove, IndividualNode nodeTarget) {
+		logger.warn ("moveIndividualNode not yet implemented (added Xper 2.3)");
+		return false;
+	}
+
+	@Override
+	public boolean moveIndividualNodeInIndividualTreeRoot(List<IndividualNode> nodesDaughters) {
+		logger.warn ("moveIndividualNodeInIndividualTreeRoot not yet implemented (added Xper 2.3)");
+		return false;
+	}
+
+	@Override
+	public boolean moveIndividualNodeInIndividualTreeRoot(IndividualNode targerNode) {
+		logger.warn ("moveIndividualNodeInIndividualTreeRoot not yet implemented (added Xper 2.3)");
+		return false;
+	}
+
+	@Override
+	public boolean checkIndNodeByName(String keyNode) {
+		logger.warn ("checkIndNodeByName not yet implemented (added Xper 2.3)");
+		return false;
+	}
+
+	@Override
+	public IndividualNode getIndNodeByName(String refTaxonHierarchyNodeTaxoNameIND) {
+		logger.warn ("getIndNodeByName not yet implemented (added Xper 2.3)");
+		return null;
+	}
+
+	@Override
+	public boolean checkIfIndividualNodeIsInTree(Individual individual) {
+		logger.warn ("checkIfIndividualNodeIsInTree not yet implemented (added Xper 2.3)");
+		return false;
+	}
+
+	@Override
+	public IndividualNode getIndividualNodeByLeaf(Individual individual) {
+		logger.warn ("getIndividualNodeByLeaf not yet implemented (added Xper 2.3)");
+		return null;
+	}
+
+	@Override
+	public void setIndividualtreeLabel(String string) {
+		logger.warn ("setIndividualtreeLabel not yet implemented (added Xper 2.3)");
+		
+	}
+
+	@Override
+	public void setIndividualtreeHierarchyType(String string) {
+		logger.warn ("setIndividualtreeHierarchyType not yet implemented (added Xper 2.3)");
+		
+	}
+
+	@Override
+	public List<IndividualTree> getListIndividualTree() {
+		logger.warn ("getListIndividualTree not yet implemented (added Xper 2.3)");
+		return null;
+	}
+
+	@Override
+	public void setListIndividualTree(List<IndividualTree> listOfTree) {
+		logger.warn ("setListIndividualTree not yet implemented (added Xper 2.3)");
+		
+	}
+
+	@Override
+	public IndividualGroupNode getIndividualNodeInTreeGroupAt(int i) {
+		logger.warn ("getIndividualNodeInTreeGroupAt not yet implemented (added Xper 2.3)");
+		return null;
+	}
+
+	@Override
+	public int getNbIndividualNodesGroupInTree() {
+		logger.warn ("getNbIndividualNodesGroupInTree not yet implemented (added Xper 2.3)");
+		return 0;
+	}
+
+	@Override
+	public IndividualGroupTree getIndividualGroupTree() {
+		logger.warn ("getIndividualGroupTree not yet implemented (added Xper 2.3)");
+		return null;
+	}
+
+	@Override
+	public boolean addIndividualGroupNode(IndividualGroupNode targetNode,IndividualGroupNode node2add) {
+		logger.warn ("addIndividualGroupNode not yet implemented (added Xper 2.3)");
+		return false;
+	}
+
+	@Override
+	public boolean addIndGroup(Group newGroup) {
+		logger.warn ("addIndGroup not yet implemented (added Xper 2.3)");
+		return false;
+	}
+
+	@Override
+	public boolean deleteIndividualGroupNode(Individual ind) {
+		logger.warn ("deleteIndividualGroupNode not yet implemented (added Xper 2.3)");
+		return false;
+	}
+
+	@Override
+	public boolean deleteIndividualGroupNode(Group group) {
+		logger.warn ("deleteIndividualGroupNode not yet implemented (added Xper 2.3)");
+		return false;
+	}
+
+	@Override
+	public boolean deleteIndividualGroupNode(IndividualGroupNode node2Delete) {
+		logger.warn ("deleteIndividualGroupNode not yet implemented (added Xper 2.3)");
+		return false;
+	}
+
+	@Override
+	public int getNbIndividualGroups() {
+		logger.warn ("getNbIndividualGroups not yet implemented (added Xper 2.3)");
+		return 0;
+	}
+
+	@Override
+	public List<Group> getIndividualGroups() {
+		logger.warn ("getIndividualGroups not yet implemented (added Xper 2.3)");
+		return null;
+	}
+
+	@Override
+	public Group getIndividualGroupAt(int i) {
+		logger.warn ("getIndividualGroupAt not yet implemented (added Xper 2.3)");
+		return null;
+	}
+
+	@Override
+	public boolean addDuplicateIndividualGroupNode(IndividualGroupNode targetNode, IndividualGroupNode node2copy) {
+		logger.warn ("addDuplicateIndividualGroupNode not yet implemented (added Xper 2.3)");
+		return false;
+	}
+
+	@Override
+	public boolean removeIndividualGroupNode(IndividualGroupNode mother, IndividualGroupNode node2del) {
+		logger.warn ("removeIndividualGroupNode not yet implemented (added Xper 2.3)");
+		return false;
+	}
+
+	@Override
+	public IndividualGroupNode addIndividualGroupNode(Group group) {
+		logger.warn ("addIndividualGroupNode not yet implemented (added Xper 2.3)");
+		return null;
+	}
+
+	@Override
+	public boolean moveIndividualGroupNode(String idTargetNode, IndividualGroupNode node2move) {
+		logger.warn ("moveIndividualGroupNode not yet implemented (added Xper 2.3)");
+		return false;
+	}
+
+	@Override
+	public IndividualGroupNode getIndividualNodeByGroupId(String idGroupParent) {
+		logger.warn ("getIndividualNodeByGroupId not yet implemented (added Xper 2.3)");
+		return null;
+	}
+
+	@Override
+	public void sortIndGrpList() {
+		logger.warn ("sortIndGrpList not yet implemented (added Xper 2.3)");
+		
+	}
+	
+	
 }
