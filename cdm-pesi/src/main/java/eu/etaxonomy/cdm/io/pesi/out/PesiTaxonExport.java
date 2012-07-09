@@ -681,6 +681,7 @@ public class PesiTaxonExport extends PesiExportBase {
 
 				doCount(count++, modCount, pluralString);
 				Integer typeNameFk = getTypeNameFk(taxonName, state);
+				kingdomFk = PesiTransformer.nomenClaturalCode2Kingdom(nomenclaturalCode);
 				
 				//TODO why are expertFks needed? (Andreas M.)
 //				if (expertFk != null || speciesExpertFk != null) {
@@ -892,28 +893,30 @@ public class PesiTaxonExport extends PesiExportBase {
 										IdentifiableSource source = synonym.getSources().iterator().next();
 										if (source.getIdNamespace().contains("Potential combination")){
 											synRel = acceptedTaxon.addSynonym(synonym, SynonymRelationshipType.POTENTIAL_COMBINATION_OF());
-											logger.warn(synonym.getTitleCache() + " has no synonym relationship to " + acceptedTaxon.getTitleCache() + " type is set to potential combination");
+											logger.error(synonym.getTitleCache() + " has no synonym relationship to " + acceptedTaxon.getTitleCache() + " type is set to potential combination");
 										} else if (source.getIdNamespace().contains("Inferred Genus")){
 											synRel = acceptedTaxon.addSynonym(synonym, SynonymRelationshipType.INFERRED_GENUS_OF());
-											logger.warn(synonym.getTitleCache() + " has no synonym relationship to " + acceptedTaxon.getTitleCache() + " type is set to inferred genus");
+											logger.error(synonym.getTitleCache() + " has no synonym relationship to " + acceptedTaxon.getTitleCache() + " type is set to inferred genus");
 										} else if (source.getIdNamespace().contains("Inferred Epithet")){
 											synRel = acceptedTaxon.addSynonym(synonym, SynonymRelationshipType.INFERRED_EPITHET_OF());
-											logger.warn(synonym.getTitleCache() + " has no synonym relationship to " + acceptedTaxon.getTitleCache() + " type is set to inferred epithet");
+											logger.error(synonym.getTitleCache() + " has no synonym relationship to " + acceptedTaxon.getTitleCache() + " type is set to inferred epithet");
 										} else{
 											synRel = acceptedTaxon.addSynonym(synonym, SynonymRelationshipType.INFERRED_SYNONYM_OF());
-											logger.warn(synonym.getTitleCache() + " has no synonym relationship to " + acceptedTaxon.getTitleCache() + " type is set to inferred synonym");
+											logger.error(synonym.getTitleCache() + " has no synonym relationship to " + acceptedTaxon.getTitleCache() + " type is set to inferred synonym");
 										}
 										
 										localSuccess &= synRelMapping.invoke(synRel);
 										if (!localSuccess) {
-											logger.warn("Synonym relationship export failed " + synonym.getTitleCache() + " accepted taxon: " + acceptedTaxon.getUuid() + " (" + acceptedTaxon.getTitleCache()+")");
+											logger.error("Synonym relationship export failed " + synonym.getTitleCache() + " accepted taxon: " + acceptedTaxon.getUuid() + " (" + acceptedTaxon.getTitleCache()+")");
 										}
 										synRel = null;
 									} else {
 										for (SynonymRelationship synRel: synonym.getSynonymRelations()){
 											localSuccess &= synRelMapping.invoke(synRel);
 											if (!localSuccess) {
-												logger.warn("Synonym relationship export failed " + synonym.getTitleCache() + " accepted taxon: " + acceptedTaxon.getUuid() + " (" + acceptedTaxon.getTitleCache()+")");
+												logger.error("Synonym relationship export failed " + synonym.getTitleCache() + " accepted taxon: " + acceptedTaxon.getUuid() + " (" + acceptedTaxon.getTitleCache()+")");
+											} else {
+												logger.info("Synonym relationship successfully exported: " + synonym.getTitleCache() + "  " +acceptedTaxon.getUuid() + " (" + acceptedTaxon.getTitleCache()+")");
 											}
 											synRel = null;
 										}
