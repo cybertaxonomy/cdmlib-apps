@@ -46,7 +46,7 @@ import fr_jussieu_snv_lis.base.Variable;
 import fr_jussieu_snv_lis.utils.Utils;
 
 @Component
-public class CdmXperAdapter extends CdmIoBase implements IExternalAdapter{
+public class CdmXperAdapter extends CdmIoBase<IoStateBase> implements IExternalAdapter{
 	private static final Logger logger = Logger.getLogger(CdmXperAdapter.class);
 	
 	private CdmXperAdapter  adapter = this;
