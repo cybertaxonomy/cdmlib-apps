@@ -99,8 +99,8 @@ public class PesiRelTaxonExport extends PesiExportBase {
 			boolean success = true;
 
 			// PESI: Clear the database table RelTaxon.
-			doDelete(state);
-	
+			//doDelete(state); -> done by stored procedure
+			
 			// Get specific mappings: (CDM) Relationship -> (PESI) RelTaxon
 			mapping = getMapping();
 
@@ -113,6 +113,10 @@ public class PesiRelTaxonExport extends PesiExportBase {
 			
 			// Export name relations
 			success &= doPhase02(state, mapping);
+			
+			if (! success){
+				state.setUnsuccessfull();
+			}
 
 		} catch (SQLException e) {
 			e.printStackTrace();
@@ -511,7 +515,7 @@ public class PesiRelTaxonExport extends PesiExportBase {
 	 * @param state
 	 * @param sr
 	 */
-	private static void invokeSynonyms(PesiExportState state, TaxonNameBase synonymTaxonName) {
+	private void invokeSynonyms(PesiExportState state, TaxonNameBase synonymTaxonName) {
 		// Store KingdomFk and Rank information in Taxon table
 		Integer kingdomFk = PesiTransformer.nomenClaturalCode2Kingdom(synonymTaxonName.getNomenclaturalCode());
 		Integer synonymFk = state.getDbId(synonymTaxonName);
@@ -528,7 +532,7 @@ public class PesiRelTaxonExport extends PesiExportBase {
 	 * @param synonymParentTaxonFk
 	 * @param currentTaxonFk
 	 */
-	private static boolean saveSynonymData(PesiExportState state, TaxonNameBase taxonName,
+	private boolean saveSynonymData(PesiExportState state, TaxonNameBase taxonName,
 			NomenclaturalCode nomenclaturalCode, Integer kingdomFk,
 			Integer currentSynonymFk) {
 		try {

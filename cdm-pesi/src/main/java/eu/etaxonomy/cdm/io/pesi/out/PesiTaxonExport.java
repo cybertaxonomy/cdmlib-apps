@@ -189,7 +189,7 @@ public class PesiTaxonExport extends PesiExportBase {
 			boolean success = true;
 	
 			// PESI: Clear the database table Taxon.
-			doDelete(state);
+//			doDelete(state);
 			
 			// Get specific mappings: (CDM) Taxon -> (PESI) Taxon
 			PesiExportMapping mapping = getMapping();

@@ -113,8 +113,8 @@ public class PesiSourceExport extends PesiExportBase {
 			boolean success = true ;
 
 			// PESI: Clear the database table Source.
-			doDelete(state);
-
+			//doDelete(state);  -> done by stored procedure
+			
 			// Get specific mappings: (CDM) Reference -> (PESI) Source
 			PesiExportMapping mapping = getMapping();
 
