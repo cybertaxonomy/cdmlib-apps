@@ -335,14 +335,14 @@ public class CdmXperAdapter extends CdmIoBase<IoStateBase> implements IExternalA
 	 * @return
 	 */
 	private Map<UuidAndTitleCache, Map<UUID, Set<CategoricalData>>> getCategoricalData() {
-		Map<UuidAndTitleCache, Map<UUID, Set<CategoricalData>>> data = getWorkingSetService().getTaxonFeatureDescriptionElementMap(
-				CategoricalData.class, uuidWorkingSet, null);
+		Map<UuidAndTitleCache, Map<UUID, Set<CategoricalData>>> data = 
+			getWorkingSetService().getTaxonFeatureDescriptionElementMap(CategoricalData.class, uuidWorkingSet, null);
 		return data;
 	}
 
 	private Map<UuidAndTitleCache, Map<UUID, Set<QuantitativeData>>> getQuantitativeData() {
-		Map<UuidAndTitleCache, Map<UUID, Set<QuantitativeData>>> data = getWorkingSetService().getTaxonFeatureDescriptionElementMap(
-				QuantitativeData.class, uuidWorkingSet, null);
+		Map<UuidAndTitleCache, Map<UUID, Set<QuantitativeData>>> data = 
+			getWorkingSetService().getTaxonFeatureDescriptionElementMap(QuantitativeData.class, uuidWorkingSet, null);
 		return data;
 	}
 
