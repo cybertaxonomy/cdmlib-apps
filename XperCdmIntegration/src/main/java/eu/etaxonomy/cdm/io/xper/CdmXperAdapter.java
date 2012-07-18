@@ -317,12 +317,16 @@ public class CdmXperAdapter extends CdmIoBase<IoStateBase> implements IExternalA
 		
 		//TODO
 		//descriptions with no data
+		logger.warn("Descriptions with no data not yet implemented");
 		
 		//TODO varComment
+		logger.warn("varComment not yet implemented");
 		
 		//TODO varUnknown
+		logger.warn("varUnknown not yet implemented");
 		
 		//TODO Resources
+		logger.warn("resources not yet implemented");
 		
 //		TODO private String index;
 //		TODO private String description;
