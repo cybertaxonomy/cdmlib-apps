@@ -1002,6 +1002,12 @@ public class CdmXperBaseControler extends ControlerBase implements IControlerBas
 		super.setCurrentIndArray(tab);
 	}
 
+	
+	@Override
+	public boolean isAllowIndividualEditing() {
+		//editing of individuals is not allowed in CDM mode
+		return false;
+	}
 
 	/* (non-Javadoc)
 	 * @see fr_jussieu_snv_lis.base.IControlerBase#getSortedIndividuals()
