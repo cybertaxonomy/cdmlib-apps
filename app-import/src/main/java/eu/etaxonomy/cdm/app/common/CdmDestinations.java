@@ -131,7 +131,7 @@ public class CdmDestinations {
 	public static ICdmDataSource cdm_redlist_moose_dev(){
 		DatabaseTypeEnum dbType = DatabaseTypeEnum.MySQL;
 		String cdmServer = "160.45.63.201";
-		String cdmDB = "cdm_redlist_moose";
+		String cdmDB = "cdm_mt_moose";
 		String cdmUserName = "edit";
 		return makeDestination(dbType, cdmServer, cdmDB, -1, cdmUserName, null);
 	}
@@ -139,7 +139,7 @@ public class CdmDestinations {
 	public static ICdmDataSource cdm_redlist_standardlist_dev(){
 		DatabaseTypeEnum dbType = DatabaseTypeEnum.MySQL;
 		String cdmServer = "160.45.63.201";
-		String cdmDB = "cdm_redlist_standardlist";
+		String cdmDB = "cdm_mt_standardliste";
 		String cdmUserName = "edit";
 		return makeDestination(dbType, cdmServer, cdmDB, -1, cdmUserName, null);
 	}
