@@ -1055,6 +1055,21 @@ public class BaseCdm implements IBase {
 		logger.warn ("getListIndividualGroupTree not yet implemented (added Xper 2.3)");
 		return null;
 	}
+
+	@Override
+	public void sortIndividualTree() {
+		logger.info("sortIndividualTree not implemented for BaseCdm. Probably not needed (added since Xper 2.3)");
+	}
+
+	@Override
+	public void sortIndividualGroupTree() {
+		logger.info("sortIndividualGroupTree not implemented for BaseCdm. Probably not needed (added since Xper 2.3)");
+	}
+
+	@Override
+	public void checkTreeIndex() {
+		logger.info("checkTreeIndex not implemented for BaseCdm. Probably not needed (added since Xper 2.3)");
+	}
 	
 	
 }
