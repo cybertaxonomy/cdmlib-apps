@@ -43,6 +43,7 @@ import fr_jussieu_snv_lis.XPApp;
 import fr_jussieu_snv_lis.Xper;
 import fr_jussieu_snv_lis.IO.IExternalAdapter;
 import fr_jussieu_snv_lis.base.Individual;
+import fr_jussieu_snv_lis.base.IndividualNode;
 import fr_jussieu_snv_lis.base.IndividualTree;
 import fr_jussieu_snv_lis.base.Mode;
 import fr_jussieu_snv_lis.base.Variable;
@@ -321,7 +322,7 @@ public class CdmXperAdapter extends CdmIoBase<IoStateBase> implements IExternalA
 		//classification
 		//TODO classification not yet in WorkingSet. We create a preliminary classification here
 		logger.warn("Classification implementation is preliminary");
-		createAndHandleClassification();
+		handleClassification();
 		
 		
 		//TODO
@@ -344,18 +345,72 @@ public class CdmXperAdapter extends CdmIoBase<IoStateBase> implements IExternalA
 		
 	}
 
-	private void createAndHandleClassification() {
-		List<Individual> individuals = this.getBaseController().getBase().getIndividuals();
-		IndividualTree indTree;
+	/**
+	 * Handles the classification.
+	 * Currently this is a very preliminary implementation as classifications are not 
+	 * yet part of WorkingSet. We may implement better implementations later.
+	 * Current implementation uses IndividualTree and IndividualNode from Xper but later we
+	 * may use Classification and TaxonNode itself. However, we will need to adapt 
+	 * BaseCdm then.
+	 */
+	private void handleClassification() {
+		IndividualTree indTree = new IndividualTree();
 		SortedMap<String, Individual> indMap = new TreeMap<String, Individual>();
+		List<Individual> individuals = this.getBaseController().getBase().getIndividuals();
+		
 		for (Individual ind : individuals){
 			String name = ind.getName();
+			name = getNameCache(name);
 			indMap.put(name, ind);
 		}
 		
+		IndividualNode lastNode = null;
+		IndividualNode newNode;
 		for (String str : indMap.keySet()){
-		
+			Individual ind = indMap.get(str);
+			String description = null;
+			IndividualNode mother = getLastCommonAncestor(str, lastNode);
+			newNode = new IndividualNode(str, description, mother, ind);
+			if (mother == null){
+				indTree.addIndividualNode(newNode);
+			}
+			lastNode = newNode;
 		}
+		
+		//save
+		getBaseController().getBase().setIndividualTree(indTree);
+		
+	}
+
+	private String getNameCache(String name) {
+		name = name.split("sec\\.")[0];  //remove secundum information
+		//remove authorship
+		String[] split = name.split(" ");
+		if (split.length > 1){
+			name = split[0];
+			for (int i = 1; i < split.length; i++){
+				String epithet = split[i];
+				char firstChar = epithet.charAt(0);
+				if (! Character.isUpperCase(firstChar) && ! "(".equals(String.valueOf(firstChar)) ){
+					name += " " + epithet;
+				}else{
+					break;  //stop with first capital epiteht or open bracket "(". May be incorrect for subgenuses.
+				}
+			}
+		}
+		return name;
+		
+	}
+
+	private IndividualNode getLastCommonAncestor(String str, IndividualNode lastNode) {
+		if (lastNode == null || StringUtils.isBlank(str)){
+			return null;
+		}else if (str.startsWith(lastNode.getName())){
+			return lastNode;
+		}else{
+			return getLastCommonAncestor(str, lastNode.getMother());
+		}
+			
 		
 	}
 

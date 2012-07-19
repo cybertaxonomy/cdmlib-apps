@@ -45,6 +45,8 @@ public class BaseCdm implements IBase {
 	//temporary store
 	private List<Variable> cdmVariables; // A set of Variable
 	private List<Individual> cdmIndividuals;
+	private IndividualTree cdmIndividualTree;
+	
 	//FIXME mapping for groups not yet decided
 	private List<Group> groups = new ArrayList<Group>();
 
@@ -814,66 +816,58 @@ public class BaseCdm implements IBase {
 
 	@Override
 	public int getNbIndividualNodes() {
-		logger.warn ("getNbIndividualNodes not yet implemented (added Xper 2.3)");
-		return 0;
+		//preliminary until classification is implemented in a better way for CDM
+		return this.cdmIndividualTree.getIndividualNodes().size();
 	}
 
 	@Override
 	public IndividualNode getIndividualNodeAt(int i) {
-		logger.warn ("getIndividualNodeAt not yet implemented (added Xper 2.3)");
-		return null;
+		//preliminary until classification is implemented in a better way for CDM
+		return this.cdmIndividualTree.getIndividualNodes().get(i);
 	}
 
 	@Override
 	public boolean addIndividualNode(IndividualNode node) {
 		logger.warn ("addIndividualNode not yet implemented (added Xper 2.3)");
-		
-		return false;
+		throw new RuntimeException("Individual Node can't be added in CDM version of Xper. Editing taxonomy is not allowed.");
 	}
 
 	@Override
 	public IndividualTree getIndividualtree() {
-		logger.warn ("getIndividualtree not yet implemented (added Xper 2.3)");
-		
-		return null;
+		//preliminary until classification is implemented in a better way for CDM
+		return this.cdmIndividualTree;
 	}
 
 	@Override
 	public void setIndividualTree(IndividualTree individualTree) {
-		logger.warn ("setIndividualTree not yet implemented (added Xper 2.3)");
-		
+		//preliminary until classification is implemented in a better way for CDM
+		this.cdmIndividualTree = individualTree;
 	}
 
 	@Override
 	public int getNbIndividualNodes(IndividualNode idNode) {
-		logger.warn ("getNbIndividualNodes not yet implemented (added Xper 2.3)");
-		
-		return 0;
+		//preliminary until classification is implemented in a better way for CDM
+		return this.cdmIndividualTree.getNbIndividualNodes(idNode);
 	}
 
 	@Override
 	public boolean deleteIndividualNode(IndividualNode individualNode) {
-		logger.warn ("deleteIndividualNode not yet implemented (added Xper 2.3)");
-		
-		return false;
+		throw new RuntimeException("Individual node can't be deleted in CDM version of Xper. Editing taxonomy is not allowed.");
 	}
 
 	@Override
 	public boolean moveIndividualNode(IndividualNode nodeToMove, IndividualNode nodeTarget) {
-		logger.warn ("moveIndividualNode not yet implemented (added Xper 2.3)");
-		return false;
+		throw new RuntimeException("Individual node can't be moved in CDM version of Xper. Editing taxonomy is not allowed.");
 	}
 
 	@Override
 	public boolean moveIndividualNodeInIndividualTreeRoot(List<IndividualNode> nodesDaughters) {
-		logger.warn ("moveIndividualNodeInIndividualTreeRoot not yet implemented (added Xper 2.3)");
-		return false;
+		throw new RuntimeException("Individual node can't be moved in CDM version of Xper. Editing taxonomy is not allowed.");
 	}
 
 	@Override
 	public boolean moveIndividualNodeInIndividualTreeRoot(IndividualNode targerNode) {
-		logger.warn ("moveIndividualNodeInIndividualTreeRoot not yet implemented (added Xper 2.3)");
-		return false;
+		throw new RuntimeException("Individual node can't be moved in CDM version of Xper. Editing taxonomy is not allowed.");
 	}
 
 	@Override
@@ -902,8 +896,7 @@ public class BaseCdm implements IBase {
 
 	@Override
 	public void setIndividualtreeLabel(String string) {
-		logger.warn ("setIndividualtreeLabel not yet implemented (added Xper 2.3)");
-		
+		logger.warn("setIndividualtreeLabel not yet implemented (added Xper 2.3)");
 	}
 
 	@Override
