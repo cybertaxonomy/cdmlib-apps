@@ -6,6 +6,8 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.SortedMap;
+import java.util.TreeMap;
 import java.util.UUID;
 
 import org.apache.commons.lang.StringUtils;
@@ -41,6 +43,7 @@ import fr_jussieu_snv_lis.XPApp;
 import fr_jussieu_snv_lis.Xper;
 import fr_jussieu_snv_lis.IO.IExternalAdapter;
 import fr_jussieu_snv_lis.base.Individual;
+import fr_jussieu_snv_lis.base.IndividualTree;
 import fr_jussieu_snv_lis.base.Mode;
 import fr_jussieu_snv_lis.base.Variable;
 import fr_jussieu_snv_lis.utils.Utils;
@@ -315,6 +318,12 @@ public class CdmXperAdapter extends CdmIoBase<IoStateBase> implements IExternalA
 		handleQuantitativeData(quantitativeData);
 		logger.warn("load quantitative data :::");
 		
+		//classification
+		//TODO classification not yet in WorkingSet. We create a preliminary classification here
+		logger.warn("Classification implementation is preliminary");
+		createAndHandleClassification();
+		
+		
 		//TODO
 		//descriptions with no data
 		logger.warn("Descriptions with no data not yet implemented");
@@ -332,6 +341,21 @@ public class CdmXperAdapter extends CdmIoBase<IoStateBase> implements IExternalA
 //		TODO private String description;
 
 		
+		
+	}
+
+	private void createAndHandleClassification() {
+		List<Individual> individuals = this.getBaseController().getBase().getIndividuals();
+		IndividualTree indTree;
+		SortedMap<String, Individual> indMap = new TreeMap<String, Individual>();
+		for (Individual ind : individuals){
+			String name = ind.getName();
+			indMap.put(name, ind);
+		}
+		
+		for (String str : indMap.keySet()){
+		
+		}
 		
 	}
 
