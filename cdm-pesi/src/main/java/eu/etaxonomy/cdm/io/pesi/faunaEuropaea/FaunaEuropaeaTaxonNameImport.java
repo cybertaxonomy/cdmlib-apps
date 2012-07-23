@@ -629,7 +629,7 @@ public class FaunaEuropaeaTaxonNameImport extends FaunaEuropaeaImportBase  {
 			
 			buildTaxonName(fauEuTaxon, synonym, basionym, true, fauEuConfig);
 			
-			//originalSources zufügen
+			//originalSources zufÃ¼gen
 			
 			ImportHelper.setOriginalSource(synonym, fauEuConfig.getSourceReference(), fauEuTaxon.getId(), PesiTransformer.STR_NAMESPACE_NOMINAL_TAXON);
 			ImportHelper.setOriginalSource(synonym.getName(), fauEuConfig.getSourceReference(), fauEuTaxon.getId(), PesiTransformer.STR_NAMESPACE_NOMINAL_TAXON);
