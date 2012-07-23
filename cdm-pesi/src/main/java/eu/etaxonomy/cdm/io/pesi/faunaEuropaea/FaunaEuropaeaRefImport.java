@@ -501,7 +501,7 @@ public class FaunaEuropaeaRefImport extends FaunaEuropaeaImportBase {
 			} else {
 				taxon = CdmBase.deproxy(taxonBase, Taxon.class);
 			}
-//TODO: statt TaxonDescription TaxonNameDescription und an den Namen anstatt ans Taxon h‰ngen!!!
+//TODO: statt TaxonDescription TaxonNameDescription und an den Namen anstatt ans Taxon h√§ngen!!!
 			if (taxon != null) {
 				TaxonNameDescription taxonNameDescription = null;
 				Set<TaxonNameDescription> descriptions = taxon.getName().getDescriptions();

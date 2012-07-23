@@ -323,7 +323,7 @@ public class FaunaEuErmsFindIdenticalNamesActivator {
 			zooName = (ZoologicalName)names.get(i);
 			zooName2 = (ZoologicalName)names.get(i+1);
 			mergeObject = new FaunaEuErmsMerging();
-			//TODO:überprüfen, ob die beiden Namen identisch sind und aus unterschiedlichen DB kommen
+			//TODO:Ã¼berprÃ¼fen, ob die beiden Namen identisch sind und aus unterschiedlichen DB kommen
 			
 			//getPhylum
 			String phylum1 = null;
@@ -380,7 +380,7 @@ public class FaunaEuErmsFindIdenticalNamesActivator {
 						parentNode = node.getParent();
 					}
 				}
-				//TODO: ändern mit erweitertem Initializer..
+				//TODO: Ã¤ndern mit erweitertem Initializer..
 				if (parentNode != null){
 					ZoologicalName parentName = HibernateProxyHelper.deproxy(parentNode.getTaxon().getName(), ZoologicalName.class);
 					String parentNameCache = parentName.getNameCache();
@@ -411,7 +411,7 @@ public class FaunaEuErmsFindIdenticalNamesActivator {
 						parentNode = node.getParent();
 					}
 				}
-				//TODO: ändern mit erweitertem Initializer..
+				//TODO: Ã¤ndern mit erweitertem Initializer..
 				if (parentNode != null){
 					if (parentNode.getTaxon().getName() instanceof ZoologicalName){
 					

@@ -380,7 +380,7 @@ public final class ErmsTransformer extends InputTransformerBase {
 			
 			unhandledLanguages.add("cu");   //Chleuh
 			unhandledLanguages.add("ki");  //Krio, subset of Language.CREOLES_PIDGINS_ENGLISH_BASED_OTHER()
-			unhandledLanguages.add("mo");  //Monégasque
+			unhandledLanguages.add("mo");  //MonÃ©gasque
 
 
 			
