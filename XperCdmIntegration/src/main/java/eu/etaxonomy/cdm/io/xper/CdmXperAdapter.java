@@ -21,6 +21,7 @@ import eu.etaxonomy.cdm.api.service.pager.Pager;
 import eu.etaxonomy.cdm.common.CdmUtils;
 import eu.etaxonomy.cdm.io.common.CdmIoBase;
 import eu.etaxonomy.cdm.io.common.IoStateBase;
+import eu.etaxonomy.cdm.model.common.Annotation;
 import eu.etaxonomy.cdm.model.common.CdmBase;
 import eu.etaxonomy.cdm.model.common.DefinedTermBase;
 import eu.etaxonomy.cdm.model.common.Language;
@@ -28,6 +29,7 @@ import eu.etaxonomy.cdm.model.common.Representation;
 import eu.etaxonomy.cdm.model.common.TermVocabulary;
 import eu.etaxonomy.cdm.model.common.UuidAndTitleCache;
 import eu.etaxonomy.cdm.model.description.CategoricalData;
+import eu.etaxonomy.cdm.model.description.DescriptionElementBase;
 import eu.etaxonomy.cdm.model.description.Feature;
 import eu.etaxonomy.cdm.model.description.FeatureNode;
 import eu.etaxonomy.cdm.model.description.FeatureTree;
@@ -465,13 +467,13 @@ public class CdmXperAdapter extends CdmIoBase<IoStateBase> implements IExternalA
 							}
 						}
 					}
+					handleAnnotations(categorical, individual, variable);
 				}
 			}else{
 				logger.warn("Variable not found for uuid " +  featureUuid.toString());
 			}
 		}
 	}
-	
 	
 	private void handleQuantitativeData(Map<UUID, Set<QuantitativeData>> variableMap, Individual individual) {
 		for (UUID featureUuid : variableMap.keySet()){
@@ -480,10 +482,18 @@ public class CdmXperAdapter extends CdmIoBase<IoStateBase> implements IExternalA
 				for (QuantitativeData qdCDM : variableMap.get(featureUuid)){
 					fr_jussieu_snv_lis.base.QuantitativeData qdXper = adaptQdCdm2QdXper(qdCDM);
 					individual.addNumMatrix(variable, qdXper);
+					handleAnnotations(qdCDM, individual, variable);
 				}
 			}else{
 				logger.warn("Variable not found for uuid " +  featureUuid.toString());
 			}
+		}
+	}
+	
+	
+	private void handleAnnotations(DescriptionElementBase descriptionElement, Individual individual, Variable variable) {
+		for (Annotation annotation : descriptionElement.getAnnotations()){
+			individual.addVarComment(variable, annotation.getText());
 		}
 	}
 
@@ -491,8 +501,7 @@ public class CdmXperAdapter extends CdmIoBase<IoStateBase> implements IExternalA
 	 * @param qdCDM
 	 * @return
 	 */
-	private fr_jussieu_snv_lis.base.QuantitativeData adaptQdCdm2QdXper(
-			QuantitativeData qdCDM) {
+	private fr_jussieu_snv_lis.base.QuantitativeData adaptQdCdm2QdXper(QuantitativeData qdCDM) {
 		fr_jussieu_snv_lis.base.QuantitativeData qdXper = new fr_jussieu_snv_lis.base.QuantitativeData();
 		
 		if (qdCDM.getMax() != null){
@@ -522,11 +531,12 @@ public class CdmXperAdapter extends CdmIoBase<IoStateBase> implements IExternalA
 	}
 	
 	
-	private Individual getIndividualByUuidAndTitleCache(UuidAndTitleCache taxon) {
-		Individual result = this.getBaseController().findIndividualByName(taxon.getTitleCache());
+	private Individual getIndividualByUuidAndTitleCache(UuidAndTitleCache simpleTaxon) {
+		Individual result = this.getBaseController().findIndividualByName(simpleTaxon.getTitleCache());
+		
 		if (result == null){
-			result= new Individual(taxon.getTitleCache());
-			result.setUuid(taxon.getUuid());
+			result= new Individual(simpleTaxon.getTitleCache());
+			result.setUuid(simpleTaxon.getUuid());
 			this.getBaseController().addIndividual(result);
 		}
 		return result;
