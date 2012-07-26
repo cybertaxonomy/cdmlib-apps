@@ -1,6 +1,7 @@
 package eu.etaxonomy.cdm.io.xper;
 
 import java.net.URI;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -25,6 +26,8 @@ import eu.etaxonomy.cdm.model.common.Annotation;
 import eu.etaxonomy.cdm.model.common.CdmBase;
 import eu.etaxonomy.cdm.model.common.DefinedTermBase;
 import eu.etaxonomy.cdm.model.common.Language;
+import eu.etaxonomy.cdm.model.common.LanguageString;
+import eu.etaxonomy.cdm.model.common.MarkerType;
 import eu.etaxonomy.cdm.model.common.Representation;
 import eu.etaxonomy.cdm.model.common.TermVocabulary;
 import eu.etaxonomy.cdm.model.common.UuidAndTitleCache;
@@ -39,16 +42,22 @@ import eu.etaxonomy.cdm.model.description.State;
 import eu.etaxonomy.cdm.model.description.StateData;
 import eu.etaxonomy.cdm.model.description.TaxonDescription;
 import eu.etaxonomy.cdm.model.description.WorkingSet;
+import eu.etaxonomy.cdm.model.media.Media;
+import eu.etaxonomy.cdm.model.media.MediaRepresentation;
+import eu.etaxonomy.cdm.model.media.MediaRepresentationPart;
+import eu.etaxonomy.cdm.model.media.MediaUtils;
 import eu.etaxonomy.cdm.model.taxon.Taxon;
 import eu.etaxonomy.cdm.model.taxon.TaxonBase;
 import fr_jussieu_snv_lis.XPApp;
 import fr_jussieu_snv_lis.Xper;
 import fr_jussieu_snv_lis.IO.IExternalAdapter;
+import fr_jussieu_snv_lis.base.BaseObjectResource;
 import fr_jussieu_snv_lis.base.Individual;
 import fr_jussieu_snv_lis.base.IndividualNode;
 import fr_jussieu_snv_lis.base.IndividualTree;
 import fr_jussieu_snv_lis.base.Mode;
 import fr_jussieu_snv_lis.base.Variable;
+import fr_jussieu_snv_lis.base.XPResource;
 import fr_jussieu_snv_lis.utils.Utils;
 
 @Component
@@ -437,11 +446,60 @@ public class CdmXperAdapter extends CdmIoBase<IoStateBase> implements IExternalA
 		for (UuidAndTitleCache taxon : categoricalData.keySet()){
 			Map<UUID, Set<CategoricalData>> variableMap = categoricalData.get(taxon);
 			Individual individual = getIndividualByUuidAndTitleCache(taxon);
-			
+			handleResources(individual, taxon);
 			handleCategoricalData(variableMap, individual);
 		}
 	}
 	
+	private void handleResources(Individual individual, UuidAndTitleCache<Taxon> taxon) {
+		if (true){ // FIXME currently still has LazyInitExceptions
+			return;
+		}
+		
+		boolean limitToGalleries = false;
+		Set<MarkerType> markerTypes = null;
+		List<String> propertyPaths = null;
+		List<Media> mediaList = getDescriptionService().listTaxonDescriptionMedia(taxon.getUuid(), limitToGalleries, markerTypes, null, null, propertyPaths);
+		for(Media media : mediaList){
+			BaseObjectResource xpResource = adaptMediaToXpResource(media);
+			individual.addResource(xpResource);
+		}
+	}
+
+	private BaseObjectResource adaptMediaToXpResource(Media media) {
+		BaseObjectResource result = new BaseObjectResource();
+		Map<Language, LanguageString> descriptions = media.getAllDescriptions();
+		
+		//BaseObjectResource
+		//TODO handle language correctly
+		String description = descriptions.get(Language.DEFAULT()).getText();
+		result.setDescription(description);
+		//TODO getTitle(Language) ??
+		result.setName(media.getTitleCache());
+		
+		//XpResource
+		MediaRepresentation rep = media.getRepresentations().iterator().next();
+		XPResource xpResource = null;
+		if (rep != null){
+			MediaRepresentationPart part = rep.getParts().iterator().next();
+			if (part != null){
+				URI uri = part.getUri();
+				xpResource = new XPResource(uri.toString());
+				//TODO needed here or will it be loaded by Xper anyway?
+				xpResource.loadProperties();
+			}
+		}
+		if (xpResource == null){
+			logger.warn("No uri available to create XpResource");
+		}else{
+			result.setResource(xpResource);
+		}
+		
+		return result;
+		
+		
+	}
+
 	private void handleQuantitativeData(Map<UuidAndTitleCache, Map<UUID, Set<QuantitativeData>>> quantitativeData) {
 		for (UuidAndTitleCache taxon : quantitativeData.keySet()){
 			Map<UUID, Set<QuantitativeData>> variableMap = quantitativeData.get(taxon);
@@ -492,8 +550,19 @@ public class CdmXperAdapter extends CdmIoBase<IoStateBase> implements IExternalA
 	
 	
 	private void handleAnnotations(DescriptionElementBase descriptionElement, Individual individual, Variable variable) {
-		for (Annotation annotation : descriptionElement.getAnnotations()){
-			individual.addVarComment(variable, annotation.getText());
+		if (true){ //FIXME currently still throws LazyInitException
+			return;
+		}
+		if (descriptionElement.getAnnotations().size()>0){
+			Set<Annotation> annotations = descriptionElement.getAnnotations();
+			if (annotations.size()> 1 ){
+				String message = "There is more than one note for Taxon-Character note %s - %s";
+				message = String.format(message, individual.getName(), variable.getName());
+				logger.warn(message);
+				individual.addVarComment(variable, "There is more than one note available. Can't handle this in Xper");
+			}else{
+				individual.addVarComment(variable, annotations.iterator().next().getText());
+			}
 		}
 	}
 
