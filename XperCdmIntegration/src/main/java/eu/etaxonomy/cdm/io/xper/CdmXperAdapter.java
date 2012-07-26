@@ -320,14 +320,18 @@ public class CdmXperAdapter extends CdmIoBase<IoStateBase> implements IExternalA
 	public void loadTaxa(){
 		//categorical data
 		logger.warn("load categorical data");
-		Map<UuidAndTitleCache, Map<UUID, Set<CategoricalData>>> categoricalData = getCategoricalData();
+		TransactionStatus tx = startTransaction();
+		Map<UuidAndTitleCache, Map<UUID, Set<CategoricalData>>> categoricalData = retrieveCategoricalData();
 		handleCategoricalData(categoricalData);
+		commitTransaction(tx);
 		logger.warn("load categorical data :::");
 		
 		//quantitative data
 		logger.warn("load quantitative data");
-		Map<UuidAndTitleCache, Map<UUID, Set<QuantitativeData>>> quantitativeData = getQuantitativeData();
+		tx = startTransaction();
+		Map<UuidAndTitleCache, Map<UUID, Set<QuantitativeData>>> quantitativeData = retrieveQuantitativeData();
 		handleQuantitativeData(quantitativeData);
+		commitTransaction(tx);
 		logger.warn("load quantitative data :::");
 		
 		//classification
@@ -428,13 +432,13 @@ public class CdmXperAdapter extends CdmIoBase<IoStateBase> implements IExternalA
 	/**
 	 * @return
 	 */
-	private Map<UuidAndTitleCache, Map<UUID, Set<CategoricalData>>> getCategoricalData() {
+	private Map<UuidAndTitleCache, Map<UUID, Set<CategoricalData>>> retrieveCategoricalData() {
 		Map<UuidAndTitleCache, Map<UUID, Set<CategoricalData>>> data = 
 			getWorkingSetService().getTaxonFeatureDescriptionElementMap(CategoricalData.class, uuidWorkingSet, null);
 		return data;
 	}
 
-	private Map<UuidAndTitleCache, Map<UUID, Set<QuantitativeData>>> getQuantitativeData() {
+	private Map<UuidAndTitleCache, Map<UUID, Set<QuantitativeData>>> retrieveQuantitativeData() {
 		Map<UuidAndTitleCache, Map<UUID, Set<QuantitativeData>>> data = 
 			getWorkingSetService().getTaxonFeatureDescriptionElementMap(QuantitativeData.class, uuidWorkingSet, null);
 		return data;
@@ -443,22 +447,22 @@ public class CdmXperAdapter extends CdmIoBase<IoStateBase> implements IExternalA
 
 
 	private void handleCategoricalData(Map<UuidAndTitleCache, Map<UUID, Set<CategoricalData>>> categoricalData) {
-		for (UuidAndTitleCache taxon : categoricalData.keySet()){
+		for (UuidAndTitleCache<Taxon> taxon : categoricalData.keySet()){
 			Map<UUID, Set<CategoricalData>> variableMap = categoricalData.get(taxon);
-			Individual individual = getIndividualByUuidAndTitleCache(taxon);
+			Individual individual = findOrCreateIndividualByUuidAndTitleCache(taxon);
 			handleResources(individual, taxon);
 			handleCategoricalData(variableMap, individual);
 		}
 	}
 	
 	private void handleResources(Individual individual, UuidAndTitleCache<Taxon> taxon) {
-		if (true){ // FIXME currently still has LazyInitExceptions
-			return;
-		}
-		
 		boolean limitToGalleries = false;
 		Set<MarkerType> markerTypes = null;
 		List<String> propertyPaths = null;
+		boolean isTooSlow = true;
+		if (isTooSlow){
+			return;
+		}
 		List<Media> mediaList = getDescriptionService().listTaxonDescriptionMedia(taxon.getUuid(), limitToGalleries, markerTypes, null, null, propertyPaths);
 		for(Media media : mediaList){
 			BaseObjectResource xpResource = adaptMediaToXpResource(media);
@@ -503,7 +507,8 @@ public class CdmXperAdapter extends CdmIoBase<IoStateBase> implements IExternalA
 	private void handleQuantitativeData(Map<UuidAndTitleCache, Map<UUID, Set<QuantitativeData>>> quantitativeData) {
 		for (UuidAndTitleCache taxon : quantitativeData.keySet()){
 			Map<UUID, Set<QuantitativeData>> variableMap = quantitativeData.get(taxon);
-			Individual individual = getIndividualByUuidAndTitleCache(taxon);
+			Individual individual = findOrCreateIndividualByUuidAndTitleCache(taxon);
+			handleResources(individual, taxon);
 			handleQuantitativeData(variableMap, individual);
 		}
 	}
@@ -550,9 +555,6 @@ public class CdmXperAdapter extends CdmIoBase<IoStateBase> implements IExternalA
 	
 	
 	private void handleAnnotations(DescriptionElementBase descriptionElement, Individual individual, Variable variable) {
-		if (true){ //FIXME currently still throws LazyInitException
-			return;
-		}
 		if (descriptionElement.getAnnotations().size()>0){
 			Set<Annotation> annotations = descriptionElement.getAnnotations();
 			if (annotations.size()> 1 ){
@@ -600,7 +602,7 @@ public class CdmXperAdapter extends CdmIoBase<IoStateBase> implements IExternalA
 	}
 	
 	
-	private Individual getIndividualByUuidAndTitleCache(UuidAndTitleCache simpleTaxon) {
+	private Individual findOrCreateIndividualByUuidAndTitleCache(UuidAndTitleCache simpleTaxon) {
 		Individual result = this.getBaseController().findIndividualByName(simpleTaxon.getTitleCache());
 		
 		if (result == null){
