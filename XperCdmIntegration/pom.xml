@@ -7,7 +7,7 @@
   <parent>
     <groupId>eu.etaxonomy</groupId>
     <artifactId>cdmlib-parent</artifactId>
-    <version>3.0.11-SNAPSHOT</version>
+    <version>3.0.13-SNAPSHOT</version>
     <relativePath>../pom.xml</relativePath>
   </parent>
   
@@ -25,7 +25,7 @@
    	<dependency>
   		<groupId>eu.etaxonomy</groupId>
   		<artifactId>cdmlib-io</artifactId>
-  		<version>3.0.11</version>
+  		<version>3.0.12</version>
   	</dependency>
    	<dependency>
   		<groupId>eu.etaxonomy</groupId>
