@@ -18,15 +18,17 @@ import fr_jussieu_snv_lis.utils.Utils;
 public class TestAdapterCdmXper {
 	private static final Logger logger = Logger.getLogger(TestAdapterCdmXper.class);
 	
-	CdmXperAdapter adapterCdmXper;
+	private CdmXperAdapter adapterCdmXper;
 	
 	/**
-	 * 
+	 * Starts CDM and Xper. Xper is started via the CdmXperAdapter.startXper().
 	 */
 	private boolean startApplications() {
 		boolean result = false;
+		
+		//start CDM
 		DbSchemaValidation dbSchemaValidation = DbSchemaValidation.VALIDATE;
-		ICdmDataSource datasource = CdmDestinations.cdm_test_local_xper_root();
+		ICdmDataSource datasource = CdmDestinations.cdm_test_local_xper();
 		System.out.println("cdm start");
 		CdmApplicationController appCtr = CdmIoApplicationController.NewInstance(datasource, dbSchemaValidation);
 		System.out.println("cdm started :::");
@@ -47,7 +49,7 @@ public class TestAdapterCdmXper {
 		
 	}
 	
-	public void xperloadDataFromCdm(){
+	public void xperLoadDataFromCdm(){
 		System.out.println("start load data");
 		// display a loading gif
 		Utils.displayLoadingGif(true);
@@ -96,6 +98,11 @@ public class TestAdapterCdmXper {
 	}
 	
 
+	/**
+	 * PartialCDM loads CDM data into Xper2 only when required.
+	 * Data like images, comments, etc. are loaded on the fly.
+	 * Changes to data are always persisted immediately.
+	 */
 	private void startPartialCdm() {
 		System.out.println("start load data");
 		// display a loading gif
@@ -143,13 +150,16 @@ public class TestAdapterCdmXper {
 			}
 		}
 		System.out.println("xper2 started :::");
+		
+		
+//		success = false;  //as I don't understand what the following code is for I temporarily disable it it from running
 		if (success){
 			testAdapter.createThumbnailDirectory();
 			if (args.length >= 1 && "-p".equals(args[0]) ){
 				testAdapter.startPartialCdm();
 			}else{
 				// load the data from CDM
-				testAdapter.xperloadDataFromCdm();
+				testAdapter.xperLoadDataFromCdm();
 				// use the current directory as working directory for Xper2
 				XPApp.getCurrentBase().setPathName(System.getProperty("user.dir") + Utils.sep);
 				
