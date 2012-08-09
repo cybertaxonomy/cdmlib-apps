@@ -16,7 +16,6 @@ import org.apache.log4j.Logger;
 
 import eu.etaxonomy.cdm.model.description.Feature;
 import eu.etaxonomy.cdm.model.description.FeatureTree;
-import eu.etaxonomy.cdm.model.description.State;
 import eu.etaxonomy.cdm.model.description.WorkingSet;
 import fr_jussieu_snv_lis.XPApp;
 import fr_jussieu_snv_lis.base.Base;
@@ -27,6 +26,7 @@ import fr_jussieu_snv_lis.base.IControlerBase;
 import fr_jussieu_snv_lis.base.Individual;
 import fr_jussieu_snv_lis.base.Mode;
 import fr_jussieu_snv_lis.base.Variable;
+import fr_jussieu_snv_lis.utils.Utils;
 
 /**
  * @author a.mueller
@@ -426,8 +426,7 @@ public class CdmXperBaseControler extends ControlerBase implements IControlerBas
 	 * @see fr_jussieu_snv_lis.base.IControlerBase#matchModes(fr_jussieu_snv_lis.base.Individual, fr_jussieu_snv_lis.base.Variable, java.util.List, int)
 	 */
 	@Override
-	public boolean matchModes(Individual ind, Variable var, List<Mode> modes,
-			int operator) {
+	public boolean matchModes(Individual ind, Variable var, List<Mode> modes, int operator) {
 		logger.warn("matchModes Not yet implemented");
 		return false;
 	}
@@ -448,7 +447,7 @@ public class CdmXperBaseControler extends ControlerBase implements IControlerBas
 	public Mode createNewMode(Variable va, String name) {
 		Mode newMode = new Mode(name);
 		
-		boolean hasChanged = addModeToVariable(newMode, va); // Add the new Mode to the list f Mode of the Variable
+		boolean hasChanged = addModeToVariable(newMode, va); // Add the new Mode to the list of Mode of the Variable
 
 		if (hasChanged){
 			XPApp.baseChanged = true;
@@ -462,8 +461,7 @@ public class CdmXperBaseControler extends ControlerBase implements IControlerBas
 	 * @see fr_jussieu_snv_lis.base.IControlerBase#controlModeExVariable(boolean, fr_jussieu_snv_lis.base.Variable, fr_jussieu_snv_lis.base.Mode)
 	 */
 	@Override
-	public void controlModeExVariable(boolean selected, Variable v,
-			Mode modeException) {
+	public void controlModeExVariable(boolean selected, Variable v, Mode modeException) {
 		logger.warn("controlModeExVariable Not yet implemented");
 
 	}
@@ -500,7 +498,7 @@ public class CdmXperBaseControler extends ControlerBase implements IControlerBas
 	 */
 	@Override
 	public void deleteIndividual(Individual ind) {
-		logger.warn("deleteIndividual Not yet implemented");
+		throw new RuntimeException("delete individual not supported by CDM version");
 
 	}
 
@@ -631,8 +629,9 @@ public class CdmXperBaseControler extends ControlerBase implements IControlerBas
 	 * @see fr_jussieu_snv_lis.base.IControlerBase#checkUnknown(fr_jussieu_snv_lis.base.Variable, fr_jussieu_snv_lis.base.Individual, boolean, boolean)
 	 */
 	@Override
-	public void checkUnknown(Variable var, Individual ind, boolean b, boolean withDaughters) {
-		super.checkUnknown(var, ind, b, withDaughters);
+	public void checkUnknown(Variable var, Individual ind, boolean value, boolean withDaughters) {
+		this.cdmXperAdapter.checkUnknown(var, ind, value, withDaughters);
+		super.checkUnknown(var, ind, value, withDaughters);
 	}
 
 	/* (non-Javadoc)
@@ -640,7 +639,7 @@ public class CdmXperBaseControler extends ControlerBase implements IControlerBas
 	 */
 	@Override
 	public void checkUnknown(Variable var, Individual[] tab, boolean b, boolean withDaughters) {
-		super.checkUnknown(var, tab, b, withDaughters);
+		super.checkUnknown(var, tab, b, withDaughters);  //super calls check unknown for each individual
 	}
 
 	/* (non-Javadoc)
@@ -701,9 +700,12 @@ public class CdmXperBaseControler extends ControlerBase implements IControlerBas
 	 * @see fr_jussieu_snv_lis.base.IControlerBase#changeMother(fr_jussieu_snv_lis.base.Variable, fr_jussieu_snv_lis.base.Variable)
 	 */
 	@Override
-	public void changeMother(Variable current, Variable mother) {
-		logger.warn("changeMother Not yet implemented");
-
+	public void changeMother(Variable current, Variable newMother) {
+		//from super
+		super.removeMother(current);
+		super.addMother(current, newMother);
+		
+		getAdapter().moveFeature(current, newMother);
 	}
 
 	/* (non-Javadoc)
@@ -759,7 +761,7 @@ public class CdmXperBaseControler extends ControlerBase implements IControlerBas
 	 */
 	@Override
 	public boolean checkExistanceOneVariable(String s) {
-		logger.warn("checkExistanceOneVariable implemented as super");
+		logger.info("checkExistanceOneVariable implemented as super");
 		return super.checkExistanceOneVariable(s);
 	}
 
@@ -794,9 +796,25 @@ public class CdmXperBaseControler extends ControlerBase implements IControlerBas
 	 * @see fr_jussieu_snv_lis.base.IControlerBase#createNewVariable(java.lang.String)
 	 */
 	@Override
-	public Variable createNewVariable(String name) {
-		logger.warn("createNewVariable Not yet implemented");
-		return null;
+	public Variable createNewCategoricalVariable(String name) {
+		Variable newVariable = new Variable(name); 
+		newVariable.setType(Utils.catType);
+		newVariable.setUuid(UUID.randomUUID());
+
+		// By default, a new Variable has two Modes
+		//TODO Do we really need to add new modes immediately? SDD data sometimes do not have to states
+//		Mode mode1 = new Mode(XPApp.messages.getString("mode") + " 1");
+//		Mode mode2 = new Mode(XPApp.messages.getString("mode") + " 2");
+//		newVariable.addMode(mode1);
+//		newVariable.addMode(mode2);
+
+		base.addVariable(newVariable); // add the new Variable to the List of Variable of the Base
+		//TODO needed
+		XPApp.baseChanged = true;
+
+		this.cdmXperAdapter.createNewVariable(newVariable);
+		
+		return newVariable;
 	}
 
 	/* (non-Javadoc)
@@ -804,8 +822,18 @@ public class CdmXperBaseControler extends ControlerBase implements IControlerBas
 	 */
 	@Override
 	public Variable createNewVariableNumOrEnum(String name, String type) {
-		logger.warn("createNewVariableNumOrEnum Not yet implemented");
-		return null;
+		Variable newVariable = new Variable(name); 
+		newVariable.setType(type);
+		newVariable.setUuid(UUID.randomUUID());
+		
+		base.addVariable(newVariable); // add the new Variable to the List of Variable of the Base
+		//TODO needed
+		XPApp.baseChanged = true;
+
+		this.cdmXperAdapter.createNewVariable(newVariable);
+			
+		return newVariable;
+		
 	}
 
 	/* (non-Javadoc)
@@ -813,7 +841,8 @@ public class CdmXperBaseControler extends ControlerBase implements IControlerBas
 	 */
 	@Override
 	public void addNewVariableAndItsModesToMatrix(Variable newVariable) {
-		logger.warn("addNewVariableAndItsModesToMatrix Not yet implemented");
+		logger.warn("addNewVariableAndItsModesToMatrix still needs to add 'unknown data' as a value for the feature");
+		super.addNewVariableAndItsModesToMatrix(newVariable);
 	}
 
 	/* (non-Javadoc)
@@ -877,8 +906,7 @@ public class CdmXperBaseControler extends ControlerBase implements IControlerBas
 	 * @see fr_jussieu_snv_lis.base.IControlerBase#getVariableDescendant(java.util.List, fr_jussieu_snv_lis.base.Variable)
 	 */
 	@Override
-	public List<Variable> getVariableDescendant(List<Variable> listDescendant,
-			Variable v) {
+	public List<Variable> getVariableDescendant(List<Variable> listDescendant, Variable v) {
 		logger.warn("getVariableDescendant Not yet implemented");
 		return null;
 	}
