@@ -4,6 +4,7 @@ import java.net.URI;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -40,6 +41,8 @@ import eu.etaxonomy.cdm.model.description.MeasurementUnit;
 import eu.etaxonomy.cdm.model.description.QuantitativeData;
 import eu.etaxonomy.cdm.model.description.State;
 import eu.etaxonomy.cdm.model.description.StateData;
+import eu.etaxonomy.cdm.model.description.StatisticalMeasure;
+import eu.etaxonomy.cdm.model.description.StatisticalMeasurementValue;
 import eu.etaxonomy.cdm.model.description.TaxonDescription;
 import eu.etaxonomy.cdm.model.description.WorkingSet;
 import eu.etaxonomy.cdm.model.media.Media;
@@ -48,6 +51,7 @@ import eu.etaxonomy.cdm.model.media.MediaRepresentationPart;
 import eu.etaxonomy.cdm.model.media.MediaUtils;
 import eu.etaxonomy.cdm.model.taxon.Taxon;
 import eu.etaxonomy.cdm.model.taxon.TaxonBase;
+import eu.etaxonomy.cdm.persistence.query.MatchMode;
 import fr_jussieu_snv_lis.XPApp;
 import fr_jussieu_snv_lis.Xper;
 import fr_jussieu_snv_lis.IO.IExternalAdapter;
@@ -76,6 +80,7 @@ public class CdmXperAdapter extends CdmIoBase<IoStateBase> implements IExternalA
 	private boolean isLazyModes = false;
 	private boolean isLazyIndMatrix = true;
 	private boolean useSecInTaxonName = false;
+	private StatisticalMeasure unknownDataType;
 	
 	public CdmXperAdapter(){
 		BaseCdm base = new BaseCdm();
@@ -143,7 +148,7 @@ public class CdmXperAdapter extends CdmIoBase<IoStateBase> implements IExternalA
 		logger.warn("load features start");
 		TransactionStatus tx = startTransaction();
 		
-		FeatureTree featureTree = getWorkingSet().getDescriptiveSystem();
+		FeatureTree featureTree = getFeatureTree();
 		getFeatureTreeService().saveOrUpdate(featureTree);
 		
 		if (featureTree != null) {
@@ -153,6 +158,13 @@ public class CdmXperAdapter extends CdmIoBase<IoStateBase> implements IExternalA
 		}
 		commitTransaction(tx);
 		logger.warn("load features end :::");
+	}
+
+	/**
+	 * @return
+	 */
+	private FeatureTree getFeatureTree() {
+		return getWorkingSet().getDescriptiveSystem();
 	}
 
 
@@ -554,6 +566,14 @@ public class CdmXperAdapter extends CdmIoBase<IoStateBase> implements IExternalA
 	}
 	
 	
+	/**
+	 * FIXME Do they need to be loaded at all? This is against the common rules at 
+	 * http://dev.e-taxonomy.eu/trac/wiki/XperCdmAdapter
+	 * At least Individual.varComment we do want to handle on the fly!!
+	 * @param descriptionElement
+	 * @param individual
+	 * @param variable
+	 */
 	private void handleAnnotations(DescriptionElementBase descriptionElement, Individual individual, Variable variable) {
 		if (descriptionElement.getAnnotations().size()>0){
 			Set<Annotation> annotations = descriptionElement.getAnnotations();
@@ -561,9 +581,9 @@ public class CdmXperAdapter extends CdmIoBase<IoStateBase> implements IExternalA
 				String message = "There is more than one note for Taxon-Character note %s - %s";
 				message = String.format(message, individual.getName(), variable.getName());
 				logger.warn(message);
-				individual.addVarComment(variable, "There is more than one note available. Can't handle this in Xper");
+				getBaseController().getBase().putIndividualVarComment(individual, variable, "There is more than one note available. Can't handle this in Xper");
 			}else{
-				individual.addVarComment(variable, annotations.iterator().next().getText());
+				getBaseController().getBase().putIndividualVarComment(individual, variable, annotations.iterator().next().getText());
 			}
 		}
 	}
@@ -911,7 +931,14 @@ public class CdmXperAdapter extends CdmIoBase<IoStateBase> implements IExternalA
 		String ws = uuidWorkingSet == null ?"-" : uuidWorkingSet.toString();
 		return "CdmXperAdapter (" + ws + ")";
 	}
-
+	
+	/**
+	 * Control addition or removal of StateData from a taxon description
+	 * @param selected true for addition, false for removal
+	 * @param var the Xper variable
+	 * @param ind the Xper Individual
+	 * @param m the Xper mode
+	 */
 	public void controlModeIndVar(boolean selected, Variable var, Individual ind, Mode m) {
 //		(boolean selected, Variable v, Individual i, Mode m);
 		TransactionStatus txStatus = startTransaction();
@@ -923,6 +950,7 @@ public class CdmXperAdapter extends CdmIoBase<IoStateBase> implements IExternalA
 		if (catData.size()>1){
 			logger.warn("There is more than one categorical data for the same taxon and the same feature");
 		}
+		//add new state
 		if (selected && catData.size() == 0 ){
 			CategoricalData data = CategoricalData.NewInstance();
 			data.setFeature(feature);
@@ -931,6 +959,7 @@ public class CdmXperAdapter extends CdmIoBase<IoStateBase> implements IExternalA
 			addModeToCategoricalData(m, data);
 			getDescriptionService().saveDescriptionElement(data);
 		}else{
+			//update existing data
 			for (CategoricalData data: catData){
 				State tmpState = adaptModeToState(m);
 				StateData existingState = null;
@@ -941,6 +970,7 @@ public class CdmXperAdapter extends CdmIoBase<IoStateBase> implements IExternalA
 						break;
 					}
 				}
+				//update data
 				if (selected && existingState == null){
 					//selected
 					addModeToCategoricalData(m, data);
@@ -969,11 +999,65 @@ public class CdmXperAdapter extends CdmIoBase<IoStateBase> implements IExternalA
 		data.getStates().add(sd);
 	}
 
+	/**
+	 * @param var
+	 * @param ind
+	 * @param value
+	 * @param withDaughters
+	 */
+	public void checkUnknown(Variable var, Individual ind, boolean value, boolean withDaughters) {
+		TransactionStatus txStatus = startTransaction();
+		
+		List<QuantitativeData> quantData = retriveQuantitativeDataListForTaxonFeature(ind, var);
+		
+		for (QuantitativeData data: quantData){
+			//TODO handle existing data better ??
+			setDataUnknown(data);
+
+			//test data exists ??
+			getDescriptionService().saveDescriptionElement(data);
+		}
+		
+		commitTransaction(txStatus);
+	}
+	
 	public void controlModeIndVar(Individual ind, Variable var, Double min,
 			Double max, Double mean, Double sd, Double umethLower,
 			Double umethUpper, Integer nSample) {
-//		(boolean selected, Variable v, Individual i, Mode m);
+
 		TransactionStatus txStatus = startTransaction();
+		List<QuantitativeData> quantData = retriveQuantitativeDataListForTaxonFeature(ind, var);
+		
+//		fr_jussieu_snv_lis.base.QuantitativeData qdXper = ind.getNumMatrix().get(var);
+//		if (qdXper == null ){
+//			//TODO needed?
+//		}
+		
+		for (QuantitativeData data: quantData){
+			//TODO handle existing data better
+			setQdValues(data, min, max, mean, sd, umethLower, umethUpper, nSample);
+
+			//test data exists
+//				for (StateData sd : data.getStates()){
+//					if (tmpState.equals(sd.getState())){
+//						existingState = sd;
+//						break;
+//					}
+//				}
+			getDescriptionService().saveDescriptionElement(data);
+		}
+		
+		commitTransaction(txStatus);
+		
+	}
+
+	/**
+	 * @param ind
+	 * @param var
+	 * @return
+	 */
+	private List<QuantitativeData> retriveQuantitativeDataListForTaxonFeature(
+			Individual ind, Variable var) {
 		Taxon taxon = (Taxon)getTaxonService().find(ind.getUuid());
 		Feature feature = (Feature)getTermService().find(var.getUuid());
 		Set<Feature> features = new HashSet<Feature>();
@@ -982,11 +1066,6 @@ public class CdmXperAdapter extends CdmIoBase<IoStateBase> implements IExternalA
 		if (quantData.size()>1){
 			logger.warn("There are more than one quantitative data for the same taxon and the same feature");
 		}
-		fr_jussieu_snv_lis.base.QuantitativeData qdXper = ind.getNumMatrix().get(var);
-		if (qdXper == null ){
-			//TODO needed?
-		}
-		
 		
 		if (quantData.size() == 0 ){
 			QuantitativeData data = QuantitativeData.NewInstance();
@@ -995,30 +1074,32 @@ public class CdmXperAdapter extends CdmIoBase<IoStateBase> implements IExternalA
 			desc.addElement(data);
 //			addValuesToQuantitativeData(qdXper, data, min, max, 
 //					mean, sd, umethLower, umethUpper, nSample);
-			setQdValues(qdXper, data, min, max, mean, sd, umethLower, umethUpper, nSample);
 			
-			getDescriptionService().saveDescriptionElement(data);
-		}else{
-			for (QuantitativeData data: quantData){
-				//TODO handle existing data better
-				setQdValues(qdXper, data, min, max, mean, sd, umethLower, umethUpper, nSample);
-
-				//test data exists
-//				for (StateData sd : data.getStates()){
-//					if (tmpState.equals(sd.getState())){
-//						existingState = sd;
-//						break;
-//					}
-//				}
-				getDescriptionService().saveDescriptionElement(data);
-			}
+			quantData.add(data);
 		}
-		commitTransaction(txStatus);
+		return quantData;
+	}
+
+	/**
+	 * Removes all existing values and puts a new value of type unknown data.
+	 * The value itself is arbitrary.
+	 * @param data
+	 */
+	private void setDataUnknown(QuantitativeData data) {
+		//remove all other values
+		Iterator<StatisticalMeasurementValue> it = data.getStatisticalValues().iterator();
+		while (it.hasNext()){
+			it.remove();
+		}
+		
+		//add unknown data value
+		StatisticalMeasure dataUnknownType = getUnknownData();
+		data.setSpecificStatisticalValue(Float.valueOf(0), null, dataUnknownType);
 		
 	}
 
 	/**
-	 * @param qdXper
+	 * @param qdXper Xper quantitative data attached to the individual. Needed here?
 	 * @param data
 	 * @param nSample 
 	 * @param umethUpper 
@@ -1028,8 +1109,9 @@ public class CdmXperAdapter extends CdmIoBase<IoStateBase> implements IExternalA
 	 * @param max 
 	 * @param min 
 	 */
-	private void setQdValues(fr_jussieu_snv_lis.base.QuantitativeData qdXper,
-			QuantitativeData data, Double min, Double max, Double mean, Double sd, Double umethLower, Double umethUpper, Integer nSample) {
+	private void setQdValues(QuantitativeData data, Double min, Double max, 
+			Double mean, Double sd, Double umethLower, Double umethUpper, Integer nSample) {
+		
 		data.setMinimum(getFloat(min), null);
 		data.setMaximum(getFloat(max), null);
 		data.setAverage(getFloat(mean), null);
@@ -1042,6 +1124,178 @@ public class CdmXperAdapter extends CdmIoBase<IoStateBase> implements IExternalA
 	private Float getFloat(Number myNumber) {
 		Float result = (myNumber == null) ? null : myNumber.floatValue();
 		return result;
+	}
+	
+	/**
+	 * Retrieve the unknownData {@link StatisticalMeasure}. If necessary create it anew and save in database.
+	 * @return
+	 */
+	private StatisticalMeasure getUnknownData(){
+		if (this.unknownDataType != null){
+			return this.unknownDataType;
+		}
+		UUID uuid = StatisticalMeasure.uuidStatisticalMeasureUnknownData;
+		
+		unknownDataType = (StatisticalMeasure)getTermService().find(uuid);
+		if (unknownDataType == null){
+			unknownDataType = StatisticalMeasure.NewInstance("Unknown data", "Placeholder for unknown statistical data", "unknown");
+			unknownDataType.setUuid(uuid);
+			TermVocabulary<StatisticalMeasure> voc = StatisticalMeasure.AVERAGE().getVocabulary();
+			getVocabularyService().saveOrUpdate(voc);
+			voc.addTerm(unknownDataType);
+			getTermService().save(unknownDataType);
+		}
+	
+		return unknownDataType;
+	}
+
+	/**
+	 * Creates and saves a new feature with label = name, adds it to the end of the feature tree,
+	 * and adds the supported states (currently none)
+	 * 
+	 * @param newVariable
+	 */
+	public void createNewVariable(Variable newVariable) {
+		TransactionStatus txStatus = startTransaction();
+		
+		//create feature
+		String description = newVariable.getDescription();
+		String label = newVariable.getName();
+		String abbrev = null;
+		Feature feature = Feature.NewInstance(description, label, abbrev);
+		feature.setUuid(newVariable.getUuid());
+		
+		//feature type
+		if (newVariable.getType().equals(Utils.catType)){
+			feature.setSupportsCategoricalData(true);
+			//add supported states
+			String vocDescription = "Vocabulary for feature " + label;
+			String vocLabel = label +  " states";
+			String vocAbbrev = null;
+			URI termSourceUri = null;
+			TermVocabulary<State> supportedCategoricalEnumeration = TermVocabulary.NewInstance(vocDescription, vocLabel, vocAbbrev, termSourceUri); 
+			feature.addSupportedCategoricalEnumeration(supportedCategoricalEnumeration);
+			getVocabularyService().save(supportedCategoricalEnumeration);
+				
+		}else if (newVariable.getType().equals(Utils.numType)){
+			feature.setSupportsQuantitativeData(true);
+			
+			//measurement unit
+			String strUnit = newVariable.getUnit();
+			if (strUnit != null){
+				List unitList = getTermService().listByTitle(MeasurementUnit.class, strUnit, MatchMode.EXACT, null, 1, 1, null, null);
+				if (unitList.isEmpty()){
+					MeasurementUnit newUnit = MeasurementUnit.NewInstance(strUnit, strUnit, strUnit);
+					unitList.add(newUnit);
+					getTermService().save(newUnit);
+				}
+				MeasurementUnit unit = (MeasurementUnit)unitList.get(0);
+				feature.addRecommendedMeasurementUnit(unit);
+			}
+			//add Xper statistical measures
+			feature.addRecommendedStatisticalMeasure(StatisticalMeasure.SAMPLE_SIZE());
+			feature.addRecommendedStatisticalMeasure(StatisticalMeasure.STANDARD_DEVIATION());
+			feature.addRecommendedStatisticalMeasure(StatisticalMeasure.AVERAGE());
+			feature.addRecommendedStatisticalMeasure(StatisticalMeasure.MIN());
+			feature.addRecommendedStatisticalMeasure(StatisticalMeasure.MAX());
+			feature.addRecommendedStatisticalMeasure(StatisticalMeasure.TYPICAL_LOWER_BOUNDARY());
+			feature.addRecommendedStatisticalMeasure(StatisticalMeasure.TYPICAL_UPPER_BOUNDARY());
+		}
+		
+		getTermService().save(feature); 
+		
+		
+		//add to feature tree 
+		FeatureNode node = FeatureNode.NewInstance(feature);
+	    
+		FeatureNode root = getFeatureTree().getRoot();
+		//get feature vocabulary
+		TermVocabulary<Feature> featureVoc = null;
+		if (root.getChildCount()>0 && featureVoc == null){
+			featureVoc = getFirstVocabulary(root);
+		}
+		if (featureVoc == null){
+			//TODO labels  ; add WorkingSet information
+			String featureVocDescription = "Feature vocabulary for descriptive data";
+			String featureVocLabel = "Feature vocabulary for descriptive data";
+			String featureVocAbbrev = null;
+			URI featureVocTermSourceUri = null;
+			featureVoc = TermVocabulary.NewInstance(featureVocDescription, featureVocLabel, featureVocAbbrev, featureVocTermSourceUri);
+			getVocabularyService().save(featureVoc);
+		}
+		featureVoc.addTerm(feature);
+		root.addChild(node);
+		getFeatureNodeService().save(node);
+		commitTransaction(txStatus);
+	}
+	
+	/**
+	 * Returns the first vocabulary found in an child or grandchild.
+	 * @param node
+	 * @return
+	 */
+	private TermVocabulary<Feature> getFirstVocabulary(FeatureNode node){
+		TermVocabulary<Feature> result = null;
+		for (FeatureNode child : node.getChildren()){
+			result = child.getFeature().getVocabulary();
+			if (result != null){
+				return result;
+			}
+			result = getFirstVocabulary(child);
+			if (result != null){
+				return result;
+			}
+		}
+		return null;
+	}
+
+	public void moveFeature(Variable current, Variable newMother) {
+		TransactionStatus txStatus = startTransaction();
+		FeatureNode root = getFeatureTree().getRoot();
+		
+		//current node
+		FeatureNode currentNode = getFirstFeature(root, current.getUuid());
+		if (currentNode == null){
+			throw new RuntimeException("Feature node for descriptor to move could not be found");
+		}
+		
+		//parent node
+		FeatureNode newParentNode = null;
+		if (newMother != null){
+			newParentNode = getFirstFeature(root, newMother.getUuid());
+		}
+		if (newParentNode == null){
+			newParentNode = root;
+		}
+		
+		//move
+		newParentNode.addChild(currentNode);
+		
+		//save
+		getFeatureNodeService().saveOrUpdate(newParentNode);
+		commitTransaction(txStatus);
+		
+	}
+	
+	/**
+	 * Returns the first feature node found that has a feature with the given uuid.
+	 * @param parentNode
+	 * @param uuid
+	 * @return
+	 */
+	//preliminary implementation to find the 
+	private FeatureNode getFirstFeature(FeatureNode parentNode, UUID uuid){
+		FeatureNode result = null;
+		for (FeatureNode child : parentNode.getChildren()){
+			if (child.getFeature().getUuid().equals(uuid)){
+				return child;
+			}
+			result = getFirstFeature(child, uuid);
+			if (result != null){
+				return result;
+			}
+		}
+		return null;
 	}
 
 }
