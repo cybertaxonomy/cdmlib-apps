@@ -17,6 +17,7 @@ import eu.etaxonomy.cdm.api.application.ICdmApplicationConfiguration;
 import eu.etaxonomy.cdm.app.common.CdmDestinations;
 import eu.etaxonomy.cdm.database.DbSchemaValidation;
 import eu.etaxonomy.cdm.database.ICdmDataSource;
+import eu.etaxonomy.cdm.io.algaterra.AlgaTerraImportConfigurator;
 import eu.etaxonomy.cdm.io.berlinModel.in.BerlinModelImportConfigurator;
 import eu.etaxonomy.cdm.io.common.CdmDefaultImport;
 import eu.etaxonomy.cdm.io.common.IImportConfigurator.CHECK;
@@ -56,6 +57,7 @@ public class AlgaTerraActivator {
 	//check - import
 	static final CHECK check = CHECK.IMPORT_WITHOUT_CHECK;
 
+	private boolean ignoreNull = true;
 
 	//NomeclaturalCode
 	static final NomenclaturalCode nomenclaturalCode = NomenclaturalCode.ICBN;
@@ -79,6 +81,9 @@ public class AlgaTerraActivator {
 	static final boolean doFacts = true;
 	static final boolean doOccurences = false;
 	static final boolean doCommonNames = false; //do not exist in Alga Terra
+	
+	//alga terra specific
+	static final boolean doSpecimen = true;
 
 // ************************ NONE **************************************** //
 	
@@ -94,12 +99,14 @@ public class AlgaTerraActivator {
 //	static final boolean doNameFacts = false;
 //	
 //	//taxa
-//	static final boolean doTaxa = false;
+//	static final boolean doTaxa = true;
 //	static final boolean doRelTaxa = false;
 //	static final boolean doFacts = false;
 //	static final boolean doOccurences = false;
 //	static final boolean doCommonNames = false;
-	
+//	
+//  //alga terra specific
+//	static final boolean doSpecimen = true;
 	
 	public void invoke(String[] args){
 		System.out.println("Start import from BerlinModel("+ berlinModelSource.getDatabase() + ") ...");
@@ -108,40 +115,43 @@ public class AlgaTerraActivator {
 		Source source = berlinModelSource;
 		ICdmDataSource destination = CdmDestinations.chooseDestination(args) != null ? CdmDestinations.chooseDestination(args) : cdmDestination;
 		
-		BerlinModelImportConfigurator bmImportConfigurator = BerlinModelImportConfigurator.NewInstance(source,  destination);
+		AlgaTerraImportConfigurator config = AlgaTerraImportConfigurator.NewInstance(source,  destination);
 		
-		bmImportConfigurator.setClassificationUuid(treeUuid);
-		bmImportConfigurator.setSourceSecId(sourceSecId);
-		bmImportConfigurator.setNomenclaturalCode(nomenclaturalCode);
+		config.setClassificationUuid(treeUuid);
+		config.setSourceSecId(sourceSecId);
+		config.setNomenclaturalCode(nomenclaturalCode);
 
-		bmImportConfigurator.setDoAuthors(doAuthors);
-		bmImportConfigurator.setDoReferences(doReferences);
-		bmImportConfigurator.setDoTaxonNames(doTaxonNames);
-		bmImportConfigurator.setDoRelNames(doRelNames);
-		bmImportConfigurator.setDoNameStatus(doNameStatus);
-		bmImportConfigurator.setDoTypes(doTypes);
-		bmImportConfigurator.setDoNameFacts(doNameFacts);
+		config.setDoAuthors(doAuthors);
+		config.setDoReferences(doReferences);
+		config.setDoTaxonNames(doTaxonNames);
+		config.setDoRelNames(doRelNames);
+		config.setDoNameStatus(doNameStatus);
+		config.setDoTypes(doTypes);
+		config.setDoNameFacts(doNameFacts);
 		
-		bmImportConfigurator.setDoTaxa(doTaxa);
-		bmImportConfigurator.setDoRelTaxa(doRelTaxa);
-		bmImportConfigurator.setDoFacts(doFacts);
-		bmImportConfigurator.setDoOccurrence(doOccurences);
-		bmImportConfigurator.setDoCommonNames(doCommonNames);
-		bmImportConfigurator.setSourceRefUuid(sourceRefUuid);
+		config.setDoTaxa(doTaxa);
+		config.setDoRelTaxa(doRelTaxa);
+		config.setDoFacts(doFacts);
+		config.setDoOccurrence(doOccurences);
+		config.setDoCommonNames(doCommonNames);
+		config.setDoSpecimen(doSpecimen);
 		
-		bmImportConfigurator.setDbSchemaValidation(hbm2dll);
+		config.setSourceRefUuid(sourceRefUuid);
+		config.setIgnoreNull(ignoreNull);
+		
+		config.setDbSchemaValidation(hbm2dll);
 
-		bmImportConfigurator.setCheck(check);
+		config.setCheck(check);
 		
 		// invoke import
 		CdmDefaultImport<BerlinModelImportConfigurator> bmImport = new CdmDefaultImport<BerlinModelImportConfigurator>();
-		bmImport.invoke(bmImportConfigurator);
+		bmImport.invoke(config);
 
-		if (doFacts && (bmImportConfigurator.getCheck().equals(CHECK.CHECK_AND_IMPORT)  || bmImportConfigurator.getCheck().equals(CHECK.IMPORT_WITHOUT_CHECK) )   ){
+		if (doFacts && (config.getCheck().equals(CHECK.CHECK_AND_IMPORT)  || config.getCheck().equals(CHECK.IMPORT_WITHOUT_CHECK) )   ){
 			ICdmApplicationConfiguration app = bmImport.getCdmAppController();
 			
 			//make feature tree
-			FeatureTree tree = TreeCreator.flatTree(featureTreeUuid, bmImportConfigurator.getFeatureMap(), featureKeyList);
+			FeatureTree tree = TreeCreator.flatTree(featureTreeUuid, config.getFeatureMap(), featureKeyList);
 			FeatureNode imageNode = FeatureNode.NewInstance(Feature.IMAGE());
 			tree.getRoot().addChild(imageNode);
 			FeatureNode distributionNode = FeatureNode.NewInstance(Feature.DISTRIBUTION());

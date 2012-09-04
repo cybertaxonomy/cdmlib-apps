@@ -97,6 +97,10 @@ app-import/src/main/java/eu/etaxonomy/cdm/app/wp6/palmae/config/PalmaeProtologue
 app-import/src/main/java/eu/etaxonomy/cdm/io/PalmaeImageImport.java -text
 app-import/src/main/java/eu/etaxonomy/cdm/io/PalmaeProtologueImport.java -text
 app-import/src/main/java/eu/etaxonomy/cdm/io/ProtologueImport.java -text
+app-import/src/main/java/eu/etaxonomy/cdm/io/algaterra/AlgaTerraImportConfigurator.java -text
+app-import/src/main/java/eu/etaxonomy/cdm/io/algaterra/AlgaTerraImportState.java -text
+app-import/src/main/java/eu/etaxonomy/cdm/io/algaterra/AlgaTerraSpecimenImport.java -text
+app-import/src/main/java/eu/etaxonomy/cdm/io/algaterra/validation/AlgaTerraSpecimenImportValidator.java -text
 app-import/src/main/java/eu/etaxonomy/cdm/io/cyprus/CyprusDistributionImport.java -text
 app-import/src/main/java/eu/etaxonomy/cdm/io/cyprus/CyprusDistributionRow.java -text
 app-import/src/main/java/eu/etaxonomy/cdm/io/cyprus/CyprusExcelImport.java -text
