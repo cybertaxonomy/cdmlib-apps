@@ -58,6 +58,8 @@ public class AlgaTerraActivator {
 	static final CHECK check = CHECK.IMPORT_WITHOUT_CHECK;
 
 	private boolean ignoreNull = true;
+	
+	private boolean includeFlatClassifications = true;
 
 	//NomeclaturalCode
 	static final NomenclaturalCode nomenclaturalCode = NomenclaturalCode.ICBN;
@@ -100,7 +102,7 @@ public class AlgaTerraActivator {
 //	
 //	//taxa
 //	static final boolean doTaxa = true;
-//	static final boolean doRelTaxa = false;
+//	static final boolean doRelTaxa = true;
 //	static final boolean doFacts = false;
 //	static final boolean doOccurences = false;
 //	static final boolean doCommonNames = false;
@@ -138,6 +140,8 @@ public class AlgaTerraActivator {
 		
 		config.setSourceRefUuid(sourceRefUuid);
 		config.setIgnoreNull(ignoreNull);
+		
+		config.setIncludeFlatClassifications(includeFlatClassifications);
 		
 		config.setDbSchemaValidation(hbm2dll);
 

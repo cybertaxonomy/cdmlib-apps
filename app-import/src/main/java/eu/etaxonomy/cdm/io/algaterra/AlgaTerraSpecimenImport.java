@@ -9,16 +9,20 @@
 
 package eu.etaxonomy.cdm.io.algaterra;
 
+import java.net.URI;
+import java.sql.Date;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
+import java.util.UUID;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.TransactionStatus;
 
 import eu.etaxonomy.cdm.api.facade.DerivedUnitFacade;
 import eu.etaxonomy.cdm.api.facade.DerivedUnitFacade.DerivedUnitType;
@@ -29,12 +33,31 @@ import eu.etaxonomy.cdm.io.berlinModel.in.BerlinModelImportState;
 import eu.etaxonomy.cdm.io.berlinModel.in.BerlinModelTaxonImport;
 import eu.etaxonomy.cdm.io.common.IOValidator;
 import eu.etaxonomy.cdm.io.common.ResultSetPartitioner;
+import eu.etaxonomy.cdm.io.common.Source;
+import eu.etaxonomy.cdm.model.agent.Team;
 import eu.etaxonomy.cdm.model.common.CdmBase;
+import eu.etaxonomy.cdm.model.common.DefinedTermBase;
+import eu.etaxonomy.cdm.model.common.Language;
+import eu.etaxonomy.cdm.model.common.Marker;
+import eu.etaxonomy.cdm.model.common.MarkerType;
+import eu.etaxonomy.cdm.model.common.OrderedTermVocabulary;
+import eu.etaxonomy.cdm.model.common.TimePeriod;
+import eu.etaxonomy.cdm.model.description.CategoricalData;
+import eu.etaxonomy.cdm.model.description.DescriptionBase;
 import eu.etaxonomy.cdm.model.description.Feature;
 import eu.etaxonomy.cdm.model.description.IndividualsAssociation;
+import eu.etaxonomy.cdm.model.description.SpecimenDescription;
+import eu.etaxonomy.cdm.model.description.State;
 import eu.etaxonomy.cdm.model.description.TaxonDescription;
+import eu.etaxonomy.cdm.model.description.TextData;
+import eu.etaxonomy.cdm.model.location.NamedArea;
 import eu.etaxonomy.cdm.model.location.Point;
 import eu.etaxonomy.cdm.model.location.ReferenceSystem;
+import eu.etaxonomy.cdm.model.location.TdwgArea;
+import eu.etaxonomy.cdm.model.location.WaterbodyOrCountry;
+import eu.etaxonomy.cdm.model.name.BotanicalName;
+import eu.etaxonomy.cdm.model.name.Rank;
+import eu.etaxonomy.cdm.model.occurrence.FieldObservation;
 import eu.etaxonomy.cdm.model.reference.Reference;
 import eu.etaxonomy.cdm.model.taxon.Taxon;
 import eu.etaxonomy.cdm.model.taxon.TaxonBase;
@@ -49,7 +72,23 @@ import eu.etaxonomy.cdm.model.taxon.TaxonBase;
 public class AlgaTerraSpecimenImport  extends BerlinModelImportBase {
 	private static final Logger logger = Logger.getLogger(AlgaTerraSpecimenImport.class);
 
-	public static final String NAMESPACE = "Occurrence";
+	public static final String FIELD_OBSERVATION_NAMESPACE = "FieldObservation";
+	public static final String TERMS_NAMESPACE = "ALGA_TERRA_TERMS";
+	
+	//move to transformrer
+	final static UUID uuidMarkerAlkalinity = UUID.fromString("e52d0ea2-0c1f-4d95-ae6d-e21ab317c594");  
+	final static UUID uuidRefSystemGps = UUID.fromString("c23e4928-c137-4e4a-b6ab-b430da3d0b94");  
+	final static UUID uuidFeatureSpecimenCommunity = UUID.fromString("3ff5b1ab-3999-4b5a-b8f7-01fd2f6c12c7");
+	final static UUID uuidFeatureAdditionalData = UUID.fromString("0ac82ab8-2c2b-4953-98eb-a9f718eb9c57");
+	
+	final static UUID uuidVocAlgaTerraClimate = UUID.fromString("b0a677c6-8bb6-43f4-b1b8-fc377a10feb5");
+	final static UUID uuidVocAlgaTerraHabitat = UUID.fromString("06f30114-e19c-4e7d-a8e5-5488c41fcbc5");
+	final static UUID uuidVocAlgaTerraLifeForm = UUID.fromString("3c0b194e-809c-4b42-9498-6ff034066ed7");
+	
+	final static UUID uuidFeatureAlgaTerraClimate = UUID.fromString("8754674c-9ab9-4f28-95f1-91eeee2314ee");
+	final static UUID uuidFeatureAlgaTerraHabitat = UUID.fromString("7def3fc2-cdc5-4739-8e13-62edbd053415");
+	final static UUID uuidFeatureAlgaTerraLifeForm = UUID.fromString("9b657901-1b0d-4a2a-8d21-dd8c1413e2e6");
+	
 	
 	
 	private static int modCount = 5000;
@@ -61,15 +100,19 @@ public class AlgaTerraSpecimenImport  extends BerlinModelImportBase {
 		super();
 	}
 	
+	
+	
 	/* (non-Javadoc)
 	 * @see eu.etaxonomy.cdm.io.berlinModel.in.BerlinModelImportBase#getIdQuery()
 	 */
 	@Override
 	protected String getIdQuery(BerlinModelImportState state) {
 		String result = " SELECT factId " + 
-				" FROM " + getTableName() + " INNER JOIN PTaxon ON Fact.PTNameFk = PTaxon.PTNameFk AND Fact.PTRefFk = PTaxon.PTRefFk "
+				" FROM Fact " +
+					" INNER JOIN EcoFact ON Fact.ExtensionFk = EcoFact.EcoFactId " +
+					"INNER JOIN PTaxon ON Fact.PTNameFk = PTaxon.PTNameFk AND Fact.PTRefFk = PTaxon.PTRefFk "
 				+ " WHERE FactCategoryFk = 202 "
-				+ " ORDER BY PTaxon.RIdentifier, Fact.FactId ";
+				+ " ORDER BY EcoFact.EcoFactId, PTaxon.RIdentifier, Fact.FactId ";
 		return result;
 	}
 
@@ -79,12 +122,18 @@ public class AlgaTerraSpecimenImport  extends BerlinModelImportBase {
 	@Override
 	protected String getRecordQuery(BerlinModelImportConfigurator config) {
 			String strQuery =   //DISTINCT because otherwise emOccurrenceSource creates multiple records for a single distribution 
-            " SELECT PTaxon.RIdentifier as taxonId, Fact.FactId, Fact.RecordBasis, EcoFact.* " + 
+            " SELECT PTaxon.RIdentifier as taxonId, Fact.FactId, Fact.RecordBasis, EcoFact.*, " + 
+               " tg.ID AS GazetteerId, tg.L2Code, tg.L3Code, tg.L4Code, tg.Country, tg.ISOCountry, " +
+               " ec.UUID as climateUuid, eh.UUID as habitatUuid, elf.UUID as lifeFormUuid" +
             " FROM Fact " + 
                  " INNER JOIN EcoFact ON Fact.ExtensionFk = EcoFact.EcoFactId " +
                  " INNER JOIN PTaxon ON dbo.Fact.PTNameFk = dbo.PTaxon.PTNameFk AND dbo.Fact.PTRefFk = dbo.PTaxon.PTRefFk " +
-            " WHERE Fact.FactCategoryFk = 202 AND (Fact.FactId IN (" + ID_LIST_TOKEN + ")  )"  
-            + " ORDER BY PTaxon.RIdentifier, Fact.FactId "
+                 " LEFT OUTER JOIN TDWGGazetteer tg ON EcoFact.TDWGGazetteerFk = tg.ID " +
+                 " LEFT OUTER JOIN EcoClimate  ec  ON EcoFact.ClimateFk  = ec.ClimateId " +
+                 " LEFT OUTER JOIN EcoHabitat  eh  ON EcoFact.HabitatFk  = eh.HabitatId " +
+                 " LEFT OUTER JOIN EcoLifeForm elf ON EcoFact.LifeFormFk = elf.LifeFormId " +
+              " WHERE Fact.FactCategoryFk = 202 AND (Fact.FactId IN (" + ID_LIST_TOKEN + ")  )"  
+            + " ORDER BY EcoFact.EcoFactId, PTaxon.RIdentifier, Fact.FactId "
             ;
 		return strQuery;
 	}
@@ -92,20 +141,27 @@ public class AlgaTerraSpecimenImport  extends BerlinModelImportBase {
 	/* (non-Javadoc)
 	 * @see eu.etaxonomy.cdm.io.berlinModel.in.IPartitionedIO#doPartition(eu.etaxonomy.cdm.io.berlinModel.in.ResultSetPartitioner, eu.etaxonomy.cdm.io.berlinModel.in.BerlinModelImportState)
 	 */
-	public boolean doPartition(ResultSetPartitioner partitioner, BerlinModelImportState state) {
+	public boolean doPartition(ResultSetPartitioner partitioner, BerlinModelImportState bmState) {
 		boolean success = true;
+		
+		AlgaTerraImportState state = (AlgaTerraImportState)bmState;
+		try {
+			makeVocabulariesAndFeatures(state);
+		} catch (SQLException e1) {
+			logger.warn("Exception occurred when trying to create Ecofact vocabularies: " + e1.getMessage());
+			e1.printStackTrace();
+		}
 		Set<TaxonBase> taxaToSave = new HashSet<TaxonBase>();
 		
 		Map<String, TaxonBase> taxonMap = (Map<String, TaxonBase>) partitioner.getObjectMap(BerlinModelTaxonImport.NAMESPACE);
-			
+		Map<String, FieldObservation> fieldObservationMap = (Map<String, FieldObservation>) partitioner.getObjectMap(FIELD_OBSERVATION_NAMESPACE);
+		
 		ResultSet rs = partitioner.getResultSet();
 
 		try {
-			int oldTaxonId = -1;
-			TaxonDescription oldDescription = null;
+			
 			int i = 0;
-			int countDescriptions = 0;
-			int countSpecimen = 0;
+
 			//for each reference
             while (rs.next()){
                 
@@ -113,30 +169,33 @@ public class AlgaTerraSpecimenImport  extends BerlinModelImportBase {
 				
 				int newTaxonId = rs.getInt("taxonId");
 				int factId = rs.getInt("FactId");
+				int ecoFactId = rs.getInt("EcoFactId");
+				String recordBasis = rs.getString("RecordBasis");
+				
 				try {
-							
-					String recordBasis = rs.getString("RecordBasis");
 					
+					//source ref
 					Reference<?> sourceRef = state.getTransactionalSourceReference();
-					//create description(elements)
-					TaxonDescription taxonDescription = getTaxonDescription(newTaxonId, oldTaxonId, oldDescription, taxonMap, factId, sourceRef);
-
+				
+					//facade
+					FieldObservation fieldObservation = getFieldObservation(ecoFactId, fieldObservationMap);
 					DerivedUnitType type = makeDerivedUnitType(recordBasis);
-					DerivedUnitFacade facade = DerivedUnitFacade.NewInstance(type);
+					DerivedUnitFacade facade = DerivedUnitFacade.NewInstance(type, fieldObservation);
+
+					//field observation
+					handleSingleSpecimen(rs, facade, state);
 					
-					handleSingleSpecimen(rs, facade);
-					
+					//description element
+					TaxonDescription taxonDescription = getTaxonDescription(state, newTaxonId, taxonMap, factId, sourceRef);
 					IndividualsAssociation indAssociation = IndividualsAssociation.NewInstance();
 					Feature feature = makeFeature(type);
 					indAssociation.setAssociatedSpecimenOrObservation(facade.innerDerivedUnit());
 					indAssociation.setFeature(feature);
 					taxonDescription.addElement(indAssociation);
 					
-					if (taxonDescription != oldDescription){ 
-						taxaToSave.add(taxonDescription.getTaxon()); 
-						oldDescription = taxonDescription; 
-						countDescriptions++; 
-					}
+					taxaToSave.add(taxonDescription.getTaxon()); 
+					
+
 				} catch (Exception e) {
 					logger.warn("Exception in ecoFact: FactId " + factId + ". " + e.getMessage());
 //					e.printStackTrace();
@@ -144,7 +203,7 @@ public class AlgaTerraSpecimenImport  extends BerlinModelImportBase {
                 
             }
            
-            logger.warn("Specimen: " + countSpecimen + ", Descriptions: " + countDescriptions );
+//            logger.warn("Specimen: " + countSpecimen + ", Descriptions: " + countDescriptions );
 
 			logger.warn("Taxa to save: " + taxaToSave.size());
 			getTaxonService().save(taxaToSave);	
@@ -157,39 +216,332 @@ public class AlgaTerraSpecimenImport  extends BerlinModelImportBase {
 	}
 
 
-	private void handleSingleSpecimen(ResultSet rs, DerivedUnitFacade facade) throws SQLException {
-       	//TDWGGazetteerFK, CollectionFk, Collector, GeoCodeMethod, Prec, AltitudeMethod, Depth,
-    	//ISOCountrySub, CollectionDate/End, WaterBody, 
-    	//CreatedWhen/Who/Updated/who
+
+
+	/**
+	 * Creates the vocabularies and the features for Climate, Habitat and Lifeform
+	 * @param state
+	 * @throws SQLException
+	 */
+	private void makeVocabulariesAndFeatures(AlgaTerraImportState state) throws SQLException {
+		String abbrevLabel = null;
+		URI uri = null;
+		
+		if (! state.isSpecimenVocabulariesCreated()){
+			
+			TransactionStatus txStatus = this.startTransaction();
+		
+			boolean isOrdered = true;
+			OrderedTermVocabulary<State> climateVoc = (OrderedTermVocabulary)getVocabulary(uuidVocAlgaTerraClimate, "Climate", "Climate", abbrevLabel, uri, isOrdered, null);
+			OrderedTermVocabulary<State> habitatVoc = (OrderedTermVocabulary)getVocabulary(uuidVocAlgaTerraHabitat, "Habitat", "Habitat", abbrevLabel, uri, isOrdered, null);
+			OrderedTermVocabulary<State> lifeformVoc = (OrderedTermVocabulary)getVocabulary(uuidVocAlgaTerraLifeForm, "Lifeform", "Lifeform", abbrevLabel, uri, isOrdered, null);
+			
+			
+			Feature feature = getFeature(state, uuidFeatureAlgaTerraClimate, "Climate","Climate", null, null);
+			feature.setSupportsCategoricalData(true);
+			
+			feature = getFeature(state, uuidFeatureAlgaTerraLifeForm, "LifeForm","LifeForm", null, null);
+			feature.setSupportsCategoricalData(true);
+			
+			feature = Feature.HABITAT();
+			feature.setSupportsCategoricalData(true);
+			getTermService().saveOrUpdate(feature);
+			
+			Source source = state.getAlgaTerraConfigurator().getSource();
+			
+			String climateSql = "SELECT * FROM EcoClimate";
+			ResultSet rs = source.getResultSet(climateSql);
+			while (rs.next()){
+				String climate = rs.getString("Climate");
+				String description = rs.getString("Description");
+				Integer id = rs.getInt("ClimateId");
+				UUID uuid = UUID.fromString(rs.getString("UUID"));
+				State stateTerm = getStateTerm(state, uuid, climate, description, null, climateVoc);
+				addOriginalSource(stateTerm, id.toString(), "EcoClimate", state.getConfig().getSourceReference());
+				getTermService().saveOrUpdate(stateTerm);
+			}
+			
+			String habitatSql = "SELECT * FROM EcoHabitat";
+			rs = source.getResultSet(habitatSql);
+			while (rs.next()){
+				String habitat = rs.getString("Habitat");
+				String description = rs.getString("Description");
+				Integer id = rs.getInt("HabitatId");
+				UUID uuid = UUID.fromString(rs.getString("UUID"));
+				State stateTerm = getStateTerm(state, uuid, habitat, description, null, habitatVoc);
+				addOriginalSource(stateTerm, id.toString(), "EcoHabitat", state.getConfig().getSourceReference());
+				getTermService().saveOrUpdate(stateTerm);
+			}
+			
+			String lifeformSql = "SELECT * FROM EcoLifeForm";
+			rs = source.getResultSet(lifeformSql);
+			while (rs.next()){
+				String lifeform = rs.getString("LifeForm");
+				String description = rs.getString("Description");
+				Integer id = rs.getInt("LifeFormId");
+				UUID uuid = UUID.fromString(rs.getString("UUID"));
+				State stateTerm = getStateTerm(state, uuid, lifeform, description, null, lifeformVoc);
+				addOriginalSource(stateTerm, id.toString(), "EcoLifeForm", state.getConfig().getSourceReference());
+				getTermService().saveOrUpdate(stateTerm);
+			}
+			
+			this.commitTransaction(txStatus);
+			
+			state.setSpecimenVocabulariesCreated(true);
+		}
+		
+	}
+
+
+
+	private void handleSingleSpecimen(ResultSet rs, DerivedUnitFacade facade, AlgaTerraImportState state) throws SQLException {
+       	//CollectionFk, Collector, AltitudeMethod, 
+    	//ISOCountrySub, CreatedWhen/Who/Updated/who
     	
     	//P1-10Value/Unit/Parameter/Method
+		
+		try {
+			Object alkalinityFlag = rs.getBoolean("AlkalinityFlag");
+			
+			String locality = rs.getString("Locality");
+			Double latitude = nullSafeDouble(rs, "Latitude");
+			Double longitude = nullSafeDouble(rs, "Longitude");
+			Integer errorRadius = nullSafeInt(rs,"Prec");
+			String geoCodeMethod = rs.getString("GeoCodeMethod");
+			
+			Integer altitude = nullSafeInt(rs, "Altitude");
+			Integer lowerAltitude = nullSafeInt(rs,"AltitudeLowerValue");
+			String altitudeUnit = rs.getString("AltitudeUnit");
+			Double depth = nullSafeDouble(rs, "Depth");
+			Double depthLow = nullSafeDouble(rs, "DepthLow");
+			   	
+			String collectorsNumber = rs.getString("CollectorsNumber");
+			Date collectionDateStart = rs.getDate("CollectionDate");
+			Date collectionDateEnd = rs.getDate("CollectionDateEnd");
+			
+			String climateUuid = rs.getString("climateUuid");
+			String habitatUuid = rs.getString("habitatUuid");
+			String lifeFormUuid = rs.getString("lifeFormUuid");
+			
+			String habitat = rs.getString("HabitatExplanation");
+			String community = rs.getString("Comunity");
+			String additionalData = rs.getString("AdditionalData");
+			
+			
+			
+			FieldObservation fieldObservation = facade.innerFieldObservation();
+			
+			//alkalinity marker
+			if (alkalinityFlag != null){
+				MarkerType alkalinityMarkerType = getMarkerType(state, uuidMarkerAlkalinity, "Alkalinity", "Alkalinity", null);
+				boolean alkFlag = Boolean.valueOf(alkalinityFlag.toString());
+				Marker alkalinityMarker = Marker.NewInstance(alkalinityMarkerType, alkFlag);
+				fieldObservation.addMarker(alkalinityMarker);
+			}
+			
+			//location
+			facade.setLocality(locality);
+			    	
+			//exact location
+			ReferenceSystem referenceSystem = makeRefrenceSystem(geoCodeMethod, state);
+			Point exactLocation = Point.NewInstance(longitude, latitude, referenceSystem, errorRadius);
+			facade.setExactLocation(exactLocation);
+			
+			//altitude, depth
+			if (StringUtils.isNotBlank(altitudeUnit) && ! altitudeUnit.trim().equalsIgnoreCase("m")){
+				logger.warn("Altitude unit is not [m] but: " +  altitudeUnit);
+			}
+			if ( altitude != null){
+				if (lowerAltitude == null){
+					facade.setAbsoluteElevation(altitude);
+				}else{
+			   		if (! facade.isEvenDistance(lowerAltitude, altitude)){
+			   			//FIXME there is a ticket for this
+			   			altitude = altitude + 1;
+			   			logger.warn("Current implementation of altitude does not allow uneven distances");
+			   		}
+					facade.setAbsoluteElevationRange(lowerAltitude,altitude);
+			   	}
+			}
+			if ( depth != null){
+				//FIXME needs model change to accept double #3072
+				Integer intDepth = depth.intValue();
+				if (depthLow == null){
+					facade.setDistanceToWaterSurface(intDepth);
+				}else{
+					//FIXME range not yet in model #3074
+			   		facade.setDistanceToWaterSurface(intDepth);
+			   	}
+			}
+			
+			//habitat, ecology, community, etc.
+			DescriptionBase<?> fieldDescription = getFieldObservationDescription(facade);
+			addCategoricalValue(state, fieldDescription, climateUuid, uuidFeatureAlgaTerraClimate);
+			addCategoricalValue(state, fieldDescription, habitatUuid, Feature.HABITAT().getUuid());
+			addCategoricalValue(state, fieldDescription, lifeFormUuid, uuidFeatureAlgaTerraLifeForm);
+			
+			if (isNotBlank(habitat)){
+				//FIXME
+				facade.setEcology(habitat);  //or use an own feature ??
+			}
+			if (isNotBlank(community)){
+				Feature communityFeature = getFeature(state, uuidFeatureSpecimenCommunity, "Community", "The community of a specimen (e.g. other algae in the same sample)", null, null);
+				TextData textData = TextData.NewInstance(communityFeature);
+				textData.putText(Language.DEFAULT(), community);
+				getFieldObservationDescription(facade).addElement(textData);
+			}
+			if (isNotBlank(additionalData)){  //or handle it as Annotation ??
+				Feature additionalDataFeature = getFeature(state, uuidFeatureAdditionalData, "Additional Data", "Additional Data", null, null);
+				TextData textData = TextData.NewInstance(additionalDataFeature);
+				textData.putText(Language.DEFAULT(), additionalData);
+				getFieldObservationDescription(facade).addElement(textData);
+			}
+			
+			//field
+			facade.setFieldNumber(collectorsNumber);
+			TimePeriod gatheringPeriod = TimePeriod.NewInstance(collectionDateStart, collectionDateEnd);
+			facade.setGatheringPeriod(gatheringPeriod);
+			handleCollectorTeam(state, facade, rs);
+			
+			//areas
+			makeAreas(state, rs, facade);
+			
+			//parameters
+			//TODO
+			
+			//notes
+			//TODO is this an annotation on field observation or on the derived unit?
+			
+			//TODO id, created for fact +  ecoFact
+			//    	this.doIdCreatedUpdatedNotes(state, descriptionElement, rs, id, namespace);
+		
+		} catch (IllegalArgumentException e) {
+			throw e;
+		}
+    	
+	}
 
-//		int factId = rs.getInt("factId");
-        String locality = rs.getString("Locality");
-        Double latitude = rs.getDouble("Latitude");
-        Double longitude = rs.getDouble("Longitude");
-        int errorRadius = rs.getInt("Prec");
-    	Integer altitude = rs.getInt("Altitude");
-    	String altitudeUnit = rs.getString("AltitudeUnit");
-    	String collectorsNumber = rs.getString("CollectorsNumber");
-    	
-    	//location
-    	facade.setLocality(locality);
-    	    	
-    	//exact location
-    	ReferenceSystem referenceSystem = null;
-    	Point exactLocation = Point.NewInstance(longitude, latitude, referenceSystem, errorRadius);
-    	facade.setExactLocation(exactLocation);
-    	
-    	//altitude
-    	if (StringUtils.isNotBlank(altitudeUnit) && ! altitudeUnit.trim().equalsIgnoreCase("m")){
-    		logger.warn("Altitude unit is not [m] but: " +  altitudeUnit);
-    	}
-    	facade.setAbsoluteElevationRange(altitude, altitude);  //TODO
-    	
-    	//field
-    	facade.setFieldNumber(collectorsNumber);
-     	
+
+	private void addCategoricalValue(AlgaTerraImportState importState, DescriptionBase description, String uuidTerm, UUID featureUuid) {
+		if (uuidTerm != null){
+			State state = this.getStateTerm(importState, UUID.fromString(uuidTerm));
+			Feature feature = getFeature(importState, featureUuid);
+			CategoricalData categoricalData = CategoricalData.NewInstance(state, feature);
+			description.addElement(categoricalData);
+		}
+	}
+
+
+	private void handleCollectorTeam(AlgaTerraImportState state, DerivedUnitFacade facade, ResultSet rs) throws SQLException {
+		// FIXME parsen
+		String collector = rs.getString("Collector");
+		Team team = Team.NewTitledInstance(collector, collector);
+		facade.setCollector(team);
+		
+		
+		
+	}
+
+	private void makeAreas(AlgaTerraImportState state, ResultSet rs, DerivedUnitFacade facade) throws SQLException {
+	   	Object gazetteerId = rs.getObject("GazetteerId");
+	   	if (gazetteerId != null){
+	   		//TDWG
+	   		NamedArea tdwgArea;
+	   		String tdwg4 = rs.getString("L4Code");
+	   		if (isNotBlank(tdwg4)){
+	   			tdwgArea = TdwgArea.getAreaByTdwgAbbreviation(tdwg4);
+	   		}else{
+	   			String tdwg3 = rs.getString("L3Code");
+	   			if (isNotBlank(tdwg3)){
+	   				tdwgArea = TdwgArea.getAreaByTdwgAbbreviation(tdwg3);
+	   			}else{
+	   				Integer tdwg2 = rs.getInt("L2Code");   				
+	   				tdwgArea = TdwgArea.getAreaByTdwgAbbreviation(String.valueOf(tdwg2));
+		   		}
+	   		}
+	   		if (tdwgArea == null){
+	   			logger.warn("TDWG area could not be defined for gazetterId: " + gazetteerId);
+	   		}else{
+	   			facade.addCollectingArea(tdwgArea);
+	   		}
+	   		
+	   		//Countries
+	   		WaterbodyOrCountry country = null;
+	   		String isoCountry = rs.getString("ISOCountry");
+	   		String countryStr = rs.getString("Country");
+	   		if (isNotBlank(isoCountry)){
+		   		country = WaterbodyOrCountry.getWaterbodyOrCountryByIso3166A2(isoCountry);
+	   		}else if (isNotBlank(countryStr)){
+	   			logger.warn("Country exists but no ISO code");
+	   		}
+	   		if (country == null){
+	   			logger.warn("Country does not exist for GazetteerID " + gazetteerId);
+	   		}else{
+	   			facade.setCountry(country);
+	   		}
+	   		
+	   	}
+	    
+	   	//Waterbody
+	   	WaterbodyOrCountry waterbody = null;
+	   	String waterbodyStr = rs.getString("WaterBody");
+	   	if (isNotBlank(waterbodyStr)){
+	   		if (waterbodyStr.equals("Atlantic Ocean")){
+	   			waterbody = WaterbodyOrCountry.ATLANTICOCEAN();
+	   		}else{
+	   			logger.warn("Waterbody not recognized: " + waterbody);
+	   		}
+	   		if (waterbody != null){
+	   			facade.addCollectingArea(waterbody);
+	   		}
+	   	}
+
+		
+	   	//countries sub
+	   	//TODO
+	}
+
+	private DescriptionBase getFieldObservationDescription(DerivedUnitFacade facade) {
+		Set<DescriptionBase> descriptions = facade.innerFieldObservation().getDescriptions();
+		for (DescriptionBase desc : descriptions){
+			if (desc.isImageGallery() == false){
+				return desc;
+			}
+		}
+		SpecimenDescription specDesc = SpecimenDescription.NewInstance(facade.innerFieldObservation());
+		descriptions.add(specDesc);
+		return specDesc;
+	}
+
+	private ReferenceSystem makeRefrenceSystem(String geoCodeMethod, AlgaTerraImportState state) {
+		if (StringUtils.isBlank(geoCodeMethod)){
+			return null;
+		}else if(geoCodeMethod.startsWith("GPS")){
+			getReferenceSystem(state, uuidRefSystemGps, "GPS", "GPS", "GPS", ReferenceSystem.GOOGLE_EARTH().getVocabulary());
+			return ReferenceSystem.WGS84(); 
+		}else if(geoCodeMethod.startsWith("Google")){
+			return ReferenceSystem.GOOGLE_EARTH();
+		}else if(geoCodeMethod.startsWith("Map")){
+			logger.warn("Reference system " +  geoCodeMethod +  " not yet supported.");
+			return null;
+		}else if(geoCodeMethod.startsWith("WikiProjekt Georeferenzierung") || geoCodeMethod.startsWith("http://toolserver.org/~geohack/geohack.php") ){
+			return ReferenceSystem.WGS84();
+		}else {
+			logger.warn("Reference system " +  geoCodeMethod +  " not yet supported.");
+			return null;
+		}
+	}
+
+	private FieldObservation getFieldObservation(int ecoFactId, Map<String, FieldObservation> fieldObservationMap) {
+		String key = String.valueOf(ecoFactId);
+		FieldObservation fieldObservation = fieldObservationMap.get(key);
+		if (fieldObservation == null){
+			fieldObservation = FieldObservation.NewInstance();
+			
+			fieldObservationMap.put(key, fieldObservation);
+		}
+		
+		return fieldObservation;
 	}
 	
 	private Feature makeFeature(DerivedUnitType type) {
@@ -238,8 +590,15 @@ public class AlgaTerraSpecimenImport  extends BerlinModelImportBase {
 		
 		try{
 			Set<String> taxonIdSet = new HashSet<String>();
+			Set<String> fieldObservationIdSet = new HashSet<String>();
+			Set<String> termsIdSet = new HashSet<String>();
+			
 			while (rs.next()){
 				handleForeignKey(rs, taxonIdSet, "taxonId");
+				handleForeignKey(rs, fieldObservationIdSet, "ecoFactId");
+				handleForeignKey(rs, termsIdSet, "ClimateFk");
+				handleForeignKey(rs, termsIdSet, "HabitatFk");
+				handleForeignKey(rs, termsIdSet, "LifeFormFk");
 			}
 			
 			//taxon map
@@ -249,6 +608,23 @@ public class AlgaTerraSpecimenImport  extends BerlinModelImportBase {
 			Map<String, TaxonBase> objectMap = (Map<String, TaxonBase>)getCommonService().getSourcedObjectsByIdInSource(cdmClass, idSet, nameSpace);
 			result.put(nameSpace, objectMap);
 
+			//field observation map map
+			nameSpace = AlgaTerraSpecimenImport.FIELD_OBSERVATION_NAMESPACE;
+			cdmClass = FieldObservation.class;
+			idSet = taxonIdSet;
+			Map<String, FieldObservation> fieldObservationMap = (Map<String, FieldObservation>)getCommonService().getSourcedObjectsByIdInSource(cdmClass, idSet, nameSpace);
+			result.put(nameSpace, fieldObservationMap);
+
+			//terms
+			nameSpace = AlgaTerraSpecimenImport.TERMS_NAMESPACE;
+			cdmClass = FieldObservation.class;
+			idSet = taxonIdSet;
+			Map<String, DefinedTermBase> termMap = (Map<String, DefinedTermBase>)getCommonService().getSourcedObjectsByIdInSource(cdmClass, idSet, nameSpace);
+			result.put(nameSpace, termMap);
+
+		
+			
+			
 		} catch (SQLException e) {
 			throw new RuntimeException(e);
 		}
@@ -258,38 +634,39 @@ public class AlgaTerraSpecimenImport  extends BerlinModelImportBase {
 
 	/**
 	 * Use same TaxonDescription if two records belong to the same taxon 
+	 * @param state 
 	 * @param newTaxonId
 	 * @param oldTaxonId
 	 * @param oldDescription
 	 * @param taxonMap
 	 * @return
 	 */
-	private TaxonDescription getTaxonDescription(int newTaxonId, int oldTaxonId, TaxonDescription oldDescription, Map<String, TaxonBase> taxonMap, int factId, Reference<?> sourceSec){
+	private TaxonDescription getTaxonDescription(AlgaTerraImportState state, int newTaxonId, Map<String, TaxonBase> taxonMap, int factId, Reference<?> sourceSec){
 		TaxonDescription result = null;
-		if (oldDescription == null || newTaxonId != oldTaxonId){
-			TaxonBase<?> taxonBase = taxonMap.get(String.valueOf(newTaxonId));
-			//TODO for testing
-			//TaxonBase taxonBase = Taxon.NewInstance(BotanicalName.NewInstance(Rank.SPECIES()), null);
-			Taxon taxon;
-			if ( taxonBase instanceof Taxon ) {
-				taxon = (Taxon) taxonBase;
-			} else if (taxonBase != null) {
-				logger.warn("TaxonBase for Fact(Specimen) with factId" + factId + " was not of type Taxon but: " + taxonBase.getClass().getSimpleName());
-				return null;
-			} else {
-				logger.warn("TaxonBase for Fact(Specimen) " + factId + " is null.");
-				return null;
-			}		
-			Set<TaxonDescription> descriptionSet= taxon.getDescriptions();
-			if (descriptionSet.size() > 0) {
-				result = descriptionSet.iterator().next(); 
-			}else{
-				result = TaxonDescription.NewInstance();
-				result.setTitleCache(sourceSec.getTitleCache(), true);
-				taxon.addDescription(result);
-			}
+		TaxonBase<?> taxonBase = taxonMap.get(String.valueOf(newTaxonId));
+		
+		//TODO for testing
+		if (taxonBase == null && ! state.getConfig().isDoTaxa()){
+			taxonBase = Taxon.NewInstance(BotanicalName.NewInstance(Rank.SPECIES()), null);
+		}
+		
+		Taxon taxon;
+		if ( taxonBase instanceof Taxon ) {
+			taxon = (Taxon) taxonBase;
+		} else if (taxonBase != null) {
+			logger.warn("TaxonBase for Fact(Specimen) with factId" + factId + " was not of type Taxon but: " + taxonBase.getClass().getSimpleName());
+			return null;
+		} else {
+			logger.warn("TaxonBase for Fact(Specimen) " + factId + " is null.");
+			return null;
+		}		
+		Set<TaxonDescription> descriptionSet= taxon.getDescriptions();
+		if (descriptionSet.size() > 0) {
+			result = descriptionSet.iterator().next(); 
 		}else{
-			result = oldDescription;
+			result = TaxonDescription.NewInstance();
+			result.setTitleCache(sourceSec.getTitleCache(), true);
+			taxon.addDescription(result);
 		}
 		return result;
 	}

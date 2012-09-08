@@ -24,6 +24,8 @@ public class AlgaTerraImportState extends BerlinModelImportState{
 	@SuppressWarnings("unused")
 	private static final Logger logger = Logger.getLogger(AlgaTerraImportState.class);
 
+	private boolean specimenVocabulariesCreated = false;
+	
 	public AlgaTerraImportState(AlgaTerraImportConfigurator config) {
 		super(config);
 	}
@@ -31,5 +33,14 @@ public class AlgaTerraImportState extends BerlinModelImportState{
 	public AlgaTerraImportConfigurator getAlgaTerraConfigurator(){
 		return (AlgaTerraImportConfigurator)getConfig();
 	}
+
+	public boolean isSpecimenVocabulariesCreated() {
+		return specimenVocabulariesCreated;
+	}
+
+	public void setSpecimenVocabulariesCreated(boolean specimenVocabulariesCreated) {
+		this.specimenVocabulariesCreated = specimenVocabulariesCreated;
+	}
+
     
 }
