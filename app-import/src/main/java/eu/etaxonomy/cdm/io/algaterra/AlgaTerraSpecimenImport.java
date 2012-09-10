@@ -257,7 +257,7 @@ public class AlgaTerraSpecimenImport  extends BerlinModelImportBase {
 				Integer id = rs.getInt("ClimateId");
 				UUID uuid = UUID.fromString(rs.getString("UUID"));
 				State stateTerm = getStateTerm(state, uuid, climate, description, null, climateVoc);
-				addOriginalSource(stateTerm, id.toString(), "EcoClimate", state.getConfig().getSourceReference());
+				addOriginalSource(stateTerm, id.toString(), "EcoClimate", state.getTransactionalSourceReference());
 				getTermService().saveOrUpdate(stateTerm);
 			}
 			
@@ -269,7 +269,7 @@ public class AlgaTerraSpecimenImport  extends BerlinModelImportBase {
 				Integer id = rs.getInt("HabitatId");
 				UUID uuid = UUID.fromString(rs.getString("UUID"));
 				State stateTerm = getStateTerm(state, uuid, habitat, description, null, habitatVoc);
-				addOriginalSource(stateTerm, id.toString(), "EcoHabitat", state.getConfig().getSourceReference());
+				addOriginalSource(stateTerm, id.toString(), "EcoHabitat", state.getTransactionalSourceReference());
 				getTermService().saveOrUpdate(stateTerm);
 			}
 			
@@ -281,7 +281,7 @@ public class AlgaTerraSpecimenImport  extends BerlinModelImportBase {
 				Integer id = rs.getInt("LifeFormId");
 				UUID uuid = UUID.fromString(rs.getString("UUID"));
 				State stateTerm = getStateTerm(state, uuid, lifeform, description, null, lifeformVoc);
-				addOriginalSource(stateTerm, id.toString(), "EcoLifeForm", state.getConfig().getSourceReference());
+				addOriginalSource(stateTerm, id.toString(), "EcoLifeForm", state.getTransactionalSourceReference());
 				getTermService().saveOrUpdate(stateTerm);
 			}
 			
@@ -408,6 +408,13 @@ public class AlgaTerraSpecimenImport  extends BerlinModelImportBase {
 			
 			//parameters
 			//TODO
+			
+			//collection
+			String voucher = rs.getString("Voucher");
+			if (StringUtils.isNotBlank(voucher)){
+				facade.setAccessionNumber(voucher);
+			}
+			
 			
 			//notes
 			//TODO is this an annotation on field observation or on the derived unit?
