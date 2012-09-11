@@ -26,6 +26,7 @@ import org.springframework.transaction.TransactionStatus;
 
 import eu.etaxonomy.cdm.api.facade.DerivedUnitFacade;
 import eu.etaxonomy.cdm.api.facade.DerivedUnitFacade.DerivedUnitType;
+import eu.etaxonomy.cdm.api.facade.DerivedUnitFacadeNotSupportedException;
 import eu.etaxonomy.cdm.io.algaterra.validation.AlgaTerraSpecimenImportValidator;
 import eu.etaxonomy.cdm.io.berlinModel.in.BerlinModelImportBase;
 import eu.etaxonomy.cdm.io.berlinModel.in.BerlinModelImportConfigurator;
@@ -41,13 +42,19 @@ import eu.etaxonomy.cdm.model.common.Language;
 import eu.etaxonomy.cdm.model.common.Marker;
 import eu.etaxonomy.cdm.model.common.MarkerType;
 import eu.etaxonomy.cdm.model.common.OrderedTermVocabulary;
+import eu.etaxonomy.cdm.model.common.TermVocabulary;
 import eu.etaxonomy.cdm.model.common.TimePeriod;
 import eu.etaxonomy.cdm.model.description.CategoricalData;
 import eu.etaxonomy.cdm.model.description.DescriptionBase;
 import eu.etaxonomy.cdm.model.description.Feature;
 import eu.etaxonomy.cdm.model.description.IndividualsAssociation;
+import eu.etaxonomy.cdm.model.description.MeasurementUnit;
+import eu.etaxonomy.cdm.model.description.Modifier;
+import eu.etaxonomy.cdm.model.description.QuantitativeData;
 import eu.etaxonomy.cdm.model.description.SpecimenDescription;
 import eu.etaxonomy.cdm.model.description.State;
+import eu.etaxonomy.cdm.model.description.StatisticalMeasure;
+import eu.etaxonomy.cdm.model.description.StatisticalMeasurementValue;
 import eu.etaxonomy.cdm.model.description.TaxonDescription;
 import eu.etaxonomy.cdm.model.description.TextData;
 import eu.etaxonomy.cdm.model.location.NamedArea;
@@ -57,6 +64,7 @@ import eu.etaxonomy.cdm.model.location.TdwgArea;
 import eu.etaxonomy.cdm.model.location.WaterbodyOrCountry;
 import eu.etaxonomy.cdm.model.name.BotanicalName;
 import eu.etaxonomy.cdm.model.name.Rank;
+import eu.etaxonomy.cdm.model.occurrence.DerivedUnit;
 import eu.etaxonomy.cdm.model.occurrence.FieldObservation;
 import eu.etaxonomy.cdm.model.reference.Reference;
 import eu.etaxonomy.cdm.model.taxon.Taxon;
@@ -72,14 +80,15 @@ import eu.etaxonomy.cdm.model.taxon.TaxonBase;
 public class AlgaTerraSpecimenImport  extends BerlinModelImportBase {
 	private static final Logger logger = Logger.getLogger(AlgaTerraSpecimenImport.class);
 
-	public static final String FIELD_OBSERVATION_NAMESPACE = "FieldObservation";
+	public static final String ECO_FACT_NAMESPACE = "EcoFact";
 	public static final String TERMS_NAMESPACE = "ALGA_TERRA_TERMS";
 	
-	//move to transformrer
+	//TODO move to transformrer
 	final static UUID uuidMarkerAlkalinity = UUID.fromString("e52d0ea2-0c1f-4d95-ae6d-e21ab317c594");  
 	final static UUID uuidRefSystemGps = UUID.fromString("c23e4928-c137-4e4a-b6ab-b430da3d0b94");  
 	final static UUID uuidFeatureSpecimenCommunity = UUID.fromString("3ff5b1ab-3999-4b5a-b8f7-01fd2f6c12c7");
 	final static UUID uuidFeatureAdditionalData = UUID.fromString("0ac82ab8-2c2b-4953-98eb-a9f718eb9c57");
+	final static UUID uuidFeatureHabitatExplanation = UUID.fromString("6fe32295-61a3-44fc-9fcf-a85790ea888f");
 	
 	final static UUID uuidVocAlgaTerraClimate = UUID.fromString("b0a677c6-8bb6-43f4-b1b8-fc377a10feb5");
 	final static UUID uuidVocAlgaTerraHabitat = UUID.fromString("06f30114-e19c-4e7d-a8e5-5488c41fcbc5");
@@ -89,7 +98,12 @@ public class AlgaTerraSpecimenImport  extends BerlinModelImportBase {
 	final static UUID uuidFeatureAlgaTerraHabitat = UUID.fromString("7def3fc2-cdc5-4739-8e13-62edbd053415");
 	final static UUID uuidFeatureAlgaTerraLifeForm = UUID.fromString("9b657901-1b0d-4a2a-8d21-dd8c1413e2e6");
 	
+	final static UUID uuidVocParameter = UUID.fromString("45888b40-5bbb-4293-aa1e-02479796cd7c");
+	final static UUID uuidStatMeasureSingleValue = UUID.fromString("eb4c3d98-4d4b-4c37-8eb4-17315ce79920");
+	final static UUID uuidMeasurementValueModifier = UUID.fromString("0218a7a3-f6c0-4d06-a4f8-6b50b73aef5e");
 	
+	final static UUID uuidModifierLowerThan = UUID.fromString("2b500085-6bef-4003-b6ea-e0ad0237d79d");
+	final static UUID uuidModifierGreaterThan = UUID.fromString("828df49d-c745-48f7-b083-0ada43356c34");
 	
 	private static int modCount = 5000;
 	private static final String pluralString = "specimen and observation";
@@ -154,7 +168,7 @@ public class AlgaTerraSpecimenImport  extends BerlinModelImportBase {
 		Set<TaxonBase> taxaToSave = new HashSet<TaxonBase>();
 		
 		Map<String, TaxonBase> taxonMap = (Map<String, TaxonBase>) partitioner.getObjectMap(BerlinModelTaxonImport.NAMESPACE);
-		Map<String, FieldObservation> fieldObservationMap = (Map<String, FieldObservation>) partitioner.getObjectMap(FIELD_OBSERVATION_NAMESPACE);
+		Map<String, DerivedUnit> ecoFactMap = (Map<String, DerivedUnit>) partitioner.getObjectMap(ECO_FACT_NAMESPACE);
 		
 		ResultSet rs = partitioner.getResultSet();
 
@@ -178,12 +192,13 @@ public class AlgaTerraSpecimenImport  extends BerlinModelImportBase {
 					Reference<?> sourceRef = state.getTransactionalSourceReference();
 				
 					//facade
-					FieldObservation fieldObservation = getFieldObservation(ecoFactId, fieldObservationMap);
 					DerivedUnitType type = makeDerivedUnitType(recordBasis);
-					DerivedUnitFacade facade = DerivedUnitFacade.NewInstance(type, fieldObservation);
-
+					DerivedUnitFacade facade = getDerivedUnit(state, ecoFactId, ecoFactMap, type);
+					
 					//field observation
 					handleSingleSpecimen(rs, facade, state);
+					
+					state.setCurrentFieldObservationNotNew(false);
 					
 					//description element
 					TaxonDescription taxonDescription = getTaxonDescription(state, newTaxonId, taxonMap, factId, sourceRef);
@@ -295,11 +310,7 @@ public class AlgaTerraSpecimenImport  extends BerlinModelImportBase {
 
 
 	private void handleSingleSpecimen(ResultSet rs, DerivedUnitFacade facade, AlgaTerraImportState state) throws SQLException {
-       	//CollectionFk, Collector, AltitudeMethod, 
-    	//ISOCountrySub, CreatedWhen/Who/Updated/who
-    	
-    	//P1-10Value/Unit/Parameter/Method
-		
+		//FIXME missing fields #3084, #3085, #3080
 		try {
 			Object alkalinityFlag = rs.getBoolean("AlkalinityFlag");
 			
@@ -329,7 +340,7 @@ public class AlgaTerraSpecimenImport  extends BerlinModelImportBase {
 			
 			
 			
-			FieldObservation fieldObservation = facade.innerFieldObservation();
+			FieldObservation fieldObservation = facade.getFieldObservation(true);
 			
 			//alkalinity marker
 			if (alkalinityFlag != null){
@@ -376,13 +387,16 @@ public class AlgaTerraSpecimenImport  extends BerlinModelImportBase {
 			
 			//habitat, ecology, community, etc.
 			DescriptionBase<?> fieldDescription = getFieldObservationDescription(facade);
+			
 			addCategoricalValue(state, fieldDescription, climateUuid, uuidFeatureAlgaTerraClimate);
 			addCategoricalValue(state, fieldDescription, habitatUuid, Feature.HABITAT().getUuid());
 			addCategoricalValue(state, fieldDescription, lifeFormUuid, uuidFeatureAlgaTerraLifeForm);
 			
 			if (isNotBlank(habitat)){
-				//FIXME
-				facade.setEcology(habitat);  //or use an own feature ??
+				Feature habitatExplanation = getFeature(state, uuidFeatureHabitatExplanation, "Habitat Explanation", "HabitatExplanation", null, null);
+				TextData textData = TextData.NewInstance(habitatExplanation);
+				textData.putText(Language.DEFAULT(), habitat);
+				getFieldObservationDescription(facade).addElement(textData);
 			}
 			if (isNotBlank(community)){
 				Feature communityFeature = getFeature(state, uuidFeatureSpecimenCommunity, "Community", "The community of a specimen (e.g. other algae in the same sample)", null, null);
@@ -407,7 +421,7 @@ public class AlgaTerraSpecimenImport  extends BerlinModelImportBase {
 			makeAreas(state, rs, facade);
 			
 			//parameters
-			//TODO
+			makeParameter(state, rs, getFieldObservationDescription(facade));
 			
 			//collection
 			String voucher = rs.getString("Voucher");
@@ -422,11 +436,133 @@ public class AlgaTerraSpecimenImport  extends BerlinModelImportBase {
 			//TODO id, created for fact +  ecoFact
 			//    	this.doIdCreatedUpdatedNotes(state, descriptionElement, rs, id, namespace);
 		
-		} catch (IllegalArgumentException e) {
-			throw e;
+		} catch (Exception e) {
+			throw new RuntimeException(e);
 		}
     	
 	}
+
+
+	private void makeParameter(AlgaTerraImportState state, ResultSet rs, DescriptionBase<?> descriptionBase) throws SQLException {
+		for (int i = 1; i <= 10; i++){
+			String valueStr = rs.getString(String.format("P%dValue", i));
+			String unitStr = rs.getString(String.format("P%dUnit", i));
+			String parameter = rs.getString(String.format("P%dParameter", i));
+			String method = rs.getString(String.format("P%dMethod", i));
+			
+			//method
+			if (StringUtils.isNotBlank(method)){
+				logger.warn("Methods not yet handled: " + method);
+			}
+			//parameter
+			TermVocabulary<Feature> vocParameter = getVocabulary(uuidVocParameter, "Feature vocabulary for AlgaTerra measurement parameters", "Parameters", null, null, false, Feature.COMMON_NAME());
+			if (StringUtils.isNotBlank(parameter)){
+				UUID featureUuid = getParameterFeatureUuid(state, parameter);
+				Feature feature = getFeature(state, featureUuid, parameter, parameter, null, vocParameter);
+				QuantitativeData quantData = QuantitativeData.NewInstance(feature);
+				
+				//unit
+				MeasurementUnit unit = getMeasurementUnit(state, unitStr);
+				quantData.setUnit(unit);
+				try {
+					
+					Set<Modifier> valueModifier = new HashSet<Modifier>();
+					valueStr = normalizeAndModifyValue(state, valueStr, valueModifier);
+					//value
+					Float valueFlt = Float.valueOf(valueStr);  //TODO maybe change model to Double ??
+					
+					StatisticalMeasure measureSingleValue = getStatisticalMeasure(state, uuidStatMeasureSingleValue, "Value", "Single measurement value", null, null);
+					StatisticalMeasurementValue value = StatisticalMeasurementValue.NewInstance(measureSingleValue, valueFlt); 
+					quantData.addStatisticalValue(value);
+					descriptionBase.addElement(quantData);
+					
+				} catch (NumberFormatException e) {
+					logger.warn(String.format("Value '%s' can't be converted to double. Parameter %s not imported.", valueStr, parameter));
+				}
+			}else if (isNotBlank(valueStr) || isNotBlank(unitStr) ){
+				logger.warn("There is value or unit without parameter: " + i);
+			}
+			
+			
+		}
+		
+	}
+
+	private String normalizeAndModifyValue(AlgaTerraImportState state, String valueStr, Set<Modifier> valueModifier) {
+		valueStr = valueStr.replace(",", ".");
+		if (valueStr.startsWith("<")){
+			TermVocabulary<Modifier> measurementValueModifierVocabulary = getVocabulary(uuidMeasurementValueModifier, "Measurement value modifier", "Measurement value modifier", null, null, false, Modifier.NewInstance());
+			Modifier modifier = getModifier(state, uuidModifierLowerThan, "Lower", "Lower than the given measurement value", "<", measurementValueModifierVocabulary);
+			valueModifier.add(modifier);
+			valueStr = valueStr.replace("<", "");
+		}
+		if (valueStr.startsWith(">")){
+			TermVocabulary<Modifier> measurementValueModifierVocabulary = getVocabulary(uuidMeasurementValueModifier, "Measurement value modifier", "Measurement value modifier", null, null, false, Modifier.NewInstance());
+			Modifier modifier = getModifier(state, uuidModifierGreaterThan, "Lower", "Lower than the given measurement value", "<", measurementValueModifierVocabulary);
+			valueModifier.add(modifier);
+			valueStr = valueStr.replace(">", "");
+		}
+		return valueStr;
+	}
+
+
+
+	private UUID getParameterFeatureUuid(AlgaTerraImportState state, String key) {
+		//TODO define some UUIDs in Transformer
+		UUID uuid = state.getParameterFeatureUuid(key);
+		if (uuid == null){
+			uuid = UUID.randomUUID();
+			state.putParameterFeatureUuid(key, uuid);
+		}
+		return uuid;
+	}
+
+
+
+	/**
+	 * TODO move to InputTransformerBase
+	 * @param state
+	 * @param unitStr
+	 * @return
+	 */
+	private MeasurementUnit getMeasurementUnit(AlgaTerraImportState state, String unitStr) {
+		MeasurementUnit result = null;
+		if (StringUtils.isNotBlank(unitStr)){
+			UUID uuidMeasurementUnitMgL = UUID.fromString("7ac302c5-3cbd-4334-964a-bf5d11eb9ead");
+			UUID uuidMeasurementUnitMolMol = UUID.fromString("96b78d78-3e49-448f-8100-e7779b71dd53");
+			UUID uuidMeasurementUnitMicroMolSiL = UUID.fromString("2cb8bc85-a4af-42f1-b80b-34c36c9f75d4");
+			UUID uuidMeasurementUnitMicroMolL = UUID.fromString("a631f62e-377e-405c-bd1a-76885b13a72b");
+			UUID uuidMeasurementUnitDegreeC = UUID.fromString("55222aec-d5be-413e-8db7-d9a48c316c6c");
+			UUID uuidMeasurementUnitPercent = UUID.fromString("3ea3110e-f048-4bed-8bfe-33c60f63626f");
+			UUID uuidMeasurementUnitCm = UUID.fromString("3ea3110e-f048-4bed-8bfe-33c60f63626f");
+			UUID uuidMeasurementUnitMicroSiCm = UUID.fromString("3ea3110e-f048-4bed-8bfe-33c60f63626f");
+			
+			
+			if (unitStr.equalsIgnoreCase("mg/L")){
+				return  getMeasurementUnit(state, uuidMeasurementUnitMgL, unitStr, unitStr, unitStr, null);
+			}else if (unitStr.equalsIgnoreCase("mol/mol")){
+				return result = getMeasurementUnit(state, uuidMeasurementUnitMolMol, unitStr, unitStr, unitStr, null);
+			}else if (unitStr.equalsIgnoreCase("\u00B5mol Si/L")){   //µmol Si/L
+				return getMeasurementUnit(state, uuidMeasurementUnitMicroMolSiL, unitStr, unitStr, unitStr, null);
+			}else if (unitStr.equalsIgnoreCase("\u00B5mol/L")){		//µmol/L
+				return getMeasurementUnit(state, uuidMeasurementUnitMicroMolL, unitStr, unitStr, unitStr, null);
+			}else if (unitStr.equalsIgnoreCase("\u00B0C")){               //°C
+				return getMeasurementUnit(state, uuidMeasurementUnitDegreeC, unitStr, unitStr, unitStr, null);
+			}else if (unitStr.equalsIgnoreCase("%")){
+				return getMeasurementUnit(state, uuidMeasurementUnitPercent, unitStr, unitStr, unitStr, null);
+			}else if (unitStr.equalsIgnoreCase("cm")){
+				return getMeasurementUnit(state, uuidMeasurementUnitCm, unitStr, unitStr, unitStr, null);
+			}else if (unitStr.equalsIgnoreCase("\u00B5S/cm")){   //µS/cm
+				return getMeasurementUnit(state, uuidMeasurementUnitMicroSiCm, unitStr, unitStr, unitStr, null);
+			}else{
+				logger.warn("MeasurementUnit was not recognized");
+				return null;
+			}
+		}else{
+			return null;
+		}
+	}
+
 
 
 	private void addCategoricalValue(AlgaTerraImportState importState, DescriptionBase description, String uuidTerm, UUID featureUuid) {
@@ -539,16 +675,30 @@ public class AlgaTerraSpecimenImport  extends BerlinModelImportBase {
 		}
 	}
 
-	private FieldObservation getFieldObservation(int ecoFactId, Map<String, FieldObservation> fieldObservationMap) {
+	/**
+	 * @param state
+	 * @param ecoFactId
+	 * @param derivedUnitMap
+	 * @param type 
+	 * @return
+	 */
+	private DerivedUnitFacade getDerivedUnit(AlgaTerraImportState state, int ecoFactId, Map<String, DerivedUnit> derivedUnitMap, DerivedUnitType type) {
 		String key = String.valueOf(ecoFactId);
-		FieldObservation fieldObservation = fieldObservationMap.get(key);
-		if (fieldObservation == null){
-			fieldObservation = FieldObservation.NewInstance();
-			
-			fieldObservationMap.put(key, fieldObservation);
+		DerivedUnit derivedUnit = derivedUnitMap.get(key);
+		DerivedUnitFacade facade;
+		if (derivedUnit == null){
+			facade = DerivedUnitFacade.NewInstance(type);
+			derivedUnitMap.put(key, derivedUnit);
+		}else{
+			try {
+				facade = DerivedUnitFacade.NewInstance(derivedUnit);
+			} catch (DerivedUnitFacadeNotSupportedException e) {
+				logger.error(e.getMessage());
+				facade = DerivedUnitFacade.NewInstance(type);
+			}
 		}
 		
-		return fieldObservation;
+		return facade;
 	}
 	
 	private Feature makeFeature(DerivedUnitType type) {
@@ -616,7 +766,7 @@ public class AlgaTerraSpecimenImport  extends BerlinModelImportBase {
 			result.put(nameSpace, objectMap);
 
 			//field observation map map
-			nameSpace = AlgaTerraSpecimenImport.FIELD_OBSERVATION_NAMESPACE;
+			nameSpace = AlgaTerraSpecimenImport.ECO_FACT_NAMESPACE;
 			cdmClass = FieldObservation.class;
 			idSet = taxonIdSet;
 			Map<String, FieldObservation> fieldObservationMap = (Map<String, FieldObservation>)getCommonService().getSourcedObjectsByIdInSource(cdmClass, idSet, nameSpace);
