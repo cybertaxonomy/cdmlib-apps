@@ -27,36 +27,22 @@ public class CdmImportSources {
 	@SuppressWarnings("unused")
 	private static final Logger logger = Logger.getLogger(CdmImportSources.class);
 	
-
-	public static Source AFRICA_CHECKLIST_ACCESS(){
-		//	
-		String dbms = Source.ACCESS;
-		String strServer = null;
-		//String strDB = "fernsTest";
-		String strDB = "C:\\localCopy\\Data\\eflora\\africa\\checklist\\checklist_flore_afrique_centrale_corr.mdb";
+	public static Source ROTE_LISTE_DB(){
+		String dbms = Source.ORACLE;
+		String strServer = "xxx";
+		String strDB = "dbName";
 		int port = 1433;
-		String userName = "";
+		String userName = "adam";
 		return  makeSource(dbms, strServer, strDB, port, userName, null);
 	}
 
-	
-	public static Source AFRICA_FERNS_ACCESS(){
-		//	
-		String dbms = Source.ACCESS;
-		String strServer = null;
-		//String strDB = "fernsTest";
-		String strDB = "C:\\localCopy\\Data\\eflora\\africa\\ferns\\Synopsis_Database_corrected.mdb";
-		int port = 1433;
-		String userName = "";
-		return  makeSource(dbms, strServer, strDB, port, userName, null);
-	}
 	
 	public static Source GLOBIS(){
 		String dbms = Source.SQL_SERVER_2005;
 		String strServer = "LENOVO-T61";
 		String strDB = "globis";
-		int port = 1433;
-		String userName = "adam";
+		int port = 0001;
+		String userName = "user";
 		return  makeSource(dbms, strServer, strDB, port, userName, null);
 	}
 
