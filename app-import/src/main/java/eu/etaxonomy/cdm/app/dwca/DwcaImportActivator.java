@@ -40,12 +40,12 @@ public class DwcaImportActivator {
 	static DbSchemaValidation hbm2dll = DbSchemaValidation.CREATE;
 //	static final URI source = dwca_test_in();
 //	static final URI source = dwca_test_cich_len();
-	static final URI source = dwca_test_col_sapindaceae();
+//	static final URI source = dwca_test_col_sapindaceae();
 //	static final URI source = dwca_test_col_cichorium();
 //	static final URI source = dwca_test_scratch_test();
-//	static final URI source = dwca_test_col_All_Pesi2();
 //	static final URI source = dwca_test_col_All();
 //	static final URI source = dwca_test_col_All_Pesi2();
+	static final URI source =  dwca_import_emonocots();
 	
 	
 	static final ICdmDataSource cdmDestination = CdmDestinations.localH2();
@@ -67,7 +67,7 @@ public class DwcaImportActivator {
 	
 	//check - import
 	static final CHECK check = CHECK.IMPORT_WITHOUT_CHECK;
-	static int partitionSize = 5;
+	static int partitionSize = 1000;
 	
 	//config
 	static DatasetUse datasetUse = DatasetUse.SECUNDUM;
@@ -168,6 +168,12 @@ public class DwcaImportActivator {
 	//Dwca
 	public static URI dwca_test_col_sapindaceae() {
 		URI sourceUrl = URI.create("file:///C:/localCopy/Data/dwca/import/CoL/Sapindaceae/archive-family-Sapindaceae-bl3.zip");
+		return sourceUrl;
+	}
+
+	//Dwca
+	public static URI dwca_import_emonocots() {
+		URI sourceUrl = URI.create("file:///C:/localCopy/Data/dwca/import/Scratchpads/dwca_dioscoreaceae_emonocots.zip");
 		return sourceUrl;
 	}
 	
