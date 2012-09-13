@@ -10,16 +10,11 @@
 
 package eu.etaxonomy.cdm.io.algaterra.validation;
 
-import java.sql.ResultSet;
-import java.sql.SQLException;
-
-import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 
 import eu.etaxonomy.cdm.io.berlinModel.in.BerlinModelImportConfigurator;
 import eu.etaxonomy.cdm.io.berlinModel.in.BerlinModelImportState;
 import eu.etaxonomy.cdm.io.common.IOValidator;
-import eu.etaxonomy.cdm.io.common.Source;
 
 /**
  * @author a.mueller

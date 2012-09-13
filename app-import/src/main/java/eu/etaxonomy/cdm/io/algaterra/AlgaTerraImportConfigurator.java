@@ -56,17 +56,16 @@ public class AlgaTerraImportConfigurator extends BerlinModelImportConfigurator {
 				, BerlinModelTaxonNameImport.class
 				, BerlinModelTaxonNameRelationImport.class
 				, BerlinModelNameStatusImport.class
-				, BerlinModelTypesImport.class
+				
 				, BerlinModelTaxonImport.class
 				, BerlinModelTaxonRelationImport.class
-				, BerlinModelCommonNamesImport.class
+				
 				, BerlinModelFactsImport.class
-				, BerlinModelOccurrenceImport.class
-				, BerlinModelOccurrenceSourceImport.class
 				, BerlinModelWebMarkerCategoryImport.class
 				, BerlinModelWebMarkerImport.class
 				
 				, AlgaTerraSpecimenImport.class
+				, AlgaTerraTypeImport.class
 				
 		};	
 		
