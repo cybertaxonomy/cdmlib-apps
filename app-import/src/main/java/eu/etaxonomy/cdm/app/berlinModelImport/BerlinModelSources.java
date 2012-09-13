@@ -68,7 +68,7 @@ public class BerlinModelSources {
 		String strServer = "BGBM42";
 		String strDB = "Campanulaceae";
 		int port = 1433;
-		String userName = "webUser";
+		String userName = "WebUser";
 		return  makeSource(dbms, strServer, strDB, port, userName, null);
 	}
 	

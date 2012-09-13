@@ -72,6 +72,8 @@ public class CampanulaceaeActivator {
 	static final boolean ignoreNull = true;
 	
 	static boolean useClassification = true;
+	
+	static boolean includesEmCode = false; 
 
 
 // **************** ALL *********************	
@@ -157,6 +159,7 @@ public class CampanulaceaeActivator {
 		bmImportConfigurator.setDbSchemaValidation(hbm2dll);
 		bmImportConfigurator.setRecordsPerTransaction(recordsPerTransaction);
 		
+		bmImportConfigurator.setIncludesEmCode(includesEmCode);
 
 		// maximum number of name facts to import
 		bmImportConfigurator.setMaximumNumberOfNameFacts(maximumNumberOfNameFacts);
