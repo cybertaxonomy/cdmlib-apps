@@ -50,6 +50,7 @@ import eu.etaxonomy.cdm.model.description.TaxonDescription;
 import eu.etaxonomy.cdm.model.description.TextData;
 import eu.etaxonomy.cdm.model.name.BotanicalName;
 import eu.etaxonomy.cdm.model.name.Rank;
+import eu.etaxonomy.cdm.model.occurrence.Collection;
 import eu.etaxonomy.cdm.model.occurrence.DerivedUnit;
 import eu.etaxonomy.cdm.model.occurrence.FieldObservation;
 import eu.etaxonomy.cdm.model.reference.Reference;
@@ -157,7 +158,7 @@ public class AlgaTerraSpecimenImport  extends AlgaTerraSpecimenImportBase {
 					DerivedUnitFacade facade = getDerivedUnit(state, ecoFactId, ecoFactMap, type);
 					
 					//field observation
-					handleSingleSpecimen(rs, facade, state);
+					handleSingleSpecimen(rs, facade, state, partitioner);
 					
 					handleEcoFactSpecificSpecimen(rs,facade, state);
 					
@@ -465,6 +466,7 @@ public class AlgaTerraSpecimenImport  extends AlgaTerraSpecimenImportBase {
 			Set<String> taxonIdSet = new HashSet<String>();
 			Set<String> fieldObservationIdSet = new HashSet<String>();
 			Set<String> termsIdSet = new HashSet<String>();
+			Set<String> collectionIdSet = new HashSet<String>();
 			
 			while (rs.next()){
 				handleForeignKey(rs, taxonIdSet, "taxonId");
@@ -472,6 +474,7 @@ public class AlgaTerraSpecimenImport  extends AlgaTerraSpecimenImportBase {
 				handleForeignKey(rs, termsIdSet, "ClimateFk");
 				handleForeignKey(rs, termsIdSet, "HabitatFk");
 				handleForeignKey(rs, termsIdSet, "LifeFormFk");
+				handleForeignKey(rs, collectionIdSet, "CollectionFk");
 			}
 			
 			//taxon map
@@ -487,6 +490,20 @@ public class AlgaTerraSpecimenImport  extends AlgaTerraSpecimenImportBase {
 			idSet = fieldObservationIdSet;
 			Map<String, FieldObservation> fieldObservationMap = (Map<String, FieldObservation>)getCommonService().getSourcedObjectsByIdInSource(cdmClass, idSet, nameSpace);
 			result.put(nameSpace, fieldObservationMap);
+
+			//collections
+			nameSpace = AlgaTerraCollectionImport.NAMESPACE_COLLECTION;
+			cdmClass = Collection.class;
+			idSet = collectionIdSet;
+			Map<String, Collection> collectionMap = (Map<String, Collection>)getCommonService().getSourcedObjectsByIdInSource(cdmClass, idSet, nameSpace);
+			result.put(nameSpace, collectionMap);
+
+			//sub-collections
+			nameSpace = AlgaTerraCollectionImport.NAMESPACE_SUBCOLLECTION;
+			cdmClass = Collection.class;
+			idSet = collectionIdSet;
+			Map<String, Collection> subCollectionMap = (Map<String, Collection>)getCommonService().getSourcedObjectsByIdInSource(cdmClass, idSet, nameSpace);
+			result.put(nameSpace, subCollectionMap);
 
 			//terms
 			nameSpace = AlgaTerraSpecimenImport.TERMS_NAMESPACE;

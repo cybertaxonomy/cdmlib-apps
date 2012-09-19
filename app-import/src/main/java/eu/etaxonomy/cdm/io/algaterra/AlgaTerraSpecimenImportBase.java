@@ -13,6 +13,7 @@ import java.net.URI;
 import java.sql.Date;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
 
@@ -22,6 +23,8 @@ import org.springframework.transaction.TransactionStatus;
 
 import eu.etaxonomy.cdm.api.facade.DerivedUnitFacade;
 import eu.etaxonomy.cdm.io.berlinModel.in.BerlinModelImportBase;
+import eu.etaxonomy.cdm.io.berlinModel.in.BerlinModelTaxonNameImport;
+import eu.etaxonomy.cdm.io.common.ResultSetPartitioner;
 import eu.etaxonomy.cdm.io.common.Source;
 import eu.etaxonomy.cdm.model.agent.Team;
 import eu.etaxonomy.cdm.model.common.OrderedTermVocabulary;
@@ -35,6 +38,8 @@ import eu.etaxonomy.cdm.model.location.Point;
 import eu.etaxonomy.cdm.model.location.ReferenceSystem;
 import eu.etaxonomy.cdm.model.location.TdwgArea;
 import eu.etaxonomy.cdm.model.location.WaterbodyOrCountry;
+import eu.etaxonomy.cdm.model.name.TaxonNameBase;
+import eu.etaxonomy.cdm.model.occurrence.Collection;
 
 /**
  * @author a.mueller
@@ -148,7 +153,7 @@ public abstract class AlgaTerraSpecimenImportBase extends BerlinModelImportBase{
 		return "Locality";
 	}
 	
-	protected void handleSingleSpecimen(ResultSet rs, DerivedUnitFacade facade, AlgaTerraImportState state) throws SQLException {
+	protected void handleSingleSpecimen(ResultSet rs, DerivedUnitFacade facade, AlgaTerraImportState state, ResultSetPartitioner partitioner) throws SQLException {
 		//FIXME missing fields #3084, #3085, #3080
 		try {
 			
@@ -167,7 +172,10 @@ public abstract class AlgaTerraSpecimenImportBase extends BerlinModelImportBase{
 			String collectorsNumber = rs.getString("CollectorsNumber");
 			Date collectionDateStart = rs.getDate("CollectionDate");
 			Date collectionDateEnd = rs.getDate("CollectionDateEnd");
-
+			
+			Integer collectionFk = nullSafeInt(rs,"CollectionFk");
+			
+			
 			//location
 			facade.setLocality(locality);
 			    	
@@ -204,7 +212,6 @@ public abstract class AlgaTerraSpecimenImportBase extends BerlinModelImportBase{
 			   		facade.setDistanceToWaterSurface(intDepth);
 			   	}
 			}
-
 			
 			//field
 			facade.setFieldNumber(collectorsNumber);
@@ -215,6 +222,16 @@ public abstract class AlgaTerraSpecimenImportBase extends BerlinModelImportBase{
 			//areas
 			makeAreas(state, rs, facade);
 			
+			//collection
+			if (collectionFk != null){
+				Collection subCollection = state.getRelatedObject(AlgaTerraCollectionImport.NAMESPACE_SUBCOLLECTION, String.valueOf(collectionFk), Collection.class);
+				if (subCollection != null){
+					facade.setCollection(subCollection);
+				}else{
+					Collection collection = state.getRelatedObject(AlgaTerraCollectionImport.NAMESPACE_COLLECTION, String.valueOf(collectionFk), Collection.class);
+					facade.setCollection(collection);
+				}
+			}
 			
 			//notes
 			//TODO is this an annotation on field observation or on the derived unit?
