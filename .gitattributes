@@ -105,6 +105,7 @@ app-import/src/main/java/eu/etaxonomy/cdm/io/algaterra/AlgaTerraImportTransforme
 app-import/src/main/java/eu/etaxonomy/cdm/io/algaterra/AlgaTerraSpecimenImport.java -text
 app-import/src/main/java/eu/etaxonomy/cdm/io/algaterra/AlgaTerraSpecimenImportBase.java -text
 app-import/src/main/java/eu/etaxonomy/cdm/io/algaterra/AlgaTerraTypeImport.java -text
+app-import/src/main/java/eu/etaxonomy/cdm/io/algaterra/validation/AlgaTerraCollectionImportValidator.java -text
 app-import/src/main/java/eu/etaxonomy/cdm/io/algaterra/validation/AlgaTerraSpecimenImportValidator.java -text
 app-import/src/main/java/eu/etaxonomy/cdm/io/algaterra/validation/AlgaTerraTypeImportValidator.java -text
 app-import/src/main/java/eu/etaxonomy/cdm/io/cyprus/CyprusDistributionImport.java -text
