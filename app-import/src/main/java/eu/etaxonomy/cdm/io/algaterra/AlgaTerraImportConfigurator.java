@@ -37,6 +37,10 @@ public class AlgaTerraImportConfigurator extends BerlinModelImportConfigurator {
 
 	private boolean doSpecimen = true;
 	
+	private boolean doImages = true;
+	
+	private String imageBaseUrl = "http://www.algaterra.org/ATDB/Figures/";
+	
 	public static AlgaTerraImportConfigurator NewInstance(Source berlinModelSource, ICdmDataSource destination){
 		return new AlgaTerraImportConfigurator(berlinModelSource, destination);
 	}
@@ -67,6 +71,7 @@ public class AlgaTerraImportConfigurator extends BerlinModelImportConfigurator {
 				, AlgaTerraCollectionImport.class
 				, AlgaTerraSpecimenImport.class
 				, AlgaTerraTypeImport.class
+				, AlgaTerraTypeImagesImport.class
 				
 		};	
 		
@@ -88,6 +93,22 @@ public class AlgaTerraImportConfigurator extends BerlinModelImportConfigurator {
 
 	public void setDoSpecimen(boolean doSpecimen) {
 		this.doSpecimen = doSpecimen;
+	}
+
+	public String getImageBaseUrl() {
+		return imageBaseUrl;
+	}
+
+	public void setImageBaseUrl(String imageBaseUrl) {
+		this.imageBaseUrl = imageBaseUrl;
+	}
+
+	public boolean isDoImages() {
+		return doImages;
+	}
+
+	public void setDoImages(boolean doImages) {
+		this.doImages = doImages;
 	}
 
 
