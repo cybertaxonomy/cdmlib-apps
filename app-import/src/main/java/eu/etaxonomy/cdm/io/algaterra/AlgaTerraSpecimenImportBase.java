@@ -13,7 +13,6 @@ import java.net.URI;
 import java.sql.Date;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
 
@@ -23,7 +22,6 @@ import org.springframework.transaction.TransactionStatus;
 
 import eu.etaxonomy.cdm.api.facade.DerivedUnitFacade;
 import eu.etaxonomy.cdm.io.berlinModel.in.BerlinModelImportBase;
-import eu.etaxonomy.cdm.io.berlinModel.in.BerlinModelTaxonNameImport;
 import eu.etaxonomy.cdm.io.common.ResultSetPartitioner;
 import eu.etaxonomy.cdm.io.common.Source;
 import eu.etaxonomy.cdm.model.agent.Team;
@@ -38,7 +36,6 @@ import eu.etaxonomy.cdm.model.location.Point;
 import eu.etaxonomy.cdm.model.location.ReferenceSystem;
 import eu.etaxonomy.cdm.model.location.TdwgArea;
 import eu.etaxonomy.cdm.model.location.WaterbodyOrCountry;
-import eu.etaxonomy.cdm.model.name.TaxonNameBase;
 import eu.etaxonomy.cdm.model.occurrence.Collection;
 
 /**
@@ -48,8 +45,11 @@ import eu.etaxonomy.cdm.model.occurrence.Collection;
 public abstract class AlgaTerraSpecimenImportBase extends BerlinModelImportBase{
 	private static final Logger logger = Logger.getLogger(AlgaTerraSpecimenImportBase.class);
 
-	public static final String ECO_FACT_NAMESPACE = "EcoFact";
-	public static final String TYPE_SPECIMEN_NAMESPACE = "TypeSpecimen";
+	public static final String ECO_FACT_FIELD_OBSERVATION_NAMESPACE = "EcoFact";
+	public static final String ECO_FACT_DERIVED_UNIT_NAMESPACE = "EcoFact";
+	public static final String TYPE_SPECIMEN_FIELD_OBSERVATION_NAMESPACE = "TypeSpecimen_FieldObservation";
+	public static final String TYPE_SPECIMEN_DERIVED_UNIT_NAMESPACE = "TypeSpecimen_DerivedUnit";
+	
 	public static final String TERMS_NAMESPACE = "ALGA_TERRA_TERMS";
 	
 	//TODO move to transformrer
@@ -157,6 +157,7 @@ public abstract class AlgaTerraSpecimenImportBase extends BerlinModelImportBase{
 		//FIXME missing fields #3084, #3085, #3080
 		try {
 			
+			Integer unitId = nullSafeInt(rs, "unitId");
 			String locality = rs.getString(getLocalityString());
 			Double latitude = nullSafeDouble(rs, "Latitude");
 			Double longitude = nullSafeDouble(rs, "Longitude");
@@ -238,13 +239,21 @@ public abstract class AlgaTerraSpecimenImportBase extends BerlinModelImportBase{
 			
 			//TODO id, created for fact +  ecoFact
 			//    	this.doIdCreatedUpdatedNotes(state, descriptionElement, rs, id, namespace);
-		
+			if (unitId != null){
+				this.doIdCreatedUpdatedNotes(state, facade.innerDerivedUnit(), rs, unitId, getDerivedUnitNameSpace());
+			}else{
+				logger.warn("Specimen has not unitId: " +  facade.innerDerivedUnit() + ": " + getDerivedUnitNameSpace());
+			}
+			
+			
 		} catch (Exception e) {
 			throw new RuntimeException(e);
 		}
     	
 	}
 	
+	protected abstract String getDerivedUnitNameSpace();
+
 	protected DescriptionBase getFieldObservationDescription(DerivedUnitFacade facade) {
 		Set<DescriptionBase> descriptions = facade.innerFieldObservation().getDescriptions();
 		for (DescriptionBase desc : descriptions){

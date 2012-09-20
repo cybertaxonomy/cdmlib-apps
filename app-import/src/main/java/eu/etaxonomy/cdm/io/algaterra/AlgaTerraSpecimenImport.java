@@ -98,9 +98,9 @@ public class AlgaTerraSpecimenImport  extends AlgaTerraSpecimenImportBase {
 	@Override
 	protected String getRecordQuery(BerlinModelImportConfigurator config) {
 			String strQuery =   
-            " SELECT PTaxon.RIdentifier as taxonId, Fact.FactId, Fact.RecordBasis, EcoFact.*, " + 
+            " SELECT PTaxon.RIdentifier as taxonId, Fact.FactId, Fact.RecordBasis, EcoFact.*, EcoFact.EcoFactId as unitId, " + 
                " tg.ID AS GazetteerId, tg.L2Code, tg.L3Code, tg.L4Code, tg.Country, tg.ISOCountry, " +
-               " ec.UUID as climateUuid, eh.UUID as habitatUuid, elf.UUID as lifeFormUuid" +
+               " ec.UUID as climateUuid, eh.UUID as habitatUuid, elf.UUID as lifeFormUuid " +
             " FROM Fact " + 
                  " INNER JOIN EcoFact ON Fact.ExtensionFk = EcoFact.EcoFactId " +
                  " INNER JOIN PTaxon ON dbo.Fact.PTNameFk = dbo.PTaxon.PTNameFk AND dbo.Fact.PTRefFk = dbo.PTaxon.PTRefFk " +
@@ -130,7 +130,7 @@ public class AlgaTerraSpecimenImport  extends AlgaTerraSpecimenImportBase {
 		Set<TaxonBase> taxaToSave = new HashSet<TaxonBase>();
 		
 		Map<String, TaxonBase> taxonMap = (Map<String, TaxonBase>) partitioner.getObjectMap(BerlinModelTaxonImport.NAMESPACE);
-		Map<String, DerivedUnit> ecoFactMap = (Map<String, DerivedUnit>) partitioner.getObjectMap(ECO_FACT_NAMESPACE);
+		Map<String, DerivedUnit> ecoFactDerivedUnitMap = (Map<String, DerivedUnit>) partitioner.getObjectMap(ECO_FACT_DERIVED_UNIT_NAMESPACE);
 		
 		ResultSet rs = partitioner.getResultSet();
 
@@ -155,7 +155,7 @@ public class AlgaTerraSpecimenImport  extends AlgaTerraSpecimenImportBase {
 				
 					//facade
 					DerivedUnitType type = makeDerivedUnitType(recordBasis);
-					DerivedUnitFacade facade = getDerivedUnit(state, ecoFactId, ecoFactMap, type);
+					DerivedUnitFacade facade = getDerivedUnit(state, ecoFactId, ecoFactDerivedUnitMap, type);
 					
 					//field observation
 					handleSingleSpecimen(rs, facade, state, partitioner);
@@ -192,6 +192,10 @@ public class AlgaTerraSpecimenImport  extends AlgaTerraSpecimenImportBase {
 			logger.error("SQLException:" +  e);
 			return false;
 		}
+	}
+	
+	protected String getDerivedUnitNameSpace(){
+		return ECO_FACT_DERIVED_UNIT_NAMESPACE;
 	}
 
 
@@ -485,7 +489,7 @@ public class AlgaTerraSpecimenImport  extends AlgaTerraSpecimenImportBase {
 			result.put(nameSpace, objectMap);
 
 			//field observation map map
-			nameSpace = AlgaTerraSpecimenImport.ECO_FACT_NAMESPACE;
+			nameSpace = AlgaTerraSpecimenImport.ECO_FACT_FIELD_OBSERVATION_NAMESPACE;
 			cdmClass = FieldObservation.class;
 			idSet = fieldObservationIdSet;
 			Map<String, FieldObservation> fieldObservationMap = (Map<String, FieldObservation>)getCommonService().getSourcedObjectsByIdInSource(cdmClass, idSet, nameSpace);

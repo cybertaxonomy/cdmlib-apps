@@ -19,38 +19,35 @@ import java.util.Set;
 import org.apache.log4j.Logger;
 import org.springframework.stereotype.Component;
 
-import eu.etaxonomy.cdm.io.algaterra.validation.AlgaTerraCollectionImportValidator;
-import eu.etaxonomy.cdm.io.berlinModel.in.BerlinModelImportBase;
+import eu.etaxonomy.cdm.io.algaterra.validation.AlgaTerraTypeImportValidator;
 import eu.etaxonomy.cdm.io.berlinModel.in.BerlinModelImportConfigurator;
 import eu.etaxonomy.cdm.io.berlinModel.in.BerlinModelImportState;
 import eu.etaxonomy.cdm.io.common.IOValidator;
 import eu.etaxonomy.cdm.io.common.ResultSetPartitioner;
 import eu.etaxonomy.cdm.model.common.CdmBase;
-import eu.etaxonomy.cdm.model.occurrence.Collection;
-import eu.etaxonomy.cdm.model.reference.Reference;
+import eu.etaxonomy.cdm.model.media.Media;
+import eu.etaxonomy.cdm.model.occurrence.DerivedUnitBase;
+import eu.etaxonomy.cdm.model.occurrence.FieldObservation;
+import eu.etaxonomy.cdm.model.occurrence.SpecimenOrObservationBase;
 
 
 /**
  * @author a.mueller
- * @created 01.09.2012
+ * @created 20.03.2008
+ * @version 1.0
  */
 @Component
-public class AlgaTerraCollectionImport  extends BerlinModelImportBase {
-	private static final Logger logger = Logger.getLogger(AlgaTerraCollectionImport.class);
+public class AlgaTerraSiteImagesImport  extends AlgaTerraImageImportBase {
+	private static final Logger logger = Logger.getLogger(AlgaTerraSiteImagesImport.class);
 
 	
 	private static int modCount = 5000;
-	private static final String pluralString = "collections";
-	private static final String dbTableName = "Collection";  //??  
+	private static final String pluralString = "site images";
+	private static final String dbTableName = "SiteImages";  //??  
 	
-	public static final String NAMESPACE_COLLECTION = "Collection"; 
-	public static final String NAMESPACE_SUBCOLLECTION = "Collection (Subcollection)"; 
-
-
-	public AlgaTerraCollectionImport(){
+	public AlgaTerraSiteImagesImport(){
 		super();
 	}
-	
 	
 	
 	/* (non-Javadoc)
@@ -58,9 +55,9 @@ public class AlgaTerraCollectionImport  extends BerlinModelImportBase {
 	 */
 	@Override
 	protected String getIdQuery(BerlinModelImportState state) {
-		String result = " SELECT CollectionId " + 
-				" FROM Collection c "
-				+ " ORDER BY c.CollectionId ";
+		String result = " SELECT SiteId "  
+				+ " FROM SiteImages " 
+				+ " ORDER BY EcoFactFk ";
 		return result;
 	}
 
@@ -69,12 +66,12 @@ public class AlgaTerraCollectionImport  extends BerlinModelImportBase {
 	 */
 	@Override
 	protected String getRecordQuery(BerlinModelImportConfigurator config) {
-			String strQuery =   
-            " SELECT CollectionId, Name, Town, IHCode, Subcollection, TDWGGazetteerFk, Address, CultCollFlag, " +
-            		" Created_When, Updated_When, Created_Who, Updated_Who, Notes " +
-            " FROM Collection c " + 
-            " WHERE c.CollectionId IN (" + ID_LIST_TOKEN + ") "  
-            + " ORDER BY c.CollectionId "
+			String strQuery =    
+						
+				" SELECT si.*, si.Comment as FigurePhrase, si.Picture as fileName " +
+	            " FROM SiteImages si  " 
+	            + 	" WHERE (si.SiteID IN (" + ID_LIST_TOKEN + ")  )"  
+	            + " ORDER BY EcoFactFk ";
             ;
 		return strQuery;
 	}
@@ -86,7 +83,10 @@ public class AlgaTerraCollectionImport  extends BerlinModelImportBase {
 		boolean success = true;
 		
 		AlgaTerraImportState state = (AlgaTerraImportState)bmState;
-		Set<Collection> collectionsToSave = new HashSet<Collection>();
+		
+		Set<SpecimenOrObservationBase> unitsToSave = new HashSet<SpecimenOrObservationBase>();
+		
+		Map<String, FieldObservation> ecoFactFieldObservationMap = (Map<String, FieldObservation>) partitioner.getObjectMap(AlgaTerraSpecimenImportBase.ECO_FACT_FIELD_OBSERVATION_NAMESPACE);
 		
 		ResultSet rs = partitioner.getResultSet();
 
@@ -99,55 +99,42 @@ public class AlgaTerraCollectionImport  extends BerlinModelImportBase {
                 
         		if ((i++ % modCount) == 0 && i!= 1 ){ logger.info(pluralString + " handled: " + (i-1));}
 				
-        		int collectionId = rs.getInt("CollectionId");
-        		String name = rs.getString("Name");
-        		String town = rs.getString("Town");
-        		String ihCode = rs.getString("IHCode");
-        		String subCollectionStr = rs.getString("Subcollection");
-        		Integer tdwgArea = nullSafeInt(rs, "TDWGGazetteerFk");  //somehow redundant with town
-        		String address = rs.getString("Address");           //only available for BGBM
-        		Boolean cultCollFlag = rs.getBoolean("CultCollFlag");  //?? not really needed according to Henning
-        		//TODO createdUpdates, NOtes		
-      
-        		try {
-					
-					//source ref
-					Reference<?> sourceRef = state.getTransactionalSourceReference();
+				int figureId = rs.getInt("VoucherImageID");
+				int ecoFactFk = rs.getInt("EcoFactFk");
 				
+				
+				//TODO etc. Created, Notes, Copyright, TermsOfUse etc.
+				
+				try {
 					
-					Collection collection = Collection.NewInstance();
-					collection.setName(name);
-					if (isNotBlank("ihCode")){
-						collection.setCode(ihCode);
-						collection.setCodeStandard("Index Herbariorum");
+					//TODO use deduplicated ecofact
+					FieldObservation fieldObservation = ecoFactFieldObservationMap.get(ecoFactFk);
+					
+					if (fieldObservation == null){
+						logger.warn("Could not find eco fact field observation (" + ecoFactFk +") for site image " +  figureId);
+					}else{
+						
 					}
 					
-					collection.setTownOrLocation(town);
-					collection.addSource(String.valueOf(collectionId), NAMESPACE_COLLECTION, sourceRef, null);
+					//field observation
+					Media media = handleSingleImage(rs, fieldObservation, state, partitioner);
 					
-					collectionsToSave.add(collection);  //or subcollection ? 
-
-					//subcollection
-					if (isNotBlank(subCollectionStr)){
-						Collection subCollection = Collection.NewInstance();
-						subCollection.setName(subCollectionStr);
-						subCollection.setSuperCollection(collection);
-						collectionsToSave.add(subCollection);  //or subcollection ? 
-						collection.addSource(String.valueOf(collectionId), NAMESPACE_SUBCOLLECTION, sourceRef, null);	
-					}
+					handleTypeImageSpecificFields(rs, media, state);
 					
-					//TODO partOfFk , movedToFk
+					unitsToSave.add(fieldObservation); 
 					
 
 				} catch (Exception e) {
-					logger.warn("Exception in collection: CollectionId " + collectionId + ". " + e.getMessage());
-//					e.printStackTrace();
+					logger.warn("Exception in " + getTableName() + ": SiteId " + figureId + ". " + e.getMessage());
+					e.printStackTrace();
 				} 
                 
             }
            
-			logger.warn(pluralString + " to save: " + collectionsToSave.size());
-			getCollectionService().save(collectionsToSave);	
+//            logger.warn("Specimen: " + countSpecimen + ", Descriptions: " + countDescriptions );
+
+			logger.warn(pluralString + " to save: " + unitsToSave.size());
+			getOccurrenceService().save(unitsToSave);	
 			
 			return success;
 		} catch (SQLException e) {
@@ -158,24 +145,51 @@ public class AlgaTerraCollectionImport  extends BerlinModelImportBase {
 
 
 
+	private void handleTypeImageSpecificFields(ResultSet rs, Media media, AlgaTerraImportState state) throws SQLException {
+		//TODO
+		
+	}
+
+	
 	/* (non-Javadoc)
 	 * @see eu.etaxonomy.cdm.io.berlinModel.in.IPartitionedIO#getRelatedObjectsForPartition(java.sql.ResultSet)
 	 */
 	public Map<Object, Map<String, ? extends CdmBase>> getRelatedObjectsForPartition(ResultSet rs) {
-		//no related objects are needed
+		String nameSpace;
+		Class cdmClass;
+		Set<String> idSet;
 		Map<Object, Map<String, ? extends CdmBase>> result = new HashMap<Object, Map<String, ? extends CdmBase>>();
-
-		return result;
 		
+		try{
+			Set<String> ecoFactIdSet = new HashSet<String>();
+			
+			while (rs.next()){
+				handleForeignKey(rs, ecoFactIdSet, "EcoFactFk");
+			}
+			
+			//type specimen map
+			nameSpace = AlgaTerraSpecimenImportBase.ECO_FACT_DERIVED_UNIT_NAMESPACE;
+			cdmClass = DerivedUnitBase.class;
+			idSet = ecoFactIdSet;
+			Map<String, DerivedUnitBase> typeSpecimenMap = (Map<String,DerivedUnitBase>)getCommonService().getSourcedObjectsByIdInSource(cdmClass, idSet, nameSpace);
+			result.put(nameSpace, typeSpecimenMap);
+
+			
+		} catch (SQLException e) {
+			throw new RuntimeException(e);
+		}
+		return result;
 	}
 
+
+	
 
 	/* (non-Javadoc)
 	 * @see eu.etaxonomy.cdm.io.common.CdmIoBase#doCheck(eu.etaxonomy.cdm.io.common.IoStateBase)
 	 */
 	@Override
 	protected boolean doCheck(BerlinModelImportState state){
-		IOValidator<BerlinModelImportState> validator = new AlgaTerraCollectionImportValidator();
+		IOValidator<BerlinModelImportState> validator = new AlgaTerraTypeImportValidator();
 		return validator.validate(state);
 	}
 	
@@ -199,8 +213,9 @@ public class AlgaTerraCollectionImport  extends BerlinModelImportBase {
 	 * @see eu.etaxonomy.cdm.io.common.CdmIoBase#isIgnore(eu.etaxonomy.cdm.io.common.IImportConfigurator)
 	 */
 	protected boolean isIgnore(BerlinModelImportState bmState){
-		AlgaTerraImportState state = (AlgaTerraImportState)bmState;
-		return ! ( state.getAlgaTerraConfigurator().isDoSpecimen() ||  state.getAlgaTerraConfigurator().isDoTypes() );
+		AlgaTerraImportConfigurator config = ((AlgaTerraImportState) bmState).getAlgaTerraConfigurator();
+//		return !  ( config.isDoTypes() && config.isDoImages()) ;
+		return false;
 	}
 	
 }
