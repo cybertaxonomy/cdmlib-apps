@@ -180,7 +180,7 @@ public class AlgaTerraCollectionImport  extends BerlinModelImportBase {
 			String name, String town, String ihCode, Reference<?> sourceRef, String namespace, Map<String, Collection> collectionMap) {
 		Collection collection = Collection.NewInstance();
 		collection.setName(name);
-		if (isNotBlank(ihCode)){
+		if (isNotBlank(ihCode) && ! "--".equals(ihCode)){
 			collection.setCode(ihCode);
 			collection.setCodeStandard("Index Herbariorum");
 		}
