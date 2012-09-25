@@ -35,7 +35,7 @@ import eu.etaxonomy.cdm.model.name.NomenclaturalCode;
  */
 public class AlgaTerraImportConfigurator extends BerlinModelImportConfigurator {
 
-	private boolean doSpecimen = true;
+	private boolean doEcoFacts = true;
 	
 	private boolean doImages = true;
 	
@@ -87,12 +87,12 @@ public class AlgaTerraImportConfigurator extends BerlinModelImportConfigurator {
 		return new AlgaTerraImportState(this);
 	}
 
-	public boolean isDoSpecimen() {
-		return doSpecimen;
+	public boolean isDoEcoFacts() {
+		return doEcoFacts;
 	}
 
-	public void setDoSpecimen(boolean doSpecimen) {
-		this.doSpecimen = doSpecimen;
+	public void setDoEcoFacts(boolean doEcoFacts) {
+		this.doEcoFacts = doEcoFacts;
 	}
 
 	public String getImageBaseUrl() {

@@ -592,7 +592,7 @@ public class AlgaTerraSpecimenImport  extends AlgaTerraSpecimenImportBase {
 	 * @see eu.etaxonomy.cdm.io.common.CdmIoBase#isIgnore(eu.etaxonomy.cdm.io.common.IImportConfigurator)
 	 */
 	protected boolean isIgnore(BerlinModelImportState state){
-		return ! ((AlgaTerraImportState)state).getAlgaTerraConfigurator().isDoSpecimen();
+		return ! ((AlgaTerraImportState)state).getAlgaTerraConfigurator().isDoEcoFacts();
 	}
 	
 }
