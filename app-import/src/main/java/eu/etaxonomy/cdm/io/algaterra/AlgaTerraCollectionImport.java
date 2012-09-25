@@ -27,6 +27,8 @@ import eu.etaxonomy.cdm.io.common.IOValidator;
 import eu.etaxonomy.cdm.io.common.ResultSetPartitioner;
 import eu.etaxonomy.cdm.model.common.CdmBase;
 import eu.etaxonomy.cdm.model.occurrence.Collection;
+import eu.etaxonomy.cdm.model.occurrence.DerivedUnit;
+import eu.etaxonomy.cdm.model.occurrence.SpecimenOrObservationBase;
 import eu.etaxonomy.cdm.model.reference.Reference;
 
 
@@ -60,7 +62,7 @@ public class AlgaTerraCollectionImport  extends BerlinModelImportBase {
 	protected String getIdQuery(BerlinModelImportState state) {
 		String result = " SELECT CollectionId " + 
 				" FROM Collection c "
-				+ " ORDER BY c.CollectionId ";
+				+ " ORDER BY partOfFk, c.CollectionId ";
 		return result;
 	}
 
@@ -70,11 +72,11 @@ public class AlgaTerraCollectionImport  extends BerlinModelImportBase {
 	@Override
 	protected String getRecordQuery(BerlinModelImportConfigurator config) {
 			String strQuery =   
-            " SELECT CollectionId, Name, Town, IHCode, Subcollection, TDWGGazetteerFk, Address, CultCollFlag, " +
+            " SELECT CollectionId, Name, Town, IHCode, Subcollection, partOfFk, TDWGGazetteerFk, Address, CultCollFlag, " +
             		" Created_When, Updated_When, Created_Who, Updated_Who, Notes " +
             " FROM Collection c " + 
             " WHERE c.CollectionId IN (" + ID_LIST_TOKEN + ") "  
-            + " ORDER BY c.CollectionId "
+            + " ORDER BY partOfFk, c.CollectionId "
             ;
 		return strQuery;
 	}
@@ -87,6 +89,10 @@ public class AlgaTerraCollectionImport  extends BerlinModelImportBase {
 		
 		AlgaTerraImportState state = (AlgaTerraImportState)bmState;
 		Set<Collection> collectionsToSave = new HashSet<Collection>();
+
+		
+		Map<String, Collection> collectionMap = (Map<String, Collection>) partitioner.getObjectMap(NAMESPACE_COLLECTION);
+		
 		
 		ResultSet rs = partitioner.getResultSet();
 
@@ -104,9 +110,12 @@ public class AlgaTerraCollectionImport  extends BerlinModelImportBase {
         		String town = rs.getString("Town");
         		String ihCode = rs.getString("IHCode");
         		String subCollectionStr = rs.getString("Subcollection");
-        		Integer tdwgArea = nullSafeInt(rs, "TDWGGazetteerFk");  //somehow redundant with town
-        		String address = rs.getString("Address");           //only available for BGBM
-        		Boolean cultCollFlag = rs.getBoolean("CultCollFlag");  //?? not really needed according to Henning
+        		Integer partOfFk = nullSafeInt(rs, "PartOfFk");
+        		
+//        		Integer tdwgArea = nullSafeInt(rs, "TDWGGazetteerFk");  //somehow redundant with town
+//        		String address = rs.getString("Address");           //only available for BGBM
+//        		Boolean cultCollFlag = rs.getBoolean("CultCollFlag");  //?? not really needed according to Henning
+        		
         		//TODO createdUpdates, NOtes		
       
         		try {
@@ -115,28 +124,27 @@ public class AlgaTerraCollectionImport  extends BerlinModelImportBase {
 					Reference<?> sourceRef = state.getTransactionalSourceReference();
 				
 					
-					Collection collection = Collection.NewInstance();
-					collection.setName(name);
-					if (isNotBlank("ihCode")){
-						collection.setCode(ihCode);
-						collection.setCodeStandard("Index Herbariorum");
+					//collection
+					Collection collection;
+					if (partOfFk == null){
+						collection = makeCollection(collectionsToSave,
+								collectionId, name, town, ihCode, sourceRef, NAMESPACE_COLLECTION, collectionMap);
+					}else{
+						collection = collectionMap.get(String.valueOf(partOfFk));
+						if (collection == null){
+							logger.warn("PartOf collection not found");
+						}
 					}
 					
-					collection.setTownOrLocation(town);
-					collection.addSource(String.valueOf(collectionId), NAMESPACE_COLLECTION, sourceRef, null);
-					
-					collectionsToSave.add(collection);  //or subcollection ? 
 
 					//subcollection
 					if (isNotBlank(subCollectionStr)){
-						Collection subCollection = Collection.NewInstance();
-						subCollection.setName(subCollectionStr);
+						Collection subCollection = makeCollection(collectionsToSave, collectionId, subCollectionStr, town, ihCode, sourceRef, NAMESPACE_SUBCOLLECTION, collectionMap);
 						subCollection.setSuperCollection(collection);
-						collectionsToSave.add(subCollection);  //or subcollection ? 
-						collection.addSource(String.valueOf(collectionId), NAMESPACE_SUBCOLLECTION, sourceRef, null);	
 					}
 					
-					//TODO partOfFk , movedToFk
+					
+					//TODO movedToFk (extension ??)
 					
 
 				} catch (Exception e) {
@@ -158,13 +166,62 @@ public class AlgaTerraCollectionImport  extends BerlinModelImportBase {
 
 
 
+	/**
+	 * @param collectionsToSave
+	 * @param collectionId
+	 * @param name
+	 * @param town
+	 * @param ihCode
+	 * @param sourceRef
+	 * @param collectionMap 
+	 * @return
+	 */
+	private Collection makeCollection(Set<Collection> collectionsToSave, int collectionId, 
+			String name, String town, String ihCode, Reference<?> sourceRef, String namespace, Map<String, Collection> collectionMap) {
+		Collection collection = Collection.NewInstance();
+		collection.setName(name);
+		if (isNotBlank(ihCode)){
+			collection.setCode(ihCode);
+			collection.setCodeStandard("Index Herbariorum");
+		}
+		
+		collection.setTownOrLocation(town);
+		collection.addSource(String.valueOf(collectionId), namespace, sourceRef, null);
+		
+		collectionMap.put(String.valueOf(collectionId), collection);
+		collectionsToSave.add(collection);  //or subcollection ? 
+		return collection;
+	}
+
+
+
 	/* (non-Javadoc)
 	 * @see eu.etaxonomy.cdm.io.berlinModel.in.IPartitionedIO#getRelatedObjectsForPartition(java.sql.ResultSet)
 	 */
 	public Map<Object, Map<String, ? extends CdmBase>> getRelatedObjectsForPartition(ResultSet rs) {
-		//no related objects are needed
+		String nameSpace;
+		Class cdmClass;
+		Set<String> idSet;
 		Map<Object, Map<String, ? extends CdmBase>> result = new HashMap<Object, Map<String, ? extends CdmBase>>();
 
+		try{
+			Set<String> collectionIdSet = new HashSet<String>();
+			
+			while (rs.next()){
+				handleForeignKey(rs, collectionIdSet, "partOfFk");
+			}
+			
+			//type specimen map
+			nameSpace = NAMESPACE_COLLECTION;
+			cdmClass = Collection.class;
+			idSet = collectionIdSet;
+			Map<String, Collection> collectionMap = (Map<String, Collection>)getCommonService().getSourcedObjectsByIdInSource(cdmClass, idSet, nameSpace);
+			result.put(nameSpace, collectionMap);
+
+			
+		} catch (SQLException e) {
+			throw new RuntimeException(e);
+		}
 		return result;
 		
 	}
