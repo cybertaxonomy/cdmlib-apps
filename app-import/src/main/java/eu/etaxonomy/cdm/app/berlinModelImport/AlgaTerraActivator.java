@@ -22,6 +22,7 @@ import eu.etaxonomy.cdm.io.berlinModel.in.BerlinModelImportConfigurator;
 import eu.etaxonomy.cdm.io.common.CdmDefaultImport;
 import eu.etaxonomy.cdm.io.common.IImportConfigurator.CHECK;
 import eu.etaxonomy.cdm.io.common.IImportConfigurator.DO_REFERENCES;
+import eu.etaxonomy.cdm.io.common.IImportConfigurator.EDITOR;
 import eu.etaxonomy.cdm.io.common.Source;
 import eu.etaxonomy.cdm.model.description.Feature;
 import eu.etaxonomy.cdm.model.description.FeatureNode;
@@ -45,7 +46,9 @@ public class AlgaTerraActivator {
 	static DbSchemaValidation hbm2dll = DbSchemaValidation.CREATE;
 	static final Source berlinModelSource = BerlinModelSources.AlgaTerra();
 //	static final ICdmDataSource cdmDestination = CdmDestinations.localH2();
-	static final ICdmDataSource cdmDestination = CdmDestinations.cdm_algaterra_preview();
+//	static final ICdmDataSource cdmDestination = CdmDestinations.cdm_algaterra_preview();
+	static final ICdmDataSource cdmDestination = CdmDestinations.cdm_test_local_mysql();
+	
 	
 	static final UUID treeUuid = UUID.fromString("1f617402-78dc-4bf1-ac77-d260600a8879");
 	static final int sourceSecId = 7331;
@@ -60,55 +63,58 @@ public class AlgaTerraActivator {
 	private boolean ignoreNull = true;
 	
 	private boolean includeFlatClassifications = true;
+	
+	private EDITOR editor = EDITOR.EDITOR_AS_EDITOR;
 
 	//NomeclaturalCode
 	static final NomenclaturalCode nomenclaturalCode = NomenclaturalCode.ICBN;
-
+	
+	static String factFilter = " factCategoryFk NOT IN (7, 202 ) ";
+	
+	
 // ****************** ALL *****************************************
 	
-	//authors
-	static final boolean doAuthors = true;
-	//references
-	static final DO_REFERENCES doReferences =  DO_REFERENCES.ALL;
-	//names
-	static final boolean doTaxonNames = true;
-	static final boolean doRelNames = true;
-	static final boolean doNameStatus = true;
-	static final boolean doTypes = false;  
-	static final boolean doNameFacts = false;    //do not exist in Alga Terra
-	
-	//taxa
-	static final boolean doTaxa = true;
-	static final boolean doRelTaxa = true;
-	static final boolean doFacts = true;
-	static final boolean doOccurences = false;
-	static final boolean doCommonNames = false; //do not exist in Alga Terra
-	
-	//alga terra specific
-	static final boolean doSpecimen = true;
-
-// ************************ NONE **************************************** //
-	
 //	//authors
-//	static final boolean doAuthors = false;
+//	static final boolean doAuthors = true;
 //	//references
-//	static final DO_REFERENCES doReferences =  DO_REFERENCES.NONE;
+//	static final DO_REFERENCES doReferences =  DO_REFERENCES.ALL;
 //	//names
-//	static final boolean doTaxonNames = false;
-//	static final boolean doRelNames = false;
-//	static final boolean doNameStatus = false;
-//	static final boolean doTypes = false;
-//	static final boolean doNameFacts = false;
+//	static final boolean doTaxonNames = true;
+//	static final boolean doRelNames = true;
+//	static final boolean doNameStatus = true;
+//	static final boolean doTypes = true;  
 //	
 //	//taxa
 //	static final boolean doTaxa = true;
 //	static final boolean doRelTaxa = true;
-//	static final boolean doFacts = false;
-//	static final boolean doOccurences = false;
-//	static final boolean doCommonNames = false;
+//	static final boolean doFacts = true;
 //	
-//  //alga terra specific
+//	//alga terra specific
 //	static final boolean doSpecimen = true;
+//	static final boolean doImages = true;
+
+// ************************ NONE **************************************** //
+	
+	//authors
+	static final boolean doAuthors = false;
+	//references
+	static final DO_REFERENCES doReferences =  DO_REFERENCES.NONE;
+	//names
+	static final boolean doTaxonNames = false;
+	static final boolean doRelNames = false;
+	static final boolean doNameStatus = false;
+	static final boolean doTypes = true;
+	static final boolean doNameFacts = false;
+	
+	//taxa
+	static final boolean doTaxa = false;
+	static final boolean doRelTaxa = false;
+	static final boolean doFacts = false;
+	
+  //alga terra specific
+	static final boolean ecoFacts = false;
+	static final boolean doImages = true;
+	
 	
 	public void invoke(String[] args){
 		System.out.println("Start import from BerlinModel("+ berlinModelSource.getDatabase() + ") ...");
@@ -129,23 +135,23 @@ public class AlgaTerraActivator {
 		config.setDoRelNames(doRelNames);
 		config.setDoNameStatus(doNameStatus);
 		config.setDoTypes(doTypes);
-		config.setDoNameFacts(doNameFacts);
 		
 		config.setDoTaxa(doTaxa);
 		config.setDoRelTaxa(doRelTaxa);
 		config.setDoFacts(doFacts);
-		config.setDoOccurrence(doOccurences);
-		config.setDoCommonNames(doCommonNames);
-		config.setDoSpecimen(doSpecimen);
+		config.setDoEcoFacts(ecoFacts);
+		config.setDoImages(doImages);
 		
 		config.setSourceRefUuid(sourceRefUuid);
 		config.setIgnoreNull(ignoreNull);
 		
 		config.setIncludeFlatClassifications(includeFlatClassifications);
+		config.setFactFilter(factFilter);
 		
 		config.setDbSchemaValidation(hbm2dll);
 
 		config.setCheck(check);
+		config.setEditor(editor);
 		
 		// invoke import
 		CdmDefaultImport<BerlinModelImportConfigurator> bmImport = new CdmDefaultImport<BerlinModelImportConfigurator>();
