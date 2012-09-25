@@ -242,7 +242,7 @@ public abstract class AlgaTerraSpecimenImportBase extends BerlinModelImportBase{
 			if (unitId != null){
 				this.doIdCreatedUpdatedNotes(state, facade.innerDerivedUnit(), rs, unitId, getDerivedUnitNameSpace());
 			}else{
-				logger.warn("Specimen has not unitId: " +  facade.innerDerivedUnit() + ": " + getDerivedUnitNameSpace());
+				logger.warn("Specimen has no unitId: " +  facade.innerDerivedUnit() + ": " + getDerivedUnitNameSpace());
 			}
 			
 			
