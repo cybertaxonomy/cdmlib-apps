@@ -72,6 +72,8 @@ public class AlgaTerraImportConfigurator extends BerlinModelImportConfigurator {
 				, AlgaTerraSpecimenImport.class
 				, AlgaTerraTypeImport.class
 				, AlgaTerraTypeImagesImport.class
+				, AlgaTerraVoucherImagesImport.class
+				, AlgaTerraSiteImagesImport.class
 				
 		};	
 		

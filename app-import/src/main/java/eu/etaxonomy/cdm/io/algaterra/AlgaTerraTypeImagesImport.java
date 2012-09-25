@@ -165,7 +165,12 @@ public class AlgaTerraTypeImagesImport  extends AlgaTerraImageImportBase {
 
 
 	private void handleTypeImageSpecificFields(ResultSet rs, Media media, AlgaTerraImportState state) throws SQLException {
+		//TODO refFk, refDetailFk, publishFlag
+		Integer refFk = nullSafeInt(rs, "refFk");
+		Integer refDetailFk = nullSafeInt(rs, "refDetailFk");
+		
 		//TODO
+		
 		
 	}
 

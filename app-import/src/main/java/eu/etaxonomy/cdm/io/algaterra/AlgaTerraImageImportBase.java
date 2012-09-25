@@ -78,9 +78,7 @@ public abstract class AlgaTerraImageImportBase extends BerlinModelImportBase{
 		try {
 			String fileName = rs.getString("fileName");
 			String figurePhrase = rs.getString("FigurePhrase");
-			//TODO refFk, refDetailFk, publishFlag
-			Integer refFk = nullSafeInt(rs, "refFk");
-			Integer refDetailFk = nullSafeInt(rs, "refDetailFk");
+			//TODO  publishFlag
 			Boolean publishFlag = rs.getBoolean("RestrictedFlag");
 			
 			
