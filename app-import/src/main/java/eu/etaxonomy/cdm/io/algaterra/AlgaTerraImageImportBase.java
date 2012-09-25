@@ -17,6 +17,8 @@ import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
 
+import javassist.runtime.Desc;
+
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.springframework.transaction.TransactionStatus;
@@ -28,13 +30,16 @@ import eu.etaxonomy.cdm.io.berlinModel.in.BerlinModelTaxonNameImport;
 import eu.etaxonomy.cdm.io.common.ResultSetPartitioner;
 import eu.etaxonomy.cdm.io.common.Source;
 import eu.etaxonomy.cdm.model.agent.Team;
+import eu.etaxonomy.cdm.model.common.CdmBase;
 import eu.etaxonomy.cdm.model.common.Language;
 import eu.etaxonomy.cdm.model.common.OrderedTermVocabulary;
 import eu.etaxonomy.cdm.model.common.TimePeriod;
 import eu.etaxonomy.cdm.model.description.DescriptionBase;
+import eu.etaxonomy.cdm.model.description.DescriptionElementBase;
 import eu.etaxonomy.cdm.model.description.Feature;
 import eu.etaxonomy.cdm.model.description.SpecimenDescription;
 import eu.etaxonomy.cdm.model.description.State;
+import eu.etaxonomy.cdm.model.description.TextData;
 import eu.etaxonomy.cdm.model.location.NamedArea;
 import eu.etaxonomy.cdm.model.location.Point;
 import eu.etaxonomy.cdm.model.location.ReferenceSystem;
@@ -60,10 +65,20 @@ public abstract class AlgaTerraImageImportBase extends BerlinModelImportBase{
 
 
 	
+	/**
+	 * Creates a media object and 
+	 * @param rs
+	 * @param derivedUnit
+	 * @param state
+	 * @param partitioner
+	 * @return
+	 * @throws SQLException
+	 */
 	protected Media handleSingleImage(ResultSet rs, SpecimenOrObservationBase derivedUnit, AlgaTerraImportState state, ResultSetPartitioner partitioner) throws SQLException {
 		try {
 			String fileName = rs.getString("fileName");
 			String figurePhrase = rs.getString("FigurePhrase");
+			//TODO refFk, refDetailFk, publishFlag
 			Integer refFk = nullSafeInt(rs, "refFk");
 			Integer refDetailFk = nullSafeInt(rs, "refDetailFk");
 			Boolean publishFlag = rs.getBoolean("RestrictedFlag");
@@ -87,7 +102,18 @@ public abstract class AlgaTerraImageImportBase extends BerlinModelImportBase{
 			//TODO ref
 			Reference<?> ref = null;
 			if (derivedUnit != null){
-				getSpecimenDescription(derivedUnit, ref, IMAGE_GALLERY, CREATE);
+				SpecimenDescription desc = getSpecimenDescription(derivedUnit, ref, IMAGE_GALLERY, CREATE);
+				TextData textData = null;
+				for (DescriptionElementBase descEl : desc.getElements()){
+					if (descEl.isInstanceOf(TextData.class)){
+						textData = CdmBase.deproxy(descEl, TextData.class);
+					}
+				}
+				if (textData == null){
+					textData = TextData.NewInstance(Feature.IMAGE());
+				}
+				desc.addElement(textData);
+				textData.addMedia(media);
 			}else{
 				logger.warn("Derived unit is null. Can't add media ");
 			}
