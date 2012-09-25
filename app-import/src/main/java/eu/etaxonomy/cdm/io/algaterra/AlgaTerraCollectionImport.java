@@ -257,7 +257,7 @@ public class AlgaTerraCollectionImport  extends BerlinModelImportBase {
 	 */
 	protected boolean isIgnore(BerlinModelImportState bmState){
 		AlgaTerraImportState state = (AlgaTerraImportState)bmState;
-		return ! ( state.getAlgaTerraConfigurator().isDoSpecimen() ||  state.getAlgaTerraConfigurator().isDoTypes() );
+		return ! ( state.getAlgaTerraConfigurator().isDoEcoFacts() ||  state.getAlgaTerraConfigurator().isDoTypes() );
 	}
 	
 }
