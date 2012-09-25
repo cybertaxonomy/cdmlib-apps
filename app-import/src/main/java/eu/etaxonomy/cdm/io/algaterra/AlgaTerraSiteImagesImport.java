@@ -133,7 +133,7 @@ public class AlgaTerraSiteImagesImport  extends AlgaTerraImageImportBase {
 //            logger.warn("Specimen: " + countSpecimen + ", Descriptions: " + countDescriptions );
 
 			logger.warn(pluralString + " to save: " + unitsToSave.size());
-			getOccurrenceService().save(unitsToSave);	
+			getOccurrenceService().saveOrUpdate(unitsToSave);	
 			
 			return success;
 		} catch (SQLException e) {
