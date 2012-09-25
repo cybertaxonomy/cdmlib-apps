@@ -213,8 +213,7 @@ public class AlgaTerraVoucherImagesImport  extends AlgaTerraImageImportBase {
 	 */
 	protected boolean isIgnore(BerlinModelImportState bmState){
 		AlgaTerraImportConfigurator config = ((AlgaTerraImportState) bmState).getAlgaTerraConfigurator();
-//		return !  ( config.isDoTypes() && config.isDoImages()) ;
-		return false;
+		return !  ( config.isDoEcoFacts() && config.isDoImages()) ;
 	}
 	
 }

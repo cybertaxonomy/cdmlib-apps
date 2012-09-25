@@ -156,7 +156,7 @@ public class AlgaTerraSiteImagesImport  extends AlgaTerraImageImportBase {
 	 */
 	public Map<Object, Map<String, ? extends CdmBase>> getRelatedObjectsForPartition(ResultSet rs) {
 		String nameSpace;
-		Class cdmClass;
+		Class<?> cdmClass;
 		Set<String> idSet;
 		Map<Object, Map<String, ? extends CdmBase>> result = new HashMap<Object, Map<String, ? extends CdmBase>>();
 		
@@ -167,12 +167,12 @@ public class AlgaTerraSiteImagesImport  extends AlgaTerraImageImportBase {
 				handleForeignKey(rs, ecoFactIdSet, "EcoFactFk");
 			}
 			
-			//type specimen map
-			nameSpace = AlgaTerraSpecimenImportBase.ECO_FACT_DERIVED_UNIT_NAMESPACE;
-			cdmClass = DerivedUnitBase.class;
+			//field observation map
+			nameSpace = AlgaTerraSpecimenImportBase.ECO_FACT_FIELD_OBSERVATION_NAMESPACE;
+			cdmClass = FieldObservation.class;
 			idSet = ecoFactIdSet;
-			Map<String, DerivedUnitBase> typeSpecimenMap = (Map<String,DerivedUnitBase>)getCommonService().getSourcedObjectsByIdInSource(cdmClass, idSet, nameSpace);
-			result.put(nameSpace, typeSpecimenMap);
+			Map<String, FieldObservation> fieldObservationMap = (Map<String,FieldObservation>)getCommonService().getSourcedObjectsByIdInSource(cdmClass, idSet, nameSpace);
+			result.put(nameSpace, fieldObservationMap);
 
 			
 		} catch (SQLException e) {
@@ -214,8 +214,7 @@ public class AlgaTerraSiteImagesImport  extends AlgaTerraImageImportBase {
 	 */
 	protected boolean isIgnore(BerlinModelImportState bmState){
 		AlgaTerraImportConfigurator config = ((AlgaTerraImportState) bmState).getAlgaTerraConfigurator();
-//		return !  ( config.isDoTypes() && config.isDoImages()) ;
-		return false;
+		return !  ( config.isDoEcoFacts() && config.isDoImages()) ;
 	}
 	
 }
