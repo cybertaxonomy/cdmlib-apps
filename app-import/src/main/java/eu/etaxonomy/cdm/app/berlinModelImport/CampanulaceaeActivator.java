@@ -32,7 +32,7 @@ import eu.etaxonomy.cdm.model.name.NomenclaturalCode;
 
 /**
  * TODO add the following to a wiki page:
- * HINT: If you are about to import into a mysql data base running under windows and if you wish to dump and restore the resulting data bas under another operation systen 
+ * HINT: If you are about to import into a mysql data base running under windows and if you wish to dump and restore the resulting data base under another operation systen 
  * you must set the mysql system variable lower_case_table_names = 0 in order to create data base with table compatible names.
  * 
  * 
