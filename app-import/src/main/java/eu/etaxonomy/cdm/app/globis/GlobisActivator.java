@@ -38,7 +38,7 @@ public class GlobisActivator {
 
 	//database validation status (create, update, validate ...)
 	static DbSchemaValidation hbm2dll = DbSchemaValidation.CREATE;
-	static final Source globisSource = CdmImportSources.GLOBIS_MDB();
+	static final Source globisSource = CdmImportSources.GLOBIS_MDB_20120928();
 	static final ICdmDataSource cdmDestination = CdmDestinations.localH2();
 	static final UUID treeUuid = UUID.fromString("8bd27d84-fd4f-4bfa-bde0-3e6b7311b334");
 	static final UUID featureTreeUuid = UUID.fromString("33cbf7a8-0c47-4d47-bd11-b7d77a38d0f6");

@@ -63,7 +63,16 @@ public class CdmImportSources {
 		String userName = "";
 		return  makeSource(dbms, strServer, strDB, port, userName, null);
 	}
+
 	
+	public static Source GLOBIS_MDB_20120928(){
+		String dbms = Source.ACCESS;
+		String strServer = null;
+		String strDB = "F:\\data\\globis\\globis.20120928.mdb";
+		int port = -1;
+		String userName = "";
+		return  makeSource(dbms, strServer, strDB, port, userName, null);
+	}
 	
 	public static URI SYNTHESYS_SPECIMEN(){
 		//		tcsXmlTest.xml
