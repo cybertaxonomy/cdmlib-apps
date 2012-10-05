@@ -20,6 +20,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.joda.time.DateTime;
 
@@ -54,21 +55,9 @@ public abstract class GlobisImportBase<CDM_BASE extends CdmBase> extends CdmImpo
 	
 	//NAMESPACES
 	
-	protected static final String AREA_NAMESPACE = "gu";
-	protected static final String DR_NAMESPACE = "dr";
-	protected static final String IMAGE_NAMESPACE = "Images";
-	protected static final String LINKS_NAMESPACE = "Links";
-	protected static final String NOTES_NAMESPACE = "Notes";
-	protected static final String LANGUAGE_NAMESPACE = "Language";
-	protected static final String REFERENCE_NAMESPACE = "Source";
-	protected static final String SOURCEUSE_NAMESPACE = "tu_sources";
-	protected static final String TAXON_NAMESPACE = "Taxon";
-	protected static final String NAME_NAMESPACE = "TaxonName";
-	protected static final String VERNACULAR_NAMESPACE = "Vernaculars";
-	protected static final String FEATURE_NAMESPACE = "note.type";
-	protected static final String EXTENSION_TYPE_NAMESPACE = "ExtensionType";
-	
-	
+	protected static final String REFERENCE_NAMESPACE = "Literatur";
+	protected static final String TAXON_NAMESPACE = "current_species";
+
 
 	private String pluralString;
 	private String dbTableName;
@@ -109,7 +98,8 @@ public abstract class GlobisImportBase<CDM_BASE extends CdmBase> extends CdmImpo
 		logger.info("end make " + getPluralString() + " ... " + getSuccessString(true));
 		return;
 	}
-	
+
+
 	public boolean doPartition(ResultSetPartitioner partitioner, GlobisImportState state) {
 		boolean success = true ;
 		Set objectsToSave = new HashSet();
@@ -137,7 +127,9 @@ public abstract class GlobisImportBase<CDM_BASE extends CdmBase> extends CdmImpo
 	/**
 	 * @return
 	 */
-	protected abstract DbImportMapping<?, ?> getMapping();
+	protected /*abstract*/ DbImportMapping<?, ?> getMapping(){
+		return null;
+	}
 	
 	/**
 	 * @return
@@ -222,7 +214,7 @@ public abstract class GlobisImportBase<CDM_BASE extends CdmBase> extends CdmImpo
 		
 		
 		//notes
-		if (CdmUtils.isNotEmpty(notes)){
+		if (StringUtils.isNotBlank(notes)){
 			String notesString = String.valueOf(notes);
 			if (notesString.length() > 65530 ){
 				notesString = notesString.substring(0, 65530) + "...";
@@ -237,7 +229,7 @@ public abstract class GlobisImportBase<CDM_BASE extends CdmBase> extends CdmImpo
 	}
 	
 	private User getUser(String userString, GlobisImportState state){
-		if (CdmUtils.isEmpty(userString)){
+		if (StringUtils.isBlank(userString)){
 			return null;
 		}
 		userString = userString.trim();

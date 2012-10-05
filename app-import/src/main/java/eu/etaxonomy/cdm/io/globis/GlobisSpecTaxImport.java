@@ -20,30 +20,16 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.springframework.stereotype.Component;
 
-import eu.etaxonomy.cdm.api.facade.DerivedUnitFacade;
-import eu.etaxonomy.cdm.api.facade.DerivedUnitFacade.DerivedUnitType;
-import eu.etaxonomy.cdm.io.algaterra.AlgaTerraImportState;
-import eu.etaxonomy.cdm.io.berlinModel.in.BerlinModelTaxonImport;
 import eu.etaxonomy.cdm.io.common.IImportConfigurator;
 import eu.etaxonomy.cdm.io.common.IOValidator;
 import eu.etaxonomy.cdm.io.common.ResultSetPartitioner;
-import eu.etaxonomy.cdm.io.common.mapping.DbIgnoreMapper;
-import eu.etaxonomy.cdm.io.common.mapping.DbImportExtensionMapper;
-import eu.etaxonomy.cdm.io.common.mapping.DbImportMapping;
-import eu.etaxonomy.cdm.io.common.mapping.DbImportObjectCreationMapper;
-import eu.etaxonomy.cdm.io.common.mapping.DbImportStringMapper;
-import eu.etaxonomy.cdm.io.common.mapping.DbNotYetImplementedMapper;
 import eu.etaxonomy.cdm.io.common.mapping.IMappingImport;
 import eu.etaxonomy.cdm.io.globis.validation.GlobisReferenceImportValidator;
+import eu.etaxonomy.cdm.io.globis.validation.GlobisSpecTaxaImportValidator;
 import eu.etaxonomy.cdm.model.common.CdmBase;
-import eu.etaxonomy.cdm.model.description.Feature;
-import eu.etaxonomy.cdm.model.description.IndividualsAssociation;
-import eu.etaxonomy.cdm.model.description.TaxonDescription;
-import eu.etaxonomy.cdm.model.occurrence.DerivedUnit;
 import eu.etaxonomy.cdm.model.reference.Reference;
 import eu.etaxonomy.cdm.model.reference.ReferenceFactory;
 import eu.etaxonomy.cdm.model.reference.ReferenceType;
-import eu.etaxonomy.cdm.model.taxon.TaxonBase;
 
 
 /**
@@ -52,15 +38,15 @@ import eu.etaxonomy.cdm.model.taxon.TaxonBase;
  * @version 1.0
  */
 @Component
-public class GlobisReferenceImport  extends GlobisImportBase<Reference> implements IMappingImport<Reference, GlobisImportState>{
-	private static final Logger logger = Logger.getLogger(GlobisReferenceImport.class);
+public class GlobisSpecTaxImport  extends GlobisImportBase<Reference> implements IMappingImport<Reference, GlobisImportState>{
+	private static final Logger logger = Logger.getLogger(GlobisSpecTaxImport.class);
 	
 	private int modCount = 10000;
-	private static final String pluralString = "references";
-	private static final String dbTableName = "Literatur";
+	private static final String pluralString = "taxa";
+	private static final String dbTableName = "specTax";
 	private static final Class cdmTargetClass = Reference.class;
 
-	public GlobisReferenceImport(){
+	public GlobisSpecTaxImport(){
 		super(pluralString, dbTableName, cdmTargetClass);
 	}
 
@@ -73,7 +59,7 @@ public class GlobisReferenceImport  extends GlobisImportBase<Reference> implemen
 	@Override
 	protected String getIdQuery() {
 		String strRecordQuery = 
-			" SELECT refID " + 
+			" SELECT specTaxId " + 
 			" FROM " + dbTableName; 
 		return strRecordQuery;	
 	}
@@ -87,10 +73,10 @@ public class GlobisReferenceImport  extends GlobisImportBase<Reference> implemen
 	@Override
 	protected String getRecordQuery(GlobisImportConfigurator config) {
 		String strRecordQuery = 
-			" SELECT l.*, l.DateCreated as Created_When, l.CreatedBy as Created_Who," +
-			"        l.ModifiedBy as Updated_who, l.DateModified as Updated_When, l.RefRemarks as Notes " + 
-			" FROM " + getTableName() + " l " +
-			" WHERE ( l.refId IN (" + ID_LIST_TOKEN + ") )";
+			" SELECT t.*, t.DateCreated as Created_When, t.CreatedBy as Created_Who," +
+			"        t.ModifiedBy as Updated_who, t.DateModified as Updated_When, t.SpecRemarks as Notes " + 
+			" FROM " + getTableName() + " t " +
+			" WHERE ( t.refId IN (" + ID_LIST_TOKEN + ") )";
 		return strRecordQuery;
 	}
 	
@@ -247,7 +233,7 @@ public class GlobisReferenceImport  extends GlobisImportBase<Reference> implemen
 	 */
 	@Override
 	protected boolean doCheck(GlobisImportState state){
-		IOValidator<GlobisImportState> validator = new GlobisReferenceImportValidator();
+		IOValidator<GlobisImportState> validator = new GlobisSpecTaxaImportValidator();
 		return validator.validate(state);
 	}
 	
@@ -256,8 +242,7 @@ public class GlobisReferenceImport  extends GlobisImportBase<Reference> implemen
 	 * @see eu.etaxonomy.cdm.io.common.CdmIoBase#isIgnore(eu.etaxonomy.cdm.io.common.IImportConfigurator)
 	 */
 	protected boolean isIgnore(GlobisImportState state){
-		//TODO
-		return state.getConfig().getDoReferences() != IImportConfigurator.DO_REFERENCES.ALL;
+		return ! state.getConfig().isDoSpecTaxa();
 	}
 
 

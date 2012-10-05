@@ -38,16 +38,14 @@ public class GlobisImportConfigurator extends ImportConfiguratorBase<GlobisImpor
 	}
 
 	/* Max number of records to be saved with one service call */
-	private int recordsPerTransaction = 1000;  //defaultValue
+	private int recordsPerTransaction = 2000;  //defaultValue
 
 	//TODO needed ??
 	private Method userTransformationMethod;
 	
-	private boolean doVernaculars = true;
-	private boolean doLinks = true;
-	private boolean doNotes = true;
 	private boolean doImages = true;
-	private boolean doOccurrence = true;
+	private boolean doCurrentTaxa = true;
+	private boolean doSpecTaxa = true;
 	private DO_REFERENCES doReferences = DO_REFERENCES.ALL;
 
 	
@@ -58,7 +56,8 @@ public class GlobisImportConfigurator extends ImportConfiguratorBase<GlobisImpor
 				//ErmsGeneralImportValidator.class
 				 GlobisReferenceImport.class
 	//			, ErmsReferenceImport.class
-//				, GlobisTaxonImport.class
+				, GlobisCurrentSpeciesImport.class
+				, GlobisSpecTaxImport.class
 		};	
 	}
 	
@@ -160,6 +159,26 @@ public class GlobisImportConfigurator extends ImportConfiguratorBase<GlobisImpor
 	}
 	public void setDoReferences(DO_REFERENCES doReferences) {
 		this.doReferences = doReferences;
+	}
+
+
+	public void setDoCurrentTaxa(boolean doCurrentTaxa) {
+		this.doCurrentTaxa = doCurrentTaxa;
+	}
+
+
+	public boolean isDoCurrentTaxa() {
+		return doCurrentTaxa;
+	}
+
+
+	public void setDoSpecTaxa(boolean doSpecTaxa) {
+		this.doSpecTaxa = doSpecTaxa;
+	}
+
+
+	public boolean isDoSpecTaxa() {
+		return doSpecTaxa;
 	}
 
 
