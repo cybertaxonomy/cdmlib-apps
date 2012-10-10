@@ -166,7 +166,7 @@ public class GlobisSpecTaxImport  extends GlobisImportBase<Reference> implements
 						
 						handleNomRef(state, referenceMap, rs, name);
 					
-						handleTypeInformation(state,rs, name);
+						handleTypeInformation(state,rs, name, specTaxId);
 					
 					
 //						this.doIdCreatedUpdatedNotes(state, ref, rs, refId, REFERENCE_NAMESPACE);
@@ -198,7 +198,7 @@ public class GlobisSpecTaxImport  extends GlobisImportBase<Reference> implements
 	private Pattern patternAll = Pattern.compile("(.+,\\s.+)(\\(.+\\))");
 	
 
-	private void handleTypeInformation(GlobisImportState state, ResultSet rs, ZoologicalName name) throws SQLException {
+	private void handleTypeInformation(GlobisImportState state, ResultSet rs, ZoologicalName name, Integer specTaxId) throws SQLException {
 		
 		String specTypeDepositoriesStr = rs.getString("SpecTypeDepository");
 		String countryString = rs.getString("SpecTypeCountry");
@@ -209,10 +209,15 @@ public class GlobisSpecTaxImport  extends GlobisImportBase<Reference> implements
 		
 		FieldObservation fieldObservation = makeTypeFieldObservation(state, countryString);
 		
-		String[] specTypeDepositories = specTypeDepositoriesStr.split(";");
+		String[] specTypeDepositories; 
+		if (isNotBlank(specTypeDepositoriesStr) ){
+			specTypeDepositories = specTypeDepositoriesStr.split(";");
+		}else{
+			specTypeDepositories = new String[0];
+		}
 		//TODO different issues
 		if (specTypeDepositories.length == 0){
-			//TODO
+			logger.warn("SpecTax has type information but no SpecTypeDepository. specTaxId: " + specTaxId);
 		}
 		for (String specTypeDepositoryStr : specTypeDepositories){
 			specTypeDepositoryStr = specTypeDepositoryStr.trim();
@@ -234,6 +239,7 @@ public class GlobisSpecTaxImport  extends GlobisImportBase<Reference> implements
 			//type Designation
 			makeTypeDesignation(name, rs, specimen);
 		}
+
 		
 	}
 

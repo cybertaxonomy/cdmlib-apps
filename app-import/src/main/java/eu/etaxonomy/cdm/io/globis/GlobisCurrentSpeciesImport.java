@@ -249,15 +249,39 @@ public class GlobisCurrentSpeciesImport  extends GlobisImportBase<Taxon> {
 		for (String countryStr : countriesSplit){
 			if (isBlank(countryStr)){
 				continue;
-			}else{
-				countryStr = normalizeCountry(countryStr);
 			}
+			countryStr = countryStr.trim();
+			
+			//TODO use isComplete
+			boolean isComplete = countryStr.endsWith(".");
+			if (isComplete){
+				countryStr = countryStr.substring(0,countryStr.length() - 1).trim();
+			}
+			boolean isDoubtful = countryStr.endsWith("[?]");
+			if (isDoubtful){
+				countryStr = countryStr.substring(0,countryStr.length() - 3).trim();
+			}
+			if (countryStr.startsWith("?")){
+				isDoubtful = true;
+				countryStr = countryStr.substring(1).trim();
+			}
+			
+			
+			
+			countryStr = normalizeCountry(countryStr);
 			
 			WaterbodyOrCountry country = getCountry(state, countryStr);
 			
+			PresenceTerm status;
+			if (isDoubtful){
+				status = PresenceTerm.PRESENT_DOUBTFULLY();
+			}else{
+				status = PresenceTerm.PRESENT();
+			}
+			
 			if (country != null){
 				TaxonDescription desc = getTaxonDescription(species, state.getTransactionalSourceReference(), false, true);
-				Distribution distribution = Distribution.NewInstance(country, PresenceTerm.PRESENT());
+				Distribution distribution = Distribution.NewInstance(country, status);
 				desc.addElement(distribution);
 			}else{
 				logger.warn("Country string not recognized: " + countryStr);

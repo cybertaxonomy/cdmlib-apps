@@ -11,12 +11,9 @@ package eu.etaxonomy.cdm.io.globis;
 
 import java.lang.reflect.Method;
 import java.sql.ResultSet;
-import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.sql.Timestamp;
-import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
 
@@ -24,7 +21,6 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.joda.time.DateTime;
 
-import eu.etaxonomy.cdm.common.CdmUtils;
 import eu.etaxonomy.cdm.io.common.CdmImportBase;
 import eu.etaxonomy.cdm.io.common.ICdmIO;
 import eu.etaxonomy.cdm.io.common.IImportConfigurator.EDITOR;
@@ -38,10 +34,8 @@ import eu.etaxonomy.cdm.model.common.AnnotatableEntity;
 import eu.etaxonomy.cdm.model.common.Annotation;
 import eu.etaxonomy.cdm.model.common.AnnotationType;
 import eu.etaxonomy.cdm.model.common.CdmBase;
-import eu.etaxonomy.cdm.model.common.ExtensionType;
 import eu.etaxonomy.cdm.model.common.IdentifiableEntity;
 import eu.etaxonomy.cdm.model.common.Language;
-import eu.etaxonomy.cdm.model.common.MarkerType;
 import eu.etaxonomy.cdm.model.common.User;
 import eu.etaxonomy.cdm.model.location.WaterbodyOrCountry;
 import eu.etaxonomy.cdm.model.name.ZoologicalName;
@@ -123,6 +117,9 @@ public abstract class GlobisImportBase<CDM_BASE extends CdmBase> extends CdmImpo
 			if (authorAndYear.contains("?")){
 				authorAndYear = authorAndYear.replace("H?bner", "H\u00fcbner");
 				authorAndYear = authorAndYear.replace("Oberth?r", "Oberth\u00fcr");
+				//TODO remove
+				authorAndYear = authorAndYear.replace("?", "");
+				
 			}
 			
 			parser.parseAuthors(zooName, authorAndYear);

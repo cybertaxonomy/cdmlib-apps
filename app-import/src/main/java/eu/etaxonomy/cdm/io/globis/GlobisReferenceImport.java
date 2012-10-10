@@ -75,7 +75,7 @@ public class GlobisReferenceImport  extends GlobisImportBase<Reference> implemen
 		String strRecordQuery = 
 			" SELECT refID " + 
 			" FROM " + dbTableName
-			+ " WHERE RefSource like 'Original'"; 
+			+ " WHERE RefSource like 'Original' or refID in (SELECT fiSpecRefId FROM specTax)"; 
 		return strRecordQuery;	
 	}
 
@@ -137,7 +137,7 @@ public class GlobisReferenceImport  extends GlobisImportBase<Reference> implemen
 							Reference<?> journal = getJournal(state, rs, refJournal);
 							ref.setInJournal(journal);
 						}else{
-							logger.warn("Reference type not supported for journal: " + ref.getType().toString());
+							logger.warn("Reference type not supported for journal: " + ref.getType().toString() + ", refId: " + refId );
 						}
 					}
 					

@@ -115,7 +115,7 @@ public final class GlobisTransformer extends InputTransformerBase {
 		}else if (area.equals("Ivory Coast")){return WaterbodyOrCountry.COTEDIVOIREIVORYCOASTREPUBLICOFTHE();
 
 		}else if (area.equals("Benin")){return WaterbodyOrCountry.BENINPEOPLESREPUBLICOF();
-		}else if (area.equals("Kenya")){return WaterbodyOrCountry.KENYAREPUBLICOF();
+		}else if (area.equalsIgnoreCase("Kenya")){return WaterbodyOrCountry.KENYAREPUBLICOF();
 		}else if (area.equals("Uganda")){return WaterbodyOrCountry.UGANDAREPUBLICOF();
 		}else if (area.equals("Zambia")){return WaterbodyOrCountry.ZAMBIAREPUBLICOF();
 		}else if (area.equals("Rwanda")){return WaterbodyOrCountry.RWANDARWANDESEREPUBLIC();
@@ -131,7 +131,9 @@ public final class GlobisTransformer extends InputTransformerBase {
 		}else if (area.equals("Liberia")){return WaterbodyOrCountry.LIBERIAREPUBLICOF();
 		
 		}else if (area.equals("Togo")){return WaterbodyOrCountry.TOGOTOGOLESEREPUBLIC();
-//		}else if (area.equals("Guinea")){return WaterbodyOrCountry.Guinea();
+		}else if (area.equals("Guinea")){return WaterbodyOrCountry.GUINEAREVOLUTIONARYPEOPLESREPCOF();
+		}else if (area.equals("Guinea-Bissau")){return WaterbodyOrCountry.GUINEABISSAUREPUBLICOF();
+		
 		}else if (area.equals("Malawi")){return WaterbodyOrCountry.MALAWIREPUBLICOF();
 		}else if (area.equals("Mozambique")){return WaterbodyOrCountry.MOZAMBIQUEPEOPLESREPUBLICOF();
 		}else if (area.equals("Nigeria")){return WaterbodyOrCountry.NIGERIAFEDERALREPUBLICOF();
@@ -168,7 +170,7 @@ public final class GlobisTransformer extends InputTransformerBase {
 		}else if (area.equals("Austria")){return WaterbodyOrCountry.AUSTRIAREPUBLICOF();
 		}else if (area.equals("Azerbaijan")){return WaterbodyOrCountry.AZERBAIJANREPUBLICOF();
 		}else if (area.equals("Bulgaria")){return WaterbodyOrCountry.BULGARIAPEOPLESREPUBLICOF();
-//		}else if (area.equals("Croatia")){return WaterbodyOrCountry.Croatia();
+		}else if (area.equals("Croatia")){return WaterbodyOrCountry.HRVATSKA();
 		}else if (area.equals("Greece")){return WaterbodyOrCountry.GREECEHELLENICREPUBLIC();
 		}else if (area.equals("Hungary")){return WaterbodyOrCountry.HUNGARYHUNGARIANPEOPLESREPUBLIC();
 		
@@ -197,11 +199,31 @@ public final class GlobisTransformer extends InputTransformerBase {
 		
 		}else if (area.equals("Sri Lanka")){return WaterbodyOrCountry.SRILANKADEMOCRATICSOCIALISTREPUBLICOF();
 		}else if (area.equals("Bahamas")){return WaterbodyOrCountry.BAHAMASCOMMONWEALTHOFTHE();
-//		}else if (area.equals("Western Samoa")){return WaterbodyOrCountry.WESTERNSAMOA();
+		}else if (area.equals("Western Samoa")){return WaterbodyOrCountry.SAMOAINDEPENDENTSTATEOF();
 		}else if (area.equals("Finland")){return WaterbodyOrCountry.FINLANDREPUBLICOF();
 		}else if (area.equals("Norway")){return WaterbodyOrCountry.NORWAYKINGDOMOF();
 		}else if (area.equals("El Salvador")){return WaterbodyOrCountry.ELSALVADORREPUBLICOF();
 		}else if (area.equals("Cyprus")){return WaterbodyOrCountry.CYPRUSREPUBLICOF();
+		}else if (area.equals("Sweden")){return WaterbodyOrCountry.SWEDENKINGDOMOF();
+		}else if (area.equals("Denmark")){return WaterbodyOrCountry.DENMARKKINGDOMOF();
+		}else if (area.equals("Trinidad & Tobago")){return WaterbodyOrCountry.TRINIDADANDTOBAGOREPUBLICOF();
+		}else if (area.equals("Chile")){return WaterbodyOrCountry.CHILEREPUBLICOF();
+		}else if (area.equals("Jordan")){return WaterbodyOrCountry.JORDANHASHEMITEKINGDOMOF();
+		}else if (area.equals("Montenegro")){
+			logger.warn("Montenegro is currently mapped to 'Serbia & Montenegro'");
+			return WaterbodyOrCountry.SERBIAANDMONTENEGRO();
+		}else if (area.equals("Portugal")){return WaterbodyOrCountry.PORTUGALPORTUGUESEREPUBLIC();
+		}else if (area.equals("Tunisia")){return WaterbodyOrCountry.TUNISIAREPUBLICOF();
+		}else if (area.equals("Seychelles")){return WaterbodyOrCountry.SEYCHELLESREPUBLICOF();
+		}else if (area.equals("Fiji")){return WaterbodyOrCountry.FIJIREPUBLICOFTHEFIJIISLANDS();
+		}else if (area.equals("Belgium")){return WaterbodyOrCountry.BELGIUMKINGDOMOF();
+		}else if (area.equals("Virgin Islands")){return WaterbodyOrCountry.USVIRGINISLANDS();
+		}else if (area.equals("Gambia")){return WaterbodyOrCountry.GAMBIAREPUBLICOFTHE();
+		}else if (area.equals("Dominica")){return WaterbodyOrCountry.DOMINICACOMMONWEALTHOF();
+		}else if (area.equals("Liechtenstein")){return WaterbodyOrCountry.LIECHTENSTEINPRINCIPALITYOF();
+		
+	
+		
 		
 		
 		}else{	
