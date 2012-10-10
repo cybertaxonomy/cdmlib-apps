@@ -33,7 +33,6 @@ import eu.etaxonomy.cdm.model.taxon.Classification;
 import eu.etaxonomy.cdm.model.taxon.Taxon;
 import eu.etaxonomy.cdm.model.taxon.TaxonBase;
 import eu.etaxonomy.cdm.model.taxon.TaxonNode;
-import eu.etaxonomy.cdm.strategy.exceptions.StringNotParsableException;
 import eu.etaxonomy.cdm.strategy.parser.INonViralNameParser;
 import eu.etaxonomy.cdm.strategy.parser.NonViralNameParserImpl;
 
@@ -218,7 +217,7 @@ public class GlobisImageImport  extends GlobisImportBase<Taxon> {
 		if (taxon == null){
 			ZoologicalName name = ZoologicalName.NewInstance(rank);
 			taxon = Taxon.NewInstance(name, state.getTransactionalSourceReference());
-			handleAuthor(author, name);
+			handleAuthorAndYear(author, name);
 			getTaxonService().save(taxon);
 		}
 		
@@ -261,28 +260,13 @@ public class GlobisImageImport  extends GlobisImportBase<Taxon> {
 			zooName.setInfraSpecificEpithet(subGenusEpi);
 		}
 		zooName.setGenusOrUninomial(genusEpi);
-		handleAuthor(author, zooName);
+		handleAuthorAndYear(author, zooName);
 		
 		Taxon taxon = Taxon.NewInstance(zooName, state.getTransactionalSourceReference());
 		
 		return taxon;
 	}
 
-
-
-
-	/**
-	 * @param author
-	 * @param zooName
-	 */
-	private void handleAuthor(String author, ZoologicalName zooName) {
-		try {
-			parser.parseAuthors(zooName, author);
-		} catch (StringNotParsableException e) {
-			logger.warn("Author could not be parsed: " + author);
-			zooName.setAuthorshipCache(author, true);
-		}
-	}
 
 	/* (non-Javadoc)
 	 * @see eu.etaxonomy.cdm.io.berlinModel.in.IPartitionedIO#getRelatedObjectsForPartition(java.sql.ResultSet)

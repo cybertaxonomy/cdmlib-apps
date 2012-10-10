@@ -74,7 +74,8 @@ public class GlobisReferenceImport  extends GlobisImportBase<Reference> implemen
 	protected String getIdQuery() {
 		String strRecordQuery = 
 			" SELECT refID " + 
-			" FROM " + dbTableName; 
+			" FROM " + dbTableName
+			+ " WHERE RefSource like 'Original'"; 
 		return strRecordQuery;	
 	}
 
@@ -215,17 +216,17 @@ public class GlobisReferenceImport  extends GlobisImportBase<Reference> implemen
 		String refType = rs.getString("RefType");
 		if (refType == null){
 			ref = ReferenceFactory.newGeneric();
-		}else if (refType == "book"){
+		}else if (refType.equals("book")){
 			ref = ReferenceFactory.newBook();
-		}else if (refType == "paper in journal"){
+		}else if (refType.equals("paper in journal")){
 			ref = ReferenceFactory.newArticle();
 		}else if (refType.startsWith("unpublished") ){
 			ref = ReferenceFactory.newGeneric();
 		}else if (refType.endsWith("paper in journal")){
 			ref = ReferenceFactory.newArticle();
-		}else if (refType == "paper in book"){
+		}else if (refType.equals("paper in book")){
 			ref = ReferenceFactory.newBookSection();
-		}else if (refType == "paper in journalwebsite"){
+		}else if (refType.equals("paper in journalwebsite")){
 			ref = ReferenceFactory.newArticle();
 		}else{
 			logger.warn("Unknown reference type: " + refType);

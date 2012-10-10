@@ -216,7 +216,7 @@ public class GlobisCurrentSpeciesImport  extends GlobisImportBase<Taxon> {
 					
 					handleCommonNames(state, rs, species);
 					
-					this.doIdCreatedUpdatedNotes(state, species, rs, taxonId, REFERENCE_NAMESPACE);
+					this.doIdCreatedUpdatedNotes(state, species, rs, taxonId, TAXON_NAMESPACE);
 					
 					objectsToSave.add(species); 
 					
@@ -253,14 +253,7 @@ public class GlobisCurrentSpeciesImport  extends GlobisImportBase<Taxon> {
 				countryStr = normalizeCountry(countryStr);
 			}
 			
-			WaterbodyOrCountry country = WaterbodyOrCountry.getWaterbodyOrCountryByLabel(countryStr);
-			if (country == null){
-				try {
-					country = (WaterbodyOrCountry)state.getTransformer().getNamedAreaByKey(countryStr);
-				} catch (UndefinedTransformerMethodException e) {
-					e.printStackTrace();
-				}
-			}
+			WaterbodyOrCountry country = getCountry(state, countryStr);
 			
 			if (country != null){
 				TaxonDescription desc = getTaxonDescription(species, state.getTransactionalSourceReference(), false, true);
@@ -271,7 +264,6 @@ public class GlobisCurrentSpeciesImport  extends GlobisImportBase<Taxon> {
 			}
 		}
 	}
-
 
 
 
@@ -362,7 +354,7 @@ public class GlobisCurrentSpeciesImport  extends GlobisImportBase<Taxon> {
 			taxon = Taxon.NewInstance(name, state.getTransactionalSourceReference());
 			
 			taxonMap.put(key, taxon);
-			handleAuthor(author, name);
+			handleAuthorAndYear(author, name);
 			getTaxonService().save(taxon);
 		}
 		
@@ -385,9 +377,6 @@ public class GlobisCurrentSpeciesImport  extends GlobisImportBase<Taxon> {
 		
 	}
 
-	private INonViralNameParser parser = NonViralNameParserImpl.NewInstance();
-	
-
 	/* (non-Javadoc)
 	 * @see eu.etaxonomy.cdm.io.common.mapping.IMappingImport#createObject(java.sql.ResultSet, eu.etaxonomy.cdm.io.common.ImportStateBase)
 	 */
@@ -405,7 +394,7 @@ public class GlobisCurrentSpeciesImport  extends GlobisImportBase<Taxon> {
 			zooName.setInfraGenericEpithet(subGenusEpi);
 		}
 		zooName.setGenusOrUninomial(genusEpi);
-		handleAuthor(author, zooName);
+		handleAuthorAndYear(author, zooName);
 		
 		Taxon taxon = Taxon.NewInstance(zooName, state.getTransactionalSourceReference());
 		
@@ -415,29 +404,6 @@ public class GlobisCurrentSpeciesImport  extends GlobisImportBase<Taxon> {
 
 
 
-	/**
-	 * @param author
-	 * @param zooName
-	 */
-	private void handleAuthor(String author, ZoologicalName zooName) {
-		if (isBlank(author)){
-			return;
-		}
-		try {
-			if(author.matches(".*\\,\\s\\[\\d{4}\\].*")){
-				author = author.replace("[", "").replace("]", "");
-			}
-			if (author.contains("?")){
-				author = author.replace("H?bner", "H\u00fcbner");
-				author = author.replace("Oberth?r", "Oberth\u00fcr");
-			}
-			
-			parser.parseAuthors(zooName, author);
-		} catch (StringNotParsableException e) {
-			logger.warn("Author could not be parsed: " + author);
-			zooName.setAuthorshipCache(author, true);
-		}
-	}
 
 	/* (non-Javadoc)
 	 * @see eu.etaxonomy.cdm.io.berlinModel.in.IPartitionedIO#getRelatedObjectsForPartition(java.sql.ResultSet)
@@ -465,7 +431,8 @@ public class GlobisCurrentSpeciesImport  extends GlobisImportBase<Taxon> {
 		} catch (SQLException e) {
 			throw new RuntimeException(e);
 		}
-		return result;	}
+		return result;
+	}
 	
 	/* (non-Javadoc)
 	 * @see eu.etaxonomy.cdm.io.common.CdmIoBase#doCheck(eu.etaxonomy.cdm.io.common.IImportConfigurator)

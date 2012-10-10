@@ -124,7 +124,8 @@ public final class GlobisTransformer extends InputTransformerBase {
 		}else if (area.equals("Burundi")){return WaterbodyOrCountry.BURUNDIREPUBLICOF();
 		}else if (area.equals("Cameroon")){return WaterbodyOrCountry.CAMEROONUNITEDREPUBLICOF();
 		
-//		}else if (area.equals("Congo")){return WaterbodyOrCountry.Congo();
+		}else if (area.equals("Congo")){return WaterbodyOrCountry.CONGOPEOPLESREPUBLICOF();
+		}else if (area.equals("Zaire")){return WaterbodyOrCountry.CONGODEMOCRATICREPUBLICOF();
 		}else if (area.equals("Equatorial Guinea")){return WaterbodyOrCountry.EQUATORIALGUINEAREPUBLICOF();
 		}else if (area.equals("Gabon")){return WaterbodyOrCountry.GABONGABONESEREPUBLIC();
 		}else if (area.equals("Liberia")){return WaterbodyOrCountry.LIBERIAREPUBLICOF();
@@ -148,7 +149,60 @@ public final class GlobisTransformer extends InputTransformerBase {
 		}else if (area.equals("Nepal")){return WaterbodyOrCountry.NEPALKINGDOMOF();
 		}else if (area.equals("Pakistan")){return WaterbodyOrCountry.PAKISTANISLAMICREPUBLICOF();
 		}else if (area.equals("Singapore")){return WaterbodyOrCountry.SINGAPOREREPUBLICOF();
-			
+		
+		}else if (area.equals("Honduras")){return WaterbodyOrCountry.HONDURASREPUBLICOF();
+		}else if (area.equals("Nicaragua")){return WaterbodyOrCountry.NICARAGUAREPUBLICOF();
+		}else if (area.equals("Trinidad and Tobago")){return WaterbodyOrCountry.TRINIDADANDTOBAGOREPUBLICOF();
+		}else if (area.equals("United States")){return WaterbodyOrCountry.UNITEDSTATESOFAMERICA();
+		}else if (area.equals("Uruguay")){return WaterbodyOrCountry.URUGUAYEASTERNREPUBLICOF();
+		}else if (area.equals("Haiti")){return WaterbodyOrCountry.HAITIREPUBLICOF();
+		}else if (area.equals("North Korea")){return WaterbodyOrCountry.KOREADEMOCRATICPEOPLESREPUBLICOF();
+		}else if (area.equals("South Korea")){return WaterbodyOrCountry.KOREAREPUBLICOF();
+		}else if (area.equals("Taiwan")){return WaterbodyOrCountry.TAIWANPROVINCEOFCHINA();
+		
+		}else if (area.equals("Somalia")){return WaterbodyOrCountry.SOMALIASOMALIREPUBLIC();
+		}else if (area.equals("Albania")){return WaterbodyOrCountry.ALBANIAPEOPLESSOCIALISTREPUBLICOF();
+		}else if (area.equals("Algeria")){return WaterbodyOrCountry.ALGERIAPEOPLESDEMOCRATICREPUBLICOF();
+		
+		}else if (area.equals("Andorra")){return WaterbodyOrCountry.ANDORRAPRINCIPALITYOF();
+		}else if (area.equals("Austria")){return WaterbodyOrCountry.AUSTRIAREPUBLICOF();
+		}else if (area.equals("Azerbaijan")){return WaterbodyOrCountry.AZERBAIJANREPUBLICOF();
+		}else if (area.equals("Bulgaria")){return WaterbodyOrCountry.BULGARIAPEOPLESREPUBLICOF();
+//		}else if (area.equals("Croatia")){return WaterbodyOrCountry.Croatia();
+		}else if (area.equals("Greece")){return WaterbodyOrCountry.GREECEHELLENICREPUBLIC();
+		}else if (area.equals("Hungary")){return WaterbodyOrCountry.HUNGARYHUNGARIANPEOPLESREPUBLIC();
+		
+		}else if (area.equals("Iran")){return WaterbodyOrCountry.IRANISLAMICREPUBLICOF();
+		}else if (area.equals("Iraq")){return WaterbodyOrCountry.IRAQREPUBLICOF();
+		}else if (area.equals("Israel")){return WaterbodyOrCountry.ISRAELSTATEOF();
+		}else if (area.equals("Italy")){return WaterbodyOrCountry.ITALYITALIANREPUBLIC();
+		}else if (area.equals("Kazakhstan")){return WaterbodyOrCountry.KAZAKHSTANREPUBLICOF();
+		}else if (area.equals("Kyrgyzstan")){return WaterbodyOrCountry.KYRGYZREPUBLIC();
+		}else if (area.equals("Lebanon")){return WaterbodyOrCountry.LEBANONLEBANESEREPUBLIC();
+		
+		}else if (area.equals("Luxembourg")){return WaterbodyOrCountry.LUXEMBOURGGRANDDUCHYOF();
+		}else if (area.equals("Macedonia")){return WaterbodyOrCountry.MACEDONIATHEFORMERYUGOSLAVREPUBLICOF();
+		}else if (area.equals("Moldova")){return WaterbodyOrCountry.MOLDOVAREPUBLICOF();
+		}else if (area.equals("Morocco")){return WaterbodyOrCountry.MOROCCOKINGDOMOF();
+		}else if (area.equals("Romania")){return WaterbodyOrCountry.ROMANIASOCIALISTREPUBLICOF();
+		}else if (area.equals("Serbia")){return WaterbodyOrCountry.SERBIAANDMONTENEGRO();
+		}else if (area.equals("Slovakia")){return WaterbodyOrCountry.SLOVAKIA();
+		}else if (area.equals("Spain")){return WaterbodyOrCountry.SPAINSPANISHSTATE();
+		
+		}else if (area.equals("Switzerland")){return WaterbodyOrCountry.SWITZERLANDSWISSCONFEDERATION();
+		}else if (area.equals("Syria")){return WaterbodyOrCountry.SYRIANARABREPUBLIC();
+		}else if (area.equals("Turkey")){return WaterbodyOrCountry.TURKEYREPUBLICOF();
+		}else if (area.equals("Cambodia")){return WaterbodyOrCountry.CAMBODIAKINGDOMOF();
+		}else if (area.equals("Bangladesh")){return WaterbodyOrCountry.BANGLADESHPEOPLESREPUBLICOF();
+		
+		}else if (area.equals("Sri Lanka")){return WaterbodyOrCountry.SRILANKADEMOCRATICSOCIALISTREPUBLICOF();
+		}else if (area.equals("Bahamas")){return WaterbodyOrCountry.BAHAMASCOMMONWEALTHOFTHE();
+//		}else if (area.equals("Western Samoa")){return WaterbodyOrCountry.WESTERNSAMOA();
+		}else if (area.equals("Finland")){return WaterbodyOrCountry.FINLANDREPUBLICOF();
+		}else if (area.equals("Norway")){return WaterbodyOrCountry.NORWAYKINGDOMOF();
+		}else if (area.equals("El Salvador")){return WaterbodyOrCountry.ELSALVADORREPUBLICOF();
+		}else if (area.equals("Cyprus")){return WaterbodyOrCountry.CYPRUSREPUBLICOF();
+		
 		
 		}else{	
 			if (unhandledCountries.contains(area)){

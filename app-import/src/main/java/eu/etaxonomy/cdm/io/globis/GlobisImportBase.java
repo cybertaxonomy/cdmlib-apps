@@ -33,6 +33,7 @@ import eu.etaxonomy.cdm.io.common.ImportHelper;
 import eu.etaxonomy.cdm.io.common.ResultSetPartitioner;
 import eu.etaxonomy.cdm.io.common.Source;
 import eu.etaxonomy.cdm.io.common.mapping.DbImportMapping;
+import eu.etaxonomy.cdm.io.common.mapping.UndefinedTransformerMethodException;
 import eu.etaxonomy.cdm.model.common.AnnotatableEntity;
 import eu.etaxonomy.cdm.model.common.Annotation;
 import eu.etaxonomy.cdm.model.common.AnnotationType;
@@ -42,6 +43,11 @@ import eu.etaxonomy.cdm.model.common.IdentifiableEntity;
 import eu.etaxonomy.cdm.model.common.Language;
 import eu.etaxonomy.cdm.model.common.MarkerType;
 import eu.etaxonomy.cdm.model.common.User;
+import eu.etaxonomy.cdm.model.location.WaterbodyOrCountry;
+import eu.etaxonomy.cdm.model.name.ZoologicalName;
+import eu.etaxonomy.cdm.strategy.exceptions.StringNotParsableException;
+import eu.etaxonomy.cdm.strategy.parser.INonViralNameParser;
+import eu.etaxonomy.cdm.strategy.parser.NonViralNameParserImpl;
 
 /**
  * @author a.mueller
@@ -64,7 +70,8 @@ public abstract class GlobisImportBase<CDM_BASE extends CdmBase> extends CdmImpo
 	//TODO needed?
 	private Class cdmTargetClass;
 
-	
+	private INonViralNameParser parser = NonViralNameParserImpl.NewInstance();
+
 	
 	/**
 	 * @param dbTableName
@@ -99,6 +106,55 @@ public abstract class GlobisImportBase<CDM_BASE extends CdmBase> extends CdmImpo
 		return;
 	}
 
+	/**
+	 * @param authorAndYear
+	 * @param zooName
+	 */
+	protected void handleAuthorAndYear(String authorAndYear, ZoologicalName zooName) {
+		if (isBlank(authorAndYear)){
+			return;
+		}
+		try {
+			String doubtfulAuthorAndYear = null;
+			if(authorAndYear.matches(".+\\,\\s\\[\\d{4}\\].*")){
+				doubtfulAuthorAndYear = authorAndYear;
+				authorAndYear = authorAndYear.replace("[", "").replace("]", "");
+			}
+			if (authorAndYear.contains("?")){
+				authorAndYear = authorAndYear.replace("H?bner", "H\u00fcbner");
+				authorAndYear = authorAndYear.replace("Oberth?r", "Oberth\u00fcr");
+			}
+			
+			parser.parseAuthors(zooName, authorAndYear);
+			if (doubtfulAuthorAndYear != null){
+				zooName.setAuthorshipCache(doubtfulAuthorAndYear, true);
+			}
+			
+		} catch (StringNotParsableException e) {
+			logger.warn("Author could not be parsed: " + authorAndYear);
+			zooName.setAuthorshipCache(authorAndYear, true);
+		}
+	}
+	
+
+	/**
+	 * @param state
+	 * @param countryStr
+	 * @return
+	 */
+	protected WaterbodyOrCountry getCountry(GlobisImportState state, String countryStr) {
+		WaterbodyOrCountry country = WaterbodyOrCountry.getWaterbodyOrCountryByLabel(countryStr);
+		if (country == null){
+			try {
+				country = (WaterbodyOrCountry)state.getTransformer().getNamedAreaByKey(countryStr);
+			} catch (UndefinedTransformerMethodException e) {
+				e.printStackTrace();
+			}
+		}
+		return country;
+	}
+
+	
 
 	public boolean doPartition(ResultSetPartitioner partitioner, GlobisImportState state) {
 		boolean success = true ;
@@ -290,86 +346,8 @@ public abstract class GlobisImportBase<CDM_BASE extends CdmBase> extends CdmImpo
 		return dateTime;
 	}
 	
-	protected boolean resultSetHasColumn(ResultSet rs, String columnName){
-		try {
-			ResultSetMetaData metaData = rs.getMetaData();
-			for (int i = 0; i < metaData.getColumnCount(); i++){
-				if (metaData.getColumnName(i + 1).equalsIgnoreCase(columnName)){
-					return true;
-				}
-			}
-			return false;
-		} catch (SQLException e) {
-            logger.warn("Exception in resultSetHasColumn");
-            return false;
-		}
-	}
 	
-	protected boolean checkSqlServerColumnExists(Source source, String tableName, String columnName){
-		String strQuery = "SELECT  Count(t.id) as n " +
-				" FROM sysobjects AS t " +
-				" INNER JOIN syscolumns AS c ON t.id = c.id " +
-				" WHERE (t.xtype = 'U') AND " + 
-				" (t.name = '" + tableName + "') AND " + 
-				" (c.name = '" + columnName + "')";
-		ResultSet rs = source.getResultSet(strQuery) ;		
-		int n;
-		try {
-			rs.next();
-			n = rs.getInt("n");
-			return n>0;
-		} catch (SQLException e) {
-			e.printStackTrace();
-			return false;
-		}
-		
-	}
 	
-	/**
-	 * Returns a map that holds all values of a ResultSet. This is needed if a value needs to
-	 * be accessed twice
-	 * @param rs
-	 * @return
-	 * @throws SQLException
-	 */
-	protected Map<String, Object> getValueMap(ResultSet rs) throws SQLException{
-		try{
-			Map<String, Object> valueMap = new HashMap<String, Object>();
-			int colCount = rs.getMetaData().getColumnCount();
-			for (int c = 0; c < colCount ; c++){
-				Object value = rs.getObject(c+1);
-				String label = rs.getMetaData().getColumnLabel(c+1).toLowerCase();
-				if (value != null && ! CdmUtils.Nz(value.toString()).trim().equals("")){
-					valueMap.put(label, value);
-				}
-			}
-			return valueMap;
-		}catch(SQLException e){
-			throw e;
-		}
-	}
-	
-	protected ExtensionType getExtensionType(UUID uuid, String label, String text, String labelAbbrev){
-		ExtensionType extensionType = (ExtensionType)getTermService().find(uuid);
-		if (extensionType == null){
-			extensionType = ExtensionType.NewInstance(text, label, labelAbbrev);
-			extensionType.setUuid(uuid);
-			getTermService().save(extensionType);
-		}
-		return extensionType;
-	}
-	
-	protected MarkerType getMarkerType(UUID uuid, String label, String text, String labelAbbrev){
-		MarkerType markerType = (MarkerType)getTermService().find(uuid);
-		if (markerType == null){
-			markerType = MarkerType.NewInstance(label, text, labelAbbrev);
-			markerType.setUuid(uuid);
-			getTermService().save(markerType);
-		}
-		return markerType;
-	}
-	
-
 	/**
 	 * Reads a foreign key field from the result set and adds its value to the idSet.
 	 * @param rs
@@ -384,6 +362,9 @@ public abstract class GlobisImportBase<CDM_BASE extends CdmBase> extends CdmImpo
 			idSet.add(id);
 		}
 	}
+	
+	
+	
 	
 	/**
 	 * Returns true if i is a multiple of recordsPerTransaction
