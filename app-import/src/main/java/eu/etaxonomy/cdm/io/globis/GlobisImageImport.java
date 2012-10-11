@@ -18,26 +18,17 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
-import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.springframework.stereotype.Component;
 
-import eu.etaxonomy.cdm.common.media.ImageInfo;
 import eu.etaxonomy.cdm.io.common.IOValidator;
 import eu.etaxonomy.cdm.io.common.ResultSetPartitioner;
-import eu.etaxonomy.cdm.io.globis.validation.GlobisCurrentSpeciesImportValidator;
+import eu.etaxonomy.cdm.io.globis.validation.GlobisImageImportValidator;
 import eu.etaxonomy.cdm.model.common.CdmBase;
 import eu.etaxonomy.cdm.model.common.Language;
 import eu.etaxonomy.cdm.model.media.Media;
-import eu.etaxonomy.cdm.model.name.Rank;
-import eu.etaxonomy.cdm.model.name.ZoologicalName;
 import eu.etaxonomy.cdm.model.reference.Reference;
-import eu.etaxonomy.cdm.model.taxon.Classification;
 import eu.etaxonomy.cdm.model.taxon.Taxon;
-import eu.etaxonomy.cdm.model.taxon.TaxonBase;
-import eu.etaxonomy.cdm.model.taxon.TaxonNode;
-import eu.etaxonomy.cdm.strategy.parser.INonViralNameParser;
-import eu.etaxonomy.cdm.strategy.parser.NonViralNameParserImpl;
 
 
 /**
@@ -201,24 +192,6 @@ public class GlobisImageImport  extends GlobisImportBase<Taxon> {
 
 
 
-
-	private Taxon getTaxon(GlobisImportState state, ResultSet rs, String subGenus, Rank rank, String author, Map<String, Taxon> taxonMap) {
-		String key = subGenus + "@" + "subGenusAuthor" + "@" + rank.getTitleCache();
-		Taxon taxon = taxonMap.get(key);
-		if (taxon == null){
-			ZoologicalName name = ZoologicalName.NewInstance(rank);
-			taxon = Taxon.NewInstance(name, state.getTransactionalSourceReference());
-			handleAuthorAndYear(author, name);
-			getTaxonService().save(taxon);
-		}
-		
-		return taxon;
-	}
-
-
-
-
-
 	/* (non-Javadoc)
 	 * @see eu.etaxonomy.cdm.io.berlinModel.in.IPartitionedIO#getRelatedObjectsForPartition(java.sql.ResultSet)
 	 */
@@ -232,7 +205,7 @@ public class GlobisImageImport  extends GlobisImportBase<Taxon> {
 	 */
 	@Override
 	protected boolean doCheck(GlobisImportState state){
-		IOValidator<GlobisImportState> validator = new GlobisCurrentSpeciesImportValidator();
+		IOValidator<GlobisImportState> validator = new GlobisImageImportValidator();
 		return validator.validate(state);
 	}
 	
