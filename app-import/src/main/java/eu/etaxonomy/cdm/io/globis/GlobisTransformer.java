@@ -221,8 +221,9 @@ public final class GlobisTransformer extends InputTransformerBase {
 		}else if (area.equals("Gambia")){return WaterbodyOrCountry.GAMBIAREPUBLICOFTHE();
 		}else if (area.equals("Dominica")){return WaterbodyOrCountry.DOMINICACOMMONWEALTHOF();
 		}else if (area.equals("Liechtenstein")){return WaterbodyOrCountry.LIECHTENSTEINPRINCIPALITYOF();
+		}else if (area.matches("B(y)?elarus")){return WaterbodyOrCountry.BELARUS();
 		
-	
+		
 		
 		
 		

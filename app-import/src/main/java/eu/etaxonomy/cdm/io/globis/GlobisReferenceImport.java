@@ -20,30 +20,15 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.springframework.stereotype.Component;
 
-import eu.etaxonomy.cdm.api.facade.DerivedUnitFacade;
-import eu.etaxonomy.cdm.api.facade.DerivedUnitFacade.DerivedUnitType;
-import eu.etaxonomy.cdm.io.algaterra.AlgaTerraImportState;
-import eu.etaxonomy.cdm.io.berlinModel.in.BerlinModelTaxonImport;
 import eu.etaxonomy.cdm.io.common.IImportConfigurator;
 import eu.etaxonomy.cdm.io.common.IOValidator;
 import eu.etaxonomy.cdm.io.common.ResultSetPartitioner;
-import eu.etaxonomy.cdm.io.common.mapping.DbIgnoreMapper;
-import eu.etaxonomy.cdm.io.common.mapping.DbImportExtensionMapper;
-import eu.etaxonomy.cdm.io.common.mapping.DbImportMapping;
-import eu.etaxonomy.cdm.io.common.mapping.DbImportObjectCreationMapper;
-import eu.etaxonomy.cdm.io.common.mapping.DbImportStringMapper;
-import eu.etaxonomy.cdm.io.common.mapping.DbNotYetImplementedMapper;
 import eu.etaxonomy.cdm.io.common.mapping.IMappingImport;
 import eu.etaxonomy.cdm.io.globis.validation.GlobisReferenceImportValidator;
 import eu.etaxonomy.cdm.model.common.CdmBase;
-import eu.etaxonomy.cdm.model.description.Feature;
-import eu.etaxonomy.cdm.model.description.IndividualsAssociation;
-import eu.etaxonomy.cdm.model.description.TaxonDescription;
-import eu.etaxonomy.cdm.model.occurrence.DerivedUnit;
 import eu.etaxonomy.cdm.model.reference.Reference;
 import eu.etaxonomy.cdm.model.reference.ReferenceFactory;
 import eu.etaxonomy.cdm.model.reference.ReferenceType;
-import eu.etaxonomy.cdm.model.taxon.TaxonBase;
 
 
 /**
@@ -212,10 +197,21 @@ public class GlobisReferenceImport  extends GlobisImportBase<Reference> implemen
 	 */
 	public Reference<?> createObject(ResultSet rs, GlobisImportState state)
 			throws SQLException {
+		String refJournal = rs.getString("RefJournal");
+		boolean isInJournal =isNotBlank(refJournal); 
+		String refBookTitle = rs.getString("RefBookTitle");
+		boolean isInBook =isNotBlank(refBookTitle); 
+		
+		
+		
 		Reference<?> ref;
 		String refType = rs.getString("RefType");
 		if (refType == null){
-			ref = ReferenceFactory.newGeneric();
+			if (isInJournal && ! isInBook){
+				ref = ReferenceFactory.newArticle();
+			}else{
+				ref = ReferenceFactory.newGeneric();
+			}
 		}else if (refType.equals("book")){
 			ref = ReferenceFactory.newBook();
 		}else if (refType.equals("paper in journal")){
@@ -226,7 +222,7 @@ public class GlobisReferenceImport  extends GlobisImportBase<Reference> implemen
 			ref = ReferenceFactory.newArticle();
 		}else if (refType.equals("paper in book")){
 			ref = ReferenceFactory.newBookSection();
-		}else if (refType.equals("paper in journalwebsite")){
+		}else if (refType.matches("paper in journal.*website.*")){
 			ref = ReferenceFactory.newArticle();
 		}else{
 			logger.warn("Unknown reference type: " + refType);

@@ -304,20 +304,22 @@ public class GlobisCurrentSpeciesImport  extends GlobisImportBase<Taxon> {
 	}
 	
 	private void handleCommonNames(GlobisImportState state, ResultSet rs, Taxon species) throws SQLException {
-		String commonNamesStr = rs.getString("vernacularnames");
-		if (isBlank(commonNamesStr)){
-			return;
-		}
-		String[] commonNamesSplit = commonNamesStr.split(";");
-		for (String commonNameStr : commonNamesSplit){
-			if (isBlank(commonNameStr)){
-				continue;
-			}
-			Language language = null; //TODO
-			CommonTaxonName commonName = CommonTaxonName.NewInstance(commonNameStr, language);
-			TaxonDescription desc = getTaxonDescription(species, state.getTransactionalSourceReference(), false, true);
-			desc.addElement(commonName);
-		}
+		//DON't use, use seperate common name tables instead
+		
+//		String commonNamesStr = rs.getString("vernacularnames");
+//		if (isBlank(commonNamesStr)){
+//			return;
+//		}
+//		String[] commonNamesSplit = commonNamesStr.split(";");
+//		for (String commonNameStr : commonNamesSplit){
+//			if (isBlank(commonNameStr)){
+//				continue;
+//			}
+//			Language language = null; //TODO
+//			CommonTaxonName commonName = CommonTaxonName.NewInstance(commonNameStr, language);
+//			TaxonDescription desc = getTaxonDescription(species, state.getTransactionalSourceReference(), false, true);
+//			desc.addElement(commonName);
+//		}
 	}
 
 

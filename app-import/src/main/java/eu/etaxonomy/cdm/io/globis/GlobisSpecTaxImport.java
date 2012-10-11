@@ -148,8 +148,11 @@ public class GlobisSpecTaxImport  extends GlobisImportBase<Reference> implements
 					}else if (specSystaxRank.equals("synonym")){
 						Synonym synonym = getSynonym(state, rs);
 						if (acceptedTaxon == null){
-							//TODO
-							logger.warn("Accepted taxon (" + acceptedTaxonId + ") not found for synonym "+ specTaxId);
+							if (acceptedTaxonId == null){
+								logger.warn("Synonym has no accepted taxon defined. SpecTaxId: "+ specTaxId);
+							}else{
+								logger.warn("Accepted taxon (" + acceptedTaxonId + ") not found for synonym "+ specTaxId);
+							}
 						}else{
 							acceptedTaxon.addSynonym(synonym, SynonymRelationshipType.SYNONYM_OF());
 							thisTaxon = synonym;
@@ -200,24 +203,26 @@ public class GlobisSpecTaxImport  extends GlobisImportBase<Reference> implements
 
 	private void handleTypeInformation(GlobisImportState state, ResultSet rs, ZoologicalName name, Integer specTaxId) throws SQLException {
 		
-		String specTypeDepositoriesStr = rs.getString("SpecTypeDepository");
-		String countryString = rs.getString("SpecTypeCountry");
 		
-		if (! hasTypeInformation(specTypeDepositoriesStr, countryString)){
+		if (! hasTypeInformation(rs)){
 			return;
 		}
 		
-		FieldObservation fieldObservation = makeTypeFieldObservation(state, countryString);
+		FieldObservation fieldObservation = makeTypeFieldObservation(state, rs);
 		
+		//typeDepository
+		String specTypeDepositoriesStr = rs.getString("SpecTypeDepository");
 		String[] specTypeDepositories; 
 		if (isNotBlank(specTypeDepositoriesStr) ){
-			specTypeDepositories = specTypeDepositoriesStr.split(";");
+			specTypeDepositories = specTypeDepositoriesStr.trim().split(";");
 		}else{
 			specTypeDepositories = new String[0];
 		}
-		//TODO different issues
+		
+		//TODO several issues
 		if (specTypeDepositories.length == 0){
-			logger.warn("SpecTax has type information but no SpecTypeDepository. specTaxId: " + specTaxId);
+			Specimen specimen = makeSingleTypeSpecimen(fieldObservation);
+			makeTypeDesignation(name, rs, specimen);
 		}
 		for (String specTypeDepositoryStr : specTypeDepositories){
 			specTypeDepositoryStr = specTypeDepositoryStr.trim();
@@ -227,13 +232,12 @@ public class GlobisSpecTaxImport  extends GlobisImportBase<Reference> implements
 
 			if (specTypeDepositoryStr.equals("??")){
 				//unknown
-				//TODO
 				specimen.setTitleCache("??", true);
 			}else{
 				specTypeDepositoryStr = makeAdditionalSpecimenInformation( 
-						specTypeDepositoryStr, specimen);
+						specTypeDepositoryStr, specimen, specTaxId);
 				
-				makeCollection(specTypeDepositoryStr, specimen);
+				makeCollection(specTypeDepositoryStr, specimen, specTaxId);
 			}
 			
 			//type Designation
@@ -246,9 +250,13 @@ public class GlobisSpecTaxImport  extends GlobisImportBase<Reference> implements
 
 
 
-	private boolean hasTypeInformation(String specTypeDepositoriesStr, String countryString) {
+	private boolean hasTypeInformation(ResultSet rs) throws SQLException {
+		String specTypeDepositoriesStr = rs.getString("SpecTypeDepository");
+		String countryString = rs.getString("SpecTypeCountry");
+		String specType = rs.getString("SpecType");
 		boolean result = false;
-		result |= isNotBlank(specTypeDepositoriesStr) || isNotBlank(countryString);
+		result |= isNotBlank(specTypeDepositoriesStr) || isNotBlank(countryString)
+			|| isNotBlank(specType);
 		return result;
 	}
 
@@ -257,39 +265,61 @@ public class GlobisSpecTaxImport  extends GlobisImportBase<Reference> implements
 	/**
 	 * @param specTypeDepositoryStr
 	 * @param specimen
+	 * @param specTaxId 
 	 */
-	protected void makeCollection(String specTypeDepositoryStr, Specimen specimen) {
+	protected void makeCollection(String specTypeDepositoryStr, Specimen specimen, Integer specTaxId) {
 		//TODO deduplicate
 		Map<String, Collection> collectionMap = new HashMap<String, Collection>();
 		
 		
 		//Collection
-		String[] split = specTypeDepositoryStr.split(",");
-		if (split.length != 2){
-			if (split.length == 1 && split[0].startsWith("coll.")){
-				Collection collection = Collection.NewInstance();
-				collection.setName(split[0]);
-			}else{
-				logger.warn("Split size is not 2: " + specTypeDepositoryStr);
-			}
-			
-		}else{
-			String collectionStr = split[0];
-			String location = split[1];
-			
-			
-			Collection collection = collectionMap.get(collectionStr);
-			if (collection == null){
-				collection = Collection.NewInstance();
-				collection.setCode(collectionStr);
-				collection.setTownOrLocation(split[1]);
-			}else if (CdmUtils.nullSafeEqual(location, collection.getTownOrLocation())){
-				String message = "Location (%s) is not equal to location (%s) of existing collection";
-				logger.warn(String.format(message, location, collection.getTownOrLocation(), collection.getCode()));
-			}
-			
+		specTypeDepositoryStr = specTypeDepositoryStr.replace("Washington, D.C.", "Washington@ D.C.");
+		
+		if (specTypeDepositoryStr.equals("BMNH, London and/or MNHN, Paris")){
+			//TODO deduplicate
+			Collection collection = Collection.NewInstance();
+			collection.setName(specTypeDepositoryStr);
 			specimen.setCollection(collection);
+		}else if (specTypeDepositoryStr.equals("coll. L. V. Kaabak, A .V. Sotshivko & V. V. Titov, Moscow")){
+			Collection collection = Collection.NewInstance();
+			collection.setName("coll. L. V. Kaabak, A .V. Sotshivko & V. V. Titov");
+			collection.setTownOrLocation("Moscow");
+			specimen.setCollection(collection);
+		}else if (specTypeDepositoryStr.matches("coll. R. E. Parrott?, Port Hope, Ontario")){
+			//TODO deduplicate
+			Collection collection = Collection.NewInstance();
+			collection.setName("coll. R. E. Parrott");
+			collection.setTownOrLocation("Port Hope, Ontario");
+			specimen.setCollection(collection);
+		}else{
 			
+			String[] split = specTypeDepositoryStr.split(",");
+			if (split.length != 2){
+				if (split.length == 1 && split[0].startsWith("coll.")){
+					Collection collection = Collection.NewInstance();
+					collection.setName(split[0]);
+					specimen.setCollection(collection);
+				}else{
+					logger.warn("Split size is not 2: " + specTypeDepositoryStr + " (specTaxID:" + specTaxId + ")");
+				}
+				
+			}else{
+				String collectionStr = split[0];
+				String location = split[1].replace("Washington@ D.C.", "Washington, D.C.");
+				
+				Collection collection = collectionMap.get(collectionStr);
+				if (collection == null){
+					collection = Collection.NewInstance();
+					collection.setCode(collectionStr);
+					collection.setTownOrLocation(split[1]);
+				}else if (CdmUtils.nullSafeEqual(location, collection.getTownOrLocation())){
+					String message = "Location (%s) is not equal to location (%s) of existing collection";
+					logger.warn(String.format(message, location, collection.getTownOrLocation(), collection.getCode()));
+				}
+				
+				specimen.setCollection(collection);
+				
+			}
 		}
 	}
 
@@ -300,10 +330,10 @@ public class GlobisSpecTaxImport  extends GlobisImportBase<Reference> implements
 	 * @param specTypeDepositoriesStr
 	 * @param specTypeDepositoryStr
 	 * @param specimen
+	 * @param specTaxId 
 	 * @return
 	 */
-	protected String makeAdditionalSpecimenInformation( String specTypeDepositoryStr,
-			Specimen specimen) {
+	protected String makeAdditionalSpecimenInformation( String specTypeDepositoryStr, Specimen specimen, Integer specTaxId) {
 		//doubful
 		if (specTypeDepositoryStr.endsWith("?")){
 			Marker.NewInstance(specimen, true, MarkerType.IS_DOUBTFUL());
@@ -321,9 +351,10 @@ public class GlobisSpecTaxImport  extends GlobisImportBase<Reference> implements
 			brackets = brackets.replace("[m]", "\u2642");
 			brackets = brackets.replace("[ff]", "\u2640\u2640");
 			brackets = brackets.replace("[f]", "\u2640");
+			brackets = brackets.replace("[m/f]", "\u26a5");
 			
 			if (brackets.contains("[") || brackets.contains("]")){
-				logger.warn ("There are still '[', ']' in the bracket part: " + brackets);
+				logger.warn ("There are still '[', ']' in the bracket part: " + brackets + "; specTaxId: " + specTaxId);
 			}
 			
 			//TODO replace mm/ff by Unicode male 
@@ -358,7 +389,9 @@ public class GlobisSpecTaxImport  extends GlobisImportBase<Reference> implements
 	 * @throws SQLException
 	 */
 	protected FieldObservation makeTypeFieldObservation(GlobisImportState state, 
-			String countryString) throws SQLException {
+			ResultSet rs) throws SQLException {
+		
+		String countryString = rs.getString("SpecTypeCountry");
 		
 		DerivedUnitType unitType = DerivedUnitType.Specimen;
 		DerivedUnitFacade facade = DerivedUnitFacade.NewInstance(unitType);
@@ -401,7 +434,7 @@ public class GlobisSpecTaxImport  extends GlobisImportBase<Reference> implements
 			return SpecimenTypeDesignationStatus.HOLOTYPE();
 		}else if (specType.matches("Neotype")){
 			return SpecimenTypeDesignationStatus.NEOTYPE();
-		}else if (specType.matches("Syntype(\\(s\\))?")){
+		}else if (specType.matches("Syntype(\\(s\\))?") || specType.matches("Syntype.*Syntype\\(s\\)\\s*") ){
 			return SpecimenTypeDesignationStatus.SYNTYPE();
 		}else if (specType.matches("Lectotype")){
 			return SpecimenTypeDesignationStatus.LECTOTYPE();

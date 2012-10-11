@@ -9,6 +9,8 @@
 
 package eu.etaxonomy.cdm.io.globis;
 
+import java.net.MalformedURLException;
+import java.net.URI;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.HashMap;
@@ -20,6 +22,7 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.springframework.stereotype.Component;
 
+import eu.etaxonomy.cdm.common.media.ImageInfo;
 import eu.etaxonomy.cdm.io.common.IOValidator;
 import eu.etaxonomy.cdm.io.common.ResultSetPartitioner;
 import eu.etaxonomy.cdm.io.globis.validation.GlobisCurrentSpeciesImportValidator;
@@ -97,14 +100,12 @@ public class GlobisImageImport  extends GlobisImportBase<Taxon> {
 	public boolean doPartition(ResultSetPartitioner partitioner, GlobisImportState state) {
 		boolean success = true;
 		
-		Set<TaxonBase> objectsToSave = new HashSet<TaxonBase>();
+		Set<Media> objectsToSave = new HashSet<Media>();
 		
-		Map<String, Taxon> taxonMap = (Map<String, Taxon>) partitioner.getObjectMap(TAXON_NAMESPACE);
+//		Map<String, Taxon> taxonMap = (Map<String, Taxon>) partitioner.getObjectMap(TAXON_NAMESPACE);
 //		Map<String, DerivedUnit> ecoFactDerivedUnitMap = (Map<String, DerivedUnit>) partitioner.getObjectMap(ECO_FACT_DERIVED_UNIT_NAMESPACE);
 		
 		ResultSet rs = partitioner.getResultSet();
-
-		Classification classification = getClassification(state);
 		
 		try {
 			
@@ -115,52 +116,44 @@ public class GlobisImageImport  extends GlobisImportBase<Taxon> {
                 
         		if ((i++ % modCount) == 0 && i!= 1 ){ logger.info(pluralString + " handled: " + (i-1));}
 				
-        		Integer taxonId = rs.getInt("IDcurrentspec");
+        		Integer bildID = rs.getInt("BildID");
+        		
+        		Integer spectaxID = nullSafeInt(rs, "spectaxID");
+        		
+        		//ignore: [file lab2], same as Dateiname04 but less data
         		
         		
-        		//TODO
-        		//String dtSpcJahr,
-        		//dtSpcFamakt,dtSpcSubfamakt,dtSpcTribakt,
-        		//fiSpcLiteratur, fiSpcspcgrptax, dtSpcCountries,vernacularnames
         		
-				try {
+        		try {
 					
-					//source ref
+        			//source ref
 					Reference<?> sourceRef = state.getTransactionalSourceReference();
-					Taxon nextHigherTaxon = null;
 					
-					Taxon species = createObject(rs, state);
+					//make image path
+					String pathShort = rs.getString("Dateipfad_kurz");
+					String fileOS = rs.getString("file OS");
+					pathShort.replace(fileOS, "");
+					//TODO move to config
+					String newPath = "http://globis-images.insects-online.de/images/";
+					String path = pathShort.replace("image:Webversionen", newPath);
 					
-					//subgenus
-					String subGenusStr = rs.getString("dtSpcSubgenakt");
-					String subGenusAuthorStr = rs.getString("dtSpcSubgenaktauthor");
-					boolean hasSubgenus = StringUtils.isNotBlank(subGenusStr) || StringUtils.isNotBlank(subGenusAuthorStr);
-					if (hasSubgenus){
-						Taxon subGenus = getTaxon(state, rs, subGenusStr, Rank.SUBGENUS(), subGenusAuthorStr, taxonMap);
-						classification.addParentChild(subGenus, species, sourceRef, null);
-						nextHigherTaxon = getParent(subGenus, classification);
-					}
 					
-					//genus
-					String genusStr = rs.getString("dtSpcGenusakt");
-					String genusAuthorStr = rs.getString("dtSpcGenusaktauthor");
-					Taxon genus = getTaxon(state, rs, genusStr, Rank.GENUS(), genusAuthorStr, taxonMap);
-					if (nextHigherTaxon != null){
-						if (! compareTaxa(genus, nextHigherTaxon)){
-							logger.warn("Current genus and parent of subgenus are not equal: " + taxonId);
-						}
-					}else{
-						classification.addParentChild(genus, species, sourceRef, null);
-						nextHigherTaxon = getParent(genus, classification);
-					}
 					
-					this.doIdCreatedUpdatedNotes(state, species, rs, taxonId, REFERENCE_NAMESPACE);
+					Media media1 = makeMedia(state, rs, "file OS", "Legende 1", path );
+        			Media media2 = makeMedia(state, rs, "Dateiname02", "Legende 2", path );
+        			Media media3 = makeMedia(state, rs, "Dateiname03", "Legende 3", path );
+        			Media media4 = makeMedia(state, rs, "Dateiname04", "Legende 4", path );
+        			
 					
-					objectsToSave.add(species); 
+        			//TODO
+					this.doIdCreatedUpdatedNotes(state, media1, rs, bildID, IMAGE_NAMESPACE);
 					
+					save(objectsToSave, media1);
+					
+										
 
 				} catch (Exception e) {
-					logger.warn("Exception in current_species: IDcurrentspec " + taxonId + ". " + e.getMessage());
+					logger.warn("Exception in Einzelbilder: bildID " + bildID + ". " + e.getMessage());
 //					e.printStackTrace();
 				} 
                 
@@ -169,7 +162,7 @@ public class GlobisImageImport  extends GlobisImportBase<Taxon> {
 //            logger.warn("Specimen: " + countSpecimen + ", Descriptions: " + countDescriptions );
 
 			logger.warn(pluralString + " to save: " + objectsToSave.size());
-			getTaxonService().save(objectsToSave);	
+			getMediaService().save(objectsToSave);	
 			
 			return success;
 		} catch (SQLException e) {
@@ -178,34 +171,32 @@ public class GlobisImageImport  extends GlobisImportBase<Taxon> {
 		}
 	}
 
-	/**
-	 * Compares 2 taxa, returns true of both taxa look similar
-	 * @param genus
-	 * @param nextHigherTaxon
-	 * @return
-	 */
-	private boolean compareTaxa(Taxon taxon1, Taxon taxon2) {
-		ZoologicalName name1 = CdmBase.deproxy(taxon1.getName(), ZoologicalName.class);
-		ZoologicalName name2 = CdmBase.deproxy(taxon2.getName(), ZoologicalName.class);
-		if (!name1.getRank().equals(name2.getRank())){
-			return false;
+	private void save(Set<Media> objectsToSave, Media media) {
+		if (media != null){
+			objectsToSave.add(media); 
 		}
-		if (! name1.getTitleCache().equals(name2.getTitleCache())){
-			return false;
-		}
-		return true;
 	}
 
 
 
 
-	private Taxon getParent(Taxon subgenus, Classification classification) {
-		for (TaxonNode node :  subgenus.getTaxonNodes()){
-			if (node.getClassification().equals(classification)){
-				return node.getParent().getTaxon();
-			}
+	private Media makeMedia(GlobisImportState state, ResultSet rs, String fileNameAttr, String legendAttr, String path) throws SQLException {
+		Media media = null;
+		String fileName = rs.getString(fileNameAttr);
+		String legend = rs.getString(legendAttr);
+		
+		URI uri = URI.create(path+fileName); 
+		
+//		Media media = ImageInfo.NewInstanceWithMetaData(uri, null);
+		
+		try {
+			media = this.getImageMedia(uri.toString(), true, false);
+			media.putTitle(Language.ENGLISH(), legend);
+		} catch (MalformedURLException e) {
+			e.printStackTrace();
 		}
-		return null;
+		
+		return media;
 	}
 
 
@@ -225,47 +216,7 @@ public class GlobisImageImport  extends GlobisImportBase<Taxon> {
 	}
 
 
-	//fast and dirty is enough here
-	private Classification classification;
-	
-	private Classification getClassification(GlobisImportState state) {
-		if (this.classification == null){
-			String name = state.getConfig().getClassificationName();
-			Reference<?> reference = state.getTransactionalSourceReference();
-			this.classification = Classification.NewInstance(name, reference, Language.DEFAULT());
-			classification.setUuid(state.getConfig().getClassificationUuid());
-			getClassificationService().save(classification);
-		}
-		return this.classification;
-		
-	}
 
-	private INonViralNameParser parser = NonViralNameParserImpl.NewInstance();
-	
-
-	/* (non-Javadoc)
-	 * @see eu.etaxonomy.cdm.io.common.mapping.IMappingImport#createObject(java.sql.ResultSet, eu.etaxonomy.cdm.io.common.ImportStateBase)
-	 */
-	public Taxon createObject(ResultSet rs, GlobisImportState state)
-			throws SQLException {
-		String speciesEpi = rs.getString("dtSpcSpcakt");
-		String subGenusEpi = rs.getString("dtSpcSubgenakt");
-		String genusEpi = rs.getString("dtSpcGenusakt");
-		String author = rs.getString("dtSpcAutor");
-		
-		
-		ZoologicalName zooName = ZoologicalName.NewInstance(Rank.SPECIES());
-		zooName.setSpecificEpithet(speciesEpi);
-		if (StringUtils.isNotBlank(subGenusEpi)){
-			zooName.setInfraSpecificEpithet(subGenusEpi);
-		}
-		zooName.setGenusOrUninomial(genusEpi);
-		handleAuthorAndYear(author, zooName);
-		
-		Taxon taxon = Taxon.NewInstance(zooName, state.getTransactionalSourceReference());
-		
-		return taxon;
-	}
 
 
 	/* (non-Javadoc)
