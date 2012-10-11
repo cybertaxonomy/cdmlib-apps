@@ -58,6 +58,7 @@ public class GlobisImportConfigurator extends ImportConfiguratorBase<GlobisImpor
 	//			, ErmsReferenceImport.class
 				, GlobisCurrentSpeciesImport.class
 				, GlobisSpecTaxImport.class
+				, GlobisImageImport.class
 		};	
 	}
 	
