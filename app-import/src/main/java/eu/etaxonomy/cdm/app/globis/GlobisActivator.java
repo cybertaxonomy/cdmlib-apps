@@ -39,21 +39,34 @@ public class GlobisActivator {
 	//database validation status (create, update, validate ...)
 	static DbSchemaValidation hbm2dll = DbSchemaValidation.CREATE;
 	static final Source globisSource = CdmImportSources.GLOBIS_MDB_20120928();
-	static final ICdmDataSource cdmDestination = CdmDestinations.localH2();
-	static final UUID treeUuid = UUID.fromString("8bd27d84-fd4f-4bfa-bde0-3e6b7311b334");
+//	static final ICdmDataSource cdmDestination = CdmDestinations.localH2();
+//	static final ICdmDataSource cdmDestination = CdmDestinations.cdm_test_local_mysql();
+	static final ICdmDataSource cdmDestination = CdmDestinations.cdm_globis_dev();
+	
+	
+	
+	static final UUID classificationUuid = UUID.fromString("8bd27d84-fd4f-4bfa-bde0-3e6b7311b334");
 	static final UUID featureTreeUuid = UUID.fromString("33cbf7a8-0c47-4d47-bd11-b7d77a38d0f6");
-	//static final Object[] featureKeyList = new Integer[]{1,4,5,10,11,12,13,14, 249, 250, 251, 252, 253}; 
+	//static final Object[] featureKeyList = new Integer[]{1,4,5,10,11,12,13,14, 249, 250, 251, 252, 253};
+	
+	static final String classificationName = "Globis";
+	static final String sourceReferenceTitle = "globis database";
+	
+	static final String imageBaseUrl = "http://globis-images.insects-online.de/images/";
 	
 	//check - import
 	static final CHECK check = CHECK.IMPORT_WITHOUT_CHECK;
 
-	static final int partitionSize = 2000;
+	static final int partitionSize = 3000;
 
 
 	//NomeclaturalCode
 	static final NomenclaturalCode nomenclaturalCode = NomenclaturalCode.ICZN;
 
-	//ignore null
+	
+	static final boolean doReadMediaData = false;
+	
+//	//ignore null
 	static final boolean ignoreNull = true;
 	
 // ***************** ALL ************************************************//
@@ -62,9 +75,10 @@ public class GlobisActivator {
 	static final DO_REFERENCES doReferences =  DO_REFERENCES.ALL;
 	
 	//taxa
-	static final boolean doTaxa = true;
-	static final boolean doRelTaxa = true;
+	static final boolean doCurrentTaxa = true;
+	static final boolean doSpecTaxa = true;
 	static final boolean doImages = true;
+	static final boolean doCommonNames = true;
 	
 	
 //******************** NONE ***************************************//
@@ -74,8 +88,10 @@ public class GlobisActivator {
 //	static final DO_REFERENCES doReferences =  DO_REFERENCES.NONE;
 //	
 //	//taxa
-//	static final boolean doTaxa = false;
-//	static final boolean doRelTaxa = false;
+//	static final boolean doCurrentTaxa = true;
+//	static final boolean doSpecTaxa = false;
+//	static final boolean doImages = false;
+//	static final boolean doCommonNames = true;
 
 //	
 	
@@ -92,18 +108,23 @@ public class GlobisActivator {
 		
 		GlobisImportConfigurator config = GlobisImportConfigurator.NewInstance(source,  destination);
 		
-		config.setClassificationUuid(treeUuid);
+		config.setClassificationUuid(classificationUuid);
 		config.setNomenclaturalCode(nomenclaturalCode);
 
 		config.setIgnoreNull(ignoreNull);
+		config.setDoReadMediaData(doReadMediaData);
 		config.setDoReferences(doReferences);
 		
-//		config.setDoTaxa(doTaxa);
-//		config.setDoRelTaxa(doRelTaxa);
+		config.setDoCurrentTaxa(doCurrentTaxa);
+		config.setDoSpecTaxa(doSpecTaxa);
+		config.setDoImages(doImages);
+		config.setImageBaseUrl(imageBaseUrl);
+		
 		config.setDbSchemaValidation(hbm2dll);
-
 		config.setCheck(check);
 		config.setRecordsPerTransaction(partitionSize);
+		config.setClassificationName(classificationName);
+		config.setSourceReferenceTitle(sourceReferenceTitle);
 
 		// invoke import
 		CdmDefaultImport<GlobisImportConfigurator> globisImport = new CdmDefaultImport<GlobisImportConfigurator>();
