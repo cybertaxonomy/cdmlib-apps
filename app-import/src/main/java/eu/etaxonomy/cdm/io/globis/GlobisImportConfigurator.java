@@ -46,8 +46,13 @@ public class GlobisImportConfigurator extends ImportConfiguratorBase<GlobisImpor
 	private boolean doImages = true;
 	private boolean doCurrentTaxa = true;
 	private boolean doSpecTaxa = true;
+	private boolean doCommonNames = true;
+	
+	private boolean doReadMediaData = true;
+	
 	private DO_REFERENCES doReferences = DO_REFERENCES.ALL;
 
+	private String imageBaseUrl = "http://globis-images.insects-online.de/images/";
 	
 	private static IInputTransformer defaultTransformer = new GlobisTransformer();
 	
@@ -180,6 +185,36 @@ public class GlobisImportConfigurator extends ImportConfiguratorBase<GlobisImpor
 
 	public boolean isDoSpecTaxa() {
 		return doSpecTaxa;
+	}
+
+
+	public void setDoCommonNames(boolean doCommonNames) {
+		this.doCommonNames = doCommonNames;
+	}
+
+
+	public boolean isDoCommonNames() {
+		return doCommonNames;
+	}
+
+
+	public void setImageBaseUrl(String imageBaseUrl) {
+		this.imageBaseUrl = imageBaseUrl;
+	}
+
+
+	public String getImageBaseUrl() {
+		return imageBaseUrl;
+	}
+
+
+	public void setDoReadMediaData(boolean doReadMediaData) {
+		this.doReadMediaData = doReadMediaData;
+	}
+
+
+	public boolean isDoReadMediaData() {
+		return doReadMediaData;
 	}
 
 

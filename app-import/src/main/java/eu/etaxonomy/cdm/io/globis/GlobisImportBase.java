@@ -215,7 +215,7 @@ public abstract class GlobisImportBase<CDM_BASE extends CdmBase> extends CdmImpo
 			throws SQLException{
 		boolean success = true;
 		//id
-		success &= ImportHelper.setOriginalSource(identifiableEntity, state.getConfig().getSourceReference(), id, namespace);
+		success &= ImportHelper.setOriginalSource(identifiableEntity, state.getTransactionalSourceReference(), id, namespace);
 		//createdUpdateNotes
 		success &= doCreatedUpdatedNotes(state, identifiableEntity, rs, namespace);
 		return success;
