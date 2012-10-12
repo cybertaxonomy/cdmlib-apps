@@ -10,6 +10,7 @@
 package eu.etaxonomy.cdm.app.vibrant;
 
 import java.net.URI;
+import java.util.UUID;
 
 import org.apache.log4j.Logger;
 
@@ -37,45 +38,75 @@ public class DwcaScratchpadImportActivator {
 	
 	//database validation status (create, update, validate ...)
 	static DbSchemaValidation hbm2dll = DbSchemaValidation.CREATE;
-	static final URI source = dwca_test_scratch_test();
-	
+
+	//	static final URI source =  dwca_emonocots_dioscoreaceae();
+	static final URI source =  dwca_emonocots_zingiberaceae();
+//	static final URI source =  dwca_emonocots_cypripedioideae();
 	
 //	static final ICdmDataSource cdmDestination = CdmDestinations.localH2();
-	static final ICdmDataSource cdmDestination = CdmDestinations.cdm_test_local_mysql_dwca();
+	static final ICdmDataSource cdmDestination = CdmDestinations.cdm_test_local_mysql();
 //	static final ICdmDataSource cdmDestination = CdmDestinations.cdm_test_local_mysql_test();
-
 	
 	//default nom code is ICZN as it allows adding publication year 
-	static final NomenclaturalCode defaultNomCode = null;
+	static final NomenclaturalCode defaultNomCode = NomenclaturalCode.ICBN;
 
+	//title
+	static final String title = "Scratchpad test import";
 	
 	//check - import
 	static final CHECK check = CHECK.IMPORT_WITHOUT_CHECK;
+	static int partitionSize = 1000;
 	
 	//config
 	static DatasetUse datasetUse = DatasetUse.CLASSIFICATION;
 	
 	//validate
-	static boolean validateRankConsistency = true;
+	static boolean validateRankConsistency = false;
 	
 	
 	//taxa
 	static final boolean doTaxa = true;
+	static final boolean doDistribution = true;
 	
 	
 	
 	static final MappingType mappingType = MappingType.InMemoryMapping;
 	
-	private void doImport(ICdmDataSource cdmDestination){
+	//classification
+	static final UUID classificationUuid = UUID.fromString("d9d199b6-eaf4-47c8-a732-0639bc445c56");
+	
+	
+	//config
+	static boolean scientificNameIdAsOriginalSourceId = true;
+	static boolean guessNomRef = false;
+	private boolean handleAllRefsAsCitation = false;
+	private static final boolean useSourceReferenceAsSec = true;
+	
+
+	//deduplicate
+	static final boolean doDeduplicate = false;
+
+	
+	
+	protected void doImport(URI source, ICdmDataSource cdmDestination, UUID classificationUuid, String title, DbSchemaValidation hbm2dll){
 		
 		//make Source
 		DwcaImportConfigurator config= DwcaImportConfigurator.NewInstance(source, cdmDestination);
 		config.addObserver(new LoggingIoObserver());
+		config.setClassificationUuid(classificationUuid);
 		config.setCheck(check);
 		config.setDbSchemaValidation(hbm2dll);
 		config.setMappingType(mappingType);
+		
+		config.setScientificNameIdAsOriginalSourceId(scientificNameIdAsOriginalSourceId);
 		config.setValidateRankConsistency(validateRankConsistency);
+		config.setDefaultPartitionSize(partitionSize);
 		config.setNomenclaturalCode(defaultNomCode);
+		config.setDatasetUse(datasetUse);
+		config.setGuessNomenclaturalReferences(guessNomRef);
+		config.setHandleAllRefsAsCitation(handleAllRefsAsCitation);
+		config.setUseSourceReferenceAsSec(useSourceReferenceAsSec);
+		config.setSourceReferenceTitle(title);
 		
 		CdmDefaultImport myImport = new CdmDefaultImport();
 
@@ -97,10 +128,26 @@ public class DwcaScratchpadImportActivator {
 		return result;
 	}
 
+	//Dwca
+	public static URI dwca_emonocots_local() {
+		URI sourceUrl = URI.create("file:///C:/localCopy/Data/dwca/import/Scratchpads/dwca_dioscoreaceae_emonocots.zip");
+		return sourceUrl;
+	}
 	
-	//Scratchpads test
-	public static URI dwca_test_scratch_test() {
-		URI sourceUrl = URI.create("file:////PESIIMPORT3/vibrant/dwca/dwca_export_scratchpads_test.zip");
+	//emonocots_dioscoreaceae
+	public static URI dwca_emonocots_dioscoreaceae() {
+		URI sourceUrl = URI.create("file:////PESIIMPORT3/vibrant/dwca/dwca_emonocots_dioscoreaceae.zip");
+		return sourceUrl;
+	}
+	
+	//emonocots_zingiberaceae
+	public static URI dwca_emonocots_zingiberaceae() {
+		URI sourceUrl = URI.create("file:////PESIIMPORT3/vibrant/dwca/dwca_emonocots_zingiberaceae.zip");
+		return sourceUrl;
+	}
+	//emonocots_cypripedioideae
+	public static URI dwca_emonocots_cypripedioideae() {
+		URI sourceUrl = URI.create("file:////PESIIMPORT3/vibrant/dwca/dwca_emonocots_cypripedioideae.zip");
 		return sourceUrl;
 	}
 	
@@ -110,7 +157,7 @@ public class DwcaScratchpadImportActivator {
 	 */
 	public static void main(String[] args) {
 		DwcaScratchpadImportActivator me = new DwcaScratchpadImportActivator();
-		me.doImport(cdmDestination);
+		me.doImport(source, cdmDestination, classificationUuid, title, hbm2dll);
 	}
 	
 }
