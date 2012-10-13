@@ -57,8 +57,8 @@ public abstract class GlobisImportBase<CDM_BASE extends CdmBase> extends CdmImpo
 	
 	protected static final String REFERENCE_NAMESPACE = "Literatur";
 	protected static final String TAXON_NAMESPACE = "current_species";
-
-
+	protected static final String COLLECTION_NAMESPACE = "Collection";
+	
 	private String pluralString;
 	private String dbTableName;
 	//TODO needed?

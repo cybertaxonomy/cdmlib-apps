@@ -13,26 +13,23 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.springframework.stereotype.Component;
 
 import eu.etaxonomy.cdm.api.facade.DerivedUnitFacade;
 import eu.etaxonomy.cdm.api.facade.DerivedUnitFacade.DerivedUnitType;
 import eu.etaxonomy.cdm.common.CdmUtils;
-import eu.etaxonomy.cdm.io.common.IImportConfigurator;
 import eu.etaxonomy.cdm.io.common.IOValidator;
 import eu.etaxonomy.cdm.io.common.ResultSetPartitioner;
 import eu.etaxonomy.cdm.io.common.mapping.IMappingImport;
-import eu.etaxonomy.cdm.io.globis.validation.GlobisReferenceImportValidator;
 import eu.etaxonomy.cdm.io.globis.validation.GlobisSpecTaxaImportValidator;
 import eu.etaxonomy.cdm.model.common.CdmBase;
-import eu.etaxonomy.cdm.model.common.Extension;
 import eu.etaxonomy.cdm.model.common.IdentifiableSource;
 import eu.etaxonomy.cdm.model.common.Marker;
 import eu.etaxonomy.cdm.model.common.MarkerType;
@@ -41,18 +38,13 @@ import eu.etaxonomy.cdm.model.name.NomenclaturalCode;
 import eu.etaxonomy.cdm.model.name.Rank;
 import eu.etaxonomy.cdm.model.name.SpecimenTypeDesignation;
 import eu.etaxonomy.cdm.model.name.SpecimenTypeDesignationStatus;
-import eu.etaxonomy.cdm.model.name.SpecimenTypeDesignationTest;
 import eu.etaxonomy.cdm.model.name.TaxonNameBase;
 import eu.etaxonomy.cdm.model.name.ZoologicalName;
 import eu.etaxonomy.cdm.model.occurrence.Collection;
 import eu.etaxonomy.cdm.model.occurrence.DerivationEvent;
-import eu.etaxonomy.cdm.model.occurrence.DerivationEventType;
-import eu.etaxonomy.cdm.model.occurrence.DerivedUnitBase;
 import eu.etaxonomy.cdm.model.occurrence.FieldObservation;
 import eu.etaxonomy.cdm.model.occurrence.Specimen;
 import eu.etaxonomy.cdm.model.reference.Reference;
-import eu.etaxonomy.cdm.model.reference.ReferenceFactory;
-import eu.etaxonomy.cdm.model.reference.ReferenceType;
 import eu.etaxonomy.cdm.model.taxon.Synonym;
 import eu.etaxonomy.cdm.model.taxon.SynonymRelationshipType;
 import eu.etaxonomy.cdm.model.taxon.Taxon;
@@ -150,9 +142,9 @@ public class GlobisSpecTaxImport  extends GlobisImportBase<Reference> implements
 					
 					ZoologicalName name = null;
 					if (isBlank(specSystaxRank) ){
-						name = makeName(state, rs);
+						name = makeName(state, rs, specTaxId);
 					}else if (specSystaxRank.equals("synonym")){
-						Synonym synonym = getSynonym(state, rs);
+						Synonym synonym = getSynonym(state, rs, specTaxId);
 						if (acceptedTaxon == null){
 							if (acceptedTaxonId == null){
 								logger.warn("Synonym has no accepted taxon defined. SpecTaxId: "+ specTaxId);
@@ -168,14 +160,17 @@ public class GlobisSpecTaxImport  extends GlobisImportBase<Reference> implements
 						thisTaxon = acceptedTaxon;
 					}else{
 						logger.warn(String.format("Unhandled specSystaxRank %s in specTaxId %d", specSystaxRank, specTaxId));
-						name = makeName(state, rs);
+						name = makeName(state, rs, specTaxId);
 					}
 					
 					if (thisTaxon != null){
 						name = CdmBase.deproxy(thisTaxon.getName(), ZoologicalName.class);
-					}
-					if (name == null){
-						name = makeName(state, rs);
+					}else{
+						if (name == null){
+							name = makeName(state, rs, specTaxId);
+						}
+						thisTaxon = Taxon.NewInstance(name, sourceRef);
+						objectsToSave.add(thisTaxon);
 					}
 					
 					handleNomRef(state, referenceMap, rs, name);
@@ -214,8 +209,6 @@ public class GlobisSpecTaxImport  extends GlobisImportBase<Reference> implements
 	
 
 	private void handleTypeInformation(GlobisImportState state, ResultSet rs, ZoologicalName name, Integer specTaxId) throws SQLException {
-		
-		
 		if (! hasTypeInformation(rs)){
 			return;
 		}
@@ -252,7 +245,7 @@ public class GlobisSpecTaxImport  extends GlobisImportBase<Reference> implements
 				specTypeDepositoryStr = makeAdditionalSpecimenInformation(
 						specTypeDepositoryStr, specimen, specTaxId);
 				
-				Collection collection = makeCollection(specTypeDepositoryStr, specimen, specTaxId);
+				Collection collection = makeCollection(state, specTypeDepositoryStr, specimen, specTaxId);
 				String collectionCode = collection.getCode();
 				if (isBlank(collectionCode)){
 					collectionCode = collection.getName();
@@ -302,58 +295,77 @@ public class GlobisSpecTaxImport  extends GlobisImportBase<Reference> implements
 
 
 	/**
+	 * @param state 
 	 * @param specTypeDepositoryStr
 	 * @param specimen
 	 * @param specTaxId 
 	 */
-	protected Collection makeCollection(String specTypeDepositoryStr, Specimen specimen, Integer specTaxId) {
-		//TODO deduplicate
-		Map<String, Collection> collectionMap = new HashMap<String, Collection>();
+	protected Collection makeCollection(GlobisImportState state, String specTypeDepositoryStr, Specimen specimen, Integer specTaxId) {
 		
 		//Collection
 		specTypeDepositoryStr = specTypeDepositoryStr.replace("Washington, D.C.", "Washington@ D.C.");
 		
 		Collection collection;
 		if (specTypeDepositoryStr.equals("BMNH, London and/or MNHN, Paris")){
-			//TODO deduplicate
-			collection = Collection.NewInstance();
-			collection.setName(specTypeDepositoryStr);
+			collection = state.getRelatedObject(COLLECTION_NAMESPACE, specTypeDepositoryStr, Collection.class);
+			if (collection == null){
+				collection = Collection.NewInstance();
+				collection.setName(specTypeDepositoryStr);
+				collection.setTownOrLocation("London or Paris");
+				state.addRelatedObject(COLLECTION_NAMESPACE, collection.getName(), collection);
+			}
 			specimen.setCollection(collection);
 		}else if (specTypeDepositoryStr.equals("coll. L. V. Kaabak, A .V. Sotshivko & V. V. Titov, Moscow")){
-			collection = Collection.NewInstance();
-			collection.setName("coll. L. V. Kaabak, A .V. Sotshivko & V. V. Titov");
-			collection.setTownOrLocation("Moscow");
+			String colName = "coll. L. V. Kaabak, A .V. Sotshivko & V. V. Titov";
+			collection = state.getRelatedObject(COLLECTION_NAMESPACE, colName, Collection.class);
+			if (collection == null){
+				collection = Collection.NewInstance();
+				collection.setName(colName);
+				collection.setTownOrLocation("Moscow");
+				state.addRelatedObject(COLLECTION_NAMESPACE, collection.getName(), collection);
+			}
 			specimen.setCollection(collection);
 		}else if (specTypeDepositoryStr.matches("coll. R. E. Parrott?, Port Hope, Ontario")){
-			//TODO deduplicate
-			collection = Collection.NewInstance();
-			collection.setName("coll. R. E. Parrott");
-			collection.setTownOrLocation("Port Hope, Ontario");
+			String colName = "coll. R. E. Parrott";
+			collection = state.getRelatedObject(COLLECTION_NAMESPACE, colName, Collection.class);
+			if (collection == null){
+				collection = Collection.NewInstance();
+				collection.setName(colName);
+				collection.setTownOrLocation("Port Hope, Ontario");
+				state.addRelatedObject(COLLECTION_NAMESPACE, collection.getName(), collection);
+			}
 			specimen.setCollection(collection);
 		}else{
 			
 			String[] split = specTypeDepositoryStr.split(",");
 			if (split.length != 2){
 				if (split.length == 1 && split[0].startsWith("coll.")){
-					collection = Collection.NewInstance();
-					collection.setName(split[0]);
+					collection = state.getRelatedObject(COLLECTION_NAMESPACE, split[0], Collection.class);
+					if (collection == null){
+						collection = Collection.NewInstance();
+						collection.setName(split[0]);
+						state.addRelatedObject(COLLECTION_NAMESPACE, collection.getName(), collection);
+					}
 					specimen.setCollection(collection);
 				}else{
 					logger.warn("Split size is not 2: " + specTypeDepositoryStr + " (specTaxID:" + specTaxId + ")");
 					collection = Collection.NewInstance();
 					collection.setCode("??");
+					//TODO deduplicate ??
 				}
 				
 			}else{
 				String collectionStr = split[0];
 				String location = split[1].replace("Washington@ D.C.", "Washington, D.C.");
 				
-				collection = collectionMap.get(collectionStr);
+				collection = state.getRelatedObject(COLLECTION_NAMESPACE, collectionStr, Collection.class);
 				if (collection == null){
 					collection = Collection.NewInstance();
 					collection.setCode(collectionStr);
 					collection.setTownOrLocation(split[1]);
-				}else if (CdmUtils.nullSafeEqual(location, collection.getTownOrLocation())){
+					state.addRelatedObject(COLLECTION_NAMESPACE, collection.getCode(), collection);
+						
+				}else if (! CdmUtils.nullSafeEqual(location, collection.getTownOrLocation())){
 					String message = "Location (%s) is not equal to location (%s) of existing collection";
 					logger.warn(String.format(message, location, collection.getTownOrLocation(), collection.getCode()));
 				}
@@ -540,8 +552,8 @@ public class GlobisSpecTaxImport  extends GlobisImportBase<Reference> implements
 
 
 
-	private Synonym getSynonym(GlobisImportState state, ResultSet rs) throws SQLException {
-		ZoologicalName name = makeName(state, rs);
+	private Synonym getSynonym(GlobisImportState state, ResultSet rs, Integer specTaxId) throws SQLException {
+		ZoologicalName name = makeName(state, rs, specTaxId);
 				
 		Synonym synonym = Synonym.NewInstance(name, state.getTransactionalSourceReference());
 		
@@ -554,10 +566,11 @@ public class GlobisSpecTaxImport  extends GlobisImportBase<Reference> implements
 	/**
 	 * @param state
 	 * @param rs
+	 * @param specTaxId 
 	 * @return
 	 * @throws SQLException
 	 */
-	protected ZoologicalName makeName(GlobisImportState state, ResultSet rs)
+	protected ZoologicalName makeName(GlobisImportState state, ResultSet rs, Integer specTaxId)
 			throws SQLException {
 		//rank
 		String rankStr = rs.getString("SpecRank");
@@ -580,6 +593,8 @@ public class GlobisSpecTaxImport  extends GlobisImportBase<Reference> implements
 		String yearStr = rs.getString("SpecYear");
 		String authorAndYearStr = CdmUtils.concat(", ", authorStr, yearStr);
 		handleAuthorAndYear(authorAndYearStr, name);
+		
+		name.addSource(String.valueOf(specTaxId), SPEC_TAX_NAMESPACE, state.getTransactionalSourceReference(), null);
 		return name;
 	}
 
@@ -610,64 +625,6 @@ public class GlobisSpecTaxImport  extends GlobisImportBase<Reference> implements
 		name.setNameCache(cache, true);
 	}
 
-
-
-
-	private boolean isInfraSpecies(GlobisImportState state, ResultSet rs, Rank rank) {
-		// TODO Auto-generated method stub
-		return false;
-	}
-
-
-
-
-	private Reference<?> getJournal(GlobisImportState state, ResultSet rs, String refJournal) throws SQLException {
-		
-		
-		Reference<?> journal = ReferenceFactory.newJournal();
-		String issn = rs.getString("RefISSN");
-		if (StringUtils.isNotBlank(issn)){
-			issn.replaceAll("ISSN", "").trim();
-			journal.setIssn(issn);			
-		}
-
-		
-		
-		//TODO deduplicate
-		journal.setTitle(refJournal);
-		return journal;
-	}
-
-
-
-
-	/* (non-Javadoc)
-	 * @see eu.etaxonomy.cdm.io.common.mapping.IMappingImport#createObject(java.sql.ResultSet, eu.etaxonomy.cdm.io.common.ImportStateBase)
-	 */
-	public Reference<?> createObject(ResultSet rs, GlobisImportState state)
-			throws SQLException {
-		Reference<?> ref;
-		String refType = rs.getString("RefType");
-		if (refType == null){
-			ref = ReferenceFactory.newGeneric();
-		}else if (refType == "book"){
-			ref = ReferenceFactory.newBook();
-		}else if (refType == "paper in journal"){
-			ref = ReferenceFactory.newArticle();
-		}else if (refType.startsWith("unpublished") ){
-			ref = ReferenceFactory.newGeneric();
-		}else if (refType.endsWith("paper in journal")){
-			ref = ReferenceFactory.newArticle();
-		}else if (refType == "paper in book"){
-			ref = ReferenceFactory.newBookSection();
-		}else if (refType == "paper in journalwebsite"){
-			ref = ReferenceFactory.newArticle();
-		}else{
-			logger.warn("Unknown reference type: " + refType);
-			ref = ReferenceFactory.newGeneric();
-		}
-		return ref;
-	}
 
 	/* (non-Javadoc)
 	 * @see eu.etaxonomy.cdm.io.berlinModel.in.IPartitionedIO#getRelatedObjectsForPartition(java.sql.ResultSet)
@@ -700,6 +657,17 @@ public class GlobisSpecTaxImport  extends GlobisImportBase<Reference> implements
 			Map<String, Reference> referenceMap = (Map<String, Reference>)getCommonService().getSourcedObjectsByIdInSource(cdmClass, idSet, nameSpace);
 			result.put(nameSpace, referenceMap);
 			
+			//collection map
+			nameSpace = COLLECTION_NAMESPACE;
+			List<Collection> listCollection = getCollectionService().list(Collection.class, null, null, null, null);
+			Map<String, Collection> collectionMap = new HashMap<String, Collection>();
+			for (Collection collection : listCollection){
+				collectionMap.put(collection.getCode(), collection);
+				if (isBlank(collection.getCode())){
+					logger.warn("Collection code is blank: " + collection);
+				}
+			}
+			result.put(nameSpace, collectionMap);
 			
 		} catch (SQLException e) {
 			throw new RuntimeException(e);
@@ -722,6 +690,16 @@ public class GlobisSpecTaxImport  extends GlobisImportBase<Reference> implements
 	 */
 	protected boolean isIgnore(GlobisImportState state){
 		return ! state.getConfig().isDoSpecTaxa();
+	}
+
+
+
+
+	@Override
+	public Reference createObject(ResultSet rs, GlobisImportState state)
+			throws SQLException {
+		// not needed
+		return null;
 	}
 
 
