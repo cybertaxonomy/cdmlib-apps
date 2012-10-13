@@ -16,6 +16,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.UUID;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -30,6 +31,7 @@ import eu.etaxonomy.cdm.io.common.ResultSetPartitioner;
 import eu.etaxonomy.cdm.io.common.mapping.IMappingImport;
 import eu.etaxonomy.cdm.io.globis.validation.GlobisSpecTaxaImportValidator;
 import eu.etaxonomy.cdm.model.common.CdmBase;
+import eu.etaxonomy.cdm.model.common.ExtensionType;
 import eu.etaxonomy.cdm.model.common.IdentifiableSource;
 import eu.etaxonomy.cdm.model.common.Marker;
 import eu.etaxonomy.cdm.model.common.MarkerType;
@@ -67,6 +69,9 @@ public class GlobisSpecTaxImport  extends GlobisImportBase<Reference> implements
 	private static final Class cdmTargetClass = Reference.class;
 	public static final String SPEC_TAX_NAMESPACE = dbTableName;
 	public static final String TYPE_NAMESPACE = dbTableName + ".SpecTypeDepository";
+	
+	private static UUID uuidCitedTypeLocality = UUID.fromString("ca431e0a-84ec-4828-935f-df4c8f5cf880");
+	private static UUID uuidCitedTypeMaterial = UUID.fromString("8395021a-e596-4a55-9794-8c03aaad9e16");
 
 	public GlobisSpecTaxImport(){
 		super(pluralString, dbTableName, cdmTargetClass);
@@ -183,6 +188,22 @@ public class GlobisSpecTaxImport  extends GlobisImportBase<Reference> implements
 					if (acceptedTaxon != null){
 						objectsToSave.add(acceptedTaxon); 
 					}
+					
+					//SpecCitedTypeLocality
+					String citedTypeLocality = rs.getString("SpecCitedTypeLocality");
+					if (isNotBlank(citedTypeLocality)){
+						ExtensionType exTypeCitedTypeLoc = getExtensionType(state, uuidCitedTypeLocality, "Type locality as cited in original description", "Type locality as cited in original description", null, ExtensionType.DOI().getVocabulary());
+						name.addExtension(citedTypeLocality, exTypeCitedTypeLoc);
+					}
+
+					//SpecCitedTypeMaterial
+					String citedTypeMaterial = rs.getString("SpecCitedTypeMaterial");
+					if (isNotBlank(citedTypeMaterial)){
+						ExtensionType exTypeCitedTypeLoc = getExtensionType(state, uuidCitedTypeMaterial, "Type material as cited in original description", "Type locality as cited in original description", null, ExtensionType.DOI().getVocabulary());
+						name.addExtension(citedTypeLocality, exTypeCitedTypeLoc);
+					}
+
+					
 					namesToSave.add(name);
 					
 
