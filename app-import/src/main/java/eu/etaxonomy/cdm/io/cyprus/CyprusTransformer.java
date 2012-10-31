@@ -12,6 +12,7 @@ package eu.etaxonomy.cdm.io.cyprus;
 
 import java.util.UUID;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 
 import eu.etaxonomy.cdm.common.CdmUtils;
@@ -69,7 +70,7 @@ public final class CyprusTransformer extends InputTransformerBase {
 	 */
 	@Override
 	public MarkerType getMarkerTypeByKey(String key) throws UndefinedTransformerMethodException {
-		if (CdmUtils.isEmpty(key)){return null;
+		if (StringUtils.isBlank(key)){return null;
 //		}else if (key.equalsIgnoreCase("distribution")){return MarkerType.;
 //		}else if (key.equalsIgnoreCase("habitatecology")){return Feature.ECOLOGY();
 		}else{
@@ -79,7 +80,7 @@ public final class CyprusTransformer extends InputTransformerBase {
 
 	@Override
 	public UUID getMarkerTypeUuid(String key) throws UndefinedTransformerMethodException {
-		if (CdmUtils.isEmpty(key)){return null;
+		if (StringUtils.isBlank(key)){return null;
 //		}else if (key.equalsIgnoreCase("IMPERFECTLY KNOWN SPECIES")){return uuidIncompleteTaxon;
 		}else{
 			return null;
@@ -89,7 +90,7 @@ public final class CyprusTransformer extends InputTransformerBase {
 	
 	@Override
 	public UUID getPresenceTermUuid(String key) throws UndefinedTransformerMethodException {
-		if (CdmUtils.isEmpty(key)){return null;
+		if (StringUtils.isBlank(key)){return null;
 		}else if (key.equalsIgnoreCase("IN")){return indigenousUuid;
 		}else if (key.equalsIgnoreCase("CA")){return casualUuid;
 		}else if (key.equalsIgnoreCase("NN")){return nonInvasiveUuid;
@@ -109,7 +110,7 @@ public final class CyprusTransformer extends InputTransformerBase {
 	
 	@Override
 	public UUID getFeatureUuid(String key) throws UndefinedTransformerMethodException {
-		if (CdmUtils.isEmpty(key)){return null;
+		if (StringUtils.isBlank(key)){return null;
 		}else if (key.equalsIgnoreCase("Red book")){return redBookUuid;
 		}else if (key.equalsIgnoreCase("Endemism")){return endemismUuid;
 		}else{
@@ -120,7 +121,7 @@ public final class CyprusTransformer extends InputTransformerBase {
 
 	@Override
 	public UUID getNamedAreaUuid(String key) throws UndefinedTransformerMethodException {
-		if (CdmUtils.isEmpty(key)){return null;
+		if (StringUtils.isBlank(key)){return null;
 		}else if (key.equalsIgnoreCase("1")){return uuidDivision1;
 		}else if (key.equalsIgnoreCase("2")){return uuidDivision2;
 		}else if (key.equalsIgnoreCase("3")){return uuidDivision3;
