@@ -64,38 +64,7 @@ public class RoteListeDbImportConfigurator extends DbImportConfiguratorBase<Rote
 	   super(source, destination, NomenclaturalCode.ICBN, defaultTransformer);
 	}
 	
-	
-	public Source getSource() {
-		return (Source)super.getSource();
-	}
-	public void setSource(Source berlinModelSource) {
-		super.setSource(berlinModelSource);
-	}
 
-	/* (non-Javadoc)
-	 * @see eu.etaxonomy.cdm.io.tcsrdf.IImportConfigurator#getSourceReference()
-	 */
-	public Reference getSourceReference() {
-		if (sourceReference == null){
-			sourceReference =  ReferenceFactory.newDatabase();
-			if (getSource() != null){
-				sourceReference.setTitleCache(getSource().getDatabase(), true);
-			}
-		}
-		return sourceReference;
-	}
-	
-	/* (non-Javadoc)
-	 * @see eu.etaxonomy.cdm.io.common.IImportConfigurator#getSourceNameString()
-	 */
-	public String getSourceNameString() {
-		if (this.getSource() == null){
-			return null;
-		}else{
-			return this.getSource().getDatabase();
-		}
-	}
-	
 	/**
 	 * @return the limitSave
 	 */
