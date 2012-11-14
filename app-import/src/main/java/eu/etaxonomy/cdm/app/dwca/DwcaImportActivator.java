@@ -73,7 +73,7 @@ public class DwcaImportActivator {
 	static DatasetUse datasetUse = DatasetUse.SECUNDUM;
 	static boolean scientificNameIdAsOriginalSourceId = true;
 	static boolean guessNomRef = true;
-	private boolean handleAllRefsAsCitation = true;
+	static boolean handleAllRefsAsCitation = true;
 	
 	//validate
 	static boolean validateRankConsistency = false;
@@ -107,7 +107,7 @@ public class DwcaImportActivator {
 		config.setGuessNomenclaturalReferences(guessNomRef);
 		config.setHandleAllRefsAsCitation(handleAllRefsAsCitation);
 		
-		CdmDefaultImport myImport = new CdmDefaultImport();
+		CdmDefaultImport<DwcaImportConfigurator> myImport = new CdmDefaultImport<DwcaImportConfigurator>();
 
 		
 		//...
