@@ -12,8 +12,8 @@ package eu.etaxonomy.cdm.io.pesi.indexFungorum;
 import org.apache.log4j.Logger;
 
 import eu.etaxonomy.cdm.database.ICdmDataSource;
+import eu.etaxonomy.cdm.io.common.DbImportConfiguratorBase;
 import eu.etaxonomy.cdm.io.common.IImportConfigurator;
-import eu.etaxonomy.cdm.io.common.ImportConfiguratorBase;
 import eu.etaxonomy.cdm.io.common.Source;
 import eu.etaxonomy.cdm.io.common.mapping.IInputTransformer;
 import eu.etaxonomy.cdm.model.name.NomenclaturalCode;
@@ -26,7 +26,7 @@ import eu.etaxonomy.cdm.model.reference.ReferenceFactory;
  * @created 20.03.2008
  * @version 1.0
  */
-public class IndexFungorumImportConfigurator extends ImportConfiguratorBase<IndexFungorumImportState, Source> implements IImportConfigurator{
+public class IndexFungorumImportConfigurator extends DbImportConfiguratorBase<IndexFungorumImportState> implements IImportConfigurator{
 	@SuppressWarnings("unused")
 	private static Logger logger = Logger.getLogger(IndexFungorumImportConfigurator.class);
 
@@ -70,10 +70,7 @@ public class IndexFungorumImportConfigurator extends ImportConfiguratorBase<Inde
 	 * @param destination
 	 */
 	private IndexFungorumImportConfigurator(Source source, ICdmDataSource destination) {
-	   super(defaultTransformer);
-	   setNomenclaturalCode(NomenclaturalCode.ICBN); //default for IF
-	   setSource(source);
-	   setDestination(destination);
+	   super(source, destination, NomenclaturalCode.ICBN, defaultTransformer);//default for IF
 	}
 	
 	

@@ -14,8 +14,8 @@ import java.lang.reflect.Method;
 import org.apache.log4j.Logger;
 
 import eu.etaxonomy.cdm.database.ICdmDataSource;
+import eu.etaxonomy.cdm.io.common.DbImportConfiguratorBase;
 import eu.etaxonomy.cdm.io.common.IImportConfigurator;
-import eu.etaxonomy.cdm.io.common.ImportConfiguratorBase;
 import eu.etaxonomy.cdm.io.common.ImportStateBase;
 import eu.etaxonomy.cdm.io.common.Source;
 import eu.etaxonomy.cdm.io.common.mapping.IInputTransformer;
@@ -30,7 +30,7 @@ import eu.etaxonomy.cdm.model.reference.ReferenceFactory;
  * @created 20.03.2008
  * @version 1.0
  */
-public class ErmsImportConfigurator extends ImportConfiguratorBase<ErmsImportState, Source> implements IImportConfigurator{
+public class ErmsImportConfigurator extends DbImportConfiguratorBase<ErmsImportState> implements IImportConfigurator{
 	@SuppressWarnings("unused")
 	private static Logger logger = Logger.getLogger(ErmsImportConfigurator.class);
 
@@ -92,10 +92,7 @@ public class ErmsImportConfigurator extends ImportConfiguratorBase<ErmsImportSta
 	 * @param destination
 	 */
 	private ErmsImportConfigurator(Source ermsSource, ICdmDataSource destination) {
-	   super(defaultTransformer);
-	   setNomenclaturalCode(NomenclaturalCode.ICZN); //default for ERMS
-	   setSource(ermsSource);
-	   setDestination(destination);
+	   super(ermsSource, destination, NomenclaturalCode.ICZN, defaultTransformer);//default for ERMS
 	}
 	
 	
