@@ -25,6 +25,7 @@ import eu.etaxonomy.cdm.io.berlinModel.in.BerlinModelUserImport;
 import eu.etaxonomy.cdm.io.berlinModel.in.BerlinModelWebMarkerCategoryImport;
 import eu.etaxonomy.cdm.io.berlinModel.in.BerlinModelWebMarkerImport;
 import eu.etaxonomy.cdm.io.berlinModel.in.validation.BerlinModelGeneralImportValidator;
+import eu.etaxonomy.cdm.io.common.DbImportStateBase;
 import eu.etaxonomy.cdm.io.common.ImportStateBase;
 import eu.etaxonomy.cdm.io.common.Source;
 import eu.etaxonomy.cdm.model.name.NomenclaturalCode;
@@ -80,12 +81,11 @@ public class AlgaTerraImportConfigurator extends BerlinModelImportConfigurator {
 	
 	}
 	
-
 	/* (non-Javadoc)
 	 * @see eu.etaxonomy.cdm.io.berlinModel.in.BerlinModelImportConfigurator#getNewState()
 	 */
 	@Override
-	public ImportStateBase getNewState() {
+	public AlgaTerraImportState getNewState() {
 		return new AlgaTerraImportState(this);
 	}
 
