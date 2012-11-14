@@ -9,20 +9,15 @@
 
 package eu.etaxonomy.cdm.io.eflora.centralAfrica.ferns;
 
-import java.lang.reflect.Method;
-
 import org.apache.log4j.Logger;
 
 import eu.etaxonomy.cdm.database.ICdmDataSource;
+import eu.etaxonomy.cdm.io.common.DbImportConfiguratorBase;
 import eu.etaxonomy.cdm.io.common.IImportConfigurator;
-import eu.etaxonomy.cdm.io.common.ImportConfiguratorBase;
 import eu.etaxonomy.cdm.io.common.ImportStateBase;
 import eu.etaxonomy.cdm.io.common.Source;
-import eu.etaxonomy.cdm.io.common.IImportConfigurator.DO_REFERENCES;
 import eu.etaxonomy.cdm.io.common.mapping.IInputTransformer;
 import eu.etaxonomy.cdm.model.name.NomenclaturalCode;
-import eu.etaxonomy.cdm.model.reference.Reference;
-import eu.etaxonomy.cdm.model.reference.ReferenceFactory;
 
 
 /**
@@ -30,7 +25,7 @@ import eu.etaxonomy.cdm.model.reference.ReferenceFactory;
  * @created 20.03.2008
  * @version 1.0
  */
-public class CentralAfricaFernsImportConfigurator extends ImportConfiguratorBase<CentralAfricaFernsImportState, Source> implements IImportConfigurator{
+public class CentralAfricaFernsImportConfigurator extends DbImportConfiguratorBase<CentralAfricaFernsImportState> implements IImportConfigurator{
 	@SuppressWarnings("unused")
 	private static Logger logger = Logger.getLogger(CentralAfricaFernsImportConfigurator.class);
 
@@ -38,12 +33,6 @@ public class CentralAfricaFernsImportConfigurator extends ImportConfiguratorBase
 			return new CentralAfricaFernsImportConfigurator(ermsSource, destination);
 	}
 
-	/* Max number of records to be saved with one service call */
-	private int recordsPerTransaction = 1000;  //defaultValue
-
-	//TODO needed ??
-	private Method userTransformationMethod;
-	
 	private boolean doVernaculars = true;
 	private boolean doLinks = true;
 	private boolean doNotes = true;
@@ -75,64 +64,9 @@ public class CentralAfricaFernsImportConfigurator extends ImportConfiguratorBase
 
 
 	private CentralAfricaFernsImportConfigurator(Source source, ICdmDataSource destination) {
-	   super(defaultTransformer);
-	   setNomenclaturalCode(NomenclaturalCode.ICZN); //default for ERMS
-	   setSource(source);
-	   setDestination(destination);
+	   super(source, destination,NomenclaturalCode.ICBN,  defaultTransformer);//default for FdAC
 	}
 	
-	/* (non-Javadoc)
-	 * @see eu.etaxonomy.cdm.io.tcsrdf.IImportConfigurator#getSourceReference()
-	 */
-	public Reference getSourceReference() {
-		if (sourceReference == null){
-			sourceReference =  ReferenceFactory.newDatabase();
-			if (getSource() != null){
-				sourceReference.setTitleCache(getSource().getDatabase(), true);
-			}
-		}
-		return sourceReference;
-	}
-
-
-	/* (non-Javadoc)
-	 * @see eu.etaxonomy.cdm.io.common.IImportConfigurator#getSourceNameString()
-	 */
-	public String getSourceNameString() {
-		if (this.getSource() == null){
-			return null;
-		}else{
-			return this.getSource().getDatabase();
-		}
-	}
-
-	/**
-	 * @return the userTransformationMethod
-	 */
-	public Method getUserTransformationMethod() {
-		return userTransformationMethod;
-	}
-
-	/**
-	 * @param userTransformationMethod the userTransformationMethod to set
-	 */
-	public void setUserTransformationMethod(Method userTransformationMethod) {
-		this.userTransformationMethod = userTransformationMethod;
-	}
-
-	
-	/**
-	 * @return the limitSave
-	 */
-	public int getRecordsPerTransaction() {
-		return recordsPerTransaction;
-	}
-	/**
-	 * @param limitSave the limitSave to set
-	 */
-	public void setRecordsPerTransaction(int recordsPerTransaction) {
-		this.recordsPerTransaction = recordsPerTransaction;
-	}
 
 	/**
 	 * @param doVernaculars the doVernaculars to set
