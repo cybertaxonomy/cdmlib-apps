@@ -14,9 +14,8 @@ import java.lang.reflect.Method;
 import org.apache.log4j.Logger;
 
 import eu.etaxonomy.cdm.database.ICdmDataSource;
+import eu.etaxonomy.cdm.io.common.DbImportConfiguratorBase;
 import eu.etaxonomy.cdm.io.common.IImportConfigurator;
-import eu.etaxonomy.cdm.io.common.ImportConfiguratorBase;
-import eu.etaxonomy.cdm.io.common.ImportStateBase;
 import eu.etaxonomy.cdm.io.common.Source;
 import eu.etaxonomy.cdm.io.common.mapping.IInputTransformer;
 import eu.etaxonomy.cdm.model.name.NomenclaturalCode;
@@ -29,7 +28,7 @@ import eu.etaxonomy.cdm.model.reference.ReferenceFactory;
  * @created 20.03.2008
  * @version 1.0
  */
-public class GlobisImportConfigurator extends ImportConfiguratorBase<GlobisImportState, Source> implements IImportConfigurator{
+public class GlobisImportConfigurator extends DbImportConfiguratorBase<GlobisImportState> implements IImportConfigurator{
 	@SuppressWarnings("unused")
 	private static Logger logger = Logger.getLogger(GlobisImportConfigurator.class);
 
@@ -71,17 +70,14 @@ public class GlobisImportConfigurator extends ImportConfiguratorBase<GlobisImpor
 	/* (non-Javadoc)
 	 * @see eu.etaxonomy.cdm.io.common.IImportConfigurator#getNewState()
 	 */
-	public ImportStateBase getNewState() {
+	public GlobisImportState getNewState() {
 		return new GlobisImportState(this);
 	}
 
 
 
 	private GlobisImportConfigurator(Source source, ICdmDataSource destination) {
-	   super(defaultTransformer);
-	   setNomenclaturalCode(NomenclaturalCode.ICZN); //default for ERMS
-	   setSource(source);
-	   setDestination(destination);
+	   super(source, destination, NomenclaturalCode.ICZN, defaultTransformer);//default for Globis
 	}
 	
 	
