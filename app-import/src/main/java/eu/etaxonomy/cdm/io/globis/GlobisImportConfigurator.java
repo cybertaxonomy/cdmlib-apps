@@ -19,8 +19,6 @@ import eu.etaxonomy.cdm.io.common.IImportConfigurator;
 import eu.etaxonomy.cdm.io.common.Source;
 import eu.etaxonomy.cdm.io.common.mapping.IInputTransformer;
 import eu.etaxonomy.cdm.model.name.NomenclaturalCode;
-import eu.etaxonomy.cdm.model.reference.Reference;
-import eu.etaxonomy.cdm.model.reference.ReferenceFactory;
 
 
 /**
@@ -79,55 +77,6 @@ public class GlobisImportConfigurator extends DbImportConfiguratorBase<GlobisImp
 	private GlobisImportConfigurator(Source source, ICdmDataSource destination) {
 	   super(source, destination, NomenclaturalCode.ICZN, defaultTransformer);//default for Globis
 	}
-	
-	
-	public Source getSource() {
-		return (Source)super.getSource();
-	}
-	public void setSource(Source berlinModelSource) {
-		super.setSource(berlinModelSource);
-	}
-
-	/* (non-Javadoc)
-	 * @see eu.etaxonomy.cdm.io.tcsrdf.IImportConfigurator#getSourceReference()
-	 */
-	public Reference getSourceReference() {
-		ReferenceFactory refFactory = ReferenceFactory.newInstance();
-		if (sourceReference == null){
-			sourceReference =  refFactory.newDatabase();
-			if (getSource() != null){
-				sourceReference.setTitleCache(getSource().getDatabase(), true);
-			}
-		}
-		return sourceReference;
-	}
-
-
-	/* (non-Javadoc)
-	 * @see eu.etaxonomy.cdm.io.common.IImportConfigurator#getSourceNameString()
-	 */
-	public String getSourceNameString() {
-		if (this.getSource() == null){
-			return null;
-		}else{
-			return this.getSource().getDatabase();
-		}
-	}
-
-	/**
-	 * @return the userTransformationMethod
-	 */
-	public Method getUserTransformationMethod() {
-		return userTransformationMethod;
-	}
-
-	/**
-	 * @param userTransformationMethod the userTransformationMethod to set
-	 */
-	public void setUserTransformationMethod(Method userTransformationMethod) {
-		this.userTransformationMethod = userTransformationMethod;
-	}
-
 	
 	/**
 	 * @return the limitSave
