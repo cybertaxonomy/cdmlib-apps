@@ -61,7 +61,7 @@ public class AlgaTerraTypeImagesImport  extends AlgaTerraImageImportBase {
 	private static final String dbTableName = "SpecimenFigure";  //??  
 	
 	public AlgaTerraTypeImagesImport(){
-		super();
+		super(dbTableName, pluralString);
 	}
 	
 	
@@ -205,9 +205,6 @@ public class AlgaTerraTypeImagesImport  extends AlgaTerraImageImportBase {
 		return result;
 	}
 
-
-	
-
 	/* (non-Javadoc)
 	 * @see eu.etaxonomy.cdm.io.common.CdmIoBase#doCheck(eu.etaxonomy.cdm.io.common.IoStateBase)
 	 */
@@ -216,22 +213,7 @@ public class AlgaTerraTypeImagesImport  extends AlgaTerraImageImportBase {
 		IOValidator<BerlinModelImportState> validator = new AlgaTerraTypeImportValidator();
 		return validator.validate(state);
 	}
-	
-	/* (non-Javadoc)
-	 * @see eu.etaxonomy.cdm.io.berlinModel.in.BerlinModelImportBase#getTableName()
-	 */
-	@Override
-	protected String getTableName() {
-		return dbTableName;
-	}
-	
-	/* (non-Javadoc)
-	 * @see eu.etaxonomy.cdm.io.berlinModel.in.BerlinModelImportBase#getPluralString()
-	 */
-	@Override
-	public String getPluralString() {
-		return pluralString;
-	}
+
 
 	/* (non-Javadoc)
 	 * @see eu.etaxonomy.cdm.io.common.CdmIoBase#isIgnore(eu.etaxonomy.cdm.io.common.IImportConfigurator)

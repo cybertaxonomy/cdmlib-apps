@@ -74,7 +74,10 @@ public abstract class AlgaTerraSpecimenImportBase extends BerlinModelImportBase{
 	final static UUID uuidModifierLowerThan = UUID.fromString("2b500085-6bef-4003-b6ea-e0ad0237d79d");
 	final static UUID uuidModifierGreaterThan = UUID.fromString("828df49d-c745-48f7-b083-0ada43356c34");
 
-
+	public AlgaTerraSpecimenImportBase(String tableName, String pluralString) {
+		super(tableName, pluralString);
+	}
+	
 	/**
 	 * Creates the vocabularies and the features for Climate, Habitat and Lifeform
 	 * @param state

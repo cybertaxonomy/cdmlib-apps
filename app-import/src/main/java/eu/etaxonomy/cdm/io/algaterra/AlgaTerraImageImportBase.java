@@ -58,6 +58,14 @@ import eu.etaxonomy.cdm.model.reference.Reference;
  * @created 12.09.2012
  */
 public abstract class AlgaTerraImageImportBase extends BerlinModelImportBase{
+	public AlgaTerraImageImportBase(String tableName, String pluralString) {
+		super(tableName, pluralString);
+		// TODO Auto-generated constructor stub
+	}
+
+
+
+
 	private static final Logger logger = Logger.getLogger(AlgaTerraImageImportBase.class);
 
 	public static final String TERMS_NAMESPACE = "ALGA_TERRA_TERMS";

@@ -73,7 +73,7 @@ public class AlgaTerraSpecimenImport  extends AlgaTerraSpecimenImportBase {
 
 
 	public AlgaTerraSpecimenImport(){
-		super();
+		super(dbTableName, pluralString);
 	}
 	
 	

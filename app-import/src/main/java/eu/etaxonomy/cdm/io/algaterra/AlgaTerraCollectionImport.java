@@ -50,10 +50,9 @@ public class AlgaTerraCollectionImport  extends BerlinModelImportBase {
 
 
 	public AlgaTerraCollectionImport(){
-		super();
+		super(dbTableName, pluralString);
 	}
-	
-	
+
 	
 	/* (non-Javadoc)
 	 * @see eu.etaxonomy.cdm.io.berlinModel.in.BerlinModelImportBase#getIdQuery()
@@ -234,22 +233,6 @@ public class AlgaTerraCollectionImport  extends BerlinModelImportBase {
 	protected boolean doCheck(BerlinModelImportState state){
 		IOValidator<BerlinModelImportState> validator = new AlgaTerraCollectionImportValidator();
 		return validator.validate(state);
-	}
-	
-	/* (non-Javadoc)
-	 * @see eu.etaxonomy.cdm.io.berlinModel.in.BerlinModelImportBase#getTableName()
-	 */
-	@Override
-	protected String getTableName() {
-		return dbTableName;
-	}
-	
-	/* (non-Javadoc)
-	 * @see eu.etaxonomy.cdm.io.berlinModel.in.BerlinModelImportBase#getPluralString()
-	 */
-	@Override
-	public String getPluralString() {
-		return pluralString;
 	}
 
 	/* (non-Javadoc)
