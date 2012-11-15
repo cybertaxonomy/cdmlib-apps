@@ -14,8 +14,8 @@ import java.net.URL;
 
 import org.apache.log4j.Logger;
 
+import eu.etaxonomy.cdm.app.berlinModelImport.SourceBase;
 import eu.etaxonomy.cdm.app.tcs.TcsSources;
-import eu.etaxonomy.cdm.common.AccountStore;
 import eu.etaxonomy.cdm.io.common.Source;
 
 /**
@@ -23,7 +23,7 @@ import eu.etaxonomy.cdm.io.common.Source;
  * @date 21.04.2010
  *
  */
-public class CdmImportSources {
+public class CdmImportSources extends SourceBase{
 	@SuppressWarnings("unused")
 	private static final Logger logger = Logger.getLogger(CdmImportSources.class);
 	
@@ -90,25 +90,7 @@ public class CdmImportSources {
 		return uri;	
 	}
 	
-	/**
-	 * Initializes the source.
-	 * @param dbms
-	 * @param strServer
-	 * @param strDB
-	 * @param port
-	 * @param userName
-	 * @param pwd
-	 * @return the source
-	 */
-	private static Source makeSource(String dbms, String strServer, String strDB, int port, String userName, String pwd ){
-		//establish connection
-		Source source = null;
-		source = new Source(dbms, strServer, strDB);
-		source.setPort(port);
-			
-		pwd = AccountStore.readOrStorePassword(dbms, strServer, userName, pwd);
-		source.setUserAndPwd(userName, pwd);
-		// write pwd to account store
-		return source;
-	}
+	
+	
+
 }
