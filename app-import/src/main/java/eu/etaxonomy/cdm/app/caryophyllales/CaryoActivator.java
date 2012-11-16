@@ -9,36 +9,26 @@
 
 package eu.etaxonomy.cdm.app.caryophyllales;
 
-import java.net.URI;
-import java.net.URISyntaxException;
 import java.util.UUID;
 
 import org.apache.log4j.Logger;
 
 import eu.etaxonomy.cdm.api.application.ICdmApplicationConfiguration;
-import eu.etaxonomy.cdm.api.service.ITermService;
 import eu.etaxonomy.cdm.app.berlinModelImport.SourceBase;
 import eu.etaxonomy.cdm.app.common.CdmDestinations;
 import eu.etaxonomy.cdm.database.DbSchemaValidation;
 import eu.etaxonomy.cdm.database.ICdmDataSource;
 import eu.etaxonomy.cdm.io.caryo.CaryoImportConfigurator;
 import eu.etaxonomy.cdm.io.common.CdmDefaultImport;
-import eu.etaxonomy.cdm.io.common.Source;
 import eu.etaxonomy.cdm.io.common.IImportConfigurator.CHECK;
-import eu.etaxonomy.cdm.io.common.mapping.IInputTransformer;
-import eu.etaxonomy.cdm.io.common.mapping.UndefinedTransformerMethodException;
-import eu.etaxonomy.cdm.io.cyprus.CyprusImportConfigurator;
-import eu.etaxonomy.cdm.io.cyprus.CyprusTransformer;
+import eu.etaxonomy.cdm.io.common.Source;
 import eu.etaxonomy.cdm.model.agent.Person;
-import eu.etaxonomy.cdm.model.description.Feature;
-import eu.etaxonomy.cdm.model.description.FeatureNode;
-import eu.etaxonomy.cdm.model.description.FeatureTree;
 import eu.etaxonomy.cdm.model.reference.Reference;
 import eu.etaxonomy.cdm.model.reference.ReferenceFactory;
 
 /**
  * @author a.mueller
- * @created 16.12.2010
+ * @created 16.10.2012
  * @version 1.0
  */
 public class CaryoActivator extends SourceBase{
@@ -50,15 +40,12 @@ public class CaryoActivator extends SourceBase{
 
 	
 	static final ICdmDataSource cdmDestination = CdmDestinations.localH2();
-//	static final ICdmDataSource cdmDestination = CdmDestinations.cdm_local_postgres_CdmTest();
 //	static final ICdmDataSource cdmDestination = CdmDestinations.cdm_test_local_mysql();
-//	static final ICdmDataSource cdmDestination = CdmDestinations.cdm_cyprus_dev();
-//	static final ICdmDataSource cdmDestination = CdmDestinations.cdm_cyprus_production();
-
+//	static final ICdmDataSource cdmDestination = CdmDestinations.cdm_local_postgres_CdmTest();
 	
 	
 	//classification
-	static final UUID classificationUuid = UUID.fromString("125d7812-065b-46a2-88ee-06d6115e105e");
+	static final UUID classificationUuid = UUID.fromString("9edc58b5-de3b-43aa-9f31-1ede7c009c2b");
 	
 	//check - import
 	static final CHECK check = CHECK.IMPORT_WITHOUT_CHECK;
@@ -76,8 +63,9 @@ public class CaryoActivator extends SourceBase{
 		config.setCheck(check);
 		config.setDoTaxa(doTaxa);
 		config.setDbSchemaValidation(hbm2dll);
+		config.setSourceReferenceTitle("NCU - Caryophyllales, v0.4");
 		
-		CdmDefaultImport myImport = new CdmDefaultImport();
+		CdmDefaultImport<CaryoImportConfigurator> myImport = new CdmDefaultImport<CaryoImportConfigurator>();
 
 		
 		//...
@@ -103,32 +91,18 @@ public class CaryoActivator extends SourceBase{
 		
 	}
 
-	private Reference getSourceReference(String string) {
-		Reference result = ReferenceFactory.newGeneric();
+	private Reference<?> getSourceReference(String string) {
+		Reference<?> result = ReferenceFactory.newGeneric();
 		result.setTitleCache(string);
 		return result;
 	}
 
 
-	
-
-	//Cyprus
-	public static URI caryo_local() {
-		URI sourceUrl;
-		try {
-			sourceUrl = new URI("file:/C:/localCopy/Data/zypern/Zypern.xls");
-			return sourceUrl;
-		} catch (URISyntaxException e) {
-			e.printStackTrace();
-			return null;
-		}
-	}
-	
 	public static Source caryo_len61(){
 		//	Cyryophyllales source
 		String dbms = Source.SQL_SERVER_2008;
 		String strServer = "Lenovo-T61";
-		String strDB = "CARYOPHYLLALES";
+		String strDB = "caryo";
 		int port = 1433;
 		String userName = "WebUser";
 		return  makeSource(dbms, strServer, strDB, port, userName, null);
