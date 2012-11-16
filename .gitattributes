@@ -23,6 +23,7 @@ app-import/src/main/java/eu/etaxonomy/cdm/app/berlinModelImport/SalvadorActivato
 app-import/src/main/java/eu/etaxonomy/cdm/app/berlinModelImport/SalvadorExport.java -text
 app-import/src/main/java/eu/etaxonomy/cdm/app/berlinModelImport/SourceBase.java -text
 app-import/src/main/java/eu/etaxonomy/cdm/app/berlinModelImport/TreeCreator.java -text
+app-import/src/main/java/eu/etaxonomy/cdm/app/caryophyllales/CaryoActivator.java -text
 app-import/src/main/java/eu/etaxonomy/cdm/app/common/AppImportApplicationListener.java -text
 app-import/src/main/java/eu/etaxonomy/cdm/app/common/CacheUpdater.java -text
 app-import/src/main/java/eu/etaxonomy/cdm/app/common/CdmDestinations.java -text
@@ -113,6 +114,10 @@ app-import/src/main/java/eu/etaxonomy/cdm/io/algaterra/AlgaTerraVoucherImagesImp
 app-import/src/main/java/eu/etaxonomy/cdm/io/algaterra/validation/AlgaTerraCollectionImportValidator.java -text
 app-import/src/main/java/eu/etaxonomy/cdm/io/algaterra/validation/AlgaTerraSpecimenImportValidator.java -text
 app-import/src/main/java/eu/etaxonomy/cdm/io/algaterra/validation/AlgaTerraTypeImportValidator.java -text
+app-import/src/main/java/eu/etaxonomy/cdm/io/caryo/CaryoImportConfigurator.java -text
+app-import/src/main/java/eu/etaxonomy/cdm/io/caryo/CaryoImportState.java -text
+app-import/src/main/java/eu/etaxonomy/cdm/io/caryo/CaryoTaxonImport.java -text
+app-import/src/main/java/eu/etaxonomy/cdm/io/caryo/CaryoTransformer.java -text
 app-import/src/main/java/eu/etaxonomy/cdm/io/cyprus/CyprusDistributionImport.java -text
 app-import/src/main/java/eu/etaxonomy/cdm/io/cyprus/CyprusDistributionRow.java -text
 app-import/src/main/java/eu/etaxonomy/cdm/io/cyprus/CyprusExcelImport.java -text
