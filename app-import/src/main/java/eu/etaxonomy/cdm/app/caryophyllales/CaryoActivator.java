@@ -43,6 +43,7 @@ public class CaryoActivator extends SourceBase{
 //	static final ICdmDataSource cdmDestination = CdmDestinations.cdm_test_local_mysql();
 //	static final ICdmDataSource cdmDestination = CdmDestinations.cdm_local_postgres_CdmTest();
 	
+	static final String classificationName = "Caryophyllales";
 	
 	//classification
 	static final UUID classificationUuid = UUID.fromString("9edc58b5-de3b-43aa-9f31-1ede7c009c2b");
@@ -52,7 +53,7 @@ public class CaryoActivator extends SourceBase{
 	
 	//taxa
 	static final boolean doTaxa = true;
-	static final boolean doDeduplicate = false;
+	static final boolean doDeduplicate = true;
 	
 	
 	private void doImport(ICdmDataSource cdmDestination){
@@ -64,6 +65,7 @@ public class CaryoActivator extends SourceBase{
 		config.setDoTaxa(doTaxa);
 		config.setDbSchemaValidation(hbm2dll);
 		config.setSourceReferenceTitle("NCU - Caryophyllales, v0.4");
+		config.setClassificationName(classificationName);
 		
 		CdmDefaultImport<CaryoImportConfigurator> myImport = new CdmDefaultImport<CaryoImportConfigurator>();
 

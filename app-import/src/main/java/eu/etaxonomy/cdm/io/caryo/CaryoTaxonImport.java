@@ -26,6 +26,7 @@ import eu.etaxonomy.cdm.io.common.Source;
 import eu.etaxonomy.cdm.model.agent.Person;
 import eu.etaxonomy.cdm.model.agent.Team;
 import eu.etaxonomy.cdm.model.agent.TeamOrPersonBase;
+import eu.etaxonomy.cdm.model.common.Annotation;
 import eu.etaxonomy.cdm.model.common.CdmBase;
 import eu.etaxonomy.cdm.model.common.Language;
 import eu.etaxonomy.cdm.model.common.TimePeriod;
@@ -196,12 +197,13 @@ public class CaryoTaxonImport  extends DbImportBase<CaryoImportState, CaryoImpor
 		}
 	}
 
-	
-	private INonViralNameParser parser = NonViralNameParserImpl.NewInstance();
 	private void handleBasionym(CaryoImportState state, ResultSet rs, Taxon taxon, String basioStr, Integer id) {
 		if (StringUtils.isNotBlank(basioStr)){
 			BotanicalName name = (BotanicalName) taxon.getName();
-			BotanicalName basionym = BotanicalName.PARSED_NAME(basioStr);
+			BotanicalName basionym = BotanicalName.PARSED_REFERENCE(basioStr);
+			if (basionym.hasProblem()){
+				logger.warn("Problem when parsing basionym ("+id+"): " +  basioStr);
+			}
 			name.addBasionym(basionym);
 			Synonym syn = Synonym.NewInstance(basionym, state.getTransactionalSourceReference());
 			taxon.addSynonym(syn, SynonymRelationshipType.HOMOTYPIC_SYNONYM_OF());
@@ -216,7 +218,7 @@ public class CaryoTaxonImport  extends DbImportBase<CaryoImportState, CaryoImpor
 	private void handleTypes(CaryoImportState state, ResultSet rs, Taxon taxon, String origType, Integer id) {
 		NameTypeDesignation desig = NameTypeDesignation.NewInstance();
 		String type = origType;
-		if (StringUtils.isBlank(type) ){
+		if (StringUtils.isBlank(type) || "to be designated".equalsIgnoreCase(type)){
 			return;
 		}else{
 			BotanicalName name = (BotanicalName)taxon.getName();
@@ -229,7 +231,7 @@ public class CaryoTaxonImport  extends DbImportBase<CaryoImportState, CaryoImpor
 				if (! type.startsWith(genus.substring(0,1) + ". " )){
 					int i = type.indexOf(" ");
 					String genusOrig = type.substring(0, i);
-					logger.warn("First genus letter not recognized: " + genusOrig + "-" + genus + ":"+  id);
+					logger.info("First genus letter not recognized: " + genusOrig + "-" + genus + ":"+  id);
 					typeName.setGenusOrUninomial(genusOrig);
 					type = type.substring(i + 1).trim();
 				}else{
@@ -246,10 +248,12 @@ public class CaryoTaxonImport  extends DbImportBase<CaryoImportState, CaryoImpor
 					int posBracket = type.indexOf("(", 2);
 					if (posBracket > 0){
 						String bracket = type.substring(posBracket);
-						//TODO
 //						logger.warn("Type has bracket("+id+"): " + bracket);
-						//TODO Annotation
+						taxon.addAnnotation(Annotation.NewInstance("Type-bracket: " + bracket, Language.DEFAULT()));
 						type = type.substring(0, posBracket).trim();
+					}else{
+						Taxon speciesTaxon = Taxon.NewInstance(typeName, state.getTransactionalSourceReference());
+						classification.addParentChild(taxon, speciesTaxon, null, null);
 					}
 					type = makeTypeNomStatus(typeName, type);
 
@@ -289,16 +293,16 @@ public class CaryoTaxonImport  extends DbImportBase<CaryoImportState, CaryoImpor
 			} catch (UnknownCdmTypeException e) {
 				if (nomStatusStr.startsWith("nom. rej. prop.")){
 					nomStatusType = NomenclaturalStatusType.REJECTED_PROP();
-					logger.warn("in favour not supported ("+id+"): " + nomStatusStr);
+					logger.info("in favour not supported ("+id+"): " + nomStatusStr);
 				}else if (nomStatusStr.startsWith("nom. rej. in favour")){
 					nomStatusType = NomenclaturalStatusType.REJECTED();
-					logger.warn("in favour not supported ("+id+"): " + nomStatusStr);
+					logger.info("in favour not supported ("+id+"): " + nomStatusStr);
 				}else if (nomStatusStr.startsWith("nom. cons. against")){
 					nomStatusType = NomenclaturalStatusType.CONSERVED();
-					logger.warn("against not supported ("+id+"): " + nomStatusStr);
+					logger.info("against not supported ("+id+"): " + nomStatusStr);
 				}else if (nomStatusStr.startsWith("nom. cons. prop. against")){
 					nomStatusType = NomenclaturalStatusType.CONSERVED_PROP();
-					logger.warn("against not supported ("+id+"): " + nomStatusStr);
+					logger.info("against not supported ("+id+"): " + nomStatusStr);
 				}else{
 					logger.warn("Unknown status type ("+id+"): " + nomStatusStr);
 					nomStatusType = NomenclaturalStatusType.DOUBTFUL();
@@ -369,18 +373,18 @@ public class CaryoTaxonImport  extends DbImportBase<CaryoImportState, CaryoImpor
 
 		tp.setStartYear(year1.intValue());
 		Integer[] preDate1 = getDay(pre1,id);
-		tp.setStartMonth(preDate1[1]);
-		tp.setStartDay(preDate1[0]);
+//		tp.setStartMonth(preDate1[1]);
+//		tp.setStartDay(preDate1[0]);
 		if (year2 != null){
 			tp.setEndYear(year2.intValue());
 		}
 		Integer[] preDate2 = getDay(pre2, id);
-		tp.setEndMonth(preDate2[1]);
-		tp.setEndDay(preDate2[0]);
+//		tp.setEndMonth(preDate2[1]);
+//		tp.setEndDay(preDate2[0]);
 		
-		if (StringUtils.isNotBlank(modi1) || StringUtils.isNotBlank(modi2)){
-			tp.setFreeText(date);
-		}
+//		if (StringUtils.isNotBlank(modi1) || StringUtils.isNotBlank(modi2)){
+//			tp.setFreeText(date);
+//		}
 		ref.setDatePublished(tp);
 	}
 
@@ -685,7 +689,6 @@ public class CaryoTaxonImport  extends DbImportBase<CaryoImportState, CaryoImpor
 		if (author != null){
 			String[]  split = author.split("\\sex\\s");
 			if (split.length > 1){
-				//TODO richtige Reihenfolge ?
 				result[0] = split[1].trim();
 				result[1] = split[0].trim();
 			}else{
