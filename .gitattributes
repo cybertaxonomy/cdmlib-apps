@@ -58,6 +58,7 @@ app-import/src/main/java/eu/etaxonomy/cdm/app/sdd/FreshwaterAquaticInsectsActiva
 app-import/src/main/java/eu/etaxonomy/cdm/app/sdd/FreshwaterAquaticInsectsUpdateActivator.java -text
 app-import/src/main/java/eu/etaxonomy/cdm/app/sdd/LIASActivator.java -text
 app-import/src/main/java/eu/etaxonomy/cdm/app/sdd/LIASUpdateActivator.java -text
+app-import/src/main/java/eu/etaxonomy/cdm/app/sdd/SDDExportActivator.java -text
 app-import/src/main/java/eu/etaxonomy/cdm/app/sdd/SDDImportActivator.java -text
 app-import/src/main/java/eu/etaxonomy/cdm/app/sdd/SDDSources.java -text
 app-import/src/main/java/eu/etaxonomy/cdm/app/sdd/ValRosandraFRIDAKeyActivator.java -text
