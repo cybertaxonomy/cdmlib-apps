@@ -188,6 +188,7 @@ app-import/src/main/resources/sdd/LIAS_Main.sdd11.xml -text
 app-import/src/main/resources/sdd/SDD-Test-Simple.xml -text
 app-import/src/main/resources/sdd/Val-Rosandra-FRIDA-Key.sdd11.xml -text
 app-import/src/main/resources/sdd/Xper2-import-export.sdd.xml -text
+app-import/src/main/resources/sdd/ant.sdd.xml -text
 app-import/src/main/resources/sdd/cichorieae-Xper2.xml -text
 app-import/src/main/resources/sdd/phlebo.sdd.xml -text
 app-import/src/main/resources/specimen/SynthesysSpecimenExample.xls -text
