@@ -117,7 +117,7 @@ public class AlgaTerraTypeImport  extends AlgaTerraSpecimenImportBase {
 		Set<TaxonNameBase> namesToSave = new HashSet<TaxonNameBase>();
 		
 		Map<String, TaxonNameBase> taxonNameMap = (Map<String, TaxonNameBase>) partitioner.getObjectMap(BerlinModelTaxonNameImport.NAMESPACE);
-		Map<String, DerivedUnit> ecoFactMap = (Map<String, DerivedUnit>) partitioner.getObjectMap(AlgaTerraSpecimenImport.ECO_FACT_FIELD_OBSERVATION_NAMESPACE);
+		Map<String, DerivedUnit> ecoFactMap = (Map<String, DerivedUnit>) partitioner.getObjectMap(AlgaTerraEcoFactImport.ECO_FACT_FIELD_OBSERVATION_NAMESPACE);
 		Map<String, DerivedUnit> typeSpecimenMap = (Map<String, DerivedUnit>) partitioner.getObjectMap(TYPE_SPECIMEN_FIELD_OBSERVATION_NAMESPACE);
 		Map<String, Reference> biblioReference = (Map<String, Reference>) partitioner.getObjectMap(BerlinModelReferenceImport.BIBLIO_REFERENCE_NAMESPACE);
 		
@@ -155,8 +155,6 @@ public class AlgaTerraTypeImport  extends AlgaTerraSpecimenImportBase {
 					handleSingleSpecimen(rs, facade, state, partitioner);
 					
 					handleTypeSpecimenSpecificSpecimen(rs,facade, state);
-					
-					state.setCurrentFieldObservationNotNew(false);
 					
 					//Designation
 					TaxonNameBase<?,?> name = getTaxonName(state, taxonNameMap, nameId);
