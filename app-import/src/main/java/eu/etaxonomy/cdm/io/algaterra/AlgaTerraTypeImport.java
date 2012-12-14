@@ -152,9 +152,13 @@ public class AlgaTerraTypeImport  extends AlgaTerraSpecimenImportBase {
 					DerivedUnitFacade facade = getDerivedUnit(state, typeSpecimenId, typeSpecimenMap, type, ecoFactMap, ecoFactId);
 					
 					//field observation
-					handleSingleSpecimen(rs, facade, state, partitioner);
+					handleFieldObservationSpecimen(rs, facade, state, partitioner);
 					
+					//TODO devide like in EcoFact (if necessary)
 					handleTypeSpecimenSpecificSpecimen(rs,facade, state);
+					
+					handleFirstDerivedSpecimen(rs, facade, state, partitioner);
+					
 					
 					//Designation
 					TaxonNameBase<?,?> name = getTaxonName(state, taxonNameMap, nameId);
@@ -192,6 +196,10 @@ public class AlgaTerraTypeImport  extends AlgaTerraSpecimenImportBase {
 	
 	protected String getDerivedUnitNameSpace(){
 		return TYPE_SPECIMEN_DERIVED_UNIT_NAMESPACE;
+	}
+	
+	protected String getFieldObservationNameSpace(){
+		return TYPE_SPECIMEN_FIELD_OBSERVATION_NAMESPACE;
 	}
 
 	/**

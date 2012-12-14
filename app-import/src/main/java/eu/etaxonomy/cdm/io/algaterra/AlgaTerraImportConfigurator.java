@@ -6,29 +6,20 @@ package eu.etaxonomy.cdm.io.algaterra;
 import eu.etaxonomy.cdm.database.ICdmDataSource;
 import eu.etaxonomy.cdm.io.berlinModel.in.BerlinModelAuthorImport;
 import eu.etaxonomy.cdm.io.berlinModel.in.BerlinModelAuthorTeamImport;
-import eu.etaxonomy.cdm.io.berlinModel.in.BerlinModelCommonNamesImport;
 import eu.etaxonomy.cdm.io.berlinModel.in.BerlinModelFactsImport;
 import eu.etaxonomy.cdm.io.berlinModel.in.BerlinModelImportConfigurator;
-import eu.etaxonomy.cdm.io.berlinModel.in.BerlinModelImportState;
-import eu.etaxonomy.cdm.io.berlinModel.in.BerlinModelNameFactsImport;
 import eu.etaxonomy.cdm.io.berlinModel.in.BerlinModelNameStatusImport;
-import eu.etaxonomy.cdm.io.berlinModel.in.BerlinModelOccurrenceImport;
-import eu.etaxonomy.cdm.io.berlinModel.in.BerlinModelOccurrenceSourceImport;
 import eu.etaxonomy.cdm.io.berlinModel.in.BerlinModelRefDetailImport;
 import eu.etaxonomy.cdm.io.berlinModel.in.BerlinModelReferenceImport;
 import eu.etaxonomy.cdm.io.berlinModel.in.BerlinModelTaxonImport;
 import eu.etaxonomy.cdm.io.berlinModel.in.BerlinModelTaxonNameImport;
 import eu.etaxonomy.cdm.io.berlinModel.in.BerlinModelTaxonNameRelationImport;
 import eu.etaxonomy.cdm.io.berlinModel.in.BerlinModelTaxonRelationImport;
-import eu.etaxonomy.cdm.io.berlinModel.in.BerlinModelTypesImport;
 import eu.etaxonomy.cdm.io.berlinModel.in.BerlinModelUserImport;
 import eu.etaxonomy.cdm.io.berlinModel.in.BerlinModelWebMarkerCategoryImport;
 import eu.etaxonomy.cdm.io.berlinModel.in.BerlinModelWebMarkerImport;
 import eu.etaxonomy.cdm.io.berlinModel.in.validation.BerlinModelGeneralImportValidator;
-import eu.etaxonomy.cdm.io.common.DbImportStateBase;
-import eu.etaxonomy.cdm.io.common.ImportStateBase;
 import eu.etaxonomy.cdm.io.common.Source;
-import eu.etaxonomy.cdm.model.name.NomenclaturalCode;
 
 /**
  * @author pesiimport
@@ -37,6 +28,7 @@ import eu.etaxonomy.cdm.model.name.NomenclaturalCode;
 public class AlgaTerraImportConfigurator extends BerlinModelImportConfigurator {
 
 	private boolean doEcoFacts = true;
+	private boolean doFactEcology = true;
 	
 	private boolean doImages = true;
 	
@@ -70,11 +62,13 @@ public class AlgaTerraImportConfigurator extends BerlinModelImportConfigurator {
 				, BerlinModelWebMarkerImport.class
 				
 				, AlgaTerraCollectionImport.class
-				, AlgaTerraSpecimenImport.class
+				, AlgaTerraEcoFactImport.class
+				, AlgaTerraFactEcologyImport.class
 				, AlgaTerraTypeImport.class
 				, AlgaTerraTypeImagesImport.class
 				, AlgaTerraVoucherImagesImport.class
 				, AlgaTerraSiteImagesImport.class
+				, AlgaTerraPictureImport.class
 				
 		};	
 		
@@ -111,6 +105,14 @@ public class AlgaTerraImportConfigurator extends BerlinModelImportConfigurator {
 
 	public void setDoImages(boolean doImages) {
 		this.doImages = doImages;
+	}
+
+	public boolean isDoFactEcology() {
+		return doFactEcology;
+	}
+
+	public void setDoFactEcology(boolean doFactEcology) {
+		this.doFactEcology = doFactEcology;
 	}
 
 

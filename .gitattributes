@@ -102,6 +102,8 @@ app-import/src/main/java/eu/etaxonomy/cdm/io/PalmaeImageImport.java -text
 app-import/src/main/java/eu/etaxonomy/cdm/io/PalmaeProtologueImport.java -text
 app-import/src/main/java/eu/etaxonomy/cdm/io/ProtologueImport.java -text
 app-import/src/main/java/eu/etaxonomy/cdm/io/algaterra/AlgaTerraCollectionImport.java -text
+app-import/src/main/java/eu/etaxonomy/cdm/io/algaterra/AlgaTerraEcoFactImport.java -text
+app-import/src/main/java/eu/etaxonomy/cdm/io/algaterra/AlgaTerraFactEcologyImport.java -text
 app-import/src/main/java/eu/etaxonomy/cdm/io/algaterra/AlgaTerraImageImportBase.java -text
 app-import/src/main/java/eu/etaxonomy/cdm/io/algaterra/AlgaTerraImportConfigurator.java -text
 app-import/src/main/java/eu/etaxonomy/cdm/io/algaterra/AlgaTerraImportState.java -text

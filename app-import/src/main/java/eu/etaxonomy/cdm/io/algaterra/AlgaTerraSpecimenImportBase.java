@@ -25,18 +25,22 @@ import eu.etaxonomy.cdm.io.berlinModel.in.BerlinModelImportBase;
 import eu.etaxonomy.cdm.io.common.ResultSetPartitioner;
 import eu.etaxonomy.cdm.io.common.Source;
 import eu.etaxonomy.cdm.model.agent.Team;
+import eu.etaxonomy.cdm.model.agent.TeamOrPersonBase;
 import eu.etaxonomy.cdm.model.common.OrderedTermVocabulary;
 import eu.etaxonomy.cdm.model.common.TimePeriod;
 import eu.etaxonomy.cdm.model.description.DescriptionBase;
 import eu.etaxonomy.cdm.model.description.Feature;
 import eu.etaxonomy.cdm.model.description.SpecimenDescription;
 import eu.etaxonomy.cdm.model.description.State;
+import eu.etaxonomy.cdm.model.description.TaxonDescription;
 import eu.etaxonomy.cdm.model.location.NamedArea;
 import eu.etaxonomy.cdm.model.location.Point;
 import eu.etaxonomy.cdm.model.location.ReferenceSystem;
 import eu.etaxonomy.cdm.model.location.TdwgArea;
 import eu.etaxonomy.cdm.model.location.WaterbodyOrCountry;
 import eu.etaxonomy.cdm.model.occurrence.Collection;
+import eu.etaxonomy.cdm.model.reference.Reference;
+import eu.etaxonomy.cdm.model.taxon.Taxon;
 
 /**
  * @author a.mueller
@@ -45,10 +49,12 @@ import eu.etaxonomy.cdm.model.occurrence.Collection;
 public abstract class AlgaTerraSpecimenImportBase extends BerlinModelImportBase{
 	private static final Logger logger = Logger.getLogger(AlgaTerraSpecimenImportBase.class);
 
-	public static final String ECO_FACT_FIELD_OBSERVATION_NAMESPACE = "EcoFact";
-	public static final String ECO_FACT_DERIVED_UNIT_NAMESPACE = "EcoFact";
+	public static final String ECO_FACT_FIELD_OBSERVATION_NAMESPACE = "EcoFact_FieldObservation";
+	public static final String ECO_FACT_DERIVED_UNIT_NAMESPACE = "EcoFact_DerivedUnit";
 	public static final String TYPE_SPECIMEN_FIELD_OBSERVATION_NAMESPACE = "TypeSpecimen_FieldObservation";
 	public static final String TYPE_SPECIMEN_DERIVED_UNIT_NAMESPACE = "TypeSpecimen_DerivedUnit";
+	public static final String FACT_ECOLOGY_NAMESPACE = "Fact(Ecology)";
+	
 	
 	public static final String TERMS_NAMESPACE = "ALGA_TERRA_TERMS";
 	
@@ -156,7 +162,7 @@ public abstract class AlgaTerraSpecimenImportBase extends BerlinModelImportBase{
 		return "Locality";
 	}
 	
-	protected void handleSingleSpecimen(ResultSet rs, DerivedUnitFacade facade, AlgaTerraImportState state, ResultSetPartitioner partitioner) throws SQLException {
+	protected void handleFieldObservationSpecimen(ResultSet rs, DerivedUnitFacade facade, AlgaTerraImportState state, ResultSetPartitioner partitioner) throws SQLException {
 		//FIXME missing fields #3084, #3085, #3080
 		try {
 			
@@ -176,9 +182,6 @@ public abstract class AlgaTerraSpecimenImportBase extends BerlinModelImportBase{
 			String collectorsNumber = rs.getString("CollectorsNumber");
 			Date collectionDateStart = rs.getDate("CollectionDate");
 			Date collectionDateEnd = rs.getDate("CollectionDateEnd");
-			
-			Integer collectionFk = nullSafeInt(rs,"CollectionFk");
-			
 			
 			//location
 			facade.setLocality(locality);
@@ -225,37 +228,52 @@ public abstract class AlgaTerraSpecimenImportBase extends BerlinModelImportBase{
 			
 			//areas
 			makeAreas(state, rs, facade);
-			
-			//collection
-			if (collectionFk != null){
-				Collection subCollection = state.getRelatedObject(AlgaTerraCollectionImport.NAMESPACE_SUBCOLLECTION, String.valueOf(collectionFk), Collection.class);
-				if (subCollection != null){
-					facade.setCollection(subCollection);
-				}else{
-					Collection collection = state.getRelatedObject(AlgaTerraCollectionImport.NAMESPACE_COLLECTION, String.valueOf(collectionFk), Collection.class);
-					facade.setCollection(collection);
-				}
-			}
-			
+
 			//notes
 			//TODO is this an annotation on field observation or on the derived unit?
 			
-			//TODO id, created for fact +  ecoFact
-			//    	this.doIdCreatedUpdatedNotes(state, descriptionElement, rs, id, namespace);
+			//id, created, updated, notes
 			if (unitId != null){
-				this.doIdCreatedUpdatedNotes(state, facade.innerDerivedUnit(), rs, unitId, getDerivedUnitNameSpace());
+				this.doIdCreatedUpdatedNotes(state, facade.innerFieldObservation(), rs, unitId, getFieldObservationNameSpace());
 			}else{
-				logger.warn("Specimen has no unitId: " +  facade.innerDerivedUnit() + ": " + getDerivedUnitNameSpace());
+				logger.warn("FieldObservation has no unitId: " +  facade.innerFieldObservation() + ": " + getFieldObservationNameSpace());
 			}
-			
-			
 		} catch (Exception e) {
 			throw new RuntimeException(e);
 		}
     	
 	}
 	
+	protected void handleFirstDerivedSpecimen(ResultSet rs, DerivedUnitFacade facade, AlgaTerraImportState state, ResultSetPartitioner partitioner) throws SQLException {
+		Integer unitId = nullSafeInt(rs, "unitId");
+		Integer collectionFk = nullSafeInt(rs,"CollectionFk");
+		
+		//collection
+		if (collectionFk != null){
+			Collection subCollection = state.getRelatedObject(AlgaTerraCollectionImport.NAMESPACE_SUBCOLLECTION, String.valueOf(collectionFk), Collection.class);
+			if (subCollection != null){
+				facade.setCollection(subCollection);
+			}else{
+				Collection collection = state.getRelatedObject(AlgaTerraCollectionImport.NAMESPACE_COLLECTION, String.valueOf(collectionFk), Collection.class);
+				facade.setCollection(collection);
+			}
+		}
+		
+		//TODO id, created for fact +  ecoFact
+		//    	this.doIdCreatedUpdatedNotes(state, descriptionElement, rs, id, namespace);
+		if (unitId != null){
+			this.doIdCreatedUpdatedNotes(state, facade.innerDerivedUnit(), rs, unitId, getDerivedUnitNameSpace());
+		}else{
+			logger.warn("Specimen has no unitId: " +  facade.innerDerivedUnit() + ": " + getDerivedUnitNameSpace());
+		}
+	}
+		
+	
+	
 	protected abstract String getDerivedUnitNameSpace();
+	
+	protected abstract String getFieldObservationNameSpace();
+	
 
 	protected DescriptionBase getFieldObservationDescription(DerivedUnitFacade facade) {
 		Set<DescriptionBase> descriptions = facade.innerFieldObservation().getDescriptions();
@@ -355,10 +373,42 @@ public abstract class AlgaTerraSpecimenImportBase extends BerlinModelImportBase{
 	
 
 	private void handleCollectorTeam(AlgaTerraImportState state, DerivedUnitFacade facade, ResultSet rs) throws SQLException {
-		// FIXME parsen
 		String collector = rs.getString("Collector");
-		Team team = Team.NewTitledInstance(collector, collector);
-		facade.setCollector(team);
+		TeamOrPersonBase<?> author = getAuthor(collector);
+		facade.setCollector(author);
+	}
+
+	/**
+	 * @param facade
+	 * @param collector
+	 */
+	protected TeamOrPersonBase<?> getAuthor(String author) {
+		// FIXME TODO parsen und deduplizieren
+		Team team = Team.NewTitledInstance(author, author);
+		return team;
+	}
+	
+
+	/**
+	 * Use same TaxonDescription if two records belong to the same taxon 
+	 * @param state 
+	 * @param newTaxonId
+	 * @param oldTaxonId
+	 * @param oldDescription
+	 * @param taxonMap
+	 * @return
+	 */
+	protected TaxonDescription getTaxonDescription(AlgaTerraImportState state, Taxon taxon, Reference<?> sourceSec){
+		TaxonDescription result = null;
+		Set<TaxonDescription> descriptionSet= taxon.getDescriptions();
+		if (descriptionSet.size() > 0) {
+			result = descriptionSet.iterator().next(); 
+		}else{
+			result = TaxonDescription.NewInstance();
+			result.setTitleCache(sourceSec.getTitleCache(), true);
+			taxon.addDescription(result);
+		}
+		return result;
 	}
 
 	
