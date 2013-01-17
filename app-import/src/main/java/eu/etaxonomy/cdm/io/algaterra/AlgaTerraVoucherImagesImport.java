@@ -26,7 +26,6 @@ import eu.etaxonomy.cdm.io.common.IOValidator;
 import eu.etaxonomy.cdm.io.common.ResultSetPartitioner;
 import eu.etaxonomy.cdm.model.common.CdmBase;
 import eu.etaxonomy.cdm.model.media.Media;
-import eu.etaxonomy.cdm.model.occurrence.DerivedUnit;
 import eu.etaxonomy.cdm.model.occurrence.DerivedUnitBase;
 import eu.etaxonomy.cdm.model.occurrence.SpecimenOrObservationBase;
 
@@ -107,21 +106,24 @@ public class AlgaTerraVoucherImagesImport  extends AlgaTerraImageImportBase {
 				
 				try {
 					
-					DerivedUnitBase<?> derivedUnit = ecoFactMap.get(ecoFactFk);
+					DerivedUnitBase<?> derivedUnit = ecoFactMap.get(String.valueOf(ecoFactFk));
 					
 					if (derivedUnit == null){
 						logger.warn("Could not find eco fact specimen (" + ecoFactFk +") for voucher image " +  figureId);
 					}else{
-						
+						logger.warn("DerivedUnit for ecoFact-derived unit is null");
 					}
 					
 					//field observation
 					Media media = handleSingleImage(rs, derivedUnit, state, partitioner);
 					
-					handleTypeImageSpecificFields(rs, media, state);
+					handleVoucherImageSpecificFields(rs, media, state);
 					
-					unitsToSave.add(derivedUnit); 
-					
+					if (derivedUnit != null){
+						unitsToSave.add(derivedUnit); 
+					}else{
+						logger.warn("DerivedUnit is null");
+					}
 
 				} catch (Exception e) {
 					logger.warn("Exception in " + getTableName() + ": VoucherImageId " + figureId + ". " + e.getMessage());
@@ -144,7 +146,7 @@ public class AlgaTerraVoucherImagesImport  extends AlgaTerraImageImportBase {
 
 
 
-	private void handleTypeImageSpecificFields(ResultSet rs, Media media, AlgaTerraImportState state) throws SQLException {
+	private void handleVoucherImageSpecificFields(ResultSet rs, Media media, AlgaTerraImportState state) throws SQLException {
 		//TODO
 		
 	}
@@ -170,8 +172,8 @@ public class AlgaTerraVoucherImagesImport  extends AlgaTerraImageImportBase {
 			nameSpace = AlgaTerraSpecimenImportBase.ECO_FACT_DERIVED_UNIT_NAMESPACE;
 			cdmClass = DerivedUnitBase.class;
 			idSet = ecoFactIdSet;
-			Map<String, DerivedUnitBase> typeSpecimenMap = (Map<String,DerivedUnitBase>)getCommonService().getSourcedObjectsByIdInSource(cdmClass, idSet, nameSpace);
-			result.put(nameSpace, typeSpecimenMap);
+			Map<String, DerivedUnitBase> specimenMap = (Map<String,DerivedUnitBase>)getCommonService().getSourcedObjectsByIdInSource(cdmClass, idSet, nameSpace);
+			result.put(nameSpace, specimenMap);
 
 			
 		} catch (SQLException e) {

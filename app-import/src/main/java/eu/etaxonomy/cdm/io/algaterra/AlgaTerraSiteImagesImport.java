@@ -67,7 +67,7 @@ public class AlgaTerraSiteImagesImport  extends AlgaTerraImageImportBase {
 	protected String getRecordQuery(BerlinModelImportConfigurator config) {
 			String strQuery =    
 						
-				" SELECT si.*, si.Comment as FigurePhrase, si.Picture as fileName " +
+				" SELECT si.*, si.Comment as FigurePhrase, si.PictureFile as fileName " +
 	            " FROM SiteImages si  " 
 	            + 	" WHERE (si.SiteID IN (" + ID_LIST_TOKEN + ")  )"  
 	            + " ORDER BY EcoFactFk ";
@@ -98,7 +98,7 @@ public class AlgaTerraSiteImagesImport  extends AlgaTerraImageImportBase {
                 
         		if ((i++ % modCount) == 0 && i!= 1 ){ logger.info(pluralString + " handled: " + (i-1));}
 				
-				int figureId = rs.getInt("VoucherImageID");
+				int figureId = rs.getInt("SiteId");
 				int ecoFactFk = rs.getInt("EcoFactFk");
 				
 				
@@ -107,7 +107,7 @@ public class AlgaTerraSiteImagesImport  extends AlgaTerraImageImportBase {
 				try {
 					
 					//TODO use deduplicated ecofact
-					FieldObservation fieldObservation = ecoFactFieldObservationMap.get(ecoFactFk);
+					FieldObservation fieldObservation = ecoFactFieldObservationMap.get(String.valueOf(ecoFactFk));
 					
 					if (fieldObservation == null){
 						logger.warn("Could not find eco fact field observation (" + ecoFactFk +") for site image " +  figureId);
@@ -118,7 +118,7 @@ public class AlgaTerraSiteImagesImport  extends AlgaTerraImageImportBase {
 					//field observation
 					Media media = handleSingleImage(rs, fieldObservation, state, partitioner);
 					
-					handleTypeImageSpecificFields(rs, media, state);
+					handleSiteImageSpecificFields(rs, media, state);
 					
 					unitsToSave.add(fieldObservation); 
 					
@@ -144,7 +144,7 @@ public class AlgaTerraSiteImagesImport  extends AlgaTerraImageImportBase {
 
 
 
-	private void handleTypeImageSpecificFields(ResultSet rs, Media media, AlgaTerraImportState state) throws SQLException {
+	private void handleSiteImageSpecificFields(ResultSet rs, Media media, AlgaTerraImportState state) throws SQLException {
 		//TODO
 		
 	}
