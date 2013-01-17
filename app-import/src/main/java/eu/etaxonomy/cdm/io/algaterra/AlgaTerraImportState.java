@@ -29,7 +29,6 @@ public class AlgaTerraImportState extends BerlinModelImportState{
 	private static final Logger logger = Logger.getLogger(AlgaTerraImportState.class);
 
 	private boolean specimenVocabulariesCreated = false;
-	private Map<String, UUID> parameterFeatureUuidMap = new HashMap<String, UUID>(); 
 	
 	public AlgaTerraImportState(AlgaTerraImportConfigurator config) {
 		super(config);
@@ -47,12 +46,5 @@ public class AlgaTerraImportState extends BerlinModelImportState{
 		this.specimenVocabulariesCreated = specimenVocabulariesCreated;
 	}
 
-	public UUID getParameterFeatureUuid(String key) {
-		return parameterFeatureUuidMap.get(key);
-	}
-
-	public void putParameterFeatureUuid(String key, UUID parameterFeatureUuid) {
-		this.parameterFeatureUuidMap.put(key, parameterFeatureUuid);
-	}
 
 }

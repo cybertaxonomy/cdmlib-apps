@@ -23,13 +23,12 @@ import org.springframework.stereotype.Component;
 
 import eu.etaxonomy.cdm.api.facade.DerivedUnitFacade;
 import eu.etaxonomy.cdm.api.facade.DerivedUnitFacade.DerivedUnitType;
-import eu.etaxonomy.cdm.api.facade.DerivedUnitFacadeNotSupportedException;
 import eu.etaxonomy.cdm.io.algaterra.validation.AlgaTerraSpecimenImportValidator;
 import eu.etaxonomy.cdm.io.berlinModel.in.BerlinModelImportConfigurator;
 import eu.etaxonomy.cdm.io.berlinModel.in.BerlinModelImportState;
-import eu.etaxonomy.cdm.io.berlinModel.in.BerlinModelTaxonImport;
 import eu.etaxonomy.cdm.io.common.IOValidator;
 import eu.etaxonomy.cdm.io.common.ResultSetPartitioner;
+import eu.etaxonomy.cdm.io.common.mapping.UndefinedTransformerMethodException;
 import eu.etaxonomy.cdm.model.common.CdmBase;
 import eu.etaxonomy.cdm.model.common.DefinedTermBase;
 import eu.etaxonomy.cdm.model.common.Language;
@@ -39,25 +38,18 @@ import eu.etaxonomy.cdm.model.common.TermVocabulary;
 import eu.etaxonomy.cdm.model.description.CategoricalData;
 import eu.etaxonomy.cdm.model.description.DescriptionBase;
 import eu.etaxonomy.cdm.model.description.Feature;
-import eu.etaxonomy.cdm.model.description.IndividualsAssociation;
 import eu.etaxonomy.cdm.model.description.MeasurementUnit;
 import eu.etaxonomy.cdm.model.description.Modifier;
 import eu.etaxonomy.cdm.model.description.QuantitativeData;
 import eu.etaxonomy.cdm.model.description.State;
 import eu.etaxonomy.cdm.model.description.StatisticalMeasure;
 import eu.etaxonomy.cdm.model.description.StatisticalMeasurementValue;
-import eu.etaxonomy.cdm.model.description.TaxonDescription;
 import eu.etaxonomy.cdm.model.description.TextData;
-import eu.etaxonomy.cdm.model.name.BotanicalName;
-import eu.etaxonomy.cdm.model.name.Rank;
 import eu.etaxonomy.cdm.model.occurrence.Collection;
-import eu.etaxonomy.cdm.model.occurrence.DerivedUnit;
 import eu.etaxonomy.cdm.model.occurrence.DerivedUnitBase;
 import eu.etaxonomy.cdm.model.occurrence.FieldObservation;
 import eu.etaxonomy.cdm.model.occurrence.SpecimenOrObservationBase;
 import eu.etaxonomy.cdm.model.reference.Reference;
-import eu.etaxonomy.cdm.model.taxon.Taxon;
-import eu.etaxonomy.cdm.model.taxon.TaxonBase;
 
 
 /**
@@ -349,13 +341,11 @@ public class AlgaTerraEcoFactImport  extends AlgaTerraSpecimenImportBase {
 
 
 	private UUID getParameterFeatureUuid(AlgaTerraImportState state, String key) {
-		//TODO define some UUIDs in Transformer
-		UUID uuid = state.getParameterFeatureUuid(key);
-		if (uuid == null){
-			uuid = UUID.randomUUID();
-			state.putParameterFeatureUuid(key, uuid);
+		try {
+			return AlgaTerraImportTransformer.getFeatureUuid(key);
+		} catch (UndefinedTransformerMethodException e) {
+			throw new RuntimeException(e);
 		}
-		return uuid;
 	}
 
 
@@ -368,32 +358,9 @@ public class AlgaTerraEcoFactImport  extends AlgaTerraSpecimenImportBase {
 	 */
 	private MeasurementUnit getMeasurementUnit(AlgaTerraImportState state, String unitStr) {
 		if (StringUtils.isNotBlank(unitStr)){
-			UUID uuidMeasurementUnitMgL = UUID.fromString("7ac302c5-3cbd-4334-964a-bf5d11eb9ead");
-			UUID uuidMeasurementUnitMolMol = UUID.fromString("96b78d78-3e49-448f-8100-e7779b71dd53");
-			UUID uuidMeasurementUnitMicroMolSiL = UUID.fromString("2cb8bc85-a4af-42f1-b80b-34c36c9f75d4");
-			UUID uuidMeasurementUnitMicroMolL = UUID.fromString("a631f62e-377e-405c-bd1a-76885b13a72b");
-			UUID uuidMeasurementUnitDegreeC = UUID.fromString("55222aec-d5be-413e-8db7-d9a48c316c6c");
-			UUID uuidMeasurementUnitPercent = UUID.fromString("3ea3110e-f048-4bed-8bfe-33c60f63626f");
-			UUID uuidMeasurementUnitCm = UUID.fromString("3ea3110e-f048-4bed-8bfe-33c60f63626f");
-			UUID uuidMeasurementUnitMicroSiCm = UUID.fromString("3ea3110e-f048-4bed-8bfe-33c60f63626f");
-			
-			
-			if (unitStr.equalsIgnoreCase("mg/L")){
-				return getMeasurementUnit(state, uuidMeasurementUnitMgL, unitStr, unitStr, unitStr, null);
-			}else if (unitStr.equalsIgnoreCase("mol/mol")){
-				return getMeasurementUnit(state, uuidMeasurementUnitMolMol, unitStr, unitStr, unitStr, null);
-			}else if (unitStr.equalsIgnoreCase("\u00B5mol Si/L")){   //µmol Si/L
-				return getMeasurementUnit(state, uuidMeasurementUnitMicroMolSiL, unitStr, unitStr, unitStr, null);
-			}else if (unitStr.equalsIgnoreCase("\u00B5mol/L")){		//µmol/L
-				return getMeasurementUnit(state, uuidMeasurementUnitMicroMolL, unitStr, unitStr, unitStr, null);
-			}else if (unitStr.equalsIgnoreCase("\u00B0C")){               //°C
-				return getMeasurementUnit(state, uuidMeasurementUnitDegreeC, unitStr, unitStr, unitStr, null);
-			}else if (unitStr.equalsIgnoreCase("%")){
-				return getMeasurementUnit(state, uuidMeasurementUnitPercent, unitStr, unitStr, unitStr, null);
-			}else if (unitStr.equalsIgnoreCase("cm")){
-				return getMeasurementUnit(state, uuidMeasurementUnitCm, unitStr, unitStr, unitStr, null);
-			}else if (unitStr.equalsIgnoreCase("\u00B5S/cm")){   //µS/cm
-				return getMeasurementUnit(state, uuidMeasurementUnitMicroSiCm, unitStr, unitStr, unitStr, null);
+			UUID uuid = AlgaTerraImportTransformer.getMeasurementUnitUuid(unitStr);
+			if (uuid != null){
+				return getMeasurementUnit(state, uuid, unitStr, unitStr, unitStr, null);
 			}else{
 				logger.warn("MeasurementUnit was not recognized");
 				return null;
