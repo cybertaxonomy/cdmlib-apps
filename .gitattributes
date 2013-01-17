@@ -110,7 +110,6 @@ app-import/src/main/java/eu/etaxonomy/cdm/io/algaterra/AlgaTerraImportState.java
 app-import/src/main/java/eu/etaxonomy/cdm/io/algaterra/AlgaTerraImportTransformer.java -text
 app-import/src/main/java/eu/etaxonomy/cdm/io/algaterra/AlgaTerraPictureImport.java -text
 app-import/src/main/java/eu/etaxonomy/cdm/io/algaterra/AlgaTerraSiteImagesImport.java -text
-app-import/src/main/java/eu/etaxonomy/cdm/io/algaterra/AlgaTerraSpecimenImport.java -text
 app-import/src/main/java/eu/etaxonomy/cdm/io/algaterra/AlgaTerraSpecimenImportBase.java -text
 app-import/src/main/java/eu/etaxonomy/cdm/io/algaterra/AlgaTerraTypeImagesImport.java -text
 app-import/src/main/java/eu/etaxonomy/cdm/io/algaterra/AlgaTerraTypeImport.java -text
