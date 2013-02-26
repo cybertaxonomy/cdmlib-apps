@@ -32,6 +32,8 @@ public class AlgaTerraImportConfigurator extends BerlinModelImportConfigurator {
 	
 	private boolean doImages = true;
 	
+	private boolean doDna = true;
+	
 	private String imageBaseUrl = "http://www.algaterra.org/ATDB/Figures/";
 	
 	public static AlgaTerraImportConfigurator NewInstance(Source berlinModelSource, ICdmDataSource destination){
@@ -69,6 +71,7 @@ public class AlgaTerraImportConfigurator extends BerlinModelImportConfigurator {
 				, AlgaTerraVoucherImagesImport.class
 				, AlgaTerraSiteImagesImport.class
 				, AlgaTerraPictureImport.class
+				, AlgaTerraDnaImport.class
 				
 		};	
 		
@@ -113,6 +116,14 @@ public class AlgaTerraImportConfigurator extends BerlinModelImportConfigurator {
 
 	public void setDoFactEcology(boolean doFactEcology) {
 		this.doFactEcology = doFactEcology;
+	}
+
+	public boolean isDoDna() {
+		return doDna;
+	}
+
+	public void setDoDna(boolean doDna) {
+		this.doDna = doDna;
 	}
 
 

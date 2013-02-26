@@ -67,7 +67,7 @@ public class AlgaTerraVoucherImagesImport  extends AlgaTerraImageImportBase {
 	protected String getRecordQuery(BerlinModelImportConfigurator config) {
 			String strQuery =    
 						
-				" SELECT vi.*, vi.Comment as FigurePhrase, vi.PictureFile as fileName " +
+				" SELECT vi.*, vi.Comment as FigurePhrase, vi.PictureFile as fileName, vi.PictuePath as filePath " +
 	            " FROM VoucherImages vi  " 
 	            + 	" WHERE (vi.VoucherImageID IN (" + ID_LIST_TOKEN + ")  )"  
 	            + " ORDER BY EcoFactFk ";
@@ -110,8 +110,6 @@ public class AlgaTerraVoucherImagesImport  extends AlgaTerraImageImportBase {
 					
 					if (derivedUnit == null){
 						logger.warn("Could not find eco fact specimen (" + ecoFactFk +") for voucher image " +  figureId);
-					}else{
-						logger.warn("DerivedUnit for ecoFact-derived unit is null");
 					}
 					
 					//field observation

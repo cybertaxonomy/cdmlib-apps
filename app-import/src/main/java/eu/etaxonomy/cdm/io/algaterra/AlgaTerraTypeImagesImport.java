@@ -71,7 +71,7 @@ public class AlgaTerraTypeImagesImport  extends AlgaTerraImageImportBase {
 	protected String getRecordQuery(BerlinModelImportConfigurator config) {
 			String strQuery =    
 					
-			" SELECT sf.*, sf.SpecimenFigurePhrase as FigurePhrase, sf.SpecimenFigure as fileName" +
+			" SELECT sf.*, sf.SpecimenFigurePhrase as FigurePhrase, sf.SpecimenFigure as fileName, sf.PicturePath as filePath" +
             " FROM SpecimenFigure sf  " 
      	+ 	" WHERE (sf.SpecimenFigureId IN (" + ID_LIST_TOKEN + ")  )"  
      	+ " ORDER BY TypeSpecimenFk ";

@@ -102,6 +102,7 @@ app-import/src/main/java/eu/etaxonomy/cdm/io/PalmaeImageImport.java -text
 app-import/src/main/java/eu/etaxonomy/cdm/io/PalmaeProtologueImport.java -text
 app-import/src/main/java/eu/etaxonomy/cdm/io/ProtologueImport.java -text
 app-import/src/main/java/eu/etaxonomy/cdm/io/algaterra/AlgaTerraCollectionImport.java -text
+app-import/src/main/java/eu/etaxonomy/cdm/io/algaterra/AlgaTerraDnaImport.java -text
 app-import/src/main/java/eu/etaxonomy/cdm/io/algaterra/AlgaTerraEcoFactImport.java -text
 app-import/src/main/java/eu/etaxonomy/cdm/io/algaterra/AlgaTerraFactEcologyImport.java -text
 app-import/src/main/java/eu/etaxonomy/cdm/io/algaterra/AlgaTerraImageImportBase.java -text
@@ -115,6 +116,7 @@ app-import/src/main/java/eu/etaxonomy/cdm/io/algaterra/AlgaTerraTypeImagesImport
 app-import/src/main/java/eu/etaxonomy/cdm/io/algaterra/AlgaTerraTypeImport.java -text
 app-import/src/main/java/eu/etaxonomy/cdm/io/algaterra/AlgaTerraVoucherImagesImport.java -text
 app-import/src/main/java/eu/etaxonomy/cdm/io/algaterra/validation/AlgaTerraCollectionImportValidator.java -text
+app-import/src/main/java/eu/etaxonomy/cdm/io/algaterra/validation/AlgaTerraDnaImportValidator.java -text
 app-import/src/main/java/eu/etaxonomy/cdm/io/algaterra/validation/AlgaTerraSpecimenImportValidator.java -text
 app-import/src/main/java/eu/etaxonomy/cdm/io/algaterra/validation/AlgaTerraTypeImportValidator.java -text
 app-import/src/main/java/eu/etaxonomy/cdm/io/caryo/CaryoImportConfigurator.java -text

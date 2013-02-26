@@ -17,14 +17,16 @@ import org.apache.log4j.Logger;
 import eu.etaxonomy.cdm.io.berlinModel.in.BerlinModelImportBase;
 import eu.etaxonomy.cdm.io.common.ResultSetPartitioner;
 import eu.etaxonomy.cdm.model.common.CdmBase;
+import eu.etaxonomy.cdm.model.common.IdentifiableEntity;
 import eu.etaxonomy.cdm.model.common.Language;
+import eu.etaxonomy.cdm.model.description.DescriptionBase;
 import eu.etaxonomy.cdm.model.description.DescriptionElementBase;
 import eu.etaxonomy.cdm.model.description.Feature;
-import eu.etaxonomy.cdm.model.description.SpecimenDescription;
 import eu.etaxonomy.cdm.model.description.TextData;
 import eu.etaxonomy.cdm.model.media.Media;
 import eu.etaxonomy.cdm.model.occurrence.SpecimenOrObservationBase;
 import eu.etaxonomy.cdm.model.reference.Reference;
+import eu.etaxonomy.cdm.model.taxon.Taxon;
 
 /**
  * @author a.mueller
@@ -55,10 +57,11 @@ public abstract class AlgaTerraImageImportBase extends BerlinModelImportBase{
 	 * @return
 	 * @throws SQLException
 	 */
-	protected Media handleSingleImage(ResultSet rs, SpecimenOrObservationBase derivedUnit, AlgaTerraImportState state, ResultSetPartitioner partitioner) throws SQLException {
+	protected Media handleSingleImage(ResultSet rs, IdentifiableEntity identifiableEntity, AlgaTerraImportState state, ResultSetPartitioner partitioner) throws SQLException {
 		try {
-			String fileName = rs.getString("fileName");
 			String figurePhrase = rs.getString("FigurePhrase");
+			String filePath = rs.getString("filePath");
+			String fileName = rs.getString("fileName");
 			//TODO  publishFlag
 			Boolean publishFlag = rs.getBoolean("RestrictedFlag");
 			
@@ -66,7 +69,10 @@ public abstract class AlgaTerraImageImportBase extends BerlinModelImportBase{
 			if (isBlank(fileName)){
 				throw new RuntimeException("FileName is missing");
 			}
-			String fullPath = state.getAlgaTerraConfigurator().getImageBaseUrl() + fileName;
+			if (isBlank(filePath)){
+				filePath = state.getAlgaTerraConfigurator().getImageBaseUrl();
+			}
+			String fullPath = filePath + fileName;
 			
 			boolean isFigure = false;
 			Media media = getImageMedia(fullPath, READ_MEDIA_DATA, isFigure);
@@ -80,8 +86,8 @@ public abstract class AlgaTerraImageImportBase extends BerlinModelImportBase{
 			
 			//TODO ref
 			Reference<?> ref = null;
-			if (derivedUnit != null){
-				SpecimenDescription desc = getSpecimenDescription(derivedUnit, ref, IMAGE_GALLERY, CREATE);
+			if (identifiableEntity != null){
+				DescriptionBase<?> desc = getDescription(identifiableEntity, ref, IMAGE_GALLERY, CREATE);
 				TextData textData = null;
 				for (DescriptionElementBase descEl : desc.getElements()){
 					if (descEl.isInstanceOf(TextData.class)){
@@ -94,7 +100,7 @@ public abstract class AlgaTerraImageImportBase extends BerlinModelImportBase{
 				desc.addElement(textData);
 				textData.addMedia(media);
 			}else{
-				logger.warn("Derived unit is null. Can't add media ");
+				logger.warn("Identifiable Entity is null. Can't add media ");
 			}
 			
 			//notes
@@ -110,9 +116,19 @@ public abstract class AlgaTerraImageImportBase extends BerlinModelImportBase{
 		}
     	
 	}
-	
-
-	
 
 
+
+
+	private DescriptionBase<?> getDescription(IdentifiableEntity identifiableEntity, Reference<?> ref,
+			boolean imageGallery, boolean create) {
+		if (identifiableEntity.isInstanceOf(SpecimenOrObservationBase.class)){
+			return getSpecimenDescription(CdmBase.deproxy(identifiableEntity, SpecimenOrObservationBase.class), ref, imageGallery, create);
+		}else if (identifiableEntity.isInstanceOf(Taxon.class)){
+			return getTaxonDescription(CdmBase.deproxy(identifiableEntity, Taxon.class), ref, imageGallery, create);
+		}else{
+			logger.warn("Unsupported IdentifiableEntity type: " +  identifiableEntity.getClass());
+			return null;
+		}
+	}	
 }

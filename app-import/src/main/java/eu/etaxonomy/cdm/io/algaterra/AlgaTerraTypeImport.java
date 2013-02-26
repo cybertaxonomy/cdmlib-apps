@@ -31,6 +31,7 @@ import eu.etaxonomy.cdm.io.berlinModel.in.BerlinModelTaxonNameImport;
 import eu.etaxonomy.cdm.io.common.IOValidator;
 import eu.etaxonomy.cdm.io.common.ResultSetPartitioner;
 import eu.etaxonomy.cdm.model.common.CdmBase;
+import eu.etaxonomy.cdm.model.common.IdentifiableSource;
 import eu.etaxonomy.cdm.model.name.BotanicalName;
 import eu.etaxonomy.cdm.model.name.Rank;
 import eu.etaxonomy.cdm.model.name.SpecimenTypeDesignation;
@@ -38,6 +39,7 @@ import eu.etaxonomy.cdm.model.name.SpecimenTypeDesignationStatus;
 import eu.etaxonomy.cdm.model.name.TaxonNameBase;
 import eu.etaxonomy.cdm.model.occurrence.Collection;
 import eu.etaxonomy.cdm.model.occurrence.DerivedUnit;
+import eu.etaxonomy.cdm.model.occurrence.DerivedUnitBase;
 import eu.etaxonomy.cdm.model.occurrence.FieldObservation;
 import eu.etaxonomy.cdm.model.reference.Reference;
 
@@ -83,8 +85,8 @@ public class AlgaTerraTypeImport  extends AlgaTerraSpecimenImportBase {
 	protected String getRecordQuery(BerlinModelImportConfigurator config) {
 			String strQuery =    
 					
-			" SELECT ts.*, ts.TypeSpecimenId as unitId, td.*, gz.ID as GazetteerId, gz.L2Code, gz.L3Code, gz.L4Code, gz.ISOCountry, gz.Country, ts.WaterBody " + 
-               " " +
+			" SELECT ts.*, ts.TypeSpecimenId as unitId, td.*, gz.ID as GazetteerId, gz.L2Code, gz.L3Code, gz.L4Code, gz.ISOCountry, gz.Country, ts.WaterBody, " + 
+               " ts.RefFk as tsRefFk, ts.RefDetailFk as tsRefDetailFk, td.RefFk as tdRefFk, td.RefDetailFk as tdRefDetailFk " +
             " FROM TypeSpecimenDesignation tsd  " 
             	+ " LEFT OUTER JOIN TypeSpecimen AS ts ON tsd.TypeSpecimenFk = ts.TypeSpecimenId " 
             	+ " FULL OUTER JOIN TypeDesignation td ON  td.TypeDesignationId = tsd.TypeDesignationFk "
@@ -119,7 +121,8 @@ public class AlgaTerraTypeImport  extends AlgaTerraSpecimenImportBase {
 		Map<String, TaxonNameBase> taxonNameMap = (Map<String, TaxonNameBase>) partitioner.getObjectMap(BerlinModelTaxonNameImport.NAMESPACE);
 		Map<String, DerivedUnit> ecoFactMap = (Map<String, DerivedUnit>) partitioner.getObjectMap(AlgaTerraEcoFactImport.ECO_FACT_FIELD_OBSERVATION_NAMESPACE);
 		Map<String, DerivedUnit> typeSpecimenMap = (Map<String, DerivedUnit>) partitioner.getObjectMap(TYPE_SPECIMEN_FIELD_OBSERVATION_NAMESPACE);
-		Map<String, Reference> biblioReference = (Map<String, Reference>) partitioner.getObjectMap(BerlinModelReferenceImport.BIBLIO_REFERENCE_NAMESPACE);
+		Map<String, Reference> biblioRefMap = (Map<String, Reference>) partitioner.getObjectMap(BerlinModelReferenceImport.BIBLIO_REFERENCE_NAMESPACE);
+		Map<String, Reference> nomRefMap = (Map<String, Reference>) partitioner.getObjectMap(BerlinModelReferenceImport.NOM_REFERENCE_NAMESPACE);
 		
 		
 		ResultSet rs = partitioner.getResultSet();
@@ -138,6 +141,10 @@ public class AlgaTerraTypeImport  extends AlgaTerraSpecimenImportBase {
 				int typeDesignationId = rs.getInt("TypeDesignationId");
 				Integer typeStatusFk =  nullSafeInt(rs, "typeStatusFk");
 				Integer ecoFactId = nullSafeInt(rs, "ecoFactFk");
+				Integer tdRefFk = nullSafeInt(rs, "tdRefFk");
+				Integer tdRefDetailFk = nullSafeInt(rs, "tdRefDetailFk");
+				
+				
 //				String recordBasis = rs.getString("RecordBasis");
 				
 				try {
@@ -154,8 +161,8 @@ public class AlgaTerraTypeImport  extends AlgaTerraSpecimenImportBase {
 					//field observation
 					handleFieldObservationSpecimen(rs, facade, state, partitioner);
 					
-					//TODO devide like in EcoFact (if necessary)
-					handleTypeSpecimenSpecificSpecimen(rs,facade, state);
+					//TODO divide like in EcoFact (if necessary)
+					handleTypeSpecimenSpecificSpecimen(rs,facade, state, biblioRefMap, nomRefMap, typeSpecimenId);
 					
 					handleFirstDerivedSpecimen(rs, facade, state, partitioner);
 					
@@ -166,6 +173,19 @@ public class AlgaTerraTypeImport  extends AlgaTerraSpecimenImportBase {
 					SpecimenTypeDesignationStatus status = getSpecimenTypeDesignationStatusByKey(typeStatusFk);
 					designation.setTypeSpecimen(facade.innerDerivedUnit());
 					designation.setTypeStatus(status);
+					if (tdRefFk != null){
+						Reference<?> typeDesigRef = getReferenceOnlyFromMaps(biblioRefMap, nomRefMap, String.valueOf(tdRefFk));
+						if (typeDesigRef == null){
+							logger.warn("Type designation reference not found in maps: " + tdRefFk);
+						}else{
+							designation.setCitation(typeDesigRef);
+						}
+					}
+					
+					if (tdRefDetailFk != null){
+						logger.warn("TypeDesignation.RefDetailFk not yet implemented: " + typeDesignationId);
+					}
+					
 					if (name != null){
 						name.addTypeDesignation(designation, true); //TODO check if true is correct
 					}else{
@@ -219,15 +239,40 @@ public class AlgaTerraTypeImport  extends AlgaTerraSpecimenImportBase {
 		return result;
 	}
 
-	private void handleTypeSpecimenSpecificSpecimen(ResultSet rs, DerivedUnitFacade facade, AlgaTerraImportState state) throws SQLException {
+	private void handleTypeSpecimenSpecificSpecimen(ResultSet rs, DerivedUnitFacade facade, AlgaTerraImportState state, Map<String, Reference> biblioRefMap, Map<String, Reference> nomRefMap, int typeSpecimenId) throws SQLException {
+		
+		
 		//TODO
 		
+		
+		
+		DerivedUnitBase<?> derivedUnit = facade.innerDerivedUnit();
 		
 		//collection
 		String barcode = rs.getString("Barcode");
 		if (StringUtils.isNotBlank(barcode)){
 			facade.setBarcode(barcode);
 		}
+		
+		//RefFk + RefDetailFk
+		Integer  refFk = nullSafeInt(rs, "tsRefFk");
+		if (refFk != null){
+			
+			Reference<?> ref = getReferenceOnlyFromMaps(biblioRefMap, nomRefMap, String.valueOf(refFk));
+			if (ref == null){
+				logger.warn("TypeSpecimen reference (" + refFk + ")not found in biblioRef. TypeSpecimenId: " + typeSpecimenId);
+			}else{
+				IdentifiableSource source = IdentifiableSource.NewInstance(ref, null);
+				derivedUnit.addSource(source);
+			}
+		}
+		
+		Integer refDetailFk = nullSafeInt(rs, "tsRefDetailFk");
+		if (refDetailFk != null){
+			logger.warn("TypeSpecimen.RefDetailFk should always be NULL but wasn't: " + typeSpecimenId);
+		}
+		
+		
 		
 	}
 
@@ -327,12 +372,15 @@ public class AlgaTerraTypeImport  extends AlgaTerraSpecimenImportBase {
 			Set<String> typeSpecimenIdSet = new HashSet<String>();
 			Set<String> termsIdSet = new HashSet<String>();
 			Set<String> collectionIdSet = new HashSet<String>();
+			Set<String> referenceIdSet = new HashSet<String>();
 			
 			while (rs.next()){
 				handleForeignKey(rs, nameIdSet, "nameFk");
 				handleForeignKey(rs, ecoFieldObservationIdSet, "ecoFactFk");
 				handleForeignKey(rs, typeSpecimenIdSet, "TypeSpecimenId");
 				handleForeignKey(rs, collectionIdSet, "CollectionFk");
+				handleForeignKey(rs, referenceIdSet, "tsRefFk");
+				handleForeignKey(rs, referenceIdSet, "tdRefFk");
 			}
 			
 			//name map
@@ -370,6 +418,20 @@ public class AlgaTerraTypeImport  extends AlgaTerraSpecimenImportBase {
 			idSet = collectionIdSet;
 			Map<String, Collection> subCollectionMap = (Map<String, Collection>)getCommonService().getSourcedObjectsByIdInSource(cdmClass, idSet, nameSpace);
 			result.put(nameSpace, subCollectionMap);
+
+			//nom reference map
+			nameSpace = BerlinModelReferenceImport.NOM_REFERENCE_NAMESPACE;
+			cdmClass = Reference.class;
+			idSet = referenceIdSet;
+			Map<String, Reference> nomReferenceMap = (Map<String, Reference>)getCommonService().getSourcedObjectsByIdInSource(cdmClass, idSet, nameSpace);
+			result.put(nameSpace, nomReferenceMap);
+
+			//biblio reference map
+			nameSpace = BerlinModelReferenceImport.BIBLIO_REFERENCE_NAMESPACE;
+			cdmClass = Reference.class;
+			idSet = referenceIdSet;
+			Map<String, Reference> biblioReferenceMap = (Map<String, Reference>)getCommonService().getSourcedObjectsByIdInSource(cdmClass, idSet, nameSpace);
+			result.put(nameSpace, biblioReferenceMap);
 
 			
 			//
