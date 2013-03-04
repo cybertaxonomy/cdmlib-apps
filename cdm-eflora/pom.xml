@@ -13,8 +13,8 @@
   
   <modelVersion>4.0.0</modelVersion>
   <artifactId>cdm-eflora</artifactId>
-  <name>CDM PESI</name>
-  <description>The PESI package for EDIT's CdmLibrary</description>
+  <name>CDM Eflora</name>
+  <description>The Eflora package for EDIT's CdmLibrary</description>
   <scm>
     <connection>scm:svn:http://dev.e-taxonomy.eu/svn/trunk/cdmlib-apps/cdmlib-eflora/</connection>
     <developerConnection>scm:svn:https://dev.e-taxonomy.eu/svn/trunk/cdmlib-apps/cdmlib-eflora/</developerConnection>
