@@ -12,6 +12,7 @@ package eu.etaxonomy.cdm.io.eflora.centralAfrica.ferns;
 
 import java.util.UUID;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 
 import eu.etaxonomy.cdm.common.CdmUtils;
@@ -95,27 +96,27 @@ public final class CentralAfricaFernsTransformer extends InputTransformerBase {
 
 	@Override
 	public NamedArea getNamedAreaByKey(String key) throws UndefinedTransformerMethodException {
-		if (CdmUtils.isEmpty(key)){return null;
+		if (StringUtils.isBlank(key)){return null;
 		}else if (key.equalsIgnoreCase("DRC")){return TdwgArea.getAreaByTdwgAbbreviation("CON-OO");
-		}else if (key.matches("C[ôo]t[eéê] d'Ivoire")){return TdwgArea.getAreaByTdwgAbbreviation("IVO-OO");
+		}else if (key.matches("C[ï¿½o]t[eï¿½ï¿½] d'Ivoire")){return TdwgArea.getAreaByTdwgAbbreviation("IVO-OO");
 		}else if (key.equalsIgnoreCase("Gambia")){return TdwgArea.getAreaByTdwgAbbreviation("GAM-OO");
 		}else if (key.matches("Sout?h Af?rica")){return WaterbodyOrCountry.getWaterbodyOrCountryByLabel("South Africa, Republic of");
 		}else if (key.matches("Equ[ai]torial? Guinea")){return TdwgArea.getAreaByTdwgAbbreviation("EQG-OO");
 		}else if (key.equalsIgnoreCase("Spanish Moroco")){return TdwgArea.getAreaByTdwgAbbreviation("MOR-SP");
 		}else if (key.matches("Co?[mn]o[rl][oe] [iI]sl?\\.")|| key.equalsIgnoreCase("Comores")){return TdwgArea.getAreaByTdwgAbbreviation("COM-CO");
-		}else if (key.matches("(La )?R[ée]un?ion\\.?")){return TdwgArea.getAreaByTdwgAbbreviation("REU-OO");
+		}else if (key.matches("(La )?R[\u00c9]un?ion\\.?")){return TdwgArea.getAreaByTdwgAbbreviation("REU-OO");
 		}else if (key.equalsIgnoreCase("Lybia")){return TdwgArea.getAreaByTdwgAbbreviation("LBY-OO");
 		}else if (key.matches("St He[lr]ena")){return TdwgArea.getAreaByTdwgAbbreviation("STH-OO");
 		}else if (key.equalsIgnoreCase("Amsterdam Isl.")){return TdwgArea.getAreaByTdwgAbbreviation("ASP-OO");
 		}else if (key.equalsIgnoreCase("Crozet isl.")){return TdwgArea.getAreaByTdwgAbbreviation("CRZ-OO");
-		}else if (key.matches("Pr?[ií]nci[pl]e")){return TdwgArea.getAreaByTdwgAbbreviation("GGI-PR");
+		}else if (key.matches("Pr?[iï¿½]nci[pl]e")){return TdwgArea.getAreaByTdwgAbbreviation("GGI-PR");
 		}else if (key.equalsIgnoreCase("Marion Isl.") || key.matches("Prince Ed[uw]ard Isl.") ){return TdwgArea.getAreaByTdwgAbbreviation("MPE-OO");
 		}else if (key.matches("Tan?z?an(ia|ai)")){return TdwgArea.getAreaByTdwgAbbreviation("TAN-OO");
 		}else if (key.matches("Cana[rt]y [iI]sl.")){return TdwgArea.getAreaByTdwgAbbreviation("CNY-OO");
 		}else if (key.equalsIgnoreCase("Azores")){return TdwgArea.getAreaByTdwgAbbreviation("AZO-OO");
 		}else if (key.matches("Rodri[gq]ue[sz]( Isl?(and)?\\.?)?")){return TdwgArea.getAreaByTdwgAbbreviation("ROD-OO");
 		}else if (key.equalsIgnoreCase("Ascension Island")){return TdwgArea.getAreaByTdwgAbbreviation("ASC-OO");
-		}else if (key.matches("S[aâ]o Tom[ée]")){return TdwgArea.getAreaByTdwgAbbreviation("GGI-ST");
+		}else if (key.matches("S[aï¿½]o Tom[\u00c9]")){return TdwgArea.getAreaByTdwgAbbreviation("GGI-ST");
 		}else if (key.matches("Marquesas Is.")){return TdwgArea.getAreaByTdwgAbbreviation("MRQ-OO");
 		}else if (key.matches("Equador")){return TdwgArea.getAreaByTdwgAbbreviation("ECU-OO");
 		}else if (key.matches("Norfolk Isl.")){return TdwgArea.getAreaByTdwgAbbreviation("NFK");
@@ -158,29 +159,29 @@ public final class CentralAfricaFernsTransformer extends InputTransformerBase {
 		if (CdmUtils.isEmpty(key)){return null;
 		//Teilstaat des Unionsstaates Tansania
 		}else if (key.equalsIgnoreCase("Zanzibar")){return uuidZanzibar;
-		//Annobón (port. Ano Bom) ist eine Insel im Golf von Guinea und gleichzeitig eine der sieben Provinzen Äquatorialguineas mit der Hauptstadt San Antonio de Palé.
+		//Annobï¿½n (port. Ano Bom) ist eine Insel im Golf von Guinea und gleichzeitig eine der sieben Provinzen ï¿½quatorialguineas mit der Hauptstadt San Antonio de Palï¿½.
 		}else if (key.matches("Anno?[bn]on")){return uuidAnnobon;
-		//Diego Garcia ist nach der Landfläche das größte Atoll des Chagos-Archipels,
+		//Diego Garcia ist nach der Landflï¿½che das grï¿½ï¿½te Atoll des Chagos-Archipels,
 		}else if (key.equalsIgnoreCase("Diego Garcia")){return uuidDiegoGarcia;
-		//Pemba ist die zweitgrößte Insel des ostafrikanischen Sansibar-Archipels. Gemeinsam mit der 50 km südlich gelegenen Insel Unguja und zahlreichen kleinen Nebeninseln bildet Pemba den halbautonomen Teilstaat „Sansibar“ in Tansania.
+		//Pemba ist die zweitgrï¿½ï¿½te Insel des ostafrikanischen Sansibar-Archipels. Gemeinsam mit der 50 km sï¿½dlich gelegenen Insel Unguja und zahlreichen kleinen Nebeninseln bildet Pemba den halbautonomen Teilstaat ï¿½Sansibarï¿½ in Tansania.
 		}else if (key.matches("Pemba( Isl.)?")){return uuidPemba;
-		//Santo Antão (port. für Heiliger Antonius) ist mit 779 km² die zweitgrößte der Kapverdischen Inseln im Atlantik. 
-		}else if (key.matches("S(an)?(to?)?\\.? Ant[ãa]o") ){return uuidStoAntao;
-		//São Vicente  ist eine der kleineren Kapverdischen Inseln im Atlantik
-		}else if (key.matches("S(ão)?\\.? Vicente")){return uuidSaoVicente;
-		//São Nicolau (dt.: „Sankt Nikolaus“) ist eine der kleineren (388 km²) und gebirgigen Kapverdischen Inseln im Norden des Archipels.
-		}else if (key.matches("S(\\.|ão) Nicolau")){return uuidSaoNicolau;
+		//Santo Antï¿½o (port. fï¿½r Heiliger Antonius) ist mit 779 kmï¿½ die zweitgrï¿½ï¿½te der Kapverdischen Inseln im Atlantik. 
+		}else if (key.matches("S(an)?(to?)?\\.? Ant[ï¿½a]o") ){return uuidStoAntao;
+		//Sï¿½o Vicente  ist eine der kleineren Kapverdischen Inseln im Atlantik
+		}else if (key.matches("S(ï¿½o)?\\.? Vicente")){return uuidSaoVicente;
+		//Sï¿½o Nicolau (dt.: ï¿½Sankt Nikolausï¿½) ist eine der kleineren (388 kmï¿½) und gebirgigen Kapverdischen Inseln im Norden des Archipels.
+		}else if (key.matches("S(\\.|ï¿½o) Nicolau")){return uuidSaoNicolau;
 		//Fogo - Kap Verde
 		}else if (key.equalsIgnoreCase("Fogo")){return uuidFogo;
 		//Brava ist die kleinste der bewohnten Kapverdischen Inseln im Atlantik.
 		}else if (key.matches("Br[ao]v[ao]")){return uuidBrava;
 		//Grande Comore - Comores
 		}else if (key.matches("Grande Comor[eo]")){return uuidGrandeComore;
-		//Gough ist eine hohe vulkanische Insel im Atlantischen Ozean, die zur Inselgruppe Tristan da Cunha gehört.
+		//Gough ist eine hohe vulkanische Insel im Atlantischen Ozean, die zur Inselgruppe Tristan da Cunha gehï¿½rt.
 		}else if (key.matches("Gough Isl(\\.|and)?")){return uuidGough;
-		//Middle Island ist eine Insel im Südatlantik, gelegen zwischen Nightingale Island und Stoltenhoff Island. Sie ist Teil der Inselgruppe Tristan da Cunha und gehört somit zum Britischen Überseegebiet St. Helena.
+		//Middle Island ist eine Insel im Sï¿½datlantik, gelegen zwischen Nightingale Island und Stoltenhoff Island. Sie ist Teil der Inselgruppe Tristan da Cunha und gehï¿½rt somit zum Britischen ï¿½berseegebiet St. Helena.
 		}else if (key.matches("Middle Isl(\\.|and)?")){return uuidMiddleIslandTristanDaCunha;
-		//Die Île aux Cerfs (wörtlich übersetzt „Hirscheninsel“) ist eine kleine Insel östlich von Mauritius im Indischen Ozean.
+		//Die ï¿½le aux Cerfs (wï¿½rtlich ï¿½bersetzt ï¿½Hirscheninselï¿½) ist eine kleine Insel ï¿½stlich von Mauritius im Indischen Ozean.
 		}else if (key.equalsIgnoreCase("Ile aux Cerfs")){return uuidCerfs;
 		//Sokotra ist eine Insel im nordwestlichen Indischen Ozean.
 		}else if (key.equalsIgnoreCase("Soqotra")){return uuidSoqotra;
@@ -202,17 +203,17 @@ public final class CentralAfricaFernsTransformer extends InputTransformerBase {
 		}else if (key.matches("(La )?Palma")){return uuidLaPalma;
 		//Flores
 		}else if (key.matches("Flores")){return uuidFlores;
-		//Faial ist eine Gemeinde an der Nordküste Madeiras im Kreis Santan
+		//Faial ist eine Gemeinde an der Nordkï¿½ste Madeiras im Kreis Santan
 		}else if (key.equalsIgnoreCase("Faial")){return uuidFaial;
 		//Anjouan (komorisch Ndzouani) ist eine der vier Inseln der Komoren.
 		}else if (key.equalsIgnoreCase("Anjouan")){return uuidAnjouan;
-		//Silhouette ist eine Insel der Seychellen in der Inselgruppe um Mahé.
+		//Silhouette ist eine Insel der Seychellen in der Inselgruppe um Mahï¿½.
 		}else if (key.matches("Silhouette( Isl?(and)?\\.)?")){return uuidSilhouette;
 		//Long Island : Seychellen (es gibt auch andere Long Islands)
 		}else if (key.matches("Long Island")){return uuidLongIslandSeychelles;
-		//Inaccessible Islands sind eine Gruppe kleiner, unbewohnter Inseln im Archipel der Südlichen Orkneyinseln im Südpolarmeer.
+		//Inaccessible Islands sind eine Gruppe kleiner, unbewohnter Inseln im Archipel der Sï¿½dlichen Orkneyinseln im Sï¿½dpolarmeer.
 		}else if (key.matches("Inaccessibl[ea] Isl(and)?\\.?")){return uuidInaccessible;
-		//Boa Vista (dt.: „Schöner Anblick“), auch Boavista geschrieben, ist die drittgrößte der Kapverdischen Inseln im Zentralatlantik.
+		//Boa Vista (dt.: ï¿½Schï¿½ner Anblickï¿½), auch Boavista geschrieben, ist die drittgrï¿½ï¿½te der Kapverdischen Inseln im Zentralatlantik.
 		}else if (key.equalsIgnoreCase("Boavista")){return uuidBoavista;
 		//Maio ist eine der neun bewohnten Kapverdischen Inseln im Atlantik.
 		}else if (key.equalsIgnoreCase("Maio")){return uuidMaio;
@@ -220,27 +221,27 @@ public final class CentralAfricaFernsTransformer extends InputTransformerBase {
 		}else if (key.equalsIgnoreCase("Sta. Luzia")){return uuidStLuzia;
 		//Nightingale Islands
 		}else if (key.matches("Nightingale Isl(and)?\\.?")){return uuidNightingaleIs;
-		//Mohély ??
-		}else if (key.matches("Moh[ée]ll?[yi]")){return uuidMohely;
-		//Santa Maria ist die geologisch älteste Insel der Azoren im Atlantischen Ozean
+		//Mohï¿½ly ??
+		}else if (key.matches("Moh[ï¿½e]ll?[yi]")){return uuidMohely;
+		//Santa Maria ist die geologisch ï¿½lteste Insel der Azoren im Atlantischen Ozean
 		}else if (key.matches("Santa Maria")){return uuidSantaMaria;
-		//São Miguel ist die größte Insel der Azoren. 
-		}else if (key.matches("São Miguel")){return uuidSaoMiguel;
-		//Terceira gehört zur Zentralgruppe der Azoren.
+		//Sï¿½o Miguel ist die grï¿½ï¿½te Insel der Azoren. 
+		}else if (key.matches("Sï¿½o Miguel")){return uuidSaoMiguel;
+		//Terceira gehï¿½rt zur Zentralgruppe der Azoren.
 		}else if (key.matches("Terceira")){return uuidTerceira;
 		//Desertas - Madeira
 		}else if (key.matches("Desertas")){return uuidDesertas;
 		//Porto Santo - Madeira
 		}else if (key.matches("Porto Santo")){return uuidPortoSanto;
-		//Mahé - Seychelles
-		}else if (key.matches("Mah[ée]")){return uuidMahe;
+		//Mahï¿½ - Seychelles
+		}else if (key.matches("Mah[ï¿½e]")){return uuidMahe;
 		//Parslin - Seychelles
 		}else if (key.matches("Parslin")){return uuidParslin;
-		//Stoltenhoff Island ist eine unbewohnte Insel im Südatlantik. Stoltenhoff gehört, wie die gesamte Inselgruppe Tristan da Cunha, zum Britischen Überseegebiet St. Helena.
+		//Stoltenhoff Island ist eine unbewohnte Insel im Sï¿½datlantik. Stoltenhoff gehï¿½rt, wie die gesamte Inselgruppe Tristan da Cunha, zum Britischen ï¿½berseegebiet St. Helena.
 		}else if (key.matches("Stoltenhoff Isl(and)?\\.?")){return uuidStoltenhoff;
 		//Comoro Is.??
 		}else if (key.matches("Omoro Isl.")){return uuidOmoroIs;
-		//Moorea ältere Namen Aimeho oder Eimeo (Cook), Santo Domingo (Boenechea) und York Island (Wallis), ist eine Insel im Süd-Pazifik, die politisch zu Französisch-Polynesien gehört.
+		//Moorea ï¿½ltere Namen Aimeho oder Eimeo (Cook), Santo Domingo (Boenechea) und York Island (Wallis), ist eine Insel im Sï¿½d-Pazifik, die politisch zu Franzï¿½sisch-Polynesien gehï¿½rt.
 		}else if (key.matches("Moorea")){return uuidMoorea;
 		
 		}else{
