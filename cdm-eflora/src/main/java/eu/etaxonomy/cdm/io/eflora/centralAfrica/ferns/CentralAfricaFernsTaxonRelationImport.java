@@ -1015,7 +1015,7 @@ public class CentralAfricaFernsTaxonRelationImport  extends CentralAfricaFernsIm
 		countriesString = countriesString.replace("(introduced)", " - introduced");
 		countriesString = countriesString.replace("(naturalised)", " - naturalised");
 		countriesString = countriesString.replace("Madagascar-", "Madagascar -");
-		countriesString = countriesString.replace("Mahé", "Mahe");
+		countriesString = countriesString.replace("Mah\u00e9", "Mahe");
 		 
 		String[] split = countriesString.split("[,;]");
 		String remainingString = null;
