@@ -291,7 +291,7 @@ public class PesiRelTaxonExport extends PesiExportBase {
 					txStatus = startTransaction(true);
 					logger.info("Started transaction to fetch all rootNodes specific to Rank " + rank.getLabel() + " ...");
 
-					List<TaxonNode> rankSpecificRootNodes = getClassificationService().loadRankSpecificRootNodes(classification, rank, null);
+					List<TaxonNode> rankSpecificRootNodes = getClassificationService().loadRankSpecificRootNodes(classification, rank, null, null, null);
 					logger.info("Fetched " + rankSpecificRootNodes.size() + " RootNodes for Rank " + rank.getLabel());
 
 					commitTransaction(txStatus);
