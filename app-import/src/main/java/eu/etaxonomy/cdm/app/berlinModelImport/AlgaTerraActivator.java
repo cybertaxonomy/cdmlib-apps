@@ -59,12 +59,14 @@ public class AlgaTerraActivator {
 	static final UUID sourceRefUuid = UUID.fromString("7e1a2500-93a5-40c2-ba34-0213d7822379");
 	
 	static final UUID featureTreeUuid = UUID.fromString("a970168a-36fd-4c7c-931e-87214a965c14");
-	static final Object[] featureKeyList = new Integer[]{7,201,202,203,204,205,206,207}; 
+	static final Object[] featureKeyList = new Integer[]{7,201,203,204,206,207}; 
 	static final UUID specimenFeatureTreeUuid = UUID.fromString("ba86246e-d4d0-419f-832e-86d70b1e4bd7");
 	
 	
+	static final boolean removeRestricted = true;
+	
 	//check - import
-	static final CHECK check = CHECK.IMPORT_WITHOUT_CHECK;
+	static final CHECK check = CHECK.CHECK_AND_IMPORT;
 
 	private boolean ignoreNull = true;
 	
@@ -76,53 +78,55 @@ public class AlgaTerraActivator {
 	//NomeclaturalCode
 	static final NomenclaturalCode nomenclaturalCode = NomenclaturalCode.ICBN;
 	
-	static String factFilter = " factCategoryFk NOT IN (7, 202, 1000 ) ";
+	static String factFilter = " factCategoryFk NOT IN (7, 202, 203, 205, 1000 ) ";
 	
 	
 // ****************** ALL *****************************************
 	
-//	//authors
-//	static final boolean doAuthors = true;
-//	//references
-//	static final DO_REFERENCES doReferences =  DO_REFERENCES.ALL;
-//	//names
-//	static final boolean doTaxonNames = true;
-//	static final boolean doRelNames = true;
-//	static final boolean doNameStatus = true;
-//	static final boolean doTypes = true;  
-//	
-//	//taxa
-//	static final boolean doTaxa = true;
-//	static final boolean doRelTaxa = true;
-//	static final boolean doFacts = true;
-//	
-//	//alga terra specific
-//	static final boolean ecoFacts = true;
-//	static final boolean doFactEcology = true;
-//	static final boolean doImages = true;
-
-// ************************ NONE **************************************** //
-	
 	//authors
-	static final boolean doAuthors = false;
+	static final boolean doAuthors = true;
 	//references
 	static final DO_REFERENCES doReferences =  DO_REFERENCES.ALL;
 	//names
-	static final boolean doTaxonNames = false;
-	static final boolean doRelNames = false;
-	static final boolean doNameStatus = false;
-	static final boolean doTypes = false;
-	static final boolean doNameFacts = false;
+	static final boolean doTaxonNames = true;
+	static final boolean doRelNames = true;
+	static final boolean doNameStatus = true;
+	static final boolean doTypes = true;  
 	
 	//taxa
 	static final boolean doTaxa = true;
-	static final boolean doRelTaxa = false;
+	static final boolean doRelTaxa = true;
 	static final boolean doFacts = true;
 	
-  //alga terra specific
+	//alga terra specific
 	static final boolean ecoFacts = true;
-	static final boolean doFactEcology = false;
+	static final boolean doFactEcology = true;
 	static final boolean doImages = true;
+	static final boolean doDna = true;
+
+// ************************ NONE **************************************** //
+	
+//	//authors
+//	static final boolean doAuthors = false;
+//	//references
+//	static final DO_REFERENCES doReferences =  DO_REFERENCES.ALL;
+//	//names
+//	static final boolean doTaxonNames = false;
+//	static final boolean doRelNames = false;
+//	static final boolean doNameStatus = false;
+//	static final boolean doTypes = false;
+//	static final boolean doNameFacts = false;
+//	
+//	//taxa
+//	static final boolean doTaxa = true;
+//	static final boolean doRelTaxa = false;
+//	static final boolean doFacts = false;
+//	
+//  //alga terra specific
+//	static final boolean ecoFacts = true;
+//	static final boolean doFactEcology = false;
+//	static final boolean doImages = false;
+//	static final boolean doDna = true;
 	
 	
 	public void invoke(String[] args){
@@ -151,9 +155,11 @@ public class AlgaTerraActivator {
 		config.setDoEcoFacts(ecoFacts);
 		config.setDoImages(doImages);
 		config.setDoFactEcology(doFactEcology);
+		config.setDoDna(doDna);
 		
 		config.setSourceRefUuid(sourceRefUuid);
 		config.setIgnoreNull(ignoreNull);
+		config.setRemoveRestricted(removeRestricted);
 		
 		config.setIncludeFlatClassifications(includeFlatClassifications);
 		config.setIncludeAllNonMisappliedRelatedClassifications(includeAllNonMisappliedRelatedClassifications);
@@ -209,9 +215,9 @@ public class AlgaTerraActivator {
 		FeatureNode distributionNode = FeatureNode.NewInstance(Feature.DISTRIBUTION());
 		tree.getRoot().addChild(distributionNode, 2);
 		
-		//needed ??
-		FeatureNode imageNode = FeatureNode.NewInstance(Feature.IMAGE());
-		tree.getRoot().addChild(imageNode);
+//		//needed ??
+//		FeatureNode imageNode = FeatureNode.NewInstance(Feature.IMAGE());
+//		tree.getRoot().addChild(imageNode);
 		
 		app.getFeatureTreeService().saveOrUpdate(tree);
 	}

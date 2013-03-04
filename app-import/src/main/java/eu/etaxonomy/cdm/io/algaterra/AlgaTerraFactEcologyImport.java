@@ -22,8 +22,8 @@ import org.apache.log4j.Logger;
 import org.springframework.stereotype.Component;
 
 import eu.etaxonomy.cdm.api.facade.DerivedUnitFacade;
-import eu.etaxonomy.cdm.api.facade.DerivedUnitFacadeCacheStrategy;
 import eu.etaxonomy.cdm.api.facade.DerivedUnitFacade.DerivedUnitType;
+import eu.etaxonomy.cdm.api.facade.DerivedUnitFacadeCacheStrategy;
 import eu.etaxonomy.cdm.api.facade.DerivedUnitFacadeNotSupportedException;
 import eu.etaxonomy.cdm.io.algaterra.validation.AlgaTerraSpecimenImportValidator;
 import eu.etaxonomy.cdm.io.berlinModel.in.BerlinModelImportConfigurator;
@@ -38,8 +38,6 @@ import eu.etaxonomy.cdm.model.common.TimePeriod;
 import eu.etaxonomy.cdm.model.description.Feature;
 import eu.etaxonomy.cdm.model.description.IndividualsAssociation;
 import eu.etaxonomy.cdm.model.description.TaxonDescription;
-import eu.etaxonomy.cdm.model.name.BotanicalName;
-import eu.etaxonomy.cdm.model.name.Rank;
 import eu.etaxonomy.cdm.model.occurrence.DerivationEvent;
 import eu.etaxonomy.cdm.model.occurrence.DerivedUnit;
 import eu.etaxonomy.cdm.model.occurrence.DerivedUnitBase;
@@ -326,34 +324,6 @@ public class AlgaTerraFactEcologyImport  extends AlgaTerraSpecimenImportBase {
 
 
 
-	/**
-	 * @param state
-	 * @param newTaxonId
-	 * @param taxonMap
-	 * @param factId
-	 * @return
-	 */
-	private Taxon getTaxon(AlgaTerraImportState state, int taxonId, Map<String, TaxonBase> taxonMap, int factId) {
-		TaxonBase<?> taxonBase = taxonMap.get(String.valueOf(taxonId));
-		
-		//TODO for testing
-		if (taxonBase == null && ! state.getConfig().isDoTaxa()){
-			taxonBase = Taxon.NewInstance(BotanicalName.NewInstance(Rank.SPECIES()), null);
-		}
-		
-		Taxon taxon;
-		if ( taxonBase instanceof Taxon ) {
-			taxon = (Taxon) taxonBase;
-		} else if (taxonBase != null) {
-			logger.warn("TaxonBase (" + taxonId + ") for Fact(Specimen) with factId " + factId + " was not of type Taxon but: " + taxonBase.getClass().getSimpleName());
-			return null;
-		} else {
-			logger.warn("TaxonBase (" + taxonId + ") for Fact(Specimen) with factId " + factId + " is null.");
-			return null;
-		}
-		return taxon;
-	}
-	
 	/* (non-Javadoc)
 	 * @see eu.etaxonomy.cdm.io.berlinModel.in.IPartitionedIO#getRelatedObjectsForPartition(java.sql.ResultSet)
 	 */

@@ -22,10 +22,11 @@ import eu.etaxonomy.cdm.io.berlinModel.in.validation.BerlinModelGeneralImportVal
 import eu.etaxonomy.cdm.io.common.Source;
 
 /**
- * @author pesiimport
+ * @author a.mueller
  *
  */
 public class AlgaTerraImportConfigurator extends BerlinModelImportConfigurator {
+
 
 	private boolean doEcoFacts = true;
 	private boolean doFactEcology = true;
@@ -33,6 +34,8 @@ public class AlgaTerraImportConfigurator extends BerlinModelImportConfigurator {
 	private boolean doImages = true;
 	
 	private boolean doDna = true;
+	
+	private boolean removeRestricted = false;  //if true, all records with protected or restricted flag will be filtered
 	
 	private String imageBaseUrl = "http://www.algaterra.org/ATDB/Figures/";
 	
@@ -124,6 +127,14 @@ public class AlgaTerraImportConfigurator extends BerlinModelImportConfigurator {
 
 	public void setDoDna(boolean doDna) {
 		this.doDna = doDna;
+	}
+
+	public boolean isRemoveRestricted() {
+		return removeRestricted;
+	}
+	
+	public void setRemoveRestricted(boolean removeRestricted) {
+		this.removeRestricted = removeRestricted;
 	}
 
 
