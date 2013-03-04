@@ -15,7 +15,6 @@ import java.util.UUID;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 
-import eu.etaxonomy.cdm.common.CdmUtils;
 import eu.etaxonomy.cdm.io.common.mapping.InputTransformerBase;
 import eu.etaxonomy.cdm.io.common.mapping.UndefinedTransformerMethodException;
 import eu.etaxonomy.cdm.model.common.ExtensionType;
@@ -98,13 +97,13 @@ public final class CentralAfricaFernsTransformer extends InputTransformerBase {
 	public NamedArea getNamedAreaByKey(String key) throws UndefinedTransformerMethodException {
 		if (StringUtils.isBlank(key)){return null;
 		}else if (key.equalsIgnoreCase("DRC")){return TdwgArea.getAreaByTdwgAbbreviation("CON-OO");
-		}else if (key.matches("C[�o]t[e��] d'Ivoire")){return TdwgArea.getAreaByTdwgAbbreviation("IVO-OO");
+		}else if (key.matches("C[\u00F4o]t[e��] d'Ivoire")){return TdwgArea.getAreaByTdwgAbbreviation("IVO-OO");
 		}else if (key.equalsIgnoreCase("Gambia")){return TdwgArea.getAreaByTdwgAbbreviation("GAM-OO");
 		}else if (key.matches("Sout?h Af?rica")){return WaterbodyOrCountry.getWaterbodyOrCountryByLabel("South Africa, Republic of");
 		}else if (key.matches("Equ[ai]torial? Guinea")){return TdwgArea.getAreaByTdwgAbbreviation("EQG-OO");
 		}else if (key.equalsIgnoreCase("Spanish Moroco")){return TdwgArea.getAreaByTdwgAbbreviation("MOR-SP");
 		}else if (key.matches("Co?[mn]o[rl][oe] [iI]sl?\\.")|| key.equalsIgnoreCase("Comores")){return TdwgArea.getAreaByTdwgAbbreviation("COM-CO");
-		}else if (key.matches("(La )?R[\u00c9]un?ion\\.?")){return TdwgArea.getAreaByTdwgAbbreviation("REU-OO");
+		}else if (key.matches("(La )?R[e\u00c9]un?ion\\.?")){return TdwgArea.getAreaByTdwgAbbreviation("REU-OO");
 		}else if (key.equalsIgnoreCase("Lybia")){return TdwgArea.getAreaByTdwgAbbreviation("LBY-OO");
 		}else if (key.matches("St He[lr]ena")){return TdwgArea.getAreaByTdwgAbbreviation("STH-OO");
 		}else if (key.equalsIgnoreCase("Amsterdam Isl.")){return TdwgArea.getAreaByTdwgAbbreviation("ASP-OO");
@@ -116,7 +115,7 @@ public final class CentralAfricaFernsTransformer extends InputTransformerBase {
 		}else if (key.equalsIgnoreCase("Azores")){return TdwgArea.getAreaByTdwgAbbreviation("AZO-OO");
 		}else if (key.matches("Rodri[gq]ue[sz]( Isl?(and)?\\.?)?")){return TdwgArea.getAreaByTdwgAbbreviation("ROD-OO");
 		}else if (key.equalsIgnoreCase("Ascension Island")){return TdwgArea.getAreaByTdwgAbbreviation("ASC-OO");
-		}else if (key.matches("S[a�]o Tom[\u00c9]")){return TdwgArea.getAreaByTdwgAbbreviation("GGI-ST");
+		}else if (key.matches("S[a\u00E3]o Tom[e\u00c9]")){return TdwgArea.getAreaByTdwgAbbreviation("GGI-ST");
 		}else if (key.matches("Marquesas Is.")){return TdwgArea.getAreaByTdwgAbbreviation("MRQ-OO");
 		}else if (key.matches("Equador")){return TdwgArea.getAreaByTdwgAbbreviation("ECU-OO");
 		}else if (key.matches("Norfolk Isl.")){return TdwgArea.getAreaByTdwgAbbreviation("NFK");
@@ -156,21 +155,21 @@ public final class CentralAfricaFernsTransformer extends InputTransformerBase {
 	
 	@Override
 	public UUID getNamedAreaUuid(String key) throws UndefinedTransformerMethodException {
-		if (CdmUtils.isEmpty(key)){return null;
+		if (StringUtils.isBlank(key)){return null;
 		//Teilstaat des Unionsstaates Tansania
 		}else if (key.equalsIgnoreCase("Zanzibar")){return uuidZanzibar;
-		//Annob�n (port. Ano Bom) ist eine Insel im Golf von Guinea und gleichzeitig eine der sieben Provinzen �quatorialguineas mit der Hauptstadt San Antonio de Pal�.
+		//Annobon (port. Ano Bom) ist eine Insel im Golf von Guinea und gleichzeitig eine der sieben Provinzen �quatorialguineas mit der Hauptstadt San Antonio de Pal�.
 		}else if (key.matches("Anno?[bn]on")){return uuidAnnobon;
 		//Diego Garcia ist nach der Landfl�che das gr��te Atoll des Chagos-Archipels,
 		}else if (key.equalsIgnoreCase("Diego Garcia")){return uuidDiegoGarcia;
 		//Pemba ist die zweitgr��te Insel des ostafrikanischen Sansibar-Archipels. Gemeinsam mit der 50 km s�dlich gelegenen Insel Unguja und zahlreichen kleinen Nebeninseln bildet Pemba den halbautonomen Teilstaat �Sansibar� in Tansania.
 		}else if (key.matches("Pemba( Isl.)?")){return uuidPemba;
 		//Santo Ant�o (port. f�r Heiliger Antonius) ist mit 779 km� die zweitgr��te der Kapverdischen Inseln im Atlantik. 
-		}else if (key.matches("S(an)?(to?)?\\.? Ant[�a]o") ){return uuidStoAntao;
-		//S�o Vicente  ist eine der kleineren Kapverdischen Inseln im Atlantik
-		}else if (key.matches("S(�o)?\\.? Vicente")){return uuidSaoVicente;
-		//S�o Nicolau (dt.: �Sankt Nikolaus�) ist eine der kleineren (388 km�) und gebirgigen Kapverdischen Inseln im Norden des Archipels.
-		}else if (key.matches("S(\\.|�o) Nicolau")){return uuidSaoNicolau;
+		}else if (key.matches("S(an)?(to?)?\\.? Ant[\u00E3a]o") ){return uuidStoAntao;
+		//Sao Vicente  ist eine der kleineren Kapverdischen Inseln im Atlantik
+		}else if (key.matches("S(\u00E3o)?\\.? Vicente")){return uuidSaoVicente;
+		//Sao Nicolau (dt.: �Sankt Nikolaus�) ist eine der kleineren (388 km�) und gebirgigen Kapverdischen Inseln im Norden des Archipels.
+		}else if (key.matches("S(\\.|\u00E3o) Nicolau")){return uuidSaoNicolau;
 		//Fogo - Kap Verde
 		}else if (key.equalsIgnoreCase("Fogo")){return uuidFogo;
 		//Brava ist die kleinste der bewohnten Kapverdischen Inseln im Atlantik.
@@ -226,7 +225,7 @@ public final class CentralAfricaFernsTransformer extends InputTransformerBase {
 		//Santa Maria ist die geologisch �lteste Insel der Azoren im Atlantischen Ozean
 		}else if (key.matches("Santa Maria")){return uuidSantaMaria;
 		//S�o Miguel ist die gr��te Insel der Azoren. 
-		}else if (key.matches("S�o Miguel")){return uuidSaoMiguel;
+		}else if (key.matches("S\u00E3o Miguel")){return uuidSaoMiguel;
 		//Terceira geh�rt zur Zentralgruppe der Azoren.
 		}else if (key.matches("Terceira")){return uuidTerceira;
 		//Desertas - Madeira
@@ -283,7 +282,7 @@ public final class CentralAfricaFernsTransformer extends InputTransformerBase {
 	 */
 	@Override
 	public Feature getFeatureByKey(String key) throws UndefinedTransformerMethodException {
-		if (CdmUtils.isEmpty(key)){return null;
+		if (StringUtils.isBlank(key)){return null;
 //		}else if (key.equalsIgnoreCase("distribution")){return Feature.DISTRIBUTION();
 //		}else if (key.equalsIgnoreCase("habitatecology")){return Feature.ECOLOGY();
 		}else{
@@ -296,7 +295,7 @@ public final class CentralAfricaFernsTransformer extends InputTransformerBase {
 	 */
 	@Override
 	public UUID getFeatureUuid(String key) 	throws UndefinedTransformerMethodException {
-		if (CdmUtils.isEmpty(key)){return null;
+		if (StringUtils.isBlank(key)){return null;
 //		}else if (key.equalsIgnoreCase("Chromosomes")){return uuidChromosomes;
 //		}else if (key.equalsIgnoreCase("Inflorescence")){return uuidInflorescence;
 
@@ -315,7 +314,7 @@ public final class CentralAfricaFernsTransformer extends InputTransformerBase {
 	 */
 	@Override
 	public MarkerType getMarkerTypeByKey(String key) throws UndefinedTransformerMethodException {
-		if (CdmUtils.isEmpty(key)){return null;
+		if (StringUtils.isBlank(key)){return null;
 //		}else if (key.equalsIgnoreCase("distribution")){return MarkerType.;
 //		}else if (key.equalsIgnoreCase("habitatecology")){return Feature.ECOLOGY();
 		}else{
@@ -325,7 +324,7 @@ public final class CentralAfricaFernsTransformer extends InputTransformerBase {
 
 	@Override
 	public UUID getMarkerTypeUuid(String key) throws UndefinedTransformerMethodException {
-		if (CdmUtils.isEmpty(key)){return null;
+		if (StringUtils.isBlank(key)){return null;
 //		}else if (key.equalsIgnoreCase("IMPERFECTLY KNOWN SPECIES")){return uuidIncompleteTaxon;
 		}else{
 			return null;
@@ -336,7 +335,7 @@ public final class CentralAfricaFernsTransformer extends InputTransformerBase {
 	
 	@Override
 	public PresenceTerm getPresenceTermByKey(String key) throws UndefinedTransformerMethodException {
-		if (CdmUtils.isEmpty(key)){return null;
+		if (StringUtils.isBlank(key)){return null;
 		}else if (key.equalsIgnoreCase("introduced")){return PresenceTerm.INTRODUCED();
 		}else if (key.equalsIgnoreCase("endemic")){return PresenceTerm.ENDEMIC_FOR_THE_RELEVANT_AREA();
 		}else if (key.equalsIgnoreCase("naturalised")){return PresenceTerm.NATURALISED();
@@ -348,7 +347,7 @@ public final class CentralAfricaFernsTransformer extends InputTransformerBase {
 
 	@Override
 	public UUID getPresenceTermUuid(String key) throws UndefinedTransformerMethodException {
-		if (CdmUtils.isEmpty(key)){return null;
+		if (StringUtils.isBlank(key)){return null;
 //		}else if (key.equalsIgnoreCase("IN")){return indigenousUuid;
 //		}else if (key.equalsIgnoreCase("CA")){return casualUuid;
 //		}else if (key.equalsIgnoreCase("NN")){return nonInvasiveUuid;

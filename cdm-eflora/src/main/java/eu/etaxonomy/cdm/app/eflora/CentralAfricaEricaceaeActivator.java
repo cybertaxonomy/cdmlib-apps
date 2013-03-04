@@ -205,7 +205,7 @@ public class CentralAfricaEricaceaeActivator {
 		
 		termService.save(level);
 		
-		NamedArea area = NamedArea.NewInstance("Côtier", "Côtier", "I");
+		NamedArea area = NamedArea.NewInstance("C\u00F4tier", "C\u00F4tier", "I");
 		area.setLevel(level);
 		area.setType(NamedAreaType.NATURAL_AREA());
 		voc.addTerm(area);
@@ -254,7 +254,7 @@ public class CentralAfricaEricaceaeActivator {
 		voc.addTerm(area);
 		termService.save(area);
 
-		area = NamedArea.NewInstance("Lacs Édouard et Kivu", "Lacs Édouard et Kivu", "IX");
+		area = NamedArea.NewInstance("Lacs \u00C9douard et Kivu", "Lacs \u00C9douard et Kivu", "IX");
 		area.setLevel(level);
 		area.setType(NamedAreaType.NATURAL_AREA());
 		voc.addTerm(area);
