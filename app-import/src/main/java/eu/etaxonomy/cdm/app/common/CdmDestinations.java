@@ -504,7 +504,25 @@ public class CdmDestinations {
 		return makeDestination(dbType, cdmServer, cdmDB, -1, cdmUserName, null);
 	}
 	
-	
+	/**
+     * patricia
+     */
+    public static ICdmDataSource mon_cdm() {
+        DatabaseTypeEnum dbType = DatabaseTypeEnum.MySQL;
+        String cdmServer = "localhost";
+        String cdmDB = "cdm_local";
+        String cdmUserName = "root";
+        return makeDestination(dbType, cdmServer, cdmDB, -1, cdmUserName, null);
+    }
+    
+   public static ICdmDataSource proibiosphere_local() {
+        DatabaseTypeEnum dbType = DatabaseTypeEnum.MySQL;
+        String cdmServer = "localhost";
+        String cdmDB = "cdm_production_proibiosphere_chenopodium_pilot";
+        String cdmUserName = "root";
+        return makeDestination(dbType, cdmServer, cdmDB, -1, cdmUserName, null);
+    }
+    
 //	public static ICdmDataSource LAPTOP_HP(){
 //		DatabaseTypeEnum dbType = DatabaseTypeEnum.SqlServer2005;
 //		String cdmServer = "LAPTOPHP";
