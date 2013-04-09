@@ -242,13 +242,12 @@ public class GlobisImageImport  extends GlobisImportBase<Taxon> {
 							}
 							if (taxon == null){
 								//FIXME
-								Reference undefinedSec = null;
+								Reference<?> undefinedSec = null;
 								taxon = Taxon.NewInstance(specTaxTaxonName, undefinedSec);
 							}
 							
-							DeterminationEvent determinationEvent = DeterminationEvent.NewInstance();
-							determinationEvent.setTaxon(taxon);
-							determinationEvent.setIdentifiedUnit(specimen);
+							DeterminationEvent.NewInstance(taxon, specimen);
+
 						}
 						
 						
