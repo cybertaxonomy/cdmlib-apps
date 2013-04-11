@@ -32,8 +32,6 @@ public class CommonNameImportConfigurator extends ExcelImportConfiguratorBase im
 	@SuppressWarnings("unused")
 	private static Logger logger = Logger.getLogger(CommonNameImportConfigurator.class);
 
-//	private UUID uuidCyprusReference = UUID.fromString("b5281cd3-9d5d-4ae2-8d55-b62a592ce846");
-	
 	private String referenceTitle = "Common Name Excel Import";
 	
 	
@@ -41,10 +39,13 @@ public class CommonNameImportConfigurator extends ExcelImportConfiguratorBase im
 	
 	public static CommonNameImportConfigurator NewInstance(URI source, ICdmDataSource destination){
 		return new CommonNameImportConfigurator(source, destination);
-}
+	}
 
 
-	
+	/* (non-Javadoc)
+	 * @see eu.etaxonomy.cdm.io.common.ImportConfiguratorBase#makeIoClassList()
+	 */
+	@Override
 	protected void makeIoClassList(){
 		ioClassList = new Class[]{
 				CommonNameExcelImport.class ,
@@ -55,6 +56,7 @@ public class CommonNameImportConfigurator extends ExcelImportConfiguratorBase im
 	/* (non-Javadoc)
 	 * @see eu.etaxonomy.cdm.io.common.IImportConfigurator#getNewState()
 	 */
+	@Override
 	public ImportStateBase getNewState() {
 		return new CichorieaeCommonNameImportState(this);
 	}
@@ -69,16 +71,26 @@ public class CommonNameImportConfigurator extends ExcelImportConfiguratorBase im
 	}
 	
 	
+	/* (non-Javadoc)
+	 * @see eu.etaxonomy.cdm.io.common.ImportConfiguratorBase#getSource()
+	 */
+	@Override
 	public URI getSource() {
 		return (URI)super.getSource();
 	}
+
+	/* (non-Javadoc)
+	 * @see eu.etaxonomy.cdm.io.common.ImportConfiguratorBase#setSource(java.lang.Object)
+	 */
+	@Override
 	public void setSource(URI source) {
 		super.setSource(source);
 	}
 
 	/* (non-Javadoc)
-	 * @see eu.etaxonomy.cdm.io.tcsrdf.IImportConfigurator#getSourceReference()
+	 * @see eu.etaxonomy.cdm.io.excel.common.ExcelImportConfiguratorBase#getSourceReference()
 	 */
+	@Override
 	public Reference getSourceReference() {
 		if (sourceReference == null){
 			sourceReference =  ReferenceFactory.newDatabase();
@@ -89,14 +101,12 @@ public class CommonNameImportConfigurator extends ExcelImportConfiguratorBase im
 		return sourceReference;
 	}
 	
+
 	/* (non-Javadoc)
-	 * @see eu.etaxonomy.cdm.io.common.IImportConfigurator#getSourceNameString()
+	 * @see eu.etaxonomy.cdm.io.common.ImportConfiguratorBase#getSourceNameString()
 	 */
+	@Override
 	public String getSourceNameString() {
 		return getSource().toString();
 	}
-
-	
-	
-
 }
