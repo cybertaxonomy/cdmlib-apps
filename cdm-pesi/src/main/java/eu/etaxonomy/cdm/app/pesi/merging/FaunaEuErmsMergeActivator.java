@@ -13,7 +13,7 @@ import java.util.Set;
 import java.util.StringTokenizer;
 import java.util.UUID;
 
-import common.Logger;
+import org.apache.log4j.Logger;
 
 import eu.etaxonomy.cdm.api.application.CdmApplicationController;
 import eu.etaxonomy.cdm.api.service.pager.Pager;
