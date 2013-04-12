@@ -4,6 +4,7 @@
 package eu.etaxonomy.cdm.io.algaterra;
 
 import eu.etaxonomy.cdm.database.ICdmDataSource;
+import eu.etaxonomy.cdm.io.algaterra.validation.AlgaTerraMorphologyImportValidator;
 import eu.etaxonomy.cdm.io.berlinModel.in.BerlinModelAuthorImport;
 import eu.etaxonomy.cdm.io.berlinModel.in.BerlinModelAuthorTeamImport;
 import eu.etaxonomy.cdm.io.berlinModel.in.BerlinModelFactsImport;
@@ -34,6 +35,8 @@ public class AlgaTerraImportConfigurator extends BerlinModelImportConfigurator {
 	private boolean doImages = true;
 	
 	private boolean doDna = true;
+	
+	private boolean doMorphology = true;
 	
 	private boolean removeRestricted = false;  //if true, all records with protected or restricted flag will be filtered
 	
@@ -75,6 +78,7 @@ public class AlgaTerraImportConfigurator extends BerlinModelImportConfigurator {
 				, AlgaTerraSiteImagesImport.class
 				, AlgaTerraPictureImport.class
 				, AlgaTerraDnaImport.class
+				, AlgaTerraMorphologyImport.class
 				
 		};	
 		
@@ -135,6 +139,14 @@ public class AlgaTerraImportConfigurator extends BerlinModelImportConfigurator {
 	
 	public void setRemoveRestricted(boolean removeRestricted) {
 		this.removeRestricted = removeRestricted;
+	}
+
+	public boolean isDoMorphology() {
+		return doMorphology;
+	}
+
+	public void setDoMorphology(boolean doMorphology) {
+		this.doMorphology = doMorphology;
 	}
 
 

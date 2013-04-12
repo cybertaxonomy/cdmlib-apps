@@ -57,7 +57,7 @@ public abstract class AlgaTerraImageImportBase extends BerlinModelImportBase{
 	 * @return
 	 * @throws SQLException
 	 */
-	protected Media handleSingleImage(ResultSet rs, IdentifiableEntity identifiableEntity, AlgaTerraImportState state, ResultSetPartitioner partitioner) throws SQLException {
+	protected Media handleSingleImage(ResultSet rs, IdentifiableEntity<?> identifiableEntity, AlgaTerraImportState state, ResultSetPartitioner partitioner) throws SQLException {
 		try {
 			String figurePhrase = rs.getString("FigurePhrase");
 			String filePath = rs.getString("filePath");

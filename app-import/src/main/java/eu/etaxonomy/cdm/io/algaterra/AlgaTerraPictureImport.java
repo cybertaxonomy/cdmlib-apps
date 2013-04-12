@@ -19,6 +19,8 @@ import java.util.Set;
 import org.apache.log4j.Logger;
 import org.springframework.stereotype.Component;
 
+import eu.etaxonomy.cdm.api.facade.DerivedUnitFacade;
+import eu.etaxonomy.cdm.api.facade.DerivedUnitFacadeNotSupportedException;
 import eu.etaxonomy.cdm.io.algaterra.validation.AlgaTerraTypeImportValidator;
 import eu.etaxonomy.cdm.io.berlinModel.in.BerlinModelImportConfigurator;
 import eu.etaxonomy.cdm.io.berlinModel.in.BerlinModelImportState;
@@ -27,6 +29,8 @@ import eu.etaxonomy.cdm.io.common.IOValidator;
 import eu.etaxonomy.cdm.io.common.ResultSetPartitioner;
 import eu.etaxonomy.cdm.model.common.CdmBase;
 import eu.etaxonomy.cdm.model.media.Media;
+import eu.etaxonomy.cdm.model.occurrence.DerivedUnitBase;
+import eu.etaxonomy.cdm.model.occurrence.SpecimenOrObservationBase;
 import eu.etaxonomy.cdm.model.taxon.Taxon;
 import eu.etaxonomy.cdm.model.taxon.TaxonBase;
 
@@ -57,7 +61,7 @@ public class AlgaTerraPictureImport  extends AlgaTerraImageImportBase {
 	protected String getIdQuery(BerlinModelImportState state) {
 		String result = " SELECT p.PictureId "  
 				+ " FROM Picture p  INNER JOIN Fact f ON p.PictureId = f.ExtensionFk LEFT OUTER JOIN PTaxon pt ON f.PTNameFk = pt.PTNameFk AND f.PTRefFk = pt.PTRefFk " 
-				+ " WHERE f.FactCategoryFk = 205 "
+				+ " WHERE f.FactCategoryFk = 205 AND p.RestrictedFlag = 0 "
 				+ " ORDER BY p.PictureId ";
 		return result;
 	}
@@ -90,6 +94,7 @@ public class AlgaTerraPictureImport  extends AlgaTerraImageImportBase {
 		
 //		Map<String, DerivedUnitBase> ecoFactMap = (Map<String, DerivedUnitBase>) partitioner.getObjectMap(AlgaTerraSpecimenImportBase.ECO_FACT_DERIVED_UNIT_NAMESPACE);
 		Map<String, TaxonBase> taxonMap = (Map<String, TaxonBase>) partitioner.getObjectMap(BerlinModelTaxonImport.NAMESPACE);
+		Map<String, DerivedUnitBase<?>> specimenMap = (Map<String, DerivedUnitBase<?>>) partitioner.getObjectMap(AlgaTerraFactEcologyImport.FACT_ECOLOGY_NAMESPACE);
 		
 		ResultSet rs = partitioner.getResultSet();
 
@@ -122,7 +127,7 @@ public class AlgaTerraPictureImport  extends AlgaTerraImageImportBase {
 						
 						Media media = handleSingleImage(rs, taxon, state, partitioner);
 						
-						handlePictureSpecificFields(rs, media, state);
+						handlePictureSpecificFields(rs, media, state, specimenMap);
 						
 						taxaToSave.add(taxon); 
 					}
@@ -150,8 +155,23 @@ public class AlgaTerraPictureImport  extends AlgaTerraImageImportBase {
 
 
 
-	private void handlePictureSpecificFields(ResultSet rs, Media media, AlgaTerraImportState state) throws SQLException {
-		//TODO
+	private void handlePictureSpecificFields(ResultSet rs, Media media, AlgaTerraImportState state, Map<String, DerivedUnitBase<?>> specimenMap) throws SQLException {
+		Integer specimenFactId = nullSafeInt(rs, "FactFk");
+		if (specimenFactId != null){
+			DerivedUnitBase<?> specimen = specimenMap.get(String.valueOf(specimenFactId));
+			if (specimen == null){
+				logger.warn("Specimen not found for FactFK: " + specimenFactId);
+			}else{
+				try {
+					DerivedUnitFacade facade = DerivedUnitFacade.NewInstance(specimen);
+					facade.addDerivedUnitMedia(media);
+					getOccurrenceService().saveOrUpdate(specimen);
+				} catch (DerivedUnitFacadeNotSupportedException e) {
+					e.printStackTrace();
+					logger.error(e.getMessage());
+				}
+			}
+		}
 		
 	}
 
@@ -167,6 +187,7 @@ public class AlgaTerraPictureImport  extends AlgaTerraImageImportBase {
 		
 		try{
 			Set<String> taxonIdSet = new HashSet<String>();
+			Set<String> specimenIdSet = new HashSet<String>();
 			
 			while (rs.next()){
 				handleForeignKey(rs, taxonIdSet, "RIdentifier");
@@ -178,6 +199,13 @@ public class AlgaTerraPictureImport  extends AlgaTerraImageImportBase {
 			idSet = taxonIdSet;
 			Map<String, TaxonBase> taxonMap = (Map<String,TaxonBase>)getCommonService().getSourcedObjectsByIdInSource(cdmClass, idSet, nameSpace);
 			result.put(nameSpace, taxonMap);
+
+			//fact specimen map
+			nameSpace = AlgaTerraFactEcologyImport.FACT_ECOLOGY_NAMESPACE;
+			cdmClass = SpecimenOrObservationBase.class;
+			idSet = specimenIdSet;
+			Map<String, SpecimenOrObservationBase> specimenMap = (Map<String,SpecimenOrObservationBase>)getCommonService().getSourcedObjectsByIdInSource(cdmClass, idSet, nameSpace);
+			result.put(nameSpace, specimenMap);
 
 			
 		} catch (SQLException e) {
