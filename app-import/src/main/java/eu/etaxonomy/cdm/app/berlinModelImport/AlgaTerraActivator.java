@@ -51,7 +51,7 @@ public class AlgaTerraActivator {
 	static final ICdmDataSource cdmDestination = CdmDestinations.localH2();
 //	static final ICdmDataSource cdmDestination = CdmDestinations.cdm_test_local_mysql();
 
-//	static final ICdmDataSource cdmDestination = CdmDestinations.cdm_algaterra_preview();
+//	static final ICdmDataSource cdmDestination s= CdmDestinations.cdm_algaterra_preview();
 	
 	
 	static final UUID treeUuid = UUID.fromString("1f617402-78dc-4bf1-ac77-d260600a8879");
@@ -62,11 +62,11 @@ public class AlgaTerraActivator {
 	static final Object[] featureKeyList = new Integer[]{7,201,203,204,206,207}; 
 	static final UUID specimenFeatureTreeUuid = UUID.fromString("ba86246e-d4d0-419f-832e-86d70b1e4bd7");
 	
-	
+	static final boolean loginAsDefaultAdmin = true;
 	static final boolean removeRestricted = true;
 	
 	//check - import
-	static final CHECK check = CHECK.CHECK_AND_IMPORT;
+	static final CHECK check = CHECK.IMPORT_WITHOUT_CHECK;
 
 	private boolean ignoreNull = true;
 	
@@ -78,7 +78,7 @@ public class AlgaTerraActivator {
 	//NomeclaturalCode
 	static final NomenclaturalCode nomenclaturalCode = NomenclaturalCode.ICBN;
 	
-	static String factFilter = " factCategoryFk NOT IN (7, 202, 203, 205, 1000 ) ";
+	static String factFilter = " factCategoryFk NOT IN (7, 201, 202, 203, 204, 205, 206, 207, 208, 1000 ) ";
 	
 	
 // ****************** ALL *****************************************
@@ -103,6 +103,7 @@ public class AlgaTerraActivator {
 	static final boolean doFactEcology = true;
 	static final boolean doImages = true;
 	static final boolean doDna = true;
+	static final boolean doMorphology = false;
 
 // ************************ NONE **************************************** //
 	
@@ -127,6 +128,7 @@ public class AlgaTerraActivator {
 //	static final boolean doFactEcology = false;
 //	static final boolean doImages = false;
 //	static final boolean doDna = true;
+//	static final boolean doMorphology = false;
 	
 	
 	public void invoke(String[] args){
@@ -156,6 +158,7 @@ public class AlgaTerraActivator {
 		config.setDoImages(doImages);
 		config.setDoFactEcology(doFactEcology);
 		config.setDoDna(doDna);
+		config.setDoMorphology(doMorphology);
 		
 		config.setSourceRefUuid(sourceRefUuid);
 		config.setIgnoreNull(ignoreNull);
@@ -169,6 +172,10 @@ public class AlgaTerraActivator {
 
 		config.setCheck(check);
 		config.setEditor(editor);
+		
+		if (loginAsDefaultAdmin){
+			config.authenticateAsDefaultAdmin();
+		}
 		
 		// invoke import
 		CdmDefaultImport<BerlinModelImportConfigurator> bmImport = new CdmDefaultImport<BerlinModelImportConfigurator>();
@@ -202,14 +209,14 @@ public class AlgaTerraActivator {
 		FeatureNode node = FeatureNode.NewInstance(Feature.HABITAT());
 		tree.getRoot().addChild(node);
 		
-		node = FeatureNode.NewInstance(Feature.OBSERVATION());
-		tree.getRoot().addChild(node);
-		
-		node = FeatureNode.NewInstance(Feature.SPECIMEN());
-		tree.getRoot().addChild(node);
-		
-		node = FeatureNode.NewInstance(Feature.INDIVIDUALS_ASSOCIATION());
-		tree.getRoot().addChild(node);
+//		node = FeatureNode.NewInstance(Feature.OBSERVATION());
+//		tree.getRoot().addChild(node);
+//		
+//		node = FeatureNode.NewInstance(Feature.SPECIMEN());
+//		tree.getRoot().addChild(node);
+//		
+//		node = FeatureNode.NewInstance(Feature.INDIVIDUALS_ASSOCIATION());
+//		tree.getRoot().addChild(node);
 		
 		//needed ??
 		FeatureNode distributionNode = FeatureNode.NewInstance(Feature.DISTRIBUTION());
