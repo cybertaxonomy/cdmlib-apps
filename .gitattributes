@@ -351,3 +351,4 @@ cdm-pesi/src/main/resources/log4j.properties -text
 cdm-pesi/src/test/java/eu/etaxonomy/cdm/io/common/TestConnection.java -text
 cdm-pesi/src/test/java/eu/etaxonomy/cdm/io/erms/ermsErrors.txt -text
 cdm-pesi/src/test/resources/sql/Check_Import_Master.sql -text
+cdmapps-parent/pom.xml -text
