@@ -39,6 +39,8 @@ app-import/src/main/java/eu/etaxonomy/cdm/app/excelImport/taxa/NormalExplicitAct
 app-import/src/main/java/eu/etaxonomy/cdm/app/excelImport/taxa/UseSummaryActivator.java -text
 app-import/src/main/java/eu/etaxonomy/cdm/app/exel/NormalExplicitTestActivator.java -text
 app-import/src/main/java/eu/etaxonomy/cdm/app/globis/GlobisActivator.java -text
+app-import/src/main/java/eu/etaxonomy/cdm/app/i4life/col/ColDwcaExportActivator.java -text
+app-import/src/main/java/eu/etaxonomy/cdm/app/i4life/col/ColDwcaImportActivator.java -text
 app-import/src/main/java/eu/etaxonomy/cdm/app/images/AbstractImageImporter.java -text
 app-import/src/main/java/eu/etaxonomy/cdm/app/images/ImageImportConfigurator.java -text
 app-import/src/main/java/eu/etaxonomy/cdm/app/images/ImageImportState.java -text
