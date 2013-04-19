@@ -28,7 +28,7 @@
   		<artifactId>cdmlib-persistence</artifactId>
   		<type>test-jar</type>
   		<scope>test</scope> 
-  		<version>${parent.version}</version>
+  		<version>${project.version}</version>
   	</dependency>
    	<dependency>
   		<groupId>eu.etaxonomy</groupId>
