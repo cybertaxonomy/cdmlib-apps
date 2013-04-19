@@ -22,10 +22,11 @@
    	<dependency>
   		<groupId>eu.etaxonomy</groupId>
   		<artifactId>cdmlib-io</artifactId>
+  		<version>${project.version}</version>
   	</dependency>
-    <dependency>
+<!--     <dependency>
     	<groupId>aspectj</groupId>
       	<artifactId>aspectjrt</artifactId>
 		<version>1.6.3</version>
-    </dependency>
+    </dependency> -->
   </dependencies></project>
