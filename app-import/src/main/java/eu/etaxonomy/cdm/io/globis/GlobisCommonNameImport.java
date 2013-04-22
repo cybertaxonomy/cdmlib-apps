@@ -114,14 +114,6 @@ public class GlobisCommonNameImport  extends GlobisImportBase<Taxon> {
         		Integer taxonId = rs.getInt("IdCrrentSpec");
         		
         		
-        		//String dtSpcJahr -> ignore !
-        		//empty: fiSpcLiteratur
-        		
-        		//TODO
-        		//fiSpcspcgrptax
-        		
-        	
-        		
 				try {
 					
 					//source ref
