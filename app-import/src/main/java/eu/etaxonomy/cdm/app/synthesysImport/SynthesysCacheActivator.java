@@ -146,14 +146,13 @@ public class SynthesysCacheActivator {
 		
 		tx = app.startTransaction();
 		try {
-			ReferenceFactory refFactory = ReferenceFactory.newInstance();
-			Reference sec = refFactory.newDatabase();
+			Reference<?> sec = ReferenceFactory.newDatabase();
 			sec.setTitleCache("SYNTHESYS CACHE DATA", true);
 
 			/**
 			 * SPECIMEN OR OBSERVATION OR LIVING
 			 */
-			DerivedUnitBase derivedThing = null;
+			DerivedUnitBase<?> derivedThing = null;
 			//create specimen
 			if (this.recordBasis != null){
 				if (this.recordBasis.toLowerCase().startsWith("s")) {//specimen
@@ -168,7 +167,7 @@ public class SynthesysCacheActivator {
 			}
 			if (derivedThing == null) derivedThing = Observation.NewInstance();
 
-			TaxonNameBase taxonName = null;
+			TaxonNameBase<?,?> taxonName = null;
 			Taxon taxon = null;
 			DeterminationEvent determinationEvent = null;
 			List<TaxonNameBase> names = null;
