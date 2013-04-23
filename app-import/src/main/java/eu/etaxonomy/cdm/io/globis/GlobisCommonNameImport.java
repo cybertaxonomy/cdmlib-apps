@@ -16,27 +16,24 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
-import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.springframework.stereotype.Component;
 
-import eu.etaxonomy.cdm.common.CdmUtils;
-import eu.etaxonomy.cdm.io.common.IOValidator;
 import eu.etaxonomy.cdm.io.common.ResultSetPartitioner;
-import eu.etaxonomy.cdm.io.globis.validation.GlobisCurrentSpeciesImportValidator;
+import eu.etaxonomy.cdm.model.agent.Person;
+import eu.etaxonomy.cdm.model.agent.Team;
+import eu.etaxonomy.cdm.model.agent.TeamOrPersonBase;
 import eu.etaxonomy.cdm.model.common.CdmBase;
 import eu.etaxonomy.cdm.model.common.Language;
-import eu.etaxonomy.cdm.model.description.Distribution;
-import eu.etaxonomy.cdm.model.description.PresenceTerm;
+import eu.etaxonomy.cdm.model.common.TimePeriod;
+import eu.etaxonomy.cdm.model.description.CommonTaxonName;
 import eu.etaxonomy.cdm.model.description.TaxonDescription;
+import eu.etaxonomy.cdm.model.location.NamedArea;
 import eu.etaxonomy.cdm.model.location.WaterbodyOrCountry;
-import eu.etaxonomy.cdm.model.name.Rank;
-import eu.etaxonomy.cdm.model.name.ZoologicalName;
 import eu.etaxonomy.cdm.model.reference.Reference;
-import eu.etaxonomy.cdm.model.taxon.Classification;
+import eu.etaxonomy.cdm.model.reference.ReferenceFactory;
 import eu.etaxonomy.cdm.model.taxon.Taxon;
 import eu.etaxonomy.cdm.model.taxon.TaxonBase;
-import eu.etaxonomy.cdm.model.taxon.TaxonNode;
 
 
 /**
@@ -57,7 +54,8 @@ public class GlobisCommonNameImport  extends GlobisImportBase<Taxon> {
 		super(pluralString, dbTableName, cdmTargetClass);
 	}
 
-
+	//dirty but acceptable for globis environment
+	private Map<Integer,Reference> refMap = new HashMap<Integer,Reference>();
 	
 	
 	/* (non-Javadoc)
@@ -111,28 +109,53 @@ public class GlobisCommonNameImport  extends GlobisImportBase<Taxon> {
                 
         		if ((i++ % modCount) == 0 && i!= 1 ){ logger.info(pluralString + " handled: " + (i-1));}
 				
-        		Integer taxonId = rs.getInt("IdCrrentSpec");
-        		
-        		
-				try {
+        		Integer idTaxon = nullSafeInt(rs,"IDCurrentSpec");
+				
+        		try {
 					
 					//source ref
 					Reference<?> sourceRef = state.getTransactionalSourceReference();
 			
-					//species
-					Taxon species = createObject(rs, state);
+					//common names
+					Integer id = nullSafeInt(rs,"ID");
+					String isoLang = rs.getString("ISO");
+					String strCommonName = rs.getString("commonname");
+					Integer refID = nullSafeInt(rs,"ReferenceID");
+					String strCountryCode = rs.getString("Code2");
 					
 					
-					handleCountries(state, rs, species);
-					
-					this.doIdCreatedUpdatedNotes(state, species, rs, taxonId, TAXON_NAMESPACE);
-					
-					objectsToSave.add(species); 
-					
+					Taxon taxon = taxonMap.get(String.valueOf(idTaxon));
+					if (taxon == null){
+						logger.warn("No taxon found for taxonId " + idTaxon);
+					}else if (isBlank(strCommonName)){
+						logger.warn("No common name string defined for common name ID: " + id);
+					}else{
+						Language language = getLanguage(isoLang);
+						if (language == null){
+							logger.warn("No language found for common name ID: " + id);
+						}
+						NamedArea area = WaterbodyOrCountry.getWaterbodyOrCountryByIso3166A2(strCountryCode);
+						if (area == null){
+							logger.warn("No country found for common name ID: " + id);
+						}
+
+						TaxonDescription taxonDescription = getTaxonDescription(taxon, sourceRef, ! IMAGE_GALLERY,  CREATE);
+						CommonTaxonName commonName = CommonTaxonName.NewInstance(strCommonName, language, area);
+						taxonDescription.addElement(commonName);
+						
+						Reference<?> ref = handleReference(state, refID);
+						if (ref == null && refID != null){
+							logger.warn("No reference found for common name ID: " + id);
+						}else{
+							commonName.addSource(String.valueOf(refID), "reference", sourceRef, null);
+						}
+						
+						objectsToSave.add(taxon); 
+					}
 
 				} catch (Exception e) {
-					logger.warn("Exception in current_species: IDcurrentspec " + taxonId + ". " + e.getMessage());
-//					e.printStackTrace();
+					logger.warn("Exception in current_species: IDcurrentspec " + idTaxon + ". " + e.getMessage());
+					e.printStackTrace();
 				} 
                 
             }
@@ -149,94 +172,73 @@ public class GlobisCommonNameImport  extends GlobisImportBase<Taxon> {
 		}
 	}
 
-	private void handleCountries(GlobisImportState state, ResultSet rs, Taxon species) throws SQLException {
-		String countriesStr = rs.getString("dtSpcCountries");
-		if (isBlank(countriesStr)){
-			return;
-		}
-		String[] countriesSplit = countriesStr.split(";");
-		for (String countryStr : countriesSplit){
-			if (isBlank(countryStr)){
-				continue;
-			}
-			countryStr = countryStr.trim();
-			
-			//TODO use isComplete
-			boolean isComplete = countryStr.endsWith(".");
-			if (isComplete){
-				countryStr = countryStr.substring(0,countryStr.length() - 1).trim();
-			}
-			boolean isDoubtful = countryStr.endsWith("[?]");
-			if (isDoubtful){
-				countryStr = countryStr.substring(0,countryStr.length() - 3).trim();
-			}
-			if (countryStr.startsWith("?")){
-				isDoubtful = true;
-				countryStr = countryStr.substring(1).trim();
-			}
-			
-			
-			
-			countryStr = normalizeCountry(countryStr);
-			
-			WaterbodyOrCountry country = getCountry(state, countryStr);
-			
-			PresenceTerm status;
-			if (isDoubtful){
-				status = PresenceTerm.PRESENT_DOUBTFULLY();
-			}else{
-				status = PresenceTerm.PRESENT();
-			}
-			
-			if (country != null){
-				TaxonDescription desc = getTaxonDescription(species, state.getTransactionalSourceReference(), false, true);
-				Distribution distribution = Distribution.NewInstance(country, status);
-				desc.addElement(distribution);
-			}else{
-				logger.warn("Country string not recognized: " + countryStr);
-			}
-		}
-	}
-
-
-
-	/**
-	 * @param countryStr
-	 * @return
-	 */
-	private String normalizeCountry(String countryStr) {
-		String result = countryStr.trim();
-		if (result.endsWith(".")){
-			result = result.substring(0,result.length() - 1);
-		}
-		return result; 
-	}
 	
 
-	/* (non-Javadoc)
-	 * @see eu.etaxonomy.cdm.io.common.mapping.IMappingImport#createObject(java.sql.ResultSet, eu.etaxonomy.cdm.io.common.ImportStateBase)
-	 */
-	public Taxon createObject(ResultSet rs, GlobisImportState state)
-			throws SQLException {
-		String speciesEpi = rs.getString("dtSpcSpcakt");
-		String subGenusEpi = rs.getString("dtSpcSubgenakt");
-		String genusEpi = rs.getString("dtSpcGenusakt");
-		String author = rs.getString("dtSpcAutor");
+	private Map<String,Language> languageMap = new HashMap<String,Language>();
+	private Language getLanguage(String isoLang) {
+		Language result = languageMap.get(isoLang);
+		if (result == null){
 		
-		
-		ZoologicalName zooName = ZoologicalName.NewInstance(Rank.SPECIES());
-		zooName.setSpecificEpithet(speciesEpi);
-		if (StringUtils.isNotBlank(subGenusEpi)){
-			zooName.setInfraGenericEpithet(subGenusEpi);
+			result = getTermService().getLanguageByIso(isoLang);
+			if (result == null){
+				logger.warn("No language found for iso code: " + isoLang);
+			}
 		}
-		zooName.setGenusOrUninomial(genusEpi);
-		handleAuthorAndYear(author, zooName);
+		return result;
+
+	}
+	
+	private Reference<?> handleReference(GlobisImportState state, Integer refId){
+		Reference<?> result = refMap.get(refId);
 		
-		Taxon taxon = Taxon.NewInstance(zooName, state.getTransactionalSourceReference());
+		if (result == null){
+			try {
+				String sql = "SELECT * FROM references WHERE ReferenceID = " + refId;
+				ResultSet rs = state.getConfig().getSource().getResultSet(sql);
+				rs.next();
+				
+				String authors = rs.getString("Author(s)");
+				String title = rs.getString("Title");
+				String details = rs.getString("Details");
+				Integer year = nullSafeInt(rs, "year");
+				result = ReferenceFactory.newGeneric();
+				result.setTitleCache(details);
+				result.setTitle(title);
+				result.setDatePublished(TimePeriod.NewInstance(year));
+
+				TeamOrPersonBase<?> author;
+				String[] authorSplit = authors.split("&");
+				if (authorSplit.length > 1){
+					Team team = Team.NewInstance();
+					author = team;
+					for (String singleAuthor : authorSplit){
+						Person person = makeSingleAuthor(singleAuthor);
+						team.addTeamMember(person);
+					}
+				}else{
+					author = makeSingleAuthor(authors);
+				}
+				
+				result.setAuthorTeam(author);
+				refMap.put(refId,result);
+				rs.close();
+			} catch (SQLException e) {
+				e.printStackTrace();
+			}
+
+			
+		}
 		
-		return taxon;
+		return result;
 	}
 
+
+
+
+	private Person makeSingleAuthor(String authors) {
+		Person result = Person.NewTitledInstance(authors);
+		return result;
+	}
 
 
 
@@ -253,7 +255,7 @@ public class GlobisCommonNameImport  extends GlobisImportBase<Taxon> {
 			Set<String> taxonIdSet = new HashSet<String>();
 			
 			while (rs.next()){
-//				handleForeignKey(rs, taxonIdSet, "taxonId");
+				handleForeignKey(rs, taxonIdSet, "IDCurrentSpec");
 			}
 			
 			//taxon map
@@ -275,8 +277,8 @@ public class GlobisCommonNameImport  extends GlobisImportBase<Taxon> {
 	 */
 	@Override
 	protected boolean doCheck(GlobisImportState state){
-		IOValidator<GlobisImportState> validator = new GlobisCurrentSpeciesImportValidator();
-		return validator.validate(state);
+//		IOValidator<GlobisImportState> validator = new GlobisCurrentSpeciesImportValidator();
+		return true;
 	}
 	
 	
@@ -284,7 +286,7 @@ public class GlobisCommonNameImport  extends GlobisImportBase<Taxon> {
 	 * @see eu.etaxonomy.cdm.io.common.CdmIoBase#isIgnore(eu.etaxonomy.cdm.io.common.IImportConfigurator)
 	 */
 	protected boolean isIgnore(GlobisImportState state){
-		return ! state.getConfig().isDoCurrentTaxa();
+		return ! state.getConfig().isDoCommonNames();
 	}
 
 
