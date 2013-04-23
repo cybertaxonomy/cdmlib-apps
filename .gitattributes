@@ -142,7 +142,6 @@ app-import/src/main/java/eu/etaxonomy/cdm/io/globis/GlobisImportBase.java -text
 app-import/src/main/java/eu/etaxonomy/cdm/io/globis/GlobisImportConfigurator.java -text
 app-import/src/main/java/eu/etaxonomy/cdm/io/globis/GlobisImportState.java -text
 app-import/src/main/java/eu/etaxonomy/cdm/io/globis/GlobisReferenceImport.java -text
-app-import/src/main/java/eu/etaxonomy/cdm/io/globis/GlobisReferenceImport_Mapping_OLD.java -text
 app-import/src/main/java/eu/etaxonomy/cdm/io/globis/GlobisSpecTaxImport.java -text
 app-import/src/main/java/eu/etaxonomy/cdm/io/globis/GlobisTransformer.java -text
 app-import/src/main/java/eu/etaxonomy/cdm/io/globis/validation/GlobisCurrentSpeciesImportValidator.java -text
