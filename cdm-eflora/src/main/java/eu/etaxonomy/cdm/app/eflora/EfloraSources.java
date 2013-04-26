@@ -9,7 +9,6 @@
 */
 package eu.etaxonomy.cdm.app.eflora;
 
-import java.io.File;
 import java.net.URI;
 
 import org.apache.log4j.Logger;
@@ -128,6 +127,47 @@ public class EfloraSources {
 		return URI.create("file://PESIIMPORT3/gabon/markupData/fdgvol4_9.xml");
 	}
 	
+	//Flore du Gabon vol 5
+	public static URI fdg_5(){
+		return URI.create("file://PESIIMPORT3/gabon/markupData/fdgvol5_9.xml");
+	}
+
+	
+	//Flore du Gabon vol 5
+	public static URI fdg_5bis(){
+		return URI.create("file://PESIIMPORT3/gabon/markupData/5bis_final.xml");
+	}
+	
+	//Flore du Gabon vol 6
+	public static URI fdg_6(){
+		return URI.create("file://PESIIMPORT3/gabon/markupData/fdgvol6_9.xml");
+	}
+	
+	//Flore du Gabon vol 7
+	public static URI fdg_7(){
+		return URI.create("file://PESIIMPORT3/gabon/markupData/fdgvol7_9.xml");
+	}
+	
+	//Flore du Gabon vol 8
+	public static URI fdg_8(){
+		return URI.create("file://PESIIMPORT3/gabon/markupData/fdgvol8_9.xml");
+	}
+	
+	//Flore du Gabon vol 9
+	public static URI fdg_9(){
+		return URI.create("file://PESIIMPORT3/gabon/markupData/fdgvol9_9.xml");
+	}
+	
+	//Flore du Gabon vol 10
+	public static URI fdg_10(){
+		return URI.create("file://PESIIMPORT3/gabon/markupData/fdgvol10_9.xml");
+	}
+	
+	//Flore du Gabon vol 11
+	public static URI fdg_11(){
+		return URI.create("file://PESIIMPORT3/gabon/markupData/fdgvol11_9.xml");
+	}
+		
 //************************* GUIANAS **********************************************/	
 	
 	//Flora of the Guianas Sample
