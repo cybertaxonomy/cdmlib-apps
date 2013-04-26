@@ -63,7 +63,7 @@ public class CentralAfricaChecklistTaxonImport  extends CentralAfricaChecklistIm
 	
 	private Integer TREE_ID = null;
 	
-	private DbImportMapping mapping;
+	private DbImportMapping<?,?> mapping;
 	
 	private int modCount = 10000;
 	private static final String pluralString = "taxa";
@@ -89,7 +89,7 @@ public class CentralAfricaChecklistTaxonImport  extends CentralAfricaChecklistIm
 
 
 	/* (non-Javadoc)
-	 * @see eu.etaxonomy.cdm.io.erms.ErmsImportBase#getMapping()
+	 * @see eu.etaxonomy.cdm.io.eflora.centralAfrica.checklist.CentralAfricaChecklistImportBase#getMapping()
 	 */
 	protected DbImportMapping getMapping() {
 		if (mapping == null){
