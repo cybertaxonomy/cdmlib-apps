@@ -51,6 +51,15 @@ public class FloreGabonActivator {
 	static final URI fdg2 = EfloraSources.fdg_2();
 	static final URI fdg3 = EfloraSources.fdg_3();
 	static final URI fdg4 = EfloraSources.fdg_4();
+	static final URI fdg5 = EfloraSources.fdg_5();
+	static final URI fdg5bis = EfloraSources.fdg_5bis();
+	static final URI fdg6 = EfloraSources.fdg_6();
+	static final URI fdg7 = EfloraSources.fdg_7();
+	static final URI fdg8 = EfloraSources.fdg_8();
+	static final URI fdg9 = EfloraSources.fdg_9();
+	static final URI fdg10 = EfloraSources.fdg_10();
+	static final URI fdg11 = EfloraSources.fdg_11();
+	
 	
 	
 //	static final ICdmDataSource cdmDestination = CdmDestinations.cdm_flore_gabon_preview();
@@ -74,17 +83,35 @@ public class FloreGabonActivator {
 	//taxa
 	static final boolean doTaxa = true;
 	
-	private boolean includeFdg1 = true;
+	
+	//if true, use inverse include information
+	private boolean inverseInclude = true;
+	
+	private boolean includeFdg1 = false;
 	private boolean includeFdg2 = true;
 	private boolean includeFdg3 = true;
 	private boolean includeFdg4 = true;
+	private boolean includeFdg5 = true;
+	private boolean includeFdg5bis = true;
+	private boolean includeFdg6 = true;
+	private boolean includeFdg7 = true;
+	private boolean includeFdg8 = true;
+	private boolean includeFdg9 = true;
+	private boolean includeFdg10 = true;
+	private boolean includeFdg11 = true;
 	
+	
+	
+	
+//	
 		
 	private boolean replaceStandardKeyTitles = false;
 
 	private IIoObserver observer = new LoggingIoObserver();
 	private Set<IIoObserver> observerList = new HashSet<IIoObserver>();
 	
+	private MarkupImportConfigurator config;
+	private CdmDefaultImport<MarkupImportConfigurator> myImport;
 	
 	private void doImport(ICdmDataSource cdmDestination){
 		observerList.add(observer);
@@ -94,55 +121,54 @@ public class FloreGabonActivator {
 		
 		//make config
 		URI source = fdg1;
-		MarkupImportConfigurator markupConfig= MarkupImportConfigurator.NewInstance(source, cdmDestination);
-		markupConfig.setClassificationUuid(classificationUuid);
-		markupConfig.setDoTaxa(doTaxa);
-		markupConfig.setCheck(check);
-		markupConfig.setDoPrintKeys(doPrintKeys);
-		markupConfig.setDbSchemaValidation(hbm2dll);
-		markupConfig.setObservers(observerList);
-		markupConfig.setReplaceStandardKeyTitles(replaceStandardKeyTitles);
+		config = MarkupImportConfigurator.NewInstance(source, cdmDestination);
+		config.setClassificationUuid(classificationUuid);
+		config.setDoTaxa(doTaxa);
+		config.setCheck(check);
+		config.setDoPrintKeys(doPrintKeys);
+		config.setDbSchemaValidation(hbm2dll);
+		config.setObservers(observerList);
+		config.setReplaceStandardKeyTitles(replaceStandardKeyTitles);
+		config.setSourceReference(getSourceReference("Flore du Gabon"));
 		
-		
-		markupConfig.setSourceReference(getSourceReference("Flore du Gabon"));
-		
-		CdmDefaultImport<MarkupImportConfigurator> myImport = new CdmDefaultImport<MarkupImportConfigurator>(); 
+		myImport = new CdmDefaultImport<MarkupImportConfigurator>(); 
 		
 		//Vol1
-		if (includeFdg1){
-			System.out.println("\nStart import from ("+ fdg1.toString() + ") ...");
-			source = fdg1;
-			markupConfig.setSource(source);
-			myImport.invoke(markupConfig);
-			System.out.println("End import from ("+ fdg1.toString() + ")...");
-		}
+		executeVolume( fdg1, includeFdg1 ^ inverseInclude);
 		
 		//Vol2
-		if (includeFdg2){
-			source = fdg2;
-			System.out.println("\nStart import from ("+ source.toString() + ") ...");
-			markupConfig.setSource(source);
-			myImport.invoke(markupConfig);
-			System.out.println("End import from ("+ source.toString() + ")...");
-		}
+		executeVolume(fdg2, includeFdg2 ^ inverseInclude);
 		
 		//Vol3
-		if (includeFdg3){
-			source = fdg3;
-			System.out.println("\nStart import from ("+ source.toString() + ") ...");
-			markupConfig.setSource(source);
-			myImport.invoke(markupConfig);
-			System.out.println("End import from ("+ source.toString() + ")...");
-		}
+		executeVolume(fdg3, includeFdg3 ^ inverseInclude);
 
 		//Vol4
-		if (includeFdg4){
-			source = fdg4;
-			System.out.println("\nStart import from ("+ source.toString() + ") ...");
-			markupConfig.setSource(source);
-			myImport.invoke(markupConfig);
-			System.out.println("End import from ("+ source.toString() + ")...");
-		}
+		executeVolume(fdg4, includeFdg4 ^ inverseInclude);
+
+		//Vol5
+		executeVolume(fdg5, includeFdg5 ^ inverseInclude);
+		
+		//Vol5bis
+		executeVolume(fdg5bis, includeFdg5bis ^ inverseInclude);
+		
+		//Vol6
+		executeVolume(fdg6, includeFdg6 ^ inverseInclude);
+		
+		//Vol7
+		executeVolume(fdg7, includeFdg7 ^ inverseInclude);
+		
+		//Vol8
+		executeVolume(fdg8, includeFdg8 ^ inverseInclude);
+		
+		//Vol9
+		executeVolume(fdg9, includeFdg9 ^ inverseInclude);
+		
+		//Vol10
+		executeVolume(fdg10, includeFdg10 ^ inverseInclude);
+
+		//Vol11
+		executeVolume(fdg11, includeFdg11 ^ inverseInclude);
+
 		
 		FeatureTree tree = makeFeatureNode(myImport.getCdmAppController().getTermService());
 		myImport.getCdmAppController().getFeatureTreeService().saveOrUpdate(tree);
@@ -158,6 +184,19 @@ public class FloreGabonActivator {
 			myImport.getCdmAppController().commitTransaction(tx);
 		}
 		
+	}
+
+	/**
+	 * @param markupConfig
+	 * @param myImport
+	 */
+	private void executeVolume(URI source, boolean include) {
+		if (include){
+			System.out.println("\nStart import from ("+ source.toString() + ") ...");
+			config.setSource(source);
+			myImport.invoke(config);
+			System.out.println("End import from ("+ source.toString() + ")...");
+		}
 	}
 	
 	private Reference<?> getSourceReference(String string) {
