@@ -10,8 +10,11 @@
 package eu.etaxonomy.cdm.app.eflora;
 
 import java.net.URI;
+import java.util.Collection;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
 
@@ -27,7 +30,10 @@ import eu.etaxonomy.cdm.io.common.events.IIoObserver;
 import eu.etaxonomy.cdm.io.common.events.LoggingIoObserver;
 import eu.etaxonomy.cdm.io.common.mapping.IInputTransformer;
 import eu.etaxonomy.cdm.io.common.mapping.UndefinedTransformerMethodException;
+import eu.etaxonomy.cdm.io.markup.FeatureSorter;
+import eu.etaxonomy.cdm.io.markup.FeatureSorterInfo;
 import eu.etaxonomy.cdm.io.markup.MarkupImportConfigurator;
+import eu.etaxonomy.cdm.io.markup.MarkupImportState;
 import eu.etaxonomy.cdm.io.markup.MarkupTransformer;
 import eu.etaxonomy.cdm.model.description.Feature;
 import eu.etaxonomy.cdm.model.description.FeatureNode;
@@ -39,7 +45,6 @@ import eu.etaxonomy.cdm.model.reference.ReferenceFactory;
 /**
  * @author a.mueller
  * @created 20.06.2008
- * @version 1.0
  */
 public class FloreGabonActivator {
 	private static final Logger logger = Logger.getLogger(FloreGabonActivator.class);
@@ -70,24 +75,32 @@ public class FloreGabonActivator {
 
 	//feature tree uuid
 	public static final UUID featureTreeUuid = UUID.fromString("ee688973-2595-4d4d-b11e-6df71e96a5c2");
+	private static final String featureTreeTitle = "Flore Gabon Presentation Feature Tree";
 	
 	//classification
 	static final UUID classificationUuid = UUID.fromString("2f892452-ff49-48cf-834f-52ca29600719");
+	static final String classificationTitle = "Flore du Gabon";
+	
 	
 	//check - import
 	private boolean h2ForCheck = false;
 	static CHECK check = CHECK.IMPORT_WITHOUT_CHECK;
 	
 	static boolean doPrintKeys = false;
+
 	
+	private boolean replaceStandardKeyTitles = true;
+
 	//taxa
 	static final boolean doTaxa = true;
 	
+	static final boolean reuseState = true;
+	
 	
 	//if true, use inverse include information
-	private boolean inverseInclude = true;
+	private boolean inverseInclude = false;
 	
-	private boolean includeFdg1 = false;
+	private boolean includeFdg1 = true;
 	private boolean includeFdg2 = true;
 	private boolean includeFdg3 = true;
 	private boolean includeFdg4 = true;
@@ -101,12 +114,8 @@ public class FloreGabonActivator {
 	private boolean includeFdg11 = true;
 	
 	
+// **************** NO CHANGE **********************************************/
 	
-	
-//	
-		
-	private boolean replaceStandardKeyTitles = false;
-
 	private IIoObserver observer = new LoggingIoObserver();
 	private Set<IIoObserver> observerList = new HashSet<IIoObserver>();
 	
@@ -130,6 +139,8 @@ public class FloreGabonActivator {
 		config.setObservers(observerList);
 		config.setReplaceStandardKeyTitles(replaceStandardKeyTitles);
 		config.setSourceReference(getSourceReference("Flore du Gabon"));
+		config.setClassificationName(classificationTitle);
+		config.setReuseExistingState(reuseState);
 		
 		myImport = new CdmDefaultImport<MarkupImportConfigurator>(); 
 		
@@ -173,6 +184,10 @@ public class FloreGabonActivator {
 		FeatureTree tree = makeFeatureNode(myImport.getCdmAppController().getTermService());
 		myImport.getCdmAppController().getFeatureTreeService().saveOrUpdate(tree);
 		
+		FeatureTree automatedTree = makeAutomatedFeatureTree();
+		
+		
+		
 		//check keys
 		if (doPrintKeys){
 			TransactionStatus tx = myImport.getCdmAppController().startTransaction();
@@ -204,12 +219,70 @@ public class FloreGabonActivator {
 		result.setTitleCache(string);
 		return result;
 	}
+	
+	
+	private FeatureTree makeAutomatedFeatureTree(){
+		FeatureTree tree = FeatureTree.NewInstance(featureTreeUuid);
+		tree.setTitleCache(featureTreeTitle, true);
+		FeatureNode root = tree.getRoot();
+		
+		ITermService termService = myImport.getCdmAppController().getTermService();
+		MarkupImportState state = config.getState();
+		FeatureSorter sorter = new FeatureSorter();
+		FeatureNode descriptionNode = null;
+		
+		//general features
+		Map<String, List<FeatureSorterInfo>> generalList = state.getGeneralFeatureSorterListMap();
+		List<UUID> uuidList = sorter.getSortOrder(generalList);
+		Map<UUID, Feature> map = makeUuidMap(uuidList, termService);
+		for (UUID key : uuidList){
+			Feature feature = map.get(key);
+			FeatureNode node = FeatureNode.NewInstance(feature);
+			root.addChild(node);
+			if (feature.equals(Feature.DESCRIPTION())){
+				descriptionNode = node;
+			}
+		}
+		FeatureNode newNode = FeatureNode.NewInstance(Feature.CITATION());
+		root.addChild(newNode);
+		
+		
+		//description features
+		if (descriptionNode != null){
+			Map<String, List<FeatureSorterInfo>> charList = state.getCharFeatureSorterListMap();
+			uuidList = sorter.getSortOrder(charList);
+			map = makeUuidMap(uuidList, termService);
+			for (UUID key : uuidList){
+				Feature feature = map.get(key);
+				descriptionNode.addChild(FeatureNode.NewInstance(feature));
+			}
+		}else{
+			logger.warn("No description node found. Could not create feature nodes for description features.");
+		}
+
+		//save tree
+		myImport.getCdmAppController().getFeatureTreeService().saveOrUpdate(tree);
+		
+		return tree;
+	}
+	
+	private Map<UUID,Feature> makeUuidMap(Collection<UUID> uuids, ITermService termService){
+		HashSet<UUID> uuidSet = new HashSet<UUID>();
+		uuidSet.addAll(uuids);
+		List<Feature> featureSet = (List)termService.find(uuidSet);
+		
+		Map<UUID,Feature> result = new HashMap<UUID, Feature>();
+		for (Feature feature : featureSet){
+			result.put(feature.getUuid(), feature);
+		}
+		return result;
+	}
 
 	private FeatureTree makeFeatureNode(ITermService service){
 		MarkupTransformer transformer = new MarkupTransformer();
 		
-		FeatureTree result = FeatureTree.NewInstance(featureTreeUuid);
-		result.setTitleCache("Flore Gabon Presentation Feature Tree");
+		FeatureTree result = FeatureTree.NewInstance();
+		result.setTitleCache("Old feature tree", true);
 		FeatureNode root = result.getRoot();
 		FeatureNode newNode;
 		
