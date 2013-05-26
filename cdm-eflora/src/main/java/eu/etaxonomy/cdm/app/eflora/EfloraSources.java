@@ -70,6 +70,11 @@ public class EfloraSources {
 		return URI.create("file://PESIIMPORT3/malesiana/vol_13/xmlv9_large_families_vol_13.xml");
 	}
 
+	//Flora Malesiana Vol 14
+	public static URI fm_14(){
+		return URI.create("file://PESIIMPORT3/malesiana/vol_15/vol14_final.xml");
+	}
+	
 	//Flora Malesiana Vol 15
 	public static URI fm_15(){
 		return URI.create("file://PESIIMPORT3/malesiana/vol_15/vol15_final.xml");
@@ -88,6 +93,19 @@ public class EfloraSources {
 	//Flora Malesiana Vol 17, part2
 	public static URI fm_17_2(){
 		return URI.create("file://PESIIMPORT3/malesiana/vol_17/fmvol17_part2_final.xml");
+	}
+	
+	//Flora Malesiana Vol 18
+	public static URI fm_18(){
+		return URI.create("file://PESIIMPORT3/malesiana/vol_15/vol18_final.xml");
+	}
+	//Flora Malesiana Vol 19
+	public static URI fm_19(){
+		return URI.create("file://PESIIMPORT3/malesiana/vol_15/vol19_final.xml");
+	}
+	//Flora Malesiana Vol 20
+	public static URI fm_20(){
+		return URI.create("file://PESIIMPORT3/malesiana/vol_15/vol20_final.xml");
 	}
 	
 	//Flora Malesiana Series 2 - Vol 2
@@ -167,7 +185,33 @@ public class EfloraSources {
 	public static URI fdg_11(){
 		return URI.create("file://PESIIMPORT3/gabon/markupData/fdgvol11_final.xml");
 	}
-		
+
+	//Flore du Gabon vol 21
+	public static URI fdg_21(){
+		return URI.create("file://PESIIMPORT3/gabon/markupData/fdgvol21_final.xml");
+	}
+
+	//Flore du Gabon vol 22
+	public static URI fdg_22(){
+		return URI.create("file://PESIIMPORT3/gabon/markupData/fdgvol22_final.xml");
+	}
+
+	//Flore du Gabon vol 27
+	public static URI fdg_27(){
+		return URI.create("file://PESIIMPORT3/gabon/markupData/fdgvol27_final.xml");
+	}
+
+	//Flore du Gabon vol 28
+	public static URI fdg_28(){
+		return URI.create("file://PESIIMPORT3/gabon/markupData/fdgvol28_final.xml");
+	}
+
+	//Flore du Gabon vol 30
+	public static URI fdg_30(){
+		return URI.create("file://PESIIMPORT3/gabon/markupData/fdgvol30_final.xml");
+	}
+
+	
 //************************* GUIANAS **********************************************/	
 	
 	//Flora of the Guianas Sample

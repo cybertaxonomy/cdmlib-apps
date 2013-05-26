@@ -41,7 +41,7 @@ import eu.etaxonomy.cdm.model.reference.ReferenceFactory;
  * @created 20.06.2008
  * @version 1.0
  */
-public class FloraMalesianaActivator {
+public class FloraMalesianaActivator extends EfloraActivatorBase {
 	private static final Logger logger = Logger.getLogger(FloraMalesianaActivator.class);
 	
 	//database validation status (create, update, validate ...)
@@ -50,10 +50,15 @@ public class FloraMalesianaActivator {
 	static final URI fmSource12 = EfloraSources.fm_12();
 	static final URI fmSource13_small = EfloraSources.fm_13_small_families();
 	static final URI fmSource13_large = EfloraSources.fm_13_large_families();
+	static final URI fmSource14 = EfloraSources.fm_14();
 	static final URI fmSource15 = EfloraSources.fm_15();
 	static final URI fmSource16 = EfloraSources.fm_16();
 	static final URI fmSource17_1 = EfloraSources.fm_17_1();
 	static final URI fmSource17_2 = EfloraSources.fm_17_2();
+	static final URI fmSource18 = EfloraSources.fm_18();
+	static final URI fmSource19 = EfloraSources.fm_19();
+	static final URI fmSource20 = EfloraSources.fm_20();
+	
 	static final URI fmSource_Ser2_02 = EfloraSources.fm_ser2_2();
 	static final URI fmSource_Ser2_03 = EfloraSources.fm_ser2_3();
 	
@@ -68,18 +73,23 @@ public class FloraMalesianaActivator {
 	private boolean includeVol12 = includeBase;
 	private boolean includeVol13_small = includeBase;
 	private boolean includeVol13_large = includeBase;
+	private boolean includeVol14 = includeBase;
 	private boolean includeVol15 = includeBase;
 	private boolean includeVol16 = includeBase;
 	private boolean includeVol17_1 = includeBase;
 	private boolean includeVol17_2 = includeBase;
+	private boolean includeVol18 = includeBase;
+	private boolean includeVol19 = includeBase;
+	private boolean includeVol20 = includeBase;
 	private boolean includeVol2_2 = includeBase;
 	private boolean includeVol2_3 = includeBase;
 	
-	private boolean h2ForCheck = true;
+	private boolean h2ForCheck = false;
 	
 
 	//feature tree uuid
 	public static final UUID featureTreeUuid = UUID.fromString("168df0c6-6429-484c-b26f-ded1f7e44bd9");
+	private static final String featureTreeTitle = "Flora Malesiana Presentation Feature Tree";
 	
 	//classification
 	static final UUID classificationUuid = UUID.fromString("ca4e4bcb-a1d1-4124-a358-a3d3c41dd450");
@@ -133,6 +143,9 @@ public class FloraMalesianaActivator {
 		//Vol13_small
 		doSource(includeVol13_small, fmSource13_small, "Flora Malesiana - vol. 13", markupConfig, myImport);
 
+		//Vol14
+		doSource(includeVol14, fmSource14, "Flora Malesiana - vol. 14", markupConfig, myImport);
+
 		//Vol15
 		doSource(includeVol15, fmSource15, "Flora Malesiana - vol. 15", markupConfig, myImport);
 
@@ -142,8 +155,17 @@ public class FloraMalesianaActivator {
 		//Vol17, part1
 		doSource(includeVol17_1, fmSource17_1, "Flora Malesiana - vol. 17, part I", markupConfig, myImport);
 
-		//Vol12
+		//Vol17, part2
 		doSource(includeVol17_2, fmSource17_2, "Flora Malesiana - vol. 17, part II", markupConfig, myImport);
+		
+		//Vol18
+		doSource(includeVol18, fmSource18, "Flora Malesiana - vol. 18", markupConfig, myImport);
+		
+		//Vol19
+		doSource(includeVol19, fmSource19, "Flora Malesiana - vol. 19", markupConfig, myImport);
+
+		//Vol20
+		doSource(includeVol20, fmSource20, "Flora Malesiana - vol. 20", markupConfig, myImport);
 		
 		//Vol_2_2
 		doSource(includeVol2_2, fmSource_Ser2_02, "Flora Malesiana - Ser.2, vol. 2", markupConfig, myImport);
@@ -151,7 +173,8 @@ public class FloraMalesianaActivator {
 		//Vol_2_3
 		doSource(includeVol2_3, fmSource_Ser2_03, "Flora Malesiana - Ser.2, vol. 3", markupConfig, myImport);
 
-		
+		makeAutomatedFeatureTree(myImport.getCdmAppController(), markupConfig.getState(), 
+				featureTreeUuid, featureTreeTitle);
 		
 //		makeGeoService();
 		
@@ -191,8 +214,8 @@ public class FloraMalesianaActivator {
 	private FeatureTree makeFeatureNode(ITermService service){
 		FloraMalesianaTransformer transformer = new FloraMalesianaTransformer();
 		
-		FeatureTree result = FeatureTree.NewInstance(featureTreeUuid);
-		result.setTitleCache("Flora Malesiana Presentation Feature Tree");
+		FeatureTree result = FeatureTree.NewInstance(UUID.randomUUID());
+		result.setTitleCache("Flora Malesiana Presentation Feature Tree - Old");
 		FeatureNode root = result.getRoot();
 		FeatureNode newNode;
 		

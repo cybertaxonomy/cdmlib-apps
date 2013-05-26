@@ -236,7 +236,7 @@ public class CdmDestinations {
 
 	public static ICdmDataSource cdm_flora_malesiana_production(){
 		DatabaseTypeEnum dbType = DatabaseTypeEnum.MySQL;
-		String cdmServer = "160.45.63.151";
+		String cdmServer = "160.45.63.171";
 		String cdmDB = "cdm_production_flora_malesiana";
 		String cdmUserName = "edit";
 		return makeDestination(dbType, cdmServer, cdmDB, -1, cdmUserName, null);

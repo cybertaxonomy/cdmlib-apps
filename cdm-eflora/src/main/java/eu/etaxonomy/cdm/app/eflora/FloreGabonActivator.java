@@ -10,11 +10,8 @@
 package eu.etaxonomy.cdm.app.eflora;
 
 import java.net.URI;
-import java.util.Collection;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
 
@@ -30,10 +27,7 @@ import eu.etaxonomy.cdm.io.common.events.IIoObserver;
 import eu.etaxonomy.cdm.io.common.events.LoggingIoObserver;
 import eu.etaxonomy.cdm.io.common.mapping.IInputTransformer;
 import eu.etaxonomy.cdm.io.common.mapping.UndefinedTransformerMethodException;
-import eu.etaxonomy.cdm.io.markup.FeatureSorter;
-import eu.etaxonomy.cdm.io.markup.FeatureSorterInfo;
 import eu.etaxonomy.cdm.io.markup.MarkupImportConfigurator;
-import eu.etaxonomy.cdm.io.markup.MarkupImportState;
 import eu.etaxonomy.cdm.io.markup.MarkupTransformer;
 import eu.etaxonomy.cdm.model.description.Feature;
 import eu.etaxonomy.cdm.model.description.FeatureNode;
@@ -46,7 +40,7 @@ import eu.etaxonomy.cdm.model.reference.ReferenceFactory;
  * @author a.mueller
  * @created 20.06.2008
  */
-public class FloreGabonActivator {
+public class FloreGabonActivator extends EfloraActivatorBase {
 	private static final Logger logger = Logger.getLogger(FloreGabonActivator.class);
 	
 	//database validation status (create, update, validate ...)
@@ -64,6 +58,11 @@ public class FloreGabonActivator {
 	static final URI fdg9 = EfloraSources.fdg_9();
 	static final URI fdg10 = EfloraSources.fdg_10();
 	static final URI fdg11 = EfloraSources.fdg_11();
+	static final URI fdg21 = EfloraSources.fdg_21();
+	static final URI fdg22 = EfloraSources.fdg_22();
+	static final URI fdg27 = EfloraSources.fdg_27();
+	static final URI fdg28 = EfloraSources.fdg_28();
+	static final URI fdg30 = EfloraSources.fdg_30();
 	
 	
 	
@@ -112,7 +111,11 @@ public class FloreGabonActivator {
 	private boolean includeFdg9 = true;
 	private boolean includeFdg10 = true;
 	private boolean includeFdg11 = true;
-	
+	private boolean includeFdg21 = true;
+	private boolean includeFdg22 = true;
+	private boolean includeFdg27 = true;
+	private boolean includeFdg28 = true;
+	private boolean includeFdg30 = true;
 	
 // **************** NO CHANGE **********************************************/
 	
@@ -180,13 +183,23 @@ public class FloreGabonActivator {
 		//Vol11
 		executeVolume(fdg11, includeFdg11 ^ inverseInclude);
 
+		//Vol21
+		executeVolume(fdg21, includeFdg21 ^ inverseInclude);
+		//Vol22
+		executeVolume(fdg22, includeFdg22 ^ inverseInclude);
+		//Vol27
+		executeVolume(fdg27, includeFdg27 ^ inverseInclude);
+		//Vol28
+		executeVolume(fdg28, includeFdg28 ^ inverseInclude);
+		//Vol30
+		executeVolume(fdg30, includeFdg30 ^ inverseInclude);
 		
 		FeatureTree tree = makeFeatureNode(myImport.getCdmAppController().getTermService());
 		myImport.getCdmAppController().getFeatureTreeService().saveOrUpdate(tree);
 		
-		FeatureTree automatedTree = makeAutomatedFeatureTree();
-		
-		
+		makeAutomatedFeatureTree(myImport.getCdmAppController(), config.getState(),
+				featureTreeUuid, featureTreeTitle);
+
 		
 		//check keys
 		if (doPrintKeys){
@@ -221,62 +234,7 @@ public class FloreGabonActivator {
 	}
 	
 	
-	private FeatureTree makeAutomatedFeatureTree(){
-		FeatureTree tree = FeatureTree.NewInstance(featureTreeUuid);
-		tree.setTitleCache(featureTreeTitle, true);
-		FeatureNode root = tree.getRoot();
-		
-		ITermService termService = myImport.getCdmAppController().getTermService();
-		MarkupImportState state = config.getState();
-		FeatureSorter sorter = new FeatureSorter();
-		FeatureNode descriptionNode = null;
-		
-		//general features
-		Map<String, List<FeatureSorterInfo>> generalList = state.getGeneralFeatureSorterListMap();
-		List<UUID> uuidList = sorter.getSortOrder(generalList);
-		Map<UUID, Feature> map = makeUuidMap(uuidList, termService);
-		for (UUID key : uuidList){
-			Feature feature = map.get(key);
-			FeatureNode node = FeatureNode.NewInstance(feature);
-			root.addChild(node);
-			if (feature.equals(Feature.DESCRIPTION())){
-				descriptionNode = node;
-			}
-		}
-		FeatureNode newNode = FeatureNode.NewInstance(Feature.CITATION());
-		root.addChild(newNode);
-		
-		
-		//description features
-		if (descriptionNode != null){
-			Map<String, List<FeatureSorterInfo>> charList = state.getCharFeatureSorterListMap();
-			uuidList = sorter.getSortOrder(charList);
-			map = makeUuidMap(uuidList, termService);
-			for (UUID key : uuidList){
-				Feature feature = map.get(key);
-				descriptionNode.addChild(FeatureNode.NewInstance(feature));
-			}
-		}else{
-			logger.warn("No description node found. Could not create feature nodes for description features.");
-		}
 
-		//save tree
-		myImport.getCdmAppController().getFeatureTreeService().saveOrUpdate(tree);
-		
-		return tree;
-	}
-	
-	private Map<UUID,Feature> makeUuidMap(Collection<UUID> uuids, ITermService termService){
-		HashSet<UUID> uuidSet = new HashSet<UUID>();
-		uuidSet.addAll(uuids);
-		List<Feature> featureSet = (List)termService.find(uuidSet);
-		
-		Map<UUID,Feature> result = new HashMap<UUID, Feature>();
-		for (Feature feature : featureSet){
-			result.put(feature.getUuid(), feature);
-		}
-		return result;
-	}
 
 	private FeatureTree makeFeatureNode(ITermService service){
 		MarkupTransformer transformer = new MarkupTransformer();
