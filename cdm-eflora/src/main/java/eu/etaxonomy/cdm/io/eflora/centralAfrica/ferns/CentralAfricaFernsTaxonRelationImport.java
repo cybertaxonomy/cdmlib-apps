@@ -38,6 +38,7 @@ import eu.etaxonomy.cdm.model.common.Language;
 import eu.etaxonomy.cdm.model.description.CommonTaxonName;
 import eu.etaxonomy.cdm.model.description.Distribution;
 import eu.etaxonomy.cdm.model.description.Feature;
+import eu.etaxonomy.cdm.model.description.PresenceAbsenceTermBase;
 import eu.etaxonomy.cdm.model.description.PresenceTerm;
 import eu.etaxonomy.cdm.model.description.TaxonDescription;
 import eu.etaxonomy.cdm.model.description.TextData;
@@ -68,12 +69,12 @@ import eu.etaxonomy.cdm.model.taxon.TaxonNode;
 public class CentralAfricaFernsTaxonRelationImport  extends CentralAfricaFernsImportBase<TaxonBase> implements IMappingImport<TaxonBase, CentralAfricaFernsImportState>{
 	private static final Logger logger = Logger.getLogger(CentralAfricaFernsTaxonRelationImport.class);
 	
-	private DbImportMapping mapping;
+	private DbImportMapping<?,?> mapping;
 	
 	
 	private static final String pluralString = "taxon relations";
 	private static final String dbTableName = "[African pteridophytes]";
-	private static final Class cdmTargetClass = TaxonBase.class;
+	private static final Class<?> cdmTargetClass = TaxonBase.class;
 
 	private Map<String, UUID> nameCacheTaxonMap = new HashMap<String, UUID>();
 	private Map<String, UUID> titleCacheTaxonMap = new HashMap<String, UUID>();
@@ -101,7 +102,7 @@ public class CentralAfricaFernsTaxonRelationImport  extends CentralAfricaFernsIm
 	 * @see eu.etaxonomy.cdm.io.eflora.centralAfrica.ferns.CentralAfricaFernsImportBase#getMapping()
 	 */
 	@Override
-	protected DbImportMapping getMapping() {
+	protected DbImportMapping<?,?> getMapping() {
 		if (mapping == null){
 			mapping = new DbImportMapping();
 			
@@ -150,7 +151,7 @@ public class CentralAfricaFernsTaxonRelationImport  extends CentralAfricaFernsIm
 		
 		List<Taxon> taxonList = (List)getTaxonService().list(Taxon.class, null, null, null, propPath );
 		for (Taxon taxon : taxonList){
-			NonViralName nvn = CdmBase.deproxy(taxon.getName(), NonViralName.class);
+			NonViralName<?> nvn = CdmBase.deproxy(taxon.getName(), NonViralName.class);
 			UUID uuid = taxon.getUuid();
 			String nameCache = nvn.getNameCache();
 			String titleCache = nvn.getTitleCache();
@@ -164,7 +165,7 @@ public class CentralAfricaFernsTaxonRelationImport  extends CentralAfricaFernsIm
 	 */
 	public Map<Object, Map<String, ? extends CdmBase>> getRelatedObjectsForPartition(ResultSet rs) {
 		String nameSpace;
-		Class cdmClass;
+		Class<?> cdmClass;
 		Set<String> idSet;
 		Map<Object, Map<String, ? extends CdmBase>> result = new HashMap<Object, Map<String, ? extends CdmBase>>();
 		
@@ -203,7 +204,7 @@ public class CentralAfricaFernsTaxonRelationImport  extends CentralAfricaFernsIm
 	 */
 	@Override
 	public TaxonBase createObject(ResultSet rs, CentralAfricaFernsImportState state) throws SQLException {
-		TaxonBase result = null;
+		TaxonBase<?> result = null;
 		try {
 			String status = rs.getString("Current/Synonym");
 			String taxonNumber = rs.getString("Taxon number");
@@ -267,7 +268,7 @@ public class CentralAfricaFernsTaxonRelationImport  extends CentralAfricaFernsIm
 			logger.warn ("Synonym ("+synonymId+")not found.");
 			return null;
 		}
-		TaxonBase taxonBase = CdmBase.deproxy(state.getRelatedObject(TAXON_NAMESPACE, accTaxonId), TaxonBase.class);
+		TaxonBase<?> taxonBase = CdmBase.deproxy(state.getRelatedObject(TAXON_NAMESPACE, accTaxonId), TaxonBase.class);
 			
 		if (taxonBase != null){
 			if (taxonBase.isInstanceOf(Taxon.class)){
@@ -410,8 +411,8 @@ public class CentralAfricaFernsTaxonRelationImport  extends CentralAfricaFernsIm
 	 * @param constructedHigherTaxon
 	 */
 	private Taxon mergeExistingAndConstructedTaxon(CentralAfricaFernsImportState state, Taxon existingTaxon, Taxon constructedTaxon) {
-		NonViralName constructedName = CdmBase.deproxy(constructedTaxon.getName(), NonViralName.class);
-		NonViralName existingName = CdmBase.deproxy(existingTaxon.getName(), NonViralName.class);
+		NonViralName<?> constructedName = CdmBase.deproxy(constructedTaxon.getName(), NonViralName.class);
+		NonViralName<?> existingName = CdmBase.deproxy(existingTaxon.getName(), NonViralName.class);
 		if (constructedName.hasAuthors()){
 			if (! existingName.hasAuthors()){
 				logger.warn(state.getTaxonNumber() + " - Constrcucted name ("+constructedName.getTitleCache()+") has authors but existing name ("+existingName.getTitleCache()+") has no authors");
@@ -704,7 +705,7 @@ public class CentralAfricaFernsTaxonRelationImport  extends CentralAfricaFernsIm
 		
 		//persist
 //		Reference citation = state.getConfig().getSourceReference(); //throws nonUniqueObject exception
-		Reference citation = null;  
+		Reference<?> citation = null;  
 		String id = state.getTaxonNumber() + "-" + constructedName.getRank().getTitleCache();
 		addOriginalSource(constructedName, id, NAME_NAMESPACE, citation);
 		addOriginalSource(constructedHigherTaxon, id, TAXON_NAMESPACE, citation);
@@ -932,7 +933,7 @@ public class CentralAfricaFernsTaxonRelationImport  extends CentralAfricaFernsIm
 			String province = rs.getString("Distribution - Province");
 			String distributionDetailed = rs.getString("Distribution - detailed");
 			if (taxonBase != null){
-				TaxonNameBase nameUsedInSource = taxonBase.getName();
+				TaxonNameBase<?,?> nameUsedInSource = taxonBase.getName();
 				Taxon taxon = getAcceptedTaxon(taxonBase);
 				if (taxon != null){
 				
@@ -1038,7 +1039,7 @@ public class CentralAfricaFernsTaxonRelationImport  extends CentralAfricaFernsIm
 	private void makeSingleCountry(CentralAfricaFernsImportState state, String taxonNumber, Taxon taxon, TaxonNameBase nameUsedInSource, String country) throws UndefinedTransformerMethodException {
 		boolean areaDoubtful = false;
 		Distribution distribution = Distribution.NewInstance(null, PresenceTerm.PRESENT());
-		Reference sourceReference = this.sourceReference;
+		Reference<?> sourceReference = this.sourceReference;
 		distribution.addSource(taxonNumber, "Distribution_Country", sourceReference, null, nameUsedInSource, null);
 		NamedArea area = null;
 		//empty
@@ -1115,17 +1116,17 @@ public class CentralAfricaFernsTaxonRelationImport  extends CentralAfricaFernsIm
 	 * @param state
 	 * @return
 	 */
-	Reference sourceReference = null;
-	private Reference getFernsSourceReference(CentralAfricaFernsImportState state) {
+	private Reference<?> sourceReference = null;
+	private Reference<?> getFernsSourceReference(CentralAfricaFernsImportState state) {
 //		if (sourceReference == null || true){
-			Reference tmpReference = state.getConfig().getSourceReference();
+			Reference<?> tmpReference = state.getConfig().getSourceReference();
 			sourceReference = getReferenceService().find(tmpReference.getUuid());
 //		}
 		return sourceReference;
 	}
 
 
-	private String makeCountryBrackets(CentralAfricaFernsImportState state, String taxonNumber, Taxon taxon, TaxonNameBase nameUsedInSource, String country) {
+	private String makeCountryBrackets(CentralAfricaFernsImportState state, String taxonNumber, Taxon taxon, TaxonNameBase<?,?> nameUsedInSource, String country) {
 		String[] split = (country + " ").split("\\(.*\\)");
 		if (split.length == 2){
 			String bracket = country.substring(split[0].length()+1, country.indexOf(")"));
@@ -1140,7 +1141,7 @@ public class CentralAfricaFernsTaxonRelationImport  extends CentralAfricaFernsIm
 	}
 
 	private String makeCountryStatus(CentralAfricaFernsImportState state, String country, Distribution distribution) throws UndefinedTransformerMethodException {
-		PresenceTerm status = null;
+		PresenceAbsenceTermBase<?> status = null;
 		String[] split = country.split(" - ");
 		
 		if (split.length == 2){
@@ -1196,8 +1197,8 @@ public class CentralAfricaFernsTaxonRelationImport  extends CentralAfricaFernsIm
 	 * @param existingHigherTaxon
 	 */
 	private boolean mergeAuthors_old(Taxon higherTaxon, Taxon existingHigherTaxon) {
-		NonViralName existingName = CdmBase.deproxy(higherTaxon.getName(), NonViralName.class);
-		NonViralName newName = CdmBase.deproxy(existingHigherTaxon.getName(), NonViralName.class);
+		NonViralName<?> existingName = CdmBase.deproxy(higherTaxon.getName(), NonViralName.class);
+		NonViralName<?> newName = CdmBase.deproxy(existingHigherTaxon.getName(), NonViralName.class);
 		if (existingName == newName){
 			return true;
 		}
