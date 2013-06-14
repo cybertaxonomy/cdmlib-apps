@@ -86,6 +86,8 @@ public class FloraMalesianaActivator extends EfloraActivatorBase {
 	
 	private boolean h2ForCheck = false;
 	
+	static final boolean reuseState = true;
+	
 
 	//feature tree uuid
 	public static final UUID featureTreeUuid = UUID.fromString("168df0c6-6429-484c-b26f-ded1f7e44bd9");
@@ -127,7 +129,7 @@ public class FloraMalesianaActivator extends EfloraActivatorBase {
 		markupConfig.setDbSchemaValidation(hbm2dll);
 		markupConfig.setObservers(observerList);
 		markupConfig.setReplaceStandardKeyTitles(replaceStandardKeyTitles);
-		
+		markupConfig.setReuseExistingState(reuseState);
 		
 		markupConfig.setSourceReference(getSourceReference("Flora Malesiana - Vol. 13"));
 		
