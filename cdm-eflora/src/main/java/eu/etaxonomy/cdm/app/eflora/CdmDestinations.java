@@ -34,51 +34,12 @@ public class CdmDestinations {
 		return makeDestination(dbType, cdmServer, cdmDB, -1, cdmUserName, null);
 	}
 
-	public static ICdmDataSource cdm_test_alex(){
-		DatabaseTypeEnum dbType = DatabaseTypeEnum.MySQL;
-		String cdmServer = "192.168.2.10";
-		String cdmDB = "cdm_production_palmae"; 
-		String cdmUserName = "edit";
-		return makeDestination(dbType, cdmServer, cdmDB, -1, cdmUserName, null);
-	}
 	
 
 	public static ICdmDataSource cdm_test_useSummary(){
 		DatabaseTypeEnum dbType = DatabaseTypeEnum.MySQL;
 		String cdmServer = "localhost";
 		String cdmDB = "palmae_2011_07_17"; 
-		String cdmUserName = "edit";
-		return makeDestination(dbType, cdmServer, cdmDB, -1, cdmUserName, null);
-	}
-	
-	public static ICdmDataSource cdm_test_jaxb(){
-		DatabaseTypeEnum dbType = DatabaseTypeEnum.MySQL;
-		String cdmServer = "192.168.2.10";
-		String cdmDB = "cdm_test_jaxb"; 
-		String cdmUserName = "edit";
-		return makeDestination(dbType, cdmServer, cdmDB, -1, cdmUserName, null);
-	}
-	
-	public static ICdmDataSource cdm_test_jaxb2(){
-		DatabaseTypeEnum dbType = DatabaseTypeEnum.MySQL;
-		String cdmServer = "192.168.2.10";
-		String cdmDB = "cdm_test_jaxb2"; 
-		String cdmUserName = "edit";
-		return makeDestination(dbType, cdmServer, cdmDB, -1, cdmUserName, null);
-	}
-
-	public static ICdmDataSource cdm_test_andreasM(){
-		DatabaseTypeEnum dbType = DatabaseTypeEnum.MySQL;
-		String cdmServer = "192.168.2.10";
-		String cdmDB = "cdm_test_andreasM"; 
-		String cdmUserName = "edit";
-		return makeDestination(dbType, cdmServer, cdmDB, -1, cdmUserName, null);
-	}
-	
-	public static ICdmDataSource cdm_test_andreasM2(){
-		DatabaseTypeEnum dbType = DatabaseTypeEnum.MySQL;
-		String cdmServer = "192.168.2.10";
-		String cdmDB = "cdm_test_andreasM2"; 
 		String cdmUserName = "edit";
 		return makeDestination(dbType, cdmServer, cdmDB, -1, cdmUserName, null);
 	}
@@ -114,56 +75,6 @@ public class CdmDestinations {
 		String cdmUserName = "root";
 		return makeDestination(dbType, cdmServer, cdmDB, -1, cdmUserName, null);
 	}
-	
-	public static ICdmDataSource cdm_portal(){
-		DatabaseTypeEnum dbType = DatabaseTypeEnum.MySQL;
-		String cdmServer = "192.168.2.10";
-		String cdmDB = "cdm_portal";
-		String cdmUserName = "edit";
-		return makeDestination(dbType, cdmServer, cdmDB, -1, cdmUserName, null);
-	}
-	
-	public static ICdmDataSource cdm_portal_test(){
-		DatabaseTypeEnum dbType = DatabaseTypeEnum.MySQL;
-		String cdmServer = "192.168.2.10";
-		String cdmDB = "cdm_portal_test";
-		String cdmUserName = "edit";
-		return makeDestination(dbType, cdmServer, cdmDB, -1, cdmUserName, null);
-	}
-	
-	public static ICdmDataSource cdm_test_patricia(){
-		DatabaseTypeEnum dbType = DatabaseTypeEnum.MySQL;
-		String cdmServer = "192.168.2.10";
-		String cdmDB = "cdm_test_patricia";
-		String cdmUserName = "edit";
-		return makeDestination(dbType, cdmServer, cdmDB, -1, cdmUserName, null);
-	}
-	
-	//
-	public static ICdmDataSource cdm_test_andreasK1(){
-		DatabaseTypeEnum dbType = DatabaseTypeEnum.MySQL;
-		String cdmServer = "192.168.2.10";
-		String cdmDB = "cdm_test_andreasK1";
-		String cdmUserName = "edit";
-		return makeDestination(dbType, cdmServer, cdmDB, -1, cdmUserName, null);
-	}
-	
-
-	public static ICdmDataSource cdm_pesi_erms(){
-		DatabaseTypeEnum dbType = DatabaseTypeEnum.MySQL;
-		String cdmServer = "192.168.2.10";
-		String cdmDB = "cdm_pesi_erms";
-		String cdmUserName = "edit";
-		return makeDestination(dbType, cdmServer, cdmDB, -1, cdmUserName, null);
-	}
-	
-	public static ICdmDataSource cdm_campanulaceae(){
-		DatabaseTypeEnum dbType = DatabaseTypeEnum.MySQL;
-		String cdmServer = "192.168.2.10";
-		String cdmDB = "cdm_campanulaceae";
-		String cdmUserName = "edit";
-		return makeDestination(dbType, cdmServer, cdmDB, -1, cdmUserName, null);
-	}
 
 	public static ICdmDataSource cdm_ildis_dev(){
 		DatabaseTypeEnum dbType = DatabaseTypeEnum.MySQL;
@@ -192,7 +103,7 @@ public class CdmDestinations {
 	
 	public static ICdmDataSource cdm_cyprus_production(){
 		DatabaseTypeEnum dbType = DatabaseTypeEnum.MySQL;
-		String cdmServer = "160.45.63.151";
+		String cdmServer = "160.45.63.171";
 		String cdmDB = "cdm_production_cyprus";
 		String cdmUserName = "edit";
 		return makeDestination(dbType, cdmServer, cdmDB, -1, cdmUserName, null);
@@ -218,7 +129,7 @@ public class CdmDestinations {
 	
 	public static ICdmDataSource cdm_campanulaceae_production(){
 		DatabaseTypeEnum dbType = DatabaseTypeEnum.MySQL;
-		String cdmServer = "160.45.63.151";
+		String cdmServer = "160.45.63.171";
 		String cdmDB = "cdm_production_campanulaceae";
 		String cdmUserName = "edit";
 		return makeDestination(dbType, cdmServer, cdmDB, -1, cdmUserName, null);
@@ -231,16 +142,23 @@ public class CdmDestinations {
 		String cdmUserName = "edit";
 		return makeDestination(dbType, cdmServer, cdmDB, -1, cdmUserName, null);
 	}
-	
-	
 
 	public static ICdmDataSource cdm_flora_malesiana_production(){
+		DatabaseTypeEnum dbType = DatabaseTypeEnum.MySQL;
+		String cdmServer = "160.45.63.171";
+		String cdmDB = "cdm_production_flora_malesiana_prospective";
+		String cdmUserName = "edit";
+		return makeDestination(dbType, cdmServer, cdmDB, -1, cdmUserName, null);
+	}
+
+	public static ICdmDataSource cdm_flora_malesiana_prospective_production(){
 		DatabaseTypeEnum dbType = DatabaseTypeEnum.MySQL;
 		String cdmServer = "160.45.63.171";
 		String cdmDB = "cdm_production_flora_malesiana";
 		String cdmUserName = "edit";
 		return makeDestination(dbType, cdmServer, cdmDB, -1, cdmUserName, null);
 	}
+
 	
 	public static ICdmDataSource cdm_flora_guianas_preview(){
 		DatabaseTypeEnum dbType = DatabaseTypeEnum.MySQL;
