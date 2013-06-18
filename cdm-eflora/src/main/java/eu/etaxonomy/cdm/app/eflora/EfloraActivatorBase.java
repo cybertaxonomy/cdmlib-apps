@@ -31,6 +31,7 @@ public class EfloraActivatorBase {
 	
 	protected FeatureTree makeAutomatedFeatureTree(ICdmApplicationConfiguration app, 
 			MarkupImportState state, UUID featureTreeUuid, String featureTreeTitle){
+		System.out.println("Start creating automated Feature Tree");
 		FeatureTree tree = FeatureTree.NewInstance(featureTreeUuid);
 		tree.setTitleCache(featureTreeTitle, true);
 		FeatureNode root = tree.getRoot();
@@ -70,6 +71,8 @@ public class EfloraActivatorBase {
 
 		//save tree
 		app.getFeatureTreeService().saveOrUpdate(tree);
+		
+		System.out.println("End creating automated Feature Tree");
 		
 		return tree;
 	}
