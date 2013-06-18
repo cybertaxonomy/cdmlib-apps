@@ -219,6 +219,7 @@ cdm-eflora/src/main/java/eu/etaxonomy/cdm/app/eflora/EfloraSources.java -text
 cdm-eflora/src/main/java/eu/etaxonomy/cdm/app/eflora/FloraGuianasActivator.java -text
 cdm-eflora/src/main/java/eu/etaxonomy/cdm/app/eflora/FloraMalesianaActivator.java -text
 cdm-eflora/src/main/java/eu/etaxonomy/cdm/app/eflora/FloraMalesianaActivator_OLD.java -text
+cdm-eflora/src/main/java/eu/etaxonomy/cdm/app/eflora/FloraMalesianaProspectiveTester.java -text
 cdm-eflora/src/main/java/eu/etaxonomy/cdm/app/eflora/FloreGabonActivator.java -text
 cdm-eflora/src/main/java/eu/etaxonomy/cdm/app/testUpdate/EricaceaeTestUpdateActivator.java -text
 cdm-eflora/src/main/java/eu/etaxonomy/cdm/io/eflora/EfloraImportBase.java -text
