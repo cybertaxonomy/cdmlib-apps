@@ -47,7 +47,6 @@ import eu.etaxonomy.cdm.strategy.parser.NonViralNameParserImpl;
 /**
  * @author a.mueller
  * @created 20.03.2008
- * @version 1.0
  */
 public abstract class GlobisImportBase<CDM_BASE extends CdmBase> extends CdmImportBase<GlobisImportConfigurator, GlobisImportState> implements ICdmIO<GlobisImportState>, IPartitionedIO<GlobisImportState> {
 	private static final Logger logger = Logger.getLogger(GlobisImportBase.class);
