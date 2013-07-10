@@ -40,8 +40,10 @@ public class DwcaScratchpadImportActivator {
 	static DbSchemaValidation hbm2dll = DbSchemaValidation.CREATE;
 
 	//	static final URI source =  dwca_emonocots_dioscoreaceae();
-	static final URI source =  dwca_emonocots_zingiberaceae();
-//	static final URI source =  dwca_emonocots_cypripedioideae();
+//	static final URI source =  dwca_emonocots_zingiberaceae();
+	//static final URI source =  dwca_emonocots_cypripedioideae();
+	static final URI source =  dwca_emonocots_dioscoreaceae();
+	
 	
 //	static final ICdmDataSource cdmDestination = CdmDestinations.localH2();
 	static final ICdmDataSource cdmDestination = CdmDestinations.cdm_test_local_mysql();
@@ -136,7 +138,8 @@ public class DwcaScratchpadImportActivator {
 	
 	//emonocots_dioscoreaceae
 	public static URI dwca_emonocots_dioscoreaceae() {
-		URI sourceUrl = URI.create("file:////PESIIMPORT3/vibrant/dwca/dwca_emonocots_dioscoreaceae.zip");
+		//URI sourceUrl = URI.create("file:////PESIIMPORT3/vibrant/dwca/dwca_emonocots_dioscoreaceae.zip");//dwca_dioscoreaceae_e_monocot.zip
+		URI sourceUrl = URI.create("file:///C:/Users/l.morris/Downloads/dwca_scratchpads/dwca_dioscoreaceae_e_monocot_org.zip");
 		return sourceUrl;
 	}
 	
@@ -147,7 +150,8 @@ public class DwcaScratchpadImportActivator {
 	}
 	//emonocots_cypripedioideae
 	public static URI dwca_emonocots_cypripedioideae() {
-		URI sourceUrl = URI.create("file:////PESIIMPORT3/vibrant/dwca/dwca_emonocots_cypripedioideae.zip");
+		//URI sourceUrl = URI.create("file:////PESIIMPORT3/vibrant/dwca/dwca_emonocots_cypripedioideae.zip");
+		URI sourceUrl = URI.create("file:///C:/Users/l.morris/Downloads/dwca_scratchpads/dwca_cypripedioideae_e-monocot_org.zip");
 		return sourceUrl;
 	}
 	
