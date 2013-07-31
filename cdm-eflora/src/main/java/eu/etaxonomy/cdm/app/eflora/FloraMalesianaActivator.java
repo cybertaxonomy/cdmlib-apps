@@ -39,7 +39,6 @@ import eu.etaxonomy.cdm.model.reference.ReferenceFactory;
 /**
  * @author a.mueller
  * @created 20.06.2008
- * @version 1.0
  */
 public class FloraMalesianaActivator extends EfloraActivatorBase {
 	private static final Logger logger = Logger.getLogger(FloraMalesianaActivator.class);
@@ -75,7 +74,7 @@ public class FloraMalesianaActivator extends EfloraActivatorBase {
 	private boolean includeVol13_large = includeBase;
 	private boolean includeVol14 = includeBase;
 	private boolean includeVol15 = includeBase;
-	private boolean includeVol16 = includeBase;
+	private boolean includeVol16 =  includeBase;
 	private boolean includeVol17_1 = includeBase;
 	private boolean includeVol17_2 = includeBase;
 	private boolean includeVol18 = includeBase;
@@ -95,6 +94,7 @@ public class FloraMalesianaActivator extends EfloraActivatorBase {
 	
 	//classification
 	static final UUID classificationUuid = UUID.fromString("ca4e4bcb-a1d1-4124-a358-a3d3c41dd450");
+	static final String classificationTitle = "Flora Malesiana";
 	
 	//check - import
 	static CHECK check = CHECK.IMPORT_WITHOUT_CHECK;
@@ -123,6 +123,7 @@ public class FloraMalesianaActivator extends EfloraActivatorBase {
 		
 		MarkupImportConfigurator markupConfig= MarkupImportConfigurator.NewInstance(source, cdmDestination);
 		markupConfig.setClassificationUuid(classificationUuid);
+		markupConfig.setClassificationName(classificationTitle);
 		markupConfig.setDoTaxa(doTaxa);
 		markupConfig.setCheck(check);
 		markupConfig.setDoPrintKeys(doPrintKeys);
@@ -135,6 +136,11 @@ public class FloraMalesianaActivator extends EfloraActivatorBase {
 		
 		CdmDefaultImport<MarkupImportConfigurator> myImport = new CdmDefaultImport<MarkupImportConfigurator>(); 
 
+
+
+		//Vol16
+		doSource(includeVol16, fmSource16, "Flora Malesiana - vol. 16", markupConfig, myImport);
+		
 
 		//Vol12
 		doSource(includeVol12, fmSource12, "Flora Malesiana - vol. 12", markupConfig, myImport);
@@ -150,10 +156,6 @@ public class FloraMalesianaActivator extends EfloraActivatorBase {
 
 		//Vol15
 		doSource(includeVol15, fmSource15, "Flora Malesiana - vol. 15", markupConfig, myImport);
-
-		//Vol16
-		doSource(includeVol16, fmSource16, "Flora Malesiana - vol. 16", markupConfig, myImport);
-		
 		//Vol17, part1
 		doSource(includeVol17_1, fmSource17_1, "Flora Malesiana - vol. 17, part I", markupConfig, myImport);
 
