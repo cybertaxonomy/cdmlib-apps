@@ -72,7 +72,7 @@ public class EfloraSources {
 
 	//Flora Malesiana Vol 14
 	public static URI fm_14(){
-		return URI.create("file://PESIIMPORT3/malesiana/vol_15/vol14_final.xml");
+		return URI.create("file://PESIIMPORT3/malesiana/vol_14/vol14_final.xml");
 	}
 	
 	//Flora Malesiana Vol 15
@@ -97,15 +97,15 @@ public class EfloraSources {
 	
 	//Flora Malesiana Vol 18
 	public static URI fm_18(){
-		return URI.create("file://PESIIMPORT3/malesiana/vol_15/vol18_final.xml");
+		return URI.create("file://PESIIMPORT3/malesiana/vol_18/vol18_final.xml");
 	}
 	//Flora Malesiana Vol 19
 	public static URI fm_19(){
-		return URI.create("file://PESIIMPORT3/malesiana/vol_15/vol19_final.xml");
+		return URI.create("file://PESIIMPORT3/malesiana/vol_19/vol19_final.xml");
 	}
 	//Flora Malesiana Vol 20
 	public static URI fm_20(){
-		return URI.create("file://PESIIMPORT3/malesiana/vol_15/vol20_final.xml");
+		return URI.create("file://PESIIMPORT3/malesiana/vol_20/vol20_final.xml");
 	}
 	
 	//Flora Malesiana Series 2 - Vol 2
