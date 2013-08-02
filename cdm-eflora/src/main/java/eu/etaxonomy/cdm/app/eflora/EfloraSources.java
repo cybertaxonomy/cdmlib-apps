@@ -55,20 +55,24 @@ public class EfloraSources {
 
   //***** FM NEW */	
 	
-	//Flora Malesiana Vol 12
-	public static URI fm_12(){
-		return URI.create("file://PESIIMPORT3/malesiana/vol_12/xml_1995_vol_12_all_final_5.xml");
+	//Flora Malesiana Vol 12_1
+	public static URI fm_12_1(){
+		return URI.create("file://PESIIMPORT3/malesiana/vol_12/vol_12_1_final.xml");
 	}
 	
-	//Flora Malesiana Vol 13 - small families
-	public static URI fm_13_small_families(){
-		return URI.create("file://PESIIMPORT3/malesiana/vol_13/vol_13_small_families.xml");
+	//Flora Malesiana Vol 12_2
+	public static URI fm_12_2(){
+		return URI.create("file://PESIIMPORT3/malesiana/vol_12/vol_12_2_final.xml");
+	}
+	
+	public static URI fm_13(){
+		return URI.create("file://PESIIMPORT3/malesiana/vol_13/vol13_final.xml");
 	}
 
-	//Flora Malesiana Vol 13 - large families
-	public static URI fm_13_large_families(){
-		return URI.create("file://PESIIMPORT3/malesiana/vol_13/xmlv9_large_families_vol_13.xml");
-	}
+//	//Flora Malesiana Vol 13 - large families
+//	public static URI fm_13_large_families(){
+//		return URI.create("file://PESIIMPORT3/malesiana/vol_13/xmlv9_large_families_vol_13.xml");
+//	}
 
 	//Flora Malesiana Vol 14
 	public static URI fm_14(){
