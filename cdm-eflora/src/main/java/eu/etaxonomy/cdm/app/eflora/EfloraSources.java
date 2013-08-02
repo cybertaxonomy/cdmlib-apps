@@ -57,12 +57,12 @@ public class EfloraSources {
 	
 	//Flora Malesiana Vol 12_1
 	public static URI fm_12_1(){
-		return URI.create("file://PESIIMPORT3/malesiana/vol_12/vol_12_1_final.xml");
+		return URI.create("file://PESIIMPORT3/malesiana/vol_12/vol12_1_final.xml");
 	}
 	
 	//Flora Malesiana Vol 12_2
 	public static URI fm_12_2(){
-		return URI.create("file://PESIIMPORT3/malesiana/vol_12/vol_12_2_final.xml");
+		return URI.create("file://PESIIMPORT3/malesiana/vol_12/vol12_2_final.xml");
 	}
 	
 	public static URI fm_13(){
