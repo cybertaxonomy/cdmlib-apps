@@ -215,6 +215,15 @@ public class EfloraSources {
 		return URI.create("file://PESIIMPORT3/gabon/markupData/fdgvol30_final.xml");
 	}
 
+	//Flore du Gabon vol 34
+	public static URI fdg_34(){
+		return URI.create("file://PESIIMPORT3/gabon/markupData/fdgvol34_final.xml");
+	}
+	
+	//Flore du Gabon vol 35
+	public static URI fdg_35(){
+		return URI.create("file://PESIIMPORT3/gabon/markupData/fdgvol35_final.xml");
+	}
 	
 //************************* GUIANAS **********************************************/	
 	

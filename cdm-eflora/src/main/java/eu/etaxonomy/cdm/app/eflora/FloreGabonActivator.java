@@ -63,6 +63,8 @@ public class FloreGabonActivator extends EfloraActivatorBase {
 	static final URI fdg27 = EfloraSources.fdg_27();
 	static final URI fdg28 = EfloraSources.fdg_28();
 	static final URI fdg30 = EfloraSources.fdg_30();
+	static final URI fdg34 = EfloraSources.fdg_34();
+	static final URI fdg35 = EfloraSources.fdg_35();
 	
 	
 	
@@ -116,6 +118,8 @@ public class FloreGabonActivator extends EfloraActivatorBase {
 	private boolean includeFdg27 = true;
 	private boolean includeFdg28 = true;
 	private boolean includeFdg30 = true;
+	private boolean includeFdg34 = true;
+	private boolean includeFdg35 = true;
 	
 // **************** NO CHANGE **********************************************/
 	
@@ -193,6 +197,12 @@ public class FloreGabonActivator extends EfloraActivatorBase {
 		executeVolume(fdg28, includeFdg28 ^ inverseInclude);
 		//Vol30
 		executeVolume(fdg30, includeFdg30 ^ inverseInclude);
+		//Vol34
+		executeVolume(fdg34, includeFdg34 ^ inverseInclude);
+		//Vol35
+		executeVolume(fdg35, includeFdg35 ^ inverseInclude);
+				
+		
 		
 		FeatureTree tree = makeFeatureNode(myImport.getCdmAppController().getTermService());
 		myImport.getCdmAppController().getFeatureTreeService().saveOrUpdate(tree);
