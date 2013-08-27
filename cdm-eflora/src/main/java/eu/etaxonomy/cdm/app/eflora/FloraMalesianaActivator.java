@@ -68,11 +68,11 @@ public class FloraMalesianaActivator extends EfloraActivatorBase {
 //	static final ICdmDataSource cdmDestination = CdmDestinations.cdm_test_local_mysql();
 //	static final ICdmDataSource cdmDestination = CdmDestinations.cdm_test_local_mysql_test();
 	
-	private boolean includeBase = false;
+	private boolean includeBase = true;
 	private boolean includeVol12_1 = includeBase;
 	private boolean includeVol12_2 = includeBase;
 	private boolean includeVol13 = includeBase;
-	private boolean includeVol14 = ! includeBase;
+	private boolean includeVol14 = includeBase;
 	private boolean includeVol15 = includeBase;
 	private boolean includeVol16 = includeBase;
 	private boolean includeVol17_1 = includeBase;
@@ -85,7 +85,7 @@ public class FloraMalesianaActivator extends EfloraActivatorBase {
 	
 	private boolean h2ForCheck = false;
 	
-	static final boolean reuseState = true;
+	static final boolean reuseState = true;  //when running multiple imports
 	
 
 	//feature tree uuid
