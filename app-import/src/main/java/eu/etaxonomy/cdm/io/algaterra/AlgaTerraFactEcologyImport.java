@@ -25,6 +25,7 @@ import eu.etaxonomy.cdm.api.facade.DerivedUnitFacade;
 import eu.etaxonomy.cdm.api.facade.DerivedUnitFacade.DerivedUnitType;
 import eu.etaxonomy.cdm.api.facade.DerivedUnitFacadeCacheStrategy;
 import eu.etaxonomy.cdm.api.facade.DerivedUnitFacadeNotSupportedException;
+import eu.etaxonomy.cdm.common.CdmUtils;
 import eu.etaxonomy.cdm.io.algaterra.validation.AlgaTerraSpecimenImportValidator;
 import eu.etaxonomy.cdm.io.berlinModel.in.BerlinModelImportConfigurator;
 import eu.etaxonomy.cdm.io.berlinModel.in.BerlinModelImportState;
@@ -136,7 +137,9 @@ public class AlgaTerraFactEcologyImport  extends AlgaTerraSpecimenImportBase {
 					Reference<?> sourceRef = state.getTransactionalSourceReference();
 				
 					DerivedUnitBase<?> ecoFact = ecoFactDerivedUnitMap.get(String.valueOf(ecoFactId));
-					
+					if (ecoFact == null){
+						logger.warn("EcoFact is null for EcoFact: " + CdmUtils.Nz(ecoFactId) + ", taxonId: " + CdmUtils.Nz(taxonId));
+					}
 					
 					//description element
 					if (taxonId != null){
