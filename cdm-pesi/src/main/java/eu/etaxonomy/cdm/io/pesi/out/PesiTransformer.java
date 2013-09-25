@@ -38,8 +38,7 @@ import eu.etaxonomy.cdm.model.description.Feature;
 import eu.etaxonomy.cdm.model.description.PresenceAbsenceTermBase;
 import eu.etaxonomy.cdm.model.description.PresenceTerm;
 import eu.etaxonomy.cdm.model.location.NamedArea;
-import eu.etaxonomy.cdm.model.location.TdwgArea;
-import eu.etaxonomy.cdm.model.location.WaterbodyOrCountry;
+import eu.etaxonomy.cdm.model.location.Country;
 import eu.etaxonomy.cdm.model.name.HybridRelationshipType;
 import eu.etaxonomy.cdm.model.name.NameRelationshipType;
 import eu.etaxonomy.cdm.model.name.NameTypeDesignationStatus;
@@ -47,7 +46,7 @@ import eu.etaxonomy.cdm.model.name.NomenclaturalCode;
 import eu.etaxonomy.cdm.model.name.NomenclaturalStatusType;
 import eu.etaxonomy.cdm.model.name.Rank;
 import eu.etaxonomy.cdm.model.name.TaxonNameBase;
-import eu.etaxonomy.cdm.model.occurrence.Fossil;
+import eu.etaxonomy.cdm.model.occurrence.DerivedUnit;
 import eu.etaxonomy.cdm.model.reference.Reference;
 import eu.etaxonomy.cdm.model.reference.ReferenceType;
 import eu.etaxonomy.cdm.model.taxon.Synonym;
@@ -996,24 +995,24 @@ public final class PesiTransformer extends ExportTransformerBase implements IExp
 		if (area == null) {
 			return null;
 		//TDWG areas
-		} else if (area.isInstanceOf(TdwgArea.class)) {
+		} else if (area.getVocabulary().getUuid().equals(NamedArea.uuidTdwgAreaVocabulary)) {
 			String abbrevLabel = namedArea.getRepresentation(Language.DEFAULT()).getAbbreviatedLabel();
 			Integer result = this.tdwgKeyMap.get(abbrevLabel);
 			if (result == null){
 				logger.warn("Unknown TDWGArea: " + area.getTitleCache());
 			}
 			return result;
-		//countries & Waterbodies
-		}else if (namedArea.isInstanceOf(WaterbodyOrCountry.class)){
-			if (namedArea.equals(WaterbodyOrCountry.UKRAINE())) { return AREA_UKRAINE_INCLUDING_CRIMEA; }
-			else if (namedArea.equals(WaterbodyOrCountry.AZERBAIJANREPUBLICOF())) { return AREA_AZERBAIJAN_INCLUDING_NAKHICHEVAN; }
-			else if (namedArea.equals(WaterbodyOrCountry.GEORGIA())) { return AREA_GEORGIA; }
-			else if (namedArea.equals(WaterbodyOrCountry.RUSSIANFEDERATION())) { return AREA_THE_RUSSIAN_FEDERATION; }
-			else if (namedArea.equals(WaterbodyOrCountry.UNITEDKINGDOMOFGREATBRITAINANDNORTHERNIRELAND())) { return AREA_UNITED_KINGDOM; }
-			else if (namedArea.equals(WaterbodyOrCountry.DENMARKKINGDOMOF())) { return AREA_DENMARK_COUNTRY; }
-			else if (namedArea.equals(WaterbodyOrCountry.TURKEYREPUBLICOF())) { return AREA_TURKEY_COUNTRY; }
+		//countries
+		}else if (namedArea.isInstanceOf(Country.class)){
+			if (namedArea.equals(Country.UKRAINE())) { return AREA_UKRAINE_INCLUDING_CRIMEA; }
+			else if (namedArea.equals(Country.AZERBAIJANREPUBLICOF())) { return AREA_AZERBAIJAN_INCLUDING_NAKHICHEVAN; }
+			else if (namedArea.equals(Country.GEORGIA())) { return AREA_GEORGIA; }
+			else if (namedArea.equals(Country.RUSSIANFEDERATION())) { return AREA_THE_RUSSIAN_FEDERATION; }
+			else if (namedArea.equals(Country.UNITEDKINGDOMOFGREATBRITAINANDNORTHERNIRELAND())) { return AREA_UNITED_KINGDOM; }
+			else if (namedArea.equals(Country.DENMARKKINGDOMOF())) { return AREA_DENMARK_COUNTRY; }
+			else if (namedArea.equals(Country.TURKEYREPUBLICOF())) { return AREA_TURKEY_COUNTRY; }
 			else {
-				logger.warn("Unknown Waterbody/Country: " + area.getTitleCache());
+				logger.warn("Unknown Country: " + area.getTitleCache());
 			}
 		}else{  //Non TDWG, non country
 			//EM
@@ -1162,7 +1161,7 @@ public final class PesiTransformer extends ExportTransformerBase implements IExp
 	 * @param fossil
 	 * @return
 	 */
-	public static String fossil2FossilStatusCache(Fossil fossil) {
+	public static String fossil2FossilStatusCache(DerivedUnit fossil) {
 		String result = null;
 		return result;
 	}
@@ -1172,7 +1171,7 @@ public final class PesiTransformer extends ExportTransformerBase implements IExp
 	 * @param fossil
 	 * @return
 	 */
-	public static Integer fossil2FossilStatusId(Fossil fossil) {
+	public static Integer fossil2FossilStatusId(DerivedUnit fossil) {
 		Integer result = null;
 		return result;
 	}
@@ -1503,7 +1502,7 @@ public final class PesiTransformer extends ExportTransformerBase implements IExp
 		// TODO: This needs to be refined. For now we differentiate between Animalia and Plantae only.
 		if (nomenclaturalCode.equals(NomenclaturalCode.ICZN)) {
 			result = KINGDOM_ANIMALIA;
-		} else if (nomenclaturalCode.equals(NomenclaturalCode.ICBN)) {
+		} else if (nomenclaturalCode.equals(NomenclaturalCode.ICNAFP)) {
 			result = KINGDOM_PLANTAE;
 		} else if (nomenclaturalCode.equals(NomenclaturalCode.ICNB)) {
 			result = KINGDOM_BACTERIA;

@@ -51,7 +51,7 @@ public class DwcaScratchpadImportActivator {
 //	static final ICdmDataSource cdmDestination = CdmDestinations.cdm_test_local_mysql_test();
 	
 	//default nom code is ICZN as it allows adding publication year 
-	static final NomenclaturalCode defaultNomCode = NomenclaturalCode.ICBN;
+	static final NomenclaturalCode defaultNomCode = NomenclaturalCode.ICNAFP;
 	
 	//classification Name
 	static String classificationName = "Default classification";
