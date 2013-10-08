@@ -190,6 +190,52 @@ public class EfloraSources {
 		return URI.create("file://PESIIMPORT3/gabon/markupData/fdgvol11_final.xml");
 	}
 
+	//Flore du Gabon vol 12
+	public static URI fdg_12(){
+		return URI.create("file://PESIIMPORT3/gabon/markupData/fdgvol12_final.xml");
+	}
+
+
+	//Flore du Gabon vol 13
+	public static URI fdg_13(){
+		return URI.create("file://PESIIMPORT3/gabon/markupData/fdgvol13_final.xml");
+	}
+
+	//Flore du Gabon vol 14
+	public static URI fdg_14(){
+		return URI.create("file://PESIIMPORT3/gabon/markupData/fdgvol14_final.xml");
+	}
+
+	//Flore du Gabon vol 15
+	public static URI fdg_15(){
+		return URI.create("file://PESIIMPORT3/gabon/markupData/fdgvol15_final.xml");
+	}
+
+	//Flore du Gabon vol 16
+	public static URI fdg_16(){
+		return URI.create("file://PESIIMPORT3/gabon/markupData/fdgvol16_final.xml");
+	}
+
+	//Flore du Gabon vol 17
+	public static URI fdg_17(){
+		return URI.create("file://PESIIMPORT3/gabon/markupData/fdgvol17_final.xml");
+	}
+
+	//Flore du Gabon vol 18
+	public static URI fdg_18(){
+		return URI.create("file://PESIIMPORT3/gabon/markupData/fdgvol18_final.xml");
+	}
+
+	//Flore du Gabon vol 19
+	public static URI fdg_19(){
+		return URI.create("file://PESIIMPORT3/gabon/markupData/fdgvol19_final.xml");
+	}
+
+	//Flore du Gabon vol 20
+	public static URI fdg_20(){
+		return URI.create("file://PESIIMPORT3/gabon/markupData/fdgvol20_final.xml");
+	}
+	
 	//Flore du Gabon vol 21
 	public static URI fdg_21(){
 		return URI.create("file://PESIIMPORT3/gabon/markupData/fdgvol21_final.xml");
