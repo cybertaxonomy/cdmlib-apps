@@ -91,7 +91,6 @@ public class FloreGabonActivator extends EfloraActivatorBase {
 	static final UUID classificationUuid = UUID.fromString("2f892452-ff49-48cf-834f-52ca29600719");
 	static final String classificationTitle = "Flore du Gabon";
 	
-	
 	//check - import
 	private boolean h2ForCheck = false;
 	static CHECK check = CHECK.IMPORT_WITHOUT_CHECK;
@@ -108,7 +107,7 @@ public class FloreGabonActivator extends EfloraActivatorBase {
 	
 	
 	//if true, use inverse include information
-	private boolean inverseInclude = true;
+	private boolean inverseInclude = false;
 	
 	private boolean includeFdg1 = true;
 	private boolean includeFdg2 = true;
@@ -136,8 +135,8 @@ public class FloreGabonActivator extends EfloraActivatorBase {
 	private boolean includeFdg27 = true;
 	private boolean includeFdg28 = true;
 	private boolean includeFdg30 = true;
-	private boolean includeFdg34 = false;
-	private boolean includeFdg35 = false;
+	private boolean includeFdg34 = true;
+	private boolean includeFdg35 = true;
 	
 // **************** NO CHANGE **********************************************/
 	
