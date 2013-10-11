@@ -153,7 +153,7 @@ public class EuroMedActivator {
 //	static final boolean doTaxa = false;
 //	static final boolean doRelTaxa = false;
 //	static final boolean doFacts = false;
-//	static final boolean doOccurences = true;
+//	static final boolean doOccurences = false;
 //	static final boolean doCommonNames = false;
 //	
 //	//etc.
