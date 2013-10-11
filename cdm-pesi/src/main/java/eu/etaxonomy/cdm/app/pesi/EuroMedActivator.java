@@ -47,8 +47,8 @@ public class EuroMedActivator {
 
 	//database validation status (create, update, validate ...)
 	static DbSchemaValidation hbm2dll = DbSchemaValidation.CREATE;
-//	static final Source berlinModelSource = BerlinModelSources.euroMed();
-	static final Source berlinModelSource = BerlinModelSources.PESI3_euroMed();
+	static final Source berlinModelSource = BerlinModelSources.euroMed();
+//	static final Source berlinModelSource = BerlinModelSources.PESI3_euroMed();
 	
 //	static final ICdmDataSource cdmDestination = CdmDestinations.cdm_pesi_euroMed();
 //	static final ICdmDataSource cdmDestination = CdmDestinations.cdm_test_local_mysql();
@@ -84,7 +84,8 @@ public class EuroMedActivator {
 	
 	static boolean useClassification = true;
 	
-	static boolean 	isSplitTdwgCodes = false;
+	static boolean isSplitTdwgCodes = false;
+	static boolean useEmAreaVocabulary = true;
 	
 	private boolean removeHttpMapsAnchor = true;
 
@@ -152,7 +153,7 @@ public class EuroMedActivator {
 //	static final boolean doTaxa = false;
 //	static final boolean doRelTaxa = false;
 //	static final boolean doFacts = false;
-//	static final boolean doOccurences = false;
+//	static final boolean doOccurences = true;
 //	static final boolean doCommonNames = false;
 //	
 //	//etc.
@@ -216,7 +217,7 @@ public class EuroMedActivator {
 		
 		//TDWG codes
 		config.setSplitTdwgCodes(isSplitTdwgCodes);
-		
+		config.setUseEmAreaVocabulary(useEmAreaVocabulary);
 		
 		config.setCheck(check);
 		config.setEditor(editor);
