@@ -190,9 +190,9 @@ public class EfloraSources {
 		return URI.create("file://PESIIMPORT3/gabon/markupData/fdgvol11_final.xml");
 	}
 
-	//Flore du Gabon vol 12
-	public static URI fdg_12(){
-		return URI.create("file://PESIIMPORT3/gabon/markupData/fdgvol12_final.xml");
+	//Flore du Gabon vol 12 and 17  (same family)
+	public static URI fdg_12_17(){
+		return URI.create("file://PESIIMPORT3/gabon/markupData/fdgvol12and17_final.xml");
 	}
 
 
