@@ -278,10 +278,6 @@ cdm-pesi/src/main/java/eu/etaxonomy/cdm/app/pesi/PesiSources.java -text
 cdm-pesi/src/main/java/eu/etaxonomy/cdm/app/pesi/merging/FaunaEuErmsFindIdenticalNamesActivator.java -text
 cdm-pesi/src/main/java/eu/etaxonomy/cdm/app/pesi/merging/FaunaEuErmsMergeActivator.java -text
 cdm-pesi/src/main/java/eu/etaxonomy/cdm/io/berlinModel/BerlinModelTransformer.java -text
-cdm-pesi/src/main/java/eu/etaxonomy/cdm/io/berlinModel/CdmBooleanMapper.java -text
-cdm-pesi/src/main/java/eu/etaxonomy/cdm/io/berlinModel/CdmOneToManyMapper.java -text
-cdm-pesi/src/main/java/eu/etaxonomy/cdm/io/berlinModel/CdmStringMapper.java -text
-cdm-pesi/src/main/java/eu/etaxonomy/cdm/io/berlinModel/CdmUriMapper.java -text
 cdm-pesi/src/main/java/eu/etaxonomy/cdm/io/berlinModel/in/BerlinModelAuthorImport.java -text
 cdm-pesi/src/main/java/eu/etaxonomy/cdm/io/berlinModel/in/BerlinModelAuthorTeamImport.java -text
 cdm-pesi/src/main/java/eu/etaxonomy/cdm/io/berlinModel/in/BerlinModelCommonNamesImport.java -text
