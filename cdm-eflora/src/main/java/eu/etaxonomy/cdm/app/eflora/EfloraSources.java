@@ -57,16 +57,16 @@ public class EfloraSources {
 	
 	//Flora Malesiana Vol 12_1
 	public static URI fm_12_1(){
-		return URI.create("file://PESIIMPORT3/malesiana/vol_12/vol12_1_final.xml");
+		return URI.create("file://PESIIMPORT3/malesiana/vol12_1_final.xml");
 	}
 	
 	//Flora Malesiana Vol 12_2
 	public static URI fm_12_2(){
-		return URI.create("file://PESIIMPORT3/malesiana/vol_12/vol12_2_final.xml");
+		return URI.create("file://PESIIMPORT3/malesiana/vol12_2_final.xml");
 	}
 	
 	public static URI fm_13(){
-		return URI.create("file://PESIIMPORT3/malesiana/vol_13/vol13_final.xml");
+		return URI.create("file://PESIIMPORT3/malesiana/vol13_final.xml");
 	}
 
 //	//Flora Malesiana Vol 13 - large families
@@ -76,50 +76,50 @@ public class EfloraSources {
 
 	//Flora Malesiana Vol 14
 	public static URI fm_14(){
-		return URI.create("file://PESIIMPORT3/malesiana/vol_14/vol14_final.xml");
+		return URI.create("file://PESIIMPORT3/malesiana/vol14_final.xml");
 	}
 	
 	//Flora Malesiana Vol 15
 	public static URI fm_15(){
-		return URI.create("file://PESIIMPORT3/malesiana/vol_15/vol15_final.xml");
+		return URI.create("file://PESIIMPORT3/malesiana/vol15_final.xml");
 	}
 
 	//Flora Malesiana Vol 16
 	public static URI fm_16(){
-		return URI.create("file://PESIIMPORT3/malesiana/vol_16/vol16_final.xml");
+		return URI.create("file://PESIIMPORT3/malesiana/vol16_final.xml");
 	}
 
 	//Flora Malesiana Vol 17, part1
 	public static URI fm_17_1(){
-		return URI.create("file://PESIIMPORT3/malesiana/vol_17/fmvol17_part1_final.xml");
+		return URI.create("file://PESIIMPORT3/malesiana/vol17_part1_final.xml");
 	}
 	
 	//Flora Malesiana Vol 17, part2
 	public static URI fm_17_2(){
-		return URI.create("file://PESIIMPORT3/malesiana/vol_17/fmvol17_part2_final.xml");
+		return URI.create("file://PESIIMPORT3/malesiana/vol17_part2_final.xml");
 	}
 	
 	//Flora Malesiana Vol 18
 	public static URI fm_18(){
-		return URI.create("file://PESIIMPORT3/malesiana/vol_18/vol18_final.xml");
+		return URI.create("file://PESIIMPORT3/malesiana/vol18_final.xml");
 	}
 	//Flora Malesiana Vol 19
 	public static URI fm_19(){
-		return URI.create("file://PESIIMPORT3/malesiana/vol_19/vol19_final.xml");
+		return URI.create("file://PESIIMPORT3/malesiana/vol19_final.xml");
 	}
 	//Flora Malesiana Vol 20
 	public static URI fm_20(){
-		return URI.create("file://PESIIMPORT3/malesiana/vol_20/vol20_final.xml");
+		return URI.create("file://PESIIMPORT3/malesiana/vol20_final.xml");
 	}
 	
 	//Flora Malesiana Series 2 - Vol 2
 	public static URI fm_ser2_2(){
-		return URI.create("file://PESIIMPORT3/malesiana/ser2/vol_02/ser2vol2final1.xml");
+		return URI.create("file://PESIIMPORT3/malesiana/IIvol2_final.xml");
 	}
 
 	//Flora Malesiana Series 2 - Vol 3
 	public static URI fm_ser2_3(){
-		return URI.create("file://PESIIMPORT3/malesiana/ser2/vol_03/IIvol3_final.xml");
+		return URI.create("file://PESIIMPORT3/malesiana/IIvol3_final.xml");
 	}
 
 //************************* GABON ************************************************/
