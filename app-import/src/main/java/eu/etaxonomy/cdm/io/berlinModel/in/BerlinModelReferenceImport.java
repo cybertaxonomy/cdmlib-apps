@@ -151,10 +151,6 @@ public class BerlinModelReferenceImport extends BerlinModelImportBase {
 		public String toString(){return String.valueOf(refCount) ;};
 	}
 
-
-	/* (non-Javadoc)
-	 * @see eu.etaxonomy.cdm.io.berlinModel.in.BerlinModelImportBase#getRecordQuery(eu.etaxonomy.cdm.io.berlinModel.in.BerlinModelImportConfigurator)
-	 */
 	@Override
 	protected String getRecordQuery(BerlinModelImportConfigurator config) {
 		return null;  //not needed
@@ -233,12 +229,7 @@ public class BerlinModelReferenceImport extends BerlinModelImportBase {
 		return;
 	}
 
-	
-	
-
-	/* (non-Javadoc)
-	 * @see eu.etaxonomy.cdm.io.berlinModel.in.IPartitionedIO#doPartition(eu.etaxonomy.cdm.io.berlinModel.in.ResultSetPartitioner, eu.etaxonomy.cdm.io.berlinModel.in.BerlinModelImportState)
-	 */
+	@Override
 	public boolean doPartition(ResultSetPartitioner partitioner, BerlinModelImportState state) {
 		if (state.isReferenceSecondPath()){
 			return doPartitionSecondPath(partitioner, state);
@@ -597,6 +588,7 @@ public class BerlinModelReferenceImport extends BerlinModelImportBase {
 			logger.warn("Part-Of-Other-Title has no inRefCategoryFk! RefId = " + refId + ". ReferenceType set to Generic.");
 			result = makeUnknown(valueMap);
 		}else if (inRefFk == null){
+			//TODO is this correct ??
 			logger.warn("Part-Of-Other-Title has in in reference: " + refId);
 			result = makeUnknown(valueMap);
 		}else if (inRefCategoryFk == REF_BOOK){
@@ -607,8 +599,8 @@ public class BerlinModelReferenceImport extends BerlinModelImportBase {
 			//Article
 			//TODO 
 			logger.info("Reference (refId = " + refId + ") of type 'part_of_other_title' is part of 'article'." +
-					" There is no specific reference type for such in references yet. Generic reference created instead") ;
-			result = ReferenceFactory.newGeneric();
+					" We use the section reference type for such in references now.") ;
+			result = ReferenceFactory.newSection();
 		}else if (inRefCategoryFk == REF_JOURNAL){
 			//TODO 
 			logger.warn("Reference (refId = " + refId + ") of type 'part_of_other_title' has inReference of type 'journal'." +
