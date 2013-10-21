@@ -63,7 +63,6 @@ public class FloreGabonActivator extends EfloraActivatorBase {
 	static final URI fdg14 = EfloraSources.fdg_14();
 	static final URI fdg15 = EfloraSources.fdg_15();
 	static final URI fdg16 = EfloraSources.fdg_16();
-//	static final URI fdg17 = EfloraSources.fdg_17();
 	static final URI fdg18 = EfloraSources.fdg_18();
 	static final URI fdg19 = EfloraSources.fdg_19();
 	static final URI fdg20 = EfloraSources.fdg_20();
@@ -126,9 +125,8 @@ public class FloreGabonActivator extends EfloraActivatorBase {
 	private boolean includeFdg14 = true;
 	private boolean includeFdg15 = true;
 	private boolean includeFdg16 = true;
-//	private boolean includeFdg17 = true;
 	private boolean includeFdg18 = true;
-	private boolean includeFdg19 = true;
+	private boolean includeFdg19 = false;
 	private boolean includeFdg20 = true;
 	private boolean includeFdg21 = true;
 	private boolean includeFdg22 = true;
@@ -136,7 +134,7 @@ public class FloreGabonActivator extends EfloraActivatorBase {
 	private boolean includeFdg28 = true;
 	private boolean includeFdg30 = true;
 	private boolean includeFdg34 = true;
-	private boolean includeFdg35 = false;
+	private boolean includeFdg35 = true;
 	
 // **************** NO CHANGE **********************************************/
 	
@@ -218,9 +216,6 @@ public class FloreGabonActivator extends EfloraActivatorBase {
 		
 		//Vol16
 		executeVolume(fdg16, includeFdg16 ^ inverseInclude);
-//		
-//		//Vol17
-//		executeVolume(fdg17, includeFdg17 ^ inverseInclude);
 		
 		//Vol18
 		executeVolume(fdg18, includeFdg18 ^ inverseInclude);
