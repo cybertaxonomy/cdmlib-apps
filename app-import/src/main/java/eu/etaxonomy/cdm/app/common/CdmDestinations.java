@@ -368,14 +368,6 @@ public class CdmDestinations {
 	public static ICdmDataSource localH2_FreshwaterAquaticInsects(){
 		return CdmDataSource.NewH2EmbeddedInstance("testFreshwaterAquaticInsects", "sa", "");
 	}
-	
-	public static ICdmDataSource cdm_portal_test_pollux(){
-		DatabaseTypeEnum dbType = DatabaseTypeEnum.MySQL;
-		String cdmServer = "192.168.2.11";
-		String cdmDB = "cdm_portal_test";
-		String cdmUserName = "edit";
-		return makeDestination(dbType, cdmServer, cdmDB, -1, cdmUserName, null);
-	}
 
 	public static ICdmDataSource cdm_algaterra_preview(){
 		DatabaseTypeEnum dbType = DatabaseTypeEnum.MySQL;
