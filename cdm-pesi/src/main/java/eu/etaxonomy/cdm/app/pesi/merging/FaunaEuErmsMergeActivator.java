@@ -278,8 +278,13 @@ public class FaunaEuErmsMergeActivator {
 				TaxonDescription description = (TaxonDescription)distribution.getInDescription();
 				TaxonDescription newDescription = TaxonDescription.NewInstance(taxonErms);
 				newDescription.addElement(distribution);
-				appCtrInit.getDescriptionService().delete(description);
+				try{
+					appCtrInit.getDescriptionService().delete(description);
+				}catch (ReferencedObjectUndeletableException e){
+					logger.debug("The description of" + description.getTaxon().getTitleCache() + description.getTitleCache() + "can't be deleted because it is referenced.");
+				}
 			}
+			
 			
 			//Child-Parent Relationship aktualisieren -> dem Child des Fauna Europaea Taxons als parent das akzeptierte Taxon von synErms
 			Set<TaxonNode> nodesErms = taxonErms.getTaxonNodes();
@@ -307,8 +312,11 @@ public class FaunaEuErmsMergeActivator {
 			moveAllInformationsFromFaunaEuToErms(taxonFaunaEu, taxonErms);
 			moveOriginalDbToErmsTaxon(taxonFaunaEu, taxonErms);
 			//neue sec Referenz an das ErmsTaxon oder an das Synonym und Taxon oder nur Synonym??
-			deleteFaunaEuTaxon(taxonFaunaEu);
-			
+			try{
+				deleteFaunaEuTaxon(taxonFaunaEu);
+			}catch(ReferencedObjectUndeletableException e){
+				logger.debug("The taxon " + taxonFaunaEu.getTitleCache() + " can't be deleted because it is referenced.");
+			}
 		}
 		
 		
@@ -409,7 +417,7 @@ public class FaunaEuErmsMergeActivator {
 	}
 	
 	
-	private void deleteFaunaEuTaxon(Taxon taxonFaunaEu) {
+	private void deleteFaunaEuTaxon(Taxon taxonFaunaEu) throws ReferencedObjectUndeletableException{
 		appCtrInit.getTaxonService().delete(taxonFaunaEu);
 		
 	}
