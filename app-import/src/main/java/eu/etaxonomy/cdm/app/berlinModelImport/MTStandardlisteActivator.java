@@ -41,12 +41,12 @@ public class MTStandardlisteActivator {
 	 *
 	 */
 
-		private static final Logger logger = Logger.getLogger(AlgaTerraActivator.class);
+		private static final Logger logger = Logger.getLogger(MTStandardlisteActivator.class);
 
 		//database validation status (create, update, validate ...)
 		static DbSchemaValidation hbm2dll = DbSchemaValidation.CREATE;
 		static final Source berlinModelSource = BerlinModelSources.MT_Standardliste();
-		static final ICdmDataSource cdmDestination = CdmDestinations.localH2();
+		static final ICdmDataSource cdmDestination = CdmDestinations.cdm_test_local_mysql_standardliste2();
 //		static final ICdmDataSource cdmDestination = CdmDestinations.cdm_mt_standardliste();
 		
 		static final UUID treeUuid = UUID.fromString("70549f1a-3d30-42ae-8257-c8367e2703b0");
@@ -76,16 +76,18 @@ public class MTStandardlisteActivator {
 		//names
 		static final boolean doTaxonNames = true;
 		static final boolean doRelNames = true;
-		static final boolean doNameStatus = true;
-		static final boolean doTypes = true;  
+		static final boolean doNameStatus = false;
+		static final boolean doTypes = false;  
 		static final boolean doNameFacts = false;   
 		
 		//taxa
 		static final boolean doTaxa = true;
 		static final boolean doRelTaxa = true;
-		static final boolean doFacts = true;
+		static final boolean doFacts = false;
 		static final boolean doOccurences = false;
 		static final boolean doCommonNames = false;
+
+		private static final boolean includeAllNonMisappliedRelatedClassifications = true;
 
 
 	// ************************ NONE **************************************** //
@@ -139,6 +141,7 @@ public class MTStandardlisteActivator {
 			
 			config.setDbSchemaValidation(hbm2dll);
 			config.setIncludeFlatClassifications(includeFlatClassifications);
+			config.setIncludeAllNonMisappliedRelatedClassifications(includeAllNonMisappliedRelatedClassifications);
 
 			config.setCheck(check);
 			
