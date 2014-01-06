@@ -114,7 +114,7 @@ public class BerlinModelSources {
 	
 	public static Source El_Salvador(){
 		//	BerlinModel - El_Salvador
-		String dbms = Source.SQL_SERVER_2008;
+		String dbms = Source.SQL_SERVER_2008;   //server version is 2012 !!
 		String strServer = "BGBMSQL2008";
 		String strDB = "Salvador";
 		int port = 1433;
