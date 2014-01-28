@@ -24,6 +24,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.springframework.stereotype.Component;
 
@@ -221,19 +222,19 @@ public class BerlinModelTaxonImport  extends BerlinModelImportBase {
 					
 					//detail
 					String detail = rs.getString("Detail");
-					if (CdmUtils.isNotEmpty(detail)){
+					if (StringUtils.isNotBlank(detail)){
 						ExtensionType detailExtensionType = getExtensionType(state, BerlinModelTransformer.DETAIL_EXT_UUID, "micro reference","micro reference","micro ref.");
 						Extension.NewInstance(taxonBase, detail, detailExtensionType);
 					}
 					//idInSource
 					String idInSource = rs.getString("IdInSource");
-					if (CdmUtils.isNotEmpty(idInSource)){
+					if (StringUtils.isNotBlank(idInSource)){
 						ExtensionType detailExtensionType = getExtensionType(state, BerlinModelTransformer.ID_IN_SOURCE_EXT_UUID, "Berlin Model IdInSource","Berlin Model IdInSource","BM source id");
 						Extension.NewInstance(taxonBase, idInSource, detailExtensionType);
 					}
 					//namePhrase
 					String namePhrase = rs.getString("NamePhrase");
-					if (CdmUtils.isNotEmpty(namePhrase)){
+					if (StringUtils.isNotBlank(namePhrase)){
 						taxonBase.setAppendedPhrase(namePhrase);
 					}
 					//useNameCache
@@ -250,7 +251,8 @@ public class BerlinModelTaxonImport  extends BerlinModelImportBase {
 						}
 						
 						if ( ! misapplied){
-							taxonBase.setPublish(publishFlag);
+							logger.error("Publish Flag for synonyms not yet handled correctly");
+//							taxonBase.setPublish(publishFlag);
 						}
 					}
 					
@@ -298,7 +300,7 @@ public class BerlinModelTaxonImport  extends BerlinModelImportBase {
 	 */
 	public Map<Object, Map<String, ? extends CdmBase>> getRelatedObjectsForPartition(ResultSet rs) {
 		String nameSpace;
-		Class cdmClass;
+		Class<?> cdmClass;
 		Set<String> idSet;
 		Map<Object, Map<String, ? extends CdmBase>> result = new HashMap<Object, Map<String, ? extends CdmBase>>();
 		
