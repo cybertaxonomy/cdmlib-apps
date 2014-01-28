@@ -1,4 +1,6 @@
 * text=auto !eol
+/LICENSE.TXT -text
+/README.TXT -text
 XperCdmIntegration/pom.xml -text
 XperCdmIntegration/src/main/java/eu/etaxonomy/cdm/io/xper/BaseCdm.java -text
 XperCdmIntegration/src/main/java/eu/etaxonomy/cdm/io/xper/CdmXperAdapter.java -text
@@ -411,3 +413,4 @@ cdm-pesi/src/test/java/eu/etaxonomy/cdm/io/common/TestConnection.java -text
 cdm-pesi/src/test/java/eu/etaxonomy/cdm/io/erms/ermsErrors.txt -text
 cdm-pesi/src/test/resources/sql/Check_Import_Master.sql -text
 cdmapps-parent/pom.xml -text
+/pom.xml -text
