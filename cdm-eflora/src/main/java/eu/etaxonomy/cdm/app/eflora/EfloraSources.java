@@ -31,6 +31,10 @@ public class EfloraSources {
 		return URI.create("file:/C:/localCopy/Data/eflora/africa/Specimen/Ericaceae/Ericaceae_CDM_specimen.xls");
 	}
 	
+	public static URI vittaria_specimen_pesiimport3() {
+		return URI.create("file:/F:/data/eflora/fdac/Vittaria_neu.xls");
+	}
+	
 //******************* MALESIANA ************************************************************/
 	
 	//Sapindaceae
