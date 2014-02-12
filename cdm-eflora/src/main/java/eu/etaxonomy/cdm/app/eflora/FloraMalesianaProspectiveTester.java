@@ -14,7 +14,7 @@ import java.util.Set;
 
 import org.apache.log4j.Logger;
 
-import eu.etaxonomy.cdm.api.application.CdmApplicationController;
+import eu.etaxonomy.cdm.api.application.CdmApplicationDefaultController;
 import eu.etaxonomy.cdm.api.service.ITermService;
 import eu.etaxonomy.cdm.database.DbSchemaValidation;
 import eu.etaxonomy.cdm.database.ICdmDataSource;
@@ -54,7 +54,7 @@ public class FloraMalesianaProspectiveTester extends EfloraActivatorBase {
 	private void doImport(ICdmDataSource cdmDestination){
 		observerList.add(observer);
 
-		CdmApplicationController app = CdmIoApplicationController.NewInstance(cdmDestination, hbm2dll);
+		CdmApplicationDefaultController app = CdmIoApplicationController.NewInstance(cdmDestination, hbm2dll);
 		ITermService service = app.getTermService();
 	}		
 	
