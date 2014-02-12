@@ -14,7 +14,7 @@ import java.util.UUID;
 
 import org.apache.log4j.Logger;
 
-import eu.etaxonomy.cdm.api.application.ICdmApplicationConfiguration;
+import eu.etaxonomy.cdm.api.application.ICdmApplicationDefaultConfiguration;
 import eu.etaxonomy.cdm.app.common.CdmDestinations;
 import eu.etaxonomy.cdm.app.common.CdmImportSources;
 import eu.etaxonomy.cdm.database.DbSchemaValidation;
@@ -131,7 +131,7 @@ public class GlobisActivator {
 		globisImport.invoke(config);
 		
 		if (config.getCheck().equals(CHECK.CHECK_AND_IMPORT)  || config.getCheck().equals(CHECK.IMPORT_WITHOUT_CHECK)    ){
-			ICdmApplicationConfiguration app = globisImport.getCdmAppController();
+			ICdmApplicationDefaultConfiguration app = globisImport.getCdmAppController();
 			ISourceable obj = app.getCommonService().getSourcedObjectByIdInSource(ZoologicalName.class, "1000027", null);
 			logger.info(obj);
 			

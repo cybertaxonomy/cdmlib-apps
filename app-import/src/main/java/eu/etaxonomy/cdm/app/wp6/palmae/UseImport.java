@@ -29,7 +29,7 @@ import org.apache.poi.hssf.usermodel.HSSFSheet;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.poifs.filesystem.POIFSFileSystem;
 
-import eu.etaxonomy.cdm.api.application.CdmApplicationController;
+import eu.etaxonomy.cdm.api.application.CdmApplicationDefaultController;
 import eu.etaxonomy.cdm.api.conversation.ConversationHolder;
 import eu.etaxonomy.cdm.api.service.IDescriptionService;
 import eu.etaxonomy.cdm.api.service.IFeatureTreeService;
@@ -105,7 +105,7 @@ public class UseImport {
 	public boolean importFromExcelSS(String xlsPath) {
 		boolean success = true;
 		
-		CdmApplicationController applicationController = CdmApplicationController.NewInstance(dataSource());
+		CdmApplicationDefaultController applicationController = CdmApplicationDefaultController.NewInstance(dataSource());
 		ConversationHolder conversation = applicationController.NewConversation();
 		conversation.startTransaction();
 		
@@ -273,7 +273,7 @@ public class UseImport {
 		InputStream inputStream = null;
 		
 		
-		CdmApplicationController applicationController = CdmApplicationController.NewInstance(dataSource());
+		CdmApplicationDefaultController applicationController = CdmApplicationDefaultController.NewInstance(dataSource());
 		ConversationHolder conversation = applicationController.NewConversation();
 		conversation.startTransaction();
 		
@@ -497,7 +497,7 @@ public class UseImport {
 		//String xslPathString = "C://workspace//terms.xls";
 		String xslPathString = "//Users//alextheys//Projects//CDM_Trunk//Palm_Use_Data_Extension//CDMLib-apps//cdmlib-apps//UseImport//src//main//resources//terms.xls";
 		
-		CdmApplicationController applicationController = CdmApplicationController.NewInstance(dataSource());
+		CdmApplicationDefaultController applicationController = CdmApplicationDefaultController.NewInstance(dataSource());
 		ConversationHolder conversation = applicationController.NewConversation();
 		conversation.startTransaction();
 		
@@ -707,7 +707,7 @@ public class UseImport {
 	
 	private boolean setupNecessaryItems() {
 		boolean success = false;
-		CdmApplicationController applicationController = CdmApplicationController.NewInstance(dataSource());
+		CdmApplicationDefaultController applicationController = CdmApplicationDefaultController.NewInstance(dataSource());
 		ConversationHolder conversation = applicationController.NewConversation();
 		
 		

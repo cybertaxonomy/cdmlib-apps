@@ -12,7 +12,7 @@ import java.util.UUID;
 import org.apache.log4j.Logger;
 import org.springframework.transaction.TransactionStatus;
 
-import eu.etaxonomy.cdm.api.application.CdmApplicationController;
+import eu.etaxonomy.cdm.api.application.CdmApplicationDefaultController;
 import eu.etaxonomy.cdm.database.DbSchemaValidation;
 import eu.etaxonomy.cdm.database.ICdmDataSource;
 import eu.etaxonomy.cdm.model.agent.AgentBase;
@@ -51,11 +51,11 @@ public class TestTransaction {
      */    
 	private void modifyDisjunctObjects() {
 		
-		CdmApplicationController appCtr = null;
+		CdmApplicationDefaultController appCtr = null;
 		logger.info("Test modifying disjunct objects");
 
 		try {
-			appCtr = CdmApplicationController.NewInstance(db, DbSchemaValidation.VALIDATE, true);
+			appCtr = CdmApplicationDefaultController.NewInstance(db, DbSchemaValidation.VALIDATE, true);
 
 		} catch (Exception e) {
 			logger.error("Error creating application controller");
@@ -129,11 +129,11 @@ public class TestTransaction {
      */    
 	private void modifySharedObjects() {
 		
-		CdmApplicationController appCtr = null;
+		CdmApplicationDefaultController appCtr = null;
 		logger.info("Test modifying shared objects");
 
 		try {
-			appCtr = CdmApplicationController.NewInstance(db, DbSchemaValidation.VALIDATE, true);
+			appCtr = CdmApplicationDefaultController.NewInstance(db, DbSchemaValidation.VALIDATE, true);
 
 		} catch (Exception e) {
 			logger.error("Error creating application controller");
@@ -199,11 +199,11 @@ public class TestTransaction {
 
 	private void checkTransactionFacets() {
 		
-		CdmApplicationController appCtr = null;
+		CdmApplicationDefaultController appCtr = null;
 		logger.info("Test checking transaction facets");
 		
 		try {
-			appCtr = CdmApplicationController.NewInstance(db, DbSchemaValidation.VALIDATE, true);
+			appCtr = CdmApplicationDefaultController.NewInstance(db, DbSchemaValidation.VALIDATE, true);
 
 		} catch (Exception e) {
 			logger.error("Error creating application controller");
@@ -216,7 +216,7 @@ public class TestTransaction {
 			
 	    	TransactionStatus txStatOne = appCtr.startTransaction();
 	    	appCtr.commitTransaction(txStatOne);
-	    	// set CdmApplicationController = debug in log4j.properties to see the transaction properties
+	    	// set CdmApplicationDefaultController = debug in log4j.properties to see the transaction properties
 	    	appCtr.close();
 			logger.info("End test ask session for objects"); 
 			
@@ -228,11 +228,11 @@ public class TestTransaction {
 		
 	private void askSessionForObjects() {
 		
-		CdmApplicationController appCtr = null;
+		CdmApplicationDefaultController appCtr = null;
 		logger.info("Test asking session for objects");
 
 		try {
-			appCtr = CdmApplicationController.NewInstance(db, DbSchemaValidation.VALIDATE, true);
+			appCtr = CdmApplicationDefaultController.NewInstance(db, DbSchemaValidation.VALIDATE, true);
 
 		} catch (Exception e) {
 			logger.error("Error creating application controller");
@@ -299,7 +299,7 @@ public class TestTransaction {
 		
     	/* Init DB */
 		// initDb(ICdmDataSource db, DbSchemaValidation dbSchemaValidation, boolean omitTermLoading)
-		CdmApplicationController appCtrInit = TestDatabase.initDb(db, DbSchemaValidation.CREATE, false);
+		CdmApplicationDefaultController appCtrInit = TestDatabase.initDb(db, DbSchemaValidation.CREATE, false);
 
 		/* Load test data into DB */
 //    	TestDatabase.loadTestData(dbName, appCtrInit);

@@ -13,7 +13,7 @@ import java.util.UUID;
 
 import org.apache.log4j.Logger;
 
-import eu.etaxonomy.cdm.api.application.ICdmApplicationConfiguration;
+import eu.etaxonomy.cdm.api.application.ICdmApplicationDefaultConfiguration;
 import eu.etaxonomy.cdm.app.common.CdmDestinations;
 import eu.etaxonomy.cdm.database.DbSchemaValidation;
 import eu.etaxonomy.cdm.database.ICdmDataSource;
@@ -139,7 +139,7 @@ public class MTMooseActivator {
 		bmImport.invoke(bmImportConfigurator);
 
 		if (doFacts && (bmImportConfigurator.getCheck().equals(CHECK.CHECK_AND_IMPORT)  || bmImportConfigurator.getCheck().equals(CHECK.IMPORT_WITHOUT_CHECK) )   ){
-			ICdmApplicationConfiguration app = bmImport.getCdmAppController();
+			ICdmApplicationDefaultConfiguration app = bmImport.getCdmAppController();
 			
 			//make feature tree
 			FeatureTree tree = TreeCreator.flatTree(featureTreeUuid, bmImportConfigurator.getFeatureMap(), featureKeyList);

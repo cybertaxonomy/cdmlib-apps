@@ -17,7 +17,7 @@ import java.util.List;
 
 import org.apache.log4j.Logger;
 
-import eu.etaxonomy.cdm.api.application.CdmApplicationController;
+import eu.etaxonomy.cdm.api.application.CdmApplicationDefaultController;
 import eu.etaxonomy.cdm.api.facade.DerivedUnitFacade;
 import eu.etaxonomy.cdm.app.common.CdmDestinations;
 import eu.etaxonomy.cdm.common.AccountStore;
@@ -63,14 +63,14 @@ public class ViennaActivator {
 		boolean result = true;
 		boolean withCdm = false;
 		berlinModelSource.setQuery("SELECT * FROM vienna"); // WHERE ID1 <> 1
-		CdmApplicationController app = null;
+		CdmApplicationDefaultController app = null;
 		
 		
 		try {
 			if (withCdm){
-				app = CdmApplicationController.NewInstance(CdmDestinations.localH2());
+				app = CdmApplicationDefaultController.NewInstance(CdmDestinations.localH2());
 			}else{
-				//app = CdmApplicationController.NewInstance(DbSchemaValidation.VALIDATE);
+				//app = CdmApplicationDefaultController.NewInstance(DbSchemaValidation.VALIDATE);
 			}
 		} catch (Exception e1) {
 			e1.printStackTrace();

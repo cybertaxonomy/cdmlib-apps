@@ -15,7 +15,7 @@ import java.util.UUID;
 
 import org.apache.log4j.Logger;
 
-import eu.etaxonomy.cdm.api.application.ICdmApplicationConfiguration;
+import eu.etaxonomy.cdm.api.application.ICdmApplicationDefaultConfiguration;
 import eu.etaxonomy.cdm.api.service.ITermService;
 import eu.etaxonomy.cdm.app.common.CdmDestinations;
 import eu.etaxonomy.cdm.database.DbSchemaValidation;
@@ -99,7 +99,7 @@ public class CyprusActivator {
 		
 		//deduplicate
 		if (doDeduplicate){
-			ICdmApplicationConfiguration app = myImport.getCdmAppController();
+			ICdmApplicationDefaultConfiguration app = myImport.getCdmAppController();
 			int count = app.getAgentService().deduplicate(Person.class, null, null);
 			logger.warn("Deduplicated " + count + " persons.");
 //			count = app.getAgentService().deduplicate(Team.class, null, null);

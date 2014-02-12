@@ -23,7 +23,7 @@ import org.apache.log4j.Logger;
 import org.springframework.transaction.TransactionStatus;
 
 import au.com.bytecode.opencsv.CSVReader;
-import eu.etaxonomy.cdm.api.application.CdmApplicationController;
+import eu.etaxonomy.cdm.api.application.CdmApplicationDefaultController;
 import eu.etaxonomy.cdm.app.common.CdmDestinations;
 import eu.etaxonomy.cdm.common.CdmUtils;
 import eu.etaxonomy.cdm.database.DbSchemaValidation;
@@ -47,7 +47,7 @@ public class DipteraCollectionImport {
 	
 
 	public boolean invoke(ICdmDataSource dataSource) {
-		CdmApplicationController cdmApp = CdmApplicationController.NewInstance(dataSource, DbSchemaValidation.VALIDATE);
+		CdmApplicationDefaultController cdmApp = CdmApplicationDefaultController.NewInstance(dataSource, DbSchemaValidation.VALIDATE);
 			
 		//create collections
 		TransactionStatus tx = cdmApp.startTransaction();
@@ -66,7 +66,7 @@ public class DipteraCollectionImport {
 	 * @param cdmApp
 	 * @param colletionMap 
 	 */
-	private void addCollectionsToSpecimen(CdmApplicationController cdmApp, Map<String, Collection> colletionMap) {
+	private void addCollectionsToSpecimen(CdmApplicationDefaultController cdmApp, Map<String, Collection> colletionMap) {
 		List<SpecimenOrObservationBase> specimens = (cdmApp.getOccurrenceService().list(DerivedUnit.class, null, null, null, null));
 		for (SpecimenOrObservationBase<?> specOrObservBase : specimens){
 			if (specOrObservBase.getRecordBasis().isPreservedSpecimen()){
@@ -186,7 +186,7 @@ public class DipteraCollectionImport {
 	/**
 	 * @param cdmApp
 	 */
-	private Map<String, Collection> createCollections(CdmApplicationController cdmApp) {
+	private Map<String, Collection> createCollections(CdmApplicationDefaultController cdmApp) {
 		Map<String, Collection> collectionMap = new HashMap<String, Collection>(); 
 		List<String[]> lines = getLines();
 		for (String[] line:lines){

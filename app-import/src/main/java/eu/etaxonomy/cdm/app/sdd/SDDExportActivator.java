@@ -91,7 +91,7 @@ public class SDDExportActivator {
        CdmPersistentDataSource.save(dataSourceName, dataSource);
        try {
            loadedDataSource = CdmPersistentDataSource.NewInstance(dataSourceName);
-//			CdmApplicationController.NewInstance(loadedDataSource, DbSchemaValidation.CREATE);
+//			CdmApplicationDefaultController.NewInstance(loadedDataSource, DbSchemaValidation.CREATE);
            NomenclaturalCode loadedCode = loadedDataSource.getNomenclaturalCode();
 
            Assert.assertEquals(NomenclaturalCode.ICNAFP, loadedCode);

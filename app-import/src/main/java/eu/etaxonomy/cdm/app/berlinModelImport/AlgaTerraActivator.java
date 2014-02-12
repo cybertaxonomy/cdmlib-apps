@@ -13,7 +13,7 @@ import java.util.UUID;
 
 import org.apache.log4j.Logger;
 
-import eu.etaxonomy.cdm.api.application.ICdmApplicationConfiguration;
+import eu.etaxonomy.cdm.api.application.ICdmApplicationDefaultConfiguration;
 import eu.etaxonomy.cdm.api.service.ITermService;
 import eu.etaxonomy.cdm.app.common.CdmDestinations;
 import eu.etaxonomy.cdm.database.DbSchemaValidation;
@@ -183,7 +183,7 @@ public class AlgaTerraActivator {
 		bmImport.invoke(config);
 
 		if (doFacts && (config.getCheck().equals(CHECK.CHECK_AND_IMPORT)  || config.getCheck().equals(CHECK.IMPORT_WITHOUT_CHECK) )   ){
-			ICdmApplicationConfiguration app = bmImport.getCdmAppController();
+			ICdmApplicationDefaultConfiguration app = bmImport.getCdmAppController();
 			
 			//make feature tree
 			makeTaxonFeatureTree(config, app);
@@ -203,7 +203,7 @@ public class AlgaTerraActivator {
 	 * @param config
 	 * @param app
 	 */
-	private void makeTaxonFeatureTree(AlgaTerraImportConfigurator config, ICdmApplicationConfiguration app) {
+	private void makeTaxonFeatureTree(AlgaTerraImportConfigurator config, ICdmApplicationDefaultConfiguration app) {
 		FeatureTree tree = TreeCreator.flatTree(featureTreeUuid, config.getFeatureMap(), featureKeyList);
 		tree.setTitleCache("AlgaTerra Taxon Feature Tree", true);
 		
@@ -236,7 +236,7 @@ public class AlgaTerraActivator {
 	 * @param app
 	 * @param tree
 	 */
-	private void makeSpecimenFeatureTree(AlgaTerraImportConfigurator config, ICdmApplicationConfiguration app) {
+	private void makeSpecimenFeatureTree(AlgaTerraImportConfigurator config, ICdmApplicationDefaultConfiguration app) {
 		ITermService termService = app.getTermService();
 		FeatureTree specimenTree = FeatureTree.NewInstance(specimenFeatureTreeUuid);
 //		FeatureTree specimenTree = TreeCreator.flatTree(specimenFeatureTreeUuid, config.getFeatureMap(), featureKeyList);

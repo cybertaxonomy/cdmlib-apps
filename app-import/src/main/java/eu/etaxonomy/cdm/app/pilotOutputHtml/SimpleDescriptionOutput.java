@@ -115,7 +115,7 @@ public class SimpleDescriptionOutput {
 
 		SimpleDescriptionOutput sdo = new SimpleDescriptionOutput();
 
-//		CdmApplicationController appCtr = null;
+//		CdmApplicationDefaultController appCtr = null;
 //		appCtr = sc.initDb(sourceDb);
 //		sc.loadTestData(appCtr);
 		

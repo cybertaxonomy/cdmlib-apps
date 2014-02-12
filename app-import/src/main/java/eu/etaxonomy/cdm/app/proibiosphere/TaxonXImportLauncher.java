@@ -121,7 +121,7 @@ public class TaxonXImportLauncher {
                     log.info("End import from SpecimenData ("+ source.toString() + ")...");
 
                     //          //deduplicate
-                    //            ICdmApplicationConfiguration app = taxonImport.getCdmAppController();
+                    //            ICdmApplicationDefaultConfiguration app = taxonImport.getCdmAppController();
                     //            int count = app.getAgentService().deduplicate(Person.class, null, null);
                     //            logger.warn("Deduplicated " + count + " persons.");
                     //            count = app.getReferenceService().deduplicate(Reference.class, null, null);
