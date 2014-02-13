@@ -21,7 +21,7 @@ import org.apache.log4j.Logger;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.springframework.transaction.TransactionStatus;
 
-import eu.etaxonomy.cdm.api.application.CdmApplicationDefaultController;
+import eu.etaxonomy.cdm.api.application.CdmApplicationController;
 import eu.etaxonomy.cdm.api.service.pager.Pager;
 import eu.etaxonomy.cdm.app.common.CdmDestinations;
 import eu.etaxonomy.cdm.app.common.CdmImportSources;
@@ -137,10 +137,10 @@ public class SynthesysCacheActivator {
 	public boolean invoke(){
 		boolean result = true;
 		boolean withCdm = true;
-		CdmApplicationDefaultController app = null;
+		CdmApplicationController app = null;
 		TransactionStatus tx = null;
 
-		app = CdmApplicationDefaultController.NewInstance(desitination, hbm2dll);
+		app = CdmApplicationController.NewInstance(desitination, hbm2dll);
 		
 		tx = app.startTransaction();
 		try {

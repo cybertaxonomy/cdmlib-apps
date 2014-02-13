@@ -14,7 +14,7 @@ import java.net.URISyntaxException;
 
 import org.apache.log4j.Logger;
 
-import eu.etaxonomy.cdm.api.application.CdmApplicationDefaultController;
+import eu.etaxonomy.cdm.api.application.CdmApplicationController;
 import eu.etaxonomy.cdm.app.common.CdmDestinations;
 import eu.etaxonomy.cdm.app.util.TestDatabase;
 import eu.etaxonomy.cdm.database.DbSchemaValidation;
@@ -38,7 +38,7 @@ public class JaxbImportActivator {
 	private static String importFileNameString = 
 		//"C:\\workspace\\cdmlib_2.2\\cdmlib-io\\src\\test\\resources\\eu\\etaxonomy\\cdm\\io\\jaxb\\export_test_app_import.xml";
 //		"file:/C:/export_test_app_import.xml";
-	"file:/C:/localCopy/Data/krï¿½hen/201206141338-jaxb_export-cdm.xml";
+	"file:/C:/localCopy/Data/krähen/201206141338-jaxb_export-cdm.xml";
 	
 
 	/** NUMBER_ROWS_TO_RETRIEVE = 0 is the default case to retrieve all rows.
@@ -95,10 +95,10 @@ public class JaxbImportActivator {
 	}
 
 	
-	private CdmApplicationDefaultController initDb(ICdmDataSource db) {
+	private CdmApplicationController initDb(ICdmDataSource db) {
 
 		// Init source DB
-		CdmApplicationDefaultController appCtrInit = null;
+		CdmApplicationController appCtrInit = null;
 
 		appCtrInit = TestDatabase.initDb(db, DbSchemaValidation.CREATE, false);
 
@@ -107,7 +107,7 @@ public class JaxbImportActivator {
 
 	
 	// Load test data to DB
-	private void loadTestData(CdmApplicationDefaultController appCtrInit) {
+	private void loadTestData(CdmApplicationController appCtrInit) {
 
 		TestDatabase.loadTestData("", appCtrInit);
 	}
@@ -121,7 +121,7 @@ public class JaxbImportActivator {
 		JaxbImportActivator jia = new JaxbImportActivator();
 		ICdmDataSource destination = CdmDestinations.chooseDestination(args) != null ? CdmDestinations.chooseDestination(args) : cdmDestination;
 		String file = chooseFile(args)!= null ? chooseFile(args) : importFileNameString;
-		CdmApplicationDefaultController appCtr = null;
+		CdmApplicationController appCtr = null;
 //		appCtr = jia.initDb(destination);
 				
 		jia.invokeImport(file, destination);

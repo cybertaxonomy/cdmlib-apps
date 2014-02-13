@@ -13,7 +13,7 @@ import java.net.URI;
 
 import org.apache.log4j.Logger;
 
-import eu.etaxonomy.cdm.api.application.CdmApplicationDefaultController;
+import eu.etaxonomy.cdm.api.application.CdmApplicationController;
 import eu.etaxonomy.cdm.app.common.CdmDestinations;
 import eu.etaxonomy.cdm.app.util.TestDatabase;
 import eu.etaxonomy.cdm.database.DbSchemaValidation;
@@ -78,10 +78,10 @@ public class JaxbExportActivator {
 	
 
 	
-	private CdmApplicationDefaultController initDb(ICdmDataSource db) {
+	private CdmApplicationController initDb(ICdmDataSource db) {
 
 		// Init source DB
-		CdmApplicationDefaultController appCtrInit = null;
+		CdmApplicationController appCtrInit = null;
 
 		appCtrInit = TestDatabase.initDb(db, DbSchemaValidation.VALIDATE, false);
 
@@ -90,7 +90,7 @@ public class JaxbExportActivator {
 
 	
 	// Load test data to DB
-	private void loadTestData(CdmApplicationDefaultController appCtrInit) {
+	private void loadTestData(CdmApplicationController appCtrInit) {
 		TestDatabase.loadTestData("", appCtrInit);
 	}
 
@@ -104,7 +104,7 @@ public class JaxbExportActivator {
 		ICdmDataSource source = CdmDestinations.chooseDestination(args) != null ? CdmDestinations.chooseDestination(args) : cdmSource;
 		String file = chooseFile(args);
 		URI uri = URI.create(file);
-		CdmApplicationDefaultController appCtr = null;
+		CdmApplicationController appCtr = null;
 		appCtr = sc.initDb(source);
 				
 		sc.invokeExport(source, uri);

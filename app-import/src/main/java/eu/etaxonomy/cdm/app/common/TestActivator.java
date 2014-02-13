@@ -16,7 +16,7 @@ import org.apache.log4j.Logger;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.transaction.TransactionStatus;
 
-import eu.etaxonomy.cdm.api.application.CdmApplicationDefaultController;
+import eu.etaxonomy.cdm.api.application.CdmApplicationController;
 import eu.etaxonomy.cdm.common.monitor.DefaultProgressMonitor;
 import eu.etaxonomy.cdm.common.monitor.IProgressMonitor;
 import eu.etaxonomy.cdm.database.DbSchemaValidation;
@@ -64,7 +64,7 @@ public class TestActivator {
 
 		ICdmDataSource destination = cdmDestination;
 
-		CdmApplicationDefaultController app;
+		CdmApplicationController app;
 
 //		applicationEventMulticaster
 //		app = CdmIoApplicationController.NewInstance(destination, dbSchemaValidation);
@@ -75,8 +75,8 @@ public class TestActivator {
 //		ApplicationListener<?> listener = new AppImportApplicationListener();
 //		List<ApplicationListener> listeners = new ArrayList<ApplicationListener>();
 //		listeners.add(listener);
-//		app = CdmApplicationDefaultController.NewInstance(resource, destination, dbSchemaValidation, false, progressMonitor, listeners);
-		app = CdmApplicationDefaultController.NewInstance(resource, destination, dbSchemaValidation, false, progressMonitor);
+//		app = CdmApplicationController.NewInstance(resource, destination, dbSchemaValidation, false, progressMonitor, listeners);
+		app = CdmApplicationController.NewInstance(resource, destination, dbSchemaValidation, false, progressMonitor);
 
 
 

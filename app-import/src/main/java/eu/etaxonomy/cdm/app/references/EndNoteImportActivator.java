@@ -5,7 +5,7 @@ import java.net.URISyntaxException;
 
 import org.apache.log4j.Logger;
 
-import eu.etaxonomy.cdm.api.application.CdmApplicationDefaultController;
+import eu.etaxonomy.cdm.api.application.CdmApplicationController;
 import eu.etaxonomy.cdm.app.common.CdmDestinations;
 import eu.etaxonomy.cdm.app.util.TestDatabase;
 import eu.etaxonomy.cdm.database.DbSchemaValidation;
@@ -72,10 +72,10 @@ public class EndNoteImportActivator {
 	}
 
 	
-	private CdmApplicationDefaultController initDb(ICdmDataSource db) {
+	private CdmApplicationController initDb(ICdmDataSource db) {
 
 		// Init source DB
-		CdmApplicationDefaultController appCtrInit = null;
+		CdmApplicationController appCtrInit = null;
 
 		appCtrInit = TestDatabase.initDb(db, DbSchemaValidation.VALIDATE, true);
 
@@ -84,7 +84,7 @@ public class EndNoteImportActivator {
 
 	
 	// Load test data to DB
-	private void loadTestData(CdmApplicationDefaultController appCtrInit) {
+	private void loadTestData(CdmApplicationController appCtrInit) {
 
 		TestDatabase.loadTestData("", appCtrInit);
 	}
@@ -98,7 +98,7 @@ public class EndNoteImportActivator {
 		EndNoteImportActivator sc = new EndNoteImportActivator();
 		ICdmDataSource destination = CdmDestinations.chooseDestination(args) != null ? CdmDestinations.chooseDestination(args) : cdmDestination;
 		String file = chooseFile(args)!= null ? chooseFile(args) : importFileNameString;
-		CdmApplicationDefaultController appCtr = null;
+		CdmApplicationController appCtr = null;
 		appCtr = sc.initDb(destination);
 		//sc.loadTestData(appCtr);
 				

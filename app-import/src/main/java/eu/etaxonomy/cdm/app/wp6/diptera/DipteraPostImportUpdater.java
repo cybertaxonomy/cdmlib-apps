@@ -19,7 +19,7 @@ import java.util.Set;
 import org.apache.log4j.Logger;
 import org.springframework.transaction.TransactionStatus;
 
-import eu.etaxonomy.cdm.api.application.CdmApplicationDefaultController;
+import eu.etaxonomy.cdm.api.application.CdmApplicationController;
 import eu.etaxonomy.cdm.api.service.INameService;
 import eu.etaxonomy.cdm.api.service.pager.Pager;
 import eu.etaxonomy.cdm.app.common.CdmDestinations;
@@ -60,7 +60,7 @@ public class DipteraPostImportUpdater {
 		try{
 			logger.warn("start updating citations");
 			boolean result = true;
-			CdmApplicationDefaultController cdmApp = CdmApplicationDefaultController.NewInstance(dataSource, DbSchemaValidation.VALIDATE);
+			CdmApplicationController cdmApp = CdmApplicationController.NewInstance(dataSource, DbSchemaValidation.VALIDATE);
 			Set<DescriptionElementBase> citationsToSave = new HashSet<DescriptionElementBase>();
 			TransactionStatus tx = cdmApp.startTransaction();
 

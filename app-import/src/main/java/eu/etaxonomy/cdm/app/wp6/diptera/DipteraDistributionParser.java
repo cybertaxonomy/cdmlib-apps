@@ -26,8 +26,8 @@ import java.util.regex.Pattern;
 import org.apache.log4j.Logger;
 import org.springframework.transaction.TransactionStatus;
 
-import eu.etaxonomy.cdm.api.application.CdmApplicationDefaultController;
-import eu.etaxonomy.cdm.api.application.ICdmApplicationDefaultConfiguration;
+import eu.etaxonomy.cdm.api.application.CdmApplicationController;
+import eu.etaxonomy.cdm.api.application.ICdmApplicationConfiguration;
 import eu.etaxonomy.cdm.app.common.CdmDestinations;
 import eu.etaxonomy.cdm.database.DbSchemaValidation;
 import eu.etaxonomy.cdm.database.ICdmDataSource;
@@ -58,7 +58,7 @@ public class DipteraDistributionParser {
 	final static String epiSplitter = "(\\s+|\\[|\\]|\\(|\\))"; //( ' '+| '(' | ')'| '[' | ']' )
 	static Pattern pattern = null;
 	
-	protected void doDistribution(ICdmApplicationDefaultConfiguration app){
+	protected void doDistribution(ICdmApplicationConfiguration app){
 		pattern = Pattern.compile(epiSplitter); 
 	    TransactionStatus txStatus = app.startTransaction();
 		List<TaxonBase> taxa = app.getTaxonService().list(null, null, null, null, null);
@@ -415,9 +415,9 @@ public class DipteraDistributionParser {
 	 * @param args
 	 */
 	public static void main(String[] args) {
-		CdmApplicationDefaultController app = null;
+		CdmApplicationController app = null;
 		DbSchemaValidation val = DbSchemaValidation.UPDATE;
-		app = CdmApplicationDefaultController.NewInstance(cdmDestination, val);
+		app = CdmApplicationController.NewInstance(cdmDestination, val);
 		
 		DipteraDistributionParser dipDist = new DipteraDistributionParser();
 		if (app != null){

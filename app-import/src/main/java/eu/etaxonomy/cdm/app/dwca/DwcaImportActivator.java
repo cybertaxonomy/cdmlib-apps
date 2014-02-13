@@ -14,7 +14,7 @@ import java.util.UUID;
 
 import org.apache.log4j.Logger;
 
-import eu.etaxonomy.cdm.api.application.ICdmApplicationDefaultConfiguration;
+import eu.etaxonomy.cdm.api.application.ICdmApplicationConfiguration;
 import eu.etaxonomy.cdm.app.common.CdmDestinations;
 import eu.etaxonomy.cdm.database.DbSchemaValidation;
 import eu.etaxonomy.cdm.database.ICdmDataSource;
@@ -122,7 +122,7 @@ public class DwcaImportActivator {
 		
 		//deduplicate
 		if (doDeduplicate){
-			ICdmApplicationDefaultConfiguration app = myImport.getCdmAppController();
+			ICdmApplicationConfiguration app = myImport.getCdmAppController();
 			int count = app.getAgentService().deduplicate(Person.class, null, null);
 			logger.warn("Deduplicated " + count + " persons.");
 //			count = app.getAgentService().deduplicate(Team.class, null, null);

@@ -17,7 +17,7 @@ import java.util.UUID;
 import org.apache.log4j.Logger;
 import org.springframework.transaction.TransactionStatus;
 
-import eu.etaxonomy.cdm.api.application.CdmApplicationDefaultController;
+import eu.etaxonomy.cdm.api.application.CdmApplicationController;
 import eu.etaxonomy.cdm.app.common.CdmDestinations;
 import eu.etaxonomy.cdm.database.DbSchemaValidation;
 import eu.etaxonomy.cdm.database.ICdmDataSource;
@@ -53,7 +53,7 @@ public class PalmaePostImportUpdater {
 		try{
 			int count = 0;
 			UUID featureTreeUuid = PalmaeActivator.featureTreeUuid;
-			CdmApplicationDefaultController cdmApp = CdmApplicationDefaultController.NewInstance(dataSource, DbSchemaValidation.VALIDATE);
+			CdmApplicationController cdmApp = CdmApplicationController.NewInstance(dataSource, DbSchemaValidation.VALIDATE);
 			
 			TransactionStatus tx = cdmApp.startTransaction();
 			
@@ -95,7 +95,7 @@ public class PalmaePostImportUpdater {
 	public boolean updateNameUsage(ICdmDataSource dataSource) {
 		try{
 			boolean result = true;
-			CdmApplicationDefaultController cdmApp = CdmApplicationDefaultController.NewInstance(dataSource, DbSchemaValidation.VALIDATE);
+			CdmApplicationController cdmApp = CdmApplicationController.NewInstance(dataSource, DbSchemaValidation.VALIDATE);
 
 			TransactionStatus tx = cdmApp.startTransaction();
 

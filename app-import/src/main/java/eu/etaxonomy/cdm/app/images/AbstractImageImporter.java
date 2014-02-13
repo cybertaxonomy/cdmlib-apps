@@ -12,7 +12,7 @@ package eu.etaxonomy.cdm.app.images;
 import org.apache.log4j.Logger;
 import org.springframework.transaction.TransactionStatus;
 
-import eu.etaxonomy.cdm.api.application.CdmApplicationDefaultController;
+import eu.etaxonomy.cdm.api.application.CdmApplicationController;
 import eu.etaxonomy.cdm.api.service.IAgentService;
 import eu.etaxonomy.cdm.api.service.ICommonService;
 import eu.etaxonomy.cdm.api.service.IDescriptionService;
@@ -31,9 +31,9 @@ import eu.etaxonomy.cdm.io.common.ICdmIO;
 public abstract class AbstractImageImporter extends CdmIoBase<ImageImportState> implements ICdmIO<ImageImportState> {
 	private static final Logger logger = Logger.getLogger(AbstractImageImporter.class);
 	
-	protected CdmApplicationDefaultController appCtr;
+	protected CdmApplicationController appCtr;
 	
-	protected CdmApplicationDefaultController cdmApp;
+	protected CdmApplicationController cdmApp;
 	protected ITaxonService taxonService;
 	protected IClassificationService classificationService;
 	//TODO:

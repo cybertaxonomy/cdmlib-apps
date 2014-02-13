@@ -14,7 +14,7 @@ import java.util.UUID;
 
 import org.apache.log4j.Logger;
 
-import eu.etaxonomy.cdm.api.application.ICdmApplicationDefaultConfiguration;
+import eu.etaxonomy.cdm.api.application.ICdmApplicationConfiguration;
 import eu.etaxonomy.cdm.app.common.CdmDestinations;
 import eu.etaxonomy.cdm.database.DbSchemaValidation;
 import eu.etaxonomy.cdm.database.ICdmDataSource;
@@ -54,7 +54,7 @@ public class ColDwcaImportActivator {
 	
 	//check - import
 	static final CHECK check = CHECK.IMPORT_WITHOUT_CHECK;
-	static int partitionSize = 5000;
+	static int partitionSize = 1000;
 	
 	//config
 	static DatasetUse datasetUse = DatasetUse.ORIGINAL_SOURCE;
@@ -110,7 +110,7 @@ public class ColDwcaImportActivator {
 		
 		//deduplicate
 		if (doDeduplicate){
-			ICdmApplicationDefaultConfiguration app = myImport.getCdmAppController();
+			ICdmApplicationConfiguration app = myImport.getCdmAppController();
 			int count = app.getAgentService().deduplicate(Person.class, null, null);
 			logger.warn("Deduplicated " + count + " persons.");
 //			count = app.getAgentService().deduplicate(Team.class, null, null);
@@ -137,7 +137,7 @@ public class ColDwcaImportActivator {
 	
 	//CoL
 	public static URI dwca_col_All() {
-		URI sourceUrl = URI.create("file:///data/dwca/xylariaceae/added.zip");
+		URI sourceUrl = URI.create("file:////Pesiimport3/col/col_20Nov2012.zip");
 		return sourceUrl;
 	}
 

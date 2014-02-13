@@ -84,7 +84,7 @@ public class SDDImportActivator {
        CdmPersistentDataSource.save(dataSourceName, dataSource);
        try {
            loadedDataSource = CdmPersistentDataSource.NewInstance(dataSourceName);
-//			CdmApplicationDefaultController.NewInstance(loadedDataSource, DbSchemaValidation.CREATE);
+//			CdmApplicationController.NewInstance(loadedDataSource, DbSchemaValidation.CREATE);
            NomenclaturalCode loadedCode = loadedDataSource.getNomenclaturalCode();
 
            Assert.assertEquals(NomenclaturalCode.ICNAFP, loadedCode);

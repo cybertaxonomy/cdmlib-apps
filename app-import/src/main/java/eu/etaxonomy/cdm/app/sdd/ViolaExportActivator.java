@@ -112,7 +112,7 @@ public class ViolaExportActivator {
 
 		ViolaExportActivator vea = new ViolaExportActivator();
 
-//		CdmApplicationDefaultController appCtr = null;
+//		CdmApplicationController appCtr = null;
 //		appCtr = sc.initDb(sourceDb);
 //		sc.loadTestData(appCtr);
 		
