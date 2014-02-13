@@ -7,7 +7,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
-import eu.etaxonomy.cdm.api.application.CdmApplicationDefaultController;
+import eu.etaxonomy.cdm.api.application.CdmApplicationController;
 import eu.etaxonomy.cdm.app.common.CdmDestinations;
 import eu.etaxonomy.cdm.app.common.TestDatabase;
 import eu.etaxonomy.cdm.database.DbSchemaValidation;
@@ -29,10 +29,10 @@ public class FaunaEuErmsFindIdenticalNamesActivator {
 	//TODO hole aus beiden DB alle TaxonNameBases
 	
 	
-	private CdmApplicationDefaultController initDb(ICdmDataSource db) {
+	private CdmApplicationController initDb(ICdmDataSource db) {
 
 		// Init source DB
-		CdmApplicationDefaultController appCtrInit = null;
+		CdmApplicationController appCtrInit = null;
 
 		appCtrInit = TestDatabase.initDb(db, DbSchemaValidation.VALIDATE, false);
 
@@ -47,9 +47,9 @@ public class FaunaEuErmsFindIdenticalNamesActivator {
 		
 		FaunaEuErmsFindIdenticalNamesActivator sc = new FaunaEuErmsFindIdenticalNamesActivator();
 		
-		CdmApplicationDefaultController appCtrFaunaEu = sc.initDb(faunaEuropaeaSource);
+		CdmApplicationController appCtrFaunaEu = sc.initDb(faunaEuropaeaSource);
 		String sFileName = "c:\\test";
-		//CdmApplicationDefaultController appCtrErms = sc.initDb(ermsSource);
+		//CdmApplicationController appCtrErms = sc.initDb(ermsSource);
 		List<String> propertyPaths = new ArrayList<String>();
 		propertyPaths.add("sources.*");
 		propertyPaths.add("sources.idInSource");
@@ -313,7 +313,7 @@ public class FaunaEuErmsFindIdenticalNamesActivator {
 	}
 	
 	
-	private List<FaunaEuErmsMerging> createMergeObjects(List<TaxonNameBase> names, CdmApplicationDefaultController appCtr){
+	private List<FaunaEuErmsMerging> createMergeObjects(List<TaxonNameBase> names, CdmApplicationController appCtr){
 		
 		List<FaunaEuErmsMerging> merge = new ArrayList<FaunaEuErmsMerging>();
 		ZoologicalName zooName, zooName2;

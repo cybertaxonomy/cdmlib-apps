@@ -15,7 +15,7 @@ import java.util.UUID;
 
 import org.apache.log4j.Logger;
 
-import eu.etaxonomy.cdm.api.application.CdmApplicationDefaultController;
+import eu.etaxonomy.cdm.api.application.CdmApplicationController;
 import eu.etaxonomy.cdm.api.service.exception.ReferencedObjectUndeletableException;
 import eu.etaxonomy.cdm.api.service.pager.Pager;
 import eu.etaxonomy.cdm.app.common.CdmDestinations;
@@ -52,7 +52,7 @@ public class FaunaEuErmsMergeActivator {
 	static final int rankFaunaEu = 4;
 	static final int rankErms = 13;
 	
-	CdmApplicationDefaultController appCtrInit;
+	CdmApplicationController appCtrInit;
 	
 	private static final Logger logger = Logger.getLogger(FaunaEuErmsMergeActivator.class);
 	
