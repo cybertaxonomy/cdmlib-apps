@@ -16,9 +16,8 @@ import java.util.UUID;
 import org.apache.log4j.Logger;
 import org.springframework.transaction.TransactionStatus;
 
-import eu.etaxonomy.cdm.api.application.CdmApplicationDefaultController;
+import eu.etaxonomy.cdm.api.application.CdmApplicationController;
 import eu.etaxonomy.cdm.api.application.ICdmApplicationConfiguration;
-import eu.etaxonomy.cdm.api.application.ICdmApplicationDefaultConfiguration;
 import eu.etaxonomy.cdm.api.service.ITermService;
 import eu.etaxonomy.cdm.common.monitor.DefaultProgressMonitor;
 import eu.etaxonomy.cdm.common.monitor.IProgressMonitor;
@@ -151,9 +150,9 @@ public class CentralAfricaEricaceaeActivator {
 		
 		//deduplicate
 		if (doDeduplicate){
-			ICdmApplicationDefaultConfiguration app = myImport.getCdmAppController();
+			ICdmApplicationConfiguration app = myImport.getCdmAppController();
 			if (app == null){
-				app = CdmApplicationDefaultController.NewInstance(cdmDestination, hbm2dll, false);
+				app = CdmApplicationController.NewInstance(cdmDestination, hbm2dll, false);
 			}
 			app.getAgentService().updateTitleCache(Team.class, null, null, null);
 			return;
@@ -172,9 +171,9 @@ public class CentralAfricaEricaceaeActivator {
 
 		if (doSpecimen){
 			logger.warn("Start specimen import");
-			ICdmApplicationDefaultConfiguration app = myImport.getCdmAppController();
+			ICdmApplicationConfiguration app = myImport.getCdmAppController();
 			SpecimenCdmExcelImportConfigurator specimenConfig= SpecimenCdmExcelImportConfigurator.NewInstance(specimenSource, cdmDestination);
-			specimenConfig.setCdmAppController((CdmApplicationDefaultController)app);
+			specimenConfig.setCdmAppController((CdmApplicationController)app);
 			specimenConfig.setAreaMatchMode(specimenAreaMatchMode);
 			
 			config.setDbSchemaValidation(DbSchemaValidation.VALIDATE);
@@ -193,9 +192,9 @@ public class CentralAfricaEricaceaeActivator {
 	}
 
 	private void newNamedAreas(CdmDefaultImport<EfloraImportConfigurator> myImport) {
-		ICdmApplicationDefaultConfiguration app = myImport.getCdmAppController();
+		ICdmApplicationConfiguration app = myImport.getCdmAppController();
 		if (app == null){
-			app = CdmApplicationDefaultController.NewInstance(cdmDestination, hbm2dll, false);
+			app = CdmApplicationController.NewInstance(cdmDestination, hbm2dll, false);
 		}
 		TransactionStatus tx = app.startTransaction();
 		

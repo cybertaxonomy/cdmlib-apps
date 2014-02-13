@@ -16,7 +16,7 @@ import java.util.UUID;
 import org.apache.log4j.Logger;
 import org.springframework.transaction.TransactionStatus;
 
-import eu.etaxonomy.cdm.api.application.ICdmApplicationDefaultConfiguration;
+import eu.etaxonomy.cdm.api.application.ICdmApplicationConfiguration;
 import eu.etaxonomy.cdm.app.eflora.CdmDestinations;
 import eu.etaxonomy.cdm.app.eflora.EfloraSources;
 import eu.etaxonomy.cdm.common.monitor.DefaultProgressMonitor;
@@ -91,7 +91,7 @@ public class EricaceaeTestUpdateActivator {
 		
 		CdmDefaultImport<EfloraImportConfigurator> myImport = new CdmDefaultImport<EfloraImportConfigurator>();
 		
-		ICdmApplicationDefaultConfiguration app = myImport.getCdmAppController();
+		ICdmApplicationConfiguration app = myImport.getCdmAppController();
 		
 		
 		//
@@ -121,7 +121,7 @@ public class EricaceaeTestUpdateActivator {
 	 * @param app
 	 * @param tree
 	 */
-	private void moveChild(ICdmApplicationDefaultConfiguration app, FeatureTree tree) {
+	private void moveChild(ICdmApplicationConfiguration app, FeatureTree tree) {
 		FeatureNode root = tree.getRoot();
 		int count = root.getChildCount();
 		FeatureNode lastChild = root.getChildAt(count - 1);
