@@ -34,6 +34,7 @@ app-import/src/main/java/eu/etaxonomy/cdm/app/common/CdmImportSources.java -text
 app-import/src/main/java/eu/etaxonomy/cdm/app/common/ImportUtils.java -text
 app-import/src/main/java/eu/etaxonomy/cdm/app/common/TestActivator.java -text
 app-import/src/main/java/eu/etaxonomy/cdm/app/cyprus/CyprusActivator.java -text
+app-import/src/main/java/eu/etaxonomy/cdm/app/cyprus/CyprusAltitudeActivator.java -text
 app-import/src/main/java/eu/etaxonomy/cdm/app/cyprus/CyprusSpecimenActivator.java -text
 app-import/src/main/java/eu/etaxonomy/cdm/app/dwca/DwcaExportActivator.java -text
 app-import/src/main/java/eu/etaxonomy/cdm/app/dwca/DwcaImportActivator.java -text
