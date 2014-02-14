@@ -48,7 +48,7 @@ public class BerlinModelSources {
 		String strServer = "BGBM42";
 		String strDB = "EuroPlusMed_00_Edit";
 		int port = 1433;  //was 1247
-		String userName = "Webuser";  //was webUser
+		String userName = "Webuser";  //was webUser  or pesiexport
 		return  makeSource(dbms, strServer, strDB, port, userName, null);
 	}
 	
@@ -114,8 +114,8 @@ public class BerlinModelSources {
 	
 	public static Source El_Salvador(){
 		//	BerlinModel - El_Salvador
-		String dbms = Source.SQL_SERVER_2008;   //server version is 2012 !!
-		String strServer = "BGBMSQL2008";
+		String dbms = Source.SQL_SERVER_2005;
+		String strServer = "SQL2000Intern";
 		String strDB = "Salvador";
 		int port = 1433;
 		String userName = "WebUser";
