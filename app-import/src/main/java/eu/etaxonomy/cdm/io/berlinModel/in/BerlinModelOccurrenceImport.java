@@ -107,18 +107,19 @@ public class BerlinModelOccurrenceImport  extends BerlinModelImportBase {
 	
 	
 	@Override
-	public boolean invoke(BerlinModelImportState state) {
+	public void doInvoke(BerlinModelImportState state) {
 		if (state.getConfig().isUseEmAreaVocabulary()){
 			try {
 				createEuroMedAreas(state);
 			} catch (Exception e) {
 				logger.error("Exception occurred when trying to create euroMed Areas");
 				e.printStackTrace();
+				state.setSuccess(false);
 			}
 		}
-		boolean result = super.invoke(state);
+		super.doInvoke(state);
+		//reset
 		euroMedAreas = new HashMap<Integer, NamedArea>();
-		return result;
 	}
 	
 	private TermVocabulary<NamedArea> createEuroMedAreas(BerlinModelImportState state) throws SQLException {
