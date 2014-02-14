@@ -48,7 +48,7 @@ public class BerlinModelSources {
 		String strServer = "BGBM42";
 		String strDB = "EuroPlusMed_00_Edit";
 		int port = 1433;  //was 1247
-		String userName = "pesiexport";  //was webUser
+		String userName = "Webuser";  //was webUser
 		return  makeSource(dbms, strServer, strDB, port, userName, null);
 	}
 	
