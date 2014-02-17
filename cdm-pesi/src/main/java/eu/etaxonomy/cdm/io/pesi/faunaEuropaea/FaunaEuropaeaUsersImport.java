@@ -25,9 +25,12 @@ import org.springframework.transaction.TransactionStatus;
 import eu.etaxonomy.cdm.io.common.IImportConfigurator;
 import eu.etaxonomy.cdm.io.common.ImportHelper;
 import eu.etaxonomy.cdm.io.common.Source;
+import eu.etaxonomy.cdm.model.agent.AgentBase;
+import eu.etaxonomy.cdm.model.agent.Person;
 import eu.etaxonomy.cdm.model.agent.Team;
 import eu.etaxonomy.cdm.model.agent.TeamOrPersonBase;
 import eu.etaxonomy.cdm.model.common.OriginalSourceBase;
+import eu.etaxonomy.cdm.model.common.User;
 import eu.etaxonomy.cdm.model.reference.Reference;
 import eu.etaxonomy.cdm.model.reference.ReferenceFactory;
 
@@ -79,32 +82,32 @@ public class FaunaEuropaeaUsersImport extends FaunaEuropaeaImportBase {
 		ProfilerController.memorySnapshot();
 		*/
 		TransactionStatus txStatus = null;
-		Map<Integer, Reference> references = null;
-		Map<String,TeamOrPersonBase> authors = null;
-		Map<Integer, UUID> referenceUuids = new HashMap<Integer, UUID>();
+		Map<String, AgentBase<?>> persons = null;
+		Map<Integer, User> users= null;
+		Map<Integer, UUID> userUuids = new HashMap<Integer, UUID>();
 		int limit = state.getConfig().getLimitSave();
 
 		FaunaEuropaeaImportConfigurator fauEuConfig = state.getConfig();
 		Source source = fauEuConfig.getSource();
 
-		String namespace = "Reference";
+		String namespace = "User";
 		int i = 0;
 
 		String selectCountUsers = 
 			" SELECT count(*) FROM Users";
 
 		String selectColumnsUsers = 
-			" SELECT usr_id, usr_title, usr_firstname, usr_lastname, usr_createdat FROM Users";
+			" SELECT usr_id, usr_title, usr_firstname, usr_lastname, usr_createdat, usr_password FROM Users";
 
 		int count;
 		if(logger.isInfoEnabled()) { logger.info("Start making References (Users)..."); }
 
 		try {
-			ResultSet rsRefs = source.getResultSet(selectCountUsers);
-			rsRefs.next();
-			count = rsRefs.getInt(1);
+			ResultSet rsUser = source.getResultSet(selectCountUsers);
+			rsUser.next();
+			count = rsUser.getInt(1);
 			
-			rsRefs = source.getResultSet(selectColumnsUsers);
+			rsUser= source.getResultSet(selectColumnsUsers);
 
 	        if (logger.isInfoEnabled()) {
 	        	logger.info("Get all References..."); 
@@ -113,24 +116,25 @@ public class FaunaEuropaeaUsersImport extends FaunaEuropaeaImportBase {
 				logger.info("Select Query: " + selectColumnsUsers);
 			}
 	        
-	        while (rsRefs.next()){
-	        	int refId = rsRefs.getInt("usr_id");
-				String refTitle = rsRefs.getString("usr_title");
-				String refFirstname = rsRefs.getString("usr_firstname");
-				String refLastname = rsRefs.getString("usr_lastname");
-				String createdDate = rsRefs.getString("usr_createdat");
+	        while (rsUser.next()){
+	        	int userId = rsUser.getInt("usr_id");
+				String userTitle = rsUser.getString("usr_title");
+				String userFirstname = rsUser.getString("usr_firstname");
+				String userLastname = rsUser.getString("usr_lastname");
+				String createdDate = rsUser.getString("usr_createdat");
+				String userPwd = rsUser.getString("usr_password");
 
-				// build author
-				String refAuthor = "";
-				if (refTitle != null) {
-					refAuthor = refTitle;
-					if (! refTitle.endsWith(".")) {
-						refAuthor += ".";
+				// build person
+				String userPerson = "";
+				if (userTitle != null) {
+					userPerson = userTitle;
+					if (! userTitle.endsWith(".")) {
+						userPerson += ".";
 					}
 				}
-				refAuthor += refTitle == null ? NullToEmpty(refFirstname) : " " + NullToEmpty(refFirstname);
-				if ((refTitle != null || refFirstname != null) && refLastname != null) {
-					refAuthor += " " + refLastname;
+				userPerson += userTitle == null ? NullToEmpty(userFirstname) : " " + NullToEmpty(userFirstname);
+				if ((userTitle != null || userFirstname != null) && userLastname != null) {
+					userPerson += " " + userLastname;
 				}
 
 				// build year
@@ -142,85 +146,84 @@ public class FaunaEuropaeaUsersImport extends FaunaEuropaeaImportBase {
 				if ((i++ % limit) == 0) {
 
 					txStatus = startTransaction();
-					references = new HashMap<Integer,Reference>(limit);
-					authors = new HashMap<String,TeamOrPersonBase>(limit);
+					persons= new HashMap<String,AgentBase<?>>(limit);
+					users = new HashMap<Integer,User>(limit);
 					
 					if(logger.isInfoEnabled()) {
-						logger.info("i = " + i + " - Reference import transaction started"); 
+						logger.info("i = " + i + " - User import transaction started"); 
 					}
 				}
 				
-				Reference<?> reference = null;
-				TeamOrPersonBase<Team> author = null;
-				reference = ReferenceFactory.newGeneric();
-
-				reference.setTitle("" + refId); // This unique key is needed to get a hand on this Reference in PesiTaxonExport
-				reference.setDatePublished(ImportHelper.getDatePublished(year));
+				AgentBase<?> person = null;
+				User user = null;
+				person= Person.NewTitledInstance(userTitle);
+				user = User.NewInstance(userPerson, userPwd);
+				//reference.setTitle("" + refId); // This unique key is needed to get a hand on this Reference in PesiTaxonExport
+				//reference.setDatePublished(ImportHelper.getDatePublished(year));
 				
-				if (!authors.containsKey(refAuthor)) {
-					if (refAuthor == null) {
-						logger.warn("Reference author is null");
+				if (!persons.containsKey(userPerson)) {
+					if (userPerson == null) {
+						logger.warn("User is null");
 					}
-					author = Team.NewInstance();
-					author.setTitleCache(refAuthor, true);
-					authors.put(refAuthor,author); 
+									
+					persons.put(userPerson, person); 
 					if (logger.isTraceEnabled()) { 
-						logger.trace("Stored author (" + refAuthor + ")");
+						logger.trace("Stored user (" + userPerson + ")");
 					}
 				//}
 
 				} else {
-					author = authors.get(refAuthor);
+					person = persons.get(userPerson);
 					if (logger.isDebugEnabled()) { 
-						logger.debug("Not imported author with duplicated aut_id (" + refId + 
-							") " + refAuthor);
+						logger.debug("Not imported user with duplicated user_id (" + userId + 
+							") " + userPerson);
 					}
 				}
 				
 				// set protected titleCache
-				StringBuilder referenceTitleCache = new StringBuilder(author.getTitleCache() + ".");
+				/*StringBuilder referenceTitleCache = new StringBuilder(user.getTitleCache() + ".");
 				if (year != null) {
 					referenceTitleCache.append(" " + year);
 				}
 				reference.setTitleCache(referenceTitleCache.toString(), true);
 				
-				reference.setAuthorTeam(author);
+				reference.setAuthorTeam(author);*/
 				
-				ImportHelper.setOriginalSource(reference, fauEuConfig.getSourceReference(), refId, namespace);
-				ImportHelper.setOriginalSource(author, fauEuConfig.getSourceReference(), refId, namespace);
+				//ImportHelper.setOriginalSource(user, fauEuConfig.getSourceReference(), userId, namespace);
+				ImportHelper.setOriginalSource(person, fauEuConfig.getSourceReference(), userId, namespace);
 
 				
-				// Store reference
-				if (!references.containsKey(refId)) {
+				// Store persons
+				if (!users.containsKey(userId)) {
 
-					if (reference == null) {
-						logger.warn("Reference is null");
+					if (user == null) {
+						logger.warn("User is null");
 					}
-					references.put(refId, reference);
+					users.put(userId, user);
 					if (logger.isTraceEnabled()) { 
-						logger.trace("Stored reference (" + refAuthor + ")"); 
+						logger.trace("Stored user (" + userTitle + ")"); 
 					}
 				} else {
 					if (logger.isDebugEnabled()) { 
-						logger.debug("Duplicated reference (" + refId + ", " + refAuthor + ")");
+						logger.debug("Duplicated user(" + userId + ", " + userTitle+ ")");
 					}
 					//continue;
 				}
 				
 				if (((i % limit) == 0 && i > 1 ) || i == count ) { 
 					
-					commitReferences(txStatus, references, authors,
-							referenceUuids, i);
+					commitUsers(txStatus, persons, users,
+							userUuids, i);
 					
-					authors = null;					
-					references= null;
+					users = null;					
+					persons= null;
 				}
 	        	
 	        }
-	        if (references != null){
-	        	commitReferences(txStatus, references, authors, referenceUuids, i);
-	        	authors = null;					
-				references= null;
+	        if (users != null){
+	        	commitUsers(txStatus, persons, users, userUuids, i);
+	        	users = null;					
+				persons= null;
 	        }
 		}catch(SQLException e) {
 			logger.error("SQLException:" +  e);
@@ -235,22 +238,22 @@ public class FaunaEuropaeaUsersImport extends FaunaEuropaeaImportBase {
 		return;
 	}
 
-	private void commitReferences(TransactionStatus txStatus,
-			Map<Integer, Reference> references,
-			Map<String, TeamOrPersonBase> authors,
-			Map<Integer, UUID> referenceUuids, int i) {
-		Map <UUID, Reference> referenceMap =getReferenceService().save(references.values());
-		logger.info("i = " + i + " - references saved"); 
+	private void commitUsers(TransactionStatus txStatus,
+			Map<String, AgentBase<?>> persons,
+			Map<Integer, User> users,
+			Map<Integer, UUID> userUuids, int i) {
+		Map<UUID, AgentBase> userMap =getAgentService().save((Collection)persons.values());
+		logger.info("i = " + i + " - users saved"); 
 
-		Iterator<Entry<UUID, Reference>> it = referenceMap.entrySet().iterator();
+		Iterator<Entry<UUID, AgentBase>> it = userMap.entrySet().iterator();
 		while (it.hasNext()){
-			Reference ref = it.next().getValue();
-			int refID = Integer.valueOf(((OriginalSourceBase)ref.getSources().iterator().next()).getIdInSource());
-			UUID uuid = ref.getUuid();
-			referenceUuids.put(refID, uuid);
+			AgentBase person = it.next().getValue();
+			int userID = Integer.valueOf(((OriginalSourceBase)person.getSources().iterator().next()).getIdInSource());
+			UUID uuid = person.getUuid();
+			userUuids.put(userID, uuid);
 		}
 		
-		getAgentService().save((Collection)authors.values());
+		getUserService().save((Collection)users.values());
 		commitTransaction(txStatus);
 	}
 
