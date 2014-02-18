@@ -24,7 +24,6 @@ import eu.etaxonomy.cdm.model.name.NomenclaturalCode;
 /**
  * @author a.mueller
  * @created 20.03.2008
- * @version 1.0
  */
 public class GlobisImportConfigurator extends DbImportConfiguratorBase<GlobisImportState> implements IImportConfigurator{
 	@SuppressWarnings("unused")

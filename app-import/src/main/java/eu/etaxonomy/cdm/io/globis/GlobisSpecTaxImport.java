@@ -60,16 +60,15 @@ import eu.etaxonomy.cdm.strategy.exceptions.UnknownCdmTypeException;
 /**
  * @author a.mueller
  * @created 20.02.2010
- * @version 1.0
  */
 @Component
-public class GlobisSpecTaxImport  extends GlobisImportBase<Reference> implements IMappingImport<Reference, GlobisImportState>{
+public class GlobisSpecTaxImport  extends GlobisImportBase<Reference<?>> implements IMappingImport<Reference<?>, GlobisImportState>{
 	private static final Logger logger = Logger.getLogger(GlobisSpecTaxImport.class);
 	
 	private int modCount = 10000;
 	private static final String pluralString = "taxa";
 	private static final String dbTableName = "specTax";
-	private static final Class cdmTargetClass = Reference.class;
+	private static final Class<?> cdmTargetClass = Reference.class;
 	
 	private static UUID uuidCitedTypeLocality = UUID.fromString("ca431e0a-84ec-4828-935f-df4c8f5cf880");
 	private static UUID uuidCitedTypeMaterial = UUID.fromString("8395021a-e596-4a55-9794-8c03aaad9e16");
@@ -110,9 +109,6 @@ public class GlobisSpecTaxImport  extends GlobisImportBase<Reference> implements
 	
 
 
-	/* (non-Javadoc)
-	 * @see eu.etaxonomy.cdm.io.globis.GlobisImportBase#doPartition(eu.etaxonomy.cdm.io.common.ResultSetPartitioner, eu.etaxonomy.cdm.io.globis.GlobisImportState)
-	 */
 	@Override
 	public boolean doPartition(ResultSetPartitioner partitioner, GlobisImportState state) {
 		boolean success = true;

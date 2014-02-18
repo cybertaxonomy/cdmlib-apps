@@ -49,12 +49,6 @@ public class GlobisReferenceImport  extends GlobisImportBase<Reference> implemen
 		super(pluralString, dbTableName, cdmTargetClass);
 	}
 
-
-	
-	
-	/* (non-Javadoc)
-	 * @see eu.etaxonomy.cdm.io.globis.GlobisImportBase#getIdQuery()
-	 */
 	@Override
 	protected String getIdQuery() {
 		String strRecordQuery = 
@@ -64,12 +58,6 @@ public class GlobisReferenceImport  extends GlobisImportBase<Reference> implemen
 		return strRecordQuery;	
 	}
 
-
-
-
-	/* (non-Javadoc)
-	 * @see eu.etaxonomy.cdm.io.berlinModel.in.BerlinModelImportBase#getRecordQuery(eu.etaxonomy.cdm.io.berlinModel.in.BerlinModelImportConfigurator)
-	 */
 	@Override
 	protected String getRecordQuery(GlobisImportConfigurator config) {
 		String strRecordQuery = 
@@ -80,11 +68,6 @@ public class GlobisReferenceImport  extends GlobisImportBase<Reference> implemen
 		return strRecordQuery;
 	}
 	
-
-
-	/* (non-Javadoc)
-	 * @see eu.etaxonomy.cdm.io.globis.GlobisImportBase#doPartition(eu.etaxonomy.cdm.io.common.ResultSetPartitioner, eu.etaxonomy.cdm.io.globis.GlobisImportState)
-	 */
 	@Override
 	public boolean doPartition(ResultSetPartitioner partitioner, GlobisImportState state) {
 		boolean success = true;

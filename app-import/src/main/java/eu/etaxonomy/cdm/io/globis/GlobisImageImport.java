@@ -61,7 +61,7 @@ public class GlobisImageImport  extends GlobisImportBase<Taxon> {
 	private UUID uuidArtNonSpecTaxMarkerType = UUID.fromString("be362085-0f5b-4314-96d1-78b9b129ef6d") ;
 	private static final String pluralString = "images";
 	private static final String dbTableName = "Einzelbilder";
-	private static final Class cdmTargetClass = Media.class;  //not needed
+	private static final Class<?> cdmTargetClass = Media.class;  //not needed
 	
 	private static UUID uuidGartRef = UUID.fromString("af85470f-6e54-4304-9d29-fd117cd56161"); 
 	

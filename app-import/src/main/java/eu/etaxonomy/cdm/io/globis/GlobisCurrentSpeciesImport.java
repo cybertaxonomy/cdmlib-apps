@@ -51,7 +51,7 @@ public class GlobisCurrentSpeciesImport  extends GlobisImportBase<Taxon> {
 	private int modCount = 10000;
 	private static final String pluralString = "current taxa";
 	private static final String dbTableName = "current_species";
-	private static final Class cdmTargetClass = Taxon.class;  //not needed
+	private static final Class<?> cdmTargetClass = Taxon.class;  //not needed
 	
 	public GlobisCurrentSpeciesImport(){
 		super(pluralString, dbTableName, cdmTargetClass);
