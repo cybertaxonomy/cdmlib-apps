@@ -31,17 +31,16 @@ import eu.etaxonomy.cdm.model.name.ZoologicalName;
 /**
  * @author a.mueller
  * @created 14.04.2010
- * @version 1.0
  */
 public class GlobisActivator {
 	private static final Logger logger = Logger.getLogger(GlobisActivator.class);
 
 	//database validation status (create, update, validate ...)
 	static DbSchemaValidation hbm2dll = DbSchemaValidation.CREATE;
-	static final Source globisSource = CdmImportSources.GLOBIS_MDB_20120928();
-//	static final ICdmDataSource cdmDestination = CdmDestinations.localH2();
+	static final Source globisSource = CdmImportSources.GLOBIS_MDB_20140113_PESIIMPORT_SQLSERVER();
+	static final ICdmDataSource cdmDestination = CdmDestinations.localH2();
 //	static final ICdmDataSource cdmDestination = CdmDestinations.cdm_test_local_mysql();
-	static final ICdmDataSource cdmDestination = CdmDestinations.cdm_globis_dev();
+//	static final ICdmDataSource cdmDestination = CdmDestinations.cdm_globis_dev();
 	
 	
 	
@@ -71,27 +70,27 @@ public class GlobisActivator {
 	
 // ***************** ALL ************************************************//
 	
-	//references
-	static final DO_REFERENCES doReferences =  DO_REFERENCES.ALL;
-	
-	//taxa
-	static final boolean doCurrentTaxa = true;
-	static final boolean doSpecTaxa = true;
-	static final boolean doImages = true;
-	static final boolean doCommonNames = true;
+//	//references
+//	static final DO_REFERENCES doReferences =  DO_REFERENCES.ALL;
+//	
+//	//taxa
+//	static final boolean doCurrentTaxa = true;
+//	static final boolean doSpecTaxa = true;
+//	static final boolean doImages = true;
+//	static final boolean doCommonNames = true;
 	
 	
 //******************** NONE ***************************************//
 	
 
-//	//references
-//	static final DO_REFERENCES doReferences =  DO_REFERENCES.NONE;
-//	
-//	//taxa
-//	static final boolean doCurrentTaxa = true;
-//	static final boolean doSpecTaxa = false;
-//	static final boolean doImages = false;
-//	static final boolean doCommonNames = true;
+	//references
+	static final DO_REFERENCES doReferences =  DO_REFERENCES.ALL;
+	
+	//taxa
+	static final boolean doCurrentTaxa = false;
+	static final boolean doSpecTaxa = false;
+	static final boolean doImages = false;
+	static final boolean doCommonNames = false;
 
 //	
 	
