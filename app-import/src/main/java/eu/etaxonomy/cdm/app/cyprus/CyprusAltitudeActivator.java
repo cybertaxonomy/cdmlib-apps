@@ -40,7 +40,6 @@ import eu.etaxonomy.cdm.model.description.QuantitativeData;
 import eu.etaxonomy.cdm.model.description.StatisticalMeasure;
 import eu.etaxonomy.cdm.model.description.StatisticalMeasurementValue;
 import eu.etaxonomy.cdm.model.description.TaxonDescription;
-import eu.etaxonomy.cdm.model.location.NamedArea;
 import eu.etaxonomy.cdm.model.name.TaxonNameBase;
 import eu.etaxonomy.cdm.model.reference.Reference;
 import eu.etaxonomy.cdm.model.reference.ReferenceFactory;
@@ -223,7 +222,7 @@ public class CyprusAltitudeActivator {
 			}
 			//Excel
 			TaxonNameBase<?,?> nameUsedInSource = null;  //TODO probably we don't want this
-			data.addSource(OriginalSourceType.Import, null, null, getSourceReference(), null, nameUsedInSource, null);
+			data.addSource(OriginalSourceType.Import, String.valueOf(row), "row", getSourceReference(), null, nameUsedInSource, null);
 			data.setUnit(meter);
 			
 			String[] split = altitude.split("-");
