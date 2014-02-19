@@ -10,10 +10,7 @@
 package eu.etaxonomy.cdm.app.proibiosphere;
 import java.awt.Dimension;
 import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileWriter;
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.MalformedURLException;
 import java.net.URI;
@@ -30,11 +27,8 @@ import java.util.Scanner;
 import javax.swing.JOptionPane;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
 
 import org.apache.log4j.Logger;
-import org.w3c.dom.Document;
 
 import eu.etaxonomy.cdm.app.common.CdmDestinations;
 import eu.etaxonomy.cdm.database.DbSchemaValidation;
@@ -71,13 +65,15 @@ public class TaxonXImportLauncher {
     }
 
     public static void main(String[] args) {
-        String[] taxonList = new String[] {"Polybothrus","Eupolybothrus"};
-//       /*ants*/ String[] modsList = new String[] {"3924", "3743", "4375","6757","6752","3481","21401_fisher_smith_plos_2008","2592","4096","6877","6192","8071"};
-//        String[] modsList = new String[] {"FloNuttDuWin1838"};
+//        String[] taxonList = new String[] {"Eupolybothrus","Polybothrus"};
+       /*ants*/ String[] modsList = new String[] {"3924", "3743", "4375", "6757", "6752", "3481", "21401_fisher_smith_plos_2008", "2592", "4096", "6877", "6192", "8071"};
+//        String[] modsList = new String[] {"21367", "21365", "8171", "6877", "21820", "3641", "6757"};
+//                debut="3743", "3628", "4022", "3994", "3603", "8070", "4001", "4071", "3948", "3481"};
+//        suite: , };//,"3540555099"};
 //        modsList = new String[] {"Zapparoli-1986-Eupolybothrus-fasciatus"};
         String tnomenclature = "ICZN";
 
-        String defaultClassif="Eupolybothrus and Polybothrus";
+        String defaultClassif="Ants";
 
         Map<String,List<String>> documents = new HashMap<String,List<String>>();
         HashMap<String,List<URI>>documentMap = new HashMap<String, List<URI>>();
@@ -89,8 +85,8 @@ public class TaxonXImportLauncher {
             secundum = askForSecundum();
         }
 
-        checkTreatmentPresence("taxon",taxonList, documents,documentMap);
-//        checkTreatmentPresence("modsid",modsList, documents,documentMap);
+//        checkTreatmentPresence("taxon",taxonList, documents,documentMap);
+        checkTreatmentPresence("modsid",modsList, documents,documentMap);
 
         TaxonXImportConfigurator taxonxImportConfigurator =null;
         CdmDefaultImport<TaxonXImportConfigurator> taxonImport = new CdmDefaultImport<TaxonXImportConfigurator>();
@@ -109,7 +105,7 @@ public class TaxonXImportLauncher {
             if (doImportDocument(document, documentMap.get(document).size())){
                 int i=0;
                 for (URI source:documentMap.get(document)){
-                    System.out.println("START "+i+" ("+(documentMap.get(document)).size()+"): "+source.getPath());
+                    System.out.println("START "+document+" "+i+" ("+(documentMap.get(document)).size()+"): "+source.getPath());
                     i++;
                     if (j==documentMap.keySet().size() && i==documentMap.get(document).size()) {
                         taxonxImportConfigurator.setLastImport(true);
@@ -323,44 +319,45 @@ public class TaxonXImportLauncher {
             //            log.info(pages);
 
             log.info("Document "+docId+" should have "+treatments.size()+" treatments");
-            int cnt=0;
-            if(treatments.size()<150){
-
-            for (String source:treatments){
-                DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
-                DocumentBuilder builder;
-                URL url;
-
-                try {
-                    builder = factory.newDocumentBuilder();
-                    url = new URL(source.split("---")[3]);
-                    Object o = url.getContent();
-                    InputStream is = (InputStream) o;
-                    Document document = builder.parse(is);
-                    cnt++;
-                }catch(Exception e){
-                    //  e.printStackTrace();
-                    log.warn(e);
-                }
-            }
-            log.info("Document "+docId+" has "+cnt+" treatments available");
-            }
-            if(treatments.size() != cnt)
-            {
-                File file = new File("/home/pkelbert/Bureau/urlTaxonXToDoLater.txt");
-                FileWriter writer;
-                try {
-                    writer = new FileWriter(file ,true);
-                    writer.write(docId+"\n");
-                    writer.flush();
-                    writer.close();
-                } catch (IOException e1) {
-                    // TODO Auto-generated catch block
-                    e1.printStackTrace();
-                }
-
-            }
-            else{
+            //don't test if all the treatments are really online, it should be working without problems now
+//            int cnt=0;
+//            if(treatments.size()<150){
+//
+//            for (String source:treatments){
+//                DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+//                DocumentBuilder builder;
+//                URL url;
+//
+//                try {
+//                    builder = factory.newDocumentBuilder();
+//                    url = new URL(source.split("---")[3]);
+//                    Object o = url.getContent();
+//                    InputStream is = (InputStream) o;
+//                    Document document = builder.parse(is);
+//                    cnt++;
+//                }catch(Exception e){
+//                    //  e.printStackTrace();
+//                    log.warn(e);
+//                }
+//            }
+//            log.info("Document "+docId+" has "+cnt+" treatments available");
+//            }
+//            if(treatments.size() != cnt)
+//            {
+//                File file = new File("/home/pkelbert/Bureau/urlTaxonXToDoLater.txt");
+//                FileWriter writer;
+//                try {
+//                    writer = new FileWriter(file ,true);
+//                    writer.write(docId+"\n");
+//                    writer.flush();
+//                    writer.close();
+//                } catch (IOException e1) {
+//                    // TODO Auto-generated catch block
+//                    e1.printStackTrace();
+//                }
+//
+//            }
+//            else{
                 List<URI> uritmp = documentMap.get(docId);
                 if (uritmp == null) {
                     uritmp = new ArrayList<URI>();
@@ -384,7 +381,7 @@ public class TaxonXImportLauncher {
 
 
 
-        }
+//        }
         //////        log.info("NB SOURCES : "+sourcesStr.size());
         //        List<URI> sourcesStr = new ArrayList<URI>();
         //        try {
@@ -405,6 +402,18 @@ public class TaxonXImportLauncher {
      * @return
      */
     private static boolean doImportDocument(String document, int nbtreatments) {
+        if (nbtreatments>400) {
+            return false;
+        }
+        if (document.equalsIgnoreCase("1314-2828-2")) { //this is a mix of several publications..
+            return false;
+        }
+        if (document.equalsIgnoreCase("21367")) { //600treatments for ants..
+            return false;
+        }
+        if (document.equalsIgnoreCase("1314-2828-1")) { //900treatments for eupoly..
+            return false;
+        }
         return true;
       /*
         //        List<String> docDone = Arrays.asList(new String[]{"3540555099", "0910-2878-5652", "5012-9059-4108",
