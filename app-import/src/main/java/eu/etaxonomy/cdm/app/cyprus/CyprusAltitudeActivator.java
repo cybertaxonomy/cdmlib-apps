@@ -78,7 +78,7 @@ public class CyprusAltitudeActivator {
 	
 	
 	//TODO move to Feature vocabulary
-	private static final UUID uuidAltitudeFeature = UUID.fromString("1279e8c8-b6e2-4f9f-af41-76acfa7312ed");
+	private static final UUID uuidAltitudeFeature = UUID.fromString("1a28ed59-e15f-4001-b5c2-ea89f0012671");
 	
 	//check - import
 	static final CHECK check = CHECK.IMPORT_WITHOUT_CHECK;
@@ -107,13 +107,13 @@ public class CyprusAltitudeActivator {
 		Reference<?> mikle85 = app.getReferenceService().find(uuidMikle85);
 		
 		
-		TermVocabulary<Feature> featureVoc = null;
 		Feature altitudeFeature = (Feature) app.getTermService().find(uuidAltitudeFeature);
 		if (altitudeFeature == null){
-			altitudeFeature = Feature.NewInstance("Altitude", "Altitude", "alt.");
-			altitudeFeature.setUuid(uuidAltitudeFeature);
-			featureVoc = app.getVocabularyService().find(UUID.fromString("b187d555-f06f-4d65-9e53-da7c93f8eaa8"));
-			featureVoc.addTerm(altitudeFeature);
+//			altitudeFeature = Feature.NewInstance("Altitude", "Altitude", "alt.");
+//			altitudeFeature.setUuid(uuidAltitudeFeature);
+//			featureVoc = app.getVocabularyService().find(UUID.fromString("b187d555-f06f-4d65-9e53-da7c93f8eaa8"));
+//			featureVoc.addTerm(altitudeFeature);
+			throw new RuntimeException("Could not find altitudinal range feature");
 		}
 		
 		MeasurementUnit meter = (MeasurementUnit)app.getTermService().find(UUID.fromString("8bef5055-789c-41e5-bea2-8dc2ea8ecdf6"));
@@ -127,41 +127,48 @@ public class CyprusAltitudeActivator {
 			UUID parentUuid = makeUuid(row, "parentUuid");
 			
 			String altitude = row.get("Altitude-kumuliert");
+			
+			String altitudeMin = row.get("Min");
+			String altitudeMax = row.get("Max");
+			String acceptedName = row.get("AcceptedName");
+			
+			
+			
 			String source = row.get("Source");
 			
-			if (StringUtils.isBlank(altitude)){
+			if (StringUtils.isBlank(altitudeMin)){
 				continue;
 			}
 			
 			boolean hasAltitude = false;
 			Reference<?> sourceRef = getSource(source, mikle77, mikle85);
-			Taxon taxon = getTaxon(app, baseUuid, acceptedUuid, parentUuid, count);
+			Taxon taxon = getTaxon(app, baseUuid, acceptedUuid, parentUuid, acceptedName, count);
 			if (taxon != null){
 				TaxonDescription desc = getDescription(taxon, sourceRef);
 				
-				
-				hasAltitude = makeAltitude(altitude, altitudeFeature, sourceRef, desc, meter, count);
+				hasAltitude = makeAltitude(altitudeMin, altitudeMax, altitudeFeature, sourceRef, desc, meter, count);
+//				hasAltitude = makeAltitudeOld(altitude, altitudeFeature, sourceRef, desc, meter, count);
 				if (hasAltitude){
 					if(desc.getTaxon() == null){
 						taxon.addDescription(desc);
 					}
 					taxaToSave.add(taxon);
+				}else{
+					logger.warn("HasALtitude is false in " + count);
 				}
 			}else{
 				logger.warn("Taxon not recognized in line " + count);
 			}
 		}
 
-		if (featureVoc != null){
-			app.getVocabularyService().saveOrUpdate(featureVoc);
-		}
 		app.getTaxonService().saveOrUpdate(taxaToSave);
 		
 //		tx.setRollbackOnly();
 		app.commitTransaction(tx);
 	}
 
-	private Taxon getTaxon(CdmApplicationController app, UUID baseUuid, UUID acceptedUuid, UUID parentUuid, int row) {
+
+	private Taxon getTaxon(CdmApplicationController app, UUID baseUuid, UUID acceptedUuid, UUID parentUuid, String acceptedName, int row) {
 		TaxonBase<?> base = app.getTaxonService().find(baseUuid);
 //		TaxonBase<?> parent = app.getTaxonService().find(parentUuid);
 		
@@ -190,6 +197,14 @@ public class CyprusAltitudeActivator {
 			}
 		}
 		
+		if (result != null){
+			if (! result.getName().getTitleCache().equals(acceptedName)){
+				logger.warn("AcceptedName and taxon name is not equal in " + row + ".\n" +
+						" Accepted Name: " + acceptedName + ";\n" +
+						" Taxon    Name: " + result.getName().getTitleCache());
+			}
+		}
+		
 		return result;
 	}
 
@@ -207,8 +222,35 @@ public class CyprusAltitudeActivator {
 	private static final Pattern altitudePattern = Pattern.compile("\\d{1,4}(-\\d{1,4})?");
 
 
+	private boolean makeAltitude(String altitudeMin, String altitudeMax, Feature altitudeFeature, 
+			Reference<?> sourceRef, TaxonDescription desc, MeasurementUnit meter, int row) {
 	
-	private boolean makeAltitude(String altitudeOrig, Feature feature, Reference<?> source, TaxonDescription desc, MeasurementUnit meter, int row) {
+		QuantitativeData data = QuantitativeData.NewInstance(altitudeFeature);
+		
+		//Meikle
+		if (source != null){
+			TaxonNameBase<?,?> nameUsedInSource = null;  //TODO
+			data.addSource(OriginalSourceType.PrimaryTaxonomicSource, null, null, sourceRef, null, nameUsedInSource, null);
+		}
+//		//Excel   //excel source not wanted by Ralf
+//		TaxonNameBase<?,?> nameUsedInSource = null;  //TODO probably we don't want this
+//		data.addSource(OriginalSourceType.Import, String.valueOf(row), "row", getSourceReference(), null, nameUsedInSource, null);
+		
+		data.setUnit(meter);
+		
+		Integer min = Integer.valueOf(altitudeMin);
+		StatisticalMeasurementValue minValue = StatisticalMeasurementValue.NewInstance(StatisticalMeasure.MIN(), min);
+		data.addStatisticalValue(minValue);
+
+		Integer max = Integer.valueOf(altitudeMax);
+		StatisticalMeasurementValue maxValue = StatisticalMeasurementValue.NewInstance(StatisticalMeasure.MAX(), max);
+		data.addStatisticalValue(maxValue);
+		
+		desc.addElement(data);
+		return true;
+	}
+	
+	private boolean makeAltitudeOld(String altitudeOrig, Feature feature, Reference<?> source, TaxonDescription desc, MeasurementUnit meter, int row) {
 		String altitude = altitudeOrig.trim().replace(" ", "");
 		Matcher matcher = altitudePattern.matcher(altitude);
 		
@@ -303,12 +345,13 @@ public class CyprusAltitudeActivator {
 			
 	}
 
-
+	
 	//Cyprus
 	public static URI cyprus_altitude() {
 		URI sourceUrl;
 		try {
-			sourceUrl = new URI("file:/F:/data/cyprus/Zypern-Altitude.xls");
+			sourceUrl = new URI("file:/F:/data/cyprus/Cyprus-altitude-import-neu.xls");
+//			sourceUrl = new URI("file:/F:/data/cyprus/Zypern-Altitude.xls");
 			return sourceUrl;
 		} catch (URISyntaxException e) {
 			e.printStackTrace();
