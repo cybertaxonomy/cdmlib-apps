@@ -98,7 +98,7 @@ public class CdmImportSources extends SourceBase{
 		String strServer = "PESIIMPORT3";
 		String strDB = "globis_orig_20140113";
 		int port = 1433;
-		String userName = "pesiexport";
+		String userName = "globisImport";
 		return  makeSource(dbms, strServer, strDB, port, userName, null);
 	}
 	
