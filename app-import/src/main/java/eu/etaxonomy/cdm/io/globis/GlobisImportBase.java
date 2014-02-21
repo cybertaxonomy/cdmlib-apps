@@ -234,14 +234,8 @@ public abstract class GlobisImportBase<CDM_BASE extends CdmBase> extends CdmImpo
 		GlobisImportConfigurator config = state.getConfig();
 		Object createdWhen = rs.getObject("Created_When");
 		String createdWho = rs.getString("Created_Who");
-		Object updatedWhen = null;
-		String updatedWho = null;
-		try {
-			updatedWhen = rs.getObject("Updated_When");
-			updatedWho = rs.getString("Updated_who");
-		} catch (SQLException e) {
-			//Table "Name" has no updated when/who
-		}
+		Object updatedWhen = rs.getObject("Updated_When");
+		String updatedWho = rs.getString("Updated_who");
 		String notes = rs.getString("notes");
 		
 		boolean success  = true;
@@ -288,7 +282,7 @@ public abstract class GlobisImportBase<CDM_BASE extends CdmBase> extends CdmImpo
 	}
 	
 	private User getUser(String userString, GlobisImportState state){
-		if (StringUtils.isBlank(userString)){
+		if (isBlank(userString)){
 			return null;
 		}
 		userString = userString.trim();

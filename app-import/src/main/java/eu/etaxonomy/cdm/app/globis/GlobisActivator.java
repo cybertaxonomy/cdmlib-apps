@@ -22,6 +22,7 @@ import eu.etaxonomy.cdm.database.ICdmDataSource;
 import eu.etaxonomy.cdm.io.common.CdmDefaultImport;
 import eu.etaxonomy.cdm.io.common.IImportConfigurator.CHECK;
 import eu.etaxonomy.cdm.io.common.IImportConfigurator.DO_REFERENCES;
+import eu.etaxonomy.cdm.io.common.IImportConfigurator.EDITOR;
 import eu.etaxonomy.cdm.io.common.Source;
 import eu.etaxonomy.cdm.io.globis.GlobisImportConfigurator;
 import eu.etaxonomy.cdm.model.common.ISourceable;
@@ -38,8 +39,8 @@ public class GlobisActivator {
 	//database validation status (create, update, validate ...)
 	static DbSchemaValidation hbm2dll = DbSchemaValidation.CREATE;
 	static final Source globisSource = CdmImportSources.GLOBIS_MDB_20140113_PESIIMPORT_SQLSERVER();
-	static final ICdmDataSource cdmDestination = CdmDestinations.localH2();
-//	static final ICdmDataSource cdmDestination = CdmDestinations.cdm_test_local_mysql();
+//	static final ICdmDataSource cdmDestination = CdmDestinations.localH2();
+	static final ICdmDataSource cdmDestination = CdmDestinations.cdm_test_local_mysql();
 //	static final ICdmDataSource cdmDestination = CdmDestinations.cdm_globis_dev();
 	
 	
@@ -49,7 +50,9 @@ public class GlobisActivator {
 	//static final Object[] featureKeyList = new Integer[]{1,4,5,10,11,12,13,14, 249, 250, 251, 252, 253};
 	
 	static final String classificationName = "Globis";
-	static final String sourceReferenceTitle = "globis database";
+	static final String sourceReferenceTitle = "Globis Informix Database";
+	
+	static final EDITOR editor = EDITOR.EDITOR_AS_EDITOR;
 	
 	static final String imageBaseUrl = "http://globis-images.insects-online.de/images/";
 	
@@ -71,26 +74,26 @@ public class GlobisActivator {
 // ***************** ALL ************************************************//
 	
 //	//references
-//	static final DO_REFERENCES doReferences =  DO_REFERENCES.ALL;
-//	
-//	//taxa
-//	static final boolean doCurrentTaxa = true;
-//	static final boolean doSpecTaxa = true;
-//	static final boolean doImages = true;
-//	static final boolean doCommonNames = true;
+	static final DO_REFERENCES doReferences =  DO_REFERENCES.ALL;
+	
+	//taxa
+	static final boolean doCurrentTaxa = true;
+	static final boolean doSpecTaxa = true;
+	static final boolean doImages = true;
+	static final boolean doCommonNames = true;
 	
 	
 //******************** NONE ***************************************//
 	
 
 	//references
-	static final DO_REFERENCES doReferences =  DO_REFERENCES.ALL;
-	
-	//taxa
-	static final boolean doCurrentTaxa = false;
-	static final boolean doSpecTaxa = false;
-	static final boolean doImages = false;
-	static final boolean doCommonNames = false;
+//	static final DO_REFERENCES doReferences =  DO_REFERENCES.ALL;
+//	
+//	//taxa
+//	static final boolean doCurrentTaxa = false;
+//	static final boolean doSpecTaxa = false;
+//	static final boolean doImages = false;
+//	static final boolean doCommonNames = false;
 
 //	
 	
@@ -117,6 +120,7 @@ public class GlobisActivator {
 		config.setDoCurrentTaxa(doCurrentTaxa);
 		config.setDoSpecTaxa(doSpecTaxa);
 		config.setDoImages(doImages);
+		config.setDoCommonNames(doCommonNames);
 		config.setImageBaseUrl(imageBaseUrl);
 		
 		config.setDbSchemaValidation(hbm2dll);
@@ -124,6 +128,7 @@ public class GlobisActivator {
 		config.setRecordsPerTransaction(partitionSize);
 		config.setClassificationName(classificationName);
 		config.setSourceReferenceTitle(sourceReferenceTitle);
+		config.setEditor(editor);
 
 		// invoke import
 		CdmDefaultImport<GlobisImportConfigurator> globisImport = new CdmDefaultImport<GlobisImportConfigurator>();
@@ -131,7 +136,7 @@ public class GlobisActivator {
 		
 		if (config.getCheck().equals(CHECK.CHECK_AND_IMPORT)  || config.getCheck().equals(CHECK.IMPORT_WITHOUT_CHECK)    ){
 			ICdmApplicationConfiguration app = globisImport.getCdmAppController();
-			ISourceable obj = app.getCommonService().getSourcedObjectByIdInSource(ZoologicalName.class, "1000027", null);
+			ISourceable<?> obj = app.getCommonService().getSourcedObjectByIdInSource(ZoologicalName.class, "1000027", null);
 			logger.info(obj);
 			
 //			//make feature tree
