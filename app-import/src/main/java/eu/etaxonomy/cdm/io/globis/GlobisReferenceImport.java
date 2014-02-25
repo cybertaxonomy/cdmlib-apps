@@ -12,10 +12,8 @@ package eu.etaxonomy.cdm.io.globis;
 import java.net.URI;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -27,9 +25,6 @@ import eu.etaxonomy.cdm.io.common.IOValidator;
 import eu.etaxonomy.cdm.io.common.ResultSetPartitioner;
 import eu.etaxonomy.cdm.io.common.mapping.IMappingImport;
 import eu.etaxonomy.cdm.io.globis.validation.GlobisReferenceImportValidator;
-import eu.etaxonomy.cdm.model.agent.AgentBase;
-import eu.etaxonomy.cdm.model.agent.Person;
-import eu.etaxonomy.cdm.model.agent.Team;
 import eu.etaxonomy.cdm.model.agent.TeamOrPersonBase;
 import eu.etaxonomy.cdm.model.common.Annotation;
 import eu.etaxonomy.cdm.model.common.AnnotationType;
@@ -85,8 +80,6 @@ public class GlobisReferenceImport  extends GlobisImportBase<Reference> implemen
 		boolean success = true;
 		
 		Set<Reference> objectsToSave = new HashSet<Reference>();
-		
-//		Map<String, TaxonBase> taxonMap = (Map<String, TaxonBase>) partitioner.getObjectMap(BerlinModelTaxonImport.NAMESPACE);
 		
 		ResultSet rs = partitioner.getResultSet();
 
@@ -175,7 +168,7 @@ public class GlobisReferenceImport  extends GlobisImportBase<Reference> implemen
 			ref.setTitle(title);
 			
 			//refAuthor
-			TeamOrPersonBase<?> author = makeAuthor(refAuthor);
+			TeamOrPersonBase<?> author = makeAuthor(refAuthor, state);
 			ref.setAuthorTeam(author);
 			
 			//inRef
@@ -318,42 +311,48 @@ public class GlobisReferenceImport  extends GlobisImportBase<Reference> implemen
 			e.printStackTrace();
 		}
 	}
-
-	private TeamOrPersonBase<?> makeAuthor(String refAuthor) {
-		String[] split = refAuthor.split(";");
-		List<String> singleAuthorStrings = new ArrayList<String>();
-		for (String single : split){
-			single = single.trim();
-			if (single.startsWith("&")){
-				single = single.substring(1).trim();
-			}
-			String[] split2 = single.split("&");
-			for (String single2 : split2){
-				singleAuthorStrings.add(single2);
-			}
-		}
-		
-		TeamOrPersonBase<?> result; 
-		if (singleAuthorStrings.size() > 1){
-			Team team= Team.NewInstance();
-			for (String str : singleAuthorStrings){
-				Person person = makePerson(str);
-				team.addTeamMember(person);
-			}
-			result = team;
-		}else{
-			result = makePerson(singleAuthorStrings.get(0));
-		}
-		
-		//TODO deduplicate
-		return result;
+	
+	private TeamOrPersonBase<?> makeAuthor(String refAuthor, GlobisImportState state) {
+		TeamOrPersonBase<?> author = GlobisAuthorImport.makeAuthor(refAuthor, state, getAgentService());
+//		getAgentService().update(author);
+		return author;
 	}
 
-	private Person makePerson(String string) {
-		Person person = Person.NewTitledInstance(string.trim());
-		//TODO deduplicate
-		return person;
-	}
+//	private TeamOrPersonBase<?> makeAuthor(String refAuthor) {
+//		String[] split = refAuthor.split(";");
+//		List<String> singleAuthorStrings = new ArrayList<String>();
+//		for (String single : split){
+//			single = single.trim();
+//			if (single.startsWith("&")){
+//				single = single.substring(1).trim();
+//			}
+//			String[] split2 = single.split("&");
+//			for (String single2 : split2){
+//				singleAuthorStrings.add(single2);
+//			}
+//		}
+//		
+//		TeamOrPersonBase<?> result; 
+//		if (singleAuthorStrings.size() > 1){
+//			Team team= Team.NewInstance();
+//			for (String str : singleAuthorStrings){
+//				Person person = makePerson(str);
+//				team.addTeamMember(person);
+//			}
+//			result = team;
+//		}else{
+//			result = makePerson(singleAuthorStrings.get(0));
+//		}
+//		
+//		//TODO deduplicate
+//		return result;
+//	}
+//
+//	private Person makePerson(String string) {
+//		Person person = Person.NewTitledInstance(string.trim());
+//		//TODO deduplicate
+//		return person;
+//	}
 
 	/**
 	 * @param refId

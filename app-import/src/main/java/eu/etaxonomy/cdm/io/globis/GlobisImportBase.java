@@ -21,6 +21,7 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.joda.time.DateTime;
 
+import eu.etaxonomy.cdm.api.service.AgentServiceImpl;
 import eu.etaxonomy.cdm.io.common.CdmImportBase;
 import eu.etaxonomy.cdm.io.common.ICdmIO;
 import eu.etaxonomy.cdm.io.common.IImportConfigurator.EDITOR;
@@ -30,6 +31,10 @@ import eu.etaxonomy.cdm.io.common.ResultSetPartitioner;
 import eu.etaxonomy.cdm.io.common.Source;
 import eu.etaxonomy.cdm.io.common.mapping.DbImportMapping;
 import eu.etaxonomy.cdm.io.common.mapping.UndefinedTransformerMethodException;
+import eu.etaxonomy.cdm.model.agent.INomenclaturalAuthor;
+import eu.etaxonomy.cdm.model.agent.Person;
+import eu.etaxonomy.cdm.model.agent.Team;
+import eu.etaxonomy.cdm.model.agent.TeamOrPersonBase;
 import eu.etaxonomy.cdm.model.common.AnnotatableEntity;
 import eu.etaxonomy.cdm.model.common.Annotation;
 import eu.etaxonomy.cdm.model.common.AnnotationType;
@@ -64,17 +69,16 @@ public abstract class GlobisImportBase<CDM_BASE extends CdmBase> extends CdmImpo
 	
 	private String pluralString;
 	private String dbTableName;
-	//TODO needed?
 	private Class cdmTargetClass;
 
-	private INonViralNameParser parser = NonViralNameParserImpl.NewInstance();
+	private INonViralNameParser<?> parser = NonViralNameParserImpl.NewInstance();
 
 	
 	/**
 	 * @param dbTableName
 	 * @param dbTableName2 
 	 */
-	public GlobisImportBase(String pluralString, String dbTableName, Class cdmTargetClass) {
+	public GlobisImportBase(String pluralString, String dbTableName, Class<?> cdmTargetClass) {
 		this.pluralString = pluralString;
 		this.dbTableName = dbTableName;
 		this.cdmTargetClass = cdmTargetClass;
@@ -107,7 +111,7 @@ public abstract class GlobisImportBase<CDM_BASE extends CdmBase> extends CdmImpo
 	 * @param authorAndYear
 	 * @param zooName
 	 */
-	protected void handleAuthorAndYear(String authorAndYear, ZoologicalName zooName, Integer id) {
+	protected void handleAuthorAndYear(String authorAndYear, ZoologicalName zooName, Integer id, GlobisImportState state) {
 		if (isBlank(authorAndYear)){
 			return;
 		}
@@ -117,18 +121,20 @@ public abstract class GlobisImportBase<CDM_BASE extends CdmBase> extends CdmImpo
 				doubtfulAuthorAndYear = authorAndYear;
 				authorAndYear = authorAndYear.replace("[", "").replace("]", "");
 			}
-			if (authorAndYear.contains("?")){
-				authorAndYear = authorAndYear.replace("H?bner", "H\u00fcbner");
-				authorAndYear = authorAndYear.replace("Oberth?r", "Oberth\u00fcr");
-				authorAndYear = authorAndYear.replace("M?n?tri?s","M\u00E9n\u00E9tri\u00E9s");
-				authorAndYear = authorAndYear.replace("Schifferm?ller","Schifferm\u00fcller");
-				
-				//TODO remove
-				authorAndYear = authorAndYear.replace("?", "");
-				
-			}
+//			if (authorAndYear.contains("?")){
+//				authorAndYear = authorAndYear.replace("H?bner", "H\u00fcbner");
+//				authorAndYear = authorAndYear.replace("Oberth?r", "Oberth\u00fcr");
+//				authorAndYear = authorAndYear.replace("M?n?tri?s","M\u00E9n\u00E9tri\u00E9s");
+//				authorAndYear = authorAndYear.replace("Schifferm?ller","Schifferm\u00fcller");
+//				
+//				//TODO remove
+//				authorAndYear = authorAndYear.replace("?", "");
+//				
+//			}
 			
 			parser.parseAuthors(zooName, authorAndYear);
+			deduplicateAuthors(zooName, state);
+			
 			if (doubtfulAuthorAndYear != null){
 				zooName.setAuthorshipCache(doubtfulAuthorAndYear, true);
 			}
@@ -139,6 +145,59 @@ public abstract class GlobisImportBase<CDM_BASE extends CdmBase> extends CdmImpo
 		}
 	}
 	
+
+	private void deduplicateAuthors(ZoologicalName zooName, GlobisImportState state) {
+		zooName.setCombinationAuthorTeam(getExistingAuthor(zooName.getCombinationAuthorTeam(), state));
+		zooName.setExCombinationAuthorTeam(getExistingAuthor(zooName.getExCombinationAuthorTeam(), state));
+		zooName.setBasionymAuthorTeam(getExistingAuthor(zooName.getBasionymAuthorTeam(), state));
+		zooName.setExBasionymAuthorTeam(getExistingAuthor(zooName.getExBasionymAuthorTeam(), state));
+	}
+
+	private INomenclaturalAuthor getExistingAuthor(INomenclaturalAuthor nomAuthor, GlobisImportState state) {
+		TeamOrPersonBase<?> author = (TeamOrPersonBase<?>)nomAuthor;
+		if (author == null){
+			return null;
+		}
+		if (author instanceof Person){
+			Person person = state.getPerson(author.getTitleCache());
+			return saveAndDecide(person, author, author.getTitleCache(), state);
+		}else if (author instanceof Team){
+			String key = GlobisAuthorImport.makeTeamKey((Team)author, state, getAgentService());
+			Team existingTeam = state.getTeam(key);
+			if (existingTeam == null){
+				Team newTeam = Team.NewInstance();
+				for (Person member :((Team) author).getTeamMembers()){
+					Person existingPerson = state.getPerson(member.getTitleCache());
+					if (existingPerson != null){
+						newTeam.addTeamMember(existingPerson);
+					}else{
+						newTeam.addTeamMember(member);
+					}	
+				}
+				author = newTeam;
+			}
+			
+			return saveAndDecide(existingTeam, author, key, state);
+		}else{
+			logger.warn("Author type not supported: " + author.getClass().getName());
+			return author;
+		}
+	}
+
+	private TeamOrPersonBase<?> saveAndDecide(TeamOrPersonBase<?> existing, TeamOrPersonBase<?> author, String key, GlobisImportState state) {
+		if (existing != null){
+			getAgentService().update(existing);
+			return existing;
+		}else{
+			getAgentService().save(author);
+			if (author instanceof Team){
+				state.putTeam(key, (Team)author);
+			}else{
+				state.putPerson(key, (Person)author);
+			}
+			return author;
+		}
+	}
 
 	/**
 	 * @param state

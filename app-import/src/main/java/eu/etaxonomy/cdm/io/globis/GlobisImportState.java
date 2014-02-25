@@ -16,6 +16,8 @@ import java.util.Map;
 import org.apache.log4j.Logger;
 
 import eu.etaxonomy.cdm.io.common.DbImportStateBase;
+import eu.etaxonomy.cdm.model.agent.Person;
+import eu.etaxonomy.cdm.model.agent.Team;
 import eu.etaxonomy.cdm.model.common.DefinedTermBase;
 import eu.etaxonomy.cdm.model.common.MarkerType;
 import eu.etaxonomy.cdm.model.common.User;
@@ -30,15 +32,18 @@ public class GlobisImportState extends DbImportStateBase<GlobisImportConfigurato
 	@SuppressWarnings("unused")
 	private static final Logger logger = Logger.getLogger(GlobisImportState.class);
 
-	Map<String, DefinedTermBase> dbCdmDefTermMap = new HashMap<String, DefinedTermBase>();
+	private Map<String, DefinedTermBase> dbCdmDefTermMap = new HashMap<String, DefinedTermBase>();
 	
-	Map<String, User> usernameMap = new HashMap<String, User>();
+	private Map<String, User> usernameMap = new HashMap<String, User>();
 	
 	private Map<Integer, Map<Integer,Rank>> rankMap;
+
+	private Map<String, Person> personMap = new HashMap<String, Person>();
 	
-	/* (non-Javadoc)
-	 * @see eu.etaxonomy.cdm.io.common.IoStateBase#initialize(eu.etaxonomy.cdm.io.common.IoConfiguratorBase)
-	 */
+	private Map<String, Team> teamMap = new HashMap<String, Team>();
+	
+	
+	
 	@Override
 	public void initialize(GlobisImportConfigurator config) {
 //		super(config);
@@ -107,5 +112,23 @@ public class GlobisImportState extends DbImportStateBase<GlobisImportConfigurato
 		return result;
 	}
 
-    
+	public void putPerson(String str, Person person){
+		personMap.put(str, person);
+	}
+	
+
+	public Person getPerson(String str){
+		return personMap.get(str);
+	}
+
+
+	public void putTeam(String str, Team team){
+		teamMap.put(str, team);
+	}
+	
+
+	public Team getTeam(String str){
+		return teamMap.get(str);
+	}
+	
 }

@@ -39,6 +39,8 @@ public class GlobisImportConfigurator extends DbImportConfiguratorBase<GlobisImp
 	//TODO needed ??
 	private Method userTransformationMethod;
 	
+	
+	private boolean doAuthors = true;
 	private boolean doImages = true;
 	private boolean doCurrentTaxa = true;
 	private boolean doSpecTaxa = true;
@@ -54,7 +56,7 @@ public class GlobisImportConfigurator extends DbImportConfiguratorBase<GlobisImp
 	
 	protected void makeIoClassList(){
 		ioClassList = new Class[]{
-				//ErmsGeneralImportValidator.class
+				 GlobisAuthorImport.class,
 				 GlobisReferenceImport.class
 	//			, ErmsReferenceImport.class
 				, GlobisCurrentSpeciesImport.class
@@ -160,6 +162,16 @@ public class GlobisImportConfigurator extends DbImportConfiguratorBase<GlobisImp
 
 	public boolean isDoReadMediaData() {
 		return doReadMediaData;
+	}
+
+
+	public boolean isDoAuthors() {
+		return doAuthors;
+	}
+
+
+	public void setDoAuthors(boolean doAuthors) {
+		this.doAuthors = doAuthors;
 	}
 
 }

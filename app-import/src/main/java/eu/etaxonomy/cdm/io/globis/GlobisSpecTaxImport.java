@@ -693,7 +693,7 @@ public class GlobisSpecTaxImport  extends GlobisImportBase<Reference<?>> impleme
 		String authorStr = rs.getString("SpecAuthor");
 		String yearStr = rs.getString("SpecYear");
 		String authorAndYearStr = CdmUtils.concat(", ", authorStr, yearStr);
-		handleAuthorAndYear(authorAndYearStr, name, specTaxId);
+		handleAuthorAndYear(authorAndYearStr, name, specTaxId, state);
 		
 		return name;
 	}

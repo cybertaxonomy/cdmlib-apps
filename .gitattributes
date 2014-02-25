@@ -197,6 +197,7 @@ app-import/src/main/java/eu/etaxonomy/cdm/io/cyprus/CyprusImportState.java -text
 app-import/src/main/java/eu/etaxonomy/cdm/io/cyprus/CyprusRow.java -text
 app-import/src/main/java/eu/etaxonomy/cdm/io/cyprus/CyprusTransformer.java -text
 app-import/src/main/java/eu/etaxonomy/cdm/io/cyprus/CyprusUserImport.java -text
+app-import/src/main/java/eu/etaxonomy/cdm/io/globis/GlobisAuthorImport.java -text
 app-import/src/main/java/eu/etaxonomy/cdm/io/globis/GlobisCommonNameImport.java -text
 app-import/src/main/java/eu/etaxonomy/cdm/io/globis/GlobisCurrentSpeciesImport.java -text
 app-import/src/main/java/eu/etaxonomy/cdm/io/globis/GlobisImageImport.java -text
