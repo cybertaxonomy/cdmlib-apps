@@ -73,27 +73,32 @@ public class GlobisActivator {
 	
 // ***************** ALL ************************************************//
 	
-//	//references
-	static final DO_REFERENCES doReferences =  DO_REFERENCES.ALL;
-	
-	//taxa
-	static final boolean doCurrentTaxa = true;
-	static final boolean doSpecTaxa = true;
-	static final boolean doImages = true;
-	static final boolean doCommonNames = true;
+//	//authors
+//	static final boolean doAuthors = true;
+//	
+////	//references
+//	static final DO_REFERENCES doReferences =  DO_REFERENCES.ALL;
+//	
+//	//taxa
+//	static final boolean doCurrentTaxa = true;
+//	static final boolean doSpecTaxa = true;
+//	static final boolean doImages = true;
+//	static final boolean doCommonNames = true;
 	
 	
 //******************** NONE ***************************************//
 	
+	//authors
+	static final boolean doAuthors = true;
 
 	//references
-//	static final DO_REFERENCES doReferences =  DO_REFERENCES.ALL;
-//	
-//	//taxa
-//	static final boolean doCurrentTaxa = false;
-//	static final boolean doSpecTaxa = false;
-//	static final boolean doImages = false;
-//	static final boolean doCommonNames = false;
+	static final DO_REFERENCES doReferences =  DO_REFERENCES.ALL;
+	
+	//taxa
+	static final boolean doCurrentTaxa = true;
+	static final boolean doSpecTaxa = false;
+	static final boolean doImages = false;
+	static final boolean doCommonNames = false;
 
 //	
 	
@@ -116,6 +121,7 @@ public class GlobisActivator {
 		config.setIgnoreNull(ignoreNull);
 		config.setDoReadMediaData(doReadMediaData);
 		config.setDoReferences(doReferences);
+		config.setDoAuthors(doAuthors);
 		
 		config.setDoCurrentTaxa(doCurrentTaxa);
 		config.setDoSpecTaxa(doSpecTaxa);
