@@ -11,11 +11,14 @@
 package eu.etaxonomy.cdm.io.globis;
 
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 
 import org.apache.log4j.Logger;
 
 import eu.etaxonomy.cdm.io.common.DbImportStateBase;
+import eu.etaxonomy.cdm.model.agent.AgentBase;
 import eu.etaxonomy.cdm.model.agent.Person;
 import eu.etaxonomy.cdm.model.agent.Team;
 import eu.etaxonomy.cdm.model.common.DefinedTermBase;
@@ -129,6 +132,13 @@ public class GlobisImportState extends DbImportStateBase<GlobisImportConfigurato
 
 	public Team getTeam(String str){
 		return teamMap.get(str);
+	}
+	
+	public Set<AgentBase> getAgents(){
+		Set<AgentBase> result = new HashSet<AgentBase>();
+		result.addAll(personMap.values());
+		result.addAll(teamMap.values());
+		return result;
 	}
 	
 }

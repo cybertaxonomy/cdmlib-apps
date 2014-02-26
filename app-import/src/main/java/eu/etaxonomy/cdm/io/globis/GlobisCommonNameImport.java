@@ -86,7 +86,6 @@ public class GlobisCommonNameImport  extends GlobisImportBase<Taxon> {
 		Set<TaxonBase> objectsToSave = new HashSet<TaxonBase>();
 		
 		Map<String, Taxon> taxonMap = (Map<String, Taxon>) partitioner.getObjectMap(TAXON_NAMESPACE);
-//		Map<String, DerivedUnit> ecoFactDerivedUnitMap = (Map<String, DerivedUnit>) partitioner.getObjectMap(ECO_FACT_DERIVED_UNIT_NAMESPACE);
 		
 		ResultSet rs = partitioner.getResultSet();
 
@@ -150,8 +149,6 @@ public class GlobisCommonNameImport  extends GlobisImportBase<Taxon> {
                 
             }
            
-//            logger.warn("Specimen: " + countSpecimen + ", Descriptions: " + countDescriptions );
-
 			logger.warn(pluralString + " to save: " + objectsToSave.size());
 			getTaxonService().save(objectsToSave);	
 			
@@ -227,7 +224,7 @@ public class GlobisCommonNameImport  extends GlobisImportBase<Taxon> {
 	}
 
 	@Override
-	public Map<Object, Map<String, ? extends CdmBase>> getRelatedObjectsForPartition(ResultSet rs) {
+	public Map<Object, Map<String, ? extends CdmBase>> getRelatedObjectsForPartition(ResultSet rs, GlobisImportState state) {
 		String nameSpace;
 		Class<?> cdmClass;
 		Set<String> idSet;

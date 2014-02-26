@@ -143,7 +143,7 @@ public class BerlinModelUserImport extends BerlinModelImportBase {
 	}
 
 	@Override
-	public Map<Object, Map<String, ? extends CdmBase>> getRelatedObjectsForPartition(ResultSet rs) {
+	public Map<Object, Map<String, ? extends CdmBase>> getRelatedObjectsForPartition(ResultSet rs, BerlinModelImportState state) {
 		return null; //not needed at the moment
 	}
 

@@ -120,7 +120,7 @@ public class BerlinModelWebMarkerImport extends BerlinModelImportBase {
 	}
 		
 	@Override
-	public Map<Object, Map<String, ? extends CdmBase>> getRelatedObjectsForPartition(ResultSet rs) {
+	public Map<Object, Map<String, ? extends CdmBase>> getRelatedObjectsForPartition(ResultSet rs, BerlinModelImportState state) {
 		String nameSpace;
 		Class<?> cdmClass;
 		Set<String> idSet;

@@ -404,11 +404,8 @@ public class GlobisCurrentSpeciesImport  extends GlobisImportBase<Taxon> {
 
 
 
-
-	/* (non-Javadoc)
-	 * @see eu.etaxonomy.cdm.io.berlinModel.in.IPartitionedIO#getRelatedObjectsForPartition(java.sql.ResultSet)
-	 */
-	public Map<Object, Map<String, ? extends CdmBase>> getRelatedObjectsForPartition(ResultSet rs) {
+	@Override
+	public Map<Object, Map<String, ? extends CdmBase>> getRelatedObjectsForPartition(ResultSet rs, GlobisImportState state) {
 		String nameSpace;
 		Class cdmClass;
 		Set<String> idSet;

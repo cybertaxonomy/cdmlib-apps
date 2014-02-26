@@ -77,15 +77,13 @@ public class GlobisAuthorImport  extends GlobisImportBase<TeamOrPersonBase<?>> i
 
 
 	@Override
-	public Map<Object, Map<String, ? extends CdmBase>> getRelatedObjectsForPartition(
-			ResultSet rs) {
+	public Map<Object, Map<String, ? extends CdmBase>> getRelatedObjectsForPartition( ResultSet rs, GlobisImportState state) {
 		//not required here
 		return null;
 	}
 
 	@Override
-	public TeamOrPersonBase<?> createObject(ResultSet rs,
-			GlobisImportState state) throws SQLException {
+	public TeamOrPersonBase<?> createObject(ResultSet rs, GlobisImportState state) throws SQLException {
 		//not required here
 		return null;
 	}

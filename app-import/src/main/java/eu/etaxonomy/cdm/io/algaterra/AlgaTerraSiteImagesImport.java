@@ -33,7 +33,6 @@ import eu.etaxonomy.cdm.model.occurrence.SpecimenOrObservationBase;
 /**
  * @author a.mueller
  * @created 20.03.2008
- * @version 1.0
  */
 @Component
 public class AlgaTerraSiteImagesImport  extends AlgaTerraImageImportBase {
@@ -149,11 +148,9 @@ public class AlgaTerraSiteImagesImport  extends AlgaTerraImageImportBase {
 		
 	}
 
-	
-	/* (non-Javadoc)
-	 * @see eu.etaxonomy.cdm.io.berlinModel.in.IPartitionedIO#getRelatedObjectsForPartition(java.sql.ResultSet)
-	 */
-	public Map<Object, Map<String, ? extends CdmBase>> getRelatedObjectsForPartition(ResultSet rs) {
+
+	@Override
+	public Map<Object, Map<String, ? extends CdmBase>> getRelatedObjectsForPartition(ResultSet rs, BerlinModelImportState state) {
 		String nameSpace;
 		Class<?> cdmClass;
 		Set<String> idSet;
@@ -180,18 +177,13 @@ public class AlgaTerraSiteImagesImport  extends AlgaTerraImageImportBase {
 		return result;
 	}
 
-	/* (non-Javadoc)
-	 * @see eu.etaxonomy.cdm.io.common.CdmIoBase#doCheck(eu.etaxonomy.cdm.io.common.IoStateBase)
-	 */
 	@Override
 	protected boolean doCheck(BerlinModelImportState state){
 		IOValidator<BerlinModelImportState> validator = new AlgaTerraTypeImportValidator();
 		return validator.validate(state);
 	}
 
-	/* (non-Javadoc)
-	 * @see eu.etaxonomy.cdm.io.common.CdmIoBase#isIgnore(eu.etaxonomy.cdm.io.common.IImportConfigurator)
-	 */
+	@Override
 	protected boolean isIgnore(BerlinModelImportState bmState){
 		AlgaTerraImportConfigurator config = ((AlgaTerraImportState) bmState).getAlgaTerraConfigurator();
 		return !  ( config.isDoEcoFacts() && config.isDoImages()) ;

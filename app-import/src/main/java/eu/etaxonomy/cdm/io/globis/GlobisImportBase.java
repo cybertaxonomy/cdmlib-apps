@@ -19,6 +19,7 @@ import java.util.UUID;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
+import org.hibernate.NonUniqueObjectException;
 import org.joda.time.DateTime;
 
 import eu.etaxonomy.cdm.api.service.AgentServiceImpl;
@@ -169,7 +170,18 @@ public abstract class GlobisImportBase<CDM_BASE extends CdmBase> extends CdmImpo
 				for (Person member :((Team) author).getTeamMembers()){
 					Person existingPerson = state.getPerson(member.getTitleCache());
 					if (existingPerson != null){
+						try {
+							getAgentService().update(existingPerson);
+						} catch (NonUniqueObjectException nuoe){
+							// person already exists in 
+							existingPerson = CdmBase.deproxy(getAgentService().find(existingPerson.getUuid()), Person.class);
+							state.putPerson(existingPerson.getTitleCache(), existingPerson);
+						} catch (Exception e) {
+							throw new RuntimeException (e);
+						}
 						newTeam.addTeamMember(existingPerson);
+						
+						logger.warn("newTeam " + newTeam.getId());
 					}else{
 						newTeam.addTeamMember(member);
 					}	
@@ -186,16 +198,33 @@ public abstract class GlobisImportBase<CDM_BASE extends CdmBase> extends CdmImpo
 
 	private TeamOrPersonBase<?> saveAndDecide(TeamOrPersonBase<?> existing, TeamOrPersonBase<?> author, String key, GlobisImportState state) {
 		if (existing != null){
-			getAgentService().update(existing);
+			try {
+				getAgentService().update(existing);
+			} catch (NonUniqueObjectException nuoe){
+				// person already exists in 
+				existing = CdmBase.deproxy(getAgentService().find(existing.getUuid()), TeamOrPersonBase.class);
+				putAgent(existing, key, state);
+			} catch (Exception e) {
+				throw new RuntimeException (e);
+			}
 			return existing;
 		}else{
 			getAgentService().save(author);
-			if (author instanceof Team){
-				state.putTeam(key, (Team)author);
-			}else{
-				state.putPerson(key, (Person)author);
-			}
+			putAgent(author, key, state);
 			return author;
+		}
+	}
+
+	/**
+	 * @param author
+	 * @param key
+	 * @param state
+	 */
+	private void putAgent(TeamOrPersonBase<?> agent, String key, GlobisImportState state) {
+		if (agent instanceof Team){
+			state.putTeam(key, (Team)agent);
+		}else{
+			state.putPerson(key, (Person)agent);
 		}
 	}
 

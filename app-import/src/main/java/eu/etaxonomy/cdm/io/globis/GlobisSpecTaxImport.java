@@ -30,6 +30,7 @@ import eu.etaxonomy.cdm.io.common.ResultSetPartitioner;
 import eu.etaxonomy.cdm.io.common.mapping.IMappingImport;
 import eu.etaxonomy.cdm.io.common.mapping.UndefinedTransformerMethodException;
 import eu.etaxonomy.cdm.io.globis.validation.GlobisSpecTaxaImportValidator;
+import eu.etaxonomy.cdm.model.agent.AgentBase;
 import eu.etaxonomy.cdm.model.common.CdmBase;
 import eu.etaxonomy.cdm.model.common.ExtensionType;
 import eu.etaxonomy.cdm.model.common.IdentifiableSource;
@@ -77,12 +78,6 @@ public class GlobisSpecTaxImport  extends GlobisImportBase<Reference<?>> impleme
 		super(pluralString, dbTableName, cdmTargetClass);
 	}
 
-
-	
-	
-	/* (non-Javadoc)
-	 * @see eu.etaxonomy.cdm.io.globis.GlobisImportBase#getIdQuery()
-	 */
 	@Override
 	protected String getIdQuery() {
 		String strRecordQuery = 
@@ -91,12 +86,6 @@ public class GlobisSpecTaxImport  extends GlobisImportBase<Reference<?>> impleme
 		return strRecordQuery;	
 	}
 
-
-
-
-	/* (non-Javadoc)
-	 * @see eu.etaxonomy.cdm.io.berlinModel.in.BerlinModelImportBase#getRecordQuery(eu.etaxonomy.cdm.io.berlinModel.in.BerlinModelImportConfigurator)
-	 */
 	@Override
 	protected String getRecordQuery(GlobisImportConfigurator config) {
 		String strRecordQuery = 
@@ -107,7 +96,6 @@ public class GlobisSpecTaxImport  extends GlobisImportBase<Reference<?>> impleme
 		return strRecordQuery;
 	}
 	
-
 
 	@Override
 	public boolean doPartition(ResultSetPartitioner partitioner, GlobisImportState state) {
@@ -120,7 +108,7 @@ public class GlobisSpecTaxImport  extends GlobisImportBase<Reference<?>> impleme
 		Map<String, Reference> referenceMap = (Map<String, Reference>) partitioner.getObjectMap(REFERENCE_NAMESPACE);
 		
 		ResultSet rs = partitioner.getResultSet();
-
+		
 		try {
 			
 			int i = 0;
@@ -173,16 +161,20 @@ public class GlobisSpecTaxImport  extends GlobisImportBase<Reference<?>> impleme
 						if (name == null){
 							name = makeName(state, rs, specTaxId);
 						}
+						
 						thisTaxon = Taxon.NewInstance(name, sourceRef);
 						objectsToSave.add(thisTaxon);
 					}
+					if (name == null){
+						throw new RuntimeException("Name is still null");
+					}
 					
-					handleNomRef(state, referenceMap, rs, name);
+					handleNomRef(state, referenceMap, rs, name, specTaxId);
 				
 					handleTypeInformation(state,rs, name, specTaxId);
 				
 				
-//						this.doIdCreatedUpdatedNotes(state, ref, rs, refId, REFERENCE_NAMESPACE);
+//					this.doIdCreatedUpdatedNotes(state, ref, rs, refId, REFERENCE_NAMESPACE);
 				
 					if (acceptedTaxon != null){
 						objectsToSave.add(acceptedTaxon); 
@@ -466,7 +458,7 @@ public class GlobisSpecTaxImport  extends GlobisImportBase<Reference<?>> impleme
 					state.addRelatedObject(COLLECTION_NAMESPACE, collection.getCode(), collection);
 						
 				}else if (! CdmUtils.nullSafeEqual(location, collection.getTownOrLocation())){
-					String message = "Location (%s) is not equal to location (%s) of existing collection";
+					String message = "Location (%s) is not equal to location (%s) of existing collection, specTaxId: " + specTaxId;
 					logger.warn(String.format(message, location, collection.getTownOrLocation(), collection.getCode()));
 				}
 				
@@ -606,18 +598,19 @@ public class GlobisSpecTaxImport  extends GlobisImportBase<Reference<?>> impleme
 	 * @param referenceMap
 	 * @param rs
 	 * @param name
+	 * @param specTaxId 
 	 * @return
 	 * @throws SQLException
 	 */
 	private Reference<?> handleNomRef(GlobisImportState state, Map<String, Reference> referenceMap, ResultSet rs,
-			ZoologicalName name) throws SQLException {
+			ZoologicalName name, Integer specTaxId) throws SQLException {
 		//ref
 		Integer refId = nullSafeInt(rs, "fiSpecRefID");
 		Reference<?> nomRef = null;
 		if (refId != null){
 			nomRef = referenceMap.get(String.valueOf(refId));
 			if (nomRef == null && state.getConfig().getDoReferences().equals(state.getConfig().getDoReferences().ALL)){
-				logger.warn("Reference " + refId + " could not be found.");
+				logger.warn("Reference " + refId + " could not be found. SpecTaxId: " + specTaxId);
 			}else if (nomRef != null){
 				name.setNomenclaturalReference(nomRef);
 			}
@@ -636,7 +629,7 @@ public class GlobisSpecTaxImport  extends GlobisImportBase<Reference<?>> impleme
 	
 	private void validateAcceptedTaxon(Taxon acceptedTaxon, ResultSet rs, Integer specTaxId, Integer acceptedTaxonId) throws SQLException {
 		if (acceptedTaxon == null){
-			logger.warn("Accepted taxon is null for taxon taxon to validate: ");
+			logger.warn("Accepted taxon is null for taxon taxon to validate. SpecTaxId " + specTaxId + ", accTaxonId: " + acceptedTaxonId);
 			return;
 		}
 		
@@ -645,7 +638,7 @@ public class GlobisSpecTaxImport  extends GlobisImportBase<Reference<?>> impleme
 		
 		String specName = rs.getString("SpecName");
 		if (! name.getSpecificEpithet().equals(specName)){
-			logger.warn(String.format("Species epithet is not equal for accepted taxon: %s - %s", name.getSpecificEpithet(), specName));
+			logger.warn(String.format("Species epithet is not equal for accepted taxon: %s - %s. SpecTaxId: %d", name.getSpecificEpithet(), specName, specTaxId));
 		}
 		//TODO
 	}
@@ -725,14 +718,15 @@ public class GlobisSpecTaxImport  extends GlobisImportBase<Reference<?>> impleme
 		name.setNameCache(cache, true);
 	}
 
-
-	/* (non-Javadoc)
-	 * @see eu.etaxonomy.cdm.io.berlinModel.in.IPartitionedIO#getRelatedObjectsForPartition(java.sql.ResultSet)
-	 */
-	public Map<Object, Map<String, ? extends CdmBase>> getRelatedObjectsForPartition(ResultSet rs) {
+	@Override
+	public Map<Object, Map<String, ? extends CdmBase>> getRelatedObjectsForPartition(ResultSet rs, GlobisImportState state) {
 		String nameSpace;
-		Class cdmClass;
+		Class<?> cdmClass;
 		Set<String> idSet;
+		
+		Set<AgentBase> agents = state.getAgents();
+		getAgentService().saveOrUpdate(agents);
+		
 		Map<Object, Map<String, ? extends CdmBase>> result = new HashMap<Object, Map<String, ? extends CdmBase>>();
 		try{
 			Set<String> taxonIdSet = new HashSet<String>();

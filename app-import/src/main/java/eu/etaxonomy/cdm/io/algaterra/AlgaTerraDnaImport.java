@@ -364,7 +364,7 @@ public class AlgaTerraDnaImport  extends AlgaTerraSpecimenImportBase {
 	}
 
 	@Override
-	public Map<Object, Map<String, ? extends CdmBase>> getRelatedObjectsForPartition(ResultSet rs) {
+	public Map<Object, Map<String, ? extends CdmBase>> getRelatedObjectsForPartition(ResultSet rs, BerlinModelImportState state) {
 		String nameSpace;
 		Class<?> cdmClass;
 		Set<String> idSet;
@@ -408,10 +408,7 @@ public class AlgaTerraDnaImport  extends AlgaTerraSpecimenImportBase {
 		return validator.validate(state);
 	}
 
-
-	/* (non-Javadoc)
-	 * @see eu.etaxonomy.cdm.io.common.CdmIoBase#isIgnore(eu.etaxonomy.cdm.io.common.IImportConfigurator)
-	 */
+	@Override
 	protected boolean isIgnore(BerlinModelImportState state){
 		return ! ((AlgaTerraImportState)state).getAlgaTerraConfigurator().isDoDna();
 	}

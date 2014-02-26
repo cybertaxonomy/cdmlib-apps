@@ -42,11 +42,9 @@ import eu.etaxonomy.cdm.model.occurrence.FieldUnit;
 import eu.etaxonomy.cdm.model.occurrence.SpecimenOrObservationType;
 import eu.etaxonomy.cdm.model.reference.Reference;
 
-
 /**
  * @author a.mueller
  * @created 20.03.2008
- * @version 1.0
  */
 @Component
 public class AlgaTerraTypeImport  extends AlgaTerraSpecimenImportBase {
@@ -357,12 +355,10 @@ public class AlgaTerraTypeImport  extends AlgaTerraSpecimenImportBase {
 	}
 
 	
-	/* (non-Javadoc)
-	 * @see eu.etaxonomy.cdm.io.berlinModel.in.IPartitionedIO#getRelatedObjectsForPartition(java.sql.ResultSet)
-	 */
-	public Map<Object, Map<String, ? extends CdmBase>> getRelatedObjectsForPartition(ResultSet rs) {
+	@Override
+	public Map<Object, Map<String, ? extends CdmBase>> getRelatedObjectsForPartition(ResultSet rs, BerlinModelImportState state) {
 		String nameSpace;
-		Class cdmClass;
+		Class<?> cdmClass;
 		Set<String> idSet;
 		Map<Object, Map<String, ? extends CdmBase>> result = new HashMap<Object, Map<String, ? extends CdmBase>>();
 		
@@ -370,7 +366,7 @@ public class AlgaTerraTypeImport  extends AlgaTerraSpecimenImportBase {
 			Set<String> nameIdSet = new HashSet<String>();
 			Set<String> ecoFieldObservationIdSet = new HashSet<String>();
 			Set<String> typeSpecimenIdSet = new HashSet<String>();
-			Set<String> termsIdSet = new HashSet<String>();
+//			Set<String> termsIdSet = new HashSet<String>();
 			Set<String> collectionIdSet = new HashSet<String>();
 			Set<String> referenceIdSet = new HashSet<String>();
 			
