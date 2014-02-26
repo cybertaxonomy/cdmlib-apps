@@ -33,19 +33,18 @@ import eu.etaxonomy.cdm.model.reference.ReferenceFactory;
 /**
  * @author a.mueller
  * @created 20.02.2010
- * @version 1.0
  */
 @Component
 public class CentralAfricaFernsReferenceImport  extends CentralAfricaFernsImportBase<Reference> implements IMappingImport<Reference, CentralAfricaFernsImportState>{
 	private static final Logger logger = Logger.getLogger(CentralAfricaFernsReferenceImport.class);
 	
-	private DbImportMapping mapping;
+	private DbImportMapping<?,?> mapping;
 	
 	
-	private int modCount = 10000;
+//	private int modCount = 10000;
 	private static final String pluralString = "references";
 	private static final String dbTableName = "literature";
-	private static final Class cdmTargetClass = Reference.class;
+	private static final Class<?> cdmTargetClass = Reference.class;
 
 	public CentralAfricaFernsReferenceImport(){
 		super(pluralString, dbTableName, cdmTargetClass);
@@ -154,27 +153,20 @@ public class CentralAfricaFernsReferenceImport  extends CentralAfricaFernsImport
 		return ref;
 	}
 
-	/* (non-Javadoc)
-	 * @see eu.etaxonomy.cdm.io.berlinModel.in.IPartitionedIO#getRelatedObjectsForPartition(java.sql.ResultSet)
-	 */
-	public Map<Object, Map<String, ? extends CdmBase>> getRelatedObjectsForPartition(ResultSet rs) {
+
+	@Override
+	public Map<Object, Map<String, ? extends CdmBase>> getRelatedObjectsForPartition(ResultSet rs, CentralAfricaFernsImportState state) {
 		Map<Object, Map<String, ? extends CdmBase>> result = new HashMap<Object, Map<String, ? extends CdmBase>>();
 		return result;  //not needed
 	}
 	
-	/* (non-Javadoc)
-	 * @see eu.etaxonomy.cdm.io.common.CdmIoBase#doCheck(eu.etaxonomy.cdm.io.common.IImportConfigurator)
-	 */
 	@Override
 	protected boolean doCheck(CentralAfricaFernsImportState state){
 		IOValidator<CentralAfricaFernsImportState> validator = new CentralAfricaFernsReferenceImportValidator();
 		return validator.validate(state);
 	}
 	
-	
-	/* (non-Javadoc)
-	 * @see eu.etaxonomy.cdm.io.common.CdmIoBase#isIgnore(eu.etaxonomy.cdm.io.common.IImportConfigurator)
-	 */
+	@Override
 	protected boolean isIgnore(CentralAfricaFernsImportState state){
 		//TODO
 		return state.getConfig().getDoReferences() != IImportConfigurator.DO_REFERENCES.ALL;

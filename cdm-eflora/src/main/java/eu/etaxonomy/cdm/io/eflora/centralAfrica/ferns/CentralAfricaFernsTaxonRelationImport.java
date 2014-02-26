@@ -44,10 +44,10 @@ import eu.etaxonomy.cdm.model.description.PresenceAbsenceTermBase;
 import eu.etaxonomy.cdm.model.description.PresenceTerm;
 import eu.etaxonomy.cdm.model.description.TaxonDescription;
 import eu.etaxonomy.cdm.model.description.TextData;
+import eu.etaxonomy.cdm.model.location.Country;
 import eu.etaxonomy.cdm.model.location.NamedArea;
 import eu.etaxonomy.cdm.model.location.NamedAreaLevel;
 import eu.etaxonomy.cdm.model.location.NamedAreaType;
-import eu.etaxonomy.cdm.model.location.Country;
 import eu.etaxonomy.cdm.model.name.BotanicalName;
 import eu.etaxonomy.cdm.model.name.NonViralName;
 import eu.etaxonomy.cdm.model.name.Rank;
@@ -86,22 +86,14 @@ public class CentralAfricaFernsTaxonRelationImport  extends CentralAfricaFernsIm
 	public CentralAfricaFernsTaxonRelationImport(){
 		super(pluralString, dbTableName, cdmTargetClass);
 	}
-	
-	
 
-	/* (non-Javadoc)
-	 * @see eu.etaxonomy.cdm.io.erms.ErmsImportBase#getIdQuery()
-	 */
+	
 	@Override
 	protected String getIdQuery() {
 		String strQuery = " SELECT [Taxon number] FROM " + dbTableName;;
 		return strQuery;
 	}
 
-
-	/* (non-Javadoc)
-	 * @see eu.etaxonomy.cdm.io.eflora.centralAfrica.ferns.CentralAfricaFernsImportBase#getMapping()
-	 */
 	@Override
 	protected DbImportMapping<?,?> getMapping() {
 		if (mapping == null){
@@ -161,10 +153,9 @@ public class CentralAfricaFernsTaxonRelationImport  extends CentralAfricaFernsIm
 		}
 	}
 
-	/* (non-Javadoc)
-	 * @see eu.etaxonomy.cdm.io.common.IPartitionedIO#getRelatedObjectsForPartition(java.sql.ResultSet)
-	 */
-	public Map<Object, Map<String, ? extends CdmBase>> getRelatedObjectsForPartition(ResultSet rs) {
+
+	@Override
+	public Map<Object, Map<String, ? extends CdmBase>> getRelatedObjectsForPartition(ResultSet rs, CentralAfricaFernsImportState state) {
 		String nameSpace;
 		Class<?> cdmClass;
 		Set<String> idSet;

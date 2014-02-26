@@ -59,13 +59,12 @@ public class CentralAfricaEricaceaeActivator {
 	static DbSchemaValidation hbm2dll = DbSchemaValidation.VALIDATE;
 	static final URI source = EfloraSources.ericacea_local();
 	
-	static final URI specimenSource = EfloraSources.ericacea_specimen_local();
+	static final URI specimenSource = EfloraSources.vittaria_specimen_pesiimport3();
 
 	
-//	static final ICdmDataSource cdmDestination = CdmDestinations.cdm_test_andreasM3();
-//	static final ICdmDataSource cdmDestination = CdmDestinations.cdm_flora_central_africa_preview();
+	static final ICdmDataSource cdmDestination = CdmDestinations.cdm_flora_central_africa_preview();
 //	static final ICdmDataSource cdmDestination = CdmDestinations.cdm_flora_central_africa_production();
-	static final ICdmDataSource cdmDestination = CdmDestinations.localH2();
+//	static final ICdmDataSource cdmDestination = CdmDestinations.localH2();
 //	static final ICdmDataSource cdmDestination = CdmDestinations.cdm_local_postgres_CdmTest();
 //	static final ICdmDataSource cdmDestination = CdmDestinations.cdm_test_local_mysql();
 //	static final ICdmDataSource cdmDestination = CdmDestinations.cdm_test_jaxb();
@@ -86,22 +85,22 @@ public class CentralAfricaEricaceaeActivator {
 	static boolean doPrintKeys = false;
 	
 	//taxa
-	private boolean includeEricaceae = true;
-	static final boolean doTaxa = true;
+	private boolean includeEricaceae = false;
+	static final boolean doTaxa = false;
 	static final boolean doDeduplicate = false;
 
 	
 	private boolean doNewNamedAreas = false;
 	private boolean doFeatureTree = false;
 	
-	private boolean doSpecimen = false;
+	private boolean doSpecimen = true;
 	private TermMatchMode specimenAreaMatchMode = TermMatchMode.UUID_ABBREVLABEL;
 
 	
 	private void doImport(ICdmDataSource cdmDestination){
 		
-		CdmUpdater su = CdmUpdater.NewInstance();
-		IProgressMonitor monitor = DefaultProgressMonitor.NewInstance();
+//		CdmUpdater su = CdmUpdater.NewInstance();
+//		IProgressMonitor monitor = DefaultProgressMonitor.NewInstance();
 //		
 //		try {
 //			su.updateToCurrentVersion(cdmDestination, monitor);

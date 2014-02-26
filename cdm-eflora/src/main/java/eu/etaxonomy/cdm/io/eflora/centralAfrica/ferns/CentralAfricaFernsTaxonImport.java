@@ -70,7 +70,6 @@ import eu.etaxonomy.cdm.strategy.parser.TimePeriodParser;
 /**
  * @author a.mueller
  * @created 20.02.2010
- * @version 1.0
  */
 @Component
 public class CentralAfricaFernsTaxonImport  extends CentralAfricaFernsImportBase<TaxonBase> implements IMappingImport<TaxonBase, CentralAfricaFernsImportState>{
@@ -79,35 +78,27 @@ public class CentralAfricaFernsTaxonImport  extends CentralAfricaFernsImportBase
 	public static final UUID TNS_EXT_UUID = UUID.fromString("41cb0450-ac84-4d73-905e-9c7773c23b05");
 	
 	
-	private DbImportMapping mapping;
+	private DbImportMapping<?,?> mapping;
 	
 	//second path is not used anymore, there is now an ErmsTaxonRelationImport class instead
-	private boolean isSecondPath = false;
+//	private boolean isSecondPath = false;
 	
 	private static final String pluralString = "taxa";
 	private static final String dbTableName = "[African pteridophytes]";
-	private static final Class cdmTargetClass = TaxonBase.class;
+	private static final Class<?> cdmTargetClass = TaxonBase.class;
 
 	public CentralAfricaFernsTaxonImport(){
 		super(pluralString, dbTableName, cdmTargetClass);
 	}
 	
-	
 
-	/* (non-Javadoc)
-	 * @see eu.etaxonomy.cdm.io.eflora.centralAfrica.ferns.CentralAfricaFernsImportBase#getIdQuery()
-	 */
-	@Override
 	protected String getIdQuery() {
 		String strQuery = " SELECT [Taxon number] FROM " + dbTableName ;
 		return strQuery;
 	}
 
-
-	/* (non-Javadoc)
-	 * @see eu.etaxonomy.cdm.io.eflora.centralAfrica.ferns.CentralAfricaFernsImportBase#getMapping()
-	 */
-	protected DbImportMapping getMapping() {
+	@Override
+	protected DbImportMapping<?,?> getMapping() {
 		if (mapping == null){
 			mapping = new DbImportMapping();
 			
@@ -167,13 +158,11 @@ public class CentralAfricaFernsTaxonImport  extends CentralAfricaFernsImportBase
 	}
 
 
-	/* (non-Javadoc)
-	 * @see eu.etaxonomy.cdm.io.berlinModel.in.IPartitionedIO#getRelatedObjectsForPartition(java.sql.ResultSet)
-	 */
-	public Map<Object, Map<String, ? extends CdmBase>> getRelatedObjectsForPartition(ResultSet rs) {
-		String nameSpace;
-		Class cdmClass;
-		Set<String> idSet;
+	@Override
+	public Map<Object, Map<String, ? extends CdmBase>> getRelatedObjectsForPartition(ResultSet rs, CentralAfricaFernsImportState state) {
+//		String nameSpace;
+//		Class<?> cdmClass;
+//		Set<String> idSet;
 		Map<Object, Map<String, ? extends CdmBase>> result = new HashMap<Object, Map<String, ? extends CdmBase>>();
 		
 		try{

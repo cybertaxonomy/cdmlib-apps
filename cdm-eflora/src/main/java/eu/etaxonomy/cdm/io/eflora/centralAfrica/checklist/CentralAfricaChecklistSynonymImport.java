@@ -39,7 +39,6 @@ import eu.etaxonomy.cdm.strategy.parser.NonViralNameParserImpl;
 /**
  * @author a.mueller
  * @created 20.02.2010
- * @version 1.0
  */
 @Component
 public class CentralAfricaChecklistSynonymImport  extends CentralAfricaChecklistImportBase<TaxonBase> implements IMappingImport<TaxonBase, CentralAfricaChecklistImportState>{
@@ -48,15 +47,15 @@ public class CentralAfricaChecklistSynonymImport  extends CentralAfricaChecklist
 	private NonViralNameParserImpl parser = NonViralNameParserImpl.NewInstance();
 	
 	
-	private DbImportMapping mapping;
+	private DbImportMapping<?, ?> mapping;
 	
 	//second path is not used anymore, there is now an ErmsTaxonRelationImport class instead
-	private boolean isSecondPath = false;
+//	private boolean isSecondPath = false;
 	
-	private int modCount = 10000;
+//	private int modCount = 10000;
 	private static final String pluralString = "synonyms";
 	private static final String dbTableName = "synonyms";
-	private static final Class cdmTargetClass = TaxonBase.class;
+	private static final Class<?> cdmTargetClass = TaxonBase.class;
 	private static final String strOrderBy = "";
 
 	public CentralAfricaChecklistSynonymImport(){
@@ -101,13 +100,10 @@ public class CentralAfricaChecklistSynonymImport  extends CentralAfricaChecklist
 		return strRecordQuery;
 	}
 
-
-	/* (non-Javadoc)
-	 * @see eu.etaxonomy.cdm.io.berlinModel.in.IPartitionedIO#getRelatedObjectsForPartition(java.sql.ResultSet)
-	 */
-	public Map<Object, Map<String, ? extends CdmBase>> getRelatedObjectsForPartition(ResultSet rs) {
+	@Override
+	public Map<Object, Map<String, ? extends CdmBase>> getRelatedObjectsForPartition(ResultSet rs, CentralAfricaChecklistImportState state) {
 		String nameSpace;
-		Class cdmClass;
+		Class<?> cdmClass;
 		Set<String> idSet;
 		Map<Object, Map<String, ? extends CdmBase>> result = new HashMap<Object, Map<String, ? extends CdmBase>>();
 		
