@@ -32,7 +32,6 @@ import eu.etaxonomy.cdm.strategy.exceptions.UnknownCdmTypeException;
 /**
  * @author a.mueller
  * @created 01.03.2010
- * @version 1.0
  */
 @Component
 public class ErmsImportRankMap extends ErmsImportBase<Rank>{
@@ -48,10 +47,8 @@ public class ErmsImportRankMap extends ErmsImportBase<Rank>{
 		super(null, null, null);
 	}
 
-	
-	/* (non-Javadoc)
-	 * @see eu.etaxonomy.cdm.io.common.CdmIoBase#invoke(eu.etaxonomy.cdm.io.common.IoStateBase)
-	 */
+
+	@Override
 	public boolean invoke (ErmsImportState state){
 		rankMap = new HashMap<Integer, Map<Integer,Rank>>();
 		Source source = state.getConfig().getSource() ;
@@ -107,59 +104,39 @@ public class ErmsImportRankMap extends ErmsImportBase<Rank>{
 	}
 
 
-	/* (non-Javadoc)
-	 * @see eu.etaxonomy.cdm.io.common.CdmIoBase#doCheck(eu.etaxonomy.cdm.io.common.IoStateBase)
-	 */
 	@Override
 	protected boolean doCheck(ErmsImportState state) {
-		IOValidator rankImport = new ErmsRankImportValidator();
+		IOValidator<ErmsImportState> rankImport = new ErmsRankImportValidator();
 		return rankImport.validate(state);
 	}
 
 
-	/* (non-Javadoc)
-	 * @see eu.etaxonomy.cdm.io.erms.ErmsImportBase#getRecordQuery(eu.etaxonomy.cdm.io.erms.ErmsImportConfigurator)
-	 */
 	@Override
 	protected String getRecordQuery(ErmsImportConfigurator config) {
 		// TODO Auto-generated method stub
 		return null;
 	}
 
-	
-	/* (non-Javadoc)
-	 * @see eu.etaxonomy.cdm.io.common.CdmIoBase#isIgnore(eu.etaxonomy.cdm.io.common.IoStateBase)
-	 */
+
 	@Override
 	protected boolean isIgnore(ErmsImportState state) {
 		return false;  //should always be called
 	}
 
-
-	/* (non-Javadoc)
-	 * @see eu.etaxonomy.cdm.io.common.IPartitionedIO#getRelatedObjectsForPartition(java.sql.ResultSet)
-	 */
-	public Map<Object, Map<String, ? extends CdmBase>> getRelatedObjectsForPartition(ResultSet rs) {
+	@Override
+	public Map<Object, Map<String, ? extends CdmBase>> getRelatedObjectsForPartition(ResultSet rs, ErmsImportState state) {
 		return null;  // not needed
 	}
 
-	/* (non-Javadoc)
-	 * @see eu.etaxonomy.cdm.io.common.mapping.IMappingImport#createObject(java.sql.ResultSet, eu.etaxonomy.cdm.io.common.ImportStateBase)
-	 */
 	public Rank createObject(ResultSet rs, ErmsImportState state)
 			throws SQLException {
 		return null;  // not needed
 	}
 
 
-	/* (non-Javadoc)
-	 * @see eu.etaxonomy.cdm.io.erms.ErmsImportBase#getMapping()
-	 */
 	@Override
 	protected DbImportMapping<?, ?> getMapping() {
 		return null;  //not needed
 	}
-	
-	
 	
 }

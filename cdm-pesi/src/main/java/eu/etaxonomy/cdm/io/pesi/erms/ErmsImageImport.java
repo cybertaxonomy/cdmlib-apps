@@ -33,7 +33,6 @@ import eu.etaxonomy.cdm.model.taxon.TaxonBase;
 /**
  * @author a.mueller
  * @created 20.02.2010
- * @version 1.0
  */
 @Component
 public class ErmsImageImport  extends ErmsImportBase<TextData> {
@@ -51,10 +50,6 @@ public class ErmsImageImport  extends ErmsImportBase<TextData> {
 		super(pluralString, dbTableName, cdmTargetClass);
 	}
 
-
-	/* (non-Javadoc)
-	 * @see eu.etaxonomy.cdm.io.erms.ErmsImportBase#getIdQuery()
-	 */
 	@Override
 	protected String getIdQuery() {
 		String strIdQuery = 
@@ -65,9 +60,6 @@ public class ErmsImageImport  extends ErmsImportBase<TextData> {
 	}
 
 
-	/* (non-Javadoc)
-	 * @see eu.etaxonomy.cdm.io.berlinModel.in.BerlinModelImportBase#getRecordQuery(eu.etaxonomy.cdm.io.berlinModel.in.BerlinModelImportConfigurator)
-	 */
 	@Override
 	protected String getRecordQuery(ErmsImportConfigurator config) {
 		String strRecordQuery = 
@@ -78,9 +70,7 @@ public class ErmsImageImport  extends ErmsImportBase<TextData> {
 		return strRecordQuery;
 	}
 
-	/* (non-Javadoc)
-	 * @see eu.etaxonomy.cdm.io.erms.ErmsImportBase#getMapping()
-	 */
+	@Override
 	protected DbImportMapping<ErmsImportState, ErmsImportConfigurator> getMapping() {
 		if (mapping == null){
 			mapping = new DbImportMapping<ErmsImportState, ErmsImportConfigurator>();
@@ -93,10 +83,8 @@ public class ErmsImageImport  extends ErmsImportBase<TextData> {
 		return mapping;
 	}
 	
-	/* (non-Javadoc)
-	 * @see eu.etaxonomy.cdm.io.berlinModel.in.IPartitionedIO#getRelatedObjectsForPartition(java.sql.ResultSet)
-	 */
-	public Map<Object, Map<String, ? extends CdmBase>> getRelatedObjectsForPartition(ResultSet rs) {
+	@Override
+	public Map<Object, Map<String, ? extends CdmBase>> getRelatedObjectsForPartition(ResultSet rs, ErmsImportState state) {
 		String nameSpace;
 		Class<?> cdmClass;
 		Set<String> idSet;
@@ -124,9 +112,7 @@ public class ErmsImageImport  extends ErmsImportBase<TextData> {
 	@Override
 	protected int divideCountBy() { return devideCountBy;}
 	
-	/* (non-Javadoc)
-	 * @see eu.etaxonomy.cdm.io.common.CdmIoBase#doCheck(eu.etaxonomy.cdm.io.common.IImportConfigurator)
-	 */
+
 	@Override
 	protected boolean doCheck(ErmsImportState state){
 		IOValidator<ErmsImportState> validator = new ErmsImageImportValidator();
@@ -134,9 +120,7 @@ public class ErmsImageImport  extends ErmsImportBase<TextData> {
 	}
 
 	
-	/* (non-Javadoc)
-	 * @see eu.etaxonomy.cdm.io.common.CdmIoBase#isIgnore(eu.etaxonomy.cdm.io.common.IImportConfigurator)
-	 */
+	@Override
 	protected boolean isIgnore(ErmsImportState state){
 		return ! state.getConfig().isDoImages();
 	}

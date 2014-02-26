@@ -49,9 +49,6 @@ public class IndexFungorumHigherClassificationImport  extends IndexFungorumImpor
 	}
 
 
-	/* (non-Javadoc)
-	 * @see eu.etaxonomy.cdm.io.berlinModel.in.BerlinModelImportBase#getRecordQuery(eu.etaxonomy.cdm.io.berlinModel.in.BerlinModelImportConfigurator)
-	 */
 	@Override
 	protected String getRecordQuery(IndexFungorumImportConfigurator config) {
 		String strRecordQuery = 
@@ -99,7 +96,7 @@ public class IndexFungorumHigherClassificationImport  extends IndexFungorumImpor
 		
 		TransactionStatus tx = startTransaction();
 		ResultSet rsRelatedObjects = state.getConfig().getSource().getResultSet(sql);
-		state.setRelatedObjects((Map)getRelatedObjectsForPartition(rsRelatedObjects));
+		state.setRelatedObjects((Map)getRelatedObjectsForPartition(rsRelatedObjects, state));
 		
 		Classification classification = getClassification(state);
 		
@@ -257,12 +254,10 @@ public class IndexFungorumHigherClassificationImport  extends IndexFungorumImpor
 	}
 
 
-	/* (non-Javadoc)
-	 * @see eu.etaxonomy.cdm.io.berlinModel.in.IPartitionedIO#getRelatedObjectsForPartition(java.sql.ResultSet)
-	 */
-	public Map<Object, Map<String, ? extends CdmBase>> getRelatedObjectsForPartition(ResultSet rs) {
+	@Override
+	public Map<Object, Map<String, ? extends CdmBase>> getRelatedObjectsForPartition(ResultSet rs, IndexFungorumImportState state) {
 		String nameSpace;
-		Class cdmClass;
+		Class<?> cdmClass;
 		Set<String> idSet;
 		Map<Object, Map<String, ? extends CdmBase>> result = new HashMap<Object, Map<String, ? extends CdmBase>>();
 		
@@ -295,19 +290,12 @@ public class IndexFungorumHigherClassificationImport  extends IndexFungorumImpor
 		return result;
 	}
 	
-
-
-	/* (non-Javadoc)
-	 * @see eu.etaxonomy.cdm.io.common.CdmIoBase#doCheck(eu.etaxonomy.cdm.io.common.IImportConfigurator)
-	 */
 	@Override
 	protected boolean doCheck(IndexFungorumImportState state){
 		return true;
 	}
 	
-	/* (non-Javadoc)
-	 * @see eu.etaxonomy.cdm.io.common.CdmIoBase#isIgnore(eu.etaxonomy.cdm.io.common.IImportConfigurator)
-	 */
+	@Override
 	protected boolean isIgnore(IndexFungorumImportState state){
 		return ! state.getConfig().isDoRelTaxa();
 	}

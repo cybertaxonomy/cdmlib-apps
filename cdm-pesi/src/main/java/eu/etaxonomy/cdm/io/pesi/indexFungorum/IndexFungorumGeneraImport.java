@@ -155,12 +155,11 @@ public class IndexFungorumGeneraImport  extends IndexFungorumImportBase {
 		return parentName;
 	}
 
-	/* (non-Javadoc)
-	 * @see eu.etaxonomy.cdm.io.berlinModel.in.IPartitionedIO#getRelatedObjectsForPartition(java.sql.ResultSet)
-	 */
-	public Map<Object, Map<String, ? extends CdmBase>> getRelatedObjectsForPartition(ResultSet rs) {
+
+	@Override
+	public Map<Object, Map<String, ? extends CdmBase>> getRelatedObjectsForPartition(ResultSet rs, IndexFungorumImportState state) {
 		String nameSpace;
-		Class cdmClass;
+		Class<?> cdmClass;
 		Set<String> idSet;
 		Map<Object, Map<String, ? extends CdmBase>> result = new HashMap<Object, Map<String, ? extends CdmBase>>();
 		
@@ -194,18 +193,12 @@ public class IndexFungorumGeneraImport  extends IndexFungorumImportBase {
 	}
 	
 
-
-	/* (non-Javadoc)
-	 * @see eu.etaxonomy.cdm.io.common.CdmIoBase#doCheck(eu.etaxonomy.cdm.io.common.IImportConfigurator)
-	 */
 	@Override
 	protected boolean doCheck(IndexFungorumImportState state){
 		return true;
 	}
 	
-	/* (non-Javadoc)
-	 * @see eu.etaxonomy.cdm.io.common.CdmIoBase#isIgnore(eu.etaxonomy.cdm.io.common.IImportConfigurator)
-	 */
+	@Override
 	protected boolean isIgnore(IndexFungorumImportState state){
 		return ! state.getConfig().isDoTaxa();
 	}

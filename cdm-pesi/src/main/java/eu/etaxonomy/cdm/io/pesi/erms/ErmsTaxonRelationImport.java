@@ -34,7 +34,6 @@ import eu.etaxonomy.cdm.model.taxon.TaxonRelationshipType;
 /**
  * @author a.mueller
  * @created 09.03.2010
- * @version 1.0
  */
 @Component
 public class ErmsTaxonRelationImport extends ErmsImportBase<TaxonBase<?>> implements ICheckIgnoreMapper{
@@ -54,9 +53,8 @@ public class ErmsTaxonRelationImport extends ErmsImportBase<TaxonBase<?>> implem
 		super(pluralString, dbTableName, cdmTargetClass);
 	}
 
-	/* (non-Javadoc)
-	 * @see eu.etaxonomy.cdm.io.erms.ErmsImportBase#getMapping()
-	 */
+
+	@Override
 	protected DbImportMapping<ErmsImportState, ErmsImportConfigurator> getMapping() {
 		if (mapping == null){
 			mapping = new DbImportMapping<ErmsImportState, ErmsImportConfigurator>();
@@ -96,11 +94,9 @@ public class ErmsTaxonRelationImport extends ErmsImportBase<TaxonBase<?>> implem
 		this.state = state;
 		super.doInvoke(state);
 	}
-	
-	/* (non-Javadoc)
-	 * @see eu.etaxonomy.cdm.io.berlinModel.in.IPartitionedIO#getRelatedObjectsForPartition(java.sql.ResultSet)
-	 */
-	public Map<Object, Map<String, ? extends CdmBase>> getRelatedObjectsForPartition(ResultSet rs) {
+
+	@Override
+	public Map<Object, Map<String, ? extends CdmBase>> getRelatedObjectsForPartition(ResultSet rs, ErmsImportState state) {
 		String nameSpace;
 		Class<?> cdmClass;
 		Set<String> idSet;
@@ -184,19 +180,7 @@ public class ErmsTaxonRelationImport extends ErmsImportBase<TaxonBase<?>> implem
 		return result;
 	}
 	
-	/* (non-Javadoc)
-	 * @see eu.etaxonomy.cdm.io.common.mapping.IMappingImport#createObject(java.sql.ResultSet, eu.etaxonomy.cdm.io.common.ImportStateBase)
-	 */
-	public TaxonBase<?> createObject(ResultSet rs, ErmsImportState state) throws SQLException {
-		// not needed
-		return null;
-	}
 	
-	
-
-	/* (non-Javadoc)
-	 * @see eu.etaxonomy.cdm.io.common.CdmIoBase#doCheck(eu.etaxonomy.cdm.io.common.IImportConfigurator)
-	 */
 	@Override
 	protected boolean doCheck(ErmsImportState state){
 //		IOValidator<ErmsImportState> validator = new ErmsTaxonImportValidator();
@@ -204,10 +188,7 @@ public class ErmsTaxonRelationImport extends ErmsImportBase<TaxonBase<?>> implem
 		return true;
 	}
 	
-	
-	/* (non-Javadoc)
-	 * @see eu.etaxonomy.cdm.io.common.CdmIoBase#isIgnore(eu.etaxonomy.cdm.io.common.IImportConfigurator)
-	 */
+	@Override
 	protected boolean isIgnore(ErmsImportState state){
 		return ! state.getConfig().isDoRelTaxa();
 	}

@@ -43,9 +43,6 @@ public class IndexFungorumSupraGeneraImport  extends IndexFungorumImportBase {
 	}
 
 
-	/* (non-Javadoc)
-	 * @see eu.etaxonomy.cdm.io.berlinModel.in.BerlinModelImportBase#getRecordQuery(eu.etaxonomy.cdm.io.berlinModel.in.BerlinModelImportConfigurator)
-	 */
 	@Override
 	protected String getRecordQuery(IndexFungorumImportConfigurator config) {
 		String strRecordQuery = 
@@ -71,7 +68,7 @@ public class IndexFungorumSupraGeneraImport  extends IndexFungorumImportBase {
 		
 		//transaction and related objects
 		TransactionStatus tx = startTransaction();
-		state.setRelatedObjects((Map)getRelatedObjectsForPartition(null));
+		state.setRelatedObjects((Map)getRelatedObjectsForPartition(null, state));
 		sourceReference = state.getRelatedObject(NAMESPACE_REFERENCE, SOURCE_REFERENCE, Reference.class);
 		
 		try {
@@ -124,10 +121,8 @@ public class IndexFungorumSupraGeneraImport  extends IndexFungorumImportBase {
 	}
 
 
-	/* (non-Javadoc)
-	 * @see eu.etaxonomy.cdm.io.berlinModel.in.IPartitionedIO#getRelatedObjectsForPartition(java.sql.ResultSet)
-	 */
-	public Map<Object, Map<String, ? extends CdmBase>> getRelatedObjectsForPartition(ResultSet rs) {
+	@Override
+	public Map<Object, Map<String, ? extends CdmBase>> getRelatedObjectsForPartition(ResultSet rs, IndexFungorumImportState state) {
 		HashMap<Object, Map<String, ? extends CdmBase>> result = new HashMap<Object, Map<String,? extends CdmBase>>();  //not needed here
 		
 		//sourceReference
@@ -139,19 +134,12 @@ public class IndexFungorumSupraGeneraImport  extends IndexFungorumImportBase {
 		return result;
 	}
 	
-
-
-	/* (non-Javadoc)
-	 * @see eu.etaxonomy.cdm.io.common.CdmIoBase#doCheck(eu.etaxonomy.cdm.io.common.IImportConfigurator)
-	 */
 	@Override
 	protected boolean doCheck(IndexFungorumImportState state){
 		return true;
 	}
 	
-	/* (non-Javadoc)
-	 * @see eu.etaxonomy.cdm.io.common.CdmIoBase#isIgnore(eu.etaxonomy.cdm.io.common.IImportConfigurator)
-	 */
+	@Override
 	protected boolean isIgnore(IndexFungorumImportState state){
 		return ! state.getConfig().isDoTaxa();
 	}

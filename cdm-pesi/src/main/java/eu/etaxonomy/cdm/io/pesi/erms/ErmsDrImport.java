@@ -39,7 +39,6 @@ import eu.etaxonomy.cdm.model.taxon.TaxonBase;
 /**
  * @author a.mueller
  * @created 20.02.2010
- * @version 1.0
  */
 @Component
 public class ErmsDrImport  extends ErmsImportBase<Distribution> {
@@ -56,10 +55,6 @@ public class ErmsDrImport  extends ErmsImportBase<Distribution> {
 		super(pluralString, dbTableName, cdmTargetClass);
 	}
 
-
-	/* (non-Javadoc)
-	 * @see eu.etaxonomy.cdm.io.berlinModel.in.BerlinModelImportBase#getRecordQuery(eu.etaxonomy.cdm.io.berlinModel.in.BerlinModelImportConfigurator)
-	 */
 	@Override
 	protected String getRecordQuery(ErmsImportConfigurator config) {
 		String strRecordQuery = 
@@ -111,10 +106,9 @@ public class ErmsDrImport  extends ErmsImportBase<Distribution> {
 		return mapping;
 	}
 	
-	/* (non-Javadoc)
-	 * @see eu.etaxonomy.cdm.io.berlinModel.in.IPartitionedIO#getRelatedObjectsForPartition(java.sql.ResultSet)
-	 */
-	public Map<Object, Map<String, ? extends CdmBase>> getRelatedObjectsForPartition(ResultSet rs) {
+
+	@Override
+	public Map<Object, Map<String, ? extends CdmBase>> getRelatedObjectsForPartition(ResultSet rs, ErmsImportState state) {
 		String nameSpace;
 		Class<?> cdmClass;
 		Set<String> idSet;

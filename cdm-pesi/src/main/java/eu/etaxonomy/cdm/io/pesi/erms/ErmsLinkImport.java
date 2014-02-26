@@ -33,10 +33,10 @@ import eu.etaxonomy.cdm.model.taxon.TaxonBase;
 /**
  * @author a.mueller
  * @created 20.02.2010
- * @version 1.0
  */
 @Component
 public class ErmsLinkImport  extends ErmsImportBase<TaxonBase> {
+	@SuppressWarnings("unused")
 	private static final Logger logger = Logger.getLogger(ErmsLinkImport.class);
 
 	private DbImportMapping<ErmsImportState,ErmsImportConfigurator> mapping;
@@ -49,10 +49,6 @@ public class ErmsLinkImport  extends ErmsImportBase<TaxonBase> {
 		super(pluralString, dbTableName, cdmTargetClass);
 	}
 
-
-	/* (non-Javadoc)
-	 * @see eu.etaxonomy.cdm.io.berlinModel.in.BerlinModelImportBase#getRecordQuery(eu.etaxonomy.cdm.io.berlinModel.in.BerlinModelImportConfigurator)
-	 */
 	@Override
 	protected String getRecordQuery(ErmsImportConfigurator config) {
 		String strRecordQuery = 
@@ -78,14 +74,11 @@ public class ErmsLinkImport  extends ErmsImportBase<TaxonBase> {
 		}
 		return mapping;
 	}
-	
 
-	/* (non-Javadoc)
-	 * @see eu.etaxonomy.cdm.io.berlinModel.in.IPartitionedIO#getRelatedObjectsForPartition(java.sql.ResultSet)
-	 */
-	public Map<Object, Map<String, ? extends CdmBase>> getRelatedObjectsForPartition(ResultSet rs) {
+	@Override
+	public Map<Object, Map<String, ? extends CdmBase>> getRelatedObjectsForPartition(ResultSet rs, ErmsImportState state) {
 		String nameSpace;
-		Class cdmClass;
+		Class<?> cdmClass;
 		Set<String> idSet;
 		Map<Object, Map<String, ? extends CdmBase>> result = new HashMap<Object, Map<String, ? extends CdmBase>>();
 		
@@ -108,20 +101,14 @@ public class ErmsLinkImport  extends ErmsImportBase<TaxonBase> {
 		}
 		return result;
 	}
-	
-	/* (non-Javadoc)
-	 * @see eu.etaxonomy.cdm.io.common.CdmIoBase#doCheck(eu.etaxonomy.cdm.io.common.IImportConfigurator)
-	 */
+
 	@Override
 	protected boolean doCheck(ErmsImportState state){
 		IOValidator<ErmsImportState> validator = new ErmsLinkImportValidator();
 		return validator.validate(state);
 	}
 	
-	
-	/* (non-Javadoc)
-	 * @see eu.etaxonomy.cdm.io.common.CdmIoBase#isIgnore(eu.etaxonomy.cdm.io.common.IImportConfigurator)
-	 */
+	@Override
 	protected boolean isIgnore(ErmsImportState state){
 		return ! state.getConfig().isDoLinks();
 	}

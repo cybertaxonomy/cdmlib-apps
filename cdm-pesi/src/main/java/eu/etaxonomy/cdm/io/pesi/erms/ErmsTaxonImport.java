@@ -49,7 +49,6 @@ import eu.etaxonomy.cdm.strategy.cache.name.NonViralNameDefaultCacheStrategy;
 /**
  * @author a.mueller
  * @created 20.02.2010
- * @version 1.0
  */
 @Component
 public class ErmsTaxonImport  extends ErmsImportBase<TaxonBase<?>> implements IMappingImport<TaxonBase<?>, ErmsImportState>{
@@ -203,12 +202,10 @@ public class ErmsTaxonImport  extends ErmsImportBase<TaxonBase<?>> implements IM
 
 
 
-	/* (non-Javadoc)
-	 * @see eu.etaxonomy.cdm.io.berlinModel.in.IPartitionedIO#getRelatedObjectsForPartition(java.sql.ResultSet)
-	 */
-	public Map<Object, Map<String, ? extends CdmBase>> getRelatedObjectsForPartition(ResultSet rs) {
+	@Override
+	public Map<Object, Map<String, ? extends CdmBase>> getRelatedObjectsForPartition(ResultSet rs, ErmsImportState state) {
 		String nameSpace;
-		Class cdmClass;
+		Class<?> cdmClass;
 		Set<String> idSet;
 		Map<Object, Map<String, ? extends CdmBase>> result = new HashMap<Object, Map<String, ? extends CdmBase>>();
 		
@@ -232,10 +229,7 @@ public class ErmsTaxonImport  extends ErmsImportBase<TaxonBase<?>> implements IM
 		return result;
 	}
 	
-
-	/* (non-Javadoc)
-	 * @see eu.etaxonomy.cdm.io.common.mapping.IMappingImport#createObject(java.sql.ResultSet)
-	 */
+	@Override
 	public TaxonBase<?> createObject(ResultSet rs, ErmsImportState state) throws SQLException {
 		int statusId = rs.getInt("status_id");
 //		Object accTaxonId = rs.getObject("tu_acctaxon");

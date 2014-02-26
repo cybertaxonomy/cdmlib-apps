@@ -37,7 +37,6 @@ import eu.etaxonomy.cdm.model.taxon.TaxonBase;
 /**
  * @author a.mueller
  * @created 20.02.2010
- * @version 1.0
  */
 @Component
 public class ErmsNotesImport  extends ErmsImportBase<Annotation> {
@@ -83,10 +82,8 @@ public class ErmsNotesImport  extends ErmsImportBase<Annotation> {
 	}
 	
 
-	/* (non-Javadoc)
-	 * @see eu.etaxonomy.cdm.io.berlinModel.in.IPartitionedIO#getRelatedObjectsForPartition(java.sql.ResultSet)
-	 */
-	public Map<Object, Map<String, ? extends CdmBase>> getRelatedObjectsForPartition(ResultSet rs) {
+	@Override
+	public Map<Object, Map<String, ? extends CdmBase>> getRelatedObjectsForPartition(ResultSet rs, ErmsImportState state) {
 		String nameSpace;
 		Class<?> cdmClass;
 		Set<String> idSet;
@@ -123,20 +120,14 @@ public class ErmsNotesImport  extends ErmsImportBase<Annotation> {
 		}
 		return result;
 	}
-	
-	/* (non-Javadoc)
-	 * @see eu.etaxonomy.cdm.io.common.CdmIoBase#doCheck(eu.etaxonomy.cdm.io.common.IImportConfigurator)
-	 */
+
 	@Override
 	protected boolean doCheck(ErmsImportState state){
 		IOValidator<ErmsImportState> validator = new ErmsNoteImportValidator();
 		return validator.validate(state);
 	}
 	
-	
-	/* (non-Javadoc)
-	 * @see eu.etaxonomy.cdm.io.common.CdmIoBase#isIgnore(eu.etaxonomy.cdm.io.common.IImportConfigurator)
-	 */
+	@Override
 	protected boolean isIgnore(ErmsImportState state){
 		return ! state.getConfig().isDoNotes();
 	}

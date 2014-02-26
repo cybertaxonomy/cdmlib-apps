@@ -37,19 +37,19 @@ import eu.etaxonomy.cdm.model.location.NamedAreaType;
 /**
  * @author a.mueller
  * @created 20.02.2010
- * @version 1.0
  */
 @Component
 public class ErmsAreaImport  extends ErmsImportBase<NamedArea> implements IMappingImport<NamedArea, ErmsImportState>{
+	@SuppressWarnings("unused")
 	private static final Logger logger = Logger.getLogger(ErmsAreaImport.class);
 
-	private DbImportMapping mapping;
+	private DbImportMapping<?,?> mapping;
 	
 	
 	private int modCount = 10000;
 	private static final String pluralString = "areas";
 	private static final String dbTableName = "gu";
-	private static final Class cdmTargetClass = NamedArea.class;
+	private static final Class<?> cdmTargetClass = NamedArea.class;
 
 	public ErmsAreaImport(){
 		super(pluralString, dbTableName, cdmTargetClass);
@@ -86,18 +86,13 @@ public class ErmsAreaImport  extends ErmsImportBase<NamedArea> implements IMappi
 	}
 	
 
-	/* (non-Javadoc)
-	 * @see eu.etaxonomy.cdm.io.berlinModel.in.IPartitionedIO#getRelatedObjectsForPartition(java.sql.ResultSet)
-	 */
-	public Map<Object, Map<String, ? extends CdmBase>> getRelatedObjectsForPartition(ResultSet rs) {
+	@Override
+	public Map<Object, Map<String, ? extends CdmBase>> getRelatedObjectsForPartition(ResultSet rs, ErmsImportState state) {
 		Map<Object, Map<String, ? extends CdmBase>> result = new HashMap<Object, Map<String, ? extends CdmBase>>();
 		return result;  //not needed
 	}
 	
-
-	/* (non-Javadoc)
-	 * @see eu.etaxonomy.cdm.io.common.mapping.IMappingImport#createObject(java.sql.ResultSet)
-	 */
+	@Override
 	public NamedArea createObject(ResultSet rs, ErmsImportState state) throws SQLException {
 		int id = rs.getInt("id");
 		String strGuName = rs.getString("gu_name");
@@ -112,19 +107,13 @@ public class ErmsAreaImport  extends ErmsImportBase<NamedArea> implements IMappi
 		return area;
 	}
 
-	/* (non-Javadoc)
-	 * @see eu.etaxonomy.cdm.io.common.CdmIoBase#doCheck(eu.etaxonomy.cdm.io.common.IImportConfigurator)
-	 */
 	@Override
 	protected boolean doCheck(ErmsImportState state){
 		IOValidator<ErmsImportState> validator = new ErmsAreaImportValidator();
 		return validator.validate(state);
 	}
 	
-	
-	/* (non-Javadoc)
-	 * @see eu.etaxonomy.cdm.io.common.CdmIoBase#isIgnore(eu.etaxonomy.cdm.io.common.IImportConfigurator)
-	 */
+	@Override
 	protected boolean isIgnore(ErmsImportState state){
 		//TODO
 //		return ! state.getConfig().isDoAreas();

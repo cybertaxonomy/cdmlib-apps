@@ -362,10 +362,8 @@ public class ErmsSourceUsesImport  extends ErmsImportBase<CommonTaxonName> {
 	
 //************************************ RELATED OBJECTS *************************************************/	
 	
-	/* (non-Javadoc)
-	 * @see eu.etaxonomy.cdm.io.berlinModel.in.IPartitionedIO#getRelatedObjectsForPartition(java.sql.ResultSet)
-	 */
-	public Map<Object, Map<String, ? extends CdmBase>> getRelatedObjectsForPartition(ResultSet rs) {
+	@Override
+	public Map<Object, Map<String, ? extends CdmBase>> getRelatedObjectsForPartition(ResultSet rs, ErmsImportState state) {
 		String nameSpace;
 		Class<?> cdmClass;
 		Set<String> idSet;

@@ -32,7 +32,6 @@ import eu.etaxonomy.cdm.model.reference.Reference;
 /**
  * @author a.mueller
  * @created 12.03.2010
- * @version 1.0
  */
 @Component
 public class ErmsNotesSourcesImport extends ErmsImportBase<CommonTaxonName> {
@@ -44,9 +43,9 @@ public class ErmsNotesSourcesImport extends ErmsImportBase<CommonTaxonName> {
 	
 	private static String pluralString = "note sources";
 	private static String dbTableName = "notes_sources";
-	private static final Class cdmTargetClass = DescriptionElementSource.class;
+	private static final Class<?> cdmTargetClass = DescriptionElementSource.class;
 
-	private DbImportMapping mapping;
+	private DbImportMapping<?,?> mapping;
 
 	
 //******************************************* CONSTRUCTOR *******************************	
@@ -74,9 +73,6 @@ public class ErmsNotesSourcesImport extends ErmsImportBase<CommonTaxonName> {
 		return strQuery;
 	}
 
-	/* (non-Javadoc)
-	 * @see eu.etaxonomy.cdm.io.erms.ErmsImportBase#getIdQuery()
-	 */
 	@Override
 	protected String getIdQuery() {
 		String strQuery = 
@@ -86,10 +82,8 @@ public class ErmsNotesSourcesImport extends ErmsImportBase<CommonTaxonName> {
 		return strQuery;
 	}
 	
-	/* (non-Javadoc)
-	 * @see eu.etaxonomy.cdm.io.erms.ErmsImportBase#getMapping()
-	 */
-	protected DbImportMapping getMapping() {
+	@Override
+	protected DbImportMapping<?,?> getMapping() {
 		if (mapping == null){
 			mapping = new DbImportMapping();
 			String vernacularNamespace = ErmsVernacularImport.VERNACULAR_NAMESPACE;
@@ -99,12 +93,10 @@ public class ErmsNotesSourcesImport extends ErmsImportBase<CommonTaxonName> {
 		return mapping;
 	}
 
-	/* (non-Javadoc)
-	 * @see eu.etaxonomy.cdm.io.common.IPartitionedIO#getRelatedObjectsForPartition(java.sql.ResultSet)
-	 */
-	public Map getRelatedObjectsForPartition(ResultSet rs) {
+	@Override
+	public Map getRelatedObjectsForPartition(ResultSet rs, ErmsImportState state) {
 		String nameSpace;
-		Class cdmClass;
+		Class<?> cdmClass;
 		Set<String> idSet;
 		Map<Object, Map<String, ? extends CdmBase>> result = new HashMap<Object, Map<String, ? extends CdmBase>>();
 		
@@ -137,20 +129,12 @@ public class ErmsNotesSourcesImport extends ErmsImportBase<CommonTaxonName> {
 		return result;
 	}
 	
-
-	/* (non-Javadoc)
-	 * @see eu.etaxonomy.cdm.io.common.CdmIoBase#doCheck(eu.etaxonomy.cdm.io.common.IoStateBase)
-	 */
 	@Override
 	protected boolean doCheck(ErmsImportState state) {
 		IOValidator<ErmsImportState> validator = new ErmsNoteSourceImportValidator();
 		return validator.validate(state);
 	}
 	
-	
-	/* (non-Javadoc)
-	 * @see eu.etaxonomy.cdm.io.common.CdmIoBase#isIgnore(eu.etaxonomy.cdm.io.common.IoStateBase)
-	 */
 	@Override
 	protected boolean isIgnore(ErmsImportState state) {
 		boolean isDo = state.getConfig().isDoVernaculars() && state.getConfig().isDoVernaculars();
