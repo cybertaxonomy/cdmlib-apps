@@ -17,8 +17,6 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.UUID;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
@@ -33,7 +31,6 @@ import eu.etaxonomy.cdm.io.api.application.CdmIoApplicationController;
 import eu.etaxonomy.cdm.io.common.IImportConfigurator.CHECK;
 import eu.etaxonomy.cdm.model.common.CdmBase;
 import eu.etaxonomy.cdm.model.common.OriginalSourceType;
-import eu.etaxonomy.cdm.model.common.TermVocabulary;
 import eu.etaxonomy.cdm.model.description.Feature;
 import eu.etaxonomy.cdm.model.description.MeasurementUnit;
 import eu.etaxonomy.cdm.model.description.QuantitativeData;
@@ -51,7 +48,6 @@ import eu.etaxonomy.cdm.model.taxon.TaxonBase;
 /**
  * @author a.mueller
  * @created 16.12.2010
- * @version 1.0
  */
 public class CyprusAltitudeActivator {
 	private static final Logger logger = Logger.getLogger(CyprusAltitudeActivator.class);
@@ -62,9 +58,9 @@ public class CyprusAltitudeActivator {
 	static final URI source = cyprus_altitude();
 
 	
-//	static final ICdmDataSource cdmDestination = CdmDestinations.localH2();
-//	static final ICdmDataSource cdmDestination = CdmDestinations.cdm_test_local_mysql();
-	static final ICdmDataSource cdmDestination = CdmDestinations.cdm_cyprus_dev();
+	static final ICdmDataSource cdmDestination = CdmDestinations.localH2();
+//	static final ICdmDataSource cdmDestination = CdmDestinations.cdm_test_local_mysql_test();
+//	static final ICdmDataSource cdmDestination = CdmDestinations.cdm_cyprus_dev();
 //	static final ICdmDataSource cdmDestination = CdmDestinations.cdm_cyprus_production();
 
 	
@@ -126,7 +122,7 @@ public class CyprusAltitudeActivator {
 			UUID acceptedUuid = makeUuid(row, "acceptedNameUuid");
 			UUID parentUuid = makeUuid(row, "parentUuid");
 			
-			String altitude = row.get("Altitude-kumuliert");
+//			String altitude = row.get("Altitude-kumuliert");
 			
 			String altitudeMin = row.get("Min");
 			String altitudeMax = row.get("Max");
@@ -219,7 +215,7 @@ public class CyprusAltitudeActivator {
 		return false;
 	}
 
-	private static final Pattern altitudePattern = Pattern.compile("\\d{1,4}(-\\d{1,4})?");
+//	private static final Pattern altitudePattern = Pattern.compile("\\d{1,4}(-\\d{1,4})?");
 
 
 	private boolean makeAltitude(String altitudeMin, String altitudeMax, Feature altitudeFeature, 
@@ -250,41 +246,41 @@ public class CyprusAltitudeActivator {
 		return true;
 	}
 	
-	private boolean makeAltitudeOld(String altitudeOrig, Feature feature, Reference<?> source, TaxonDescription desc, MeasurementUnit meter, int row) {
-		String altitude = altitudeOrig.trim().replace(" ", "");
-		Matcher matcher = altitudePattern.matcher(altitude);
-		
-		if (matcher.matches()){
-			QuantitativeData data = QuantitativeData.NewInstance(feature);
-			
-			//Meikle
-			if (source != null){
-				TaxonNameBase<?,?> nameUsedInSource = null;  //TODO
-				data.addSource(OriginalSourceType.PrimaryTaxonomicSource, null, null, source, null, nameUsedInSource, null);
-			}
-			//Excel
-			TaxonNameBase<?,?> nameUsedInSource = null;  //TODO probably we don't want this
-			data.addSource(OriginalSourceType.Import, String.valueOf(row), "row", getSourceReference(), null, nameUsedInSource, null);
-			data.setUnit(meter);
-			
-			String[] split = altitude.split("-");
-
-			Integer min = Integer.valueOf(split[0]);
-			StatisticalMeasurementValue minValue = StatisticalMeasurementValue.NewInstance(StatisticalMeasure.MIN(), min);
-			data.addStatisticalValue(minValue);
-
-			if (split.length > 1){
-				Integer max = Integer.valueOf(split[1]);
-				StatisticalMeasurementValue maxValue = StatisticalMeasurementValue.NewInstance(StatisticalMeasure.MAX(), max);
-				data.addStatisticalValue(maxValue);
-			}
-			desc.addElement(data);
-			return true;
-		}else{
-			logger.warn("Altitude does not match in row " + row + ": "  + altitudeOrig);
-			return false;
-		}
-	}
+//	private boolean makeAltitudeOld(String altitudeOrig, Feature feature, Reference<?> source, TaxonDescription desc, MeasurementUnit meter, int row) {
+//		String altitude = altitudeOrig.trim().replace(" ", "");
+//		Matcher matcher = altitudePattern.matcher(altitude);
+//		
+//		if (matcher.matches()){
+//			QuantitativeData data = QuantitativeData.NewInstance(feature);
+//			
+//			//Meikle
+//			if (source != null){
+//				TaxonNameBase<?,?> nameUsedInSource = null;  //TODO
+//				data.addSource(OriginalSourceType.PrimaryTaxonomicSource, null, null, source, null, nameUsedInSource, null);
+//			}
+//			//Excel
+//			TaxonNameBase<?,?> nameUsedInSource = null;  //TODO probably we don't want this
+//			data.addSource(OriginalSourceType.Import, String.valueOf(row), "row", getSourceReference(), null, nameUsedInSource, null);
+//			data.setUnit(meter);
+//			
+//			String[] split = altitude.split("-");
+//
+//			Integer min = Integer.valueOf(split[0]);
+//			StatisticalMeasurementValue minValue = StatisticalMeasurementValue.NewInstance(StatisticalMeasure.MIN(), min);
+//			data.addStatisticalValue(minValue);
+//
+//			if (split.length > 1){
+//				Integer max = Integer.valueOf(split[1]);
+//				StatisticalMeasurementValue maxValue = StatisticalMeasurementValue.NewInstance(StatisticalMeasure.MAX(), max);
+//				data.addStatisticalValue(maxValue);
+//			}
+//			desc.addElement(data);
+//			return true;
+//		}else{
+//			logger.warn("Altitude does not match in row " + row + ": "  + altitudeOrig);
+//			return false;
+//		}
+//	}
 
 	private TaxonDescription getDescription(Taxon taxon, Reference<?> sourceRef) {
 		if (taxon != null){
