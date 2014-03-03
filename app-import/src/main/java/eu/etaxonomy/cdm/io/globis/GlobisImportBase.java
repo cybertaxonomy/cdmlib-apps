@@ -23,6 +23,7 @@ import org.hibernate.NonUniqueObjectException;
 import org.joda.time.DateTime;
 
 import eu.etaxonomy.cdm.api.service.AgentServiceImpl;
+import eu.etaxonomy.cdm.common.UTF8;
 import eu.etaxonomy.cdm.io.common.CdmImportBase;
 import eu.etaxonomy.cdm.io.common.ICdmIO;
 import eu.etaxonomy.cdm.io.common.IImportConfigurator.EDITOR;
@@ -115,35 +116,47 @@ public abstract class GlobisImportBase<CDM_BASE extends CdmBase> extends CdmImpo
 	protected void handleAuthorAndYear(String authorAndYear, ZoologicalName zooName, Integer id, GlobisImportState state) {
 		if (isBlank(authorAndYear)){
 			return;
-		}
-		try {
-			String doubtfulAuthorAndYear = null;
-			if(authorAndYear.matches(".+\\,\\s\\[\\d{4}\\].*")){
-				doubtfulAuthorAndYear = authorAndYear;
-				authorAndYear = authorAndYear.replace("[", "").replace("]", "");
+		}else if ("[Denis & Schifferm\u00FCller], 1775".equals(authorAndYear)){
+			handleDenisSchiffermueller(zooName, state);
+			return;
+		}else{
+			try {
+				String doubtfulAuthorAndYear = null;
+				if(authorAndYear.matches(".+\\,\\s\\[\\d{4}\\].*")){
+					doubtfulAuthorAndYear = authorAndYear;
+					authorAndYear = authorAndYear.replace("[", "").replace("]", "");
+				}
+				
+				parser.parseAuthors(zooName, authorAndYear);
+				deduplicateAuthors(zooName, state);
+				
+				if (doubtfulAuthorAndYear != null){
+					zooName.setAuthorshipCache(doubtfulAuthorAndYear, true);
+				}
+				
+			} catch (StringNotParsableException e) {
+				logger.warn("Author could not be parsed: " + authorAndYear + " for id "  +id);
+				zooName.setAuthorshipCache(authorAndYear, true);
 			}
-//			if (authorAndYear.contains("?")){
-//				authorAndYear = authorAndYear.replace("H?bner", "H\u00fcbner");
-//				authorAndYear = authorAndYear.replace("Oberth?r", "Oberth\u00fcr");
-//				authorAndYear = authorAndYear.replace("M?n?tri?s","M\u00E9n\u00E9tri\u00E9s");
-//				authorAndYear = authorAndYear.replace("Schifferm?ller","Schifferm\u00fcller");
-//				
-//				//TODO remove
-//				authorAndYear = authorAndYear.replace("?", "");
-//				
-//			}
-			
-			parser.parseAuthors(zooName, authorAndYear);
-			deduplicateAuthors(zooName, state);
-			
-			if (doubtfulAuthorAndYear != null){
-				zooName.setAuthorshipCache(doubtfulAuthorAndYear, true);
-			}
-			
-		} catch (StringNotParsableException e) {
-			logger.warn("Author could not be parsed: " + authorAndYear + " for id "  +id);
-			zooName.setAuthorshipCache(authorAndYear, true);
 		}
+	}
+
+	/**
+	 * @param zooName
+	 * @param state
+	 */
+	private void handleDenisSchiffermueller(ZoologicalName zooName,
+			GlobisImportState state) {
+		String teamStr = "Denis & Schifferm\u00FCller";
+		Team team = state.getTeam(teamStr);
+		if (team == null){
+			team = Team.NewInstance();
+			state.putTeam(teamStr, team);
+			getAgentService().save(team);
+		}
+		zooName.setCombinationAuthorTeam(team);
+		zooName.setPublicationYear(1775);
+		zooName.setAuthorshipCache("[Denis & Schifferm\u00FCller], 1775", true);
 	}
 	
 
@@ -180,8 +193,8 @@ public abstract class GlobisImportBase<CDM_BASE extends CdmBase> extends CdmImpo
 							throw new RuntimeException (e);
 						}
 						newTeam.addTeamMember(existingPerson);
-						
-						logger.warn("newTeam " + newTeam.getId());
+//						
+//						logger.warn("newTeam " + newTeam.getId());
 					}else{
 						newTeam.addTeamMember(member);
 					}	

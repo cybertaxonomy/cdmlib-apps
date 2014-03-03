@@ -122,7 +122,8 @@ public class GlobisSpecTaxImport  extends GlobisImportBase<Reference<?>> impleme
         		Integer acceptedTaxonId = nullSafeInt(rs, "SpecCurrspecID");
         		String specSystaxRank = rs.getString("SpecSystaxRank");
         		
-        		//ignore: CountryDummy, currentSpecies, DepositoryDisplay, DepositoryDummy, ReferenceDisplay, SpecDescriptionImageFile, all *Valid*
+        		//ignore: CountryDummy, currentSpecies, DepositoryDisplay, DepositoryDummy, ReferenceDisplay, 
+        		//        SpecDescriptionImageFile, all *Valid*
         		
 				try {
 					
@@ -321,35 +322,41 @@ public class GlobisSpecTaxImport  extends GlobisImportBase<Reference<?>> impleme
 			DerivedUnit specimen = makeSingleTypeSpecimen(fieldObservation);
 			makeTypeDesignation(name, rs, specimen, specTaxId);
 			makeTypeIdInSource(state, specimen, "null", specTaxId);
-		}
-		for (String specTypeDepositoryStr : specTypeDepositories){
-			specTypeDepositoryStr = specTypeDepositoryStr.trim();
-			
-			//Specimen
-			DerivedUnit specimen = makeSingleTypeSpecimen(fieldObservation);
-
-			if (specTypeDepositoryStr.equals("??")){
-				//unknown
-				specimen.setTitleCache("??", true);
-				makeTypeIdInSource(state, specimen, "??", specTaxId);
+		}else{
+			for (String specTypeDepositoryStr : specTypeDepositories){
+				specTypeDepositoryStr = specTypeDepositoryStr.trim();
 				
-			}else{
-				specTypeDepositoryStr = makeAdditionalSpecimenInformation(
-						specTypeDepositoryStr, specimen, specTaxId);
+				//Specimen
+				DerivedUnit specimen = makeSingleTypeSpecimen(fieldObservation);
+	
+				if (specTypeDepositoryStr.equals("??")){
+					//unknown
+					//TODO marker unknown ?
+					specimen.setTitleCache("??", true);
+					makeTypeIdInSource(state, specimen, "??", specTaxId);
+				}else if (specTypeDepositoryStr.equals("[lost]")){
+					//lost
+					//TODO marker lost ?
+					specimen.setTitleCache("lost", true);
+					makeTypeIdInSource(state, specimen, "[lost]", specTaxId);
+				}else{
+					specTypeDepositoryStr = makeAdditionalSpecimenInformation(
+							specTypeDepositoryStr, specimen, specTaxId);
+					
+					Collection collection = makeCollection(state, specTypeDepositoryStr, specimen, specTaxId);
+					String collectionCode = collection.getCode();
+					if (isBlank(collectionCode)){
+						collectionCode = collection.getName();
+					}
+					if (isBlank(collectionCode)){
+						logger.warn("Collection has empty representation: " + specTypeDepositoryStr + ", specTaxId" +  specTaxId);
+					}
+					makeTypeIdInSource(state, specimen, collectionCode , specTaxId);	
+				}
 				
-				Collection collection = makeCollection(state, specTypeDepositoryStr, specimen, specTaxId);
-				String collectionCode = collection.getCode();
-				if (isBlank(collectionCode)){
-					collectionCode = collection.getName();
-				}
-				if (isBlank(collectionCode)){
-					logger.warn("Collection has empty representation: " + specTypeDepositoryStr + ", specTaxId" +  specTaxId);
-				}
-				makeTypeIdInSource(state, specimen, collectionCode , specTaxId);	
+				//type Designation
+				makeTypeDesignation(name, rs, specimen, specTaxId);
 			}
-			
-			//type Designation
-			makeTypeDesignation(name, rs, specimen, specTaxId);
 		}
 
 		
@@ -395,8 +402,184 @@ public class GlobisSpecTaxImport  extends GlobisImportBase<Reference<?>> impleme
 	protected Collection makeCollection(GlobisImportState state, String specTypeDepositoryStr, DerivedUnit specimen, Integer specTaxId) {
 		
 		//Collection
-		specTypeDepositoryStr = specTypeDepositoryStr.replace("Washington, D.C.", "Washington@ D.C.");
+		specTypeDepositoryStr = specTypeDepositoryStr.replace("Washington, D.C.", "Washington@ D.C.")
+				.replace("St.-Raymond, Quebec", "St.-Raymond@ Quebec")
+				.replace("St.Petersburg", "St. Petersburg");
 		
+		
+		Collection collection = handleSpecialCase(specTypeDepositoryStr, state, specimen);
+		if (collection == null){
+			String[] split = specTypeDepositoryStr.split(",");
+			if (split.length != 2){
+				if (split.length == 1 && (split[0].startsWith("coll.")|| split[0].startsWith("Coll.") )){
+					collection = state.getRelatedObject(COLLECTION_NAMESPACE, split[0], Collection.class);
+					if (collection == null){
+						collection = Collection.NewInstance();
+						collection.setName(split[0]);
+						state.addRelatedObject(COLLECTION_NAMESPACE, collection.getName(), collection);
+					}
+					specimen.setCollection(collection);
+				}else{
+					logger.warn("Split size in SpecTypeDepository is not 2: " + specTypeDepositoryStr + " (specTaxID:" + specTaxId + ")");
+					collection = Collection.NewInstance();
+					collection.setCode("??");
+					//TODO deduplicate ??
+				}
+				
+			}else{
+				String collectionStr = split[0];
+				String location = split[1].replace("@", ",").trim();
+				
+				collection = state.getRelatedObject(COLLECTION_NAMESPACE, collectionStr, Collection.class);
+				if (collection == null){
+					collection = Collection.NewInstance();
+					if (collectionStr != null && collectionStr.startsWith("coll.")){
+						collection.setName(collectionStr);
+					}else{
+						collection.setCode(collectionStr);
+					}
+					collection.setTownOrLocation(location);
+					state.addRelatedObject(COLLECTION_NAMESPACE, collection.getCode(), collection);
+						
+				}else if (! CdmUtils.nullSafeEqual(location, collection.getTownOrLocation())){
+					if (! normalizeTownOrLocation(location, collection)){
+						String message = "Location (%s) is not equal to location (%s) of existing collection, specTaxId: " + specTaxId;
+						logger.warn(String.format(message, location, collection.getTownOrLocation(), collection.getCode()));
+					}
+					
+				}
+				
+				specimen.setCollection(collection);
+			}
+		}
+		return collection;
+	}
+
+
+	private boolean normalizeTownOrLocation(String location, Collection collection) {
+		boolean result = false;
+		if (location != null){
+			if ("coll. C. G. Treadaway".equals(collection.getName())){
+				if (! "Frankfurt am Main".equals(collection.getTownOrLocation())){
+					collection.setTownOrLocation("Frankfurt am Main");
+					getCollectionService().saveOrUpdate(collection);
+				}
+				return true;
+			}	else if ("coll. K. Rose".equals(collection.getName())){
+				if (! "Mainz-Bretzenheim".equals(collection.getTownOrLocation())){
+					collection.setTownOrLocation("Mainz-Bretzenheim");
+					getCollectionService().saveOrUpdate(collection);
+				}
+				return true;
+			} else if ("NMPN".equals(collection.getCode())){
+				if (! "Prague".equals(collection.getTownOrLocation())){
+					collection.setTownOrLocation("Prague");
+					getCollectionService().saveOrUpdate(collection);
+				}
+				return true;
+			} else if ("USNM".equals(collection.getCode())){
+				if (! "Washington, D.C.".equals(collection.getTownOrLocation())){
+					collection.setTownOrLocation("Washington, D.C.");
+					getCollectionService().saveOrUpdate(collection);
+				}
+				return true;
+			} else if ("coll. S. Kocman".equals(collection.getName())){
+				if (! "Ostrava-Zabreh".equals(collection.getTownOrLocation())){
+					collection.setTownOrLocation("Ostrava-Zabreh");
+					getCollectionService().saveOrUpdate(collection);
+				}
+				return true;
+			} else if ("ZSSM".equals(collection.getCode())){
+				if (! "Munich".equals(collection.getTownOrLocation())){
+					collection.setTownOrLocation("Munich");
+					getCollectionService().saveOrUpdate(collection);
+				}
+				return true;
+			} else if ("coll. R. H. Anken".equals(collection.getName())){
+				if (! "Stuttgart".equals(collection.getTownOrLocation())){
+					collection.setTownOrLocation("Stuttgart");
+					getCollectionService().saveOrUpdate(collection);
+				}
+				return true;
+			} else if ("coll. S.-I. Murayama".equals(collection.getName())){
+				if (! "Aichi-Gakuin".equals(collection.getTownOrLocation())){
+					collection.setTownOrLocation("Aichi-Gakuin");
+					getCollectionService().saveOrUpdate(collection);
+				}
+				return true;
+			} else if ("coll. Y. Sorimachi".equals(collection.getName())){
+				if (! "Saitama".equals(collection.getTownOrLocation())){
+					collection.setTownOrLocation("Saitama");
+					getCollectionService().saveOrUpdate(collection);
+				}
+				return true;
+			} else if ("coll. K. Yoshino".equals(collection.getName())){
+				if (! "Saitama".equals(collection.getTownOrLocation())){
+					collection.setTownOrLocation("Saitama");
+					getCollectionService().saveOrUpdate(collection);
+				}
+				return true;
+			} else if ("coll. U. Eitschberger".equals(collection.getName())){
+				if (! "Marktleuthen".equals(collection.getTownOrLocation())){
+					collection.setTownOrLocation("Marktleuthen");
+					getCollectionService().saveOrUpdate(collection);
+				}
+				return true;
+			} else if ("coll. G. Sala".equals(collection.getName())){
+				if (! "Sal\u00f2".equals(collection.getTownOrLocation())){
+					collection.setTownOrLocation("Sal\u00f2");  //LATIN SMALL LETTER O WITH GRAVE
+					getCollectionService().saveOrUpdate(collection);
+				}
+				return true;
+			} else if ("coll. Dantchenko".equals(collection.getName())){
+				if (! "Moscow".equals(collection.getTownOrLocation())){
+					collection.setTownOrLocation("Moscow");  
+					getCollectionService().saveOrUpdate(collection);
+				}
+				return true;
+			} else if ("coll. S. Nakano".equals(collection.getName())){
+				if (! "Tokyo".equals(collection.getTownOrLocation())){
+					collection.setTownOrLocation("Tokyo");  
+					getCollectionService().saveOrUpdate(collection);
+				}
+				return true;
+			} else if ("coll. A. Yagishita".equals(collection.getName())){
+				if (! "Toride Ibaraki".equals(collection.getTownOrLocation())){
+					collection.setTownOrLocation("Toride Ibaraki");  
+					getCollectionService().saveOrUpdate(collection);
+				}
+				return true;
+			} else if ("coll. H. Sugiyama".equals(collection.getName())){
+				if (! "Gifu".equals(collection.getTownOrLocation())){
+					collection.setTownOrLocation("Gifu");  
+					getCollectionService().saveOrUpdate(collection);
+				}
+				return true;
+			} else if ("MDMO".equals(collection.getCode())){
+				if (! "Moscow".equals(collection.getTownOrLocation())){
+					collection.setTownOrLocation("Moscow");  
+					getCollectionService().saveOrUpdate(collection);
+				}
+				return true;
+			} else if ("coll. W. Eckweiler".equals(collection.getName())){
+				if (! "Frankfurt am Main".equals(collection.getTownOrLocation())){
+					collection.setTownOrLocation("Frankfurt am Main");  
+					getCollectionService().saveOrUpdate(collection);
+				}
+				return true;
+			} else if ("coll. T. Frankenbach".equals(collection.getName())){
+				if (! "Wangen".equals(collection.getTownOrLocation())){
+					collection.setTownOrLocation("Wangen");  
+					getCollectionService().saveOrUpdate(collection);
+				}
+				return true;
+			}
+		}
+		
+		return result;
+	}
+
+	private Collection handleSpecialCase(String specTypeDepositoryStr, GlobisImportState state, DerivedUnit specimen) {
 		Collection collection;
 		if (specTypeDepositoryStr.equals("BMNH, London and/or MNHN, Paris")){
 			collection = state.getRelatedObject(COLLECTION_NAMESPACE, specTypeDepositoryStr, Collection.class);
@@ -428,48 +611,10 @@ public class GlobisSpecTaxImport  extends GlobisImportBase<Reference<?>> impleme
 			}
 			specimen.setCollection(collection);
 		}else{
-			
-			String[] split = specTypeDepositoryStr.split(",");
-			if (split.length != 2){
-				if (split.length == 1 && split[0].startsWith("coll.")){
-					collection = state.getRelatedObject(COLLECTION_NAMESPACE, split[0], Collection.class);
-					if (collection == null){
-						collection = Collection.NewInstance();
-						collection.setName(split[0]);
-						state.addRelatedObject(COLLECTION_NAMESPACE, collection.getName(), collection);
-					}
-					specimen.setCollection(collection);
-				}else{
-					logger.warn("Split size is not 2: " + specTypeDepositoryStr + " (specTaxID:" + specTaxId + ")");
-					collection = Collection.NewInstance();
-					collection.setCode("??");
-					//TODO deduplicate ??
-				}
-				
-			}else{
-				String collectionStr = split[0];
-				String location = split[1].replace("Washington@ D.C.", "Washington, D.C.");
-				
-				collection = state.getRelatedObject(COLLECTION_NAMESPACE, collectionStr, Collection.class);
-				if (collection == null){
-					collection = Collection.NewInstance();
-					collection.setCode(collectionStr);
-					collection.setTownOrLocation(split[1]);
-					state.addRelatedObject(COLLECTION_NAMESPACE, collection.getCode(), collection);
-						
-				}else if (! CdmUtils.nullSafeEqual(location, collection.getTownOrLocation())){
-					String message = "Location (%s) is not equal to location (%s) of existing collection, specTaxId: " + specTaxId;
-					logger.warn(String.format(message, location, collection.getTownOrLocation(), collection.getCode()));
-				}
-				
-				specimen.setCollection(collection);
-			}
+			collection = null;
 		}
 		return collection;
 	}
-
-
-
 
 	/**
 	 * @param specTypeDepositoriesStr
@@ -492,6 +637,7 @@ public class GlobisSpecTaxImport  extends GlobisImportBase<Reference<?>> impleme
 			String brackets = matcher.group(2);
 			brackets = brackets.substring(1, brackets.length()-1);
 			
+			//TODO this is unwanted according to Alexander
 			brackets = brackets.replace("[mm]", "\u2642\u2642");
 			brackets = brackets.replace("[m]", "\u2642");
 			brackets = brackets.replace("[ff]", "\u2640\u2640");
@@ -576,11 +722,13 @@ public class GlobisSpecTaxImport  extends GlobisImportBase<Reference<?>> impleme
 	private SpecimenTypeDesignationStatus getTypeDesigType(String specType, Integer specTaxId) {
 		if (isBlank(specType) ){
 			return null;
-		}else if (specType.matches("Holotype(.*Holotypus)?")){
+		}else if (specType.matches("Holotype(\r*\n*Holotypus)?")){
 			return SpecimenTypeDesignationStatus.HOLOTYPE();
 		}else if (specType.matches("Neotype")){
 			return SpecimenTypeDesignationStatus.NEOTYPE();
 		}else if (specType.matches("Syntype(\\(s\\))?") || specType.matches("Syntype.*Syntype\\(s\\)\\s*") ){
+			return SpecimenTypeDesignationStatus.SYNTYPE();
+		}else if (specType.matches("Syntype\r*\n*Syntype.*") ){
 			return SpecimenTypeDesignationStatus.SYNTYPE();
 		}else if (specType.matches("Lectotype")){
 			return SpecimenTypeDesignationStatus.LECTOTYPE();
@@ -704,7 +852,7 @@ public class GlobisSpecTaxImport  extends GlobisImportBase<Reference<?>> impleme
 		
 		String cache = CdmUtils.concat(" ", new String[]{citedFamily, citedGenus, citedSpecies, citedSubspecies, rank, lastEpithet});
 		name.setGenusOrUninomial(citedGenus);
-		//TODO sperate authors
+		//TODO separate authors
 		if (isBlank(citedSpecies)){
 			name.setSpecificEpithet(lastEpithet);
 		}else{
@@ -756,9 +904,12 @@ public class GlobisSpecTaxImport  extends GlobisImportBase<Reference<?>> impleme
 			List<Collection> listCollection = getCollectionService().list(Collection.class, null, null, null, null);
 			Map<String, Collection> collectionMap = new HashMap<String, Collection>();
 			for (Collection collection : listCollection){
-				collectionMap.put(collection.getCode(), collection);
-				if (isBlank(collection.getCode())){
-					logger.warn("Collection code is blank: " + collection);
+				if (isNotBlank(collection.getCode())){
+					collectionMap.put(collection.getCode(), collection);
+				}else if (isNotBlank(collection.getName())){
+					collectionMap.put(collection.getName(), collection);
+				}else{
+					logger.warn("Collection code and name are blank: " + collection);
 				}
 			}
 			result.put(nameSpace, collectionMap);

@@ -175,11 +175,14 @@ public class GlobisCommonNameImport  extends GlobisImportBase<Taxon> {
 	}
 	
 	private Reference<?> handleReference(GlobisImportState state, Integer refId){
+		if (refId == null){
+			return null;
+		}
 		Reference<?> result = refMap.get(refId);
 		
 		if (result == null){
 			try {
-				String sql = "SELECT * FROM references WHERE ReferenceID = " + refId;
+				String sql = "SELECT * FROM [references] WHERE ReferenceID = " + refId;
 				ResultSet rs = state.getConfig().getSource().getResultSet(sql);
 				rs.next();
 				
