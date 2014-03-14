@@ -40,6 +40,8 @@ import eu.etaxonomy.cdm.model.common.OriginalSourceType;
 import eu.etaxonomy.cdm.model.description.Feature;
 import eu.etaxonomy.cdm.model.location.NamedArea;
 import eu.etaxonomy.cdm.model.name.NomenclaturalCode;
+import eu.etaxonomy.cdm.model.name.NomenclaturalStatus;
+import eu.etaxonomy.cdm.model.name.NomenclaturalStatusType;
 import eu.etaxonomy.cdm.model.name.Rank;
 import eu.etaxonomy.cdm.model.name.SpecimenTypeDesignation;
 import eu.etaxonomy.cdm.model.name.SpecimenTypeDesignationStatus;
@@ -183,7 +185,11 @@ public class GlobisSpecTaxImport  extends GlobisImportBase<Reference<?>> impleme
 					
 					//makeMarker1(state, rs, name);   //ignore!
 					
-					makeNotAvailable(state, rs, name);
+					//make not available
+					makeNotAvailable(state, rs, name, specTaxId);
+					
+					//maken invalid
+					//TODO 
 					
 					//SpecCitedTypeLocality
 					String citedTypeLocality = rs.getString("SpecCitedTypeLocality");
@@ -224,33 +230,45 @@ public class GlobisSpecTaxImport  extends GlobisImportBase<Reference<?>> impleme
 	}
 
 
-	private void makeNotAvailable(GlobisImportState state, ResultSet rs, ZoologicalName name) throws SQLException {
+	private void makeNotAvailable(GlobisImportState state, ResultSet rs, ZoologicalName name, int id) throws SQLException {
 		String notAvailableStr = rs.getString("SpecNotAvailable");
-		try {
-			if (isNotBlank(notAvailableStr)){
-				if (notAvailableStr.contains("not available") ){ 
-					UUID uuidNotAvailableMarkerType = state.getTransformer().getMarkerTypeUuid("not available");
-					
-					MarkerType markerType = getMarkerType(state, uuidNotAvailableMarkerType, "not available", "not available", null);
-					name.addMarker(Marker.NewInstance(markerType, true));
-				}
-			}
-		} catch (UndefinedTransformerMethodException e) {
-			e.printStackTrace();
-		}
-		//Not available reason
-		//TODO make it a vocabulary
 		String notAvailableReason = rs.getString("SpecNotAvailableReason");
-		if (isNotBlank(notAvailableReason)){
-			UUID uuidNotAvailableReason;
-			try {
-				uuidNotAvailableReason = state.getTransformer().getExtensionTypeUuid("not available reason");
-				ExtensionType notAvailableReasonExtType = getExtensionType(state, uuidNotAvailableReason, "Not available reason", "Not available reason", null, null);
-				name.addExtension(notAvailableReason, notAvailableReasonExtType);
-			} catch (UndefinedTransformerMethodException e) {
-				e.printStackTrace();
-			} 
+		
+		if (isNotBlank(notAvailableStr) && notAvailableStr.contains("not available")){
+			if (isBlank(notAvailableReason)){
+				logger.warn("Blank notAvailableReason has available: " + id);
+			}
+			NomenclaturalStatus nomStatus = getNomStatus(state, notAvailableReason, id);
+			if (nomStatus != null){
+				name.addStatus(nomStatus);
+			}
+		}else{
+			if (isNotBlank(notAvailableReason)){
+				logger.warn("Blank notAvailable has reason: " + id);
+			}
+			//Do nothing
 		}
+
+
+		//OLD
+//				if (notAvailableStr.contains("not available") ){ 
+//					UUID uuidNotAvailableMarkerType = state.getTransformer().getMarkerTypeUuid("not available");
+//					
+//					MarkerType markerType = getMarkerType(state, uuidNotAvailableMarkerType, "not available", "not available", null);
+//					name.addMarker(Marker.NewInstance(markerType, true));
+//				}
+//		//Not available reason
+//		String notAvailableReason = rs.getString("SpecNotAvailableReason");
+//		if (isNotBlank(notAvailableReason)){
+//			UUID uuidNotAvailableReason;
+//			try {
+//				uuidNotAvailableReason = state.getTransformer().getExtensionTypeUuid("not available reason");
+//				ExtensionType notAvailableReasonExtType = getExtensionType(state, uuidNotAvailableReason, "Not available reason", "Not available reason", null, null);
+//				name.addExtension(notAvailableReason, notAvailableReasonExtType);
+//			} catch (UndefinedTransformerMethodException e) {
+//				e.printStackTrace();
+//			} 
+//		}
 		
 	}
 
@@ -258,6 +276,21 @@ public class GlobisSpecTaxImport  extends GlobisImportBase<Reference<?>> impleme
 
 
 	
+	private NomenclaturalStatus getNomStatus(GlobisImportState state, String notAvailableReason, int id) {
+		NomenclaturalStatus status = NomenclaturalStatus.NewInstance(NomenclaturalStatusType.ZOO_NOT_AVAILABLE());
+		status.setRuleConsidered(notAvailableReason);
+		if (notAvailableReason.equalsIgnoreCase("hybrid")){
+			logger.warn("Check hybrid for correctnes. Is there a better status?");
+		}else if (notAvailableReason.equalsIgnoreCase("infrasubspecific name") || notAvailableReason.equalsIgnoreCase("infrasubspeciic name")){
+			logger.warn("Check infrasubspecific name for correctnes. Is there a better status?");
+		}else if (notAvailableReason.equalsIgnoreCase("by ruling of the Commission")){
+			logger.warn("Check by ruling of the Commission for correctnes. Is there a better status?");
+		}else{
+			logger.warn("Unknown non available reason. ");
+		}
+		return status;
+	}
+
 	/**
 	 * This method is not used anymore as according to Alexander Marker1 should be ignored.
 	 * @param state
@@ -265,6 +298,7 @@ public class GlobisSpecTaxImport  extends GlobisImportBase<Reference<?>> impleme
 	 * @param name
 	 * @throws SQLException
 	 */
+	@SuppressWarnings("unused")
 	private void makeMarker1(GlobisImportState state, ResultSet rs, ZoologicalName name) throws SQLException {
 		String marker1Str = rs.getString("Marker1");
 		try {
@@ -590,6 +624,52 @@ public class GlobisSpecTaxImport  extends GlobisImportBase<Reference<?>> impleme
 				state.addRelatedObject(COLLECTION_NAMESPACE, collection.getName(), collection);
 			}
 			specimen.setCollection(collection);
+		}else if (specTypeDepositoryStr.equals("ZISP, St. Petersburg, and/or BMNH, London ?")){
+			collection = state.getRelatedObject(COLLECTION_NAMESPACE, specTypeDepositoryStr, Collection.class);
+			if (collection == null){
+				collection = Collection.NewInstance();
+				collection.setName(specTypeDepositoryStr);
+				collection.setTownOrLocation("St. Petersburg or London");
+				state.addRelatedObject(COLLECTION_NAMESPACE, collection.getName(), collection);
+			}
+			specimen.setCollection(collection);
+		}else if (specTypeDepositoryStr.equals("MFNB, Berlin or SMTD, Dresden")){
+			collection = state.getRelatedObject(COLLECTION_NAMESPACE, specTypeDepositoryStr, Collection.class);
+			if (collection == null){
+				collection = Collection.NewInstance();
+				collection.setName(specTypeDepositoryStr);
+				collection.setTownOrLocation("Berlin or Dresden");
+				state.addRelatedObject(COLLECTION_NAMESPACE, collection.getName(), collection);
+			}
+			specimen.setCollection(collection);
+		}else if (specTypeDepositoryStr.equals("coll. S. Ianoka, Yamanashi, coll. A. Shinkai, Tokyo or coll. S. Morita")){
+			collection = state.getRelatedObject(COLLECTION_NAMESPACE, specTypeDepositoryStr, Collection.class);
+			if (collection == null){
+				collection = Collection.NewInstance();
+				collection.setName(specTypeDepositoryStr);
+				collection.setTownOrLocation("Yamanashi or Tokyo or ?");
+				state.addRelatedObject(COLLECTION_NAMESPACE, collection.getName(), collection);
+			}
+			specimen.setCollection(collection);
+		}else if (specTypeDepositoryStr.equals("coll. S. Inaoka, Yamanashi, coll. A. Shinkai, Tokyo, coll. H. Mikami, coll. S. Koiwaya, coll S. Morita or coll. Y. Nose")){
+			collection = state.getRelatedObject(COLLECTION_NAMESPACE, specTypeDepositoryStr, Collection.class);
+			if (collection == null){
+				collection = Collection.NewInstance();
+				collection.setName(specTypeDepositoryStr);
+				collection.setTownOrLocation("Yamanashi or Tokyo or ?");
+				state.addRelatedObject(COLLECTION_NAMESPACE, collection.getName(), collection);
+			}
+			specimen.setCollection(collection);
+		}else if (specTypeDepositoryStr.equals("S. Morita, Tokyo or coll. Y. Sorimachi, Saitama")){
+			collection = state.getRelatedObject(COLLECTION_NAMESPACE, specTypeDepositoryStr, Collection.class);
+			if (collection == null){
+				collection = Collection.NewInstance();
+				collection.setName(specTypeDepositoryStr);
+				collection.setTownOrLocation("Tokyo or Saitama");
+				state.addRelatedObject(COLLECTION_NAMESPACE, collection.getName(), collection);
+			}
+			specimen.setCollection(collection);
+			
 		}else if (specTypeDepositoryStr.equals("coll. L. V. Kaabak, A .V. Sotshivko & V. V. Titov, Moscow")){
 			String colName = "coll. L. V. Kaabak, A .V. Sotshivko & V. V. Titov";
 			collection = state.getRelatedObject(COLLECTION_NAMESPACE, colName, Collection.class);
@@ -610,9 +690,31 @@ public class GlobisSpecTaxImport  extends GlobisImportBase<Reference<?>> impleme
 				state.addRelatedObject(COLLECTION_NAMESPACE, collection.getName(), collection);
 			}
 			specimen.setCollection(collection);
+		}else if (specTypeDepositoryStr.matches("coll. O. Slaby, Plzen, Tschechei")){
+			String colName = "coll. O. Slaby";
+			collection = state.getRelatedObject(COLLECTION_NAMESPACE, colName, Collection.class);
+			if (collection == null){
+				collection = Collection.NewInstance();
+				collection.setName(colName);
+				collection.setTownOrLocation("Plzen, Tschechei");
+				state.addRelatedObject(COLLECTION_NAMESPACE, collection.getName(), collection);
+			}
+			specimen.setCollection(collection);
+		}else if (specTypeDepositoryStr.matches("coll. K. Okubo")){
+			String colName = "coll. K. Okubo";
+			collection = state.getRelatedObject(COLLECTION_NAMESPACE, colName, Collection.class);
+			if (collection == null){
+				collection = Collection.NewInstance();
+				collection.setName(colName);
+				collection.setTownOrLocation("Nichinomiya city, Hyogo");
+				state.addRelatedObject(COLLECTION_NAMESPACE, collection.getName(), collection);
+			}
+			specimen.setCollection(collection);
 		}else{
 			collection = null;
 		}
+		
+		
 		return collection;
 	}
 
