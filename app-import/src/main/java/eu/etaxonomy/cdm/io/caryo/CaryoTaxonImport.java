@@ -286,7 +286,7 @@ public class CaryoTaxonImport  extends DbImportBase<CaryoImportState, CaryoImpor
 		if (StringUtils.isNotBlank(nomStatusStr)){
 			NomenclaturalStatusType nomStatusType;
 			try {
-				nomStatusType = NomenclaturalStatusType.getNomenclaturalStatusTypeByAbbreviation(nomStatusStr);
+				nomStatusType = NomenclaturalStatusType.getNomenclaturalStatusTypeByAbbreviation(nomStatusStr, name);
 			} catch (UnknownCdmTypeException e) {
 				if (nomStatusStr.startsWith("nom. rej. prop.")){
 					nomStatusType = NomenclaturalStatusType.REJECTED_PROP();
