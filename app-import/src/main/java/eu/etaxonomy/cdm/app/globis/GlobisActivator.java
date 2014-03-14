@@ -102,16 +102,8 @@ public class GlobisActivator {
 
 //	
 	
-	
-	/**
-	 * @param args
-	 */
-	public static void main(String[] args) {
+	public void doImport(Source source, ICdmDataSource destination){
 		System.out.println("Start import from ("+ globisSource.getDatabase() + ") ...");
-		
-		//make Globis Source
-		Source source = globisSource;
-		ICdmDataSource destination = CdmDestinations.chooseDestination(args) != null ? CdmDestinations.chooseDestination(args) : cdmDestination;
 		
 		GlobisImportConfigurator config = GlobisImportConfigurator.NewInstance(source,  destination);
 		
@@ -151,6 +143,20 @@ public class GlobisActivator {
 //			app.getFeatureTreeService().saveOrUpdate(tree);
 		}
 		System.out.println("End import from ("+ source.getDatabase() + ")...");
+	}
+	
+	
+	/**
+	 * @param args
+	 */
+	public static void main(String[] args) {
+		
+		//make Globis Source
+		Source source = globisSource;
+		ICdmDataSource destination = CdmDestinations.chooseDestination(args) != null ? CdmDestinations.chooseDestination(args) : cdmDestination;
+		GlobisActivator me = new GlobisActivator();
+		me.doImport(source, destination);
+
 	}
 
 
