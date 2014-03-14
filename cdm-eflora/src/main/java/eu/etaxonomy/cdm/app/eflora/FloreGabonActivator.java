@@ -68,11 +68,33 @@ public class FloreGabonActivator extends EfloraActivatorBase {
 	static final URI fdg20 = EfloraSources.fdg_20();
 	static final URI fdg21 = EfloraSources.fdg_21();
 	static final URI fdg22 = EfloraSources.fdg_22();
+	static final URI fdg23 = EfloraSources.fdg_23();
+	static final URI fdg24 = EfloraSources.fdg_24();
+	static final URI fdg25 = EfloraSources.fdg_25();
+	static final URI fdg26 = EfloraSources.fdg_26();
 	static final URI fdg27 = EfloraSources.fdg_27();
 	static final URI fdg28 = EfloraSources.fdg_28();
+	static final URI fdg29 = EfloraSources.fdg_29();
 	static final URI fdg30 = EfloraSources.fdg_30();
+	static final URI fdg31 = EfloraSources.fdg_31();
+	static final URI fdg32 = EfloraSources.fdg_32();
+	static final URI fdg33 = EfloraSources.fdg_33();
 	static final URI fdg34 = EfloraSources.fdg_34();
 	static final URI fdg35 = EfloraSources.fdg_35();
+	
+//	static final URI fdg36 = EfloraSources.fdg_36();
+//	static final URI fdg37 = EfloraSources.fdg_37();
+	static final URI fdg36_37 = EfloraSources.fdg_36_37();
+	
+	static final URI fdg38 = EfloraSources.fdg_38();
+	static final URI fdg39 = EfloraSources.fdg_39();
+	static final URI fdg40 = EfloraSources.fdg_40();
+	static final URI fdg41 = EfloraSources.fdg_41();
+	static final URI fdg42 = EfloraSources.fdg_42();
+	static final URI fdg43 = EfloraSources.fdg_43();
+	static final URI fdg44 = EfloraSources.fdg_44();
+	static final URI fdg45 = EfloraSources.fdg_45();
+	
 	
 	
 	
@@ -126,15 +148,41 @@ public class FloreGabonActivator extends EfloraActivatorBase {
 	private boolean includeFdg15 = true;
 	private boolean includeFdg16 = true;
 	private boolean includeFdg18 = true;
-	private boolean includeFdg19 = false;
+	private boolean includeFdg19 = true;
 	private boolean includeFdg20 = true;
 	private boolean includeFdg21 = true;
 	private boolean includeFdg22 = true;
+	
+	private boolean includeFdg23 = false;
+	private boolean includeFdg24 = true;
+	private boolean includeFdg25 = true;
+	private boolean includeFdg26 = true;
+	
 	private boolean includeFdg27 = true;
 	private boolean includeFdg28 = true;
+	
+	private boolean includeFdg29 = true;
+	
 	private boolean includeFdg30 = true;
+	
+	private boolean includeFdg31 = true;
+	private boolean includeFdg32 = true;
+	private boolean includeFdg33 = true;
+	
 	private boolean includeFdg34 = true;
 	private boolean includeFdg35 = true;
+	
+//	private boolean includeFdg36 = true;
+//	private boolean includeFdg37 = true;
+	private boolean includeFdg36_37 = true;
+	private boolean includeFdg38 = true;
+	private boolean includeFdg39 = true;
+	private boolean includeFdg40 = true;
+	private boolean includeFdg41 = true;
+	private boolean includeFdg42 = true;
+	private boolean includeFdg43 = true;
+	private boolean includeFdg44 = true;
+	private boolean includeFdg45 = true;
 	
 // **************** NO CHANGE **********************************************/
 	
@@ -230,17 +278,66 @@ public class FloreGabonActivator extends EfloraActivatorBase {
 		executeVolume(fdg21, includeFdg21 ^ inverseInclude);
 		//Vol22
 		executeVolume(fdg22, includeFdg22 ^ inverseInclude);
+		//Vol23
+		executeVolume(fdg23, includeFdg23 ^ inverseInclude);
+		//Vol24
+		executeVolume(fdg24, includeFdg24 ^ inverseInclude);
+		//Vol25
+		executeVolume(fdg25, includeFdg25 ^ inverseInclude);
+		//Vol26
+		executeVolume(fdg26, includeFdg26 ^ inverseInclude);				
 		//Vol27
 		executeVolume(fdg27, includeFdg27 ^ inverseInclude);
 		//Vol28
 		executeVolume(fdg28, includeFdg28 ^ inverseInclude);
+		//Vol29
+		executeVolume(fdg29, includeFdg29 ^ inverseInclude);
 		//Vol30
 		executeVolume(fdg30, includeFdg30 ^ inverseInclude);
+		//Vol31
+		executeVolume(fdg31, includeFdg31 ^ inverseInclude);
+		//Vol32
+		executeVolume(fdg32, includeFdg32 ^ inverseInclude);
+		//Vol33
+		executeVolume(fdg33, includeFdg33 ^ inverseInclude);
 		//Vol34
 		executeVolume(fdg34, includeFdg34 ^ inverseInclude);
 		//Vol35
 		executeVolume(fdg35, includeFdg35 ^ inverseInclude);
 				
+//		//Vol36
+//		executeVolume(fdg36, includeFdg36 ^ inverseInclude);
+//				
+//		//Vol37
+//		executeVolume(fdg37, includeFdg37 ^ inverseInclude);
+		
+		//Vol 36_37
+		executeVolume(fdg36_37, includeFdg36_37 ^ inverseInclude);
+
+		//Vol38
+		executeVolume(fdg38, includeFdg38 ^ inverseInclude);
+
+		//Vol39
+		executeVolume(fdg39, includeFdg39 ^ inverseInclude);
+
+		//Vol40
+		executeVolume(fdg40, includeFdg40 ^ inverseInclude);
+
+		//Vol41
+		executeVolume(fdg41, includeFdg41 ^ inverseInclude);
+
+		//Vol42
+		executeVolume(fdg42, includeFdg42 ^ inverseInclude);
+
+		//Vol43
+		executeVolume(fdg43, includeFdg43 ^ inverseInclude);
+
+		//Vol44
+		executeVolume(fdg44, includeFdg44 ^ inverseInclude);
+
+		//Vol45
+		executeVolume(fdg45, includeFdg45 ^ inverseInclude);
+
 		
 		
 		FeatureTree tree = makeFeatureNode(myImport.getCdmAppController().getTermService());
@@ -278,7 +375,7 @@ public class FloreGabonActivator extends EfloraActivatorBase {
 	
 	private Reference<?> getSourceReference(String string) {
 		Reference<?> result = ReferenceFactory.newGeneric();
-		result.setTitleCache(string);
+		result.setTitleCache(string, true);
 		return result;
 	}
 	
