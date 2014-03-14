@@ -44,6 +44,7 @@ import eu.etaxonomy.cdm.model.description.PolytomousKey;
 import eu.etaxonomy.cdm.model.location.NamedArea;
 import eu.etaxonomy.cdm.model.location.NamedAreaLevel;
 import eu.etaxonomy.cdm.model.location.NamedAreaType;
+import eu.etaxonomy.cdm.model.name.NomenclaturalCode;
 import eu.etaxonomy.cdm.model.reference.Reference;
 import eu.etaxonomy.cdm.model.reference.ReferenceFactory;
 
@@ -62,13 +63,13 @@ public class CentralAfricaEricaceaeActivator {
 	static final URI specimenSource = EfloraSources.vittaria_specimen_pesiimport3();
 
 	
-	static final ICdmDataSource cdmDestination = CdmDestinations.cdm_flora_central_africa_preview();
+	static final ICdmDataSource cdmDestination = CdmDestinations.cdm_flora_central_africa_local();
+
+//	static final ICdmDataSource cdmDestination = CdmDestinations.cdm_flora_central_africa_preview();
 //	static final ICdmDataSource cdmDestination = CdmDestinations.cdm_flora_central_africa_production();
 //	static final ICdmDataSource cdmDestination = CdmDestinations.localH2();
 //	static final ICdmDataSource cdmDestination = CdmDestinations.cdm_local_postgres_CdmTest();
 //	static final ICdmDataSource cdmDestination = CdmDestinations.cdm_test_local_mysql();
-//	static final ICdmDataSource cdmDestination = CdmDestinations.cdm_test_jaxb();
-//	static final ICdmDataSource cdmDestination = CdmDestinations.cdm_edit_cichorieae_preview();
 //	static final ICdmDataSource cdmDestination = CdmDestinations.cdm_campanulaceae_production();
 	
 	//feature tree uuid
@@ -78,6 +79,8 @@ public class CentralAfricaEricaceaeActivator {
 	
 	//classification
 	static final UUID classificationUuid = UUID.fromString("10e5efcc-6e13-4abc-ad42-e0b46e50cbe7");
+	
+	NomenclaturalCode nc = NomenclaturalCode.ICNAFP;
 	
 	//check - import
 	static final CHECK check = CHECK.IMPORT_WITHOUT_CHECK;
@@ -119,6 +122,7 @@ public class CentralAfricaEricaceaeActivator {
 		config.setDefaultLanguageUuid(defaultLanguageUuid);
 		config.setDoPrintKeys(doPrintKeys);
 		config.setDbSchemaValidation(hbm2dll);
+		config.setNomenclaturalCode(nc);
 		
 		CdmDefaultImport<EfloraImportConfigurator> myImport = new CdmDefaultImport<EfloraImportConfigurator>();
 
@@ -174,6 +178,7 @@ public class CentralAfricaEricaceaeActivator {
 			SpecimenCdmExcelImportConfigurator specimenConfig= SpecimenCdmExcelImportConfigurator.NewInstance(specimenSource, cdmDestination);
 			specimenConfig.setCdmAppController((CdmApplicationController)app);
 			specimenConfig.setAreaMatchMode(specimenAreaMatchMode);
+			specimenConfig.setNomenclaturalCode(nc);
 			
 			config.setDbSchemaValidation(DbSchemaValidation.VALIDATE);
 			specimenConfig.setSourceReference(getSourceReference(specimenConfig.getSourceReferenceTitle()));
