@@ -61,6 +61,7 @@ public class SpecimenImportActivator {
             specimenImportConfigurator.setDbSchemaValidation(hbm2dll);
             specimenImportConfigurator.setDoAutomaticParsing(true);
             specimenImportConfigurator.setReUseExistingMetadata(true);
+            specimenImportConfigurator.setDebugInstitutionOnly(true);
 
             //            specimenImportConfigurator.setDoMatchTaxa(true);
             specimenImportConfigurator.setReUseTaxon(true);
