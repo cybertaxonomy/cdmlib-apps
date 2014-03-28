@@ -19,6 +19,7 @@ import java.util.Set;
 import org.apache.log4j.Logger;
 import org.springframework.stereotype.Component;
 
+import eu.etaxonomy.cdm.io.algaterra.AlgaTerraImageImportBase.PathType;
 import eu.etaxonomy.cdm.io.algaterra.validation.AlgaTerraTypeImportValidator;
 import eu.etaxonomy.cdm.io.berlinModel.in.BerlinModelImportConfigurator;
 import eu.etaxonomy.cdm.io.berlinModel.in.BerlinModelImportState;
@@ -115,7 +116,7 @@ public class AlgaTerraSiteImagesImport  extends AlgaTerraImageImportBase {
 					}
 					
 					//field observation
-					Media media = handleSingleImage(rs, fieldObservation, state, partitioner, true);
+					Media media = handleSingleImage(rs, fieldObservation, state, partitioner, PathType.Site);
 					
 					handleSiteImageSpecificFields(rs, media, state);
 					

@@ -125,7 +125,7 @@ public class AlgaTerraPictureImport  extends AlgaTerraImageImportBase {
 					}else{
 						Taxon taxon = CdmBase.deproxy(taxonBase, Taxon.class);
 						
-						Media media = handleSingleImage(rs, taxon, state, partitioner, false);
+						Media media = handleSingleImage(rs, taxon, state, partitioner, PathType.Image);
 						
 						handlePictureSpecificFields(rs, media, state, specimenMap);
 						

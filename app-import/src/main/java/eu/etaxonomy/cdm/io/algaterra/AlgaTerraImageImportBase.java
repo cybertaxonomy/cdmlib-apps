@@ -46,7 +46,21 @@ public abstract class AlgaTerraImageImportBase extends BerlinModelImportBase{
 
 	private static final String ALGAE_URL_BASE = "http://mediastorage.bgbm.org/fsi/server?type=image&profile=jpeg&quality=100&source=Algaterra%2FAlgae%2F";
 	private static final String SITE_URL_BASE =  "http://mediastorage.bgbm.org/fsi/server?type=image&profile=jpeg&quality=100&source=Algaterra%2FSites%2F";
+	private static final String VOUCHER_URL_BASE =  "http://mediastorage.bgbm.org/fsi/server?type=image&profile=jpeg&quality=100&source=Algaterra%2FVoucher%2F";
 
+	
+	protected enum PathType {
+		Image (ALGAE_URL_BASE),
+		Site (SITE_URL_BASE),
+		Voucher (VOUCHER_URL_BASE)
+		;
+		
+		String urlBase;
+		private PathType(String urlBase){
+			this.urlBase = urlBase;
+		}
+	}
+	
 	
 	/**
 	 * Creates a media object and 
@@ -57,11 +71,11 @@ public abstract class AlgaTerraImageImportBase extends BerlinModelImportBase{
 	 * @return
 	 * @throws SQLException
 	 */
-	protected Media handleSingleImage(ResultSet rs, IdentifiableEntity<?> identifiableEntity, AlgaTerraImportState state, ResultSetPartitioner partitioner, boolean isSite) throws SQLException {
+	protected Media handleSingleImage(ResultSet rs, IdentifiableEntity<?> identifiableEntity, AlgaTerraImportState state, ResultSetPartitioner partitioner, PathType pathType) throws SQLException {
 		
 		try {
 			String figurePhrase = rs.getString("FigurePhrase");
-			String filePath = rs.getString("filePath");
+//			String filePath = rs.getString("filePath");
 			String fileName = rs.getString("fileName");
 			//TODO  publishFlag
 			Boolean publishFlag = rs.getBoolean("RestrictedFlag");
@@ -70,14 +84,10 @@ public abstract class AlgaTerraImageImportBase extends BerlinModelImportBase{
 			if (isBlank(fileName)){
 				throw new RuntimeException("FileName is missing");
 			}
-			if (isBlank(filePath)){
-				filePath = state.getAlgaTerraConfigurator().getImageBaseUrl();
-			}
-			if (isSite){
-				filePath = SITE_URL_BASE;
-			}else{
-				filePath = ALGAE_URL_BASE;
-			}
+//			if (isBlank(filePath)){
+//				filePath = state.getAlgaTerraConfigurator().getImageBaseUrl();
+//			}
+			String filePath = pathType.urlBase;
 			
 			String fullPath = filePath + fileName;
 			
