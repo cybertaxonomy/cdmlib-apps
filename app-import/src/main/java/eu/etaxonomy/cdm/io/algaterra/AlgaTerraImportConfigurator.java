@@ -4,7 +4,6 @@
 package eu.etaxonomy.cdm.io.algaterra;
 
 import eu.etaxonomy.cdm.database.ICdmDataSource;
-import eu.etaxonomy.cdm.io.algaterra.validation.AlgaTerraMorphologyImportValidator;
 import eu.etaxonomy.cdm.io.berlinModel.in.BerlinModelAuthorImport;
 import eu.etaxonomy.cdm.io.berlinModel.in.BerlinModelAuthorTeamImport;
 import eu.etaxonomy.cdm.io.berlinModel.in.BerlinModelFactsImport;

@@ -35,7 +35,6 @@ import eu.etaxonomy.cdm.model.taxon.Taxon;
 public abstract class AlgaTerraImageImportBase extends BerlinModelImportBase{
 	public AlgaTerraImageImportBase(String tableName, String pluralString) {
 		super(tableName, pluralString);
-		// TODO Auto-generated constructor stub
 	}
 
 
@@ -45,7 +44,8 @@ public abstract class AlgaTerraImageImportBase extends BerlinModelImportBase{
 
 	public static final String TERMS_NAMESPACE = "ALGA_TERRA_TERMS";
 
-
+	private static final String ALGAE_URL_BASE = "http://mediastorage.bgbm.org/fsi/server?type=image&profile=jpeg&quality=100&source=Algaterra%2FAlgae%2F";
+	private static final String SITE_URL_BASE =  "http://mediastorage.bgbm.org/fsi/server?type=image&profile=jpeg&quality=100&source=Algaterra%2FSites%2F";
 
 	
 	/**
@@ -57,7 +57,8 @@ public abstract class AlgaTerraImageImportBase extends BerlinModelImportBase{
 	 * @return
 	 * @throws SQLException
 	 */
-	protected Media handleSingleImage(ResultSet rs, IdentifiableEntity<?> identifiableEntity, AlgaTerraImportState state, ResultSetPartitioner partitioner) throws SQLException {
+	protected Media handleSingleImage(ResultSet rs, IdentifiableEntity<?> identifiableEntity, AlgaTerraImportState state, ResultSetPartitioner partitioner, boolean isSite) throws SQLException {
+		
 		try {
 			String figurePhrase = rs.getString("FigurePhrase");
 			String filePath = rs.getString("filePath");
@@ -72,6 +73,12 @@ public abstract class AlgaTerraImageImportBase extends BerlinModelImportBase{
 			if (isBlank(filePath)){
 				filePath = state.getAlgaTerraConfigurator().getImageBaseUrl();
 			}
+			if (isSite){
+				filePath = SITE_URL_BASE;
+			}else{
+				filePath = ALGAE_URL_BASE;
+			}
+			
 			String fullPath = filePath + fileName;
 			
 			boolean isFigure = false;

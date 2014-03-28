@@ -120,7 +120,7 @@ public class AlgaTerraTypeImagesImport  extends AlgaTerraImageImportBase {
 					}else{
 						
 						//field observation
-						Media media = handleSingleImage(rs, derivedUnit, state, partitioner);
+						Media media = handleSingleImage(rs, derivedUnit, state, partitioner, false);
 						
 						handleTypeImageSpecificFields(rs, media, state);
 						

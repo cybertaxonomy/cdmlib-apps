@@ -115,7 +115,7 @@ public class AlgaTerraSiteImagesImport  extends AlgaTerraImageImportBase {
 					}
 					
 					//field observation
-					Media media = handleSingleImage(rs, fieldObservation, state, partitioner);
+					Media media = handleSingleImage(rs, fieldObservation, state, partitioner, true);
 					
 					handleSiteImageSpecificFields(rs, media, state);
 					
