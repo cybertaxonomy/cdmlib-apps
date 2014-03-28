@@ -113,7 +113,7 @@ public class AlgaTerraVoucherImagesImport  extends AlgaTerraImageImportBase {
 					}
 					
 					//field observation
-					Media media = handleSingleImage(rs, derivedUnit, state, partitioner);
+					Media media = handleSingleImage(rs, derivedUnit, state, partitioner, false);
 					
 					handleVoucherImageSpecificFields(rs, media, state);
 					
