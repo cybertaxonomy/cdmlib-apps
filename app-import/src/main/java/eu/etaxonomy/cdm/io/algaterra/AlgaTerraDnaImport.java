@@ -290,7 +290,9 @@ public class AlgaTerraDnaImport  extends AlgaTerraSpecimenImportBase {
 		if (sequenceStr == null){
 			logger.warn("PlainSequence is null. Id: " + dnaFactId);
 		}else{
-			if (sequenceStr.length() != seqLen){
+			if (seqLen == null){
+				logger.warn("SeqLen is null for dnaFact: "  + dnaFactId);
+			}else if (sequenceStr.length() != seqLen){
 				logger.warn("SeqLen (" + seqLen+ ") and OriginalLen ("+sequenceStr.length()+") differ for dnaFact: "  + dnaFactId);
 			}
 		}
