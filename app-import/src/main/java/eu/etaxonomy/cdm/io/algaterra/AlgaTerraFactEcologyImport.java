@@ -141,7 +141,7 @@ public class AlgaTerraFactEcologyImport  extends AlgaTerraSpecimenImportBase {
 						Taxon taxon = getTaxon(state, taxonId, taxonMap, factId);		
 						
 						if(taxon != null){
-							DerivedUnit identifiedSpecimen = makeIdentifiedSpecimen(ecoFact, recordBasis);
+							DerivedUnit identifiedSpecimen = makeIdentifiedSpecimen(ecoFact, recordBasis, taxonId, ecoFactId);
 							
 							makeDetermination(state, rs, taxon, identifiedSpecimen, factId, partitioner);
 													
@@ -225,18 +225,24 @@ public class AlgaTerraFactEcologyImport  extends AlgaTerraSpecimenImportBase {
 
 
 
-	private DerivedUnit makeIdentifiedSpecimen(DerivedUnit ecoFact, String recordBasis) {
+	private DerivedUnit makeIdentifiedSpecimen(DerivedUnit ecoFact, String recordBasis, Integer taxonId, Integer ecoFactId) {
 		//TODO event type
 		DerivationEvent event = DerivationEvent.NewInstance();
 		SpecimenOrObservationType derivedUnitType = makeDerivedUnitType(recordBasis);
 		if (derivedUnitType == null){
-			logger.warn("derivedUnitType is NULL");
+			String message = "derivedUnitType is NULL for recordBasis (%s). Use dummy type instead. (TaxonId = %s)";
+			logger.warn(String.format(message, recordBasis, taxonId));
+			derivedUnitType = SpecimenOrObservationType.PreservedSpecimen;
 		}
 		
 		DerivedUnit result = DerivedUnit.NewInstance(derivedUnitType);
 		result.setDerivedFrom(event);
-		ecoFact.addDerivationEvent(event);
-		
+		if (ecoFact == null){
+			String message = "EcoFact (%s) is null for taxonId (%s)";
+			logger.warn(String.format(message, ecoFactId, taxonId));
+		}else{
+			ecoFact.addDerivationEvent(event);
+		}
 		return result;
 	}
 

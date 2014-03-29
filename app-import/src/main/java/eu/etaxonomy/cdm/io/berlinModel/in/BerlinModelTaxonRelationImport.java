@@ -426,7 +426,10 @@ public class BerlinModelTaxonRelationImport  extends BerlinModelImportBase  {
 				String taxonId = rs.getString("RIdentifier");
 				Classification classification = getClassificationTree(state, classificationMap, treeRefFk);
 				TaxonBase<?> taxon = taxonMap.get(taxonId);
-				if (taxon.isInstanceOf(Taxon.class)){
+				if (taxon == null){
+					String message = "TaxonBase for taxon id (%s) not found in taxonMap";
+					logger.warn(String.format(message, taxonId, taxonId));
+				}else if (taxon.isInstanceOf(Taxon.class)){
 					classification.addChildTaxon(CdmBase.deproxy(taxon, Taxon.class), null, null);
 				}else{
 					String message = "TaxonBase for taxon is not of class Taxon but %s (RIdentifier %s)";
