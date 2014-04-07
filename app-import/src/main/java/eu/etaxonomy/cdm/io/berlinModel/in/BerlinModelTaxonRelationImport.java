@@ -587,7 +587,7 @@ public class BerlinModelTaxonRelationImport  extends BerlinModelImportBase  {
 	
 	private  boolean isTaxonRelationship(int relQualifierFk){
 		if (relQualifierFk == TAX_REL_IS_INCLUDED_IN || 
-		relQualifierFk == TAX_REL_IS_MISAPPLIED_NAME_OF){
+				relQualifierFk == TAX_REL_IS_MISAPPLIED_NAME_OF){
 			return true;
 		}else{
 			return false;
