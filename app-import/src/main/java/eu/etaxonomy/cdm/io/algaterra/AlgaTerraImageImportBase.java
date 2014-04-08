@@ -33,13 +33,6 @@ import eu.etaxonomy.cdm.model.taxon.Taxon;
  * @created 12.09.2012
  */
 public abstract class AlgaTerraImageImportBase extends BerlinModelImportBase{
-	public AlgaTerraImageImportBase(String tableName, String pluralString) {
-		super(tableName, pluralString);
-	}
-
-
-
-
 	private static final Logger logger = Logger.getLogger(AlgaTerraImageImportBase.class);
 
 	public static final String TERMS_NAMESPACE = "ALGA_TERRA_TERMS";
@@ -48,19 +41,29 @@ public abstract class AlgaTerraImageImportBase extends BerlinModelImportBase{
 	private static final String SITE_URL_BASE =  "http://mediastorage.bgbm.org/fsi/server?type=image&profile=jpeg&quality=100&source=Algaterra%2FSites%2F";
 	private static final String VOUCHER_URL_BASE =  "http://mediastorage.bgbm.org/fsi/server?type=image&profile=jpeg&quality=100&source=Algaterra%2FVoucher%2F";
 
+	private static final String ALGAE_URL_ORIGINAL = "http://media.bgbm.org/erez/erez?cmd=get&src=Algaterra%2FAlgae%2F";
+	private static final String SITE_URL_ORIGINAL = "http://media.bgbm.org/erez/erez?cmd=get&src=Algaterra%2FSites%2F";
+	private static final String VOUCHER_URL_ORIGINAL = "http://media.bgbm.org/erez/erez?cmd=get&src=Algaterra%2FVoucher%2F";
+	
 	
 	protected enum PathType {
-		Image (ALGAE_URL_BASE),
-		Site (SITE_URL_BASE),
-		Voucher (VOUCHER_URL_BASE)
+		Image (ALGAE_URL_BASE, ALGAE_URL_ORIGINAL),
+		Site (SITE_URL_BASE, SITE_URL_ORIGINAL),
+		Voucher (VOUCHER_URL_BASE, VOUCHER_URL_ORIGINAL)
 		;
 		
-		String urlBase;
-		private PathType(String urlBase){
-			this.urlBase = urlBase;
+		String urlThumbnail;
+		String urlOriginal;
+		private PathType(String urlThumbnail, String urlOriginal){
+			this.urlThumbnail = urlThumbnail;
+			this.urlOriginal = urlOriginal;
 		}
 	}
-	
+
+	public AlgaTerraImageImportBase(String tableName, String pluralString) {
+		super(tableName, pluralString);
+	}
+
 	
 	/**
 	 * Creates a media object and 
@@ -90,15 +93,33 @@ public abstract class AlgaTerraImageImportBase extends BerlinModelImportBase{
 			
 			
 			//handle thumbnail
-			String filePath = pathType.urlBase;
+			String filePath = pathType.urlThumbnail;
 			String fullPath = filePath + fileName;
-			
-			//
 			Media media = getImageMedia(fullPath, READ_MEDIA_DATA);
+			if (media == null){
+				logger.warn("Thumbnail image not found: " + filePath);
+			}
+			
+			//handle original
+			filePath = pathType.urlOriginal;
+			fullPath = filePath + fileName;
+			Media mediaOriginal = getImageMedia(fullPath, READ_MEDIA_DATA);
+			if (mediaOriginal != null){
+				if (media == null){
+					media = mediaOriginal;
+				}else {
+					media.addRepresentation(mediaOriginal.getRepresentations().iterator().next());
+				}
+			}else{
+				logger.warn("Original image not found: " + filePath);
+			}
 			
 			if (media == null){
 				throw new RuntimeException ("Media not found for " +fullPath);
 			}
+			
+			
+			
 			if (isNotBlank(figurePhrase)){
 				media.putTitle(Language.DEFAULT(), figurePhrase);
 			}
