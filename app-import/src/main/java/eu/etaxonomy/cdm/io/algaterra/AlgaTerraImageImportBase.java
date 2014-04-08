@@ -87,12 +87,14 @@ public abstract class AlgaTerraImageImportBase extends BerlinModelImportBase{
 //			if (isBlank(filePath)){
 //				filePath = state.getAlgaTerraConfigurator().getImageBaseUrl();
 //			}
-			String filePath = pathType.urlBase;
 			
+			
+			//handle thumbnail
+			String filePath = pathType.urlBase;
 			String fullPath = filePath + fileName;
 			
-			boolean isFigure = false;
-			Media media = getImageMedia(fullPath, READ_MEDIA_DATA, isFigure);
+			//
+			Media media = getImageMedia(fullPath, READ_MEDIA_DATA);
 			
 			if (media == null){
 				throw new RuntimeException ("Media not found for " +fullPath);

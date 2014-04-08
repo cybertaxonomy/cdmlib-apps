@@ -345,7 +345,7 @@ public class GlobisImageImport  extends GlobisImportBase<Taxon> {
 				}
 			}
 			
-			media = this.getImageMedia(uri.toString(), readMediaData, false);
+			media = this.getImageMedia(uri.toString(), readMediaData);
 			media.putTitle(Language.ENGLISH(), legend);
 			this.doIdCreatedUpdatedNotes(state, media, rs, bildID, IMAGE_NAMESPACE);
 			
