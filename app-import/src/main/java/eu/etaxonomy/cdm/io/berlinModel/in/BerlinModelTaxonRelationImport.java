@@ -44,14 +44,15 @@ import eu.etaxonomy.cdm.model.common.AnnotatableEntity;
 import eu.etaxonomy.cdm.model.common.CdmBase;
 import eu.etaxonomy.cdm.model.common.IdentifiableSource;
 import eu.etaxonomy.cdm.model.reference.Reference;
+import eu.etaxonomy.cdm.model.taxon.Classification;
 import eu.etaxonomy.cdm.model.taxon.Synonym;
 import eu.etaxonomy.cdm.model.taxon.SynonymRelationship;
 import eu.etaxonomy.cdm.model.taxon.SynonymRelationshipType;
 import eu.etaxonomy.cdm.model.taxon.Taxon;
 import eu.etaxonomy.cdm.model.taxon.TaxonBase;
 import eu.etaxonomy.cdm.model.taxon.TaxonNode;
+import eu.etaxonomy.cdm.model.taxon.TaxonRelationship;
 import eu.etaxonomy.cdm.model.taxon.TaxonRelationshipType;
-import eu.etaxonomy.cdm.model.taxon.Classification;
 import eu.etaxonomy.cdm.strategy.exceptions.UnknownCdmTypeException;
 
 /**
@@ -317,17 +318,27 @@ public class BerlinModelTaxonRelationImport  extends BerlinModelImportBase  {
 								logger.warn("Proparte/Partial not yet implemented for TaxonRelationShipType " + relQualifierFk);
 							}
 						}else if (isConceptRelationship){
-							ResultWrapper<Boolean> isInverse = new ResultWrapper<Boolean>();
+							ResultWrapper<Boolean> isInverse = ResultWrapper.NewInstance(false);
+							ResultWrapper<Boolean> isDoubtful = ResultWrapper.NewInstance(false);
 							try {
-								TaxonRelationshipType relType = BerlinModelTransformer.taxonRelId2TaxonRelType(relQualifierFk, isInverse);	
+								TaxonRelationshipType relType = BerlinModelTransformer.taxonRelId2TaxonRelType(relQualifierFk, isInverse, isDoubtful);	
+
 								if (! (taxon1 instanceof Taxon)){
 									success = false;
 									logger.error("TaxonBase (ID = " + taxon1.getId()+ ", RIdentifier = " + taxon1Id + ") can't be casted to Taxon");
 								}else{
 									Taxon fromTaxon = (Taxon)taxon1;
+									if (isInverse.getValue() == true){
+										Taxon tmp = fromTaxon;
+										fromTaxon = toTaxon;
+										toTaxon = tmp;
+									}
 									taxonRelationship = fromTaxon.addTaxonRelation(toTaxon, relType, citation, microcitation);
 									handleAllRelatedTaxa(state, toTaxon, classificationMap, treeRefFk);
 									handleAllRelatedTaxa(state, fromTaxon, classificationMap, fromRefFk);
+									if (isDoubtful.getValue() == true){
+										((TaxonRelationship)taxonRelationship).setDoubtful(true);
+									}	
 								}
 							} catch (UnknownCdmTypeException e) {
 								//TODO other relationships
@@ -381,9 +392,6 @@ public class BerlinModelTaxonRelationImport  extends BerlinModelImportBase  {
 			Classification classification = getClassificationTree(state, classificationMap, secRefFk);
 			classification.addChildTaxon(taxon, null, null);
 		}
-		
-
-		
 	}
 
 	@Override
