@@ -101,17 +101,19 @@ public abstract class AlgaTerraImageImportBase extends BerlinModelImportBase{
 			}
 			
 			//handle original
-			filePath = pathType.urlOriginal;
-			fullPath = filePath + fileName;
-			Media mediaOriginal = getImageMedia(fullPath, READ_MEDIA_DATA);
-			if (mediaOriginal != null){
-				if (media == null){
-					media = mediaOriginal;
-				}else {
-					media.addRepresentation(mediaOriginal.getRepresentations().iterator().next());
+			if (state.getAlgaTerraConfigurator().isImportOriginalSizeMedia()){
+				filePath = pathType.urlOriginal;
+				fullPath = filePath + fileName;
+				Media mediaOriginal = getImageMedia(fullPath, READ_MEDIA_DATA);
+				if (mediaOriginal != null){
+					if (media == null){
+						media = mediaOriginal;
+					}else {
+						media.addRepresentation(mediaOriginal.getRepresentations().iterator().next());
+					}
+				}else{
+					logger.warn("Original image not found: " + filePath);
 				}
-			}else{
-				logger.warn("Original image not found: " + filePath);
 			}
 			
 			if (media == null){

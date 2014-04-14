@@ -207,7 +207,11 @@ public class AlgaTerraFactEcologyImport  extends AlgaTerraSpecimenImportBase {
 			Map<String, Reference> refMap = (Map<String, Reference>) partitioner.getObjectMap(BerlinModelReferenceImport.REFERENCE_NAMESPACE);
 			
 			Reference<?> ref = refMap.get(String.valueOf(refFk));
-			determination.addReference(ref);
+			if (ref != null){
+				determination.addReference(ref);
+			}else{
+				logger.warn("Ref not found for Determination Event");
+			}
 		}else{
 			//IdentificationReference is not to be handled according to Henning
 			if (StringUtils.isNotBlank(identificationReference)){
@@ -224,7 +228,7 @@ public class AlgaTerraFactEcologyImport  extends AlgaTerraSpecimenImportBase {
 	}
 
 
-
+                                                                                                                                                                                                                                                                                          
 	private DerivedUnit makeIdentifiedSpecimen(DerivedUnit ecoFact, String recordBasis, Integer taxonId, Integer ecoFactId) {
 		//TODO event type
 		DerivationEvent event = DerivationEvent.NewInstance();
@@ -341,7 +345,7 @@ public class AlgaTerraFactEcologyImport  extends AlgaTerraSpecimenImportBase {
 
 	@Override
 	protected boolean isIgnore(BerlinModelImportState state){
-		return ! ((AlgaTerraImportState)state).getAlgaTerraConfigurator().isDoEcoFacts();
+		return ! ((AlgaTerraImportState)state).getAlgaTerraConfigurator().isDoFactEcology();
 	}
 	
 }

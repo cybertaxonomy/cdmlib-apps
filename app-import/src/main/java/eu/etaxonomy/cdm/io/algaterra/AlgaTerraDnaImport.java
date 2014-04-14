@@ -106,9 +106,7 @@ public class AlgaTerraDnaImport  extends AlgaTerraSpecimenImportBase {
 		return strQuery;
 	}
 
-	/* (non-Javadoc)
-	 * @see eu.etaxonomy.cdm.io.berlinModel.in.IPartitionedIO#doPartition(eu.etaxonomy.cdm.io.berlinModel.in.ResultSetPartitioner, eu.etaxonomy.cdm.io.berlinModel.in.BerlinModelImportState)
-	 */
+	@Override
 	public boolean doPartition(ResultSetPartitioner partitioner, BerlinModelImportState bmState) {
 		boolean success = true;
 		
@@ -237,10 +235,7 @@ public class AlgaTerraDnaImport  extends AlgaTerraSpecimenImportBase {
 				DerivationEvent.NewSimpleInstance(ecoFact, dnaSample, DerivationEventType.DNA_EXTRACTION());
 				samplesToSave.add(ecoFact);
 			}
-		}
-		
-		
-		
+		}	
 	}
 
 
@@ -380,7 +375,6 @@ public class AlgaTerraDnaImport  extends AlgaTerraSpecimenImportBase {
 			while (rs.next()){
 				handleForeignKey(rs, taxonIdSet, "taxonId");
 				handleForeignKey(rs, ecoFactFkSet, "ecoFactId");
-
 			}
 			
 			//taxon map

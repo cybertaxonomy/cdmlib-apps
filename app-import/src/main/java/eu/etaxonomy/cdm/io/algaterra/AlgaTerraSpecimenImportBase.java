@@ -22,6 +22,7 @@ import org.springframework.transaction.TransactionStatus;
 
 import eu.etaxonomy.cdm.api.facade.DerivedUnitFacade;
 import eu.etaxonomy.cdm.io.berlinModel.in.BerlinModelImportBase;
+import eu.etaxonomy.cdm.io.berlinModel.in.BerlinModelImportState;
 import eu.etaxonomy.cdm.io.common.ResultSetPartitioner;
 import eu.etaxonomy.cdm.io.common.Source;
 import eu.etaxonomy.cdm.io.common.TdwgAreaProvider;
@@ -156,8 +157,7 @@ public abstract class AlgaTerraSpecimenImportBase extends BerlinModelImportBase{
 			this.commitTransaction(txStatus);
 			
 			state.setSpecimenVocabulariesCreated(true);
-		}
-		
+		}	
 	}
 	
 	protected String getLocalityString(){

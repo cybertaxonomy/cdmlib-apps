@@ -177,10 +177,8 @@ public class AlgaTerraEcoFactImport  extends AlgaTerraSpecimenImportBase {
 				} 
                 
             }
-           
-//            logger.warn("Specimen: " + countSpecimen + ", Descriptions: " + countDescriptions );
-
-			logger.warn("Taxa to save: " + objectsToSave.size());
+ 
+			logger.warn("Specimen to save: " + objectsToSave.size());
 			getOccurrenceService().save(objectsToSave);	
 			
 			return success;
@@ -250,7 +248,6 @@ public class AlgaTerraEcoFactImport  extends AlgaTerraSpecimenImportBase {
 		addCategoricalValue(state, fieldDescription, lifeFormUuid, uuidFeatureAlgaTerraLifeForm);
 		
 
-		
 		//parameters
 		makeParameter(state, rs, getFieldObservationDescription(facade));
 
