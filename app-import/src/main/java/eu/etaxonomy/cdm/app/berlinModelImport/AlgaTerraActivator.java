@@ -48,8 +48,8 @@ public class AlgaTerraActivator {
 	//database validation status (create, update, validate ...)
 	static DbSchemaValidation hbm2dll = DbSchemaValidation.CREATE;
 	static final Source berlinModelSource = BerlinModelSources.AlgaTerra();
-	static final ICdmDataSource cdmDestination = CdmDestinations.localH2();
-//	static final ICdmDataSource cdmDestination = CdmDestinations.cdm_test_local_mysql();
+//	static final ICdmDataSource cdmDestination = CdmDestinations.localH2();
+	static final ICdmDataSource cdmDestination = CdmDestinations.cdm_test_local_mysql();
 
 //	static final ICdmDataSource cdmDestination = CdmDestinations.cdm_algaterra_preview();
 //	static final ICdmDataSource cdmDestination = CdmDestinations.cdm_algaterra_production();
@@ -65,6 +65,8 @@ public class AlgaTerraActivator {
 	
 	static final boolean loginAsDefaultAdmin = true;
 	static final boolean removeRestricted = true;
+	
+	static final boolean importOriginalSizeMedia = false;
 	
 	//check - import
 	static final CHECK check = CHECK.IMPORT_WITHOUT_CHECK;
@@ -102,16 +104,16 @@ public class AlgaTerraActivator {
 	//alga terra specific
 	static final boolean ecoFacts = true;
 	static final boolean doFactEcology = true;
-	static final boolean doImages = true;
+	static final boolean doImages = false;
 	static final boolean doDna = true;
-	static final boolean doMorphology = false;
+	static final boolean doMorphology = true;
 
 // ************************ NONE **************************************** //
 	
 //	//authors
 //	static final boolean doAuthors = false;
 //	//references
-//	static final DO_REFERENCES doReferences =  DO_REFERENCES.ALL;
+//	static final DO_REFERENCES doReferences =  DO_REFERENCES.NONE;
 //	//names
 //	static final boolean doTaxonNames = false;
 //	static final boolean doRelNames = false;
@@ -120,7 +122,7 @@ public class AlgaTerraActivator {
 //	static final boolean doNameFacts = false;
 //	
 //	//taxa
-//	static final boolean doTaxa = true;
+//	static final boolean doTaxa = false;
 //	static final boolean doRelTaxa = false;
 //	static final boolean doFacts = false;
 //	
@@ -128,8 +130,8 @@ public class AlgaTerraActivator {
 //	static final boolean ecoFacts = true;
 //	static final boolean doFactEcology = false;
 //	static final boolean doImages = false;
-//	static final boolean doDna = true;
-//	static final boolean doMorphology = false;
+//	static final boolean doDna = false;
+//	static final boolean doMorphology = true;
 	
 	
 	public void invoke(String[] args){
@@ -164,6 +166,7 @@ public class AlgaTerraActivator {
 		config.setSourceRefUuid(sourceRefUuid);
 		config.setIgnoreNull(ignoreNull);
 		config.setRemoveRestricted(removeRestricted);
+		config.setImportOriginalSizeMedia(importOriginalSizeMedia);
 		
 		config.setIncludeFlatClassifications(includeFlatClassifications);
 		config.setIncludeAllNonMisappliedRelatedClassifications(includeAllNonMisappliedRelatedClassifications);
