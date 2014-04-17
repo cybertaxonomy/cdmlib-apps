@@ -186,8 +186,7 @@ public class CentralAfricaEricaceaeActivator {
 			CdmDefaultImport<SpecimenCdmExcelImportConfigurator> specimenImport = new CdmDefaultImport<SpecimenCdmExcelImportConfigurator>();
 			specimenImport.setCdmAppController(app);
 			specimenImport.invoke(specimenConfig);
-			
-			
+				
 		}
 		return;
 	
