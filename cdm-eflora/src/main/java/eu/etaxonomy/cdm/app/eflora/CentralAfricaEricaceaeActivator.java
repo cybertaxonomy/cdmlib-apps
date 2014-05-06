@@ -282,9 +282,9 @@ public class CentralAfricaEricaceaeActivator {
 
 	}
 
-	private Reference getSourceReference(String string) {
-		Reference result = ReferenceFactory.newGeneric();
-		result.setTitleCache(string);
+	private Reference<?> getSourceReference(String string) {
+		Reference<?> result = ReferenceFactory.newGeneric();
+		result.setTitleCache(string, true);
 		return result;
 	}
 
@@ -292,7 +292,7 @@ public class CentralAfricaEricaceaeActivator {
 		CentralAfricaEricaceaeTransformer transformer = new CentralAfricaEricaceaeTransformer();
 		
 		FeatureTree result = FeatureTree.NewInstance(featureTreeUuid);
-		result.setTitleCache("Central Africa Ericaceae Feature Tree");
+		result.setTitleCache("Central Africa Ericaceae Feature Tree", true);
 		FeatureNode root = result.getRoot();
 		FeatureNode newNode;
 		
