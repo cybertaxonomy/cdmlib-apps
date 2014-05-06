@@ -281,7 +281,7 @@ public class FaunaEuErmsMergeActivator {
 				newDescription.addElement(distribution);
 				try{
 					appCtrInit.getDescriptionService().delete(description);
-				}catch (ReferencedObjectUndeletableException e){
+				}catch (Exception e){
 					logger.debug("The description of" + description.getTaxon().getTitleCache() + description.getTitleCache() + "can't be deleted because it is referenced.");
 				}
 			}
