@@ -283,7 +283,9 @@ public class AlgaTerraEcoFactImport  extends AlgaTerraSpecimenImportBase {
 			
 			//method
 			if (StringUtils.isNotBlank(method)){
-				logger.warn("Methods not yet handled: " + method);
+				//TODO
+				//see http://dev.e-taxonomy.eu/trac/ticket/4205
+				logger.warn("Methods not yet handled: " + method + ", #4205");
 			}
 			//parameter
 			TermVocabulary<Feature> vocParameter = getVocabulary(TermType.Feature, uuidVocParameter, "Feature vocabulary for AlgaTerra measurement parameters", "Parameters", null, null, false, Feature.COMMON_NAME());

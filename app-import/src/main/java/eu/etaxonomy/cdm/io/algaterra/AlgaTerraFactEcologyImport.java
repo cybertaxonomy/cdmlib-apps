@@ -41,8 +41,6 @@ import eu.etaxonomy.cdm.model.description.TaxonDescription;
 import eu.etaxonomy.cdm.model.occurrence.DerivationEvent;
 import eu.etaxonomy.cdm.model.occurrence.DerivedUnit;
 import eu.etaxonomy.cdm.model.occurrence.DeterminationEvent;
-import eu.etaxonomy.cdm.model.occurrence.FieldUnit;
-import eu.etaxonomy.cdm.model.occurrence.SpecimenOrObservationBase;
 import eu.etaxonomy.cdm.model.occurrence.SpecimenOrObservationType;
 import eu.etaxonomy.cdm.model.reference.Reference;
 import eu.etaxonomy.cdm.model.taxon.Taxon;
@@ -68,11 +66,7 @@ public class AlgaTerraFactEcologyImport  extends AlgaTerraSpecimenImportBase {
 		super(dbTableName, pluralString);
 	}
 	
-	
-	
-	/* (non-Javadoc)
-	 * @see eu.etaxonomy.cdm.io.berlinModel.in.BerlinModelImportBase#getIdQuery()
-	 */
+
 	@Override
 	protected String getIdQuery(BerlinModelImportState state) {
 		String result = " SELECT f.factId " + 
@@ -82,9 +76,6 @@ public class AlgaTerraFactEcologyImport  extends AlgaTerraSpecimenImportBase {
 		return result;
 	}
 
-	/* (non-Javadoc)
-	 * @see eu.etaxonomy.cdm.io.berlinModel.in.BerlinModelImportBase#getRecordQuery(eu.etaxonomy.cdm.io.berlinModel.in.BerlinModelImportConfigurator)
-	 */
 	@Override
 	protected String getRecordQuery(BerlinModelImportConfigurator config) {
 			String strQuery =   
@@ -97,9 +88,7 @@ public class AlgaTerraFactEcologyImport  extends AlgaTerraSpecimenImportBase {
 		return strQuery;
 	}
 
-	/* (non-Javadoc)
-	 * @see eu.etaxonomy.cdm.io.berlinModel.in.IPartitionedIO#doPartition(eu.etaxonomy.cdm.io.berlinModel.in.ResultSetPartitioner, eu.etaxonomy.cdm.io.berlinModel.in.BerlinModelImportState)
-	 */
+	@Override
 	public boolean doPartition(ResultSetPartitioner partitioner, BerlinModelImportState bmState) {
 		boolean success = true;
 		
@@ -179,7 +168,7 @@ public class AlgaTerraFactEcologyImport  extends AlgaTerraSpecimenImportBase {
 	private void makeIndividualsAssociation(AlgaTerraImportState state, Taxon taxon, Reference<?> sourceRef, DerivedUnit identifiedSpecimen){
 		TaxonDescription taxonDescription = getTaxonDescription(state, taxon, sourceRef);
 		IndividualsAssociation indAssociation = IndividualsAssociation.NewInstance();
-		Feature feature = makeFeature(identifiedSpecimen.getRecordBasis());
+		Feature feature = makeFeature(identifiedSpecimen.getRecordBasis(), state);
 		indAssociation.setAssociatedSpecimenOrObservation(identifiedSpecimen);
 		indAssociation.setFeature(feature);
 		taxonDescription.addElement(indAssociation);	
@@ -289,8 +278,6 @@ public class AlgaTerraFactEcologyImport  extends AlgaTerraSpecimenImportBase {
 		return facade;
 	}
 
-
-	
 	@Override
 	public Map<Object, Map<String, ? extends CdmBase>> getRelatedObjectsForPartition(ResultSet rs, BerlinModelImportState state) {
 		String nameSpace;

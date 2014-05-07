@@ -72,6 +72,9 @@ public class AlgaTerraImportTransformer extends BerlinModelTransformer {
 	public static final UUID uuidFeatureCentralAreaValve2 = UUID.fromString("ac7a95c0-e388-4ab1-bf87-5bd1c17a1ad0");
 	public static final UUID uuidFeatureAxialAreaValve2 = UUID.fromString("0d84c46b-789f-430a-ab55-81e2b280d8d4");
 	public static final UUID uuidFeatureHasRapheValve2 = UUID.fromString("b0d99b12-8de2-43e6-83d0-2e94ca71a53e");
+	public static final UUID uuidFeatureSalinity = UUID.fromString("2c9377d6-73d9-4401-a113-799eb3752ef3");
+	
+	public static final UUID uuidFeatureLivingSpecimen = UUID.fromString("0f167e2e-6494-4cf6-93a5-d92266626ec9");
 	
 
 	public static final UUID uuidVocChloroplastPosition = UUID.fromString("0ef57573-09e0-4ed6-a6bc-d80a8f927113");
@@ -92,6 +95,13 @@ public class AlgaTerraImportTransformer extends BerlinModelTransformer {
 	public static final UUID uuidMeasurementUnitPercent = UUID.fromString("3ea3110e-f048-4bed-8bfe-33c60f63626f");
 	public static final UUID uuidMeasurementUnitCm = UUID.fromString("3ea3110e-f048-4bed-8bfe-33c60f63626f");
 	public static final UUID uuidMeasurementUnitMicroSiCm = UUID.fromString("3ea3110e-f048-4bed-8bfe-33c60f63626f");
+	
+	
+	public static final UUID uuidNamedAreaVocAlgaTerraInformalAreas = UUID.fromString("ebce2f16-2a5d-4845-b4b8-f7841796a093");
+	public static final UUID uuidNamedAreaPatagonia = UUID.fromString("e0423d0a-87c3-41aa-afa3-8f2a86aa06dd");
+	public static final UUID uuidNamedAreaTierraDelFuego = UUID.fromString("53cf6dc2-b5cc-42be-9fad-7158b8f682f4");
+	public static final UUID uuidNamedAreaBorneo = UUID.fromString("6bb908af-be16-402b-973b-3ea20df1d70d");
+	
 	
 	
 	/* (non-Javadoc)
@@ -154,6 +164,8 @@ public class AlgaTerraImportTransformer extends BerlinModelTransformer {
 		}else if (key.equalsIgnoreCase("Central Area Valve 2")){return uuidFeatureCentralAreaValve2;
 		}else if (key.equalsIgnoreCase("Axial Area Valve 2")){return uuidFeatureAxialAreaValve2;
 		}else if (key.equalsIgnoreCase("has Raphe Valve 2")){return uuidFeatureHasRapheValve2;
+
+		}else if (key.equalsIgnoreCase("Salinity")){return uuidFeatureSalinity;
 
 		}else{
 			logger.warn("Feature was not recognized: " + key);
