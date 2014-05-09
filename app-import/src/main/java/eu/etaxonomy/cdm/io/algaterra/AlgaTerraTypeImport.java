@@ -151,9 +151,7 @@ public class AlgaTerraTypeImport  extends AlgaTerraSpecimenImportBase {
 				
 				String typeSpecimenPhrase = rs.getString("TypeSpecimenPhrase");
 				
-				
-				
-				boolean isIcon = typeSpecimenPhrase.toLowerCase().startsWith("\u005bicon");
+				boolean isIcon = typeSpecimenPhrase != null && typeSpecimenPhrase.toLowerCase().startsWith("\u005bicon");
 				
 				try {
 					
@@ -165,7 +163,7 @@ public class AlgaTerraTypeImport  extends AlgaTerraSpecimenImportBase {
 					if (isIcon){
 						//TODO handle images correctly for these specimen
 						type = SpecimenOrObservationType.StillImage;
-					}else if (typeStatusFk.equals(39)){
+					}else if (typeStatusFk != null && typeStatusFk.equals(39)){
 						type =  SpecimenOrObservationType.LivingSpecimen;
 					}
 					
@@ -184,7 +182,7 @@ public class AlgaTerraTypeImport  extends AlgaTerraSpecimenImportBase {
 					TaxonNameBase<?,?> name = getTaxonName(state, taxonNameMap, nameId);
 					SpecimenTypeDesignation designation = SpecimenTypeDesignation.NewInstance();
 					SpecimenTypeDesignationStatus status = getSpecimenTypeDesignationStatusByKey(typeStatusFk);
-					if (typeStatusFk.equals(39)){
+					if (typeStatusFk != null && typeStatusFk.equals(39)){
 						designation.addAnnotation(Annotation.NewInstance("Type status: Authentic strain", AnnotationType.EDITORIAL(), Language.DEFAULT()));
 					}
 					
@@ -395,27 +393,6 @@ public class AlgaTerraTypeImport  extends AlgaTerraSpecimenImportBase {
 		
 		return facade;
 	}
-//	private DerivedUnitType makeDerivedUnitType(String recordBasis) {
-//		DerivedUnitType result = null;
-//		if (StringUtils.isBlank(recordBasis)){
-//			result = DerivedUnitType.DerivedUnit;
-//		} else if (recordBasis.equalsIgnoreCase("FossileSpecimen")){
-//			result = DerivedUnitType.Fossil;
-//		}else if (recordBasis.equalsIgnoreCase("HumanObservation")){
-//			result = DerivedUnitType.Observation;
-//		}else if (recordBasis.equalsIgnoreCase("Literature")){
-//			logger.warn("Literature record basis not yet supported");
-//			result = DerivedUnitType.DerivedUnit;
-//		}else if (recordBasis.equalsIgnoreCase("LivingSpecimen")){
-//			result = DerivedUnitType.LivingBeing;
-//		}else if (recordBasis.equalsIgnoreCase("MachineObservation")){
-//			logger.warn("MachineObservation record basis not yet supported");
-//			result = DerivedUnitType.Observation;
-//		}else if (recordBasis.equalsIgnoreCase("PreservedSpecimen")){
-//			result = DerivedUnitType.Specimen;
-//		}
-//		return result;
-//	}
 
 	
 	private SpecimenTypeDesignationStatus getSpecimenTypeDesignationStatusByKey(Integer typeStatusFk) {
@@ -438,7 +415,7 @@ public class AlgaTerraTypeImport  extends AlgaTerraSpecimenImportBase {
 		}else if (typeStatusFk == 22) { return SpecimenTypeDesignationStatus.PHOTOTYPE();
 		}else if (typeStatusFk == 30) { return SpecimenTypeDesignationStatus.TYPE();
 		}else if (typeStatusFk == 38) { return SpecimenTypeDesignationStatus.ISOEPITYPE();
-		}else if (typeStatusFk == 39) { return SpecimenTypeDesignationStatus.ORIGINAL_MATERIAL();
+		}else if (typeStatusFk == 39) { return SpecimenTypeDesignationStatus.ORIGINAL_MATERIAL();  //but add annotation
 		}else if (typeStatusFk == 40) { return SpecimenTypeDesignationStatus.ORIGINAL_MATERIAL();
 		}else{
 			logger.warn("typeStatusFk undefined for " +  typeStatusFk);
