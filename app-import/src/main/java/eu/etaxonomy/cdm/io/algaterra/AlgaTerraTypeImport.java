@@ -31,16 +31,15 @@ import eu.etaxonomy.cdm.io.berlinModel.in.BerlinModelImportState;
 import eu.etaxonomy.cdm.io.berlinModel.in.BerlinModelRefDetailImport;
 import eu.etaxonomy.cdm.io.berlinModel.in.BerlinModelReferenceImport;
 import eu.etaxonomy.cdm.io.berlinModel.in.BerlinModelTaxonNameImport;
+import eu.etaxonomy.cdm.io.common.IImportConfigurator.EDITOR;
 import eu.etaxonomy.cdm.io.common.IOValidator;
 import eu.etaxonomy.cdm.io.common.ResultSetPartitioner;
-import eu.etaxonomy.cdm.io.common.IImportConfigurator.EDITOR;
 import eu.etaxonomy.cdm.model.common.AnnotatableEntity;
 import eu.etaxonomy.cdm.model.common.Annotation;
 import eu.etaxonomy.cdm.model.common.AnnotationType;
 import eu.etaxonomy.cdm.model.common.CdmBase;
 import eu.etaxonomy.cdm.model.common.IdentifiableSource;
 import eu.etaxonomy.cdm.model.common.Language;
-import eu.etaxonomy.cdm.model.common.OriginalSourceType;
 import eu.etaxonomy.cdm.model.common.User;
 import eu.etaxonomy.cdm.model.name.BotanicalName;
 import eu.etaxonomy.cdm.model.name.Rank;
@@ -90,8 +89,8 @@ public class AlgaTerraTypeImport  extends AlgaTerraSpecimenImportBase {
 			" SELECT ts.*, ts.TypeSpecimenId as unitId, td.*, gz.ID as GazetteerId, gz.L2Code, gz.L3Code, gz.L4Code, gz.ISOCountry, gz.Country, ts.WaterBody, " + 
                " ts.RefFk as tsRefFk, ts.RefDetailFk as tsRefDetailFk, td.RefFk as tdRefFk, td.RefDetailFk as tdRefDetailFk, " +
                " RefDet.Details as tdRefDetails, " +
-               " td.created_When tdCreated_When, tsd.created_When tsdCreated_When, td.updated_when tdUpdated_when" +
-               " td.created_who tdCreated_who, tsd.created_who tdCreated_who, td.updated_who tdUpdated_who,  " +
+               " td.created_When as tdCreated_When, tsd.created_When as tsdCreated_When, td.updated_when as tdUpdated_when, " +
+               " td.created_who as tdCreated_who, tsd.created_who as tsdCreated_who, td.updated_who tdUpdated_who  " +
             " FROM TypeSpecimenDesignation tsd  " 
             	+ " LEFT OUTER JOIN TypeSpecimen AS ts ON tsd.TypeSpecimenFk = ts.TypeSpecimenId " 
             	+ " FULL OUTER JOIN TypeDesignation td ON  td.TypeDesignationId = tsd.TypeDesignationFk "
@@ -150,11 +149,11 @@ public class AlgaTerraTypeImport  extends AlgaTerraSpecimenImportBase {
 				String tdRefDetails = rs.getString("tdRefDetails");
 				Boolean restrictedFlag = nullSafeBoolean(rs, "RestrictedFlag");
 				
-				String typeSpecimenPhrase = rs.getString("TypeSpecimnePhrase");
+				String typeSpecimenPhrase = rs.getString("TypeSpecimenPhrase");
 				
 				
 				
-				boolean isIcon = typeSpecimenPhrase.toLowerCase().startsWith("[icon");
+				boolean isIcon = typeSpecimenPhrase.toLowerCase().startsWith("\u005bicon");
 				
 				try {
 					
