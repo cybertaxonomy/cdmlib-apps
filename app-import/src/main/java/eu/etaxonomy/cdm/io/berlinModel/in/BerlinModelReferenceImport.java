@@ -514,10 +514,10 @@ public class BerlinModelReferenceImport extends BerlinModelImportBase {
 		}
 
 		//title/abbrevTitle
-		if (StringUtils.isNotBlank(nomTitleAbbrev)){
+		if (isNotBlank(nomTitleAbbrev)){
 			ref.setAbbrevTitle(nomTitleAbbrev);
 		}
-		if (StringUtils.isNotBlank(title)){
+		if (isNotBlank(title)){
 			ref.setTitle(title);
 		}
 
@@ -568,12 +568,11 @@ public class BerlinModelReferenceImport extends BerlinModelImportBase {
 			logger.warn ("Article has no inreference: " + refId);
 		}
 		makeStandardMapper(valueMap, (Reference)article); //url, pages, series, volume
-		return (Reference)article;
+		return (Reference<?>)article;
 	}
 	
 	private Reference<?> makePartOfOtherTitle (Map<String, Object> valueMap, 
-			Map<Integer, Reference> refToSave, 
-			Map<String, Reference> relatedReferences){
+			Map<Integer, Reference> refToSave, Map<String, Reference> relatedReferences){
 		
 		Reference<?> result;
 		Object inRefFk = valueMap.get("inRefFk".toLowerCase());
@@ -586,7 +585,7 @@ public class BerlinModelReferenceImport extends BerlinModelImportBase {
 			result = makeUnknown(valueMap);
 		}else if (inRefFk == null){
 			//TODO is this correct ??
-			logger.warn("Part-Of-Other-Title has in in reference: " + refId);
+			logger.warn("Part-Of-Other-Title has no in reference: " + refId);
 			result = makeUnknown(valueMap);
 		}else if (inRefCategoryFk == REF_BOOK){
 			//BookSection
@@ -594,7 +593,6 @@ public class BerlinModelReferenceImport extends BerlinModelImportBase {
 			result = (Reference<?>)bookSection;
 		}else if (inRefCategoryFk == REF_ARTICLE){
 			//Article
-			//TODO 
 			logger.info("Reference (refId = " + refId + ") of type 'part_of_other_title' is part of 'article'." +
 					" We use the section reference type for such in references now.") ;
 			result = ReferenceFactory.newSection();
@@ -604,6 +602,10 @@ public class BerlinModelReferenceImport extends BerlinModelImportBase {
 					" This is not allowed! Generic reference created instead") ;
 			result = ReferenceFactory.newGeneric();
 			result.addMarker(Marker.NewInstance(MarkerType.TO_BE_CHECKED(), true));
+		}else if (inRefCategoryFk == REF_PART_OF_OTHER_TITLE){
+			logger.info("Reference (refId = " + refId + ") of type 'part_of_other_title' has inReference 'part of other title'." +
+					" This is allowed, but may be true only for specific cases (e.g. parts of book chapters). You may want to check if this is correct") ;
+			result = ReferenceFactory.newSection();
 		}else{
 			logger.warn("InReference type (catFk = " + inRefCategoryFk + ") of part-of-reference not recognized for refId " + refId + "." +
 				" Create 'Generic' reference instead");
@@ -653,7 +655,7 @@ public class BerlinModelReferenceImport extends BerlinModelImportBase {
 //		informal.setSeries(series);
 		makeStandardMapper(valueMap, generic);//editor, pages, placePublished, publisher, series, volume
 		String informal = (String)valueMap.get("InformalRefCategory".toLowerCase());
-		if (CdmUtils.isNotEmpty(informal) ){
+		if (isNotBlank(informal) ){
 			generic.addExtension(informal, ExtensionType.INFORMAL_CATEGORY());
 		}
 		return generic;
@@ -661,14 +663,14 @@ public class BerlinModelReferenceImport extends BerlinModelImportBase {
 	
 	private Reference<?> makeDatabase(Map<String, Object> valueMap){
 		if (logger.isDebugEnabled()){logger.debug("RefType 'Database'");}
-		Reference database =  ReferenceFactory.newDatabase();
+		Reference<?> database =  ReferenceFactory.newDatabase();
 		makeStandardMapper(valueMap, database); //?
 		return database;
 	}
 	
 	private Reference<?> makeJournal(Map<String, Object> valueMap){
 		if (logger.isDebugEnabled()){logger.debug("RefType 'Journal'");}
-		Reference journal = ReferenceFactory.newJournal();
+		Reference<?> journal = ReferenceFactory.newJournal();
 		
 		Set<String> omitAttributes = new HashSet<String>();
 		String series = "series";
