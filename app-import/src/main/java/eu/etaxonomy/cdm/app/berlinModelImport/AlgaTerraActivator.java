@@ -48,8 +48,8 @@ public class AlgaTerraActivator {
 	//database validation status (create, update, validate ...)
 	static DbSchemaValidation hbm2dll = DbSchemaValidation.CREATE;
 	static final Source berlinModelSource = BerlinModelSources.AlgaTerra();
-//	static final ICdmDataSource cdmDestination = CdmDestinations.localH2();
-	static final ICdmDataSource cdmDestination = CdmDestinations.cdm_test_local_mysql();
+	static final ICdmDataSource cdmDestination = CdmDestinations.localH2();
+//	static final ICdmDataSource cdmDestination = CdmDestinations.cdm_test_local_mysql();
 
 //	static final ICdmDataSource cdmDestination = CdmDestinations.cdm_algaterra_preview();
 //	static final ICdmDataSource cdmDestination = CdmDestinations.cdm_algaterra_production();

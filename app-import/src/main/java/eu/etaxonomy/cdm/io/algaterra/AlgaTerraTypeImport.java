@@ -11,6 +11,7 @@ package eu.etaxonomy.cdm.io.algaterra;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Timestamp;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
@@ -18,19 +19,29 @@ import java.util.Set;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
+import org.joda.time.DateTime;
 import org.springframework.stereotype.Component;
 
 import eu.etaxonomy.cdm.api.facade.DerivedUnitFacade;
 import eu.etaxonomy.cdm.api.facade.DerivedUnitFacadeNotSupportedException;
 import eu.etaxonomy.cdm.io.algaterra.validation.AlgaTerraTypeImportValidator;
+import eu.etaxonomy.cdm.io.berlinModel.in.BerlinModelImportBase;
 import eu.etaxonomy.cdm.io.berlinModel.in.BerlinModelImportConfigurator;
 import eu.etaxonomy.cdm.io.berlinModel.in.BerlinModelImportState;
+import eu.etaxonomy.cdm.io.berlinModel.in.BerlinModelRefDetailImport;
 import eu.etaxonomy.cdm.io.berlinModel.in.BerlinModelReferenceImport;
 import eu.etaxonomy.cdm.io.berlinModel.in.BerlinModelTaxonNameImport;
 import eu.etaxonomy.cdm.io.common.IOValidator;
 import eu.etaxonomy.cdm.io.common.ResultSetPartitioner;
+import eu.etaxonomy.cdm.io.common.IImportConfigurator.EDITOR;
+import eu.etaxonomy.cdm.model.common.AnnotatableEntity;
+import eu.etaxonomy.cdm.model.common.Annotation;
+import eu.etaxonomy.cdm.model.common.AnnotationType;
 import eu.etaxonomy.cdm.model.common.CdmBase;
 import eu.etaxonomy.cdm.model.common.IdentifiableSource;
+import eu.etaxonomy.cdm.model.common.Language;
+import eu.etaxonomy.cdm.model.common.OriginalSourceType;
+import eu.etaxonomy.cdm.model.common.User;
 import eu.etaxonomy.cdm.model.name.BotanicalName;
 import eu.etaxonomy.cdm.model.name.Rank;
 import eu.etaxonomy.cdm.model.name.SpecimenTypeDesignation;
@@ -64,9 +75,6 @@ public class AlgaTerraTypeImport  extends AlgaTerraSpecimenImportBase {
 	}
 	
 	
-	/* (non-Javadoc)
-	 * @see eu.etaxonomy.cdm.io.berlinModel.in.BerlinModelImportBase#getIdQuery()
-	 */
 	@Override
 	protected String getIdQuery(BerlinModelImportState state) {
 		String result = " SELECT TypeDesignationId "  
@@ -75,28 +83,27 @@ public class AlgaTerraTypeImport  extends AlgaTerraSpecimenImportBase {
 		return result;
 	}
 
-	/* (non-Javadoc)
-	 * @see eu.etaxonomy.cdm.io.berlinModel.in.BerlinModelImportBase#getRecordQuery(eu.etaxonomy.cdm.io.berlinModel.in.BerlinModelImportConfigurator)
-	 */
 	@Override
 	protected String getRecordQuery(BerlinModelImportConfigurator config) {
 			String strQuery =    
 					
 			" SELECT ts.*, ts.TypeSpecimenId as unitId, td.*, gz.ID as GazetteerId, gz.L2Code, gz.L3Code, gz.L4Code, gz.ISOCountry, gz.Country, ts.WaterBody, " + 
-               " ts.RefFk as tsRefFk, ts.RefDetailFk as tsRefDetailFk, td.RefFk as tdRefFk, td.RefDetailFk as tdRefDetailFk " +
+               " ts.RefFk as tsRefFk, ts.RefDetailFk as tsRefDetailFk, td.RefFk as tdRefFk, td.RefDetailFk as tdRefDetailFk, " +
+               " RefDet.Details as tdRefDetails, " +
+               " td.created_When tdCreated_When, tsd.created_When tsdCreated_When, td.updated_when tdUpdated_when" +
+               " td.created_who tdCreated_who, tsd.created_who tdCreated_who, td.updated_who tdUpdated_who,  " +
             " FROM TypeSpecimenDesignation tsd  " 
             	+ " LEFT OUTER JOIN TypeSpecimen AS ts ON tsd.TypeSpecimenFk = ts.TypeSpecimenId " 
             	+ " FULL OUTER JOIN TypeDesignation td ON  td.TypeDesignationId = tsd.TypeDesignationFk "
             	+ " LEFT OUTER JOIN TDWGGazetteer gz ON ts.TDWGGazetteerFk = gz.ID "
+            	+ " LEFT OUTER JOIN RefDetail refDet ON td.RefDetailFk = refDet.RefDetailId AND td.RefFk = refDet.RefFk "
 		+ 	" WHERE (td.TypeDesignationId IN (" + ID_LIST_TOKEN + ")  )"  
           + " ORDER BY NameFk "
             ;
 		return strQuery;
 	}
 
-	/* (non-Javadoc)
-	 * @see eu.etaxonomy.cdm.io.berlinModel.in.IPartitionedIO#doPartition(eu.etaxonomy.cdm.io.berlinModel.in.ResultSetPartitioner, eu.etaxonomy.cdm.io.berlinModel.in.BerlinModelImportState)
-	 */
+	@Override
 	public boolean doPartition(ResultSetPartitioner partitioner, BerlinModelImportState bmState) {
 		boolean success = true;
 		
@@ -119,6 +126,7 @@ public class AlgaTerraTypeImport  extends AlgaTerraSpecimenImportBase {
 		Map<String, DerivedUnit> ecoFactMap = (Map<String, DerivedUnit>) partitioner.getObjectMap(AlgaTerraEcoFactImport.ECO_FACT_FIELD_OBSERVATION_NAMESPACE);
 		Map<String, DerivedUnit> typeSpecimenMap = (Map<String, DerivedUnit>) partitioner.getObjectMap(TYPE_SPECIMEN_FIELD_OBSERVATION_NAMESPACE);
 		Map<String, Reference> refMap = (Map<String, Reference>) partitioner.getObjectMap(BerlinModelReferenceImport.REFERENCE_NAMESPACE);
+		Map<String, Reference> refDetailMap = partitioner.getObjectMap(BerlinModelRefDetailImport.REFDETAIL_NAMESPACE);
 		
 		
 		ResultSet rs = partitioner.getResultSet();
@@ -139,9 +147,14 @@ public class AlgaTerraTypeImport  extends AlgaTerraSpecimenImportBase {
 				Integer ecoFactId = nullSafeInt(rs, "ecoFactFk");
 				Integer tdRefFk = nullSafeInt(rs, "tdRefFk");
 				Integer tdRefDetailFk = nullSafeInt(rs, "tdRefDetailFk");
+				String tdRefDetails = rs.getString("tdRefDetails");
+				Boolean restrictedFlag = nullSafeBoolean(rs, "RestrictedFlag");
+				
+				String typeSpecimenPhrase = rs.getString("TypeSpecimnePhrase");
 				
 				
-//				String recordBasis = rs.getString("RecordBasis");
+				
+				boolean isIcon = typeSpecimenPhrase.toLowerCase().startsWith("[icon");
 				
 				try {
 					
@@ -149,12 +162,15 @@ public class AlgaTerraTypeImport  extends AlgaTerraSpecimenImportBase {
 					Reference<?> sourceRef = state.getTransactionalSourceReference();
 				
 					//facade
-					//FIXME - depends on material category
-//					DerivedUnitType type = makeDerivedUnitType(recordBasis);
-					if (i<=2){logger.warn("RecordBasis not yet implemented in TypeImport");}
-					
 					SpecimenOrObservationType type = SpecimenOrObservationType.PreservedSpecimen;
-					DerivedUnitFacade facade = getDerivedUnit(state, typeSpecimenId, typeSpecimenMap, type, ecoFactMap, ecoFactId);
+					if (isIcon){
+						//TODO handle images correctly for these specimen
+						type = SpecimenOrObservationType.StillImage;
+					}else if (typeStatusFk.equals(39)){
+						type =  SpecimenOrObservationType.LivingSpecimen;
+					}
+					
+					DerivedUnitFacade facade = getDerivedUnit(state, typeSpecimenId, typeSpecimenMap, type, ecoFactMap, ecoFactId, sourceRef);
 					
 					//field observation
 					handleFieldObservationSpecimen(rs, facade, state, partitioner);
@@ -169,20 +185,33 @@ public class AlgaTerraTypeImport  extends AlgaTerraSpecimenImportBase {
 					TaxonNameBase<?,?> name = getTaxonName(state, taxonNameMap, nameId);
 					SpecimenTypeDesignation designation = SpecimenTypeDesignation.NewInstance();
 					SpecimenTypeDesignationStatus status = getSpecimenTypeDesignationStatusByKey(typeStatusFk);
+					if (typeStatusFk.equals(39)){
+						designation.addAnnotation(Annotation.NewInstance("Type status: Authentic strain", AnnotationType.EDITORIAL(), Language.DEFAULT()));
+					}
+					
 					designation.setTypeSpecimen(facade.innerDerivedUnit());
 					designation.setTypeStatus(status);
 					if (tdRefFk != null){
-						Reference<?> typeDesigRef = refMap.get(String.valueOf(tdRefFk));
+						Reference<?> typeDesigRef = getReferenceFromMaps(refDetailMap, refMap, String.valueOf(tdRefDetailFk), String.valueOf(tdRefFk));
 						if (typeDesigRef == null){
 							logger.warn("Type designation reference not found in maps: " + tdRefFk);
 						}else{
 							designation.setCitation(typeDesigRef);
 						}
 					}
-					
-					if (tdRefDetailFk != null){
-						logger.warn("TypeDesignation.RefDetailFk not yet implemented: " + typeDesignationId);
+					if (isNotBlank(tdRefDetails)){
+						designation.setCitationMicroReference(tdRefDetails);
 					}
+					
+					//ID: Type designations do not allow OriginalSources
+					designation.addAnnotation(Annotation.NewInstance("Id in BerlinModel-TypeDesignation: " + String.valueOf(typeDesignationId), AnnotationType.TECHNICAL(), Language.UNDETERMINED()));
+					
+					if (restrictedFlag != null &&restrictedFlag.equals(true)){
+						logger.warn("Restricted Flag is expected to be null or 0. TypeDesignationId" + typeDesignationId);
+					}
+					
+					//Created, Updated
+					this.doCreatedUpdated(state, designation, rs);
 					
 					if (name != null){
 						name.addTypeDesignation(designation, true); //TODO check if true is correct
@@ -209,6 +238,69 @@ public class AlgaTerraTypeImport  extends AlgaTerraSpecimenImportBase {
 			logger.error("SQLException:" +  e);
 			return false;
 		}
+	}
+	
+	/**
+	 * same as {@link BerlinModelImportBase#doCreatedUpdatedNotes}, but handles multiple similar fields
+	 * @throws SQLException 
+	 */
+	private void doCreatedUpdated(BerlinModelImportState state, AnnotatableEntity annotatableEntity, ResultSet rs) throws SQLException{
+		BerlinModelImportConfigurator config = state.getConfig();
+		Object createdWhen = rs.getObject("tsdCreated_When");
+		Object tdCreatedWhen = rs.getObject("tdCreated_When");
+		if (tdCreatedWhen != null){
+			createdWhen = tdCreatedWhen;
+		}
+		
+		String createdWho = rs.getString("tsdCreated_Who");
+		String tdCreatedWho = rs.getString("tdCreated_Who");
+		if (tdCreatedWho != null){
+			createdWho = tdCreatedWho;
+		}
+		
+		Object updatedWhen = rs.getObject("tdUpdated_When");
+		String updatedWho = rs.getString("tdUpdated_who");
+		
+		//Created When, Who, Updated When Who
+		if (config.getEditor() == null || config.getEditor().equals(EDITOR.NO_EDITORS)){
+			//do nothing
+		}else if (config.getEditor().equals(EDITOR.EDITOR_AS_ANNOTATION)){
+			String createdAnnotationString = "Berlin Model record was created By: " + String.valueOf(createdWho) + " (" + String.valueOf(createdWhen) + ") ";
+			if (updatedWhen != null && updatedWho != null){
+				createdAnnotationString += " and updated By: " + String.valueOf(updatedWho) + " (" + String.valueOf(updatedWhen) + ")";
+			}
+			Annotation annotation = Annotation.NewInstance(createdAnnotationString, Language.DEFAULT());
+			annotation.setCommentator(config.getCommentator());
+			annotation.setAnnotationType(AnnotationType.TECHNICAL());
+			annotatableEntity.addAnnotation(annotation);
+		}else if (config.getEditor().equals(EDITOR.EDITOR_AS_EDITOR)){
+			User creator = getUser(state, createdWho);
+			User updator = getUser(state, updatedWho);
+			DateTime created = getDateTime(createdWhen);
+			DateTime updated = getDateTime(updatedWhen);
+			annotatableEntity.setCreatedBy(creator);
+			annotatableEntity.setUpdatedBy(updator);
+			annotatableEntity.setCreated(created);
+			annotatableEntity.setUpdated(updated);
+		}else {
+			logger.warn("Editor type not yet implemented: " + config.getEditor());
+		}
+	}
+	
+
+	private DateTime getDateTime(Object timeString){
+		if (timeString == null){
+			return null;
+		}
+		DateTime dateTime = null;
+		if (timeString instanceof Timestamp){
+			Timestamp timestamp = (Timestamp)timeString;
+			dateTime = new DateTime(timestamp);
+		}else{
+			logger.warn("time ("+timeString+") is not a timestamp. Datetime set to current date. ");
+			dateTime = new DateTime();
+		}
+		return dateTime;
 	}
 	
 	
@@ -281,9 +373,10 @@ public class AlgaTerraTypeImport  extends AlgaTerraSpecimenImportBase {
 	 * @param type 
 	 * @param ecoFactId2 
 	 * @param ecoFactMap 
+	 * @param sourceRef 
 	 * @return
 	 */
-	private DerivedUnitFacade getDerivedUnit(AlgaTerraImportState state, int typeSpecimenId, Map<String, DerivedUnit> typeSpecimenMap, SpecimenOrObservationType type, Map<String, DerivedUnit> ecoFactMap, Integer ecoFactId2) {
+	private DerivedUnitFacade getDerivedUnit(AlgaTerraImportState state, int typeSpecimenId, Map<String, DerivedUnit> typeSpecimenMap, SpecimenOrObservationType type, Map<String, DerivedUnit> ecoFactMap, Integer ecoFactId2, Reference<?> sourceRef) {
 		//TODO implement ecoFact map - if not all null anymore
 		String typeKey = String.valueOf(typeSpecimenId);
 		DerivedUnit derivedUnit = typeSpecimenMap.get(typeKey);
@@ -294,6 +387,7 @@ public class AlgaTerraTypeImport  extends AlgaTerraSpecimenImportBase {
 		}else{
 			try {
 				facade = DerivedUnitFacade.NewInstance(derivedUnit);
+				facade.addSource(IdentifiableSource.NewDataImportInstance(typeKey, "TypeSpecimen", sourceRef));
 			} catch (DerivedUnitFacadeNotSupportedException e) {
 				logger.error(e.getMessage());
 				facade = DerivedUnitFacade.NewInstance(type);
@@ -345,7 +439,7 @@ public class AlgaTerraTypeImport  extends AlgaTerraSpecimenImportBase {
 		}else if (typeStatusFk == 22) { return SpecimenTypeDesignationStatus.PHOTOTYPE();
 		}else if (typeStatusFk == 30) { return SpecimenTypeDesignationStatus.TYPE();
 		}else if (typeStatusFk == 38) { return SpecimenTypeDesignationStatus.ISOEPITYPE();
-//		}else if (typeStatusFk == 39) { return SpecimenTypeDesignationStatus.;
+		}else if (typeStatusFk == 39) { return SpecimenTypeDesignationStatus.ORIGINAL_MATERIAL();
 		}else if (typeStatusFk == 40) { return SpecimenTypeDesignationStatus.ORIGINAL_MATERIAL();
 		}else{
 			logger.warn("typeStatusFk undefined for " +  typeStatusFk);
@@ -369,6 +463,7 @@ public class AlgaTerraTypeImport  extends AlgaTerraSpecimenImportBase {
 //			Set<String> termsIdSet = new HashSet<String>();
 			Set<String> collectionIdSet = new HashSet<String>();
 			Set<String> referenceIdSet = new HashSet<String>();
+			Set<String> refDetailIdSet = new HashSet<String>();
 			
 			while (rs.next()){
 				handleForeignKey(rs, nameIdSet, "nameFk");
@@ -377,6 +472,7 @@ public class AlgaTerraTypeImport  extends AlgaTerraSpecimenImportBase {
 				handleForeignKey(rs, collectionIdSet, "CollectionFk");
 				handleForeignKey(rs, referenceIdSet, "tsRefFk");
 				handleForeignKey(rs, referenceIdSet, "tdRefFk");
+				handleForeignKey(rs, refDetailIdSet, "tdRefDetailFk");
 			}
 			
 			//name map
@@ -422,15 +518,13 @@ public class AlgaTerraTypeImport  extends AlgaTerraSpecimenImportBase {
 			Map<String, Reference> referenceMap = (Map<String, Reference>)getCommonService().getSourcedObjectsByIdInSource(cdmClass, idSet, nameSpace);
 			result.put(nameSpace, referenceMap);
 			
-			//
-//			//terms
-//			nameSpace = AlgaTerraTypeImport.TERMS_NAMESPACE;
-//			cdmClass = FieldObservation.class;
-//			idSet = taxonIdSet;
-//			Map<String, DefinedTermBase> termMap = (Map<String, DefinedTermBase>)getCommonService().getSourcedObjectsByIdInSource(cdmClass, idSet, nameSpace);
-//			result.put(nameSpace, termMap);
-
-		
+			//refDetail map
+			nameSpace = BerlinModelRefDetailImport.REFDETAIL_NAMESPACE;
+			cdmClass = Reference.class;
+			idSet = refDetailIdSet;
+			Map<String, Reference> refDetailMap= (Map<String, Reference>)getCommonService().getSourcedObjectsByIdInSource(cdmClass, idSet, nameSpace);
+			result.put(nameSpace, refDetailMap);
+	
 			
 			
 		} catch (SQLException e) {

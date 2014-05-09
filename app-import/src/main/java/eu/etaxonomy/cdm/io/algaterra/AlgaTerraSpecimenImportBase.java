@@ -27,6 +27,9 @@ import eu.etaxonomy.cdm.io.common.Source;
 import eu.etaxonomy.cdm.io.common.TdwgAreaProvider;
 import eu.etaxonomy.cdm.model.agent.Team;
 import eu.etaxonomy.cdm.model.agent.TeamOrPersonBase;
+import eu.etaxonomy.cdm.model.common.Annotation;
+import eu.etaxonomy.cdm.model.common.AnnotationType;
+import eu.etaxonomy.cdm.model.common.Language;
 import eu.etaxonomy.cdm.model.common.OrderedTermVocabulary;
 import eu.etaxonomy.cdm.model.common.TermType;
 import eu.etaxonomy.cdm.model.common.TimePeriod;
@@ -155,18 +158,34 @@ public abstract class AlgaTerraSpecimenImportBase extends BerlinModelImportBase{
 			}
 			
 			//areas
-			OrderedTermVocabulary<NamedArea> informalAreasVoc = (OrderedTermVocabulary<NamedArea>)getVocabulary(TermType.NamedArea, AlgaTerraImportTransformer.uuidNamedAreaVocAlgaTerraInformalAreas, "AlgaTerra Informal Areas", "AlgaTerra Informal Areas", abbrevLabel, uri, true, NamedArea.NewInstance());
+			OrderedTermVocabulary<NamedArea> informalAreasVoc = (OrderedTermVocabulary<NamedArea>)getVocabulary(TermType.NamedArea, AlgaTerraImportTransformer.uuidNamedAreaVocAlgaTerraInformalAreas, "AlgaTerra Specific Areas", "AlgaTerra Specific Areas", abbrevLabel, uri, true, NamedArea.NewInstance());
 			getVocabularyService().save(informalAreasVoc);
-			getNamedArea(state, AlgaTerraImportTransformer.uuidNamedAreaPatagonia,"Patagonia", "Patagonia", null, NamedAreaType.NATURAL_AREA(), null, informalAreasVoc, TermMatchMode.UUID_ONLY, null);
-			getNamedArea(state, AlgaTerraImportTransformer.uuidNamedAreaTierraDelFuego,"Terra del Fuego", "Terra del Fuego", null, NamedAreaType.NATURAL_AREA(), null, informalAreasVoc, TermMatchMode.UUID_ONLY, null);
-			getNamedArea(state, AlgaTerraImportTransformer.uuidNamedAreaBorneo,"Borneo", "Borneo", null, NamedAreaType.NATURAL_AREA(), null, informalAreasVoc, TermMatchMode.UUID_ONLY, null);
 			
-			NamedArea patagonia = NamedArea.NewInstance("Patagonia", "Patagonia", null);
-			NamedArea tierraDelFuego = NamedArea.NewInstance("Tierra del Fuego", "Tierra del Fuego", null);
-			NamedArea borneo = NamedArea.NewInstance("Borneo", "Borneo", null);
-			informalAreasVoc.addTerm(patagonia);
-			informalAreasVoc.addTerm(tierraDelFuego);
-			informalAreasVoc.addTerm(borneo);
+			String areaSql = "SELECT * FROM TDWGGazetteer WHERE subL4 = 1 ";
+			rs = source.getResultSet(areaSql);
+			while (rs.next()){
+				String l1Code = rs.getString("L1Code");
+				String l2Code = rs.getString("L2Code");
+				String l3Code = rs.getString("L3Code");
+				String l4Code = rs.getString("L4Code");
+				String gazetteer = rs.getString("Gazetteer");
+				Integer id = rs.getInt("ID");
+				String notes = rs.getString("Notes");
+//				UUID uuid = UUID.fromString(rs.getString("UUID"));
+				
+				String tdwgCode =  (l4Code != null) ? l4Code : (l3Code != null) ? l3Code : (l2Code != null) ? l2Code : l1Code;
+				
+				NamedArea tdwgArea = TdwgAreaProvider.getAreaByTdwgAbbreviation(tdwgCode);
+				NamedArea newArea  = getNamedArea(state, AlgaTerraImportTransformer.uuidNamedAreaPatagonia,gazetteer, gazetteer, null, null, null, informalAreasVoc, TermMatchMode.UUID_ONLY, null);
+				if (isNotBlank(notes)){
+					newArea.addAnnotation(Annotation.NewInstance(notes, AnnotationType.EDITORIAL(), Language.DEFAULT()));
+				}
+				
+				addOriginalSource(newArea, id.toString(), "TDWGGazetteer", state.getTransactionalSourceReference());
+				getTermService().saveOrUpdate(newArea);
+				newArea.setPartOf(tdwgArea);
+				informalAreasVoc.addTerm(newArea);
+			}
 			
 			this.commitTransaction(txStatus);
 			
