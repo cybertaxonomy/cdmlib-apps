@@ -16,6 +16,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
+import java.util.UUID;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
@@ -38,6 +39,7 @@ import eu.etaxonomy.cdm.model.common.AnnotatableEntity;
 import eu.etaxonomy.cdm.model.common.Annotation;
 import eu.etaxonomy.cdm.model.common.AnnotationType;
 import eu.etaxonomy.cdm.model.common.CdmBase;
+import eu.etaxonomy.cdm.model.common.DefinedTerm;
 import eu.etaxonomy.cdm.model.common.IdentifiableSource;
 import eu.etaxonomy.cdm.model.common.Language;
 import eu.etaxonomy.cdm.model.common.User;
@@ -86,16 +88,18 @@ public class AlgaTerraTypeImport  extends AlgaTerraSpecimenImportBase {
 	protected String getRecordQuery(BerlinModelImportConfigurator config) {
 			String strQuery =    
 					
-			" SELECT ts.*, ts.TypeSpecimenId as unitId, td.*, gz.ID as GazetteerId, gz.L2Code, gz.L3Code, gz.L4Code, gz.ISOCountry, gz.Country, ts.WaterBody, " + 
-               " ts.RefFk as tsRefFk, ts.RefDetailFk as tsRefDetailFk, td.RefFk as tdRefFk, td.RefDetailFk as tdRefDetailFk, " +
+			" SELECT ts.*, ts.TypeSpecimenId as unitId, td.*, gz.ID as GazetteerId,  gz.L1Code, gz.L2Code, gz.L3Code, gz.L4Code, gz.ISOCountry, gz.Country, gz.subL4, ts.WaterBody, " + 
+               " ts.RefFk as tsRefFk, ts.RefDetailFk as tsRefDetailFk, ts.MaterialCategoryFK as tsMaterialCategoryFK, td.RefFk as tdRefFk, td.RefDetailFk as tdRefDetailFk, " +
                " RefDet.Details as tdRefDetails, " +
                " td.created_When as tdCreated_When, tsd.created_When as tsdCreated_When, td.updated_when as tdUpdated_when, " +
-               " td.created_who as tdCreated_who, tsd.created_who as tsdCreated_who, td.updated_who tdUpdated_who  " +
+               " td.created_who as tdCreated_who, tsd.created_who as tsdCreated_who, td.updated_who tdUpdated_who,  " +
+               " mc.* " +
             " FROM TypeSpecimenDesignation tsd  " 
             	+ " LEFT OUTER JOIN TypeSpecimen AS ts ON tsd.TypeSpecimenFk = ts.TypeSpecimenId " 
             	+ " FULL OUTER JOIN TypeDesignation td ON  td.TypeDesignationId = tsd.TypeDesignationFk "
             	+ " LEFT OUTER JOIN TDWGGazetteer gz ON ts.TDWGGazetteerFk = gz.ID "
             	+ " LEFT OUTER JOIN RefDetail refDet ON td.RefDetailFk = refDet.RefDetailId AND td.RefFk = refDet.RefFk "
+            	+ " LEFT OUTER JOIN MaterialCategory mc ON mc.MaterialCategoryId = ts.MaterialCategoryFK "
 		+ 	" WHERE (td.TypeDesignationId IN (" + ID_LIST_TOKEN + ")  )"  
           + " ORDER BY NameFk "
             ;
@@ -150,6 +154,7 @@ public class AlgaTerraTypeImport  extends AlgaTerraSpecimenImportBase {
 				Boolean restrictedFlag = nullSafeBoolean(rs, "RestrictedFlag");
 				
 				String typeSpecimenPhrase = rs.getString("TypeSpecimenPhrase");
+				Integer tsMaterialCategoryFK = nullSafeInt(rs, "MaterialCategoryFK");
 				
 				boolean isIcon = typeSpecimenPhrase != null && typeSpecimenPhrase.toLowerCase().startsWith("\u005bicon");
 				
@@ -165,12 +170,23 @@ public class AlgaTerraTypeImport  extends AlgaTerraSpecimenImportBase {
 						type = SpecimenOrObservationType.StillImage;
 					}else if (typeStatusFk != null && typeStatusFk.equals(39)){
 						type =  SpecimenOrObservationType.LivingSpecimen;
+					}else if (tsMaterialCategoryFK != null && tsMaterialCategoryFK.equals(4)){
+						type = SpecimenOrObservationType.Fossil;
 					}
+					
+					
+					if (tsMaterialCategoryFK != null && typeStatusFk != null && 
+							( typeStatusFk.equals(39) && !tsMaterialCategoryFK.equals(14) || ! typeStatusFk.equals(39) && tsMaterialCategoryFK.equals(14) )){
+						logger.warn("Living Specimen type status should be 39 and materialCategoryFk 14 but one of them wasn't");
+					}
+					
 					
 					DerivedUnitFacade facade = getDerivedUnit(state, typeSpecimenId, typeSpecimenMap, type, ecoFactMap, ecoFactId, sourceRef);
 					
 					//field observation
 					handleFieldObservationSpecimen(rs, facade, state, partitioner);
+					
+//					handleTypeSpecimenSpecificFieldObservation(rs,facade, state);
 					
 					//TODO divide like in EcoFact (if necessary)
 					handleTypeSpecimenSpecificSpecimen(rs,facade, state, refMap, typeSpecimenId);
@@ -335,6 +351,23 @@ public class AlgaTerraTypeImport  extends AlgaTerraSpecimenImportBase {
 		
 		DerivedUnit derivedUnit = facade.innerDerivedUnit();
 		
+		Integer tsMaterialCategoryFK = nullSafeInt(rs, "tsMaterialCategoryFK");
+		String matCat = rs.getString("MaterialCategory");
+		if (tsMaterialCategoryFK != null){
+			if (tsMaterialCategoryFK.equals(16)){
+				tsMaterialCategoryFK = 9;
+			}
+			UUID uuid = materialCategoryMapping.get(tsMaterialCategoryFK);
+			if (uuid == null){
+				logger.warn("Uuid was null. This should not happen.");
+			}
+			DefinedTerm kindOfUnit = getKindOfUnit(state, uuid, matCat, null, null, null);  //all terms should exist already
+			facade.setKindOfUnit(kindOfUnit);
+		}else{
+			logger.warn("Material Category was null. This is not expected");
+		}
+		
+		
 		//collection
 		String barcode = rs.getString("Barcode");
 		if (StringUtils.isNotBlank(barcode)){
@@ -358,8 +391,6 @@ public class AlgaTerraTypeImport  extends AlgaTerraSpecimenImportBase {
 		if (refDetailFk != null){
 			logger.warn("TypeSpecimen.RefDetailFk should always be NULL but wasn't: " + typeSpecimenId);
 		}
-		
-		
 		
 	}
 
@@ -396,7 +427,7 @@ public class AlgaTerraTypeImport  extends AlgaTerraSpecimenImportBase {
 
 	
 	private SpecimenTypeDesignationStatus getSpecimenTypeDesignationStatusByKey(Integer typeStatusFk) {
-		if (typeStatusFk == null){ return null;
+		if (typeStatusFk == null){ return SpecimenTypeDesignationStatus.TYPE();
 		}else if (typeStatusFk == 1) { return SpecimenTypeDesignationStatus.HOLOTYPE();
 		}else if (typeStatusFk == 2) { return SpecimenTypeDesignationStatus.LECTOTYPE();
 		}else if (typeStatusFk == 3) { return SpecimenTypeDesignationStatus.NEOTYPE();

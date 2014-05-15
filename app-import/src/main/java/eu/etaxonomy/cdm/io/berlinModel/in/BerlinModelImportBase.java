@@ -31,9 +31,9 @@ import eu.etaxonomy.cdm.model.common.IdentifiableEntity;
 import eu.etaxonomy.cdm.model.common.Language;
 import eu.etaxonomy.cdm.model.common.User;
 import eu.etaxonomy.cdm.model.description.DescriptionElementBase;
+import eu.etaxonomy.cdm.model.location.Country;
 import eu.etaxonomy.cdm.model.location.NamedArea;
 import eu.etaxonomy.cdm.model.location.NamedAreaType;
-import eu.etaxonomy.cdm.model.location.Country;
 import eu.etaxonomy.cdm.model.name.BotanicalName;
 import eu.etaxonomy.cdm.model.name.Rank;
 import eu.etaxonomy.cdm.model.reference.Reference;
@@ -71,13 +71,13 @@ public abstract class BerlinModelImportBase extends DbImportBase<BerlinModelImpo
 		return success;
 	}
 	
-	protected boolean doIdCreatedUpdatedNotes(BerlinModelImportState state, IdentifiableEntity identifiableEntity, ResultSet rs, long id, String namespace, boolean excludeUpdated)	
-				throws SQLException{
+	protected boolean doIdCreatedUpdatedNotes(BerlinModelImportState state, IdentifiableEntity identifiableEntity, ResultSet rs, long id, String namespace, boolean excludeUpdated, boolean excludeNotes)	
+			throws SQLException{
 		boolean success = true;
 		//id
 		success &= doId(state, identifiableEntity, id, namespace);
 		//createdUpdateNotes
-		success &= doCreatedUpdatedNotes(state, identifiableEntity, rs, excludeUpdated);
+		success &= doCreatedUpdatedNotes(state, identifiableEntity, rs, excludeUpdated, excludeNotes);
 		return success;
 	}
 
@@ -85,16 +85,16 @@ public abstract class BerlinModelImportBase extends DbImportBase<BerlinModelImpo
 	protected boolean doIdCreatedUpdatedNotes(BerlinModelImportState state, IdentifiableEntity identifiableEntity, ResultSet rs, long id, String namespace)
 			throws SQLException{
 		boolean excludeUpdated = false;
-		return doIdCreatedUpdatedNotes(state, identifiableEntity, rs, id, namespace, excludeUpdated);
+		return doIdCreatedUpdatedNotes(state, identifiableEntity, rs, id, namespace, excludeUpdated, false);
 	}
 	
 	protected boolean doCreatedUpdatedNotes(BerlinModelImportState state, AnnotatableEntity annotatableEntity, ResultSet rs)
 			throws SQLException{
 		boolean excludeUpdated = false;
-		return doCreatedUpdatedNotes(state, annotatableEntity, rs, excludeUpdated);
+		return doCreatedUpdatedNotes(state, annotatableEntity, rs, excludeUpdated, false);
 	}
 	
-	protected boolean doCreatedUpdatedNotes(BerlinModelImportState state, AnnotatableEntity annotatableEntity, ResultSet rs, boolean excludeUpdated)
+	protected boolean doCreatedUpdatedNotes(BerlinModelImportState state, AnnotatableEntity annotatableEntity, ResultSet rs, boolean excludeUpdated, boolean excludeNotes)
 			throws SQLException{
 
 		BerlinModelImportConfigurator config = state.getConfig();
@@ -142,7 +142,9 @@ public abstract class BerlinModelImportBase extends DbImportBase<BerlinModelImpo
 		
 		
 		//notes
-		doNotes(annotatableEntity, notes);
+		if (! excludeNotes){
+			doNotes(annotatableEntity, notes);
+		}
 		return success;
 	}
 	

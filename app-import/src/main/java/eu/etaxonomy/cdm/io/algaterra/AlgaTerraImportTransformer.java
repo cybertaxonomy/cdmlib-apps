@@ -102,6 +102,7 @@ public class AlgaTerraImportTransformer extends BerlinModelTransformer {
 	public static final UUID uuidNamedAreaTierraDelFuego = UUID.fromString("53cf6dc2-b5cc-42be-9fad-7158b8f682f4");
 	public static final UUID uuidNamedAreaBorneo = UUID.fromString("6bb908af-be16-402b-973b-3ea20df1d70d");
 	
+	public static final UUID uuidKindOfUnitVoc = UUID.fromString("400d3ef7-1882-4ed6-bb76-f98f636b595c");
 	
 	
 	/* (non-Javadoc)

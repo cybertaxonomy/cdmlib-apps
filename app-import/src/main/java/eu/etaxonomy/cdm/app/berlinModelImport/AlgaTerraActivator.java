@@ -64,6 +64,7 @@ public class AlgaTerraActivator {
 	static final UUID specimenFeatureTreeUuid = UUID.fromString("ba86246e-d4d0-419f-832e-86d70b1e4bd7");
 	
 	static final boolean loginAsDefaultAdmin = true;
+	//TODO set to false for final import
 	static final boolean removeRestricted = true;
 	
 	static final boolean importOriginalSizeMedia = false;
@@ -118,7 +119,7 @@ public class AlgaTerraActivator {
 //	static final boolean doTaxonNames = false;
 //	static final boolean doRelNames = false;
 //	static final boolean doNameStatus = false;
-//	static final boolean doTypes = false;
+//	static final boolean doTypes = true;
 //	static final boolean doNameFacts = false;
 //	
 //	//taxa
@@ -127,11 +128,11 @@ public class AlgaTerraActivator {
 //	static final boolean doFacts = false;
 //	
 //  //alga terra specific
-//	static final boolean ecoFacts = true;
+//	static final boolean ecoFacts = false;
 //	static final boolean doFactEcology = false;
 //	static final boolean doImages = false;
 //	static final boolean doDna = false;
-//	static final boolean doMorphology = true;
+//	static final boolean doMorphology = false;
 	
 	
 	public void invoke(String[] args){

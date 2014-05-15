@@ -85,6 +85,7 @@ public class AlgaTerraDnaImport  extends AlgaTerraSpecimenImportBase {
 					" WHERE f.FactCategoryFk = 203 ";
 		if (state.getAlgaTerraConfigurator().isRemoveRestricted()){
 				result = result + " AND df.ProtectedFlag = 0 ";
+				logger.warn("DNA with protectedFlag = 0 is currently not imported");
 		}
 		result += " ORDER BY df.DNAFactID ";
 		return result;
