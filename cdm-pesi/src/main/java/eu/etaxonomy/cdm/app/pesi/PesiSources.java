@@ -33,6 +33,16 @@ public class PesiSources {
 		return  ImportUtils.makeSource(dbms, strServer, strDB, port, userName, null);
 	}
 	
+	public static Source mfn_faunEu_pesi3(){
+		//	Fauna Europaea auf pesiimport3
+		String dbms = Source.SQL_SERVER_2008;
+        String strServer = "pesiimport3";
+        String strDB = "MfN_FaunaEuropeae";
+		int port = 1433;
+		String userName = "pesiExportFaunaEu";
+		return  ImportUtils.makeSource(dbms, strServer, strDB, port, userName, null);
+	}
+	
 	public static Source faunEu(){
 		//	Fauna Europaea
 		String dbms = Source.SQL_SERVER_2008;
