@@ -79,7 +79,7 @@ implements ICdmImport<FaunaEuropaeaImportConfigurator, FaunaEuropaeaImportState>
 						logger.info("Retrieving synonyms starting from: " + start);
 					}
 					txStatus = startTransaction();
-					synonymList = getTaxonService().getAllSynonyms(limit, start);
+					synonymList = getTaxonService().list(Synonym.class, limit, start, null, null);
 					taxonSet = new HashSet<Taxon>(limit);
 				}
 

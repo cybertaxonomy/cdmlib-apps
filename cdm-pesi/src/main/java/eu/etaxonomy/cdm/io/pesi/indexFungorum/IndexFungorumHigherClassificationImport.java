@@ -272,8 +272,8 @@ public class IndexFungorumHigherClassificationImport  extends IndexFungorumImpor
 			cdmClass = TaxonBase.class;
 //			idSet = taxonNameSet;
 			Map<String, TaxonBase<?>> taxonMap = new HashMap<String, TaxonBase<?>>();
-			List<TaxonBase> list = getTaxonService().list(Taxon.class, null, null, null, null);
-			for (TaxonBase<?> taxon : list){
+			List<Taxon> list = getTaxonService().list(Taxon.class, null, null, null, null);
+			for (Taxon taxon : list){
 				taxonMap.put(CdmBase.deproxy(taxon.getName(), NonViralName.class).getGenusOrUninomial(), taxon);
 			}
 			result.put(nameSpace, taxonMap);
