@@ -48,7 +48,7 @@ public class TaxonXImportLauncher {
 
     //database validation status (create, update, validate ...)
     static DbSchemaValidation hbm2dll = DbSchemaValidation.CREATE;
-    static final ICdmDataSource cdmDestination = CdmDestinations.mon_cdm();
+    static final ICdmDataSource cdmDestination = CdmDestinations.localH2();
 
     static final CHECK check = CHECK.IMPORT_WITHOUT_CHECK;
 
