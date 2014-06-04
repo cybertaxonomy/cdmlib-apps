@@ -23,16 +23,6 @@ public class CdmDestinations {
 	@SuppressWarnings("unused")
 	private static Logger logger = Logger.getLogger(CdmDestinations.class);
 
-	/**
-	 * Intended to be used for imports
-	 */
-	public static ICdmDataSource import_a(){
-		DatabaseTypeEnum dbType = DatabaseTypeEnum.MySQL;
-		String cdmServer = "localhost";
-		String cdmDB = "import_a";
-		String cdmUserName = "root";
-		return makeDestination(dbType, cdmServer, cdmDB, -1, cdmUserName, null);
-	}
 
 	public static ICdmDataSource cdm_test_useSummary(){
 		DatabaseTypeEnum dbType = DatabaseTypeEnum.MySQL;
