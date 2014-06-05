@@ -2081,7 +2081,7 @@ public class PesiTaxonExport extends PesiExportBase {
 			
 			if (sources.size() == 0 && testSources.size()>0){
 				IdentifiableSource source = testSources.iterator().next();
-				logger.warn("There are sources, but they are no pesi sources!!!" + source.getIdInSource() + " - " + source.getIdNamespace() + " - "+source.getCitation().generateTitle());
+				logger.warn("There are sources, but they are no pesi sources!!!" + source.getIdInSource() + " - " + source.getIdNamespace() + " - " + source.getCitation().getTitleCache());
 			}
 			if (sources.size() > 1) {
 				logger.warn("This TaxonName has more than one Source: " + identEntity.getUuid() + " (" + identEntity.getTitleCache() + ")");
