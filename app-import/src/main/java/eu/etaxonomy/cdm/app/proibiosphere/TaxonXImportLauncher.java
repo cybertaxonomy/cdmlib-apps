@@ -51,6 +51,7 @@ public class TaxonXImportLauncher {
 //    static final ICdmDataSource cdmDestination = CdmDestinations.cdm_test_local_mysql();
     static final ICdmDataSource cdmDestination = CdmDestinations.localH2();
 //  static final ICdmDataSource cdmDestination = CdmDestinations.cdm_test_local_mysql_test();
+//    static final ICdmDataSource cdmDestination = CdmDestinations.cdm_production_piB("piB_spiders");
  
     static final CHECK check = CHECK.IMPORT_WITHOUT_CHECK;
     
@@ -79,6 +80,8 @@ public class TaxonXImportLauncher {
 
         String defaultClassification="Spiders";
         boolean alwaysUseDefaultClassification = true;
+        
+        boolean useOldUnparsedSynonymExtraction = false;
 
         
         
@@ -95,16 +98,16 @@ public class TaxonXImportLauncher {
         loadTreatmentIfPresent(filterType,taxonList, documentMap);
 //        loadTreatmentIfPresent(FilterType.MODS,modsList, documents,documentMap);
 
-        TaxonXImportConfigurator taxonxImportConfigurator =null;
         CdmDefaultImport<TaxonXImportConfigurator> taxonImport = new CdmDefaultImport<TaxonXImportConfigurator>();
 
         ICdmDataSource destination = cdmDestination;
-        taxonxImportConfigurator = prepareTaxonXImport(destination,reuseSecundum, secundum, tnomenclature, alwaysUseDefaultClassification);
-
-        taxonxImportConfigurator.setImportClassificationName(defaultClassification);
+        TaxonXImportConfigurator config = prepareTaxonXImport(destination,reuseSecundum, secundum, tnomenclature, alwaysUseDefaultClassification);
+        config.setUseOldUnparsedSynonymExtraction(useOldUnparsedSynonymExtraction);
+        
+        config.setImportClassificationName(defaultClassification);
         log.info("Start import from  TaxonX Data");
 
-        taxonxImportConfigurator.setLastImport(false);
+        config.setLastImport(false);
 
         int j=0;
         for (String document : documentMap.keySet()){
@@ -115,11 +118,11 @@ public class TaxonXImportLauncher {
                     System.out.println("START "+document+" "+i+" ("+(documentMap.get(document)).size()+"): "+source.getPath());
                     i++;
                     if (j==documentMap.keySet().size() && i==documentMap.get(document).size()) {
-                        taxonxImportConfigurator.setLastImport(true);
+                        config.setLastImport(true);
                     }
-                    prepareReferenceAndSource(taxonxImportConfigurator,source);
+                    prepareReferenceAndSource(config,source);
                      //   taxonxImportConfigurator.setTaxonReference(null);
-                    taxonImport.invoke(taxonxImportConfigurator);
+                    taxonImport.invoke(config);
                     log.info("End import from SpecimenData ("+ source.toString() + ")...");
 
                     //          //deduplicate
@@ -221,8 +224,6 @@ public class TaxonXImportLauncher {
             e1.printStackTrace();
         }
 
-        //        sourcesStr.add("/home/pkelbert/Documents/Proibiosphere/ChenopodiumXML/1362148061170_Chenopodium_K_hn_U_1993_tx.xml");
-
         //System.out.println(documents);
         for (String docId : docs.keySet()){
             List<String> treatments = new ArrayList<String>(new HashSet<String>(docs.get(docId)));
@@ -243,45 +244,6 @@ public class TaxonXImportLauncher {
             //            log.info(pages);
 
             log.info("Document "+docId+" should have "+treatments.size()+" treatments");
-            //don't test if all the treatments are really online, it should be working without problems now
-//            int cnt=0;
-//            if(treatments.size()<150){
-//
-//            for (String source:treatments){
-//                DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
-//                DocumentBuilder builder;
-//                URL url;
-//
-//                try {
-//                    builder = factory.newDocumentBuilder();
-//                    url = new URL(source.split("---")[3]);
-//                    Object o = url.getContent();
-//                    InputStream is = (InputStream) o;
-//                    Document document = builder.parse(is);
-//                    cnt++;
-//                }catch(Exception e){
-//                    //  e.printStackTrace();
-//                    log.warn(e);
-//                }
-//            }
-//            log.info("Document "+docId+" has "+cnt+" treatments available");
-//            }
-//            if(treatments.size() != cnt)
-//            {
-//                File file = new File("/home/pkelbert/Bureau/urlTaxonXToDoLater.txt");
-//                FileWriter writer;
-//                try {
-//                    writer = new FileWriter(file ,true);
-//                    writer.write(docId+"\n");
-//                    writer.flush();
-//                    writer.close();
-//                } catch (IOException e1) {
-//                    // TODO Auto-generated catch block
-//                    e1.printStackTrace();
-//                }
-//
-//            }
-//            else{
                 List<URI> uritmp = documentMap.get(docId);
                 if (uritmp == null) {
                     uritmp = new ArrayList<URI>();
@@ -305,17 +267,7 @@ public class TaxonXImportLauncher {
 
 
 
-//        }
-        //////        log.info("NB SOURCES : "+sourcesStr.size());
-        //        List<URI> sourcesStr = new ArrayList<URI>();
-        //        try {
-        ////            documentMap = new HashMap<String, List<URI>>();
-        //            sourcesStr.add(new URI("http://plazi.cs.umb.edu/GgServer/cdmSync/8F5B3EA099D371BC41CC5DDBFEDCFBED"));
-        //            documentMap.put("singlesource", sourcesStr);
-        //        } catch (URISyntaxException e) {
-        //            // TODO Auto-generated catch block
-        //            e.printStackTrace();
-        //        }
+
 
         return documentMap;
 
