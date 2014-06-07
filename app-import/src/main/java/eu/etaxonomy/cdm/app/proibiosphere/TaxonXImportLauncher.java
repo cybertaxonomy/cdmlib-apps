@@ -49,10 +49,11 @@ public class TaxonXImportLauncher {
     //database validation status (create, update, validate ...)
     static DbSchemaValidation hbm2dll = DbSchemaValidation.CREATE;
 //    static final ICdmDataSource cdmDestination = CdmDestinations.cdm_test_local_mysql();
-    static final ICdmDataSource cdmDestination = CdmDestinations.localH2();
+//    static final ICdmDataSource cdmDestination = CdmDestinations.localH2();
 //  static final ICdmDataSource cdmDestination = CdmDestinations.cdm_test_local_mysql_test();
 //    static final ICdmDataSource cdmDestination = CdmDestinations.cdm_production_piB("piB_spiders");
- 
+    static final ICdmDataSource cdmDestination = CdmDestinations.cdm_local_piB("spiders");
+    
     static final CHECK check = CHECK.IMPORT_WITHOUT_CHECK;
     
     private enum FilterType{MODS, TAXON};
