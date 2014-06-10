@@ -51,36 +51,36 @@ public class TaxonXImportLauncher {
 //    static final ICdmDataSource cdmDestination = CdmDestinations.cdm_test_local_mysql();
 //    static final ICdmDataSource cdmDestination = CdmDestinations.localH2();
 //  static final ICdmDataSource cdmDestination = CdmDestinations.cdm_test_local_mysql_test();
-//    static final ICdmDataSource cdmDestination = CdmDestinations.cdm_production_piB("piB_spiders");
-    static final ICdmDataSource cdmDestination = CdmDestinations.cdm_local_piB("spiders");
+    static final ICdmDataSource cdmDestination = CdmDestinations.cdm_production_piB("piB_campylopus");
+//    static final ICdmDataSource cdmDestination = CdmDestinations.cdm_local_piB("guianas");
     
     static final CHECK check = CHECK.IMPORT_WITHOUT_CHECK;
     
     private enum FilterType{MODS, TAXON};
 
 
-    static String plaziUrl = "http://plazi.cs.umb.edu/GgServer/search?taxonomicName.isNomenclature=true&taxonomicName.exactMatch=true&indexName=0&subIndexName=taxonomicName&subIndexName=MODS&minSubResultSize=1&searchMode=index&resultFormat=xml&xsltUrl=http%3A%2F%2Fplazi.cs.umb.edu%2FGgServer%2Fresources%2FsrsWebPortalData%2FCdmSyncTreatmentList.xslt&taxonomicName.taxonomicName=";
-    static String plaziUrlDoc = "http://plazi.cs.umb.edu/GgServer/search?taxonomicName.isNomenclature=true&taxonomicName.exactMatch=true&indexName=0&subIndexName=taxonomicName&subIndexName=MODS&minSubResultSize=1&searchMode=index&resultFormat=xml&xsltUrl=http%3A%2F%2Fplazi.cs.umb.edu%2FGgServer%2Fresources%2FsrsWebPortalData%2FCdmSyncTreatmentList.xslt&MODS.ModsDocID=";
+    static String plaziUrlTaxName = "http://plazi.cs.umb.edu/GgServer/search?taxonomicName.isNomenclature=true&taxonomicName.exactMatch=true&indexName=0&subIndexName=taxonomicName&subIndexName=MODS&minSubResultSize=1&searchMode=index&resultFormat=xml&xsltUrl=http%3A%2F%2Fplazi.cs.umb.edu%2FGgServer%2Fresources%2FsrsWebPortalData%2FCdmSyncTreatmentList.xslt&taxonomicName.taxonomicName=";
+    static String plaziUrlModsDoc = "http://plazi.cs.umb.edu/GgServer/search?taxonomicName.isNomenclature=true&taxonomicName.exactMatch=true&indexName=0&subIndexName=taxonomicName&subIndexName=MODS&minSubResultSize=1&searchMode=index&resultFormat=xml&xsltUrl=http%3A%2F%2Fplazi.cs.umb.edu%2FGgServer%2Fresources%2FsrsWebPortalData%2FCdmSyncTreatmentList.xslt&MODS.ModsDocID=";
 
 
 
     public static void main(String[] args) {
     	String[] spiderModsList = new String[] {"zt03768p138","zt03750p196","zt03666p193","zt03664p068","zt03646p592","zt03507p056","zt03415p057","zt03383p038","zt03305p052","zt03228p068","zt03131p034","zt02963p068","zt02883p068","zt02814p018","zt02739p050","zt02730p043","zt02637p054","zt02593p127","zt02551p068","zt02534p036","zt02526p053","zt02427p035","zt02361p012","zt02267p068","zt02223p047","zt01826p058","zt01775p024","zt01744p040","zt01529p060","zt01004p028","zt00904","zt00872","zt00619","zt00109","DippenaarSchoeman1989Penestominae","Simon1902Cribellates","Simon1903Penestominae","Lehtinen1967CribellatePenestominae"};
     	
-    	String[] taxonList = new String[]  {"Comaroma"}; //{"Eupolybothrus","Polybothrus"}, Chenopodium, Lactarius, Campylopus, Nephrolepis, Comaroma (spiders)
+    	String[] taxonList = new String[]  {"Campylopus"}; //{"Eupolybothrus","Polybothrus"}, Chenopodium, Lactarius, Campylopus, Nephrolepis, Comaroma (spiders)
 //       /*ants Anochetus*/ String[] modsList = new String[] {"3924" /*, "3743", "4375", "6757", "6752", "3481", "21401_fisher_smith_plos_2008", "2592", "4096", "6877", "6192", "8071"  */};
 //        String[] modsList = new String[] {"21367", "21365", "8171", "6877", "21820", "3641", "6757"};
 //        /*auch ants*/        debut="3743", "3628", "4022", "3994", "3603", "8070", "4001", "4071", "3948", "3481"};
 //        suite: , };//,"3540555099"};
 //        modsList = new String[] {"Zapparoli-1986-Eupolybothrus-fasciatus"};
-    	taxonList = spiderModsList;
+//    	taxonList = spiderModsList;
     	
-    	FilterType filterType = FilterType.MODS;
+    	FilterType filterType = FilterType.TAXON;
         
-    	NomenclaturalCode tnomenclature = NomenclaturalCode.ICZN;
+    	NomenclaturalCode tnomenclature = NomenclaturalCode.ICNAFP;
 
-        String defaultClassification="Spiders";
-        boolean alwaysUseDefaultClassification = true;
+        String defaultClassification= null;// "Campylopus";
+        boolean alwaysUseDefaultClassification = false;
         
         boolean useOldUnparsedSynonymExtraction = false;
 
@@ -97,7 +97,7 @@ public class TaxonXImportLauncher {
         }
 
         loadTreatmentIfPresent(filterType,taxonList, documentMap);
-//        loadTreatmentIfPresent(FilterType.MODS,modsList, documents,documentMap);
+//        loadTreatmentIfPresent(FilterType.MODS, modsList, documents,documentMap);
 
         CdmDefaultImport<TaxonXImportConfigurator> taxonImport = new CdmDefaultImport<TaxonXImportConfigurator>();
 
@@ -279,7 +279,7 @@ public class TaxonXImportLauncher {
 		List<String> docList;
 		String inputLine;
 		for (String docId:documents.keySet()){
-			URL url = new URL(plaziUrlDoc+docId);
+			URL url = new URL(plaziUrlModsDoc+docId);
 			BufferedReader in = new BufferedReader(new InputStreamReader(url.openStream()));
 		    while ((inputLine = in.readLine()) != null) {
 		        if (inputLine.startsWith("<treatment ")){
@@ -309,9 +309,9 @@ public class TaxonXImportLauncher {
 		for(String filter : filterList){
 		    //        plaziUrl=plaziUrl+"Eupolybothrus";
 		    if (filterType == FilterType.MODS) {
-		        urlstr=plaziUrlDoc + filter;
+		        urlstr=plaziUrlModsDoc + filter;
 		    }else if (filterType == FilterType.TAXON) {
-		        urlstr=plaziUrl + filter;
+		        urlstr=plaziUrlTaxName + filter;
 		    }
 		    log.info("URLstr: " + urlstr);
 
