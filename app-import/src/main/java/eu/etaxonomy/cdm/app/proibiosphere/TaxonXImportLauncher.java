@@ -50,8 +50,8 @@ public class TaxonXImportLauncher {
     static DbSchemaValidation hbm2dll = DbSchemaValidation.CREATE;
 //    static final ICdmDataSource cdmDestination = CdmDestinations.cdm_test_local_mysql();
 //    static final ICdmDataSource cdmDestination = CdmDestinations.localH2();
-//  static final ICdmDataSource cdmDestination = CdmDestinations.cdm_test_local_mysql_test();
-    static final ICdmDataSource cdmDestination = CdmDestinations.cdm_production_piB("piB_campylopus");
+  static final ICdmDataSource cdmDestination = CdmDestinations.cdm_test_local_mysql_test();
+//    static final ICdmDataSource cdmDestination = CdmDestinations.cdm_production_piB("piB_nephrolepis");
 //    static final ICdmDataSource cdmDestination = CdmDestinations.cdm_local_piB("guianas");
     
     static final CHECK check = CHECK.IMPORT_WITHOUT_CHECK;
@@ -79,7 +79,7 @@ public class TaxonXImportLauncher {
         
     	NomenclaturalCode tnomenclature = NomenclaturalCode.ICNAFP;
 
-        String defaultClassification= null;// "Campylopus";
+        String defaultClassification= null;// "Nephrolepis";
         boolean alwaysUseDefaultClassification = false;
         
         boolean useOldUnparsedSynonymExtraction = false;
