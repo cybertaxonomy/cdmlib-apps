@@ -84,13 +84,14 @@ public class BerlinModelTaxonImportValidator implements IOValidator<BerlinModelI
 			Source source = config.getSource();
 			String strSQL = " SELECT * "  +
 				" FROM PTaxon t " +
-					" INNER JOIN Name ON t.PTNameFk = Name.NameId " +
+					" INNER JOIN Name n ON t.PTNameFk = n.NameId " +
 				" WHERE (t.DoubtfulFlag = 'i') ";
 			
 			if (StringUtils.isNotBlank(config.getTaxonTable())){
-				strSQL += String.format(" AND (t.RIdentifier IN " +
+				strSQL +=  String.format(" AND (t.RIdentifier IN " +
                         " (SELECT RIdentifier FROM %s ))" , config.getTaxonTable()) ; 
 			}
+			strSQL += " ORDER BY t.ptRefFk, n.FullNameCache";
 			
 			ResultSet rs = source.getResultSet(strSQL);
 			boolean firstRow = true;
