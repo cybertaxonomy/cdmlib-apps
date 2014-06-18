@@ -45,11 +45,11 @@ public class EuroMedActivator {
 
 	//database validation status (create, update, validate ...)
 	static DbSchemaValidation hbm2dll = DbSchemaValidation.VALIDATE;
-	static final Source berlinModelSource = BerlinModelSources.euroMed();
-//	static final Source berlinModelSource = BerlinModelSources.PESI3_euroMed();
+//	static final Source berlinModelSource = BerlinModelSources.euroMed();
+	static final Source berlinModelSource = BerlinModelSources.PESI3_euroMed();
 	
 //	static final ICdmDataSource cdmDestination = CdmDestinations.cdm_pesi_euroMed();
-	static final ICdmDataSource cdmDestination = CdmDestinations.cdm_test_local_mysql_test();
+	static final ICdmDataSource cdmDestination = CdmDestinations.cdm_test_local_euromed();
 //	static final ICdmDataSource cdmDestination = CdmDestinations.localH2();
 	
 	static final boolean includePesiExport = false;
@@ -125,9 +125,9 @@ public class EuroMedActivator {
 //	
 //	//taxa
 //	static final boolean doTaxa = true;
-//	static final boolean doRelTaxa = false;
+//	static final boolean doRelTaxa = true;
 //	static final boolean doFacts = true;
-//	static final boolean doOccurences = false;
+//	static final boolean doOccurences = true;
 //	static final boolean doCommonNames = true;
 //
 //	//etc.
