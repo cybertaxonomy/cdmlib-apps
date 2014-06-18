@@ -327,26 +327,17 @@ public class BerlinModelTaxonImport  extends BerlinModelImportBase {
 		return result;
 	}
 	
-	
-	/* (non-Javadoc)
-	 * @see eu.etaxonomy.cdm.io.berlinModel.in.BerlinModelImportBase#getTableName()
-	 */
 	@Override
 	protected String getTableName() {
 		return dbTableName;
 	}
 	
-	/* (non-Javadoc)
-	 * @see eu.etaxonomy.cdm.io.berlinModel.in.BerlinModelImportBase#getPluralString()
-	 */
 	@Override
 	public String getPluralString() {
 		return pluralString;
 	}
 	
-	/* (non-Javadoc)
-	 * @see eu.etaxonomy.cdm.io.common.CdmIoBase#isIgnore(eu.etaxonomy.cdm.io.common.IImportConfigurator)
-	 */
+	@Override
 	protected boolean isIgnore(BerlinModelImportState state){
 		return ! state.getConfig().isDoTaxa();
 	}
