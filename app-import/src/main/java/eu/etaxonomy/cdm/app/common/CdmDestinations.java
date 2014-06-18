@@ -89,6 +89,14 @@ public class CdmDestinations {
 		String cdmUserName = "root";     //root on pesiimport2
 		return makeDestination(dbType, cdmServer, cdmDB, -1, cdmUserName, null);
 	}
+
+	public static ICdmDataSource cdm_test_local_euromed(){
+		DatabaseTypeEnum dbType = DatabaseTypeEnum.MySQL;
+		String cdmServer = "127.0.0.1";
+		String cdmDB = "euroMed";
+		String cdmUserName = "root";
+		return makeDestination(dbType, cdmServer, cdmDB, -1, cdmUserName, null);
+	}
 	
 	public static ICdmDataSource cdm_local_EDITImport(){
 		DatabaseTypeEnum dbType = DatabaseTypeEnum.MySQL;
