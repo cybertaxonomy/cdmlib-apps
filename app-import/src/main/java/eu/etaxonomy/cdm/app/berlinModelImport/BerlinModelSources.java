@@ -26,7 +26,7 @@ public class BerlinModelSources {
 		//	BerlinModel - Euro+Med
 		String dbms = Source.SQL_SERVER_2008;
 		String strServer = "PESIIMPORT3";
-		String strDB = "EuroPlusMed_01";
+		String strDB = "EM_2014_06";
 		int port = 1433;
 		String userName = "pesiexport";
 		return  makeSource(dbms, strServer, strDB, port, userName, null);
