@@ -38,7 +38,8 @@ public class JaxbImportActivator {
 	private static String importFileNameString = 
 		//"C:\\workspace\\cdmlib_2.2\\cdmlib-io\\src\\test\\resources\\eu\\etaxonomy\\cdm\\io\\jaxb\\export_test_app_import.xml";
 //		"file:/C:/export_test_app_import.xml";
-	"file:/C:/localCopy/Data/krähen/201206141338-jaxb_export-cdm.xml";
+//	"file:/C:/localCopy/Data/krï¿½hen/201206141338-jaxb_export-cdm.xml";
+	"file:/C:/opt/data/rl/201406041541-jaxb_export-Regenwuermer.xml";
 	
 
 	/** NUMBER_ROWS_TO_RETRIEVE = 0 is the default case to retrieve all rows.
@@ -65,8 +66,7 @@ public class JaxbImportActivator {
 		try {
 			JaxbImportConfigurator jaxbImportConfigurator;
 			if (importFileParamString !=null && destination != null){
-				URI importFileParam;
-				importFileParam = new URI(importFileParamString);
+				URI importFileParam = new URI(importFileParamString);
 				jaxbImportConfigurator = JaxbImportConfigurator.NewInstance(importFileParam, destination);
 			}else if (destination != null){			
 				URI importFileName = new URI(importFileNameString);
