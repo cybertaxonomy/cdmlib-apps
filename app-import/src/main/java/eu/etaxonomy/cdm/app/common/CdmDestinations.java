@@ -304,8 +304,8 @@ public class CdmDestinations {
 		return CdmDataSource.NewH2EmbeddedInstance("salvador", "sa", "");
 	}
 
-	public static ICdmDataSource localH2Diptera(){
-		return CdmDataSource.NewH2EmbeddedInstance("diptera", "sa", "");
+	public static ICdmDataSource localH2Armeria(){
+		return CdmDataSource.NewH2EmbeddedInstance("armeria", "sa", "");
 	}
 
 

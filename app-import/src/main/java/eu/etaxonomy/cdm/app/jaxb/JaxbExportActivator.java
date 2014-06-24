@@ -29,7 +29,7 @@ import eu.etaxonomy.cdm.io.jaxb.JaxbExportConfigurator;
 public class JaxbExportActivator {
 
 	/* SerializeFrom DB **/
-	private static final ICdmDataSource cdmSource = CdmDestinations.localH2Diptera();
+	private static final ICdmDataSource cdmSource = CdmDestinations.localH2();
 	
 	// Export:
 	private static String exportFileName = "C:\\export_test_app_import.xml";

@@ -25,13 +25,12 @@ import eu.etaxonomy.cdm.io.jaxb.JaxbImportConfigurator;
 /**
  * @author a.babadshanjan
  * @created 25.09.2008
- * @version 1.0
  */
 public class JaxbImportActivator {
 
 	/* SerializeFrom DB **/
-	//private static final ICdmDataSource cdmSource = CdmDestinations.localH2Diptera();
-	private static final ICdmDataSource cdmDestination = CdmDestinations.cdm_test_local_mysql_test();
+//	private static final ICdmDataSource cdmDestination = CdmDestinations.cdm_test_local_mysql_test();
+	private static final ICdmDataSource cdmDestination = CdmDestinations.localH2Armeria();
 	
 	
 	// Import:
@@ -39,7 +38,8 @@ public class JaxbImportActivator {
 		//"C:\\workspace\\cdmlib_2.2\\cdmlib-io\\src\\test\\resources\\eu\\etaxonomy\\cdm\\io\\jaxb\\export_test_app_import.xml";
 //		"file:/C:/export_test_app_import.xml";
 //	"file:/C:/localCopy/Data/kr�hen/201206141338-jaxb_export-cdm.xml";
-	"file:/C:/opt/data/rl/201406041541-jaxb_export-Regenwuermer.xml";
+//	"file:/C:/opt/data/rl/201406041541-jaxb_export-Regenwuermer.xml";
+	"file:/C:/opt/data/rl/201406241132-jaxb_export-Armeria.xml";
 	
 
 	/** NUMBER_ROWS_TO_RETRIEVE = 0 is the default case to retrieve all rows.
@@ -50,17 +50,7 @@ public class JaxbImportActivator {
 
 	private static final Logger logger = Logger.getLogger(JaxbImportActivator.class);
 
-	
-	public static String chooseFile(String[] args) {
-		if(args == null)
-			return null;
-		for (String dest: args){
-			if (dest.endsWith(".xml")){
-				return args[0];
-			}
-		}
-		return null;
-	}
+
 
 	private void invokeImport(String importFileParamString, ICdmDataSource destination) {
 		try {
@@ -111,7 +101,17 @@ public class JaxbImportActivator {
 
 		TestDatabase.loadTestData("", appCtrInit);
 	}
-
+	
+	public static String chooseFile(String[] args) {
+		if(args == null)
+			return null;
+		for (String dest: args){
+			if (dest.endsWith(".xml")){
+				return args[0];
+			}
+		}
+		return null;
+	}
 
 	/**
 	 * @param args
