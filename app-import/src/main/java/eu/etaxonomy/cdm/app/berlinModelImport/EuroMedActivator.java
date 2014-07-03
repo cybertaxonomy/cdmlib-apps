@@ -24,6 +24,8 @@ import eu.etaxonomy.cdm.io.common.IImportConfigurator.CHECK;
 import eu.etaxonomy.cdm.io.common.IImportConfigurator.DO_REFERENCES;
 import eu.etaxonomy.cdm.io.common.IImportConfigurator.EDITOR;
 import eu.etaxonomy.cdm.io.common.Source;
+import eu.etaxonomy.cdm.model.common.DefinedTermBase;
+import eu.etaxonomy.cdm.model.common.Language;
 import eu.etaxonomy.cdm.model.description.Feature;
 import eu.etaxonomy.cdm.model.description.FeatureNode;
 import eu.etaxonomy.cdm.model.description.FeatureTree;
@@ -44,9 +46,9 @@ public class EuroMedActivator {
 	private static final Logger logger = Logger.getLogger(EuroMedActivator.class);
 
 	//database validation status (create, update, validate ...)
-	static DbSchemaValidation hbm2dll = DbSchemaValidation.VALIDATE;
+	static DbSchemaValidation hbm2dll = DbSchemaValidation.CREATE;
 //	static final Source berlinModelSource = BerlinModelSources.euroMed();
-	static final Source berlinModelSource = BerlinModelSources.PESI3_euroMed();
+	static final Source berlinModelSource = BerlinModelSources.euroMed_PESI3();
 	
 //	static final ICdmDataSource cdmDestination = CdmDestinations.cdm_pesi_euroMed();
 	static final ICdmDataSource cdmDestination = CdmDestinations.cdm_test_local_euromed();
@@ -94,7 +96,7 @@ public class EuroMedActivator {
 	
 	static String taxonTable = "v_cdm_exp_taxaAll";
 	static String classificationQuery = " SELECT DISTINCT t.PTRefFk, r.RefCache FROM PTaxon t INNER JOIN Reference r ON t.PTRefFk = r.RefId WHERE t.PTRefFk = " + sourceSecId; 
-	static String relPTaxonIdQuery = " SELECT r.RelPTaxonId " + 
+	static String relPTaxonIdQuery = " SELECT TOP (100) PERCENT r.RelPTaxonId " + 
 					" FROM RelPTaxon AS r INNER JOIN v_cdm_exp_taxaDirect AS a ON r.PTNameFk2 = a.PTNameFk AND r.PTRefFk2 = a.PTRefFk" +
 					" ORDER BY r.RelPTaxonId ";  // AND r.RelQualifierFk =1 
 	static String nameIdTable = " v_cdm_exp_namesAll ";
@@ -111,52 +113,52 @@ public class EuroMedActivator {
 	
 // **************** ALL *********************	
 
-//	static final boolean doUser = true;
-//	//authors
-//	static final boolean doAuthors = true;
-//	//references
-//	static final DO_REFERENCES doReferences =  DO_REFERENCES.ALL;
-//	//names
-//	static final boolean doTaxonNames = true;
-//	static final boolean doRelNames = true;
-//	static final boolean doNameStatus = true;
-//	static final boolean doTypes = false;  //serious types do not exist in E+M
-//	static final boolean doNameFacts = true;
-//	
-//	//taxa
-//	static final boolean doTaxa = true;
-//	static final boolean doRelTaxa = true;
-//	static final boolean doFacts = true;
-//	static final boolean doOccurences = true;
-//	static final boolean doCommonNames = true;
-//
-//	//etc.
-//	static final boolean doMarker = true;
+	static final boolean doUser = true;
+	//authors
+	static final boolean doAuthors = true;
+	//references
+	static final DO_REFERENCES doReferences =  DO_REFERENCES.ALL;
+	//names
+	static final boolean doTaxonNames = true;
+	static final boolean doRelNames = true;
+	static final boolean doNameStatus = true;
+	static final boolean doTypes = false;  //serious types do not exist in E+M
+	static final boolean doNameFacts = true;
+	
+	//taxa
+	static final boolean doTaxa = true;
+	static final boolean doRelTaxa = false;
+	static final boolean doFacts = true;
+	static final boolean doOccurences = true;
+	static final boolean doCommonNames = true;
+
+	//etc.
+	static final boolean doMarker = true;
 
 	
 // **************** SELECTED *********************
 
-	static final boolean doUser = false;
-	//authors
-	static final boolean doAuthors = false;
-	//references
-	static final DO_REFERENCES doReferences =  DO_REFERENCES.NONE;
-	//names
-	static final boolean doTaxonNames = false;
-	static final boolean doRelNames = false;
-	static final boolean doNameStatus = false;
-	static final boolean doTypes = false;
-	static final boolean doNameFacts = false;
-	
-	//taxa 
-	static final boolean doTaxa = false;
-	static final boolean doRelTaxa = false;
-	static final boolean doFacts = false;
-	static final boolean doOccurences = true;
-	static final boolean doCommonNames = false;
-	
-	//etc.
-	static final boolean doMarker = false;
+//	static final boolean doUser = false;
+//	//authors
+//	static final boolean doAuthors = false;
+//	//references
+//	static final DO_REFERENCES doReferences =  DO_REFERENCES.NONE;
+//	//names
+//	static final boolean doTaxonNames = false;
+//	static final boolean doRelNames = false;
+//	static final boolean doNameStatus = false;
+//	static final boolean doTypes = false;
+//	static final boolean doNameFacts = false;
+//	
+//	//taxa 
+//	static final boolean doTaxa = false;
+//	static final boolean doRelTaxa = true;
+//	static final boolean doFacts = false;
+//	static final boolean doOccurences = false;
+//	static final boolean doCommonNames = false;
+//	
+//	//etc.
+//	static final boolean doMarker = false;
 	
 	
 	public void importEm2CDM (Source source, ICdmDataSource destination, DbSchemaValidation hbm2dll){
@@ -240,6 +242,12 @@ public class EuroMedActivator {
 			FeatureNode commonNameNode = FeatureNode.NewInstance(Feature.COMMON_NAME());
 			tree.getRoot().addChild(commonNameNode, 3); 
 			app.getFeatureTreeService().saveOrUpdate(tree);
+			
+			//Change common name label
+			DefinedTermBase<?> commonNameFeature = app.getTermService().find(Feature.COMMON_NAME().getUuid());
+			commonNameFeature.setLabel("Common Names", Language.ENGLISH());
+			commonNameFeature.setTitleCache(null, false);  //to definetely update the titleCache also
+			app.getTermService().saveOrUpdate(commonNameFeature);
 		}
 		
 		System.out.println("End import from BerlinModel ("+ source.getDatabase() + ")...");

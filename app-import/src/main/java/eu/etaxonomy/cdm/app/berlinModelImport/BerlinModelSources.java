@@ -22,7 +22,7 @@ public class BerlinModelSources {
 	
 	
 
-	public static Source PESI3_euroMed(){
+	public static Source euroMed_PESI3(){
 		//	BerlinModel - Euro+Med
 		String dbms = Source.SQL_SERVER_2008;
 		String strServer = "PESIIMPORT3";
@@ -42,7 +42,7 @@ public class BerlinModelSources {
 		return  makeSource(dbms, strServer, strDB, port, userName, null);
 	}
 	
-	public static Source euroMed(){
+	public static Source euroMed_BGBM42(){
 		//	BerlinModel - Euro+Med
 		String dbms = Source.SQL_SERVER_2008;
 		String strServer = "BGBM42";
