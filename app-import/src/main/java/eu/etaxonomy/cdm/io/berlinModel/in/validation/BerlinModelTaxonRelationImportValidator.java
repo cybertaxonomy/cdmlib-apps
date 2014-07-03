@@ -63,6 +63,7 @@ public class BerlinModelTaxonRelationImportValidator implements IOValidator<Berl
                         " ( %s ) )" , config.getRelTaxaIdQuery()) ; 
 			}
 			
+//			System.out.println(strSQL);
 			ResultSet rs = source.getResultSet(strSQL);
 			boolean firstRow = true;
 			int i = 0;
