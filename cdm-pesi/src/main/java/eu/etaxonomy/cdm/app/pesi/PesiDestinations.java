@@ -30,7 +30,7 @@ public class PesiDestinations {
 		String strServer = "localhost";
 		String strDB = "CDM_EM2PESI";
 		int port = 1433;
-		String userName = "pesiexport3";
+		String userName =  "pesiexport";// "pesiexport3";
 		return makeSource(dbms, strServer, strDB, port, userName, null);
 	}
 	
