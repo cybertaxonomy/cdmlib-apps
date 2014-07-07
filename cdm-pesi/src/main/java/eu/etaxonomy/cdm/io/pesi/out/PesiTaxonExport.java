@@ -402,7 +402,7 @@ public class PesiTaxonExport extends PesiExportBase {
 				if (validateAncestorOfSpecificRank(taxon, ancestorLevel, Rank.SUBGENUS())) {
 					// The child (species or subspecies) of this parent (subgenus) has to have an infraGenericEpithet
 					if (infraGenericEpithet == null) {
-						logger.warn("InfraGenericEpithet does not exist even though it should for: " + taxon.getUuid() + " (" + taxon.getTitleCache() + ")");
+						logger.warn("InfraGenericEpithet for (sub)species of infrageneric taxon does not exist even though it should (also valid for Botanical Names?) for: " + taxon.getUuid() + " (" + taxon.getTitleCache() + ")");
 						// maybe the taxon could be named here
 					}
 				}
@@ -467,7 +467,7 @@ public class PesiTaxonExport extends PesiExportBase {
 				for (TaxonNode node : taxon.getTaxonNodes()){
 					doCount(count++, modCount, pluralString);
 					TaxonNode parentNode = node.getParent();
-					if (parentNode != null){
+					if (parentNode != null && parentNode.getTaxon() != null){  //new root node handling requires has root taxon with taxon == null
 						int childId = state.getDbId( taxon); 
 						int parentId = state.getDbId(parentNode.getTaxon());
 						success &= invokeParentTaxonFk(parentId, childId);
@@ -1072,6 +1072,8 @@ public class PesiTaxonExport extends PesiExportBase {
 				if (parentTaxonName != null && parentTaxonName.getRank().equals(ancestorRank)) {
 					result = true;
 				}
+			} else if (parentNode.treeIndex().matches("#t\\d+#\\d+#")) {
+				//do nothing (is root node)
 			} else {
 				logger.error("This TaxonNode has no Taxon: " + node.getUuid());
 			}
