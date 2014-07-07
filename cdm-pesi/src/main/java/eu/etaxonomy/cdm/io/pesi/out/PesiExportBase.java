@@ -348,7 +348,12 @@ public abstract class PesiExportBase extends DbExportBase<PesiExportConfigurator
 		//handle accepted taxa
 		if (taxonBase.isInstanceOf(Taxon.class)){
 			Taxon taxon = CdmBase.deproxy(taxonBase, Taxon.class);
+			if (! taxon.isPublish()){
+				taxon = null;
+				return false;
+			}
 			for (Marker marker : taxon.getMarkers()){
+				//probably not needed anymore after #1780 was fixed, also #4046 interesting
 				if (marker.getValue() == false && marker.getMarkerType().equals(MarkerType.PUBLISH())){
 					taxon = null;
 					return false;
