@@ -73,9 +73,6 @@ public class BerlinModelTaxonNameImport extends BerlinModelImportBase {
 	}
 
 
-	/* (non-Javadoc)
-	 * @see eu.etaxonomy.cdm.io.berlinModel.in.BerlinModelImportBase#getIdQuery(eu.etaxonomy.cdm.io.berlinModel.in.BerlinModelImportState)
-	 */
 	@Override
 	protected String getIdQuery(BerlinModelImportState state) {
 		if (state.getConfig().getNameIdTable()==null ){
@@ -85,10 +82,6 @@ public class BerlinModelTaxonNameImport extends BerlinModelImportBase {
 		}
 	}
 	
-	
-	/* (non-Javadoc)
-	 * @see eu.etaxonomy.cdm.io.berlinModel.in.BerlinModelImportBase#getRecordQuery()
-	 */
 	@Override
 	protected String getRecordQuery(BerlinModelImportConfigurator config) {
 		Source source = config.getSource();
@@ -142,10 +135,7 @@ public class BerlinModelTaxonNameImport extends BerlinModelImportBase {
 		}
 	}
 
-
-	/* (non-Javadoc)
-	 * @see eu.etaxonomy.cdm.io.berlinModel.in.IPartitionedIO#doPartition(eu.etaxonomy.cdm.io.berlinModel.in.ResultSetPartitioner, eu.etaxonomy.cdm.io.berlinModel.in.BerlinModelImportState)
-	 */
+	@Override
 	public boolean doPartition(ResultSetPartitioner partitioner, BerlinModelImportState state) {
 		String dbAttrName;
 		String cdmAttrName;
@@ -173,6 +163,10 @@ public class BerlinModelTaxonNameImport extends BerlinModelImportBase {
 				String strCultivarName = rs.getString("CultivarName");
 				String nameCache = rs.getString("NameCache");
 				String fullNameCache = rs.getString("FullNameCache");
+				String uuid = null;
+				if (resultSetHasColumn(rs,"UUID")){
+					uuid = rs.getString("UUID");
+				}
 				
 				try {
 					
@@ -202,6 +196,9 @@ public class BerlinModelTaxonNameImport extends BerlinModelImportBase {
 						}
 					}else{
 						taxonNameBase = NonViralName.NewInstance(rank);
+					}
+					if (uuid != null){
+						taxonNameBase.setUuid(UUID.fromString(uuid));
 					}
 					
 					if (rank == null){
@@ -343,6 +340,7 @@ public class BerlinModelTaxonNameImport extends BerlinModelImportBase {
 		}
 		return result;
 	}
+	
 	@Override
 	public Map<Object, Map<String, ? extends CdmBase>> getRelatedObjectsForPartition(ResultSet rs, BerlinModelImportState state) {
 		String nameSpace;
@@ -514,18 +512,12 @@ public class BerlinModelTaxonNameImport extends BerlinModelImportBase {
 		}
 	}
 	
-	/* (non-Javadoc)
-	 * @see eu.etaxonomy.cdm.io.common.CdmIoBase#doCheck(eu.etaxonomy.cdm.io.common.IImportConfigurator)
-	 */
 	@Override
 	protected boolean doCheck(BerlinModelImportState state){
 		IOValidator<BerlinModelImportState> validator = new BerlinModelTaxonNameImportValidator();
 		return validator.validate(state);
 	}
 	
-	/* (non-Javadoc)
-	 * @see eu.etaxonomy.cdm.io.common.CdmIoBase#isIgnore(eu.etaxonomy.cdm.io.common.IImportConfigurator)
-	 */
 	protected boolean isIgnore(BerlinModelImportState state){
 		return ! state.getConfig().isDoTaxonNames();
 	}
