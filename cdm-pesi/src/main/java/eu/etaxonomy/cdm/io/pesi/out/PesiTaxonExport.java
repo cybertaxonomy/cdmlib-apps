@@ -777,7 +777,7 @@ public class PesiTaxonExport extends PesiExportBase {
 			// Increment pageNumber
 			pageNumber++;
 		}
-		
+		taxonList = null;
 		while ((taxonList  = getTaxonService().listTaxaByName(Taxon.class, "*", "*", "*", "*", Rank.SUBSPECIES(), pageSize, pageNumber)).size() > 0) {
 			HashMap<Integer, TaxonNameBase<?,?>> inferredSynonymsDataToBeSaved = new HashMap<Integer, TaxonNameBase<?,?>>();
 
@@ -866,7 +866,7 @@ public class PesiTaxonExport extends PesiExportBase {
 						// Classification could not be determined directly from this TaxonNode
 						// The stored classification from another TaxonNode is used. It's a simple, but not a failsafe fallback solution.
 						if (taxonNodes.size() == 0) {
-							logger.error("Classification could not be determined directly from this Taxon: " + acceptedTaxon.getUuid() + " is misapplication? "+acceptedTaxon.isMisapplication()+ "). The classification of the last taxon is used");
+							//logger.error("Classification could not be determined directly from this Taxon: " + acceptedTaxon.getUuid() + " is misapplication? "+acceptedTaxon.isMisapplication()+ "). The classification of the last taxon is used");
 						
 						}
 					}
@@ -940,6 +940,7 @@ public class PesiTaxonExport extends PesiExportBase {
 				logger.error("This TaxonBase is not a Taxon even though it should be: " + taxonBase.getUuid() + " (" + taxonBase.getTitleCache() + ")");
 			}
 		}
+		taxonList = null;
 		return inferredSynonymsDataToBeSaved;
 	}
 	
@@ -2524,7 +2525,7 @@ public class PesiTaxonExport extends PesiExportBase {
 	private PesiExportMapping getMapping() {
 		PesiExportMapping mapping = new PesiExportMapping(dbTableName);
 		
-		mapping.addMapper(IdMapper.NewInstance("TaxonId"));
+		//mapping.addMapper(IdMapper.NewInstance("TaxonId"));
 		mapping.addMapper(DbObjectMapper.NewInstance("sec", "sourceFk")); //OLD:mapping.addMapper(MethodMapper.NewInstance("SourceFK", this.getClass(), "getSourceFk", standardMethodParameter, PesiExportState.class));
 		mapping.addMapper(MethodMapper.NewInstance("TaxonStatusFk", this.getClass(), "getTaxonStatusFk", standardMethodParameter, PesiExportState.class));
 		mapping.addMapper(MethodMapper.NewInstance("TaxonStatusCache", this.getClass(), "getTaxonStatusCache", standardMethodParameter, PesiExportState.class));

@@ -221,10 +221,12 @@ public class FaunaEuropaeaDistributionImport extends FaunaEuropaeaImportBase {
 					e.printStackTrace();
 				}
 			}
+			rs = null;
 		} catch (SQLException e) {
 			logger.error("SQLException:" +  e);
 			state.setUnsuccessfull();
 		}
+		
 		if(logger.isInfoEnabled()) { logger.info("End making distributions..."); }
 		
 		return;
@@ -238,6 +240,9 @@ public class FaunaEuropaeaDistributionImport extends FaunaEuropaeaImportBase {
 		 List<TaxonBase> taxonList = prepareTaxaAndDistribution(getTaxonService().find(taxonUuids), fauEuTaxonMap, noDataUuid, state);
 
 		getTaxonService().save(taxonList);
+		taxonList = null;
+		taxonUuids = null;
+		fauEuTaxonMap = null;
 		commitTransaction(txStatus);
 		
 	}

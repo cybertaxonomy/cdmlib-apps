@@ -422,7 +422,7 @@ public class PesiSourceExport extends PesiExportBase {
 		PesiExportMapping mapping = new PesiExportMapping(dbTableName);
 		ExtensionType extensionType = null;
 		
-		mapping.addMapper(IdMapper.NewInstance("SourceId"));
+	//	mapping.addMapper(IdMapper.NewInstance("SourceId"));
 		
 		// IMIS_Id
 		extensionType = (ExtensionType)getTermService().find(ErmsTransformer.IMIS_UUID);

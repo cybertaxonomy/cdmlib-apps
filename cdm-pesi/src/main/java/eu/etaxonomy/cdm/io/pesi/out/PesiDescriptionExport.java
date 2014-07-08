@@ -341,6 +341,7 @@ public class PesiDescriptionExport extends PesiExportBase {
 						addSourceSourceMapping, additionalSourceMapping, isImageGallery, element);
 			}
 		}
+		descriptions = null;
 		return success;
 	}
 
@@ -834,7 +835,7 @@ public class PesiDescriptionExport extends PesiExportBase {
 	private PesiExportMapping getNotesMapping() {
 		PesiExportMapping mapping = new PesiExportMapping(dbNoteTableName);
 		
-		mapping.addMapper(IdMapper.NewInstance("NoteId"));
+		//mapping.addMapper(IdMapper.NewInstance("NoteId"));
 		mapping.addMapper(DbTextDataMapper.NewInstance(Language.ENGLISH(), "Note_1"));
 		//TODO
 		mapping.addMapper(MethodMapper.NewInstance("Note_2", this, DescriptionElementBase.class));
@@ -871,7 +872,7 @@ public class PesiDescriptionExport extends PesiExportBase {
 	private PesiExportMapping getOccurrenceMapping() {
 		PesiExportMapping mapping = new PesiExportMapping(dbOccurrenceTableName);
 		
-		mapping.addMapper(IdMapper.NewInstance("OccurrenceId"));
+		//mapping.addMapper(IdMapper.NewInstance("OccurrenceId"));
 		mapping.addMapper(DbDescriptionElementTaxonMapper.NewInstance("taxonFk"));
 		mapping.addMapper(DbDescriptionElementTaxonMapper.NewInstance("TaxonFullNameCache", true, true, null)); 
 		

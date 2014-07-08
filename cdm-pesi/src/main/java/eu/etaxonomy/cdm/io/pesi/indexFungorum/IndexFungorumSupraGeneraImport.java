@@ -77,27 +77,30 @@ public class IndexFungorumSupraGeneraImport  extends IndexFungorumImportBase {
 				//TODO
 				//DisplayName, NomRefCache
 
-				Integer id = (Integer)rs.getObject("RECORD_NUMBER");
+				Double id = (Double)rs.getObject("RECORD NUMBER");
 				
-				String supragenericNames = rs.getString("SupragenericNames");
-				String preferredName = rs.getString("PreferredName");
+				String supragenericNames = rs.getString("Suprageneric names");
+				//String preferredName = rs.getString("PreferredName");
 				Integer rankFk = rs.getInt("PESI_RankFk");
 				
 				//name
 				Rank rank = state.getTransformer().getRankByKey(String.valueOf(rankFk));
 				NonViralName<?> name = BotanicalName.NewInstance(rank);
 				name.setGenusOrUninomial(supragenericNames);
-				if (preferredName != null && !preferredName.equals(supragenericNames)){
-					logger.warn("Suprageneric names and preferredName is not equal. This case is not yet handled by IF import. I take SupragenericNames for import. RECORD_NUMBER" + CdmUtils.Nz(id));
-				}
+				/*if (preferredName != null && !preferredName.equals(supragenericNames)){
+					logger.warn("Suprageneric names and preferredName is not equal. This case is not yet handled by IF import. I take SupragenericNames for import. RECORD NUMBER" +id);
+				}*/
 				
 				//taxon
 				Taxon taxon = Taxon.NewInstance(name, sourceReference);
 				//author + nom.ref.
 				makeAuthorAndPublication(state, rs, name);
 				//source
-				makeSource(state, taxon, id, NAMESPACE_SUPRAGENERIC_NAMES );
-				
+				if (id != null){
+					makeSource(state, taxon, id.intValue(), NAMESPACE_SUPRAGENERIC_NAMES );
+				} else{
+					makeSource(state, taxon, null,NAMESPACE_SUPRAGENERIC_NAMES);
+				}
 				getTaxonService().saveOrUpdate(taxon);
 			}
 

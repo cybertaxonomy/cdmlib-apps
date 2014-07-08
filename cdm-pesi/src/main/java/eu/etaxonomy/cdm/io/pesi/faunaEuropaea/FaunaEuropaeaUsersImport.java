@@ -19,8 +19,11 @@ import java.util.Map.Entry;
 import java.util.UUID;
 
 import org.apache.log4j.Logger;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.TransactionStatus;
+import org.springframework.transaction.support.DefaultTransactionDefinition;
 
 import eu.etaxonomy.cdm.io.common.IImportConfigurator;
 import eu.etaxonomy.cdm.io.common.ImportHelper;
@@ -45,6 +48,8 @@ public class FaunaEuropaeaUsersImport extends FaunaEuropaeaImportBase {
 
 	/* Interval for progress info message when retrieving taxa */
 	private int modCount = 10000;
+	
+	 protected DefaultTransactionDefinition txDefinition = new DefaultTransactionDefinition();
 
 	/* (non-Javadoc)
 	 * @see eu.etaxonomy.cdm.io.common.CdmIoBase#doCheck(eu.etaxonomy.cdm.io.common.IImportConfigurator)
@@ -81,12 +86,15 @@ public class FaunaEuropaeaUsersImport extends FaunaEuropaeaImportBase {
 		logger.warn("Start User doInvoke");
 		ProfilerController.memorySnapshot();
 		*/
+		
 		TransactionStatus txStatus = null;
 		Map<String, AgentBase<?>> persons = null;
-		Map<Integer, User> users= null;
+		Map<String, User> users= null;
+		Map<Integer, Reference> references = null;
 		Map<Integer, UUID> userUuids = new HashMap<Integer, UUID>();
 		int limit = state.getConfig().getLimitSave();
-
+		//this.authenticate("admin", "00000");  
+		
 		FaunaEuropaeaImportConfigurator fauEuConfig = state.getConfig();
 		Source source = fauEuConfig.getSource();
 
@@ -117,7 +125,7 @@ public class FaunaEuropaeaUsersImport extends FaunaEuropaeaImportBase {
 			}
 	        
 	        while (rsUser.next()){
-	        	int userId = rsUser.getInt("usr_id");
+	        	int refId = rsUser.getInt("usr_id");
 				String userTitle = rsUser.getString("usr_title");
 				String userFirstname = rsUser.getString("usr_firstname");
 				String userLastname = rsUser.getString("usr_lastname");
@@ -136,7 +144,7 @@ public class FaunaEuropaeaUsersImport extends FaunaEuropaeaImportBase {
 				if ((userTitle != null || userFirstname != null) && userLastname != null) {
 					userPerson += " " + userLastname;
 				}
-
+				this.authenticate("admin", "00000");
 				// build year
 				String year = null;
 				if (createdDate != null) {
@@ -147,7 +155,8 @@ public class FaunaEuropaeaUsersImport extends FaunaEuropaeaImportBase {
 
 					txStatus = startTransaction();
 					persons= new HashMap<String,AgentBase<?>>(limit);
-					users = new HashMap<Integer,User>(limit);
+					users = new HashMap<String,User>(limit);
+					references = new HashMap<Integer, Reference>(limit);
 					
 					if(logger.isInfoEnabled()) {
 						logger.info("i = " + i + " - User import transaction started"); 
@@ -156,10 +165,13 @@ public class FaunaEuropaeaUsersImport extends FaunaEuropaeaImportBase {
 				
 				AgentBase<?> person = null;
 				User user = null;
-				person= Person.NewTitledInstance(userTitle);
+				Reference reference = null;
+				person= Person.NewTitledInstance(userPerson);
 				user = User.NewInstance(userPerson, userPwd);
-				//reference.setTitle("" + refId); // This unique key is needed to get a hand on this Reference in PesiTaxonExport
-				//reference.setDatePublished(ImportHelper.getDatePublished(year));
+				reference = ReferenceFactory.newGeneric();
+				reference.setTitle("" + refId); // This unique key is needed to get a hand on this Reference in PesiTaxonExport
+				reference.setDatePublished(ImportHelper.getDatePublished(year));
+				
 				
 				if (!persons.containsKey(userPerson)) {
 					if (userPerson == null) {
@@ -175,44 +187,44 @@ public class FaunaEuropaeaUsersImport extends FaunaEuropaeaImportBase {
 				} else {
 					person = persons.get(userPerson);
 					if (logger.isDebugEnabled()) { 
-						logger.debug("Not imported user with duplicated user_id (" + userId + 
+						logger.debug("Not imported user with duplicated ref_id (" + refId + 
 							") " + userPerson);
 					}
 				}
 				
 				// set protected titleCache
-				/*StringBuilder referenceTitleCache = new StringBuilder(user.getTitleCache() + ".");
+				StringBuilder referenceTitleCache = new StringBuilder(person.getTitleCache() + ".");
 				if (year != null) {
 					referenceTitleCache.append(" " + year);
 				}
 				reference.setTitleCache(referenceTitleCache.toString(), true);
 				
-				reference.setAuthorTeam(author);*/
+				reference.setAuthorTeam((TeamOrPersonBase)person);
 				
 				//ImportHelper.setOriginalSource(user, fauEuConfig.getSourceReference(), userId, namespace);
-				ImportHelper.setOriginalSource(person, fauEuConfig.getSourceReference(), userId, namespace);
+				ImportHelper.setOriginalSource(person, fauEuConfig.getSourceReference(), refId, namespace);
 
 				
 				// Store persons
-				if (!users.containsKey(userId)) {
+				if (!users.containsKey(userPerson)) {
 
 					if (user == null) {
 						logger.warn("User is null");
 					}
-					users.put(userId, user);
+					users.put(userPerson, user);
 					if (logger.isTraceEnabled()) { 
-						logger.trace("Stored user (" + userTitle + ")"); 
+						logger.trace("Stored user (" + userPerson + ")"); 
 					}
 				} else {
 					if (logger.isDebugEnabled()) { 
-						logger.debug("Duplicated user(" + userId + ", " + userTitle+ ")");
+						logger.debug("Duplicated user(" + userPerson +")");
 					}
 					//continue;
 				}
 				
 				if (((i % limit) == 0 && i > 1 ) || i == count ) { 
 					
-					commitUsers(txStatus, persons, users,
+					commitUsers(txStatus, persons, users, references,
 							userUuids, i);
 					
 					users = null;					
@@ -221,7 +233,7 @@ public class FaunaEuropaeaUsersImport extends FaunaEuropaeaImportBase {
 	        	
 	        }
 	        if (users != null){
-	        	commitUsers(txStatus, persons, users, userUuids, i);
+	        	commitUsers(txStatus, persons, users, references, userUuids, i);
 	        	users = null;					
 				persons= null;
 	        }
@@ -240,11 +252,15 @@ public class FaunaEuropaeaUsersImport extends FaunaEuropaeaImportBase {
 
 	private void commitUsers(TransactionStatus txStatus,
 			Map<String, AgentBase<?>> persons,
-			Map<Integer, User> users,
+			Map<String, User> users,
+			Map<Integer, Reference> references,
 			Map<Integer, UUID> userUuids, int i) {
+		
 		Map<UUID, AgentBase> userMap =getAgentService().save((Collection)persons.values());
-		logger.info("i = " + i + " - users saved"); 
-
+		logger.info("i = " + i + " - persons saved"); 
+		
+	    
+	       
 		Iterator<Entry<UUID, AgentBase>> it = userMap.entrySet().iterator();
 		while (it.hasNext()){
 			AgentBase person = it.next().getValue();
@@ -254,6 +270,9 @@ public class FaunaEuropaeaUsersImport extends FaunaEuropaeaImportBase {
 		}
 		
 		getUserService().save((Collection)users.values());
+		logger.info("i = " + users.size() + " - users saved"); 
+		//getReferenceService().save(references.values());
+		//logger.info("i = " +references.size() + " - references saved"); 
 		commitTransaction(txStatus);
 	}
 

@@ -53,8 +53,8 @@ public class IndexFungorumGeneraImport  extends IndexFungorumImportBase {
 	
 	@Override
 	protected String getIdQuery() {
-		String result = " SELECT RECORD_NUMBER FROM " + getTableName() +
-				" ORDER BY PreferredName ";
+		String result = " SELECT [RECORD NUMBER] FROM " + getTableName() +
+				" ORDER BY [NAME OF FUNGUS] ";
 		return result;
 	}
 
@@ -64,9 +64,9 @@ public class IndexFungorumGeneraImport  extends IndexFungorumImportBase {
 	@Override
 	protected String getRecordQuery(IndexFungorumImportConfigurator config) {
 		String strRecordQuery = 
-				" SELECT DISTINCT c.FamilyName, c.OrderName, c.SubclassName, c.ClassName, c.SubphylumName, c.PhylumName, c.KingdomName, g.* " +
-                " FROM tblGenera AS g LEFT OUTER JOIN  dbo.[tblPESIfungi-Classification] AS c ON g.RECORD_NUMBER = c.PreferredNameFDCnumber " +
-			" WHERE ( g.RECORD_NUMBER IN (" + ID_LIST_TOKEN + ") )" + 
+				" SELECT DISTINCT c.[Family name], c.[Order name], c.[Subclass name], c.[Class name], c.[Subphylum name], c.[Phylum name], c.[Kingdom name], g.* " +
+                " FROM tblGenera AS g LEFT OUTER JOIN  dbo.[tblPESIfungi-Classification] AS c ON g.[RECORD NUMBER] = c.PreferredNameFDCnumber " +
+			" WHERE ( g.[RECORD NUMBER] IN (" + ID_LIST_TOKEN + ") )" + 
 			"";
 		return strRecordQuery;
 	}
@@ -86,12 +86,12 @@ public class IndexFungorumGeneraImport  extends IndexFungorumImportBase {
 				//TODO
 				//DisplayName, NomRefCache
 
-				Integer id = (Integer)rs.getObject("RECORD_NUMBER");
+				Double id = (Double)rs.getObject("RECORD NUMBER");
 				
 				
-				String preferredName = rs.getString("PreferredName");
+				String preferredName = rs.getString("NAME OF FUNGUS");
 				if (StringUtils.isBlank(preferredName)){
-					logger.warn("Preferred name is blank. This case is not yet handled by IF import. RECORD_NUMBER" + CdmUtils.Nz(id));
+					logger.warn("Preferred name is blank. This case is not yet handled by IF import. RECORD NUMBER" + id);
 				}
 				
 				Rank rank = Rank.GENUS();
@@ -105,8 +105,12 @@ public class IndexFungorumGeneraImport  extends IndexFungorumImportBase {
 				//author + publication
 				makeAuthorAndPublication(state, rs, name);
 				//source
-				makeSource(state, taxon, id, NAMESPACE_GENERA );
-				
+				//makeSource(state, taxon, id, NAMESPACE_GENERA );
+				if (id != null){
+					makeSource(state, taxon, id.intValue(), NAMESPACE_GENERA );
+				} else{
+					makeSource(state, taxon, null,NAMESPACE_GENERA);
+				}
 				getTaxonService().saveOrUpdate(taxon);
 			}
 
@@ -123,29 +127,35 @@ public class IndexFungorumGeneraImport  extends IndexFungorumImportBase {
 	
 	private Taxon getParentTaxon(IndexFungorumImportState state, ResultSet rs) throws SQLException {
 		String parentName = getParentNameString(rs);
-		
+		if (parentName == null){
+			logger.warn("Parent name not found for: " + rs.getString("NAME OF FUNGUS"));
+		}
 		Taxon taxon = state.getRelatedObject(NAMESPACE_SUPRAGENERIC_NAMES, parentName, Taxon.class);
 		if (taxon == null){
-			logger.warn("Taxon not found for " + parentName);
+			logger.warn("Taxon not found for " + parentName + " name of fungus: " +rs.getString("NAME OF FUNGUS") );
 		}
 		return taxon;
 	}
 
 
 	private String getParentNameString(ResultSet rs) throws SQLException {
-		String parentName = rs.getString("FamilyName");
+		String parentName = rs.getString("Family name");
+		if (parentName == null){
+			logger.warn(rs.getObject("NAME OF FUNGUS") + " has no family name. ");
+			return null;
+		}
 		if (parentName.equalsIgnoreCase(INCERTAE_SEDIS)){
-			parentName = rs.getString("OrderName");
+			parentName = rs.getString("Order name");
 			if (parentName.equalsIgnoreCase(INCERTAE_SEDIS)){
-				parentName = rs.getString("SubclassName");
+				parentName = rs.getString("Subclass name");
 				if (parentName.equalsIgnoreCase(INCERTAE_SEDIS)){
-					parentName = rs.getString("ClassName");
+					parentName = rs.getString("Class name");
 					if (parentName.equalsIgnoreCase(INCERTAE_SEDIS)){
-						parentName = rs.getString("SubphylumName");
+						parentName = rs.getString("Subphylum name");
 						if (parentName.equalsIgnoreCase(INCERTAE_SEDIS)){
-							parentName = rs.getString("PhylumName");
+							parentName = rs.getString("Phylum name");
 							if (parentName.equalsIgnoreCase(INCERTAE_SEDIS) || parentName.equalsIgnoreCase(FOSSIL_FUNGI) ){
-								parentName = rs.getString("KingdomName");
+								parentName = rs.getString("Kingdom name");
 							}
 						}
 					}

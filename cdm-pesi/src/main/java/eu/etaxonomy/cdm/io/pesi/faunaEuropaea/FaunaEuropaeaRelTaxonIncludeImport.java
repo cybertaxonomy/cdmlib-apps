@@ -50,7 +50,8 @@ public class FaunaEuropaeaRelTaxonIncludeImport extends FaunaEuropaeaImportBase 
 	private static final Logger logger = Logger.getLogger(FaunaEuropaeaRelTaxonIncludeImport.class);
 	//private static final String acceptedTaxonUUID = "A9C24E42-69F5-4681-9399-041E652CF338"; // any accepted taxon uuid, taken from original fauna europaea database
 	//private static final String acceptedTaxonUUID = "E23E6295-836A-4332-BF72-7D29949C7C60"; //faunaEu_1_3
-	private static final String acceptedTaxonUUID = "BB9CDF6C-BBA3-4AC7-A3FD-648A14F518A0"; //for faunEu (2.4)
+	//private static final String acceptedTaxonUUID = "bab7642e-f733-4a21-848d-a15250d2f4ed"; //for faunEu (2.4)
+	private static final String acceptedTaxonUUID = "DADA6F44-B7B5-4C0A-9F32-980F54B02C36"; // for MfNFaunaEuropaea
 	
 	private Reference<?> sourceRef;
 	private static String ALL_SYNONYM_FROM_CLAUSE = " FROM Taxon INNER JOIN Taxon AS Parent " +
@@ -108,19 +109,19 @@ public class FaunaEuropaeaRelTaxonIncludeImport extends FaunaEuropaeaImportBase 
 
 		Classification tree = getClassificationFor(state, sourceRef);
 		commitTransaction(txStatus);
-		/*
-		logger.warn("Before processParentsChildren");
 		
-		ProfilerController.memorySnapshot();
-		*/
-		if (state.getConfig().isDoTaxonomicallyIncluded()) {
+		logger.warn("Before processParentsChildren" + state.getConfig().isDoTaxonomicallyIncluded());
+		
+		//ProfilerController.memorySnapshot();
+		
+		if (state.getConfig().isDoTaxonomicallyIncluded())  {
 			processParentsChildren(state);
 		}
-		/*
-		logger.warn("Before processMissappliedNames");
 		
-		ProfilerController.memorySnapshot();
-		*/
+		logger.warn("Before processMissappliedNames" + state.getConfig().isDoMisappliedNames());
+		
+		//ProfilerController.memorySnapshot();
+		
 		if (state.getConfig().isDoMisappliedNames()) {
 			processMisappliedNames(state);
 		}
@@ -138,7 +139,7 @@ public class FaunaEuropaeaRelTaxonIncludeImport extends FaunaEuropaeaImportBase 
 		logger.warn("End RelTaxon doInvoke");
 		ProfilerController.memorySnapshot();
 		*/
-		logger.info("End making taxa...");
+		logger.info("End making relationships......");
 
 		return;
 	}
@@ -225,7 +226,7 @@ public class FaunaEuropaeaRelTaxonIncludeImport extends FaunaEuropaeaImportBase 
 					}
 				}
 			}
-	        
+	        rs = null;
 	        if (childParentMap != null){
 	        	logger.info("processParentsChildren... last commit");
 	        	createAndCommitParentChildRelationships(
@@ -237,6 +238,7 @@ public class FaunaEuropaeaRelTaxonIncludeImport extends FaunaEuropaeaImportBase 
 			logger.error("SQLException:" +  e);
 			state.setUnsuccessfull();
 		}
+		childParentMap = null;
 		return;		
 	}
 
@@ -395,7 +397,7 @@ public class FaunaEuropaeaRelTaxonIncludeImport extends FaunaEuropaeaImportBase 
 			}
 	        
 	        storeSynonymRelationships(rs, count, state);
-
+	        rs = null;
 		} catch (SQLException e) {
 			logger.error("SQLException:" +  e);
 			state.setUnsuccessfull();

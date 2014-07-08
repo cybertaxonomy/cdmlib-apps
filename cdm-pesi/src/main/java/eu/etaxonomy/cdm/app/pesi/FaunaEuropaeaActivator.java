@@ -37,7 +37,7 @@ public class FaunaEuropaeaActivator {
 	private static final Logger logger = Logger.getLogger(FaunaEuropaeaActivator.class);
 
 
-	static final Source faunaEuropaeaSource = PesiSources.faunEu_pesi3();
+	static final Source faunaEuropaeaSource = PesiSources.mfn_faunEu_pesi3();
 	static final ICdmDataSource cdmDestination = CdmDestinations.cdm_test_local_faunaEu_mysql();
 
 	

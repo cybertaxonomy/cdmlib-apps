@@ -97,32 +97,37 @@ public class IndexFungorumDistributionImport  extends IndexFungorumImportBase {
 				Integer id = rs.getInt("PreferredNameIFnumber");
 				Taxon taxon = state.getRelatedObject(NAMESPACE_SPECIES, String.valueOf(id), Taxon.class);
 				Reference<?> ref = null;
-				TaxonDescription description = getTaxonDescription(taxon, ref, false, true);
+				if (taxon == null){
+					logger.debug("taxon is null for id " + id);
+				} else{
+					TaxonDescription description = getTaxonDescription(taxon, ref, false, true);
 				
-				//handle single distributions
-				int count = rs.getMetaData().getColumnCount();
-				for (int i=1; i <= count; i++ ){
-					String colName = rs.getMetaData().getColumnName(i);
-					//exclude non distribution columns
-					if (! excludedColumns.contains(colName)){
-						String distributionValue = rs.getString(i);
-						if (StringUtils.isNotBlank(distributionValue)){
-							//create distribution for existing occurrences
-							if (! distributionValue.equals("X")){
-								logger.warn("Unexpected distribution value '" + distributionValue + "' for area " + colName);
+					//handle single distributions
+					int count = rs.getMetaData().getColumnCount();
+					for (int i=1; i <= count; i++ ){
+						String colName = rs.getMetaData().getColumnName(i);
+						//exclude non distribution columns
+						if (! excludedColumns.contains(colName)){
+							String distributionValue = rs.getString(i);
+							if (StringUtils.isNotBlank(distributionValue)){
+								//create distribution for existing occurrences
+								if (! distributionValue.equals("X")){
+									logger.warn("Unexpected distribution value '" + distributionValue + "' for area " + colName);
+								}
+								NamedArea area = state.getTransformer().getNamedAreaByKey(colName);
+								Distribution distribution = Distribution.NewInstance(area, status);
+								description.addElement(distribution);
+								//no last action
+								distribution.addMarker(Marker.NewInstance(noLastActionMarkerType, true));
 							}
-							NamedArea area = state.getTransformer().getNamedAreaByKey(colName);
-							Distribution distribution = Distribution.NewInstance(area, status);
-							description.addElement(distribution);
-							//no last action
-							distribution.addMarker(Marker.NewInstance(noLastActionMarkerType, true));
+							
 						}
-						
 					}
+					getTaxonService().saveOrUpdate(taxon);
 				}
 				
 				//save
-				getTaxonService().saveOrUpdate(taxon);
+				
 			}
 
 			

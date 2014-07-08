@@ -41,7 +41,7 @@ public class IndexFungorumActivator {
 
 	//database validation status (create, update, validate ...)
 	static DbSchemaValidation hbm2dll = DbSchemaValidation.CREATE;
-	static final Source indexFungorumSource = PesiSources.PESI_IF();
+	static final Source indexFungorumSource = PesiSources.PESI3_IF();
 //	static final ICdmDataSource cdmDestination = CdmDestinations.cdm_pesi_erms();
 	static final ICdmDataSource cdmDestination = CdmDestinations.cdm_test_local_indexFungorum();
 	static final UUID treeUuid = UUID.fromString("4bea48c3-eb10-41d1-b708-b5ee625ed243");
@@ -51,7 +51,7 @@ public class IndexFungorumActivator {
 
 	static final int partitionSize = 2000;
 	
-	static final boolean doPesiExport = true;
+	static final boolean doPesiExport = false;
 	
 
 	//NomeclaturalCode

@@ -416,7 +416,7 @@ public class FaunaEuropaeaTaxonNameImport extends FaunaEuropaeaImportBase  {
 								
 								taxon = Taxon.NewInstance(zooName, auctReference);
 								taxonBase = taxon;
-								logger.info("Misapplied name created ("+ taxonId + ") " + autName);
+								//logger.info("Misapplied name created ("+ taxonId + ") " + autName);
 								if (logger.isDebugEnabled()) {
 									logger.debug("Misapplied name created (" + taxonId + ")");
 									}
@@ -485,6 +485,7 @@ public class FaunaEuropaeaTaxonNameImport extends FaunaEuropaeaImportBase  {
 				}
 
 			}
+			rs = null;
 			if (taxonMap != null){
 				commitTaxa(state, txStatus, taxonMap, fauEuTaxonMap,
 						synonymSet);
@@ -496,7 +497,9 @@ public class FaunaEuropaeaTaxonNameImport extends FaunaEuropaeaImportBase  {
 			logger.error("SQLException:" +  e);
 			state.setUnsuccessfull();
 		}
-
+        taxonMap = null;
+		synonymSet = null;
+		fauEuTaxonMap = null;
 		return;
 	}
 

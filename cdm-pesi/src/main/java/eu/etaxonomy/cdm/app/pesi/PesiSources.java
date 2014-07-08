@@ -37,7 +37,7 @@ public class PesiSources {
 		//	Fauna Europaea auf pesiimport3
 		String dbms = Source.SQL_SERVER_2008;
         String strServer = "pesiimport3";
-        String strDB = "MfN_FaunaEuropeae";
+        String strDB = "MfN_FaunaEuropaea";
 		int port = 1433;
 		String userName = "pesiExportFaunaEu";
 		return  ImportUtils.makeSource(dbms, strServer, strDB, port, userName, null);
@@ -90,6 +90,16 @@ public class PesiSources {
 		String strDB = "ERMS";
 		int port = 1433;
 		String userName = "pesiexport";
+		return  makeSource(dbms, strServer, strDB, port, userName, null);
+	}
+	
+	public static Source PESI3_IF(){
+		//	BerlinModel - Pesi-ERMS
+		String dbms = Source.SQL_SERVER_2008;
+		String strServer = "Pesiimport3";
+		String strDB = "IF_2014_06";
+		int port = 1433;
+		String userName = "pesiExportFaunaEu";
 		return  makeSource(dbms, strServer, strDB, port, userName, null);
 	}
 	

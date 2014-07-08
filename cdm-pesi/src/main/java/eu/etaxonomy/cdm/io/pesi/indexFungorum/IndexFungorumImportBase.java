@@ -283,7 +283,7 @@ public abstract class IndexFungorumImportBase extends CdmImportBase<IndexFungoru
 		boolean hasInReference = false;
 		//publishing authors
 		Team pubAuthor = null;
-		String pubAuthorStr = rs.getString("PUBLISHING_AUTHORS");
+		String pubAuthorStr = rs.getString("PUBLISHING AUTHORS");
 		if (StringUtils.isNotBlank(pubAuthorStr)){
 			if (StringUtils.isNotBlank(authorStr)){
 				if (! pubAuthorStr.equals(authorStr)){
@@ -345,8 +345,8 @@ public abstract class IndexFungorumImportBase extends CdmImportBase<IndexFungoru
 		ref.setVolume(volume);
 		
 		//year
-		String yearOfPubl = rs.getString("YEAR_OF_PUBLICATION");
-		String yearOnPubl = rs.getString("YEAR_ON_PUBLICATION");
+		String yearOfPubl = rs.getString("YEAR OF PUBLICATION");
+		String yearOnPubl = rs.getString("YEAR ON PUBLICATION");
 		String year = null;
 		if (StringUtils.isNotBlank(yearOfPubl)){
 			year = yearOfPubl.trim();

@@ -96,7 +96,7 @@ implements ICdmImport<FaunaEuropaeaImportConfigurator, FaunaEuropaeaImportState>
 					NameRelationship nameRelation = null;
 					TaxonNameBase acceptedName = null;
 					
-					for (Synonym synonym : synonymList) {
+					for (TaxonBase synonym : synonymList) {
 						synonymName = synonym.getName();
 						if (synonymName.isGroupsBasionym()) {
 							nameRelations = synonymName.getNameRelations();

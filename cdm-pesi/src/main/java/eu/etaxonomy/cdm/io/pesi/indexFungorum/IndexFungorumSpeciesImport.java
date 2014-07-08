@@ -58,7 +58,7 @@ public class IndexFungorumSpeciesImport  extends IndexFungorumImportBase {
 	
 	@Override
 	protected String getIdQuery() {
-		String result = " SELECT RECORD_NUMBER FROM " + getTableName() +
+		String result = " SELECT PreferredNameIFnumber FROM " + getTableName() +
 				" ORDER BY PreferredName ";
 		return result;
 	}
@@ -72,10 +72,10 @@ public class IndexFungorumSpeciesImport  extends IndexFungorumImportBase {
 	@Override
 	protected String getRecordQuery(IndexFungorumImportConfigurator config) {
 		String strRecordQuery = 
-				" SELECT DISTINCT distribution.PreferredNameFDCnumber, species.* , cl.PhylumName" +
-				" FROM tblPESIfungi AS distribution RIGHT OUTER JOIN  dbo.[tblPESIfungi-IFdata] AS species ON distribution.PreferredNameIFnumber = species.RECORD_NUMBER " +
+				" SELECT DISTINCT distribution.PreferredNameFDCnumber, species.* , cl.[Phylum name]" +
+				" FROM tblPESIfungi AS distribution RIGHT OUTER JOIN  dbo.[tblPESIfungi-IFdata] AS species ON distribution.PreferredNameIFnumber = species.PreferredNameIFnumber " +
 					" LEFT OUTER JOIN [tblPESIfungi-Classification] cl ON species.PreferredName   = cl.PreferredName " +
-				" WHERE ( species.RECORD_NUMBER IN (" + ID_LIST_TOKEN + ") )" +
+				" WHERE ( species.PreferredNameIFnumber IN (" + ID_LIST_TOKEN + ") )" +
 			"";
 		return strRecordQuery;
 	}
@@ -93,12 +93,12 @@ public class IndexFungorumSpeciesImport  extends IndexFungorumImportBase {
 
 				//DisplayName, NomRefCache -> don't use, created by Marc
 
-				Integer id = (Integer)rs.getObject("RECORD_NUMBER");
-				String phylumName = rs.getString("PhylumName");
+				Integer id = (Integer)rs.getObject("PreferredNameIFnumber");
+				String phylumName = rs.getString("Phylum name");
 				
 				String preferredName = rs.getString("PreferredName");
 				if (StringUtils.isBlank(preferredName)){
-					logger.warn("Preferred name is blank. This case is not yet handled by IF import. RECORD_NUMBER" + CdmUtils.Nz(id));
+					logger.warn("Preferred name is blank. This case is not yet handled by IF import. RECORD UMBER" + CdmUtils.Nz(id));
 				}
 				
 				Rank rank = Rank.SPECIES();
@@ -108,6 +108,9 @@ public class IndexFungorumSpeciesImport  extends IndexFungorumImportBase {
 				
 				Taxon taxon = Taxon.NewInstance(name, sourceReference);
 				Taxon parent = getParentTaxon(state, rs);
+				if (parent == null){
+					logger.warn("parent not found for name:" +preferredName);
+				}
 				classification.addParentChild(parent, taxon, null, null);
 				
 				//author + publication

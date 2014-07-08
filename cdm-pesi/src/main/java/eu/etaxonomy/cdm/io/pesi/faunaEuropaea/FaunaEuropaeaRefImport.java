@@ -208,7 +208,7 @@ public class FaunaEuropaeaRefImport extends FaunaEuropaeaImportBase {
 	        	
 				if ((i++ % limit) == 0) {
 
-					txStatus = startTransaction();
+					txStatus = startTransactionForImports();
 					references = new HashMap<Integer,Reference>(limit);
 					authors = new HashMap<String,TeamOrPersonBase>(limit);
 					
@@ -281,6 +281,7 @@ public class FaunaEuropaeaRefImport extends FaunaEuropaeaImportBase {
 	        	
 	        	
 	        }
+	        rsRefs = null;
 	        if (references != null){
 	        	commitReferences(references, authors, referenceUuids, i, txStatus);
 	        	references= null;
@@ -290,6 +291,8 @@ public class FaunaEuropaeaRefImport extends FaunaEuropaeaImportBase {
 			logger.error("SQLException:" +  e);
 			state.setUnsuccessfull();
 		}
+		references = null;
+		authors = null;
 		
 	}
 
@@ -453,6 +456,14 @@ public class FaunaEuropaeaRefImport extends FaunaEuropaeaImportBase {
 		logger.error("SQLException:" +  e);
 		state.setUnsuccessfull();
 }
+		taxonUuids = null;
+		references = null;
+		taxonList = null;
+		fauEuTaxonMap = null;
+		referenceIDs = null;
+		referenceList = null;
+		
+		
 	}
 
 	private void commitTaxaReferenceRel(Set<UUID> taxonUuids,
@@ -492,9 +503,10 @@ public class FaunaEuropaeaRefImport extends FaunaEuropaeaImportBase {
 				Set<Taxon> acceptedTaxa = syn.getAcceptedTaxa();
 				if (acceptedTaxa.size() > 0) {
 					taxon = syn.getAcceptedTaxa().iterator().next();
+					logger.warn("Synonym (" + taxonBase.getUuid() + ") has accepted taxon" + taxon.getUuid());
 				} else {
 //								if (logger.isDebugEnabled()) { 
-						logger.warn("Synonym (" + taxonBase.getUuid() + ") does not have accepted taxa");
+					logger.warn("Synonym (" + taxonBase.getUuid() + ") does not have accepted taxa");
 //								}
 				}
 			} else {
