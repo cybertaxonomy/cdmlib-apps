@@ -118,20 +118,13 @@ public class BerlinModelTaxonImport  extends BerlinModelImportBase {
 		return config.getTaxonTable().trim().equals("v_cdm_exp_taxaAll");
 	}
 
-
-
-	/* (non-Javadoc)
-	 * @see eu.etaxonomy.cdm.io.common.CdmIoBase#doCheck(eu.etaxonomy.cdm.io.common.IImportConfigurator)
-	 */
 	@Override
 	protected boolean doCheck(BerlinModelImportState state){
 		IOValidator<BerlinModelImportState> validator = new BerlinModelTaxonImportValidator();
 		return validator.validate(state);
 	}
 
-	/* (non-Javadoc)
-	 * @see eu.etaxonomy.cdm.io.berlinModel.in.IPartitionedIO#doPartition(eu.etaxonomy.cdm.io.berlinModel.in.ResultSetPartitioner, eu.etaxonomy.cdm.io.berlinModel.in.BerlinModelImportState)
-	 */
+	@Override
 	public boolean doPartition(ResultSetPartitioner partitioner, BerlinModelImportState state) {
 		boolean success = true ;
 		
@@ -250,6 +243,9 @@ public class BerlinModelTaxonImport  extends BerlinModelImportBase {
 						if ( ! misapplied){
 //							logger.error("Publish Flag for synonyms not yet handled correctly");
 //							taxonBase.setPublish(publishFlag);
+							if(taxonBase.isInstanceOf(Taxon.class) ){
+								CdmBase.deproxy(taxonBase, Taxon.class).setPublish(publishFlag);
+							}
 						}
 					}
 					
