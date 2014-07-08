@@ -18,6 +18,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.UUID;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
@@ -223,6 +224,15 @@ public class BerlinModelOccurrenceImport  extends BerlinModelImportBase {
 		
 		//label
 		NamedArea area = NamedArea.NewInstance(geoSearch, unit, emCode);
+		
+		//uuid
+		UUID uuid = BerlinModelTransformer.getEMAreaUuid(emCode);
+		if (uuid != null){
+			area.setUuid(uuid);
+		}else{
+			logger.warn("Uuuid for emCode could not be defined: " + emCode);
+		}
+		
 		//code
 		area.setIdInVocabulary(emCode);
 		//notes
