@@ -9,6 +9,8 @@
 */
 package eu.etaxonomy.cdm.app.pesi;
 
+import java.sql.Connection;
+
 import org.apache.log4j.Logger;
 
 import eu.etaxonomy.cdm.app.common.CdmDestinations;
@@ -33,16 +35,16 @@ public class PesiExportActivatorEM {
 	private static final Logger logger = Logger.getLogger(PesiExportActivatorEM.class);
 
 	//database validation status (create, update, validate ...)
-	static final Source pesiDestination = PesiDestinations.pesi_test_local_CDM_EM2PESI();
+	static final Source pesiDestination = PesiDestinations.pesi_test_local_CDM_EM2PESI_tmp();
 //	static final Source pesiDestination = PesiDestinations.pesi_test_local_CDM_FE2PESI();
 //	static final Source pesiDestination = PesiDestinations.pesi_test_local_CDM_ERMS2PESI();
 	
-	static final ICdmDataSource cdmSource = CdmDestinations.cdm_test_local_mysql();
+	static final ICdmDataSource cdmSource = CdmDestinations.cdm_local_euroMed();
 	//Taxon names can't be mapped to their CDM ids as PESI Taxon table mainly holds taxa and there IDs. We ad nameIdStart to the TaxonName id to get a unique id
 	static final int nameIdStart = 10000000;
 	static final IdType idType = IdType.CDM_ID_WITH_EXCEPTIONS;
 
-	static final int partitionSize = 5000;
+	static final int partitionSize = 1000;
 	
 	//check - export
 	static final CHECK check = CHECK.EXPORT_WITHOUT_CHECK;
@@ -142,7 +144,8 @@ public class PesiExportActivatorEM {
 	public static void main(String[] args) {
 		PesiExportActivatorEM ex = new PesiExportActivatorEM();
 		ICdmDataSource source = CdmDestinations.chooseDestination(args) != null ? CdmDestinations.chooseDestination(args) : cdmSource;
-
+//		Connection con = pesiDestination.getConnection();
+//		System.out.println(con);
 		ex.doExport(source);
 	}
 
