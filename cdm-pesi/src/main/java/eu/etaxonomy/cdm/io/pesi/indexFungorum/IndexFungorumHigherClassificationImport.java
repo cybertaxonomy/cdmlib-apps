@@ -21,7 +21,6 @@ import org.apache.log4j.Logger;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.TransactionStatus;
 
-import eu.etaxonomy.cdm.hibernate.HibernateProxyHelper;
 import eu.etaxonomy.cdm.io.pesi.out.PesiTransformer;
 import eu.etaxonomy.cdm.model.common.CdmBase;
 import eu.etaxonomy.cdm.model.common.Marker;
@@ -32,7 +31,6 @@ import eu.etaxonomy.cdm.model.reference.Reference;
 import eu.etaxonomy.cdm.model.taxon.Classification;
 import eu.etaxonomy.cdm.model.taxon.Taxon;
 import eu.etaxonomy.cdm.model.taxon.TaxonBase;
-import eu.etaxonomy.cdm.model.taxon.TaxonNode;
 
 
 /**
@@ -134,7 +132,7 @@ public class IndexFungorumHigherClassificationImport  extends IndexFungorumImpor
 										Rank newRank = (lastKingdom.equals("Fungi") ? null : Rank.PHYLUM());
 										taxonPhylum = makeTaxon(state, phylum, newRank);
 										if (taxonPhylum != null){
-											classification.addParentChild(higherTaxon, taxonPhylum, null, null, true);
+											classification.addParentChild(higherTaxon, taxonPhylum, null, null);
 										}
 										higherTaxon = isIncertisSedis(phylum) ? higherTaxon : taxonPhylum;
 										lastPhylum = phylum;
@@ -145,7 +143,7 @@ public class IndexFungorumHigherClassificationImport  extends IndexFungorumImpor
 									Rank newRank = (lastKingdom.equals("Fungi") ? null : Rank.SUBPHYLUM());
 									taxonSubphylum = makeTaxon(state, subphylum, newRank);
 									if (taxonSubphylum != null){
-										getClassification(state).addParentChild(higherTaxon,taxonSubphylum, null, null,true);
+										getClassification(state).addParentChild(higherTaxon,taxonSubphylum, null, null);
 									}
 									higherTaxon = isIncertisSedis(subphylum) ? higherTaxon : taxonSubphylum;
 									lastSubphylum = subphylum;
@@ -154,7 +152,7 @@ public class IndexFungorumHigherClassificationImport  extends IndexFungorumImpor
 								}
 								taxonClass = makeTaxon(state, classname, Rank.CLASS());
 								if (taxonClass != null){
-									getClassification(state).addParentChild(higherTaxon, taxonClass, null, null, true);
+									getClassification(state).addParentChild(higherTaxon, taxonClass, null, null);
 								}
 								higherTaxon = isIncertisSedis(classname) ? higherTaxon : taxonClass;
 								lastClassname = classname;
@@ -163,7 +161,7 @@ public class IndexFungorumHigherClassificationImport  extends IndexFungorumImpor
 							}
 							taxonSubclass = makeTaxon(state, subclass, Rank.SUBCLASS());
 							if (taxonSubclass != null){
-								getClassification(state).addParentChild(higherTaxon, taxonSubclass,null, null, true);
+								getClassification(state).addParentChild(higherTaxon, taxonSubclass,null, null);
 							}
 							higherTaxon = isIncertisSedis(subclass) ? higherTaxon : taxonSubclass;
 							lastSubclass = subclass;
@@ -172,7 +170,7 @@ public class IndexFungorumHigherClassificationImport  extends IndexFungorumImpor
 						}
 						taxonOrder = makeTaxon(state, order, Rank.ORDER());
 						if (taxonOrder != null){
-							getClassification(state).addParentChild(higherTaxon, taxonOrder, null, null, true);
+							getClassification(state).addParentChild(higherTaxon, taxonOrder, null, null);
 						}
 						higherTaxon = isIncertisSedis(order) ? higherTaxon : taxonOrder;
 						lastOrder = order;
@@ -182,7 +180,7 @@ public class IndexFungorumHigherClassificationImport  extends IndexFungorumImpor
 					taxonFamily = makeTaxon(state, family, Rank.FAMILY());
 					if (taxonFamily != null){
 						try{
-							getClassification(state).addParentChild(higherTaxon, taxonFamily, null, null, true);
+							getClassification(state).addParentChild(higherTaxon, taxonFamily, null, null);
 						}catch(IllegalStateException e){
 							if (e.getMessage().startsWith("The child taxon is already part of the tree")){
 								//TaxonNode node = getClassification(state).getNode(taxonFamily);
