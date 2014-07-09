@@ -26,10 +26,12 @@ import eu.etaxonomy.cdm.io.common.IImportConfigurator.EDITOR;
 import eu.etaxonomy.cdm.io.common.Source;
 import eu.etaxonomy.cdm.model.common.DefinedTermBase;
 import eu.etaxonomy.cdm.model.common.Language;
+import eu.etaxonomy.cdm.model.common.Representation;
 import eu.etaxonomy.cdm.model.description.Feature;
 import eu.etaxonomy.cdm.model.description.FeatureNode;
 import eu.etaxonomy.cdm.model.description.FeatureTree;
 import eu.etaxonomy.cdm.model.name.NomenclaturalCode;
+import eu.etaxonomy.cdm.model.name.Rank;
 
 
 /**
@@ -46,7 +48,7 @@ public class EuroMedActivator {
 	private static final Logger logger = Logger.getLogger(EuroMedActivator.class);
 
 	//database validation status (create, update, validate ...)
-	static DbSchemaValidation hbm2dll = DbSchemaValidation.CREATE;
+	static DbSchemaValidation hbm2dll = DbSchemaValidation.VALIDATE;
 //	static final Source berlinModelSource = BerlinModelSources.euroMed();
 	static final Source berlinModelSource = BerlinModelSources.euroMed_PESI3();
 	
@@ -113,52 +115,52 @@ public class EuroMedActivator {
 	
 // **************** ALL *********************	
 
-	static final boolean doUser = true;
-	//authors
-	static final boolean doAuthors = true;
-	//references
-	static final DO_REFERENCES doReferences =  DO_REFERENCES.ALL;
-	//names
-	static final boolean doTaxonNames = true;
-	static final boolean doRelNames = true;
-	static final boolean doNameStatus = true;
-	static final boolean doTypes = false;  //serious types do not exist in E+M
-	static final boolean doNameFacts = true;
-	
-	//taxa
-	static final boolean doTaxa = true;
-	static final boolean doRelTaxa = false;
-	static final boolean doFacts = true;
-	static final boolean doOccurences = true;
-	static final boolean doCommonNames = true;
-
-	//etc.
-	static final boolean doMarker = true;
+//	static final boolean doUser = true;
+//	//authors
+//	static final boolean doAuthors = true;
+//	//references
+//	static final DO_REFERENCES doReferences =  DO_REFERENCES.ALL;
+//	//names
+//	static final boolean doTaxonNames = true;
+//	static final boolean doRelNames = true;
+//	static final boolean doNameStatus = true;
+//	static final boolean doTypes = false;  //serious types do not exist in E+M
+//	static final boolean doNameFacts = true;
+//	
+//	//taxa
+//	static final boolean doTaxa = true;
+//	static final boolean doRelTaxa = false;
+//	static final boolean doFacts = true;
+//	static final boolean doOccurences = true;
+//	static final boolean doCommonNames = true;
+//
+//	//etc.
+//	static final boolean doMarker = true;
 
 	
 // **************** SELECTED *********************
 
-//	static final boolean doUser = false;
-//	//authors
-//	static final boolean doAuthors = false;
-//	//references
-//	static final DO_REFERENCES doReferences =  DO_REFERENCES.NONE;
-//	//names
-//	static final boolean doTaxonNames = false;
-//	static final boolean doRelNames = false;
-//	static final boolean doNameStatus = false;
-//	static final boolean doTypes = false;
-//	static final boolean doNameFacts = false;
-//	
-//	//taxa 
-//	static final boolean doTaxa = false;
-//	static final boolean doRelTaxa = true;
-//	static final boolean doFacts = false;
-//	static final boolean doOccurences = false;
-//	static final boolean doCommonNames = false;
-//	
-//	//etc.
-//	static final boolean doMarker = false;
+	static final boolean doUser = false;
+	//authors
+	static final boolean doAuthors = false;
+	//references
+	static final DO_REFERENCES doReferences =  DO_REFERENCES.NONE;
+	//names
+	static final boolean doTaxonNames = false;
+	static final boolean doRelNames = false;
+	static final boolean doNameStatus = false;
+	static final boolean doTypes = false;
+	static final boolean doNameFacts = false;
+	
+	//taxa 
+	static final boolean doTaxa = false;
+	static final boolean doRelTaxa = true;
+	static final boolean doFacts = false;
+	static final boolean doOccurences = false;
+	static final boolean doCommonNames = false;
+	
+	//etc.
+	static final boolean doMarker = false;
 	
 	
 	public void importEm2CDM (Source source, ICdmDataSource destination, DbSchemaValidation hbm2dll){
@@ -229,6 +231,24 @@ public class EuroMedActivator {
 		// invoke import
 		CdmDefaultImport<BerlinModelImportConfigurator> bmImport = new CdmDefaultImport<BerlinModelImportConfigurator>();
 		bmImport.invoke(config);
+		
+		if (doTaxonNames && (config.getCheck().equals(CHECK.CHECK_AND_IMPORT)  || config.getCheck().equals(CHECK.IMPORT_WITHOUT_CHECK)  )  ){
+			ICdmApplicationConfiguration app = bmImport.getCdmAppController();
+			Rank sectBot = (Rank)app.getTermService().find(Rank.SECTION_BOTANY().getUuid());
+			Representation repr = sectBot.getRepresentation(Language.ENGLISH());
+			repr.setAbbreviatedLabel(repr.getAbbreviatedLabel().replace("(bot.)", "").trim());
+			repr.setLabel(repr.getLabel().replace("(Botany)", "").trim());
+			sectBot.setTitleCache(null, false);  //to definetely update the titleCache also
+			app.getTermService().saveOrUpdate(sectBot);
+
+			Rank subSectBot = (Rank)app.getTermService().find(Rank.SECTION_BOTANY().getUuid());
+			repr = subSectBot.getRepresentation(Language.ENGLISH());
+			repr.setAbbreviatedLabel(repr.getAbbreviatedLabel().replace("(bot.)", "").trim());
+			repr.setLabel(repr.getLabel().replace("(Botany)", "").trim());
+			subSectBot.setTitleCache(null, false);  //to definetely update the titleCache also
+			app.getTermService().saveOrUpdate(subSectBot);
+
+		}
 		
 		if (doFacts && (config.getCheck().equals(CHECK.CHECK_AND_IMPORT)  || config.getCheck().equals(CHECK.IMPORT_WITHOUT_CHECK)  )  ){
 			ICdmApplicationConfiguration app = bmImport.getCdmAppController();
