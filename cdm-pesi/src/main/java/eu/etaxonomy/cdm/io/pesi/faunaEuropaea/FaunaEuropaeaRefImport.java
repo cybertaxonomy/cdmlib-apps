@@ -56,9 +56,6 @@ public class FaunaEuropaeaRefImport extends FaunaEuropaeaImportBase {
 	/* Interval for progress info message when retrieving taxa */
 	private int modCount = 10000;
 
-	/* (non-Javadoc)
-	 * @see eu.etaxonomy.cdm.io.common.CdmIoBase#doCheck(eu.etaxonomy.cdm.io.common.IImportConfigurator)
-	 */
 	@Override
 	protected boolean doCheck(FaunaEuropaeaImportState state) {
 		boolean result = true;
@@ -82,9 +79,6 @@ public class FaunaEuropaeaRefImport extends FaunaEuropaeaImportBase {
 //		}
 	}
 	
-	/* (non-Javadoc)
-	 * @see eu.etaxonomy.cdm.io.common.CdmIoBase#doInvoke(eu.etaxonomy.cdm.io.common.IImportConfigurator, eu.etaxonomy.cdm.api.application.CdmApplicationController, java.util.Map)
-	 */
 	@Override
 	protected void doInvoke(FaunaEuropaeaImportState state) {				
 		/*
@@ -208,7 +202,7 @@ public class FaunaEuropaeaRefImport extends FaunaEuropaeaImportBase {
 	        	
 				if ((i++ % limit) == 0) {
 
-					txStatus = startTransactionForImports();
+					txStatus = startTransaction();
 					references = new HashMap<Integer,Reference>(limit);
 					authors = new HashMap<String,TeamOrPersonBase>(limit);
 					
@@ -281,7 +275,6 @@ public class FaunaEuropaeaRefImport extends FaunaEuropaeaImportBase {
 	        	
 	        	
 	        }
-	        rsRefs = null;
 	        if (references != null){
 	        	commitReferences(references, authors, referenceUuids, i, txStatus);
 	        	references= null;
@@ -291,8 +284,6 @@ public class FaunaEuropaeaRefImport extends FaunaEuropaeaImportBase {
 			logger.error("SQLException:" +  e);
 			state.setUnsuccessfull();
 		}
-		references = null;
-		authors = null;
 		
 	}
 
@@ -423,39 +414,39 @@ public class FaunaEuropaeaRefImport extends FaunaEuropaeaImportBase {
 				
 			
 		
-			if (((i % limit) == 0 && i > 1 ) || i == count) { 
-
-				try {
-
-					Set<UUID> uuidSet;
-					commitTaxaReferenceRel(taxonUuids, fauEuTaxonMap,
-							referenceUuids, referenceIDs, limit, txStatus, i,
-							taxon);
-
-					taxonUuids = null;
-					references = null;
-					taxonList = null;
-					fauEuTaxonMap = null;
-					referenceIDs = null;
-					referenceList = null;
-					uuidSet = null;
-					
-
-				} catch (Exception e) {
-					logger.warn("An exception occurred when creating reference, reference could not be saved.");
+				if (((i % limit) == 0 && i > 1 ) || i == count) { 
+	
+					try {
+	
+						Set<UUID> uuidSet;
+						commitTaxaReferenceRel(taxonUuids, fauEuTaxonMap,
+								referenceUuids, referenceIDs, limit, txStatus, i,
+								taxon);
+	
+						taxonUuids = null;
+						references = null;
+						taxonList = null;
+						fauEuTaxonMap = null;
+						referenceIDs = null;
+						referenceList = null;
+						uuidSet = null;
+						
+	
+					} catch (Exception e) {
+						logger.warn("An exception occurred when creating reference, reference could not be saved.");
+					}
 				}
 			}
+			if (taxonUuids != null){
+				commitTaxaReferenceRel(taxonUuids, fauEuTaxonMap,
+						referenceUuids, referenceIDs, limit, txStatus, i,
+						taxon);
+			}
+			rsTaxRefs.close();
+		} catch (SQLException e) {
+				logger.error("SQLException:" +  e);
+				state.setUnsuccessfull();
 		}
-		if (taxonUuids != null){
-			commitTaxaReferenceRel(taxonUuids, fauEuTaxonMap,
-					referenceUuids, referenceIDs, limit, txStatus, i,
-					taxon);
-		}
-		rsTaxRefs.close();
-} catch (SQLException e) {
-		logger.error("SQLException:" +  e);
-		state.setUnsuccessfull();
-}
 		taxonUuids = null;
 		references = null;
 		taxonList = null;
@@ -556,14 +547,7 @@ public class FaunaEuropaeaRefImport extends FaunaEuropaeaImportBase {
 		
 	}
 
-	
-	
-
-	
-
-	/* (non-Javadoc)
-	 * @see eu.etaxonomy.cdm.io.common.CdmIoBase#isIgnore(eu.etaxonomy.cdm.io.common.IImportConfigurator)
-	 */
+	@Override
 	protected boolean isIgnore(FaunaEuropaeaImportState state){
 		return (state.getConfig().getDoReferences() == IImportConfigurator.DO_REFERENCES.NONE);
 	}
