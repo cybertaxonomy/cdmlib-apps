@@ -14,7 +14,6 @@ import java.sql.SQLException;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Set;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
@@ -42,14 +41,10 @@ import eu.etaxonomy.cdm.model.reference.ReferenceFactory;
 public class BerlinModelRefDetailImport extends BerlinModelImportBase {
 	private static final Logger logger = Logger.getLogger(BerlinModelRefDetailImport.class);
 
-	public static final String NOM_REFDETAIL_NAMESPACE = "NomRefDetail";
-	public static final String BIBLIO_REFDETAIL_NAMESPACE = "BiblioRefDetail";
+//	public static final String NOM_REFDETAIL_NAMESPACE = "NomRefDetail";
+//	public static final String BIBLIO_REFDETAIL_NAMESPACE = "BiblioRefDetail";
 	public static final String REFDETAIL_NAMESPACE = "RefDetail";
-	
-	private static ReferenceFactory refFactory;
-	
-	
-	
+		
 	private int modCount = 1000;
 	private static final String pluralString = "ref-details";
 	private static final String dbTableName = "RefDetail";
@@ -58,21 +53,7 @@ public class BerlinModelRefDetailImport extends BerlinModelImportBase {
 	public BerlinModelRefDetailImport(){
 		super(dbTableName, pluralString);
 	}
-	
-	
-	//type to count the references nomReferences that have been created and saved
-	private class RefCounter{
-		RefCounter() {nomRefCount = 0; biblioRefCount = 0;};
-		int nomRefCount;
-		int biblioRefCount;
-		public String toString(){return String.valueOf(nomRefCount) + "," +String.valueOf(biblioRefCount);};
-	}
-
-	
-	
-	/* (non-Javadoc)
-	 * @see eu.etaxonomy.cdm.io.berlinModel.in.BerlinModelImportBase#getIdQuery()
-	 */
+		
 	@Override
 	protected String getIdQuery(BerlinModelImportState state) {
 		String strQuery = " SELECT RefDetail.RefDetailId " +
@@ -81,10 +62,6 @@ public class BerlinModelRefDetailImport extends BerlinModelImportBase {
 		return strQuery;
 	}
 
-
-	/* (non-Javadoc)
-	 * @see eu.etaxonomy.cdm.io.berlinModel.in.BerlinModelImportBase#getRecordQuery(eu.etaxonomy.cdm.io.berlinModel.in.BerlinModelImportConfigurator)
-	 */
 	@Override
 	protected String getRecordQuery(BerlinModelImportConfigurator config) {
 		String strQuery = 
@@ -96,23 +73,19 @@ public class BerlinModelRefDetailImport extends BerlinModelImportBase {
 		return strQuery;  
 	}
 
-
-	/* (non-Javadoc)
-	 * @see eu.etaxonomy.cdm.io.berlinModel.in.IPartitionedIO#doPartition(eu.etaxonomy.cdm.io.berlinModel.in.ResultSetPartitioner, eu.etaxonomy.cdm.io.berlinModel.in.BerlinModelImportState)
-	 */
+	@Override
 	public boolean doPartition(ResultSetPartitioner partitioner, BerlinModelImportState state) {
 		boolean success = true;
 		logger.info("start make " + getPluralString() + " ...");
 		
 		BerlinModelImportConfigurator config = state.getConfig(); 
-		Map<Integer, Reference> biblioRefDetailsToSave = new HashMap<Integer, Reference>();
-		Map<Integer, Reference> nomRefDetailsToSave =  new HashMap<Integer, Reference>();
+		Map<Integer, Reference> refDetailsToSave = new HashMap<Integer, Reference>();
 		
 		ResultSet rs = partitioner.getResultSet();
+		int refCount = 0; 
 		
 		try {
 			int i = 0;
-			RefCounter refCounter  = new RefCounter();
 			while (rs.next()){
 				
 				if ((i++ % modCount) == 0 && i!= 1 ){ logger.info("RefDetails handled: " + (i-1) );}
@@ -121,37 +94,44 @@ public class BerlinModelRefDetailImport extends BerlinModelImportBase {
 				
 				//nomRef
 				String fullNomRefCache = rs.getString("fullNomRefCache"); 
-				if ( StringUtils.isNotBlank(fullNomRefCache) ){
-					Reference genericReference = refFactory.newGeneric();
-					genericReference.setTitleCache(fullNomRefCache, true);
-					nomRefDetailsToSave.put(refDetailId, genericReference);
-					//year
-					genericReference.setDatePublished(ImportHelper.getDatePublished(refYear)); 
-					//refId, created, notes
-					doIdCreatedUpdatedNotes(state, genericReference, rs, refDetailId, NOM_REFDETAIL_NAMESPACE );						
-					refCounter.nomRefCount++;
-				}	
-				
-				//biblioRef
 				String fullRefCache = rs.getString("fullRefCache"); 
-				if ( StringUtils.isNotBlank(fullRefCache) && ! fullRefCache.equals(fullNomRefCache)){
-					Reference<?> genericReference = refFactory.newGeneric();
-					genericReference.setTitleCache(fullRefCache, true);
-					biblioRefDetailsToSave.put(refDetailId, genericReference);
+				
+				if ( StringUtils.isNotBlank(fullNomRefCache) || StringUtils.isNotBlank(fullRefCache)  ){
+					Reference<?> genericReference = ReferenceFactory.newGeneric();
+					
+					if (StringUtils.isNotBlank(fullNomRefCache)){
+						genericReference.setAbbrevTitleCache(fullNomRefCache, true);
+					}
+					if ( StringUtils.isNotBlank(fullRefCache) ){
+						genericReference.setTitleCache(fullRefCache, true);
+					}
+					
+					refDetailsToSave.put(refDetailId, genericReference);
 					//year
 					genericReference.setDatePublished(ImportHelper.getDatePublished(refYear)); 
 					//refId, created, notes
-					doIdCreatedUpdatedNotes(state, genericReference, rs, refDetailId, BIBLIO_REFDETAIL_NAMESPACE );						
-					refCounter.biblioRefCount++;
-				}
+					doIdCreatedUpdatedNotes(state, genericReference, rs, refDetailId, REFDETAIL_NAMESPACE );						
+					refCount++;
+				}	
+//				xx;
+//				//biblioRef
+//				String fullRefCache = rs.getString("fullRefCache"); 
+//				if ( StringUtils.isNotBlank(fullRefCache) && ! fullRefCache.equals(fullNomRefCache)){
+//					Reference<?> genericReference = ReferenceFactory.newGeneric();
+//					genericReference.setTitleCache(fullRefCache, true);
+//					biblioRefDetailsToSave.put(refDetailId, genericReference);
+//					//year
+//					genericReference.setDatePublished(ImportHelper.getDatePublished(refYear)); 
+//					//refId, created, notes
+//					doIdCreatedUpdatedNotes(state, genericReference, rs, refDetailId, BIBLIO_REFDETAIL_NAMESPACE );						
+//					refCounter.biblioRefCount++;
+//				}
 			}
 			//save and store in map
-			logger.info("Save nomenclatural preliminary references (" + refCounter.nomRefCount + ")");
+			logger.info("Save preliminary (RefDetail) references  (" + refCount + ")");
 			partitioner.startDoSave();
-			Collection<Reference> col = nomRefDetailsToSave.values();
+			Collection<Reference> col = refDetailsToSave.values();
 			getReferenceService().save(col);
-			logger.info("Save bibliographical preliminary references (" + refCounter.biblioRefCount +")");
-			getReferenceService().save(biblioRefDetailsToSave.values());
 			
 			//TODO
 			//SecondarySources
@@ -174,19 +154,13 @@ public class BerlinModelRefDetailImport extends BerlinModelImportBase {
 		return result;
 	}
 	
-	/* (non-Javadoc)
-	 * @see eu.etaxonomy.cdm.io.common.CdmIoBase#doCheck(eu.etaxonomy.cdm.io.common.IoStateBase)
-	 */
 	@Override
 	protected boolean doCheck(BerlinModelImportState state){
 		IOValidator<BerlinModelImportState> validator = new BerlinModelRefDetailImportValidator();
 		return validator.validate(state);
 	}
 
-	
-	/* (non-Javadoc)
-	 * @see eu.etaxonomy.cdm.io.common.CdmIoBase#isIgnore(eu.etaxonomy.cdm.io.common.IImportConfigurator)
-	 */
+	@Override
 	protected boolean isIgnore(BerlinModelImportState state){
 		DO_REFERENCES doReference = state.getConfig().getDoReferences();
 		return (doReference == IImportConfigurator.DO_REFERENCES.NONE || doReference == IImportConfigurator.DO_REFERENCES.CONCEPT_REFERENCES);
