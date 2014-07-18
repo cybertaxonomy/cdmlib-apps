@@ -222,16 +222,19 @@ public class BerlinModelOccurrenceImport  extends BerlinModelImportBase {
 			emCode = unit;
 		}
 		
-		//label
-		NamedArea area = NamedArea.NewInstance(geoSearch, unit, emCode);
-		
 		//uuid
 		UUID uuid = BerlinModelTransformer.getEMAreaUuid(emCode);
-		if (uuid != null){
-			area.setUuid(uuid);
-		}else{
-			logger.warn("Uuuid for emCode could not be defined: " + emCode);
+		NamedArea area = (NamedArea)getTermService().find(uuid);
+		if (area == null){
+			//label
+			area = NamedArea.NewInstance(geoSearch, unit, emCode);
+			if (uuid != null){
+				area.setUuid(uuid);
+			}else{
+				logger.warn("Uuuid for emCode could not be defined: " + emCode);
+			}
 		}
+		
 		
 		//code
 		area.setIdInVocabulary(emCode);
