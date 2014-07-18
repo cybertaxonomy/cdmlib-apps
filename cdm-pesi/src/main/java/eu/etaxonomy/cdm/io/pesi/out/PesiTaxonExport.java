@@ -1583,6 +1583,13 @@ public class PesiTaxonExport extends PesiExportBase {
 		}
 	}
 	
+	@SuppressWarnings("unused")
+	private static String getGUID(TaxonNameBase<?,?> taxonName) {
+		UUID uuid = taxonName.getUuid();
+		String result = "NameUUID:" + uuid.toString();
+		return result;
+	}
+	
 
 	/**
 	 * Returns the <code>WebShowName</code> attribute for a taxon.
@@ -1668,6 +1675,26 @@ public class PesiTaxonExport extends PesiExportBase {
 	}
 	
 	/**
+	 * Returns the SourceNameCache for the AdditionalSource table
+	 * @param taxonName
+	 * @return
+	 */
+	@SuppressWarnings("unused")
+	private static String getSourceNameCache(TaxonNameBase taxonName) {
+		NonViralName<?> nvn = CdmBase.deproxy(taxonName, NonViralName.class);
+		if (nvn != null){
+			Reference<?> nomRef = (Reference)nvn.getNomenclaturalReference();
+			if (nomRef != null){
+				return nomRef.getAbbrevTitleCache();
+			}
+			
+		}
+		return null;
+	}
+	
+	
+	
+	/**
 	 * Returns the <code>FullName</code> attribute.
 	 * @param taxon The {@link TaxonBase taxon}.
 	 * @return The <code>FullName</code> attribute.
@@ -1696,7 +1723,13 @@ public class PesiTaxonExport extends PesiExportBase {
 	@SuppressWarnings("unused")
 	private static String getNomRefString(TaxonNameBase<?,?> taxonName) {
 		INomenclaturalReference ref = taxonName.getNomenclaturalReference();
-		return ref == null ? null : ref.getNomenclaturalCitation(taxonName.getNomenclaturalMicroReference());
+		if (ref == null){
+			return null;
+		}
+		if (! ref.isProtectedAbbrevTitleCache()){
+			ref.setAbbrevTitleCache(null, false);  //to remove a false cache
+		}
+		return ref.getNomenclaturalCitation(taxonName.getNomenclaturalMicroReference());
 	}
 	
 
@@ -2525,7 +2558,7 @@ public class PesiTaxonExport extends PesiExportBase {
 	private PesiExportMapping getMapping() {
 		PesiExportMapping mapping = new PesiExportMapping(dbTableName);
 		
-		//mapping.addMapper(IdMapper.NewInstance("TaxonId"));
+		mapping.addMapper(IdMapper.NewInstance("TaxonId"));
 		mapping.addMapper(DbObjectMapper.NewInstance("sec", "sourceFk")); //OLD:mapping.addMapper(MethodMapper.NewInstance("SourceFK", this.getClass(), "getSourceFk", standardMethodParameter, PesiExportState.class));
 		mapping.addMapper(MethodMapper.NewInstance("TaxonStatusFk", this.getClass(), "getTaxonStatusFk", standardMethodParameter, PesiExportState.class));
 		mapping.addMapper(MethodMapper.NewInstance("TaxonStatusCache", this.getClass(), "getTaxonStatusCache", standardMethodParameter, PesiExportState.class));
@@ -2582,6 +2615,9 @@ public class PesiTaxonExport extends PesiExportBase {
 		mapping.addMapper(DbConstantMapper.NewInstance("TaxonStatusCache", Types.VARCHAR , state.getTransformer().getTaxonStatusCacheByKey( PesiTransformer.T_STATUS_UNACCEPTED)));
 		mapping.addMapper(DbStringMapper.NewInstance("AuthorshipCache", "AuthorString").setBlankToNull(true));  
 		mapping.addMapper(MethodMapper.NewInstance("WebShowName", this, TaxonNameBase.class));
+		mapping.addMapper(MethodMapper.NewInstance("GUID", this, TaxonNameBase.class));
+		
+		
 		
 		// DisplayName
 		mapping.addMapper(MethodMapper.NewInstance("DisplayName", this, TaxonNameBase.class));
@@ -2645,7 +2681,9 @@ public class PesiTaxonExport extends PesiExportBase {
 		mapping.addMapper(ObjectChangeMapper.NewInstance(TaxonBase.class, TaxonNameBase.class, "Name"));
 		
 		mapping.addMapper(DbObjectMapper.NewInstance("NomenclaturalReference", "SourceFk"));
-		mapping.addMapper(DbObjectMapper.NewInstance("NomenclaturalReference", "SourceNameCache", IS_CACHE));
+//		mapping.addMapper(DbObjectMapper.NewInstance("NomenclaturalReference", "SourceNameCache", IS_CACHE));
+		mapping.addMapper(MethodMapper.NewInstance("SourceNameCache", this, TaxonNameBase.class));
+		
 
 		//we have only nomenclatural references here
 		mapping.addMapper(DbConstantMapper.NewInstance("SourceUseFk", Types.INTEGER , PesiTransformer.NOMENCLATURAL_REFERENCE));
