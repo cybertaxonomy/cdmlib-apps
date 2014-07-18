@@ -369,7 +369,6 @@ public class BerlinModelImportConfigurator extends DbImportConfiguratorBase<Berl
 	public boolean isDoUser() {
 		return doUser;
 	}
-
 	public void setDoUser(boolean doUser) {
 		this.doUser = doUser;
 	}
@@ -424,11 +423,9 @@ public class BerlinModelImportConfigurator extends DbImportConfiguratorBase<Berl
 	}
 
 
-
 	public String getTaxonTable() {
 		return this.taxonTable ;
 	}
-
 	/**
 	 * @param taxonTable the taxonTable to set
 	 */
@@ -441,7 +438,6 @@ public class BerlinModelImportConfigurator extends DbImportConfiguratorBase<Berl
 	public String getClassificationQuery() {
 		return this.classificationQuery ;
 	}
-	
 	/**
 	 * @param classificationQuery the classificationQuery to set
 	 */
@@ -455,11 +451,9 @@ public class BerlinModelImportConfigurator extends DbImportConfiguratorBase<Berl
 	public void setRelTaxaIdQuery(String relTaxaIdQuery) {
 		this.relTaxaIdQuery = relTaxaIdQuery;
 	}
-
 	public String getRelTaxaIdQuery() {
 		return this.relTaxaIdQuery ;
 	}
-
 
 
 	/**
@@ -468,9 +462,6 @@ public class BerlinModelImportConfigurator extends DbImportConfiguratorBase<Berl
 	public String getNameIdTable() {
 		return nameIdTable;
 	}
-
-
-
 	/**
 	 * @param nameIdTable the nameIdTable to set
 	 */
@@ -479,23 +470,16 @@ public class BerlinModelImportConfigurator extends DbImportConfiguratorBase<Berl
 	}
 
 
-
 	public void setReferenceIdTable(String referenceIdTable) {
 		this.referenceIdTable = referenceIdTable;
 	}
-
 	public String getReferenceIdTable() {
 		return referenceIdTable;
 	}
 
-
-
 	public void setFactFilter(String factFilter) {
 		this.factFilter = factFilter;
 	}
-
-
-
 	public String getFactFilter() {
 		return factFilter;
 	}
@@ -505,9 +489,6 @@ public class BerlinModelImportConfigurator extends DbImportConfiguratorBase<Berl
 	public String getOccurrenceFilter() {
 		return occurrenceFilter;
 	}
-
-
-
 	public void setOccurrenceFilter(String occurrenceFilter) {
 		this.occurrenceFilter = occurrenceFilter;
 	}
@@ -517,9 +498,6 @@ public class BerlinModelImportConfigurator extends DbImportConfiguratorBase<Berl
 	public String getCommonNameFilter() {
 		return commonNameFilter;
 	}
-
-
-
 	public void setCommonNameFilter(String commonNameFilter) {
 		this.commonNameFilter = commonNameFilter;
 	}
@@ -529,9 +507,6 @@ public class BerlinModelImportConfigurator extends DbImportConfiguratorBase<Berl
 	public String getOccurrenceSourceFilter() {
 		return occurrenceSourceFilter;
 	}
-
-
-
 	public void setOccurrenceSourceFilter(String occurrenceSourceFilter) {
 		this.occurrenceSourceFilter = occurrenceSourceFilter;
 	}
@@ -541,21 +516,14 @@ public class BerlinModelImportConfigurator extends DbImportConfiguratorBase<Berl
 	public String getWebMarkerFilter() {
 		return webMarkerFilter;
 	}
-
-
-
 	public void setWebMarkerFilter(String webMarkerFilter) {
 		this.webMarkerFilter = webMarkerFilter;
 	}
 
 
-
 	public boolean isUseSingleClassification() {
 		return useSingleClassification;
 	}
-
-
-
 	public void setUseSingleClassification(boolean useSingleClassification) {
 		this.useSingleClassification = useSingleClassification;
 	}
@@ -564,19 +532,14 @@ public class BerlinModelImportConfigurator extends DbImportConfiguratorBase<Berl
 	public void setAuthorTeamFilter(String authorTeamFilter) {
 		this.authorTeamFilter = authorTeamFilter;
 	}
-
 	public String getAuthorTeamFilter() {
 		return authorTeamFilter;
 	}
 
 
-
 	public String getAuthorFilter() {
 		return authorFilter;
 	}
-
-
-
 	public void setAuthorFilter(String authorFilter) {
 		this.authorFilter = authorFilter;
 	}
@@ -586,9 +549,6 @@ public class BerlinModelImportConfigurator extends DbImportConfiguratorBase<Berl
 	public boolean isSwitchSpeciesGroup() {
 		return switchSpeciesGroup;
 	}
-
-
-
 	/**
 	 * If true, the rankId for speicesGroup is changed from 59 to 57 and
 	 * 59 is used for coll. species instead
@@ -599,12 +559,9 @@ public class BerlinModelImportConfigurator extends DbImportConfiguratorBase<Berl
 	}
 
 
-
 	public boolean isSplitTdwgCodes() {
 		return isSplitTdwgCodes;
 	}
-	
-	
 	public void setSplitTdwgCodes(boolean isSplitTdwgCodes) {
 		this.isSplitTdwgCodes = isSplitTdwgCodes;
 	}
@@ -613,103 +570,71 @@ public class BerlinModelImportConfigurator extends DbImportConfiguratorBase<Berl
 	public Method getMakeUrlForTaxon() {
 		return makeUrlForTaxon;
 	}
-
 	public void setMakeUrlForTaxon(Method makeUrlForTaxon) {
 		this.makeUrlForTaxon = makeUrlForTaxon;
 	}
 
 
-
 	public String getInfrGenericRankAbbrev() {
 		return infrGenericRankAbbrev;
 	}
-
-
-
 	public void setInfrGenericRankAbbrev(String infrGenericRankAbbrev) {
 		this.infrGenericRankAbbrev = infrGenericRankAbbrev;
 	}
 
 
-
 	public String getInfrSpecificRankAbbrev() {
 		return infrSpecificRankAbbrev;
 	}
-
-
-
 	public void setInfrSpecificRankAbbrev(String infrSpecificRankAbbrev) {
 		this.infrSpecificRankAbbrev = infrSpecificRankAbbrev;
 	}
 
 
-
 	public boolean isRemoveHttpMapsAnchor() {
 		return removeHttpMapsAnchor;
 	}
-
-
-
 	public void setRemoveHttpMapsAnchor(boolean removeHttpMapsAnchor) {
 		this.removeHttpMapsAnchor = removeHttpMapsAnchor;
 	}
 
 
-
 	public boolean isIncludeFlatClassifications() {
 		return includeFlatClassifications;
 	}
-
-
-
 	public void setIncludeFlatClassifications(boolean includeFlatClassifications) {
 		this.includeFlatClassifications = includeFlatClassifications;
 	}
 
 
-
 	public boolean isIncludesAreaEmCode() {
 		return includesEmCode;
 	}
-
-
-
 	public void setIncludesEmCode(boolean includesEmCode) {
 		this.includesEmCode = includesEmCode;
 		
 	}
 
 
-
 	public boolean isAllowInfraSpecTaxonRank() {
 		return allowInfraSpecTaxonRank ;
 	}
-
 	public void setAllowInfraSpecTaxonRank(boolean allowInfraSpecTaxonRank) {
 		this.allowInfraSpecTaxonRank = allowInfraSpecTaxonRank;
 	}
 
 
-
 	public boolean isIncludeAllNonMisappliedRelatedClassifications() {
 		return includeAllNonMisappliedRelatedClassifications;
 	}
-
-
-
-	public void setIncludeAllNonMisappliedRelatedClassifications(
-			boolean includeAllNonMisappliedRelatedClassifications) {
+	public void setIncludeAllNonMisappliedRelatedClassifications(boolean includeAllNonMisappliedRelatedClassifications) {
 		this.includeAllNonMisappliedRelatedClassifications = includeAllNonMisappliedRelatedClassifications;
 	}
 
-
-
+	
 	public boolean isUseEmAreaVocabulary() {
 		return useEmAreaVocabulary;
 	}
-
-
-
 	public void setUseEmAreaVocabulary(boolean useEmAreaVocabulary) {
 		this.useEmAreaVocabulary = useEmAreaVocabulary;
 	}
