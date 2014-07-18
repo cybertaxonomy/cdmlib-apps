@@ -1055,8 +1055,9 @@ public final class PesiTransformer extends ExportTransformerBase implements IExp
 //			else if (namedArea.getUuid().equals(BerlinModelTransformer.uuidUkraineAndCrimea)) { return AREA_UKRAINE_INCLUDING_CRIMEA; }
 //			else if (namedArea.getUuid().equals(BerlinModelTransformer.uuidAzerbaijanNakhichevan)) { return AREA_AZERBAIJAN_INCLUDING_NAKHICHEVAN; }
 			
-			
-			if (namedArea.getUuid().equals(BerlinModelTransformer.uuidAb)) { return AREA_AZERBAIJAN_INCLUDING_NAKHICHEVAN; }
+			if (namedArea.getUuid().equals(BerlinModelTransformer.uuidEM)) { logger.warn("E+M area not available in PESI"); return null; }
+			else if (namedArea.getUuid().equals(BerlinModelTransformer.uuidEUR)) { logger.warn("EUR area not available in PESI"); return null; }
+			else if (namedArea.getUuid().equals(BerlinModelTransformer.uuidAb)) { return AREA_AZERBAIJAN_INCLUDING_NAKHICHEVAN; }
 			else if (namedArea.getUuid().equals(BerlinModelTransformer.uuidAb_A)) { return AREA_AZERBAIJAN; }
 			else if (namedArea.getUuid().equals(BerlinModelTransformer.uuidAb_N)) { return AREA_NAKHICHEVAN; }
 			else if (namedArea.getUuid().equals(BerlinModelTransformer.uuidAE)) { return AREA_EAST_AEGEAN_ISLANDS; }
@@ -1739,6 +1740,8 @@ public final class PesiTransformer extends ExportTransformerBase implements IExp
 				result = Plantae_Class;
 			} else if (rank.equals(Rank.SUBCLASS())) {
 				result = Plantae_Subclass;
+			} else if (rank.equals(Rank.SUPERORDER())) {
+				result = Plantae_Superorder;
 			} else if (rank.equals(Rank.ORDER())) {
 				result = Plantae_Order;
 			} else if (rank.equals(Rank.SUBORDER())) {
