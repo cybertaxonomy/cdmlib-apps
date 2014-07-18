@@ -12,6 +12,7 @@ package eu.etaxonomy.cdm.app.berlinModelImport;
 import java.util.UUID;
 
 import org.apache.log4j.Logger;
+import org.springframework.transaction.TransactionStatus;
 
 import eu.etaxonomy.cdm.api.application.ICdmApplicationConfiguration;
 import eu.etaxonomy.cdm.app.common.CdmDestinations;
@@ -53,7 +54,7 @@ public class EuroMedActivator {
 	static final Source berlinModelSource = BerlinModelSources.euroMed_PESI3();
 	
 //	static final ICdmDataSource cdmDestination = CdmDestinations.cdm_pesi_euroMed();
-	static final ICdmDataSource cdmDestination = CdmDestinations.cdm_test_local_euromed();
+	static final ICdmDataSource cdmDestination = CdmDestinations.cdm_test_local_euromed3();
 //	static final ICdmDataSource cdmDestination = CdmDestinations.localH2();
 	
 	static final boolean includePesiExport = false;
@@ -115,53 +116,30 @@ public class EuroMedActivator {
 	
 // **************** ALL *********************	
 
-//	static final boolean doUser = true;
+	boolean invers = true;
+	
+	static final boolean doUser = true;
 //	//authors
-//	static final boolean doAuthors = true;
-//	//references
-//	static final DO_REFERENCES doReferences =  DO_REFERENCES.ALL;
-//	//names
-//	static final boolean doTaxonNames = true;
-//	static final boolean doRelNames = true;
-//	static final boolean doNameStatus = true;
-//	static final boolean doTypes = false;  //serious types do not exist in E+M
-//	static final boolean doNameFacts = true;
-//	
-//	//taxa
-//	static final boolean doTaxa = true;
-//	static final boolean doRelTaxa = false;
-//	static final boolean doFacts = true;
-//	static final boolean doOccurences = true;
-//	static final boolean doCommonNames = true;
-//
-//	//etc.
-//	static final boolean doMarker = true;
-
-	
-// **************** SELECTED *********************
-
-	static final boolean doUser = false;
-	//authors
-	static final boolean doAuthors = false;
+	static final boolean doAuthors = true;
 	//references
-	static final DO_REFERENCES doReferences =  DO_REFERENCES.NONE;
+	static final DO_REFERENCES doReferences =  DO_REFERENCES.ALL;
 	//names
-	static final boolean doTaxonNames = false;
-	static final boolean doRelNames = false;
-	static final boolean doNameStatus = false;
-	static final boolean doTypes = false;
-	static final boolean doNameFacts = false;
+	static final boolean doTaxonNames = true;
+	static final boolean doRelNames = true;
+	static final boolean doNameStatus = true;
+	static final boolean doTypes = false;  //serious types do not exist in E+M
+	static final boolean doNameFacts = true;
 	
-	//taxa 
-	static final boolean doTaxa = false;
-	static final boolean doRelTaxa = true;
-	static final boolean doFacts = false;
-	static final boolean doOccurences = false;
-	static final boolean doCommonNames = false;
-	
+	//taxa
+	static final boolean doTaxa = true;
+	static final boolean doRelTaxa = false;
+	static final boolean doFacts = true;
+	static final boolean doOccurences = true;
+	static final boolean doCommonNames = true;
+
 	//etc.
-	static final boolean doMarker = false;
-	
+	static final boolean doMarker = true;
+
 	
 	public void importEm2CDM (Source source, ICdmDataSource destination, DbSchemaValidation hbm2dll){
 		System.out.println("Start import from BerlinModel("+ berlinModelSource.getDatabase() + ") to " + cdmDestination.getDatabase() + " ...");
@@ -171,28 +149,27 @@ public class EuroMedActivator {
 		
 		config.setClassificationUuid(classificationUuid);
 		config.setSourceSecId(sourceSecId);
-		
 		config.setNomenclaturalCode(nomenclaturalCode);
-
 		config.setIgnoreNull(ignoreNull);
-		config.setDoAuthors(doAuthors);
-		config.setDoReferences(doReferences);
-		config.setDoTaxonNames(doTaxonNames);
-		config.setDoRelNames(doRelNames);
-		config.setDoNameStatus(doNameStatus);
-		config.setDoTypes(doTypes);
-		config.setDoNameFacts(doNameFacts);
+		
+		config.setDoAuthors(doAuthors ^ invers);
+		config.setDoReferences(invers ? doReferences.invers() : doReferences);
+		config.setDoTaxonNames(doTaxonNames ^ invers);
+		config.setDoRelNames(doRelNames ^ invers);
+		config.setDoNameStatus(doNameStatus ^ invers);
+		config.setDoTypes(doTypes);  //always false
+		config.setDoNameFacts(doNameFacts ^ invers);
+		config.setDoTaxa(doTaxa ^ invers);
+		config.setDoRelTaxa(doRelTaxa ^ invers);
+		config.setDoFacts(doFacts ^ invers);
+		config.setDoOccurrence(doOccurences ^ invers);
+		config.setDoCommonNames(doCommonNames ^ invers);
+		
+		config.setDoMarker(doMarker ^ invers);
+		config.setDoUser(doUser ^ invers);
+		
 		config.setUseClassification(useClassification);
 		config.setSourceRefUuid(BerlinModelTransformer.uuidSourceRefEuroMed);
-		
-		config.setDoTaxa(doTaxa);
-		config.setDoRelTaxa(doRelTaxa);
-		config.setDoFacts(doFacts);
-		config.setDoOccurrence(doOccurences);
-		config.setDoCommonNames(doCommonNames);
-		
-		config.setDoMarker(doMarker);
-		config.setDoUser(doUser);
 		config.setEditor(editor);
 		config.setDbSchemaValidation(hbm2dll);
 		
@@ -232,35 +209,41 @@ public class EuroMedActivator {
 		CdmDefaultImport<BerlinModelImportConfigurator> bmImport = new CdmDefaultImport<BerlinModelImportConfigurator>();
 		bmImport.invoke(config);
 		
-		if (doTaxonNames && (config.getCheck().equals(CHECK.CHECK_AND_IMPORT)  || config.getCheck().equals(CHECK.IMPORT_WITHOUT_CHECK)  )  ){
+		if (config.isDoTaxonNames() && (config.getCheck().equals(CHECK.CHECK_AND_IMPORT)  || config.getCheck().equals(CHECK.IMPORT_WITHOUT_CHECK)  )  ){
 			ICdmApplicationConfiguration app = bmImport.getCdmAppController();
-			Rank sectBot = (Rank)app.getTermService().find(Rank.SECTION_BOTANY().getUuid());
-			Representation repr = sectBot.getRepresentation(Language.ENGLISH());
-			repr.setAbbreviatedLabel(repr.getAbbreviatedLabel().replace("(bot.)", "").trim());
-			repr.setLabel(repr.getLabel().replace("(Botany)", "").trim());
-			sectBot.setTitleCache(null, false);  //to definetely update the titleCache also
-			app.getTermService().saveOrUpdate(sectBot);
-
-			Rank subSectBot = (Rank)app.getTermService().find(Rank.SECTION_BOTANY().getUuid());
-			repr = subSectBot.getRepresentation(Language.ENGLISH());
-			repr.setAbbreviatedLabel(repr.getAbbreviatedLabel().replace("(bot.)", "").trim());
-			repr.setLabel(repr.getLabel().replace("(Botany)", "").trim());
-			subSectBot.setTitleCache(null, false);  //to definetely update the titleCache also
-			app.getTermService().saveOrUpdate(subSectBot);
-
+			TransactionStatus tx = app.startTransaction();
+			try {
+				Rank sectBot = (Rank)app.getTermService().find(Rank.SECTION_BOTANY().getUuid());
+				Representation repr = sectBot.getRepresentation(Language.ENGLISH());
+				repr.setAbbreviatedLabel(repr.getAbbreviatedLabel().replace("(bot.)", "").trim());
+				repr.setLabel(repr.getLabel().replace("(Botany)", "").trim());
+				sectBot.setTitleCache(null, false);  //to definetely update the titleCache also
+				app.getTermService().saveOrUpdate(sectBot);
+	
+				Rank subSectBot = (Rank)app.getTermService().find(Rank.SECTION_BOTANY().getUuid());
+				repr = subSectBot.getRepresentation(Language.ENGLISH());
+				repr.setAbbreviatedLabel(repr.getAbbreviatedLabel().replace("(bot.)", "").trim());
+				repr.setLabel(repr.getLabel().replace("(Botany)", "").trim());
+				subSectBot.setTitleCache(null, false);  //to definetely update the titleCache also
+				app.getTermService().saveOrUpdate(subSectBot);
+				app.commitTransaction(tx);
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
 		}
 		
-		if (doFacts && (config.getCheck().equals(CHECK.CHECK_AND_IMPORT)  || config.getCheck().equals(CHECK.IMPORT_WITHOUT_CHECK)  )  ){
+		if (config.isDoFacts() && (config.getCheck().equals(CHECK.CHECK_AND_IMPORT)  || config.getCheck().equals(CHECK.IMPORT_WITHOUT_CHECK)  )  ){
 			ICdmApplicationConfiguration app = bmImport.getCdmAppController();
+			TransactionStatus tx = app.startTransaction();
 			
 			//make feature tree
 			FeatureTree tree = TreeCreator.flatTree(featureTreeUuid, config.getFeatureMap(), featureKeyList);
 			FeatureNode imageNode = FeatureNode.NewInstance(Feature.IMAGE());
 			tree.getRoot().addChild(imageNode);
 			FeatureNode distributionNode = FeatureNode.NewInstance(Feature.DISTRIBUTION());
-			tree.getRoot().addChild(distributionNode, 2); 
+			tree.getRoot().addChild(distributionNode, 1); 
 			FeatureNode commonNameNode = FeatureNode.NewInstance(Feature.COMMON_NAME());
-			tree.getRoot().addChild(commonNameNode, 3); 
+			tree.getRoot().addChild(commonNameNode, 2); 
 			app.getFeatureTreeService().saveOrUpdate(tree);
 			
 			//Change common name label
@@ -268,6 +251,7 @@ public class EuroMedActivator {
 			commonNameFeature.setLabel("Common Names", Language.ENGLISH());
 			commonNameFeature.setTitleCache(null, false);  //to definetely update the titleCache also
 			app.getTermService().saveOrUpdate(commonNameFeature);
+			app.commitTransaction(tx);
 		}
 		
 		System.out.println("End import from BerlinModel ("+ source.getDatabase() + ")...");
