@@ -531,12 +531,14 @@ public class BerlinModelCommonNamesImport  extends BerlinModelImportBase {
 	private NamedArea getNamedArea(BerlinModelImportState state, String tdwgCode) {
 		NamedArea area;
 		if (tdwgCode.equalsIgnoreCase("Ab")){
-			area = getNamedArea(state, BerlinModelTransformer.uuidAzerbaijanNakhichevan, "Azerbaijan & Nakhichevan", "Azerbaijan (including Nakhichevan)",  "Ab", null, null);
+			area = getNamedArea(state, BerlinModelTransformer.uuidAb, "Azerbaijan & Nakhichevan", "Azerbaijan (including Nakhichevan)",  "Ab", null, null);
 			getTermService().saveOrUpdate(area);
 		}else if (tdwgCode.equalsIgnoreCase("Uk")){
-			area = getNamedArea(state, BerlinModelTransformer.uuidUkraineAndCrimea , "Ukraine & Crimea", "Ukraine (including Crimea)", "Uk", null, null);
+			area = getNamedArea(state, BerlinModelTransformer.uuidUk , "Ukraine & Crimea", "Ukraine (including Crimea)", "Uk", null, null);
 			getTermService().saveOrUpdate(area);
 		}else if (tdwgCode.equalsIgnoreCase("Rf")){
+//			area = getNamedArea(state, BerlinModelTransformer.uuidRf , "Ukraine & Crimea", "Ukraine (including Crimea)", "Uk", null, null);
+//			getTermService().saveOrUpdate(area);
 			area = Country.RUSSIANFEDERATION();
 		}else if (tdwgCode.equalsIgnoreCase("Gg")){
 			area = Country.GEORGIA();
