@@ -84,7 +84,7 @@ public abstract class PesiExportBase extends DbExportBase<PesiExportConfigurator
 			}
 			taxonBase = null;
 		}
-		
+		it = null;
 		return list;
 	}
 	
@@ -365,6 +365,7 @@ public abstract class PesiExportBase extends DbExportBase<PesiExportConfigurator
 				}
 				
 			}
+			
 			//handle PESI accepted taxa
 			if (! taxon.isMisapplication()){
 				for (Marker marker : taxon.getMarkers()){

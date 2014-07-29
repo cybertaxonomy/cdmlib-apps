@@ -59,7 +59,7 @@ public class PesiDestinations {
 		//	CDM - PESI
 		String dbms = Source.SQL_SERVER_2008;
 		String strServer = "pesiimport3"; //192.168.1.223
-		String strDB = "CDM_IF2PESI";
+		String strDB = "CDMTMP_IF2PESI";
 		int port = 1433;
 		String userName = "pesiExportFaunaEu";
 		return makeSource(dbms, strServer, strDB, port, userName, null);

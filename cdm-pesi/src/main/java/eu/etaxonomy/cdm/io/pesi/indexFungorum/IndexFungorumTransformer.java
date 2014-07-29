@@ -55,7 +55,8 @@ public final class IndexFungorumTransformer extends InputTransformerBase {
 		}
 		Integer rankFk = Integer.valueOf(key);
 		switch (rankFk){
-			case 30: return Rank.DIVISION();
+			case 10: return Rank.KINGDOM();
+ 			case 30: return Rank.DIVISION();
 			case 40: return Rank.SUBDIVISION();
 			case 60: return Rank.CLASS();
 			case 70: return Rank.SUBCLASS();

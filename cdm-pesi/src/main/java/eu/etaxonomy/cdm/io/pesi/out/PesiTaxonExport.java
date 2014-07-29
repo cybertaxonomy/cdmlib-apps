@@ -488,7 +488,7 @@ public class PesiTaxonExport extends PesiExportBase {
 		if (list == null ) {
 			logger.info("No " + pluralString + " left to fetch.");
 		}
-		
+		list = null;
 		// Commit transaction
 		commitTransaction(txStatus);
 		
@@ -510,9 +510,11 @@ public class PesiTaxonExport extends PesiExportBase {
 									       " VALUES (" + biotaId + ",    0,    0,   'Superdomain',   'Biota',          'Biota',  '<i>Biota</i>',   'Biota', '<i>Biota</i>',  1 ,      'accepted')";
 				state.getConfig().getDestination().update(sqlInsertBiota);
 			}
+			rs = null;
 		} catch (SQLException e) {
 			logger.warn ("Biota could not be requested or inserted");
 		}
+		
 	}
 	
 	// 4th round: Add TreeIndex to each taxon
@@ -1033,6 +1035,7 @@ public class PesiTaxonExport extends PesiExportBase {
 			logger.error("TaxonCount could not be determined: " + e.getMessage());
 			e.printStackTrace();
 		}
+		resultSet = null;
 		return result;
 	}
 	

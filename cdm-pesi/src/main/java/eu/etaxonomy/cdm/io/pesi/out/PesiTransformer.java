@@ -259,6 +259,8 @@ public final class PesiTransformer extends ExportTransformerBase implements IExp
 	// Plantae Ranks
 	public static int Plantae_Kingdom = 10;
 	public static int Plantae_Subkingdom = 20;
+	public static int Plantae_Phylum = 20;
+	public static int Plantae_Subphylum = 20;
 	public static int Plantae_Division = 30;
 	public static int Plantae_Subdivision = 40;
 	public static int Plantae_Class = 60;
@@ -863,7 +865,7 @@ public final class PesiTransformer extends ExportTransformerBase implements IExp
 					this.taxRelZooQualifierCacheMap.put(key, zoologCache);
 				}
 			}
-					
+			rs = null;		
 		} catch (SQLException e) {
 			logger.error("SQLException when trying to read area map", e);
 			e.printStackTrace();
@@ -1732,7 +1734,11 @@ public final class PesiTransformer extends ExportTransformerBase implements IExp
 				result = Plantae_Kingdom;
 			} else if (rank.equals(Rank.SUBKINGDOM())) {
 				result = Plantae_Subkingdom;
-			} else if (rank.equals(Rank.DIVISION())) {
+			}else if (rank.equals(Rank.PHYLUM())) {
+				result = Plantae_Phylum;
+			}else if (rank.equals(Rank.SUBPHYLUM())) {
+				result = Plantae_Subphylum;
+			}else if (rank.equals(Rank.DIVISION())) {
 				result = Plantae_Division;
 			} else if (rank.equals(Rank.SUBDIVISION())) {
 				result = Plantae_Subdivision;
