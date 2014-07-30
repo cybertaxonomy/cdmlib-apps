@@ -31,6 +31,7 @@ import eu.etaxonomy.cdm.io.common.Source;
 import eu.etaxonomy.cdm.io.common.TdwgAreaProvider;
 import eu.etaxonomy.cdm.io.common.mapping.UndefinedTransformerMethodException;
 import eu.etaxonomy.cdm.io.common.mapping.out.CollectionExportMapping;
+import eu.etaxonomy.cdm.io.common.mapping.out.DbAnnotationMapper;
 import eu.etaxonomy.cdm.io.common.mapping.out.DbAreaMapper;
 import eu.etaxonomy.cdm.io.common.mapping.out.DbConstantMapper;
 import eu.etaxonomy.cdm.io.common.mapping.out.DbDescriptionElementTaxonMapper;
@@ -876,8 +877,7 @@ public class PesiDescriptionExport extends PesiExportBase {
 		mapping.addMapper(DbExportIgnoreMapper.NewInstance("SourceFk", "Use OccurrenceSource table for sources instead"));
 		mapping.addMapper(DbExportIgnoreMapper.NewInstance("SourceNameCache", "Use OccurrenceSource table for sources instead"));
 		
-		
-		mapping.addMapper(DbExportNotYetImplementedMapper.NewInstance("Notes", "Needs reimplementation in description export"));
+		mapping.addMapper(DbAnnotationMapper.NewInstance(null, "Notes"));
 		mapping.addMapper(ExpertsAndLastActionMapper.NewInstance());
 		mapping.addCollectionMapping(getOccurrenceSourceMapping());
 		
