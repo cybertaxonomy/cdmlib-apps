@@ -56,30 +56,25 @@ public class PesiOccurrenceSourceExport extends PesiExportBase {
 	private static final String parentPluralString = "Taxa";
 	private static Taxon taxon = null;
 
+//*************** CONSTRUCTOR ******************************/	
+	
 	public PesiOccurrenceSourceExport() {
 		super();
 	}
+	
+//************************************************************/	
 
-	/* (non-Javadoc)
-	 * @see eu.etaxonomy.cdm.io.common.DbExportBase#getStandardMethodParameter()
-	 */
 	@Override
 	public Class<? extends CdmBase> getStandardMethodParameter() {
 		return standardMethodParameter;
 	}
 
-	/* (non-Javadoc)
-	 * @see eu.etaxonomy.cdm.io.common.CdmIoBase#doCheck(eu.etaxonomy.cdm.io.common.IoStateBase)
-	 */
 	@Override
 	protected boolean doCheck(PesiExportState state) {
 		boolean result = true;
 		return result;
 	}
 
-	/* (non-Javadoc)
-	 * @see eu.etaxonomy.cdm.io.common.CdmIoBase#doInvoke(eu.etaxonomy.cdm.io.common.IoStateBase)
-	 */
 	@Override
 	protected void doInvoke(PesiExportState state) {
 		try {
@@ -268,9 +263,6 @@ public class PesiOccurrenceSourceExport extends PesiExportBase {
 		return true;
 	}
 
-	/* (non-Javadoc)
-	 * @see eu.etaxonomy.cdm.io.common.CdmIoBase#isIgnore(eu.etaxonomy.cdm.io.common.IoStateBase)
-	 */
 	@Override
 	protected boolean isIgnore(PesiExportState state) {
 		return ! ( state.getConfig().isDoOccurrenceSource() && state.getConfig().isDoOccurrence() && state.getConfig().getDoReferences().equals(DO_REFERENCES.ALL));
