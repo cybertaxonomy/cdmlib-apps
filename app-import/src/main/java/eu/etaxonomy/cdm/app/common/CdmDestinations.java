@@ -121,6 +121,14 @@ public class CdmDestinations {
 		String cdmUserName = "edit";     //root on pesiimport2
 		return makeDestination(dbType, cdmServer, cdmDB, -1, cdmUserName, null);
 	}
+	
+	public static ICdmDataSource cdm_test_euroMed(){
+		DatabaseTypeEnum dbType = DatabaseTypeEnum.MySQL;
+		String cdmServer = "160.45.63.175";
+		String cdmDB = "cdm_test_euromed";
+		String cdmUserName = "edit";
+		return makeDestination(dbType, cdmServer, cdmDB, -1, cdmUserName, null);
+	}
 
 	public static ICdmDataSource cdm_corvidae_dev(){
 		DatabaseTypeEnum dbType = DatabaseTypeEnum.MySQL;
@@ -452,14 +460,6 @@ public class CdmDestinations {
         String cdmDB = "cdm_local";
         String cdmUserName = "root";
         return makeDestination(dbType, cdmServer, cdmDB, -1, cdmUserName, null);
-    }
-
-    public static ICdmDataSource mon_corvids() {
-        DatabaseTypeEnum dbType = DatabaseTypeEnum.MySQL;
-        String cdmServer = "localhost";
-        String cdmDB = "cdm_production_corvidae";
-        String cdmUserName = "root";
-        return makeDestination(dbType, cdmServer, cdmDB, -1, cdmUserName, "mysqlr00t");
     }
 
    public static ICdmDataSource proibiosphere_chenopodium_local() {
