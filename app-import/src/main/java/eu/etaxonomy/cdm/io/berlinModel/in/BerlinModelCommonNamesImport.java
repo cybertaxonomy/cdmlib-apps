@@ -174,22 +174,22 @@ public class BerlinModelCommonNamesImport  extends BerlinModelImportBase {
 			while (rs.next()){
 
 				//create TaxonName element
-				Object commonNameId = rs.getObject("CommonNameId");
+				Integer commonNameId = rs.getInt("CommonNameId");
 				int taxonId = rs.getInt("taxonId");
-				Object refId = rs.getObject("refId");
-				Object ptNameFk = rs.getObject("PTNameFk");
+				Integer refId = nullSafeInt(rs, "refId");
+//				Integer ptNameFk = nullSafeInt(rs,"PTNameFk");
 				String commonNameString = rs.getString("CommonName");
 				String iso639_2 = rs.getString("ISO639_2");
 				String iso639_1 = rs.getString("ISO639_1");
 				String languageString = rs.getString("Language");
 				String originalLanguageString = rs.getString("LanguageOriginal");
-				Object misNameRefFk = rs.getObject("MisNameRefFk");
-				Object languageRefRefFk = rs.getObject("languageRefRefFk");
+				Integer misNameRefFk = nullSafeInt(rs, "MisNameRefFk");
+				Integer languageRefRefFk = nullSafeInt(rs, "languageRefRefFk");
 				String refLanguage = rs.getString("refLanguage");
 				String refLanguageIso639_2 = rs.getString("refLanguageIso639_2");
 				String status = rs.getString("Status");
-				Object nameInSourceFk = rs.getObject("NameInSourceFk");
-				Object misappliedTaxonId = rs.getObject("misappliedTaxonId");
+				Integer nameInSourceFk = nullSafeInt( rs, "NameInSourceFk");
+				Integer misappliedTaxonId = nullSafeInt( rs, "misappliedTaxonId");
 				
 				//regions
 				String regionFks  = rs.getString("RegionFks");
@@ -244,18 +244,19 @@ public class BerlinModelCommonNamesImport  extends BerlinModelImportBase {
 				}
 					
 				//Reference/Source
-				String strRefId = String.valueOf(refId);
-				String languageRefFk = String.valueOf(languageRefRefFk);
-				if (! CdmUtils.nullSafeEqual(strRefId, languageRefFk)){
+				if (! CdmUtils.nullSafeEqual(refId, languageRefRefFk)){
 					//use strRefId if languageRefFk is null
 					if (languageRefRefFk == null){
-						languageRefFk = strRefId;
+						languageRefRefFk = refId;
 					}else{
-						logger.warn("CommonName.RefFk (" + CdmUtils.Nz(strRefId) + ") and LanguageReference.RefFk " + CdmUtils.Nz(languageRefFk) + " are not equal. I will import only languageReference.RefFk");
+						logger.warn("CommonName.RefFk (" + CdmUtils.Nz(refId) + ") and LanguageReference.RefFk " + (languageRefRefFk==null? "null" : languageRefRefFk)  + " are not equal. I will import only languageReference.RefFk");
 					}
 				}
 				
 				Reference<?> reference = refMap.get(String.valueOf(languageRefRefFk));
+				if (reference == null && languageRefRefFk != null){
+					logger.warn("CommonName reference was null but reference exists. languageRefRefFk = " + languageRefRefFk + "; commonNameId = " + commonNameId);
+				}
 				String microCitation = null;
 				String originalNameString = null;
 				
@@ -671,19 +672,14 @@ public class BerlinModelCommonNamesImport  extends BerlinModelImportBase {
 	}
 		
 
-
-	/* (non-Javadoc)
-	 * @see eu.etaxonomy.cdm.io.common.CdmIoBase#doCheck(eu.etaxonomy.cdm.io.common.IoStateBase)
-	 */
 	@Override
 	protected boolean doCheck(BerlinModelImportState state){
 		IOValidator<BerlinModelImportState> validator = new BerlinModelCommonNamesImportValidator();
 		return validator.validate(state);
 	}
 
-	/* (non-Javadoc)
-	 * @see eu.etaxonomy.cdm.io.common.CdmIoBase#isIgnore(eu.etaxonomy.cdm.io.common.IImportConfigurator)
-	 */
+
+	@Override
 	protected boolean isIgnore(BerlinModelImportState state){
 		return ! state.getConfig().isDoCommonNames();
 	}
