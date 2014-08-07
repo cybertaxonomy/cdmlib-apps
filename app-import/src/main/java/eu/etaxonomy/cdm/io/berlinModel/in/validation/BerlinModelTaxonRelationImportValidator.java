@@ -207,7 +207,7 @@ public class BerlinModelTaxonRelationImportValidator implements IOValidator<Berl
 					" INNER JOIN RelPTQualifier ON RelPTaxon.RelQualifierFk = RelPTQualifier.RelPTQualifierId " +
 					" LEFT OUTER JOIN Name ON PTaxon.PTNameFk = Name.NameId " +
 					" LEFT OUTER JOIN Name AS AcceptedName ON RelPTaxon.PTNameFk2 = AcceptedName.NameId " +
-				" WHERE (PTaxon.StatusFk IN (2,3,4)) AND (RelPTaxon.RelQualifierFk NOT IN (2, 4, 5, 6, 7)) ";
+				" WHERE (PTaxon.StatusFk IN (2,3,4)) AND (RelPTaxon.RelQualifierFk NOT IN (2, 4, 5, 6, 7, 101, 102, 103, 104, -99)) ";
 			
 			if (StringUtils.isNotBlank(config.getRelTaxaIdQuery())){
 				strQuery += String.format(" AND (RelPTaxon.RelPTaxonId IN " +
