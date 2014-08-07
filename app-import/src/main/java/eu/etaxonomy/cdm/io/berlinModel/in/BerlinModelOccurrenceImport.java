@@ -92,7 +92,8 @@ public class BerlinModelOccurrenceImport  extends BerlinModelImportBase {
 			String emCode = config.isIncludesAreaEmCode()? ", emArea.EMCode" : "";
 			String strQuery =   //DISTINCT because otherwise emOccurrenceSource creates multiple records for a single distribution 
             " SELECT DISTINCT PTaxon.RIdentifier AS taxonId, emOccurrence.OccurrenceId, emOccurrence.Native, emOccurrence.Introduced, " +
-            		" emOccurrence.Cultivated, emOccurSumCat.emOccurSumCatId, emOccurSumCat.Short, emOccurSumCat.Description, " +  
+            		" emOccurrence.Cultivated, emOccurrence.Notes occNotes, " +
+            		" emOccurSumCat.emOccurSumCatId, emOccurSumCat.Short, emOccurSumCat.Description, " +  
                 	" emOccurSumCat.OutputCode, emArea.AreaId, emArea.TDWGCode " + emCode + 
                 " FROM emOccurrence INNER JOIN " +  
                 	" emArea ON emOccurrence.AreaFk = emArea.AreaId INNER JOIN " + 
@@ -316,7 +317,7 @@ public class BerlinModelOccurrenceImport  extends BerlinModelImportBase {
 
 		try {
 			//map to store the mapping of duplicate berlin model occurrences to their real distributions
-			//duplicated may occurr due to area mappings from BM areas to TDWG areas
+			//duplicated may occur due to area mappings from BM areas to TDWG areas
 			Map<Integer, String> duplicateMap = new HashMap<Integer, String>();
 			int oldTaxonId = -1;
 			TaxonDescription oldDescription = null;
@@ -331,6 +332,7 @@ public class BerlinModelOccurrenceImport  extends BerlinModelImportBase {
                 
                 int occurrenceId = rs.getInt("OccurrenceId");
                 int newTaxonId = rs.getInt("taxonId");
+                String notes = nullSafeTrim(rs.getString("occNotes"));
                 
                 Integer emStatusId = nullSafeInt(rs, "emOccurSumCatId");
                 
@@ -349,44 +351,47 @@ public class BerlinModelOccurrenceImport  extends BerlinModelImportBase {
                     
 					List<NamedArea> areas = makeAreaList(state, rs,	occurrenceId);
                      
-                     //create description(elements)
-                     TaxonDescription taxonDescription = getTaxonDescription(newTaxonId, oldTaxonId, oldDescription, taxonMap, occurrenceId, sourceRef);
-                     for (NamedArea area : areas){
-                           Distribution distribution = Distribution.NewInstance(area, status);
-                           if (status == null){
-                        	   AnnotationType annotationType = AnnotationType.EDITORIAL();
-                        	   Annotation annotation = Annotation.NewInstance(alternativeStatusString, annotationType, null);
-                        	   distribution.addAnnotation(annotation);
-                        	   distribution.addMarker(Marker.NewInstance(MarkerType.PUBLISH(), false));
-                           }
-//                         distribution.setCitation(sourceRef);
-                           if (taxonDescription != null) { 
-                        	   Distribution duplicate = checkIsNoDuplicate(taxonDescription, distribution, duplicateMap , occurrenceId);
-                               if (duplicate == null){
-	                        	   taxonDescription.addElement(distribution); 
-	                               distribution.addImportSource(String.valueOf(occurrenceId), NAMESPACE, state.getTransactionalSourceReference(), null);
-	                        	   countDistributions++; 
-	                               if (taxonDescription != oldDescription){ 
-	                            	   taxaToSave.add(taxonDescription.getTaxon()); 
-	                                   oldDescription = taxonDescription; 
-	                                   countDescriptions++; 
-	                               	} 
-                               }else{                          	  
-                            	   countDuplicates++;
-                            	   duplicate.addImportSource(String.valueOf(occurrenceId), NAMESPACE, state.getTransactionalSourceReference(), null);
-                            	   logger.info("Distribution is duplicate");	                           }
-	                       	} else { 
-	                       		logger.warn("Distribution " + area.getLabel() + " ignored. OccurrenceId = " + occurrenceId);
-	                       		success = false;
-	                       	}
-                     }
-                     
+                    //create description(elements)
+                    TaxonDescription taxonDescription = getTaxonDescription(newTaxonId, oldTaxonId, oldDescription, taxonMap, occurrenceId, sourceRef);
+                    for (NamedArea area : areas){
+                    	Distribution distribution = Distribution.NewInstance(area, status);
+                        if (status == null){
+                        	AnnotationType annotationType = AnnotationType.EDITORIAL();
+                        	Annotation annotation = Annotation.NewInstance(alternativeStatusString, annotationType, null);
+                        	distribution.addAnnotation(annotation);
+                        	distribution.addMarker(Marker.NewInstance(MarkerType.PUBLISH(), false));
+                        }
+//                      distribution.setCitation(sourceRef);
+                        if (taxonDescription != null) { 
+                        	Distribution duplicate = checkIsNoDuplicate(taxonDescription, distribution, duplicateMap , occurrenceId);
+                            if (duplicate == null){
+                            	taxonDescription.addElement(distribution); 
+	                            distribution.addImportSource(String.valueOf(occurrenceId), NAMESPACE, state.getTransactionalSourceReference(), null);
+	                        	countDistributions++; 
+	                            if (taxonDescription != oldDescription){ 
+	                            	taxaToSave.add(taxonDescription.getTaxon()); 
+	                                oldDescription = taxonDescription; 
+	                                countDescriptions++; 
+	                            } 
+                            }else{                          	  
+                            	countDuplicates++;
+                            	duplicate.addImportSource(String.valueOf(occurrenceId), NAMESPACE, state.getTransactionalSourceReference(), null);
+                            	logger.info("Distribution is duplicate");	                           }
+                        } else { 
+                        	logger.warn("Distribution " + area.getLabel() + " ignored. OccurrenceId = " + occurrenceId);
+	                       	success = false;
+	                    }
+                        //notes
+                        if (isNotBlank(notes)){
+                        	Annotation annotation = Annotation.NewInstance(notes, Language.DEFAULT());
+                        	distribution.addAnnotation(annotation);
+                        }
+                    }
                 } catch (UnknownCdmTypeException e) {
                      logger.error("Unknown presenceAbsence status id: " + emStatusId); 
                 	e.printStackTrace();
                      success = false;
                 }
-                
             }
            
             logger.info("Distributions: " + countDistributions + ", Descriptions: " + countDescriptions );
