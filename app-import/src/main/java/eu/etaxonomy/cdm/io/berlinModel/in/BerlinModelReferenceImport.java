@@ -113,7 +113,7 @@ public class BerlinModelReferenceImport extends BerlinModelImportBase {
 		new CdmStringMapper("isbn", "isbn"),
 		new CdmStringMapper("isbn", "isbn"),
 		new CdmStringMapper("pageString", "pages"),
-		new CdmStringMapper("series", "series"),
+		new CdmStringMapper("series", "seriesPart"),
 		new CdmStringMapper("issn", "issn"),
 		new CdmUriMapper("url", "uri"),
 		DbImportExtensionMapper.NewInstance("NomStandard", ExtensionType.NOMENCLATURAL_STANDARD()),
@@ -889,19 +889,13 @@ public class BerlinModelReferenceImport extends BerlinModelImportBase {
 		return result;
 	}
 
-	/* (non-Javadoc)
-	 * @see eu.etaxonomy.cdm.io.common.CdmIoBase#doCheck(eu.etaxonomy.cdm.io.common.IoStateBase)
-	 */
 	@Override
 	protected boolean doCheck(BerlinModelImportState state){
 		BerlinModelReferenceImportValidator validator = new BerlinModelReferenceImportValidator();
 		return validator.validate(state, this);
 	}
-
 	
-	/* (non-Javadoc)
-	 * @see eu.etaxonomy.cdm.io.common.CdmIoBase#isIgnore(eu.etaxonomy.cdm.io.common.IImportConfigurator)
-	 */
+	@Override
 	protected boolean isIgnore(BerlinModelImportState state){
 		return (state.getConfig().getDoReferences() == IImportConfigurator.DO_REFERENCES.NONE);
 	}
