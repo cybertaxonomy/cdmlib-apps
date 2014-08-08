@@ -22,8 +22,6 @@ import org.apache.log4j.Logger;
 import org.hibernate.NonUniqueObjectException;
 import org.joda.time.DateTime;
 
-import eu.etaxonomy.cdm.api.service.AgentServiceImpl;
-import eu.etaxonomy.cdm.common.UTF8;
 import eu.etaxonomy.cdm.io.common.CdmImportBase;
 import eu.etaxonomy.cdm.io.common.ICdmIO;
 import eu.etaxonomy.cdm.io.common.IImportConfigurator.EDITOR;
@@ -44,8 +42,8 @@ import eu.etaxonomy.cdm.model.common.CdmBase;
 import eu.etaxonomy.cdm.model.common.IdentifiableEntity;
 import eu.etaxonomy.cdm.model.common.Language;
 import eu.etaxonomy.cdm.model.common.User;
-import eu.etaxonomy.cdm.model.location.NamedArea;
 import eu.etaxonomy.cdm.model.location.Country;
+import eu.etaxonomy.cdm.model.location.NamedArea;
 import eu.etaxonomy.cdm.model.name.ZoologicalName;
 import eu.etaxonomy.cdm.strategy.exceptions.StringNotParsableException;
 import eu.etaxonomy.cdm.strategy.parser.INonViralNameParser;
@@ -167,7 +165,7 @@ public abstract class GlobisImportBase<CDM_BASE extends CdmBase> extends CdmImpo
 		zooName.setExBasionymAuthorTeam(getExistingAuthor(zooName.getExBasionymAuthorTeam(), state));
 	}
 
-	private INomenclaturalAuthor getExistingAuthor(INomenclaturalAuthor nomAuthor, GlobisImportState state) {
+	private TeamOrPersonBase<?> getExistingAuthor(INomenclaturalAuthor nomAuthor, GlobisImportState state) {
 		TeamOrPersonBase<?> author = (TeamOrPersonBase<?>)nomAuthor;
 		if (author == null){
 			return null;
