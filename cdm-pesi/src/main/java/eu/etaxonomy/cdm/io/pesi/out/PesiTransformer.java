@@ -733,6 +733,10 @@ public final class PesiTransformer extends ExportTransformerBase implements IExp
 	public static int AREA_DANISH_EXCLUSIVE_ECONOMIC_ZONE = 198;
 	public static int AREA_TRANSCAUCASUS = 199;
 	
+	public static int AREA_GEORGIA_G = 200;
+	public static int AREA_ABKHAZIA = 201;
+	public static int AREA_ADZARIA = 202;
+	
 	public static int AREA_UNITED_KINGDOM = 203;
 	public static int AREA_DENMARK_COUNTRY = 204;
 	public static int AREA_TURKEY_COUNTRY = 205;
@@ -1057,7 +1061,10 @@ public final class PesiTransformer extends ExportTransformerBase implements IExp
 //			else if (namedArea.getUuid().equals(BerlinModelTransformer.uuidUkraineAndCrimea)) { return AREA_UKRAINE_INCLUDING_CRIMEA; }
 //			else if (namedArea.getUuid().equals(BerlinModelTransformer.uuidAzerbaijanNakhichevan)) { return AREA_AZERBAIJAN_INCLUDING_NAKHICHEVAN; }
 			
-			if (namedArea.getUuid().equals(BerlinModelTransformer.uuidEM)) { logger.warn("E+M area not available in PESI"); return null; }
+			if (namedArea.getUuid().equals(BerlinModelTransformer.uuidEM)) { 
+//				logger.warn("E+M area not available in PESI"); 
+				return null;
+			}
 			else if (namedArea.getUuid().equals(BerlinModelTransformer.uuidEUR)) { logger.warn("EUR area not available in PESI"); return null; }
 			else if (namedArea.getUuid().equals(BerlinModelTransformer.uuidAb)) { return AREA_AZERBAIJAN_INCLUDING_NAKHICHEVAN; }
 			else if (namedArea.getUuid().equals(BerlinModelTransformer.uuidAb_A)) { return AREA_AZERBAIJAN; }
@@ -1117,8 +1124,15 @@ public final class PesiTransformer extends ExportTransformerBase implements IExp
 			else if (namedArea.getUuid().equals(BerlinModelTransformer.uuidGa)) { return AREA_FRANCE; }
 			else if (namedArea.getUuid().equals(BerlinModelTransformer.uuidGa_C)) { return AREA_CHANNEL_ISLANDS; }
 			else if (namedArea.getUuid().equals(BerlinModelTransformer.uuidGa_F)) { return AREA_FRENCH_MAINLAND; }
+			else if (namedArea.getUuid().equals(BerlinModelTransformer.uuidGa_M)) { return AREA_MONACO; }
+			
 			else if (namedArea.getUuid().equals(BerlinModelTransformer.uuidGe)) { return AREA_GERMANY; }
 			else if (namedArea.getUuid().equals(BerlinModelTransformer.uuidGg)) { return AREA_GEORGIA; }
+			
+			else if (namedArea.getUuid().equals(BerlinModelTransformer.uuidGg_G)) { return AREA_GEORGIA_G; }
+			else if (namedArea.getUuid().equals(BerlinModelTransformer.uuidGg_A)) { return AREA_ABKHAZIA; }
+			else if (namedArea.getUuid().equals(BerlinModelTransformer.uuidGg_D)) { return AREA_ADZARIA; }
+			
 			else if (namedArea.getUuid().equals(BerlinModelTransformer.uuidGr)) { return AREA_GREECE_WITH_CYCLADES_AND_MORE_ISLANDS; }
 			else if (namedArea.getUuid().equals(BerlinModelTransformer.uuidHb)) { return AREA_IRELAND; }
 			else if (namedArea.getUuid().equals(BerlinModelTransformer.uuidHb_E)) { return AREA_REPUBLIC_OF_IRELAND; }
@@ -1267,8 +1281,7 @@ public final class PesiTransformer extends ExportTransformerBase implements IExp
 			else if (namedArea.getUuid().equals(ErmsTransformer.uuidBalearSea)) { return AREA_BALEAR_SEA; }
 			else if (namedArea.getUuid().equals(ErmsTransformer.uuidTurkishExclusiveEconomicZone)) { return AREA_TURKISH_EXCLUSIVE_ECONOMIC_ZONE; }
 			else if (namedArea.getUuid().equals(ErmsTransformer.uuidDanishExclusiveEconomicZone)) { return AREA_DANISH_EXCLUSIVE_ECONOMIC_ZONE; }
-
-			
+	
 			else {
 				logger.warn("Unknown NamedArea Area: " + area.getTitleCache());
 			}
