@@ -64,7 +64,7 @@ public class EuroMedActivator {
 	static final int sourceSecId = 7000000; //500000
 	static final UUID classificationUuid = UUID.fromString("314a68f9-8449-495a-91c2-92fde8bcf344");
 	static final boolean useSingleClassification = true;
-	
+	static final String classificationName = "Euro+Med 2014";	
 	static final UUID featureTreeUuid = UUID.fromString("6a5e1c2b-ec0d-46c8-9c7d-a2059267ffb7");
 	static final Object[] featureKeyList = new Integer[]{1, 31, 4, 98, 41}; 	
 	
@@ -148,6 +148,8 @@ public class EuroMedActivator {
 		//make BerlinModel Source
 				
 		BerlinModelImportConfigurator config = BerlinModelImportConfigurator.NewInstance(source,  destination);
+		
+		config.setClassificationName(classificationName);
 		
 		config.setClassificationUuid(classificationUuid);
 		config.setSourceSecId(sourceSecId);
@@ -254,6 +256,10 @@ public class EuroMedActivator {
 			commonNameFeature.setTitleCache(null, false);  //to definetely update the titleCache also
 			app.getTermService().saveOrUpdate(commonNameFeature);
 			app.commitTransaction(tx);
+		}
+		
+		if (config.isDoRelTaxa()){
+			
 		}
 		
 		System.out.println("End import from BerlinModel ("+ source.getDatabase() + ")...");
