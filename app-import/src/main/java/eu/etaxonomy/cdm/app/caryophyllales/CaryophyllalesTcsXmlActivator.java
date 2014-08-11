@@ -29,8 +29,8 @@ import eu.etaxonomy.cdm.io.tcsxml.in.TcsXmlImportConfigurator;
  * @created 20.06.2008
  * @version 1.0
  */
-public class TcsXmlTestActivator {
-	private static final Logger logger = Logger.getLogger(TcsXmlTestActivator.class);
+public class CaryophyllalesTcsXmlActivator {
+	private static final Logger logger = Logger.getLogger(CaryophyllalesTcsXmlActivator.class);
 	
 	//database validation status (create, update, validate ...)
 	static DbSchemaValidation hbm2dll = DbSchemaValidation.CREATE;
@@ -112,7 +112,7 @@ public class TcsXmlTestActivator {
 	 * @param args
 	 */
 	public static void main(String[] args) {
-		TcsXmlTestActivator me = new TcsXmlTestActivator();
+		CaryophyllalesTcsXmlActivator me = new CaryophyllalesTcsXmlActivator();
 		me.doImport();
 	}
 	

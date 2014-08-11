@@ -27,8 +27,8 @@ app-import/src/main/java/eu/etaxonomy/cdm/app/berlinModelImport/SalvadorExport.j
 app-import/src/main/java/eu/etaxonomy/cdm/app/berlinModelImport/SourceBase.java -text
 app-import/src/main/java/eu/etaxonomy/cdm/app/berlinModelImport/TreeCreator.java -text
 app-import/src/main/java/eu/etaxonomy/cdm/app/caryophyllales/CaryoActivator.java -text
+app-import/src/main/java/eu/etaxonomy/cdm/app/caryophyllales/CaryophyllalesTcsXmlActivator.java -text
 app-import/src/main/java/eu/etaxonomy/cdm/app/caryophyllales/TcsSources.java -text
-app-import/src/main/java/eu/etaxonomy/cdm/app/caryophyllales/TcsXmlTestActivator.java -text
 app-import/src/main/java/eu/etaxonomy/cdm/app/common/AppImportApplicationListener.java -text
 app-import/src/main/java/eu/etaxonomy/cdm/app/common/CacheUpdater.java -text
 app-import/src/main/java/eu/etaxonomy/cdm/app/common/CdmDestinations.java -text
