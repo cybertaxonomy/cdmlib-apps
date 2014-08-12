@@ -167,10 +167,10 @@ public class BerlinModelTaxonNameRelationImport extends BerlinModelImportBase {
 				}else{
 					//TODO
 					if (nameFrom == null){
-						 logger.warn("from TaxonName " + name1Id + "  for RelName (" + relNameId + " , type: " + relQualifierFk + ") does not exist in store. ToName is: " + (nameTo == null ? "" : nameTo.getTitleCache()));
+						 logger.warn("from TaxonName " + name1Id + "  for RelName (" + relNameId + " , type: " + relQualifierFk  + " , toName: " + name2Id+ ") does not exist in store. ToName is: " + (nameTo == null ? "" : nameTo.getTitleCache()));
 					}
 					if (nameTo == null){
-						logger.warn("to TaxonName " + name2Id + " for RelName (" + relNameId + " , type: " + relQualifierFk + ") does not exist in store. FromName is: "  + (nameFrom == null ? "" : nameFrom.getTitleCache()));
+						logger.warn("to TaxonName " + name2Id + " for RelName (" + relNameId + " , type: " + relQualifierFk  + " , fromName: " + name1Id + ") does not exist in store. FromName is: "  + (nameFrom == null ? "" : nameFrom.getTitleCache()));
 					}
 					success = false;
 				}

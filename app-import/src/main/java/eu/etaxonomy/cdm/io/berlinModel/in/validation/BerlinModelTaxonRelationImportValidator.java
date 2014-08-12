@@ -261,7 +261,7 @@ public class BerlinModelTaxonRelationImportValidator implements IOValidator<Berl
 				        " Name ON pt.PTNameFk = dbo.Name.NameId LEFT OUTER JOIN " +
 				        " RelPTaxon ON pt.PTNameFk = dbo.RelPTaxon.PTNameFk2 AND pt.PTRefFk = dbo.RelPTaxon.PTRefFk2 LEFT OUTER JOIN " +
 				        " RelPTaxon AS RelPTaxon_1 ON pt.PTNameFk = RelPTaxon_1.PTNameFk1 AND pt.PTRefFk = RelPTaxon_1.PTRefFk1 " + 
-				" WHERE (RelPTaxon_1.RelQualifierFk IS NULL) AND (dbo.RelPTaxon.RelQualifierFk IS NULL) " + 
+				" WHERE (RelPTaxon_1.RelQualifierFk IS NULL) AND (dbo.RelPTaxon.RelQualifierFk IS NULL) AND pt.statusFK <> 6 " + 
 				" ORDER BY Reference.RefCache, pt.PTRefFk, Name.FullNameCache, statusFK";
 
 			//project filter
@@ -274,9 +274,9 @@ public class BerlinModelTaxonRelationImportValidator implements IOValidator<Berl
 			boolean firstRow = true;
 			while (rs.next()){
 				if (firstRow){
-					System.out.println("========================================================");
-					System.out.println("There are taxa without any taxon relationship!");
-					System.out.println("========================================================");
+					System.out.println("=====================================================================");
+					System.out.println("There are taxa without any taxon relationship and not being orphaned!");
+					System.out.println("=====================================================================");
 				}
 
 				int secRefFk = rs.getInt("secRefFk");
