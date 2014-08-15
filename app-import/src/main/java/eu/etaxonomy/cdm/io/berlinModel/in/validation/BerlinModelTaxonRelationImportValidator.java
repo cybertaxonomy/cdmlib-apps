@@ -220,6 +220,8 @@ public class BerlinModelTaxonRelationImportValidator implements IOValidator<Berl
 				if (firstRow){
 					System.out.println("========================================================");
 					System.out.println("There are synonyms being part of a accepted taxon relationship!");
+					System.out.println("--------------------------------------------------------");
+					System.out.println(strQuery);
 					System.out.println("========================================================");
 				}
 
