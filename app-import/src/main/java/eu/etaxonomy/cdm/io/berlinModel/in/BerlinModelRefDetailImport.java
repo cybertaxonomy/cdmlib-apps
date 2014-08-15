@@ -59,6 +59,10 @@ public class BerlinModelRefDetailImport extends BerlinModelImportBase {
 		String strQuery = " SELECT RefDetail.RefDetailId " +
         	" FROM RefDetail " +
         	" WHERE (RefDetail.PreliminaryFlag = 1)";
+			if (StringUtils.isNotBlank(state.getConfig().getRefDetailFilter())){
+				strQuery += " AND " + state.getConfig().getRefDetailFilter();
+			}
+		
 		return strQuery;
 	}
 

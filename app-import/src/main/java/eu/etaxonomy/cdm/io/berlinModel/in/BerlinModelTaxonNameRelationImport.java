@@ -75,7 +75,6 @@ public class BerlinModelTaxonNameRelationImport extends BerlinModelImportBase {
 	}
 
 	
-
 	@Override
 	protected String getIdQuery(BerlinModelImportState state) {
 		if (StringUtils.isNotBlank(state.getConfig().getNameIdTable())){
@@ -89,10 +88,7 @@ public class BerlinModelTaxonNameRelationImport extends BerlinModelImportBase {
 		}
 	}
 	
-	
-	/* (non-Javadoc)
-	 * @see eu.etaxonomy.cdm.io.berlinModel.in.BerlinModelImportBase#getRecordQuery(eu.etaxonomy.cdm.io.berlinModel.in.BerlinModelImportConfigurator)
-	 */
+
 	@Override
 	protected String getRecordQuery(BerlinModelImportConfigurator config) {
 			String strQuery = 
@@ -105,9 +101,7 @@ public class BerlinModelTaxonNameRelationImport extends BerlinModelImportBase {
 		return strQuery;
 	}
 
-	/* (non-Javadoc)
-	 * @see eu.etaxonomy.cdm.io.berlinModel.in.IPartitionedIO#doPartition(eu.etaxonomy.cdm.io.berlinModel.in.ResultSetPartitioner, eu.etaxonomy.cdm.io.berlinModel.in.BerlinModelImportState)
-	 */
+	@Override
 	public boolean doPartition(ResultSetPartitioner partitioner, BerlinModelImportState state) {
 		boolean success = true ;
 		BerlinModelImportConfigurator config = state.getConfig();
@@ -167,7 +161,9 @@ public class BerlinModelTaxonNameRelationImport extends BerlinModelImportBase {
 				}else{
 					//TODO
 					if (nameFrom == null){
-						 logger.warn("from TaxonName " + name1Id + "  for RelName (" + relNameId + " , type: " + relQualifierFk  + " , toName: " + name2Id+ ") does not exist in store. ToName is: " + (nameTo == null ? "" : nameTo.getTitleCache()));
+						if ( ! (config.isUseEmAreaVocabulary() && relNameId == 28159 )) {
+							logger.warn("from TaxonName " + name1Id + "  for RelName (" + relNameId + " , type: " + relQualifierFk  + " , toName: " + name2Id+ ") does not exist in store. ToName is: " + (nameTo == null ? "" : nameTo.getTitleCache()));
+						}
 					}
 					if (nameTo == null){
 						logger.warn("to TaxonName " + name2Id + " for RelName (" + relNameId + " , type: " + relQualifierFk  + " , fromName: " + name1Id + ") does not exist in store. FromName is: "  + (nameFrom == null ? "" : nameFrom.getTitleCache()));

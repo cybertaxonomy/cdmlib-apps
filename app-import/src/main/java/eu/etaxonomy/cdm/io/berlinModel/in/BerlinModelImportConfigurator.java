@@ -104,6 +104,7 @@ public class BerlinModelImportConfigurator extends DbImportConfiguratorBase<Berl
 	private String authorTeamFilter = null;
 	private String authorFilter = null;
 	private String factFilter = null;
+	private String refDetailFilter = null;
 	private String commonNameFilter = null;
 	private String occurrenceFilter = null;
 	private String occurrenceSourceFilter = null;
@@ -482,6 +483,13 @@ public class BerlinModelImportConfigurator extends DbImportConfiguratorBase<Berl
 	}
 	public String getFactFilter() {
 		return factFilter;
+	}
+	
+	public void setRefDetailFilter(String refDetailFilter) {
+		this.refDetailFilter = refDetailFilter;
+	}
+	public String getRefDetailFilter() {
+		return refDetailFilter;
 	}
 
 
