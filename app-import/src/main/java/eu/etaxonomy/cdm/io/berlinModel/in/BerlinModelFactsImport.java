@@ -149,9 +149,6 @@ public class BerlinModelFactsImport  extends BerlinModelImportBase {
 
 	}
 
-	/* (non-Javadoc)
-	 * @see eu.etaxonomy.cdm.io.berlinModel.in.BerlinModelImportBase#doInvoke(eu.etaxonomy.cdm.io.berlinModel.in.BerlinModelImportState)
-	 */
 	@Override
 	protected void doInvoke(BerlinModelImportState state) {
 		featureMap = invokeFactCategories(state);
