@@ -56,7 +56,7 @@ public class EuroMedActivator {
 //	static final ICdmDataSource cdmDestination = CdmDestinations.cdm_test_euroMed();
 	
 //	static final ICdmDataSource cdmDestination = CdmDestinations.cdm_pesi_euroMed();
-//	static final ICdmDataSource cdmDestination = CdmDestinations.cdm_test_local_euromed3();
+//	static final ICdmDataSource cdmDestination = CdmDestinations.cdm_test_local_euromed();
 	static final ICdmDataSource cdmDestination = CdmDestinations.localH2();
 	
 	static final boolean includePesiExport = false;
@@ -74,7 +74,7 @@ public class EuroMedActivator {
 	static final int partitionSize = 2500;
 	
 	//check - import
-	static final CHECK check = CHECK.CHECK_ONLY;
+	static final CHECK check = CHECK.IMPORT_WITHOUT_CHECK;
 
 	//editor - import
 	static final EDITOR editor = EDITOR.EDITOR_AS_EDITOR;
@@ -106,6 +106,7 @@ public class EuroMedActivator {
 					" ORDER BY r.RelPTaxonId ";  // AND r.RelQualifierFk =1 
 	static String nameIdTable = " v_cdm_exp_namesAll ";
 	static String referenceIdTable = " v_cdm_exp_refAll ";
+	static String refDetailFilter =  " RefDetailID IN (SELECT RefDetailID FROM v_cdm_exp_RefDetail) ";
 	static String factFilter = " factId IN ( SELECT factId FROM v_cdm_exp_factsAll WHERE FactCategoryFk NOT IN (12, 14, 249, 251))";
 	static String occurrenceFilter = " occurrenceId IN ( SELECT occurrenceId FROM v_cdm_exp_occurrenceAll )";
 	static String occurrenceSourceFilter = " occurrenceFk IN ( SELECT occurrenceId FROM v_cdm_exp_occurrenceAll )"; 
@@ -118,7 +119,7 @@ public class EuroMedActivator {
 	
 // **************** ALL *********************	
 
-	boolean invers = !(hbm2dll == DbSchemaValidation.CREATE);
+	boolean invers =  !(hbm2dll == DbSchemaValidation.CREATE);
 	
 	static final boolean doUser = true;
 //	//authors
@@ -193,6 +194,7 @@ public class EuroMedActivator {
 		config.setAuthorTeamFilter(authorTeamFilter);
 		config.setAuthorFilter(authorFilter);
 		config.setFactFilter(factFilter);
+		config.setRefDetailFilter(refDetailFilter);
 		config.setCommonNameFilter(commonNameFilter);
 		config.setOccurrenceFilter(occurrenceFilter);
 		config.setOccurrenceSourceFilter(occurrenceSourceFilter);
