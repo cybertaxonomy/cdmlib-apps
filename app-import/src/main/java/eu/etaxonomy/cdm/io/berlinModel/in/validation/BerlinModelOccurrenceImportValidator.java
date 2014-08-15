@@ -64,7 +64,10 @@ public class BerlinModelOccurrenceImportValidator implements IOValidator<BerlinM
 				if (firstRow){
 					System.out.println("========================================================");
 					System.out.println("There are Occurrences for a taxon that is not accepted!");
+					System.out.println("--------------------------------------------------------");
+					System.out.println(strQuery);
 					System.out.println("========================================================");
+					
 				}
 				int occurrenceId = resulSet.getInt("OccurrenceId");
 //					int statusFk = resulSet.getInt("StatusFk");
