@@ -49,15 +49,15 @@ public class EuroMedActivator {
 	private static final Logger logger = Logger.getLogger(EuroMedActivator.class);
 
 	//database validation status (create, update, validate ...)
-	static DbSchemaValidation hbm2dll = DbSchemaValidation.CREATE;
+	static DbSchemaValidation hbm2dll = DbSchemaValidation.VALIDATE;
 	static final Source berlinModelSource = BerlinModelSources.euroMed_BGBM42();
 //	static final Source berlinModelSource = BerlinModelSources.euroMed_PESI3();
 	
 //	static final ICdmDataSource cdmDestination = CdmDestinations.cdm_test_euroMed();
 	
-//	static final ICdmDataSource cdmDestination = CdmDestinations.cdm_pesi_euroMed();
+	static final ICdmDataSource cdmDestination = CdmDestinations.cdm_pesi_euromed();
 //	static final ICdmDataSource cdmDestination = CdmDestinations.cdm_test_local_euromed();
-	static final ICdmDataSource cdmDestination = CdmDestinations.localH2();
+//	static final ICdmDataSource cdmDestination = CdmDestinations.localH2();
 	
 	static final boolean includePesiExport = false;
 	
@@ -74,7 +74,7 @@ public class EuroMedActivator {
 	static final int partitionSize = 2500;
 	
 	//check - import
-	static final CHECK check = CHECK.IMPORT_WITHOUT_CHECK;
+	static final CHECK check = CHECK.CHECK_AND_IMPORT;
 
 	//editor - import
 	static final EDITOR editor = EDITOR.EDITOR_AS_EDITOR;
@@ -119,7 +119,7 @@ public class EuroMedActivator {
 	
 // **************** ALL *********************	
 
-	boolean invers =  !(hbm2dll == DbSchemaValidation.CREATE);
+	boolean invers =   !(hbm2dll == DbSchemaValidation.CREATE);
 	
 	static final boolean doUser = true;
 //	//authors
