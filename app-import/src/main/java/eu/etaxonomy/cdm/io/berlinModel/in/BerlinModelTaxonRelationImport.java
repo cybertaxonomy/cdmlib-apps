@@ -453,9 +453,6 @@ public class BerlinModelTaxonRelationImport  extends BerlinModelImportBase  {
 		
 	}
 
-	/* (non-Javadoc)
-	 * @see eu.etaxonomy.cdm.io.berlinModel.in.BerlinModelImportBase#getIdQuery(eu.etaxonomy.cdm.io.berlinModel.in.BerlinModelImportState)
-	 */
 	@Override
 	protected String getIdQuery(BerlinModelImportState state) {
 		if (state.getConfig().getRelTaxaIdQuery() != null){
@@ -512,10 +509,8 @@ public class BerlinModelTaxonRelationImport  extends BerlinModelImportBase  {
 		return result;
 	}
 	
-	/* (non-Javadoc)
-	 * @see eu.etaxonomy.cdm.io.berlinModel.in.IPartitionedIO#getRelatedObjectsForPartition(java.sql.ResultSet)
-	 */
-	public Map<Object, Map<String, ? extends CdmBase>> getRelatedObjectsForFlatPartition( ResultSet rs) {
+
+	private Map<Object, Map<String, ? extends CdmBase>> getRelatedObjectsForFlatPartition( ResultSet rs) {
 		String nameSpace;
 		Class cdmClass;
 		Set<String> idSet;
