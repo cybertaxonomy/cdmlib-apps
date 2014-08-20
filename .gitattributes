@@ -392,6 +392,7 @@ cdm-pesi/src/main/java/eu/etaxonomy/cdm/io/pesi/indexFungorum/IndexFungorumImpor
 cdm-pesi/src/main/java/eu/etaxonomy/cdm/io/pesi/indexFungorum/IndexFungorumImportConfigurator.java -text
 cdm-pesi/src/main/java/eu/etaxonomy/cdm/io/pesi/indexFungorum/IndexFungorumImportState.java -text
 cdm-pesi/src/main/java/eu/etaxonomy/cdm/io/pesi/indexFungorum/IndexFungorumSpeciesImport.java -text
+cdm-pesi/src/main/java/eu/etaxonomy/cdm/io/pesi/indexFungorum/IndexFungorumSubSpeciesImport.java -text
 cdm-pesi/src/main/java/eu/etaxonomy/cdm/io/pesi/indexFungorum/IndexFungorumSupraGeneraImport.java -text
 cdm-pesi/src/main/java/eu/etaxonomy/cdm/io/pesi/indexFungorum/IndexFungorumTransformer.java -text
 cdm-pesi/src/main/java/eu/etaxonomy/cdm/io/pesi/merging/FaunaEuErmsMerging.java -text
