@@ -40,6 +40,7 @@ import eu.etaxonomy.cdm.model.reference.Reference;
 import eu.etaxonomy.cdm.model.taxon.Classification;
 import eu.etaxonomy.cdm.model.taxon.Taxon;
 import eu.etaxonomy.cdm.model.taxon.TaxonBase;
+import eu.etaxonomy.cdm.model.taxon.TaxonNode;
 import eu.etaxonomy.cdm.strategy.parser.NonViralNameParserImpl;
 
 
@@ -53,7 +54,7 @@ public class IndexFungorumSpeciesImport  extends IndexFungorumImportBase {
 
 	private static final String pluralString = "species";
 	private static final String dbTableName = "[tblPESIfungi-IFdata]";
-	private final Set<UUID> infraspecificTaxaUUIDs = new HashSet<UUID>();
+	
 
 	public IndexFungorumSpeciesImport(){
 		super(pluralString, dbTableName, null);
@@ -89,52 +90,9 @@ public class IndexFungorumSpeciesImport  extends IndexFungorumImportBase {
 	@Override
     protected void doInvoke(IndexFungorumImportState state){
         System.out.println("start make " + getPluralString() + " ...");
-        IndexFungorumImportConfigurator config = state.getConfig();
-        Source source = config.getSource();
-
         super.doInvoke(state);
-        Classification classification = getClassification(state);
-        List<TaxonBase> infraspecificTaxa = new ArrayList<TaxonBase>();
-        for (UUID uuid: infraspecificTaxaUUIDs){
-            infraspecificTaxa.add(getTaxonService().load(uuid));
-        }
-
-        System.out.println("create infraspecific - specific relationship: " + infraspecificTaxa.size() + " taxa");
-        for (TaxonBase infraspecificTaxon: infraspecificTaxa){
-            HibernateProxyHelper.deproxy(infraspecificTaxon);
-            TaxonNameBase name = infraspecificTaxon.getName();
-
-            UUID uuid = getNameService().saveOrUpdate(name);
-            String parentNameString = getParentNameInfraSpecific(name);
-            System.out.println("Parent name string: " + parentNameString);
-            MatchingTaxonConfigurator matchingConfig = new MatchingTaxonConfigurator();
-            matchingConfig.setTaxonNameTitle(parentNameString);
-            List<String> propertyPaths = new ArrayList<String>();
-            propertyPaths.add("taxonNodes.*");
-            propertyPaths.add("taxonNodes.classification");
-            propertyPaths.add("taxonNodes.childNodes.*");
-            propertyPaths.add("taxonNodes.childNodes.taxon.*");
-            propertyPaths.add("taxonNodes.parent.*");
-            propertyPaths.add("taxonNodes.parent.taxon.*");
-            matchingConfig.setPropertyPath(propertyPaths);
-            List<TaxonBase> potentialParents = getTaxonService().findTaxaByName(matchingConfig);
-                    //Taxon.class, parentNameString + "sec. ", MatchMode.BEGINNING, , pageSize, pageNumber, orderHints, propertyPaths)
-                    //.searchNames(String uninomial,String infraGenericEpithet, String specificEpithet, String infraspecificEpithet, Rank rank, Integer pageSize, Integer pageNumber, List<OrderHint> orderHints,
-            if (potentialParents.size()>1){
-                for (TaxonBase potentialParent:potentialParents){
-                    if (potentialParent.getTitleCache().equals(parentNameString + " sec*")){
-                        classification.addParentChild((Taxon)potentialParent, (Taxon)infraspecificTaxon, null, null);
-                    }
-                }
-            }else if (!potentialParents.isEmpty()){
-                Taxon parent = HibernateProxyHelper.deproxy(potentialParents.get(0), Taxon.class);
-                Taxon child = (Taxon)getTaxonService().load(infraspecificTaxon.getUuid(), propertyPaths);
-                classification.addParentChild(parent, child, null, null);
-            } else{
-                System.out.println("No parent for: " + name.getTitleCache());
-            }
-            getTaxonService().saveOrUpdate(infraspecificTaxon);
-        }
+        
+       
 
 
 	}
@@ -188,9 +146,9 @@ public class IndexFungorumSpeciesImport  extends IndexFungorumImportBase {
 				//save
 
 				UUID uuidTaxon = getTaxonService().saveOrUpdate(taxon);
-				getNameService().saveOrUpdate(name);
+				//getNameService().saveOrUpdate(name);
 				if (name.isInfraSpecific()){
-                    infraspecificTaxaUUIDs.add(uuidTaxon);
+                    state.getInfraspecificTaxaUUIDs().add(uuidTaxon);
                 }
 
 			}
@@ -206,16 +164,7 @@ public class IndexFungorumSpeciesImport  extends IndexFungorumImportBase {
 	}
 
 
-	/**
-     * @param taxon
-     * @return
-     */
-    private String getParentNameInfraSpecific(TaxonNameBase taxonName){
-       NonViralName<NonViralName> name =  HibernateProxyHelper.deproxy(taxonName, NonViralName.class);
-       String parentName = name.getGenusOrUninomial() + " " + name.getSpecificEpithet();
-
-       return parentName;
-    }
+	
 
 
 

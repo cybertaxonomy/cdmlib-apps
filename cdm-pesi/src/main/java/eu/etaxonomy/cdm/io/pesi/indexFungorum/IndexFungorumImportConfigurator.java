@@ -50,6 +50,7 @@ public class IndexFungorumImportConfigurator extends DbImportConfiguratorBase<In
 				, IndexFungorumHigherClassificationImport.class
 				, IndexFungorumGeneraImport.class
 				, IndexFungorumSpeciesImport.class
+				, IndexFungorumSubSpeciesImport.class
 				, IndexFungorumDistributionImport.class
 		};	
 	}
