@@ -1,9 +1,9 @@
 // $Id$
 /**
 * Copyright (C) 2009 EDIT
-* European Distributed Institute of Taxonomy 
+* European Distributed Institute of Taxonomy
 * http://www.e-taxonomy.eu
-* 
+*
 * The contents of this file are subject to the Mozilla Public License Version 1.1
 * See LICENSE.TXT at the top of this package for the full license terms.
 */
@@ -37,8 +37,8 @@ import eu.etaxonomy.cdm.model.description.AbsenceTerm;
 import eu.etaxonomy.cdm.model.description.Feature;
 import eu.etaxonomy.cdm.model.description.PresenceAbsenceTermBase;
 import eu.etaxonomy.cdm.model.description.PresenceTerm;
-import eu.etaxonomy.cdm.model.location.NamedArea;
 import eu.etaxonomy.cdm.model.location.Country;
+import eu.etaxonomy.cdm.model.location.NamedArea;
 import eu.etaxonomy.cdm.model.name.HybridRelationshipType;
 import eu.etaxonomy.cdm.model.name.NameRelationshipType;
 import eu.etaxonomy.cdm.model.name.NameTypeDesignationStatus;
@@ -67,20 +67,20 @@ public final class PesiTransformer extends ExportTransformerBase implements IExp
 	private static final Logger logger = Logger.getLogger(PesiTransformer.class);
 
 	public static final String AUCT_STRING = "auct.";
-	
-	
+
+
 	//source identifiers
 	public static final int SOURCE_EM = 1;
 	public static final int SOURCE_FE = 2;
 	public static final int SOURCE_IF = 3;
 	public static final int SOURCE_ERMS = 4;
-	
+
 	//sourceRefUUIDs
 	public static final UUID uuidSourceRefFaunaEuropaea = UUID.fromString("6786d863-75d4-4796-b916-c1c3dff4cb70");
 	public static final UUID uuidSourceRefErms = UUID.fromString("7744bc26-f914-42c4-b54a-dd2a030a8bb7");
 	public static final UUID uuidSourceRefIndexFungorum = UUID.fromString("8de25d27-7d40-47f4-af3b-59d64935a843");
 	public static final UUID uuidSourceRefAuct = UUID.fromString("5f79f96c-c100-4cd8-b78e-2b2dacf09a23");
-	
+
 	public static final String SOURCE_STR_EM = "E+M";
 	public static final String SOURCE_STR_FE = "FaEu";
 	public static final String SOURCE_STR_IF = "IF";
@@ -91,19 +91,19 @@ public final class PesiTransformer extends ExportTransformerBase implements IExp
 	public static int QUALITY_STATUS_ADD_BY_DBMT= 2;
 	public static int QUALITY_STATUS_CHECKED_EDITOR = 3;
 	public static int QUALITY_STATUS_EDITED_BY_DBMT = 4;
-	
+
 	// marker type
 	public static final UUID uuidMarkerGuidIsMissing = UUID.fromString("24e70843-05e2-44db-954b-84df0d23ea20");
 	public static final UUID uuidMarkerTypeHasNoLastAction = UUID.fromString("99652d5a-bc92-4251-b57d-0fec4d258ab7");
 //	public static final UUID uuidMarkerFossil = UUID.fromString("761ce108-031a-4e07-b444-f8d757070312");
-	
-	
+
+
 	//extension type uuids
 	public static final UUID cacheCitationUuid = UUID.fromString("29656168-32d6-4301-9067-d57c63be5c67");
 	//public static final UUID expertUserIdUuid = UUID.fromString("e25813d3-c67c-4585-9aa0-970fafde50b4");
 	//public static final UUID speciesExpertUserIdUuid = UUID.fromString("6d42abd8-8894-4980-ae07-e918affd4172");
 	public static final UUID expertNameUuid = BerlinModelTransformer.uuidExpertName;
-	public static final UUID speciesExpertNameUuid = BerlinModelTransformer.uuidSpeciesExpertName; 
+	public static final UUID speciesExpertNameUuid = BerlinModelTransformer.uuidSpeciesExpertName;
 	public static final UUID lastActionDateUuid = UUID.fromString("8d0a7d81-bb83-4576-84c3-8c906ef039b2");
 	public static final UUID lastActionUuid = UUID.fromString("bc20d5bc-6161-4279-9499-89ea26ce5f6a");
 	public static final UUID taxCommentUuid = UUID.fromString("8041a752-0479-4626-ab1b-b266b751f816");
@@ -123,7 +123,7 @@ public final class PesiTransformer extends ExportTransformerBase implements IExp
 	public static int REF_UNRESOLVED = 10;
 	public static int REF_PUBLICATION = 11;
 	public static String REF_STR_UNRESOLVED = "unresolved";
-	
+
 	// NameStatus
 	public static int NAME_ST_NOM_INVAL = 1;
 	public static int NAME_ST_NOM_ILLEG = 2;
@@ -163,7 +163,7 @@ public final class PesiTransformer extends ExportTransformerBase implements IExp
 	public static int T_STATUS_ORPHANED = 6;
 	public static int T_STATUS_UNACCEPTED = 7;
 	public static int T_STATUS_NOT_ACCEPTED = 8;
-	
+
 	// TypeDesginationStatus //	 -> not a table anymore
 	public static int TYPE_BY_ORIGINAL_DESIGNATION = 1;
 	public static int TYPE_BY_SUBSEQUENT_DESIGNATION = 2;
@@ -171,7 +171,7 @@ public final class PesiTransformer extends ExportTransformerBase implements IExp
 	public static String TYPE_STR_BY_ORIGINAL_DESIGNATION = "Type by original designation";
 	public static String TYPE_STR_BY_SUBSEQUENT_DESIGNATION = "Type by subsequent designation";
 	public static String TYPE_STR_BY_MONOTYPY = "Type by monotypy";
-	
+
 	// RelTaxonQualifier
 	public static int IS_BASIONYM_FOR = 1;
 	public static int IS_LATER_HOMONYM_OF = 2;
@@ -208,7 +208,7 @@ public final class PesiTransformer extends ExportTransformerBase implements IExp
 	public static int IS_INFERRED_GENUS_FOR = 302;
 	public static int IS_POTENTIAL_COMBINATION_FOR = 303;
 
-		
+
 	//namespaces
 	public static String STR_NAMESPACE_NOMINAL_TAXON = "Nominal taxon from TAX_ID:";
 	public static String STR_NAMESPACE_INFERRED_EPITHET = "Inferred epithet from TAX_ID:";
@@ -224,6 +224,16 @@ public final class PesiTransformer extends ExportTransformerBase implements IExp
 	public static int KINGDOM_PROTOZOA = 5;
 	public static int KINGDOM_BACTERIA = 6;
 	public static int KINGDOM_CHROMISTA = 7;
+
+	// Kingdoms
+	public static Map<String, Integer> pesiKingdomMap = new HashMap<String, Integer>();
+
+
+    public static String KINGDOM_PLANTAE_STRING = "Plantae";
+    public static String KINGDOM_FUNGI_STRING = "Fungi";
+    public static String KINGDOM_PROTOZOA_STRING = "Protozoa";
+    public static String kINGDOM_BACTERIA_STRING = "Bacteria";
+    public static String KINGDOM_CHROMISTA_STRING = "Chromista";
 
 	// Animalia Ranks
 	public static int Animalia_Kingdom = 10;
@@ -293,7 +303,7 @@ public final class PesiTransformer extends ExportTransformerBase implements IExp
 	public static int Plantae_Forma_spec = 275;
 	public static int Plantae_Taxa_infragen = 280;
 	public static int Plantae_Taxa_infraspec = 285;
-	
+
 	// Fungi Ranks
 	public static int Fungi_Kingdom = 10;
 	public static int Fungi_Subkingdom = 20;
@@ -317,7 +327,8 @@ public final class PesiTransformer extends ExportTransformerBase implements IExp
 	public static int Fungi_Subvariety = 250;
 	public static int Fungi_Forma	= 260;
 	public static int Fungi_Subforma = 270;
-	
+	public static int Fungi_Forma_spec = 275;
+
 	//Protozoa Ranks
 	public static int Protozoa_Kingdom = 10;
 	public static int Protozoa_Subkingdom = 20;
@@ -342,7 +353,7 @@ public final class PesiTransformer extends ExportTransformerBase implements IExp
 	public static int Protozoa_Subspecies = 230;
 	public static int Protozoa_Variety = 240;
 	public static int Protozoa_Forma	= 260;
-	
+
 	// Bacteria Ranks
 	public static int Bacteria_Kingdom = 10;
 	public static int Bacteria_Subkingdom = 20;
@@ -396,7 +407,7 @@ public final class PesiTransformer extends ExportTransformerBase implements IExp
 	public static int Chromista_Variety	= 240;
 	public static int Chromista_Subvariety = 250;
 	public static int Chromista_Forma = 260;
-	
+
 	// NoteCategory
 	public static int NoteCategory_description = 1;
 	public static int NoteCategory_ecology = 4;
@@ -451,7 +462,7 @@ public final class PesiTransformer extends ExportTransformerBase implements IExp
 	public static int NoteCategory_Use = 302;
 	public static int NoteCategory_Comments = 303;
 
-	
+
 	// Language
 	public static int Language_Albanian = 1;
 	public static int Language_Arabic = 2;
@@ -520,7 +531,7 @@ public final class PesiTransformer extends ExportTransformerBase implements IExp
 	public static int FOSSILSTATUS_FOSSIL_ONLY = 2;
 	public static int FOSSILSTATUS_RECENT_FOSSIL = 3;
 	public static String STR_FOSSIL_ONLY = "fossil only";  //still used for Index Fungorum
-	
+
 	// SourceUse
 	public static int ORIGINAL_DESCRIPTION = 1;
 	public static int BASIS_OF_RECORD = 2;
@@ -732,11 +743,11 @@ public final class PesiTransformer extends ExportTransformerBase implements IExp
 	public static int AREA_TURKISH_EXCLUSIVE_ECONOMIC_ZONE = 197;
 	public static int AREA_DANISH_EXCLUSIVE_ECONOMIC_ZONE = 198;
 	public static int AREA_TRANSCAUCASUS = 199;
-	
+
 	public static int AREA_GEORGIA_G = 200;
 	public static int AREA_ABKHAZIA = 201;
 	public static int AREA_ADZARIA = 202;
-	
+
 	public static int AREA_UNITED_KINGDOM = 203;
 	public static int AREA_DENMARK_COUNTRY = 204;
 	public static int AREA_TURKEY_COUNTRY = 205;
@@ -754,26 +765,26 @@ public final class PesiTransformer extends ExportTransformerBase implements IExp
 	public static int STATUS_MANAGED = 7;
 	public static int STATUS_DOUBTFUL = 8;
 
-	private Map<String, Integer> tdwgKeyMap = new HashMap<String, Integer>();
-	private Map<Integer, String> areaCacheMap = new HashMap<Integer, String>();
-	private Map<Integer, String> languageCacheMap  = new HashMap<Integer, String>();
-	private Map<Integer, String> featureCacheMap  = new HashMap<Integer, String>();
-	private Map<Integer, String> nameStatusCacheMap  = new HashMap<Integer, String>();
-	private Map<Integer, String> qualityStatusCacheMap  = new HashMap<Integer, String>();
-	private Map<Integer, String> taxonStatusCacheMap  = new HashMap<Integer, String>();
-	private Map<Integer, String> taxRelQualifierCacheMap  = new HashMap<Integer, String>();
-	private Map<Integer, String> taxRelZooQualifierCacheMap  = new HashMap<Integer, String>();
-	private Map<Integer, String> sourceUseCacheMap  = new HashMap<Integer, String>();
-	private Map<Integer, String> fossilStatusCacheMap  = new HashMap<Integer, String>();
-	private Map<Integer, String> typeDesigStatusCacheMap  = new HashMap<Integer, String>();
-	private Map<Integer, String> sourceCategoryCacheMap  = new HashMap<Integer, String>();
-	private Map<Integer, String> occurrenceStatusCacheMap  = new HashMap<Integer, String>();
-	private Map<Integer, Map<Integer, String>> rankCacheMap  = new  HashMap<Integer, Map<Integer, String>>();
-	private Map<Integer, Map<Integer, String>> rankAbbrevCacheMap  = new  HashMap<Integer, Map<Integer, String>>();
-	
-	
-	private Source destination;
-	
+	private final Map<String, Integer> tdwgKeyMap = new HashMap<String, Integer>();
+	private final Map<Integer, String> areaCacheMap = new HashMap<Integer, String>();
+	private final Map<Integer, String> languageCacheMap  = new HashMap<Integer, String>();
+	private final Map<Integer, String> featureCacheMap  = new HashMap<Integer, String>();
+	private final Map<Integer, String> nameStatusCacheMap  = new HashMap<Integer, String>();
+	private final Map<Integer, String> qualityStatusCacheMap  = new HashMap<Integer, String>();
+	private final Map<Integer, String> taxonStatusCacheMap  = new HashMap<Integer, String>();
+	private final Map<Integer, String> taxRelQualifierCacheMap  = new HashMap<Integer, String>();
+	private final Map<Integer, String> taxRelZooQualifierCacheMap  = new HashMap<Integer, String>();
+	private final Map<Integer, String> sourceUseCacheMap  = new HashMap<Integer, String>();
+	private final Map<Integer, String> fossilStatusCacheMap  = new HashMap<Integer, String>();
+	private final Map<Integer, String> typeDesigStatusCacheMap  = new HashMap<Integer, String>();
+	private final Map<Integer, String> sourceCategoryCacheMap  = new HashMap<Integer, String>();
+	private final Map<Integer, String> occurrenceStatusCacheMap  = new HashMap<Integer, String>();
+	private final Map<Integer, Map<Integer, String>> rankCacheMap  = new  HashMap<Integer, Map<Integer, String>>();
+	private final Map<Integer, Map<Integer, String>> rankAbbrevCacheMap  = new  HashMap<Integer, Map<Integer, String>>();
+
+
+	private final Source destination;
+
 	public PesiTransformer(Source destination) {
 		super();
 		this.destination = destination;
@@ -789,22 +800,23 @@ public final class PesiTransformer extends ExportTransformerBase implements IExp
 				String tdwg = rs.getString("AreaTdwgCode");
 				Integer id = rs.getInt("AreaId");
 				String label = rs.getString("AreaName");
-				
+
 				if (StringUtils.isNotBlank(tdwg)){
 					this.tdwgKeyMap.put(tdwg, id);
 				}
 				this.areaCacheMap.put(id, label);
 			}
-			
+
 			//rankCache
-			sql = " SELECT KingdomId, RankId, Rank, RankAbbrev  FROM Rank";
+			sql = " SELECT KingdomId, RankId, Rank, RankAbbrev, Kingdom  FROM Rank";
 			rs = destination.getResultSet(sql);
 			while (rs.next()){
 				String rank = rs.getString("Rank");
 				String abbrev = rs.getString("RankAbbrev");
 				Integer rankId = rs.getInt("RankId");
 				Integer kingdomId = rs.getInt("KingdomId");
-				
+				String kingdom = rs.getString("Kingdom");
+
 				//rank str
 				Map<Integer, String> kingdomMap = rankCacheMap.get(kingdomId);
 				if (kingdomMap == null){
@@ -812,7 +824,11 @@ public final class PesiTransformer extends ExportTransformerBase implements IExp
 					rankCacheMap.put(kingdomId, kingdomMap);
 				}
 				kingdomMap.put(rankId, rank);
-				
+
+				if (rank.equals("Kingdom")){
+				    pesiKingdomMap.put(kingdom, kingdomId);
+				}
+
 				//rank abbrev
 				Map<Integer, String> kingdomAbbrevMap = rankAbbrevCacheMap.get(kingdomId);
 				if (kingdomAbbrevMap == null){
@@ -822,15 +838,18 @@ public final class PesiTransformer extends ExportTransformerBase implements IExp
 				if (StringUtils.isNotBlank(abbrev)){
 					kingdomAbbrevMap.put(rankId, abbrev);
 				}
-				
+
 			}
-			
+
+
+
+
 			//languageCache
 			fillSingleMap(languageCacheMap,"Language");
 
 			//feature / note category
 			fillSingleMap(featureCacheMap,"NoteCategory");
-			
+
 			//nameStatusCache
 			fillSingleMap(nameStatusCacheMap,"NameStatus", "NomStatus");
 
@@ -839,22 +858,22 @@ public final class PesiTransformer extends ExportTransformerBase implements IExp
 
 			//taxonStatusCache
 			fillSingleMap(taxonStatusCacheMap,"TaxonStatus", "Status");
-			
+
 			//sourceUse
 			fillSingleMap(sourceUseCacheMap,"SourceUse");
 
 			//fossil status
 			fillSingleMap(fossilStatusCacheMap,"FossilStatus");
-			
+
 			//fossil status
 			fillSingleMap(typeDesigStatusCacheMap,"FossilStatus");
 
 			//fossil status
 			fillSingleMap(occurrenceStatusCacheMap,"OccurrenceStatus");
-			
+
 			//source category
 			fillSingleMap(sourceCategoryCacheMap,"SourceCategory", "Category", "SourceCategoryId");
-			
+
 			//RelTaxonQualifier
 			sql = " SELECT QualifierId, Qualifier, ZoologQualifier FROM RelTaxonQualifier ";
 			rs = destination.getResultSet(sql);
@@ -869,22 +888,22 @@ public final class PesiTransformer extends ExportTransformerBase implements IExp
 					this.taxRelZooQualifierCacheMap.put(key, zoologCache);
 				}
 			}
-			rs = null;		
+			rs = null;
 		} catch (SQLException e) {
 			logger.error("SQLException when trying to read area map", e);
 			e.printStackTrace();
 		}
-		
+
 	}
 
 	private void fillSingleMap(Map<Integer, String> map, String tableName) throws SQLException {
 		fillSingleMap(map, tableName, tableName,  tableName + "Id");
 	}
-	
+
 	private void fillSingleMap(Map<Integer, String> map, String tableName, String attr) throws SQLException {
 			fillSingleMap(map, tableName, attr,  attr + "Id");
 	}
-	
+
 	private void fillSingleMap(Map<Integer, String> map, String tableName, String attr, String idAttr) throws SQLException {
 		String sql;
 		ResultSet rs;
@@ -896,7 +915,7 @@ public final class PesiTransformer extends ExportTransformerBase implements IExp
 			String cache = rs.getString(attr);
 			if (StringUtils.isNotBlank(cache)){
 				map.put(key, cache);
-			} 
+			}
 		}
 	}
 
@@ -914,12 +933,12 @@ public final class PesiTransformer extends ExportTransformerBase implements IExp
 		return result;
 	}
 
-	
+
 	/**
 	 * Returns the OccurrenceStatusId for a given PresenceAbsenceTerm.
 	 * @param term
 	 * @return
-	 * @throws UnknownCdmTypeException 
+	 * @throws UnknownCdmTypeException
 	 */
 	public static Integer presenceAbsenceTerm2OccurrenceStatusId(PresenceAbsenceTermBase<?> term) {
 		Integer result = null;
@@ -928,17 +947,17 @@ public final class PesiTransformer extends ExportTransformerBase implements IExp
 		//present
 		}else if (term.isInstanceOf(PresenceTerm.class)) {
 			PresenceTerm presenceTerm = CdmBase.deproxy(term, PresenceTerm.class);
-			if (presenceTerm.equals(PresenceTerm.PRESENT()) || 
-					presenceTerm.equals(PresenceTerm.INTRODUCED_DOUBTFULLY_INTRODUCED()) || 
+			if (presenceTerm.equals(PresenceTerm.PRESENT()) ||
+					presenceTerm.equals(PresenceTerm.INTRODUCED_DOUBTFULLY_INTRODUCED()) ||
 					presenceTerm.equals(PresenceTerm.NATIVE_DOUBTFULLY_NATIVE())) {
 				result = STATUS_PRESENT;
 			} else if (presenceTerm.equals(PresenceTerm.NATIVE())) {
 				result = STATUS_NATIVE;
-			} else if (presenceTerm.equals(PresenceTerm.INTRODUCED()) || 
+			} else if (presenceTerm.equals(PresenceTerm.INTRODUCED()) ||
 					presenceTerm.equals(PresenceTerm.INTRODUCED_ADVENTITIOUS()) ||
 					presenceTerm.equals(PresenceTerm.INTRODUCED_UNCERTAIN_DEGREE_OF_NATURALISATION())) {
 				result = STATUS_INTRODUCED;
-			} else if (presenceTerm.equals(PresenceTerm.NATURALISED()) 
+			} else if (presenceTerm.equals(PresenceTerm.NATURALISED())
 					|| presenceTerm.equals(PresenceTerm.INTRODUCED_NATURALIZED())) {
 				result = STATUS_NATURALISED;
 			} else if (presenceTerm.equals(PresenceTerm.INVASIVE())) {
@@ -952,7 +971,7 @@ public final class PesiTransformer extends ExportTransformerBase implements IExp
 			} else {
 				logger.error("PresenceTerm could not be translated to datawarehouse occurrence status id: " + presenceTerm.getLabel());
 			}
-		//absent	
+		//absent
 		} else if (term.isInstanceOf(AbsenceTerm.class)) {
 			AbsenceTerm absenceTerm = CdmBase.deproxy(term, AbsenceTerm.class);
 			if (absenceTerm.equals(AbsenceTerm.ABSENT()) || absenceTerm.equals(AbsenceTerm.NATIVE_FORMERLY_NATIVE()) ||
@@ -965,35 +984,35 @@ public final class PesiTransformer extends ExportTransformerBase implements IExp
 		}
 		return result;
 	}
-	
+
 
 	@Override
 	public String getCacheByPresenceAbsenceTerm(PresenceAbsenceTermBase status) throws UndefinedTransformerMethodException {
 		if (status == null){
 			return null;
 		}else{
-			return this.occurrenceStatusCacheMap.get(getKeyByPresenceAbsenceTerm(status)); 
+			return this.occurrenceStatusCacheMap.get(getKeyByPresenceAbsenceTerm(status));
 		}
 	}
-	
+
 	@Override
 	public Object getKeyByPresenceAbsenceTerm(PresenceAbsenceTermBase status) throws UndefinedTransformerMethodException {
 		return presenceAbsenceTerm2OccurrenceStatusId(status);
 	}
-	
-	
-	
+
+
+
 	@Override
 	public String getCacheByNamedArea(NamedArea namedArea) throws UndefinedTransformerMethodException {
 		NamedArea area = CdmBase.deproxy(namedArea, NamedArea.class);
 		if (area == null){
 			return null;
 		}else{
-			return this.areaCacheMap.get(getKeyByNamedArea(area)); 
+			return this.areaCacheMap.get(getKeyByNamedArea(area));
 		}
 	}
-	
-	
+
+
 	@Override
 	public Object getKeyByNamedArea(NamedArea area) throws UndefinedTransformerMethodException {
 		NamedArea namedArea = CdmBase.deproxy(area, NamedArea.class);
@@ -1044,14 +1063,14 @@ public final class PesiTransformer extends ExportTransformerBase implements IExp
 //			else if (namedArea.getUuid().equals(BerlinModelTransformer.uuidIbizaWithFormentera)) { return AREA_IBIZA_WITH_FORMENTERA; }
 //			else if (namedArea.getUuid().equals(BerlinModelTransformer.uuidMallorca)) { return AREA_MALLORCA; }
 //			else if (namedArea.getUuid().equals(BerlinModelTransformer.uuidMenorca)) { return AREA_MENORCA; }
-//			
+//
 //			else if (namedArea.getUuid().equals(BerlinModelTransformer.uuidUssr)) { return AREA_FORMER_USSR; }
 //			else if (namedArea.getUuid().equals(BerlinModelTransformer.uuidRussiaBaltic)) { return AREA_RUSSIA_BALTIC; }
 //			else if (namedArea.getUuid().equals(BerlinModelTransformer.uuidRussiaSouthEast)) { return AREA_RUSSIA_SOUTHEAST; }
 //			else if (namedArea.getUuid().equals(BerlinModelTransformer.uuidRussiaSouthWest)) { return AREA_RUSSIA_SOUTHWEST; }
 //			else if (namedArea.getUuid().equals(BerlinModelTransformer.uuidRussiaCentral)) { return AREA_RUSSIA_CENTRAL; }
 //			else if (namedArea.getUuid().equals(BerlinModelTransformer.uuidRussiaNorthern)) { return AREA_RUSSIA_NORTHERN; }
-//			
+//
 //			else if (namedArea.getUuid().equals(BerlinModelTransformer.uuidTurkey)) { return AREA_TURKEY; }
 //			else if (namedArea.getUuid().equals(BerlinModelTransformer.uuidEastAegeanIslands)) { return AREA_EAST_AEGEAN_ISLANDS; }
 //			else if (namedArea.getUuid().equals(BerlinModelTransformer.uuidTurkishEastAegeanIslands)) { return AREA_TURKISH_EAST_AEGEAN_ISLANDS; }
@@ -1060,9 +1079,9 @@ public final class PesiTransformer extends ExportTransformerBase implements IExp
 //			else if (namedArea.getUuid().equals(BerlinModelTransformer.uuidCaucasia)) { return AREA_CAUCASUS_REGION; }
 //			else if (namedArea.getUuid().equals(BerlinModelTransformer.uuidUkraineAndCrimea)) { return AREA_UKRAINE_INCLUDING_CRIMEA; }
 //			else if (namedArea.getUuid().equals(BerlinModelTransformer.uuidAzerbaijanNakhichevan)) { return AREA_AZERBAIJAN_INCLUDING_NAKHICHEVAN; }
-			
-			if (namedArea.getUuid().equals(BerlinModelTransformer.uuidEM)) { 
-//				logger.warn("E+M area not available in PESI"); 
+
+			if (namedArea.getUuid().equals(BerlinModelTransformer.uuidEM)) {
+//				logger.warn("E+M area not available in PESI");
 				return null;
 			}
 			else if (namedArea.getUuid().equals(BerlinModelTransformer.uuidEUR)) { logger.warn("EUR area not available in PESI"); return null; }
@@ -1125,14 +1144,14 @@ public final class PesiTransformer extends ExportTransformerBase implements IExp
 			else if (namedArea.getUuid().equals(BerlinModelTransformer.uuidGa_C)) { return AREA_CHANNEL_ISLANDS; }
 			else if (namedArea.getUuid().equals(BerlinModelTransformer.uuidGa_F)) { return AREA_FRENCH_MAINLAND; }
 			else if (namedArea.getUuid().equals(BerlinModelTransformer.uuidGa_M)) { return AREA_MONACO; }
-			
+
 			else if (namedArea.getUuid().equals(BerlinModelTransformer.uuidGe)) { return AREA_GERMANY; }
 			else if (namedArea.getUuid().equals(BerlinModelTransformer.uuidGg)) { return AREA_GEORGIA; }
-			
+
 			else if (namedArea.getUuid().equals(BerlinModelTransformer.uuidGg_G)) { return AREA_GEORGIA_G; }
 			else if (namedArea.getUuid().equals(BerlinModelTransformer.uuidGg_A)) { return AREA_ABKHAZIA; }
 			else if (namedArea.getUuid().equals(BerlinModelTransformer.uuidGg_D)) { return AREA_ADZARIA; }
-			
+
 			else if (namedArea.getUuid().equals(BerlinModelTransformer.uuidGr)) { return AREA_GREECE_WITH_CYCLADES_AND_MORE_ISLANDS; }
 			else if (namedArea.getUuid().equals(BerlinModelTransformer.uuidHb)) { return AREA_IRELAND; }
 			else if (namedArea.getUuid().equals(BerlinModelTransformer.uuidHb_E)) { return AREA_REPUBLIC_OF_IRELAND; }
@@ -1205,9 +1224,9 @@ public final class PesiTransformer extends ExportTransformerBase implements IExp
 			else if (namedArea.getUuid().equals(BerlinModelTransformer.uuidUk)) { return AREA_UKRAINE_INCLUDING_CRIMEA; }
 			else if (namedArea.getUuid().equals(BerlinModelTransformer.uuidUk_K)) { return AREA_CRIMEA; }
 			else if (namedArea.getUuid().equals(BerlinModelTransformer.uuidUk_U)) { return AREA_UKRAINE; }
-			
-			
-			
+
+
+
 			//FE
 			else if (namedArea.getUuid().equals(FaunaEuropaeaTransformer.uuidAreaAFR)) { return AREA_AFRO_TROPICAL_REGION; }
 			else if (namedArea.getUuid().equals(FaunaEuropaeaTransformer.uuidAreaAUS)) { return AREA_AUSTRALIAN_REGION; }
@@ -1225,7 +1244,7 @@ public final class PesiTransformer extends ExportTransformerBase implements IExp
 			else if (namedArea.getUuid().equals(FaunaEuropaeaTransformer.uuidAreaUA)) { return AREA_UKRAINE_INCLUDING_CRIMEA; }
 			else if (namedArea.getUuid().equals(FaunaEuropaeaTransformer.uuidAreaRU_FJL)) { return AREA_FRANZ_JOSEF_LAND; }
 			else if (namedArea.getUuid().equals(FaunaEuropaeaTransformer.uuidAreaRU_NOZ)) { return AREA_NOVAYA_ZEMLYA; }
-			
+
 
 			//ERMS
 			else if (namedArea.getUuid().equals(ErmsTransformer.uuidEuropeanMarineWaters)) { return AREA_EUROPEAN_MARINE_WATERS; }
@@ -1281,7 +1300,6 @@ public final class PesiTransformer extends ExportTransformerBase implements IExp
 			else if (namedArea.getUuid().equals(ErmsTransformer.uuidBalearSea)) { return AREA_BALEAR_SEA; }
 			else if (namedArea.getUuid().equals(ErmsTransformer.uuidTurkishExclusiveEconomicZone)) { return AREA_TURKISH_EXCLUSIVE_ECONOMIC_ZONE; }
 			else if (namedArea.getUuid().equals(ErmsTransformer.uuidDanishExclusiveEconomicZone)) { return AREA_DANISH_EXCLUSIVE_ECONOMIC_ZONE; }
-	
 			else {
 				logger.warn("Unknown NamedArea Area: " + area.getTitleCache());
 			}
@@ -1289,7 +1307,7 @@ public final class PesiTransformer extends ExportTransformerBase implements IExp
 		}
 		return null;
 	}
-	
+
 
 	/**
 	 * Returns the PESI SourceUseId for a given CDM sourceUseId.
@@ -1307,7 +1325,7 @@ public final class PesiTransformer extends ExportTransformerBase implements IExp
 		return result;
 	}
 
-	
+
 	/**
 	 * Returns the FossilStatusCache to a given Fossil.
 	 * @param fossil
@@ -1327,9 +1345,9 @@ public final class PesiTransformer extends ExportTransformerBase implements IExp
 		Integer result = null;
 		return result;
 	}
-	
-	
-	
+
+
+
 	@Override
 	public Object getKeyByLanguage(Language language) throws UndefinedTransformerMethodException {
 		return language2LanguageId(language);
@@ -1340,11 +1358,11 @@ public final class PesiTransformer extends ExportTransformerBase implements IExp
 		if (language == null){
 			return null;
 		}else{
-			return this.languageCacheMap.get(getKeyByLanguage(language)); 
+			return this.languageCacheMap.get(getKeyByLanguage(language));
 		}
 	}
 
-	
+
 	/**
 	 * Returns the identifier of the given Language.
 	 * @param language
@@ -1481,17 +1499,18 @@ public final class PesiTransformer extends ExportTransformerBase implements IExp
 			return null;
 		}
 	}
-	
+
 	/**
 	 * Returns the NodeCategoryCache for a given TextData.
 	 * @param feature
 	 * @return
 	 */
-	public String getCacheByFeature(Feature feature) {
+	@Override
+    public String getCacheByFeature(Feature feature) {
 		if (feature == null){
 			return null;
 		}else{
-			return this.featureCacheMap.get(feature2NoteCategoryFk(feature)); 
+			return this.featureCacheMap.get(feature2NoteCategoryFk(feature));
 		}
 	}
 
@@ -1577,7 +1596,7 @@ public final class PesiTransformer extends ExportTransformerBase implements IExp
 			return NoteCategory_Comments;
 		} else if (feature.getUuid().equals(BerlinModelTransformer.uuidFeatureConservationStatus)){
 			return NoteCategory_Conservation_Status;
-		
+
 		//E+M
 		} else if (feature.getUuid().equals(BerlinModelTransformer.uuidFeatureDistrEM)){
 			return NoteCategory_general_distribution_euromed;
@@ -1591,8 +1610,8 @@ public final class PesiTransformer extends ExportTransformerBase implements IExp
 			return NoteCategory_Inedited;
 		} else if (feature.getUuid().equals(BerlinModelTransformer.uuidFeatureCommentsEditing)){
 			return NoteCategory_Comments_on_editing_process;
-			
-			
+
+
 			// TODO: Unknown NoteCategories
 //			NoteCategory_Common_names = 12;
 //			NoteCategory_Maps =14;
@@ -1625,10 +1644,10 @@ public final class PesiTransformer extends ExportTransformerBase implements IExp
 		if (rank == null){
 			return null;
 		}else{
-			return this.rankCacheMap.get(pesiKingdomId).get(rank2RankId(rank, pesiKingdomId)); 
+			return this.rankCacheMap.get(pesiKingdomId).get(rank2RankId(rank, pesiKingdomId));
 		}
 	}
-	
+
 	/**
 	 * Returns the abbreviation for a given rank.
 	 * Currently unused.
@@ -1640,7 +1659,7 @@ public final class PesiTransformer extends ExportTransformerBase implements IExp
 		if (rank == null){
 			return null;
 		}else{
-			return this.rankAbbrevCacheMap.get(pesiKingdomId).get(rank2RankId(rank, pesiKingdomId)); 
+			return this.rankAbbrevCacheMap.get(pesiKingdomId).get(rank2RankId(rank, pesiKingdomId));
 		}
 	}
 
@@ -1659,13 +1678,13 @@ public final class PesiTransformer extends ExportTransformerBase implements IExp
 		} else if (nomenclaturalCode.equals(NomenclaturalCode.ICNB)) {
 			result = KINGDOM_BACTERIA;
 //		} else if (nomenclaturalCode.equals(NomenclaturalCode.)) { // Biota
-//			result = 
+//			result =
 		} else {
 			logger.error("NomenclaturalCode not yet considered: " + nomenclaturalCode.getUuid() + " (" +  nomenclaturalCode.getTitleCache() + ")");
 		}
 		return result;
 	}
-	
+
 	/**
 	 * Returns the RankId for a Rank.
 	 * @param rank
@@ -1676,7 +1695,7 @@ public final class PesiTransformer extends ExportTransformerBase implements IExp
 		if (rank == null) {
 			return null;
 		}
-		
+
 		// We differentiate between Animalia and Plantae only for now.
 		if (pesiKingdomId != null && pesiKingdomId.intValue() == KINGDOM_ANIMALIA) {
 			if (rank.equals(Rank.KINGDOM())) {
@@ -1790,7 +1809,7 @@ public final class PesiTransformer extends ExportTransformerBase implements IExp
 			} else if (rank.equals(Rank.SPECIESGROUP())) {
 				logger.warn("Rank Species Group not yet implemented");
 				result = null;
-			} else if (rank.getUuid().equals(BerlinModelTransformer.uuidRankCollSpecies)) { 
+			} else if (rank.getUuid().equals(BerlinModelTransformer.uuidRankCollSpecies)) {
 				result = Plantae_Coll_Species;
 			} else if (rank.equals(Rank.SPECIES())) {
 				result = Plantae_Species;
@@ -1814,9 +1833,9 @@ public final class PesiTransformer extends ExportTransformerBase implements IExp
 				result = Plantae_Subforma;
 //			} else if (rank.equals(Rank.)) { // not yet specified
 //				result = Plantae_Forma_spec;
-			} else if (rank.equals(Rank.INFRAGENERICTAXON())) { 
+			} else if (rank.equals(Rank.INFRAGENERICTAXON())) {
 				result = Plantae_Taxa_infragen;
-			} else if (rank.equals(Rank.INFRASPECIFICTAXON())) { 
+			} else if (rank.equals(Rank.INFRASPECIFICTAXON())) {
 				result = Plantae_Taxa_infraspec;
 			} else {
 				//TODO Exception
@@ -1847,16 +1866,67 @@ public final class PesiTransformer extends ExportTransformerBase implements IExp
 			else if (rank.equals(Rank.SUBSPECIES())) { result = Bacteria_Subspecies; }
 			else if (rank.equals(Rank.VARIETY())) { result = Bacteria_Variety; }
 			else if (rank.equals(Rank.FORM())) { result = Bacteria_Forma; }
-		} else {
+		} else if (pesiKingdomId != null && pesiKingdomId.intValue() == KINGDOM_FUNGI) {
+            if (rank.equals(Rank.KINGDOM())) { result = Fungi_Kingdom; }
+            else if (rank.equals(Rank.SUBKINGDOM())) { result = Fungi_Subkingdom; }
+            else if (rank.equals(Rank.DIVISION())) { result =  Fungi_Division;}
+            else if (rank.equals(Rank.SUBDIVISION())) { result =  Fungi_Subdivision;}
+            else if (rank.equals(Rank.CLASS())) { result = Fungi_Class; }
+            else if (rank.equals(Rank.SUBCLASS())) { result = Fungi_Subclass; }
+            else if (rank.equals(Rank.ORDER())) { result = Fungi_Order; }
+            else if (rank.equals(Rank.SUBORDER())) { result = Fungi_Suborder; }
+
+            else if (rank.equals(Rank.FAMILY())) { result = Fungi_Family; }
+            else if (rank.equals(Rank.SUBFAMILY())) { result = Fungi_Subfamily; }
+            else if (rank.equals(Rank.TRIBE())) { result = Fungi_Tribe; }
+            else if (rank.equals(Rank.SUBTRIBE())) { result = Fungi_Subtribe; }
+            else if (rank.equals(Rank.GENUS())) { result = Fungi_Genus; }
+            else if (rank.equals(Rank.SUBGENUS())) { result = Fungi_Subgenus; }
+            else if (rank.equals(Rank.SECTION_BOTANY())) { result = Fungi_Section;}
+            else if (rank.equals(Rank.SUBSECTION_BOTANY())) { result = Fungi_Subsection;}
+            else if (rank.equals(Rank.SPECIES())) { result = Fungi_Species; }
+            else if (rank.equals(Rank.SUBSPECIES())) { result = Fungi_Subspecies; }
+            else if (rank.equals(Rank.VARIETY())) { result = Fungi_Variety; }
+            else if (rank.equals(Rank.SUBVARIETY())) { result = Fungi_Subvariety; }
+            else if (rank.equals(Rank.FORM())) { result = Fungi_Forma; }
+            else if (rank.equals(Rank.SUBFORM())) { result = Fungi_Subforma;}
+        }else if (pesiKingdomId != null && pesiKingdomId.intValue() == KINGDOM_CHROMISTA) {
+            if (rank.equals(Rank.KINGDOM())) { result = Chromista_Kingdom; }
+            else if (rank.equals(Rank.SUBKINGDOM())) { result = Chromista_Subkingdom; }
+
+            else if (rank.equals(Rank.CLASS())) { result = Chromista_Class; }
+            else if (rank.equals(Rank.SUBCLASS())) { result = Chromista_Subclass; }
+            else if (rank.equals(Rank.ORDER())) { result = Chromista_Order; }
+            else if (rank.equals(Rank.SUBORDER())) { result = Chromista_Suborder; }
+            else if (rank.equals(Rank.INFRAORDER())) { result = Chromista_Infraorder; }
+            else if (rank.equals(Rank.SUPERFAMILY())) { result = Chromista_Superfamily; }
+            else if (rank.equals(Rank.FAMILY())) { result = Chromista_Family; }
+            else if (rank.equals(Rank.SUBFAMILY())) { result = Chromista_Subfamily; }
+            else if (rank.equals(Rank.TRIBE())) { result = Chromista_Tribe; }
+            else if (rank.equals(Rank.SUBTRIBE())) { result = Chromista_Subtribe; }
+            else if (rank.equals(Rank.GENUS())) { result = Chromista_Genus; }
+            else if (rank.equals(Rank.SUBGENUS())) { result = Chromista_Subgenus; }
+            else if (rank.equals(Rank.SECTION_BOTANY())) { result = Chromista_Section;}
+            else if (rank.equals(Rank.SUBSECTION_BOTANY())) { result = Chromista_Subsection;}
+            else if (rank.equals(Rank.SPECIES())) { result = Chromista_Species; }
+            else if (rank.equals(Rank.SUBSPECIES())) { result = Chromista_Subspecies; }
+            else if (rank.equals(Rank.VARIETY())) { result = Chromista_Variety; }
+            else if (rank.equals(Rank.SUBVARIETY())) { result = Chromista_Subvariety; }
+            else if (rank.equals(Rank.FORM())) { result = Chromista_Forma; }
+
+
+
+        }else{
 			//TODO Exception
 			logger.warn("Kingdom not yet supported in CDM: "+ pesiKingdomId);
 			return null;
 		}
 		return result;
+
 	}
 
 	/**
-	 * 
+	 *
 	 * @param nameTypeDesignationStatus
 	 * @return
 	 */
@@ -1879,7 +1949,7 @@ public final class PesiTransformer extends ExportTransformerBase implements IExp
 	}
 
 	/**
-	 * 
+	 *
 	 * @param nameTypeDesignationStatus
 	 * @return
 	 */
@@ -1909,7 +1979,7 @@ public final class PesiTransformer extends ExportTransformerBase implements IExp
 	public static Integer taxonBase2statusFk (TaxonBase<?> taxonBase){
 		if (taxonBase == null){
 			return null;
-		}		
+		}
 		if (taxonBase.isInstanceOf(Taxon.class)){
 			Taxon taxon = CdmBase.deproxy(taxonBase, Taxon.class);
 			if (taxon.getTaxonNodes().size() == 0){
@@ -1923,7 +1993,7 @@ public final class PesiTransformer extends ExportTransformerBase implements IExp
 			logger.warn("Unknown ");
 			return T_STATUS_UNRESOLVED;
 		}
-		//TODO 
+		//TODO
 //		public static int T_STATUS_PARTIAL_SYN = 3;
 //		public static int T_STATUS_PRO_PARTE_SYN = 4;
 //		public static int T_STATUS_UNRESOLVED = 5;
@@ -1931,7 +2001,7 @@ public final class PesiTransformer extends ExportTransformerBase implements IExp
 	}
 
 //	/**
-//	 * 
+//	 *
 //	 * @param taxonBase
 //	 * @return
 //	 */
@@ -1950,13 +2020,13 @@ public final class PesiTransformer extends ExportTransformerBase implements IExp
 //			logger.warn("Unknown ");
 //			return T_STATUS_STR_UNRESOLVED;
 //		}
-//		//TODO 
+//		//TODO
 //		public static int T_STATUS_STR_PARTIAL_SYN = 3;
 //		public static int T_STATUS_STR_PRO_PARTE_SYN = 4;
 //		public static int T_STATUS_STR_UNRESOLVED = 5;
 //		public static int T_STATUS_STR_ORPHANED = 6;
 //	}
-		
+
 	/**
 	 * Returns the {@link SourceCategory SourceCategory} representation of the given {@link ReferenceType ReferenceType} in PESI.
 	 * @param reference The {@link Reference Reference}.
@@ -2000,7 +2070,7 @@ public final class PesiTransformer extends ExportTransformerBase implements IExp
 			return null;
 		}
 	}
-	
+
 	/**
 	 * Returns the {@link SourceCategoryCache SourceCategoryCache}.
 	 * @param reference The {@link Reference Reference}.
@@ -2010,25 +2080,26 @@ public final class PesiTransformer extends ExportTransformerBase implements IExp
 		if (reference == null){
 			return null;
 		}else{
-			return this.sourceCategoryCacheMap.get(reference2SourceCategoryFK(reference)); 
+			return this.sourceCategoryCacheMap.get(reference2SourceCategoryFK(reference));
 		}
 	}
 
 	/**
-	 * 
+	 *
 	 * @param status
 	 * @return
 	 */
-	public String getCacheByNomStatus(NomenclaturalStatusType status) {
+	@Override
+    public String getCacheByNomStatus(NomenclaturalStatusType status) {
 		if (status == null){
 			return null;
 		}else{
-			return this.nameStatusCacheMap.get(nomStatus2nomStatusFk(status)); 
+			return this.nameStatusCacheMap.get(nomStatus2nomStatusFk(status));
 		}
 	}
-	
+
 	/**
-	 * 
+	 *
 	 * @param status
 	 * @return
 	 */
@@ -2044,7 +2115,7 @@ public final class PesiTransformer extends ExportTransformerBase implements IExp
 		}else if (status.equals(NomenclaturalStatusType.UTIQUE_REJECTED())) {return NAME_ST_NOM_UTIQUE_REJ;
 		}else if (status.equals(NomenclaturalStatusType.UTIQUE_REJECTED_PROP())) {return NAME_ST_NOM_UTIQUE_REJ_PROP;
 		}else if (status.equals(NomenclaturalStatusType.CONSERVED())) {return NAME_ST_NOM_CONS;
-		
+
 		}else if (status.equals(NomenclaturalStatusType.CONSERVED_PROP())) {return NAME_ST_NOM_CONS_PROP;
 		}else if (status.equals(NomenclaturalStatusType.ORTHOGRAPHY_CONSERVED())) {return NAME_ST_ORTH_CONS;
 		}else if (status.equals(NomenclaturalStatusType.ORTHOGRAPHY_CONSERVED_PROP())) {return NAME_ST_ORTH_CONS_PROP;
@@ -2053,17 +2124,17 @@ public final class PesiTransformer extends ExportTransformerBase implements IExp
 		}else if (status.equals(NomenclaturalStatusType.PROVISIONAL())) {return NAME_ST_NOM_PROVIS;
 		}else if (status.equals(NomenclaturalStatusType.DOUBTFUL())) {return NAME_ST_NOM_DUB;
 		}else if (status.equals(NomenclaturalStatusType.NOVUM())) {return NAME_ST_NOM_NOV;
-		
+
 		}else if (status.equals(NomenclaturalStatusType.CONFUSUM())) {return NAME_ST_NOM_CONFUS;
 		}else if (status.equals(NomenclaturalStatusType.ALTERNATIVE())) {return NAME_ST_NOM_ALTERN;
 		}else if (status.equals(NomenclaturalStatusType.COMBINATION_INVALID())) {return NAME_ST_COMB_INVAL;
 		}else if (status.equals(NomenclaturalStatusType.LEGITIMATE())) {return NAME_ST_LEGITIMATE;
-		
+
 		}else if (status.getUuid().equals(BerlinModelTransformer.uuidNomStatusCombIned)) {return NAME_ST_COMB_INED;
 		}else if (status.getUuid().equals(BerlinModelTransformer.uuidNomStatusNomOrthCons)) {return NAME_ST_NOM_AND_ORTH_CONS;
 		}else if (status.getUuid().equals(BerlinModelTransformer.uuidNomStatusSpNovIned)) {return NAME_ST_SP_NOV_INED;
-		
-		
+
+
 		// The following are non-existent in CDM
 //		}else if (status.equals(NomenclaturalStatusType.)) {return NAME_ST_COMB_AND_STAT_INED;
 //		}else if (status.equals(NomenclaturalStatusType.)) {return NAME_ST_NOM_NOV_INED;
@@ -2078,7 +2149,7 @@ public final class PesiTransformer extends ExportTransformerBase implements IExp
 			return null;
 		}
 	}
-	
+
 	/**
 	 * Returns the RelTaxonQualifierCache for a given taxonRelation.
 	 * @param relation
@@ -2088,20 +2159,20 @@ public final class PesiTransformer extends ExportTransformerBase implements IExp
 		if (relation == null){
 			return null;
 		}else{
-			String result; 
+			String result;
 			Integer key = taxonRelation2RelTaxonQualifierFk(relation);
 			if (code.equals(NomenclaturalCode.ICZN)){
 				result = this.taxRelZooQualifierCacheMap.get(key);
 				if (result == null){
-					this.taxRelQualifierCacheMap.get(key); 
+					this.taxRelQualifierCacheMap.get(key);
 				}
 			}else{
-				result = this.taxRelQualifierCacheMap.get(key); 
+				result = this.taxRelQualifierCacheMap.get(key);
 			}
 			return result;
 		}
 	}
-	
+
 	/**
 	 * Returns the RelTaxonQualifierFk for a TaxonRelation.
 	 * @param relation
@@ -2191,7 +2262,7 @@ public final class PesiTransformer extends ExportTransformerBase implements IExp
 
 		return null;
 	}
-	
+
 	/**
 	 * Returns the StatusFk for a given StatusCache.
 	 * @param StatusCache
@@ -2210,10 +2281,10 @@ public final class PesiTransformer extends ExportTransformerBase implements IExp
 		} else {
 			logger.error("StatusFk could not be determined. StatusCache unknown: " + StatusCache);
 		}
-		
+
 		return result;
 	}
-	
+
 	/**
 	 * Returns the FossilStatusFk for a given FossilStatusCache.
 	 * @param fossilStatusCache
@@ -2230,7 +2301,7 @@ public final class PesiTransformer extends ExportTransformerBase implements IExp
 		} else {
 			logger.error("FossilStatusFk could not be determined. FossilStatusCache unknown: " + fossilStatusCache);
 		}
-		
+
 		return result;
 	}
 
@@ -2250,7 +2321,7 @@ public final class PesiTransformer extends ExportTransformerBase implements IExp
 		}
 		return result;
 	}
-	
+
 	/**
 	 * Returns the NoteCategoryCache for a given UUID representing an ExtensionType.
 	 * @param uuid
@@ -2289,11 +2360,11 @@ public final class PesiTransformer extends ExportTransformerBase implements IExp
 				return null;
 			}
 		}else{
-			return null;   // TODO needs to be implemented for others 
+			return null;   // TODO needs to be implemented for others
 		}
 	}
 
-	
+
 	private static Set<String> getAllQualityStatus(TaxonNameBase<?, ?> taxonName) {
 		Set<String> result = new HashSet<String>();
 		for (TaxonBase<?> taxonBase : taxonName.getTaxonBases()){
@@ -2307,25 +2378,25 @@ public final class PesiTransformer extends ExportTransformerBase implements IExp
 		if (qualityStatusId == null){
 			return null;
 		}else{
-			return this.qualityStatusCacheMap.get(qualityStatusId); 
+			return this.qualityStatusCacheMap.get(qualityStatusId);
 		}
 	}
-	
+
 
 	public Object getSourceUseCacheByKey(Integer sourceUseFk) {
 		if (sourceUseFk == null){
 			return null;
 		}else{
-			return this.sourceUseCacheMap.get(sourceUseFk); 
+			return this.sourceUseCacheMap.get(sourceUseFk);
 		}
 	}
-	
+
 	@Override
 	public String getTaxonStatusCacheByKey(Integer taxonStatusId) throws UndefinedTransformerMethodException {
 		if (taxonStatusId == null){
 			return null;
 		}else{
-			return this.taxonStatusCacheMap.get(taxonStatusId); 
+			return this.taxonStatusCacheMap.get(taxonStatusId);
 		}
 	}
 
@@ -2343,10 +2414,18 @@ public final class PesiTransformer extends ExportTransformerBase implements IExp
 		if (sources.get(SOURCE_ERMS)){
 			result = CdmUtils.concat(",", result,  SOURCE_STR_ERMS);
 		}
-		
+
 		return result;
 	}
 
+    /**
+     * @param titleCache
+     */
+    public static Integer pesiKingdomId(String titleCache) {
+        return pesiKingdomMap.get(titleCache);
 
-	
+    }
+
+
+
 }
