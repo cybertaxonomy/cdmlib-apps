@@ -1,9 +1,9 @@
 // $Id$
 /**
 * Copyright (C) 2009 EDIT
-* European Distributed Institute of Taxonomy 
+* European Distributed Institute of Taxonomy
 * http://www.e-taxonomy.eu
-* 
+*
 * The contents of this file are subject to the Mozilla Public License Version 1.1
 * See LICENSE.TXT at the top of this package for the full license terms.
 */
@@ -33,24 +33,24 @@ public class PesiExportActivatorIF {
 
 	//database validation status (create, update, validate ...)
 	static final Source pesiDestination = PesiDestinations.pesi_test_local_CDM_IF2PESI();
-	
+
 	static final ICdmDataSource cdmSource = CdmDestinations.cdm_test_local_indexFungorum();
 //	static final ICdmDataSource cdmSource = CdmDestinations.cdm_test_local_mysql_test();
 
 	static final int partitionSize = 2000;
-	
+
 	//check - export
 	static final CHECK check = CHECK.EXPORT_WITHOUT_CHECK;
 
 	static final boolean deleteAll = true;
-	
+
 	static final IdType idType = IdType.CDM_ID;
 
 // ****************** ALL *****************************************
-	
+
 	//references
 	static final DO_REFERENCES doReferences =  DO_REFERENCES.ALL;
-	
+
 	//taxa
 	static final boolean doTaxa = true;
 	static final boolean doRelTaxa = true;
@@ -65,13 +65,13 @@ public class PesiExportActivatorIF {
 	static final boolean doInferredSynonyms = false;
 	static final boolean doPureNames = false; // !!!
 	static final boolean doDescription = true;
-	
+
 
 // ************************ NONE **************************************** //
-	
+
 //	//references
 //	static final DO_REFERENCES doReferences =  DO_REFERENCES.NONE;
-//	
+//
 //	//taxa
 //	static final boolean doTaxa = false;
 //	static final boolean doRelTaxa = false;
@@ -85,17 +85,17 @@ public class PesiExportActivatorIF {
 //	static final boolean doRank = true;
 //	static final boolean doInferredSynonyms = true;
 //	static final boolean doDescription = false;
-	
-	
+
+
 	public boolean 	doExport(ICdmDataSource source){
 		System.out.println("Start export to PESI ("+ pesiDestination.getDatabase() + ") ...");
-		
+
 		//make PESI Source
 		Source destination = pesiDestination;
 		PesiTransformer transformer = new PesiTransformer(destination);
-		
+
 		PesiExportConfigurator config = PesiExportConfigurator.NewInstance(destination, source, transformer);
-		
+
 		config.setDoTaxa(doTaxa);
 		config.setDoRelTaxa(doRelTaxa);
 		config.setDoOccurrence(doOccurrence);
@@ -109,7 +109,7 @@ public class PesiExportActivatorIF {
 		config.setDoInferredSynonyms(doInferredSynonyms);
 		config.setDoPureNames(doPureNames);
 		config.setDoDescription(doDescription);
-		
+
 		config.setCheck(check);
 		config.setLimitSave(partitionSize);
 		config.setIdType(idType);
@@ -119,12 +119,13 @@ public class PesiExportActivatorIF {
 
 		// invoke export
 		CdmDefaultExport<PesiExportConfigurator> pesiExport = new CdmDefaultExport<PesiExportConfigurator>();
-		boolean result = pesiExport.invoke(config);
-		
+
+		    boolean result = pesiExport.invoke(config);
+
 		System.out.println("End export to PESI ("+ destination.getDatabase() + ")..." + (result? "(successful)":"(with errors)"));
 		return result;
 	}
-		
+
 	/**
 	 * @param args
 	 */

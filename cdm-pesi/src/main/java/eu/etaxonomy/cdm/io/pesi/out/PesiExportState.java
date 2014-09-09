@@ -1,9 +1,9 @@
 // $Id$
 /**
 * Copyright (C) 2009 EDIT
-* European Distributed Institute of Taxonomy 
+* European Distributed Institute of Taxonomy
 * http://www.e-taxonomy.eu
-* 
+*
 * The contents of this file are subject to the Mozilla Public License Version 1.1
 * See LICENSE.TXT at the top of this package for the full license terms.
 */
@@ -35,17 +35,26 @@ import eu.etaxonomy.cdm.model.taxon.TaxonBase;
 public class PesiExportState extends DbExportStateBase<PesiExportConfigurator, PesiTransformer>{
 	@SuppressWarnings("unused")
 	private static final Logger logger = Logger.getLogger(PesiExportState.class);
-	
+
 	private static List<Integer> processedSourceList = new ArrayList<Integer>();
-	
+
 	private IdentifiableEntity<?> currentToObject;
 	private IdentifiableEntity<?> currentFromObject;
 	private TaxonBase<?> currentTaxon;
 	private boolean sourceForAdditionalSourceCreated = false;
-	
-	private Map<UUID, MarkerType> markerTypeMap = new HashMap<UUID, MarkerType>();
-	public static final UUID uuidUserDefinedMarkerTypeVocabulary = UUID.fromString("5f02a261-fd7d-4fce-bbe4-21472de8cd51");
-	
+
+	private final Map<UUID, MarkerType> markerTypeMap = new HashMap<UUID, MarkerType>();
+	private final Map<String,Integer> treeIndexKingdomMap = new HashMap<String,Integer>();
+	/**
+     * @return the treeIndexKingdomMap
+     */
+    public Map<String,Integer> getTreeIndexKingdomMap() {
+        return treeIndexKingdomMap;
+    }
+
+
+    public static final UUID uuidUserDefinedMarkerTypeVocabulary = UUID.fromString("5f02a261-fd7d-4fce-bbe4-21472de8cd51");
+
 	@Autowired
 	//@Qualifier("termService")
 	private ITermService termService;
@@ -57,7 +66,7 @@ public class PesiExportState extends DbExportStateBase<PesiExportConfigurator, P
 	public PesiExportState(PesiExportConfigurator config) {
 		super(config);
 	}
-	
+
 
 	/**
 	 * Stores the Datawarehouse.id to a specific CDM object originally.
@@ -81,11 +90,11 @@ public class PesiExportState extends DbExportStateBase<PesiExportConfigurator, P
 	public Integer getDbId(CdmBase cdmBase) {
 		return (Integer)getCurrentIO().getDbId(cdmBase, this);
 	}
-	
+
 	private ITermService getTermService(){
 		return this.termService;
 	}
-	
+
 	/**
 	 * Returns whether the given Source object was processed before or not.
 	 * @param
@@ -98,7 +107,7 @@ public class PesiExportState extends DbExportStateBase<PesiExportConfigurator, P
 			return false;
 		}
 	}
-	
+
 	/**
 	 * Adds given Source to the list of processed Sources.
 	 */
@@ -106,7 +115,7 @@ public class PesiExportState extends DbExportStateBase<PesiExportConfigurator, P
 		if (! processedSourceList.contains(sourceId)) {
 			processedSourceList.add(sourceId);
 		}
-		
+
 		return true;
 	}
 
@@ -148,9 +157,9 @@ public class PesiExportState extends DbExportStateBase<PesiExportConfigurator, P
 	}
 
 	public void putMarkerType(MarkerType markerType) {
-		
+
 		markerTypeMap.put(markerType.getUuid(), markerType);
-		
+
 	}
 
 

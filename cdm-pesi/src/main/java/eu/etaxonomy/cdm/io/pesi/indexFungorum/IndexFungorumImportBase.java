@@ -1,8 +1,8 @@
 /**
 * Copyright (C) 2007 EDIT
-* European Distributed Institute of Taxonomy 
+* European Distributed Institute of Taxonomy
 * http://www.e-taxonomy.eu
-* 
+*
 * The contents of this file are subject to the Mozilla Public License Version 1.1
 * See LICENSE.TXT at the top of this package for the full license terms.
 */
@@ -39,7 +39,6 @@ import eu.etaxonomy.cdm.model.common.LSID;
 import eu.etaxonomy.cdm.model.common.Marker;
 import eu.etaxonomy.cdm.model.common.MarkerType;
 import eu.etaxonomy.cdm.model.common.OriginalSourceType;
-import eu.etaxonomy.cdm.model.common.TimePeriod;
 import eu.etaxonomy.cdm.model.name.NonViralName;
 import eu.etaxonomy.cdm.model.reference.Reference;
 import eu.etaxonomy.cdm.model.reference.ReferenceFactory;
@@ -55,33 +54,33 @@ import eu.etaxonomy.cdm.strategy.parser.TimePeriodParser;
  */
 public abstract class IndexFungorumImportBase extends CdmImportBase<IndexFungorumImportConfigurator, IndexFungorumImportState> implements ICdmIO<IndexFungorumImportState>, IPartitionedIO<IndexFungorumImportState> {
 	private static final Logger logger = Logger.getLogger(IndexFungorumImportBase.class);
-	
+
 	//NAMESPACES
 	protected static final String NAMESPACE_REFERENCE = "reference";
 	protected static final String NAMESPACE_TAXON = "Taxon";
 	protected static final String NAMESPACE_SUPRAGENERIC_NAMES = "SupragenericNames";
 	protected static final String NAMESPACE_GENERA = "Genera";
 	protected static final String NAMESPACE_SPECIES = "Species";
-	
-	
+
+
 	protected static final String INCERTAE_SEDIS = "Incertae sedis";
 	protected static final String FOSSIL_FUNGI = "Fossil Fungi";
 
 	protected static final String SOURCE_REFERENCE = "SOURCE_REFERENCE";
 
 
-	
 
-	private String pluralString;
-	private String dbTableName;
+
+	private final String pluralString;
+	private final String dbTableName;
 	//TODO needed?
-	private Class cdmTargetClass;
+	private final Class cdmTargetClass;
 
-	
-	
+
+
 	/**
 	 * @param dbTableName
-	 * @param dbTableName2 
+	 * @param dbTableName2
 	 */
 	public IndexFungorumImportBase(String pluralString, String dbTableName, Class cdmTargetClass) {
 		this.pluralString = pluralString;
@@ -89,12 +88,15 @@ public abstract class IndexFungorumImportBase extends CdmImportBase<IndexFungoru
 		this.cdmTargetClass = cdmTargetClass;
 	}
 
-	protected void doInvoke(IndexFungorumImportState state){
-		logger.info("start make " + getPluralString() + " ...");
+	@Override
+    protected void doInvoke(IndexFungorumImportState state){
+		System.out.println("start make " + getPluralString() + " ...");
 		IndexFungorumImportConfigurator config = state.getConfig();
 		Source source = config.getSource();
-			
+
+
 		String strIdQuery = getIdQuery();
+
 		String strRecordQuery = getRecordQuery(config);
 
 		int recordsPerTransaction = config.getRecordsPerTransaction();
@@ -108,22 +110,25 @@ public abstract class IndexFungorumImportBase extends CdmImportBase<IndexFungoru
 			state.setUnsuccessfull();
 			return;
 		}
-		
+
 		logger.info("end make " + getPluralString() + " ... " + getSuccessString(true));
 		return;
 	}
-	
 
 
-	
-	
-	public boolean doPartition(ResultSetPartitioner partitioner, IndexFungorumImportState state) {
+
+
+
+
+
+    @Override
+    public boolean doPartition(ResultSetPartitioner partitioner, IndexFungorumImportState state) {
 		boolean success = true ;
 		Set objectsToSave = new HashSet<CdmBase>();
-		
+
 // 		DbImportMapping<?, ?> mapping = getMapping();
 //		mapping.initialize(state, cdmTargetClass);
-		
+
 		ResultSet rs = partitioner.getResultSet();
 		try{
 			while (rs.next()){
@@ -133,7 +138,7 @@ public abstract class IndexFungorumImportBase extends CdmImportBase<IndexFungoru
 			logger.error("SQLException:" +  e);
 			return false;
 		}
-	
+
 		partitioner.startDoSave();
 		getCommonService().save(objectsToSave);
 		return success;
@@ -145,6 +150,7 @@ public abstract class IndexFungorumImportBase extends CdmImportBase<IndexFungoru
 	 */
 	protected abstract String getRecordQuery(IndexFungorumImportConfigurator config);
 
+
 	/**
 	 * @return
 	 */
@@ -152,11 +158,12 @@ public abstract class IndexFungorumImportBase extends CdmImportBase<IndexFungoru
 		String result = " SELECT id FROM " + getTableName();
 		return result;
 	}
-	
+
 	/* (non-Javadoc)
 	 * @see eu.etaxonomy.cdm.io.berlinModel.in.IPartitionedIO#getPluralString()
 	 */
-	public String getPluralString(){
+	@Override
+    public String getPluralString(){
 		return pluralString;
 	}
 
@@ -167,7 +174,7 @@ public abstract class IndexFungorumImportBase extends CdmImportBase<IndexFungoru
 		return this.dbTableName;
 	}
 
-	
+
 	protected boolean resultSetHasColumn(ResultSet rs, String columnName){
 		try {
 			ResultSetMetaData metaData = rs.getMetaData();
@@ -182,15 +189,15 @@ public abstract class IndexFungorumImportBase extends CdmImportBase<IndexFungoru
             return false;
 		}
 	}
-	
+
 	protected boolean checkSqlServerColumnExists(Source source, String tableName, String columnName){
 		String strQuery = "SELECT  Count(t.id) as n " +
 				" FROM sysobjects AS t " +
 				" INNER JOIN syscolumns AS c ON t.id = c.id " +
-				" WHERE (t.xtype = 'U') AND " + 
-				" (t.name = '" + tableName + "') AND " + 
+				" WHERE (t.xtype = 'U') AND " +
+				" (t.name = '" + tableName + "') AND " +
 				" (c.name = '" + columnName + "')";
-		ResultSet rs = source.getResultSet(strQuery) ;		
+		ResultSet rs = source.getResultSet(strQuery) ;
 		int n;
 		try {
 			rs.next();
@@ -200,9 +207,9 @@ public abstract class IndexFungorumImportBase extends CdmImportBase<IndexFungoru
 			e.printStackTrace();
 			return false;
 		}
-		
+
 	}
-	
+
 	/**
 	 * Returns a map that holds all values of a ResultSet. This is needed if a value needs to
 	 * be accessed twice
@@ -242,7 +249,7 @@ public abstract class IndexFungorumImportBase extends CdmImportBase<IndexFungoru
 			idSet.add(id);
 		}
 	}
-	
+
 	/**
 	 * Returns true if i is a multiple of recordsPerTransaction
 	 * @param i
@@ -253,11 +260,11 @@ public abstract class IndexFungorumImportBase extends CdmImportBase<IndexFungoru
 		startTransaction();
 		return (i % recordsPerLoop) == 0;
 	}
-	
+
 	protected void doLogPerLoop(int count, int recordsPerLog, String pluralString){
 		if ((count % recordsPerLog ) == 0 && count!= 0 ){ logger.info(pluralString + " handled: " + (count));}
 	}
-	
+
 
 	protected void makeAuthorAndPublication(IndexFungorumImportState state, ResultSet rs, NonViralName name) throws SQLException {
 		//authors
@@ -266,18 +273,18 @@ public abstract class IndexFungorumImportBase extends CdmImportBase<IndexFungoru
 		if (StringUtils.isNotBlank(authorStr)){
 			try {
 				parser.parseAuthors(name, authorStr);
-			} catch (StringNotParsableException e){ 
-				logger.warn("Authorstring not parsable: " + authorStr);
+			} catch (StringNotParsableException e){
+				//logger.warn("Authorstring not parsable: " + authorStr);
 				name.setAuthorshipCache(authorStr);
 			}
 		}
-		
+
 		//page
 		String page = rs.getString("PAGE");
 		if (StringUtils.isNotBlank(page)){
 			name.setNomenclaturalMicroReference(page);
 		}
-		
+
 		//Reference
 		Reference<?> ref = ReferenceFactory.newGeneric();
 		boolean hasInReference = false;
@@ -293,7 +300,7 @@ public abstract class IndexFungorumImportBase extends CdmImportBase<IndexFungoru
 				logger.warn("'AUTHORS' is blank for not empty PUBLISHING_AUTHORS. This is not yet handled.");
 			}
 		}
-		
+
 		//inRef + inRefAuthor
 		if (pubAuthor != null){
 			Reference<?> inRef = ReferenceFactory.newGeneric();
@@ -301,7 +308,7 @@ public abstract class IndexFungorumImportBase extends CdmImportBase<IndexFungoru
 			ref.setInReference(inRef);
 			hasInReference = true;
 		}
-		
+
 		//refAuthor
 		TeamOrPersonBase<?> refAuthor = CdmBase.deproxy(name.getCombinationAuthorTeam(), TeamOrPersonBase.class);
 		if (refAuthor == null){
@@ -343,7 +350,7 @@ public abstract class IndexFungorumImportBase extends CdmImportBase<IndexFungoru
 			}
 		}
 		ref.setVolume(volume);
-		
+
 		//year
 		String yearOfPubl = rs.getString("YEAR OF PUBLICATION");
 		String yearOnPubl = rs.getString("YEAR ON PUBLICATION");
@@ -357,7 +364,7 @@ public abstract class IndexFungorumImportBase extends CdmImportBase<IndexFungoru
 		if (year != null){
 			ref.setDatePublished(TimePeriodParser.parseString(year));
 		}
-		
+
 		//preliminary, set protected titlecache as Generic Cache Generation with in references currently doesn't fully work yet
 		String titleCache = CdmUtils.concat(", ", pubAuthorStr, title);
 		if  ( StringUtils.isNotBlank(pubAuthorStr)){
@@ -367,16 +374,16 @@ public abstract class IndexFungorumImportBase extends CdmImportBase<IndexFungoru
 		titleCache = CdmUtils.concat(": ", titleCache, page);
 		titleCache = CdmUtils.concat(". ", titleCache, year);
 		ref.setTitleCache(titleCache, true);
-		
+
 		//set nom ref
 		if (StringUtils.isNotBlank(titleCache)){
 			name.setNomenclaturalReference(ref);
 		}
 	}
-	
+
 
 	protected MarkerType getNoLastActionMarkerType(IndexFungorumImportState state) {
-		return getMarkerType(state, DbLastActionMapper.uuidMarkerTypeHasNoLastAction, 
+		return getMarkerType(state, DbLastActionMapper.uuidMarkerTypeHasNoLastAction,
 				"has no last action", "No last action information available", "no last action");
 	}
 
@@ -388,7 +395,7 @@ public abstract class IndexFungorumImportBase extends CdmImportBase<IndexFungoru
 		String strId = (id == null ? null : String.valueOf(id));
 		IdentifiableSource source = IdentifiableSource.NewInstance(OriginalSourceType.Import, strId, namespace, sourceReference, null);
 		taxon.addSource(source);
-		
+
 		//no last action
 		MarkerType hasNoLastAction = getNoLastActionMarkerType(state);
 		taxon.addMarker(Marker.NewInstance(hasNoLastAction, true));
@@ -415,7 +422,7 @@ public abstract class IndexFungorumImportBase extends CdmImportBase<IndexFungoru
 		MarkerType missingGUID = getMarkerType(state, PesiTransformer.uuidMarkerGuidIsMissing, "GUID is missing", "GUID is missing", null);
 		return missingGUID;
 	}
-	
+
 
 	protected Classification getClassification(IndexFungorumImportState state) {
 		Classification result;
@@ -425,12 +432,12 @@ public abstract class IndexFungorumImportBase extends CdmImportBase<IndexFungoru
 			result = makeTreeMemSave(state, sourceReference);
 		} else {
 			result = getClassificationService().find(classificationUuid);
-		} 
+		}
 		return result;
 	}
 
-	
 
 
-	
+
+
 }

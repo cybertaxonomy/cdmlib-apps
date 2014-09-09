@@ -1,8 +1,8 @@
 /**
 * Copyright (C) 2007 EDIT
-* European Distributed Institute of Taxonomy 
+* European Distributed Institute of Taxonomy
 * http://www.e-taxonomy.eu
-* 
+*
 * The contents of this file are subject to the Mozilla Public License Version 1.1
 * See LICENSE.TXT at the top of this package for the full license terms.
 */
@@ -26,51 +26,51 @@ public class CdmDestinations {
 	public static ICdmDataSource cdm_test_local_mysql(){
 		DatabaseTypeEnum dbType = DatabaseTypeEnum.MySQL;
 		String cdmServer = "127.0.0.1";
-		String cdmDB = "cdm_test"; 
+		String cdmDB = "cdm_test";
 		String cdmUserName = "root";
 		return makeDestination(dbType, cdmServer, cdmDB, -1, cdmUserName, null);
 	}
-	
+
 	public static ICdmDataSource cdm_test_local_faunaEu_mysql(){
 		DatabaseTypeEnum dbType = DatabaseTypeEnum.MySQL;
 		String cdmServer = "127.0.0.1";
-		String cdmDB = "cdm_test"; 
+		String cdmDB = "cdm_faunaeu_2014_07";
 		String cdmUserName = "root";
 		return makeDestination(dbType, cdmServer, cdmDB, -1, cdmUserName, null);
 	}
 
-	
+
 	public static ICdmDataSource cdm_test_local_indexFungorum(){
 		DatabaseTypeEnum dbType = DatabaseTypeEnum.MySQL;
 		String cdmServer = "127.0.0.1";
-		String cdmDB = "indexFungorum"; 
+		String cdmDB = "indexFungorum";
 		String cdmUserName = "root";
 		return makeDestination(dbType, cdmServer, cdmDB, -1, cdmUserName, null);
 	}
-	
-	
+
+
 	public static ICdmDataSource cdm_test_local_mysql_erms(){
 		DatabaseTypeEnum dbType = DatabaseTypeEnum.MySQL;
 		String cdmServer = "127.0.0.1";
-		String cdmDB = "erms"; 
+		String cdmDB = "erms";
 		String cdmUserName = "root";
 		return CdmDestinations.makeDestination(dbType, cdmServer, cdmDB, -1, cdmUserName, null);
 	}
 
-	
+
 	public static ICdmDataSource cdm_test_local_mysql_erms2(){
 		DatabaseTypeEnum dbType = DatabaseTypeEnum.MySQL;
 		String cdmServer = "127.0.0.1";
-		String cdmDB = "erms2"; 
+		String cdmDB = "erms2";
 		String cdmUserName = "root";
 		return CdmDestinations.makeDestination(dbType, cdmServer, cdmDB, -1, cdmUserName, null);
 	}
-	
-	
+
+
 	public static ICdmDataSource cdm_test_local_mysql_test(){
 		DatabaseTypeEnum dbType = DatabaseTypeEnum.MySQL;
 		String cdmServer = "127.0.0.1";
-		String cdmDB = "test"; 
+		String cdmDB = "test";
 		String cdmUserName = "edit";
 		return makeDestination(dbType, cdmServer, cdmDB, -1, cdmUserName, null);
 	}
@@ -81,7 +81,7 @@ public class CdmDestinations {
 		String cdmUserName = "edit";
 		return makeDestination(dbType, cdmServer, cdmDB, -1, cdmUserName, null);
 	}
-	
+
 	public static ICdmDataSource cdm_portal_test_localhost2(){
 		DatabaseTypeEnum dbType = DatabaseTypeEnum.MySQL;
 		String cdmServer = "127.0.0.1";
@@ -97,26 +97,26 @@ public class CdmDestinations {
 		String cdmUserName = "edit";
 		return makeDestination(dbType, cdmServer, cdmDB, -1, cdmUserName, null);
 	}
-	
-	
+
+
 	public static ICdmDataSource NULL(){
 		return null;
 	}
-	
-	
+
+
 	public static ICdmDataSource localH2(){
 		return CdmDataSource.NewH2EmbeddedInstance("cdm", "sa", "");
 	}
-	
+
 	public static ICdmDataSource localH2(String database, String username, String filePath){
 		return CdmDataSource.NewH2EmbeddedInstance(database, "sa", "", filePath, null);
 	}
 
-	
+
 	public static ICdmDataSource localH2EuroMed(){
 		return CdmDataSource.NewH2EmbeddedInstance("euroMed", "sa", "");
 	}
-	
+
 	public static ICdmDataSource localH2Erms(){
 		return CdmDataSource.NewH2EmbeddedInstance("erms", "sa", "");
 	}
@@ -124,7 +124,7 @@ public class CdmDestinations {
 	public static ICdmDataSource cdm_algaterra_preview(){
 		DatabaseTypeEnum dbType = DatabaseTypeEnum.MySQL;
 		String cdmServer = "160.45.63.201";
-		String cdmDB = "cdm_edit_algaterra"; 
+		String cdmDB = "cdm_edit_algaterra";
 		String cdmUserName = "edit";
 		return makeDestination(dbType, cdmServer, cdmDB, -1, cdmUserName, null);
 	}
@@ -133,7 +133,7 @@ public class CdmDestinations {
 	public static ICdmDataSource cdm_pesi_euroMed(){
 		DatabaseTypeEnum dbType = DatabaseTypeEnum.MySQL;
 		String cdmServer = "160.45.63.175";
-		String cdmDB = "cdm_pesi_euromed"; 
+		String cdmDB = "cdm_pesi_euromed";
 		String cdmUserName = "edit";
 		return makeDestination(dbType, cdmServer, cdmDB, -1, cdmUserName, null);
 	}
@@ -153,7 +153,7 @@ public class CdmDestinations {
 		String cdmUserName = "root";
 		return makeDestination(dbType, cdmServer, cdmDB, -1, cdmUserName, null);
 	}
-	
+
 	public static ICdmDataSource cdm_local_euroMed3(){
 		DatabaseTypeEnum dbType = DatabaseTypeEnum.MySQL;
 		String cdmServer = "127.0.0.1";
@@ -165,25 +165,25 @@ public class CdmDestinations {
 	public static ICdmDataSource cdm_pesi_fauna_europaea(){
 		DatabaseTypeEnum dbType = DatabaseTypeEnum.MySQL;
 		String cdmServer = "160.45.63.175";
-		String cdmDB = "cdm_pesi_fauna_europaea"; 
+		String cdmDB = "cdm_pesi_fauna_europaea";
 		String cdmUserName = "edit";
 		return makeDestination(dbType, cdmServer, cdmDB, -1, cdmUserName, null);
 	}
-	
+
 
 	public static ICdmDataSource cdm_pesi_erms(){
 		DatabaseTypeEnum dbType = DatabaseTypeEnum.MySQL;
 		String cdmServer = "160.45.63.175";
-		String cdmDB = "cdm_pesi_erms"; 
+		String cdmDB = "cdm_pesi_erms";
 		String cdmUserName = "edit";
 		return makeDestination(dbType, cdmServer, cdmDB, -1, cdmUserName, null);
 	}
 
-	 
+
 	/**
 	 * initializes source
 	 * TODO only supports MySQL and PostgreSQL
-	 * 
+	 *
 	 * @param dbType
 	 * @param cdmServer
 	 * @param cdmDB
@@ -197,9 +197,9 @@ public class CdmDestinations {
 		pwd = AccountStore.readOrStorePassword(cdmServer, cdmDB, cdmUserName, pwd);
 		ICdmDataSource destination;
 		if(dbType.equals(DatabaseTypeEnum.MySQL)){
-			destination = CdmDataSource.NewMySqlInstance(cdmServer, cdmDB, port, cdmUserName, pwd, null);			
+			destination = CdmDataSource.NewMySqlInstance(cdmServer, cdmDB, port, cdmUserName, pwd, null);
 		} else if(dbType.equals(DatabaseTypeEnum.PostgreSQL)){
-			destination = CdmDataSource.NewPostgreSQLInstance(cdmServer, cdmDB, port, cdmUserName, pwd, null);			
+			destination = CdmDataSource.NewPostgreSQLInstance(cdmServer, cdmDB, port, cdmUserName, pwd, null);
 		} else {
 			//TODO others
 			throw new RuntimeException("Unsupported DatabaseType");
@@ -210,23 +210,25 @@ public class CdmDestinations {
 
 
 	/**
-	 * Accepts a string array and tries to find a method returning an ICdmDataSource with 
+	 * Accepts a string array and tries to find a method returning an ICdmDataSource with
 	 * the name of the given first string in the array
-	 * 
+	 *
 	 * @param args
 	 * @return
 	 */
 	public static ICdmDataSource chooseDestination(String[] args) {
-		if(args == null)
-			return null;
-		
-		if(args.length != 1)
-			return null;
-		
+		if(args == null) {
+            return null;
+        }
+
+		if(args.length != 1) {
+            return null;
+        }
+
 		String possibleDestination = args[0];
-		
+
 		Method[] methods = CdmDestinations.class.getMethods();
-		
+
 		for (Method method : methods){
 			if(method.getName().equals(possibleDestination)){
 				try {
@@ -245,6 +247,6 @@ public class CdmDestinations {
 		}
 		return null;
 	}
-	
+
 }
 

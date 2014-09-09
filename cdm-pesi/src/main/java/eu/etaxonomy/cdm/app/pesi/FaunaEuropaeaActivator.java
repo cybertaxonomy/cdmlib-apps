@@ -1,8 +1,8 @@
 /**
 * Copyright (C) 2007 EDIT
-* European Distributed Institute of Taxonomy 
+* European Distributed Institute of Taxonomy
 * http://www.e-taxonomy.eu
-* 
+*
 * The contents of this file are subject to the Mozilla Public License Version 1.1
 * See LICENSE.TXT at the top of this package for the full license terms.
 */
@@ -39,8 +39,9 @@ public class FaunaEuropaeaActivator {
 
 	static final Source faunaEuropaeaSource = PesiSources.mfn_faunEu_pesi3();
 	static final ICdmDataSource cdmDestination = CdmDestinations.cdm_test_local_faunaEu_mysql();
+	//static final ICdmDataSource cdmDestination = CdmDestinations.cdm_pesi_fauna_europaea();
 
-	
+
 	static final int limitSave = 5000;
 
 //	static final CHECK check = CHECK.CHECK_AND_IMPORT;
@@ -51,7 +52,7 @@ public class FaunaEuropaeaActivator {
 	static final NomenclaturalCode nomenclaturalCode  = NomenclaturalCode.ICZN;
 
 // ****************** ALL *****************************************
-	
+
 	// Fauna Europaea to CDM import
 	static final boolean doAuthors = true;
 	static final boolean doTaxa = true;
@@ -64,9 +65,9 @@ public class FaunaEuropaeaActivator {
 	static final boolean makeFeatureTree = true;
     // CDM to CDM import
 	static final boolean doHeterotypicSynonymsForBasionyms = true;
-	
+
 // ************************ NONE **************************************** //
-		
+
 	// Fauna Europaea to CDM import
 //	static final boolean doAuthors = false;
 //	static final boolean doTaxa = false;
@@ -79,21 +80,21 @@ public class FaunaEuropaeaActivator {
 //	static final boolean makeFeatureTree = false;
 //    // CDM to CDM import
 //	static final boolean doHeterotypicSynonymsForBasionyms = false;
-	
-	
+
+
 	/**
 	 * @param args
 	 */
 	public static void main(String[] args) {
-		
+
 		ICdmDataSource destination = cdmDestination;
 		System.out.println("Starting import from Fauna Europaea (" + faunaEuropaeaSource.getDatabase() + ") to CDM (" + destination.getDatabase() + ")...");
 
 				// invoke Fauna Europaea to CDM import
-		
-		FaunaEuropaeaImportConfigurator fauEuImportConfigurator = 
+
+		FaunaEuropaeaImportConfigurator fauEuImportConfigurator =
 			FaunaEuropaeaImportConfigurator.NewInstance(faunaEuropaeaSource,  destination);
-		
+
 		fauEuImportConfigurator.setDbSchemaValidation(dbSchemaValidation);
 		fauEuImportConfigurator.setNomenclaturalCode(nomenclaturalCode);
 		fauEuImportConfigurator.setCheck(check);
@@ -108,8 +109,8 @@ public class FaunaEuropaeaActivator {
 		fauEuImportConfigurator.setDoHeterotypicSynonyms(doHeterotypicSynonyms);
 		fauEuImportConfigurator.setDoHeterotypicSynonymsForBasionyms(doHeterotypicSynonymsForBasionyms);
 		fauEuImportConfigurator.setSourceRefUuid(PesiTransformer.uuidSourceRefFaunaEuropaea);
-		
-		CdmDefaultImport<FaunaEuropaeaImportConfigurator> fauEuImport = 
+
+		CdmDefaultImport<FaunaEuropaeaImportConfigurator> fauEuImport =
 			new CdmDefaultImport<FaunaEuropaeaImportConfigurator>();
 		try {
 			fauEuImport.invoke(fauEuImportConfigurator);
@@ -119,12 +120,12 @@ public class FaunaEuropaeaActivator {
 		}
 
 		// invoke CDM to CDM import
-		
+
 //		System.out.println("Starting import from CDM to CDM (" + destination.getDatabase() + ")...");
-//		
-//		CdmImportConfigurator cdmImportConfigurator = 
+//
+//		CdmImportConfigurator cdmImportConfigurator =
 //			CdmImportConfigurator.NewInstance(destination, destination);
-//		
+//
 //		cdmImportConfigurator.setDbSchemaValidation(DbSchemaValidation.VALIDATE);
 //		cdmImportConfigurator.setNomenclaturalCode(nomenclaturalCode);
 //		cdmImportConfigurator.setCheck(check);
@@ -136,7 +137,7 @@ public class FaunaEuropaeaActivator {
 //		cdmImportConfigurator.setDoOccurrence(false);
 //		cdmImportConfigurator.setLimitSave(limitSave);
 //
-//		CdmDefaultImport<CdmImportConfigurator> cdmImport = 
+//		CdmDefaultImport<CdmImportConfigurator> cdmImport =
 //			new CdmDefaultImport<CdmImportConfigurator>();
 //		try {
 //			cdmImport.invoke(cdmImportConfigurator);
@@ -144,10 +145,10 @@ public class FaunaEuropaeaActivator {
 //			System.out.println("ERROR in CDM to CDM import");
 //			e.printStackTrace();
 //		}
-		
+
 		//make feature tree
-		
-		if (makeFeatureTree == true) {
+
+		if (makeFeatureTree) {
 			FeatureTree featureTree = FeatureTree.NewInstance(UUID.fromString("ff59b9ad-1fb8-4aa4-a8ba-79d62123d0fb"));
 			FeatureNode root = featureTree.getRoot();
 
@@ -161,7 +162,7 @@ public class FaunaEuropaeaActivator {
 
 			app.getFeatureTreeService().saveOrUpdate(featureTree);
 		}
-		
+
 		System.out.println("End importing Fauna Europaea data");
 	}
 
