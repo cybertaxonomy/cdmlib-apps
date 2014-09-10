@@ -54,7 +54,7 @@ public class IndexFungorumActivator {
 	static final boolean doPesiExport = false;
 	
 
-	//NomeclaturalCode
+	//NomenclaturalCode
 	static final NomenclaturalCode nomenclaturalCode = NomenclaturalCode.ICNAFP;
 
 	
