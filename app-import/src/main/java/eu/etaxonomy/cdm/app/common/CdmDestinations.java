@@ -23,6 +23,29 @@ public class CdmDestinations {
 	@SuppressWarnings("unused")
 	private static Logger logger = Logger.getLogger(CdmDestinations.class);
 
+	public static ICdmDataSource cdm_redlist_localhost(){
+		DatabaseTypeEnum dbType = DatabaseTypeEnum.MySQL;
+		String cdmServer = "localhost";
+		String cdmDB = "mammaleDB"; 
+		String cdmUserName = "root";
+		return makeDestination(dbType, cdmServer, cdmDB, -1, cdmUserName, null);
+	}
+	
+	public static ICdmDataSource cdm_redlist_lumbricidae(){
+		DatabaseTypeEnum dbType = DatabaseTypeEnum.MySQL;
+		String cdmServer = "160.45.63.171";
+		String cdmDB = "cdm_production_rl_lumbricidae"; 
+		String cdmUserName = "edit";
+		return makeDestination(dbType, cdmServer, cdmDB, -1, cdmUserName, null);
+	}
+	
+	public static ICdmDataSource cdm_testDB_localhost(){
+		DatabaseTypeEnum dbType = DatabaseTypeEnum.MySQL;
+		String cdmServer = "localhost";
+		String cdmDB = "testDB"; 
+		String cdmUserName = "root";
+		return makeDestination(dbType, cdmServer, cdmDB, -1, cdmUserName, null);
+	}
 
 	public static ICdmDataSource cdm_test_useSummary(){
 		DatabaseTypeEnum dbType = DatabaseTypeEnum.MySQL;

@@ -18,7 +18,6 @@ import junit.framework.Assert;
 
 import org.apache.log4j.Logger;
 
-import eu.etaxonomy.cdm.app.common.CdmDestinations;
 import eu.etaxonomy.cdm.common.CdmUtils;
 import eu.etaxonomy.cdm.database.CdmDataSource;
 import eu.etaxonomy.cdm.database.CdmPersistentDataSource;

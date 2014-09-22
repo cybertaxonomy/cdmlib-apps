@@ -1,0 +1,1072 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ROTELISTEDATEN>
+    <EIGENSCHAFTEN>
+        <EIGENSCHAFT standardname="Zwischenueberschrift">
+            <METAINFOS>
+                <MWERT name="Steuerung">CD-ROM</MWERT>
+                <MWERT name="Name für Druck">Zwischenüberschrift</MWERT>
+                <MWERT name="Typ">Text</MWERT>
+                <MWERT name="Bewertungsumfang">nicht</MWERT>
+            </METAINFOS>
+            <RAUMINFOS>
+                <RAUM name="Bund">
+                    <RWERT name="Sequenz">0</RWERT>
+                </RAUM>
+            </RAUMINFOS>
+        </EIGENSCHAFT>
+        <EIGENSCHAFT standardname="RL Kat.">
+            <METAINFOS>
+                <MWERT name="Steuerung">Druck</MWERT>
+                <MWERT name="Name für Druck">RL</MWERT>
+                <MWERT name="Typ">nominal</MWERT>
+                <MWERT name="Bewertungsumfang">vollständig</MWERT>
+            </METAINFOS>
+            <LISTENWERTE>
+                <LWERT reihenfolge="1">#dtpl_RLKat_NULL#</LWERT>
+                <LWERT reihenfolge="2">#dtpl_RLKat_EINS#</LWERT>
+                <LWERT reihenfolge="3">#dtpl_RLKat_ZWEI#</LWERT>
+                <LWERT reihenfolge="4">#dtpl_RLKat_DREI#</LWERT>
+                <LWERT reihenfolge="5">#dtpl_RLKat_G#</LWERT>
+                <LWERT reihenfolge="6">#dtpl_RLKat_R#</LWERT>
+                <LWERT reihenfolge="7">#dtpl_RLKat_V#</LWERT>
+                <LWERT reihenfolge="8">#dtpl_RLKat_STERN#</LWERT>
+                <LWERT reihenfolge="9">#dtpl_RLKat_STERN##dtpl_RLKat_STERN#</LWERT>
+                <LWERT reihenfolge="10">#dtpl_RLKat_D#</LWERT>
+                <LWERT reihenfolge="11">#dtpl_RLKat_RAUTE#</LWERT>
+                <LWERT reihenfolge="12">kN</LWERT>
+            </LISTENWERTE>
+            <RAUMINFOS>
+                <RAUM name="Bund">
+                    <RWERT name="Sequenz">2</RWERT>
+                </RAUM>
+            </RAUMINFOS>
+        </EIGENSCHAFT>
+        <EIGENSCHAFT standardname="Kat. +/-">
+            <METAINFOS>
+                <MWERT name="Steuerung">Druck</MWERT>
+                <MWERT name="Name für Druck">Kat. +/-</MWERT>
+                <MWERT name="Typ">nominal</MWERT>
+                <MWERT name="Bewertungsumfang">vollständig</MWERT>
+            </METAINFOS>
+            <LISTENWERTE>
+                <LWERT reihenfolge="1">+</LWERT>
+                <LWERT reihenfolge="2">-</LWERT>
+                <LWERT reihenfolge="3">=</LWERT>
+            </LISTENWERTE>
+            <RAUMINFOS>
+                <RAUM name="Bund">
+                    <RWERT name="Sequenz">22</RWERT>
+                </RAUM>
+            </RAUMINFOS>
+        </EIGENSCHAFT>
+        <EIGENSCHAFT standardname="Neobiota">
+            <METAINFOS>
+                <MWERT name="Steuerung">Druck</MWERT>
+                <MWERT name="Name für Druck">N</MWERT>
+                <MWERT name="Typ">nominal</MWERT>
+                <MWERT name="Bewertungsumfang">alle bewertet</MWERT>
+            </METAINFOS>
+            <LISTENWERTE>
+                <LWERT reihenfolge="1">N</LWERT>
+                <LWERT reihenfolge="2"/>
+            </LISTENWERTE>
+            <RAUMINFOS>
+                <RAUM name="Bund">
+                    <RWERT name="Sequenz">190</RWERT>
+                </RAUM>
+            </RAUMINFOS>
+        </EIGENSCHAFT>
+        <EIGENSCHAFT standardname="aktuelle Bestandsstituation">
+            <METAINFOS>
+                <MWERT name="Steuerung">Druck</MWERT>
+                <MWERT name="Name für Druck">aktuell</MWERT>
+                <MWERT name="Typ">nominal</MWERT>
+                <MWERT name="Bewertungsumfang">vollständig</MWERT>
+            </METAINFOS>
+            <LISTENWERTE>
+                <LWERT reihenfolge="1">ex</LWERT>
+                <LWERT reihenfolge="2">es</LWERT>
+                <LWERT reihenfolge="3">ss</LWERT>
+                <LWERT reihenfolge="4">s</LWERT>
+                <LWERT reihenfolge="5">mh</LWERT>
+                <LWERT reihenfolge="6">h</LWERT>
+                <LWERT reihenfolge="7">sh</LWERT>
+                <LWERT reihenfolge="8">?</LWERT>
+                <LWERT reihenfolge="9">nb</LWERT>
+                <LWERT reihenfolge="10">kN</LWERT>
+                <LWERT reihenfolge="11"/>
+            </LISTENWERTE>
+            <RAUMINFOS>
+                <RAUM name="Bund">
+                    <RWERT name="Sequenz">5</RWERT>
+                </RAUM>
+            </RAUMINFOS>
+        </EIGENSCHAFT>
+        <EIGENSCHAFT standardname="langfristiger Bestandstrend">
+            <METAINFOS>
+                <MWERT name="Steuerung">Druck</MWERT>
+                <MWERT name="Name für Druck">lang</MWERT>
+                <MWERT name="Typ">nominal</MWERT>
+                <MWERT name="Bewertungsumfang">teilweise</MWERT>
+            </METAINFOS>
+            <LISTENWERTE>
+                <LWERT reihenfolge="1">&lt;&lt;&lt;</LWERT>
+                <LWERT reihenfolge="2">&lt;&lt;</LWERT>
+                <LWERT reihenfolge="3">&lt;</LWERT>
+                <LWERT reihenfolge="4">(&lt;)</LWERT>
+                <LWERT reihenfolge="5">=</LWERT>
+                <LWERT reihenfolge="6">&gt;</LWERT>
+                <LWERT reihenfolge="7">?</LWERT>
+                <LWERT reihenfolge="8"/>
+            </LISTENWERTE>
+            <RAUMINFOS>
+                <RAUM name="Bund">
+                    <RWERT name="Sequenz">6</RWERT>
+                </RAUM>
+            </RAUMINFOS>
+        </EIGENSCHAFT>
+        <EIGENSCHAFT standardname="kurzfristiger Bestandstrend">
+            <METAINFOS>
+                <MWERT name="Steuerung">Druck</MWERT>
+                <MWERT name="Name für Druck">kurz</MWERT>
+                <MWERT name="Typ">nominal</MWERT>
+                <MWERT name="Bewertungsumfang">teilweise</MWERT>
+            </METAINFOS>
+            <LISTENWERTE>
+                <LWERT reihenfolge="1"
+                    >#dtpl_KurzfBest_RUNTER##dtpl_KurzfBest_RUNTER##dtpl_KurzfBest_RUNTER#</LWERT>
+                <LWERT reihenfolge="2">#dtpl_KurzfBest_RUNTER##dtpl_KurzfBest_RUNTER#</LWERT>
+                <LWERT reihenfolge="3">(#dtpl_KurzfBest_RUNTER#)</LWERT>
+                <LWERT reihenfolge="4">=</LWERT>
+                <LWERT reihenfolge="5">#dtpl_KurzfBest_HOCH#</LWERT>
+                <LWERT reihenfolge="6">?</LWERT>
+                <LWERT reihenfolge="7"/>
+            </LISTENWERTE>
+            <RAUMINFOS>
+                <RAUM name="Bund">
+                    <RWERT name="Sequenz">7</RWERT>
+                </RAUM>
+            </RAUMINFOS>
+        </EIGENSCHAFT>
+        <EIGENSCHAFT standardname="Risikofaktoren">
+            <METAINFOS>
+                <MWERT name="Steuerung">Druck</MWERT>
+                <MWERT name="Name für Druck">Risiko</MWERT>
+                <MWERT name="Typ">nominal</MWERT>
+                <MWERT name="Bewertungsumfang">teilweise</MWERT>
+            </METAINFOS>
+            <LISTENWERTE>
+                <LWERT reihenfolge="1">#dtpl_Risiko_MINUS#</LWERT>
+                <LWERT reihenfolge="2">=</LWERT>
+                <LWERT reihenfolge="3"/>
+            </LISTENWERTE>
+            <RAUMINFOS>
+                <RAUM name="Bund">
+                    <RWERT name="Sequenz">8</RWERT>
+                </RAUM>
+            </RAUMINFOS>
+        </EIGENSCHAFT>
+        <EIGENSCHAFT standardname="Sonderfälle">
+            <METAINFOS>
+                <MWERT name="Steuerung">Druck</MWERT>
+                <MWERT name="Name für Druck">Sond.</MWERT>
+                <MWERT name="Typ">nominal</MWERT>
+                <MWERT name="Bewertungsumfang">teilweise</MWERT>
+            </METAINFOS>
+            <LISTENWERTE>
+                <LWERT reihenfolge="1">S</LWERT>
+                <LWERT reihenfolge="2">E</LWERT>
+                <LWERT reihenfolge="3">D</LWERT>
+                <LWERT reihenfolge="4"/>
+            </LISTENWERTE>
+            <RAUMINFOS>
+                <RAUM name="Bund">
+                    <RWERT name="Sequenz">9</RWERT>
+                </RAUM>
+            </RAUMINFOS>
+        </EIGENSCHAFT>
+        <EIGENSCHAFT standardname="Letzter Nachweis">
+            <METAINFOS>
+                <MWERT name="Steuerung">Druck</MWERT>
+                <MWERT name="Name für Druck">Letzter Nachweis</MWERT>
+                <MWERT name="Typ">Text</MWERT>
+                <MWERT name="Bewertungsumfang">teilweise</MWERT>
+            </METAINFOS>
+            <RAUMINFOS>
+                <RAUM name="Bund">
+                    <RWERT name="Sequenz">10</RWERT>
+                </RAUM>
+            </RAUMINFOS>
+        </EIGENSCHAFT>
+        <EIGENSCHAFT standardname="Verantwortlichkeit">
+            <METAINFOS>
+                <MWERT name="Steuerung">Druck</MWERT>
+                <MWERT name="Name für Druck">V</MWERT>
+                <MWERT name="Typ">nominal</MWERT>
+                <MWERT name="Bewertungsumfang">alle bewertet</MWERT>
+            </METAINFOS>
+            <LISTENWERTE>
+                <LWERT reihenfolge="1">!!</LWERT>
+                <LWERT reihenfolge="2">!</LWERT>
+                <LWERT reihenfolge="3">(!)</LWERT>
+                <LWERT reihenfolge="4">?</LWERT>
+                <LWERT reihenfolge="5">#dtpl_VERANTW_NB#</LWERT>
+                <LWERT reihenfolge="6"/>
+            </LISTENWERTE>
+            <RAUMINFOS>
+                <RAUM name="Bund">
+                    <RWERT name="Sequenz">3</RWERT>
+                </RAUM>
+            </RAUMINFOS>
+        </EIGENSCHAFT>
+        <EIGENSCHAFT standardname="Kommentar zur Taxonomie">
+            <METAINFOS>
+                <MWERT name="Steuerung">Druck</MWERT>
+                <MWERT name="Name für Druck">Tax.</MWERT>
+                <MWERT name="Typ">Kommentar</MWERT>
+                <MWERT name="Bewertungsumfang">teilweise</MWERT>
+            </METAINFOS>
+            <RAUMINFOS>
+                <RAUM name="Bund">
+                    <RWERT name="Sequenz">1</RWERT>
+                </RAUM>
+            </RAUMINFOS>
+        </EIGENSCHAFT>
+        <EIGENSCHAFT standardname="Kommentar zur Gefährdung">
+            <METAINFOS>
+                <MWERT name="Steuerung">Druck</MWERT>
+                <MWERT name="Name für Druck">Gef.</MWERT>
+                <MWERT name="Typ">Kommentar</MWERT>
+                <MWERT name="Bewertungsumfang">teilweise</MWERT>
+            </METAINFOS>
+            <RAUMINFOS>
+                <RAUM name="Bund">
+                    <RWERT name="Sequenz">11</RWERT>
+                </RAUM>
+            </RAUMINFOS>
+        </EIGENSCHAFT>
+        <EIGENSCHAFT standardname="Kommentar zur Nachsuche">
+            <METAINFOS>
+                <MWERT name="Steuerung">Druck</MWERT>
+                <MWERT name="Name für Druck">Nachs.</MWERT>
+                <MWERT name="Typ">Kommentar</MWERT>
+                <MWERT name="Bewertungsumfang">teilweise</MWERT>
+            </METAINFOS>
+            <RAUMINFOS>
+                <RAUM name="Bund">
+                    <RWERT name="Sequenz">12</RWERT>
+                </RAUM>
+            </RAUMINFOS>
+        </EIGENSCHAFT>
+        <EIGENSCHAFT standardname="Weitere Kommentare">
+            <METAINFOS>
+                <MWERT name="Steuerung">Druck</MWERT>
+                <MWERT name="Name für Druck">Komm.</MWERT>
+                <MWERT name="Typ">Kommentar</MWERT>
+                <MWERT name="Bewertungsumfang">teilweise</MWERT>
+            </METAINFOS>
+            <RAUMINFOS>
+                <RAUM name="Bund">
+                    <RWERT name="Sequenz">170</RWERT>
+                </RAUM>
+            </RAUMINFOS>
+        </EIGENSCHAFT>
+        <EIGENSCHAFT standardname="Taxonomischer Bezug">
+            <METAINFOS>
+                <MWERT name="Steuerung">Druck</MWERT>
+                <MWERT name="Name für Druck"/>
+                <MWERT name="Typ">nominal</MWERT>
+                <MWERT name="Bewertungsumfang">alle bewertet</MWERT>
+            </METAINFOS>
+            <LISTENWERTE>
+                <LWERT reihenfolge="1">#dtpl_TaxBez_GLEICH#</LWERT>
+                <LWERT reihenfolge="2">#dtpl_TaxBez_KLEINER#</LWERT>
+                <LWERT reihenfolge="3">#dtpl_TaxBez_GROESSER#</LWERT>
+                <LWERT reihenfolge="4">#dtpl_TaxBez_UNGLEICH#</LWERT>
+                <LWERT reihenfolge="5"/>
+            </LISTENWERTE>
+            <RAUMINFOS>
+                <RAUM name="Bund">
+                    <RWERT name="Sequenz">20</RWERT>
+                </RAUM>
+            </RAUMINFOS>
+        </EIGENSCHAFT>
+        <EIGENSCHAFT standardname="alte RL- Kat.">
+            <METAINFOS>
+                <MWERT name="Steuerung">Druck</MWERT>
+                <MWERT name="Name für Druck">alte RL- Kat.</MWERT>
+                <MWERT name="Typ">nominal</MWERT>
+                <MWERT name="Bewertungsumfang">vollständig</MWERT>
+            </METAINFOS>
+            <LISTENWERTE>
+                <LWERT reihenfolge="1">0</LWERT>
+                <LWERT reihenfolge="2">1</LWERT>
+                <LWERT reihenfolge="3">2</LWERT>
+                <LWERT reihenfolge="4">3</LWERT>
+                <LWERT reihenfolge="5">G</LWERT>
+                <LWERT reihenfolge="6">R</LWERT>
+                <LWERT reihenfolge="7">V</LWERT>
+                <LWERT reihenfolge="8">#dtpl_AlteRLKat_STERN#</LWERT>
+                <LWERT reihenfolge="9">#dtpl_AlteRLKat_ZWEISTERN#</LWERT>
+                <LWERT reihenfolge="10">D</LWERT>
+                <LWERT reihenfolge="11">#dtpl_AlteRLKat_NB#</LWERT>
+                <LWERT reihenfolge="12">#dtpl_AlteRLKat_KN#</LWERT>
+                <LWERT reihenfolge="13"/>
+            </LISTENWERTE>
+            <RAUMINFOS>
+                <RAUM name="Bund">
+                    <RWERT name="Sequenz">21</RWERT>
+                </RAUM>
+            </RAUMINFOS>
+        </EIGENSCHAFT>
+        <EIGENSCHAFT standardname="Eindeutiger Code">
+            <METAINFOS>
+                <MWERT name="Steuerung">CD-ROM</MWERT>
+                <MWERT name="Name für Druck"/>
+                <MWERT name="Typ">Text</MWERT>
+                <MWERT name="Bewertungsumfang">vollständig</MWERT>
+            </METAINFOS>
+            <RAUMINFOS>
+                <RAUM name="Bund">
+                    <RWERT name="Sequenz">200</RWERT>
+                </RAUM>
+            </RAUMINFOS>
+        </EIGENSCHAFT>
+        <EIGENSCHAFT standardname="Feuchtkammer">
+            <METAINFOS>
+                <MWERT name="Steuerung">CD-ROM</MWERT>
+                <MWERT name="Name für Druck">FK</MWERT>
+                <MWERT name="Typ">nominal</MWERT>
+                <MWERT name="Bewertungsumfang">alle bewertet</MWERT>
+            </METAINFOS>
+            <LISTENWERTE>
+                <LWERT reihenfolge="1">FK</LWERT>
+                <LWERT reihenfolge="2">(FK)</LWERT>
+            </LISTENWERTE>
+            <RAUMINFOS>
+                <RAUM name="Bund">
+                    <RWERT name="Sequenz">100</RWERT>
+                </RAUM>
+            </RAUMINFOS>
+        </EIGENSCHAFT>
+        <EIGENSCHAFT standardname="Phänologie">
+            <METAINFOS>
+                <MWERT name="Steuerung">CD-ROM</MWERT>
+                <MWERT name="Name für Druck">Phän.</MWERT>
+                <MWERT name="Typ">Text</MWERT>
+                <MWERT name="Bewertungsumfang">vollständig</MWERT>
+            </METAINFOS>
+            <RAUMINFOS>
+                <RAUM name="Bund">
+                    <RWERT name="Sequenz">101</RWERT>
+                </RAUM>
+            </RAUMINFOS>
+        </EIGENSCHAFT>
+        <EIGENSCHAFT standardname="Mikrohabitat">
+            <METAINFOS>
+                <MWERT name="Steuerung">CD-ROM</MWERT>
+                <MWERT name="Name für Druck">Mikrohab.</MWERT>
+                <MWERT name="Typ">Text</MWERT>
+                <MWERT name="Bewertungsumfang">vollständig</MWERT>
+            </METAINFOS>
+            <RAUMINFOS>
+                <RAUM name="Bund">
+                    <RWERT name="Sequenz">102</RWERT>
+                </RAUM>
+            </RAUMINFOS>
+        </EIGENSCHAFT>
+        <EIGENSCHAFT standardname="Areal">
+            <METAINFOS>
+                <MWERT name="Steuerung">CD-ROM</MWERT>
+                <MWERT name="Name für Druck">Areal</MWERT>
+                <MWERT name="Typ">Text</MWERT>
+                <MWERT name="Bewertungsumfang">nicht</MWERT>
+            </METAINFOS>
+            <RAUMINFOS>
+                <RAUM name="Bund">
+                    <RWERT name="Sequenz">103</RWERT>
+                </RAUM>
+            </RAUMINFOS>
+        </EIGENSCHAFT>
+        <EIGENSCHAFT standardname="Höhenstufe">
+            <METAINFOS>
+                <MWERT name="Steuerung">CD-ROM</MWERT>
+                <MWERT name="Name für Druck">Höhenst.</MWERT>
+                <MWERT name="Typ">Text</MWERT>
+                <MWERT name="Bewertungsumfang">nicht</MWERT>
+            </METAINFOS>
+            <RAUMINFOS>
+                <RAUM name="Bund">
+                    <RWERT name="Sequenz">104</RWERT>
+                </RAUM>
+            </RAUMINFOS>
+        </EIGENSCHAFT>
+        <EIGENSCHAFT standardname="Dispersion">
+            <METAINFOS>
+                <MWERT name="Steuerung">CD-ROM</MWERT>
+                <MWERT name="Name für Druck">Disp.</MWERT>
+                <MWERT name="Typ">ordinal</MWERT>
+                <MWERT name="Bewertungsumfang">nicht</MWERT>
+            </METAINFOS>
+            <LISTENWERTE>
+                <LWERT reihenfolge="1">v</LWERT>
+                <LWERT reihenfolge="2">z</LWERT>
+                <LWERT reihenfolge="3">z?</LWERT>
+                <LWERT reihenfolge="4">?</LWERT>
+                <LWERT reihenfolge="5">l</LWERT>
+                <LWERT reihenfolge="6">sl</LWERT>
+                <LWERT reihenfolge="7">l?</LWERT>
+                <LWERT reihenfolge="8">sl?</LWERT>
+                <LWERT reihenfolge="9">v?</LWERT>
+            </LISTENWERTE>
+            <RAUMINFOS>
+                <RAUM name="Bund">
+                    <RWERT name="Sequenz">105</RWERT>
+                </RAUM>
+            </RAUMINFOS>
+        </EIGENSCHAFT>
+        <EIGENSCHAFT standardname="Zweite Zeile">
+            <METAINFOS>
+                <MWERT name="Steuerung">Druck</MWERT>
+                <MWERT name="Name für Druck">Zweite Zeile</MWERT>
+                <MWERT name="Typ">Text</MWERT>
+                <MWERT name="Bewertungsumfang">teilweise</MWERT>
+            </METAINFOS>
+            <RAUMINFOS>
+                <RAUM name="Bund">
+                    <RWERT name="Sequenz">0</RWERT>
+                </RAUM>
+            </RAUMINFOS>
+        </EIGENSCHAFT>
+        <EIGENSCHAFT standardname="Auswertung">
+            <METAINFOS>
+                <MWERT name="Steuerung">CD-ROM</MWERT>
+                <MWERT name="Name für Druck"/>
+                <MWERT name="Typ">nominal</MWERT>
+                <MWERT name="Bewertungsumfang">vollständig</MWERT>
+            </METAINFOS>
+            <LISTENWERTE>
+                <LWERT reihenfolge="1">S</LWERT>
+                <LWERT reihenfolge="2">M</LWERT>
+                <LWERT reihenfolge="3">I</LWERT>
+                <LWERT reihenfolge="4">O</LWERT>
+                <LWERT reihenfolge="5">A</LWERT>
+                <LWERT reihenfolge="6">K</LWERT>
+                <LWERT reihenfolge="7">T</LWERT>
+                <LWERT reihenfolge="8">F</LWERT>
+                <LWERT reihenfolge="9">H</LWERT>
+                <LWERT reihenfolge="10">U</LWERT>
+                <LWERT reihenfolge="11">V</LWERT>
+            </LISTENWERTE>
+            <RAUMINFOS>
+                <RAUM name="Bund">
+                    <RWERT name="Sequenz">200</RWERT>
+                </RAUM>
+            </RAUMINFOS>
+        </EIGENSCHAFT>
+        <EIGENSCHAFT standardname="Jahrzehnt">
+            <METAINFOS>
+                <MWERT name="Steuerung">CD-ROM</MWERT>
+                <MWERT name="Name für Druck">Jahr</MWERT>
+                <MWERT name="Typ">Festkommazahl 0</MWERT>
+                <MWERT name="Bewertungsumfang">teilweise</MWERT>
+            </METAINFOS>
+            <RAUMINFOS>
+                <RAUM name="Bund">
+                    <RWERT name="Sequenz">14</RWERT>
+                </RAUM>
+            </RAUMINFOS>
+        </EIGENSCHAFT>
+        <EIGENSCHAFT standardname="Anteil">
+            <METAINFOS>
+                <MWERT name="Steuerung">CD-ROM</MWERT>
+                <MWERT name="Name für Druck">Anteil</MWERT>
+                <MWERT name="Typ">nominal</MWERT>
+                <MWERT name="Bewertungsumfang">vollständig</MWERT>
+            </METAINFOS>
+            <LISTENWERTE>
+                <LWERT reihenfolge="1">A0</LWERT>
+                <LWERT reihenfolge="2">A0-1</LWERT>
+                <LWERT reihenfolge="3">A1</LWERT>
+                <LWERT reihenfolge="4">A3</LWERT>
+                <LWERT reihenfolge="5">A7</LWERT>
+                <LWERT reihenfolge="6">AE</LWERT>
+                <LWERT reihenfolge="7">AE?</LWERT>
+                <LWERT reihenfolge="8">A?</LWERT>
+                <LWERT reihenfolge="9"/>
+            </LISTENWERTE>
+            <RAUMINFOS>
+                <RAUM name="Bund">
+                    <RWERT name="Sequenz">33</RWERT>
+                </RAUM>
+            </RAUMINFOS>
+        </EIGENSCHAFT>
+        <EIGENSCHAFT standardname="Lage">
+            <METAINFOS>
+                <MWERT name="Steuerung">CD-ROM</MWERT>
+                <MWERT name="Name für Druck">Lage</MWERT>
+                <MWERT name="Typ">nominal</MWERT>
+                <MWERT name="Bewertungsumfang">vollständig</MWERT>
+            </METAINFOS>
+            <LISTENWERTE>
+                <LWERT reihenfolge="1">Lr</LWERT>
+                <LWERT reihenfolge="2">Lr-h</LWERT>
+                <LWERT reihenfolge="3">Lr-z</LWERT>
+                <LWERT reihenfolge="4">Lh</LWERT>
+                <LWERT reihenfolge="5">Lh-z</LWERT>
+                <LWERT reihenfolge="6">Lz</LWERT>
+                <LWERT reihenfolge="7">Li</LWERT>
+                <LWERT reihenfolge="8">L?</LWERT>
+                <LWERT reihenfolge="9"/>
+            </LISTENWERTE>
+            <RAUMINFOS>
+                <RAUM name="Bund">
+                    <RWERT name="Sequenz">34</RWERT>
+                </RAUM>
+            </RAUMINFOS>
+        </EIGENSCHAFT>
+        <EIGENSCHAFT standardname="Gefährdung">
+            <METAINFOS>
+                <MWERT name="Steuerung">CD-ROM</MWERT>
+                <MWERT name="Name für Druck">Gefährdung</MWERT>
+                <MWERT name="Typ">nominal</MWERT>
+                <MWERT name="Bewertungsumfang">vollständig</MWERT>
+            </METAINFOS>
+            <LISTENWERTE>
+                <LWERT reihenfolge="1">G+</LWERT>
+                <LWERT reihenfolge="2">G3</LWERT>
+                <LWERT reihenfolge="3">G2</LWERT>
+                <LWERT reihenfolge="4">G1</LWERT>
+                <LWERT reihenfolge="5">G0</LWERT>
+                <LWERT reihenfolge="6">G?</LWERT>
+                <LWERT reihenfolge="7"/>
+            </LISTENWERTE>
+            <RAUMINFOS>
+                <RAUM name="Bund">
+                    <RWERT name="Sequenz">35</RWERT>
+                </RAUM>
+            </RAUMINFOS>
+        </EIGENSCHAFT>
+    </EIGENSCHAFTEN>
+    <TAXONYME>
+        <TAXONYM reihenfolge="11">
+            <WISSNAME>
+                <NANTEIL bereich="Eindeutiger Code">400</NANTEIL>
+                <NANTEIL bereich="Epitheton 1">Arcyria</NANTEIL>
+                <NANTEIL bereich="Epitheton 2">globosa</NANTEIL>
+                <NANTEIL bereich="Epitheton 3">globosa</NANTEIL>
+                <NANTEIL bereich="Epitheton 4"/>
+                <NANTEIL bereich="Epitheton 5"/>
+                <NANTEIL bereich="Rang">spezies</NANTEIL>
+                <NANTEIL bereich="Ordnungszahl">20</NANTEIL>
+                <NANTEIL bereich="Autonym"/>
+                <NANTEIL bereich="Reich">Pilze</NANTEIL>
+                <NANTEIL bereich="Bastard "/>
+                <NANTEIL bereich="Autoren">Schwein.</NANTEIL>
+                <NANTEIL bereich="Zusätze"/>
+                <NANTEIL bereich="SortWissName">Arcyria globosa globosa </NANTEIL>
+                <NANTEIL bereich="SortArtEpi">globosa Arcyria</NANTEIL>
+                <NANTEIL bereich="SortDeutName"/>
+                <NANTEIL bereich="wissName">Arcyria globosa Schwein.</NANTEIL>
+                <NANTEIL bereich="Formatiert">&lt;span
+                    style="font-style:italic"&gt;Arcyria&lt;/span&gt; &lt;span
+                    style="font-style:italic"&gt;globosa&lt;/span&gt; &lt;span
+                    style="font-variant:small-caps"&gt;Schwein.&lt;/span&gt;</NANTEIL>
+            </WISSNAME>
+            <INFORMATIONEN>
+                <BEZUGSRAUM name="Bund">
+                    <IWERT standardname="RL Kat.">
+                        <WERT>#dtpl_RLKat_D#</WERT>
+                        <FORMATWERT/>
+                    </IWERT>
+                    <IWERT standardname="Kat. +/-">
+                        <WERT> </WERT>
+                        <FORMATWERT/>
+                    </IWERT>
+                    <IWERT standardname="Neobiota">
+                        <WERT/>
+                        <FORMATWERT/>
+                    </IWERT>
+                    <IWERT standardname="aktuelle Bestandsstituation">
+                        <WERT>ss</WERT>
+                        <FORMATWERT/>
+                    </IWERT>
+                    <IWERT standardname="langfristiger Bestandstrend">
+                        <WERT>?</WERT>
+                        <FORMATWERT/>
+                    </IWERT>
+                    <IWERT standardname="kurzfristiger Bestandstrend">
+                        <WERT>?</WERT>
+                        <FORMATWERT/>
+                    </IWERT>
+                    <IWERT standardname="Risikofaktoren">
+                        <WERT>=</WERT>
+                        <FORMATWERT/>
+                    </IWERT>
+                    <IWERT standardname="Sonderfälle">
+                        <WERT/>
+                        <FORMATWERT/>
+                    </IWERT>
+                    <IWERT standardname="Letzter Nachweis">
+                        <WERT/>
+                        <FORMATWERT/>
+                    </IWERT>
+                    <IWERT standardname="Verantwortlichkeit">
+                        <WERT/>
+                        <FORMATWERT/>
+                    </IWERT>
+                    <IWERT standardname="Kommentar zur Taxonomie">
+                        <WERT>Sehr ähnlich ist A. margino-undulata (siehe Anmerkungen dort).</WERT>
+                        <FORMATWERT>Sehr ähnlich ist &lt;span style="font-style:italic"&gt;A.
+                            margino-undulata&lt;/span&gt; (siehe Anmerkungen dort).</FORMATWERT>
+                    </IWERT>
+                    <IWERT standardname="Kommentar zur Gefährdung">
+                        <WERT/>
+                        <FORMATWERT/>
+                    </IWERT>
+                    <IWERT standardname="Kommentar zur Nachsuche">
+                        <WERT/>
+                        <FORMATWERT/>
+                    </IWERT>
+                    <IWERT standardname="Weitere Kommentare">
+                        <WERT>Die Art kommt insbesondere an Erlenkätzchen, aber auch an Blättern in
+                            sehr luftfeuchten Standorten wie Erlensümpfen vor. </WERT>
+                        <FORMATWERT>Die Art kommt insbesondere an Erlenkätzchen, aber auch an
+                            Blättern in sehr luftfeuchten Standorten wie Erlensümpfen vor.
+                        </FORMATWERT>
+                    </IWERT>
+                    <IWERT standardname="Taxonomischer Bezug">
+                        <WERT/>
+                        <FORMATWERT/>
+                    </IWERT>
+                    <IWERT standardname="alte RL- Kat.">
+                        <WERT>R</WERT>
+                        <FORMATWERT/>
+                    </IWERT>
+                    <IWERT standardname="Eindeutiger Code">
+                        <WERT>400</WERT>
+                        <FORMATWERT/>
+                    </IWERT>
+                    <IWERT standardname="Feuchtkammer">
+                        <WERT/>
+                        <FORMATWERT/>
+                    </IWERT>
+                    <IWERT standardname="Phänologie">
+                        <WERT>7-9</WERT>
+                        <FORMATWERT/>
+                    </IWERT>
+                    <IWERT standardname="Mikrohabitat">
+                        <WERT>StreuK</WERT>
+                        <FORMATWERT/>
+                    </IWERT>
+                    <IWERT standardname="Areal">
+                        <WERT>trop</WERT>
+                        <FORMATWERT/>
+                    </IWERT>
+                    <IWERT standardname="Höhenstufe">
+                        <WERT>plan</WERT>
+                        <FORMATWERT/>
+                    </IWERT>
+                    <IWERT standardname="Dispersion">
+                        <WERT>l</WERT>
+                        <FORMATWERT/>
+                    </IWERT>
+                    <IWERT standardname="Zweite Zeile">
+                        <WERT>7-9; StreuK; trop; plan; l#A0, Lr, G+#Komm.: Die Art kommt
+                            insbesondere an Erlenkätzchen, aber auch an Blättern in sehr
+                            luftfeuchten Standorten wie Erlensümpfen vor. #Tax.: Sehr ähnlich ist A.
+                            margino-undulata (siehe Anmerkungen dort).</WERT>
+                        <FORMATWERT/>
+                    </IWERT>
+                    <IWERT standardname="Auswertung">
+                        <WERT>S</WERT>
+                        <FORMATWERT/>
+                    </IWERT>
+                    <IWERT standardname="Jahrzehnt">
+                        <WERT/>
+                        <FORMATWERT/>
+                    </IWERT>
+                    <IWERT standardname="Anteil">
+                        <WERT>A0</WERT>
+                        <FORMATWERT/>
+                    </IWERT>
+                    <IWERT standardname="Lage">
+                        <WERT>Lr</WERT>
+                        <FORMATWERT/>
+                    </IWERT>
+                    <IWERT standardname="Gefährdung">
+                        <WERT>G+</WERT>
+                        <FORMATWERT/>
+                    </IWERT>
+                </BEZUGSRAUM>
+            </INFORMATIONEN>
+        </TAXONYM>
+        <TAXONYM reihenfolge="193">
+            <WISSNAME>
+                <NANTEIL bereich="Eindeutiger Code">751</NANTEIL>
+                <NANTEIL bereich="Epitheton 1">Lamproderma</NANTEIL>
+                <NANTEIL bereich="Epitheton 2">atrosporum</NANTEIL>
+                <NANTEIL bereich="Epitheton 3">atrosporum</NANTEIL>
+                <NANTEIL bereich="Epitheton 4" />
+                <NANTEIL bereich="Epitheton 5" />
+                <NANTEIL bereich="Rang">agg.</NANTEIL>
+                <NANTEIL bereich="Ordnungszahl">23</NANTEIL>
+                <NANTEIL bereich="Autonym" />
+                <NANTEIL bereich="Reich">Pilze</NANTEIL>
+                <NANTEIL bereich="Bastard " />
+                <NANTEIL bereich="Autoren" />
+                <NANTEIL bereich="Zusätze">agg.</NANTEIL>
+                <NANTEIL bereich="SortWissName">Lamproderma atrosporum atrosporum </NANTEIL>
+                <NANTEIL bereich="SortArtEpi">atrosporum Lamproderma</NANTEIL>
+                <NANTEIL bereich="SortDeutName" />
+                <NANTEIL bereich="wissName">Lamproderma atrosporum</NANTEIL>
+                <NANTEIL bereich="Formatiert">&lt;span
+                    style="font-style:italic"&gt;Lamproderma&lt;/span&gt; &lt;span
+                    style="font-style:italic"&gt;atrosporum&lt;/span&gt;</NANTEIL>
+            </WISSNAME>
+            <INFORMATIONEN>
+                <BEZUGSRAUM name="Bund">
+                    <IWERT standardname="RL Kat.">
+                        <WERT>#dtpl_RLKat_STERN#</WERT>
+                        <FORMATWERT />
+                    </IWERT>
+                    <IWERT standardname="Kat. +/-">
+                        <WERT>=</WERT>
+                        <FORMATWERT />
+                    </IWERT>
+                    <IWERT standardname="Neobiota">
+                        <WERT />
+                        <FORMATWERT />
+                    </IWERT>
+                    <IWERT standardname="aktuelle Bestandsstituation">
+                        <WERT>s</WERT>
+                        <FORMATWERT />
+                    </IWERT>
+                    <IWERT standardname="langfristiger Bestandstrend">
+                        <WERT>=</WERT>
+                        <FORMATWERT />
+                    </IWERT>
+                    <IWERT standardname="kurzfristiger Bestandstrend">
+                        <WERT>=</WERT>
+                        <FORMATWERT />
+                    </IWERT>
+                    <IWERT standardname="Risikofaktoren">
+                        <WERT>=</WERT>
+                        <FORMATWERT />
+                    </IWERT>
+                    <IWERT standardname="Sonderfälle">
+                        <WERT />
+                        <FORMATWERT />
+                    </IWERT>
+                    <IWERT standardname="Letzter Nachweis">
+                        <WERT />
+                        <FORMATWERT />
+                    </IWERT>
+                    <IWERT standardname="Verantwortlichkeit">
+                        <WERT />
+                        <FORMATWERT />
+                    </IWERT>
+                    <IWERT standardname="Kommentar zur Taxonomie">
+                        <WERT>Formenreiche Gruppe vermutlich asexueller Kleinarten, die nach
+                            molekularbiologischen befunden (Fiore-Donno et al. 2008) in eine eigene
+                            Gattung (Meriderma) zu stellen ist. Alle zu Meriderma gehörenden Arten
+                            sind gut durch die trichterartig verbreiterten Capillitiumenden
+                            kenntlich. Poulain et al. (2011) unterscheiden im Lamproderma atrosporum
+                            agg. drei Arten, Meriderma carestiae (Ces. &amp; de Not.) Mar. Mey.
+                            &amp; Poulain, M. echinulatum (Meyl.) Mar. Mey. &amp; Poulain und M.
+                            cribrarioides (Fr.) Mar. Mey. &amp; Poulain. Die Kenntnisse zur
+                            Verbreitung der Arten dieser Gruppe in Deutschland sind gegenwärtig noch
+                            nicht ausreichend, um sie in dieser Liste differenziert zu
+                            behandeln.</WERT>
+                        <FORMATWERT>Formenreiche Gruppe vermutlich asexueller Kleinarten, die nach
+                            molekularbiologischen befunden &lt;span
+                            style="font-variant:small-caps"&gt;(Fiore-Donno&lt;/span&gt; et al.
+                            2008) in eine eigene Gattung (&lt;span
+                            style="font-style:italic"&gt;Meriderma&lt;/span&gt;) zu stellen ist.
+                            Alle zu &lt;span style="font-style:italic"&gt;Meriderma&lt;/span&gt;
+                            gehörenden Arten sind gut durch die trichterartig verbreiterten
+                            Capillitiumenden kenntlich. &lt;span
+                            style="font-variant:small-caps"&gt;Poulain&lt;/span&gt; et al. (2011)
+                            unterscheiden im &lt;span style="font-style:italic"&gt;Lamproderma
+                            atrosporum&lt;/span&gt; agg. drei Arten, &lt;span
+                            style="font-style:italic"&gt;Meriderma carestiae&lt;/span&gt; (Ces.
+                            &amp; de Not.) Mar. Mey. &amp; Poulain,&lt;span
+                            style="font-style:italic"&gt; M. echinulatum&lt;/span&gt; (Meyl.) Mar.
+                            Mey. &amp; Poulain und &lt;span style="font-style:italic"&gt;M.
+                            cribrarioides&lt;/span&gt; (Fr.) Mar. Mey. &amp; Poulain. Die Kenntnisse
+                            zur Verbreitung der Arten dieser Gruppe in Deutschland sind gegenwärtig
+                            noch nicht ausreichend, um sie in dieser Liste differenziert zu
+                            behandeln.</FORMATWERT>
+                    </IWERT>
+                    <IWERT standardname="Kommentar zur Gefährdung">
+                        <WERT />
+                        <FORMATWERT />
+                    </IWERT>
+                    <IWERT standardname="Kommentar zur Nachsuche">
+                        <WERT />
+                        <FORMATWERT />
+                    </IWERT>
+                    <IWERT standardname="Weitere Kommentare">
+                        <WERT />
+                        <FORMATWERT />
+                    </IWERT>
+                    <IWERT standardname="Taxonomischer Bezug">
+                        <WERT />
+                        <FORMATWERT />
+                    </IWERT>
+                    <IWERT standardname="alte RL- Kat.">
+                        <WERT>#dtpl_AlteRLKat_STERN#</WERT>
+                        <FORMATWERT />
+                    </IWERT>
+                    <IWERT standardname="Eindeutiger Code">
+                        <WERT>751</WERT>
+                        <FORMATWERT />
+                    </IWERT>
+                    <IWERT standardname="Feuchtkammer">
+                        <WERT />
+                        <FORMATWERT />
+                    </IWERT>
+                    <IWERT standardname="Phänologie">
+                        <WERT>(3-)4-5(-7)</WERT>
+                        <FORMATWERT />
+                    </IWERT>
+                    <IWERT standardname="Mikrohabitat">
+                        <WERT>Niv</WERT>
+                        <FORMATWERT />
+                    </IWERT>
+                    <IWERT standardname="Areal">
+                        <WERT>temp</WERT>
+                        <FORMATWERT />
+                    </IWERT>
+                    <IWERT standardname="Höhenstufe">
+                        <WERT>mont-alp</WERT>
+                        <FORMATWERT />
+                    </IWERT>
+                    <IWERT standardname="Dispersion">
+                        <WERT>l</WERT>
+                        <FORMATWERT />
+                    </IWERT>
+                    <IWERT standardname="Zweite Zeile">
+                        <WERT>(3-)4-5(-7); Niv; temp; mont-alp; l#A0, Lr-z, G+#Tax.: Formenreiche
+                            Gruppe vermutlich asexueller Kleinarten, die nach molekularbiologischen
+                            befunden (Fiore-Donno et al. 2008) in eine eigene Gattung (Meriderma) zu
+                            stellen ist. Alle zu Meriderma gehörenden Arten sind gut durch die
+                            trichterartig verbreiterten Capillitiumenden kenntlich. Poulain et al.
+                            (2011) unterscheiden im Lamproderma atrosporum agg. drei Arten,
+                            Meriderma carestiae (Ces. &amp; de Not.) Mar. Mey. &amp; Poulain, M.
+                            echinulatum (Meyl.) Mar. Mey. &amp; Poulain und M. cribrarioides (Fr.)
+                            Mar. Mey. &amp; Poulain. Die Kenntnisse zur Verbreitung der Arten dieser
+                            Gruppe in Deutschland sind gegenwärtig noch nicht ausreichend, um sie in
+                            dieser Liste differenziert zu behandeln.</WERT>
+                        <FORMATWERT />
+                    </IWERT>
+                    <IWERT standardname="Auswertung">
+                        <WERT>S</WERT>
+                        <FORMATWERT />
+                    </IWERT>
+                    <IWERT standardname="Jahrzehnt">
+                        <WERT />
+                        <FORMATWERT />
+                    </IWERT>
+                    <IWERT standardname="Anteil">
+                        <WERT>A0</WERT>
+                        <FORMATWERT />
+                    </IWERT>
+                    <IWERT standardname="Lage">
+                        <WERT>Lr-z</WERT>
+                        <FORMATWERT />
+                    </IWERT>
+                    <IWERT standardname="Gefährdung">
+                        <WERT>G+</WERT>
+                        <FORMATWERT />
+                    </IWERT>
+                </BEZUGSRAUM>
+            </INFORMATIONEN>
+        </TAXONYM><TAXONYM reihenfolge="377">
+            <WISSNAME>
+                <NANTEIL bereich="Eindeutiger Code"/>
+                <NANTEIL bereich="Epitheton 1">Comatricha</NANTEIL>
+                <NANTEIL bereich="Epitheton 2">dictyospora</NANTEIL>
+                <NANTEIL bereich="Epitheton 3">dictyospora</NANTEIL>
+                <NANTEIL bereich="Epitheton 4"/>
+                <NANTEIL bereich="Epitheton 5"/>
+                <NANTEIL bereich="Rang">spezies</NANTEIL>
+                <NANTEIL bereich="Ordnungszahl">20</NANTEIL>
+                <NANTEIL bereich="Autonym"/>
+                <NANTEIL bereich="Reich">Pilze</NANTEIL>
+                <NANTEIL bereich="Bastard "/>
+                <NANTEIL bereich="Autoren">L.F. Čelak. fil.</NANTEIL>
+                <NANTEIL bereich="Zusätze">nom. illeg.</NANTEIL>
+                <NANTEIL bereich="SortWissName">Comatricha dictyospora dictyospora </NANTEIL>
+                <NANTEIL bereich="SortArtEpi">dictyospora Comatricha</NANTEIL>
+                <NANTEIL bereich="SortDeutName"/>
+                <NANTEIL bereich="wissName">Comatricha dictyospora L.F. Čelak. fil. nom.
+                    illeg.</NANTEIL>
+                <NANTEIL bereich="Formatiert">&lt;span
+                    style="font-style:italic"&gt;Comatricha&lt;/span&gt; &lt;span
+                    style="font-style:italic"&gt;dictyospora&lt;/span&gt; &lt;span
+                    style="font-variant:small-caps"&gt;L.F. Čelak. fil.&lt;/span&gt; nom.
+                    illeg.</NANTEIL>
+            </WISSNAME>
+            <INFORMATIONEN>
+                <BEZUGSRAUM name="Bund">
+                    <IWERT standardname="RL Kat.">
+                        <WERT/>
+                        <FORMATWERT/>
+                    </IWERT>
+                    <IWERT standardname="Kat. +/-">
+                        <WERT/>
+                        <FORMATWERT/>
+                    </IWERT>
+                    <IWERT standardname="Neobiota">
+                        <WERT/>
+                        <FORMATWERT/>
+                    </IWERT>
+                    <IWERT standardname="aktuelle Bestandsstituation">
+                        <WERT/>
+                        <FORMATWERT/>
+                    </IWERT>
+                    <IWERT standardname="langfristiger Bestandstrend">
+                        <WERT/>
+                        <FORMATWERT/>
+                    </IWERT>
+                    <IWERT standardname="kurzfristiger Bestandstrend">
+                        <WERT/>
+                        <FORMATWERT/>
+                    </IWERT>
+                    <IWERT standardname="Risikofaktoren">
+                        <WERT/>
+                        <FORMATWERT/>
+                    </IWERT>
+                    <IWERT standardname="Sonderfälle">
+                        <WERT/>
+                        <FORMATWERT/>
+                    </IWERT>
+                    <IWERT standardname="Letzter Nachweis">
+                        <WERT/>
+                        <FORMATWERT/>
+                    </IWERT>
+                    <IWERT standardname="Verantwortlichkeit">
+                        <WERT>#dtpl_VERANTW_NB#</WERT>
+                        <FORMATWERT/>
+                    </IWERT>
+                    <IWERT standardname="Kommentar zur Taxonomie">
+                        <WERT>Nach Martin &amp; Alexopoulos (1969) und Farr (1988) steht für diese
+                            Art zur Zeit kein gültiger Name zur Verfügung. Im Index Fungorum wird C.
+                            dictyospora als Synonym von Stemonitopsis dictyospora (L. F. Čelak)
+                            Nann.-Bremek. als eigenständiges Taxon geführt, während Neubert et al.
+                            (2000: 308) den Namen als synonym zu Stemonitopsis reticulata (H.C.
+                            Gilbert) Nann.-Bremek. &amp; Y. Yamam. auffassen.</WERT>
+                        <FORMATWERT>Nach &lt;span style="font-variant:small-caps"&gt;Martin &amp;
+                            Alexopoulos&lt;/span&gt; (1969) und &lt;span
+                            style="font-variant:small-caps"&gt;Farr&lt;/span&gt; (1988) steht für
+                            diese Art zur Zeit kein gültiger Name zur Verfügung. Im Index Fungorum
+                            wird &lt;span style="font-style:italic"&gt;C. dictyospora&lt;/span&gt;
+                            als Synonym von &lt;span style="font-style:italic"&gt;Stemonitopsis
+                            dictyospora&lt;/span&gt; (&lt;span style="font-variant:small-caps"&gt;L.
+                            F. Čelak) Nann.-Bremek. &lt;/span&gt;als eigenständiges Taxon geführt,
+                            während &lt;span style="font-variant:small-caps"&gt;Neubert&lt;/span&gt;
+                            et al. (2000: 308) den Namen als synonym zu &lt;span
+                            style="font-style:italic"&gt;Stemonitopsis reticulata&lt;/span&gt;
+                            &lt;span style="font-variant:small-caps"&gt;(H.C. Gilbert) Nann.-Bremek.
+                            &amp; Y. Yamam.&lt;/span&gt; auffassen.</FORMATWERT>
+                    </IWERT>
+                    <IWERT standardname="Kommentar zur Gefährdung">
+                        <WERT/>
+                        <FORMATWERT/>
+                    </IWERT>
+                    <IWERT standardname="Kommentar zur Nachsuche">
+                        <WERT/>
+                        <FORMATWERT/>
+                    </IWERT>
+                    <IWERT standardname="Weitere Kommentare">
+                        <WERT>Der erste Nachweis dieser Sippe geht auf eine Aufsammlung von 1977
+                            durch Senge (vgl. Benkert 1986) zurück. Zwei weitere Kollektionen werden
+                            in Neubert et al. 2000: 309 zitiert. Da der Status des Namens jedoch
+                            ungeklärt ist, wird das Taxon im Gegensatz zur Roten Liste 1996 hier im
+                            Anhang A2 aufgeführt.</WERT>
+                        <FORMATWERT>Der erste Nachweis dieser Sippe geht auf eine Aufsammlung von
+                            1977 durch Senge (vgl. &lt;span
+                            style="font-variant:small-caps"&gt;Benkert&lt;/span&gt; 1986) zurück.
+                            Zwei weitere Kollektionen werden in &lt;span
+                            style="font-variant:small-caps"&gt;Neubert&lt;/span&gt; et al. 2000: 309
+                            zitiert. Da der Status des Namens jedoch ungeklärt ist, wird das Taxon
+                            im Gegensatz zur Roten Liste 1996 hier im Anhang A2
+                            aufgeführt.</FORMATWERT>
+                    </IWERT>
+                    <IWERT standardname="Taxonomischer Bezug">
+                        <WERT/>
+                        <FORMATWERT/>
+                    </IWERT>
+                    <IWERT standardname="alte RL- Kat.">
+                        <WERT/>
+                        <FORMATWERT/>
+                    </IWERT>
+                    <IWERT standardname="Eindeutiger Code">
+                        <WERT/>
+                        <FORMATWERT/>
+                    </IWERT>
+                    <IWERT standardname="Feuchtkammer">
+                        <WERT/>
+                        <FORMATWERT/>
+                    </IWERT>
+                    <IWERT standardname="Phänologie">
+                        <WERT/>
+                        <FORMATWERT/>
+                    </IWERT>
+                    <IWERT standardname="Mikrohabitat">
+                        <WERT/>
+                        <FORMATWERT/>
+                    </IWERT>
+                    <IWERT standardname="Areal">
+                        <WERT/>
+                        <FORMATWERT/>
+                    </IWERT>
+                    <IWERT standardname="Höhenstufe">
+                        <WERT/>
+                        <FORMATWERT/>
+                    </IWERT>
+                    <IWERT standardname="Dispersion">
+                        <WERT/>
+                        <FORMATWERT/>
+                    </IWERT>
+                    <IWERT standardname="Zweite Zeile">
+                        <WERT>Komm.: Der erste Nachweis dieser Sippe geht auf eine Aufsammlung von
+                            1977 durch Senge (vgl. Benkert 1986) zurück. Zwei weitere Kollektionen
+                            werden in Neubert et al. 2000: 309 zitiert. Da der Status des Namens
+                            jedoch ungeklärt ist, wird das Taxon im Gegensatz zur Roten Liste 1996
+                            hier im Anhang A2 aufgeführt.#Tax.: Nach Martin &amp; Alexopoulos (1969)
+                            und Farr (1988) steht für diese Art zur Zeit kein gültiger Name zur
+                            Verfügung. Im Index Fungorum wird C. dictyospora als Synonym von
+                            Stemonitopsis dictyospora (L. F. Čelak) Nann.-Bremek. als eigenständiges
+                            Taxon geführt, während Neubert et al. (2000: 308) den Namen als synonym
+                            zu Stemonitopsis reticulata (H.C. Gilbert) Nann.-Bremek. &amp; Y. Yamam.
+                            auffassen.</WERT>
+                        <FORMATWERT/>
+                    </IWERT>
+                    <IWERT standardname="Auswertung">
+                        <WERT>S</WERT>
+                        <FORMATWERT/>
+                    </IWERT>
+                    <IWERT standardname="Jahrzehnt">
+                        <WERT/>
+                        <FORMATWERT/>
+                    </IWERT>
+                    <IWERT standardname="Anteil">
+                        <WERT/>
+                        <FORMATWERT/>
+                    </IWERT>
+                    <IWERT standardname="Lage">
+                        <WERT/>
+                        <FORMATWERT/>
+                    </IWERT>
+                    <IWERT standardname="Gefährdung">
+                        <WERT/>
+                        <FORMATWERT/>
+                    </IWERT>
+                </BEZUGSRAUM>
+            </INFORMATIONEN>
+        </TAXONYM>
+        
+    </TAXONYME>
+</ROTELISTEDATEN>
