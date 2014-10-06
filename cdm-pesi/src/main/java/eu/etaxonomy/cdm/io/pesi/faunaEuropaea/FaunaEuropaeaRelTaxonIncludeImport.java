@@ -53,6 +53,7 @@ public class FaunaEuropaeaRelTaxonIncludeImport extends FaunaEuropaeaImportBase 
 	//private static final String acceptedTaxonUUID = "bab7642e-f733-4a21-848d-a15250d2f4ed"; //for faunEu (2.4)
 	private static final String acceptedTaxonUUID = "DADA6F44-B7B5-4C0A-9F32-980F54B02C36"; // for MfNFaunaEuropaea
 	
+	
 	private Reference<?> sourceRef;
 	private static String ALL_SYNONYM_FROM_CLAUSE = " FROM Taxon INNER JOIN Taxon AS Parent " +
 	" ON Taxon.TAX_TAX_IDPARENT = Parent.TAX_ID " +

@@ -35,6 +35,7 @@ import org.springframework.transaction.TransactionStatus;
 
 import eu.etaxonomy.cdm.api.service.TaxonServiceImpl;
 import eu.etaxonomy.cdm.common.CdmUtils;
+import eu.etaxonomy.cdm.common.profiler.ProfilerController;
 import eu.etaxonomy.cdm.io.berlinModel.BerlinModelTransformer;
 import eu.etaxonomy.cdm.io.common.Source;
 import eu.etaxonomy.cdm.io.common.mapping.UndefinedTransformerMethodException;
@@ -80,7 +81,6 @@ import eu.etaxonomy.cdm.model.taxon.Taxon;
 import eu.etaxonomy.cdm.model.taxon.TaxonBase;
 import eu.etaxonomy.cdm.model.taxon.TaxonNode;
 import eu.etaxonomy.cdm.model.taxon.TaxonRelationship;
-import eu.etaxonomy.cdm.profiler.ProfilerController;
 import eu.etaxonomy.cdm.strategy.cache.HTMLTagRules;
 import eu.etaxonomy.cdm.strategy.cache.TagEnum;
 import eu.etaxonomy.cdm.strategy.cache.name.BacterialNameDefaultCacheStrategy;
@@ -753,7 +753,7 @@ public class PesiTaxonExport extends PesiExportBase {
                 }
                 return kingdomID;
             } else {
-                logger.error("The taxon has no nodes: " + taxon.getTitleCache() + " the kingdom is taken from the nomenclatural code: " + PesiTransformer.nomenClaturalCode2Kingdom(nomenclaturalCode));
+                logger.debug("The taxon has no nodes: " + taxon.getTitleCache() + " the kingdom is taken from the nomenclatural code: " + PesiTransformer.nomenClaturalCode2Kingdom(nomenclaturalCode));
                 return PesiTransformer.nomenClaturalCode2Kingdom(nomenclaturalCode);
         }} else{
            return PesiTransformer.nomenClaturalCode2Kingdom(nomenclaturalCode);
@@ -844,6 +844,7 @@ public class PesiTaxonExport extends PesiExportBase {
 
 			// Increment pageNumber
 			pageNumber++;
+			inferredSynonymsDataToBeSaved = null;
 		}
 		if (taxonList.size() == 0) {
 			logger.info("No " + parentPluralString + " left to fetch.");
@@ -1042,6 +1043,7 @@ public class PesiTaxonExport extends PesiExportBase {
 			if (list == null) {
 				logger.info("No " + pluralString + " left to fetch.");
 			}
+			list = null;
 			// Commit transaction
 			commitTransaction(txStatus);
 			logger.debug("Committed transaction.");

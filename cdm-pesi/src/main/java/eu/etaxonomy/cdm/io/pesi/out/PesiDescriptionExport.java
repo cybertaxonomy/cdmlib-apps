@@ -27,6 +27,7 @@ import org.springframework.transaction.TransactionStatus;
 
 import com.microsoft.sqlserver.jdbc.SQLServerException;
 
+import eu.etaxonomy.cdm.common.profiler.ProfilerController;
 import eu.etaxonomy.cdm.io.berlinModel.BerlinModelTransformer;
 import eu.etaxonomy.cdm.io.common.DbExportStateBase;
 import eu.etaxonomy.cdm.io.common.Source;
@@ -189,7 +190,8 @@ public class PesiDescriptionExport extends PesiExportBase {
 		int count = 0;
 		int pastCount = 0;
 		boolean success = true;
-		int limit = state.getConfig().getLimitSave();
+		//int limit = state.getConfig().getLimitSave();
+		int limit = 100;
 
 		List<Taxon> taxonList = null;
 
@@ -198,28 +200,33 @@ public class PesiDescriptionExport extends PesiExportBase {
 		List<String> propPath = Arrays.asList(new String[]{"descriptions.elements.*"});
 
 		logger.debug("Start snapshot, before starting loop");
-	//	ProfilerController.memorySnapshot();
+		ProfilerController.memorySnapshot();
 		//taxon descriptions
 		int partitionCount = 0;
 		while ((taxonList = getNextTaxonPartition(Taxon.class, limit, partitionCount++, propPath )) != null   ) {
 
 			logger.info("Fetched " + taxonList.size() + " " + pluralString + ". Exporting...");
+			System.out.println("Fetched " + taxonList.size() + " " + pluralString + ". Exporting...");
 
 			for (Taxon taxon : taxonList) {
 				countTaxa++;
 				doCount(count++, modCount, pluralString);
 				state.setCurrentTaxon(taxon);
-				success &= handleSingleTaxon(taxon, state, notesMapping, occurrenceMapping, addSourceSourceMapping,
+				if (!taxon.getDescriptions().isEmpty()){
+					success &= handleSingleTaxon(taxon, state, notesMapping, occurrenceMapping, addSourceSourceMapping,
 						additionalSourceMapping, vernacularMapping, imageMapping);
+				}
+				
 			}
 			taxonList = null;
 			state.setCurrentTaxon(null);
-
+			
 			// Commit transaction
 			commitTransaction(txStatus);
 			logger.info("Exported " + (count - pastCount) + " " + pluralString + ". Total: " + count);
+			System.out.println("Exported " + (count - pastCount) + " " + pluralString + ". Total: " + count);
 			pastCount = count;
-
+			ProfilerController.memorySnapshot();
 			// Start transaction
 			txStatus = startTransaction(true);
 			logger.info("Started new transaction. Fetching some " + pluralString + " (max: " + limit + ") for description import ...");
@@ -251,8 +258,8 @@ public class PesiDescriptionExport extends PesiExportBase {
 		int count = 0;
 		int pastCount = 0;
 		boolean success = true;
-		int limit = state.getConfig().getLimitSave();
-
+		//int limit = state.getConfig().getLimitSave();
+		int limit = 100;
 		List<TaxonNameDescription> nameDescList = null;
 
 		TransactionStatus txStatus = startTransaction(true);
@@ -325,19 +332,21 @@ public class PesiDescriptionExport extends PesiExportBase {
 			PesiExportMapping vernacularMapping, PesiExportMapping imageMapping) throws SQLException {
 		boolean success = true;
 
-		System.out.println("handle single Taxon");
+		
 		Set<DescriptionBase<?>> descriptions = new HashSet<DescriptionBase<?>>();
 		descriptions.addAll(taxon.getDescriptions());
 
 		for (DescriptionBase<?> desc : descriptions){
-			countDescriptions++;
+			
 
 			boolean isImageGallery = desc.isImageGallery();
 			for (DescriptionElementBase element : desc.getElements()){
 				success &= handleDescriptionElement(state, notesMapping, occurrenceMapping, vernacularMapping, imageMapping,
 						addSourceSourceMapping, additionalSourceMapping, isImageGallery, element);
+				countDescriptions++;
 			}
 		}
+		logger.info("number of handled decriptionelements " + countDescriptions);
 		descriptions = null;
 		return success;
 	}
@@ -367,9 +376,9 @@ public class PesiDescriptionExport extends PesiExportBase {
 				if (isPesiDistribution(state, distribution)){
 					countDistribution++;
 					try{
-					    success &=occurrenceMapping.invoke(element);
+					    success &=occurrenceMapping.invoke(distribution);
 					}catch(SQLServerException e){
-					    System.err.println(element.getInDescription().getTitleCache());
+					    System.err.println(distribution.getInDescription().getTitleCache());
 					    e.printStackTrace();
 					}
 				}
@@ -503,8 +512,8 @@ public class PesiDescriptionExport extends PesiExportBase {
 		boolean success =  true;
 
 		// Get the limit for objects to save within a single transaction.
-		int limit = state.getConfig().getLimitSave();
-
+		//int limit = state.getConfig().getLimitSave();
+		int limit = 100;
 		txStatus = startTransaction(true);
 		ExtensionType taxCommentExtensionType = (ExtensionType)getTermService().find(PesiTransformer.taxCommentUuid);
 		ExtensionType fauCommentExtensionType = (ExtensionType)getTermService().find(PesiTransformer.fauCommentUuid);
@@ -889,7 +898,7 @@ public class PesiDescriptionExport extends PesiExportBase {
 		mapping.addMapper(DbExportIgnoreMapper.NewInstance("SourceNameCache", "Use OccurrenceSource table for sources instead"));
 
 		mapping.addMapper(DbAnnotationMapper.NewInstance(null, "Notes"));
-	//	mapping.addMapper(ExpertsAndLastActionMapper.NewInstance());
+		mapping.addMapper(ExpertsAndLastActionMapper.NewInstance());
 		mapping.addCollectionMapping(getOccurrenceSourceMapping());
 
 		return mapping;

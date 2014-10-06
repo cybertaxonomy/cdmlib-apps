@@ -494,7 +494,7 @@ public class FaunaEuropaeaRefImport extends FaunaEuropaeaImportBase {
 				Set<Taxon> acceptedTaxa = syn.getAcceptedTaxa();
 				if (acceptedTaxa.size() > 0) {
 					taxon = syn.getAcceptedTaxa().iterator().next();
-					logger.warn("Synonym (" + taxonBase.getUuid() + ") has accepted taxon" + taxon.getUuid());
+					//logger.warn("Synonym (" + taxonBase.getUuid() + ") has accepted taxon" + taxon.getUuid());
 				} else {
 //								if (logger.isDebugEnabled()) { 
 					logger.warn("Synonym (" + taxonBase.getUuid() + ") does not have accepted taxa");
