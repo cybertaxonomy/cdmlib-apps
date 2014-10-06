@@ -71,7 +71,11 @@ public abstract class PesiExportBase extends DbExportBase<PesiExportConfigurator
 	protected <CLASS extends TaxonBase> List<CLASS> getNextTaxonPartition(Class<CLASS> clazz, int limit, int partitionCount, List<String> propertyPath) {
 		List<OrderHint> orderHints = new ArrayList<OrderHint>();
 		orderHints.add(new OrderHint("id", OrderHint.SortOrder.ASCENDING ));
+		
 		List<CLASS> list = (List<CLASS>)getTaxonService().list(clazz, limit, partitionCount * limit, orderHints, propertyPath);
+		
+		
+		
 		if (list.isEmpty()){
 			return null;
 		}

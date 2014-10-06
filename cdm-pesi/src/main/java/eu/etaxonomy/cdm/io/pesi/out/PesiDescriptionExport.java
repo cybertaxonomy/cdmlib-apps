@@ -27,7 +27,7 @@ import org.springframework.transaction.TransactionStatus;
 
 import com.microsoft.sqlserver.jdbc.SQLServerException;
 
-import eu.etaxonomy.cdm.common.profiler.ProfilerController;
+import eu.etaxonomy.cdm.profiler.ProfilerController;
 import eu.etaxonomy.cdm.io.berlinModel.BerlinModelTransformer;
 import eu.etaxonomy.cdm.io.common.DbExportStateBase;
 import eu.etaxonomy.cdm.io.common.Source;
