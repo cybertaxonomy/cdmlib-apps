@@ -11,22 +11,17 @@ package eu.etaxonomy.cdm.app.redlist;
 
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.net.URL;
 import java.util.UUID;
 
 import org.apache.log4j.Logger;
 
 import eu.etaxonomy.cdm.app.common.CdmDestinations;
-import eu.etaxonomy.cdm.app.common.CdmImportSources;
-import eu.etaxonomy.cdm.app.exel.NormalExplicitTestActivator;
 import eu.etaxonomy.cdm.database.DbSchemaValidation;
 import eu.etaxonomy.cdm.database.ICdmDataSource;
 import eu.etaxonomy.cdm.io.common.CdmDefaultImport;
-import eu.etaxonomy.cdm.io.common.Source;
 import eu.etaxonomy.cdm.io.common.IImportConfigurator.CHECK;
 import eu.etaxonomy.cdm.io.common.IImportConfigurator.DO_REFERENCES;
 import eu.etaxonomy.cdm.io.redlist.bfnXml.BfnXmlImportConfigurator;
-import eu.etaxonomy.cdm.io.tcsxml.in.TcsXmlImportConfigurator;
 
 /**
  * @author a.oppermann
