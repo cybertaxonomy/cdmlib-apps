@@ -522,8 +522,8 @@ public class BerlinModelReferenceImport extends BerlinModelImportBase {
 		}
 
 		//author
-		TeamOrPersonBase<?> author = getAuthorTeam(refAuthorString , nomAuthor);
-		ref.setAuthorTeam(author);
+		TeamOrPersonBase<?> author = getAuthorship(refAuthorString , nomAuthor);
+		ref.setAuthorship(author);
 		
 		//save
 		if (! refToSave.containsKey(refId)){
@@ -843,7 +843,7 @@ public class BerlinModelReferenceImport extends BerlinModelImportBase {
 	}
 
 	
-	private static TeamOrPersonBase<?> getAuthorTeam(String authorString, TeamOrPersonBase<?> nomAuthor){
+	private static TeamOrPersonBase<?> getAuthorship(String authorString, TeamOrPersonBase<?> nomAuthor){
 		TeamOrPersonBase<?> result;
 		if (nomAuthor != null){
 			result = nomAuthor;

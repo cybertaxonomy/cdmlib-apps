@@ -180,7 +180,7 @@ public class UseImport {
 				Reference citation = ReferenceFactory.newGeneric();
 				Team authorTeam = Team.NewInstance();
 				authorTeam.setTitleCache(lstUpdate.get(3));
-				citation.setAuthorTeam(authorTeam);
+				citation.setAuthorship(authorTeam);
 				citation.setTitle(lstUpdate.get(4));
 				
 				//citation.

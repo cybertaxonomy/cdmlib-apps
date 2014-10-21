@@ -304,7 +304,7 @@ public abstract class IndexFungorumImportBase extends CdmImportBase<IndexFungoru
 		//inRef + inRefAuthor
 		if (pubAuthor != null){
 			Reference<?> inRef = ReferenceFactory.newGeneric();
-			inRef.setAuthorTeam(pubAuthor);
+			inRef.setAuthorship(pubAuthor);
 			ref.setInReference(inRef);
 			hasInReference = true;
 		}
@@ -314,7 +314,7 @@ public abstract class IndexFungorumImportBase extends CdmImportBase<IndexFungoru
 		if (refAuthor == null){
 			refAuthor = Team.NewTitledInstance(authorStr, authorStr);
 		}
-		ref.setAuthorTeam(refAuthor);
+		ref.setAuthorship(refAuthor);
 		//location
 		String location = rs.getString("pubIMIAbbrLoc");
 		if (StringUtils.isNotBlank(location)){

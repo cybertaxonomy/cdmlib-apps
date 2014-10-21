@@ -69,7 +69,7 @@ public class CentralAfricaEricaceaeTaxonImport  extends EfloraTaxonImport  {
 		name.setNomenclaturalMicroReference(microReference);
 		
 		TeamOrPersonBase  nameTeam = CdmBase.deproxy(name.getCombinationAuthorTeam(), TeamOrPersonBase.class);
-		TeamOrPersonBase  refTeam = nomRef.getAuthorTeam();
+		TeamOrPersonBase  refTeam = nomRef.getAuthorship();
 		if (nameTeam == null ){
 			logger.warn("Name has nom. ref. but no author team. Name: " + name.getTitleCache() + ", Nom.Ref.: " + value);
 		}else if (refTeam == null ){
@@ -77,7 +77,7 @@ public class CentralAfricaEricaceaeTaxonImport  extends EfloraTaxonImport  {
 		}else if (! authorTeamsMatch(refTeam, nameTeam)){
 			logger.warn("Nom.Ref. author and comb. author do not match: " + nomRef.getTitleCache() + " <-> " + nameTeam.getNomenclaturalTitle());
 		}else {
-			nomRef.setAuthorTeam(nameTeam);
+			nomRef.setAuthorship(nameTeam);
 			nomRef.setTitle(CdmUtils.Nz(nomRef.getTitle()) + " - no title given yet -");
 			nameTeam.setTitleCache(refTeam.getTitleCache(), true);
 		}
@@ -117,7 +117,7 @@ public class CentralAfricaEricaceaeTaxonImport  extends EfloraTaxonImport  {
 			String author = titleToParse.substring(0, start).trim();
 			author = parseInRefrence(ref, author);
 			TeamOrPersonBase team = parseSingleTeam(author);
-			ref.setAuthorTeam(team);
+			ref.setAuthorship(team);
 			ref.setProtectedTitleCache(false);
 		}else{
 			logger.warn("Could not parse reference: " +  titleToParse);
@@ -133,7 +133,7 @@ public class CentralAfricaEricaceaeTaxonImport  extends EfloraTaxonImport  {
 			String myAuthorString = author.substring(0, pos);
 			Reference inReference = ReferenceFactory.newGeneric();
 			TeamOrPersonBase inAuthor = parseSingleTeam(inAuthorString);
-			inReference.setAuthorTeam(inAuthor);
+			inReference.setAuthorship(inAuthor);
 			ref.setInReference(inReference);
 			return myAuthorString;
 		}else{
@@ -173,7 +173,7 @@ public class CentralAfricaEricaceaeTaxonImport  extends EfloraTaxonImport  {
 		ref.setTitleCache(referenceTitle, true);
 		
 		TeamOrPersonBase<?> team = getReferenceAuthor(ref, name);
-		ref.setAuthorTeam(team);
+		ref.setAuthorship(team);
 	
 		String[] multipleReferences = ref.getTitleCache().split("&");
 		
@@ -181,7 +181,7 @@ public class CentralAfricaEricaceaeTaxonImport  extends EfloraTaxonImport  {
 		for (String singleReferenceString : multipleReferences){
 			Reference<?> singleRef = ReferenceFactory.newGeneric();
 			singleRef.setTitleCache(singleReferenceString.trim(), true);
-			singleRef.setAuthorTeam(team);
+			singleRef.setAuthorship(team);
 			
 			String microReference = parseReferenceYearAndDetailForUsage(singleRef);
 			

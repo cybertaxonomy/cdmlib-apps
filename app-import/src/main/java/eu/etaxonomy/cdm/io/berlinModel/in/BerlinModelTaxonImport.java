@@ -241,8 +241,7 @@ public class BerlinModelTaxonImport  extends BerlinModelImportBase {
 						}
 						
 						if ( ! misapplied){
-//							logger.error("Publish Flag for synonyms not yet handled correctly");
-//							taxonBase.setPublish(publishFlag);
+							taxonBase.setPublish(publishFlag);
 							if(taxonBase.isInstanceOf(Taxon.class) ){
 								CdmBase.deproxy(taxonBase, Taxon.class).setPublish(publishFlag);
 							}

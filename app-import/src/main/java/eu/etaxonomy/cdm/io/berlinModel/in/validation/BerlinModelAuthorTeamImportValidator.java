@@ -26,7 +26,7 @@ public class BerlinModelAuthorTeamImportValidator implements IOValidator<BerlinM
 	@Override
 	public boolean validate(BerlinModelImportState state) {
 		boolean result = true;
-		System.out.println("Checking for authorteams not yet implemented");
+		System.out.println("Checking for authors not yet implemented");
 		//result &= checkArticlesWithoutJournal(bmiConfig);
 		//result &= checkPartOfJournal(bmiConfig);
 		

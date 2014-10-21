@@ -1370,7 +1370,7 @@ public class EfloraTaxonImport  extends EfloraImportBase implements ICdmIO<Eflor
 		if (team == null){
 			team = lastTeam;
 		}
-		ref.setAuthorTeam(team);
+		ref.setAuthorship(team);
 		
 		TaxonDescription description = getDescription(taxon);
 		TextData textData = TextData.NewInstance(Feature.CITATION());
@@ -1431,7 +1431,7 @@ public class EfloraTaxonImport  extends EfloraImportBase implements ICdmIO<Eflor
 				logger.error("ERROR occurred when trying to split title: " +  title + "; split[0]: + " + split[0]);
 			}
 			book.setTitle(title);
-			book.setAuthorTeam(bookTeam);
+			book.setAuthorship(bookTeam);
 			book.setDatePublished(ref.getDatePublished());
 			ref.setTitle(null);
 			ref.setInBook(book);
@@ -1526,7 +1526,7 @@ public class EfloraTaxonImport  extends EfloraImportBase implements ICdmIO<Eflor
 			homonymName.setNomenclaturalMicroReference(homonymNomRefDetail);
 			String authorTitle = homonymNomRef.getTitleCache();
 			Team team = Team.NewTitledInstance(authorTitle, authorTitle);
-			homonymNomRef.setAuthorTeam(team);
+			homonymNomRef.setAuthorship(team);
 			homonymNomRef.setTitle("");
 			homonymNomRef.setProtectedTitleCache(false);
 			
@@ -1570,7 +1570,7 @@ public class EfloraTaxonImport  extends EfloraImportBase implements ICdmIO<Eflor
 		if (team == null){
 			logger.warn("Name has nom. ref. but no author team. Name: " + name.getTitleCache() + ", Nom.Ref.: " + value);
 		}else{
-			nomRef.setAuthorTeam(team);
+			nomRef.setAuthorship(team);
 		}
 		return team;
 	}

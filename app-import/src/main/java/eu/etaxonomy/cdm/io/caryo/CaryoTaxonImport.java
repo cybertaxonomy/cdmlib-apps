@@ -339,7 +339,7 @@ public class CaryoTaxonImport  extends DbImportBase<CaryoImportState, CaryoImpor
 				IBookSection section = ReferenceFactory.newBookSection();
 				section.setInBook(book);
 				TeamOrPersonBase<?> inAuthor = getInAuthor(inAutorStr);
-				book.setAuthorTeam(inAuthor);
+				book.setAuthorship(inAuthor);
 				result = section;
 			}else{
 				result = book;
@@ -349,7 +349,7 @@ public class CaryoTaxonImport  extends DbImportBase<CaryoImportState, CaryoImpor
 			result = null;
 		}
 		if (result != null){
-			result.setAuthorTeam(author);
+			result.setAuthorship(author);
 			makeDate(state, rs, result, id);
 		}
 		return result;

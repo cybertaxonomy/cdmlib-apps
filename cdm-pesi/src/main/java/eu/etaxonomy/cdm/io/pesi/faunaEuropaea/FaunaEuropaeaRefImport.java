@@ -240,7 +240,7 @@ public class FaunaEuropaeaRefImport extends FaunaEuropaeaImportBase {
 					}
 				}
 				
-				reference.setAuthorTeam(author);
+				reference.setAuthorship(author);
 				
 				ImportHelper.setOriginalSource(reference, fauEuConfig.getSourceReference(), refId, namespace);
 				ImportHelper.setOriginalSource(author, fauEuConfig.getSourceReference(), refId, namespace);

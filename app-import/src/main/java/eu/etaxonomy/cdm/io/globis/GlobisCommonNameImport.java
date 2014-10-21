@@ -208,7 +208,7 @@ public class GlobisCommonNameImport  extends GlobisImportBase<Taxon> {
 					author = makeSingleAuthor(authors);
 				}
 				
-				result.setAuthorTeam(author);
+				result.setAuthorship(author);
 				refMap.put(refId,result);
 				rs.close();
 			} catch (SQLException e) {

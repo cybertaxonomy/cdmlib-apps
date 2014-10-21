@@ -83,7 +83,7 @@ public class BerlinModelReferenceExport extends BerlinModelExportBase<Reference>
 		mapping.addMapper(MethodMapper.NewInstance("NomRefCache", this));
 		mapping.addMapper(DbBooleanMapper.NewFalseInstance("isProtectedTitleCache","PreliminaryFlag"));
 
-		mapping.addMapper(DbObjectMapper.NewInstance("authorTeam", "NomAuthorTeamFk"));
+		mapping.addMapper(DbObjectMapper.NewInstance("authorship", "NomAuthorTeamFk"));
 		mapping.addMapper(MethodMapper.NewInstance("RefAuthorString", this));
 		
 		mapping.addMapper(DbStringMapper.NewInstance("title", "Title"));
@@ -288,7 +288,7 @@ public class BerlinModelReferenceExport extends BerlinModelExportBase<Reference>
 		if (ref == null){
 			return null;
 		}else{
-			return (ref.getAuthorTeam() == null)? null: ref.getAuthorTeam().getTitleCache();
+			return (ref.getAuthorship() == null)? null: ref.getAuthorship().getTitleCache();
 		}
 	}
 

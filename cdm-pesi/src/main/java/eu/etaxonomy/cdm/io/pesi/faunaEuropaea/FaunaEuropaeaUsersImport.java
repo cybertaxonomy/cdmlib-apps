@@ -199,7 +199,7 @@ public class FaunaEuropaeaUsersImport extends FaunaEuropaeaImportBase {
 				}
 				reference.setTitleCache(referenceTitleCache.toString(), true);
 				
-				reference.setAuthorTeam((TeamOrPersonBase)person);
+				reference.setAuthorship((TeamOrPersonBase)person);
 				
 				//ImportHelper.setOriginalSource(user, fauEuConfig.getSourceReference(), userId, namespace);
 				ImportHelper.setOriginalSource(person, fauEuConfig.getSourceReference(), refId, namespace);

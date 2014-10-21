@@ -265,7 +265,7 @@ public class PesiSourceExport extends PesiExportBase {
 
 		try {
 		if (reference != null) {
-			TeamOrPersonBase team = reference.getAuthorTeam();
+			TeamOrPersonBase team = reference.getAuthorship();
 			if (team != null) {
 				result = team.getTitleCache();
 //				result = team.getNomenclaturalTitle();

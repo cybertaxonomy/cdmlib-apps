@@ -576,7 +576,7 @@ public class CentralAfricaFernsTaxonImport  extends CentralAfricaFernsImportBase
 			bracket = bracket.substring(0, bracket.length()-1);
 		}
 		Team team = Team.NewTitledInstance(authorPart, authorPart);
-		result.setAuthorTeam(team);
+		result.setAuthorship(team);
 		String[] bracketSplit = bracket.split(":");
 		TimePeriod datePublished = TimePeriodParser.parseString(bracketSplit[0].trim());
 		result.setDatePublished(datePublished);
@@ -648,7 +648,7 @@ public class CentralAfricaFernsTaxonImport  extends CentralAfricaFernsImportBase
 					StringUtils.isNotBlank(datePublishedString) || StringUtils.isNotBlank(paperTitle)){
 			NonViralName<?> name = CdmBase.deproxy(taxonBase.getName(), NonViralName.class);
 			Reference<?> reference = ReferenceFactory.newGeneric();
-			reference.setAuthorTeam((TeamOrPersonBase<?>)name.getCombinationAuthorTeam());
+			reference.setAuthorship((TeamOrPersonBase<?>)name.getCombinationAuthorTeam());
 			reference.setTitle(referenceString);
 			reference.setVolume(volume);
 			reference.setEdition(part);

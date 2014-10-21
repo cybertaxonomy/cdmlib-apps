@@ -169,7 +169,7 @@ public class GlobisReferenceImport  extends GlobisImportBase<Reference> implemen
 			
 			//refAuthor
 			TeamOrPersonBase<?> author = makeAuthor(refAuthor, state);
-			ref.setAuthorTeam(author);
+			ref.setAuthorship(author);
 			
 			//inRef
 			if (isNotBlank(refJournal)){

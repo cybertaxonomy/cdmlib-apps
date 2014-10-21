@@ -90,7 +90,7 @@ public class TestDatabase {
 		DataSet dataSet = buildDataSet();
 		
 		appCtr.getTermService().save(dataSet.getTerms());
-		appCtr.getTaxonService().save(dataSet.getTaxonBases());
+		appCtr.getTaxonService().save((List)dataSet.getTaxonBases());
 
 		appCtr.commitTransaction(txStatus);
 		appCtr.close();
@@ -231,12 +231,12 @@ public class TestDatabase {
 		
         // references
 		sec = ReferenceFactory.newBook();
-		sec.setAuthorTeam(linne);
+		sec.setAuthorship(linne);
 		sec.setTitleCache("Plant Specification & Taxonomy", true);
 		references.add(sec);
 		
 		citRef = ReferenceFactory.newDatabase();
-		citRef.setAuthorTeam(linne);
+		citRef.setAuthorship(linne);
 		citRef.setTitleCache("BioCASE", true);
 		references.add(citRef);
 
@@ -341,7 +341,7 @@ public class TestDatabase {
 //		dataSet.setAgentData(agentData); //TODO
 		dataSet.setReferences(references);
 		dataSet.setTaxonomicNames(taxonomicNames);
-		dataSet.setTaxonBases(taxonBases);
+		dataSet.setTaxonBases((List)taxonBases);
 		
 		
 		return dataSet;

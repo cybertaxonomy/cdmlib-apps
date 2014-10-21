@@ -80,7 +80,7 @@ public class SynthesysCacheActivator {
             p.setFirstname("Quentin");
             p.setLastname("Groom");
             p.addEmailAddress("qgroom@bsbi.co.uk");
-            reference.setAuthorTeam(p);
+            reference.setAuthorship(p);
             reference.setOrganization("Botanical Society of the British Isles");
 
             specimenImportConfigurator.setSourceReference(reference);
