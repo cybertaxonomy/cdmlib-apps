@@ -56,7 +56,7 @@ public class EuroMedActivator {
 //	static final ICdmDataSource cdmDestination = CdmDestinations.cdm_test_euroMed();
 	
 	static final ICdmDataSource cdmDestination = CdmDestinations.cdm_pesi_euromed();
-//	static final ICdmDataSource cdmDestination = CdmDestinations.cdm_test_local_euromed();
+//	static final ICdmDataSource cdmDestination = CdmDestinations.cdm_test_local_euromed3();
 //	static final ICdmDataSource cdmDestination = CdmDestinations.localH2();
 	
 	static final boolean includePesiExport = false;
@@ -79,7 +79,7 @@ public class EuroMedActivator {
 	//editor - import
 	static final EDITOR editor = EDITOR.EDITOR_AS_EDITOR;
 	
-	//NomeclaturalCode
+	//NomenclaturalCode
 	static final NomenclaturalCode nomenclaturalCode = NomenclaturalCode.ICNAFP;
 
 	//ignore null
@@ -101,9 +101,10 @@ public class EuroMedActivator {
 	
 	static String taxonTable = "v_cdm_exp_taxaAll";
 	static String classificationQuery = " SELECT DISTINCT t.PTRefFk, r.RefCache FROM PTaxon t INNER JOIN Reference r ON t.PTRefFk = r.RefId WHERE t.PTRefFk = " + sourceSecId; 
-	static String relPTaxonIdQuery = " SELECT TOP (100) PERCENT r.RelPTaxonId " + 
+	static String relPTaxonIdQuery = " SELECT r.RelPTaxonId " + 
 					" FROM RelPTaxon AS r INNER JOIN v_cdm_exp_taxaDirect AS a ON r.PTNameFk2 = a.PTNameFk AND r.PTRefFk2 = a.PTRefFk" +
-					" ORDER BY r.RelPTaxonId ";  // AND r.RelQualifierFk =1 
+					" WHERE r.RelPTaxonID NOT IN (1883791,1883800,1883823,1883852,1883853,1883864,1883896,1883921,1883943,1883944,1883955,1883972,1884008,1884030,1884031,1884035) " + //Unpublished Kew taxa which are not imported anymore
+					" ";  // AND r.RelQualifierFk =1 
 	static String nameIdTable = " v_cdm_exp_namesAll ";
 	static String referenceIdTable = " v_cdm_exp_refAll ";
 	static String refDetailFilter =  " RefDetailID IN (SELECT RefDetailID FROM v_cdm_exp_RefDetail) ";
