@@ -111,6 +111,7 @@ app-import/src/main/java/eu/etaxonomy/cdm/app/wp6/palmae/PalmaeProtologueImportA
 app-import/src/main/java/eu/etaxonomy/cdm/app/wp6/palmae/PalmaeTaxonXImportActivator.java -text
 app-import/src/main/java/eu/etaxonomy/cdm/app/wp6/palmae/UseImport.java -text
 app-import/src/main/java/eu/etaxonomy/cdm/app/wp6/palmae/config/PalmaeProtologueImportConfigurator.java -text
+app-import/src/main/java/eu/etaxonomy/cdm/database/update/BgbmInstancesUpdater.java -text
 app-import/src/main/java/eu/etaxonomy/cdm/io/PalmaeImageImport.java -text
 app-import/src/main/java/eu/etaxonomy/cdm/io/PalmaeProtologueImport.java -text
 app-import/src/main/java/eu/etaxonomy/cdm/io/ProtologueImport.java -text
