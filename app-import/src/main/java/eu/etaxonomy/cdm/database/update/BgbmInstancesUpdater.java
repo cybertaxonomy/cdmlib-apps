@@ -45,7 +45,24 @@ public class BgbmInstancesUpdater {
 		"cdm_caryo_caryophyllales","cdm_flora_malesiana_prospective","cdm_pesi_all","cdm_salvador",
 		};
 	
-	private static String[] productionDatabases = new String[]{"cdm_integration_cichorieae",};
+	private static String[] productionDatabases = new String[]{
+		"cdm_col", "cdm_production_acantholimon","cdm_production_algaterra",
+		"cdm_production_amaranthaceae","cdm_production_cactaceae",
+		"cdm_production_campanulaceae","cdm_production_caryophyllales",
+		"cdm_production_chenopodiaceae","cdm_production_cichorieae",
+		"cdm_production_corvidae","cdm_production_cyprus",
+		"cdm_production_dianthus","cdm_production_diptera",
+		"cdm_production_flora_central_africa","cdm_production_flora_malesiana",
+		"cdm_production_flora_malesiana_prospective","cdm_production_flore_gabon",
+		"cdm_production_globis","cdm_production_nyctaginaceae",
+		"cdm_production_palmae","cdm_production_piB_campylopus_pilot",
+		"cdm_production_piB_eupolybothrus_pilot","cdm_production_piB_lactarius_pilot",
+		"cdm_production_piB_loranthaceae","cdm_production_piB_nephrolepis_pilot",
+		"cdm_production_piB_spiders_pilot","cdm_production_polygonaceae",
+		"cdm_production_proibiosphere_ants_pilot","cdm_production_proibiosphere_chenopodium_pilot",
+		"cdm_production_rl_armeria_demo","cdm_production_rl_lumbricidae",
+		"cdm_production_rl_odonata_demo","cdm_production_rl_standardliste",
+		"cdm_production_tamaricaceae","cdm_production_vibrant_index"};
 
 	static BgbmServer bgbmServer = BgbmServer.TEST;
 	
@@ -67,7 +84,7 @@ public class BgbmInstancesUpdater {
     		ICdmDataSource dataSource = CdmDataSource.NewMySqlInstance(server, database, username, AccountStore.readOrStorePassword(server, database, username, null));
     		try {
     			CdmUpdater updater = new CdmUpdater();
-    			//result = updater.updateToCurrentVersion(dataSource, DefaultProgressMonitor.NewInstance());
+    			result = updater.updateToCurrentVersion(dataSource, DefaultProgressMonitor.NewInstance());
     			CdmApplicationController appCtr = CdmIoApplicationController.NewInstance(dataSource,schema);
     			System.out.println(appCtr.getClassificationService().count(Classification.class));
     		} catch (Exception e) {
