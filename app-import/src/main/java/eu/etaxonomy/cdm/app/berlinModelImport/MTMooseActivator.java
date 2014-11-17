@@ -43,9 +43,9 @@ public class MTMooseActivator {
 	//database validation status (create, update, validate ...)
 	static DbSchemaValidation hbm2dll = DbSchemaValidation.CREATE;
 	static final Source berlinModelSource = BerlinModelSources.MT_MOOSE();
-	static final ICdmDataSource cdmDestination = CdmDestinations.localH2();
+//	static final ICdmDataSource cdmDestination = CdmDestinations.localH2();
 //	static final ICdmDataSource cdmDestination = CdmDestinations.cdm_mt_moose();
-//	static final ICdmDataSource cdmDestination = CdmDestinations.cdm_test_local_mysql_moose();
+	static final ICdmDataSource cdmDestination = CdmDestinations.cdm_test_local_mysql_moose();
 	
 	
 	static final UUID classificationUuid = UUID.fromString("601d8a00-cffe-4509-af93-b15b543ccf8d");
