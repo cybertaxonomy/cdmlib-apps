@@ -9,6 +9,7 @@
 
 package eu.etaxonomy.cdm.app.jaxb;
 
+import java.io.File;
 import java.net.URI;
 import java.net.URISyntaxException;
 
@@ -30,7 +31,7 @@ public class JaxbImportActivator {
 
 	/* SerializeFrom DB **/
 //	private static final ICdmDataSource cdmDestination = CdmDestinations.cdm_test_local_mysql_test();
-	private static final ICdmDataSource cdmDestination = CdmDestinations.localH2Armeria();
+	private static final ICdmDataSource cdmDestination = CdmDestinations.localH2Standardliste();
 	
 	
 	// Import:
@@ -39,7 +40,8 @@ public class JaxbImportActivator {
 //		"file:/C:/export_test_app_import.xml";
 //	"file:/C:/localCopy/Data/kr�hen/201206141338-jaxb_export-cdm.xml";
 //	"file:/C:/opt/data/rl/201406041541-jaxb_export-Regenwuermer.xml";
-	"file:/C:/opt/data/rl/201406241132-jaxb_export-Armeria.xml";
+//	"file:/C:/opt/data/rl/201406241132-jaxb_export-Armeria.xml";
+	"file:////PESIIMPORT3/redlist/standardliste/standardliste_jaxb.xml";
 	
 
 	/** NUMBER_ROWS_TO_RETRIEVE = 0 is the default case to retrieve all rows.
@@ -49,8 +51,6 @@ public class JaxbImportActivator {
 	private static final int NUMBER_ROWS_TO_RETRIEVE = 0;
 
 	private static final Logger logger = Logger.getLogger(JaxbImportActivator.class);
-
-
 
 	private void invokeImport(String importFileParamString, ICdmDataSource destination) {
 		try {
@@ -80,7 +80,24 @@ public class JaxbImportActivator {
 		} catch (URISyntaxException e) {
 			e.printStackTrace();
 		}
-	
+	}
+
+	private void invokeImport(URI importUri, ICdmDataSource destination) {
+		JaxbImportConfigurator jaxbImportConfigurator;
+		if (destination != null){
+			jaxbImportConfigurator = JaxbImportConfigurator.NewInstance(importUri, destination);
+		}else {
+			jaxbImportConfigurator = JaxbImportConfigurator.NewInstance(importUri, cdmDestination);
+		}
+		
+		CdmDefaultImport<JaxbImportConfigurator> jaxbImport = 
+			new CdmDefaultImport<JaxbImportConfigurator>();
+
+
+		// invoke import
+		logger.debug("Invoking Jaxb import");
+
+		jaxbImport.invoke(jaxbImportConfigurator, destination, true);
 
 	}
 
@@ -121,10 +138,23 @@ public class JaxbImportActivator {
 		JaxbImportActivator jia = new JaxbImportActivator();
 		ICdmDataSource destination = CdmDestinations.chooseDestination(args) != null ? CdmDestinations.chooseDestination(args) : cdmDestination;
 		String file = chooseFile(args)!= null ? chooseFile(args) : importFileNameString;
+
+		File file2 = new File("//PESIIMPORT3/redlist/standardliste/standardliste_jaxb.xml");
+		boolean exists = file2.exists();
+//		System.out.println(exists);
+		URI uri = file2.toURI();
+//		System.out.println(uri.toString());
+		
+		
+		File fileTest = new File(uri);
+		exists = fileTest.exists();
+//		System.out.println(exists);
+
+		
 		CdmApplicationController appCtr = null;
 //		appCtr = jia.initDb(destination);
 				
-		jia.invokeImport(file, destination);
+		jia.invokeImport(uri, destination);
 	}
 
 }
