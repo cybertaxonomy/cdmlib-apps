@@ -362,7 +362,10 @@ public class CdmDestinations {
 	public static ICdmDataSource localH2Armeria(){
 		return CdmDataSource.NewH2EmbeddedInstance("armeria", "sa", "");
 	}
-
+	
+	public static ICdmDataSource localH2Standardliste(){
+		return CdmDataSource.NewH2EmbeddedInstance("standardliste", "sa", "");
+	}
 
 	public static ICdmDataSource localH2Cichorieae(){
 		return CdmDataSource.NewH2EmbeddedInstance("cichorieae", "sa", "");
