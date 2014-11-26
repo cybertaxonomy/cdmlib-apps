@@ -109,7 +109,7 @@ public class CdmDestinations {
 		DatabaseTypeEnum dbType = DatabaseTypeEnum.MySQL;
 		String cdmServer = "127.0.0.1";
 		String cdmDB = "test";
-		String cdmUserName = "root";     //root on pesiimport2
+		String cdmUserName = "edit";     //root on pesiimport2
 		return makeDestination(dbType, cdmServer, cdmDB, -1, cdmUserName, null);
 	}
 
@@ -608,15 +608,9 @@ public class CdmDestinations {
 			if(method.getName().equals(possibleDestination)){
 				try {
 					return (ICdmDataSource) method.invoke(null, null);
-				} catch (IllegalArgumentException e) {
-					// TODO Auto-generated catch block
+				} catch (Exception e) {
 					e.printStackTrace();
-				} catch (IllegalAccessException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				} catch (InvocationTargetException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
+					throw new RuntimeException(e);
 				}
 			}
 		}
