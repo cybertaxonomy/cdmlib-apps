@@ -26,22 +26,30 @@ import eu.etaxonomy.cdm.io.jaxb.JaxbImportConfigurator;
 /**
  * @author a.babadshanjan
  * @created 25.09.2008
+ * 
+ * NOTE: the result may go into 
+ * cdmlib-persistence\target\test-classes\eu\etaxonomy\cdm\h2\LocalH2
  */
 public class JaxbImportActivator {
 
 	/* SerializeFrom DB **/
 //	private static final ICdmDataSource cdmDestination = CdmDestinations.cdm_test_local_mysql_test();
-	private static final ICdmDataSource cdmDestination = CdmDestinations.localH2Standardliste();
+	//if you run from IDE it may run into {cdmlib-folder}\cdmlib-persistence\target\test-classes\eu\etaxonomy\cdm\h2\LocalH2\
+	private static final ICdmDataSource cdmDestination = CdmDestinations.localH2Armeria();
 	
 	
 	// Import:
 	private static String importFileNameString = 
 		//"C:\\workspace\\cdmlib_2.2\\cdmlib-io\\src\\test\\resources\\eu\\etaxonomy\\cdm\\io\\jaxb\\export_test_app_import.xml";
 //		"file:/C:/export_test_app_import.xml";
-//	"file:/C:/localCopy/Data/kr�hen/201206141338-jaxb_export-cdm.xml";
 //	"file:/C:/opt/data/rl/201406041541-jaxb_export-Regenwuermer.xml";
 //	"file:/C:/opt/data/rl/201406241132-jaxb_export-Armeria.xml";
-	"file:////PESIIMPORT3/redlist/standardliste/standardliste_jaxb.xml";
+//	"file:/F:/data/redlist/standardliste/standardliste_jaxb.xml";
+//	"//PESIIMPORT3/redlist/standardliste/standardliste_jaxb.xml";
+	"//PESIIMPORT3/redlist/201411261400-jaxb_export-armeria_demo_local.xml";
+	
+	
+
 	
 
 	/** NUMBER_ROWS_TO_RETRIEVE = 0 is the default case to retrieve all rows.
@@ -137,23 +145,15 @@ public class JaxbImportActivator {
 
 		JaxbImportActivator jia = new JaxbImportActivator();
 		ICdmDataSource destination = CdmDestinations.chooseDestination(args) != null ? CdmDestinations.chooseDestination(args) : cdmDestination;
-		String file = chooseFile(args)!= null ? chooseFile(args) : importFileNameString;
-
-		File file2 = new File("//PESIIMPORT3/redlist/standardliste/standardliste_jaxb.xml");
-		boolean exists = file2.exists();
-//		System.out.println(exists);
-		URI uri = file2.toURI();
-//		System.out.println(uri.toString());
+		String fileStr = chooseFile(args)!= null ? chooseFile(args) : importFileNameString;
+		File file = new File(fileStr);
 		
-		
-		File fileTest = new File(uri);
-		exists = fileTest.exists();
-//		System.out.println(exists);
-
-		
-		CdmApplicationController appCtr = null;
-//		appCtr = jia.initDb(destination);
-				
+		URI uri = file.toURI();
+		System.out.println(new File(uri).exists());
+		if (! new File(uri).exists()){
+			System.out.println("File does not exist! Exit");
+			return;
+		}
 		jia.invokeImport(uri, destination);
 	}
 

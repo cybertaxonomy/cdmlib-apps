@@ -49,6 +49,13 @@ public class JaxbExportActivator {
 	private static final Logger logger = Logger.getLogger(JaxbImportActivator.class);
 
 	private void invokeExport(ICdmDataSource sourceParam, URI uri) {
+//		String server = "localhost";
+//		String database = "EDITimport";
+//		String username = "edit";
+//		sourceParam = CdmDataSource.NewMySqlInstance(server, database, username, AccountStore.readOrStorePassword(server, database, username, null));
+
+		
+		
 		JaxbExportConfigurator jaxbExportConfigurator;
 		if (uri !=null && sourceParam != null){
 			jaxbExportConfigurator = JaxbExportConfigurator.NewInstance(sourceParam, uri);
@@ -114,7 +121,7 @@ public class JaxbExportActivator {
 		try {
 			File myFile = new File(uri);
 			PrintWriter writer = new PrintWriter(new OutputStreamWriter(new FileOutputStream(myFile), "UTF8"), true);
-			sc.initDb(source);
+			sc.initDb(source);  //does this make sense here (it starts the appControler even if it is not needed later
 					
 			sc.invokeExport(source, uri);
 		} catch (UnsupportedEncodingException e) {
