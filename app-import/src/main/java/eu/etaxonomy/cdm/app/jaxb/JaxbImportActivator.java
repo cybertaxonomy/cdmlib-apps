@@ -46,7 +46,8 @@ public class JaxbImportActivator {
 //	"file:/C:/opt/data/rl/201406241132-jaxb_export-Armeria.xml";
 //	"file:/F:/data/redlist/standardliste/standardliste_jaxb.xml";
 //	"//PESIIMPORT3/redlist/standardliste/standardliste_jaxb.xml";
-	"//PESIIMPORT3/redlist/201411261400-jaxb_export-armeria_demo_local.xml";
+	"//PESIIMPORT3/redlist/201411261506-jaxb_export-armeria_demo_local.xml";
+
 	
 	
 
