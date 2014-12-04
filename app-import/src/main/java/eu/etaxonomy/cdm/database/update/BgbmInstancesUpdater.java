@@ -23,24 +23,23 @@ public class BgbmInstancesUpdater {
 	
 	private static String integrationServer = "160.45.63.201";
 	private static String productionServer = "160.45.63.171";
-	private static String testServer = "160.45.63.175";
+//	private static String testServer = "160.45.63.175";
+	private static String testServer = "160.45.63.21";  //preliminary
 	
 	private static String[] integrationDatabases = new String[]{/**/"cdm_integration_cichorieae",
 		"cdm_integration_cyprus", "cdm_integration_diptera",  "cdm_integration_flora_malesiana",
 		"cdm_integration_palmae"};
 	
-	private static String[] testDatabases = new String[]{/**/"caryo", "cdm_campanulaceae", 
-		"cdm_campanulaceae_082014","cdm_col","cdm_corvidae","cdm_cyprus","cdm_demo1","cdm_demo2",
-		"cdm_demo3", "cdm_edit_algaterra","cdm_edit_cichorieae","cdm_edit_flora_central_africa",
-		"cdm_edit_flora_malesiana","cdm_edit_globis","cdm_edit_palmae", 
-		"cdm_ipni_Caryophyllaceae","cdm_mt_standardliste",
-		"cdm_pesi_euromed",  "cdm_pesi_fauna_europaea",
-		"cdm_rl_mammalia","cdm_test_eckhard","cdm_test_euromed","cdm_test_gabi",
+	private static String[] testDatabases = new String[]{"cdm_bgbm_edit_usergroup","cdm_campanulaceae", 
+		"cdm_campanulaceae_082014","cdm_caryo", "cdm_col","cdm_corvidae","cdm_cyprus","cdm_demo1","cdm_demo2",
+		"cdm_demo3", "cdm_edit_algaterra","cdm_edit_cichorieae","cdm_edit_ildis","cdm_edit_flora_central_africa",
+		"cdm_flora_guianas","cdm_flore_gabon","cdm_edit_flora_malesiana","cdm_edit_globis","cdm_edit_palmae", 
+		"cdm_ipni_Caryophyllaceae","cdm_mt_moose","cdm_mt_standardliste",
+		"cdm_pesi_euromed", "cdm_pesi_erms","cdm_pesi_fauna_europaea",
+		"cdm_proibiosphere_chenopodium_pilot","cdm_rl_mammalia","cdm_test_eckhard","cdm_test_euromed","cdm_test_gabi",
 		"cdm_test_norbert","cdm_test_sabine","cdm_vibrant_index"};
 	
-	private static String[] testDatabasesInnoDb = new String[]{/**/"cdm_bgbm_edit_usergroup",
-		"cdm_edit_ildis","cdm_flora_guianas","cdm_flore_gabon","cdm_mt_moose","cdm_pesi_erms",
-		"cdm_proibiosphere_chenopodium_pilot",};
+
 	private static String[] testDatabasesOthers = new String[]{"cdm_caryo_amaranthaceae",
 		"cdm_caryo_caryophyllales","cdm_flora_malesiana_prospective","cdm_pesi_all","cdm_salvador",
 		};
