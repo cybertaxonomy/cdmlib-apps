@@ -17,7 +17,9 @@
     <developerConnection>scm:svn:https://dev.e-taxonomy.eu/svn/trunk/cdmlib-apps/app-import/</developerConnection>
     <url>http://dev.e-taxonomy.eu/trac/browser/trunk/cdmlib-apps/app-import/</url>
   </scm>
-  
+  <properties>
+  	<java.codelevel>1.7</java.codelevel>
+  </properties>
   <dependencies>
 	<dependency>
 		<groupId>eu.etaxonomy</groupId>
