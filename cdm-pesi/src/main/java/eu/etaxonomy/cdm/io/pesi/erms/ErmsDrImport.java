@@ -30,7 +30,7 @@ import eu.etaxonomy.cdm.model.common.AnnotationType;
 import eu.etaxonomy.cdm.model.common.CdmBase;
 import eu.etaxonomy.cdm.model.common.OriginalSourceType;
 import eu.etaxonomy.cdm.model.description.Distribution;
-import eu.etaxonomy.cdm.model.description.PresenceTerm;
+import eu.etaxonomy.cdm.model.description.PresenceAbsenceTerm;
 import eu.etaxonomy.cdm.model.location.NamedArea;
 import eu.etaxonomy.cdm.model.reference.Reference;
 import eu.etaxonomy.cdm.model.taxon.TaxonBase;
@@ -64,14 +64,13 @@ public class ErmsDrImport  extends ErmsImportBase<Distribution> {
 		return strRecordQuery;
 	}
 
-	/* (non-Javadoc)
-	 * @see eu.etaxonomy.cdm.io.erms.ErmsImportBase#getMapping()
-	 */
+
+	@Override
 	protected DbImportMapping<ErmsImportState, ErmsImportConfigurator> getMapping() {
 		if (mapping == null){
 			mapping = new DbImportMapping<ErmsImportState, ErmsImportConfigurator>();
 			
-			PresenceTerm status = PresenceTerm.PRESENT();
+			PresenceAbsenceTerm status = PresenceAbsenceTerm.PRESENT();
 			DbImportDistributionCreationMapper<?> distributionMapper = DbImportDistributionCreationMapper.NewFixedStatusInstance("id", DR_NAMESPACE, "tu_acctaxon", ErmsTaxonImport.TAXON_NAMESPACE, status);
 			distributionMapper.setSource("source_id", REFERENCE_NAMESPACE, null);
 			mapping.addMapper(distributionMapper);

@@ -23,16 +23,13 @@ import org.springframework.stereotype.Component;
 import org.springframework.transaction.TransactionStatus;
 
 import eu.etaxonomy.cdm.io.common.Source;
-//import eu.etaxonomy.cdm.io.profiler.ProfilerController;
 import eu.etaxonomy.cdm.model.common.CdmBase;
 import eu.etaxonomy.cdm.model.description.Distribution;
-import eu.etaxonomy.cdm.model.description.PresenceAbsenceTermBase;
-import eu.etaxonomy.cdm.model.description.PresenceTerm;
+import eu.etaxonomy.cdm.model.description.PresenceAbsenceTerm;
 import eu.etaxonomy.cdm.model.description.TaxonDescription;
 import eu.etaxonomy.cdm.model.location.NamedArea;
 import eu.etaxonomy.cdm.model.taxon.Taxon;
 import eu.etaxonomy.cdm.model.taxon.TaxonBase;
-//import com.yourkit.api.Controller;
 
 
 /**
@@ -93,7 +90,7 @@ public class FaunaEuropaeaDistributionImport extends FaunaEuropaeaImportBase {
 		TransactionStatus txStatus = null;
 		
 		//txStatus = startTransaction();
-		noDataUuid = getTermService().save(PresenceTerm.NewInstance("no data", "no data", "nod"));
+		noDataUuid = getTermService().save(PresenceAbsenceTerm.NewPresenceInstance("no data", "no data", "nod"));
 		//commitTransaction(txStatus);	
 		
 		FaunaEuropaeaTransformer.setUUIDs(noDataUuid);
@@ -251,7 +248,7 @@ public class FaunaEuropaeaDistributionImport extends FaunaEuropaeaImportBase {
 	
 		Distribution newDistribution = null;
 		NamedArea namedArea;
-		PresenceAbsenceTermBase<?> presenceAbsenceStatus;
+		PresenceAbsenceTerm presenceAbsenceStatus;
 		FaunaEuropaeaDistributionTaxon fauEuHelperTaxon;
 		UUID taxonUuid;
 		TaxonDescription taxonDescription;
@@ -286,7 +283,7 @@ public class FaunaEuropaeaDistributionImport extends FaunaEuropaeaImportBase {
 					presenceAbsenceStatus = null;
 					
 					if (fauEuHelperDistribution.getOccurrenceStatusId() != 0 && fauEuHelperDistribution.getOccurrenceStatusId() != 2 && fauEuHelperDistribution.getOccurrenceStatusId() != 1){
-						presenceAbsenceStatus = (PresenceAbsenceTermBase<?>)getTermService().find(noData);
+						presenceAbsenceStatus = (PresenceAbsenceTerm)getTermService().find(noData);
 					}else{
 						presenceAbsenceStatus = FaunaEuropaeaTransformer.occStatus2PresenceAbsence(fauEuHelperDistribution.getOccurrenceStatusId());
 					}

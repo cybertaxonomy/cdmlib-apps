@@ -33,10 +33,8 @@ import eu.etaxonomy.cdm.model.common.CdmBase;
 import eu.etaxonomy.cdm.model.common.Language;
 import eu.etaxonomy.cdm.model.common.RelationshipBase;
 import eu.etaxonomy.cdm.model.common.RelationshipTermBase;
-import eu.etaxonomy.cdm.model.description.AbsenceTerm;
 import eu.etaxonomy.cdm.model.description.Feature;
-import eu.etaxonomy.cdm.model.description.PresenceAbsenceTermBase;
-import eu.etaxonomy.cdm.model.description.PresenceTerm;
+import eu.etaxonomy.cdm.model.description.PresenceAbsenceTerm;
 import eu.etaxonomy.cdm.model.location.Country;
 import eu.etaxonomy.cdm.model.location.NamedArea;
 import eu.etaxonomy.cdm.model.name.HybridRelationshipType;
@@ -940,46 +938,41 @@ public final class PesiTransformer extends ExportTransformerBase implements IExp
 	 * @return
 	 * @throws UnknownCdmTypeException
 	 */
-	public static Integer presenceAbsenceTerm2OccurrenceStatusId(PresenceAbsenceTermBase<?> term) {
+	public static Integer presenceAbsenceTerm2OccurrenceStatusId(PresenceAbsenceTerm term) {
 		Integer result = null;
 		if (term == null){
 			return null;
 		//present
-		}else if (term.isInstanceOf(PresenceTerm.class)) {
-			PresenceTerm presenceTerm = CdmBase.deproxy(term, PresenceTerm.class);
-			if (presenceTerm.equals(PresenceTerm.PRESENT()) ||
-					presenceTerm.equals(PresenceTerm.INTRODUCED_DOUBTFULLY_INTRODUCED()) ||
-					presenceTerm.equals(PresenceTerm.NATIVE_DOUBTFULLY_NATIVE())) {
+		}else if (term.isInstanceOf(PresenceAbsenceTerm.class)) {
+			PresenceAbsenceTerm presenceTerm = CdmBase.deproxy(term, PresenceAbsenceTerm.class);
+			if (presenceTerm.equals(PresenceAbsenceTerm.PRESENT()) ||
+					presenceTerm.equals(PresenceAbsenceTerm.INTRODUCED_DOUBTFULLY_INTRODUCED()) ||
+					presenceTerm.equals(PresenceAbsenceTerm.NATIVE_DOUBTFULLY_NATIVE())) {
 				result = STATUS_PRESENT;
-			} else if (presenceTerm.equals(PresenceTerm.NATIVE())) {
+			} else if (presenceTerm.equals(PresenceAbsenceTerm.NATIVE())) {
 				result = STATUS_NATIVE;
-			} else if (presenceTerm.equals(PresenceTerm.INTRODUCED()) ||
-					presenceTerm.equals(PresenceTerm.INTRODUCED_ADVENTITIOUS()) ||
-					presenceTerm.equals(PresenceTerm.INTRODUCED_UNCERTAIN_DEGREE_OF_NATURALISATION())) {
+			} else if (presenceTerm.equals(PresenceAbsenceTerm.INTRODUCED()) ||
+					presenceTerm.equals(PresenceAbsenceTerm.INTRODUCED_ADVENTITIOUS()) ||
+					presenceTerm.equals(PresenceAbsenceTerm.INTRODUCED_UNCERTAIN_DEGREE_OF_NATURALISATION())) {
 				result = STATUS_INTRODUCED;
-			} else if (presenceTerm.equals(PresenceTerm.NATURALISED())
-					|| presenceTerm.equals(PresenceTerm.INTRODUCED_NATURALIZED())) {
+			} else if (presenceTerm.equals(PresenceAbsenceTerm.NATURALISED())
+					|| presenceTerm.equals(PresenceAbsenceTerm.INTRODUCED_NATURALIZED())) {
 				result = STATUS_NATURALISED;
-			} else if (presenceTerm.equals(PresenceTerm.INVASIVE())) {
+			} else if (presenceTerm.equals(PresenceAbsenceTerm.INVASIVE())) {
 				result = STATUS_INVASIVE;
-			} else if (presenceTerm.equals(PresenceTerm.CULTIVATED())) {
+			} else if (presenceTerm.equals(PresenceAbsenceTerm.CULTIVATED())) {
 				result = STATUS_MANAGED;
-			} else if (presenceTerm.equals(PresenceTerm.PRESENT_DOUBTFULLY())||
-					presenceTerm.equals(PresenceTerm.INTRODUCED_PRESENCE_QUESTIONABLE()) ||
-					presenceTerm.equals(PresenceTerm.NATIVE_PRESENCE_QUESTIONABLE() )) {
+			} else if (presenceTerm.equals(PresenceAbsenceTerm.PRESENT_DOUBTFULLY())||
+					presenceTerm.equals(PresenceAbsenceTerm.INTRODUCED_PRESENCE_QUESTIONABLE()) ||
+					presenceTerm.equals(PresenceAbsenceTerm.NATIVE_PRESENCE_QUESTIONABLE() )) {
 				result = STATUS_DOUBTFUL;
-			} else {
-				logger.error("PresenceTerm could not be translated to datawarehouse occurrence status id: " + presenceTerm.getLabel());
-			}
-		//absent
-		} else if (term.isInstanceOf(AbsenceTerm.class)) {
-			AbsenceTerm absenceTerm = CdmBase.deproxy(term, AbsenceTerm.class);
-			if (absenceTerm.equals(AbsenceTerm.ABSENT()) || absenceTerm.equals(AbsenceTerm.NATIVE_FORMERLY_NATIVE()) ||
-					absenceTerm.equals(AbsenceTerm.CULTIVATED_REPORTED_IN_ERROR()) || absenceTerm.equals(AbsenceTerm.INTRODUCED_REPORTED_IN_ERROR()) ||
-					absenceTerm.equals(AbsenceTerm.INTRODUCED_FORMERLY_INTRODUCED()) || absenceTerm.equals(AbsenceTerm.NATIVE_REPORTED_IN_ERROR() ) ) {
+			//absent
+			}else if (presenceTerm.equals(PresenceAbsenceTerm.ABSENT()) || presenceTerm.equals(PresenceAbsenceTerm.NATIVE_FORMERLY_NATIVE()) ||
+					presenceTerm.equals(PresenceAbsenceTerm.CULTIVATED_REPORTED_IN_ERROR()) || presenceTerm.equals(PresenceAbsenceTerm.INTRODUCED_REPORTED_IN_ERROR()) ||
+					presenceTerm.equals(PresenceAbsenceTerm.INTRODUCED_FORMERLY_INTRODUCED()) || presenceTerm.equals(PresenceAbsenceTerm.NATIVE_REPORTED_IN_ERROR() ) ) {
 				result = STATUS_ABSENT;
 			} else {
-				logger.error("AbsenceTerm could not be translated to datawarehouse occurrence status id: " + absenceTerm.getLabel());
+				logger.error("PresenceAbsenceTerm could not be translated to datawarehouse occurrence status id: " + presenceTerm.getLabel());
 			}
 		}
 		return result;
@@ -987,7 +980,7 @@ public final class PesiTransformer extends ExportTransformerBase implements IExp
 
 
 	@Override
-	public String getCacheByPresenceAbsenceTerm(PresenceAbsenceTermBase status) throws UndefinedTransformerMethodException {
+	public String getCacheByPresenceAbsenceTerm(PresenceAbsenceTerm status) throws UndefinedTransformerMethodException {
 		if (status == null){
 			return null;
 		}else{
@@ -996,7 +989,7 @@ public final class PesiTransformer extends ExportTransformerBase implements IExp
 	}
 
 	@Override
-	public Object getKeyByPresenceAbsenceTerm(PresenceAbsenceTermBase status) throws UndefinedTransformerMethodException {
+	public Object getKeyByPresenceAbsenceTerm(PresenceAbsenceTerm status) throws UndefinedTransformerMethodException {
 		return presenceAbsenceTerm2OccurrenceStatusId(status);
 	}
 

@@ -20,9 +20,7 @@ import eu.etaxonomy.cdm.api.service.ITermService;
 import eu.etaxonomy.cdm.io.common.TdwgAreaProvider;
 import eu.etaxonomy.cdm.model.common.Language;
 import eu.etaxonomy.cdm.model.common.Representation;
-import eu.etaxonomy.cdm.model.description.AbsenceTerm;
-import eu.etaxonomy.cdm.model.description.PresenceAbsenceTermBase;
-import eu.etaxonomy.cdm.model.description.PresenceTerm;
+import eu.etaxonomy.cdm.model.description.PresenceAbsenceTerm;
 import eu.etaxonomy.cdm.model.location.NamedArea;
 import eu.etaxonomy.cdm.model.name.NomenclaturalStatusType;
 import eu.etaxonomy.cdm.model.name.Rank;
@@ -80,15 +78,15 @@ public final class FaunaEuropaeaTransformer {
 	public static final int R_SPECIES = 21;
 	public static final int R_SUBSPECIES = 22;
 	
-	public static PresenceAbsenceTermBase<?> occStatus2PresenceAbsence(int occStatusId)  throws UnknownCdmTypeException{
+	public static PresenceAbsenceTerm occStatus2PresenceAbsence(int occStatusId)  throws UnknownCdmTypeException{
 	
 		if (Integer.valueOf(occStatusId) == null) {
-			return PresenceTerm.PRESENT();
+			return PresenceAbsenceTerm.PRESENT();
 		}
 		switch (occStatusId){
-		case 0: return PresenceTerm.PRESENT();
-		case 2: return AbsenceTerm.ABSENT();
-		case 1: return PresenceTerm.PRESENT_DOUBTFULLY();
+		case 0: return PresenceAbsenceTerm.PRESENT();
+		case 2: return PresenceAbsenceTerm.ABSENT();
+		case 1: return PresenceAbsenceTerm.PRESENT_DOUBTFULLY();
 
 		default: {
 
@@ -105,28 +103,28 @@ public final class FaunaEuropaeaTransformer {
 	
 	}
 	
-	public static PresenceAbsenceTermBase<?> occStatus2PresenceAbsence_ (int occStatusId)  throws UnknownCdmTypeException{
+	public static PresenceAbsenceTerm occStatus2PresenceAbsence_ (int occStatusId)  throws UnknownCdmTypeException{
 		switch (occStatusId){
 			case 0: return null;
 			//case 110: return AbsenceTerm.CULTIVATED_REPORTED_IN_ERROR();
-			case 120: return PresenceTerm.CULTIVATED();
+			case 120: return PresenceAbsenceTerm.CULTIVATED();
 		//	case 210: return AbsenceTerm.INTRODUCED_REPORTED_IN_ERROR();
-			case 220: return PresenceTerm.INTRODUCED_PRESENCE_QUESTIONABLE();
-			case 230: return AbsenceTerm.INTRODUCED_FORMERLY_INTRODUCED();
-			case 240: return PresenceTerm.INTRODUCED_DOUBTFULLY_INTRODUCED();
-			case 250: return PresenceTerm.INTRODUCED();
-			case 260: return PresenceTerm.INTRODUCED_UNCERTAIN_DEGREE_OF_NATURALISATION();
-			case 270: return PresenceTerm.INTRODUCED_ADVENTITIOUS();
-			case 280: return PresenceTerm.INTRODUCED_NATURALIZED();
+			case 220: return PresenceAbsenceTerm.INTRODUCED_PRESENCE_QUESTIONABLE();
+			case 230: return PresenceAbsenceTerm.INTRODUCED_FORMERLY_INTRODUCED();
+			case 240: return PresenceAbsenceTerm.INTRODUCED_DOUBTFULLY_INTRODUCED();
+			case 250: return PresenceAbsenceTerm.INTRODUCED();
+			case 260: return PresenceAbsenceTerm.INTRODUCED_UNCERTAIN_DEGREE_OF_NATURALISATION();
+			case 270: return PresenceAbsenceTerm.INTRODUCED_ADVENTITIOUS();
+			case 280: return PresenceAbsenceTerm.INTRODUCED_NATURALIZED();
 			//case 310: return AbsenceTerm.NATIVE_REPORTED_IN_ERROR();
-			case 320: return PresenceTerm.NATIVE_PRESENCE_QUESTIONABLE();
-			case 330: return AbsenceTerm.NATIVE_FORMERLY_NATIVE();
-			case 340: return PresenceTerm.NATIVE_DOUBTFULLY_NATIVE();
-			case 350: return PresenceTerm.NATIVE();
+			case 320: return PresenceAbsenceTerm.NATIVE_PRESENCE_QUESTIONABLE();
+			case 330: return PresenceAbsenceTerm.NATIVE_FORMERLY_NATIVE();
+			case 340: return PresenceAbsenceTerm.NATIVE_DOUBTFULLY_NATIVE();
+			case 350: return PresenceAbsenceTerm.NATIVE();
 			case 999: {
 					logger.warn("endemic for EM can not be transformed in legal status");
 					//TODO preliminary
-					return PresenceTerm.PRESENT();
+					return PresenceAbsenceTerm.PRESENT();
 				}
 			default: {
 				throw new UnknownCdmTypeException("Unknown occurrence status  (id=" + Integer.valueOf(occStatusId).toString() + ")");

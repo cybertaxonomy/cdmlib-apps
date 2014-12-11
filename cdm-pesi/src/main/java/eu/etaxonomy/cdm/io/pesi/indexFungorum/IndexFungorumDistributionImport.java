@@ -26,7 +26,7 @@ import eu.etaxonomy.cdm.model.common.CdmBase;
 import eu.etaxonomy.cdm.model.common.Marker;
 import eu.etaxonomy.cdm.model.common.MarkerType;
 import eu.etaxonomy.cdm.model.description.Distribution;
-import eu.etaxonomy.cdm.model.description.PresenceTerm;
+import eu.etaxonomy.cdm.model.description.PresenceAbsenceTerm;
 import eu.etaxonomy.cdm.model.description.TaxonDescription;
 import eu.etaxonomy.cdm.model.location.NamedArea;
 import eu.etaxonomy.cdm.model.reference.Reference;
@@ -89,7 +89,7 @@ public class IndexFungorumDistributionImport  extends IndexFungorumImportBase {
 			excludedColumns.add("PreferredNameIFnumber");
 			excludedColumns.add("PreferredNameFDCnumber");
 			
-			PresenceTerm status = PresenceTerm.PRESENT();
+			PresenceAbsenceTerm status = PresenceAbsenceTerm.PRESENT();
 			MarkerType noLastActionMarkerType = getNoLastActionMarkerType(state);
 			while (rs.next()){
 
