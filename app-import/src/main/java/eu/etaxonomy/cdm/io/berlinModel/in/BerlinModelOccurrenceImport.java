@@ -45,7 +45,7 @@ import eu.etaxonomy.cdm.model.common.TermType;
 import eu.etaxonomy.cdm.model.common.TermVocabulary;
 import eu.etaxonomy.cdm.model.description.DescriptionElementBase;
 import eu.etaxonomy.cdm.model.description.Distribution;
-import eu.etaxonomy.cdm.model.description.PresenceAbsenceTermBase;
+import eu.etaxonomy.cdm.model.description.PresenceAbsenceTerm;
 import eu.etaxonomy.cdm.model.description.TaxonDescription;
 import eu.etaxonomy.cdm.model.location.NamedArea;
 import eu.etaxonomy.cdm.model.location.NamedAreaLevel;
@@ -338,7 +338,7 @@ public class BerlinModelOccurrenceImport  extends BerlinModelImportBase {
                 
                 try {
                 	//status
-                	PresenceAbsenceTermBase<?> status = null;
+                	PresenceAbsenceTerm status = null;
                 	String alternativeStatusString = null;
 					if (emStatusId != null){
 						status = BerlinModelTransformer.occStatus2PresenceAbsence(emStatusId);
@@ -501,7 +501,7 @@ public class BerlinModelOccurrenceImport  extends BerlinModelImportBase {
     			Distribution oldDistr = HibernateProxyHelper.deproxy(descElBase, Distribution.class);
     			NamedArea oldArea = oldDistr.getArea();
     			if (oldArea != null && oldArea.equals(distribution.getArea())){
-    				PresenceAbsenceTermBase<?> oldStatus = oldDistr.getStatus();
+    				PresenceAbsenceTerm oldStatus = oldDistr.getStatus();
     				if (oldStatus != null && oldStatus.equals(distribution.getStatus())){
     					duplicateMap.put(bmDistributionId, oldDistr.getSources().iterator().next().getIdInSource());
     					return oldDistr;

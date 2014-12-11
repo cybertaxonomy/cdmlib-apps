@@ -30,7 +30,7 @@ import eu.etaxonomy.cdm.io.common.mapping.IMappingImport;
 import eu.etaxonomy.cdm.io.redlist.validation.RoteListeDbTaxonImportValidator;
 import eu.etaxonomy.cdm.model.common.CdmBase;
 import eu.etaxonomy.cdm.model.description.Distribution;
-import eu.etaxonomy.cdm.model.description.PresenceTerm;
+import eu.etaxonomy.cdm.model.description.PresenceAbsenceTerm;
 import eu.etaxonomy.cdm.model.description.TaxonDescription;
 import eu.etaxonomy.cdm.model.location.NamedArea;
 import eu.etaxonomy.cdm.model.name.BotanicalName;
@@ -247,7 +247,7 @@ public class RoteListeDbTaxonImport  extends RoteListeDbImportBase<TaxonBase> im
 	private void addDistribution(TaxonDescription description, Boolean exists, String label) {
 		if (exists == true){
 			NamedArea namedArea = TdwgAreaProvider.getAreaByTdwgAbbreviation(label);
-			Distribution distribution = Distribution.NewInstance(namedArea, PresenceTerm.PRESENT());
+			Distribution distribution = Distribution.NewInstance(namedArea, PresenceAbsenceTerm.PRESENT());
 			description.addElement(distribution);
 		}
 	}

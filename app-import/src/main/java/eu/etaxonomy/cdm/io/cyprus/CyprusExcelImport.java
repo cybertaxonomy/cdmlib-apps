@@ -28,7 +28,7 @@ import eu.etaxonomy.cdm.io.excel.common.ExcelImporterBase;
 import eu.etaxonomy.cdm.model.common.Language;
 import eu.etaxonomy.cdm.model.description.Distribution;
 import eu.etaxonomy.cdm.model.description.Feature;
-import eu.etaxonomy.cdm.model.description.PresenceTerm;
+import eu.etaxonomy.cdm.model.description.PresenceAbsenceTerm;
 import eu.etaxonomy.cdm.model.description.TaxonDescription;
 import eu.etaxonomy.cdm.model.description.TextData;
 import eu.etaxonomy.cdm.model.location.NamedArea;
@@ -199,18 +199,18 @@ public class CyprusExcelImport extends ExcelImporterBase<CyprusImportState> {
 	private static NomenclaturalCode nc = NomenclaturalCode.ICNAFP;
 	private Feature redBookCategory;
 	private Feature endemism;
-	private PresenceTerm indigenous;
-	private PresenceTerm indigenousDoubtful;
-	private PresenceTerm cultivatedDoubtful;
+	private PresenceAbsenceTerm indigenous;
+	private PresenceAbsenceTerm indigenousDoubtful;
+	private PresenceAbsenceTerm cultivatedDoubtful;
 	
-	private PresenceTerm casual;
-	private PresenceTerm casualDoubtful;
-	private PresenceTerm nonInvasive;
-	private PresenceTerm nonInvasiveDoubtful;
-	private PresenceTerm invasive;
-	private PresenceTerm invasiveDoubtful;
-	private PresenceTerm questionable;
-	private PresenceTerm questionableDoubtful;
+	private PresenceAbsenceTerm casual;
+	private PresenceAbsenceTerm casualDoubtful;
+	private PresenceAbsenceTerm nonInvasive;
+	private PresenceAbsenceTerm nonInvasiveDoubtful;
+	private PresenceAbsenceTerm invasive;
+	private PresenceAbsenceTerm invasiveDoubtful;
+	private PresenceAbsenceTerm questionable;
+	private PresenceAbsenceTerm questionableDoubtful;
 	
 	private boolean termsCreated = false;
 	
@@ -436,7 +436,7 @@ public class CyprusExcelImport extends ExcelImporterBase<CyprusImportState> {
 	private void makeStatus(String statusString, Taxon mainTaxon) {
 		//status
 		if (StringUtils.isNotBlank(statusString)){
-			PresenceTerm status = null;
+			PresenceAbsenceTerm status = null;
 			if (statusString.contains("Indigenous?")){
 				status = indigenousDoubtful;
 			}else if (statusString.contains("Indigenous")){
@@ -448,7 +448,7 @@ public class CyprusExcelImport extends ExcelImporterBase<CyprusImportState> {
 			}else if (statusString.contains("Cultivated?")){
 				status = cultivatedDoubtful;
 			}else if (statusString.contains("Cultivated")){
-				status = PresenceTerm.CULTIVATED();
+				status = PresenceAbsenceTerm.CULTIVATED();
 			}else if (statusString.contains("non-invasive?")){
 				status = nonInvasiveDoubtful;
 			}else if (statusString.contains("non-invasive")){

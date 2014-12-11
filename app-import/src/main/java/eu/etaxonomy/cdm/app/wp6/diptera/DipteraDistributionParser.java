@@ -37,8 +37,7 @@ import eu.etaxonomy.cdm.model.description.DescriptionBase;
 import eu.etaxonomy.cdm.model.description.DescriptionElementBase;
 import eu.etaxonomy.cdm.model.description.Distribution;
 import eu.etaxonomy.cdm.model.description.Feature;
-import eu.etaxonomy.cdm.model.description.PresenceAbsenceTermBase;
-import eu.etaxonomy.cdm.model.description.PresenceTerm;
+import eu.etaxonomy.cdm.model.description.PresenceAbsenceTerm;
 import eu.etaxonomy.cdm.model.description.TaxonDescription;
 import eu.etaxonomy.cdm.model.description.TextData;
 import eu.etaxonomy.cdm.model.location.NamedArea;
@@ -159,7 +158,7 @@ public class DipteraDistributionParser {
 									countSkip=2;
 								}
 							}
-							PresenceAbsenceTermBase<?> term = PresenceTerm.PRESENT();
+							PresenceAbsenceTerm term = PresenceAbsenceTerm.PRESENT();
 							if (isDoubleArea(word)){
 								NamedArea[] doubleArea = getDoubleArea(word);
 								for (NamedArea area : doubleArea){
@@ -174,7 +173,7 @@ public class DipteraDistributionParser {
 									area = TdwgAreaProvider.getAreaByTdwgAbbreviation(word);
 								}
 								if (isDoubtful){
-									term = PresenceTerm.INTRODUCED_PRESENCE_QUESTIONABLE();
+									term = PresenceAbsenceTerm.INTRODUCED_PRESENCE_QUESTIONABLE();
 								}
 								Distribution distr = Distribution.NewInstance(area, term);
 								desc.addElement(distr);

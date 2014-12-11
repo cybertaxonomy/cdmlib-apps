@@ -24,7 +24,6 @@ import org.springframework.stereotype.Component;
 
 import eu.etaxonomy.cdm.api.service.pager.Pager;
 import eu.etaxonomy.cdm.common.CdmUtils;
-import eu.etaxonomy.cdm.io.common.TdwgAreaProvider;
 import eu.etaxonomy.cdm.io.common.mapping.IInputTransformer;
 import eu.etaxonomy.cdm.io.common.mapping.UndefinedTransformerMethodException;
 import eu.etaxonomy.cdm.io.excel.common.ExcelImporterBase;
@@ -35,13 +34,12 @@ import eu.etaxonomy.cdm.model.common.TermVocabulary;
 import eu.etaxonomy.cdm.model.description.DescriptionBase;
 import eu.etaxonomy.cdm.model.description.DescriptionElementBase;
 import eu.etaxonomy.cdm.model.description.Distribution;
-import eu.etaxonomy.cdm.model.description.PresenceAbsenceTermBase;
-import eu.etaxonomy.cdm.model.description.PresenceTerm;
+import eu.etaxonomy.cdm.model.description.PresenceAbsenceTerm;
 import eu.etaxonomy.cdm.model.description.TaxonDescription;
+import eu.etaxonomy.cdm.model.location.Country;
 import eu.etaxonomy.cdm.model.location.NamedArea;
 import eu.etaxonomy.cdm.model.location.NamedAreaLevel;
 import eu.etaxonomy.cdm.model.location.NamedAreaType;
-import eu.etaxonomy.cdm.model.location.Country;
 import eu.etaxonomy.cdm.model.name.BotanicalName;
 import eu.etaxonomy.cdm.model.reference.Reference;
 import eu.etaxonomy.cdm.model.reference.ReferenceFactory;
@@ -138,7 +136,7 @@ public class CyprusDistributionImport extends ExcelImporterBase<CyprusImportStat
 		
 //		TaxonDescription description = getTaxonDescription(taxon, NO_IMAGE_GALLERY, CREATE);
 		TaxonDescription description = getNewDescription(state, taxon);
-		PresenceAbsenceTermBase<?> status = getStatus(taxon);
+		PresenceAbsenceTerm status = getStatus(taxon);
 		status = removeDoubtfulStatus(status);
 		removeDistributions(taxon);
 		
@@ -160,13 +158,13 @@ public class CyprusDistributionImport extends ExcelImporterBase<CyprusImportStat
 		return desc;
 	}
 
-	private PresenceAbsenceTermBase<?> indigenousStatus;
-	private PresenceAbsenceTermBase<?> casualStatus;
-	private PresenceAbsenceTermBase<?> nonInvasiveStatus;
-	private PresenceAbsenceTermBase<?> invasiveStatus;
-	private PresenceAbsenceTermBase<?> questionableStatus;
+	private PresenceAbsenceTerm indigenousStatus;
+	private PresenceAbsenceTerm casualStatus;
+	private PresenceAbsenceTerm nonInvasiveStatus;
+	private PresenceAbsenceTerm invasiveStatus;
+	private PresenceAbsenceTerm questionableStatus;
 	
-	private PresenceAbsenceTermBase<?> removeDoubtfulStatus(PresenceAbsenceTermBase<?> status) {
+	private PresenceAbsenceTerm removeDoubtfulStatus(PresenceAbsenceTerm status) {
 		if (status == null){
 			return null;
 		}
@@ -181,20 +179,20 @@ public class CyprusDistributionImport extends ExcelImporterBase<CyprusImportStat
 		}else if (status.getUuid().equals(CyprusTransformer.questionableDoubtfulUuid)){
 			status = questionableStatus;
 		}else if (status.getUuid().equals(CyprusTransformer.cultivatedDoubtfulUuid)){
-			status = PresenceTerm.CULTIVATED();
+			status = PresenceAbsenceTerm.CULTIVATED();
 		}
 		
 		return status;
 	}
 
-	private PresenceAbsenceTermBase<?> getStatus(Taxon taxon) {
-		Set<PresenceAbsenceTermBase<?>> statusSet = new HashSet<PresenceAbsenceTermBase<?>>();
+	private PresenceAbsenceTerm getStatus(Taxon taxon) {
+		Set<PresenceAbsenceTerm> statusSet = new HashSet<PresenceAbsenceTerm>();
 		Set<Distribution> existingDistributions = getExistingDistributions(taxon);
 		if (existingDistributions.size() > 1){
 			logger.warn("There is more than 1 distribution: " + taxon.getTitleCache());
 		}
 		for (Distribution distribution: existingDistributions){
-			PresenceAbsenceTermBase<?> status = distribution.getStatus();
+			PresenceAbsenceTerm status = distribution.getStatus();
 			statusSet.add(status);
 		}
 		
@@ -340,11 +338,11 @@ public class CyprusDistributionImport extends ExcelImporterBase<CyprusImportStat
 	 * 
 	 */
 	private void loadStatus() {
-		indigenousStatus = (PresenceTerm)getTermService().find(CyprusTransformer.indigenousUuid);
-		casualStatus = (PresenceTerm)getTermService().find(CyprusTransformer.casualUuid);
-		nonInvasiveStatus = (PresenceTerm)getTermService().find(CyprusTransformer.nonInvasiveUuid);
-		invasiveStatus = (PresenceTerm)getTermService().find(CyprusTransformer.invasiveUuid);
-		questionableStatus = (PresenceTerm)getTermService().find(CyprusTransformer.questionableUuid);
+		indigenousStatus = (PresenceAbsenceTerm)getTermService().find(CyprusTransformer.indigenousUuid);
+		casualStatus = (PresenceAbsenceTerm)getTermService().find(CyprusTransformer.casualUuid);
+		nonInvasiveStatus = (PresenceAbsenceTerm)getTermService().find(CyprusTransformer.nonInvasiveUuid);
+		invasiveStatus = (PresenceAbsenceTerm)getTermService().find(CyprusTransformer.invasiveUuid);
+		questionableStatus = (PresenceAbsenceTerm)getTermService().find(CyprusTransformer.questionableUuid);
 	}
 
 	/**

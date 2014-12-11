@@ -28,7 +28,7 @@ import eu.etaxonomy.cdm.io.globis.validation.GlobisCurrentSpeciesImportValidator
 import eu.etaxonomy.cdm.model.common.CdmBase;
 import eu.etaxonomy.cdm.model.common.Language;
 import eu.etaxonomy.cdm.model.description.Distribution;
-import eu.etaxonomy.cdm.model.description.PresenceTerm;
+import eu.etaxonomy.cdm.model.description.PresenceAbsenceTerm;
 import eu.etaxonomy.cdm.model.description.TaxonDescription;
 import eu.etaxonomy.cdm.model.location.NamedArea;
 import eu.etaxonomy.cdm.model.name.Rank;
@@ -234,11 +234,11 @@ public class GlobisCurrentSpeciesImport  extends GlobisImportBase<Taxon> {
 			
 			NamedArea country = getCountry(state, countryStr);
 			
-			PresenceTerm status;
+			PresenceAbsenceTerm status;
 			if (isDoubtful){
-				status = PresenceTerm.PRESENT_DOUBTFULLY();
+				status = PresenceAbsenceTerm.PRESENT_DOUBTFULLY();
 			}else{
-				status = PresenceTerm.PRESENT();
+				status = PresenceAbsenceTerm.PRESENT();
 			}
 			
 			if (country != null){
