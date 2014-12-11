@@ -13,6 +13,10 @@
   
   <name>CDM e-Flora</name>
   <description>The e-Flora package for e-FLora imports to the EDIT CDM Platform</description>
+  
+  <properties>
+      <java.codelevel>1.7</java.codelevel>
+  </properties>
   <scm>
     <connection>scm:svn:http://dev.e-taxonomy.eu/svn/trunk/cdmlib-apps/cdmlib-eflora/</connection>
     <developerConnection>scm:svn:https://dev.e-taxonomy.eu/svn/trunk/cdmlib-apps/cdmlib-eflora/</developerConnection>
