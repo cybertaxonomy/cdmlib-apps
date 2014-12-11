@@ -24,7 +24,7 @@ public class BgbmInstancesUpdater {
 	private static String integrationServer = "160.45.63.201";
 	private static String productionServer = "160.45.63.171";
 //	private static String testServer = "160.45.63.175";
-	private static String testServer = "160.45.63.21";  //preliminary
+	private static String testServer = "edit-test.bgbm.fu-berlin.de";  //preliminary
 	
 	private static String[] integrationDatabases = new String[]{/**/"cdm_integration_cichorieae",
 		"cdm_integration_cyprus", "cdm_integration_diptera",  "cdm_integration_flora_malesiana",
