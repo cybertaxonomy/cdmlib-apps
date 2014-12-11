@@ -40,8 +40,7 @@ import eu.etaxonomy.cdm.model.common.OriginalSourceType;
 import eu.etaxonomy.cdm.model.description.CommonTaxonName;
 import eu.etaxonomy.cdm.model.description.Distribution;
 import eu.etaxonomy.cdm.model.description.Feature;
-import eu.etaxonomy.cdm.model.description.PresenceAbsenceTermBase;
-import eu.etaxonomy.cdm.model.description.PresenceTerm;
+import eu.etaxonomy.cdm.model.description.PresenceAbsenceTerm;
 import eu.etaxonomy.cdm.model.description.TaxonDescription;
 import eu.etaxonomy.cdm.model.description.TextData;
 import eu.etaxonomy.cdm.model.location.Country;
@@ -1030,7 +1029,7 @@ public class CentralAfricaFernsTaxonRelationImport  extends CentralAfricaFernsIm
 
 	private void makeSingleCountry(CentralAfricaFernsImportState state, String taxonNumber, Taxon taxon, TaxonNameBase nameUsedInSource, String country) throws UndefinedTransformerMethodException {
 		boolean areaDoubtful = false;
-		Distribution distribution = Distribution.NewInstance(null, PresenceTerm.PRESENT());
+		Distribution distribution = Distribution.NewInstance(null, PresenceAbsenceTerm.PRESENT());
 		Reference<?> sourceReference = this.sourceReference;
 		distribution.addSource(OriginalSourceType.Import, taxonNumber, "Distribution_Country", sourceReference, null, nameUsedInSource, null);
 		NamedArea area = null;
@@ -1094,8 +1093,8 @@ public class CentralAfricaFernsTaxonRelationImport  extends CentralAfricaFernsIm
 		
 		distribution.setArea(area);
 		if (areaDoubtful == true){
-			if (distribution.getStatus().equals(PresenceTerm.PRESENT())){
-				distribution.setStatus(PresenceTerm.PRESENT_DOUBTFULLY());
+			if (distribution.getStatus().equals(PresenceAbsenceTerm.PRESENT())){
+				distribution.setStatus(PresenceAbsenceTerm.PRESENT_DOUBTFULLY());
 			}
 		}
 		TaxonDescription description = getTaxonDescription(taxon, false, true);
@@ -1133,7 +1132,7 @@ public class CentralAfricaFernsTaxonRelationImport  extends CentralAfricaFernsIm
 	}
 
 	private String makeCountryStatus(CentralAfricaFernsImportState state, String country, Distribution distribution) throws UndefinedTransformerMethodException {
-		PresenceAbsenceTermBase<?> status = null;
+		PresenceAbsenceTerm status = null;
 		String[] split = country.split(" - ");
 		
 		if (split.length == 2){

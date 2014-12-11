@@ -21,9 +21,9 @@ import eu.etaxonomy.cdm.io.common.mapping.UndefinedTransformerMethodException;
 import eu.etaxonomy.cdm.model.common.ExtensionType;
 import eu.etaxonomy.cdm.model.common.MarkerType;
 import eu.etaxonomy.cdm.model.description.Feature;
-import eu.etaxonomy.cdm.model.description.PresenceTerm;
-import eu.etaxonomy.cdm.model.location.NamedArea;
+import eu.etaxonomy.cdm.model.description.PresenceAbsenceTerm;
 import eu.etaxonomy.cdm.model.location.Country;
+import eu.etaxonomy.cdm.model.location.NamedArea;
 
 /**
  * @author a.mueller
@@ -334,12 +334,12 @@ public final class CentralAfricaFernsTransformer extends InputTransformerBase {
 
 	
 	@Override
-	public PresenceTerm getPresenceTermByKey(String key) throws UndefinedTransformerMethodException {
+	public PresenceAbsenceTerm getPresenceTermByKey(String key) throws UndefinedTransformerMethodException {
 		if (StringUtils.isBlank(key)){return null;
-		}else if (key.equalsIgnoreCase("introduced")){return PresenceTerm.INTRODUCED();
-		}else if (key.equalsIgnoreCase("endemic")){return PresenceTerm.ENDEMIC_FOR_THE_RELEVANT_AREA();
-		}else if (key.equalsIgnoreCase("naturalised")){return PresenceTerm.NATURALISED();
-		}else if (key.equalsIgnoreCase("introduced?")){return PresenceTerm.INTRODUCED_DOUBTFULLY_INTRODUCED();
+		}else if (key.equalsIgnoreCase("introduced")){return PresenceAbsenceTerm.INTRODUCED();
+		}else if (key.equalsIgnoreCase("endemic")){return PresenceAbsenceTerm.ENDEMIC_FOR_THE_RELEVANT_AREA();
+		}else if (key.equalsIgnoreCase("naturalised")){return PresenceAbsenceTerm.NATURALISED();
+		}else if (key.equalsIgnoreCase("introduced?")){return PresenceAbsenceTerm.INTRODUCED_DOUBTFULLY_INTRODUCED();
 		}else{
 			return null;
 		}
