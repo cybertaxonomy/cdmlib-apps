@@ -34,10 +34,9 @@
             <configuration>
 				<source>${java.codelevel}</source>
             	<target>${java.codelevel}</target>
-                <encoding>UTF-8</encoding>  <!-- necessary? should be covered by project. properties source encoding-->
+                <encoding>UTF-8</encoding>
             </configuration>
          </plugin>
-    
     </plugins>
   </build>
   <dependencies>   

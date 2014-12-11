@@ -23,7 +23,20 @@
     <developerConnection>scm:svn:https://dev.e-taxonomy.eu/svn/trunk/cdmlib-apps/XperCdmIntegration/</developerConnection>
     <url>http://dev.e-taxonomy.eu/trac/browser/trunk/cdmlib-apps/XperCdmIntegration/</url>
   </scm>
-  
+    <build>
+    <plugins>
+    	<plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-compiler-plugin</artifactId>
+            <version>2.3.2</version>
+            <configuration>
+				<source>${java.codelevel}</source>
+            	<target>${java.codelevel}</target>
+                <encoding>UTF-8</encoding>
+            </configuration>
+         </plugin>
+    </plugins>
+  </build>
   <dependencies>
    	<dependency>
   		<groupId>eu.etaxonomy</groupId>
