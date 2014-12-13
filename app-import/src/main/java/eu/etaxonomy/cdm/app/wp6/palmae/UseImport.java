@@ -23,11 +23,12 @@ import java.util.Set;
 import java.util.UUID;
 
 import org.apache.log4j.Logger;
-import org.apache.poi.hssf.usermodel.HSSFCell;
-import org.apache.poi.hssf.usermodel.HSSFRow;
-import org.apache.poi.hssf.usermodel.HSSFSheet;
-import org.apache.poi.hssf.usermodel.HSSFWorkbook;
-import org.apache.poi.poifs.filesystem.POIFSFileSystem;
+import org.apache.poi.openxml4j.exceptions.InvalidFormatException;
+import org.apache.poi.ss.usermodel.Cell;
+import org.apache.poi.ss.usermodel.Row;
+import org.apache.poi.ss.usermodel.Sheet;
+import org.apache.poi.ss.usermodel.Workbook;
+import org.apache.poi.ss.usermodel.WorkbookFactory;
 
 import eu.etaxonomy.cdm.api.application.CdmApplicationController;
 import eu.etaxonomy.cdm.api.conversation.ConversationHolder;
@@ -51,7 +52,6 @@ import eu.etaxonomy.cdm.model.common.Language;
 import eu.etaxonomy.cdm.model.common.LanguageString;
 import eu.etaxonomy.cdm.model.common.Marker;
 import eu.etaxonomy.cdm.model.common.MarkerType;
-import eu.etaxonomy.cdm.model.common.OriginalSourceType;
 import eu.etaxonomy.cdm.model.common.TermType;
 import eu.etaxonomy.cdm.model.common.TermVocabulary;
 import eu.etaxonomy.cdm.model.common.TimePeriod;
@@ -102,7 +102,7 @@ public class UseImport {
 		return destination;
 	}
 
-	public boolean importFromExcelSS(String xlsPath) {
+	public boolean importFromExcelSS(String xlsPath) throws InvalidFormatException {
 		boolean success = true;
 		
 		CdmApplicationController applicationController = CdmApplicationController.NewInstance(dataSource());
@@ -124,14 +124,17 @@ public class UseImport {
 			e.printStackTrace();
 		}
 
-		POIFSFileSystem fileSystem = null;
+//		POIFSFileSystem fileSystem = null;
 		
 		try {
-			fileSystem = new POIFSFileSystem(inputStream);
+//			fileSystem = new POIFSFileSystem(inputStream);
+//
+//			HSSFWorkbook workBook = new HSSFWorkbook(fileSystem);
+			Workbook workBook = WorkbookFactory.create(inputStream);
 
-			HSSFWorkbook workBook = new HSSFWorkbook(fileSystem);
-			HSSFSheet sheet = workBook.getSheetAt(0);
-			Iterator rows = sheet.rowIterator();
+			
+			Sheet sheet = workBook.getSheetAt(0);
+			Iterator<Row> rows = sheet.rowIterator();
 			// Iterator rows = sheet.rowIterator();
 			ArrayList<ArrayList<String>> lstUpdates = new ArrayList<ArrayList<String>>();
 			Set<Integer> lstTaxonIDs = new HashSet<Integer>();
@@ -140,12 +143,12 @@ public class UseImport {
 
 			while (rows.hasNext()) {
 
-				HSSFRow row = (HSSFRow) rows.next();
+				Row row = rows.next();
 				System.out.println("Row No.: " + row.getRowNum());
-				Iterator cells = row.cellIterator();
+				Iterator<Cell> cells = row.cellIterator();
 				ArrayList<String> lstTaxon = new ArrayList<String>();
 				while (cells.hasNext()) {
-					HSSFCell cell = (HSSFCell) cells.next();
+					Cell cell = cells.next();
 				
 					int intCellType = cell.getCellType();
 					switch (intCellType) {
@@ -257,7 +260,7 @@ public class UseImport {
 
 	}
 	
-	private boolean loadUses() {
+	private boolean loadUses() throws InvalidFormatException {
 		boolean success = true;
 		//String xslUseSummaryPathString = "C://workspace//Matched_UseSummary_referenceIdTaxEd_TaxonName.xls";
 		//String xslUseSummaryPathString = "C://workspace//testUseSummaries.xls";
@@ -491,7 +494,7 @@ public class UseImport {
 	}
 	
 	//Completed and tested!
-	private boolean loadTerms() {
+	private boolean loadTerms() throws InvalidFormatException {
 		boolean success = true;
 		
 		//String xslPathString = "C://workspace//terms.xls";
@@ -523,25 +526,27 @@ public class UseImport {
 			e.printStackTrace();
 		}
 
-		POIFSFileSystem fileSystem = null;
-		
+	
 		try {
-			fileSystem = new POIFSFileSystem(inputStream);
+//			POIFSFileSystem fileSystem = new POIFSFileSystem(inputStream);
+//			HSSFWorkbook workBook = new HSSFWorkbook(fileSystem);
 
-			HSSFWorkbook workBook = new HSSFWorkbook(fileSystem);
-			HSSFSheet sheet = workBook.getSheetAt(0);
-			Iterator rows = sheet.rowIterator();
+			Workbook workBook = WorkbookFactory.create(inputStream);
+
+			
+			Sheet sheet = workBook.getSheetAt(0);
+			Iterator<Row> rows = sheet.rowIterator();
 
 			ArrayList<ArrayList<String>> lstUpdates = new ArrayList<ArrayList<String>>();
 		
 			while (rows.hasNext()) {
 
-				HSSFRow row = (HSSFRow) rows.next();
+				Row row = rows.next();
 				System.out.println("Row No.: " + row.getRowNum());
-				Iterator cells = row.cellIterator();
+				Iterator<Cell> cells = row.cellIterator();
 				ArrayList<String> lstTerms = new ArrayList<String>();
 				while (cells.hasNext()) {
-					HSSFCell cell = (HSSFCell) cells.next();
+					Cell cell = cells.next();
 				
 					int intCellType = cell.getCellType();
 					switch (intCellType) {
@@ -651,7 +656,7 @@ public class UseImport {
 		
 	}
 	
-	private ArrayList<ArrayList<String>> loadSpreadsheet(String xslPathString) {
+	private ArrayList<ArrayList<String>> loadSpreadsheet(String xslPathString) throws InvalidFormatException {
 		ArrayList<ArrayList<String>> lstUpdates = new ArrayList<ArrayList<String>>();
 		InputStream inputStream = null;
 		
@@ -663,26 +668,27 @@ public class UseImport {
 			e.printStackTrace();
 		}
 		
-		POIFSFileSystem fileSystem = null;
-		
 		try {
-			fileSystem = new POIFSFileSystem(inputStream);
+//			POIFSFileSystem fileSystem = new POIFSFileSystem(inputStream);
+//			HSSFWorkbook workBook = new HSSFWorkbook(fileSystem);
+			
+			Workbook workBook = WorkbookFactory.create(inputStream);
 
-			HSSFWorkbook workBook = new HSSFWorkbook(fileSystem);
-			HSSFSheet sheet = workBook.getSheetAt(0);
-			Iterator rows = sheet.rowIterator();
+			
+			Sheet sheet = workBook.getSheetAt(0);
+			Iterator<Row> rows = sheet.rowIterator();
 			// Iterator rows = sheet.rowIterator();
 			//Set<Integer> lstTaxonIDs;
 		
 
 			while (rows.hasNext()) {
 
-				HSSFRow row = (HSSFRow) rows.next();
+				Row row = rows.next();
 				System.out.println("Row No.: " + row.getRowNum());
-				Iterator cells = row.cellIterator();
+				Iterator<Cell> cells = row.cellIterator();
 				ArrayList<String> lstTerms = new ArrayList<String>();
 				while (cells.hasNext()) {
-					HSSFCell cell = (HSSFCell) cells.next();
+					Cell cell = cells.next();
 				
 					int intCellType = cell.getCellType();
 					switch (intCellType) {
@@ -868,8 +874,13 @@ public class UseImport {
 		//String xlsPath = "C://workspace//CDM Trunk//UseImport//src//main//java//eu//etaxonomy//cdm//toLoad2.xls";
 		
 		uiImport.setupNecessaryItems();
-		uiImport.loadTerms();
-		uiImport.loadUses();
+		try {
+			uiImport.loadTerms();
+			uiImport.loadUses();
+		} catch (InvalidFormatException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 		//String xlsPath = "C://workspace//toLoad3.xls";
 		//uiImport.importFromExcelSS(xlsPath);
 
