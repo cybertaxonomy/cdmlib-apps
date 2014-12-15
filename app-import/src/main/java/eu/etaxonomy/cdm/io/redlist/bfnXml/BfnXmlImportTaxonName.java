@@ -314,7 +314,9 @@ public class BfnXmlImportTaxonName extends BfnXmlImportBase implements ICdmIO<Bf
 		IClassificationService classificationService = getClassificationService();
 		classificationService.saveOrUpdate(classification);
 		//set boolean for reference and internal mapping of concept relations
-		config.setFillSecondList(true);
+		if(config.isHasSecondList()){
+			config.setFillSecondList(true);
+		}
 		return isNewClassification;
 	}
 
@@ -347,11 +349,16 @@ public class BfnXmlImportTaxonName extends BfnXmlImportBase implements ICdmIO<Bf
 		String strSupplement = null;
 		Taxon taxon = null;
 		Integer uniqueID = null;
+//		Long uniqueID = null;
 		for(Element elWissName:elWissNameList){
 
 			if(elWissName.getAttributeValue("bereich", bfnNamespace).equalsIgnoreCase("Eindeutiger Code")){
 				String textNormalize = elWissName.getTextNormalize();
-				uniqueID = Integer.valueOf(textNormalize);
+				if(StringUtils.isBlank(textNormalize)){
+					uniqueID = -1;
+				}else{
+					uniqueID = Integer.valueOf(textNormalize);
+				}
 			}
 			if(elWissName.getAttributeValue("bereich", bfnNamespace).equalsIgnoreCase("Autoren")){
 				strAuthor = elWissName.getTextNormalize();

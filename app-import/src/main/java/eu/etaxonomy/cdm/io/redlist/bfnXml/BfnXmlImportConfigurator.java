@@ -47,8 +47,10 @@ public class BfnXmlImportConfigurator extends ImportConfiguratorBase<BfnXmlImpor
 	private boolean doSpecimen = true;
 	private boolean doInformationImport = true;
 	private boolean fillSecondList = false;
+	private boolean hasSecondList = false;
 
 
+	
 	public boolean isFillSecondList() {
 		return fillSecondList;
 	}
@@ -329,5 +331,14 @@ public class BfnXmlImportConfigurator extends ImportConfiguratorBase<BfnXmlImpor
 	public void setDoInformationImport(boolean doInformationImport) {
 		this.doInformationImport = doInformationImport;
 	}
+
+	public boolean isHasSecondList() {
+		return hasSecondList;
+	}
+
+	public void setHasSecondList(boolean hasSecondList) {
+		this.hasSecondList = hasSecondList;
+	}
+
 	
 }

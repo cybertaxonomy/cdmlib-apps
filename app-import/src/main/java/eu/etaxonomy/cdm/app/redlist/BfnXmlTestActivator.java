@@ -39,13 +39,13 @@ public class BfnXmlTestActivator {
 	/**
 	 * If Metadata exists this will be overwritten
 	 */
-	private static final String sourceReferenceTitle = "Mammalia";
+	private static final String sourceReferenceTitle = "Lumbricidae";
 
 
 	static final UUID treeUuid = UUID.fromString("00000000-0c97-48ac-8d33-6099ed68c625");
-	static final String sourceSecId = "TestDATA";
+	static final String sourceSecId = "BfnXML";
 	
-	private static final String strSource = "/eu/etaxonomy/cdm/io/bfnXml/saeuger.xml";
+	private static final String strSource = "/eu/etaxonomy/cdm/io/bfnXml/rldb_Lumbricidae.xml";
 //	private static final String strSource = "/eu/etaxonomy/cdm/io/bfnXml/rldb_Myxo.xml";
 	static final boolean includeNormalExplicit = true; 
 	
@@ -79,9 +79,12 @@ public class BfnXmlTestActivator {
 			
 			bfnImportConfigurator.setSourceReferenceTitle(sourceReferenceTitle);
 			
-			bfnImportConfigurator.setClassificationName("Mammale");
+			bfnImportConfigurator.setClassificationName("Lumbricidae");
 			bfnImportConfigurator.setClassificationUuid(treeUuid);
 			bfnImportConfigurator.setSourceSecId(sourceSecId);
+			
+			//if xmllist has two lists
+			bfnImportConfigurator.setHasSecondList(false);
 			
 			bfnImportConfigurator.setDoMetaData(doMetaData);
 			bfnImportConfigurator.setDoReferences(doReferences);
