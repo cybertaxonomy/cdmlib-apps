@@ -20,35 +20,27 @@ import java.util.UUID;
 import org.apache.log4j.Logger;
 import org.springframework.stereotype.Component;
 
-import eu.etaxonomy.cdm.api.service.IClassificationService;
 import eu.etaxonomy.cdm.io.common.IOValidator;
 import eu.etaxonomy.cdm.io.common.ResultSetPartitioner;
-import eu.etaxonomy.cdm.io.common.TdwgAreaProvider;
 import eu.etaxonomy.cdm.io.common.mapping.DbImportMapping;
-import eu.etaxonomy.cdm.io.common.mapping.DbImportTaxIncludedInMapper;
 import eu.etaxonomy.cdm.io.common.mapping.IMappingImport;
 import eu.etaxonomy.cdm.io.redlist.validation.RoteListeDbTaxonImportValidator;
 import eu.etaxonomy.cdm.model.common.CdmBase;
-import eu.etaxonomy.cdm.model.description.Distribution;
-import eu.etaxonomy.cdm.model.description.PresenceAbsenceTerm;
-import eu.etaxonomy.cdm.model.description.TaxonDescription;
-import eu.etaxonomy.cdm.model.location.NamedArea;
 import eu.etaxonomy.cdm.model.name.BotanicalName;
 import eu.etaxonomy.cdm.model.name.Rank;
-import eu.etaxonomy.cdm.model.reference.Reference;
-import eu.etaxonomy.cdm.model.taxon.Classification;
 import eu.etaxonomy.cdm.model.taxon.Taxon;
 import eu.etaxonomy.cdm.model.taxon.TaxonBase;
-import eu.etaxonomy.cdm.model.taxon.TaxonNode;
 import eu.etaxonomy.cdm.strategy.parser.NonViralNameParserImpl;
 
 
 /**
+ * TODO do we still need this class?
  * @author a.mueller
  * @created 27.08.2012
  */
 @Component
 public class RoteListeDbTaxonImport  extends RoteListeDbImportBase<TaxonBase> implements IMappingImport<TaxonBase, RoteListeDbImportState>{
+	@SuppressWarnings("unused")
 	private static final Logger logger = Logger.getLogger(RoteListeDbTaxonImport.class);
 	
 	private NonViralNameParserImpl parser = NonViralNameParserImpl.NewInstance();
@@ -70,10 +62,6 @@ public class RoteListeDbTaxonImport  extends RoteListeDbImportBase<TaxonBase> im
 	}
 	
 	
-
-	/* (non-Javadoc)
-	 * @see eu.etaxonomy.cdm.io.erms.ErmsImportBase#getIdQuery()
-	 */
 	@Override
 	protected String getIdQuery() {
 		String strQuery = " SELECT pk FROM " + dbTableName +
@@ -81,10 +69,7 @@ public class RoteListeDbTaxonImport  extends RoteListeDbImportBase<TaxonBase> im
 		return strQuery;
 	}
 
-
-	/* (non-Javadoc)
-	 * @see eu.etaxonomy.cdm.io.erms.ErmsImportBase#getMapping()
-	 */
+	@Override
 	protected DbImportMapping getMapping() {
 		if (mapping == null){
 			mapping = new DbImportMapping();
@@ -99,9 +84,6 @@ public class RoteListeDbTaxonImport  extends RoteListeDbImportBase<TaxonBase> im
 		return mapping;
 	}
 
-	/* (non-Javadoc)
-	 * @see eu.etaxonomy.cdm.io.berlinModel.in.BerlinModelImportBase#getRecordQuery(eu.etaxonomy.cdm.io.berlinModel.in.BerlinModelImportConfigurator)
-	 */
 	@Override
 	protected String getRecordQuery(RoteListeDbImportConfigurator config) {
 		String strSelect = " SELECT * ";
@@ -114,13 +96,6 @@ public class RoteListeDbTaxonImport  extends RoteListeDbImportBase<TaxonBase> im
 	
 	@Override
 	public boolean doPartition(ResultSetPartitioner partitioner, RoteListeDbImportState state) {
-//		higherTaxonMap = new HashMap<UUID, Taxon>();
-//		Reference genevaReference = getReferenceService().find(state.getConfig().getUuidGenevaReference());
-//		if (genevaReference == null){
-//			genevaReference = makeGenevaReference(state);
-//			getReferenceService().save(genevaReference);
-//		}
-//		state.setGenevaReference(genevaReference);
 		boolean success = super.doPartition(partitioner, state);
 //		higherTaxonMap = new HashMap<UUID, Taxon>();
 //		state.setGenevaReference(null);
@@ -212,11 +187,6 @@ public class RoteListeDbTaxonImport  extends RoteListeDbImportBase<TaxonBase> im
 //		speciesTaxon.addSource(sourceId, REFERENCE_NAMESPACE, sourceRef, null);
 //		
 //		
-//		//geneva id
-//		Reference genevaReference = state.getGenevaReference();
-//		Object genevaId = rs.getObject("geneva_ID");
-//		speciesTaxon.addSource(String.valueOf(genevaId), null, genevaReference, null);
-//		
 //		//distribution
 //		handleDistribution(rs, speciesTaxon);
 //		
@@ -224,77 +194,8 @@ public class RoteListeDbTaxonImport  extends RoteListeDbImportBase<TaxonBase> im
 		
 		return null;
 	}
-	
-	private void handleDistribution(ResultSet rs, Taxon speciesTaxon) throws SQLException {
-		TaxonDescription description = TaxonDescription.NewInstance(speciesTaxon);
-		
-		Boolean isCongo = rs.getBoolean("drc");
-		Boolean isBurundi = rs.getBoolean("burundi");
-		Boolean isRwanda = rs.getBoolean("rwanda");
-
-		addDistribution(description, isCongo, "ZAI");
-		addDistribution(description, isBurundi, "BUR");
-		addDistribution(description, isRwanda, "RWA");
-
-	}
 
 
-
-	/**
-	 * @param description
-	 * @param isCongo
-	 */
-	private void addDistribution(TaxonDescription description, Boolean exists, String label) {
-		if (exists == true){
-			NamedArea namedArea = TdwgAreaProvider.getAreaByTdwgAbbreviation(label);
-			Distribution distribution = Distribution.NewInstance(namedArea, PresenceAbsenceTerm.PRESENT());
-			description.addElement(distribution);
-		}
-	}
-
-
-	
-	//TODO use Mapper
-	private boolean makeTaxonomicallyIncluded(RoteListeDbImportState state, Integer treeRefFk, Taxon child, Taxon parent, Reference citation, String microCitation){
-		String treeKey;
-		UUID treeUuid;
-		if (treeRefFk == null){
-			treeKey = "1";  // there is only one tree and it gets the map key '1'
-			treeUuid = state.getConfig().getClassificationUuid();
-		}else{
-			treeKey =String.valueOf(treeRefFk);
-			treeUuid = state.getTreeUuidByTreeKey(treeKey);
-		}
-		Classification tree = (Classification)state.getRelatedObject(DbImportTaxIncludedInMapper.TAXONOMIC_TREE_NAMESPACE, treeKey);
-		if (tree == null){
-			IClassificationService service = state.getCurrentIO().getClassificationService();
-			tree = service.find(treeUuid);
-			if (tree == null){
-				String treeName = state.getConfig().getClassificationName();
-				tree = Classification.NewInstance(treeName);
-				tree.setUuid(treeUuid);
-				//FIXME tree reference
-				//tree.setReference(ref);
-				service.save(tree);
-			}
-			state.addRelatedObject(DbImportTaxIncludedInMapper.TAXONOMIC_TREE_NAMESPACE, treeKey, tree);
-		}
-		
-		TaxonNode childNode = tree.addParentChild(parent, child, citation, microCitation);
-		return (childNode != null);
-	}
-
-
-//	private Reference makeGenevaReference(RoteListeDbImportState state) {
-//		Reference result = ReferenceFactory.newDatabase();
-//		result.setTitleCache(state.getConfig().getGenevaReferenceTitle(), true);
-//		result.setUuid(state.getConfig().getUuidGenevaReference());
-//		return result;
-//	}
-
-	/* (non-Javadoc)
-	 * @see eu.etaxonomy.cdm.io.common.CdmIoBase#doCheck(eu.etaxonomy.cdm.io.common.IImportConfigurator)
-	 */
 	@Override
 	protected boolean doCheck(RoteListeDbImportState state){
 		IOValidator<RoteListeDbImportState> validator = new RoteListeDbTaxonImportValidator();
@@ -302,9 +203,7 @@ public class RoteListeDbTaxonImport  extends RoteListeDbImportBase<TaxonBase> im
 	}
 	
 	
-	/* (non-Javadoc)
-	 * @see eu.etaxonomy.cdm.io.common.CdmIoBase#isIgnore(eu.etaxonomy.cdm.io.common.IImportConfigurator)
-	 */
+	@Override
 	protected boolean isIgnore(RoteListeDbImportState state){
 		return ! state.getConfig().isDoTaxa();
 	}
