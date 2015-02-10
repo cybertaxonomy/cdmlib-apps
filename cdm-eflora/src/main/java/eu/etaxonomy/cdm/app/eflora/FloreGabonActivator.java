@@ -10,9 +10,7 @@
 package eu.etaxonomy.cdm.app.eflora;
 
 import java.net.URI;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 import java.util.UUID;
 
 import org.apache.log4j.Logger;
@@ -21,13 +19,9 @@ import org.springframework.transaction.TransactionStatus;
 import eu.etaxonomy.cdm.api.service.ITermService;
 import eu.etaxonomy.cdm.database.DbSchemaValidation;
 import eu.etaxonomy.cdm.database.ICdmDataSource;
-import eu.etaxonomy.cdm.io.common.CdmDefaultImport;
 import eu.etaxonomy.cdm.io.common.IImportConfigurator.CHECK;
-import eu.etaxonomy.cdm.io.common.events.IIoObserver;
-import eu.etaxonomy.cdm.io.common.events.LoggingIoObserver;
 import eu.etaxonomy.cdm.io.common.mapping.IInputTransformer;
 import eu.etaxonomy.cdm.io.common.mapping.UndefinedTransformerMethodException;
-import eu.etaxonomy.cdm.io.markup.MarkupImportConfigurator;
 import eu.etaxonomy.cdm.io.markup.MarkupTransformer;
 import eu.etaxonomy.cdm.model.description.Feature;
 import eu.etaxonomy.cdm.model.description.FeatureNode;
@@ -186,33 +180,18 @@ public class FloreGabonActivator extends EfloraActivatorBase {
 	
 // **************** NO CHANGE **********************************************/
 	
-	private IIoObserver observer = new LoggingIoObserver();
-	private Set<IIoObserver> observerList = new HashSet<IIoObserver>();
-	
-	private MarkupImportConfigurator config;
-	private CdmDefaultImport<MarkupImportConfigurator> myImport;
-	
 	private void doImport(ICdmDataSource cdmDestination){
-		observerList.add(observer);
-		if (h2ForCheck && cdmDestination.getDatabaseType().equals(CdmDestinations.localH2().getDatabaseType())){
-			check = CHECK.CHECK_ONLY;
-		}
+		super.doImport(fdg1, cdmDestination,check, h2ForCheck);
 		
 		//make config
-		URI source = fdg1;
-		config = MarkupImportConfigurator.NewInstance(source, cdmDestination);
 		config.setClassificationUuid(classificationUuid);
 		config.setDoTaxa(doTaxa);
-		config.setCheck(check);
 		config.setDoPrintKeys(doPrintKeys);
 		config.setDbSchemaValidation(hbm2dll);
-		config.setObservers(observerList);
 		config.setReplaceStandardKeyTitles(replaceStandardKeyTitles);
 		config.setSourceReference(getSourceReference("Flore du Gabon"));
 		config.setClassificationName(classificationTitle);
 		config.setReuseExistingState(reuseState);
-		
-		myImport = new CdmDefaultImport<MarkupImportConfigurator>(); 
 		
 		//Vol1
 		executeVolume( fdg1, includeFdg1 ^ inverseInclude);
@@ -358,19 +337,6 @@ public class FloreGabonActivator extends EfloraActivatorBase {
 			myImport.getCdmAppController().commitTransaction(tx);
 		}
 		
-	}
-
-	/**
-	 * @param markupConfig
-	 * @param myImport
-	 */
-	private void executeVolume(URI source, boolean include) {
-		if (include){
-			System.out.println("\nStart import from ("+ source.toString() + ") ...");
-			config.setSource(source);
-			myImport.invoke(config);
-			System.out.println("End import from ("+ source.toString() + ")...");
-		}
 	}
 	
 	private Reference<?> getSourceReference(String string) {

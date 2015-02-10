@@ -372,7 +372,40 @@ public class EfloraSources {
 	
 	//Flora of the Guianas Sample
 	public static URI fgu_1(){
-		return URI.create("file://PESIIMPORT3/guianas/markupData/79THEOPHRASTACEAE.xml");
+//		return URI.create("file:///PESIIMPORT3/guianas/markupData/79THEOPHRASTACEAE.xml");
+		return URI.create("file:////BGBM-PESIHPC/FloraGuianasXml/79THEOPHRASTACEAE.xml");
+	}
+	
+	public static URI fotg_22(){
+		return URI.create("file:////BGBM-PESIHPC/FloraGuianasXml/A22_final.xml");
+	}
+
+	public static URI fotg_23(){
+		return URI.create("file:////BGBM-PESIHPC/FloraGuianasXml/A23_final.xml");
+	}
+	
+	public static URI fotg_24(){
+		return URI.create("file:////BGBM-PESIHPC/FloraGuianasXml/A24_final4.xml");
+	}
+
+	public static URI fotg_24plus(){
+		return URI.create("file:////BGBM-PESIHPC/FloraGuianasXml/A24_finalplus4.xml");
+	}
+	
+	public static URI fotg_25(){
+		return URI.create("file:////BGBM-PESIHPC/FloraGuianasXml/A25_final2.xml");
+	}
+
+	public static URI fotg_25plus(){
+		return URI.create("file:////BGBM-PESIHPC/FloraGuianasXml/A25_finalplus2.xml");
+	}
+	
+	public static URI fotg_26(){
+		return URI.create("file://BGBM-PESIHPC/FloraGuianasXml/A26_final.xml");
+	}
+
+	public static URI fotg_27(){
+		return URI.create("file:////BGBM-PESIHPC/FloraGuianasXml/A27_final.xml");
 	}
 	
 }

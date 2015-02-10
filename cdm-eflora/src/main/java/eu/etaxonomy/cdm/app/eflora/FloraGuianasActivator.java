@@ -10,9 +10,7 @@
 package eu.etaxonomy.cdm.app.eflora;
 
 import java.net.URI;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 import java.util.UUID;
 
 import org.apache.log4j.Logger;
@@ -21,13 +19,9 @@ import org.springframework.transaction.TransactionStatus;
 import eu.etaxonomy.cdm.api.service.ITermService;
 import eu.etaxonomy.cdm.database.DbSchemaValidation;
 import eu.etaxonomy.cdm.database.ICdmDataSource;
-import eu.etaxonomy.cdm.io.common.CdmDefaultImport;
 import eu.etaxonomy.cdm.io.common.IImportConfigurator.CHECK;
-import eu.etaxonomy.cdm.io.common.events.IIoObserver;
-import eu.etaxonomy.cdm.io.common.events.LoggingIoObserver;
 import eu.etaxonomy.cdm.io.common.mapping.IInputTransformer;
 import eu.etaxonomy.cdm.io.common.mapping.UndefinedTransformerMethodException;
-import eu.etaxonomy.cdm.io.markup.MarkupImportConfigurator;
 import eu.etaxonomy.cdm.io.markup.MarkupTransformer;
 import eu.etaxonomy.cdm.model.description.Feature;
 import eu.etaxonomy.cdm.model.description.FeatureNode;
@@ -37,20 +31,38 @@ import eu.etaxonomy.cdm.model.reference.Reference;
 import eu.etaxonomy.cdm.model.reference.ReferenceFactory;
 
 /**
+ * Activator for Flora of the Guianas imports.
+ * This class is meant for advanced use and is therefore not documented.
  * @author a.mueller
- * @created 20.06.2008
- * @version 1.0
  */
-public class FloraGuianasActivator {
+public class FloraGuianasActivator extends EfloraActivatorBase {
 	private static final Logger logger = Logger.getLogger(FloraGuianasActivator.class);
 	
 	//database validation status (create, update, validate ...)
 	static DbSchemaValidation hbm2dll = DbSchemaValidation.CREATE;
-//	static final URI source = EfloraSources.fdg_sample();
 	static final URI fgu1 = EfloraSources.fgu_1();
-//	static final URI fgu2 = EfloraSources.fgu_2();
-//	static final URI fgu3 = EfloraSources.fgu_3();
-//	static final URI fgu4 = EfloraSources.fgu_4();
+	static final URI fotg22 = EfloraSources.fotg_22();
+	static final URI fotg23 = EfloraSources.fotg_23();
+	static final URI fotg24 = EfloraSources.fotg_24();
+	static final URI fotg24_plus = EfloraSources.fotg_24plus();
+	static final URI fotg25 = EfloraSources.fotg_25();
+	static final URI fotg25_plus = EfloraSources.fotg_25plus();
+	static final URI fotg26 = EfloraSources.fotg_26();
+	static final URI fotg27 = EfloraSources.fotg_27();
+	
+
+	private boolean inverseInclude = false;
+	
+	private boolean includeFotg1 = false;
+	private boolean includeFotg22 = true;
+	private boolean includeFotg23 = false;
+	private boolean includeFotg24 = false;
+	private boolean includeFotg24_plus = false;
+	private boolean includeFotg25 = false;
+	private boolean includeFotg25_plus = false;
+	private boolean includeFotg26 = false;
+	private boolean includeFotg27 = false;
+
 	
 	
 //	static final ICdmDataSource cdmDestination = CdmDestinations.cdm_flora_guianas_preview();
@@ -66,6 +78,8 @@ public class FloraGuianasActivator {
 	static final UUID classificationUuid = UUID.fromString("5e3a1b07-2609-4597-bbda-7b02dfe8c2b3");
 	
 	private static final String SOURCE_REFERENCE_TITLE = "Flora of the Guianas";
+	static final String classificationTitle = "Flore du the Guianas";
+	
 	private static final String FEATURE_TREE_TITLE = "Flora of the Guianas Feature Tree";
 
 	//check - import
@@ -77,75 +91,58 @@ public class FloraGuianasActivator {
 	//taxa
 	static final boolean doTaxa = true;
 	
-	private boolean includeFgu1 = true;
-	private boolean includeFgu2 = false;
-	private boolean includeFgu3 = false;
-	private boolean includeFgu4 = false;
+	static final boolean reuseState = true;
+	
 	
 		
 	private boolean replaceStandardKeyTitles = true;
 
-	private IIoObserver observer = new LoggingIoObserver();
-	private Set<IIoObserver> observerList = new HashSet<IIoObserver>();
-	
+// ****************** NO CHANGE *******************************************/	
 	
 	private void doImport(ICdmDataSource cdmDestination){
-		observerList.add(observer);
-		if (h2ForCheck && cdmDestination.getDatabaseType().equals(CdmDestinations.localH2().getDatabaseType())){
-			check = CHECK.CHECK_ONLY;
-		}
+		super.doImport(fotg22, cdmDestination,check, h2ForCheck);
+		
 		
 		//make config
-		URI source = fgu1;
-		MarkupImportConfigurator markupConfig= MarkupImportConfigurator.NewInstance(source, cdmDestination);
-		markupConfig.setClassificationUuid(classificationUuid);
-		markupConfig.setDoTaxa(doTaxa);
-		markupConfig.setCheck(check);
-		markupConfig.setDoPrintKeys(doPrintKeys);
-		markupConfig.setDbSchemaValidation(hbm2dll);
-		markupConfig.setObservers(observerList);
-		markupConfig.setReplaceStandardKeyTitles(replaceStandardKeyTitles);
+		config.setClassificationUuid(classificationUuid);
+		config.setDoTaxa(doTaxa);
+		config.setDoPrintKeys(doPrintKeys);
+		config.setDbSchemaValidation(hbm2dll);
+		config.setReplaceStandardKeyTitles(replaceStandardKeyTitles);
+		config.setSourceReference(getSourceReference(SOURCE_REFERENCE_TITLE));
+		config.setClassificationName(classificationTitle);
+		config.setReuseExistingState(reuseState);
 		
-		
-		markupConfig.setSourceReference(getSourceReference(SOURCE_REFERENCE_TITLE));
-		
-		CdmDefaultImport<MarkupImportConfigurator> myImport = new CdmDefaultImport<MarkupImportConfigurator>(); 
-		
-		//Vol1
-		if (includeFgu1){
-			source = fgu1;
-			System.out.println("\nStart import from ("+ fgu1.toString() + ") ...");
-			markupConfig.setSource(source);
-			myImport.invoke(markupConfig);
-			System.out.println("End import from ("+ fgu1.toString() + ")...");
-		}
-		
-//		//Vol2
-//		if (includeFgu2){
-//			source = fgu2;
-//			System.out.println("\nStart import from ("+ source.toString() + ") ...");
-//			markupConfig.setSource(source);
-//			myImport.invoke(markupConfig);
-//			System.out.println("End import from ("+ source.toString() + ")...");
+//		URI uri = config.getSource();
+//		try {
+////			InputStream is = uri.toURL().openStream();
+//			File file = new File(uri);
+//			System.out.println(file.exists());
+//			InputStream is = new FileInputStream(file);
+//			System.out.println(is);
+//		} catch (Exception e) {
+//			e.printStackTrace();
 //		}
-//		
-//		//Vol3
-//		if (includeFgu3){
-//			source = fgu3;
-//			System.out.println("\nStart import from ("+ source.toString() + ") ...");
-//			markupConfig.setSource(source);
-//			myImport.invoke(markupConfig);
-//			System.out.println("End import from ("+ source.toString() + ")...");
-//		}
-//
-//		//Vol4
-//		if (includeFgu4){
-//			source = fgu4;
-//			System.out.println("\nStart import from ("+ source.toString() + ") ...");
-//			markupConfig.setSource(source);
-//			myImport.invoke(markupConfig);
-//			System.out.println("End import from ("+ source.toString() + ")...");
-//		}
+		
+		//Vol1-79
+		executeVolume( fgu1, includeFotg1 ^ inverseInclude);
+		//Vol22
+		executeVolume(fotg22, includeFotg22 ^ inverseInclude);
+		//Vol23
+		executeVolume(fotg23, includeFotg23 ^ inverseInclude);
+		//Vol24
+		executeVolume(fotg24, includeFotg24 ^ inverseInclude);
+		//Vol24+
+		executeVolume(fotg24_plus, includeFotg24_plus ^ inverseInclude);
+		//Vol25
+		executeVolume(fotg25, includeFotg25 ^ inverseInclude);
+		//Vol26
+		executeVolume(fotg25_plus, includeFotg25_plus ^ inverseInclude);
+		//Vol26
+		executeVolume(fotg26, includeFotg26 ^ inverseInclude);				
+		//Vol27
+		executeVolume(fotg27, includeFotg27 ^ inverseInclude);
+
 		
 		FeatureTree tree = makeFeatureNode(myImport.getCdmAppController().getTermService());
 		myImport.getCdmAppController().getFeatureTreeService().saveOrUpdate(tree);
@@ -396,8 +393,8 @@ public class FloraGuianasActivator {
 		}
 		return lastChild;
 	}
-	
 
+	
 
 	/**
 	 * @param args

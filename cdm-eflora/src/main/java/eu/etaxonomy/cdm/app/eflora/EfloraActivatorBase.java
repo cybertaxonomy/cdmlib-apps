@@ -3,19 +3,27 @@
  */
 package eu.etaxonomy.cdm.app.eflora;
 
+import java.net.URI;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.UUID;
 
 import org.apache.log4j.Logger;
 
 import eu.etaxonomy.cdm.api.application.ICdmApplicationConfiguration;
 import eu.etaxonomy.cdm.api.service.ITermService;
+import eu.etaxonomy.cdm.database.ICdmDataSource;
+import eu.etaxonomy.cdm.io.common.CdmDefaultImport;
+import eu.etaxonomy.cdm.io.common.IImportConfigurator.CHECK;
+import eu.etaxonomy.cdm.io.common.events.IIoObserver;
+import eu.etaxonomy.cdm.io.common.events.LoggingIoObserver;
 import eu.etaxonomy.cdm.io.markup.FeatureSorter;
 import eu.etaxonomy.cdm.io.markup.FeatureSorterInfo;
+import eu.etaxonomy.cdm.io.markup.MarkupImportConfigurator;
 import eu.etaxonomy.cdm.io.markup.MarkupImportState;
 import eu.etaxonomy.cdm.model.description.Feature;
 import eu.etaxonomy.cdm.model.description.FeatureNode;
@@ -27,7 +35,25 @@ import eu.etaxonomy.cdm.model.description.FeatureTree;
  */
 public class EfloraActivatorBase {
 	private static final Logger logger = Logger.getLogger(EfloraActivatorBase.class);
+	
+	protected MarkupImportConfigurator config;
+	protected CdmDefaultImport<MarkupImportConfigurator> myImport;
+	protected IIoObserver observer = new LoggingIoObserver();
+	protected Set<IIoObserver> observerList = new HashSet<IIoObserver>();
 
+	protected MarkupImportConfigurator doImport(URI source, ICdmDataSource cdmDestination, CHECK check, boolean h2ForCheck){
+		observerList.add(observer);
+		if (h2ForCheck && cdmDestination.getDatabaseType().equals(CdmDestinations.localH2().getDatabaseType())){
+			check = CHECK.CHECK_ONLY;
+		}
+		config = MarkupImportConfigurator.NewInstance(source, cdmDestination);
+		config.setObservers(observerList);
+		config.setCheck(check);
+		
+		myImport = new CdmDefaultImport<MarkupImportConfigurator>(); 
+		
+		return config;
+	}
 	
 	protected FeatureTree makeAutomatedFeatureTree(ICdmApplicationConfiguration app, 
 			MarkupImportState state, UUID featureTreeUuid, String featureTreeTitle){
@@ -87,5 +113,19 @@ public class EfloraActivatorBase {
 			result.put(feature.getUuid(), feature);
 		}
 		return result;
+	}
+	
+	
+	/**
+	 * @param markupConfig
+	 * @param myImport
+	 */
+	protected void executeVolume(URI source, boolean include) {
+		if (include){
+			System.out.println("\nStart import from ("+ source.toString() + ") ...");
+			config.setSource(source);
+			myImport.invoke(config);
+			System.out.println("End import from ("+ source.toString() + ")...");
+		}
 	}
 }
