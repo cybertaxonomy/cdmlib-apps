@@ -67,8 +67,8 @@ public class FloraGuianasActivator extends EfloraActivatorBase {
 	
 //	static final ICdmDataSource cdmDestination = CdmDestinations.cdm_flora_guianas_preview();
 //	static final ICdmDataSource cdmDestination = CdmDestinations.cdm_flora_guianas_production();
-	static final ICdmDataSource cdmDestination = CdmDestinations.localH2();
-//	static final ICdmDataSource cdmDestination = CdmDestinations.cdm_test_local_mysql();
+//	static final ICdmDataSource cdmDestination = CdmDestinations.localH2();
+	static final ICdmDataSource cdmDestination = CdmDestinations.cdm_test_local_mysql();
 	
 
 	//feature tree uuid
@@ -78,7 +78,7 @@ public class FloraGuianasActivator extends EfloraActivatorBase {
 	static final UUID classificationUuid = UUID.fromString("5e3a1b07-2609-4597-bbda-7b02dfe8c2b3");
 	
 	private static final String SOURCE_REFERENCE_TITLE = "Flora of the Guianas";
-	static final String classificationTitle = "Flore du the Guianas";
+	static final String classificationTitle = "Flora of the Guianas";
 	
 	private static final String FEATURE_TREE_TITLE = "Flora of the Guianas Feature Tree";
 
