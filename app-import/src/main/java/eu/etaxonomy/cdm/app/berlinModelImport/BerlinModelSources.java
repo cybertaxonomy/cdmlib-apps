@@ -155,8 +155,8 @@ public class BerlinModelSources {
 	
 	public static Source MT_MOOSE(){
 		String dbms = Source.SQL_SERVER_2005;
-		String strServer = "SQL2000Intern";
-		String strDB = "MTMOOSE";
+		String strServer = "BGBM-SQL02";
+		String strDB = "MTMoose";
 		int port = 1433;
 		String userName = "WebUser";
 		return  makeSource(dbms, strServer, strDB, port, userName, null);
@@ -164,7 +164,7 @@ public class BerlinModelSources {
 	
 	public static Source MT_Standardliste(){
 		String dbms = Source.SQL_SERVER_2005;
-		String strServer = "SQL2000Intern";
+		String strServer = "BGBM-SQL02";
 		String strDB = "MTStandardliste";
 		int port = 1433;
 		String userName = "WebUser";
