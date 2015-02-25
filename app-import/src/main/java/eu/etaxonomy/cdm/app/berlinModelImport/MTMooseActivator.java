@@ -21,6 +21,7 @@ import eu.etaxonomy.cdm.io.berlinModel.in.BerlinModelImportConfigurator;
 import eu.etaxonomy.cdm.io.common.CdmDefaultImport;
 import eu.etaxonomy.cdm.io.common.IImportConfigurator.CHECK;
 import eu.etaxonomy.cdm.io.common.IImportConfigurator.DO_REFERENCES;
+import eu.etaxonomy.cdm.io.common.IImportConfigurator.EDITOR;
 import eu.etaxonomy.cdm.io.common.Source;
 import eu.etaxonomy.cdm.model.description.Feature;
 import eu.etaxonomy.cdm.model.description.FeatureNode;
@@ -43,23 +44,29 @@ public class MTMooseActivator {
 	//database validation status (create, update, validate ...)
 	static DbSchemaValidation hbm2dll = DbSchemaValidation.CREATE;
 	static final Source berlinModelSource = BerlinModelSources.MT_MOOSE();
+	
 //	static final ICdmDataSource cdmDestination = CdmDestinations.localH2();
 //	static final ICdmDataSource cdmDestination = CdmDestinations.cdm_mt_moose();
-	static final ICdmDataSource cdmDestination = CdmDestinations.cdm_test_local_mysql_moose();
-	
+//	static final ICdmDataSource cdmDestination = CdmDestinations.cdm_test_local_mysql_moose();
+	static final ICdmDataSource cdmDestination = CdmDestinations.cdm_test_local_mysql_test();
 	
 	static final UUID classificationUuid = UUID.fromString("601d8a00-cffe-4509-af93-b15b543ccf8d");
 	static final UUID sourceRefUuid = UUID.fromString("601d8a00-cffe-4509-af93-b15b543ccf8d");
 	
-	static final UUID featureTreeUuid = UUID.fromString("4c5b5bbe-6fef-4607-96b2-1b0104eac19e");
-	static final Object[] featureKeyList = new Integer[]{7,201,202,203,204,205,206,207}; 
+//	static final UUID featureTreeUuid = UUID.fromString("4c5b5bbe-6fef-4607-96b2-1b0104eac19e");
+//	static final Object[] featureKeyList = new Integer[]{7,201,202,203,204,205,206,207}; 
+	
+	static final boolean includeFlatClassifications = true; 
+
 	
 	//check - import
-	static final CHECK check = CHECK.CHECK_AND_IMPORT;
+	static final CHECK check = CHECK.IMPORT_WITHOUT_CHECK;
 
 
 	//NomenclaturalCode
 	static final NomenclaturalCode nomenclaturalCode = NomenclaturalCode.ICNAFP;
+	
+	static final EDITOR editor = EDITOR.EDITOR_AS_EDITOR;
 
 // ****************** ALL *****************************************
 	
@@ -72,14 +79,14 @@ public class MTMooseActivator {
 	static final boolean doRelNames = true;
 	static final boolean doNameStatus = true;
 	static final boolean doTypes = true;  
-	static final boolean doNameFacts = false;   //no name facts exist  
+	static final boolean doNameFacts = false;   //no name facts exist
 	
 	//taxa
 	static final boolean doTaxa = true;
 	static final boolean doRelTaxa = true;
 	static final boolean doFacts = false;    //no facts exist
 	static final boolean doOccurences = false;   //no occurrences exist
-	static final boolean doCommonNames = false;  //nocommon names exist
+	static final boolean doCommonNames = false;  //no common names exist
 
 // ************************ NONE **************************************** //
 	
@@ -109,44 +116,46 @@ public class MTMooseActivator {
 		Source source = berlinModelSource;
 		ICdmDataSource destination = CdmDestinations.chooseDestination(args) != null ? CdmDestinations.chooseDestination(args) : cdmDestination;
 		
-		BerlinModelImportConfigurator bmImportConfigurator = BerlinModelImportConfigurator.NewInstance(source,  destination);
+		BerlinModelImportConfigurator config = BerlinModelImportConfigurator.NewInstance(source,  destination);
 		
-		bmImportConfigurator.setClassificationUuid(classificationUuid);
+		config.setClassificationUuid(classificationUuid);
 //		bmImportConfigurator.setSourceSecId(sourceSecId);
-		bmImportConfigurator.setNomenclaturalCode(nomenclaturalCode);
+		config.setNomenclaturalCode(nomenclaturalCode);
+		config.setEditor(editor);
+		config.setIncludeFlatClassifications(includeFlatClassifications);
 
-		bmImportConfigurator.setDoAuthors(doAuthors);
-		bmImportConfigurator.setDoReferences(doReferences);
-		bmImportConfigurator.setDoTaxonNames(doTaxonNames);
-		bmImportConfigurator.setDoRelNames(doRelNames);
-		bmImportConfigurator.setDoNameStatus(doNameStatus);
-		bmImportConfigurator.setDoTypes(doTypes);
-		bmImportConfigurator.setDoNameFacts(doNameFacts);
+		config.setDoAuthors(doAuthors);
+		config.setDoReferences(doReferences);
+		config.setDoTaxonNames(doTaxonNames);
+		config.setDoRelNames(doRelNames);
+		config.setDoNameStatus(doNameStatus);
+		config.setDoTypes(doTypes);
+		config.setDoNameFacts(doNameFacts);
 		
-		bmImportConfigurator.setDoTaxa(doTaxa);
-		bmImportConfigurator.setDoRelTaxa(doRelTaxa);
-		bmImportConfigurator.setDoFacts(doFacts);
-		bmImportConfigurator.setDoOccurrence(doOccurences);
-		bmImportConfigurator.setDoCommonNames(doCommonNames);
-		bmImportConfigurator.setSourceRefUuid(sourceRefUuid);
+		config.setDoTaxa(doTaxa);
+		config.setDoRelTaxa(doRelTaxa);
+		config.setDoFacts(doFacts);
+		config.setDoOccurrence(doOccurences);
+		config.setDoCommonNames(doCommonNames);
+		config.setSourceRefUuid(sourceRefUuid);
 		
-		bmImportConfigurator.setDbSchemaValidation(hbm2dll);
+		config.setDbSchemaValidation(hbm2dll);
 
-		bmImportConfigurator.setCheck(check);
+		config.setCheck(check);
 		
 		// invoke import
 		CdmDefaultImport<BerlinModelImportConfigurator> bmImport = new CdmDefaultImport<BerlinModelImportConfigurator>();
-		bmImport.invoke(bmImportConfigurator);
+		bmImport.invoke(config);
 
-		if (doFacts && (bmImportConfigurator.getCheck().equals(CHECK.CHECK_AND_IMPORT)  || bmImportConfigurator.getCheck().equals(CHECK.IMPORT_WITHOUT_CHECK) )   ){
-			ICdmApplicationConfiguration app = bmImport.getCdmAppController();
-			
-			//make feature tree
-			FeatureTree tree = TreeCreator.flatTree(featureTreeUuid, bmImportConfigurator.getFeatureMap(), featureKeyList);
-			FeatureNode distributionNode = FeatureNode.NewInstance(Feature.DISTRIBUTION());
-			tree.getRoot().addChild(distributionNode, 0); 
-			app.getFeatureTreeService().saveOrUpdate(tree);
-		}
+//		if (doFacts && (config.getCheck().equals(CHECK.CHECK_AND_IMPORT)  || config.getCheck().equals(CHECK.IMPORT_WITHOUT_CHECK) )   ){
+//			ICdmApplicationConfiguration app = bmImport.getCdmAppController();
+//			
+//			//make feature tree
+//			FeatureTree tree = TreeCreator.flatTree(featureTreeUuid, config.getFeatureMap(), featureKeyList);
+//			FeatureNode distributionNode = FeatureNode.NewInstance(Feature.DISTRIBUTION());
+//			tree.getRoot().addChild(distributionNode, 0); 
+//			app.getFeatureTreeService().saveOrUpdate(tree);
+//		}
 		
 		
 		System.out.println("End import from BerlinModel ("+ source.getDatabase() + ")...");
