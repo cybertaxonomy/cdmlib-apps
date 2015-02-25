@@ -138,30 +138,6 @@ public class CdmDestinations {
 		return makeDestination(dbType, cdmServer, cdmDB, -1, cdmUserName, null);
 	}
 
-	public static ICdmDataSource cdm_local_euroMed(){
-		DatabaseTypeEnum dbType = DatabaseTypeEnum.MySQL;
-		String cdmServer = "127.0.0.1";
-		String cdmDB = "euroMed";
-		String cdmUserName = "root";
-		return makeDestination(dbType, cdmServer, cdmDB, -1, cdmUserName, null);
-	}
-
-	public static ICdmDataSource cdm_local_euroMed2(){
-		DatabaseTypeEnum dbType = DatabaseTypeEnum.MySQL;
-		String cdmServer = "127.0.0.1";
-		String cdmDB = "euroMed2";
-		String cdmUserName = "root";
-		return makeDestination(dbType, cdmServer, cdmDB, -1, cdmUserName, null);
-	}
-
-	public static ICdmDataSource cdm_local_euroMed3(){
-		DatabaseTypeEnum dbType = DatabaseTypeEnum.MySQL;
-		String cdmServer = "127.0.0.1";
-		String cdmDB = "euroMed3";
-		String cdmUserName = "root";
-		return makeDestination(dbType, cdmServer, cdmDB, -1, cdmUserName, null);
-	}
-
 	public static ICdmDataSource cdm_pesi_fauna_europaea(){
 		DatabaseTypeEnum dbType = DatabaseTypeEnum.MySQL;
 		String cdmServer = "160.45.63.175";
