@@ -341,12 +341,10 @@ public class BerlinModelTaxonRelationImport  extends BerlinModelImportBase  {
 									}	
 								}
 							} catch (UnknownCdmTypeException e) {
-								//TODO other relationships
 								logger.warn("TaxonRelationShipType " + relQualifierFk + " (conceptRelationship) not yet implemented");
 								success = false;
 							}
 						}else {
-							//TODO
 							logger.warn("TaxonRelationShipType " + relQualifierFk + " not yet implemented: RelPTaxonId = " + relPTaxonId );
 							success = false;
 						}

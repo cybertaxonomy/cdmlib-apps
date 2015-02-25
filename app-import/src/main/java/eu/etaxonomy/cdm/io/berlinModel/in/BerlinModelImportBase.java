@@ -124,6 +124,7 @@ public abstract class BerlinModelImportBase extends DbImportBase<BerlinModelImpo
 				createdAnnotationString += " and updated By: " + String.valueOf(updatedWho) + " (" + String.valueOf(updatedWhen) + ")";
 			}
 			Annotation annotation = Annotation.NewInstance(createdAnnotationString, Language.DEFAULT());
+			//TODO make transaction compatible, same as common sec reference
 			annotation.setCommentator(config.getCommentator());
 			annotation.setAnnotationType(AnnotationType.TECHNICAL());
 			annotatableEntity.addAnnotation(annotation);

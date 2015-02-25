@@ -13,7 +13,6 @@ import java.util.UUID;
 
 import org.apache.log4j.Logger;
 
-import eu.etaxonomy.cdm.api.application.ICdmApplicationConfiguration;
 import eu.etaxonomy.cdm.app.common.CdmDestinations;
 import eu.etaxonomy.cdm.database.DbSchemaValidation;
 import eu.etaxonomy.cdm.database.ICdmDataSource;
@@ -23,9 +22,6 @@ import eu.etaxonomy.cdm.io.common.IImportConfigurator.CHECK;
 import eu.etaxonomy.cdm.io.common.IImportConfigurator.DO_REFERENCES;
 import eu.etaxonomy.cdm.io.common.IImportConfigurator.EDITOR;
 import eu.etaxonomy.cdm.io.common.Source;
-import eu.etaxonomy.cdm.model.description.Feature;
-import eu.etaxonomy.cdm.model.description.FeatureNode;
-import eu.etaxonomy.cdm.model.description.FeatureTree;
 import eu.etaxonomy.cdm.model.name.NomenclaturalCode;
 
 
@@ -46,7 +42,8 @@ public class MTMooseActivator {
 	static final Source berlinModelSource = BerlinModelSources.MT_MOOSE();
 	
 //	static final ICdmDataSource cdmDestination = CdmDestinations.localH2();
-//	static final ICdmDataSource cdmDestination = CdmDestinations.cdm_mt_moose();
+//	static final ICdmDataSource cdmDestination = CdmDestinations.cdm_redlist_moose_dev();
+//	static final ICdmDataSource cdmDestination = CdmDestinations.cdm_redlist_moose_production();
 //	static final ICdmDataSource cdmDestination = CdmDestinations.cdm_test_local_mysql_moose();
 	static final ICdmDataSource cdmDestination = CdmDestinations.cdm_test_local_mysql_test();
 	
@@ -58,6 +55,8 @@ public class MTMooseActivator {
 	
 	static final boolean includeFlatClassifications = true; 
 
+	static final String relPTaxonIdQuery = "SELECT * FROM RelPTaxon r " + 
+			" WHERE NOT (r.PTRefFk1 <> r.PTRefFk2 AND r.RelQualifierFk = 1)";
 	
 	//check - import
 	static final CHECK check = CHECK.IMPORT_WITHOUT_CHECK;
@@ -138,6 +137,7 @@ public class MTMooseActivator {
 		config.setDoOccurrence(doOccurences);
 		config.setDoCommonNames(doCommonNames);
 		config.setSourceRefUuid(sourceRefUuid);
+		config.setRelTaxaIdQuery(relPTaxonIdQuery);
 		
 		config.setDbSchemaValidation(hbm2dll);
 

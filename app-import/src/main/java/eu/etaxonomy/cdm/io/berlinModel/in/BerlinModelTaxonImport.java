@@ -200,7 +200,7 @@ public class BerlinModelTaxonImport  extends BerlinModelImportBase {
 						taxonBase.setUuid(UUID.fromString(uuid));
 					}
 					
-					//douptful
+					//doubtful
 					if (doubtful.equals("a")){
 						taxonBase.setDoubtful(false);
 					}else if(doubtful.equals("d")){
@@ -273,11 +273,11 @@ public class BerlinModelTaxonImport  extends BerlinModelImportBase {
 					success = false;
 				}
 			}
-		} catch (SQLException e) {
-			logger.error("SQLException:" +  e);
-			return false;
 		} catch (DatabaseTypeNotSupportedException e) {
 			logger.error("MethodNotSupportedException:" +  e);
+			return false;
+		} catch (Exception e) {
+			logger.error("SQLException:" +  e);
 			return false;
 		}
 	
