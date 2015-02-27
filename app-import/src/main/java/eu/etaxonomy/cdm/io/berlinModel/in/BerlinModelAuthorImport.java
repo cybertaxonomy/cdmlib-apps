@@ -47,7 +47,7 @@ public class BerlinModelAuthorImport extends BerlinModelImportBase {
 
 	public static final String NAMESPACE = "Author";
 	
-	private static int recordsPerLog = 5000;
+//	private static int recordsPerLog = 5000;
 	private static final String dbTableName = "Author";
 	private static final String pluralString = "Authors";
 	
@@ -55,9 +55,6 @@ public class BerlinModelAuthorImport extends BerlinModelImportBase {
 		super(dbTableName, pluralString);
 	}
 	
-	/* (non-Javadoc)
-	 * @see eu.etaxonomy.cdm.io.berlinModel.in.BerlinModelImportBase#getIdQuery()
-	 */
 	@Override
 	protected String getIdQuery(BerlinModelImportState state) {
 		String result = " SELECT authorId FROM " + getTableName();
@@ -67,9 +64,6 @@ public class BerlinModelAuthorImport extends BerlinModelImportBase {
 		return result;
 	}
 
-	/* (non-Javadoc)
-	 * @see eu.etaxonomy.cdm.io.berlinModel.in.BerlinModelImportBase#getRecordQuery(eu.etaxonomy.cdm.io.berlinModel.in.BerlinModelImportConfigurator)
-	 */
 	@Override
 	protected String getRecordQuery(BerlinModelImportConfigurator config) {
 		String strRecordQuery = 
@@ -79,12 +73,7 @@ public class BerlinModelAuthorImport extends BerlinModelImportBase {
 		return strRecordQuery;
 	}
 
-
-	/**
-	 * @param partitioner
-	 * @throws SQLException 
-	 */
-	//TODO public ??
+	@Override
 	public boolean doPartition(ResultSetPartitioner partitioner, BerlinModelImportState state)  {
 		String dbAttrName;
 		String cdmAttrName;
@@ -122,17 +111,19 @@ public class BerlinModelAuthorImport extends BerlinModelImportBase {
 						author.setLifespan(lifespan);
 					}
 					
-//				//AreaOfInterest
+//				    //AreaOfInterest
 					String areaOfInterest = rs.getString("AreaOfInterest");
-					if (CdmUtils.isNotEmpty(areaOfInterest)){
-						Extension datesExtension = Extension.NewInstance(author, areaOfInterest, ExtensionType.AREA_OF_INTREREST());
+					if (StringUtils.isNotBlank(areaOfInterest)){
+						Extension.NewInstance(author, areaOfInterest, ExtensionType.AREA_OF_INTREREST());
 					}
 
 					//nomStandard
 					String nomStandard = rs.getString("NomStandard");
-					if (CdmUtils.isNotEmpty(nomStandard)){
-						Extension nomStandardExtension = Extension.NewInstance(author, nomStandard, ExtensionType.NOMENCLATURAL_STANDARD());
+					if (StringUtils.isNotBlank(nomStandard)){
+						Extension.NewInstance(author, nomStandard, ExtensionType.NOMENCLATURAL_STANDARD());
 					}
+					
+					
 					//initials
 					String initials = null;
 					for (int j = 1; j <= rs.getMetaData().getColumnCount(); j++){
@@ -170,21 +161,13 @@ public class BerlinModelAuthorImport extends BerlinModelImportBase {
 		return result;
 	}
 			
-
-	/* (non-Javadoc)
-	 * @see eu.etaxonomy.cdm.io.common.CdmIoBase#doCheck(eu.etaxonomy.cdm.io.common.IImportConfigurator)
-	 */
 	@Override
 	protected boolean doCheck(BerlinModelImportState state){
 		IOValidator<BerlinModelImportState> validator = new BerlinModelAuthorImportValidator();
 		return validator.validate(state);
 	}
 	
-
-
-	/* (non-Javadoc)
-	 * @see eu.etaxonomy.cdm.io.common.CdmIoBase#isIgnore(eu.etaxonomy.cdm.io.common.IImportConfigurator)
-	 */
+	@Override
 	protected boolean isIgnore(BerlinModelImportState state){
 		return ! state.getConfig().isDoAuthors();
 	}
