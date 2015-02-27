@@ -41,12 +41,14 @@ public class CacheUpdater {
 //	static final ICdmDataSource cdmDestination = CdmDestinations.cdm_production_cichorieae();
 //	static final ICdmDataSource cdmDestination = CdmDestinations.localH2();
 //	static final ICdmDataSource cdmDestination = CdmDestinations.cdm_test_local_euromed3();
-	static final ICdmDataSource cdmDestination = CdmDestinations.cdm_production_flora_deutschland();
+//	static final ICdmDataSource cdmDestination = CdmDestinations.cdm_production_flora_deutschland();
+	static final ICdmDataSource cdmDestination = CdmDestinations.cdm_production_caryophyllales();
+	
 
 	static final List<String> classListStrings =  Arrays.asList(new String[]{
 			//IdentifiableEntity.class.getName(),
 //			IdentifiableEntity.class.getName(),
-			AgentBase.class.getName(),
+//			AgentBase.class.getName(),
 			Reference.class.getName(),
 			TaxonNameBase.class.getName(),
 			TaxonBase.class.getName()
