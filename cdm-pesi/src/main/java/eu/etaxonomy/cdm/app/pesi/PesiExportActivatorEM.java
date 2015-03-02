@@ -37,7 +37,7 @@ public class PesiExportActivatorEM {
 //	static final Source pesiDestination = PesiDestinations.pesi_test_local_CDM_FE2PESI();
 //	static final Source pesiDestination = PesiDestinations.pesi_test_local_CDM_ERMS2PESI();
 	
-	static final ICdmDataSource cdmSource = CdmDestinations.cdm_local_euroMed3();
+	static final ICdmDataSource cdmSource = CdmDestinations.cdm_pesi_erms();
 	//Taxon names can't be mapped to their CDM ids as PESI Taxon table mainly holds taxa and there IDs. We ad nameIdStart to the TaxonName id to get a unique id
 	static final int nameIdStart = 10000000;
 	static final IdType idType = IdType.CDM_ID_WITH_EXCEPTIONS;
