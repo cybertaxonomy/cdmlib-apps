@@ -96,6 +96,8 @@ public class FloraGuianasActivator extends EfloraActivatorBase {
 	
 		
 	private boolean replaceStandardKeyTitles = true;
+	
+	private boolean useFotGCollectionTypeOnly = true;
 
 // ****************** NO CHANGE *******************************************/	
 	
@@ -112,6 +114,7 @@ public class FloraGuianasActivator extends EfloraActivatorBase {
 		config.setSourceReference(getSourceReference(SOURCE_REFERENCE_TITLE));
 		config.setClassificationName(classificationTitle);
 		config.setReuseExistingState(reuseState);
+		config.setUseFotGSpecimenTypeCollectionAndTypeOnly(useFotGCollectionTypeOnly);
 		
 //		URI uri = config.getSource();
 //		try {
