@@ -46,6 +46,9 @@ public class FloraMalesianaActivator extends EfloraActivatorBase {
 	//database validation status (create, update, validate ...)
 	static DbSchemaValidation hbm2dll = DbSchemaValidation.CREATE;
 	
+	static final URI fmSource11_1 = EfloraSources.fm_11_1();
+	static final URI fmSource11_2 = EfloraSources.fm_11_2();
+	static final URI fmSource11_3 = EfloraSources.fm_11_3();
 	static final URI fmSource12_1 = EfloraSources.fm_12_1();
 	static final URI fmSource12_2 = EfloraSources.fm_12_2();
 	static final URI fmSource13 = EfloraSources.fm_13();
@@ -68,7 +71,10 @@ public class FloraMalesianaActivator extends EfloraActivatorBase {
 //	static final ICdmDataSource cdmDestination = CdmDestinations.cdm_test_local_mysql();
 //	static final ICdmDataSource cdmDestination = CdmDestinations.cdm_test_local_mysql_test();
 	
-	private boolean includeBase = true;
+	private boolean includeBase = false;
+	private boolean includeVol11_1 = includeBase;
+	private boolean includeVol11_2 = includeBase;
+	private boolean includeVol11_3 = ! includeBase;
 	private boolean includeVol12_1 = includeBase;
 	private boolean includeVol12_2 = includeBase;
 	private boolean includeVol13 = includeBase;
@@ -138,9 +144,15 @@ public class FloraMalesianaActivator extends EfloraActivatorBase {
 
 
 
-		//Vol16
-		doSource(includeVol16, fmSource16, "Flora Malesiana - vol. 16", markupConfig, myImport);
+		//Vol11_1
+		doSource(includeVol11_1, fmSource11_1, "Flora Malesiana - vol. 11, pt.1", markupConfig, myImport);
 		
+		//Vol11_2
+		doSource(includeVol11_2, fmSource11_2, "Flora Malesiana - vol. 11, pt.2", markupConfig, myImport);
+
+		//Vol11_3
+		doSource(includeVol11_3, fmSource11_3, "Flora Malesiana - vol. 11, pt.3", markupConfig, myImport);
+
 
 		//Vol12_1
 		doSource(includeVol12_1, fmSource12_1, "Flora Malesiana - vol. 12, pt.1", markupConfig, myImport);
@@ -156,6 +168,10 @@ public class FloraMalesianaActivator extends EfloraActivatorBase {
 
 		//Vol15
 		doSource(includeVol15, fmSource15, "Flora Malesiana - vol. 15", markupConfig, myImport);
+
+		//Vol16
+		doSource(includeVol16, fmSource16, "Flora Malesiana - vol. 16", markupConfig, myImport);
+
 		//Vol17, part1
 		doSource(includeVol17_1, fmSource17_1, "Flora Malesiana - vol. 17, part I", markupConfig, myImport);
 
