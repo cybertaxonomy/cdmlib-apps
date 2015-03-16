@@ -48,6 +48,7 @@ public final class BfnXmlTransformer {
 	public static final UUID vocStateRLKatOld =  UUID.fromString("e9be0626-e14e-4556-a8af-9d49e6279669");
 	public static final UUID vocStateRLNeo =  UUID.fromString("6c55ae1d-046d-4b67-89aa-b24c4888df6a");
 	public static final UUID vocStateRLKatId =  UUID.fromString("c54481b3-bf07-43ce-b1cb-09759e4d2a70");
+	public static final UUID vocStateRLSpecialCases =  UUID.fromString("ce2f4f8f-4222-429f-938b-77b794ecf704");
 
 	//redlist feature
 	public static final UUID featureRLKat =  UUID.fromString("744f8833-619a-4d83-b330-1997c3b2c2f9");
@@ -62,6 +63,9 @@ public final class BfnXmlTransformer {
 	public static final UUID featureRLKatId =  UUID.fromString("dc9f5dd2-302c-4a32-bd70-278bbd9abd16");
 	public static final UUID featureRLTaxComment =  UUID.fromString("b7c05d78-16a4-4b6e-a03b-fa6bb2ed74ae");
 	public static final UUID featureRLHazardComment =  UUID.fromString("5beb1ebf-8643-4d5f-9849-8087c35455bb");
+	public static final UUID featureRLSpecialCases =  UUID.fromString("fb92068d-667a-448e-8019-ca4551891b3b");
+	public static final UUID featureRLLastOccurrence =  UUID.fromString("218a32be-fb87-41c9-8d64-b21b43b47caa");
+	public static final UUID featureRLAdditionalComment =  UUID.fromString("c610c98e-f242-4f3b-9edd-7b84a9435867");
 	
 
 	//rl kat state list
@@ -140,6 +144,9 @@ public final class BfnXmlTransformer {
 	public static final UUID stateTermRLKatOldNb = UUID.fromString("72faec78-6db9-4471-9a65-c6d2337bd324");
 	public static final UUID stateTermRLKatOldKn = UUID.fromString("92276f3e-3c09-4761-ba5b-b49697c6d5ce");
 	public static final UUID stateTermEmpty = UUID.fromString("1d357340-5329-4f43-a454-7f99625a1d71");
+	public static final UUID stateTermRLSpecialS = UUID.fromString("71fda1f6-a7eb-44a0-aeb8-e7f676096916");
+	public static final UUID stateTermRLSpecialE = UUID.fromString("ef335a01-f4f1-4a02-95a2-2254aa457774");
+	public static final UUID stateTermRLSpecialD = UUID.fromString("6b267cc5-49b6-4ebd-87ec-aa574e9cbcc5");
 	
 	
 	public static TaxonRelationshipType concept2TaxonRelation(String conceptStatus) throws UnknownCdmTypeException{
@@ -207,6 +214,7 @@ public final class BfnXmlTransformer {
 		}else if (strRank.equals("subsubfm")){return Rank.SUBSUBFORM();
 		}else if (strRank.equals("subfm")){return Rank.SUBFORM();
 		}else if (strRank.equals("fm")){return Rank.FORM();
+		}else if (strRank.equals("f.")){return Rank.FORM();
 		}else if (strRank.equals("subsubvar")){return Rank.SUBSUBVARIETY();
 		}else if (strRank.equals("subvar")){return Rank.SUBVARIETY();
 		}else if (strRank.equals("var")){return Rank.VARIETY();
@@ -233,6 +241,7 @@ public final class BfnXmlTransformer {
 		}else if (strRank.equals("superreg")){return Rank.SUPERKINGDOM();
 		}else if (strRank.equals("dom")){return Rank.DOMAIN();
 		}else if (strRank.equals("taxsupragen")){return Rank.SUPRAGENERICTAXON();
+		}else if (strRank.equals("Auswertungsgruppe")){return Rank.EMPIRE();
 		//family group
 		}else if (strRank.equals("infrafam")){return Rank.FAMILY();
 		}else if (strRank.equals("subfam")){return Rank.FAMILY();
@@ -270,6 +279,9 @@ public final class BfnXmlTransformer {
 		}else if (redListCode.equals("-")){return "-";
 		}else if (redListCode.equals("=")){return "=";
 		}else if (redListCode.equals("N")){return "N";
+		}else if (redListCode.equals("S")){return "S";
+		}else if (redListCode.equals("E")){return "E";
+		}else if (redListCode.equals("D")){return "D";
 		}else if (redListCode.equals("#dtpl_KurzfBest_RUNTER##dtpl_KurzfBest_RUNTER##dtpl_KurzfBest_RUNTER#")){
 			char c = 0x2193;
 			return String.valueOf(c)+String.valueOf(c)+String.valueOf(c);
@@ -331,8 +343,9 @@ public final class BfnXmlTransformer {
 		if(redListVocabulary.equalsIgnoreCase("alte RL- Kat.")) return vocStateRLKatOld;
 		if(redListVocabulary.equalsIgnoreCase("Neobiota")) return vocStateRLNeo;
 		if(redListVocabulary.equalsIgnoreCase("Eindeutiger Code")) return vocStateRLKatId;
+		if(redListVocabulary.equalsIgnoreCase("Sonderfälle")) return vocStateRLSpecialCases;
 		else{
-			throw new UnknownCdmTypeException("Unknown feature, could not match: " + redListVocabulary);
+			throw new UnknownCdmTypeException("Unknown Vocabulary feature, could not match: " + redListVocabulary);
 		}
 
 	}
@@ -352,6 +365,10 @@ public final class BfnXmlTransformer {
 		if(redListFeature.equalsIgnoreCase("Eindeutiger Code")) return featureRLKatId;
 		if(redListFeature.equalsIgnoreCase("Kommentar zur Taxonomie")) return featureRLTaxComment;
 		if(redListFeature.equalsIgnoreCase("Kommentar zur Gefährdung")) return featureRLHazardComment;
+		if(redListFeature.equalsIgnoreCase("Sonderfälle")) return featureRLSpecialCases;
+		if(redListFeature.equalsIgnoreCase("Letzter Nachweis")) return featureRLLastOccurrence;
+		if(redListFeature.equalsIgnoreCase("Weitere Kommentare")) return featureRLAdditionalComment;
+		
 		else{
 			throw new UnknownCdmTypeException("Unknown feature, could not match: " + redListFeature);
 		}
@@ -437,6 +454,12 @@ public final class BfnXmlTransformer {
 		
 		//RL Neo
 		if(redListStateTerm.equalsIgnoreCase("N") && redListFeature.equalsIgnoreCase("Neobiota")) return stateTermRLKatNeo;
+
+		//RL Special
+		if(redListStateTerm.equalsIgnoreCase("S") && redListFeature.equalsIgnoreCase("Sonderfälle")) return stateTermRLSpecialS;
+		if(redListStateTerm.equalsIgnoreCase("E") && redListFeature.equalsIgnoreCase("Sonderfälle")) return stateTermRLSpecialE;
+		if(redListStateTerm.equalsIgnoreCase("D") && redListFeature.equalsIgnoreCase("Sonderfälle")) return stateTermRLSpecialD;
+		
 		
 		
 		//RL Empty

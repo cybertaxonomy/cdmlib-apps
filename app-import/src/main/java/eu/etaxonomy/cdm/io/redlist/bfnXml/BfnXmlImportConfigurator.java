@@ -78,33 +78,8 @@ public class BfnXmlImportConfigurator extends ImportConfiguratorBase<BfnXmlImpor
 
 	protected static Namespace nsTcsXml = Namespace.getNamespace("http://www.tdwg.org/schemas/tcs/1.01");
 	
-//	@Autowired
-//	TcsXmlMetaDataImport tcsXmlMetaDataImport;
-//	@Autowired
-//	TcsXmlSpecimensImport tcsXmlSpecimensIO;
-//	@Autowired
-//	TcsXmlPublicationsImport tcsXmlPublicationsIO;
-//	@Autowired
-//	BfnXmlTaxonNameImport tcsXmlTaxonNameIO;
-//	@Autowired
-//	TcsXmlTaxonNameRelationsImport tcsXmlTaxonNameRelationsIO;
-//	@Autowired
-//	BfnXmlTaxonImport tcsXmlTaxonIO;
-//	@Autowired
-//	TcsXmlTaxonRelationsImport tcsXmlTaxonRelationsIO;
-	
 	@SuppressWarnings("unchecked")
 	protected void makeIoClassList(){
-//		ioBeans = new String[]{
-//				"tcsXmlMetaDataImport"
-//				, "tcsXmlSpecimensIO"
-//				, "tcsXmlPublicationsIO"
-//				, "tcsXmlTaxonNameIO"
-//				, "tcsXmlTaxonNameRelationsIO"
-//				, "tcsXmlTaxonIO"
-//				, "tcsXmlTaxonRelationsIO"	
-//		};
-		
 		ioClassList = new Class[]{
 				BfnXmlImportMetaData.class,
 				BfnXmlImportFeature.class,

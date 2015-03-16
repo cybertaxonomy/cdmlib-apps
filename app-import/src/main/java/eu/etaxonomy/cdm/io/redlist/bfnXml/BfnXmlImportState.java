@@ -26,7 +26,10 @@ import eu.etaxonomy.cdm.model.reference.Reference;
 public class BfnXmlImportState extends ImportStateBase<BfnXmlImportConfigurator, BfnXmlImportBase>{
 	private Reference refA;
 	private Reference refB;
-	private Reference currentRef;
+	private Reference currentMicroRef;
+	private Reference completeSourceRef;
+	private String classificationA;
+	private String classificationB;
 	@SuppressWarnings("unused")
 	private static final Logger logger = Logger.getLogger(BfnXmlImportState.class);
 
@@ -41,6 +44,8 @@ public class BfnXmlImportState extends ImportStateBase<BfnXmlImportConfigurator,
 		return commonNameMap;
 	}
 
+	
+	
 	public void setCommonNameMap(Map<String, CommonTaxonName> commonNameMap) {
 		this.commonNameMap = commonNameMap;
 	}
@@ -61,11 +66,34 @@ public class BfnXmlImportState extends ImportStateBase<BfnXmlImportConfigurator,
 		return refB;
 	}
 
-	public void setCurrentRef(Reference currentRef) {
-		this.currentRef = currentRef;
+	public void setCurrentMicroRef(Reference currentRef) {
+		this.currentMicroRef = currentRef;
 	}
-	public Reference getCurrentRef(){
-		return currentRef;
+	public Reference getCompleteSourceRef() {
+		return completeSourceRef;
+	}
+
+	public void setCompleteSourceRef(Reference completeSourceRef) {
+		this.completeSourceRef = completeSourceRef;
+	}
+
+	public Reference getCurrentMicroRef(){
+		return currentMicroRef;
+	}
+	public void setFirstClassificationName(String classificationA) {
+		  this.classificationA = classificationA;
+	}
+	
+	public void setSecondClassificationName(String classificationB) {
+		  this.classificationB = classificationB;
+	}
+	
+	public String getFirstClassificationName() {
+		return  classificationA;
+	}
+
+	public String getSecondClassificationName() {
+		return  classificationB;
 	}
 	
 //	/* (non-Javadoc)

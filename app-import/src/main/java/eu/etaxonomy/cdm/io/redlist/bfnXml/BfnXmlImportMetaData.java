@@ -35,11 +35,13 @@ import eu.etaxonomy.cdm.common.XmlHelp;
 import eu.etaxonomy.cdm.io.common.ICdmIO;
 import eu.etaxonomy.cdm.io.common.ImportHelper;
 import eu.etaxonomy.cdm.io.common.MapWrapper;
+import eu.etaxonomy.cdm.io.common.Source;
 import eu.etaxonomy.cdm.model.common.DefinedTermBase;
 import eu.etaxonomy.cdm.model.common.Language;
 import eu.etaxonomy.cdm.model.common.OrderedTermVocabulary;
 import eu.etaxonomy.cdm.model.common.TermType;
 import eu.etaxonomy.cdm.model.common.TermVocabulary;
+import eu.etaxonomy.cdm.model.common.TimePeriod;
 import eu.etaxonomy.cdm.model.common.VocabularyEnum;
 import eu.etaxonomy.cdm.model.description.CategoricalData;
 import eu.etaxonomy.cdm.model.description.DescriptionBase;
@@ -64,6 +66,7 @@ import eu.etaxonomy.cdm.persistence.dao.description.IFeatureDao;
 import eu.etaxonomy.cdm.strategy.exceptions.UnknownCdmTypeException;
 import eu.etaxonomy.cdm.strategy.parser.NonViralNameParserImpl;
 import eu.etaxonomy.cdm.strategy.parser.ParserProblem;
+import eu.etaxonomy.cdm.strategy.parser.TimePeriodParser;
 /**
  * 
  * @author a.oppermann
@@ -73,6 +76,9 @@ import eu.etaxonomy.cdm.strategy.parser.ParserProblem;
 @Component
 public class BfnXmlImportMetaData extends BfnXmlImportBase implements ICdmIO<BfnXmlImportState> {
 	private static final Logger logger = Logger.getLogger(BfnXmlImportMetaData.class);
+	private String sourceFileName;
+	private String debVersion;
+	private String timeStamp;
 
 	public BfnXmlImportMetaData(){
 		super();
@@ -87,7 +93,7 @@ public class BfnXmlImportMetaData extends BfnXmlImportBase implements ICdmIO<Bfn
 
 	@Override
 	public void doInvoke(BfnXmlImportState state){
-		logger.info("start import MetaData...");
+		logger.warn("start import MetaData...");
 		
 		
 		ResultWrapper<Boolean> success = ResultWrapper.NewInstance(true);
@@ -95,11 +101,24 @@ public class BfnXmlImportMetaData extends BfnXmlImportBase implements ICdmIO<Bfn
 		BfnXmlImportConfigurator config = state.getConfig();
 		Element elDataSet = getDataSetElement(config);
 		Namespace bfnNamespace = config.getBfnXmlNamespace();
+		//create complete source object
+		if(elDataSet.getName().equalsIgnoreCase("DEBExport")){
+			sourceFileName = elDataSet.getAttributeValue("source");
+			debVersion = elDataSet.getAttributeValue("debversion");
+			timeStamp = elDataSet.getAttributeValue("timestamp");
+			
+			Reference sourceReference = ReferenceFactory.newGeneric();
+			sourceReference.setTitle(sourceFileName);
+			TimePeriod parsedTimePeriod = TimePeriodParser.parseString(timeStamp);
+			sourceReference.setDatePublished(parsedTimePeriod);
+			state.setCompleteSourceRef(sourceReference);
+		}
 		
 		List contentXML = elDataSet.getContent();
 		Element currentElement = null;
 		for(Object object:contentXML){
 		
+			
 			if(object instanceof Element){
 				currentElement = (Element)object;
 
@@ -114,23 +133,36 @@ public class BfnXmlImportMetaData extends BfnXmlImportBase implements ICdmIO<Bfn
 						if( elMetaData.getAttributeValue("standardname").equalsIgnoreCase("KurzLit_A")){
 							List<Element> children = (List<Element>)elMetaData.getChildren();
 							String kurzlitA = children.get(0).getTextNormalize();
-							Reference sourceReference = ReferenceFactory.newDatabase();
+							Reference sourceReference = ReferenceFactory.newGeneric();
 							sourceReference.setTitle(kurzlitA);
 							state.setFirstListSecRef(sourceReference);
 
 						}
+						else if( elMetaData.getAttributeValue("standardname").equalsIgnoreCase("Klassifikation_A")){
+							List<Element> children = (List<Element>)elMetaData.getChildren();
+							String klassifikation_A = children.get(0).getTextNormalize();
+							state.setFirstClassificationName(klassifikation_A);
+
+						}						
 						else if( elMetaData.getAttributeValue("standardname").equalsIgnoreCase("KurzLit_B")){
 							List<Element> children = (List<Element>)elMetaData.getChildren();
 							String kurzlitB = children.get(0).getTextNormalize();
-							Reference sourceReference = ReferenceFactory.newDatabase();
+							Reference sourceReference = ReferenceFactory.newGeneric();
 							sourceReference.setTitle(kurzlitB);
 							state.setSecondListSecRef(sourceReference);
 						}
+						else if( elMetaData.getAttributeValue("standardname").equalsIgnoreCase("Klassifikation_B")){
+							List<Element> children = (List<Element>)elMetaData.getChildren();
+							String klassifikation_B = children.get(0).getTextNormalize();
+							state.setSecondClassificationName(klassifikation_B);
+
+						}
+
 					}
 					
+					logger.warn("end import MetaData ...");
 					commitTransaction(tx);
 					
-					logger.info("end import MetaData ...");
 					
 					
 					

@@ -25,7 +25,7 @@ public class CdmDestinations {
 	public static ICdmDataSource cdm_redlist_localhost(){
 		DatabaseTypeEnum dbType = DatabaseTypeEnum.MySQL;
 		String cdmServer = "localhost";
-		String cdmDB = "cdm_production_rl_lumbricidae"; 
+		String cdmDB = "cdm_bfn_imports"; 
 		String cdmUserName = "root";
 		return makeDestination(dbType, cdmServer, cdmDB, -1, cdmUserName, null);
 	}
