@@ -115,7 +115,7 @@ public abstract class ErmsImportBase<CDM_BASE extends CdmBase> extends CdmImport
 	
 	public boolean doPartition(ResultSetPartitioner partitioner, ErmsImportState state) {
 		boolean success = true ;
-		Set objectsToSave = new HashSet<CdmBase>();
+		Set<CdmBase> objectsToSave = new HashSet<CdmBase>();
 		
  		DbImportMapping<?, ?> mapping = getMapping();
 		mapping.initialize(state, cdmTargetClass);

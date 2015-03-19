@@ -99,7 +99,7 @@ public abstract class CentralAfricaChecklistImportBase<CDM_BASE extends CdmBase>
 	
 	public boolean doPartition(ResultSetPartitioner partitioner, CentralAfricaChecklistImportState state) {
 		boolean success = true ;
-		Set objectsToSave = new HashSet();
+		Set<CdmBase> objectsToSave = new HashSet<CdmBase>();
 		
  		DbImportMapping<?, ?> mapping = getMapping();
 		mapping.initialize(state, cdmTargetClass);
