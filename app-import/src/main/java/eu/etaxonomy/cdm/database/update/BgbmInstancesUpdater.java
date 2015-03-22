@@ -36,7 +36,7 @@ public class BgbmInstancesUpdater {
 		"cdm_flora_guianas","cdm_flore_gabon","cdm_edit_flora_malesiana","cdm_edit_globis","cdm_edit_palmae", 
 		"cdm_ipni_Caryophyllaceae","cdm_mt_moose","cdm_mt_standardliste",
 		"cdm_pesi_euromed", "cdm_pesi_erms","cdm_pesi_fauna_europaea",
-		"cdm_proibiosphere_chenopodium_pilot","cdm_rl_mammalia","cdm_test_eckhard","cdm_test_euromed","cdm_test_gabi",
+		"cdm_proibiosphere_chenopodium_pilot","cdm_rl_mammalia","cdm_rl_animals","cdm_test_eckhard","cdm_test_euromed","cdm_test_gabi",
 		"cdm_test_norbert","cdm_test_sabine","cdm_vibrant_index"};
 	
 
