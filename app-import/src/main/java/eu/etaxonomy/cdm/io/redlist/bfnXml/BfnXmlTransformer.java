@@ -49,6 +49,7 @@ public final class BfnXmlTransformer {
 	public static final UUID vocStateRLNeo =  UUID.fromString("6c55ae1d-046d-4b67-89aa-b24c4888df6a");
 	public static final UUID vocStateRLKatId =  UUID.fromString("c54481b3-bf07-43ce-b1cb-09759e4d2a70");
 	public static final UUID vocStateRLSpecialCases =  UUID.fromString("ce2f4f8f-4222-429f-938b-77b794ecf704");
+	public static final UUID vocGermanFederalStates =  UUID.fromString("a80dc3d4-0def-4c9b-97a1-12e8eb7ec87f");
 
 	//redlist feature
 	public static final UUID featureRLKat =  UUID.fromString("744f8833-619a-4d83-b330-1997c3b2c2f9");
@@ -344,6 +345,7 @@ public final class BfnXmlTransformer {
 		if(redListVocabulary.equalsIgnoreCase("Neobiota")) return vocStateRLNeo;
 		if(redListVocabulary.equalsIgnoreCase("Eindeutiger Code")) return vocStateRLKatId;
 		if(redListVocabulary.equalsIgnoreCase("Sonderfälle")) return vocStateRLSpecialCases;
+		if(redListVocabulary.equalsIgnoreCase("German Federal States")) return vocGermanFederalStates;
 		else{
 			throw new UnknownCdmTypeException("Unknown Vocabulary feature, could not match: " + redListVocabulary);
 		}
@@ -468,6 +470,30 @@ public final class BfnXmlTransformer {
 		else
 			throw new UnknownCdmTypeException("Unknown State, could not match: " + redListStateTerm +"\n In Category: " + redListFeature);
 	
+	}
+
+
+	public static UUID getGermanStateUUID(String strGermanState) throws UnknownCdmTypeException {
+
+		if(strGermanState.equalsIgnoreCase("Deutschland")) return UUID.fromString("a7f3855e-d4fa-4313-8fcf-da792ef848e7");
+		if(strGermanState.equalsIgnoreCase("Baden-Württemberg"))return UUID.fromString("00e64948-9ce9-4ebf-961b-133c56517b1c");
+		if(strGermanState.equalsIgnoreCase("Bayern"))return UUID.fromString("ba075265-368f-4ff0-8942-88546239c70a");
+		if(strGermanState.equalsIgnoreCase("Berlin"))return UUID.fromString("d9339e12-7efa-45df-a008-3c934b9386bc");
+		if(strGermanState.equalsIgnoreCase("Brandenburg"))return UUID.fromString("dda9d8b8-8090-4667-953e-d8b1f7243926");
+		if(strGermanState.equalsIgnoreCase("Hamburg"))return UUID.fromString("f087a7d7-974f-4627-a414-df27c04f99dd");
+		if(strGermanState.equalsIgnoreCase("Hessen"))return UUID.fromString("59de29e6-bf32-4677-89c7-a6834fcb5085");
+		if(strGermanState.equalsIgnoreCase("Mecklenburg-Vorpommern"))return UUID.fromString("06dccbd5-8d5a-4e4f-b56e-d1d74ab25c19");
+		if(strGermanState.equalsIgnoreCase("Niedersachsen"))return UUID.fromString("97f77fe8-07ab-4e14-8f8b-40e8caf7e653");
+		if(strGermanState.equalsIgnoreCase("Nordrhein-Westfalen"))return UUID.fromString("46bf702e-1438-470c-9c77-04202c34ebf2");
+		if(strGermanState.equalsIgnoreCase("Rheinland-Pfalz"))return UUID.fromString("dd3ddb29-b1ec-4937-99a9-4a94d383becf");
+		if(strGermanState.equalsIgnoreCase("Saarland"))return UUID.fromString("26d3e85f-ce90-43ae-8ac0-42a60302b7b7");
+		if(strGermanState.equalsIgnoreCase("Sachsen"))return UUID.fromString("ca3ef152-ee3a-45f2-8343-983cf0fdddbd");
+		if(strGermanState.equalsIgnoreCase("Sachsen-Anhalt"))return UUID.fromString("bb95b9a4-87ee-49bd-a542-4c30289e8d1f");
+		if(strGermanState.equalsIgnoreCase("Schleswig-Holstein"))return UUID.fromString("863323a7-22fb-4070-ad94-ce317098a28a");
+		if(strGermanState.equalsIgnoreCase("Thüringen"))return UUID.fromString("72e18526-6bf7-4300-8329-53cab5da2b51");
+
+		else
+			throw new UnknownCdmTypeException("Unknown State, could not match: " + strGermanState);
 	}
 	
 }

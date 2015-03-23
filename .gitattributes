@@ -225,6 +225,7 @@ app-import/src/main/java/eu/etaxonomy/cdm/io/redlist/bfnXml/BfnXmlImportBase.jav
 app-import/src/main/java/eu/etaxonomy/cdm/io/redlist/bfnXml/BfnXmlImportConfigurator.java -text
 app-import/src/main/java/eu/etaxonomy/cdm/io/redlist/bfnXml/BfnXmlImportFeature.java -text
 app-import/src/main/java/eu/etaxonomy/cdm/io/redlist/bfnXml/BfnXmlImportMetaData.java -text
+app-import/src/main/java/eu/etaxonomy/cdm/io/redlist/bfnXml/BfnXmlImportNamedArea.java -text
 app-import/src/main/java/eu/etaxonomy/cdm/io/redlist/bfnXml/BfnXmlImportState.java -text
 app-import/src/main/java/eu/etaxonomy/cdm/io/redlist/bfnXml/BfnXmlImportTaxonName.java -text
 app-import/src/main/java/eu/etaxonomy/cdm/io/redlist/bfnXml/BfnXmlTransformer.java -text

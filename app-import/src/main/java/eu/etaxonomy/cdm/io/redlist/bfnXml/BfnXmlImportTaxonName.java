@@ -23,12 +23,15 @@ import org.jdom.Namespace;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.TransactionStatus;
 
+import com.sun.tools.jxc.gen.config.Config;
+
 import eu.etaxonomy.cdm.api.service.IClassificationService;
 import eu.etaxonomy.cdm.api.service.ITaxonService;
 import eu.etaxonomy.cdm.common.ResultWrapper;
 import eu.etaxonomy.cdm.common.XmlHelp;
 import eu.etaxonomy.cdm.io.common.ICdmIO;
 import eu.etaxonomy.cdm.model.common.CdmBase;
+import eu.etaxonomy.cdm.model.common.DefinedTermBase;
 import eu.etaxonomy.cdm.model.common.Language;
 import eu.etaxonomy.cdm.model.description.CategoricalData;
 import eu.etaxonomy.cdm.model.description.CommonTaxonName;
@@ -67,7 +70,7 @@ public class BfnXmlImportTaxonName extends BfnXmlImportBase implements ICdmIO<Bf
 	
 	private static final Logger logger = Logger.getLogger(BfnXmlImportTaxonName.class);
 
-	private static final String strNomenclaturalCode = "Zoological";//"Botanical";
+	private static String strNomenclaturalCode = null;// "Zoological";//"Botanical";
 	private static int parsingProblemCounter = 0;
 	private Map<Integer, Taxon> firstList;
 	private Map<Integer, Taxon> secondList;
@@ -89,6 +92,7 @@ public class BfnXmlImportTaxonName extends BfnXmlImportBase implements ICdmIO<Bf
 		ITaxonService taxonService = getTaxonService();
 
 		BfnXmlImportConfigurator config = state.getConfig();
+		strNomenclaturalCode = config.getNomenclaturalSig();
 		Element elDataSet = getDataSetElement(config);
 		//TODO set Namespace
 		Namespace bfnNamespace = config.getBfnXmlNamespace();
@@ -124,8 +128,7 @@ public class BfnXmlImportTaxonName extends BfnXmlImportBase implements ICdmIO<Bf
 	 * @param bfnNamespace
 	 * @param currentElement
 	 */
-	private void extractTaxonConceptRelationShips(Namespace bfnNamespace,
-			Element currentElement) {
+	private void extractTaxonConceptRelationShips(Namespace bfnNamespace, Element currentElement) {
 		String childName;
 		String bfnElementName = "KONZEPTBEZIEHUNG";
 		ResultWrapper<Boolean> success = ResultWrapper.NewInstance(true);
@@ -379,15 +382,17 @@ public class BfnXmlImportTaxonName extends BfnXmlImportBase implements ICdmIO<Bf
 			if(elWissName.getAttributeValue("bereich", bfnNamespace).equalsIgnoreCase("wissName")){
 				try{
 					TaxonNameBase<?, ?> nameBase = parseNonviralNames(rank,strAuthor,strSupplement,elWissName);
+					if(nameBase.isProtectedTitleCache() == true){
+						logger.warn("Taxon " + nameBase.getTitleCache());
+					}
+
 					//TODO  extract to method?
+					if(strSupplement != null){
+						nameBase.setAppendedPhrase(strSupplement);
+					}
 					if(strSupplement != null && strSupplement.equalsIgnoreCase("nom. illeg.")){
 						nameBase.addStatus(NomenclaturalStatus.NewInstance(NomenclaturalStatusType.ILLEGITIMATE()));
 					}
-
-					//					nameBase.setId(Integer.parseInt(strId));
-					//ImportHelper.setOriginalSource(nameBase, config.getSourceReference(), strId, idNamespace);
-
-					
 					/**
 					 *  BFN does not want any name matching yet
 					 */
@@ -403,22 +408,15 @@ public class BfnXmlImportTaxonName extends BfnXmlImportBase implements ICdmIO<Bf
 //						if (nameList.size()>1){
 //							logger.warn("More than 1 matching taxon name found for " + nameBase.getTitleCache());
 //						}
-//					}CurrentMicroRef
-
-//					taxon = (Taxon) taxonBase;
+//					}
 					state.setCurrentMicroRef(state.getFirstListSecRef());
 					if(config.isFillSecondList()){
 						state.setCurrentMicroRef(state.getSecondListSecRef());
 					}
 					taxon = Taxon.NewInstance(nameBase, state.getCurrentMicroRef());
-//					logger.info("Taxon Reference" + taxon.getSec().getTitle());
-					//set NameSpace
+					//set create and set path of nameSpace
 					Element parentElement = elWissName.getParentElement();
 					Element grandParentElement = parentElement.getParentElement();
-//					Element newElement = new Element("prefix", parentElement.getName()+":"+parentElement.getAttribute("taxNr").getName());
-//					Element newElement = new Element("element",grandParentElement.getName()+"-"+parentElement.getName()+"-"+elWissName.getName() , uriNameSpace);
-//					config.setBfnXmlNamespace(newElement.getNamespace());
-					
 					taxon.addImportSource(uniqueID, grandParentElement.getName()+":"+parentElement.getName()+":"+elWissName.getName()+":"+uriNameSpace, state.getCompleteSourceRef(), state.getCurrentMicroRef().getTitle());
 				} catch (UnknownCdmTypeException e) {
 					success.setValue(false); 
@@ -524,68 +522,80 @@ public class BfnXmlImportTaxonName extends BfnXmlImportBase implements ICdmIO<Bf
 	 * @param childElementName
 	 * @param elInformations
 	 * @param state
+	 * @throws UnknownCdmTypeException 
 	 */
 
 	@SuppressWarnings("unchecked")
 	private void createOrUpdateInformation(Taxon taxon,
 			Namespace bfnNamespace, String childElementName,
 			Element elInformations, 
-			BfnXmlImportState state) {
+			BfnXmlImportState state){
 
 		List<Element> elInformationList = (List<Element>)elInformations.getChildren(childElementName, bfnNamespace);
         
-		//TODO
-		TaxonDescription taxonDescription = getTaxonDescription(taxon, false, true);
 		for(Element elInfo:elInformationList){
+			//check if geographical scope is Bund and import only these information for now
+			//TODO create several taxon descriptions for different geographical scope 
+			if(elInfo.getName().equalsIgnoreCase("BEZUGSRAUM") && elInfo.getAttributeValue("name").equalsIgnoreCase("Bund")){
+				childElementName = "IWERT";
+				TaxonDescription taxonDescription = getTaxonDescription(taxon, false, true);
+				UUID germanStateUUID;
+				try {
+					germanStateUUID = BfnXmlTransformer.getGermanStateUUID("Deutschland");
+					NamedArea area = (NamedArea)getTermService().load(germanStateUUID);
+					taxonDescription.addGeoScope(area);
+				} catch (UnknownCdmTypeException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+				List<Element> elInfoDetailList = (List<Element>)elInfo.getChildren(childElementName, bfnNamespace);
 
-			childElementName = "IWERT";
-			List<Element> elInfoDetailList = (List<Element>)elInfo.getChildren(childElementName, bfnNamespace);
-
-			for(Element elInfoDetail : elInfoDetailList){
-				if(elInfoDetail.getAttributeValue("standardname").equalsIgnoreCase("RL Kat.")){
-					makeFeatures(taxonDescription, elInfoDetail, state, false);
-				}
-				if(elInfoDetail.getAttributeValue("standardname").equalsIgnoreCase("Kat. +/-")){
-					makeFeatures(taxonDescription, elInfoDetail, state, false);
-				}
-				if(elInfoDetail.getAttributeValue("standardname").equalsIgnoreCase("aktuelle Bestandsstituation")){
-					makeFeatures(taxonDescription, elInfoDetail, state, false);
-				}
-				if(elInfoDetail.getAttributeValue("standardname").equalsIgnoreCase("langfristiger Bestandstrend")){
-					makeFeatures(taxonDescription, elInfoDetail, state, false);
-				}
-				if(elInfoDetail.getAttributeValue("standardname").equalsIgnoreCase("kurzfristiger Bestandstrend")){
-					makeFeatures(taxonDescription, elInfoDetail, state, false);
-				}
-				if(elInfoDetail.getAttributeValue("standardname").equalsIgnoreCase("Risikofaktoren")){
-					makeFeatures(taxonDescription, elInfoDetail, state, false);
-				}
-				if(elInfoDetail.getAttributeValue("standardname").equalsIgnoreCase("Verantwortlichkeit")){
-					makeFeatures(taxonDescription, elInfoDetail, state, false);
-				}
-				if(elInfoDetail.getAttributeValue("standardname").equalsIgnoreCase("alte RL- Kat.")){
-					makeFeatures(taxonDescription, elInfoDetail, state, false);
-				}
-				if(elInfoDetail.getAttributeValue("standardname").equalsIgnoreCase("Neobiota")){
-					makeFeatures(taxonDescription, elInfoDetail, state, false);
-				}
-				if(elInfoDetail.getAttributeValue("standardname").equalsIgnoreCase("Eindeutiger Code")){
-					makeFeatures(taxonDescription, elInfoDetail, state, false);
-				}
-				if(elInfoDetail.getAttributeValue("standardname").equalsIgnoreCase("Kommentar zur Taxonomie")){
-					makeFeatures(taxonDescription, elInfoDetail, state, true);
-				}
-				if(elInfoDetail.getAttributeValue("standardname").equalsIgnoreCase("Kommentar zur Gefährdung")){
-					makeFeatures(taxonDescription, elInfoDetail, state, true);
-				}
-				if(elInfoDetail.getAttributeValue("standardname").equalsIgnoreCase("Sonderfälle")){
-					makeFeatures(taxonDescription, elInfoDetail, state, false);
-				}
-				if(elInfoDetail.getAttributeValue("standardname").equalsIgnoreCase("Letzter Nachweis")){
-					makeFeatures(taxonDescription, elInfoDetail, state, true);
-				}
-				if(elInfoDetail.getAttributeValue("standardname").equalsIgnoreCase("Weitere Kommentare")){
-					makeFeatures(taxonDescription, elInfoDetail, state, true);
+				for(Element elInfoDetail : elInfoDetailList){
+					if(elInfoDetail.getAttributeValue("standardname").equalsIgnoreCase("RL Kat.")){
+						makeFeatures(taxonDescription, elInfoDetail, state, false);
+					}
+					if(elInfoDetail.getAttributeValue("standardname").equalsIgnoreCase("Kat. +/-")){
+						makeFeatures(taxonDescription, elInfoDetail, state, false);
+					}
+					if(elInfoDetail.getAttributeValue("standardname").equalsIgnoreCase("aktuelle Bestandsstituation")){
+						makeFeatures(taxonDescription, elInfoDetail, state, false);
+					}
+					if(elInfoDetail.getAttributeValue("standardname").equalsIgnoreCase("langfristiger Bestandstrend")){
+						makeFeatures(taxonDescription, elInfoDetail, state, false);
+					}
+					if(elInfoDetail.getAttributeValue("standardname").equalsIgnoreCase("kurzfristiger Bestandstrend")){
+						makeFeatures(taxonDescription, elInfoDetail, state, false);
+					}
+					if(elInfoDetail.getAttributeValue("standardname").equalsIgnoreCase("Risikofaktoren")){
+						makeFeatures(taxonDescription, elInfoDetail, state, false);
+					}
+					if(elInfoDetail.getAttributeValue("standardname").equalsIgnoreCase("Verantwortlichkeit")){
+						makeFeatures(taxonDescription, elInfoDetail, state, false);
+					}
+					if(elInfoDetail.getAttributeValue("standardname").equalsIgnoreCase("alte RL- Kat.")){
+						makeFeatures(taxonDescription, elInfoDetail, state, false);
+					}
+					if(elInfoDetail.getAttributeValue("standardname").equalsIgnoreCase("Neobiota")){
+						makeFeatures(taxonDescription, elInfoDetail, state, false);
+					}
+					if(elInfoDetail.getAttributeValue("standardname").equalsIgnoreCase("Eindeutiger Code")){
+						makeFeatures(taxonDescription, elInfoDetail, state, false);
+					}
+					if(elInfoDetail.getAttributeValue("standardname").equalsIgnoreCase("Kommentar zur Taxonomie")){
+						makeFeatures(taxonDescription, elInfoDetail, state, true);
+					}
+					if(elInfoDetail.getAttributeValue("standardname").equalsIgnoreCase("Kommentar zur Gefährdung")){
+						makeFeatures(taxonDescription, elInfoDetail, state, true);
+					}
+					if(elInfoDetail.getAttributeValue("standardname").equalsIgnoreCase("Sonderfälle")){
+						makeFeatures(taxonDescription, elInfoDetail, state, false);
+					}
+					if(elInfoDetail.getAttributeValue("standardname").equalsIgnoreCase("Letzter Nachweis")){
+						makeFeatures(taxonDescription, elInfoDetail, state, true);
+					}
+					if(elInfoDetail.getAttributeValue("standardname").equalsIgnoreCase("Weitere Kommentare")){
+						makeFeatures(taxonDescription, elInfoDetail, state, true);
+					}
 				}
 			}
 		}
@@ -685,7 +695,7 @@ public class BfnXmlImportTaxonName extends BfnXmlImportBase implements ICdmIO<Bf
 		//codeRank does not exist
 		else{
 			result = codeRank;
-			logger.warn("string rank used, because code rank does not exist or was not recognized: " + codeRank.toString() +" "+strRank);
+			logger.warn("string rank used, because code rank does not exist or was not recognized: " + codeRank.getTitleCache()+" "+strRank);
 		}
 		return result;
 	}
@@ -703,30 +713,42 @@ public class BfnXmlImportTaxonName extends BfnXmlImportBase implements ICdmIO<Bf
 		TaxonNameBase<?,?> taxonNameBase = null;
 
 		NomenclaturalCode nomCode = BfnXmlTransformer.nomCodeString2NomCode(strNomenclaturalCode);
-		//Todo check author
 		String strScientificName = elWissName.getTextNormalize();
+		/**
+		 *  
+		 * trim strScienctificName because sometimes 
+		 * getTextNormalize() does not removes all the 
+		 * whitespaces
+		 *  
+		 **/
+		strScientificName = StringUtils.trim(strScientificName);
+		strScientificName = StringUtils.remove(strScientificName, "\u00a0");
+		strScientificName = StringUtils.remove(strScientificName, "\uc281");
+		
 		if(strSupplement != null && !strSupplement.isEmpty()){
 			strScientificName = StringUtils.remove(strScientificName, strSupplement);
 		}
-
 		NonViralName<?> nonViralName = null;
 		NonViralNameParserImpl parser = NonViralNameParserImpl.NewInstance();
 		nonViralName = parser.parseFullName(strScientificName, nomCode, rank);
 		if(nonViralName.hasProblem()){
-//			logger.info("Problems: "+nonViralName.hasProblem());
-			//TODO handle parsing Problems
-			
 			for(ParserProblem p:nonViralName.getParsingProblems()){
-				
-				logger.info(++parsingProblemCounter + " " +nonViralName.toString() +" "+p.toString());
+				logger.warn(++parsingProblemCounter + " " +nonViralName.getTitleCache() +" "+p.toString());
 			}
 		}
+		//check for parsed rank
 		Rank parsedRank = nonViralName.getRank();
 		if(parsedRank != rank){
 			nonViralName.setRank(rank);
 		}
-			
-//		nonViralName.setNameCache(strScientificName);
+		//check for parsed author
+		String parsedAuthor = nonViralName.getAuthorshipCache();
+		strAuthor = StringUtils.trim(strAuthor);
+		parsedAuthor = StringUtils.trim(parsedAuthor);
+		if(parsedAuthor.equalsIgnoreCase(strAuthor)){
+			logger.info("Taxon " + nonViralName.getTitleCache() +":"
+					+"\t Author field: " + strAuthor +" and parsed AuthorshipCache: "+nonViralName.getAuthorshipCache());
+		}
 		taxonNameBase = nonViralName;
 		return taxonNameBase;
 	}

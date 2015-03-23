@@ -76,11 +76,14 @@ public class BfnXmlImportConfigurator extends ImportConfiguratorBase<BfnXmlImpor
 	//	rdfNamespace
 	Namespace bfnXmlNamespace;
 
+	private String nomenclaturalCode = null;
+
 	protected static Namespace nsTcsXml = Namespace.getNamespace("http://www.tdwg.org/schemas/tcs/1.01");
 	
 	@SuppressWarnings("unchecked")
 	protected void makeIoClassList(){
 		ioClassList = new Class[]{
+				BfnXmlImportNamedArea.class,
 				BfnXmlImportMetaData.class,
 				BfnXmlImportFeature.class,
 				BfnXmlImportTaxonName.class
@@ -315,5 +318,11 @@ public class BfnXmlImportConfigurator extends ImportConfiguratorBase<BfnXmlImpor
 		this.hasSecondList = hasSecondList;
 	}
 
-	
+	public void setNomenclaturalSig(String nomenclaturalCode) {
+		this.nomenclaturalCode = nomenclaturalCode;
+	}
+
+	public String getNomenclaturalSig(){
+		return nomenclaturalCode;
+	}
 }

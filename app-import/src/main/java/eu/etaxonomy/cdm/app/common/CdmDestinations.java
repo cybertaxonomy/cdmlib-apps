@@ -30,6 +30,14 @@ public class CdmDestinations {
 		return makeDestination(dbType, cdmServer, cdmDB, -1, cdmUserName, null);
 	}
 	
+	public static ICdmDataSource cdm_redlist_plant_localhost(){
+		DatabaseTypeEnum dbType = DatabaseTypeEnum.MySQL;
+		String cdmServer = "localhost";
+		String cdmDB = "cdm_bfn_imports_plants"; 
+		String cdmUserName = "root";
+		return makeDestination(dbType, cdmServer, cdmDB, -1, cdmUserName, null);
+	}
+	
 	public static ICdmDataSource cdm_redlist_lumbricidae(){
 		DatabaseTypeEnum dbType = DatabaseTypeEnum.MySQL;
 		String cdmServer = "160.45.63.171";

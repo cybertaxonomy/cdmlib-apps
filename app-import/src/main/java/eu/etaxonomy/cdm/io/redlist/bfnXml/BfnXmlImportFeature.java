@@ -273,21 +273,21 @@ public class BfnXmlImportFeature extends BfnXmlImportBase implements ICdmIO<BfnX
 				vocabularyStateUuid = BfnXmlTransformer.getRedlistVocabularyUUID(redListCat.toString());
 			} catch (UnknownCdmTypeException e1) {
 				vocabularyStateUuid = UUID.randomUUID();
-				logger.info("Element: " + listValue);
-				e1.printStackTrace();
+				logger.warn("Element: " + listValue + "\n"+ e1);
 			}
 			try {
 				matchedListValue = BfnXmlTransformer.redListString2RedListCode(listValue);
 			} catch (UnknownCdmTypeException e) {
 				matchedListValue = listValue;
-				logger.info("no matched red list code nor UUID found. \n" + e);
+				logger.warn("no matched red list code nor UUID found. \n" + e);
 				
 			}
 			try {
 				stateTermUuid = BfnXmlTransformer.getRedlistStateTermUUID(matchedListValue, redListCat.getTitleCache());
 			} catch (UnknownCdmTypeException e) {
-//				stateTermUuid = UUID.randomUUID(); //TODO: needs to be fixed for "eindeutiger Code"
-				e.printStackTrace();
+//				stateTermUuid = UUID.randomUUID(); 
+				//TODO: needs to be fixed for "eindeutiger Code"
+				logger.warn("could not finde state term uuid for " + matchedListValue + " and redlist category"+ redListCat.getTitleCache()+"\n"+e);
 			}
 			String vocName = redListCat.toString()+" States";
 			termVocabulary = (OrderedTermVocabulary) getVocabulary(TermType.State, vocabularyStateUuid, vocName, vocName, vocName, null, true, null); 	
