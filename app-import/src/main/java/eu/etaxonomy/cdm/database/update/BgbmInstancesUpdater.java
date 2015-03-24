@@ -39,7 +39,6 @@ public class BgbmInstancesUpdater {
 		"cdm_proibiosphere_chenopodium_pilot","cdm_rl_mammalia","cdm_rl_animals","cdm_test_eckhard","cdm_test_euromed","cdm_test_gabi",
 		"cdm_test_norbert","cdm_test_sabine","cdm_vibrant_index"};
 	
-
 	private static String[] testDatabasesOthers = new String[]{"cdm_caryo_amaranthaceae",
 		"cdm_caryo_caryophyllales","cdm_flora_malesiana_prospective","cdm_pesi_all","cdm_salvador",
 		};
