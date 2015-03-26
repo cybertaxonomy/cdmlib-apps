@@ -58,12 +58,13 @@ public class BgbmInstancesUpdater {
 		"cdm_production_piB_eupolybothrus_pilot","cdm_production_piB_lactarius_pilot",
 		"cdm_production_piB_loranthaceae","cdm_production_piB_nephrolepis_pilot",
 		"cdm_production_piB_spiders_pilot","cdm_production_polygonaceae",
-		"cdm_production_proibiosphere_ants_pilot","cdm_production_proibiosphere_chenopodium_pilot",
+		"cdm_production_piB_ants_pilot","cdm_production_piB_chenopodium_pilot",
 		"cdm_production_rl_armeria_demo","cdm_production_rl_lumbricidae",
-		"cdm_production_rl_odonata_demo","cdm_production_rl_standardliste",
+		"cdm_production_rl_standardliste","cdm_production_rl_animals","cdm_production_rl_moose",
 		"cdm_production_tamaricaceae","cdm_production_vibrant_index"};
 
-	static BgbmServer bgbmServer = BgbmServer.TEST;
+
+	static BgbmServer bgbmServer = BgbmServer.PRODUCTION;
 	
 	
 	
