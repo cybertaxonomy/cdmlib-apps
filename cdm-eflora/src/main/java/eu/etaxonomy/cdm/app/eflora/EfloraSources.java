@@ -59,6 +59,41 @@ public class EfloraSources {
 
   //***** FM NEW */	
 	
+	//Flora Malesiana Vol 08_1
+	public static URI fm_08_1(){
+		return URI.create("file:////BGBM-PESIHPC/FloraMalesianaXml/vol8_part1_final.xml");
+	}
+	
+	//Flora Malesiana Vol 08_2
+	public static URI fm_08_2(){
+		return URI.create("file:////BGBM-PESIHPC/FloraMalesianaXml/vol8_part2_final.xml");
+	}
+
+	//Flora Malesiana Vol 08_3
+	public static URI fm_08_3(){
+		return URI.create("file:////BGBM-PESIHPC/FloraMalesianaXml/vol8_part3_final.xml");
+	}
+	
+	//Flora Malesiana Vol 10_1
+	public static URI fm_10_1(){
+		return URI.create("file:////BGBM-PESIHPC/FloraMalesianaXml/vol10_part1_final.xml");
+	}
+	
+	//Flora Malesiana Vol 10_2
+	public static URI fm_10_2(){
+		return URI.create("file:////BGBM-PESIHPC/FloraMalesianaXml/vol10_part2_final.xml");
+	}
+
+	//Flora Malesiana Vol 10_3
+	public static URI fm_10_3(){
+		return URI.create("file:////BGBM-PESIHPC/FloraMalesianaXml/vol10_part3_final.xml");
+	}
+
+	//Flora Malesiana Vol 10_4
+	public static URI fm_10_4(){
+		return URI.create("file:////BGBM-PESIHPC/FloraMalesianaXml/vol10_part4_final.xml");
+	}
+	
 	//Flora Malesiana Vol 11_1
 	public static URI fm_11_1(){
 		return URI.create("file:////BGBM-PESIHPC/FloraMalesianaXml/vol11_part1_final.xml");

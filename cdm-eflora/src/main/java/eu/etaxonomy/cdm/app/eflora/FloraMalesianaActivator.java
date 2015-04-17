@@ -46,6 +46,16 @@ public class FloraMalesianaActivator extends EfloraActivatorBase {
 	//database validation status (create, update, validate ...)
 	static DbSchemaValidation hbm2dll = DbSchemaValidation.CREATE;
 	
+	static final URI fmSource08_1 = EfloraSources.fm_08_1();
+	static final URI fmSource08_2 = EfloraSources.fm_08_2();
+	static final URI fmSource08_3 = EfloraSources.fm_08_3();
+	
+	static final URI fmSource10_1 = EfloraSources.fm_10_1();
+	static final URI fmSource10_2 = EfloraSources.fm_10_2();
+	static final URI fmSource10_3 = EfloraSources.fm_10_3();
+	static final URI fmSource10_4 = EfloraSources.fm_10_4();
+	
+	
 	static final URI fmSource11_1 = EfloraSources.fm_11_1();
 	static final URI fmSource11_2 = EfloraSources.fm_11_2();
 	static final URI fmSource11_3 = EfloraSources.fm_11_3();
@@ -72,9 +82,16 @@ public class FloraMalesianaActivator extends EfloraActivatorBase {
 //	static final ICdmDataSource cdmDestination = CdmDestinations.cdm_test_local_mysql_test();
 	
 	private boolean includeBase = false;
+	private boolean includeVol08_1 = includeBase;
+	private boolean includeVol08_2 = includeBase;
+	private boolean includeVol08_3 = ! includeBase;
+	private boolean includeVol10_1 = includeBase;
+	private boolean includeVol10_2 = includeBase;
+	private boolean includeVol10_3 = includeBase;
+	private boolean includeVol10_4 = includeBase;
 	private boolean includeVol11_1 = includeBase;
 	private boolean includeVol11_2 = includeBase;
-	private boolean includeVol11_3 = ! includeBase;
+	private boolean includeVol11_3 = includeBase;
 	private boolean includeVol12_1 = includeBase;
 	private boolean includeVol12_2 = includeBase;
 	private boolean includeVol13 = includeBase;
@@ -92,7 +109,6 @@ public class FloraMalesianaActivator extends EfloraActivatorBase {
 	private boolean h2ForCheck = false;
 	
 	static final boolean reuseState = true;  //when running multiple imports
-	
 
 	//feature tree uuid
 	public static final UUID featureTreeUuid = UUID.fromString("168df0c6-6429-484c-b26f-ded1f7e44bd9");
@@ -143,6 +159,26 @@ public class FloraMalesianaActivator extends EfloraActivatorBase {
 		CdmDefaultImport<MarkupImportConfigurator> myImport = new CdmDefaultImport<MarkupImportConfigurator>(); 
 
 
+		//Vol08_1
+		doSource(includeVol08_1, fmSource08_1, "Flora Malesiana - vol. 08, pt.1", markupConfig, myImport);
+		
+		//Vol08_2
+		doSource(includeVol08_2, fmSource08_2, "Flora Malesiana - vol. 08, pt.2", markupConfig, myImport);
+
+		//Vol08_3
+		doSource(includeVol08_3, fmSource08_3, "Flora Malesiana - vol. 08, pt.3", markupConfig, myImport);
+
+		//Vol10_1
+		doSource(includeVol10_1, fmSource10_1, "Flora Malesiana - vol. 10, pt.1", markupConfig, myImport);
+		
+		//Vol10_2
+		doSource(includeVol10_2, fmSource10_2, "Flora Malesiana - vol. 10, pt.2", markupConfig, myImport);
+
+		//Vol10_3
+		doSource(includeVol10_3, fmSource10_3, "Flora Malesiana - vol. 10, pt.3", markupConfig, myImport);
+
+		//Vol10_4
+		doSource(includeVol10_4, fmSource10_4, "Flora Malesiana - vol. 10, pt.4", markupConfig, myImport);
 
 		//Vol11_1
 		doSource(includeVol11_1, fmSource11_1, "Flora Malesiana - vol. 11, pt.1", markupConfig, myImport);
