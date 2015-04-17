@@ -37,8 +37,8 @@ public class BfnXmlTestActivator {
 	private static final Logger logger = Logger.getLogger(BfnXmlTestActivator.class);
 	
 	//database validation status (create, update, validate ...)
-	static DbSchemaValidation schemaValidation = DbSchemaValidation.NONE;
-	static final ICdmDataSource cdmDestination = CdmDestinations.cdm_redlist_localhost();
+	static DbSchemaValidation schemaValidation = DbSchemaValidation.CREATE;
+	static final ICdmDataSource cdmDestination = CdmDestinations.cdm_redlist_plant_localhost();
 
 	private String filename;
 	
@@ -75,8 +75,8 @@ public class BfnXmlTestActivator {
 			BfnXmlImportConfigurator bfnImportConfigurator = BfnXmlImportConfigurator.NewInstance(source,  destination);
 			
 			//if xmllist has two lists
-			bfnImportConfigurator.setNomenclaturalSig("Zoological");// "Zoological";//"Botanical"ICNAFP
 			bfnImportConfigurator.setHasSecondList(false);
+			bfnImportConfigurator.setNomenclaturalSig("Botanical");// "Zoological";//"Botanical"ICNAFP
 			bfnImportConfigurator.setDoMetaData(doMetaData);
 			bfnImportConfigurator.setDoReferences(doReferences);
 			bfnImportConfigurator.setDoTaxonNames(doTaxonNames);
@@ -108,7 +108,7 @@ public class BfnXmlTestActivator {
 		
 		List<String> fileNames = Arrays.asList(
 //				Plants
-//				"rldb_print_v4_0_1_0_Flechten_korr_verantw_syn.xml"
+				"rldb_print_v4_0_1_0_Flechten_korr_verantw_syn.xml"
 //				"rldb_print_v4_0_1_0_Lichenicole_verantw_syn.xml",
 //				"rldb_print_v4_0_1_0_Makroalgen_150121_syn.xml",
 //				"rldb_print_v4_0_1_0_Myxo_110708_korr_syn_neu.xml",
@@ -117,42 +117,52 @@ public class BfnXmlTestActivator {
 //				Animals
 //				"rldb_print_v4_0_1_0_Ameisen_110609_rev120113_syn.xml"
 				
-				"rldb_print_v4_0_1_0_artenarmeWeichtiergruppen_121127_verantw_syn.xml",
-				"rldb_print_v4_0_1_0_Asilidae_GMH_Wolff_110314_HGxls_120413_DF_korrV_Verantw_syn.xml",
-				"rldb_print_v4_0_1_0_Asseln_121128_verantw_syn.xml",
-				"rldb_print_v4_0_1_0_Asselspinnen_120907_verantw_syn.xml",
-				"rldb_print_v4_0_1_0_Bienen_PWKorr_HG_120413_DF_120612_syn.xml",
-				"rldb_print_v4_0_1_0_Binnenmollusken_0alle_120413_DF_syn.xml",
-				"rldb_print_v4_0_1_0_Blattoptera_140413_DF_syn.xml",
-				"rldb_print_v4_0_1_0_Empidoidea_120413_DF.xml",
-				"rldb_print_v4_0_1_0_Eulen_Korruebern_23-05-2012_KorrV_syn.xml",
+//				"rldb_print_v4_0_1_0_artenarmeWeichtiergruppen_121127_verantw_syn.xml",
+//				"rldb_print_v4_0_1_0_Asilidae_GMH_Wolff_110314_HGxls_120413_DF_korrV_Verantw_syn.xml",
+//				"rldb_print_v4_0_1_0_Asseln_121128_verantw_syn.xml",
+//				"rldb_print_v4_0_1_0_Asselspinnen_120907_verantw_syn.xml",
+//				"rldb_print_v4_0_1_0_Bienen_PWKorr_HG_120413_DF_120612_syn.xml",
+//				"rldb_print_v4_0_1_0_Binnenmollusken_0alle_120413_DF_syn.xml",
+//				"rldb_print_v4_0_1_0_Blattoptera_140413_DF_syn.xml",
+//				"rldb_print_v4_0_1_0_Empidoidea_120413_DF.xml",
+//				"rldb_print_v4_0_1_0_Eulen_Korruebern_23-05-2012_KorrV_syn.xml",
 //				
 ////				"rldb_print_v4_0_1_0_Eulenspinner_Spanner_13-06-2012_KorrV_syn.xml",
 //				
-				"rldb_print_v4_0_1_0_Flohkrebse_121128_verantw_syn.xml",
-				"rldb_print_v4_0_1_0_Heuschrecken_syn.xml",
-				"rldb_print_v4_0_1_0_Igelwuermer_120907_verantw.xml",
-				"rldb_print_v4_0_1_0_Kumazeen_120709_verantw_syn.xml",
-				"rldb_print_v4_0_1_0_Meeresfische_syn.xml",
-				"rldb_print_v4_0_1_0_Moostierchen_121128_verantw_syn.xml",
-				"rldb_print_v4_0_1_0_Muscheln_121128_verantw_syn.xml",
-				"rldb_print_v4_0_1_0_Nesseltiere_130104_verantw_syn.xml",
-				"rldb_print_v4_0_1_0_Ohrwuermer_DF_syn.xml",
-				"rldb_print_v4_0_1_0_Pflanzenwespen_280711_Autor_110815_HG2_120413_DF_syn.xml",
-				"rldb_print_v4_0_1_0_Pyraloidea_Februar_ 2012_Korruebern_MB_24-04-2012_syn.xml",
-				"rldb_print_v4_0_1_0_Schaedellose_120907_verantw_syn.xml",
-				"rldb_print_v4_0_1_0_Schnecken_130206_verantw_syn.xml",
-				"rldb_print_v4_0_1_0_Schwaemme_121127_verantw_syn.xml",
-				"rldb_print_v4_0_1_0_Schwebfliegen_111103_KorrAS_120413_DF_syn.xml",
-				"rldb_print_v4_0_1_0_Seepocken_121128_verantw_syn.xml",
-				"rldb_print_v4_0_1_0_Seescheiden_121128_verantw_syn.xml",
-				"rldb_print_v4_0_1_0_Spinner_Oktober2011_eingearbKorr_120124_Korruebern_MB_02-05-2012_KorrV_syn.xml",
-				"rldb_print_v4_0_1_0_Stachelhaeuter_121128_verantw_syn.xml",
-				"rldb_print_v4_0_1_0_Tagfalter_06-06-2012_KorrV_syn.xml",
-				"rldb_print_v4_0_1_0_Thysanoptera_120413_DF_korrV_Verantw.xml",
-				"rldb_print_v4_0_1_0_Vielborster_130206_verantw_syn.xml",
-				"rldb_print_v4_0_1_0_Wenigborster_121128_verantw_syn.xml",
-				"rldb_print_v4_0_1_0_Zehnfusskrebse_130104_verantw_syn.xml"
+//				"rldb_print_v4_0_1_0_Flohkrebse_121128_verantw_syn.xml",
+//				"rldb_print_v4_0_1_0_Heuschrecken_syn.xml",
+//				"rldb_print_v4_0_1_0_Igelwuermer_120907_verantw.xml",
+//				"rldb_print_v4_0_1_0_Kumazeen_120709_verantw_syn.xml",
+//				"rldb_print_v4_0_1_0_Meeresfische_syn.xml",
+//				"rldb_print_v4_0_1_0_Moostierchen_121128_verantw_syn.xml",
+//				"rldb_print_v4_0_1_0_Muscheln_121128_verantw_syn.xml",
+//				"rldb_print_v4_0_1_0_Nesseltiere_130104_verantw_syn.xml",
+//				"rldb_print_v4_0_1_0_Ohrwuermer_DF_syn.xml",
+//				"rldb_print_v4_0_1_0_Pflanzenwespen_280711_Autor_110815_HG2_120413_DF_syn.xml",
+//				"rldb_print_v4_0_1_0_Pyraloidea_Februar_ 2012_Korruebern_MB_24-04-2012_syn.xml",
+//				"rldb_print_v4_0_1_0_Schaedellose_120907_verantw_syn.xml",
+//				"rldb_print_v4_0_1_0_Schnecken_130206_verantw_syn.xml",
+//				"rldb_print_v4_0_1_0_Schwaemme_121127_verantw_syn.xml",
+//				"rldb_print_v4_0_1_0_Schwebfliegen_111103_KorrAS_120413_DF_syn.xml",
+//				"rldb_print_v4_0_1_0_Seepocken_121128_verantw_syn.xml",
+//				"rldb_print_v4_0_1_0_Seescheiden_121128_verantw_syn.xml",
+//				"rldb_print_v4_0_1_0_Spinner_Oktober2011_eingearbKorr_120124_Korruebern_MB_02-05-2012_KorrV_syn.xml",
+//				"rldb_print_v4_0_1_0_Stachelhaeuter_121128_verantw_syn.xml",
+//				"rldb_print_v4_0_1_0_Tagfalter_06-06-2012_KorrV_syn.xml",
+//				"rldb_print_v4_0_1_0_Thysanoptera_120413_DF_korrV_Verantw.xml",
+//				"rldb_print_v4_0_1_0_Vielborster_130206_verantw_syn.xml",
+//				"rldb_print_v4_0_1_0_Wenigborster_121128_verantw_syn.xml",
+//				"rldb_print_v4_0_1_0_Zehnfusskrebse_130104_verantw_syn.xml"
+//				
+				
+				//old list
+//				"rldb_print_v4_0_1_0_Amphibien.xml",
+//				"rldb_print_v4_0_1_0_Brutvoegel.xml",
+//				"rldb_print_v4_0_1_0_Fische.xml",
+//				"rldb_print_v4_0_1_0_Reptilien_1.xml"
+				
+				//two lists in one
+//				"RoteListe_v4_0_6_0_BFN_Saeuger_korr.xml"
 				);
 		for(String fileName:fileNames){
 			BfnXmlTestActivator bfnXmlTestActivator = new BfnXmlTestActivator(fileName);

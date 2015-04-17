@@ -5,7 +5,7 @@
 *
 * The contents of this file are subject to the Mozilla Public License Version 1.1
 * See LICENSE.TXT at the top of this package for the full license terms.
-*/ 
+*/
 
 package eu.etaxonomy.cdm.io.redlist.bfnXml;
 
@@ -14,24 +14,17 @@ import java.util.UUID;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 
-import eu.etaxonomy.cdm.common.ResultWrapper;
-import eu.etaxonomy.cdm.model.common.RelationshipTermBase;
 import eu.etaxonomy.cdm.model.name.NomenclaturalCode;
-import eu.etaxonomy.cdm.model.name.NomenclaturalStatusType;
 import eu.etaxonomy.cdm.model.name.Rank;
-import eu.etaxonomy.cdm.model.name.SpecimenTypeDesignationStatus;
+import eu.etaxonomy.cdm.model.taxon.TaxonRelationshipType;
+import eu.etaxonomy.cdm.strategy.exceptions.UnknownCdmTypeException;
 /*import eu.etaxonomy.cdm.model.reference.Article;
 import eu.etaxonomy.cdm.model.reference.Book;
 import eu.etaxonomy.cdm.model.reference.BookSection;
 import eu.etaxonomy.cdm.model.reference.Journal;
 import eu.etaxonomy.cdm.model.reference.PersonalCommunication;
 import eu.etaxonomy.cdm.model.reference.PrintSeries;*/
-import eu.etaxonomy.cdm.model.reference.Reference;
-import eu.etaxonomy.cdm.model.reference.ReferenceFactory;
 //import eu.etaxonomy.cdm.model.reference.WebPage;
-import eu.etaxonomy.cdm.model.taxon.SynonymRelationshipType;
-import eu.etaxonomy.cdm.model.taxon.TaxonRelationshipType;
-import eu.etaxonomy.cdm.strategy.exceptions.UnknownCdmTypeException;
 
 public final class BfnXmlTransformer {
 	@SuppressWarnings("unused")
@@ -50,6 +43,8 @@ public final class BfnXmlTransformer {
 	public static final UUID vocStateRLKatId =  UUID.fromString("c54481b3-bf07-43ce-b1cb-09759e4d2a70");
 	public static final UUID vocStateRLSpecialCases =  UUID.fromString("ce2f4f8f-4222-429f-938b-77b794ecf704");
 	public static final UUID vocGermanFederalStates =  UUID.fromString("a80dc3d4-0def-4c9b-97a1-12e8eb7ec87f");
+	public static final UUID vocGermanPresenceTerms =  UUID.fromString("57d6bfa6-ac49-4c88-a9f0-b9c763d5b521");
+	public static final UUID vocGermanEstablishmentTerms =  UUID.fromString("b5919067-ec28-404a-a22e-be914c810f22");
 
 	//redlist feature
 	public static final UUID featureRLKat =  UUID.fromString("744f8833-619a-4d83-b330-1997c3b2c2f9");
@@ -67,7 +62,7 @@ public final class BfnXmlTransformer {
 	public static final UUID featureRLSpecialCases =  UUID.fromString("fb92068d-667a-448e-8019-ca4551891b3b");
 	public static final UUID featureRLLastOccurrence =  UUID.fromString("218a32be-fb87-41c9-8d64-b21b43b47caa");
 	public static final UUID featureRLAdditionalComment =  UUID.fromString("c610c98e-f242-4f3b-9edd-7b84a9435867");
-	
+
 
 	//rl kat state list
 	public static final UUID stateTermRlKat0 = UUID.fromString("05ff7c0f-2fb2-4c10-9527-a2e0c68d68af");
@@ -82,15 +77,15 @@ public final class BfnXmlTransformer {
 	public static final UUID stateTermRlKatD = UUID.fromString("4d61cadd-b27e-41da-9c91-f29e96adaf89");
 	public static final UUID stateTermRlKatDiamond = UUID.fromString("aedc4006-4097-41cd-bab9-f8607ff84519");
 	public static final UUID stateTermRlKatKN = UUID.fromString("49dc7656-4cef-4b0e-81dd-8422a3d0d06b");
-	
+
 	//rl kat diff state list
 	public static final UUID stateTermRLKatDiffPlus = UUID.fromString("6bc7ddc2-6f25-4076-a392-2626cb7a4b35");
 	public static final UUID stateTermRLKatDiffMinus = UUID.fromString("8f6a8c16-195c-4084-a201-8d702f9636e7");
 	public static final UUID stateTermRLKatDiffEqual = UUID.fromString("5215fd8a-7e70-43a6-abde-4e14966a0e0e");
-	
+
 	//rl kat neo state list
 	public static final UUID stateTermRLKatNeo = UUID.fromString("d9ae3dc2-99c9-40aa-b724-9810ed52ca15");
-	
+
 	//rl kat akt state list
 	public static final UUID stateTermRLKatAktEx = UUID.fromString("a36d4251-0ca1-4818-bbf7-4089a9362a7e");
 	public static final UUID stateTermRLKatAktEs = UUID.fromString("9d2426a2-d845-47df-9607-01addc4e3253");
@@ -102,7 +97,7 @@ public final class BfnXmlTransformer {
 	public static final UUID stateTermRLKatAktQuest = UUID.fromString("2ee9820e-c98d-4d5a-8621-5d7b73be66c2");
 	public static final UUID stateTermRLKatAktNb = UUID.fromString("5da81f91-0089-4360-b07c-b3b833f8fc8e");
 	public static final UUID stateTermRLKatAktKn = UUID.fromString("f10865f9-aa13-4cf0-9e6c-cc657103bd13");
-	
+
 	//rl kat lang state list
 	public static final UUID stateTermRLKatLangLT3 = UUID.fromString("6d23b5f9-ac18-4ecb-9be8-2c6e5e7db736");
 	public static final UUID stateTermRLKatLangLT2 = UUID.fromString("1bd75728-79ed-427d-b96e-858ddca6103d");
@@ -111,7 +106,7 @@ public final class BfnXmlTransformer {
 	public static final UUID stateTermRLKatLangEqual = UUID.fromString("d66be068-4a0c-4f95-aa6e-9e5804ceb1f1");
 	public static final UUID stateTermRLKatLangGT = UUID.fromString("528185c6-3c12-41bd-a1e5-6ee3d729776c");
 	public static final UUID stateTermRLKatLangQuest = UUID.fromString("53076429-d4ac-427f-a9dc-2c8a15901999");
-	
+
 	//rl kat kurz state list
 	public static final UUID stateTermRLKatKurzDown3 = UUID.fromString("dd97697c-004a-4860-a553-67695d32a992");
 	public static final UUID stateTermRLKatKurzDown2 = UUID.fromString("311a531b-8263-4c72-af79-662ffbc26fbe");
@@ -119,18 +114,18 @@ public final class BfnXmlTransformer {
 	public static final UUID stateTermRLKatKurzEqual = UUID.fromString("0a8cf4c0-8b7c-49d5-9195-0999a0f202ad");
 	public static final UUID stateTermRLKatKurzUp = UUID.fromString("13e7c95c-3ca3-435d-b7b6-4889e594bf2a");
 	public static final UUID stateTermRLKatKurzQuest = UUID.fromString("4eb11517-a874-484d-8390-dbb8c6bda47c");
-	
+
 	//rl kat risk state list
 	public static final UUID stateTermRLKatRiskMinus = UUID.fromString("4e96c671-e1f7-4273-83e7-6650207b57e0");
 	public static final UUID stateTermRLKatRiskEqual = UUID.fromString("d3f00d31-26a4-40c0-99d4-55ea3672ff5d");
-	
+
 	//rl kat resp state list
 	public static final UUID stateTermRLKatRespBang2 = UUID.fromString("d1e6b6cd-bb19-40a3-9d02-33099295e7f7");
 	public static final UUID stateTermRLKatRespBang1 = UUID.fromString("01856904-aced-4889-b955-d16872bcd0e8");
 	public static final UUID stateTermRLKatRespBang = UUID.fromString("c432e39e-ec09-41b7-be9b-28e0d76a4cf9");
 	public static final UUID stateTermRLKatRespQuest = UUID.fromString("4116fbda-a392-417c-be1c-08f5e72f762b");
 	public static final UUID stateTermRLKatRespNb = UUID.fromString("800328ce-f618-4de1-9237-243f16fbe9f9");
-	
+
 	//rl Kat old state list
 	public static final UUID stateTermRLKatOld0 = UUID.fromString("1977b29c-8b63-407a-a11b-ada8726ac653");
 	public static final UUID stateTermRLKatOld1 = UUID.fromString("4f3d3255-7e06-4a4e-83d1-5841beee85d4");
@@ -148,18 +143,20 @@ public final class BfnXmlTransformer {
 	public static final UUID stateTermRLSpecialS = UUID.fromString("71fda1f6-a7eb-44a0-aeb8-e7f676096916");
 	public static final UUID stateTermRLSpecialE = UUID.fromString("ef335a01-f4f1-4a02-95a2-2254aa457774");
 	public static final UUID stateTermRLSpecialD = UUID.fromString("6b267cc5-49b6-4ebd-87ec-aa574e9cbcc5");
-	
-	
+
+
 	public static TaxonRelationshipType concept2TaxonRelation(String conceptStatus) throws UnknownCdmTypeException{
 		if(conceptStatus == null) {
 			return null;
 		}else if(conceptStatus.equalsIgnoreCase("!=")){
 			return TaxonRelationshipType.CONGRUENT_TO();
+		}else if(conceptStatus.equalsIgnoreCase("=!")){
+			return TaxonRelationshipType.CONGRUENT_TO();
 		}else if(conceptStatus.equalsIgnoreCase("!=,>")){
 			return TaxonRelationshipType.CONGRUENT_OR_INCLUDES();
 		}else if(conceptStatus.equalsIgnoreCase("!=,<")){
 			return TaxonRelationshipType.CONGRUENT_OR_INCLUDED_OR_INCLUDES();
-		}else if(conceptStatus.equalsIgnoreCase(">")){	
+		}else if(conceptStatus.equalsIgnoreCase(">")){
 			return TaxonRelationshipType.INCLUDES();
 		}else if(conceptStatus.equalsIgnoreCase(">,><")){
 			return TaxonRelationshipType.INCLUDES_OR_OVERLAPS();
@@ -182,8 +179,8 @@ public final class BfnXmlTransformer {
 			throw new UnknownCdmTypeException("Unknown concept relation status " + conceptStatus);
 		}
 	}
-	
-	
+
+
 	/** Creates an cdm-Rank by the tcs rank
 	 */
 	public static Rank rankCode2Rank (String strRank) throws UnknownCdmTypeException{
@@ -193,7 +190,7 @@ public final class BfnXmlTransformer {
 		}else if (strRank.equals("subgen")){return Rank.SUBGENUS();
 		}else if (strRank.equals("gen")){return Rank.GENUS();
 		//genus subdivision
-		//TODO 
+		//TODO
 		}else if (strRank.equals("aggr")){return Rank.SPECIESAGGREGATE();
 		}else if (strRank.equals("agg.")){return Rank.SPECIESAGGREGATE();
 		}else if (strRank.equals("taxinfragen")){return Rank.INFRAGENERICTAXON();
@@ -253,7 +250,7 @@ public final class BfnXmlTransformer {
 		}else if (strRank.equals("subtrib")){return Rank.FAMILY();
 		}else if (strRank.equals("trib")){return Rank.FAMILY();
 		}else if (strRank.equals("supertrib")){return Rank.FAMILY();
-		}	
+		}
 		else {
 			throw new UnknownCdmTypeException("Unknown Rank " + strRank);
 		}
@@ -263,12 +260,12 @@ public final class BfnXmlTransformer {
 		if (redListCode == null){ return null;
 		}else if (redListCode.equals("#dtpl_RLKat_NULL#")){return "0";
 		}else if (redListCode.equals("#dtpl_RLKat_EINS#")){return "1";
-		}else if (redListCode.equals("#dtpl_RLKat_ZWEI#")){return "2"; 
-		}else if (redListCode.equals("#dtpl_RLKat_DREI#")){return "3"; 
-		}else if (redListCode.equals("#dtpl_RLKat_VIER#")){return "4"; 
-		}else if (redListCode.equals("#dtpl_RLKat_G#")){return "G"; 
-		}else if (redListCode.equals("#dtpl_RLKat_R#")){return "R"; 
-		}else if (redListCode.equals("#dtpl_RLKat_V#")){return "V"; 
+		}else if (redListCode.equals("#dtpl_RLKat_ZWEI#")){return "2";
+		}else if (redListCode.equals("#dtpl_RLKat_DREI#")){return "3";
+		}else if (redListCode.equals("#dtpl_RLKat_VIER#")){return "4";
+		}else if (redListCode.equals("#dtpl_RLKat_G#")){return "G";
+		}else if (redListCode.equals("#dtpl_RLKat_R#")){return "R";
+		}else if (redListCode.equals("#dtpl_RLKat_V#")){return "V";
 		}else if (redListCode.equals("#dtpl_RLKat_STERN#")){return "*";
 		}else if (redListCode.equals("#dtpl_RLKat_STERN##dtpl_RLKat_STERN#")){return "**";
 		}else if (redListCode.equals("#dtpl_RLKat_D#")){return "D";
@@ -309,12 +306,12 @@ public final class BfnXmlTransformer {
 		}else if (redListCode.equals("#dtpl_AlteRLKat_KN#")){return "kN";
 		}else if (redListCode.equals("#dtpl_TaxBez_UNGLEICH#")){return "-";
 		}else if (StringUtils.isBlank(redListCode)){return "keine Angabe";
-		}	
+		}
 		else {
 			throw new UnknownCdmTypeException("Unknown Redlist Code " + redListCode);
 		}
 	}
-	
+
 	public static NomenclaturalCode nomCodeString2NomCode (String nomCode) throws UnknownCdmTypeException{
 		if (nomCode != null){
 			nomCode = nomCode.trim();
@@ -327,26 +324,55 @@ public final class BfnXmlTransformer {
 		}else if (nomCode.equals("CultivatedPlant")){return NomenclaturalCode.ICNCP;
 		//TODO code Indeterminate
 //		}else if (nomCode.equals("Indeterminate")){return NomenclaturalCode.XXX();
-		}	
+		}
 		else {
 			throw new UnknownCdmTypeException("Unknown Nomenclatural Code " + nomCode);
 		}
 	}
 	public static UUID getRedlistVocabularyUUID(String redListVocabulary) throws UnknownCdmTypeException {
 
-		if(redListVocabulary.equalsIgnoreCase("RL Kat.")) return vocStateRLKat;
-		if(redListVocabulary.equalsIgnoreCase("Kat. +/-")) return vocStateRlKatDiff;
-		if(redListVocabulary.equalsIgnoreCase("aktuelle Bestandsstituation")) return vocStateRlAkt;
-		if(redListVocabulary.equalsIgnoreCase("langfristiger Bestandstrend")) return vocStateRLLang;
-		if(redListVocabulary.equalsIgnoreCase("kurzfristiger Bestandstrend")) return vocStateRLKurz;
-		if(redListVocabulary.equalsIgnoreCase("Risikofaktoren")) return vocStateRLRisk;
-		if(redListVocabulary.equalsIgnoreCase("Verantwortlichkeit")) return vocStateRLResp;
-		if(redListVocabulary.equalsIgnoreCase("alte RL- Kat.")) return vocStateRLKatOld;
-		if(redListVocabulary.equalsIgnoreCase("Neobiota")) return vocStateRLNeo;
-		if(redListVocabulary.equalsIgnoreCase("Eindeutiger Code")) return vocStateRLKatId;
-		if(redListVocabulary.equalsIgnoreCase("Sonderfälle")) return vocStateRLSpecialCases;
-		if(redListVocabulary.equalsIgnoreCase("German Federal States")) return vocGermanFederalStates;
-		else{
+		if(redListVocabulary.equalsIgnoreCase("RL Kat.")) {
+            return vocStateRLKat;
+        }
+		if(redListVocabulary.equalsIgnoreCase("Kat. +/-")) {
+            return vocStateRlKatDiff;
+        }
+		if(redListVocabulary.equalsIgnoreCase("aktuelle Bestandsstituation")) {
+            return vocStateRlAkt;
+        }
+		if(redListVocabulary.equalsIgnoreCase("langfristiger Bestandstrend")) {
+            return vocStateRLLang;
+        }
+		if(redListVocabulary.equalsIgnoreCase("kurzfristiger Bestandstrend")) {
+            return vocStateRLKurz;
+        }
+		if(redListVocabulary.equalsIgnoreCase("Risikofaktoren")) {
+            return vocStateRLRisk;
+        }
+		if(redListVocabulary.equalsIgnoreCase("Verantwortlichkeit")) {
+            return vocStateRLResp;
+        }
+		if(redListVocabulary.equalsIgnoreCase("alte RL- Kat.")) {
+            return vocStateRLKatOld;
+        }
+		if(redListVocabulary.equalsIgnoreCase("Neobiota")) {
+            return vocStateRLNeo;
+        }
+		if(redListVocabulary.equalsIgnoreCase("Eindeutiger Code")) {
+            return vocStateRLKatId;
+        }
+		if(redListVocabulary.equalsIgnoreCase("Sonderfälle")) {
+            return vocStateRLSpecialCases;
+        }
+		if(redListVocabulary.equalsIgnoreCase("Vorkommensstatus")) {
+		    return vocGermanPresenceTerms;
+		}
+		if(redListVocabulary.equalsIgnoreCase("Etablierungsstatus")) {
+		    return vocGermanEstablishmentTerms;
+		}
+		if(redListVocabulary.equalsIgnoreCase("Bundesländer")) {
+            return vocGermanFederalStates;
+        } else{
 			throw new UnknownCdmTypeException("Unknown Vocabulary feature, could not match: " + redListVocabulary);
 		}
 
@@ -355,23 +381,51 @@ public final class BfnXmlTransformer {
 
 	public static UUID getRedlistFeatureUUID(String redListFeature) throws UnknownCdmTypeException {
 
-		if(redListFeature.equalsIgnoreCase("RL Kat.")) return featureRLKat;
-		if(redListFeature.equalsIgnoreCase("Kat. +/-")) return featureRlKatDiff;
-		if(redListFeature.equalsIgnoreCase("aktuelle Bestandsstituation")) return featureRlAkt;
-		if(redListFeature.equalsIgnoreCase("langfristiger Bestandstrend")) return featureRLLang;
-		if(redListFeature.equalsIgnoreCase("kurzfristiger Bestandstrend")) return featureRLKurz;
-		if(redListFeature.equalsIgnoreCase("Risikofaktoren")) return featureRLRisk;
-		if(redListFeature.equalsIgnoreCase("Verantwortlichkeit")) return featureRLResp;
-		if(redListFeature.equalsIgnoreCase("alte RL- Kat.")) return featureRLKatOld;
-		if(redListFeature.equalsIgnoreCase("Neobiota")) return featureRLNeo;
-		if(redListFeature.equalsIgnoreCase("Eindeutiger Code")) return featureRLKatId;
-		if(redListFeature.equalsIgnoreCase("Kommentar zur Taxonomie")) return featureRLTaxComment;
-		if(redListFeature.equalsIgnoreCase("Kommentar zur Gefährdung")) return featureRLHazardComment;
-		if(redListFeature.equalsIgnoreCase("Sonderfälle")) return featureRLSpecialCases;
-		if(redListFeature.equalsIgnoreCase("Letzter Nachweis")) return featureRLLastOccurrence;
-		if(redListFeature.equalsIgnoreCase("Weitere Kommentare")) return featureRLAdditionalComment;
-		
-		else{
+		if(redListFeature.equalsIgnoreCase("RL Kat.")) {
+            return featureRLKat;
+        }
+		if(redListFeature.equalsIgnoreCase("Kat. +/-")) {
+            return featureRlKatDiff;
+        }
+		if(redListFeature.equalsIgnoreCase("aktuelle Bestandsstituation")) {
+            return featureRlAkt;
+        }
+		if(redListFeature.equalsIgnoreCase("langfristiger Bestandstrend")) {
+            return featureRLLang;
+        }
+		if(redListFeature.equalsIgnoreCase("kurzfristiger Bestandstrend")) {
+            return featureRLKurz;
+        }
+		if(redListFeature.equalsIgnoreCase("Risikofaktoren")) {
+            return featureRLRisk;
+        }
+		if(redListFeature.equalsIgnoreCase("Verantwortlichkeit")) {
+            return featureRLResp;
+        }
+		if(redListFeature.equalsIgnoreCase("alte RL- Kat.")) {
+            return featureRLKatOld;
+        }
+		if(redListFeature.equalsIgnoreCase("Neobiota")) {
+            return featureRLNeo;
+        }
+		if(redListFeature.equalsIgnoreCase("Eindeutiger Code")) {
+            return featureRLKatId;
+        }
+		if(redListFeature.equalsIgnoreCase("Kommentar zur Taxonomie")) {
+            return featureRLTaxComment;
+        }
+		if(redListFeature.equalsIgnoreCase("Kommentar zur Gefährdung")) {
+            return featureRLHazardComment;
+        }
+		if(redListFeature.equalsIgnoreCase("Sonderfälle")) {
+            return featureRLSpecialCases;
+        }
+		if(redListFeature.equalsIgnoreCase("Letzter Nachweis")) {
+            return featureRLLastOccurrence;
+        }
+		if(redListFeature.equalsIgnoreCase("Weitere Kommentare")) {
+            return featureRLAdditionalComment;
+        } else{
 			throw new UnknownCdmTypeException("Unknown feature, could not match: " + redListFeature);
 		}
 
@@ -380,120 +434,309 @@ public final class BfnXmlTransformer {
 	public static UUID getRedlistStateTermUUID(String redListStateTerm, String redListFeature) throws UnknownCdmTypeException {
 		//RL Kat
 		char a = 0x2666;
-		if(redListStateTerm.equalsIgnoreCase("0") && redListFeature.equalsIgnoreCase("RL Kat.")) return stateTermRlKat0;
-		if(redListStateTerm.equalsIgnoreCase("1") && redListFeature.equalsIgnoreCase("RL Kat.")) return stateTermRlKat1;
-		if(redListStateTerm.equalsIgnoreCase("2") && redListFeature.equalsIgnoreCase("RL Kat.")) return stateTermRlKat2;
-		if(redListStateTerm.equalsIgnoreCase("3") && redListFeature.equalsIgnoreCase("RL Kat.")) return stateTermRlKat3;
-		if(redListStateTerm.equalsIgnoreCase("G") && redListFeature.equalsIgnoreCase("RL Kat.")) return stateTermRlKatG;
-		if(redListStateTerm.equalsIgnoreCase("R") && redListFeature.equalsIgnoreCase("RL Kat.")) return stateTermRlKatR;
-		if(redListStateTerm.equalsIgnoreCase("V") && redListFeature.equalsIgnoreCase("RL Kat.")) return stateTermRlKatV;
-		if(redListStateTerm.equalsIgnoreCase("*") && redListFeature.equalsIgnoreCase("RL Kat.")) return stateTermRlKatStar;
-		if(redListStateTerm.equalsIgnoreCase("**") && redListFeature.equalsIgnoreCase("RL Kat.")) return stateTermRlKatStar2;
-		if(redListStateTerm.equalsIgnoreCase("D") && redListFeature.equalsIgnoreCase("RL Kat.")) return stateTermRlKatD;
-		if(redListStateTerm.equalsIgnoreCase(String.valueOf(a)) && redListFeature.equalsIgnoreCase("RL Kat.")) return stateTermRlKatDiamond;
-		if(redListStateTerm.equalsIgnoreCase("kN") && redListFeature.equalsIgnoreCase("RL Kat.")) return stateTermRlKatKN;
-		
+		if(redListStateTerm.equalsIgnoreCase("0") && redListFeature.equalsIgnoreCase("RL Kat.")) {
+            return stateTermRlKat0;
+        }
+		if(redListStateTerm.equalsIgnoreCase("1") && redListFeature.equalsIgnoreCase("RL Kat.")) {
+            return stateTermRlKat1;
+        }
+		if(redListStateTerm.equalsIgnoreCase("2") && redListFeature.equalsIgnoreCase("RL Kat.")) {
+            return stateTermRlKat2;
+        }
+		if(redListStateTerm.equalsIgnoreCase("3") && redListFeature.equalsIgnoreCase("RL Kat.")) {
+            return stateTermRlKat3;
+        }
+		if(redListStateTerm.equalsIgnoreCase("G") && redListFeature.equalsIgnoreCase("RL Kat.")) {
+            return stateTermRlKatG;
+        }
+		if(redListStateTerm.equalsIgnoreCase("R") && redListFeature.equalsIgnoreCase("RL Kat.")) {
+            return stateTermRlKatR;
+        }
+		if(redListStateTerm.equalsIgnoreCase("V") && redListFeature.equalsIgnoreCase("RL Kat.")) {
+            return stateTermRlKatV;
+        }
+		if(redListStateTerm.equalsIgnoreCase("*") && redListFeature.equalsIgnoreCase("RL Kat.")) {
+            return stateTermRlKatStar;
+        }
+		if(redListStateTerm.equalsIgnoreCase("**") && redListFeature.equalsIgnoreCase("RL Kat.")) {
+            return stateTermRlKatStar2;
+        }
+		if(redListStateTerm.equalsIgnoreCase("D") && redListFeature.equalsIgnoreCase("RL Kat.")) {
+            return stateTermRlKatD;
+        }
+		if(redListStateTerm.equalsIgnoreCase(String.valueOf(a)) && redListFeature.equalsIgnoreCase("RL Kat.")) {
+            return stateTermRlKatDiamond;
+        }
+		if(redListStateTerm.equalsIgnoreCase("kN") && redListFeature.equalsIgnoreCase("RL Kat.")) {
+            return stateTermRlKatKN;
+        }
+
 		//RL Diff
-		if(redListStateTerm.equalsIgnoreCase("+") && redListFeature.equalsIgnoreCase("Kat. +/-")) return stateTermRLKatDiffPlus;
-		if(redListStateTerm.equalsIgnoreCase("-") && redListFeature.equalsIgnoreCase("Kat. +/-")) return stateTermRLKatDiffMinus;
-		if(redListStateTerm.equalsIgnoreCase("=") && redListFeature.equalsIgnoreCase("Kat. +/-")) return stateTermRLKatDiffEqual;
-		
+		if(redListStateTerm.equalsIgnoreCase("+") && redListFeature.equalsIgnoreCase("Kat. +/-")) {
+            return stateTermRLKatDiffPlus;
+        }
+		if(redListStateTerm.equalsIgnoreCase("-") && redListFeature.equalsIgnoreCase("Kat. +/-")) {
+            return stateTermRLKatDiffMinus;
+        }
+		if(redListStateTerm.equalsIgnoreCase("=") && redListFeature.equalsIgnoreCase("Kat. +/-")) {
+            return stateTermRLKatDiffEqual;
+        }
+
 		//Rl Akt
-		if(redListStateTerm.equalsIgnoreCase("ex") && redListFeature.equalsIgnoreCase("aktuelle Bestandsstituation")) return stateTermRLKatAktEx;
-		if(redListStateTerm.equalsIgnoreCase("es") && redListFeature.equalsIgnoreCase("aktuelle Bestandsstituation")) return stateTermRLKatAktEs;
-		if(redListStateTerm.equalsIgnoreCase("ss") && redListFeature.equalsIgnoreCase("aktuelle Bestandsstituation")) return stateTermRLKatAktSs;
-		if(redListStateTerm.equalsIgnoreCase("s") && redListFeature.equalsIgnoreCase("aktuelle Bestandsstituation")) return stateTermRLKatAktS;
-		if(redListStateTerm.equalsIgnoreCase("mh") && redListFeature.equalsIgnoreCase("aktuelle Bestandsstituation")) return stateTermRLKatAktMh;
-		if(redListStateTerm.equalsIgnoreCase("h") && redListFeature.equalsIgnoreCase("aktuelle Bestandsstituation")) return stateTermRLKatAktH;
-		if(redListStateTerm.equalsIgnoreCase("sh") && redListFeature.equalsIgnoreCase("aktuelle Bestandsstituation")) return stateTermRLKatAktSh;
-		if(redListStateTerm.equalsIgnoreCase("?") && redListFeature.equalsIgnoreCase("aktuelle Bestandsstituation")) return stateTermRLKatAktQuest;
-		if(redListStateTerm.equalsIgnoreCase("nb") && redListFeature.equalsIgnoreCase("aktuelle Bestandsstituation")) return stateTermRLKatAktNb;
-		if(redListStateTerm.equalsIgnoreCase("kN") && redListFeature.equalsIgnoreCase("aktuelle Bestandsstituation")) return stateTermRLKatAktKn;
-		
+		if(redListStateTerm.equalsIgnoreCase("ex") && redListFeature.equalsIgnoreCase("aktuelle Bestandsstituation")) {
+            return stateTermRLKatAktEx;
+        }
+		if(redListStateTerm.equalsIgnoreCase("es") && redListFeature.equalsIgnoreCase("aktuelle Bestandsstituation")) {
+            return stateTermRLKatAktEs;
+        }
+		if(redListStateTerm.equalsIgnoreCase("ss") && redListFeature.equalsIgnoreCase("aktuelle Bestandsstituation")) {
+            return stateTermRLKatAktSs;
+        }
+		if(redListStateTerm.equalsIgnoreCase("s") && redListFeature.equalsIgnoreCase("aktuelle Bestandsstituation")) {
+            return stateTermRLKatAktS;
+        }
+		if(redListStateTerm.equalsIgnoreCase("mh") && redListFeature.equalsIgnoreCase("aktuelle Bestandsstituation")) {
+            return stateTermRLKatAktMh;
+        }
+		if(redListStateTerm.equalsIgnoreCase("h") && redListFeature.equalsIgnoreCase("aktuelle Bestandsstituation")) {
+            return stateTermRLKatAktH;
+        }
+		if(redListStateTerm.equalsIgnoreCase("sh") && redListFeature.equalsIgnoreCase("aktuelle Bestandsstituation")) {
+            return stateTermRLKatAktSh;
+        }
+		if(redListStateTerm.equalsIgnoreCase("?") && redListFeature.equalsIgnoreCase("aktuelle Bestandsstituation")) {
+            return stateTermRLKatAktQuest;
+        }
+		if(redListStateTerm.equalsIgnoreCase("nb") && redListFeature.equalsIgnoreCase("aktuelle Bestandsstituation")) {
+            return stateTermRLKatAktNb;
+        }
+		if(redListStateTerm.equalsIgnoreCase("kN") && redListFeature.equalsIgnoreCase("aktuelle Bestandsstituation")) {
+            return stateTermRLKatAktKn;
+        }
+
 		//RL Lang
-		if(redListStateTerm.equalsIgnoreCase("<<<") && redListFeature.equalsIgnoreCase("langfristiger Bestandstrend")) return stateTermRLKatLangLT3;
-		if(redListStateTerm.equalsIgnoreCase("<<") && redListFeature.equalsIgnoreCase("langfristiger Bestandstrend")) return stateTermRLKatLangLT2;
-		if(redListStateTerm.equalsIgnoreCase("<") && redListFeature.equalsIgnoreCase("langfristiger Bestandstrend")) return stateTermRLKatLangLT1;
-		if(redListStateTerm.equalsIgnoreCase("(<)") && redListFeature.equalsIgnoreCase("langfristiger Bestandstrend")) return stateTermRLKatLangLT;
-		if(redListStateTerm.equalsIgnoreCase("=") && redListFeature.equalsIgnoreCase("langfristiger Bestandstrend")) return stateTermRLKatLangEqual;
-		if(redListStateTerm.equalsIgnoreCase(">") && redListFeature.equalsIgnoreCase("langfristiger Bestandstrend")) return stateTermRLKatLangGT;
-		if(redListStateTerm.equalsIgnoreCase("?") && redListFeature.equalsIgnoreCase("langfristiger Bestandstrend")) return stateTermRLKatLangQuest;
-		
+		if(redListStateTerm.equalsIgnoreCase("<<<") && redListFeature.equalsIgnoreCase("langfristiger Bestandstrend")) {
+            return stateTermRLKatLangLT3;
+        }
+		if(redListStateTerm.equalsIgnoreCase("<<") && redListFeature.equalsIgnoreCase("langfristiger Bestandstrend")) {
+            return stateTermRLKatLangLT2;
+        }
+		if(redListStateTerm.equalsIgnoreCase("<") && redListFeature.equalsIgnoreCase("langfristiger Bestandstrend")) {
+            return stateTermRLKatLangLT1;
+        }
+		if(redListStateTerm.equalsIgnoreCase("(<)") && redListFeature.equalsIgnoreCase("langfristiger Bestandstrend")) {
+            return stateTermRLKatLangLT;
+        }
+		if(redListStateTerm.equalsIgnoreCase("=") && redListFeature.equalsIgnoreCase("langfristiger Bestandstrend")) {
+            return stateTermRLKatLangEqual;
+        }
+		if(redListStateTerm.equalsIgnoreCase(">") && redListFeature.equalsIgnoreCase("langfristiger Bestandstrend")) {
+            return stateTermRLKatLangGT;
+        }
+		if(redListStateTerm.equalsIgnoreCase("?") && redListFeature.equalsIgnoreCase("langfristiger Bestandstrend")) {
+            return stateTermRLKatLangQuest;
+        }
+
 		//RL Kurz
 		char c = 0x2193;
 		char b = 0x2191;
-		if(redListStateTerm.equalsIgnoreCase(String.valueOf(c)+String.valueOf(c)+String.valueOf(c)) && redListFeature.equalsIgnoreCase("kurzfristiger Bestandstrend")) return stateTermRLKatKurzDown3;
-		if(redListStateTerm.equalsIgnoreCase(String.valueOf(c)+String.valueOf(c)) && redListFeature.equalsIgnoreCase("kurzfristiger Bestandstrend")) return stateTermRLKatKurzDown2;
-		if(redListStateTerm.equalsIgnoreCase("("+String.valueOf(c)+")") && redListFeature.equalsIgnoreCase("kurzfristiger Bestandstrend")) return stateTermRLKatKurzDown1;
-		if(redListStateTerm.equalsIgnoreCase("=") && redListFeature.equalsIgnoreCase("kurzfristiger Bestandstrend")) return stateTermRLKatKurzEqual;
-		if(redListStateTerm.equalsIgnoreCase(String.valueOf(b)) && redListFeature.equalsIgnoreCase("kurzfristiger Bestandstrend")) return stateTermRLKatKurzUp;
-		if(redListStateTerm.equalsIgnoreCase("?") && redListFeature.equalsIgnoreCase("kurzfristiger Bestandstrend")) return stateTermRLKatKurzQuest;
-		
+		if(redListStateTerm.equalsIgnoreCase(String.valueOf(c)+String.valueOf(c)+String.valueOf(c)) && redListFeature.equalsIgnoreCase("kurzfristiger Bestandstrend")) {
+            return stateTermRLKatKurzDown3;
+        }
+		if(redListStateTerm.equalsIgnoreCase(String.valueOf(c)+String.valueOf(c)) && redListFeature.equalsIgnoreCase("kurzfristiger Bestandstrend")) {
+            return stateTermRLKatKurzDown2;
+        }
+		if(redListStateTerm.equalsIgnoreCase("("+String.valueOf(c)+")") && redListFeature.equalsIgnoreCase("kurzfristiger Bestandstrend")) {
+            return stateTermRLKatKurzDown1;
+        }
+		if(redListStateTerm.equalsIgnoreCase("=") && redListFeature.equalsIgnoreCase("kurzfristiger Bestandstrend")) {
+            return stateTermRLKatKurzEqual;
+        }
+		if(redListStateTerm.equalsIgnoreCase(String.valueOf(b)) && redListFeature.equalsIgnoreCase("kurzfristiger Bestandstrend")) {
+            return stateTermRLKatKurzUp;
+        }
+		if(redListStateTerm.equalsIgnoreCase("?") && redListFeature.equalsIgnoreCase("kurzfristiger Bestandstrend")) {
+            return stateTermRLKatKurzQuest;
+        }
+
 		//RL Risk
-		if(redListStateTerm.equalsIgnoreCase("-") && redListFeature.equalsIgnoreCase("Risikofaktoren")) return stateTermRLKatRiskMinus;
-		if(redListStateTerm.equalsIgnoreCase("=") && redListFeature.equalsIgnoreCase("Risikofaktoren")) return stateTermRLKatRiskEqual;
-		
+		if(redListStateTerm.equalsIgnoreCase("-") && redListFeature.equalsIgnoreCase("Risikofaktoren")) {
+            return stateTermRLKatRiskMinus;
+        }
+		if(redListStateTerm.equalsIgnoreCase("=") && redListFeature.equalsIgnoreCase("Risikofaktoren")) {
+            return stateTermRLKatRiskEqual;
+        }
+
 		//RL Resp
-		if(redListStateTerm.equalsIgnoreCase("!!") && redListFeature.equalsIgnoreCase("Verantwortlichkeit")) return stateTermRLKatRespBang2;
-		if(redListStateTerm.equalsIgnoreCase("!") && redListFeature.equalsIgnoreCase("Verantwortlichkeit")) return stateTermRLKatRespBang1;
-		if(redListStateTerm.equalsIgnoreCase("(!)") && redListFeature.equalsIgnoreCase("Verantwortlichkeit")) return stateTermRLKatRespBang;
-		if(redListStateTerm.equalsIgnoreCase("?") && redListFeature.equalsIgnoreCase("Verantwortlichkeit")) return stateTermRLKatRespQuest;
-		if(redListStateTerm.equalsIgnoreCase("nb") && redListFeature.equalsIgnoreCase("Verantwortlichkeit")) return stateTermRLKatRespNb;
-		
+		if(redListStateTerm.equalsIgnoreCase("!!") && redListFeature.equalsIgnoreCase("Verantwortlichkeit")) {
+            return stateTermRLKatRespBang2;
+        }
+		if(redListStateTerm.equalsIgnoreCase("!") && redListFeature.equalsIgnoreCase("Verantwortlichkeit")) {
+            return stateTermRLKatRespBang1;
+        }
+		if(redListStateTerm.equalsIgnoreCase("(!)") && redListFeature.equalsIgnoreCase("Verantwortlichkeit")) {
+            return stateTermRLKatRespBang;
+        }
+		if(redListStateTerm.equalsIgnoreCase("?") && redListFeature.equalsIgnoreCase("Verantwortlichkeit")) {
+            return stateTermRLKatRespQuest;
+        }
+		if(redListStateTerm.equalsIgnoreCase("nb") && redListFeature.equalsIgnoreCase("Verantwortlichkeit")) {
+            return stateTermRLKatRespNb;
+        }
+
 		//RL Kat Old
-		if(redListStateTerm.equalsIgnoreCase("0") && redListFeature.equalsIgnoreCase("alte RL- Kat.")) return stateTermRLKatOld0;
-		if(redListStateTerm.equalsIgnoreCase("1") && redListFeature.equalsIgnoreCase("alte RL- Kat.")) return stateTermRLKatOld1;
-		if(redListStateTerm.equalsIgnoreCase("2") && redListFeature.equalsIgnoreCase("alte RL- Kat.")) return stateTermRLKatOld2;
-		if(redListStateTerm.equalsIgnoreCase("3") && redListFeature.equalsIgnoreCase("alte RL- Kat.")) return stateTermRLKatOld3;
-		if(redListStateTerm.equalsIgnoreCase("G") && redListFeature.equalsIgnoreCase("alte RL- Kat.")) return stateTermRLKatOldG;
-		if(redListStateTerm.equalsIgnoreCase("R") && redListFeature.equalsIgnoreCase("alte RL- Kat.")) return stateTermRLKatOldR;
-		if(redListStateTerm.equalsIgnoreCase("V") && redListFeature.equalsIgnoreCase("alte RL- Kat.")) return stateTermRLKatOldV;
-		if(redListStateTerm.equalsIgnoreCase("*") && redListFeature.equalsIgnoreCase("alte RL- Kat.")) return stateTermRLKatOldStar;
-		if(redListStateTerm.equalsIgnoreCase("**") && redListFeature.equalsIgnoreCase("alte RL- Kat.")) return stateTermRLKatOldStar2;
-		if(redListStateTerm.equalsIgnoreCase("D") && redListFeature.equalsIgnoreCase("alte RL- Kat.")) return stateTermRLKatOldD;
-		if(redListStateTerm.equalsIgnoreCase("nb") && redListFeature.equalsIgnoreCase("alte RL- Kat.")) return stateTermRLKatOldNb;
-		if(redListStateTerm.equalsIgnoreCase("kN") && redListFeature.equalsIgnoreCase("alte RL- Kat.")) return stateTermRLKatOldKn;
-		
+		if(redListStateTerm.equalsIgnoreCase("0") && redListFeature.equalsIgnoreCase("alte RL- Kat.")) {
+            return stateTermRLKatOld0;
+        }
+		if(redListStateTerm.equalsIgnoreCase("1") && redListFeature.equalsIgnoreCase("alte RL- Kat.")) {
+            return stateTermRLKatOld1;
+        }
+		if(redListStateTerm.equalsIgnoreCase("2") && redListFeature.equalsIgnoreCase("alte RL- Kat.")) {
+            return stateTermRLKatOld2;
+        }
+		if(redListStateTerm.equalsIgnoreCase("3") && redListFeature.equalsIgnoreCase("alte RL- Kat.")) {
+            return stateTermRLKatOld3;
+        }
+		if(redListStateTerm.equalsIgnoreCase("G") && redListFeature.equalsIgnoreCase("alte RL- Kat.")) {
+            return stateTermRLKatOldG;
+        }
+		if(redListStateTerm.equalsIgnoreCase("R") && redListFeature.equalsIgnoreCase("alte RL- Kat.")) {
+            return stateTermRLKatOldR;
+        }
+		if(redListStateTerm.equalsIgnoreCase("V") && redListFeature.equalsIgnoreCase("alte RL- Kat.")) {
+            return stateTermRLKatOldV;
+        }
+		if(redListStateTerm.equalsIgnoreCase("*") && redListFeature.equalsIgnoreCase("alte RL- Kat.")) {
+            return stateTermRLKatOldStar;
+        }
+		if(redListStateTerm.equalsIgnoreCase("**") && redListFeature.equalsIgnoreCase("alte RL- Kat.")) {
+            return stateTermRLKatOldStar2;
+        }
+		if(redListStateTerm.equalsIgnoreCase("D") && redListFeature.equalsIgnoreCase("alte RL- Kat.")) {
+            return stateTermRLKatOldD;
+        }
+		if(redListStateTerm.equalsIgnoreCase("nb") && redListFeature.equalsIgnoreCase("alte RL- Kat.")) {
+            return stateTermRLKatOldNb;
+        }
+		if(redListStateTerm.equalsIgnoreCase("kN") && redListFeature.equalsIgnoreCase("alte RL- Kat.")) {
+            return stateTermRLKatOldKn;
+        }
+
 		//RL Neo
-		if(redListStateTerm.equalsIgnoreCase("N") && redListFeature.equalsIgnoreCase("Neobiota")) return stateTermRLKatNeo;
+		if(redListStateTerm.equalsIgnoreCase("N") && redListFeature.equalsIgnoreCase("Neobiota")) {
+            return stateTermRLKatNeo;
+        }
 
 		//RL Special
-		if(redListStateTerm.equalsIgnoreCase("S") && redListFeature.equalsIgnoreCase("Sonderfälle")) return stateTermRLSpecialS;
-		if(redListStateTerm.equalsIgnoreCase("E") && redListFeature.equalsIgnoreCase("Sonderfälle")) return stateTermRLSpecialE;
-		if(redListStateTerm.equalsIgnoreCase("D") && redListFeature.equalsIgnoreCase("Sonderfälle")) return stateTermRLSpecialD;
-		
-		
-		
+		if(redListStateTerm.equalsIgnoreCase("S") && redListFeature.equalsIgnoreCase("Sonderfälle")) {
+            return stateTermRLSpecialS;
+        }
+		if(redListStateTerm.equalsIgnoreCase("E") && redListFeature.equalsIgnoreCase("Sonderfälle")) {
+            return stateTermRLSpecialE;
+        }
+		if(redListStateTerm.equalsIgnoreCase("D") && redListFeature.equalsIgnoreCase("Sonderfälle")) {
+            return stateTermRLSpecialD;
+        }
+
+
+
 		//RL Empty
-		if(StringUtils.isBlank(redListStateTerm) || redListStateTerm.equalsIgnoreCase("keine Angabe")) return stateTermEmpty; 
-		
-		else
-			throw new UnknownCdmTypeException("Unknown State, could not match: " + redListStateTerm +"\n In Category: " + redListFeature);
-	
+		if(StringUtils.isBlank(redListStateTerm) || redListStateTerm.equalsIgnoreCase("keine Angabe")) {
+            return stateTermEmpty;
+        } else {
+            throw new UnknownCdmTypeException("Unknown State, could not match: " + redListStateTerm +"\n In Category: " + redListFeature);
+        }
+
 	}
 
 
+	/**
+	 * retrieve german federal States
+	 *
+	 * @param strGermanState
+	 * @return
+	 * @throws UnknownCdmTypeException
+	 */
 	public static UUID getGermanStateUUID(String strGermanState) throws UnknownCdmTypeException {
 
-		if(strGermanState.equalsIgnoreCase("Deutschland")) return UUID.fromString("a7f3855e-d4fa-4313-8fcf-da792ef848e7");
-		if(strGermanState.equalsIgnoreCase("Baden-Württemberg"))return UUID.fromString("00e64948-9ce9-4ebf-961b-133c56517b1c");
-		if(strGermanState.equalsIgnoreCase("Bayern"))return UUID.fromString("ba075265-368f-4ff0-8942-88546239c70a");
-		if(strGermanState.equalsIgnoreCase("Berlin"))return UUID.fromString("d9339e12-7efa-45df-a008-3c934b9386bc");
-		if(strGermanState.equalsIgnoreCase("Brandenburg"))return UUID.fromString("dda9d8b8-8090-4667-953e-d8b1f7243926");
-		if(strGermanState.equalsIgnoreCase("Hamburg"))return UUID.fromString("f087a7d7-974f-4627-a414-df27c04f99dd");
-		if(strGermanState.equalsIgnoreCase("Hessen"))return UUID.fromString("59de29e6-bf32-4677-89c7-a6834fcb5085");
-		if(strGermanState.equalsIgnoreCase("Mecklenburg-Vorpommern"))return UUID.fromString("06dccbd5-8d5a-4e4f-b56e-d1d74ab25c19");
-		if(strGermanState.equalsIgnoreCase("Niedersachsen"))return UUID.fromString("97f77fe8-07ab-4e14-8f8b-40e8caf7e653");
-		if(strGermanState.equalsIgnoreCase("Nordrhein-Westfalen"))return UUID.fromString("46bf702e-1438-470c-9c77-04202c34ebf2");
-		if(strGermanState.equalsIgnoreCase("Rheinland-Pfalz"))return UUID.fromString("dd3ddb29-b1ec-4937-99a9-4a94d383becf");
-		if(strGermanState.equalsIgnoreCase("Saarland"))return UUID.fromString("26d3e85f-ce90-43ae-8ac0-42a60302b7b7");
-		if(strGermanState.equalsIgnoreCase("Sachsen"))return UUID.fromString("ca3ef152-ee3a-45f2-8343-983cf0fdddbd");
-		if(strGermanState.equalsIgnoreCase("Sachsen-Anhalt"))return UUID.fromString("bb95b9a4-87ee-49bd-a542-4c30289e8d1f");
-		if(strGermanState.equalsIgnoreCase("Schleswig-Holstein"))return UUID.fromString("863323a7-22fb-4070-ad94-ce317098a28a");
-		if(strGermanState.equalsIgnoreCase("Thüringen"))return UUID.fromString("72e18526-6bf7-4300-8329-53cab5da2b51");
-
-		else
-			throw new UnknownCdmTypeException("Unknown State, could not match: " + strGermanState);
+		if(strGermanState.equalsIgnoreCase("Deutschland")) {
+            return UUID.fromString("a7f3855e-d4fa-4313-8fcf-da792ef848e7");
+        }
+		if(strGermanState.equalsIgnoreCase("Baden-Württemberg")) {
+            return UUID.fromString("00e64948-9ce9-4ebf-961b-133c56517b1c");
+        }
+		if(strGermanState.equalsIgnoreCase("Bayern")) {
+            return UUID.fromString("ba075265-368f-4ff0-8942-88546239c70a");
+        }
+		if(strGermanState.equalsIgnoreCase("Berlin")) {
+            return UUID.fromString("d9339e12-7efa-45df-a008-3c934b9386bc");
+        }
+		if(strGermanState.equalsIgnoreCase("Bremen")) {
+            return UUID.fromString("a6d2f97d-5dba-4b79-a073-25fb491b6320");
+        }
+		if(strGermanState.equalsIgnoreCase("Brandenburg")) {
+            return UUID.fromString("dda9d8b8-8090-4667-953e-d8b1f7243926");
+        }
+		if(strGermanState.equalsIgnoreCase("Hamburg")) {
+            return UUID.fromString("f087a7d7-974f-4627-a414-df27c04f99dd");
+        }
+		if(strGermanState.equalsIgnoreCase("Hessen")) {
+            return UUID.fromString("59de29e6-bf32-4677-89c7-a6834fcb5085");
+        }
+		if(strGermanState.equalsIgnoreCase("Mecklenburg-Vorpommern")) {
+            return UUID.fromString("06dccbd5-8d5a-4e4f-b56e-d1d74ab25c19");
+        }
+		if(strGermanState.equalsIgnoreCase("Niedersachsen")) {
+            return UUID.fromString("97f77fe8-07ab-4e14-8f8b-40e8caf7e653");
+        }
+		if(strGermanState.equalsIgnoreCase("Nordrhein-Westfalen")) {
+            return UUID.fromString("46bf702e-1438-470c-9c77-04202c34ebf2");
+        }
+		if(strGermanState.equalsIgnoreCase("Rheinland-Pfalz")) {
+            return UUID.fromString("dd3ddb29-b1ec-4937-99a9-4a94d383becf");
+        }
+		if(strGermanState.equalsIgnoreCase("Saarland")) {
+            return UUID.fromString("26d3e85f-ce90-43ae-8ac0-42a60302b7b7");
+        }
+		if(strGermanState.equalsIgnoreCase("Sachsen")) {
+            return UUID.fromString("ca3ef152-ee3a-45f2-8343-983cf0fdddbd");
+        }
+		if(strGermanState.equalsIgnoreCase("Sachsen-Anhalt")) {
+            return UUID.fromString("bb95b9a4-87ee-49bd-a542-4c30289e8d1f");
+        }
+		if(strGermanState.equalsIgnoreCase("Schleswig-Holstein")) {
+            return UUID.fromString("863323a7-22fb-4070-ad94-ce317098a28a");
+        }
+		if(strGermanState.equalsIgnoreCase("Thüringen")) {
+            return UUID.fromString("72e18526-6bf7-4300-8329-53cab5da2b51");
+        } else {
+            throw new UnknownCdmTypeException("Unknown State, could not match: " + strGermanState);
+        }
 	}
-	
+
+	public static UUID getGermanAbsenceTermUUID(String strGermanTerm) throws UnknownCdmTypeException {
+	    if(strGermanTerm.equalsIgnoreCase("abwesend")) {return UUID.fromString("517c4c68-952e-4580-8379-66a4aa12c04b");}
+	    if(strGermanTerm.equalsIgnoreCase("abwesend - ausgestorben")) {return UUID.fromString("7a620705-7c0d-4c72-863f-f41d548a2cc5");}
+	    if(strGermanTerm.equalsIgnoreCase("abwesend - frühere Fehleingabe")) {return UUID.fromString("1009264c-197d-43d4-ba16-7a7f0a6fde0c");}
+	    if(strGermanTerm.equalsIgnoreCase("vorkommend")) {return UUID.fromString("b294e7db-919f-4da0-9ba4-c374e7876aff");}
+	    if(strGermanTerm.equalsIgnoreCase("vorkommend - in Einbürgerung befindlich")) {return UUID.fromString("ec2f4099-82f7-44de-8892-09651c76d255");}
+	    if(strGermanTerm.equalsIgnoreCase("vorkommend - etabliert")) {return UUID.fromString("c1954b3c-58b5-43f3-b122-c872b2708bba");}
+	    if(strGermanTerm.equalsIgnoreCase("vorkommend - kultiviert, domestiziert")) {return UUID.fromString("99ebdb24-fda0-4203-9455-30441cdee17b");}
+	    if(strGermanTerm.equalsIgnoreCase("vorkommend - unbeständig")) {return UUID.fromString("12566e82-cdc2-48e4-951d-2fb88f30c5fd");}
+	    if(strGermanTerm.equalsIgnoreCase("vorkommend - Vorkommen unsicher")) {return UUID.fromString("a84d2ddb-fe7b-483b-96ba-fc0884d77c81");}
+	    if(strGermanTerm.equalsIgnoreCase("vorkommend - unsicher")) {return UUID.fromString("0b144b76-dab6-40da-8511-898f8226a24a");
+        } else {
+            throw new UnknownCdmTypeException("Unknown State, could not match: " + strGermanTerm);
+        }
+	}
+    public static UUID getGermanEstablishmentTermUUID(String strGermanTerm) throws UnknownCdmTypeException {
+        if(strGermanTerm.equalsIgnoreCase("Archaeophyt")) {return UUID.fromString("2cd2bc48-9fcb-4ccd-b03d-bafc0d3dde8c");}
+        if(strGermanTerm.equalsIgnoreCase("Indigen")) {return UUID.fromString("20a99907-406a-45f1-aa3e-4768697488e4");}
+        if(strGermanTerm.equalsIgnoreCase("Kulturpflanze / domestiziertes Tier")) {return UUID.fromString("94aa6408-f950-4e2e-bded-e01a1be859f6");}
+        if(strGermanTerm.equalsIgnoreCase("Neophyt")) {return UUID.fromString("fdf6f1b7-c6ad-4b49-bc6b-b06398f8b1b5");}
+        if(strGermanTerm.equalsIgnoreCase("Kultuflüchtling")) {return UUID.fromString("411f9190-56b7-41dd-a31a-3f200619c5e0");
+        } else {
+            throw new UnknownCdmTypeException("Unknown State, could not match: " + strGermanTerm);
+        }
+    }
 }

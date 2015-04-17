@@ -83,7 +83,7 @@ public class BfnXmlImportConfigurator extends ImportConfiguratorBase<BfnXmlImpor
 	@SuppressWarnings("unchecked")
 	protected void makeIoClassList(){
 		ioClassList = new Class[]{
-				BfnXmlImportNamedArea.class,
+				BfnXmlImportAddtionalTerms.class,
 				BfnXmlImportMetaData.class,
 				BfnXmlImportFeature.class,
 				BfnXmlImportTaxonName.class
