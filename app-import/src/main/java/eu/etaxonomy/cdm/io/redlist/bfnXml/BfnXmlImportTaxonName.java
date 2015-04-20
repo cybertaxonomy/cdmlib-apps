@@ -1,8 +1,8 @@
 /**
 * Copyright (C) 2007 EDIT
-* European Distributed Institute of Taxonomy 
+* European Distributed Institute of Taxonomy
 * http://www.e-taxonomy.eu
-* 
+*
 * The contents of this file are subject to the Mozilla Public License Version 1.1
 * See LICENSE.TXT at the top of this package for the full license terms.
 */
@@ -23,15 +23,12 @@ import org.jdom.Namespace;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.TransactionStatus;
 
-import com.sun.tools.jxc.gen.config.Config;
-
 import eu.etaxonomy.cdm.api.service.IClassificationService;
 import eu.etaxonomy.cdm.api.service.ITaxonService;
 import eu.etaxonomy.cdm.common.ResultWrapper;
 import eu.etaxonomy.cdm.common.XmlHelp;
 import eu.etaxonomy.cdm.io.common.ICdmIO;
 import eu.etaxonomy.cdm.model.common.CdmBase;
-import eu.etaxonomy.cdm.model.common.DefinedTermBase;
 import eu.etaxonomy.cdm.model.common.Language;
 import eu.etaxonomy.cdm.model.description.CategoricalData;
 import eu.etaxonomy.cdm.model.description.CommonTaxonName;
@@ -58,7 +55,7 @@ import eu.etaxonomy.cdm.strategy.exceptions.UnknownCdmTypeException;
 import eu.etaxonomy.cdm.strategy.parser.NonViralNameParserImpl;
 import eu.etaxonomy.cdm.strategy.parser.ParserProblem;
 /**
- * 
+ *
  * @author a.oppermann
  * @date 04.07.2013
  *
@@ -67,15 +64,15 @@ import eu.etaxonomy.cdm.strategy.parser.ParserProblem;
 @Component
 public class BfnXmlImportTaxonName extends BfnXmlImportBase implements ICdmIO<BfnXmlImportState> {
 
-	
+
 	private static final Logger logger = Logger.getLogger(BfnXmlImportTaxonName.class);
 
 	private static String strNomenclaturalCode = null;// "Zoological";//"Botanical";
 	private static int parsingProblemCounter = 0;
 	private Map<Integer, Taxon> firstList;
 	private Map<Integer, Taxon> secondList;
-	
-	
+
+
 	public BfnXmlImportTaxonName(){
 		super();
 	}
@@ -96,11 +93,11 @@ public class BfnXmlImportTaxonName extends BfnXmlImportBase implements ICdmIO<Bf
 		Element elDataSet = getDataSetElement(config);
 		//TODO set Namespace
 		Namespace bfnNamespace = config.getBfnXmlNamespace();
-		
+
 		List<?> contentXML = elDataSet.getContent();
 		Element currentElement = null;
 		for(Object object:contentXML){
-		
+
 			if(object instanceof Element){
 				currentElement = (Element)object;
 				//import taxon lists
@@ -124,7 +121,7 @@ public class BfnXmlImportTaxonName extends BfnXmlImportBase implements ICdmIO<Bf
 
 	/**
 	 * This method will parse the XML concept relationships and tries to map them into cdm relationship types.
-	 * 
+	 *
 	 * @param bfnNamespace
 	 * @param currentElement
 	 */
@@ -132,10 +129,10 @@ public class BfnXmlImportTaxonName extends BfnXmlImportBase implements ICdmIO<Bf
 		String childName;
 		String bfnElementName = "KONZEPTBEZIEHUNG";
 		ResultWrapper<Boolean> success = ResultWrapper.NewInstance(true);
-		List<Element> elConceptList = (List<Element>)currentElement.getChildren(bfnElementName, bfnNamespace);
+		List<Element> elConceptList = currentElement.getChildren(bfnElementName, bfnNamespace);
 		List<TaxonBase> updatedTaxonList = new ArrayList<TaxonBase>();
 		for(Element element:elConceptList){
-			
+
 			childName = "TAXONYM1";
 			Element elTaxon1 = XmlHelp.getSingleChildElement(success, element, childName, bfnNamespace, false);
 			String taxNr1 = elTaxon1.getAttributeValue("taxNr");
@@ -151,7 +148,7 @@ public class BfnXmlImportTaxonName extends BfnXmlImportBase implements ICdmIO<Bf
 			Taxon taxon2 = secondList.get(int2);
 			TaxonBase<?> taxonBase2 = getTaxonService().load(taxon2.getUuid());
 			taxon2 = (Taxon) taxonBase2;
-			
+
 			childName = "STATUS";
 			Element elConceptStatus = XmlHelp.getSingleChildElement(success, element, childName, bfnNamespace, false);
 			String conceptStatusValue = elConceptStatus.getValue();
@@ -184,9 +181,9 @@ public class BfnXmlImportTaxonName extends BfnXmlImportBase implements ICdmIO<Bf
 
 	/**
 	 * This method stores the current imported maps in global variables to make
-	 * them later available for matching the taxon relationships between these 
+	 * them later available for matching the taxon relationships between these
 	 * imported lists.
-	 *  
+	 *
 	 * @param config
 	 * @param taxonMap
 	 */
@@ -199,7 +196,7 @@ public class BfnXmlImportTaxonName extends BfnXmlImportBase implements ICdmIO<Bf
 	}
 
 	/**
-	 * 
+	 *
 	 * @param state
 	 * @param taxonService
 	 * @param config
@@ -216,14 +213,14 @@ public class BfnXmlImportTaxonName extends BfnXmlImportBase implements ICdmIO<Bf
 		String childName;
 		boolean obligatory;
 		String idNamespace = "TaxonName";
-		
+
 		childName = "TAXONYME";
 		obligatory = false;
 		Element elTaxonNames = XmlHelp.getSingleChildElement(success, elDataSet, childName, bfnNamespace, obligatory);
 
 		String bfnElementName = "TAXONYM";
-		List<Element> elTaxonList = (List<Element>)elTaxonNames.getChildren(bfnElementName, bfnNamespace);
-		
+		List<Element> elTaxonList = elTaxonNames.getChildren(bfnElementName, bfnNamespace);
+
 		//for each taxonName
 		for (Element elTaxon : elTaxonList){
 			//create Taxon
@@ -232,7 +229,7 @@ public class BfnXmlImportTaxonName extends BfnXmlImportBase implements ICdmIO<Bf
 			Element elWissName = XmlHelp.getSingleChildElement(success, elTaxon, childName, bfnNamespace, obligatory);
 			String childElementName = "NANTEIL";
 			Taxon taxon = createOrUpdateTaxon(success, idNamespace, config, bfnNamespace, elWissName, childElementName, state);
-			
+
 			//for each synonym
 			childName = "SYNONYME";
 			Element elSynonyms = XmlHelp.getSingleChildElement(success, elTaxon, childName, bfnNamespace, obligatory);
@@ -259,10 +256,10 @@ public class BfnXmlImportTaxonName extends BfnXmlImportBase implements ICdmIO<Bf
 			}
 			taxonMap.put(Integer.parseInt(taxonId), taxon);
 		}
-		
+
 		//Quick'n'dirty to set concept relationships between two imported list
 		prepareListforConceptImport(config, taxonMap);
-		
+
 		Map<UUID, TaxonBase> savedTaxonMap = taxonService.saveOrUpdate((Collection)taxonMap.values());
 		//FIXME: after first list don't import metadata yet
 		//TODO: import information for second taxon list.
@@ -279,14 +276,14 @@ public class BfnXmlImportTaxonName extends BfnXmlImportBase implements ICdmIO<Bf
 
 	/**
 	 * This will put the prior imported list into a classification
-	 * 
-	 * @param config 
-	 * @param taxonService 
-	 * @param config 
-	 * @param savedTaxonMap 
-	 * @param currentElement 
-	 * @param state 
-	 * @return 
+	 *
+	 * @param config
+	 * @param taxonService
+	 * @param config
+	 * @param savedTaxonMap
+	 * @param currentElement
+	 * @param state
+	 * @return
 	 */
 	@SuppressWarnings("rawtypes")
 	private boolean createOrUdateClassification(BfnXmlImportConfigurator config, ITaxonService taxonService, Map<UUID, TaxonBase> savedTaxonMap, Element currentElement, BfnXmlImportState state) {
@@ -308,7 +305,7 @@ public class BfnXmlImportTaxonName extends BfnXmlImportBase implements ICdmIO<Bf
 //				isNewClassification = false;
 //			}
 //		}
-		
+
 //		ArrayList<TaxonBase> taxonBaseList = (ArrayList<TaxonBase>) taxonService.list(TaxonBase.class, null, null, null, VOC_CLASSIFICATION_INIT_STRATEGY);
 		for(TaxonBase tb:savedTaxonMap.values()){
 			if(tb instanceof Taxon){
@@ -327,30 +324,30 @@ public class BfnXmlImportTaxonName extends BfnXmlImportBase implements ICdmIO<Bf
 		return isNewClassification;
 	}
 
-	
+
 
 	/**
-	 * Matches the XML attributes against CDM entities.<BR> 
+	 * Matches the XML attributes against CDM entities.<BR>
 	 * Imports Scientific Name, Rank, etc. and creates a taxon.<br>
 	 * <b>Existing taxon names won't be matched yet</b>
-	 * 
+	 *
 	 * @param success
 	 * @param idNamespace
 	 * @param config
 	 * @param bfnNamespace
 	 * @param elTaxonName
 	 * @param childElementName
-	 * @param state 
+	 * @param state
 	 * @return
 	 */
-	
+
 	@SuppressWarnings({ "unchecked", "rawtypes" })
 	private Taxon createOrUpdateTaxon(
 			ResultWrapper<Boolean> success, String idNamespace,
 			BfnXmlImportConfigurator config, Namespace bfnNamespace,
 			Element elTaxonName, String childElementName, BfnXmlImportState state) {
-		
-		List<Element> elWissNameList = (List<Element>)elTaxonName.getChildren(childElementName, bfnNamespace);
+
+		List<Element> elWissNameList = elTaxonName.getChildren(childElementName, bfnNamespace);
 		Rank rank = null;
 		String strAuthor = null;
 		String strSupplement = null;
@@ -402,7 +399,7 @@ public class BfnXmlImportTaxonName extends BfnXmlImportBase implements ICdmIO<Bf
 //					//TODO  correct handling for pager
 //					List<TaxonNameBase> nameList = names.getRecords();
 //					if (nameList.isEmpty()){
-//						taxonBase = Taxon.NewInstance(nameBase, config.getSourceReference());	
+//						taxonBase = Taxon.NewInstance(nameBase, config.getSourceReference());
 //					}else{
 //						taxonBase = Taxon.NewInstance(nameList.get(0), config.getSourceReference());
 //						if (nameList.size()>1){
@@ -419,18 +416,18 @@ public class BfnXmlImportTaxonName extends BfnXmlImportBase implements ICdmIO<Bf
 					Element grandParentElement = parentElement.getParentElement();
 					taxon.addImportSource(uniqueID, grandParentElement.getName()+":"+parentElement.getName()+":"+elWissName.getName()+":"+uriNameSpace, state.getCompleteSourceRef(), state.getCurrentMicroRef().getTitle());
 				} catch (UnknownCdmTypeException e) {
-					success.setValue(false); 
+					success.setValue(false);
 				}
 			}
 		}
 		return taxon;
 	}
-	
+
 	/**
 	 * Matches the XML attributes against CDM entities.<BR>
 	 * Imports Scientific Name, Rank etc. and create a synonym.<br>
 	 * <b>Existing synonym names won't be matched yet</b>
-	 * 
+	 *
 	 * @param taxon
 	 * @param success
 	 * @param obligatory
@@ -439,15 +436,15 @@ public class BfnXmlImportTaxonName extends BfnXmlImportBase implements ICdmIO<Bf
 	 * @param elSynonyms
 	 * @param taxonId
 	 * @param config
-	 * @param state 
+	 * @param state
 	 */
 
 	@SuppressWarnings({ "unchecked" })
-	private void createOrUpdateSynonym(Taxon taxon, ResultWrapper<Boolean> success, boolean obligatory, Namespace bfnNamespace, 
+	private void createOrUpdateSynonym(Taxon taxon, ResultWrapper<Boolean> success, boolean obligatory, Namespace bfnNamespace,
 			     String childElementName, Element elSynonyms, String taxonId, BfnXmlImportState state) {
-		
+
 		String childName;
-		List<Element> elSynonymList = (List<Element>)elSynonyms.getChildren(childElementName, bfnNamespace);
+		List<Element> elSynonymList = elSynonyms.getChildren(childElementName, bfnNamespace);
 
 		for(Element elSyn:elSynonymList){
 			Rank rank = null;
@@ -457,7 +454,7 @@ public class BfnXmlImportTaxonName extends BfnXmlImportBase implements ICdmIO<Bf
 			Element elSynScientificName = XmlHelp.getSingleChildElement(success, elSyn, childName, bfnNamespace, obligatory);
 
 			childElementName = "NANTEIL";
-			List<Element> elSynDetails = (List<Element>)elSynScientificName.getChildren(childElementName, bfnNamespace);
+			List<Element> elSynDetails = elSynScientificName.getChildren(childElementName, bfnNamespace);
 
 			for(Element elSynDetail:elSynDetails){
 				if(elSynDetail.getAttributeValue("bereich").equalsIgnoreCase("Rang")){
@@ -466,7 +463,7 @@ public class BfnXmlImportTaxonName extends BfnXmlImportBase implements ICdmIO<Bf
 				}
 				if(elSynDetail.getAttributeValue("bereich").equalsIgnoreCase("Autoren")){
 					strAuthor = elSynDetail.getTextNormalize();
-				}	
+				}
 				if(elSynDetail.getAttributeValue("bereich", bfnNamespace).equalsIgnoreCase("Zusätze")){
 					strSupplement = elSynDetail.getTextNormalize();
 				}
@@ -477,21 +474,21 @@ public class BfnXmlImportTaxonName extends BfnXmlImportBase implements ICdmIO<Bf
 						//TODO find best matching Taxa
 						Synonym synonym = Synonym.NewInstance(nameBase, state.getCurrentMicroRef());
 						taxon.addSynonym(synonym, SynonymRelationshipType.SYNONYM_OF());
-						
+
 					} catch (UnknownCdmTypeException e) {
 						logger.warn("Name with id " + taxonId + " has unknown nomenclatural code.");
-						success.setValue(false); 
+						success.setValue(false);
 					}
-				
+
 				}
-				
+
 			}
 		}
 	}
 
-	
+
 	/**
-	 * 
+	 *
 	 * @param taxon
 	 * @param bfnNamespace
 	 * @param childElementName
@@ -501,41 +498,41 @@ public class BfnXmlImportTaxonName extends BfnXmlImportBase implements ICdmIO<Bf
 	private void createOrUpdateVernacularName(Taxon taxon,
 			Namespace bfnNamespace, String childElementName,
 			Element elVernacularName, BfnXmlImportState state) {
-		
-		List<Element> elVernacularNameList = (List<Element>)elVernacularName.getChildren(childElementName, bfnNamespace);
-		
+
+		List<Element> elVernacularNameList = elVernacularName.getChildren(childElementName, bfnNamespace);
+
 		TaxonDescription taxonDescription = getTaxonDescription(taxon, false, true);
-		
+
 		for(Element elVernacular : elVernacularNameList){
 			Element child = elVernacular.getChild("TRIVIALNAME");
 			if(child != null){
 				makeCommonName(taxonDescription, child, state);
 			}
 		}
-		
+
 	}
-	
+
 	/**
-	 * 
+	 *
 	 * @param taxon
 	 * @param bfnNamespace
 	 * @param childElementName
 	 * @param elInformations
 	 * @param state
-	 * @throws UnknownCdmTypeException 
+	 * @throws UnknownCdmTypeException
 	 */
 
 	@SuppressWarnings("unchecked")
 	private void createOrUpdateInformation(Taxon taxon,
 			Namespace bfnNamespace, String childElementName,
-			Element elInformations, 
+			Element elInformations,
 			BfnXmlImportState state){
 
-		List<Element> elInformationList = (List<Element>)elInformations.getChildren(childElementName, bfnNamespace);
-        
+		List<Element> elInformationList = elInformations.getChildren(childElementName, bfnNamespace);
+
 		for(Element elInfo:elInformationList){
 			//check if geographical scope is Bund and import only these information for now
-			//TODO create several taxon descriptions for different geographical scope 
+			//TODO create several taxon descriptions for different geographical scope
 			if(elInfo.getName().equalsIgnoreCase("BEZUGSRAUM") && elInfo.getAttributeValue("name").equalsIgnoreCase("Bund")){
 				childElementName = "IWERT";
 				TaxonDescription taxonDescription = getTaxonDescription(taxon, false, true);
@@ -543,12 +540,13 @@ public class BfnXmlImportTaxonName extends BfnXmlImportBase implements ICdmIO<Bf
 				try {
 					germanStateUUID = BfnXmlTransformer.getGermanStateUUID("Deutschland");
 					NamedArea area = (NamedArea)getTermService().load(germanStateUUID);
-					taxonDescription.addGeoScope(area);
+					//FIXME GEOSCOPE_ID CANNOT BE NULL Exception
+//					taxonDescription.addGeoScope(area);
 				} catch (UnknownCdmTypeException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
-				List<Element> elInfoDetailList = (List<Element>)elInfo.getChildren(childElementName, bfnNamespace);
+				List<Element> elInfoDetailList = elInfo.getChildren(childElementName, bfnNamespace);
 
 				for(Element elInfoDetail : elInfoDetailList){
 					if(elInfoDetail.getAttributeValue("standardname").equalsIgnoreCase("RL Kat.")){
@@ -601,8 +599,8 @@ public class BfnXmlImportTaxonName extends BfnXmlImportBase implements ICdmIO<Bf
 		}
 	}
 
-	
-	
+
+
 	private void makeCommonName(TaxonDescription taxonDescription,
 			Element child, BfnXmlImportState state) {
 		String commonNameValue = child.getValue();
@@ -611,9 +609,9 @@ public class BfnXmlImportTaxonName extends BfnXmlImportBase implements ICdmIO<Bf
 		taxonDescription.addElement(commonName);
 	}
 
-	
+
 	/**
-	 * 
+	 *
 	 * @param taxonDescription
 	 * @param elInfoDetail
 	 * @param state
@@ -624,7 +622,7 @@ public class BfnXmlImportTaxonName extends BfnXmlImportBase implements ICdmIO<Bf
 			Element elInfoDetail,
 			BfnXmlImportState state,
 			boolean isTextData) {
-		
+
 		String transformedRlKatValue = null;
 		UUID featureUUID = null;
 		UUID stateTermUUID = null;
@@ -648,8 +646,9 @@ public class BfnXmlImportTaxonName extends BfnXmlImportBase implements ICdmIO<Bf
 				randomStateUUID = true;
 			}
 			if(randomStateUUID || stateTermUUID == BfnXmlTransformer.stateTermEmpty){
-				if(stateTermUUID == BfnXmlTransformer.stateTermEmpty)
-					transformedRlKatValue = "keine Angabe";
+				if(stateTermUUID == BfnXmlTransformer.stateTermEmpty) {
+                    transformedRlKatValue = "keine Angabe";
+                }
 				rlState = getStateTerm(state, stateTermUUID, transformedRlKatValue, transformedRlKatValue, transformedRlKatValue, null);
 			}else{
 				rlState = getStateTerm(state, stateTermUUID);
@@ -666,7 +665,7 @@ public class BfnXmlImportTaxonName extends BfnXmlImportBase implements ICdmIO<Bf
 			taxonDescription.addElement(descriptionElement);
 		}
 	}
-	
+
 	/**
 	 * Returns the rank represented by the rank element.<br>
 	 * Returns <code>null</code> if the element is null.<br>
@@ -675,13 +674,13 @@ public class BfnXmlImportTaxonName extends BfnXmlImportBase implements ICdmIO<Bf
 	 * If the code could not be resolved it returns the rank represented most likely by the elements text.<br>
 	 * Returns UNKNOWN_RANK if code attribute and element text could not be resolved.
 	 * @param strRank bfn rank element
-	 * @return 
+	 * @return
 	 */
 	protected static Rank makeRank(String strRank){
 		Rank result;
  		if (strRank == null){
 			return null;
-		}	
+		}
 		Rank codeRank = null;
 		try {
 			codeRank = BfnXmlTransformer.rankCode2Rank(strRank);
@@ -703,7 +702,7 @@ public class BfnXmlImportTaxonName extends BfnXmlImportBase implements ICdmIO<Bf
 	/**
 	 * @param rank
 	 * @param strAuthor
-	 * @param strSupplement 
+	 * @param strSupplement
 	 * @param elWissName
 	 * @return
 	 * @throws UnknownCdmTypeException
@@ -715,16 +714,16 @@ public class BfnXmlImportTaxonName extends BfnXmlImportBase implements ICdmIO<Bf
 		NomenclaturalCode nomCode = BfnXmlTransformer.nomCodeString2NomCode(strNomenclaturalCode);
 		String strScientificName = elWissName.getTextNormalize();
 		/**
-		 *  
-		 * trim strScienctificName because sometimes 
-		 * getTextNormalize() does not removes all the 
+		 *
+		 * trim strScienctificName because sometimes
+		 * getTextNormalize() does not removes all the
 		 * whitespaces
-		 *  
+		 *
 		 **/
 		strScientificName = StringUtils.trim(strScientificName);
 		strScientificName = StringUtils.remove(strScientificName, "\u00a0");
 		strScientificName = StringUtils.remove(strScientificName, "\uc281");
-		
+
 		if(strSupplement != null && !strSupplement.isEmpty()){
 			strScientificName = StringUtils.remove(strScientificName, strSupplement);
 		}
@@ -752,7 +751,7 @@ public class BfnXmlImportTaxonName extends BfnXmlImportBase implements ICdmIO<Bf
 		taxonNameBase = nonViralName;
 		return taxonNameBase;
 	}
-	
+
 	@Override
 	protected boolean isIgnore(BfnXmlImportState state){
 		return ! state.getConfig().isDoTaxonNames();

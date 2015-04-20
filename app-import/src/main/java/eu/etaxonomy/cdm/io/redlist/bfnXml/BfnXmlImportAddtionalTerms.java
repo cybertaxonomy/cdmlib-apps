@@ -13,6 +13,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.UUID;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.TransactionStatus;
@@ -122,17 +123,22 @@ public class BfnXmlImportAddtionalTerms extends BfnXmlImportBase implements ICdm
 
 	private void createGermanTerms(IVocabularyService vocabularyService,ITermService termService , List<String> termList, Vocabulary vocabulary){
 	   NamedArea parentGermany = null;
+	   PresenceAbsenceTerm parent = null;
 	   int id = 0;
        for(String strGermanTerm:termList){
+           //Split string into label and abbrevated label
+           String[] splittedStrings = StringUtils.splitByWholeSeparator(strGermanTerm, ":");
+           String abbrevatedLabel = splittedStrings[0];
+           String label = splittedStrings[1];
            //get UUID and load existing term
            UUID termUuuid = null;
            try {
                if(vocabulary.equals(Vocabulary.GERMAN_PRESENCE_TERMS)){
-                   termUuuid = BfnXmlTransformer.getGermanAbsenceTermUUID(strGermanTerm);
+                   termUuuid = BfnXmlTransformer.getGermanAbsenceTermUUID(label);
                }else if(vocabulary.equals(Vocabulary.GERMAN_ESTABLISHMENT_TERMS)){
-                   termUuuid = BfnXmlTransformer.getGermanEstablishmentTermUUID(strGermanTerm);
+                   termUuuid = BfnXmlTransformer.getGermanEstablishmentTermUUID(label);
                }else if(vocabulary.equals(Vocabulary.GERMAN_FEDERAL_STATES)){
-                   termUuuid = BfnXmlTransformer.getGermanStateUUID(strGermanTerm);
+                   termUuuid = BfnXmlTransformer.getGermanStateUUID(label);
                }
            } catch (UnknownCdmTypeException e) {
                logger.warn("Could not match term to uuid: "+e.toString());
@@ -145,11 +151,10 @@ public class BfnXmlImportAddtionalTerms extends BfnXmlImportBase implements ICdm
            }else{
                if(vocabulary.equals(Vocabulary.GERMAN_FEDERAL_STATES)){
                    //Namedareas
-                   term = NamedArea.NewInstance(strGermanTerm, strGermanTerm, strGermanTerm);
-                   term.setUuid(termUuuid);
+                   term = NamedArea.NewInstance(label, label, abbrevatedLabel);
                    ((NamedArea) term).setType(NamedAreaType.ADMINISTRATION_AREA());
                    term.setIdInVocabulary(Integer.toString(id));;
-                   if(strGermanTerm.equalsIgnoreCase("Deutschland")){
+                   if(label.equalsIgnoreCase("Deutschland")){
                        ((NamedArea) term).setLevel(NamedAreaLevel.COUNTRY());
                        parentGermany = (NamedArea) term;
                    }else{
@@ -157,11 +162,20 @@ public class BfnXmlImportAddtionalTerms extends BfnXmlImportBase implements ICdm
                        term.setPartOf(parentGermany);
                    }
                }else{
-                   term = PresenceAbsenceTerm.NewPresenceInstance(strGermanTerm, strGermanTerm, strGermanTerm);
-                   //TODO create hierarchy
-//                   ((PresenceAbsenceTerm)term).setPartOf(partOf);
-                   term.setUuid(termUuuid);
+                   term = PresenceAbsenceTerm.NewPresenceInstance(label, label, abbrevatedLabel);
+                   term.setIdInVocabulary(abbrevatedLabel);
+                   if(vocabulary.equals(Vocabulary.GERMAN_PRESENCE_TERMS)){
+                       //create hierarchy of terms
+                       if(label.equalsIgnoreCase("abwesend")){
+                           parent = (PresenceAbsenceTerm) term;
+                       }else if(label.equalsIgnoreCase("vorkommend")){
+                           parent = (PresenceAbsenceTerm) term;
+                       }else{
+                           ((PresenceAbsenceTerm)term).setPartOf(parent);
+                       }
+                   }
                }
+               term.setUuid(termUuuid);
            }
            if(vocabulary.equals(Vocabulary.GERMAN_FEDERAL_STATES)){
                createOrUpdateTermVocabulary(TermType.NamedArea, vocabularyService, term, vocabulary.toString());
@@ -225,45 +239,45 @@ public class BfnXmlImportAddtionalTerms extends BfnXmlImportBase implements ICdm
 
 
 	private static final List<String> GERMAN_PRESENCE_ABSENCE_TERMS = Arrays.asList(new String[] {
-	        "abwesend",
-	        "abwesend - ausgestorben",
-	        "abwesend - frühere Fehleingabe",
-	        "vorkommend",
-	        "vorkommend - in Einbürgerung befindlich",
-	        "vorkommend - etabliert",
-	        "vorkommend - kultiviert, domestiziert",
-	        "vorkommend - unbeständig",
-	        "vorkommend - Vorkommen unsicher",
-	        "vorkommend - unsicher"
+	        "a:abwesend",
+	        "aa:abwesend - ausgestorben",
+	        "af:abwesend - frühere Fehleingabe",
+	        "v:vorkommend",
+	        "v+:vorkommend - in Einbürgerung befindlich",
+	        "ve:vorkommend - etabliert",
+	        "vk:vorkommend - kultiviert, domestiziert",
+	        "vu:vorkommend - unbeständig",
+	        "vs:vorkommend - Vorkommen unsicher",
+	        "s:vorkommend - unsicher"
 
 	});
 
 	private static final List<String> GERMAN_ESTABLISHMENT_STATUS_TERMS = Arrays.asList(new String[] {
-	        "Archaeophyt",
-	        "Indigen",
-	        "Kulturpflanze / domestiziertes Tier",
-	        "Neophyt",
-	        "Kultuflüchtling"
+	        "A:Archaeophyt",
+	        "I:Indigen",
+	        "K:Kulturpflanze / domestiziertes Tier",
+	        "N:Neophyt",
+	        "KF:Kultuflüchtling"
 	});
 
     private static final List<String> GERMAN_FEDERAL_STATES = Arrays.asList(new String[] {
-    		"Deutschland",
-    		"Baden-Württemberg",
-    		"Bayern",
-    		"Berlin",
-            "Brandenburg",
-            "Bremen",
-            "Hamburg",
-            "Hessen",
-            "Mecklenburg-Vorpommern",
-            "Niedersachsen",
-            "Nordrhein-Westfalen",
-            "Rheinland-Pfalz",
-            "Saarland",
-            "Sachsen",
-            "Sachsen-Anhalt",
-            "Schleswig-Holstein",
-            "Thüringen"
+    		"DE:Deutschland",
+    		"BW:Baden-Württemberg",
+    		"BY:Bayern",
+    		"BE:Berlin",
+            "BB:Brandenburg",
+            "HB:Bremen",
+            "HH:Hamburg",
+            "HE:Hessen",
+            "MV:Mecklenburg-Vorpommern",
+            "NI:Niedersachsen",
+            "NW:Nordrhein-Westfalen",
+            "RP:Rheinland-Pfalz",
+            "SL:Saarland",
+            "SN:Sachsen",
+            "ST:Sachsen-Anhalt",
+            "SH:Schleswig-Holstein",
+            "TH:Thüringen"
     });
 
 
