@@ -30,10 +30,13 @@ import eu.etaxonomy.cdm.common.XmlHelp;
 import eu.etaxonomy.cdm.io.common.ICdmIO;
 import eu.etaxonomy.cdm.model.common.CdmBase;
 import eu.etaxonomy.cdm.model.common.Language;
+import eu.etaxonomy.cdm.model.common.TermVocabulary;
 import eu.etaxonomy.cdm.model.description.CategoricalData;
 import eu.etaxonomy.cdm.model.description.CommonTaxonName;
 import eu.etaxonomy.cdm.model.description.DescriptionElementBase;
+import eu.etaxonomy.cdm.model.description.Distribution;
 import eu.etaxonomy.cdm.model.description.Feature;
+import eu.etaxonomy.cdm.model.description.PresenceAbsenceTerm;
 import eu.etaxonomy.cdm.model.description.State;
 import eu.etaxonomy.cdm.model.description.TaxonDescription;
 import eu.etaxonomy.cdm.model.description.TextData;
@@ -594,14 +597,77 @@ public class BfnXmlImportTaxonName extends BfnXmlImportBase implements ICdmIO<Bf
 					if(elInfoDetail.getAttributeValue("standardname").equalsIgnoreCase("Weitere Kommentare")){
 						makeFeatures(taxonDescription, elInfoDetail, state, true);
 					}
+					//create german federal states distribution status
+					if(elInfoDetail.getAttributeValue("standardname").equalsIgnoreCase("BW")){
+                        createGermanDistributionStatus(taxon, elInfoDetail, state, taxonDescription);
+                    }
+					//create german federal states distribution status
+					if(elInfoDetail.getAttributeValue("standardname").equalsIgnoreCase("BY")){
+					    createGermanDistributionStatus(taxon, elInfoDetail, state, taxonDescription);
+					}
+					//create german federal states distribution status
+					if(elInfoDetail.getAttributeValue("standardname").equalsIgnoreCase("BE")){
+					    createGermanDistributionStatus(taxon, elInfoDetail, state, taxonDescription);
+					}
+					//create german federal states distribution status
+					if(elInfoDetail.getAttributeValue("standardname").equalsIgnoreCase("BB")){
+					    createGermanDistributionStatus(taxon, elInfoDetail, state, taxonDescription);
+					}
+					//create german federal states distribution status
+					if(elInfoDetail.getAttributeValue("standardname").equalsIgnoreCase("HB")){
+					    createGermanDistributionStatus(taxon, elInfoDetail, state, taxonDescription);
+					}
+					//create german federal states distribution status
+					if(elInfoDetail.getAttributeValue("standardname").equalsIgnoreCase("HH")){
+					    createGermanDistributionStatus(taxon, elInfoDetail, state, taxonDescription);
+					}
+					//create german federal states distribution status
+					if(elInfoDetail.getAttributeValue("standardname").equalsIgnoreCase("HE")){
+					    createGermanDistributionStatus(taxon, elInfoDetail, state, taxonDescription);
+					}
+					//create german federal states distribution status
+					if(elInfoDetail.getAttributeValue("standardname").equalsIgnoreCase("MV")){
+					    createGermanDistributionStatus(taxon, elInfoDetail, state, taxonDescription);
+					}
+					//create german federal states distribution status
+					if(elInfoDetail.getAttributeValue("standardname").equalsIgnoreCase("NI")){
+					    createGermanDistributionStatus(taxon, elInfoDetail, state, taxonDescription);
+					}
+					//create german federal states distribution status
+					if(elInfoDetail.getAttributeValue("standardname").equalsIgnoreCase("NW")){
+					    createGermanDistributionStatus(taxon, elInfoDetail, state, taxonDescription);
+					}
+					//create german federal states distribution status
+					if(elInfoDetail.getAttributeValue("standardname").equalsIgnoreCase("RP")){
+					    createGermanDistributionStatus(taxon, elInfoDetail, state, taxonDescription);
+					}
+					//create german federal states distribution status
+					if(elInfoDetail.getAttributeValue("standardname").equalsIgnoreCase("SL")){
+					    createGermanDistributionStatus(taxon, elInfoDetail, state, taxonDescription);
+					}
+					//create german federal states distribution status
+					if(elInfoDetail.getAttributeValue("standardname").equalsIgnoreCase("SN")){
+					    createGermanDistributionStatus(taxon, elInfoDetail, state, taxonDescription);
+					}
+					//create german federal states distribution status
+					if(elInfoDetail.getAttributeValue("standardname").equalsIgnoreCase("ST")){
+					    createGermanDistributionStatus(taxon, elInfoDetail, state, taxonDescription);
+					}
+					//create german federal states distribution status
+					if(elInfoDetail.getAttributeValue("standardname").equalsIgnoreCase("SH")){
+					    createGermanDistributionStatus(taxon, elInfoDetail, state, taxonDescription);
+					}
+					//create german federal states distribution status
+					if(elInfoDetail.getAttributeValue("standardname").equalsIgnoreCase("TH")){
+					    createGermanDistributionStatus(taxon, elInfoDetail, state, taxonDescription);
+					}
 				}
 			}
 		}
 	}
 
 
-
-	private void makeCommonName(TaxonDescription taxonDescription,
+    private void makeCommonName(TaxonDescription taxonDescription,
 			Element child, BfnXmlImportState state) {
 		String commonNameValue = child.getValue();
 		NamedArea area = getTermService().getAreaByTdwgAbbreviation("GER");
@@ -751,6 +817,74 @@ public class BfnXmlImportTaxonName extends BfnXmlImportBase implements ICdmIO<Bf
 		taxonNameBase = nonViralName;
 		return taxonNameBase;
 	}
+
+	/**
+	 * This method will match the BFN XML status to a distribution status
+	 * and map it to the german federal state area. The vocabulary needs to be
+	 * created first by the Importer, in order to map the terms correctly. Have a look
+	 * for further details at the file BfnXmlImportAdditionalTerms.
+	 *
+	 *
+     * @param taxon, for saving the distribution and its status
+     * @param elInfoDetail, keeps the details from the import, in this case the distribution detail
+     * @param state, import state
+     * @param germanState, the abbreviated label for the German state
+     *
+     */
+    private void createGermanDistributionStatus(Taxon taxon, Element elInfoDetail, BfnXmlImportState state,
+            TaxonDescription taxonDescription){
+
+        String strDistributionValue = elInfoDetail.getChild("WERT").getValue();
+        String strGermanState = elInfoDetail.getAttributeValue("standardname");
+        //TODO match DistributionValue
+        UUID matchedDistributionUUID = null;
+        try {
+            matchedDistributionUUID = BfnXmlTransformer.matchDistributionValue(strDistributionValue);
+        } catch (UnknownCdmTypeException e1) {
+            logger.warn("could not match xml value "+ strDistributionValue +" to distribution status for "+strGermanState);
+            e1.printStackTrace();
+            return;
+        }
+        PresenceAbsenceTerm status = (PresenceAbsenceTerm) getTermService().load(matchedDistributionUUID);
+        //TODO load vocabulary and german state
+        UUID vocabularyUUID = null;
+        TermVocabulary vocabulary = null;
+        UUID stateUUID = null;
+
+        try {
+            stateUUID = BfnXmlTransformer.getGermanStateUUID(strGermanState);
+        } catch (UnknownCdmTypeException e1) {
+            logger.warn("could not match state" + strGermanState + " to UUID");
+            e1.printStackTrace();
+            return;
+        }
+        NamedArea area = (NamedArea)getTermService().load(stateUUID);
+
+//        try {
+//            vocabularyUUID =  BfnXmlTransformer.getRedlistVocabularyUUID("Bundesländer");
+//            vocabulary = getVocabularyService().load(vocabularyUUID);
+//        } catch (UnknownCdmTypeException e) {
+//            logger.warn("could not load vocabulary");
+//            e.printStackTrace();
+//            return;
+//        }
+//        NamedArea area = null;
+//        for(Object term: vocabulary){
+//            //TODO match german state
+//            NamedArea narea = (NamedArea) term;
+//            Set<Representation> representations = narea.getRepresentations();
+//            for(Representation r:representations){
+//                if(r.getAbbreviatedLabel().equalsIgnoreCase(strGermanState)){
+//                    area = narea;
+//                }
+//            }
+//
+//        }
+        //TODO create new taxon description
+        DescriptionElementBase descriptionElement = Distribution.NewInstance(area, status);
+        taxonDescription.addElement(descriptionElement);
+    }
+
 
 	@Override
 	protected boolean isIgnore(BfnXmlImportState state){

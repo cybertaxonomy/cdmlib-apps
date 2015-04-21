@@ -665,49 +665,73 @@ public final class BfnXmlTransformer {
 		if(strGermanState.equalsIgnoreCase("Baden-Württemberg")) {
             return UUID.fromString("00e64948-9ce9-4ebf-961b-133c56517b1c");
         }
+		if(strGermanState.equalsIgnoreCase("BW")) {
+		    return UUID.fromString("00e64948-9ce9-4ebf-961b-133c56517b1c");
+		}
 		if(strGermanState.equalsIgnoreCase("Bayern")) {
             return UUID.fromString("ba075265-368f-4ff0-8942-88546239c70a");
         }
+		if(strGermanState.equalsIgnoreCase("BY")) {
+		    return UUID.fromString("ba075265-368f-4ff0-8942-88546239c70a");
+		}
 		if(strGermanState.equalsIgnoreCase("Berlin")) {
             return UUID.fromString("d9339e12-7efa-45df-a008-3c934b9386bc");
         }
+		if(strGermanState.equalsIgnoreCase("BE")) {
+		    return UUID.fromString("d9339e12-7efa-45df-a008-3c934b9386bc");
+		}
 		if(strGermanState.equalsIgnoreCase("Bremen")) {
             return UUID.fromString("a6d2f97d-5dba-4b79-a073-25fb491b6320");
         }
+		if(strGermanState.equalsIgnoreCase("HB")) {
+		    return UUID.fromString("a6d2f97d-5dba-4b79-a073-25fb491b6320");
+		}
 		if(strGermanState.equalsIgnoreCase("Brandenburg")) {
             return UUID.fromString("dda9d8b8-8090-4667-953e-d8b1f7243926");
         }
+		if(strGermanState.equalsIgnoreCase("BB")) {
+		    return UUID.fromString("dda9d8b8-8090-4667-953e-d8b1f7243926");
+		}
 		if(strGermanState.equalsIgnoreCase("Hamburg")) {
             return UUID.fromString("f087a7d7-974f-4627-a414-df27c04f99dd");
         }
+		if(strGermanState.equalsIgnoreCase("HH")) {
+		    return UUID.fromString("f087a7d7-974f-4627-a414-df27c04f99dd");
+		}
 		if(strGermanState.equalsIgnoreCase("Hessen")) {
             return UUID.fromString("59de29e6-bf32-4677-89c7-a6834fcb5085");
         }
+		if(strGermanState.equalsIgnoreCase("HE")) {
+		    return UUID.fromString("59de29e6-bf32-4677-89c7-a6834fcb5085");
+		}
 		if(strGermanState.equalsIgnoreCase("Mecklenburg-Vorpommern")) {
             return UUID.fromString("06dccbd5-8d5a-4e4f-b56e-d1d74ab25c19");
         }
-		if(strGermanState.equalsIgnoreCase("Niedersachsen")) {
+		if(strGermanState.equalsIgnoreCase("MV")) {
+		    return UUID.fromString("06dccbd5-8d5a-4e4f-b56e-d1d74ab25c19");
+		}
+		if(strGermanState.equalsIgnoreCase("Niedersachsen") || strGermanState.equalsIgnoreCase("NI")) {
             return UUID.fromString("97f77fe8-07ab-4e14-8f8b-40e8caf7e653");
         }
-		if(strGermanState.equalsIgnoreCase("Nordrhein-Westfalen")) {
+		if(strGermanState.equalsIgnoreCase("Nordrhein-Westfalen")||strGermanState.equalsIgnoreCase("NW")) {
             return UUID.fromString("46bf702e-1438-470c-9c77-04202c34ebf2");
         }
-		if(strGermanState.equalsIgnoreCase("Rheinland-Pfalz")) {
+		if(strGermanState.equalsIgnoreCase("Rheinland-Pfalz")||strGermanState.equalsIgnoreCase("RP")) {
             return UUID.fromString("dd3ddb29-b1ec-4937-99a9-4a94d383becf");
         }
-		if(strGermanState.equalsIgnoreCase("Saarland")) {
+		if(strGermanState.equalsIgnoreCase("Saarland")||strGermanState.equalsIgnoreCase("SL")) {
             return UUID.fromString("26d3e85f-ce90-43ae-8ac0-42a60302b7b7");
         }
-		if(strGermanState.equalsIgnoreCase("Sachsen")) {
+		if(strGermanState.equalsIgnoreCase("Sachsen")||strGermanState.equalsIgnoreCase("SN")) {
             return UUID.fromString("ca3ef152-ee3a-45f2-8343-983cf0fdddbd");
         }
-		if(strGermanState.equalsIgnoreCase("Sachsen-Anhalt")) {
+		if(strGermanState.equalsIgnoreCase("Sachsen-Anhalt")|| strGermanState.equalsIgnoreCase("ST")) {
             return UUID.fromString("bb95b9a4-87ee-49bd-a542-4c30289e8d1f");
         }
-		if(strGermanState.equalsIgnoreCase("Schleswig-Holstein")) {
+		if(strGermanState.equalsIgnoreCase("Schleswig-Holstein")||strGermanState.equalsIgnoreCase("SH")) {
             return UUID.fromString("863323a7-22fb-4070-ad94-ce317098a28a");
         }
-		if(strGermanState.equalsIgnoreCase("Thüringen")) {
+		if(strGermanState.equalsIgnoreCase("Thüringen")||strGermanState.equalsIgnoreCase("TH")) {
             return UUID.fromString("72e18526-6bf7-4300-8329-53cab5da2b51");
         } else {
             throw new UnknownCdmTypeException("Unknown State, could not match: " + strGermanState);
@@ -737,6 +761,43 @@ public final class BfnXmlTransformer {
         if(strGermanTerm.equalsIgnoreCase("Kultuflüchtling")) {return UUID.fromString("411f9190-56b7-41dd-a31a-3f200619c5e0");
         } else {
             throw new UnknownCdmTypeException("Unknown State, could not match: " + strGermanTerm);
+        }
+    }
+
+
+    /**
+     * @param strDistributionValue
+     * @return
+     */
+    public static UUID matchDistributionValue(String strDistributionValue) throws UnknownCdmTypeException {
+
+        if(strDistributionValue.equalsIgnoreCase("*")){return getGermanAbsenceTermUUID("vorkommend - etabliert");}
+        if(strDistributionValue.equalsIgnoreCase("0")){return getGermanAbsenceTermUUID("abwesend - ausgestorben");}
+        if(strDistributionValue.equalsIgnoreCase("1")){return getGermanAbsenceTermUUID("vorkommend - etabliert");}
+        if(strDistributionValue.equalsIgnoreCase("2")){return getGermanAbsenceTermUUID("vorkommend - etabliert");}
+        if(strDistributionValue.equalsIgnoreCase("3")){return getGermanAbsenceTermUUID("vorkommend - etabliert");}
+        if(strDistributionValue.equalsIgnoreCase("G")){return getGermanAbsenceTermUUID("vorkommend - etabliert");}
+        if(strDistributionValue.equalsIgnoreCase("D")){return getGermanAbsenceTermUUID("vorkommend - Vorkommen unsicher");}
+        if(strDistributionValue.equalsIgnoreCase("R")){return getGermanAbsenceTermUUID("vorkommend - Vorkommen unsicher");}
+//        if(strDistributionValue.equalsIgnoreCase("N")){return getGermanAbsenceTermUUID();}
+        if(strDistributionValue.equalsIgnoreCase("V")){return getGermanAbsenceTermUUID("vorkommend - etabliert");}
+        if(strDistributionValue.equalsIgnoreCase("nb")){return getGermanAbsenceTermUUID("vorkommend - etabliert");}
+        if(strDistributionValue.equalsIgnoreCase("*")){return getGermanAbsenceTermUUID("vorkommend - etabliert");}
+        if(strDistributionValue.equalsIgnoreCase("#dtpl_SynopseBL_STERN_DP#")){return getGermanAbsenceTermUUID("vorkommend - etabliert");}
+        if(strDistributionValue.equalsIgnoreCase("#dtpl_SynopseBL_STERN#")){return getGermanAbsenceTermUUID("vorkommend - etabliert");}
+        if(strDistributionValue.equalsIgnoreCase("#dtpl_SynopseBL_STERN##dtpl_SynopseBL_STERN#")){return getGermanAbsenceTermUUID("vorkommend - etabliert");}
+        if(strDistributionValue.equalsIgnoreCase("")){return getGermanAbsenceTermUUID("vorkommend - etabliert");}
+        if(strDistributionValue.equalsIgnoreCase(" ")){return getGermanAbsenceTermUUID("vorkommend - etabliert");}
+        if(strDistributionValue.equalsIgnoreCase("#dtpl_SynopseBL_NB#")){return getGermanAbsenceTermUUID("vorkommend - etabliert");}
+        if(strDistributionValue.equalsIgnoreCase("-")){return getGermanAbsenceTermUUID("vorkommend - Vorkommen unsicher");}
+        if(strDistributionValue.equalsIgnoreCase("#dtpl_SynopseBL_X_KLAMMER#")){return getGermanAbsenceTermUUID("vorkommend - Vorkommen unsicher");}
+        if(strDistributionValue.equalsIgnoreCase("#dtpl_SynopseBL_STRICH#")){return getGermanAbsenceTermUUID("vorkommend - Vorkommen unsicher");}
+        if(strDistributionValue.equalsIgnoreCase("+")){return getGermanAbsenceTermUUID("vorkommend - Vorkommen unsicher");}
+        if(strDistributionValue.equalsIgnoreCase("°")){return getGermanAbsenceTermUUID("vorkommend - Vorkommen unsicher");}
+//        if(strDistributionValue.equalsIgnoreCase("G/D")){return getGermanAbsenceTermUUID();}
+        if(strDistributionValue.equalsIgnoreCase("#dtpl_SynopseBL_LEER#")){return getGermanAbsenceTermUUID("abwesend");}
+        else {
+            throw new UnknownCdmTypeException("Unknown State, could not match: " + strDistributionValue);
         }
     }
 }
