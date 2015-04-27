@@ -779,7 +779,7 @@ public final class BfnXmlTransformer {
         if(strDistributionValue.equalsIgnoreCase("G")){return getGermanAbsenceTermUUID("vorkommend - etabliert");}
         if(strDistributionValue.equalsIgnoreCase("D")){return getGermanAbsenceTermUUID("vorkommend - Vorkommen unsicher");}
         if(strDistributionValue.equalsIgnoreCase("R")){return getGermanAbsenceTermUUID("vorkommend - Vorkommen unsicher");}
-//        if(strDistributionValue.equalsIgnoreCase("N")){return getGermanAbsenceTermUUID();}
+        if(strDistributionValue.equalsIgnoreCase("N")){return getGermanAbsenceTermUUID("vorkommend");}
         if(strDistributionValue.equalsIgnoreCase("V")){return getGermanAbsenceTermUUID("vorkommend - etabliert");}
         if(strDistributionValue.equalsIgnoreCase("nb")){return getGermanAbsenceTermUUID("vorkommend - etabliert");}
         if(strDistributionValue.equalsIgnoreCase("*")){return getGermanAbsenceTermUUID("vorkommend - etabliert");}
@@ -791,10 +791,13 @@ public final class BfnXmlTransformer {
         if(strDistributionValue.equalsIgnoreCase("#dtpl_SynopseBL_NB#")){return getGermanAbsenceTermUUID("vorkommend - etabliert");}
         if(strDistributionValue.equalsIgnoreCase("-")){return getGermanAbsenceTermUUID("vorkommend - Vorkommen unsicher");}
         if(strDistributionValue.equalsIgnoreCase("#dtpl_SynopseBL_X_KLAMMER#")){return getGermanAbsenceTermUUID("vorkommend - Vorkommen unsicher");}
+        if(strDistributionValue.equalsIgnoreCase("#dtpl_SynopseBL_X#")){return getGermanAbsenceTermUUID("vorkommend - Vorkommen unsicher");}
         if(strDistributionValue.equalsIgnoreCase("#dtpl_SynopseBL_STRICH#")){return getGermanAbsenceTermUUID("vorkommend - Vorkommen unsicher");}
         if(strDistributionValue.equalsIgnoreCase("+")){return getGermanAbsenceTermUUID("vorkommend - Vorkommen unsicher");}
         if(strDistributionValue.equalsIgnoreCase("°")){return getGermanAbsenceTermUUID("vorkommend - Vorkommen unsicher");}
-//        if(strDistributionValue.equalsIgnoreCase("G/D")){return getGermanAbsenceTermUUID();}
+        if(strDistributionValue.equalsIgnoreCase("G/D")){return getGermanAbsenceTermUUID("vorkommend");}
+        if(strDistributionValue.equalsIgnoreCase("R/1")){return getGermanAbsenceTermUUID("vorkommend");}
+        if(strDistributionValue.equalsIgnoreCase("?")){return getGermanAbsenceTermUUID("vorkommend - Vorkommen unsicher");}
         if(strDistributionValue.equalsIgnoreCase("#dtpl_SynopseBL_LEER#")){return getGermanAbsenceTermUUID("abwesend");}
         else {
             throw new UnknownCdmTypeException("Unknown State, could not match: " + strDistributionValue);
