@@ -29,6 +29,7 @@ import eu.etaxonomy.cdm.common.ResultWrapper;
 import eu.etaxonomy.cdm.common.XmlHelp;
 import eu.etaxonomy.cdm.io.common.ICdmIO;
 import eu.etaxonomy.cdm.model.common.CdmBase;
+import eu.etaxonomy.cdm.model.common.DefinedTermBase;
 import eu.etaxonomy.cdm.model.common.Language;
 import eu.etaxonomy.cdm.model.common.TermVocabulary;
 import eu.etaxonomy.cdm.model.description.CategoricalData;
@@ -836,17 +837,24 @@ public class BfnXmlImportTaxonName extends BfnXmlImportBase implements ICdmIO<Bf
 
         String strDistributionValue = elInfoDetail.getChild("WERT").getValue();
         String strGermanState = elInfoDetail.getAttributeValue("standardname");
-        //TODO match DistributionValue
+        //match DistributionValue
         UUID matchedDistributionUUID = null;
+        PresenceAbsenceTerm status = null;
         try {
             matchedDistributionUUID = BfnXmlTransformer.matchDistributionValue(strDistributionValue);
+            DefinedTermBase load = getTermService().load(matchedDistributionUUID);
+            if(load.isInstanceOf(PresenceAbsenceTerm.class)) {
+                status = CdmBase.deproxy(load, PresenceAbsenceTerm.class);
+            }else{
+                logger.warn(strDistributionValue + " is not PresenceAbsence Term " + load.getTitleCache() + " " + load.getTermType().toString());
+                return;
+            }
         } catch (UnknownCdmTypeException e1) {
             logger.warn("could not match xml value "+ strDistributionValue +" to distribution status for "+strGermanState);
             e1.printStackTrace();
             return;
         }
-        PresenceAbsenceTerm status = (PresenceAbsenceTerm) getTermService().load(matchedDistributionUUID);
-        //TODO load vocabulary and german state
+        //load vocabulary and german state
         UUID vocabularyUUID = null;
         TermVocabulary vocabulary = null;
         UUID stateUUID = null;
@@ -880,7 +888,7 @@ public class BfnXmlImportTaxonName extends BfnXmlImportBase implements ICdmIO<Bf
 //            }
 //
 //        }
-        //TODO create new taxon description
+        //create new taxon description
         DescriptionElementBase descriptionElement = Distribution.NewInstance(area, status);
         taxonDescription.addElement(descriptionElement);
     }
