@@ -90,6 +90,7 @@ app-import/src/main/java/eu/etaxonomy/cdm/app/util/TestTransaction.java -text
 app-import/src/main/java/eu/etaxonomy/cdm/app/validate/ValidateKeys.java -text
 app-import/src/main/java/eu/etaxonomy/cdm/app/vibrant/DwcaScratchpadImportActivator.java -text
 app-import/src/main/java/eu/etaxonomy/cdm/app/vibrant/EuroMedActivator.java -text
+app-import/src/main/java/eu/etaxonomy/cdm/app/vibrant/EuroMedVibrantActivator.java -text
 app-import/src/main/java/eu/etaxonomy/cdm/app/vibrant/IopiActivator.java -text
 app-import/src/main/java/eu/etaxonomy/cdm/app/vibrant/MclActivator.java -text
 app-import/src/main/java/eu/etaxonomy/cdm/app/vibrant/VibrantActivator.java -text
