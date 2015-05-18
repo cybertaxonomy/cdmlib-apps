@@ -72,7 +72,7 @@ public class VibrantActivator {
 		}
 		
 		if (doEuroMed){
-			EuroMedActivator emActivator = new EuroMedActivator();
+			EuroMedVibrantActivator emActivator = new EuroMedVibrantActivator();
 			emActivator.importEm2CDM(emSource, cdmRepository, hbm2dll);
 			hbm2dll = DbSchemaValidation.NONE;
 		}
