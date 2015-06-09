@@ -50,6 +50,9 @@ public class FloraGuianasActivator extends EfloraActivatorBase {
 	static final URI fotg26 = EfloraSources.fotg_26();
 	static final URI fotg27 = EfloraSources.fotg_27();
 	
+	static final URI fotg29 = EfloraSources.fotg_29();
+	static final URI fotg30 = EfloraSources.fotg_30();
+	
 
 	private boolean inverseInclude = false;
 	
@@ -63,6 +66,8 @@ public class FloraGuianasActivator extends EfloraActivatorBase {
 	private boolean includeFotg26 = false;
 	private boolean includeFotg27 = false;
 
+	private boolean includeFotg29 = false;
+	private boolean includeFotg30 = false;
 	
 	
 //	static final ICdmDataSource cdmDestination = CdmDestinations.cdm_flora_guianas_preview();
@@ -146,6 +151,10 @@ public class FloraGuianasActivator extends EfloraActivatorBase {
 		//Vol27
 		executeVolume(fotg27, includeFotg27 ^ inverseInclude);
 
+		//Vol29
+		executeVolume(fotg29, includeFotg29 ^ inverseInclude);
+		//Vol30
+		executeVolume(fotg30, includeFotg30 ^ inverseInclude);
 		
 		FeatureTree tree = makeFeatureNode(myImport.getCdmAppController().getTermService());
 		myImport.getCdmAppController().getFeatureTreeService().saveOrUpdate(tree);
@@ -173,7 +182,7 @@ public class FloraGuianasActivator extends EfloraActivatorBase {
 		MarkupTransformer transformer = new MarkupTransformer();
 		
 		FeatureTree result = FeatureTree.NewInstance(featureTreeUuid);
-		result.setTitleCache(FEATURE_TREE_TITLE);
+		result.setTitleCache(FEATURE_TREE_TITLE, true);
 		FeatureNode root = result.getRoot();
 		FeatureNode newNode;
 		

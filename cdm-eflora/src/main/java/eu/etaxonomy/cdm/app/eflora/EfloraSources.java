@@ -166,6 +166,11 @@ public class EfloraSources {
 		return URI.create("file://PESIIMPORT3/malesiana/vol20_final.xml");
 	}
 	
+	//Flora Malesiana Vol 21
+	public static URI fm_21(){
+		return URI.create("file:////BGBM-PESIHPC/FloraMalesianaXml/vol21_final.xml");
+	}
+	
 	//Flora Malesiana Series 2 - Vol 2
 	public static URI fm_ser2_2(){
 		return URI.create("file://PESIIMPORT3/malesiana/IIvol2_final.xml");
@@ -174,6 +179,11 @@ public class EfloraSources {
 	//Flora Malesiana Series 2 - Vol 3
 	public static URI fm_ser2_3(){
 		return URI.create("file://PESIIMPORT3/malesiana/IIvol3_final.xml");
+	}
+	
+	//Flora Malesiana Series 2 - Vol 4
+	public static URI fm_ser2_4(){
+		return URI.create("file:////BGBM-PESIHPC/FloraMalesianaXml/ser2vol4_final.xml");
 	}
 
 //************************* GABON ************************************************/
@@ -456,6 +466,13 @@ public class EfloraSources {
 
 	public static URI fotg_27(){
 		return URI.create("file:////BGBM-PESIHPC/FloraGuianasXml/A27_final.xml");
+	}
+
+	public static URI fotg_29(){
+		return URI.create("file:////BGBM-PESIHPC/FloraGuianasXml/A29_final.xml");
+	}
+	public static URI fotg_30(){
+		return URI.create("file:////BGBM-PESIHPC/FloraGuianasXml/A30_final.xml");
 	}
 	
 }
