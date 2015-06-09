@@ -1,9 +1,9 @@
 // $Id$
 /**
 * Copyright (C) 2007 EDIT
-* European Distributed Institute of Taxonomy 
+* European Distributed Institute of Taxonomy
 * http://www.e-taxonomy.eu
-* 
+*
 * The contents of this file are subject to the Mozilla Public License Version 1.1
 * See LICENSE.TXT at the top of this package for the full license terms.
 */
@@ -27,14 +27,15 @@ public class FaunaEuropaeaImportState extends ImportStateBase<FaunaEuropaeaImpor
 	@SuppressWarnings("unused")
 	private static final Logger logger = Logger.getLogger(FaunaEuropaeaImportState.class);
 
-	
+
 	public FaunaEuropaeaImportState(FaunaEuropaeaImportConfigurator config) {
 		super(config);
 	}
-	
+
 	private Map<Integer, FaunaEuropaeaTaxon> fauEuTaxonMap = new HashMap();
 	private Map<UUID, UUID> childParentMap = new HashMap();
-	
+	private Map<Integer, UUID> agentUUIDMap = new HashMap();
+
 	/* Highest taxon index in the FauEu database */
 //	private int highestTaxonIndex = 305755;
 	/* Max number of taxa to be saved with one service call */
@@ -83,5 +84,17 @@ public class FaunaEuropaeaImportState extends ImportStateBase<FaunaEuropaeaImpor
 	public void setChildParentMap(Map<UUID, UUID> childParentMap) {
 		this.childParentMap = childParentMap;
 	}
-	
+
+    /**
+     * @return the agentMap
+     */
+    public Map<Integer, UUID> getAgentMap() {
+        return agentUUIDMap;
+    }
+    /**
+     * @return the agentMap
+     */
+    public void setAgentMap(Map<Integer, UUID> agentUUIDMap) {
+        this.agentUUIDMap = agentUUIDMap;
+    }
 }

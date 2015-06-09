@@ -1,26 +1,27 @@
 /**
  * Copyright (C) 2007 EDIT
- * European Distributed Institute of Taxonomy 
+ * European Distributed Institute of Taxonomy
  * http://www.e-taxonomy.eu
- * 
+ *
  * The contents of this file are subject to the Mozilla Public License Version 1.1
  * See LICENSE.TXT at the top of this package for the full license terms.
  */
 
 package eu.etaxonomy.cdm.io.pesi.faunaEuropaea;
 
+import java.net.URI;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.UUID;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.DefaultTransactionDefinition;
@@ -29,13 +30,11 @@ import eu.etaxonomy.cdm.io.common.IImportConfigurator;
 import eu.etaxonomy.cdm.io.common.ImportHelper;
 import eu.etaxonomy.cdm.io.common.Source;
 import eu.etaxonomy.cdm.model.agent.AgentBase;
+import eu.etaxonomy.cdm.model.agent.Contact;
+import eu.etaxonomy.cdm.model.agent.Institution;
 import eu.etaxonomy.cdm.model.agent.Person;
-import eu.etaxonomy.cdm.model.agent.Team;
-import eu.etaxonomy.cdm.model.agent.TeamOrPersonBase;
 import eu.etaxonomy.cdm.model.common.OriginalSourceBase;
 import eu.etaxonomy.cdm.model.common.User;
-import eu.etaxonomy.cdm.model.reference.Reference;
-import eu.etaxonomy.cdm.model.reference.ReferenceFactory;
 
 
 /**
@@ -47,8 +46,8 @@ public class FaunaEuropaeaUsersImport extends FaunaEuropaeaImportBase {
 	private static final Logger logger = Logger.getLogger(FaunaEuropaeaUsersImport.class);
 
 	/* Interval for progress info message when retrieving taxa */
-	private int modCount = 10000;
-	
+	private final int modCount = 10000;
+
 	 protected DefaultTransactionDefinition txDefinition = new DefaultTransactionDefinition();
 
 	/* (non-Javadoc)
@@ -76,36 +75,39 @@ public class FaunaEuropaeaUsersImport extends FaunaEuropaeaImportBase {
 //		return false;
 //		}
 	}
-	
+
 	/* (non-Javadoc)
 	 * @see eu.etaxonomy.cdm.io.common.CdmIoBase#doInvoke(eu.etaxonomy.cdm.io.common.IImportConfigurator, eu.etaxonomy.cdm.api.application.CdmApplicationController, java.util.Map)
 	 */
 	@Override
-	protected void doInvoke(FaunaEuropaeaImportState state) {				
+	protected void doInvoke(FaunaEuropaeaImportState state) {
 		/*
 		logger.warn("Start User doInvoke");
 		ProfilerController.memorySnapshot();
 		*/
-		
+
 		TransactionStatus txStatus = null;
-		Map<String, AgentBase<?>> persons = null;
+		Map<String, Person> persons = null;
 		Map<String, User> users= null;
-		Map<Integer, Reference> references = null;
+
 		Map<Integer, UUID> userUuids = new HashMap<Integer, UUID>();
+		Map<Integer, Institution> institiutions= new HashMap<Integer, Institution>();
+		Collection<Institution> institutionsToSave = new HashSet<Institution>();
 		int limit = state.getConfig().getLimitSave();
-		//this.authenticate("admin", "00000");  
-		
+		//this.authenticate("admin", "00000");
+
 		FaunaEuropaeaImportConfigurator fauEuConfig = state.getConfig();
 		Source source = fauEuConfig.getSource();
 
 		String namespace = "User";
 		int i = 0;
 
-		String selectCountUsers = 
+		String selectCountUsers =
 			" SELECT count(*) FROM Users";
 
-		String selectColumnsUsers = 
-			" SELECT usr_id, usr_title, usr_firstname, usr_lastname, usr_createdat, usr_password FROM Users";
+		String selectColumnsUsers =
+			" SELECT u.usr_id as userId, u.usr_title as title, u.usr_firstname as firstname, u.usr_lastname as lastname, u.usr_createdat as created, u.usr_password as password, u.usr_cou_id as country, u.usr_email as mail, "
+			+ "u.usr_homepage as homepage, u.usr_description as description, u.usr_active as active, o.org_name as organisationName, o.org_homepage as organisationHomepage, o.org_id as institutionId FROM Users u LEFT JOIN Organisation o ON o.org_id= u.usr_org_id";
 
 		int count;
 		if(logger.isInfoEnabled()) { logger.info("Start making References (Users)..."); }
@@ -114,23 +116,33 @@ public class FaunaEuropaeaUsersImport extends FaunaEuropaeaImportBase {
 			ResultSet rsUser = source.getResultSet(selectCountUsers);
 			rsUser.next();
 			count = rsUser.getInt(1);
-			
+
 			rsUser= source.getResultSet(selectColumnsUsers);
 
 	        if (logger.isInfoEnabled()) {
-	        	logger.info("Get all References..."); 
+	        	logger.info("Get all References...");
 				logger.info("Number of rows: " + count);
 				logger.info("Count Query: " + selectCountUsers);
 				logger.info("Select Query: " + selectColumnsUsers);
 			}
-	        
-	        while (rsUser.next()){
-	        	int refId = rsUser.getInt("usr_id");
-				String userTitle = rsUser.getString("usr_title");
-				String userFirstname = rsUser.getString("usr_firstname");
-				String userLastname = rsUser.getString("usr_lastname");
-				String createdDate = rsUser.getString("usr_createdat");
-				String userPwd = rsUser.getString("usr_password");
+
+	        while (rsUser.next()){//usr_country_id, usr_org_id, usr_email, usr_homepage, usr_groupname, usr_groupicon, usr_groupnote, usr_description, usr_active)
+	        	int refId = rsUser.getInt("userId");
+				String userTitle = rsUser.getString("title");
+				String userFirstname = rsUser.getString("firstname");
+				String userLastname = rsUser.getString("lastname");
+				String createdDate = rsUser.getString("created");
+				String userPwd = rsUser.getString("password");
+				String userCountry = rsUser.getString("country");
+
+				String userMail = rsUser.getString("mail");
+				String userHomepage = rsUser.getString("homepage");
+				//String userGroupName = rsUser.getString("u.usr_groupname");
+				String userDescription = rsUser.getString("description");
+				int userActive = rsUser.getInt("active");
+				String orgName = rsUser.getString("organisationName");
+				String orgHomepage = rsUser.getString("organisationHomepage");
+				int institutionId = rsUser.getInt("institutionId");
 
 				// build person
 				String userPerson = "";
@@ -150,91 +162,122 @@ public class FaunaEuropaeaUsersImport extends FaunaEuropaeaImportBase {
 				if (createdDate != null) {
 					year = createdDate.substring(0, createdDate.indexOf("-"));
 				}
-				
+
 				if ((i++ % limit) == 0) {
 
 					txStatus = startTransaction();
-					persons= new HashMap<String,AgentBase<?>>(limit);
+					persons= new HashMap<String,Person>(limit);
 					users = new HashMap<String,User>(limit);
-					references = new HashMap<Integer, Reference>(limit);
-					
+
+
 					if(logger.isInfoEnabled()) {
-						logger.info("i = " + i + " - User import transaction started"); 
+						logger.info("i = " + i + " - User import transaction started");
 					}
 				}
-				
-				AgentBase<?> person = null;
+
+				Person person = null;
 				User user = null;
-				Reference reference = null;
+
 				person= Person.NewTitledInstance(userPerson);
+
+				person.addEmailAddress(userMail);
+				try{
+				    if (!StringUtils.isBlank(userHomepage)){
+				        person.addUrl(URI.create(userHomepage));
+				    }
+				}catch(IllegalArgumentException e){
+				    logger.debug(e.getMessage());
+				}
+				if (institutionId != 1){//1 = private
+				    Institution institution ;
+				    if (!institiutions.containsKey(institutionId)){
+				        institution = Institution.NewInstance();
+				        institution.setName(orgName);
+				        Contact contact = Contact.NewInstance();
+	                    try{
+	                        if (!StringUtils.isBlank(orgHomepage)){
+	                            contact.addUrl(URI.create(orgHomepage));
+	                        }
+	                    }catch(IllegalArgumentException e){
+	                        logger.debug(e.getMessage());
+	                    }
+	                    institution.setContact(contact);
+	                    institutionsToSave.add(institution);
+				    } else {
+				        institution = institiutions.get(institutionId);
+				    }
+
+
+    				person.addInstitutionalMembership(institution, null, null, null);
+				}
 				user = User.NewInstance(userPerson, userPwd);
-				reference = ReferenceFactory.newGeneric();
-				reference.setTitle("" + refId); // This unique key is needed to get a hand on this Reference in PesiTaxonExport
-				reference.setDatePublished(ImportHelper.getDatePublished(year));
-				
-				
+				user.setPerson(person);
+				if (userActive == FaunaEuropaeaTransformer.U_ACTIVE){
+				    user.setAccountNonLocked(false);
+				} else{
+				    user.setAccountNonLocked(true);
+				}
+
 				if (!persons.containsKey(userPerson)) {
 					if (userPerson == null) {
 						logger.warn("User is null");
 					}
-									
-					persons.put(userPerson, person); 
-					if (logger.isTraceEnabled()) { 
+
+					persons.put(userPerson, person);
+					if (logger.isTraceEnabled()) {
 						logger.trace("Stored user (" + userPerson + ")");
 					}
 				//}
 
 				} else {
 					person = persons.get(userPerson);
-					if (logger.isDebugEnabled()) { 
-						logger.debug("Not imported user with duplicated ref_id (" + refId + 
+					if (logger.isDebugEnabled()) {
+						logger.debug("Not imported user with duplicated ref_id (" + refId +
 							") " + userPerson);
 					}
 				}
-				
+
 				// set protected titleCache
 				StringBuilder referenceTitleCache = new StringBuilder(person.getTitleCache() + ".");
 				if (year != null) {
 					referenceTitleCache.append(" " + year);
 				}
-				reference.setTitleCache(referenceTitleCache.toString(), true);
-				
-				reference.setAuthorship((TeamOrPersonBase)person);
-				
+
+
 				//ImportHelper.setOriginalSource(user, fauEuConfig.getSourceReference(), userId, namespace);
 				ImportHelper.setOriginalSource(person, fauEuConfig.getSourceReference(), refId, namespace);
 
-				
+
 				// Store persons
-				if (!users.containsKey(userPerson)) {
+				if (!users.containsKey(userPerson.toLowerCase())) {
 
 					if (user == null) {
 						logger.warn("User is null");
 					}
-					users.put(userPerson, user);
-					if (logger.isTraceEnabled()) { 
-						logger.trace("Stored user (" + userPerson + ")"); 
+					users.put(userPerson.toLowerCase(), user);
+					if (logger.isTraceEnabled()) {
+						logger.trace("Stored user (" + userPerson + ")");
 					}
 				} else {
-					if (logger.isDebugEnabled()) { 
-						logger.debug("Duplicated user(" + userPerson +")");
-					}
+					//if (logger.isDebugEnabled()) {
+						logger.info("Duplicated user(" + userPerson +")");
+					//}
 					//continue;
 				}
-				
-				if (((i % limit) == 0 && i > 1 ) || i == count ) { 
-					
-					commitUsers(txStatus, persons, users, references,
-							userUuids, i);
-					
-					users = null;					
+
+				if (((i % limit) == 0 && i > 1 ) || i == count ) {
+
+					commitUsers(txStatus, persons, users,
+							state.getAgentMap(),institutionsToSave, i);
+
+					users = null;
 					persons= null;
 				}
-	        	
+
 	        }
 	        if (users != null){
-	        	commitUsers(txStatus, persons, users, references, userUuids, i);
-	        	users = null;					
+	        	commitUsers(txStatus, persons, users,  state.getAgentMap(), institutionsToSave,i);
+	        	users = null;
 				persons= null;
 	        }
 		}catch(SQLException e) {
@@ -246,33 +289,35 @@ public class FaunaEuropaeaUsersImport extends FaunaEuropaeaImportBase {
 		ProfilerController.memorySnapshot();
 		*/
 		if(logger.isInfoEnabled()) { logger.info("End making References (Users) ..."); }
-		
+
 		return;
 	}
 
 	private void commitUsers(TransactionStatus txStatus,
-			Map<String, AgentBase<?>> persons,
+			Map<String, Person> persons,
 			Map<String, User> users,
-			Map<Integer, Reference> references,
-			Map<Integer, UUID> userUuids, int i) {
-		
-		Map<UUID, AgentBase> userMap =getAgentService().save((Collection)persons.values());
-		logger.info("i = " + i + " - persons saved"); 
-		
-	    
-	       
+			Map<Integer, UUID> agentsUUID,
+			Collection<Institution> institutionsToSave,
+			int i) {
+
+	    Map<UUID, AgentBase> instMap = getAgentService().save((Collection)institutionsToSave);
+		Map<UUID, AgentBase> userMap = getAgentService().save((Collection)persons.values());
+		logger.info("i = " + i + " - persons saved");
+
+
+
 		Iterator<Entry<UUID, AgentBase>> it = userMap.entrySet().iterator();
 		while (it.hasNext()){
 			AgentBase person = it.next().getValue();
 			int userID = Integer.valueOf(((OriginalSourceBase)person.getSources().iterator().next()).getIdInSource());
 			UUID uuid = person.getUuid();
-			userUuids.put(userID, uuid);
+			agentsUUID.put(userID, uuid);
 		}
-		
-		getUserService().save((Collection)users.values());
-		logger.info("i = " + users.size() + " - users saved"); 
+
+		getUserService().save(users.values());
+		logger.info("i = " + users.size() + " - users saved");
 		//getReferenceService().save(references.values());
-		//logger.info("i = " +references.size() + " - references saved"); 
+		//logger.info("i = " +references.size() + " - references saved");
 		commitTransaction(txStatus);
 	}
 
@@ -293,7 +338,8 @@ public class FaunaEuropaeaUsersImport extends FaunaEuropaeaImportBase {
 	/* (non-Javadoc)
 	 * @see eu.etaxonomy.cdm.io.common.CdmIoBase#isIgnore(eu.etaxonomy.cdm.io.common.IImportConfigurator)
 	 */
-	protected boolean isIgnore(FaunaEuropaeaImportState state){
+	@Override
+    protected boolean isIgnore(FaunaEuropaeaImportState state){
 		return (state.getConfig().getDoReferences() == IImportConfigurator.DO_REFERENCES.NONE);
 	}
 

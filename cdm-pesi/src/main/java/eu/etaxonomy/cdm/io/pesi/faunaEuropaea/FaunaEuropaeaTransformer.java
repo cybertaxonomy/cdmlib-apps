@@ -1,8 +1,8 @@
 /**
 * Copyright (C) 2007 EDIT
-* European Distributed Institute of Taxonomy 
+* European Distributed Institute of Taxonomy
 * http://www.e-taxonomy.eu
-* 
+*
 * The contents of this file are subject to the Mozilla Public License Version 1.1
 * See LICENSE.TXT at the top of this package for the full license terms.
 */
@@ -34,26 +34,30 @@ import eu.etaxonomy.cdm.strategy.exceptions.UnknownCdmTypeException;
 
 public final class FaunaEuropaeaTransformer {
 	private static final Logger logger = Logger.getLogger(FaunaEuropaeaTransformer.class);
-	
+
 	// Query
 	public static final int Q_NO_RESTRICTION = -1;
-	
+
 	// TaxonStatus
 	public static final int T_STATUS_ACCEPTED = 1;
 	public static final int T_STATUS_NOT_ACCEPTED = 0;
-	
+
 	// Author
 	public static final int A_AUCT = 1;
 	public static final String A_AUCTNAME = "auct.";
-	
+
 	// Parenthesis
 	public static final int P_PARENTHESIS = 1;
-	
+
+	// User
+
+	public static final int U_ACTIVE = 1;
+
 	//new AbsencePresenceTermUUIDs
-	
+
 	public static UUID noData;
 	//public static UUID doubtfull_present;
-	
+
 	// Rank
 	public static final int R_KINGDOM = 1;
 	public static final int R_SUBKINGDOM = 2;
@@ -77,9 +81,9 @@ public final class FaunaEuropaeaTransformer {
 	public static final int R_SUBGENUS = 20;
 	public static final int R_SPECIES = 21;
 	public static final int R_SUBSPECIES = 22;
-	
+
 	public static PresenceAbsenceTerm occStatus2PresenceAbsence(int occStatusId)  throws UnknownCdmTypeException{
-	
+
 		if (Integer.valueOf(occStatusId) == null) {
 			return PresenceAbsenceTerm.PRESENT();
 		}
@@ -91,18 +95,18 @@ public final class FaunaEuropaeaTransformer {
 		default: {
 
 			return null;
-		
+
 
 		}
-		
+
 	}
 	}
 	public static void setUUIDs(UUID uuid){
 		noData = uuid;
 		//doubtfull_present = uuids.get("doubtfullPresent");
-	
+
 	}
-	
+
 	public static PresenceAbsenceTerm occStatus2PresenceAbsence_ (int occStatusId)  throws UnknownCdmTypeException{
 		switch (occStatusId){
 			case 0: return null;
@@ -131,8 +135,8 @@ public final class FaunaEuropaeaTransformer {
 			}
 		}
 	}
-		
-	
+
+
 	public static Rank rankId2Rank (ResultSet rs, boolean useUnknown) throws UnknownCdmTypeException {
 		Rank result;
 		try {
@@ -189,117 +193,167 @@ public final class FaunaEuropaeaTransformer {
 			e.printStackTrace();
 			logger.warn("Exception occurred. Created UNKNOWN_RANK instead");
 			return Rank.UNKNOWN_RANK();
-		}		
+		}
 	}
-	
-	
-	public static NamedArea areaId2TdwgArea (FaunaEuropaeaDistribution fauEuDistribution) 
+
+
+	public static NamedArea areaId2TdwgArea (FaunaEuropaeaDistribution fauEuDistribution)
 	throws UnknownCdmTypeException {
-		
+
 		NamedArea tdwgArea = null;
-		
+
 		try {
 			int areaId = fauEuDistribution.getAreaId();
 			String areaName = fauEuDistribution.getAreaName();
 			String areaCode = fauEuDistribution.getAreaCode();
 			int extraLimital = fauEuDistribution.getExtraLimital();
-			
+
 			//TODO: Verify mappings with comments. Those don't map to TDWG areas.
-			
-			if (areaCode.equals("AD")) tdwgArea = TdwgAreaProvider.getAreaByTdwgAbbreviation("SPA-AN");
-			//else if (areaCode.equals("AFR")) tdwgArea = TdwgAreaProvider.getAreaByTdwgAbbreviation("24"); // Afro-tropical region - Northeast Tropical Africa
-			else if (areaCode.equals("AL")) tdwgArea = TdwgAreaProvider.getAreaByTdwgAbbreviation("ALB-OO");
-			else if (areaCode.equals("AT")) tdwgArea = TdwgAreaProvider.getAreaByTdwgAbbreviation("AUT-AU");
-			else if (areaCode.equals("AUS")) tdwgArea = TdwgAreaProvider.getAreaByTdwgAbbreviation("AUS"); // Australian region - Australia
-			else if (areaCode.equals("BA")) tdwgArea = TdwgAreaProvider.getAreaByTdwgAbbreviation("YUG-BH"); 
-			else if (areaCode.equals("BE")) tdwgArea = TdwgAreaProvider.getAreaByTdwgAbbreviation("BGM-BE");
-			else if (areaCode.equals("BG")) tdwgArea = TdwgAreaProvider.getAreaByTdwgAbbreviation("BUL-OO");
-			else if (areaCode.equals("BY")) tdwgArea = TdwgAreaProvider.getAreaByTdwgAbbreviation("BLR-OO");
-			else if (areaCode.equals("CH")) tdwgArea = TdwgAreaProvider.getAreaByTdwgAbbreviation("SWI-OO");
-			else if (areaCode.equals("CY")) tdwgArea = TdwgAreaProvider.getAreaByTdwgAbbreviation("CYP-OO");
-			else if (areaCode.equals("CZ")) tdwgArea = TdwgAreaProvider.getAreaByTdwgAbbreviation("CZE-CZ");
-			else if (areaCode.equals("DE")) tdwgArea = TdwgAreaProvider.getAreaByTdwgAbbreviation("GER-OO");
-			else if (areaCode.equals("DK-DEN")) tdwgArea = TdwgAreaProvider.getAreaByTdwgAbbreviation("DEN-OO");
-			else if (areaCode.equals("DK-FOR")) tdwgArea = TdwgAreaProvider.getAreaByTdwgAbbreviation("FOR-OO");
-			else if (areaCode.equals("EE")) tdwgArea = TdwgAreaProvider.getAreaByTdwgAbbreviation("BLT-ES");
-			//else if (areaCode.equals("EPA")) tdwgArea = TdwgAreaProvider.getAreaByTdwgAbbreviation("3");   // Palaearctic - Asia-Temperate
-			else if (areaCode.equals("ES-BAL")) tdwgArea = TdwgAreaProvider.getAreaByTdwgAbbreviation("BLT-ES");
-			else if (areaCode.equals("ES-CNY")) tdwgArea = TdwgAreaProvider.getAreaByTdwgAbbreviation("CNY-OO");
-			else if (areaCode.equals("ES-SPA")) tdwgArea = TdwgAreaProvider.getAreaByTdwgAbbreviation("SPA-SP");
-			else if (areaCode.equals("FI")) tdwgArea = TdwgAreaProvider.getAreaByTdwgAbbreviation("FIN-OO");
-			else if (areaCode.equals("FR-COR")) tdwgArea = TdwgAreaProvider.getAreaByTdwgAbbreviation("COR-OO");
-			else if (areaCode.equals("FR-FRA")) tdwgArea = TdwgAreaProvider.getAreaByTdwgAbbreviation("FRA-FR");
-			else if (areaCode.equals("GB-CI")) tdwgArea = TdwgAreaProvider.getAreaByTdwgAbbreviation("FRA-CI");
-			else if (areaCode.equals("GB-GI")) tdwgArea = TdwgAreaProvider.getAreaByTdwgAbbreviation("SPA-GI");
-			else if (areaCode.equals("GB-GRB")) tdwgArea = TdwgAreaProvider.getAreaByTdwgAbbreviation("GRB-OO");
-			else if (areaCode.equals("GB-NI")) tdwgArea = TdwgAreaProvider.getAreaByTdwgAbbreviation("IRE-NI");
-			//else if (areaCode.equals("GR-AEG")) tdwgArea = TdwgAreaProvider.getAreaByTdwgAbbreviation("EAI-OO"); // North Aegean Is. - East Aegean Is.
-			//else if (areaCode.equals("GR-CYC")) tdwgArea = TdwgAreaProvider.getAreaByTdwgAbbreviation("GRC-OO"); // Cyclades Is. - Greece
-			//else if (areaCode.equals("GR-DOD")) tdwgArea = TdwgAreaProvider.getAreaByTdwgAbbreviation("EAI-OO"); // Dodecanese Is. - East Aegean Is.
-			else if (areaCode.equals("GR-GRC")) tdwgArea = TdwgAreaProvider.getAreaByTdwgAbbreviation("GRC-OO");
-			//else if (areaCode.equals("GR-KRI")) tdwgArea = TdwgAreaProvider.getAreaByTdwgAbbreviation("KRI-OO");//only Crete
-			else if (areaCode.equals("HR")) tdwgArea = TdwgAreaProvider.getAreaByTdwgAbbreviation("YUG-CR");
-			else if (areaCode.equals("HU")) tdwgArea = TdwgAreaProvider.getAreaByTdwgAbbreviation("HUN-OO");
-			else if (areaCode.equals("IE")) tdwgArea = TdwgAreaProvider.getAreaByTdwgAbbreviation("IRE-IR");
-			else if (areaCode.equals("IS")) tdwgArea = TdwgAreaProvider.getAreaByTdwgAbbreviation("ICE-OO");
-			else if (areaCode.equals("IT-ITA")) tdwgArea = TdwgAreaProvider.getAreaByTdwgAbbreviation("ITA-IT");
-			else if (areaCode.equals("IT-SAR")) tdwgArea = TdwgAreaProvider.getAreaByTdwgAbbreviation("SAR-OO");
-			else if (areaCode.equals("IT-SI")) tdwgArea = TdwgAreaProvider.getAreaByTdwgAbbreviation("SIC-SI");
-			else if (areaCode.equals("LI")) tdwgArea = TdwgAreaProvider.getAreaByTdwgAbbreviation("AUT-LI");
-			else if (areaCode.equals("LT")) tdwgArea = TdwgAreaProvider.getAreaByTdwgAbbreviation("BLT-LI");
-			else if (areaCode.equals("LU")) tdwgArea = TdwgAreaProvider.getAreaByTdwgAbbreviation("BGM-LU");
-			else if (areaCode.equals("LV")) tdwgArea = TdwgAreaProvider.getAreaByTdwgAbbreviation("BLT-LA");
-			else if (areaCode.equals("MC")) tdwgArea = TdwgAreaProvider.getAreaByTdwgAbbreviation("FRA-MO");
-			else if (areaCode.equals("MD")) tdwgArea = TdwgAreaProvider.getAreaByTdwgAbbreviation("UKR-MO");
-			else if (areaCode.equals("MK")) tdwgArea = TdwgAreaProvider.getAreaByTdwgAbbreviation("YUG-MA");
-			else if (areaCode.equals("MT")) tdwgArea = TdwgAreaProvider.getAreaByTdwgAbbreviation("SIC-MA");
-			//else if (areaCode.equals("NAF")) tdwgArea = TdwgAreaProvider.getAreaByTdwgAbbreviation("20");   // North Africa - Northern Africa
-			//else if (areaCode.equals("NEA")) tdwgArea = TdwgAreaProvider.getAreaByTdwgAbbreviation("7");	// Nearctic region - Northern America
-			//else if (areaCode.equals("NEO")) tdwgArea = TdwgAreaProvider.getAreaByTdwgAbbreviation("8");    // Neotropical region - Southern America
-			else if (areaCode.equals("NL")) tdwgArea = TdwgAreaProvider.getAreaByTdwgAbbreviation("NET-OO");
-			else if (areaCode.equals("NO-NOR")) tdwgArea = TdwgAreaProvider.getAreaByTdwgAbbreviation("NOR-OO");
-			else if (areaCode.equals("NO-SVA")) tdwgArea = TdwgAreaProvider.getAreaByTdwgAbbreviation("SVA-OO");
-			//else if (areaCode.equals("NRE")) tdwgArea = TdwgAreaProvider.getAreaByTdwgAbbreviation("34");   // Near East - Western Asia
-			//else if (areaCode.equals("ORR")) tdwgArea = TdwgAreaProvider.getAreaByTdwgAbbreviation("35");	// Oriental region - Arabian Peninsula
-			else if (areaCode.equals("PL")) tdwgArea = TdwgAreaProvider.getAreaByTdwgAbbreviation("POL-OO");
-			else if (areaCode.equals("PT-AZO")) tdwgArea = TdwgAreaProvider.getAreaByTdwgAbbreviation("AZO-OO");
-			else if (areaCode.equals("PT-MDR")) tdwgArea = TdwgAreaProvider.getAreaByTdwgAbbreviation("MDR-OO");
-			else if (areaCode.equals("PT-POR")) tdwgArea = TdwgAreaProvider.getAreaByTdwgAbbreviation("POR-OO");
-			else if (areaCode.equals("PT-SEL")) tdwgArea = TdwgAreaProvider.getAreaByTdwgAbbreviation("SEL-OO");
-			else if (areaCode.equals("RO")) tdwgArea = TdwgAreaProvider.getAreaByTdwgAbbreviation("ROM-OO");
-			//else if (areaCode.equals("RU-FJL")) tdwgArea = TdwgAreaProvider.getAreaByTdwgAbbreviation("WSB-OO"); Franz Josef Land
-			else if (areaCode.equals("RU-KGD")) tdwgArea = TdwgAreaProvider.getAreaByTdwgAbbreviation("BLT-KA");
-			//else if (areaCode.equals("RU-NOZ")) tdwgArea = TdwgAreaProvider.getAreaByTdwgAbbreviation("WSB-OO"); Novaya Zemla
-			else if (areaCode.equals("RU-RUC")) tdwgArea = TdwgAreaProvider.getAreaByTdwgAbbreviation("RUC-OO");
-			else if (areaCode.equals("RU-RUE")) tdwgArea = TdwgAreaProvider.getAreaByTdwgAbbreviation("RUE-OO");
-			else if (areaCode.equals("RU-RUN")) tdwgArea = TdwgAreaProvider.getAreaByTdwgAbbreviation("RUN-OO");
-			else if (areaCode.equals("RU-RUS")) tdwgArea = TdwgAreaProvider.getAreaByTdwgAbbreviation("RUS-OO");
-			else if (areaCode.equals("RU-RUW")) tdwgArea = TdwgAreaProvider.getAreaByTdwgAbbreviation("RUW-OO");
-			else if (areaCode.equals("SE")) tdwgArea = TdwgAreaProvider.getAreaByTdwgAbbreviation("SWE-OO");
-			else if (areaCode.equals("SI")) tdwgArea = TdwgAreaProvider.getAreaByTdwgAbbreviation("YUG-SL");
-			else if (areaCode.equals("SK")) tdwgArea = TdwgAreaProvider.getAreaByTdwgAbbreviation("CZE-SK");
-			else if (areaCode.equals("SM")) tdwgArea = TdwgAreaProvider.getAreaByTdwgAbbreviation("ITA-SM");
-			else if (areaCode.equals("TR-TUE")) tdwgArea = TdwgAreaProvider.getAreaByTdwgAbbreviation("TUE-OO");
-			//else if (areaCode.equals("UA")) tdwgArea = TdwgAreaProvider.getAreaByTdwgAbbreviation("UKR-UK"); //UKraine including Crimea
-			
-			else if (areaCode.equals("VA")) tdwgArea = TdwgAreaProvider.getAreaByTdwgAbbreviation("ITA-VC");
-			else if (areaCode.equals("YU")) tdwgArea = TdwgAreaProvider.getAreaByTdwgAbbreviation("YUG");
-			else 					
-				throw new UnknownCdmTypeException("Unknown Area " + areaCode);
+
+			if (areaCode.equals("AD")) {
+                tdwgArea = TdwgAreaProvider.getAreaByTdwgAbbreviation("SPA-AN");
+            } else if (areaCode.equals("AL")) {
+                tdwgArea = TdwgAreaProvider.getAreaByTdwgAbbreviation("ALB-OO");
+            } else if (areaCode.equals("AT")) {
+                tdwgArea = TdwgAreaProvider.getAreaByTdwgAbbreviation("AUT-AU");
+            } else if (areaCode.equals("AUS")) {
+                tdwgArea = TdwgAreaProvider.getAreaByTdwgAbbreviation("AUS"); // Australian region - Australia
+            } else if (areaCode.equals("BA")) {
+                tdwgArea = TdwgAreaProvider.getAreaByTdwgAbbreviation("YUG-BH");
+            } else if (areaCode.equals("BE")) {
+                tdwgArea = TdwgAreaProvider.getAreaByTdwgAbbreviation("BGM-BE");
+            } else if (areaCode.equals("BG")) {
+                tdwgArea = TdwgAreaProvider.getAreaByTdwgAbbreviation("BUL-OO");
+            } else if (areaCode.equals("BY")) {
+                tdwgArea = TdwgAreaProvider.getAreaByTdwgAbbreviation("BLR-OO");
+            } else if (areaCode.equals("CH")) {
+                tdwgArea = TdwgAreaProvider.getAreaByTdwgAbbreviation("SWI-OO");
+            } else if (areaCode.equals("CY")) {
+                tdwgArea = TdwgAreaProvider.getAreaByTdwgAbbreviation("CYP-OO");
+            } else if (areaCode.equals("CZ")) {
+                tdwgArea = TdwgAreaProvider.getAreaByTdwgAbbreviation("CZE-CZ");
+            } else if (areaCode.equals("DE")) {
+                tdwgArea = TdwgAreaProvider.getAreaByTdwgAbbreviation("GER-OO");
+            } else if (areaCode.equals("DK-DEN")) {
+                tdwgArea = TdwgAreaProvider.getAreaByTdwgAbbreviation("DEN-OO");
+            } else if (areaCode.equals("DK-FOR")) {
+                tdwgArea = TdwgAreaProvider.getAreaByTdwgAbbreviation("FOR-OO");
+            } else if (areaCode.equals("EE")) {
+                tdwgArea = TdwgAreaProvider.getAreaByTdwgAbbreviation("BLT-ES");
+            } else if (areaCode.equals("ES-BAL")) {
+                tdwgArea = TdwgAreaProvider.getAreaByTdwgAbbreviation("BLT-ES");
+            } else if (areaCode.equals("ES-CNY")) {
+                tdwgArea = TdwgAreaProvider.getAreaByTdwgAbbreviation("CNY-OO");
+            } else if (areaCode.equals("ES-SPA")) {
+                tdwgArea = TdwgAreaProvider.getAreaByTdwgAbbreviation("SPA-SP");
+            } else if (areaCode.equals("FI")) {
+                tdwgArea = TdwgAreaProvider.getAreaByTdwgAbbreviation("FIN-OO");
+            } else if (areaCode.equals("FR-COR")) {
+                tdwgArea = TdwgAreaProvider.getAreaByTdwgAbbreviation("COR-OO");
+            } else if (areaCode.equals("FR-FRA")) {
+                tdwgArea = TdwgAreaProvider.getAreaByTdwgAbbreviation("FRA-FR");
+            } else if (areaCode.equals("GB-CI")) {
+                tdwgArea = TdwgAreaProvider.getAreaByTdwgAbbreviation("FRA-CI");
+            } else if (areaCode.equals("GB-GI")) {
+                tdwgArea = TdwgAreaProvider.getAreaByTdwgAbbreviation("SPA-GI");
+            } else if (areaCode.equals("GB-GRB")) {
+                tdwgArea = TdwgAreaProvider.getAreaByTdwgAbbreviation("GRB-OO");
+            } else if (areaCode.equals("GB-NI")) {
+                tdwgArea = TdwgAreaProvider.getAreaByTdwgAbbreviation("IRE-NI");
+            } else if (areaCode.equals("GR-GRC")) {
+                tdwgArea = TdwgAreaProvider.getAreaByTdwgAbbreviation("GRC-OO");
+            } else if (areaCode.equals("HR")) {
+                tdwgArea = TdwgAreaProvider.getAreaByTdwgAbbreviation("YUG-CR");
+            } else if (areaCode.equals("HU")) {
+                tdwgArea = TdwgAreaProvider.getAreaByTdwgAbbreviation("HUN-OO");
+            } else if (areaCode.equals("IE")) {
+                tdwgArea = TdwgAreaProvider.getAreaByTdwgAbbreviation("IRE-IR");
+            } else if (areaCode.equals("IS")) {
+                tdwgArea = TdwgAreaProvider.getAreaByTdwgAbbreviation("ICE-OO");
+            } else if (areaCode.equals("IT-ITA")) {
+                tdwgArea = TdwgAreaProvider.getAreaByTdwgAbbreviation("ITA-IT");
+            } else if (areaCode.equals("IT-SAR")) {
+                tdwgArea = TdwgAreaProvider.getAreaByTdwgAbbreviation("SAR-OO");
+            } else if (areaCode.equals("IT-SI")) {
+                tdwgArea = TdwgAreaProvider.getAreaByTdwgAbbreviation("SIC-SI");
+            } else if (areaCode.equals("LI")) {
+                tdwgArea = TdwgAreaProvider.getAreaByTdwgAbbreviation("AUT-LI");
+            } else if (areaCode.equals("LT")) {
+                tdwgArea = TdwgAreaProvider.getAreaByTdwgAbbreviation("BLT-LI");
+            } else if (areaCode.equals("LU")) {
+                tdwgArea = TdwgAreaProvider.getAreaByTdwgAbbreviation("BGM-LU");
+            } else if (areaCode.equals("LV")) {
+                tdwgArea = TdwgAreaProvider.getAreaByTdwgAbbreviation("BLT-LA");
+            } else if (areaCode.equals("MC")) {
+                tdwgArea = TdwgAreaProvider.getAreaByTdwgAbbreviation("FRA-MO");
+            } else if (areaCode.equals("MD")) {
+                tdwgArea = TdwgAreaProvider.getAreaByTdwgAbbreviation("UKR-MO");
+            } else if (areaCode.equals("MK")) {
+                tdwgArea = TdwgAreaProvider.getAreaByTdwgAbbreviation("YUG-MA");
+            } else if (areaCode.equals("MT")) {
+                tdwgArea = TdwgAreaProvider.getAreaByTdwgAbbreviation("SIC-MA");
+            } else if (areaCode.equals("NL")) {
+                tdwgArea = TdwgAreaProvider.getAreaByTdwgAbbreviation("NET-OO");
+            } else if (areaCode.equals("NO-NOR")) {
+                tdwgArea = TdwgAreaProvider.getAreaByTdwgAbbreviation("NOR-OO");
+            } else if (areaCode.equals("NO-SVA")) {
+                tdwgArea = TdwgAreaProvider.getAreaByTdwgAbbreviation("SVA-OO");
+            } else if (areaCode.equals("PL")) {
+                tdwgArea = TdwgAreaProvider.getAreaByTdwgAbbreviation("POL-OO");
+            } else if (areaCode.equals("PT-AZO")) {
+                tdwgArea = TdwgAreaProvider.getAreaByTdwgAbbreviation("AZO-OO");
+            } else if (areaCode.equals("PT-MDR")) {
+                tdwgArea = TdwgAreaProvider.getAreaByTdwgAbbreviation("MDR-OO");
+            } else if (areaCode.equals("PT-POR")) {
+                tdwgArea = TdwgAreaProvider.getAreaByTdwgAbbreviation("POR-OO");
+            } else if (areaCode.equals("PT-SEL")) {
+                tdwgArea = TdwgAreaProvider.getAreaByTdwgAbbreviation("SEL-OO");
+            } else if (areaCode.equals("RO")) {
+                tdwgArea = TdwgAreaProvider.getAreaByTdwgAbbreviation("ROM-OO");
+            } else if (areaCode.equals("RU-KGD")) {
+                tdwgArea = TdwgAreaProvider.getAreaByTdwgAbbreviation("BLT-KA");
+            } else if (areaCode.equals("RU-RUC")) {
+                tdwgArea = TdwgAreaProvider.getAreaByTdwgAbbreviation("RUC-OO");
+            } else if (areaCode.equals("RU-RUE")) {
+                tdwgArea = TdwgAreaProvider.getAreaByTdwgAbbreviation("RUE-OO");
+            } else if (areaCode.equals("RU-RUN")) {
+                tdwgArea = TdwgAreaProvider.getAreaByTdwgAbbreviation("RUN-OO");
+            } else if (areaCode.equals("RU-RUS")) {
+                tdwgArea = TdwgAreaProvider.getAreaByTdwgAbbreviation("RUS-OO");
+            } else if (areaCode.equals("RU-RUW")) {
+                tdwgArea = TdwgAreaProvider.getAreaByTdwgAbbreviation("RUW-OO");
+            } else if (areaCode.equals("SE")) {
+                tdwgArea = TdwgAreaProvider.getAreaByTdwgAbbreviation("SWE-OO");
+            } else if (areaCode.equals("SI")) {
+                tdwgArea = TdwgAreaProvider.getAreaByTdwgAbbreviation("YUG-SL");
+            } else if (areaCode.equals("SK")) {
+                tdwgArea = TdwgAreaProvider.getAreaByTdwgAbbreviation("CZE-SK");
+            } else if (areaCode.equals("SM")) {
+                tdwgArea = TdwgAreaProvider.getAreaByTdwgAbbreviation("ITA-SM");
+            } else if (areaCode.equals("TR-TUE")) {
+                tdwgArea = TdwgAreaProvider.getAreaByTdwgAbbreviation("TUE-OO");
+                //else if (areaCode.equals("UA")) tdwgArea = TdwgAreaProvider.getAreaByTdwgAbbreviation("UKR-UK"); //UKraine including Crimea
+            } else if (areaCode.equals("VA")) {
+                tdwgArea = TdwgAreaProvider.getAreaByTdwgAbbreviation("ITA-VC");
+            } else if (areaCode.equals("YU")) {
+                tdwgArea = TdwgAreaProvider.getAreaByTdwgAbbreviation("YUG");
+            } else {
+                throw new UnknownCdmTypeException("Unknown Area " + areaCode);
+            }
 
 			if (logger.isDebugEnabled()) {
 				logger.debug(areaId + ", " + areaName + ", " + areaCode + ", " + extraLimital);
 			}
-			
+
 		} catch (Exception e) {
 			//e.printStackTrace();
 			logger.debug("Exception occurred. Area could not be mapped." + fauEuDistribution.getAreaName());
 			return null;
-		}	
-		
+		}
+
 		return tdwgArea;
 	}
-	
+
 	public static UUID uuidAreaAUS = UUID.fromString("cf979ca8-8cb6-42df-b2ce-1f432ec7c26b");
 	public static UUID uuidAreaAFR = UUID.fromString("07ac5e75-9fc9-4aa0-938c-1324c9618b97");
 	public static UUID uuidAreaEPA = UUID.fromString("e83446d7-7379-4beb-be05-295f8da6f5ae");
@@ -316,11 +370,11 @@ public final class FaunaEuropaeaTransformer {
 	public static UUID uuidAreaUA = UUID.fromString("859cf055-a208-4f30-8e6e-361f165c6fa9");
 	public static UUID uuidAreaRU_FJL = UUID.fromString("84671068-2f18-40cb-933a-e7e1c0e37cc8");
 	public static UUID uuidAreaRU_NOZ = UUID.fromString("64cce0aa-0222-4740-8fa2-dbf0330e9266");
-	
-	
+
+
 	public final static HashMap<String, UUID> abbrToUUID = new HashMap<String,UUID>();
 	 	static
-	 	{	
+	 	{
 	 		abbrToUUID.put("AUS", uuidAreaAUS);
 	 		abbrToUUID.put("AFR", uuidAreaAFR);
 	 		abbrToUUID.put("EPA", uuidAreaEPA);
@@ -337,17 +391,17 @@ public final class FaunaEuropaeaTransformer {
 	 		abbrToUUID.put("UA", uuidAreaUA);
 	 		abbrToUUID.put("RU-FJL", uuidAreaRU_FJL);
 	 		abbrToUUID.put("RU-NOZ", uuidAreaRU_NOZ);
-	 		
-	 		
+
+
 	 	}
 	public static UUID getUUIDByAreaAbbr(String abbr){
 		return abbrToUUID.get(abbr);
 	}
-	
+
 	public static UUID uuidNomStatusTempNamed = UUID.fromString("aa6ada5a-ca21-4fef-b76f-9ae237e9c4ae");
-	
+
 	static NomenclaturalStatusType nomStatusTempNamed;
-	
+
 	public static NomenclaturalStatusType getNomStatusTempNamed(ITermService termService){
 		if (nomStatusTempNamed == null){
 			nomStatusTempNamed = (NomenclaturalStatusType)termService.find(uuidNomStatusTempNamed);
@@ -362,5 +416,5 @@ public final class FaunaEuropaeaTransformer {
 		}
 		return nomStatusTempNamed;
 	}
-	
+
 }
