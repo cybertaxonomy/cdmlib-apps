@@ -57,7 +57,7 @@ public class FloraGuianasActivator extends EfloraActivatorBase {
 	private boolean inverseInclude = false;
 	
 	private boolean includeFotg1 = false;
-	private boolean includeFotg22 = true;
+	private boolean includeFotg22 = false;
 	private boolean includeFotg23 = false;
 	private boolean includeFotg24 = false;
 	private boolean includeFotg24_plus = false;
@@ -67,13 +67,13 @@ public class FloraGuianasActivator extends EfloraActivatorBase {
 	private boolean includeFotg27 = false;
 
 	private boolean includeFotg29 = false;
-	private boolean includeFotg30 = false;
+	private boolean includeFotg30 = true;
 	
 	
 //	static final ICdmDataSource cdmDestination = CdmDestinations.cdm_flora_guianas_preview();
 //	static final ICdmDataSource cdmDestination = CdmDestinations.cdm_flora_guianas_production();
-//	static final ICdmDataSource cdmDestination = CdmDestinations.localH2();
-	static final ICdmDataSource cdmDestination = CdmDestinations.cdm_test_local_mysql();
+	static final ICdmDataSource cdmDestination = CdmDestinations.localH2();
+//	static final ICdmDataSource cdmDestination = CdmDestinations.cdm_test_local_mysql();
 	
 
 	//feature tree uuid
