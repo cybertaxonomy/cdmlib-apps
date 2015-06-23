@@ -508,15 +508,15 @@
 		<xsd:attribute name="ACRONYM" use="optional" />
 		<xsd:attribute name="LSID_LSID" use="optional" />
 		<xsd:attribute name="ID" use="optional" />
-		<xsd:attribute name="EXCOMBINATIONAUTHORTEAM_ID" use="optional" />
-		<xsd:attribute name="EXBASIONYMAUTHORTEAM_ID" use="optional" />
+		<xsd:attribute name="EXCOMBINATIONAUTHORSHIP_ID" use="optional" />
+		<xsd:attribute name="EXBASIONYMAUTHORSHIP_ID" use="optional" />
 		<xsd:attribute name="DTYPE" use="optional" />
 		<xsd:attribute name="PROTECTEDNAMECACHE" use="optional" />
 		<xsd:attribute name="LSID_AUTHORITY" use="optional" />
 		<xsd:attribute name="HYBRIDFORMULA" use="optional" />
 		<xsd:attribute name="NAMECACHE" use="optional" />
 		<xsd:attribute name="LSID_NAMESPACE" use="optional" />
-		<xsd:attribute name="BASIONYMAUTHORTEAM_ID" use="optional" />
+		<xsd:attribute name="BASIONYMAUTHORSHIP_ID" use="optional" />
 		<xsd:attribute name="FULLTITLECACHE" use="optional" />
 		<xsd:attribute name="ORIGINALPUBLICATIONYEAR" use="optional" />
 		<xsd:attribute name="HOMOTYPICALGROUP_ID" use="optional" />
@@ -530,7 +530,7 @@
 		<xsd:attribute name="BINOMHYBRID" use="optional" />
 		<xsd:attribute name="UPDATEDBY_ID" use="optional" />
 		<xsd:attribute name="PUBLICATIONYEAR" use="optional" />
-		<xsd:attribute name="COMBINATIONAUTHORTEAM_ID" use="optional" />
+		<xsd:attribute name="COMBINATIONAUTHORSHIP_ID" use="optional" />
 		<xsd:attribute name="NAMEAPPROBATION" use="optional" />
 		<xsd:attribute name="TITLECACHE" use="optional" />
 		<xsd:attribute name="RANK_ID" use="optional" />
@@ -740,11 +740,11 @@
 		<xsd:attribute name="ACRONYM" use="optional" />
 		<xsd:attribute name="LSID_LSID" use="optional" />
 		<xsd:attribute name="ID" use="optional" />
-		<xsd:attribute name="EXBASIONYMAUTHORTEAM_ID" use="optional" />
+		<xsd:attribute name="EXBASIONYMAUTHORSHIP_ID" use="optional" />
 		<xsd:attribute name="LSID_AUTHORITY" use="optional" />
 		<xsd:attribute name="REV" use="optional" />
 		<xsd:attribute name="LSID_NAMESPACE" use="optional" />
-		<xsd:attribute name="BASIONYMAUTHORTEAM_ID" use="optional" />
+		<xsd:attribute name="BASIONYMAUTHORSHIP_ID" use="optional" />
 		<xsd:attribute name="FULLTITLECACHE" use="optional" />
 		<xsd:attribute name="HOMOTYPICALGROUP_ID" use="optional" />
 		<xsd:attribute name="PROBLEMSTARTS" use="optional" />
@@ -753,7 +753,7 @@
 		<xsd:attribute name="NOMENCLATURALMICROREFERENCE" use="optional" />
 		<xsd:attribute name="PUBLICATIONYEAR" use="optional" />
 		<xsd:attribute name="NAMEAPPROBATION" use="optional" />
-		<xsd:attribute name="COMBINATIONAUTHORTEAM_ID" use="optional" />
+		<xsd:attribute name="COMBINATIONAUTHORSHIP_ID" use="optional" />
 		<xsd:attribute name="TITLECACHE" use="optional" />
 		<xsd:attribute name="PROTECTEDFULLTITLECACHE" use="optional" />
 		<xsd:attribute name="MONOMHYBRID" use="optional" />
@@ -768,7 +768,7 @@
 		<xsd:attribute name="PROBLEMENDS" use="optional" />
 		<xsd:attribute name="REVTYPE" use="optional" />
 		<xsd:attribute name="DTYPE" use="optional" />
-		<xsd:attribute name="EXCOMBINATIONAUTHORTEAM_ID" use="optional" />
+		<xsd:attribute name="EXCOMBINATIONAUTHORSHIP_ID" use="optional" />
 		<xsd:attribute name="PROTECTEDNAMECACHE" use="optional" />
 		<xsd:attribute name="HYBRIDFORMULA" use="optional" />
 		<xsd:attribute name="NAMECACHE" use="optional" />

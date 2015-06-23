@@ -310,7 +310,7 @@ public abstract class IndexFungorumImportBase extends CdmImportBase<IndexFungoru
 		}
 
 		//refAuthor
-		TeamOrPersonBase<?> refAuthor = CdmBase.deproxy(name.getCombinationAuthorTeam(), TeamOrPersonBase.class);
+		TeamOrPersonBase<?> refAuthor = CdmBase.deproxy(name.getCombinationAuthorship(), TeamOrPersonBase.class);
 		if (refAuthor == null){
 			refAuthor = Team.NewTitledInstance(authorStr, authorStr);
 		}

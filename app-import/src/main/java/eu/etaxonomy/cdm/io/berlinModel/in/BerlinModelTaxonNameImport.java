@@ -1,8 +1,8 @@
 /**
 * Copyright (C) 2007 EDIT
-* European Distributed Institute of Taxonomy 
+* European Distributed Institute of Taxonomy
 * http://www.e-taxonomy.eu
-* 
+*
 * The contents of this file are subject to the Mozilla Public License Version 1.1
 * See LICENSE.TXT at the top of this package for the full license terms.
 */
@@ -60,9 +60,9 @@ public class BerlinModelTaxonNameImport extends BerlinModelImportBase {
 	private static final Logger logger = Logger.getLogger(BerlinModelTaxonNameImport.class);
 
 	public static final String NAMESPACE = "TaxonName";
-	
+
 	public static final UUID SOURCE_ACC_UUID = UUID.fromString("c3959b4f-d876-4b7a-a739-9260f4cafd1c");
-	
+
 	private static int modCount = 5000;
 	private static final String pluralString = "TaxonNames";
 	private static final String dbTableName = "Name";
@@ -78,14 +78,14 @@ public class BerlinModelTaxonNameImport extends BerlinModelImportBase {
 		if (state.getConfig().getNameIdTable()==null ){
 			return super.getIdQuery(state);
 		}else{
-			return "SELECT nameId FROM " + state.getConfig().getNameIdTable() + ""; 
+			return "SELECT nameId FROM " + state.getConfig().getNameIdTable() + "";
 		}
 	}
-	
+
 	@Override
 	protected String getRecordQuery(BerlinModelImportConfigurator config) {
 		Source source = config.getSource();
-		
+
 			String facultativCols = "";
 			String strFacTable = "RefDetail";
 			String strFacColumn = "IdInSource";
@@ -97,14 +97,14 @@ public class BerlinModelTaxonNameImport extends BerlinModelImportBase {
 				}
 			}
 
-		String strRecordQuery = 
+		String strRecordQuery =
 					"SELECT Name.* , RefDetail.RefDetailId, RefDetail.RefFk, " +
-                      		" RefDetail.FullRefCache, RefDetail.FullNomRefCache, RefDetail.PreliminaryFlag AS RefDetailPrelim, RefDetail.Details, " + 
+                      		" RefDetail.FullRefCache, RefDetail.FullNomRefCache, RefDetail.PreliminaryFlag AS RefDetailPrelim, RefDetail.Details, " +
                       		" RefDetail.SecondarySources, Rank.RankAbbrev, Rank.Rank " +
                       		facultativCols +
                     " FROM Name LEFT OUTER JOIN RefDetail ON Name.NomRefDetailFk = RefDetail.RefDetailId AND  " +
                     	" Name.NomRefFk = RefDetail.RefFk " +
-                    	" LEFT OUTER JOIN Rank ON Name.RankFk = Rank.rankID " + 
+                    	" LEFT OUTER JOIN Rank ON Name.RankFk = Rank.rankID " +
                 " WHERE name.nameId IN ("+ID_LIST_TOKEN+") ";
 					//strQuery += " AND RefDetail.PreliminaryFlag = 1 ";
 					//strQuery += " AND Name.Created_When > '03.03.2004' ";
@@ -119,11 +119,11 @@ public class BerlinModelTaxonNameImport extends BerlinModelImportBase {
 		String strAbbrev = state.getConfig().getInfrGenericRankAbbrev();
 		Rank rank = Rank.INFRAGENERICTAXON();
 		testRankAbbrev(strAbbrev, rank);
-		
+
 		strAbbrev = state.getConfig().getInfrSpecificRankAbbrev();
 		rank = Rank.INFRASPECIFICTAXON();
 		testRankAbbrev(strAbbrev, rank);
-		
+
 		super.doInvoke(state);
 	}
 
@@ -142,17 +142,17 @@ public class BerlinModelTaxonNameImport extends BerlinModelImportBase {
 		boolean success = true ;
 		BerlinModelImportConfigurator config = state.getConfig();
 		Set<TaxonNameBase> namesToSave = new HashSet<TaxonNameBase>();
-		Map<String, Team> teamMap = (Map<String, Team>) partitioner.getObjectMap(BerlinModelAuthorTeamImport.NAMESPACE);
-			
+		Map<String, Team> teamMap = partitioner.getObjectMap(BerlinModelAuthorTeamImport.NAMESPACE);
+
 		ResultSet rs = partitioner.getResultSet();
-			
+
 		try {
 			int i = 0;
 			//for each reference
 			while (rs.next()){
-				
+
 				if ((i++ % modCount) == 0 && i != 1 ){ logger.info("Names handled: " + (i-1));}
-				
+
 				//create TaxonName element
 				int nameId = rs.getInt("nameId");
 				Object authorFk = rs.getObject("AuthorTeamFk");
@@ -167,23 +167,23 @@ public class BerlinModelTaxonNameImport extends BerlinModelImportBase {
 				if (resultSetHasColumn(rs,"UUID")){
 					uuid = rs.getString("UUID");
 				}
-				
+
 				try {
-					
+
 					//define rank
 					boolean useUnknownRank = true;
 					Rank rank = BerlinModelTransformer.rankId2Rank(rs, useUnknownRank, config.isSwitchSpeciesGroup());
-					
+
 					boolean allowInfraSpecTaxonRank = state.getConfig().isAllowInfraSpecTaxonRank() ;
 					if (rank == null || rank.equals(Rank.UNKNOWN_RANK()) || (rank.equals(Rank.INFRASPECIFICTAXON()) && ! allowInfraSpecTaxonRank)){
 						rank = handleProlesAndRaceSublusus(state, rs, rank);
 					}
-					
+
 					if (rank.getId() == 0){
 						getTermService().save(rank);
 						logger.warn("Rank did not yet exist: " +  rank.getTitleCache());
 					}
-					
+
 					//create TaxonNameBase
 					TaxonNameBase<?,?> taxonNameBase;
 					if (config.getNomenclaturalCode() != null){
@@ -200,13 +200,13 @@ public class BerlinModelTaxonNameImport extends BerlinModelImportBase {
 					if (uuid != null){
 						taxonNameBase.setUuid(UUID.fromString(uuid));
 					}
-					
+
 					if (rank == null){
 						//TODO rank should never be null or a more sophisticated algorithm has to be implemented for genus/supraGenericName
 						logger.warn("Rank is null. Genus epethiton was imported. May be wrong");
 						success = false;
 					}
-					
+
 					//epithets
 					if (rank != null && rank.isSupraGeneric()){
 						dbAttrName = "supraGenericName";
@@ -215,32 +215,32 @@ public class BerlinModelTaxonNameImport extends BerlinModelImportBase {
 					}
 					cdmAttrName = "genusOrUninomial";
 					success &= ImportHelper.addStringValue(rs, taxonNameBase, dbAttrName, cdmAttrName, BLANK_TO_NULL);
-					
+
 					dbAttrName = "genusSubdivisionEpi";
 					cdmAttrName = "infraGenericEpithet";
 					success &= ImportHelper.addStringValue(rs, taxonNameBase, dbAttrName, cdmAttrName, BLANK_TO_NULL);
-					
+
 					dbAttrName = "speciesEpi";
 					cdmAttrName = "specificEpithet";
 					success &= ImportHelper.addStringValue(rs, taxonNameBase, dbAttrName, cdmAttrName, BLANK_TO_NULL);
-					
-	
+
+
 					dbAttrName = "infraSpeciesEpi";
 					cdmAttrName = "infraSpecificEpithet";
 					success &= ImportHelper.addStringValue(rs, taxonNameBase, dbAttrName, cdmAttrName, BLANK_TO_NULL);
-					
+
 					dbAttrName = "unnamedNamePhrase";
 					cdmAttrName = "appendedPhrase";
 					success &= ImportHelper.addStringValue(rs, taxonNameBase, dbAttrName, cdmAttrName, BLANK_TO_NULL);
-					
+
 					//Details
 					dbAttrName = "details";
 					cdmAttrName = "nomenclaturalMicroReference";
 					success &= ImportHelper.addStringValue(rs, taxonNameBase, dbAttrName, cdmAttrName, BLANK_TO_NULL);
-	
+
 					//nomRef
 					success &= makeNomenclaturalReference(config, taxonNameBase, nameId, rs, partitioner);
-	
+
 					//Source_Acc
 					boolean colExists = true;
 					try {
@@ -255,46 +255,46 @@ public class BerlinModelTaxonNameImport extends BerlinModelImportBase {
 							Extension datesExtension = Extension.NewInstance(taxonNameBase, sourceAcc, sourceAccExtensionType);
 						}
 					}
-					
+
 					//created, notes
 					boolean excludeUpdated = true;
 					success &= doIdCreatedUpdatedNotes(state, taxonNameBase, rs, nameId, NAMESPACE, excludeUpdated, false);
-	
+
 					//NonViralName
 					if (taxonNameBase instanceof NonViralName){
 						NonViralName<?> nonViralName = (NonViralName<?>)taxonNameBase;
-						
+
 						//authorTeams
 						if (teamMap != null ){
-							nonViralName.setCombinationAuthorTeam(getAuthorTeam(teamMap, authorFk, nameId, config));
-							nonViralName.setExCombinationAuthorTeam(getAuthorTeam(teamMap, exAuthorFk, nameId, config));
-							nonViralName.setBasionymAuthorTeam(getAuthorTeam(teamMap, basAuthorFk, nameId, config));
-							nonViralName.setExBasionymAuthorTeam(getAuthorTeam(teamMap, exBasAuthorFk, nameId, config));
+							nonViralName.setCombinationAuthorship(getAuthorTeam(teamMap, authorFk, nameId, config));
+							nonViralName.setExCombinationAuthorship(getAuthorTeam(teamMap, exAuthorFk, nameId, config));
+							nonViralName.setBasionymAuthorship(getAuthorTeam(teamMap, basAuthorFk, nameId, config));
+							nonViralName.setExBasionymAuthorship(getAuthorTeam(teamMap, exBasAuthorFk, nameId, config));
 						}else{
 							logger.warn("TeamMap is null");
 							success = false;
 						}
 					}//nonviralName
-					
-	
-					
+
+
+
 					//zoologicalName
 					if (taxonNameBase instanceof ZoologicalName){
 						ZoologicalName zooName = (ZoologicalName)taxonNameBase;
 						makeZoologialName(rs, zooName, nameId);
 					}
-					//botanicalName  
+					//botanicalName
 					else if (taxonNameBase instanceof BotanicalName){
 						BotanicalName botName = (BotanicalName)taxonNameBase;
 						success &= makeBotanicalNamePart(rs, botName) ;
-						
+
 					}
-					
+
 	//				dbAttrName = "preliminaryFlag";
 					Boolean preliminaryFlag = rs.getBoolean("PreliminaryFlag");
 					Boolean hybridFormulaFlag = rs.getBoolean("HybridFormulaFlag");  //hybrid flag does not lead to cache update in Berlin Model
 					if (preliminaryFlag == true || hybridFormulaFlag == true){
-						//Computes all caches and sets 
+						//Computes all caches and sets
 						taxonNameBase.setTitleCache(fullNameCache, true);
 						taxonNameBase.setFullTitleCache(taxonNameBase.getFullTitleCache(), true);
 						if (taxonNameBase instanceof NonViralName){
@@ -304,20 +304,20 @@ public class BerlinModelTaxonNameImport extends BerlinModelImportBase {
 						}
 					}
 					namesToSave.add(taxonNameBase);
-					
+
 				}
 				catch (UnknownCdmTypeException e) {
 					logger.warn("Name with id " + nameId + " has unknown rankId " + " and could not be saved.");
-					success = false; 
+					success = false;
 				}
-				
+
 			} //while rs.hasNext()
 		} catch (SQLException e) {
 			logger.error("SQLException:" +  e);
 			return false;
 		}
 
-			
+
 //		logger.info( i + " names handled");
 		getNameService().save(namesToSave);
 		return success;
@@ -340,15 +340,15 @@ public class BerlinModelTaxonNameImport extends BerlinModelImportBase {
 		}
 		return result;
 	}
-	
+
 	@Override
 	public Map<Object, Map<String, ? extends CdmBase>> getRelatedObjectsForPartition(ResultSet rs, BerlinModelImportState state) {
 		String nameSpace;
 		Class<?> cdmClass;
 		Set<String> idSet;
-			
+
 		Map<Object, Map<String, ? extends CdmBase>> result = new HashMap<Object, Map<String, ? extends CdmBase>>();
-		
+
 		try{
 			Set<String> teamIdSet = new HashSet<String>();
 			Set<String> referenceIdSet = new HashSet<String>();
@@ -361,7 +361,7 @@ public class BerlinModelTaxonNameImport extends BerlinModelImportBase {
 				handleForeignKey(rs, referenceIdSet, "nomRefFk");
 				handleForeignKey(rs, refDetailIdSet, "nomRefDetailFk");
 			}
-			
+
 			//team map
 			nameSpace = BerlinModelAuthorTeamImport.NAMESPACE;
 			cdmClass = Team.class;
@@ -375,21 +375,21 @@ public class BerlinModelTaxonNameImport extends BerlinModelImportBase {
 			idSet = referenceIdSet;
 			Map<String, Reference> referenceMap = (Map<String, Reference>)getCommonService().getSourcedObjectsByIdInSource(cdmClass, idSet, nameSpace);
 			result.put(nameSpace, referenceMap);
-			
+
 			//refDetail map
 			nameSpace = BerlinModelRefDetailImport.REFDETAIL_NAMESPACE;
 			cdmClass = Reference.class;
 			idSet = refDetailIdSet;
 			Map<String, Reference> refDetailMap= (Map<String, Reference>)getCommonService().getSourcedObjectsByIdInSource(cdmClass, idSet, nameSpace);
 			result.put(nameSpace, refDetailMap);
-			
+
 		} catch (SQLException e) {
 			throw new RuntimeException(e);
 		}
 		return result;
 	}
-	
-	private boolean makeZoologialName(ResultSet rs, ZoologicalName zooName, int nameId) 
+
+	private boolean makeZoologialName(ResultSet rs, ZoologicalName zooName, int nameId)
 					throws SQLException{
 		boolean success = true;
 		//publicationYear
@@ -414,12 +414,12 @@ public class BerlinModelTaxonNameImport extends BerlinModelImportBase {
 		}
 		return success;
 	}
-	
+
 	private boolean makeBotanicalNamePart(ResultSet rs, BotanicalName botanicalName)throws SQLException{
 		boolean success = true;
 		String dbAttrName;
 		String cdmAttrName;
-		
+
 		dbAttrName = "HybridFormulaFlag";
 		cdmAttrName = "isHybridFormula";
 		success &= ImportHelper.addBooleanValue(rs, botanicalName, dbAttrName, cdmAttrName);
@@ -452,17 +452,17 @@ public class BerlinModelTaxonNameImport extends BerlinModelImportBase {
 		}
 		return success;
 	}
-	
-	
-	private boolean makeNomenclaturalReference(IImportConfigurator config, TaxonNameBase taxonNameBase, 
+
+
+	private boolean makeNomenclaturalReference(IImportConfigurator config, TaxonNameBase taxonNameBase,
 					int nameId, ResultSet rs, ResultSetPartitioner partitioner) throws SQLException{
 		Map<String, Reference> refMap = partitioner.getObjectMap(BerlinModelReferenceImport.REFERENCE_NAMESPACE);
 		Map<String, Reference> refDetailMap = partitioner.getObjectMap(BerlinModelRefDetailImport.REFDETAIL_NAMESPACE);
-		
+
 		Object nomRefFkObj = rs.getObject("NomRefFk");
 		Object nomRefDetailFkObj = rs.getObject("NomRefDetailFk");
 		boolean refDetailPrelim = rs.getBoolean("RefDetailPrelim");
-		
+
 		boolean success = true;
 		//nomenclatural Reference
 		if (refMap != null){
@@ -470,10 +470,10 @@ public class BerlinModelTaxonNameImport extends BerlinModelImportBase {
 				String nomRefFk = String.valueOf(nomRefFkObj);
 				String nomRefDetailFk = String.valueOf(nomRefDetailFkObj);
 				//get nomRef
-				Reference<?> nomReference = 
+				Reference<?> nomReference =
 					getReferenceFromMaps(refDetailMap, refMap, nomRefDetailFk, nomRefFk);
-				
-				
+
+
 				//setNomRef
 				if (nomReference == null ){
 					//TODO
@@ -493,7 +493,7 @@ public class BerlinModelTaxonNameImport extends BerlinModelImportBase {
 		}
 		return success;
 	}
-	
+
 	private static TeamOrPersonBase getAuthorTeam(Map<String, Team> teamMap, Object teamIdObject, int nameId, BerlinModelImportConfigurator bmiConfig){
 		if (teamIdObject == null){
 			return null;
@@ -502,7 +502,7 @@ public class BerlinModelTaxonNameImport extends BerlinModelImportBase {
 			TeamOrPersonBase author = teamMap.get(teamId);
 			if (author == null){
 				//TODO
-				if (!bmiConfig.isIgnoreNull() && ! (teamId.equals(0) && bmiConfig.isIgnore0AuthorTeam()) ){ 
+				if (!bmiConfig.isIgnoreNull() && ! (teamId.equals(0) && bmiConfig.isIgnore0AuthorTeam()) ){
 					logger.warn("AuthorTeam (teamId = " + teamId + ") for TaxonName (nameId = " + nameId + ")"+
 				" was not found in authorTeam store. Relation was not set!!");}
 				return null;
@@ -511,14 +511,15 @@ public class BerlinModelTaxonNameImport extends BerlinModelImportBase {
 			}
 		}
 	}
-	
+
 	@Override
 	protected boolean doCheck(BerlinModelImportState state){
 		IOValidator<BerlinModelImportState> validator = new BerlinModelTaxonNameImportValidator();
 		return validator.validate(state);
 	}
-	
-	protected boolean isIgnore(BerlinModelImportState state){
+
+	@Override
+    protected boolean isIgnore(BerlinModelImportState state){
 		return ! state.getConfig().isDoTaxonNames();
 	}
 
@@ -526,8 +527,8 @@ public class BerlinModelTaxonNameImport extends BerlinModelImportBase {
 
 
 
-	
-//FOR FUTURE USE , DONT DELETE	
+
+//FOR FUTURE USE , DONT DELETE
 //	new CdmStringMapper("nameId", "nameId"),
 //	new CdmStringMapper("rankFk", "rankFk"),
 //	new CdmStringMapper("nameCache", "nameCache"),
@@ -562,5 +563,5 @@ public class BerlinModelTaxonNameImport extends BerlinModelImportBase {
 //	new CdmStringMapper("updated_Who", "updated_Who"),
 //	new CdmStringMapper("orthoProjection", "orthoProjection"),
 
-	
+
 }

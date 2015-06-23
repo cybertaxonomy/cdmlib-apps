@@ -1,8 +1,8 @@
 /**
 * Copyright (C) 2007 EDIT
-* European Distributed Institute of Taxonomy 
+* European Distributed Institute of Taxonomy
 * http://www.e-taxonomy.eu
-* 
+*
 * The contents of this file are subject to the Mozilla Public License Version 1.1
 * See LICENSE.TXT at the top of this package for the full license terms.
 */
@@ -55,28 +55,28 @@ import eu.etaxonomy.cdm.strategy.parser.NonViralNameParserImpl;
  */
 public abstract class GlobisImportBase<CDM_BASE extends CdmBase> extends CdmImportBase<GlobisImportConfigurator, GlobisImportState> implements ICdmIO<GlobisImportState>, IPartitionedIO<GlobisImportState> {
 	private static final Logger logger = Logger.getLogger(GlobisImportBase.class);
-	
+
 	public static final UUID ID_IN_SOURCE_EXT_UUID = UUID.fromString("23dac094-e793-40a4-bad9-649fc4fcfd44");
-	
+
 	//NAMESPACES
-	
+
 	protected static final String REFERENCE_NAMESPACE = "Literatur";
 	protected static final String TAXON_NAMESPACE = "current_species";
 	protected static final String COLLECTION_NAMESPACE = "Collection";
 	protected static final String IMAGE_NAMESPACE = "Einzelbilder";
 	protected static final String SPEC_TAX_NAMESPACE = "specTax";
 	protected static final String TYPE_NAMESPACE = "specTax.SpecTypeDepository";
-	
-	private String pluralString;
-	private String dbTableName;
-	private Class cdmTargetClass;
 
-	private INonViralNameParser<?> parser = NonViralNameParserImpl.NewInstance();
+	private final String pluralString;
+	private final String dbTableName;
+	private final Class cdmTargetClass;
 
-	
+	private final INonViralNameParser<?> parser = NonViralNameParserImpl.NewInstance();
+
+
 	/**
 	 * @param dbTableName
-	 * @param dbTableName2 
+	 * @param dbTableName2
 	 */
 	public GlobisImportBase(String pluralString, String dbTableName, Class<?> cdmTargetClass) {
 		this.pluralString = pluralString;
@@ -84,11 +84,12 @@ public abstract class GlobisImportBase<CDM_BASE extends CdmBase> extends CdmImpo
 		this.cdmTargetClass = cdmTargetClass;
 	}
 
-	protected void doInvoke(GlobisImportState state){
+	@Override
+    protected void doInvoke(GlobisImportState state){
 		logger.info("start make " + getPluralString() + " ...");
 		GlobisImportConfigurator config = state.getConfig();
 		Source source = config.getSource();
-			
+
 		String strIdQuery = getIdQuery();
 		String strRecordQuery = getRecordQuery(config);
 
@@ -102,7 +103,7 @@ public abstract class GlobisImportBase<CDM_BASE extends CdmBase> extends CdmImpo
 			logger.error("SQLException:" +  e);
 			state.setUnsuccessfull();
 		}
-		
+
 		logger.info("end make " + getPluralString() + " ... " + getSuccessString(true));
 		return;
 	}
@@ -124,14 +125,14 @@ public abstract class GlobisImportBase<CDM_BASE extends CdmBase> extends CdmImpo
 					doubtfulAuthorAndYear = authorAndYear;
 					authorAndYear = authorAndYear.replace("[", "").replace("]", "");
 				}
-				
+
 				parser.parseAuthors(zooName, authorAndYear);
 				deduplicateAuthors(zooName, state);
-				
+
 				if (doubtfulAuthorAndYear != null){
 					zooName.setAuthorshipCache(doubtfulAuthorAndYear, true);
 				}
-				
+
 			} catch (StringNotParsableException e) {
 				logger.warn("Author could not be parsed: " + authorAndYear + " for id "  +id);
 				zooName.setAuthorshipCache(authorAndYear, true);
@@ -152,17 +153,17 @@ public abstract class GlobisImportBase<CDM_BASE extends CdmBase> extends CdmImpo
 			state.putTeam(teamStr, team);
 			getAgentService().save(team);
 		}
-		zooName.setCombinationAuthorTeam(team);
+		zooName.setCombinationAuthorship(team);
 		zooName.setPublicationYear(1775);
 		zooName.setAuthorshipCache("[Denis & Schifferm\u00FCller], 1775", true);
 	}
-	
+
 
 	private void deduplicateAuthors(ZoologicalName zooName, GlobisImportState state) {
-		zooName.setCombinationAuthorTeam(getExistingAuthor(zooName.getCombinationAuthorTeam(), state));
-		zooName.setExCombinationAuthorTeam(getExistingAuthor(zooName.getExCombinationAuthorTeam(), state));
-		zooName.setBasionymAuthorTeam(getExistingAuthor(zooName.getBasionymAuthorTeam(), state));
-		zooName.setExBasionymAuthorTeam(getExistingAuthor(zooName.getExBasionymAuthorTeam(), state));
+		zooName.setCombinationAuthorship(getExistingAuthor(zooName.getCombinationAuthorship(), state));
+		zooName.setExCombinationAuthorship(getExistingAuthor(zooName.getExCombinationAuthorship(), state));
+		zooName.setBasionymAuthorship(getExistingAuthor(zooName.getBasionymAuthorship(), state));
+		zooName.setExBasionymAuthorship(getExistingAuthor(zooName.getExBasionymAuthorship(), state));
 	}
 
 	private TeamOrPersonBase<?> getExistingAuthor(INomenclaturalAuthor nomAuthor, GlobisImportState state) {
@@ -184,22 +185,22 @@ public abstract class GlobisImportBase<CDM_BASE extends CdmBase> extends CdmImpo
 						try {
 							getAgentService().update(existingPerson);
 						} catch (NonUniqueObjectException nuoe){
-							// person already exists in 
+							// person already exists in
 							existingPerson = CdmBase.deproxy(getAgentService().find(existingPerson.getUuid()), Person.class);
 							state.putPerson(existingPerson.getTitleCache(), existingPerson);
 						} catch (Exception e) {
 							throw new RuntimeException (e);
 						}
 						newTeam.addTeamMember(existingPerson);
-//						
+//
 //						logger.warn("newTeam " + newTeam.getId());
 					}else{
 						newTeam.addTeamMember(member);
-					}	
+					}
 				}
 				author = newTeam;
 			}
-			
+
 			return saveAndDecide(existingTeam, author, key, state);
 		}else{
 			logger.warn("Author type not supported: " + author.getClass().getName());
@@ -212,7 +213,7 @@ public abstract class GlobisImportBase<CDM_BASE extends CdmBase> extends CdmImpo
 			try {
 				getAgentService().update(existing);
 			} catch (NonUniqueObjectException nuoe){
-				// person already exists in 
+				// person already exists in
 				existing = CdmBase.deproxy(getAgentService().find(existing.getUuid()), TeamOrPersonBase.class);
 				putAgent(existing, key, state);
 			} catch (Exception e) {
@@ -248,7 +249,7 @@ public abstract class GlobisImportBase<CDM_BASE extends CdmBase> extends CdmImpo
 		NamedArea country = Country.getCountryByLabel(countryStr);
 		if (country == null){
 			try {
-				country = (NamedArea)state.getTransformer().getNamedAreaByKey(countryStr);
+				country = state.getTransformer().getNamedAreaByKey(countryStr);
 			} catch (UndefinedTransformerMethodException e) {
 				e.printStackTrace();
 			}
@@ -256,15 +257,16 @@ public abstract class GlobisImportBase<CDM_BASE extends CdmBase> extends CdmImpo
 		return country;
 	}
 
-	
 
-	public boolean doPartition(ResultSetPartitioner partitioner, GlobisImportState state) {
+
+	@Override
+    public boolean doPartition(ResultSetPartitioner partitioner, GlobisImportState state) {
 		boolean success = true ;
 		Set objectsToSave = new HashSet();
-		
+
  		DbImportMapping<?, ?> mapping = getMapping();
 		mapping.initialize(state, cdmTargetClass);
-		
+
 		ResultSet rs = partitioner.getResultSet();
 		try{
 			while (rs.next()){
@@ -274,21 +276,21 @@ public abstract class GlobisImportBase<CDM_BASE extends CdmBase> extends CdmImpo
 			logger.error("SQLException:" +  e);
 			return false;
 		}
-	
+
 		partitioner.startDoSave();
 		getCommonService().save(objectsToSave);
 		return success;
 	}
 
 
-	
+
 	/**
 	 * @return
 	 */
 	protected /*abstract*/ DbImportMapping<?, ?> getMapping(){
 		return null;
 	}
-	
+
 	/**
 	 * @return
 	 */
@@ -301,11 +303,12 @@ public abstract class GlobisImportBase<CDM_BASE extends CdmBase> extends CdmImpo
 		String result = " SELECT id FROM " + getTableName();
 		return result;
 	}
-	
+
 	/* (non-Javadoc)
 	 * @see eu.etaxonomy.cdm.io.berlinModel.in.IPartitionedIO#getPluralString()
 	 */
-	public String getPluralString(){
+	@Override
+    public String getPluralString(){
 		return pluralString;
 	}
 
@@ -315,7 +318,7 @@ public abstract class GlobisImportBase<CDM_BASE extends CdmBase> extends CdmImpo
 	protected String getTableName(){
 		return this.dbTableName;
 	}
-	
+
 	protected boolean doIdCreatedUpdatedNotes(GlobisImportState state, IdentifiableEntity identifiableEntity, ResultSet rs, long id, String namespace)
 			throws SQLException{
 		boolean success = true;
@@ -325,8 +328,8 @@ public abstract class GlobisImportBase<CDM_BASE extends CdmBase> extends CdmImpo
 		success &= doCreatedUpdatedNotes(state, identifiableEntity, rs, namespace);
 		return success;
 	}
-	
-	
+
+
 	protected boolean doCreatedUpdatedNotes(GlobisImportState state, AnnotatableEntity annotatableEntity, ResultSet rs, String namespace)
 			throws SQLException{
 
@@ -336,9 +339,9 @@ public abstract class GlobisImportBase<CDM_BASE extends CdmBase> extends CdmImpo
 		Object updatedWhen = rs.getObject("Updated_When");
 		String updatedWho = rs.getString("Updated_who");
 		String notes = rs.getString("notes");
-		
+
 		boolean success  = true;
-		
+
 		//Created When, Who, Updated When Who
 		if (config.getEditor() == null || config.getEditor().equals(EDITOR.NO_EDITORS)){
 			//do nothing
@@ -363,8 +366,8 @@ public abstract class GlobisImportBase<CDM_BASE extends CdmBase> extends CdmImpo
 		}else {
 			logger.warn("Editor type not yet implemented: " + config.getEditor());
 		}
-		
-		
+
+
 		//notes
 		if (StringUtils.isNotBlank(notes)){
 			String notesString = String.valueOf(notes);
@@ -379,13 +382,13 @@ public abstract class GlobisImportBase<CDM_BASE extends CdmBase> extends CdmImpo
 		}
 		return success;
 	}
-	
+
 	private User getUser(String userString, GlobisImportState state){
 		if (isBlank(userString)){
 			return null;
 		}
 		userString = userString.trim();
-		
+
 		User user = state.getUser(userString);
 		if (user == null){
 			user = getTransformedUser(userString,state);
@@ -398,7 +401,7 @@ public abstract class GlobisImportBase<CDM_BASE extends CdmBase> extends CdmImpo
 		}
 		return user;
 	}
-	
+
 	private User getTransformedUser(String userString, GlobisImportState state){
 		Method method = state.getConfig().getUserTransformationMethod();
 		if (method == null){
@@ -414,19 +417,19 @@ public abstract class GlobisImportBase<CDM_BASE extends CdmBase> extends CdmImpo
 	}
 
 	private User makeNewUser(String userString, GlobisImportState state){
-		String pwd = getPassword(); 
+		String pwd = getPassword();
 		User user = User.NewInstance(userString, pwd);
 		state.putUser(userString, user);
 		getUserService().save(user);
 		logger.info("Added new user: " + userString);
 		return user;
 	}
-	
+
 	private String getPassword(){
 		String result = UUID.randomUUID().toString();
 		return result;
 	}
-	
+
 	private DateTime getDateTime(Object timeString){
 		if (timeString == null){
 			return null;
@@ -441,9 +444,9 @@ public abstract class GlobisImportBase<CDM_BASE extends CdmBase> extends CdmImpo
 		}
 		return dateTime;
 	}
-	
-	
-	
+
+
+
 	/**
 	 * Reads a foreign key field from the result set and adds its value to the idSet.
 	 * @param rs
@@ -458,10 +461,10 @@ public abstract class GlobisImportBase<CDM_BASE extends CdmBase> extends CdmImpo
 			idSet.add(id);
 		}
 	}
-	
-	
-	
-	
+
+
+
+
 	/**
 	 * Returns true if i is a multiple of recordsPerTransaction
 	 * @param i
@@ -472,12 +475,12 @@ public abstract class GlobisImportBase<CDM_BASE extends CdmBase> extends CdmImpo
 		startTransaction();
 		return (i % recordsPerLoop) == 0;
 	}
-	
+
 	protected void doLogPerLoop(int count, int recordsPerLog, String pluralString){
 		if ((count % recordsPerLog ) == 0 && count!= 0 ){ logger.info(pluralString + " handled: " + (count));}
 	}
-	
 
 
-	
+
+
 }

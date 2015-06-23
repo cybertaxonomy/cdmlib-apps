@@ -648,7 +648,7 @@ public class CentralAfricaFernsTaxonImport  extends CentralAfricaFernsImportBase
 					StringUtils.isNotBlank(datePublishedString) || StringUtils.isNotBlank(paperTitle)){
 			NonViralName<?> name = CdmBase.deproxy(taxonBase.getName(), NonViralName.class);
 			Reference<?> reference = ReferenceFactory.newGeneric();
-			reference.setAuthorship((TeamOrPersonBase<?>)name.getCombinationAuthorTeam());
+			reference.setAuthorship((TeamOrPersonBase<?>)name.getCombinationAuthorship());
 			reference.setTitle(referenceString);
 			reference.setVolume(volume);
 			reference.setEdition(part);

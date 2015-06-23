@@ -1,8 +1,8 @@
 /**
 * Copyright (C) 2007 EDIT
-* European Distributed Institute of Taxonomy 
+* European Distributed Institute of Taxonomy
 * http://www.e-taxonomy.eu
-* 
+*
 * The contents of this file are subject to the Mozilla Public License Version 1.1
 * See LICENSE.TXT at the top of this package for the full license terms.
 */
@@ -57,7 +57,7 @@ public class BerlinModelTaxonNameExport extends BerlinModelExportBase<TaxonNameB
 	public BerlinModelTaxonNameExport(){
 		super();
 	}
-	
+
 	/* (non-Javadoc)
 	 * @see eu.etaxonomy.cdm.io.common.CdmIoBase#doCheck(eu.etaxonomy.cdm.io.common.IImportConfigurator)
 	 */
@@ -67,31 +67,33 @@ public class BerlinModelTaxonNameExport extends BerlinModelExportBase<TaxonNameB
 		logger.warn("Checking for " + pluralString + " not yet fully implemented");
 		List<TaxonNameBase> list = getObjectList();
 		checkRank(list);
-		
+
 		//result &= checkRank(config);
-		
+
 		return result;
 	}
-	
+
 	private boolean checkRank(List<TaxonNameBase> list){
 		List<TaxonNameBase> errorNames = new ArrayList<TaxonNameBase>();
 		for (TaxonNameBase<?,?> name : list){
-			if (name.getRank() == null);
+			if (name.getRank() == null) {
+                ;
+            }
 			errorNames.add(name);
 		}
 		if (errorNames.size() >0){
 			System.out.println("The following names have no Rank:\n=======================");
 			for (TaxonNameBase<?,?> name : errorNames){
 				System.out.println("  " + name.toString());
-				System.out.println("  " + name.getUuid());		
-				System.out.println("  " + name.getTitleCache());		
+				System.out.println("  " + name.getUuid());
+				System.out.println("  " + name.getTitleCache());
 			}
 			return false;
 		}else{
 			return true;
 		}
 	}
-	
+
 	private CdmDbExportMapping<BerlinModelExportState, BerlinModelExportConfigurator, IExportTransformer> getMapping(){
 		String tableName = dbTableName;
 		CdmDbExportMapping<BerlinModelExportState, BerlinModelExportConfigurator, IExportTransformer> mapping = new CdmDbExportMapping<BerlinModelExportState, BerlinModelExportConfigurator, IExportTransformer>(tableName);
@@ -111,11 +113,11 @@ public class BerlinModelTaxonNameExport extends BerlinModelExportBase<TaxonNameB
 		mapping.addMapper(DbBooleanMapper.NewInstance("isBinomHybrid", "BinomHybFlag", false, false));
 		mapping.addMapper(DbBooleanMapper.NewInstance("isTrinomHybrid", "TrinomHybFlag", false, false));
 		mapping.addMapper(DbStringMapper.NewFacultativeInstance("cultivarName", "CultivarName"));
-		
-		mapping.addMapper(TeamOrPersonMapper.NewInstance("combinationAuthorTeam", "AuthorTeamFk"));
-		mapping.addMapper(TeamOrPersonMapper.NewInstance("exCombinationAuthorTeam", "ExAuthorTeamFk"));
-		mapping.addMapper(TeamOrPersonMapper.NewInstance("basionymAuthorTeam", "BasAuthorTeamFk"));
-		mapping.addMapper(TeamOrPersonMapper.NewInstance("exBasionymAuthorTeam", "ExBasAuthorTeamFk"));
+
+		mapping.addMapper(TeamOrPersonMapper.NewInstance("combinationAuthorship", "AuthorTeamFk"));
+		mapping.addMapper(TeamOrPersonMapper.NewInstance("exCombinationAuthorship", "ExAuthorTeamFk"));
+		mapping.addMapper(TeamOrPersonMapper.NewInstance("basionymAuthorship", "BasAuthorTeamFk"));
+		mapping.addMapper(TeamOrPersonMapper.NewInstance("exBasionymAuthorship", "ExBasAuthorTeamFk"));
 
 		mapping.addMapper(DbObjectMapper.NewInstance("nomenclaturalReference", "NomRefFk"));
 		mapping.addMapper(RefDetailMapper.NewInstance("nomenclaturalMicroReference","nomenclaturalReference", "NomRefDetailFk"));
@@ -125,14 +127,14 @@ public class BerlinModelTaxonNameExport extends BerlinModelExportBase<TaxonNameB
 			mapping.addMapper(DbExtensionMapper.NewInstance(sourceAccExtensionType, "Source_Acc"));
 		}
 		mapping.addCollectionMapping(getNomStatusMapping());
-		
-	
-		
+
+
+
 		//TODO
 		//CultivarGroupName
 		//NameSourceRefFk
 		//     ,[Source_ACC]
-		
+
 		//publicationYear
 		//originalPublicationYear
 		//breed
@@ -140,7 +142,7 @@ public class BerlinModelTaxonNameExport extends BerlinModelExportBase<TaxonNameB
 		//n.getNomenclaturalMicroReference()
 		return mapping;
 	}
-	
+
 	private CollectionExportMapping getNomStatusMapping(){
 		String tableName = "NomStatusRel";
 		String collectionAttribute = "status";
@@ -154,17 +156,18 @@ public class BerlinModelTaxonNameExport extends BerlinModelExportBase<TaxonNameB
 
 		return mapping;
 	}
-	
-	protected void doInvoke(BerlinModelExportState state){
+
+	@Override
+    protected void doInvoke(BerlinModelExportState state){
 		try{
 			logger.info("start make "+pluralString+" ...");
 			boolean success = true ;
 			doDelete(state);
-			
+
 			TransactionStatus txStatus = startTransaction(true);
 			logger.info("load "+pluralString+" ...");
 			List<TaxonNameBase> names = getObjectList();
-			
+
 			CdmDbExportMapping<BerlinModelExportState, BerlinModelExportConfigurator, IExportTransformer> mapping = getMapping();
 			mapping.initialize(state);
 			logger.info("save "+pluralString+" ...");
@@ -176,7 +179,7 @@ public class BerlinModelTaxonNameExport extends BerlinModelExportBase<TaxonNameB
 			}
 			commitTransaction(txStatus);
 			logger.info("end make " + pluralString+ " ..." + getSuccessString(success));
-			
+
 			if (!success){
 				state.setUnsuccessfull();
 			}
@@ -194,10 +197,10 @@ public class BerlinModelTaxonNameExport extends BerlinModelExportBase<TaxonNameB
 		return list;
 	}
 
-	
+
 	protected boolean doDelete(BerlinModelExportState state){
 		BerlinModelExportConfigurator bmeConfig = state.getConfig();
-		
+
 		String sql;
 		Source destination =  bmeConfig.getDestination();
 		//RelPTaxon
@@ -212,7 +215,7 @@ public class BerlinModelTaxonNameExport extends BerlinModelExportBase<TaxonNameB
 		sql = "DELETE FROM PTaxon";
 		destination.setQuery(sql);
 		destination.update(sql);
-		
+
 		//NameHistory
 		sql = "DELETE FROM NameHistory";
 		destination.setQuery(sql);
@@ -231,15 +234,16 @@ public class BerlinModelTaxonNameExport extends BerlinModelExportBase<TaxonNameB
 		destination.update(sql);
 		return true;
 	}
-		
-	
+
+
 	/* (non-Javadoc)
 	 * @see eu.etaxonomy.cdm.io.common.CdmIoBase#isIgnore(eu.etaxonomy.cdm.io.common.IImportConfigurator)
 	 */
-	protected boolean isIgnore(BerlinModelExportState state){
+	@Override
+    protected boolean isIgnore(BerlinModelExportState state){
 		return ! state.getConfig().isDoTaxonNames();
 	}
-	
+
 	//called by MethodMapper
 	@SuppressWarnings("unused")
 	private static Integer getRankFk(NonViralName<?> name){
@@ -250,13 +254,13 @@ public class BerlinModelTaxonNameExport extends BerlinModelExportBase<TaxonNameB
 		}
 		return result;
 	}
-	
+
 	//called by MethodMapper
 	@SuppressWarnings("unused")
 	private static Integer getNomStatusFk(NomenclaturalStatus status){
 		return BerlinModelTransformer.nomStatus2nomStatusFk(status.getType());
 	}
-	
+
 	//called by MethodMapper
 	@SuppressWarnings("unused")
 	private static String getSupraGenericName(NonViralName<?> name){
@@ -266,7 +270,7 @@ public class BerlinModelTaxonNameExport extends BerlinModelExportBase<TaxonNameB
 			return null;
 		}
 	}
-	
+
 	//called by MethodMapper
 	@SuppressWarnings("unused")
 	private static String getGenus(NonViralName<?> name){
@@ -296,7 +300,7 @@ public class BerlinModelTaxonNameExport extends BerlinModelExportBase<TaxonNameB
 			return null;
 		}
 	}
-	
+
 	//called by MethodMapper
 	@SuppressWarnings("unused")
 	private static Boolean getPreliminaryFlag(NonViralName<?> name){
@@ -309,8 +313,8 @@ public class BerlinModelTaxonNameExport extends BerlinModelExportBase<TaxonNameB
 			return false;
 		}
 	}
-	
-	
+
+
 
 	/* (non-Javadoc)
 	 * @see eu.etaxonomy.cdm.io.berlinModel.out.BerlinModelExportBase#getStandardMethodParameter()
@@ -319,5 +323,5 @@ public class BerlinModelTaxonNameExport extends BerlinModelExportBase<TaxonNameB
 	public Class<? extends CdmBase> getStandardMethodParameter() {
 		return standardMethodParameter;
 	}
-	
+
 }

@@ -5,7 +5,7 @@
 *
 * The contents of this file are subject to the Mozilla Public License Version 1.1
 * See LICENSE.TXT at the top of this package for the full license terms.
-*/ 
+*/
 
 package eu.etaxonomy.cdm.io.eflora.centralAfrica.ericaceae;
 
@@ -51,7 +51,7 @@ public class CentralAfricaEricaceaeTaxonImport  extends EfloraTaxonImport  {
 
 
 
-	
+
 	/* (non-Javadoc)
 	 * @see eu.etaxonomy.cdm.io.eflora.EfloraTaxonImport#handleNomenclaturalReference(eu.etaxonomy.cdm.model.name.NonViralName, java.lang.String)
 	 */
@@ -61,14 +61,14 @@ public class CentralAfricaEricaceaeTaxonImport  extends EfloraTaxonImport  {
 		nomRef.setTitleCache(value, true);
 		parseNomStatus(nomRef, name);
 		name.setNomenclaturalReference(nomRef);
-		
+
 		String microReference = parseReferenceYearAndDetail(nomRef);
 		microReference = removeTrailing(microReference, ")");
-		
+
 		microReference = parseHomonym(microReference, name);
 		name.setNomenclaturalMicroReference(microReference);
-		
-		TeamOrPersonBase  nameTeam = CdmBase.deproxy(name.getCombinationAuthorTeam(), TeamOrPersonBase.class);
+
+		TeamOrPersonBase  nameTeam = CdmBase.deproxy(name.getCombinationAuthorship(), TeamOrPersonBase.class);
 		TeamOrPersonBase  refTeam = nomRef.getAuthorship();
 		if (nameTeam == null ){
 			logger.warn("Name has nom. ref. but no author team. Name: " + name.getTitleCache() + ", Nom.Ref.: " + value);
@@ -83,7 +83,7 @@ public class CentralAfricaEricaceaeTaxonImport  extends EfloraTaxonImport  {
 		}
 		return nameTeam;
 	}
-	
+
 	/**
 	 * Extracts the date published part and returns micro reference
 	 * @param ref
@@ -93,24 +93,24 @@ public class CentralAfricaEricaceaeTaxonImport  extends EfloraTaxonImport  {
 		String detailResult = null;
 		String titleToParse = ref.getTitleCache();
 		titleToParse = removeReferenceBracket(titleToParse, ref);
-		
+
 		int detailStart = titleToParse.indexOf(":");
 		if (detailStart >=  0){
 			detailResult = titleToParse.substring(detailStart + 1);
 			titleToParse = titleToParse.substring(0, titleToParse.length() -  detailResult.length() - 1).trim();
 			detailResult = detailResult.trim();
 		}
-		
+
 		String reYear = "\\s[1-2]{1}[0-9]{3}";
 		String reYearPeriod = reYear;
-//		
+//
 //		//pattern for the whole string
 		Pattern patReference = Pattern.compile( reYearPeriod );
 		Matcher matcher = patReference.matcher(titleToParse);
 		if (matcher.find()){
 			int start = matcher.start();
 			int end = matcher.end();
-//			
+//
 			String strPeriod = titleToParse.substring(start, end);
 			TimePeriod datePublished = TimePeriodParser.parseString(strPeriod);
 			ref.setDatePublished(datePublished);
@@ -123,7 +123,7 @@ public class CentralAfricaEricaceaeTaxonImport  extends EfloraTaxonImport  {
 			logger.warn("Could not parse reference: " +  titleToParse);
 		}
 		return detailResult;
-		
+
 	}
 
 	private String parseInRefrence(Reference ref, String author) {
@@ -139,7 +139,7 @@ public class CentralAfricaEricaceaeTaxonImport  extends EfloraTaxonImport  {
 		}else{
 			return author;
 		}
-		
+
 	}
 
 	private String removeReferenceBracket(String refString, Reference ref) {
@@ -147,7 +147,7 @@ public class CentralAfricaEricaceaeTaxonImport  extends EfloraTaxonImport  {
 		String reBracket = "\\(.*\\).?";
 		Pattern patBracket = Pattern.compile(reBracket);
 		Matcher matcher = patBracket.matcher(titleToParse);
-		
+
 		if (matcher.matches()){
 			int start = matcher.start() + 1;
 			int end = matcher.end() -1 ;
@@ -155,12 +155,12 @@ public class CentralAfricaEricaceaeTaxonImport  extends EfloraTaxonImport  {
 				end = end - 1;
 			}
 			titleToParse = titleToParse.substring(start, end);
-			
+
 			ref.setTitleCache(titleToParse);
 		}
 		return titleToParse;
 	}
-	
+
 	/**
 	 * @param taxon
 	 * @param name
@@ -169,26 +169,26 @@ public class CentralAfricaEricaceaeTaxonImport  extends EfloraTaxonImport  {
 	@Override
 	protected TeamOrPersonBase<?> handleNameUsage(Taxon taxon, NonViralName<?> name, String referenceTitle, TeamOrPersonBase lastTeam) {
 		Reference<?> ref = ReferenceFactory.newGeneric();
-		
+
 		ref.setTitleCache(referenceTitle, true);
-		
+
 		TeamOrPersonBase<?> team = getReferenceAuthor(ref, name);
 		ref.setAuthorship(team);
-	
+
 		String[] multipleReferences = ref.getTitleCache().split("&");
-		
+
 		TaxonDescription description = getDescription(taxon);
 		for (String singleReferenceString : multipleReferences){
 			Reference<?> singleRef = ReferenceFactory.newGeneric();
 			singleRef.setTitleCache(singleReferenceString.trim(), true);
 			singleRef.setAuthorship(team);
-			
+
 			String microReference = parseReferenceYearAndDetailForUsage(singleRef);
-			
+
 			singleRef.setTitle( CdmUtils.Nz(singleRef.getTitle()) + " - no title given yet -");
-			
+
 	//		parseReferenceType(ref);
-			
+
 			TextData textData = TextData.NewInstance(Feature.CITATION());
 			textData.addSource(OriginalSourceType.PrimaryTaxonomicSource, null, null, singleRef, microReference, name, null);
 			description.addElement(textData);
@@ -199,17 +199,17 @@ public class CentralAfricaEricaceaeTaxonImport  extends EfloraTaxonImport  {
 	private String parseReferenceYearAndDetailForUsage(Reference ref) {
 		String detailResult = null;
 		String titleToParse = ref.getTitleCache().trim();
-		
+
 		int detailStart = titleToParse.indexOf(":");
 		if (detailStart >=  0){
 			detailResult = titleToParse.substring(detailStart + 1);
 			titleToParse = titleToParse.substring(0, titleToParse.length() -  detailResult.length() - 1).trim();
 			detailResult = detailResult.trim();
 		}
-		
+
 		String reYear = "^[1-2]{1}[0-9]{3}[a-e]?$";
 		String reYearPeriod = reYear;
-//			
+//
 //			//pattern for the whole string
 		Pattern patReference = Pattern.compile( reYearPeriod );
 		Matcher matcher = patReference.matcher(titleToParse);
@@ -226,7 +226,7 @@ public class CentralAfricaEricaceaeTaxonImport  extends EfloraTaxonImport  {
 		TimePeriod datePublished = TimePeriodParser.parseString(titleToParse);
 		ref.setDatePublished(datePublished);
 		return detailResult;
-		
+
 	}
 
 	protected TeamOrPersonBase getReferenceAuthor (Reference ref, NonViralName name) {
@@ -245,14 +245,14 @@ public class CentralAfricaEricaceaeTaxonImport  extends EfloraTaxonImport  {
 			logger.warn("Title does not match: " + titleString);
 			return null;
 		}
-		
+
 	}
 
 	private TeamOrPersonBase getAuthorTeam(String authorString, NonViralName name) {
 		//TODO atomize
-//		TeamOrPersonBase nameTeam = CdmBase.deproxy(name.getCombinationAuthorTeam(), TeamOrPersonBase.class);
+//		TeamOrPersonBase nameTeam = CdmBase.deproxy(name.getCombinationAuthorship(), TeamOrPersonBase.class);
 //		String nameTeamTitle = nameTeam == null ? "" : nameTeam.getNomenclaturalTitle();
-		
+
 //		if (nameTeam == null || ! authorTeamsMatch(authorString, nameTeamTitle)){
 //			logger.warn("Author teams do not match: " + authorString + " <-> " + nameTeamTitle);
 			TeamOrPersonBase result = parseSingleTeam(authorString);
@@ -275,7 +275,7 @@ public class CentralAfricaEricaceaeTaxonImport  extends EfloraTaxonImport  {
 		if (nameTeamString.equalsIgnoreCase(refAuthorTeamString)){
 			return true;
 		}
-		
+
 		if (nameTeamString.endsWith(".")){
 			nameTeamString = nameTeamString.substring(0, nameTeamString.length() - 1 );
 			if (refAuthorTeamString.startsWith(nameTeamString)){
@@ -291,7 +291,7 @@ public class CentralAfricaEricaceaeTaxonImport  extends EfloraTaxonImport  {
 			}
 		}
 	}
-	
+
 	private boolean checkSingleAndIpniAuthor(TeamOrPersonBase nameTeam, TeamOrPersonBase refAuthorTeam) {
 		if ( nameTeam.isInstanceOf(Team.class) && ((Team)nameTeam).getTeamMembers().size()> 1 ||
 				refAuthorTeam.isInstanceOf(Team.class) && ((Team)refAuthorTeam).getTeamMembers().size()> 1){
@@ -346,7 +346,7 @@ public class CentralAfricaEricaceaeTaxonImport  extends EfloraTaxonImport  {
 	 * @param state
 	 * @param elNom
 	 * @param taxon
-	 * @param homotypicalGroup 
+	 * @param homotypicalGroup
 	 */
 	@Override
 	protected void handleTypeRef(EfloraImportState state, Element elNom, Taxon taxon, HomotypicalGroup homotypicalGroup) {
@@ -365,11 +365,12 @@ public class CentralAfricaEricaceaeTaxonImport  extends EfloraTaxonImport  {
 		typeRef = typeRef.trim().replace("Type: ", "").replace("Types: ", "").trim();
 		return typeRef;
 	}
-	
-	protected void handleGenus(String value, TaxonNameBase taxonName) {
+
+	@Override
+    protected void handleGenus(String value, TaxonNameBase taxonName) {
 		// do nothing
 	}
 
-	
-	
+
+
 }
