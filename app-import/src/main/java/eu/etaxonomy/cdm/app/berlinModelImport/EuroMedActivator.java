@@ -9,13 +9,19 @@
 
 package eu.etaxonomy.cdm.app.berlinModelImport;
 
+import java.util.Arrays;
+import java.util.List;
 import java.util.UUID;
 
 import org.apache.log4j.Logger;
 import org.springframework.transaction.TransactionStatus;
 
 import eu.etaxonomy.cdm.api.application.ICdmApplicationConfiguration;
+import eu.etaxonomy.cdm.api.service.description.TransmissionEngineDistribution;
+import eu.etaxonomy.cdm.api.service.description.TransmissionEngineDistribution.AggregationMode;
+import eu.etaxonomy.cdm.api.service.pager.Pager;
 import eu.etaxonomy.cdm.app.common.CdmDestinations;
+import eu.etaxonomy.cdm.common.monitor.DefaultProgressMonitor;
 import eu.etaxonomy.cdm.database.DbSchemaValidation;
 import eu.etaxonomy.cdm.database.ICdmDataSource;
 import eu.etaxonomy.cdm.io.berlinModel.BerlinModelTransformer;
@@ -31,8 +37,12 @@ import eu.etaxonomy.cdm.model.common.Representation;
 import eu.etaxonomy.cdm.model.description.Feature;
 import eu.etaxonomy.cdm.model.description.FeatureNode;
 import eu.etaxonomy.cdm.model.description.FeatureTree;
+import eu.etaxonomy.cdm.model.location.NamedArea;
+import eu.etaxonomy.cdm.model.location.NamedAreaLevel;
+import eu.etaxonomy.cdm.model.location.NamedAreaType;
 import eu.etaxonomy.cdm.model.name.NomenclaturalCode;
 import eu.etaxonomy.cdm.model.name.Rank;
+import eu.etaxonomy.cdm.persistence.query.OrderHint;
 
 
 /**
@@ -277,7 +287,29 @@ public class EuroMedActivator {
 		    //??
 		}
 
+        //Transmission engine #3979 .1
+        if (config.isDoOccurrence() && (config.getCheck().isImport()  )  ){
+            ICdmApplicationConfiguration app = bmImport.getCdmAppController();
 
+            final List<String> term_init_strategy = Arrays.asList(new String []{
+                    "representations"
+            });
+            Pager<NamedArea> areaPager = app.getTermService().list(
+                    NamedAreaLevel.TDWG_LEVEL3(),
+                    (NamedAreaType) null,
+                    null,
+                    null,
+                    (List<OrderHint>) null,
+                    term_init_strategy);
+            TransmissionEngineDistribution transmissionEngineDistribution = (TransmissionEngineDistribution)app.getBean("transmissionEngineDistribution");
+            transmissionEngineDistribution.accumulate(
+                    AggregationMode.byAreasAndRanks,
+                    areaPager.getRecords(),
+                    Rank.SUBSPECIES(),
+                    Rank.GENUS(),
+                    null,
+                    DefaultProgressMonitor.NewInstance());
+        }
 
 		System.out.println("End import from BerlinModel ("+ source.getDatabase() + ")...");
 
