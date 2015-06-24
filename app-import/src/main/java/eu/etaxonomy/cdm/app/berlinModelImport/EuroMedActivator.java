@@ -35,13 +35,17 @@ import eu.etaxonomy.cdm.ext.geo.IEditGeoService;
 import eu.etaxonomy.cdm.io.berlinModel.BerlinModelTransformer;
 import eu.etaxonomy.cdm.io.berlinModel.in.BerlinModelImportConfigurator;
 import eu.etaxonomy.cdm.io.common.CdmDefaultImport;
+import eu.etaxonomy.cdm.io.common.CdmImportBase;
 import eu.etaxonomy.cdm.io.common.IImportConfigurator.CHECK;
 import eu.etaxonomy.cdm.io.common.IImportConfigurator.DO_REFERENCES;
 import eu.etaxonomy.cdm.io.common.IImportConfigurator.EDITOR;
 import eu.etaxonomy.cdm.io.common.Source;
 import eu.etaxonomy.cdm.model.common.DefinedTermBase;
 import eu.etaxonomy.cdm.model.common.Language;
+import eu.etaxonomy.cdm.model.common.Marker;
+import eu.etaxonomy.cdm.model.common.MarkerType;
 import eu.etaxonomy.cdm.model.common.Representation;
+import eu.etaxonomy.cdm.model.common.TermVocabulary;
 import eu.etaxonomy.cdm.model.description.Feature;
 import eu.etaxonomy.cdm.model.description.FeatureNode;
 import eu.etaxonomy.cdm.model.description.FeatureTree;
@@ -323,7 +327,7 @@ public class EuroMedActivator {
 //      //import shapefile attributes #3979 .2
 	    if (config.isDoOccurrence() && (config.getCheck().isImport())){
 
-	        UUID areaVocabularyUuid = BerlinModelTransformer.uuidVocEuroMedAreas;
+	       UUID areaVocabularyUuid = BerlinModelTransformer.uuidVocEuroMedAreas;
            List<String> idSearchFields = Arrays.asList(new String[]{"EMAREA","PARENT"});
            String wmsLayerName = "euromed_2013";
            Set<UUID> areaUuidSet = null;
@@ -351,7 +355,31 @@ public class EuroMedActivator {
            }
 	    }
 
+	    //5.Mark areas to be hidden #3979 .5
+	    if (config.isDoOccurrence() && (config.getCheck().isImport())){
+	        ICdmApplicationConfiguration app = bmImport.getCdmAppController();
 
+	        MarkerType hiddenAreaMarkerType = MarkerType.NewInstance("", "Hidden area", null);
+	        hiddenAreaMarkerType.setUuid(BerlinModelTransformer.uuidHiddenArea);
+	        @SuppressWarnings("unchecked")
+            TermVocabulary<MarkerType> vocUserDefinedMarkerTypes = app.getVocabularyService().find(CdmImportBase.uuidUserDefinedMarkerTypeVocabulary);
+	        if (vocUserDefinedMarkerTypes == null){
+	            String message = "Marker type vocabulary could not be found. Hidden areas not added.";
+	            logger.error(message);
+	            System.out.println(message);
+	        }else{
+	            vocUserDefinedMarkerTypes.addTerm(hiddenAreaMarkerType);
+	            app.getVocabularyService().saveOrUpdate(vocUserDefinedMarkerTypes);
+
+	            //Add hidden area marker to Rs(C) and Rs(N)
+	            NamedArea rs_c = (NamedArea)app.getTermService().find(BerlinModelTransformer.uuidRs_C);
+	            rs_c.addMarker(Marker.NewInstance(hiddenAreaMarkerType, true));
+	            app.getTermService().saveOrUpdate(rs_c);
+	            NamedArea rs_n = (NamedArea)app.getTermService().find(BerlinModelTransformer.uuidRs_N);
+                rs_n.addMarker(Marker.NewInstance(hiddenAreaMarkerType, true));
+                app.getTermService().saveOrUpdate(rs_n);
+	        }
+	    }
 
 		System.out.println("End import from BerlinModel ("+ source.getDatabase() + ")...");
 
