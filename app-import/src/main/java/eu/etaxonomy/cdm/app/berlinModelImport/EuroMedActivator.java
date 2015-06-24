@@ -21,9 +21,12 @@ import java.util.Set;
 import java.util.UUID;
 
 import org.apache.log4j.Logger;
+import org.springframework.security.core.GrantedAuthority;
 import org.springframework.transaction.TransactionStatus;
 
+import eu.etaxonomy.cdm.api.application.FirstDataInserter;
 import eu.etaxonomy.cdm.api.application.ICdmApplicationConfiguration;
+import eu.etaxonomy.cdm.api.service.IGroupService;
 import eu.etaxonomy.cdm.api.service.description.TransmissionEngineDistribution;
 import eu.etaxonomy.cdm.api.service.description.TransmissionEngineDistribution.AggregationMode;
 import eu.etaxonomy.cdm.api.service.pager.Pager;
@@ -40,12 +43,16 @@ import eu.etaxonomy.cdm.io.common.IImportConfigurator.CHECK;
 import eu.etaxonomy.cdm.io.common.IImportConfigurator.DO_REFERENCES;
 import eu.etaxonomy.cdm.io.common.IImportConfigurator.EDITOR;
 import eu.etaxonomy.cdm.io.common.Source;
+import eu.etaxonomy.cdm.model.agent.Person;
 import eu.etaxonomy.cdm.model.common.DefinedTermBase;
+import eu.etaxonomy.cdm.model.common.GrantedAuthorityImpl;
+import eu.etaxonomy.cdm.model.common.Group;
 import eu.etaxonomy.cdm.model.common.Language;
 import eu.etaxonomy.cdm.model.common.Marker;
 import eu.etaxonomy.cdm.model.common.MarkerType;
 import eu.etaxonomy.cdm.model.common.Representation;
 import eu.etaxonomy.cdm.model.common.TermVocabulary;
+import eu.etaxonomy.cdm.model.common.User;
 import eu.etaxonomy.cdm.model.description.Feature;
 import eu.etaxonomy.cdm.model.description.FeatureNode;
 import eu.etaxonomy.cdm.model.description.FeatureTree;
@@ -54,6 +61,10 @@ import eu.etaxonomy.cdm.model.location.NamedAreaLevel;
 import eu.etaxonomy.cdm.model.location.NamedAreaType;
 import eu.etaxonomy.cdm.model.name.NomenclaturalCode;
 import eu.etaxonomy.cdm.model.name.Rank;
+import eu.etaxonomy.cdm.model.taxon.Taxon;
+import eu.etaxonomy.cdm.model.taxon.TaxonNode;
+import eu.etaxonomy.cdm.persistence.hibernate.permission.Role;
+import eu.etaxonomy.cdm.persistence.query.MatchMode;
 import eu.etaxonomy.cdm.persistence.query.OrderHint;
 
 
@@ -67,7 +78,6 @@ import eu.etaxonomy.cdm.persistence.query.OrderHint;
  *
  */
 public class EuroMedActivator {
-	@SuppressWarnings("unused")
 	private static final Logger logger = Logger.getLogger(EuroMedActivator.class);
 
 	//database validation status (create, update, validate ...)
@@ -142,7 +152,7 @@ public class EuroMedActivator {
 
 // **************** ALL *********************
 
-	boolean invers =   !(hbm2dll == DbSchemaValidation.CREATE);
+	boolean invers = !(hbm2dll == DbSchemaValidation.CREATE);
 
 	static final boolean doUser = true;
 //	//authors
@@ -158,7 +168,7 @@ public class EuroMedActivator {
 
 	//taxa
 	static final boolean doTaxa = true;
-	static final boolean doRelTaxa = false;
+	static final boolean doRelTaxa = true;  //FIXME revert
 	static final boolean doFacts = true;
 	static final boolean doOccurences = true;
 	static final boolean doCommonNames = true;
@@ -238,7 +248,26 @@ public class EuroMedActivator {
 		CdmDefaultImport<BerlinModelImportConfigurator> bmImport = new CdmDefaultImport<BerlinModelImportConfigurator>();
 		bmImport.invoke(config);
 
-		//Rename Ranks (still needed?)
+		renameRanks(config, bmImport);
+
+		createFeatureTree(config, bmImport);
+
+		changeCommonNameLabel(config, bmImport);
+
+        runTransmissionEngine(config, bmImport);
+
+        importShapefile(config, bmImport);
+
+        createUsersAndRoles(config, bmImport);
+
+	    markAreasAsHidden(config, bmImport);
+
+		System.out.println("End import from BerlinModel ("+ source.getDatabase() + ")...");
+	}
+
+    private void renameRanks(BerlinModelImportConfigurator config,
+            CdmDefaultImport<BerlinModelImportConfigurator> bmImport) {
+        //Rename Ranks (still needed?)
 		if (config.isDoTaxonNames() && (config.getCheck().isImport() )  ){
 			ICdmApplicationConfiguration app = bmImport.getCdmAppController();
 			TransactionStatus tx = app.startTransaction();
@@ -261,8 +290,11 @@ public class EuroMedActivator {
 				e.printStackTrace();
 			}
 		}
+    }
 
-		//create feature tree
+    private void createFeatureTree(BerlinModelImportConfigurator config,
+            CdmDefaultImport<BerlinModelImportConfigurator> bmImport) {
+        //create feature tree
 		if (config.isDoFacts() && (config.getCheck().isImport()  )  ){
 			ICdmApplicationConfiguration app = bmImport.getCdmAppController();
 			TransactionStatus tx = app.startTransaction();
@@ -278,11 +310,12 @@ public class EuroMedActivator {
 			app.getFeatureTreeService().saveOrUpdate(tree);
 
             app.commitTransaction(tx);
-
-
 		}
+    }
 
-		//Change common name label
+    private void changeCommonNameLabel(BerlinModelImportConfigurator config,
+            CdmDefaultImport<BerlinModelImportConfigurator> bmImport) {
+        //Change common name label
 	    if (config.isDoFacts() && (config.getCheck().isImport()  )  ){
 	        ICdmApplicationConfiguration app = bmImport.getCdmAppController();
 	        TransactionStatus tx = app.startTransaction();
@@ -294,11 +327,10 @@ public class EuroMedActivator {
 
             app.commitTransaction(tx);
 	    }
+    }
 
-		if (config.isDoRelTaxa()){
-		    //??
-		}
-
+    private void runTransmissionEngine(BerlinModelImportConfigurator config,
+            CdmDefaultImport<BerlinModelImportConfigurator> bmImport) {
         //Transmission engine #3979 .1
         if (config.isDoOccurrence() && (config.getCheck().isImport()  )  ){
             ICdmApplicationConfiguration app = bmImport.getCdmAppController();
@@ -322,9 +354,40 @@ public class EuroMedActivator {
                     null,
                     DefaultProgressMonitor.NewInstance());
         }
+    }
 
+    private void markAreasAsHidden(BerlinModelImportConfigurator config,
+            CdmDefaultImport<BerlinModelImportConfigurator> bmImport) {
+        //5.Mark areas to be hidden #3979 .5
+	    if (config.isDoOccurrence() && (config.getCheck().isImport())){
+	        ICdmApplicationConfiguration app = bmImport.getCdmAppController();
 
-//      //import shapefile attributes #3979 .2
+	        MarkerType hiddenAreaMarkerType = MarkerType.NewInstance("", "Hidden area", null);
+	        hiddenAreaMarkerType.setUuid(BerlinModelTransformer.uuidHiddenArea);
+	        @SuppressWarnings("unchecked")
+            TermVocabulary<MarkerType> vocUserDefinedMarkerTypes = app.getVocabularyService().find(CdmImportBase.uuidUserDefinedMarkerTypeVocabulary);
+	        if (vocUserDefinedMarkerTypes == null){
+	            String message = "Marker type vocabulary could not be found. Hidden areas not added.";
+	            logger.error(message);
+	            System.out.println(message);
+	        }else{
+	            vocUserDefinedMarkerTypes.addTerm(hiddenAreaMarkerType);
+	            app.getVocabularyService().saveOrUpdate(vocUserDefinedMarkerTypes);
+
+	            //Add hidden area marker to Rs(C) and Rs(N)
+	            NamedArea rs_c = (NamedArea)app.getTermService().find(BerlinModelTransformer.uuidRs_C);
+	            rs_c.addMarker(Marker.NewInstance(hiddenAreaMarkerType, true));
+	            app.getTermService().saveOrUpdate(rs_c);
+	            NamedArea rs_n = (NamedArea)app.getTermService().find(BerlinModelTransformer.uuidRs_N);
+                rs_n.addMarker(Marker.NewInstance(hiddenAreaMarkerType, true));
+                app.getTermService().saveOrUpdate(rs_n);
+	        }
+	    }
+    }
+
+    private void importShapefile(BerlinModelImportConfigurator config,
+            CdmDefaultImport<BerlinModelImportConfigurator> bmImport) {
+        //      //import shapefile attributes #3979 .2
 	    if (config.isDoOccurrence() && (config.getCheck().isImport())){
 
 	       UUID areaVocabularyUuid = BerlinModelTransformer.uuidVocEuroMedAreas;
@@ -354,36 +417,130 @@ public class EuroMedActivator {
                 System.out.println(message);
            }
 	    }
+    }
 
-	    //5.Mark areas to be hidden #3979 .5
-	    if (config.isDoOccurrence() && (config.getCheck().isImport())){
+    private void createUsersAndRoles(BerlinModelImportConfigurator config,
+            CdmDefaultImport<BerlinModelImportConfigurator> bmImport) {
+        //4. Create users and assign roles  #3979
+	    if (config.isDoRelTaxa() && (config.getCheck().isImport())){
 	        ICdmApplicationConfiguration app = bmImport.getCdmAppController();
+	        TransactionStatus tx = app.startTransaction();
 
-	        MarkerType hiddenAreaMarkerType = MarkerType.NewInstance("", "Hidden area", null);
-	        hiddenAreaMarkerType.setUuid(BerlinModelTransformer.uuidHiddenArea);
-	        @SuppressWarnings("unchecked")
-            TermVocabulary<MarkerType> vocUserDefinedMarkerTypes = app.getVocabularyService().find(CdmImportBase.uuidUserDefinedMarkerTypeVocabulary);
-	        if (vocUserDefinedMarkerTypes == null){
-	            String message = "Marker type vocabulary could not be found. Hidden areas not added.";
-	            logger.error(message);
-	            System.out.println(message);
+	        //eraabstraube
+	        String eraabstraube = "eraabstraube";
+	        List<User> users = app.getUserService().listByUsername(eraabstraube, MatchMode.EXACT, null, null, null, null, null);
+	        User userEraabStraube;
+	        if (users.isEmpty()){
+	            userEraabStraube = User.NewInstance(eraabstraube, eraabstraube);
 	        }else{
-	            vocUserDefinedMarkerTypes.addTerm(hiddenAreaMarkerType);
-	            app.getVocabularyService().saveOrUpdate(vocUserDefinedMarkerTypes);
-
-	            //Add hidden area marker to Rs(C) and Rs(N)
-	            NamedArea rs_c = (NamedArea)app.getTermService().find(BerlinModelTransformer.uuidRs_C);
-	            rs_c.addMarker(Marker.NewInstance(hiddenAreaMarkerType, true));
-	            app.getTermService().saveOrUpdate(rs_c);
-	            NamedArea rs_n = (NamedArea)app.getTermService().find(BerlinModelTransformer.uuidRs_N);
-                rs_n.addMarker(Marker.NewInstance(hiddenAreaMarkerType, true));
-                app.getTermService().saveOrUpdate(rs_n);
+	            userEraabStraube = users.get(0);
 	        }
+	        if (userEraabStraube.getPerson() == null){
+    	        Person eckhard = Person.NewInstance();
+                eckhard.setLastname("von Raab-Straube");
+                eckhard.setFirstname("Eckhard");
+                eckhard.setPrefix("Dr.");
+                userEraabStraube.setPerson(eckhard);
+	        }
+            app.getUserService().saveOrUpdate(userEraabStraube);
+
+            //groups
+            Group groupEditor = app.getGroupService().load(Group.groupEditorUuid);
+            groupEditor.addMember(userEraabStraube);
+            app.getGroupService().saveOrUpdate(groupEditor);
+
+            Group groupProjectManager = app.getGroupService().load(Group.groupProjectManagerUuid);
+            groupProjectManager.addMember(userEraabStraube);
+            app.getGroupService().saveOrUpdate(groupProjectManager);
+
+            String[] publishRoles = new String[]{Role.ROLE_PUBLISH.toString()};
+            Group groupPublisher = checkGroup(app.getGroupService(), Group.groupPublisherUuid, "Publisher", publishRoles);
+            groupPublisher.addMember(userEraabStraube);
+            app.getGroupService().saveOrUpdate(groupPublisher);
+
+            UUID uuidEuroMedPlantBaseGroup = UUID.fromString("91be42ea-ad04-4458-9836-389277e773db");
+            String[] emPlantBaseRoles = new String[]{"TAXONNODE.[CREATE,READ,UPDATE,DELETE]"};
+            Group euroMedPlantbase = checkGroup(app.getGroupService(), uuidEuroMedPlantBaseGroup, "Euro+Med Plantbase", emPlantBaseRoles);
+            euroMedPlantbase.addMember(userEraabStraube);
+            app.getGroupService().saveOrUpdate(euroMedPlantbase);
+
+            //cichorieae-editor
+            String cichorieaeEditor = "cichorieae-editor";
+            app.getUserService().listByUsername(cichorieaeEditor, MatchMode.EXACT, null, null, null, null, null);
+            User userCichEditor;
+            if (users.isEmpty()){
+                userCichEditor = User.NewInstance(cichorieaeEditor, cichorieaeEditor);
+            }else{
+                userCichEditor = users.get(0);
+            }
+            app.getUserService().saveOrUpdate(userCichEditor);
+
+            //groups
+            groupEditor.addMember(userCichEditor);
+            app.getGroupService().saveOrUpdate(groupEditor);
+
+            UUID uuidCichorieaeSubtree = null;
+            UUID uuidCichorieae = UUID.fromString("63c7dbeb-b9a2-48b8-a75f-e3fe5e161f7c");
+            Taxon cich = (Taxon)app.getTaxonService().find(uuidCichorieae);
+            if (cich != null){
+                TaxonNode cichNode = cich.getTaxonNodes().iterator().next();
+                if (cichNode != null){
+                    uuidCichorieaeSubtree = cichNode.getUuid();
+                }
+            }
+
+            String[] cichorieaeRoles = new String[]{};
+            if (uuidCichorieaeSubtree != null){
+                cichorieaeRoles = new String[]{"TAXONNODE.[CREATE,READ,UPDATE,DELETE]{"+uuidCichorieaeSubtree.toString()+"}"};
+            }else{
+                String message = "Cichorieae node could not be found";
+                logger.warn(message);
+                System.out.println(message);
+            }
+            UUID uuidCichorieaeGroup = UUID.fromString("a630938d-dd4f-48c2-9406-91def487b11e");
+            String cichorieaeGroupName = "cichorieae";
+            Group cichorieaeGroup = checkGroup(app.getGroupService(), uuidCichorieaeGroup, cichorieaeGroupName, cichorieaeRoles);
+            cichorieaeGroup.addMember(userCichEditor);
+            app.getGroupService().saveOrUpdate(cichorieaeGroup);
+
+            app.commitTransaction(tx);
 	    }
+    }
 
-		System.out.println("End import from BerlinModel ("+ source.getDatabase() + ")...");
+	/**
+	  * copied from {@link FirstDataInserter#checkGroup}
+     */
+    private Group checkGroup(IGroupService groupService, UUID groupUuid, String groupName, String[] requiredAuthorities) {
+        Group group = groupService.load(groupUuid);
+        if(group == null){
+            group = Group.NewInstance();
+            group.setUuid(groupUuid);
+            logger.info("New Group '" + groupName + "' created");
+        }
+        group.setName(groupName); // force name
 
-	}
+        Set<GrantedAuthority> grantedAuthorities = group.getGrantedAuthorities();
+
+        for(String a : requiredAuthorities){
+            boolean isMissing = true;
+            for(GrantedAuthority ga : grantedAuthorities){
+                if(a.equals(ga.getAuthority())){
+                    isMissing = false;
+                    break;
+                }
+            }
+            if(isMissing){
+                GrantedAuthorityImpl newGa = GrantedAuthorityImpl.NewInstance();
+                newGa.setAuthority(a);
+                group.addGrantedAuthority(newGa);
+                logger.info("New GrantedAuthority '" + a + "' added  to '" + groupName + "'");
+            }
+        }
+        groupService.saveOrUpdate(group);
+        logger.info("Check of group  '" + groupName + "' done");
+        return group;
+    }
+
 
 	/**
 	 * @param args
