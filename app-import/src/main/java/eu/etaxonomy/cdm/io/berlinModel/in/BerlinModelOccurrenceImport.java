@@ -1,8 +1,8 @@
 /**
 * Copyright (C) 2007 EDIT
-* European Distributed Institute of Taxonomy 
+* European Distributed Institute of Taxonomy
 * http://www.e-taxonomy.eu
-* 
+*
 * The contents of this file are subject to the Mozilla Public License Version 1.1
 * See LICENSE.TXT at the top of this package for the full license terms.
 */
@@ -67,8 +67,8 @@ public class BerlinModelOccurrenceImport  extends BerlinModelImportBase {
 	private static final Logger logger = Logger.getLogger(BerlinModelOccurrenceImport.class);
 
 	public static final String NAMESPACE = "Occurrence";
-	
-	
+
+
 	private static int modCount = 5000;
 	private static final String pluralString = "occurrences";
 	private static final String dbTableName = "emOccurrence";  //??
@@ -77,37 +77,37 @@ public class BerlinModelOccurrenceImport  extends BerlinModelImportBase {
 	public BerlinModelOccurrenceImport(){
 		super(dbTableName, pluralString);
 	}
-	
+
 	@Override
 	protected String getIdQuery(BerlinModelImportState state) {
 		String result = " SELECT occurrenceId FROM " + getTableName();
 		if (StringUtils.isNotBlank(state.getConfig().getOccurrenceFilter())){
-			result += " WHERE " +  state.getConfig().getOccurrenceFilter(); 
-		} 
+			result += " WHERE " +  state.getConfig().getOccurrenceFilter();
+		}
 		return result;
 	}
 
 	@Override
 	protected String getRecordQuery(BerlinModelImportConfigurator config) {
 			String emCode = config.isIncludesAreaEmCode()? ", emArea.EMCode" : "";
-			String strQuery =   //DISTINCT because otherwise emOccurrenceSource creates multiple records for a single distribution 
+			String strQuery =   //DISTINCT because otherwise emOccurrenceSource creates multiple records for a single distribution
             " SELECT DISTINCT PTaxon.RIdentifier AS taxonId, emOccurrence.OccurrenceId, emOccurrence.Native, emOccurrence.Introduced, " +
             		" emOccurrence.Cultivated, emOccurrence.Notes occNotes, " +
-            		" emOccurSumCat.emOccurSumCatId, emOccurSumCat.Short, emOccurSumCat.Description, " +  
-                	" emOccurSumCat.OutputCode, emArea.AreaId, emArea.TDWGCode " + emCode + 
-                " FROM emOccurrence INNER JOIN " +  
-                	" emArea ON emOccurrence.AreaFk = emArea.AreaId INNER JOIN " + 
-                	" PTaxon ON emOccurrence.PTNameFk = PTaxon.PTNameFk AND emOccurrence.PTRefFk = PTaxon.PTRefFk LEFT OUTER JOIN " + 
-                	" emOccurSumCat ON emOccurrence.SummaryStatus = emOccurSumCat.emOccurSumCatId LEFT OUTER JOIN " +  
-                	" emOccurrenceSource ON emOccurrence.OccurrenceId = emOccurrenceSource.OccurrenceFk " +  
-            " WHERE (emOccurrence.OccurrenceId IN (" + ID_LIST_TOKEN + ")  )" +  
+            		" emOccurSumCat.emOccurSumCatId, emOccurSumCat.Short, emOccurSumCat.Description, " +
+                	" emOccurSumCat.OutputCode, emArea.AreaId, emArea.TDWGCode " + emCode +
+                " FROM emOccurrence INNER JOIN " +
+                	" emArea ON emOccurrence.AreaFk = emArea.AreaId INNER JOIN " +
+                	" PTaxon ON emOccurrence.PTNameFk = PTaxon.PTNameFk AND emOccurrence.PTRefFk = PTaxon.PTRefFk LEFT OUTER JOIN " +
+                	" emOccurSumCat ON emOccurrence.SummaryStatus = emOccurSumCat.emOccurSumCatId LEFT OUTER JOIN " +
+                	" emOccurrenceSource ON emOccurrence.OccurrenceId = emOccurrenceSource.OccurrenceFk " +
+            " WHERE (emOccurrence.OccurrenceId IN (" + ID_LIST_TOKEN + ")  )" +
                 " ORDER BY PTaxon.RIdentifier";
 		return strQuery;
 	}
 
 	private Map<Integer, NamedArea> euroMedAreas = new HashMap<Integer, NamedArea>();
-	
-	
+
+
 	@Override
 	public void doInvoke(BerlinModelImportState state) {
 		if (state.getConfig().isUseEmAreaVocabulary()){
@@ -123,18 +123,18 @@ public class BerlinModelOccurrenceImport  extends BerlinModelImportBase {
 		//reset
 		euroMedAreas = new HashMap<Integer, NamedArea>();
 	}
-	
+
 	private TermVocabulary<NamedArea> createEuroMedAreas(BerlinModelImportState state) throws SQLException {
 		logger.warn("Start creating E+M areas");
 		Source source = state.getConfig().getSource();
 		Reference<?> sourceReference = state.getConfig().getSourceReference();
-		
+
 		TransactionStatus txStatus = this.startTransaction();
-		
+
 		sourceReference = getSourceReference(sourceReference);
-		
+
 		TermVocabulary<NamedArea> euroMedAreas = makeEmptyEuroMedVocabulary();
-		
+
 		MarkerType eurMarkerType = getMarkerType(state, BerlinModelTransformer.uuidEurArea, "eur", "eur Area", "eur");
 		MarkerType euroMedAreaMarkerType = getMarkerType(state, BerlinModelTransformer.uuidEurMedArea, "EuroMedArea", "EuroMedArea", "EuroMedArea");
 		ExtensionType isoCodeExtType = getExtensionType(state, BerlinModelTransformer.uuidIsoCode, "IsoCode", "IsoCode", "iso");
@@ -143,37 +143,37 @@ public class BerlinModelOccurrenceImport  extends BerlinModelImportBase {
 		NamedAreaLevel areaLevelTop = getNamedAreaLevel(state, BerlinModelTransformer.uuidAreaLevelTop, "Euro+Med top area level", "Euro+Med top area level. This level is only to be used for the area representing the complete Euro+Med area", "e+m top", null);
 		NamedAreaLevel areaLevelEm1 = getNamedAreaLevel(state, BerlinModelTransformer.uuidAreaLevelFirst, "Euro+Med 1. area level", "Euro+Med 1. area level", "e+m 1.", null);
 		NamedAreaLevel areaLevelEm2 = getNamedAreaLevel(state, BerlinModelTransformer.uuidAreaLevelSecond, "Euro+Med 2. area level", "Euro+Med 2. area level", "Euro+Med 1. area level", null);
-		
-		
+
+
 		String sql = "SELECT * , CASE WHEN EMCode = 'EM' THEN 'a' ELSE 'b' END as isEM " +
 				" FROM emArea " +
-				" ORDER BY isEM, EMCode"; 
+				" ORDER BY isEM, EMCode";
 		ResultSet rs = source.getResultSet(sql);
-		
+
 		NamedArea euroMedArea = null;
 		NamedArea lastLevel2Area = null;
-		
+
 		//euroMedArea (EMCode = 'EM')
 		rs.next();
-		euroMedArea = makeSingleEuroMedArea(rs, eurMarkerType, euroMedAreaMarkerType, isoCodeExtType, tdwgCodeExtType, mclCodeExtType, 
+		euroMedArea = makeSingleEuroMedArea(rs, eurMarkerType, euroMedAreaMarkerType, isoCodeExtType, tdwgCodeExtType, mclCodeExtType,
 				areaLevelTop, areaLevelEm1 , areaLevelEm2, sourceReference, euroMedArea, lastLevel2Area);
 		euroMedAreas.addTerm(euroMedArea);
-		
+
 		//all other areas
 		while (rs.next()){
 			NamedArea newArea = makeSingleEuroMedArea(rs, eurMarkerType, euroMedAreaMarkerType,
-					isoCodeExtType, tdwgCodeExtType, mclCodeExtType, 
+					isoCodeExtType, tdwgCodeExtType, mclCodeExtType,
 					areaLevelTop, areaLevelEm1 , areaLevelEm2, sourceReference, euroMedArea, lastLevel2Area);
 			euroMedAreas.addTerm(newArea);
 			if (newArea.getPartOf().equals(euroMedArea)){
 				lastLevel2Area = newArea;
 			}
 			getVocabularyService().saveOrUpdate(euroMedAreas);
-		}	
-		
+		}
+
 		commitTransaction(txStatus);
 		logger.warn("Created E+M areas");
-		
+
 		return euroMedAreas;
 	}
 
@@ -196,15 +196,15 @@ public class BerlinModelOccurrenceImport  extends BerlinModelImportBase {
 	 * @param tdwgCodeExtType
 	 * @param mclCodeExtType
 	 * @param rs
-	 * @param areaLevelEm2 
-	 * @param areaLevelEm1 
-	 * @param areaLevelTop 
+	 * @param areaLevelEm2
+	 * @param areaLevelEm1
+	 * @param areaLevelTop
 	 * @throws SQLException
 	 */
 	private NamedArea makeSingleEuroMedArea(ResultSet rs, MarkerType eurMarkerType,
 			MarkerType euroMedAreaMarkerType, ExtensionType isoCodeExtType,
 			ExtensionType tdwgCodeExtType, ExtensionType mclCodeExtType,
-			NamedAreaLevel areaLevelTop, NamedAreaLevel areaLevelEm1, NamedAreaLevel areaLevelEm2, 
+			NamedAreaLevel areaLevelTop, NamedAreaLevel areaLevelEm1, NamedAreaLevel areaLevelEm2,
 			Reference<?> sourceReference, NamedArea euroMedArea, NamedArea level2Area) throws SQLException {
 		Integer areaId = rs.getInt("AreaId");
 		String emCode = nullSafeTrim(rs.getString("EMCode"));
@@ -218,11 +218,11 @@ public class BerlinModelOccurrenceImport  extends BerlinModelImportBase {
 		String notes = nullSafeTrim(rs.getString("Notes"));
 		String mclCode = nullSafeTrim(rs.getString("MCLCode"));
 		String geoSearch = nullSafeTrim(rs.getString("NameForGeoSearch"));
-		
+
 		if (isBlank(emCode)){
 			emCode = unit;
 		}
-		
+
 		//uuid
 		UUID uuid = BerlinModelTransformer.getEMAreaUuid(emCode);
 		NamedArea area = (NamedArea)getTermService().find(uuid);
@@ -235,8 +235,8 @@ public class BerlinModelOccurrenceImport  extends BerlinModelImportBase {
 				logger.warn("Uuuid for emCode could not be defined: " + emCode);
 			}
 		}
-		
-		
+
+
 		//code
 		area.setIdInVocabulary(emCode);
 		//notes
@@ -246,7 +246,7 @@ public class BerlinModelOccurrenceImport  extends BerlinModelImportBase {
 		//markers
 		area.addMarker(Marker.NewInstance(eurMarkerType, eurMarker));
 		area.addMarker(Marker.NewInstance(euroMedAreaMarkerType, euroMedAreaMarker));
-		
+
 		//extensions
 		if (isNotBlank(isoCode)){
 			area.addExtension(isoCode, isoCodeExtType);
@@ -257,13 +257,13 @@ public class BerlinModelOccurrenceImport  extends BerlinModelImportBase {
 		if (isNotBlank(mclCode)){
 			area.addExtension(mclCode, mclCodeExtType);
 		}
-		
+
 		//type
 		area.setType(NamedAreaType.ADMINISTRATION_AREA());
-		
+
 		//source
 		area.addSource(OriginalSourceType.Import, String.valueOf(areaId), EM_AREA_NAMESPACE, sourceReference, null);
-		
+
 		//parent
 		if (euroMedArea != null){
 			if (emCode.contains("(")){
@@ -277,10 +277,10 @@ public class BerlinModelOccurrenceImport  extends BerlinModelImportBase {
 			area.setLevel(areaLevelTop);
 		}
 		this.euroMedAreas.put(areaId, area);
-		
+
 		//save
 		getTermService().saveOrUpdate(area);
-		
+
 		return area;
 	}
 
@@ -293,7 +293,7 @@ public class BerlinModelOccurrenceImport  extends BerlinModelImportBase {
 	}
 
 	/**
-	 * 
+	 *
 	 */
 	private TermVocabulary<NamedArea> makeEmptyEuroMedVocabulary() {
 		TermType type = TermType.NamedArea;
@@ -302,6 +302,8 @@ public class BerlinModelOccurrenceImport  extends BerlinModelImportBase {
 		String abbrev = null;
 		URI termSourceUri = null;
 		TermVocabulary<NamedArea> result = TermVocabulary.NewInstance(type, description, label, abbrev, termSourceUri);
+
+		result.setUuid(BerlinModelTransformer.uuidVocEuroMedAreas);
 		getVocabularyService().save(result);
 		return result;
 	}
@@ -310,9 +312,9 @@ public class BerlinModelOccurrenceImport  extends BerlinModelImportBase {
 	public boolean doPartition(ResultSetPartitioner partitioner, BerlinModelImportState state) {
 		boolean success = true;
 		Set<TaxonBase> taxaToSave = new HashSet<TaxonBase>();
-		
-		Map<String, TaxonBase<?>> taxonMap = (Map<String, TaxonBase<?>>) partitioner.getObjectMap(BerlinModelTaxonImport.NAMESPACE);
-			
+
+		Map<String, TaxonBase<?>> taxonMap = partitioner.getObjectMap(BerlinModelTaxonImport.NAMESPACE);
+
 		ResultSet rs = partitioner.getResultSet();
 
 		try {
@@ -327,15 +329,15 @@ public class BerlinModelOccurrenceImport  extends BerlinModelImportBase {
 			int countDuplicates = 0;
 			//for each reference
             while (rs.next()){
-                
+
             	if ((i++ % modCount) == 0 && i!= 1 ){ logger.info("Facts handled: " + (i-1));}
-                
+
                 int occurrenceId = rs.getInt("OccurrenceId");
                 int newTaxonId = rs.getInt("taxonId");
                 String notes = nullSafeTrim(rs.getString("occNotes"));
-                
+
                 Integer emStatusId = nullSafeInt(rs, "emOccurSumCatId");
-                
+
                 try {
                 	//status
                 	PresenceAbsenceTerm status = null;
@@ -346,11 +348,11 @@ public class BerlinModelOccurrenceImport  extends BerlinModelImportBase {
 						String[] stringArray = new String[]{rs.getString("Native"), rs.getString("Introduced"), rs.getString("Cultivated")};
 						alternativeStatusString = CdmUtils.concat(",", stringArray);
 					}
-                     
+
 					Reference<?> sourceRef = state.getTransactionalSourceReference();
-                    
+
 					List<NamedArea> areas = makeAreaList(state, rs,	occurrenceId);
-                     
+
                     //create description(elements)
                     TaxonDescription taxonDescription = getTaxonDescription(newTaxonId, oldTaxonId, oldDescription, taxonMap, occurrenceId, sourceRef);
                     for (NamedArea area : areas){
@@ -362,22 +364,22 @@ public class BerlinModelOccurrenceImport  extends BerlinModelImportBase {
                         	distribution.addMarker(Marker.NewInstance(MarkerType.PUBLISH(), false));
                         }
 //                      distribution.setCitation(sourceRef);
-                        if (taxonDescription != null) { 
+                        if (taxonDescription != null) {
                         	Distribution duplicate = checkIsNoDuplicate(taxonDescription, distribution, duplicateMap , occurrenceId);
                             if (duplicate == null){
-                            	taxonDescription.addElement(distribution); 
+                            	taxonDescription.addElement(distribution);
 	                            distribution.addImportSource(String.valueOf(occurrenceId), NAMESPACE, state.getTransactionalSourceReference(), null);
-	                        	countDistributions++; 
-	                            if (taxonDescription != oldDescription){ 
-	                            	taxaToSave.add(taxonDescription.getTaxon()); 
-	                                oldDescription = taxonDescription; 
-	                                countDescriptions++; 
-	                            } 
-                            }else{                          	  
+	                        	countDistributions++;
+	                            if (taxonDescription != oldDescription){
+	                            	taxaToSave.add(taxonDescription.getTaxon());
+	                                oldDescription = taxonDescription;
+	                                countDescriptions++;
+	                            }
+                            }else{
                             	countDuplicates++;
                             	duplicate.addImportSource(String.valueOf(occurrenceId), NAMESPACE, state.getTransactionalSourceReference(), null);
                             	logger.info("Distribution is duplicate");	                           }
-                        } else { 
+                        } else {
                         	logger.warn("Distribution " + area.getLabel() + " ignored. OccurrenceId = " + occurrenceId);
 	                       	success = false;
 	                    }
@@ -388,18 +390,18 @@ public class BerlinModelOccurrenceImport  extends BerlinModelImportBase {
                         }
                     }
                 } catch (UnknownCdmTypeException e) {
-                     logger.error("Unknown presenceAbsence status id: " + emStatusId); 
+                     logger.error("Unknown presenceAbsence status id: " + emStatusId);
                 	e.printStackTrace();
                      success = false;
                 }
             }
-           
+
             logger.info("Distributions: " + countDistributions + ", Descriptions: " + countDescriptions );
 			logger.info("Duplicate occurrences: "  + (countDuplicates));
 
 			logger.info("Taxa to save: " + taxaToSave.size());
-			getTaxonService().save(taxaToSave);	
-			
+			getTaxonService().save(taxaToSave);
+
 			return success;
 		} catch (SQLException e) {
 			logger.error("SQLException:" +  e);
@@ -419,7 +421,7 @@ public class BerlinModelOccurrenceImport  extends BerlinModelImportBase {
 	//Create area list
 	private List<NamedArea> makeAreaList(BerlinModelImportState state, ResultSet rs, int occurrenceId) throws SQLException {
 		List<NamedArea> areas = new ArrayList<NamedArea>();
-		
+
 		if (state.getConfig().isUseEmAreaVocabulary()){
 			Integer areaId = rs.getInt("AreaId");
 	        NamedArea area = this.euroMedAreas.get(areaId);
@@ -427,14 +429,14 @@ public class BerlinModelOccurrenceImport  extends BerlinModelImportBase {
 		}else{
 	        String tdwgCodeString = rs.getString("TDWGCode");
 	        String emCodeString = state.getConfig().isIncludesAreaEmCode() ? rs.getString("EMCode") : null;
-	
+
 			if (tdwgCodeString != null){
-			
+
 				String[] tdwgCodes = new String[]{tdwgCodeString};
 				if (state.getConfig().isSplitTdwgCodes()){
 					tdwgCodes = tdwgCodeString.split(";");
 				}
-				
+
 				for (String tdwgCode : tdwgCodes){
 					NamedArea area = TdwgAreaProvider.getAreaByTdwgAbbreviation(tdwgCode.trim());
 			    	if (area == null){
@@ -445,7 +447,7 @@ public class BerlinModelOccurrenceImport  extends BerlinModelImportBase {
 			    	}
 				}
 			 }
-			
+
 			 if (areas.size()== 0){
 				 NamedArea area = getOtherAreas(state, emCodeString, tdwgCodeString);
 				 if (area != null){
@@ -466,13 +468,13 @@ public class BerlinModelOccurrenceImport  extends BerlinModelImportBase {
 		Class<?> cdmClass;
 		Set<String> idSet;
 		Map<Object, Map<String, ? extends CdmBase>> result = new HashMap<Object, Map<String, ? extends CdmBase>>();
-		
+
 		try{
 			Set<String> taxonIdSet = new HashSet<String>();
 			while (rs.next()){
 				handleForeignKey(rs, taxonIdSet, "taxonId");
 			}
-			
+
 			//taxon map
 			nameSpace = BerlinModelTaxonImport.NAMESPACE;
 			cdmClass = TaxonBase.class;
@@ -489,8 +491,8 @@ public class BerlinModelOccurrenceImport  extends BerlinModelImportBase {
 
 
 	/**
-     * Tests if a distribution with the same tdwgArea and the same status already exists in the description. 
-     * If so the old distribution is returned 
+     * Tests if a distribution with the same tdwgArea and the same status already exists in the description.
+     * If so the old distribution is returned
      * @param description
      * @param tdwgArea
      * @return false, if dupplicate exists. True otherwise.
@@ -511,9 +513,9 @@ public class BerlinModelOccurrenceImport  extends BerlinModelImportBase {
     	}
     	return null;
     }
-	
+
 	/**
-	 * Use same TaxonDescription if two records belong to the same taxon 
+	 * Use same TaxonDescription if two records belong to the same taxon
 	 * @param newTaxonId
 	 * @param oldTaxonId
 	 * @param oldDescription
@@ -535,10 +537,10 @@ public class BerlinModelOccurrenceImport  extends BerlinModelImportBase {
 			} else {
 				logger.warn("TaxonBase for Occurrence " + occurrenceId + " is null.");
 				return null;
-			}		
+			}
 			Set<TaxonDescription> descriptionSet= taxon.getDescriptions();
 			if (descriptionSet.size() > 0) {
-				result = descriptionSet.iterator().next(); 
+				result = descriptionSet.iterator().next();
 			}else{
 				result = TaxonDescription.NewInstance();
 				result.setTitleCache(sourceSec.getTitleCache(), true);
@@ -549,7 +551,7 @@ public class BerlinModelOccurrenceImport  extends BerlinModelImportBase {
 		}
 		return result;
 	}
-	
+
 	@Override
 	protected boolean doCheck(BerlinModelImportState state){
 		IOValidator<BerlinModelImportState> validator = new BerlinModelOccurrenceImportValidator();
@@ -570,5 +572,5 @@ public class BerlinModelOccurrenceImport  extends BerlinModelImportBase {
 			}
 		}
 	}
-	
+
 }

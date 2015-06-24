@@ -9,8 +9,15 @@
 
 package eu.etaxonomy.cdm.app.berlinModelImport;
 
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.Reader;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 import java.util.UUID;
 
 import org.apache.log4j.Logger;
@@ -24,6 +31,7 @@ import eu.etaxonomy.cdm.app.common.CdmDestinations;
 import eu.etaxonomy.cdm.common.monitor.DefaultProgressMonitor;
 import eu.etaxonomy.cdm.database.DbSchemaValidation;
 import eu.etaxonomy.cdm.database.ICdmDataSource;
+import eu.etaxonomy.cdm.ext.geo.IEditGeoService;
 import eu.etaxonomy.cdm.io.berlinModel.BerlinModelTransformer;
 import eu.etaxonomy.cdm.io.berlinModel.in.BerlinModelImportConfigurator;
 import eu.etaxonomy.cdm.io.common.CdmDefaultImport;
@@ -310,6 +318,40 @@ public class EuroMedActivator {
                     null,
                     DefaultProgressMonitor.NewInstance());
         }
+
+
+//      //import shapefile attributes #3979 .2
+	    if (config.isDoOccurrence() && (config.getCheck().isImport())){
+
+	        UUID areaVocabularyUuid = BerlinModelTransformer.uuidVocEuroMedAreas;
+           List<String> idSearchFields = Arrays.asList(new String[]{"EMAREA","PARENT"});
+           String wmsLayerName = "euromed_2013";
+           Set<UUID> areaUuidSet = null;
+
+           ICdmApplicationConfiguration app = bmImport.getCdmAppController();
+           IEditGeoService geoService = (IEditGeoService)app.getBean("editGeoService");
+
+           Map<NamedArea, String> resultMap;
+           try {
+//             URL url =  ClassLoader.getSystemResource("myConfig.txt");
+//             FileReader fileReader = new FileReader(url.getFile());
+               InputStream in = EuroMedActivator.class.getResourceAsStream("/euromed/euromed_2013.csv");
+               Reader reader = new InputStreamReader(in, "UTF-8");
+
+               resultMap = geoService.mapShapeFileToNamedAreas(
+                           reader, idSearchFields , wmsLayerName , areaVocabularyUuid, areaUuidSet);
+               Map<String, String> flatResultMap = new HashMap<String, String>(resultMap.size());
+               for(NamedArea area : resultMap.keySet()){
+                   flatResultMap.put(area.getTitleCache() + " [" + area.getUuid() + "]", resultMap.get(area));
+               }
+           } catch (IOException e) {
+                String message = "IOException when reading from mapping file or creating result map.";
+                logger.error(message);
+                System.out.println(message);
+           }
+	    }
+
+
 
 		System.out.println("End import from BerlinModel ("+ source.getDatabase() + ")...");
 
