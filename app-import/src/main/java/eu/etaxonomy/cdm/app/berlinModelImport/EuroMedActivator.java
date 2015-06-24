@@ -85,9 +85,9 @@ public class EuroMedActivator {
 	static final Source berlinModelSource = BerlinModelSources.euroMed_BGBM42();
 //	static final Source berlinModelSource = BerlinModelSources.euroMed_PESI3();
 
-//	static final ICdmDataSource cdmDestination = CdmDestinations.cdm_test_euroMed();
+	static final ICdmDataSource cdmDestination = CdmDestinations.cdm_test_euroMed();
 
-	static final ICdmDataSource cdmDestination = CdmDestinations.cdm_pesi_euromed();
+//	static final ICdmDataSource cdmDestination = CdmDestinations.cdm_pesi_euromed();
 //	static final ICdmDataSource cdmDestination = CdmDestinations.cdm_test_local_euromed3();
 //	static final ICdmDataSource cdmDestination = CdmDestinations.localH2();
 
@@ -106,7 +106,7 @@ public class EuroMedActivator {
 	static final int partitionSize = 2500;
 
 	//check - import
-	static final CHECK check = CHECK.CHECK_AND_IMPORT;
+	static final CHECK check = CHECK.IMPORT_WITHOUT_CHECK;
 
 	//editor - import
 	static final EDITOR editor = EDITOR.EDITOR_AS_EDITOR;
@@ -329,17 +329,22 @@ public class EuroMedActivator {
 	    }
     }
 
+    //1. run transmission engine #3979
     private void runTransmissionEngine(BerlinModelImportConfigurator config,
             CdmDefaultImport<BerlinModelImportConfigurator> bmImport) {
         //Transmission engine #3979 .1
-        if (config.isDoOccurrence() && (config.getCheck().isImport()  )  ){
+        if (true || config.isDoOccurrence() && (config.getCheck().isImport()  )  ){
             ICdmApplicationConfiguration app = bmImport.getCdmAppController();
 
             final List<String> term_init_strategy = Arrays.asList(new String []{
                     "representations"
             });
+
+            UUID uuidSuperAreaLevel = BerlinModelTransformer.uuidEuroMedAreaLevelFirst;
+            NamedAreaLevel euroMedLevel1 = (NamedAreaLevel)app.getTermService().find(uuidSuperAreaLevel);
+
             Pager<NamedArea> areaPager = app.getTermService().list(
-                    NamedAreaLevel.TDWG_LEVEL3(),
+                    euroMedLevel1,
                     (NamedAreaType) null,
                     null,
                     null,
@@ -356,13 +361,15 @@ public class EuroMedActivator {
         }
     }
 
+    //5.Mark areas to be hidden #3979 .5
     private void markAreasAsHidden(BerlinModelImportConfigurator config,
             CdmDefaultImport<BerlinModelImportConfigurator> bmImport) {
-        //5.Mark areas to be hidden #3979 .5
-	    if (config.isDoOccurrence() && (config.getCheck().isImport())){
-	        ICdmApplicationConfiguration app = bmImport.getCdmAppController();
 
-	        MarkerType hiddenAreaMarkerType = MarkerType.NewInstance("", "Hidden area", null);
+        if (config.isDoOccurrence() && (config.getCheck().isImport())){
+	        ICdmApplicationConfiguration app = bmImport.getCdmAppController();
+	        TransactionStatus tx = app.startTransaction();
+
+	        MarkerType hiddenAreaMarkerType = MarkerType.NewInstance("Used to hide distributions for the named areas in publications", "Hidden Area", null);
 	        hiddenAreaMarkerType.setUuid(BerlinModelTransformer.uuidHiddenArea);
 	        @SuppressWarnings("unchecked")
             TermVocabulary<MarkerType> vocUserDefinedMarkerTypes = app.getVocabularyService().find(CdmImportBase.uuidUserDefinedMarkerTypeVocabulary);
@@ -382,13 +389,15 @@ public class EuroMedActivator {
                 rs_n.addMarker(Marker.NewInstance(hiddenAreaMarkerType, true));
                 app.getTermService().saveOrUpdate(rs_n);
 	        }
+	        app.commitTransaction(tx);
 	    }
     }
 
+    //2. import shapefile attributes #3979 .2
     private void importShapefile(BerlinModelImportConfigurator config,
             CdmDefaultImport<BerlinModelImportConfigurator> bmImport) {
-        //      //import shapefile attributes #3979 .2
-	    if (config.isDoOccurrence() && (config.getCheck().isImport())){
+
+        if (config.isDoOccurrence() && (config.getCheck().isImport())){
 
 	       UUID areaVocabularyUuid = BerlinModelTransformer.uuidVocEuroMedAreas;
            List<String> idSearchFields = Arrays.asList(new String[]{"EMAREA","PARENT"});
@@ -419,10 +428,12 @@ public class EuroMedActivator {
 	    }
     }
 
-    private void createUsersAndRoles(BerlinModelImportConfigurator config,
+    //4. Create users and assign roles  #3979
+    private void createUsersAndRoles(
+            BerlinModelImportConfigurator config,
             CdmDefaultImport<BerlinModelImportConfigurator> bmImport) {
-        //4. Create users and assign roles  #3979
-	    if (config.isDoRelTaxa() && (config.getCheck().isImport())){
+
+        if (config.isDoRelTaxa() && (config.getCheck().isImport())){
 	        ICdmApplicationConfiguration app = bmImport.getCdmAppController();
 	        TransactionStatus tx = app.startTransaction();
 
@@ -498,7 +509,7 @@ public class EuroMedActivator {
                 System.out.println(message);
             }
             UUID uuidCichorieaeGroup = UUID.fromString("a630938d-dd4f-48c2-9406-91def487b11e");
-            String cichorieaeGroupName = "cichorieae";
+            String cichorieaeGroupName = "Cichorieae";
             Group cichorieaeGroup = checkGroup(app.getGroupService(), uuidCichorieaeGroup, cichorieaeGroupName, cichorieaeRoles);
             cichorieaeGroup.addMember(userCichEditor);
             app.getGroupService().saveOrUpdate(cichorieaeGroup);
