@@ -164,12 +164,14 @@ public class BerlinModelOccurrenceImport  extends BerlinModelImportBase {
 			NamedArea newArea = makeSingleEuroMedArea(rs, eurMarkerType, euroMedAreaMarkerType,
 					isoCodeExtType, tdwgCodeExtType, mclCodeExtType,
 					areaLevelTop, areaLevelEm1 , areaLevelEm2, sourceReference, euroMedArea, lastLevel2Area);
-			euroMedAreas.addTerm(newArea);
-			if (newArea.getPartOf().equals(euroMedArea)){
-				lastLevel2Area = newArea;
+			if (newArea != null){
+    			euroMedAreas.addTerm(newArea);
+    			if (newArea.getPartOf().equals(euroMedArea)){
+    				lastLevel2Area = newArea;
+    			}
 			}
-			getVocabularyService().saveOrUpdate(euroMedAreas);
 		}
+		getVocabularyService().saveOrUpdate(euroMedAreas);
 
 		commitTransaction(txStatus);
 		logger.warn("Created E+M areas");
@@ -219,6 +221,8 @@ public class BerlinModelOccurrenceImport  extends BerlinModelImportBase {
 		String mclCode = nullSafeTrim(rs.getString("MCLCode"));
 		String geoSearch = nullSafeTrim(rs.getString("NameForGeoSearch"));
 
+
+
 		if (isBlank(emCode)){
 			emCode = unit;
 		}
@@ -232,7 +236,10 @@ public class BerlinModelOccurrenceImport  extends BerlinModelImportBase {
 			if (uuid != null){
 				area.setUuid(uuid);
 			}else{
-				logger.warn("Uuuid for emCode could not be defined: " + emCode);
+			    if (areaId == 211 || areaId == 213){  //Additional Azores and Canary Is. area are merged into primary area, see also area.addSource part below
+			        return null;
+			    }
+				logger.warn("Uuid for emCode could not be defined: " + emCode);
 			}
 		}
 
@@ -263,6 +270,13 @@ public class BerlinModelOccurrenceImport  extends BerlinModelImportBase {
 
 		//source
 		area.addSource(OriginalSourceType.Import, String.valueOf(areaId), EM_AREA_NAMESPACE, sourceReference, null);
+		//add duplicate area ids for canary
+		if (areaId == 624){ //Canary Is.
+		    area.addSource(OriginalSourceType.Import, String.valueOf(213), EM_AREA_NAMESPACE, sourceReference, null);
+		}
+		if (areaId == 210){//Azores
+            area.addSource(OriginalSourceType.Import, String.valueOf(211), EM_AREA_NAMESPACE, sourceReference, null);
+        }
 
 		//parent
 		if (euroMedArea != null){

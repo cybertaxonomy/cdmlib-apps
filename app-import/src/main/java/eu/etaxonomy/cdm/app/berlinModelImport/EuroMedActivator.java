@@ -81,14 +81,16 @@ public class EuroMedActivator {
 	private static final Logger logger = Logger.getLogger(EuroMedActivator.class);
 
 	//database validation status (create, update, validate ...)
-	static DbSchemaValidation hbm2dll = DbSchemaValidation.VALIDATE;
+	static DbSchemaValidation hbm2dll = DbSchemaValidation.CREATE;
 	static final Source berlinModelSource = BerlinModelSources.euroMed_BGBM42();
 //	static final Source berlinModelSource = BerlinModelSources.euroMed_PESI3();
 
-	static final ICdmDataSource cdmDestination = CdmDestinations.cdm_test_euroMed();
-
+//	static final ICdmDataSource cdmDestination = CdmDestinations.cdm_test_euroMed();
 //	static final ICdmDataSource cdmDestination = CdmDestinations.cdm_pesi_euromed();
+
 //	static final ICdmDataSource cdmDestination = CdmDestinations.cdm_test_local_euromed3();
+	static final ICdmDataSource cdmDestination = CdmDestinations.cdm_test_local_mysql_test();
+
 //	static final ICdmDataSource cdmDestination = CdmDestinations.localH2();
 
 	static final boolean includePesiExport = false;
@@ -168,10 +170,11 @@ public class EuroMedActivator {
 
 	//taxa
 	static final boolean doTaxa = true;
-	static final boolean doRelTaxa = true;  //FIXME revert
 	static final boolean doFacts = true;
-	static final boolean doOccurences = true;
-	static final boolean doCommonNames = true;
+	static final boolean doCommonNames = false;
+	static final boolean doOccurences = false;
+	static final boolean doRelTaxa = false;
+	static final boolean doRunTransmissionEngine = (hbm2dll == DbSchemaValidation.VALIDATE);
 
 	//etc.
 	static final boolean doMarker = true;
@@ -254,21 +257,22 @@ public class EuroMedActivator {
 
 		changeCommonNameLabel(config, bmImport);
 
+		createUsersAndRoles(config, bmImport);
+
         runTransmissionEngine(config, bmImport);
 
         importShapefile(config, bmImport);
 
-        createUsersAndRoles(config, bmImport);
-
-	    markAreasAsHidden(config, bmImport);
+        markAreasAsHidden(config, bmImport);
 
 		System.out.println("End import from BerlinModel ("+ source.getDatabase() + ")...");
 	}
 
+	//Rename Ranks (still needed?)
     private void renameRanks(BerlinModelImportConfigurator config,
             CdmDefaultImport<BerlinModelImportConfigurator> bmImport) {
-        //Rename Ranks (still needed?)
-		if (config.isDoTaxonNames() && (config.getCheck().isImport() )  ){
+
+        if (true || config.isDoTaxonNames() && (config.getCheck().isImport() )  ){
 			ICdmApplicationConfiguration app = bmImport.getCdmAppController();
 			TransactionStatus tx = app.startTransaction();
 			try {
@@ -292,10 +296,11 @@ public class EuroMedActivator {
 		}
     }
 
+    //create feature tree
     private void createFeatureTree(BerlinModelImportConfigurator config,
-            CdmDefaultImport<BerlinModelImportConfigurator> bmImport) {
-        //create feature tree
-		if (config.isDoFacts() && (config.getCheck().isImport()  )  ){
+            CdmDefaultImport<BerlinModelImportConfigurator> bmImport)
+    {
+	    if (true || config.isDoFacts() && (config.getCheck().isImport()  )  ){
 			ICdmApplicationConfiguration app = bmImport.getCdmAppController();
 			TransactionStatus tx = app.startTransaction();
 
@@ -313,10 +318,10 @@ public class EuroMedActivator {
 		}
     }
 
+    //Change common name label
     private void changeCommonNameLabel(BerlinModelImportConfigurator config,
             CdmDefaultImport<BerlinModelImportConfigurator> bmImport) {
-        //Change common name label
-	    if (config.isDoFacts() && (config.getCheck().isImport()  )  ){
+	    if (true || config.isDoFacts() && (config.getCheck().isImport()  )  ){
 	        ICdmApplicationConfiguration app = bmImport.getCdmAppController();
 	        TransactionStatus tx = app.startTransaction();
 
@@ -332,8 +337,8 @@ public class EuroMedActivator {
     //1. run transmission engine #3979
     private void runTransmissionEngine(BerlinModelImportConfigurator config,
             CdmDefaultImport<BerlinModelImportConfigurator> bmImport) {
-        //Transmission engine #3979 .1
-        if (true || config.isDoOccurrence() && (config.getCheck().isImport()  )  ){
+
+        if (doRunTransmissionEngine && (config.getCheck().isImport()  )  ){
             ICdmApplicationConfiguration app = bmImport.getCdmAppController();
 
             final List<String> term_init_strategy = Arrays.asList(new String []{
@@ -365,7 +370,7 @@ public class EuroMedActivator {
     private void markAreasAsHidden(BerlinModelImportConfigurator config,
             CdmDefaultImport<BerlinModelImportConfigurator> bmImport) {
 
-        if (config.isDoOccurrence() && (config.getCheck().isImport())){
+        if (true || config.isDoOccurrence() && (config.getCheck().isImport())){
 	        ICdmApplicationConfiguration app = bmImport.getCdmAppController();
 	        TransactionStatus tx = app.startTransaction();
 
@@ -397,7 +402,7 @@ public class EuroMedActivator {
     private void importShapefile(BerlinModelImportConfigurator config,
             CdmDefaultImport<BerlinModelImportConfigurator> bmImport) {
 
-        if (config.isDoOccurrence() && (config.getCheck().isImport())){
+        if (true || config.isDoOccurrence() && (config.getCheck().isImport())){
 
 	       UUID areaVocabularyUuid = BerlinModelTransformer.uuidVocEuroMedAreas;
            List<String> idSearchFields = Arrays.asList(new String[]{"EMAREA","PARENT"});
@@ -429,11 +434,10 @@ public class EuroMedActivator {
     }
 
     //4. Create users and assign roles  #3979
-    private void createUsersAndRoles(
-            BerlinModelImportConfigurator config,
+    private void createUsersAndRoles(BerlinModelImportConfigurator config,
             CdmDefaultImport<BerlinModelImportConfigurator> bmImport) {
 
-        if (config.isDoRelTaxa() && (config.getCheck().isImport())){
+        if (true || config.isDoRelTaxa() && (config.getCheck().isImport())){
 	        ICdmApplicationConfiguration app = bmImport.getCdmAppController();
 	        TransactionStatus tx = app.startTransaction();
 
