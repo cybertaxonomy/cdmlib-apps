@@ -1,9 +1,9 @@
 // $Id$
 /**
 * Copyright (C) 2007 EDIT
-* European Distributed Institute of Taxonomy 
+* European Distributed Institute of Taxonomy
 * http://www.e-taxonomy.eu
-* 
+*
 * The contents of this file are subject to the Mozilla Public License Version 1.1
 * See LICENSE.TXT at the top of this package for the full license terms.
 */
@@ -24,10 +24,10 @@ import eu.etaxonomy.cdm.model.reference.Reference;
  * @version 1.0
  */
 public class BfnXmlImportState extends ImportStateBase<BfnXmlImportConfigurator, BfnXmlImportBase>{
-	private Reference refA;
-	private Reference refB;
-	private Reference currentMicroRef;
-	private Reference completeSourceRef;
+	private Reference<?> refA;
+	private Reference<?> refB;
+	private Reference<?> currentMicroRef;
+	private Reference<?> completeSourceRef;
 	private String classificationA;
 	private String classificationB;
 	@SuppressWarnings("unused")
@@ -35,59 +35,59 @@ public class BfnXmlImportState extends ImportStateBase<BfnXmlImportConfigurator,
 
 	//TODO make it better
 	private Map<String, CommonTaxonName> commonNameMap = null;
-	
+
 	public BfnXmlImportState(BfnXmlImportConfigurator config) {
 		super(config);
 	}
-	
+
 	public Map<String, CommonTaxonName> getCommonNameMap() {
 		return commonNameMap;
 	}
 
-	
-	
+
+
 	public void setCommonNameMap(Map<String, CommonTaxonName> commonNameMap) {
 		this.commonNameMap = commonNameMap;
 	}
 
-	public void setFirstListSecRef(Reference ref) {
+	public void setFirstListSecRef(Reference<?> ref) {
 		this.refA = ref;
 	}
-	
-	public void setSecondListSecRef(Reference ref) {
+
+	public void setSecondListSecRef(Reference<?> ref) {
 		this.refB = ref;
 	}
 
-	public Reference getFirstListSecRef(){
+	public Reference<?> getFirstListSecRef(){
 		return refA;
 	}
-	
-	public Reference getSecondListSecRef(){
+
+	public Reference<?> getSecondListSecRef(){
 		return refB;
 	}
 
-	public void setCurrentMicroRef(Reference currentRef) {
+	public void setCurrentMicroRef(Reference<?> currentRef) {
 		this.currentMicroRef = currentRef;
 	}
-	public Reference getCompleteSourceRef() {
+	public Reference<?> getCompleteSourceRef() {
 		return completeSourceRef;
 	}
 
-	public void setCompleteSourceRef(Reference completeSourceRef) {
+	public void setCompleteSourceRef(Reference<?> completeSourceRef) {
 		this.completeSourceRef = completeSourceRef;
 	}
 
-	public Reference getCurrentMicroRef(){
+	public Reference<?> getCurrentMicroRef(){
 		return currentMicroRef;
 	}
 	public void setFirstClassificationName(String classificationA) {
 		  this.classificationA = classificationA;
 	}
-	
+
 	public void setSecondClassificationName(String classificationB) {
 		  this.classificationB = classificationB;
 	}
-	
+
 	public String getFirstClassificationName() {
 		return  classificationA;
 	}
@@ -95,13 +95,13 @@ public class BfnXmlImportState extends ImportStateBase<BfnXmlImportConfigurator,
 	public String getSecondClassificationName() {
 		return  classificationB;
 	}
-	
+
 //	/* (non-Javadoc)
 //	 * @see eu.etaxonomy.cdm.io.common.IoStateBase#initialize(eu.etaxonomy.cdm.io.common.IoConfiguratorBase)
 //	 */
 //	@Override
 //	public void initialize(TcsXmlImportConfigurator config) {
-//				
+//
 //	}
 
 }

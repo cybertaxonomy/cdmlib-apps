@@ -5,7 +5,7 @@
 *
 * The contents of this file are subject to the Mozilla Public License Version 1.1
 * See LICENSE.TXT at the top of this package for the full license terms.
-*/ 
+*/
 
 package eu.etaxonomy.cdm.io.redlist.bfnXml;
 
@@ -15,7 +15,6 @@ package eu.etaxonomy.cdm.io.redlist.bfnXml;
  *
  */
 import java.io.InputStream;
-import java.lang.reflect.Method;
 import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URL;
@@ -27,31 +26,31 @@ import org.springframework.stereotype.Component;
 
 import eu.etaxonomy.cdm.common.XmlHelp;
 import eu.etaxonomy.cdm.database.ICdmDataSource;
-import eu.etaxonomy.cdm.io.common.IImportConfigurator;
 import eu.etaxonomy.cdm.io.common.ImportConfiguratorBase;
 import eu.etaxonomy.cdm.io.common.mapping.IInputTransformer;
-import eu.etaxonomy.cdm.io.tcsxml.DefaultTcsXmlPlaceholders;
-import eu.etaxonomy.cdm.io.tcsxml.ITcsXmlPlaceholderClass;
 import eu.etaxonomy.cdm.model.reference.Reference;
 import eu.etaxonomy.cdm.model.reference.ReferenceFactory;
 
 @Component
-public class BfnXmlImportConfigurator extends ImportConfiguratorBase<BfnXmlImportState, URI> implements IImportConfigurator {
+public class BfnXmlImportConfigurator extends ImportConfiguratorBase<BfnXmlImportState, URI>  {
 	private static final Logger logger = Logger.getLogger(BfnXmlImportConfigurator.class);
-	
+
 	//TODO
 	private static IInputTransformer defaultTransformer = null;
 
-	
+
 	private boolean doMetaData = true;
-	private boolean doSpecimen = true;
-	private boolean doInformationImport = true;
-	private boolean fillSecondList = false;
-	private boolean hasSecondList = false;
+	private boolean doTaxonNames = true;
+    private boolean doFeature = true;
+    private boolean doAdditionalTerms = true;
+
+    private boolean doInformationImport = true;
+    private boolean fillSecondList = false;
+    private boolean hasSecondList = false;
 
 
-	
-	public boolean isFillSecondList() {
+
+    public boolean isFillSecondList() {
 		return fillSecondList;
 	}
 
@@ -59,28 +58,14 @@ public class BfnXmlImportConfigurator extends ImportConfiguratorBase<BfnXmlImpor
 		this.fillSecondList = fillSecondList;
 	}
 
-	//	//references
-	private DO_REFERENCES doReferences = DO_REFERENCES.ALL;
-//	//names
-	private boolean doTaxonNames = true;
-	private boolean doRelNames = true;
-//	//taxa
-	private boolean doTaxa = true;
-	private boolean doRelTaxa = true;
 
-	
-	
-	private Method functionMetaDataDetailed = null; 
-	private ITcsXmlPlaceholderClass placeholderClass;
-	
 	//	rdfNamespace
 	Namespace bfnXmlNamespace;
 
 	private String nomenclaturalCode = null;
 
-	protected static Namespace nsTcsXml = Namespace.getNamespace("http://www.tdwg.org/schemas/tcs/1.01");
-	
 	@SuppressWarnings("unchecked")
+	@Override
 	protected void makeIoClassList(){
 		ioClassList = new Class[]{
 				BfnXmlImportAddtionalTerms.class,
@@ -89,12 +74,12 @@ public class BfnXmlImportConfigurator extends ImportConfiguratorBase<BfnXmlImpor
 				BfnXmlImportTaxonName.class
 		};
 	};
-	
+
 	public static BfnXmlImportConfigurator NewInstance(URI uri,
 			ICdmDataSource destination){
 		return new BfnXmlImportConfigurator(uri, destination);
 	}
-	
+
 	/**
 	 * @param berlinModelSource
 	 * @param sourceReference
@@ -102,10 +87,8 @@ public class BfnXmlImportConfigurator extends ImportConfiguratorBase<BfnXmlImpor
 	 */
 	private BfnXmlImportConfigurator() {
 		super(defaultTransformer);
-//		setSource(url);
-//		setDestination(destination);
 	}
-	
+
 	/**
 	 * @param berlinModelSource
 	 * @param sourceReference
@@ -116,30 +99,13 @@ public class BfnXmlImportConfigurator extends ImportConfiguratorBase<BfnXmlImpor
 		setSource(uri);
 		setDestination(destination);
 	}
-	
-	
 
-	/* (non-Javadoc)
-	 * @see eu.etaxonomy.cdm.io.common.IImportConfigurator#getNewState()
-	 */
+
+	@Override
 	public BfnXmlImportState getNewState() {
 		return new BfnXmlImportState(this);
 	}
 
-	/* (non-Javadoc)
-	 * @see eu.etaxonomy.cdm.io.common.ImportConfiguratorBase#getSource()
-	 */
-	public URI getSource() {
-		return (URI)super.getSource();
-	}
-	
-	/**
-	 * @param file
-	 */
-	public void setSource(URI uri) {
-		super.setSource(uri);
-	}
-	
 	/**
 	 * @return
 	 */
@@ -161,24 +127,20 @@ public class BfnXmlImportConfigurator extends ImportConfiguratorBase<BfnXmlImpor
 		}
 		return null;
 	}
-	
+
 	private boolean makeNamespaces(Element root){
 		bfnXmlNamespace = root.getNamespace();
-		if (bfnXmlNamespace == null 
-				/**|| tcNamespace == null 
-				 * || tnNamespace == null 
-				 * || commonNamespace == null 
-				 * ||	geoNamespace == null 
+		if (bfnXmlNamespace == null
+				/**|| tcNamespace == null
+				 * || tnNamespace == null
+				 * || commonNamespace == null
+				 * ||	geoNamespace == null
 				 * || publicationNamespace == null*/){
 			logger.warn("At least one Namespace is NULL");
 		}
 		return true;
 	}
 
-
-	/* (non-Javadoc)
-	 * @see eu.etaxonomy.cdm.io.common.ImportConfiguratorBase#getSourceReference()
-	 */
 	@Override
 	public Reference getSourceReference() {
 		//TODO
@@ -190,18 +152,15 @@ public class BfnXmlImportConfigurator extends ImportConfiguratorBase<BfnXmlImpor
 		return sourceReference;
 	}
 
-
-	/* (non-Javadoc)
-	 * @see eu.etaxonomy.cdm.io.common.IImportConfigurator#getSourceNameString()
-	 */
-	public String getSourceNameString() {
+	@Override
+    public String getSourceNameString() {
 		if (this.getSource() == null){
 			return null;
 		}else{
 			return this.getSource().toString();
 		}
 	}
-	
+
 	public Namespace getBfnXmlNamespace() {
 		return bfnXmlNamespace;
 	}
@@ -210,20 +169,6 @@ public class BfnXmlImportConfigurator extends ImportConfiguratorBase<BfnXmlImpor
 		this.bfnXmlNamespace = bfnXmlNamespace;
 	}
 
-	/**
-	 * @param funMetaDataDetailed the funMetaDataDetailed to set
-	 */
-	public void setFunctionMetaDataDetailed(Method functionMetaDataDetailed) {
-		this.functionMetaDataDetailed = functionMetaDataDetailed;
-	}
-	
-	public DO_REFERENCES getDoReferences() {
-		return doReferences;
-	}
-	public void setDoReferences(DO_REFERENCES doReferences) {
-		this.doReferences = doReferences;
-	}
-	
 	public boolean isDoTaxonNames() {
 		return doTaxonNames;
 	}
@@ -231,31 +176,6 @@ public class BfnXmlImportConfigurator extends ImportConfiguratorBase<BfnXmlImpor
 		this.doTaxonNames = doTaxonNames;
 	}
 
-	public boolean isDoTaxa() {
-		return doTaxa;
-	}
-	public void setDoTaxa(boolean doTaxa) {
-		this.doTaxa = doTaxa;
-	}
-
-	public boolean isDoRelTaxa() {
-		return doRelTaxa;
-	}
-	public void setDoRelTaxa(boolean doRelTaxa) {
-		this.doRelTaxa = doRelTaxa;
-	}
-
-	/**
-	 * Import name relationships yes/no?.
-	 * @return
-	 */
-	public boolean isDoRelNames() {
-		return doRelNames;
-	}
-	public void setDoRelNames(boolean doRelNames) {
-		this.doRelNames = doRelNames;
-	}
-	
 	/**
 	 * @return the doMetaData
 	 */
@@ -271,37 +191,6 @@ public class BfnXmlImportConfigurator extends ImportConfiguratorBase<BfnXmlImpor
 	}
 
 
-	/**
-	 * @return the doSpecimen
-	 */
-	public boolean isDoSpecimen() {
-		return doSpecimen;
-	}
-
-	/**
-	 * @param doSpecimen the doSpecimen to set
-	 */
-	public void setDoSpecimen(boolean doSpecimen) {
-		this.doSpecimen = doSpecimen;
-	}
-
-	/**
-	 * @return the placeholderClass
-	 */
-	public ITcsXmlPlaceholderClass getPlaceholderClass() {
-		if (placeholderClass == null){
-			placeholderClass = new DefaultTcsXmlPlaceholders();
-		}
-		return placeholderClass;
-	}
-
-	/**
-	 * @param placeholderClass the placeholderClass to set
-	 */
-	public void setPlaceholderClass(ITcsXmlPlaceholderClass placeholderClass) {
-		this.placeholderClass = placeholderClass;
-	}
-	
 	public boolean isDoInformationImport() {
 		return doInformationImport;
 	}
@@ -325,4 +214,33 @@ public class BfnXmlImportConfigurator extends ImportConfiguratorBase<BfnXmlImpor
 	public String getNomenclaturalSig(){
 		return nomenclaturalCode;
 	}
+
+    /**
+     * @return the doFeature
+     */
+    public boolean isDoFeature() {
+        return doFeature;
+    }
+
+
+    /**
+     * @param doFeature the doFeature to set
+     */
+    public void setDoFeature(boolean doFeature) {
+        this.doFeature = doFeature;
+    }
+
+    /**
+     * @return the doAdditionalTerms
+     */
+    public boolean isDoAdditionalTerms() {
+        return doAdditionalTerms;
+    }
+
+    /**
+     * @param doAdditionalTerms the doAdditionalTerms to set
+     */
+    public void setDoAdditionalTerms(boolean doAdditionalTerms) {
+        this.doAdditionalTerms = doAdditionalTerms;
+    }
 }

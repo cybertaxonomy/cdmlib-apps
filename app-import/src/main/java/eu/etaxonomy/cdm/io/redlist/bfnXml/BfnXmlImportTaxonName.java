@@ -27,7 +27,6 @@ import eu.etaxonomy.cdm.api.service.IClassificationService;
 import eu.etaxonomy.cdm.api.service.ITaxonService;
 import eu.etaxonomy.cdm.common.ResultWrapper;
 import eu.etaxonomy.cdm.common.XmlHelp;
-import eu.etaxonomy.cdm.io.common.ICdmIO;
 import eu.etaxonomy.cdm.model.common.CdmBase;
 import eu.etaxonomy.cdm.model.common.DefinedTermBase;
 import eu.etaxonomy.cdm.model.common.Language;
@@ -66,10 +65,9 @@ import eu.etaxonomy.cdm.strategy.parser.ParserProblem;
  */
 //@Component("bfnXmlTaxonNameIO")
 @Component
-public class BfnXmlImportTaxonName extends BfnXmlImportBase implements ICdmIO<BfnXmlImportState> {
+public class BfnXmlImportTaxonName extends BfnXmlImportBase {
 
-
-	private static final Logger logger = Logger.getLogger(BfnXmlImportTaxonName.class);
+    private static final Logger logger = Logger.getLogger(BfnXmlImportTaxonName.class);
 
 	private static String strNomenclaturalCode = null;// "Zoological";//"Botanical";
 	private static int parsingProblemCounter = 0;
@@ -81,11 +79,6 @@ public class BfnXmlImportTaxonName extends BfnXmlImportBase implements ICdmIO<Bf
 		super();
 	}
 
-	@Override
-	public boolean doCheck(BfnXmlImportState state){
-		boolean result = true;
-		return result;
-	}
 
 	@Override
 	@SuppressWarnings({"rawtypes" })
@@ -893,6 +886,12 @@ public class BfnXmlImportTaxonName extends BfnXmlImportBase implements ICdmIO<Bf
         taxonDescription.addElement(descriptionElement);
     }
 
+
+    @Override
+    public boolean doCheck(BfnXmlImportState state){
+        boolean result = true;
+        return result;
+    }
 
 	@Override
 	protected boolean isIgnore(BfnXmlImportState state){

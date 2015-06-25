@@ -1,8 +1,8 @@
 /**
 * Copyright (C) 2007 EDIT
-* European Distributed Institute of Taxonomy 
+* European Distributed Institute of Taxonomy
 * http://www.e-taxonomy.eu
-* 
+*
 * The contents of this file are subject to the Mozilla Public License Version 1.1
 * See LICENSE.TXT at the top of this package for the full license terms.
 */
@@ -14,7 +14,6 @@ import java.net.URISyntaxException;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Scanner;
-import java.util.UUID;
 
 import org.apache.log4j.Logger;
 
@@ -23,9 +22,7 @@ import eu.etaxonomy.cdm.database.DbSchemaValidation;
 import eu.etaxonomy.cdm.database.ICdmDataSource;
 import eu.etaxonomy.cdm.io.common.CdmDefaultImport;
 import eu.etaxonomy.cdm.io.common.IImportConfigurator.CHECK;
-import eu.etaxonomy.cdm.io.common.IImportConfigurator.DO_REFERENCES;
 import eu.etaxonomy.cdm.io.redlist.bfnXml.BfnXmlImportConfigurator;
-import eu.etaxonomy.cdm.model.name.NomenclaturalCode;
 
 /**
  * @author a.oppermann
@@ -35,77 +32,70 @@ import eu.etaxonomy.cdm.model.name.NomenclaturalCode;
 public class BfnXmlTestActivator {
 
 	private static final Logger logger = Logger.getLogger(BfnXmlTestActivator.class);
-	
+
 	//database validation status (create, update, validate ...)
 	static DbSchemaValidation schemaValidation = DbSchemaValidation.CREATE;
-	static final ICdmDataSource cdmDestination = CdmDestinations.cdm_redlist_plant_localhost();
+//	static final ICdmDataSource cdmDestination = CdmDestinations.cdm_redlist_plant_localhost();
+	static final ICdmDataSource cdmDestination = CdmDestinations.localH2();
 
-	private String filename;
-	
+	private final String filename;
+
 	private static final String strSource = "/eu/etaxonomy/cdm/io/bfnXml/";
-	
-	static final boolean includeNormalExplicit = true; 
-	
+
 	//check - import
 	static final CHECK check = CHECK.IMPORT_WITHOUT_CHECK;
 	//authors
 	static final boolean doMetaData = true;
-	//references
-	static final DO_REFERENCES doReferences =  DO_REFERENCES.ALL;
 	//names
 	static final boolean doTaxonNames = true;
-	static final boolean doRelNames = false;
-	//taxa
-	static final boolean doTaxa = true;
-	static final boolean doRelTaxa = false;
-	
+	//feature
+	static final boolean doFeature = true;
+	//feature
+    static final boolean doAdditionalTerms = true;
+
+
 	public BfnXmlTestActivator(String fileName){
 		filename = fileName;
 	}
-	
+
 	private void doImport(){
 		System.out.println("Start import from BfnXML to "+ cdmDestination.getDatabase() + " ...");
-		
+
 		//make Source
 		URI source;
 		try {
 			source = this.getClass().getResource(strSource+filename).toURI();
 			ICdmDataSource destination = cdmDestination;
-			
+
 			BfnXmlImportConfigurator bfnImportConfigurator = BfnXmlImportConfigurator.NewInstance(source,  destination);
-			
+
 			//if xmllist has two lists
 			bfnImportConfigurator.setHasSecondList(false);
 			bfnImportConfigurator.setNomenclaturalSig("Botanical");// "Zoological";//"Botanical"ICNAFP
 			bfnImportConfigurator.setDoMetaData(doMetaData);
-			bfnImportConfigurator.setDoReferences(doReferences);
 			bfnImportConfigurator.setDoTaxonNames(doTaxonNames);
-			bfnImportConfigurator.setDoRelNames(doRelNames);
-			
-			bfnImportConfigurator.setDoTaxa(doTaxa);
-			bfnImportConfigurator.setDoRelTaxa(doRelTaxa);
-			
+
 			bfnImportConfigurator.setCheck(check);
 			bfnImportConfigurator.setDbSchemaValidation(schemaValidation);
-	
+
 			// invoke import
 			CdmDefaultImport<BfnXmlImportConfigurator> bfnImport = new CdmDefaultImport<BfnXmlImportConfigurator>();
 			bfnImport.invoke(bfnImportConfigurator);
-			
+
 			logger.warn("End");
 			System.out.println("End import from BfnXML ("+ source.toString() + ")...");
 		} catch (URISyntaxException e) {
 			e.printStackTrace();
 		}
-		
+
 	}
 
-	
+
 	/**
 	 * @param args
 	 */
 	public static void main(String[] args) {
-		
+
 		List<String> fileNames = Arrays.asList(
 //				Plants
 				"rldb_print_v4_0_1_0_Flechten_korr_verantw_syn.xml"
@@ -116,7 +106,7 @@ public class BfnXmlTestActivator {
 //
 //				Animals
 //				"rldb_print_v4_0_1_0_Ameisen_110609_rev120113_syn.xml"
-				
+
 //				"rldb_print_v4_0_1_0_artenarmeWeichtiergruppen_121127_verantw_syn.xml",
 //				"rldb_print_v4_0_1_0_Asilidae_GMH_Wolff_110314_HGxls_120413_DF_korrV_Verantw_syn.xml",
 //				"rldb_print_v4_0_1_0_Asseln_121128_verantw_syn.xml",
@@ -126,9 +116,9 @@ public class BfnXmlTestActivator {
 //				"rldb_print_v4_0_1_0_Blattoptera_140413_DF_syn.xml",
 //				"rldb_print_v4_0_1_0_Empidoidea_120413_DF.xml",
 //				"rldb_print_v4_0_1_0_Eulen_Korruebern_23-05-2012_KorrV_syn.xml",
-//				
+//
 ////				"rldb_print_v4_0_1_0_Eulenspinner_Spanner_13-06-2012_KorrV_syn.xml",
-//				
+//
 //				"rldb_print_v4_0_1_0_Flohkrebse_121128_verantw_syn.xml",
 //				"rldb_print_v4_0_1_0_Heuschrecken_syn.xml",
 //				"rldb_print_v4_0_1_0_Igelwuermer_120907_verantw.xml",
@@ -153,14 +143,14 @@ public class BfnXmlTestActivator {
 //				"rldb_print_v4_0_1_0_Vielborster_130206_verantw_syn.xml",
 //				"rldb_print_v4_0_1_0_Wenigborster_121128_verantw_syn.xml",
 //				"rldb_print_v4_0_1_0_Zehnfusskrebse_130104_verantw_syn.xml"
-//				
-				
+//
+
 				//old list
 //				"rldb_print_v4_0_1_0_Amphibien.xml",
 //				"rldb_print_v4_0_1_0_Brutvoegel.xml",
 //				"rldb_print_v4_0_1_0_Fische.xml",
 //				"rldb_print_v4_0_1_0_Reptilien_1.xml"
-				
+
 				//two lists in one
 //				"RoteListe_v4_0_6_0_BFN_Saeuger_korr.xml"
 				);
@@ -169,14 +159,14 @@ public class BfnXmlTestActivator {
 			bfnXmlTestActivator.doImport();
 //			pauseProg();
 		}
-			
+
 			//first run
 			//create DB,Metadata
 //			String fileName = "rldb_print_v4_0_1_0_Ameisen_110609_rev120113_syn.xml";
 //			BfnXmlTestActivator bfnXmlTestActivator = new BfnXmlTestActivator(fileName);
 //			bfnXmlTestActivator.doImport();
 	}
-	
+
 	public static void pauseProg(){
 		System.out.println("Press enter to continue...");
 		Scanner keyboard = new Scanner(System.in);

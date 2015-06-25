@@ -20,7 +20,6 @@ import org.springframework.transaction.TransactionStatus;
 
 import eu.etaxonomy.cdm.api.service.ITermService;
 import eu.etaxonomy.cdm.api.service.IVocabularyService;
-import eu.etaxonomy.cdm.io.common.ICdmIO;
 import eu.etaxonomy.cdm.model.common.DefinedTermBase;
 import eu.etaxonomy.cdm.model.common.OrderedTermBase;
 import eu.etaxonomy.cdm.model.common.OrderedTermVocabulary;
@@ -38,20 +37,9 @@ import eu.etaxonomy.cdm.strategy.exceptions.UnknownCdmTypeException;
  *
  */
 @Component
-public class BfnXmlImportAddtionalTerms extends BfnXmlImportBase implements ICdmIO<BfnXmlImportState> {
+public class BfnXmlImportAddtionalTerms extends BfnXmlImportBase {
 
     private static final Logger logger = Logger.getLogger(BfnXmlImportAddtionalTerms.class);
-
-	public BfnXmlImportAddtionalTerms(){
-		super();
-	}
-
-	@Override
-	public boolean doCheck(BfnXmlImportState state){
-		boolean result = true;
-		//TODO needs to be implemented
-		return result;
-	}
 
     public enum Vocabulary{
         GERMAN_FEDERAL_STATES("Bundesländer"),
@@ -70,8 +58,77 @@ public class BfnXmlImportAddtionalTerms extends BfnXmlImportBase implements ICdm
         }
     }
 
+
+    private static final List<String> GERMAN_PRESENCE_ABSENCE_TERMS = Arrays.asList(new String[] {
+            "a:abwesend",
+            "aa:abwesend - ausgestorben",
+            "af:abwesend - frühere Fehleingabe",
+            "v:vorkommend",
+            "v+:vorkommend - in Einbürgerung befindlich",
+            "ve:vorkommend - etabliert",
+            "vk:vorkommend - kultiviert, domestiziert",
+            "vu:vorkommend - unbeständig",
+            "vs:vorkommend - Vorkommen unsicher",
+            "s:vorkommend - unsicher"
+
+    });
+
+    private static final List<String> GERMAN_ESTABLISHMENT_STATUS_TERMS = Arrays.asList(new String[] {
+            "A:Archaeophyt",
+            "I:Indigen",
+            "K:Kulturpflanze / domestiziertes Tier",
+            "N:Neophyt",
+            "KF:Kultuflüchtling"
+    });
+
+    private static final List<String> GERMAN_FEDERAL_STATES = Arrays.asList(new String[] {
+            "DE:Deutschland",
+            "BW:Baden-Württemberg",
+            "BY:Bayern",
+            "BE:Berlin",
+            "BB:Brandenburg",
+            "HB:Bremen",
+            "HH:Hamburg",
+            "HE:Hessen",
+            "MV:Mecklenburg-Vorpommern",
+            "NI:Niedersachsen",
+            "NW:Nordrhein-Westfalen",
+            "RP:Rheinland-Pfalz",
+            "SL:Saarland",
+            "SN:Sachsen",
+            "ST:Sachsen-Anhalt",
+            "SH:Schleswig-Holstein",
+            "TH:Thüringen"
+    });
+
+
+    /** Hibernate classification vocabulary initialisation strategy */
+    private static final List<String> VOC_CLASSIFICATION_INIT_STRATEGY = Arrays.asList(new String[] {
+            "classification.$",
+            "classification.rootNodes",
+            "childNodes",
+            "childNodes.taxon",
+            "childNodes.taxon.name",
+            "taxonNodes",
+            "taxonNodes.taxon",
+            "synonymRelations",
+            "taxon.*",
+            "taxon.sec",
+            "taxon.name.*",
+            "taxon.synonymRelations",
+            "termVocabulary.*",
+            "terms",
+            "namedArea"
+
+    });
+
+
+    public BfnXmlImportAddtionalTerms(){
+        super();
+    }
+
+
 	@Override
-	@SuppressWarnings({ "unchecked", "rawtypes" })
 	public void doInvoke(BfnXmlImportState state){
 		logger.info("create german terms ...");
 		IVocabularyService vocabularyService = getVocabularyService();
@@ -227,79 +284,20 @@ public class BfnXmlImportAddtionalTerms extends BfnXmlImportBase implements ICdm
 		return termVocabulary;
 	}
 
-
-	/* (non-Javadoc)
-	 * @see eu.etaxonomy.cdm.io.common.CdmIoBase#isIgnore(eu.etaxonomy.cdm.io.common.IImportConfigurator)
-	 */
 	@Override
     protected boolean isIgnore(BfnXmlImportState state){
-		return ! state.getConfig().isDoTaxonNames();
+		return ! state.getConfig().isDoAdditionalTerms();
 	}
 
 
 
-	private static final List<String> GERMAN_PRESENCE_ABSENCE_TERMS = Arrays.asList(new String[] {
-	        "a:abwesend",
-	        "aa:abwesend - ausgestorben",
-	        "af:abwesend - frühere Fehleingabe",
-	        "v:vorkommend",
-	        "v+:vorkommend - in Einbürgerung befindlich",
-	        "ve:vorkommend - etabliert",
-	        "vk:vorkommend - kultiviert, domestiziert",
-	        "vu:vorkommend - unbeständig",
-	        "vs:vorkommend - Vorkommen unsicher",
-	        "s:vorkommend - unsicher"
 
-	});
-
-	private static final List<String> GERMAN_ESTABLISHMENT_STATUS_TERMS = Arrays.asList(new String[] {
-	        "A:Archaeophyt",
-	        "I:Indigen",
-	        "K:Kulturpflanze / domestiziertes Tier",
-	        "N:Neophyt",
-	        "KF:Kultuflüchtling"
-	});
-
-    private static final List<String> GERMAN_FEDERAL_STATES = Arrays.asList(new String[] {
-    		"DE:Deutschland",
-    		"BW:Baden-Württemberg",
-    		"BY:Bayern",
-    		"BE:Berlin",
-            "BB:Brandenburg",
-            "HB:Bremen",
-            "HH:Hamburg",
-            "HE:Hessen",
-            "MV:Mecklenburg-Vorpommern",
-            "NI:Niedersachsen",
-            "NW:Nordrhein-Westfalen",
-            "RP:Rheinland-Pfalz",
-            "SL:Saarland",
-            "SN:Sachsen",
-            "ST:Sachsen-Anhalt",
-            "SH:Schleswig-Holstein",
-            "TH:Thüringen"
-    });
-
-
-    /** Hibernate classification vocabulary initialisation strategy */
-    private static final List<String> VOC_CLASSIFICATION_INIT_STRATEGY = Arrays.asList(new String[] {
-    		"classification.$",
-    		"classification.rootNodes",
-    		"childNodes",
-    		"childNodes.taxon",
-            "childNodes.taxon.name",
-            "taxonNodes",
-            "taxonNodes.taxon",
-            "synonymRelations",
-            "taxon.*",
-            "taxon.sec",
-            "taxon.name.*",
-            "taxon.synonymRelations",
-            "termVocabulary.*",
-            "terms",
-            "namedArea"
-
-    });
+    @Override
+    public boolean doCheck(BfnXmlImportState state){
+        boolean result = true;
+        //TODO needs to be implemented
+        return result;
+    }
 
 
 }
