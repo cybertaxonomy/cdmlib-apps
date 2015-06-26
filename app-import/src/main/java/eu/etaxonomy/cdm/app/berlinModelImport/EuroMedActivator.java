@@ -371,7 +371,7 @@ public class EuroMedActivator {
                 transmissionEngineDistribution.accumulate(
                         AggregationMode.byAreasAndRanks,
                         areaPager.getRecords(),
-                        Rank.SUBSPECIES(),
+                        Rank.UNRANKED_INFRASPECIFIC(),   //or do we even want to start from lower (UNKNOWN?)
                         Rank.GENUS(),
                         null,
                         DefaultProgressMonitor.NewInstance());
