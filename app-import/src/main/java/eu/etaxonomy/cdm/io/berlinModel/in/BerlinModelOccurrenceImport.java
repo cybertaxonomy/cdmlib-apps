@@ -29,6 +29,7 @@ import eu.etaxonomy.cdm.common.CdmUtils;
 import eu.etaxonomy.cdm.hibernate.HibernateProxyHelper;
 import eu.etaxonomy.cdm.io.berlinModel.BerlinModelTransformer;
 import eu.etaxonomy.cdm.io.berlinModel.in.validation.BerlinModelOccurrenceImportValidator;
+import eu.etaxonomy.cdm.io.common.CdmImportBase;
 import eu.etaxonomy.cdm.io.common.IOValidator;
 import eu.etaxonomy.cdm.io.common.ResultSetPartitioner;
 import eu.etaxonomy.cdm.io.common.Source;
@@ -151,27 +152,32 @@ public class BerlinModelOccurrenceImport  extends BerlinModelImportBase {
 		ResultSet rs = source.getResultSet(sql);
 
 		NamedArea euroMedArea = null;
-		NamedArea lastLevel2Area = null;
+		NamedArea lastLevel1Area = null;
 
 		//euroMedArea (EMCode = 'EM')
 		rs.next();
 		euroMedArea = makeSingleEuroMedArea(rs, eurMarkerType, euroMedAreaMarkerType, isoCodeExtType, tdwgCodeExtType, mclCodeExtType,
-				areaLevelTop, areaLevelEm1 , areaLevelEm2, sourceReference, euroMedArea, lastLevel2Area);
+				areaLevelTop, areaLevelEm1 , areaLevelEm2, sourceReference, euroMedArea, lastLevel1Area);
 		euroMedAreas.addTerm(euroMedArea);
 
 		//all other areas
 		while (rs.next()){
 			NamedArea newArea = makeSingleEuroMedArea(rs, eurMarkerType, euroMedAreaMarkerType,
 					isoCodeExtType, tdwgCodeExtType, mclCodeExtType,
-					areaLevelTop, areaLevelEm1 , areaLevelEm2, sourceReference, euroMedArea, lastLevel2Area);
+					areaLevelTop, areaLevelEm1 , areaLevelEm2, sourceReference, euroMedArea, lastLevel1Area);
 			if (newArea != null){
     			euroMedAreas.addTerm(newArea);
     			if (newArea.getPartOf().equals(euroMedArea)){
-    				lastLevel2Area = newArea;
+    				lastLevel1Area = newArea;
     			}
 			}
 		}
-		getVocabularyService().saveOrUpdate(euroMedAreas);
+		emAreaFinetuning(euroMedAreas, areaLevelEm2);
+
+
+		markAreasAsHidden(state, euroMedAreas);
+
+	    getVocabularyService().saveOrUpdate(euroMedAreas);
 
 		commitTransaction(txStatus);
 		logger.warn("Created E+M areas");
@@ -180,6 +186,85 @@ public class BerlinModelOccurrenceImport  extends BerlinModelImportBase {
 	}
 
 	/**
+     * @param areaLevelEm2
+	 * @param euroMedAreas2
+     */
+    private void emAreaFinetuning(TermVocabulary<NamedArea> euroMedAreas, NamedAreaLevel areaLevelEm2) {
+        //CZ
+        NamedArea oldArea = euroMedAreas.getTermByIdInvocabulary("Cz");
+        makeSubterm(oldArea, euroMedAreas.getTermByIdInvocabulary("Cs"), areaLevelEm2);
+        makeSubterm(oldArea, euroMedAreas.getTermByIdInvocabulary("Sk"), areaLevelEm2);
+
+        //Ju
+        oldArea = euroMedAreas.getTermByIdInvocabulary("Ju");
+        makeSubterm(oldArea, euroMedAreas.getTermByIdInvocabulary("BH"), areaLevelEm2);
+        makeSubterm(oldArea, euroMedAreas.getTermByIdInvocabulary("Cg"), areaLevelEm2);
+        makeSubterm(oldArea, euroMedAreas.getTermByIdInvocabulary("Ct"), areaLevelEm2);
+        makeSubterm(oldArea, euroMedAreas.getTermByIdInvocabulary("Mk"), areaLevelEm2);
+        makeSubterm(oldArea, euroMedAreas.getTermByIdInvocabulary("Sl"), areaLevelEm2);
+        makeSubterm(oldArea, euroMedAreas.getTermByIdInvocabulary("Sr"), areaLevelEm2);
+
+        //IJ
+        oldArea = euroMedAreas.getTermByIdInvocabulary("IJ");
+        makeSubterm(oldArea, euroMedAreas.getTermByIdInvocabulary("Ir"), areaLevelEm2);
+        makeSubterm(oldArea, euroMedAreas.getTermByIdInvocabulary("Jo"), areaLevelEm2);
+
+        //LS
+        oldArea = euroMedAreas.getTermByIdInvocabulary("LS");
+        makeSubterm(oldArea, euroMedAreas.getTermByIdInvocabulary("Le"), areaLevelEm2);
+        makeSubterm(oldArea, euroMedAreas.getTermByIdInvocabulary("Sy"), areaLevelEm2);
+
+    }
+
+    //5.Mark areas to be hidden #3979 .5
+    private void markAreasAsHidden(BerlinModelImportState state, TermVocabulary<NamedArea> euroMedAreasVoc) {
+
+        try {
+
+            @SuppressWarnings("unchecked")
+            TermVocabulary<MarkerType> vocUserDefinedMarkerTypes = getVocabularyService().find(CdmImportBase.uuidUserDefinedMarkerTypeVocabulary);
+            if (vocUserDefinedMarkerTypes == null){
+                String message = "Marker type vocabulary could not be found. Hidden areas not added.";
+                logger.error(message);
+                System.out.println(message);
+            }
+            MarkerType hiddenAreaMarkerType = getMarkerType(state, BerlinModelTransformer.uuidHiddenArea, "Hidden Area","Used to hide distributions for the named areas in publications", null, vocUserDefinedMarkerTypes);
+
+            //Add hidden area marker to Rs(C) and Rs(N)
+            hideArea(euroMedAreasVoc, hiddenAreaMarkerType, BerlinModelTransformer.uuidRs);
+            hideArea(euroMedAreasVoc, hiddenAreaMarkerType, BerlinModelTransformer.uuidRs_B);
+            hideArea(euroMedAreasVoc, hiddenAreaMarkerType, BerlinModelTransformer.uuidRs_C);
+            hideArea(euroMedAreasVoc, hiddenAreaMarkerType, BerlinModelTransformer.uuidRs_E);
+            hideArea(euroMedAreasVoc, hiddenAreaMarkerType, BerlinModelTransformer.uuidRs_N);
+            hideArea(euroMedAreasVoc, hiddenAreaMarkerType, BerlinModelTransformer.uuidRs_K);
+            hideArea(euroMedAreasVoc, hiddenAreaMarkerType, BerlinModelTransformer.uuidRs_W);
+        } catch (Exception e) {
+            e.printStackTrace();
+            logger.error("Exception in markAreasAsHidden: " + e.getMessage());
+        }
+
+    }
+
+    private void hideArea(TermVocabulary<NamedArea> euroMedAreasVoc, MarkerType hiddenAreaMarkerType, UUID areaUuid) {
+        for (NamedArea namedArea : euroMedAreasVoc){
+            if (namedArea.getUuid().equals(areaUuid)){
+                namedArea.addMarker(Marker.NewInstance(hiddenAreaMarkerType, true));
+                return;
+            }
+        }
+    }
+
+    /**
+     * @param oldArea
+     * @param namedArea
+     * @param areaLevelEm2
+     */
+    private void makeSubterm(NamedArea oldArea, NamedArea namedArea, NamedAreaLevel areaLevelEm2) {
+        namedArea.setLevel(areaLevelEm2);
+        namedArea.setPartOf(oldArea);
+    }
+
+    /**
 	 * @param sourceReference
 	 * @return
 	 */
@@ -207,7 +292,7 @@ public class BerlinModelOccurrenceImport  extends BerlinModelImportBase {
 			MarkerType euroMedAreaMarkerType, ExtensionType isoCodeExtType,
 			ExtensionType tdwgCodeExtType, ExtensionType mclCodeExtType,
 			NamedAreaLevel areaLevelTop, NamedAreaLevel areaLevelEm1, NamedAreaLevel areaLevelEm2,
-			Reference<?> sourceReference, NamedArea euroMedArea, NamedArea level2Area) throws SQLException {
+			Reference<?> sourceReference, NamedArea euroMedArea, NamedArea level1Area) throws SQLException {
 		Integer areaId = rs.getInt("AreaId");
 		String emCode = nullSafeTrim(rs.getString("EMCode"));
 		String isoCode = nullSafeTrim(rs.getString("ISOCode"));
@@ -281,7 +366,7 @@ public class BerlinModelOccurrenceImport  extends BerlinModelImportBase {
 		//parent
 		if (euroMedArea != null){
 			if (emCode.contains("(")){
-				area.setPartOf(level2Area);
+				area.setPartOf(level1Area);
 				area.setLevel(areaLevelEm2);
 			}else{
 				area.setPartOf(euroMedArea);
