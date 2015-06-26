@@ -85,11 +85,11 @@ public class EuroMedActivator {
 	static final Source berlinModelSource = BerlinModelSources.euroMed_BGBM42();
 //	static final Source berlinModelSource = BerlinModelSources.euroMed_PESI3();
 
-//	static final ICdmDataSource cdmDestination = CdmDestinations.cdm_test_euroMed();
+	static final ICdmDataSource cdmDestination = CdmDestinations.cdm_test_euroMed();
 //	static final ICdmDataSource cdmDestination = CdmDestinations.cdm_pesi_euromed();
 
 //	static final ICdmDataSource cdmDestination = CdmDestinations.cdm_test_local_euromed3();
-	static final ICdmDataSource cdmDestination = CdmDestinations.cdm_test_local_mysql_test();
+//	static final ICdmDataSource cdmDestination = CdmDestinations.cdm_test_local_mysql_test();
 
 //	static final ICdmDataSource cdmDestination = CdmDestinations.localH2();
 
@@ -171,10 +171,10 @@ public class EuroMedActivator {
 	//taxa
 	static final boolean doTaxa = true;
 	static final boolean doFacts = true;
-	static final boolean doCommonNames = false;
-	static final boolean doOccurences = false;
+	static final boolean doCommonNames = true;
+	static final boolean doOccurences = true;
 	static final boolean doRelTaxa = false;
-	static final boolean doRunTransmissionEngine = (hbm2dll == DbSchemaValidation.VALIDATE);
+	static final boolean doRunTransmissionEngine = true;// (hbm2dll == DbSchemaValidation.VALIDATE);
 
 	//etc.
 	static final boolean doMarker = true;
@@ -404,19 +404,26 @@ public class EuroMedActivator {
                     app.getVocabularyService().saveOrUpdate(vocUserDefinedMarkerTypes);
 
                     //Add hidden area marker to Rs(C) and Rs(N)
-                    NamedArea rs_c = (NamedArea)app.getTermService().find(BerlinModelTransformer.uuidRs_C);
-                    rs_c.addMarker(Marker.NewInstance(hiddenAreaMarkerType, true));
-                    app.getTermService().saveOrUpdate(rs_c);
-                    NamedArea rs_n = (NamedArea)app.getTermService().find(BerlinModelTransformer.uuidRs_N);
-                    rs_n.addMarker(Marker.NewInstance(hiddenAreaMarkerType, true));
-                    app.getTermService().saveOrUpdate(rs_n);
-                }
+                    hideArea(app, hiddenAreaMarkerType, BerlinModelTransformer.uuidRs);
+                    hideArea(app, hiddenAreaMarkerType, BerlinModelTransformer.uuidRs_B);
+                    hideArea(app, hiddenAreaMarkerType, BerlinModelTransformer.uuidRs_C);
+                    hideArea(app, hiddenAreaMarkerType, BerlinModelTransformer.uuidRs_E);
+                    hideArea(app, hiddenAreaMarkerType, BerlinModelTransformer.uuidRs_N);
+                    hideArea(app, hiddenAreaMarkerType, BerlinModelTransformer.uuidRs_K);
+                    hideArea(app, hiddenAreaMarkerType, BerlinModelTransformer.uuidRs_W);
+                 }
                 app.commitTransaction(tx);
             } catch (Exception e) {
                 e.printStackTrace();
                 logger.error("Exception in markAreasAsHidden: " + e.getMessage());
             }
 	    }
+    }
+
+    private void hideArea(ICdmApplicationConfiguration app, MarkerType hiddenAreaMarkerType, UUID areaUuid) {
+        NamedArea area = (NamedArea)app.getTermService().find(areaUuid);
+        area.addMarker(Marker.NewInstance(hiddenAreaMarkerType, true));
+        app.getTermService().saveOrUpdate(area);
     }
 
     //2. import shapefile attributes #3979 .2
