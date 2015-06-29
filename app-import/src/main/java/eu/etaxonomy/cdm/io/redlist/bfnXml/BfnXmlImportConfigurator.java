@@ -28,6 +28,7 @@ import eu.etaxonomy.cdm.common.XmlHelp;
 import eu.etaxonomy.cdm.database.ICdmDataSource;
 import eu.etaxonomy.cdm.io.common.ImportConfiguratorBase;
 import eu.etaxonomy.cdm.io.common.mapping.IInputTransformer;
+import eu.etaxonomy.cdm.model.name.NomenclaturalCode;
 import eu.etaxonomy.cdm.model.reference.Reference;
 import eu.etaxonomy.cdm.model.reference.ReferenceFactory;
 
@@ -62,7 +63,7 @@ public class BfnXmlImportConfigurator extends ImportConfiguratorBase<BfnXmlImpor
 	//	rdfNamespace
 	Namespace bfnXmlNamespace;
 
-	private String nomenclaturalCode = null;
+	private NomenclaturalCode nomenclaturalCode = null;
 
 	@SuppressWarnings("unchecked")
 	@Override
@@ -207,11 +208,12 @@ public class BfnXmlImportConfigurator extends ImportConfiguratorBase<BfnXmlImpor
 		this.hasSecondList = hasSecondList;
 	}
 
-	public void setNomenclaturalSig(String nomenclaturalCode) {
+	public void setNomenclaturalCode(NomenclaturalCode nomenclaturalCode) {
 		this.nomenclaturalCode = nomenclaturalCode;
 	}
 
-	public String getNomenclaturalSig(){
+	@Override
+    public NomenclaturalCode getNomenclaturalCode(){
 		return nomenclaturalCode;
 	}
 

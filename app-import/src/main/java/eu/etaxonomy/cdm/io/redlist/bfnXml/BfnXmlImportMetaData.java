@@ -51,6 +51,8 @@ public class BfnXmlImportMetaData extends BfnXmlImportBase implements ICdmIO<Bfn
 	public void doInvoke(BfnXmlImportState state){
 		logger.warn("start import MetaData...");
 
+		//TODO only dirty quick fix for now
+		state.setFirstClassificationName(state.getConfig().getClassificationName());
 
 		ResultWrapper<Boolean> success = ResultWrapper.NewInstance(true);
 
@@ -73,7 +75,6 @@ public class BfnXmlImportMetaData extends BfnXmlImportBase implements ICdmIO<Bfn
 		List<?> contentXML = elDataSet.getContent();
 		Element currentElement = null;
 		for(Object object:contentXML){
-
 
 			if(object instanceof Element){
 				currentElement = (Element)object;
@@ -129,7 +130,6 @@ public class BfnXmlImportMetaData extends BfnXmlImportBase implements ICdmIO<Bfn
 						state.setUnsuccessfull();
 					}
 					//FIXME: Only take the first RoteListeData Features
-
 
 					return;
 				}

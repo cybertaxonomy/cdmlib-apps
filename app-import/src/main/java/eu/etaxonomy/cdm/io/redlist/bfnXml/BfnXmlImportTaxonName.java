@@ -47,6 +47,7 @@ import eu.etaxonomy.cdm.model.name.NomenclaturalStatusType;
 import eu.etaxonomy.cdm.model.name.NonViralName;
 import eu.etaxonomy.cdm.model.name.Rank;
 import eu.etaxonomy.cdm.model.name.TaxonNameBase;
+import eu.etaxonomy.cdm.model.reference.Reference;
 import eu.etaxonomy.cdm.model.taxon.Classification;
 import eu.etaxonomy.cdm.model.taxon.Synonym;
 import eu.etaxonomy.cdm.model.taxon.SynonymRelationshipType;
@@ -69,7 +70,7 @@ public class BfnXmlImportTaxonName extends BfnXmlImportBase {
 
     private static final Logger logger = Logger.getLogger(BfnXmlImportTaxonName.class);
 
-	private static String strNomenclaturalCode = null;// "Zoological";//"Botanical";
+	private static NomenclaturalCode nomenclaturalCode = null;
 	private static int parsingProblemCounter = 0;
 	private Map<Integer, Taxon> firstList;
 	private Map<Integer, Taxon> secondList;
@@ -86,7 +87,7 @@ public class BfnXmlImportTaxonName extends BfnXmlImportBase {
 		ITaxonService taxonService = getTaxonService();
 
 		BfnXmlImportConfigurator config = state.getConfig();
-		strNomenclaturalCode = config.getNomenclaturalSig();
+		nomenclaturalCode = config.getNomenclaturalCode();
 		Element elDataSet = getDataSetElement(config);
 		//TODO set Namespace
 		Namespace bfnNamespace = config.getBfnXmlNamespace();
@@ -101,7 +102,7 @@ public class BfnXmlImportTaxonName extends BfnXmlImportBase {
 				if(currentElement.getName().equalsIgnoreCase("ROTELISTEDATEN")){
 					TransactionStatus tx = startTransaction();
 					Map<UUID, TaxonBase> savedTaxonMap = extractTaxonNames(state, taxonService, config, currentElement, bfnNamespace);
-					createOrUdateClassification(config, taxonService, savedTaxonMap, currentElement, state);
+					createOrUpdateClassification(config, taxonService, savedTaxonMap, currentElement, state);
 					commitTransaction(tx);
 				}//import concept relations of taxon lists
 				if(config.isHasSecondList()){
@@ -283,7 +284,7 @@ public class BfnXmlImportTaxonName extends BfnXmlImportBase {
 	 * @return
 	 */
 	@SuppressWarnings("rawtypes")
-	private boolean createOrUdateClassification(BfnXmlImportConfigurator config, ITaxonService taxonService, Map<UUID, TaxonBase> savedTaxonMap, Element currentElement, BfnXmlImportState state) {
+	private boolean createOrUpdateClassification(BfnXmlImportConfigurator config, ITaxonService taxonService, Map<UUID, TaxonBase> savedTaxonMap, Element currentElement, BfnXmlImportState state) {
 		boolean isNewClassification = true;
 		String classificationName = state.getFirstClassificationName();
 		if(config.isFillSecondList()){
@@ -294,7 +295,9 @@ public class BfnXmlImportTaxonName extends BfnXmlImportBase {
 //		}
 		//TODO make classification name dynamically depending on its value in the XML.
 		Classification classification = Classification.NewInstance(classificationName+" "+currentElement.getAttributeValue("inhalt"), state.getCompleteSourceRef());
-		classification.addImportSource(Integer.toString(classification.getId()), classification.getTitleCache(), state.getCompleteSourceRef(), state.getCurrentMicroRef().toString());
+		//TODO do we really want toString() or titleCache here?
+		String microRef = state.getCurrentMicroRef() == null ? null : state.getCurrentMicroRef().toString();
+		classification.addImportSource(Integer.toString(classification.getId()), classification.getTitleCache(), state.getCompleteSourceRef(), microRef);
 //		List<Classification> classificationList = getClassificationService().list(Classification.class, null, null, null, VOC_CLASSIFICATION_INIT_STRATEGY);
 //		for(Classification c : classificationList){
 //			if(c.getTitleCache().equalsIgnoreCase(classification.getTitleCache())){
@@ -338,7 +341,7 @@ public class BfnXmlImportTaxonName extends BfnXmlImportBase {
 	 * @return
 	 */
 
-	@SuppressWarnings({ "unchecked", "rawtypes" })
+	@SuppressWarnings({ "unchecked" })
 	private Taxon createOrUpdateTaxon(
 			ResultWrapper<Boolean> success, String idNamespace,
 			BfnXmlImportConfigurator config, Namespace bfnNamespace,
@@ -403,15 +406,18 @@ public class BfnXmlImportTaxonName extends BfnXmlImportBase {
 //							logger.warn("More than 1 matching taxon name found for " + nameBase.getTitleCache());
 //						}
 //					}
-					state.setCurrentMicroRef(state.getFirstListSecRef());
-					if(config.isFillSecondList()){
-						state.setCurrentMicroRef(state.getSecondListSecRef());
-					}
+
+					Reference<?> microRef = config.isFillSecondList() ?
+					        state.getSecondListSecRef():
+					        state.getFirstListSecRef();
+					state.setCurrentMicroRef(microRef);
 					taxon = Taxon.NewInstance(nameBase, state.getCurrentMicroRef());
 					//set create and set path of nameSpace
 					Element parentElement = elWissName.getParentElement();
 					Element grandParentElement = parentElement.getParentElement();
-					taxon.addImportSource(uniqueID, grandParentElement.getName()+":"+parentElement.getName()+":"+elWissName.getName()+":"+uriNameSpace, state.getCompleteSourceRef(), state.getCurrentMicroRef().getTitle());
+					String namespace = grandParentElement.getName() + ":" + parentElement.getName() + ":"+elWissName.getName() + ":" + uriNameSpace;
+					String microRefStr = microRef == null ? null : microRef.getTitle();
+					taxon.addImportSource(uniqueID, namespace, state.getCompleteSourceRef(), microRefStr);
 				} catch (UnknownCdmTypeException e) {
 					success.setValue(false);
 				}
@@ -771,7 +777,6 @@ public class BfnXmlImportTaxonName extends BfnXmlImportBase {
 			throws UnknownCdmTypeException {
 		TaxonNameBase<?,?> taxonNameBase = null;
 
-		NomenclaturalCode nomCode = BfnXmlTransformer.nomCodeString2NomCode(strNomenclaturalCode);
 		String strScientificName = elWissName.getTextNormalize();
 		/**
 		 *
@@ -789,7 +794,7 @@ public class BfnXmlImportTaxonName extends BfnXmlImportBase {
 		}
 		NonViralName<?> nonViralName = null;
 		NonViralNameParserImpl parser = NonViralNameParserImpl.NewInstance();
-		nonViralName = parser.parseFullName(strScientificName, nomCode, rank);
+		nonViralName = parser.parseFullName(strScientificName, nomenclaturalCode, rank);
 		if(nonViralName.hasProblem()){
 			for(ParserProblem p:nonViralName.getParsingProblems()){
 				logger.warn(++parsingProblemCounter + " " +nonViralName.getTitleCache() +" "+p.toString());

@@ -102,7 +102,7 @@ public class BfnXmlImportAddtionalTerms extends BfnXmlImportBase {
     });
 
 
-    /** Hibernate classification vocabulary initialisation strategy */
+    /** Hibernate classification vocabulary initialization strategy */
     private static final List<String> VOC_CLASSIFICATION_INIT_STRATEGY = Arrays.asList(new String[] {
             "classification.$",
             "classification.rootNodes",
@@ -210,7 +210,7 @@ public class BfnXmlImportAddtionalTerms extends BfnXmlImportBase {
                    //Namedareas
                    term = NamedArea.NewInstance(label, label, abbrevatedLabel);
                    ((NamedArea) term).setType(NamedAreaType.ADMINISTRATION_AREA());
-                   term.setIdInVocabulary(Integer.toString(id));;
+                   term.setIdInVocabulary(Integer.toString(id));
                    if(label.equalsIgnoreCase("Deutschland")){
                        ((NamedArea) term).setLevel(NamedAreaLevel.COUNTRY());
                        parentGermany = (NamedArea) term;

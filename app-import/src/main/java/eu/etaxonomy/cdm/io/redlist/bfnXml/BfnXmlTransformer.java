@@ -14,7 +14,6 @@ import java.util.UUID;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 
-import eu.etaxonomy.cdm.model.name.NomenclaturalCode;
 import eu.etaxonomy.cdm.model.name.Rank;
 import eu.etaxonomy.cdm.model.taxon.TaxonRelationshipType;
 import eu.etaxonomy.cdm.strategy.exceptions.UnknownCdmTypeException;
@@ -312,65 +311,36 @@ public final class BfnXmlTransformer {
 		}
 	}
 
-	public static NomenclaturalCode nomCodeString2NomCode (String nomCode) throws UnknownCdmTypeException{
-		if (nomCode != null){
-			nomCode = nomCode.trim();
-		}
-		if (nomCode == null){ return null;
-		}else if (nomCode.equals("Botanical")){return NomenclaturalCode.ICNAFP;
-		}else if (nomCode.equals("Zoological")){return NomenclaturalCode.ICZN;
-		}else if (nomCode.equals("Viral")){return NomenclaturalCode.ICVCN;
-		}else if (nomCode.equals("Bacteriological")){return NomenclaturalCode.ICNB;
-		}else if (nomCode.equals("CultivatedPlant")){return NomenclaturalCode.ICNCP;
-		//TODO code Indeterminate
-//		}else if (nomCode.equals("Indeterminate")){return NomenclaturalCode.XXX();
-		}
-		else {
-			throw new UnknownCdmTypeException("Unknown Nomenclatural Code " + nomCode);
-		}
-	}
+
 	public static UUID getRedlistVocabularyUUID(String redListVocabulary) throws UnknownCdmTypeException {
 
 		if(redListVocabulary.equalsIgnoreCase("RL Kat.")) {
             return vocStateRLKat;
-        }
-		if(redListVocabulary.equalsIgnoreCase("Kat. +/-")) {
+        }else if(redListVocabulary.equalsIgnoreCase("Kat. +/-")) {
             return vocStateRlKatDiff;
-        }
-		if(redListVocabulary.equalsIgnoreCase("aktuelle Bestandsstituation")) {
+        }else if(redListVocabulary.equalsIgnoreCase("aktuelle Bestandsstituation")) {
             return vocStateRlAkt;
-        }
-		if(redListVocabulary.equalsIgnoreCase("langfristiger Bestandstrend")) {
+        }else if(redListVocabulary.equalsIgnoreCase("langfristiger Bestandstrend")) {
             return vocStateRLLang;
-        }
-		if(redListVocabulary.equalsIgnoreCase("kurzfristiger Bestandstrend")) {
+        }else if(redListVocabulary.equalsIgnoreCase("kurzfristiger Bestandstrend")) {
             return vocStateRLKurz;
-        }
-		if(redListVocabulary.equalsIgnoreCase("Risikofaktoren")) {
+        }else if(redListVocabulary.equalsIgnoreCase("Risikofaktoren")) {
             return vocStateRLRisk;
-        }
-		if(redListVocabulary.equalsIgnoreCase("Verantwortlichkeit")) {
+        }else if(redListVocabulary.equalsIgnoreCase("Verantwortlichkeit")) {
             return vocStateRLResp;
-        }
-		if(redListVocabulary.equalsIgnoreCase("alte RL- Kat.")) {
+        }else if(redListVocabulary.equalsIgnoreCase("alte RL- Kat.")) {
             return vocStateRLKatOld;
-        }
-		if(redListVocabulary.equalsIgnoreCase("Neobiota")) {
+        }else if(redListVocabulary.equalsIgnoreCase("Neobiota")) {
             return vocStateRLNeo;
-        }
-		if(redListVocabulary.equalsIgnoreCase("Eindeutiger Code")) {
+        }else if(redListVocabulary.equalsIgnoreCase("Eindeutiger Code")) {
             return vocStateRLKatId;
-        }
-		if(redListVocabulary.equalsIgnoreCase("Sonderfälle")) {
+        }else if(redListVocabulary.equalsIgnoreCase("Sonderfälle")) {
             return vocStateRLSpecialCases;
-        }
-		if(redListVocabulary.equalsIgnoreCase("Vorkommensstatus")) {
+        }else if(redListVocabulary.equalsIgnoreCase("Vorkommensstatus")) {
 		    return vocGermanPresenceTerms;
-		}
-		if(redListVocabulary.equalsIgnoreCase("Etablierungsstatus")) {
+		}else if(redListVocabulary.equalsIgnoreCase("Etablierungsstatus")) {
 		    return vocGermanEstablishmentTerms;
-		}
-		if(redListVocabulary.equalsIgnoreCase("Bundesländer")) {
+		}else if(redListVocabulary.equalsIgnoreCase("Bundesländer")) {
             return vocGermanFederalStates;
         } else{
 			throw new UnknownCdmTypeException("Unknown Vocabulary feature, could not match: " + redListVocabulary);
@@ -661,77 +631,53 @@ public final class BfnXmlTransformer {
 
 		if(strGermanState.equalsIgnoreCase("Deutschland")) {
             return UUID.fromString("a7f3855e-d4fa-4313-8fcf-da792ef848e7");
-        }
-		if(strGermanState.equalsIgnoreCase("Baden-Württemberg")) {
+        }else if(strGermanState.equalsIgnoreCase("Baden-Württemberg")) {
             return UUID.fromString("00e64948-9ce9-4ebf-961b-133c56517b1c");
-        }
-		if(strGermanState.equalsIgnoreCase("BW")) {
+        }else if(strGermanState.equalsIgnoreCase("BW")) {
 		    return UUID.fromString("00e64948-9ce9-4ebf-961b-133c56517b1c");
-		}
-		if(strGermanState.equalsIgnoreCase("Bayern")) {
+		}else if(strGermanState.equalsIgnoreCase("Bayern")) {
             return UUID.fromString("ba075265-368f-4ff0-8942-88546239c70a");
-        }
-		if(strGermanState.equalsIgnoreCase("BY")) {
+        }else if(strGermanState.equalsIgnoreCase("BY")) {
 		    return UUID.fromString("ba075265-368f-4ff0-8942-88546239c70a");
-		}
-		if(strGermanState.equalsIgnoreCase("Berlin")) {
+		}else if(strGermanState.equalsIgnoreCase("Berlin")) {
             return UUID.fromString("d9339e12-7efa-45df-a008-3c934b9386bc");
-        }
-		if(strGermanState.equalsIgnoreCase("BE")) {
+        }else if(strGermanState.equalsIgnoreCase("BE")) {
 		    return UUID.fromString("d9339e12-7efa-45df-a008-3c934b9386bc");
-		}
-		if(strGermanState.equalsIgnoreCase("Bremen")) {
+		}else if(strGermanState.equalsIgnoreCase("Bremen")) {
             return UUID.fromString("a6d2f97d-5dba-4b79-a073-25fb491b6320");
-        }
-		if(strGermanState.equalsIgnoreCase("HB")) {
+        }else if(strGermanState.equalsIgnoreCase("HB")) {
 		    return UUID.fromString("a6d2f97d-5dba-4b79-a073-25fb491b6320");
-		}
-		if(strGermanState.equalsIgnoreCase("Brandenburg")) {
+		}else if(strGermanState.equalsIgnoreCase("Brandenburg")) {
             return UUID.fromString("dda9d8b8-8090-4667-953e-d8b1f7243926");
-        }
-		if(strGermanState.equalsIgnoreCase("BB")) {
+        }else if(strGermanState.equalsIgnoreCase("BB")) {
 		    return UUID.fromString("dda9d8b8-8090-4667-953e-d8b1f7243926");
-		}
-		if(strGermanState.equalsIgnoreCase("Hamburg")) {
+		}else if(strGermanState.equalsIgnoreCase("Hamburg")) {
             return UUID.fromString("f087a7d7-974f-4627-a414-df27c04f99dd");
-        }
-		if(strGermanState.equalsIgnoreCase("HH")) {
+        }else if(strGermanState.equalsIgnoreCase("HH")) {
 		    return UUID.fromString("f087a7d7-974f-4627-a414-df27c04f99dd");
-		}
-		if(strGermanState.equalsIgnoreCase("Hessen")) {
+		}else if(strGermanState.equalsIgnoreCase("Hessen")) {
             return UUID.fromString("59de29e6-bf32-4677-89c7-a6834fcb5085");
-        }
-		if(strGermanState.equalsIgnoreCase("HE")) {
+        }else if(strGermanState.equalsIgnoreCase("HE")) {
 		    return UUID.fromString("59de29e6-bf32-4677-89c7-a6834fcb5085");
-		}
-		if(strGermanState.equalsIgnoreCase("Mecklenburg-Vorpommern")) {
+		}else if(strGermanState.equalsIgnoreCase("Mecklenburg-Vorpommern")) {
             return UUID.fromString("06dccbd5-8d5a-4e4f-b56e-d1d74ab25c19");
-        }
-		if(strGermanState.equalsIgnoreCase("MV")) {
+        }else if(strGermanState.equalsIgnoreCase("MV")) {
 		    return UUID.fromString("06dccbd5-8d5a-4e4f-b56e-d1d74ab25c19");
-		}
-		if(strGermanState.equalsIgnoreCase("Niedersachsen") || strGermanState.equalsIgnoreCase("NI")) {
+		}else if(strGermanState.equalsIgnoreCase("Niedersachsen") || strGermanState.equalsIgnoreCase("NI")) {
             return UUID.fromString("97f77fe8-07ab-4e14-8f8b-40e8caf7e653");
-        }
-		if(strGermanState.equalsIgnoreCase("Nordrhein-Westfalen")||strGermanState.equalsIgnoreCase("NW")) {
+        }else if(strGermanState.equalsIgnoreCase("Nordrhein-Westfalen")||strGermanState.equalsIgnoreCase("NW")) {
             return UUID.fromString("46bf702e-1438-470c-9c77-04202c34ebf2");
-        }
-		if(strGermanState.equalsIgnoreCase("Rheinland-Pfalz")||strGermanState.equalsIgnoreCase("RP")) {
+        }else if(strGermanState.equalsIgnoreCase("Rheinland-Pfalz")||strGermanState.equalsIgnoreCase("RP")) {
             return UUID.fromString("dd3ddb29-b1ec-4937-99a9-4a94d383becf");
-        }
-		if(strGermanState.equalsIgnoreCase("Saarland")||strGermanState.equalsIgnoreCase("SL")) {
+        }else if(strGermanState.equalsIgnoreCase("Saarland")||strGermanState.equalsIgnoreCase("SL")) {
             return UUID.fromString("26d3e85f-ce90-43ae-8ac0-42a60302b7b7");
-        }
-		if(strGermanState.equalsIgnoreCase("Sachsen")||strGermanState.equalsIgnoreCase("SN")) {
+        }else if(strGermanState.equalsIgnoreCase("Sachsen")||strGermanState.equalsIgnoreCase("SN")) {
             return UUID.fromString("ca3ef152-ee3a-45f2-8343-983cf0fdddbd");
-        }
-		if(strGermanState.equalsIgnoreCase("Sachsen-Anhalt")|| strGermanState.equalsIgnoreCase("ST")) {
+        }else if(strGermanState.equalsIgnoreCase("Sachsen-Anhalt")|| strGermanState.equalsIgnoreCase("ST")) {
             return UUID.fromString("bb95b9a4-87ee-49bd-a542-4c30289e8d1f");
-        }
-		if(strGermanState.equalsIgnoreCase("Schleswig-Holstein")||strGermanState.equalsIgnoreCase("SH")) {
+        }else if(strGermanState.equalsIgnoreCase("Schleswig-Holstein")||strGermanState.equalsIgnoreCase("SH")) {
             return UUID.fromString("863323a7-22fb-4070-ad94-ce317098a28a");
-        }
-		if(strGermanState.equalsIgnoreCase("Thüringen")||strGermanState.equalsIgnoreCase("TH")) {
+        }else if(strGermanState.equalsIgnoreCase("Thüringen")||strGermanState.equalsIgnoreCase("TH")) {
             return UUID.fromString("72e18526-6bf7-4300-8329-53cab5da2b51");
         } else {
             throw new UnknownCdmTypeException("Unknown State, could not match: " + strGermanState);
@@ -740,25 +686,25 @@ public final class BfnXmlTransformer {
 
 	public static UUID getGermanAbsenceTermUUID(String strGermanTerm) throws UnknownCdmTypeException {
 	    if(strGermanTerm.equalsIgnoreCase("abwesend")) {return UUID.fromString("517c4c68-952e-4580-8379-66a4aa12c04b");}
-	    if(strGermanTerm.equalsIgnoreCase("abwesend - ausgestorben")) {return UUID.fromString("7a620705-7c0d-4c72-863f-f41d548a2cc5");}
-	    if(strGermanTerm.equalsIgnoreCase("abwesend - frühere Fehleingabe")) {return UUID.fromString("1009264c-197d-43d4-ba16-7a7f0a6fde0c");}
-	    if(strGermanTerm.equalsIgnoreCase("vorkommend")) {return UUID.fromString("b294e7db-919f-4da0-9ba4-c374e7876aff");}
-	    if(strGermanTerm.equalsIgnoreCase("vorkommend - in Einbürgerung befindlich")) {return UUID.fromString("ec2f4099-82f7-44de-8892-09651c76d255");}
-	    if(strGermanTerm.equalsIgnoreCase("vorkommend - etabliert")) {return UUID.fromString("c1954b3c-58b5-43f3-b122-c872b2708bba");}
-	    if(strGermanTerm.equalsIgnoreCase("vorkommend - kultiviert, domestiziert")) {return UUID.fromString("99ebdb24-fda0-4203-9455-30441cdee17b");}
-	    if(strGermanTerm.equalsIgnoreCase("vorkommend - unbeständig")) {return UUID.fromString("12566e82-cdc2-48e4-951d-2fb88f30c5fd");}
-	    if(strGermanTerm.equalsIgnoreCase("vorkommend - Vorkommen unsicher")) {return UUID.fromString("a84d2ddb-fe7b-483b-96ba-fc0884d77c81");}
-	    if(strGermanTerm.equalsIgnoreCase("vorkommend - unsicher")) {return UUID.fromString("0b144b76-dab6-40da-8511-898f8226a24a");
+	    else if(strGermanTerm.equalsIgnoreCase("abwesend - ausgestorben")) {return UUID.fromString("7a620705-7c0d-4c72-863f-f41d548a2cc5");}
+	    else if(strGermanTerm.equalsIgnoreCase("abwesend - frühere Fehleingabe")) {return UUID.fromString("1009264c-197d-43d4-ba16-7a7f0a6fde0c");}
+	    else if(strGermanTerm.equalsIgnoreCase("vorkommend")) {return UUID.fromString("b294e7db-919f-4da0-9ba4-c374e7876aff");}
+	    else if(strGermanTerm.equalsIgnoreCase("vorkommend - in Einbürgerung befindlich")) {return UUID.fromString("ec2f4099-82f7-44de-8892-09651c76d255");}
+	    else if(strGermanTerm.equalsIgnoreCase("vorkommend - etabliert")) {return UUID.fromString("c1954b3c-58b5-43f3-b122-c872b2708bba");}
+	    else if(strGermanTerm.equalsIgnoreCase("vorkommend - kultiviert, domestiziert")) {return UUID.fromString("99ebdb24-fda0-4203-9455-30441cdee17b");}
+	    else if(strGermanTerm.equalsIgnoreCase("vorkommend - unbeständig")) {return UUID.fromString("12566e82-cdc2-48e4-951d-2fb88f30c5fd");}
+	    else if(strGermanTerm.equalsIgnoreCase("vorkommend - Vorkommen unsicher")) {return UUID.fromString("a84d2ddb-fe7b-483b-96ba-fc0884d77c81");}
+	    else if(strGermanTerm.equalsIgnoreCase("vorkommend - unsicher")) {return UUID.fromString("0b144b76-dab6-40da-8511-898f8226a24a");
         } else {
             throw new UnknownCdmTypeException("Unknown State, could not match: " + strGermanTerm);
         }
 	}
     public static UUID getGermanEstablishmentTermUUID(String strGermanTerm) throws UnknownCdmTypeException {
         if(strGermanTerm.equalsIgnoreCase("Archaeophyt")) {return UUID.fromString("2cd2bc48-9fcb-4ccd-b03d-bafc0d3dde8c");}
-        if(strGermanTerm.equalsIgnoreCase("Indigen")) {return UUID.fromString("20a99907-406a-45f1-aa3e-4768697488e4");}
-        if(strGermanTerm.equalsIgnoreCase("Kulturpflanze / domestiziertes Tier")) {return UUID.fromString("94aa6408-f950-4e2e-bded-e01a1be859f6");}
-        if(strGermanTerm.equalsIgnoreCase("Neophyt")) {return UUID.fromString("fdf6f1b7-c6ad-4b49-bc6b-b06398f8b1b5");}
-        if(strGermanTerm.equalsIgnoreCase("Kultuflüchtling")) {return UUID.fromString("411f9190-56b7-41dd-a31a-3f200619c5e0");
+        else if(strGermanTerm.equalsIgnoreCase("Indigen")) {return UUID.fromString("20a99907-406a-45f1-aa3e-4768697488e4");}
+        else if(strGermanTerm.equalsIgnoreCase("Kulturpflanze / domestiziertes Tier")) {return UUID.fromString("94aa6408-f950-4e2e-bded-e01a1be859f6");}
+        else if(strGermanTerm.equalsIgnoreCase("Neophyt")) {return UUID.fromString("fdf6f1b7-c6ad-4b49-bc6b-b06398f8b1b5");}
+        else if(strGermanTerm.equalsIgnoreCase("Kultuflüchtling")) {return UUID.fromString("411f9190-56b7-41dd-a31a-3f200619c5e0");
         } else {
             throw new UnknownCdmTypeException("Unknown State, could not match: " + strGermanTerm);
         }
@@ -772,33 +718,33 @@ public final class BfnXmlTransformer {
     public static UUID matchDistributionValue(String strDistributionValue) throws UnknownCdmTypeException {
 
         if(strDistributionValue.equalsIgnoreCase("*")){return getGermanAbsenceTermUUID("vorkommend - etabliert");}
-        if(strDistributionValue.equalsIgnoreCase("0")){return getGermanAbsenceTermUUID("abwesend - ausgestorben");}
-        if(strDistributionValue.equalsIgnoreCase("1")){return getGermanAbsenceTermUUID("vorkommend - etabliert");}
-        if(strDistributionValue.equalsIgnoreCase("2")){return getGermanAbsenceTermUUID("vorkommend - etabliert");}
-        if(strDistributionValue.equalsIgnoreCase("3")){return getGermanAbsenceTermUUID("vorkommend - etabliert");}
-        if(strDistributionValue.equalsIgnoreCase("G")){return getGermanAbsenceTermUUID("vorkommend - etabliert");}
-        if(strDistributionValue.equalsIgnoreCase("D")){return getGermanAbsenceTermUUID("vorkommend - Vorkommen unsicher");}
-        if(strDistributionValue.equalsIgnoreCase("R")){return getGermanAbsenceTermUUID("vorkommend - Vorkommen unsicher");}
-        if(strDistributionValue.equalsIgnoreCase("N")){return getGermanAbsenceTermUUID("vorkommend");}
-        if(strDistributionValue.equalsIgnoreCase("V")){return getGermanAbsenceTermUUID("vorkommend - etabliert");}
-        if(strDistributionValue.equalsIgnoreCase("nb")){return getGermanAbsenceTermUUID("vorkommend - etabliert");}
-        if(strDistributionValue.equalsIgnoreCase("*")){return getGermanAbsenceTermUUID("vorkommend - etabliert");}
-        if(strDistributionValue.equalsIgnoreCase("#dtpl_SynopseBL_STERN_DP#")){return getGermanAbsenceTermUUID("vorkommend - etabliert");}
-        if(strDistributionValue.equalsIgnoreCase("#dtpl_SynopseBL_STERN#")){return getGermanAbsenceTermUUID("vorkommend - etabliert");}
-        if(strDistributionValue.equalsIgnoreCase("#dtpl_SynopseBL_STERN##dtpl_SynopseBL_STERN#")){return getGermanAbsenceTermUUID("vorkommend - etabliert");}
-        if(strDistributionValue.equalsIgnoreCase("")){return getGermanAbsenceTermUUID("vorkommend - etabliert");}
-        if(strDistributionValue.equalsIgnoreCase(" ")){return getGermanAbsenceTermUUID("vorkommend - etabliert");}
-        if(strDistributionValue.equalsIgnoreCase("#dtpl_SynopseBL_NB#")){return getGermanAbsenceTermUUID("vorkommend - etabliert");}
-        if(strDistributionValue.equalsIgnoreCase("-")){return getGermanAbsenceTermUUID("vorkommend - Vorkommen unsicher");}
-        if(strDistributionValue.equalsIgnoreCase("#dtpl_SynopseBL_X_KLAMMER#")){return getGermanAbsenceTermUUID("vorkommend - Vorkommen unsicher");}
-        if(strDistributionValue.equalsIgnoreCase("#dtpl_SynopseBL_X#")){return getGermanAbsenceTermUUID("vorkommend - Vorkommen unsicher");}
-        if(strDistributionValue.equalsIgnoreCase("#dtpl_SynopseBL_STRICH#")){return getGermanAbsenceTermUUID("vorkommend - Vorkommen unsicher");}
-        if(strDistributionValue.equalsIgnoreCase("+")){return getGermanAbsenceTermUUID("vorkommend - Vorkommen unsicher");}
-        if(strDistributionValue.equalsIgnoreCase("°")){return getGermanAbsenceTermUUID("vorkommend - Vorkommen unsicher");}
-        if(strDistributionValue.equalsIgnoreCase("G/D")){return getGermanAbsenceTermUUID("vorkommend");}
-        if(strDistributionValue.equalsIgnoreCase("R/1")){return getGermanAbsenceTermUUID("vorkommend");}
-        if(strDistributionValue.equalsIgnoreCase("?")){return getGermanAbsenceTermUUID("vorkommend - Vorkommen unsicher");}
-        if(strDistributionValue.equalsIgnoreCase("#dtpl_SynopseBL_LEER#")){return getGermanAbsenceTermUUID("abwesend");}
+        else if(strDistributionValue.equalsIgnoreCase("0")){return getGermanAbsenceTermUUID("abwesend - ausgestorben");}
+        else if(strDistributionValue.equalsIgnoreCase("1")){return getGermanAbsenceTermUUID("vorkommend - etabliert");}
+        else if(strDistributionValue.equalsIgnoreCase("2")){return getGermanAbsenceTermUUID("vorkommend - etabliert");}
+        else if(strDistributionValue.equalsIgnoreCase("3")){return getGermanAbsenceTermUUID("vorkommend - etabliert");}
+        else if(strDistributionValue.equalsIgnoreCase("G")){return getGermanAbsenceTermUUID("vorkommend - etabliert");}
+        else if(strDistributionValue.equalsIgnoreCase("D")){return getGermanAbsenceTermUUID("vorkommend - Vorkommen unsicher");}
+        else if(strDistributionValue.equalsIgnoreCase("R")){return getGermanAbsenceTermUUID("vorkommend - Vorkommen unsicher");}
+        else if(strDistributionValue.equalsIgnoreCase("N")){return getGermanAbsenceTermUUID("vorkommend");}
+        else if(strDistributionValue.equalsIgnoreCase("V")){return getGermanAbsenceTermUUID("vorkommend - etabliert");}
+        else if(strDistributionValue.equalsIgnoreCase("nb")){return getGermanAbsenceTermUUID("vorkommend - etabliert");}
+        else if(strDistributionValue.equalsIgnoreCase("*")){return getGermanAbsenceTermUUID("vorkommend - etabliert");}
+        else if(strDistributionValue.equalsIgnoreCase("#dtpl_SynopseBL_STERN_DP#")){return getGermanAbsenceTermUUID("vorkommend - etabliert");}
+        else if(strDistributionValue.equalsIgnoreCase("#dtpl_SynopseBL_STERN#")){return getGermanAbsenceTermUUID("vorkommend - etabliert");}
+        else if(strDistributionValue.equalsIgnoreCase("#dtpl_SynopseBL_STERN##dtpl_SynopseBL_STERN#")){return getGermanAbsenceTermUUID("vorkommend - etabliert");}
+        else if(strDistributionValue.equalsIgnoreCase("")){return getGermanAbsenceTermUUID("vorkommend - etabliert");}
+        else if(strDistributionValue.equalsIgnoreCase(" ")){return getGermanAbsenceTermUUID("vorkommend - etabliert");}
+        else if(strDistributionValue.equalsIgnoreCase("#dtpl_SynopseBL_NB#")){return getGermanAbsenceTermUUID("vorkommend - etabliert");}
+        else if(strDistributionValue.equalsIgnoreCase("-")){return getGermanAbsenceTermUUID("vorkommend - Vorkommen unsicher");}
+        else if(strDistributionValue.equalsIgnoreCase("#dtpl_SynopseBL_X_KLAMMER#")){return getGermanAbsenceTermUUID("vorkommend - Vorkommen unsicher");}
+        else if(strDistributionValue.equalsIgnoreCase("#dtpl_SynopseBL_X#")){return getGermanAbsenceTermUUID("vorkommend - Vorkommen unsicher");}
+        else if(strDistributionValue.equalsIgnoreCase("#dtpl_SynopseBL_STRICH#")){return getGermanAbsenceTermUUID("vorkommend - Vorkommen unsicher");}
+        else if(strDistributionValue.equalsIgnoreCase("+")){return getGermanAbsenceTermUUID("vorkommend - Vorkommen unsicher");}
+        else if(strDistributionValue.equalsIgnoreCase("°")){return getGermanAbsenceTermUUID("vorkommend - Vorkommen unsicher");}
+        else if(strDistributionValue.equalsIgnoreCase("G/D")){return getGermanAbsenceTermUUID("vorkommend");}
+        else if(strDistributionValue.equalsIgnoreCase("R/1")){return getGermanAbsenceTermUUID("vorkommend");}
+        else if(strDistributionValue.equalsIgnoreCase("?")){return getGermanAbsenceTermUUID("vorkommend - Vorkommen unsicher");}
+        else if(strDistributionValue.equalsIgnoreCase("#dtpl_SynopseBL_LEER#")){return getGermanAbsenceTermUUID("abwesend");}
         else {
             throw new UnknownCdmTypeException("Unknown State, could not match: " + strDistributionValue);
         }
