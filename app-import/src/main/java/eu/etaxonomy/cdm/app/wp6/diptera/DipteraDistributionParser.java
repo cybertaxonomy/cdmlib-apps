@@ -1,17 +1,17 @@
 /**
 * Copyright (C) 2007 EDIT
-* European Distributed Institute of Taxonomy 
+* European Distributed Institute of Taxonomy
 * http://www.e-taxonomy.eu
-* 
+*
 * The contents of this file are subject to the Mozilla Public License Version 1.1
 * See LICENSE.TXT at the top of this package for the full license terms.
 */
 
 /**
 * Copyright (C) 2007 EDIT
-* European Distributed Institute of Taxonomy 
+* European Distributed Institute of Taxonomy
 * http://www.e-taxonomy.eu
-* 
+*
 * The contents of this file are subject to the Mozilla Public License Version 1.1
 * See LICENSE.TXT at the top of this package for the full license terms.
 */
@@ -51,14 +51,14 @@ import eu.etaxonomy.cdm.model.taxon.TaxonBase;
  */
 public class DipteraDistributionParser {
 	private static final Logger logger = Logger.getLogger(DipteraDistributionParser.class);
-	
-	private static ICdmDataSource cdmDestination = CdmDestinations.cdm_local_diptera();
+
+	private static ICdmDataSource cdmDestination = CdmDestinations.localH2();
 
 	final static String epiSplitter = "(\\s+|\\[|\\]|\\(|\\))"; //( ' '+| '(' | ')'| '[' | ']' )
 	static Pattern pattern = null;
-	
+
 	protected void doDistribution(ICdmApplicationConfiguration app){
-		pattern = Pattern.compile(epiSplitter); 
+		pattern = Pattern.compile(epiSplitter);
 	    TransactionStatus txStatus = app.startTransaction();
 		List<TaxonBase> taxa = app.getTaxonService().list(null, null, null, null, null);
 		for (TaxonBase taxon: taxa ){
@@ -68,7 +68,7 @@ public class DipteraDistributionParser {
 				for (DescriptionBase description: descriptions){
 					Set<DescriptionElementBase> descElements = new HashSet<DescriptionElementBase>();
 					descElements.addAll(description.getElements());
-					
+
 					for (DescriptionElementBase descEl: descElements){
 						if (descEl.getFeature().equals(Feature.OCCURRENCE())){
 							if (descEl instanceof TextData){
@@ -89,11 +89,11 @@ public class DipteraDistributionParser {
 		System.out.println("Distributions created: " + countYes);
 		app.commitTransaction(txStatus);
 	}
-	
+
 	static Set<String> unrekognizedStrings = new HashSet<String>();
 	static int countNot = 0;
 	static int countYes = 0;
-	
+
 	private void parseOccurenceString(String occString, DescriptionBase desc){
 		System.out.println(occString);
 		if (occString != null){
@@ -120,7 +120,7 @@ public class DipteraDistributionParser {
 							word = word.replace("?", "");
 						}
 						word = adaptWordsToTdwg(word);
-						
+
 						if (! "".equals(word) && ! TdwgAreaProvider.isTdwgAreaLabel(word) && ! TdwgAreaProvider.isTdwgAreaAbbreviation(word) && ! isDoubleArea(word)){
 							for (countSkip = 1; countSkip <= 6; countSkip++){
 								word = word.trim();
@@ -188,9 +188,9 @@ public class DipteraDistributionParser {
 			}
 		}
 	}
-	
+
 	private boolean isDoubleArea(String word){
-		if ("Canary and Madeira Is.".equalsIgnoreCase(word) || 
+		if ("Canary and Madeira Is.".equalsIgnoreCase(word) ||
 				"southern Europe".equalsIgnoreCase(word) ||
 				"former USSR: North and Central European territory".equalsIgnoreCase(word)
 				){
@@ -199,7 +199,7 @@ public class DipteraDistributionParser {
 			return false;
 		}
 	}
-	
+
 	private NamedArea[] getDoubleArea(String word){
 		NamedArea[] result = new NamedArea[2];
 		if ("Canary and Madeira Is.".equalsIgnoreCase(word)){
@@ -216,12 +216,12 @@ public class DipteraDistributionParser {
 		}
 		return result;
 	}
-	
-	
+
+
 	static List<String> stopWords = new ArrayList<String>();
 	static List<String> unknownAreas = new ArrayList<String>();
 	static List<String> higherAreas = new ArrayList<String>();
-	
+
 	private String adaptWordsToTdwg(String word){
 		word = word.replace(",", "").replace(";", "");
 		if (! word.contains("U.S.A")){
@@ -229,7 +229,7 @@ public class DipteraDistributionParser {
 		}else{
 			word = word.replace(",", "").replace(";", "");
 		}
-		
+
 		word = word.trim();
 		if (word.endsWith("Is")){
 			word = word + ".";
@@ -237,15 +237,15 @@ public class DipteraDistributionParser {
 		if (stopWords.size() == 0){
 			initStopWords();
 		}
-		
+
 		word = word.replace("Russia [North European territory]", "North European Russia");
 		word = word.replace("Russia North European territory", "North European Russia");
 		word = word.replace("Russia: North European territory", "North European Russia");
 		word = word.replace("Russia: North European territory", "North European Russia");
-				
+
 		word = word.replace("Amber", "amber");
-		
-		
+
+
 		word = word.replace("Prince Edward Is.", "Marion-Prince Edward Is.");
 		//or word = word.replace("Prince Edward Is.", "Prince Edward I.");
 		word = word.replace("Bahama Is.", "Bahamas");
@@ -256,14 +256,14 @@ public class DipteraDistributionParser {
 		word = word.replace("The Gambia", "Gambia, The");
 
 		if (!word.contains("El Salvador")){
-			word = word.replace("Salvador", "El Salvador");	
+			word = word.replace("Salvador", "El Salvador");
 		}
 		word = word.replace("Vera Cruz", "Veracruz");
 		word = word.replace("Turkmenia", "Turkmenistan");
 		word = word.replace("Qu\u00E9beck", "Qu\u00E9bec");
 		word = word.replace("Quebeck", "Qu\u00E9bec");
 		word = word.replace("Quebec", "Qu\u00E9bec");
-		
+
 		if (!word.contains("Gambia, The")){
 			word = word.replace("Gambia", "Gambia, The");
 		}
@@ -280,9 +280,9 @@ public class DipteraDistributionParser {
 		word = word.replace("former USSR: North European territory", "North European Russia");
 		word = word.replace("former USSR: South European territory", "South European Russia");
 		word = word.replace("former USSR: Soviet Middle Asia", "Middle Asia");
-		
+
 		word = word.replace("St Kitts-Nevis", "St.Kitts-Nevis");
-		
+
 		word = word.replace("oceanian islands", "Pacific");
 		word = word.replace("Ussuri region", "Primorye");
 		word = word.replace("Galapagos Is.", "Gal\u00E1pagos");
@@ -291,13 +291,13 @@ public class DipteraDistributionParser {
 		if (! word.contains("Is.")){
 			word = word.replace("Galapagos", "Gal\u00E1pagos");
 		}
-		
+
 		//word = word.replace("Galapagos Is.", "GalÃ¡pagos");
 		if (! word.contains("Peninsular")){
 			word = word.replace("Malaysia", "Peninsular Malaysia");
 		}
 		word = word.replace("Polynesic Is.", "South Solomons");
-		
+
 		word = word.replace("Usbek SSR", "Uzbekistan");
 		word = word.replace("Mexican amber", "Mexico");
 		word = word.replace("Marocco", "Morocco");
@@ -307,7 +307,7 @@ public class DipteraDistributionParser {
 		if (! word.contains("Trinidad")){
 			word = word.replace("Tobago", "Trinidad-Tobago");
 		}
-		word = word.replace("Haiti", "Haiti");  
+		word = word.replace("Haiti", "Haiti");
 		word = word.replace("Moluccas", "Maluku");
 		word = word.replace("Belau", "Palau");
 		word = word.replace("Dominican amber", "Dominican Republic");
@@ -340,8 +340,8 @@ public class DipteraDistributionParser {
 		word = word.replace("Virgin Islands", "Virgin Is.");
 		word = word.replace("Canary Islands", "Canary Is.");
 		word = word.replace("Rhode Island", "Rhode I.");
-		
-		
+
+
 		word = word.replace("Rodriguez", "Rodrigues");
 		word = word.replace("British Colombia", "British Columbia");
 		word = word.replace("Bermudas", "Bermuda");
@@ -350,12 +350,12 @@ public class DipteraDistributionParser {
 		word = word.replace("Transvaal", "Northern Provinces");
 		word = word.replace("Tucum\u00E1n", "Tucuman");
 //		if (!word.contains("Netherlands")){
-//			
+//
 //		}
-		
-//		unknownAreas.add("Baltic amber");  
-//		unknownAreas.add("Arabia"); 
-						
+
+//		unknownAreas.add("Baltic amber");
+//		unknownAreas.add("Arabia");
+
 		for (String stopWord : stopWords){
 			if (stopWord.equals(word)){
 				System.out.println("         STOP: " + word);
@@ -373,43 +373,43 @@ public class DipteraDistributionParser {
 				return "";
 			}
 		}
-		
+
 		//higher regions
-		
+
 		return word;
 	}
-	
+
 	private void initStopWords(){
 		stopWords.add("and");
 		stopWords.add("Is");
 		stopWords.add("Is.");
 		stopWords.add("Islands");
 		stopWords.add("Island");
-		
+
 		stopWords.add("of");
 		stopWords.add("areas");
 		stopWords.add("USA");
 		stopWords.add("Australia"); //except for Australia only
-		stopWords.add("Argentina");		
+		stopWords.add("Argentina");
 
 		//unknownAreas.add("Panama");
 		unknownAreas.add("South Africa");
 		unknownAreas.add("Chile");
 
-		unknownAreas.add("Baltic amber");  
-		unknownAreas.add("Arabia"); 
+		unknownAreas.add("Baltic amber");
+		unknownAreas.add("Arabia");
 
-			
+
 		higherAreas.add("AF");
 		higherAreas.add("OR");
 		higherAreas.add("PA");
 		higherAreas.add("AU");
 		higherAreas.add("NE");
-		
+
 		higherAreas.add("NT");
 	}
 
-	
+
 	/**
 	 * @param args
 	 */
@@ -417,7 +417,7 @@ public class DipteraDistributionParser {
 		CdmApplicationController app = null;
 		DbSchemaValidation val = DbSchemaValidation.UPDATE;
 		app = CdmApplicationController.NewInstance(cdmDestination, val);
-		
+
 		DipteraDistributionParser dipDist = new DipteraDistributionParser();
 		if (app != null){
 			dipDist.doDistribution(app);

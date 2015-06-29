@@ -1,9 +1,9 @@
 // $Id$
 /**
 * Copyright (C) 2007 EDIT
-* European Distributed Institute of Taxonomy 
+* European Distributed Institute of Taxonomy
 * http://www.e-taxonomy.eu
-* 
+*
 * The contents of this file are subject to the Mozilla Public License Version 1.1
 * See LICENSE.TXT at the top of this package for the full license terms.
 */
@@ -43,28 +43,28 @@ public class DipteraCollectionImport {
 
 	public static final File acronymsFile = new File("src/main/resources/collections/Acronyms.tab");
 	//datasource for use from local main()
-	static final ICdmDataSource cdmDestination = CdmDestinations.cdm_local_diptera();
-	
+	static final ICdmDataSource cdmDestination = CdmDestinations.localH2();
+
 
 	public boolean invoke(ICdmDataSource dataSource) {
 		CdmApplicationController cdmApp = CdmApplicationController.NewInstance(dataSource, DbSchemaValidation.VALIDATE);
-			
+
 		//create collections
 		TransactionStatus tx = cdmApp.startTransaction();
 		Map<String, Collection> colletionMap = createCollections(cdmApp);
-		
+
 		//add collections to specimen
 		addCollectionsToSpecimen(cdmApp, colletionMap);
 		cdmApp.commitTransaction(tx);
-		
+
 		return true;
-		
+
 	}
 
 
 	/**
 	 * @param cdmApp
-	 * @param colletionMap 
+	 * @param colletionMap
 	 */
 	private void addCollectionsToSpecimen(CdmApplicationController cdmApp, Map<String, Collection> colletionMap) {
 		List<DerivedUnit> specimens = cdmApp.getOccurrenceService().list(DerivedUnit.class, null, null, null, null);
@@ -81,7 +81,7 @@ public class DipteraCollectionImport {
 
 
 	/**
-	 * @param specimen 
+	 * @param specimen
 	 * @param colletionMap
 	 */
 	private void handleSingleSpecimen(DerivedUnit specimen, Map<String, Collection> collectionMap) {
@@ -154,7 +154,7 @@ public class DipteraCollectionImport {
 		}
 		return string;
 	}
-	
+
 	/**
 	 * @param result
 	 * @return
@@ -188,7 +188,7 @@ public class DipteraCollectionImport {
 	 * @param cdmApp
 	 */
 	private Map<String, Collection> createCollections(CdmApplicationController cdmApp) {
-		Map<String, Collection> collectionMap = new HashMap<String, Collection>(); 
+		Map<String, Collection> collectionMap = new HashMap<String, Collection>();
 		List<String[]> lines = getLines();
 		for (String[] line:lines){
 			Collection collection = makeLine(line);
@@ -200,7 +200,7 @@ public class DipteraCollectionImport {
 //			}
 		return collectionMap;
 	}
-	
+
 
 	private Collection makeLine(String[] line) {
 		String code = line[0];
@@ -214,44 +214,44 @@ public class DipteraCollectionImport {
 		collection.setCode(code);
 		Institution institution = Institution.NewInstance();
 		institution.setCode(code);
-		
+
 		institution.setName(instituteName);
-		
+
 		if (StringUtils.isNotBlank(lowerInstitutionName)){
 			Institution lowerInstitution = Institution.NewInstance();
 			lowerInstitution.setName(lowerInstitutionName);
 			lowerInstitution.setIsPartOf(institution);
 		}
-		
+
 		if (StringUtils.isNotBlank(higherInstitutionName)){
 			Institution higherInstitution = Institution.NewInstance();
 			higherInstitution.setName(higherInstitutionName);
 			institution.setIsPartOf(higherInstitution);
 		}
-		
+
 		collection.setInstitute(institution);
 		String locationAndCountry = CdmUtils.concat("/", location, country);
 		collection.setTownOrLocation(locationAndCountry);
-		
+
 		String titleCache = CdmUtils.concat(", ", new String[]{instituteName, lowerInstitutionName, higherInstitutionName, location, country});
 		collection.setTitleCache(titleCache, true);
-		
+
 		return collection;
 	}
 
-	
-	
-	
+
+
+
 	private List<String[]> getLines() {
 		List<String[]> result = new ArrayList<String[]>();
-		
+
 		try {
 			InputStream inStream = new FileInputStream(acronymsFile);
 			InputStreamReader inputStreamReader = new InputStreamReader(inStream, "UTF8");
 			CSVReader reader = new CSVReader(inputStreamReader, '\t');
 			String [] nextLine = reader.readNext();
-			
-			
+
+
 			while ((nextLine = reader.readNext()) != null) {
 				if (nextLine.length == 0){
 					continue;
