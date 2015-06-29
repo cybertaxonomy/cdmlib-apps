@@ -77,7 +77,7 @@ public class EuroMedActivator {
 	private static final Logger logger = Logger.getLogger(EuroMedActivator.class);
 
 	//database validation status (create, update, validate ...)
-	static DbSchemaValidation hbm2dll = DbSchemaValidation.CREATE;
+	static DbSchemaValidation hbm2dll = DbSchemaValidation.VALIDATE;
 	static final Source berlinModelSource = BerlinModelSources.euroMed_BGBM42();
 //	static final Source berlinModelSource = BerlinModelSources.euroMed_PESI3();
 
@@ -170,7 +170,7 @@ public class EuroMedActivator {
 	static final boolean doCommonNames = true;
 	static final boolean doOccurences = true;
 	static final boolean doRelTaxa = false;
-	static final boolean doRunTransmissionEngine = false;// (hbm2dll == DbSchemaValidation.VALIDATE);
+	static final boolean doRunTransmissionEngine = (hbm2dll == DbSchemaValidation.VALIDATE);
 
 	//etc.
 	static final boolean doMarker = true;

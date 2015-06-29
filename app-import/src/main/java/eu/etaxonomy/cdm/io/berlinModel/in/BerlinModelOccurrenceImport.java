@@ -63,17 +63,14 @@ import eu.etaxonomy.cdm.strategy.exceptions.UnknownCdmTypeException;
  */
 @Component
 public class BerlinModelOccurrenceImport  extends BerlinModelImportBase {
-	private static final String EM_AREA_NAMESPACE = "emArea";
-
 	private static final Logger logger = Logger.getLogger(BerlinModelOccurrenceImport.class);
 
 	public static final String NAMESPACE = "Occurrence";
-
+	private static final String EM_AREA_NAMESPACE = "emArea";
 
 	private static int modCount = 5000;
 	private static final String pluralString = "occurrences";
 	private static final String dbTableName = "emOccurrence";  //??
-
 
 	public BerlinModelOccurrenceImport(){
 		super(dbTableName, pluralString);
@@ -174,12 +171,16 @@ public class BerlinModelOccurrenceImport  extends BerlinModelImportBase {
 		}
 		emAreaFinetuning(euroMedAreas, areaLevelEm2);
 
-
 		markAreasAsHidden(state, euroMedAreas);
 
 	    getVocabularyService().saveOrUpdate(euroMedAreas);
 
-		commitTransaction(txStatus);
+		try {
+            commitTransaction(txStatus);
+        } catch (Exception e) {
+             e.printStackTrace();
+             logger.error("An exception occurred when trying to commit E+M Areas");
+        }
 		logger.warn("Created E+M areas");
 
 		return euroMedAreas;
