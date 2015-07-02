@@ -10,7 +10,6 @@
 package eu.etaxonomy.cdm.app.redlist;
 
 import java.net.URI;
-import java.net.URISyntaxException;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Scanner;
@@ -23,27 +22,34 @@ import eu.etaxonomy.cdm.database.ICdmDataSource;
 import eu.etaxonomy.cdm.io.common.CdmDefaultImport;
 import eu.etaxonomy.cdm.io.common.IImportConfigurator.CHECK;
 import eu.etaxonomy.cdm.io.redlist.bfnXml.BfnXmlImportConfigurator;
+import eu.etaxonomy.cdm.model.name.NomenclaturalCode;
 
 /**
  * @author a.oppermann
  * @created 16.07.2013
- * @version 1.0
  */
 public class BfnXmlTestActivator {
 
 	private static final Logger logger = Logger.getLogger(BfnXmlTestActivator.class);
 
 	//database validation status (create, update, validate ...)
-	static DbSchemaValidation schemaValidation = DbSchemaValidation.CREATE;
+	static DbSchemaValidation schemaValidation = DbSchemaValidation.VALIDATE;
 //	static final ICdmDataSource cdmDestination = CdmDestinations.cdm_redlist_plant_localhost();
-	static final ICdmDataSource cdmDestination = CdmDestinations.localH2();
+//	static final ICdmDataSource cdmDestination = CdmDestinations.localH2();
+	static final ICdmDataSource cdmDestination = CdmDestinations.cdm_redlist_animalia_localhost();
+//	static final ICdmDataSource cdmDestination = CdmDestinations.cdm_redlist_animalia_production();
 
-	private final String filename;
 
-	private static final String strSource = "/eu/etaxonomy/cdm/io/bfnXml/";
+//	private static final String strSource = "/eu/etaxonomy/cdm/io/bfnXml/";
+	private static final String sourceUriBase = "file:////BGBM-PESIHPC/RoteListen/";
+
+	//nom Code
+	private static final NomenclaturalCode nomenclaturalCode = NomenclaturalCode.ICZN;
 
 	//check - import
 	static final CHECK check = CHECK.IMPORT_WITHOUT_CHECK;
+
+
 	//authors
 	static final boolean doMetaData = true;
 	//names
@@ -53,30 +59,36 @@ public class BfnXmlTestActivator {
 	//feature
     static final boolean doAdditionalTerms = true;
 
+    private final String filename;
 
 	public BfnXmlTestActivator(String fileName){
 		filename = fileName;
 	}
 
 	private void doImport(){
-		System.out.println("Start import from BfnXML to "+ cdmDestination.getDatabase() + " ...");
+		System.out.println("Start import from " + filename + " to "+ cdmDestination.getDatabase() + " ...");
 
 		//make Source
 		URI source;
 		try {
-			source = this.getClass().getResource(strSource+filename).toURI();
+		    source = URI.create(sourceUriBase + filename);
+//			source = this.getClass().getResource(strSource + filename).toURI();
 			ICdmDataSource destination = cdmDestination;
 
 			BfnXmlImportConfigurator bfnImportConfigurator = BfnXmlImportConfigurator.NewInstance(source,  destination);
 
 			//if xmllist has two lists
 			bfnImportConfigurator.setHasSecondList(false);
-			bfnImportConfigurator.setNomenclaturalSig("Botanical");// "Zoological";//"Botanical"ICNAFP
+			bfnImportConfigurator.setNomenclaturalCode(nomenclaturalCode);
 			bfnImportConfigurator.setDoMetaData(doMetaData);
 			bfnImportConfigurator.setDoTaxonNames(doTaxonNames);
 
 			bfnImportConfigurator.setCheck(check);
 			bfnImportConfigurator.setDbSchemaValidation(schemaValidation);
+
+			//TODO only quickfix see also MetaData import
+			String classificationName = filename.replace("rldb_print_v4_0_1_0_", "").split("_")[0];
+			bfnImportConfigurator.setClassificationName(classificationName);
 
 			// invoke import
 			CdmDefaultImport<BfnXmlImportConfigurator> bfnImport = new CdmDefaultImport<BfnXmlImportConfigurator>();
@@ -84,12 +96,11 @@ public class BfnXmlTestActivator {
 
 			logger.warn("End");
 			System.out.println("End import from BfnXML ("+ source.toString() + ")...");
-		} catch (URISyntaxException e) {
+		} catch (Exception e) {
 			e.printStackTrace();
 		}
 
 	}
-
 
 	/**
 	 * @param args
@@ -98,7 +109,7 @@ public class BfnXmlTestActivator {
 
 		List<String> fileNames = Arrays.asList(
 //				Plants
-				"rldb_print_v4_0_1_0_Flechten_korr_verantw_syn.xml"
+//				"rldb_print_v4_0_1_0_Flechten_korr_verantw_syn.xml"
 //				"rldb_print_v4_0_1_0_Lichenicole_verantw_syn.xml",
 //				"rldb_print_v4_0_1_0_Makroalgen_150121_syn.xml",
 //				"rldb_print_v4_0_1_0_Myxo_110708_korr_syn_neu.xml",
@@ -106,18 +117,18 @@ public class BfnXmlTestActivator {
 //
 //				Animals
 //				"rldb_print_v4_0_1_0_Ameisen_110609_rev120113_syn.xml"
-
+//
 //				"rldb_print_v4_0_1_0_artenarmeWeichtiergruppen_121127_verantw_syn.xml",
 //				"rldb_print_v4_0_1_0_Asilidae_GMH_Wolff_110314_HGxls_120413_DF_korrV_Verantw_syn.xml",
 //				"rldb_print_v4_0_1_0_Asseln_121128_verantw_syn.xml",
 //				"rldb_print_v4_0_1_0_Asselspinnen_120907_verantw_syn.xml",
 //				"rldb_print_v4_0_1_0_Bienen_PWKorr_HG_120413_DF_120612_syn.xml",
 //				"rldb_print_v4_0_1_0_Binnenmollusken_0alle_120413_DF_syn.xml",
-//				"rldb_print_v4_0_1_0_Blattoptera_140413_DF_syn.xml",
+////				"rldb_print_v4_0_1_0_Blattoptera_140413_DF_syn.xml",
 //				"rldb_print_v4_0_1_0_Empidoidea_120413_DF.xml",
 //				"rldb_print_v4_0_1_0_Eulen_Korruebern_23-05-2012_KorrV_syn.xml",
 //
-////				"rldb_print_v4_0_1_0_Eulenspinner_Spanner_13-06-2012_KorrV_syn.xml",
+////			,	"rldb_print_v4_0_1_0_Eulenspinner_Spanner_13-06-2012_KorrV_syn.xml",
 //
 //				"rldb_print_v4_0_1_0_Flohkrebse_121128_verantw_syn.xml",
 //				"rldb_print_v4_0_1_0_Heuschrecken_syn.xml",
@@ -129,7 +140,7 @@ public class BfnXmlTestActivator {
 //				"rldb_print_v4_0_1_0_Nesseltiere_130104_verantw_syn.xml",
 //				"rldb_print_v4_0_1_0_Ohrwuermer_DF_syn.xml",
 //				"rldb_print_v4_0_1_0_Pflanzenwespen_280711_Autor_110815_HG2_120413_DF_syn.xml",
-//				"rldb_print_v4_0_1_0_Pyraloidea_Februar_ 2012_Korruebern_MB_24-04-2012_syn.xml",
+//				"rldb_print_v4_0_1_0_Pyraloidea_Februar_2012_Korruebern_MB_24-04-2012_syn.xml",
 //				"rldb_print_v4_0_1_0_Schaedellose_120907_verantw_syn.xml",
 //				"rldb_print_v4_0_1_0_Schnecken_130206_verantw_syn.xml",
 //				"rldb_print_v4_0_1_0_Schwaemme_121127_verantw_syn.xml",
@@ -152,9 +163,9 @@ public class BfnXmlTestActivator {
 //				"rldb_print_v4_0_1_0_Reptilien_1.xml"
 
 				//two lists in one
-//				"RoteListe_v4_0_6_0_BFN_Saeuger_korr.xml"
+				"RoteListe_v4_0_6_0_BFN_Saeuger_korr.xml"
 				);
-		for(String fileName:fileNames){
+		for(String fileName : fileNames){
 			BfnXmlTestActivator bfnXmlTestActivator = new BfnXmlTestActivator(fileName);
 			bfnXmlTestActivator.doImport();
 //			pauseProg();
@@ -167,7 +178,8 @@ public class BfnXmlTestActivator {
 //			bfnXmlTestActivator.doImport();
 	}
 
-	public static void pauseProg(){
+	@SuppressWarnings("resource")
+    public static void pauseProg(){
 		System.out.println("Press enter to continue...");
 		Scanner keyboard = new Scanner(System.in);
 		keyboard.nextLine();
