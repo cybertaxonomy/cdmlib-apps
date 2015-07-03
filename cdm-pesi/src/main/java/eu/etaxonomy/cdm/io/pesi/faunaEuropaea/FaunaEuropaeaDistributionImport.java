@@ -65,9 +65,6 @@ public class FaunaEuropaeaDistributionImport extends FaunaEuropaeaImportBase {
 //		}
 	}
 
-	/* (non-Javadoc)
-	 * @see eu.etaxonomy.cdm.io.common.CdmIoBase#doInvoke(eu.etaxonomy.cdm.io.common.IoStateBase)
-	 */
 	@Override
 	protected void doInvoke(FaunaEuropaeaImportState state) {
 		/*
@@ -306,10 +303,6 @@ public class FaunaEuropaeaDistributionImport extends FaunaEuropaeaImportBase {
 		return taxonList;
 	}
 
-
-	/* (non-Javadoc)
-	 * @see eu.etaxonomy.cdm.io.common.CdmIoBase#isIgnore(eu.etaxonomy.cdm.io.common.IImportConfigurator)
-	 */
 	@Override
     protected boolean isIgnore(FaunaEuropaeaImportState state){
 		return !state.getConfig().isDoOccurrence();
