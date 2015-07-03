@@ -1,8 +1,8 @@
 /**
 * Copyright (C) 2007 EDIT
-* European Distributed Institute of Taxonomy 
+* European Distributed Institute of Taxonomy
 * http://www.e-taxonomy.eu
-* 
+*
 * The contents of this file are subject to the Mozilla Public License Version 1.1
 * See LICENSE.TXT at the top of this package for the full license terms.
 */
@@ -41,7 +41,7 @@ import eu.etaxonomy.cdm.model.taxon.TaxonBase;
 public class FaunaEuropaeaDistributionImport extends FaunaEuropaeaImportBase {
 	private static final Logger logger = Logger.getLogger(FaunaEuropaeaDistributionImport.class);
 
-	
+
 	/* (non-Javadoc)
 	 * @see eu.etaxonomy.cdm.io.common.CdmIoBase#doCheck(eu.etaxonomy.cdm.io.common.IImportConfigurator)
 	 */
@@ -51,10 +51,10 @@ public class FaunaEuropaeaDistributionImport extends FaunaEuropaeaImportBase {
 		FaunaEuropaeaImportConfigurator fauEuConfig = state.getConfig();
 		logger.warn("Checking for Distributions not yet fully implemented");
 		result &= checkReferenceStatus(fauEuConfig);
-		
+
 		return result;
 	}
-	
+
 	private boolean checkReferenceStatus(FaunaEuropaeaImportConfigurator fauEuConfig) {
 		boolean result = true;
 //		try {
@@ -67,12 +67,12 @@ public class FaunaEuropaeaDistributionImport extends FaunaEuropaeaImportBase {
 //			return false;
 //		}
 	}
-	
+
 	/* (non-Javadoc)
 	 * @see eu.etaxonomy.cdm.io.common.CdmIoBase#doInvoke(eu.etaxonomy.cdm.io.common.IoStateBase)
 	 */
 	@Override
-	protected void doInvoke(FaunaEuropaeaImportState state) {	
+	protected void doInvoke(FaunaEuropaeaImportState state) {
 		/*
 		logger.warn("Start distribution doInvoke");
 		ProfilerController.memorySnapshot();
@@ -85,45 +85,45 @@ public class FaunaEuropaeaDistributionImport extends FaunaEuropaeaImportBase {
 		Set<UUID> taxonUuids = null;
 		/* Store to hold helper objects */
 		Map<UUID, FaunaEuropaeaDistributionTaxon> fauEuTaxonMap = null;
-		
-		
+
+
 		TransactionStatus txStatus = null;
-		
+
 		//txStatus = startTransaction();
-		noDataUuid = getTermService().save(PresenceAbsenceTerm.NewPresenceInstance("no data", "no data", "nod"));
-		//commitTransaction(txStatus);	
-		
+		PresenceAbsenceTerm noDataStatusTerm = PresenceAbsenceTerm.NewPresenceInstance("no data", "no data", "nod");
+		noDataUuid = noDataStatusTerm.getUuid();
+		getTermService().save(noDataStatusTerm);
+		//commitTransaction(txStatus);
+
 		FaunaEuropaeaTransformer.setUUIDs(noDataUuid);
-		
-		txStatus = null;
-		
+
 		FaunaEuropaeaImportConfigurator fauEuConfig = state.getConfig();
 		Source source = fauEuConfig.getSource();
-		
+
         int i = 0;
-		
-		String selectCount = 
+
+		String selectCount =
 			" SELECT count(*) ";
 
-		String selectColumns = 
+		String selectColumns =
 			" SELECT distribution.*, Area.*, Taxon.UUID ";
-			
-		String fromClause = 
+
+		String fromClause =
 			" FROM distribution INNER JOIN " +
             " Area ON distribution.dis_ara_id = Area.ara_id INNER JOIN " +
             " Taxon ON distribution.dis_tax_id = Taxon.TAX_ID ";
 		String orderBy = " ORDER BY distribution.dis_tax_id";
-		
-		String countQuery = 
+
+		String countQuery =
 			selectCount + fromClause;
 
-		String selectQuery = 
+		String selectQuery =
 			selectColumns + fromClause + orderBy;
-		
+
 
 
 		if(logger.isInfoEnabled()) { logger.info("Start making distributions..."); }
-		
+
 		try {
 			ResultSet rs = source.getResultSet(countQuery);
 			rs.next();
@@ -136,9 +136,9 @@ public class FaunaEuropaeaDistributionImport extends FaunaEuropaeaImportBase {
 				logger.info("Count Query: " + countQuery);
 				logger.info("Select Query: " + selectQuery);
 			}
-			
+
 			//int taxonId;
-			
+
 			while (rs.next()) {
 				if ((i++ % limit) == 0) {
 
@@ -147,7 +147,7 @@ public class FaunaEuropaeaDistributionImport extends FaunaEuropaeaImportBase {
 					fauEuTaxonMap = new HashMap<UUID, FaunaEuropaeaDistributionTaxon>(limit);
 
 					if(logger.isInfoEnabled()) {
-						logger.info("i = " + i + " - Distribution import transaction started"); 
+						logger.info("i = " + i + " - Distribution import transaction started");
 					}
 				}
 
@@ -175,12 +175,12 @@ public class FaunaEuropaeaDistributionImport extends FaunaEuropaeaImportBase {
 
 				if (!taxonUuids.contains(currentTaxonUuid)) {
 					taxonUuids.add(currentTaxonUuid);
-					FaunaEuropaeaDistributionTaxon fauEuDistributionTaxon = 
+					FaunaEuropaeaDistributionTaxon fauEuDistributionTaxon =
 						new FaunaEuropaeaDistributionTaxon(currentTaxonUuid);
 					fauEuTaxonMap.put(currentTaxonUuid, fauEuDistributionTaxon);
 					fauEuDistributionTaxon = null;
 				} else {
-					if (logger.isTraceEnabled()) { 
+					if (logger.isTraceEnabled()) {
 						logger.trace("Taxon (" + currentTaxonUuid + ") already stored.");
 						continue;
 					}
@@ -188,24 +188,24 @@ public class FaunaEuropaeaDistributionImport extends FaunaEuropaeaImportBase {
 
 				fauEuTaxonMap.get(currentTaxonUuid).addDistribution(fauEuDistribution);
 
-				if (((i % limit) == 0 && i != 1 ) || i == count ) { 
+				if (((i % limit) == 0 && i != 1 ) || i == count ) {
 
 					try {
 						commitTaxaAndDistribution(state, noDataUuid, taxonUuids, fauEuTaxonMap, txStatus);
 						taxonUuids = null;
 						taxonList = null;
 						fauEuTaxonMap = null;
-						
+
 					} catch (Exception e) {
 						logger.error("Commit of taxa and distributions failed" + e.getMessage());
 						e.printStackTrace();
 					}
-					
+
 					if(logger.isInfoEnabled()) { logger.info("i = " + i + " - Transaction committed");}
 				}
 
-					
-			}	
+
+			}
 			if (taxonUuids != null){
 				try {
 					commitTaxaAndDistribution(state, noDataUuid, taxonUuids, fauEuTaxonMap, txStatus);
@@ -223,9 +223,9 @@ public class FaunaEuropaeaDistributionImport extends FaunaEuropaeaImportBase {
 			logger.error("SQLException:" +  e);
 			state.setUnsuccessfull();
 		}
-		
+
 		if(logger.isInfoEnabled()) { logger.info("End making distributions..."); }
-		
+
 		return;
 	}
 
@@ -241,11 +241,11 @@ public class FaunaEuropaeaDistributionImport extends FaunaEuropaeaImportBase {
 		taxonUuids = null;
 		fauEuTaxonMap = null;
 		commitTransaction(txStatus);
-		
+
 	}
-	
+
 	private List<TaxonBase> prepareTaxaAndDistribution(List<TaxonBase> taxonList, Map<UUID, FaunaEuropaeaDistributionTaxon> fauEuTaxonMap, UUID noData, FaunaEuropaeaImportState state) throws Exception{
-	
+
 		Distribution newDistribution = null;
 		NamedArea namedArea;
 		PresenceAbsenceTerm presenceAbsenceStatus;
@@ -256,32 +256,32 @@ public class FaunaEuropaeaDistributionImport extends FaunaEuropaeaImportBase {
 		for (TaxonBase<?> taxonBase : taxonList) {
 
 			if (taxonBase != null) {
-				
+
 				if (taxonBase instanceof Taxon) {
 					taxon = CdmBase.deproxy(taxonBase, Taxon.class);
 				} else {
-					logger.warn("TaxonBase (" + taxonBase.getId() + " is not of type Taxon but: " 
+					logger.warn("TaxonBase (" + taxonBase.getId() + " is not of type Taxon but: "
 							+ taxonBase.getClass().getSimpleName());
 					continue;
 				}
-	
-				
+
+
 				Set<TaxonDescription> descriptionSet = taxon.getDescriptions();
 				if (descriptionSet.size() > 0) {
-					taxonDescription = descriptionSet.iterator().next(); 
+					taxonDescription = descriptionSet.iterator().next();
 				} else {
 					taxonDescription = TaxonDescription.NewInstance();
 					taxon.addDescription(taxonDescription);
 				}
-	
+
 				taxonUuid = taxonBase.getUuid();
 				fauEuHelperTaxon= fauEuTaxonMap.get(taxonUuid);
-	
+
 				for (FaunaEuropaeaDistribution fauEuHelperDistribution : fauEuHelperTaxon.getDistributions()) {
 					namedArea = null;
 					newDistribution = null;
 					presenceAbsenceStatus = null;
-					
+
 					if (fauEuHelperDistribution.getOccurrenceStatusId() != 0 && fauEuHelperDistribution.getOccurrenceStatusId() != 2 && fauEuHelperDistribution.getOccurrenceStatusId() != 1){
 						presenceAbsenceStatus = (PresenceAbsenceTerm)getTermService().find(noData);
 					}else{
@@ -289,19 +289,19 @@ public class FaunaEuropaeaDistributionImport extends FaunaEuropaeaImportBase {
 					}
 
 					namedArea = FaunaEuropaeaTransformer.areaId2TdwgArea(fauEuHelperDistribution);
-					
+
 					if (namedArea == null){
 						UUID areaUuid= FaunaEuropaeaTransformer.getUUIDByAreaAbbr(fauEuHelperDistribution.getAreaCode());
 						if (areaUuid == null){
 							logger.warn("Area " + fauEuHelperDistribution.getAreaCode() + "not found in FE transformer");
 						}
 						namedArea = getNamedArea(state, areaUuid, fauEuHelperDistribution.getAreaName(), fauEuHelperDistribution.getAreaName(), fauEuHelperDistribution.getAreaCode(), null, null);
-						
+
 					}
-					
+
 					newDistribution = Distribution.NewInstance(namedArea, presenceAbsenceStatus);
 					newDistribution.setCreated(null);
-					
+
 					taxonDescription.addElement(newDistribution);
 				}
 			}
@@ -309,11 +309,12 @@ public class FaunaEuropaeaDistributionImport extends FaunaEuropaeaImportBase {
 		return taxonList;
 	}
 
-	
+
 	/* (non-Javadoc)
 	 * @see eu.etaxonomy.cdm.io.common.CdmIoBase#isIgnore(eu.etaxonomy.cdm.io.common.IImportConfigurator)
 	 */
-	protected boolean isIgnore(FaunaEuropaeaImportState state){
+	@Override
+    protected boolean isIgnore(FaunaEuropaeaImportState state){
 		return !state.getConfig().isDoOccurrence();
 	}
 }
