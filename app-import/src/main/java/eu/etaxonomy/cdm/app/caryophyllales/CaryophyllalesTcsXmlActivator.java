@@ -37,7 +37,7 @@ public class CaryophyllalesTcsXmlActivator {
 //	static final String tcsSource = TcsSources.tcsXml_cichorium();
 	static final String tcsSource = TcsSources.tcsXml_nyctaginaceae();
 	
-	static final ICdmDataSource cdmDestination = CdmDestinations.localH2();
+	static final ICdmDataSource cdmDestination = CdmDestinations.cdm_local_caryo();
 
 	static final UUID treeUuid = UUID.fromString("00708000-0c97-48ac-8d33-6099ed68c625");
 	static final String sourceSecId = "TestTCS";
@@ -54,11 +54,12 @@ public class CaryophyllalesTcsXmlActivator {
 	//names
 	static final boolean doTaxonNames = true;
 	static final boolean doRelNames = true;
-	
+	static final boolean doGetMissingNames = true;
 	//taxa
 	static final boolean doTaxa = true;
 	static final boolean doRelTaxa = true;
-
+	
+	
 	
 	private void doImport(){
 		System.out.println("Start import from Tcs("+ tcsSource.toString() + ") ...");
@@ -84,11 +85,13 @@ public class CaryophyllalesTcsXmlActivator {
 			
 			tcsImportConfigurator.setCheck(check);
 			tcsImportConfigurator.setDbSchemaValidation(hbm2dll);
+			tcsImportConfigurator.setDoGetMissingNames(doGetMissingNames);
 	
 			// invoke import
 			CdmDefaultImport<TcsXmlImportConfigurator> tcsImport = new CdmDefaultImport<TcsXmlImportConfigurator>();
 			//new Test().invoke(tcsImportConfigurator);
 			tcsImport.invoke(tcsImportConfigurator);
+			
 			
 			
 //			IReferenceService refService = tcsImport.getCdmAppController().getReferenceService();

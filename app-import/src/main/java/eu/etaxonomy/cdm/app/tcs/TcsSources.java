@@ -133,6 +133,15 @@ public class TcsSources {
 		
 	}	
 	
+	public static String tcsRdf_test(){
+		//		globis.rdf.xml
+		//String sourceUrl = "file:C:/Dokumente und Einstellungen/a.kohlbecker.BGBM/Desktop/globis.rdf.xml";
+		String sourceUrl = "/test_rdf.xml";
+		URL resourceUrl = new TcsSources().getClass().getResource(sourceUrl);
+		logger.debug("TcsRdfSource " +  resourceUrl.toString());
+		return resourceUrl.toString();
+		
+	}	
 
 	
 }

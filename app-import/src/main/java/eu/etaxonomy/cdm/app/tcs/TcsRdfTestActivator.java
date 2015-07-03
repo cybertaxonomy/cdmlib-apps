@@ -38,8 +38,8 @@ public class TcsRdfTestActivator {
 	
 	//database validation status (create, update, validate ...)
 	static DbSchemaValidation hbm2dll = DbSchemaValidation.CREATE;
-	static final String tcsSource = TcsSources.tcsRdf_globis();
-	static final ICdmDataSource cdmDestination = CdmDestinations.localH2();
+	static final String tcsSource = TcsSources.tcsRdf_test();
+	static final ICdmDataSource cdmDestination = CdmDestinations.cdm_local_caryo();
 
 	static final UUID treeUuid = UUID.fromString("00000000-0c97-48ac-8d33-6099ed68345");
 	static final String sourceSecId = "XXX";

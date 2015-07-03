@@ -93,7 +93,7 @@ public class TcsSources {
 
 	public static String tcsXml_nyctaginaceae(){
 		try {
-			File file = new File("C:\\Users\\k.luther\\Desktop\\ipni-Nyctaginaceae-Caryophyllaceae.xml\\ipni-Nyctaginaceae-Caryophyllaceae.xml");
+			File file = new File("C:\\Users\\k.luther\\Desktop\\ipni-Nyctaginaceae-Caryophyllaceae.xml\\ipni-Caryophyllaceae.xml");
 			return file.toURI().toURL().toString();
 		} catch (MalformedURLException e) {
 			throw new RuntimeException(e);
