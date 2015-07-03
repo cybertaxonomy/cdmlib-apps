@@ -304,7 +304,6 @@ public class FaunaEuropaeaDistributionImport extends FaunaEuropaeaImportBase {
 	}
 
 	@Override
-	@Override
     protected boolean isIgnore(FaunaEuropaeaImportState state){
 		return !state.getConfig().isDoOccurrence();
 	}
