@@ -144,6 +144,22 @@ public class CdmDestinations {
 		return makeDestination(dbType, cdmServer, cdmDB, -1, cdmUserName, null);
 	}
 
+    public static ICdmDataSource cdm_test_col(){
+        DatabaseTypeEnum dbType = DatabaseTypeEnum.MySQL;
+        String cdmServer = "160.45.63.175";
+        String cdmDB = "cdm_col";
+        String cdmUserName = "edit";
+        return makeDestination(dbType, cdmServer, cdmDB, -1, cdmUserName, null);
+    }
+
+    public static ICdmDataSource cdm_test_col2(){
+        DatabaseTypeEnum dbType = DatabaseTypeEnum.MySQL;
+        String cdmServer = "160.45.63.175";
+        String cdmDB = "cdm_col2";
+        String cdmUserName = "edit";
+        return makeDestination(dbType, cdmServer, cdmDB, -1, cdmUserName, null);
+    }
+
 
 	public static ICdmDataSource cdm_local_EDITImport(){
 		DatabaseTypeEnum dbType = DatabaseTypeEnum.MySQL;
@@ -562,14 +578,6 @@ public class CdmDestinations {
        String cdmUserName = "root";
        return makeDestination(dbType, cdmServer, cdmDB, -1, cdmUserName, null);
    }
-//	public static ICdmDataSource LAPTOP_HP(){
-//		DatabaseTypeEnum dbType = DatabaseTypeEnum.SqlServer2005;
-//		String cdmServer = "LAPTOPHP";
-//		String cdmDB = "cdmTest";
-//		String cdmUserName = "edit";
-//		return makeDestination(cdmServer, cdmDB, -1, cdmUserName, null);
-//	}
-
 
 
 
