@@ -1,8 +1,8 @@
 /**
 * Copyright (C) 2007 EDIT
-* European Distributed Institute of Taxonomy 
+* European Distributed Institute of Taxonomy
 * http://www.e-taxonomy.eu
-* 
+*
 * The contents of this file are subject to the Mozilla Public License Version 1.1
 * See LICENSE.TXT at the top of this package for the full license terms.
 */
@@ -35,57 +35,70 @@ import eu.etaxonomy.cdm.model.reference.ReferenceFactory;
  */
 public class ColDwcaImportActivator {
 	private static final Logger logger = Logger.getLogger(ColDwcaImportActivator.class);
-	
+
 	//database validation status (create, update, validate ...)
-	static DbSchemaValidation hbm2dll = DbSchemaValidation.CREATE;
+//	static DbSchemaValidation hbm2dll = DbSchemaValidation.CREATE;
+
+	ImportSteps importSteps = ImportSteps.TaxaOnly;
+
 	static final URI source = dwca_col_All();
 
-	static final ICdmDataSource cdmDestination = CdmDestinations.cdm_test_local_mysql_dwca();
+	static final ICdmDataSource cdmDestination = CdmDestinations.cdm_test_col();
 
 
 	static boolean isNoQuotes = true;
-	
+
+
 	//classification
 	static final UUID classificationUuid = UUID.fromString("29d4011f-a6dd-4081-beb8-559ba6b84a6b");
-	
-	//default nom code is ICZN as it allows adding publication year 
+
+	//default nom code is ICZN as it allows adding publication year
 	static final NomenclaturalCode defaultNomCode = NomenclaturalCode.ICZN;
 
-	
+
 	//check - import
 	static final CHECK check = CHECK.IMPORT_WITHOUT_CHECK;
 	static int partitionSize = 1000;
-	
+
 	//config
 	static DatasetUse datasetUse = DatasetUse.ORIGINAL_SOURCE;
 	static boolean scientificNameIdAsOriginalSourceId = true;
 	static boolean guessNomRef = true;
-	private boolean handleAllRefsAsCitation = true;
-	
+	private final boolean handleAllRefsAsCitation = true;
+
 	//validate
 	static boolean validateRankConsistency = false;
-	
-	
+
+
 	//taxa
-	static final boolean doTaxa = true;
-	static final boolean doDistribution = false;
+//	static final boolean doTaxa = true;
+	static final boolean doTaxonRelationships = false;
+//	static final boolean doDistributionD = false;
 	//deduplicate
 	static final boolean doDeduplicate = false;
-	
-	
-	
-	static final MappingType mappingType = MappingType.InMemoryMapping;
-	
+
+
+	//mapping type
+	static final MappingType mappingType = MappingType.DatabaseMapping;
+
 	private void doImport(ICdmDataSource cdmDestination){
-		
+
 		//make Source
 		DwcaImportConfigurator config= DwcaImportConfigurator.NewInstance(source, cdmDestination);
 		config.addObserver(new LoggingIoObserver());
 		config.setClassificationUuid(classificationUuid);
 		config.setCheck(check);
-		config.setDbSchemaValidation(hbm2dll);
+		config.setDbSchemaValidation(importSteps.validation());
+		config.setDoTaxonRelationships(importSteps.doTaxonRelations());
+		config.setDoTaxa(importSteps.doTaxa());
+		config.setDoExtensions(importSteps.doExtensions());
+		config.setDoHigherRankRelationships(importSteps.doHigherTaxonRelations());
+		config.setDoSplitRelationshipImport(importSteps.doSplitRelations());
+		config.setDoLowerRankRelationships(importSteps.doLowerTaxonRelations());
+		config.setDoSynonymRelationships(importSteps.doSynonymRelations());
+
 		config.setMappingType(mappingType);
-		
+
 		config.setScientificNameIdAsOriginalSourceId(scientificNameIdAsOriginalSourceId);
 		config.setValidateRankConsistency(validateRankConsistency);
 		config.setDefaultPartitionSize(partitionSize);
@@ -94,10 +107,10 @@ public class ColDwcaImportActivator {
 		config.setGuessNomenclaturalReferences(guessNomRef);
 		config.setHandleAllRefsAsCitation(handleAllRefsAsCitation);
 		config.setNoQuotes(isNoQuotes);
-		
-		CdmDefaultImport myImport = new CdmDefaultImport();
 
-		
+		CdmDefaultImport<DwcaImportConfigurator> myImport = new CdmDefaultImport<DwcaImportConfigurator>();
+
+
 		//...
 		if (true){
 			System.out.println("Start import from ("+ source.toString() + ") ...");
@@ -105,9 +118,9 @@ public class ColDwcaImportActivator {
 			myImport.invoke(config);
 			System.out.println("End import from ("+ source.toString() + ")...");
 		}
-		
-		
-		
+
+
+
 		//deduplicate
 		if (doDeduplicate){
 			ICdmApplicationConfiguration app = myImport.getCdmAppController();
@@ -118,12 +131,12 @@ public class ColDwcaImportActivator {
 			count = app.getReferenceService().deduplicate(Reference.class, null, null);
 			logger.warn("Deduplicated " + count + " references.");
 		}
-		
+
 	}
 
 	private Reference<?> getSourceReference(String string) {
 		Reference<?> result = ReferenceFactory.newGeneric();
-		result.setTitleCache(string);
+		result.setTitleCache(string, true);
 		return result;
 	}
 
@@ -133,12 +146,63 @@ public class ColDwcaImportActivator {
 		URI sourceUrl = URI.create("file:///C:/Users/pesiimport/Documents/pesi_cdmlib/cdmlib-io/src/test/resources/eu/etaxonomy/cdm/io/dwca/in/DwcaZipToStreamConverterTest-input.zip");
 		return sourceUrl;
 	}
-	
-	
+
+
 	//CoL
 	public static URI dwca_col_All() {
-		URI sourceUrl = URI.create("file:////Pesiimport3/col/col_20Nov2012.zip");
-		return sourceUrl;
+	    //http://www.catalogueoflife.org/DCA_Export/
+	    URI sourceUrl = URI.create("file:////BGBM-PESIHPC/CoL/archive-complete_2015_07_02.zip");
+//	    URI sourceUrl = URI.create("file:////Pesiimport3/col/col_20Nov2012.zip");
+        return sourceUrl;
+	}
+
+	private enum ImportSteps{
+	    ALL,
+	    TaxaOnly,
+	    ExtensionsOnly,
+	    TaxaAndExtensions,
+	    TaxonRelationsOnly,
+	    SynonymsOnly,
+	    HigherTaxaOnly,
+	    LowerTaxaOnly
+	    ;
+
+	    private DbSchemaValidation validation(){
+	        if (this == ALL || this == TaxaOnly || this == TaxaAndExtensions){
+	            return DbSchemaValidation.CREATE;
+	        }else{
+	            return DbSchemaValidation.VALIDATE;
+	        }
+	    }
+
+        private boolean doTaxa(){
+            return (this == ALL || this == TaxaOnly || this == TaxaAndExtensions);
+        }
+
+        private boolean doExtensions(){
+            return (this == ALL || this == ExtensionsOnly || this == TaxaAndExtensions);
+        }
+
+        private boolean doTaxonRelations(){
+            return (this == ALL || this == TaxonRelationsOnly || doSplitRelations());
+        }
+
+        private boolean doSplitRelations(){
+            return (this == SynonymsOnly || this == HigherTaxaOnly || this == LowerTaxaOnly);
+        }
+
+        private boolean doSynonymRelations(){
+            return (this == SynonymsOnly);
+        }
+
+        private boolean doHigherTaxonRelations(){
+            return (this == HigherTaxaOnly);
+        }
+
+        private boolean doLowerTaxonRelations(){
+            return (this == LowerTaxaOnly);
+        }
+
 	}
 
 	/**
@@ -148,5 +212,5 @@ public class ColDwcaImportActivator {
 		ColDwcaImportActivator me = new ColDwcaImportActivator();
 		me.doImport(cdmDestination);
 	}
-	
+
 }
