@@ -30,9 +30,9 @@ public class CaryophyllalesCacheUpdater {
 		static final List<String> classListStrings =  Arrays.asList(new String[]{
 				//IdentifiableEntity.class.getName(),
 //				IdentifiableEntity.class.getName(),
-				AgentBase.class.getName(),
-				Reference.class.getName(),
-				TaxonNameBase.class.getName(),
+				//AgentBase.class.getName(),
+				//Reference.class.getName(),
+				//TaxonNameBase.class.getName(),
 				TaxonBase.class.getName()
 				
 				
@@ -98,7 +98,7 @@ public class CaryophyllalesCacheUpdater {
 
 			CacheUpdaterConfigurator config;
 			try {
-				config = CacheUpdaterConfigurator.NewInstance(destination, classListStrings);
+				config = CacheUpdaterConfigurator.NewInstance(destination, classListStrings, true);
 				
 				// invoke import
 				CdmDefaultImport<CacheUpdaterConfigurator> myImport = new CdmDefaultImport<CacheUpdaterConfigurator>();
