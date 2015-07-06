@@ -43,7 +43,7 @@ public class ColDwcaImportActivator {
 
 	static final URI source = dwca_col_All();
 
-	static final ICdmDataSource cdmDestination = CdmDestinations.cdm_test_col();
+	static final ICdmDataSource cdmDestination = CdmDestinations.cdm_col_local();
 
 
 	static boolean isNoQuotes = true;
@@ -80,6 +80,7 @@ public class ColDwcaImportActivator {
 
 	//mapping type
 	static final MappingType mappingType = MappingType.DatabaseMapping;
+	static final String databaseMappingFile = "C:/Users/a.mueller/.cdmLibrary/log/colMapping";
 
 	private void doImport(ICdmDataSource cdmDestination){
 
@@ -98,6 +99,7 @@ public class ColDwcaImportActivator {
 		config.setDoSynonymRelationships(importSteps.doSynonymRelations());
 
 		config.setMappingType(mappingType);
+		config.setDatabaseMappingFile(databaseMappingFile);
 
 		config.setScientificNameIdAsOriginalSourceId(scientificNameIdAsOriginalSourceId);
 		config.setValidateRankConsistency(validateRankConsistency);
