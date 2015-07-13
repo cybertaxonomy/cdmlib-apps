@@ -1,8 +1,8 @@
 /**
 * Copyright (C) 2007 EDIT
-* European Distributed Institute of Taxonomy 
+* European Distributed Institute of Taxonomy
 * http://www.e-taxonomy.eu
-* 
+*
 * The contents of this file are subject to the Mozilla Public License Version 1.1
 * See LICENSE.TXT at the top of this package for the full license terms.
 */
@@ -52,23 +52,23 @@ import eu.etaxonomy.cdm.model.taxon.TaxonBase;
 @Component
 public class BerlinModelTaxonImport  extends BerlinModelImportBase {
 	private static final Logger logger = Logger.getLogger(BerlinModelTaxonImport.class);
-	
+
 	public static final String NAMESPACE = "Taxon";
 
 	private static final String pluralString = "Taxa";
 	private static final String dbTableName = "PTaxon";
-	
+
 	/**
 	 * How should the publish flag in table PTaxon be interpreted
 	 * NO_MARKER: No marker is set
-	 * ONLY_FALSE: 
+	 * ONLY_FALSE:
 	 */
 	public enum PublishMarkerChooser{
 		NO_MARKER,
 		ONLY_FALSE,
 		ONLY_TRUE,
 		ALL;
-		
+
 		boolean doMark(boolean value){
 			if (value == true){
 				return this == ALL || this == ONLY_TRUE;
@@ -77,18 +77,18 @@ public class BerlinModelTaxonImport  extends BerlinModelImportBase {
 			}
 		}
 	}
-	
+
 	public BerlinModelTaxonImport(){
 		super(dbTableName, pluralString);
 	}
-	
+
 	@Override
 	protected String getIdQuery(BerlinModelImportState state) {
 		String sqlSelect = " SELECT RIdentifier";
 		String taxonTable = state.getConfig().getTaxonTable();
 		String sqlFrom = String.format(" FROM %s ", taxonTable);
 		String sqlWhere = "";
-		
+
 		String sql = sqlSelect + " " + sqlFrom + " " + sqlWhere ;
 		return sql;
 	}
@@ -96,24 +96,24 @@ public class BerlinModelTaxonImport  extends BerlinModelImportBase {
 	@Override
 	protected String getRecordQuery(BerlinModelImportConfigurator config) {
 		String sqlSelect = " SELECT pt.*  ";
-		String sqlFrom = " FROM PTaxon pt "; 
+		String sqlFrom = " FROM PTaxon pt ";
 		if (isEuroMed(config) ){
-			sqlFrom = " FROM PTaxon AS pt " + 
+			sqlFrom = " FROM PTaxon AS pt " +
 							" INNER JOIN v_cdm_exp_taxaAll AS em ON pt.RIdentifier = em.RIdentifier " +
 							" LEFT OUTER JOIN Reference r ON pt.LastScrutinyFk = r.RefId ";
 			sqlSelect += " , em.MA, r.RefCache as LastScrutiny ";
 		}
-		
-		
+
+
 		String sqlWhere = " WHERE ( pt.RIdentifier IN (" + ID_LIST_TOKEN + ") )";
-		
+
 		String strRecordQuery =sqlSelect + " " + sqlFrom + " " + sqlWhere ;
-//			" SELECT * " + 
+//			" SELECT * " +
 //			" FROM PTaxon " + state.getConfig().getTaxonTable();
 //			" WHERE ( RIdentifier IN (" + ID_LIST_TOKEN + ") )";
 		return strRecordQuery;
 	}
-	
+
 	private boolean isEuroMed(BerlinModelImportConfigurator config) {
 		return config.getTaxonTable().trim().equals("v_cdm_exp_taxaAll");
 	}
@@ -127,12 +127,12 @@ public class BerlinModelTaxonImport  extends BerlinModelImportBase {
 	@Override
 	public boolean doPartition(ResultSetPartitioner partitioner, BerlinModelImportState state) {
 		boolean success = true ;
-		
+
 		BerlinModelImportConfigurator config = state.getConfig();
 		Set<TaxonBase> taxaToSave = new HashSet<TaxonBase>();
-		Map<String, TaxonNameBase> taxonNameMap = (Map<String, TaxonNameBase>) partitioner.getObjectMap(BerlinModelTaxonNameImport.NAMESPACE);
-		Map<String, Reference> refMap = (Map<String, Reference>) partitioner.getObjectMap(BerlinModelReferenceImport.REFERENCE_NAMESPACE);
-		
+		Map<String, TaxonNameBase> taxonNameMap = partitioner.getObjectMap(BerlinModelTaxonNameImport.NAMESPACE);
+		Map<String, Reference> refMap = partitioner.getObjectMap(BerlinModelReferenceImport.REFERENCE_NAMESPACE);
+
 		ResultSet rs = partitioner.getResultSet();
 		try{
 			boolean publishFlagExists = state.getConfig().getSource().checkColumnExists("PTaxon", "PublishFlag");
@@ -140,11 +140,11 @@ public class BerlinModelTaxonImport  extends BerlinModelImportBase {
 			while (rs.next()){
 
 			//	if ((i++ % modCount) == 0 && i!= 1 ){ logger.info("PTaxa handled: " + (i-1));}
-				
+
 				//create TaxonName element
 				int taxonId = rs.getInt("RIdentifier");
 				int statusFk = rs.getInt("statusFk");
-				
+
 				int nameFk = rs.getInt("PTNameFk");
 				int refFkInt = rs.getInt("PTRefFk");
 				String doubtful = rs.getString("DoubtfulFlag");
@@ -152,14 +152,14 @@ public class BerlinModelTaxonImport  extends BerlinModelImportBase {
 				if (resultSetHasColumn(rs,"UUID")){
 					uuid = rs.getString("UUID");
 				}
-				
+
 				TaxonNameBase<?,?> taxonName = null;
 				taxonName  = taxonNameMap.get(String.valueOf(nameFk));
-				
+
 				Reference<?> reference = null;
 				String refFk = String.valueOf(refFkInt);
-				reference = refMap.get(refFk); 
-					
+				reference = refMap.get(refFk);
+
 				if(! config.isIgnoreNull()){
 					if (taxonName == null ){
 						logger.warn("TaxonName belonging to taxon (RIdentifier = " + taxonId + ") could not be found in store. Taxon will not be imported");
@@ -199,7 +199,7 @@ public class BerlinModelTaxonImport  extends BerlinModelImportBase {
 					if (uuid != null){
 						taxonBase.setUuid(UUID.fromString(uuid));
 					}
-					
+
 					//doubtful
 					if (doubtful.equals("a")){
 						taxonBase.setDoubtful(false);
@@ -209,7 +209,7 @@ public class BerlinModelTaxonImport  extends BerlinModelImportBase {
 						taxonBase.setDoubtful(false);
 						logger.warn("Doubtful = i (inactivated) does not exist in CDM. Doubtful set to false. RIdentifier: " + taxonId);
 					}
-					
+
 					//detail
 					String detail = rs.getString("Detail");
 					if (StringUtils.isNotBlank(detail)){
@@ -239,15 +239,12 @@ public class BerlinModelTaxonImport  extends BerlinModelImportBase {
 						if (isEuroMed){
 							misapplied = rs.getBoolean("MA");
 						}
-						
+
 						if ( ! misapplied){
 							taxonBase.setPublish(publishFlag);
-							if(taxonBase.isInstanceOf(Taxon.class) ){
-								CdmBase.deproxy(taxonBase, Taxon.class).setPublish(publishFlag);
-							}
 						}
 					}
-					
+
 					//
 					if (resultSetHasColumn(rs,"LastScrutiny")){
 						String lastScrutiny = rs.getString("LastScrutiny");
@@ -256,16 +253,16 @@ public class BerlinModelTaxonImport  extends BerlinModelImportBase {
 						ExtensionType extensionTypeExpert = getExtensionType(state, BerlinModelTransformer.uuidExpertName, "Expert", "Expert for a taxonomic group", "Expert");
 						taxonBase.addExtension(lastScrutiny, extensionTypeExpert);
 					}
-					
+
 					//Notes
 					doIdCreatedUpdatedNotes(state, taxonBase, rs, taxonId, NAMESPACE);
-					
+
 					//external url
 					if (config.getMakeUrlForTaxon() != null){
 						Method urlMethod = config.getMakeUrlForTaxon();
 						urlMethod.invoke(null, taxonBase, rs);
 					}
-					
+
 					partitioner.startDoSave();
 					taxaToSave.add(taxonBase);
 				} catch (Exception e) {
@@ -280,8 +277,8 @@ public class BerlinModelTaxonImport  extends BerlinModelImportBase {
 			logger.error("SQLException:" +  e);
 			return false;
 		}
-	
-			
+
+
 		//	logger.info( i + " names handled");
 		getTaxonService().save(taxaToSave);
 		return success;
@@ -293,7 +290,7 @@ public class BerlinModelTaxonImport  extends BerlinModelImportBase {
 		Class<?> cdmClass;
 		Set<String> idSet;
 		Map<Object, Map<String, ? extends CdmBase>> result = new HashMap<Object, Map<String, ? extends CdmBase>>();
-		
+
 		try{
 			Set<String> nameIdSet = new HashSet<String>();
 			Set<String> referenceIdSet = new HashSet<String>();
@@ -301,7 +298,7 @@ public class BerlinModelTaxonImport  extends BerlinModelImportBase {
 				handleForeignKey(rs, nameIdSet, "PTNameFk");
 				handleForeignKey(rs, referenceIdSet, "PTRefFk");
 			}
-			
+
 			//name map
 			nameSpace = BerlinModelTaxonNameImport.NAMESPACE;
 			cdmClass = TaxonNameBase.class;
@@ -321,17 +318,17 @@ public class BerlinModelTaxonImport  extends BerlinModelImportBase {
 		}
 		return result;
 	}
-	
+
 	@Override
 	protected String getTableName() {
 		return dbTableName;
 	}
-	
+
 	@Override
 	public String getPluralString() {
 		return pluralString;
 	}
-	
+
 	@Override
 	protected boolean isIgnore(BerlinModelImportState state){
 		return ! state.getConfig().isDoTaxa();
