@@ -43,7 +43,7 @@ public class ColDwcaImportActivator {
 
 	static final URI source = dwca_col_All();
 
-	static final ICdmDataSource cdmDestination = CdmDestinations.cdm_col_local();
+	static final ICdmDataSource cdmDestination = CdmDestinations.cdm_col2_local();
 
 
 	static boolean isNoQuotes = true;
@@ -80,7 +80,7 @@ public class ColDwcaImportActivator {
 
 	//mapping type
 	static final MappingType mappingType = MappingType.DatabaseMapping;
-	static final String databaseMappingFile = "C:/Users/a.mueller/.cdmLibrary/log/colMapping";
+	static final String databaseMappingFile = "C:/Users/a.mueller/.cdmLibrary/log/colMapping2";
 
 	private void doImport(ICdmDataSource cdmDestination){
 
@@ -153,7 +153,7 @@ public class ColDwcaImportActivator {
 	//CoL
 	public static URI dwca_col_All() {
 	    //http://www.catalogueoflife.org/DCA_Export/
-	    URI sourceUrl = URI.create("file:////BGBM-PESIHPC/CoL/archive-complete_2015_07_02.zip");
+	    URI sourceUrl = URI.create("file:////BGBM-PESIHPC/CoL/archive-complete_2015_07_02_test.zip");
 //	    URI sourceUrl = URI.create("file:////Pesiimport3/col/col_20Nov2012.zip");
         return sourceUrl;
 	}
