@@ -39,11 +39,12 @@ public class ColDwcaImportActivator {
 	//database validation status (create, update, validate ...)
 //	static DbSchemaValidation hbm2dll = DbSchemaValidation.CREATE;
 
-	ImportSteps importSteps = ImportSteps.TaxaOnly;
+	static final ImportSteps importSteps = ImportSteps.TaxaOnly;
+	static final UUID stateUuid = UUID.fromString("81b402d0-e2dc-462b-b1ff-2171b846fce9");
 
 	static final URI source = dwca_col_All();
 
-	static final ICdmDataSource cdmDestination = CdmDestinations.cdm_col2_local();
+	static final ICdmDataSource cdmDestination = CdmDestinations.cdm_col_local();
 
 
 	static boolean isNoQuotes = true;
@@ -72,7 +73,7 @@ public class ColDwcaImportActivator {
 
 	//taxa
 //	static final boolean doTaxa = true;
-	static final boolean doTaxonRelationships = false;
+//	static final boolean doTaxonRelationships = false;
 //	static final boolean doDistributionD = false;
 	//deduplicate
 	static final boolean doDeduplicate = false;
@@ -80,7 +81,7 @@ public class ColDwcaImportActivator {
 
 	//mapping type
 	static final MappingType mappingType = MappingType.DatabaseMapping;
-	static final String databaseMappingFile = "C:/Users/a.mueller/.cdmLibrary/log/colMapping2";
+	static final String databaseMappingFile = "C:/Users/a.mueller/.cdmLibrary/log/colMapping";
 
 	private void doImport(ICdmDataSource cdmDestination){
 
@@ -97,9 +98,11 @@ public class ColDwcaImportActivator {
 		config.setDoSplitRelationshipImport(importSteps.doSplitRelations());
 		config.setDoLowerRankRelationships(importSteps.doLowerTaxonRelations());
 		config.setDoSynonymRelationships(importSteps.doSynonymRelations());
+		config.setKeepMappingForFurtherImports(importSteps.keepMapping());
 
 		config.setMappingType(mappingType);
 		config.setDatabaseMappingFile(databaseMappingFile);
+		config.setStateUuid(stateUuid);
 
 		config.setScientificNameIdAsOriginalSourceId(scientificNameIdAsOriginalSourceId);
 		config.setValidateRankConsistency(validateRankConsistency);
@@ -142,18 +145,12 @@ public class ColDwcaImportActivator {
 		return result;
 	}
 
-	//Dwca
-	public static URI dwca_test_in() {
-//		URI sourceUrl = URI.create("http://dev.e-taxonomy.eu/trac/export/14463/trunk/cdmlib/cdmlib-io/src/test/resources/eu/etaxonomy/cdm/io/dwca/in/DwcaZipToStreamConverterTest-input.zip");
-		URI sourceUrl = URI.create("file:///C:/Users/pesiimport/Documents/pesi_cdmlib/cdmlib-io/src/test/resources/eu/etaxonomy/cdm/io/dwca/in/DwcaZipToStreamConverterTest-input.zip");
-		return sourceUrl;
-	}
-
 
 	//CoL
 	public static URI dwca_col_All() {
 	    //http://www.catalogueoflife.org/DCA_Export/
-	    URI sourceUrl = URI.create("file:////BGBM-PESIHPC/CoL/archive-complete_2015_07_02_test.zip");
+	    URI sourceUrl = URI.create("file:////BGBM-PESIHPC/CoL/archive-complete_2015_07_02.zip");
+//        sourceUrl = URI.create("file:////BGBM-PESIHPC/CoL/archive-complete_2015_07_02_test.zip");
 //	    URI sourceUrl = URI.create("file:////Pesiimport3/col/col_20Nov2012.zip");
         return sourceUrl;
 	}
@@ -203,6 +200,10 @@ public class ColDwcaImportActivator {
 
         private boolean doLowerTaxonRelations(){
             return (this == LowerTaxaOnly);
+        }
+
+        private boolean keepMapping(){
+            return !(this == ALL || this == TaxonRelationsOnly);
         }
 
 	}
