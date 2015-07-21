@@ -56,7 +56,6 @@ public class SpecimenImport {
             specimenImportConfigurator.setSourceSecId("specimen");
             specimenImportConfigurator.setCheck(check);
             specimenImportConfigurator.setDbSchemaValidation(hbm2dll);
-            specimenImportConfigurator.setParseNameAutomatically(true);
             specimenImportConfigurator.setReuseExistingMetadata(true);
             specimenImportConfigurator.reuseExistingDescriptiveGroups(true);
 //
