@@ -39,7 +39,7 @@ public class ColDwcaImportActivator {
 	//database validation status (create, update, validate ...)
 //	static DbSchemaValidation hbm2dll = DbSchemaValidation.CREATE;
 
-	static final ImportSteps importSteps = ImportSteps.TaxaOnly;
+	static final ImportSteps importSteps = ImportSteps.ExtensionsOnly;
 	static final UUID stateUuid = UUID.fromString("81b402d0-e2dc-462b-b1ff-2171b846fce9");
 
 	static final URI source = dwca_col_All();
