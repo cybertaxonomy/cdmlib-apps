@@ -556,7 +556,7 @@ public class FaunaEuropaeaTaxonNameImport extends FaunaEuropaeaImportBase  {
 				if (actualGenusId.intValue() != originalGenusId.intValue() && taxonBase.isInstanceOf(Taxon.class)) {
 					createBasionym(fauEuTaxon, taxonBase, taxonName, fauEuConfig, synonymSet, state);
 				} else if (fauEuTaxon.isParenthesis()) {
-					//the Authorship should be set in parenthesis because there should be a basionym, but we do not know it?
+					//the authorteam should be set in parenthesis because there should be a basionym, but we do not know it?
 					ZoologicalName zooName = taxonName.deproxy(taxonName, ZoologicalName.class);
 					zooName.setBasionymAuthorship(zooName.getCombinationAuthorship());
 					zooName.setCombinationAuthorship(null);
@@ -1053,7 +1053,7 @@ public class FaunaEuropaeaTaxonNameImport extends FaunaEuropaeaImportBase  {
 	 * @return
 	 */
 	private String emptyToNull(String text) {
-		if (CdmUtils.isEmpty(text)) {
+		if (StringUtils.isBlank(text)) {
 			return null;
 		} else {
 			return text;

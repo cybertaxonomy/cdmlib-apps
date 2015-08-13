@@ -1,8 +1,8 @@
 /**
 * Copyright (C) 2008 EDIT
-* European Distributed Institute of Taxonomy 
+* European Distributed Institute of Taxonomy
 * http://www.e-taxonomy.eu
-* 
+*
 * The contents of this file are subject to the Mozilla Public License Version 1.1
 * See LICENSE.TXT at the top of this package for the full license terms.
 */
@@ -14,7 +14,6 @@ import eu.etaxonomy.cdm.database.ICdmDataSource;
 import eu.etaxonomy.cdm.io.common.IImportConfigurator;
 import eu.etaxonomy.cdm.io.common.ImportConfiguratorBase;
 import eu.etaxonomy.cdm.io.common.Source;
-import eu.etaxonomy.cdm.io.common.IImportConfigurator.DO_REFERENCES;
 import eu.etaxonomy.cdm.io.common.mapping.IInputTransformer;
 import eu.etaxonomy.cdm.io.pesi.out.PesiTransformer;
 import eu.etaxonomy.cdm.model.name.NomenclaturalCode;
@@ -31,47 +30,49 @@ public class FaunaEuropaeaImportConfigurator extends ImportConfiguratorBase<Faun
 
 	//TODO
 	private static IInputTransformer defaultTransformer = null;
-	
+
 	private boolean doBasionyms = true;
 	private boolean doTaxonomicallyIncluded = true;
 	private boolean doMisappliedNames = true;
 	private boolean doHeterotypicSynonyms = true;
 	private boolean doHeterotypicSynonymsForBasionyms ;
 	private boolean doOccurrence = true;
-	
+
 	/* Max number of taxa to be saved with one service call */
 	private int limitSave = 5000;
 	private Reference<?> auctReference;
-	
-	@SuppressWarnings("unchecked")
+
+	@Override
+    @SuppressWarnings("unchecked")
 	protected void makeIoClassList() {
 		ioClassList = new Class[] {
 				FaunaEuropaeaAuthorImport.class,
+				FaunaEuropaeaUsersImport.class,
 				FaunaEuropaeaTaxonNameImport.class,
 				FaunaEuropaeaRelTaxonIncludeImport.class,
 				FaunaEuropaeaRefImport.class,
-				FaunaEuropaeaUsersImport.class,
+
 				FaunaEuropaeaDistributionImport.class,
 				FaunaEuropaeaHeterotypicSynonymImport.class,
 				FaunaEuropaeaAdditionalTaxonDataImport.class,
 		};
 	};
-	
+
 	public static FaunaEuropaeaImportConfigurator NewInstance(Source source, ICdmDataSource destination){
 		return new FaunaEuropaeaImportConfigurator(source, destination);
 }
-	
+
 	private FaunaEuropaeaImportConfigurator(Source source, ICdmDataSource destination) {
 		super(defaultTransformer);
 		setSource(source);
 		setDestination(destination);
 		setNomenclaturalCode(NomenclaturalCode.ICZN);
 	}
-	
+
 //	public static FaunaEuropaeaImportConfigurator NewInstance(ICdmDataSource source, ICdmDataSource destination){
 //		return new FaunaEuropaeaImportConfigurator(source, destination);
 //}
-	
+
 //	private FaunaEuropaeaImportConfigurator(ICdmDataSource source, ICdmDataSource destination) {
 //		super(defaultTransformer);
 //		setSource(source);
@@ -79,7 +80,7 @@ public class FaunaEuropaeaImportConfigurator extends ImportConfiguratorBase<Faun
 //		setNomenclaturalCode(NomenclaturalCode.ICBN);
 //	}
 
-	
+
 	/* (non-Javadoc)
 	 * @see eu.etaxonomy.cdm.io.common.ImportConfiguratorBase#getSourceReference()
 	 */
@@ -89,7 +90,7 @@ public class FaunaEuropaeaImportConfigurator extends ImportConfiguratorBase<Faun
 		if (this.sourceReference == null){
 			logger.warn("getSource Reference not yet fully implemented");
 			sourceReference = ReferenceFactory.newDatabase();
-			
+
 			sourceReference.setTitleCache("Fauna Europaea database", true);
 			if (this.getSourceRefUuid() != null){
 				sourceReference.setUuid(this.getSourceRefUuid());
@@ -106,7 +107,7 @@ public class FaunaEuropaeaImportConfigurator extends ImportConfiguratorBase<Faun
 		//TODO
 		if (auctReference == null){
 			auctReference = ReferenceFactory.newPersonalCommunication();
-			
+
 			auctReference.setTitleCache("auct.", true);
 			auctReference.setUuid(PesiTransformer.uuidSourceRefAuct);
 		}
@@ -116,7 +117,8 @@ public class FaunaEuropaeaImportConfigurator extends ImportConfiguratorBase<Faun
 	/* (non-Javadoc)
 	 * @see eu.etaxonomy.cdm.io.common.IImportConfigurator#getSourceNameString()
 	 */
-	public String getSourceNameString() {
+	@Override
+    public String getSourceNameString() {
 		if (this.getSource() == null) {
 			return null;
 		}else{
@@ -127,7 +129,8 @@ public class FaunaEuropaeaImportConfigurator extends ImportConfiguratorBase<Faun
 	/* (non-Javadoc)
 	 * @see eu.etaxonomy.cdm.io.common.IImportConfigurator#getNewState()
 	 */
-	public FaunaEuropaeaImportState getNewState() {
+	@Override
+    public FaunaEuropaeaImportState getNewState() {
 		return new FaunaEuropaeaImportState(this);
 	}
 
@@ -223,7 +226,7 @@ public class FaunaEuropaeaImportConfigurator extends ImportConfiguratorBase<Faun
 		return doHeterotypicSynonymsForBasionyms;
 	}
 
-	
+
 	/* (non-Javadoc)
 	 * @see eu.etaxonomy.cdm.io.tcsrdf.IImportConfigurator#isDoOccurrence()
 	 */
@@ -237,13 +240,13 @@ public class FaunaEuropaeaImportConfigurator extends ImportConfiguratorBase<Faun
 		this.doOccurrence = doOccurrence;
 	}
 
-	
+
 	private boolean doAuthors = true;
 	//references
 	private DO_REFERENCES doReferences = DO_REFERENCES.ALL;
 	//names
-	private boolean doTypes = true;
-	
+	private final boolean doTypes = true;
+
 	//taxa
 	private boolean doTaxa = true;
 	private boolean doRelTaxa = true;
@@ -283,5 +286,5 @@ public class FaunaEuropaeaImportConfigurator extends ImportConfiguratorBase<Faun
 		this.doRelTaxa = doRelTaxa;
 	}
 
-	
+
 }

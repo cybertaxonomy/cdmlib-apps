@@ -18,8 +18,10 @@ import org.apache.log4j.Logger;
 
 import eu.etaxonomy.cdm.api.service.ITermService;
 import eu.etaxonomy.cdm.io.common.TdwgAreaProvider;
+import eu.etaxonomy.cdm.model.common.DefinedTerm;
 import eu.etaxonomy.cdm.model.common.Language;
 import eu.etaxonomy.cdm.model.common.Representation;
+import eu.etaxonomy.cdm.model.common.TermType;
 import eu.etaxonomy.cdm.model.description.PresenceAbsenceTerm;
 import eu.etaxonomy.cdm.model.location.NamedArea;
 import eu.etaxonomy.cdm.model.name.NomenclaturalStatusType;
@@ -402,6 +404,14 @@ public final class FaunaEuropaeaTransformer {
 
 	static NomenclaturalStatusType nomStatusTempNamed;
 
+    private static DefinedTerm taxonomicSpecialistType;
+
+    private static UUID uuidTaxonomicSpecialistType = UUID.fromString("006879e4-cf99-405a-a720-2e81d9cbc34c");
+
+    private static DefinedTerm groupCoordinatorType;
+
+    private static UUID uuidGroupCoordinatorType = UUID.fromString("3a827ebe-4410-40e5-a241-941b17028e11");
+
 	public static NomenclaturalStatusType getNomStatusTempNamed(ITermService termService){
 		if (nomStatusTempNamed == null){
 			nomStatusTempNamed = (NomenclaturalStatusType)termService.find(uuidNomStatusTempNamed);
@@ -416,5 +426,38 @@ public final class FaunaEuropaeaTransformer {
 		}
 		return nomStatusTempNamed;
 	}
+    /**
+     * @return
+     */
+    public static DefinedTerm getTaxonomicSpecialistType(ITermService termService) {
+        if (taxonomicSpecialistType == null){
+            taxonomicSpecialistType = (DefinedTerm)termService.find(uuidTaxonomicSpecialistType);
+            if (taxonomicSpecialistType == null){
+                taxonomicSpecialistType = DefinedTerm.NewInstance(TermType.TaxonNodeAgentRelationType, "taxonomic specialist", "taxonomic specialist", "TS");
+
+                taxonomicSpecialistType.setUuid(uuidTaxonomicSpecialistType);
+
+                termService.save(taxonomicSpecialistType);
+            }
+        }
+        return taxonomicSpecialistType;
+    }
+    /**
+     * @return
+     */
+    public static DefinedTerm getGroupCoordinatorType(ITermService termService) {
+        if (groupCoordinatorType == null){
+            groupCoordinatorType = (DefinedTerm)termService.find(uuidGroupCoordinatorType);
+            if (groupCoordinatorType == null){
+                groupCoordinatorType = DefinedTerm.NewInstance(TermType.TaxonNodeAgentRelationType, "group coordinator", "group coordinator", "GC");
+
+                groupCoordinatorType.setUuid(uuidGroupCoordinatorType);
+
+                termService.save(groupCoordinatorType);
+            }
+        }
+        return groupCoordinatorType;
+    }
+
 
 }
