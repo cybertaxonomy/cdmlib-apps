@@ -39,12 +39,12 @@ public class ColDwcaImportActivator {
 	//database validation status (create, update, validate ...)
 //	static DbSchemaValidation hbm2dll = DbSchemaValidation.CREATE;
 
-	static final ImportSteps importSteps = ImportSteps.ExtensionsOnly;
+	static final ImportSteps importSteps = ImportSteps.TaxaAndExtensions;
 	static final UUID stateUuid = UUID.fromString("81b402d0-e2dc-462b-b1ff-2171b846fce9");
 
 	static final URI source = dwca_col_All();
 
-	static final ICdmDataSource cdmDestination = CdmDestinations.cdm_col_local();
+	static final ICdmDataSource cdmDestination = CdmDestinations.cdm_test_col();
 
 
 	static boolean isNoQuotes = true;
@@ -149,8 +149,9 @@ public class ColDwcaImportActivator {
 	//CoL
 	public static URI dwca_col_All() {
 	    //http://www.catalogueoflife.org/DCA_Export/
-	    URI sourceUrl = URI.create("file:////BGBM-PESIHPC/CoL/archive-complete_2015_07_02.zip");
+//	    URI sourceUrl = URI.create("file:////BGBM-PESIHPC/CoL/archive-complete_2015_07_02.zip");
 //        sourceUrl = URI.create("file:////BGBM-PESIHPC/CoL/archive-complete_2015_07_02_test.zip");
+        URI sourceUrl = URI.create("file:////BGBM-PESIHPC/CoL/2015-03-18-archive-complete.zip");
 //	    URI sourceUrl = URI.create("file:////Pesiimport3/col/col_20Nov2012.zip");
         return sourceUrl;
 	}
