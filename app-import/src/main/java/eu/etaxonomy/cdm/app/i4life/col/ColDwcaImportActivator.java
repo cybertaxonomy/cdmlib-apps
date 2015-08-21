@@ -40,7 +40,7 @@ public class ColDwcaImportActivator {
 //	static DbSchemaValidation hbm2dll = DbSchemaValidation.CREATE;
 
 	static final ImportSteps importSteps = ImportSteps.TaxaAndExtensions;
-	static final UUID stateUuid = UUID.fromString("81b402d0-e2dc-462b-b1ff-2171b846fce9");
+	static final UUID stateUuid = UUID.fromString("7e1da388-0039-4ba3-b0dc-b2bebbf507db");
 
 	static final URI source = dwca_col_All();
 
@@ -52,6 +52,9 @@ public class ColDwcaImportActivator {
 
 	//classification
 	static final UUID classificationUuid = UUID.fromString("29d4011f-a6dd-4081-beb8-559ba6b84a6b");
+
+	//classification name
+	static String classificationName = "Catalogue of Life 2015";
 
 	//default nom code is ICZN as it allows adding publication year
 	static final NomenclaturalCode defaultNomCode = NomenclaturalCode.ICZN;
@@ -70,18 +73,12 @@ public class ColDwcaImportActivator {
 	//validate
 	static boolean validateRankConsistency = false;
 
-
-	//taxa
-//	static final boolean doTaxa = true;
-//	static final boolean doTaxonRelationships = false;
-//	static final boolean doDistributionD = false;
 	//deduplicate
 	static final boolean doDeduplicate = false;
 
-
 	//mapping type
 	static final MappingType mappingType = MappingType.DatabaseMapping;
-	static final String databaseMappingFile = "C:/Users/a.mueller/.cdmLibrary/log/colMapping";
+	static final String databaseMappingFile = "C:/Users/a.mueller/.cdmLibrary/log/colMappingAnnual";
 
 	private void doImport(ICdmDataSource cdmDestination){
 
@@ -89,6 +86,7 @@ public class ColDwcaImportActivator {
 		DwcaImportConfigurator config= DwcaImportConfigurator.NewInstance(source, cdmDestination);
 		config.addObserver(new LoggingIoObserver());
 		config.setClassificationUuid(classificationUuid);
+		config.setClassificationName(classificationName);
 		config.setCheck(check);
 		config.setDbSchemaValidation(importSteps.validation());
 		config.setDoTaxonRelationships(importSteps.doTaxonRelations());
