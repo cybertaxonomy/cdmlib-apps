@@ -438,7 +438,7 @@ public class EfloraSources {
 
 	
 	public static URI fotg_03(){
-		return URI.create("file:////BGBM-PESIHPC/FloraGuianasXml/A03_final.xml");
+		return URI.create("file:////BGBM-PESIHPC/FloraGuianasXml/A3_final.xml");
 	}
 
 	

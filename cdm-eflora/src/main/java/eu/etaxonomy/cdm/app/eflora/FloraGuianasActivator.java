@@ -41,6 +41,17 @@ public class FloraGuianasActivator extends EfloraActivatorBase {
 	//database validation status (create, update, validate ...)
 	static DbSchemaValidation hbm2dll = DbSchemaValidation.CREATE;
 	static final URI fgu1 = EfloraSources.fgu_1();
+	
+	static final URI fotg03 = EfloraSources.fotg_03();
+
+	static final URI fotg11 = EfloraSources.fotg_11();
+	
+	static final URI fotg14 = EfloraSources.fotg_14();
+	static final URI fotg15 = EfloraSources.fotg_15();
+	static final URI fotg16 = EfloraSources.fotg_16();
+	
+	static final URI fotg20 = EfloraSources.fotg_20();
+	
 	static final URI fotg22 = EfloraSources.fotg_22();
 	static final URI fotg23 = EfloraSources.fotg_23();
 	static final URI fotg24 = EfloraSources.fotg_24();
@@ -57,6 +68,13 @@ public class FloraGuianasActivator extends EfloraActivatorBase {
 	private boolean inverseInclude = false;
 	
 	private boolean includeFotg1 = false;
+	
+	private boolean includeFotg03 = true;
+	private boolean includeFotg11 = false;
+	private boolean includeFotg14 = false;
+	private boolean includeFotg15 = false;
+	private boolean includeFotg16 = false;
+	private boolean includeFotg20 = false;
 	private boolean includeFotg22 = false;
 	private boolean includeFotg23 = false;
 	private boolean includeFotg24 = false;
@@ -67,7 +85,7 @@ public class FloraGuianasActivator extends EfloraActivatorBase {
 	private boolean includeFotg27 = false;
 
 	private boolean includeFotg29 = false;
-	private boolean includeFotg30 = true;
+	private boolean includeFotg30 = false;
 	
 	
 //	static final ICdmDataSource cdmDestination = CdmDestinations.cdm_flora_guianas_preview();
@@ -134,6 +152,18 @@ public class FloraGuianasActivator extends EfloraActivatorBase {
 		
 		//Vol1-79
 		executeVolume( fgu1, includeFotg1 ^ inverseInclude);
+		//Vol03
+		executeVolume(fotg03, includeFotg03 ^ inverseInclude);
+		//Vol11
+		executeVolume(fotg11, includeFotg11 ^ inverseInclude);
+		//Vol14
+		executeVolume(fotg14, includeFotg14 ^ inverseInclude);
+		//Vol15
+		executeVolume(fotg15, includeFotg15 ^ inverseInclude);
+		//Vol16
+		executeVolume(fotg16, includeFotg16 ^ inverseInclude);
+		//Vol20
+		executeVolume(fotg20, includeFotg20 ^ inverseInclude);
 		//Vol22
 		executeVolume(fotg22, includeFotg22 ^ inverseInclude);
 		//Vol23
