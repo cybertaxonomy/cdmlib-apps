@@ -435,7 +435,36 @@ public class EfloraSources {
 //		return URI.create("file:///PESIIMPORT3/guianas/markupData/79THEOPHRASTACEAE.xml");
 		return URI.create("file:////BGBM-PESIHPC/FloraGuianasXml/79THEOPHRASTACEAE.xml");
 	}
+
 	
+	public static URI fotg_03(){
+		return URI.create("file:////BGBM-PESIHPC/FloraGuianasXml/A03_final.xml");
+	}
+
+	
+	public static URI fotg_11(){
+		return URI.create("file:////BGBM-PESIHPC/FloraGuianasXml/A11_final.xml");
+	}
+
+	
+	public static URI fotg_14(){
+		return URI.create("file:////BGBM-PESIHPC/FloraGuianasXml/A14_final.xml");
+	}
+
+	
+	public static URI fotg_15(){
+		return URI.create("file:////BGBM-PESIHPC/FloraGuianasXml/A15_final.xml");
+	}
+
+	
+	public static URI fotg_16(){
+		return URI.create("file:////BGBM-PESIHPC/FloraGuianasXml/A16_final.xml");
+	}
+	
+	public static URI fotg_20(){
+		return URI.create("file:////BGBM-PESIHPC/FloraGuianasXml/A20_final.xml");
+	}
+
 	public static URI fotg_22(){
 		return URI.create("file:////BGBM-PESIHPC/FloraGuianasXml/A22_final.xml");
 	}
