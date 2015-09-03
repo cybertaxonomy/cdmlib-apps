@@ -1,9 +1,9 @@
 // $Id$
 /**
 * Copyright (C) 2009 EDIT
-* European Distributed Institute of Taxonomy 
+* European Distributed Institute of Taxonomy
 * http://www.e-taxonomy.eu
-* 
+*
 * The contents of this file are subject to the Mozilla Public License Version 1.1
 * See LICENSE.TXT at the top of this package for the full license terms.
 */
@@ -55,12 +55,12 @@ public class PesiRelTaxonExport extends PesiExportBase {
 	private static final String dbTableName = "RelTaxon";
 	private static final String pluralString = "Relationships";
 	private static PreparedStatement synonymsStmt;
-	
-	private HashMap<Rank, Rank> rank2endRankMap = new HashMap<Rank, Rank>();
-	private List<Rank> rankList = new ArrayList<Rank>();
+
+	private final HashMap<Rank, Rank> rank2endRankMap = new HashMap<Rank, Rank>();
+	private final List<Rank> rankList = new ArrayList<Rank>();
 	private PesiExportMapping mapping;
 	private int count = 0;
-	
+
 	public PesiRelTaxonExport() {
 		super();
 	}
@@ -82,7 +82,7 @@ public class PesiRelTaxonExport extends PesiExportBase {
 		return result;
 	}
 
-	
+
 	/* (non-Javadoc)
 	 * @see eu.etaxonomy.cdm.io.common.CdmIoBase#doInvoke(eu.etaxonomy.cdm.io.common.IoStateBase)
 	 */
@@ -90,9 +90,9 @@ public class PesiRelTaxonExport extends PesiExportBase {
 	protected void doInvoke(PesiExportState state) {
 		try {
 			logger.info("*** Started Making " + pluralString + " ...");
-	
+
 			Connection connection = state.getConfig().getDestination().getConnection();
-			String synonymsSql = "UPDATE Taxon SET KingdomFk = ?, RankFk = ?, RankCache = ? WHERE TaxonId = ?"; 
+			String synonymsSql = "UPDATE Taxon SET KingdomFk = ?, RankFk = ?, RankCache = ? WHERE TaxonId = ?";
 			synonymsStmt = connection.prepareStatement(synonymsSql);
 
 			// Stores whether this invoke was successful or not.
@@ -100,20 +100,20 @@ public class PesiRelTaxonExport extends PesiExportBase {
 
 			// PESI: Clear the database table RelTaxon.
 			//doDelete(state); -> done by stored procedure
-			
+
 			// Get specific mappings: (CDM) Relationship -> (PESI) RelTaxon
 			mapping = getMapping();
 
 			// Initialize the db mapper
 			mapping.initialize(state);
-			
+
 			//Export taxon relations
 			success &= doPhase01(state, mapping);
 
-			
+
 			// Export name relations
 			success &= doPhase02(state, mapping);
-			
+
 			if (! success){
 				state.setUnsuccessfull();
 			}
@@ -125,19 +125,19 @@ public class PesiRelTaxonExport extends PesiExportBase {
 			return;
 		}
 	}
-	
-	
+
+
 	private boolean doPhase01(PesiExportState state, PesiExportMapping mapping2) throws SQLException {
 		logger.info("PHASE 1: Taxon Relationships ...");
 		boolean success = true;
-		
+
 		int limit = state.getConfig().getLimitSave();
 		// Start transaction
 		TransactionStatus txStatus = startTransaction(true);
 		logger.info("Started new transaction. Fetching some " + pluralString + " (max: " + limit + ") ...");
-		
+
 		List<RelationshipBase> list;
-		
+
 		//taxon relations
 		int partitionCount = 0;
 		int totalCount = 0;
@@ -155,7 +155,7 @@ public class PesiRelTaxonExport extends PesiExportBase {
 					e.printStackTrace();
 				}
 			}
-			
+
 			commitTransaction(txStatus);
 			txStatus = startTransaction();
 		}
@@ -163,18 +163,18 @@ public class PesiRelTaxonExport extends PesiExportBase {
 		commitTransaction(txStatus);
 		return success;
 	}
-	
+
 	private boolean doPhase02(PesiExportState state, PesiExportMapping mapping2) throws SQLException {
 		logger.info("PHASE 2: Name Relationships ...");
 		boolean success = true;
-		
+
 		int limit = state.getConfig().getLimitSave();
 		// Start transaction
 		TransactionStatus txStatus = startTransaction(true);
 		logger.info("Started new transaction. Fetching some " + pluralString + " (max: " + limit + ") ...");
-		
+
 		List<RelationshipBase> list;
-		
+
 		//name relations
 		int partitionCount = 0;
 		while ((list = getNextNameRelationshipPartition(null, limit, partitionCount++, null)) != null   ) {
@@ -200,7 +200,7 @@ public class PesiRelTaxonExport extends PesiExportBase {
 					List<IdentifiableEntity> toList = new ArrayList<IdentifiableEntity>();
 					makeList(name1, fromList);
 					makeList(name2, toList);
-					
+
 					for (IdentifiableEntity fromEntity : fromList){
 						for (IdentifiableEntity toEntity : toList){
 							//TODO set entities to state
@@ -214,8 +214,8 @@ public class PesiRelTaxonExport extends PesiExportBase {
 					name1 = null;
 					name2 = null;
 					rel = null;
-					
-					
+
+
 				} catch (Exception e) {
 					logger.error(e.getMessage() + ". Relationship: " +  rel.getUuid());
 					e.printStackTrace();
@@ -228,7 +228,7 @@ public class PesiRelTaxonExport extends PesiExportBase {
 		list = null;
 		logger.info("End PHASE 2: Name Relationships ...");
 		state.setCurrentFromObject(null);
-		state.setCurrentToObject(null);	
+		state.setCurrentToObject(null);
 		return success;
 	}
 
@@ -248,9 +248,9 @@ public class PesiRelTaxonExport extends PesiExportBase {
 	protected void doInvoke_Old(PesiExportState state) {
 		try {
 			logger.info("*** Started Making " + pluralString + " ...");
-	
+
 			Connection connection = state.getConfig().getDestination().getConnection();
-			String synonymsSql = "UPDATE Taxon SET KingdomFk = ?, RankFk = ?, RankCache = ? WHERE TaxonId = ?"; 
+			String synonymsSql = "UPDATE Taxon SET KingdomFk = ?, RankFk = ?, RankCache = ? WHERE TaxonId = ?";
 			synonymsStmt = connection.prepareStatement(synonymsSql);
 
 			// Stores whether this invoke was successful or not.
@@ -258,7 +258,7 @@ public class PesiRelTaxonExport extends PesiExportBase {
 
 			// PESI: Clear the database table RelTaxon.
 			doDelete(state);
-	
+
 			// Get specific mappings: (CDM) Relationship -> (PESI) RelTaxon
 			mapping = getMapping();
 
@@ -267,7 +267,7 @@ public class PesiRelTaxonExport extends PesiExportBase {
 
 			TransactionStatus txStatus = null;
 			List<Classification> classificationList = null;
-			
+
 			// Specify starting ranks for tree traversing
 			rankList.add(Rank.KINGDOM());
 			rankList.add(Rank.GENUS());
@@ -275,7 +275,7 @@ public class PesiRelTaxonExport extends PesiExportBase {
 			// Specify where to stop traversing (value) when starting at a specific Rank (key)
 			rank2endRankMap.put(Rank.GENUS(), null); // Since NULL does not match an existing Rank, traverse all the way down to the leaves
 			rank2endRankMap.put(Rank.KINGDOM(), Rank.GENUS()); // excludes rank genus
-			
+
 			// Retrieve list of classifications
 			txStatus = startTransaction(true);
 			logger.info("Started transaction. Fetching all classifications...");
@@ -287,11 +287,11 @@ public class PesiRelTaxonExport extends PesiExportBase {
 
 			for (Classification classification : classificationList) {
 				for (Rank rank : rankList) {
-					
+
 					txStatus = startTransaction(true);
 					logger.info("Started transaction to fetch all rootNodes specific to Rank " + rank.getLabel() + " ...");
 
-					List<TaxonNode> rankSpecificRootNodes = getClassificationService().loadRankSpecificRootNodes(classification, rank, null, null, null);
+					List<TaxonNode> rankSpecificRootNodes = getClassificationService().listRankSpecificRootNodes(classification, rank, null, null, null);
 					logger.info("Fetched " + rankSpecificRootNodes.size() + " RootNodes for Rank " + rank.getLabel());
 
 					commitTransaction(txStatus);
@@ -301,15 +301,15 @@ public class PesiRelTaxonExport extends PesiExportBase {
 						txStatus = startTransaction(false);
 						Rank endRank = rank2endRankMap.get(rank);
 						logger.debug("Started transaction to traverse childNodes of rootNode (" + rootNode.getUuid() + ") till " + (endRank == null ? "leaves are reached ..." : "Rank " + endRank.getLabel() + " ..."));
-						
+
 						TaxonNode newNode = getTaxonNodeService().load(rootNode.getUuid());
 
 						if (isPesiTaxon(newNode.getTaxon())){
-							
+
 							TaxonNode parentNode = newNode.getParent();
-	
+
 							success &=traverseTree(newNode, parentNode, endRank, state);
-	
+
 							commitTransaction(txStatus);
 							logger.debug("Committed transaction.");
 						}else{
@@ -352,13 +352,13 @@ public class PesiRelTaxonExport extends PesiExportBase {
 					Rank childTaxonNameRank = childTaxon.getName().getRank();
 					if (childTaxonNameRank != null) {
 						if (! childTaxonNameRank.equals(fetchLevel)) {
-	
+
 							success &= saveData(childNode, parentNode, state);
-	
+
 							for (TaxonNode newNode : childNode.getChildNodes()) {
 								success &= traverseTree(newNode, childNode, fetchLevel, state);
 							}
-							
+
 						} else {
 	//						logger.error("Target Rank " + fetchLevel.getLabel() + " reached");
 							return success;
@@ -399,7 +399,7 @@ public class PesiRelTaxonExport extends PesiExportBase {
 			success &= saveSynonymAndSynNameRelationships(state, childNodeTaxon);
 		}
 		return success;
-		
+
 	}
 
 	private boolean saveSynonymAndSynNameRelationships(PesiExportState state, Taxon childNodeTaxon) {
@@ -411,12 +411,12 @@ public class PesiRelTaxonExport extends PesiExportBase {
 				logger.warn("Synonym " + synonym.getId() + " of synonym relation " + synRel.getId() + " is not a PESI taxon. Can't export relationship");
 				continue;
 			}
-			
+
 			// Store synonym data in Taxon table
 			invokeSynonyms(state, synonymTaxonName);
 
-			
-			
+
+
 			Set<SynonymRelationship> synonymRelations = synonym.getSynonymRelations();
 			state.setCurrentFromObject(synonym);
 			for (SynonymRelationship synonymRelationship : synonymRelations) {  //needed? Maybe to make sure that there are no partial synonym relations missed ??
@@ -424,7 +424,7 @@ public class PesiRelTaxonExport extends PesiExportBase {
 					if (neededValuesNotNull(synonymRelationship, state)) {
 						doCount(count++, modCount, pluralString);
 						success &= mapping.invoke(synonymRelationship);
-						
+
 					}
 				} catch (SQLException e) {
 					logger.error("SynonymRelationship (" + synonymRelationship.getUuid() + ") could not be stored : " + e.getMessage());
@@ -447,7 +447,7 @@ public class PesiRelTaxonExport extends PesiExportBase {
 		state.setCurrentFromObject(taxonBase);
 		boolean isFrom = true;
 		success &= saveOneSideNameRelation(state, isFrom, nameRelations);
-		
+
 		//toRelations
 		nameRelations = childNodeTaxonName.getRelationsToThisName();
 		state.setCurrentToObject(taxonBase);
@@ -525,7 +525,7 @@ public class PesiRelTaxonExport extends PesiExportBase {
 
 	/**
 	 * Stores synonym data.
-	 * @param state 
+	 * @param state
 	 * @param taxonName
 	 * @param nomenclaturalCode
 	 * @param kingdomFk
@@ -541,7 +541,7 @@ public class PesiRelTaxonExport extends PesiExportBase {
 			} else {
 				synonymsStmt.setObject(1, null);
 			}
-			
+
 			Integer rankFk = getRankFk(taxonName, nomenclaturalCode);
 			if (rankFk != null) {
 				synonymsStmt.setInt(2, rankFk);
@@ -549,7 +549,7 @@ public class PesiRelTaxonExport extends PesiExportBase {
 				synonymsStmt.setObject(2, null);
 			}
 			synonymsStmt.setString(3, getRankCache(taxonName, nomenclaturalCode, state));
-			
+
 			if (currentSynonymFk != null) {
 				synonymsStmt.setInt(4, currentSynonymFk);
 			} else {
@@ -580,15 +580,15 @@ public class PesiRelTaxonExport extends PesiExportBase {
 		}
 		return result;
 	}
-	
+
 	/**
 	 * Deletes all entries of database tables related to <code>RelTaxon</code>.
 	 * @param state The {@link PesiExportState PesiExportState}.
 	 * @return Whether the delete operation was successful or not.
 	 */
 	protected boolean doDelete(PesiExportState state) {
-		PesiExportConfigurator pesiConfig = (PesiExportConfigurator) state.getConfig();
-		
+		PesiExportConfigurator pesiConfig = state.getConfig();
+
 		String sql;
 		Source destination =  pesiConfig.getDestination();
 
@@ -617,7 +617,7 @@ public class PesiRelTaxonExport extends PesiExportBase {
 	private static Integer getTaxonFk1(RelationshipBase<?, ?, ?> relationship, PesiExportState state) {
 		return getObjectFk(relationship, state, true);
 	}
-	
+
 	/**
 	 * Returns the <code>TaxonFk2</code> attribute. It corresponds to a CDM <code>SynonymRelationship</code>.
 	 * @param relationship The {@link RelationshipBase Relationship}.
@@ -628,7 +628,7 @@ public class PesiRelTaxonExport extends PesiExportBase {
 	private static Integer getTaxonFk2(RelationshipBase<?, ?, ?> relationship, PesiExportState state) {
 		return getObjectFk(relationship, state, false);
 	}
-	
+
 	/**
 	 * Returns the <code>RelTaxonQualifierFk</code> attribute.
 	 * @param relationship The {@link RelationshipBase Relationship}.
@@ -639,7 +639,7 @@ public class PesiRelTaxonExport extends PesiExportBase {
 	private static Integer getRelTaxonQualifierFk(RelationshipBase<?, ?, ?> relationship) {
 		return PesiTransformer.taxonRelation2RelTaxonQualifierFk(relationship);
 	}
-	
+
 	/**
 	 * Returns the <code>RelQualifierCache</code> attribute.
 	 * @param relationship The {@link RelationshipBase Relationship}.
@@ -658,7 +658,7 @@ public class PesiRelTaxonExport extends PesiExportBase {
 			name = taxon.getName();
 			code = name.getNomenclaturalCode();
 			rel = null;
-			
+
 		}else if (relationship.isInstanceOf(SynonymRelationship.class)){
 			SynonymRelationship rel = CdmBase.deproxy(relationship, SynonymRelationship.class);
 			taxon = rel.getAcceptedTaxon();
@@ -671,7 +671,7 @@ public class PesiRelTaxonExport extends PesiExportBase {
 			name = rel.getFromName();
 			code =name.getNomenclaturalCode();
 			rel = null;
-						
+
 		}else if (relationship.isInstanceOf(HybridRelationship.class)){
 			HybridRelationship rel =  CdmBase.deproxy(relationship,  HybridRelationship.class);
 			name = rel.getParentName();
@@ -687,7 +687,7 @@ public class PesiRelTaxonExport extends PesiExportBase {
 		}
 		return result;
 	}
-	
+
 	/**
 	 * Returns the <code>Notes</code> attribute.
 	 * @param relationship The {@link RelationshipBase Relationship}.
@@ -727,9 +727,9 @@ public class PesiRelTaxonExport extends PesiExportBase {
 				logger.warn("Related taxonBase is not a PESI taxon. Taxon: " + taxonBase.getId() + "/" + taxonBase.getUuid() + "; TaxonRel: " +  relationship.getId() + "(" + relationship.getType().getTitleCache() + ")");
 				return null;
 			}else{
-				return state.getDbId(taxonBase);	
+				return state.getDbId(taxonBase);
 			}
-			
+
 		}
 		logger.warn("No taxon found in state for relationship: " + relationship.toString());
 		return null;
@@ -760,7 +760,7 @@ public class PesiRelTaxonExport extends PesiExportBase {
 	 * Returns the <code>RankCache</code> attribute.
 	 * @param taxonName The {@link TaxonNameBase TaxonName}.
 	 * @param nomenclaturalCode The {@link NomenclaturalCode NomenclaturalCode}.
-	 * @param state 
+	 * @param state
 	 * @return The <code>RankCache</code> attribute.
 	 * @see MethodMapper
 	 */
@@ -779,7 +779,7 @@ public class PesiRelTaxonExport extends PesiExportBase {
 	 */
 	PesiExportMapping getMapping() {
 		PesiExportMapping mapping = new PesiExportMapping(dbTableName);
-		
+
 		mapping.addMapper(MethodMapper.NewInstance("TaxonFk1", this.getClass(), "getTaxonFk1", standardMethodParameter, PesiExportState.class));
 		mapping.addMapper(MethodMapper.NewInstance("TaxonFk2", this.getClass(), "getTaxonFk2", standardMethodParameter, PesiExportState.class));
 		mapping.addMapper(MethodMapper.NewInstance("RelTaxonQualifierFk", this));
