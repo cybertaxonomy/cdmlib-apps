@@ -1,8 +1,8 @@
 /**
 * Copyright (C) 2007 EDIT
-* European Distributed Institute of Taxonomy 
+* European Distributed Institute of Taxonomy
 * http://www.e-taxonomy.eu
-* 
+*
 * The contents of this file are subject to the Mozilla Public License Version 1.1
 * See LICENSE.TXT at the top of this package for the full license terms.
 */
@@ -19,11 +19,8 @@ import org.springframework.transaction.TransactionStatus;
 import eu.etaxonomy.cdm.api.application.CdmApplicationController;
 import eu.etaxonomy.cdm.api.application.ICdmApplicationConfiguration;
 import eu.etaxonomy.cdm.api.service.ITermService;
-import eu.etaxonomy.cdm.common.monitor.DefaultProgressMonitor;
-import eu.etaxonomy.cdm.common.monitor.IProgressMonitor;
 import eu.etaxonomy.cdm.database.DbSchemaValidation;
 import eu.etaxonomy.cdm.database.ICdmDataSource;
-import eu.etaxonomy.cdm.database.update.CdmUpdater;
 import eu.etaxonomy.cdm.io.common.CdmDefaultImport;
 import eu.etaxonomy.cdm.io.common.CdmImportBase.TermMatchMode;
 import eu.etaxonomy.cdm.io.common.IImportConfigurator.CHECK;
@@ -55,14 +52,14 @@ import eu.etaxonomy.cdm.model.reference.ReferenceFactory;
  */
 public class CentralAfricaEricaceaeActivator {
 	private static final Logger logger = Logger.getLogger(CentralAfricaEricaceaeActivator.class);
-	
+
 	//database validation status (create, update, validate ...)
 	static DbSchemaValidation hbm2dll = DbSchemaValidation.VALIDATE;
 	static final URI source = EfloraSources.ericacea_local();
-	
+
 	static final URI specimenSource = EfloraSources.vittaria_specimen_pesiimport3();
 
-	
+
 	static final ICdmDataSource cdmDestination = CdmDestinations.cdm_flora_central_africa_local();
 
 //	static final ICdmDataSource cdmDestination = CdmDestinations.cdm_flora_central_africa_preview();
@@ -71,40 +68,40 @@ public class CentralAfricaEricaceaeActivator {
 //	static final ICdmDataSource cdmDestination = CdmDestinations.cdm_local_postgres_CdmTest();
 //	static final ICdmDataSource cdmDestination = CdmDestinations.cdm_test_local_mysql();
 //	static final ICdmDataSource cdmDestination = CdmDestinations.cdm_campanulaceae_production();
-	
+
 	//feature tree uuid
 	public static final UUID featureTreeUuid = UUID.fromString("051d35ee-22f1-42d8-be07-9e9bfec5bcf7");
-	
+
 	public static UUID defaultLanguageUuid = Language.uuidFrench;
-	
+
 	//classification
 	static final UUID classificationUuid = UUID.fromString("10e5efcc-6e13-4abc-ad42-e0b46e50cbe7");
-	
+
 	NomenclaturalCode nc = NomenclaturalCode.ICNAFP;
-	
+
 	//check - import
 	static final CHECK check = CHECK.IMPORT_WITHOUT_CHECK;
-	
+
 	static boolean doPrintKeys = false;
-	
+
 	//taxa
-	private boolean includeEricaceae = false;
+	private final boolean includeEricaceae = false;
 	static final boolean doTaxa = false;
 	static final boolean doDeduplicate = false;
 
-	
-	private boolean doNewNamedAreas = false;
-	private boolean doFeatureTree = false;
-	
-	private boolean doSpecimen = true;
-	private TermMatchMode specimenAreaMatchMode = TermMatchMode.UUID_ABBREVLABEL;
 
-	
+	private final boolean doNewNamedAreas = false;
+	private final boolean doFeatureTree = false;
+
+	private final boolean doSpecimen = true;
+	private final TermMatchMode specimenAreaMatchMode = TermMatchMode.UUID_ABBREVLABEL;
+
+
 	private void doImport(ICdmDataSource cdmDestination){
-		
+
 //		CdmUpdater su = CdmUpdater.NewInstance();
 //		IProgressMonitor monitor = DefaultProgressMonitor.NewInstance();
-//		
+//
 //		try {
 //			su.updateToCurrentVersion(cdmDestination, monitor);
 //		} catch (Exception e) {
@@ -113,7 +110,7 @@ public class CentralAfricaEricaceaeActivator {
 //		if (true){
 //			return;
 //		}
-		
+
 		//make Source
 		CentralAfricaEricaceaeImportConfigurator config= CentralAfricaEricaceaeImportConfigurator.NewInstance(source, cdmDestination);
 		config.setClassificationUuid(classificationUuid);
@@ -123,10 +120,10 @@ public class CentralAfricaEricaceaeActivator {
 		config.setDoPrintKeys(doPrintKeys);
 		config.setDbSchemaValidation(hbm2dll);
 		config.setNomenclaturalCode(nc);
-		
+
 		CdmDefaultImport<EfloraImportConfigurator> myImport = new CdmDefaultImport<EfloraImportConfigurator>();
 
-		
+
 		//Ericaceae
 		if (includeEricaceae){
 			System.out.println("Start import from ("+ source.toString() + ") ...");
@@ -134,12 +131,12 @@ public class CentralAfricaEricaceaeActivator {
 			myImport.invoke(config);
 			System.out.println("End import from ("+ source.toString() + ")...");
 		}
-		
+
 		if (doFeatureTree){
 			FeatureTree tree = makeFeatureNode(myImport.getCdmAppController().getTermService());
 			myImport.getCdmAppController().getFeatureTreeService().saveOrUpdate(tree);
 		}
-		
+
 		//check keys
 		if (doPrintKeys){
 			TransactionStatus tx = myImport.getCdmAppController().startTransaction();
@@ -150,7 +147,7 @@ public class CentralAfricaEricaceaeActivator {
 			}
 			myImport.getCdmAppController().commitTransaction(tx);
 		}
-		
+
 		//deduplicate
 		if (doDeduplicate){
 			ICdmApplicationConfiguration app = myImport.getCdmAppController();
@@ -160,14 +157,14 @@ public class CentralAfricaEricaceaeActivator {
 			app.getAgentService().updateTitleCache(Team.class, null, null, null);
 			return;
 //			int count = app.getAgentService().deduplicate(Person.class, null, null);
-//			
+//
 //			logger.warn("Deduplicated " + count + " persons.");
-////			count = app.getAgentService().deduplicate(Team.class, null, null);
+//			count = app.getAgentService().deduplicate(Team.class, null, null);
 ////			logger.warn("Deduplicated " + count + " teams.");
 //			count = app.getReferenceService().deduplicate(Reference.class, null, null);
 //			logger.warn("Deduplicated " + count + " references.");
 		}
-		
+
 		if(doNewNamedAreas){
 			newNamedAreas(myImport);
 		}
@@ -176,22 +173,22 @@ public class CentralAfricaEricaceaeActivator {
 			logger.warn("Start specimen import");
 			ICdmApplicationConfiguration app = myImport.getCdmAppController();
 			SpecimenCdmExcelImportConfigurator specimenConfig= SpecimenCdmExcelImportConfigurator.NewInstance(specimenSource, cdmDestination);
-			specimenConfig.setCdmAppController((CdmApplicationController)app);
+			specimenConfig.setCdmAppController(app);
 			specimenConfig.setAreaMatchMode(specimenAreaMatchMode);
 			specimenConfig.setNomenclaturalCode(nc);
-			
+
 			config.setDbSchemaValidation(DbSchemaValidation.VALIDATE);
 			specimenConfig.setSourceReference(getSourceReference(specimenConfig.getSourceReferenceTitle()));
-			
+
 			CdmDefaultImport<SpecimenCdmExcelImportConfigurator> specimenImport = new CdmDefaultImport<SpecimenCdmExcelImportConfigurator>();
 			specimenImport.setCdmAppController(app);
 			specimenImport.invoke(specimenConfig);
-				
+
 		}
 		return;
-	
 
-		
+
+
 	}
 
 	private void newNamedAreas(CdmDefaultImport<EfloraImportConfigurator> myImport) {
@@ -200,21 +197,21 @@ public class CentralAfricaEricaceaeActivator {
 			app = CdmApplicationController.NewInstance(cdmDestination, hbm2dll, false);
 		}
 		TransactionStatus tx = app.startTransaction();
-		
+
 		OrderedTermVocabulary<NamedArea> areaVoc = OrderedTermVocabulary.NewInstance(TermType.NamedArea, "Phytogeographic Regions of Central Africa", "Phytogeographic Regions of Central Africa", "FdAC regions", null);
 		app.getVocabularyService().save(areaVoc);
-		
+
 		NamedAreaLevel level = NamedAreaLevel.NewInstance("Phytogeographic Regions of Central Africa", "Phytogeographic Regions of Central Africa", "FdAC regions");
 		ITermService termService = app.getTermService();
-		
+
 		termService.save(level);
-		
+
 		NamedArea area = NamedArea.NewInstance("C\u00F4tier", "C\u00F4tier", "I");
 		area.setLevel(level);
 		area.setType(NamedAreaType.NATURAL_AREA());
 		areaVoc.addTerm(area);
 		termService.save(area);
-		
+
 
 		area = NamedArea.NewInstance("Mayumbe", "Mayumbe", "II");
 		area.setLevel(level);
@@ -275,9 +272,9 @@ public class CentralAfricaEricaceaeActivator {
 		area.setType(NamedAreaType.NATURAL_AREA());
 		areaVoc.addTerm(area);
 		termService.save(area);
-		
+
 		app.getVocabularyService().save(areaVoc);
-		
+
 		app.commitTransaction(tx);
 
 	}
@@ -290,158 +287,158 @@ public class CentralAfricaEricaceaeActivator {
 
 	private FeatureTree makeFeatureNode(ITermService service){
 		CentralAfricaEricaceaeTransformer transformer = new CentralAfricaEricaceaeTransformer();
-		
+
 		FeatureTree result = FeatureTree.NewInstance(featureTreeUuid);
 		result.setTitleCache("Central Africa Ericaceae Feature Tree", true);
 		FeatureNode root = result.getRoot();
 		FeatureNode newNode;
-		
+
 		newNode = FeatureNode.NewInstance(Feature.DESCRIPTION());
 		root.addChild(newNode);
-		
+
 		addFeataureNodesByStringList(descriptionFeatureList, newNode, transformer, service);
 
 		addFeataureNodesByStringList(generellDescriptionsList, root, transformer, service);
 
-		
+
 		newNode = FeatureNode.NewInstance(Feature.DISTRIBUTION());
 		root.addChild(newNode);
 
 		newNode = FeatureNode.NewInstance(Feature.ECOLOGY());
 		root.addChild(newNode);
 		addFeataureNodesByStringList(habitatEcologyList, root, transformer, service);
-		
+
 		newNode = FeatureNode.NewInstance(Feature.USES());
 		root.addChild(newNode);
-		
+
 		addFeataureNodesByStringList(chomosomesList, root, transformer, service);
 
 		newNode = FeatureNode.NewInstance(Feature.COMMON_NAME());
 		root.addChild(newNode);
-		
+
 		newNode = FeatureNode.NewInstance(Feature.CITATION());
 		root.addChild(newNode);
-		
+
 		return result;
 	}
-	
+
 	private static String [] chomosomesList = new String[]{
-		"Chromosomes", 
+		"Chromosomes",
 	};
 
-	
+
 	private static String [] habitatEcologyList = new String[]{
 		"Habitat",
 		"Habitat & Ecology"
 	};
-	
-	
+
+
 	private static String [] generellDescriptionsList = new String[]{
 		"Fossils",
 		"Morphology and anatomy",
-		"Morphology", 
+		"Morphology",
 		"Vegetative morphology and anatomy",
 		"Flower morphology",
-		"Palynology",  
-		"Pollination",  
+		"Palynology",
+		"Pollination",
 		"Pollen morphology",
 		"Life cycle",
 		"Fruits and embryology",
 		"Dispersal",
-		"Wood anatomy",  
-		"Leaf anatomy",  
-		"Chromosome numbers", 
+		"Wood anatomy",
+		"Leaf anatomy",
+		"Chromosome numbers",
 		"Phytochemistry and Chemotaxonomy",
 		"Phytochemistry",
-		"Taxonomy",	
+		"Taxonomy",
 	};
 
 	private static String [] descriptionFeatureList = new String[]{
-		"lifeform", 
-		"Bark",  
-		"Indumentum",  
-		"endophytic body",  
-		"flowering buds",  
-		"Branchlets",  
-		"Branches",  
-		"Branch",  
+		"lifeform",
+		"Bark",
+		"Indumentum",
+		"endophytic body",
+		"flowering buds",
+		"Branchlets",
+		"Branches",
+		"Branch",
 		"Flowering branchlets",
-		"Trees",  
-		"Twigs",  
-		"stem",  
-		"Stems",  
-		"stem leaves", 
+		"Trees",
+		"Twigs",
+		"stem",
+		"Stems",
+		"stem leaves",
 		"Leaves",
-		"flower-bearing stems",  
-		"Petiole",  
-		"Petiolules",  
-		"Leaflets", 
-		"Thyrsus",  
-		"Thyrses",  
-		"Inflorescences",  
+		"flower-bearing stems",
+		"Petiole",
+		"Petiolules",
+		"Leaflets",
+		"Thyrsus",
+		"Thyrses",
+		"Inflorescences",
 		"Inflorescence",
-		"Young inflorescences", 
-		"Bracts",  
-		"Pedicels",  
-		"flowering buds",  
-		"scales",  
-		"Buds",  
-		"Flowers",  
-		"Flower",  
+		"Young inflorescences",
+		"Bracts",
+		"Pedicels",
+		"flowering buds",
+		"scales",
+		"Buds",
+		"Flowers",
+		"Flower",
 		"Flowering",
-		"Stigma",  
-		"perianth",  
-		"Sepals",  
-		"Sepal",  
-		"Outer Sepals",  
-		"Axillary",  
-		"cymes",  
-		"Calyx",  
-		"Petal",  
-		"Petals",  
+		"Stigma",
+		"perianth",
+		"Sepals",
+		"Sepal",
+		"Outer Sepals",
+		"Axillary",
+		"cymes",
+		"Calyx",
+		"Petal",
+		"Petals",
 		"perigone tube",
-		"Disc",  
-		"corolla",  
-		"Stamens",  
-		"Staminodes",  
-		"Ovary",  
+		"Disc",
+		"corolla",
+		"Stamens",
+		"Staminodes",
+		"Ovary",
 		"Anthers",
-		"anther",  
-		"Pistil",  
-		"Pistillode",  
-		"Ovules",  
-		"androecium",  
-		"gynoecium",  
-		"Filaments",  		
-		"Style",  
-		"annulus",  
-		"female flowers",  
-		"Male flowers",  
-		"Female",  
-		"Infructescences",    //order not consistent (sometimes before "Flowers")  
-		"Fruit",  
-		"Fruits",  
-		"fruiting axes",  
-		"drupes",  
-		"Arillode",  
-		"seed",  
-		"Seeds",  
-		"Seedling",  
-		"flower tube", 
-		"nutlets",  
-		"pollen",  
-		"secondary xylem",  
-		"chromosome number",  
-	
-		"figure",  
-		"fig",  
-		"figs",  
+		"anther",
+		"Pistil",
+		"Pistillode",
+		"Ovules",
+		"androecium",
+		"gynoecium",
+		"Filaments",
+		"Style",
+		"annulus",
+		"female flowers",
+		"Male flowers",
+		"Female",
+		"Infructescences",    //order not consistent (sometimes before "Flowers")
+		"Fruit",
+		"Fruits",
+		"fruiting axes",
+		"drupes",
+		"Arillode",
+		"seed",
+		"Seeds",
+		"Seedling",
+		"flower tube",
+		"nutlets",
+		"pollen",
+		"secondary xylem",
+		"chromosome number",
+
+		"figure",
+		"fig",
+		"figs",
 
 
 
-		
+
 	};
-	
+
 	public void addFeataureNodesByStringList(String[] featureStringList, FeatureNode root, IInputTransformer transformer, ITermService termService){
 		try {
 			for (String featureString : featureStringList){
@@ -450,14 +447,14 @@ public class CentralAfricaEricaceaeActivator {
 			Feature feature = (Feature)termService.find(featureUuid);
 			if (feature != null){
 				FeatureNode child = FeatureNode.NewInstance(feature);
-				root.addChild(child);	
+				root.addChild(child);
 			}
 		}
 		} catch (UndefinedTransformerMethodException e) {
 			logger.error("getFeatureUuid is not implemented in transformer. Features could not be added");
 		}
 	}
-	
+
 
 
 	/**
@@ -467,5 +464,5 @@ public class CentralAfricaEricaceaeActivator {
 		CentralAfricaEricaceaeActivator me = new CentralAfricaEricaceaeActivator();
 		me.doImport(cdmDestination);
 	}
-	
+
 }
