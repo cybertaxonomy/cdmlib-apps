@@ -24,6 +24,7 @@ import org.springframework.transaction.TransactionStatus;
 
 import eu.etaxonomy.cdm.io.common.Source;
 import eu.etaxonomy.cdm.model.common.CdmBase;
+import eu.etaxonomy.cdm.model.common.TermVocabulary;
 import eu.etaxonomy.cdm.model.description.Distribution;
 import eu.etaxonomy.cdm.model.description.PresenceAbsenceTerm;
 import eu.etaxonomy.cdm.model.description.TaxonDescription;
@@ -86,7 +87,10 @@ public class FaunaEuropaeaDistributionImport extends FaunaEuropaeaImportBase {
 		//txStatus = startTransaction();
 		PresenceAbsenceTerm noDataStatusTerm = PresenceAbsenceTerm.NewPresenceInstance("no data", "no data", "nod");
 		noDataUuid = noDataStatusTerm.getUuid();
-		getTermService().save(noDataStatusTerm);
+		TermVocabulary voc = getVocabularyService().find(30);
+		voc.addTerm(noDataStatusTerm);
+		getVocabularyService().saveOrUpdate(voc);
+	//	getTermService().save(noDataStatusTerm);
 		//commitTransaction(txStatus);
 
 		FaunaEuropaeaTransformer.setUUIDs(noDataUuid);
