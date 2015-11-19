@@ -63,6 +63,7 @@ public class FaunaEuropaeaActivator {
 	static final DO_REFERENCES doReferences =  DO_REFERENCES.ALL;
 	static final boolean doDistributions = true;
 	static final boolean makeFeatureTree = true;
+	static final boolean doVernacularNames = true;
     // CDM to CDM import
 	static final boolean doHeterotypicSynonymsForBasionyms = true;
 
@@ -159,7 +160,8 @@ public class FaunaEuropaeaActivator {
 			Feature distributionFeature = (Feature)app.getTermService().find(UUID.fromString("9fc9d10c-ba50-49ee-b174-ce83fc3f80c6"));
 			FeatureNode distributionNode = FeatureNode.NewInstance(distributionFeature);
 			root.addChild(distributionNode);
-
+			Feature commonNameFeature = (Feature)app.getTermService().find(UUID.fromString("fc810911-51f0-4a46-ab97-6562fe263ae5"));
+			FeatureNode commonNameFeatureNode = FeatureNode.NewInstance(commonNameFeature);
 			app.getFeatureTreeService().saveOrUpdate(featureTree);
 		}
 

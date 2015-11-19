@@ -396,6 +396,27 @@ public final class FaunaEuropaeaTransformer {
 
 
 	 	}
+	 	
+	 	public final static HashMap<Integer, Language> languageFK2Language  = new HashMap<Integer,Language>();
+	 	static
+	 	{
+	 		languageFK2Language.put(10, Language.DANISH());
+	 		languageFK2Language.put(19, Language.GREEK_MODERN());
+	 		languageFK2Language.put(18, Language.GERMAN());
+	 		languageFK2Language.put(59, Language.UKRAINIAN());
+	 		languageFK2Language.put(83, Language.ENGLISH());
+	 		languageFK2Language.put(58, Language.TURKISH());
+	 		languageFK2Language.put(26, Language.LITHUANIAN());
+	 		languageFK2Language.put(34, Language.RUSSIAN());
+	 		languageFK2Language.put(55, Language.SLOVENIAN());
+	 		languageFK2Language.put(57, Language.SWEDISH());
+	 		languageFK2Language.put(11, Language.DUTCH_MIDDLE());
+	 		languageFK2Language.put(100, Language.NORWEGIAN_BOKMOL());
+	 		languageFK2Language.put(101, Language.NORWEGIAN_NYNORSK());
+	 		
+
+
+	 	} 	
 	public static UUID getUUIDByAreaAbbr(String abbr){
 		return abbrToUUID.get(abbr);
 	}
@@ -411,6 +432,10 @@ public final class FaunaEuropaeaTransformer {
     private static DefinedTerm groupCoordinatorType;
 
     private static UUID uuidGroupCoordinatorType = UUID.fromString("3a827ebe-4410-40e5-a241-941b17028e11");
+
+	private static DefinedTerm associateSpecialistType;
+
+	private static UUID uuidAssociateSpecialistType = UUID.fromString("8258f73c-e0ad-4f87-a88c-53c58c08bba9");
 
 	public static NomenclaturalStatusType getNomStatusTempNamed(ITermService termService){
 		if (nomStatusTempNamed == null){
@@ -458,6 +483,28 @@ public final class FaunaEuropaeaTransformer {
         }
         return groupCoordinatorType;
     }
+    
+    /**
+     * @return
+     */
+    public static DefinedTerm getAssociateSpecialistType(ITermService termService) {
+        if (associateSpecialistType == null){
+        	associateSpecialistType = (DefinedTerm)termService.find(uuidAssociateSpecialistType);
+            if (associateSpecialistType == null){
+            	associateSpecialistType = DefinedTerm.NewInstance(TermType.TaxonNodeAgentRelationType, "associate specialist", "associate specialist", "AS");
+
+            	associateSpecialistType.setUuid(uuidAssociateSpecialistType);
+
+                termService.save(associateSpecialistType);
+            }
+        }
+        return associateSpecialistType;
+    }
+	public static Language langFK2Language(
+			int languageFk) {
+		
+		return null;
+	}
 
 
 }

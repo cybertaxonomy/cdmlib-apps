@@ -170,9 +170,10 @@ public class FaunaEuropaeaRefImport extends FaunaEuropaeaImportBase {
 
 	        while (rsRefs.next()){
 	        	int refId = rsRefs.getInt("ref_id");
-				String refAuthor = rsRefs.getString("ref_author");
-				String year = rsRefs.getString("ref_year");
-				String title = rsRefs.getString("ref_title");
+				String refAuthor = deleteSymbol("§",rsRefs.getString("ref_author"));
+				
+				String year = deleteSymbol("§", rsRefs.getString("ref_year"));
+				String title = deleteSymbol("§", rsRefs.getString("ref_title"));
 
 				if (year == null){
 					try{
@@ -517,6 +518,19 @@ public class FaunaEuropaeaRefImport extends FaunaEuropaeaImportBase {
 	@Override
 	protected boolean isIgnore(FaunaEuropaeaImportState state){
 		return (state.getConfig().getDoReferences() == IImportConfigurator.DO_REFERENCES.NONE);
+	}
+	
+	private String deleteSymbol(String symbol, String stringVar){
+		if (stringVar.startsWith(symbol)){
+			if (stringVar.endsWith(symbol)){
+				stringVar = stringVar.substring(1,stringVar.length()-1);
+			}else{
+				stringVar = stringVar.substring(1);
+			}
+		} else if (stringVar.endsWith(symbol)){
+			stringVar = stringVar.substring(0, stringVar.length()-1);
+		}
+		return stringVar;
 	}
 
 }
