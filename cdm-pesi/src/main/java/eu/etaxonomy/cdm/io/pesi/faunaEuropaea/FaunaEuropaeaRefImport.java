@@ -170,10 +170,11 @@ public class FaunaEuropaeaRefImport extends FaunaEuropaeaImportBase {
 
 	        while (rsRefs.next()){
 	        	int refId = rsRefs.getInt("ref_id");
-				String refAuthor = deleteSymbol("§",rsRefs.getString("ref_author"));
+	        	String var = "\u00A7";
+				String refAuthor = deleteSymbol(var,rsRefs.getString("ref_author"));
 				
-				String year = deleteSymbol("§", rsRefs.getString("ref_year"));
-				String title = deleteSymbol("§", rsRefs.getString("ref_title"));
+				String year = deleteSymbol(var, rsRefs.getString("ref_year"));
+				String title = deleteSymbol(var, rsRefs.getString("ref_title"));
 
 				if (year == null){
 					try{
