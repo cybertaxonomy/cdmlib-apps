@@ -218,6 +218,7 @@ public final class FaunaEuropaeaTransformer {
                 tdwgArea = TdwgAreaProvider.getAreaByTdwgAbbreviation("ALB-OO");
             } else if (areaCode.equals("AT")) {
                 tdwgArea = TdwgAreaProvider.getAreaByTdwgAbbreviation("AUT-AU");
+            //still needs to be checked if fully correct and covers the same area #5410
             } else if (areaCode.equals("AUS")) {
                 tdwgArea = TdwgAreaProvider.getAreaByTdwgAbbreviation("AUS"); // Australian region - Australia
             } else if (areaCode.equals("BA")) {
@@ -264,6 +265,17 @@ public final class FaunaEuropaeaTransformer {
                 tdwgArea = TdwgAreaProvider.getAreaByTdwgAbbreviation("IRE-NI");
             } else if (areaCode.equals("GR-GRC")) {
                 tdwgArea = TdwgAreaProvider.getAreaByTdwgAbbreviation("GRC-OO");
+
+             //Greek islands not covered by TDWG
+//            } else if (areaCode.equals("GR-AEG")) {
+//                tdwgArea = TdwgAreaProvider.getAreaByTdwgAbbreviation("");
+//            } else if (areaCode.equals("GR-CYC")) {
+//                tdwgArea = TdwgAreaProvider.getAreaByTdwgAbbreviation("");
+//            } else if (areaCode.equals("GR-DOD")) {
+//                tdwgArea = TdwgAreaProvider.getAreaByTdwgAbbreviation("");
+//            } else if (areaCode.equals("GR-KRI")) {
+//                tdwgArea = TdwgAreaProvider.getAreaByTdwgAbbreviation("");
+
             } else if (areaCode.equals("HR")) {
                 tdwgArea = TdwgAreaProvider.getAreaByTdwgAbbreviation("YUG-CR");
             } else if (areaCode.equals("HU")) {
@@ -312,8 +324,12 @@ public final class FaunaEuropaeaTransformer {
                 tdwgArea = TdwgAreaProvider.getAreaByTdwgAbbreviation("SEL-OO");
             } else if (areaCode.equals("RO")) {
                 tdwgArea = TdwgAreaProvider.getAreaByTdwgAbbreviation("ROM-OO");
+//            } else if (areaCode.equals("RU-FJL")) {
+//                tdwgArea = TdwgAreaProvider.getAreaByTdwgAbbreviation("");
             } else if (areaCode.equals("RU-KGD")) {
                 tdwgArea = TdwgAreaProvider.getAreaByTdwgAbbreviation("BLT-KA");
+//          } else if (areaCode.equals("RU-NOZ")) {
+//              tdwgArea = TdwgAreaProvider.getAreaByTdwgAbbreviation("");
             } else if (areaCode.equals("RU-RUC")) {
                 tdwgArea = TdwgAreaProvider.getAreaByTdwgAbbreviation("RUC-OO");
             } else if (areaCode.equals("RU-RUE")) {
@@ -337,10 +353,13 @@ public final class FaunaEuropaeaTransformer {
                 //else if (areaCode.equals("UA")) tdwgArea = TdwgAreaProvider.getAreaByTdwgAbbreviation("UKR-UK"); //UKraine including Crimea
             } else if (areaCode.equals("VA")) {
                 tdwgArea = TdwgAreaProvider.getAreaByTdwgAbbreviation("ITA-VC");
-            //the mapping YU-YUG is incorrect as YUG is larger then YU. The later holds only Serbia, Montenegro and Kozovo while YUG is all former Yugoslavia
+            //the mapping YU->YUG is incorrect as YUG is larger then YU. The later holds only Serbia, Montenegro and Kozovo while YUG is all former Yugoslavia
             //and therefore we disable the mapping
 //            } else if (areaCode.equals("YU")) {
 //                tdwgArea = TdwgAreaProvider.getAreaByTdwgAbbreviation("YUG");
+
+            //world wide areas AFR, (AUS), EPA, NAF, NEA, NEO, NRE, ORR not yet mapped
+
             } else {
                 throw new UnknownCdmTypeException("Unknown Area " + areaCode);
             }
