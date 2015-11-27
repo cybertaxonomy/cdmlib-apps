@@ -337,8 +337,10 @@ public final class FaunaEuropaeaTransformer {
                 //else if (areaCode.equals("UA")) tdwgArea = TdwgAreaProvider.getAreaByTdwgAbbreviation("UKR-UK"); //UKraine including Crimea
             } else if (areaCode.equals("VA")) {
                 tdwgArea = TdwgAreaProvider.getAreaByTdwgAbbreviation("ITA-VC");
-            } else if (areaCode.equals("YU")) {
-                tdwgArea = TdwgAreaProvider.getAreaByTdwgAbbreviation("YUG");
+            //the mapping YU-YUG is incorrect as YUG is larger then YU. The later holds only Serbia, Montenegro and Kozovo while YUG is all former Yugoslavia
+            //and therefore we disable the mapping
+//            } else if (areaCode.equals("YU")) {
+//                tdwgArea = TdwgAreaProvider.getAreaByTdwgAbbreviation("YUG");
             } else {
                 throw new UnknownCdmTypeException("Unknown Area " + areaCode);
             }
@@ -396,7 +398,7 @@ public final class FaunaEuropaeaTransformer {
 
 
 	 	}
-	 	
+
 	 	public final static HashMap<Integer, Language> languageFK2Language  = new HashMap<Integer,Language>();
 	 	static
 	 	{
@@ -413,10 +415,10 @@ public final class FaunaEuropaeaTransformer {
 	 		languageFK2Language.put(11, Language.DUTCH_MIDDLE());
 	 		languageFK2Language.put(100, Language.NORWEGIAN_BOKMOL());
 	 		languageFK2Language.put(101, Language.NORWEGIAN_NYNORSK());
-	 		
 
 
-	 	} 	
+
+	 	}
 	public static UUID getUUIDByAreaAbbr(String abbr){
 		return abbrToUUID.get(abbr);
 	}
@@ -483,7 +485,7 @@ public final class FaunaEuropaeaTransformer {
         }
         return groupCoordinatorType;
     }
-    
+
     /**
      * @return
      */
@@ -502,7 +504,7 @@ public final class FaunaEuropaeaTransformer {
     }
 	public static Language langFK2Language(
 			int languageFk) {
-		
+
 		return null;
 	}
 
