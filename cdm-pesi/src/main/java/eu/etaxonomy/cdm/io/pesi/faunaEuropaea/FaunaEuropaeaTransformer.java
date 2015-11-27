@@ -245,7 +245,7 @@ public final class FaunaEuropaeaTransformer {
             } else if (areaCode.equals("EE")) {
                 tdwgArea = TdwgAreaProvider.getAreaByTdwgAbbreviation("BLT-ES");
             } else if (areaCode.equals("ES-BAL")) {
-                tdwgArea = TdwgAreaProvider.getAreaByTdwgAbbreviation("BLT-ES");
+                tdwgArea = TdwgAreaProvider.getAreaByTdwgAbbreviation("BAL-OO");
             } else if (areaCode.equals("ES-CNY")) {
                 tdwgArea = TdwgAreaProvider.getAreaByTdwgAbbreviation("CNY-OO");
             } else if (areaCode.equals("ES-SPA")) {
@@ -530,10 +530,6 @@ public final class FaunaEuropaeaTransformer {
         }
         return taxonomicSpecialistType;
     }
-    
-    
-    
-    
     /**
      * @return
      */
