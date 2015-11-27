@@ -1,5 +1,6 @@
 package eu.etaxonomy.cdm.io.pesi.faunaEuropaea;
 
+import java.util.HashSet;
 import java.util.Set;
 import java.util.UUID;
 
@@ -7,7 +8,7 @@ public class FaunaEuropaeaVernacularNamesTaxon {
 	
 	private UUID taxonUuid;
 	private int taxonId;
-	private Set<FaunaEuropaeaVernacularName> vernacularNames;	
+	private Set<FaunaEuropaeaVernacularName> vernacularNames = new HashSet<FaunaEuropaeaVernacularName>();	
 	
 	public FaunaEuropaeaVernacularNamesTaxon(UUID currentTaxonUuid) {
 		this.taxonUuid = currentTaxonUuid;

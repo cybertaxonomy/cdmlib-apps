@@ -17,6 +17,7 @@ import eu.etaxonomy.cdm.api.application.ICdmApplicationConfiguration;
 import eu.etaxonomy.cdm.app.common.CdmDestinations;
 import eu.etaxonomy.cdm.database.DbSchemaValidation;
 import eu.etaxonomy.cdm.database.ICdmDataSource;
+import eu.etaxonomy.cdm.hibernate.HibernateProxyHelper;
 import eu.etaxonomy.cdm.io.common.CdmDefaultImport;
 import eu.etaxonomy.cdm.io.common.IImportConfigurator.CHECK;
 import eu.etaxonomy.cdm.io.common.IImportConfigurator.DO_REFERENCES;
@@ -49,6 +50,9 @@ public class FaunaEuropaeaActivator {
 	static DbSchemaValidation dbSchemaValidation = DbSchemaValidation.CREATE;
 //	static DbSchemaValidation dbSchemaValidation = DbSchemaValidation.UPDATE;
 //	static DbSchemaValidation dbSchemaValidation = DbSchemaValidation.VALIDATE;
+
+
+	
 	static final NomenclaturalCode nomenclaturalCode  = NomenclaturalCode.ICZN;
 
 // ****************** ALL *****************************************
@@ -64,9 +68,11 @@ public class FaunaEuropaeaActivator {
 	static final boolean doDistributions = true;
 	static final boolean makeFeatureTree = true;
 	static final boolean doVernacularNames = true;
+	static final boolean doAssociatedSpecialists = true;
+	static final boolean addCommonNameFeature = true;
     // CDM to CDM import
 	static final boolean doHeterotypicSynonymsForBasionyms = true;
-
+	
 // ************************ NONE **************************************** //
 
 	// Fauna Europaea to CDM import
@@ -110,7 +116,8 @@ public class FaunaEuropaeaActivator {
 		fauEuImportConfigurator.setDoHeterotypicSynonyms(doHeterotypicSynonyms);
 		fauEuImportConfigurator.setDoHeterotypicSynonymsForBasionyms(doHeterotypicSynonymsForBasionyms);
 		fauEuImportConfigurator.setSourceRefUuid(PesiTransformer.uuidSourceRefFaunaEuropaea);
-
+		fauEuImportConfigurator.setDoAssociatedSpecialists(doAssociatedSpecialists);
+		fauEuImportConfigurator.setDoVernacularNames(doVernacularNames);
 		CdmDefaultImport<FaunaEuropaeaImportConfigurator> fauEuImport =
 			new CdmDefaultImport<FaunaEuropaeaImportConfigurator>();
 		try {
@@ -164,7 +171,7 @@ public class FaunaEuropaeaActivator {
 			FeatureNode commonNameFeatureNode = FeatureNode.NewInstance(commonNameFeature);
 			app.getFeatureTreeService().saveOrUpdate(featureTree);
 		}
-
+		
 		System.out.println("End importing Fauna Europaea data");
 	}
 

@@ -22,8 +22,10 @@ import org.apache.log4j.Logger;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.TransactionStatus;
 
+import eu.etaxonomy.cdm.hibernate.HibernateProxyHelper;
 import eu.etaxonomy.cdm.io.common.Source;
 import eu.etaxonomy.cdm.model.common.CdmBase;
+import eu.etaxonomy.cdm.model.common.OrderedTermVocabulary;
 import eu.etaxonomy.cdm.model.common.TermVocabulary;
 import eu.etaxonomy.cdm.model.description.Distribution;
 import eu.etaxonomy.cdm.model.description.PresenceAbsenceTerm;
@@ -72,6 +74,11 @@ public class FaunaEuropaeaDistributionImport extends FaunaEuropaeaImportBase {
 		logger.warn("Start distribution doInvoke");
 		ProfilerController.memorySnapshot();
 		*/
+		
+		if (!state.getConfig().isDoOccurrence()){
+			return;
+		}
+			
 		int limit = state.getConfig().getLimitSave();
 		UUID noDataUuid;
 		/* Taxon store for retrieving taxa from and saving taxa to CDM */
@@ -87,10 +94,11 @@ public class FaunaEuropaeaDistributionImport extends FaunaEuropaeaImportBase {
 		//txStatus = startTransaction();
 		PresenceAbsenceTerm noDataStatusTerm = PresenceAbsenceTerm.NewPresenceInstance("no data", "no data", "nod");
 		noDataUuid = noDataStatusTerm.getUuid();
-		TermVocabulary voc = getVocabularyService().find(30);
-		voc.addTerm(noDataStatusTerm);
-		getVocabularyService().saveOrUpdate(voc);
-	//	getTermService().save(noDataStatusTerm);
+		TermVocabulary<PresenceAbsenceTerm> voc = getVocabularyService().find(30);
+		HibernateProxyHelper.deproxy(voc, OrderedTermVocabulary.class);
+		//voc.addTerm(noDataStatusTerm);
+	//	getVocabularyService().saveOrUpdate(voc);
+		getTermService().save(noDataStatusTerm);
 		//commitTransaction(txStatus);
 
 		FaunaEuropaeaTransformer.setUUIDs(noDataUuid);
@@ -224,6 +232,7 @@ public class FaunaEuropaeaDistributionImport extends FaunaEuropaeaImportBase {
 
 		if(logger.isInfoEnabled()) { logger.info("End making distributions..."); }
 
+		
 		return;
 	}
 

@@ -26,6 +26,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.transaction.TransactionStatus;
 
 import eu.etaxonomy.cdm.io.common.IImportConfigurator;
+import eu.etaxonomy.cdm.io.common.IImportConfigurator.DO_REFERENCES;
 import eu.etaxonomy.cdm.io.common.ImportHelper;
 import eu.etaxonomy.cdm.io.common.Source;
 import eu.etaxonomy.cdm.model.agent.Team;
@@ -71,7 +72,9 @@ public class FaunaEuropaeaRefImport extends FaunaEuropaeaImportBase {
 		logger.warn("Start RefImport doInvoke");
 		ProfilerController.memorySnapshot();
 		*/
-
+		if (state.getConfig().getDoReferences().equals(DO_REFERENCES.NONE)){
+			return;
+		}
 		Set<UUID> taxonUuids = null;
 		Map<Integer, Reference<?>> references = null;
 		Map<String,TeamOrPersonBase<?>> authors = null;

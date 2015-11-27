@@ -20,6 +20,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.TransactionStatus;
@@ -29,7 +30,9 @@ import eu.etaxonomy.cdm.io.common.ICdmIO;
 import eu.etaxonomy.cdm.io.common.MapWrapper;
 import eu.etaxonomy.cdm.io.common.Source;
 import eu.etaxonomy.cdm.model.agent.TeamOrPersonBase;
+import eu.etaxonomy.cdm.model.common.Annotation;
 import eu.etaxonomy.cdm.model.common.CdmBase;
+import eu.etaxonomy.cdm.model.common.Language;
 import eu.etaxonomy.cdm.model.reference.Reference;
 import eu.etaxonomy.cdm.model.taxon.Classification;
 import eu.etaxonomy.cdm.model.taxon.Synonym;
@@ -38,6 +41,7 @@ import eu.etaxonomy.cdm.model.taxon.Taxon;
 import eu.etaxonomy.cdm.model.taxon.TaxonBase;
 import eu.etaxonomy.cdm.model.taxon.TaxonNode;
 //import eu.etaxonomy.cdm.profiler.ProfilerController;
+import eu.etaxonomy.cdm.model.taxon.TaxonNodeAgentRelation;
 
 
 
@@ -97,6 +101,10 @@ public class FaunaEuropaeaRelTaxonIncludeImport extends FaunaEuropaeaImportBase 
 		/*logger.warn("Start RelTaxon doInvoke");
 		ProfilerController.memorySnapshot();
 		*/
+		
+		if (!state.getConfig().isDoTaxonomicallyIncluded()){
+			return;
+		}
 		Map<String, MapWrapper<? extends CdmBase>> stores = state.getStores();
 
 		MapWrapper<TeamOrPersonBase> authorStore = (MapWrapper<TeamOrPersonBase>)stores.get(ICdmIO.TEAM_STORE);
@@ -119,6 +127,10 @@ public class FaunaEuropaeaRelTaxonIncludeImport extends FaunaEuropaeaImportBase 
 
 		if (state.getConfig().isDoTaxonomicallyIncluded())  {
 			processParentsChildren(state);
+			
+		}
+		if (state.getConfig().isDoAssociatedSpecialists()){
+			processAssociatedSpecialists(state);
 		}
 
 		logger.warn("Before processMissappliedNames" + state.getConfig().isDoMisappliedNames());
@@ -881,5 +893,99 @@ public class FaunaEuropaeaRelTaxonIncludeImport extends FaunaEuropaeaImportBase 
 
 		return;
 	}
+	
+	private void processAssociatedSpecialists(FaunaEuropaeaImportState state){
+		int limit = state.getConfig().getLimitSave();
+
+		TransactionStatus txStatus = null;
+
+		Map<UUID, UUID> childParentMap = null;
+
+		
+		TaxonNode taxonNode = null;
+		TeamOrPersonBase associatedSpecialist = null;
+		TaxonNodeAgentRelation agentRel = null;
+		UUID agentUuid = null;
+		FaunaEuropaeaImportConfigurator fauEuConfig = state.getConfig();
+		Source source = fauEuConfig.getSource();
+		int i = 0;
+
+		String selectCount =
+			" SELECT count(*) ";
+		
+		
+		
+		String selectColumns = "SELECT  u.USR_GROUPNAME as groupName, u.USR_GROUPNOTE groupNote, u.USR_USR_ID as user_user_id, "
+				+ "		u.usr_id user_id, user2.USR_ID as user2_id, taxon.UUID as tax_uuid ";
+				
+		String fromClause = " FROM USERROLE as userrole left join USERS u on userrole.URL_USR_ID = u.USR_ID left join USERS user2 on user2.USR_ID = u.USR_USR_ID "
+						+ " left join TAXON taxon on (taxon.TAX_USR_IDSP= user2.USR_ID or taxon.TAX_USR_IDGC= user2.USR_ID) "
+						+ " where USERROLE.URL_ROL_ID = 7 order by taxon.TAX_ID";
+		String orderClause = " ORDER BY taxon.TAX_ID";
+
+		String countQuery =
+			selectCount + fromClause;
+
+		String selectQuery =
+			selectColumns + fromClause + orderClause;
+		
+		if(logger.isInfoEnabled()) { logger.info("Start making associated specialists..."); }
+
+		try {
+
+			ResultSet rs = source.getResultSet(countQuery);
+			rs.next();
+			int count = rs.getInt(1);
+
+			rs = source.getResultSet(selectQuery);
+
+	        if (logger.isInfoEnabled()) {
+				logger.info("Number of rows: " + count);
+				logger.info("Count Query: " + countQuery);
+				logger.info("Select Query: " + selectQuery);
+			}
+
+	        while (rs.next()) {
+				String taxonUUID = rs.getString("taxUuid");
+				String oldTaxonUuidString = null;
+				int userId = rs.getInt("user_id");
+				int user2Id = rs.getInt("user2_id");
+				String groupName = rs.getString("groupName");
+				Taxon taxon = null;
+				if (!taxonUUID.equals(oldTaxonUuidString)){
+					if (taxonNode != null){
+						getTaxonNodeService().saveOrUpdate(taxonNode);
+					}
+					commitTransaction(txStatus);
+					txStatus = startTransaction();
+					taxon = HibernateProxyHelper.deproxy(getTaxonService().find(UUID.fromString(taxonUUID)), Taxon.class);
+					oldTaxonUuidString = taxonUUID;
+					if (!taxon.getTaxonNodes().isEmpty()){
+						taxonNode = taxon.getTaxonNodes().iterator().next();
+					} else {
+						taxonNode = null;
+						logger.info("There is an associated specialist for a taxon which has no taxonnode.");
+					}
+ 				}
+				
+				agentUuid = state.getAgentMap().get(userId);
+				
+				
+				associatedSpecialist = (TeamOrPersonBase) getAgentService().find(agentUuid);
+				if (associatedSpecialist != null && taxonNode != null){
+					agentRel =taxonNode.addAgentRelation(FaunaEuropaeaTransformer.getAssociateSpecialistType(getTermService()), associatedSpecialist);
+					if (!StringUtils.isBlank(groupName))
+					agentRel.addAnnotation(Annotation.NewInstance(groupName, Language.DEFAULT()));
+				}
+				
+				
+	        }
+	        getTaxonNodeService().saveOrUpdate(taxonNode);
+			commitTransaction(txStatus);
+		}catch(SQLException e){
+			logger.info("Problems during creating associated specialists.", e);
+		}
+	}
+	        
 
 }

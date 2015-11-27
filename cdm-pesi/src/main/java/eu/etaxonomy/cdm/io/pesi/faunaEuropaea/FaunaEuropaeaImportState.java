@@ -32,9 +32,9 @@ public class FaunaEuropaeaImportState extends ImportStateBase<FaunaEuropaeaImpor
 		super(config);
 	}
 
-	private Map<Integer, FaunaEuropaeaTaxon> fauEuTaxonMap = new HashMap();
-	private Map<UUID, UUID> childParentMap = new HashMap();
-	private Map<Integer, UUID> agentUUIDMap = new HashMap();
+	private Map<Integer, FaunaEuropaeaTaxon> fauEuTaxonMap = new HashMap<Integer, FaunaEuropaeaTaxon>();
+	private Map<UUID, UUID> childParentMap = new HashMap<UUID, UUID>();
+	private Map<Integer, UUID> agentUUIDMap = new HashMap<Integer, UUID>();
 
 	/* Highest taxon index in the FauEu database */
 //	private int highestTaxonIndex = 305755;

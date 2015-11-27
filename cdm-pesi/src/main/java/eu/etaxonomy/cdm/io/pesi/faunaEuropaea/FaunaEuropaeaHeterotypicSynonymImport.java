@@ -68,7 +68,7 @@ implements ICdmImport<FaunaEuropaeaImportConfigurator, FaunaEuropaeaImportState>
 		if (logger.isInfoEnabled()) {
 			logger.info("Number of synonyms = " + nbrOfSynonyms);
 		}
-		
+		if(state.getConfig().isDoHeterotypicSynonyms()){
 		while (i < nbrOfSynonyms) {
 
 			try {
@@ -136,6 +136,7 @@ implements ICdmImport<FaunaEuropaeaImportConfigurator, FaunaEuropaeaImportState>
 				logger.warn("An exception occurred when creating heterotypic synonym relationship # " + i );
 				e.printStackTrace();
 			}
+		}
 		}
 		return;
 	}

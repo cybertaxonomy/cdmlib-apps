@@ -38,6 +38,22 @@ public class FaunaEuropaeaImportConfigurator extends ImportConfiguratorBase<Faun
 	private boolean doHeterotypicSynonymsForBasionyms ;
 	private boolean doOccurrence = true;
 	private boolean doVernacularNames = true;
+	private boolean doAssociatedSpecialists = true;
+
+	public boolean isDoVernacularNames() {
+		return doVernacularNames;
+	}
+
+	public void setDoVernacularNames(boolean doVernacularNames) {
+		this.doVernacularNames = doVernacularNames;
+	}
+
+	public boolean isDoTypes() {
+		return doTypes;
+	}
+
+	
+
 
 	/* Max number of taxa to be saved with one service call */
 	private int limitSave = 5000;
@@ -286,6 +302,15 @@ public class FaunaEuropaeaImportConfigurator extends ImportConfiguratorBase<Faun
 	}
 	public void setDoRelTaxa(boolean doRelTaxa) {
 		this.doRelTaxa = doRelTaxa;
+	}
+
+	public boolean isDoAssociatedSpecialists() {
+		
+		return this.doAssociatedSpecialists;
+	}
+	
+	public void setDoAssociatedSpecialists(boolean doAssociatedSpecialists){
+		this.doAssociatedSpecialists = doAssociatedSpecialists;
 	}
 
 

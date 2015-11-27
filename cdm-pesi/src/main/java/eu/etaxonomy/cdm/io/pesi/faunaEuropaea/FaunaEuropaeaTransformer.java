@@ -16,9 +16,11 @@ import java.util.UUID;
 
 import org.apache.log4j.Logger;
 
+import eu.etaxonomy.cdm.api.application.CdmApplicationUtils;
 import eu.etaxonomy.cdm.api.service.ITermService;
 import eu.etaxonomy.cdm.io.common.TdwgAreaProvider;
 import eu.etaxonomy.cdm.model.common.DefinedTerm;
+import eu.etaxonomy.cdm.model.common.LSID;
 import eu.etaxonomy.cdm.model.common.Language;
 import eu.etaxonomy.cdm.model.common.Representation;
 import eu.etaxonomy.cdm.model.common.TermType;
@@ -334,7 +336,8 @@ public final class FaunaEuropaeaTransformer {
                 tdwgArea = TdwgAreaProvider.getAreaByTdwgAbbreviation("ITA-SM");
             } else if (areaCode.equals("TR-TUE")) {
                 tdwgArea = TdwgAreaProvider.getAreaByTdwgAbbreviation("TUE-OO");
-                //else if (areaCode.equals("UA")) tdwgArea = TdwgAreaProvider.getAreaByTdwgAbbreviation("UKR-UK"); //UKraine including Crimea
+            }else if (areaCode.equals("UA")) {
+            	tdwgArea = TdwgAreaProvider.getAreaByTdwgAbbreviation("UKR-UK"); //UKraine including Crimea
             } else if (areaCode.equals("VA")) {
                 tdwgArea = TdwgAreaProvider.getAreaByTdwgAbbreviation("ITA-VC");
             } else if (areaCode.equals("YU")) {
@@ -400,19 +403,57 @@ public final class FaunaEuropaeaTransformer {
 	 	public final static HashMap<Integer, Language> languageFK2Language  = new HashMap<Integer,Language>();
 	 	static
 	 	{
+	 		languageFK2Language.put(1, Language.ALBANIAN());
+	 		languageFK2Language.put(4, Language.AZERBAIJANI());
+	 		languageFK2Language.put(6, Language.BULGARIAN());
 	 		languageFK2Language.put(10, Language.DANISH());
-	 		languageFK2Language.put(19, Language.GREEK_MODERN());
+	 		languageFK2Language.put(11, Language.DUTCH_MIDDLE());
+	 		languageFK2Language.put(12, Language.ENGLISH());
+	 		languageFK2Language.put(16, Language.FRENCH());
+	 		
 	 		languageFK2Language.put(18, Language.GERMAN());
-	 		languageFK2Language.put(59, Language.UKRAINIAN());
-	 		languageFK2Language.put(83, Language.ENGLISH());
-	 		languageFK2Language.put(58, Language.TURKISH());
+	 		languageFK2Language.put(19, Language.GREEK_MODERN());
+	 		languageFK2Language.put(23, Language.HEBREW());
+	 		languageFK2Language.put(24, Language.ITALIAN());
 	 		languageFK2Language.put(26, Language.LITHUANIAN());
+	 		languageFK2Language.put(30, Language.NORWEGIAN());
+	 		languageFK2Language.put(31, Language.POLISH());
 	 		languageFK2Language.put(34, Language.RUSSIAN());
+	 		languageFK2Language.put(54, Language.SLOVAK());
 	 		languageFK2Language.put(55, Language.SLOVENIAN());
 	 		languageFK2Language.put(57, Language.SWEDISH());
-	 		languageFK2Language.put(11, Language.DUTCH_MIDDLE());
+	 		languageFK2Language.put(58, Language.TURKISH());
+	 		
+	 		languageFK2Language.put(59, Language.UKRAINIAN());
+	 		languageFK2Language.put(60, Language.WELSH());
+	 		languageFK2Language.put(62, Language.GALICIAN());
+	 		//languageFK2Language.put(83, getEnglishUS());
+	 		languageFK2Language.put(97, Language.IRISH());
+	 		
+	 		
 	 		languageFK2Language.put(100, Language.NORWEGIAN_BOKMOL());
 	 		languageFK2Language.put(101, Language.NORWEGIAN_NYNORSK());
+	 	
+	 		languageFK2Language.put(102, Language.ARABIC());
+	 		languageFK2Language.put(103, Language.ARMENIAN());
+	 		
+	 		languageFK2Language.put(104, Language.CATALAN_VALENCIAN());
+	 		languageFK2Language.put(105, Language.CHINESE());
+	 		languageFK2Language.put(106, Language.ESTONIAN());
+	 		languageFK2Language.put(107, Language.FINNISH());
+	 		
+	 		languageFK2Language.put(108, Language.GAELIC_SCOTTISH_GAELIC());
+	 		languageFK2Language.put(109, Language.JAPANESE());
+	 		languageFK2Language.put(110, Language.KOREAN());
+	 		languageFK2Language.put(111, Language.LATIN());
+	 		languageFK2Language.put(112, Language.LATVIAN());
+	 		languageFK2Language.put(113, Language.PERSIAN());
+	 		languageFK2Language.put(114, Language.PORTUGUESE());
+	 		languageFK2Language.put(115, Language.ROMANIAN());
+	 		languageFK2Language.put(117, Language.SWAHILI());
+	 		languageFK2Language.put(118, Language.SPANISH_CASTILIAN());
+	 		
+	 		
 	 		
 
 
@@ -437,6 +478,12 @@ public final class FaunaEuropaeaTransformer {
 
 	private static UUID uuidAssociateSpecialistType = UUID.fromString("8258f73c-e0ad-4f87-a88c-53c58c08bba9");
 
+	private static Language langEnglishUS;
+
+	private static UUID uuidEnglishUS;
+
+
+
 	public static NomenclaturalStatusType getNomStatusTempNamed(ITermService termService){
 		if (nomStatusTempNamed == null){
 			nomStatusTempNamed = (NomenclaturalStatusType)termService.find(uuidNomStatusTempNamed);
@@ -451,6 +498,21 @@ public final class FaunaEuropaeaTransformer {
 		}
 		return nomStatusTempNamed;
 	}
+	
+	public static Language getEnglishUS(ITermService termService){
+		if (langEnglishUS == null){
+			langEnglishUS = (Language)termService.find(uuidEnglishUS);
+            if (langEnglishUS == null){
+            	logger.info("create language english-us");
+            	langEnglishUS = Language.NewInstance("english-United States", "english-US", "eng-US");
+    			langEnglishUS.setUuid(uuidEnglishUS);
+
+                langEnglishUS = (Language)termService.save(langEnglishUS);
+                languageFK2Language.put(83, langEnglishUS);
+            }
+        }
+		return langEnglishUS;
+	}
     /**
      * @return
      */
@@ -458,6 +520,7 @@ public final class FaunaEuropaeaTransformer {
         if (taxonomicSpecialistType == null){
             taxonomicSpecialistType = (DefinedTerm)termService.find(uuidTaxonomicSpecialistType);
             if (taxonomicSpecialistType == null){
+            	logger.info("create associated specialist type");
                 taxonomicSpecialistType = DefinedTerm.NewInstance(TermType.TaxonNodeAgentRelationType, "taxonomic specialist", "taxonomic specialist", "TS");
 
                 taxonomicSpecialistType.setUuid(uuidTaxonomicSpecialistType);
@@ -467,6 +530,10 @@ public final class FaunaEuropaeaTransformer {
         }
         return taxonomicSpecialistType;
     }
+    
+    
+    
+    
     /**
      * @return
      */
@@ -483,6 +550,8 @@ public final class FaunaEuropaeaTransformer {
         }
         return groupCoordinatorType;
     }
+    
+   
     
     /**
      * @return
@@ -501,9 +570,11 @@ public final class FaunaEuropaeaTransformer {
         return associateSpecialistType;
     }
 	public static Language langFK2Language(
-			int languageFk) {
+			Integer languageFk) {
 		
-		return null;
+		Language result = languageFK2Language.get(languageFk);
+		
+		return result;
 	}
 
 

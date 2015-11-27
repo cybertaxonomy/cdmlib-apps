@@ -10,7 +10,16 @@ public class FaunaEuropaeaVernacularName {
 	UUID taxonUuid;
 	String guid;
 	String source;
+	String area = "";
 	
+	public String getArea() {
+		return area;
+	}
+
+	public void setArea(String area) {
+		this.area = area;
+	}
+
 	public String getVernacularName() {
 		return vernacularName;
 	}
