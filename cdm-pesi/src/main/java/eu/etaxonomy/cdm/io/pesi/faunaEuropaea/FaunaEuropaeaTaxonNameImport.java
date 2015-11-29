@@ -98,7 +98,7 @@ public class FaunaEuropaeaTaxonNameImport extends FaunaEuropaeaImportBase  {
 	@Override
     protected void doInvoke(FaunaEuropaeaImportState state) {
 		if(logger.isInfoEnabled()) { logger.info("Start making taxa..."); }
-		if (state.getConfig().isDoTaxa()){
+		if (!state.getConfig().isDoTaxa()){
 			return;
 		}
 		processTaxa(state);

@@ -188,7 +188,7 @@ public class FaunaEuropaeaRefImport extends FaunaEuropaeaImportBase {
 						logger.info("year is empty and " +title + " contains no integer");
 				    }
 				}
-				String refSource = rsRefs.getString("ref_source");
+				String refSource = deleteSymbol(var, rsRefs.getString("ref_source"));
 
 				if ((i++ % limit) == 0) {
 
@@ -209,6 +209,7 @@ public class FaunaEuropaeaRefImport extends FaunaEuropaeaImportBase {
 //				reference.setTitleCache(title);
 				reference.setTitle(title);
 				reference.setDatePublished(ImportHelper.getDatePublished(year));
+			
 
 				if (!authors.containsKey(refAuthor)) {
 					if (refAuthor == null) {
@@ -498,7 +499,7 @@ public class FaunaEuropaeaRefImport extends FaunaEuropaeaImportBase {
 					TextData textData = TextData.NewInstance(Feature.CITATION());
 
 					citation = references.get(storedReference.getReferenceId());
-					microCitation = storedReference.getPage();
+					microCitation = storedReference.getReferenceSource();
 					originalSource = DescriptionElementSource.NewInstance(OriginalSourceType.PrimaryTaxonomicSource, null, null, citation, microCitation, null, null);
 					if (isSynonym){
 						syn = CdmBase.deproxy(taxonBase, Synonym.class);

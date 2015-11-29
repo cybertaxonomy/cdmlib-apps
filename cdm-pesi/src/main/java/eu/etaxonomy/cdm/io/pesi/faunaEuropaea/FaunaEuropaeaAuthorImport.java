@@ -58,6 +58,9 @@ public class FaunaEuropaeaAuthorImport extends FaunaEuropaeaImportBase {
 		logger.warn("Start author doInvoke");
 		ProfilerController.memorySnapshot();
 		*/
+		if (!state.getConfig().isDoAuthors()){
+			return;
+		}
 		Map<String, MapWrapper<? extends CdmBase>> stores = state.getStores();
 		MapWrapper<TeamOrPersonBase> authorStore = (MapWrapper<TeamOrPersonBase>)stores.get(ICdmIO.TEAM_STORE);
 		TransactionStatus txStatus = null;
