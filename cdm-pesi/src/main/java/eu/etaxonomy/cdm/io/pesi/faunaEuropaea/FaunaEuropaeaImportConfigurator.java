@@ -67,10 +67,9 @@ public class FaunaEuropaeaImportConfigurator extends ImportConfiguratorBase<Faun
 				FaunaEuropaeaUsersImport.class,
 				FaunaEuropaeaTaxonNameImport.class,
 				FaunaEuropaeaRelTaxonIncludeImport.class,
-				FaunaEuropaeaRefImport.class,
-
 				FaunaEuropaeaDistributionImport.class,
 				FaunaEuropaeaHeterotypicSynonymImport.class,
+				FaunaEuropaeaRefImport.class,
 				FaunaEuropaeaAdditionalTaxonDataImport.class,
 				FaunaEuropaeaVernacularNamesImport.class
 		};

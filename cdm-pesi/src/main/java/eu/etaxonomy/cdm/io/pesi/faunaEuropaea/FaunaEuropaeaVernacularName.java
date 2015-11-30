@@ -12,6 +12,22 @@ public class FaunaEuropaeaVernacularName {
 	String source;
 	String area = "";
 	
+	
+	public FaunaEuropaeaVernacularName(String vernacularName, int languageFK, String languageCache, UUID taxonUuid, String guid, String source){
+		this.guid=guid;
+		this.languageCache = languageCache;
+		this.languageFk = languageFk;
+		this.taxonUuid = taxonUuid;
+		this.vernacularName = vernacularName;
+		this.source = source;
+	
+	}
+
+	public FaunaEuropaeaVernacularName() {
+		
+	}
+	
+	
 	public String getArea() {
 		return area;
 	}
@@ -68,18 +84,5 @@ public class FaunaEuropaeaVernacularName {
 		this.source = source;
 	}
 	
-	public FaunaEuropaeaVernacularName(String vernacularName, int LanguageFK, String languageCache, UUID taxonUuid, String guid, String source){
-		this.guid=guid;
-		this.languageCache = languageCache;
-		this.languageFk = languageFk;
-		this.taxonUuid = taxonUuid;
-		this.vernacularName = vernacularName;
-		this.source = source;
-	
-	}
-
-	public FaunaEuropaeaVernacularName() {
-		
-	}
 	
 }

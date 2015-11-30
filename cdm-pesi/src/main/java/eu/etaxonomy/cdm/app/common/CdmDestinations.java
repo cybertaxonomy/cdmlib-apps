@@ -34,7 +34,7 @@ public class CdmDestinations {
 	public static ICdmDataSource cdm_test_local_faunaEu_mysql(){
 		DatabaseTypeEnum dbType = DatabaseTypeEnum.MySQL;
 		String cdmServer = "127.0.0.1";
-		String cdmDB = "cdm_faunaeu_2015_09";
+		String cdmDB = "cdm_faunaeu_2015_11";
 		String cdmUserName = "root";
 		return makeDestination(dbType, cdmServer, cdmDB, -1, cdmUserName, null);
 	}

@@ -47,9 +47,9 @@ public class FaunaEuropaeaActivator {
 
 //	static final CHECK check = CHECK.CHECK_AND_IMPORT;
 	static final CHECK check = CHECK.IMPORT_WITHOUT_CHECK;
-	static DbSchemaValidation dbSchemaValidation = DbSchemaValidation.CREATE;
+//	static DbSchemaValidation dbSchemaValidation = DbSchemaValidation.CREATE;
 //	static DbSchemaValidation dbSchemaValidation = DbSchemaValidation.UPDATE;
-//	static DbSchemaValidation dbSchemaValidation = DbSchemaValidation.VALIDATE;
+	static DbSchemaValidation dbSchemaValidation = DbSchemaValidation.VALIDATE;
 
 
 	
@@ -58,20 +58,20 @@ public class FaunaEuropaeaActivator {
 // ****************** ALL *****************************************
 
 	// Fauna Europaea to CDM import
-	static final boolean doAuthors = true;
-	static final boolean doTaxa = true;
-	static final boolean doBasionyms = true;
-	static final boolean doTaxonomicallyIncluded = true;
-	static final boolean doMisappliedNames = true;
-	static final boolean doHeterotypicSynonyms = true;
+	static final boolean doAuthors = false;
+	static final boolean doTaxa = false;
+	static final boolean doBasionyms = false;
+	static final boolean doTaxonomicallyIncluded = false;
+	static final boolean doMisappliedNames = false;
+	static final boolean doHeterotypicSynonyms = false;
 	static final DO_REFERENCES doReferences =  DO_REFERENCES.ALL;
-	static final boolean doDistributions = true;
-	static final boolean makeFeatureTree = true;
+	static final boolean doDistributions = false;
+	static final boolean makeFeatureTree = false;
 	static final boolean doVernacularNames = true;
-	static final boolean doAssociatedSpecialists = true;
-	static final boolean addCommonNameFeature = true;
+	static final boolean doAssociatedSpecialists = false;
+	static final boolean addCommonNameFeature = false;
     // CDM to CDM import
-	static final boolean doHeterotypicSynonymsForBasionyms = true;
+	static final boolean doHeterotypicSynonymsForBasionyms = false;
 	
 // ************************ NONE **************************************** //
 

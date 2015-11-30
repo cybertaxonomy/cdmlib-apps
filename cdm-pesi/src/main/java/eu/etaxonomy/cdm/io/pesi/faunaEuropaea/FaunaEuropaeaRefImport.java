@@ -209,7 +209,7 @@ public class FaunaEuropaeaRefImport extends FaunaEuropaeaImportBase {
 //				reference.setTitleCache(title);
 				reference.setTitle(title);
 				reference.setDatePublished(ImportHelper.getDatePublished(year));
-			
+				reference.setTitleCache(title + " " +refSource , true);
 
 				if (!authors.containsKey(refAuthor)) {
 					if (refAuthor == null) {
@@ -281,6 +281,7 @@ public class FaunaEuropaeaRefImport extends FaunaEuropaeaImportBase {
 	private void commitReferences(Map<Integer, Reference<?>> references,
 			Map<String, TeamOrPersonBase<?>> authors,
 			Map<Integer, UUID> referenceUuids, int i, TransactionStatus txStatus) {
+		
 		Map <UUID, Reference> referenceMap =getReferenceService().save((Collection)references.values());
 		logger.info("i = " + i + " - references saved");
 
@@ -446,7 +447,9 @@ public class FaunaEuropaeaRefImport extends FaunaEuropaeaImportBase {
 			uuid = referenceUuids.get(itRefs.next());
 			uuidSet.add(uuid);
 		}
+		
 		referenceList = getReferenceService().find(uuidSet);
+		
 		references = new HashMap<Integer, Reference>(limit);
 		for (Reference<?> ref : referenceList){
 			references.put(Integer.valueOf(((OriginalSourceBase)ref.getSources().iterator().next()).getIdInSource()), ref);
@@ -499,7 +502,7 @@ public class FaunaEuropaeaRefImport extends FaunaEuropaeaImportBase {
 					TextData textData = TextData.NewInstance(Feature.CITATION());
 
 					citation = references.get(storedReference.getReferenceId());
-					microCitation = storedReference.getReferenceSource();
+					microCitation = null;
 					originalSource = DescriptionElementSource.NewInstance(OriginalSourceType.PrimaryTaxonomicSource, null, null, citation, microCitation, null, null);
 					if (isSynonym){
 						syn = CdmBase.deproxy(taxonBase, Synonym.class);
