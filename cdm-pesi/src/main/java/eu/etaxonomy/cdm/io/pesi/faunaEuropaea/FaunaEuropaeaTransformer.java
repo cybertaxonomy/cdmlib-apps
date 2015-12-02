@@ -57,9 +57,6 @@ public final class FaunaEuropaeaTransformer {
 
 	//new AbsencePresenceTermUUIDs
 
-	public static UUID noData;
-	//public static UUID doubtfull_present;
-
 	// Rank
 	public static final int R_KINGDOM = 1;
 	public static final int R_SUBKINGDOM = 2;
@@ -103,11 +100,7 @@ public final class FaunaEuropaeaTransformer {
 
 	}
 	}
-	public static void setUUIDs(UUID uuid){
-		noData = uuid;
-		//doubtfull_present = uuids.get("doubtfullPresent");
 
-	}
 
 	public static PresenceAbsenceTerm occStatus2PresenceAbsence_ (int occStatusId)  throws UnknownCdmTypeException{
 		switch (occStatusId){

@@ -22,11 +22,8 @@ import org.apache.log4j.Logger;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.TransactionStatus;
 
-import eu.etaxonomy.cdm.hibernate.HibernateProxyHelper;
 import eu.etaxonomy.cdm.io.common.Source;
 import eu.etaxonomy.cdm.model.common.CdmBase;
-import eu.etaxonomy.cdm.model.common.OrderedTermVocabulary;
-import eu.etaxonomy.cdm.model.common.TermVocabulary;
 import eu.etaxonomy.cdm.model.description.Distribution;
 import eu.etaxonomy.cdm.model.description.PresenceAbsenceTerm;
 import eu.etaxonomy.cdm.model.description.TaxonDescription;
@@ -74,11 +71,11 @@ public class FaunaEuropaeaDistributionImport extends FaunaEuropaeaImportBase {
 		logger.warn("Start distribution doInvoke");
 		ProfilerController.memorySnapshot();
 		*/
-		
+
 		if (!state.getConfig().isDoOccurrence()){
 			return;
 		}
-			
+
 		int limit = state.getConfig().getLimitSave();
 		UUID noDataUuid;
 		/* Taxon store for retrieving taxa from and saving taxa to CDM */
@@ -92,16 +89,16 @@ public class FaunaEuropaeaDistributionImport extends FaunaEuropaeaImportBase {
 		TransactionStatus txStatus = null;
 
 		//txStatus = startTransaction();
-		PresenceAbsenceTerm noDataStatusTerm = PresenceAbsenceTerm.NewPresenceInstance("no data", "no data", "nod");
+		/*PresenceAbsenceTerm noDataStatusTerm = PresenceAbsenceTerm.NewPresenceInstance("no data", "no data", "nod");
 		noDataUuid = noDataStatusTerm.getUuid();
 		TermVocabulary<PresenceAbsenceTerm> voc = getVocabularyService().find(30);
 		HibernateProxyHelper.deproxy(voc, OrderedTermVocabulary.class);
 		//voc.addTerm(noDataStatusTerm);
 	//	getVocabularyService().saveOrUpdate(voc);
-		getTermService().save(noDataStatusTerm);
+		getTermService().save(noDataStatusTerm);*/
 		//commitTransaction(txStatus);
 
-		FaunaEuropaeaTransformer.setUUIDs(noDataUuid);
+	//	FaunaEuropaeaTransformer.setUUIDs(noDataUuid);
 
 		FaunaEuropaeaImportConfigurator fauEuConfig = state.getConfig();
 		Source source = fauEuConfig.getSource();
@@ -197,7 +194,7 @@ public class FaunaEuropaeaDistributionImport extends FaunaEuropaeaImportBase {
 				if (((i % limit) == 0 && i != 1 ) || i == count ) {
 
 					try {
-						commitTaxaAndDistribution(state, noDataUuid, taxonUuids, fauEuTaxonMap, txStatus);
+						commitTaxaAndDistribution(state, taxonUuids, fauEuTaxonMap, txStatus);
 						taxonUuids = null;
 						taxonList = null;
 						fauEuTaxonMap = null;
@@ -214,7 +211,7 @@ public class FaunaEuropaeaDistributionImport extends FaunaEuropaeaImportBase {
 			}
 			if (taxonUuids != null){
 				try {
-					commitTaxaAndDistribution(state, noDataUuid, taxonUuids, fauEuTaxonMap, txStatus);
+					commitTaxaAndDistribution(state, taxonUuids, fauEuTaxonMap, txStatus);
 					taxonUuids = null;
 					taxonList = null;
 					fauEuTaxonMap = null;
@@ -232,16 +229,16 @@ public class FaunaEuropaeaDistributionImport extends FaunaEuropaeaImportBase {
 
 		if(logger.isInfoEnabled()) { logger.info("End making distributions..."); }
 
-		
+
 		return;
 	}
 
 	private void commitTaxaAndDistribution(
-			FaunaEuropaeaImportState state, UUID noDataUuid,
+			FaunaEuropaeaImportState state,
 			Set<UUID> taxonUuids,
 			Map<UUID, FaunaEuropaeaDistributionTaxon> fauEuTaxonMap,
 			TransactionStatus txStatus) throws Exception {
-		 List<TaxonBase> taxonList = prepareTaxaAndDistribution(getTaxonService().find(taxonUuids), fauEuTaxonMap, noDataUuid, state);
+		 List<TaxonBase> taxonList = prepareTaxaAndDistribution(getTaxonService().find(taxonUuids), fauEuTaxonMap, state);
 
 		getTaxonService().save(taxonList);
 		taxonList = null;
@@ -251,7 +248,7 @@ public class FaunaEuropaeaDistributionImport extends FaunaEuropaeaImportBase {
 
 	}
 
-	private List<TaxonBase> prepareTaxaAndDistribution(List<TaxonBase> taxonList, Map<UUID, FaunaEuropaeaDistributionTaxon> fauEuTaxonMap, UUID noData, FaunaEuropaeaImportState state) throws Exception{
+	private List<TaxonBase> prepareTaxaAndDistribution(List<TaxonBase> taxonList, Map<UUID, FaunaEuropaeaDistributionTaxon> fauEuTaxonMap,  FaunaEuropaeaImportState state) throws Exception{
 
 		Distribution newDistribution = null;
 		NamedArea namedArea;
@@ -289,11 +286,8 @@ public class FaunaEuropaeaDistributionImport extends FaunaEuropaeaImportBase {
 					newDistribution = null;
 					presenceAbsenceStatus = null;
 
-					if (fauEuHelperDistribution.getOccurrenceStatusId() != 0 && fauEuHelperDistribution.getOccurrenceStatusId() != 2 && fauEuHelperDistribution.getOccurrenceStatusId() != 1){
-						presenceAbsenceStatus = (PresenceAbsenceTerm)getTermService().find(noData);
-					}else{
-						presenceAbsenceStatus = FaunaEuropaeaTransformer.occStatus2PresenceAbsence(fauEuHelperDistribution.getOccurrenceStatusId());
-					}
+					presenceAbsenceStatus = FaunaEuropaeaTransformer.occStatus2PresenceAbsence(fauEuHelperDistribution.getOccurrenceStatusId());
+
 
 					namedArea = FaunaEuropaeaTransformer.areaId2TdwgArea(fauEuHelperDistribution);
 
