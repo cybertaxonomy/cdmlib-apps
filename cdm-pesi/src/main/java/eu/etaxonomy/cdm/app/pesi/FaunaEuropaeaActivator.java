@@ -17,7 +17,6 @@ import eu.etaxonomy.cdm.api.application.ICdmApplicationConfiguration;
 import eu.etaxonomy.cdm.app.common.CdmDestinations;
 import eu.etaxonomy.cdm.database.DbSchemaValidation;
 import eu.etaxonomy.cdm.database.ICdmDataSource;
-import eu.etaxonomy.cdm.hibernate.HibernateProxyHelper;
 import eu.etaxonomy.cdm.io.common.CdmDefaultImport;
 import eu.etaxonomy.cdm.io.common.IImportConfigurator.CHECK;
 import eu.etaxonomy.cdm.io.common.IImportConfigurator.DO_REFERENCES;
@@ -47,32 +46,33 @@ public class FaunaEuropaeaActivator {
 
 //	static final CHECK check = CHECK.CHECK_AND_IMPORT;
 	static final CHECK check = CHECK.IMPORT_WITHOUT_CHECK;
-//	static DbSchemaValidation dbSchemaValidation = DbSchemaValidation.CREATE;
+	static DbSchemaValidation dbSchemaValidation = DbSchemaValidation.CREATE;
 //	static DbSchemaValidation dbSchemaValidation = DbSchemaValidation.UPDATE;
-	static DbSchemaValidation dbSchemaValidation = DbSchemaValidation.VALIDATE;
+//	static DbSchemaValidation dbSchemaValidation = DbSchemaValidation.VALIDATE;
 
 
-	
+
 	static final NomenclaturalCode nomenclaturalCode  = NomenclaturalCode.ICZN;
 
 // ****************** ALL *****************************************
 
 	// Fauna Europaea to CDM import
 	static final boolean doAuthors = false;
-	static final boolean doTaxa = false;
+	static final boolean doTaxa =false;
 	static final boolean doBasionyms = false;
-	static final boolean doTaxonomicallyIncluded = false;
+	static final boolean doTaxonomicallyIncluded = true;
 	static final boolean doMisappliedNames = false;
 	static final boolean doHeterotypicSynonyms = false;
-	static final DO_REFERENCES doReferences =  DO_REFERENCES.ALL;
+	static final DO_REFERENCES doReferences =  DO_REFERENCES.NONE;
 	static final boolean doDistributions = false;
 	static final boolean makeFeatureTree = false;
-	static final boolean doVernacularNames = true;
-	static final boolean doAssociatedSpecialists = false;
+	static final boolean doVernacularNames = false;
+	static final boolean doAssociatedSpecialists = true;
 	static final boolean addCommonNameFeature = false;
+	static final boolean doInferredSynonyms = false;
     // CDM to CDM import
 	static final boolean doHeterotypicSynonymsForBasionyms = false;
-	
+
 // ************************ NONE **************************************** //
 
 	// Fauna Europaea to CDM import
@@ -118,6 +118,7 @@ public class FaunaEuropaeaActivator {
 		fauEuImportConfigurator.setSourceRefUuid(PesiTransformer.uuidSourceRefFaunaEuropaea);
 		fauEuImportConfigurator.setDoAssociatedSpecialists(doAssociatedSpecialists);
 		fauEuImportConfigurator.setDoVernacularNames(doVernacularNames);
+		fauEuImportConfigurator.setDoInferredSynonyms(doInferredSynonyms);
 		CdmDefaultImport<FaunaEuropaeaImportConfigurator> fauEuImport =
 			new CdmDefaultImport<FaunaEuropaeaImportConfigurator>();
 		try {
@@ -171,7 +172,7 @@ public class FaunaEuropaeaActivator {
 			FeatureNode commonNameFeatureNode = FeatureNode.NewInstance(commonNameFeature);
 			app.getFeatureTreeService().saveOrUpdate(featureTree);
 		}
-		
+
 		System.out.println("End importing Fauna Europaea data");
 	}
 

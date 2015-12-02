@@ -3,7 +3,7 @@ package eu.etaxonomy.cdm.io.pesi.faunaEuropaea;
 import java.util.UUID;
 
 public class FaunaEuropaeaVernacularName {
-	
+
 	String vernacularName;
 	int languageFk;
 	String languageCache;
@@ -11,23 +11,23 @@ public class FaunaEuropaeaVernacularName {
 	String guid;
 	String source;
 	String area = "";
-	
-	
+
+
 	public FaunaEuropaeaVernacularName(String vernacularName, int languageFK, String languageCache, UUID taxonUuid, String guid, String source){
 		this.guid=guid;
 		this.languageCache = languageCache;
-		this.languageFk = languageFk;
+		this.languageFk = languageFK;
 		this.taxonUuid = taxonUuid;
 		this.vernacularName = vernacularName;
 		this.source = source;
-	
+
 	}
 
 	public FaunaEuropaeaVernacularName() {
-		
+
 	}
-	
-	
+
+
 	public String getArea() {
 		return area;
 	}
@@ -83,6 +83,6 @@ public class FaunaEuropaeaVernacularName {
 	public void setSource(String source) {
 		this.source = source;
 	}
-	
-	
+
+
 }

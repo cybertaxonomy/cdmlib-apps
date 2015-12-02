@@ -25,6 +25,8 @@ import eu.etaxonomy.cdm.common.CdmUtils;
 import eu.etaxonomy.cdm.io.common.CdmImportBase;
 import eu.etaxonomy.cdm.io.common.ICdmImport;
 import eu.etaxonomy.cdm.io.common.Source;
+import eu.etaxonomy.cdm.io.pesi.out.PesiTransformer;
+import eu.etaxonomy.cdm.model.common.MarkerType;
 import eu.etaxonomy.cdm.model.reference.Reference;
 import eu.etaxonomy.cdm.model.taxon.Classification;
 
@@ -167,6 +169,28 @@ implements ICdmImport<FaunaEuropaeaImportConfigurator,FaunaEuropaeaImportState> 
 		return matcher;
 	}
 
+	protected MarkerType getUuidMarkerType(UUID uuid, FaunaEuropaeaImportState state){
+        if (uuid == null){
+            uuid = UUID.randomUUID();
+        }
 
+        MarkerType markerType = state.getMarkerType(uuid);
+            if (markerType == null){
+                markerType = (MarkerType)getTermService().find(uuid);
+                if (markerType == null){
+                    if (uuid.equals(PesiTransformer.uuidMarkerGuidIsMissing)){
+                        markerType = MarkerType.NewInstance("Uuid is Missing", "Uuid is missing", null);
+                        markerType.setUuid(uuid);
+                    } else if (uuid.equals(PesiTransformer.uuidMarkerTypeHasNoLastAction)){
+                        markerType = MarkerType.NewInstance("Has no last Action", "Has no last action", null);
+                        markerType.setUuid(uuid);
+                    }
+                    markerType = (MarkerType)getTermService().save(markerType);
+                }
+            }
+
+            state.putMarkerType(markerType);
+            return markerType;
+        }
 
 }

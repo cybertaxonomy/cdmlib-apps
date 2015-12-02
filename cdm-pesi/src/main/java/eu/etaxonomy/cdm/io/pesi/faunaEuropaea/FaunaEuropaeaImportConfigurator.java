@@ -39,6 +39,7 @@ public class FaunaEuropaeaImportConfigurator extends ImportConfiguratorBase<Faun
 	private boolean doOccurrence = true;
 	private boolean doVernacularNames = true;
 	private boolean doAssociatedSpecialists = true;
+	private boolean doInferredSynonyms = true;
 
 	public boolean isDoVernacularNames() {
 		return doVernacularNames;
@@ -52,7 +53,7 @@ public class FaunaEuropaeaImportConfigurator extends ImportConfiguratorBase<Faun
 		return doTypes;
 	}
 
-	
+
 
 
 	/* Max number of taxa to be saved with one service call */
@@ -106,6 +107,7 @@ public class FaunaEuropaeaImportConfigurator extends ImportConfiguratorBase<Faun
 		//TODO
 		if (this.sourceReference == null){
 			logger.warn("getSource Reference not yet fully implemented");
+
 			sourceReference = ReferenceFactory.newDatabase();
 
 			sourceReference.setTitleCache("Fauna Europaea database", true);
@@ -304,13 +306,23 @@ public class FaunaEuropaeaImportConfigurator extends ImportConfiguratorBase<Faun
 	}
 
 	public boolean isDoAssociatedSpecialists() {
-		
+
 		return this.doAssociatedSpecialists;
 	}
-	
+
 	public void setDoAssociatedSpecialists(boolean doAssociatedSpecialists){
 		this.doAssociatedSpecialists = doAssociatedSpecialists;
 	}
 
+    /**
+     * @return the doInferredSynonyms
+     */
+    public boolean isDoInferredSynonyms() {
+        return doInferredSynonyms;
+    }
+
+    public void setDoInferredSynonyms(boolean doInferredSynonyms){
+        this.doInferredSynonyms = doInferredSynonyms;
+    }
 
 }

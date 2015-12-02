@@ -13,6 +13,7 @@ import static eu.etaxonomy.cdm.io.pesi.faunaEuropaea.FaunaEuropaeaTransformer.A_
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -29,13 +30,21 @@ import eu.etaxonomy.cdm.hibernate.HibernateProxyHelper;
 import eu.etaxonomy.cdm.io.common.ICdmIO;
 import eu.etaxonomy.cdm.io.common.MapWrapper;
 import eu.etaxonomy.cdm.io.common.Source;
+import eu.etaxonomy.cdm.io.pesi.out.PesiTransformer;
 import eu.etaxonomy.cdm.model.agent.TeamOrPersonBase;
 import eu.etaxonomy.cdm.model.common.Annotation;
 import eu.etaxonomy.cdm.model.common.CdmBase;
+import eu.etaxonomy.cdm.model.common.IdentifiableSource;
 import eu.etaxonomy.cdm.model.common.Language;
+import eu.etaxonomy.cdm.model.common.Marker;
+import eu.etaxonomy.cdm.model.common.MarkerType;
+import eu.etaxonomy.cdm.model.name.Rank;
+import eu.etaxonomy.cdm.model.name.TaxonNameBase;
+import eu.etaxonomy.cdm.model.name.ZoologicalName;
 import eu.etaxonomy.cdm.model.reference.Reference;
 import eu.etaxonomy.cdm.model.taxon.Classification;
 import eu.etaxonomy.cdm.model.taxon.Synonym;
+import eu.etaxonomy.cdm.model.taxon.SynonymRelationship;
 import eu.etaxonomy.cdm.model.taxon.SynonymRelationshipType;
 import eu.etaxonomy.cdm.model.taxon.Taxon;
 import eu.etaxonomy.cdm.model.taxon.TaxonBase;
@@ -61,6 +70,7 @@ public class FaunaEuropaeaRelTaxonIncludeImport extends FaunaEuropaeaImportBase 
 
 
 	private Reference<?> sourceRef;
+    private final String parentPluralString = "Taxa";
 	private static String ALL_SYNONYM_FROM_CLAUSE = " FROM Taxon INNER JOIN Taxon AS Parent " +
 	" ON Taxon.TAX_TAX_IDPARENT = Parent.TAX_ID " +
 	" WHERE (Taxon.TAX_VALID = 0) " +
@@ -79,7 +89,7 @@ public class FaunaEuropaeaRelTaxonIncludeImport extends FaunaEuropaeaImportBase 
 	@Override
 	protected boolean isIgnore(FaunaEuropaeaImportState state) {
 		return ! (state.getConfig().isDoTaxonomicallyIncluded() ||
-		state.getConfig().isDoMisappliedNames() || state.getConfig().isDoHeterotypicSynonyms());
+		state.getConfig().isDoMisappliedNames() || state.getConfig().isDoHeterotypicSynonyms() || state.getConfig().isDoInferredSynonyms());
 	}
 
 	private boolean checkTaxonStatus(FaunaEuropaeaImportConfigurator fauEuConfig) {
@@ -101,10 +111,8 @@ public class FaunaEuropaeaRelTaxonIncludeImport extends FaunaEuropaeaImportBase 
 		/*logger.warn("Start RelTaxon doInvoke");
 		ProfilerController.memorySnapshot();
 		*/
-		
-		if (!state.getConfig().isDoTaxonomicallyIncluded()){
-			return;
-		}
+
+
 		Map<String, MapWrapper<? extends CdmBase>> stores = state.getStores();
 
 		MapWrapper<TeamOrPersonBase> authorStore = (MapWrapper<TeamOrPersonBase>)stores.get(ICdmIO.TEAM_STORE);
@@ -127,7 +135,7 @@ public class FaunaEuropaeaRelTaxonIncludeImport extends FaunaEuropaeaImportBase 
 
 		if (state.getConfig().isDoTaxonomicallyIncluded())  {
 			processParentsChildren(state);
-			
+
 		}
 		if (state.getConfig().isDoAssociatedSpecialists()){
 			processAssociatedSpecialists(state);
@@ -149,6 +157,10 @@ public class FaunaEuropaeaRelTaxonIncludeImport extends FaunaEuropaeaImportBase 
 				logger.info("Start making heterotypic synonym relationships...");
 			}
 			processHeterotypicSynonyms(state, ALL_SYNONYM_FROM_CLAUSE);
+		}
+
+		if (state.getConfig().isDoInferredSynonyms()){
+		    processInferredSynonyms(state);
 		}
 		/*
 		logger.warn("End RelTaxon doInvoke");
@@ -261,7 +273,7 @@ public class FaunaEuropaeaRelTaxonIncludeImport extends FaunaEuropaeaImportBase 
 				if (((i % limit) == 0 && i != 1 ) || i == count ) {
 
 					createAndCommitParentChildRelationships(
-							state, txStatus, childParentMap, taxonGroupCoordinatorMap, taxonSpecialistMap);
+							state, txStatus, childParentMap, taxonSpecialistMap, taxonGroupCoordinatorMap);
 					childParentMap = null;
 
 					if(logger.isInfoEnabled()) {
@@ -893,7 +905,7 @@ public class FaunaEuropaeaRelTaxonIncludeImport extends FaunaEuropaeaImportBase 
 
 		return;
 	}
-	
+
 	private void processAssociatedSpecialists(FaunaEuropaeaImportState state){
 		int limit = state.getConfig().getLimitSave();
 
@@ -901,7 +913,7 @@ public class FaunaEuropaeaRelTaxonIncludeImport extends FaunaEuropaeaImportBase 
 
 		Map<UUID, UUID> childParentMap = null;
 
-		
+
 		TaxonNode taxonNode = null;
 		TeamOrPersonBase associatedSpecialist = null;
 		TaxonNodeAgentRelation agentRel = null;
@@ -912,12 +924,12 @@ public class FaunaEuropaeaRelTaxonIncludeImport extends FaunaEuropaeaImportBase 
 
 		String selectCount =
 			" SELECT count(*) ";
-		
-		
-		
+
+
+
 		String selectColumns = "SELECT  u.USR_GROUPNAME as groupName, u.USR_GROUPNOTE groupNote, u.USR_USR_ID as user_user_id, "
 				+ "		u.usr_id user_id, user2.USR_ID as user2_id, taxon.UUID as tax_uuid ";
-				
+
 		String fromClause = " FROM USERROLE as userrole left join USERS u on userrole.URL_USR_ID = u.USR_ID left join USERS user2 on user2.USR_ID = u.USR_USR_ID "
 						+ " left join TAXON taxon on (taxon.TAX_USR_IDSP= user2.USR_ID or taxon.TAX_USR_IDGC= user2.USR_ID) "
 						+ " where USERROLE.URL_ROL_ID = 7 order by taxon.TAX_ID";
@@ -928,7 +940,7 @@ public class FaunaEuropaeaRelTaxonIncludeImport extends FaunaEuropaeaImportBase 
 
 		String selectQuery =
 			selectColumns + fromClause + orderClause;
-		
+
 		if(logger.isInfoEnabled()) { logger.info("Start making associated specialists..."); }
 
 		try {
@@ -967,18 +979,19 @@ public class FaunaEuropaeaRelTaxonIncludeImport extends FaunaEuropaeaImportBase 
 						logger.info("There is an associated specialist for a taxon which has no taxonnode.");
 					}
  				}
-				
+
 				agentUuid = state.getAgentMap().get(userId);
-				
-				
+
+
 				associatedSpecialist = (TeamOrPersonBase) getAgentService().find(agentUuid);
 				if (associatedSpecialist != null && taxonNode != null){
 					agentRel =taxonNode.addAgentRelation(FaunaEuropaeaTransformer.getAssociateSpecialistType(getTermService()), associatedSpecialist);
-					if (!StringUtils.isBlank(groupName))
-					agentRel.addAnnotation(Annotation.NewInstance(groupName, Language.DEFAULT()));
+					if (!StringUtils.isBlank(groupName)) {
+                        agentRel.addAnnotation(Annotation.NewInstance(groupName, Language.DEFAULT()));
+                    }
 				}
-				
-				
+
+
 	        }
 	        getTaxonNodeService().saveOrUpdate(taxonNode);
 			commitTransaction(txStatus);
@@ -986,6 +999,227 @@ public class FaunaEuropaeaRelTaxonIncludeImport extends FaunaEuropaeaImportBase 
 			logger.info("Problems during creating associated specialists.", e);
 		}
 	}
-	        
+
+	private void processInferredSynonyms(FaunaEuropaeaImportState state){
+
+	        int count;
+	        int pastCount;
+	        boolean success = true;
+	        // Get the limit for objects to save within a single transaction.
+	        if (! state.getConfig().isDoInferredSynonyms()){
+	            logger.info ("Ignore Creating Inferred Synonyms...");
+	            return;
+	        }
+
+	        int limit = state.getConfig().getLimitSave();
+	        // Create inferred synonyms for accepted taxa
+	        logger.info("Creating Inferred Synonyms...");
+
+
+	        count = 0;
+	        pastCount = 0;
+	        int pageSize = limit/10;
+	        int pageNumber = 1;
+	        String inferredSynonymPluralString = "Inferred Synonyms";
+
+	        // Start transaction
+	        TransactionStatus txStatus = startTransaction(true);
+	        logger.info("Started new transaction. Fetching some " + parentPluralString + " first (max: " + limit + ") ...");
+	        List<TaxonBase> taxonList = null;
+	        Set<TaxonBase> synonymList = new HashSet<TaxonBase>();
+
+
+	        while ((taxonList  = getTaxonService().listTaxaByName(Taxon.class, "*", "*", "*", "*", Rank.SPECIES(), pageSize, pageNumber)).size() > 0) {
+	            HashMap<Integer, TaxonNameBase<?,?>> inferredSynonymsDataToBeSaved = new HashMap<Integer, TaxonNameBase<?,?>>();
+
+	            logger.info("Fetched " + taxonList.size() + " " + parentPluralString + ". Importing...");
+	            synonymList = createInferredSynonymsForTaxonList(state,  taxonList);
+	            getTaxonService().save(synonymList);
+
+	          //  getTaxonService().saveOrUpdate(taxonList);
+	            // Commit transaction
+	            commitTransaction(txStatus);
+	            logger.debug("Committed transaction.");
+	            logger.info("Imported " + (taxonList.size()) + " " + inferredSynonymPluralString + ". Total: " + count);
+	            //pastCount = count;
+
+
+
+	            // Start transaction
+	            txStatus = startTransaction(true);
+	            logger.info("Started new transaction. Fetching some " + parentPluralString + " first (max: " + limit + ") ...");
+
+	            // Increment pageNumber
+	            pageNumber++;
+	        }
+	        taxonList = null;
+	        while ((taxonList  = getTaxonService().listTaxaByName(Taxon.class, "*", "*", "*", "*", Rank.SUBSPECIES(), pageSize, pageNumber)).size() > 0) {
+	            HashMap<Integer, TaxonNameBase<?,?>> inferredSynonymsDataToBeSaved = new HashMap<Integer, TaxonNameBase<?,?>>();
+
+	            logger.info("Fetched " + taxonList.size() + " " + parentPluralString  + ". Exporting...");
+	            synonymList = createInferredSynonymsForTaxonList(state, taxonList);
+
+	            getTaxonService().save(synonymList);
+	            // Commit transaction
+	            commitTransaction(txStatus);
+	            logger.debug("Committed transaction.");
+	            logger.info("Exported " + taxonList.size()+ " " + inferredSynonymPluralString + ". Total: " + count);
+	            //pastCount = count;
+
+
+
+	            // Start transaction
+	            txStatus = startTransaction(true);
+	            logger.info("Started new transaction. Fetching some " + parentPluralString + " first (max: " + limit + ") ...");
+
+	            // Increment pageNumber
+	            pageNumber++;
+	            inferredSynonymsDataToBeSaved = null;
+	        }
+	        if (taxonList.size() == 0) {
+	            logger.info("No " + parentPluralString + " left to fetch.");
+	        }
+
+	        taxonList = null;
+
+	        // Commit transaction
+	        commitTransaction(txStatus);
+	        System.gc();
+
+	        //ProfilerController.memorySnapshot();
+	        logger.debug("Committed transaction.");
+
+
+	}
+
+	/**
+    * @param state
+    * @param mapping
+    * @param synRelMapping
+    * @param currentTaxonId
+    * @param taxonList
+    * @param inferredSynonymsDataToBeSaved
+    * @return
+    */
+   private Set<TaxonBase> createInferredSynonymsForTaxonList(FaunaEuropaeaImportState state,
+            List<TaxonBase> taxonList) {
+
+       Taxon acceptedTaxon;
+       Classification classification = null;
+       Set<TaxonBase> inferredSynonyms = new HashSet<TaxonBase>();
+       List<Synonym> inferredSynonymsLocal= new ArrayList<Synonym>();
+       boolean localSuccess = true;
+
+       HashMap<Integer, TaxonNameBase<?,?>> inferredSynonymsDataToBeSaved = new HashMap<Integer, TaxonNameBase<?,?>>();
+
+       for (TaxonBase<?> taxonBase : taxonList) {
+
+           if (taxonBase.isInstanceOf(Taxon.class)) { // this should always be the case since we should have fetched accepted taxon only, but you never know...
+               acceptedTaxon = CdmBase.deproxy(taxonBase, Taxon.class);
+               TaxonNameBase<?,?> taxonName = acceptedTaxon.getName();
+
+               if (taxonName.isInstanceOf(ZoologicalName.class)) {
+                   Set<TaxonNode> taxonNodes = acceptedTaxon.getTaxonNodes();
+                   TaxonNode singleNode = null;
+
+                   if (taxonNodes.size() > 0) {
+                       // Determine the classification of the current TaxonNode
+
+                       singleNode = taxonNodes.iterator().next();
+                       if (singleNode != null) {
+                           classification = singleNode.getClassification();
+                       } else {
+                           logger.error("A TaxonNode belonging to this accepted Taxon is NULL: " + acceptedTaxon.getUuid() + " (" + acceptedTaxon.getTitleCache() +")");
+                       }
+                   } else {
+                       // Classification could not be determined directly from this TaxonNode
+                       // The stored classification from another TaxonNode is used. It's a simple, but not a failsafe fallback solution.
+                       if (taxonNodes.size() == 0) {
+                           //logger.error("Classification could not be determined directly from this Taxon: " + acceptedTaxon.getUuid() + " is misapplication? "+acceptedTaxon.isMisapplication()+ "). The classification of the last taxon is used");
+
+                       }
+                   }
+
+                   if (classification != null) {
+                       try{
+                           TaxonNameBase name = acceptedTaxon.getName();
+
+                            //if (name.isSpecies() || name.isInfraSpecific()){
+                               inferredSynonymsLocal = getTaxonService().createAllInferredSynonyms(acceptedTaxon, classification, true);
+                              // logger.info("number of inferred synonyms: " + inferredSynonyms.size());
+                           //}
+//                             inferredSynonyms = getTaxonService().createInferredSynonyms(classification, acceptedTaxon, SynonymRelationshipType.INFERRED_GENUS_OF());
+                           if (inferredSynonymsLocal != null) {
+                               for (TaxonBase synonym : inferredSynonymsLocal) {
+//                                 TaxonNameBase<?,?> synonymName = synonym.getName();
+                                   MarkerType markerType =getUuidMarkerType(PesiTransformer.uuidMarkerGuidIsMissing, state);
+
+                                   synonym.addMarker(Marker.NewInstance(markerType, true));
+
+
+                                   //get SynonymRelationship and export
+                                   if (((Synonym)synonym).getSynonymRelations().isEmpty() ){
+                                       SynonymRelationship synRel;
+                                       IdentifiableSource source = ((Synonym)synonym).getSources().iterator().next();
+                                       if (source.getIdNamespace().contains("Potential combination")){
+                                           synRel = acceptedTaxon.addSynonym((Synonym)synonym, SynonymRelationshipType.POTENTIAL_COMBINATION_OF());
+                                           logger.error(synonym.getTitleCache() + " has no synonym relationship to " + acceptedTaxon.getTitleCache() + " type is set to potential combination");
+                                       } else if (source.getIdNamespace().contains("Inferred Genus")){
+                                           synRel = acceptedTaxon.addSynonym((Synonym)synonym, SynonymRelationshipType.INFERRED_GENUS_OF());
+                                           logger.error(synonym.getTitleCache() + " has no synonym relationship to " + acceptedTaxon.getTitleCache() + " type is set to inferred genus");
+                                       } else if (source.getIdNamespace().contains("Inferred Epithet")){
+                                           synRel = acceptedTaxon.addSynonym((Synonym)synonym, SynonymRelationshipType.INFERRED_EPITHET_OF());
+                                           logger.error(synonym.getTitleCache() + " has no synonym relationship to " + acceptedTaxon.getTitleCache() + " type is set to inferred epithet");
+                                       } else{
+                                           synRel = acceptedTaxon.addSynonym((Synonym)synonym, SynonymRelationshipType.INFERRED_SYNONYM_OF());
+                                           logger.error(synonym.getTitleCache() + " has no synonym relationship to " + acceptedTaxon.getTitleCache() + " type is set to inferred synonym");
+                                       }
+
+
+
+                                       synRel = null;
+                                   } else {
+                                       for (SynonymRelationship synRel: ((Synonym)synonym).getSynonymRelations()){
+                                           if (!localSuccess) {
+                                               logger.error("Synonym relationship export failed " + synonym.getTitleCache() + " accepted taxon: " + acceptedTaxon.getUuid() + " (" + acceptedTaxon.getTitleCache()+")");
+                                           } else {
+                                              // logger.info("Synonym relationship successfully exported: " + synonym.getTitleCache() + "  " +acceptedTaxon.getUuid() + " (" + acceptedTaxon.getTitleCache()+")");
+                                           }
+                                           synRel = null;
+                                       }
+                                   }
+
+                                   inferredSynonymsDataToBeSaved.put(synonym.getId(), synonym.getName());
+                               }
+
+                               inferredSynonyms.addAll(inferredSynonymsLocal);
+                              //logger.info("inferredSet: " + inferredSet.size());
+                               //getTaxonService().save(inferredSynonyms);
+                               //commitTransaction(txStatus);
+
+                               inferredSynonymsLocal = null;
+
+                           }
+
+
+                       }catch(Exception e){
+                           logger.error(e.getMessage());
+                           e.printStackTrace();
+                       }
+                   } else {
+                       logger.error("Classification is NULL. Inferred Synonyms could not be created for this Taxon: " + acceptedTaxon.getUuid() + " (" + acceptedTaxon.getTitleCache() + ")");
+                   }
+               } else {
+//                         logger.error("TaxonName is not a ZoologicalName: " + taxonName.getUuid() + " (" + taxonName.getTitleCache() + ")");
+               }
+           } else {
+               logger.error("This TaxonBase is not a Taxon even though it should be: " + taxonBase.getUuid() + " (" + taxonBase.getTitleCache() + ")");
+           }
+       }
+       //getTaxonService().saveOrUpdate(taxonList);
+       taxonList = null;
+       return inferredSynonyms;
+   }
+
 
 }

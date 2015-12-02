@@ -75,6 +75,10 @@ public class FaunaEuropaeaRefImport extends FaunaEuropaeaImportBase {
 		if (state.getConfig().getDoReferences().equals(DO_REFERENCES.NONE)){
 			return;
 		}
+		if (state.getConfig().getSourceReference().getId() == 0){
+		    Reference sourceRef = getReferenceService().find(state.getConfig().getSourceRefUuid());
+		    state.getConfig().setSourceReference(sourceRef);
+		}
 		Set<UUID> taxonUuids = null;
 		Map<Integer, Reference<?>> references = null;
 		Map<String,TeamOrPersonBase<?>> authors = null;
@@ -175,7 +179,7 @@ public class FaunaEuropaeaRefImport extends FaunaEuropaeaImportBase {
 	        	int refId = rsRefs.getInt("ref_id");
 	        	String var = "\u00A7";
 				String refAuthor = deleteSymbol(var,rsRefs.getString("ref_author"));
-				
+
 				String year = deleteSymbol(var, rsRefs.getString("ref_year"));
 				String title = deleteSymbol(var, rsRefs.getString("ref_title"));
 
@@ -281,7 +285,7 @@ public class FaunaEuropaeaRefImport extends FaunaEuropaeaImportBase {
 	private void commitReferences(Map<Integer, Reference<?>> references,
 			Map<String, TeamOrPersonBase<?>> authors,
 			Map<Integer, UUID> referenceUuids, int i, TransactionStatus txStatus) {
-		
+
 		Map <UUID, Reference> referenceMap =getReferenceService().save((Collection)references.values());
 		logger.info("i = " + i + " - references saved");
 
@@ -447,9 +451,9 @@ public class FaunaEuropaeaRefImport extends FaunaEuropaeaImportBase {
 			uuid = referenceUuids.get(itRefs.next());
 			uuidSet.add(uuid);
 		}
-		
+
 		referenceList = getReferenceService().find(uuidSet);
-		
+
 		references = new HashMap<Integer, Reference>(limit);
 		for (Reference<?> ref : referenceList){
 			references.put(Integer.valueOf(((OriginalSourceBase)ref.getSources().iterator().next()).getIdInSource()), ref);
@@ -527,7 +531,7 @@ public class FaunaEuropaeaRefImport extends FaunaEuropaeaImportBase {
 	protected boolean isIgnore(FaunaEuropaeaImportState state){
 		return (state.getConfig().getDoReferences() == IImportConfigurator.DO_REFERENCES.NONE);
 	}
-	
+
 	private String deleteSymbol(String symbol, String stringVar){
 		if (stringVar.startsWith(symbol)){
 			if (stringVar.endsWith(symbol)){
