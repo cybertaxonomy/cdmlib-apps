@@ -53,6 +53,16 @@ public class GlobisImportConfigurator extends DbImportConfiguratorBase<GlobisImp
 	private String imageBaseUrl = "http://globis-images.insects-online.de/images/";
 	
 	private static IInputTransformer defaultTransformer = new GlobisTransformer();
+	public boolean isDoNewUser() {
+		return doNewUser;
+	}
+
+
+	public void setDoNewUser(boolean doNewUser) {
+		this.doNewUser = doNewUser;
+	}
+
+	private boolean doNewUser = true;
 	
 	protected void makeIoClassList(){
 		ioClassList = new Class[]{
