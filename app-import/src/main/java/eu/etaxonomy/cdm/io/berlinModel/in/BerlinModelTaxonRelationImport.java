@@ -249,12 +249,13 @@ public class BerlinModelTaxonRelationImport  extends BerlinModelImportBase  {
 				int relPTaxonId = rs.getInt("RelPTaxonId");
 				Integer taxon1Id = nullSafeInt(rs, "taxon1Id");
 				Integer taxon2Id = nullSafeInt(rs, "taxon2Id");
+				int relQualifierFk = 0;
 				try {
 					Integer relRefFk = nullSafeInt(rs,"relRefFk");
 					int treeRefFk = rs.getInt("treeRefFk");
 					int fromRefFk = rs.getInt("fromRefFk");
 
-					int relQualifierFk = rs.getInt("relQualifierFk");
+					relQualifierFk = rs.getInt("relQualifierFk");
 					String notes = rs.getString("notes");
 					boolean isConceptRelationship = rs.getBoolean("is_concept_relation");
 
@@ -366,7 +367,7 @@ public class BerlinModelTaxonRelationImport  extends BerlinModelImportBase  {
 						success = false;
 					}
 				} catch (Exception e) {
-					logger.error("Exception occurred when trying to handle taxon relationship " + relPTaxonId + " (" + taxon1Id + ","+ taxon2Id + "): " + e.getMessage());
+					logger.error("Exception occurred when trying to handle taxon relationship " + relPTaxonId + " relQualifierFK " + relQualifierFk + " (" + taxon1Id + ","+ taxon2Id + "): " + e.getMessage());
 					e.printStackTrace();
 				}
 			}
@@ -621,6 +622,9 @@ public class BerlinModelTaxonRelationImport  extends BerlinModelImportBase  {
 		Classification tree = classificationMap.get(treeRefFk);
 		if (tree == null){
 			UUID treeUuid = state.getTreeUuidByIntTreeKey(treeRefFk);
+			if (treeUuid == null){
+				throw new IllegalStateException("treeUUID does not exist in state for " + treeRefFk );
+			}
 			tree = getClassificationService().find(treeUuid);
 			classificationMap.put(treeRefFk, tree);
 		}

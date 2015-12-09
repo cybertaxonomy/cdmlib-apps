@@ -1,9 +1,9 @@
 // $Id$
 /**
 * Copyright (C) 2007 EDIT
-* European Distributed Institute of Taxonomy 
+* European Distributed Institute of Taxonomy
 * http://www.e-taxonomy.eu
-* 
+*
 * The contents of this file are subject to the Mozilla Public License Version 1.1
 * See LICENSE.TXT at the top of this package for the full license terms.
 */
@@ -25,7 +25,7 @@ import eu.etaxonomy.cdm.api.service.pager.Pager;
 import eu.etaxonomy.cdm.app.common.CdmDestinations;
 import eu.etaxonomy.cdm.database.DbSchemaValidation;
 import eu.etaxonomy.cdm.database.ICdmDataSource;
-import eu.etaxonomy.cdm.model.common.CdmBase;
+import eu.etaxonomy.cdm.io.common.ImportResult;
 import eu.etaxonomy.cdm.model.common.Language;
 import eu.etaxonomy.cdm.model.common.OriginalSourceType;
 import eu.etaxonomy.cdm.model.description.DescriptionBase;
@@ -37,7 +37,6 @@ import eu.etaxonomy.cdm.model.description.TextData;
 import eu.etaxonomy.cdm.model.name.NonViralName;
 import eu.etaxonomy.cdm.model.name.TaxonNameBase;
 import eu.etaxonomy.cdm.model.taxon.Taxon;
-import eu.etaxonomy.cdm.model.taxon.TaxonBase;
 
 /**
  * @author a.mueller
@@ -48,18 +47,19 @@ public class DipteraPostImportUpdater {
 	private static final Logger logger = Logger.getLogger(DipteraPostImportUpdater.class);
 
 	static final ICdmDataSource cdmDestination = CdmDestinations.localH2Palmae();
-	
+
 	/**
-	 * This method updateds the citation text by deleting <code>OriginalName</code> tags and 
+	 * This method updateds the citation text by deleting <code>OriginalName</code> tags and
 	 * adding the original name to the source either as a link to an existing taxon name
 	 * or as a string. The later becomes true if there is not exactly one matching name
 	 * @param dataSource
 	 * @return
 	 */
-	public boolean updateCitations(ICdmDataSource dataSource) {
-		try{
+	public ImportResult updateCitations(ICdmDataSource dataSource) {
+
 			logger.warn("start updating citations");
-			boolean result = true;
+			ImportResult result = new ImportResult();
+			try{
 			CdmApplicationController cdmApp = CdmApplicationController.NewInstance(dataSource, DbSchemaValidation.VALIDATE);
 			Set<DescriptionElementBase> citationsToSave = new HashSet<DescriptionElementBase>();
 			TransactionStatus tx = cdmApp.startTransaction();
@@ -73,12 +73,12 @@ public class DipteraPostImportUpdater {
 			Map<String, TaxonNameBase> nameMap = new HashMap<String, TaxonNameBase>();
 			Map<String, TaxonNameBase> nameDuplicateMap = new HashMap<String, TaxonNameBase>();
 			fillNameMaps(nameList, nameMap, nameDuplicateMap);
-			
+
 			int i = 0;
-			
+
 			for (Taxon taxon : taxonList){
 				if ((i++ % modCount) == 0){ logger.warn("taxa handled: " + (i-1));}
-				
+
 				Set<TextData> citations = getCitations(taxon);
 				for (TextData citation : citations){
 					Language language = Language.DEFAULT();
@@ -88,7 +88,7 @@ public class DipteraPostImportUpdater {
 					citation.removeText(language);
 					citation.putText(language, newText);
 					TaxonNameBase<?,?> scientificName = getScientificName(originalNameString, nameMap, nameDuplicateMap);
-					
+
 					Set<DescriptionElementSource> sources = citation.getSources();
 					if (sources.size() > 1){
 						logger.warn("There are more then 1 sources for a description");
@@ -104,25 +104,28 @@ public class DipteraPostImportUpdater {
 							source.setOriginalNameString(originalNameString);
 						}
 					}
-					
+
 					citationsToSave.add(citation);
 				}
 			}
-				
+
 			cdmApp.getDescriptionService().saveDescriptionElement(citationsToSave);
 			//commit
 			cdmApp.commitTransaction(tx);
 			logger.warn("Citations updated!");
+			result.setSuccess(true);
 			return result;
 		} catch (Exception e) {
 			e.printStackTrace();
 			logger.error("ERROR in citation update");
-			return false;
+			result.setSuccess(false);
+			result.addReport(e.getMessage().getBytes());
+			return result;
 		}
-		
+
 	}
-	
-	public boolean updateCollections(ICdmDataSource dataSource){
+
+	public ImportResult updateCollections(ICdmDataSource dataSource){
 		DipteraCollectionImport collectionImport = new DipteraCollectionImport();
 		return collectionImport.invoke(dataSource);
 	}
@@ -139,8 +142,8 @@ public class DipteraPostImportUpdater {
 			}
 		}
 	}
-	
-	
+
+
 	private TaxonNameBase getScientificName(String originalNameString, Map<String, TaxonNameBase> nameMap, Map<String, TaxonNameBase> nameDuplicateMap) {
 		originalNameString = originalNameString.trim();
 		TaxonNameBase result = nameMap.get(originalNameString);
@@ -203,7 +206,7 @@ public class DipteraPostImportUpdater {
 
 
 
-	
+
 	/**
 	 * @param args
 	 */

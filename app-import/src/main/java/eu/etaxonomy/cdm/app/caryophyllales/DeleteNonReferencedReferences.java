@@ -8,6 +8,7 @@ import eu.etaxonomy.cdm.database.DbSchemaValidation;
 import eu.etaxonomy.cdm.database.ICdmDataSource;
 import eu.etaxonomy.cdm.io.common.CdmDefaultImport;
 import eu.etaxonomy.cdm.io.common.DeleteNonReferencedReferencesConfigurator;
+import eu.etaxonomy.cdm.io.common.ImportResult;
 
 
 public class DeleteNonReferencedReferences {
@@ -26,18 +27,18 @@ public class DeleteNonReferencedReferences {
 
 
 
-			private boolean doInvoke(ICdmDataSource destination){
-				boolean success = true;
+			private ImportResult doInvoke(ICdmDataSource destination){
+				ImportResult result = new ImportResult();
 
 				DeleteNonReferencedReferencesConfigurator config;
 				config = DeleteNonReferencedReferencesConfigurator.NewInstance(cdmDestination);
 
 				// invoke import
 				CdmDefaultImport<DeleteNonReferencedReferencesConfigurator> myImport = new CdmDefaultImport<DeleteNonReferencedReferencesConfigurator>();
-				success &= myImport.invoke(config);
-				String successString = success ? "successful" : " with errors ";
-				System.out.println("End updating caches for "+ destination.getDatabase() + "..." +  successString);
-				return success;
+				result = myImport.invoke(config);
+				//String successString = success ? "successful" : " with errors ";
+				//System.out.println("End updating caches for "+ destination.getDatabase() + "..." +  successString);
+				return result;
 			}
 
 			/**

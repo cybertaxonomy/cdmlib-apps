@@ -1,15 +1,15 @@
 package eu.etaxonomy.cdm.app.caryophyllales;
 
 import java.io.File;
-import java.net.URI;
+import java.util.UUID;
 
 import eu.etaxonomy.cdm.app.common.CdmDestinations;
 import eu.etaxonomy.cdm.database.DbSchemaValidation;
 import eu.etaxonomy.cdm.database.ICdmDataSource;
 import eu.etaxonomy.cdm.io.common.CdmDefaultExport;
+import eu.etaxonomy.cdm.io.csv.caryophyllales.out.CsvNameExport;
 import eu.etaxonomy.cdm.io.csv.caryophyllales.out.CsvNameExportBase;
 import eu.etaxonomy.cdm.io.csv.caryophyllales.out.CsvNameExportConfigurator;
-import eu.etaxonomy.cdm.io.csv.redlist.out.CsvExportBaseRedlist;
 import eu.etaxonomy.cdm.model.name.NomenclaturalCode;
 
 
@@ -20,13 +20,13 @@ import eu.etaxonomy.cdm.model.name.NomenclaturalCode;
 
 
 public class TaxonExcelCaryophyllalesActivator {
-	
-	
+
+
 	//	private static final Logger logger = Logger.getLogger(TaxonExcelCaryophyllalesActivator.class);
 
 
 		static final String source = XlsSources.xls_nyctaginaceae();
-//			
+//
 
 		private static DbSchemaValidation dbSchemaValidation = DbSchemaValidation.CREATE;
 
@@ -39,9 +39,10 @@ public class TaxonExcelCaryophyllalesActivator {
 	    	File csv = new File("test.csv");
 	    	CsvNameExportConfigurator csvNameExportConfigurator =
 	    			CsvNameExportConfigurator.NewInstance(destinationDb, csv);
-	    	
-	    	CsvNameExportBase export = new CsvNameExportBase();
-	    	
+
+	    	csvNameExportConfigurator.setClassificationUUID(UUID.fromString("9edc58b5-de3b-43aa-9f31-1ede7c009c2b"));
+	    	CsvNameExportBase export = new CsvNameExport();
+
 	    	//export.invoke(csvNameExportConfigurator.getNewState());
 	    	CdmDefaultExport<CsvNameExportConfigurator> normalExplicitImport =
 				new CdmDefaultExport<CsvNameExportConfigurator>();

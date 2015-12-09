@@ -22,6 +22,7 @@ import eu.etaxonomy.cdm.io.common.CdmDefaultImport;
 import eu.etaxonomy.cdm.io.common.IImportConfigurator;
 import eu.etaxonomy.cdm.io.common.IImportConfigurator.CHECK;
 import eu.etaxonomy.cdm.io.common.IImportConfigurator.DO_REFERENCES;
+import eu.etaxonomy.cdm.io.common.ImportResult;
 import eu.etaxonomy.cdm.io.common.Source;
 import eu.etaxonomy.cdm.model.name.NomenclaturalCode;
 import eu.etaxonomy.cdm.model.name.NonViralName;
@@ -113,7 +114,7 @@ public class SalvadorActivator {
 //	static final boolean doUser = false;
 
 
-	public boolean doImport(ICdmDataSource destination){
+	public ImportResult doImport(ICdmDataSource destination){
 		System.out.println("Start import from BerlinModel("+ berlinModelSource.getDatabase() + ") ...");
 
 		//make BerlinModel Source
@@ -156,7 +157,7 @@ public class SalvadorActivator {
 
 		// invoke import
 		CdmDefaultImport<BerlinModelImportConfigurator> bmImport = new CdmDefaultImport<BerlinModelImportConfigurator>();
-		boolean result = bmImport.invoke(config);
+		ImportResult result = bmImport.invoke(config);
 		System.out.println("End import from BerlinModel ("+ source.getDatabase() + ")...");
 		return result;
 	}

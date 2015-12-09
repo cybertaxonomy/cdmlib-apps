@@ -28,6 +28,7 @@ import eu.etaxonomy.cdm.app.common.CdmDestinations;
 import eu.etaxonomy.cdm.common.CdmUtils;
 import eu.etaxonomy.cdm.database.DbSchemaValidation;
 import eu.etaxonomy.cdm.database.ICdmDataSource;
+import eu.etaxonomy.cdm.io.common.ImportResult;
 import eu.etaxonomy.cdm.model.agent.Institution;
 import eu.etaxonomy.cdm.model.occurrence.Collection;
 import eu.etaxonomy.cdm.model.occurrence.DerivedUnit;
@@ -46,7 +47,8 @@ public class DipteraCollectionImport {
 	static final ICdmDataSource cdmDestination = CdmDestinations.localH2();
 
 
-	public boolean invoke(ICdmDataSource dataSource) {
+	public ImportResult invoke(ICdmDataSource dataSource) {
+	    ImportResult result = new ImportResult();
 		CdmApplicationController cdmApp = CdmApplicationController.NewInstance(dataSource, DbSchemaValidation.VALIDATE);
 
 		//create collections
@@ -57,7 +59,7 @@ public class DipteraCollectionImport {
 		addCollectionsToSpecimen(cdmApp, colletionMap);
 		cdmApp.commitTransaction(tx);
 
-		return true;
+		return result;
 
 	}
 

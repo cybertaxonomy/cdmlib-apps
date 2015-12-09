@@ -9,6 +9,7 @@ import eu.etaxonomy.cdm.database.DbSchemaValidation;
 import eu.etaxonomy.cdm.database.ICdmDataSource;
 import eu.etaxonomy.cdm.io.common.CacheUpdaterConfigurator;
 import eu.etaxonomy.cdm.io.common.CdmDefaultImport;
+import eu.etaxonomy.cdm.io.common.ImportResult;
 import eu.etaxonomy.cdm.model.taxon.TaxonBase;
 
 public class CaryophyllalesCacheUpdater {
@@ -89,8 +90,8 @@ public class CaryophyllalesCacheUpdater {
 	//
 
 
-		private boolean doInvoke(ICdmDataSource destination){
-			boolean success = true;
+		private ImportResult doInvoke(ICdmDataSource destination){
+			ImportResult result = new ImportResult();
 
 			CacheUpdaterConfigurator config;
 			try {
@@ -98,13 +99,14 @@ public class CaryophyllalesCacheUpdater {
 
 				// invoke import
 				CdmDefaultImport<CacheUpdaterConfigurator> myImport = new CdmDefaultImport<CacheUpdaterConfigurator>();
-				success &= myImport.invoke(config);
-				String successString = success ? "successful" : " with errors ";
-				System.out.println("End updating caches for "+ destination.getDatabase() + "..." +  successString);
-				return success;
+				result=myImport.invoke(config);
+				//String successString = success ? "successful" : " with errors ";
+				//System.out.println("End updating caches for "+ destination.getDatabase() + "..." +  successString);
+				return result;
 			} catch (ClassNotFoundException e) {
 				logger.error(e);
-				return false;
+				result.setSuccess(false);
+				return result;
 			}
 		}
 

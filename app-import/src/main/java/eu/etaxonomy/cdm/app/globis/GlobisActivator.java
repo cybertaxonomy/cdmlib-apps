@@ -17,6 +17,8 @@ import org.apache.log4j.Logger;
 import eu.etaxonomy.cdm.api.application.ICdmApplicationConfiguration;
 import eu.etaxonomy.cdm.app.common.CdmDestinations;
 import eu.etaxonomy.cdm.app.common.CdmImportSources;
+import eu.etaxonomy.cdm.common.AccountStore;
+import eu.etaxonomy.cdm.common.CdmUtils;
 import eu.etaxonomy.cdm.database.DbSchemaValidation;
 import eu.etaxonomy.cdm.database.ICdmDataSource;
 import eu.etaxonomy.cdm.io.common.CdmDefaultImport;
@@ -26,6 +28,7 @@ import eu.etaxonomy.cdm.io.common.IImportConfigurator.EDITOR;
 import eu.etaxonomy.cdm.io.common.Source;
 import eu.etaxonomy.cdm.io.globis.GlobisImportConfigurator;
 import eu.etaxonomy.cdm.model.common.ISourceable;
+import eu.etaxonomy.cdm.model.common.User;
 import eu.etaxonomy.cdm.model.name.NomenclaturalCode;
 import eu.etaxonomy.cdm.model.name.ZoologicalName;
 
@@ -132,6 +135,15 @@ public class GlobisActivator {
 		// invoke import
 		CdmDefaultImport<GlobisImportConfigurator> globisImport = new CdmDefaultImport<GlobisImportConfigurator>();
 		globisImport.invoke(config);
+		
+		if (config.isDoNewUser()){
+			//single user or all
+			
+			String user = CdmUtils.readInputLine("Please insert username : ");
+			String pwd = CdmUtils.readInputLine("Please insert password for user '" + CdmUtils.Nz(user) + "': ");
+			ICdmApplicationConfiguration app = globisImport.getCdmAppController();
+			app.getUserService().save(User.NewInstance(user, pwd));
+		}
 		
 		if (config.getCheck().equals(CHECK.CHECK_AND_IMPORT)  || config.getCheck().equals(CHECK.IMPORT_WITHOUT_CHECK)    ){
 			ICdmApplicationConfiguration app = globisImport.getCdmAppController();

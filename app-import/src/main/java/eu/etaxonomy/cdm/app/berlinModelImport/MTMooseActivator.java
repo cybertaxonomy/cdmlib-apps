@@ -38,7 +38,7 @@ public class MTMooseActivator {
 	private static final Logger logger = Logger.getLogger(AlgaTerraActivator.class);
 
 	//database validation status (create, update, validate ...)
-	static DbSchemaValidation hbm2dll = DbSchemaValidation.CREATE;
+	static DbSchemaValidation hbm2dll = DbSchemaValidation.CREATE_DROP;
 	static final Source berlinModelSource = BerlinModelSources.MT_MOOSE();
 	
 //	static final ICdmDataSource cdmDestination = CdmDestinations.localH2();

@@ -63,7 +63,7 @@ public class BerlinModelImportConfigurator extends DbImportConfiguratorBase<Berl
 
 	private boolean useSingleClassification = false;
 	private boolean includeFlatClassifications = false;  //concepts with no taxon relationship (even no misapplied name or synonym rel)
-	private boolean includeAllNonMisappliedRelatedClassifications = false;  //all concepts with any relationship except for misapplied name relationships
+	private boolean includeAllNonMisappliedRelatedClassifications = true;  //all concepts with any relationship except for misapplied name relationships
 	
 	//occurrences
 	private boolean isSplitTdwgCodes = true;
