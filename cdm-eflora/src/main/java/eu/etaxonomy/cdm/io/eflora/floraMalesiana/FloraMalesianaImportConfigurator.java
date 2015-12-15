@@ -21,7 +21,8 @@ import eu.etaxonomy.cdm.io.eflora.EfloraTaxonImport;
 
 @Component
 public class FloraMalesianaImportConfigurator extends EfloraImportConfigurator  {
-	@SuppressWarnings("unused")
+    private static final long serialVersionUID = 6245230085258251671L;
+    @SuppressWarnings("unused")
 	private static final Logger logger = Logger.getLogger(FloraMalesianaImportConfigurator.class);
 
 	public static FloraMalesianaImportConfigurator NewInstance(URI uri, ICdmDataSource destination){

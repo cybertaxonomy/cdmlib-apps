@@ -1,9 +1,9 @@
 // $Id$
 /**
 * Copyright (C) 2007 EDIT
-* European Distributed Institute of Taxonomy 
+* European Distributed Institute of Taxonomy
 * http://www.e-taxonomy.eu
-* 
+*
 * The contents of this file are subject to the Mozilla Public License Version 1.1
 * See LICENSE.TXT at the top of this package for the full license terms.
 */
@@ -26,18 +26,17 @@ import eu.etaxonomy.cdm.model.description.Feature;
  * @version 1.0
  */
 public class EfloraTransformer extends InputTransformerBase {
-	@SuppressWarnings("unused")
-	private static final Logger logger = Logger.getLogger(EfloraTransformer.class);
-	
-	
-	
-	//feature uuids
+    private static final long serialVersionUID = -4804745203889579244L;
 
+    @SuppressWarnings("unused")
+	private static final Logger logger = Logger.getLogger(EfloraTransformer.class);
+
+	//feature uuids
 	public static final UUID uuidHabitat = UUID.fromString("fb16929f-bc9c-456f-9d40-dec987b36438");
 	public static final UUID uuidHabitatEcology = UUID.fromString("9fdc4663-4d56-47d0-90b5-c0bf251bafbb");
-	
+
 	public static final UUID uuidChromosomes = UUID.fromString("c4a60319-4978-4692-9545-58d60cf8379e");
-	
+
 	public static final UUID uuidNote = UUID.fromString("b9af1489-6b68-497f-8d4b-260a9f886827");
 	public static final UUID uuidNotes = UUID.fromString("e31bb420-f39e-493d-b452-dd5e63dda443");
 	public static final UUID uuidTaxonomy = UUID.fromString("0c80c395-038b-4bd6-9ff4-48f4511754b6");
@@ -118,7 +117,7 @@ public class EfloraTransformer extends InputTransformerBase {
 	public static final UUID uuidBark = UUID.fromString("a8cd7ed7-0e55-4aa6-8a6f-52bf497e1602");
 	public static final UUID uuidEndophyticBody = UUID.fromString("5b6c3525-bc9a-4ae9-b16b-814ea0ff3ffc");
 	public static final UUID uuidFloweringBuds = UUID.fromString("b3c8cd80-0eea-4747-83f9-32f2418c34ff");
-	
+
 	//VOL 13.1
 	public static final UUID uuidPerianth = UUID.fromString("bd1480bb-ce44-495f-a462-98db4ac80530");
 	public static final UUID uuidScales = UUID.fromString("bd1480bb-ce44-495f-a462-98db4ac80530");
@@ -142,17 +141,17 @@ public class EfloraTransformer extends InputTransformerBase {
 	public static final UUID uuidAnther = UUID.fromString("4c7cf621-11f7-4102-b49a-caa493364707");
 	public static final UUID uuidFlowerBearingStems = UUID.fromString("86ee899f-af71-4b51-aa1a-2666bab79cf0");
 	public static final UUID uuidFloweringBranchlets = UUID.fromString("e0364345-764c-4b39-943a-fad1eac0fe9e");
-	
-	
-	
+
+
+
 	//extension type uuids
 	public static final UUID uuidTitle = UUID.fromString("5d9ca987-81f1-4d6c-b06a-eaa8311ca249");
-	
+
 	//marker type uuid
 	public static final UUID uuidExcludedTaxon = UUID.fromString("e729a22d-8c94-4859-9f91-3e3ae212c91d");
 	public static final UUID uuidIncompleteTaxon = UUID.fromString("cb34d525-de64-4569-b277-3429ec49a09f");
-	
-	
+
+
 
 	/* (non-Javadoc)
 	 * @see eu.etaxonomy.cdm.io.common.mapping.InputTransformerBase#getFeatureByKey(java.lang.String)
@@ -167,9 +166,6 @@ public class EfloraTransformer extends InputTransformerBase {
 		}
 	}
 
-	/* (non-Javadoc)
-	 * @see eu.etaxonomy.cdm.io.common.mapping.InputTransformerBase#getFeatureUuid(java.lang.String)
-	 */
 	@Override
 	public UUID getFeatureUuid(String key) 	throws UndefinedTransformerMethodException {
 		if (CdmUtils.isBlank(key)){return null;
@@ -221,7 +217,7 @@ public class EfloraTransformer extends InputTransformerBase {
 		}else if (key.equalsIgnoreCase("Filaments")){return uuidFilaments;
 		}else if (key.equalsIgnoreCase("Pistillode")){return uuidPistillode;
 		}else if (key.equalsIgnoreCase("Stigma")){return uuidStigma;
-		}else if (key.equalsIgnoreCase("Petiole")){return uuidPetiole;	
+		}else if (key.equalsIgnoreCase("Petiole")){return uuidPetiole;
 		}else if (key.equalsIgnoreCase("Buds")){return uuidBuds;
 		}else if (key.equalsIgnoreCase("Stems")){return uuidStems;
 		}else if (key.equalsIgnoreCase("Trees")){return uuidTrees;
@@ -251,21 +247,21 @@ public class EfloraTransformer extends InputTransformerBase {
 		}else if (key.equalsIgnoreCase("chromosome number")){return uuidChromosomeNumber;
 		}else if (key.equalsIgnoreCase("stem leaves")){return uuidStemLeaves;
 		}else if (key.equalsIgnoreCase("flower tube")){return uuidFlowerTube;
-		
+
 		}else if (key.equalsIgnoreCase("seed")){return uuidSeed;
 		}else if (key.equalsIgnoreCase("drupes")){return uuidDrupes;
 		}else if (key.equalsIgnoreCase("fruiting axes")){return uuidFruitingAxes;
 		}else if (key.equalsIgnoreCase("androecium")){return uuidAndroecium;
 		}else if (key.equalsIgnoreCase("gynoecium")){return uuidGynoecium;
-		
+
 		}else if (key.equalsIgnoreCase("anther")){return uuidAnther;
 		}else if (key.equalsIgnoreCase("flower-bearing stems")){return uuidFlowerBearingStems;
 		}else if (key.equalsIgnoreCase("Flowering branchlets")){return uuidFloweringBranchlets;
-		
+
 		}else if (key.equalsIgnoreCase("Pseudo-stipules")){return uuidPseudoStipules;
 		}else if (key.equalsIgnoreCase("Wall of fruit inside")){return uuidWallOfFruitInside;
-				
-		
+
+
 		}else if (key.equalsIgnoreCase("Note")){return uuidNote;
 		}else if (key.equalsIgnoreCase("Notes")){return uuidNotes;
 		}else if (key.equalsIgnoreCase("Taxonomy")){return uuidTaxonomy;
@@ -287,15 +283,15 @@ public class EfloraTransformer extends InputTransformerBase {
 		}else if (key.equalsIgnoreCase("Morphology and anatomy")){return uuidMorphologyAndAnatomy;
 //		}else if (key.equalsIgnoreCase("Inflorescence")){return uuidInflorescence;
 
-		
-		
+
+
 		}else{
 			return null;
 		}
-		
+
 	}
 
-	
+
 
 	/* (non-Javadoc)
 	 * @see eu.etaxonomy.cdm.io.common.mapping.InputTransformerBase#getMarkerTypeByKey(java.lang.String)
@@ -320,21 +316,21 @@ public class EfloraTransformer extends InputTransformerBase {
 		}else if (key.equalsIgnoreCase("INSUFICIENTLY KNOWN")){return uuidIncompleteTaxon;
 		}else if (key.equalsIgnoreCase("INSUFFICIENTLY KNOWN")){return uuidIncompleteTaxon;
 		}else if (key.equalsIgnoreCase("IMPERFECTLY KNOWN SPECIES")){return uuidIncompleteTaxon;
-		
+
 //		}else if (key.equalsIgnoreCase("CULTIVATED, EXOTIC SAPINDACEAE")){return uuidIncompleteTaxon;
-		
+
 		}else{
 			return null;
 		}
-		
+
 //		<xs:enumeration value="DOUBTFUL OR ERRONEOUS RECORDS"/>
 //		<xs:enumeration value="DOUBTFUL SPECIES, PROBABLY TO BE EXCLUDED"/>
 //		<xs:enumeration value="EXCLUDED OR DOUBTFUL NAMES"/>
 //		<xs:enumeration value="CULTIVATED, EXOTIC SAPINDACEAE"/>
 	}
-	
-	
-	
-	
-	
+
+
+
+
+
 }
