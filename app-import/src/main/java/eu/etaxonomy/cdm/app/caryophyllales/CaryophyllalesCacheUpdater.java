@@ -14,10 +14,6 @@ import eu.etaxonomy.cdm.model.taxon.TaxonBase;
 
 public class CaryophyllalesCacheUpdater {
 
-
-
-
-
 		private static final Logger logger = Logger.getLogger(CaryophyllalesCacheUpdater.class);
 
 		//database validation status (create, update, validate ...)

@@ -1,8 +1,8 @@
 /**
 * Copyright (C) 2007 EDIT
-* European Distributed Institute of Taxonomy 
+* European Distributed Institute of Taxonomy
 * http://www.e-taxonomy.eu
-* 
+*
 * The contents of this file are subject to the Mozilla Public License Version 1.1
 * See LICENSE.TXT at the top of this package for the full license terms.
 */
@@ -46,22 +46,24 @@ import eu.etaxonomy.cdm.model.taxon.TaxonBase;
  * @version 1.0
  */
 public abstract class BerlinModelImportBase extends DbImportBase<BerlinModelImportState, BerlinModelImportConfigurator>  implements ICdmIO<BerlinModelImportState>, IPartitionedIO<BerlinModelImportState> {
-	private static final Logger logger = Logger.getLogger(BerlinModelImportBase.class);
-	
+    private static final long serialVersionUID = -4982506434258587864L;
+    private static final Logger logger = Logger.getLogger(BerlinModelImportBase.class);
+
 	public BerlinModelImportBase(String tableName, String pluralString ) {
 		super(tableName, pluralString);
 	}
-	
+
 
 	/**
 	 * @return
 	 */
-	protected String getIdQuery(BerlinModelImportState state){
+	@Override
+    protected String getIdQuery(BerlinModelImportState state){
 		String result = " SELECT " + getTableName() + "id FROM " + getTableName();
 		return result;
 	}
 
-	
+
 	protected boolean doIdCreatedUpdatedNotes(BerlinModelImportState state, DescriptionElementBase descriptionElement, ResultSet rs, String id, String namespace) throws SQLException{
 		boolean success = true;
 		//id
@@ -70,8 +72,8 @@ public abstract class BerlinModelImportBase extends DbImportBase<BerlinModelImpo
 		success &= doCreatedUpdatedNotes(state, descriptionElement, rs);
 		return success;
 	}
-	
-	protected boolean doIdCreatedUpdatedNotes(BerlinModelImportState state, IdentifiableEntity identifiableEntity, ResultSet rs, long id, String namespace, boolean excludeUpdated, boolean excludeNotes)	
+
+	protected boolean doIdCreatedUpdatedNotes(BerlinModelImportState state, IdentifiableEntity identifiableEntity, ResultSet rs, long id, String namespace, boolean excludeUpdated, boolean excludeNotes)
 			throws SQLException{
 		boolean success = true;
 		//id
@@ -81,19 +83,19 @@ public abstract class BerlinModelImportBase extends DbImportBase<BerlinModelImpo
 		return success;
 	}
 
-	
+
 	protected boolean doIdCreatedUpdatedNotes(BerlinModelImportState state, IdentifiableEntity identifiableEntity, ResultSet rs, long id, String namespace)
 			throws SQLException{
 		boolean excludeUpdated = false;
 		return doIdCreatedUpdatedNotes(state, identifiableEntity, rs, id, namespace, excludeUpdated, false);
 	}
-	
+
 	protected boolean doCreatedUpdatedNotes(BerlinModelImportState state, AnnotatableEntity annotatableEntity, ResultSet rs)
 			throws SQLException{
 		boolean excludeUpdated = false;
 		return doCreatedUpdatedNotes(state, annotatableEntity, rs, excludeUpdated, false);
 	}
-	
+
 	protected boolean doCreatedUpdatedNotes(BerlinModelImportState state, AnnotatableEntity annotatableEntity, ResultSet rs, boolean excludeUpdated, boolean excludeNotes)
 			throws SQLException{
 
@@ -112,9 +114,9 @@ public abstract class BerlinModelImportBase extends DbImportBase<BerlinModelImpo
 			}
 		}
 		String notes = rs.getString("notes");
-		
+
 		boolean success  = true;
-		
+
 		//Created When, Who, Updated When Who
 		if (config.getEditor() == null || config.getEditor().equals(EDITOR.NO_EDITORS)){
 			//do nothing
@@ -140,15 +142,15 @@ public abstract class BerlinModelImportBase extends DbImportBase<BerlinModelImpo
 		}else {
 			logger.warn("Editor type not yet implemented: " + config.getEditor());
 		}
-		
-		
+
+
 		//notes
 		if (! excludeNotes){
 			doNotes(annotatableEntity, notes);
 		}
 		return success;
 	}
-	
+
 	/**
 	 * Special usecase for EDITWP6 import where in the createdWho field the original ID is stored
 	 * @param createdWho
@@ -179,7 +181,7 @@ public abstract class BerlinModelImportBase extends DbImportBase<BerlinModelImpo
 		}
 		return dateTime;
 	}
-	
+
 	/**
 	 * @param state
 	 * @param newTaxonId
@@ -189,12 +191,12 @@ public abstract class BerlinModelImportBase extends DbImportBase<BerlinModelImpo
 	 */
 	protected Taxon getTaxon(BerlinModelImportState state, int taxonId, Map<String, TaxonBase> taxonMap, int factId) {
 		TaxonBase<?> taxonBase = taxonMap.get(String.valueOf(taxonId));
-		
+
 		//TODO for testing
 		if (taxonBase == null && ! state.getConfig().isDoTaxa()){
 			taxonBase = Taxon.NewInstance(BotanicalName.NewInstance(Rank.SPECIES()), null);
 		}
-		
+
 		Taxon taxon;
 		if ( taxonBase instanceof Taxon ) {
 			taxon = (Taxon) taxonBase;
@@ -240,15 +242,15 @@ public abstract class BerlinModelImportBase extends DbImportBase<BerlinModelImpo
 		}
 		return ref;
 	}
-	
+
 
 	/**
-	 * Searches for a reference in the first detail map. If it does not exist it 
+	 * Searches for a reference in the first detail map. If it does not exist it
 	 * searches in the second detail map. Returns null if it does not exist in any map.
 	 * A map may be <code>null</code> to avoid search on this map.
-	 * @param secondDetailMap 
-	 * @param firstDetailMap 
-	 * @param nomRefDetailFk 
+	 * @param secondDetailMap
+	 * @param firstDetailMap
+	 * @param nomRefDetailFk
 	 * @return
 	 */
 	private Reference getReferenceDetailFromMaps(Map<String, Reference> firstDetailMap, Map<String, Reference> secondDetailMap, String nomRefDetailFk) {
@@ -264,7 +266,7 @@ public abstract class BerlinModelImportBase extends DbImportBase<BerlinModelImpo
 		}
 		return result;
 	}
-	
+
 	protected NamedArea getOtherAreas(BerlinModelImportState state, String emCodeString, String tdwgCodeString) {
 		String em = CdmUtils.Nz(emCodeString).trim();
 		String tdwg = CdmUtils.Nz(tdwgCodeString).trim();
@@ -273,20 +275,20 @@ public abstract class BerlinModelImportBase extends DbImportBase<BerlinModelImpo
 			return getNamedArea(state, BerlinModelTransformer.euroMedUuid, "Euro+Med", "Euro+Med area", "EM", null, null);
 		}else if("Rf".equals(em)){
 			return Country.RUSSIANFEDERATION();
-		
+
 		}else if("KRY-OO;UKR-UK".equals(tdwg)){
 			return Country.UKRAINE();
-		
+
 		}else if("TCS-AZ;TCS-NA".equals(tdwg)){
 			return Country.AZERBAIJANREPUBLICOF();
 		}else if("TCS-AB;TCS-AD;TCS-GR".equals(tdwg)){
 			return Country.GEORGIA();
-		
-		
+
+
 		}else if("Cc".equals(em)){
 			return getNamedArea(state, BerlinModelTransformer.uuidCaucasia, "Caucasia (Ab + Ar + Gg + Rf(CS))", "Euro+Med area 'Caucasia (Ab + Ar + Gg + Rf(CS))'", "Cc", null, null);
 		}
-		
+
 		//E+M
 		else if("EUR".equals(em)){
 			return TdwgAreaProvider.getAreaByTdwgAbbreviation("1");
@@ -296,13 +298,13 @@ public abstract class BerlinModelImportBase extends DbImportBase<BerlinModelImpo
 			return TdwgAreaProvider.getAreaByTdwgAbbreviation("21");  // Macaronesia
 		}else if("33".equals(em)){
 			return TdwgAreaProvider.getAreaByTdwgAbbreviation("33");
-		
+
 		}else if("SM".equals(em)){
 			return getNamedArea(state, BerlinModelTransformer.uuidSerbiaMontenegro, "Serbia & Montenegro", "Euro+Med area 'Serbia & Montenegro'", "SM", NamedAreaType.ADMINISTRATION_AREA(), null);
 		}else if("Sr".equals(em)){
 			return getNamedArea(state, BerlinModelTransformer.uuidSerbia, "Serbia", "Euro+Med area 'Serbia' (including Kosovo and Vojvodina)", "Sr", NamedAreaType.ADMINISTRATION_AREA(), null);
-		
-		
+
+
 		//see #2769
 		}else if("Rs".equals(em)){
 			return getNamedArea(state, BerlinModelTransformer.uuidUssr, "Former USSR", "Euro+Med area 'Former USSR'", "Rs", NamedAreaType.ADMINISTRATION_AREA(), null);
@@ -316,7 +318,7 @@ public abstract class BerlinModelImportBase extends DbImportBase<BerlinModelImpo
 			return getNamedArea(state, BerlinModelTransformer.uuidRussiaSouthWest, "Russia Southwest", "Euro+Med area 'Russia Southwest'", "Rs(W)", null, null);
 		}else if("Rs(E)".equals(em)){
 			return getNamedArea(state, BerlinModelTransformer.uuidRussiaSouthEast, "Russia Southeast", "Euro+Med area 'Russia Southeast'", "Rs(E)", null, null);
-			
+
 		//see #2770
 		}else if("AE".equals(em)){
 			return getNamedArea(state, BerlinModelTransformer.uuidEastAegeanIslands, "East Aegean Islands", "Euro+Med area 'East Aegean Islands'", "AE", null, null);
@@ -324,8 +326,8 @@ public abstract class BerlinModelImportBase extends DbImportBase<BerlinModelImpo
 			return getNamedArea(state, BerlinModelTransformer.uuidTurkishEastAegeanIslands, "Turkish East Aegean Islands", "Euro+Med area 'Turkish East Aegean Islands'", "AE(T)", null, null);
 		}else if("Tu".equals(em)){
 			return getNamedArea(state, BerlinModelTransformer.uuidTurkey, "Turkey", "Euro+Med area 'Turkey' (without AE(T))", "Tu", null, null);
-		
-		//TODO Azores, Canary Is. 
+
+		//TODO Azores, Canary Is.
 		}else if("Md(D)".equals(em)){
 			return getNamedArea(state, BerlinModelTransformer.uuidDesertas, "Desertas", "Euro+Med area 'Desertas'", "Md(D)", null, null);
 		}else if("Md(M)".equals(em)){
@@ -374,11 +376,11 @@ public abstract class BerlinModelImportBase extends DbImportBase<BerlinModelImpo
 		}else if("Bl(N)".equals(em)){
 			return getNamedArea(state, BerlinModelTransformer.uuidTerceira, "Menorca", "Euro+Med area 'Menorca'", "Bl(N)", null, null);
 		}
-		
+
 		logger.warn("Area(em: '" + em + "', tdwg: '" + tdwg +"') could not be found for occurrence import");
-		
+
 		return null;
 	}
 
-	
+
 }

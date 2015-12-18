@@ -1,8 +1,8 @@
 /**
 * Copyright (C) 2007 EDIT
-* European Distributed Institute of Taxonomy 
+* European Distributed Institute of Taxonomy
 * http://www.e-taxonomy.eu
-* 
+*
 * The contents of this file are subject to the Mozilla Public License Version 1.1
 * See LICENSE.TXT at the top of this package for the full license terms.
 */
@@ -30,38 +30,42 @@ import eu.etaxonomy.cdm.model.reference.ReferenceFactory;
  * @version 1.0
  */
 public class CyprusImportConfigurator extends ExcelImportConfiguratorBase implements IImportConfigurator{
-	@SuppressWarnings("unused")
+    private static final long serialVersionUID = 5590553979984931651L;
+
+    @SuppressWarnings("unused")
 	private static Logger logger = Logger.getLogger(CyprusImportConfigurator.class);
 
 	private UUID uuidCyprusReference = UUID.fromString("b5281cd3-9d5d-4ae2-8d55-b62a592ce846");
-	
+
 	private String cyprusReferenceTitle = "Cyprus Distributions Excel Import";
 
 	private boolean doDistribution;
 	private boolean isDoTaxa;
-	
+
 	private static IInputTransformer defaultTransformer = new CyprusTransformer();
-	
+
 	public static CyprusImportConfigurator NewInstance(URI source, ICdmDataSource destination){
 		return new CyprusImportConfigurator(source, destination);
 }
 
 
-	
-	protected void makeIoClassList(){
+
+	@Override
+    protected void makeIoClassList(){
 		ioClassList = new Class[]{
 				CyprusUserImport.class,
 				CyprusExcelImport.class ,
 				CyprusDistributionImport.class ,
-				
-		};	
+
+		};
 	}
-	
+
 
 	/* (non-Javadoc)
 	 * @see eu.etaxonomy.cdm.io.common.IImportConfigurator#getNewState()
 	 */
-	public ImportStateBase getNewState() {
+	@Override
+    public ImportStateBase getNewState() {
 		return new CyprusImportState(this);
 	}
 
@@ -69,23 +73,26 @@ public class CyprusImportConfigurator extends ExcelImportConfiguratorBase implem
 
 	private CyprusImportConfigurator(URI source, ICdmDataSource destination) {
 	   super(source, destination, defaultTransformer);
-	   setNomenclaturalCode(NomenclaturalCode.ICNAFP); 
+	   setNomenclaturalCode(NomenclaturalCode.ICNAFP);
 	   setSource(source);
 	   setDestination(destination);
 	}
-	
-	
-	public URI getSource() {
-		return (URI)super.getSource();
+
+
+	@Override
+    public URI getSource() {
+		return super.getSource();
 	}
-	public void setSource(URI source) {
+	@Override
+    public void setSource(URI source) {
 		super.setSource(source);
 	}
 
 	/* (non-Javadoc)
 	 * @see eu.etaxonomy.cdm.io.tcsrdf.IImportConfigurator#getSourceReference()
 	 */
-	public Reference getSourceReference() {
+	@Override
+    public Reference getSourceReference() {
 		if (sourceReference == null){
 			sourceReference =  ReferenceFactory.newDatabase();
 			if (getSource() != null){
@@ -94,11 +101,12 @@ public class CyprusImportConfigurator extends ExcelImportConfiguratorBase implem
 		}
 		return sourceReference;
 	}
-	
+
 	/* (non-Javadoc)
 	 * @see eu.etaxonomy.cdm.io.common.IImportConfigurator#getSourceNameString()
 	 */
-	public String getSourceNameString() {
+	@Override
+    public String getSourceNameString() {
 		return getSource().toString();
 	}
 
@@ -127,11 +135,11 @@ public class CyprusImportConfigurator extends ExcelImportConfiguratorBase implem
 	public void setDoDistribution(boolean doDistribution) {
 		this.doDistribution = doDistribution;
 	}
-	
+
 	public boolean isDoDistribution(){
 		return this.doDistribution;
 	}
-	
+
 
 	public void setDoTaxa(boolean isDoTaxa) {
 		this.isDoTaxa = isDoTaxa;
@@ -140,7 +148,7 @@ public class CyprusImportConfigurator extends ExcelImportConfiguratorBase implem
 	public boolean isDoTaxa() {
 		return isDoTaxa;
 	}
-	
-	
+
+
 
 }

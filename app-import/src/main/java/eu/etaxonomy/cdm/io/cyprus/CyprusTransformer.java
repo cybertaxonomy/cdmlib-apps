@@ -1,9 +1,9 @@
 // $Id$
 /**
 * Copyright (C) 2007 EDIT
-* European Distributed Institute of Taxonomy 
+* European Distributed Institute of Taxonomy
 * http://www.e-taxonomy.eu
-* 
+*
 * The contents of this file are subject to the Mozilla Public License Version 1.1
 * See LICENSE.TXT at the top of this package for the full license terms.
 */
@@ -15,7 +15,6 @@ import java.util.UUID;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 
-import eu.etaxonomy.cdm.common.CdmUtils;
 import eu.etaxonomy.cdm.io.common.mapping.InputTransformerBase;
 import eu.etaxonomy.cdm.io.common.mapping.UndefinedTransformerMethodException;
 import eu.etaxonomy.cdm.model.common.MarkerType;
@@ -26,14 +25,17 @@ import eu.etaxonomy.cdm.model.common.MarkerType;
  * @version 1.0
  */
 public final class CyprusTransformer extends InputTransformerBase {
-	@SuppressWarnings("unused")
+    private static final long serialVersionUID = 6499276527625309482L;
+
+
+    @SuppressWarnings("unused")
 	private static final Logger logger = Logger.getLogger(CyprusTransformer.class);
-	
+
 
 	//feature
 	public static final UUID redBookUuid =  UUID.fromString("df59d44a-ee5a-4c01-8637-127cc804842d");
 	public static final UUID endemismUuid =  UUID.fromString("dd343c31-1916-4786-a530-536ea995dce4");
-	
+
 	//presenceTerm
 	public static final UUID indigenousUuid = UUID.fromString("b325859b-504b-45e0-9ef0-d5c1602fcc0f");
 	public static final UUID casualUuid = UUID.fromString("5e81353c-38a3-4ca6-b979-0d9abc93b877");
@@ -48,11 +50,11 @@ public final class CyprusTransformer extends InputTransformerBase {
 	public static final UUID questionableDoubtfulUuid = UUID.fromString("914e7393-1314-4632-bc45-5eff3dc1e424");
 
 	public static final UUID cultivatedDoubtfulUuid = UUID.fromString("4f31bfc8-3058-4d83-aea5-3a1fe9773f9f");
-	
-	//Named Area - divisions 
+
+	//Named Area - divisions
 	public static final UUID uuidCyprusDivisionsVocabulary = UUID.fromString("2119f610-1f93-4d87-af28-40aeefaca100");
 	public static final UUID uuidCyprusDivisionsAreaLevel = UUID.fromString("ff52bbd9-f73d-4476-af39-f3991fa892bd");
-	
+
 	public static final UUID uuidDivision1 = UUID.fromString("ab17eee9-1abb-4ce9-a9a2-563f840cdbfc");
 	public static final UUID uuidDivision2 = UUID.fromString("c3606165-efb7-4224-a168-63e009eb4aa5");
 	public static final UUID uuidDivision3 = UUID.fromString("750d4e07-e34b-491f-a7b7-09723afdc960");
@@ -61,10 +63,10 @@ public final class CyprusTransformer extends InputTransformerBase {
 	public static final UUID uuidDivision6 = UUID.fromString("fbf21230-4a42-4f4c-9af8-5da52123c264");
 	public static final UUID uuidDivision7 = UUID.fromString("d31dd96a-36ea-4428-871c-d8552a9565ca");
 	public static final UUID uuidDivision8 = UUID.fromString("236ea447-c3ab-486d-9e06-cc5907861acc");
-	
-	
 
-	
+
+
+
 	/* (non-Javadoc)
 	 * @see eu.etaxonomy.cdm.io.common.mapping.InputTransformerBase#getMarkerTypeByKey(java.lang.String)
 	 */
@@ -87,7 +89,7 @@ public final class CyprusTransformer extends InputTransformerBase {
 		}
 
 	}
-	
+
 	@Override
 	public UUID getPresenceTermUuid(String key) throws UndefinedTransformerMethodException {
 		if (StringUtils.isBlank(key)){return null;
@@ -107,7 +109,7 @@ public final class CyprusTransformer extends InputTransformerBase {
 		}
 
 	}
-	
+
 	@Override
 	public UUID getFeatureUuid(String key) throws UndefinedTransformerMethodException {
 		if (StringUtils.isBlank(key)){return null;
@@ -132,13 +134,13 @@ public final class CyprusTransformer extends InputTransformerBase {
 		}else if (key.equalsIgnoreCase("8")){return uuidDivision8;
 		}else{
 			return null;
-		}	
+		}
 	}
-	
-	
-	
-	
-	
-	
-	
+
+
+
+
+
+
+
 }

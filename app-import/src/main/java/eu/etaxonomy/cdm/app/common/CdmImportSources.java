@@ -1,9 +1,9 @@
 // $Id$
 /**
 * Copyright (C) 2009 EDIT
-* European Distributed Institute of Taxonomy 
+* European Distributed Institute of Taxonomy
 * http://www.e-taxonomy.eu
-* 
+*
 * The contents of this file are subject to the Mozilla Public License Version 1.1
 * See LICENSE.TXT at the top of this package for the full license terms.
 */
@@ -26,7 +26,7 @@ import eu.etaxonomy.cdm.io.common.Source;
 public class CdmImportSources extends SourceBase{
 	@SuppressWarnings("unused")
 	private static final Logger logger = Logger.getLogger(CdmImportSources.class);
-	
+
 	public static Source ROTE_LISTE_DB(){
 		String dbms = Source.ORACLE;
 		String strServer = "xxx";
@@ -36,7 +36,7 @@ public class CdmImportSources extends SourceBase{
 		return  makeSource(dbms, strServer, strDB, port, userName, null);
 	}
 
-	
+
 	public static Source GLOBIS(){
 		String dbms = Source.SQL_SERVER_2005;
 		String strServer = "LENOVO-T61";
@@ -54,7 +54,7 @@ public class CdmImportSources extends SourceBase{
 		String userName = "sa";
 		return  makeSource(dbms, strServer, strDB, port, userName, null);
 	}
-	
+
 	public static Source GLOBIS_MDB(){
 		String dbms = Source.ACCESS;
 		String strServer = null;
@@ -81,7 +81,7 @@ public class CdmImportSources extends SourceBase{
 		String userName = "";
 		return  makeSource(dbms, strServer, strDB, port, userName, null);
 	}
-	
+
 	//Problem MS Access ODBC Driver does not work on PESIIMPORT 3
 	@Deprecated
 	public static Source GLOBIS_MDB_20140113_PESIIMPORT(){
@@ -92,7 +92,7 @@ public class CdmImportSources extends SourceBase{
 		String userName = "";
 		return  makeSource(dbms, strServer, strDB, port, userName, null);
 	}
-	
+
 	public static Source GLOBIS_MDB_20140113_PESIIMPORT_SQLSERVER(){
 		String dbms = Source.SQL_SERVER_2008;
 		String strServer = "PESIIMPORT3";
@@ -101,16 +101,25 @@ public class CdmImportSources extends SourceBase{
 		String userName = "globisImport";
 		return  makeSource(dbms, strServer, strDB, port, userName, null);
 	}
-	
+
 	public static URI SYNTHESYS_SPECIMEN(){
 		//		tcsXmlTest.xml
 		URL url = new TcsSources().getClass().getResource("/specimen/SynthesysSpecimenExample.xls");
 		String sourceUrl = url.toString();
 		URI uri = URI.create(sourceUrl);
-		return uri;	
+		return uri;
 	}
-	
-	
-	
+
+    public static Source EDAPHOBASE(){
+        String dbms = Source.POSTGRESQL9;
+        String strServer = "130.133.70.26";  //BGBM-PESISQL
+        String strDB = "edaphobase";
+        int port = 5432;
+        String userName = "postgres";
+        return  makeSource(dbms, strServer, strDB, port, userName, null);
+    }
+
+
+
 
 }

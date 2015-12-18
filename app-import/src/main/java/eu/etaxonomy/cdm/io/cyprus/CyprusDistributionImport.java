@@ -1,8 +1,8 @@
 /**
  * Copyright (C) 2007 EDIT
- * European Distributed Institute of Taxonomy 
+ * European Distributed Institute of Taxonomy
  * http://www.e-taxonomy.eu
- * 
+ *
  * The contents of this file are subject to the Mozilla Public License Version 1.1
  * See LICENSE.TXT at the top of this package for the full license terms.
  */
@@ -54,10 +54,7 @@ import eu.etaxonomy.cdm.model.taxon.Taxon;
 @Component
 public class CyprusDistributionImport extends ExcelImporterBase<CyprusImportState> {
 	private static final Logger logger = Logger.getLogger(CyprusDistributionImport.class);
-	
-	/* (non-Javadoc)
-	 * @see eu.etaxonomy.cdm.io.common.CdmIoBase#doCheck(eu.etaxonomy.cdm.io.common.IoStateBase)
-	 */
+
 	@Override
 	protected boolean doCheck(CyprusImportState state) {
 		logger.warn("DoCheck not yet implemented for CyprusExcelImport");
@@ -68,29 +65,29 @@ public class CyprusDistributionImport extends ExcelImporterBase<CyprusImportStat
 	protected static final String SPECIES_COLUMN = "Taxon";
 	protected static final String DISTRIBUTION_COLUMN = "Distribution";
 	protected static final String REFERENCE_COLUMN = "source";
-	
+
 
 	private Reference<?> refMeikle1977 = ReferenceFactory.newGeneric();
 	private Reference<?> refMeikle1985 = ReferenceFactory.newGeneric();
-	
-	private Map<String, Taxon> taxonWithAuthorStore = new HashMap<String, Taxon>(); 
-	private Map<String, Taxon> taxonNameOnlyStore = new HashMap<String, Taxon>();
+
+	private final Map<String, Taxon> taxonWithAuthorStore = new HashMap<String, Taxon>();
+	private final Map<String, Taxon> taxonNameOnlyStore = new HashMap<String, Taxon>();
 
 
 	private boolean areasCreated = false;
-	private Map<String, NamedArea> divisions = new HashMap<String, NamedArea>();
-	
+	private final Map<String, NamedArea> divisions = new HashMap<String, NamedArea>();
+
 	private void makeAreasAndReference(CyprusImportState state) {
 		if (areasCreated == false){
 			IInputTransformer transformer = state.getTransformer();
 			try {
 				//divisions
 				makeNewDivisions(state, transformer);
-				
+
 				loadReferences();
 				loadStatus();
 				loadTaxa();
-				
+
 				areasCreated = true;
 				return;
 			} catch (Exception e) {
@@ -101,14 +98,14 @@ public class CyprusDistributionImport extends ExcelImporterBase<CyprusImportStat
 		}
 	}
 
-	/** 
+	/**
 	 *  Stores taxa records in DB
 	 */
 	@Override
     protected void firstPass(CyprusImportState state) {
-		
+
 		makeAreasAndReference(state);
-		
+
 		CyprusDistributionRow taxonLight = state.getCyprusDistributionRow();
 		//species name
 		String taxonStr = taxonLight.getSpecies();
@@ -121,25 +118,25 @@ public class CyprusDistributionImport extends ExcelImporterBase<CyprusImportStat
 		if (taxon != null){
 			makeDistribution(state, taxon, taxonLight.getDistribution(), ref);
 			getTaxonService().save(taxon);
-		}	
-			
+		}
+
 		return;
     }
 
-	
+
 	protected static final boolean CREATE = true;
 	protected static final boolean CREATE_NOT = false;
 	protected static final boolean NO_IMAGE_GALLERY = false;
 	protected static final boolean IMAGE_GALLERY = false;
-	
+
 	private void makeDistribution(CyprusImportState state, Taxon taxon, String distributionStr, Reference<?> ref) {
-		
+
 //		TaxonDescription description = getTaxonDescription(taxon, NO_IMAGE_GALLERY, CREATE);
 		TaxonDescription description = getNewDescription(state, taxon);
 		PresenceAbsenceTerm status = getStatus(taxon);
 		status = removeDoubtfulStatus(status);
 		removeDistributions(taxon);
-		
+
 		for (int i = 1; i <= 8; i++){
 			if (distributionStr.contains(String.valueOf(i))){
 				NamedArea area = this.divisions.get(String.valueOf(i));
@@ -149,7 +146,7 @@ public class CyprusDistributionImport extends ExcelImporterBase<CyprusImportStat
 			}
 		}
 	}
-	
+
 	private TaxonDescription getNewDescription(CyprusImportState state, Taxon taxon) {
 		Reference<?> excelRef = state.getConfig().getSourceReference();
 		TaxonDescription desc = TaxonDescription.NewInstance(taxon, false);
@@ -163,7 +160,7 @@ public class CyprusDistributionImport extends ExcelImporterBase<CyprusImportStat
 	private PresenceAbsenceTerm nonInvasiveStatus;
 	private PresenceAbsenceTerm invasiveStatus;
 	private PresenceAbsenceTerm questionableStatus;
-	
+
 	private PresenceAbsenceTerm removeDoubtfulStatus(PresenceAbsenceTerm status) {
 		if (status == null){
 			return null;
@@ -181,7 +178,7 @@ public class CyprusDistributionImport extends ExcelImporterBase<CyprusImportStat
 		}else if (status.getUuid().equals(CyprusTransformer.cultivatedDoubtfulUuid)){
 			status = PresenceAbsenceTerm.CULTIVATED();
 		}
-		
+
 		return status;
 	}
 
@@ -195,7 +192,7 @@ public class CyprusDistributionImport extends ExcelImporterBase<CyprusImportStat
 			PresenceAbsenceTerm status = distribution.getStatus();
 			statusSet.add(status);
 		}
-		
+
 		if (statusSet.size() == 0){
 			logger.warn("No status found for: " +  taxon.getTitleCache());
 			return null;
@@ -232,7 +229,7 @@ public class CyprusDistributionImport extends ExcelImporterBase<CyprusImportStat
 		}
 		return;
 	}
-	
+
 	/**
 	 * @param taxon
 	 * @param statusSet
@@ -251,7 +248,7 @@ public class CyprusDistributionImport extends ExcelImporterBase<CyprusImportStat
 		}
 		return result;
 	}
-	
+
 	private Reference<?> getReference(String referenceStr) {
 		Reference<?> result;
 		if ("Meikle 1977".equals(referenceStr)){
@@ -276,7 +273,7 @@ public class CyprusDistributionImport extends ExcelImporterBase<CyprusImportStat
 //			result = getTaxonService().findBestMatchingTaxon(taxonStr);
 //			TaxonNameBase name = BotanicalName.NewInstance(Rank.SPECIES());
 //			name.setTitleCache(taxonStr, true);
-//			
+//
 //			result = Taxon.NewInstance(name, null);
 //			if (result == null){
 				logger.warn("Taxon not found: " +  taxonStr);
@@ -288,15 +285,15 @@ public class CyprusDistributionImport extends ExcelImporterBase<CyprusImportStat
 		return result;
 	}
 
-	
+
 
 	/**
-	 * 
+	 *
 	 */
 	private void loadTaxa() {
 		List<String> propertyPaths = new ArrayList<String>();
 		propertyPaths.add("*.name");
-		List<Taxon> taxonList = (List)getTaxonService().list(Taxon.class, null, null, null, propertyPaths);
+		List<Taxon> taxonList = getTaxonService().list(Taxon.class, null, null, null, propertyPaths);
 		for (Taxon taxon: taxonList){
 			if (taxon.getTaxonNodes().size() == 0){
 				continue;
@@ -319,13 +316,13 @@ public class CyprusDistributionImport extends ExcelImporterBase<CyprusImportStat
 	 */
 	private void loadReferences() {
 		Pager<Reference> meikle1977List = getReferenceService().findByTitle(Reference.class, "R. D. Meikle, Flora of Cyprus 1. 1977", null, null, null, null, null, null);
-		
+
 		if (meikle1977List.getCount() != 1){
 			logger.error("There is not exactly 1 Meikle 1977 reference");
 		}else{
 			refMeikle1977 = meikle1977List.getRecords().iterator().next();
 		}
-		
+
 		Pager<Reference> meikle1985List = getReferenceService().findByTitle(Reference.class, "R. D. Meikle, Flora of Cyprus 2. 1985", null, null, null, null, null, null);
 		if (meikle1985List.getCount() != 1){
 			logger.error("There is not exactly 1 Meikle 1985 reference");
@@ -335,7 +332,7 @@ public class CyprusDistributionImport extends ExcelImporterBase<CyprusImportStat
 	}
 
 	/**
-	 * 
+	 *
 	 */
 	private void loadStatus() {
 		indigenousStatus = (PresenceAbsenceTerm)getTermService().find(CyprusTransformer.indigenousUuid);
@@ -359,11 +356,11 @@ public class CyprusDistributionImport extends ExcelImporterBase<CyprusImportStat
 			areaLevel = NamedAreaLevel.NewInstance("Cyprus Division", "Cyprus Division", null);
 			getTermService().save(areaLevel);
 		}
-		
+
 		TermVocabulary<NamedArea> areaVocabulary = getVocabulary(TermType.NamedArea, CyprusTransformer.uuidCyprusDivisionsVocabulary, "Cyprus devisions", "Cyprus divisions", null, null, true, NamedArea.NewInstance());
 		NamedArea tdwg4Cyprus = (NamedArea)getTermService().find(UUID.fromString("9d447b51-e363-4dde-ae40-84c55679983c"));
 		Country isoCountryCyprus = (Country)getTermService().find(UUID.fromString("4b13d6b8-7eca-4d42-8172-f2018051ca19"));
-		
+
 		for(int i = 1; i <= 8; i++){
 			UUID divisionUuid = transformer.getNamedAreaUuid(String.valueOf(i));
 			NamedArea division = this.getNamedArea(state, divisionUuid, "Division " + i, "Cyprus: Division " + i, String.valueOf(i), areaType, areaLevel, areaVocabulary, null);
@@ -374,17 +371,14 @@ public class CyprusDistributionImport extends ExcelImporterBase<CyprusImportStat
 		}
 	}
 
-	
-	/* (non-Javadoc)
-	 * @see eu.etaxonomy.cdm.io.excel.common.ExcelImporterBase#analyzeRecord(java.util.HashMap, eu.etaxonomy.cdm.io.excel.common.ExcelImportState)
-	 */
+
 	@Override
     protected void analyzeRecord(HashMap<String, String> record, CyprusImportState state) {
-		
+
     	Set<String> keys = record.keySet();
     	CyprusDistributionRow cyprusDistributionRow = new CyprusDistributionRow();
     	state.setCyprusDistributionRow(cyprusDistributionRow);
-    	
+
     	for (String originalKey: keys) {
     		String indexedKey = CdmUtils.removeDuplicateWhitespace(originalKey.trim()).toString();
     		String[] split = indexedKey.split("_");
@@ -399,25 +393,25 @@ public class CyprusDistributionImport extends ExcelImporterBase<CyprusImportStat
 					continue;
 				}
     		}
-    		
-    		String value = (String) record.get(indexedKey);
+
+    		String value = record.get(indexedKey);
     		if (! StringUtils.isBlank(value)) {
     			if (logger.isDebugEnabled()) { logger.debug(key + ": " + value); }
         		value = CdmUtils.removeDuplicateWhitespace(value.trim()).toString();
     		}else{
     			continue;
     		}
-    		
-    		
+
+
     		if (key.equalsIgnoreCase(SPECIES_COLUMN)) {
     			cyprusDistributionRow.setSpecies(value);
-    			
+
 			} else if(key.equalsIgnoreCase(DISTRIBUTION_COLUMN)) {
 				cyprusDistributionRow.setDistribution(value);
-				
+
 			} else if(key.equalsIgnoreCase(REFERENCE_COLUMN)) {
 				cyprusDistributionRow.setReference(value);
-    			
+
 			} else {
 				state.setUnsuccessfull();
 				logger.error("Unexpected column header " + key);
@@ -425,20 +419,20 @@ public class CyprusDistributionImport extends ExcelImporterBase<CyprusImportStat
     	}
     	return;
     }
-	
-	
-	/** 
-	 *  
+
+
+	/**
+	 *
 	 */
 	@Override
     protected void secondPass(CyprusImportState state) {
 		//no second pass for this import
 		return;
 	}
-	
+
 	@Override
 	protected boolean isIgnore(CyprusImportState state) {
 		return ! state.getConfig().isDoDistribution();
 	}
-	
+
 }

@@ -44,7 +44,7 @@ public class FloraMalesianaActivator extends EfloraActivatorBase {
 	private static final Logger logger = Logger.getLogger(FloraMalesianaActivator.class);
 
 	//database validation status (create, update, validate ...)
-	static DbSchemaValidation hbm2dll = DbSchemaValidation.CREATE;
+	static DbSchemaValidation hbm2dll = DbSchemaValidation.VALIDATE;
 
 	static final URI fmSource08_1 = EfloraSources.fm_08_1();
 	static final URI fmSource08_2 = EfloraSources.fm_08_2();
@@ -79,8 +79,8 @@ public class FloraMalesianaActivator extends EfloraActivatorBase {
 	static final URI fmSource_Ser2_04 = EfloraSources.fm_ser2_4();
 
 //	static final ICdmDataSource cdmDestination = CdmDestinations.cdm_flora_malesiana_preview();
-//	static final ICdmDataSource cdmDestination = CdmDestinations.cdm_flora_malesiana_production();
-	static final ICdmDataSource cdmDestination = CdmDestinations.localH2();
+	static final ICdmDataSource cdmDestination = CdmDestinations.cdm_flora_malesiana_production();
+//	static final ICdmDataSource cdmDestination = CdmDestinations.localH2();
 //	static final ICdmDataSource cdmDestination = CdmDestinations.cdm_test_local_mysql();
 //	static final ICdmDataSource cdmDestination = CdmDestinations.cdm_test_local_mysql_test();
 
@@ -88,7 +88,7 @@ public class FloraMalesianaActivator extends EfloraActivatorBase {
 	private final boolean includeVol08_1 = includeBase;
 	private final boolean includeVol08_2 = includeBase;
 	private final boolean includeVol08_3 = includeBase;
-	private final boolean includeVol09 = includeBase;
+	private final boolean includeVol09 = ! includeBase;
     private final boolean includeVol10_1 = includeBase;
 	private final boolean includeVol10_2 = includeBase;
 	private final boolean includeVol10_3 = includeBase;
@@ -108,7 +108,7 @@ public class FloraMalesianaActivator extends EfloraActivatorBase {
 	private final boolean includeVol20 = includeBase;
 	private final boolean includeVol21 = includeBase;
 	private final boolean includeVol2_1 = includeBase;
-    private final boolean includeVol2_2 = ! includeBase;
+    private final boolean includeVol2_2 = includeBase;
 	private final boolean includeVol2_3 = includeBase;
 	private final boolean includeVol2_4 = includeBase;
 
@@ -499,6 +499,7 @@ public class FloraMalesianaActivator extends EfloraActivatorBase {
 	public static void main(String[] args) {
 		FloraMalesianaActivator me = new FloraMalesianaActivator();
 		me.doImport(cdmDestination);
+		System.exit(0);
 	}
 
 }
