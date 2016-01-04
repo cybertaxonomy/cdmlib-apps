@@ -1,8 +1,8 @@
 /**
 * Copyright (C) 2007 EDIT
-* European Distributed Institute of Taxonomy 
+* European Distributed Institute of Taxonomy
 * http://www.e-taxonomy.eu
-* 
+*
 * The contents of this file are subject to the Mozilla Public License Version 1.1
 * See LICENSE.TXT at the top of this package for the full license terms.
 */
@@ -40,37 +40,37 @@ import eu.etaxonomy.cdm.model.reference.ReferenceFactory;
  */
 public class CyprusActivator {
 	private static final Logger logger = Logger.getLogger(CyprusActivator.class);
-	
+
 	//database validation status (create, update, validate ...)
 	static DbSchemaValidation hbm2dll = DbSchemaValidation.CREATE;
 //	static final URI source = cyprus_distribution();
 	static final URI source = cyprus_local();
 
-	
+
 	static final ICdmDataSource cdmDestination = CdmDestinations.localH2();
 //	static final ICdmDataSource cdmDestination = CdmDestinations.cdm_local_postgres_CdmTest();
 //	static final ICdmDataSource cdmDestination = CdmDestinations.cdm_test_local_mysql();
 //	static final ICdmDataSource cdmDestination = CdmDestinations.cdm_cyprus_dev();
 //	static final ICdmDataSource cdmDestination = CdmDestinations.cdm_cyprus_production();
 
-	
+
 	//feature tree uuid
 	public static final UUID featureTreeUuid = UUID.fromString("14d1e912-5ec2-4d10-878b-828788b70a87");
-	
+
 	//classification
 	static final UUID classificationUuid = UUID.fromString("0c2b5d25-7b15-4401-8b51-dd4be0ee5cab");
-	
+
 	//check - import
 	static final CHECK check = CHECK.IMPORT_WITHOUT_CHECK;
-	
+
 	//taxa
 	static final boolean doTaxa = true;
 	static final boolean doDeduplicate = false;
 	static final boolean doDistribution = false;
 
-	
+
 	private void doImport(ICdmDataSource cdmDestination){
-		
+
 		//make Source
 		CyprusImportConfigurator config= CyprusImportConfigurator.NewInstance(source, cdmDestination);
 		config.setClassificationUuid(classificationUuid);
@@ -78,10 +78,10 @@ public class CyprusActivator {
 		config.setDoDistribution(doDistribution);
 		config.setDoTaxa(doTaxa);
 		config.setDbSchemaValidation(hbm2dll);
-		
+
 		CdmDefaultImport myImport = new CdmDefaultImport();
 
-		
+
 		//...
 		if (true){
 			System.out.println("Start import from ("+ source.toString() + ") ...");
@@ -94,9 +94,9 @@ public class CyprusActivator {
 
 			System.out.println("End import from ("+ source.toString() + ")...");
 		}
-		
-		
-		
+
+
+
 		//deduplicate
 		if (doDeduplicate){
 			ICdmApplicationConfiguration app = myImport.getCdmAppController();
@@ -107,26 +107,26 @@ public class CyprusActivator {
 			count = app.getReferenceService().deduplicate(Reference.class, null, null);
 			logger.warn("Deduplicated " + count + " references.");
 		}
-		
+
 	}
 
-	private Reference getSourceReference(String string) {
-		Reference result = ReferenceFactory.newGeneric();
-		result.setTitleCache(string);
+	private Reference<?> getSourceReference(String string) {
+		Reference<?> result = ReferenceFactory.newGeneric();
+		result.setTitleCache(string, true);
 		return result;
 	}
 
 	private FeatureTree makeFeatureNodes(ITermService service){
 		CyprusTransformer transformer = new CyprusTransformer();
-		
+
 		FeatureTree result = FeatureTree.NewInstance(featureTreeUuid);
-		result.setTitleCache("Cyprus Feature Tree");
+		result.setTitleCache("Cyprus Feature Tree", true);
 		FeatureNode root = result.getRoot();
 		FeatureNode newNode;
 
 		newNode = FeatureNode.NewInstance(Feature.STATUS());
 		root.addChild(newNode);
-		
+
 		newNode = FeatureNode.NewInstance(Feature.DISTRIBUTION());
 		root.addChild(newNode);
 
@@ -136,10 +136,10 @@ public class CyprusActivator {
 		//user defined features
 		String [] featureList = new String[]{"Red Book", "Endemism"};
 		addFeataureNodesByStringList(featureList, root, transformer, service);
-		
+
 		return result;
 	}
-	
+
 
 	//Cyprus
 	public static URI cyprus_local() {
@@ -163,7 +163,7 @@ public class CyprusActivator {
 			return null;
 		}
 	}
-	
+
 	public void addFeataureNodesByStringList(String[] featureStringList, FeatureNode root, IInputTransformer transformer, ITermService termService){
 		try {
 			for (String featureString : featureStringList){
@@ -172,14 +172,14 @@ public class CyprusActivator {
 			Feature feature = (Feature)termService.find(featureUuid);
 			if (feature != null){
 				FeatureNode child = FeatureNode.NewInstance(feature);
-				root.addChild(child);	
+				root.addChild(child);
 			}
 		}
 		} catch (UndefinedTransformerMethodException e) {
 			logger.error("getFeatureUuid is not implemented in transformer. Features could not be added");
 		}
 	}
-	
+
 
 	/**
 	 * @param args
@@ -188,5 +188,5 @@ public class CyprusActivator {
 		CyprusActivator me = new CyprusActivator();
 		me.doImport(cdmDestination);
 	}
-	
+
 }
