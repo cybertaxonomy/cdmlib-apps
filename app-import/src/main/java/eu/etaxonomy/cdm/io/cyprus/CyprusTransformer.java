@@ -64,12 +64,6 @@ public final class CyprusTransformer extends InputTransformerBase {
 	public static final UUID uuidDivision7 = UUID.fromString("d31dd96a-36ea-4428-871c-d8552a9565ca");
 	public static final UUID uuidDivision8 = UUID.fromString("236ea447-c3ab-486d-9e06-cc5907861acc");
 
-
-
-
-	/* (non-Javadoc)
-	 * @see eu.etaxonomy.cdm.io.common.mapping.InputTransformerBase#getMarkerTypeByKey(java.lang.String)
-	 */
 	@Override
 	public MarkerType getMarkerTypeByKey(String key) throws UndefinedTransformerMethodException {
 		if (StringUtils.isBlank(key)){return null;
@@ -107,7 +101,6 @@ public final class CyprusTransformer extends InputTransformerBase {
 		}else{
 			return null;
 		}
-
 	}
 
 	@Override

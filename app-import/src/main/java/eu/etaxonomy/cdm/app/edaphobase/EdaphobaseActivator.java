@@ -32,11 +32,11 @@ public class EdaphobaseActivator {
     private static final Logger logger = Logger.getLogger(EdaphobaseActivator.class);
 
     //database validation status (create, update, validate ...)
-    static DbSchemaValidation hbm2dll = DbSchemaValidation.CREATE;
+    static DbSchemaValidation dbSchemaValidation = DbSchemaValidation.CREATE;
 
     static final Source edaphoSource = CdmImportSources.EDAPHOBASE();
 
-    static final ICdmDataSource cdmDestination = CdmDestinations.localH2();
+    static final ICdmDataSource cdmDestination = CdmDestinations.cdm_local_edaphobase();
 
     //feature tree uuid
     public static final UUID featureTreeUuid = UUID.fromString("a543d66a-e310-4b3e-a9fa-b729afefad16");
@@ -56,6 +56,7 @@ public class EdaphobaseActivator {
     private void doImport(Source source, ICdmDataSource cdmDestination){
 
         EdaphobaseImportConfigurator config= EdaphobaseImportConfigurator.NewInstance(source, cdmDestination);
+        config.setDbSchemaValidation(dbSchemaValidation);
         config.setClassificationUuid(classificationUuid);
         config.setClassificationName(classificationTitle);
         config.setDoTaxa(doTaxa);

@@ -36,7 +36,6 @@ import eu.etaxonomy.cdm.model.reference.ReferenceFactory;
 /**
  * @author a.mueller
  * @created 16.12.2010
- * @version 1.0
  */
 public class CyprusActivator {
 	private static final Logger logger = Logger.getLogger(CyprusActivator.class);

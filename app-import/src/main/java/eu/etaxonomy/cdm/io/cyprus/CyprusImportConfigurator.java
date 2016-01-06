@@ -15,7 +15,6 @@ import java.util.UUID;
 import org.apache.log4j.Logger;
 
 import eu.etaxonomy.cdm.database.ICdmDataSource;
-import eu.etaxonomy.cdm.io.common.IImportConfigurator;
 import eu.etaxonomy.cdm.io.common.ImportStateBase;
 import eu.etaxonomy.cdm.io.common.mapping.IInputTransformer;
 import eu.etaxonomy.cdm.io.excel.common.ExcelImportConfiguratorBase;
@@ -29,7 +28,7 @@ import eu.etaxonomy.cdm.model.reference.ReferenceFactory;
  * @created 20.03.2008
  * @version 1.0
  */
-public class CyprusImportConfigurator extends ExcelImportConfiguratorBase implements IImportConfigurator{
+public class CyprusImportConfigurator extends ExcelImportConfiguratorBase {
     private static final long serialVersionUID = 5590553979984931651L;
 
     @SuppressWarnings("unused")

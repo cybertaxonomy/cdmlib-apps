@@ -5,10 +5,8 @@ import eu.etaxonomy.cdm.io.excel.taxa.TaxonExcelImportState;
 import eu.etaxonomy.cdm.io.excel.taxa.TaxonExcelImporterBase;
 
 public class TaxonExcelCaryophyllales extends TaxonExcelImporterBase {
-
-	
-	
-	protected static final String AUTHOR_COLUMN = "Authorship";
+    private static final long serialVersionUID = 7516628978483172010L;
+    protected static final String AUTHOR_COLUMN = "Authorship";
 	protected static final String SPECIES_HYBRID_MARKER = "Species hybrid marker";
 	protected static final String NAME_STATUS_COLUMN = "NameStatus";
 	protected static final String VERNACULAR_NAME_COLUMN = "VernacularName";
@@ -19,9 +17,9 @@ public class TaxonExcelCaryophyllales extends TaxonExcelImporterBase {
 	protected static final String IMAGE_COLUMN = "Image";
 	protected static final String TDWG_COLUMN = "TDWG";
 	protected static final String COUNTRY_COLUMN = "Country";
-	
-	protected static final String SYNONYM_COLUMN = "Synonym";	
-	
+
+	protected static final String SYNONYM_COLUMN = "Synonym";
+
 	@Override
 	protected NormalExplicitRow createDataHolderRow() {
 		// TODO Auto-generated method stub

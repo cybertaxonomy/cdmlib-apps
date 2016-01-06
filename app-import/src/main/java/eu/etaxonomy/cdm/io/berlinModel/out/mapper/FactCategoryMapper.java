@@ -1,9 +1,9 @@
 // $Id$
 /**
 * Copyright (C) 2007 EDIT
-* European Distributed Institute of Taxonomy 
+* European Distributed Institute of Taxonomy
 * http://www.e-taxonomy.eu
-* 
+*
 * The contents of this file are subject to the Mozilla Public License Version 1.1
 * See LICENSE.TXT at the top of this package for the full license terms.
 */
@@ -12,9 +12,9 @@ package eu.etaxonomy.cdm.io.berlinModel.out.mapper;
 
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
+import java.sql.Types;
 
 import org.apache.log4j.Logger;
-import org.hsqldb.Types;
 
 import eu.etaxonomy.cdm.io.berlinModel.out.BerlinModelExportConfigurator;
 import eu.etaxonomy.cdm.io.berlinModel.out.BerlinModelExportState;
@@ -39,10 +39,10 @@ import eu.etaxonomy.cdm.model.name.NomenclaturalStatus;
 public class FactCategoryMapper extends DbSingleAttributeExportMapperBase<BerlinModelExportState> implements IDbExportMapper<BerlinModelExportState, IExportTransformer>{
 	@SuppressWarnings("unused")
 	private static final Logger logger = Logger.getLogger(FactCategoryMapper.class);
-	
+
 	private PreparedStatement preparedStatement;
-	private CdmDbExportMapping<BerlinModelExportState, BerlinModelExportConfigurator, IExportTransformer> mapping = null; 
-	private String dbTableName = "NomStatusRel";
+	private CdmDbExportMapping<BerlinModelExportState, BerlinModelExportConfigurator, IExportTransformer> mapping = null;
+	private final String dbTableName = "NomStatusRel";
 //	protected BerlinModelExportState<?> state;
 
 	public static FactCategoryMapper NewInstance(String cdmAttributeString, String dbAttributeString){
@@ -56,20 +56,20 @@ public class FactCategoryMapper extends DbSingleAttributeExportMapperBase<Berlin
 		mapping.addMapper(MethodMapper.NewInstance("NomStatusFk", this.getClass(), "getNomStatusFk", NomenclaturalStatus.class));
 		mapping.addMapper(DbObjectMapper.NewInstance("citation", "NomStatusRefFk"));
 		mapping.addMapper(RefDetailMapper.NewInstance("citationMicroReference","citation", "NomStatusRefDetailFk"));
-		
+
 		mapping.addMapper(CreatedAndNotesMapper.NewInstance());
 		//TODO
 //		DoubtfulFlag
-		
+
 		return mapping;
 	}
-	
-	
+
+
 //	public static RefDetailMapper NewInstance(String cdmAttributeString, String dbAttributeString){
 //		return new RefDetailMapper();
 //	}
 
-	
+
 	/**
 	 * @param dbAttributString
 	 * @param cdmAttributeString
@@ -78,8 +78,8 @@ public class FactCategoryMapper extends DbSingleAttributeExportMapperBase<Berlin
 		super(cdmAttributeString, dbAttributeString, null);
 	}
 
-	
-	
+
+
 	/* (non-Javadoc)
 	 * @see eu.etaxonomy.cdm.io.berlinModel.out.mapper.DbSingleAttributeExportMapperBase#initialize(java.sql.PreparedStatement, eu.etaxonomy.cdm.io.berlinModel.out.mapper.IndexCounter, eu.etaxonomy.cdm.io.berlinModel.out.DbExportState)
 	 */
@@ -88,9 +88,9 @@ public class FactCategoryMapper extends DbSingleAttributeExportMapperBase<Berlin
 		super.initialize(stmt, index, state, tableName);
 		mapping = getMapping();
 
-//		String inRefSql = "INSERT INTO FactCategory (FactCategoryId, FactCategory , " + 
+//		String inRefSql = "INSERT INTO FactCategory (FactCategoryId, FactCategory , " +
 //	 		" MaxFactNumber , RankRestrictionFk" +
-//	 		" VALUES (?,?,?,?)";    
+//	 		" VALUES (?,?,?,?)";
 //		Connection con = getState().getConfig().getDestination().getConnection();
 		try {
 			mapping.initialize(state);
@@ -114,7 +114,7 @@ public class FactCategoryMapper extends DbSingleAttributeExportMapperBase<Berlin
 //		getState().getConfig().getCdmAppController().commitTransaction(tx);
 		return result;
 	}
-	
+
 	/* (non-Javadoc)
 	 * @see eu.etaxonomy.cdm.io.berlinModel.out.mapper.DbSingleAttributeExportMapperBase#getValue()
 	 */
@@ -128,16 +128,16 @@ public class FactCategoryMapper extends DbSingleAttributeExportMapperBase<Berlin
 		return result;
 	}
 
-	
+
 	protected Integer makeRow(Feature feature){
 		if (feature == null){
-			return null;		
+			return null;
 		}
 		Integer factCategoryId = getState().getNextFactCategoryId();
 		String factCategory = feature.getLabel();
 		Integer maxFactNumber = null;
 		Integer RankRestrictionFk = null;
-		
+
 		try {
 			preparedStatement.setInt(1, factCategoryId);
 			preparedStatement.setString(2, factCategory);
@@ -159,7 +159,7 @@ public class FactCategoryMapper extends DbSingleAttributeExportMapperBase<Berlin
 			Integer id = getState().getDbId(cdmBase);
 			return id;
 		}
-	}	
+	}
 
 	/* (non-Javadoc)
 	 * @see eu.etaxonomy.cdm.io.berlinModel.out.mapper.DbSingleAttributeExportMapperBase#getValueType()
