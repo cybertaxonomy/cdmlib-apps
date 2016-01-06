@@ -41,9 +41,9 @@ import eu.etaxonomy.cdm.model.taxon.TaxonBase;
  *
  */
 @Component
-public class EdaphobaseTaxonImport extends EdaphobaseImportBase {
+public class EdaphobaseReferenceImport extends EdaphobaseImportBase {
     private static final long serialVersionUID = -9138378836474086070L;
-    private static final Logger logger = Logger.getLogger(EdaphobaseTaxonImport.class);
+    private static final Logger logger = Logger.getLogger(EdaphobaseReferenceImport.class);
 
     private static final String tableName = "tax_taxon";
 
@@ -55,7 +55,7 @@ public class EdaphobaseTaxonImport extends EdaphobaseImportBase {
      * @param tableName
      * @param pluralString
      */
-    public EdaphobaseTaxonImport() {
+    public EdaphobaseReferenceImport() {
         super(tableName, pluralString);
     }
 
@@ -92,6 +92,24 @@ public class EdaphobaseTaxonImport extends EdaphobaseImportBase {
         Set<TaxonBase> taxaToSave = new HashSet<>();
         try {
             while (rs.next()){
+//  //              "JPASampleBook"
+//  //              "JPAJournal"
+//    //            "JPASample"
+//                "JPAThesis"
+//      //          "JPALitOther"
+//    //            "JPACollection"
+//    //            "JPADocument"
+//   //             "JPABibliography"
+//   //             "JPAProject"
+//   //             "JPARawData"
+//                "JPAArticle"
+//                "JPABook"
+//                "JPAChapter"
+//   //             "JPACollectionObject"
+//   //                "JPACollectionContainer"
+
+
+
                 Integer id = nullSafeInt(rs, "taxon_id");
                 Integer year = nullSafeInt(rs, "tax_year");
                 boolean isBrackets = rs.getBoolean("tax_brackets");

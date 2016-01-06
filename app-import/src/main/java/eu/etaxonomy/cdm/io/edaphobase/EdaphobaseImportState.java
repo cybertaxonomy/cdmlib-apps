@@ -9,6 +9,10 @@
 */
 package eu.etaxonomy.cdm.io.edaphobase;
 
+import java.util.HashMap;
+import java.util.Map;
+import java.util.UUID;
+
 import org.apache.log4j.Logger;
 
 import eu.etaxonomy.cdm.io.common.DbImportStateBase;
@@ -22,6 +26,8 @@ public class EdaphobaseImportState extends DbImportStateBase<EdaphobaseImportCon
     @SuppressWarnings("unused")
     private static final Logger logger = Logger.getLogger(EdaphobaseImportState.class);
 
+    private final Map<String, UUID> authorMap = new HashMap<>();
+
     /**
      * @param config
      */
@@ -29,4 +35,11 @@ public class EdaphobaseImportState extends DbImportStateBase<EdaphobaseImportCon
         super(config);
     }
 
+    public UUID getAuthorUuid(String key){
+        return authorMap.get(key);
+    }
+
+    public void setAuthorMap(Map<String, UUID> authorMap){
+        this.authorMap.putAll(authorMap);
+    }
 }

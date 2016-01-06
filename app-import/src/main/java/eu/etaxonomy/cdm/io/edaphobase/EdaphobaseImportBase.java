@@ -20,6 +20,10 @@ import eu.etaxonomy.cdm.io.common.IPartitionedIO;
  */
 public abstract class EdaphobaseImportBase
         extends DbImportBase<EdaphobaseImportState, EdaphobaseImportConfigurator>  implements ICdmIO<EdaphobaseImportState>, IPartitionedIO<EdaphobaseImportState> {
+    private static final long serialVersionUID = 3496726181873011520L;
+
+    protected static final String TAXON_NAMESPACE = "tax_taxon";
+    protected static final String CLASSIFICATION_NAMESPACE = "Classification";
 
     /**
      * @param tableName

@@ -17,6 +17,7 @@ import eu.etaxonomy.cdm.io.common.IImportConfigurator;
 import eu.etaxonomy.cdm.io.common.Source;
 import eu.etaxonomy.cdm.model.name.NomenclaturalCode;
 import eu.etaxonomy.cdm.model.reference.Reference;
+import eu.etaxonomy.cdm.model.reference.ReferenceFactory;
 
 /**
  * @author a.mueller
@@ -60,14 +61,17 @@ public class EdaphobaseImportConfigurator
     @Override
     protected void makeIoClassList() {
         ioClassList = new Class[]{
+                EdaphobaseAuthorImport.class,
                 EdaphobaseTaxonImport.class,
+                EdaphobaseClassificationImport.class
         };
     }
 
     @Override
-    public Reference getSourceReference() {
-        // TODO Auto-generated method stub
-        return null;
+    public Reference<?> getSourceReference() {
+        Reference<?> sourceRef = ReferenceFactory.newDatabase();
+        sourceRef.setTitle("Edaphobase");
+        return sourceRef;
     }
 
 }
