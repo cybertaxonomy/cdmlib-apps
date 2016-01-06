@@ -59,6 +59,27 @@ public class EfloraSources {
 
   //***** FM NEW */
 
+
+    //Flora Malesiana Vol 07_1
+    public static URI fm_07_1(){
+        return URI.create("file:////BGBM-PESIHPC/FloraMalesianaXml/fmvol7_part1_final.xml");
+    }
+
+    //Flora Malesiana Vol 07_2
+    public static URI fm_07_2(){
+        return URI.create("file:////BGBM-PESIHPC/FloraMalesianaXml/fmvol7_part2_final.xml");
+    }
+
+    //Flora Malesiana Vol 07_3 & vol 09 part1 (Cyperaceae)
+    public static URI fm_07_3_09_1(){
+        return URI.create("file:////BGBM-PESIHPC/FloraMalesianaXml/fmvol7_part3_vol9_part1_final.xml");
+    }
+
+    //Flora Malesiana Vol 07_4
+    public static URI fm_07_4(){
+        return URI.create("file:////BGBM-PESIHPC/FloraMalesianaXml/fmvol7_part4_final.xml");
+    }
+
 	//Flora Malesiana Vol 08_1
 	public static URI fm_08_1(){
 		return URI.create("file:////BGBM-PESIHPC/FloraMalesianaXml/fmvol8_part1_final.xml");
@@ -140,7 +161,7 @@ public class EfloraSources {
 
 	//Flora Malesiana Vol 17, part1
 	public static URI fm_17_1(){
-		return URI.create("file:////BGBM-PESIHPC/FloraMalesianaXml/fmvol17_part2_final2.xml");
+		return URI.create("file:////BGBM-PESIHPC/FloraMalesianaXml/fmvol17_part1_final2.xml");
 	}
 
 	//Flora Malesiana Vol 17, part2

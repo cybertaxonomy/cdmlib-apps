@@ -44,51 +44,26 @@ public class FloraMalesianaActivator extends EfloraActivatorBase {
 	private static final Logger logger = Logger.getLogger(FloraMalesianaActivator.class);
 
 	//database validation status (create, update, validate ...)
-	static DbSchemaValidation hbm2dll = DbSchemaValidation.VALIDATE;
-
-	static final URI fmSource08_1 = EfloraSources.fm_08_1();
-	static final URI fmSource08_2 = EfloraSources.fm_08_2();
-	static final URI fmSource08_3 = EfloraSources.fm_08_3();
-
-	static final URI fmSource09 = EfloraSources.fm_09();
-
-	static final URI fmSource10_1 = EfloraSources.fm_10_1();
-	static final URI fmSource10_2 = EfloraSources.fm_10_2();
-	static final URI fmSource10_3 = EfloraSources.fm_10_3();
-	static final URI fmSource10_4 = EfloraSources.fm_10_4();
+	static DbSchemaValidation hbm2dll = DbSchemaValidation.CREATE;
 
 
-	static final URI fmSource11_1 = EfloraSources.fm_11_1();
-	static final URI fmSource11_2 = EfloraSources.fm_11_2();
-	static final URI fmSource11_3 = EfloraSources.fm_11_3();
-	static final URI fmSource12_1 = EfloraSources.fm_12();
-	static final URI fmSource13 = EfloraSources.fm_13();
-	static final URI fmSource14 = EfloraSources.fm_14();
-	static final URI fmSource15 = EfloraSources.fm_15();
-	static final URI fmSource16 = EfloraSources.fm_16();
-	static final URI fmSource17_1 = EfloraSources.fm_17_1();
-	static final URI fmSource17_2 = EfloraSources.fm_17_2();
-	static final URI fmSource18 = EfloraSources.fm_18();
-	static final URI fmSource19 = EfloraSources.fm_19();
-	static final URI fmSource20 = EfloraSources.fm_20();
-	static final URI fmSource21 = EfloraSources.fm_21();
-
-	static final URI fmSource_Ser2_01 = EfloraSources.fm_ser2_1();
-    static final URI fmSource_Ser2_02 = EfloraSources.fm_ser2_2();
-	static final URI fmSource_Ser2_03 = EfloraSources.fm_ser2_3();
-	static final URI fmSource_Ser2_04 = EfloraSources.fm_ser2_4();
 
 //	static final ICdmDataSource cdmDestination = CdmDestinations.cdm_flora_malesiana_preview();
-	static final ICdmDataSource cdmDestination = CdmDestinations.cdm_flora_malesiana_production();
-//	static final ICdmDataSource cdmDestination = CdmDestinations.localH2();
+//	static final ICdmDataSource cdmDestination = CdmDestinations.cdm_flora_malesiana_production();
+	static final ICdmDataSource cdmDestination = CdmDestinations.localH2();
 //	static final ICdmDataSource cdmDestination = CdmDestinations.cdm_test_local_mysql();
 //	static final ICdmDataSource cdmDestination = CdmDestinations.cdm_test_local_mysql_test();
 
 	private final boolean includeBase = false;
-	private final boolean includeVol08_1 = includeBase;
+	private final boolean includeVol07_1 = includeBase;
+    private final boolean includeVol07_2 = includeBase;
+    private final boolean includeVol07_3_09_1 = includeBase;
+    private final boolean includeVol07_4 = includeBase;
+
+    private final boolean includeVol08_1 = includeBase;
 	private final boolean includeVol08_2 = includeBase;
 	private final boolean includeVol08_3 = includeBase;
-	private final boolean includeVol09 = ! includeBase;
+	private final boolean includeVol09 = includeBase;
     private final boolean includeVol10_1 = includeBase;
 	private final boolean includeVol10_2 = includeBase;
 	private final boolean includeVol10_3 = includeBase;
@@ -96,7 +71,7 @@ public class FloraMalesianaActivator extends EfloraActivatorBase {
 	private final boolean includeVol11_1 = includeBase;
 	private final boolean includeVol11_2 = includeBase;
 	private final boolean includeVol11_3 = includeBase;
-	private final boolean includeVol12 = includeBase;
+	private final boolean includeVol12 = ! includeBase;
 	private final boolean includeVol13 = includeBase;
 	private final boolean includeVol14 = includeBase;
 	private final boolean includeVol15 = includeBase;
@@ -111,6 +86,43 @@ public class FloraMalesianaActivator extends EfloraActivatorBase {
     private final boolean includeVol2_2 = includeBase;
 	private final boolean includeVol2_3 = includeBase;
 	private final boolean includeVol2_4 = includeBase;
+
+    static final URI fmSource07_1 = EfloraSources.fm_07_1();
+    static final URI fmSource07_2 = EfloraSources.fm_07_2();
+    static final URI fmSource07_3_09_1 = EfloraSources.fm_07_3_09_1();
+    static final URI fmSource07_4 = EfloraSources.fm_07_4();
+
+    static final URI fmSource08_1 = EfloraSources.fm_08_1();
+    static final URI fmSource08_2 = EfloraSources.fm_08_2();
+    static final URI fmSource08_3 = EfloraSources.fm_08_3();
+
+    static final URI fmSource09 = EfloraSources.fm_09();
+
+    static final URI fmSource10_1 = EfloraSources.fm_10_1();
+    static final URI fmSource10_2 = EfloraSources.fm_10_2();
+    static final URI fmSource10_3 = EfloraSources.fm_10_3();
+    static final URI fmSource10_4 = EfloraSources.fm_10_4();
+
+
+    static final URI fmSource11_1 = EfloraSources.fm_11_1();
+    static final URI fmSource11_2 = EfloraSources.fm_11_2();
+    static final URI fmSource11_3 = EfloraSources.fm_11_3();
+    static final URI fmSource12_1 = EfloraSources.fm_12();
+    static final URI fmSource13 = EfloraSources.fm_13();
+    static final URI fmSource14 = EfloraSources.fm_14();
+    static final URI fmSource15 = EfloraSources.fm_15();
+    static final URI fmSource16 = EfloraSources.fm_16();
+    static final URI fmSource17_1 = EfloraSources.fm_17_1();
+    static final URI fmSource17_2 = EfloraSources.fm_17_2();
+    static final URI fmSource18 = EfloraSources.fm_18();
+    static final URI fmSource19 = EfloraSources.fm_19();
+    static final URI fmSource20 = EfloraSources.fm_20();
+    static final URI fmSource21 = EfloraSources.fm_21();
+
+    static final URI fmSource_Ser2_01 = EfloraSources.fm_ser2_1();
+    static final URI fmSource_Ser2_02 = EfloraSources.fm_ser2_2();
+    static final URI fmSource_Ser2_03 = EfloraSources.fm_ser2_3();
+    static final URI fmSource_Ser2_04 = EfloraSources.fm_ser2_4();
 
 	private final boolean h2ForCheck = true;
 
@@ -164,6 +176,14 @@ public class FloraMalesianaActivator extends EfloraActivatorBase {
 
 		CdmDefaultImport<MarkupImportConfigurator> myImport = new CdmDefaultImport<MarkupImportConfigurator>();
 
+        //Vol07_1
+        doSource(includeVol07_1, fmSource07_1, "Flora Malesiana - vol. 07, pt.1", markupConfig, myImport);
+        //Vol07_2
+        doSource(includeVol07_2, fmSource07_2, "Flora Malesiana - vol. 07, pt.2", markupConfig, myImport);
+        //Vol07_3
+        doSource(includeVol07_3_09_1, fmSource07_3_09_1, "Flora Malesiana - vol. 07, pt.3 and vol. 09 pt.1", markupConfig, myImport);
+        //Vol07_4
+        doSource(includeVol07_4, fmSource07_4, "Flora Malesiana - vol. 07, pt.4", markupConfig, myImport);
 
 		//Vol08_1
 		doSource(includeVol08_1, fmSource08_1, "Flora Malesiana - vol. 08, pt.1", markupConfig, myImport);
