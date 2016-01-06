@@ -49,9 +49,7 @@
   <dependencies>   
   	<dependency>
   		<groupId>eu.etaxonomy</groupId>
-  		<artifactId>cdmlib-persistence</artifactId>
-  		<type>test-jar</type>
-<!--   		<scope>test</scope>  -->
+  		<artifactId>cdmlib-test</artifactId>
   		<version>${project.version}</version>
   	</dependency>
    	<dependency>
