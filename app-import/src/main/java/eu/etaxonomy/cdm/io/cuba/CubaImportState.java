@@ -18,8 +18,10 @@ import org.apache.log4j.Logger;
 
 import eu.etaxonomy.cdm.io.excel.common.ExcelImportState;
 import eu.etaxonomy.cdm.io.excel.common.ExcelRowBase;
+import eu.etaxonomy.cdm.model.reference.Reference;
 import eu.etaxonomy.cdm.model.taxon.Classification;
 import eu.etaxonomy.cdm.model.taxon.Taxon;
+import eu.etaxonomy.cdm.model.taxon.TaxonNode;
 
 /**
  * @author a.mueller
@@ -30,102 +32,61 @@ public class CubaImportState extends ExcelImportState<CubaImportConfigurator, Ex
 	private static final Logger logger = Logger.getLogger(CubaImportState.class);
 
 	private final Map<String, Taxon> higherTaxonTaxonMap = new HashMap<String, Taxon>();
+
 	private final Map<String, UUID> higherTaxonUuidMap = new HashMap<String, UUID>();
 
-//	private CyprusRow cyprusRow;
-//	private CyprusDistributionRow cyprusDistributionRow;
-
+	//classification
 	private Classification classification;
+    public Classification getClassification() {return classification;}
+    public void setClassification(Classification classification) {this.classification = classification;}
+
+    //current taxon
+    private Taxon currentTaxon;
+    public Taxon getCurrentTaxon() {return currentTaxon;}
+    public void setCurrentTaxon(Taxon currentTaxon) {this.currentTaxon = currentTaxon;}
+
+    //rootNode
+    private TaxonNode rootNode;
+    public void setRootNode(TaxonNode rootNode) {this.rootNode = rootNode;}
+    public TaxonNode getRootNode() { return rootNode;}
+
+    private Reference<?> secReference;
+    public Reference<?> getSecReference() {return secReference;}
+    public void setSecReference(Reference<?> secReference) {this.secReference = secReference;}
 
 
-	public CubaImportState(CubaImportConfigurator config) {
+    //Constructor
+    public CubaImportState(CubaImportConfigurator config) {
 		super(config);
 	}
 
 
-	public boolean containsHigherTaxon(String higherName) {
-		return higherTaxonTaxonMap.containsKey(higherName);
-	}
-
+    //higher taxon
+    public Taxon getHigherTaxon(String higherName) {
+        return higherTaxonTaxonMap.get(higherName);
+    }
 	public Taxon putHigherTaxon(String higherName, Taxon taxon) {
 		return higherTaxonTaxonMap.put(higherName, taxon);
 	}
-
 	public Taxon removeHigherTaxon(String higherName) {
 		return higherTaxonTaxonMap.remove(higherName);
 	}
+    public boolean containsHigherTaxon(String higherName) {
+        return higherTaxonTaxonMap.containsKey(higherName);
+    }
 
-	public Taxon getHigherTaxon(String higherName) {
-		return higherTaxonTaxonMap.get(higherName);
-	}
-
-
-	public boolean containsHigherTaxonUuid(String higherName) {
-		return higherTaxonUuidMap.containsKey(higherName);
-	}
-
+    //higher taxon uuid
+    public UUID getHigherTaxonUuid(String higherName) {
+        return higherTaxonUuidMap.get(higherName);
+    }
 	public UUID putHigherTaxon(String higherName, UUID uuid) {
 		return higherTaxonUuidMap.put(higherName, uuid);
 	}
-
 	public UUID removeHigherTaxonUuid(String higherName) {
 		return higherTaxonUuidMap.remove(higherName);
 	}
-
-	public UUID getHigherTaxonUuid(String higherName) {
-		return higherTaxonUuidMap.get(higherName);
-	}
-
-
-    /**
-     * @return
-     */
-    public Classification getClassification() {
-        return classification;
+    public boolean containsHigherTaxonUuid(String higherName) {
+        return higherTaxonUuidMap.containsKey(higherName);
     }
-
-
-    /**
-     * @param classification the classification to set
-     */
-    public void setClassification(Classification classification) {
-        this.classification = classification;
-    }
-
-
-
-
-
-//	/**
-//	 * @return the cyprusRow
-//	 */
-//	public CyprusRow getCyprusRow() {
-//		return cyprusRow;
-//	}
-//
-//	/**
-//	 * @param cyprusRow the normalExplicitRow to set
-//	 */
-//	public void setCyprusRow(CyprusRow cyprusRow) {
-//		this.cyprusRow = cyprusRow;
-//	}
-
-
-//	/**
-//	 * @return the cyprusRow
-//	 */
-//	public CyprusDistributionRow getCyprusDistributionRow() {
-//		return cyprusDistributionRow;
-//	}
-//
-//	/**
-//	 * @param cyprusRow the normalExplicitRow to set
-//	 */
-//	public void setCyprusDistributionRow(CyprusDistributionRow cyprusRow) {
-//		this.cyprusDistributionRow = cyprusRow;
-//	}
-
-
-
 
 }

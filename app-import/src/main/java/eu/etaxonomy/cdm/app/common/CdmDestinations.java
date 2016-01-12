@@ -267,6 +267,14 @@ public class CdmDestinations {
 		return makeDestination(dbType, cdmServer, cdmDB, -1, cdmUserName, null);
 	}
 
+	   public static ICdmDataSource cdm_cuba_production(){
+	        DatabaseTypeEnum dbType = DatabaseTypeEnum.MySQL;
+	        String cdmServer = "160.45.63.171";
+	        String cdmDB = "cdm_production_flora_cuba";
+	        String cdmUserName = "edit";
+	        return makeDestination(dbType, cdmServer, cdmDB, -1, cdmUserName, null);
+	    }
+
 	public static ICdmDataSource cdm_cyprus_production_tunnel(){
 		DatabaseTypeEnum dbType = DatabaseTypeEnum.MySQL;
 		String cdmServer = "127.0.0.1";

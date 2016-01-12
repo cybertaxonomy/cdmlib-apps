@@ -230,44 +230,44 @@ public class CyprusExcelImport extends ExcelImporterBase<CyprusImportState> {
 				//status
 
 				UUID indigenousUuid = transformer.getPresenceTermUuid("IN");
-				indigenous = this.getPresenceTerm(state, indigenousUuid, "indigenous", "Indigenous", "IN");
+				indigenous = this.getPresenceTerm(state, indigenousUuid, "indigenous", "Indigenous", "IN", false);
 				getTermService().save(indigenous);
 				UUID indigenousDoubtfulUuid = transformer.getPresenceTermUuid("IN?");
-				indigenousDoubtful = this.getPresenceTerm(state, indigenousDoubtfulUuid, "indigenous?", "Indigenous?", "IN?");
+				indigenousDoubtful = this.getPresenceTerm(state, indigenousDoubtfulUuid, "indigenous?", "Indigenous?", "IN?", false);
 				getTermService().save(indigenousDoubtful);
 
 				UUID cultivatedDoubtfulUuid = transformer.getPresenceTermUuid("CU?");
-				cultivatedDoubtful = this.getPresenceTerm(state, cultivatedDoubtfulUuid, "cultivated?", "Cultivated?", "CU?");
+				cultivatedDoubtful = this.getPresenceTerm(state, cultivatedDoubtfulUuid, "cultivated?", "Cultivated?", "CU?", false);
 				getTermService().save(cultivatedDoubtful);
 
 
 				UUID casualUuid = transformer.getPresenceTermUuid("CA");
-				casual = this.getPresenceTerm(state, casualUuid, "casual", "Casual", "CA");
+				casual = this.getPresenceTerm(state, casualUuid, "casual", "Casual", "CA", false);
 				getTermService().save(casual);
 				UUID casualDoubtfulUuid = transformer.getPresenceTermUuid("CA?");
-				casualDoubtful = this.getPresenceTerm(state, casualDoubtfulUuid, "casual?", "Casual?", "CA?");
+				casualDoubtful = this.getPresenceTerm(state, casualDoubtfulUuid, "casual?", "Casual?", "CA?", false);
 				getTermService().save(casualDoubtful);
 
 
 				UUID nonInvasiveUuid = transformer.getPresenceTermUuid("NN");
-				nonInvasive = this.getPresenceTerm(state, nonInvasiveUuid, "naturalized  non-invasive", "Naturalized  non-invasive", "NN");
+				nonInvasive = this.getPresenceTerm(state, nonInvasiveUuid, "naturalized  non-invasive", "Naturalized  non-invasive", "NN", false);
 				getTermService().save(nonInvasive);
 				UUID nonInvasiveDoubtfulUuid = transformer.getPresenceTermUuid("NN?");
-				nonInvasiveDoubtful = this.getPresenceTerm(state, nonInvasiveDoubtfulUuid, "naturalized  non-invasive?", "Naturalized  non-invasive?", "NN?");
+				nonInvasiveDoubtful = this.getPresenceTerm(state, nonInvasiveDoubtfulUuid, "naturalized  non-invasive?", "Naturalized  non-invasive?", "NN?", false);
 				getTermService().save(nonInvasiveDoubtful);
 
 				UUID invasiveUuid = transformer.getPresenceTermUuid("NA");
-				invasive = this.getPresenceTerm(state, invasiveUuid, "naturalized  invasive", "Naturalized  invasive", "NA");
+				invasive = this.getPresenceTerm(state, invasiveUuid, "naturalized  invasive", "Naturalized  invasive", "NA", false);
 				getTermService().save(invasive);
 				UUID invasiveDoubtfulUuid = transformer.getPresenceTermUuid("NA?");
-				invasiveDoubtful = this.getPresenceTerm(state, invasiveDoubtfulUuid, "naturalized  invasive?", "Naturalized  invasive?", "NA?");
+				invasiveDoubtful = this.getPresenceTerm(state, invasiveDoubtfulUuid, "naturalized  invasive?", "Naturalized  invasive?", "NA?", false);
 				getTermService().save(invasiveDoubtful);
 
 				UUID questionableUuid = transformer.getPresenceTermUuid("Q");
-				questionable = this.getPresenceTerm(state, questionableUuid, "questionable", "Questionable", "Q");
+				questionable = this.getPresenceTerm(state, questionableUuid, "questionable", "Questionable", "Q", false);
 				getTermService().save(questionable);
 				UUID questionableDoubtfulUuid = transformer.getPresenceTermUuid("Q?");
-				questionableDoubtful = this.getPresenceTerm(state, questionableDoubtfulUuid, "questionable?", "Questionable?", "Q?");
+				questionableDoubtful = this.getPresenceTerm(state, questionableDoubtfulUuid, "questionable?", "Questionable?", "Q?", false);
 				getTermService().save(questionableDoubtful);
 
 				termsCreated = true;

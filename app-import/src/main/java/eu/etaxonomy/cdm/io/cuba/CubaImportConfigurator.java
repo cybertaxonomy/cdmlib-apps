@@ -40,7 +40,11 @@ public class CubaImportConfigurator extends ExcelImportConfiguratorBase {
 
 	private boolean isDoTaxa;
 
-	private static IInputTransformer defaultTransformer = new CubaTransformer();
+    private boolean doVocabularies;
+    public void setDoVocabularies(boolean doVocabularies) {this.doVocabularies = doVocabularies;}
+    public boolean isDoVocabularies() {return doVocabularies;}
+
+    private static IInputTransformer defaultTransformer = new CubaTransformer();
 
 	public static CubaImportConfigurator NewInstance(URI source, ICdmDataSource destination){
 		return new CubaImportConfigurator(source, destination);

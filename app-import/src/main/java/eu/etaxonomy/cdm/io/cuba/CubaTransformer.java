@@ -32,8 +32,34 @@ public final class CubaTransformer extends InputTransformerBase {
 
     //presenceTerm
     public static final UUID nonNativeDoubtfullyNaturalisedUuid = UUID.fromString("a1e26234-831e-4190-9fe3-011aca09ddba");
-    public static final UUID nonAdventiveAlienUuid = UUID.fromString("06e48a0b-3e48-4ef8-9bdd-0755880e99ce");
+    public static final UUID adventiveAlienUuid = UUID.fromString("06e48a0b-3e48-4ef8-9bdd-0755880e99ce");
     public static final UUID cultivatedOnlyUuid = UUID.fromString("9cca5c3b-aced-41c4-accc-f800b67168f8");
+    public static final UUID occasionallyCultivatedUuid = UUID.fromString("936c3f9a-6099-4322-9792-0a72c6c2ce25");
+    public static final UUID doubtfulIndigenousUuid = UUID.fromString("f47f4f4e-9d84-459a-b747-27a1af24ab7a");
+    public static final UUID doubtfulIndigenousDoubtfulUuid = UUID.fromString("7ddfd94d-01a4-496c-a6d6-18584c00af59");
+
+    public static final UUID doubtfullyNaturalisedUuid = UUID.fromString("9e0b413b-5a68-4e5b-91f2-227b4f832466");
+    public static final UUID doubtfullyNonNativeUuid = UUID.fromString("c42ca644-1773-4230-a2ee-328a5d4a21ab");
+
+    public static final UUID endemicInErrorUuid = UUID.fromString("679b215d-c231-4ee2-ae12-3ffc3dd528ad");
+    public static final UUID adventiveInErrorUuid = UUID.fromString("9b910b7b-43e3-4260-961c-6063b11cb7dc");
+    public static final UUID nonNativeInErrorUuid = UUID.fromString("b9153d90-9e31-465a-a28c-79077a8ed4c2");
+    public static final UUID naturalisedInErrorUuid = UUID.fromString("8d918a37-3add-4e1c-a233-c37dbee209aa");
+
+
+//    public static final UUID indigenousUuid = UUID.fromString("b325859b-504b-45e0-9ef0-d5c1602fcc0f");
+//    public static final UUID casualUuid = UUID.fromString("5e81353c-38a3-4ca6-b979-0d9abc93b877");
+//    public static final UUID nonInvasiveUuid = UUID.fromString("1b025e8b-901a-42e8-9739-119b410c6f03");
+//    public static final UUID invasiveUuid = UUID.fromString("faf2d271-868a-4bf7-b0b8-a1c5ab309de2");
+//    public static final UUID questionableUuid = UUID.fromString("4b48f675-a6cf-49f3-a5ba-77e2c2979eb3");
+//
+//    public static final UUID indigenousDoubtfulUuid = UUID.fromString("17bc601f-53eb-4997-a4bc-c03ce5bfd1d3");
+//    public static final UUID casualDoubtfulUuid = UUID.fromString("73f75493-1185-4a3e-af1e-9a1f2e8dadb7");
+//    public static final UUID nonInvasiveDoubtfulUuid = UUID.fromString("11f56e2f-c16c-4b3d-a870-bb5d3b20e624");
+//    public static final UUID invasiveDoubtfulUuid = UUID.fromString("ac429d5f-e8ad-49ae-a41c-e4779b58b96a");
+//    public static final UUID questionableDoubtfulUuid = UUID.fromString("914e7393-1314-4632-bc45-5eff3dc1e424");
+//
+//    public static final UUID cultivatedDoubtfulUuid = UUID.fromString("4f31bfc8-3058-4d83-aea5-3a1fe9773f9f");
 
 
     //Named Areas
@@ -45,6 +71,9 @@ public final class CubaTransformer extends InputTransformerBase {
     public static final UUID uuidWesternCuba = UUID.fromString("53ee35a5-03dd-4c1e-9b23-1a0d08489684");
     public static final UUID uuidPinarDelRio = UUID.fromString("ee1bae89-b6a8-4b89-a864-238fe3c4dbf3");
     public static final UUID uuidHabana = UUID.fromString("ff906b63-6e74-4a38-b492-73d32817ad3a");
+    public static final UUID uuidCiudadHabana = UUID.fromString("af96dc90-ef03-4e2c-9c65-50dd1cca4f4f");
+    public static final UUID uuidMayabeque = UUID.fromString("7813fc47-1038-49d0-9fc7-07d245abcf2d");
+    public static final UUID uuidArtemisa = UUID.fromString("7e236945-1097-43f7-9deb-dedf3f45dfe1");
     public static final UUID uuidMatanzas = UUID.fromString("bc280278-1b67-4766-ba28-e3a5c215d6a9");
     public static final UUID uuidIslaDeLaJuventud = UUID.fromString("0e0683d6-90d4-4b0f-834e-05737ca9b2b4");
 
@@ -77,14 +106,22 @@ public final class CubaTransformer extends InputTransformerBase {
 //    public static final UUID uuid = UUID.fromString("");
 //    public static final UUID uuid = UUID.fromString("");
 
-
+    private static final UUID uuidCubaTdwg = UUID.fromString("66ce6bb4-b48e-483b-aed1-62646e9c80b8");
     @Override
     public UUID getNamedAreaUuid(String key) throws UndefinedTransformerMethodException {
         if (StringUtils.isBlank(key)){return null;
+
+
         }else if (key.equalsIgnoreCase("C")){return uuidCuba;
         }else if (key.equalsIgnoreCase("CuW")){return uuidWesternCuba;
-        }else if (key.equalsIgnoreCase("PR")){return uuidPinarDelRio;
-        }else if (key.equalsIgnoreCase("Hab")){return uuidHabana;
+        }else if (key.equalsIgnoreCase("PR*")){return uuidPinarDelRio;
+        }else if (key.equalsIgnoreCase("PR PR*")){return uuidPinarDelRio;
+//        }else if (key.equals("HAB")){return uuidHabana;
+        }else if (key.equalsIgnoreCase("Hab*")){return uuidCiudadHabana;
+        }else if (key.equalsIgnoreCase("Hab(*)")){return uuidCiudadHabana;
+        }else if (key.equalsIgnoreCase("May")){return uuidMayabeque;
+        }else if (key.equalsIgnoreCase("Art")){return uuidArtemisa;
+
         }else if (key.equalsIgnoreCase("Mat")){return uuidMatanzas;
         }else if (key.equalsIgnoreCase("IJ")){return uuidIslaDeLaJuventud;
 
@@ -105,7 +142,6 @@ public final class CubaTransformer extends InputTransformerBase {
         }else if (key.equalsIgnoreCase("Esp")){return uuidEspanola;
         }else if (key.equalsIgnoreCase("Ja")){return uuidJamaica;
         }else if (key.equalsIgnoreCase("PR")){return uuidPuertoRico;
-        //TODO same as Pinar del Rio
         }else if (key.equalsIgnoreCase("Men")){return uuidSmallerAntilles;
         }else if (key.equalsIgnoreCase("Bah")){return uuidBahamas;
         }else if (key.equalsIgnoreCase("Cay")){return uuidCaymanIslands;
@@ -124,28 +160,66 @@ public final class CubaTransformer extends InputTransformerBase {
     public UUID getPresenceTermUuid(String key) throws UndefinedTransformerMethodException {
         if (StringUtils.isBlank(key)){return null;
         }else if (key.equalsIgnoreCase("Ind.")){return CyprusTransformer.indigenousUuid;
-        }else if (key.equalsIgnoreCase("Ind?")){return CyprusTransformer.indigenousDoubtfulUuid;
+        }else if (key.equalsIgnoreCase("+")){return CyprusTransformer.indigenousUuid;
+        }else if (key.equalsIgnoreCase("?Ind.")){return CyprusTransformer.indigenousDoubtfulUuid;
+        }else if (key.equalsIgnoreCase("?")){return CyprusTransformer.indigenousDoubtfulUuid;
+        }else if (key.equalsIgnoreCase("?Cult.")){return CyprusTransformer.cultivatedDoubtfulUuid;
+
+
+        }else if (key.equalsIgnoreCase("Ind.?")){return doubtfulIndigenousUuid;
+        }else if (key.equalsIgnoreCase("D")){return doubtfulIndigenousUuid;
+        }else if (key.equalsIgnoreCase("?Ind.?")){return doubtfulIndigenousUuid;
+        }else if (key.equalsIgnoreCase("??")){return doubtfulIndigenousDoubtfulUuid;
+
         }else if (key.equalsIgnoreCase("Dud.")){return nonNativeDoubtfullyNaturalisedUuid;
-        }else if (key.equalsIgnoreCase("Adv.")){return nonAdventiveAlienUuid;
+        }else if (key.equalsIgnoreCase("P")){return nonNativeDoubtfullyNaturalisedUuid;
+
+        }else if (key.equalsIgnoreCase("Adv.")){return adventiveAlienUuid;
+        }else if (key.equalsIgnoreCase("A")){return adventiveAlienUuid;
+
         }else if (key.equalsIgnoreCase("Cult.")){return cultivatedOnlyUuid;
+        }else if (key.equalsIgnoreCase("C")){return cultivatedOnlyUuid;
+        }else if (key.equalsIgnoreCase("(C)")){return occasionallyCultivatedUuid;
+
+        }else if (key.equalsIgnoreCase("?Nat.")){return doubtfullyNaturalisedUuid;
+        }else if (key.equalsIgnoreCase("?N")){return doubtfullyNaturalisedUuid;
+        }else if (key.equalsIgnoreCase("?Dud.")){return doubtfullyNonNativeUuid;
+        }else if (key.equalsIgnoreCase("?P")){return doubtfullyNonNativeUuid;
+        }else if (key.equalsIgnoreCase("-End.")){return endemicInErrorUuid;
+        }else if (key.equalsIgnoreCase("-E")){return endemicInErrorUuid;
+        }else if (key.equalsIgnoreCase("-Nat.")){return naturalisedInErrorUuid;
+        }else if (key.equalsIgnoreCase("-N")){return naturalisedInErrorUuid;
+        }else if (key.equalsIgnoreCase("-Dud.")){return nonNativeInErrorUuid;
+        }else if (key.equalsIgnoreCase("-P")){return nonNativeInErrorUuid;
+        }else if (key.equalsIgnoreCase("-Adv.")){return adventiveInErrorUuid;
+        }else if (key.equalsIgnoreCase("-A")){return adventiveInErrorUuid;
+
+
         }else{
             return null;
         }
     }
+
 
     @Override
     public PresenceAbsenceTerm getPresenceTermByKey(String key) throws UndefinedTransformerMethodException {
         if (StringUtils.isBlank(key)){return null;
+
+        }else if (key.equalsIgnoreCase("E")){return PresenceAbsenceTerm.ENDEMIC_FOR_THE_RELEVANT_AREA();
+
+        }else if (key.equalsIgnoreCase("-Ind.")){return PresenceAbsenceTerm.NATIVE_REPORTED_IN_ERROR();
+
         }else if (key.equalsIgnoreCase("Nat.")){return PresenceAbsenceTerm.NATURALISED();
+        }else if (key.equalsIgnoreCase("N")){return PresenceAbsenceTerm.NATURALISED();
+
         }else if (key.equalsIgnoreCase("Cult.")){return PresenceAbsenceTerm.CULTIVATED();
+        }else if (key.equalsIgnoreCase("C")){return PresenceAbsenceTerm.CULTIVATED();
+
+        }else if (key.equalsIgnoreCase("-Cult.")){return PresenceAbsenceTerm.CULTIVATED_REPORTED_IN_ERROR();
+
         }else{
             return null;
         }
     }
-
-
-
-
-
 
 }

@@ -39,14 +39,32 @@ public class CubaActivator {
 	//database validation status (create, update, validate ...)
 	static DbSchemaValidation hbm2dll = DbSchemaValidation.CREATE;
 
-	private static final URI source = monocots();
-//    private static final URI source = cyperaceae();
+	boolean invers = true;
+	boolean include = !invers;
+    boolean doAsteraceae = include;
+    boolean doConvolvulaceae = include;
+    boolean doCyperaceae = include;
+    boolean doDicotA_C = include;
+    boolean doDicotD_M = include;
+    boolean doDicotN_Z = include;
+    boolean doEuphorbiaceae = include;
+    boolean doFabaceae = include;
+    boolean doGymnospermae = include;
+    boolean doLamVerbenaceae = include;
+    boolean doMalpighiaceae = include;
+    boolean doMelastomataceae = ! include;
+    boolean doMonocots = include ;
+    boolean doMyrtaceae = include;
+    boolean doOrchidaceae = include;
+    boolean doRubiaceae = include;
+    boolean doUrticaceae = include;
 
 
-//	static final ICdmDataSource cdmDestination = CdmDestinations.localH2();
-	static final ICdmDataSource cdmDestination = CdmDestinations.cdm_test_local_mysql_test();
+
+    static final ICdmDataSource cdmDestination = CdmDestinations.localH2();
+//	static final ICdmDataSource cdmDestination = CdmDestinations.cdm_test_local_mysql_test();
 //	static final ICdmDataSource cdmDestination = CdmDestinations.cdm_cyprus_dev();
-//	static final ICdmDataSource cdmDestination = CdmDestinations.cdm_cyprus_production();
+//	static final ICdmDataSource cdmDestination = CdmDestinations.cdm_cuba_production();
 
 
 	//feature tree uuid
@@ -54,44 +72,88 @@ public class CubaActivator {
 
 	//classification
 	static final UUID classificationUuid = UUID.fromString("5de394de-9c76-4b97-b04d-71be31c7f44b");
+	private static final String classificationName = "Flora of Cuba";
 
 	static final String sourceReferenceTitle = "Cuba import";
 
 	//check - import
 	static final CHECK check = CHECK.IMPORT_WITHOUT_CHECK;
 
-	//taxa
+	static boolean doVocabularies = (hbm2dll == DbSchemaValidation.CREATE);
 	static final boolean doTaxa = true;
 	static final boolean doDeduplicate = false;
-	static final boolean doDistribution = false;
 
 
 	private void doImport(ICdmDataSource cdmDestination){
 
+	    URI source = monocots();  //just any
+
 		//make Source
 		CubaImportConfigurator config= CubaImportConfigurator.NewInstance(source, cdmDestination);
 		config.setClassificationUuid(classificationUuid);
-		config.setCheck(check);
+        config.setClassificationName(classificationName);
+        config.setCheck(check);
 //		config.setDoDistribution(doDistribution);
 		config.setDoTaxa(doTaxa);
 		config.setDbSchemaValidation(hbm2dll);
 		config.setSourceReferenceTitle(sourceReferenceTitle);
+		config.setDoVocabularies(doVocabularies);
 
-		CdmDefaultImport<CubaImportConfigurator> myImport = new CdmDefaultImport();
+		CdmDefaultImport<CubaImportConfigurator> myImport = new CdmDefaultImport<CubaImportConfigurator>();
 
 
 		//...
-		if (true){
-			System.out.println("Start import from ("+ source.toString() + ") ...");
-			config.setSourceReference(getSourceReference(sourceReferenceTitle));
-			myImport.invoke(config);
-			if (doTaxa){
-				FeatureTree tree = makeFeatureNodes(myImport.getCdmAppController().getTermService());
-				myImport.getCdmAppController().getFeatureTreeService().saveOrUpdate(tree);
-			}
-
-			System.out.println("End import from ("+ source.toString() + ")...");
-		}
+        if (doAsteraceae){
+            doSource(asteraceae(), config, myImport, doVocabularies);
+        }
+        if (doConvolvulaceae){
+            doSource(convolvulaceae(), config, myImport, doVocabularies);
+        }
+        if (doCyperaceae){
+            doSource(cyperaceae(), config, myImport, doVocabularies);
+        }
+        if (doDicotA_C){
+            doSource(dicotA_C(), config, myImport, doVocabularies);
+        }
+        if (doDicotD_M){
+            doSource(dicotD_M(), config, myImport, doVocabularies);
+        }
+        if (doDicotN_Z){
+            doSource(dicotN_Z(), config, myImport, doVocabularies);
+        }
+        if (doEuphorbiaceae){
+            doSource(euphorbiaceae(), config, myImport, doVocabularies);
+        }
+        if (doFabaceae){
+            doSource(fabaceae(), config, myImport, doVocabularies);
+        }
+        if (doGymnospermae){
+            doSource(gymnospermae(), config, myImport, doVocabularies);
+        }
+        if (doLamVerbenaceae){
+            doSource(lamVerbenaceae(), config, myImport, doVocabularies);
+        }
+        if (doMalpighiaceae){
+            doSource(malpighiaceae(), config, myImport, doVocabularies);
+        }
+        if (doMelastomataceae){
+            doSource(melastomataceae(), config, myImport, doVocabularies);
+        }
+        if (doMonocots){
+            doSource(monocots(), config, myImport, doVocabularies);
+        }
+        if (doMyrtaceae){
+            doSource(myrtaceae(), config, myImport, doVocabularies);
+        }
+        if (doOrchidaceae){
+            doSource(orchidaceae(), config, myImport, doVocabularies);
+        }
+        if (doRubiaceae){
+            doSource(rubiaceae(), config, myImport, doVocabularies);
+        }
+        if (doUrticaceae){
+            doSource(urticaceae(), config, myImport, doVocabularies);
+        }
 
 
 
@@ -106,7 +168,30 @@ public class CubaActivator {
 			logger.warn("Deduplicated " + count + " references.");
 		}
 
+
+		System.exit(0);
+
 	}
+
+    /**
+     * @param source
+     * @param config
+     * @param myImport
+     */
+    private void doSource(URI source, CubaImportConfigurator config,
+            CdmDefaultImport<CubaImportConfigurator> myImport, boolean doVocabularies) {
+        config.setSource(source);
+        System.out.println("Start import from ("+ source.toString() + ") ...");
+        config.setSourceReference(getSourceReference(sourceReferenceTitle));
+        config.setDoVocabularies(false);
+        myImport.invoke(config);
+
+        if (doVocabularies){
+            FeatureTree tree = makeFeatureNodes(myImport.getCdmAppController().getTermService());
+            myImport.getCdmAppController().getFeatureTreeService().saveOrUpdate(tree);
+        }
+        System.out.println("End import from ("+ source.toString() + ")...");
+    }
 
 	private Reference<?> getSourceReference(String string) {
 		Reference<?> result = ReferenceFactory.newGeneric();
@@ -143,13 +228,70 @@ public class CubaActivator {
 	public static URI monocots() {
 	    return URI.create("file:////BGBM-PESIHPC/Cuba/Monocot.xlsx");
 	}
-
 	//Cyperaceae
 	public static URI cyperaceae() {
 	    return URI.create("file:////BGBM-PESIHPC/Cuba/Cyper_Poaceae.xlsx");
 	}
-
-
+    //Fabaceae
+    public static URI fabaceae() {
+        return URI.create("file:////BGBM-PESIHPC/Cuba/Fabaceae.xlsx");
+    }
+    //Urticaceae
+    public static URI urticaceae() {
+        return URI.create("file:////BGBM-PESIHPC/Cuba/Urticaceae.xlsx");
+    }
+    //Asteraceae
+    public static URI asteraceae() {
+        return URI.create("file:////BGBM-PESIHPC/Cuba/Asteraceae.xlsx");
+    }
+    //Convolvulaceae
+    public static URI convolvulaceae() {
+        return URI.create("file:////BGBM-PESIHPC/Cuba/Convolvulaceae.xlsx");
+    }
+    //dicot A-C
+    public static URI dicotA_C() {
+        return URI.create("file:////BGBM-PESIHPC/Cuba/dicotA_C.xlsx");
+    }
+    //dicot D-M
+    public static URI dicotD_M() {
+        return URI.create("file:////BGBM-PESIHPC/Cuba/dicotD_M.xlsx");
+    }
+    //dicot N-Z
+    public static URI dicotN_Z() {
+        return URI.create("file:////BGBM-PESIHPC/Cuba/dicotN_Z.xlsx");
+    }
+    //Euphorbiaceae
+    public static URI euphorbiaceae() {
+        return URI.create("file:////BGBM-PESIHPC/Cuba/Euphorbiaceae.xlsx");
+    }
+    //Gymnospermae
+    public static URI gymnospermae() {
+        return URI.create("file:////BGBM-PESIHPC/Cuba/gymnospermae.xlsx");
+    }
+    //Lam.Verbenaceae
+    public static URI lamVerbenaceae() {
+        return URI.create("file:////BGBM-PESIHPC/Cuba/Lam_Verbenaceae.xlsx");
+    }
+    //Malpighiaceae
+    public static URI malpighiaceae() {
+        return URI.create("file:////BGBM-PESIHPC/Cuba/Malpighiaceae.xlsx");
+    }
+    //Melastomataceae
+    public static URI melastomataceae() {
+        return URI.create("file:////BGBM-PESIHPC/Cuba/Melastomataceae.xlsx");
+    }
+    //Myrtaceae
+    public static URI myrtaceae() {
+        return URI.create("file:////BGBM-PESIHPC/Cuba/Myrtaceae.xlsx");
+    }
+    //Orchidaceae
+    public static URI orchidaceae() {
+        return URI.create("file:////BGBM-PESIHPC/Cuba/Orchidaceae.xlsx");
+    }
+    //Rubiaceae
+    public static URI rubiaceae() {
+        return URI.create("file:////BGBM-PESIHPC/Cuba/Rubiaceae.xlsx");
+    }
 
 	/**
 	 * @param args
