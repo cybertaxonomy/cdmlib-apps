@@ -49,28 +49,9 @@
   	</dependency>
   	<dependency>
   		<groupId>eu.etaxonomy</groupId>
-  		<artifactId>cdmlib-persistence</artifactId>
-  		<type>test-jar</type>
+  		<artifactId>cdmlib-test</artifactId>
         	<scope>test</scope>
   		<version>${project.version}</version>
   	</dependency>
-	<!-- <dependency>
-      		<groupId>org.unitils</groupId>
-		<artifactId>unitils-dbunit</artifactId>
-		<version>3.3</version>
-		<scope>test</scope>
-    	</dependency>
-    	<dependency>
-		<groupId>org.unitils</groupId>
-      		<artifactId>unitils-spring</artifactId>
-      		<version>3.3</version>
-      		<scope>test</scope>
-  	</dependency> -->
-
-
-<!--     <dependency>
-    	<groupId>aspectj</groupId>
-      	<artifactId>aspectjrt</artifactId>
-		<version>1.6.3</version>
-    </dependency> -->
-  </dependencies></project>
+  </dependencies>
+</project>
