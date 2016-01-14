@@ -58,28 +58,13 @@
   		<version>${project.version}</version>
   	</dependency>
 
-  	
-  	
-<!--   	<dependency> -->
-<!--         <groupId>org.unitils</groupId> -->
-<!--         <artifactId>unitils-core</artifactId> -->
-<!--     </dependency> -->
-<!--     <dependency> -->
-<!--       <groupId>org.dbunit</groupId> -->
-<!--       <artifactId>dbunit</artifactId> -->
-<!--     </dependency> -->
-<!--     <dependency> -->
-<!--       <groupId>xmlunit</groupId> -->
-<!--       <artifactId>xmlunit</artifactId> -->
-<!--   	</dependency> -->
-
-		<!-- Profiling -->
+	<!-- Profiling -->
 		<dependency>
 			<groupId>com.yourkit</groupId>
 			<artifactId>yjp-controller-api-redist</artifactId>
 			<version>9.0.8</version>
-<!--			<scope>test</scope> -->
-		</dependency>
+<!--        <scope>test</scope> -->
+	</dependency>
   </dependencies>
 </project>
 
