@@ -41,30 +41,31 @@ public class CubaActivator {
 
 	boolean invers = true;
 	boolean include = !invers;
+
     boolean doAsteraceae = include;
     boolean doConvolvulaceae = include;
-    boolean doCyperaceae = include;
+    boolean doCyperaceae = ! include;
     boolean doDicotA_C = include;
     boolean doDicotD_M = include;
     boolean doDicotN_Z = include;
     boolean doEuphorbiaceae = include;
-    boolean doFabaceae = include;
+    boolean doFabaceae = ! include;
     boolean doGymnospermae = include;
     boolean doLamVerbenaceae = include;
-    boolean doMalpighiaceae = include;
+    boolean doMalpighiaceae = ! include;
     boolean doMelastomataceae = ! include;
-    boolean doMonocots = include ;
+    boolean doMonocots = ! include ;
     boolean doMyrtaceae = include;
     boolean doOrchidaceae = include;
     boolean doRubiaceae = include;
-    boolean doUrticaceae = include;
+    boolean doUrticaceae = ! include;
 
 
 
-    static final ICdmDataSource cdmDestination = CdmDestinations.localH2();
+//    static final ICdmDataSource cdmDestination = CdmDestinations.localH2();
 //	static final ICdmDataSource cdmDestination = CdmDestinations.cdm_test_local_mysql_test();
 //	static final ICdmDataSource cdmDestination = CdmDestinations.cdm_cyprus_dev();
-//	static final ICdmDataSource cdmDestination = CdmDestinations.cdm_cuba_production();
+	static final ICdmDataSource cdmDestination = CdmDestinations.cdm_cuba_production();
 
 
 	//feature tree uuid
@@ -79,7 +80,7 @@ public class CubaActivator {
 	//check - import
 	static final CHECK check = CHECK.IMPORT_WITHOUT_CHECK;
 
-	static boolean doVocabularies = (hbm2dll == DbSchemaValidation.CREATE);
+	boolean doVocabularies = (hbm2dll == DbSchemaValidation.CREATE);
 	static final boolean doTaxa = true;
 	static final boolean doDeduplicate = false;
 
@@ -189,6 +190,7 @@ public class CubaActivator {
         if (doVocabularies){
             FeatureTree tree = makeFeatureNodes(myImport.getCdmAppController().getTermService());
             myImport.getCdmAppController().getFeatureTreeService().saveOrUpdate(tree);
+            this.doVocabularies = false;
         }
         System.out.println("End import from ("+ source.toString() + ")...");
     }

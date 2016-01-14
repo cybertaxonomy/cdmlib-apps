@@ -270,7 +270,9 @@ public class CubaExcelImport extends ExcelImporterBase<CubaImportState> {
                                                      +"(\\((.{6,})\\))?";
     private static final String heterotypicRegExStr_TEST = "([^\\(]{5,}" +"(\\(.+\\))?" + "[^\\)\\(]{2,})"
             +"(\\((.{6,})\\))?";
-    private static final String missapliedRegExStr = "“(.*{5,})”\\s+(auct\\.(\\sFC\\-S)?(\\s+p\\.\\s*p\\.)?|sensu\\s+.{2,})";
+    private static final String auctRegExStr = "auct\\."
+            +"((\\sFC(\\-S)?(\\s&\\sA&S)?)|(\\sA&S))?(\\s+p\\.\\s*p\\.)?";
+    private static final String missapliedRegExStr = "“(.*{5,})”\\s+(" + auctRegExStr + "|sensu\\s+.{2,})";
     private static final String nomInvalRegExStr = "“(.*{5,})”\\s+nom\\.\\s+inval\\.";
     private static final String homonymRegExStr = "\\s*(\\[.*\\])*\\s*";
 
@@ -321,7 +323,7 @@ public class CubaExcelImport extends ExcelImporterBase<CubaImportState> {
                 Team team = Team.NewTitledInstance(secondPart, null);
                 sensu.setAuthorship(team);
                 misappliedNameTaxon.setSec(sensu);
-            }else if (secondPart.matches("auct.((\\s+p\\.\\s*p\\.)|(\\sFC\\-S))?")){
+            }else if (secondPart.matches(auctRegExStr)){
                 secondPart = secondPart.replace("p. p.", "p.p.");
                 misappliedNameTaxon.setAppendedPhrase(secondPart);
             }else{
@@ -692,7 +694,7 @@ public class CubaExcelImport extends ExcelImporterBase<CubaImportState> {
         TaxonNode familyTaxon = getFamilyTaxon(record, state);
         if (familyTaxon == null){
             if (record.get("Taxón") != null){
-                logger.warn(line + ": Family not recognized but taxon exists:" + record.get("Taxón"));
+                logger.warn(line + ": Family not recognized but taxon exists: " + record.get("Taxón"));
                 return;
             }else if (record.get("Syn.") == null){
                 logger.warn(line + ": Family not recognized but also no synonym exists");
