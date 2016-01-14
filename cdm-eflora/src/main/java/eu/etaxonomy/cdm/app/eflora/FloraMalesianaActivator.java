@@ -57,7 +57,7 @@ public class FloraMalesianaActivator extends EfloraActivatorBase {
 	private final boolean includeBase = false;
 	private final boolean includeVol07_1 = includeBase;
     private final boolean includeVol07_2 = includeBase;
-    private final boolean includeVol07_3_09_1 = includeBase;
+    private final boolean includeVol07_3_09_1 = includeBase;     //all fixed
     private final boolean includeVol07_4 = includeBase;
 
     private final boolean includeVol08_1 = includeBase;
@@ -71,17 +71,18 @@ public class FloraMalesianaActivator extends EfloraActivatorBase {
 	private final boolean includeVol11_1 = includeBase;
 	private final boolean includeVol11_2 = includeBase;
 	private final boolean includeVol11_3 = includeBase;
-	private final boolean includeVol12 = ! includeBase;
-	private final boolean includeVol13 = includeBase;
-	private final boolean includeVol14 = includeBase;
-	private final boolean includeVol15 = includeBase;
-	private final boolean includeVol16 = includeBase;
-	private final boolean includeVol17_1 = includeBase;
-	private final boolean includeVol17_2 = includeBase;
-	private final boolean includeVol18 = includeBase;
-	private final boolean includeVol19 = includeBase;
-	private final boolean includeVol20 = includeBase;
-	private final boolean includeVol21 = includeBase;
+	private final boolean includeVol12 = includeBase;    //30 issues (uuids, series, section, apostrophs, non-standard names)
+	private final boolean includeVol13 = includeBase;      //4xuuid, 1 manual (Loranthaceae)
+	private final boolean includeVol14 = includeBase;      //15 (some open, 2 uuids, 4 non standard, 3 forma
+	private final boolean includeVol15 = includeBase;     //3 manual (hybrids)
+	private final boolean includeVol16 = includeBase;    //all fixed
+//	private final boolean includeVol17_1 = includeBase;
+//	private final boolean includeVol17_2 = includeBase;
+	private final boolean includeVol17 = ! includeBase;
+    private final boolean includeVol18 = includeBase;      //12 remaining issues
+	private final boolean includeVol19 = includeBase;    //14 forma (instead of f.) and 2 non standard names
+	private final boolean includeVol20 = includeBase;    //all fixed
+	private final boolean includeVol21 = includeBase;    //2 subfamilies
 	private final boolean includeVol2_1 = includeBase;
     private final boolean includeVol2_2 = includeBase;
 	private final boolean includeVol2_3 = includeBase;
@@ -112,6 +113,7 @@ public class FloraMalesianaActivator extends EfloraActivatorBase {
     static final URI fmSource14 = EfloraSources.fm_14();
     static final URI fmSource15 = EfloraSources.fm_15();
     static final URI fmSource16 = EfloraSources.fm_16();
+    static final URI fmSource17 = EfloraSources.fm_17();
     static final URI fmSource17_1 = EfloraSources.fm_17_1();
     static final URI fmSource17_2 = EfloraSources.fm_17_2();
     static final URI fmSource18 = EfloraSources.fm_18();
@@ -233,11 +235,14 @@ public class FloraMalesianaActivator extends EfloraActivatorBase {
 		//Vol16
 		doSource(includeVol16, fmSource16, "Flora Malesiana - vol. 16", markupConfig, myImport);
 
-		//Vol17, part1
-		doSource(includeVol17_1, fmSource17_1, "Flora Malesiana - vol. 17, part I", markupConfig, myImport);
+		//Vol17, part1+2
+        doSource(includeVol17, fmSource17, "Flora Malesiana - vol. 17, part I and II", markupConfig, myImport);
 
-		//Vol17, part2
-		doSource(includeVol17_2, fmSource17_2, "Flora Malesiana - vol. 17, part II", markupConfig, myImport);
+//		//Vol17, part1
+//		doSource(includeVol17_1, fmSource17_1, "Flora Malesiana - vol. 17, part I", markupConfig, myImport);
+//
+//		//Vol17, part2
+//		doSource(includeVol17_2, fmSource17_2, "Flora Malesiana - vol. 17, part II", markupConfig, myImport);
 
 		//Vol18
 		doSource(includeVol18, fmSource18, "Flora Malesiana - vol. 18", markupConfig, myImport);

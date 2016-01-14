@@ -159,6 +159,11 @@ public class EfloraSources {
 		return URI.create("file:////BGBM-PESIHPC/FloraMalesianaXml/fmvol16_final2.xml");
 	}
 
+	//Flora Malesiana Vol 17, part1+2
+    public static URI fm_17(){
+        return URI.create("file:////BGBM-PESIHPC/FloraMalesianaXml/fmvol17_final2.xml");
+    }
+
 	//Flora Malesiana Vol 17, part1
 	public static URI fm_17_1(){
 		return URI.create("file:////BGBM-PESIHPC/FloraMalesianaXml/fmvol17_part1_final2.xml");
