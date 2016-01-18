@@ -41,31 +41,31 @@ public class CubaActivator {
 
 	boolean invers = true;
 	boolean include = !invers;
+	boolean exists = true;
 
     boolean doAsteraceae = include;
-    boolean doConvolvulaceae = include;
-    boolean doCyperaceae = ! include;
+    boolean doConvolvulaceae = include && exists;   //x
+    boolean doCyperaceae = include && exists;   //x
     boolean doDicotA_C = include;
     boolean doDicotD_M = include;
     boolean doDicotN_Z = include;
     boolean doEuphorbiaceae = include;
-    boolean doFabaceae = ! include;
+    boolean doFabaceae = include && exists;
     boolean doGymnospermae = include;
     boolean doLamVerbenaceae = include;
-    boolean doMalpighiaceae = ! include;
-    boolean doMelastomataceae = ! include;
-    boolean doMonocots = ! include ;
-    boolean doMyrtaceae = include;
+    boolean doMalpighiaceae = include && exists;
+    boolean doMelastomataceae = include && exists;
+    boolean doMonocots = include && exists;
+    boolean doMyrtaceae = ! include && exists;
     boolean doOrchidaceae = include;
     boolean doRubiaceae = include;
-    boolean doUrticaceae = ! include;
+    boolean doUrticaceae = include && exists;
 
 
-
-//    static final ICdmDataSource cdmDestination = CdmDestinations.localH2();
+    static final ICdmDataSource cdmDestination = CdmDestinations.localH2();
 //	static final ICdmDataSource cdmDestination = CdmDestinations.cdm_test_local_mysql_test();
 //	static final ICdmDataSource cdmDestination = CdmDestinations.cdm_cyprus_dev();
-	static final ICdmDataSource cdmDestination = CdmDestinations.cdm_cuba_production();
+//	static final ICdmDataSource cdmDestination = CdmDestinations.cdm_cuba_production();
 
 
 	//feature tree uuid

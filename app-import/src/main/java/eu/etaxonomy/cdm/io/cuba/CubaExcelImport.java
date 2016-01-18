@@ -675,13 +675,13 @@ public class CubaExcelImport extends ExcelImporterBase<CubaImportState> {
     protected void firstPass(CubaImportState state) {
 	    boolean isSynonym = false;
 
-        int line = state.getCurrentLine();
+        String line = state.getCurrentLine() + ": ";
         HashMap<String, String> record = state.getOriginalRecord();
 
         Set<String> keys = record.keySet();
         for (String key: keys) {
             if (! expectedKeys.contains(key)){
-                logger.warn("Unexpected Key: " + key);
+                logger.warn(line + "Unexpected Key: " + key);
             }
         }
 
@@ -694,10 +694,10 @@ public class CubaExcelImport extends ExcelImporterBase<CubaImportState> {
         TaxonNode familyTaxon = getFamilyTaxon(record, state);
         if (familyTaxon == null){
             if (record.get("Taxón") != null){
-                logger.warn(line + ": Family not recognized but taxon exists: " + record.get("Taxón"));
+                logger.warn(line + "Family not recognized but taxon exists: " + record.get("Taxón"));
                 return;
             }else if (record.get("Syn.") == null){
-                logger.warn(line + ": Family not recognized but also no synonym exists");
+                logger.warn(line + "Family not recognized but also no synonym exists");
                 return;
             }else{
                 isSynonym = true;
@@ -710,7 +710,7 @@ public class CubaExcelImport extends ExcelImporterBase<CubaImportState> {
         //Taxón
         Taxon taxon = makeTaxon(record, state, familyTaxon, isSynonym);
         if (taxon == null && ! isSynonym){
-            logger.warn(line + ": taxon could not be created and is null");
+            logger.warn(line + "taxon could not be created and is null");
             return;
         }
         state.setCurrentTaxon(taxon);
