@@ -39,33 +39,34 @@ public class CubaActivator {
 	//database validation status (create, update, validate ...)
 	static DbSchemaValidation hbm2dll = DbSchemaValidation.CREATE;
 
-	boolean invers = true;
+//    static final ICdmDataSource cdmDestination = CdmDestinations.localH2();
+//  static final ICdmDataSource cdmDestination = CdmDestinations.cdm_test_local_mysql_test();
+    static final ICdmDataSource cdmDestination = CdmDestinations.cdm_cuba_production();
+
+	boolean invers = false;
+
 	boolean include = !invers;
 	boolean exists = true;
 
-    boolean doAsteraceae = include;
+    boolean doAsteraceae = include && false;
     boolean doConvolvulaceae = include && exists;   //x
     boolean doCyperaceae = include && exists;   //x
-    boolean doDicotA_C = include;
-    boolean doDicotD_M = include;
-    boolean doDicotN_Z = include;
-    boolean doEuphorbiaceae = include;
+    boolean doDicotA_C = include && false;
+    boolean doDicotD_M = include && false;
+    boolean doDicotN_Z = include && false;
+    boolean doEuphorbiaceae = include && false;
     boolean doFabaceae = include && exists;
-    boolean doGymnospermae = include;
-    boolean doLamVerbenaceae = include;
+    boolean doGymnospermae = include && false;
+    boolean doLamVerbenaceae = include && false;
     boolean doMalpighiaceae = include && exists;
     boolean doMelastomataceae = include && exists;
     boolean doMonocots = include && exists;
-    boolean doMyrtaceae = ! include && exists;
-    boolean doOrchidaceae = include;
-    boolean doRubiaceae = include;
+    boolean doMyrtaceae = include && exists;
+    boolean doOrchidaceae = include && false;
+    boolean doRubiaceae = include && exists;
     boolean doUrticaceae = include && exists;
 
 
-    static final ICdmDataSource cdmDestination = CdmDestinations.localH2();
-//	static final ICdmDataSource cdmDestination = CdmDestinations.cdm_test_local_mysql_test();
-//	static final ICdmDataSource cdmDestination = CdmDestinations.cdm_cyprus_dev();
-//	static final ICdmDataSource cdmDestination = CdmDestinations.cdm_cuba_production();
 
 
 	//feature tree uuid
@@ -182,9 +183,11 @@ public class CubaActivator {
     private void doSource(URI source, CubaImportConfigurator config,
             CdmDefaultImport<CubaImportConfigurator> myImport, boolean doVocabularies) {
         config.setSource(source);
-        System.out.println("Start import from ("+ source.toString() + ") ...");
+        String message = "Start import from ("+ source.toString() + ") ...";
+        System.out.println(message);
+        logger.warn(message);
         config.setSourceReference(getSourceReference(sourceReferenceTitle));
-        config.setDoVocabularies(false);
+        config.setDoVocabularies(doVocabularies);
         myImport.invoke(config);
 
         if (doVocabularies){

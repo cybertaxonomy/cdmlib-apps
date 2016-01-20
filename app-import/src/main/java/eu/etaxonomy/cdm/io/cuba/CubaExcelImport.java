@@ -89,7 +89,7 @@ public class CubaExcelImport extends ExcelImporterBase<CubaImportState> {
         try {
             NamedArea cuba = getNamedArea(state, state.getTransformer().getNamedAreaUuid("C"), null, null, null, null, null);
             TaxonDescription desc = getTaxonDescription(state.getCurrentTaxon(), false, true);
-            List<PresenceAbsenceTerm> statuss =  makeCubanStatus(record, state);
+            List<PresenceAbsenceTerm> statuss =  makeCubanStatuss(record, state);
             for (PresenceAbsenceTerm status : statuss){
                 Distribution distribution = Distribution.NewInstance(cuba, status);
                 desc.addElement(distribution);
@@ -106,8 +106,9 @@ public class CubaExcelImport extends ExcelImporterBase<CubaImportState> {
      * @return
      * @throws UndefinedTransformerMethodException
      */
-    private List<PresenceAbsenceTerm> makeCubanStatus(HashMap<String, String> record, CubaImportState state) throws UndefinedTransformerMethodException {
+    private List<PresenceAbsenceTerm> makeCubanStatuss(HashMap<String, String> record, CubaImportState state) throws UndefinedTransformerMethodException {
         boolean isAbsent = false;  //TODO
+        PresenceAbsenceTerm highestStatus = null;
 
         String line = state.getCurrentLine() + ": ";
         List<PresenceAbsenceTerm> result = new ArrayList<>();
@@ -124,10 +125,12 @@ public class CubaExcelImport extends ExcelImporterBase<CubaImportState> {
             if(endemicStr.equals("+")){
                 PresenceAbsenceTerm endemicState = state.getTransformer().getPresenceTermByKey("E");
                 result.add(endemicState);
+                highestStatus = endemicState;
             }else if(isMinus(endemicStr)){
                 UUID endemicUuid = state.getTransformer().getPresenceTermUuid("-E");
                 PresenceAbsenceTerm endemicState = getPresenceTerm(state, endemicUuid, null, null, null, false);
                 result.add(endemicState);
+                checkAbsentHighestState(highestStatus, line, "endemic", false);
             }else{
                 logger.warn(line + "Endemic not recognized: " + endemicStr);
             }
@@ -137,13 +140,16 @@ public class CubaExcelImport extends ExcelImporterBase<CubaImportState> {
                 UUID indigenousUuid = state.getTransformer().getPresenceTermUuid("Ind.");
                 PresenceAbsenceTerm indigenousState = getPresenceTerm(state, indigenousUuid, null, null, null, false);
                 result.add(indigenousState);
+                highestStatus = highestStatus != null ? highestStatus : indigenousState;
             }else if(isMinus(indigenousStr)){
-                PresenceAbsenceTerm haturalizedState = state.getTransformer().getPresenceTermByKey("-Ind.");
-                result.add(haturalizedState);
+                PresenceAbsenceTerm indigenousState = state.getTransformer().getPresenceTermByKey("-Ind.");
+                result.add(indigenousState);
+                checkAbsentHighestState(highestStatus, line, "indigenous", false);
             }else if(indigenousStr.equals("?")){
                 UUID indigenousDoubtUuid = state.getTransformer().getPresenceTermUuid("?Ind.");
                 PresenceAbsenceTerm indigenousDoubtState = getPresenceTerm(state, indigenousDoubtUuid, null, null, null, false);
                 result.add(indigenousDoubtState);
+                checkAbsentHighestState(highestStatus, line, "indigenous", true);
             }else{
                 logger.warn(line + "Indigenous not recognized: " + indigenousStr);
             }
@@ -153,22 +159,26 @@ public class CubaExcelImport extends ExcelImporterBase<CubaImportState> {
                 UUID indigenousDoubtUuid = state.getTransformer().getPresenceTermUuid("Ind.?");
                 PresenceAbsenceTerm indigenousDoubtState = getPresenceTerm(state, indigenousDoubtUuid, null, null, null, false);
                 result.add(indigenousDoubtState);
+                highestStatus = highestStatus != null ? highestStatus : indigenousDoubtState;
             }else{
                 logger.warn(line + "Indigenous doubtful not recognized: " + indigenousDoubtStr);
             }
         }
         if(naturalisedStr != null){
             if(naturalisedStr.equals("N")){
-                  PresenceAbsenceTerm haturalizedState = state.getTransformer().getPresenceTermByKey("Nat.");
-                  result.add(haturalizedState);
+                PresenceAbsenceTerm haturalizedState = state.getTransformer().getPresenceTermByKey("Nat.");
+                result.add(haturalizedState);
+                highestStatus = highestStatus != null ? highestStatus : haturalizedState;
             }else if(isMinus(naturalisedStr)){
                 UUID naturalisedErrorUuid = state.getTransformer().getPresenceTermUuid("-Nat.");
                 PresenceAbsenceTerm naturalisedErrorState = getPresenceTerm(state, naturalisedErrorUuid, null, null, null, false);
                 result.add(naturalisedErrorState);
+                checkAbsentHighestState(highestStatus, line, "naturalized", false);
             }else if(naturalisedStr.equals("?")){
                 UUID naturalisedDoubtUuid = state.getTransformer().getPresenceTermUuid("?Nat.");
                 PresenceAbsenceTerm naturalisedDoubtState = getPresenceTerm(state, naturalisedDoubtUuid, null, null, null, false);
                 result.add(naturalisedDoubtState);
+                checkAbsentHighestState(highestStatus, line, "naturalized", true);
             }else{
                 logger.warn(line + "Naturalized not recognized: " + naturalisedStr);
             }
@@ -178,14 +188,17 @@ public class CubaExcelImport extends ExcelImporterBase<CubaImportState> {
                 UUID dudUuid = state.getTransformer().getPresenceTermUuid("Dud.");
                 PresenceAbsenceTerm dudState = getPresenceTerm(state, dudUuid, null, null, null, false);
                 result.add(dudState);
+                highestStatus = highestStatus != null ? highestStatus : dudState;
             }else if(isMinus(dudStr)){
                 UUID nonNativeErrorUuid = state.getTransformer().getPresenceTermUuid("-Dud.");
                 PresenceAbsenceTerm nonNativeErrorState = getPresenceTerm(state, nonNativeErrorUuid, null, null, null, false);
                 result.add(nonNativeErrorState);
+                checkAbsentHighestState(highestStatus, line, "non-native and doubtfully naturalised", false);
             }else if(dudStr.equals("?")){
                 UUID naturalisedDoubtUuid = state.getTransformer().getPresenceTermUuid("?Dud.");
                 PresenceAbsenceTerm naturalisedDoubtState = getPresenceTerm(state, naturalisedDoubtUuid, null, null, null, false);
                 result.add(naturalisedDoubtState);
+                checkAbsentHighestState(highestStatus, line, "non-native and doubtfully naturalised", true);
             }else{
                 logger.warn(line + "non-native and doubtfully naturalised not recognized: " + dudStr);
             }
@@ -195,10 +208,12 @@ public class CubaExcelImport extends ExcelImporterBase<CubaImportState> {
                 UUID advUuid = state.getTransformer().getPresenceTermUuid("Adv.");
                 PresenceAbsenceTerm advState = getPresenceTerm(state, advUuid, null, null, null, false);
                 result.add(advState);
+                highestStatus = highestStatus != null ? highestStatus : advState;
             }else if(isMinus(advStr)){
                 UUID advUuid = state.getTransformer().getPresenceTermUuid("-Adv.");
                 PresenceAbsenceTerm advState = getPresenceTerm(state, advUuid, null, null, null, false);
                 result.add(advState);
+                checkAbsentHighestState(highestStatus, line, "adventive", false);
             }else{
                 logger.warn(line + "'adventive (casual) alien' not recognized: " + advStr);
             }
@@ -208,9 +223,11 @@ public class CubaExcelImport extends ExcelImporterBase<CubaImportState> {
             }else if(cultStr.equals("C")){
                 PresenceAbsenceTerm cultivatedState = state.getTransformer().getPresenceTermByKey("Cult.");
                 result.add(cultivatedState);
+                highestStatus = highestStatus != null ? highestStatus : cultivatedState;
             }else if(cultStr.equals("?")){
                 PresenceAbsenceTerm cultivatedState = state.getTransformer().getPresenceTermByKey("?Cult.");
                 result.add(cultivatedState);
+                checkAbsentHighestState(highestStatus, line, "cultivated", true);
             }else if(cultStr.equals("(C)")){
                 UUID ocassualCultUuid = state.getTransformer().getPresenceTermUuid("(C)");
                 PresenceAbsenceTerm cultivatedState = getPresenceTerm(state, ocassualCultUuid, null, null, null, false);
@@ -218,12 +235,26 @@ public class CubaExcelImport extends ExcelImporterBase<CubaImportState> {
             }else if(isMinus(cultStr)){
                 PresenceAbsenceTerm cultivatedState = state.getTransformer().getPresenceTermByKey("-Cult.");
                 result.add(cultivatedState);
+                checkAbsentHighestState(highestStatus, line, "cultivated", false);
             }else{
                 logger.warn(line + "'cultivated' not recognized: " + cultStr);
             }
         }
-
+        state.setHighestStatusForTaxon(highestStatus);
         return result;
+    }
+
+
+    /**
+     * @param highestStatus
+     * @param line
+     */
+    private void checkAbsentHighestState(PresenceAbsenceTerm highestStatus, String line, String stateLabel, boolean doubtful) {
+        if (highestStatus == null){
+            String absentStr = doubtful ? "doubtful" : "absent";
+            logger.warn(line + "Highest cuban state is " + absentStr + " " + stateLabel);
+        }
+
     }
 
 
@@ -494,7 +525,7 @@ public class CubaExcelImport extends ExcelImporterBase<CubaImportState> {
         }else{
             Annotation annotation = Annotation.NewDefaultLanguageInstance(notesStr);
             //TODO
-            annotation.setAnnotationType(AnnotationType.EDITORIAL());
+            annotation.setAnnotationType(AnnotationType.TECHNICAL());
             state.getCurrentTaxon().addAnnotation(annotation);
         }
     }
@@ -725,12 +756,18 @@ public class CubaExcelImport extends ExcelImporterBase<CubaImportState> {
         makeCubanDistribution(record, state);
 
 
-        // "CuW","PR PR*","Art","Hab(*)","May","Mat","IJ",
+//        "CuW","PR PR*","Art","Hab(*)","May","Mat","IJ",
 //        "CuC","VC","Ci","SS","CA","Cam","LT",
 //        "CuE","Gr","Ho","SC","Gu",
-//      "Esp","Ja","PR","Men","Bah","Cay",
-//      "AmN","AmC","AmS","VM"});
         makeProvincesDistribution(record, state);
+
+//    "Esp","Ja","PR","Men","Bah","Cay",
+//    "AmN","AmC","AmS","VM"});
+      makeOtherAreasDistribution(record, state);
+
+
+
+        state.setHighestStatusForTaxon(null);
 
 		return;
     }
@@ -750,12 +787,21 @@ public class CubaExcelImport extends ExcelImporterBase<CubaImportState> {
                 "CuW","PR PR*","Art","Hab(*)","May","Mat","IJ",
                 "CuC","VC","Ci","SS","CA","Cam","LT",
                 "CuE","Gr","Ho","SC","Gu",
+                });
+        for (String areaKey : areaKeys){
+            state.setCubanProvince(true);
+            makeSingleProvinceDistribution(areaKey, record, state);
+        }
+    }
+
+    private void makeOtherAreasDistribution(HashMap<String, String> record, CubaImportState state) {
+        List<String> areaKeys = Arrays.asList(new String[]{
                 "Esp","Ja","PR","Men","Bah","Cay",
                 "AmN","AmC","AmS","VM"});
         for (String areaKey : areaKeys){
+            state.setCubanProvince(false);
             makeSingleProvinceDistribution(areaKey, record, state);
         }
-
     }
 
 
@@ -785,7 +831,7 @@ public class CubaExcelImport extends ExcelImporterBase<CubaImportState> {
             TaxonDescription desc = getTaxonDescription(state.getCurrentTaxon(), false, true);
             PresenceAbsenceTerm status =  makeProvinceStatus(areaKey, record, state);
             if (status == null){
-                logger.warn(state.getCurrentLine() + ": Distribution Status could not be defined: " + record.get(areaKey));
+                logger.warn(state.getCurrentLine() + ": Province distribution status could not be defined: " + record.get(areaKey));
             }
             Distribution distribution = Distribution.NewInstance(area, status);
             desc.addElement(distribution);
@@ -800,17 +846,74 @@ public class CubaExcelImport extends ExcelImporterBase<CubaImportState> {
      * @param areaKey
      * @param record
      * @param state
+     * @param highestStatus
      * @return
      * @throws UndefinedTransformerMethodException
      */
-    private PresenceAbsenceTerm makeProvinceStatus(String areaKey, HashMap<String, String> record, CubaImportState state) throws UndefinedTransformerMethodException {
+    private PresenceAbsenceTerm makeProvinceStatus(String areaKey,
+            HashMap<String, String> record,
+            CubaImportState state) throws UndefinedTransformerMethodException {
+
         String statusStr = record.get(areaKey);
         if (statusStr == null){
             return null;
         }
         PresenceAbsenceTerm status = state.getTransformer().getPresenceTermByKey(statusStr);
         if (status == null){
-            UUID statusUuid = state.getTransformer().getPresenceTermUuid(statusStr);
+            PresenceAbsenceTerm highestStatus = state.getHighestStatusForTaxon();
+            if (state.isCubanProvince() && isMinus(statusStr)){
+                getAbsenceTermForStatus(state, highestStatus);
+            }else if (! state.isCubanProvince() && isMinus(statusStr)){
+                status = state.getTransformer().getPresenceTermByKey("");
+            }else{
+                UUID statusUuid = state.getTransformer().getPresenceTermUuid(statusStr);
+                status = getPresenceTerm(state, statusUuid, null, null, null, false);
+            }
+        }
+
+        return status;
+    }
+
+
+    /**
+     * @param highestStatus
+     * @throws UndefinedTransformerMethodException
+     */
+    private PresenceAbsenceTerm getAbsenceTermForStatus(CubaImportState state, PresenceAbsenceTerm highestStatus) throws UndefinedTransformerMethodException {
+        if (highestStatus == null){
+            logger.warn(state.getCurrentLine() + ": Highest status not defined");
+            return null;
+        }
+        PresenceAbsenceTerm result = null;
+        if (highestStatus.equals(getStatus(state, "E"))){
+            result = getStatus(state, "-E");
+        }else if (highestStatus.getUuid().equals(state.getTransformer().getPresenceTermUuid("Ind.")) || highestStatus.equals(PresenceAbsenceTerm.NATIVE())){
+            result = getStatus(state, "-Ind.");
+        }else if (highestStatus.equals(getStatus(state, "Ind.?"))){
+            result = getStatus(state, "-Ind.?");  //TODO
+        }else if (highestStatus.equals(getStatus(state, "N"))){
+            result = getStatus(state, "-N");
+        }else if (highestStatus.equals(getStatus(state, "P"))){
+            result = getStatus(state, "-P");
+        }else if (highestStatus.equals(getStatus(state, "A"))){
+            result = getStatus(state, "-A");
+        }else if (highestStatus.equals(getStatus(state, "C"))){
+            result = getStatus(state, "-C");
+        }
+        logger.warn(state.getCurrentLine() + ": Absent province status could not be defined for highest status " + highestStatus.getTitleCache());
+        return result;
+    }
+
+
+    /**
+     * @param string
+     * @return
+     * @throws UndefinedTransformerMethodException
+     */
+    private PresenceAbsenceTerm getStatus(CubaImportState state, String key) throws UndefinedTransformerMethodException {
+        PresenceAbsenceTerm status = state.getTransformer().getPresenceTermByKey(key);
+        if (status == null){
+            UUID statusUuid = state.getTransformer().getPresenceTermUuid(key);
             status = getPresenceTerm(state, statusUuid, null, null, null, false);
         }
         return status;

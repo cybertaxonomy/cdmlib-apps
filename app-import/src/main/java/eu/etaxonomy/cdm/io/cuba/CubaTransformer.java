@@ -217,6 +217,8 @@ public final class CubaTransformer extends InputTransformerBase {
 
         }else if (key.equalsIgnoreCase("-Cult.")){return PresenceAbsenceTerm.CULTIVATED_REPORTED_IN_ERROR();
 
+//        }else if (key.equalsIgnoreCase("--")){return PresenceAbsenceTerm;
+
         }else{
             return null;
         }

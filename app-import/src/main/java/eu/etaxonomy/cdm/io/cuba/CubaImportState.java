@@ -18,6 +18,7 @@ import org.apache.log4j.Logger;
 
 import eu.etaxonomy.cdm.io.excel.common.ExcelImportState;
 import eu.etaxonomy.cdm.io.excel.common.ExcelRowBase;
+import eu.etaxonomy.cdm.model.description.PresenceAbsenceTerm;
 import eu.etaxonomy.cdm.model.reference.Reference;
 import eu.etaxonomy.cdm.model.taxon.Classification;
 import eu.etaxonomy.cdm.model.taxon.Taxon;
@@ -54,6 +55,13 @@ public class CubaImportState extends ExcelImportState<CubaImportConfigurator, Ex
     public Reference<?> getSecReference() {return secReference;}
     public void setSecReference(Reference<?> secReference) {this.secReference = secReference;}
 
+    private PresenceAbsenceTerm highestStatusForTaxon;
+    public PresenceAbsenceTerm getHighestStatusForTaxon(){return highestStatusForTaxon;}
+    public void setHighestStatusForTaxon(PresenceAbsenceTerm highestStatusForTaxon){this.highestStatusForTaxon = highestStatusForTaxon;}
+
+    private boolean isCubanProvince;
+    public void setCubanProvince(boolean cubanProvince) {this.isCubanProvince = cubanProvince;}
+    public boolean isCubanProvince(){return isCubanProvince;}
 
     //Constructor
     public CubaImportState(CubaImportConfigurator config) {
@@ -88,5 +96,7 @@ public class CubaImportState extends ExcelImportState<CubaImportConfigurator, Ex
     public boolean containsHigherTaxonUuid(String higherName) {
         return higherTaxonUuidMap.containsKey(higherName);
     }
+
+
 
 }
