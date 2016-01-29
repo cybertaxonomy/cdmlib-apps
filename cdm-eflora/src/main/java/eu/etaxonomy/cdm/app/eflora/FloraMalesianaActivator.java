@@ -55,38 +55,119 @@ public class FloraMalesianaActivator extends EfloraActivatorBase {
 //	static final ICdmDataSource cdmDestination = CdmDestinations.cdm_test_local_mysql_test();
 
 	private final boolean includeBase = false;
-	private final boolean includeVol07_1 = includeBase;  //all fixed           //2531
-    private final boolean includeVol07_2 = includeBase;   // 1 non-standard, 1 hybrid, 2 manual  //1664
-    private final boolean includeVol07_3_09_1 = includeBase;     //all fixed   //4796
-    private final boolean includeVol07_4 = includeBase;    //2 non-standard    //752
 
-    private final boolean includeVol08_1 = includeBase;  //all fixed //256
-	private final boolean includeVol08_2 = includeBase;   //1 uuid, 30 non-standard   //3042
-	private final boolean includeVol08_3 = includeBase;  //1 uuid, 2 hybrids   //3289
-	private final boolean includeVol09 = ! includeBase;    //2 uuid    //6096
-    private final boolean includeVol10_1 = includeBase;   //1 uuid   //1016
-	private final boolean includeVol10_2 = includeBase;   //fixed    //1545
-	private final boolean includeVol10_3 = includeBase;   //1 unresolved, 3 non standard, 1 hybrid, 2 tribes, 2 sections //2544
-	private final boolean includeVol10_4 = includeBase;     //1 non-standard    //702
-	private final boolean includeVol11_1 = includeBase;    //1 unresolved, 3 non-standard, 3 section, 1 series          //1647
-	private final boolean includeVol11_2 = includeBase;  //3 uuid, 2 cultivar groups, 1 hybrid, 1 non-standard hybrid   //1571
-	private final boolean includeVol11_3 = includeBase;  //1 unresolved, 7 uuids, 3 non-standard                        //4612
-	private final boolean includeVol12 = includeBase;    //23 issues (uuids, apostrophs, non-standard names)
-	private final boolean includeVol13 = includeBase;      //4xuuid, 1 manual (Loranthaceae)
-	private final boolean includeVol14 = includeBase;      //9 (3 forma, 2 uuids, 4 non standard)
-	private final boolean includeVol15 = includeBase;     //3 manual (hybrids)
-	private final boolean includeVol16 = includeBase;    //all fixed
-//	private final boolean includeVol17_1 = includeBase;
-//	private final boolean includeVol17_2 = includeBase;
-	private final boolean includeVol17 = includeBase;     //33 issues, 2-3 open, remaining non-standard names
-    private final boolean includeVol18 = includeBase;      //12 remaining issues
-	private final boolean includeVol19 = includeBase;    //14 forma (instead of f.) and 2(1) non standard names
-	private final boolean includeVol20 = includeBase;    //all fixed
-	private final boolean includeVol21 = includeBase;    //2 subfamilies
-	private final boolean includeVol2_1 = includeBase;   //3 unresolved,  1 uuid, 13 non standard, 4 hybrids  //7087
-    private final boolean includeVol2_2 = includeBase;    //3 hybrids, 1 sect.(manual)       //1267
-	private final boolean includeVol2_3 = includeBase;   //1 uuid, 1 non standard, 1 hybrid  //3038
-	private final boolean includeVol2_4 = includeBase;  //fixed   //1200
+	//2534 /49700
+	//no syso, 120 lifecycle, few of them references! and figureRef?
+	private final boolean includeVol07_1 = includeBase;
+	//1751
+	//keys: 1 hybrid, 2 manual
+//12 syso, no uncovered, >>100 lifecycle, >10 references, figureRefs?
+    private final boolean includeVol07_2 = includeBase;
+    //4641
+ //430 syso (10 subheadings),no uncovered, 43 figureRef, references and lifecycle
+    private final boolean includeVol07_3_09_1 = includeBase;
+    //655   /   12440
+    //no syso, 14 lifecycle, 1 reference
+    private final boolean includeVol07_4 = includeBase;
+
+    //256
+    //no syso, 5 lifecycle
+    private final boolean includeVol08_1 = includeBase;
+    //3037
+    //keys: 1 uuid, 30 non-standard
+ //4syso, <= uncovered, <150 lifecycle, figureRef and references
+    private final boolean includeVol08_2 = ! includeBase;
+    //3035
+    //keys: 1 uuid, 2 hybrids
+    //no syso
+	private final boolean includeVol08_3 = includeBase;
+	//5216
+	//2 uuid
+//184 syso!! (30 subheadings), <=3 uncovered, <50 lifecycle and figureRef
+	private final boolean includeVol09 = includeBase;
+	//928
+	//keys: 1 uuid
+	//no syso, <= 5 uncovered, <=50 lifecycle
+	private final boolean includeVol10_1 = includeBase;
+	//1292
+//6 syso, <=3 uncovered, <50 lifecycle
+    private final boolean includeVol10_2 = includeBase;
+    //2280
+    //keys: 3 non standard, 1 hybrid, 2 tribes
+//2 syso habitats, 2 fast, many lifcycle
+	private final boolean includeVol10_3 = includeBase;
+	//590
+	//keys: 1 non-standard
+	//no syso, 1 uncovered, 1 figureRef, 10 lifecycle
+	private final boolean includeVol10_4 = includeBase;
+	//1631
+	//keys: 1 manually, 1 non-standard
+	//no syso, <= 10 uncovered, < 100 lifecycle
+	private final boolean includeVol11_1 = includeBase;
+	//1430
+	//keys: 3 uuid, 2 cultivar groups, 1 hybrid, 1 non-standard hybrid
+	//no syso, 1 uncovered, 1 lifecycle, 2 references
+	private final boolean includeVol11_2 = includeBase;
+	//4741
+	//7 uuids, 4 non-standard
+	//no syso habitat, <10 uncovered, > 100 lifecycles
+	private final boolean includeVol11_3 = includeBase;
+	//6792
+	//keys: 23 issues (uuids, apostrophs, non-standard names)
+	//habitat: no syso, 200 - 400 uncovered, different types
+	private final boolean includeVol12 = includeBase;
+	//2995
+	//keys: 4xuuid, 1 manual (Loranthaceae)
+	//no syso, 1 uncovered habitat
+	private final boolean includeVol13 = includeBase;
+	//5407
+	//keys: 2 uuids, 4 non standard
+	//no syso habitat, 100-150 uncovered, most of them flowering and fruiting lifecycle
+	private final boolean includeVol14 = includeBase;
+	//1898
+	//3 hybrids
+	//no syso, 5 uncovered, 2 of them epiphytic
+	private final boolean includeVol15 = includeBase;
+	//1653
+	//no syso, <= 60 uncovered, very different types
+	private final boolean includeVol16 = includeBase;
+
+	//5190
+	//keys: 31 issues, 1 unresolved (subspecies), remaining non-standard names
+	//no syso, medium # uncovered habitat (some or)
+	private final boolean includeVol17 = includeBase;
+	//6713
+	//no syso habitat, <20 uncovered
+	private final boolean includeVol18 = includeBase;
+	//2881
+    //keys: 1 non standard
+    //no syso habitat, <= 50 uncovered, mostly untagged lifecycle, some errors
+    private final boolean includeVol19 = includeBase;
+    //606
+    //no syso, < 20 uncovered, mostly untagged lifecycle
+	private final boolean includeVol20 = includeBase;
+	//1803
+	//2 subfamilies
+	//no syso, no covered, medium # lifecycle and very few references
+	private final boolean includeVol21 = includeBase;
+
+//Ser II
+	//6401  / 123.600
+	//2 manually,  1 uuid, 13 non standard, 4 hybrids
+	//no syso habitat, only figureRef and references as habitat issues
+    private final boolean includeVol2_1 = includeBase;
+    //1257   / 25100
+    //3 hybrids, 1 sect.(manual)
+    //no syso, no habitat issue
+    private final boolean includeVol2_2 = includeBase;
+    //2780  / 52100
+    //1 uuid, 1 non standard, 1 hybrid
+    //no syso, 10-15 uncovered, 2 unecpected attributes: extra
+	private final boolean includeVol2_3 = includeBase;
+	//1120  / 12240
+	//no syso, 1 <br>
+	private final boolean includeVol2_4 = includeBase;
+
 
     static final URI fmSource07_1 = EfloraSources.fm_07_1();
     static final URI fmSource07_2 = EfloraSources.fm_07_2();
