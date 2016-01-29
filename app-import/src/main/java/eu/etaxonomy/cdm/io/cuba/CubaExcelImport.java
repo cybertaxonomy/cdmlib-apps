@@ -61,7 +61,7 @@ public class CubaExcelImport extends ExcelImporterBase<CubaImportState> {
     private static final long serialVersionUID = -747486709409732371L;
     private static final Logger logger = Logger.getLogger(CubaExcelImport.class);
 
-    private static final String HOMONYM_MARKER = ".*\\s+homon.?$";
+    private static final String HOMONYM_MARKER = "\\s+homon.?$";
     private static final String DOUBTFUL_MARKER = "^\\?\\s?";
 
 
@@ -302,8 +302,8 @@ public class CubaExcelImport extends ExcelImporterBase<CubaImportState> {
     private static final String heterotypicRegExStr_TEST = "([^\\(]{5,}" +"(\\(.+\\))?" + "[^\\)\\(]{2,})"
             +"(\\((.{6,})\\))?";
     private static final String auctRegExStr = "auct\\."
-            +"((\\sFC(\\-S)?(\\s&\\sA&S)?)|(\\sA&S))?(\\s+p\\.\\s*p\\.)?";
-    private static final String missapliedRegExStr = "“(.*{5,})”\\s+(" + auctRegExStr + "|sensu\\s+.{2,})";
+            +"((\\sFC(\\-S)?(\\s&\\sA&S)?)|(\\sA&S)|\\sSagra|\\sBritton|\\sGriseb\\.|\\sWright|\\sFRC|\\sCoL|\\sUrb\\.)?(\\s+p\\.\\s*p\\.)?";
+    private static final String missapliedRegExStr = "(\\?\\s)?“(.*{5,})”\\s+(" + auctRegExStr + "|sensu\\s+.{2,})";
     private static final String nomInvalRegExStr = "“(.*{5,})”\\s+nom\\.\\s+inval\\.";
     private static final String homonymRegExStr = "\\s*(\\[.*\\])*\\s*";
 
@@ -340,15 +340,17 @@ public class CubaExcelImport extends ExcelImporterBase<CubaImportState> {
 
         List<BotanicalName> homonyms = new ArrayList<>();
         if (missapliedMatcher.matches()){
-            String firstPart = missapliedMatcher.group(1);
+            boolean doubtful = missapliedMatcher.group(1) != null;
+            String firstPart = missapliedMatcher.group(2);
             BotanicalName name = (BotanicalName)nameParser.parseSimpleName(firstPart, state.getConfig().getNomenclaturalCode(), Rank.SPECIES());
 
-            String secondPart = missapliedMatcher.group(2);
+            String secondPart = missapliedMatcher.group(3);
             Taxon misappliedNameTaxon = Taxon.NewInstance(name, null);
+            misappliedNameTaxon.setDoubtful(doubtful);
             if (secondPart.startsWith("sensu")){
                 secondPart = secondPart.substring(5).trim();
                 if (secondPart.contains(" ")){
-                    logger.warn(line + "Second part contains more than 1 word. Check if this is correct: " + secondPart);
+                    logger.warn(line + "CHECK: Second part contains more than 1 word. Check if this is correct: " + secondPart);
                 }
                 Reference<?> sensu = ReferenceFactory.newGeneric();
                 Team team = Team.NewTitledInstance(secondPart, null);
@@ -378,7 +380,7 @@ public class CubaExcelImport extends ExcelImporterBase<CubaImportState> {
             String secondPart = heterotypicMatcher.groupCount() < 3 ? null : heterotypicMatcher.group(3);
             String homonymPart = heterotypicMatcher.groupCount() < 4 ? null : heterotypicMatcher.group(4);
             boolean isDoubtful = firstPart.matches("^\\?\\s*.*");
-            boolean isHomonym = firstPart.trim().matches(HOMONYM_MARKER);
+            boolean isHomonym = firstPart.trim().matches(".*" + HOMONYM_MARKER);
             firstPart = normalizeStatus(firstPart);
             BotanicalName synName = (BotanicalName)nameParser.parseReferencedName(firstPart, state.getConfig().getNomenclaturalCode(), Rank.SPECIES());
             if (synName.isProtectedTitleCache()){
@@ -423,7 +425,7 @@ public class CubaExcelImport extends ExcelImporterBase<CubaImportState> {
         BotanicalName currentBasionym = homotypicName;
         String[] splits = homotypicStr.split("\\s*,\\s*");
         for (String split : splits){
-            boolean isHomonym = split.trim().matches(HOMONYM_MARKER);
+            boolean isHomonym = split.trim().matches(".*" + HOMONYM_MARKER);
             String singleName = normalizeStatus(split);
             BotanicalName newName = (BotanicalName)nameParser.parseReferencedName(singleName, state.getConfig().getNomenclaturalCode(), Rank.SPECIES());
             if (newName.isProtectedTitleCache()){
@@ -492,6 +494,7 @@ public class CubaExcelImport extends ExcelImporterBase<CubaImportState> {
             basionymName = name2;
             newCombination = currentBasionym;
         }
+//        newCombination.getHomotypicalGroup().removeGroupBasionym(xxx);
         if (matchAuthor(basionymName.getCombinationAuthorship(), newCombination.getBasionymAuthorship())){
             newCombination.getHomotypicalGroup().setGroupBasionym(basionymName);
         }
@@ -591,7 +594,7 @@ public class CubaExcelImport extends ExcelImporterBase<CubaImportState> {
 
 
     private static final String[] nomStatusStrings = new String[]{"nom. cons.", "ined.", "nom. illeg.",
-            "nom. rej.","nom. cons. prop.","nom. altern."};
+            "nom. rej.","nom. cons. prop.","nom. altern.","nom. confus.","nom. dub."};
     /**
      * @param taxonStr
      * @return
