@@ -59,6 +59,20 @@ public class EfloraSources {
 
   //***** FM NEW */
 
+	//Flora Malesiana Vol 04
+    public static URI fm_04(){
+        return URI.create("file:////BGBM-PESIHPC/FloraMalesianaXml/fmvol4_final.xml");
+    }
+
+    //Flora Malesiana Vol 05
+    public static URI fm_05(){
+        return URI.create("file:////BGBM-PESIHPC/FloraMalesianaXml/fmvol5_final.xml");
+    }
+
+    //Flora Malesiana Vol 06
+    public static URI fm_06(){
+        return URI.create("file:////BGBM-PESIHPC/FloraMalesianaXml/fmvol6_final.xml");
+    }
 
     //Flora Malesiana Vol 07_1
     public static URI fm_07_1(){

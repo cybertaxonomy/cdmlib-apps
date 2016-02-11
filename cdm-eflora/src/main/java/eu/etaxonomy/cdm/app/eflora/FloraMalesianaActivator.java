@@ -56,119 +56,127 @@ public class FloraMalesianaActivator extends EfloraActivatorBase {
 
 	private final boolean includeBase = false;
 
-	//2534 /49700
+	//5620 / 121674
+	//2 footnote issues, 2 uuids, 1 hybrid
+	//habitat: 6 syso, + ???
+	private final boolean includeVol04 = includeBase;
+    private final boolean includeVol05 = includeBase;
+    private final boolean includeVol06 = includeBase;
+
+	//2441 /49700
 	//no syso, 120 lifecycle, few of them references! and figureRef?
 	private final boolean includeVol07_1 = includeBase;
-	//1751
+	//1696
 	//keys: 1 hybrid, 2 manual
 //12 syso, no uncovered, >>100 lifecycle, >10 references, figureRefs?
     private final boolean includeVol07_2 = includeBase;
-    //4641
+    //4433
  //430 syso (10 subheadings),no uncovered, 43 figureRef, references and lifecycle
     private final boolean includeVol07_3_09_1 = includeBase;
-    //655   /   12440
+    //625   /   12440
     //no syso, 14 lifecycle, 1 reference
     private final boolean includeVol07_4 = includeBase;
 
-    //256
+    //244   /   5986
     //no syso, 5 lifecycle
     private final boolean includeVol08_1 = includeBase;
-    //3037
-    //keys: 1 uuid, 30 non-standard
+    //2830   /   53189
+    //keys: 1 uuid, 23 S. Moore -> Symplocos Moore (handle manually before import)
  //4syso, <= uncovered, <150 lifecycle, figureRef and references
-    private final boolean includeVol08_2 = ! includeBase;
-    //3035
+    private final boolean includeVol08_2 = includeBase;
+    //3017    /   54235
     //keys: 1 uuid, 2 hybrids
     //no syso
 	private final boolean includeVol08_3 = includeBase;
-	//5216
+	//4886    /   94566
 	//2 uuid
 //184 syso!! (30 subheadings), <=3 uncovered, <50 lifecycle and figureRef
 	private final boolean includeVol09 = includeBase;
-	//928
+	//906   / 19098
 	//keys: 1 uuid
 	//no syso, <= 5 uncovered, <=50 lifecycle
 	private final boolean includeVol10_1 = includeBase;
-	//1292
+	//1283  / 32334
 //6 syso, <=3 uncovered, <50 lifecycle
     private final boolean includeVol10_2 = includeBase;
-    //2280
-    //keys: 3 non standard, 1 hybrid, 2 tribes
+    //1997   /  49034
+    //keys: 1 hybrid, 2 tribes
 //2 syso habitats, 2 fast, many lifcycle
 	private final boolean includeVol10_3 = includeBase;
-	//590
-	//keys: 1 non-standard
+	//533    /   13553
+	//keys: 1 non-standard (!!)
 	//no syso, 1 uncovered, 1 figureRef, 10 lifecycle
 	private final boolean includeVol10_4 = includeBase;
-	//1631
-	//keys: 1 manually, 1 non-standard
+	//1529     /  36379
+	//keys: 1 manually
 	//no syso, <= 10 uncovered, < 100 lifecycle
 	private final boolean includeVol11_1 = includeBase;
-	//1430
+	//1317   /  24775
 	//keys: 3 uuid, 2 cultivar groups, 1 hybrid, 1 non-standard hybrid
 	//no syso, 1 uncovered, 1 lifecycle, 2 references
 	private final boolean includeVol11_2 = includeBase;
-	//4741
-	//7 uuids, 4 non-standard
+	//4585    /  52747
+	//7 uuids
 	//no syso habitat, <10 uncovered, > 100 lifecycles
 	private final boolean includeVol11_3 = includeBase;
-	//6792
-	//keys: 23 issues (uuids, apostrophs, non-standard names)
+	//6558   /   116737
+	//keys: 10 uuids, 10 apostrophs
 	//habitat: no syso, 200 - 400 uncovered, different types
 	private final boolean includeVol12 = includeBase;
-	//2995
+	//2976    /   43764
 	//keys: 4xuuid, 1 manual (Loranthaceae)
 	//no syso, 1 uncovered habitat
 	private final boolean includeVol13 = includeBase;
-	//5407
-	//keys: 2 uuids, 4 non standard
+	//5389   /   55501
+	//keys: 2 uuids
 	//no syso habitat, 100-150 uncovered, most of them flowering and fruiting lifecycle
 	private final boolean includeVol14 = includeBase;
-	//1898
+	//1898   /   16415
 	//3 hybrids
 	//no syso, 5 uncovered, 2 of them epiphytic
 	private final boolean includeVol15 = includeBase;
-	//1653
+	//1632   /   22049
 	//no syso, <= 60 uncovered, very different types
 	private final boolean includeVol16 = includeBase;
 
-	//5190
-	//keys: 31 issues, 1 unresolved (subspecies), remaining non-standard names
+	//4507    /   116956
 	//no syso, medium # uncovered habitat (some or)
 	private final boolean includeVol17 = includeBase;
-	//6713
+	//6687    /   71151
 	//no syso habitat, <20 uncovered
 	private final boolean includeVol18 = includeBase;
-	//2881
-    //keys: 1 non standard
+	//2745    /   27663
     //no syso habitat, <= 50 uncovered, mostly untagged lifecycle, some errors
     private final boolean includeVol19 = includeBase;
-    //606
+    //604     /    5866
     //no syso, < 20 uncovered, mostly untagged lifecycle
 	private final boolean includeVol20 = includeBase;
-	//1803
+	//1786     /   19469
 	//2 subfamilies
 	//no syso, no covered, medium # lifecycle and very few references
 	private final boolean includeVol21 = includeBase;
 
 //Ser II
-	//6401  / 123.600
+	//5938  / 123.600
 	//2 manually,  1 uuid, 13 non standard, 4 hybrids
 	//no syso habitat, only figureRef and references as habitat issues
-    private final boolean includeVol2_1 = includeBase;
-    //1257   / 25100
-    //3 hybrids, 1 sect.(manual)
+    private final boolean includeVol2_1 = ! includeBase;
+    //1160   / 25100
+    //3 hybrids
     //no syso, no habitat issue
     private final boolean includeVol2_2 = includeBase;
-    //2780  / 52100
-    //1 uuid, 1 non standard, 1 hybrid
-    //no syso, 10-15 uncovered, 2 unecpected attributes: extra
+    //2574  / 52100
+    //1 non standard (!), 1 uuid, 1 hybrid
+    //no syso, 10-15 uncovered, 2 unexpected attributes: extra
 	private final boolean includeVol2_3 = includeBase;
 	//1120  / 12240
 	//no syso, 1 <br>
 	private final boolean includeVol2_4 = includeBase;
 
 
+	static final URI fmSource04 = EfloraSources.fm_04();
+	static final URI fmSource05 = EfloraSources.fm_05();
+	static final URI fmSource06 = EfloraSources.fm_06();
     static final URI fmSource07_1 = EfloraSources.fm_07_1();
     static final URI fmSource07_2 = EfloraSources.fm_07_2();
     static final URI fmSource07_3_09_1 = EfloraSources.fm_07_3_09_1();
@@ -259,26 +267,32 @@ public class FloraMalesianaActivator extends EfloraActivatorBase {
 
 		CdmDefaultImport<MarkupImportConfigurator> myImport = new CdmDefaultImport<MarkupImportConfigurator>();
 
+        //Vol04
+        doSource(includeVol04, fmSource04, "Flora Malesiana - vol. 4", markupConfig, myImport);
+        //Vol05
+        doSource(includeVol05, fmSource05, "Flora Malesiana - vol. 5", markupConfig, myImport);
+        //Vol06
+        doSource(includeVol06, fmSource06, "Flora Malesiana - vol. 6", markupConfig, myImport);
         //Vol07_1
-        doSource(includeVol07_1, fmSource07_1, "Flora Malesiana - vol. 07, pt.1", markupConfig, myImport);
+        doSource(includeVol07_1, fmSource07_1, "Flora Malesiana - vol. 7, pt.1", markupConfig, myImport);
         //Vol07_2
-        doSource(includeVol07_2, fmSource07_2, "Flora Malesiana - vol. 07, pt.2", markupConfig, myImport);
+        doSource(includeVol07_2, fmSource07_2, "Flora Malesiana - vol. 7, pt.2", markupConfig, myImport);
         //Vol07_3
-        doSource(includeVol07_3_09_1, fmSource07_3_09_1, "Flora Malesiana - vol. 07, pt.3 and vol. 09 pt.1", markupConfig, myImport);
+        doSource(includeVol07_3_09_1, fmSource07_3_09_1, "Flora Malesiana - vol. 7, pt.3 and vol. 9 pt.1", markupConfig, myImport);
         //Vol07_4
-        doSource(includeVol07_4, fmSource07_4, "Flora Malesiana - vol. 07, pt.4", markupConfig, myImport);
+        doSource(includeVol07_4, fmSource07_4, "Flora Malesiana - vol. 7, pt.4", markupConfig, myImport);
 
 		//Vol08_1
-		doSource(includeVol08_1, fmSource08_1, "Flora Malesiana - vol. 08, pt.1", markupConfig, myImport);
+		doSource(includeVol08_1, fmSource08_1, "Flora Malesiana - vol. 8, pt.1", markupConfig, myImport);
 
 		//Vol08_2
-		doSource(includeVol08_2, fmSource08_2, "Flora Malesiana - vol. 08, pt.2", markupConfig, myImport);
+		doSource(includeVol08_2, fmSource08_2, "Flora Malesiana - vol. 8, pt.2", markupConfig, myImport);
 
 		//Vol08_3
-		doSource(includeVol08_3, fmSource08_3, "Flora Malesiana - vol. 08, pt.3", markupConfig, myImport);
+		doSource(includeVol08_3, fmSource08_3, "Flora Malesiana - vol. 8, pt.3", markupConfig, myImport);
 
 		//Vol09
-        doSource(includeVol09, fmSource09, "Flora Malesiana - vol. 09", markupConfig, myImport);
+        doSource(includeVol09, fmSource09, "Flora Malesiana - vol. 9", markupConfig, myImport);
 
 		//Vol10_1
 		doSource(includeVol10_1, fmSource10_1, "Flora Malesiana - vol. 10, pt.1", markupConfig, myImport);
