@@ -36,6 +36,18 @@ public class EdaphobaseImportConfigurator
     public boolean isDoTaxa() {return doTaxa;}
     public void setDoTaxa(boolean doTaxa) {this.doTaxa = doTaxa;}
 
+    private boolean doSynonyms = true;
+    public boolean isDoSynonyms() {return doSynonyms;}
+    public void setDoSynonyms(boolean doSynonyms) {this.doSynonyms = doSynonyms;}
+
+    private boolean doReferences = true;
+    public boolean isDoReferences() {return doReferences;}
+    public void setDoReferences(boolean doReferences) {this.doReferences = doReferences;}
+
+    private String edaphobaseSecundumTitle;
+    public String getEdaphobaseSecundumTitle() {return edaphobaseSecundumTitle;}
+    public void setEdaphobaseSecundumTitle(String edaphobaseSecundumTitle) {this.edaphobaseSecundumTitle = edaphobaseSecundumTitle;}
+
 
     /**
      * @param source
@@ -62,7 +74,10 @@ public class EdaphobaseImportConfigurator
     protected void makeIoClassList() {
         ioClassList = new Class[]{
                 EdaphobaseAuthorImport.class,
+                EdaphobaseReferenceImport.class,
+                EdaphobaseInReferenceImport.class,
                 EdaphobaseTaxonImport.class,
+                EdaphobaseSynonymyImport.class,
                 EdaphobaseClassificationImport.class
         };
     }
@@ -73,5 +88,6 @@ public class EdaphobaseImportConfigurator
         sourceRef.setTitle("Edaphobase");
         return sourceRef;
     }
+
 
 }

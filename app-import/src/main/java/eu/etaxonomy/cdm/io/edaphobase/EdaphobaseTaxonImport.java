@@ -31,6 +31,7 @@ import eu.etaxonomy.cdm.model.common.CdmBase;
 import eu.etaxonomy.cdm.model.name.Rank;
 import eu.etaxonomy.cdm.model.name.ZoologicalName;
 import eu.etaxonomy.cdm.model.reference.Reference;
+import eu.etaxonomy.cdm.model.reference.ReferenceFactory;
 import eu.etaxonomy.cdm.model.taxon.Synonym;
 import eu.etaxonomy.cdm.model.taxon.Taxon;
 import eu.etaxonomy.cdm.model.taxon.TaxonBase;
@@ -92,74 +93,7 @@ public class EdaphobaseTaxonImport extends EdaphobaseImportBase {
         Set<TaxonBase> taxaToSave = new HashSet<>();
         try {
             while (rs.next()){
-                Integer id = nullSafeInt(rs, "taxon_id");
-                Integer year = nullSafeInt(rs, "tax_year");
-                boolean isBrackets = rs.getBoolean("tax_brackets");
-                String remark = rs.getString("remark");
-                String nameStr = rs.getString("name");
-                String authorName = rs.getString("tax_author_name");
-                //parentTaxonFk
-                //rankFk
-                //document
-                boolean isValid = rs.getBoolean("valid");
-                boolean idDeleted = rs.getBoolean("deleted");
-                String displayString = rs.getString("display_string");
-                Integer version = nullSafeInt(rs, "versionfield");
-                String pages = rs.getString("pages");
-                String treeIndex = rs.getString("path_to_root");
-//                Integer rankFk = nullSafeInt(rs, "tax_rank_fk");
-                String nameAddition = rs.getString("name_addition");
-                String officialRemark = rs.getString("official_remark");
-                boolean isGroup = rs.getBoolean("taxonomic_group");
-                String rankStr = rs.getString("rankStr");
-                String parentRankStr = rs.getString("parentRankStr");
-                String grandParentRankStr = rs.getString("grandParentRankStr");
-                String parentNameStr = rs.getString("parentName");
-                String grandParentNameStr = rs.getString("grandParentName");
-
-
-                TaxonBase<?> taxonBase;
-                Reference<?> sec = null; //TODO
-
-                //Name etc.
-                Rank rank = makeRank(state, rankStr);
-                ZoologicalName name = ZoologicalName.NewInstance(rank);
-                setNamePart(nameStr, rank, name);
-                Rank parentRank = makeRank(state, parentRankStr);
-                setNamePart(parentNameStr, parentRank, name);
-                Rank parentParentRank = makeRank(state, grandParentRankStr);
-                setNamePart(grandParentNameStr, parentParentRank, name);
-
-                //Authors
-                if (StringUtils.isNotBlank(authorName)){
-                    TeamOrPersonBase<?> author = state.getRelatedObject(AUTHOR_NAMESPACE, authorName, TeamOrPersonBase.class);
-                    if (author == null){
-                        logger.warn("Author not found in state: "  + authorName);
-                    }else{
-                        if (isBrackets){
-                            name.setBasionymAuthorship(author);
-                            name.setOriginalPublicationYear(year);
-                        }else{
-                            name.setCombinationAuthorship(author);
-                            name.setPublicationYear(year);
-                        }
-                    }
-                }
-
-
-                if (isValid){
-                    taxonBase = Taxon.NewInstance(name, sec);
-                }else{
-                    taxonBase = Synonym.NewInstance(name, sec);
-                }
-                taxaToSave.add(taxonBase);
-
-                //remarks
-                doNotes(taxonBase, remark);
-
-                //id
-                ImportHelper.setOriginalSource(taxonBase, state.getTransactionalSourceReference(), id, TAXON_NAMESPACE);
-                ImportHelper.setOriginalSource(name, state.getTransactionalSourceReference(), id, TAXON_NAMESPACE);
+                makeSingleTaxon(state, rs, taxaToSave);
 
             }
         } catch (SQLException e) {
@@ -171,6 +105,109 @@ public class EdaphobaseTaxonImport extends EdaphobaseImportBase {
         return true;
     }
 
+    /**
+     * @param state
+     * @param rs
+     * @param taxaToSave
+     * @throws SQLException
+     */
+    private void makeSingleTaxon(EdaphobaseImportState state, ResultSet rs, Set<TaxonBase> taxaToSave)
+            throws SQLException {
+        Integer id = nullSafeInt(rs, "taxon_id");
+        Integer year = nullSafeInt(rs, "tax_year");
+        boolean isBrackets = rs.getBoolean("tax_brackets");
+        String remark = rs.getString("remark");
+        String nameStr = rs.getString("name");
+        String authorName = rs.getString("tax_author_name");
+        //parentTaxonFk
+        //rankFk
+        Integer nomRefId = nullSafeInt(rs, "tax_document");
+        boolean isValid = rs.getBoolean("valid");
+        boolean idDeleted = rs.getBoolean("deleted");
+        String displayString = rs.getString("display_string");
+        Integer version = nullSafeInt(rs, "versionfield");
+        String pages = rs.getString("pages");
+        String treeIndex = rs.getString("path_to_root");
+//      Integer rankFk = nullSafeInt(rs, "tax_rank_fk");
+        String nameAddition = rs.getString("name_addition");
+        String officialRemark = rs.getString("official_remark");
+        boolean isGroup = rs.getBoolean("taxonomic_group");
+        String rankStr = rs.getString("rankStr");
+        String parentRankStr = rs.getString("parentRankStr");
+        String grandParentRankStr = rs.getString("grandParentRankStr");
+        String parentNameStr = rs.getString("parentName");
+        String grandParentNameStr = rs.getString("grandParentName");
+
+        TaxonBase<?> taxonBase;
+
+        //Name etc.
+        Rank rank = makeRank(state, rankStr);
+        ZoologicalName name = ZoologicalName.NewInstance(rank);
+        setNamePart(nameStr, rank, name);
+        Rank parentRank = makeRank(state, parentRankStr);
+        setNamePart(parentNameStr, parentRank, name);
+        Rank parentParentRank = makeRank(state, grandParentRankStr);
+        setNamePart(grandParentNameStr, parentParentRank, name);
+
+        //Authors
+        if (StringUtils.isNotBlank(authorName)){
+            TeamOrPersonBase<?> author = state.getRelatedObject(AUTHOR_NAMESPACE, authorName, TeamOrPersonBase.class);
+            if (author == null){
+                logger.warn("Author not found in state: "  + authorName);
+            }else{
+                if (isBrackets){
+                    name.setBasionymAuthorship(author);
+                    name.setOriginalPublicationYear(year);
+                }else{
+                    name.setCombinationAuthorship(author);
+                    name.setPublicationYear(year);
+                }
+            }
+        }
+
+        //nomRef
+        if (nomRefId != null){
+            Reference<?> nomRef = state.getRelatedObject(REFERENCE_NAMESPACE, String.valueOf(nomRefId), Reference.class);
+            if (nomRef == null){
+                logger.warn("Reference " + nomRefId + " could not be found");
+            }
+            name.setNomenclaturalReference(nomRef);
+        }
+        name.setNomenclaturalMicroReference(StringUtils.isBlank(pages)? null : pages);
+
+
+        Reference<?> secRef = state.getRelatedObject(REFERENCE_NAMESPACE, state.getConfig().getSecUuid().toString(), Reference.class);
+        if (secRef == null){
+            secRef = makeSecRef(state);
+        }
+        if (isValid){
+            taxonBase = Taxon.NewInstance(name, secRef);
+        }else{
+            taxonBase = Synonym.NewInstance(name, secRef);
+        }
+        taxaToSave.add(taxonBase);
+
+        //remarks
+        doNotes(taxonBase, remark);
+
+        //id
+        ImportHelper.setOriginalSource(taxonBase, state.getTransactionalSourceReference(), id, TAXON_NAMESPACE);
+        ImportHelper.setOriginalSource(name, state.getTransactionalSourceReference(), id, TAXON_NAMESPACE);
+    }
+
+
+    /**
+     * @param state
+     * @return
+     */
+    private Reference<?> makeSecRef(EdaphobaseImportState state) {
+        Reference<?> ref = ReferenceFactory.newDatabase();
+        ref.setTitle(state.getConfig().getEdaphobaseSecundumTitle());
+        ref.setUuid(state.getConfig().getSecUuid());
+        state.addRelatedObject(REFERENCE_NAMESPACE, ref.getUuid().toString(), ref);
+        getReferenceService().save(ref);
+        return ref;
+    }
 
     @Override
     public Map<Object, Map<String, ? extends CdmBase>> getRelatedObjectsForPartition(ResultSet rs,
@@ -178,10 +215,13 @@ public class EdaphobaseTaxonImport extends EdaphobaseImportBase {
         Map<Object, Map<String, ? extends CdmBase>> result = new HashMap<>();
         Map<String, TeamOrPersonBase<?>> authorMap = new HashMap<>();
         Set<String> authorSet = new HashSet<>();
+        Set<String> referenceIdSet = new HashSet<String>();
+
         try {
             while (rs.next()){
                 String authorStr = rs.getString("tax_author_name");
                 authorSet.add(authorStr);
+                handleForeignKey(rs, referenceIdSet, "tax_document");
             }
         } catch (SQLException e) {
             e.printStackTrace();
@@ -205,6 +245,18 @@ public class EdaphobaseTaxonImport extends EdaphobaseImportBase {
             authorMap.put(authorStr, author);
         }
         result.put(AUTHOR_NAMESPACE, authorMap);
+
+        //reference map
+        String nameSpace = REFERENCE_NAMESPACE;
+        Class<?> cdmClass = Reference.class;
+        Set<String> idSet = referenceIdSet;
+        Map<String, Reference<?>> referenceMap = (Map<String, Reference<?>>)getCommonService().getSourcedObjectsByIdInSource(cdmClass, idSet, nameSpace);
+        result.put(nameSpace, referenceMap);
+
+        //secundum
+        UUID secUuid = state.getConfig().getSecUuid();
+        Reference<?> secRef = getReferenceService().find(secUuid);
+        referenceMap.put(secUuid.toString(), secRef);
 
         return result;
     }

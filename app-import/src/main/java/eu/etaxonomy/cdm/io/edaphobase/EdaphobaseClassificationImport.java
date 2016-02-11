@@ -23,10 +23,10 @@ import org.springframework.stereotype.Component;
 import eu.etaxonomy.cdm.io.common.IPartitionedIO;
 import eu.etaxonomy.cdm.io.common.ResultSetPartitioner;
 import eu.etaxonomy.cdm.model.common.CdmBase;
+import eu.etaxonomy.cdm.model.name.TaxonNameBase;
 import eu.etaxonomy.cdm.model.reference.Reference;
 import eu.etaxonomy.cdm.model.taxon.Classification;
 import eu.etaxonomy.cdm.model.taxon.Synonym;
-import eu.etaxonomy.cdm.model.taxon.SynonymRelationshipType;
 import eu.etaxonomy.cdm.model.taxon.Taxon;
 import eu.etaxonomy.cdm.model.taxon.TaxonBase;
 
@@ -87,7 +87,7 @@ public class EdaphobaseClassificationImport extends EdaphobaseImportBase {
         Set<TaxonBase> taxaToSave = new HashSet<>();
         try {
             while (rs.next()){
-                Integer id = rs.getInt("taxon_id");
+                int id = rs.getInt("taxon_id");
                  //parentTaxonFk
                 boolean isValid = rs.getBoolean("valid");
 //                boolean idDeleted = rs.getBoolean("deleted");
@@ -97,28 +97,42 @@ public class EdaphobaseClassificationImport extends EdaphobaseImportBase {
 //                boolean isGroup = rs.getBoolean("taxonomic_group");
                 Integer parentTaxonFk = nullSafeInt(rs, "parent_taxon_fk");
 
-                if (id != null && parentTaxonFk != null){
-                    if (isValid){
-                        Taxon child = state.getRelatedObject(TAXON_NAMESPACE, id.toString(), Taxon.class);
-                        Taxon parent = state.getRelatedObject(TAXON_NAMESPACE, parentTaxonFk.toString(), Taxon.class);
-                        if (parent != null){
-                            classification.addParentChild(parent, child, sourceReference, null);
-                        }else{
-                            logger.warn("Parent taxon " + parentTaxonFk + " not found for taxon " + id );
-                        }
+                if (parentTaxonFk != null){
+                    TaxonBase<?> parent = state.getRelatedObject(TAXON_NAMESPACE, parentTaxonFk.toString(), TaxonBase.class);
+                    if (parent == null){
+                        logger.warn("Parent taxon " + parentTaxonFk + " not found for taxon " + id );
                     }else{
-                        Synonym synonym = state.getRelatedObject(TAXON_NAMESPACE, id.toString(), Synonym.class);
-                        if (synonym == null){
-                            logger.warn("Synonym " + id + " not found for taxon ");
-                        }
-                        Taxon accepted = state.getRelatedObject(TAXON_NAMESPACE, parentTaxonFk.toString(), Taxon.class);
-                        if (accepted != null){
-                            accepted.addSynonym(synonym, SynonymRelationshipType.SYNONYM_OF());
+
+                        TaxonNameBase<?,?> parentName = parent.getName();
+
+                        TaxonBase<?> child = state.getRelatedObject(TAXON_NAMESPACE, String.valueOf(id), TaxonBase.class);
+//                        TaxonNameBase<?,?> childName = child.getName();
+
+//                        handleMissingNameParts(CdmBase.deproxy(childName, NonViralName.class), CdmBase.deproxy(parentName, NonViralName.class));
+
+                        if (isValid){
+                            if (parent.isInstanceOf(Synonym.class)){
+                                logger.warn("Parent taxon (" + parentTaxonFk + " is not valid for valid child " + id);
+                            }else{
+                                Taxon accParent = CdmBase.deproxy(parent, Taxon.class);
+                                classification.addParentChild(accParent, (Taxon)child, sourceReference, null);
+                                taxaToSave.add(accParent);
+                            }
                         }else{
-                            logger.warn("Accepted(parent) taxon " + parentTaxonFk + " not found for taxon " + id );
+//                            Synonym synonym = CdmBase.deproxy(child, Synonym.class);
+//                            if (synonym == null){
+//                                logger.warn("Synonym " + id + " not found for taxon ");
+//                            }
+//                            if(parent.isInstanceOf(Synonym.class)){
+//                                String message = "Taxon ("+parentTaxonFk+") is not accepted but synonym. Can't add synonym ("+id+")";
+//                                logger.warn(message);
+//                            }else{
+//                                Taxon accepted = CdmBase.deproxy(parent, Taxon.class);
+////                                accepted.addSynonym(synonym, SynonymRelationshipType.SYNONYM_OF());
+//                                taxaToSave.add(accepted);
+//                            }
                         }
                     }
-
                 }
 
 //              //id
@@ -129,13 +143,20 @@ public class EdaphobaseClassificationImport extends EdaphobaseImportBase {
 
             }
         } catch (SQLException e) {
-            // TODO Auto-generated catch block
             e.printStackTrace();
         }
 
         getTaxonService().saveOrUpdate(taxaToSave);
         return true;
     }
+
+//    /**
+//     * @param childName
+//     * @param parentName
+//     */
+//    private void handleMissingNameParts(NonViralName<?> childName, NonViralName<?> parentName) {
+//        if (childName.getGenusOrUninomial())
+//    }
 
     @Override
     public Map<Object, Map<String, ? extends CdmBase>> getRelatedObjectsForPartition(ResultSet rs,

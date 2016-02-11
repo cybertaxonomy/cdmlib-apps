@@ -13,27 +13,21 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.UUID;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
-import org.codehaus.plexus.util.StringUtils;
 import org.springframework.stereotype.Component;
 
+import eu.etaxonomy.cdm.common.DOI;
 import eu.etaxonomy.cdm.io.common.IPartitionedIO;
 import eu.etaxonomy.cdm.io.common.ImportHelper;
 import eu.etaxonomy.cdm.io.common.ResultSetPartitioner;
-import eu.etaxonomy.cdm.io.common.mapping.UndefinedTransformerMethodException;
-import eu.etaxonomy.cdm.model.agent.TeamOrPersonBase;
 import eu.etaxonomy.cdm.model.common.CdmBase;
-import eu.etaxonomy.cdm.model.name.Rank;
-import eu.etaxonomy.cdm.model.name.ZoologicalName;
+import eu.etaxonomy.cdm.model.common.TimePeriod;
 import eu.etaxonomy.cdm.model.reference.Reference;
-import eu.etaxonomy.cdm.model.taxon.Synonym;
-import eu.etaxonomy.cdm.model.taxon.Taxon;
-import eu.etaxonomy.cdm.model.taxon.TaxonBase;
+import eu.etaxonomy.cdm.model.reference.ReferenceFactory;
 
 /**
  * @author a.mueller
@@ -42,14 +36,16 @@ import eu.etaxonomy.cdm.model.taxon.TaxonBase;
  */
 @Component
 public class EdaphobaseReferenceImport extends EdaphobaseImportBase {
-    private static final long serialVersionUID = -9138378836474086070L;
+    private static final long serialVersionUID = 6895687693249076160L;
+
+    @SuppressWarnings("unused")
     private static final Logger logger = Logger.getLogger(EdaphobaseReferenceImport.class);
 
-    private static final String tableName = "tax_taxon";
+    private static final String tableName = "lit_document";
 
-    private static final String pluralString = "taxa";
-
-    private static final Object AUTHOR_NAMESPACE = "tax_author_name";
+    private static final String pluralString = "documents";
+//
+//    private static final Object AUTHOR_NAMESPACE = "tax_author_name";
 
     /**
      * @param tableName
@@ -61,123 +57,32 @@ public class EdaphobaseReferenceImport extends EdaphobaseImportBase {
 
     @Override
     protected String getIdQuery(EdaphobaseImportState state) {
-        return "SELECT DISTINCT taxon_id FROM tax_taxon t "
-                + " ORDER BY taxon_id";
+        return    " SELECT DISTINCT document_id "
+                + " FROM lit_document ld INNER JOIN tax_taxon t ON t.tax_document = ld.document_id "
+                + " UNION "
+                + " SELECT DISTINCT pd.document_id "
+                + " FROM lit_document ld INNER JOIN tax_taxon t ON t.tax_document = ld.document_id "
+                + " INNER JOIN lit_document pd ON pd.document_id = ld.parent_document_fk_document_id "
+                + " ORDER BY document_id ";
     }
 
     @Override
     protected String getRecordQuery(EdaphobaseImportConfigurator config) {
-        String result = " SELECT DISTINCT t.*, r.value as rankStr, pr.value as parentRankStr, ppr.value as grandParentRankStr, "
-                    + " pt.name as parentName, ppt.name as grandParentName "
-                + " FROM tax_taxon t "
-                    + " LEFT JOIN tax_taxon pt ON t.parent_taxon_fk = pt.taxon_id "
-                    + " LEFT JOIN tax_taxon ppt ON pt.parent_taxon_fk = ppt.taxon_id"
-                    + " LEFT OUTER JOIN tax_rank_en r ON r.element_id = t.tax_rank_fk "
-                    + " LEFT OUTER JOIN tax_rank_en pr ON pr.element_id = pt.tax_rank_fk "
-                    + " LEFT OUTER JOIN tax_rank_en ppr ON pr.element_id = ppt.tax_rank_fk "
-                + " WHERE t.taxon_id IN (@IDSET)";
+        String result = " SELECT * "
+                + " FROM lit_document ld "
+                + " WHERE ld.document_id IN (@IDSET)";
         result = result.replace("@IDSET", IPartitionedIO.ID_LIST_TOKEN);
         return result;
     }
 
     @Override
-    protected void doInvoke(EdaphobaseImportState state) {
-        super.doInvoke(state);
-    }
-
-
-    @Override
     public boolean doPartition(ResultSetPartitioner partitioner, EdaphobaseImportState state) {
         ResultSet rs = partitioner.getResultSet();
-        Set<TaxonBase> taxaToSave = new HashSet<>();
+        Set<Reference> referencesToSave = new HashSet<>();
         try {
             while (rs.next()){
-//  //              "JPASampleBook"
-//  //              "JPAJournal"
-//    //            "JPASample"
-//                "JPAThesis"
-//      //          "JPALitOther"
-//    //            "JPACollection"
-//    //            "JPADocument"
-//   //             "JPABibliography"
-//   //             "JPAProject"
-//   //             "JPARawData"
-//                "JPAArticle"
-//                "JPABook"
-//                "JPAChapter"
-//   //             "JPACollectionObject"
-//   //                "JPACollectionContainer"
 
-
-
-                Integer id = nullSafeInt(rs, "taxon_id");
-                Integer year = nullSafeInt(rs, "tax_year");
-                boolean isBrackets = rs.getBoolean("tax_brackets");
-                String remark = rs.getString("remark");
-                String nameStr = rs.getString("name");
-                String authorName = rs.getString("tax_author_name");
-                //parentTaxonFk
-                //rankFk
-                //document
-                boolean isValid = rs.getBoolean("valid");
-                boolean idDeleted = rs.getBoolean("deleted");
-                String displayString = rs.getString("display_string");
-                Integer version = nullSafeInt(rs, "versionfield");
-                String pages = rs.getString("pages");
-                String treeIndex = rs.getString("path_to_root");
-//                Integer rankFk = nullSafeInt(rs, "tax_rank_fk");
-                String nameAddition = rs.getString("name_addition");
-                String officialRemark = rs.getString("official_remark");
-                boolean isGroup = rs.getBoolean("taxonomic_group");
-                String rankStr = rs.getString("rankStr");
-                String parentRankStr = rs.getString("parentRankStr");
-                String grandParentRankStr = rs.getString("grandParentRankStr");
-                String parentNameStr = rs.getString("parentName");
-                String grandParentNameStr = rs.getString("grandParentName");
-
-
-                TaxonBase<?> taxonBase;
-                Reference<?> sec = null; //TODO
-
-                //Name etc.
-                Rank rank = makeRank(state, rankStr);
-                ZoologicalName name = ZoologicalName.NewInstance(rank);
-                setNamePart(nameStr, rank, name);
-                Rank parentRank = makeRank(state, parentRankStr);
-                setNamePart(parentNameStr, parentRank, name);
-                Rank parentParentRank = makeRank(state, grandParentRankStr);
-                setNamePart(grandParentNameStr, parentParentRank, name);
-
-                //Authors
-                if (StringUtils.isNotBlank(authorName)){
-                    TeamOrPersonBase<?> author = state.getRelatedObject(AUTHOR_NAMESPACE, authorName, TeamOrPersonBase.class);
-                    if (author == null){
-                        logger.warn("Author not found in state: "  + authorName);
-                    }else{
-                        if (isBrackets){
-                            name.setBasionymAuthorship(author);
-                            name.setOriginalPublicationYear(year);
-                        }else{
-                            name.setCombinationAuthorship(author);
-                            name.setPublicationYear(year);
-                        }
-                    }
-                }
-
-
-                if (isValid){
-                    taxonBase = Taxon.NewInstance(name, sec);
-                }else{
-                    taxonBase = Synonym.NewInstance(name, sec);
-                }
-                taxaToSave.add(taxonBase);
-
-                //remarks
-                doNotes(taxonBase, remark);
-
-                //id
-                ImportHelper.setOriginalSource(taxonBase, state.getTransactionalSourceReference(), id, TAXON_NAMESPACE);
-                ImportHelper.setOriginalSource(name, state.getTransactionalSourceReference(), id, TAXON_NAMESPACE);
+                handleSingleReference(state, rs, referencesToSave);
 
             }
         } catch (SQLException e) {
@@ -185,79 +90,157 @@ public class EdaphobaseReferenceImport extends EdaphobaseImportBase {
             e.printStackTrace();
         }
 
-        getTaxonService().saveOrUpdate(taxaToSave);
+        getReferenceService().saveOrUpdate(referencesToSave);
+
         return true;
     }
 
+    /**
+     * @param state
+     * @param rs
+     * @param referencesToSave
+     * @throws SQLException
+     */
+    private void handleSingleReference(EdaphobaseImportState state, ResultSet rs, Set<Reference> referencesToSave) throws SQLException {
+        Integer id = nullSafeInt(rs, "document_id");
+        String dtype = rs.getString("dtype");
+        String issue = rs.getString("issue");
+        String orderer = rs.getString("orderer");
+        String place = rs.getString("place");
+        Integer pageFrom = nullSafeInt(rs, "page_from");
+        Integer pageTo = nullSafeInt(rs, "page_to");
+        String subtitle = rs.getString("subtitle");
+        Integer year = nullSafeInt(rs, "year");
+        String isbn = rs.getString("isbn");
+        //refers_to_literature
+        //refers_to_collection
+        //refers_to_observation
+        String remark = rs.getString("remark");
+        String volume = rs.getString("volume");
+        //abbreviation (no record)
+        String title = rs.getString("title");
+        String issn = rs.getString("issn");
+        //circulation //2 records
+        String keywords = rs.getString("keywords");
+        String abstractt = rs.getString("abstract");
+        String parallel_title = rs.getString("parallel_title");
+        //language_fk_language_id
+        //document_type_fk_document_type_id
+        //editor_fk_person_id
+        Integer editorFk = nullSafeInt(rs, "editor_fk_person_id");
+
+//        Integer parentFk = nullSafeInt(rs, "parent_document_fk_document_id");
+        //publisher_fk_publisher_id
+        //deleted
+        //chapter_no
+        //versionfield
+        String doi = rs.getString("doi");
+        String displayString = rs.getString("display_string");
+        //aquisistion_date, aquisition_type, adoption_date, ex_colletion, barcode_prefix, barcode_org_prefix
+        //barcode_type, collection_status, barcode, typus_form,
+
+        //taxon_for_scope, taxon_is_scope
+        //language_fk, document_type_backup
+
+        Integer documentType = nullSafeInt(rs, "document_type");
+        //normalized_title, normalized_abk_official_remark
+
+        Reference<?> ref = makeReferenceType(documentType, dtype);
+        ref.setTitle(title);
+        ref.setPlacePublished(place);
+        ref.setIssn(issn);
+        ref.setIsbn(isbn);
+        if (pageFrom != null || pageTo != null){
+            String pageStr = pageFrom == null ? "" : String.valueOf(pageFrom);
+            pageStr = pageTo == null ? pageStr : "-" + pageTo;
+            ref.setPages(pageStr);
+        }
+        if (year != null){
+            ref.setDatePublished(TimePeriod.NewInstance(year));
+        }
+        ref.setVolume(volume);
+        ref.setReferenceAbstract(abstractt);
+        if (StringUtils.isNotBlank(doi)){
+            try {
+                String doiStr = doi;
+                if (doiStr.startsWith("dx.doi.org/")){
+                    doiStr = doiStr.substring(11);
+                }
+                ref.setDoi(DOI.fromString(doiStr));
+            } catch (IllegalArgumentException e) {
+                logger.warn("DOI could not be parsed: " + doi);
+            }
+        }
+        ref.setEdition(issue);
+
+        //id
+        ImportHelper.setOriginalSource(ref, state.getTransactionalSourceReference(), id, REFERENCE_NAMESPACE);
+
+        referencesToSave.add(ref);
+    }
+
+
+    /**
+     * @param documentType
+     * @return
+     */
+    private Reference<?> makeReferenceType(Integer documentType, String dtype) {
+        if (documentType == 11914){
+            return ReferenceFactory.newArticle();
+        } else if (documentType == 11916){
+            return ReferenceFactory.newBook();
+        } else if (documentType == 11915){
+            return ReferenceFactory.newPrintSeries();
+        } else if (documentType == 11913){
+            return ReferenceFactory.newJournal();
+        } else if (documentType == 11917){
+            return ReferenceFactory.newBookSection();
+        } else if (documentType == 11912 || documentType == 11919 || documentType == 11924 ){
+            Reference<?> ref = ReferenceFactory.newGeneric();
+            return ref;
+        } else {
+            throw new RuntimeException("DocumentType not yet supported: " + documentType + ", " + dtype);
+        }
+    }
 
     @Override
     public Map<Object, Map<String, ? extends CdmBase>> getRelatedObjectsForPartition(ResultSet rs,
             EdaphobaseImportState state) {
         Map<Object, Map<String, ? extends CdmBase>> result = new HashMap<>();
-        Map<String, TeamOrPersonBase<?>> authorMap = new HashMap<>();
-        Set<String> authorSet = new HashSet<>();
-        try {
-            while (rs.next()){
-                String authorStr = rs.getString("tax_author_name");
-                authorSet.add(authorStr);
-            }
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-
-        //Authors
-        Set<UUID> uuidSet = new HashSet<>();
-        for (String authorStr : authorSet){
-            UUID uuid = state.getAuthorUuid(authorStr);
-            uuidSet.add(uuid);
-        }
-        List<TeamOrPersonBase<?>> authors = (List)getAgentService().find(uuidSet);
-        Map<UUID, TeamOrPersonBase<?>> authorUuidMap = new HashMap<>();
-        for (TeamOrPersonBase<?> author : authors){
-            authorUuidMap.put(author.getUuid(), author);
-        }
-
-        for (String authorStr : authorSet){
-            UUID uuid = state.getAuthorUuid(authorStr);
-            TeamOrPersonBase<?> author = authorUuidMap.get(uuid);
-            authorMap.put(authorStr, author);
-        }
-        result.put(AUTHOR_NAMESPACE, authorMap);
+//        Map<String, TeamOrPersonBase<?>> authorMap = new HashMap<>();
+//        Set<String> authorSet = new HashSet<>();
+//        try {
+//            while (rs.next()){
+//                String authorStr = rs.getString("tax_author_name");
+//                authorSet.add(authorStr);
+//            }
+//        } catch (SQLException e) {
+//            e.printStackTrace();
+//        }
+//
+//        //Authors
+//        Set<UUID> uuidSet = new HashSet<>();
+//        for (String authorStr : authorSet){
+//            UUID uuid = state.getAuthorUuid(authorStr);
+//            uuidSet.add(uuid);
+//        }
+//        List<TeamOrPersonBase<?>> authors = (List)getAgentService().find(uuidSet);
+//        Map<UUID, TeamOrPersonBase<?>> authorUuidMap = new HashMap<>();
+//        for (TeamOrPersonBase<?> author : authors){
+//            authorUuidMap.put(author.getUuid(), author);
+//        }
+//
+//        for (String authorStr : authorSet){
+//            UUID uuid = state.getAuthorUuid(authorStr);
+//            TeamOrPersonBase<?> author = authorUuidMap.get(uuid);
+//            authorMap.put(authorStr, author);
+//        }
+//        result.put(AUTHOR_NAMESPACE, authorMap);
 
         return result;
     }
 
-    private void setNamePart(String nameStr, Rank rank, ZoologicalName name) {
-        if (rank != null){
-            if (rank.isSupraGeneric() || rank.isGenus()){
-                if (StringUtils.isBlank(name.getGenusOrUninomial())){
-                    name.setGenusOrUninomial(nameStr);
-                }
-            }else if (rank.isInfraGeneric()){
-                if (StringUtils.isBlank(name.getInfraGenericEpithet())){
-                    name.setInfraGenericEpithet(nameStr);
-                }
-            }else if (rank.isSpeciesAggregate() || rank.isSpecies()){
-                if (StringUtils.isBlank(name.getSpecificEpithet())){
-                    name.setSpecificEpithet(nameStr);
-                }
-            }else if (rank.isInfraSpecific()){
-                if (StringUtils.isBlank(name.getInfraSpecificEpithet())){
-                    name.setInfraSpecificEpithet(nameStr);
-                }
-            }
-        }
-    }
 
-    private Rank makeRank(EdaphobaseImportState state, String rankStr) {
-        Rank rank = null;
-        try {
-            rank = state.getTransformer().getRankByKey(rankStr);
-        } catch (UndefinedTransformerMethodException e) {
-            e.printStackTrace();
-        }
-        return rank;
-    }
 
     @Override
     protected boolean doCheck(EdaphobaseImportState state) {
@@ -266,7 +249,7 @@ public class EdaphobaseReferenceImport extends EdaphobaseImportBase {
 
     @Override
     protected boolean isIgnore(EdaphobaseImportState state) {
-        return ! state.getConfig().isDoTaxa();
+        return ! state.getConfig().isDoReferences();
     }
 
 }

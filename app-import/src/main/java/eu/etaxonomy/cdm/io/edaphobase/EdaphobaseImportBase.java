@@ -24,6 +24,7 @@ public abstract class EdaphobaseImportBase
 
     protected static final String TAXON_NAMESPACE = "tax_taxon";
     protected static final String CLASSIFICATION_NAMESPACE = "Classification";
+    protected static final String REFERENCE_NAMESPACE = "lit_document";
 
     /**
      * @param tableName

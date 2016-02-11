@@ -36,7 +36,6 @@ import eu.etaxonomy.cdm.model.common.CdmBase;
 public class EdaphobaseAuthorImport extends EdaphobaseImportBase {
     private static final long serialVersionUID = -9138378836474086070L;
 
-    @SuppressWarnings("unused")
     private static final Logger logger = Logger.getLogger(EdaphobaseAuthorImport.class);
 
     private static final String tableName = "tax_taxon";
@@ -94,6 +93,7 @@ public class EdaphobaseAuthorImport extends EdaphobaseImportBase {
         String query = "SELECT DISTINCT t.tax_author_name "
                 + " FROM tax_taxon t"
                 + " WHERE TRIM(t.tax_author_name) <>'' AND t.tax_author_name IS NOT NULL";
+
         ResultSet rs = state.getConfig().getSource().getResultSet(query);
         try {
             while(rs.next()){
