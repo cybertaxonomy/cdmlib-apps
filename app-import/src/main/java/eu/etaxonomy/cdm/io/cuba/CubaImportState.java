@@ -19,6 +19,7 @@ import org.apache.log4j.Logger;
 import eu.etaxonomy.cdm.io.excel.common.ExcelImportState;
 import eu.etaxonomy.cdm.io.excel.common.ExcelRowBase;
 import eu.etaxonomy.cdm.model.description.PresenceAbsenceTerm;
+import eu.etaxonomy.cdm.model.name.BotanicalName;
 import eu.etaxonomy.cdm.model.reference.Reference;
 import eu.etaxonomy.cdm.model.taxon.Classification;
 import eu.etaxonomy.cdm.model.taxon.Taxon;
@@ -35,6 +36,10 @@ public class CubaImportState extends ExcelImportState<CubaImportConfigurator, Ex
 	private final Map<String, Taxon> higherTaxonTaxonMap = new HashMap<String, Taxon>();
 
 	private final Map<String, UUID> higherTaxonUuidMap = new HashMap<String, UUID>();
+
+	private final Map<String, BotanicalName> familyNameMap = new HashMap<String, BotanicalName>();
+
+
 
 	//classification
 	private Classification classification;
@@ -95,6 +100,24 @@ public class CubaImportState extends ExcelImportState<CubaImportConfigurator, Ex
 	}
     public boolean containsHigherTaxonUuid(String higherName) {
         return higherTaxonUuidMap.containsKey(higherName);
+    }
+
+    //family names
+    public BotanicalName getFamilyName(String familyStr) {
+        return familyNameMap.get(familyStr);
+    }
+    public void putFamilyName(String familyStr, BotanicalName name) {
+        familyNameMap.put(familyStr, name);
+    }
+
+
+    Map<UUID, Reference<?>> refMap = new HashMap<UUID, Reference<?>>();
+    //reference
+    public Reference<?> getReference(UUID uuidRef) {
+        return refMap.get(uuidRef);
+    }
+    public void putReference(UUID uuidRef, Reference<?> ref) {
+        refMap.put(uuidRef, ref);
     }
 
 

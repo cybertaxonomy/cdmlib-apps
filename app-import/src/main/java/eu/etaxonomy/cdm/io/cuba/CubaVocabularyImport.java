@@ -9,21 +9,29 @@
 
 package eu.etaxonomy.cdm.io.cuba;
 
+import java.net.URI;
 import java.util.UUID;
 
 import org.apache.log4j.Logger;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.TransactionStatus;
 
+import eu.etaxonomy.cdm.common.DOI;
 import eu.etaxonomy.cdm.io.common.CdmImportBase;
 import eu.etaxonomy.cdm.io.common.mapping.IInputTransformer;
 import eu.etaxonomy.cdm.io.common.mapping.UndefinedTransformerMethodException;
+import eu.etaxonomy.cdm.model.agent.Person;
+import eu.etaxonomy.cdm.model.agent.Team;
 import eu.etaxonomy.cdm.model.common.TermType;
 import eu.etaxonomy.cdm.model.common.TermVocabulary;
 import eu.etaxonomy.cdm.model.description.PresenceAbsenceTerm;
 import eu.etaxonomy.cdm.model.location.NamedArea;
 import eu.etaxonomy.cdm.model.location.NamedAreaLevel;
 import eu.etaxonomy.cdm.model.location.NamedAreaType;
+import eu.etaxonomy.cdm.model.reference.Reference;
+import eu.etaxonomy.cdm.model.reference.ReferenceFactory;
+import eu.etaxonomy.cdm.strategy.parser.TimePeriodParser;
+
 
 /**
  * @author a.mueller
@@ -44,9 +52,61 @@ public class CubaVocabularyImport extends CdmImportBase<CubaImportConfigurator, 
         try {
             makeAreas(state);
             makePresenceAbsenceTerms(state);
+            makeAlternativeFloras(state);
         } catch (UndefinedTransformerMethodException e) {
            e.printStackTrace();
         }
+    }
+
+    /**
+     * @param state
+     */
+    private void makeAlternativeFloras(CubaImportState state) {
+
+        //FRC
+        Reference<?> refFRC = ReferenceFactory.newBook();
+        refFRC.setUuid(CubaTransformer.uuidRefFRC);
+        refFRC.setTitle("Flora de la República de Cuba");
+        getReferenceService().save(refFRC);
+
+        //A&S
+        Reference<?> refAS = ReferenceFactory.newArticle();
+        refAS.setUuid(CubaTransformer.uuidRefAS);
+        refAS.setTitle("Catalogue of seed plants of the West Indies");
+        Person acevedo = Person.NewInstance();
+        acevedo.setFirstname("Pedro");
+        acevedo.setLastname("Acevedo-Rodríguez");
+        Person strong = Person.NewInstance();
+        strong.setFirstname("Mark T.");
+        strong.setLastname("Strong");
+        Team asTeam = Team.NewInstance();
+        asTeam.addTeamMember(acevedo);
+        asTeam.addTeamMember(strong);
+        refAS.setAuthorship(asTeam);
+        refAS.setDatePublished(TimePeriodParser.parseString("2012-01-01"));
+        refAS.setVolume("98");
+        refAS.setPages("i-xxv, 1-1192");
+        refAS.setIssn("0081-024X");
+        refAS.setDoi(DOI.fromString("10.5479/si.0081024X.98.1"));
+        refAS.setUri(URI.create("http://hdl.handle.net/10088/17551"));
+        String abstracct = "The catalogue enumerates all taxa of Gymnosperms, Dicotyledons, and Monocotyledons occurring in the West Indies archipelago excluding the islands off the coast of Venezuela (Netherlands Antilles, Venezuelan Antilles, Tobago, and Trinidad). For each accepted taxon, nomenclature (including synonyms described from the West Indies and their references to publication), distribution in the West Indies (including endemic, native, or exotic status), common names, and a numerical listing of literature records are given. Type specimen citations are provided for accepted names and synonyms of Cyperaceae, Sapindaceae, and some selected genera in several families including the Apocynaceae (Plumeria), Aquifoliaceae (Ilex), and Santalaceae (Dendrophthora). More than 30,000 names were treated comprising 208 families, 2,033 genera, and 12,279 taxa, which includes exotic and commonly cultivated plants. The total number of indigenous taxa was approximately 10,470 of which 71% (7,446 taxa) are endemic to the archipelago or part of it. Fifteen new names, 37 combinations, and 7 lectotypifications are validated. A searchable website of this catalogue, maintained and continuously updated at the Smithsonian Institution, is available at http://botany.si.edu/antilles/WestIndies/.";
+        refAS.setReferenceAbstract(abstracct);
+        Reference<?> refASIn = ReferenceFactory.newJournal();
+        refAS.setInReference(refASIn);
+        getReferenceService().save(refAS);
+
+        //FC
+        Reference<?> refFC = ReferenceFactory.newBook();
+        refFC.setUuid(CubaTransformer.uuidRefFC);
+        refFC.setTitle("Flora de Cuba");
+        Person leon = Person.NewTitledInstance("León");
+        Person alain = Person.NewTitledInstance("Alain");
+        Team fcTeam = Team.NewInstance();
+        fcTeam.addTeamMember(leon);
+        fcTeam.addTeamMember(alain);
+        refAS.setAuthorship(fcTeam);
+        getReferenceService().save(refFC);
+
     }
 
     /**
@@ -68,46 +128,47 @@ public class CubaVocabularyImport extends CdmImportBase<CubaImportConfigurator, 
 
         final boolean PRESENT = false;
 
+        //doubtfully endemic
+        UUID doubtfullyEndemicUuid = transformer.getPresenceTermUuid("?E");
+        this.getPresenceTerm(state, doubtfullyEndemicUuid, "doubtfully endemic", "doubtfully endemic", "?E", false);
 
         //indigenous
         UUID indigenousUuid = transformer.getPresenceTermUuid("+");
-        PresenceAbsenceTerm indigenous = this.getPresenceTerm(state, indigenousUuid, "indigenous", "Indigenous", "+", false);
+        this.getPresenceTerm(state, indigenousUuid, "indigenous", "Indigenous", "+", false);
         UUID indigenousDoubtfulUuid = transformer.getPresenceTermUuid("?");
-        PresenceAbsenceTerm indigenousDoubtful = this.getPresenceTerm(state, indigenousDoubtfulUuid, "indigenous, doubtfully present", "indigenous, doubtfully present", "?", false);
+        this.getPresenceTerm(state, indigenousDoubtfulUuid, "indigenous, doubtfully present", "indigenous, doubtfully present", "?", false);
         UUID nonNativeDoubtfulNaturalizedUuid = transformer.getPresenceTermUuid("P");
-        PresenceAbsenceTerm nonNative = this.getPresenceTerm(state, nonNativeDoubtfulNaturalizedUuid, "non-native and doubtfully naturalised", "non-native and doubtfully naturalised", "P", false);
+        this.getPresenceTerm(state, nonNativeDoubtfulNaturalizedUuid, "non-native and doubtfully naturalised", "non-native and doubtfully naturalised", "P", false);
         UUID casualUuid = transformer.getPresenceTermUuid("A");
-        PresenceAbsenceTerm casual = this.getPresenceTerm(state, casualUuid, "adventive (casual) alien", "adventive (casual) alien", "A", false);
+        this.getPresenceTerm(state, casualUuid, "adventive (casual) alien", "adventive (casual) alien", "A", false);
 
         //occasionally cultivated
         label = "occasionally cultivated";
         abbrev = "(C)";
         UUID occasionallyCultivatedUuid = transformer.getPresenceTermUuid(abbrev);
-        PresenceAbsenceTerm occasionallyCultivated = getPresenceTerm(state, occasionallyCultivatedUuid, label, label, abbrev, PRESENT, cubaStatusVocabualary);
+        getPresenceTerm(state, occasionallyCultivatedUuid, label, label, abbrev, PRESENT, cubaStatusVocabualary);
 
         //doubtfully present
         UUID doubtfullyIndigenousUuid = transformer.getPresenceTermUuid("D");
-        PresenceAbsenceTerm doubtfullyIndigenous = this.getPresenceTerm(state, doubtfullyIndigenousUuid, "indigenous?", "Indigenous?", "D", false);
+        this.getPresenceTerm(state, doubtfullyIndigenousUuid, "indigenous?", "Indigenous?", "D", false);
         UUID doubtfullyIndigenousDoubtfulUuid = transformer.getPresenceTermUuid("??");
-        PresenceAbsenceTerm doubtfulIndigenousDoutful = this.getPresenceTerm(state, doubtfullyIndigenousDoubtfulUuid, "?indigenous?", "doubfully indigenous, (und) doubtfully present", "??", false);
+        this.getPresenceTerm(state, doubtfullyIndigenousDoubtfulUuid, "?indigenous?", "doubfully indigenous, (und) doubtfully present", "??", false);
 
         UUID doubtfullyNaturalisedUuid = transformer.getPresenceTermUuid("?N");
-        PresenceAbsenceTerm doubtfullyNaturalised = this.getPresenceTerm(state, doubtfullyNaturalisedUuid, "?non-native and doubtfully naturalised", "non-native and doubtfully naturalised, doubtfully present", "?N", false);
+        this.getPresenceTerm(state, doubtfullyNaturalisedUuid, "?non-native and doubtfully naturalised", "non-native and doubtfully naturalised, doubtfully present", "?N", false);
         UUID doubtfullyNonNativeUuid = transformer.getPresenceTermUuid("?P");
-        PresenceAbsenceTerm doubtfullyNonNative = this.getPresenceTerm(state, doubtfullyNonNativeUuid, "?adventive (casual) alien ", "adventive (casual) alien, doubtfully present", "?P", false);
+        this.getPresenceTerm(state, doubtfullyNonNativeUuid, "?adventive (casual) alien ", "adventive (casual) alien, doubtfully present", "?P", false);
 
         //reported in error
         boolean isAbsent = true;
         UUID endemicErrorUuid = transformer.getPresenceTermUuid("-E");
-        PresenceAbsenceTerm endemicError = this.getPresenceTerm(state, endemicErrorUuid, "endemic, reported in error", "endemic, reported in error", "-E", isAbsent);
+        this.getPresenceTerm(state, endemicErrorUuid, "endemic, reported in error", "endemic, reported in error", "-E", isAbsent);
         UUID naturalizedErrorUuid = transformer.getPresenceTermUuid("-N");
-        PresenceAbsenceTerm naturalizedError = this.getPresenceTerm(state, naturalizedErrorUuid, "naturalised, reported in error", "naturalised, reported in error", "-N", isAbsent);
+        this.getPresenceTerm(state, naturalizedErrorUuid, "naturalised, reported in error", "naturalised, reported in error", "-N", isAbsent);
         UUID nonNativeErrorUuid = transformer.getPresenceTermUuid("-P");
-        PresenceAbsenceTerm nonNativeError = this.getPresenceTerm(state, nonNativeErrorUuid, "non-native and doubtfully naturalised, reported in error", "non-native and doubtfully naturalised, reported in error", "-P", isAbsent);
+        this.getPresenceTerm(state, nonNativeErrorUuid, "non-native and doubtfully naturalised, reported in error", "non-native and doubtfully naturalised, reported in error", "-P", isAbsent);
         UUID casualErrorUuid = transformer.getPresenceTermUuid("-A");
-        PresenceAbsenceTerm casualError = this.getPresenceTerm(state, casualErrorUuid, "adventive alien , reported in error", "adventive alien , reported in error", "-A", isAbsent);
-
-
+        this.getPresenceTerm(state, casualErrorUuid, "adventive alien , reported in error", "adventive alien , reported in error", "-A", isAbsent);
 
         commitTransaction(tx);
     }

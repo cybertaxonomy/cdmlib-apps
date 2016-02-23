@@ -30,6 +30,15 @@ public final class CubaTransformer extends InputTransformerBase {
     @SuppressWarnings("unused")
 	private static final Logger logger = Logger.getLogger(CubaTransformer.class);
 
+    //references
+    public static final UUID uuidRefFRC = UUID.fromString("c1caf6a2-5083-4f44-8f97-9abe23a84cd8");
+    public static final UUID uuidRefAS = UUID.fromString("1f15291a-b4c5-4e15-960f-d0145a250539");
+    public static final UUID uuidRefFC = UUID.fromString("c5a0bfb8-85b2-422d-babe-423aa2e24c35");
+
+    //featureUUID
+    public static final UUID uuidAlternativeFamily = UUID.fromString("a005f8a1-6377-4641-a826-185f67136860");
+    public static final UUID uuidAlternativeFamily2 = UUID.fromString("ff15b54a-6785-4ba0-acb6-8fb2eab80a6a");
+
     //presenceTerm
     public static final UUID nonNativeDoubtfullyNaturalisedUuid = UUID.fromString("a1e26234-831e-4190-9fe3-011aca09ddba");
     public static final UUID adventiveAlienUuid = UUID.fromString("06e48a0b-3e48-4ef8-9bdd-0755880e99ce");
@@ -38,9 +47,9 @@ public final class CubaTransformer extends InputTransformerBase {
     public static final UUID doubtfulIndigenousUuid = UUID.fromString("f47f4f4e-9d84-459a-b747-27a1af24ab7a");
     public static final UUID doubtfulIndigenousDoubtfulUuid = UUID.fromString("7ddfd94d-01a4-496c-a6d6-18584c00af59");
 
+    public static final UUID doubtfullyEndemicUuid = UUID.fromString("5f954f08-267a-4928-b073-12328f74c187");
     public static final UUID doubtfullyNaturalisedUuid = UUID.fromString("9e0b413b-5a68-4e5b-91f2-227b4f832466");
     public static final UUID doubtfullyNonNativeUuid = UUID.fromString("c42ca644-1773-4230-a2ee-328a5d4a21ab");
-
     public static final UUID endemicInErrorUuid = UUID.fromString("679b215d-c231-4ee2-ae12-3ffc3dd528ad");
     public static final UUID adventiveInErrorUuid = UUID.fromString("9b910b7b-43e3-4260-961c-6063b11cb7dc");
     public static final UUID nonNativeInErrorUuid = UUID.fromString("b9153d90-9e31-465a-a28c-79077a8ed4c2");
@@ -102,11 +111,6 @@ public final class CubaTransformer extends InputTransformerBase {
     public static final UUID uuidSouthAmerica = UUID.fromString("0fccc041-ce9d-40d5-8b9b-d7d833feed38");
     public static final UUID uuidOldWorld = UUID.fromString("c6b45544-01df-4c97-bb29-9058964c5b57");
 
-//    public static final UUID uuid = UUID.fromString("");
-//    public static final UUID uuid = UUID.fromString("");
-//    public static final UUID uuid = UUID.fromString("");
-
-    private static final UUID uuidCubaTdwg = UUID.fromString("66ce6bb4-b48e-483b-aed1-62646e9c80b8");
     @Override
     public UUID getNamedAreaUuid(String key) throws UndefinedTransformerMethodException {
         if (StringUtils.isBlank(key)){return null;
@@ -181,6 +185,7 @@ public final class CubaTransformer extends InputTransformerBase {
         }else if (key.equalsIgnoreCase("C")){return cultivatedOnlyUuid;
         }else if (key.equalsIgnoreCase("(C)")){return occasionallyCultivatedUuid;
 
+        }else if (key.equalsIgnoreCase("?E")){return doubtfullyEndemicUuid;
         }else if (key.equalsIgnoreCase("?Nat.")){return doubtfullyNaturalisedUuid;
         }else if (key.equalsIgnoreCase("?N")){return doubtfullyNaturalisedUuid;
         }else if (key.equalsIgnoreCase("?Dud.")){return doubtfullyNonNativeUuid;
@@ -217,11 +222,28 @@ public final class CubaTransformer extends InputTransformerBase {
 
         }else if (key.equalsIgnoreCase("-Cult.")){return PresenceAbsenceTerm.CULTIVATED_REPORTED_IN_ERROR();
 
+        }else if (key.equalsIgnoreCase("--")){return PresenceAbsenceTerm.REPORTED_IN_ERROR();
+
 //        }else if (key.equalsIgnoreCase("--")){return PresenceAbsenceTerm;
 
         }else{
             return null;
         }
     }
+
+    @Override
+    public UUID getFeatureUuid(String key) throws UndefinedTransformerMethodException {
+        if (key == null){
+            return null;
+        }else if (key.equalsIgnoreCase("Alt.Fam.")){
+            return uuidAlternativeFamily;
+        }else if (key.equalsIgnoreCase("Alt.Fam.2")){
+            return uuidAlternativeFamily2;
+        }else{
+            throw new RuntimeException("feature not defined: " + key);
+        }
+    }
+
+
 
 }
