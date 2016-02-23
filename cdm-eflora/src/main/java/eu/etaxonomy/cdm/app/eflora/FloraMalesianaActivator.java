@@ -56,120 +56,115 @@ public class FloraMalesianaActivator extends EfloraActivatorBase {
 
 	private final boolean includeBase = false;
 
-	//5620 / 121674
-	//2 footnote issues, 2 uuids, 1 hybrid
+	//5618 / 121674
+	//2 footnote issues
 	//habitat: 6 syso, + ???
 	private final boolean includeVol04 = includeBase;
-    private final boolean includeVol05 = includeBase;
+	//6258  / 110625
+	//11 sysos, + ??
+	private final boolean includeVol05 = includeBase;
     private final boolean includeVol06 = includeBase;
 
-	//2441 /49700
+	//2283 /49700
 	//no syso, 120 lifecycle, few of them references! and figureRef?
 	private final boolean includeVol07_1 = includeBase;
-	//1696
-	//keys: 1 hybrid, 2 manual
+	//1640
+	//keys: 1 nothofagus; 4 quercus
 //12 syso, no uncovered, >>100 lifecycle, >10 references, figureRefs?
     private final boolean includeVol07_2 = includeBase;
-    //4433
+    //4225
  //430 syso (10 subheadings),no uncovered, 43 figureRef, references and lifecycle
     private final boolean includeVol07_3_09_1 = includeBase;
-    //625   /   12440
+    //561   /   12440
     //no syso, 14 lifecycle, 1 reference
     private final boolean includeVol07_4 = includeBase;
 
-    //244   /   5986
+    //223   /   5986
     //no syso, 5 lifecycle
     private final boolean includeVol08_1 = includeBase;
     //2830   /   53189
-    //keys: 1 uuid, 23 S. Moore -> Symplocos Moore (handle manually before import)
+    //keys: 23 S. Moore -> Symplocos Moore (handle manually before import)
  //4syso, <= uncovered, <150 lifecycle, figureRef and references
     private final boolean includeVol08_2 = includeBase;
-    //3017    /   54235
-    //keys: 1 uuid, 2 hybrids
+    //2912    /   54235
     //no syso
 	private final boolean includeVol08_3 = includeBase;
-	//4886    /   94566
-	//2 uuid
-//184 syso!! (30 subheadings), <=3 uncovered, <50 lifecycle and figureRef
+	//4641    /   94566
+ //184 syso!! (30 subheadings), <=3 uncovered, <50 lifecycle and figureRef
 	private final boolean includeVol09 = includeBase;
-	//906   / 19098
-	//keys: 1 uuid
+	//845   / 19098
 	//no syso, <= 5 uncovered, <=50 lifecycle
 	private final boolean includeVol10_1 = includeBase;
-	//1283  / 32334
+	//1211  / 32334
 //6 syso, <=3 uncovered, <50 lifecycle
     private final boolean includeVol10_2 = includeBase;
-    //1997   /  49034
-    //keys: 1 hybrid, 2 tribes
+    //1993   /  49034
 //2 syso habitats, 2 fast, many lifcycle
 	private final boolean includeVol10_3 = includeBase;
 	//533    /   13553
-	//keys: 1 non-standard (!!)
 	//no syso, 1 uncovered, 1 figureRef, 10 lifecycle
 	private final boolean includeVol10_4 = includeBase;
 	//1529     /  36379
-	//keys: 1 manually
+	//keys: 1 manually (a sect. botrycephalae)
 	//no syso, <= 10 uncovered, < 100 lifecycle
 	private final boolean includeVol11_1 = includeBase;
-	//1317   /  24775
-	//keys: 3 uuid, 2 cultivar groups, 1 hybrid, 1 non-standard hybrid
+	//1271   /  24775
+	//keys: 1 uuid, 2 cultivar groups (a cultivar group aggregatum; 4:b989752b-2802-48f0-ac59-658e03fd3da6; b cultivar group common onion)
 	//no syso, 1 uncovered, 1 lifecycle, 2 references
 	private final boolean includeVol11_2 = includeBase;
-	//4585    /  52747
-	//7 uuids
+	//4582    /  52747
+	//1 empty "[]"
 	//no syso habitat, <10 uncovered, > 100 lifecycles
 	private final boolean includeVol11_3 = includeBase;
-	//6558   /   116737
-	//keys: 10 uuids, 10 apostrophs
+	//6135   /   116737
+	//keys: 10 apostrophs
 	//habitat: no syso, 200 - 400 uncovered, different types
 	private final boolean includeVol12 = includeBase;
-	//2976    /   43764
-	//keys: 4xuuid, 1 manual (Loranthaceae)
+	//2865    /   43764
+	//keys: 1 uuid, 1 manual (Loranthaceae)
 	//no syso, 1 uncovered habitat
 	private final boolean includeVol13 = includeBase;
-	//5389   /   55501
-	//keys: 2 uuids
+	//4843   /   55501
 	//no syso habitat, 100-150 uncovered, most of them flowering and fruiting lifecycle
 	private final boolean includeVol14 = includeBase;
-	//1898   /   16415
-	//3 hybrids
+	//1775   /   16415
 	//no syso, 5 uncovered, 2 of them epiphytic
 	private final boolean includeVol15 = includeBase;
-	//1632   /   22049
+	//1471   /   22049
 	//no syso, <= 60 uncovered, very different types
 	private final boolean includeVol16 = includeBase;
 
-	//4507    /   116956
+	//4113    /   116956
 	//no syso, medium # uncovered habitat (some or)
 	private final boolean includeVol17 = includeBase;
-	//6687    /   71151
+	//6422    /   71151
 	//no syso habitat, <20 uncovered
 	private final boolean includeVol18 = includeBase;
-	//2745    /   27663
+	//2612    /   27663
     //no syso habitat, <= 50 uncovered, mostly untagged lifecycle, some errors
     private final boolean includeVol19 = includeBase;
-    //604     /    5866
+    //563    /    5866
     //no syso, < 20 uncovered, mostly untagged lifecycle
 	private final boolean includeVol20 = includeBase;
-	//1786     /   19469
+	//1735     /   19469
 	//2 subfamilies
 	//no syso, no covered, medium # lifecycle and very few references
 	private final boolean includeVol21 = includeBase;
 
 //Ser II
-	//5938  / 123.600
-	//2 manually,  1 uuid, 13 non standard, 4 hybrids
+	//5798  / 123.627
+	//2 manually, 9 non standard(?), 2 hybrids(?)
 	//no syso habitat, only figureRef and references as habitat issues
-    private final boolean includeVol2_1 = ! includeBase;
-    //1160   / 25100
-    //3 hybrids
+    private final boolean includeVol2_1 = includeBase;
+    //1054   / 25100
+    //2 hybrid formulas
     //no syso, no habitat issue
     private final boolean includeVol2_2 = includeBase;
-    //2574  / 52100
-    //1 non standard (!), 1 uuid, 1 hybrid
+    //2382  / 52100
+    //1 non standard (platycerium bifurcatum subsp. bifurcatum var. hillii)
     //no syso, 10-15 uncovered, 2 unexpected attributes: extra
 	private final boolean includeVol2_3 = includeBase;
-	//1120  / 12240
+	//1045  / 12240
 	//no syso, 1 <br>
 	private final boolean includeVol2_4 = includeBase;
 
