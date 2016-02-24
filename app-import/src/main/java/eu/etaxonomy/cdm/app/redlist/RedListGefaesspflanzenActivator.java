@@ -1,0 +1,75 @@
+package eu.etaxonomy.cdm.app.redlist;
+
+import java.util.UUID;
+
+import org.apache.log4j.Logger;
+
+import eu.etaxonomy.cdm.app.common.CdmDestinations;
+import eu.etaxonomy.cdm.app.common.CdmImportSources;
+import eu.etaxonomy.cdm.database.DbSchemaValidation;
+import eu.etaxonomy.cdm.database.ICdmDataSource;
+import eu.etaxonomy.cdm.io.common.CdmDefaultImport;
+import eu.etaxonomy.cdm.io.common.IImportConfigurator.CHECK;
+import eu.etaxonomy.cdm.io.common.Source;
+import eu.etaxonomy.cdm.io.redlist.gefaesspflanzen.RedListGefaesspflanzenImportConfigurator;
+import eu.etaxonomy.cdm.model.reference.Reference;
+import eu.etaxonomy.cdm.model.reference.ReferenceFactory;
+
+public class RedListGefaesspflanzenActivator {
+	@SuppressWarnings("unused")
+	private static final Logger logger = Logger.getLogger(RedListGefaesspflanzenActivator.class);
+
+	//database validation status (create, update, validate ...)
+	static DbSchemaValidation hbm2dll = DbSchemaValidation.CREATE;
+	static final Source mySource = CdmImportSources.ROTE_LISTE_GEFAESSPFLANZEN_DB();
+
+//	static final ICdmDataSource cdmDestination = CdmDestinations.localH2();
+//	static final ICdmDataSource cdmDestination = CdmDestinations.cdm_production_redlist_gefaesspflanzen();
+  static final ICdmDataSource cdmDestination = CdmDestinations.cdm_test_local_mysql();
+
+	//feature tree uuid
+	public static final UUID featureTreeUuid = UUID.fromString("75a0e0fc-838a-4c12-8fbb-90d42ba98a34");
+
+	public static final String sourceReference = "Rote Listen - Gefäßpflanzen";
+
+
+	//classification
+	public static final UUID classificationUuid = UUID.fromString("c4053649-1994-4b79-b409-f3986227a4af");
+
+	//check - import
+	static final CHECK check = CHECK.IMPORT_WITHOUT_CHECK;
+
+	//taxa
+	static final boolean doTaxa = true;
+
+	private void doImport(ICdmDataSource cdmDestination){
+
+		//make Source
+		Source source = mySource;
+
+		RedListGefaesspflanzenImportConfigurator config= RedListGefaesspflanzenImportConfigurator.NewInstance(source, cdmDestination);
+		config.setClassificationUuid(classificationUuid);
+//		config.setDoTaxa(doTaxa);
+		config.setCheck(check);
+		config.setDbSchemaValidation(hbm2dll);
+
+		CdmDefaultImport<RedListGefaesspflanzenImportConfigurator> myImport = new CdmDefaultImport<RedListGefaesspflanzenImportConfigurator>();
+
+		System.out.println("Start import from ("+ source.toString() + ") ...");
+		config.setSourceReference(getSourceReference(sourceReference));
+		myImport.invoke(config);
+		System.out.println("End import from ("+ source.toString() + ")...");
+	}
+
+	private Reference<?> getSourceReference(String string) {
+		Reference<?> result = ReferenceFactory.newGeneric();
+		result.setTitleCache(string, true);
+		return result;
+	}
+
+
+	public static void main(String[] args) {
+		RedListGefaesspflanzenActivator me = new RedListGefaesspflanzenActivator();
+		me.doImport(cdmDestination);
+	}
+}
