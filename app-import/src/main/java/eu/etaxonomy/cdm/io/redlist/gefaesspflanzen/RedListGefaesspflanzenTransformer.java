@@ -17,8 +17,10 @@ import eu.etaxonomy.cdm.io.common.mapping.UndefinedTransformerMethodException;
 import eu.etaxonomy.cdm.model.name.Rank;
 
 /**
- * @author a.mueller
- * @created 01.03.2010
+ *
+ * @author pplitzner
+ * @date Mar 1, 2016
+ *
  */
 @SuppressWarnings("serial")
 public final class RedListGefaesspflanzenTransformer extends InputTransformerBase {
@@ -31,6 +33,8 @@ public final class RedListGefaesspflanzenTransformer extends InputTransformerBas
         if (key == null){return null;}
         if (key.equals("GAT")){return Rank.GENUS();}
         else if (key.equals("SPE")){return Rank.SPECIES();}
+        else if (key.equals("VAR")){return Rank.VARIETY();}
+        else if (key.equals("SSP")){return Rank.SUBSPECIES();}
         return null;
     }
 

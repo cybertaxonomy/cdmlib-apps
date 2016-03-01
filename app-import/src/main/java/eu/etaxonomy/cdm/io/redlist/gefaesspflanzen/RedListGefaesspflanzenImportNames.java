@@ -30,8 +30,10 @@ import eu.etaxonomy.cdm.model.name.Rank;
 import eu.etaxonomy.cdm.model.name.TaxonNameBase;
 
 /**
- * @author a.mueller
- * @created 05.01.2016
+ *
+ * @author pplitzner
+ * @date Mar 1, 2016
+ *
  */
 
 @Component
@@ -102,6 +104,7 @@ public class RedListGefaesspflanzenImportNames extends DbImportBase<RedListGefae
 
         BotanicalName name = BotanicalName.NewInstance(makeRank(state, rangString));
 
+
         //id
         ImportHelper.setOriginalSource(name, state.getTransactionalSourceReference(), id, TAXON_NAMESPACE);
     }
@@ -112,6 +115,9 @@ public class RedListGefaesspflanzenImportNames extends DbImportBase<RedListGefae
             rank = state.getTransformer().getRankByKey(rankStr);
         } catch (UndefinedTransformerMethodException e) {
             e.printStackTrace();
+        }
+        if(rank==null){
+            logger.error(rankStr+" could not be associated to a known rank.");
         }
         return rank;
     }

@@ -32,8 +32,10 @@ import eu.etaxonomy.cdm.model.taxon.TaxonBase;
 import eu.etaxonomy.cdm.strategy.parser.NonViralNameParserImpl;
 
 /**
- * @author a.mueller
- * @created 05.01.2016
+ *
+ * @author pplitzner
+ * @date Mar 1, 2016
+ *
  */
 
 @Component
