@@ -123,13 +123,13 @@ public class RedListGefaesspflanzenImportTaxa extends DbImportBase<RedListGefaes
             RedListGefaesspflanzenImportState state) {
         Map<Object, Map<String, ? extends CdmBase>> result = new HashMap<>();
 //        Map<String, TeamOrPersonBase<?>> authorMap = new HashMap<>();
-//        Set<String> authorSet = new HashSet<>();
+//        Set<String> authorKombSet = new HashSet<>();
 //        Set<String> referenceIdSet = new HashSet<String>();
 //
 //        try {
 //            while (rs.next()){
 //                String authorStr = rs.getString("tax_author_name");
-//                authorSet.add(authorStr);
+//                authorKombSet.add(authorStr);
 //                handleForeignKey(rs, referenceIdSet, "tax_document");
 //            }
 //        } catch (SQLException e) {
@@ -138,7 +138,7 @@ public class RedListGefaesspflanzenImportTaxa extends DbImportBase<RedListGefaes
 //
 //        //Authors
 //        Set<UUID> uuidSet = new HashSet<>();
-//        for (String authorStr : authorSet){
+//        for (String authorStr : authorKombSet){
 //            UUID uuid = state.getAuthorUuid(authorStr);
 //            uuidSet.add(uuid);
 //        }
@@ -148,7 +148,7 @@ public class RedListGefaesspflanzenImportTaxa extends DbImportBase<RedListGefaes
 //            authorUuidMap.put(author.getUuid(), author);
 //        }
 //
-//        for (String authorStr : authorSet){
+//        for (String authorStr : authorKombSet){
 //            UUID uuid = state.getAuthorUuid(authorStr);
 //            TeamOrPersonBase<?> author = authorUuidMap.get(uuid);
 //            authorMap.put(authorStr, author);
