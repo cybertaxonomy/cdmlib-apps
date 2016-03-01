@@ -53,9 +53,9 @@ public class RedListGefaesspflanzenImportTaxa extends DbImportBase<RedListGefaes
 
     @Override
     protected String getIdQuery(RedListGefaesspflanzenImportState state) {
-        return "SELECT NAMNR FROM V_TAXATLAS_D20_EXPORT t "
-//                + " ORDER BY NAMNR"
-                ;
+        return "SELECT NAMNR "
+                + "FROM V_TAXATLAS_D20_EXPORT t "
+                + " ORDER BY NAMNR";
     }
 
     @Override
@@ -79,7 +79,7 @@ public class RedListGefaesspflanzenImportTaxa extends DbImportBase<RedListGefaes
         Set<TaxonBase> taxaToSave = new HashSet<>();
         try {
             while (rs.next()){
-                taxaToSave = makeSingleTaxon(state, rs);
+                makeSingleTaxon(state, rs, taxaToSave);
 
             }
         } catch (SQLException e) {
@@ -90,9 +90,8 @@ public class RedListGefaesspflanzenImportTaxa extends DbImportBase<RedListGefaes
         return true;
     }
 
-    private Set<TaxonBase> makeSingleTaxon(RedListGefaesspflanzenImportState state, ResultSet rs)
+    private void makeSingleTaxon(RedListGefaesspflanzenImportState state, ResultSet rs, Set<TaxonBase> taxaToSave)
             throws SQLException {
-        Set<TaxonBase> taxaToSave = new HashSet<>();
         long id = rs.getLong("NAMNR");
         String taxonNameString = rs.getString("TAXNAME");
 
@@ -105,8 +104,6 @@ public class RedListGefaesspflanzenImportTaxa extends DbImportBase<RedListGefaes
         //id
         ImportHelper.setOriginalSource(taxon, state.getTransactionalSourceReference(), id, TAXON_NAMESPACE);
         ImportHelper.setOriginalSource(name, state.getTransactionalSourceReference(), id, TAXON_NAMESPACE);
-
-        return taxaToSave;
     }
 
     private Rank makeRank(RedListGefaesspflanzenImportState state, String rankStr) {
