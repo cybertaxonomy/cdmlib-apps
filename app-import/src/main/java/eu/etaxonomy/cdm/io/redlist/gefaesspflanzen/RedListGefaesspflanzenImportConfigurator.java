@@ -30,7 +30,8 @@ public class RedListGefaesspflanzenImportConfigurator extends
     @Override
     protected void makeIoClassList() {
         ioClassList = new Class[]{
-                RedListGefaesspflanzenImportTaxa.class,
+                RedListGefaesspflanzenImportAuthor.class,
+//                RedListGefaesspflanzenImportTaxa.class,
         };
     }
 }
