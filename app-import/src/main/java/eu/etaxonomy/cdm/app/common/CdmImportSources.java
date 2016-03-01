@@ -26,16 +26,16 @@ import eu.etaxonomy.cdm.io.common.Source;
 public class CdmImportSources extends SourceBase{
 	@SuppressWarnings("unused")
 	private static final Logger logger = Logger.getLogger(CdmImportSources.class);
-	
+
 	public static Source ROTE_LISTE_GEFAESSPFLANZEN_DB(){
-		String dbms = Source.ACCESS;
-		String strServer = null;
-		String strDB = "/home/pplitzner/Rote Listen 2020/Gefaesspflanzen/tax_atlas_d20_export.accdb";
-		int port = -1;
-		String userName = "";
+		String dbms = Source.MYSQL;
+		String strServer = "localhost";
+		String strDB = "RL_Gefaesspflanzen_source";
+		int port = 3306;
+		String userName = "root";
 		return  makeSource(dbms, strServer, strDB, port, userName, null);
 	}
-	
+
 	public static Source ROTE_LISTE_DB(){
 		String dbms = Source.ORACLE;
 		String strServer = "xxx";
