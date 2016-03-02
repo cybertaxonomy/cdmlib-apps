@@ -13,20 +13,19 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Map.Entry;
 import java.util.UUID;
 
 import org.apache.log4j.Logger;
 import org.springframework.stereotype.Component;
 
 import eu.etaxonomy.cdm.common.CdmUtils;
+import eu.etaxonomy.cdm.hibernate.HibernateProxyHelper;
 import eu.etaxonomy.cdm.io.common.DbImportBase;
 import eu.etaxonomy.cdm.io.common.IPartitionedIO;
-import eu.etaxonomy.cdm.io.common.ImportHelper;
 import eu.etaxonomy.cdm.io.common.ResultSetPartitioner;
-import eu.etaxonomy.cdm.model.agent.AgentBase;
 import eu.etaxonomy.cdm.model.agent.Person;
 import eu.etaxonomy.cdm.model.agent.Team;
+import eu.etaxonomy.cdm.model.agent.TeamOrPersonBase;
 import eu.etaxonomy.cdm.model.common.CdmBase;
 
 /**
@@ -42,9 +41,6 @@ public class RedListGefaesspflanzenImportAuthor extends DbImportBase<RedListGefa
     private static final String tableName = "Rote Liste Gefäßpflanzen";
 
     private static final String pluralString = "authors";
-
-    private static final String AUTHOR_KOMB_NAMESPACE = "author_komb";
-    private static final String AUTHOR_BASI_NAMESPACE = "author_basi";
 
     public RedListGefaesspflanzenImportAuthor() {
         super(tableName, pluralString);
@@ -75,7 +71,7 @@ public class RedListGefaesspflanzenImportAuthor extends DbImportBase<RedListGefa
     @Override
     public boolean doPartition(ResultSetPartitioner partitioner, RedListGefaesspflanzenImportState state) {
         ResultSet rs = partitioner.getResultSet();
-        Map<String, AgentBase> teamsOrPersonToSave = new HashMap<String, AgentBase>();
+        Map<String, TeamOrPersonBase> teamsOrPersonToSave = new HashMap<String, TeamOrPersonBase>();
         try {
             while (rs.next()){
                 makeSingleAuthor(state, rs, teamsOrPersonToSave);
@@ -85,15 +81,11 @@ public class RedListGefaesspflanzenImportAuthor extends DbImportBase<RedListGefa
             e.printStackTrace();
         }
 
-        getAgentService().saveOrUpdate(teamsOrPersonToSave.values());
-        //add partition to state map
-        for (Entry<String, AgentBase> entry: teamsOrPersonToSave.entrySet()) {
-            state.getAgentMap().put(entry.getKey(), entry.getValue().getUuid());
-        }
+//        getAgentService().saveOrUpdate(teamsOrPersonToSave.values());
         return true;
     }
 
-    private void makeSingleAuthor(RedListGefaesspflanzenImportState state, ResultSet rs, Map<String, AgentBase> teamsOrPersonToSave)
+    private void makeSingleAuthor(RedListGefaesspflanzenImportState state, ResultSet rs, Map<String, TeamOrPersonBase> teamsOrPersonToSave)
             throws SQLException {
         long id = rs.getLong("NAMNR");
         String authorName = rs.getString("AUTOR");
@@ -102,15 +94,20 @@ public class RedListGefaesspflanzenImportAuthor extends DbImportBase<RedListGefa
 
         //check null values
         if(CdmUtils.isBlank(authorName) && CdmUtils.isBlank(authorBasiName) && CdmUtils.isBlank(authorKombName)){
-            logger.info("NAMNR "+id+": No author found for NAMNR "+id);
+            logger.info("NAMNR "+id+": No author found!");
             return;
         }
-        AgentBase authorKomb = null;
-        AgentBase authorBasi = null;
-        AgentBase author = null;
+        TeamOrPersonBase authorKomb = null;
+        TeamOrPersonBase authorBasi = null;
 
-        authorKomb = importPerson(state, teamsOrPersonToSave, id, authorKombName, AUTHOR_KOMB_NAMESPACE);
-        authorBasi = importPerson(state, teamsOrPersonToSave, id, authorBasiName, AUTHOR_BASI_NAMESPACE);
+        authorKomb = importPerson(state, teamsOrPersonToSave, id, authorKombName);
+        if(authorKomb!=null){
+            state.getAuthorKombMap().put(id, authorKomb.getUuid());
+        }
+        authorBasi = importPerson(state, teamsOrPersonToSave, id, authorBasiName);
+        if(authorKomb!=null){
+            state.getAuthorBasiMap().put(id, authorBasi.getUuid());
+        }
 
         //check if missapplied name
         if(authorName.equals("auct.")){
@@ -122,7 +119,8 @@ public class RedListGefaesspflanzenImportAuthor extends DbImportBase<RedListGefa
         }
         else if(authorBasi==null && authorKomb==null){
             logger.warn("NAMNR "+id+": Author not atomised in authorKomb and authorBasi. Author: "+authorName);
-            importPerson(state, teamsOrPersonToSave, id, authorName, AUTHOR_KOMB_NAMESPACE);
+            TeamOrPersonBase team = importPerson(state, teamsOrPersonToSave, id, authorName);
+            state.getAuthorKombMap().put(id, team.getUuid());
         }
 //        //check author column consistency
 //        String authorCheckString = "";
@@ -143,17 +141,17 @@ public class RedListGefaesspflanzenImportAuthor extends DbImportBase<RedListGefa
 
     }
 
-    private AgentBase importPerson(RedListGefaesspflanzenImportState state, Map<String, AgentBase> teamsOrPersonToSave,
-            long id, String agentName, String namespace) {
-        AgentBase agent = null;
+    private TeamOrPersonBase importPerson(RedListGefaesspflanzenImportState state, Map<String, TeamOrPersonBase> teamsOrPersonToSave,
+            long id, String agentName) {
+        TeamOrPersonBase agent = null;
         //check if agent already exists
-        AgentBase notYetPersistedAgent = teamsOrPersonToSave.get(agentName);
-        UUID existingAgentUuid = state.getAgentMap().get(agentName);
+        TeamOrPersonBase notYetPersistedAgent = teamsOrPersonToSave.get(agentName);
+        UUID existingAgentUuid = state.getAuthorKombMap().get(agentName);
         if(notYetPersistedAgent!=null){
             agent = notYetPersistedAgent;
         }
         else if(existingAgentUuid!=null){
-            agent = getAgentService().load(existingAgentUuid);
+            agent = HibernateProxyHelper.deproxy(getAgentService().load(existingAgentUuid), TeamOrPersonBase.class);
         }
         else if(!CdmUtils.isBlank(agentName)){
             //check if it is a team
@@ -168,8 +166,7 @@ public class RedListGefaesspflanzenImportAuthor extends DbImportBase<RedListGefa
                 agent = Person.NewTitledInstance(agentName);
             }
             teamsOrPersonToSave.put(agentName, agent);
-            state.getAgentMap().put(agentName, agent.getUuid());
-            ImportHelper.setOriginalSource(agent, state.getTransactionalSourceReference(), id, namespace);
+//            ImportHelper.setOriginalSource(agent, state.getTransactionalSourceReference(), id, namespace);
         }
         return agent;
     }

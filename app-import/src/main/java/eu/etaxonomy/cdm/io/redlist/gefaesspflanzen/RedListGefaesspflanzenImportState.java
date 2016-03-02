@@ -28,14 +28,19 @@ public class RedListGefaesspflanzenImportState extends DbImportStateBase<RedList
 	@SuppressWarnings("unused")
 	private static final Logger logger = Logger.getLogger(RedListGefaesspflanzenImportState.class);
 
-	private Map<String, UUID> agentMap = new HashMap<String, UUID>();
+	private Map<Long, UUID> authorKombMap = new HashMap<Long, UUID>();
+	private Map<Long, UUID> authorBasiMap = new HashMap<Long, UUID>();
 
     protected RedListGefaesspflanzenImportState(RedListGefaesspflanzenImportConfigurator config) {
         super(config);
     }
 
-    public Map<String, UUID> getAgentMap() {
-        return agentMap;
+    public Map<Long, UUID> getAuthorKombMap() {
+        return authorKombMap;
+    }
+
+    public Map<Long, UUID> getAuthorBasiMap() {
+        return authorBasiMap;
     }
 
 }

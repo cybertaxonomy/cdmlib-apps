@@ -19,11 +19,13 @@ import java.util.Set;
 import org.apache.log4j.Logger;
 import org.springframework.stereotype.Component;
 
+import eu.etaxonomy.cdm.common.CdmUtils;
 import eu.etaxonomy.cdm.io.common.DbImportBase;
 import eu.etaxonomy.cdm.io.common.IPartitionedIO;
 import eu.etaxonomy.cdm.io.common.ImportHelper;
 import eu.etaxonomy.cdm.io.common.ResultSetPartitioner;
 import eu.etaxonomy.cdm.io.common.mapping.UndefinedTransformerMethodException;
+import eu.etaxonomy.cdm.model.agent.AgentBase;
 import eu.etaxonomy.cdm.model.common.CdmBase;
 import eu.etaxonomy.cdm.model.name.BotanicalName;
 import eu.etaxonomy.cdm.model.name.Rank;
@@ -46,6 +48,8 @@ public class RedListGefaesspflanzenImportNames extends DbImportBase<RedListGefae
     private static final String pluralString = "names";
 
     private static final String TAXON_NAMESPACE = "name";
+    private static final String AUTHOR_KOMB_NAMESPACE = "author_komb";
+    private static final String AUTHOR_BASI_NAMESPACE = "author_basi";
 
     public RedListGefaesspflanzenImportNames() {
         super(tableName, pluralString);
@@ -101,9 +105,23 @@ public class RedListGefaesspflanzenImportNames extends DbImportBase<RedListGefae
         String nomZusatzString = rs.getString("NOM_ZUSATZ");
         String zusatzString = rs.getString("ZUSATZ");
 
+        if(CdmUtils.isBlank(taxNameString) && CdmUtils.isBlank(ep1String)){
+            logger.error("NAMNR: "+id+" No name found!");
+        }
 
-        BotanicalName name = BotanicalName.NewInstance(makeRank(state, rangString));
 
+        Rank rank = makeRank(state, rangString);
+        BotanicalName name = BotanicalName.NewInstance(rank);
+
+        //ep1 should always be present
+        name.setGenusOrUninomial(ep1String);
+        if(rank==Rank.SPECIES()){
+            name.setGenusOrUninomial(ep1String);
+        }
+
+        //add author
+        AgentBase authorKomb = getAgentService().load(state.getAuthorKombMap().get(id));
+//        name.setCombinationAuthorship(authorKomb);
 
         //id
         ImportHelper.setOriginalSource(name, state.getTransactionalSourceReference(), id, TAXON_NAMESPACE);
@@ -128,15 +146,19 @@ public class RedListGefaesspflanzenImportNames extends DbImportBase<RedListGefae
     public Map<Object, Map<String, ? extends CdmBase>> getRelatedObjectsForPartition(ResultSet rs,
             RedListGefaesspflanzenImportState state) {
         Map<Object, Map<String, ? extends CdmBase>> result = new HashMap<>();
-//        Map<String, TeamOrPersonBase<?>> authorMap = new HashMap<>();
-//        Set<String> authorKombSet = new HashSet<>();
-//        Set<String> referenceIdSet = new HashSet<String>();
+//        Map<Long, AgentBase<?>> authorKombMap = new HashMap<>();
+//        Map<Long, AgentBase<?>> authorBasiMap = new HashMap<>();
 //
+//        //load authors
+//        for(Entry<Long, UUID> entry:state.getAuthorKombMap().entrySet()){
+//            authorKombMap.put(entry.getKey(), getAgentService().load(entry.getValue()));
+//        }
+//        for(Entry<Long, UUID> entry:state.getAuthorBasiMap().entrySet()){
+//            authorBasiMap.put(entry.getKey(), getAgentService().load(entry.getValue()));
+//        }
 //        try {
 //            while (rs.next()){
-//                String authorStr = rs.getString("tax_author_name");
-//                authorKombSet.add(authorStr);
-//                handleForeignKey(rs, referenceIdSet, "tax_document");
+//                long id = rs.getLong("NAMNR");
 //            }
 //        } catch (SQLException e) {
 //            e.printStackTrace();
