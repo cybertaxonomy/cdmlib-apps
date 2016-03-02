@@ -40,12 +40,15 @@ public final class RedListGefaesspflanzenTransformer extends InputTransformerBas
         else if (key.equals("SEC")){return Rank.SECTION_BOTANY();}
         else if (key.equals("SSE")){return Rank.SUBSECTION_BOTANY();}
         else if (key.equals("SGE")){return Rank.SUBGENUS();}
-        else if (key.equals("ORA")){return Rank.UNKNOWN_RANK();}
         else if (key.equals("SVA")){return Rank.SUBVARIETY();}
         else if (key.equals("CV")){return Rank.CULTIVAR();}
         else if (key.equals("PRO")){return Rank.PROLES();}
         else if (key.equals("SER")){return Rank.SERIES();}
         else if (key.equals("GRE")){return Rank.GREX();}
+        else if (key.equals("AGG")){return Rank.SPECIESAGGREGATE();}
+        else if (key.equals("GRO")){return Rank.SPECIESGROUP();}
+        else if (key.equals("ORA")){return null;}
+        else if (key.equals("?")){return Rank.UNKNOWN_RANK();}
         return null;
     }
 
