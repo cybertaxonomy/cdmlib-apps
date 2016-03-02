@@ -123,6 +123,14 @@ public class RedListGefaesspflanzenImportNames extends DbImportBase<RedListGefae
         //add author
         TeamOrPersonBase authorKomb = HibernateProxyHelper.deproxy(getAgentService().load(state.getAuthorMap().get(authorKombString)), TeamOrPersonBase.class);
         name.setCombinationAuthorship(authorKomb);
+        TeamOrPersonBase authorBasi = HibernateProxyHelper.deproxy(getAgentService().load(state.getAuthorMap().get(authorBasiString)), TeamOrPersonBase.class);
+        name.setBasionymAuthorship(authorBasi);
+
+        //check authorship consistency
+        String authorString = rs.getString("AUTOR");
+        if(!authorString.equals(name.getAuthorshipCache())){
+            logger.warn("Authorship inconsisten! Name-AuthorhshipCache: +"+name.getAuthorshipCache()+" Column AUTOR: "+authorString);
+        }
 
         //id
         ImportHelper.setOriginalSource(name, state.getTransactionalSourceReference(), id, NAME_NAMESPACE);
