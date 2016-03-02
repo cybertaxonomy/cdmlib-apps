@@ -13,13 +13,11 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.UUID;
 
 import org.apache.log4j.Logger;
 import org.springframework.stereotype.Component;
 
 import eu.etaxonomy.cdm.common.CdmUtils;
-import eu.etaxonomy.cdm.hibernate.HibernateProxyHelper;
 import eu.etaxonomy.cdm.io.common.DbImportBase;
 import eu.etaxonomy.cdm.io.common.IPartitionedIO;
 import eu.etaxonomy.cdm.io.common.ResultSetPartitioner;
@@ -64,111 +62,47 @@ public class RedListGefaesspflanzenImportAuthor extends DbImportBase<RedListGefa
 
     @Override
     protected void doInvoke(RedListGefaesspflanzenImportState state) {
-        super.doInvoke(state);
+        makeAuthors(state, "AUTOR_KOMB");
+        makeAuthors(state, "AUTOR_BASI");
     }
 
 
     @Override
     public boolean doPartition(ResultSetPartitioner partitioner, RedListGefaesspflanzenImportState state) {
-        ResultSet rs = partitioner.getResultSet();
-        Map<String, TeamOrPersonBase> teamsOrPersonToSave = new HashMap<String, TeamOrPersonBase>();
-        try {
-            while (rs.next()){
-                makeSingleAuthor(state, rs, teamsOrPersonToSave);
+        return true;
+    }
 
+    private void makeAuthors(RedListGefaesspflanzenImportState state, String columnName) {
+
+        //--- combination authors ---
+        String query = "select distinct "+columnName+" from V_TAXATLAS_D20_EXPORT t"
+                + " WHERE TRIM(t."+columnName+") <>''";
+
+        ResultSet rs = state.getConfig().getSource().getResultSet(query);
+
+        try{
+            while(rs.next()){
+                String authorName = rs.getString(columnName);
+                TeamOrPersonBase teamOrPerson = null;
+                if(!CdmUtils.isBlank(authorName)){
+                    //check if it is a team
+                    if(authorName.contains("&")){
+                        teamOrPerson = Team.NewInstance();
+                        String[] split = authorName.split("&");
+                        for (int i = 0; i < split.length; i++) {
+                            ((Team) teamOrPerson).addTeamMember(Person.NewTitledInstance(split[i].trim()));
+                        }
+                    }
+                    else{
+                        teamOrPerson = Person.NewTitledInstance(authorName);
+                    }
+                    getAgentService().saveOrUpdate(teamOrPerson);
+                    state.getAuthorMap().put(authorName, teamOrPerson.getUuid());
+                }
             }
         } catch (SQLException e) {
             e.printStackTrace();
         }
-
-//        getAgentService().saveOrUpdate(teamsOrPersonToSave.values());
-        return true;
-    }
-
-    private void makeSingleAuthor(RedListGefaesspflanzenImportState state, ResultSet rs, Map<String, TeamOrPersonBase> teamsOrPersonToSave)
-            throws SQLException {
-        long id = rs.getLong("NAMNR");
-        String authorName = rs.getString("AUTOR");
-        String authorBasiName = rs.getString("AUTOR_BASI");
-        String authorKombName = rs.getString("AUTOR_KOMB");
-
-        //check null values
-        if(CdmUtils.isBlank(authorName) && CdmUtils.isBlank(authorBasiName) && CdmUtils.isBlank(authorKombName)){
-            logger.info("NAMNR "+id+": No author found!");
-            return;
-        }
-        TeamOrPersonBase authorKomb = null;
-        TeamOrPersonBase authorBasi = null;
-
-        authorKomb = importPerson(state, teamsOrPersonToSave, id, authorKombName);
-        if(authorKomb!=null){
-            state.getAuthorKombMap().put(id, authorKomb.getUuid());
-        }
-        authorBasi = importPerson(state, teamsOrPersonToSave, id, authorBasiName);
-        if(authorKomb!=null){
-            state.getAuthorBasiMap().put(id, authorBasi.getUuid());
-        }
-
-        //check if missapplied name
-        if(authorName.equals("auct.")){
-
-        }
-        //check if pro parte synonym
-        else if(authorName.equals("p .p.")){
-
-        }
-        else if(authorBasi==null && authorKomb==null){
-            logger.warn("NAMNR "+id+": Author not atomised in authorKomb and authorBasi. Author: "+authorName);
-            TeamOrPersonBase team = importPerson(state, teamsOrPersonToSave, id, authorName);
-            state.getAuthorKombMap().put(id, team.getUuid());
-        }
-//        //check author column consistency
-//        String authorCheckString = "";
-//        if(!CdmUtils.isBlank(authorKombName)){
-//            authorCheckString = "("+authorBasiName+")"+" "+authorKombName;
-//        }
-//        else{
-//            authorCheckString = authorBasiName;
-//        }
-//        boolean isAuthorStringCorrect = false;
-//        if(authorName.startsWith(authorCheckString)){
-//            isAuthorStringCorrect = true;
-//        }
-//        if(!isAuthorStringCorrect){
-//            String errorString = "NAMNR "+id+": Author string not consistent! Is \""+authorName+"\" Should start with \""+authorCheckString+"\"";
-//            logger.error(errorString);
-//        }
-
-    }
-
-    private TeamOrPersonBase importPerson(RedListGefaesspflanzenImportState state, Map<String, TeamOrPersonBase> teamsOrPersonToSave,
-            long id, String agentName) {
-        TeamOrPersonBase agent = null;
-        //check if agent already exists
-        TeamOrPersonBase notYetPersistedAgent = teamsOrPersonToSave.get(agentName);
-        UUID existingAgentUuid = state.getAuthorKombMap().get(agentName);
-        if(notYetPersistedAgent!=null){
-            agent = notYetPersistedAgent;
-        }
-        else if(existingAgentUuid!=null){
-            agent = HibernateProxyHelper.deproxy(getAgentService().load(existingAgentUuid), TeamOrPersonBase.class);
-        }
-        else if(!CdmUtils.isBlank(agentName)){
-            //check if it is a team
-            if(agentName.contains("&")){
-                agent = Team.NewInstance();
-                String[] split = agentName.split("&");
-                for (int i = 0; i < split.length; i++) {
-                    ((Team) agent).addTeamMember(Person.NewTitledInstance(split[i].trim()));
-                }
-            }
-            else{
-                agent = Person.NewTitledInstance(agentName);
-            }
-            teamsOrPersonToSave.put(agentName, agent);
-//            ImportHelper.setOriginalSource(agent, state.getTransactionalSourceReference(), id, namespace);
-        }
-        return agent;
     }
 
     @Override

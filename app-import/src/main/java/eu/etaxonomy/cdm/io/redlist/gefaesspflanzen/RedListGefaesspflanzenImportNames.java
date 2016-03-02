@@ -20,12 +20,13 @@ import org.apache.log4j.Logger;
 import org.springframework.stereotype.Component;
 
 import eu.etaxonomy.cdm.common.CdmUtils;
+import eu.etaxonomy.cdm.hibernate.HibernateProxyHelper;
 import eu.etaxonomy.cdm.io.common.DbImportBase;
 import eu.etaxonomy.cdm.io.common.IPartitionedIO;
 import eu.etaxonomy.cdm.io.common.ImportHelper;
 import eu.etaxonomy.cdm.io.common.ResultSetPartitioner;
 import eu.etaxonomy.cdm.io.common.mapping.UndefinedTransformerMethodException;
-import eu.etaxonomy.cdm.model.agent.AgentBase;
+import eu.etaxonomy.cdm.model.agent.TeamOrPersonBase;
 import eu.etaxonomy.cdm.model.common.CdmBase;
 import eu.etaxonomy.cdm.model.name.BotanicalName;
 import eu.etaxonomy.cdm.model.name.Rank;
@@ -47,9 +48,7 @@ public class RedListGefaesspflanzenImportNames extends DbImportBase<RedListGefae
 
     private static final String pluralString = "names";
 
-    private static final String TAXON_NAMESPACE = "name";
-    private static final String AUTHOR_KOMB_NAMESPACE = "author_komb";
-    private static final String AUTHOR_BASI_NAMESPACE = "author_basi";
+    private static final String NAME_NAMESPACE = "name";
 
     public RedListGefaesspflanzenImportNames() {
         super(tableName, pluralString);
@@ -80,17 +79,17 @@ public class RedListGefaesspflanzenImportNames extends DbImportBase<RedListGefae
     @Override
     public boolean doPartition(ResultSetPartitioner partitioner, RedListGefaesspflanzenImportState state) {
         ResultSet rs = partitioner.getResultSet();
-        Set<TaxonNameBase> taxaToSave = new HashSet<TaxonNameBase>();
+        Set<TaxonNameBase> namesToSave = new HashSet<TaxonNameBase>();
         try {
             while (rs.next()){
-                makeSingleName(state, rs, taxaToSave);
+                makeSingleName(state, rs, namesToSave);
 
             }
         } catch (SQLException e) {
             e.printStackTrace();
         }
 
-        getNameService().saveOrUpdate(taxaToSave);
+        getNameService().saveOrUpdate(namesToSave);
         return true;
     }
 
@@ -104,6 +103,8 @@ public class RedListGefaesspflanzenImportNames extends DbImportBase<RedListGefae
         String ep3String = rs.getString("EPI3");
         String nomZusatzString = rs.getString("NOM_ZUSATZ");
         String zusatzString = rs.getString("ZUSATZ");
+        String authorKombString = rs.getString("AUTOR_KOMB");
+        String authorBasiString = rs.getString("AUTOR_BASI");
 
         if(CdmUtils.isBlank(taxNameString) && CdmUtils.isBlank(ep1String)){
             logger.error("NAMNR: "+id+" No name found!");
@@ -120,11 +121,13 @@ public class RedListGefaesspflanzenImportNames extends DbImportBase<RedListGefae
         }
 
         //add author
-        AgentBase authorKomb = getAgentService().load(state.getAuthorKombMap().get(id));
-//        name.setCombinationAuthorship(authorKomb);
+        TeamOrPersonBase authorKomb = HibernateProxyHelper.deproxy(getAgentService().load(state.getAuthorMap().get(authorKombString)), TeamOrPersonBase.class);
+        name.setCombinationAuthorship(authorKomb);
 
         //id
-        ImportHelper.setOriginalSource(name, state.getTransactionalSourceReference(), id, TAXON_NAMESPACE);
+        ImportHelper.setOriginalSource(name, state.getTransactionalSourceReference(), id, NAME_NAMESPACE);
+
+        namesToSave.add(name);
     }
 
     private Rank makeRank(RedListGefaesspflanzenImportState state, String rankStr) {
