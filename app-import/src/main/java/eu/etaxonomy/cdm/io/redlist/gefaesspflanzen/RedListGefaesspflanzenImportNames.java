@@ -127,19 +127,13 @@ public class RedListGefaesspflanzenImportNames extends DbImportBase<RedListGefae
             logger.error("NAMNR: "+id+" EPI1 is empty!");
         }
         name.setGenusOrUninomial(ep1String);
-//        if(CdmUtils.isBlank(ep2String)){
-//            name.setSpecificEpithet(ep2String);
-//        }
-//        if(CdmUtils.isBlank(ep3String)){
-//        }
-        if(rank.isSpecies()){
-            if(!CdmUtils.isBlank(ep2String)){
-                name.setSpecificEpithet(ep2String);
-            }
+        if(!CdmUtils.isBlank(ep2String)){
+            name.setSpecificEpithet(ep2String);
         }
-        else if(rank.isLower(Rank.SPECIES())){
-            if(!CdmUtils.isBlank(ep3String)){
-                name.setSpecificEpithet(ep3String);
+        if(!CdmUtils.isBlank(ep3String)){
+            if(rank==Rank.SUBSPECIES() ||
+                    rank==Rank.VARIETY()){
+                name.setInfraSpecificEpithet(ep3String);
             }
         }
 
