@@ -29,6 +29,7 @@ public class RedListGefaesspflanzenImportState extends DbImportStateBase<RedList
 	private static final Logger logger = Logger.getLogger(RedListGefaesspflanzenImportState.class);
 
 	private final Map<String, UUID> authorMap = new HashMap<String, UUID>();
+	private final Map<Long, UUID> nameMap = new HashMap<Long, UUID>();
 
     protected RedListGefaesspflanzenImportState(RedListGefaesspflanzenImportConfigurator config) {
         super(config);
@@ -36,6 +37,10 @@ public class RedListGefaesspflanzenImportState extends DbImportStateBase<RedList
 
     public Map<String, UUID> getAuthorMap() {
         return authorMap;
+    }
+
+    public Map<Long, UUID> getNameMap() {
+        return nameMap;
     }
 
 }

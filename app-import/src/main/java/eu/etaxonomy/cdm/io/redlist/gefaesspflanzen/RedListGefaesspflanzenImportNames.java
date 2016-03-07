@@ -193,6 +193,7 @@ public class RedListGefaesspflanzenImportNames extends DbImportBase<RedListGefae
 
         //id
         ImportHelper.setOriginalSource(name, state.getTransactionalSourceReference(), id, NAME_NAMESPACE);
+        state.getNameMap().put(id, name.getUuid());
 
         namesToSave.add(name);
     }

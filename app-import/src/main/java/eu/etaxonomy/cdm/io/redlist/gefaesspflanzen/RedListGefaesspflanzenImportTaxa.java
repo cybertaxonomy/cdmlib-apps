@@ -92,8 +92,9 @@ public class RedListGefaesspflanzenImportTaxa extends DbImportBase<RedListGefaes
     private void makeSingleTaxon(RedListGefaesspflanzenImportState state, ResultSet rs, Set<TaxonBase> taxaToSave)
             throws SQLException {
         long id = rs.getLong("NAMNR");
+        String gueltString = rs.getString("GUELT");
 
-        BotanicalName name = state.getRelatedObject("name", String.valueOf(id), BotanicalName.class);
+        BotanicalName name = state.getRelatedObject("name",String.valueOf(id), BotanicalName.class);
         TaxonBase taxon = Taxon.NewInstance(name, null);
 
         taxaToSave.add(taxon);
@@ -107,14 +108,10 @@ public class RedListGefaesspflanzenImportTaxa extends DbImportBase<RedListGefaes
             RedListGefaesspflanzenImportState state) {
         Map<Object, Map<String, ? extends CdmBase>> result = new HashMap<>();
         Map<String, BotanicalName> nameMap = new HashMap<String, BotanicalName>();
-
-
         try {
             while (rs.next()){
                 long id = rs.getLong("NAMNR");
-                BotanicalName name = (BotanicalName) getCommonService().getSourcedObjectByIdInSource(BotanicalName.class, String.valueOf(id), "name");
-                nameMap.put(String.valueOf(id), name);
-
+                nameMap.put(String.valueOf(id), (BotanicalName) getNameService().load(state.getNameMap().get(id)));
             }
         } catch (SQLException e) {
             e.printStackTrace();
