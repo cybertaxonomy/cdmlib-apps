@@ -53,8 +53,6 @@ public class RedListGefaesspflanzenImportNames extends DbImportBase<RedListGefae
 
     private static final String pluralString = "names";
 
-    private static final String NAME_NAMESPACE = "name";
-
     public RedListGefaesspflanzenImportNames() {
         super(tableName, pluralString);
     }
@@ -192,7 +190,7 @@ public class RedListGefaesspflanzenImportNames extends DbImportBase<RedListGefae
         }
 
         //id
-        ImportHelper.setOriginalSource(name, state.getTransactionalSourceReference(), id, NAME_NAMESPACE);
+        ImportHelper.setOriginalSource(name, state.getTransactionalSourceReference(), id, Namespace.NAME_NAMESPACE);
         state.getNameMap().put(id, name.getUuid());
 
         namesToSave.add(name);

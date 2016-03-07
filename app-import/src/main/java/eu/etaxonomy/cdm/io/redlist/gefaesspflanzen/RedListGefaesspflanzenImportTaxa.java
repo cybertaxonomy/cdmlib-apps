@@ -38,13 +38,12 @@ import eu.etaxonomy.cdm.model.taxon.TaxonBase;
 @Component
 @SuppressWarnings("serial")
 public class RedListGefaesspflanzenImportTaxa extends DbImportBase<RedListGefaesspflanzenImportState, RedListGefaesspflanzenImportConfigurator> {
+
     private static final Logger logger = Logger.getLogger(RedListGefaesspflanzenImportTaxa.class);
 
     private static final String tableName = "Rote Liste Gefäßpflanzen";
 
     private static final String pluralString = "taxa";
-
-    private static final String TAXON_NAMESPACE = "taxon";
 
     public RedListGefaesspflanzenImportTaxa() {
         super(tableName, pluralString);
@@ -94,13 +93,13 @@ public class RedListGefaesspflanzenImportTaxa extends DbImportBase<RedListGefaes
         long id = rs.getLong("NAMNR");
         String gueltString = rs.getString("GUELT");
 
-        BotanicalName name = state.getRelatedObject("name",String.valueOf(id), BotanicalName.class);
+        BotanicalName name = state.getRelatedObject(Namespace.NAME_NAMESPACE,String.valueOf(id), BotanicalName.class);
         TaxonBase taxon = Taxon.NewInstance(name, null);
 
         taxaToSave.add(taxon);
 
         //id
-        ImportHelper.setOriginalSource(taxon, state.getTransactionalSourceReference(), id, TAXON_NAMESPACE);
+        ImportHelper.setOriginalSource(taxon, state.getTransactionalSourceReference(), id, Namespace.TAXON_NAMESPACE);
     }
 
     @Override
@@ -116,7 +115,7 @@ public class RedListGefaesspflanzenImportTaxa extends DbImportBase<RedListGefaes
         } catch (SQLException e) {
             e.printStackTrace();
         }
-        result.put("name", nameMap);
+        result.put(Namespace.NAME_NAMESPACE, nameMap);
 
         return result;
     }
