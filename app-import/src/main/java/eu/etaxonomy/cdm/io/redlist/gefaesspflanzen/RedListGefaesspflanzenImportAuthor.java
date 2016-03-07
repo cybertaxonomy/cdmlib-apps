@@ -85,25 +85,38 @@ public class RedListGefaesspflanzenImportAuthor extends DbImportBase<RedListGefa
                 String authorName = rs.getString(columnName);
                 TeamOrPersonBase teamOrPerson = null;
                 if(!CdmUtils.isBlank(authorName)){
-                    //check if it is a team
-                    if(authorName.contains("&")){
-                        teamOrPerson = Team.NewInstance();
-                        String[] split = authorName.split("&");
-                        for (int i = 0; i < split.length; i++) {
-                            ((Team) teamOrPerson).addTeamMember(Person.NewTitledInstance(split[i].trim()));
-                        }
-                    }
-                    else{
-                        teamOrPerson = Person.NewTitledInstance(authorName);
-                    }
-                    getAgentService().saveOrUpdate(teamOrPerson);
-                    state.getAuthorMap().put(authorName, teamOrPerson.getUuid());
+                    makePerson(state, authorName);
                 }
             }
         } catch (SQLException e) {
             e.printStackTrace();
         }
     }
+
+    private void makePerson(RedListGefaesspflanzenImportState state, String authorName) {
+        TeamOrPersonBase teamOrPerson;
+        //check if there are ex authors
+        if(authorName.contains(" ex ")){
+            String[] split = authorName.split(" ex ");
+            for (int i = 0; i < split.length; i++) {
+                makePerson(state, split[i].trim());
+            }
+        }
+        //check if it is a team
+        if(authorName.contains("&")){
+            teamOrPerson = Team.NewInstance();
+            String[] split = authorName.split("&");
+            for (int i = 0; i < split.length; i++) {
+                ((Team) teamOrPerson).addTeamMember(Person.NewTitledInstance(split[i].trim()));
+            }
+        }
+        else{
+            teamOrPerson = Person.NewTitledInstance(authorName);
+        }
+        getAgentService().saveOrUpdate(teamOrPerson);
+        state.getAuthorMap().put(authorName, teamOrPerson.getUuid());
+    }
+
 
     @Override
     public Map<Object, Map<String, ? extends CdmBase>> getRelatedObjectsForPartition(ResultSet rs,

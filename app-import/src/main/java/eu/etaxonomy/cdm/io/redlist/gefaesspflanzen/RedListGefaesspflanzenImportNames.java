@@ -42,6 +42,11 @@ import eu.etaxonomy.cdm.model.name.TaxonNameBase;
 @Component
 @SuppressWarnings("serial")
 public class RedListGefaesspflanzenImportNames extends DbImportBase<RedListGefaesspflanzenImportState, RedListGefaesspflanzenImportConfigurator> {
+    /**
+     *
+     */
+    private static final String EX = " ex ";
+
     private static final Logger logger = Logger.getLogger(RedListGefaesspflanzenImportNames.class);
 
     private static final String tableName = "Rote Liste Gefäßpflanzen";
@@ -120,16 +125,58 @@ public class RedListGefaesspflanzenImportNames extends DbImportBase<RedListGefae
             name.setGenusOrUninomial(ep1String);
         }
 
-        //add author
-        TeamOrPersonBase authorKomb = HibernateProxyHelper.deproxy(getAgentService().load(state.getAuthorMap().get(authorKombString)), TeamOrPersonBase.class);
-        name.setCombinationAuthorship(authorKomb);
-        TeamOrPersonBase authorBasi = HibernateProxyHelper.deproxy(getAgentService().load(state.getAuthorMap().get(authorBasiString)), TeamOrPersonBase.class);
-        name.setBasionymAuthorship(authorBasi);
+        //--- AUTHORS ---
+        //combination author
+        if(authorKombString.contains(EX)){
+            //TODO: what happens with multiple ex authors??
+            String[] kombSplit = authorKombString.split(EX);
+            for (int i = 0; i < kombSplit.length; i++) {
+                if(i==0){
+                    //first author is ex author
+                    TeamOrPersonBase authorKomb = HibernateProxyHelper.deproxy(getAgentService().load(state.getAuthorMap().get(kombSplit[i])), TeamOrPersonBase.class);
+                    name.setExCombinationAuthorship(authorKomb);
+                }
+                else{
+                    TeamOrPersonBase authorKomb = HibernateProxyHelper.deproxy(getAgentService().load(state.getAuthorMap().get(kombSplit[i])), TeamOrPersonBase.class);
+                    name.setCombinationAuthorship(authorKomb);
+                }
+            }
+        }
+        else if(!CdmUtils.isBlank(authorKombString)){
+            TeamOrPersonBase authorKomb = HibernateProxyHelper.deproxy(getAgentService().load(state.getAuthorMap().get(authorKombString)), TeamOrPersonBase.class);
+            name.setCombinationAuthorship(authorKomb);
+        }
+        //basionym author
+        if(authorBasiString.contains(EX)){
+            String[] basiSplit = authorBasiString.split(EX);
+            for (int i = 0; i < basiSplit.length; i++) {
+                if(i==0){
+                    TeamOrPersonBase authorBasi = HibernateProxyHelper.deproxy(getAgentService().load(state.getAuthorMap().get(basiSplit[i])), TeamOrPersonBase.class);
+                    name.setExBasionymAuthorship(authorBasi);
+                }
+                else{
+                    TeamOrPersonBase authorBasi = HibernateProxyHelper.deproxy(getAgentService().load(state.getAuthorMap().get(basiSplit[i])), TeamOrPersonBase.class);
+                    name.setBasionymAuthorship(authorBasi);
+                }
+            }
+        }
+        else if(!CdmUtils.isBlank(authorBasiString)){
+            TeamOrPersonBase authorBasi = HibernateProxyHelper.deproxy(getAgentService().load(state.getAuthorMap().get(authorBasiString)), TeamOrPersonBase.class);
+            name.setBasionymAuthorship(authorBasi);
+        }
 
         //check authorship consistency
         String authorString = rs.getString("AUTOR");
-        if(!authorString.equals(name.getAuthorshipCache())){
-            logger.warn("Authorship inconsisten! Name-AuthorhshipCache: +"+name.getAuthorshipCache()+" Column AUTOR: "+authorString);
+        String authorshipCache = name.getAuthorshipCache();
+
+        if(!CdmUtils.isBlank(zusatzString)){
+            authorString = authorString.replace(", "+zusatzString, "");
+        }
+        if(CdmUtils.isBlank(authorKombString) && !CdmUtils.isBlank(authorBasiString)){
+            authorString = "("+authorString+")";
+        }
+        if(!authorString.equals(authorshipCache)){
+            logger.warn("NAMNR: "+id+" Authorship inconsistent! name.authorhshipCache <-> Column AUTOR: "+authorshipCache+" <-> "+authorString);
         }
 
         //id
