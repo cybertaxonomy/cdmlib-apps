@@ -115,14 +115,32 @@ public class RedListGefaesspflanzenImportNames extends DbImportBase<RedListGefae
             logger.error("NAMNR: "+id+" No name found!");
         }
 
-
         Rank rank = makeRank(state, rangString);
+        if(rank==null){
+            logger.error("NAMNR: "+id+" Rank could not be resolved.");
+            return;
+        }
         BotanicalName name = BotanicalName.NewInstance(rank);
 
         //ep1 should always be present
+        if(CdmUtils.isBlank(ep1String)){
+            logger.error("NAMNR: "+id+" EPI1 is empty!");
+        }
         name.setGenusOrUninomial(ep1String);
-        if(rank==Rank.SPECIES()){
-            name.setGenusOrUninomial(ep1String);
+//        if(CdmUtils.isBlank(ep2String)){
+//            name.setSpecificEpithet(ep2String);
+//        }
+//        if(CdmUtils.isBlank(ep3String)){
+//        }
+        if(rank.isSpecies()){
+            if(!CdmUtils.isBlank(ep2String)){
+                name.setSpecificEpithet(ep2String);
+            }
+        }
+        else if(rank.isLower(Rank.SPECIES())){
+            if(!CdmUtils.isBlank(ep3String)){
+                name.setSpecificEpithet(ep3String);
+            }
         }
 
         //--- AUTHORS ---
