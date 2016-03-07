@@ -24,10 +24,9 @@ import eu.etaxonomy.cdm.io.common.IPartitionedIO;
 import eu.etaxonomy.cdm.io.common.ImportHelper;
 import eu.etaxonomy.cdm.io.common.ResultSetPartitioner;
 import eu.etaxonomy.cdm.model.common.CdmBase;
-import eu.etaxonomy.cdm.model.name.NonViralName;
+import eu.etaxonomy.cdm.model.name.BotanicalName;
 import eu.etaxonomy.cdm.model.taxon.Taxon;
 import eu.etaxonomy.cdm.model.taxon.TaxonBase;
-import eu.etaxonomy.cdm.strategy.parser.NonViralNameParserImpl;
 
 /**
  *
@@ -93,67 +92,34 @@ public class RedListGefaesspflanzenImportTaxa extends DbImportBase<RedListGefaes
     private void makeSingleTaxon(RedListGefaesspflanzenImportState state, ResultSet rs, Set<TaxonBase> taxaToSave)
             throws SQLException {
         long id = rs.getLong("NAMNR");
-        String taxonNameString = rs.getString("TAXNAME");
 
-        NonViralNameParserImpl parser = NonViralNameParserImpl.NewInstance();
-        NonViralName<?> name = parser.parseFullName(taxonNameString);
+        BotanicalName name = state.getRelatedObject("name", String.valueOf(id), BotanicalName.class);
         TaxonBase taxon = Taxon.NewInstance(name, null);
 
         taxaToSave.add(taxon);
 
         //id
         ImportHelper.setOriginalSource(taxon, state.getTransactionalSourceReference(), id, TAXON_NAMESPACE);
-        ImportHelper.setOriginalSource(name, state.getTransactionalSourceReference(), id, TAXON_NAMESPACE);
     }
 
     @Override
     public Map<Object, Map<String, ? extends CdmBase>> getRelatedObjectsForPartition(ResultSet rs,
             RedListGefaesspflanzenImportState state) {
         Map<Object, Map<String, ? extends CdmBase>> result = new HashMap<>();
-//        Map<String, TeamOrPersonBase<?>> authorMap = new HashMap<>();
-//        Set<String> authorKombSet = new HashSet<>();
-//        Set<String> referenceIdSet = new HashSet<String>();
-//
-//        try {
-//            while (rs.next()){
-//                String authorStr = rs.getString("tax_author_name");
-//                authorKombSet.add(authorStr);
-//                handleForeignKey(rs, referenceIdSet, "tax_document");
-//            }
-//        } catch (SQLException e) {
-//            e.printStackTrace();
-//        }
-//
-//        //Authors
-//        Set<UUID> uuidSet = new HashSet<>();
-//        for (String authorStr : authorKombSet){
-//            UUID uuid = state.getAuthorUuid(authorStr);
-//            uuidSet.add(uuid);
-//        }
-//        List<TeamOrPersonBase<?>> authors = (List)getAgentService().find(uuidSet);
-//        Map<UUID, TeamOrPersonBase<?>> authorUuidMap = new HashMap<>();
-//        for (TeamOrPersonBase<?> author : authors){
-//            authorUuidMap.put(author.getUuid(), author);
-//        }
-//
-//        for (String authorStr : authorKombSet){
-//            UUID uuid = state.getAuthorUuid(authorStr);
-//            TeamOrPersonBase<?> author = authorUuidMap.get(uuid);
-//            authorMap.put(authorStr, author);
-//        }
-//        result.put(AUTHOR_NAMESPACE, authorMap);
-//
-//        //reference map
-//        String nameSpace = REFERENCE_NAMESPACE;
-//        Class<?> cdmClass = Reference.class;
-//        Set<String> idSet = referenceIdSet;
-//        Map<String, Reference<?>> referenceMap = (Map<String, Reference<?>>)getCommonService().getSourcedObjectsByIdInSource(cdmClass, idSet, nameSpace);
-//        result.put(nameSpace, referenceMap);
-//
-//        //secundum
-//        UUID secUuid = state.getConfig().getSecUuid();
-//        Reference<?> secRef = getReferenceService().find(secUuid);
-//        referenceMap.put(secUuid.toString(), secRef);
+        Map<String, BotanicalName> nameMap = new HashMap<String, BotanicalName>();
+
+
+        try {
+            while (rs.next()){
+                long id = rs.getLong("NAMNR");
+                BotanicalName name = (BotanicalName) getCommonService().getSourcedObjectByIdInSource(BotanicalName.class, String.valueOf(id), "name");
+                nameMap.put(String.valueOf(id), name);
+
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        result.put("name", nameMap);
 
         return result;
     }

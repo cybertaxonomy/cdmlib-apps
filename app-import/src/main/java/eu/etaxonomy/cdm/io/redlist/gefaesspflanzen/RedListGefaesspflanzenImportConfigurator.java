@@ -38,7 +38,7 @@ public class RedListGefaesspflanzenImportConfigurator extends
         ioClassList = new Class[]{
                 RedListGefaesspflanzenImportAuthor.class,
                 RedListGefaesspflanzenImportNames.class,
-//                RedListGefaesspflanzenImportTaxa.class,
+                RedListGefaesspflanzenImportTaxa.class,
         };
     }
 }
