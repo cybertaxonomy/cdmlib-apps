@@ -23,10 +23,8 @@ import eu.etaxonomy.cdm.io.common.DbImportBase;
 import eu.etaxonomy.cdm.io.common.IPartitionedIO;
 import eu.etaxonomy.cdm.io.common.ImportHelper;
 import eu.etaxonomy.cdm.io.common.ResultSetPartitioner;
-import eu.etaxonomy.cdm.io.common.mapping.UndefinedTransformerMethodException;
 import eu.etaxonomy.cdm.model.common.CdmBase;
 import eu.etaxonomy.cdm.model.name.NonViralName;
-import eu.etaxonomy.cdm.model.name.Rank;
 import eu.etaxonomy.cdm.model.taxon.Taxon;
 import eu.etaxonomy.cdm.model.taxon.TaxonBase;
 import eu.etaxonomy.cdm.strategy.parser.NonViralNameParserImpl;
@@ -107,18 +105,6 @@ public class RedListGefaesspflanzenImportTaxa extends DbImportBase<RedListGefaes
         ImportHelper.setOriginalSource(taxon, state.getTransactionalSourceReference(), id, TAXON_NAMESPACE);
         ImportHelper.setOriginalSource(name, state.getTransactionalSourceReference(), id, TAXON_NAMESPACE);
     }
-
-    private Rank makeRank(RedListGefaesspflanzenImportState state, String rankStr) {
-        Rank rank = null;
-        try {
-            rank = state.getTransformer().getRankByKey(rankStr);
-        } catch (UndefinedTransformerMethodException e) {
-            e.printStackTrace();
-        }
-        return rank;
-    }
-
-
 
     @Override
     public Map<Object, Map<String, ? extends CdmBase>> getRelatedObjectsForPartition(ResultSet rs,
