@@ -12,21 +12,18 @@ package eu.etaxonomy.cdm.io.redlist.gefaesspflanzen;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Map;
-import java.util.Set;
 
 import org.apache.log4j.Logger;
 import org.springframework.stereotype.Component;
 
 import eu.etaxonomy.cdm.io.common.DbImportBase;
 import eu.etaxonomy.cdm.io.common.IPartitionedIO;
-import eu.etaxonomy.cdm.io.common.ImportHelper;
 import eu.etaxonomy.cdm.io.common.ResultSetPartitioner;
 import eu.etaxonomy.cdm.model.common.CdmBase;
-import eu.etaxonomy.cdm.model.name.BotanicalName;
-import eu.etaxonomy.cdm.model.name.Rank;
+import eu.etaxonomy.cdm.model.taxon.Classification;
 import eu.etaxonomy.cdm.model.taxon.Synonym;
+import eu.etaxonomy.cdm.model.taxon.SynonymRelationshipType;
 import eu.etaxonomy.cdm.model.taxon.Taxon;
 import eu.etaxonomy.cdm.model.taxon.TaxonBase;
 
@@ -39,15 +36,15 @@ import eu.etaxonomy.cdm.model.taxon.TaxonBase;
 
 @Component
 @SuppressWarnings("serial")
-public class RedListGefaesspflanzenImportTaxa extends DbImportBase<RedListGefaesspflanzenImportState, RedListGefaesspflanzenImportConfigurator> {
+public class RedListGefaesspflanzenImportClassification extends DbImportBase<RedListGefaesspflanzenImportState, RedListGefaesspflanzenImportConfigurator> {
 
-    private static final Logger logger = Logger.getLogger(RedListGefaesspflanzenImportTaxa.class);
+    private static final Logger logger = Logger.getLogger(RedListGefaesspflanzenImportClassification.class);
 
     private static final String tableName = "Rote Liste Gefäßpflanzen";
 
-    private static final String pluralString = "taxa";
+    private static final String pluralString = "classifications";
 
-    public RedListGefaesspflanzenImportTaxa() {
+    public RedListGefaesspflanzenImportClassification() {
         super(tableName, pluralString);
     }
 
@@ -69,73 +66,75 @@ public class RedListGefaesspflanzenImportTaxa extends DbImportBase<RedListGefaes
 
     @Override
     protected void doInvoke(RedListGefaesspflanzenImportState state) {
+        makeClassification(state);
         super.doInvoke(state);
     }
+
 
     @Override
     public boolean doPartition(ResultSetPartitioner partitioner, RedListGefaesspflanzenImportState state) {
         ResultSet rs = partitioner.getResultSet();
-        Set<TaxonBase> taxaToSave = new HashSet<>();
+        Classification classification = getClassificationService().load(state.getConfig().getClassificationUuid());
         try {
             while (rs.next()){
-                makeSingleTaxon(state, rs, taxaToSave);
+                makeSingleTaxonNode(state, rs, classification);
 
             }
         } catch (SQLException e) {
             e.printStackTrace();
         }
 
-        getTaxonService().saveOrUpdate(taxaToSave);
+        getClassificationService().saveOrUpdate(classification);
         return true;
     }
 
-    private void makeSingleTaxon(RedListGefaesspflanzenImportState state, ResultSet rs, Set<TaxonBase> taxaToSave)
+    private void makeSingleTaxonNode(RedListGefaesspflanzenImportState state, ResultSet rs, Classification classification)
             throws SQLException {
         long id = rs.getLong("NAMNR");
+        long parentId = rs.getLong("LOWER");
         String gueltString = rs.getString("GUELT");
 
-//        BotanicalName name = state.getRelatedObject(Namespace.NAME_NAMESPACE,String.valueOf(id), BotanicalName.class);
-        BotanicalName name = BotanicalName.NewInstance(Rank.GENUS());
-        name.setGenusOrUninomial(String.valueOf(id));
+        TaxonBase taxonBase = getTaxonService().load(state.getTaxonMap().get(id));
+        Taxon parent = (Taxon) getTaxonService().load(state.getTaxonMap().get(parentId));
 
-        TaxonBase taxonBase = null;
-        if(gueltString.equals("1")){
-            taxonBase = Taxon.NewInstance(name, null);
+        if(taxonBase.isInstanceOf(Taxon.class)){
+            classification.addParentChild(parent, (Taxon)taxonBase, null, null);
         }
-        else if(gueltString.equals("x")){
-            taxonBase = Synonym.NewInstance(name, null);
-        }
-        else if(gueltString.equals("b")){
-            taxonBase = Synonym.NewInstance(name, null);
-        }
-        if(taxonBase==null){
-            logger.error("NAMNR: "+id+" Taxon for name "+name+" could not be created.");
-            return;
+        else if(taxonBase.isInstanceOf(Synonym.class)){
+            if(gueltString.equals("b")){
+
+            }
+            else{
+                parent.addSynonym((Synonym) taxonBase, SynonymRelationshipType.SYNONYM_OF());
+            }
         }
 
-        taxaToSave.add(taxonBase);
-
-        //id
-        ImportHelper.setOriginalSource(taxonBase, state.getTransactionalSourceReference(), id, Namespace.TAXON_NAMESPACE);
-        state.getTaxonMap().put(id, taxonBase.getUuid());
     }
 
     @Override
     public Map<Object, Map<String, ? extends CdmBase>> getRelatedObjectsForPartition(ResultSet rs,
             RedListGefaesspflanzenImportState state) {
         Map<Object, Map<String, ? extends CdmBase>> result = new HashMap<>();
-//        Map<String, BotanicalName> nameMap = new HashMap<String, BotanicalName>();
-//        try {
-//            while (rs.next()){
-//                long id = rs.getLong("NAMNR");
-//                nameMap.put(String.valueOf(id), (BotanicalName) getNameService().load(state.getNameMap().get(id)));
-//            }
-//        } catch (SQLException e) {
-//            e.printStackTrace();
-//        }
-//        result.put(Namespace.NAME_NAMESPACE, nameMap);
+        Map<String, TaxonBase> taxonMap = new HashMap<String, TaxonBase>();
+        try {
+            while (rs.next()){
+                long id = rs.getLong("NAMNR");
+                long parentId = rs.getLong("LOWER");
+//                taxonMap.put(String.valueOf(id), getTaxonService().load(state.getTaxonMap().get(id)));
+                taxonMap.put(String.valueOf(parentId), getTaxonService().load(state.getTaxonMap().get(parentId)));
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        result.put(Namespace.TAXON_NAMESPACE, taxonMap);
 
         return result;
+    }
+
+    private void makeClassification(RedListGefaesspflanzenImportState state) {
+        Classification classification = Classification.NewInstance(state.getConfig().getClassificationName());
+        classification.setUuid(state.getConfig().getClassificationUuid());
+        getClassificationService().save(classification);
     }
 
     @Override
