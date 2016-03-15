@@ -31,6 +31,9 @@ import eu.etaxonomy.cdm.model.common.CdmBase;
 import eu.etaxonomy.cdm.model.name.BotanicalName;
 import eu.etaxonomy.cdm.model.name.Rank;
 import eu.etaxonomy.cdm.model.name.TaxonNameBase;
+import eu.etaxonomy.cdm.model.taxon.Synonym;
+import eu.etaxonomy.cdm.model.taxon.Taxon;
+import eu.etaxonomy.cdm.model.taxon.TaxonBase;
 
 /**
  *
@@ -83,9 +86,10 @@ public class RedListGefaesspflanzenImportNames extends DbImportBase<RedListGefae
     public boolean doPartition(ResultSetPartitioner partitioner, RedListGefaesspflanzenImportState state) {
         ResultSet rs = partitioner.getResultSet();
         Set<TaxonNameBase> namesToSave = new HashSet<TaxonNameBase>();
+        Set<TaxonBase> taxaToSave = new HashSet<TaxonBase>();
         try {
             while (rs.next()){
-                makeSingleName(state, rs, namesToSave);
+                makeSingleNameAndTaxon(state, rs, namesToSave, taxaToSave);
 
             }
         } catch (SQLException e) {
@@ -93,13 +97,15 @@ public class RedListGefaesspflanzenImportNames extends DbImportBase<RedListGefae
         }
 
         getNameService().saveOrUpdate(namesToSave);
+        getTaxonService().saveOrUpdate(taxaToSave);
         return true;
     }
 
-    private void makeSingleName(RedListGefaesspflanzenImportState state, ResultSet rs, Set<TaxonNameBase> namesToSave)
+    private void makeSingleNameAndTaxon(RedListGefaesspflanzenImportState state, ResultSet rs, Set<TaxonNameBase> namesToSave, Set<TaxonBase> taxaToSave)
             throws SQLException {
         long id = rs.getLong("NAMNR");
         String taxNameString = rs.getString("TAXNAME");
+        String gueltString = rs.getString("GUELT");
         String rangString = rs.getString("RANG");
         String ep1String = rs.getString("EPI1");
         String ep2String = rs.getString("EPI2");
@@ -116,7 +122,6 @@ public class RedListGefaesspflanzenImportNames extends DbImportBase<RedListGefae
         Rank rank = makeRank(state, rangString);
         if(rank==null){
             logger.error("NAMNR: "+id+" Rank could not be resolved.");
-            return;
         }
         BotanicalName name = BotanicalName.NewInstance(rank);
 
@@ -194,6 +199,28 @@ public class RedListGefaesspflanzenImportNames extends DbImportBase<RedListGefae
         state.getNameMap().put(id, name.getUuid());
 
         namesToSave.add(name);
+
+        //---TAXON---
+        TaxonBase taxonBase = null;
+        if(gueltString.equals("1")){
+            taxonBase = Taxon.NewInstance(name, null);
+        }
+        else if(gueltString.equals("x")){
+            taxonBase = Synonym.NewInstance(name, null);
+        }
+        else if(gueltString.equals("b")){
+            taxonBase = Synonym.NewInstance(name, null);
+        }
+        if(taxonBase==null){
+            logger.error("NAMNR: "+id+" Taxon for name "+name+" could not be created.");
+            return;
+        }
+
+        taxaToSave.add(taxonBase);
+
+        //id
+        ImportHelper.setOriginalSource(taxonBase, state.getTransactionalSourceReference(), id, Namespace.TAXON_NAMESPACE);
+        state.getTaxonMap().put(id, taxonBase.getUuid());
     }
 
     private Rank makeRank(RedListGefaesspflanzenImportState state, String rankStr) {
