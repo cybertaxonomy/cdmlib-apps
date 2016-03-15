@@ -74,7 +74,6 @@ public class RedListGefaesspflanzenImportAuthor extends DbImportBase<RedListGefa
 
     private void makeAuthors(RedListGefaesspflanzenImportState state, String columnName) {
 
-        //--- combination authors ---
         String query = "select distinct "+columnName+" from V_TAXATLAS_D20_EXPORT t"
                 + " WHERE TRIM(t."+columnName+") <>''";
 
