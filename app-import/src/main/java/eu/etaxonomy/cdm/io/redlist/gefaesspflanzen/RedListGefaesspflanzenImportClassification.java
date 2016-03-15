@@ -23,7 +23,6 @@ import eu.etaxonomy.cdm.io.common.ResultSetPartitioner;
 import eu.etaxonomy.cdm.model.common.CdmBase;
 import eu.etaxonomy.cdm.model.taxon.Classification;
 import eu.etaxonomy.cdm.model.taxon.Synonym;
-import eu.etaxonomy.cdm.model.taxon.SynonymRelationshipType;
 import eu.etaxonomy.cdm.model.taxon.Taxon;
 import eu.etaxonomy.cdm.model.taxon.TaxonBase;
 
@@ -102,32 +101,19 @@ public class RedListGefaesspflanzenImportClassification extends DbImportBase<Red
         }
         else if(taxonBase.isInstanceOf(Synonym.class)){
             if(gueltString.equals("b")){
-
+                //TODO
             }
             else{
-                parent.addSynonym((Synonym) taxonBase, SynonymRelationshipType.SYNONYM_OF());
+                //TODO: how to correctly add a synonym?
+                parent.addHomotypicSynonym((Synonym) taxonBase, null, null);
             }
         }
-
     }
 
     @Override
     public Map<Object, Map<String, ? extends CdmBase>> getRelatedObjectsForPartition(ResultSet rs,
             RedListGefaesspflanzenImportState state) {
         Map<Object, Map<String, ? extends CdmBase>> result = new HashMap<>();
-        Map<String, TaxonBase> taxonMap = new HashMap<String, TaxonBase>();
-        try {
-            while (rs.next()){
-                long id = rs.getLong("NAMNR");
-                long parentId = rs.getLong("LOWER");
-//                taxonMap.put(String.valueOf(id), getTaxonService().load(state.getTaxonMap().get(id)));
-                taxonMap.put(String.valueOf(parentId), getTaxonService().load(state.getTaxonMap().get(parentId)));
-            }
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-        result.put(Namespace.TAXON_NAMESPACE, taxonMap);
-
         return result;
     }
 
