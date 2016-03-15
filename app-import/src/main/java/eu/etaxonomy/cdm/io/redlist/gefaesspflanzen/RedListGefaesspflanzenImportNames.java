@@ -45,9 +45,7 @@ import eu.etaxonomy.cdm.model.taxon.TaxonBase;
 @Component
 @SuppressWarnings("serial")
 public class RedListGefaesspflanzenImportNames extends DbImportBase<RedListGefaesspflanzenImportState, RedListGefaesspflanzenImportConfigurator> {
-    /**
-     *
-     */
+
     private static final String EX = " ex ";
 
     private static final Logger logger = Logger.getLogger(RedListGefaesspflanzenImportNames.class);
@@ -145,6 +143,9 @@ public class RedListGefaesspflanzenImportNames extends DbImportBase<RedListGefae
         if(authorKombString.contains(EX)){
             //TODO: what happens with multiple ex authors??
             String[] kombSplit = authorKombString.split(EX);
+            if(kombSplit.length!=2){
+                logger.error("NAMNR: "+id+" Multiple ex combination authors found");
+            }
             for (int i = 0; i < kombSplit.length; i++) {
                 if(i==0){
                     //first author is ex author
@@ -165,6 +166,9 @@ public class RedListGefaesspflanzenImportNames extends DbImportBase<RedListGefae
         if(authorBasiString.contains(EX)){
             String[] basiSplit = authorBasiString.split(EX);
             for (int i = 0; i < basiSplit.length; i++) {
+                if(basiSplit.length!=2){
+                    logger.error("NAMNR: "+id+" Multiple ex basionymn authors found");
+                }
                 if(i==0){
                     TeamOrPersonBase authorBasi = HibernateProxyHelper.deproxy(getAgentService().load(state.getAuthorMap().get(basiSplit[i])), TeamOrPersonBase.class);
                     name.setExBasionymAuthorship(authorBasi);
@@ -176,8 +180,14 @@ public class RedListGefaesspflanzenImportNames extends DbImportBase<RedListGefae
             }
         }
         else if(!CdmUtils.isBlank(authorBasiString)){
+            //this seems to be a convention in the source database: When there is only a single author then only the "AUTOR_BASI" column is used
             TeamOrPersonBase authorBasi = HibernateProxyHelper.deproxy(getAgentService().load(state.getAuthorMap().get(authorBasiString)), TeamOrPersonBase.class);
-            name.setBasionymAuthorship(authorBasi);
+            if(CdmUtils.isBlank(authorKombString)){
+                name.setCombinationAuthorship(authorBasi);
+            }
+            else{
+                name.setBasionymAuthorship(authorBasi);
+            }
         }
 
         //check authorship consistency
