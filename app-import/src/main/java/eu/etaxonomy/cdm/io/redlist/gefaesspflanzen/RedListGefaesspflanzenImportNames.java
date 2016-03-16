@@ -174,11 +174,21 @@ public class RedListGefaesspflanzenImportNames extends DbImportBase<RedListGefae
                 }
                 if(i==0){
                     TeamOrPersonBase authorBasi= (TeamOrPersonBase) state.getRelatedObject(Namespace.AUTHOR_NAMESPACE, basiSplit[i]);
-                    name.setExBasionymAuthorship(authorBasi);
+                    if(CdmUtils.isBlank(authorKombString)){
+                        name.setExCombinationAuthorship(authorBasi);
+                    }
+                    else{
+                        name.setExBasionymAuthorship(authorBasi);
+                    }
                 }
                 else{
                     TeamOrPersonBase authorBasi= (TeamOrPersonBase) state.getRelatedObject(Namespace.AUTHOR_NAMESPACE, basiSplit[i]);
-                    name.setBasionymAuthorship(authorBasi);
+                    if(CdmUtils.isBlank(authorKombString)){
+                        name.setCombinationAuthorship(authorBasi);
+                    }
+                    else{
+                        name.setBasionymAuthorship(authorBasi);
+                    }
                 }
             }
         }
@@ -206,6 +216,9 @@ public class RedListGefaesspflanzenImportNames extends DbImportBase<RedListGefae
 //        if(CdmUtils.isBlank(authorKombString) && !CdmUtils.isBlank(authorBasiString)){
 //            authorString = "("+authorString+")";
 //        }
+        if(authorString.equals("auct.")){
+            authorString = "";
+        }
         if(!authorString.equals(authorshipCache)){
             logger.warn("NAMNR: "+id+" Authorship inconsistent! name.authorhshipCache <-> Column AUTOR: "+authorshipCache+" <-> "+authorString);
         }

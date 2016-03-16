@@ -101,7 +101,8 @@ public class RedListGefaesspflanzenImportClassification extends DbImportBase<Red
         Taxon parent = (Taxon) state.getRelatedObject(Namespace.TAXON_NAMESPACE, parentId, TaxonBase.class);
 
         //misapplied name
-        if(taxonBase.getName().getAppendedPhrase().contains("auct.")){
+        String appendedPhrase = taxonBase.getName().getAppendedPhrase();
+        if(appendedPhrase!=null && appendedPhrase.contains("auct.")){
             //TODO why can't I add synonymy as misapplications
 //            parent.addMisappliedName(misappliedNameTaxon, citation, microcitation)
         }
