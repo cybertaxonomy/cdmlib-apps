@@ -18,4 +18,5 @@ public interface Namespace {
 
     public static final String NAME_NAMESPACE = "name";
     public static final String TAXON_NAMESPACE = "taxon";
+    public static final String AUTHOR_NAMESPACE = "author";
 }

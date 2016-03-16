@@ -20,12 +20,12 @@ import org.apache.log4j.Logger;
 import org.springframework.stereotype.Component;
 
 import eu.etaxonomy.cdm.common.CdmUtils;
-import eu.etaxonomy.cdm.hibernate.HibernateProxyHelper;
 import eu.etaxonomy.cdm.io.common.DbImportBase;
 import eu.etaxonomy.cdm.io.common.IPartitionedIO;
 import eu.etaxonomy.cdm.io.common.ImportHelper;
 import eu.etaxonomy.cdm.io.common.ResultSetPartitioner;
 import eu.etaxonomy.cdm.io.common.mapping.UndefinedTransformerMethodException;
+import eu.etaxonomy.cdm.model.agent.AgentBase;
 import eu.etaxonomy.cdm.model.agent.TeamOrPersonBase;
 import eu.etaxonomy.cdm.model.common.CdmBase;
 import eu.etaxonomy.cdm.model.name.BotanicalName;
@@ -149,17 +149,20 @@ public class RedListGefaesspflanzenImportNames extends DbImportBase<RedListGefae
             for (int i = 0; i < kombSplit.length; i++) {
                 if(i==0){
                     //first author is ex author
-                    TeamOrPersonBase authorKomb = HibernateProxyHelper.deproxy(getAgentService().load(state.getAuthorMap().get(kombSplit[i])), TeamOrPersonBase.class);
+                    TeamOrPersonBase authorKomb = (TeamOrPersonBase) state.getRelatedObject(Namespace.AUTHOR_NAMESPACE, kombSplit[i]);
                     name.setExCombinationAuthorship(authorKomb);
                 }
                 else{
-                    TeamOrPersonBase authorKomb = HibernateProxyHelper.deproxy(getAgentService().load(state.getAuthorMap().get(kombSplit[i])), TeamOrPersonBase.class);
+                    TeamOrPersonBase authorKomb = (TeamOrPersonBase) state.getRelatedObject(Namespace.AUTHOR_NAMESPACE, kombSplit[i]);
                     name.setCombinationAuthorship(authorKomb);
                 }
             }
         }
+        else if(authorKombString.trim().equals("auct.")){
+            logger.warn("NAMNR: "+id+" AUCT information in AUTOR_KOMB column");
+        }
         else if(!CdmUtils.isBlank(authorKombString)){
-            TeamOrPersonBase authorKomb = HibernateProxyHelper.deproxy(getAgentService().load(state.getAuthorMap().get(authorKombString)), TeamOrPersonBase.class);
+            TeamOrPersonBase authorKomb = (TeamOrPersonBase) state.getRelatedObject(Namespace.AUTHOR_NAMESPACE, authorKombString);
             name.setCombinationAuthorship(authorKomb);
         }
         //basionym author
@@ -170,18 +173,21 @@ public class RedListGefaesspflanzenImportNames extends DbImportBase<RedListGefae
                     logger.error("NAMNR: "+id+" Multiple ex basionymn authors found");
                 }
                 if(i==0){
-                    TeamOrPersonBase authorBasi = HibernateProxyHelper.deproxy(getAgentService().load(state.getAuthorMap().get(basiSplit[i])), TeamOrPersonBase.class);
+                    TeamOrPersonBase authorBasi= (TeamOrPersonBase) state.getRelatedObject(Namespace.AUTHOR_NAMESPACE, basiSplit[i]);
                     name.setExBasionymAuthorship(authorBasi);
                 }
                 else{
-                    TeamOrPersonBase authorBasi = HibernateProxyHelper.deproxy(getAgentService().load(state.getAuthorMap().get(basiSplit[i])), TeamOrPersonBase.class);
+                    TeamOrPersonBase authorBasi= (TeamOrPersonBase) state.getRelatedObject(Namespace.AUTHOR_NAMESPACE, basiSplit[i]);
                     name.setBasionymAuthorship(authorBasi);
                 }
             }
         }
+        else if(authorBasiString.trim().equals("auct.")){
+            name.setAppendedPhrase(authorBasiString);
+        }
         else if(!CdmUtils.isBlank(authorBasiString)){
             //this seems to be a convention in the source database: When there is only a single author then only the "AUTOR_BASI" column is used
-            TeamOrPersonBase authorBasi = HibernateProxyHelper.deproxy(getAgentService().load(state.getAuthorMap().get(authorBasiString)), TeamOrPersonBase.class);
+            TeamOrPersonBase authorBasi= (TeamOrPersonBase) state.getRelatedObject(Namespace.AUTHOR_NAMESPACE, authorBasiString);
             if(CdmUtils.isBlank(authorKombString)){
                 name.setCombinationAuthorship(authorBasi);
             }
@@ -197,9 +203,9 @@ public class RedListGefaesspflanzenImportNames extends DbImportBase<RedListGefae
         if(!CdmUtils.isBlank(zusatzString)){
             authorString = authorString.replace(", "+zusatzString, "");
         }
-        if(CdmUtils.isBlank(authorKombString) && !CdmUtils.isBlank(authorBasiString)){
-            authorString = "("+authorString+")";
-        }
+//        if(CdmUtils.isBlank(authorKombString) && !CdmUtils.isBlank(authorBasiString)){
+//            authorString = "("+authorString+")";
+//        }
         if(!authorString.equals(authorshipCache)){
             logger.warn("NAMNR: "+id+" Authorship inconsistent! name.authorhshipCache <-> Column AUTOR: "+authorshipCache+" <-> "+authorString);
         }
@@ -215,10 +221,7 @@ public class RedListGefaesspflanzenImportNames extends DbImportBase<RedListGefae
         if(gueltString.equals("1")){
             taxonBase = Taxon.NewInstance(name, null);
         }
-        else if(gueltString.equals("x")){
-            taxonBase = Synonym.NewInstance(name, null);
-        }
-        else if(gueltString.equals("b")){
+        else if(gueltString.equals("x") || gueltString.equals("b")){
             taxonBase = Synonym.NewInstance(name, null);
         }
         if(taxonBase==null){
@@ -252,54 +255,42 @@ public class RedListGefaesspflanzenImportNames extends DbImportBase<RedListGefae
     public Map<Object, Map<String, ? extends CdmBase>> getRelatedObjectsForPartition(ResultSet rs,
             RedListGefaesspflanzenImportState state) {
         Map<Object, Map<String, ? extends CdmBase>> result = new HashMap<>();
-//        Map<Long, AgentBase<?>> authorKombMap = new HashMap<>();
-//        Map<Long, AgentBase<?>> authorBasiMap = new HashMap<>();
-//
-//        //load authors
-//        for(Entry<Long, UUID> entry:state.getAuthorKombMap().entrySet()){
-//            authorKombMap.put(entry.getKey(), getAgentService().load(entry.getValue()));
-//        }
-//        for(Entry<Long, UUID> entry:state.getAuthorBasiMap().entrySet()){
-//            authorBasiMap.put(entry.getKey(), getAgentService().load(entry.getValue()));
-//        }
-//        try {
-//            while (rs.next()){
-//                long id = rs.getLong("NAMNR");
-//            }
-//        } catch (SQLException e) {
-//            e.printStackTrace();
-//        }
-//
-//        //Authors
-//        Set<UUID> uuidSet = new HashSet<>();
-//        for (String authorStr : authorKombSet){
-//            UUID uuid = state.getAuthorUuid(authorStr);
-//            uuidSet.add(uuid);
-//        }
-//        List<TeamOrPersonBase<?>> authors = (List)getAgentService().find(uuidSet);
-//        Map<UUID, TeamOrPersonBase<?>> authorUuidMap = new HashMap<>();
-//        for (TeamOrPersonBase<?> author : authors){
-//            authorUuidMap.put(author.getUuid(), author);
-//        }
-//
-//        for (String authorStr : authorKombSet){
-//            UUID uuid = state.getAuthorUuid(authorStr);
-//            TeamOrPersonBase<?> author = authorUuidMap.get(uuid);
-//            authorMap.put(authorStr, author);
-//        }
-//        result.put(AUTHOR_NAMESPACE, authorMap);
-//
-//        //reference map
-//        String nameSpace = REFERENCE_NAMESPACE;
-//        Class<?> cdmClass = Reference.class;
-//        Set<String> idSet = referenceIdSet;
-//        Map<String, Reference<?>> referenceMap = (Map<String, Reference<?>>)getCommonService().getSourcedObjectsByIdInSource(cdmClass, idSet, nameSpace);
-//        result.put(nameSpace, referenceMap);
-//
-//        //secundum
-//        UUID secUuid = state.getConfig().getSecUuid();
-//        Reference<?> secRef = getReferenceService().find(secUuid);
-//        referenceMap.put(secUuid.toString(), secRef);
+        Map<String, AgentBase<?>> authorMap = new HashMap<String, AgentBase<?>>();
+
+        try {
+            while (rs.next()){
+                String authorKombString = rs.getString("AUTOR_KOMB");
+
+                if(authorKombString.contains(EX)){
+                    String[] kombSplit = authorKombString.split(EX);
+                    for (int i = 0; i < kombSplit.length; i++) {
+                        if(!authorMap.containsKey(kombSplit[i])){
+                            authorMap.put(kombSplit[i], getAgentService().load(state.getAuthorMap().get(kombSplit[i])));
+                        }
+                    }
+                }
+                else if(!CdmUtils.isBlank(authorKombString) && !authorMap.containsKey(authorKombString)){
+                    authorMap.put(authorKombString, getAgentService().load(state.getAuthorMap().get(authorKombString)));
+                }
+
+                String authorBasiString = rs.getString("AUTOR_BASI");
+                //basionym author
+                if(authorBasiString.contains(EX)){
+                    String[] basiSplit = authorBasiString.split(EX);
+                    for (int i = 0; i < basiSplit.length; i++) {
+                        if(!authorMap.containsKey(basiSplit[i])){
+                            authorMap.put(basiSplit[i], getAgentService().load(state.getAuthorMap().get(basiSplit[i])));
+                        }
+                    }
+                }
+                else if(!CdmUtils.isBlank(authorBasiString) && !authorMap.containsKey(authorBasiString)){
+                    authorMap.put(authorBasiString, getAgentService().load(state.getAuthorMap().get(authorBasiString)));
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        result.put(Namespace.AUTHOR_NAMESPACE, authorMap);
 
         return result;
     }

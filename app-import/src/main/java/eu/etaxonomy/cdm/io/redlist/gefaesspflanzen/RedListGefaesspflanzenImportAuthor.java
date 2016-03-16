@@ -93,6 +93,10 @@ public class RedListGefaesspflanzenImportAuthor extends DbImportBase<RedListGefa
     }
 
     private void makePerson(RedListGefaesspflanzenImportState state, String authorName) {
+        //check if misapplied name
+        if(authorName.trim().equals("auct.")){
+            return;
+        }
         TeamOrPersonBase teamOrPerson;
         //check if there are ex authors
         if(authorName.contains(" ex ")){

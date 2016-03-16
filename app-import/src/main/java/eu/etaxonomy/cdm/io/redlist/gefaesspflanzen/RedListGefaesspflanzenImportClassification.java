@@ -86,6 +86,7 @@ public class RedListGefaesspflanzenImportClassification extends DbImportBase<Red
             e.printStackTrace();
         }
 
+        logger.info("Update classification (1000 nodes)");
         getClassificationService().saveOrUpdate(classification);
         return true;
     }
@@ -99,14 +100,22 @@ public class RedListGefaesspflanzenImportClassification extends DbImportBase<Red
         TaxonBase taxonBase = state.getRelatedObject(Namespace.TAXON_NAMESPACE, id, TaxonBase.class);
         Taxon parent = (Taxon) state.getRelatedObject(Namespace.TAXON_NAMESPACE, parentId, TaxonBase.class);
 
-        if(taxonBase.isInstanceOf(Taxon.class)){
+        //misapplied name
+        if(taxonBase.getName().getAppendedPhrase().contains("auct.")){
+            //TODO why can't I add synonymy as misapplications
+//            parent.addMisappliedName(misappliedNameTaxon, citation, microcitation)
+        }
+        //taxon
+        else if(taxonBase.isInstanceOf(Taxon.class)){
             classification.addParentChild(parent, (Taxon)taxonBase, null, null);
         }
         else if(taxonBase.isInstanceOf(Synonym.class)){
+            //basionym
             if(gueltString.equals("b")){
                 parent.addHomotypicSynonym((Synonym) taxonBase, null, null);
                 parent.getName().addBasionym(taxonBase.getName());
             }
+            //regular synonym
             else{
                 //TODO: how to correctly add a synonym?
                 parent.addSynonym((Synonym) taxonBase, SynonymRelationshipType.HETEROTYPIC_SYNONYM_OF(), null, null);
