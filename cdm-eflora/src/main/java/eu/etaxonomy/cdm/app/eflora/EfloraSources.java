@@ -261,7 +261,7 @@ public class EfloraSources {
 
 	//Flore du Gabon vol 5
 	public static URI fdg_5bis(){
-		return URI.create("file://PESIIMPORT3/gabon/markupData/5bis_final.xml");
+		return URI.create("file://PESIIMPORT3/gabon/markupData/fdgvol5bis_final.xml");
 	}
 
 	//Flore du Gabon vol 6
@@ -412,15 +412,15 @@ public class EfloraSources {
 		return URI.create("file://PESIIMPORT3/gabon/markupData/fdgvol35_final.xml");
 	}
 
-	//Flore du Gabon vol 36
-	public static URI fdg_36(){
-		return URI.create("file://PESIIMPORT3/gabon/markupData/fdgvol36_final.xml");
-	}
-
-	//Flore du Gabon vol 37
-	public static URI fdg_37(){
-		return URI.create("file://PESIIMPORT3/gabon/markupData/fdgvol37_final.xml");
-	}
+//	//Flore du Gabon vol 36
+//	public static URI fdg_36(){
+//		return URI.create("file://PESIIMPORT3/gabon/markupData/fdgvol36_final.xml");
+//	}
+//
+//	//Flore du Gabon vol 37
+//	public static URI fdg_37(){
+//		return URI.create("file://PESIIMPORT3/gabon/markupData/fdgvol37_final.xml");
+//	}
 
 	//Flore du Gabon vol 36 and 37
 	public static URI fdg_36_37(){
