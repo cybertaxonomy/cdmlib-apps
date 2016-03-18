@@ -56,13 +56,16 @@ public class FloraMalesianaActivator extends EfloraActivatorBase {
 
 	private final boolean includeBase = false;
 
-	//5618 / 121674
+	//5880 / 121834
 	//2 footnote issues
 	//habitat: 6 syso, + ???
-	private final boolean includeVol04 = includeBase;
+	private final boolean includeVol04 = ! includeBase;
 	//6258  / 110625
 	//11 sysos, + ??
 	private final boolean includeVol05 = includeBase;
+	//8097   / 177845
+	//2 sysos (<sub>
+	//102 keys
     private final boolean includeVol06 = includeBase;
 
 	//2283 /49700
@@ -109,7 +112,7 @@ public class FloraMalesianaActivator extends EfloraActivatorBase {
 	//no syso, <= 10 uncovered, < 100 lifecycle
 	private final boolean includeVol11_1 = includeBase;
 	//1271   /  24775
-	//keys: 1 uuid, 2 cultivar groups (a cultivar group aggregatum; 4:b989752b-2802-48f0-ac59-658e03fd3da6; b cultivar group common onion)
+	//keys: 2 cultivar groups (a cultivar group aggregatum; b cultivar group common onion)
 	//no syso, 1 uncovered, 1 lifecycle, 2 references
 	private final boolean includeVol11_2 = includeBase;
 	//4582    /  52747
@@ -121,7 +124,7 @@ public class FloraMalesianaActivator extends EfloraActivatorBase {
 	//habitat: no syso, 200 - 400 uncovered, different types
 	private final boolean includeVol12 = includeBase;
 	//2865    /   43764
-	//keys: 1 uuid, 1 manual (Loranthaceae)
+	//keys: 1 manual (Loranthaceae)
 	//no syso, 1 uncovered habitat
 	private final boolean includeVol13 = includeBase;
 	//4843   /   55501
@@ -147,7 +150,6 @@ public class FloraMalesianaActivator extends EfloraActivatorBase {
     //no syso, < 20 uncovered, mostly untagged lifecycle
 	private final boolean includeVol20 = includeBase;
 	//1735     /   19469
-	//2 subfamilies
 	//no syso, no covered, medium # lifecycle and very few references
 	private final boolean includeVol21 = includeBase;
 
@@ -161,7 +163,6 @@ public class FloraMalesianaActivator extends EfloraActivatorBase {
     //no syso, no habitat issue
     private final boolean includeVol2_2 = includeBase;
     //2382  / 52100
-    //1 non standard (platycerium bifurcatum subsp. bifurcatum var. hillii)
     //no syso, 10-15 uncovered, 2 unexpected attributes: extra
 	private final boolean includeVol2_3 = includeBase;
 	//1045  / 12240
