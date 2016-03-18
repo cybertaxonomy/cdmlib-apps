@@ -39,8 +39,6 @@ public class CubaImportState extends ExcelImportState<CubaImportConfigurator, Ex
 
 	private final Map<String, BotanicalName> familyNameMap = new HashMap<String, BotanicalName>();
 
-
-
 	//classification
 	private Classification classification;
     public Classification getClassification() {return classification;}
@@ -67,6 +65,14 @@ public class CubaImportState extends ExcelImportState<CubaImportConfigurator, Ex
     private boolean isCubanProvince;
     public void setCubanProvince(boolean cubanProvince) {this.isCubanProvince = cubanProvince;}
     public boolean isCubanProvince(){return isCubanProvince;}
+
+    private boolean taxonIsAbsent = false;
+    public boolean isTaxonIsAbsent(){return this.taxonIsAbsent;}
+    public void setTaxonIsAbsent(boolean taxonIsAbsent) {this.taxonIsAbsent = taxonIsAbsent;}
+
+    private boolean isEndemic = false;
+    public boolean isEndemic(){return this.isEndemic;}
+    public void setEndemic(boolean isEndemic) {this.isEndemic = isEndemic;}
 
     //Constructor
     public CubaImportState(CubaImportConfigurator config) {
@@ -119,6 +125,7 @@ public class CubaImportState extends ExcelImportState<CubaImportConfigurator, Ex
     public void putReference(UUID uuidRef, Reference<?> ref) {
         refMap.put(uuidRef, ref);
     }
+
 
 
 

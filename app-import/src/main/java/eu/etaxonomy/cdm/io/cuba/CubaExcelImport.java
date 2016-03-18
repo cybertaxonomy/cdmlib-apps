@@ -26,12 +26,17 @@ import org.springframework.stereotype.Component;
 import eu.etaxonomy.cdm.common.CdmUtils;
 import eu.etaxonomy.cdm.io.common.mapping.UndefinedTransformerMethodException;
 import eu.etaxonomy.cdm.io.excel.common.ExcelImporterBase;
+import eu.etaxonomy.cdm.model.agent.Person;
 import eu.etaxonomy.cdm.model.agent.Team;
 import eu.etaxonomy.cdm.model.agent.TeamOrPersonBase;
 import eu.etaxonomy.cdm.model.common.Annotation;
 import eu.etaxonomy.cdm.model.common.AnnotationType;
+import eu.etaxonomy.cdm.model.common.CdmBase;
+import eu.etaxonomy.cdm.model.common.IdentifiableSource;
 import eu.etaxonomy.cdm.model.common.Language;
 import eu.etaxonomy.cdm.model.common.OriginalSourceType;
+import eu.etaxonomy.cdm.model.description.DescriptionElementBase;
+import eu.etaxonomy.cdm.model.description.DescriptionElementSource;
 import eu.etaxonomy.cdm.model.description.Distribution;
 import eu.etaxonomy.cdm.model.description.Feature;
 import eu.etaxonomy.cdm.model.description.PresenceAbsenceTerm;
@@ -40,11 +45,14 @@ import eu.etaxonomy.cdm.model.description.TaxonInteraction;
 import eu.etaxonomy.cdm.model.description.TextData;
 import eu.etaxonomy.cdm.model.location.NamedArea;
 import eu.etaxonomy.cdm.model.name.BotanicalName;
+import eu.etaxonomy.cdm.model.name.HomotypicalGroup;
+import eu.etaxonomy.cdm.model.name.NameRelationship;
 import eu.etaxonomy.cdm.model.name.NameRelationshipType;
 import eu.etaxonomy.cdm.model.name.NomenclaturalCode;
 import eu.etaxonomy.cdm.model.name.NomenclaturalStatus;
 import eu.etaxonomy.cdm.model.name.NomenclaturalStatusType;
 import eu.etaxonomy.cdm.model.name.Rank;
+import eu.etaxonomy.cdm.model.name.TaxonNameBase;
 import eu.etaxonomy.cdm.model.reference.Reference;
 import eu.etaxonomy.cdm.model.reference.ReferenceFactory;
 import eu.etaxonomy.cdm.model.taxon.Classification;
@@ -101,6 +109,7 @@ public class CubaExcelImport extends ExcelImporterBase<CubaImportState> {
             for (PresenceAbsenceTerm status : statuss){
                 Distribution distribution = Distribution.NewInstance(cuba, status);
                 desc.addElement(distribution);
+                distribution.addSource(makeDescriptionSource(state));
             }
         } catch (UndefinedTransformerMethodException e) {
             e.printStackTrace();
@@ -115,7 +124,6 @@ public class CubaExcelImport extends ExcelImporterBase<CubaImportState> {
      * @throws UndefinedTransformerMethodException
      */
     private List<PresenceAbsenceTerm> makeCubanStatuss(HashMap<String, String> record, CubaImportState state) throws UndefinedTransformerMethodException {
-        boolean isAbsent = false;  //TODO
         PresenceAbsenceTerm highestStatus = null;
 
         String line = state.getCurrentLine() + ": ";
@@ -129,11 +137,14 @@ public class CubaExcelImport extends ExcelImporterBase<CubaImportState> {
         String advStr = getValue(record, "Adv");
         String cultStr = getValue(record, "Cult C");
 
+        state.setEndemic(false);
+
         if (endemicStr != null){
             if(endemicStr.equals("+")){
                 PresenceAbsenceTerm endemicState = state.getTransformer().getPresenceTermByKey("E");
                 result.add(endemicState);
                 highestStatus = endemicState;
+                state.setEndemic(true);
             }else if(isMinus(endemicStr)){
                 UUID endemicUuid = state.getTransformer().getPresenceTermUuid("-E");
                 PresenceAbsenceTerm endemicState = getPresenceTerm(state, endemicUuid, null, null, null, false);
@@ -150,8 +161,8 @@ public class CubaExcelImport extends ExcelImporterBase<CubaImportState> {
         }
         if (indigenousStr != null){
             if(indigenousStr.equals("+")){
-                UUID indigenousUuid = state.getTransformer().getPresenceTermUuid("Ind.");
-                PresenceAbsenceTerm indigenousState = getPresenceTerm(state, indigenousUuid, null, null, null, false);
+                PresenceAbsenceTerm indigenousState = state.getTransformer().getPresenceTermByKey("Ind.");
+//                PresenceAbsenceTerm indigenousState = getPresenceTerm(state, indigenousUuid, null, null, null, false);
                 result.add(indigenousState);
                 highestStatus = highestStatus != null ? highestStatus : indigenousState;
             }else if(isMinus(indigenousStr)){
@@ -159,8 +170,8 @@ public class CubaExcelImport extends ExcelImporterBase<CubaImportState> {
                 result.add(indigenousState);
                 checkAbsentHighestState(highestStatus, line, "indigenous", false);
             }else if(indigenousStr.equals("?")){
-                UUID indigenousDoubtUuid = state.getTransformer().getPresenceTermUuid("?Ind.");
-                PresenceAbsenceTerm indigenousDoubtState = getPresenceTerm(state, indigenousDoubtUuid, null, null, null, false);
+                PresenceAbsenceTerm indigenousDoubtState = state.getTransformer().getPresenceTermByKey("?Ind.");
+//                PresenceAbsenceTerm indigenousDoubtState = getPresenceTerm(state, indigenousDoubtUuid, null, null, null, false);
                 result.add(indigenousDoubtState);
                 checkAbsentHighestState(highestStatus, line, "indigenous", true);
             }else{
@@ -169,12 +180,17 @@ public class CubaExcelImport extends ExcelImporterBase<CubaImportState> {
         }
         if(indigenousDoubtStr != null){
             if(indigenousDoubtStr.equals("D")){
-                UUID indigenousDoubtUuid = state.getTransformer().getPresenceTermUuid("Ind.?");
-                PresenceAbsenceTerm indigenousDoubtState = getPresenceTerm(state, indigenousDoubtUuid, null, null, null, false);
-                result.add(indigenousDoubtState);
-                highestStatus = highestStatus != null ? highestStatus : indigenousDoubtState;
+                PresenceAbsenceTerm doubtIndigenousState = state.getTransformer().getPresenceTermByKey("Ind.?");
+//                PresenceAbsenceTerm doubtIndigenousState = getPresenceTerm(state, doubtIndigenousUuid, null, null, null, false);
+                result.add(doubtIndigenousState);
+                highestStatus = highestStatus != null ? highestStatus : doubtIndigenousState;
+            }else if(isMinus(indigenousDoubtStr)){
+                UUID doubtIndigenousErrorUuid = state.getTransformer().getPresenceTermUuid("-Ind.?");
+                PresenceAbsenceTerm doubtIndigenousErrorState = getPresenceTerm(state, doubtIndigenousErrorUuid, null, null, null, false);
+                result.add(doubtIndigenousErrorState);
+                checkAbsentHighestState(highestStatus, line, "doubtfully indigenous", true);
             }else{
-                logger.warn(line + "Indigenous doubtful not recognized: " + indigenousDoubtStr);
+                logger.warn(line + "doubtfully indigenous not recognized: " + indigenousDoubtStr);
             }
         }
         if(naturalisedStr != null){
@@ -218,8 +234,8 @@ public class CubaExcelImport extends ExcelImporterBase<CubaImportState> {
         }
         if(advStr != null){
             if(advStr.equals("A")){
-                UUID advUuid = state.getTransformer().getPresenceTermUuid("Adv.");
-                PresenceAbsenceTerm advState = getPresenceTerm(state, advUuid, null, null, null, false);
+                PresenceAbsenceTerm advState = state.getTransformer().getPresenceTermByKey("Adv.");
+//                PresenceAbsenceTerm advState = getPresenceTerm(state, advUuid, null, null, null, false);
                 result.add(advState);
                 highestStatus = highestStatus != null ? highestStatus : advState;
             }else if(isMinus(advStr)){
@@ -227,6 +243,10 @@ public class CubaExcelImport extends ExcelImporterBase<CubaImportState> {
                 PresenceAbsenceTerm advState = getPresenceTerm(state, advUuid, null, null, null, false);
                 result.add(advState);
                 checkAbsentHighestState(highestStatus, line, "adventive", false);
+            }else if(advStr.equals("(A)")){
+                UUID rareCasualUuid = state.getTransformer().getPresenceTermUuid("(A)");
+                PresenceAbsenceTerm rareCasual = getPresenceTerm(state, rareCasualUuid, null, null, null, false);
+                result.add(rareCasual);
             }else{
                 logger.warn(line + "'adventive (casual) alien' not recognized: " + advStr);
             }
@@ -263,9 +283,10 @@ public class CubaExcelImport extends ExcelImporterBase<CubaImportState> {
      * @param line
      */
     private void checkAbsentHighestState(PresenceAbsenceTerm highestStatus, String line, String stateLabel, boolean doubtful) {
+        //can be removed, highest status is not used anymore
         if (highestStatus == null){
             String absentStr = doubtful ? "doubtful" : "absent";
-            logger.warn(line + "Highest cuban state is " + absentStr + " " + stateLabel);
+            logger.info(line + "Highest cuban state is " + absentStr + " " + stateLabel);
         }
 
     }
@@ -276,7 +297,7 @@ public class CubaExcelImport extends ExcelImporterBase<CubaImportState> {
      * @return
      */
     private boolean isMinus(String str) {
-        return str.equals("-") || str.equals("–");
+        return str.equals("-") || str.equals("–") || str.equals("‒");
     }
 
 
@@ -315,7 +336,7 @@ public class CubaExcelImport extends ExcelImporterBase<CubaImportState> {
     private static final String heterotypicRegExStr_TEST = "([^\\(]{5,}" +"(\\(.+\\))?" + "[^\\)\\(]{2,})"
             +"(\\((.{6,})\\))?";
     private static final String auctRegExStr = "auct\\."
-            +"((\\sFC(\\-S)?(\\s&\\sA&S)?)|(\\sA&S)|\\sSagra|\\sCombs|\\sBritton|\\sGriseb\\.|\\sWright"
+            +"((\\sFC(\\-S)?(\\s&\\sA&S)?)|(\\sA&S)|\\sSagra|\\sCombs|\\sBritton|\\sGriseb\\.(\\sFC-S|\\sA&S)?|\\sWright"
             + "|\\sHammer|\\sEngl\\.||\\sMaza|\\sMiers|\\sRoig|\\sBorhidi|\\sFRC|\\sCoL"
             + "|\\sAckerman|\\sMújica|\\sDíaz|\\sUrb\\.)?(\\s+p\\.\\s*p\\.)?";
 
@@ -336,21 +357,31 @@ public class CubaExcelImport extends ExcelImporterBase<CubaImportState> {
      * @param state
      * @param taxon
      */
-    private void makeSynonyms(HashMap<String, String> record, CubaImportState state) {
+    private void makeSynonyms(HashMap<String, String> record, CubaImportState state, boolean isFirstSynonym) {
 //        boolean forAccepted = true;
         String synonymStr = record.get("Syn.");
         String line = state.getCurrentLine() + ": ";
+
 
         if (synonymStr == null){
             //TODO test that this is not a synonym only line
             return;
         }
+
+        if (state.getCurrentTaxon() == null){
+            logger.error(line + "Current taxon is null for synonym");
+            return;
+        }
+
+
         synonymStr = synonymStr.trim();
+        synonymStr = synonymStr.replace("[taxon]", "[infraspec.]");
 
 //        String heterotypicRegExStr = "([^\\(]{5,}(\\(.+\\))?[^\\)\\(]{2,})(\\((.{6,})\\))?";
 //        String heterotypicRegExStr = "([^\\(]{5,})(\\((.{6,})\\))?";
 
 //        Pattern heterotypicRegEx = Pattern.compile(heterotypicRegExStr + homonymRegExStr);
+
 
         Matcher missapliedMatcher = missapliedRegEx.matcher(synonymStr);
         Matcher nomInvalMatcher = nomInvalRegEx.matcher(synonymStr);
@@ -363,9 +394,11 @@ public class CubaExcelImport extends ExcelImporterBase<CubaImportState> {
             boolean doubtful = missapliedMatcher.group(1) != null;
             String firstPart = missapliedMatcher.group(2);
             BotanicalName name = (BotanicalName)nameParser.parseSimpleName(firstPart, state.getConfig().getNomenclaturalCode(), Rank.SPECIES());
+            name.addSource(makeOriginalSource(state));
 
             String secondPart = missapliedMatcher.group(3);
             Taxon misappliedNameTaxon = Taxon.NewInstance(name, null);
+            misappliedNameTaxon.addSource(makeOriginalSource(state));
             misappliedNameTaxon.setDoubtful(doubtful);
             if (secondPart.startsWith("sensu")){
                 secondPart = secondPart.substring(5).trim();
@@ -392,22 +425,27 @@ public class CubaExcelImport extends ExcelImporterBase<CubaImportState> {
                 logger.warn(state.getCurrentLine() + ": After inval to be implemented: " + afterInval);
             }
             BotanicalName name = (BotanicalName)nameParser.parseSimpleName(firstPart, state.getConfig().getNomenclaturalCode(), Rank.SPECIES());
+            name.addSource(makeOriginalSource(state));
             NomenclaturalStatus status = NomenclaturalStatus.NewInstance( NomenclaturalStatusType.INVALID());
             name.addStatus(status);
-            state.getCurrentTaxon().addSynonymName(name, SynonymRelationshipType.SYNONYM_OF());
+            SynonymRelationship sr = state.getCurrentTaxon().addSynonymName(name, SynonymRelationshipType.SYNONYM_OF());
+            sr.getSynonym().addSource(makeOriginalSource(state));
         }else if (sphalmMatcher.matches()){
             String firstPart = sphalmMatcher.group(1);
             String sphalmPart = synonymStr.replace(firstPart, "").replace("“","").replace("”","").trim();
             BotanicalName name = (BotanicalName)nameParser.parseSimpleName(firstPart, state.getConfig().getNomenclaturalCode(), Rank.SPECIES());
 //            NomenclaturalStatus status = NomenclaturalStatus.NewInstance( NomenclaturalStatusType.INVALID());
 //            name.addStatus(status);
+            name.addSource(makeOriginalSource(state));
             SynonymRelationship sr = state.getCurrentTaxon().addSynonymName(name, SynonymRelationshipType.SYNONYM_OF());
             sr.getSynonym().setAppendedPhrase(sphalmPart);
             sr.getSynonym().setSec(null);
+            sr.getSynonym().addSource(makeOriginalSource(state));
         }else if (acceptedMatcher.matches()){
             String firstPart = acceptedMatcher.group(1);
             String homonymPart = acceptedMatcher.groupCount() < 2 ? null : acceptedMatcher.group(2);
-            handleHomotypicGroup(firstPart, state, (BotanicalName)state.getCurrentTaxon().getName(), false, homonyms, homonymPart, false);
+            List<BotanicalName> list = handleHomotypicGroup(firstPart, state, (BotanicalName)state.getCurrentTaxon().getName(), false, homonyms, homonymPart, false);
+            checkFirstSynonym(state, list, isFirstSynonym, synonymStr, false);
         }else if(heterotypicMatcher.matches()){
             String firstPart = heterotypicMatcher.group(1).trim();
             String secondPart = heterotypicMatcher.groupCount() < 3 ? null : heterotypicMatcher.group(3);
@@ -415,21 +453,124 @@ public class CubaExcelImport extends ExcelImporterBase<CubaImportState> {
             boolean isDoubtful = firstPart.matches("^\\?\\s*.*");
             firstPart = replaceHomonIlleg(firstPart);
             boolean isHomonym = firstPart.matches(".*" + HOMONYM_MARKER);
-            BotanicalName synName = makeName(firstPart);
+            BotanicalName synName = makeName(state, firstPart);
             if (synName.isProtectedTitleCache()){
-                logger.warn(line + " heterotypic base synonym could not be parsed correctly:" + firstPart);
+                logger.warn(line + "Heterotypic base synonym could not be parsed correctly: " + firstPart);
             }
             if (isHomonym){
                 homonyms.add(synName);
             }
             SynonymRelationship sr = state.getCurrentTaxon().addHeterotypicSynonymName(synName);
             sr.getSynonym().setDoubtful(isDoubtful);
-            handleHomotypicGroup(secondPart, state, synName, true, homonyms, homonymPart, isDoubtful);
+            sr.getSynonym().addSource(makeOriginalSource(state));
+            List<BotanicalName> list = handleHomotypicGroup(secondPart, state, synName, true, homonyms, homonymPart, isDoubtful);
+            checkFirstSynonym(state, list, isFirstSynonym, synonymStr, true);
+
+        }else if (isSpecialHeterotypic(synonymStr)){
+            BotanicalName synName = makeName(state, synonymStr);
+            if (synName.isProtectedTitleCache()){
+                logger.warn(line + "Special heterotypic synonym could not be parsed correctly:" + synonymStr);
+            }
+            SynonymRelationship sr = state.getCurrentTaxon().addHeterotypicSynonymName(synName);
+            sr.getSynonym().addSource(makeOriginalSource(state));
         }else{
             logger.warn(line + "Synonym entry does not match: " + synonymStr);
         }
     }
 
+    /**
+     * @param state
+     * @param list
+     * @param isFirstSynonym
+     * @param synonymStr
+     * @param b
+     */
+    private void checkFirstSynonym(CubaImportState state, List<BotanicalName> list, boolean isFirstSynonym, String synonymStr, boolean isHeterotypicMatcher) {
+        if (!isFirstSynonym){
+            return;
+        }
+        String line = state.getCurrentLine() + ": ";
+        BotanicalName currentName = isHeterotypicMatcher? (BotanicalName)state.getCurrentTaxon().getName(): list.get(0);
+        boolean currentHasBasionym = currentName.getBasionymAuthorship() != null;
+        BotanicalName firstSynonym = isHeterotypicMatcher ? list.get(0): list.get(1);
+//        if (list.size() <= 1){
+//            logger.error(line + "homotypic list size is 1 but shouldn't");
+//            return;
+//        }
+        if (isHeterotypicMatcher && currentHasBasionym){
+            logger.error(line + "Current taxon (" + currentName.getTitleCache() + ") has basionym author but has no homotypic basionym , but : " + synonymStr);
+        }else if (isHeterotypicMatcher){
+            //first synonym must not have a basionym author
+            if (firstSynonym.getBasionymAuthorship() != null){
+                logger.error(line + "Current taxon (" + currentName.getTitleCache() + ") has no basionym but first synonym requires basionym : " + synonymStr);
+            }
+        }else{  //isAcceptedMatcher
+            if (currentHasBasionym){
+                if (! matchAuthor(currentName.getBasionymAuthorship(), firstSynonym.getCombinationAuthorship())){
+                    logger.info(line + "Current basionym author and first synonym combination author do not match: " + currentName.getTitleCache() + "<->" + firstSynonym.getTitleCache());
+                }
+            }else{
+                if (! matchAuthor(currentName.getCombinationAuthorship(), firstSynonym.getBasionymAuthorship())){
+                    logger.info(line + "Current combination author and first synonym basionym author do not match: " + currentName.getTitleCache() + "<->" + firstSynonym.getTitleCache());
+                }
+            }
+        }
+
+    }
+
+
+    /**
+     * @param synonymStr
+     * @return
+     */
+    private boolean isSpecialHeterotypic(String synonymStr) {
+        if (synonymStr == null){
+            return false;
+        }else if (synonymStr.equals("Rhynchospora prenleloupiana (‘prenteloupiana’) Boeckeler")){
+            return true;
+        }else if (synonymStr.equals("Psidium longipes var. orbiculare (O.Berg) McVaugh")){
+            return true;
+        }
+        return false;
+    }
+
+
+    /**
+     * @param areaKey
+     * @param record
+     * @param state
+     * @param taxon
+     */
+    private void makeSingleProvinceDistribution(String areaKey,
+            HashMap<String, String> record,
+            CubaImportState state) {
+        try {
+            UUID areaUuid = state.getTransformer().getNamedAreaUuid(areaKey);
+            if (areaUuid == null){
+                logger.warn("Area not recognized: " + areaKey);
+                return;
+            }
+            if (record.get(areaKey)==null){
+                return; //no status defined
+            }
+
+            NamedArea area = getNamedArea(state, areaUuid, null, null, null, null, null);
+            if (area == null){
+                logger.warn(state.getCurrentLine() + ": Area not recognized: " + area);
+            }
+            TaxonDescription desc = getTaxonDescription(state.getCurrentTaxon(), false, true);
+            PresenceAbsenceTerm status =  makeProvinceStatus(areaKey, record, state);
+            if (status == null){
+                logger.warn(state.getCurrentLine() + ": Province distribution status could not be defined: " + record.get(areaKey));
+            }
+            Distribution distribution = Distribution.NewInstance(area, status);
+            desc.addElement(distribution);
+            distribution.addSource(makeDescriptionSource(state));
+        } catch (UndefinedTransformerMethodException e) {
+            e.printStackTrace();
+        }
+
+    }
 
 
     /**
@@ -441,7 +582,7 @@ public class CubaExcelImport extends ExcelImporterBase<CubaImportState> {
      * @param taxon
      * @param homotypicalGroup
      */
-    private void handleHomotypicGroup(String homotypicStr,
+    private List<BotanicalName> handleHomotypicGroup(String homotypicStrOrig,
             CubaImportState state,
             BotanicalName homotypicName,
             boolean isHeterotypic,
@@ -449,18 +590,23 @@ public class CubaExcelImport extends ExcelImporterBase<CubaImportState> {
             String homonymPart,
             boolean isDoubtful) {
 
+        List<BotanicalName> homotypicNameList = new ArrayList<>();
+        homotypicNameList.add(homotypicName);
+
+        String homotypicStr = homotypicStrOrig;
         if (homotypicStr == null){
-            return;
+            return homotypicNameList;
         }else if (homotypicStr.startsWith("(") && homotypicStr.endsWith("")){
             homotypicStr = homotypicStr.substring(1, homotypicStr.length() - 1);
         }
 
-        BotanicalName currentBasionym = homotypicName;
+        HomotypicalGroup homotypicGroup = homotypicName.getHomotypicalGroup();
         String[] splits = homotypicStr.split("\\s*,\\s*");
         for (String split : splits){
             split = replaceHomonIlleg(split);
             boolean isHomonym = split.matches(".*" + HOMONYM_MARKER);
-            BotanicalName newName = makeName(split);
+            BotanicalName newName = makeName(state, split);
+            newName.setHomotypicalGroup(homotypicGroup);  //not really necessary as this is later set anyway
             if (newName.isProtectedTitleCache()){
                 logger.warn(state.getCurrentLine() + ": homotypic name part could not be parsed: " + split);
             }
@@ -468,16 +614,18 @@ public class CubaExcelImport extends ExcelImporterBase<CubaImportState> {
                 homonyms.add(newName);
             }
             if (isHeterotypic){
-                SynonymRelationship sr = state.getCurrentTaxon().addHeterotypicSynonymName(newName, homotypicName.getHomotypicalGroup(), null, null);
+                SynonymRelationship sr = state.getCurrentTaxon().addHeterotypicSynonymName(newName, homotypicGroup, null, null);
                 sr.getSynonym().setDoubtful(isDoubtful);
+                sr.getSynonym().addSource(makeOriginalSource(state));
 //                newName.addBasionym(homotypicName);
-                currentBasionym = handleBasionym(currentBasionym, newName);
             }else{
                 state.getCurrentTaxon().addHomotypicSynonymName(newName, null, null);
-                handleBasionym(currentBasionym, newName);
             }
+            handleBasionym(state, homotypicNameList, homonyms, newName);
+            homotypicNameList.add(newName);
         }
-        makeHomonyms(homonyms, homonymPart, state, currentBasionym);
+        makeHomonyms(homonyms, homonymPart, state, homotypicGroup);
+        return homotypicNameList;
     }
 
 
@@ -498,7 +646,7 @@ public class CubaExcelImport extends ExcelImporterBase<CubaImportState> {
      * @param currentBasionym
      */
     private void makeHomonyms(List<BotanicalName> homonyms, String homonymPartOrig, CubaImportState state,
-            BotanicalName currentBasionym) {
+            HomotypicalGroup homotypicGroup) {
         String line = state.getCurrentLine() + ": ";
         String homonymPart = homonymPartOrig == null ? "" : homonymPartOrig.trim();
         if (homonyms.isEmpty() && homonymPart.equals("")){
@@ -511,7 +659,7 @@ public class CubaExcelImport extends ExcelImporterBase<CubaImportState> {
         String[] splits = homonymPart.split("\\]\\s*\\[");
         if (splits.length != homonyms.size()){
             if(homonyms.size() == 0 && splits.length >= 1){
-                handleSimpleBlockingNames(splits, state, currentBasionym);
+                handleSimpleBlockingNames(splits, state, homotypicGroup);
             }else{
                 logger.warn(line + "Number of homonyms (" + homonyms.size() + ") and homonymParts ("+splits.length+") does not match");
             }
@@ -520,32 +668,33 @@ public class CubaExcelImport extends ExcelImporterBase<CubaImportState> {
         int i = 0;
         for (String split : splits){
             split = split.replaceAll("^non\\s+", "");
-            BotanicalName newName = makeName(split);
+            BotanicalName newName = makeName(state, split);
 //            BotanicalName newName = (BotanicalName)nameParser.parseReferencedName(split, state.getConfig().getNomenclaturalCode(), Rank.SPECIES());
             if (newName.isProtectedTitleCache()){
                 logger.warn(state.getCurrentLine() + ": homonym name could not be parsed: " + split);
             }
-            newName.addRelationshipToName(homonyms.get(i), NameRelationshipType.LATER_HOMONYM(), null);
+            homonyms.get(i).addRelationshipToName(newName, NameRelationshipType.LATER_HOMONYM(), null);
             i++;
         }
     }
 
-
     /**
      * @param homonymPart
      * @param state
-     * @param currentBasionym
+     * @param homotypicGroup
      */
-    private void handleSimpleBlockingNames(String[] splitsi, CubaImportState state,
-            BotanicalName currentBasionym) {
+    private void handleSimpleBlockingNames(String[] splitsi,
+            CubaImportState state,
+            HomotypicalGroup homotypicGroup) {
+        List<BotanicalName> replacementNameCandidates = new ArrayList<>();
         for (String spliti : splitsi){
 
             String split = spliti.replaceAll("^non\\s+", "");
-            BotanicalName newName = makeName(split);
+            BotanicalName newName = makeName(state, split);
             if (newName.isProtectedTitleCache()){
                 logger.warn(state.getCurrentLine() + ": blocking name could not be parsed: " + split);
             }
-            Set<BotanicalName> typifiedNames = (Set)currentBasionym.getHomotypicalGroup().getTypifiedNames();
+            Set<BotanicalName> typifiedNames = (Set)homotypicGroup.getTypifiedNames();
             Set<BotanicalName> candidates = new HashSet<>();
             for (BotanicalName name : typifiedNames){
                 if (name.getGenusOrUninomial() != null && name.getGenusOrUninomial().equals(newName.getGenusOrUninomial())){
@@ -555,32 +704,142 @@ public class CubaExcelImport extends ExcelImporterBase<CubaImportState> {
                 }
             }
             if (candidates.size() == 1){
-                newName.addRelationshipToName(candidates.iterator().next(), NameRelationshipType.BLOCKING_NAME_FOR(), null);
+                BotanicalName blockedName = candidates.iterator().next();
+                newName.addRelationshipToName(blockedName, NameRelationshipType.BLOCKING_NAME_FOR(), null);
+                replacementNameCandidates.add(blockedName);
             }else{
                 logger.warn(state.getCurrentLine() + ": Blocking name could not be handled. " + candidates.size() + " candidates.");
             }
+        }
+        makeReplacedSynonymIfPossible(state, homotypicGroup, replacementNameCandidates);
+    }
+
+    /**
+     * @param homotypicGroup
+     * @param replacementNameCandidates
+     */
+    private void makeReplacedSynonymIfPossible(CubaImportState state,
+            HomotypicalGroup homotypicGroup,
+            List<BotanicalName> replacementNameCandidates) {
+        String line = state.getCurrentLine() +": ";
+        List<BotanicalName> replacedCandidates = new ArrayList<>();
+        for (TaxonNameBase<?, ?> typifiedName : homotypicGroup.getTypifiedNames()){
+            BotanicalName candidate = (BotanicalName)typifiedName;
+            if (candidate.getBasionymAuthorship() == null){
+                if (candidate.getStatus().isEmpty()){
+                    if (! replacementNameCandidates.contains(candidate)){
+                        replacedCandidates.add(candidate);
+                    }
+                }
+            }
+        }
+        if (replacedCandidates.size() == 1){
+            BotanicalName replacedSynonym = replacedCandidates.iterator().next();
+            for (BotanicalName replacementName : replacementNameCandidates){
+                replacementName.addReplacedSynonym(replacedSynonym, null, null, null);
+            }
+        }else if (replacedCandidates.size() < 1){
+            logger.warn(line + "No replaced synonym candidate found");
+        }else{
+            logger.warn(line + "More than 1 ("+replacedCandidates.size()+") replaced synonym candidates found");
         }
     }
 
 
     /**
+     * @param homotypicGroup
      * @param newName
-     * @param homotypicName
+     */
+    private void handleBasionym(CubaImportState state, List<BotanicalName> homotypicNameList,
+            List<BotanicalName> homonyms, BotanicalName newName) {
+        for (BotanicalName existingName : homotypicNameList){
+            if (existingName != newName){  //should not happen anymore, as new name is added later
+                boolean onlyIfNotYetExists = true;
+                createBasionymRelationIfPossible(state, existingName, newName, homonyms.contains(newName), onlyIfNotYetExists);
+            }
+        }
+    }
+
+    /**
+     * @param state
+     * @param name1
+     * @param name2
      * @return
      */
-    private BotanicalName handleBasionym(BotanicalName currentBasionym, BotanicalName name2) {
-        BotanicalName basionymName = currentBasionym;
+    private void createBasionymRelationIfPossible(CubaImportState state, BotanicalName name1, BotanicalName name2,
+            boolean name2isHomonym, boolean onlyIfNotYetExists) {
+        BotanicalName basionymName = name1;
         BotanicalName newCombination = name2;
-        //switch if necessary
-        if (basionymName.getBasionymAuthorship() != null && newCombination.getBasionymAuthorship() == null){
+        //exactly one name must have a basionym author
+        if (name1.getBasionymAuthorship() == null && name2.getBasionymAuthorship() == null
+                || name1.getBasionymAuthorship() != null && name2.getBasionymAuthorship() != null){
+            return;
+        }
+
+        //switch order if necessary
+        if (! name2isHomonym && basionymName.getBasionymAuthorship() != null && newCombination.getBasionymAuthorship() == null){
             basionymName = name2;
-            newCombination = currentBasionym;
+            newCombination = name1;
         }
-//        newCombination.getHomotypicalGroup().removeGroupBasionym(xxx);
-        if (matchAuthor(basionymName.getCombinationAuthorship(), newCombination.getBasionymAuthorship())){
-            newCombination.getHomotypicalGroup().setGroupBasionym(basionymName);
+        if (matchAuthor(basionymName.getCombinationAuthorship(), newCombination.getBasionymAuthorship())
+                && matchLastNamePart(basionymName, newCombination)){
+            newCombination.addBasionym(basionymName);
+        }else{
+            if ( (newCombination.getBasionyms().isEmpty() || ! onlyIfNotYetExists)
+                    && isLegitimate(basionymName)
+                    && ! name2isHomonym){
+                logger.info(state.getCurrentLine() + ": Names are potential basionyms but either author or name part do not match: " + basionymName.getTitleCache() + " <-> " + newCombination.getTitleCache());
+            }
         }
-        return basionymName;
+    }
+
+    /**
+     * @param basionymName
+     * @return
+     */
+    private boolean isLegitimate(BotanicalName basionymName) {
+        for (NomenclaturalStatus nomStatus : basionymName.getStatus()){
+            if (nomStatus.getType()!= null && nomStatus.getType().isIllegitimateType()){
+                    return false;
+            }
+        }
+        for (NameRelationship nameRel : basionymName.getNameRelations()){
+            if (nameRel.getType()!= null && nameRel.getType().isIllegitimateType()){
+                    return false;
+            }
+        }
+        return true;
+    }
+
+
+    /**
+     * @param basionymName
+     * @param newCombination
+     * @return
+     */
+    private boolean matchLastNamePart(BotanicalName name1, BotanicalName name2) {
+        String lastNamePart1 = name1.getLastNamePart();
+        String lastNamePart2 = name2.getLastNamePart();
+        if (lastNamePart1 != null && lastNamePart2 != null){
+            lastNamePart1 = normalizeBasionymNamePart(lastNamePart1);
+            lastNamePart2 = normalizeBasionymNamePart(lastNamePart2);
+            return (lastNamePart1.equals(lastNamePart2));
+        }else{
+            return false;
+        }
+    }
+
+    /**
+     * @param lastNamePart1
+     * @return
+     */
+    private String normalizeBasionymNamePart(String lastNamePart) {
+        String namePart = lastNamePart.toLowerCase()
+                .replaceAll("(um|us|a|is|e|os|on|or)$", "")
+                .replaceAll("er$", "r")    //e.g. ruber <-> rubra
+                .replaceAll("ese$", "s");  //e.g.  cayanensis <-> cayanenese
+                //TODO tampensis / tampense
+        return namePart;
     }
 
 
@@ -627,15 +886,26 @@ public class CubaExcelImport extends ExcelImporterBase<CubaImportState> {
         if (taxonStr == null){
             return isSynonym ? state.getCurrentTaxon() : null;
         }
+
         boolean isAbsent = false;
         if (taxonStr.startsWith("[") && taxonStr.endsWith("]")){
             taxonStr = taxonStr.substring(1, taxonStr.length() - 1);
             isAbsent = true;
         }
 
-        BotanicalName botanicalName = makeName(taxonStr);
+        boolean isAuct = false;
+        if (taxonStr.endsWith("auct.")){
+            isAuct = true;
+            taxonStr.replace("auct.", "").trim();
+        }
+        state.setTaxonIsAbsent(isAbsent);
+        BotanicalName botanicalName = makeName(state, taxonStr);
         Reference<?> sec = getSecReference(state);
         Taxon taxon = Taxon.NewInstance(botanicalName, sec);
+        if (isAuct){
+            taxon.setAppendedPhrase("auct.");
+        }
+
         TaxonNode higherNode;
         if (botanicalName.isProtectedTitleCache()){
             logger.warn(state.getCurrentLine() + ": Taxon could not be parsed: " + taxonStr);
@@ -647,14 +917,17 @@ public class CubaExcelImport extends ExcelImporterBase<CubaImportState> {
                 higherNode = genus.getTaxonNodes().iterator().next();
             }else{
                 BotanicalName name = BotanicalName.NewInstance(Rank.GENUS());
+                name.addSource(makeOriginalSource(state));
                 name.setGenusOrUninomial(genusStr);
                 genus = Taxon.NewInstance(name, sec);
+                genus.addSource(makeOriginalSource(state));
                 higherNode = familyNode.addChildTaxon(genus, null, null);
                 state.putHigherTaxon(genusStr, genus);
             }
         }
 
         higherNode.addChildTaxon(taxon, null, null);
+        taxon.addSource(makeOriginalSource(state));
 
         return taxon;
     }
@@ -665,7 +938,7 @@ public class CubaExcelImport extends ExcelImporterBase<CubaImportState> {
      * @param taxonStr
      * @return
      */
-    private BotanicalName makeName(String nameStrOrig) {
+    private BotanicalName makeName(CubaImportState state, String nameStrOrig) {
         //normalize
         String nameStr = normalizeStatus(nameStrOrig);
         //orthVar
@@ -675,19 +948,89 @@ public class CubaExcelImport extends ExcelImporterBase<CubaImportState> {
             orthVar = orthVarMatcher.group(1);
             nameStr = nameStr.replace(" " + orthVar, "").trim().replaceAll("\\s{2,}", " ");
             orthVar = orthVar.substring(2, orthVar.length() - 2);
-
         }
+
+        boolean isNomInval = false;
+        if (nameStr.endsWith("nom. inval.")){
+            isNomInval = true;
+            nameStr = nameStr.replace("nom. inval.", "").trim();
+        }
+
         BotanicalName result = (BotanicalName)nameParser.parseReferencedName(nameStr, nc, Rank.SPECIES());
+        result.addSource(makeOriginalSource(state));
+        if (isNomInval){
+            result.addStatus(NomenclaturalStatus.NewInstance(NomenclaturalStatusType.INVALID()));
+        }
         if (orthVar != null){
             BotanicalName orthVarName = (BotanicalName)result.clone();
+            orthVarName.addSource(makeOriginalSource(state));
             //TODO
             Reference<?> citation = null;
             orthVarName.addRelationshipToName(result, NameRelationshipType.ORTHOGRAPHIC_VARIANT(), citation, null, null);
             orthVarName.setSpecificEpithet(orthVar);
         }
+        normalizeAuthors(result);
         return result;
 
     }
+
+    /**
+     * @param result
+     */
+    private void normalizeAuthors(BotanicalName result) {
+        result.setCombinationAuthorship(normalizeAuthor(result.getCombinationAuthorship()));
+        result.setExCombinationAuthorship(normalizeAuthor(result.getExCombinationAuthorship()));
+        result.setExBasionymAuthorship(normalizeAuthor(result.getExBasionymAuthorship()));
+        result.setBasionymAuthorship(normalizeAuthor(result.getBasionymAuthorship()));
+
+    }
+
+
+    /**
+     * @param combinationAuthorship
+     * @return
+     */
+    private TeamOrPersonBase<?> normalizeAuthor(TeamOrPersonBase<?> author) {
+        if (author == null){
+            return null;
+        }
+        TeamOrPersonBase<?> result;
+        if (author.isInstanceOf(Person.class)){
+            result = normalizePerson(CdmBase.deproxy(author, Person.class));
+        }else{
+            Team team = CdmBase.deproxy(author, Team.class);
+            List<Person> list = team.getTeamMembers();
+            for(int i = 0; i < list.size(); i++){
+                Person person = list.get(i);
+                Person tmpMember = normalizePerson(person);
+                list.set(i, tmpMember);
+            }
+            return team;
+        }
+        return result;
+    }
+
+
+    /**
+     * @param deproxy
+     * @return
+     */
+    private Person normalizePerson(Person person) {
+        String title = person.getNomenclaturalTitle();
+        title = title.replaceAll("(?<=[a-zA-Z])\\.(?=[a-zA-Z])", ". ");
+        person.setNomenclaturalTitle(title);
+        boolean isFilius = title.endsWith(" f.");
+        if (isFilius){
+            title.replace(" f.", "");
+        }
+
+        String[] splits = title.split("\\s+");
+        int nNotFirstName = isFilius ? 2 : 1;
+        person.setLastname(splits[splits.length - nNotFirstName] + (isFilius? " f." : ""));
+        person.setFirstname(CdmUtils.concat(" ", Arrays.copyOfRange(splits, 0, splits.length-nNotFirstName)));
+        return person;
+    }
+
 
     /**
      * @param state
@@ -739,26 +1082,112 @@ public class CubaExcelImport extends ExcelImporterBase<CubaImportState> {
         if (familyStr == null){
             return null;
         }
+        familyStr = familyStr.trim();
+        String alternativeFamilyStr = null;
+        if (familyStr.contains("/")){
+            String[] splits = familyStr.split("/");
+            if (splits.length > 2){
+                logger.warn(state.getCurrentLine() +": " + "More than 1 alternative name:" + familyStr);
+            }
+            familyStr = splits[0].trim();
+            alternativeFamilyStr = splits[1].trim();
+        }
+
         Taxon family = state.getHigherTaxon(familyStr);
         TaxonNode familyNode;
         if (family != null){
             familyNode = family.getTaxonNodes().iterator().next();
         }else{
-            BotanicalName name = state.getFamilyName(familyStr);
-            if (name == null){
-                name = BotanicalName.NewInstance(Rank.FAMILY());
-                name.setGenusOrUninomial(familyStr);
-                state.putFamilyName(familyStr, name);
-            }
+            BotanicalName name = makeFamilyName(state, familyStr);
             Reference<?> sec = getSecReference(state);
-            Taxon taxon = Taxon.NewInstance(name, sec);
+            family = Taxon.NewInstance(name, sec);
             ITaxonTreeNode rootNode = getClassification(state);
-            familyNode = rootNode.addChildTaxon(taxon, sec, null);
-            state.putHigherTaxon(familyStr, taxon);
+            familyNode = rootNode.addChildTaxon(family, sec, null);
+            state.putHigherTaxon(familyStr, family);
+
+        }
+
+        if (isNotBlank(alternativeFamilyStr)){
+            NameRelationshipType type = NameRelationshipType.ALTERNATIVE_NAME();
+            BotanicalName alternativeName = makeFamilyName(state, alternativeFamilyStr);
+            BotanicalName familyName = (BotanicalName)family.getName();
+            boolean hasRelation = false;
+            for (NameRelationship nameRel : familyName.getRelationsToThisName()){
+                if (nameRel.getType().equals(type)){
+                    if (nameRel.getFromName().equals(alternativeName)){
+                        hasRelation = true;
+                    }
+                }
+            }
+            if (!hasRelation){
+                familyName.addRelationshipFromName(alternativeName, type, null);
+            }
+
         }
 
         return familyNode;
     }
+
+
+    /**
+     * @param state
+     * @param taxon
+     */
+    private void validateTaxonIsAbsent(CubaImportState state, Taxon taxon) {
+        if (!state.isTaxonIsAbsent()){
+            return;
+        }
+
+        for (DescriptionElementBase el : taxon.getDescriptions().iterator().next().getElements()){
+            if (el instanceof Distribution){
+                Distribution dist = (Distribution)el;
+                NamedArea area = dist.getArea();
+                if (isCubanArea(area)){
+                    PresenceAbsenceTerm status = dist.getStatus();
+                    if (status != null && !status.isAbsenceTerm()){
+                        if (!isDoubtfulTerm(status)){
+                            String name = taxon.getName().getTitleCache();
+                            logger.error(state.getCurrentLine() +": Taxon ("+name+")is absent'[]' but has presence distribution: " + status.getTitleCache());
+                            return;
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    /**
+     * @param state
+     * @param taxon
+     */
+    private void validateEndemic(CubaImportState state, Taxon taxon) {
+
+        boolean hasExternalPresence = false;
+        for (DescriptionElementBase el : taxon.getDescriptions().iterator().next().getElements()){
+            if (el instanceof Distribution){
+                Distribution dist = (Distribution)el;
+                NamedArea area = dist.getArea();
+                if (!isCubanArea(area)){
+                    PresenceAbsenceTerm status = dist.getStatus();
+                    if (status != null && !status.isAbsenceTerm()){
+                        if (!isDoubtfulTerm(status)){
+                            hasExternalPresence = true;
+                            if (state.isEndemic()){
+                                String name = taxon.getName().getTitleCache();
+                                logger.error(state.getCurrentLine() +": Taxon ("+name+")is endemic but has non-cuban distribution: " + area.getIdInVocabulary() + "-" + status.getIdInVocabulary());
+                                return;
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        if (!state.isEndemic() && ! hasExternalPresence){
+            String name = taxon.getName().getTitleCache();
+            logger.error(state.getCurrentLine() +": Taxon ("+name+")is not endemic but has no non-cuban distribution" );
+        }
+    }
+
 
     /**
      * @param state
@@ -771,17 +1200,29 @@ public class CubaExcelImport extends ExcelImporterBase<CubaImportState> {
         String key = famRef.getTitle() + ":"+ famStr;
         Taxon family = state.getHigherTaxon(key);
         if (family == null){
-            BotanicalName name = state.getFamilyName(famStr);
-            if (name == null){
-                name = BotanicalName.NewInstance(Rank.FAMILY());
-                name.setGenusOrUninomial(famStr);
-                state.putFamilyName(famStr, name);
-            }
+            BotanicalName name = makeFamilyName(state, famStr);
             family = Taxon.NewInstance(name, famRef);
             state.putHigherTaxon(key, family);
         }
 
         return family;
+    }
+
+
+    /**
+     * @param state
+     * @param famStr
+     * @return
+     */
+    private BotanicalName makeFamilyName(CubaImportState state, String famStr) {
+        BotanicalName name = state.getFamilyName(famStr);
+        if (name == null){
+            name = BotanicalName.NewInstance(Rank.FAMILY());
+            name.setGenusOrUninomial(famStr);
+            state.putFamilyName(famStr, name);
+            name.addSource(makeOriginalSource(state));
+        }
+        return name;
     }
 
 
@@ -847,7 +1288,7 @@ public class CubaExcelImport extends ExcelImporterBase<CubaImportState> {
 	 */
 	@Override
     protected void firstPass(CubaImportState state) {
-	    boolean isSynonym = false;
+	    boolean isSynonymOnly = false;
 
         String line = state.getCurrentLine() + ": ";
         HashMap<String, String> record = state.getOriginalRecord();
@@ -874,15 +1315,13 @@ public class CubaExcelImport extends ExcelImporterBase<CubaImportState> {
                 logger.warn(line + "Family not recognized but also no synonym exists");
                 return;
             }else{
-                isSynonym = true;
+                isSynonymOnly = true;
             }
         }
 
-
-
-        //Taxón
-        Taxon taxon = makeTaxon(record, state, familyTaxon, isSynonym);
-        if (taxon == null && ! isSynonym){
+       //Taxón
+        Taxon taxon = makeTaxon(record, state, familyTaxon, isSynonymOnly);
+        if (taxon == null && ! isSynonymOnly){
             logger.warn(line + "taxon could not be created and is null");
             return;
         }
@@ -895,7 +1334,7 @@ public class CubaExcelImport extends ExcelImporterBase<CubaImportState> {
         makeNotes(record, state);
 
         //Syn.
-        makeSynonyms(record, state);
+        makeSynonyms(record, state, !isSynonymOnly);
 
         //End, Ind, Ind? D, Nat N, Dud P, Adv A, Cult C
         makeCubanDistribution(record, state);
@@ -910,6 +1349,10 @@ public class CubaExcelImport extends ExcelImporterBase<CubaImportState> {
 //      "AmN","AmC","AmS","VM"});
         makeOtherAreasDistribution(record, state);
 
+        validateTaxonIsAbsent(state, taxon);
+        if (!isSynonymOnly){
+            validateEndemic(state, taxon);
+        }
 
         state.setHighestStatusForTaxon(null);
 
@@ -917,8 +1360,60 @@ public class CubaExcelImport extends ExcelImporterBase<CubaImportState> {
     }
 
 
+    /**
+     * @param state
+     * @return
+     */
+    private IdentifiableSource makeOriginalSource(CubaImportState state) {
+        return IdentifiableSource.NewDataImportInstance("line: " + state.getCurrentLine(), null, state.getConfig().getSourceReference());
+    }
+    /**
+     * @param state
+     * @return
+     */
+    private DescriptionElementSource makeDescriptionSource(CubaImportState state) {
+        return DescriptionElementSource.NewDataImportInstance("line: " + state.getCurrentLine(), null, state.getConfig().getSourceReference());
+    }
 
-	/**
+    private static Set<UUID> doubtfulStatus = new HashSet<>();
+
+    /**
+     * @param status
+     * @return
+     */
+    private boolean isDoubtfulTerm(PresenceAbsenceTerm status) {
+        if (doubtfulStatus.isEmpty()){
+            doubtfulStatus.add(CubaTransformer.nonNativeDoubtfullyNaturalisedUuid);
+            doubtfulStatus.add(CubaTransformer.doubtfulIndigenousDoubtfulUuid);
+            doubtfulStatus.add(CubaTransformer.endemicDoubtfullyPresentUuid);
+            doubtfulStatus.add(CubaTransformer.naturalisedDoubtfullyPresentUuid);
+            doubtfulStatus.add(CubaTransformer.nonNativeDoubtfullyPresentUuid);
+            doubtfulStatus.add(CubaTransformer.occasionallyCultivatedUuid);
+            doubtfulStatus.add(CubaTransformer.rareCasualUuid);
+            doubtfulStatus.add(PresenceAbsenceTerm.NATIVE_PRESENCE_QUESTIONABLE().getUuid());
+            doubtfulStatus.add(PresenceAbsenceTerm.CULTIVATED_PRESENCE_QUESTIONABLE().getUuid());
+        }
+        boolean isDoubtful = doubtfulStatus.contains(status.getUuid());
+        return isDoubtful;
+    }
+
+
+    /**
+     * @param area
+     * @return
+     */
+    private boolean isCubanArea(NamedArea area) {
+        if (area.getUuid().equals(CubaTransformer.uuidCuba)){
+            return true;
+        }else if (area.getPartOf()!= null){
+            return isCubanArea(area.getPartOf());
+        }else{
+            return false;
+        }
+    }
+
+
+    /**
      * @param record
      * @param state
      * @param familyTaxon
@@ -1041,41 +1536,6 @@ public class CubaExcelImport extends ExcelImporterBase<CubaImportState> {
     }
 
 
-    /**
-     * @param areaKey
-     * @param record
-     * @param state
-     * @param taxon
-     */
-    private void makeSingleProvinceDistribution(String areaKey,
-            HashMap<String, String> record,
-            CubaImportState state) {
-        try {
-            UUID areaUuid = state.getTransformer().getNamedAreaUuid(areaKey);
-            if (areaUuid == null){
-                logger.warn("Area not recognized: " + areaKey);
-                return;
-            }
-            if (record.get(areaKey)==null){
-                return; //no status defined
-            }
-
-            NamedArea area = getNamedArea(state, areaUuid, null, null, null, null, null);
-            if (area == null){
-                logger.warn(state.getCurrentLine() + ": Area not recognized: " + area);
-            }
-            TaxonDescription desc = getTaxonDescription(state.getCurrentTaxon(), false, true);
-            PresenceAbsenceTerm status =  makeProvinceStatus(areaKey, record, state);
-            if (status == null){
-                logger.warn(state.getCurrentLine() + ": Province distribution status could not be defined: " + record.get(areaKey));
-            }
-            Distribution distribution = Distribution.NewInstance(area, status);
-            desc.addElement(distribution);
-        } catch (UndefinedTransformerMethodException e) {
-            e.printStackTrace();
-        }
-
-    }
 
 
     /**
@@ -1093,17 +1553,26 @@ public class CubaExcelImport extends ExcelImporterBase<CubaImportState> {
         String statusStr = record.get(areaKey);
         if (statusStr == null){
             return null;
+        }else{
+            statusStr = statusStr.trim();
         }
         PresenceAbsenceTerm status = state.getTransformer().getPresenceTermByKey(statusStr);
         if (status == null){
-            PresenceAbsenceTerm highestStatus = state.getHighestStatusForTaxon();
+//            PresenceAbsenceTerm highestStatus = state.getHighestStatusForTaxon();
             if (state.isCubanProvince() && isMinus(statusStr)){
-                getAbsenceTermForStatus(state, highestStatus);
+//                getAbsenceTermForStatus(state, highestStatus);
+                //we now handle cuban provinces same as external regions
+                status = state.getTransformer().getPresenceTermByKey("--");
             }else if (! state.isCubanProvince() && isMinus(statusStr)){
                 status = state.getTransformer().getPresenceTermByKey("--");
             }else{
+//                logger.warn("Unhandled status str for provinces / external regions: " + statusStr);
                 UUID statusUuid = state.getTransformer().getPresenceTermUuid(statusStr);
-                status = getPresenceTerm(state, statusUuid, null, null, null, false);
+                if (statusUuid == null){
+                    logger.error(state.getCurrentLine() + ": Undefined status str for provinces / external regions. No UUID given: '" + statusStr + "'");
+                }else{
+                    status = getPresenceTerm(state, statusUuid, statusStr, statusStr, statusStr, false);
+                }
             }
         }
 

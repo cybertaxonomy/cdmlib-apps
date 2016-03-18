@@ -14,6 +14,7 @@ import java.util.UUID;
 
 import org.apache.log4j.Logger;
 
+import eu.etaxonomy.cdm.api.application.CdmApplicationController;
 import eu.etaxonomy.cdm.api.application.ICdmApplicationConfiguration;
 import eu.etaxonomy.cdm.api.service.ITermService;
 import eu.etaxonomy.cdm.app.common.CdmDestinations;
@@ -24,6 +25,7 @@ import eu.etaxonomy.cdm.io.common.IImportConfigurator.CHECK;
 import eu.etaxonomy.cdm.io.cuba.CubaImportConfigurator;
 import eu.etaxonomy.cdm.io.cuba.CubaTransformer;
 import eu.etaxonomy.cdm.model.agent.Person;
+import eu.etaxonomy.cdm.model.agent.Team;
 import eu.etaxonomy.cdm.model.description.Feature;
 import eu.etaxonomy.cdm.model.description.FeatureNode;
 import eu.etaxonomy.cdm.model.description.FeatureTree;
@@ -41,8 +43,8 @@ public class CubaActivator {
 	static DbSchemaValidation hbm2dll = DbSchemaValidation.CREATE;
 
 //    static final ICdmDataSource cdmDestination = CdmDestinations.localH2();
-//  static final ICdmDataSource cdmDestination = CdmDestinations.cdm_test_local_mysql_test();
-    static final ICdmDataSource cdmDestination = CdmDestinations.cdm_cuba_production();
+  static final ICdmDataSource cdmDestination = CdmDestinations.cdm_test_local_mysql_test();
+//    static final ICdmDataSource cdmDestination = CdmDestinations.cdm_cuba_production();
 
 	static boolean invers = false;
 
@@ -67,16 +69,14 @@ public class CubaActivator {
     static boolean include = !invers;
 
 
-
-
 	//feature tree uuid
 	public static final UUID featureTreeUuid = UUID.fromString("dad6b9b5-693f-4367-a7aa-076cc9c99476");
 
 	//classification
 	static final UUID classificationUuid = UUID.fromString("5de394de-9c76-4b97-b04d-71be31c7f44b");
-	private static final String classificationName = "Flora of Cuba";
+	private static final String classificationName = "Cuba Checklist";
 
-	static final String sourceReferenceTitle = "Cuba import";
+	static final String sourceReferenceTitle = "Cuba Checklist Word Documents";
 
 	//check - import
 	static final CHECK check = CHECK.IMPORT_WITHOUT_CHECK;
@@ -106,70 +106,74 @@ public class CubaActivator {
 
 		//...
         if (doAsteraceae){
-            doSource(asteraceae(), config, myImport, doVocabularies);
+            doSingleSource(asteraceae(), config, myImport, doVocabularies);
         }
         if (doConvolvulaceae){
-            doSource(convolvulaceae(), config, myImport, doVocabularies);
+            doSingleSource(convolvulaceae(), config, myImport, doVocabularies);
         }
         if (doCyperaceae){
-            doSource(cyperaceae(), config, myImport, doVocabularies);
+            doSingleSource(cyperaceae(), config, myImport, doVocabularies);
         }
         if (doDicotA_C){
-            doSource(dicotA_C(), config, myImport, doVocabularies);
+            doSingleSource(dicotA_C(), config, myImport, doVocabularies);
         }
         if (doDicotD_M){
-            doSource(dicotD_M(), config, myImport, doVocabularies);
+            doSingleSource(dicotD_M(), config, myImport, doVocabularies);
         }
         if (doDicotN_Z){
-            doSource(dicotN_Z(), config, myImport, doVocabularies);
+            doSingleSource(dicotN_Z(), config, myImport, doVocabularies);
         }
         if (doEuphorbiaceae){
-            doSource(euphorbiaceae(), config, myImport, doVocabularies);
+            doSingleSource(euphorbiaceae(), config, myImport, doVocabularies);
         }
         if (doFabaceae){
-            doSource(fabaceae(), config, myImport, doVocabularies);
+            doSingleSource(fabaceae(), config, myImport, doVocabularies);
         }
         if (doGymnospermae){
-            doSource(gymnospermae(), config, myImport, doVocabularies);
+            doSingleSource(gymnospermae(), config, myImport, doVocabularies);
         }
         if (doLamVerbenaceae){
-            doSource(lamVerbenaceae(), config, myImport, doVocabularies);
+            doSingleSource(lamVerbenaceae(), config, myImport, doVocabularies);
         }
         if (doMalpighiaceae){
-            doSource(malpighiaceae(), config, myImport, doVocabularies);
+            doSingleSource(malpighiaceae(), config, myImport, doVocabularies);
         }
         if (doMelastomataceae){
-            doSource(melastomataceae(), config, myImport, doVocabularies);
+            doSingleSource(melastomataceae(), config, myImport, doVocabularies);
         }
         if (doMonocots){
-            doSource(monocots(), config, myImport, doVocabularies);
+            doSingleSource(monocots(), config, myImport, doVocabularies);
         }
         if (doMyrtaceae){
-            doSource(myrtaceae(), config, myImport, doVocabularies);
+            doSingleSource(myrtaceae(), config, myImport, doVocabularies);
         }
         if (doOrchidaceae){
-            doSource(orchidaceae(), config, myImport, doVocabularies);
+            doSingleSource(orchidaceae(), config, myImport, doVocabularies);
         }
         if (doRubiaceae){
-            doSource(rubiaceae(), config, myImport, doVocabularies);
+            doSingleSource(rubiaceae(), config, myImport, doVocabularies);
         }
         if (doUrticaceae){
-            doSource(urticaceae(), config, myImport, doVocabularies);
+            doSingleSource(urticaceae(), config, myImport, doVocabularies);
         }
 
 
 
 		//deduplicate
 		if (doDeduplicate){
-			ICdmApplicationConfiguration app = myImport.getCdmAppController();
+		    logger.warn("Start deduplication ...");
+
+		    ICdmApplicationConfiguration app = myImport.getCdmAppController();
+			if (app == null){
+                app = CdmApplicationController.NewInstance(cdmDestination, hbm2dll, false);
+            }
 			int count = app.getAgentService().deduplicate(Person.class, null, null);
 			logger.warn("Deduplicated " + count + " persons.");
-//			count = app.getAgentService().deduplicate(Team.class, null, null);
-//			logger.warn("Deduplicated " + count + " teams.");
+			count = app.getAgentService().deduplicate(Team.class, null, null);
+			logger.warn("Deduplicated " + count + " teams.");
 			count = app.getReferenceService().deduplicate(Reference.class, null, null);
 			logger.warn("Deduplicated " + count + " references.");
 		}
-
 
 		System.exit(0);
 
@@ -180,13 +184,16 @@ public class CubaActivator {
      * @param config
      * @param myImport
      */
-    private void doSource(URI source, CubaImportConfigurator config,
+    private void doSingleSource(URI source, CubaImportConfigurator config,
             CdmDefaultImport<CubaImportConfigurator> myImport, boolean doVocabularies) {
         config.setSource(source);
-        String message = "Start import from ("+ source.toString() + ") ...";
+        String fileName = source.toString();
+        fileName = fileName.substring(fileName.lastIndexOf("/") + 1 );
+
+        String message = "Start import from ("+ fileName + ") ...";
         System.out.println(message);
         logger.warn(message);
-        config.setSourceReference(getSourceReference(sourceReferenceTitle));
+        config.setSourceReference(getSourceReference(fileName));
         config.setDoVocabularies(doVocabularies);
         myImport.invoke(config);
 
@@ -198,9 +205,12 @@ public class CubaActivator {
         System.out.println("End import from ("+ source.toString() + ")...");
     }
 
+    private final Reference<?> inRef = ReferenceFactory.newGeneric();
 	private Reference<?> getSourceReference(String string) {
 		Reference<?> result = ReferenceFactory.newGeneric();
 		result.setTitleCache(string, true);
+		result.setInReference(inRef);
+		inRef.setTitleCache(sourceReferenceTitle, true);
 		return result;
 	}
 
