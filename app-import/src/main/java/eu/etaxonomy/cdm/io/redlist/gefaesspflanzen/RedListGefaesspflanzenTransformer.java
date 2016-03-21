@@ -46,7 +46,7 @@ public final class RedListGefaesspflanzenTransformer extends InputTransformerBas
         else if (key.equals("SER")){return Rank.SERIES();}
         else if (key.equals("GRE")){return Rank.GREX();}
         else if (key.equals("AGG")){return Rank.SPECIESAGGREGATE();}
-        else if (key.equals("GRO")){return Rank.SPECIESGROUP();}
+        else if (key.equals("GRO") || key.equals("GRU")){return Rank.SPECIESGROUP();}
         else if (key.equals("ORA")){return null;}
         else if (key.equals("?")){return Rank.UNKNOWN_RANK();}
         return null;
