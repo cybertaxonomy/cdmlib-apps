@@ -149,20 +149,20 @@ public class RedListGefaesspflanzenImportNames extends DbImportBase<RedListGefae
             for (int i = 0; i < kombSplit.length; i++) {
                 if(i==0){
                     //first author is ex author
-                    TeamOrPersonBase authorKomb = (TeamOrPersonBase) state.getRelatedObject(Namespace.AUTHOR_NAMESPACE, kombSplit[i]);
+                    TeamOrPersonBase authorKomb = (TeamOrPersonBase) state.getRelatedObject(RedListUtil.AUTHOR_NAMESPACE, kombSplit[i]);
                     name.setExCombinationAuthorship(authorKomb);
                 }
                 else{
-                    TeamOrPersonBase authorKomb = (TeamOrPersonBase) state.getRelatedObject(Namespace.AUTHOR_NAMESPACE, kombSplit[i]);
+                    TeamOrPersonBase authorKomb = (TeamOrPersonBase) state.getRelatedObject(RedListUtil.AUTHOR_NAMESPACE, kombSplit[i]);
                     name.setCombinationAuthorship(authorKomb);
                 }
             }
         }
-        else if(authorKombString.trim().equals("auct.")){
+        else if(authorKombString.trim().equals(RedListUtil.AUCT)){
             logger.warn("NAMNR: "+id+" AUCT information in AUTOR_KOMB column");
         }
         else if(!CdmUtils.isBlank(authorKombString)){
-            TeamOrPersonBase authorKomb = (TeamOrPersonBase) state.getRelatedObject(Namespace.AUTHOR_NAMESPACE, authorKombString);
+            TeamOrPersonBase authorKomb = (TeamOrPersonBase) state.getRelatedObject(RedListUtil.AUTHOR_NAMESPACE, authorKombString);
             name.setCombinationAuthorship(authorKomb);
         }
         //basionym author
@@ -173,7 +173,7 @@ public class RedListGefaesspflanzenImportNames extends DbImportBase<RedListGefae
                     logger.error("NAMNR: "+id+" Multiple ex basionymn authors found");
                 }
                 if(i==0){
-                    TeamOrPersonBase authorBasi= (TeamOrPersonBase) state.getRelatedObject(Namespace.AUTHOR_NAMESPACE, basiSplit[i]);
+                    TeamOrPersonBase authorBasi= (TeamOrPersonBase) state.getRelatedObject(RedListUtil.AUTHOR_NAMESPACE, basiSplit[i]);
                     if(CdmUtils.isBlank(authorKombString)){
                         name.setExCombinationAuthorship(authorBasi);
                     }
@@ -182,7 +182,7 @@ public class RedListGefaesspflanzenImportNames extends DbImportBase<RedListGefae
                     }
                 }
                 else{
-                    TeamOrPersonBase authorBasi= (TeamOrPersonBase) state.getRelatedObject(Namespace.AUTHOR_NAMESPACE, basiSplit[i]);
+                    TeamOrPersonBase authorBasi= (TeamOrPersonBase) state.getRelatedObject(RedListUtil.AUTHOR_NAMESPACE, basiSplit[i]);
                     if(CdmUtils.isBlank(authorKombString)){
                         name.setCombinationAuthorship(authorBasi);
                     }
@@ -192,12 +192,12 @@ public class RedListGefaesspflanzenImportNames extends DbImportBase<RedListGefae
                 }
             }
         }
-        else if(authorBasiString.trim().equals("auct.")){
+        else if(authorBasiString.trim().equals(RedListUtil.AUCT)){
             name.setAppendedPhrase(authorBasiString);
         }
         else if(!CdmUtils.isBlank(authorBasiString)){
             //this seems to be a convention in the source database: When there is only a single author then only the "AUTOR_BASI" column is used
-            TeamOrPersonBase authorBasi= (TeamOrPersonBase) state.getRelatedObject(Namespace.AUTHOR_NAMESPACE, authorBasiString);
+            TeamOrPersonBase authorBasi= (TeamOrPersonBase) state.getRelatedObject(RedListUtil.AUTHOR_NAMESPACE, authorBasiString);
             if(CdmUtils.isBlank(authorKombString)){
                 name.setCombinationAuthorship(authorBasi);
             }
@@ -216,7 +216,7 @@ public class RedListGefaesspflanzenImportNames extends DbImportBase<RedListGefae
 //        if(CdmUtils.isBlank(authorKombString) && !CdmUtils.isBlank(authorBasiString)){
 //            authorString = "("+authorString+")";
 //        }
-        if(authorString.equals("auct.")){
+        if(authorString.equals(RedListUtil.AUCT)){
             authorString = "";
         }
         if(!authorString.equals(authorshipCache)){
@@ -224,14 +224,14 @@ public class RedListGefaesspflanzenImportNames extends DbImportBase<RedListGefae
         }
 
         //id
-        ImportHelper.setOriginalSource(name, state.getTransactionalSourceReference(), id, Namespace.NAME_NAMESPACE);
+        ImportHelper.setOriginalSource(name, state.getTransactionalSourceReference(), id, RedListUtil.NAME_NAMESPACE);
         state.getNameMap().put(id, name.getUuid());
 
         namesToSave.add(name);
 
         //---TAXON---
         TaxonBase taxonBase = null;
-        if(gueltString.equals("1") || (name.getAppendedPhrase()!=null && name.getAppendedPhrase().equals("auct."))){
+        if(gueltString.equals("1") || (name.getAppendedPhrase()!=null && name.getAppendedPhrase().equals(RedListUtil.AUCT))){
             taxonBase = Taxon.NewInstance(name, null);
         }
         else if(gueltString.equals("x") || gueltString.equals("b")){
@@ -245,7 +245,7 @@ public class RedListGefaesspflanzenImportNames extends DbImportBase<RedListGefae
         taxaToSave.add(taxonBase);
 
         //id
-        ImportHelper.setOriginalSource(taxonBase, state.getTransactionalSourceReference(), id, Namespace.TAXON_NAMESPACE);
+        ImportHelper.setOriginalSource(taxonBase, state.getTransactionalSourceReference(), id, RedListUtil.TAXON_NAMESPACE);
         state.getTaxonMap().put(id, taxonBase.getUuid());
     }
 
@@ -303,7 +303,7 @@ public class RedListGefaesspflanzenImportNames extends DbImportBase<RedListGefae
         } catch (SQLException e) {
             e.printStackTrace();
         }
-        result.put(Namespace.AUTHOR_NAMESPACE, authorMap);
+        result.put(RedListUtil.AUTHOR_NAMESPACE, authorMap);
 
         return result;
     }

@@ -97,14 +97,14 @@ public class RedListGefaesspflanzenImportClassification extends DbImportBase<Red
         String parentId = String.valueOf(rs.getLong("LOWER"));
         String gueltString = rs.getString("GUELT");
 
-        TaxonBase taxonBase = state.getRelatedObject(Namespace.TAXON_NAMESPACE, id, TaxonBase.class);
-        Taxon parent = (Taxon) state.getRelatedObject(Namespace.TAXON_NAMESPACE, parentId, TaxonBase.class);
+        TaxonBase taxonBase = state.getRelatedObject(RedListUtil.TAXON_NAMESPACE, id, TaxonBase.class);
+        Taxon parent = (Taxon) state.getRelatedObject(RedListUtil.TAXON_NAMESPACE, parentId, TaxonBase.class);
 
         //taxon
         if(taxonBase.isInstanceOf(Taxon.class)){
             //misapplied name
             String appendedPhrase = taxonBase.getName().getAppendedPhrase();
-            if(appendedPhrase!=null && appendedPhrase.contains("auct.")){
+            if(appendedPhrase!=null && appendedPhrase.contains(RedListUtil.AUCT)){
                 parent.addMisappliedName((Taxon) taxonBase, null, null);
             }
             else{
@@ -140,8 +140,8 @@ public class RedListGefaesspflanzenImportClassification extends DbImportBase<Red
         } catch (SQLException e) {
             e.printStackTrace();
         }
-        Map<String, TaxonBase> taxonMap = (Map<String, TaxonBase>) getCommonService().getSourcedObjectsByIdInSource(TaxonBase.class, idSet, Namespace.TAXON_NAMESPACE);
-        result.put(Namespace.TAXON_NAMESPACE, taxonMap);
+        Map<String, TaxonBase> taxonMap = (Map<String, TaxonBase>) getCommonService().getSourcedObjectsByIdInSource(TaxonBase.class, idSet, RedListUtil.TAXON_NAMESPACE);
+        result.put(RedListUtil.TAXON_NAMESPACE, taxonMap);
         return result;
     }
 

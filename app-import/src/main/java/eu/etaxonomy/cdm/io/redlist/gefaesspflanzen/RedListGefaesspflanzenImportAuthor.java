@@ -34,6 +34,7 @@ import eu.etaxonomy.cdm.model.common.CdmBase;
 @Component
 @SuppressWarnings("serial")
 public class RedListGefaesspflanzenImportAuthor extends DbImportBase<RedListGefaesspflanzenImportState, RedListGefaesspflanzenImportConfigurator> {
+
     private static final Logger logger = Logger.getLogger(RedListGefaesspflanzenImportAuthor.class);
 
     private static final String tableName = "Rote Liste Gefäßpflanzen";
@@ -94,7 +95,7 @@ public class RedListGefaesspflanzenImportAuthor extends DbImportBase<RedListGefa
 
     private void makePerson(RedListGefaesspflanzenImportState state, String authorName) {
         //check if misapplied name
-        if(authorName.trim().equals("auct.")){
+        if(authorName.trim().equals(RedListUtil.AUCT)){
             return;
         }
         TeamOrPersonBase teamOrPerson;

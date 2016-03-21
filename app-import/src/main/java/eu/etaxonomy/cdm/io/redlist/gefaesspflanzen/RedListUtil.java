@@ -14,9 +14,14 @@ package eu.etaxonomy.cdm.io.redlist.gefaesspflanzen;
  * @date Mar 7, 2016
  *
  */
-public interface Namespace {
+public class RedListUtil {
 
     public static final String NAME_NAMESPACE = "name";
     public static final String TAXON_NAMESPACE = "taxon";
     public static final String AUTHOR_NAMESPACE = "author";
+    public static final String AUCT = "auct.";
+
+    public static logError(){
+
+    }
 }
