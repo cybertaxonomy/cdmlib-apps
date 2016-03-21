@@ -9,6 +9,8 @@
 */
 package eu.etaxonomy.cdm.io.redlist.gefaesspflanzen;
 
+import org.apache.log4j.Logger;
+
 /**
  * @author pplitzner
  * @date Mar 7, 2016
@@ -21,7 +23,7 @@ public class RedListUtil {
     public static final String AUTHOR_NAMESPACE = "author";
     public static final String AUCT = "auct.";
 
-    public static logError(){
-
+    public static void logMessage(long id, String message, Logger logger){
+        logger.error("NAMNR: "+id+" "+message);
     }
 }

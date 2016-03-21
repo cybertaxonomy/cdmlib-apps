@@ -114,18 +114,18 @@ public class RedListGefaesspflanzenImportNames extends DbImportBase<RedListGefae
         String authorBasiString = rs.getString("AUTOR_BASI");
 
         if(CdmUtils.isBlank(taxNameString) && CdmUtils.isBlank(ep1String)){
-            logger.error("NAMNR: "+id+" No name found!");
+            RedListUtil.logMessage(id, "No name found!", logger);
         }
 
         Rank rank = makeRank(state, rangString);
         if(rank==null){
-            logger.error("NAMNR: "+id+" Rank could not be resolved.");
+            RedListUtil.logMessage(id, "Rank could not be resolved.", logger);
         }
         BotanicalName name = BotanicalName.NewInstance(rank);
 
         //ep1 should always be present
         if(CdmUtils.isBlank(ep1String)){
-            logger.error("NAMNR: "+id+" EPI1 is empty!");
+            RedListUtil.logMessage(id, "EPI1 is empty!", logger);
         }
         name.setGenusOrUninomial(ep1String);
         if(!CdmUtils.isBlank(ep2String)){
@@ -144,7 +144,7 @@ public class RedListGefaesspflanzenImportNames extends DbImportBase<RedListGefae
             //TODO: what happens with multiple ex authors??
             String[] kombSplit = authorKombString.split(EX);
             if(kombSplit.length!=2){
-                logger.error("NAMNR: "+id+" Multiple ex combination authors found");
+                RedListUtil.logMessage(id, "Multiple ex combination authors found", logger);
             }
             for (int i = 0; i < kombSplit.length; i++) {
                 if(i==0){
@@ -159,7 +159,7 @@ public class RedListGefaesspflanzenImportNames extends DbImportBase<RedListGefae
             }
         }
         else if(authorKombString.trim().equals(RedListUtil.AUCT)){
-            logger.warn("NAMNR: "+id+" AUCT information in AUTOR_KOMB column");
+            RedListUtil.logMessage(id, "AUCT information in AUTOR_KOMB column", logger);
         }
         else if(!CdmUtils.isBlank(authorKombString)){
             TeamOrPersonBase authorKomb = (TeamOrPersonBase) state.getRelatedObject(RedListUtil.AUTHOR_NAMESPACE, authorKombString);
@@ -170,7 +170,7 @@ public class RedListGefaesspflanzenImportNames extends DbImportBase<RedListGefae
             String[] basiSplit = authorBasiString.split(EX);
             for (int i = 0; i < basiSplit.length; i++) {
                 if(basiSplit.length!=2){
-                    logger.error("NAMNR: "+id+" Multiple ex basionymn authors found");
+                    RedListUtil.logMessage(id, "Multiple ex basionymn authors found", logger);
                 }
                 if(i==0){
                     TeamOrPersonBase authorBasi= (TeamOrPersonBase) state.getRelatedObject(RedListUtil.AUTHOR_NAMESPACE, basiSplit[i]);
@@ -220,7 +220,7 @@ public class RedListGefaesspflanzenImportNames extends DbImportBase<RedListGefae
             authorString = "";
         }
         if(!authorString.equals(authorshipCache)){
-            logger.warn("NAMNR: "+id+" Authorship inconsistent! name.authorhshipCache <-> Column AUTOR: "+authorshipCache+" <-> "+authorString);
+            RedListUtil.logMessage(id, "Authorship inconsistent! name.authorhshipCache <-> Column AUTOR: "+authorshipCache+" <-> "+authorString, logger);
         }
 
         //id
@@ -238,7 +238,7 @@ public class RedListGefaesspflanzenImportNames extends DbImportBase<RedListGefae
             taxonBase = Synonym.NewInstance(name, null);
         }
         if(taxonBase==null){
-            logger.error("NAMNR: "+id+" Taxon for name "+name+" could not be created.");
+            RedListUtil.logMessage(id, "Taxon for name "+name+" could not be created.", logger);
             return;
         }
 
