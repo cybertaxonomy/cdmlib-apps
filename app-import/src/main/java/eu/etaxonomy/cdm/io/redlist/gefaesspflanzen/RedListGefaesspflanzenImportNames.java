@@ -231,7 +231,7 @@ public class RedListGefaesspflanzenImportNames extends DbImportBase<RedListGefae
 
         //---TAXON---
         TaxonBase taxonBase = null;
-        if(gueltString.equals("1")){
+        if(gueltString.equals("1") || (name.getAppendedPhrase()!=null && name.getAppendedPhrase().equals("auct."))){
             taxonBase = Taxon.NewInstance(name, null);
         }
         else if(gueltString.equals("x") || gueltString.equals("b")){
