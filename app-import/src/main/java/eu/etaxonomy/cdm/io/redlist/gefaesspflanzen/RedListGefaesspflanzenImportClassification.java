@@ -93,9 +93,9 @@ public class RedListGefaesspflanzenImportClassification extends DbImportBase<Red
 
     private void makeSingleTaxonNode(RedListGefaesspflanzenImportState state, ResultSet rs, Classification classification)
             throws SQLException {
-        String id = String.valueOf(rs.getLong("NAMNR"));
-        String parentId = String.valueOf(rs.getLong("LOWER"));
-        String gueltString = rs.getString("GUELT");
+        String id = String.valueOf(rs.getLong(RedListUtil.NAMNR));
+        String parentId = String.valueOf(rs.getLong(RedListUtil.LOWER));
+        String gueltString = rs.getString(RedListUtil.GUELT);
 
         TaxonBase taxonBase = state.getRelatedObject(RedListUtil.TAXON_NAMESPACE, id, TaxonBase.class);
         Taxon parent = (Taxon) state.getRelatedObject(RedListUtil.TAXON_NAMESPACE, parentId, TaxonBase.class);
@@ -113,7 +113,7 @@ public class RedListGefaesspflanzenImportClassification extends DbImportBase<Red
         }
         else if(taxonBase.isInstanceOf(Synonym.class)){
             //basionym
-            if(gueltString.equals("b")){
+            if(gueltString.equals(RedListUtil.GUELT_BASIONYM)){
                 parent.addHomotypicSynonym((Synonym) taxonBase, null, null);
                 parent.getName().addBasionym(taxonBase.getName());
             }
@@ -134,8 +134,8 @@ public class RedListGefaesspflanzenImportClassification extends DbImportBase<Red
         Set<String> idSet = new HashSet<String>();
         try {
             while (rs.next()){
-                idSet.add(String.valueOf(rs.getLong("NAMNR")));
-                idSet.add(String.valueOf(rs.getLong("LOWER")));
+                idSet.add(String.valueOf(rs.getLong(RedListUtil.NAMNR)));
+                idSet.add(String.valueOf(rs.getLong(RedListUtil.LOWER)));
             }
         } catch (SQLException e) {
             e.printStackTrace();

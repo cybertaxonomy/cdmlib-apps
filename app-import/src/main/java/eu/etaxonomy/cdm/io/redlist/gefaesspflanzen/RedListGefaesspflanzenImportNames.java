@@ -46,8 +46,6 @@ import eu.etaxonomy.cdm.model.taxon.TaxonBase;
 @SuppressWarnings("serial")
 public class RedListGefaesspflanzenImportNames extends DbImportBase<RedListGefaesspflanzenImportState, RedListGefaesspflanzenImportConfigurator> {
 
-    private static final String EX = " ex ";
-
     private static final Logger logger = Logger.getLogger(RedListGefaesspflanzenImportNames.class);
 
     private static final String tableName = "Rote Liste Gefäßpflanzen";
@@ -101,17 +99,17 @@ public class RedListGefaesspflanzenImportNames extends DbImportBase<RedListGefae
 
     private void makeSingleNameAndTaxon(RedListGefaesspflanzenImportState state, ResultSet rs, Set<TaxonNameBase> namesToSave, Set<TaxonBase> taxaToSave)
             throws SQLException {
-        long id = rs.getLong("NAMNR");
-        String taxNameString = rs.getString("TAXNAME");
-        String gueltString = rs.getString("GUELT");
-        String rangString = rs.getString("RANG");
-        String ep1String = rs.getString("EPI1");
-        String ep2String = rs.getString("EPI2");
-        String ep3String = rs.getString("EPI3");
-        String nomZusatzString = rs.getString("NOM_ZUSATZ");
-        String zusatzString = rs.getString("ZUSATZ");
-        String authorKombString = rs.getString("AUTOR_KOMB");
-        String authorBasiString = rs.getString("AUTOR_BASI");
+        long id = rs.getLong(RedListUtil.NAMNR);
+        String taxNameString = rs.getString(RedListUtil.TAXNAME);
+        String gueltString = rs.getString(RedListUtil.GUELT);
+        String rangString = rs.getString(RedListUtil.RANG);
+        String ep1String = rs.getString(RedListUtil.EPI1);
+        String ep2String = rs.getString(RedListUtil.EPI2);
+        String ep3String = rs.getString(RedListUtil.EPI3);
+        String nomZusatzString = rs.getString(RedListUtil.NOM_ZUSATZ);
+        String zusatzString = rs.getString(RedListUtil.ZUSATZ);
+        String authorKombString = rs.getString(RedListUtil.AUTOR_KOMB);
+        String authorBasiString = rs.getString(RedListUtil.AUTOR_BASI);
 
         if(CdmUtils.isBlank(taxNameString) && CdmUtils.isBlank(ep1String)){
             RedListUtil.logMessage(id, "No name found!", logger);
@@ -125,7 +123,7 @@ public class RedListGefaesspflanzenImportNames extends DbImportBase<RedListGefae
 
         //ep1 should always be present
         if(CdmUtils.isBlank(ep1String)){
-            RedListUtil.logMessage(id, "EPI1 is empty!", logger);
+            RedListUtil.logMessage(id, RedListUtil.EPI1+" is empty!", logger);
         }
         name.setGenusOrUninomial(ep1String);
         if(!CdmUtils.isBlank(ep2String)){
@@ -140,9 +138,9 @@ public class RedListGefaesspflanzenImportNames extends DbImportBase<RedListGefae
 
         //--- AUTHORS ---
         //combination author
-        if(authorKombString.contains(EX)){
+        if(authorKombString.contains(RedListUtil.EX)){
             //TODO: what happens with multiple ex authors??
-            String[] kombSplit = authorKombString.split(EX);
+            String[] kombSplit = authorKombString.split(RedListUtil.EX);
             if(kombSplit.length!=2){
                 RedListUtil.logMessage(id, "Multiple ex combination authors found", logger);
             }
@@ -159,15 +157,15 @@ public class RedListGefaesspflanzenImportNames extends DbImportBase<RedListGefae
             }
         }
         else if(authorKombString.trim().equals(RedListUtil.AUCT)){
-            RedListUtil.logMessage(id, "AUCT information in AUTOR_KOMB column", logger);
+            RedListUtil.logMessage(id, "AUCT information in "+RedListUtil.AUTOR_KOMB+" column", logger);
         }
         else if(!CdmUtils.isBlank(authorKombString)){
             TeamOrPersonBase authorKomb = (TeamOrPersonBase) state.getRelatedObject(RedListUtil.AUTHOR_NAMESPACE, authorKombString);
             name.setCombinationAuthorship(authorKomb);
         }
         //basionym author
-        if(authorBasiString.contains(EX)){
-            String[] basiSplit = authorBasiString.split(EX);
+        if(authorBasiString.contains(RedListUtil.EX)){
+            String[] basiSplit = authorBasiString.split(RedListUtil.EX);
             for (int i = 0; i < basiSplit.length; i++) {
                 if(basiSplit.length!=2){
                     RedListUtil.logMessage(id, "Multiple ex basionymn authors found", logger);
@@ -207,7 +205,7 @@ public class RedListGefaesspflanzenImportNames extends DbImportBase<RedListGefae
         }
 
         //check authorship consistency
-        String authorString = rs.getString("AUTOR");
+        String authorString = rs.getString(RedListUtil.AUTOR);
         String authorshipCache = name.getAuthorshipCache();
 
         if(!CdmUtils.isBlank(zusatzString)){
@@ -220,7 +218,7 @@ public class RedListGefaesspflanzenImportNames extends DbImportBase<RedListGefae
             authorString = "";
         }
         if(!authorString.equals(authorshipCache)){
-            RedListUtil.logMessage(id, "Authorship inconsistent! name.authorhshipCache <-> Column AUTOR: "+authorshipCache+" <-> "+authorString, logger);
+            RedListUtil.logMessage(id, "Authorship inconsistent! name.authorhshipCache <-> Column "+RedListUtil.AUTOR+": "+authorshipCache+" <-> "+authorString, logger);
         }
 
         //id
@@ -231,10 +229,10 @@ public class RedListGefaesspflanzenImportNames extends DbImportBase<RedListGefae
 
         //---TAXON---
         TaxonBase taxonBase = null;
-        if(gueltString.equals("1") || (name.getAppendedPhrase()!=null && name.getAppendedPhrase().equals(RedListUtil.AUCT))){
+        if(gueltString.equals(RedListUtil.GUELT_ACCEPTED_TAXON) || (name.getAppendedPhrase()!=null && name.getAppendedPhrase().equals(RedListUtil.AUCT))){
             taxonBase = Taxon.NewInstance(name, null);
         }
-        else if(gueltString.equals("x") || gueltString.equals("b")){
+        else if(gueltString.equals(RedListUtil.GUELT_SYNONYM) || gueltString.equals(RedListUtil.GUELT_BASIONYM)){
             taxonBase = Synonym.NewInstance(name, null);
         }
         if(taxonBase==null){
@@ -272,10 +270,10 @@ public class RedListGefaesspflanzenImportNames extends DbImportBase<RedListGefae
 
         try {
             while (rs.next()){
-                String authorKombString = rs.getString("AUTOR_KOMB");
+                String authorKombString = rs.getString(RedListUtil.AUTOR_KOMB);
 
-                if(authorKombString.contains(EX)){
-                    String[] kombSplit = authorKombString.split(EX);
+                if(authorKombString.contains(RedListUtil.EX)){
+                    String[] kombSplit = authorKombString.split(RedListUtil.EX);
                     for (int i = 0; i < kombSplit.length; i++) {
                         if(!authorMap.containsKey(kombSplit[i])){
                             authorMap.put(kombSplit[i], getAgentService().load(state.getAuthorMap().get(kombSplit[i])));
@@ -286,10 +284,10 @@ public class RedListGefaesspflanzenImportNames extends DbImportBase<RedListGefae
                     authorMap.put(authorKombString, getAgentService().load(state.getAuthorMap().get(authorKombString)));
                 }
 
-                String authorBasiString = rs.getString("AUTOR_BASI");
+                String authorBasiString = rs.getString(RedListUtil.AUTOR_BASI);
                 //basionym author
-                if(authorBasiString.contains(EX)){
-                    String[] basiSplit = authorBasiString.split(EX);
+                if(authorBasiString.contains(RedListUtil.EX)){
+                    String[] basiSplit = authorBasiString.split(RedListUtil.EX);
                     for (int i = 0; i < basiSplit.length; i++) {
                         if(!authorMap.containsKey(basiSplit[i])){
                             authorMap.put(basiSplit[i], getAgentService().load(state.getAuthorMap().get(basiSplit[i])));

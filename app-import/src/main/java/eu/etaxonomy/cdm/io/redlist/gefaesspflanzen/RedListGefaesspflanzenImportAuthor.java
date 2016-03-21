@@ -63,8 +63,8 @@ public class RedListGefaesspflanzenImportAuthor extends DbImportBase<RedListGefa
 
     @Override
     protected void doInvoke(RedListGefaesspflanzenImportState state) {
-        makeAuthors(state, "AUTOR_KOMB");
-        makeAuthors(state, "AUTOR_BASI");
+        makeAuthors(state, RedListUtil.AUTOR_KOMB);
+        makeAuthors(state, RedListUtil.AUTOR_BASI);
     }
 
 
@@ -100,8 +100,8 @@ public class RedListGefaesspflanzenImportAuthor extends DbImportBase<RedListGefa
         }
         TeamOrPersonBase teamOrPerson;
         //check if there are ex authors
-        if(authorName.contains(" ex ")){
-            String[] split = authorName.split(" ex ");
+        if(authorName.contains(RedListUtil.EX)){
+            String[] split = authorName.split(RedListUtil.EX);
             for (int i = 0; i < split.length; i++) {
                 makePerson(state, split[i].trim());
             }
