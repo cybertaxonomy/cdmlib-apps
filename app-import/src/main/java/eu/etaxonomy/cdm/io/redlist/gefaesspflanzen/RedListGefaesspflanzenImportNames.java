@@ -119,9 +119,6 @@ public class RedListGefaesspflanzenImportNames extends DbImportBase<RedListGefae
         }
 
         Rank rank = makeRank(id, state, rangString);
-        if(rank==null){
-            RedListUtil.logMessage(id, "Rank could not be resolved.", logger);
-        }
         BotanicalName name = BotanicalName.NewInstance(rank);
 
         //ep1 should always be present
