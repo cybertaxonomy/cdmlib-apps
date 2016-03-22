@@ -29,6 +29,8 @@ import eu.etaxonomy.cdm.model.agent.AgentBase;
 import eu.etaxonomy.cdm.model.agent.TeamOrPersonBase;
 import eu.etaxonomy.cdm.model.common.CdmBase;
 import eu.etaxonomy.cdm.model.name.BotanicalName;
+import eu.etaxonomy.cdm.model.name.NomenclaturalStatus;
+import eu.etaxonomy.cdm.model.name.NomenclaturalStatusType;
 import eu.etaxonomy.cdm.model.name.Rank;
 import eu.etaxonomy.cdm.model.name.TaxonNameBase;
 import eu.etaxonomy.cdm.model.taxon.Synonym;
@@ -111,11 +113,12 @@ public class RedListGefaesspflanzenImportNames extends DbImportBase<RedListGefae
         String authorKombString = rs.getString(RedListUtil.AUTOR_KOMB);
         String authorBasiString = rs.getString(RedListUtil.AUTOR_BASI);
 
+        //---NAME---
         if(CdmUtils.isBlank(taxNameString) && CdmUtils.isBlank(ep1String)){
             RedListUtil.logMessage(id, "No name found!", logger);
         }
 
-        Rank rank = makeRank(state, rangString);
+        Rank rank = makeRank(id, state, rangString);
         if(rank==null){
             RedListUtil.logMessage(id, "Rank could not be resolved.", logger);
         }
@@ -135,6 +138,12 @@ public class RedListGefaesspflanzenImportNames extends DbImportBase<RedListGefae
                 name.setInfraSpecificEpithet(ep3String);
             }
         }
+        //nomenclatural status
+        NomenclaturalStatusType status = makeNomenclaturalStatus(id, state, nomZusatzString);
+        if(status!=null){
+            name.addStatus(NomenclaturalStatus.NewInstance(status));
+        }
+
 
         //--- AUTHORS ---
         //combination author
@@ -247,7 +256,7 @@ public class RedListGefaesspflanzenImportNames extends DbImportBase<RedListGefae
         state.getTaxonMap().put(id, taxonBase.getUuid());
     }
 
-    private Rank makeRank(RedListGefaesspflanzenImportState state, String rankStr) {
+    private Rank makeRank(long id, RedListGefaesspflanzenImportState state, String rankStr) {
         Rank rank = null;
         try {
             rank = state.getTransformer().getRankByKey(rankStr);
@@ -255,9 +264,22 @@ public class RedListGefaesspflanzenImportNames extends DbImportBase<RedListGefae
             e.printStackTrace();
         }
         if(rank==null){
-            logger.error(rankStr+" could not be associated to a known rank.");
+            RedListUtil.logMessage(id, rankStr+" could not be associated to a known rank.", logger);
         }
         return rank;
+    }
+
+    private NomenclaturalStatusType makeNomenclaturalStatus(long id, RedListGefaesspflanzenImportState state, String nomZusatzString) {
+        NomenclaturalStatusType status = null;
+        try {
+            status = state.getTransformer().getNomenclaturalStatusByKey(nomZusatzString);
+        } catch (UndefinedTransformerMethodException e) {
+            e.printStackTrace();
+        }
+        if(status==null){
+            RedListUtil.logMessage(id, nomZusatzString+" could not be associated to a known nomenclatural status.", logger);
+        }
+        return status;
     }
 
 

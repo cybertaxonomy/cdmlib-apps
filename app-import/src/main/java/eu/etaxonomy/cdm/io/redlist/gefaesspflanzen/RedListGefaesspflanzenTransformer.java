@@ -14,6 +14,7 @@ import org.apache.log4j.Logger;
 
 import eu.etaxonomy.cdm.io.common.mapping.InputTransformerBase;
 import eu.etaxonomy.cdm.io.common.mapping.UndefinedTransformerMethodException;
+import eu.etaxonomy.cdm.model.name.NomenclaturalStatusType;
 import eu.etaxonomy.cdm.model.name.Rank;
 
 /**
@@ -52,6 +53,19 @@ public final class RedListGefaesspflanzenTransformer extends InputTransformerBas
         return null;
     }
 
-
+    @Override
+    public NomenclaturalStatusType getNomenclaturalStatusByKey(String key) throws UndefinedTransformerMethodException {
+        if (key == null){return null;}
+        if (key.equals("nom. cons.")){return NomenclaturalStatusType.CONSERVED();}
+        else if (key.equals("nom. illeg.")){return NomenclaturalStatusType.ILLEGITIMATE();}
+        else if (key.equals("nom. inval.")){return NomenclaturalStatusType.INVALID();}
+        else if (key.equals("nom. ambig.")){return NomenclaturalStatusType.AMBIGUOUS();}
+        else if (key.equals("nom. nud.")){return NomenclaturalStatusType.NUDUM();}
+        else if (key.equals("nom. rejic.")){return NomenclaturalStatusType.REJECTED();}
+        else if (key.equals("nom. utique rejic.")){return NomenclaturalStatusType.UTIQUE_REJECTED();}
+        else if (key.equals("nom. utique rejic. pro.")){return NomenclaturalStatusType.UTIQUE_REJECTED_PROP();}
+        else if (key.equals("comb. nov.")){return NomenclaturalStatusType.COMB_NOV();}
+        return null;
+    }
 
 }
