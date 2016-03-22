@@ -129,19 +129,21 @@ public class RedListGefaesspflanzenImportNames extends DbImportBase<RedListGefae
             RedListUtil.logMessage(id, RedListUtil.EPI1+" is empty!", logger);
         }
         name.setGenusOrUninomial(ep1String);
-        if(!CdmUtils.isBlank(ep2String)){
+        if(CdmUtils.isNotBlank(ep2String)){
             name.setSpecificEpithet(ep2String);
         }
-        if(!CdmUtils.isBlank(ep3String)){
+        if(CdmUtils.isNotBlank(ep3String)){
             if(rank==Rank.SUBSPECIES() ||
                     rank==Rank.VARIETY()){
                 name.setInfraSpecificEpithet(ep3String);
             }
         }
         //nomenclatural status
-        NomenclaturalStatusType status = makeNomenclaturalStatus(id, state, nomZusatzString);
-        if(status!=null){
-            name.addStatus(NomenclaturalStatus.NewInstance(status));
+        if(CdmUtils.isNotBlank(nomZusatzString)){
+            NomenclaturalStatusType status = makeNomenclaturalStatus(id, state, nomZusatzString);
+            if(status!=null){
+                name.addStatus(NomenclaturalStatus.NewInstance(status));
+            }
         }
 
 
@@ -168,7 +170,7 @@ public class RedListGefaesspflanzenImportNames extends DbImportBase<RedListGefae
         else if(authorKombString.trim().equals(RedListUtil.AUCT)){
             RedListUtil.logMessage(id, "AUCT information in "+RedListUtil.AUTOR_KOMB+" column", logger);
         }
-        else if(!CdmUtils.isBlank(authorKombString)){
+        else if(CdmUtils.isNotBlank(authorKombString)){
             TeamOrPersonBase authorKomb = (TeamOrPersonBase) state.getRelatedObject(RedListUtil.AUTHOR_NAMESPACE, authorKombString);
             name.setCombinationAuthorship(authorKomb);
         }
@@ -202,7 +204,7 @@ public class RedListGefaesspflanzenImportNames extends DbImportBase<RedListGefae
         else if(authorBasiString.trim().equals(RedListUtil.AUCT)){
             name.setAppendedPhrase(authorBasiString);
         }
-        else if(!CdmUtils.isBlank(authorBasiString)){
+        else if(CdmUtils.isNotBlank(authorBasiString)){
             //this seems to be a convention in the source database: When there is only a single author then only the "AUTOR_BASI" column is used
             TeamOrPersonBase authorBasi= (TeamOrPersonBase) state.getRelatedObject(RedListUtil.AUTHOR_NAMESPACE, authorBasiString);
             if(CdmUtils.isBlank(authorKombString)){
@@ -217,7 +219,7 @@ public class RedListGefaesspflanzenImportNames extends DbImportBase<RedListGefae
         String authorString = rs.getString(RedListUtil.AUTOR);
         String authorshipCache = name.getAuthorshipCache();
 
-        if(!CdmUtils.isBlank(zusatzString)){
+        if(CdmUtils.isNotBlank(zusatzString)){
             authorString = authorString.replace(", "+zusatzString, "");
         }
 //        if(CdmUtils.isBlank(authorKombString) && !CdmUtils.isBlank(authorBasiString)){
@@ -302,7 +304,7 @@ public class RedListGefaesspflanzenImportNames extends DbImportBase<RedListGefae
                         }
                     }
                 }
-                else if(!CdmUtils.isBlank(authorKombString) && !authorMap.containsKey(authorKombString)){
+                else if(CdmUtils.isNotBlank(authorKombString) && !authorMap.containsKey(authorKombString)){
                     authorMap.put(authorKombString, getAgentService().load(state.getAuthorMap().get(authorKombString)));
                 }
 
@@ -316,7 +318,7 @@ public class RedListGefaesspflanzenImportNames extends DbImportBase<RedListGefae
                         }
                     }
                 }
-                else if(!CdmUtils.isBlank(authorBasiString) && !authorMap.containsKey(authorBasiString)){
+                else if(CdmUtils.isNotBlank(authorBasiString) && !authorMap.containsKey(authorBasiString)){
                     authorMap.put(authorBasiString, getAgentService().load(state.getAuthorMap().get(authorBasiString)));
                 }
             }

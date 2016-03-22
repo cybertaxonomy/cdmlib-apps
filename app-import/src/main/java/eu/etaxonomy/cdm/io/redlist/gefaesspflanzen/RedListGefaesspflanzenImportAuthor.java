@@ -84,7 +84,7 @@ public class RedListGefaesspflanzenImportAuthor extends DbImportBase<RedListGefa
             while(rs.next()){
                 String authorName = rs.getString(columnName);
                 TeamOrPersonBase teamOrPerson = null;
-                if(!CdmUtils.isBlank(authorName)){
+                if(CdmUtils.isNotBlank(authorName)){
                     makePerson(state, authorName);
                 }
             }
