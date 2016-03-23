@@ -19,12 +19,14 @@ import java.util.Set;
 import org.apache.log4j.Logger;
 import org.springframework.stereotype.Component;
 
+import eu.etaxonomy.cdm.common.CdmUtils;
 import eu.etaxonomy.cdm.io.common.DbImportBase;
 import eu.etaxonomy.cdm.io.common.IPartitionedIO;
 import eu.etaxonomy.cdm.io.common.ResultSetPartitioner;
 import eu.etaxonomy.cdm.model.common.CdmBase;
 import eu.etaxonomy.cdm.model.taxon.Classification;
 import eu.etaxonomy.cdm.model.taxon.Synonym;
+import eu.etaxonomy.cdm.model.taxon.SynonymRelationship;
 import eu.etaxonomy.cdm.model.taxon.SynonymRelationshipType;
 import eu.etaxonomy.cdm.model.taxon.Taxon;
 import eu.etaxonomy.cdm.model.taxon.TaxonBase;
@@ -93,11 +95,12 @@ public class RedListGefaesspflanzenImportClassification extends DbImportBase<Red
 
     private void makeSingleTaxonNode(RedListGefaesspflanzenImportState state, ResultSet rs, Classification classification)
             throws SQLException {
-        String id = String.valueOf(rs.getLong(RedListUtil.NAMNR));
+        long id = rs.getLong(RedListUtil.NAMNR);
         String parentId = String.valueOf(rs.getLong(RedListUtil.LOWER));
         String gueltString = rs.getString(RedListUtil.GUELT);
+        String taxZusatzString = rs.getString(RedListUtil.TAX_ZUSATZ);
 
-        TaxonBase taxonBase = state.getRelatedObject(RedListUtil.TAXON_NAMESPACE, id, TaxonBase.class);
+        TaxonBase taxonBase = state.getRelatedObject(RedListUtil.TAXON_NAMESPACE, String.valueOf(id), TaxonBase.class);
         Taxon parent = (Taxon) state.getRelatedObject(RedListUtil.TAXON_NAMESPACE, parentId, TaxonBase.class);
 
         //taxon
@@ -110,6 +113,12 @@ public class RedListGefaesspflanzenImportClassification extends DbImportBase<Red
             else{
                 classification.addParentChild(parent, (Taxon)taxonBase, null, null);
             }
+
+            if(CdmUtils.isNotBlank(taxZusatzString)){
+                if(taxZusatzString.trim().equals("p. p.")){
+                    RedListUtil.logMessage(id, "pro parte for accepted taxon "+taxonBase, logger);
+                }
+            }
         }
         else if(taxonBase.isInstanceOf(Synonym.class)){
             //basionym
@@ -120,8 +129,29 @@ public class RedListGefaesspflanzenImportClassification extends DbImportBase<Red
             //regular synonym
             else{
                 //TODO: how to correctly add a synonym?
-                parent.addSynonym((Synonym) taxonBase, SynonymRelationshipType.HETEROTYPIC_SYNONYM_OF(), null, null);
-//                parent.addSynonym((Synonym) taxonBase, SynonymRelationshipType.SYNONYM_OF(), null, null);
+                SynonymRelationship synonymRelationship = parent.addSynonym((Synonym) taxonBase, SynonymRelationshipType.HETEROTYPIC_SYNONYM_OF(), null, null);
+
+                //TAX_ZUSATZ
+                if(CdmUtils.isNotBlank(taxZusatzString)){
+                    if(taxZusatzString.trim().equals("p. p.")){
+                        synonymRelationship.setProParte(true);
+                    }
+                    else if(taxZusatzString.trim().equals("s. l. p. p.")){
+                        synonymRelationship.setProParte(true);
+                        taxonBase.setAppendedPhrase("s. l.");
+                    }
+                    else if(taxZusatzString.trim().equals("s. str. p. p.")){
+                        synonymRelationship.setProParte(true);
+                        taxonBase.setAppendedPhrase("s. str.");
+                    }
+                    else if(taxZusatzString.trim().equals("s. l.")
+                            || taxZusatzString.trim().equals("s. str.")){
+                        taxonBase.setAppendedPhrase(taxZusatzString);
+                    }
+                    else{
+                        RedListUtil.logMessage(id, "unknown value for column "+RedListUtil.TAX_ZUSATZ, logger);
+                    }
+                }
             }
         }
     }

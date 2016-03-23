@@ -109,6 +109,7 @@ public class RedListGefaesspflanzenImportNames extends DbImportBase<RedListGefae
         String ep2String = rs.getString(RedListUtil.EPI2);
         String ep3String = rs.getString(RedListUtil.EPI3);
         String nomZusatzString = rs.getString(RedListUtil.NOM_ZUSATZ);
+        String taxZusatzString = rs.getString(RedListUtil.TAX_ZUSATZ);
         String zusatzString = rs.getString(RedListUtil.ZUSATZ);
         String authorKombString = rs.getString(RedListUtil.AUTOR_KOMB);
         String authorBasiString = rs.getString(RedListUtil.AUTOR_BASI);
@@ -215,6 +216,12 @@ public class RedListGefaesspflanzenImportNames extends DbImportBase<RedListGefae
 
         if(CdmUtils.isNotBlank(zusatzString)){
             authorString = authorString.replace(", "+zusatzString, "");
+        }
+        if(CdmUtils.isNotBlank(nomZusatzString)){
+            authorString = authorString.replace(", "+nomZusatzString, "");
+        }
+        if(CdmUtils.isNotBlank(taxZusatzString)){
+            authorString = authorString.replace(", "+taxZusatzString, "");
         }
         if(authorString.equals(RedListUtil.AUCT)){
             authorString = "";
