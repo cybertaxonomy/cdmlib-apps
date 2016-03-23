@@ -198,9 +198,6 @@ public class RedListGefaesspflanzenImportNames extends DbImportBase<RedListGefae
                 }
             }
         }
-        else if(authorBasiString.trim().equals(RedListUtil.AUCT)){
-            name.setAppendedPhrase(authorBasiString);
-        }
         else if(CdmUtils.isNotBlank(authorBasiString)){
             //this seems to be a convention in the source database: When there is only a single author then only the "AUTOR_BASI" column is used
             TeamOrPersonBase authorBasi= (TeamOrPersonBase) state.getRelatedObject(RedListUtil.AUTHOR_NAMESPACE, authorBasiString);
@@ -219,9 +216,6 @@ public class RedListGefaesspflanzenImportNames extends DbImportBase<RedListGefae
         if(CdmUtils.isNotBlank(zusatzString)){
             authorString = authorString.replace(", "+zusatzString, "");
         }
-//        if(CdmUtils.isBlank(authorKombString) && !CdmUtils.isBlank(authorBasiString)){
-//            authorString = "("+authorString+")";
-//        }
         if(authorString.equals(RedListUtil.AUCT)){
             authorString = "";
         }
@@ -237,8 +231,9 @@ public class RedListGefaesspflanzenImportNames extends DbImportBase<RedListGefae
 
         //---TAXON---
         TaxonBase taxonBase = null;
-        if(gueltString.equals(RedListUtil.GUELT_ACCEPTED_TAXON) || (name.getAppendedPhrase()!=null && name.getAppendedPhrase().equals(RedListUtil.AUCT))){
+        if(gueltString.equals(RedListUtil.GUELT_ACCEPTED_TAXON) || (name.getAppendedPhrase()!=null && authorBasiString.trim().equals(RedListUtil.AUCT))){
             taxonBase = Taxon.NewInstance(name, null);
+            taxonBase.setAppendedPhrase(authorBasiString);
         }
         else if(gueltString.equals(RedListUtil.GUELT_SYNONYM) || gueltString.equals(RedListUtil.GUELT_BASIONYM)){
             taxonBase = Synonym.NewInstance(name, null);
