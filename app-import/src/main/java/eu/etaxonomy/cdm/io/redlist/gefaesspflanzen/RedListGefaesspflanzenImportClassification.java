@@ -110,7 +110,7 @@ public class RedListGefaesspflanzenImportClassification extends DbImportBase<Red
         //Checkliste
         TaxonBase taxonBaseCL = state.getRelatedObject(RedListUtil.TAXON_CHECKLISTE_NAMESPACE, String.valueOf(id), TaxonBase.class);
         Taxon parentCL = (Taxon) state.getRelatedObject(RedListUtil.TAXON_CHECKLISTE_NAMESPACE, parentId, TaxonBase.class);
-        if(taxonBaseCL!=null && parentCL!=null){//null check necessary because not all taxa exist in the checklist
+        if(taxonBaseCL!=null){//null check necessary because not all taxa exist in the checklist
             createParentChildNodes(checklistClassification, id, gueltString, taxZusatzString, taxonBaseCL, parentCL);
         }
     }
@@ -119,9 +119,11 @@ public class RedListGefaesspflanzenImportClassification extends DbImportBase<Red
             String taxZusatzString, TaxonBase taxonBase, Taxon parent) {
         if(parent==null){
             RedListUtil.logMessage(id, "parent taxon of "+taxonBase+"  is null." , logger);
+            return;
         }
         if(taxonBase==null){
             RedListUtil.logMessage(id, "child taxon/synonym of "+parent+"  is null." , logger);
+            return;
         }
         //taxon
         if(taxonBase.isInstanceOf(Taxon.class)){
