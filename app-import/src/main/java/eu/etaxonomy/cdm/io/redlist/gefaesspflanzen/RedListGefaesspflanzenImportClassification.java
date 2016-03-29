@@ -24,6 +24,8 @@ import eu.etaxonomy.cdm.io.common.DbImportBase;
 import eu.etaxonomy.cdm.io.common.IPartitionedIO;
 import eu.etaxonomy.cdm.io.common.ResultSetPartitioner;
 import eu.etaxonomy.cdm.model.common.CdmBase;
+import eu.etaxonomy.cdm.model.common.Language;
+import eu.etaxonomy.cdm.model.common.LanguageString;
 import eu.etaxonomy.cdm.model.taxon.Classification;
 import eu.etaxonomy.cdm.model.taxon.Synonym;
 import eu.etaxonomy.cdm.model.taxon.SynonymRelationship;
@@ -192,14 +194,17 @@ public class RedListGefaesspflanzenImportClassification extends DbImportBase<Red
         } catch (SQLException e) {
             e.printStackTrace();
         }
-        Map<String, TaxonBase> taxonMap = (Map<String, TaxonBase>) getCommonService().getSourcedObjectsByIdInSource(TaxonBase.class, idSet, RedListUtil.TAXON_GESAMTLISTE_NAMESPACE);
-        result.put(RedListUtil.TAXON_GESAMTLISTE_NAMESPACE, taxonMap);
+        Map<String, TaxonBase> taxonMapGesamtListe = (Map<String, TaxonBase>) getCommonService().getSourcedObjectsByIdInSource(TaxonBase.class, idSet, RedListUtil.TAXON_GESAMTLISTE_NAMESPACE);
+        result.put(RedListUtil.TAXON_GESAMTLISTE_NAMESPACE, taxonMapGesamtListe);
+        Map<String, TaxonBase> taxonMapCheckliste = (Map<String, TaxonBase>) getCommonService().getSourcedObjectsByIdInSource(TaxonBase.class, idSet, RedListUtil.TAXON_CHECKLISTE_NAMESPACE);
+        result.put(RedListUtil.TAXON_CHECKLISTE_NAMESPACE, taxonMapCheckliste);
         return result;
     }
 
     private void makeClassification(RedListGefaesspflanzenImportState state) {
         //Gesamtliste
         Classification classification = Classification.NewInstance(state.getConfig().getClassificationName());
+        classification.setName(LanguageString.NewInstance("Gesamtliste", Language.DEFAULT()));
         classification.setUuid(state.getConfig().getClassificationUuid());
         getClassificationService().save(classification);
         //checkliste
