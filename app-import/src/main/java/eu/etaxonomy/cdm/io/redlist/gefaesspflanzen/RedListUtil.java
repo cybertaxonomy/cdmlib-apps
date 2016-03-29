@@ -9,6 +9,8 @@
 */
 package eu.etaxonomy.cdm.io.redlist.gefaesspflanzen;
 
+import java.util.UUID;
+
 import org.apache.log4j.Logger;
 
 /**
@@ -18,8 +20,11 @@ import org.apache.log4j.Logger;
  */
 public class RedListUtil {
 
+    public static final UUID checkListClassificationUuid = UUID.fromString("928a4695-c055-465e-99da-07322384b0b7");
+
     public static final String NAME_NAMESPACE = "name";
-    public static final String TAXON_NAMESPACE = "taxon";
+    public static final String TAXON_GESAMTLISTE_NAMESPACE = "taxon_gesamt_liste";
+    public static final String TAXON_CHECKLISTE_NAMESPACE = "taxon_checkliste";
     public static final String AUTHOR_NAMESPACE = "author";
 
     public static final String AUCT = "auct.";
@@ -43,6 +48,7 @@ public class RedListUtil {
     public static final String RANG = "RANG";
     public static final String TAXNAME = "TAXNAME";
     public static final String AUTOR = "AUTOR";
+    public static final String CL_TAXON = "CL_TAXON";
 
     public static void logMessage(long id, String message, Logger logger){
         logger.error(NAMNR+": "+id+" "+message);

@@ -36,6 +36,8 @@ import eu.etaxonomy.cdm.model.name.TaxonNameBase;
 import eu.etaxonomy.cdm.model.taxon.Synonym;
 import eu.etaxonomy.cdm.model.taxon.Taxon;
 import eu.etaxonomy.cdm.model.taxon.TaxonBase;
+import eu.etaxonomy.cdm.model.taxon.TaxonRelationship;
+import eu.etaxonomy.cdm.model.taxon.TaxonRelationshipType;
 
 /**
  *
@@ -249,11 +251,27 @@ public class RedListGefaesspflanzenImportNames extends DbImportBase<RedListGefae
             RedListUtil.logMessage(id, "Taxon for name "+name+" could not be created.", logger);
             return;
         }
-
         taxaToSave.add(taxonBase);
 
+        /*check if taxon/synonym is also in checklist
+         * 1. create new taxon with the same name (in the checklist classification)
+         * 2. create congruent concept relationship between both
+         */
+        String clTaxonString = rs.getString(RedListUtil.CL_TAXON);
+        if(CdmUtils.isNotBlank(clTaxonString) && !clTaxonString.trim().equals("-")){
+            TaxonBase clone = (TaxonBase) taxonBase.clone();
+            clone.setName(name);
+            if(taxonBase.isInstanceOf(Taxon.class)){
+                TaxonRelationship taxonRelation = ((Taxon) taxonBase).addTaxonRelation((Taxon) clone, TaxonRelationshipType.CONGRUENT_TO(), null, null);
+                taxonRelation.setDoubtful(true);//TODO Ist das mit " mit Fragezeichen" gemeint?
+            }
+            ImportHelper.setOriginalSource(clone, state.getTransactionalSourceReference(), id, RedListUtil.TAXON_CHECKLISTE_NAMESPACE);
+            state.getTaxonMap().put(id, clone.getUuid());
+            taxaToSave.add(clone);
+        }
+
         //id
-        ImportHelper.setOriginalSource(taxonBase, state.getTransactionalSourceReference(), id, RedListUtil.TAXON_NAMESPACE);
+        ImportHelper.setOriginalSource(taxonBase, state.getTransactionalSourceReference(), id, RedListUtil.TAXON_GESAMTLISTE_NAMESPACE);
         state.getTaxonMap().put(id, taxonBase.getUuid());
     }
 

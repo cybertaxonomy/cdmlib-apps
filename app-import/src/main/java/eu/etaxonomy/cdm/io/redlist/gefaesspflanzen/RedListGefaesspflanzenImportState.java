@@ -31,6 +31,7 @@ public class RedListGefaesspflanzenImportState extends DbImportStateBase<RedList
 	private final Map<String, UUID> authorMap = new HashMap<String, UUID>();
 	private final Map<Long, UUID> nameMap = new HashMap<Long, UUID>();
 	private final Map<Long, UUID> taxonMap = new HashMap<Long, UUID>();
+	private UUID checklistClassificationUuid;
 
     protected RedListGefaesspflanzenImportState(RedListGefaesspflanzenImportConfigurator config) {
         super(config);
@@ -46,6 +47,14 @@ public class RedListGefaesspflanzenImportState extends DbImportStateBase<RedList
 
     public Map<Long, UUID> getTaxonMap() {
         return taxonMap;
+    }
+
+    public void setChecklistClassificationUuid(UUID checklistClassificationUuid) {
+        this.checklistClassificationUuid = checklistClassificationUuid;
+    }
+
+    public UUID getChecklistClassificationUuid() {
+        return checklistClassificationUuid;
     }
 
 }
