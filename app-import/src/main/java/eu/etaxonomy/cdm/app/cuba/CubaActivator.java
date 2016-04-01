@@ -42,8 +42,8 @@ public class CubaActivator {
 	//database validation status (create, update, validate ...)
 	static DbSchemaValidation hbm2dll = DbSchemaValidation.CREATE;
 
-//    static final ICdmDataSource cdmDestination = CdmDestinations.localH2();
-  static final ICdmDataSource cdmDestination = CdmDestinations.cdm_test_local_mysql_test();
+    static final ICdmDataSource cdmDestination = CdmDestinations.localH2();
+//	static final ICdmDataSource cdmDestination = CdmDestinations.cdm_test_local_mysql_test();
 //    static final ICdmDataSource cdmDestination = CdmDestinations.cdm_cuba_production();
 
 	static boolean invers = false;
@@ -222,26 +222,16 @@ public class CubaActivator {
 		FeatureNode root = result.getRoot();
 		FeatureNode newNode;
 
-//		newNode = FeatureNode.NewInstance(Feature.STATUS());
-//		root.addChild(newNode);
-
 		newNode = FeatureNode.NewInstance(Feature.DISTRIBUTION());
 		root.addChild(newNode);
 
-		Feature featurAltFam = (Feature)service.find(CubaTransformer.uuidAlternativeFamily);
-		newNode = FeatureNode.NewInstance(featurAltFam);
-		root.addChild(newNode);
+//		Feature featurAltFam = (Feature)service.find(CubaTransformer.uuidAlternativeFamily);
+//		newNode = FeatureNode.NewInstance(featurAltFam);
+//		root.addChild(newNode);
 
 	    Feature featurAltFam2 = (Feature)service.find(CubaTransformer.uuidAlternativeFamily2);
 	    newNode = FeatureNode.NewInstance(featurAltFam2);
 	    root.addChild(newNode);
-
-//		newNode = FeatureNode.NewInstance(Feature.SYSTEMATICS());
-//		root.addChild(newNode);
-
-		//user defined features
-//		String [] featureList = new String[]{"Red Book", "Endemism"};
-//		addFeataureNodesByStringList(featureList, root, transformer, service);
 
 		return result;
 	}

@@ -102,7 +102,7 @@ public final class CubaTransformer extends InputTransformerBase {
         if (StringUtils.isBlank(key)){return null;
 
 
-        }else if (key.equalsIgnoreCase("C")){return uuidCuba;
+        }else if (key.equalsIgnoreCase("Cu")){return uuidCuba;
         }else if (key.equalsIgnoreCase("CuW")){return uuidWesternCuba;
         }else if (key.equalsIgnoreCase("PR*")){return uuidPinarDelRio;
         }else if (key.equalsIgnoreCase("PR PR*")){return uuidPinarDelRio;

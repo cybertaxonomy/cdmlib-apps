@@ -35,6 +35,7 @@ import eu.etaxonomy.cdm.model.common.CdmBase;
 import eu.etaxonomy.cdm.model.common.IdentifiableSource;
 import eu.etaxonomy.cdm.model.common.Language;
 import eu.etaxonomy.cdm.model.common.OriginalSourceType;
+import eu.etaxonomy.cdm.model.common.Representation;
 import eu.etaxonomy.cdm.model.description.DescriptionElementBase;
 import eu.etaxonomy.cdm.model.description.DescriptionElementSource;
 import eu.etaxonomy.cdm.model.description.Distribution;
@@ -103,7 +104,7 @@ public class CubaExcelImport extends ExcelImporterBase<CubaImportState> {
      */
     private void makeCubanDistribution(HashMap<String, String> record, CubaImportState state) {
         try {
-            NamedArea cuba = getNamedArea(state, state.getTransformer().getNamedAreaUuid("C"), null, null, null, null, null);
+            NamedArea cuba = getNamedArea(state, state.getTransformer().getNamedAreaUuid("Cu"), null, null, null, null, null);
             TaxonDescription desc = getTaxonDescription(state.getCurrentTaxon(), false, true);
             List<PresenceAbsenceTerm> statuss =  makeCubanStatuss(record, state);
             for (PresenceAbsenceTerm status : statuss){
@@ -882,13 +883,14 @@ public class CubaExcelImport extends ExcelImporterBase<CubaImportState> {
      * @return
      */
     private Taxon makeTaxon(HashMap<String, String> record, CubaImportState state, TaxonNode familyNode, boolean isSynonym) {
-        String taxonStr = getValue(record, "Taxón");
-        if (taxonStr == null){
+        String taxonStrOrig = getValue(record, "Taxón");
+        if (taxonStrOrig == null){
             return isSynonym ? state.getCurrentTaxon() : null;
         }
 
         boolean isAbsent = false;
-        if (taxonStr.startsWith("[") && taxonStr.endsWith("]")){
+        String taxonStr = taxonStrOrig;
+        if (taxonStrOrig.startsWith("[") && taxonStrOrig.endsWith("]")){
             taxonStr = taxonStr.substring(1, taxonStr.length() - 1);
             isAbsent = true;
         }
@@ -908,7 +910,7 @@ public class CubaExcelImport extends ExcelImporterBase<CubaImportState> {
 
         TaxonNode higherNode;
         if (botanicalName.isProtectedTitleCache()){
-            logger.warn(state.getCurrentLine() + ": Taxon could not be parsed: " + taxonStr);
+            logger.warn(state.getCurrentLine() + ": Taxon could not be parsed: " + taxonStrOrig);
             higherNode = familyNode;
         }else{
             String genusStr = botanicalName.getGenusOrUninomial();
@@ -924,6 +926,10 @@ public class CubaExcelImport extends ExcelImporterBase<CubaImportState> {
                 higherNode = familyNode.addChildTaxon(genus, null, null);
                 state.putHigherTaxon(genusStr, genus);
             }
+        }
+        if(isAbsent){
+            botanicalName.setTitleCache(taxonStrOrig, true);
+            taxon.setExcluded(true);
         }
 
         higherNode.addChildTaxon(taxon, null, null);
@@ -1328,7 +1334,9 @@ public class CubaExcelImport extends ExcelImporterBase<CubaImportState> {
         state.setCurrentTaxon(taxon);
 
         //Fam. ALT
-        makeAlternativeFamilies(record, state, familyTaxon, taxon);
+        if (!isSynonymOnly){
+            makeAlternativeFamilies(record, state, familyTaxon, taxon);
+        }
 
         //(Notas)
         makeNotes(record, state);
@@ -1461,7 +1469,8 @@ public class CubaExcelImport extends ExcelImporterBase<CubaImportState> {
      */
     private void makeSingleAlternativeFamily(CubaImportState state, Taxon taxon, String famStr, Reference<?> famRef) {
         if (isBlank(famStr)){
-            return;
+            famStr = "-";
+//            return;
         }
 
         TaxonDescription desc = getTaxonDescription(taxon, false, true);
@@ -1480,7 +1489,8 @@ public class CubaExcelImport extends ExcelImporterBase<CubaImportState> {
 
 
         //TextData
-        Feature feature1 = getFeature(state, altFamUuid1, "Family in other floras", "Family in other floras", "Other floras", null);
+        Feature feature1 = getFeature(state, altFamUuid1, "Families in other Floras (Text)", "Families in other Floras (Text)", "Other floras", null);
+        feature1.addRepresentation(Representation.NewInstance("Familias en otras Floras", "Familias en otras Floras", null, Language.SPANISH_CASTILIAN()));
 //        TextData textData = TextData.NewInstance(feature1, famStr, Language.DEFAULT(), null);
         TextData textData = TextData.NewInstance(feature1, null, Language.DEFAULT(), null);
         textData.addSource(OriginalSourceType.PrimaryTaxonomicSource, null,null, famRef, null, famTaxon.getName(),null);
@@ -1489,9 +1499,11 @@ public class CubaExcelImport extends ExcelImporterBase<CubaImportState> {
 
 
         //TaxonInteraction
-        Feature feature2 = getFeature(state, altFamUuid2, "Family in other floras(2)", "Family in other floras(2)", "Other floras(2)", null);
+        Feature feature2 = getFeature(state, altFamUuid2, "Families in other Floras", "Families in other Floras", "Other floras(2)", null);
         feature2.setSupportsTaxonInteraction(true);
+        feature2.addRepresentation(Representation.NewInstance("Familias en otras Floras", "Familias en otras Floras", null, Language.SPANISH_CASTILIAN()));
         TaxonInteraction taxInteract = TaxonInteraction.NewInstance(feature2);
+        textData.putText(Language.SPANISH_CASTILIAN(), "Familias en otras Floras");
         taxInteract.setTaxon2(famTaxon);
         taxInteract.addSource(OriginalSourceType.PrimaryTaxonomicSource, null,null, famRef, null);
         desc.addElement(taxInteract);
