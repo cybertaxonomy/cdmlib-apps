@@ -26,6 +26,8 @@ import eu.etaxonomy.cdm.io.common.ResultSetPartitioner;
 import eu.etaxonomy.cdm.model.common.CdmBase;
 import eu.etaxonomy.cdm.model.common.Language;
 import eu.etaxonomy.cdm.model.common.LanguageString;
+import eu.etaxonomy.cdm.model.reference.Reference;
+import eu.etaxonomy.cdm.model.reference.ReferenceFactory;
 import eu.etaxonomy.cdm.model.taxon.Classification;
 import eu.etaxonomy.cdm.model.taxon.Synonym;
 import eu.etaxonomy.cdm.model.taxon.SynonymRelationship;
@@ -206,10 +208,18 @@ public class RedListGefaesspflanzenImportClassification extends DbImportBase<Red
         Classification classification = Classification.NewInstance(state.getConfig().getClassificationName());
         classification.setName(LanguageString.NewInstance("Gesamtliste", Language.DEFAULT()));
         classification.setUuid(state.getConfig().getClassificationUuid());
+        Reference gesamtListeReference = ReferenceFactory.newGeneric();
+        gesamtListeReference.setUuid(RedListUtil.gesamtListeReferenceUuid);
+        gesamtListeReference.setTitle("Gesamtliste");
+        classification.setReference(gesamtListeReference);
         getClassificationService().save(classification);
         //checkliste
         Classification checklistClassification = Classification.NewInstance("Checkliste");
         checklistClassification.setUuid(RedListUtil.checkListClassificationUuid);
+        Reference checklistReference = ReferenceFactory.newGeneric();
+        checklistReference.setUuid(RedListUtil.checkListClassificationUuid);
+        checklistReference.setTitle("Gesamtliste");
+        checklistClassification.setReference(checklistReference);
         getClassificationService().save(checklistClassification);
     }
 
