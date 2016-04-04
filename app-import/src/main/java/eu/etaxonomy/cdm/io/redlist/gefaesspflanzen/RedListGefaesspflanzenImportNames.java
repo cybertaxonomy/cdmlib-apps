@@ -167,7 +167,7 @@ public class RedListGefaesspflanzenImportNames extends DbImportBase<RedListGefae
                 }
             }
         }
-        else if(authorKombString.trim().equals(RedListUtil.AUCT)){
+        else if(authorKombString.trim().contains(RedListUtil.AUCT)){
             RedListUtil.logMessage(id, "AUCT information in "+RedListUtil.AUTOR_KOMB+" column", logger);
         }
         else if(CdmUtils.isNotBlank(authorKombString)){
@@ -240,9 +240,12 @@ public class RedListGefaesspflanzenImportNames extends DbImportBase<RedListGefae
 
         //---TAXON---
         TaxonBase taxonBase = null;
-        if(gueltString.equals(RedListUtil.GUELT_ACCEPTED_TAXON) || (name.getAppendedPhrase()!=null && authorBasiString.trim().equals(RedListUtil.AUCT))){
+        if(authorBasiString.trim().contains(RedListUtil.AUCT)){
             taxonBase = Taxon.NewInstance(name, null);
-            taxonBase.setAppendedPhrase(authorBasiString);
+            taxonBase.setAppendedPhrase(RedListUtil.AUCT);
+        }
+        else if(gueltString.equals(RedListUtil.GUELT_ACCEPTED_TAXON)){
+            taxonBase = Taxon.NewInstance(name, null);
         }
         else if(gueltString.equals(RedListUtil.GUELT_SYNONYM) || gueltString.equals(RedListUtil.GUELT_BASIONYM)){
             taxonBase = Synonym.NewInstance(name, null);

@@ -130,8 +130,8 @@ public class RedListGefaesspflanzenImportClassification extends DbImportBase<Red
         //taxon
         if(taxonBase.isInstanceOf(Taxon.class)){
             //misapplied name
-            String appendedPhrase = taxonBase.getName().getAppendedPhrase();
-            if(appendedPhrase!=null && appendedPhrase.contains(RedListUtil.AUCT)){
+            String appendedPhrase = taxonBase.getAppendedPhrase();
+            if(appendedPhrase!=null && appendedPhrase.equals(RedListUtil.AUCT)){
                 parent.addMisappliedName((Taxon) taxonBase, null, null);
             }
             else{
