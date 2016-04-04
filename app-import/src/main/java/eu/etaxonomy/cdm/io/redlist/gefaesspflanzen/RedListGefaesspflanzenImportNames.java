@@ -254,7 +254,22 @@ public class RedListGefaesspflanzenImportNames extends DbImportBase<RedListGefae
             RedListUtil.logMessage(id, "Taxon for name "+name+" could not be created.", logger);
             return;
         }
+
+        //check taxon name consistency
+        if(taxNameString.endsWith("agg.")){
+            taxNameString = taxNameString.replace("agg.", "aggr.");
+        }
+        String nameCache = ((BotanicalName)taxonBase.getName()).getNameCache().trim();
+        if(!taxNameString.trim().equals(nameCache)){
+            RedListUtil.logMessage(id, "Taxon name inconsistent! taxon.titleCache <-> Column "+RedListUtil.TAXNAME+": "+nameCache+" <-> "+taxNameString, logger);
+        }
+
+
         taxaToSave.add(taxonBase);
+
+        //id
+        ImportHelper.setOriginalSource(taxonBase, state.getTransactionalSourceReference(), id, RedListUtil.TAXON_GESAMTLISTE_NAMESPACE);
+        state.getTaxonMap().put(id, taxonBase.getUuid());
 
         /*check if taxon/synonym is also in checklist
          * 1. create new taxon with the same name (in the checklist classification)
@@ -273,9 +288,6 @@ public class RedListGefaesspflanzenImportNames extends DbImportBase<RedListGefae
             taxaToSave.add(clone);
         }
 
-        //id
-        ImportHelper.setOriginalSource(taxonBase, state.getTransactionalSourceReference(), id, RedListUtil.TAXON_GESAMTLISTE_NAMESPACE);
-        state.getTaxonMap().put(id, taxonBase.getUuid());
     }
 
     private Rank makeRank(long id, RedListGefaesspflanzenImportState state, String rankStr) {
