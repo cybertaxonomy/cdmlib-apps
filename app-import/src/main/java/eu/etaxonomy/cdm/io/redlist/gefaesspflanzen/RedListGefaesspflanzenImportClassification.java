@@ -180,6 +180,8 @@ public class RedListGefaesspflanzenImportClassification extends DbImportBase<Red
                 }
             }
         }
+        //set sec reference
+        taxonBase.setSec(classification.getReference());
     }
 
     @Override
