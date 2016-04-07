@@ -365,36 +365,36 @@ public class FaunaEuropaeaDistributionImport extends FaunaEuropaeaImportBase {
        area.setIdInVocabulary("GB-NI");
        state.putNamedArea(area);
        faunaEuAreaVocabulary.addTerm(area);
-       area = NamedArea.NewInstance("Incl. AndÌpsara, ¡yios Evstr·tios, Fo˙rnoi, IkarÌa, KhÌos, "
-               + "LÈsvos, LÌmnos, Oino˙sa, Psar·, S·mos, SkÛpelos Kaloyeroi and other smaller islands",
-               "VÛreion Aiy·ion (North Aegean Is.)", "GR-AEG");
+       area = NamedArea.NewInstance("Incl. And√≠psara, √Åyios Evstr√°tios, Fo√∫rnoi,Ikar√≠a, Kh√≠os, "
+               + "L√©svos, L√≠mnos, Oino√∫sa, Psar√°, S√°mos, Sk√≥pelos Kaloyeroi and other smaller"
+               + " islands","V√≥reion Aiy√°ion (North Aegean Is.)", "GR-AEG");
        area.setUuid(UUID.randomUUID());
        area.setIdInVocabulary("GR-AEG");
        state.putNamedArea(area);
        faunaEuAreaVocabulary.addTerm(area);
-       area = NamedArea.NewInstance("Incl. AmorgÛs, An·fi, ¡nidros, ¡ndros, AndÌparos, Deno˙sa, FolÈgandros, Õos, Ir·klia, "
-               + "K·ros, KÌmolos, KÈa, K˝thnos, MÌlos, M˝konos, N·xos, P·ros, PolÌaigos, SÈrifos, SÌfnos, SÌkinos, "
-               + "S˝ros, ThÌra, TÌnos, YiarÛs and other smaller islands", "Kikl·des (Cyclades Is.)", "GR-CYC");
+       area = NamedArea.NewInstance("Incl. Amorg√≥s, An√°fi, √Ånidros, √Åndros, And√≠paros, Deno√∫sa, Fol√©gandros, "
+               + "√ços, Ir√°klia, K√°ros, K√≠molos, K√©a, K√Ωthnos, M√≠los, M√Ωkonos, N√°xos, P√°ros, Pol√≠aigos, S√©rifos, "
+               + "S√≠fnos, S√≠kinos, S√Ωros, Th√≠ra, T√≠nos, Yiar√≥s and other smaller islands", "Kikl√°des (Cyclades Is.)", "GR-CYC");
        area.setUuid(UUID.randomUUID());
        area.setIdInVocabulary("GR-CYC");
        state.putNamedArea(area);
        faunaEuAreaVocabulary.addTerm(area);
-       area = NamedArea.NewInstance("Incl. Alimni·, ¡rkoi, Astip·laia, AvgonÌsi, AnkathonÌsi, FarmakonÌsi, IoinianÌsia, "
-               + "K·limnos, KalolÌmnos, Kandelio˙sa, K·rpathos, K·sos, Kh·lki, KhamilÌ, KÌnaros, Kos, LÈros, LevÌtha, "
-               + "LipsÛi, MeyÌsti, NÌsiros, Ofido˙sa, P·tmos,", "Dodek·nisos (Dodecanese Is.), RÛdhos, SarÌa, SÌmi, SÌrina, TÌlos, TrÌa Nisi·, "
-               + "YialÌ and other smaller islands ", "GR-DOD");
+       area = NamedArea.NewInstance("Incl. Alimni√°, √Årkoi, Astip√°laia, Avgon√≠si, Ankathon√≠si, Farmakon√≠si, Ioinian√≠sia,"
+               + " K√°limnos, Kalol√≠mnos, Kandelio√∫sa, K√°rpathos, K√°sos, Kh√°lki, Khamil√≠, K√≠naros, Kos, L√©ros, Lev√≠tha, "
+               + "Lips√≥i, Mey√≠sti, N√≠siros, Ofido√∫sa, P√°tmos, R√≥dhos, Sar√≠a, S√≠mi, S√≠rina, T√≠los, Tr√≠a Nisi√°, Yial√≠ "
+               + "and other smaller islands", "Dodek√°nisos (Dodecanese Is.) ", "GR-DOD");
        area.setUuid(UUID.randomUUID());
        area.setIdInVocabulary("GR-DOD");
        state.putNamedArea(area);
        faunaEuAreaVocabulary.addTerm(area);
-       area = NamedArea.NewInstance(" Incl. AndikÌthira I., Evvia I., Ionian Is., Samothr·ki I., Northern Sporades Is., "
-               + "Th·sos I.", "Greek mainland", "GR-GRC");
+       area = NamedArea.NewInstance(" Incl. Andik√≠thira I., Evvia I., Ionian Is., Samothr√°ki I., Northern Sporades Is., Th√°sos I.",
+               "Greek mainland", "GR-GRC");
        area.setUuid(UUID.randomUUID());
        area.setIdInVocabulary("GR-GRC");
        state.putNamedArea(area);
        faunaEuAreaVocabulary.addTerm(area);
-       area = NamedArea.NewInstance("Incl. small adjacent islands like G·vdhos. Note that AndikÌthira I. although being closer to Kriti "
-               + "than to mainland, belongs to a mainland province", "Kriti (Crete)", "GR-KRI");
+       area = NamedArea.NewInstance("Incl. small adjacent islands like G√°vdhos. Note that Andik√≠thira I. although being "
+               + "closer to Kriti than to mainland, belongs to a mainland province", "Kriti (Crete)", "GR-KRI");
        area.setUuid(UUID.randomUUID());
        area.setIdInVocabulary("GR-KRI");
        state.putNamedArea(area);
@@ -581,7 +581,7 @@ public class FaunaEuropaeaDistributionImport extends FaunaEuropaeaImportBase {
        area.setIdInVocabulary("SM");
        state.putNamedArea(area);
        faunaEuAreaVocabulary.addTerm(area);
-       area = NamedArea.NewInstance("Incl. Imroz I. -  GˆkÁeada, but not those in the Sea of Marmara ",
+       area = NamedArea.NewInstance("Incl. Imroz I. - G√∂k√ßeada, but not those in the Sea of Marmara",
                "European Turkey", "TR-TUE");
        area.setUuid(UUID.randomUUID());
        area.setIdInVocabulary("TR-TUE");
