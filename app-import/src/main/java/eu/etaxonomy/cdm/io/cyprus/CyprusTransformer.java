@@ -49,7 +49,8 @@ public final class CyprusTransformer extends InputTransformerBase {
 	public static final UUID invasiveDoubtfulUuid = UUID.fromString("ac429d5f-e8ad-49ae-a41c-e4779b58b96a");
 	public static final UUID questionableDoubtfulUuid = UUID.fromString("914e7393-1314-4632-bc45-5eff3dc1e424");
 
-	public static final UUID cultivatedDoubtfulUuid = UUID.fromString("4f31bfc8-3058-4d83-aea5-3a1fe9773f9f");
+	//protected, because integrated into default vocabulary in the meanwhile
+	protected static final UUID cultivatedDoubtfulUuid = UUID.fromString("4f31bfc8-3058-4d83-aea5-3a1fe9773f9f");
 
 	//Named Area - divisions
 	public static final UUID uuidCyprusDivisionsVocabulary = UUID.fromString("2119f610-1f93-4d87-af28-40aeefaca100");

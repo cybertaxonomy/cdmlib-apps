@@ -28,13 +28,13 @@ public class RedListGefaesspflanzenActivator {
   static final ICdmDataSource cdmDestination = CdmDestinations.cdm_test_local_mysql();
 
 	//feature tree uuid
-	public static final UUID featureTreeUuid = UUID.fromString("75a0e0fc-838a-4c12-8fbb-90d42ba98a34");
+	public static final UUID featureTreeUuid = UUID.fromString("8a78ac1f-b2de-4e9e-bb14-319da0b4a790");
 
 	public static final String sourceReference = "Rote Listen - Gefäßpflanzen";
 
 
 	//classification
-	public static final UUID classificationUuid = UUID.fromString("c4053649-1994-4b79-b409-f3986227a4af");
+	public static final UUID classificationUuid = UUID.fromString("6f734299-fd8e-4cf2-864e-78ce1d53880b");
 
 	//check - import
 	static final CHECK check = CHECK.IMPORT_WITHOUT_CHECK;

@@ -162,7 +162,7 @@ public class CyprusDistributionImport extends ExcelImporterBase<CyprusImportStat
 	private PresenceAbsenceTerm questionableStatus;
 
 	private PresenceAbsenceTerm removeDoubtfulStatus(PresenceAbsenceTerm status) {
-		if (status == null){
+	    if (status == null){
 			return null;
 		}
 		if (status.getUuid().equals(CyprusTransformer.indigenousDoubtfulUuid)){

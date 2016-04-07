@@ -13,7 +13,6 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Map.Entry;
 
 import org.apache.log4j.Logger;
 import org.springframework.stereotype.Component;
@@ -21,10 +20,10 @@ import org.springframework.stereotype.Component;
 import eu.etaxonomy.cdm.common.CdmUtils;
 import eu.etaxonomy.cdm.io.common.DbImportBase;
 import eu.etaxonomy.cdm.io.common.IPartitionedIO;
-import eu.etaxonomy.cdm.io.common.ImportHelper;
 import eu.etaxonomy.cdm.io.common.ResultSetPartitioner;
-import eu.etaxonomy.cdm.model.agent.AgentBase;
 import eu.etaxonomy.cdm.model.agent.Person;
+import eu.etaxonomy.cdm.model.agent.Team;
+import eu.etaxonomy.cdm.model.agent.TeamOrPersonBase;
 import eu.etaxonomy.cdm.model.common.CdmBase;
 
 /**
@@ -35,14 +34,12 @@ import eu.etaxonomy.cdm.model.common.CdmBase;
 @Component
 @SuppressWarnings("serial")
 public class RedListGefaesspflanzenImportAuthor extends DbImportBase<RedListGefaesspflanzenImportState, RedListGefaesspflanzenImportConfigurator> {
+
     private static final Logger logger = Logger.getLogger(RedListGefaesspflanzenImportAuthor.class);
 
     private static final String tableName = "Rote Liste Gefäßpflanzen";
 
     private static final String pluralString = "authors";
-
-    private static final String AUTHOR_KOMB_NAMESPACE = "author_komb";
-    private static final String AUTHOR_BASI_NAMESPACE = "author_basi";
 
     public RedListGefaesspflanzenImportAuthor() {
         super(tableName, pluralString);
@@ -66,100 +63,64 @@ public class RedListGefaesspflanzenImportAuthor extends DbImportBase<RedListGefa
 
     @Override
     protected void doInvoke(RedListGefaesspflanzenImportState state) {
-        super.doInvoke(state);
+        makeAuthors(state, RedListUtil.AUTOR_KOMB);
+        makeAuthors(state, RedListUtil.AUTOR_BASI);
     }
 
 
     @Override
     public boolean doPartition(ResultSetPartitioner partitioner, RedListGefaesspflanzenImportState state) {
-        ResultSet rs = partitioner.getResultSet();
-        Map<String, AgentBase> teamsOrPersonToSave = new HashMap<String, AgentBase>();
-        try {
-            while (rs.next()){
-                makeSingleAuthor(state, rs, teamsOrPersonToSave);
+        return true;
+    }
 
+    private void makeAuthors(RedListGefaesspflanzenImportState state, String columnName) {
+
+        String query = "select distinct "+columnName+" from V_TAXATLAS_D20_EXPORT t"
+                + " WHERE TRIM(t."+columnName+") <>''";
+
+        ResultSet rs = state.getConfig().getSource().getResultSet(query);
+
+        try{
+            while(rs.next()){
+                String authorName = rs.getString(columnName);
+                TeamOrPersonBase teamOrPerson = null;
+                if(CdmUtils.isNotBlank(authorName)){
+                    makePerson(state, authorName);
+                }
             }
         } catch (SQLException e) {
             e.printStackTrace();
         }
-
-        getAgentService().saveOrUpdate(teamsOrPersonToSave.values());
-        //add partition to state map
-        for (Entry<String, AgentBase> entry: teamsOrPersonToSave.entrySet()) {
-            state.getAgentMap().put(entry.getKey(), entry.getValue().getUuid());
-        }
-        return true;
     }
 
-    private void makeSingleAuthor(RedListGefaesspflanzenImportState state, ResultSet rs, Map<String, AgentBase> teamsOrPersonToSave)
-            throws SQLException {
-        long id = rs.getLong("NAMNR");
-        String authorName = rs.getString("AUTOR");
-        String authorBasiName = rs.getString("AUTOR_BASI");
-        String authorKombName = rs.getString("AUTOR_KOMB");
-        String zusatz = rs.getString("ZUSATZ");
-
-        //check null values
-        if(CdmUtils.isBlank(authorName) && CdmUtils.isBlank(authorBasiName) && CdmUtils.isBlank(authorKombName)){
-            logger.error("No author found for NAMNR "+id);
+    private void makePerson(RedListGefaesspflanzenImportState state, String authorName) {
+        //check if misapplied name
+        if(authorName.trim().equals(RedListUtil.AUCT)){
             return;
         }
-        Person authorKomb = null;
-        Person authorBasi = null;
-        Person author = null;
-        authorKomb = importPerson(state, teamsOrPersonToSave, id, authorKombName, AUTHOR_KOMB_NAMESPACE);
-
-        authorBasi = importPerson(state, teamsOrPersonToSave, id, authorBasiName, AUTHOR_BASI_NAMESPACE);
-
-//        if(authorBasi!=null && authorKomb!=null){
-//            Team team = Team.NewInstance();
-//            team.addTeamMember(authorBasi);
-//            team.addTeamMember(authorKomb);
-//            teamsOrPersonToSave.add(team);
-//            ImportHelper.setOriginalSource(team, state.getTransactionalSourceReference(), id, AUTHOR_NAMESPACE);
-//        }
-        if(authorBasi==null && authorKomb==null){
-            logger.warn("Author not atomised in authorKomb and authorBasi");
-            author = Person.NewTitledInstance(authorName);
-            teamsOrPersonToSave.put(authorName, author);
-            ImportHelper.setOriginalSource(author, state.getTransactionalSourceReference(), id, AUTHOR_KOMB_NAMESPACE);
+        TeamOrPersonBase teamOrPerson;
+        //check if there are ex authors
+        if(authorName.contains(RedListUtil.EX)){
+            String[] split = authorName.split(RedListUtil.EX);
+            for (int i = 0; i < split.length; i++) {
+                makePerson(state, split[i].trim());
+            }
         }
-        //check author column consistency
-        String authorCheckString = "";
-        if(!CdmUtils.isBlank(authorKombName)){
-            authorCheckString = "("+authorBasiName+")"+" "+authorKombName;
+        //check if it is a team
+        if(authorName.contains("&")){
+            teamOrPerson = Team.NewInstance();
+            String[] split = authorName.split("&");
+            for (int i = 0; i < split.length; i++) {
+                ((Team) teamOrPerson).addTeamMember(Person.NewTitledInstance(split[i].trim()));
+            }
         }
         else{
-            authorCheckString = authorBasiName;
+            teamOrPerson = Person.NewTitledInstance(authorName);
         }
-        boolean isAuthorStringCorrect = false;
-        if(authorName.startsWith(authorCheckString)){
-            isAuthorStringCorrect = true;
-            if(!CdmUtils.isBlank(zusatz) && !authorName.contains(zusatz)){
-                isAuthorStringCorrect = false;
-            }
-        }
-        if(!isAuthorStringCorrect){
-            String errorString = "ID: "+id+", Author string not consistent! Is \""+authorName+"\" Should start with \""+authorCheckString+"\"";
-            if(!CdmUtils.isBlank(zusatz)){
-                errorString +=" and contain \""+zusatz+"\"";
-            }
-            logger.error(errorString);
-        }
-
+        getAgentService().saveOrUpdate(teamOrPerson);
+        state.getAuthorMap().put(authorName, teamOrPerson.getUuid());
     }
 
-    private Person importPerson(RedListGefaesspflanzenImportState state, Map<String, AgentBase> teamsOrPersonToSave,
-            long id, String agentName, String namespace) {
-        Person person = null;
-        if(!CdmUtils.isBlank(agentName) && !state.getAgentMap().containsKey(agentName)){
-            person = Person.NewTitledInstance(agentName);
-            teamsOrPersonToSave.put(agentName, person);
-            state.getAgentMap().put(agentName, person.getUuid());
-            ImportHelper.setOriginalSource(person, state.getTransactionalSourceReference(), id, namespace);
-        }
-        return person;
-    }
 
     @Override
     public Map<Object, Map<String, ? extends CdmBase>> getRelatedObjectsForPartition(ResultSet rs,

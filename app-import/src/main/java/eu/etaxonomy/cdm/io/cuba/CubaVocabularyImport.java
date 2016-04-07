@@ -17,6 +17,8 @@ import org.springframework.stereotype.Component;
 import org.springframework.transaction.TransactionStatus;
 
 import eu.etaxonomy.cdm.common.DOI;
+import eu.etaxonomy.cdm.ext.geo.GeoServiceArea;
+import eu.etaxonomy.cdm.ext.geo.GeoServiceAreaAnnotatedMapping;
 import eu.etaxonomy.cdm.io.common.CdmImportBase;
 import eu.etaxonomy.cdm.io.common.mapping.IInputTransformer;
 import eu.etaxonomy.cdm.io.common.mapping.UndefinedTransformerMethodException;
@@ -92,6 +94,7 @@ public class CubaVocabularyImport extends CdmImportBase<CubaImportConfigurator, 
         String abstracct = "The catalogue enumerates all taxa of Gymnosperms, Dicotyledons, and Monocotyledons occurring in the West Indies archipelago excluding the islands off the coast of Venezuela (Netherlands Antilles, Venezuelan Antilles, Tobago, and Trinidad). For each accepted taxon, nomenclature (including synonyms described from the West Indies and their references to publication), distribution in the West Indies (including endemic, native, or exotic status), common names, and a numerical listing of literature records are given. Type specimen citations are provided for accepted names and synonyms of Cyperaceae, Sapindaceae, and some selected genera in several families including the Apocynaceae (Plumeria), Aquifoliaceae (Ilex), and Santalaceae (Dendrophthora). More than 30,000 names were treated comprising 208 families, 2,033 genera, and 12,279 taxa, which includes exotic and commonly cultivated plants. The total number of indigenous taxa was approximately 10,470 of which 71% (7,446 taxa) are endemic to the archipelago or part of it. Fifteen new names, 37 combinations, and 7 lectotypifications are validated. A searchable website of this catalogue, maintained and continuously updated at the Smithsonian Institution, is available at http://botany.si.edu/antilles/WestIndies/.";
         refAS.setReferenceAbstract(abstracct);
         Reference<?> refASIn = ReferenceFactory.newJournal();
+        refASIn.setTitle("Smithsonian Contr. Bot.");
         refAS.setInReference(refASIn);
         getReferenceService().save(refAS);
 
@@ -130,17 +133,18 @@ public class CubaVocabularyImport extends CdmImportBase<CubaImportConfigurator, 
 
         //doubtfully endemic
         UUID doubtfullyEndemicUuid = transformer.getPresenceTermUuid("?E");
-        this.getPresenceTerm(state, doubtfullyEndemicUuid, "doubtfully endemic", "doubtfully endemic", "?E", false);
+        this.getPresenceTerm(state, doubtfullyEndemicUuid, "endemic, doubtfully present", "endemic, doubtfully present", "?E", false);
 
         //indigenous
-        UUID indigenousUuid = transformer.getPresenceTermUuid("+");
-        this.getPresenceTerm(state, indigenousUuid, "indigenous", "Indigenous", "+", false);
-        UUID indigenousDoubtfulUuid = transformer.getPresenceTermUuid("?");
-        this.getPresenceTerm(state, indigenousDoubtfulUuid, "indigenous, doubtfully present", "indigenous, doubtfully present", "?", false);
+//        UUID indigenousUuid = transformer.getPresenceTermUuid("+");
+//        this.getPresenceTerm(state, indigenousUuid, "indigenous", "Indigenous", "+", false);
+//        UUID indigenousDoubtfulUuid = transformer.getPresenceTermUuid("?");
+//        this.getPresenceTerm(state, indigenousDoubtfulUuid, "indigenous, doubtfully present", "indigenous, doubtfully present", "?", false);
+
         UUID nonNativeDoubtfulNaturalizedUuid = transformer.getPresenceTermUuid("P");
         this.getPresenceTerm(state, nonNativeDoubtfulNaturalizedUuid, "non-native and doubtfully naturalised", "non-native and doubtfully naturalised", "P", false);
-        UUID casualUuid = transformer.getPresenceTermUuid("A");
-        this.getPresenceTerm(state, casualUuid, "adventive (casual) alien", "adventive (casual) alien", "A", false);
+        UUID rareCasualUuid = transformer.getPresenceTermUuid("(A)");
+        this.getPresenceTerm(state, rareCasualUuid, "rare casual", "rare casual", "(A)", false);
 
         //occasionally cultivated
         label = "occasionally cultivated";
@@ -149,10 +153,10 @@ public class CubaVocabularyImport extends CdmImportBase<CubaImportConfigurator, 
         getPresenceTerm(state, occasionallyCultivatedUuid, label, label, abbrev, PRESENT, cubaStatusVocabualary);
 
         //doubtfully present
-        UUID doubtfullyIndigenousUuid = transformer.getPresenceTermUuid("D");
-        this.getPresenceTerm(state, doubtfullyIndigenousUuid, "indigenous?", "Indigenous?", "D", false);
-        UUID doubtfullyIndigenousDoubtfulUuid = transformer.getPresenceTermUuid("??");
-        this.getPresenceTerm(state, doubtfullyIndigenousDoubtfulUuid, "?indigenous?", "doubfully indigenous, (und) doubtfully present", "??", false);
+        UUID indigenousDoubtfullyPresentUuid = transformer.getPresenceTermUuid("D");
+        this.getPresenceTerm(state, indigenousDoubtfullyPresentUuid, "indigenous?", "Indigenous?", "D", false);
+        UUID doubtfullyIndigenousDoubtfullyPresentUuid = transformer.getPresenceTermUuid("??");
+        this.getPresenceTerm(state, doubtfullyIndigenousDoubtfullyPresentUuid, "?indigenous?", "doubfully indigenous, (and) doubtfully present", "??", false);
 
         UUID doubtfullyNaturalisedUuid = transformer.getPresenceTermUuid("?N");
         this.getPresenceTerm(state, doubtfullyNaturalisedUuid, "?non-native and doubtfully naturalised", "non-native and doubtfully naturalised, doubtfully present", "?N", false);
@@ -191,12 +195,26 @@ public class CubaVocabularyImport extends CdmImportBase<CubaImportConfigurator, 
         NamedAreaType areaType = null;  //TODO
         NamedAreaLevel level = null;  //TODO
 
+
+//        String mappingFormat = "<?xml version=\"1.0\" ?><mapService xmlns=\"http://www.etaxonomy.eu/cdm\" "
+//                + "type=\"editMapService\"><area><layer>%s</layer><field>%s</field><value>%s</value></area></mapService>";
+//        String mappingAnnotation = String.format(mappingFormat, layer, field, value);
+
+        String mapping_layer_world = "flora_cuba_2016_world";
+        String mapping_field_world = "cuba_0";
+        String mapping_layer_regions = "flora_cuba_2016_regions";
+        String mapping_field_regions = "cuba_1";
+        String mapping_layer_provinces = "flora_cuba_2016_provinces";
+        String mapping_field_provinces = "cuba_2";
+
         //Cuba
         level = NamedAreaLevel.COUNTRY();
         label = "Cuba";
-        abbrev = "C";
+        abbrev = "Cu";
         UUID cubaUuid = transformer.getNamedAreaUuid(abbrev);
         NamedArea cuba = getNamedArea(state, cubaUuid, label, label, abbrev, areaType, level, cubaAreasVocabualary, matchMode);
+        cuba.setIdInVocabulary(abbrev);
+        addMapping(cuba, mapping_layer_world, mapping_field_world, abbrev);
 
         //Regions
         level = null;
@@ -207,6 +225,8 @@ public class CubaVocabularyImport extends CdmImportBase<CubaImportConfigurator, 
         UUID cubaWestUuid = transformer.getNamedAreaUuid(abbrev);
         NamedArea westernCuba = getNamedArea(state, cubaWestUuid, label, label, abbrev, areaType, level, cubaAreasVocabualary, matchMode);
         cuba.addIncludes(westernCuba);
+        westernCuba.setIdInVocabulary(abbrev);
+        addMapping(westernCuba, mapping_layer_regions, mapping_field_regions, abbrev);
 
         //Central Cuba
         label = "Central Cuba";
@@ -214,6 +234,8 @@ public class CubaVocabularyImport extends CdmImportBase<CubaImportConfigurator, 
         UUID cubaCentralUuid = transformer.getNamedAreaUuid(abbrev);
         NamedArea centralCuba = getNamedArea(state, cubaCentralUuid, label, label, abbrev, areaType, level, cubaAreasVocabualary, matchMode);
         cuba.addIncludes(centralCuba);
+        centralCuba.setIdInVocabulary(abbrev);
+        addMapping(centralCuba, mapping_layer_regions, mapping_field_regions, abbrev);
 
         //East Cuba
         label = "East Cuba";
@@ -221,6 +243,8 @@ public class CubaVocabularyImport extends CdmImportBase<CubaImportConfigurator, 
         UUID cubaEastUuid = transformer.getNamedAreaUuid(abbrev);
         NamedArea eastCuba = getNamedArea(state, cubaEastUuid, label, label, abbrev, areaType, level, cubaAreasVocabualary, matchMode);
         cuba.addIncludes(eastCuba);
+        eastCuba.setIdInVocabulary(abbrev);
+        addMapping(eastCuba, mapping_layer_regions, mapping_field_regions, abbrev);
 
         //Provinces - West
         level = NamedAreaLevel.PROVINCE();
@@ -231,6 +255,8 @@ public class CubaVocabularyImport extends CdmImportBase<CubaImportConfigurator, 
         UUID uuid = transformer.getNamedAreaUuid(abbrev);
         NamedArea area = getNamedArea(state, uuid, label, label, abbrev, areaType, level, cubaAreasVocabualary, matchMode);
         westernCuba.addIncludes(area);
+        area.setIdInVocabulary(abbrev);
+        addMapping(area, mapping_layer_provinces, mapping_field_provinces, abbrev);
 
 //        //Habana Hab
 //        label = "Habana"; //including Ciudad de la Habana, Mayabeque, Artemisa
@@ -238,6 +264,16 @@ public class CubaVocabularyImport extends CdmImportBase<CubaImportConfigurator, 
 //        uuid = transformer.getNamedAreaUuid(abbrev);
 //        NamedArea habana = getNamedArea(state, uuid, label, label, abbrev, areaType, level, cubaAreasVocabualary, matchMode);
 //        westernCuba.addIncludes(habana);
+//        area.setIdInVocabulary(abbrev);
+
+        //Artemisa
+        label = "Artemisa";
+        abbrev = "Art";
+        uuid = transformer.getNamedAreaUuid(abbrev);
+        area = getNamedArea(state, uuid, label, label, abbrev, areaType, level, cubaAreasVocabualary, matchMode);
+        westernCuba.addIncludes(area);
+        area.setIdInVocabulary(abbrev);
+        addMapping(area, mapping_layer_provinces, mapping_field_provinces, abbrev);
 
         //Ciudad de la Habana
         label = "Ciudad de la Habana";
@@ -245,18 +281,17 @@ public class CubaVocabularyImport extends CdmImportBase<CubaImportConfigurator, 
         uuid = transformer.getNamedAreaUuid(abbrev);
         area = getNamedArea(state, uuid, label, label, abbrev, areaType, level, cubaAreasVocabualary, matchMode);
         westernCuba.addIncludes(area);
+        area.setIdInVocabulary(abbrev);
+        addMapping(area, mapping_layer_provinces, mapping_field_provinces, abbrev);
+
         //Ciudad de la Habana
         label = "Mayabeque";
         abbrev = "May";
         uuid = transformer.getNamedAreaUuid(abbrev);
         area = getNamedArea(state, uuid, label, label, abbrev, areaType, level, cubaAreasVocabualary, matchMode);
         westernCuba.addIncludes(area);
-        //Ciudad de la Habana
-        label = "Artemisa";
-        abbrev = "Art";
-        uuid = transformer.getNamedAreaUuid(abbrev);
-        area = getNamedArea(state, uuid, label, label, abbrev, areaType, level, cubaAreasVocabualary, matchMode);
-        westernCuba.addIncludes(area);
+        area.setIdInVocabulary(abbrev);
+        addMapping(area, mapping_layer_provinces, mapping_field_provinces, abbrev);
 
 
         //Matanzas Mat
@@ -265,6 +300,8 @@ public class CubaVocabularyImport extends CdmImportBase<CubaImportConfigurator, 
         uuid = transformer.getNamedAreaUuid(abbrev);
         area = getNamedArea(state, uuid, label, label, abbrev, areaType, level, cubaAreasVocabualary, matchMode);
         westernCuba.addIncludes(area);
+        area.setIdInVocabulary(abbrev);
+        addMapping(area, mapping_layer_provinces, mapping_field_provinces, abbrev);
 
         //Isla de la Juventud IJ
         label = "Isla de la Juventud";
@@ -272,6 +309,8 @@ public class CubaVocabularyImport extends CdmImportBase<CubaImportConfigurator, 
         uuid = transformer.getNamedAreaUuid(abbrev);
         area = getNamedArea(state, uuid, label, label, abbrev, areaType, level, cubaAreasVocabualary, matchMode);
         westernCuba.addIncludes(area);
+        area.setIdInVocabulary(abbrev);
+        addMapping(area, mapping_layer_provinces, mapping_field_provinces, abbrev);
 
         //Provinces - Central
         //Villa Clara VC
@@ -280,6 +319,8 @@ public class CubaVocabularyImport extends CdmImportBase<CubaImportConfigurator, 
         uuid = transformer.getNamedAreaUuid(abbrev);
         area = getNamedArea(state, uuid, label, label, abbrev, areaType, level, cubaAreasVocabualary, matchMode);
         centralCuba.addIncludes(area);
+        area.setIdInVocabulary(abbrev);
+        addMapping(area, mapping_layer_provinces, mapping_field_provinces, abbrev);
 
         //Cienfuegos Ci VC
         label = "Cienfuegos";
@@ -287,13 +328,17 @@ public class CubaVocabularyImport extends CdmImportBase<CubaImportConfigurator, 
         uuid = transformer.getNamedAreaUuid(abbrev);
         area = getNamedArea(state, uuid, label, label, abbrev, areaType, level, cubaAreasVocabualary, matchMode);
         centralCuba.addIncludes(area);
+        area.setIdInVocabulary(abbrev);
+        addMapping(area, mapping_layer_provinces, mapping_field_provinces, abbrev);
 
         //Sancti Spiritus SS
-        label = "Sancti Spiritus";
+        label = "Sancti Spíritus";
         abbrev = "SS";
         uuid = transformer.getNamedAreaUuid(abbrev);
         area = getNamedArea(state, uuid, label, label, abbrev, areaType, level, cubaAreasVocabualary, matchMode);
         centralCuba.addIncludes(area);
+        area.setIdInVocabulary(abbrev);
+        addMapping(area, mapping_layer_provinces, mapping_field_provinces, abbrev);
 
         //Ciego de Ávila CA
         label = "Ciego de Ávila";
@@ -301,6 +346,8 @@ public class CubaVocabularyImport extends CdmImportBase<CubaImportConfigurator, 
         uuid = transformer.getNamedAreaUuid(abbrev);
         area = getNamedArea(state, uuid, label, label, abbrev, areaType, level, cubaAreasVocabualary, matchMode);
         centralCuba.addIncludes(area);
+        area.setIdInVocabulary(abbrev);
+        addMapping(area, mapping_layer_provinces, mapping_field_provinces, abbrev);
 
         //Camagüey Cam
         label = "Camagüey";
@@ -308,6 +355,8 @@ public class CubaVocabularyImport extends CdmImportBase<CubaImportConfigurator, 
         uuid = transformer.getNamedAreaUuid(abbrev);
         area = getNamedArea(state, uuid, label, label, abbrev, areaType, level, cubaAreasVocabualary, matchMode);
         centralCuba.addIncludes(area);
+        area.setIdInVocabulary(abbrev);
+        addMapping(area, mapping_layer_provinces, mapping_field_provinces, abbrev);
 
         //Las Tunas LT
         label = "Las Tunas";
@@ -315,6 +364,8 @@ public class CubaVocabularyImport extends CdmImportBase<CubaImportConfigurator, 
         uuid = transformer.getNamedAreaUuid(abbrev);
         area = getNamedArea(state, uuid, label, label, abbrev, areaType, level, cubaAreasVocabualary, matchMode);
         centralCuba.addIncludes(area);
+        area.setIdInVocabulary(abbrev);
+        addMapping(area, mapping_layer_provinces, mapping_field_provinces, abbrev);
 
         //Provinces - East
         //Granma Gr
@@ -323,6 +374,8 @@ public class CubaVocabularyImport extends CdmImportBase<CubaImportConfigurator, 
         uuid = transformer.getNamedAreaUuid(abbrev);
         area = getNamedArea(state, uuid, label, label, abbrev, areaType, level, cubaAreasVocabualary, matchMode);
         eastCuba.addIncludes(area);
+        area.setIdInVocabulary(abbrev);
+        addMapping(area, mapping_layer_provinces, mapping_field_provinces, abbrev);
 
         //Holguín Ho
         label = "Holguín";
@@ -330,6 +383,8 @@ public class CubaVocabularyImport extends CdmImportBase<CubaImportConfigurator, 
         uuid = transformer.getNamedAreaUuid(abbrev);
         area = getNamedArea(state, uuid, label, label, abbrev, areaType, level, cubaAreasVocabualary, matchMode);
         eastCuba.addIncludes(area);
+        area.setIdInVocabulary(abbrev);
+        addMapping(area, mapping_layer_provinces, mapping_field_provinces, abbrev);
 
         //Santiago de Cuba SC
         label = "Santiago de Cuba";
@@ -337,6 +392,8 @@ public class CubaVocabularyImport extends CdmImportBase<CubaImportConfigurator, 
         uuid = transformer.getNamedAreaUuid(abbrev);
         area = getNamedArea(state, uuid, label, label, abbrev, areaType, level, cubaAreasVocabualary, matchMode);
         eastCuba.addIncludes(area);
+        area.setIdInVocabulary(abbrev);
+        addMapping(area, mapping_layer_provinces, mapping_field_provinces, abbrev);
 
         //Guantánamo Gu
         label = "Guantánamo";
@@ -344,6 +401,8 @@ public class CubaVocabularyImport extends CdmImportBase<CubaImportConfigurator, 
         uuid = transformer.getNamedAreaUuid(abbrev);
         area = getNamedArea(state, uuid, label, label, abbrev, areaType, level, cubaAreasVocabualary, matchMode);
         eastCuba.addIncludes(area);
+        area.setIdInVocabulary(abbrev);
+        addMapping(area, mapping_layer_provinces, mapping_field_provinces, abbrev);
 
         //other Greater Antilles (Cuba, Española, Jamaica, Puerto Rico)
         level = null;
@@ -352,6 +411,8 @@ public class CubaVocabularyImport extends CdmImportBase<CubaImportConfigurator, 
         abbrev = "Esp";
         uuid = transformer.getNamedAreaUuid(abbrev);
         area = getNamedArea(state, uuid, label, label, abbrev, areaType, level, cubaAreasVocabualary, matchMode);
+        area.setIdInVocabulary(abbrev);
+        addMapping(area, mapping_layer_world, mapping_field_world, abbrev);
 
         //Jamaica Ja
         level = NamedAreaLevel.COUNTRY();
@@ -359,13 +420,17 @@ public class CubaVocabularyImport extends CdmImportBase<CubaImportConfigurator, 
         abbrev = "Ja";
         uuid = transformer.getNamedAreaUuid(abbrev);
         area = getNamedArea(state, uuid, label, label, abbrev, areaType, level, cubaAreasVocabualary, matchMode);
+        area.setIdInVocabulary(abbrev);
+        addMapping(area, mapping_layer_world, mapping_field_world, abbrev);
 
         //Puerto Rico PR
         level = NamedAreaLevel.COUNTRY();
         label = "Puerto Rico";
-        abbrev = "PR";
+        abbrev = "PRc";
         uuid = transformer.getNamedAreaUuid(abbrev);
         area = getNamedArea(state, uuid, label, label, abbrev, areaType, level, cubaAreasVocabualary, matchMode);
+        area.setIdInVocabulary(abbrev);
+        addMapping(area, mapping_layer_world, mapping_field_world, abbrev);
 
         //Lesser Antilles Men
         level = null;
@@ -373,18 +438,24 @@ public class CubaVocabularyImport extends CdmImportBase<CubaImportConfigurator, 
         abbrev = "Men";
         uuid = transformer.getNamedAreaUuid(abbrev);
         area = getNamedArea(state, uuid, label, label, abbrev, areaType, level, cubaAreasVocabualary, matchMode);
+        area.setIdInVocabulary(abbrev);
+        addMapping(area, mapping_layer_world, mapping_field_world, abbrev);
 
         //Bahamas
         label = "Bahamas";
         abbrev = "Bah";
         uuid = transformer.getNamedAreaUuid(abbrev);
         area = getNamedArea(state, uuid, label, label, abbrev, areaType, level, cubaAreasVocabualary, matchMode);
+        area.setIdInVocabulary(abbrev);
+        addMapping(area, mapping_layer_world, mapping_field_world, abbrev);
 
         //Cayman Islands
         label = "Cayman Islands"; //[Trinidad, Tobago, Curaçao, Margarita, ABC Isl. => S. America];
         abbrev = "Cay";
         uuid = transformer.getNamedAreaUuid(abbrev);
         area = getNamedArea(state, uuid, label, label, abbrev, areaType, level, cubaAreasVocabualary, matchMode);
+        area.setIdInVocabulary(abbrev);
+        addMapping(area, mapping_layer_world, mapping_field_world, abbrev);
 
         //World
         //N America
@@ -392,29 +463,50 @@ public class CubaVocabularyImport extends CdmImportBase<CubaImportConfigurator, 
         abbrev = "AmN";
         uuid = transformer.getNamedAreaUuid(abbrev);
         area = getNamedArea(state, uuid, label, label, abbrev, areaType, level, cubaAreasVocabualary, matchMode);
+        area.setIdInVocabulary(abbrev);
+        addMapping(area, mapping_layer_world, mapping_field_world, abbrev);
 
         //Central America
         label = "Central America";
         abbrev = "AmC";
         uuid = transformer.getNamedAreaUuid(abbrev);
         area = getNamedArea(state, uuid, label, label, abbrev, areaType, level, cubaAreasVocabualary, matchMode);
+        area.setIdInVocabulary(abbrev);
+        addMapping(area, mapping_layer_world, mapping_field_world, abbrev);
 
         //S America
         label = "S America";
         abbrev = "AmS";
         uuid = transformer.getNamedAreaUuid(abbrev);
         area = getNamedArea(state, uuid, label, label, abbrev, areaType, level, cubaAreasVocabualary, matchMode);
+        area.setIdInVocabulary(abbrev);
+        addMapping(area, mapping_layer_world, mapping_field_world, abbrev);
 
         //Old World
         label = "Old World ";
         abbrev = "VM";
         uuid = transformer.getNamedAreaUuid(abbrev);
         area = getNamedArea(state, uuid, label, label, abbrev, areaType, level, cubaAreasVocabualary, matchMode);
+        area.setIdInVocabulary(abbrev);
+        addMapping(area, mapping_layer_world, mapping_field_world, abbrev);
 
         commitTransaction(tx);
         return true;
     }
 
+
+    /**
+     * @param cuba
+     * @param mapping_layer
+     * @param mapping_field
+     * @param abbrev
+     */
+    private void addMapping(NamedArea area, String mapping_layer, String mapping_field, String abbrev) {
+        GeoServiceAreaAnnotatedMapping mapping = (GeoServiceAreaAnnotatedMapping)this.getBean("geoServiceAreaAnnotatedMapping");
+        GeoServiceArea geoServiceArea = new GeoServiceArea();
+        geoServiceArea.add(mapping_layer, mapping_field, abbrev);
+        mapping.set(area, geoServiceArea);
+    }
 
     @Override
     protected boolean isIgnore(CubaImportState state) {

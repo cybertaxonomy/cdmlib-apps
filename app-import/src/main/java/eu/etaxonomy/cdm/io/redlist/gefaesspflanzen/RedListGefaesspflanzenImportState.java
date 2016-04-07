@@ -19,21 +19,42 @@ import org.apache.log4j.Logger;
 import eu.etaxonomy.cdm.io.common.DbImportStateBase;
 
 /**
- * @author a.mueller
- * @created 11.05.2009
+ *
+ * @author pplitzner
+ * @date Mar 1, 2016
+ *
  */
 public class RedListGefaesspflanzenImportState extends DbImportStateBase<RedListGefaesspflanzenImportConfigurator, RedListGefaesspflanzenImportState>{
 	@SuppressWarnings("unused")
 	private static final Logger logger = Logger.getLogger(RedListGefaesspflanzenImportState.class);
-	
-	private Map<String, UUID> agentMap = new HashMap<String, UUID>();
+
+	private final Map<String, UUID> authorMap = new HashMap<String, UUID>();
+	private final Map<Long, UUID> nameMap = new HashMap<Long, UUID>();
+	private final Map<Long, UUID> taxonMap = new HashMap<Long, UUID>();
+	private UUID checklistClassificationUuid;
 
     protected RedListGefaesspflanzenImportState(RedListGefaesspflanzenImportConfigurator config) {
         super(config);
     }
-    
-    public Map<String, UUID> getAgentMap() {
-        return agentMap;
+
+    public Map<String, UUID> getAuthorMap() {
+        return authorMap;
+    }
+
+    public Map<Long, UUID> getNameMap() {
+        return nameMap;
+    }
+
+    public Map<Long, UUID> getTaxonMap() {
+        return taxonMap;
+    }
+
+    public void setChecklistClassificationUuid(UUID checklistClassificationUuid) {
+        this.checklistClassificationUuid = checklistClassificationUuid;
+    }
+
+    public UUID getChecklistClassificationUuid() {
+        return checklistClassificationUuid;
     }
 
 }
