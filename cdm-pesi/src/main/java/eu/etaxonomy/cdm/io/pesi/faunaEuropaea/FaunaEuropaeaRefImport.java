@@ -243,7 +243,7 @@ public class FaunaEuropaeaRefImport extends FaunaEuropaeaImportBase {
 				// Store reference
 
 
-				if (!references.containsKey(refId)) {
+				if (!references.containsKey(refId) && !(reference.getId() ==fauEuConfig.getSourceReference().getId())) {
 
 					if (reference == null) {
 						logger.warn("Reference is null");
@@ -286,7 +286,7 @@ public class FaunaEuropaeaRefImport extends FaunaEuropaeaImportBase {
 			Map<String, TeamOrPersonBase<?>> authors,
 			Map<Integer, UUID> referenceUuids, int i, TransactionStatus txStatus) {
 
-		Map <UUID, Reference> referenceMap =getReferenceService().save((Collection)references.values());
+		Map <UUID, Reference> referenceMap =getReferenceService().saveOrUpdate((Collection)references.values());
 		logger.info("i = " + i + " - references saved");
 
 		Iterator<Entry<UUID, Reference>> it = referenceMap.entrySet().iterator();

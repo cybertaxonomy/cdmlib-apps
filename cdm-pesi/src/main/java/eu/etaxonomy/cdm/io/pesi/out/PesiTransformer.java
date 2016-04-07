@@ -1220,7 +1220,7 @@ public final class PesiTransformer extends ExportTransformerBase implements IExp
 
 
 
-			//FE
+			/*FE
 			else if (namedArea.getUuid().equals(FaunaEuropaeaTransformer.uuidAreaAFR)) { return AREA_AFRO_TROPICAL_REGION; }
 			else if (namedArea.getUuid().equals(FaunaEuropaeaTransformer.uuidAreaAUS)) { return AREA_AUSTRALIAN_REGION; }
 			else if (namedArea.getUuid().equals(FaunaEuropaeaTransformer.uuidAreaEPA)) { return AREA_EAST_PALAEARCTIC; }
@@ -1237,7 +1237,7 @@ public final class PesiTransformer extends ExportTransformerBase implements IExp
 			else if (namedArea.getUuid().equals(FaunaEuropaeaTransformer.uuidAreaUA)) { return AREA_UKRAINE_INCLUDING_CRIMEA; }
 			else if (namedArea.getUuid().equals(FaunaEuropaeaTransformer.uuidAreaRU_FJL)) { return AREA_FRANZ_JOSEF_LAND; }
 			else if (namedArea.getUuid().equals(FaunaEuropaeaTransformer.uuidAreaRU_NOZ)) { return AREA_NOVAYA_ZEMLYA; }
-
+*/
 
 			//ERMS
 			else if (namedArea.getUuid().equals(ErmsTransformer.uuidEuropeanMarineWaters)) { return AREA_EUROPEAN_MARINE_WATERS; }

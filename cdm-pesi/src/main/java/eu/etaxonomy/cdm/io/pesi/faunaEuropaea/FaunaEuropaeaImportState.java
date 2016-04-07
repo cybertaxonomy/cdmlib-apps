@@ -17,6 +17,8 @@ import java.util.UUID;
 import org.apache.log4j.Logger;
 
 import eu.etaxonomy.cdm.io.common.ImportStateBase;
+import eu.etaxonomy.cdm.model.common.TermVocabulary;
+import eu.etaxonomy.cdm.model.location.NamedArea;
 
 /**
  * @author a.mueller
@@ -35,6 +37,8 @@ public class FaunaEuropaeaImportState extends ImportStateBase<FaunaEuropaeaImpor
 	private Map<Integer, FaunaEuropaeaTaxon> fauEuTaxonMap = new HashMap<Integer, FaunaEuropaeaTaxon>();
 	private Map<UUID, UUID> childParentMap = new HashMap<UUID, UUID>();
 	private Map<Integer, UUID> agentUUIDMap = new HashMap<Integer, UUID>();
+	private final HashMap<String,UUID> idToUUID = new HashMap<String, UUID>();
+	private TermVocabulary<NamedArea> areaVoc;
 
 	/* Highest taxon index in the FauEu database */
 //	private int highestTaxonIndex = 305755;
@@ -97,4 +101,38 @@ public class FaunaEuropaeaImportState extends ImportStateBase<FaunaEuropaeaImpor
     public void setAgentMap(Map<Integer, UUID> agentUUIDMap) {
         this.agentUUIDMap = agentUUIDMap;
     }
+
+    public NamedArea areaId2NamedArea(FaunaEuropaeaDistribution dis, FaunaEuropaeaImportState state){
+        UUID uuid = idToUUID.get(dis.getAreaCode());
+        return state.getNamedArea(uuid);
+    }
+
+    public void setIdToUuid(String id, UUID uuid){
+        if (idToUUID.get(id) != null && !idToUUID.get(id).equals(uuid)){
+            logger.error("There are two different uuids for one id.");
+        }
+        idToUUID.put(id, uuid);
+    }
+
+    @Override
+    public void putNamedArea(NamedArea namedArea){
+        super.putNamedArea(namedArea);
+        setIdToUuid(namedArea.getIdInVocabulary(), namedArea.getUuid());
+    }
+
+    /**
+     * @return the areaVoc
+     */
+    public TermVocabulary<NamedArea> getAreaVoc() {
+        return areaVoc;
+    }
+
+    /**
+     * @param areaVoc the areaVoc to set
+     */
+    public void setAreaVoc(TermVocabulary<NamedArea> areaVoc) {
+        this.areaVoc = areaVoc;
+    }
+
+
 }

@@ -57,21 +57,21 @@ public class FaunaEuropaeaActivator {
 // ****************** ALL *****************************************
 
 	// Fauna Europaea to CDM import
-	static final boolean doAuthors = false;
-	static final boolean doTaxa =false;
-	static final boolean doBasionyms = false;
+	static final boolean doAuthors = true;
+	static final boolean doTaxa =true;
+	static final boolean doBasionyms = true;
 	static final boolean doTaxonomicallyIncluded = true;
-	static final boolean doMisappliedNames = false;
-	static final boolean doHeterotypicSynonyms = false;
-	static final DO_REFERENCES doReferences =  DO_REFERENCES.NONE;
-	static final boolean doDistributions = false;
-	static final boolean makeFeatureTree = false;
-	static final boolean doVernacularNames = false;
+	static final boolean doMisappliedNames = true;
+	static final boolean doHeterotypicSynonyms = true;
+	static final DO_REFERENCES doReferences =  DO_REFERENCES.ALL;
+	static final boolean doDistributions = true;
+	static final boolean makeFeatureTree = true;
+	static final boolean doVernacularNames = true;
 	static final boolean doAssociatedSpecialists = true;
-	static final boolean addCommonNameFeature = false;
-	static final boolean doInferredSynonyms = false;
+	static final boolean addCommonNameFeature = true;
+	static final boolean doInferredSynonyms = true;
     // CDM to CDM import
-	static final boolean doHeterotypicSynonymsForBasionyms = false;
+	static final boolean doHeterotypicSynonymsForBasionyms = true;
 
 // ************************ NONE **************************************** //
 
@@ -170,6 +170,7 @@ public class FaunaEuropaeaActivator {
 			root.addChild(distributionNode);
 			Feature commonNameFeature = (Feature)app.getTermService().find(UUID.fromString("fc810911-51f0-4a46-ab97-6562fe263ae5"));
 			FeatureNode commonNameFeatureNode = FeatureNode.NewInstance(commonNameFeature);
+			root.addChild(commonNameFeatureNode);
 			app.getFeatureTreeService().saveOrUpdate(featureTree);
 		}
 

@@ -412,8 +412,8 @@ public class FaunaEuropaeaTaxonNameImport extends FaunaEuropaeaImportBase  {
 							// misapplied name
 								zooName.setCombinationAuthorship(null);
 								zooName.setPublicationYear(null);
-
-								taxon = Taxon.NewInstance(zooName, auctReference);
+								// now we do it with appended phrase and without auct reference
+								taxon = Taxon.NewInstance(zooName, null);
 								taxonBase = taxon;
 								//logger.info("Misapplied name created ("+ taxonId + ") " + autName);
 								if (logger.isDebugEnabled()) {
