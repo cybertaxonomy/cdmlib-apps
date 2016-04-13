@@ -117,16 +117,20 @@ public class RedListGefaesspflanzenImportClassification extends DbImportBase<Red
         if(taxonBaseCL!=null){//null check necessary because not all taxa exist in the checklist
             createParentChildNodes(checklistClassification, id, gueltString, taxZusatzString, taxonBaseCL, parentCL);
         }
+
+        if(taxonBaseGL!= null && taxonBaseCL!=null
+                && taxonBaseGL.getUuid().equals(taxonBaseCL.getUuid())){
+            RedListUtil.logMessage(id, "Same UUID for "+taxonBaseGL+ " (Gesamtliste) and "+taxonBaseCL+" (Checkliste", logger);
+        }
+        if(parentGL!=null && parentCL!=null && parentGL.getUuid().equals(parentCL.getUuid())){
+            RedListUtil.logMessage(id, "Same UUID for "+parentGL+ " (Gesamtliste) and "+parentCL+" (Checkliste", logger);
+        }
     }
 
     private void createParentChildNodes(Classification classification, long id, String gueltString,
             String taxZusatzString, TaxonBase taxonBase, Taxon parent) {
-        if(parent==null){
-            RedListUtil.logMessage(id, "parent taxon of "+taxonBase+"  is null." , logger);
-            return;
-        }
         if(taxonBase==null){
-            RedListUtil.logMessage(id, "child taxon/synonym of "+parent+"  is null." , logger);
+            RedListUtil.logMessage(id, "child taxon/synonym of "+parent+"  is null. ("+classification.getTitleCache()+")" , logger);
             return;
         }
         //taxon
@@ -134,6 +138,10 @@ public class RedListGefaesspflanzenImportClassification extends DbImportBase<Red
             //misapplied name
             String appendedPhrase = taxonBase.getAppendedPhrase();
             if(appendedPhrase!=null && appendedPhrase.equals(RedListUtil.AUCT)){
+                if(parent==null){
+                    RedListUtil.logMessage(id, "parent taxon of misapplied name "+taxonBase+"  is null. ("+classification.getTitleCache()+")" , logger);
+                    return;
+                }
                 parent.addMisappliedName((Taxon) taxonBase, null, null);
             }
             else{
@@ -148,6 +156,10 @@ public class RedListGefaesspflanzenImportClassification extends DbImportBase<Red
         }
         //synonym
         else if(taxonBase.isInstanceOf(Synonym.class)){
+            if(parent==null){
+                RedListUtil.logMessage(id, "parent taxon of synonym "+taxonBase+"  is null. ("+classification.getTitleCache()+")" , logger);
+                return;
+            }
             //basionym
             if(gueltString.equals(RedListUtil.GUELT_BASIONYM)){
                 parent.addHomotypicSynonym((Synonym) taxonBase, null, null);
@@ -182,6 +194,7 @@ public class RedListGefaesspflanzenImportClassification extends DbImportBase<Red
         }
         //set sec reference
         taxonBase.setSec(classification.getReference());
+        taxonBase.setTitleCache(null, false);//refresh title cache
     }
 
     @Override
@@ -219,8 +232,8 @@ public class RedListGefaesspflanzenImportClassification extends DbImportBase<Red
         Classification checklistClassification = Classification.NewInstance("Checkliste");
         checklistClassification.setUuid(RedListUtil.checkListClassificationUuid);
         Reference checklistReference = ReferenceFactory.newGeneric();
-        checklistReference.setUuid(RedListUtil.checkListClassificationUuid);
-        checklistReference.setTitle("Gesamtliste");
+        checklistReference.setUuid(RedListUtil.checkListReferenceUuid);
+        checklistReference.setTitle("Checkliste");
         checklistClassification.setReference(checklistReference);
         getClassificationService().save(checklistClassification);
     }

@@ -34,28 +34,21 @@ public class RedListUtil {
 //    public static final UUID checkListClassificationUuid = UUID.fromString("e19bb2e6-d898-4793-8cd4-d866eeb1f872");
 //    public static final UUID checkListClassificationUuid = UUID.fromString("53e81162-5c2d-425b-bbe6-6e8d12e85790");
 
-
-
-
-
-
-
-
-
-
-
     public static final String NAME_NAMESPACE = "name";
     public static final String TAXON_GESAMTLISTE_NAMESPACE = "taxon_gesamt_liste";
     public static final String TAXON_CHECKLISTE_NAMESPACE = "taxon_checkliste";
     public static final String AUTHOR_NAMESPACE = "author";
 
+
+    //cell content
+    public static final String HYBRID_CHAR = "";
     public static final String AUCT = "auct.";
     public static final String EX = " ex ";
     public static final String GUELT_BASIONYM = "b";
     public static final String GUELT_SYNONYM = "x";
     public static final String GUELT_ACCEPTED_TAXON = "1";
 
-
+    //column names
     public static final String GUELT = "GUELT";
     public static final String LOWER = "LOWER";
     public static final String NAMNR = "NAMNR";
