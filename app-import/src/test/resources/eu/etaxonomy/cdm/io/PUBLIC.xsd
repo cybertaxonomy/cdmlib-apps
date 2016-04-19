@@ -229,7 +229,7 @@
 	<xsd:element name="TYPEDESIGNATIONBASE_ANNOTATION" type="TYPEDESIGNATIONBASE_ANNOTATION__type" />
 	<xsd:element name="NAMERELATIONSHIP_ANNOTATION" type="NAMERELATIONSHIP_ANNOTATION__type" />
 	<xsd:element name="ADDRESS" type="ADDRESS__type" />
-	<xsd:element name="WORKINGSET_TAXONBASE" type="WORKINGSET_TAXONBASE__type" />
+	<xsd:element name="MULTIACCESSKEY_COVEREDTAXON" type="WORKINGSET_TAXONBASE__type" />
 	<xsd:element name="TAXONBASE_AUD" type="TAXONBASE_AUD__type" />
 	<xsd:element name="COLLECTION_MARKER_AUD" type="COLLECTION_MARKER_AUD__type" />
 	<xsd:element name="POLYTOMOUSKEY_TAXON_AUD" type="POLYTOMOUSKEY_TAXON_AUD__type" />
@@ -628,7 +628,7 @@
 		<xsd:attribute name="REVTYPE" use="optional" />
 		<xsd:attribute name="MODIFIERS_ID" use="optional" />
 	</xsd:complexType>
-	<xsd:complexType name="WORKINGSET_TAXONBASE_AUD__type">
+	<xsd:complexType name="MULTIACCESSKEY_COVEREDTAXON_AUD__type">
 		<xsd:attribute name="REV" use="optional" />
 		<xsd:attribute name="COVEREDTAXA_ID" use="optional" />
 		<xsd:attribute name="WORKINGSET_ID" use="optional" />
@@ -2264,7 +2264,7 @@
 		<xsd:attribute name="CREATEDBY_ID" use="optional" />
 		<xsd:attribute name="REGION" use="optional" />
 	</xsd:complexType>
-	<xsd:complexType name="WORKINGSET_TAXONBASE__type">
+	<xsd:complexType name="MULTIACCESSKEY_COVEREDTAXON__type">
 		<xsd:attribute name="COVEREDTAXA_ID" use="optional" />
 		<xsd:attribute name="WORKINGSET_ID" use="optional" />
 	</xsd:complexType>
