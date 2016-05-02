@@ -124,7 +124,5 @@ public class BgbmInstancesUpdater {
 			this.databases = databases;
 		}
 
-
-
 	}
 }
