@@ -11,7 +11,6 @@ package eu.etaxonomy.cdm.io.redlist.bfnXml;
 
 import org.apache.log4j.Logger;
 
-import eu.etaxonomy.cdm.io.redlist.bfnXml.out.DoctronicDocumentBuilder;
 import eu.etaxonomy.cdm.model.common.Language;
 
 /**
@@ -20,7 +19,7 @@ import eu.etaxonomy.cdm.model.common.Language;
  *
  */
 public class BfnXmlConstants {
-    public static final Logger logger = Logger.getLogger(DoctronicDocumentBuilder.class);
+    public static final Logger logger = Logger.getLogger(BfnXmlConstants.class);
 
     public static final Language defaultLanguage = Language.DEFAULT();
 
