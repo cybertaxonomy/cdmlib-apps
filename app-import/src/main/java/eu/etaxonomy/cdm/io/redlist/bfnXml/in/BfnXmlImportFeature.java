@@ -24,6 +24,7 @@ import eu.etaxonomy.cdm.api.service.IVocabularyService;
 import eu.etaxonomy.cdm.common.ResultWrapper;
 import eu.etaxonomy.cdm.common.XmlHelp;
 import eu.etaxonomy.cdm.io.common.ICdmIO;
+import eu.etaxonomy.cdm.io.redlist.bfnXml.BfnXmlConstants;
 import eu.etaxonomy.cdm.model.common.DefinedTermBase;
 import eu.etaxonomy.cdm.model.common.OrderedTermVocabulary;
 import eu.etaxonomy.cdm.model.common.TermType;
@@ -88,64 +89,64 @@ public class BfnXmlImportFeature extends BfnXmlImportBase implements ICdmIO<BfnX
 			if(object instanceof Element){
 				currentElement = (Element)object;
 
-				if(currentElement.getName().equalsIgnoreCase("ROTELISTEDATEN")){
+				if(currentElement.getName().equalsIgnoreCase(BfnXmlConstants.EL_ROTELISTEDATEN)){
 
 					TransactionStatus tx = startTransaction();
 
-					childName = "EIGENSCHAFTEN";
+					childName = BfnXmlConstants.EL_EIGENSCHAFTEN;
 					obligatory = false;
 					Element elFeatureNames = XmlHelp.getSingleChildElement(success, currentElement, childName, bfnNamespace, obligatory);
 
-					String bfnElementName = "EIGENSCHAFT";
+					String bfnElementName = BfnXmlConstants.EL_EIGENSCHAFT;
 					List<Element> elFeatureList = elFeatureNames.getChildren(bfnElementName, bfnNamespace);
 					List<Feature> featureList = new ArrayList<Feature>();
 					//for each taxonName
 					for (Element elFeature : elFeatureList){
 
-						if(elFeature.getAttributeValue("standardname", bfnNamespace).equalsIgnoreCase("RL Kat.")){
+						if(elFeature.getAttributeValue(BfnXmlConstants.ATT_STANDARDNAME, bfnNamespace).equalsIgnoreCase("RL Kat.")){
 							makeFeature(vocabularyService, featureList,success, obligatory, bfnNamespace,elFeature, state);
 						}
 						String featureLabel = "Kat. +/-";
-						if(elFeature.getAttributeValue("standardname").equalsIgnoreCase(featureLabel)){
+						if(elFeature.getAttributeValue(BfnXmlConstants.ATT_STANDARDNAME).equalsIgnoreCase(featureLabel)){
 							makeFeature(vocabularyService, featureList,success, obligatory, bfnNamespace,elFeature, state);
 						}else
-						if(elFeature.getAttributeValue("standardname").equalsIgnoreCase("aktuelle Bestandsstituation")){
+						if(elFeature.getAttributeValue(BfnXmlConstants.ATT_STANDARDNAME).equalsIgnoreCase("aktuelle Bestandsstituation")){
 							makeFeature(vocabularyService, featureList,success, obligatory, bfnNamespace,elFeature, state);
 						}else
-						if(elFeature.getAttributeValue("standardname").equalsIgnoreCase("langfristiger Bestandstrend")){
+						if(elFeature.getAttributeValue(BfnXmlConstants.ATT_STANDARDNAME).equalsIgnoreCase("langfristiger Bestandstrend")){
 							makeFeature(vocabularyService, featureList,success, obligatory, bfnNamespace,elFeature, state);
 						}else
-						if(elFeature.getAttributeValue("standardname").equalsIgnoreCase("kurzfristiger Bestandstrend")){
+						if(elFeature.getAttributeValue(BfnXmlConstants.ATT_STANDARDNAME).equalsIgnoreCase("kurzfristiger Bestandstrend")){
 							makeFeature(vocabularyService, featureList,success, obligatory, bfnNamespace,elFeature, state);
 						}else
-						if(elFeature.getAttributeValue("standardname").equalsIgnoreCase("Risikofaktoren")){
+						if(elFeature.getAttributeValue(BfnXmlConstants.ATT_STANDARDNAME).equalsIgnoreCase("Risikofaktoren")){
 						    makeFeature(vocabularyService, featureList,success, obligatory, bfnNamespace,elFeature, state);
 						}else
-						if(elFeature.getAttributeValue("standardname").equalsIgnoreCase("Verantwortlichkeit")){
+						if(elFeature.getAttributeValue(BfnXmlConstants.ATT_STANDARDNAME).equalsIgnoreCase("Verantwortlichkeit")){
 							makeFeature(vocabularyService, featureList,success, obligatory, bfnNamespace,elFeature, state);
 						}else
-						if(elFeature.getAttributeValue("standardname").equalsIgnoreCase("alte RL- Kat.")){
+						if(elFeature.getAttributeValue(BfnXmlConstants.ATT_STANDARDNAME).equalsIgnoreCase("alte RL- Kat.")){
 							makeFeature(vocabularyService, featureList,success, obligatory, bfnNamespace,elFeature, state);
 						}else
-						if(elFeature.getAttributeValue("standardname").equalsIgnoreCase("Neobiota")){
+						if(elFeature.getAttributeValue(BfnXmlConstants.ATT_STANDARDNAME).equalsIgnoreCase("Neobiota")){
 							makeFeature(vocabularyService, featureList,success, obligatory, bfnNamespace,elFeature, state);
 						}else
-						if(elFeature.getAttributeValue("standardname").equalsIgnoreCase("Eindeutiger Code")){
+						if(elFeature.getAttributeValue(BfnXmlConstants.ATT_STANDARDNAME).equalsIgnoreCase("Eindeutiger Code")){
 							makeFeature(vocabularyService, featureList,success, obligatory, bfnNamespace,elFeature, state);
 						}else
-						if(elFeature.getAttributeValue("standardname").equalsIgnoreCase("Kommentar zur Taxonomie")){
+						if(elFeature.getAttributeValue(BfnXmlConstants.ATT_STANDARDNAME).equalsIgnoreCase("Kommentar zur Taxonomie")){
 							makeFeature(vocabularyService, featureList,success, obligatory, bfnNamespace,elFeature, state);
 						}else
-						if(elFeature.getAttributeValue("standardname").equalsIgnoreCase("Kommentar zur Gefährdung")){
+						if(elFeature.getAttributeValue(BfnXmlConstants.ATT_STANDARDNAME).equalsIgnoreCase("Kommentar zur Gefährdung")){
 							makeFeature(vocabularyService, featureList,success, obligatory, bfnNamespace,elFeature, state);
 						}else
-						if(elFeature.getAttributeValue("standardname").equalsIgnoreCase("Sonderfälle")){
+						if(elFeature.getAttributeValue(BfnXmlConstants.ATT_STANDARDNAME).equalsIgnoreCase("Sonderfälle")){
 							makeFeature(vocabularyService, featureList,success, obligatory, bfnNamespace,elFeature, state);
 						}else
-						if(elFeature.getAttributeValue("standardname").equalsIgnoreCase("Letzter Nachweis")){
+						if(elFeature.getAttributeValue(BfnXmlConstants.ATT_STANDARDNAME).equalsIgnoreCase("Letzter Nachweis")){
 							makeFeature(vocabularyService, featureList,success, obligatory, bfnNamespace,elFeature, state);
 						}else
-						if(elFeature.getAttributeValue("standardname").equalsIgnoreCase("Weitere Kommentare")){
+						if(elFeature.getAttributeValue(BfnXmlConstants.ATT_STANDARDNAME).equalsIgnoreCase("Weitere Kommentare")){
 							makeFeature(vocabularyService, featureList,success, obligatory, bfnNamespace,elFeature, state);
 						}
 					}
@@ -190,7 +191,7 @@ public class BfnXmlImportFeature extends BfnXmlImportBase implements ICdmIO<BfnX
 			ResultWrapper<Boolean> success, boolean obligatory,
 			Namespace bfnNamespace, Element elFeature, BfnXmlImportState state) {
 		String childName;
-		String strRlKat = elFeature.getAttributeValue("standardname");
+		String strRlKat = elFeature.getAttributeValue(BfnXmlConstants.ATT_STANDARDNAME);
 		UUID featureUUID = null;
 		try {
 			featureUUID = BfnXmlTransformer.getRedlistFeatureUUID(strRlKat);
@@ -202,10 +203,10 @@ public class BfnXmlImportFeature extends BfnXmlImportBase implements ICdmIO<BfnX
 		//TODO implement German, but currently titleCache generation does not yet work correctly with another language
 //		redListCat.getRepresentation(Language.DEFAULT()).setLanguage(Language.GERMAN());
 		featureList.add(redListCat);
-		childName = "LISTENWERTE";
+		childName = BfnXmlConstants.EL_LISTENWERTE;
 		Element elListValues = XmlHelp.getSingleChildElement(success, elFeature, childName, bfnNamespace, obligatory);
 		if(elListValues != null && !elListValues.getContent().isEmpty()){
-			String childElementName = "LWERT";
+			String childElementName = BfnXmlConstants.EL_LWERT;
 			createOrUpdateStates(bfnNamespace, elListValues, childElementName, redListCat, state);
 		}
 		createOrUpdateTermVocabulary(TermType.Feature, vocabularyService, redListCat, "RedList Feature");

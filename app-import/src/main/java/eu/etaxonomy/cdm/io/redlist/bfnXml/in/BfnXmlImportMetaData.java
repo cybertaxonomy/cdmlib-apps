@@ -19,6 +19,7 @@ import org.springframework.transaction.TransactionStatus;
 
 import eu.etaxonomy.cdm.common.ResultWrapper;
 import eu.etaxonomy.cdm.io.common.ICdmIO;
+import eu.etaxonomy.cdm.io.redlist.bfnXml.BfnXmlConstants;
 import eu.etaxonomy.cdm.model.common.TimePeriod;
 import eu.etaxonomy.cdm.model.reference.Reference;
 import eu.etaxonomy.cdm.model.reference.ReferenceFactory;
@@ -60,7 +61,7 @@ public class BfnXmlImportMetaData extends BfnXmlImportBase implements ICdmIO<Bfn
 		Element elDataSet = getDataSetElement(config);
 		Namespace bfnNamespace = config.getBfnXmlNamespace();
 		//create complete source object
-		if(elDataSet.getName().equalsIgnoreCase("DEBExport")){
+		if(elDataSet.getName().equalsIgnoreCase(BfnXmlConstants.EL_DEB_EXPORT)){
 			sourceFileName = elDataSet.getAttributeValue("source");
 			debVersion = elDataSet.getAttributeValue("debversion");
 			timeStamp = elDataSet.getAttributeValue("timestamp");
@@ -88,7 +89,7 @@ public class BfnXmlImportMetaData extends BfnXmlImportBase implements ICdmIO<Bfn
                     List<Element> elMetaDataList  = currentElement.getChildren();
 					//for each taxonName
 					for (Element elMetaData : elMetaDataList){
-						if( elMetaData.getAttributeValue("standardname").equalsIgnoreCase("KurzLit_A")){
+						if( elMetaData.getAttributeValue(BfnXmlConstants.ATT_STANDARDNAME).equalsIgnoreCase("KurzLit_A")){
 							@SuppressWarnings("unchecked")
                             List<Element> children = elMetaData.getChildren();
 							String kurzlitA = children.get(0).getTextNormalize();
@@ -97,14 +98,14 @@ public class BfnXmlImportMetaData extends BfnXmlImportBase implements ICdmIO<Bfn
 							state.setFirstListSecRef(sourceReference);
 
 						}
-						else if( elMetaData.getAttributeValue("standardname").equalsIgnoreCase("Klassifikation_A")){
+						else if( elMetaData.getAttributeValue(BfnXmlConstants.ATT_STANDARDNAME).equalsIgnoreCase("Klassifikation_A")){
 							@SuppressWarnings("unchecked")
                             List<Element> children = elMetaData.getChildren();
 							String klassifikation_A = children.get(0).getTextNormalize();
 							state.setFirstClassificationName(klassifikation_A);
 
 						}
-						else if( elMetaData.getAttributeValue("standardname").equalsIgnoreCase("KurzLit_B")){
+						else if( elMetaData.getAttributeValue(BfnXmlConstants.ATT_STANDARDNAME).equalsIgnoreCase("KurzLit_B")){
 							@SuppressWarnings("unchecked")
                             List<Element> children = elMetaData.getChildren();
 							String kurzlitB = children.get(0).getTextNormalize();
@@ -112,7 +113,7 @@ public class BfnXmlImportMetaData extends BfnXmlImportBase implements ICdmIO<Bfn
 							sourceReference.setTitle(kurzlitB);
 							state.setSecondListSecRef(sourceReference);
 						}
-						else if( elMetaData.getAttributeValue("standardname").equalsIgnoreCase("Klassifikation_B")){
+						else if( elMetaData.getAttributeValue(BfnXmlConstants.ATT_STANDARDNAME).equalsIgnoreCase("Klassifikation_B")){
 							@SuppressWarnings("unchecked")
                             List<Element> children = elMetaData.getChildren();
 							String klassifikation_B = children.get(0).getTextNormalize();

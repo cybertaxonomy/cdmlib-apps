@@ -14,6 +14,7 @@ import java.util.UUID;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 
+import eu.etaxonomy.cdm.io.redlist.bfnXml.BfnXmlConstants;
 import eu.etaxonomy.cdm.model.name.Rank;
 import eu.etaxonomy.cdm.model.taxon.TaxonRelationshipType;
 import eu.etaxonomy.cdm.strategy.exceptions.UnknownCdmTypeException;
@@ -26,7 +27,7 @@ import eu.etaxonomy.cdm.model.reference.PrintSeries;*/
 //import eu.etaxonomy.cdm.model.reference.WebPage;
 
 public final class BfnXmlTransformer {
-	@SuppressWarnings("unused")
+    @SuppressWarnings("unused")
 	private static final Logger logger = Logger.getLogger(BfnXmlTransformer.class);
 
 	//redList state Vocabularies
@@ -185,70 +186,70 @@ public final class BfnXmlTransformer {
 	public static Rank rankCode2Rank (String strRank) throws UnknownCdmTypeException{
 		if (strRank == null){return null;
 		//genus group
-		}else if (strRank.equals("infragen")){return Rank.INFRAGENUS();
-		}else if (strRank.equals("subgen")){return Rank.SUBGENUS();
-		}else if (strRank.equals("gen")){return Rank.GENUS();
+		}else if (strRank.equals(BfnXmlConstants.RNK_INFRAGEN)){return Rank.INFRAGENUS();
+		}else if (strRank.equals(BfnXmlConstants.RNK_SUBGEN)){return Rank.SUBGENUS();
+		}else if (strRank.equals(BfnXmlConstants.RNK_GEN)){return Rank.GENUS();
 		//genus subdivision
 		//TODO
-		}else if (strRank.equals("aggr")){return Rank.SPECIESAGGREGATE();
-		}else if (strRank.equals("agg.")){return Rank.SPECIESAGGREGATE();
-		}else if (strRank.equals("taxinfragen")){return Rank.INFRAGENERICTAXON();
-		}else if (strRank.equals("subser")){return Rank.SUBSERIES();
-		}else if (strRank.equals("ser")){return Rank.SERIES();
-		}else if (strRank.equals("subsect")){return Rank.SUBSECTION_BOTANY();
-		}else if (strRank.equals("sect")){return Rank.SECTION_BOTANY();
+		}else if (strRank.equals(BfnXmlConstants.RNK_AGGR)){return Rank.SPECIESAGGREGATE();
+		}else if (strRank.equals(BfnXmlConstants.RNK_AGG)){return Rank.SPECIESAGGREGATE();
+		}else if (strRank.equals(BfnXmlConstants.RNK_TAXINFRAGEN)){return Rank.INFRAGENERICTAXON();
+		}else if (strRank.equals(BfnXmlConstants.RNK_SUBSER)){return Rank.SUBSERIES();
+		}else if (strRank.equals(BfnXmlConstants.RNK_SER)){return Rank.SERIES();
+		}else if (strRank.equals(BfnXmlConstants.RNK_SUBSECT)){return Rank.SUBSECTION_BOTANY();
+		}else if (strRank.equals(BfnXmlConstants.RNK_SECT)){return Rank.SECTION_BOTANY();
 		//species group
-		}else if (strRank.equals("subsp_aggr")){return Rank.SUBSPECIFICAGGREGATE();
-		}else if (strRank.equals("ssp")){return Rank.SUBSPECIES();
-		}else if (strRank.equals("subsp.")){return Rank.SUBSPECIES();
-		}else if (strRank.equals("subsp")){return Rank.SUBSPECIES();
-		}else if (strRank.equals("sp")){return Rank.SPECIES();
-		}else if (strRank.equals("spezies")){return Rank.SPECIES();
+		}else if (strRank.equals(BfnXmlConstants.RNK_SUBSP_AGGR)){return Rank.SUBSPECIFICAGGREGATE();
+		}else if (strRank.equals(BfnXmlConstants.RNK_SSP)){return Rank.SUBSPECIES();
+		}else if (strRank.equals(BfnXmlConstants.RNK_SUBSP)){return Rank.SUBSPECIES();
+		}else if (strRank.equals(BfnXmlConstants.RNK_SUBSP_DOT)){return Rank.SUBSPECIES();
+		}else if (strRank.equals(BfnXmlConstants.RNK_SP)){return Rank.SPECIES();
+		}else if (strRank.equals(BfnXmlConstants.RNK_SPEZIES)){return Rank.SPECIES();
 		//below subspecies
-		}else if (strRank.equals("cand")){return Rank.CANDIDATE();
-		}else if (strRank.equals("taxinfrasp")){return Rank.INFRASPECIFICTAXON();
-		}else if (strRank.equals("fsp")){return Rank.SPECIALFORM();
-		}else if (strRank.equals("subsubfm")){return Rank.SUBSUBFORM();
-		}else if (strRank.equals("subfm")){return Rank.SUBFORM();
-		}else if (strRank.equals("fm")){return Rank.FORM();
-		}else if (strRank.equals("f.")){return Rank.FORM();
-		}else if (strRank.equals("subsubvar")){return Rank.SUBSUBVARIETY();
-		}else if (strRank.equals("subvar")){return Rank.SUBVARIETY();
-		}else if (strRank.equals("var")){return Rank.VARIETY();
-		}else if (strRank.equals("var.")){return Rank.VARIETY();
+		}else if (strRank.equals(BfnXmlConstants.RNK_CAND)){return Rank.CANDIDATE();
+		}else if (strRank.equals(BfnXmlConstants.RNK_TAXINFRASP)){return Rank.INFRASPECIFICTAXON();
+		}else if (strRank.equals(BfnXmlConstants.RNK_FSP)){return Rank.SPECIALFORM();
+		}else if (strRank.equals(BfnXmlConstants.RNK_SUBSUBFM)){return Rank.SUBSUBFORM();
+		}else if (strRank.equals(BfnXmlConstants.RNK_SUBFM)){return Rank.SUBFORM();
+		}else if (strRank.equals(BfnXmlConstants.RNK_FM)){return Rank.FORM();
+		}else if (strRank.equals(BfnXmlConstants.RNK_F)){return Rank.FORM();
+		}else if (strRank.equals(BfnXmlConstants.RNK_SUBSUBVAR)){return Rank.SUBSUBVARIETY();
+		}else if (strRank.equals(BfnXmlConstants.RNK_SUBVAR)){return Rank.SUBVARIETY();
+		}else if (strRank.equals(BfnXmlConstants.RNK_VAR)){return Rank.VARIETY();
+		}else if (strRank.equals(BfnXmlConstants.RNK_VAR_DOT)){return Rank.VARIETY();
 		//TODO -> see documentation, Bacteria status
 //		}else if (strRank.equals("pv")){return Rank;
 //		}else if (strRank.equals("bv")){return Rank.;
-		}else if (strRank.equals("infrasp")){return Rank.INFRASPECIES();
+		}else if (strRank.equals(BfnXmlConstants.RNK_INFRASP)){return Rank.INFRASPECIES();
 		//above superfamily
-		}else if (strRank.equals("infraord")){return Rank.INFRAORDER();
-		}else if (strRank.equals("ord")){return Rank.ORDER();
-		}else if (strRank.equals("superord")){return Rank.SUPERORDER();
-		}else if (strRank.equals("infracl")){return Rank.INFRACLASS();
-		}else if (strRank.equals("subcl")){return Rank.SUBCLASS();
-		}else if (strRank.equals("cl")){return Rank.CLASS();
-		}else if (strRank.equals("supercl")){return Rank.SUPERCLASS();
-		}else if (strRank.equals("infraphyl_div")){return Rank.INFRAPHYLUM();
-		}else if (strRank.equals("subphyl_div")){return Rank.SUBPHYLUM();
-		}else if (strRank.equals("phyl_div")){return Rank.PHYLUM();
-		}else if (strRank.equals("superphyl_div")){return Rank.SUPERPHYLUM();
-		}else if (strRank.equals("infrareg")){return Rank.INFRAKINGDOM();
-		}else if (strRank.equals("subreg")){return Rank.SUBKINGDOM();
-		}else if (strRank.equals("reg")){return Rank.KINGDOM();
-		}else if (strRank.equals("superreg")){return Rank.SUPERKINGDOM();
-		}else if (strRank.equals("dom")){return Rank.DOMAIN();
-		}else if (strRank.equals("taxsupragen")){return Rank.SUPRAGENERICTAXON();
-		}else if (strRank.equals("Auswertungsgruppe")){return Rank.EMPIRE();
+		}else if (strRank.equals(BfnXmlConstants.RNK_INFRAORD)){return Rank.INFRAORDER();
+		}else if (strRank.equals(BfnXmlConstants.RNK_ORD)){return Rank.ORDER();
+		}else if (strRank.equals(BfnXmlConstants.RNK_SUPERORD)){return Rank.SUPERORDER();
+		}else if (strRank.equals(BfnXmlConstants.RNK_INFRACL)){return Rank.INFRACLASS();
+		}else if (strRank.equals(BfnXmlConstants.RNK_SUBCL)){return Rank.SUBCLASS();
+		}else if (strRank.equals(BfnXmlConstants.RNK_CL)){return Rank.CLASS();
+		}else if (strRank.equals(BfnXmlConstants.RNK_SUPERCL)){return Rank.SUPERCLASS();
+		}else if (strRank.equals(BfnXmlConstants.RNK_INFRAPHYL_DIV)){return Rank.INFRAPHYLUM();
+		}else if (strRank.equals(BfnXmlConstants.RNK_SUBPHYL_DIV)){return Rank.SUBPHYLUM();
+		}else if (strRank.equals(BfnXmlConstants.RNK_PHYL_DIV)){return Rank.PHYLUM();
+		}else if (strRank.equals(BfnXmlConstants.RNK_SUPERPHYL_DIV)){return Rank.SUPERPHYLUM();
+		}else if (strRank.equals(BfnXmlConstants.RNK_INFRAREG)){return Rank.INFRAKINGDOM();
+		}else if (strRank.equals(BfnXmlConstants.RNK_SUBREG)){return Rank.SUBKINGDOM();
+		}else if (strRank.equals(BfnXmlConstants.RNK_REG)){return Rank.KINGDOM();
+		}else if (strRank.equals(BfnXmlConstants.RNK_SUPERREG)){return Rank.SUPERKINGDOM();
+		}else if (strRank.equals(BfnXmlConstants.RNK_DOM)){return Rank.DOMAIN();
+		}else if (strRank.equals(BfnXmlConstants.RNK_TAXSUPRAGEN)){return Rank.SUPRAGENERICTAXON();
+		}else if (strRank.equals(BfnXmlConstants.RNK_AUSWERTUNGSGRUPPE)){return Rank.EMPIRE();
 		//family group
-		}else if (strRank.equals("infrafam")){return Rank.FAMILY();
-		}else if (strRank.equals("subfam")){return Rank.FAMILY();
-		}else if (strRank.equals("fam")){return Rank.FAMILY();
-		}else if (strRank.equals("superfam")){return Rank.FAMILY();
+		}else if (strRank.equals(BfnXmlConstants.RNK_INFRAFAM)){return Rank.FAMILY();
+		}else if (strRank.equals(BfnXmlConstants.RNK_SUBFAM)){return Rank.FAMILY();
+		}else if (strRank.equals(BfnXmlConstants.RNK_FAM)){return Rank.FAMILY();
+		}else if (strRank.equals(BfnXmlConstants.RNK_SUPERFAM)){return Rank.FAMILY();
 		//family subdivision
-		}else if (strRank.equals("intratrib")){return Rank.FAMILY();
-		}else if (strRank.equals("subtrib")){return Rank.FAMILY();
-		}else if (strRank.equals("trib")){return Rank.FAMILY();
-		}else if (strRank.equals("supertrib")){return Rank.FAMILY();
+		}else if (strRank.equals(BfnXmlConstants.RNK_INTRATRIB)){return Rank.FAMILY();
+		}else if (strRank.equals(BfnXmlConstants.RNK_SUBTRIB)){return Rank.FAMILY();
+		}else if (strRank.equals(BfnXmlConstants.RNK_TRIB)){return Rank.FAMILY();
+		}else if (strRank.equals(BfnXmlConstants.RNK_SUPERTRIB)){return Rank.FAMILY();
 		}
 		else {
 			throw new UnknownCdmTypeException("Unknown Rank " + strRank);
@@ -314,33 +315,33 @@ public final class BfnXmlTransformer {
 
 	public static UUID getRedlistVocabularyUUID(String redListVocabulary) throws UnknownCdmTypeException {
 
-		if(redListVocabulary.equalsIgnoreCase("RL Kat.")) {
+		if(redListVocabulary.equalsIgnoreCase(BfnXmlConstants.VOC_RL_KAT)) {
             return vocStateRLKat;
-        }else if(redListVocabulary.equalsIgnoreCase("Kat. +/-")) {
+        }else if(redListVocabulary.equalsIgnoreCase(BfnXmlConstants.VOC_KAT)) {
             return vocStateRlKatDiff;
-        }else if(redListVocabulary.equalsIgnoreCase("aktuelle Bestandsstituation")) {
+        }else if(redListVocabulary.equalsIgnoreCase(BfnXmlConstants.VOC_AKTUELLE_BESTANDSSTITUATION)) {
             return vocStateRlAkt;
-        }else if(redListVocabulary.equalsIgnoreCase("langfristiger Bestandstrend")) {
+        }else if(redListVocabulary.equalsIgnoreCase(BfnXmlConstants.VOC_LANGFRISTIGER_BESTANDSTREND)) {
             return vocStateRLLang;
-        }else if(redListVocabulary.equalsIgnoreCase("kurzfristiger Bestandstrend")) {
+        }else if(redListVocabulary.equalsIgnoreCase(BfnXmlConstants.VOC_KURZFRISTIGER_BESTANDSTREND)) {
             return vocStateRLKurz;
-        }else if(redListVocabulary.equalsIgnoreCase("Risikofaktoren")) {
+        }else if(redListVocabulary.equalsIgnoreCase(BfnXmlConstants.VOC_RISIKOFAKTOREN)) {
             return vocStateRLRisk;
-        }else if(redListVocabulary.equalsIgnoreCase("Verantwortlichkeit")) {
+        }else if(redListVocabulary.equalsIgnoreCase(BfnXmlConstants.VOC_VERANTWORTLICHKEIT)) {
             return vocStateRLResp;
-        }else if(redListVocabulary.equalsIgnoreCase("alte RL- Kat.")) {
+        }else if(redListVocabulary.equalsIgnoreCase(BfnXmlConstants.VOC_ALTE_RL_KAT)) {
             return vocStateRLKatOld;
-        }else if(redListVocabulary.equalsIgnoreCase("Neobiota")) {
+        }else if(redListVocabulary.equalsIgnoreCase(BfnXmlConstants.VOC_NEOBIOTA)) {
             return vocStateRLNeo;
-        }else if(redListVocabulary.equalsIgnoreCase("Eindeutiger Code")) {
+        }else if(redListVocabulary.equalsIgnoreCase(BfnXmlConstants.VOC_EINDEUTIGER_CODE)) {
             return vocStateRLKatId;
-        }else if(redListVocabulary.equalsIgnoreCase("Sonderfälle")) {
+        }else if(redListVocabulary.equalsIgnoreCase(BfnXmlConstants.VOC_SONDERFAELLE)) {
             return vocStateRLSpecialCases;
-        }else if(redListVocabulary.equalsIgnoreCase("Vorkommensstatus")) {
+        }else if(redListVocabulary.equalsIgnoreCase(BfnXmlConstants.VOC_VORKOMMENSSTATUS)) {
 		    return vocGermanPresenceTerms;
-		}else if(redListVocabulary.equalsIgnoreCase("Etablierungsstatus")) {
+		}else if(redListVocabulary.equalsIgnoreCase(BfnXmlConstants.VOC_ETABLIERUNGSSTATUS)) {
 		    return vocGermanEstablishmentTerms;
-		}else if(redListVocabulary.equalsIgnoreCase("Bundesländer")) {
+		}else if(redListVocabulary.equalsIgnoreCase(BfnXmlConstants.VOC_BUNDESLAENDER)) {
             return vocGermanFederalStates;
         } else{
 			throw new UnknownCdmTypeException("Unknown Vocabulary feature, could not match: " + redListVocabulary);
@@ -351,34 +352,34 @@ public final class BfnXmlTransformer {
 
 	public static UUID getRedlistFeatureUUID(String redListFeature) throws UnknownCdmTypeException {
 
-		if(redListFeature.equalsIgnoreCase("RL Kat.")) {
+		if(redListFeature.equalsIgnoreCase(BfnXmlConstants.VOC_RL_KAT)) {
             return featureRLKat;
         }
-		if(redListFeature.equalsIgnoreCase("Kat. +/-")) {
+		if(redListFeature.equalsIgnoreCase(BfnXmlConstants.VOC_KAT)) {
             return featureRlKatDiff;
         }
-		if(redListFeature.equalsIgnoreCase("aktuelle Bestandsstituation")) {
+		if(redListFeature.equalsIgnoreCase(BfnXmlConstants.VOC_AKTUELLE_BESTANDSSTITUATION)) {
             return featureRlAkt;
         }
-		if(redListFeature.equalsIgnoreCase("langfristiger Bestandstrend")) {
+		if(redListFeature.equalsIgnoreCase(BfnXmlConstants.VOC_LANGFRISTIGER_BESTANDSTREND)) {
             return featureRLLang;
         }
-		if(redListFeature.equalsIgnoreCase("kurzfristiger Bestandstrend")) {
+		if(redListFeature.equalsIgnoreCase(BfnXmlConstants.VOC_KURZFRISTIGER_BESTANDSTREND)) {
             return featureRLKurz;
         }
-		if(redListFeature.equalsIgnoreCase("Risikofaktoren")) {
+		if(redListFeature.equalsIgnoreCase(BfnXmlConstants.VOC_RISIKOFAKTOREN)) {
             return featureRLRisk;
         }
-		if(redListFeature.equalsIgnoreCase("Verantwortlichkeit")) {
+		if(redListFeature.equalsIgnoreCase(BfnXmlConstants.VOC_VERANTWORTLICHKEIT)) {
             return featureRLResp;
         }
-		if(redListFeature.equalsIgnoreCase("alte RL- Kat.")) {
+		if(redListFeature.equalsIgnoreCase(BfnXmlConstants.VOC_ALTE_RL_KAT)) {
             return featureRLKatOld;
         }
-		if(redListFeature.equalsIgnoreCase("Neobiota")) {
+		if(redListFeature.equalsIgnoreCase(BfnXmlConstants.VOC_NEOBIOTA)) {
             return featureRLNeo;
         }
-		if(redListFeature.equalsIgnoreCase("Eindeutiger Code")) {
+		if(redListFeature.equalsIgnoreCase(BfnXmlConstants.VOC_EINDEUTIGER_CODE)) {
             return featureRLKatId;
         }
 		if(redListFeature.equalsIgnoreCase("Kommentar zur Taxonomie")) {
@@ -387,7 +388,7 @@ public final class BfnXmlTransformer {
 		if(redListFeature.equalsIgnoreCase("Kommentar zur Gefährdung")) {
             return featureRLHazardComment;
         }
-		if(redListFeature.equalsIgnoreCase("Sonderfälle")) {
+		if(redListFeature.equalsIgnoreCase(BfnXmlConstants.VOC_SONDERFAELLE)) {
             return featureRLSpecialCases;
         }
 		if(redListFeature.equalsIgnoreCase("Letzter Nachweis")) {
@@ -404,207 +405,207 @@ public final class BfnXmlTransformer {
 	public static UUID getRedlistStateTermUUID(String redListStateTerm, String redListFeature) throws UnknownCdmTypeException {
 		//RL Kat
 		char a = 0x2666;
-		if(redListStateTerm.equalsIgnoreCase("0") && redListFeature.equalsIgnoreCase("RL Kat.")) {
+		if(redListStateTerm.equalsIgnoreCase("0") && redListFeature.equalsIgnoreCase(BfnXmlConstants.VOC_RL_KAT)) {
             return stateTermRlKat0;
         }
-		if(redListStateTerm.equalsIgnoreCase("1") && redListFeature.equalsIgnoreCase("RL Kat.")) {
+		if(redListStateTerm.equalsIgnoreCase("1") && redListFeature.equalsIgnoreCase(BfnXmlConstants.VOC_RL_KAT)) {
             return stateTermRlKat1;
         }
-		if(redListStateTerm.equalsIgnoreCase("2") && redListFeature.equalsIgnoreCase("RL Kat.")) {
+		if(redListStateTerm.equalsIgnoreCase("2") && redListFeature.equalsIgnoreCase(BfnXmlConstants.VOC_RL_KAT)) {
             return stateTermRlKat2;
         }
-		if(redListStateTerm.equalsIgnoreCase("3") && redListFeature.equalsIgnoreCase("RL Kat.")) {
+		if(redListStateTerm.equalsIgnoreCase("3") && redListFeature.equalsIgnoreCase(BfnXmlConstants.VOC_RL_KAT)) {
             return stateTermRlKat3;
         }
-		if(redListStateTerm.equalsIgnoreCase("G") && redListFeature.equalsIgnoreCase("RL Kat.")) {
+		if(redListStateTerm.equalsIgnoreCase("G") && redListFeature.equalsIgnoreCase(BfnXmlConstants.VOC_RL_KAT)) {
             return stateTermRlKatG;
         }
-		if(redListStateTerm.equalsIgnoreCase("R") && redListFeature.equalsIgnoreCase("RL Kat.")) {
+		if(redListStateTerm.equalsIgnoreCase("R") && redListFeature.equalsIgnoreCase(BfnXmlConstants.VOC_RL_KAT)) {
             return stateTermRlKatR;
         }
-		if(redListStateTerm.equalsIgnoreCase("V") && redListFeature.equalsIgnoreCase("RL Kat.")) {
+		if(redListStateTerm.equalsIgnoreCase("V") && redListFeature.equalsIgnoreCase(BfnXmlConstants.VOC_RL_KAT)) {
             return stateTermRlKatV;
         }
-		if(redListStateTerm.equalsIgnoreCase("*") && redListFeature.equalsIgnoreCase("RL Kat.")) {
+		if(redListStateTerm.equalsIgnoreCase("*") && redListFeature.equalsIgnoreCase(BfnXmlConstants.VOC_RL_KAT)) {
             return stateTermRlKatStar;
         }
-		if(redListStateTerm.equalsIgnoreCase("**") && redListFeature.equalsIgnoreCase("RL Kat.")) {
+		if(redListStateTerm.equalsIgnoreCase("**") && redListFeature.equalsIgnoreCase(BfnXmlConstants.VOC_RL_KAT)) {
             return stateTermRlKatStar2;
         }
-		if(redListStateTerm.equalsIgnoreCase("D") && redListFeature.equalsIgnoreCase("RL Kat.")) {
+		if(redListStateTerm.equalsIgnoreCase("D") && redListFeature.equalsIgnoreCase(BfnXmlConstants.VOC_RL_KAT)) {
             return stateTermRlKatD;
         }
-		if(redListStateTerm.equalsIgnoreCase(String.valueOf(a)) && redListFeature.equalsIgnoreCase("RL Kat.")) {
+		if(redListStateTerm.equalsIgnoreCase(String.valueOf(a)) && redListFeature.equalsIgnoreCase(BfnXmlConstants.VOC_RL_KAT)) {
             return stateTermRlKatDiamond;
         }
-		if(redListStateTerm.equalsIgnoreCase("kN") && redListFeature.equalsIgnoreCase("RL Kat.")) {
+		if(redListStateTerm.equalsIgnoreCase("kN") && redListFeature.equalsIgnoreCase(BfnXmlConstants.VOC_RL_KAT)) {
             return stateTermRlKatKN;
         }
 
 		//RL Diff
-		if(redListStateTerm.equalsIgnoreCase("+") && redListFeature.equalsIgnoreCase("Kat. +/-")) {
+		if(redListStateTerm.equalsIgnoreCase("+") && redListFeature.equalsIgnoreCase(BfnXmlConstants.VOC_KAT)) {
             return stateTermRLKatDiffPlus;
         }
-		if(redListStateTerm.equalsIgnoreCase("-") && redListFeature.equalsIgnoreCase("Kat. +/-")) {
+		if(redListStateTerm.equalsIgnoreCase("-") && redListFeature.equalsIgnoreCase(BfnXmlConstants.VOC_KAT)) {
             return stateTermRLKatDiffMinus;
         }
-		if(redListStateTerm.equalsIgnoreCase("=") && redListFeature.equalsIgnoreCase("Kat. +/-")) {
+		if(redListStateTerm.equalsIgnoreCase("=") && redListFeature.equalsIgnoreCase(BfnXmlConstants.VOC_KAT)) {
             return stateTermRLKatDiffEqual;
         }
 
 		//Rl Akt
-		if(redListStateTerm.equalsIgnoreCase("ex") && redListFeature.equalsIgnoreCase("aktuelle Bestandsstituation")) {
+		if(redListStateTerm.equalsIgnoreCase("ex") && redListFeature.equalsIgnoreCase(BfnXmlConstants.VOC_AKTUELLE_BESTANDSSTITUATION)) {
             return stateTermRLKatAktEx;
         }
-		if(redListStateTerm.equalsIgnoreCase("es") && redListFeature.equalsIgnoreCase("aktuelle Bestandsstituation")) {
+		if(redListStateTerm.equalsIgnoreCase("es") && redListFeature.equalsIgnoreCase(BfnXmlConstants.VOC_AKTUELLE_BESTANDSSTITUATION)) {
             return stateTermRLKatAktEs;
         }
-		if(redListStateTerm.equalsIgnoreCase("ss") && redListFeature.equalsIgnoreCase("aktuelle Bestandsstituation")) {
+		if(redListStateTerm.equalsIgnoreCase("ss") && redListFeature.equalsIgnoreCase(BfnXmlConstants.VOC_AKTUELLE_BESTANDSSTITUATION)) {
             return stateTermRLKatAktSs;
         }
-		if(redListStateTerm.equalsIgnoreCase("s") && redListFeature.equalsIgnoreCase("aktuelle Bestandsstituation")) {
+		if(redListStateTerm.equalsIgnoreCase("s") && redListFeature.equalsIgnoreCase(BfnXmlConstants.VOC_AKTUELLE_BESTANDSSTITUATION)) {
             return stateTermRLKatAktS;
         }
-		if(redListStateTerm.equalsIgnoreCase("mh") && redListFeature.equalsIgnoreCase("aktuelle Bestandsstituation")) {
+		if(redListStateTerm.equalsIgnoreCase("mh") && redListFeature.equalsIgnoreCase(BfnXmlConstants.VOC_AKTUELLE_BESTANDSSTITUATION)) {
             return stateTermRLKatAktMh;
         }
-		if(redListStateTerm.equalsIgnoreCase("h") && redListFeature.equalsIgnoreCase("aktuelle Bestandsstituation")) {
+		if(redListStateTerm.equalsIgnoreCase("h") && redListFeature.equalsIgnoreCase(BfnXmlConstants.VOC_AKTUELLE_BESTANDSSTITUATION)) {
             return stateTermRLKatAktH;
         }
-		if(redListStateTerm.equalsIgnoreCase("sh") && redListFeature.equalsIgnoreCase("aktuelle Bestandsstituation")) {
+		if(redListStateTerm.equalsIgnoreCase("sh") && redListFeature.equalsIgnoreCase(BfnXmlConstants.VOC_AKTUELLE_BESTANDSSTITUATION)) {
             return stateTermRLKatAktSh;
         }
-		if(redListStateTerm.equalsIgnoreCase("?") && redListFeature.equalsIgnoreCase("aktuelle Bestandsstituation")) {
+		if(redListStateTerm.equalsIgnoreCase("?") && redListFeature.equalsIgnoreCase(BfnXmlConstants.VOC_AKTUELLE_BESTANDSSTITUATION)) {
             return stateTermRLKatAktQuest;
         }
-		if(redListStateTerm.equalsIgnoreCase("nb") && redListFeature.equalsIgnoreCase("aktuelle Bestandsstituation")) {
+		if(redListStateTerm.equalsIgnoreCase("nb") && redListFeature.equalsIgnoreCase(BfnXmlConstants.VOC_AKTUELLE_BESTANDSSTITUATION)) {
             return stateTermRLKatAktNb;
         }
-		if(redListStateTerm.equalsIgnoreCase("kN") && redListFeature.equalsIgnoreCase("aktuelle Bestandsstituation")) {
+		if(redListStateTerm.equalsIgnoreCase("kN") && redListFeature.equalsIgnoreCase(BfnXmlConstants.VOC_AKTUELLE_BESTANDSSTITUATION)) {
             return stateTermRLKatAktKn;
         }
 
 		//RL Lang
-		if(redListStateTerm.equalsIgnoreCase("<<<") && redListFeature.equalsIgnoreCase("langfristiger Bestandstrend")) {
+		if(redListStateTerm.equalsIgnoreCase("<<<") && redListFeature.equalsIgnoreCase(BfnXmlConstants.VOC_LANGFRISTIGER_BESTANDSTREND)) {
             return stateTermRLKatLangLT3;
         }
-		if(redListStateTerm.equalsIgnoreCase("<<") && redListFeature.equalsIgnoreCase("langfristiger Bestandstrend")) {
+		if(redListStateTerm.equalsIgnoreCase("<<") && redListFeature.equalsIgnoreCase(BfnXmlConstants.VOC_LANGFRISTIGER_BESTANDSTREND)) {
             return stateTermRLKatLangLT2;
         }
-		if(redListStateTerm.equalsIgnoreCase("<") && redListFeature.equalsIgnoreCase("langfristiger Bestandstrend")) {
+		if(redListStateTerm.equalsIgnoreCase("<") && redListFeature.equalsIgnoreCase(BfnXmlConstants.VOC_LANGFRISTIGER_BESTANDSTREND)) {
             return stateTermRLKatLangLT1;
         }
-		if(redListStateTerm.equalsIgnoreCase("(<)") && redListFeature.equalsIgnoreCase("langfristiger Bestandstrend")) {
+		if(redListStateTerm.equalsIgnoreCase("(<)") && redListFeature.equalsIgnoreCase(BfnXmlConstants.VOC_LANGFRISTIGER_BESTANDSTREND)) {
             return stateTermRLKatLangLT;
         }
-		if(redListStateTerm.equalsIgnoreCase("=") && redListFeature.equalsIgnoreCase("langfristiger Bestandstrend")) {
+		if(redListStateTerm.equalsIgnoreCase("=") && redListFeature.equalsIgnoreCase(BfnXmlConstants.VOC_LANGFRISTIGER_BESTANDSTREND)) {
             return stateTermRLKatLangEqual;
         }
-		if(redListStateTerm.equalsIgnoreCase(">") && redListFeature.equalsIgnoreCase("langfristiger Bestandstrend")) {
+		if(redListStateTerm.equalsIgnoreCase(">") && redListFeature.equalsIgnoreCase(BfnXmlConstants.VOC_LANGFRISTIGER_BESTANDSTREND)) {
             return stateTermRLKatLangGT;
         }
-		if(redListStateTerm.equalsIgnoreCase("?") && redListFeature.equalsIgnoreCase("langfristiger Bestandstrend")) {
+		if(redListStateTerm.equalsIgnoreCase("?") && redListFeature.equalsIgnoreCase(BfnXmlConstants.VOC_LANGFRISTIGER_BESTANDSTREND)) {
             return stateTermRLKatLangQuest;
         }
 
 		//RL Kurz
 		char c = 0x2193;
 		char b = 0x2191;
-		if(redListStateTerm.equalsIgnoreCase(String.valueOf(c)+String.valueOf(c)+String.valueOf(c)) && redListFeature.equalsIgnoreCase("kurzfristiger Bestandstrend")) {
+		if(redListStateTerm.equalsIgnoreCase(String.valueOf(c)+String.valueOf(c)+String.valueOf(c)) && redListFeature.equalsIgnoreCase(BfnXmlConstants.VOC_KURZFRISTIGER_BESTANDSTREND)) {
             return stateTermRLKatKurzDown3;
         }
-		if(redListStateTerm.equalsIgnoreCase(String.valueOf(c)+String.valueOf(c)) && redListFeature.equalsIgnoreCase("kurzfristiger Bestandstrend")) {
+		if(redListStateTerm.equalsIgnoreCase(String.valueOf(c)+String.valueOf(c)) && redListFeature.equalsIgnoreCase(BfnXmlConstants.VOC_KURZFRISTIGER_BESTANDSTREND)) {
             return stateTermRLKatKurzDown2;
         }
-		if(redListStateTerm.equalsIgnoreCase("("+String.valueOf(c)+")") && redListFeature.equalsIgnoreCase("kurzfristiger Bestandstrend")) {
+		if(redListStateTerm.equalsIgnoreCase("("+String.valueOf(c)+")") && redListFeature.equalsIgnoreCase(BfnXmlConstants.VOC_KURZFRISTIGER_BESTANDSTREND)) {
             return stateTermRLKatKurzDown1;
         }
-		if(redListStateTerm.equalsIgnoreCase("=") && redListFeature.equalsIgnoreCase("kurzfristiger Bestandstrend")) {
+		if(redListStateTerm.equalsIgnoreCase("=") && redListFeature.equalsIgnoreCase(BfnXmlConstants.VOC_KURZFRISTIGER_BESTANDSTREND)) {
             return stateTermRLKatKurzEqual;
         }
-		if(redListStateTerm.equalsIgnoreCase(String.valueOf(b)) && redListFeature.equalsIgnoreCase("kurzfristiger Bestandstrend")) {
+		if(redListStateTerm.equalsIgnoreCase(String.valueOf(b)) && redListFeature.equalsIgnoreCase(BfnXmlConstants.VOC_KURZFRISTIGER_BESTANDSTREND)) {
             return stateTermRLKatKurzUp;
         }
-		if(redListStateTerm.equalsIgnoreCase("?") && redListFeature.equalsIgnoreCase("kurzfristiger Bestandstrend")) {
+		if(redListStateTerm.equalsIgnoreCase("?") && redListFeature.equalsIgnoreCase(BfnXmlConstants.VOC_KURZFRISTIGER_BESTANDSTREND)) {
             return stateTermRLKatKurzQuest;
         }
 
 		//RL Risk
-		if(redListStateTerm.equalsIgnoreCase("-") && redListFeature.equalsIgnoreCase("Risikofaktoren")) {
+		if(redListStateTerm.equalsIgnoreCase("-") && redListFeature.equalsIgnoreCase(BfnXmlConstants.VOC_RISIKOFAKTOREN)) {
             return stateTermRLKatRiskMinus;
         }
-		if(redListStateTerm.equalsIgnoreCase("=") && redListFeature.equalsIgnoreCase("Risikofaktoren")) {
+		if(redListStateTerm.equalsIgnoreCase("=") && redListFeature.equalsIgnoreCase(BfnXmlConstants.VOC_RISIKOFAKTOREN)) {
             return stateTermRLKatRiskEqual;
         }
 
 		//RL Resp
-		if(redListStateTerm.equalsIgnoreCase("!!") && redListFeature.equalsIgnoreCase("Verantwortlichkeit")) {
+		if(redListStateTerm.equalsIgnoreCase("!!") && redListFeature.equalsIgnoreCase(BfnXmlConstants.VOC_VERANTWORTLICHKEIT)) {
             return stateTermRLKatRespBang2;
         }
-		if(redListStateTerm.equalsIgnoreCase("!") && redListFeature.equalsIgnoreCase("Verantwortlichkeit")) {
+		if(redListStateTerm.equalsIgnoreCase("!") && redListFeature.equalsIgnoreCase(BfnXmlConstants.VOC_VERANTWORTLICHKEIT)) {
             return stateTermRLKatRespBang1;
         }
-		if(redListStateTerm.equalsIgnoreCase("(!)") && redListFeature.equalsIgnoreCase("Verantwortlichkeit")) {
+		if(redListStateTerm.equalsIgnoreCase("(!)") && redListFeature.equalsIgnoreCase(BfnXmlConstants.VOC_VERANTWORTLICHKEIT)) {
             return stateTermRLKatRespBang;
         }
-		if(redListStateTerm.equalsIgnoreCase("?") && redListFeature.equalsIgnoreCase("Verantwortlichkeit")) {
+		if(redListStateTerm.equalsIgnoreCase("?") && redListFeature.equalsIgnoreCase(BfnXmlConstants.VOC_VERANTWORTLICHKEIT)) {
             return stateTermRLKatRespQuest;
         }
-		if(redListStateTerm.equalsIgnoreCase("nb") && redListFeature.equalsIgnoreCase("Verantwortlichkeit")) {
+		if(redListStateTerm.equalsIgnoreCase("nb") && redListFeature.equalsIgnoreCase(BfnXmlConstants.VOC_VERANTWORTLICHKEIT)) {
             return stateTermRLKatRespNb;
         }
 
 		//RL Kat Old
-		if(redListStateTerm.equalsIgnoreCase("0") && redListFeature.equalsIgnoreCase("alte RL- Kat.")) {
+		if(redListStateTerm.equalsIgnoreCase("0") && redListFeature.equalsIgnoreCase(BfnXmlConstants.VOC_ALTE_RL_KAT)) {
             return stateTermRLKatOld0;
         }
-		if(redListStateTerm.equalsIgnoreCase("1") && redListFeature.equalsIgnoreCase("alte RL- Kat.")) {
+		if(redListStateTerm.equalsIgnoreCase("1") && redListFeature.equalsIgnoreCase(BfnXmlConstants.VOC_ALTE_RL_KAT)) {
             return stateTermRLKatOld1;
         }
-		if(redListStateTerm.equalsIgnoreCase("2") && redListFeature.equalsIgnoreCase("alte RL- Kat.")) {
+		if(redListStateTerm.equalsIgnoreCase("2") && redListFeature.equalsIgnoreCase(BfnXmlConstants.VOC_ALTE_RL_KAT)) {
             return stateTermRLKatOld2;
         }
-		if(redListStateTerm.equalsIgnoreCase("3") && redListFeature.equalsIgnoreCase("alte RL- Kat.")) {
+		if(redListStateTerm.equalsIgnoreCase("3") && redListFeature.equalsIgnoreCase(BfnXmlConstants.VOC_ALTE_RL_KAT)) {
             return stateTermRLKatOld3;
         }
-		if(redListStateTerm.equalsIgnoreCase("G") && redListFeature.equalsIgnoreCase("alte RL- Kat.")) {
+		if(redListStateTerm.equalsIgnoreCase("G") && redListFeature.equalsIgnoreCase(BfnXmlConstants.VOC_ALTE_RL_KAT)) {
             return stateTermRLKatOldG;
         }
-		if(redListStateTerm.equalsIgnoreCase("R") && redListFeature.equalsIgnoreCase("alte RL- Kat.")) {
+		if(redListStateTerm.equalsIgnoreCase("R") && redListFeature.equalsIgnoreCase(BfnXmlConstants.VOC_ALTE_RL_KAT)) {
             return stateTermRLKatOldR;
         }
-		if(redListStateTerm.equalsIgnoreCase("V") && redListFeature.equalsIgnoreCase("alte RL- Kat.")) {
+		if(redListStateTerm.equalsIgnoreCase("V") && redListFeature.equalsIgnoreCase(BfnXmlConstants.VOC_ALTE_RL_KAT)) {
             return stateTermRLKatOldV;
         }
-		if(redListStateTerm.equalsIgnoreCase("*") && redListFeature.equalsIgnoreCase("alte RL- Kat.")) {
+		if(redListStateTerm.equalsIgnoreCase("*") && redListFeature.equalsIgnoreCase(BfnXmlConstants.VOC_ALTE_RL_KAT)) {
             return stateTermRLKatOldStar;
         }
-		if(redListStateTerm.equalsIgnoreCase("**") && redListFeature.equalsIgnoreCase("alte RL- Kat.")) {
+		if(redListStateTerm.equalsIgnoreCase("**") && redListFeature.equalsIgnoreCase(BfnXmlConstants.VOC_ALTE_RL_KAT)) {
             return stateTermRLKatOldStar2;
         }
-		if(redListStateTerm.equalsIgnoreCase("D") && redListFeature.equalsIgnoreCase("alte RL- Kat.")) {
+		if(redListStateTerm.equalsIgnoreCase("D") && redListFeature.equalsIgnoreCase(BfnXmlConstants.VOC_ALTE_RL_KAT)) {
             return stateTermRLKatOldD;
         }
-		if(redListStateTerm.equalsIgnoreCase("nb") && redListFeature.equalsIgnoreCase("alte RL- Kat.")) {
+		if(redListStateTerm.equalsIgnoreCase("nb") && redListFeature.equalsIgnoreCase(BfnXmlConstants.VOC_ALTE_RL_KAT)) {
             return stateTermRLKatOldNb;
         }
-		if(redListStateTerm.equalsIgnoreCase("kN") && redListFeature.equalsIgnoreCase("alte RL- Kat.")) {
+		if(redListStateTerm.equalsIgnoreCase("kN") && redListFeature.equalsIgnoreCase(BfnXmlConstants.VOC_ALTE_RL_KAT)) {
             return stateTermRLKatOldKn;
         }
 
 		//RL Neo
-		if(redListStateTerm.equalsIgnoreCase("N") && redListFeature.equalsIgnoreCase("Neobiota")) {
+		if(redListStateTerm.equalsIgnoreCase("N") && redListFeature.equalsIgnoreCase(BfnXmlConstants.VOC_NEOBIOTA)) {
             return stateTermRLKatNeo;
         }
 
 		//RL Special
-		if(redListStateTerm.equalsIgnoreCase("S") && redListFeature.equalsIgnoreCase("Sonderfälle")) {
+		if(redListStateTerm.equalsIgnoreCase("S") && redListFeature.equalsIgnoreCase(BfnXmlConstants.VOC_SONDERFAELLE)) {
             return stateTermRLSpecialS;
         }
-		if(redListStateTerm.equalsIgnoreCase("E") && redListFeature.equalsIgnoreCase("Sonderfälle")) {
+		if(redListStateTerm.equalsIgnoreCase("E") && redListFeature.equalsIgnoreCase(BfnXmlConstants.VOC_SONDERFAELLE)) {
             return stateTermRLSpecialE;
         }
-		if(redListStateTerm.equalsIgnoreCase("D") && redListFeature.equalsIgnoreCase("Sonderfälle")) {
+		if(redListStateTerm.equalsIgnoreCase("D") && redListFeature.equalsIgnoreCase(BfnXmlConstants.VOC_SONDERFAELLE)) {
             return stateTermRLSpecialD;
         }
 
