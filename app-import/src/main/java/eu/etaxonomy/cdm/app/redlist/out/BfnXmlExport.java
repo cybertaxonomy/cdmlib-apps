@@ -36,7 +36,7 @@ public class BfnXmlExport {
 
     protected Document document;
 
-	private void invokeExport(String[] args) {
+	private void invokeExport() {
 
 		ICdmDataSource sourceDb = CdmDestinations.cdm_test_local_mysql();
 		BfnXmlExportTransformer transformer = new BfnXmlExportTransformer();
@@ -50,6 +50,7 @@ public class BfnXmlExport {
 		logger.debug("Invoking BfnXml export");
 		export.invoke(config);
 
+		logger.debug("Writing XML file");
         outputXML(destination);
 
 	}
@@ -73,7 +74,7 @@ public class BfnXmlExport {
 
 	public static void main(String[] args) {
 		BfnXmlExport export = new BfnXmlExport();
-		export.invokeExport(args);
+		export.invokeExport();
 	}
 
 }
