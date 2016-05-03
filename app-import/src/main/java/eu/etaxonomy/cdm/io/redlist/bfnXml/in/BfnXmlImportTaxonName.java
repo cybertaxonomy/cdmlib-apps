@@ -7,7 +7,7 @@
 * See LICENSE.TXT at the top of this package for the full license terms.
 */
 
-package eu.etaxonomy.cdm.io.redlist.bfnXml;
+package eu.etaxonomy.cdm.io.redlist.bfnXml.in;
 
 import java.util.ArrayList;
 import java.util.Collection;
