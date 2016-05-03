@@ -12,6 +12,7 @@ package eu.etaxonomy.cdm.io.redlist.bfnXml.out;
 import java.io.File;
 
 import org.apache.log4j.Logger;
+import org.jdom2.Document;
 
 import eu.etaxonomy.cdm.database.ICdmDataSource;
 import eu.etaxonomy.cdm.io.common.XmlExportConfiguratorBase;
@@ -30,12 +31,15 @@ public class BfnXmlExportConfigurator extends XmlExportConfiguratorBase<BfnXmlEx
     @SuppressWarnings("unused")
 	private static Logger logger = Logger.getLogger(BfnXmlExportConfigurator.class);
 
-	public static BfnXmlExportConfigurator NewInstance(File destination, ICdmDataSource cdmSource, IExportTransformer transformer){
-			return new BfnXmlExportConfigurator(destination, cdmSource, transformer);
+    private final Document document;
+
+	public static BfnXmlExportConfigurator NewInstance(File destination, ICdmDataSource cdmSource, IExportTransformer transformer, Document document){
+			return new BfnXmlExportConfigurator(destination, cdmSource, transformer, document);
 	}
 
-	private BfnXmlExportConfigurator(File destination, ICdmDataSource cdmSource, IExportTransformer transformer) {
+	private BfnXmlExportConfigurator(File destination, ICdmDataSource cdmSource, IExportTransformer transformer, Document document) {
 	    super(destination, cdmSource, transformer);
+	    this.document = document;
 	}
 
 	@Override
@@ -50,5 +54,9 @@ public class BfnXmlExportConfigurator extends XmlExportConfiguratorBase<BfnXmlEx
     public BfnXmlExportState getNewState() {
 		return new BfnXmlExportState(this);
 	}
+
+    public Document getDocument() {
+        return document;
+    }
 
 }
