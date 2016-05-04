@@ -19,7 +19,6 @@ import org.jdom2.Element;
 import org.jdom2.output.Format;
 import org.jdom2.output.XMLOutputter;
 import org.springframework.stereotype.Component;
-import org.springframework.transaction.TransactionStatus;
 
 import eu.etaxonomy.cdm.io.redlist.bfnXml.BfnXmlConstants;
 import eu.etaxonomy.cdm.model.name.TaxonNameBase;
@@ -48,18 +47,16 @@ public class BfnXmlTaxonNameExport extends BfnXmlExportBase<TaxonNameBase> {
 
 	@Override
     protected void doInvoke(BfnXmlExportState state){
-//	    Document document = state.getConfig().getDocument();
-	    Document document = new Document();
-	    Element rootElement = new Element(BfnXmlConstants.EL_DEB_EXPORT);
-        document.setRootElement(rootElement);
-	    TransactionStatus transaction = startTransaction(true);
+	    Document document = state.getConfig().getDocument();
+
+	    startTransaction(true);
 
 	    //get all classifications
 	    List<Classification> classifications = getClassificationService().list(Classification.class, null, null, null, null);
 	    for (Classification classification : classifications) {
             Element roteListeDaten = new Element(BfnXmlConstants.EL_ROTELISTEDATEN);
             roteListeDaten.setAttribute(new Attribute(BfnXmlConstants.ATT_INHALT, classification.getTitleCache()));
-            rootElement.addContent(roteListeDaten);
+            document.getRootElement().addContent(roteListeDaten);
 
             //export taxonomy
             Element taxonyme = new Element(BfnXmlConstants.EL_TAXONYME);
@@ -75,8 +72,7 @@ public class BfnXmlTaxonNameExport extends BfnXmlExportBase<TaxonNameBase> {
 	    try {
             outputter.output(document, new FileWriter(state.getConfig().getDestination()));
         } catch (IOException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
+            logger.error("Error writing file", e);
         }
 
 	}
