@@ -10,6 +10,7 @@ package eu.etaxonomy.cdm.io.redlist.bfnXml.out;
 
 import java.io.FileWriter;
 import java.io.IOException;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Set;
 
@@ -72,6 +73,34 @@ public class BfnXmlTaxonNameExport extends BfnXmlExportBase<TaxonNameBase> {
             Element taxonyme = new Element(BfnXmlConstants.EL_TAXONYME);
             roteListeDaten.addContent(taxonyme);
             List<TaxonNode> childNodes = classification.getChildNodes();
+            java.util.Collections.sort(childNodes, new Comparator<TaxonNode>() {
+
+                @Override
+                public int compare(TaxonNode o1, TaxonNode o2) {
+                    Taxon taxon1 = o1.getTaxon();
+                    Taxon taxon2 = o2.getTaxon();
+                    int id1 = 0;
+                    int id2 = 0;
+
+                    Set<IdentifiableSource> sources1 = taxon1.getSources();
+                    for (IdentifiableSource identifiableSource : sources1) {
+                        if(identifiableSource.getType().equals(OriginalSourceType.Import)
+                                && identifiableSource.getIdNamespace().equals(BfnXmlConstants.EL_TAXONYM+":"
+                        +BfnXmlConstants.EL_WISSNAME+":"+BfnXmlConstants.EL_NANTEIL+":"+BfnXmlConstants.BEREICH_EINDEUTIGER_CODE)){
+                            id1 = Integer.parseInt(identifiableSource.getIdInSource());
+                        }
+                    }
+                    Set<IdentifiableSource> sources2 = taxon2.getSources();
+                    for (IdentifiableSource identifiableSource : sources2) {
+                        if(identifiableSource.getType().equals(OriginalSourceType.Import)
+                                && identifiableSource.getIdNamespace().equals(BfnXmlConstants.EL_TAXONYM+":"
+                                        +BfnXmlConstants.EL_WISSNAME+":"+BfnXmlConstants.EL_NANTEIL+":"+BfnXmlConstants.BEREICH_EINDEUTIGER_CODE)){
+                            id2 = Integer.parseInt(identifiableSource.getIdInSource());
+                        }
+                    }
+                    return id1-id2;
+                }
+            });
             for (TaxonNode taxonNode : childNodes) {
                 exportTaxon(taxonNode, taxonyme);
             }
