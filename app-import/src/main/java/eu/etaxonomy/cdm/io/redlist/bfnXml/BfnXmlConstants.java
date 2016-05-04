@@ -27,6 +27,7 @@ public class BfnXmlConstants {
 
     public static final String EL_DEB_EXPORT = "DEBExport";
     public static final String EL_ROTELISTEDATEN = "ROTELISTEDATEN";
+    public static final String ATT_INHALT = "inhalt";
 
     public static final String EL_EIGENSCHAFTEN = "EIGENSCHAFTEN";
     public static final String EL_EIGENSCHAFT = "EIGENSCHAFT";
@@ -67,6 +68,22 @@ public class BfnXmlConstants {
     public static final String EL_KONZEPTBEZIEHUNGEN = "KONZEPTBEZIEHUNGEN";
     public static final String EL_KONZEPTBEZIEHUNG = "KONZEPTBEZIEHUNG";
 
+
+    public static final String BEREICH_WISSNAME = "wissName";
+//    public static final String BEREICH_WISSNAME = "Eindeutiger Code";
+//    public static final String BEREICH_WISSNAME = "Epitheton 1";
+//    public static final String BEREICH_WISSNAME = "Epitheton 2";
+//    public static final String BEREICH_WISSNAME = "Epitheton 3";
+//    public static final String BEREICH_WISSNAME = "Epitheton 4";
+//    public static final String BEREICH_WISSNAME = "Rang";
+//    public static final String BEREICH_WISSNAME = "Ordnungszahl";
+//    public static final String BEREICH_WISSNAME = "wissName";
+//    public static final String BEREICH_WISSNAME = "wissName";
+//    public static final String BEREICH_WISSNAME = "wissName";
+//    public static final String BEREICH_WISSNAME = "wissName";
+//    public static final String BEREICH_WISSNAME = "wissName";
+//    public static final String BEREICH_WISSNAME = "wissName";
+//    public static final String BEREICH_WISSNAME = "wissName";
 
     public static final String RNK_SUPERTRIB = "supertrib";
     public static final String RNK_TRIB = "trib";

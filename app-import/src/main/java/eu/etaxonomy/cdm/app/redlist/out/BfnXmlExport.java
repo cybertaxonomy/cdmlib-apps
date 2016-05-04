@@ -44,7 +44,9 @@ public class BfnXmlExport {
         document = createDocument();
 		BfnXmlExportConfigurator config = BfnXmlExportConfigurator.NewInstance(destination, sourceDb, transformer, document);
 
-		CdmDefaultExport<BfnXmlExportConfigurator> export = new CdmDefaultExport<BfnXmlExportConfigurator>();
+
+		CdmDefaultExport<BfnXmlExportConfigurator> export =
+			new CdmDefaultExport<BfnXmlExportConfigurator>();
 
 		// invoke export
 		logger.debug("Invoking BfnXml export");

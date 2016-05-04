@@ -13,7 +13,6 @@ import java.io.File;
 
 import org.apache.log4j.Logger;
 import org.jdom2.Document;
-
 import eu.etaxonomy.cdm.database.ICdmDataSource;
 import eu.etaxonomy.cdm.io.common.XmlExportConfiguratorBase;
 import eu.etaxonomy.cdm.io.common.mapping.out.IExportTransformer;
