@@ -26,6 +26,9 @@ import eu.etaxonomy.cdm.io.redlist.bfnXml.BfnXmlConstants;
 import eu.etaxonomy.cdm.io.redlist.bfnXml.in.BfnXmlTransformer;
 import eu.etaxonomy.cdm.model.common.IdentifiableSource;
 import eu.etaxonomy.cdm.model.common.OriginalSourceType;
+import eu.etaxonomy.cdm.model.description.CommonTaxonName;
+import eu.etaxonomy.cdm.model.description.DescriptionElementBase;
+import eu.etaxonomy.cdm.model.description.TaxonDescription;
 import eu.etaxonomy.cdm.model.name.NonViralName;
 import eu.etaxonomy.cdm.model.name.Rank;
 import eu.etaxonomy.cdm.model.name.TaxonNameBase;
@@ -119,6 +122,28 @@ public class BfnXmlTaxonNameExport extends BfnXmlExportBase<TaxonNameBase> {
         }
         //rank
         addNanteil(taxonym, BfnXmlConstants.BEREICH_RANG, BfnXmlTransformer.getRankmap().get(rank));
+
+        //common name
+        Element deutscheNamen = new Element(BfnXmlConstants.EL_DEUTSCHENAMEN);
+        taxonym.addContent(deutscheNamen);
+
+        int sequenz = 1;
+        Set<TaxonDescription> descriptions = taxon.getDescriptions();
+        for (TaxonDescription taxonDescription : descriptions) {
+            Set<DescriptionElementBase> elements = taxonDescription.getElements();
+            for (DescriptionElementBase descriptionElementBase : elements) {
+                if(descriptionElementBase.isInstanceOf(CommonTaxonName.class)){
+                    Element dName = new Element(BfnXmlConstants.EL_DNAME);
+                    Element trivialName = new Element(BfnXmlConstants.EL_TRIVIALNAME);
+                    deutscheNamen.addContent(dName);
+                    dName.addContent(trivialName);
+
+                    dName.setAttribute(new Attribute(BfnXmlConstants.ATT_SEQUENZ, String.valueOf(sequenz)));
+                    trivialName.addContent(((CommonTaxonName)descriptionElementBase).getName());
+                }
+            }
+            sequenz++;
+        }
 
     }
 
