@@ -70,20 +70,19 @@ public class BfnXmlConstants {
 
 
     public static final String BEREICH_WISSNAME = "wissName";
-//    public static final String BEREICH_WISSNAME = "Eindeutiger Code";
-//    public static final String BEREICH_WISSNAME = "Epitheton 1";
-//    public static final String BEREICH_WISSNAME = "Epitheton 2";
-//    public static final String BEREICH_WISSNAME = "Epitheton 3";
-//    public static final String BEREICH_WISSNAME = "Epitheton 4";
-//    public static final String BEREICH_WISSNAME = "Rang";
-//    public static final String BEREICH_WISSNAME = "Ordnungszahl";
-//    public static final String BEREICH_WISSNAME = "wissName";
-//    public static final String BEREICH_WISSNAME = "wissName";
-//    public static final String BEREICH_WISSNAME = "wissName";
-//    public static final String BEREICH_WISSNAME = "wissName";
-//    public static final String BEREICH_WISSNAME = "wissName";
-//    public static final String BEREICH_WISSNAME = "wissName";
-//    public static final String BEREICH_WISSNAME = "wissName";
+    public static final String BEREICH_EINDEUTIGER_CODE = "Eindeutiger Code";
+    public static final String BEREICH_EPITHETON1 = "Epitheton 1";
+    public static final String BEREICH_EPITHETON2 = "Epitheton 2";
+    public static final String BEREICH_EPITHETON3 = "Epitheton 3";
+    public static final String BEREICH_EPITHETON4 = "Epitheton 4";
+    public static final String BEREICH_EPITHETON5 = "Epitheton 5";
+    public static final String BEREICH_RANG = "Rang";
+    public static final String BEREICH_ORDNUNGSZAHL = "Ordnungszahl";
+    public static final String BEREICH_AUTONYM = "Autonym";
+    public static final String BEREICH_REICH = "Reich";
+    public static final String BEREICH_BASTARD = "Bastard";
+    public static final String BEREICH_AUTOREN = "Autoren";
+    public static final String BEREICH_ZUSAETZE = "Zusätze";
 
     public static final String RNK_SUPERTRIB = "supertrib";
     public static final String RNK_TRIB = "trib";
