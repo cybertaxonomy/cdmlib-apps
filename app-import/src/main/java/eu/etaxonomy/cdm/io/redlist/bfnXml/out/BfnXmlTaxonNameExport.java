@@ -11,6 +11,7 @@ package eu.etaxonomy.cdm.io.redlist.bfnXml.out;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.List;
+import java.util.Set;
 
 import org.apache.log4j.Logger;
 import org.jdom2.Attribute;
@@ -20,7 +21,13 @@ import org.jdom2.output.Format;
 import org.jdom2.output.XMLOutputter;
 import org.springframework.stereotype.Component;
 
+import eu.etaxonomy.cdm.hibernate.HibernateProxyHelper;
 import eu.etaxonomy.cdm.io.redlist.bfnXml.BfnXmlConstants;
+import eu.etaxonomy.cdm.io.redlist.bfnXml.in.BfnXmlTransformer;
+import eu.etaxonomy.cdm.model.common.IdentifiableSource;
+import eu.etaxonomy.cdm.model.common.OriginalSourceType;
+import eu.etaxonomy.cdm.model.name.NonViralName;
+import eu.etaxonomy.cdm.model.name.Rank;
 import eu.etaxonomy.cdm.model.name.TaxonNameBase;
 import eu.etaxonomy.cdm.model.taxon.Classification;
 import eu.etaxonomy.cdm.model.taxon.Taxon;
@@ -82,16 +89,44 @@ public class BfnXmlTaxonNameExport extends BfnXmlExportBase<TaxonNameBase> {
         parent.addContent(taxonym);
 
         Taxon taxon = taxonNode.getTaxon();
-        Element nanteil = addNanteil(BfnXmlConstants.BEREICH_WISSNAME, taxon.getTitleCache());
-        taxonym.addContent(nanteil);
+        NonViralName name = HibernateProxyHelper.deproxy(taxon.getName(), NonViralName.class);
+        Rank rank = name.getRank();
+        //wissName
+        addNanteil(taxonym, BfnXmlConstants.BEREICH_WISSNAME, taxon.getTitleCache());
+        //epitithon 1,2,3
+        addNanteil(taxonym, BfnXmlConstants.BEREICH_EPITHETON1, name.getGenusOrUninomial());
+        if(rank.isLower(Rank.GENUS())){
+            String epitheton2 = name.getInfraGenericEpithet();
+            if(epitheton2==null){
+                epitheton2 = name.getSpecificEpithet();
+            }
+            addNanteil(taxonym, BfnXmlConstants.BEREICH_EPITHETON2, epitheton2);
+        }
+        if(rank.isLower(Rank.SPECIES())){
+            String epitheton3 = name.getInfraSpecificEpithet();
+            if(epitheton3==null){
+                epitheton3 = name.getSpecificEpithet();
+            }
+            addNanteil(taxonym, BfnXmlConstants.BEREICH_EPITHETON3, epitheton3);
+        }
+        Set<IdentifiableSource> sources = taxon.getSources();
+        for (IdentifiableSource identifiableSource : sources) {
+            if(identifiableSource.getType().equals(OriginalSourceType.Import)
+                    && identifiableSource.getIdNamespace().equals(BfnXmlConstants.EL_TAXONYM+":"
+            +BfnXmlConstants.EL_WISSNAME+":"+BfnXmlConstants.EL_NANTEIL+":"+BfnXmlConstants.BEREICH_EINDEUTIGER_CODE)){
+                addNanteil(taxonym, BfnXmlConstants.BEREICH_EINDEUTIGER_CODE, identifiableSource.getIdInSource());
+            }
+        }
+        //rank
+        addNanteil(taxonym, BfnXmlConstants.BEREICH_RANG, BfnXmlTransformer.getRankmap().get(rank));
 
     }
 
-    private Element addNanteil(String bereich, String textContent) {
+    private void addNanteil(Element element, String bereich, String textContent) {
         Element nanteil = new Element(BfnXmlConstants.EL_NANTEIL);
         nanteil.setAttribute(new Attribute(BfnXmlConstants.ATT_BEREICH, bereich));
         nanteil.addContent(textContent);
-        return nanteil;
+        element.addContent(nanteil);
     }
 
     @Override

@@ -14,17 +14,13 @@ import java.util.UUID;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 
+import com.google.common.collect.BiMap;
+import com.google.common.collect.HashBiMap;
+
 import eu.etaxonomy.cdm.io.redlist.bfnXml.BfnXmlConstants;
 import eu.etaxonomy.cdm.model.name.Rank;
 import eu.etaxonomy.cdm.model.taxon.TaxonRelationshipType;
 import eu.etaxonomy.cdm.strategy.exceptions.UnknownCdmTypeException;
-/*import eu.etaxonomy.cdm.model.reference.Article;
-import eu.etaxonomy.cdm.model.reference.Book;
-import eu.etaxonomy.cdm.model.reference.BookSection;
-import eu.etaxonomy.cdm.model.reference.Journal;
-import eu.etaxonomy.cdm.model.reference.PersonalCommunication;
-import eu.etaxonomy.cdm.model.reference.PrintSeries;*/
-//import eu.etaxonomy.cdm.model.reference.WebPage;
 
 public final class BfnXmlTransformer {
     @SuppressWarnings("unused")
@@ -143,6 +139,72 @@ public final class BfnXmlTransformer {
 	public static final UUID stateTermRLSpecialS = UUID.fromString("71fda1f6-a7eb-44a0-aeb8-e7f676096916");
 	public static final UUID stateTermRLSpecialE = UUID.fromString("ef335a01-f4f1-4a02-95a2-2254aa457774");
 	public static final UUID stateTermRLSpecialD = UUID.fromString("6b267cc5-49b6-4ebd-87ec-aa574e9cbcc5");
+
+	private static final BiMap<Rank, String> rankMap = HashBiMap.create();
+	static {
+	    rankMap.put(Rank.INFRAGENUS(), BfnXmlConstants.RNK_INFRAGEN);
+	    rankMap.put(Rank.SUBGENUS(), BfnXmlConstants.RNK_SUBGEN);
+	    rankMap.put(Rank.GENUS(), BfnXmlConstants.RNK_GEN);
+	    //genus subdivision
+	    rankMap.put(Rank.SPECIESAGGREGATE(), BfnXmlConstants.RNK_AGGR);
+	    rankMap.put(Rank.INFRAGENERICTAXON(), BfnXmlConstants.RNK_TAXINFRAGEN);
+	    rankMap.put(Rank.SUBSERIES(), BfnXmlConstants.RNK_SUBSER);
+	    rankMap.put(Rank.SERIES(), BfnXmlConstants.RNK_SER);
+	    rankMap.put(Rank.SUBSECTION_BOTANY(), BfnXmlConstants.RNK_SUBSECT);
+	    rankMap.put(Rank.SECTION_BOTANY(), BfnXmlConstants.RNK_SECT);
+	    //species group
+	    rankMap.put(Rank.SUBSPECIFICAGGREGATE(), BfnXmlConstants.RNK_SUBSP_AGGR);
+	    rankMap.put(Rank.SUBSPECIES(), BfnXmlConstants.RNK_SSP);
+	    rankMap.put(Rank.SUBSPECIES(), BfnXmlConstants.RNK_SUBSP);
+	    rankMap.put(Rank.SUBSPECIES(), BfnXmlConstants.RNK_SUBSP_DOT);
+	    rankMap.put(Rank.SPECIES(), BfnXmlConstants.RNK_SP);
+	    rankMap.put(Rank.SPECIES(), BfnXmlConstants.RNK_SPEZIES);
+	    //below subspecies
+	    rankMap.put(Rank.CANDIDATE(), BfnXmlConstants.RNK_CAND);
+	    rankMap.put(Rank.INFRASPECIFICTAXON(), BfnXmlConstants.RNK_TAXINFRASP);
+	    rankMap.put(Rank.SPECIALFORM(), BfnXmlConstants.RNK_FSP);
+	    rankMap.put(Rank.SUBSUBFORM(), BfnXmlConstants.RNK_SUBSUBFM);
+	    rankMap.put(Rank.SUBFORM(), BfnXmlConstants.RNK_SUBFM);
+	    rankMap.put(Rank.FORM(), BfnXmlConstants.RNK_FM);
+	    rankMap.put(Rank.SUBSUBVARIETY(), BfnXmlConstants.RNK_SUBSUBVAR);
+	    rankMap.put(Rank.SUBVARIETY(), BfnXmlConstants.RNK_SUBVAR);
+	    rankMap.put(Rank.VARIETY(), BfnXmlConstants.RNK_VAR);
+	    rankMap.put(Rank.VARIETY(), BfnXmlConstants.RNK_VAR_DOT);
+	    rankMap.put(Rank.INFRASPECIES(), BfnXmlConstants.RNK_INFRASP);
+	    //above superfamily
+	    rankMap.put(Rank.INFRAORDER(), BfnXmlConstants.RNK_INFRAORD);
+	    rankMap.put(Rank.ORDER(), BfnXmlConstants.RNK_ORD);
+	    rankMap.put(Rank.SUPERORDER(), BfnXmlConstants.RNK_SUPERORD);
+	    rankMap.put(Rank.INFRACLASS(), BfnXmlConstants.RNK_INFRACL);
+	    rankMap.put(Rank.SUBCLASS(), BfnXmlConstants.RNK_SUBCL);
+	    rankMap.put(Rank.CLASS(), BfnXmlConstants.RNK_CL);
+	    rankMap.put(Rank.SUPERCLASS(), BfnXmlConstants.RNK_SUPERCL);
+	    rankMap.put(Rank.INFRAPHYLUM(), BfnXmlConstants.RNK_INFRAPHYL_DIV);
+	    rankMap.put(Rank.SUBPHYLUM(), BfnXmlConstants.RNK_SUBPHYL_DIV);
+	    rankMap.put(Rank.PHYLUM(), BfnXmlConstants.RNK_PHYL_DIV);
+	    rankMap.put(Rank.SUPERPHYLUM(), BfnXmlConstants.RNK_SUPERPHYL_DIV);
+	    rankMap.put(Rank.INFRAKINGDOM(), BfnXmlConstants.RNK_INFRAREG);
+	    rankMap.put(Rank.SUBKINGDOM(), BfnXmlConstants.RNK_SUBREG);
+	    rankMap.put(Rank.KINGDOM(), BfnXmlConstants.RNK_REG);
+	    rankMap.put(Rank.SUPERKINGDOM(), BfnXmlConstants.RNK_SUPERREG);
+	    rankMap.put(Rank.DOMAIN(), BfnXmlConstants.RNK_DOM);
+	    rankMap.put(Rank.SUPRAGENERICTAXON(), BfnXmlConstants.RNK_TAXSUPRAGEN);
+	    rankMap.put(Rank.EMPIRE(), BfnXmlConstants.RNK_AUSWERTUNGSGRUPPE);
+	    //family group
+	    rankMap.put(Rank.FAMILY(), BfnXmlConstants.RNK_INFRAFAM);
+	    rankMap.put(Rank.FAMILY(), BfnXmlConstants.RNK_SUBFAM);
+	    rankMap.put(Rank.FAMILY(), BfnXmlConstants.RNK_FAM);
+	    rankMap.put(Rank.FAMILY(), BfnXmlConstants.RNK_SUPERFAM);
+	    //family subdivision
+	    rankMap.put(Rank.FAMILY(), BfnXmlConstants.RNK_INTRATRIB);
+	    rankMap.put(Rank.FAMILY(), BfnXmlConstants.RNK_SUBTRIB);
+	    rankMap.put(Rank.FAMILY(), BfnXmlConstants.RNK_TRIB);
+	    rankMap.put(Rank.FAMILY(), BfnXmlConstants.RNK_SUPERTRIB);
+	}
+
+    public static BiMap<Rank, String> getRankmap() {
+        return rankMap;
+    }
 
 
 	public static TaxonRelationshipType concept2TaxonRelation(String conceptStatus) throws UnknownCdmTypeException{
