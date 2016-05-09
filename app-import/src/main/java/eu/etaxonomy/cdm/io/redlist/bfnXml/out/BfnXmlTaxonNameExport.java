@@ -27,8 +27,11 @@ import eu.etaxonomy.cdm.io.redlist.bfnXml.BfnXmlConstants;
 import eu.etaxonomy.cdm.io.redlist.bfnXml.in.BfnXmlTransformer;
 import eu.etaxonomy.cdm.model.common.IdentifiableSource;
 import eu.etaxonomy.cdm.model.common.OriginalSourceType;
+import eu.etaxonomy.cdm.model.common.TermVocabulary;
 import eu.etaxonomy.cdm.model.description.CommonTaxonName;
 import eu.etaxonomy.cdm.model.description.DescriptionElementBase;
+import eu.etaxonomy.cdm.model.description.Feature;
+import eu.etaxonomy.cdm.model.description.State;
 import eu.etaxonomy.cdm.model.description.TaxonDescription;
 import eu.etaxonomy.cdm.model.name.NonViralName;
 import eu.etaxonomy.cdm.model.name.Rank;
@@ -58,9 +61,10 @@ public class BfnXmlTaxonNameExport extends BfnXmlExportBase<TaxonNameBase> {
 
 	@Override
     protected void doInvoke(BfnXmlExportState state){
+	    startTransaction(true);
+
 	    Document document = state.getConfig().getDocument();
 
-	    startTransaction(true);
 
 	    //get all classifications
 	    List<Classification> classifications = getClassificationService().list(Classification.class, null, null, null, null);
@@ -68,6 +72,34 @@ public class BfnXmlTaxonNameExport extends BfnXmlExportBase<TaxonNameBase> {
             Element roteListeDaten = new Element(BfnXmlConstants.EL_ROTELISTEDATEN);
             roteListeDaten.setAttribute(new Attribute(BfnXmlConstants.ATT_INHALT, classification.getTitleCache()));
             document.getRootElement().addContent(roteListeDaten);
+
+            //export features
+            Element eigenschaften = new Element(BfnXmlConstants.EL_EIGENSCHAFTEN);
+            roteListeDaten.addContent(eigenschaften);
+            TermVocabulary<Feature> redListFeaturesVoc = getVocabularyService().load(BfnXmlConstants.vocRLFeatures);
+            Set<Feature> terms = redListFeaturesVoc.getTerms();
+            for (Feature feature : terms) {
+                //export red list features
+                Element eigenschaft = new Element(BfnXmlConstants.EL_EIGENSCHAFT);
+                eigenschaft.setAttribute(new Attribute(BfnXmlConstants.ATT_STANDARDNAME, feature.getLabel()));
+                eigenschaften.addContent(eigenschaft);
+                //export feature states
+                Element listenwerte = new Element(BfnXmlConstants.EL_LISTENWERTE);
+                eigenschaften.addContent(listenwerte);
+                Set<TermVocabulary<State>> supportedCategoricalEnumerations = feature.getSupportedCategoricalEnumerations();
+                for (TermVocabulary<State> termVocabulary : supportedCategoricalEnumerations) {
+                    Set<State> featureStates = termVocabulary.getTerms();
+//                    int reihenfolge = 1;
+                    for (State featureState : featureStates) {
+                        Element lwert = new Element(BfnXmlConstants.EL_LWERT);
+//                        lwert.setAttribute(new Attribute(BfnXmlConstants.ATT_REIHENFOLGE, String.valueOf(reihenfolge)));
+                        lwert.addContent(featureState.getLabel());
+                        listenwerte.addContent(lwert);
+
+//                        reihenfolge++;
+                    }
+                }
+            }
 
             //export taxonomy
             Element taxonyme = new Element(BfnXmlConstants.EL_TAXONYME);
@@ -102,7 +134,7 @@ public class BfnXmlTaxonNameExport extends BfnXmlExportBase<TaxonNameBase> {
                 }
             });
             for (TaxonNode taxonNode : childNodes) {
-                exportTaxon(taxonNode, taxonyme);
+                exportTaxon(taxonNode.getTaxon(), taxonyme);
             }
         }
 
@@ -116,11 +148,10 @@ public class BfnXmlTaxonNameExport extends BfnXmlExportBase<TaxonNameBase> {
 
 	}
 
-    private void exportTaxon(TaxonNode taxonNode, Element parent) {
+    private void exportTaxon(Taxon taxon, Element parent) {
         Element taxonym = new Element(BfnXmlConstants.EL_TAXONYM);
         parent.addContent(taxonym);
 
-        Taxon taxon = taxonNode.getTaxon();
         NonViralName name = HibernateProxyHelper.deproxy(taxon.getName(), NonViralName.class);
         Rank rank = name.getRank();
         //wissName
