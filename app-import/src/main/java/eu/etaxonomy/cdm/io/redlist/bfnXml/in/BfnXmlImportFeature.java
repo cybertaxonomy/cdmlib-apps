@@ -84,6 +84,7 @@ public class BfnXmlImportFeature extends BfnXmlImportBase implements ICdmIO<BfnX
 
 		List contentXML = elDataSet.getContent();
 		Element currentElement = null;
+
 		for(Object object:contentXML){
 
 			if(object instanceof Element){
@@ -106,8 +107,7 @@ public class BfnXmlImportFeature extends BfnXmlImportBase implements ICdmIO<BfnX
 						if(elFeature.getAttributeValue(BfnXmlConstants.ATT_STANDARDNAME, bfnNamespace).equalsIgnoreCase("RL Kat.")){
 							makeFeature(vocabularyService, featureList,success, obligatory, bfnNamespace,elFeature, state);
 						}
-						String featureLabel = "Kat. +/-";
-						if(elFeature.getAttributeValue(BfnXmlConstants.ATT_STANDARDNAME).equalsIgnoreCase(featureLabel)){
+						if(elFeature.getAttributeValue(BfnXmlConstants.ATT_STANDARDNAME).equalsIgnoreCase("Kat. +/-")){
 							makeFeature(vocabularyService, featureList,success, obligatory, bfnNamespace,elFeature, state);
 						}else
 						if(elFeature.getAttributeValue(BfnXmlConstants.ATT_STANDARDNAME).equalsIgnoreCase("aktuelle Bestandsstituation")){
@@ -209,25 +209,18 @@ public class BfnXmlImportFeature extends BfnXmlImportBase implements ICdmIO<BfnX
 			String childElementName = BfnXmlConstants.EL_LWERT;
 			createOrUpdateStates(bfnNamespace, elListValues, childElementName, redListCat, state);
 		}
-		createOrUpdateTermVocabulary(TermType.Feature, vocabularyService, redListCat, "RedList Feature");
+		createOrUpdateTermVocabulary(TermType.Feature, vocabularyService, redListCat, BfnXmlConstants.VOC_REDLIST_FEATURES);
 	}
 
 	/**
 	 * @param vocabularyService
 	 * @param term
 	 */
-	@SuppressWarnings({ "unchecked", "rawtypes" })
+	@SuppressWarnings({ "rawtypes" })
 	private TermVocabulary createOrUpdateTermVocabulary(TermType termType, IVocabularyService vocabularyService, DefinedTermBase term, String strTermVocabulary) {
-		TermVocabulary termVocabulary = null;
-		List<TermVocabulary> vocList = vocabularyService.list(TermVocabulary.class, null, null, null, VOC_CLASSIFICATION_INIT_STRATEGY);
-		for(TermVocabulary tv : vocList){
-			if(tv.getTitleCache().equalsIgnoreCase(strTermVocabulary)){
-				termVocabulary = tv;
-			}
-		}
-		if(termVocabulary == null){
-			termVocabulary = TermVocabulary.NewInstance(termType, strTermVocabulary, strTermVocabulary, strTermVocabulary, null);
-		}
+
+        //create/get red list feature vocabulary
+        TermVocabulary<DefinedTermBase> termVocabulary = getVocabulary(termType, BfnXmlConstants.vocRLFeatures, BfnXmlConstants.VOC_REDLIST_FEATURES, BfnXmlConstants.VOC_REDLIST_FEATURES, BfnXmlConstants.VOC_REDLIST_FEATURES, null, false, null);
 		termVocabulary.addTerm(term);
 		vocabularyService.saveOrUpdate(termVocabulary);
 
@@ -260,7 +253,7 @@ public class BfnXmlImportFeature extends BfnXmlImportBase implements ICdmIO<BfnX
 			UUID stateTermUuid = null;
 			UUID vocabularyStateUuid = null;
 			try {
-				vocabularyStateUuid = BfnXmlTransformer.getRedlistVocabularyUUID(redListCat.toString());
+				vocabularyStateUuid = BfnXmlTransformer.getRedlistVocabularyUUID(redListCat.getLabel());
 			} catch (UnknownCdmTypeException e1) {
 				vocabularyStateUuid = UUID.randomUUID();
 				logger.warn("Element: " + listValue + "\n"+ e1);

@@ -712,8 +712,8 @@ public class BfnXmlImportTaxonName extends BfnXmlImportBase {
 				stateTermUUID = UUID.randomUUID();
 				randomStateUUID = true;
 			}
-			if(randomStateUUID || stateTermUUID == BfnXmlTransformer.stateTermEmpty){
-				if(stateTermUUID == BfnXmlTransformer.stateTermEmpty) {
+			if(randomStateUUID || stateTermUUID == BfnXmlConstants.stateTermEmpty){
+				if(stateTermUUID == BfnXmlConstants.stateTermEmpty) {
                     transformedRlKatValue = "keine Angabe";
                 }
 				rlState = getStateTerm(state, stateTermUUID, transformedRlKatValue, transformedRlKatValue, transformedRlKatValue, null);
