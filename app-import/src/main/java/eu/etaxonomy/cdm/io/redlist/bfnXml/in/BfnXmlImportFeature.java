@@ -105,49 +105,49 @@ public class BfnXmlImportFeature extends BfnXmlImportBase implements ICdmIO<BfnX
 					for (Element elFeature : elFeatureList){
 
 						if(elFeature.getAttributeValue(BfnXmlConstants.ATT_STANDARDNAME, bfnNamespace).equalsIgnoreCase("RL Kat.")){
-							makeFeature(vocabularyService, featureList,success, obligatory, bfnNamespace,elFeature, state);
+							makeFeature(vocabularyService, featureList,success, obligatory, bfnNamespace,elFeature, true, state);
 						}
 						if(elFeature.getAttributeValue(BfnXmlConstants.ATT_STANDARDNAME).equalsIgnoreCase("Kat. +/-")){
-							makeFeature(vocabularyService, featureList,success, obligatory, bfnNamespace,elFeature, state);
+							makeFeature(vocabularyService, featureList,success, obligatory, bfnNamespace,elFeature, true, state);
 						}else
 						if(elFeature.getAttributeValue(BfnXmlConstants.ATT_STANDARDNAME).equalsIgnoreCase("aktuelle Bestandsstituation")){
-							makeFeature(vocabularyService, featureList,success, obligatory, bfnNamespace,elFeature, state);
+							makeFeature(vocabularyService, featureList,success, obligatory, bfnNamespace,elFeature, true, state);
 						}else
 						if(elFeature.getAttributeValue(BfnXmlConstants.ATT_STANDARDNAME).equalsIgnoreCase("langfristiger Bestandstrend")){
-							makeFeature(vocabularyService, featureList,success, obligatory, bfnNamespace,elFeature, state);
+							makeFeature(vocabularyService, featureList,success, obligatory, bfnNamespace,elFeature, true, state);
 						}else
 						if(elFeature.getAttributeValue(BfnXmlConstants.ATT_STANDARDNAME).equalsIgnoreCase("kurzfristiger Bestandstrend")){
-							makeFeature(vocabularyService, featureList,success, obligatory, bfnNamespace,elFeature, state);
+							makeFeature(vocabularyService, featureList,success, obligatory, bfnNamespace,elFeature, true, state);
 						}else
 						if(elFeature.getAttributeValue(BfnXmlConstants.ATT_STANDARDNAME).equalsIgnoreCase("Risikofaktoren")){
-						    makeFeature(vocabularyService, featureList,success, obligatory, bfnNamespace,elFeature, state);
+						    makeFeature(vocabularyService, featureList,success, obligatory, bfnNamespace,elFeature, true, state);
 						}else
 						if(elFeature.getAttributeValue(BfnXmlConstants.ATT_STANDARDNAME).equalsIgnoreCase("Verantwortlichkeit")){
-							makeFeature(vocabularyService, featureList,success, obligatory, bfnNamespace,elFeature, state);
+							makeFeature(vocabularyService, featureList,success, obligatory, bfnNamespace,elFeature, true, state);
 						}else
 						if(elFeature.getAttributeValue(BfnXmlConstants.ATT_STANDARDNAME).equalsIgnoreCase("alte RL- Kat.")){
-							makeFeature(vocabularyService, featureList,success, obligatory, bfnNamespace,elFeature, state);
+							makeFeature(vocabularyService, featureList,success, obligatory, bfnNamespace,elFeature, true, state);
 						}else
 						if(elFeature.getAttributeValue(BfnXmlConstants.ATT_STANDARDNAME).equalsIgnoreCase("Neobiota")){
-							makeFeature(vocabularyService, featureList,success, obligatory, bfnNamespace,elFeature, state);
+							makeFeature(vocabularyService, featureList,success, obligatory, bfnNamespace,elFeature, true, state);
 						}else
 						if(elFeature.getAttributeValue(BfnXmlConstants.ATT_STANDARDNAME).equalsIgnoreCase("Eindeutiger Code")){
-							makeFeature(vocabularyService, featureList,success, obligatory, bfnNamespace,elFeature, state);
+							makeFeature(vocabularyService, featureList,success, obligatory, bfnNamespace,elFeature, true, state);
 						}else
 						if(elFeature.getAttributeValue(BfnXmlConstants.ATT_STANDARDNAME).equalsIgnoreCase("Kommentar zur Taxonomie")){
-							makeFeature(vocabularyService, featureList,success, obligatory, bfnNamespace,elFeature, state);
+							makeFeature(vocabularyService, featureList,success, obligatory, bfnNamespace,elFeature, false, state);
 						}else
 						if(elFeature.getAttributeValue(BfnXmlConstants.ATT_STANDARDNAME).equalsIgnoreCase("Kommentar zur Gefährdung")){
-							makeFeature(vocabularyService, featureList,success, obligatory, bfnNamespace,elFeature, state);
+							makeFeature(vocabularyService, featureList,success, obligatory, bfnNamespace,elFeature, false, state);
 						}else
 						if(elFeature.getAttributeValue(BfnXmlConstants.ATT_STANDARDNAME).equalsIgnoreCase("Sonderfälle")){
-							makeFeature(vocabularyService, featureList,success, obligatory, bfnNamespace,elFeature, state);
+							makeFeature(vocabularyService, featureList,success, obligatory, bfnNamespace,elFeature, true, state);
 						}else
 						if(elFeature.getAttributeValue(BfnXmlConstants.ATT_STANDARDNAME).equalsIgnoreCase("Letzter Nachweis")){
-							makeFeature(vocabularyService, featureList,success, obligatory, bfnNamespace,elFeature, state);
+							makeFeature(vocabularyService, featureList,success, obligatory, bfnNamespace,elFeature, false, state);
 						}else
 						if(elFeature.getAttributeValue(BfnXmlConstants.ATT_STANDARDNAME).equalsIgnoreCase("Weitere Kommentare")){
-							makeFeature(vocabularyService, featureList,success, obligatory, bfnNamespace,elFeature, state);
+							makeFeature(vocabularyService, featureList,success, obligatory, bfnNamespace,elFeature, false, state);
 						}
 					}
 					createFeatureTree(featureList);
@@ -166,9 +166,6 @@ public class BfnXmlImportFeature extends BfnXmlImportBase implements ICdmIO<BfnX
 
 	}
 
-	/**
-	 * @param featureList
-	 */
 	private void createFeatureTree(List<Feature> featureList) {
 		FeatureTree featureTree = FeatureTree.NewInstance(featureList);
 		String featureTreeName = "RedListFeatureTree";
@@ -176,20 +173,10 @@ public class BfnXmlImportFeature extends BfnXmlImportBase implements ICdmIO<BfnX
 		getFeatureTreeService().save(featureTree);
 	}
 
-	/**
-	 *
-	 * @param vocabularyService
-	 * @param featureList
-	 * @param success
-	 * @param obligatory
-	 * @param bfnNamespace
-	 * @param elFeature
-	 * @param state
-	 */
 	private void makeFeature(IVocabularyService vocabularyService,
 			List<Feature> featureList,
 			ResultWrapper<Boolean> success, boolean obligatory,
-			Namespace bfnNamespace, Element elFeature, BfnXmlImportState state) {
+			Namespace bfnNamespace, Element elFeature, boolean supportsCategoricalData, BfnXmlImportState state) {
 		String childName;
 		String strRlKat = elFeature.getAttributeValue(BfnXmlConstants.ATT_STANDARDNAME);
 		UUID featureUUID = null;
@@ -199,7 +186,7 @@ public class BfnXmlImportFeature extends BfnXmlImportBase implements ICdmIO<BfnX
 			e.printStackTrace();
 		}
 		Feature redListCat = getFeature(state, featureUUID, strRlKat, strRlKat, strRlKat, null);
-		redListCat.setSupportsCategoricalData(true);
+		redListCat.setSupportsCategoricalData(supportsCategoricalData);
 		//TODO implement German, but currently titleCache generation does not yet work correctly with another language
 //		redListCat.getRepresentation(Language.DEFAULT()).setLanguage(Language.GERMAN());
 		featureList.add(redListCat);
@@ -212,10 +199,6 @@ public class BfnXmlImportFeature extends BfnXmlImportBase implements ICdmIO<BfnX
 		createOrUpdateTermVocabulary(TermType.Feature, vocabularyService, redListCat, BfnXmlConstants.VOC_REDLIST_FEATURES);
 	}
 
-	/**
-	 * @param vocabularyService
-	 * @param term
-	 */
 	@SuppressWarnings({ "rawtypes" })
 	private TermVocabulary createOrUpdateTermVocabulary(TermType termType, IVocabularyService vocabularyService, DefinedTermBase term, String strTermVocabulary) {
 
@@ -227,15 +210,6 @@ public class BfnXmlImportFeature extends BfnXmlImportBase implements ICdmIO<BfnX
 		return termVocabulary;
 	}
 
-
-	/**
-	 * @param success
-	 * @param bfnNamespace
-	 * @param elListValues
-	 * @param childElementName
-	 * @param redListCat
-	 */
-
 	@SuppressWarnings({ "unchecked", "rawtypes"})
 	private void createOrUpdateStates(Namespace bfnNamespace,
 	        Element elListValues,
@@ -244,7 +218,6 @@ public class BfnXmlImportFeature extends BfnXmlImportBase implements ICdmIO<BfnX
 			BfnXmlImportState state) {
 
 		List<Element> elListValueList = elListValues.getChildren(childElementName, bfnNamespace);
-//		List<StateData> stateList = new ArrayList<StateData>();
 
 		OrderedTermVocabulary termVocabulary = null;
 		for(Element elListValue:elListValueList){
