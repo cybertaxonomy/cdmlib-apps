@@ -227,7 +227,7 @@ public class BfnXmlImportTaxonName extends BfnXmlImportBase {
 			childName = BfnXmlConstants.EL_WISSNAME;
 			Element elWissName = XmlHelp.getSingleChildElement(success, elTaxon, childName, bfnNamespace, obligatory);
 			String childElementName = BfnXmlConstants.EL_NANTEIL;
-			Taxon taxon = createOrUpdateTaxon(success, idNamespace, config, bfnNamespace, elWissName, childElementName, state);
+			Taxon taxon = createOrUpdateTaxon(success, taxonId, config, bfnNamespace, elWissName, childElementName, state);
 
 			//for each synonym
 			childName = "SYNONYME";
@@ -333,7 +333,7 @@ public class BfnXmlImportTaxonName extends BfnXmlImportBase {
 	 * <b>Existing taxon names won't be matched yet</b>
 	 *
 	 * @param success
-	 * @param idNamespace
+	 * @param taxonId
 	 * @param config
 	 * @param bfnNamespace
 	 * @param elTaxonName
@@ -344,7 +344,7 @@ public class BfnXmlImportTaxonName extends BfnXmlImportBase {
 
 	@SuppressWarnings({ "unchecked" })
 	private Taxon createOrUpdateTaxon(
-			ResultWrapper<Boolean> success, String idNamespace,
+			ResultWrapper<Boolean> success, String taxonId,
 			BfnXmlImportConfigurator config, Namespace bfnNamespace,
 			Element elTaxonName, String childElementName, BfnXmlImportState state) {
 
@@ -419,6 +419,8 @@ public class BfnXmlImportTaxonName extends BfnXmlImportBase {
 					String namespace = grandParentElement.getName() + ":" + parentElement.getName() + ":"+elWissName.getName() + ":" + uriNameSpace;
 					String microRefStr = microRef == null ? null : microRef.getTitle();
 					taxon.addImportSource(uniqueID, namespace, state.getCompleteSourceRef(), microRefStr);
+
+					taxon.addIdentifier(taxonId, getIdentiferType(state, BfnXmlConstants.TAX_NR_IDENTIFIER, "taxNr", "TaxNr attribute of Bfn Xml file", "taxNr", null));
 				} catch (UnknownCdmTypeException e) {
 					success.setValue(false);
 				}
