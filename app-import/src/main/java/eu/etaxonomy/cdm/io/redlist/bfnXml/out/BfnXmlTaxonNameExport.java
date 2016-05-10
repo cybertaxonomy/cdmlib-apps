@@ -8,8 +8,6 @@
 */
 package eu.etaxonomy.cdm.io.redlist.bfnXml.out;
 
-import java.io.FileWriter;
-import java.io.IOException;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Set;
@@ -18,26 +16,30 @@ import org.apache.log4j.Logger;
 import org.jdom2.Attribute;
 import org.jdom2.Document;
 import org.jdom2.Element;
-import org.jdom2.output.Format;
-import org.jdom2.output.XMLOutputter;
 import org.springframework.stereotype.Component;
 
 import eu.etaxonomy.cdm.hibernate.HibernateProxyHelper;
 import eu.etaxonomy.cdm.io.redlist.bfnXml.BfnXmlConstants;
 import eu.etaxonomy.cdm.io.redlist.bfnXml.in.BfnXmlTransformer;
 import eu.etaxonomy.cdm.model.common.IdentifiableSource;
+import eu.etaxonomy.cdm.model.common.Language;
 import eu.etaxonomy.cdm.model.common.OriginalSourceType;
 import eu.etaxonomy.cdm.model.common.TermVocabulary;
+import eu.etaxonomy.cdm.model.description.CategoricalData;
 import eu.etaxonomy.cdm.model.description.CommonTaxonName;
 import eu.etaxonomy.cdm.model.description.DescriptionElementBase;
 import eu.etaxonomy.cdm.model.description.Feature;
 import eu.etaxonomy.cdm.model.description.State;
+import eu.etaxonomy.cdm.model.description.StateData;
 import eu.etaxonomy.cdm.model.description.TaxonDescription;
+import eu.etaxonomy.cdm.model.description.TextData;
 import eu.etaxonomy.cdm.model.name.NonViralName;
 import eu.etaxonomy.cdm.model.name.Rank;
 import eu.etaxonomy.cdm.model.name.TaxonNameBase;
 import eu.etaxonomy.cdm.model.taxon.Classification;
+import eu.etaxonomy.cdm.model.taxon.Synonym;
 import eu.etaxonomy.cdm.model.taxon.Taxon;
+import eu.etaxonomy.cdm.model.taxon.TaxonBase;
 import eu.etaxonomy.cdm.model.taxon.TaxonNode;
 
 
@@ -65,7 +67,6 @@ public class BfnXmlTaxonNameExport extends BfnXmlExportBase<TaxonNameBase> {
 
 	    Document document = state.getConfig().getDocument();
 
-
 	    //get all classifications
 	    List<Classification> classifications = getClassificationService().list(Classification.class, null, null, null, null);
 	    for (Classification classification : classifications) {
@@ -73,117 +74,192 @@ public class BfnXmlTaxonNameExport extends BfnXmlExportBase<TaxonNameBase> {
             roteListeDaten.setAttribute(new Attribute(BfnXmlConstants.ATT_INHALT, classification.getTitleCache()));
             document.getRootElement().addContent(roteListeDaten);
 
-            //export features
-            Element eigenschaften = new Element(BfnXmlConstants.EL_EIGENSCHAFTEN);
-            roteListeDaten.addContent(eigenschaften);
-            TermVocabulary<Feature> redListFeaturesVoc = getVocabularyService().load(BfnXmlConstants.vocRLFeatures);
-            Set<Feature> terms = redListFeaturesVoc.getTerms();
-            for (Feature feature : terms) {
-                //export red list features
-                Element eigenschaft = new Element(BfnXmlConstants.EL_EIGENSCHAFT);
-                eigenschaft.setAttribute(new Attribute(BfnXmlConstants.ATT_STANDARDNAME, feature.getLabel()));
-                eigenschaften.addContent(eigenschaft);
-                //export feature states
-                Element listenwerte = new Element(BfnXmlConstants.EL_LISTENWERTE);
-                eigenschaften.addContent(listenwerte);
-                Set<TermVocabulary<State>> supportedCategoricalEnumerations = feature.getSupportedCategoricalEnumerations();
-                for (TermVocabulary<State> termVocabulary : supportedCategoricalEnumerations) {
-                    Set<State> featureStates = termVocabulary.getTerms();
-//                    int reihenfolge = 1;
-                    for (State featureState : featureStates) {
-                        Element lwert = new Element(BfnXmlConstants.EL_LWERT);
-//                        lwert.setAttribute(new Attribute(BfnXmlConstants.ATT_REIHENFOLGE, String.valueOf(reihenfolge)));
-                        lwert.addContent(featureState.getLabel());
-                        listenwerte.addContent(lwert);
+            exportFeatures(roteListeDaten);
 
-//                        reihenfolge++;
-                    }
-                }
-            }
+            exportTaxonomy(classification, roteListeDaten);
 
-            //export taxonomy
-            Element taxonyme = new Element(BfnXmlConstants.EL_TAXONYME);
-            roteListeDaten.addContent(taxonyme);
-            List<TaxonNode> childNodes = classification.getChildNodes();
-            java.util.Collections.sort(childNodes, new Comparator<TaxonNode>() {
-
-                @Override
-                public int compare(TaxonNode o1, TaxonNode o2) {
-                    Taxon taxon1 = o1.getTaxon();
-                    Taxon taxon2 = o2.getTaxon();
-                    int id1 = 0;
-                    int id2 = 0;
-
-                    Set<IdentifiableSource> sources1 = taxon1.getSources();
-                    for (IdentifiableSource identifiableSource : sources1) {
-                        if(identifiableSource.getType().equals(OriginalSourceType.Import)
-                                && identifiableSource.getIdNamespace().equals(BfnXmlConstants.EL_TAXONYM+":"
-                        +BfnXmlConstants.EL_WISSNAME+":"+BfnXmlConstants.EL_NANTEIL+":"+BfnXmlConstants.BEREICH_EINDEUTIGER_CODE)){
-                            id1 = Integer.parseInt(identifiableSource.getIdInSource());
-                        }
-                    }
-                    Set<IdentifiableSource> sources2 = taxon2.getSources();
-                    for (IdentifiableSource identifiableSource : sources2) {
-                        if(identifiableSource.getType().equals(OriginalSourceType.Import)
-                                && identifiableSource.getIdNamespace().equals(BfnXmlConstants.EL_TAXONYM+":"
-                                        +BfnXmlConstants.EL_WISSNAME+":"+BfnXmlConstants.EL_NANTEIL+":"+BfnXmlConstants.BEREICH_EINDEUTIGER_CODE)){
-                            id2 = Integer.parseInt(identifiableSource.getIdInSource());
-                        }
-                    }
-                    return id1-id2;
-                }
-            });
-            for (TaxonNode taxonNode : childNodes) {
-                exportTaxon(taxonNode.getTaxon(), taxonyme);
-            }
-        }
-
-	    XMLOutputter outputter = new XMLOutputter();
-	    outputter.setFormat(Format.getPrettyFormat());
-	    try {
-            outputter.output(document, new FileWriter(state.getConfig().getDestination()));
-        } catch (IOException e) {
-            logger.error("Error writing file", e);
         }
 
 	}
+
+    private void exportTaxonomy(Classification classification, Element roteListeDaten) {
+        Element taxonyme = new Element(BfnXmlConstants.EL_TAXONYME);
+        roteListeDaten.addContent(taxonyme);
+        List<TaxonNode> childNodes = classification.getChildNodes();
+        java.util.Collections.sort(childNodes, new Comparator<TaxonNode>() {
+
+            @Override
+            public int compare(TaxonNode o1, TaxonNode o2) {
+                Taxon taxon1 = o1.getTaxon();
+                Taxon taxon2 = o2.getTaxon();
+                int id1 = 0;
+                int id2 = 0;
+
+                Set<IdentifiableSource> sources1 = taxon1.getSources();
+                for (IdentifiableSource identifiableSource : sources1) {
+                    if(identifiableSource.getType().equals(OriginalSourceType.Import)
+                            && identifiableSource.getIdNamespace().equals(BfnXmlConstants.EL_TAXONYM+":"
+                    +BfnXmlConstants.EL_WISSNAME+":"+BfnXmlConstants.EL_NANTEIL+":"+BfnXmlConstants.BEREICH_EINDEUTIGER_CODE)){
+                        id1 = Integer.parseInt(identifiableSource.getIdInSource());
+                    }
+                }
+                Set<IdentifiableSource> sources2 = taxon2.getSources();
+                for (IdentifiableSource identifiableSource : sources2) {
+                    if(identifiableSource.getType().equals(OriginalSourceType.Import)
+                            && identifiableSource.getIdNamespace().equals(BfnXmlConstants.EL_TAXONYM+":"
+                                    +BfnXmlConstants.EL_WISSNAME+":"+BfnXmlConstants.EL_NANTEIL+":"+BfnXmlConstants.BEREICH_EINDEUTIGER_CODE)){
+                        id2 = Integer.parseInt(identifiableSource.getIdInSource());
+                    }
+                }
+                return id1-id2;
+            }
+        });
+        for (TaxonNode taxonNode : childNodes) {
+            exportTaxon(taxonNode.getTaxon(), taxonyme);
+        }
+    }
+
+    private void exportFactualData(Taxon taxon, Element parent) {
+        Element informationen = new Element(BfnXmlConstants.EL_INFORMATIONEN);
+        parent.addContent(informationen);
+        Element bezugsraum = new Element(BfnXmlConstants.EL_BEZUGSRAUM);
+        bezugsraum.setAttribute(new Attribute(BfnXmlConstants.ATT_NAME, BfnXmlConstants.BEZUGRAUM_BUND));
+        informationen.addContent(bezugsraum);
+
+        Set<TaxonDescription> descriptions = taxon.getDescriptions();
+        for (TaxonDescription taxonDescription : descriptions) {
+            //TODO: export only red list features ??
+            Set<DescriptionElementBase> descriptionElements = taxonDescription.getElements();
+            for (DescriptionElementBase descriptionElementBase : descriptionElements) {
+                if(descriptionElementBase.isInstanceOf(CategoricalData.class)){
+                    CategoricalData categoricalData = HibernateProxyHelper.deproxy(descriptionElementBase, CategoricalData.class);
+                    Feature feature = categoricalData.getFeature();
+                    List<StateData> stateData = categoricalData.getStateData();
+                    if(stateData.size()!=1){
+                        logger.error("StateData does not have a size of 1 for feature "+feature.getLabel()+" in taxon "+((NonViralName<?>) taxon.getName()).getNameCache());
+                        continue;
+                    }
+                    exportIwert(bezugsraum, feature, stateData.iterator().next().getState().getLabel());
+                }
+                else if(descriptionElementBase.isInstanceOf(TextData.class)){
+                    TextData textData = HibernateProxyHelper.deproxy(descriptionElementBase, TextData.class);
+                    exportIwert(bezugsraum, textData.getFeature(), textData.getText(Language.getDefaultLanguage()));
+                }
+            }
+        }
+    }
+
+    private void exportIwert(Element parent, Feature feature, String wertString) {
+        Element iwert = new Element(BfnXmlConstants.EL_IWERT);
+        iwert.setAttribute(new Attribute(BfnXmlConstants.ATT_STANDARDNAME, feature.getLabel()));
+        parent.addContent(iwert);
+
+        Element wert = new Element(BfnXmlConstants.EL_WERT);
+        wert.addContent(wertString);
+        iwert.addContent(wert);
+    }
+
+    private void exportFeatures(Element roteListeDaten) {
+        Element eigenschaften = new Element(BfnXmlConstants.EL_EIGENSCHAFTEN);
+        roteListeDaten.addContent(eigenschaften);
+        TermVocabulary<Feature> redListFeaturesVoc = getVocabularyService().load(BfnXmlConstants.vocRLFeatures);
+        Set<Feature> terms = redListFeaturesVoc.getTerms();
+        for (Feature feature : terms) {
+            //export red list features
+            Element eigenschaft = new Element(BfnXmlConstants.EL_EIGENSCHAFT);
+            eigenschaft.setAttribute(new Attribute(BfnXmlConstants.ATT_STANDARDNAME, feature.getLabel()));
+            eigenschaften.addContent(eigenschaft);
+            //export feature states
+            Element listenwerte = new Element(BfnXmlConstants.EL_LISTENWERTE);
+            eigenschaften.addContent(listenwerte);
+            Set<TermVocabulary<State>> supportedCategoricalEnumerations = feature.getSupportedCategoricalEnumerations();
+            for (TermVocabulary<State> termVocabulary : supportedCategoricalEnumerations) {
+                Set<State> featureStates = termVocabulary.getTerms();
+//                    int reihenfolge = 1;
+                for (State featureState : featureStates) {
+                    Element lwert = new Element(BfnXmlConstants.EL_LWERT);
+//                        lwert.setAttribute(new Attribute(BfnXmlConstants.ATT_REIHENFOLGE, String.valueOf(reihenfolge)));
+                    lwert.addContent(featureState.getLabel());
+                    listenwerte.addContent(lwert);
+
+//                        reihenfolge++;
+                }
+            }
+        }
+    }
 
     private void exportTaxon(Taxon taxon, Element parent) {
         Element taxonym = new Element(BfnXmlConstants.EL_TAXONYM);
         parent.addContent(taxonym);
 
-        NonViralName name = HibernateProxyHelper.deproxy(taxon.getName(), NonViralName.class);
+        exportWissName(taxon, taxonym);
+
+        //synonyms
+        Set<Synonym> synonyms = taxon.getSynonyms();
+        if(synonyms.size()>0){
+            Element synonymeElement = new Element(BfnXmlConstants.EL_SYNONYME);
+            taxonym.addContent(synonymeElement);
+            for (Synonym synonym : synonyms) {
+                Element synonymElement = new Element(BfnXmlConstants.EL_SYNONYM);
+                synonymeElement.addContent(synonymElement);
+                exportWissName(synonym, synonymElement);
+            }
+        }
+
+        //common name
+        exportCommonName(taxon, taxonym);
+
+        //factual data
+        exportFactualData(taxon, taxonym);
+
+
+    }
+
+    private void exportWissName(TaxonBase<?> taxon, Element parent) {
+        Element wissName = new Element(BfnXmlConstants.EL_WISSNAME);
+        parent.addContent(wissName);
+
+        NonViralName<?> name = HibernateProxyHelper.deproxy(taxon.getName(), NonViralName.class);
         Rank rank = name.getRank();
         //wissName
-        addNanteil(taxonym, BfnXmlConstants.BEREICH_WISSNAME, taxon.getTitleCache());
-        //epitithon 1,2,3
-        addNanteil(taxonym, BfnXmlConstants.BEREICH_EPITHETON1, name.getGenusOrUninomial());
+        addNanteil(wissName, BfnXmlConstants.BEREICH_WISSNAME, name.getTitleCache());
+        //epithet 1,2,3
+        exportEpithet(taxon, wissName, name, rank);
+
+        //rank
+        addNanteil(wissName, BfnXmlConstants.BEREICH_RANG, BfnXmlTransformer.getRankmap().get(rank));
+
+        //authors
+        addNanteil(wissName, BfnXmlConstants.BEREICH_AUTOREN, name.getAuthorshipCache());
+    }
+
+    private void exportEpithet(TaxonBase<?> taxon, Element wissName, NonViralName<?> name, Rank rank) {
+        addNanteil(wissName, BfnXmlConstants.BEREICH_EPITHETON1, name.getGenusOrUninomial());
         if(rank.isLower(Rank.GENUS())){
             String epitheton2 = name.getInfraGenericEpithet();
             if(epitheton2==null){
                 epitheton2 = name.getSpecificEpithet();
             }
-            addNanteil(taxonym, BfnXmlConstants.BEREICH_EPITHETON2, epitheton2);
+            addNanteil(wissName, BfnXmlConstants.BEREICH_EPITHETON2, epitheton2);
         }
         if(rank.isLower(Rank.SPECIES())){
             String epitheton3 = name.getInfraSpecificEpithet();
             if(epitheton3==null){
                 epitheton3 = name.getSpecificEpithet();
             }
-            addNanteil(taxonym, BfnXmlConstants.BEREICH_EPITHETON3, epitheton3);
+            addNanteil(wissName, BfnXmlConstants.BEREICH_EPITHETON3, epitheton3);
         }
         Set<IdentifiableSource> sources = taxon.getSources();
         for (IdentifiableSource identifiableSource : sources) {
             if(identifiableSource.getType().equals(OriginalSourceType.Import)
                     && identifiableSource.getIdNamespace().equals(BfnXmlConstants.EL_TAXONYM+":"
             +BfnXmlConstants.EL_WISSNAME+":"+BfnXmlConstants.EL_NANTEIL+":"+BfnXmlConstants.BEREICH_EINDEUTIGER_CODE)){
-                addNanteil(taxonym, BfnXmlConstants.BEREICH_EINDEUTIGER_CODE, identifiableSource.getIdInSource());
+                addNanteil(wissName, BfnXmlConstants.BEREICH_EINDEUTIGER_CODE, identifiableSource.getIdInSource());
             }
         }
-        //rank
-        addNanteil(taxonym, BfnXmlConstants.BEREICH_RANG, BfnXmlTransformer.getRankmap().get(rank));
+    }
 
-        //common name
+    private void exportCommonName(Taxon taxon, Element taxonym) {
         Element deutscheNamen = new Element(BfnXmlConstants.EL_DEUTSCHENAMEN);
         taxonym.addContent(deutscheNamen);
 
@@ -193,18 +269,20 @@ public class BfnXmlTaxonNameExport extends BfnXmlExportBase<TaxonNameBase> {
             Set<DescriptionElementBase> elements = taxonDescription.getElements();
             for (DescriptionElementBase descriptionElementBase : elements) {
                 if(descriptionElementBase.isInstanceOf(CommonTaxonName.class)){
-                    Element dName = new Element(BfnXmlConstants.EL_DNAME);
-                    Element trivialName = new Element(BfnXmlConstants.EL_TRIVIALNAME);
-                    deutscheNamen.addContent(dName);
-                    dName.addContent(trivialName);
+                    CommonTaxonName commonName = HibernateProxyHelper.deproxy(descriptionElementBase, CommonTaxonName.class);
+                    if(commonName.getLanguage().equals(Language.GERMAN())){
+                        Element dName = new Element(BfnXmlConstants.EL_DNAME);
+                        Element trivialName = new Element(BfnXmlConstants.EL_TRIVIALNAME);
+                        deutscheNamen.addContent(dName);
+                        dName.addContent(trivialName);
 
-                    dName.setAttribute(new Attribute(BfnXmlConstants.ATT_SEQUENZ, String.valueOf(sequenz)));
-                    trivialName.addContent(((CommonTaxonName)descriptionElementBase).getName());
+                        dName.setAttribute(new Attribute(BfnXmlConstants.ATT_SEQUENZ, String.valueOf(sequenz)));
+                        trivialName.addContent(commonName.getName());
+                    }
                 }
             }
             sequenz++;
         }
-
     }
 
     private void addNanteil(Element element, String bereich, String textContent) {

@@ -64,6 +64,12 @@ public class BfnXmlConstants {
     public static final String EL_GRUPPE = "GRUPPE";
     public static final String EL_SPEZIFISCH = "SPEZIFISCH";
 
+    public static final String EL_SYNONYME = "SYNONYME";
+    public static final String EL_SYNONYM = "SYNONYM";
+    public static final String EL_STATI = "STATI";
+    public static final String EL_STATUS = "STATUS";
+    public static final String ATT_TYP = "typ";
+
     public static final String EL_INFORMATIONEN = "INFORMATIONEN";
     public static final String EL_BEZUGSRAUM = "BEZUGSRAUM";
     public static final String EL_IWERT = "IWERT";
@@ -158,6 +164,8 @@ public class BfnXmlConstants {
     public static final String VOC_AKTUELLE_BESTANDSSTITUATION = "aktuelle Bestandsstituation";
     public static final String VOC_KAT = "Kat. +/-";
     public static final String VOC_RL_KAT = "RL Kat.";
+
+    public static final String BEZUGRAUM_BUND = "Bund";
 
     //redList feature vocabulary
     public static final UUID vocRLFeatures =  UUID.fromString("74091f30-faa0-487b-bd7e-c82eed05d3c9");
@@ -293,4 +301,5 @@ public class BfnXmlConstants {
     public static final UUID stateTermRLSpecialS = UUID.fromString("71fda1f6-a7eb-44a0-aeb8-e7f676096916");
     public static final UUID stateTermRLSpecialE = UUID.fromString("ef335a01-f4f1-4a02-95a2-2254aa457774");
     public static final UUID stateTermRLSpecialD = UUID.fromString("6b267cc5-49b6-4ebd-87ec-aa574e9cbcc5");
+
 }
