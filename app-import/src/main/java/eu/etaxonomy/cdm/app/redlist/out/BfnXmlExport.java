@@ -9,12 +9,15 @@ package eu.etaxonomy.cdm.app.redlist.out;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.util.Calendar;
+import java.util.Locale;
 
 import org.apache.log4j.Logger;
 import org.jdom2.Document;
 import org.jdom2.Element;
 import org.jdom2.output.Format;
 import org.jdom2.output.XMLOutputter;
+import org.springframework.format.datetime.DateFormatter;
 
 import eu.etaxonomy.cdm.app.common.CdmDestinations;
 import eu.etaxonomy.cdm.app.sdd.ViolaExportActivator;
@@ -41,7 +44,7 @@ public class BfnXmlExport {
 		ICdmDataSource sourceDb = CdmDestinations.cdm_test_local_mysql();
 		BfnXmlExportTransformer transformer = new BfnXmlExportTransformer();
 		File destination = new File("/home/pplitzner/Rote Listen 2020/doctronic/export/export.xml");
-        document = createDocument();
+        document = createDocument(sourceDb);
 		BfnXmlExportConfigurator config = BfnXmlExportConfigurator.NewInstance(destination, sourceDb, transformer, document);
 
 
@@ -67,9 +70,14 @@ public class BfnXmlExport {
         }
     }
 
-    private Document createDocument(){
+    private Document createDocument(ICdmDataSource sourceDb){
         Document document = new Document();// create root element
         Element rootElement = new Element(BfnXmlConstants.EL_DEB_EXPORT);
+        rootElement.setAttribute("source", sourceDb.getName());
+        rootElement.setAttribute("debversion", "2.4.1.0");
+        DateFormatter formatter = new DateFormatter();
+//        DateFormatter formatter = new DateFormatter("MM/dd/yyyy");
+        rootElement.setAttribute("timestamp", formatter.print(Calendar.getInstance().getTime(), Locale.getDefault()));
         document.setRootElement(rootElement);
         return document;
     }
