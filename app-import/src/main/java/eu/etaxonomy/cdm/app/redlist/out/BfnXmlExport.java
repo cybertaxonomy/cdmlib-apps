@@ -9,15 +9,15 @@ package eu.etaxonomy.cdm.app.redlist.out;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.util.Calendar;
-import java.util.Locale;
+import java.text.DateFormat;
+import java.util.Date;
 
 import org.apache.log4j.Logger;
+import org.apache.log4j.helpers.ISO8601DateFormat;
 import org.jdom2.Document;
 import org.jdom2.Element;
 import org.jdom2.output.Format;
 import org.jdom2.output.XMLOutputter;
-import org.springframework.format.datetime.DateFormatter;
 
 import eu.etaxonomy.cdm.app.common.CdmDestinations;
 import eu.etaxonomy.cdm.app.sdd.ViolaExportActivator;
@@ -75,9 +75,8 @@ public class BfnXmlExport {
         Element rootElement = new Element(BfnXmlConstants.EL_DEB_EXPORT);
         rootElement.setAttribute("source", sourceDb.getName());
         rootElement.setAttribute("debversion", "2.4.1.0");
-        DateFormatter formatter = new DateFormatter();
-//        DateFormatter formatter = new DateFormatter("MM/dd/yyyy");
-        rootElement.setAttribute("timestamp", formatter.print(Calendar.getInstance().getTime(), Locale.getDefault()));
+        DateFormat format = new ISO8601DateFormat();
+        rootElement.setAttribute("timestamp", format.format(new Date()));
         document.setRootElement(rootElement);
         return document;
     }
