@@ -420,7 +420,7 @@ public class BfnXmlImportTaxonName extends BfnXmlImportBase {
 					String microRefStr = microRef == null ? null : microRef.getTitle();
 					taxon.addImportSource(uniqueID, namespace, state.getCompleteSourceRef(), microRefStr);
 
-					taxon.addIdentifier(taxonId, getIdentiferType(state, BfnXmlConstants.TAX_NR_IDENTIFIER, "taxNr", "TaxNr attribute of Bfn Xml file", "taxNr", null));
+					taxon.addIdentifier(taxonId, getIdentiferType(state, BfnXmlConstants.UUID_TAX_NR_IDENTIFIER_TYPE, "taxNr", "TaxNr attribute of Bfn Xml file", "taxNr", null));
 				} catch (UnknownCdmTypeException e) {
 					success.setValue(false);
 				}

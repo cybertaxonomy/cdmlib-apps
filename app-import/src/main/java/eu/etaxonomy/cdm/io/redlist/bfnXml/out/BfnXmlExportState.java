@@ -10,6 +10,10 @@
 
 package eu.etaxonomy.cdm.io.redlist.bfnXml.out;
 
+import java.util.HashMap;
+import java.util.Map;
+import java.util.UUID;
+
 import org.apache.log4j.Logger;
 
 import eu.etaxonomy.cdm.io.common.XmlExportState;
@@ -25,8 +29,14 @@ public class BfnXmlExportState extends XmlExportState<BfnXmlExportConfigurator>{
 	@SuppressWarnings("unused")
 	private static final Logger logger = Logger.getLogger(BfnXmlExportState.class);
 
+	private Map<String, UUID> taxNrMap = new HashMap<String, UUID>();
+
 	public BfnXmlExportState(BfnXmlExportConfigurator config) {
 		super(config);
 	}
+
+    public Map<String, UUID> getTaxNrMap() {
+        return taxNrMap;
+    }
 
 }

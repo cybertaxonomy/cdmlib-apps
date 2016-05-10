@@ -21,6 +21,7 @@ import org.springframework.stereotype.Component;
 import eu.etaxonomy.cdm.hibernate.HibernateProxyHelper;
 import eu.etaxonomy.cdm.io.redlist.bfnXml.BfnXmlConstants;
 import eu.etaxonomy.cdm.io.redlist.bfnXml.in.BfnXmlTransformer;
+import eu.etaxonomy.cdm.model.common.DefinedTerm;
 import eu.etaxonomy.cdm.model.common.IdentifiableSource;
 import eu.etaxonomy.cdm.model.common.Language;
 import eu.etaxonomy.cdm.model.common.OriginalSourceType;
@@ -76,19 +77,19 @@ public class BfnXmlTaxonNameExport extends BfnXmlExportBase<TaxonNameBase> {
 
             exportFeatures(roteListeDaten);
 
-            exportTaxonomy(classification, roteListeDaten);
+            exportTaxonomy(classification, roteListeDaten, state);
 
         }
 
 	}
 
-    private void exportTaxonomy(Classification classification, Element roteListeDaten) {
+    private void exportTaxonomy(Classification classification, Element roteListeDaten, BfnXmlExportState state) {
         Element taxonyme = new Element(BfnXmlConstants.EL_TAXONYME);
         roteListeDaten.addContent(taxonyme);
         List<TaxonNode> childNodes = classification.getChildNodes();
         java.util.Collections.sort(childNodes, new OriginalSourceComparator());
         for (TaxonNode taxonNode : childNodes) {
-            exportTaxon(taxonNode.getTaxon(), taxonyme);
+            exportTaxon(taxonNode.getTaxon(), taxonyme, state);
         }
     }
 
@@ -163,9 +164,20 @@ public class BfnXmlTaxonNameExport extends BfnXmlExportBase<TaxonNameBase> {
         }
     }
 
-    private void exportTaxon(Taxon taxon, Element parent) {
+    private void exportTaxon(Taxon taxon, Element parent, BfnXmlExportState state) {
         Element taxonym = new Element(BfnXmlConstants.EL_TAXONYM);
         parent.addContent(taxonym);
+
+        DefinedTerm taxNrIdentifierType = HibernateProxyHelper.deproxy(getTermService().load(BfnXmlConstants.UUID_TAX_NR_IDENTIFIER_TYPE), DefinedTerm.class);
+        Set<String> identifiers = taxon.getIdentifiers(taxNrIdentifierType);
+        if(identifiers.size()==1){
+            String taxNr = identifiers.iterator().next();
+            taxonym.setAttribute(BfnXmlConstants.ATT_TAXNR, taxNr);
+            state.getTaxNrMap().put(taxNr, taxon.getUuid());
+        }
+        else{
+            logger.error("Taxon "+taxon.getTitleCache()+" has none or multiple identifiers of type 'taxNr'");
+        }
 
         exportWissName(taxon, taxonym);
 
