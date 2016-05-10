@@ -13,20 +13,18 @@ import org.apache.log4j.Logger;
 
 import eu.etaxonomy.cdm.io.common.CdmExportBase;
 import eu.etaxonomy.cdm.io.common.mapping.out.IExportTransformer;
-import eu.etaxonomy.cdm.model.common.CdmBase;
 
 /**
  *
  * @author pplitzner
  * @date May 3, 2016
  *
- * @param <T>
  */
-public abstract class BfnXmlExportBase<T extends CdmBase> extends CdmExportBase<BfnXmlExportConfigurator, BfnXmlExportState, IExportTransformer> {
+public abstract class BfnXmlExportBase extends CdmExportBase<BfnXmlExportConfigurator, BfnXmlExportState, IExportTransformer> {
 
     private static final long serialVersionUID = 1115122553345412881L;
 
-    private static final Logger logger = Logger.getLogger(BfnXmlExportBase.class);
+    protected static final Logger logger = Logger.getLogger(BfnXmlExportBase.class);
 
 	public BfnXmlExportBase() {
 		super();

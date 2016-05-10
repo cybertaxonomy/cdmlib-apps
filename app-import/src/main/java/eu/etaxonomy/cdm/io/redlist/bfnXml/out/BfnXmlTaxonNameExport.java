@@ -12,7 +12,6 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.Set;
 
-import org.apache.log4j.Logger;
 import org.jdom2.Attribute;
 import org.jdom2.Document;
 import org.jdom2.Element;
@@ -36,7 +35,6 @@ import eu.etaxonomy.cdm.model.description.TaxonDescription;
 import eu.etaxonomy.cdm.model.description.TextData;
 import eu.etaxonomy.cdm.model.name.NonViralName;
 import eu.etaxonomy.cdm.model.name.Rank;
-import eu.etaxonomy.cdm.model.name.TaxonNameBase;
 import eu.etaxonomy.cdm.model.taxon.Classification;
 import eu.etaxonomy.cdm.model.taxon.Synonym;
 import eu.etaxonomy.cdm.model.taxon.Taxon;
@@ -52,11 +50,9 @@ import eu.etaxonomy.cdm.model.taxon.TaxonNode;
  *
  */
 @Component
-public class BfnXmlTaxonNameExport extends BfnXmlExportBase<TaxonNameBase> {
+public class BfnXmlTaxonNameExport extends BfnXmlExportBase {
 
     private static final long serialVersionUID = -931703660108981011L;
-
-    private static final Logger logger = Logger.getLogger(BfnXmlTaxonNameExport.class);
 
 	public BfnXmlTaxonNameExport(){
 		super();
