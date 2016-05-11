@@ -159,11 +159,7 @@ public class BfnXmlImportTaxonName extends BfnXmlImportBase {
 			if(conceptStatusValue.equalsIgnoreCase("<")){
 				taxon2.addTaxonRelation(taxon1, TaxonRelationshipType.INCLUDES(), null, null);
 			}else{
-				try {
-					taxonRelationType = BfnXmlTransformer.concept2TaxonRelation(conceptStatusValue);
-				} catch (UnknownCdmTypeException e) {
-					e.printStackTrace();
-				}
+				taxonRelationType = BfnXmlTransformer.getTaxonRelationForConceptCode(conceptStatusValue);
 				taxon1.addTaxonRelation(taxon2, taxonRelationType , null, null);
 			}
 			if(taxonRelationType != null && taxonRelationType.equals(TaxonRelationshipType.ALL_RELATIONSHIPS())){
@@ -742,11 +738,9 @@ public class BfnXmlImportTaxonName extends BfnXmlImportBase {
  		if (strRank == null){
 			return null;
 		}
-		Rank codeRank = null;
-		try {
-			codeRank = BfnXmlTransformer.rankCode2Rank(strRank);
-		} catch (UnknownCdmTypeException e1) {
-			codeRank = Rank.UNKNOWN_RANK();
+		Rank codeRank = BfnXmlTransformer.getRankForRankCode(strRank);
+		if(codeRank==null){
+		    codeRank = Rank.UNKNOWN_RANK();
 		}
 		//codeRank exists
 		if ( (codeRank != null) && !codeRank.equals(Rank.UNKNOWN_RANK())){

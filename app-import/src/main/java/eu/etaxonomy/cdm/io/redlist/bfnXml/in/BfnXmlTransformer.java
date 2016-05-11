@@ -27,200 +27,114 @@ public final class BfnXmlTransformer {
 	private static final Logger logger = Logger.getLogger(BfnXmlTransformer.class);
 
 
-	private static final BiMap<Rank, String> rankMap = HashBiMap.create();
+	private static final BiMap<String, Rank> rankMap = HashBiMap.create();
 	static {
-	    rankMap.put(Rank.INFRAGENUS(), BfnXmlConstants.RNK_INFRAGEN);
-	    rankMap.put(Rank.SUBGENUS(), BfnXmlConstants.RNK_SUBGEN);
-	    rankMap.put(Rank.GENUS(), BfnXmlConstants.RNK_GEN);
+	    rankMap.put(BfnXmlConstants.RNK_INFRAGEN, Rank.INFRAGENUS());
+	    rankMap.put(BfnXmlConstants.RNK_SUBGEN, Rank.SUBGENUS());
+	    rankMap.put(BfnXmlConstants.RNK_GEN, Rank.GENUS());
 	    //genus subdivision
-	    rankMap.put(Rank.SPECIESAGGREGATE(), BfnXmlConstants.RNK_AGGR);
-	    rankMap.put(Rank.INFRAGENERICTAXON(), BfnXmlConstants.RNK_TAXINFRAGEN);
-	    rankMap.put(Rank.SUBSERIES(), BfnXmlConstants.RNK_SUBSER);
-	    rankMap.put(Rank.SERIES(), BfnXmlConstants.RNK_SER);
-	    rankMap.put(Rank.SUBSECTION_BOTANY(), BfnXmlConstants.RNK_SUBSECT);
-	    rankMap.put(Rank.SECTION_BOTANY(), BfnXmlConstants.RNK_SECT);
+	    rankMap.put(BfnXmlConstants.RNK_AGGR, Rank.SPECIESAGGREGATE());
+	    rankMap.put(BfnXmlConstants.RNK_TAXINFRAGEN, Rank.INFRAGENERICTAXON());
+	    rankMap.put(BfnXmlConstants.RNK_SUBSER, Rank.SUBSERIES());
+	    rankMap.put(BfnXmlConstants.RNK_SER, Rank.SERIES());
+	    rankMap.put(BfnXmlConstants.RNK_SUBSECT, Rank.SUBSECTION_BOTANY());
+	    rankMap.put(BfnXmlConstants.RNK_SECT, Rank.SECTION_BOTANY());
 	    //species group
-	    rankMap.put(Rank.SUBSPECIFICAGGREGATE(), BfnXmlConstants.RNK_SUBSP_AGGR);
-	    rankMap.put(Rank.SUBSPECIES(), BfnXmlConstants.RNK_SSP);
-	    rankMap.put(Rank.SUBSPECIES(), BfnXmlConstants.RNK_SUBSP);
-	    rankMap.put(Rank.SUBSPECIES(), BfnXmlConstants.RNK_SUBSP_DOT);
-	    rankMap.put(Rank.SPECIES(), BfnXmlConstants.RNK_SP);
-	    rankMap.put(Rank.SPECIES(), BfnXmlConstants.RNK_SPEZIES);
+	    rankMap.put(BfnXmlConstants.RNK_SUBSP_AGGR, Rank.SUBSPECIFICAGGREGATE());
+	    rankMap.put(BfnXmlConstants.RNK_SSP, Rank.SUBSPECIES());
+	    rankMap.put(BfnXmlConstants.RNK_SP, Rank.SPECIES());
 	    //below subspecies
-	    rankMap.put(Rank.CANDIDATE(), BfnXmlConstants.RNK_CAND);
-	    rankMap.put(Rank.INFRASPECIFICTAXON(), BfnXmlConstants.RNK_TAXINFRASP);
-	    rankMap.put(Rank.SPECIALFORM(), BfnXmlConstants.RNK_FSP);
-	    rankMap.put(Rank.SUBSUBFORM(), BfnXmlConstants.RNK_SUBSUBFM);
-	    rankMap.put(Rank.SUBFORM(), BfnXmlConstants.RNK_SUBFM);
-	    rankMap.put(Rank.FORM(), BfnXmlConstants.RNK_FM);
-	    rankMap.put(Rank.SUBSUBVARIETY(), BfnXmlConstants.RNK_SUBSUBVAR);
-	    rankMap.put(Rank.SUBVARIETY(), BfnXmlConstants.RNK_SUBVAR);
-	    rankMap.put(Rank.VARIETY(), BfnXmlConstants.RNK_VAR);
-	    rankMap.put(Rank.VARIETY(), BfnXmlConstants.RNK_VAR_DOT);
-	    rankMap.put(Rank.INFRASPECIES(), BfnXmlConstants.RNK_INFRASP);
+	    rankMap.put(BfnXmlConstants.RNK_CAND, Rank.CANDIDATE());
+	    rankMap.put(BfnXmlConstants.RNK_TAXINFRASP, Rank.INFRASPECIFICTAXON());
+	    rankMap.put(BfnXmlConstants.RNK_FSP, Rank.SPECIALFORM());
+	    rankMap.put(BfnXmlConstants.RNK_SUBSUBFM, Rank.SUBSUBFORM());
+	    rankMap.put(BfnXmlConstants.RNK_SUBFM, Rank.SUBFORM());
+	    rankMap.put(BfnXmlConstants.RNK_FM, Rank.FORM());
+	    rankMap.put(BfnXmlConstants.RNK_SUBSUBVAR, Rank.SUBSUBVARIETY());
+	    rankMap.put(BfnXmlConstants.RNK_SUBVAR, Rank.SUBVARIETY());
+	    rankMap.put(BfnXmlConstants.RNK_VAR, Rank.VARIETY());
+	    rankMap.put(BfnXmlConstants.RNK_INFRASP, Rank.INFRASPECIES());
 	    //above superfamily
-	    rankMap.put(Rank.INFRAORDER(), BfnXmlConstants.RNK_INFRAORD);
-	    rankMap.put(Rank.ORDER(), BfnXmlConstants.RNK_ORD);
-	    rankMap.put(Rank.SUPERORDER(), BfnXmlConstants.RNK_SUPERORD);
-	    rankMap.put(Rank.INFRACLASS(), BfnXmlConstants.RNK_INFRACL);
-	    rankMap.put(Rank.SUBCLASS(), BfnXmlConstants.RNK_SUBCL);
-	    rankMap.put(Rank.CLASS(), BfnXmlConstants.RNK_CL);
-	    rankMap.put(Rank.SUPERCLASS(), BfnXmlConstants.RNK_SUPERCL);
-	    rankMap.put(Rank.INFRAPHYLUM(), BfnXmlConstants.RNK_INFRAPHYL_DIV);
-	    rankMap.put(Rank.SUBPHYLUM(), BfnXmlConstants.RNK_SUBPHYL_DIV);
-	    rankMap.put(Rank.PHYLUM(), BfnXmlConstants.RNK_PHYL_DIV);
-	    rankMap.put(Rank.SUPERPHYLUM(), BfnXmlConstants.RNK_SUPERPHYL_DIV);
-	    rankMap.put(Rank.INFRAKINGDOM(), BfnXmlConstants.RNK_INFRAREG);
-	    rankMap.put(Rank.SUBKINGDOM(), BfnXmlConstants.RNK_SUBREG);
-	    rankMap.put(Rank.KINGDOM(), BfnXmlConstants.RNK_REG);
-	    rankMap.put(Rank.SUPERKINGDOM(), BfnXmlConstants.RNK_SUPERREG);
-	    rankMap.put(Rank.DOMAIN(), BfnXmlConstants.RNK_DOM);
-	    rankMap.put(Rank.SUPRAGENERICTAXON(), BfnXmlConstants.RNK_TAXSUPRAGEN);
-	    rankMap.put(Rank.EMPIRE(), BfnXmlConstants.RNK_AUSWERTUNGSGRUPPE);
+	    rankMap.put(BfnXmlConstants.RNK_INFRAORD, Rank.INFRAORDER());
+	    rankMap.put(BfnXmlConstants.RNK_ORD, Rank.ORDER());
+	    rankMap.put(BfnXmlConstants.RNK_SUPERORD, Rank.SUPERORDER());
+	    rankMap.put(BfnXmlConstants.RNK_INFRACL, Rank.INFRACLASS());
+	    rankMap.put(BfnXmlConstants.RNK_SUBCL, Rank.SUBCLASS());
+	    rankMap.put(BfnXmlConstants.RNK_CL, Rank.CLASS());
+	    rankMap.put(BfnXmlConstants.RNK_SUPERCL, Rank.SUPERCLASS());
+	    rankMap.put(BfnXmlConstants.RNK_INFRAPHYL_DIV, Rank.INFRAPHYLUM());
+	    rankMap.put(BfnXmlConstants.RNK_SUBPHYL_DIV, Rank.SUBPHYLUM());
+	    rankMap.put(BfnXmlConstants.RNK_PHYL_DIV, Rank.PHYLUM());
+	    rankMap.put(BfnXmlConstants.RNK_SUPERPHYL_DIV, Rank.SUPERPHYLUM());
+	    rankMap.put(BfnXmlConstants.RNK_INFRAREG, Rank.INFRAKINGDOM());
+	    rankMap.put(BfnXmlConstants.RNK_SUBREG, Rank.SUBKINGDOM());
+	    rankMap.put(BfnXmlConstants.RNK_REG, Rank.KINGDOM());
+	    rankMap.put(BfnXmlConstants.RNK_SUPERREG, Rank.SUPERKINGDOM());
+	    rankMap.put(BfnXmlConstants.RNK_DOM, Rank.DOMAIN());
+	    rankMap.put(BfnXmlConstants.RNK_TAXSUPRAGEN, Rank.SUPRAGENERICTAXON());
+	    rankMap.put(BfnXmlConstants.RNK_AUSWERTUNGSGRUPPE, Rank.EMPIRE());
 	    //family group
-	    rankMap.put(Rank.FAMILY(), BfnXmlConstants.RNK_INFRAFAM);
-	    rankMap.put(Rank.FAMILY(), BfnXmlConstants.RNK_SUBFAM);
-	    rankMap.put(Rank.FAMILY(), BfnXmlConstants.RNK_FAM);
-	    rankMap.put(Rank.FAMILY(), BfnXmlConstants.RNK_SUPERFAM);
-	    //family subdivision
-	    rankMap.put(Rank.FAMILY(), BfnXmlConstants.RNK_INTRATRIB);
-	    rankMap.put(Rank.FAMILY(), BfnXmlConstants.RNK_SUBTRIB);
-	    rankMap.put(Rank.FAMILY(), BfnXmlConstants.RNK_TRIB);
-	    rankMap.put(Rank.FAMILY(), BfnXmlConstants.RNK_SUPERTRIB);
+	    rankMap.put(BfnXmlConstants.RNK_INFRAFAM, Rank.FAMILY());
 	}
 
-    public static BiMap<Rank, String> getRankmap() {
-        return rankMap;
+    public static String getRankCodeForRank(Rank rank) {
+        return rankMap.inverse().get(rank);
     }
 
-    private static final BiMap<TaxonRelationshipType, String> relationshipTypeMap = HashBiMap.create();
+    /** Creates an cdm-Rank by the tcs rank
+     */
+    public static Rank getRankForRankCode (String rankCode){
+        if (rankCode == null){
+            return null;
+        }
+        //handle ambiguous key
+        else if (rankCode.equals(BfnXmlConstants.RNK_AGG)){return Rank.SPECIESAGGREGATE();
+        }else if (rankCode.equals(BfnXmlConstants.RNK_SUBSP)){return Rank.SUBSPECIES();
+        }else if (rankCode.equals(BfnXmlConstants.RNK_SUBSP_DOT)){return Rank.SUBSPECIES();
+        }else if (rankCode.equals(BfnXmlConstants.RNK_INFRAGEN)){return Rank.INFRAGENUS();
+        }else if (rankCode.equals(BfnXmlConstants.RNK_SPEZIES)){return Rank.SPECIES();
+        }else if (rankCode.equals(BfnXmlConstants.RNK_F)){return Rank.FORM();
+        }else if (rankCode.equals(BfnXmlConstants.RNK_VAR_DOT)){return Rank.VARIETY();
+        }else if (rankCode.equals(BfnXmlConstants.RNK_SUBFAM)){return Rank.FAMILY();
+        }else if (rankCode.equals(BfnXmlConstants.RNK_FAM)){return Rank.FAMILY();
+        }else if (rankCode.equals(BfnXmlConstants.RNK_SUPERFAM)){return Rank.FAMILY();
+        }else if (rankCode.equals(BfnXmlConstants.RNK_INTRATRIB)){return Rank.FAMILY();
+        }else if (rankCode.equals(BfnXmlConstants.RNK_SUBTRIB)){return Rank.FAMILY();
+        }else if (rankCode.equals(BfnXmlConstants.RNK_TRIB)){return Rank.FAMILY();
+        }else if (rankCode.equals(BfnXmlConstants.RNK_SUPERTRIB)){return Rank.FAMILY();
+        }else {return rankMap.get(rankCode);
+        }
+    }
+
+    private static final BiMap<String, TaxonRelationshipType> relationshipTypeMap = HashBiMap.create();
     static {
-        relationshipTypeMap.put(TaxonRelationshipType.CONGRUENT_TO(), "!=");
-        relationshipTypeMap.put(TaxonRelationshipType.CONGRUENT_OR_INCLUDES(), "!=,>");
-        relationshipTypeMap.put(TaxonRelationshipType.CONGRUENT_OR_INCLUDED_OR_INCLUDES(), "!=,<");
-        relationshipTypeMap.put(TaxonRelationshipType.INCLUDES(), ">");
-        relationshipTypeMap.put(TaxonRelationshipType.INCLUDES_OR_OVERLAPS(), ">,><");
-        relationshipTypeMap.put(TaxonRelationshipType.INCLUDED_OR_INCLUDES_OR_OVERLAPS(), ">,><");//TODO: should be Included In Or Overlaps
-        relationshipTypeMap.put(TaxonRelationshipType.OVERLAPS(), "><");
-        relationshipTypeMap.put(TaxonRelationshipType.CONGRUENT_OR_INCLUDES_OR_OVERLAPS(), "~");//TODO Included in not here
-        relationshipTypeMap.put(TaxonRelationshipType.ALL_RELATIONSHIPS(), "?");
-        relationshipTypeMap.put(TaxonRelationshipType.EXCLUDES(), "/=");
-        relationshipTypeMap.put(TaxonRelationshipType.CONGRUENT_TO(), "!=");
+        relationshipTypeMap.put("!=", TaxonRelationshipType.CONGRUENT_TO());
+        relationshipTypeMap.put("!=,>", TaxonRelationshipType.CONGRUENT_OR_INCLUDES());
+        relationshipTypeMap.put("!=,<", TaxonRelationshipType.CONGRUENT_OR_INCLUDED_OR_INCLUDES());
+        relationshipTypeMap.put(">", TaxonRelationshipType.INCLUDES());
+        relationshipTypeMap.put(">,><", TaxonRelationshipType.INCLUDES_OR_OVERLAPS());
+        relationshipTypeMap.put("><", TaxonRelationshipType.OVERLAPS());
+        relationshipTypeMap.put("~", TaxonRelationshipType.CONGRUENT_OR_INCLUDES_OR_OVERLAPS());//TODO Included in not here
+        relationshipTypeMap.put("?", TaxonRelationshipType.ALL_RELATIONSHIPS());
+        relationshipTypeMap.put("/=", TaxonRelationshipType.EXCLUDES());
     }
 
-    public static BiMap<TaxonRelationshipType, String> getRelationshipTypeMap() {
-        return relationshipTypeMap;
+    public static String getConceptCodeForTaxonRelation(TaxonRelationshipType type) {
+        return relationshipTypeMap.inverse().get(type);
     }
 
-
-	public static TaxonRelationshipType concept2TaxonRelation(String conceptStatus) throws UnknownCdmTypeException{
-		if(conceptStatus == null) {
+	public static TaxonRelationshipType getTaxonRelationForConceptCode(String conceptCode){
+		if(conceptCode == null) {
 			return null;
-		}else if(conceptStatus.equalsIgnoreCase("!=")){
+		}
+        //handle ambiguous key
+		else if(conceptCode.equalsIgnoreCase("=!")){
 			return TaxonRelationshipType.CONGRUENT_TO();
-		}else if(conceptStatus.equalsIgnoreCase("=!")){
-			return TaxonRelationshipType.CONGRUENT_TO();
-		}else if(conceptStatus.equalsIgnoreCase("!=,>")){
-			return TaxonRelationshipType.CONGRUENT_OR_INCLUDES();
-		}else if(conceptStatus.equalsIgnoreCase("!=,<")){
-			return TaxonRelationshipType.CONGRUENT_OR_INCLUDED_OR_INCLUDES();
-		}else if(conceptStatus.equalsIgnoreCase(">")){
-			return TaxonRelationshipType.INCLUDES();
-		}else if(conceptStatus.equalsIgnoreCase(">,><")){
-			return TaxonRelationshipType.INCLUDES_OR_OVERLAPS();
-//		}else if(conceptStatus.equalsIgnoreCase("<")){//TODO: should be just Included In
-//			return TaxonRelationshipType.INCLUDED_OR_INCLUDES();
-		}else if(conceptStatus.equalsIgnoreCase(">,><")){//TODO: should be Included In Or Overlaps
-			return TaxonRelationshipType.INCLUDED_OR_INCLUDES_OR_OVERLAPS();
-		}else if(conceptStatus.equalsIgnoreCase("><")){
-			return TaxonRelationshipType.OVERLAPS();
-		}else if(conceptStatus.equalsIgnoreCase("~")){//TODO Included in not here
-			return TaxonRelationshipType.CONGRUENT_OR_INCLUDES_OR_OVERLAPS();
-		}else if(conceptStatus.equalsIgnoreCase("?")){
-			return TaxonRelationshipType.ALL_RELATIONSHIPS();
-		}else if(conceptStatus.equalsIgnoreCase("/=")){
-			return TaxonRelationshipType.EXCLUDES();
-		}else if(conceptStatus.equalsIgnoreCase("\\")){
+		}else if(conceptCode.equalsIgnoreCase("\\")){
 			return TaxonRelationshipType.EXCLUDES();
 		}
 		else{
-			throw new UnknownCdmTypeException("Unknown concept relation status " + conceptStatus);
-		}
-	}
-
-
-	/** Creates an cdm-Rank by the tcs rank
-	 */
-	public static Rank rankCode2Rank (String strRank) throws UnknownCdmTypeException{
-		if (strRank == null){return null;
-		//genus group
-		}else if (strRank.equals(BfnXmlConstants.RNK_INFRAGEN)){return Rank.INFRAGENUS();
-		}else if (strRank.equals(BfnXmlConstants.RNK_SUBGEN)){return Rank.SUBGENUS();
-		}else if (strRank.equals(BfnXmlConstants.RNK_GEN)){return Rank.GENUS();
-		//genus subdivision
-		//TODO
-		}else if (strRank.equals(BfnXmlConstants.RNK_AGGR)){return Rank.SPECIESAGGREGATE();
-		}else if (strRank.equals(BfnXmlConstants.RNK_AGG)){return Rank.SPECIESAGGREGATE();
-		}else if (strRank.equals(BfnXmlConstants.RNK_TAXINFRAGEN)){return Rank.INFRAGENERICTAXON();
-		}else if (strRank.equals(BfnXmlConstants.RNK_SUBSER)){return Rank.SUBSERIES();
-		}else if (strRank.equals(BfnXmlConstants.RNK_SER)){return Rank.SERIES();
-		}else if (strRank.equals(BfnXmlConstants.RNK_SUBSECT)){return Rank.SUBSECTION_BOTANY();
-		}else if (strRank.equals(BfnXmlConstants.RNK_SECT)){return Rank.SECTION_BOTANY();
-		//species group
-		}else if (strRank.equals(BfnXmlConstants.RNK_SUBSP_AGGR)){return Rank.SUBSPECIFICAGGREGATE();
-		}else if (strRank.equals(BfnXmlConstants.RNK_SSP)){return Rank.SUBSPECIES();
-		}else if (strRank.equals(BfnXmlConstants.RNK_SUBSP)){return Rank.SUBSPECIES();
-		}else if (strRank.equals(BfnXmlConstants.RNK_SUBSP_DOT)){return Rank.SUBSPECIES();
-		}else if (strRank.equals(BfnXmlConstants.RNK_SP)){return Rank.SPECIES();
-		}else if (strRank.equals(BfnXmlConstants.RNK_SPEZIES)){return Rank.SPECIES();
-		//below subspecies
-		}else if (strRank.equals(BfnXmlConstants.RNK_CAND)){return Rank.CANDIDATE();
-		}else if (strRank.equals(BfnXmlConstants.RNK_TAXINFRASP)){return Rank.INFRASPECIFICTAXON();
-		}else if (strRank.equals(BfnXmlConstants.RNK_FSP)){return Rank.SPECIALFORM();
-		}else if (strRank.equals(BfnXmlConstants.RNK_SUBSUBFM)){return Rank.SUBSUBFORM();
-		}else if (strRank.equals(BfnXmlConstants.RNK_SUBFM)){return Rank.SUBFORM();
-		}else if (strRank.equals(BfnXmlConstants.RNK_FM)){return Rank.FORM();
-		}else if (strRank.equals(BfnXmlConstants.RNK_F)){return Rank.FORM();
-		}else if (strRank.equals(BfnXmlConstants.RNK_SUBSUBVAR)){return Rank.SUBSUBVARIETY();
-		}else if (strRank.equals(BfnXmlConstants.RNK_SUBVAR)){return Rank.SUBVARIETY();
-		}else if (strRank.equals(BfnXmlConstants.RNK_VAR)){return Rank.VARIETY();
-		}else if (strRank.equals(BfnXmlConstants.RNK_VAR_DOT)){return Rank.VARIETY();
-		//TODO -> see documentation, Bacteria status
-//		}else if (strRank.equals("pv")){return Rank;
-//		}else if (strRank.equals("bv")){return Rank.;
-		}else if (strRank.equals(BfnXmlConstants.RNK_INFRASP)){return Rank.INFRASPECIES();
-		//above superfamily
-		}else if (strRank.equals(BfnXmlConstants.RNK_INFRAORD)){return Rank.INFRAORDER();
-		}else if (strRank.equals(BfnXmlConstants.RNK_ORD)){return Rank.ORDER();
-		}else if (strRank.equals(BfnXmlConstants.RNK_SUPERORD)){return Rank.SUPERORDER();
-		}else if (strRank.equals(BfnXmlConstants.RNK_INFRACL)){return Rank.INFRACLASS();
-		}else if (strRank.equals(BfnXmlConstants.RNK_SUBCL)){return Rank.SUBCLASS();
-		}else if (strRank.equals(BfnXmlConstants.RNK_CL)){return Rank.CLASS();
-		}else if (strRank.equals(BfnXmlConstants.RNK_SUPERCL)){return Rank.SUPERCLASS();
-		}else if (strRank.equals(BfnXmlConstants.RNK_INFRAPHYL_DIV)){return Rank.INFRAPHYLUM();
-		}else if (strRank.equals(BfnXmlConstants.RNK_SUBPHYL_DIV)){return Rank.SUBPHYLUM();
-		}else if (strRank.equals(BfnXmlConstants.RNK_PHYL_DIV)){return Rank.PHYLUM();
-		}else if (strRank.equals(BfnXmlConstants.RNK_SUPERPHYL_DIV)){return Rank.SUPERPHYLUM();
-		}else if (strRank.equals(BfnXmlConstants.RNK_INFRAREG)){return Rank.INFRAKINGDOM();
-		}else if (strRank.equals(BfnXmlConstants.RNK_SUBREG)){return Rank.SUBKINGDOM();
-		}else if (strRank.equals(BfnXmlConstants.RNK_REG)){return Rank.KINGDOM();
-		}else if (strRank.equals(BfnXmlConstants.RNK_SUPERREG)){return Rank.SUPERKINGDOM();
-		}else if (strRank.equals(BfnXmlConstants.RNK_DOM)){return Rank.DOMAIN();
-		}else if (strRank.equals(BfnXmlConstants.RNK_TAXSUPRAGEN)){return Rank.SUPRAGENERICTAXON();
-		}else if (strRank.equals(BfnXmlConstants.RNK_AUSWERTUNGSGRUPPE)){return Rank.EMPIRE();
-		//family group
-		}else if (strRank.equals(BfnXmlConstants.RNK_INFRAFAM)){return Rank.FAMILY();
-		}else if (strRank.equals(BfnXmlConstants.RNK_SUBFAM)){return Rank.FAMILY();
-		}else if (strRank.equals(BfnXmlConstants.RNK_FAM)){return Rank.FAMILY();
-		}else if (strRank.equals(BfnXmlConstants.RNK_SUPERFAM)){return Rank.FAMILY();
-		//family subdivision
-		}else if (strRank.equals(BfnXmlConstants.RNK_INTRATRIB)){return Rank.FAMILY();
-		}else if (strRank.equals(BfnXmlConstants.RNK_SUBTRIB)){return Rank.FAMILY();
-		}else if (strRank.equals(BfnXmlConstants.RNK_TRIB)){return Rank.FAMILY();
-		}else if (strRank.equals(BfnXmlConstants.RNK_SUPERTRIB)){return Rank.FAMILY();
-		}
-		else {
-			throw new UnknownCdmTypeException("Unknown Rank " + strRank);
+			return relationshipTypeMap.get(conceptCode);
 		}
 	}
 

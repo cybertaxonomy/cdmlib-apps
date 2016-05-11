@@ -199,7 +199,7 @@ public class BfnXmlTaxonNameExport extends BfnXmlExportBase {
         exportEpithet(taxon, wissName, name, rank);
 
         //rank
-        addNanteil(wissName, BfnXmlConstants.BEREICH_RANG, BfnXmlTransformer.getRankmap().get(rank));
+        addNanteil(wissName, BfnXmlConstants.BEREICH_RANG, BfnXmlTransformer.getRankCodeForRank(rank));
 
         //authors
         addNanteil(wissName, BfnXmlConstants.BEREICH_AUTOREN, name.getAuthorshipCache());
