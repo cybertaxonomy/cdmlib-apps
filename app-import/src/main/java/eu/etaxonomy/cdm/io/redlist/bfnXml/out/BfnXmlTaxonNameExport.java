@@ -109,24 +109,14 @@ public class BfnXmlTaxonNameExport extends BfnXmlExportBase {
                         logger.error("StateData does not have a size of 1 for feature "+feature.getLabel()+" in taxon "+taxon.getTitleCache());
                         continue;
                     }
-                    exportIwert(bezugsraum, feature, stateData.iterator().next().getState().getLabel());
+                    addIwert(bezugsraum, feature.getLabel(), stateData.iterator().next().getState().getLabel());
                 }
                 else if(descriptionElementBase.isInstanceOf(TextData.class)){
                     TextData textData = HibernateProxyHelper.deproxy(descriptionElementBase, TextData.class);
-                    exportIwert(bezugsraum, textData.getFeature(), textData.getLanguageText(Language.GERMAN()).getText());
+                    addIwert(bezugsraum, textData.getFeature().getLabel(), textData.getLanguageText(Language.GERMAN()).getText());
                 }
             }
         }
-    }
-
-    private void exportIwert(Element parent, Feature feature, String wertString) {
-        Element iwert = new Element(BfnXmlConstants.EL_IWERT);
-        iwert.setAttribute(new Attribute(BfnXmlConstants.ATT_STANDARDNAME, feature.getLabel()));
-        parent.addContent(iwert);
-
-        Element wert = new Element(BfnXmlConstants.EL_WERT);
-        wert.addContent(wertString);
-        iwert.addContent(wert);
     }
 
     private void exportFeatures(Element roteListeDaten) {
@@ -169,7 +159,6 @@ public class BfnXmlTaxonNameExport extends BfnXmlExportBase {
         if(identifiers.size()==1){
             String taxNr = identifiers.iterator().next();
             taxonym.setAttribute(BfnXmlConstants.ATT_TAXNR, taxNr);
-            state.getTaxNrMap().put(taxNr, taxon.getUuid());
         }
         else{
             logger.error("Taxon "+taxon.getTitleCache()+" has none or multiple identifiers of type 'taxNr'");

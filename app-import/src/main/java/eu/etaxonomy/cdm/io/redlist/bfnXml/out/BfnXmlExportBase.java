@@ -10,9 +10,12 @@
 package eu.etaxonomy.cdm.io.redlist.bfnXml.out;
 
 import org.apache.log4j.Logger;
+import org.jdom2.Attribute;
+import org.jdom2.Element;
 
 import eu.etaxonomy.cdm.io.common.CdmExportBase;
 import eu.etaxonomy.cdm.io.common.mapping.out.IExportTransformer;
+import eu.etaxonomy.cdm.io.redlist.bfnXml.BfnXmlConstants;
 
 /**
  *
@@ -29,4 +32,14 @@ public abstract class BfnXmlExportBase extends CdmExportBase<BfnXmlExportConfigu
 	public BfnXmlExportBase() {
 		super();
 	}
+
+    protected void addIwert(Element parent, String standardNameValue, String wertString) {
+        Element iwert = new Element(BfnXmlConstants.EL_IWERT);
+        iwert.setAttribute(new Attribute(BfnXmlConstants.ATT_STANDARDNAME, standardNameValue));
+        parent.addContent(iwert);
+    
+        Element wert = new Element(BfnXmlConstants.EL_WERT);
+        wert.addContent(wertString);
+        iwert.addContent(wert);
+    }
 }

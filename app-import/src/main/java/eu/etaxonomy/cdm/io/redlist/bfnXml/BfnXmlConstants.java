@@ -52,6 +52,7 @@ public class BfnXmlConstants {
     public static final String EL_TAXONYME = "TAXONYME";
     public static final String EL_TAXONYM = "TAXONYM";
     public static final String ATT_TAXNR = "taxNr";
+    public static final String ATT_QUELLE = "quelle";
 
     public static final String EL_WISSNAME = "WISSNAME";
     public static final String EL_NANTEIL = "NANTEIL";
@@ -77,6 +78,8 @@ public class BfnXmlConstants {
 
     public static final String EL_KONZEPTBEZIEHUNGEN = "KONZEPTBEZIEHUNGEN";
     public static final String EL_KONZEPTBEZIEHUNG = "KONZEPTBEZIEHUNG";
+    public static final String EL_TAXONYM1 = "TAXONYM1";
+    public static final String EL_TAXONYM2 = "TAXONYM2";
 
 
     public static final String BEREICH_WISSNAME = "wissName";
@@ -169,7 +172,7 @@ public class BfnXmlConstants {
 
     //redList feature vocabulary
     public static final UUID vocRLFeatures =  UUID.fromString("74091f30-faa0-487b-bd7e-c82eed05d3c9");
-   
+
     public static final UUID UUID_TAX_NR_IDENTIFIER_TYPE =  UUID.fromString("7d12de50-0db7-47b3-bb8e-703ad1d54fbc");
 
     //redList state Vocabularies

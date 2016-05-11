@@ -26,6 +26,7 @@ public final class BfnXmlTransformer {
     @SuppressWarnings("unused")
 	private static final Logger logger = Logger.getLogger(BfnXmlTransformer.class);
 
+
 	private static final BiMap<Rank, String> rankMap = HashBiMap.create();
 	static {
 	    rankMap.put(Rank.INFRAGENUS(), BfnXmlConstants.RNK_INFRAGEN);
@@ -90,6 +91,25 @@ public final class BfnXmlTransformer {
 
     public static BiMap<Rank, String> getRankmap() {
         return rankMap;
+    }
+
+    private static final BiMap<TaxonRelationshipType, String> relationshipTypeMap = HashBiMap.create();
+    static {
+        relationshipTypeMap.put(TaxonRelationshipType.CONGRUENT_TO(), "!=");
+        relationshipTypeMap.put(TaxonRelationshipType.CONGRUENT_OR_INCLUDES(), "!=,>");
+        relationshipTypeMap.put(TaxonRelationshipType.CONGRUENT_OR_INCLUDED_OR_INCLUDES(), "!=,<");
+        relationshipTypeMap.put(TaxonRelationshipType.INCLUDES(), ">");
+        relationshipTypeMap.put(TaxonRelationshipType.INCLUDES_OR_OVERLAPS(), ">,><");
+        relationshipTypeMap.put(TaxonRelationshipType.INCLUDED_OR_INCLUDES_OR_OVERLAPS(), ">,><");//TODO: should be Included In Or Overlaps
+        relationshipTypeMap.put(TaxonRelationshipType.OVERLAPS(), "><");
+        relationshipTypeMap.put(TaxonRelationshipType.CONGRUENT_OR_INCLUDES_OR_OVERLAPS(), "~");//TODO Included in not here
+        relationshipTypeMap.put(TaxonRelationshipType.ALL_RELATIONSHIPS(), "?");
+        relationshipTypeMap.put(TaxonRelationshipType.EXCLUDES(), "/=");
+        relationshipTypeMap.put(TaxonRelationshipType.CONGRUENT_TO(), "!=");
+    }
+
+    public static BiMap<TaxonRelationshipType, String> getRelationshipTypeMap() {
+        return relationshipTypeMap;
     }
 
 
