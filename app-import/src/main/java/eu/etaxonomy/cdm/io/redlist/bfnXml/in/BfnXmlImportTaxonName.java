@@ -287,15 +287,7 @@ public class BfnXmlImportTaxonName extends BfnXmlImportBase {
 	@SuppressWarnings("rawtypes")
 	private boolean createOrUpdateClassification(BfnXmlImportConfigurator config, ITaxonService taxonService, Map<UUID, TaxonBase> savedTaxonMap, Element currentElement, BfnXmlImportState state) {
 		boolean isNewClassification = true;
-		String classificationName = state.getFirstClassificationName();
-		if(config.isFillSecondList()){
-			classificationName = state.getSecondClassificationName();
-		}
-//		if(classificationName == null){
-//			classificationName = config.getClassificationName();
-//		}
-		//TODO make classification name dynamically depending on its value in the XML.
-		Classification classification = Classification.NewInstance(classificationName+" "+currentElement.getAttributeValue("inhalt"), state.getCompleteSourceRef());
+		Classification classification = Classification.NewInstance(currentElement.getAttributeValue("inhalt"), state.getCompleteSourceRef());
 		//TODO do we really want toString() or titleCache here?
 		String microRef = state.getCurrentMicroRef() == null ? null : state.getCurrentMicroRef().toString();
 		classification.addImportSource(Integer.toString(classification.getId()), classification.getTitleCache(), state.getCompleteSourceRef(), microRef);
