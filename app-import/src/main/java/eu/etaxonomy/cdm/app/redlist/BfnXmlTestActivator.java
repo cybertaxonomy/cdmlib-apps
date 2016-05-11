@@ -33,15 +33,15 @@ public class BfnXmlTestActivator {
 	private static final Logger logger = Logger.getLogger(BfnXmlTestActivator.class);
 
 	//database validation status (create, update, validate ...)
-	static DbSchemaValidation schemaValidation = DbSchemaValidation.VALIDATE;
+	static DbSchemaValidation schemaValidation = DbSchemaValidation.CREATE;
 //	static final ICdmDataSource cdmDestination = CdmDestinations.cdm_redlist_plant_localhost();
 //	static final ICdmDataSource cdmDestination = CdmDestinations.localH2();
-	static final ICdmDataSource cdmDestination = CdmDestinations.cdm_redlist_animalia_localhost();
+	static final ICdmDataSource cdmDestination = CdmDestinations.cdm_test_local_mysql();
 //	static final ICdmDataSource cdmDestination = CdmDestinations.cdm_redlist_animalia_production();
 
 
 //	private static final String strSource = "/eu/etaxonomy/cdm/io/bfnXml/";
-	private static final String sourceUriBase = "file:////BGBM-PESIHPC/RoteListen/";
+	private static final String sourceUriBase = "file:///home/pplitzner/Rote%20Listen%202020/doctronic/";
 
 	//nom Code
 	private static final NomenclaturalCode nomenclaturalCode = NomenclaturalCode.ICZN;
@@ -78,7 +78,7 @@ public class BfnXmlTestActivator {
 			BfnXmlImportConfigurator bfnImportConfigurator = BfnXmlImportConfigurator.NewInstance(source,  destination);
 
 			//if xmllist has two lists
-			bfnImportConfigurator.setHasSecondList(false);
+			bfnImportConfigurator.setHasSecondList(true);
 			bfnImportConfigurator.setNomenclaturalCode(nomenclaturalCode);
 			bfnImportConfigurator.setDoMetaData(doMetaData);
 			bfnImportConfigurator.setDoTaxonNames(doTaxonNames);

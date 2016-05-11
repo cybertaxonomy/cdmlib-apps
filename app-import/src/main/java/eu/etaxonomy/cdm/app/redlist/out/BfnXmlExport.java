@@ -43,7 +43,7 @@ public class BfnXmlExport {
 
 		ICdmDataSource sourceDb = CdmDestinations.cdm_test_local_mysql();
 		BfnXmlExportTransformer transformer = new BfnXmlExportTransformer();
-		File destination = new File("/home/pplitzner/Rote Listen 2020/doctronic/export/export.xml");
+		File destination = new File("/home/pplitzner/Rote Listen 2020/doctronic/export.xml");
         document = createDocument(sourceDb);
 		BfnXmlExportConfigurator config = BfnXmlExportConfigurator.NewInstance(destination, sourceDb, transformer, document);
 
