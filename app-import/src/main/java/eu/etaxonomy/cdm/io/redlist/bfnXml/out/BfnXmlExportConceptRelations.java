@@ -18,6 +18,7 @@ import org.springframework.stereotype.Component;
 
 import eu.etaxonomy.cdm.hibernate.HibernateProxyHelper;
 import eu.etaxonomy.cdm.io.redlist.bfnXml.BfnXmlConstants;
+import eu.etaxonomy.cdm.io.redlist.bfnXml.in.BfnXmlTransformer;
 import eu.etaxonomy.cdm.model.common.DefinedTerm;
 import eu.etaxonomy.cdm.model.taxon.Classification;
 import eu.etaxonomy.cdm.model.taxon.Taxon;
@@ -62,7 +63,7 @@ public class BfnXmlExportConceptRelations extends BfnXmlExportBase {
                     if(!state.getKnownConceptRelations().contains(uuid)) {
                         if(konzeptbeziehungen==null){
                             konzeptbeziehungen = new Element(BfnXmlConstants.EL_KONZEPTBEZIEHUNGEN);
-                            document.addContent(konzeptbeziehungen);
+                            document.getRootElement().addContent(konzeptbeziehungen);
                         }
                         Element konzeptbeziehung = new Element(BfnXmlConstants.EL_KONZEPTBEZIEHUNG);
                         konzeptbeziehungen.addContent(konzeptbeziehung);
@@ -82,7 +83,10 @@ public class BfnXmlExportConceptRelations extends BfnXmlExportBase {
                         addConceptTaxonym(taxNrIdentifierType, taxonym2, toTaxon);
 
                         //relation type
-
+                        Element konzeptSynonymStatus = new Element(BfnXmlConstants.EL_STATUS);
+                        konzeptbeziehung.addContent(konzeptSynonymStatus);
+                        konzeptSynonymStatus.setAttribute(BfnXmlConstants.ATT_STANDARDNAME, BfnXmlConstants.ATT_STATUS_KONZEPTSYNONYM_STATUS);
+                        konzeptSynonymStatus.addContent(BfnXmlTransformer.getConceptCodeForTaxonRelation(taxonRelationship.getType()));
                     }
                 }
             }
@@ -96,8 +100,8 @@ public class BfnXmlExportConceptRelations extends BfnXmlExportBase {
             logger.error(taxon+" has more than one taxon node. First one is used");
         }
         Classification classification = taxon.getTaxonNodes().iterator().next().getClassification();
-        taxonym.setAttribute(BfnXmlConstants.ATT_QUELLE, classification.getTitleCache());
         taxonym.setAttribute(BfnXmlConstants.ATT_TAXNR, taxNr);
+        taxonym.setAttribute(BfnXmlConstants.ATT_QUELLE, classification.getTitleCache());
         addIwert(taxonym, BfnXmlConstants.ATT_NAME, taxon.getName().getTitleCache());
     }
 

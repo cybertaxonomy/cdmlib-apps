@@ -13,6 +13,7 @@ import java.io.File;
 
 import org.apache.log4j.Logger;
 import org.jdom2.Document;
+
 import eu.etaxonomy.cdm.database.ICdmDataSource;
 import eu.etaxonomy.cdm.io.common.XmlExportConfiguratorBase;
 import eu.etaxonomy.cdm.io.common.mapping.out.IExportTransformer;
@@ -44,7 +45,8 @@ public class BfnXmlExportConfigurator extends XmlExportConfiguratorBase<BfnXmlEx
 	@Override
     protected void makeIoClassList(){
 		ioClassList = new Class[]{
-				BfnXmlTaxonNameExport.class
+				BfnXmlTaxonNameExport.class,
+				BfnXmlExportConceptRelations.class
 		};
 
 	}

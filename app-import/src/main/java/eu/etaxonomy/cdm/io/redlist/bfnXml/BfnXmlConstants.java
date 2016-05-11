@@ -69,6 +69,7 @@ public class BfnXmlConstants {
     public static final String EL_SYNONYM = "SYNONYM";
     public static final String EL_STATI = "STATI";
     public static final String EL_STATUS = "STATUS";
+    public static final String ATT_STATUS_KONZEPTSYNONYM_STATUS = "Konzeptsynonymstatus";
     public static final String ATT_TYP = "typ";
 
     public static final String EL_INFORMATIONEN = "INFORMATIONEN";
