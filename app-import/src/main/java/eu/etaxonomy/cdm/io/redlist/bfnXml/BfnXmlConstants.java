@@ -175,6 +175,7 @@ public class BfnXmlConstants {
     public static final UUID vocRLFeatures =  UUID.fromString("74091f30-faa0-487b-bd7e-c82eed05d3c9");
 
     public static final UUID UUID_TAX_NR_IDENTIFIER_TYPE =  UUID.fromString("7d12de50-0db7-47b3-bb8e-703ad1d54fbc");
+    public static final UUID UUID_REIHENFOLGE_IDENTIFIER_TYPE =  UUID.fromString("97961851-b1c1-41fb-adfd-2961b48f7efe");
 
     //redList state Vocabularies
     public static final UUID vocStateRLKat =  UUID.fromString("66bbb391-af8a-423b-9506-a235b61af922");

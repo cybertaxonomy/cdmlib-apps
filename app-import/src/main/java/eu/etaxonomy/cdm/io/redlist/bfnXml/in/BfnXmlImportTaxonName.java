@@ -220,10 +220,11 @@ public class BfnXmlImportTaxonName extends BfnXmlImportBase {
 		for (Element elTaxon : elTaxonList){
 			//create Taxon
 			String taxonId = elTaxon.getAttributeValue(BfnXmlConstants.ATT_TAXNR);
+			String reihenfolge = elTaxon.getAttributeValue(BfnXmlConstants.ATT_REIHENFOLGE);
 			childName = BfnXmlConstants.EL_WISSNAME;
 			Element elWissName = XmlHelp.getSingleChildElement(success, elTaxon, childName, bfnNamespace, obligatory);
 			String childElementName = BfnXmlConstants.EL_NANTEIL;
-			Taxon taxon = createOrUpdateTaxon(success, taxonId, config, bfnNamespace, elWissName, childElementName, state);
+			Taxon taxon = createOrUpdateTaxon(success, taxonId, reihenfolge, config, bfnNamespace, elWissName, childElementName, state);
 
 			//for each synonym
 			childName = "SYNONYME";
@@ -322,6 +323,7 @@ public class BfnXmlImportTaxonName extends BfnXmlImportBase {
 	 *
 	 * @param success
 	 * @param taxonId
+	 * @param reihenfolge
 	 * @param config
 	 * @param bfnNamespace
 	 * @param elTaxonName
@@ -333,7 +335,7 @@ public class BfnXmlImportTaxonName extends BfnXmlImportBase {
 	@SuppressWarnings({ "unchecked" })
 	private Taxon createOrUpdateTaxon(
 			ResultWrapper<Boolean> success, String taxonId,
-			BfnXmlImportConfigurator config, Namespace bfnNamespace,
+			String reihenfolge, BfnXmlImportConfigurator config, Namespace bfnNamespace,
 			Element elTaxonName, String childElementName, BfnXmlImportState state) {
 
 		List<Element> elWissNameList = elTaxonName.getChildren(childElementName, bfnNamespace);
@@ -409,6 +411,7 @@ public class BfnXmlImportTaxonName extends BfnXmlImportBase {
 					taxon.addImportSource(uniqueID, namespace, state.getCompleteSourceRef(), microRefStr);
 
 					taxon.addIdentifier(taxonId, getIdentiferType(state, BfnXmlConstants.UUID_TAX_NR_IDENTIFIER_TYPE, "taxNr", "TaxNr attribute of Bfn Xml file", "taxNr", null));
+					taxon.addIdentifier(reihenfolge, getIdentiferType(state, BfnXmlConstants.UUID_REIHENFOLGE_IDENTIFIER_TYPE, "reihenfolge", "reihenfolge attribute of Bfn Xml file", "reihenfolge", null));
 				} catch (UnknownCdmTypeException e) {
 					success.setValue(false);
 				}

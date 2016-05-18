@@ -42,7 +42,7 @@ public final class BfnXmlTransformer {
 	    //species group
 	    rankMap.put(BfnXmlConstants.RNK_SUBSP_AGGR, Rank.SUBSPECIFICAGGREGATE());
 	    rankMap.put(BfnXmlConstants.RNK_SSP, Rank.SUBSPECIES());
-	    rankMap.put(BfnXmlConstants.RNK_SP, Rank.SPECIES());
+	    rankMap.put(BfnXmlConstants.RNK_SPEZIES, Rank.SPECIES());
 	    //below subspecies
 	    rankMap.put(BfnXmlConstants.RNK_CAND, Rank.CANDIDATE());
 	    rankMap.put(BfnXmlConstants.RNK_TAXINFRASP, Rank.INFRASPECIFICTAXON());
@@ -92,7 +92,7 @@ public final class BfnXmlTransformer {
         }else if (rankCode.equals(BfnXmlConstants.RNK_SUBSP)){return Rank.SUBSPECIES();
         }else if (rankCode.equals(BfnXmlConstants.RNK_SUBSP_DOT)){return Rank.SUBSPECIES();
         }else if (rankCode.equals(BfnXmlConstants.RNK_INFRAGEN)){return Rank.INFRAGENUS();
-        }else if (rankCode.equals(BfnXmlConstants.RNK_SPEZIES)){return Rank.SPECIES();
+        }else if (rankCode.equals(BfnXmlConstants.RNK_SP)){return Rank.SPECIES();
         }else if (rankCode.equals(BfnXmlConstants.RNK_F)){return Rank.FORM();
         }else if (rankCode.equals(BfnXmlConstants.RNK_VAR_DOT)){return Rank.VARIETY();
         }else if (rankCode.equals(BfnXmlConstants.RNK_SUBFAM)){return Rank.FAMILY();
@@ -102,7 +102,8 @@ public final class BfnXmlTransformer {
         }else if (rankCode.equals(BfnXmlConstants.RNK_SUBTRIB)){return Rank.FAMILY();
         }else if (rankCode.equals(BfnXmlConstants.RNK_TRIB)){return Rank.FAMILY();
         }else if (rankCode.equals(BfnXmlConstants.RNK_SUPERTRIB)){return Rank.FAMILY();
-        }else {return rankMap.get(rankCode);
+        }else {
+            return rankMap.get(rankCode);
         }
     }
 

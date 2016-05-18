@@ -11,6 +11,7 @@ package eu.etaxonomy.cdm.io.redlist.bfnXml.out;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Set;
+import java.util.UUID;
 
 import org.jdom2.Attribute;
 import org.jdom2.Document;
@@ -83,7 +84,7 @@ public class BfnXmlTaxonNameExport extends BfnXmlExportBase {
         Element taxonyme = new Element(BfnXmlConstants.EL_TAXONYME);
         roteListeDaten.addContent(taxonyme);
         List<TaxonNode> childNodes = classification.getChildNodes();
-        java.util.Collections.sort(childNodes, new OriginalSourceComparator());
+        java.util.Collections.sort(childNodes, new TaxonComparator());
         for (TaxonNode taxonNode : childNodes) {
             exportTaxon(taxonNode.getTaxon(), taxonyme, state);
         }
@@ -154,15 +155,12 @@ public class BfnXmlTaxonNameExport extends BfnXmlExportBase {
         Element taxonym = new Element(BfnXmlConstants.EL_TAXONYM);
         parent.addContent(taxonym);
 
-        DefinedTerm taxNrIdentifierType = HibernateProxyHelper.deproxy(getTermService().load(BfnXmlConstants.UUID_TAX_NR_IDENTIFIER_TYPE), DefinedTerm.class);
-        Set<String> identifiers = taxon.getIdentifiers(taxNrIdentifierType);
-        if(identifiers.size()==1){
-            String taxNr = identifiers.iterator().next();
-            taxonym.setAttribute(BfnXmlConstants.ATT_TAXNR, taxNr);
-        }
-        else{
-            logger.error("Taxon "+taxon.getTitleCache()+" has none or multiple identifiers of type 'taxNr'");
-        }
+        //reihenfolge attribute
+        taxonym.setAttribute(BfnXmlConstants.ATT_REIHENFOLGE, getIdentifier(taxon, BfnXmlConstants.UUID_REIHENFOLGE_IDENTIFIER_TYPE));
+
+        //taxNr attribute
+        taxonym.setAttribute(BfnXmlConstants.ATT_TAXNR, getIdentifier(taxon, BfnXmlConstants.UUID_TAX_NR_IDENTIFIER_TYPE));
+
 
         exportWissName(taxon, taxonym);
 
@@ -187,14 +185,24 @@ public class BfnXmlTaxonNameExport extends BfnXmlExportBase {
 
     }
 
+    private String getIdentifier(Taxon taxon, UUID identifierUuid) {
+        DefinedTerm identifierType = HibernateProxyHelper.deproxy(getTermService().load(identifierUuid), DefinedTerm.class);
+        Set<String> identfiers = taxon.getIdentifiers(identifierType);
+        if(identfiers.size()==1){
+            return identfiers.iterator().next();
+        }
+        else{
+            logger.error("Taxon "+taxon.getTitleCache()+" has none or multiple identifiers of type '"+identifierType.getLabel()+"'");
+            return null;
+        }
+    }
+
     private void exportWissName(TaxonBase<?> taxon, Element parent) {
         Element wissName = new Element(BfnXmlConstants.EL_WISSNAME);
         parent.addContent(wissName);
 
         NonViralName<?> name = HibernateProxyHelper.deproxy(taxon.getName(), NonViralName.class);
         Rank rank = name.getRank();
-        //wissName
-        addNanteil(wissName, BfnXmlConstants.BEREICH_WISSNAME, name.getTitleCache());
         //epithet 1,2,3
         exportEpithet(taxon, wissName, name, rank);
 
@@ -203,9 +211,23 @@ public class BfnXmlTaxonNameExport extends BfnXmlExportBase {
 
         //authors
         addNanteil(wissName, BfnXmlConstants.BEREICH_AUTOREN, name.getAuthorshipCache());
+
+        //wissName
+        addNanteil(wissName, BfnXmlConstants.BEREICH_WISSNAME, name.getTitleCache());
     }
 
     private void exportEpithet(TaxonBase<?> taxon, Element wissName, NonViralName<?> name, Rank rank) {
+        //eindeutiger Code
+        Set<IdentifiableSource> sources = taxon.getSources();
+        for (IdentifiableSource identifiableSource : sources) {
+            if(identifiableSource.getType().equals(OriginalSourceType.Import)
+                    && identifiableSource.getIdNamespace().equals(BfnXmlConstants.EL_TAXONYM+":"
+                            +BfnXmlConstants.EL_WISSNAME+":"+BfnXmlConstants.EL_NANTEIL+":"+BfnXmlConstants.BEREICH_EINDEUTIGER_CODE)){
+                addNanteil(wissName, BfnXmlConstants.BEREICH_EINDEUTIGER_CODE, identifiableSource.getIdInSource());
+            }
+        }
+
+        //epitheton1-2
         addNanteil(wissName, BfnXmlConstants.BEREICH_EPITHETON1, name.getGenusOrUninomial());
         if(rank.isLower(Rank.GENUS())){
             String epitheton2 = name.getInfraGenericEpithet();
@@ -214,20 +236,13 @@ public class BfnXmlTaxonNameExport extends BfnXmlExportBase {
             }
             addNanteil(wissName, BfnXmlConstants.BEREICH_EPITHETON2, epitheton2);
         }
+        //epitheton3
         if(rank.isLower(Rank.SPECIES())){
             String epitheton3 = name.getInfraSpecificEpithet();
             if(epitheton3==null){
                 epitheton3 = name.getSpecificEpithet();
             }
             addNanteil(wissName, BfnXmlConstants.BEREICH_EPITHETON3, epitheton3);
-        }
-        Set<IdentifiableSource> sources = taxon.getSources();
-        for (IdentifiableSource identifiableSource : sources) {
-            if(identifiableSource.getType().equals(OriginalSourceType.Import)
-                    && identifiableSource.getIdNamespace().equals(BfnXmlConstants.EL_TAXONYM+":"
-            +BfnXmlConstants.EL_WISSNAME+":"+BfnXmlConstants.EL_NANTEIL+":"+BfnXmlConstants.BEREICH_EINDEUTIGER_CODE)){
-                addNanteil(wissName, BfnXmlConstants.BEREICH_EINDEUTIGER_CODE, identifiableSource.getIdInSource());
-            }
         }
     }
 
@@ -274,31 +289,16 @@ public class BfnXmlTaxonNameExport extends BfnXmlExportBase {
         return false;
     }
 
-    private final class OriginalSourceComparator implements Comparator<TaxonNode> {
+    private final class TaxonComparator implements Comparator<TaxonNode> {
         @Override
         public int compare(TaxonNode o1, TaxonNode o2) {
             Taxon taxon1 = o1.getTaxon();
             Taxon taxon2 = o2.getTaxon();
-            int id1 = 0;
-            int id2 = 0;
 
-            Set<IdentifiableSource> sources1 = taxon1.getSources();
-            for (IdentifiableSource identifiableSource : sources1) {
-                if(identifiableSource.getType().equals(OriginalSourceType.Import)
-                        && identifiableSource.getIdNamespace().equals(BfnXmlConstants.EL_TAXONYM+":"
-                +BfnXmlConstants.EL_WISSNAME+":"+BfnXmlConstants.EL_NANTEIL+":"+BfnXmlConstants.BEREICH_EINDEUTIGER_CODE)){
-                    id1 = Integer.parseInt(identifiableSource.getIdInSource());
-                }
-            }
-            Set<IdentifiableSource> sources2 = taxon2.getSources();
-            for (IdentifiableSource identifiableSource : sources2) {
-                if(identifiableSource.getType().equals(OriginalSourceType.Import)
-                        && identifiableSource.getIdNamespace().equals(BfnXmlConstants.EL_TAXONYM+":"
-                                +BfnXmlConstants.EL_WISSNAME+":"+BfnXmlConstants.EL_NANTEIL+":"+BfnXmlConstants.BEREICH_EINDEUTIGER_CODE)){
-                    id2 = Integer.parseInt(identifiableSource.getIdInSource());
-                }
-            }
-            return id1-id2;
+            int reihenfolge1 = Integer.parseInt(getIdentifier(taxon1, BfnXmlConstants.UUID_REIHENFOLGE_IDENTIFIER_TYPE));
+            int reihenfolge2 = Integer.parseInt(getIdentifier(taxon2, BfnXmlConstants.UUID_REIHENFOLGE_IDENTIFIER_TYPE));
+
+            return reihenfolge1-reihenfolge2;
         }
     }
 
