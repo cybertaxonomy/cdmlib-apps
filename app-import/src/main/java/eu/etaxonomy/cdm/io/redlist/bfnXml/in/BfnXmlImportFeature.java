@@ -104,49 +104,49 @@ public class BfnXmlImportFeature extends BfnXmlImportBase implements ICdmIO<BfnX
 					//for each taxonName
 					for (Element elFeature : elFeatureList){
 
-						if(elFeature.getAttributeValue(BfnXmlConstants.ATT_STANDARDNAME, bfnNamespace).equalsIgnoreCase("RL Kat.")){
+						if(elFeature.getAttributeValue(BfnXmlConstants.ATT_STANDARDNAME, bfnNamespace).equalsIgnoreCase(BfnXmlConstants.VOC_RL_KAT)){
 							makeFeature(vocabularyService, featureList,success, obligatory, bfnNamespace,elFeature, true, state);
 						}
-						if(elFeature.getAttributeValue(BfnXmlConstants.ATT_STANDARDNAME).equalsIgnoreCase("Kat. +/-")){
+						if(elFeature.getAttributeValue(BfnXmlConstants.ATT_STANDARDNAME).equalsIgnoreCase(BfnXmlConstants.VOC_KAT)){
 							makeFeature(vocabularyService, featureList,success, obligatory, bfnNamespace,elFeature, true, state);
 						}else
-						if(elFeature.getAttributeValue(BfnXmlConstants.ATT_STANDARDNAME).equalsIgnoreCase("aktuelle Bestandsstituation")){
+						if(elFeature.getAttributeValue(BfnXmlConstants.ATT_STANDARDNAME).equalsIgnoreCase(BfnXmlConstants.VOC_AKTUELLE_BESTANDSSTITUATION)){
 							makeFeature(vocabularyService, featureList,success, obligatory, bfnNamespace,elFeature, true, state);
 						}else
-						if(elFeature.getAttributeValue(BfnXmlConstants.ATT_STANDARDNAME).equalsIgnoreCase("langfristiger Bestandstrend")){
+						if(elFeature.getAttributeValue(BfnXmlConstants.ATT_STANDARDNAME).equalsIgnoreCase(BfnXmlConstants.VOC_LANGFRISTIGER_BESTANDSTREND)){
 							makeFeature(vocabularyService, featureList,success, obligatory, bfnNamespace,elFeature, true, state);
 						}else
-						if(elFeature.getAttributeValue(BfnXmlConstants.ATT_STANDARDNAME).equalsIgnoreCase("kurzfristiger Bestandstrend")){
+						if(elFeature.getAttributeValue(BfnXmlConstants.ATT_STANDARDNAME).equalsIgnoreCase(BfnXmlConstants.VOC_KURZFRISTIGER_BESTANDSTREND)){
 							makeFeature(vocabularyService, featureList,success, obligatory, bfnNamespace,elFeature, true, state);
 						}else
-						if(elFeature.getAttributeValue(BfnXmlConstants.ATT_STANDARDNAME).equalsIgnoreCase("Risikofaktoren")){
+						if(elFeature.getAttributeValue(BfnXmlConstants.ATT_STANDARDNAME).equalsIgnoreCase(BfnXmlConstants.VOC_RISIKOFAKTOREN)){
 						    makeFeature(vocabularyService, featureList,success, obligatory, bfnNamespace,elFeature, true, state);
 						}else
-						if(elFeature.getAttributeValue(BfnXmlConstants.ATT_STANDARDNAME).equalsIgnoreCase("Verantwortlichkeit")){
+						if(elFeature.getAttributeValue(BfnXmlConstants.ATT_STANDARDNAME).equalsIgnoreCase(BfnXmlConstants.VOC_VERANTWORTLICHKEIT)){
 							makeFeature(vocabularyService, featureList,success, obligatory, bfnNamespace,elFeature, true, state);
 						}else
-						if(elFeature.getAttributeValue(BfnXmlConstants.ATT_STANDARDNAME).equalsIgnoreCase("alte RL- Kat.")){
+						if(elFeature.getAttributeValue(BfnXmlConstants.ATT_STANDARDNAME).equalsIgnoreCase(BfnXmlConstants.VOC_ALTE_RL_KAT)){
 							makeFeature(vocabularyService, featureList,success, obligatory, bfnNamespace,elFeature, true, state);
 						}else
-						if(elFeature.getAttributeValue(BfnXmlConstants.ATT_STANDARDNAME).equalsIgnoreCase("Neobiota")){
+						if(elFeature.getAttributeValue(BfnXmlConstants.ATT_STANDARDNAME).equalsIgnoreCase(BfnXmlConstants.VOC_NEOBIOTA)){
 							makeFeature(vocabularyService, featureList,success, obligatory, bfnNamespace,elFeature, true, state);
 						}else
-						if(elFeature.getAttributeValue(BfnXmlConstants.ATT_STANDARDNAME).equalsIgnoreCase("Eindeutiger Code")){
+						if(elFeature.getAttributeValue(BfnXmlConstants.ATT_STANDARDNAME).equalsIgnoreCase(BfnXmlConstants.VOC_EINDEUTIGER_CODE)){
 							makeFeature(vocabularyService, featureList,success, obligatory, bfnNamespace,elFeature, true, state);
 						}else
-						if(elFeature.getAttributeValue(BfnXmlConstants.ATT_STANDARDNAME).equalsIgnoreCase("Kommentar zur Taxonomie")){
+						if(elFeature.getAttributeValue(BfnXmlConstants.ATT_STANDARDNAME).equalsIgnoreCase(BfnXmlConstants.FEAT_KOMMENTAR_TAXONOMIE)){
 							makeFeature(vocabularyService, featureList,success, obligatory, bfnNamespace,elFeature, false, state);
 						}else
-						if(elFeature.getAttributeValue(BfnXmlConstants.ATT_STANDARDNAME).equalsIgnoreCase("Kommentar zur Gefährdung")){
+						if(elFeature.getAttributeValue(BfnXmlConstants.ATT_STANDARDNAME).equalsIgnoreCase(BfnXmlConstants.FEAT_KOMMENTAR_GEFAEHRDUNG)){
 							makeFeature(vocabularyService, featureList,success, obligatory, bfnNamespace,elFeature, false, state);
 						}else
-						if(elFeature.getAttributeValue(BfnXmlConstants.ATT_STANDARDNAME).equalsIgnoreCase("Sonderfälle")){
+						if(elFeature.getAttributeValue(BfnXmlConstants.ATT_STANDARDNAME).equalsIgnoreCase(BfnXmlConstants.VOC_SONDERFAELLE)){
 							makeFeature(vocabularyService, featureList,success, obligatory, bfnNamespace,elFeature, true, state);
 						}else
-						if(elFeature.getAttributeValue(BfnXmlConstants.ATT_STANDARDNAME).equalsIgnoreCase("Letzter Nachweis")){
+						if(elFeature.getAttributeValue(BfnXmlConstants.ATT_STANDARDNAME).equalsIgnoreCase(BfnXmlConstants.FEAT_LETZTER_NACHWEIS)){
 							makeFeature(vocabularyService, featureList,success, obligatory, bfnNamespace,elFeature, false, state);
 						}else
-						if(elFeature.getAttributeValue(BfnXmlConstants.ATT_STANDARDNAME).equalsIgnoreCase("Weitere Kommentare")){
+						if(elFeature.getAttributeValue(BfnXmlConstants.ATT_STANDARDNAME).equalsIgnoreCase(BfnXmlConstants.FEAT_WEITERE_KOMMENTARE)){
 							makeFeature(vocabularyService, featureList,success, obligatory, bfnNamespace,elFeature, false, state);
 						}
 					}

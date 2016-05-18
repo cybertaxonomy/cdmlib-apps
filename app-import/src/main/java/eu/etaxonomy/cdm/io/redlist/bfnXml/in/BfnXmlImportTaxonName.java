@@ -546,49 +546,49 @@ public class BfnXmlImportTaxonName extends BfnXmlImportBase {
 				List<Element> elInfoDetailList = elInfo.getChildren(childElementName, bfnNamespace);
 
 				for(Element elInfoDetail : elInfoDetailList){
-					if(elInfoDetail.getAttributeValue(BfnXmlConstants.ATT_STANDARDNAME).equalsIgnoreCase("RL Kat.")){
+					if(elInfoDetail.getAttributeValue(BfnXmlConstants.ATT_STANDARDNAME).equalsIgnoreCase(BfnXmlConstants.VOC_RL_KAT)){
 						makeFeatures(taxonDescription, elInfoDetail, state, false);
 					}
-					if(elInfoDetail.getAttributeValue(BfnXmlConstants.ATT_STANDARDNAME).equalsIgnoreCase("Kat. +/-")){
+					if(elInfoDetail.getAttributeValue(BfnXmlConstants.ATT_STANDARDNAME).equalsIgnoreCase(BfnXmlConstants.VOC_KAT)){
 						makeFeatures(taxonDescription, elInfoDetail, state, false);
 					}
-					if(elInfoDetail.getAttributeValue(BfnXmlConstants.ATT_STANDARDNAME).equalsIgnoreCase("aktuelle Bestandsstituation")){
+					if(elInfoDetail.getAttributeValue(BfnXmlConstants.ATT_STANDARDNAME).equalsIgnoreCase(BfnXmlConstants.VOC_AKTUELLE_BESTANDSSTITUATION)){
 						makeFeatures(taxonDescription, elInfoDetail, state, false);
 					}
-					if(elInfoDetail.getAttributeValue(BfnXmlConstants.ATT_STANDARDNAME).equalsIgnoreCase("langfristiger Bestandstrend")){
+					if(elInfoDetail.getAttributeValue(BfnXmlConstants.ATT_STANDARDNAME).equalsIgnoreCase(BfnXmlConstants.VOC_LANGFRISTIGER_BESTANDSTREND)){
 						makeFeatures(taxonDescription, elInfoDetail, state, false);
 					}
-					if(elInfoDetail.getAttributeValue(BfnXmlConstants.ATT_STANDARDNAME).equalsIgnoreCase("kurzfristiger Bestandstrend")){
+					if(elInfoDetail.getAttributeValue(BfnXmlConstants.ATT_STANDARDNAME).equalsIgnoreCase(BfnXmlConstants.VOC_KURZFRISTIGER_BESTANDSTREND)){
 						makeFeatures(taxonDescription, elInfoDetail, state, false);
 					}
-					if(elInfoDetail.getAttributeValue(BfnXmlConstants.ATT_STANDARDNAME).equalsIgnoreCase("Risikofaktoren")){
+					if(elInfoDetail.getAttributeValue(BfnXmlConstants.ATT_STANDARDNAME).equalsIgnoreCase(BfnXmlConstants.VOC_RISIKOFAKTOREN)){
 						makeFeatures(taxonDescription, elInfoDetail, state, false);
 					}
-					if(elInfoDetail.getAttributeValue(BfnXmlConstants.ATT_STANDARDNAME).equalsIgnoreCase("Verantwortlichkeit")){
+					if(elInfoDetail.getAttributeValue(BfnXmlConstants.ATT_STANDARDNAME).equalsIgnoreCase(BfnXmlConstants.VOC_VERANTWORTLICHKEIT)){
 						makeFeatures(taxonDescription, elInfoDetail, state, false);
 					}
-					if(elInfoDetail.getAttributeValue(BfnXmlConstants.ATT_STANDARDNAME).equalsIgnoreCase("alte RL- Kat.")){
+					if(elInfoDetail.getAttributeValue(BfnXmlConstants.ATT_STANDARDNAME).equalsIgnoreCase(BfnXmlConstants.VOC_ALTE_RL_KAT)){
 						makeFeatures(taxonDescription, elInfoDetail, state, false);
 					}
-					if(elInfoDetail.getAttributeValue(BfnXmlConstants.ATT_STANDARDNAME).equalsIgnoreCase("Neobiota")){
+					if(elInfoDetail.getAttributeValue(BfnXmlConstants.ATT_STANDARDNAME).equalsIgnoreCase(BfnXmlConstants.VOC_NEOBIOTA)){
 						makeFeatures(taxonDescription, elInfoDetail, state, false);
 					}
-					if(elInfoDetail.getAttributeValue(BfnXmlConstants.ATT_STANDARDNAME).equalsIgnoreCase("Eindeutiger Code")){
+					if(elInfoDetail.getAttributeValue(BfnXmlConstants.ATT_STANDARDNAME).equalsIgnoreCase(BfnXmlConstants.VOC_EINDEUTIGER_CODE)){
 						makeFeatures(taxonDescription, elInfoDetail, state, false);
 					}
-					if(elInfoDetail.getAttributeValue(BfnXmlConstants.ATT_STANDARDNAME).equalsIgnoreCase("Kommentar zur Taxonomie")){
+					if(elInfoDetail.getAttributeValue(BfnXmlConstants.ATT_STANDARDNAME).equalsIgnoreCase(BfnXmlConstants.FEAT_KOMMENTAR_TAXONOMIE)){
 						makeFeatures(taxonDescription, elInfoDetail, state, true);
 					}
-					if(elInfoDetail.getAttributeValue(BfnXmlConstants.ATT_STANDARDNAME).equalsIgnoreCase("Kommentar zur Gefährdung")){
+					if(elInfoDetail.getAttributeValue(BfnXmlConstants.ATT_STANDARDNAME).equalsIgnoreCase(BfnXmlConstants.FEAT_KOMMENTAR_GEFAEHRDUNG)){
 						makeFeatures(taxonDescription, elInfoDetail, state, true);
 					}
-					if(elInfoDetail.getAttributeValue(BfnXmlConstants.ATT_STANDARDNAME).equalsIgnoreCase("Sonderfälle")){
+					if(elInfoDetail.getAttributeValue(BfnXmlConstants.ATT_STANDARDNAME).equalsIgnoreCase(BfnXmlConstants.VOC_SONDERFAELLE)){
 						makeFeatures(taxonDescription, elInfoDetail, state, false);
 					}
-					if(elInfoDetail.getAttributeValue(BfnXmlConstants.ATT_STANDARDNAME).equalsIgnoreCase("Letzter Nachweis")){
+					if(elInfoDetail.getAttributeValue(BfnXmlConstants.ATT_STANDARDNAME).equalsIgnoreCase(BfnXmlConstants.FEAT_LETZTER_NACHWEIS)){
 						makeFeatures(taxonDescription, elInfoDetail, state, true);
 					}
-					if(elInfoDetail.getAttributeValue(BfnXmlConstants.ATT_STANDARDNAME).equalsIgnoreCase("Weitere Kommentare")){
+					if(elInfoDetail.getAttributeValue(BfnXmlConstants.ATT_STANDARDNAME).equalsIgnoreCase(BfnXmlConstants.FEAT_WEITERE_KOMMENTARE)){
 						makeFeatures(taxonDescription, elInfoDetail, state, true);
 					}
 					//create german federal states distribution status

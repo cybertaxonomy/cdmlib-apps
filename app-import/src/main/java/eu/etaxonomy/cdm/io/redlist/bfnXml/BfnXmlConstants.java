@@ -169,6 +169,11 @@ public class BfnXmlConstants {
     public static final String VOC_KAT = "Kat. +/-";
     public static final String VOC_RL_KAT = "RL Kat.";
 
+    public static final String FEAT_KOMMENTAR_TAXONOMIE = "Kommentar zur Taxonomie";
+    public static final String FEAT_KOMMENTAR_GEFAEHRDUNG = "Kommentar zur Gefährdung";
+    public static final String FEAT_LETZTER_NACHWEIS = "Letzter Nachweis";
+    public static final String FEAT_WEITERE_KOMMENTARE = "Weitere Kommentare";
+
     public static final String BEZUGRAUM_BUND = "Bund";
 
     //redList feature vocabulary
@@ -178,54 +183,54 @@ public class BfnXmlConstants {
     public static final UUID UUID_REIHENFOLGE_IDENTIFIER_TYPE =  UUID.fromString("97961851-b1c1-41fb-adfd-2961b48f7efe");
 
     //redList state Vocabularies
-    public static final UUID vocStateRLKat =  UUID.fromString("66bbb391-af8a-423b-9506-a235b61af922");
-    public static final UUID vocStateRlKatDiff =  UUID.fromString("abe3702e-ddd4-420c-a985-08a0f8138215");
-    public static final UUID vocStateRlAkt =  UUID.fromString("a0bb10de-35c1-47f5-b700-02ceb0a6b50c");
-    public static final UUID vocStateRLLang =  UUID.fromString("c48d99db-50b6-469f-879d-8bb781842382");
-    public static final UUID vocStateRLKurz =  UUID.fromString("46549c3b-d9d0-4d34-9135-4789d5ed6fff");
-    public static final UUID vocStateRLRisk =  UUID.fromString("ec38db54-07dd-4e48-8976-bfa4813ffa44");
-    public static final UUID vocStateRLResp =  UUID.fromString("c4763d33-75ea-4387-991f-b767650b4899");
-    public static final UUID vocStateRLKatOld =  UUID.fromString("e9be0626-e14e-4556-a8af-9d49e6279669");
-    public static final UUID vocStateRLNeo =  UUID.fromString("6c55ae1d-046d-4b67-89aa-b24c4888df6a");
-    public static final UUID vocStateRLKatId =  UUID.fromString("c54481b3-bf07-43ce-b1cb-09759e4d2a70");
-    public static final UUID vocStateRLSpecialCases =  UUID.fromString("ce2f4f8f-4222-429f-938b-77b794ecf704");
-    public static final UUID vocGermanFederalStates =  UUID.fromString("a80dc3d4-0def-4c9b-97a1-12e8eb7ec87f");
-    public static final UUID vocGermanPresenceTerms =  UUID.fromString("57d6bfa6-ac49-4c88-a9f0-b9c763d5b521");
-    public static final UUID vocGermanEstablishmentTerms =  UUID.fromString("b5919067-ec28-404a-a22e-be914c810f22");
+    public static final UUID uuidVocStateRLKat =  UUID.fromString("66bbb391-af8a-423b-9506-a235b61af922");
+    public static final UUID uuidVocStateRlKatDiff =  UUID.fromString("abe3702e-ddd4-420c-a985-08a0f8138215");
+    public static final UUID uuidVocStateRlAkt =  UUID.fromString("a0bb10de-35c1-47f5-b700-02ceb0a6b50c");
+    public static final UUID uuidVocStateRLLang =  UUID.fromString("c48d99db-50b6-469f-879d-8bb781842382");
+    public static final UUID uuidVocStateRLKurz =  UUID.fromString("46549c3b-d9d0-4d34-9135-4789d5ed6fff");
+    public static final UUID uuidVocStateRLRisk =  UUID.fromString("ec38db54-07dd-4e48-8976-bfa4813ffa44");
+    public static final UUID uuidVocStateRLResp =  UUID.fromString("c4763d33-75ea-4387-991f-b767650b4899");
+    public static final UUID uuidVocStateRLKatOld =  UUID.fromString("e9be0626-e14e-4556-a8af-9d49e6279669");
+    public static final UUID uuidVocStateRLNeo =  UUID.fromString("6c55ae1d-046d-4b67-89aa-b24c4888df6a");
+    public static final UUID uuidVocStateRLKatId =  UUID.fromString("c54481b3-bf07-43ce-b1cb-09759e4d2a70");
+    public static final UUID uuidVocStateRLSpecialCases =  UUID.fromString("ce2f4f8f-4222-429f-938b-77b794ecf704");
+    public static final UUID uuidVocGermanFederalStates =  UUID.fromString("a80dc3d4-0def-4c9b-97a1-12e8eb7ec87f");
+    public static final UUID uuidVocGermanPresenceTerms =  UUID.fromString("57d6bfa6-ac49-4c88-a9f0-b9c763d5b521");
+    public static final UUID uuidVocGermanEstablishmentTerms =  UUID.fromString("b5919067-ec28-404a-a22e-be914c810f22");
 
     //redlist feature
-    public static final UUID featureRLKat =  UUID.fromString("744f8833-619a-4d83-b330-1997c3b2c2f9");
-    public static final UUID featureRlKatDiff =  UUID.fromString("bf93361d-0c8c-4961-9f60-20bcb1d3dbaf");
-    public static final UUID featureRlAkt =  UUID.fromString("39b6962b-05ba-4cd6-a1a9-337d5d156e2f");
-    public static final UUID featureRLLang =  UUID.fromString("f6027318-b17d-49e6-b8eb-7464304044c8");
-    public static final UUID featureRLKurz =  UUID.fromString("9ecc65b5-7760-4ce7-add0-950bdcc2c792");
-    public static final UUID featureRLRisk =  UUID.fromString("2c8f8ffa-c604-4385-b428-4485f5650735");
-    public static final UUID featureRLResp =  UUID.fromString("02d8010f-7d1b-46a3-8c01-b5e6760bfd14");
-    public static final UUID featureRLKatOld =  UUID.fromString("bbdff68d-4fa0-438d-afb5-cff89791c93f");
-    public static final UUID featureRLNeo =  UUID.fromString("153c7173-6d3d-4bee-b8f2-cf8e63e0bc25");
-    public static final UUID featureRLKatId =  UUID.fromString("dc9f5dd2-302c-4a32-bd70-278bbd9abd16");
-    public static final UUID featureRLTaxComment =  UUID.fromString("b7c05d78-16a4-4b6e-a03b-fa6bb2ed74ae");
-    public static final UUID featureRLHazardComment =  UUID.fromString("5beb1ebf-8643-4d5f-9849-8087c35455bb");
-    public static final UUID featureRLSpecialCases =  UUID.fromString("fb92068d-667a-448e-8019-ca4551891b3b");
-    public static final UUID featureRLLastOccurrence =  UUID.fromString("218a32be-fb87-41c9-8d64-b21b43b47caa");
-    public static final UUID featureRLAdditionalComment =  UUID.fromString("c610c98e-f242-4f3b-9edd-7b84a9435867");
+    public static final UUID uuidFeatureRLKat =  UUID.fromString("744f8833-619a-4d83-b330-1997c3b2c2f9");
+    public static final UUID uuidFeatureRlKatDiff =  UUID.fromString("bf93361d-0c8c-4961-9f60-20bcb1d3dbaf");
+    public static final UUID uuidFeatureRlAkt =  UUID.fromString("39b6962b-05ba-4cd6-a1a9-337d5d156e2f");
+    public static final UUID uuidFeatureRLLang =  UUID.fromString("f6027318-b17d-49e6-b8eb-7464304044c8");
+    public static final UUID uuidFeatureRLKurz =  UUID.fromString("9ecc65b5-7760-4ce7-add0-950bdcc2c792");
+    public static final UUID uuidFeatureRLRisk =  UUID.fromString("2c8f8ffa-c604-4385-b428-4485f5650735");
+    public static final UUID uuidFeatureRLResp =  UUID.fromString("02d8010f-7d1b-46a3-8c01-b5e6760bfd14");
+    public static final UUID uuidFeatureRLKatOld =  UUID.fromString("bbdff68d-4fa0-438d-afb5-cff89791c93f");
+    public static final UUID uuidFeatureRLNeo =  UUID.fromString("153c7173-6d3d-4bee-b8f2-cf8e63e0bc25");
+    public static final UUID uuidFeatureRLKatId =  UUID.fromString("dc9f5dd2-302c-4a32-bd70-278bbd9abd16");
+    public static final UUID uuidFeatureRLTaxComment =  UUID.fromString("b7c05d78-16a4-4b6e-a03b-fa6bb2ed74ae");
+    public static final UUID uuidFeatureRLHazardComment =  UUID.fromString("5beb1ebf-8643-4d5f-9849-8087c35455bb");
+    public static final UUID uuidFeatureRLSpecialCases =  UUID.fromString("fb92068d-667a-448e-8019-ca4551891b3b");
+    public static final UUID uuidFeatureRLLastOccurrence =  UUID.fromString("218a32be-fb87-41c9-8d64-b21b43b47caa");
+    public static final UUID uuidFeatureRLAdditionalComment =  UUID.fromString("c610c98e-f242-4f3b-9edd-7b84a9435867");
     public static List<UUID> featureUuids = new ArrayList<UUID>();
         static {
-            featureUuids.add(featureRLKat);
-            featureUuids.add(featureRlKatDiff);
-            featureUuids.add(featureRlAkt);
-            featureUuids.add(featureRLLang);
-            featureUuids.add(featureRLKurz);
-            featureUuids.add(featureRLRisk);
-            featureUuids.add(featureRLResp);
-            featureUuids.add(featureRLKatOld);
-            featureUuids.add(featureRLNeo);
-            featureUuids.add(featureRLKatId);
-            featureUuids.add(featureRLTaxComment);
-            featureUuids.add(featureRLHazardComment);
-            featureUuids.add(featureRLSpecialCases);
-            featureUuids.add(featureRLLastOccurrence);
-            featureUuids.add(featureRLAdditionalComment);
+            featureUuids.add(uuidFeatureRLKat);
+            featureUuids.add(uuidFeatureRlKatDiff);
+            featureUuids.add(uuidFeatureRlAkt);
+            featureUuids.add(uuidFeatureRLLang);
+            featureUuids.add(uuidFeatureRLKurz);
+            featureUuids.add(uuidFeatureRLRisk);
+            featureUuids.add(uuidFeatureRLResp);
+            featureUuids.add(uuidFeatureRLKatOld);
+            featureUuids.add(uuidFeatureRLNeo);
+            featureUuids.add(uuidFeatureRLKatId);
+            featureUuids.add(uuidFeatureRLTaxComment);
+            featureUuids.add(uuidFeatureRLHazardComment);
+            featureUuids.add(uuidFeatureRLSpecialCases);
+            featureUuids.add(uuidFeatureRLLastOccurrence);
+            featureUuids.add(uuidFeatureRLAdditionalComment);
     }
 
     //rl kat state list

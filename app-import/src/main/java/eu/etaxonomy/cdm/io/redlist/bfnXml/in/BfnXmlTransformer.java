@@ -199,33 +199,33 @@ public final class BfnXmlTransformer {
 	public static UUID getRedlistVocabularyUUID(String redListVocabulary) throws UnknownCdmTypeException {
 
 		if(redListVocabulary.equalsIgnoreCase(BfnXmlConstants.VOC_RL_KAT)) {
-            return BfnXmlConstants.vocStateRLKat;
+            return BfnXmlConstants.uuidVocStateRLKat;
         }else if(redListVocabulary.equalsIgnoreCase(BfnXmlConstants.VOC_KAT)) {
-            return BfnXmlConstants.vocStateRlKatDiff;
+            return BfnXmlConstants.uuidVocStateRlKatDiff;
         }else if(redListVocabulary.equalsIgnoreCase(BfnXmlConstants.VOC_AKTUELLE_BESTANDSSTITUATION)) {
-            return BfnXmlConstants.vocStateRlAkt;
+            return BfnXmlConstants.uuidVocStateRlAkt;
         }else if(redListVocabulary.equalsIgnoreCase(BfnXmlConstants.VOC_LANGFRISTIGER_BESTANDSTREND)) {
-            return BfnXmlConstants.vocStateRLLang;
+            return BfnXmlConstants.uuidVocStateRLLang;
         }else if(redListVocabulary.equalsIgnoreCase(BfnXmlConstants.VOC_KURZFRISTIGER_BESTANDSTREND)) {
-            return BfnXmlConstants.vocStateRLKurz;
+            return BfnXmlConstants.uuidVocStateRLKurz;
         }else if(redListVocabulary.equalsIgnoreCase(BfnXmlConstants.VOC_RISIKOFAKTOREN)) {
-            return BfnXmlConstants.vocStateRLRisk;
+            return BfnXmlConstants.uuidVocStateRLRisk;
         }else if(redListVocabulary.equalsIgnoreCase(BfnXmlConstants.VOC_VERANTWORTLICHKEIT)) {
-            return BfnXmlConstants.vocStateRLResp;
+            return BfnXmlConstants.uuidVocStateRLResp;
         }else if(redListVocabulary.equalsIgnoreCase(BfnXmlConstants.VOC_ALTE_RL_KAT)) {
-            return BfnXmlConstants.vocStateRLKatOld;
+            return BfnXmlConstants.uuidVocStateRLKatOld;
         }else if(redListVocabulary.equalsIgnoreCase(BfnXmlConstants.VOC_NEOBIOTA)) {
-            return BfnXmlConstants.vocStateRLNeo;
+            return BfnXmlConstants.uuidVocStateRLNeo;
         }else if(redListVocabulary.equalsIgnoreCase(BfnXmlConstants.VOC_EINDEUTIGER_CODE)) {
-            return BfnXmlConstants.vocStateRLKatId;
+            return BfnXmlConstants.uuidVocStateRLKatId;
         }else if(redListVocabulary.equalsIgnoreCase(BfnXmlConstants.VOC_SONDERFAELLE)) {
-            return BfnXmlConstants.vocStateRLSpecialCases;
+            return BfnXmlConstants.uuidVocStateRLSpecialCases;
         }else if(redListVocabulary.equalsIgnoreCase(BfnXmlConstants.VOC_VORKOMMENSSTATUS)) {
-		    return BfnXmlConstants.vocGermanPresenceTerms;
+		    return BfnXmlConstants.uuidVocGermanPresenceTerms;
 		}else if(redListVocabulary.equalsIgnoreCase(BfnXmlConstants.VOC_ETABLIERUNGSSTATUS)) {
-		    return BfnXmlConstants.vocGermanEstablishmentTerms;
+		    return BfnXmlConstants.uuidVocGermanEstablishmentTerms;
 		}else if(redListVocabulary.equalsIgnoreCase(BfnXmlConstants.VOC_BUNDESLAENDER)) {
-            return BfnXmlConstants.vocGermanFederalStates;
+            return BfnXmlConstants.uuidVocGermanFederalStates;
         } else{
 			throw new UnknownCdmTypeException("Unknown Vocabulary feature, could not match: " + redListVocabulary);
 		}
@@ -236,49 +236,49 @@ public final class BfnXmlTransformer {
 	public static UUID getRedlistFeatureUUID(String redListFeature) throws UnknownCdmTypeException {
 
 		if(redListFeature.equalsIgnoreCase(BfnXmlConstants.VOC_RL_KAT)) {
-            return BfnXmlConstants.featureRLKat;
+            return BfnXmlConstants.uuidFeatureRLKat;
         }
 		if(redListFeature.equalsIgnoreCase(BfnXmlConstants.VOC_KAT)) {
-            return BfnXmlConstants.featureRlKatDiff;
+            return BfnXmlConstants.uuidFeatureRlKatDiff;
         }
 		if(redListFeature.equalsIgnoreCase(BfnXmlConstants.VOC_AKTUELLE_BESTANDSSTITUATION)) {
-            return BfnXmlConstants.featureRlAkt;
+            return BfnXmlConstants.uuidFeatureRlAkt;
         }
 		if(redListFeature.equalsIgnoreCase(BfnXmlConstants.VOC_LANGFRISTIGER_BESTANDSTREND)) {
-            return BfnXmlConstants.featureRLLang;
+            return BfnXmlConstants.uuidFeatureRLLang;
         }
 		if(redListFeature.equalsIgnoreCase(BfnXmlConstants.VOC_KURZFRISTIGER_BESTANDSTREND)) {
-            return BfnXmlConstants.featureRLKurz;
+            return BfnXmlConstants.uuidFeatureRLKurz;
         }
 		if(redListFeature.equalsIgnoreCase(BfnXmlConstants.VOC_RISIKOFAKTOREN)) {
-            return BfnXmlConstants.featureRLRisk;
+            return BfnXmlConstants.uuidFeatureRLRisk;
         }
 		if(redListFeature.equalsIgnoreCase(BfnXmlConstants.VOC_VERANTWORTLICHKEIT)) {
-            return BfnXmlConstants.featureRLResp;
+            return BfnXmlConstants.uuidFeatureRLResp;
         }
 		if(redListFeature.equalsIgnoreCase(BfnXmlConstants.VOC_ALTE_RL_KAT)) {
-            return BfnXmlConstants.featureRLKatOld;
+            return BfnXmlConstants.uuidFeatureRLKatOld;
         }
 		if(redListFeature.equalsIgnoreCase(BfnXmlConstants.VOC_NEOBIOTA)) {
-            return BfnXmlConstants.featureRLNeo;
+            return BfnXmlConstants.uuidFeatureRLNeo;
         }
 		if(redListFeature.equalsIgnoreCase(BfnXmlConstants.VOC_EINDEUTIGER_CODE)) {
-            return BfnXmlConstants.featureRLKatId;
+            return BfnXmlConstants.uuidFeatureRLKatId;
         }
-		if(redListFeature.equalsIgnoreCase("Kommentar zur Taxonomie")) {
-            return BfnXmlConstants.featureRLTaxComment;
+		if(redListFeature.equalsIgnoreCase(BfnXmlConstants.FEAT_KOMMENTAR_TAXONOMIE)) {
+            return BfnXmlConstants.uuidFeatureRLTaxComment;
         }
-		if(redListFeature.equalsIgnoreCase("Kommentar zur Gefährdung")) {
-            return BfnXmlConstants.featureRLHazardComment;
+		if(redListFeature.equalsIgnoreCase(BfnXmlConstants.FEAT_KOMMENTAR_GEFAEHRDUNG)) {
+            return BfnXmlConstants.uuidFeatureRLHazardComment;
         }
 		if(redListFeature.equalsIgnoreCase(BfnXmlConstants.VOC_SONDERFAELLE)) {
-            return BfnXmlConstants.featureRLSpecialCases;
+            return BfnXmlConstants.uuidFeatureRLSpecialCases;
         }
-		if(redListFeature.equalsIgnoreCase("Letzter Nachweis")) {
-            return BfnXmlConstants.featureRLLastOccurrence;
+		if(redListFeature.equalsIgnoreCase(BfnXmlConstants.FEAT_LETZTER_NACHWEIS)) {
+            return BfnXmlConstants.uuidFeatureRLLastOccurrence;
         }
-		if(redListFeature.equalsIgnoreCase("Weitere Kommentare")) {
-            return BfnXmlConstants.featureRLAdditionalComment;
+		if(redListFeature.equalsIgnoreCase(BfnXmlConstants.FEAT_WEITERE_KOMMENTARE)) {
+            return BfnXmlConstants.uuidFeatureRLAdditionalComment;
         } else{
 			throw new UnknownCdmTypeException("Unknown feature, could not match: " + redListFeature);
 		}

@@ -101,21 +101,57 @@ public class BfnXmlTaxonNameExport extends BfnXmlExportBase {
         for (TaxonDescription taxonDescription : descriptions) {
             //TODO: export only red list features ??
             Set<DescriptionElementBase> descriptionElements = taxonDescription.getElements();
-            for (DescriptionElementBase descriptionElementBase : descriptionElements) {
-                if(descriptionElementBase.isInstanceOf(CategoricalData.class)){
-                    CategoricalData categoricalData = HibernateProxyHelper.deproxy(descriptionElementBase, CategoricalData.class);
-                    Feature feature = categoricalData.getFeature();
-                    List<StateData> stateData = categoricalData.getStateData();
-                    if(stateData.size()!=1){
-                        logger.error("StateData does not have a size of 1 for feature "+feature.getLabel()+" in taxon "+taxon.getTitleCache());
-                        continue;
-                    }
-                    addIwert(bezugsraum, feature.getLabel(), stateData.iterator().next().getState().getLabel());
+            exportCategoricalData(BfnXmlConstants.VOC_RL_KAT, descriptionElements, taxon, parent);
+            exportCategoricalData(BfnXmlConstants.VOC_KAT, descriptionElements, taxon, parent);
+            exportCategoricalData(BfnXmlConstants.VOC_NEOBIOTA, descriptionElements, taxon, parent);
+            exportCategoricalData(BfnXmlConstants.VOC_AKTUELLE_BESTANDSSTITUATION, descriptionElements, taxon, parent);
+            exportCategoricalData(BfnXmlConstants.VOC_LANGFRISTIGER_BESTANDSTREND, descriptionElements, taxon, parent);
+            exportCategoricalData(BfnXmlConstants.VOC_KURZFRISTIGER_BESTANDSTREND, descriptionElements, taxon, parent);
+            exportCategoricalData(BfnXmlConstants.VOC_RISIKOFAKTOREN, descriptionElements, taxon, parent);
+            exportCategoricalData(BfnXmlConstants.VOC_SONDERFAELLE, descriptionElements, taxon, parent);
+            exportCategoricalData(BfnXmlConstants.VOC_VERANTWORTLICHKEIT, descriptionElements, taxon, parent);
+            exportCategoricalData(BfnXmlConstants.VOC_VERANTWORTLICHKEIT, descriptionElements, taxon, parent);
+
+
+//            for (DescriptionElementBase descriptionElementBase : descriptionElements) {
+//                if(descriptionElementBase.isInstanceOf(CategoricalData.class)){
+//                    CategoricalData categoricalData = HibernateProxyHelper.deproxy(descriptionElementBase, CategoricalData.class);
+//                    Feature feature = categoricalData.getFeature();
+//                    List<StateData> stateData = categoricalData.getStateData();
+//                    if(stateData.size()!=1){
+//                        logger.error("StateData does not have a size of 1 for feature "+feature.getLabel()+" in taxon "+taxon.getTitleCache());
+//                        continue;
+//                    }
+//                    addIwert(bezugsraum, feature.getLabel(), stateData.iterator().next().getState().getLabel());
+//                }
+//                else if(descriptionElementBase.isInstanceOf(TextData.class)){
+//                    TextData textData = HibernateProxyHelper.deproxy(descriptionElementBase, TextData.class);
+//                    addIwert(bezugsraum, textData.getFeature().getLabel(), textData.getLanguageText(Language.GERMAN()).getText());
+//                }
+//            }
+        }
+    }
+
+    private void exportTextData(String featureLabel, Set<DescriptionElementBase> descriptionElements, Taxon taxon, Element parent){
+        for (DescriptionElementBase descriptionElementBase : descriptionElements) {
+            if(descriptionElementBase.getFeature().getLabel().equals(featureLabel)){
+              TextData textData = HibernateProxyHelper.deproxy(descriptionElementBase, TextData.class);
+              addIwert(parent, textData.getFeature().getLabel(), textData.getLanguageText(Language.GERMAN()).getText());
+            }
+        }
+    }
+
+    private void exportCategoricalData(String featureLabel, Set<DescriptionElementBase> descriptionElements, Taxon taxon, Element parent){
+        for (DescriptionElementBase descriptionElementBase : descriptionElements) {
+            if(descriptionElementBase.getFeature().getLabel().equals(featureLabel)){
+                CategoricalData categoricalData = HibernateProxyHelper.deproxy(descriptionElementBase, CategoricalData.class);
+                Feature feature = categoricalData.getFeature();
+                List<StateData> stateData = categoricalData.getStateData();
+                if(stateData.size()!=1){
+                    logger.error("StateData does not have a size of 1 for feature "+feature.getLabel()+" in taxon "+taxon.getTitleCache());
+                    continue;
                 }
-                else if(descriptionElementBase.isInstanceOf(TextData.class)){
-                    TextData textData = HibernateProxyHelper.deproxy(descriptionElementBase, TextData.class);
-                    addIwert(bezugsraum, textData.getFeature().getLabel(), textData.getLanguageText(Language.GERMAN()).getText());
-                }
+                addIwert(parent, feature.getLabel(), stateData.iterator().next().getState().getLabel());
             }
         }
     }
@@ -209,8 +245,19 @@ public class BfnXmlTaxonNameExport extends BfnXmlExportBase {
         //rank
         addNanteil(wissName, BfnXmlConstants.BEREICH_RANG, BfnXmlTransformer.getRankCodeForRank(rank));
 
+
+        addNanteil(wissName, BfnXmlConstants.BEREICH_ORDNUNGSZAHL, null);//TODO
+        addNanteil(wissName, BfnXmlConstants.BEREICH_AUTONYM, null);//TODO
+        addNanteil(wissName, BfnXmlConstants.BEREICH_REICH, null);//TODO
+        addNanteil(wissName, BfnXmlConstants.BEREICH_BASTARD, null);//TODO
+
         //authors
         addNanteil(wissName, BfnXmlConstants.BEREICH_AUTOREN, name.getAuthorshipCache());
+
+        addNanteil(wissName, BfnXmlConstants.BEREICH_ZUSAETZE, null);//TODO
+        addNanteil(wissName, "SortWissName", null);//TODO
+        addNanteil(wissName, "SortArtEpi", null);//TODO
+        addNanteil(wissName, "SortDeutName", null);//TODO
 
         //wissName
         addNanteil(wissName, BfnXmlConstants.BEREICH_WISSNAME, name.getTitleCache());
@@ -244,6 +291,9 @@ public class BfnXmlTaxonNameExport extends BfnXmlExportBase {
             }
             addNanteil(wissName, BfnXmlConstants.BEREICH_EPITHETON3, epitheton3);
         }
+        //epitheton4-5
+        addNanteil(wissName, BfnXmlConstants.BEREICH_EPITHETON4, null);
+        addNanteil(wissName, BfnXmlConstants.BEREICH_EPITHETON5, null);
     }
 
     private void exportCommonName(Taxon taxon, Element taxonym) {
@@ -275,7 +325,9 @@ public class BfnXmlTaxonNameExport extends BfnXmlExportBase {
     private void addNanteil(Element element, String bereich, String textContent) {
         Element nanteil = new Element(BfnXmlConstants.EL_NANTEIL);
         nanteil.setAttribute(new Attribute(BfnXmlConstants.ATT_BEREICH, bereich));
-        nanteil.addContent(textContent);
+        if(textContent!=null){
+            nanteil.addContent(textContent);
+        }
         element.addContent(nanteil);
     }
 
