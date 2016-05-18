@@ -109,8 +109,12 @@ public class BfnXmlTaxonNameExport extends BfnXmlExportBase {
             exportCategoricalData(BfnXmlConstants.VOC_KURZFRISTIGER_BESTANDSTREND, descriptionElements, taxon, parent);
             exportCategoricalData(BfnXmlConstants.VOC_RISIKOFAKTOREN, descriptionElements, taxon, parent);
             exportCategoricalData(BfnXmlConstants.VOC_SONDERFAELLE, descriptionElements, taxon, parent);
+            exportTextData(BfnXmlConstants.FEAT_LETZTER_NACHWEIS, descriptionElements, taxon, parent);
             exportCategoricalData(BfnXmlConstants.VOC_VERANTWORTLICHKEIT, descriptionElements, taxon, parent);
-            exportCategoricalData(BfnXmlConstants.VOC_VERANTWORTLICHKEIT, descriptionElements, taxon, parent);
+            exportTextData(BfnXmlConstants.FEAT_KOMMENTAR_TAXONOMIE, descriptionElements, taxon, parent);
+            exportTextData(BfnXmlConstants.FEAT_KOMMENTAR_GEFAEHRDUNG, descriptionElements, taxon, parent);
+            exportTextData(BfnXmlConstants.FEAT_WEITERE_KOMMENTARE, descriptionElements, taxon, parent);
+            exportCategoricalData(BfnXmlConstants.VOC_ALTE_RL_KAT, descriptionElements, taxon, parent);
 
 
 //            for (DescriptionElementBase descriptionElementBase : descriptionElements) {
@@ -284,13 +288,15 @@ public class BfnXmlTaxonNameExport extends BfnXmlExportBase {
             addNanteil(wissName, BfnXmlConstants.BEREICH_EPITHETON2, epitheton2);
         }
         //epitheton3
+        String epitheton3 = null;
         if(rank.isLower(Rank.SPECIES())){
-            String epitheton3 = name.getInfraSpecificEpithet();
-            if(epitheton3==null){
-                epitheton3 = name.getSpecificEpithet();
-            }
-            addNanteil(wissName, BfnXmlConstants.BEREICH_EPITHETON3, epitheton3);
+            epitheton3 = name.getInfraSpecificEpithet();
         }
+        if(epitheton3==null){
+            epitheton3 = name.getSpecificEpithet();
+        }
+        addNanteil(wissName, BfnXmlConstants.BEREICH_EPITHETON3, epitheton3);
+
         //epitheton4-5
         addNanteil(wissName, BfnXmlConstants.BEREICH_EPITHETON4, null);
         addNanteil(wissName, BfnXmlConstants.BEREICH_EPITHETON5, null);
