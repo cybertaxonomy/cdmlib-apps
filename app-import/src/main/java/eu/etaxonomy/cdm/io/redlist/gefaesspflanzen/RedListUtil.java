@@ -41,12 +41,20 @@ public class RedListUtil {
 
 
     //cell content
-    public static final String HYBRID_CHAR = "";
     public static final String AUCT = "auct.";
     public static final String EX = " ex ";
     public static final String GUELT_BASIONYM = "b";
     public static final String GUELT_SYNONYM = "x";
     public static final String GUELT_ACCEPTED_TAXON = "1";
+    public static final String HYB_X = "x";
+    public static final String HYB_XF = "xf";
+    public static final String HYB_XS = "xs";
+    public static final String HYB_N = "n";
+    public static final String HYB_G = "g";
+    public static final String HYB_NF = "nf";
+    public static final String HYB_XU = "xu";
+    public static final String HYB_GF = "gf";
+
 
     //column names
     public static final String GUELT = "GUELT";
@@ -64,6 +72,7 @@ public class RedListUtil {
     public static final String TAXNAME = "TAXNAME";
     public static final String AUTOR = "AUTOR";
     public static final String CL_TAXON = "CL_TAXON";
+    public static final String HYB = "HYB";
 
     public static void logMessage(long id, String message, Logger logger){
         logger.error(NAMNR+": "+id+" "+message);

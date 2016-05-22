@@ -115,6 +115,7 @@ public class RedListGefaesspflanzenImportNames extends DbImportBase<RedListGefae
         String zusatzString = rs.getString(RedListUtil.ZUSATZ);
         String authorKombString = rs.getString(RedListUtil.AUTOR_KOMB);
         String authorBasiString = rs.getString(RedListUtil.AUTOR_BASI);
+        String hybString = rs.getString(RedListUtil.HYB);
 
         //---NAME---
         if(CdmUtils.isBlank(taxNameString) && CdmUtils.isBlank(ep1String)){
@@ -144,6 +145,13 @@ public class RedListGefaesspflanzenImportNames extends DbImportBase<RedListGefae
             if(status!=null){
                 name.addStatus(NomenclaturalStatus.NewInstance(status));
             }
+        }
+        //hybrid
+        if(hybString.equals(RedListUtil.HYB_X)){
+            name.setBinomHybrid(true);
+        }
+        else if(hybString.equals(RedListUtil.HYB_XF)){
+
         }
 
 
@@ -259,6 +267,7 @@ public class RedListGefaesspflanzenImportNames extends DbImportBase<RedListGefae
         if(taxNameString.endsWith("agg.")){
             taxNameString = taxNameString.replace("agg.", "aggr.");
         }
+        taxNameString = taxNameString.replace("× ", "×");//hybrid sign has no space in titleCache
         String nameCache = ((BotanicalName)taxonBase.getName()).getNameCache().trim();
         if(!taxNameString.trim().equals(nameCache)){
             RedListUtil.logMessage(id, "Taxon name inconsistent! taxon.titleCache <-> Column "+RedListUtil.TAXNAME+": "+nameCache+" <-> "+taxNameString, logger);
