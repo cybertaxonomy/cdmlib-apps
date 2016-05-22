@@ -120,10 +120,10 @@ public class RedListGefaesspflanzenImportClassification extends DbImportBase<Red
 
         if(taxonBaseGL!= null && taxonBaseCL!=null
                 && taxonBaseGL.getUuid().equals(taxonBaseCL.getUuid())){
-            RedListUtil.logMessage(id, "Same UUID for "+taxonBaseGL+ " (Gesamtliste) and "+taxonBaseCL+" (Checkliste", logger);
+            RedListUtil.logMessage(id, "Same UUID for "+taxonBaseGL+ " (Gesamtliste) and "+taxonBaseCL+" (Checkliste)", logger);
         }
         if(parentGL!=null && parentCL!=null && parentGL.getUuid().equals(parentCL.getUuid())){
-            RedListUtil.logMessage(id, "Same UUID for "+parentGL+ " (Gesamtliste) and "+parentCL+" (Checkliste", logger);
+            RedListUtil.logMessage(id, "Same UUID for "+parentGL+ " (Gesamtliste) and "+parentCL+" (Checkliste)", logger);
         }
     }
 
