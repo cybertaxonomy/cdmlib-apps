@@ -273,13 +273,6 @@ public class RedListGefaesspflanzenImportNames extends DbImportBase<RedListGefae
             RedListUtil.logMessage(id, "Taxon name inconsistent! taxon.titleCache <-> Column "+RedListUtil.TAXNAME+": "+nameCache+" <-> "+taxNameString, logger);
         }
 
-
-        taxaToSave.add(taxonBase);
-
-        //id
-        ImportHelper.setOriginalSource(taxonBase, state.getTransactionalSourceReference(), id, RedListUtil.TAXON_GESAMTLISTE_NAMESPACE);
-        state.getTaxonMap().put(id, taxonBase.getUuid());
-
         /*check if taxon/synonym is also in checklist
          * 1. create new taxon with the same name (in the checklist classification)
          * 2. create congruent concept relationship between both
@@ -293,9 +286,12 @@ public class RedListGefaesspflanzenImportNames extends DbImportBase<RedListGefae
                 taxonRelation.setDoubtful(true);//TODO Ist das mit " mit Fragezeichen" gemeint?
             }
             ImportHelper.setOriginalSource(clone, state.getTransactionalSourceReference(), id, RedListUtil.TAXON_CHECKLISTE_NAMESPACE);
-            state.getTaxonMap().put(id, clone.getUuid());
             taxaToSave.add(clone);
         }
+
+        //NOTE: the source has to be added after cloning or otherwise the clone would also get the source
+        ImportHelper.setOriginalSource(taxonBase, state.getTransactionalSourceReference(), id, RedListUtil.TAXON_GESAMTLISTE_NAMESPACE);
+        taxaToSave.add(taxonBase);
 
     }
 
