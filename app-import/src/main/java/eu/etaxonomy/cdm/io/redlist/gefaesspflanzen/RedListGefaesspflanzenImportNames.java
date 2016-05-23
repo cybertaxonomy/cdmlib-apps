@@ -151,7 +151,7 @@ public class RedListGefaesspflanzenImportNames extends DbImportBase<RedListGefae
             name.setBinomHybrid(true);
         }
         else if(hybString.equals(RedListUtil.HYB_XF)){
-
+            name.setTrinomHybrid(true);
         }
 
 
@@ -267,7 +267,9 @@ public class RedListGefaesspflanzenImportNames extends DbImportBase<RedListGefae
         if(taxNameString.endsWith("agg.")){
             taxNameString = taxNameString.replace("agg.", "aggr.");
         }
-        taxNameString = taxNameString.replace("× ", "×");//hybrid sign has no space in titleCache
+        if(hybString.equalsIgnoreCase(RedListUtil.HYB_X)){
+            taxNameString = taxNameString.replace("× ", "×");//hybrid sign has no space after it in titleCache for binomial hybrids
+        }
         String nameCache = ((BotanicalName)taxonBase.getName()).getNameCache().trim();
         if(!taxNameString.trim().equals(nameCache)){
             RedListUtil.logMessage(id, "Taxon name inconsistent! taxon.titleCache <-> Column "+RedListUtil.TAXNAME+": "+nameCache+" <-> "+taxNameString, logger);
