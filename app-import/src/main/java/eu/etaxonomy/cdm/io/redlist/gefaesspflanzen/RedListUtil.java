@@ -25,14 +25,23 @@ public class RedListUtil {
     public static final UUID checkListReferenceUuid = UUID.fromString("e3abe234-ff23-4d85-9c1f-6769df965f33");
     public static final UUID gesamtListeReferenceUuid = UUID.fromString("ec0308de-2245-4e71-a362-4ee72290bf23");
 
-//    public static final UUID checkListClassificationUuid = UUID.fromString("87d3d656-57bc-4b54-b338-80f9f2a37435");
-//    public static final UUID checkListClassificationUuid = UUID.fromString("1bd21015-f542-4bf9-9e1f-ac0147e3a9f8");
-//    public static final UUID checkListClassificationUuid = UUID.fromString("c6120524-f21b-4426-92db-52add2286831");
-//    public static final UUID checkListClassificationUuid = UUID.fromString("b48ca7a0-a641-4fd1-ad51-238a9b57a470");
-//    public static final UUID checkListClassificationUuid = UUID.fromString("a8743caa-56d5-4636-9ce6-4ef272d769d2");
-//    public static final UUID checkListClassificationUuid = UUID.fromString("870d2e18-cd1b-4aa1-a360-ba5e0a5905aa");
-//    public static final UUID checkListClassificationUuid = UUID.fromString("e19bb2e6-d898-4793-8cd4-d866eeb1f872");
-//    public static final UUID checkListClassificationUuid = UUID.fromString("53e81162-5c2d-425b-bbe6-6e8d12e85790");
+    public static final UUID uuidClassificationReferenceE = UUID.fromString("0d62803a-430e-465d-aa45-9ba924c52df7");
+    public static final UUID uuidClassificationReferenceW = UUID.fromString("ba62f7cc-b489-4ef4-92d3-5cfa6eedf947");
+    public static final UUID uuidClassificationReferenceK = UUID.fromString("9d5a5f0b-44f3-415b-b704-37f98c577127");
+    public static final UUID uuidClassificationReferenceAW = UUID.fromString("509a95d6-0c9f-461c-94d9-762a7467a918");
+    public static final UUID uuidClassificationReferenceAO = UUID.fromString("422d81dc-d7ea-4d78-8836-c50ef4365eb4");
+    public static final UUID uuidClassificationReferenceR = UUID.fromString("f802727b-e3fe-4ec3-84cf-153f03239f4d");
+    public static final UUID uuidClassificationReferenceO = UUID.fromString("832155f7-caeb-4cf4-a14b-64e0e9710f7a");
+    public static final UUID uuidClassificationReferenceS = UUID.fromString("a3085ffa-4f59-4bf8-add9-d4cc84b66047");
+
+    public static final UUID uuidClassificationE = UUID.fromString("87d3d656-57bc-4b54-b338-80f9f2a37435");
+    public static final UUID uuidClassificationW = UUID.fromString("1bd21015-f542-4bf9-9e1f-ac0147e3a9f8");
+    public static final UUID uuidClassificationK = UUID.fromString("c6120524-f21b-4426-92db-52add2286831");
+    public static final UUID uuidClassificationAW = UUID.fromString("b48ca7a0-a641-4fd1-ad51-238a9b57a470");
+    public static final UUID uuidClassificationAO = UUID.fromString("a8743caa-56d5-4636-9ce6-4ef272d769d2");
+    public static final UUID uuidClassificationR = UUID.fromString("870d2e18-cd1b-4aa1-a360-ba5e0a5905aa");
+    public static final UUID uuidClassificationO = UUID.fromString("e19bb2e6-d898-4793-8cd4-d866eeb1f872");
+    public static final UUID uuidClassificationS = UUID.fromString("53e81162-5c2d-425b-bbe6-6e8d12e85790");
 
     public static final String NAME_NAMESPACE = "name";
     public static final String TAXON_GESAMTLISTE_NAMESPACE = "taxon_gesamt_liste";

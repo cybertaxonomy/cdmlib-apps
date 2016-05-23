@@ -15,6 +15,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
+import java.util.UUID;
 
 import org.apache.log4j.Logger;
 import org.springframework.stereotype.Component;
@@ -25,7 +26,6 @@ import eu.etaxonomy.cdm.io.common.IPartitionedIO;
 import eu.etaxonomy.cdm.io.common.ResultSetPartitioner;
 import eu.etaxonomy.cdm.model.common.CdmBase;
 import eu.etaxonomy.cdm.model.common.Language;
-import eu.etaxonomy.cdm.model.common.LanguageString;
 import eu.etaxonomy.cdm.model.reference.Reference;
 import eu.etaxonomy.cdm.model.reference.ReferenceFactory;
 import eu.etaxonomy.cdm.model.taxon.Classification;
@@ -74,7 +74,16 @@ public class RedListGefaesspflanzenImportClassification extends DbImportBase<Red
 
     @Override
     protected void doInvoke(RedListGefaesspflanzenImportState state) {
-        makeClassification(state);
+        makeClassification("Gesamtliste", state.getConfig().getClassificationUuid(), "Gesamtliste_ref", RedListUtil.gesamtListeReferenceUuid, state);
+        makeClassification("Checkliste", RedListUtil.checkListClassificationUuid, "Checkliste_ref", RedListUtil.checkListReferenceUuid, state);
+        makeClassification("E", RedListUtil.uuidClassificationE, "E_ref", RedListUtil.uuidClassificationReferenceE, state);
+        makeClassification("W", RedListUtil.uuidClassificationW, "W_ref", RedListUtil.uuidClassificationReferenceW, state);
+        makeClassification("K", RedListUtil.uuidClassificationK, "K_ref", RedListUtil.uuidClassificationReferenceK, state);
+        makeClassification("AW", RedListUtil.uuidClassificationAW, "AW_ref", RedListUtil.uuidClassificationReferenceAW, state);
+        makeClassification("AO", RedListUtil.uuidClassificationAO, "AO_ref", RedListUtil.uuidClassificationReferenceAO, state);
+        makeClassification("R", RedListUtil.uuidClassificationR, "R_ref", RedListUtil.uuidClassificationReferenceR, state);
+        makeClassification("O", RedListUtil.uuidClassificationO, "O_ref", RedListUtil.uuidClassificationReferenceO, state);
+        makeClassification("S", RedListUtil.uuidClassificationS, "S_ref", RedListUtil.uuidClassificationReferenceS, state);
         super.doInvoke(state);
     }
 
@@ -218,24 +227,14 @@ public class RedListGefaesspflanzenImportClassification extends DbImportBase<Red
         return result;
     }
 
-    private void makeClassification(RedListGefaesspflanzenImportState state) {
-        //Gesamtliste
-        Classification classification = Classification.NewInstance(state.getConfig().getClassificationName());
-        classification.setName(LanguageString.NewInstance("Gesamtliste", Language.DEFAULT()));
-        classification.setUuid(state.getConfig().getClassificationUuid());
+    private void makeClassification(String classificationName, UUID classificationUuid, String referenceName, UUID referenceUuid, RedListGefaesspflanzenImportState state) {
+        Classification classification = Classification.NewInstance(classificationName, Language.DEFAULT());
+        classification.setUuid(classificationUuid);
         Reference gesamtListeReference = ReferenceFactory.newGeneric();
-        gesamtListeReference.setUuid(RedListUtil.gesamtListeReferenceUuid);
-        gesamtListeReference.setTitle("Gesamtliste");
+        gesamtListeReference.setTitle(referenceName);
+        gesamtListeReference.setUuid(referenceUuid);
         classification.setReference(gesamtListeReference);
         getClassificationService().save(classification);
-        //checkliste
-        Classification checklistClassification = Classification.NewInstance("Checkliste");
-        checklistClassification.setUuid(RedListUtil.checkListClassificationUuid);
-        Reference checklistReference = ReferenceFactory.newGeneric();
-        checklistReference.setUuid(RedListUtil.checkListReferenceUuid);
-        checklistReference.setTitle("Checkliste");
-        checklistClassification.setReference(checklistReference);
-        getClassificationService().save(checklistClassification);
     }
 
     @Override
