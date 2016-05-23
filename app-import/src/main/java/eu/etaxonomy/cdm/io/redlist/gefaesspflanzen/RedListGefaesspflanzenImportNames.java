@@ -120,44 +120,71 @@ public class RedListGefaesspflanzenImportNames extends DbImportBase<RedListGefae
         String hybString = rs.getString(RedListUtil.HYB);
 
         //---NAME---
-        if(CdmUtils.isBlank(taxNameString) && CdmUtils.isBlank(ep1String)){
-            RedListUtil.logMessage(id, "No name found!", logger);
-        }
-
-        Rank rank = makeRank(id, state, rangString);
-        BotanicalName name = BotanicalName.NewInstance(rank);
-
-        //ep1 should always be present
-        if(CdmUtils.isBlank(ep1String)){
-            RedListUtil.logMessage(id, RedListUtil.EPI1+" is empty!", logger);
-        }
-        name.setGenusOrUninomial(ep1String);
-        if(CdmUtils.isNotBlank(ep2String)){
-            name.setSpecificEpithet(ep2String);
-        }
-        if(CdmUtils.isNotBlank(ep3String)){
-            if(rank==Rank.SUBSPECIES() ||
-                    rank==Rank.VARIETY()){
-                name.setInfraSpecificEpithet(ep3String);
-            }
-        }
-        //nomenclatural status
-        if(CdmUtils.isNotBlank(nomZusatzString)){
-            NomenclaturalStatusType status = makeNomenclaturalStatus(id, state, nomZusatzString);
-            if(status!=null){
-                name.addStatus(NomenclaturalStatus.NewInstance(status));
-            }
-        }
-        //hybrid
-        if(hybString.equals(RedListUtil.HYB_X)){
-            name.setBinomHybrid(true);
-        }
-        else if(hybString.equals(RedListUtil.HYB_XF)){
-            name.setTrinomHybrid(true);
-        }
+        BotanicalName name = importName(state, id, taxNameString, rangString, ep1String, ep2String, ep3String,
+                nomZusatzString, hybString, namesToSave);
 
 
         //--- AUTHORS ---
+        importAuthors(state, rs, id, nomZusatzString, taxZusatzString, zusatzString, authorKombString,
+                authorBasiString, name);
+
+        //---TAXON---
+        TaxonBase taxonBase = importTaxon(id, taxNameString, gueltString, authorBasiString, hybString, name);
+        if(taxonBase==null){
+            RedListUtil.logMessage(id, "Taxon for name "+name+" could not be created.", logger);
+            return;
+        }
+
+        /*check if taxon/synonym is also in checklist
+         * 1. create new taxon with the same name (in the checklist classification)
+         * 2. create congruent concept relationship between both
+         */
+        String clTaxonString = rs.getString(RedListUtil.CL_TAXON);
+        if(CdmUtils.isNotBlank(clTaxonString) && !clTaxonString.trim().equals("-")){
+            cloneToClassification(taxonBase, name, TaxonRelationshipType.CONGRUENT_TO(), taxaToSave, id, RedListUtil.TAXON_CHECKLISTE_NAMESPACE, state);
+        }
+
+        //NOTE: the source has to be added after cloning or otherwise the clone would also get the source
+        ImportHelper.setOriginalSource(taxonBase, state.getTransactionalSourceReference(), id, RedListUtil.TAXON_GESAMTLISTE_NAMESPACE);
+        taxaToSave.add(taxonBase);
+    }
+
+    private void cloneToClassification(TaxonBase taxonBase, TaxonNameBase name, TaxonRelationshipType taxonRelationshipType, Set<TaxonBase> taxaToSave, long id, String sourceNameSpace, RedListGefaesspflanzenImportState state){
+            TaxonBase clone = (TaxonBase) taxonBase.clone();
+            clone.setName(name);
+            if(taxonBase.isInstanceOf(Taxon.class)){
+                TaxonRelationship taxonRelation = ((Taxon) taxonBase).addTaxonRelation((Taxon) clone, taxonRelationshipType, null, null);
+                taxonRelation.setDoubtful(true);//TODO Ist das mit " mit Fragezeichen" gemeint?
+            }
+            ImportHelper.setOriginalSource(clone, state.getTransactionalSourceReference(), id, sourceNameSpace);
+            taxaToSave.add(clone);
+    }
+
+    private TaxonBase importTaxon(long id, String taxNameString, String gueltString, String authorBasiString,
+            String hybString, BotanicalName name) {
+        TaxonBase taxonBase = null;
+        if(authorBasiString.trim().contains(RedListUtil.AUCT)){
+            taxonBase = Taxon.NewInstance(name, null);
+            taxonBase.setAppendedPhrase(RedListUtil.AUCT);
+        }
+        else if(gueltString.equals(RedListUtil.GUELT_ACCEPTED_TAXON)){
+            taxonBase = Taxon.NewInstance(name, null);
+        }
+        else if(gueltString.equals(RedListUtil.GUELT_SYNONYM) || gueltString.equals(RedListUtil.GUELT_BASIONYM)){
+            taxonBase = Synonym.NewInstance(name, null);
+        }
+        else{
+            return null;
+        }
+
+        //check taxon name consistency
+        checkTaxonNameConsistency(id, taxNameString, hybString, taxonBase);
+        return taxonBase;
+    }
+
+    private void importAuthors(RedListGefaesspflanzenImportState state, ResultSet rs, long id, String nomZusatzString,
+            String taxZusatzString, String zusatzString, String authorKombString, String authorBasiString,
+            BotanicalName name) throws SQLException {
         //combination author
         if(authorKombString.contains(RedListUtil.EX)){
             //TODO: what happens with multiple ex authors??
@@ -225,7 +252,56 @@ public class RedListGefaesspflanzenImportNames extends DbImportBase<RedListGefae
         //check authorship consistency
         String authorString = rs.getString(RedListUtil.AUTOR);
         String authorshipCache = name.getAuthorshipCache();
+        checkAuthorShipConsistency(id, nomZusatzString, taxZusatzString, zusatzString, authorString, authorshipCache);
+    }
 
+    private BotanicalName importName(RedListGefaesspflanzenImportState state, long id, String taxNameString,
+            String rangString, String ep1String, String ep2String, String ep3String, String nomZusatzString,
+            String hybString, Set<TaxonNameBase> namesToSave) {
+        if(CdmUtils.isBlank(taxNameString) && CdmUtils.isBlank(ep1String)){
+            RedListUtil.logMessage(id, "No name found!", logger);
+        }
+
+        Rank rank = makeRank(id, state, rangString);
+        BotanicalName name = BotanicalName.NewInstance(rank);
+
+        //ep1 should always be present
+        if(CdmUtils.isBlank(ep1String)){
+            RedListUtil.logMessage(id, RedListUtil.EPI1+" is empty!", logger);
+        }
+        name.setGenusOrUninomial(ep1String);
+        if(CdmUtils.isNotBlank(ep2String)){
+            name.setSpecificEpithet(ep2String);
+        }
+        if(CdmUtils.isNotBlank(ep3String)){
+            if(rank==Rank.SUBSPECIES() ||
+                    rank==Rank.VARIETY()){
+                name.setInfraSpecificEpithet(ep3String);
+            }
+        }
+        //nomenclatural status
+        if(CdmUtils.isNotBlank(nomZusatzString)){
+            NomenclaturalStatusType status = makeNomenclaturalStatus(id, state, nomZusatzString);
+            if(status!=null){
+                name.addStatus(NomenclaturalStatus.NewInstance(status));
+            }
+        }
+        //hybrid
+        if(hybString.equals(RedListUtil.HYB_X)){
+            name.setBinomHybrid(true);
+        }
+        else if(hybString.equals(RedListUtil.HYB_XF)){
+            name.setTrinomHybrid(true);
+        }
+        //add source
+        ImportHelper.setOriginalSource(name, state.getTransactionalSourceReference(), id, RedListUtil.NAME_NAMESPACE);
+
+        namesToSave.add(name);
+        return name;
+    }
+
+    private void checkAuthorShipConsistency(long id, String nomZusatzString, String taxZusatzString,
+            String zusatzString, String authorString, String authorshipCache) {
         if(CdmUtils.isNotBlank(zusatzString)){
             authorString = authorString.replace(", "+zusatzString, "");
         }
@@ -241,31 +317,9 @@ public class RedListGefaesspflanzenImportNames extends DbImportBase<RedListGefae
         if(!authorString.equals(authorshipCache)){
             RedListUtil.logMessage(id, "Authorship inconsistent! name.authorhshipCache <-> Column "+RedListUtil.AUTOR+": "+authorshipCache+" <-> "+authorString, logger);
         }
+    }
 
-        //id
-        ImportHelper.setOriginalSource(name, state.getTransactionalSourceReference(), id, RedListUtil.NAME_NAMESPACE);
-        state.getNameMap().put(id, name.getUuid());
-
-        namesToSave.add(name);
-
-        //---TAXON---
-        TaxonBase taxonBase = null;
-        if(authorBasiString.trim().contains(RedListUtil.AUCT)){
-            taxonBase = Taxon.NewInstance(name, null);
-            taxonBase.setAppendedPhrase(RedListUtil.AUCT);
-        }
-        else if(gueltString.equals(RedListUtil.GUELT_ACCEPTED_TAXON)){
-            taxonBase = Taxon.NewInstance(name, null);
-        }
-        else if(gueltString.equals(RedListUtil.GUELT_SYNONYM) || gueltString.equals(RedListUtil.GUELT_BASIONYM)){
-            taxonBase = Synonym.NewInstance(name, null);
-        }
-        if(taxonBase==null){
-            RedListUtil.logMessage(id, "Taxon for name "+name+" could not be created.", logger);
-            return;
-        }
-
-        //check taxon name consistency
+    private void checkTaxonNameConsistency(long id, String taxNameString, String hybString, TaxonBase taxonBase) {
         String nameCache = ((BotanicalName)taxonBase.getName()).getNameCache().trim();
 
         if(taxNameString.endsWith("agg.")){
@@ -283,27 +337,6 @@ public class RedListGefaesspflanzenImportNames extends DbImportBase<RedListGefae
         if(!taxNameString.trim().equals(nameCache)){
             RedListUtil.logMessage(id, "Taxon name inconsistent! taxon.titleCache <-> Column "+RedListUtil.TAXNAME+": "+nameCache+" <-> "+taxNameString, logger);
         }
-
-        /*check if taxon/synonym is also in checklist
-         * 1. create new taxon with the same name (in the checklist classification)
-         * 2. create congruent concept relationship between both
-         */
-        String clTaxonString = rs.getString(RedListUtil.CL_TAXON);
-        if(CdmUtils.isNotBlank(clTaxonString) && !clTaxonString.trim().equals("-")){
-            TaxonBase clone = (TaxonBase) taxonBase.clone();
-            clone.setName(name);
-            if(taxonBase.isInstanceOf(Taxon.class)){
-                TaxonRelationship taxonRelation = ((Taxon) taxonBase).addTaxonRelation((Taxon) clone, TaxonRelationshipType.CONGRUENT_TO(), null, null);
-                taxonRelation.setDoubtful(true);//TODO Ist das mit " mit Fragezeichen" gemeint?
-            }
-            ImportHelper.setOriginalSource(clone, state.getTransactionalSourceReference(), id, RedListUtil.TAXON_CHECKLISTE_NAMESPACE);
-            taxaToSave.add(clone);
-        }
-
-        //NOTE: the source has to be added after cloning or otherwise the clone would also get the source
-        ImportHelper.setOriginalSource(taxonBase, state.getTransactionalSourceReference(), id, RedListUtil.TAXON_GESAMTLISTE_NAMESPACE);
-        taxaToSave.add(taxonBase);
-
     }
 
     private Rank makeRank(long id, RedListGefaesspflanzenImportState state, String rankStr) {
