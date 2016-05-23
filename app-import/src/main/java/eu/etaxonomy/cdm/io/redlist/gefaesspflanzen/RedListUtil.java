@@ -65,6 +65,8 @@ public class RedListUtil {
     public static final String ZUSATZ = "ZUSATZ";
     public static final String NOM_ZUSATZ = "NOM_ZUSATZ";
     public static final String TAX_ZUSATZ = "TAX_ZUSATZ";
+    public static final String NON = "NON";
+    public static final String SENSU = "SENSU";
     public static final String EPI3 = "EPI3";
     public static final String EPI2 = "EPI2";
     public static final String EPI1 = "EPI1";

@@ -113,6 +113,8 @@ public class RedListGefaesspflanzenImportNames extends DbImportBase<RedListGefae
         String nomZusatzString = rs.getString(RedListUtil.NOM_ZUSATZ);
         String taxZusatzString = rs.getString(RedListUtil.TAX_ZUSATZ);
         String zusatzString = rs.getString(RedListUtil.ZUSATZ);
+        String nonString = rs.getString(RedListUtil.NON);
+        String sensuString = rs.getString(RedListUtil.SENSU);
         String authorKombString = rs.getString(RedListUtil.AUTOR_KOMB);
         String authorBasiString = rs.getString(RedListUtil.AUTOR_BASI);
         String hybString = rs.getString(RedListUtil.HYB);
@@ -264,13 +266,20 @@ public class RedListGefaesspflanzenImportNames extends DbImportBase<RedListGefae
         }
 
         //check taxon name consistency
+        String nameCache = ((BotanicalName)taxonBase.getName()).getNameCache().trim();
+
         if(taxNameString.endsWith("agg.")){
             taxNameString = taxNameString.replace("agg.", "aggr.");
         }
         if(hybString.equalsIgnoreCase(RedListUtil.HYB_X)){
             taxNameString = taxNameString.replace("× ", "×");//hybrid sign has no space after it in titleCache for binomial hybrids
         }
-        String nameCache = ((BotanicalName)taxonBase.getName()).getNameCache().trim();
+        if(taxNameString.endsWith(Rank.SPECIESGROUP().toString())){
+            taxNameString.replaceAll(Rank.SPECIESGROUP().toString(), "- Gruppe");
+            if(!taxNameString.trim().equals(nameCache)){
+                taxNameString.replaceAll(Rank.SPECIESGROUP().toString(), "- group");
+            }
+        }
         if(!taxNameString.trim().equals(nameCache)){
             RedListUtil.logMessage(id, "Taxon name inconsistent! taxon.titleCache <-> Column "+RedListUtil.TAXNAME+": "+nameCache+" <-> "+taxNameString, logger);
         }
