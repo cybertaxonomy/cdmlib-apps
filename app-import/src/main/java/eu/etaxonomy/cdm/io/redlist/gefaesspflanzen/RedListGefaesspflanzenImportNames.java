@@ -152,7 +152,7 @@ public class RedListGefaesspflanzenImportNames extends DbImportBase<RedListGefae
          */
         //checklist
         if(CdmUtils.isNotBlank(clTaxonString) && !clTaxonString.trim().equals("-")){
-            cloneTaxon(taxonBase, name, TaxonRelationshipType.CONGRUENT_TO(), taxaToSave, id, RedListUtil.TAXON_CHECKLISTE_NAMESPACE, state);
+            cloneTaxon(taxonBase, name, TaxonRelationshipType.CONGRUENT_TO(), taxaToSave, id, RedListUtil.TAXON_CHECKLISTE_NAMESPACE, false, true, state);
         }
         //E, W, K, AW, AO, R, O, S
         addConceptRelation(relationE, RedListUtil.CLASSIFICATION_NAMESPACE_E, taxonBase, name, taxaToSave, id, state);
@@ -171,27 +171,41 @@ public class RedListGefaesspflanzenImportNames extends DbImportBase<RedListGefae
 
     private void addConceptRelation(String relationString, String classificationNamespace, TaxonBase taxonBase, TaxonNameBase name, Set<TaxonBase> taxaToSave, long id, RedListGefaesspflanzenImportState state){
         if(CdmUtils.isNotBlank(relationString) && !relationString.equals(".")){
-            TaxonRelationshipType taxonRelationshipTypeByKey = new RedListGefaesspflanzenTransformer().getTaxonRelationshipTypeByKey(relationString);
+            String substring = relationString.substring(relationString.length()-1, relationString.length());
+            TaxonRelationshipType taxonRelationshipTypeByKey = new RedListGefaesspflanzenTransformer().getTaxonRelationshipTypeByKey(substring);
             if(taxonRelationshipTypeByKey==null){
-                RedListUtil.logMessage(id, "Could not interpret relationship "+relationString+" for taxon "+taxonBase, logger);
+                RedListUtil.logMessage(id, "Could not interpret relationship "+relationString+" for taxon "+taxonBase.generateTitle(), logger);
             }
-            cloneTaxon(taxonBase, name, taxonRelationshipTypeByKey, taxaToSave, id, classificationNamespace, state);
+            //there is no type "included in" so we have to reverse the direction
+            if(substring.equals("<")){
+                cloneTaxon(taxonBase, name, taxonRelationshipTypeByKey, taxaToSave, id, classificationNamespace, true, false, state);
+            }
+            else{
+                cloneTaxon(taxonBase, name, taxonRelationshipTypeByKey, taxaToSave, id, classificationNamespace, false, false, state);
+            }
         }
     }
 
     /**
      * <b>NOTE:</b> the {@link TaxonRelationshipType} passed as parameter is
-     * directed <b>from the clone</b> to the taxon
+     * directed <b>from the clone</b> to the taxon.<br>
+     * This can be changed with parameter <i>reverseRelation</i>
      */
-    private void cloneTaxon(TaxonBase taxonBase, TaxonNameBase name, TaxonRelationshipType relationFromCloneToTaxon, Set<TaxonBase> taxaToSave, long id, String sourceNameSpace, RedListGefaesspflanzenImportState state){
-            TaxonBase clone = (TaxonBase) taxonBase.clone();
-            clone.setName(name);
-            if(taxonBase.isInstanceOf(Taxon.class)){
-                TaxonRelationship taxonRelation = ((Taxon) clone).addTaxonRelation((Taxon) taxonBase, relationFromCloneToTaxon, null, null);
-                taxonRelation.setDoubtful(true);//TODO Ist das mit " mit Fragezeichen" gemeint?
+    private void cloneTaxon(TaxonBase taxonBase, TaxonNameBase name, TaxonRelationshipType relationFromCloneToTaxon, Set<TaxonBase> taxaToSave, long id, String sourceNameSpace, boolean reverseRelation, boolean doubtful, RedListGefaesspflanzenImportState state){
+        TaxonBase clone = (TaxonBase) taxonBase.clone();
+        clone.setName(name);
+        if(taxonBase.isInstanceOf(Taxon.class)){
+            TaxonRelationship taxonRelation;
+            if(reverseRelation){
+                taxonRelation = ((Taxon) taxonBase).addTaxonRelation((Taxon) clone, relationFromCloneToTaxon, null, null);
             }
-            ImportHelper.setOriginalSource(clone, state.getTransactionalSourceReference(), id, sourceNameSpace);
-            taxaToSave.add(clone);
+            else {
+                taxonRelation = ((Taxon) clone).addTaxonRelation((Taxon) taxonBase, relationFromCloneToTaxon, null, null);
+            }
+            taxonRelation.setDoubtful(doubtful);
+        }
+        ImportHelper.setOriginalSource(clone, state.getTransactionalSourceReference(), id, sourceNameSpace);
+        taxaToSave.add(clone);
     }
 
     private TaxonBase importTaxon(long id, String taxNameString, String gueltString, String authorBasiString,

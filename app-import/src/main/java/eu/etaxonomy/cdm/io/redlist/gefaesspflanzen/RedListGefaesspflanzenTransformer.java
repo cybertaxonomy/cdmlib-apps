@@ -72,12 +72,12 @@ public final class RedListGefaesspflanzenTransformer extends InputTransformerBas
     public TaxonRelationshipType getTaxonRelationshipTypeByKey(String key) {
         if (key == null){return null;}
         else {
-            String substring = key.substring(key.length()-1, key.length());
             //        if (key.equals("<")){return TaxonRelationshipType.();}//TODO: what to do here?
-            if (substring.equals("=")){return TaxonRelationshipType.CONGRUENT_TO();}
-            else if (substring.equals(">")){return TaxonRelationshipType.INCLUDES();}
-            else if (substring.equals("!")){return TaxonRelationshipType.OVERLAPS();}
-            else if (substring.equals("?")){return TaxonRelationshipType.ALL_RELATIONSHIPS();}
+            if (key.equals("=")){return TaxonRelationshipType.CONGRUENT_TO();}
+            else if (key.equals(">")){return TaxonRelationshipType.INCLUDES();}
+            else if (key.equals("<")){return TaxonRelationshipType.INCLUDES();}
+            else if (key.equals("!")){return TaxonRelationshipType.OVERLAPS();}
+//            else if (key.equals("?")){return TaxonRelationshipType.;}//TODO: what to do here?
             //        else if (key.equals("x")){return TaxonRelationshipType.();}//TODO: what to do here?
         }
         return null;

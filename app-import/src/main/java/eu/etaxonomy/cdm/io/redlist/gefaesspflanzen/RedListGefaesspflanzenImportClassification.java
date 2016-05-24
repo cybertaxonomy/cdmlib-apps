@@ -94,9 +94,19 @@ public class RedListGefaesspflanzenImportClassification extends DbImportBase<Red
         ResultSet rs = partitioner.getResultSet();
         Classification gesamtListeClassification = getClassificationService().load(state.getConfig().getClassificationUuid());
         Classification checklistClassification = getClassificationService().load(RedListUtil.checkListClassificationUuid);
+        Classification classificationE = getClassificationService().load(RedListUtil.uuidClassificationE);
+        Classification classificationW = getClassificationService().load(RedListUtil.uuidClassificationW);
+        Classification classificationK = getClassificationService().load(RedListUtil.uuidClassificationK);
+        Classification classificationAW = getClassificationService().load(RedListUtil.uuidClassificationAW);
+        Classification classificationAO = getClassificationService().load(RedListUtil.uuidClassificationAO);
+        Classification classificationR = getClassificationService().load(RedListUtil.uuidClassificationR);
+        Classification classificationO = getClassificationService().load(RedListUtil.uuidClassificationO);
+        Classification classificationS = getClassificationService().load(RedListUtil.uuidClassificationS);
         try {
             while (rs.next()){
-                makeSingleTaxonNode(state, rs, gesamtListeClassification, checklistClassification);
+                makeSingleTaxonNode(state, rs, gesamtListeClassification, checklistClassification,
+                        classificationE, classificationW, classificationK, classificationAW
+                        , classificationAO, classificationR, classificationO, classificationS);
 
             }
         } catch (SQLException e) {
@@ -109,7 +119,11 @@ public class RedListGefaesspflanzenImportClassification extends DbImportBase<Red
         return true;
     }
 
-    private void makeSingleTaxonNode(RedListGefaesspflanzenImportState state, ResultSet rs, Classification gesamtListeClassification, Classification checklistClassification)
+    private void makeSingleTaxonNode(RedListGefaesspflanzenImportState state, ResultSet rs,
+            Classification gesamtListeClassification, Classification checklistClassification,
+            Classification classificationE, Classification classificationW, Classification classificationK,
+            Classification classificationAW, Classification classificationAO, Classification classificationR,
+            Classification classificationO, Classification classificationS)
             throws SQLException {
         long id = rs.getLong(RedListUtil.NAMNR);
         String parentId = String.valueOf(rs.getLong(RedListUtil.LOWER));
@@ -137,19 +151,18 @@ public class RedListGefaesspflanzenImportClassification extends DbImportBase<Red
         }
 
         //add taxa for concept relationships to E, W, K, AW, AO, R, O, S
-        addTaxonToClassification(RedListUtil.uuidClassificationE, RedListUtil.CLASSIFICATION_NAMESPACE_E, id, state);
-        addTaxonToClassification(RedListUtil.uuidClassificationW, RedListUtil.CLASSIFICATION_NAMESPACE_W, id, state);
-        addTaxonToClassification(RedListUtil.uuidClassificationK, RedListUtil.CLASSIFICATION_NAMESPACE_K, id, state);
-        addTaxonToClassification(RedListUtil.uuidClassificationAW, RedListUtil.CLASSIFICATION_NAMESPACE_AW, id, state);
-        addTaxonToClassification(RedListUtil.uuidClassificationAO, RedListUtil.CLASSIFICATION_NAMESPACE_AO, id, state);
-        addTaxonToClassification(RedListUtil.uuidClassificationR, RedListUtil.CLASSIFICATION_NAMESPACE_R, id, state);
-        addTaxonToClassification(RedListUtil.uuidClassificationO, RedListUtil.CLASSIFICATION_NAMESPACE_O, id, state);
-        addTaxonToClassification(RedListUtil.uuidClassificationS, RedListUtil.CLASSIFICATION_NAMESPACE_S, id, state);
+        addTaxonToClassification(classificationE, RedListUtil.CLASSIFICATION_NAMESPACE_E, id, state);
+        addTaxonToClassification(classificationW, RedListUtil.CLASSIFICATION_NAMESPACE_W, id, state);
+        addTaxonToClassification(classificationK, RedListUtil.CLASSIFICATION_NAMESPACE_K, id, state);
+        addTaxonToClassification(classificationAW, RedListUtil.CLASSIFICATION_NAMESPACE_AW, id, state);
+        addTaxonToClassification(classificationAO, RedListUtil.CLASSIFICATION_NAMESPACE_AO, id, state);
+        addTaxonToClassification(classificationR, RedListUtil.CLASSIFICATION_NAMESPACE_R, id, state);
+        addTaxonToClassification(classificationO, RedListUtil.CLASSIFICATION_NAMESPACE_O, id, state);
+        addTaxonToClassification(classificationS, RedListUtil.CLASSIFICATION_NAMESPACE_S, id, state);
     }
 
-    private void addTaxonToClassification(UUID classificationUuid, String classificationNamespace, long id, RedListGefaesspflanzenImportState state){
+    private void addTaxonToClassification(Classification classification, String classificationNamespace, long id, RedListGefaesspflanzenImportState state){
         Taxon taxon = HibernateProxyHelper.deproxy(state.getRelatedObject(classificationNamespace, String.valueOf(id), TaxonBase.class), Taxon.class);
-        Classification classification = getClassificationService().load(classificationUuid);
         classification.addChildTaxon(taxon, null, null);
     }
 
