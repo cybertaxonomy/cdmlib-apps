@@ -16,6 +16,7 @@ import eu.etaxonomy.cdm.io.common.mapping.InputTransformerBase;
 import eu.etaxonomy.cdm.io.common.mapping.UndefinedTransformerMethodException;
 import eu.etaxonomy.cdm.model.name.NomenclaturalStatusType;
 import eu.etaxonomy.cdm.model.name.Rank;
+import eu.etaxonomy.cdm.model.taxon.TaxonRelationshipType;
 
 /**
  *
@@ -65,6 +66,19 @@ public final class RedListGefaesspflanzenTransformer extends InputTransformerBas
         else if (key.equals("nom. utique rejic.")){return NomenclaturalStatusType.UTIQUE_REJECTED();}
         else if (key.equals("nom. utique rejic. pro.")){return NomenclaturalStatusType.UTIQUE_REJECTED_PROP();}
         else if (key.equals("comb. nov.")){return NomenclaturalStatusType.COMB_NOV();}
+        return null;
+    }
+
+    public TaxonRelationshipType getTaxonRelationshipTypeByKey(String key) {
+        if (key == null){return null;}
+        else {
+            String substring = key.substring(key.length()-1, key.length());
+            //        if (key.equals("<")){return TaxonRelationshipType.();}//TODO: what to do here?
+            if (substring.equals(">")){return TaxonRelationshipType.INCLUDES();}
+            else if (substring.equals("!")){return TaxonRelationshipType.OVERLAPS();}
+            else if (substring.equals("?")){return TaxonRelationshipType.ALL_RELATIONSHIPS();}
+            //        else if (key.equals("x")){return TaxonRelationshipType.();}//TODO: what to do here?
+        }
         return null;
     }
 

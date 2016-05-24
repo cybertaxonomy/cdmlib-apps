@@ -44,9 +44,17 @@ public class RedListUtil {
     public static final UUID uuidClassificationS = UUID.fromString("53e81162-5c2d-425b-bbe6-6e8d12e85790");
 
     public static final String NAME_NAMESPACE = "name";
+    public static final String AUTHOR_NAMESPACE = "author";
     public static final String TAXON_GESAMTLISTE_NAMESPACE = "taxon_gesamt_liste";
     public static final String TAXON_CHECKLISTE_NAMESPACE = "taxon_checkliste";
-    public static final String AUTHOR_NAMESPACE = "author";
+    public static final String CLASSIFICATION_NAMESPACE_E = "classification_namespace_e";
+    public static final String CLASSIFICATION_NAMESPACE_W = "classification_namespace_w";
+    public static final String CLASSIFICATION_NAMESPACE_K = "classification_namespace_k";
+    public static final String CLASSIFICATION_NAMESPACE_AW = "classification_namespace_aw";
+    public static final String CLASSIFICATION_NAMESPACE_AO = "classification_namespace_ao";
+    public static final String CLASSIFICATION_NAMESPACE_R = "classification_namespace_r";
+    public static final String CLASSIFICATION_NAMESPACE_O = "classification_namespace_o";
+    public static final String CLASSIFICATION_NAMESPACE_S = "classification_namespace_s";
 
 
     //cell content
@@ -84,6 +92,15 @@ public class RedListUtil {
     public static final String AUTOR = "AUTOR";
     public static final String CL_TAXON = "CL_TAXON";
     public static final String HYB = "HYB";
+
+    public static final String E = "E";
+    public static final String W = "W";
+    public static final String K = "K";
+    public static final String AW = "AW";
+    public static final String AO = "AO";
+    public static final String R = "R";
+    public static final String O = "O";
+    public static final String S = "S";
 
     public static void logMessage(long id, String message, Logger logger){
         logger.error(NAMNR+": "+id+" "+message);

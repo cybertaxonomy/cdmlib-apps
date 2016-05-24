@@ -21,6 +21,7 @@ import org.apache.log4j.Logger;
 import org.springframework.stereotype.Component;
 
 import eu.etaxonomy.cdm.common.CdmUtils;
+import eu.etaxonomy.cdm.hibernate.HibernateProxyHelper;
 import eu.etaxonomy.cdm.io.common.DbImportBase;
 import eu.etaxonomy.cdm.io.common.IPartitionedIO;
 import eu.etaxonomy.cdm.io.common.ResultSetPartitioner;
@@ -134,6 +135,22 @@ public class RedListGefaesspflanzenImportClassification extends DbImportBase<Red
         if(parentGL!=null && parentCL!=null && parentGL.getUuid().equals(parentCL.getUuid())){
             RedListUtil.logMessage(id, "Same UUID for "+parentGL+ " (Gesamtliste) and "+parentCL+" (Checkliste)", logger);
         }
+
+        //add taxa for concept relationships to E, W, K, AW, AO, R, O, S
+        addTaxonToClassification(RedListUtil.uuidClassificationE, RedListUtil.CLASSIFICATION_NAMESPACE_E, id, state);
+        addTaxonToClassification(RedListUtil.uuidClassificationW, RedListUtil.CLASSIFICATION_NAMESPACE_W, id, state);
+        addTaxonToClassification(RedListUtil.uuidClassificationK, RedListUtil.CLASSIFICATION_NAMESPACE_K, id, state);
+        addTaxonToClassification(RedListUtil.uuidClassificationAW, RedListUtil.CLASSIFICATION_NAMESPACE_AW, id, state);
+        addTaxonToClassification(RedListUtil.uuidClassificationAO, RedListUtil.CLASSIFICATION_NAMESPACE_AO, id, state);
+        addTaxonToClassification(RedListUtil.uuidClassificationR, RedListUtil.CLASSIFICATION_NAMESPACE_R, id, state);
+        addTaxonToClassification(RedListUtil.uuidClassificationO, RedListUtil.CLASSIFICATION_NAMESPACE_O, id, state);
+        addTaxonToClassification(RedListUtil.uuidClassificationS, RedListUtil.CLASSIFICATION_NAMESPACE_S, id, state);
+    }
+
+    private void addTaxonToClassification(UUID classificationUuid, String classificationNamespace, long id, RedListGefaesspflanzenImportState state){
+        Taxon taxon = HibernateProxyHelper.deproxy(state.getRelatedObject(classificationNamespace, String.valueOf(id), TaxonBase.class), Taxon.class);
+        Classification classification = getClassificationService().load(classificationUuid);
+        classification.addChildTaxon(taxon, null, null);
     }
 
     private void createParentChildNodes(Classification classification, long id, String gueltString,
