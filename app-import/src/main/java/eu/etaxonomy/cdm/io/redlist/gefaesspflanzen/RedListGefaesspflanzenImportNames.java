@@ -179,11 +179,15 @@ public class RedListGefaesspflanzenImportNames extends DbImportBase<RedListGefae
         }
     }
 
-    private void cloneTaxon(TaxonBase taxonBase, TaxonNameBase name, TaxonRelationshipType taxonRelationshipType, Set<TaxonBase> taxaToSave, long id, String sourceNameSpace, RedListGefaesspflanzenImportState state){
+    /**
+     * <b>NOTE:</b> the {@link TaxonRelationshipType} passed as parameter is
+     * directed <b>from the clone</b> to the taxon
+     */
+    private void cloneTaxon(TaxonBase taxonBase, TaxonNameBase name, TaxonRelationshipType relationFromCloneToTaxon, Set<TaxonBase> taxaToSave, long id, String sourceNameSpace, RedListGefaesspflanzenImportState state){
             TaxonBase clone = (TaxonBase) taxonBase.clone();
             clone.setName(name);
             if(taxonBase.isInstanceOf(Taxon.class)){
-                TaxonRelationship taxonRelation = ((Taxon) taxonBase).addTaxonRelation((Taxon) clone, taxonRelationshipType, null, null);
+                TaxonRelationship taxonRelation = ((Taxon) clone).addTaxonRelation((Taxon) taxonBase, relationFromCloneToTaxon, null, null);
                 taxonRelation.setDoubtful(true);//TODO Ist das mit " mit Fragezeichen" gemeint?
             }
             ImportHelper.setOriginalSource(clone, state.getTransactionalSourceReference(), id, sourceNameSpace);
