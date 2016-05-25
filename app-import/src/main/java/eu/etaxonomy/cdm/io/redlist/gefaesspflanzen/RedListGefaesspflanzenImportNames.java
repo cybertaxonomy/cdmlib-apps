@@ -412,14 +412,13 @@ public class RedListGefaesspflanzenImportNames extends DbImportBase<RedListGefae
             taxNameString = taxNameString.replace("agg.", "aggr.");
         }
         if(hybString.equals(RedListUtil.HYB_X)){
-            taxNameString = taxNameString.replace("× ", "×");//hybrid sign has no space after it in titleCache for binomial hybrids
+            taxNameString = taxNameString.replace(RedListUtil.HYB_SIGN+" ", RedListUtil.HYB_SIGN);//hybrid sign has no space after it in titleCache for binomial hybrids
         }
-//        if(taxNameString.endsWith(Rank.SPECIESGROUP().toString())){
-        if(taxNameString.endsWith("species group")){
-            taxNameString.replaceAll(Rank.SPECIESGROUP().toString(), "- Gruppe");
-            if(!taxNameString.trim().equals(nameCache)){
-                taxNameString.replaceAll(Rank.SPECIESGROUP().toString(), "- group");
-            }
+        if(taxNameString.endsWith("- Gruppe")){
+            taxNameString.replaceAll("- Gruppe", "species group");
+        }
+        if(taxNameString.endsWith("- group")){
+            taxNameString.replaceAll("- group", "species group");
         }
         if(!taxNameString.trim().equals(nameCache)){
             RedListUtil.logMessage(id, "Taxon name inconsistent! taxon.titleCache <-> Column "+RedListUtil.TAXNAME+": "+nameCache+" <-> "+taxNameString, logger);
