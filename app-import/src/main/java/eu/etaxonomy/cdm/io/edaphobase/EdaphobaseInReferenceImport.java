@@ -90,8 +90,8 @@ public class EdaphobaseInReferenceImport extends EdaphobaseImportBase {
         Integer parentId = rs.getInt("parent_document_fk_document_id");
 //        Integer documentType = nullSafeInt(rs, "document_type");
 
-        Reference<?> child = state.getRelatedObject(REFERENCE_NAMESPACE, String.valueOf(id), Reference.class);
-        Reference<?> parent = state.getRelatedObject(REFERENCE_NAMESPACE, String.valueOf(parentId), Reference.class);
+        Reference child = state.getRelatedObject(REFERENCE_NAMESPACE, String.valueOf(id), Reference.class);
+        Reference parent = state.getRelatedObject(REFERENCE_NAMESPACE, String.valueOf(parentId), Reference.class);
         if (child == null){
             logger.warn("Child reference for document_id " + id + " is NULL" );
         }else if (parent == null){

@@ -1,8 +1,8 @@
 /**
 * Copyright (C) 2007 EDIT
-* European Distributed Institute of Taxonomy 
+* European Distributed Institute of Taxonomy
 * http://www.e-taxonomy.eu
-* 
+*
 * The contents of this file are subject to the Mozilla Public License Version 1.1
 * See LICENSE.TXT at the top of this package for the full license terms.
 */
@@ -33,43 +33,43 @@ import eu.etaxonomy.cdm.model.reference.ReferenceFactory;
 public class CentralAfricaFernsFdacImportActivator {
 	@SuppressWarnings("unused")
 	private static final Logger logger = Logger.getLogger(CentralAfricaFernsFdacImportActivator.class);
-	
+
 	//database validation status (create, update, validate ...)
 	static DbSchemaValidation hbm2dll = DbSchemaValidation.VALIDATE;
 	static final URI source = dwca_ferns();
-	
-	
+
+
 //	static final ICdmDataSource cdmDestination = CdmDestinations.localH2();
 //	static final ICdmDataSource cdmDestination = CdmDestinations.cdm_test_local_fdac();
 	static final ICdmDataSource cdmDestination = CdmDestinations.cdm_flora_central_africa_preview();
 //	static final ICdmDataSource cdmDestination = CdmDestinations.cdm_flora_central_africa_production();
 
 	static final String sourceReferenceTitle = "Ferns import(Dwc-A)";
-	static boolean useSourceReferenceAsSec = true; 
-	
-	//default nom code is ICZN as it allows adding publication year 
+	static boolean useSourceReferenceAsSec = true;
+
+	//default nom code is ICZN as it allows adding publication year
 	static final NomenclaturalCode defaultNomCode = NomenclaturalCode.ICNAFP;
 
-	
+
 	//check - import
 	static final CHECK check = CHECK.IMPORT_WITHOUT_CHECK;
-	
+
 	//config
 	static DatasetUse datasetUse = DatasetUse.CLASSIFICATION;
-	
+
 	//validate
 	static boolean validateRankConsistency = true;
-	
-	
+
+
 	//taxa
 	static final boolean doTaxa = true;
-	
-	
-	
+
+
+
 	static final MappingType mappingType = MappingType.InMemoryMapping;
-	
+
 	private void doImport(ICdmDataSource cdmDestination){
-		
+
 		//make Source
 		DwcaImportConfigurator config= DwcaImportConfigurator.NewInstance(source, cdmDestination);
 		config.addObserver(new LoggingIoObserver());
@@ -80,10 +80,10 @@ public class CentralAfricaFernsFdacImportActivator {
 		config.setNomenclaturalCode(defaultNomCode);
 		config.setSourceReferenceTitle(sourceReferenceTitle);
 		config.setUseSourceReferenceAsSec(useSourceReferenceAsSec);
-		
+
 		CdmDefaultImport myImport = new CdmDefaultImport();
 
-		
+
 		//...
 		if (true){
 			System.out.println("Start import from ("+ source.toString() + ") ...");
@@ -91,23 +91,23 @@ public class CentralAfricaFernsFdacImportActivator {
 			myImport.invoke(config);
 			System.out.println("End import from ("+ source.toString() + ")...");
 		}
-		
-		
+
+
 	}
 
-	private Reference<?> getSourceReference(String string) {
-		Reference<?> result = ReferenceFactory.newGeneric();
+	private Reference getSourceReference(String string) {
+		Reference result = ReferenceFactory.newGeneric();
 		result.setTitleCache(string);
 		return result;
 	}
 
-	
+
 	//Scratchpads test
 	public static URI dwca_ferns() {
 		URI sourceUrl = URI.create("file:////PESIIMPORT3/fdac/dwca/ferns.zip");
 		return sourceUrl;
 	}
-	
+
 
 	/**
 	 * @param args
@@ -116,5 +116,5 @@ public class CentralAfricaFernsFdacImportActivator {
 		CentralAfricaFernsFdacImportActivator me = new CentralAfricaFernsFdacImportActivator();
 		me.doImport(cdmDestination);
 	}
-	
+
 }

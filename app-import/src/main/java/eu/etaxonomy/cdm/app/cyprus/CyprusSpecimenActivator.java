@@ -1,8 +1,8 @@
 /**
 * Copyright (C) 2007 EDIT
-* European Distributed Institute of Taxonomy 
+* European Distributed Institute of Taxonomy
 * http://www.e-taxonomy.eu
-* 
+*
 * The contents of this file are subject to the Mozilla Public License Version 1.1
 * See LICENSE.TXT at the top of this package for the full license terms.
 */
@@ -31,37 +31,37 @@ import eu.etaxonomy.cdm.model.reference.ReferenceFactory;
 public class CyprusSpecimenActivator {
 	@SuppressWarnings("unused")
 	private static final Logger logger = Logger.getLogger(CyprusSpecimenActivator.class);
-	
+
 	//database validation status (create, update, validate ...)
 	static DbSchemaValidation hbm2dll = DbSchemaValidation.VALIDATE;
 	static final URI source = cyprus_specimen_local();
 
-	
+
 //	static final ICdmDataSource cdmDestination = CdmDestinations.localH2();
 //	static final ICdmDataSource cdmDestination = CdmDestinations.cdm_test_local_mysql();
 	static final ICdmDataSource cdmDestination = CdmDestinations.cdm_cyprus_dev();
 //	static final ICdmDataSource cdmDestination = CdmDestinations.cdm_cyprus_production();
 
-	
+
 	//check - import
 	static final CHECK check = CHECK.IMPORT_WITHOUT_CHECK;
-	
+
 	//taxa
 //	static final boolean doTaxa = false;
 //	static final boolean doDeduplicate = false;
 //	static final boolean doDistribution = true;
 
-	
+
 	private void doImport(ICdmDataSource cdmDestination){
-		
+
 		//make Source
 		SpecimenCdmExcelImportConfigurator config= SpecimenCdmExcelImportConfigurator.NewInstance(source, cdmDestination);
 		config.setCheck(check);
 		config.setDbSchemaValidation(hbm2dll);
-		
+
 		CdmDefaultImport myImport = new CdmDefaultImport();
 
-		
+
 		//...
 		if (true){
 			System.out.println("Start import from ("+ source.toString() + ") ...");
@@ -70,15 +70,15 @@ public class CyprusSpecimenActivator {
 
 			System.out.println("End import from ("+ source.toString() + ")...");
 		}
-		
+
 	}
 
-	private Reference<?> getSourceReference(String string) {
-		Reference<?> result = ReferenceFactory.newGeneric();
+	private Reference getSourceReference(String string) {
+		Reference result = ReferenceFactory.newGeneric();
 		result.setTitleCache(string, true);
 		return result;
 	}
-	
+
 	//Cyprus
 	public static URI cyprus_specimen_local() {
 		URI sourceUrl;
@@ -91,7 +91,7 @@ public class CyprusSpecimenActivator {
 		}
 	}
 
-	
+
 
 	/**
 	 * @param args
@@ -100,5 +100,5 @@ public class CyprusSpecimenActivator {
 		CyprusSpecimenActivator me = new CyprusSpecimenActivator();
 		me.doImport(cdmDestination);
 	}
-	
+
 }

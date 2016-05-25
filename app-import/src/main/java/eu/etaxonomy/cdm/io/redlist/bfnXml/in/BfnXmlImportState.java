@@ -24,10 +24,10 @@ import eu.etaxonomy.cdm.model.reference.Reference;
  * @version 1.0
  */
 public class BfnXmlImportState extends ImportStateBase<BfnXmlImportConfigurator, BfnXmlImportBase>{
-	private Reference<?> refA;
-	private Reference<?> refB;
-	private Reference<?> currentMicroRef;
-	private Reference<?> completeSourceRef;
+	private Reference refA;
+	private Reference refB;
+	private Reference currentMicroRef;
+	private Reference completeSourceRef;
 	private String classificationA;
 	private String classificationB;
 	@SuppressWarnings("unused")
@@ -50,34 +50,34 @@ public class BfnXmlImportState extends ImportStateBase<BfnXmlImportConfigurator,
 		this.commonNameMap = commonNameMap;
 	}
 
-	public void setFirstListSecRef(Reference<?> ref) {
+	public void setFirstListSecRef(Reference ref) {
 		this.refA = ref;
 	}
 
-	public void setSecondListSecRef(Reference<?> ref) {
+	public void setSecondListSecRef(Reference ref) {
 		this.refB = ref;
 	}
 
-	public Reference<?> getFirstListSecRef(){
+	public Reference getFirstListSecRef(){
 		return refA;
 	}
 
-	public Reference<?> getSecondListSecRef(){
+	public Reference getSecondListSecRef(){
 		return refB;
 	}
 
-	public void setCurrentMicroRef(Reference<?> currentRef) {
+	public void setCurrentMicroRef(Reference currentRef) {
 		this.currentMicroRef = currentRef;
 	}
-	public Reference<?> getCompleteSourceRef() {
+	public Reference getCompleteSourceRef() {
 		return completeSourceRef;
 	}
 
-	public void setCompleteSourceRef(Reference<?> completeSourceRef) {
+	public void setCompleteSourceRef(Reference completeSourceRef) {
 		this.completeSourceRef = completeSourceRef;
 	}
 
-	public Reference<?> getCurrentMicroRef(){
+	public Reference getCurrentMicroRef(){
 		return currentMicroRef;
 	}
 	public void setFirstClassificationName(String classificationA) {

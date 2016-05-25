@@ -25,7 +25,6 @@ import eu.etaxonomy.cdm.io.common.IImportConfigurator.CHECK;
 import eu.etaxonomy.cdm.io.cuba.CubaImportConfigurator;
 import eu.etaxonomy.cdm.io.cuba.CubaTransformer;
 import eu.etaxonomy.cdm.model.agent.Person;
-import eu.etaxonomy.cdm.model.agent.Team;
 import eu.etaxonomy.cdm.model.description.Feature;
 import eu.etaxonomy.cdm.model.description.FeatureNode;
 import eu.etaxonomy.cdm.model.description.FeatureTree;
@@ -40,13 +39,13 @@ public class CubaActivator {
 	private static final Logger logger = Logger.getLogger(CubaActivator.class);
 
 	//database validation status (create, update, validate ...)
-	static DbSchemaValidation hbm2dll = DbSchemaValidation.CREATE;
+	static DbSchemaValidation hbm2dll = DbSchemaValidation.VALIDATE;
 
-    static final ICdmDataSource cdmDestination = CdmDestinations.localH2();
+//    static final ICdmDataSource cdmDestination = CdmDestinations.localH2();
 //	static final ICdmDataSource cdmDestination = CdmDestinations.cdm_test_local_mysql_test();
-//    static final ICdmDataSource cdmDestination = CdmDestinations.cdm_cuba_production();
+    static final ICdmDataSource cdmDestination = CdmDestinations.cdm_cuba_production();
 
-	static boolean invers = false;
+	static boolean invers = true;
 
     boolean doAsteraceae = include;
     boolean doConvolvulaceae = include;
@@ -82,8 +81,8 @@ public class CubaActivator {
 	static final CHECK check = CHECK.IMPORT_WITHOUT_CHECK;
 
 	boolean doVocabularies = (hbm2dll == DbSchemaValidation.CREATE);
-	static final boolean doTaxa = true;
-	static final boolean doDeduplicate = false;
+	static final boolean doTaxa = false;
+	static final boolean doDeduplicate = true;
 
 
 	private void doImport(ICdmDataSource cdmDestination){
@@ -158,7 +157,6 @@ public class CubaActivator {
         }
 
 
-
 		//deduplicate
 		if (doDeduplicate){
 		    logger.warn("Start deduplication ...");
@@ -169,10 +167,10 @@ public class CubaActivator {
             }
 			int count = app.getAgentService().deduplicate(Person.class, null, null);
 			logger.warn("Deduplicated " + count + " persons.");
-			count = app.getAgentService().deduplicate(Team.class, null, null);
-			logger.warn("Deduplicated " + count + " teams.");
-			count = app.getReferenceService().deduplicate(Reference.class, null, null);
-			logger.warn("Deduplicated " + count + " references.");
+//			count = app.getAgentService().deduplicate(Team.class, null, null);
+//			logger.warn("Deduplicated " + count + " teams.");
+//			count = app.getReferenceService().deduplicate(Reference.class, null, null);
+//			logger.warn("Deduplicated " + count + " references.");
 		}
 
 		System.exit(0);
@@ -205,9 +203,9 @@ public class CubaActivator {
         System.out.println("End import from ("+ source.toString() + ")...");
     }
 
-    private final Reference<?> inRef = ReferenceFactory.newGeneric();
-	private Reference<?> getSourceReference(String string) {
-		Reference<?> result = ReferenceFactory.newGeneric();
+    private final Reference inRef = ReferenceFactory.newGeneric();
+	private Reference getSourceReference(String string) {
+		Reference result = ReferenceFactory.newGeneric();
 		result.setTitleCache(string, true);
 		result.setInReference(inRef);
 		inRef.setTitleCache(sourceReferenceTitle, true);

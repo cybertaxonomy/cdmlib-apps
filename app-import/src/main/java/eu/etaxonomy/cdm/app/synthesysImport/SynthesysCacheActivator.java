@@ -1,8 +1,8 @@
 /**
  * Copyright (C) 2007 EDIT
- * European Distributed Institute of Taxonomy 
+ * European Distributed Institute of Taxonomy
  * http://www.e-taxonomy.eu
- * 
+ *
  * The contents of this file are subject to the Mozilla Public License Version 1.1
  * See LICENSE.TXT at the top of this package for the full license terms.
  */
@@ -18,7 +18,6 @@ import java.util.List;
 import java.util.ListIterator;
 
 import org.apache.log4j.Logger;
-import org.apache.poi.ss.usermodel.Workbook;
 import org.springframework.transaction.TransactionStatus;
 
 import eu.etaxonomy.cdm.api.application.CdmApplicationController;
@@ -74,9 +73,9 @@ public class SynthesysCacheActivator {
 	protected ArrayList<String> identificationList = new ArrayList<String>();
 
 	static DbSchemaValidation hbm2dll = DbSchemaValidation.CREATE;
-	
+
 	static ICdmDataSource desitination = CdmDestinations.localH2();
-	
+
 
 	public void saveUnit(HashMap<String,String> unit){
 		String author = unit.get("author");
@@ -139,10 +138,10 @@ public class SynthesysCacheActivator {
 		TransactionStatus tx = null;
 
 		app = CdmApplicationController.NewInstance(desitination, hbm2dll);
-		
+
 		tx = app.startTransaction();
 		try {
-			Reference<?> sec = ReferenceFactory.newDatabase();
+			Reference sec = ReferenceFactory.newDatabase();
 			sec.setTitleCache("SYNTHESYS CACHE DATA", true);
 
 			/**
@@ -152,13 +151,13 @@ public class SynthesysCacheActivator {
 			//create specimen
 			if (this.recordBasis != null){
 				if (this.recordBasis.toLowerCase().startsWith("s")) {//specimen
-					derivedThing = DerivedUnit.NewPreservedSpecimenInstance();				
+					derivedThing = DerivedUnit.NewPreservedSpecimenInstance();
 				}
 				else if (this.recordBasis.toLowerCase().startsWith("o")) {//observation
-					derivedThing = DerivedUnit.NewInstance(SpecimenOrObservationType.Observation);				
+					derivedThing = DerivedUnit.NewInstance(SpecimenOrObservationType.Observation);
 				}
 				else if (this.recordBasis.toLowerCase().startsWith("l")) {//living -> fossil, herbarium sheet....???
-					derivedThing = DerivedUnit.NewInstance(SpecimenOrObservationType.LivingSpecimen);	
+					derivedThing = DerivedUnit.NewInstance(SpecimenOrObservationType.LivingSpecimen);
 				}
 			}
 			if (derivedThing == null){
@@ -179,12 +178,14 @@ public class SynthesysCacheActivator {
 				if (this.fullScientificNameString.indexOf("_preferred_") != -1){
 					scientificName = this.fullScientificNameString.split("_preferred_")[0];
 					String pTmp = this.fullScientificNameString.split("_preferred_")[1];
-					if (pTmp == "1" || pTmp.toLowerCase().indexOf("true") != -1)
-						preferredFlag=true;
-					else
-						preferredFlag=false;
-				}
-				else scientificName = this.fullScientificNameString;
+					if (pTmp == "1" || pTmp.toLowerCase().indexOf("true") != -1) {
+                        preferredFlag=true;
+                    } else {
+                        preferredFlag=false;
+                    }
+				} else {
+                    scientificName = this.fullScientificNameString;
+                }
 
 //				taxonName = nvnpi.parseFullName(this.fullScientificNameString,NomenclaturalCode.ICZN(),null);
 //				if (taxonName.hasProblem()){
@@ -200,7 +201,7 @@ public class SynthesysCacheActivator {
 //				System.out.println("pb ICNCP");
 //				}
 //				}
-//				}				
+//				}
 //				}
 				taxonName = nvnpi.parseFullName(scientificName);
 				if (withCdm){
@@ -216,7 +217,7 @@ public class SynthesysCacheActivator {
 					}
 				}
 
-				
+
 //				tx = app.startTransaction();
 				app.getNameService().saveOrUpdate(taxonName);
 				taxon = Taxon.NewInstance(taxonName, sec); //TODO use real reference for sec
@@ -253,7 +254,7 @@ public class SynthesysCacheActivator {
 				System.out.println("Institution (agent) unknown");
 				//create institution
 				institution = Institution.NewInstance();
-				institution.setCode(this.institutionCode);				
+				institution.setCode(this.institutionCode);
 			}
 			else{
 				System.out.println("Institution (agent) already in the db");
@@ -282,7 +283,7 @@ public class SynthesysCacheActivator {
 				for (int i=0; i<collections.size(); i++){
 					collection = collections.get(i);
 					try {
-						if (collection.getInstitute().getCode().equalsIgnoreCase(institution.getCode())){ 
+						if (collection.getInstitute().getCode().equalsIgnoreCase(institution.getCode())){
 							//found a collection with the same code and the same institution
 							collectionFound=true;
 						}
@@ -318,21 +319,22 @@ public class SynthesysCacheActivator {
 			gatheringEvent.setExactLocation(coordinates);
 
 			NamedArea area = NamedArea.NewInstance();
-			
+
 
 			Country country = null;
 //			System.out.println("isocountry "+this.isocountry);
-			if (this.isocountry != null)
-				country = app.getOccurrenceService().getCountryByIso(this.isocountry);
-			
+			if (this.isocountry != null) {
+                country = app.getOccurrenceService().getCountryByIso(this.isocountry);
+            }
+
 //			System.out.println(country.getLabel());
 //			Set<Continent> cont = country.getContinents();
-//			
+//
 //			System.out.println(cont.size());
 //			Iterator<Continent> iter = cont.iterator();
 //			while (iter.hasNext())
 //				System.out.println(iter.next().toString());
-			
+
 			if (country != null){
 				area.addCountry(country);
 				System.out.println("country not null!");
@@ -385,7 +387,7 @@ public class SynthesysCacheActivator {
 
 			/**
 			 * SAVE AND STORE DATA
-			 */			
+			 */
 			//save the specimen data
 			//	app.getOccurrenceService().saveSpecimenOrObservationBase(fieldObservation);
 			try {
@@ -409,11 +411,11 @@ public class SynthesysCacheActivator {
 			e.printStackTrace();
 			result = false;
 		}
-//		
+//
 		app.commitTransaction(tx);
 		System.out.println("commit done");
 		app.close();
-		
+
 		return result;
 	}
 
@@ -432,13 +434,13 @@ public class SynthesysCacheActivator {
 
 	/**
 	 * @param args
-	 * @throws URISyntaxException 
+	 * @throws URISyntaxException
 	 */
 	public static void main(String[] args) throws URISyntaxException {
-		URI uri = CdmImportSources.SYNTHESYS_SPECIMEN();		
+		URI uri = CdmImportSources.SYNTHESYS_SPECIMEN();
 		logger.info("main method");
 		SynthesysCacheActivator abcdAct = new SynthesysCacheActivator();
-		
+
 		ArrayList<HashMap<String, String>> units;
 		try {
 			units = ExcelUtils.parseXLS(uri);
@@ -452,7 +454,7 @@ public class SynthesysCacheActivator {
 			logger.info(unit);
 			abcdAct.saveUnit(unit);//and then invoke
 			abcdAct.invoke();
-			
+
 		}
 	}
 

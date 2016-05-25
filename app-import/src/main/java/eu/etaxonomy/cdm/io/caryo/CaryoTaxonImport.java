@@ -135,7 +135,7 @@ public class CaryoTaxonImport  extends DbImportBase<CaryoImportState, CaryoImpor
 			ResultSet rs = partitioner.getResultSet();
 
 			int i = 0;
-    		Reference<?> sec = state.getTransactionalSourceReference();
+    		Reference sec = state.getTransactionalSourceReference();
 
 			//for each reference
             while (rs.next()){
@@ -711,7 +711,7 @@ public class CaryoTaxonImport  extends DbImportBase<CaryoImportState, CaryoImpor
 				book.setTitle(bookStr);
 
 				bookMap.put(bookStr, book);
-				getReferenceService().save((Reference<?>)book);
+				getReferenceService().save((Reference)book);
 			}
 		}
 	}
@@ -727,7 +727,7 @@ public class CaryoTaxonImport  extends DbImportBase<CaryoImportState, CaryoImpor
 			String periodical = rs.getString("PeriodicalTitle");
 			if (journalMap.get(periodical) == null ){
 
-				Reference<?> journal = ReferenceFactory.newJournal();
+				Reference journal = ReferenceFactory.newJournal();
 
 				journal.setTitle(periodical);
 
@@ -764,7 +764,7 @@ public class CaryoTaxonImport  extends DbImportBase<CaryoImportState, CaryoImpor
 	private Classification getClassification(CaryoImportState state) {
 		if (this.classification == null){
 			String name = state.getConfig().getClassificationName();
-			Reference<?> reference = state.getTransactionalSourceReference();
+			Reference reference = state.getTransactionalSourceReference();
 			this.classification = Classification.NewInstance(name, reference, Language.DEFAULT());
 			if (state.getConfig().getClassificationUuid() != null){
 				classification.setUuid(state.getConfig().getClassificationUuid());

@@ -1,8 +1,8 @@
 /**
 * Copyright (C) 2007 EDIT
-* European Distributed Institute of Taxonomy 
+* European Distributed Institute of Taxonomy
 * http://www.e-taxonomy.eu
-* 
+*
 * The contents of this file are subject to the Mozilla Public License Version 1.1
 * See LICENSE.TXT at the top of this package for the full license terms.
 */
@@ -47,16 +47,16 @@ public class BerlinModelOccurrenceSourceImport  extends BerlinModelImportBase {
 	private static int modCount = 5000;
 	private static final String pluralString = "occurrence sources";
 	private static final String dbTableName = "emOccurrenceSource";  //??
-	
-	
+
+
 	private Map<String, Integer> sourceNumberRefIdMap;
 	private Set<String> unfoundReferences = new HashSet<String>();
-	
+
 
 	public BerlinModelOccurrenceSourceImport(){
 		super(dbTableName, pluralString);
 	}
-	
+
 	@Override
 	protected String getIdQuery(BerlinModelImportState state) {
 		String result = "SELECT occurrenceSourceId FROM " + getTableName();
@@ -68,20 +68,20 @@ public class BerlinModelOccurrenceSourceImport  extends BerlinModelImportBase {
 
 	@Override
 	protected String getRecordQuery(BerlinModelImportConfigurator config) {
-			String strQuery =   //DISTINCT because otherwise emOccurrenceSource creates multiple records for a single distribution 
-            " SELECT * " + 
-                " FROM emOccurrenceSource " +  
-            " WHERE (OccurrenceSourceId IN (" + ID_LIST_TOKEN + ")  )" +  
+			String strQuery =   //DISTINCT because otherwise emOccurrenceSource creates multiple records for a single distribution
+            " SELECT * " +
+                " FROM emOccurrenceSource " +
+            " WHERE (OccurrenceSourceId IN (" + ID_LIST_TOKEN + ")  )" +
              "";
 		return strQuery;
 	}
-	
-	
+
+
 
 	@Override
 	protected void doInvoke(BerlinModelImportState state) {
 		unfoundReferences = new HashSet<String>();
-		
+
 		try {
 			sourceNumberRefIdMap = makeSourceNumberReferenceIdMap(state);
 		} catch (SQLException e) {
@@ -91,7 +91,7 @@ public class BerlinModelOccurrenceSourceImport  extends BerlinModelImportBase {
 		super.doInvoke(state);
 		sourceNumberRefIdMap = null;
 		if (unfoundReferences.size()>0){
-			String unfound = "'" + CdmUtils.concat("','", unfoundReferences.toArray(new String[]{})) + "'"; 
+			String unfound = "'" + CdmUtils.concat("','", unfoundReferences.toArray(new String[]{})) + "'";
 			logger.warn("Not found references: " + unfound);
 		}
 		return;
@@ -102,29 +102,29 @@ public class BerlinModelOccurrenceSourceImport  extends BerlinModelImportBase {
 		boolean success = true;
 		ResultSet rs = partitioner.getResultSet();
 		Map<String, Reference> refMap = partitioner.getObjectMap(BerlinModelReferenceImport.REFERENCE_NAMESPACE);
-		
+
 		Set<DescriptionElementBase> objectsToSave = new HashSet<DescriptionElementBase>();
 		try {
 			int i = 0;
 			//for each reference
             while (rs.next()){
-                
+
                 if ((i++ % modCount) == 0 && i!= 1 ){ logger.info("occurrence sources handled: " + (i-1));}
-                
+
                 Integer occurrenceSourceId = rs.getInt("OccurrenceSourceId");
                 Integer occurrenceFk =nullSafeInt(rs, "OccurrenceFk");
     			String sourceNumber = rs.getString("SourceNumber");
     			String oldName = rs.getString("OldName");
     			Integer oldNameFk = nullSafeInt(rs, "OldNameFk");
-    			
+
     			Distribution distribution = (Distribution)state.getRelatedObject(BerlinModelOccurrenceImport.NAMESPACE, String.valueOf(occurrenceFk));
-                
+
     			if (distribution == null){
     				//distribution = duplicateMap.get(occurrenceFk);
     			}
     			if (distribution != null){
     				Integer refId = sourceNumberRefIdMap.get(sourceNumber);
-    				Reference<?> ref = refMap.get(String.valueOf(refId));
+    				Reference ref = refMap.get(String.valueOf(refId));
 
     				if (ref != null){
     					DescriptionElementSource originalSource = DescriptionElementSource.NewInstance(OriginalSourceType.PrimaryTaxonomicSource);
@@ -144,11 +144,11 @@ public class BerlinModelOccurrenceSourceImport  extends BerlinModelImportBase {
     			}else{
     				logger.warn("distribution ("+occurrenceFk+") for occurrence source (" + occurrenceSourceId + ") could not be found." );
     			}
-                
+
             }
 			logger.info("Distributions to save: " + objectsToSave.size());
-			getDescriptionService().saveDescriptionElement(objectsToSave);	
-			
+			getDescriptionService().saveDescriptionElement(objectsToSave);
+
 			return success;
 		} catch (SQLException e) {
 			logger.error("SQLException:" +  e);
@@ -163,7 +163,7 @@ public class BerlinModelOccurrenceSourceImport  extends BerlinModelImportBase {
 		Class<?> cdmClass;
 		Set<String> idSet;
 		Map<Object, Map<String, ? extends CdmBase>> result = new HashMap<Object, Map<String, ? extends CdmBase>>();
-		
+
 		try{
 			Set<String> occurrenceIdSet = new HashSet<String>();
 			Set<String> referenceIdSet = new HashSet<String>();
@@ -174,11 +174,11 @@ public class BerlinModelOccurrenceSourceImport  extends BerlinModelImportBase {
 				handleForeignKey(rs, nameIdSet, "oldNameFk");
 				sourceNumberSet.add(CdmUtils.NzTrim(rs.getString("SourceNumber")));
 			}
-			
+
 			sourceNumberSet.remove("");
 			referenceIdSet = handleSourceNumber(rs, sourceNumberSet, result);
-			
-			
+
+
 			//occurrence map
 			nameSpace = BerlinModelOccurrenceImport.NAMESPACE;
 			cdmClass = Distribution.class;
@@ -192,7 +192,7 @@ public class BerlinModelOccurrenceSourceImport  extends BerlinModelImportBase {
 			idSet =nameIdSet;
 			Map<String, TaxonNameBase> nameMap = (Map<String, TaxonNameBase>)getCommonService().getSourcedObjectsByIdInSource(cdmClass, idSet, nameSpace);
 			result.put(nameSpace, nameMap);
-			
+
 			//reference map
 			nameSpace = BerlinModelReferenceImport.REFERENCE_NAMESPACE;
 			cdmClass = Reference.class;
@@ -209,16 +209,16 @@ public class BerlinModelOccurrenceSourceImport  extends BerlinModelImportBase {
 	private Set<String> handleSourceNumber(ResultSet rs, Set<String> sourceNumberSet, Map<Object, Map<String, ? extends CdmBase>> result) {
 		Map<String, Integer> sourceNumberReferenceIdMap = this.sourceNumberRefIdMap;
 		Set<String> referenceIdSet = new HashSet<String>();
-		
+
 		for(String sourceNumber : sourceNumberSet){
 			Integer refId = sourceNumberReferenceIdMap.get(sourceNumber);
-			referenceIdSet.add(String.valueOf(refId));		
+			referenceIdSet.add(String.valueOf(refId));
 		}
 		return referenceIdSet;
 	}
 
-	
-	
+
+
 	/**
 	 * @param state
 	 * @param oldName
@@ -252,16 +252,16 @@ public class BerlinModelOccurrenceSourceImport  extends BerlinModelImportBase {
 	 * Creates a map which maps source numbers on references
 	 * @param state
 	 * @return
-     * @throws SQLException 
+     * @throws SQLException
 	 */
 	private Map<String, Integer> makeSourceNumberReferenceIdMap(BerlinModelImportState state) throws SQLException {
 		Map<String, Integer> result = new HashMap<String, Integer>();
-		
+
 		Source source = state.getConfig().getSource();
-		String strQuery = " SELECT RefId, IdInSource " +  
-						  " FROM Reference " + 
+		String strQuery = " SELECT RefId, IdInSource " +
+						  " FROM Reference " +
 						  " WHERE     (IdInSource IS NOT NULL) AND (IdInSource NOT LIKE '') ";
-		
+
 		ResultSet rs = source.getResultSet(strQuery) ;
 		while (rs.next()){
 			int refId = rs.getInt("RefId");
@@ -296,5 +296,5 @@ public class BerlinModelOccurrenceSourceImport  extends BerlinModelImportBase {
 			}
 		}
 	}
-	
+
 }

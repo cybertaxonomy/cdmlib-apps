@@ -156,7 +156,7 @@ public class BerlinModelTaxonImport  extends BerlinModelImportBase {
 				TaxonNameBase<?,?> taxonName = null;
 				taxonName  = taxonNameMap.get(String.valueOf(nameFk));
 
-				Reference<?> reference = null;
+				Reference reference = null;
 				String refFk = String.valueOf(refFkInt);
 				reference = refMap.get(refFk);
 

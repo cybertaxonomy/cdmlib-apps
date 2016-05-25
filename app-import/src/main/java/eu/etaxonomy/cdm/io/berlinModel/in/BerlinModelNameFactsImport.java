@@ -1,8 +1,8 @@
 /**
 * Copyright (C) 2007 EDIT
-* European Distributed Institute of Taxonomy 
+* European Distributed Institute of Taxonomy
 * http://www.e-taxonomy.eu
-* 
+*
 * The contents of this file are subject to the Mozilla Public License Version 1.1
 * See LICENSE.TXT at the top of this package for the full license terms.
 */
@@ -69,13 +69,13 @@ public class BerlinModelNameFactsImport  extends BerlinModelImportBase  {
 	private static final String pluralString = "name facts";
 	private static final String dbTableName = "NameFact";
 
-	
+
 	public BerlinModelNameFactsImport(){
 		super(dbTableName, pluralString);
 	}
-	
-	
-	
+
+
+
 
 	@Override
 	protected String getIdQuery(BerlinModelImportState state) {
@@ -96,11 +96,11 @@ public class BerlinModelNameFactsImport  extends BerlinModelImportBase  {
 	 */
 	@Override
 	protected String getRecordQuery(BerlinModelImportConfigurator config) {
-		String strQuery = 
-			" SELECT NameFact.*, Name.NameID as nameId, NameFactCategory.NameFactCategory " + 
+		String strQuery =
+			" SELECT NameFact.*, Name.NameID as nameId, NameFactCategory.NameFactCategory " +
 			" FROM NameFact INNER JOIN " +
               	" Name ON NameFact.PTNameFk = Name.NameId  INNER JOIN "+
-              	" NameFactCategory ON NameFactCategory.NameFactCategoryID = NameFact.NameFactCategoryFK " + 
+              	" NameFactCategory ON NameFactCategory.NameFactCategoryID = NameFact.NameFactCategoryFK " +
             " WHERE (NameFactId IN ("+ ID_LIST_TOKEN+") )";
 		return strQuery;
 	}
@@ -108,35 +108,36 @@ public class BerlinModelNameFactsImport  extends BerlinModelImportBase  {
 	/* (non-Javadoc)
 	 * @see eu.etaxonomy.cdm.io.berlinModel.in.IPartitionedIO#doPartition(eu.etaxonomy.cdm.io.berlinModel.in.ResultSetPartitioner, eu.etaxonomy.cdm.io.berlinModel.in.BerlinModelImportState)
 	 */
-	public boolean doPartition(ResultSetPartitioner partitioner, BerlinModelImportState state) {
+	@Override
+    public boolean doPartition(ResultSetPartitioner partitioner, BerlinModelImportState state) {
 		boolean success = true ;
 		BerlinModelImportConfigurator config = state.getConfig();
 		Set<TaxonNameBase> nameToSave = new HashSet<TaxonNameBase>();
-		Map<String, TaxonNameBase> nameMap = (Map<String, TaxonNameBase>) partitioner.getObjectMap(BerlinModelTaxonNameImport.NAMESPACE);
+		Map<String, TaxonNameBase> nameMap = partitioner.getObjectMap(BerlinModelTaxonNameImport.NAMESPACE);
 		Map<String, Reference> refMap = partitioner.getObjectMap(BerlinModelReferenceImport.REFERENCE_NAMESPACE);
-		
+
 		ResultSet rs = partitioner.getResultSet();
-		
-		Reference<?> sourceRef = state.getTransactionalSourceReference();
+
+		Reference sourceRef = state.getTransactionalSourceReference();
 		try {
 			int i = 0;
 			//for each reference
 			while (rs.next() && (config.getMaximumNumberOfNameFacts() == 0 || i < config.getMaximumNumberOfNameFacts())){
-				
+
 				if ((i++ % modCount) == 0  && i!= 1 ){ logger.info("NameFacts handled: " + (i-1));}
-				
+
 				int nameFactId = rs.getInt("nameFactId");
 				int nameId = rs.getInt("nameId");
 				Object nameFactRefFkObj = rs.getObject("nameFactRefFk");
 				String nameFactRefDetail = rs.getString("nameFactRefDetail");
-				
+
 				String category = CdmUtils.Nz(rs.getString("NameFactCategory"));
 				String nameFact = CdmUtils.Nz(rs.getString("nameFact"));
-				
+
 				TaxonNameBase<?,?> taxonNameBase = nameMap.get(String.valueOf(nameId));
 				String nameFactRefFk = String.valueOf(nameFactRefFkObj);
-				Reference<?> citation = refMap.get(nameFactRefFk);
-				
+				Reference citation = refMap.get(nameFactRefFk);
+
 				if (taxonNameBase != null){
 					//PROTOLOGUE
 					if (category.equalsIgnoreCase(NAME_FACT_PROTOLOGUE)){
@@ -159,7 +160,7 @@ public class BerlinModelNameFactsImport  extends BerlinModelImportBase  {
 						}catch(NullPointerException e){
 							logger.warn("MediaUrl and/or MediaPath not set. Could not get protologue.");
 							success = false;
-						}						
+						}
 					}else if (category.equalsIgnoreCase(NAME_FACT_ALSO_PUBLISHED_IN)){
 						if (StringUtils.isNotBlank(nameFact)){
 							TaxonNameDescription description = TaxonNameDescription.NewInstance();
@@ -193,7 +194,7 @@ public class BerlinModelNameFactsImport  extends BerlinModelImportBase  {
 						logger.warn("NameFactCategory '" + category + "' not yet implemented");
 						success = false;
 					}
-					
+
 					//TODO
 //					DoubtfulFlag    bit        Checked
 //					PublishFlag      bit        Checked
@@ -202,7 +203,7 @@ public class BerlinModelNameFactsImport  extends BerlinModelImportBase  {
 //					Created_Who    nvarchar(255)    Checked
 //					Updated_Who  nvarchar(255)    Checked
 //					Notes      nvarchar(1000)           Checked
-					
+
 					nameToSave.add(taxonNameBase);
 				}else{
 					//TODO
@@ -211,11 +212,11 @@ public class BerlinModelNameFactsImport  extends BerlinModelImportBase  {
 				}
 				//put
 			}
-			if (config.getMaximumNumberOfNameFacts() != 0 && i >= config.getMaximumNumberOfNameFacts() - 1){ 
+			if (config.getMaximumNumberOfNameFacts() != 0 && i >= config.getMaximumNumberOfNameFacts() - 1){
 				logger.warn("ONLY " + config.getMaximumNumberOfNameFacts() + " NAMEFACTS imported !!!" )
 			;};
 			logger.info("Names to save: " + nameToSave.size());
-			getNameService().save(nameToSave);	
+			getNameService().save(nameToSave);
 			return success;
 		} catch (SQLException e) {
 			logger.error("SQLException:" +  e);
@@ -231,7 +232,7 @@ public class BerlinModelNameFactsImport  extends BerlinModelImportBase  {
 		Class<?> cdmClass;
 		Set<String> idSet;
 		Map<Object, Map<String, ? extends CdmBase>> result = new HashMap<Object, Map<String, ? extends CdmBase>>();
-		
+
 		try{
 			Set<String> nameIdSet = new HashSet<String>();
 			Set<String> referenceIdSet = new HashSet<String>();
@@ -239,7 +240,7 @@ public class BerlinModelNameFactsImport  extends BerlinModelImportBase  {
 				handleForeignKey(rs, nameIdSet, "PTnameFk");
 				handleForeignKey(rs, referenceIdSet, "nameFactRefFk");
 	}
-	
+
 			//name map
 			nameSpace = BerlinModelTaxonNameImport.NAMESPACE;
 			cdmClass = TaxonNameBase.class;
@@ -261,7 +262,7 @@ public class BerlinModelNameFactsImport  extends BerlinModelImportBase  {
 		return result;
 	}
 
-	
+
 	//FIXME gibt es da keine allgemeine Methode in common?
 	public Media getMedia(String nameFact, URL mediaUrl, File mediaPath){
 		if (mediaUrl == null){
@@ -271,19 +272,19 @@ public class BerlinModelNameFactsImport  extends BerlinModelImportBase  {
 		String mimeTypeTif = "image/tiff";
 		String mimeTypeJpg = "image/jpeg";
 		String mimeTypePng = "image/png";
-		String mimeTypePdf = "application/pdf"; 
+		String mimeTypePdf = "application/pdf";
 		String suffixTif = "tif";
 		String suffixJpg = "jpg";
 		String suffixPng = "png";
-		String suffixPdf = "pdf"; 
-		
+		String suffixPdf = "pdf";
+
 		String sep = File.separator;
 		Integer size = null;
-		
+
 		logger.debug("Getting media for NameFact: " + nameFact);
-		
+
 		Media media = Media.NewInstance();
-		
+
 		String mediaUrlString = mediaUrl.toString();
 
 		//tiff
@@ -302,10 +303,10 @@ public class BerlinModelNameFactsImport  extends BerlinModelImportBase  {
 		int jpgCount = 0;
 		MediaRepresentation representationJpg = MediaRepresentation.NewInstance(mimeTypeJpg, suffixJpg);
 		while(fileExists){
-			String urlStringJpeg = mediaUrlString + "cmd_jpg/" + nameFact + "_page_000" + jpgCount + "." + suffixJpg;		
+			String urlStringJpeg = mediaUrlString + "cmd_jpg/" + nameFact + "_page_000" + jpgCount + "." + suffixJpg;
 			file = new File(mediaPath, "cmd_jpg" + sep + nameFact + "_page_000" + jpgCount + "." + suffixJpg);
 			jpgCount++;
-			if (file.exists()){ 
+			if (file.exists()){
 				representationJpg.addRepresentationPart(makeImage(urlStringJpeg, size, file));
 			}else{
 				fileExists = false;
@@ -319,7 +320,7 @@ public class BerlinModelNameFactsImport  extends BerlinModelImportBase  {
 		String urlStringPng = mediaUrlString + "png/" + nameFact + "." + suffixPng;
 		file = new File(mediaPath, "png" + sep + nameFact + "." + suffixPng);
 		MediaRepresentation representationPng = MediaRepresentation.NewInstance(mimeTypePng, suffixPng);
-		if (file.exists()){ 
+		if (file.exists()){
 			representationPng.addRepresentationPart(makeImage(urlStringPng, size, file));
 		}else{
 			fileExists = true;
@@ -328,41 +329,41 @@ public class BerlinModelNameFactsImport  extends BerlinModelImportBase  {
 				pngCount++;
 				urlStringPng = mediaUrlString + "png/" + nameFact + "00" + pngCount + "." + suffixPng;
 				file = new File(mediaPath, "png" + sep + nameFact + "00" + pngCount + "." + suffixPng);
-				
-				if (file.exists()){ 
+
+				if (file.exists()){
 					representationPng.addRepresentationPart(makeImage(urlStringPng, size, file));
 				}else{
 					fileExists = false;
 				}
 			}
-		} 
+		}
 		if(representationPng.getParts().size() > 0){
 			media.addRepresentation(representationPng);
 		}
 		//end png
-        //pdf 
-        String urlStringPdf = mediaUrlString + "pdf/" + nameFact + "." + suffixPdf; 
+        //pdf
+        String urlStringPdf = mediaUrlString + "pdf/" + nameFact + "." + suffixPdf;
         URI uriPdf;
 		try {
 			uriPdf = new URI(urlStringPdf);
-			file = new File(mediaPath, "pdf" + sep + nameFact + "." + suffixPdf); 
-	        MediaRepresentation representationPdf = MediaRepresentation.NewInstance(mimeTypePdf, suffixPdf); 
-	        if (file.exists()){  
-	                representationPdf.addRepresentationPart(MediaRepresentationPart.NewInstance(uriPdf, size)); 
-	        }else{ 
-	                fileExists = true; 
-	                int pdfCount = 0; 
-	                while (fileExists){ 
-	                        pdfCount++; 
-	                        urlStringPdf = mediaUrlString + "pdf/" + nameFact + "00" + pdfCount + "." + suffixPdf; 
-	                        file = new File(mediaPath, "pdf/" + sep + nameFact + "00" + pdfCount + "." + suffixPdf); 
-	                         
-	                        if (file.exists()){  
-	                                representationPdf.addRepresentationPart(MediaRepresentationPart.NewInstance(uriPdf, size)); 
-	                        }else{ 
-	                                fileExists = false; 
-	                        } 
-	                } 
+			file = new File(mediaPath, "pdf" + sep + nameFact + "." + suffixPdf);
+	        MediaRepresentation representationPdf = MediaRepresentation.NewInstance(mimeTypePdf, suffixPdf);
+	        if (file.exists()){
+	                representationPdf.addRepresentationPart(MediaRepresentationPart.NewInstance(uriPdf, size));
+	        }else{
+	                fileExists = true;
+	                int pdfCount = 0;
+	                while (fileExists){
+	                        pdfCount++;
+	                        urlStringPdf = mediaUrlString + "pdf/" + nameFact + "00" + pdfCount + "." + suffixPdf;
+	                        file = new File(mediaPath, "pdf/" + sep + nameFact + "00" + pdfCount + "." + suffixPdf);
+
+	                        if (file.exists()){
+	                                representationPdf.addRepresentationPart(MediaRepresentationPart.NewInstance(uriPdf, size));
+	                        }else{
+	                                fileExists = false;
+	                        }
+	                }
 	        }
 			if(representationPdf.getParts().size() > 0){
 	        	media.addRepresentation(representationPdf);
@@ -371,8 +372,8 @@ public class BerlinModelNameFactsImport  extends BerlinModelImportBase  {
 			e.printStackTrace();
 			logger.error("URISyntaxException" + urlStringPdf);
 		}
-        //end pdf 
-		
+        //end pdf
+
 		if(logger.isDebugEnabled()){
 			for (MediaRepresentation rep : media.getRepresentations()){
 				for (MediaRepresentationPart part : rep.getParts()){
@@ -380,11 +381,11 @@ public class BerlinModelNameFactsImport  extends BerlinModelImportBase  {
 				}
 			}
 		}
-		
+
 		return media;
 	}
 
-	
+
 	private ImageFile makeImage(String imageUri, Integer size, File file){
 		ImageInfo imageMetaData = null;
 		URI uri;
@@ -403,10 +404,10 @@ public class BerlinModelNameFactsImport  extends BerlinModelImportBase  {
 			logger.warn("URISyntaxException: " + imageUri);
 			return null;
 		}
-		
+
 	}
 
-	
+
 	/* (non-Javadoc)
 	 * @see eu.etaxonomy.cdm.io.common.CdmIoBase#doCheck(eu.etaxonomy.cdm.io.common.IoStateBase)
 	 */
@@ -416,21 +417,22 @@ public class BerlinModelNameFactsImport  extends BerlinModelImportBase  {
 		return validator.validate(state);
 	}
 
-	
+
 	/* (non-Javadoc)
 	 * @see eu.etaxonomy.cdm.io.common.CdmIoBase#isIgnore(eu.etaxonomy.cdm.io.common.IImportConfigurator)
 	 */
-	protected boolean isIgnore(BerlinModelImportState state){
+	@Override
+    protected boolean isIgnore(BerlinModelImportState state){
 		return ! state.getConfig().isDoNameFacts();
 	}
-	
 
-	
+
+
 	//for testing only
 	public static void main(String[] args) {
-		
+
 		BerlinModelNameFactsImport nf = new BerlinModelNameFactsImport();
-		
+
 		URL url;
 		try {
 			url = new URL("http://wp5.e-taxonomy.eu/dataportal/cichorieae/media/protolog/");
@@ -449,6 +451,6 @@ public class BerlinModelNameFactsImport  extends BerlinModelImportBase  {
 			}
 		} catch (MalformedURLException e) {
 			e.printStackTrace();
-		}		
+		}
 	}
 }

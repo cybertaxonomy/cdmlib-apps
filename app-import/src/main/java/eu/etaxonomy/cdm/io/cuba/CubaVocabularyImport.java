@@ -66,13 +66,13 @@ public class CubaVocabularyImport extends CdmImportBase<CubaImportConfigurator, 
     private void makeAlternativeFloras(CubaImportState state) {
 
         //FRC
-        Reference<?> refFRC = ReferenceFactory.newBook();
+        Reference refFRC = ReferenceFactory.newBook();
         refFRC.setUuid(CubaTransformer.uuidRefFRC);
         refFRC.setTitle("Flora de la República de Cuba");
         getReferenceService().save(refFRC);
 
         //A&S
-        Reference<?> refAS = ReferenceFactory.newArticle();
+        Reference refAS = ReferenceFactory.newArticle();
         refAS.setUuid(CubaTransformer.uuidRefAS);
         refAS.setTitle("Catalogue of seed plants of the West Indies");
         Person acevedo = Person.NewInstance();
@@ -93,13 +93,13 @@ public class CubaVocabularyImport extends CdmImportBase<CubaImportConfigurator, 
         refAS.setUri(URI.create("http://hdl.handle.net/10088/17551"));
         String abstracct = "The catalogue enumerates all taxa of Gymnosperms, Dicotyledons, and Monocotyledons occurring in the West Indies archipelago excluding the islands off the coast of Venezuela (Netherlands Antilles, Venezuelan Antilles, Tobago, and Trinidad). For each accepted taxon, nomenclature (including synonyms described from the West Indies and their references to publication), distribution in the West Indies (including endemic, native, or exotic status), common names, and a numerical listing of literature records are given. Type specimen citations are provided for accepted names and synonyms of Cyperaceae, Sapindaceae, and some selected genera in several families including the Apocynaceae (Plumeria), Aquifoliaceae (Ilex), and Santalaceae (Dendrophthora). More than 30,000 names were treated comprising 208 families, 2,033 genera, and 12,279 taxa, which includes exotic and commonly cultivated plants. The total number of indigenous taxa was approximately 10,470 of which 71% (7,446 taxa) are endemic to the archipelago or part of it. Fifteen new names, 37 combinations, and 7 lectotypifications are validated. A searchable website of this catalogue, maintained and continuously updated at the Smithsonian Institution, is available at http://botany.si.edu/antilles/WestIndies/.";
         refAS.setReferenceAbstract(abstracct);
-        Reference<?> refASIn = ReferenceFactory.newJournal();
+        Reference refASIn = ReferenceFactory.newJournal();
         refASIn.setTitle("Smithsonian Contr. Bot.");
         refAS.setInReference(refASIn);
         getReferenceService().save(refAS);
 
         //FC
-        Reference<?> refFC = ReferenceFactory.newBook();
+        Reference refFC = ReferenceFactory.newBook();
         refFC.setUuid(CubaTransformer.uuidRefFC);
         refFC.setTitle("Flora de Cuba");
         Person leon = Person.NewTitledInstance("León");

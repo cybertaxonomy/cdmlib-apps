@@ -1,8 +1,8 @@
 /**
 * Copyright (C) 2007 EDIT
-* European Distributed Institute of Taxonomy 
+* European Distributed Institute of Taxonomy
 * http://www.e-taxonomy.eu
-* 
+*
 * The contents of this file are subject to the Mozilla Public License Version 1.1
 * See LICENSE.TXT at the top of this package for the full license terms.
 */
@@ -61,19 +61,19 @@ import eu.etaxonomy.cdm.model.reference.Reference;
 public class AlgaTerraEcoFactImport  extends AlgaTerraSpecimenImportBase {
 	private static final Logger logger = Logger.getLogger(AlgaTerraEcoFactImport.class);
 
-	
+
 	private static int modCount = 5000;
 	private static final String pluralString = "eco facts";
-	private static final String dbTableName = "EcoFact";  //??  
+	private static final String dbTableName = "EcoFact";  //??
 
 
 	public AlgaTerraEcoFactImport(){
 		super(dbTableName, pluralString);
 	}
-	
+
 	@Override
 	protected String getIdQuery(BerlinModelImportState state) {
-		String result = " SELECT EcoFactId " + 
+		String result = " SELECT EcoFactId " +
 				" FROM EcoFact  " +
 				" ORDER BY EcoFact.DuplicateFk, EcoFact.EcoFactId ";
 		return result;
@@ -81,8 +81,8 @@ public class AlgaTerraEcoFactImport  extends AlgaTerraSpecimenImportBase {
 
 	@Override
 	protected String getRecordQuery(BerlinModelImportConfigurator config) {
-			String strQuery =   
-            " SELECT EcoFact.*, EcoFact.EcoFactId as unitId, " + 
+			String strQuery =
+            " SELECT EcoFact.*, EcoFact.EcoFactId as unitId, " +
                " tg.ID AS GazetteerId, tg.L1Code, tg.L2Code, tg.L3Code, tg.L4Code, tg.Country, tg.ISOCountry, tg.subL4, " +
                " ec.UUID as climateUuid, eh.UUID as habitatUuid, elf.UUID as lifeFormUuid " +
             " FROM EcoFact " +
@@ -90,7 +90,7 @@ public class AlgaTerraEcoFactImport  extends AlgaTerraSpecimenImportBase {
                  " LEFT OUTER JOIN EcoClimate  ec  ON EcoFact.ClimateFk  = ec.ClimateId " +
                  " LEFT OUTER JOIN EcoHabitat  eh  ON EcoFact.HabitatFk  = eh.HabitatId " +
                  " LEFT OUTER JOIN EcoLifeForm elf ON EcoFact.LifeFormFk = elf.LifeFormId " +
-              " WHERE (EcoFact.EcoFactId IN (" + ID_LIST_TOKEN + ")  )"  
+              " WHERE (EcoFact.EcoFactId IN (" + ID_LIST_TOKEN + ")  )"
             + " ORDER BY EcoFact.DuplicateFk, EcoFact.EcoFactId "
             ;
 		return strQuery;
@@ -99,7 +99,7 @@ public class AlgaTerraEcoFactImport  extends AlgaTerraSpecimenImportBase {
 	@Override
 	public boolean doPartition(ResultSetPartitioner partitioner, BerlinModelImportState bmState) {
 		boolean success = true;
-		
+
 		AlgaTerraImportState state = (AlgaTerraImportState)bmState;
 		try {
 			makeVocabulariesAndFeatures(state);
@@ -108,38 +108,38 @@ public class AlgaTerraEcoFactImport  extends AlgaTerraSpecimenImportBase {
 			e1.printStackTrace();
 		}
 		Set<SpecimenOrObservationBase> objectsToSave = new HashSet<SpecimenOrObservationBase>();
-		
+
 		//TODO do we still need this map? EcoFacts are not handled separate from Facts.
-		//However, they have duplicates on derived unit level. Also check duplicateFk. 
-		Map<String, FieldUnit> ecoFactFieldObservationMap = (Map<String, FieldUnit>) partitioner.getObjectMap(ECO_FACT_FIELD_OBSERVATION_NAMESPACE);
-		
+		//However, they have duplicates on derived unit level. Also check duplicateFk.
+		Map<String, FieldUnit> ecoFactFieldObservationMap = partitioner.getObjectMap(ECO_FACT_FIELD_OBSERVATION_NAMESPACE);
+
 		ResultSet rs = partitioner.getResultSet();
 
 		try {
-			
+
 			int i = 0;
 
 			//for each reference
             while (rs.next()){
-                
+
         		if ((i++ % modCount) == 0 && i!= 1 ){ logger.info(pluralString + " handled: " + (i-1));}
-				
+
 				int ecoFactId = rs.getInt("EcoFactId");
 				Integer duplicateFk = nullSafeInt(rs, "DuplicateFk");
-				
+
 				//FIXME RecordBasis is in Fact table, which is not part of the query anymore.
 				//Some EcoFacts have multiple RecordBasis types in Fact. Henning will check this.
 //				String recordBasis = rs.getString("RecordBasis");
 				String recordBasis = "PreservedSpecimen";
-				
+
 				try {
-					
+
 					//source ref
-					Reference<?> sourceRef = state.getTransactionalSourceReference();
-				
+					Reference sourceRef = state.getTransactionalSourceReference();
+
 					//facade
 					SpecimenOrObservationType type = makeDerivedUnitType(recordBasis);
-					
+
 					DerivedUnitFacade facade;
 					//field observation
 					if (duplicateFk == null){
@@ -152,46 +152,48 @@ public class AlgaTerraEcoFactImport  extends AlgaTerraSpecimenImportBase {
 						FieldUnit fieldObservation = ecoFactFieldObservationMap.get(String.valueOf(duplicateFk));
 						facade = DerivedUnitFacade.NewInstance(type, fieldObservation);
 					}
-						
+
 					handleFirstDerivedSpecimen(rs, facade, state, partitioner);
 					handleEcoFactSpecificDerivedUnit(rs,facade, state);
 
-					
+
 					DerivedUnit objectToSave = facade.innerDerivedUnit();
-					objectsToSave.add(objectToSave); 
-					
+					objectsToSave.add(objectToSave);
+
 
 				} catch (Exception e) {
 					logger.warn("Exception in ecoFact: ecoFactId " + ecoFactId + ". " + e.getMessage());
 					e.printStackTrace();
-				} 
-                
+				}
+
             }
- 
+
 			logger.warn("Specimen to save: " + objectsToSave.size());
-			getOccurrenceService().save(objectsToSave);	
-			
+			getOccurrenceService().save(objectsToSave);
+
 			return success;
 		} catch (SQLException e) {
 			logger.error("SQLException:" +  e);
 			return false;
 		}
 	}
-	
-	protected String getDerivedUnitNameSpace(){
+
+	@Override
+    protected String getDerivedUnitNameSpace(){
 		return ECO_FACT_DERIVED_UNIT_NAMESPACE;
 	}
-	
-	protected String getFieldObservationNameSpace(){
+
+	@Override
+    protected String getFieldObservationNameSpace(){
 		return ECO_FACT_FIELD_OBSERVATION_NAMESPACE;
 	}
 
 
 
 	private void handleEcoFactSpecificFieldObservation(ResultSet rs, DerivedUnitFacade facade, AlgaTerraImportState state) throws SQLException {
-		
+
 		Object alkalinityFlag = rs.getBoolean("AlkalinityFlag");
-		
+
 		//alkalinity marker
 		if (alkalinityFlag != null){
 			MarkerType alkalinityMarkerType = getMarkerType(state, uuidMarkerAlkalinity, "Alkalinity", "Alkalinity", null);
@@ -199,20 +201,20 @@ public class AlgaTerraEcoFactImport  extends AlgaTerraSpecimenImportBase {
 			Marker alkalinityMarker = Marker.NewInstance(alkalinityMarkerType, alkFlag);
 			facade.getFieldUnit(true).addMarker(alkalinityMarker);
 		}
-		
-		
+
+
 		DescriptionBase<?> fieldDescription = getFieldObservationDescription(facade);
 
 		//habitat, ecology, community, etc.
 		String habitat = rs.getString("HabitatExplanation");
-		
+
 		if (isNotBlank(habitat)){
 			Feature habitatExplanation = getFeature(state, uuidFeatureHabitatExplanation, "Habitat Explanation", "HabitatExplanation", null, null);
 			TextData textData = TextData.NewInstance(habitatExplanation);
 			textData.putText(Language.DEFAULT(), habitat);
 			fieldDescription.addElement(textData);
 		}
-		
+
 		String community = rs.getString("Comunity");
 		if (isNotBlank(community)){
 			Feature communityFeature = getFeature(state, uuidFeatureSpecimenCommunity, "Community", "The community of a specimen (e.g. other algae in the same sample)", null, null);
@@ -228,21 +230,21 @@ public class AlgaTerraEcoFactImport  extends AlgaTerraSpecimenImportBase {
 			textData.putText(Language.DEFAULT(), additionalData);
 			fieldDescription.addElement(textData);
 		}
-		
+
 		String climateUuid = rs.getString("climateUuid");
 		String habitatUuid = rs.getString("habitatUuid");
 		String lifeFormUuid = rs.getString("lifeFormUuid");
-		
+
 		addCategoricalValue(state, fieldDescription, climateUuid, uuidFeatureAlgaTerraClimate);
 		addCategoricalValue(state, fieldDescription, habitatUuid, Feature.HABITAT().getUuid());
 		addCategoricalValue(state, fieldDescription, lifeFormUuid, uuidFeatureAlgaTerraLifeForm);
-		
+
 
 		//parameters
 		makeParameter(state, rs, getFieldObservationDescription(facade));
 
 	}
-	
+
 	private void handleEcoFactSpecificDerivedUnit(ResultSet rs, DerivedUnitFacade facade, AlgaTerraImportState state) throws SQLException {
 		//collection
 		String voucher = rs.getString("Voucher");
@@ -267,7 +269,7 @@ public class AlgaTerraEcoFactImport  extends AlgaTerraSpecimenImportBase {
 			String unitStr = rs.getString(String.format("P%dUnit", i));
 			String parameter = rs.getString(String.format("P%dParameter", i));
 			String method = rs.getString(String.format("P%dMethod", i));
-			
+
 			//method
 			if (StringUtils.isNotBlank(method)){
 				//TODO
@@ -280,32 +282,32 @@ public class AlgaTerraEcoFactImport  extends AlgaTerraSpecimenImportBase {
 				UUID featureUuid = getParameterFeatureUuid(state, parameter);
 				Feature feature = getFeature(state, featureUuid, parameter, parameter, null, vocParameter);
 				QuantitativeData quantData = QuantitativeData.NewInstance(feature);
-				
+
 				//unit
 				MeasurementUnit unit = getMeasurementUnit(state, unitStr);
 				quantData.setUnit(unit);
 				try {
-					
+
 					Set<DefinedTerm> valueModifier = new HashSet<DefinedTerm>();
 					valueStr = normalizeAndModifyValue(state, valueStr, valueModifier);
 					//value
 					Float valueFlt = Float.valueOf(valueStr);  //TODO maybe change model to Double ??
-					
+
 					StatisticalMeasure measureSingleValue = getStatisticalMeasure(state, uuidStatMeasureSingleValue, "Value", "Single measurement value", null, null);
-					StatisticalMeasurementValue value = StatisticalMeasurementValue.NewInstance(measureSingleValue, valueFlt); 
+					StatisticalMeasurementValue value = StatisticalMeasurementValue.NewInstance(measureSingleValue, valueFlt);
 					quantData.addStatisticalValue(value);
 					descriptionBase.addElement(quantData);
-					
+
 				} catch (NumberFormatException e) {
 					logger.warn(String.format("Value '%s' can't be converted to double. Parameter %s not imported.", valueStr, parameter));
 				}
 			}else if (isNotBlank(valueStr) || isNotBlank(unitStr) ){
 				logger.warn("There is value or unit without parameter: " + i);
 			}
-			
-			
+
+
 		}
-		
+
 	}
 
 	private String normalizeAndModifyValue(AlgaTerraImportState state, String valueStr, Set<DefinedTerm> valueModifier) {
@@ -363,12 +365,12 @@ public class AlgaTerraEcoFactImport  extends AlgaTerraSpecimenImportBase {
 		Class<?> cdmClass;
 		Set<String> idSet;
 		Map<Object, Map<String, ? extends CdmBase>> result = new HashMap<Object, Map<String, ? extends CdmBase>>();
-		
+
 		try{
 			Set<String> fieldObservationIdSet = new HashSet<String>();
 			Set<String> termsIdSet = new HashSet<String>();
 			Set<String> collectionIdSet = new HashSet<String>();
-			
+
 			while (rs.next()){
 				handleForeignKey(rs, fieldObservationIdSet, "DuplicateFk");
 				handleForeignKey(rs, termsIdSet, "ClimateFk");
@@ -376,7 +378,7 @@ public class AlgaTerraEcoFactImport  extends AlgaTerraSpecimenImportBase {
 				handleForeignKey(rs, termsIdSet, "LifeFormFk");
 				handleForeignKey(rs, collectionIdSet, "CollectionFk");
 			}
-			
+
 			//field observation map for duplicates
 			nameSpace = AlgaTerraEcoFactImport.ECO_FACT_FIELD_OBSERVATION_NAMESPACE;
 			cdmClass = FieldUnit.class;
@@ -404,7 +406,7 @@ public class AlgaTerraEcoFactImport  extends AlgaTerraSpecimenImportBase {
 			idSet = termsIdSet;
 			Map<String, DefinedTermBase> termMap = (Map<String, DefinedTermBase>)getCommonService().getSourcedObjectsByIdInSource(cdmClass, idSet, nameSpace);
 			result.put(nameSpace, termMap);
-			
+
 		} catch (SQLException e) {
 			throw new RuntimeException(e);
 		}
@@ -421,5 +423,5 @@ public class AlgaTerraEcoFactImport  extends AlgaTerraSpecimenImportBase {
 	protected boolean isIgnore(BerlinModelImportState state){
 		return ! ((AlgaTerraImportState)state).getAlgaTerraConfigurator().isDoEcoFacts();
 	}
-	
+
 }

@@ -1,8 +1,8 @@
 /**
 * Copyright (C) 2007 EDIT
-* European Distributed Institute of Taxonomy 
+* European Distributed Institute of Taxonomy
 * http://www.e-taxonomy.eu
-* 
+*
 * The contents of this file are subject to the Mozilla Public License Version 1.1
 * See LICENSE.TXT at the top of this package for the full license terms.
 */
@@ -56,21 +56,21 @@ import eu.etaxonomy.cdm.model.taxon.TaxonBase;
 public class AlgaTerraFactEcologyImport  extends AlgaTerraSpecimenImportBase {
 	private static final Logger logger = Logger.getLogger(AlgaTerraFactEcologyImport.class);
 
-	
+
 	private static int modCount = 5000;
 	private static final String pluralString = "determinations";
-	private static final String dbTableName = "Fact"; 
+	private static final String dbTableName = "Fact";
 
 
 	public AlgaTerraFactEcologyImport(){
 		super(dbTableName, pluralString);
 	}
-	
+
 
 	@Override
 	protected String getIdQuery(BerlinModelImportState state) {
-		String result = " SELECT f.factId " + 
-				" FROM Fact f LEFT JOIN PTaxon pt ON f.PTNameFk = pt.PTNameFk AND f.PTRefFk = pt.PTRefFk " 
+		String result = " SELECT f.factId " +
+				" FROM Fact f LEFT JOIN PTaxon pt ON f.PTNameFk = pt.PTNameFk AND f.PTRefFk = pt.PTRefFk "
 				+ " WHERE f.FactCategoryFk = 202 "
 				+ " ORDER BY pt.RIdentifier, f.FactId ";
 		return result;
@@ -78,11 +78,11 @@ public class AlgaTerraFactEcologyImport  extends AlgaTerraSpecimenImportBase {
 
 	@Override
 	protected String getRecordQuery(BerlinModelImportConfigurator config) {
-			String strQuery =   
-            " SELECT pt.RIdentifier as taxonId, f.* " + 
-            " FROM Fact f " + 
+			String strQuery =
+            " SELECT pt.RIdentifier as taxonId, f.* " +
+            " FROM Fact f " +
                  " LEFT JOIN PTaxon pt ON f.PTNameFk =pt.PTNameFk AND f.PTRefFk = pt.PTRefFk " +
-             " WHERE f.FactCategoryFk = 202 AND (f.FactId IN (" + ID_LIST_TOKEN + ")  )"  
+             " WHERE f.FactCategoryFk = 202 AND (f.FactId IN (" + ID_LIST_TOKEN + ")  )"
             + " ORDER BY pt.RIdentifier, f.FactId "
             ;
 		return strQuery;
@@ -91,51 +91,51 @@ public class AlgaTerraFactEcologyImport  extends AlgaTerraSpecimenImportBase {
 	@Override
 	public boolean doPartition(ResultSetPartitioner partitioner, BerlinModelImportState bmState) {
 		boolean success = true;
-		
+
 		AlgaTerraImportState state = (AlgaTerraImportState)bmState;
 		Set<TaxonBase> taxaToSave = new HashSet<TaxonBase>();
-		
-		Map<String, TaxonBase> taxonMap = (Map<String, TaxonBase>) partitioner.getObjectMap(BerlinModelTaxonImport.NAMESPACE);
-		Map<String, DerivedUnit> ecoFactDerivedUnitMap = (Map<String, DerivedUnit>) partitioner.getObjectMap(ECO_FACT_DERIVED_UNIT_NAMESPACE);
-		
+
+		Map<String, TaxonBase> taxonMap = partitioner.getObjectMap(BerlinModelTaxonImport.NAMESPACE);
+		Map<String, DerivedUnit> ecoFactDerivedUnitMap = partitioner.getObjectMap(ECO_FACT_DERIVED_UNIT_NAMESPACE);
+
 		ResultSet rs = partitioner.getResultSet();
 
 		try {
-			
+
 			int i = 0;
 
 			//for each reference
             while (rs.next()){
-                
+
         		if ((i++ % modCount) == 0 && i!= 1 ){ logger.info(pluralString + " handled: " + (i-1));}
-				
+
 				Integer taxonId = nullSafeInt(rs, "taxonId");
 				int factId = rs.getInt("FactId");
 				Integer ecoFactId = nullSafeInt(rs, "ExtensionFk");
 				String recordBasis = rs.getString("RecordBasis");
-				
-				
+
+
 				try {
-					
+
 					//source ref
-					Reference<?> sourceRef = state.getTransactionalSourceReference();
-				
+					Reference sourceRef = state.getTransactionalSourceReference();
+
 					DerivedUnit ecoFact = ecoFactDerivedUnitMap.get(String.valueOf(ecoFactId));
 					if (ecoFact == null){
 						logger.warn("EcoFact is null for EcoFact: " + CdmUtils.Nz(ecoFactId) + ", taxonId: " + CdmUtils.Nz(taxonId));
 					}
-					
+
 					//description element
 					if (taxonId != null){
-						Taxon taxon = getTaxon(state, taxonId, taxonMap, factId);		
-						
+						Taxon taxon = getTaxon(state, taxonId, taxonMap, factId);
+
 						if(taxon != null){
 							DerivedUnit identifiedSpecimen = makeIdentifiedSpecimen(ecoFact, recordBasis, taxonId, ecoFactId);
-							
+
 							makeDetermination(state, rs, taxon, identifiedSpecimen, factId, partitioner);
-													
+
 							makeIndividualsAssociation(state, taxon, sourceRef, identifiedSpecimen);
-							
+
 							this.doIdCreatedUpdatedNotes(state, identifiedSpecimen, rs, factId, getDerivedUnitNameSpace());
 
 							identifiedSpecimen.setCacheStrategy(new DerivedUnitFacadeCacheStrategy());
@@ -144,36 +144,36 @@ public class AlgaTerraFactEcologyImport  extends AlgaTerraSpecimenImportBase {
 					}else{
 						logger.warn("No taxon defined for ecology fact: " +  factId);
 					}
-					
+
 
 				} catch (Exception e) {
 					logger.warn("Exception in FactEcology: FactId " + factId + ". " + e.getMessage());
 					e.printStackTrace();
-				} 
-                
+				}
+
             }
-           
+
 //            logger.warn("Specimen: " + countSpecimen + ", Descriptions: " + countDescriptions );
 
 			logger.warn("Taxa to save: " + taxaToSave.size());
-			getTaxonService().save(taxaToSave);	
-			
+			getTaxonService().save(taxaToSave);
+
 			return success;
 		} catch (SQLException e) {
 			logger.error("SQLException:" +  e);
 			return false;
 		}
 	}
-	
-	private void makeIndividualsAssociation(AlgaTerraImportState state, Taxon taxon, Reference<?> sourceRef, DerivedUnit identifiedSpecimen){
+
+	private void makeIndividualsAssociation(AlgaTerraImportState state, Taxon taxon, Reference sourceRef, DerivedUnit identifiedSpecimen){
 		TaxonDescription taxonDescription = getTaxonDescription(state, taxon, sourceRef);
 		IndividualsAssociation indAssociation = IndividualsAssociation.NewInstance();
 		Feature feature = makeFeature(identifiedSpecimen.getRecordBasis(), state);
 		indAssociation.setAssociatedSpecimenOrObservation(identifiedSpecimen);
 		indAssociation.setFeature(feature);
-		taxonDescription.addElement(indAssociation);	
+		taxonDescription.addElement(indAssociation);
 	}
-	
+
 	private void makeDetermination(AlgaTerraImportState state, ResultSet rs, Taxon taxon, DerivedUnit identifiedSpecimen, int factId, ResultSetPartitioner partitioner) throws SQLException {
 		Date identifiedWhen = rs.getDate("IdentifiedWhen");
 		Date identifiedWhenEnd = rs.getDate("IdentiedWhenEnd");
@@ -182,20 +182,20 @@ public class AlgaTerraFactEcologyImport  extends AlgaTerraSpecimenImportBase {
 		String identifiedBy = rs.getString("IdentifiedBy");
 		String identificationReference = rs.getString("IdentificationReference");
 		Integer refFk = nullSafeInt(rs, "IdentifidationRefFk");
-		
-		
+
+
 		DeterminationEvent determination = DeterminationEvent.NewInstance(taxon, identifiedSpecimen);
 		TimePeriod determinationPeriod = TimePeriod.NewInstance(identifiedWhen, identifiedWhenEnd);
 		determination.setTimeperiod(determinationPeriod);
 		determination.setPreferredFlag(! restrictedFlag);
-		//TODO 
-		
+		//TODO
+
 		TeamOrPersonBase<?> author = getAuthor(identifiedBy);
 		determination.setDeterminer(author);
 		if (refFk != null){
-			Map<String, Reference> refMap = (Map<String, Reference>) partitioner.getObjectMap(BerlinModelReferenceImport.REFERENCE_NAMESPACE);
-			
-			Reference<?> ref = refMap.get(String.valueOf(refFk));
+			Map<String, Reference> refMap = partitioner.getObjectMap(BerlinModelReferenceImport.REFERENCE_NAMESPACE);
+
+			Reference ref = refMap.get(String.valueOf(refFk));
 			if (ref != null){
 				determination.addReference(ref);
 			}else{
@@ -207,17 +207,17 @@ public class AlgaTerraFactEcologyImport  extends AlgaTerraSpecimenImportBase {
 				logger.warn("IdentificationReference exists without IdentificationRefFk. FactId: "+  factId);
 			}
 		}
-		
-		
-		
+
+
+
 		//TODO
-//		kind of identification, IdentificationUncertainty, IdentificationMethod, 
-		
-		
+//		kind of identification, IdentificationUncertainty, IdentificationMethod,
+
+
 	}
 
 
-                                                                                                                                                                                                                                                                                          
+
 	private DerivedUnit makeIdentifiedSpecimen(DerivedUnit ecoFact, String recordBasis, Integer taxonId, Integer ecoFactId) {
 		//TODO event type
 		DerivationEvent event = DerivationEvent.NewInstance();
@@ -227,7 +227,7 @@ public class AlgaTerraFactEcologyImport  extends AlgaTerraSpecimenImportBase {
 			logger.warn(String.format(message, recordBasis, taxonId));
 			derivedUnitType = SpecimenOrObservationType.PreservedSpecimen;
 		}
-		
+
 		DerivedUnit result = DerivedUnit.NewInstance(derivedUnitType);
 		result.setDerivedFrom(event);
 		if (ecoFact == null){
@@ -241,11 +241,13 @@ public class AlgaTerraFactEcologyImport  extends AlgaTerraSpecimenImportBase {
 
 
 
-	protected String getDerivedUnitNameSpace(){
+	@Override
+    protected String getDerivedUnitNameSpace(){
 		return FACT_ECOLOGY_NAMESPACE;
 	}
-	
-	protected String getFieldObservationNameSpace(){
+
+	@Override
+    protected String getFieldObservationNameSpace(){
 		return null;
 	}
 
@@ -256,7 +258,7 @@ public class AlgaTerraFactEcologyImport  extends AlgaTerraSpecimenImportBase {
 	 * @param state
 	 * @param ecoFactId
 	 * @param derivedUnitMap
-	 * @param type 
+	 * @param type
 	 * @return
 	 */
 	private DerivedUnitFacade getDerivedUnit(AlgaTerraImportState state, int ecoFactId, Map<String, DerivedUnit> derivedUnitMap, SpecimenOrObservationType type) {
@@ -274,7 +276,7 @@ public class AlgaTerraFactEcologyImport  extends AlgaTerraSpecimenImportBase {
 				facade = DerivedUnitFacade.NewInstance(type);
 			}
 		}
-		
+
 		return facade;
 	}
 
@@ -284,18 +286,18 @@ public class AlgaTerraFactEcologyImport  extends AlgaTerraSpecimenImportBase {
 		Class<?> cdmClass;
 		Set<String> idSet;
 		Map<Object, Map<String, ? extends CdmBase>> result = new HashMap<Object, Map<String, ? extends CdmBase>>();
-		
+
 		try{
 			Set<String> taxonIdSet = new HashSet<String>();
 			Set<String> extensionFkSet = new HashSet<String>();
 			Set<String> referenceIdSet = new HashSet<String>();
-			
+
 			while (rs.next()){
 				handleForeignKey(rs, taxonIdSet, "taxonId");
 				handleForeignKey(rs, extensionFkSet, "extensionFk");
 				handleForeignKey(rs, referenceIdSet, "IdentifidationRefFk");
 			}
-			
+
 			//taxon map
 			nameSpace = BerlinModelTaxonImport.NAMESPACE;
 			cdmClass = TaxonBase.class;
@@ -317,7 +319,7 @@ public class AlgaTerraFactEcologyImport  extends AlgaTerraSpecimenImportBase {
 			Map<String, Reference> referenceMap = (Map<String, Reference>)getCommonService().getSourcedObjectsByIdInSource(cdmClass, idSet, nameSpace);
 			result.put(nameSpace, referenceMap);
 
-			
+
 		} catch (SQLException e) {
 			throw new RuntimeException(e);
 		}
@@ -334,5 +336,5 @@ public class AlgaTerraFactEcologyImport  extends AlgaTerraSpecimenImportBase {
 	protected boolean isIgnore(BerlinModelImportState state){
 		return ! ((AlgaTerraImportState)state).getAlgaTerraConfigurator().isDoFactEcology();
 	}
-	
+
 }

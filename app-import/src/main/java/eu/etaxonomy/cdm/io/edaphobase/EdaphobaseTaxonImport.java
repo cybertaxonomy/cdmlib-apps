@@ -167,7 +167,7 @@ public class EdaphobaseTaxonImport extends EdaphobaseImportBase {
 
         //nomRef
         if (nomRefId != null){
-            Reference<?> nomRef = state.getRelatedObject(REFERENCE_NAMESPACE, String.valueOf(nomRefId), Reference.class);
+            Reference nomRef = state.getRelatedObject(REFERENCE_NAMESPACE, String.valueOf(nomRefId), Reference.class);
             if (nomRef == null){
                 logger.warn("Reference " + nomRefId + " could not be found");
             }
@@ -176,7 +176,7 @@ public class EdaphobaseTaxonImport extends EdaphobaseImportBase {
         name.setNomenclaturalMicroReference(StringUtils.isBlank(pages)? null : pages);
 
 
-        Reference<?> secRef = state.getRelatedObject(REFERENCE_NAMESPACE, state.getConfig().getSecUuid().toString(), Reference.class);
+        Reference secRef = state.getRelatedObject(REFERENCE_NAMESPACE, state.getConfig().getSecUuid().toString(), Reference.class);
         if (secRef == null){
             secRef = makeSecRef(state);
         }
@@ -200,8 +200,8 @@ public class EdaphobaseTaxonImport extends EdaphobaseImportBase {
      * @param state
      * @return
      */
-    private Reference<?> makeSecRef(EdaphobaseImportState state) {
-        Reference<?> ref = ReferenceFactory.newDatabase();
+    private Reference makeSecRef(EdaphobaseImportState state) {
+        Reference ref = ReferenceFactory.newDatabase();
         ref.setTitle(state.getConfig().getEdaphobaseSecundumTitle());
         ref.setUuid(state.getConfig().getSecUuid());
         state.addRelatedObject(REFERENCE_NAMESPACE, ref.getUuid().toString(), ref);
@@ -250,12 +250,12 @@ public class EdaphobaseTaxonImport extends EdaphobaseImportBase {
         String nameSpace = REFERENCE_NAMESPACE;
         Class<?> cdmClass = Reference.class;
         Set<String> idSet = referenceIdSet;
-        Map<String, Reference<?>> referenceMap = (Map<String, Reference<?>>)getCommonService().getSourcedObjectsByIdInSource(cdmClass, idSet, nameSpace);
+        Map<String, Reference> referenceMap = (Map<String, Reference>)getCommonService().getSourcedObjectsByIdInSource(cdmClass, idSet, nameSpace);
         result.put(nameSpace, referenceMap);
 
         //secundum
         UUID secUuid = state.getConfig().getSecUuid();
-        Reference<?> secRef = getReferenceService().find(secUuid);
+        Reference secRef = getReferenceService().find(secUuid);
         referenceMap.put(secUuid.toString(), secRef);
 
         return result;

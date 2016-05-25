@@ -1,8 +1,8 @@
 /**
 * Copyright (C) 2007 EDIT
-* European Distributed Institute of Taxonomy 
+* European Distributed Institute of Taxonomy
 * http://www.e-taxonomy.eu
-* 
+*
 * The contents of this file are subject to the Mozilla Public License Version 1.1
 * See LICENSE.TXT at the top of this package for the full license terms.
 */
@@ -59,20 +59,20 @@ import eu.etaxonomy.cdm.model.reference.Reference;
 public class AlgaTerraMorphologyImport  extends AlgaTerraSpecimenImportBase {
 	private static final Logger logger = Logger.getLogger(AlgaTerraMorphologyImport.class);
 
-	
+
 	private static int modCount = 5000;
 	private static final String pluralString = "morpho facts";
-	private static final String dbTableName = "MorphoFact";   
+	private static final String dbTableName = "MorphoFact";
 
 
 	public AlgaTerraMorphologyImport(){
 		super(dbTableName, pluralString);
 	}
-	
+
 
 	@Override
 	protected String getIdQuery(BerlinModelImportState state) {
-		String result = " SELECT MorphoFactId " + 
+		String result = " SELECT MorphoFactId " +
 				" FROM MorphoFact  " +
 				" ORDER BY MorphoFact.MorphoFactId ";
 		return result;
@@ -81,39 +81,39 @@ public class AlgaTerraMorphologyImport  extends AlgaTerraSpecimenImportBase {
 
 	@Override
 	protected String getRecordQuery(BerlinModelImportConfigurator config) {
-			String strQuery =   
-            " SELECT mf.*, mf.MorphoFactId as unitId, ecoFact.ecoFactId as ecoFactId,  size.* " + 
+			String strQuery =
+            " SELECT mf.*, mf.MorphoFactId as unitId, ecoFact.ecoFactId as ecoFactId,  size.* " +
             " FROM MorphoFact mf " +
             	" LEFT OUTER JOIN MorphoSizeRange size ON mf.SizeRangeFk = size.SizeRangeId " +
             	" LEFT OUTER JOIN MorphoValveDescription valve1Desc ON mf.Valve1DescriptionFk = valve1Desc.ValveDescriptionId " +
             	" LEFT OUTER JOIN MorphoValveDescription valve2Desc ON mf.Valve2DescriptionFk = valve2Desc.ValveDescriptionId " +
             	" LEFT OUTER JOIN EcoFact ecoFact ON ecoFact.CultureStrain = mf.CultureStrainNo " +
-              " WHERE (mf.MorphoFactId IN (" + ID_LIST_TOKEN + ")  )"  
+              " WHERE (mf.MorphoFactId IN (" + ID_LIST_TOKEN + ")  )"
             + " ORDER BY mf.MorphoFactId "
             ;
 		return strQuery;
 	}
-	
-	
+
+
 	private Map<String, TermVocabulary<State>> vocabularyMap = new HashMap<String, TermVocabulary<State>>();
 	private Map<String, Feature> featureMap = new HashMap<String, Feature>();
 	private Map<String, Map<Integer, State>> algaTerraMorphoStates = new HashMap<String, Map<Integer, State>>();
 	private TermVocabulary<Feature> algaTerraMorphoFeatures = TermVocabulary
 			.NewInstance(TermType.Feature, "Alga Terra Morphology Features", "AT Morphology Features", null, null);
-	
+
 	private void doMorphoListen(AlgaTerraImportState state) throws SQLException{
-		
+
 		TransactionStatus txStatus = this.startTransaction();
-		
+
 		getVocabularyService().save(algaTerraMorphoFeatures);
-		
+
 		//chloroplast position
 		String baseName = "Chloroplast Position";
 		UUID uuidStateVocabulary = AlgaTerraImportTransformer.uuidVocChloroplastPosition;
 		boolean isOrdered = false;
-		makeFeatureAndVocabulary(state, vocabularyMap, featureMap, algaTerraMorphoStates, 
+		makeFeatureAndVocabulary(state, vocabularyMap, featureMap, algaTerraMorphoStates,
 				algaTerraMorphoFeatures, baseName, uuidStateVocabulary, isOrdered);
-		
+
 		//Chloroplast Shape
 		baseName = "Chloroplast Shape";
 		uuidStateVocabulary = AlgaTerraImportTransformer.uuidVocChloroplastShape;
@@ -165,28 +165,28 @@ public class AlgaTerraMorphologyImport  extends AlgaTerraSpecimenImportBase {
 				algaTerraMorphoFeatures, baseName, uuidStateVocabulary, isOrdered);
 
 		getVocabularyService().saveOrUpdate(algaTerraMorphoFeatures);
-		
+
 		this.commitTransaction(txStatus);
 	}
 
 
 	private void makeFeatureAndVocabulary(AlgaTerraImportState state,
 			Map<String, TermVocabulary<State>> vocabularyMap,
-			Map<String, Feature> featureMap, Map<String, Map<Integer, State>> allMorphoStates, 
+			Map<String, Feature> featureMap, Map<String, Map<Integer, State>> allMorphoStates,
 			TermVocabulary<Feature> algaTerraMorphoFeatures, String baseName,
 			UUID uuidStateVocabulary, boolean isOrdered)
 			throws SQLException {
-		
+
 		Source source = state.getAlgaTerraConfigurator().getSource();
-		
+
 		Map<Integer, State> morphoStates = new HashMap<Integer, State>();
-		allMorphoStates.put(baseName, morphoStates);	
-		
+		allMorphoStates.put(baseName, morphoStates);
+
 		String baseNameCamel = baseName.replace(" ", "");
-		
+
 		//make feature
 		handleSingleFeature(state, featureMap, algaTerraMorphoFeatures,	baseName);
-		
+
 		//make term vocabulary
 		String vocDescription = "The vocabulary for the " + baseName + " in AlgaTerra";
 		String vocLabel = baseName;
@@ -194,7 +194,7 @@ public class AlgaTerraMorphologyImport  extends AlgaTerraSpecimenImportBase {
 		URI termSourceUri = null;
 		TermVocabulary<State> voc = getVocabulary(TermType.State, uuidStateVocabulary,vocDescription, vocLabel, vocAbbrevLabel, termSourceUri, isOrdered, null);
 		vocabularyMap.put(vocLabel, voc);
-		
+
 		String idField = baseNameCamel + "Id";
 		String sql =  "SELECT " + idField + "," + baseNameCamel + ", Description FROM Morpho" + baseNameCamel;
 		ResultSet rs = source.getResultSet(sql);
@@ -214,9 +214,9 @@ public class AlgaTerraMorphologyImport  extends AlgaTerraSpecimenImportBase {
 	private Feature handleSingleFeature(AlgaTerraImportState state,
 			Map<String, Feature> featureMap,
 			TermVocabulary<Feature> algaTerraMorphoFeatures, String baseName) {
-		
+
 		String baseNameCamel = baseName.replace(" ", "");
-		
+
 		UUID uuidFeature = null;
 		try {
 			uuidFeature = AlgaTerraImportTransformer.getFeatureUuid(baseName);
@@ -228,70 +228,70 @@ public class AlgaTerraMorphologyImport  extends AlgaTerraSpecimenImportBase {
 		featureMap.put(baseNameCamel, feature);
 		return feature;
 	}
-	
+
 	private void doNonListenFeatures(AlgaTerraImportState state) throws SQLException{
 		String baseName = "Apices";
 		handleSingleFeature(state, featureMap, algaTerraMorphoFeatures, baseName);
-		
+
 		baseName = "Chloroplast Number";
 		handleSingleFeature(state, featureMap, algaTerraMorphoFeatures, baseName);
-		
+
 		baseName = "Pyrenoid";
 		handleSingleFeature(state, featureMap, algaTerraMorphoFeatures, baseName);
-		
+
 		baseName = "Cell Wall";
 		handleSingleFeature(state, featureMap, algaTerraMorphoFeatures, baseName);
-		
+
 		baseName = "Reproductive Stages";
 		handleSingleFeature(state, featureMap, algaTerraMorphoFeatures, baseName);
-		
+
 		makeValveFeatures(state, featureMap, algaTerraMorphoFeatures);
-		
+
 	}
 
-	
+
 
 
 	private void makeValveFeatures(AlgaTerraImportState state,
 			Map<String, Feature> featureMap2,
 			TermVocabulary<Feature> algaTerraMorphoFeatures2) {
-		
+
 		String baseName = "Valve 1";
 		handleSingleValve(state, featureMap, algaTerraMorphoFeatures, baseName);
 
 		baseName = "Valve 2";
 		handleSingleValve(state, featureMap, algaTerraMorphoFeatures, baseName);
-		
+
 	}
 
 
 	private void handleSingleValve(AlgaTerraImportState state,
 			Map<String, Feature> featureMap2,
 			TermVocabulary<Feature> algaTerraMorphoFeatures2, String valveStr) {
-		
+
 		Feature featureValve = handleSingleFeature(state, featureMap, algaTerraMorphoFeatures, valveStr);
-		
+
 		String baseName = "Striae Frequency";
 		Feature featureSub = handleSingleFeature(state, featureMap, algaTerraMorphoFeatures, baseName + " " + valveStr);
 		//TODO is partOf correct here? see also below
 		featureSub.setPartOf(featureValve);
-		
+
 		baseName = "Striae Orientation Mid"; //Mid Valve
 		featureSub = handleSingleFeature(state, featureMap, algaTerraMorphoFeatures, baseName + " " + valveStr);
 		featureSub.setPartOf(featureValve);
-		
+
 		baseName = "Striae Orientation Apices";
 		featureSub = handleSingleFeature(state, featureMap, algaTerraMorphoFeatures, baseName + " " + valveStr);
 		featureSub.setPartOf(featureValve);
-		
+
 		baseName = "Central Area";
 		featureSub = handleSingleFeature(state, featureMap, algaTerraMorphoFeatures, baseName + " " + valveStr);
 		featureSub.setPartOf(featureValve);
-		
+
 		baseName = "Axial Area";
 		featureSub = handleSingleFeature(state, featureMap, algaTerraMorphoFeatures, baseName + " " + valveStr);
 		featureSub.setPartOf(featureValve);
-		
+
 		baseName = "has Raphe";
 		featureSub = handleSingleFeature(state, featureMap, algaTerraMorphoFeatures, baseName + " " + valveStr);
 		featureSub.setPartOf(featureValve);
@@ -314,82 +314,82 @@ public class AlgaTerraMorphologyImport  extends AlgaTerraSpecimenImportBase {
 	@Override
 	public boolean doPartition(ResultSetPartitioner partitioner, BerlinModelImportState bmState) {
 		boolean success = true;
-		
+
 		AlgaTerraImportState state = (AlgaTerraImportState)bmState;
 		Set<SpecimenOrObservationBase> objectsToSave = new HashSet<SpecimenOrObservationBase>();
-		
+
 		ResultSet rs = partitioner.getResultSet();
 
 		try {
-			
+
 			int i = 0;
 
 			//for each reference
             while (rs.next()){
-                
+
         		if ((i++ % modCount) == 0 && i!= 1 ){ logger.info(pluralString + " handled: " + (i-1));}
-				
+
 				int morphoFactId = rs.getInt("MorphoFactId");
 				String cultureStrainNo = rs.getString("CultureStrainNo");
-				
+
 				try {
-					
+
 					//source ref
-					Reference<?> sourceRef = state.getTransactionalSourceReference();
-					
+					Reference sourceRef = state.getTransactionalSourceReference();
+
 					//ecoFact
 					DerivedUnit ecoFact = makeDerivationFromEcoFact(state, rs, morphoFactId);
 					if (ecoFact != null){
 						SpecimenDescription desc = SpecimenDescription.NewInstance();
 						desc.setTitleCache("Morphology for " + cultureStrainNo , true);
-						
+
 						ecoFact.addDescription(desc);
-						
+
 						String baseLabel = "Organisation Level";
 						handleStateTerm(state, rs, baseLabel, desc);
-						
+
 						baseLabel = "Growth Form";
 						handleStateTerm(state, rs, baseLabel, desc);
-						
+
 						baseLabel = "Shape";
 						handleStateTerm(state, rs, baseLabel, desc);
-						
+
 						baseLabel = "Symmetry";
 						handleStateTerm(state, rs, baseLabel, desc);
-						
+
 						baseLabel = "Raphe";
 						handleStateTerm(state, rs, baseLabel, desc);
-	
+
 						baseLabel = "Chloroplast Shape";
 						handleStateTerm(state, rs, baseLabel, desc);
-	
+
 						baseLabel = "Chloroplast Structure";
 						handleStateTerm(state, rs, baseLabel, desc);
-	
+
 						baseLabel = "Chloroplast Position";
 						handleStateTerm(state, rs, baseLabel, desc);
-						
+
 						baseLabel = "Apices";
 						handleTextData(state, rs, baseLabel, desc);
-						
+
 						baseLabel = "Chloroplast Number";
 						handleTextData(state, rs, baseLabel, desc);
-						
+
 						baseLabel = "Pyrenoid";
 						handleTextData(state, rs, baseLabel, desc);
-						
+
 						baseLabel = "Cell Wall";
 						handleTextData(state, rs, baseLabel, desc);
-						
+
 						baseLabel = "Reproductive Stages";
 						handleTextData(state, rs, baseLabel, desc);
-						
+
 						//TODO to which object to add this information
 						this.doId(state, desc, morphoFactId, dbTableName);
 						String notes = rs.getString("Notes");
 						this.doNotes(desc, notes);
-	
-			            objectsToSave.add(ecoFact); 
+
+			            objectsToSave.add(ecoFact);
 					}else if (cultureStrainNo != null) {
 						logger.warn("cultureStrainNo (" + cultureStrainNo + ") exists but no ecoFact found for morphoFact " + morphoFactId);
 					}else{
@@ -398,12 +398,12 @@ public class AlgaTerraMorphologyImport  extends AlgaTerraSpecimenImportBase {
 				} catch (Exception e) {
 					logger.warn("Exception in morphoFact: morphoFactId " + morphoFactId + ". " + e.getMessage());
 					e.printStackTrace();
-				} 
-                
+				}
+
             }
-            
-            //TODO DataEntryBy, 
-            //GrowthFormExplanation, ShapeExplanation, RapheExplanation, ChloroplastExplanation, 
+
+            //TODO DataEntryBy,
+            //GrowthFormExplanation, ShapeExplanation, RapheExplanation, ChloroplastExplanation,
             //SizeRangeFk, SizeRangeExplanation,
             //Valve1RapheFlag, Valve1DescriptionFk,
             //Valve2RapheFlag, Valve2DescriptionFk,
@@ -412,21 +412,21 @@ public class AlgaTerraMorphologyImport  extends AlgaTerraSpecimenImportBase {
 
             //Not required:  OrganisationLevelExplanation, ValveLinearShape, ValveShape, SymmetryExplanation,
             //Rimoportula, Fultoportula, Description, CultureCollection
-           
+
 			logger.warn("Specimen to save: " + objectsToSave.size());
-			getOccurrenceService().save(objectsToSave);	
-			
+			getOccurrenceService().save(objectsToSave);
+
 			return success;
 		} catch (SQLException e) {
 			logger.error("SQLException:" +  e);
 			return false;
 		}
 	}
-	
+
 	private DerivedUnit makeDerivationFromEcoFact(AlgaTerraImportState state, ResultSet rs, Integer morphoFactId) throws SQLException {
 		Integer ecoFactFk = nullSafeInt(rs, "ecoFactId");
 		if (ecoFactFk != null){
-			
+
 			DerivedUnit ecoFact = (DerivedUnit)state.getRelatedObject(ECO_FACT_DERIVED_UNIT_NAMESPACE, ecoFactFk.toString());
 			if (ecoFact == null){
 				logger.warn("EcoFact is null for ecoFactFk: " + ecoFactFk + ", morphoFactId: " + morphoFactId);
@@ -438,11 +438,11 @@ public class AlgaTerraMorphologyImport  extends AlgaTerraSpecimenImportBase {
 			return null;
 		}
 	}
-	
+
 	private void handleTextData(AlgaTerraImportState state, ResultSet rs,
 			String baseLabel, SpecimenDescription desc) throws SQLException {
 		String baseLabelCamel = baseLabel.replace(" ", "");
-		
+
 		String value = rs.getString(baseLabelCamel);
 		if (value != null){
 			Feature feature = this.featureMap.get(baseLabelCamel);
@@ -457,7 +457,7 @@ public class AlgaTerraMorphologyImport  extends AlgaTerraSpecimenImportBase {
 
 	private void handleStateTerm(AlgaTerraImportState algaTerraState, ResultSet rs,
 			String baseLabel, SpecimenDescription desc) throws SQLException {
-		
+
 		String baseLabelCamel = baseLabel.replace(" ", "");
 		Integer id = nullSafeInt(rs, baseLabelCamel + "Fk");
 		if (id != null){
@@ -478,11 +478,13 @@ public class AlgaTerraMorphologyImport  extends AlgaTerraSpecimenImportBase {
 	}
 
 
-	protected String getDerivedUnitNameSpace(){
+	@Override
+    protected String getDerivedUnitNameSpace(){
 		return ECO_FACT_DERIVED_UNIT_NAMESPACE;
 	}
-	
-	protected String getFieldObservationNameSpace(){
+
+	@Override
+    protected String getFieldObservationNameSpace(){
 		return ECO_FACT_FIELD_OBSERVATION_NAMESPACE;
 	}
 
@@ -494,7 +496,7 @@ public class AlgaTerraMorphologyImport  extends AlgaTerraSpecimenImportBase {
 			String unitStr = rs.getString(String.format("P%dUnit", i));
 			String parameter = rs.getString(String.format("P%dParameter", i));
 			String method = rs.getString(String.format("P%dMethod", i));
-			
+
 			//method
 			if (StringUtils.isNotBlank(method)){
 				logger.warn("Methods not yet handled: " + method);
@@ -505,32 +507,32 @@ public class AlgaTerraMorphologyImport  extends AlgaTerraSpecimenImportBase {
 				UUID featureUuid = getParameterFeatureUuid(state, parameter);
 				Feature feature = getFeature(state, featureUuid, parameter, parameter, null, vocParameter);
 				QuantitativeData quantData = QuantitativeData.NewInstance(feature);
-				
+
 				//unit
 				MeasurementUnit unit = getMeasurementUnit(state, unitStr);
 				quantData.setUnit(unit);
 				try {
-					
+
 					Set<DefinedTerm> valueModifier = new HashSet<DefinedTerm>();
 					valueStr = normalizeAndModifyValue(state, valueStr, valueModifier);
 					//value
 					Float valueFlt = Float.valueOf(valueStr);  //TODO maybe change model to Double ??
-					
+
 					StatisticalMeasure measureSingleValue = getStatisticalMeasure(state, uuidStatMeasureSingleValue, "Value", "Single measurement value", null, null);
-					StatisticalMeasurementValue value = StatisticalMeasurementValue.NewInstance(measureSingleValue, valueFlt); 
+					StatisticalMeasurementValue value = StatisticalMeasurementValue.NewInstance(measureSingleValue, valueFlt);
 					quantData.addStatisticalValue(value);
 					descriptionBase.addElement(quantData);
-					
+
 				} catch (NumberFormatException e) {
 					logger.warn(String.format("Value '%s' can't be converted to double. Parameter %s not imported.", valueStr, parameter));
 				}
 			}else if (isNotBlank(valueStr) || isNotBlank(unitStr) ){
 				logger.warn("There is value or unit without parameter: " + i);
 			}
-			
-			
+
+
 		}
-		
+
 	}
 
 	private String normalizeAndModifyValue(AlgaTerraImportState state, String valueStr, Set<DefinedTerm> valueModifier) {
@@ -589,21 +591,21 @@ public class AlgaTerraMorphologyImport  extends AlgaTerraSpecimenImportBase {
 		Class<?> cdmClass;
 		Set<String> idSet;
 		Map<Object, Map<String, ? extends CdmBase>> result = new HashMap<Object, Map<String, ? extends CdmBase>>();
-		
+
 		try{
 			Set<String> ecoFactFkSet = new HashSet<String>();
-						
+
 			while (rs.next()){
 				handleForeignKey(rs, ecoFactFkSet, "ecoFactId");
 			}
-			
+
 			//eco fact derived unit map
 			nameSpace = AlgaTerraFactEcologyImport.ECO_FACT_DERIVED_UNIT_NAMESPACE;
 			cdmClass = DerivedUnit.class;
 			idSet = ecoFactFkSet;
 			Map<String, DerivedUnit> derivedUnitMap = (Map<String, DerivedUnit>)getCommonService().getSourcedObjectsByIdInSource(cdmClass, idSet, nameSpace);
 			result.put(nameSpace, derivedUnitMap);
-			
+
 		} catch (SQLException e) {
 			throw new RuntimeException(e);
 		}
@@ -620,5 +622,5 @@ public class AlgaTerraMorphologyImport  extends AlgaTerraSpecimenImportBase {
 	protected boolean isIgnore(BerlinModelImportState state){
 		return ! ((AlgaTerraImportState)state).getAlgaTerraConfigurator().isDoMorphology();
 	}
-	
+
 }

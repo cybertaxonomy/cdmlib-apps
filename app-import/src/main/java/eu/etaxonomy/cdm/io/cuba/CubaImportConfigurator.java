@@ -83,7 +83,7 @@ public class CubaImportConfigurator extends ExcelImportConfiguratorBase {
 	}
 
 	@Override
-    public Reference<?> getSourceReference() {
+    public Reference getSourceReference() {
 		if (sourceReference == null){
 			sourceReference =  ReferenceFactory.newDatabase();
 			if (getSource() != null){

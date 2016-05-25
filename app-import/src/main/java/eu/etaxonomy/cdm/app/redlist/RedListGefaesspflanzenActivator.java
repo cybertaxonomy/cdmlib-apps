@@ -61,8 +61,8 @@ public class RedListGefaesspflanzenActivator {
 		System.out.println("End import from ("+ source.toString() + ")...");
 	}
 
-	private Reference<?> getSourceReference(String string) {
-		Reference<?> result = ReferenceFactory.newGeneric();
+	private Reference getSourceReference(String string) {
+		Reference result = ReferenceFactory.newGeneric();
 		result.setTitleCache(string, true);
 		return result;
 	}

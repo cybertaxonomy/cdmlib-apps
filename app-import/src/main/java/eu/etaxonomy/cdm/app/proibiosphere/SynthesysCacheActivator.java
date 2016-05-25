@@ -74,7 +74,7 @@ public class SynthesysCacheActivator {
 
             specimenImportConfigurator.setReUseTaxon(true);
 
-            Reference<?> reference = ReferenceFactory.newGeneric();
+            Reference reference = ReferenceFactory.newGeneric();
             reference.setTitleCache("Chenopodium vulvaria observations from the Botanical Society of the British Isles", true);
             Person p = Person.NewInstance();
             p.setFirstname("Quentin");

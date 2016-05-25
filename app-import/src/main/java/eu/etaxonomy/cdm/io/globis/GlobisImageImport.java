@@ -1,8 +1,8 @@
 /**
 * Copyright (C) 2007 EDIT
-* European Distributed Institute of Taxonomy 
+* European Distributed Institute of Taxonomy
 * http://www.e-taxonomy.eu
-* 
+*
 * The contents of this file are subject to the Mozilla Public License Version 1.1
 * See LICENSE.TXT at the top of this package for the full license terms.
 */
@@ -55,32 +55,32 @@ import eu.etaxonomy.cdm.model.taxon.Taxon;
 @Component
 public class GlobisImageImport  extends GlobisImportBase<Taxon> {
 	private static final Logger logger = Logger.getLogger(GlobisImageImport.class);
-	
+
 	private int modCount = 1000;
 
 	private UUID uuidArtNonSpecTaxMarkerType = UUID.fromString("be362085-0f5b-4314-96d1-78b9b129ef6d") ;
 	private static final String pluralString = "images";
 	private static final String dbTableName = "Einzelbilder";
 	private static final Class<?> cdmTargetClass = Media.class;  //not needed
-	
-	private static UUID uuidGartRef = UUID.fromString("af85470f-6e54-4304-9d29-fd117cd56161"); 
-	
+
+	private static UUID uuidGartRef = UUID.fromString("af85470f-6e54-4304-9d29-fd117cd56161");
+
 	public GlobisImageImport(){
 		super(pluralString, dbTableName, cdmTargetClass);
 	}
 
 
-	
-	
+
+
 	/* (non-Javadoc)
 	 * @see eu.etaxonomy.cdm.io.globis.GlobisImportBase#getIdQuery()
 	 */
 	@Override
 	protected String getIdQuery() {
-		String strRecordQuery = 
-			" SELECT BildId " + 
-			" FROM " + dbTableName; 
-		return strRecordQuery;	
+		String strRecordQuery =
+			" SELECT BildId " +
+			" FROM " + dbTableName;
+		return strRecordQuery;
 	}
 
 
@@ -91,15 +91,15 @@ public class GlobisImageImport  extends GlobisImportBase<Taxon> {
 	 */
 	@Override
 	protected String getRecordQuery(GlobisImportConfigurator config) {
-		String strRecordQuery = 
+		String strRecordQuery =
 			" SELECT i.*, NULL as Created_When, NULL as Created_Who," +
-				"  NULL as Updated_who, NULL as Updated_When, NULL as Notes, st.SpecCurrspecID " + 
+				"  NULL as Updated_who, NULL as Updated_When, NULL as Notes, st.SpecCurrspecID " +
 			" FROM " + getTableName() + " i " +
 				" LEFT JOIN specTax st ON i.spectaxID = st.SpecTaxID " +
 			" WHERE ( i.BildId IN (" + ID_LIST_TOKEN + ") )";
 		return strRecordQuery;
 	}
-	
+
 
 
 	/* (non-Javadoc)
@@ -108,28 +108,28 @@ public class GlobisImageImport  extends GlobisImportBase<Taxon> {
 	@Override
 	public boolean doPartition(ResultSetPartitioner partitioner, GlobisImportState state) {
 		boolean success = true;
-		
+
 		Set<Media> objectsToSave = new HashSet<Media>();
-		
-		Map<String, DerivedUnit> typeMap = (Map<String, DerivedUnit>) partitioner.getObjectMap(TYPE_NAMESPACE);
-		
-		Map<String, Taxon> taxonMap = (Map<String, Taxon>) partitioner.getObjectMap(TAXON_NAMESPACE);
-		Map<String, ZoologicalName> specTaxNameMap = (Map<String, ZoologicalName>) partitioner.getObjectMap(SPEC_TAX_NAMESPACE);
-		
+
+		Map<String, DerivedUnit> typeMap = partitioner.getObjectMap(TYPE_NAMESPACE);
+
+		Map<String, Taxon> taxonMap = partitioner.getObjectMap(TAXON_NAMESPACE);
+		Map<String, ZoologicalName> specTaxNameMap = partitioner.getObjectMap(SPEC_TAX_NAMESPACE);
+
 		ResultSet rs = partitioner.getResultSet();
-		
-		Reference<?> refGart = getReferenceService().find(uuidGartRef);
-		
-		
+
+		Reference refGart = getReferenceService().find(uuidGartRef);
+
+
 		try {
-			
+
 			int i = 0;
 
 			//for each record
             while (rs.next()){
-                
+
         		if ((i++ % modCount) == 0 && i!= 1 ){ logger.info(pluralString + " handled: " + (i-1));}
-				
+
         		Integer bildID = rs.getInt("BildID");
         		Integer spectaxID = nullSafeInt(rs, "spectaxID");
         		Integer taxonID = nullSafeInt(rs, "SpecCurrspecID");
@@ -138,19 +138,19 @@ public class GlobisImageImport  extends GlobisImportBase<Taxon> {
         		String bemerkungen = rs.getString("Bemerkungen");
         		String artNotSpecTax = rs.getString("Art non spectax");
         		String motiv = rs.getString("Motiv");
-        		
-        		//ignore: 
+
+        		//ignore:
         		//	[file lab2], same as Dateiname04 but less data
         		//	Dateipfad
 
         		Set<Media> recordMedia = new HashSet<Media>();
-        		
+
         		try {
-					
+
         			makeAllMedia(state, rs, recordMedia, objectsToSave);
-        			
+
         			String title = null;
-        			
+
         			DerivedUnit specimen = null;
         			if (spectaxID != null){
         				//try to find type specimen
@@ -159,7 +159,7 @@ public class GlobisImageImport  extends GlobisImportBase<Taxon> {
 	    					String id = GlobisSpecTaxImport.getTypeId(spectaxID, collectionCode);
 	    					specimen = typeMap.get(id);
         				}
-        				
+
     					//try to find specTaxName
         				ZoologicalName specTaxTaxonName = specTaxNameMap.get(String.valueOf(spectaxID));
             			if (specTaxTaxonName != null){
@@ -170,7 +170,7 @@ public class GlobisImageImport  extends GlobisImportBase<Taxon> {
     				}else{
     					title = " name " + getNameFromFileOs(rs) + (isBlank(specimenId)? "" : " (specimenId: " + specimenId + ")");
     				}
-        			
+
         			//not type specimen
         			if (specimen == null){
 						specimen = DerivedUnit.NewPreservedSpecimenInstance();
@@ -180,11 +180,11 @@ public class GlobisImageImport  extends GlobisImportBase<Taxon> {
 						Collection collection = getCollection(collectionCode);
 						specimen.setCollection(collection);
 					}
-					
-					
+
+
 					//source
 					specimen.addSource(OriginalSourceType.Import, String.valueOf(bildID), IMAGE_NAMESPACE, state.getTransactionalSourceReference(), null);
-					
+
 					//GART id (specimenID)
 					if (isNotBlank(specimenId)){
 						specimen.addSource(OriginalSourceType.Lineage, specimenId, "specimenId", refGart, null);
@@ -208,14 +208,14 @@ public class GlobisImageImport  extends GlobisImportBase<Taxon> {
 							logger.warn(artNotSpecTax + " is not a valid value for 'Art non spectax' (BildID: " + bildID + ")" );
 						}
 					}
-        			
+
 					if (spectaxID != null){
-						
+
 						//add to image gallery (discuss if this is also needed if taxon is already added to type specimen
 //						Taxon taxon = taxonMap.get(String.valueOf(taxonID));
 						ZoologicalName specTaxTaxonName = specTaxNameMap.get(String.valueOf(spectaxID));
-						
-//						
+
+//
 //						if (taxon == null){
 ////							taxon = specTaxMap.get(String.valueOf(spectaxID));
 ////							specTaxName = specTaxMap.g
@@ -225,9 +225,9 @@ public class GlobisImageImport  extends GlobisImportBase<Taxon> {
 //						}else{
 //							name = CdmBase.deproxy(taxon.getName(), ZoologicalName.class);
 //						}
-						
+
 						//TODO FIXME
-						
+
 						if (specTaxTaxonName == null){
 							logger.warn("Name could not be found for spectaxID: " + spectaxID +  " in BildID: " + bildID);
 						}else{
@@ -237,17 +237,17 @@ public class GlobisImageImport  extends GlobisImportBase<Taxon> {
 							}
 							if (taxon == null){
 								//FIXME
-								Reference<?> undefinedSec = null;
+								Reference undefinedSec = null;
 								taxon = Taxon.NewInstance(specTaxTaxonName, undefinedSec);
 							}
-							
+
 							DeterminationEvent.NewInstance(taxon, specimen);
 
 						}
-						
-						
 
-						
+
+
+
 //						if (taxon != null){
 //							TaxonDescription taxonDescription = getTaxonDescription(taxon, true, true);
 //							if (taxonDescription.getElements().size() == 0){
@@ -261,24 +261,24 @@ public class GlobisImageImport  extends GlobisImportBase<Taxon> {
 //							}
 //						}
 					}
-					
+
 				} catch (Exception e) {
 					logger.warn("Exception in Einzelbilder: bildID " + bildID + ". " + e.getMessage());
 					e.printStackTrace();
-				} 
-                
+				}
+
             }
-           
+
 			logger.info(pluralString + " to save: " + objectsToSave.size());
-			getMediaService().save(objectsToSave);	
-			
+			getMediaService().save(objectsToSave);
+
 			return success;
 		} catch (SQLException e) {
 			logger.error("SQLException:" +  e);
 			return false;
 		}
 	}
-	
+
 	private Collection getCollection(String collectionCode) {
 		//TODO
 		return null;
@@ -310,7 +310,7 @@ public class GlobisImageImport  extends GlobisImportBase<Taxon> {
 		pathShort= pathShort.replace(fileOS, "");
 		String newPath = state.getConfig().getImageBaseUrl();
 		String path = pathShort.replace("image:Webversionen/", newPath);
-		
+
 		Media singleMedia = makeMedia(state, rs, "file OS", "Legende 1", path, objectsToSave );
 		recordMedia.add(singleMedia);
 		singleMedia = makeMedia(state, rs, "Dateinamen02", "Legende 2", path, objectsToSave );
@@ -327,14 +327,14 @@ public class GlobisImageImport  extends GlobisImportBase<Taxon> {
 		String fileName = rs.getString(fileNameAttr);
 		String legend = rs.getString(legendAttr);
 		Integer bildID = rs.getInt("BildID");
-		
+
 		String uriStr = path+fileName;
 		uriStr = uriStr.replace(" ", "%20");
-		
-		URI uri = URI.create(uriStr); 
-		
+
+		URI uri = URI.create(uriStr);
+
 //		Media media = ImageInfo.NewInstanceWithMetaData(uri, null);
-		
+
 		try {
 			boolean readMediaData = state.getConfig().isDoReadMediaData();
 			if (isBlank(legend) && readMediaData){
@@ -344,14 +344,14 @@ public class GlobisImageImport  extends GlobisImportBase<Taxon> {
 					return null;
 				}
 			}
-			
+
 			media = this.getImageMedia(uri.toString(), readMediaData);
 			media.putTitle(Language.ENGLISH(), legend);
 			this.doIdCreatedUpdatedNotes(state, media, rs, bildID, IMAGE_NAMESPACE);
-			
+
 			objectsToSave.add(media);
-			
-			
+
+
 		} catch (MalformedURLException e) {
 			e.printStackTrace();
 		} catch (ClientProtocolException e) {
@@ -359,12 +359,12 @@ public class GlobisImageImport  extends GlobisImportBase<Taxon> {
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-		
+
 		return media;
 	}
-	
+
 	private String transformCopyright2CollectionCode(String copyright){
-		
+
 		if (isBlank(copyright)){
 			return "";
 		}else if(copyright.matches("Museum f.?r Naturkunde der Humboldt-Universit.?t, Berlin")){
@@ -409,7 +409,7 @@ public class GlobisImageImport  extends GlobisImportBase<Taxon> {
 		}
 	}
 
-	
+
 	@Override
 	public Map<Object, Map<String, ? extends CdmBase>> getRelatedObjectsForPartition(ResultSet rs, GlobisImportState state) {
 		String nameSpace;
@@ -420,13 +420,13 @@ public class GlobisImageImport  extends GlobisImportBase<Taxon> {
 			Set<String> currSpecIdSet = new HashSet<String>();
 			Set<String> specTaxIdSet = new HashSet<String>();
 			Set<String> typeIdSet = new HashSet<String>();
-			
+
 			while (rs.next()){
 				handleForeignKey(rs, currSpecIdSet, "SpecCurrspecID");
 				handleForeignKey(rs, specTaxIdSet, "spectaxID");
 				handleTypeKey(rs, typeIdSet, "spectaxID", "copyright");
 			}
-			
+
 			//specTax map
 			nameSpace = SPEC_TAX_NAMESPACE;
 			cdmClass = ZoologicalName.class;
@@ -441,21 +441,21 @@ public class GlobisImageImport  extends GlobisImportBase<Taxon> {
 //			Map<String, Taxon> taxonMap = (Map<String, Taxon>)getCommonService().getSourcedObjectsByIdInSource(cdmClass, idSet, nameSpace);
 //			result.put(nameSpace, taxonMap);
 
-			
+
 			//type map
 			nameSpace = GlobisSpecTaxImport.TYPE_NAMESPACE;
 			cdmClass = DerivedUnit.class;
 			idSet = typeIdSet;
 			Map<String, DerivedUnit> typeMap = (Map<String, DerivedUnit>)getCommonService().getSourcedObjectsByIdInSource(cdmClass, idSet, nameSpace);
 			result.put(nameSpace, typeMap);
-			
-			
+
+
 		} catch (SQLException e) {
 			throw new RuntimeException(e);
 		}
 		return result;
 	}
-	
+
 	private void handleTypeKey(ResultSet rs, Set<String> idSet, String specTaxIdAttr, String copyrightAttr) throws SQLException {
 		Integer specTaxId = nullSafeInt(rs, specTaxIdAttr);
 		if (specTaxId != null){
@@ -466,7 +466,7 @@ public class GlobisImageImport  extends GlobisImportBase<Taxon> {
 			}
 		}
 	}
-	
+
 	/* (non-Javadoc)
 	 * @see eu.etaxonomy.cdm.io.common.CdmIoBase#doCheck(eu.etaxonomy.cdm.io.common.IImportConfigurator)
 	 */
@@ -475,12 +475,13 @@ public class GlobisImageImport  extends GlobisImportBase<Taxon> {
 		IOValidator<GlobisImportState> validator = new GlobisImageImportValidator();
 		return validator.validate(state);
 	}
-	
-	
+
+
 	/* (non-Javadoc)
 	 * @see eu.etaxonomy.cdm.io.common.CdmIoBase#isIgnore(eu.etaxonomy.cdm.io.common.IImportConfigurator)
 	 */
-	protected boolean isIgnore(GlobisImportState state){
+	@Override
+    protected boolean isIgnore(GlobisImportState state){
 		return ! state.getConfig().isDoImages();
 	}
 

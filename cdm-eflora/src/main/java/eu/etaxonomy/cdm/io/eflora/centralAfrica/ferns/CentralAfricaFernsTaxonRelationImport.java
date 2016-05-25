@@ -330,7 +330,7 @@ public class CentralAfricaFernsTaxonRelationImport  extends CentralAfricaFernsIm
 	private void makeNextHigherTaxon(CentralAfricaFernsImportState state, ResultSet rs, Taxon child, Epithets epithets) throws SQLException {
 
 		Taxon constructedHigherTaxon = constructNextHigherTaxon(state, rs, child, epithets);
-		Reference<?> citation = null;
+		Reference citation = null;
 		String microcitation = null;
 
 		if (constructedHigherTaxon != null){
@@ -357,7 +357,7 @@ public class CentralAfricaFernsTaxonRelationImport  extends CentralAfricaFernsIm
 	 * @param microcitation
 	 * @throws SQLException
 	 */
-	private void handleHigherTaxonMustExist(CentralAfricaFernsImportState state, ResultSet rs, Taxon child, Epithets epithets, Taxon constructedHigherTaxon, Reference<?> citation, String microCitation) throws SQLException {
+	private void handleHigherTaxonMustExist(CentralAfricaFernsImportState state, ResultSet rs, Taxon child, Epithets epithets, Taxon constructedHigherTaxon, Reference citation, String microCitation) throws SQLException {
 		Taxon parentTaxon = getParent(child);
 		if (parentTaxon == null){
 			//if no parent taxon exists
@@ -696,7 +696,7 @@ public class CentralAfricaFernsTaxonRelationImport  extends CentralAfricaFernsIm
 
 		//persist
 //		Reference citation = state.getConfig().getSourceReference(); //throws nonUniqueObject exception
-		Reference<?> citation = null;
+		Reference citation = null;
 		String id = state.getTaxonNumber() + "-" + constructedName.getRank().getTitleCache();
 		addOriginalSource(constructedName, id, NAME_NAMESPACE, citation);
 		addOriginalSource(constructedHigherTaxon, id, TAXON_NAMESPACE, citation);
@@ -1030,7 +1030,7 @@ public class CentralAfricaFernsTaxonRelationImport  extends CentralAfricaFernsIm
 	private void makeSingleCountry(CentralAfricaFernsImportState state, String taxonNumber, Taxon taxon, TaxonNameBase nameUsedInSource, String country) throws UndefinedTransformerMethodException {
 		boolean areaDoubtful = false;
 		Distribution distribution = Distribution.NewInstance(null, PresenceAbsenceTerm.PRESENT());
-		Reference<?> sourceReference = this.sourceReference;
+		Reference sourceReference = this.sourceReference;
 		distribution.addSource(OriginalSourceType.Import, taxonNumber, "Distribution_Country", sourceReference, null, nameUsedInSource, null);
 		NamedArea area = null;
 		//empty
@@ -1107,10 +1107,10 @@ public class CentralAfricaFernsTaxonRelationImport  extends CentralAfricaFernsIm
 	 * @param state
 	 * @return
 	 */
-	private Reference<?> sourceReference = null;
-	private Reference<?> getFernsSourceReference(CentralAfricaFernsImportState state) {
+	private Reference sourceReference = null;
+	private Reference getFernsSourceReference(CentralAfricaFernsImportState state) {
 //		if (sourceReference == null || true){
-			Reference<?> tmpReference = state.getConfig().getSourceReference();
+			Reference tmpReference = state.getConfig().getSourceReference();
 			sourceReference = getReferenceService().find(tmpReference.getUuid());
 //		}
 		return sourceReference;

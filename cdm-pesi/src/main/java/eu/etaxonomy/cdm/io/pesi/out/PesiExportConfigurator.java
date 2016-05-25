@@ -1,9 +1,9 @@
 // $Id$
 /**
 * Copyright (C) 2009 EDIT
-* European Distributed Institute of Taxonomy 
+* European Distributed Institute of Taxonomy
 * http://www.e-taxonomy.eu
-* 
+*
 * The contents of this file are subject to the Mozilla Public License Version 1.1
 * See LICENSE.TXT at the top of this package for the full license terms.
 */
@@ -28,9 +28,9 @@ public class PesiExportConfigurator extends DbExportConfiguratorBase<PesiExportS
 	private static Logger logger = Logger.getLogger(PesiExportConfigurator.class);
 	private int limitSave = 2000;
 
-	private Reference<?> auctReference;
-	
-	
+	private Reference auctReference;
+
+
 	private DO_REFERENCES doReferences = DO_REFERENCES.ALL;
 	private boolean doTaxa = true;
 	private boolean doRelTaxa = true;
@@ -46,14 +46,15 @@ public class PesiExportConfigurator extends DbExportConfiguratorBase<PesiExportS
 	private boolean doRank = true;
 	private boolean doPureNames = true;
 	private boolean doDescription = true;
-	
+
 	private int nameIdStart = 10000000;
 
 	public static PesiExportConfigurator NewInstance(Source pesiDestination, ICdmDataSource source, PesiTransformer transformer) {
 			return new PesiExportConfigurator(pesiDestination, source, transformer);
 	}
-	
-	@SuppressWarnings("unchecked")
+
+	@Override
+    @SuppressWarnings("unchecked")
 	protected void makeIoClassList() {
 		ioClassList = new Class[]{
 				PesiSourceExport.class,
@@ -70,11 +71,11 @@ public class PesiExportConfigurator extends DbExportConfiguratorBase<PesiExportS
 		};
 
 	}
-	
+
 	/**
 	 * @param pesiSource
 	 * @param cdmSource
-	 * @param transformer 
+	 * @param transformer
 	 */
 	private PesiExportConfigurator(Source pesiSource, ICdmDataSource cdmSource, PesiTransformer transformer) {
 	   super(transformer);
@@ -85,10 +86,11 @@ public class PesiExportConfigurator extends DbExportConfiguratorBase<PesiExportS
 	/* (non-Javadoc)
 	 * @see eu.etaxonomy.cdm.io.common.IExportConfigurator#getNewState()
 	 */
-	public PesiExportState getNewState() {
+	@Override
+    public PesiExportState getNewState() {
 		return new PesiExportState(this);
 	}
-	
+
 	/**
 	 * @return the limitSave
 	 */
@@ -108,30 +110,30 @@ public class PesiExportConfigurator extends DbExportConfiguratorBase<PesiExportS
 	 * Copied from FaunaEuropaeaImportConfigurator.
 	 * @return
 	 */
-	public Reference<?> getAuctReference() {
+	public Reference getAuctReference() {
 		if (auctReference == null){
 			auctReference = ReferenceFactory.newGeneric();
-			
+
 			auctReference.setTitleCache("auct.", true);
 		}
 		return auctReference;
 	}
-	
+
 	public boolean isDoOccurrence() {
 		return doOccurrence;
 	}
 	public void setDoOccurrence(boolean doOccurrence) {
 		this.doOccurrence = doOccurrence;
 	}
-	
-	
+
+
 	public boolean isDoImages() {
 		return doImages;
 	}
 	public void setDoImages(boolean doImages) {
 		this.doImages = doImages;
 	}
-	
+
 
 
 	public DO_REFERENCES getDoReferences() {
@@ -147,7 +149,7 @@ public class PesiExportConfigurator extends DbExportConfiguratorBase<PesiExportS
 	public void setDoTaxa(boolean doTaxa) {
 		this.doTaxa = doTaxa;
 	}
-	
+
 	public boolean isDoRelTaxa() {
 		return doRelTaxa;
 	}

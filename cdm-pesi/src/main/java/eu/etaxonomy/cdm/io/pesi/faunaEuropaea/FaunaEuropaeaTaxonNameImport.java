@@ -137,7 +137,7 @@ public class FaunaEuropaeaTaxonNameImport extends FaunaEuropaeaImportBase  {
 		Set<Synonym> synonymSet = null;
 
 		FaunaEuropaeaImportConfigurator fauEuConfig = state.getConfig();
-		Reference<?> sourceRef = fauEuConfig.getSourceReference();
+		Reference sourceRef = fauEuConfig.getSourceReference();
 
 		Source source = fauEuConfig.getSource();
 		int i = 0;
@@ -348,8 +348,8 @@ public class FaunaEuropaeaTaxonNameImport extends FaunaEuropaeaImportBase  {
 					continue;
 				}
 
-				Reference<?> sourceReference = fauEuConfig.getSourceReference();
-				Reference<?> auctReference = fauEuConfig.getAuctReference();
+				Reference sourceReference = fauEuConfig.getSourceReference();
+				Reference auctReference = fauEuConfig.getAuctReference();
 
 				ZoologicalName zooName = ZoologicalName.NewInstance(rank);
 				TeamOrPersonBase<?> author = authorStore.get(autId);
@@ -677,7 +677,7 @@ public class FaunaEuropaeaTaxonNameImport extends FaunaEuropaeaImportBase  {
 
 
 	/* Build taxon title cache */
-	private String buildTaxonTitleCache(String nameCache, Reference<?> reference) {
+	private String buildTaxonTitleCache(String nameCache, Reference reference) {
 
 		StringBuilder titleCacheStringBuilder = new StringBuilder(nameCache);
 		titleCacheStringBuilder.append(" sec. ");

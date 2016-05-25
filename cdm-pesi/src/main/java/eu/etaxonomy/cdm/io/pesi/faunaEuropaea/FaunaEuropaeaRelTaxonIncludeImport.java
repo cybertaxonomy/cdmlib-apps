@@ -71,7 +71,7 @@ public class FaunaEuropaeaRelTaxonIncludeImport extends FaunaEuropaeaImportBase 
 	private Map<UUID, TeamOrPersonBase> agentMap = new HashMap<UUID, TeamOrPersonBase>();
 
 
-	private Reference<?> sourceRef;
+	private Reference sourceRef;
     private final String parentPluralString = "Taxa";
 	private static String ALL_SYNONYM_FROM_CLAUSE = " FROM Taxon INNER JOIN Taxon AS Parent " +
 	" ON Taxon.TAX_TAX_IDPARENT = Parent.TAX_ID " +

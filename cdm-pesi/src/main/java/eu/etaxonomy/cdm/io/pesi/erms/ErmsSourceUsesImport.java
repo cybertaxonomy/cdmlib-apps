@@ -1,8 +1,8 @@
 /**
 * Copyright (C) 2007 EDIT
-* European Distributed Institute of Taxonomy 
+* European Distributed Institute of Taxonomy
 * http://www.e-taxonomy.eu
-* 
+*
 * The contents of this file are subject to the Mozilla Public License Version 1.1
 * See LICENSE.TXT at the top of this package for the full license terms.
 */
@@ -59,9 +59,9 @@ import eu.etaxonomy.cdm.model.taxon.TaxonRelationship;
 @Component
 public class ErmsSourceUsesImport  extends ErmsImportBase<CommonTaxonName> {
 	private static final Logger logger = Logger.getLogger(ErmsSourceUsesImport.class);
-	
+
 	private DbImportMapping<ErmsImportState,ErmsImportConfigurator> mapping; //not needed
-	
+
 	private static final String pluralString = "source uses";
 	private static final String dbTableName = "tu_sources";
 	private static final Class<?> cdmTargetClass = null;
@@ -77,9 +77,9 @@ public class ErmsSourceUsesImport  extends ErmsImportBase<CommonTaxonName> {
 	@Override
 	protected String getIdQuery() {
 		String strQuery = " SELECT sourceuse_id, source_id, tu_id " + " " +
-						" FROM tu_sources " + 
+						" FROM tu_sources " +
 						" ORDER BY sourceuse_id, source_id, tu_id  ";
-		return strQuery;	
+		return strQuery;
 	}
 
 
@@ -89,28 +89,29 @@ public class ErmsSourceUsesImport  extends ErmsImportBase<CommonTaxonName> {
 	 */
 	@Override
 	protected String getRecordQuery(ErmsImportConfigurator config) {
-		String strRecordQuery = 
-			" SELECT * " + 
+		String strRecordQuery =
+			" SELECT * " +
 			" FROM tu_sources INNER JOIN sourceuses ON tu_sources.sourceuse_id = sourceuses.sourceuse_id" +
 			" WHERE ( tu_sources.sourceuse_id IN (" + ID_LIST_TOKEN + ") AND " +
-			" 		tu_sources.source_id IN (" + ID_LIST_TOKEN + ") AND " + 
+			" 		tu_sources.source_id IN (" + ID_LIST_TOKEN + ") AND " +
 			"		tu_sources.tu_id IN (" + ID_LIST_TOKEN + ")  )";
 		return strRecordQuery;
 	}
 
-	
-	public boolean doPartition(ResultSetPartitioner partitioner, ErmsImportState state) {
+
+	@Override
+    public boolean doPartition(ResultSetPartitioner partitioner, ErmsImportState state) {
 		boolean success = true ;
 		Set objectsToSave = new HashSet<IdentifiableEntity>();
-		
+
 // 		DbImportMapping<?, ?> mapping = getMapping();
 //		mapping.initialize(state, cdmTargetClass);
-		
+
 		ResultSet rs = partitioner.getResultSet();
 		try{
 			while (rs.next()){
 				//success &= mapping.invoke(rs,referencesToSave);
-				
+
 				//read and normalize values
 				int sourceUseId = rs.getInt("sourceuse_id");
 				int sourceId = rs.getInt("source_id");
@@ -121,8 +122,8 @@ public class ErmsSourceUsesImport  extends ErmsImportBase<CommonTaxonName> {
 				if (StringUtils.isBlank(strPageNr)){
 					strPageNr = null;
 				}
-				Reference<?> ref = (Reference<?>)state.getRelatedObject(ErmsReferenceImport.REFERENCE_NAMESPACE, strSourceId);
-				
+				Reference ref = (Reference)state.getRelatedObject(ErmsReferenceImport.REFERENCE_NAMESPACE, strSourceId);
+
 				try {
 				IdentifiableEntity<?> objectToSave = null;
 				//invoke methods for each sourceUse type
@@ -155,7 +156,7 @@ public class ErmsSourceUsesImport  extends ErmsImportBase<CommonTaxonName> {
 			logger.error("SQLException:" +  e);
 			return false;
 		}
-	
+
 		partitioner.startDoSave();
 		getCommonService().save(objectsToSave);
 		return success;
@@ -163,20 +164,20 @@ public class ErmsSourceUsesImport  extends ErmsImportBase<CommonTaxonName> {
 
 
 	/**
-	 * @param strTaxonId 
-	 * @param ref 
-	 * @param state 
-	 * @param partitioner 
-	 * @param strPageNr 
-	 * 
+	 * @param strTaxonId
+	 * @param ref
+	 * @param state
+	 * @param partitioner
+	 * @param strPageNr
+	 *
 	 */
-	private TaxonNameBase<?,?> makeOriginalDescription(ResultSetPartitioner<?> partitioner, ErmsImportState state, Reference<?> ref, String strTaxonId, String strPageNr) {
+	private TaxonNameBase<?,?> makeOriginalDescription(ResultSetPartitioner<?> partitioner, ErmsImportState state, Reference ref, String strTaxonId, String strPageNr) {
 		TaxonNameBase<?,?> taxonName = (TaxonNameBase<?,?>)state.getRelatedObject(ErmsTaxonImport.NAME_NAMESPACE, strTaxonId);
 		taxonName.setNomenclaturalReference(ref);
 		taxonName.setNomenclaturalMicroReference(strPageNr);
 		return taxonName;
 	}
-	
+
 	/**
 	 * @param partitioner
 	 * @param state
@@ -184,15 +185,15 @@ public class ErmsSourceUsesImport  extends ErmsImportBase<CommonTaxonName> {
 	 * @param strTaxonId
 	 * @param strPageNr
 	 */
-	private boolean isFirstBasisOfRecord = true; 
-	private IdentifiableEntity<?> makeBasisOfRecord(ResultSetPartitioner<?> partitioner, ErmsImportState state, Reference<?> ref, String strTaxonId, String strPageNr) {
+	private boolean isFirstBasisOfRecord = true;
+	private IdentifiableEntity<?> makeBasisOfRecord(ResultSetPartitioner<?> partitioner, ErmsImportState state, Reference ref, String strTaxonId, String strPageNr) {
 		if (isFirstBasisOfRecord){
 			logger.warn("Basis of record not yet implemented");
 			isFirstBasisOfRecord = false;
 		}
 		return null;
 	}
-	
+
 	/**
 	 * @param partitioner
 	 * @param state
@@ -200,7 +201,7 @@ public class ErmsSourceUsesImport  extends ErmsImportBase<CommonTaxonName> {
 	 * @param strTaxonId
 	 * @param strPageNr
 	 */
-	private IdentifiableEntity<?> makeAdditionalSource(ResultSetPartitioner<?> partitioner, ErmsImportState state, Reference<?> ref, String strTaxonId, String strPageNr) {
+	private IdentifiableEntity<?> makeAdditionalSource(ResultSetPartitioner<?> partitioner, ErmsImportState state, Reference ref, String strTaxonId, String strPageNr) {
 		Feature citationFeature = Feature.CITATION();
 		DescriptionElementBase element = TextData.NewInstance(citationFeature);
 		DescriptionElementSource source = element.addSource(OriginalSourceType.PrimaryTaxonomicSource, null, null, ref, strPageNr);
@@ -210,7 +211,7 @@ public class ErmsSourceUsesImport  extends ErmsImportBase<CommonTaxonName> {
 		}
 		TaxonBase<?> taxonBase = (TaxonBase<?>)state.getRelatedObject(ErmsTaxonImport.TAXON_NAMESPACE, strTaxonId);
 		Taxon taxon;
-		
+
 		//if taxon base is a synonym, add the description to the accepted taxon
 		if (taxonBase.isInstanceOf(Synonym.class)){
 			Synonym synonym = CdmBase.deproxy(taxonBase, Synonym.class);
@@ -232,7 +233,7 @@ public class ErmsSourceUsesImport  extends ErmsImportBase<CommonTaxonName> {
 		}else{
 			taxon = (Taxon)taxonBase;
 		}
-		
+
 		//get or create description and add the element
 		TaxonDescription description;
 		if (taxon.getDescriptions().size() > 0){
@@ -243,7 +244,7 @@ public class ErmsSourceUsesImport  extends ErmsImportBase<CommonTaxonName> {
 		description.addElement(element);
 		return taxon;
 	}
-	
+
 	/**
 	 * @param partitioner
 	 * @param state
@@ -251,7 +252,7 @@ public class ErmsSourceUsesImport  extends ErmsImportBase<CommonTaxonName> {
 	 * @param strTaxonId
 	 * @param strPageNr
 	 */
-	private IdentifiableEntity<?> makeSourceOfSynonymy(ResultSetPartitioner<?> partitioner, ErmsImportState state, Reference<?> ref, String strTaxonId, String strPageNr) {
+	private IdentifiableEntity<?> makeSourceOfSynonymy(ResultSetPartitioner<?> partitioner, ErmsImportState state, Reference ref, String strTaxonId, String strPageNr) {
 		TaxonBase<?> taxonBase = (TaxonBase<?>)state.getRelatedObject(ErmsTaxonImport.TAXON_NAMESPACE, strTaxonId);
 		if (taxonBase == null){
 			String warning = "taxonBase (id = " + strTaxonId + ") could not be found ";
@@ -280,10 +281,10 @@ public class ErmsSourceUsesImport  extends ErmsImportBase<CommonTaxonName> {
 				synRel.setCitationMicroReference(strPageNr);
 			}
 		}
-			
+
 		return taxonBase;
 	}
-	
+
 	/**
 	 * @param partitioner
 	 * @param state
@@ -291,8 +292,8 @@ public class ErmsSourceUsesImport  extends ErmsImportBase<CommonTaxonName> {
 	 * @param strTaxonId
 	 * @param strPageNr
 	 */
-	private boolean isFirstRediscription = true; 
-	private IdentifiableEntity<?> makeRedescription(ResultSetPartitioner<?> partitioner, ErmsImportState state, Reference<?> ref, String strTaxonId, String strPageNr) {
+	private boolean isFirstRediscription = true;
+	private IdentifiableEntity<?> makeRedescription(ResultSetPartitioner<?> partitioner, ErmsImportState state, Reference ref, String strTaxonId, String strPageNr) {
 		if (isFirstRediscription){
 			logger.warn("Rediscription not yet implemented");
 			isFirstRediscription = false;
@@ -307,7 +308,7 @@ public class ErmsSourceUsesImport  extends ErmsImportBase<CommonTaxonName> {
 	 * @param strTaxonId
 	 * @param strPageNr
 	 */
-	private IdentifiableEntity<?> makeCombinationReference(ResultSetPartitioner<?> partitioner, ErmsImportState state, Reference<?> ref, String strTaxonId, String strPageNr) {
+	private IdentifiableEntity<?> makeCombinationReference(ResultSetPartitioner<?> partitioner, ErmsImportState state, Reference ref, String strTaxonId, String strPageNr) {
 		// Kopie von Orig. Comb.
 		//TODO ist das wirklich der richtige Name, oder muss ein verknüpfter Name verwendet werden
 		TaxonNameBase<?,?> taxonName = (TaxonNameBase<?,?>)state.getRelatedObject(ErmsTaxonImport.NAME_NAMESPACE, strTaxonId);
@@ -324,8 +325,8 @@ public class ErmsSourceUsesImport  extends ErmsImportBase<CommonTaxonName> {
 	 * @param strTaxonId
 	 * @param strPageNr
 	 */
-	private boolean isFirstStatusSource = true; 
-	private IdentifiableEntity<?> makeStatusSource(ResultSetPartitioner<?> partitioner, ErmsImportState state, Reference<?> ref, String strTaxonId, String strPageNr) {
+	private boolean isFirstStatusSource = true;
+	private IdentifiableEntity<?> makeStatusSource(ResultSetPartitioner<?> partitioner, ErmsImportState state, Reference ref, String strTaxonId, String strPageNr) {
 		if (isFirstStatusSource){
 			logger.warn("StatusSource not yet implemented");
 			isFirstStatusSource = false;
@@ -340,8 +341,8 @@ public class ErmsSourceUsesImport  extends ErmsImportBase<CommonTaxonName> {
 	 * @param strTaxonId
 	 * @param strPageNr
 	 */
-	private boolean isFirstEmendation = true; 
-	private IdentifiableEntity<?> makeEmendation(ResultSetPartitioner<?> partitioner, ErmsImportState state, Reference<?> ref, String strTaxonId, String strPageNr) {
+	private boolean isFirstEmendation = true;
+	private IdentifiableEntity<?> makeEmendation(ResultSetPartitioner<?> partitioner, ErmsImportState state, Reference ref, String strTaxonId, String strPageNr) {
 		if (isFirstEmendation){
 			logger.warn("Emmendation not yet implemented");
 			isFirstEmendation = false;
@@ -359,16 +360,16 @@ public class ErmsSourceUsesImport  extends ErmsImportBase<CommonTaxonName> {
 		return null;  //not needed
 	}
 
-	
-//************************************ RELATED OBJECTS *************************************************/	
-	
+
+//************************************ RELATED OBJECTS *************************************************/
+
 	@Override
 	public Map<Object, Map<String, ? extends CdmBase>> getRelatedObjectsForPartition(ResultSet rs, ErmsImportState state) {
 		String nameSpace;
 		Class<?> cdmClass;
 		Set<String> idSet;
 		Map<Object, Map<String, ? extends CdmBase>> result = new HashMap<Object, Map<String, ? extends CdmBase>>();
-		
+
 		try{
 			Set<String> taxonIdSet = new HashSet<String>();
 			Set<String> nameIdSet = new HashSet<String>();
@@ -378,36 +379,36 @@ public class ErmsSourceUsesImport  extends ErmsImportBase<CommonTaxonName> {
 				handleForeignKey(rs, nameIdSet, "tu_id");
 				handleForeignKey(rs, referenceIdSet, "source_id");
 			}
-			
+
 			//name map
 			nameSpace = ErmsTaxonImport.NAME_NAMESPACE;
 			cdmClass = TaxonNameBase.class;
 			idSet = nameIdSet;
 			Map<String, TaxonNameBase<?,?>> nameMap = (Map<String, TaxonNameBase<?,?>>)getCommonService().getSourcedObjectsByIdInSource(cdmClass, idSet, nameSpace);
 			result.put(nameSpace, nameMap);
-			
+
 			//taxon map
 			nameSpace = ErmsTaxonImport.TAXON_NAMESPACE;
 			cdmClass = TaxonBase.class;
 			idSet = taxonIdSet;
 			Map<String, TaxonBase<?>> taxonMap = (Map<String, TaxonBase<?>>)getCommonService().getSourcedObjectsByIdInSource(cdmClass, idSet, nameSpace);
 			result.put(nameSpace, taxonMap);
-			
+
 			//reference map
 			nameSpace = ErmsReferenceImport.REFERENCE_NAMESPACE;
 			cdmClass = Reference.class;
 			idSet = referenceIdSet;
-			Map<String, Reference<?>> referenceMap = (Map<String, Reference<?>>)getCommonService().getSourcedObjectsByIdInSource(Reference.class, idSet, nameSpace);
+			Map<String, Reference> referenceMap = (Map<String, Reference>)getCommonService().getSourcedObjectsByIdInSource(Reference.class, idSet, nameSpace);
 			result.put(nameSpace, referenceMap);
-	
-				
+
+
 		} catch (SQLException e) {
 			throw new RuntimeException(e);
 		}
 		return result;
 
 	}
-	
+
 	/* (non-Javadoc)
 	 * @see eu.etaxonomy.cdm.io.common.CdmIoBase#doCheck(eu.etaxonomy.cdm.io.common.IImportConfigurator)
 	 */
@@ -416,11 +417,12 @@ public class ErmsSourceUsesImport  extends ErmsImportBase<CommonTaxonName> {
 		IOValidator<ErmsImportState> validator = new ErmsSourceUsesImportValidator();
 		return validator.validate(state);
 	}
-	
+
 	/* (non-Javadoc)
 	 * @see eu.etaxonomy.cdm.io.common.CdmIoBase#isIgnore(eu.etaxonomy.cdm.io.common.IImportConfigurator)
 	 */
-	protected boolean isIgnore(ErmsImportState state){
+	@Override
+    protected boolean isIgnore(ErmsImportState state){
 		boolean result = state.getConfig().getDoReferences() != IImportConfigurator.DO_REFERENCES.ALL;
 		result |= ! state.getConfig().isDoTaxa();
 		return result;

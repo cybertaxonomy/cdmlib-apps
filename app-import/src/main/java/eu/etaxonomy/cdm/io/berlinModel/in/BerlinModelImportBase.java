@@ -228,12 +228,12 @@ public abstract class BerlinModelImportBase extends DbImportBase<BerlinModelImpo
 	 * @param nomRefFk
 	 * @return
 	 */
-	protected Reference<?> getReferenceFromMaps(
+	protected Reference getReferenceFromMaps(
 			Map<String, Reference> detailMap,
 			Map<String, Reference> refMap,
 			String nomRefDetailFk,
 			String nomRefFk) {
-		Reference<?> ref = null;
+		Reference ref = null;
 		if (detailMap != null){
 			ref = detailMap.get(nomRefDetailFk);
 		}
@@ -254,7 +254,7 @@ public abstract class BerlinModelImportBase extends DbImportBase<BerlinModelImpo
 	 * @return
 	 */
 	private Reference getReferenceDetailFromMaps(Map<String, Reference> firstDetailMap, Map<String, Reference> secondDetailMap, String nomRefDetailFk) {
-		Reference<?> result = null;
+		Reference result = null;
 		if (nomRefDetailFk != null){
 			//get ref
 			if (firstDetailMap != null){

@@ -82,7 +82,7 @@ public class EdaphobaseClassificationImport extends EdaphobaseImportBase {
         ResultSet rs = partitioner.getResultSet();
         Map<String, Classification> map = partitioner.getObjectMap(CLASSIFICATION_NAMESPACE);
         Classification classification = map.get(state.getConfig().getClassificationUuid().toString());
-        Reference<?> sourceReference = state.getTransactionalSourceReference();
+        Reference sourceReference = state.getTransactionalSourceReference();
 
         Set<TaxonBase> taxaToSave = new HashSet<>();
         try {

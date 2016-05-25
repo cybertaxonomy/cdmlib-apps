@@ -105,7 +105,7 @@ public class BerlinModelTaxonRelationImport  extends BerlinModelImportBase  {
 
 					Integer ptRefFkInt = nullSafeInt(rs,"PTRefFk");
 					String ptRefFk= String.valueOf(ptRefFkInt);
-					Reference<?> ref = refMap.get(ptRefFk);
+					Reference ref = refMap.get(ptRefFk);
 
 					String refCache = rs.getString("RefCache");
 					if (StringUtils.isNotBlank(refCache)){
@@ -263,7 +263,7 @@ public class BerlinModelTaxonRelationImport  extends BerlinModelImportBase  {
 					TaxonBase<?> taxon2 = taxonMap.get(String.valueOf(taxon2Id));
 
 					String refFk = String.valueOf(relRefFk);
-					Reference<?> citation = refMap.get(refFk);
+					Reference citation = refMap.get(refFk);
 
 					String microcitation = null; //does not exist in RelPTaxon
 

@@ -1,8 +1,8 @@
 /**
 * Copyright (C) 2007 EDIT
-* European Distributed Institute of Taxonomy 
+* European Distributed Institute of Taxonomy
 * http://www.e-taxonomy.eu
-* 
+*
 * The contents of this file are subject to the Mozilla Public License Version 1.1
 * See LICENSE.TXT at the top of this package for the full license terms.
 */
@@ -17,7 +17,6 @@ import org.apache.log4j.Logger;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.TransactionStatus;
 
-import eu.etaxonomy.cdm.common.CdmUtils;
 import eu.etaxonomy.cdm.io.pesi.out.PesiTransformer;
 import eu.etaxonomy.cdm.model.common.CdmBase;
 import eu.etaxonomy.cdm.model.name.BotanicalName;
@@ -34,7 +33,7 @@ import eu.etaxonomy.cdm.model.taxon.Taxon;
 @Component
 public class IndexFungorumSupraGeneraImport  extends IndexFungorumImportBase {
 	private static final Logger logger = Logger.getLogger(IndexFungorumSupraGeneraImport.class);
-	
+
 	private static final String pluralString = "Supragenera";
 	private static final String dbTableName = "tblSupragenericNames";
 
@@ -45,32 +44,32 @@ public class IndexFungorumSupraGeneraImport  extends IndexFungorumImportBase {
 
 	@Override
 	protected String getRecordQuery(IndexFungorumImportConfigurator config) {
-		String strRecordQuery = 
-			" SELECT * " + 
+		String strRecordQuery =
+			" SELECT * " +
 			" FROM [tblSupragenericNames] " +
 //			" WHERE ( dr.id IN (" + ID_LIST_TOKEN + ") )";
 			"";
 		return strRecordQuery;
 	}
 
-	
+
 	@Override
 	protected void doInvoke(IndexFungorumImportState state) {
-		
-		
+
+
 		//handle source reference first
 		Reference sourceReference = state.getConfig().getSourceReference();
 		getReferenceService().save(sourceReference);
-		
+
 		//query
 		String sql = getRecordQuery(state.getConfig());
 		ResultSet rs = state.getConfig().getSource().getResultSet(sql);
-		
+
 		//transaction and related objects
 		TransactionStatus tx = startTransaction();
-		state.setRelatedObjects((Map)getRelatedObjectsForPartition(null, state));
+		state.setRelatedObjects(getRelatedObjectsForPartition(null, state));
 		sourceReference = state.getRelatedObject(NAMESPACE_REFERENCE, SOURCE_REFERENCE, Reference.class);
-		
+
 		try {
 			while (rs.next()){
 
@@ -78,11 +77,11 @@ public class IndexFungorumSupraGeneraImport  extends IndexFungorumImportBase {
 				//DisplayName, NomRefCache
 
 				Double id = (Double)rs.getObject("RECORD NUMBER");
-				
+
 				String supragenericNames = rs.getString("Suprageneric names");
 				//String preferredName = rs.getString("PreferredName");
 				Integer rankFk = rs.getInt("PESI_RankFk");
-				
+
 				//name
 				Rank rank = state.getTransformer().getRankByKey(String.valueOf(rankFk));
 				NonViralName<?> name = BotanicalName.NewInstance(rank);
@@ -90,7 +89,7 @@ public class IndexFungorumSupraGeneraImport  extends IndexFungorumImportBase {
 				/*if (preferredName != null && !preferredName.equals(supragenericNames)){
 					logger.warn("Suprageneric names and preferredName is not equal. This case is not yet handled by IF import. I take SupragenericNames for import. RECORD NUMBER" +id);
 				}*/
-				
+
 				//taxon
 				Taxon taxon = Taxon.NewInstance(name, sourceReference);
 				//author + nom.ref.
@@ -104,7 +103,7 @@ public class IndexFungorumSupraGeneraImport  extends IndexFungorumImportBase {
 				getTaxonService().saveOrUpdate(taxon);
 			}
 
-			
+
 		} catch (Exception e) {
 			e.printStackTrace();
 			logger.error(e.getMessage());
@@ -113,7 +112,7 @@ public class IndexFungorumSupraGeneraImport  extends IndexFungorumImportBase {
 		}
 		commitTransaction(tx);
 		return;
-		
+
 	}
 
 
@@ -127,21 +126,21 @@ public class IndexFungorumSupraGeneraImport  extends IndexFungorumImportBase {
 	@Override
 	public Map<Object, Map<String, ? extends CdmBase>> getRelatedObjectsForPartition(ResultSet rs, IndexFungorumImportState state) {
 		HashMap<Object, Map<String, ? extends CdmBase>> result = new HashMap<Object, Map<String,? extends CdmBase>>();  //not needed here
-		
+
 		//sourceReference
-		Reference<?> sourceReference = getReferenceService().find(PesiTransformer.uuidSourceRefIndexFungorum);
+		Reference sourceReference = getReferenceService().find(PesiTransformer.uuidSourceRefIndexFungorum);
 		Map<String, Reference> referenceMap = new HashMap<String, Reference>();
 		referenceMap.put(SOURCE_REFERENCE, sourceReference);
 		result.put(NAMESPACE_REFERENCE, referenceMap);
 
 		return result;
 	}
-	
+
 	@Override
 	protected boolean doCheck(IndexFungorumImportState state){
 		return true;
 	}
-	
+
 	@Override
 	protected boolean isIgnore(IndexFungorumImportState state){
 		return ! state.getConfig().isDoTaxa();

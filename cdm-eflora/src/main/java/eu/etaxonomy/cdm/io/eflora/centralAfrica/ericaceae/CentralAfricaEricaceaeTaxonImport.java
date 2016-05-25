@@ -168,7 +168,7 @@ public class CentralAfricaEricaceaeTaxonImport  extends EfloraTaxonImport  {
 	 */
 	@Override
 	protected TeamOrPersonBase<?> handleNameUsage(Taxon taxon, NonViralName<?> name, String referenceTitle, TeamOrPersonBase lastTeam) {
-		Reference<?> ref = ReferenceFactory.newGeneric();
+		Reference ref = ReferenceFactory.newGeneric();
 
 		ref.setTitleCache(referenceTitle, true);
 
@@ -179,7 +179,7 @@ public class CentralAfricaEricaceaeTaxonImport  extends EfloraTaxonImport  {
 
 		TaxonDescription description = getDescription(taxon);
 		for (String singleReferenceString : multipleReferences){
-			Reference<?> singleRef = ReferenceFactory.newGeneric();
+			Reference singleRef = ReferenceFactory.newGeneric();
 			singleRef.setTitleCache(singleReferenceString.trim(), true);
 			singleRef.setAuthorship(team);
 

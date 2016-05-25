@@ -1,8 +1,8 @@
 /**
 * Copyright (C) 2007 EDIT
-* European Distributed Institute of Taxonomy 
+* European Distributed Institute of Taxonomy
 * http://www.e-taxonomy.eu
-* 
+*
 * The contents of this file are subject to the Mozilla Public License Version 1.1
 * See LICENSE.TXT at the top of this package for the full license terms.
 */
@@ -46,7 +46,7 @@ import eu.etaxonomy.cdm.strategy.parser.TimePeriodParser;
 @Component
 public class GlobisReferenceImport  extends GlobisImportBase<Reference> implements IMappingImport<Reference, GlobisImportState>{
 	private static final Logger logger = Logger.getLogger(GlobisReferenceImport.class);
-	
+
 	private int modCount = 10000;
 	private static final String pluralString = "references";
 	private static final String dbTableName = "Literatur";
@@ -58,50 +58,50 @@ public class GlobisReferenceImport  extends GlobisImportBase<Reference> implemen
 
 	@Override
 	protected String getIdQuery() {
-		String strRecordQuery = 
-			" SELECT refID " + 
+		String strRecordQuery =
+			" SELECT refID " +
 			" FROM " + dbTableName
-			+ " WHERE RefSource like 'Original' or refID in (SELECT fiSpecRefId FROM specTax)"; 
-		return strRecordQuery;	
+			+ " WHERE RefSource like 'Original' or refID in (SELECT fiSpecRefId FROM specTax)";
+		return strRecordQuery;
 	}
 
 	@Override
 	protected String getRecordQuery(GlobisImportConfigurator config) {
-		String strRecordQuery = 
+		String strRecordQuery =
 			" SELECT l.*, l.DateCreated as Created_When, l.CreatedBy as Created_Who," +
-			"        l.ModifiedBy as Updated_who, l.DateModified as Updated_When, l.RefRemarks as Notes " + 
+			"        l.ModifiedBy as Updated_who, l.DateModified as Updated_When, l.RefRemarks as Notes " +
 			" FROM " + getTableName() + " l " +
 			" WHERE ( l.refId IN (" + ID_LIST_TOKEN + ") )";
 		return strRecordQuery;
 	}
-	
+
 	@Override
 	public boolean doPartition(ResultSetPartitioner partitioner, GlobisImportState state) {
 		boolean success = true;
-		
+
 		Set<Reference> objectsToSave = new HashSet<Reference>();
-		
+
 		ResultSet rs = partitioner.getResultSet();
 
 		try {
-			
+
 			int i = 0;
 
 			//for each reference
             while (rs.next()){
-                
+
         		if ((i++ % modCount) == 0 && i!= 1 ){ logger.info(pluralString + " handled: " + (i-1));}
 
-        		
-				handleSingleRecord(state, objectsToSave, rs); 
-                
+
+				handleSingleRecord(state, objectsToSave, rs);
+
             }
-           
+
 //            logger.warn("Specimen: " + countSpecimen + ", Descriptions: " + countDescriptions );
 
 			logger.warn(pluralString + " to save: " + objectsToSave.size());
-			getReferenceService().save(objectsToSave);	
-			
+			getReferenceService().save(objectsToSave);
+
 			return success;
 		} catch (SQLException e) {
 			logger.error("SQLException:" +  e);
@@ -113,20 +113,20 @@ public class GlobisReferenceImport  extends GlobisImportBase<Reference> implemen
 	 * @param state
 	 * @param objectsToSave
 	 * @param rs
-	 * @throws SQLException 
+	 * @throws SQLException
 	 */
 	private void handleSingleRecord(GlobisImportState state,
 			Set<Reference> objectsToSave, ResultSet rs) throws SQLException {
-		
+
 		Integer refId = rs.getInt("RefId");
-		
+
 		try {
-			
+
 			String title = rs.getString("RefTitle");
 			String refJournal = rs.getString("RefJournal");
 			refJournal = normalizeRefJournal(refJournal);
 			String refBookTitle = rs.getString("RefBookTitle");
-			
+
 			String refUrl = rs.getString("RefURL");
 			String refVolume = rs.getString("RefVolume");
 			String refYear = rs.getString("RefYear");
@@ -138,7 +138,7 @@ public class GlobisReferenceImport  extends GlobisImportBase<Reference> implemen
 			String refEditor = rs.getString("RefEditor");
 			String refAuthor = rs.getString("RefAuthor");
 			String refPages = rs.getString("RefPages");
-			
+
 			String isbn = null;
 			String issn = null;
 			if (isNotBlank(refIssn)){
@@ -158,24 +158,24 @@ public class GlobisReferenceImport  extends GlobisImportBase<Reference> implemen
 					}
 				}
 			}
-		
-		
+
+
 			//source ref   //TODO
-			Reference<?> sourceRef = state.getTransactionalSourceReference();
-		
-			Reference<?> ref = createObject(rs, state);
+			Reference sourceRef = state.getTransactionalSourceReference();
+
+			Reference ref = createObject(rs, state);
 			testIsxnType(ref, isbn, issn, refId);
 			ref.setTitle(title);
-			
+
 			//refAuthor
 			TeamOrPersonBase<?> author = makeAuthor(refAuthor, state);
 			ref.setAuthorship(author);
-			
+
 			//inRef
 			if (isNotBlank(refJournal)){
 				//Article
 				if (ref.getType().equals(ReferenceType.Article) ){
-					Reference<?> journal = getJournal(state, rs, refJournal);
+					Reference journal = getJournal(state, rs, refJournal);
 					ref.setInJournal(journal);
 				}else{
 					logger.warn("Reference type not supported for RefJournal. Type: " + ref.getType().toString() + ", refId: " + refId );
@@ -193,13 +193,13 @@ public class GlobisReferenceImport  extends GlobisImportBase<Reference> implemen
 					logger.warn("Reference type not supported for RefBookTitle. Type: " + ref.getType().toString() + ", refId: " + refId );
 				}
 			}
-			
+
 			IBookSection bookSection;
 			IBook book;
 			IArticle article;
 			IJournal journal;
-				
-			
+
+
 			//RefVolume
 			if (isNotBlank(refVolume)){
 				if (ref.getType().isVolumeReference()){
@@ -210,13 +210,13 @@ public class GlobisReferenceImport  extends GlobisImportBase<Reference> implemen
 					logger.warn(ref.getType() + " does not support volume but volume exists, refId: " + refId);
 				}
 			}
-			
+
 			//RefYear
 			//TODO check correct parsing for [] and full dates
 			if (isNotBlank(refYear)){
 				ref.setDatePublished(TimePeriodParser.parseString(refYear));
 			}
-			
+
 			//refPages
 			if (isNotBlank(refPages)){
 				refPages = refPages.trim();
@@ -225,40 +225,40 @@ public class GlobisReferenceImport  extends GlobisImportBase<Reference> implemen
 				}
 				ref.setPages(refPages);
 			}
-			
+
 			//ISXN
 			if (isbn != null){
-				Reference<?> isbnRef = getIsbnReference(ref, refId);
+				Reference isbnRef = getIsbnReference(ref, refId);
 				if (isbnRef != null){
 					isbnRef.setIsbn(isbn);
 				}
 			}
 			if(issn != null){
-				Reference<?> issnRef = getIssnReference(ref, refId);
+				Reference issnRef = getIssnReference(ref, refId);
 				if (issnRef != null){
 					issnRef.setIssn(issn);
 				}
 			}
-			
+
 			//refURL
 			if (isNotBlank(refUrl)){
 				URI uri = URI.create(refUrl);
 				ref.setUri(uri);
 			}
-			
+
 			//refRemarks
 			if (isNotBlank(refRemarks)){
 				Annotation anno = Annotation.NewDefaultLanguageInstance(refRemarks);
 				anno.setAnnotationType(AnnotationType.EDITORIAL());
 				ref.addAnnotation(anno);
 			}
-			
+
 			//Publisher + Place
 			handlePublisherAndPlace(refId, refPublisher, refPlace, ref);
-			
+
 			//refEdition
 			if (isNotBlank(refEdition)){
-				Reference<?> edRef = ref;
+				Reference edRef = ref;
 				if (ref.getType() == ReferenceType.BookSection){
 					edRef = ref.getInReference();
 				}
@@ -266,10 +266,10 @@ public class GlobisReferenceImport  extends GlobisImportBase<Reference> implemen
 					logger.warn("Incorrect refType " + ref.getType() + " for refererence with edition or inRef is null, " + refId);
 				}
 			}
-			
+
 			//refEditor
 			if (isNotBlank(refEditor)){
-				Reference<?> edsRef = ref;
+				Reference edsRef = ref;
 				if (ref.getType() == ReferenceType.BookSection){
 					edsRef = ref.getInReference();
 				}
@@ -277,41 +277,41 @@ public class GlobisReferenceImport  extends GlobisImportBase<Reference> implemen
 					logger.warn("Reference type for RefEditor must be Book or Booksection but was " + ref.getType() + " or inRef was null, refId " + refId);
 				}
 			}
-			
+
 			//id, created, notes
 			this.doIdCreatedUpdatedNotes(state, ref, rs, refId, REFERENCE_NAMESPACE);
-			
-			
-			
+
+
+
 			//DONE
 			//RefType, RefTitle, RefJournal,
 			//RefId, ...
-								
+
 			//TODO
-								
+
 			//RefBookTitle, RefJournal, RefSerial, - mostly done
-			
+
 			//RefIll only, RefPages,RefPages only,
-		
+
 			//unclear
 			//RefDatePublished, RefVolPageFig,
-			//RefSource, 
+			//RefSource,
 			//RefLibrary, RefMarker,
 			//RefGeneralKeywords, RefGeoKeywords,	RefSpecificKeywords, RefTaxKeywords, SpecificKeywordDummy
-			
-			
+
+
 			//no data
 				//CountryDummy
-			
-			objectsToSave.add(ref); 
-			
+
+			objectsToSave.add(ref);
+
 
 		} catch (Exception e) {
 			logger.warn("Exception in literature: RefId " + refId + ". " + e.getMessage());
 			e.printStackTrace();
 		}
 	}
-	
+
 	private TeamOrPersonBase<?> makeAuthor(String refAuthor, GlobisImportState state) {
 		TeamOrPersonBase<?> author = GlobisAuthorImport.makeAuthor(refAuthor, state, getAgentService());
 //		getAgentService().update(author);
@@ -331,8 +331,8 @@ public class GlobisReferenceImport  extends GlobisImportBase<Reference> implemen
 //				singleAuthorStrings.add(single2);
 //			}
 //		}
-//		
-//		TeamOrPersonBase<?> result; 
+//
+//		TeamOrPersonBase<?> result;
 //		if (singleAuthorStrings.size() > 1){
 //			Team team= Team.NewInstance();
 //			for (String str : singleAuthorStrings){
@@ -343,7 +343,7 @@ public class GlobisReferenceImport  extends GlobisImportBase<Reference> implemen
 //		}else{
 //			result = makePerson(singleAuthorStrings.get(0));
 //		}
-//		
+//
 //		//TODO deduplicate
 //		return result;
 //	}
@@ -361,7 +361,7 @@ public class GlobisReferenceImport  extends GlobisImportBase<Reference> implemen
 	 * @param ref
 	 */
 	private void handlePublisherAndPlace(Integer refId, String refPublisher,
-			String refPlace, Reference<?> ref) {
+			String refPlace, Reference ref) {
 		//refPublisher
 		if (isNotBlank(refPublisher)){
 			if (ref.getType().isPublication()){
@@ -372,7 +372,7 @@ public class GlobisReferenceImport  extends GlobisImportBase<Reference> implemen
 				logger.warn("RefPublisher can not be set, " +  ref.getType() + ", refId " + refId);
 			}
 		}
-		
+
 		//refPlace
 		if (isNotBlank(refPlace)){
 			if (ref.getType().isPublication()){
@@ -386,7 +386,7 @@ public class GlobisReferenceImport  extends GlobisImportBase<Reference> implemen
 		}
 	}
 
-	private Reference<?> getIssnReference(Reference<?> ref, int refId) {
+	private Reference getIssnReference(Reference ref, int refId) {
 		if (ref == null){
 			return null;
 		}
@@ -401,7 +401,7 @@ public class GlobisReferenceImport  extends GlobisImportBase<Reference> implemen
 		}
 	}
 
-	private Reference<?> getIsbnReference(Reference<?> ref, int refId) {
+	private Reference getIsbnReference(Reference ref, int refId) {
 		if (ref == null){
 			return null;
 		}
@@ -416,7 +416,7 @@ public class GlobisReferenceImport  extends GlobisImportBase<Reference> implemen
 		}
 	}
 
-	private void testIsxnType(Reference<?> ref, String isbn, String issn, int refID) {
+	private void testIsxnType(Reference ref, String isbn, String issn, int refID) {
 		if (isbn != null && ref.getType() != ReferenceType.Book && ref.getType() != ReferenceType.BookSection ){
 			logger.warn("Reference has isbn but is not a book type, type " + ref.getType() + ", row " + refID);
 		}else if (issn != null && ref.getType() != ReferenceType.Article){
@@ -440,34 +440,34 @@ public class GlobisReferenceImport  extends GlobisImportBase<Reference> implemen
 
 
 
-	
-	private Reference<?> getJournal(GlobisImportState state, ResultSet rs, String refJournal) throws SQLException {
-		
-		Reference<?> journal = ReferenceFactory.newJournal();
+
+	private Reference getJournal(GlobisImportState state, ResultSet rs, String refJournal) throws SQLException {
+
+		Reference journal = ReferenceFactory.newJournal();
 		//TODO deduplicate
 		journal.setTitle(refJournal);
 		return journal;
 	}
-	
+
 	private IBook getBook(GlobisImportState state, ResultSet rs, String refBookTitle) throws SQLException {
-		
-		Reference<?> book = ReferenceFactory.newBook();
+
+		Reference book = ReferenceFactory.newBook();
 		//TODO deduplicate
 		book.setTitle(refBookTitle);
 		return book;
 	}
 
 	@Override
-	public Reference<?> createObject(ResultSet rs, GlobisImportState state)
+	public Reference createObject(ResultSet rs, GlobisImportState state)
 			throws SQLException {
 		String refJournal = rs.getString("RefJournal");
-		boolean isInJournal =isNotBlank(refJournal); 
+		boolean isInJournal =isNotBlank(refJournal);
 		String refBookTitle = rs.getString("RefBookTitle");
-		boolean isInBook =isNotBlank(refBookTitle); 
-		
-		
-		
-		Reference<?> ref;
+		boolean isInBook =isNotBlank(refBookTitle);
+
+
+
+		Reference ref;
 		String refType = rs.getString("RefType");
 		if (refType == null){
 			if (isInJournal && ! isInBook){
@@ -500,13 +500,13 @@ public class GlobisReferenceImport  extends GlobisImportBase<Reference> implemen
 		Map<Object, Map<String, ? extends CdmBase>> result = new HashMap<Object, Map<String, ? extends CdmBase>>();
 		return result;  //not needed
 	}
-	
+
 	@Override
 	protected boolean doCheck(GlobisImportState state){
 		IOValidator<GlobisImportState> validator = new GlobisReferenceImportValidator();
 		return validator.validate(state);
 	}
-	
+
 	@Override
 	protected boolean isIgnore(GlobisImportState state){
 		//TODO

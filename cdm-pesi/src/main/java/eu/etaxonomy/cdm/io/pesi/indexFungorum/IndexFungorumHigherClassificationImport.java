@@ -1,8 +1,8 @@
 /**
 * Copyright (C) 2007 EDIT
-* European Distributed Institute of Taxonomy 
+* European Distributed Institute of Taxonomy
 * http://www.e-taxonomy.eu
-* 
+*
 * The contents of this file are subject to the Mozilla Public License Version 1.1
 * See LICENSE.TXT at the top of this package for the full license terms.
 */
@@ -40,7 +40,7 @@ import eu.etaxonomy.cdm.model.taxon.TaxonBase;
 @Component
 public class IndexFungorumHigherClassificationImport  extends IndexFungorumImportBase {
 	private static final Logger logger = Logger.getLogger(IndexFungorumHigherClassificationImport.class);
-	
+
 	private static final String pluralString = "higher classifications";
 	private static final String dbTableName = "tblPESIfungi-Classification";
 
@@ -51,8 +51,8 @@ public class IndexFungorumHigherClassificationImport  extends IndexFungorumImpor
 
 	@Override
 	protected String getRecordQuery(IndexFungorumImportConfigurator config) {
-		String strRecordQuery = 
-			" SELECT DISTINCT [Kingdom name], [Phylum name], [Subphylum name], [Class name], [Subclass name], [Order name], [Family name], g.[NAME OF FUNGUS] as GenusName, c.PreferredName as SpeciesName " + 
+		String strRecordQuery =
+			" SELECT DISTINCT [Kingdom name], [Phylum name], [Subphylum name], [Class name], [Subclass name], [Order name], [Family name], g.[NAME OF FUNGUS] as GenusName, c.PreferredName as SpeciesName " +
 			" FROM [tblPESIfungi-Classification] c  LEFT OUTER JOIN " +
                       " tblGenera g ON c.PreferredNameFDCnumber = g.[RECORD NUMBER]" +
 //			" WHERE ( dr.id IN (" + ID_LIST_TOKEN + ") )";
@@ -60,17 +60,17 @@ public class IndexFungorumHigherClassificationImport  extends IndexFungorumImpor
 		return strRecordQuery;
 	}
 
-	
-	
-	
-	
+
+
+
+
 	@Override
 	protected void doInvoke(IndexFungorumImportState state) {
 		String sql = getRecordQuery(state.getConfig());
 		ResultSet rs = state.getConfig().getSource().getResultSet(sql);
-		
+
 		//only 1 partition here
-		
+
 		String lastKingdom = "";
 		String lastPhylum = "";
 		String lastSubphylum = "";
@@ -80,7 +80,7 @@ public class IndexFungorumHigherClassificationImport  extends IndexFungorumImpor
 		String lastFamily = "";
 //		String lastGenus = "";
 //		String lastSpecies = "";
-		
+
 		Taxon taxonKingdom = null;
 		Taxon taxonPhylum = null;
 		Taxon taxonSubphylum = null;
@@ -90,16 +90,16 @@ public class IndexFungorumHigherClassificationImport  extends IndexFungorumImpor
 		Taxon taxonFamily = null;
 //		Taxon taxonGenus = null;
 //		Taxon taxonSpecies = null;
-		
+
 		Taxon higherTaxon = null;
-		
-		
+
+
 		TransactionStatus tx = startTransaction();
 		ResultSet rsRelatedObjects = state.getConfig().getSource().getResultSet(sql);
-		state.setRelatedObjects((Map)getRelatedObjectsForPartition(rsRelatedObjects, state));
-		
+		state.setRelatedObjects(getRelatedObjectsForPartition(rsRelatedObjects, state));
+
 		Classification classification = getClassification(state);
-		
+
 		try {
 			while (rs.next()){
 				String kingdom = rs.getString("Kingdom name");
@@ -111,7 +111,7 @@ public class IndexFungorumHigherClassificationImport  extends IndexFungorumImpor
 				String family = rs.getString("Family name");
 //				String genus = rs.getString("GenusName");
 //				String species = rs.getString("SpeciesName");
-				
+
 //				if (isNewTaxon(species, lastSpecies)){
 //					if (isNewTaxon(genus, lastGenus)){
 				if (isNewTaxon(family, lastFamily)){
@@ -185,11 +185,11 @@ public class IndexFungorumHigherClassificationImport  extends IndexFungorumImpor
 							if (e.getMessage().startsWith("The child taxon is already part of the tree")){
 								//TaxonNode node = getClassification(state).getNode(taxonFamily);
 								logger.warn(e.getMessage() + taxonFamily.getTitleCache() + " " + higherTaxon.getTitleCache());
-								
-									
-									
+
+
+
 								}
-							
+
 						}
 					}
 					higherTaxon = isIncertisSedis(family) ? higherTaxon : taxonFamily;
@@ -219,7 +219,7 @@ public class IndexFungorumHigherClassificationImport  extends IndexFungorumImpor
 				getTaxonService().saveOrUpdate(higherTaxon);
 			}
 
-			
+
 		} catch (SQLException e) {
 			e.printStackTrace();
 			logger.error(e.getMessage());
@@ -228,7 +228,7 @@ public class IndexFungorumHigherClassificationImport  extends IndexFungorumImpor
 		}
 		commitTransaction(tx);
 		return;
-		
+
 	}
 
 
@@ -255,7 +255,7 @@ public class IndexFungorumHigherClassificationImport  extends IndexFungorumImpor
 			}
 			NonViralName<?> name = BotanicalName.NewInstance(newRank);
 			name.setGenusOrUninomial(uninomial);
-			Reference<?> sourceReference = state.getRelatedObject(NAMESPACE_REFERENCE, SOURCE_REFERENCE, Reference.class);
+			Reference sourceReference = state.getRelatedObject(NAMESPACE_REFERENCE, SOURCE_REFERENCE, Reference.class);
 			taxon = Taxon.NewInstance(name, sourceReference);
 			taxon.addMarker(Marker.NewInstance(getMissingGUIDMarkerType(state), true));
 		}else if (newRank != null){
@@ -271,13 +271,13 @@ public class IndexFungorumHigherClassificationImport  extends IndexFungorumImpor
 		Class<?> cdmClass;
 		Set<String> idSet;
 		Map<Object, Map<String, ? extends CdmBase>> result = new HashMap<Object, Map<String, ? extends CdmBase>>();
-		
+
 		try{
 			Set<String> taxonNameSet = new HashSet<String>();
 //			while (rs.next()){
 //				handleForeignKey(rs, taxonIdSet,"tu_acctaxon" );
 //			}
-			
+
 			//taxon map
 			nameSpace = IndexFungorumSupraGeneraImport.NAMESPACE_SUPRAGENERIC_NAMES ;
 			cdmClass = TaxonBase.class;
@@ -288,24 +288,24 @@ public class IndexFungorumHigherClassificationImport  extends IndexFungorumImpor
 				taxonMap.put(CdmBase.deproxy(taxon.getName(), NonViralName.class).getGenusOrUninomial(), taxon);
 			}
 			result.put(nameSpace, taxonMap);
-			
+
 			//source reference
-			Reference<?> sourceReference = getReferenceService().find(PesiTransformer.uuidSourceRefIndexFungorum);
+			Reference sourceReference = getReferenceService().find(PesiTransformer.uuidSourceRefIndexFungorum);
 			Map<String, Reference> referenceMap = new HashMap<String, Reference>();
 			referenceMap.put(SOURCE_REFERENCE, sourceReference);
 			result.put(NAMESPACE_REFERENCE, referenceMap);
-			
+
 		} catch (Exception e) {
 			throw new RuntimeException(e);
 		}
 		return result;
 	}
-	
+
 	@Override
 	protected boolean doCheck(IndexFungorumImportState state){
 		return true;
 	}
-	
+
 	@Override
 	protected boolean isIgnore(IndexFungorumImportState state){
 		return ! state.getConfig().isDoRelTaxa();

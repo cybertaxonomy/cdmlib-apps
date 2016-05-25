@@ -54,9 +54,9 @@ public class CubaImportState extends ExcelImportState<CubaImportConfigurator, Ex
     public void setRootNode(TaxonNode rootNode) {this.rootNode = rootNode;}
     public TaxonNode getRootNode() { return rootNode;}
 
-    private Reference<?> secReference;
-    public Reference<?> getSecReference() {return secReference;}
-    public void setSecReference(Reference<?> secReference) {this.secReference = secReference;}
+    private Reference secReference;
+    public Reference getSecReference() {return secReference;}
+    public void setSecReference(Reference secReference) {this.secReference = secReference;}
 
     private PresenceAbsenceTerm highestStatusForTaxon;
     public PresenceAbsenceTerm getHighestStatusForTaxon(){return highestStatusForTaxon;}
@@ -117,12 +117,12 @@ public class CubaImportState extends ExcelImportState<CubaImportConfigurator, Ex
     }
 
 
-    Map<UUID, Reference<?>> refMap = new HashMap<UUID, Reference<?>>();
+    Map<UUID, Reference> refMap = new HashMap<UUID, Reference>();
     //reference
-    public Reference<?> getReference(UUID uuidRef) {
+    public Reference getReference(UUID uuidRef) {
         return refMap.get(uuidRef);
     }
-    public void putReference(UUID uuidRef, Reference<?> ref) {
+    public void putReference(UUID uuidRef, Reference ref) {
         refMap.put(uuidRef, ref);
     }
 

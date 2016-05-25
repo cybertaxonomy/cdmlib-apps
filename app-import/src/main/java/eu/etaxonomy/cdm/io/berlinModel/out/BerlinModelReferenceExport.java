@@ -1,8 +1,8 @@
 /**
 * Copyright (C) 2007 EDIT
-* European Distributed Institute of Taxonomy 
+* European Distributed Institute of Taxonomy
 * http://www.e-taxonomy.eu
-* 
+*
 * The contents of this file are subject to the Mozilla Public License Version 1.1
 * See LICENSE.TXT at the top of this package for the full license terms.
 */
@@ -18,8 +18,8 @@ import org.springframework.stereotype.Component;
 import org.springframework.transaction.TransactionStatus;
 
 import eu.etaxonomy.cdm.io.berlinModel.BerlinModelTransformer;
-import eu.etaxonomy.cdm.io.common.Source;
 import eu.etaxonomy.cdm.io.common.IImportConfigurator.DO_REFERENCES;
+import eu.etaxonomy.cdm.io.common.Source;
 import eu.etaxonomy.cdm.io.common.mapping.out.CdmDbExportMapping;
 import eu.etaxonomy.cdm.io.common.mapping.out.CreatedAndNotesMapper;
 import eu.etaxonomy.cdm.io.common.mapping.out.DbBooleanMapper;
@@ -60,7 +60,7 @@ public class BerlinModelReferenceExport extends BerlinModelExportBase<Reference>
 	public BerlinModelReferenceExport(){
 		super();
 	}
-	
+
 	/* (non-Javadoc)
 	 * @see eu.etaxonomy.cdm.io.common.CdmIoBase#doCheck(eu.etaxonomy.cdm.io.common.IImportConfigurator)
 	 */
@@ -70,10 +70,10 @@ public class BerlinModelReferenceExport extends BerlinModelExportBase<Reference>
 		logger.warn("Checking for References not yet implemented");
 		//result &= checkArticlesWithoutJournal(bmiConfig);
 		//result &= checkPartOfJournal(bmiConfig);
-		
+
 		return result;
 	}
-	
+
 	private CdmDbExportMapping<BerlinModelExportState, BerlinModelExportConfigurator, IExportTransformer> getMapping(){
 		String tableName = dbTableName;
 		CdmDbExportMapping<BerlinModelExportState, BerlinModelExportConfigurator, IExportTransformer> mapping = new CdmDbExportMapping<BerlinModelExportState, BerlinModelExportConfigurator, IExportTransformer>(tableName);
@@ -85,15 +85,15 @@ public class BerlinModelReferenceExport extends BerlinModelExportBase<Reference>
 
 		mapping.addMapper(DbObjectMapper.NewInstance("authorship", "NomAuthorTeamFk"));
 		mapping.addMapper(MethodMapper.NewInstance("RefAuthorString", this));
-		
+
 		mapping.addMapper(DbStringMapper.NewInstance("title", "Title"));
 //		mapping.addMapper(MethodMapper.NewInstance("Title", this));
 
 //		mapping.addMapper(DbStringMapper.NewInstance("title", "NomTitleAbbrev"));
 		mapping.addMapper(MethodMapper.NewInstance("NomTitleAbbrev", this));
-		
-		
-		
+
+
+
 		mapping.addMapper(DbStringMapper.NewFacultativeInstance("edition", "Edition"));
 		mapping.addMapper(DbStringMapper.NewFacultativeInstance("volume", "Volume"));
 		mapping.addMapper(DbStringMapper.NewFacultativeInstance("series", "Series"));
@@ -104,51 +104,52 @@ public class BerlinModelReferenceExport extends BerlinModelExportBase<Reference>
 		mapping.addMapper(DbStringMapper.NewFacultativeInstance("placePublished", "PublicationTown"));
 		mapping.addMapper(DbTimePeriodMapper.NewInstance("datePublished", "RefYear"));
 		mapping.addMapper(MethodMapper.NewInstance("ThesisFlag", this));
-		
+
 		mapping.addMapper(CreatedAndNotesMapper.NewInstance());
-          
+
 //		        ,[Series] ??
 //		        ,[URL]
 //		        ,[ExportDate]
 //		        ,[InformalRefCategory]
 //		        ,[IsPaper]
 //		        ,[RefSourceFk]
-//		        ,[IdInSource] 
-		
-		       
+//		        ,[IdInSource]
+
+
 		return mapping;
 	}
-	
-	protected void doInvoke(BerlinModelExportState state){
+
+	@Override
+    protected void doInvoke(BerlinModelExportState state){
 		try{
 			logger.info("start make "+pluralString+" ...");
 			boolean success = true ;
 
 			doDelete(state);
-			
+
 			TransactionStatus txStatus = startTransaction(true);
-			
+
 			List<Reference> list = getReferenceService().list(null,100000000, 0,null,null);
-			
+
 			CdmDbExportMapping<BerlinModelExportState, BerlinModelExportConfigurator, IExportTransformer> mapping = getMapping();
 			mapping.initialize(state);
-			
+
 			int count = 0;
-			for (Reference<?> ref : list){
+			for (Reference ref : list){
 				doCount(count++, modCount, pluralString);
 				success &= mapping.invoke(ref);
 			}
 			//Prepare InRefStatement
 			logger.info("start make inRefences ...");
-			String inRefSql = "UPDATE Reference SET InRefFk = ? WHERE RefId = ?"; 
+			String inRefSql = "UPDATE Reference SET InRefFk = ? WHERE RefId = ?";
 			Connection con = state.getConfig().getDestination().getConnection();
 			PreparedStatement stmt = con.prepareStatement(inRefSql);
 			count = 0;
-			for (Reference<?> ref : list){
+			for (Reference ref : list){
 				doCount(count++, modCount, "inReferences");
 				success &= invokeInRef(ref, state, stmt);
 			}
-			
+
 			commitTransaction(txStatus);
 			logger.info("end make "+pluralString+" ..." + getSuccessString(success));
 			if (!success){
@@ -167,7 +168,7 @@ public class BerlinModelReferenceExport extends BerlinModelExportBase<Reference>
 		if (ref == null){
 			return true;
 		}else{
-			Reference<?> inRef = getInRef(ref);
+			Reference inRef = getInRef(ref);
 			if (inRef == null){
 				return true;
 			}else{
@@ -187,8 +188,8 @@ public class BerlinModelReferenceExport extends BerlinModelExportBase<Reference>
 		}
 	}
 
-	private Reference<?> getInRef(Reference<?> ref){
-		Reference<?> inRef;
+	private Reference getInRef(Reference ref){
+		Reference inRef;
 		if (ref.getType().equals(ReferenceType.Article)){
 			return (Reference)((IArticle)ref).getInJournal();
 		}else if (ref.getType().equals(ReferenceType.BookSection)){
@@ -200,12 +201,12 @@ public class BerlinModelReferenceExport extends BerlinModelExportBase<Reference>
 		}else{
 			return null;
 		}
-		
+
 	}
-	
+
 	protected boolean doDelete(BerlinModelExportState state){
 		BerlinModelExportConfigurator bmeConfig = state.getConfig();
-		
+
 		String sql;
 		Source destination =  bmeConfig.getDestination();
 
@@ -219,28 +220,29 @@ public class BerlinModelReferenceExport extends BerlinModelExportBase<Reference>
 		destination.update(sql);
 		return true;
 	}
-		
-	
+
+
 	/* (non-Javadoc)
 	 * @see eu.etaxonomy.cdm.io.common.CdmIoBase#isIgnore(eu.etaxonomy.cdm.io.common.IImportConfigurator)
 	 */
-	protected boolean isIgnore(BerlinModelExportState state){
+	@Override
+    protected boolean isIgnore(BerlinModelExportState state){
 		if (state.getConfig().getDoReferences().equals(DO_REFERENCES.ALL)){
 			return false;
 		}else{
 			return true;
 		}
 	}
-	
+
 	//called by MethodMapper
 	@SuppressWarnings("unused")
-	private static Integer getRefCategoryFk(Reference<?> ref){
+	private static Integer getRefCategoryFk(Reference ref){
 		return BerlinModelTransformer.ref2refCategoryId(ref);
 	}
-	
+
 	//called by MethodMapper
 	@SuppressWarnings("unused")
-	private static String getRefCache(Reference<?> ref){
+	private static String getRefCache(Reference ref){
 		if (ref.isProtectedTitleCache()){
 			return ref.getTitleCache();
 		}else{
@@ -250,7 +252,7 @@ public class BerlinModelReferenceExport extends BerlinModelExportBase<Reference>
 
 	//called by MethodMapper
 	@SuppressWarnings("unused")
-	private static String getNomRefCache(Reference<?> ref){
+	private static String getNomRefCache(Reference ref){
 		if (ref.isProtectedTitleCache()){
 			return ref.getTitleCache();
 		}else{
@@ -267,12 +269,12 @@ public class BerlinModelReferenceExport extends BerlinModelExportBase<Reference>
 ////			return null;
 ////		}
 //	}
-	
+
 
 	//called by MethodMapper
 	@SuppressWarnings("unused")
-	private static String getNomTitleAbbrev(Reference<?> ref){
-		
+	private static String getNomTitleAbbrev(Reference ref){
+
 		if (/*ref.isNomenclaturallyRelevant() &&*/ ref.getTitle() != null && ref.getTitle().length() <=80){
 			return ref.getTitle();
 		}else{
@@ -280,11 +282,11 @@ public class BerlinModelReferenceExport extends BerlinModelExportBase<Reference>
 		}
 	}
 
-	
-	
+
+
 	//called by MethodMapper
 	@SuppressWarnings("unused")
-	private static String getRefAuthorString(Reference<?> ref){
+	private static String getRefAuthorString(Reference ref){
 		if (ref == null){
 			return null;
 		}else{
@@ -292,10 +294,10 @@ public class BerlinModelReferenceExport extends BerlinModelExportBase<Reference>
 		}
 	}
 
-	
+
 	//called by MethodMapper
 	@SuppressWarnings("unused")
-	private static Boolean getPreliminaryFlag(Reference<?> ref){
+	private static Boolean getPreliminaryFlag(Reference ref){
 		if (ref.isProtectedTitleCache()){
 			return true;
 		}else{
@@ -305,14 +307,14 @@ public class BerlinModelReferenceExport extends BerlinModelExportBase<Reference>
 
 	//called by MethodMapper
 	@SuppressWarnings("unused")
-	private static Boolean getThesisFlag(Reference<?> ref){
+	private static Boolean getThesisFlag(Reference ref){
 		if (ref.getType().equals(ReferenceType.Thesis)){
 			return true;
 		}else{
 			return false;
 		}
 	}
-	
+
 
 	/* (non-Javadoc)
 	 * @see eu.etaxonomy.cdm.io.berlinModel.out.BerlinModelExportBase#getStandardMethodParameter()

@@ -1,8 +1,8 @@
 /**
 * Copyright (C) 2007 EDIT
-* European Distributed Institute of Taxonomy 
+* European Distributed Institute of Taxonomy
 * http://www.e-taxonomy.eu
-* 
+*
 * The contents of this file are subject to the Mozilla Public License Version 1.1
 * See LICENSE.TXT at the top of this package for the full license terms.
 */
@@ -29,8 +29,8 @@ import eu.etaxonomy.cdm.model.common.OriginalSourceType;
 import eu.etaxonomy.cdm.model.common.TimePeriod;
 import eu.etaxonomy.cdm.model.description.CommonTaxonName;
 import eu.etaxonomy.cdm.model.description.TaxonDescription;
-import eu.etaxonomy.cdm.model.location.NamedArea;
 import eu.etaxonomy.cdm.model.location.Country;
+import eu.etaxonomy.cdm.model.location.NamedArea;
 import eu.etaxonomy.cdm.model.reference.Reference;
 import eu.etaxonomy.cdm.model.reference.ReferenceFactory;
 import eu.etaxonomy.cdm.model.taxon.Taxon;
@@ -40,79 +40,79 @@ import eu.etaxonomy.cdm.model.taxon.TaxonBase;
 /**
  * @author a.mueller
  * @created 20.02.2010
- * 
+ *
  * OPEN ISSUES:
- * 
+ *
  * ...
  */
 @Component
 public class GlobisCommonNameImport  extends GlobisImportBase<Taxon> {
 	private static final Logger logger = Logger.getLogger(GlobisCommonNameImport.class);
-	
+
 	private int modCount = 10000;
 	private static final String pluralString = "common names";
 	private static final String dbTableName = "species_language";
 	private static final Class<?> cdmTargetClass = Taxon.class;  //not needed
-	
+
 	public GlobisCommonNameImport(){
 		super(pluralString, dbTableName, cdmTargetClass);
 	}
 
 	//dirty but acceptable for globis environment
 	private Map<Integer,Reference> refMap = new HashMap<Integer,Reference>();
-	
+
 	@Override
 	protected String getIdQuery() {
-		String strRecordQuery = 
-			" SELECT ID " + 
-			" FROM " + dbTableName; 
-		return strRecordQuery;	
+		String strRecordQuery =
+			" SELECT ID " +
+			" FROM " + dbTableName;
+		return strRecordQuery;
 	}
 
 
 	@Override
 	protected String getRecordQuery(GlobisImportConfigurator config) {
-		String strRecordQuery = 
-			" SELECT * " + 
+		String strRecordQuery =
+			" SELECT * " +
 			" FROM " + getTableName() + " sl " +
 			" WHERE ( sl.ID IN (" + ID_LIST_TOKEN + ") )";
 		return strRecordQuery;
 	}
-	
+
 	@Override
 	public boolean doPartition(ResultSetPartitioner partitioner, GlobisImportState state) {
 		boolean success = true;
-		
+
 		Set<TaxonBase> objectsToSave = new HashSet<TaxonBase>();
-		
-		Map<String, Taxon> taxonMap = (Map<String, Taxon>) partitioner.getObjectMap(TAXON_NAMESPACE);
-		
+
+		Map<String, Taxon> taxonMap = partitioner.getObjectMap(TAXON_NAMESPACE);
+
 		ResultSet rs = partitioner.getResultSet();
 
 		try {
-			
+
 			int i = 0;
 
 			//for each common name
             while (rs.next()){
-                
+
         		if ((i++ % modCount) == 0 && i!= 1 ){ logger.info(pluralString + " handled: " + (i-1));}
-				
+
         		Integer idTaxon = nullSafeInt(rs,"IDCurrentSpec");
-				
+
         		try {
-					
+
 					//source ref
-					Reference<?> sourceRef = state.getTransactionalSourceReference();
-			
+					Reference sourceRef = state.getTransactionalSourceReference();
+
 					//common names
 					Integer id = nullSafeInt(rs,"ID");
 					String isoLang = rs.getString("ISO");
 					String strCommonName = rs.getString("commonname");
 					Integer refID = nullSafeInt(rs,"ReferenceID");
 					String strCountryCode = rs.getString("Code2");
-					
-					
+
+
 					Taxon taxon = taxonMap.get(String.valueOf(idTaxon));
 					if (taxon == null){
 						logger.warn("No taxon found for taxonId " + idTaxon);
@@ -131,27 +131,27 @@ public class GlobisCommonNameImport  extends GlobisImportBase<Taxon> {
 						TaxonDescription taxonDescription = getTaxonDescription(taxon, sourceRef, ! IMAGE_GALLERY,  CREATE);
 						CommonTaxonName commonName = CommonTaxonName.NewInstance(strCommonName, language, area);
 						taxonDescription.addElement(commonName);
-						
-						Reference<?> ref = handleReference(state, refID);
+
+						Reference ref = handleReference(state, refID);
 						if (ref == null && refID != null){
 							logger.warn("No reference found for common name ID: " + id);
 						}else{
 							commonName.addSource(OriginalSourceType.Import, String.valueOf(refID), "reference", sourceRef, null);
 						}
-						
-						objectsToSave.add(taxon); 
+
+						objectsToSave.add(taxon);
 					}
 
 				} catch (Exception e) {
 					logger.warn("Exception in current_species: IDcurrentspec " + idTaxon + ". " + e.getMessage());
 					e.printStackTrace();
-				} 
-                
+				}
+
             }
-           
+
 			logger.warn(pluralString + " to save: " + objectsToSave.size());
-			getTaxonService().save(objectsToSave);	
-			
+			getTaxonService().save(objectsToSave);
+
 			return success;
 		} catch (SQLException e) {
 			logger.error("SQLException:" +  e);
@@ -159,12 +159,12 @@ public class GlobisCommonNameImport  extends GlobisImportBase<Taxon> {
 		}
 	}
 
-	
+
 	private Map<String,Language> languageMap = new HashMap<String,Language>();
 	private Language getLanguage(String isoLang) {
 		Language result = languageMap.get(isoLang);
 		if (result == null){
-		
+
 			result = getTermService().getLanguageByIso(isoLang);
 			if (result == null){
 				logger.warn("No language found for iso code: " + isoLang);
@@ -173,19 +173,19 @@ public class GlobisCommonNameImport  extends GlobisImportBase<Taxon> {
 		return result;
 
 	}
-	
-	private Reference<?> handleReference(GlobisImportState state, Integer refId){
+
+	private Reference handleReference(GlobisImportState state, Integer refId){
 		if (refId == null){
 			return null;
 		}
-		Reference<?> result = refMap.get(refId);
-		
+		Reference result = refMap.get(refId);
+
 		if (result == null){
 			try {
 				String sql = "SELECT * FROM [references] WHERE ReferenceID = " + refId;
 				ResultSet rs = state.getConfig().getSource().getResultSet(sql);
 				rs.next();
-				
+
 				String authors = rs.getString("Author(s)");
 				String title = rs.getString("Title");
 				String details = rs.getString("Details");
@@ -207,7 +207,7 @@ public class GlobisCommonNameImport  extends GlobisImportBase<Taxon> {
 				}else{
 					author = makeSingleAuthor(authors);
 				}
-				
+
 				result.setAuthorship(author);
 				refMap.put(refId,result);
 				rs.close();
@@ -215,9 +215,9 @@ public class GlobisCommonNameImport  extends GlobisImportBase<Taxon> {
 				e.printStackTrace();
 			}
 
-			
+
 		}
-		
+
 		return result;
 	}
 
@@ -234,11 +234,11 @@ public class GlobisCommonNameImport  extends GlobisImportBase<Taxon> {
 		Map<Object, Map<String, ? extends CdmBase>> result = new HashMap<Object, Map<String, ? extends CdmBase>>();
 		try{
 			Set<String> taxonIdSet = new HashSet<String>();
-			
+
 			while (rs.next()){
 				handleForeignKey(rs, taxonIdSet, "IDCurrentSpec");
 			}
-			
+
 			//taxon map
 			nameSpace = TAXON_NAMESPACE;
 			cdmClass = Taxon.class;
@@ -246,20 +246,20 @@ public class GlobisCommonNameImport  extends GlobisImportBase<Taxon> {
 			Map<String, Taxon> objectMap = (Map<String, Taxon>)getCommonService().getSourcedObjectsByIdInSource(cdmClass, idSet, nameSpace);
 			result.put(nameSpace, objectMap);
 
-			
+
 		} catch (SQLException e) {
 			throw new RuntimeException(e);
 		}
 		return result;
 	}
-	
+
 
 	@Override
 	protected boolean doCheck(GlobisImportState state){
 //		IOValidator<GlobisImportState> validator = new GlobisCurrentSpeciesImportValidator();
 		return true;
 	}
-	
+
 	@Override
 	protected boolean isIgnore(GlobisImportState state){
 		return ! state.getConfig().isDoCommonNames();

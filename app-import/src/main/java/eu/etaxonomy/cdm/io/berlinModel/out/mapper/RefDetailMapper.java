@@ -86,14 +86,14 @@ public class RefDetailMapper extends DbSingleAttributeExportMapperBase<BerlinMod
 	protected Object getValue(CdmBase cdmBase) {
 		String value = (String)super.getValue(cdmBase);
 		boolean isBoolean = false;
-		Reference<?> ref = (Reference<?>)ImportHelper.getValue(cdmBase, this.cdmRefAttributeString, isBoolean, true);
+		Reference ref = (Reference)ImportHelper.getValue(cdmBase, this.cdmRefAttributeString, isBoolean, true);
 		Object result = makeRefDetail(value, ref);
 //		getState().getConfig().getCdmAppController().commitTransaction(tx);
 		return result;
 	}
 
 
-	protected Integer makeRefDetail(String microRef, Reference<?> ref){
+	protected Integer makeRefDetail(String microRef, Reference ref){
 		if (ref == null){
 			if (microRef == null || microRef.trim().equals("")){
 				return null;

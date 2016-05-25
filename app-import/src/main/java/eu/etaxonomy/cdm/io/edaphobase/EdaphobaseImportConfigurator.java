@@ -83,8 +83,8 @@ public class EdaphobaseImportConfigurator
     }
 
     @Override
-    public Reference<?> getSourceReference() {
-        Reference<?> sourceRef = ReferenceFactory.newDatabase();
+    public Reference getSourceReference() {
+        Reference sourceRef = ReferenceFactory.newDatabase();
         sourceRef.setTitle("Edaphobase");
         return sourceRef;
     }

@@ -406,7 +406,7 @@ public class CubaExcelImport extends ExcelImporterBase<CubaImportState> {
                 if (secondPart.contains(" ")){
                     logger.warn(line + "CHECK: Second part contains more than 1 word. Check if this is correct: " + secondPart);
                 }
-                Reference<?> sensu = ReferenceFactory.newGeneric();
+                Reference sensu = ReferenceFactory.newGeneric();
                 Team team = Team.NewTitledInstance(secondPart, null);
                 sensu.setAuthorship(team);
                 misappliedNameTaxon.setSec(sensu);
@@ -417,7 +417,7 @@ public class CubaExcelImport extends ExcelImporterBase<CubaImportState> {
                 logger.warn(line + "Misapplied second part not recognized: " + secondPart);
             }
             //TODO
-            Reference<?> relRef = null;
+            Reference relRef = null;
             state.getCurrentTaxon().addMisappliedName(misappliedNameTaxon, relRef, null);
         }else if (nomInvalMatcher.matches()){
             String firstPart = nomInvalMatcher.group(1);
@@ -902,7 +902,7 @@ public class CubaExcelImport extends ExcelImporterBase<CubaImportState> {
         }
         state.setTaxonIsAbsent(isAbsent);
         BotanicalName botanicalName = makeName(state, taxonStr);
-        Reference<?> sec = getSecReference(state);
+        Reference sec = getSecReference(state);
         Taxon taxon = Taxon.NewInstance(botanicalName, sec);
         if (isAuct){
             taxon.setAppendedPhrase("auct.");
@@ -971,7 +971,7 @@ public class CubaExcelImport extends ExcelImporterBase<CubaImportState> {
             BotanicalName orthVarName = (BotanicalName)result.clone();
             orthVarName.addSource(makeOriginalSource(state));
             //TODO
-            Reference<?> citation = null;
+            Reference citation = null;
             orthVarName.addRelationshipToName(result, NameRelationshipType.ORTHOGRAPHIC_VARIANT(), citation, null, null);
             orthVarName.setSpecificEpithet(orthVar);
         }
@@ -1042,8 +1042,8 @@ public class CubaExcelImport extends ExcelImporterBase<CubaImportState> {
      * @param state
      * @return
      */
-    private Reference<?> getSecReference(CubaImportState state) {
-        Reference<?> result = state.getSecReference();
+    private Reference getSecReference(CubaImportState state) {
+        Reference result = state.getSecReference();
         if (result == null){
             result = ReferenceFactory.newDatabase();
             result.setTitle("Flora of Cuba");
@@ -1105,7 +1105,7 @@ public class CubaExcelImport extends ExcelImporterBase<CubaImportState> {
             familyNode = family.getTaxonNodes().iterator().next();
         }else{
             BotanicalName name = makeFamilyName(state, familyStr);
-            Reference<?> sec = getSecReference(state);
+            Reference sec = getSecReference(state);
             family = Taxon.NewInstance(name, sec);
             ITaxonTreeNode rootNode = getClassification(state);
             familyNode = rootNode.addChildTaxon(family, sec, null);
@@ -1202,7 +1202,7 @@ public class CubaExcelImport extends ExcelImporterBase<CubaImportState> {
      * @param famRef
      * @return
      */
-    private Taxon makeAlternativeFamilyTaxon(CubaImportState state, String famStr, Reference<?> famRef) {
+    private Taxon makeAlternativeFamilyTaxon(CubaImportState state, String famStr, Reference famRef) {
         String key = famRef.getTitle() + ":"+ famStr;
         Taxon family = state.getHigherTaxon(key);
         if (family == null){
@@ -1246,7 +1246,7 @@ public class CubaExcelImport extends ExcelImporterBase<CubaImportState> {
             rootNode = getTaxonNodeService().find(plantaeUuid);
         }
         if (rootNode == null){
-            Reference<?> sec = getSecReference(state);
+            Reference sec = getSecReference(state);
             if (classification == null){
                 String classificationName = state.getConfig().getClassificationName();
                 //TODO
@@ -1436,9 +1436,9 @@ public class CubaExcelImport extends ExcelImporterBase<CubaImportState> {
         String famAS = record.get("Fam. A&S");
         String famFC = record.get("Fam. FC");
 
-        Reference<?> refFRC = makeReference(state, CubaTransformer.uuidRefFRC);
-        Reference<?> refAS = makeReference(state, CubaTransformer.uuidRefAS);
-        Reference<?> refFC = makeReference(state, CubaTransformer.uuidRefFC);
+        Reference refFRC = makeReference(state, CubaTransformer.uuidRefFRC);
+        Reference refAS = makeReference(state, CubaTransformer.uuidRefAS);
+        Reference refFC = makeReference(state, CubaTransformer.uuidRefFC);
 
         makeSingleAlternativeFamily(state, taxon, famFRC, refFRC);
         makeSingleAlternativeFamily(state, taxon, famAS, refAS);
@@ -1451,8 +1451,8 @@ public class CubaExcelImport extends ExcelImporterBase<CubaImportState> {
      * @param uuidreffrc
      * @return
      */
-    private Reference<?> makeReference(CubaImportState state, UUID uuidRef) {
-        Reference<?> ref = state.getReference(uuidRef);
+    private Reference makeReference(CubaImportState state, UUID uuidRef) {
+        Reference ref = state.getReference(uuidRef);
         if (ref == null){
             ref = getReferenceService().find(uuidRef);
             state.putReference(uuidRef, ref);
@@ -1467,7 +1467,7 @@ public class CubaExcelImport extends ExcelImporterBase<CubaImportState> {
      * @param famString
      * @param famRef
      */
-    private void makeSingleAlternativeFamily(CubaImportState state, Taxon taxon, String famStr, Reference<?> famRef) {
+    private void makeSingleAlternativeFamily(CubaImportState state, Taxon taxon, String famStr, Reference famRef) {
         if (isBlank(famStr)){
             famStr = "-";
 //            return;

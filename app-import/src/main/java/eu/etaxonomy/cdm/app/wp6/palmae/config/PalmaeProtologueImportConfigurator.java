@@ -1,9 +1,9 @@
 // $Id$
 /**
 * Copyright (C) 2007 EDIT
-* European Distributed Institute of Taxonomy 
+* European Distributed Institute of Taxonomy
 * http://www.e-taxonomy.eu
-* 
+*
 * The contents of this file are subject to the Mozilla Public License Version 1.1
 * See LICENSE.TXT at the top of this package for the full license terms.
 */
@@ -31,13 +31,13 @@ public class PalmaeProtologueImportConfigurator extends	ImportConfiguratorBase<D
 	@SuppressWarnings("unused")
 	private static final Logger logger = Logger.getLogger(PalmaeProtologueImportConfigurator.class);
 
-	private String urlString = null; 
-	
-	
+	private String urlString = null;
+
+
 	//TODO
 	private static IInputTransformer defaultTransformer = null;
 
-	
+
 	public static PalmaeProtologueImportConfigurator NewInstance(File source, ICdmDataSource datasource, String urlString){
 		PalmaeProtologueImportConfigurator result = new PalmaeProtologueImportConfigurator();
 		result.setSource(source);
@@ -45,11 +45,11 @@ public class PalmaeProtologueImportConfigurator extends	ImportConfiguratorBase<D
 		result.setUrlString(urlString);
 		return result;
 	}
-	
-	
+
+
 	private String originalSourceTaxonNamespace = "TaxonName";
-	
-	
+
+
 	public PalmaeProtologueImportConfigurator() {
 		super(defaultTransformer);
 	}
@@ -57,7 +57,8 @@ public class PalmaeProtologueImportConfigurator extends	ImportConfiguratorBase<D
 	/* (non-Javadoc)
 	 * @see eu.etaxonomy.cdm.io.common.ImportConfiguratorBase#makeIoClassList()
 	 */
-	protected void makeIoClassList(){
+	@Override
+    protected void makeIoClassList(){
 		ioClassList = new Class[]{
 				ProtologueImport.class
 		};
@@ -66,7 +67,8 @@ public class PalmaeProtologueImportConfigurator extends	ImportConfiguratorBase<D
 	/* (non-Javadoc)
 	 * @see eu.etaxonomy.cdm.io.common.IImportConfigurator#getNewState()
 	 */
-	public DefaultImportState getNewState() {
+	@Override
+    public DefaultImportState getNewState() {
 		return new DefaultImportState(this);
 	}
 
@@ -78,7 +80,7 @@ public class PalmaeProtologueImportConfigurator extends	ImportConfiguratorBase<D
 	public Reference getSourceReference() {
 		//TODO
 		//logger.warn("getSource Reference not yet implemented");
-		Reference<?> result = ReferenceFactory.newDatabase();
+		Reference result = ReferenceFactory.newDatabase();
 		result.setTitleCache("XXX", true);
 		return result;
 	}
@@ -86,14 +88,15 @@ public class PalmaeProtologueImportConfigurator extends	ImportConfiguratorBase<D
 	/* (non-Javadoc)
 	 * @see eu.etaxonomy.cdm.io.common.IIoConfigurator#getSourceNameString()
 	 */
-	public String getSourceNameString() {
+	@Override
+    public String getSourceNameString() {
 		if (this.getSource() == null){
 			return null;
 		}else{
 			return this.getSource().getName();
 		}
 	}
-	
+
 	public String getOriginalSourceTaxonNamespace() {
 		return originalSourceTaxonNamespace;
 	}
@@ -115,8 +118,8 @@ public class PalmaeProtologueImportConfigurator extends	ImportConfiguratorBase<D
 	public void setUrlString(String urlString) {
 		this.urlString = urlString;
 	}
-	
-	
-	
-	
+
+
+
+
 }

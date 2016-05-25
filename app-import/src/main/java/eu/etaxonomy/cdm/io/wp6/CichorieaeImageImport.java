@@ -1,8 +1,8 @@
 /**
 * Copyright (C) 2007 EDIT
-* European Distributed Institute of Taxonomy 
+* European Distributed Institute of Taxonomy
 * http://www.e-taxonomy.eu
-* 
+*
 * The contents of this file are subject to the Mozilla Public License Version 1.1
 * See LICENSE.TXT at the top of this package for the full license terms.
 */
@@ -23,7 +23,6 @@ import org.joda.time.DateTime;
 import org.springframework.stereotype.Component;
 
 import eu.etaxonomy.cdm.app.images.AbstractImageImporter;
-import eu.etaxonomy.cdm.app.images.ImageImportConfigurator;
 import eu.etaxonomy.cdm.app.images.ImageImportState;
 import eu.etaxonomy.cdm.common.CdmUtils;
 import eu.etaxonomy.cdm.common.media.ImageInfo;
@@ -47,17 +46,18 @@ import eu.etaxonomy.cdm.model.taxon.TaxonBase;
 @Component
 public class CichorieaeImageImport extends AbstractImageImporter {
 	private static final Logger logger = Logger.getLogger(CichorieaeImageImport.class);
-	
-	
-	/** 
+
+
+	/**
 	 * Imports images from a directory.
 	 */
-	protected void invokeImageImport (ImageImportState state){
+	@Override
+    protected void invokeImageImport (ImageImportState state){
 		File source = new File(state.getConfig().getSource());
 		UUID treeUuid = state.getConfig().getClassificationUuid();
 		Classification tree = classificationService.find(treeUuid);
-		Reference<?> sourceRef = state.getConfig().getSourceReference();
-		
+		Reference sourceRef = state.getConfig().getSourceReference();
+
 		if (source.isDirectory()){
 			for (File file : source.listFiles() ){
 				if (file.isFile()){
@@ -66,7 +66,7 @@ public class CichorieaeImageImport extends AbstractImageImporter {
 					if (taxonName == null){
 						continue;
 					}
-					List<TaxonBase> taxa = taxonService.searchTaxaByName(taxonName, state.getConfig().getSourceReference());			
+					List<TaxonBase> taxa = taxonService.searchTaxaByName(taxonName, state.getConfig().getSourceReference());
 					if(taxa.size() == 0){
 						logger.warn("no taxon with this name found: " + taxonName);
 					} else {
@@ -75,15 +75,15 @@ public class CichorieaeImageImport extends AbstractImageImporter {
 				}else{
 					logger.warn("File is not a file (but a directory?): " + file.getName());
 				}
-			}	
+			}
 		}else{
 			logger.warn("Source is not a directory!" + source.toString());
 		}
-	
+
 		return;
-		
+
 	}
-	
+
 	private String getTaxonName(String fileName){
 		String[] fileNameParts = fileName.split("\\.");
 		if (fileNameParts.length < 2){
@@ -91,7 +91,7 @@ public class CichorieaeImageImport extends AbstractImageImporter {
 			return null;
 		}
 		String extension = fileNameParts[fileNameParts.length - 1];
-		if (! "jpg".equalsIgnoreCase(extension)) { 
+		if (! "jpg".equalsIgnoreCase(extension)) {
 			logger.warn("Extension not recognized: " + extension);
 			// Sometimes occurs here "Thumbs.db"
 			return null;
@@ -103,19 +103,19 @@ public class CichorieaeImageImport extends AbstractImageImporter {
 			logger.warn("name string has less than 2 '_'");
 			return null;
 		}
-		
+
 		String featureString = nameParts[nameParts.length-2];
 		logger.debug("FeatureString: " +  featureString);
 		String detailString = nameParts[nameParts.length-1];
 		logger.debug("detailString: " +  detailString);
-		
+
 		String taxonName = "";
 		for (int i= 0; i < nameParts.length-2; i++){
 			taxonName += nameParts[i] + " ";
 		}
 		taxonName = taxonName.trim();
 		logger.info("Taxon name: " +  taxonName);
-		
+
 		String _s_ = " s ";
 		String subsp = " subsp. ";
 		if (taxonName.contains(_s_)) {
@@ -134,8 +134,8 @@ public class CichorieaeImageImport extends AbstractImageImporter {
 	 * @param taxa
 	 * @param taxon
 	 */
-	private void handleTaxa(Classification tree, Reference<?> sourceRef, String fileName, String taxonName, List<TaxonBase> taxa) {
-		
+	private void handleTaxa(Classification tree, Reference sourceRef, String fileName, String taxonName, List<TaxonBase> taxa) {
+
 		Taxon taxon = getTaxon(tree, taxonName, taxa);
 		TaxonDescription imageGallery = taxon.getOrCreateImageGallery(sourceRef == null ? null :sourceRef.getTitleCache());
 		TextData textData = imageGallery.getOrCreateImageTextData();
@@ -155,11 +155,11 @@ public class CichorieaeImageImport extends AbstractImageImporter {
 
 	/**
 	 * @param fileName
-	 * @param taxonName 
+	 * @param taxonName
 	 * @return
 	 * @throws MalformedURLException
-	 * @throws IOException 
-	 * @throws HttpException 
+	 * @throws IOException
+	 * @throws HttpException
 	 */
 	private Media getMedia(String fileName, String taxonName) throws MalformedURLException, IOException, HttpException {
 		String urlPrefix = "http://media.bgbm.org/erez/erez?src=EditWP6/photos/";
@@ -168,9 +168,9 @@ public class CichorieaeImageImport extends AbstractImageImporter {
 		URL url = new URL(urlString);
 		URI uri = CdmUtils.string2Uri(urlString);
 		ImageInfo imageMetaData =ImageInfo.NewInstance(uri, 0);
-		
+
 		//String uri = url.toString();
-		
+
 		String mimeType = imageMetaData.getMimeType();
 		String suffix = null;
 		int height = imageMetaData.getHeight();
@@ -178,11 +178,11 @@ public class CichorieaeImageImport extends AbstractImageImporter {
 		Integer size = null;
 		DateTime mediaCreated = null;
 		AgentBase<?> artist = null;
-		
+
 //		ImageFile image = ImageFile.NewInstance(uri, size, height, width);
 		Media media = ImageFile.NewMediaInstance(mediaCreated, artist, uri, mimeType, suffix, size, height, width);
 		media.putTitle(LanguageString.NewInstance(taxonName, Language.LATIN()));
-		
+
 		return media;
 	}
 

@@ -286,7 +286,7 @@ public abstract class IndexFungorumImportBase extends CdmImportBase<IndexFungoru
 		}
 
 		//Reference
-		Reference<?> ref = ReferenceFactory.newGeneric();
+		Reference ref = ReferenceFactory.newGeneric();
 		boolean hasInReference = false;
 		//publishing authors
 		Team pubAuthor = null;
@@ -303,7 +303,7 @@ public abstract class IndexFungorumImportBase extends CdmImportBase<IndexFungoru
 
 		//inRef + inRefAuthor
 		if (pubAuthor != null){
-			Reference<?> inRef = ReferenceFactory.newGeneric();
+			Reference inRef = ReferenceFactory.newGeneric();
 			inRef.setAuthorship(pubAuthor);
 			ref.setInReference(inRef);
 			hasInReference = true;
@@ -390,7 +390,7 @@ public abstract class IndexFungorumImportBase extends CdmImportBase<IndexFungoru
 
 	protected void makeSource(IndexFungorumImportState state, Taxon taxon, Integer id, String namespace) {
 		//source reference
-		Reference<?> sourceReference = state.getRelatedObject(NAMESPACE_REFERENCE, SOURCE_REFERENCE, Reference.class);
+		Reference sourceReference = state.getRelatedObject(NAMESPACE_REFERENCE, SOURCE_REFERENCE, Reference.class);
 		//source
 		String strId = (id == null ? null : String.valueOf(id));
 		IdentifiableSource source = IdentifiableSource.NewInstance(OriginalSourceType.Import, strId, namespace, sourceReference, null);
@@ -428,7 +428,7 @@ public abstract class IndexFungorumImportBase extends CdmImportBase<IndexFungoru
 		Classification result;
 		UUID classificationUuid = state.getTreeUuid(state.getConfig().getSourceReference());
 		if (classificationUuid == null){
-			Reference<?> sourceReference = state.getRelatedObject(NAMESPACE_REFERENCE, SOURCE_REFERENCE, Reference.class);
+			Reference sourceReference = state.getRelatedObject(NAMESPACE_REFERENCE, SOURCE_REFERENCE, Reference.class);
 			result = makeTreeMemSave(state, sourceReference);
 		} else {
 			result = getClassificationService().find(classificationUuid);

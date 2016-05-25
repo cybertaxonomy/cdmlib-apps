@@ -1,8 +1,8 @@
 /**
 * Copyright (C) 2007 EDIT
-* European Distributed Institute of Taxonomy 
+* European Distributed Institute of Taxonomy
 * http://www.e-taxonomy.eu
-* 
+*
 * The contents of this file are subject to the Mozilla Public License Version 1.1
 * See LICENSE.TXT at the top of this package for the full license terms.
 */
@@ -37,21 +37,21 @@ import eu.etaxonomy.cdm.model.reference.ReferenceFactory;
  */
 public class FloraGuianasActivator extends EfloraActivatorBase {
 	private static final Logger logger = Logger.getLogger(FloraGuianasActivator.class);
-	
+
 	//database validation status (create, update, validate ...)
 	static DbSchemaValidation hbm2dll = DbSchemaValidation.CREATE;
 	static final URI fgu1 = EfloraSources.fgu_1();
-	
+
 	static final URI fotg03 = EfloraSources.fotg_03();
 
 	static final URI fotg11 = EfloraSources.fotg_11();
-	
+
 	static final URI fotg14 = EfloraSources.fotg_14();
 	static final URI fotg15 = EfloraSources.fotg_15();
 	static final URI fotg16 = EfloraSources.fotg_16();
-	
+
 	static final URI fotg20 = EfloraSources.fotg_20();
-	
+
 	static final URI fotg22 = EfloraSources.fotg_22();
 	static final URI fotg23 = EfloraSources.fotg_23();
 	static final URI fotg24 = EfloraSources.fotg_24();
@@ -60,15 +60,15 @@ public class FloraGuianasActivator extends EfloraActivatorBase {
 	static final URI fotg25_plus = EfloraSources.fotg_25plus();
 	static final URI fotg26 = EfloraSources.fotg_26();
 	static final URI fotg27 = EfloraSources.fotg_27();
-	
+
 	static final URI fotg29 = EfloraSources.fotg_29();
 	static final URI fotg30 = EfloraSources.fotg_30();
-	
+
 
 	private boolean inverseInclude = false;
-	
+
 	private boolean includeFotg1 = false;
-	
+
 	private boolean includeFotg03 = true;
 	private boolean includeFotg11 = false;
 	private boolean includeFotg14 = false;
@@ -86,48 +86,48 @@ public class FloraGuianasActivator extends EfloraActivatorBase {
 
 	private boolean includeFotg29 = false;
 	private boolean includeFotg30 = false;
-	
-	
+
+
 //	static final ICdmDataSource cdmDestination = CdmDestinations.cdm_flora_guianas_preview();
 //	static final ICdmDataSource cdmDestination = CdmDestinations.cdm_flora_guianas_production();
 	static final ICdmDataSource cdmDestination = CdmDestinations.localH2();
 //	static final ICdmDataSource cdmDestination = CdmDestinations.cdm_test_local_mysql();
-	
+
 
 	//feature tree uuid
 	public static final UUID featureTreeUuid = UUID.fromString("2be99595-92fc-4f80-b9c4-b48d38505f5d");
-	
+
 	//classification
 	static final UUID classificationUuid = UUID.fromString("5e3a1b07-2609-4597-bbda-7b02dfe8c2b3");
-	
+
 	private static final String SOURCE_REFERENCE_TITLE = "Flora of the Guianas";
 	static final String classificationTitle = "Flora of the Guianas";
-	
+
 	private static final String FEATURE_TREE_TITLE = "Flora of the Guianas Feature Tree";
 
 	//check - import
 	private boolean h2ForCheck = true;
 	static CHECK check = CHECK.IMPORT_WITHOUT_CHECK;
-	
+
 	static boolean doPrintKeys = false;
-	
+
 	//taxa
 	static final boolean doTaxa = true;
-	
+
 	static final boolean reuseState = true;
-	
-	
-		
+
+
+
 	private boolean replaceStandardKeyTitles = true;
-	
+
 	private boolean useFotGCollectionTypeOnly = true;
 
-// ****************** NO CHANGE *******************************************/	
-	
+// ****************** NO CHANGE *******************************************/
+
 	private void doImport(ICdmDataSource cdmDestination){
 		super.doImport(fotg22, cdmDestination,check, h2ForCheck);
-		
-		
+
+
 		//make config
 		config.setClassificationUuid(classificationUuid);
 		config.setDoTaxa(doTaxa);
@@ -138,7 +138,7 @@ public class FloraGuianasActivator extends EfloraActivatorBase {
 		config.setClassificationName(classificationTitle);
 		config.setReuseExistingState(reuseState);
 		config.setUseFotGSpecimenTypeCollectionAndTypeOnly(useFotGCollectionTypeOnly);
-		
+
 //		URI uri = config.getSource();
 //		try {
 ////			InputStream is = uri.toURL().openStream();
@@ -149,7 +149,7 @@ public class FloraGuianasActivator extends EfloraActivatorBase {
 //		} catch (Exception e) {
 //			e.printStackTrace();
 //		}
-		
+
 		//Vol1-79
 		executeVolume( fgu1, includeFotg1 ^ inverseInclude);
 		//Vol03
@@ -177,7 +177,7 @@ public class FloraGuianasActivator extends EfloraActivatorBase {
 		//Vol26
 		executeVolume(fotg25_plus, includeFotg25_plus ^ inverseInclude);
 		//Vol26
-		executeVolume(fotg26, includeFotg26 ^ inverseInclude);				
+		executeVolume(fotg26, includeFotg26 ^ inverseInclude);
 		//Vol27
 		executeVolume(fotg27, includeFotg27 ^ inverseInclude);
 
@@ -185,10 +185,10 @@ public class FloraGuianasActivator extends EfloraActivatorBase {
 		executeVolume(fotg29, includeFotg29 ^ inverseInclude);
 		//Vol30
 		executeVolume(fotg30, includeFotg30 ^ inverseInclude);
-		
+
 		FeatureTree tree = makeFeatureNode(myImport.getCdmAppController().getTermService());
 		myImport.getCdmAppController().getFeatureTreeService().saveOrUpdate(tree);
-		
+
 		//check keys
 		if (doPrintKeys){
 			TransactionStatus tx = myImport.getCdmAppController().startTransaction();
@@ -199,38 +199,38 @@ public class FloraGuianasActivator extends EfloraActivatorBase {
 			}
 			myImport.getCdmAppController().commitTransaction(tx);
 		}
-		
+
 	}
-	
-	private Reference<?> getSourceReference(String string) {
-		Reference<?> result = ReferenceFactory.newGeneric();
+
+	private Reference getSourceReference(String string) {
+		Reference result = ReferenceFactory.newGeneric();
 		result.setTitleCache(string);
 		return result;
 	}
 
 	private FeatureTree makeFeatureNode(ITermService service){
 		MarkupTransformer transformer = new MarkupTransformer();
-		
+
 		FeatureTree result = FeatureTree.NewInstance(featureTreeUuid);
 		result.setTitleCache(FEATURE_TREE_TITLE, true);
 		FeatureNode root = result.getRoot();
 		FeatureNode newNode;
-		
+
 		newNode = FeatureNode.NewInstance(Feature.DESCRIPTION());
 		root.addChild(newNode);
-		
+
 		addFeataureNodesByStringList(descriptionFeatureList, newNode, transformer, service);
 
 		addFeataureNodesByStringList(generellDescriptionsUpToAnatomyList, root, transformer, service);
 		newNode = FeatureNode.NewInstance(Feature.ANATOMY());
 		addFeataureNodesByStringList(anatomySubfeatureList, newNode, transformer, service);
-		
+
 		newNode = addFeataureNodesByStringList(generellDescriptionsFromAnatomyToPhytoChemoList, root, transformer, service);
 		addFeataureNodesByStringList(phytoChemoSubFeaturesList, newNode, transformer, service);
 
 		newNode = addFeataureNodesByStringList(generellDescriptionsFromPhytoChemoList, root, transformer, service);
-		
-		
+
+
 		newNode = FeatureNode.NewInstance(Feature.DISTRIBUTION());
 		root.addChild(newNode);
 
@@ -239,49 +239,49 @@ public class FloraGuianasActivator extends EfloraActivatorBase {
 
 		newNode = FeatureNode.NewInstance(Feature.PHENOLOGY());
 		root.addChild(newNode);
-		
+
 		newNode = FeatureNode.NewInstance(Feature.ECOLOGY());
 		root.addChild(newNode);
 		addFeataureNodesByStringList(habitatEcologyList, root, transformer, service);
-		
+
 		newNode = FeatureNode.NewInstance(Feature.USES());
 		root.addChild(newNode);
-		
+
 		addFeataureNodesByStringList(chomosomesList, root, transformer, service);
 
 		newNode = FeatureNode.NewInstance(Feature.CITATION());
 		root.addChild(newNode);
-		
+
 		String sql = "\nSELECT feature.titleCache " +
-				" FROM DescriptionElementBase deb INNER JOIN DefinedTermBase feature ON deb.feature_id = feature.id " + 
-				" GROUP BY feature.id " + 
+				" FROM DescriptionElementBase deb INNER JOIN DefinedTermBase feature ON deb.feature_id = feature.id " +
+				" GROUP BY feature.id " +
 				" HAVING feature.id NOT IN (SELECT DISTINCT fn.feature_id " +
 				" FROM FeatureNode fn " +
 				" WHERE fn.feature_id IS NOT NULL) ";
 		logger.warn("Check for missing features in feature tree: " + sql);
-		
+
 		return result;
 	}
-	
+
 	private static String [] chomosomesList = new String[]{
-		"Chromosomes", 
+		"Chromosomes",
 	};
 
-	
+
 	private static String [] habitatEcologyList = new String[]{
 		"Habitat",
 		"Habitat & Ecology"
 	};
-	
-	
+
+
 	private static String [] generellDescriptionsUpToAnatomyList = new String[]{
 		"Fossils",
 		"Morphology and anatomy",
-		"Morphology", 
+		"Morphology",
 		"Vegetative morphology and anatomy",
 	};
 
-	
+
 	private static String [] anatomySubfeatureList = new String[]{
 		"Leaf anatomy",
 		"Wood anatomy"
@@ -289,19 +289,19 @@ public class FloraGuianasActivator extends EfloraActivatorBase {
 
 	private static String [] generellDescriptionsFromAnatomyToPhytoChemoList = new String[]{
 		"Flower morphology",
-		"Palynology",  
-		"Pollination",  
+		"Palynology",
+		"Pollination",
 		"Pollen morphology",
 		"embryology",
 		"cytology",
 		"Life cycle",
 		"Fruits and embryology",
 		"Dispersal",
-		"Chromosome numbers", 
+		"Chromosome numbers",
 		"Phytochemistry and Chemotaxonomy",
 	};
-	
-	
+
+
 	private static String [] phytoChemoSubFeaturesList = new String[]{
 		"Alkaloids",
 		"Iridoid glucosides",
@@ -310,7 +310,7 @@ public class FloraGuianasActivator extends EfloraActivatorBase {
 		"Aluminium",
 		"Chemotaxonomy",
 	};
-	
+
 
 	private static String [] generellDescriptionsFromPhytoChemoList = new String[]{
 		"Phytochemistry",
@@ -320,103 +320,103 @@ public class FloraGuianasActivator extends EfloraActivatorBase {
 		"Notes"
 	};
 
-	
+
 	private static String [] descriptionFeatureList = new String[]{
-		"lifeform", 
+		"lifeform",
 		"Juvenile parts",
 		"Bark",
 		//new
 		"wood",
-		"Indumentum",  
-		"endophytic body",  
-		"flowering buds",  
-		"Branchlets",  
-		"Branches",  
-		"Branch",  
+		"Indumentum",
+		"endophytic body",
+		"flowering buds",
+		"Branchlets",
+		"Branches",
+		"Branch",
 		"Flowering branchlets",
-		"Trees",  
-		"Twigs",  
-		"stem",  
-		"Stems",  
-		"stem leaves", 
+		"Trees",
+		"Twigs",
+		"stem",
+		"Stems",
+		"stem leaves",
 		"Leaves",
 		"extraxylary sclerenchyma",
-		"flower-bearing stems",  
-		"Petiole",  
-		"Petiolules",  
-		"Leaflets", 
+		"flower-bearing stems",
+		"Petiole",
+		"Petiolules",
+		"Leaflets",
 		"Lamina",
 		"Veins",
-		"Thyrsus",  
-		"Thyrses",  
-		"Inflorescences",  
+		"Thyrsus",
+		"Thyrses",
+		"Inflorescences",
 		"Inflorescence",
-		"Young inflorescences", 
-		"Male inflorescences", 
-		"Female inflorescences", 
+		"Young inflorescences",
+		"Male inflorescences",
+		"Female inflorescences",
 		"rachises",
-		"Pedicels",  
-		"Bracts",  
-		"flowering buds",  
-		"scales",  
-		"Buds",  
-		"Flowers",  
-		"Flower",  
+		"Pedicels",
+		"Bracts",
+		"flowering buds",
+		"scales",
+		"Buds",
+		"Flowers",
+		"Flower",
 		"Flowering",
-		"Stigma",  
-		"perianth",  
-		"Sepals",  
-		"Sepal",  
-		"Outer Sepals",  
-		"Axillary",  
-		"cymes",  
-		"Calyx",  
-		"Petal",  
+		"Stigma",
+		"perianth",
+		"Sepals",
+		"Sepal",
+		"Outer Sepals",
+		"Axillary",
+		"cymes",
+		"Calyx",
+		"Petal",
 		"Petals",
 		"perigone",
 		"perigone lobes",
 		"perigone tube",
-		"Disc",  
-		"corolla",  
-		"Stamens",  
-		"Staminodes",  
-		"Ovary",  
+		"Disc",
+		"corolla",
+		"Stamens",
+		"Staminodes",
+		"Ovary",
 		"Anthers",
-		"anther",  
-		"Pistil",  
-		"Pistillode",  
-		"Ovules",  
-		"androecium",  
-		"gynoecium",  
-		"Filaments",  		
-		"Style",  
-		"annulus",  
-		"female flowers",  
-		"Male flowers",  
-		"Female",  
-		"Infructescences",    //order not consistent (sometimes before "Flowers")  
-		"Fruit",  
-		"Fruits",  
-		"fruiting axes",  
-		"drupes",  
-		"Arillode",  
-		"seed",  
-		"Seeds",  
-		"Seedling",  
-		"flower tube", 
-		"nutlets",  
-		"pollen",  
-		"secondary xylem",  
-		"chromosome number",  
-	
-		"figure",  
-		"fig",  
-		"figs",  
+		"anther",
+		"Pistil",
+		"Pistillode",
+		"Ovules",
+		"androecium",
+		"gynoecium",
+		"Filaments",
+		"Style",
+		"annulus",
+		"female flowers",
+		"Male flowers",
+		"Female",
+		"Infructescences",    //order not consistent (sometimes before "Flowers")
+		"Fruit",
+		"Fruits",
+		"fruiting axes",
+		"drupes",
+		"Arillode",
+		"seed",
+		"Seeds",
+		"Seedling",
+		"flower tube",
+		"nutlets",
+		"pollen",
+		"secondary xylem",
+		"chromosome number",
+
+		"figure",
+		"fig",
+		"figs",
 
 
-		
+
 	};
-	
+
 	public FeatureNode addFeataureNodesByStringList(String[] featureStringList, FeatureNode root, IInputTransformer transformer, ITermService termService){
 		FeatureNode lastChild = null;
 		try {
@@ -426,17 +426,17 @@ public class FloraGuianasActivator extends EfloraActivatorBase {
 				Feature feature = (Feature)termService.find(featureUuid);
 				if (feature != null){
 					FeatureNode child = FeatureNode.NewInstance(feature);
-					root.addChild(child);	
+					root.addChild(child);
 				}
 			}
-			
+
 		} catch (UndefinedTransformerMethodException e) {
 			logger.error("getFeatureUuid is not implemented in transformer. Features could not be added");
 		}
 		return lastChild;
 	}
 
-	
+
 
 	/**
 	 * @param args

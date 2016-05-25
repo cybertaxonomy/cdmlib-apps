@@ -145,7 +145,7 @@ public class EdaphobaseReferenceImport extends EdaphobaseImportBase {
         Integer documentType = nullSafeInt(rs, "document_type");
         //normalized_title, normalized_abk_official_remark
 
-        Reference<?> ref = makeReferenceType(documentType, dtype);
+        Reference ref = makeReferenceType(documentType, dtype);
         ref.setTitle(title);
         ref.setPlacePublished(place);
         ref.setIssn(issn);
@@ -184,7 +184,7 @@ public class EdaphobaseReferenceImport extends EdaphobaseImportBase {
      * @param documentType
      * @return
      */
-    private Reference<?> makeReferenceType(Integer documentType, String dtype) {
+    private Reference makeReferenceType(Integer documentType, String dtype) {
         if (documentType == 11914){
             return ReferenceFactory.newArticle();
         } else if (documentType == 11916){
@@ -196,7 +196,7 @@ public class EdaphobaseReferenceImport extends EdaphobaseImportBase {
         } else if (documentType == 11917){
             return ReferenceFactory.newBookSection();
         } else if (documentType == 11912 || documentType == 11919 || documentType == 11924 ){
-            Reference<?> ref = ReferenceFactory.newGeneric();
+            Reference ref = ReferenceFactory.newGeneric();
             return ref;
         } else {
             throw new RuntimeException("DocumentType not yet supported: " + documentType + ", " + dtype);

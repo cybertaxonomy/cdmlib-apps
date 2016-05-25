@@ -1,8 +1,8 @@
 /**
 * Copyright (C) 2007 EDIT
-* European Distributed Institute of Taxonomy 
+* European Distributed Institute of Taxonomy
 * http://www.e-taxonomy.eu
-* 
+*
 * The contents of this file are subject to the Mozilla Public License Version 1.1
 * See LICENSE.TXT at the top of this package for the full license terms.
 */
@@ -47,80 +47,80 @@ import eu.etaxonomy.cdm.model.taxon.TaxonNode;
 @Component
 public class GlobisCurrentSpeciesImport  extends GlobisImportBase<Taxon> {
 	private static final Logger logger = Logger.getLogger(GlobisCurrentSpeciesImport.class);
-	
+
 	private int modCount = 10000;
 	private static final String pluralString = "current taxa";
 	private static final String dbTableName = "current_species";
 	private static final Class<?> cdmTargetClass = Taxon.class;  //not needed
-	
+
 	public GlobisCurrentSpeciesImport(){
 		super(pluralString, dbTableName, cdmTargetClass);
 	}
 
 	@Override
 	protected String getIdQuery() {
-		String strRecordQuery = 
-			" SELECT IDcurrentspec " + 
-			" FROM " + dbTableName; 
-		return strRecordQuery;	
+		String strRecordQuery =
+			" SELECT IDcurrentspec " +
+			" FROM " + dbTableName;
+		return strRecordQuery;
 	}
 
 	@Override
 	protected String getRecordQuery(GlobisImportConfigurator config) {
-		String strRecordQuery = 
+		String strRecordQuery =
 			" SELECT cs.*, cs.dtSpcEingabedatum as Created_When, cs.dtSpcErfasser as Created_Who," +
-				"  cs.dtSpcBearbeiter as Updated_who, cs.dtSpcAendrgdatum as Updated_When, cs.dtSpcBemerkung as Notes " + 
+				"  cs.dtSpcBearbeiter as Updated_who, cs.dtSpcAendrgdatum as Updated_When, cs.dtSpcBemerkung as Notes " +
 			" FROM " + getTableName() + " cs " +
 			" WHERE ( cs.IDcurrentspec IN (" + ID_LIST_TOKEN + ") )";
 		return strRecordQuery;
 	}
-	
+
 	@Override
 	public boolean doPartition(ResultSetPartitioner partitioner, GlobisImportState state) {
 		boolean success = true;
-		
+
 		Set<TaxonBase> objectsToSave = new HashSet<TaxonBase>();
-		Map<String, Taxon> taxonMap = (Map<String, Taxon>) partitioner.getObjectMap(TAXON_NAMESPACE);
+		Map<String, Taxon> taxonMap = partitioner.getObjectMap(TAXON_NAMESPACE);
 		ResultSet rs = partitioner.getResultSet();
 
 		Classification classification = getClassification(state);
-		
+
 		try {
-			
+
 			int i = 0;
 
 			//for each reference
             while (rs.next()){
-                
+
         		if ((i++ % modCount) == 0 && i!= 1 ){ logger.info(pluralString + " handled: " + (i-1));}
-				
+
         		Integer taxonId = rs.getInt("IDcurrentspec");
-        		
+
         		//String dtSpcJahr -> ignore !
         		//empty: fiSpcLiteratur
-        		
+
         		//TODO
         		//fiSpcspcgrptax
-        		
+
 				try {
-					
+
 					//source ref
-					Reference<?> sourceRef = state.getTransactionalSourceReference();
+					Reference sourceRef = state.getTransactionalSourceReference();
 					Taxon nextHigherTaxon = null;
-					
+
 					boolean hasNewParent = false; //true if any parent is new
-					
+
 					//species
 					Taxon species = createObject(rs, state, taxonId);
-					
-					
+
+
 					String familyStr = rs.getString("dtSpcFamakt");
 					String subFamilyStr = rs.getString("dtSpcSubfamakt");
 					String tribeStr = rs.getString("dtSpcTribakt");
-					
+
 					//family
 					Taxon family = getTaxon(state, rs, familyStr, null, Rank.FAMILY(), null, taxonMap, taxonId);
-					
+
 					//subfamily
 					Taxon subFamily = getTaxon(state, rs, subFamilyStr, null, Rank.SUBFAMILY(), null, taxonMap, taxonId);
 					Taxon subFamilyParent = getParent(subFamily, classification);
@@ -132,7 +132,7 @@ public class GlobisCurrentSpeciesImport  extends GlobisImportBase<Taxon> {
 						classification.addParentChild(family, subFamily, sourceRef, null);
 					}
 					nextHigherTaxon = subFamily;
-					
+
 					//tribe
 					Taxon tribe = getTaxon(state, rs, tribeStr, null, Rank.TRIBE(), null, taxonMap, taxonId);
 					if (tribe != null){
@@ -145,15 +145,15 @@ public class GlobisCurrentSpeciesImport  extends GlobisImportBase<Taxon> {
 							classification.addParentChild(subFamily, tribe, sourceRef, null);
 						}
 						nextHigherTaxon = tribe;
-					}					
+					}
 
-					
+
 					//genus
 					String genusStr = rs.getString("dtSpcGenusakt");
 					String genusAuthorStr = rs.getString("dtSpcGenusaktauthor");
 					Taxon genus = getTaxon(state, rs, genusStr, null, Rank.GENUS(), genusAuthorStr, taxonMap, taxonId);
 					Taxon genusParent = getParent(genus, classification);
-					
+
 					if (genusParent != null){
 						if (! compareTaxa(genusParent, nextHigherTaxon)){
 							logger.warn("Current tribe/subfamily and parent of genus are not equal: " + taxonId);
@@ -162,7 +162,7 @@ public class GlobisCurrentSpeciesImport  extends GlobisImportBase<Taxon> {
 						classification.addParentChild(nextHigherTaxon, genus, sourceRef, null);
 					}
 					nextHigherTaxon = genus;
-					
+
 					//subgenus
 					String subGenusStr = CdmBase.deproxy(species.getName(), ZoologicalName.class).getInfraGenericEpithet();
 					String subGenusAuthorStr = rs.getString("dtSpcSubgenaktauthor");
@@ -172,29 +172,29 @@ public class GlobisCurrentSpeciesImport  extends GlobisImportBase<Taxon> {
 						classification.addParentChild(nextHigherTaxon, subGenus, sourceRef, null);
 						nextHigherTaxon = subGenus;
 					}
-					
+
 					classification.addParentChild(nextHigherTaxon, species, sourceRef, null);
-					
+
 					handleCountries(state, rs, species, taxonId);
-					
+
 					//common names -> not used anymore
 					handleCommonNames(state, rs, species);
-					
+
 					this.doIdCreatedUpdatedNotes(state, species, rs, taxonId, TAXON_NAMESPACE);
-					
-					objectsToSave.add(species); 
-					
+
+					objectsToSave.add(species);
+
 
 				} catch (Exception e) {
 					logger.warn("Exception in current_species: IDcurrentspec " + taxonId + ". " + e.getMessage());
 					e.printStackTrace();
-				} 
-                
+				}
+
             }
 
 			logger.warn(pluralString + " to save: " + objectsToSave.size());
-			getTaxonService().save(objectsToSave);	
-			
+			getTaxonService().save(objectsToSave);
+
 			return success;
 		} catch (SQLException e) {
 			logger.error("SQLException:" +  e);
@@ -213,7 +213,7 @@ public class GlobisCurrentSpeciesImport  extends GlobisImportBase<Taxon> {
 				continue;
 			}
 			countryStr = countryStr.trim();
-			
+
 			//TODO use isComplete
 			boolean isComplete = countryStr.endsWith(".");
 			if (isComplete){
@@ -227,20 +227,20 @@ public class GlobisCurrentSpeciesImport  extends GlobisImportBase<Taxon> {
 				isDoubtful = true;
 				countryStr = countryStr.substring(1).trim();
 			}
-			
-			
-			
+
+
+
 			countryStr = normalizeCountry(countryStr);
-			
+
 			NamedArea country = getCountry(state, countryStr);
-			
+
 			PresenceAbsenceTerm status;
 			if (isDoubtful){
 				status = PresenceAbsenceTerm.PRESENT_DOUBTFULLY();
 			}else{
 				status = PresenceAbsenceTerm.PRESENT();
 			}
-			
+
 			if (country != null){
 				TaxonDescription desc = getTaxonDescription(species, state.getTransactionalSourceReference(), false, true);
 				Distribution distribution = Distribution.NewInstance(country, status);
@@ -270,12 +270,12 @@ public class GlobisCurrentSpeciesImport  extends GlobisImportBase<Taxon> {
 		if (result.matches("\\s+")){
 			result = "";
 		}
-		return result.trim(); 
+		return result.trim();
 	}
-	
+
 	private void handleCommonNames(GlobisImportState state, ResultSet rs, Taxon species) throws SQLException {
 		//DON't use, use seperate common name tables instead
-		
+
 //		String commonNamesStr = rs.getString("vernacularnames");
 //		if (isBlank(commonNamesStr)){
 //			return;
@@ -324,7 +324,7 @@ public class GlobisCurrentSpeciesImport  extends GlobisImportBase<Taxon> {
 		for (TaxonNode node :  child.getTaxonNodes()){
 			if (node.getClassification().equals(classification)){
 				if (node.getParent() != null){
-					return node.getParent().getTaxon();	
+					return node.getParent().getTaxon();
 				}else{
 					return null;
 				}
@@ -340,9 +340,9 @@ public class GlobisCurrentSpeciesImport  extends GlobisImportBase<Taxon> {
 		if (isBlank(uninomial)){
 			return null;
 		}
-		
+
 		String keyEpithet = StringUtils.isNotBlank(infraGenericEpi)? infraGenericEpi : uninomial ;
-		
+
 		String key = keyEpithet + "@" + CdmUtils.Nz(author) + "@" + rank.getTitleCache();
 		Taxon taxon = taxonMap.get(key);
 		if (taxon == null){
@@ -352,29 +352,29 @@ public class GlobisCurrentSpeciesImport  extends GlobisImportBase<Taxon> {
 				name.setInfraGenericEpithet(infraGenericEpi);
 			}
 			taxon = Taxon.NewInstance(name, state.getTransactionalSourceReference());
-			
+
 			taxonMap.put(key, taxon);
 			handleAuthorAndYear(author, name, taxonId, state);
 			getTaxonService().save(taxon);
 		}
-		
+
 		return taxon;
 	}
 
 
 	//fast and dirty is enough here
 	private Classification classification;
-	
+
 	private Classification getClassification(GlobisImportState state) {
 		if (this.classification == null){
 			String name = state.getConfig().getClassificationName();
-			Reference<?> reference = state.getTransactionalSourceReference();
+			Reference reference = state.getTransactionalSourceReference();
 			this.classification = Classification.NewInstance(name, reference, Language.DEFAULT());
 			classification.setUuid(state.getConfig().getClassificationUuid());
 			getClassificationService().save(classification);
 		}
 		return this.classification;
-		
+
 	}
 
 	/* (non-Javadoc)
@@ -386,8 +386,8 @@ public class GlobisCurrentSpeciesImport  extends GlobisImportBase<Taxon> {
 		String subGenusEpi = rs.getString("dtSpcSubgenakt");
 		String genusEpi = rs.getString("dtSpcGenusakt");
 		String author = rs.getString("dtSpcAutor");
-		
-		
+
+
 		ZoologicalName zooName = ZoologicalName.NewInstance(Rank.SPECIES());
 		zooName.setSpecificEpithet(speciesEpi);
 		if (StringUtils.isNotBlank(subGenusEpi)){
@@ -395,9 +395,9 @@ public class GlobisCurrentSpeciesImport  extends GlobisImportBase<Taxon> {
 		}
 		zooName.setGenusOrUninomial(genusEpi);
 		handleAuthorAndYear(author, zooName, taxonId, state);
-		
+
 		Taxon taxon = Taxon.NewInstance(zooName, state.getTransactionalSourceReference());
-		
+
 		return taxon;
 	}
 
@@ -412,11 +412,11 @@ public class GlobisCurrentSpeciesImport  extends GlobisImportBase<Taxon> {
 		Map<Object, Map<String, ? extends CdmBase>> result = new HashMap<Object, Map<String, ? extends CdmBase>>();
 		try{
 			Set<String> taxonIdSet = new HashSet<String>();
-			
+
 			while (rs.next()){
 //				handleForeignKey(rs, taxonIdSet, "taxonId");
 			}
-			
+
 			//taxon map
 			nameSpace = TAXON_NAMESPACE;
 			cdmClass = Taxon.class;
@@ -424,13 +424,13 @@ public class GlobisCurrentSpeciesImport  extends GlobisImportBase<Taxon> {
 			Map<String, Taxon> objectMap = (Map<String, Taxon>)getCommonService().getSourcedObjectsByIdInSource(cdmClass, idSet, nameSpace);
 			result.put(nameSpace, objectMap);
 
-			
+
 		} catch (SQLException e) {
 			throw new RuntimeException(e);
 		}
 		return result;
 	}
-	
+
 	/* (non-Javadoc)
 	 * @see eu.etaxonomy.cdm.io.common.CdmIoBase#doCheck(eu.etaxonomy.cdm.io.common.IImportConfigurator)
 	 */
@@ -439,12 +439,13 @@ public class GlobisCurrentSpeciesImport  extends GlobisImportBase<Taxon> {
 		IOValidator<GlobisImportState> validator = new GlobisCurrentSpeciesImportValidator();
 		return validator.validate(state);
 	}
-	
-	
+
+
 	/* (non-Javadoc)
 	 * @see eu.etaxonomy.cdm.io.common.CdmIoBase#isIgnore(eu.etaxonomy.cdm.io.common.IImportConfigurator)
 	 */
-	protected boolean isIgnore(GlobisImportState state){
+	@Override
+    protected boolean isIgnore(GlobisImportState state){
 		return ! state.getConfig().isDoCurrentTaxa();
 	}
 

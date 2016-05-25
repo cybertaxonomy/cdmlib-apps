@@ -1,8 +1,8 @@
 /**
 * Copyright (C) 2007 EDIT
-* European Distributed Institute of Taxonomy 
+* European Distributed Institute of Taxonomy
 * http://www.e-taxonomy.eu
-* 
+*
 * The contents of this file are subject to the Mozilla Public License Version 1.1
 * See LICENSE.TXT at the top of this package for the full license terms.
 */
@@ -48,20 +48,20 @@ public class BerlinModelNameStatusImport extends BerlinModelImportBase {
 	private static final String pluralString = "nomenclatural status";
 	private static final String dbTableName = "NomStatusRel";
 
-	
+
 	public BerlinModelNameStatusImport(){
 		super(dbTableName, pluralString);
 	}
 
 
-	
+
 	/* (non-Javadoc)
 	 * @see eu.etaxonomy.cdm.io.berlinModel.in.BerlinModelImportBase#getIdQuery()
 	 */
 	@Override
 	protected String getIdQuery(BerlinModelImportState state) {
 		String result =  " SELECT RIdentifier FROM " + getTableName();
-		
+
 		if (StringUtils.isNotEmpty(state.getConfig().getNameIdTable())){
 			result += " WHERE nameFk IN (SELECT NameId FROM " + state.getConfig().getNameIdTable() + ")";
 		}
@@ -75,11 +75,11 @@ public class BerlinModelNameStatusImport extends BerlinModelImportBase {
 	 */
 	@Override
 	protected String getRecordQuery(BerlinModelImportConfigurator config) {
-		String strQuery = 
-			" SELECT NomStatusRel.*, NomStatus.NomStatus, RefDetail.Details " + 
+		String strQuery =
+			" SELECT NomStatusRel.*, NomStatus.NomStatus, RefDetail.Details " +
 			" FROM NomStatusRel INNER JOIN " +
               	" NomStatus ON NomStatusRel.NomStatusFk = NomStatus.NomStatusId " +
-              	" LEFT OUTER JOIN RefDetail ON NomStatusRel.NomStatusRefDetailFk = RefDetail.RefDetailId AND " + 
+              	" LEFT OUTER JOIN RefDetail ON NomStatusRel.NomStatusRefDetailFk = RefDetail.RefDetailId AND " +
               	" NomStatusRel.NomStatusRefFk = RefDetail.RefFk " +
             " WHERE (RIdentifier IN (" + ID_LIST_TOKEN + "))";
 		return strQuery;
@@ -88,25 +88,26 @@ public class BerlinModelNameStatusImport extends BerlinModelImportBase {
 	/* (non-Javadoc)
 	 * @see eu.etaxonomy.cdm.io.berlinModel.in.IPartitionedIO#doPartition(eu.etaxonomy.cdm.io.berlinModel.in.ResultSetPartitioner, eu.etaxonomy.cdm.io.berlinModel.in.BerlinModelImportState)
 	 */
-	public boolean doPartition(ResultSetPartitioner partitioner,BerlinModelImportState state) {
-		boolean success = true;	
+	@Override
+    public boolean doPartition(ResultSetPartitioner partitioner,BerlinModelImportState state) {
+		boolean success = true;
 		String dbAttrName;
 		String cdmAttrName;
-		
+
 		Set<TaxonNameBase> namesToSave = new HashSet<TaxonNameBase>();
 		BerlinModelImportConfigurator config = state.getConfig();
-		Map<String, TaxonNameBase> nameMap = (Map<String, TaxonNameBase>) partitioner.getObjectMap(BerlinModelTaxonNameImport.NAMESPACE);
+		Map<String, TaxonNameBase> nameMap = partitioner.getObjectMap(BerlinModelTaxonNameImport.NAMESPACE);
 
 		ResultSet rs = partitioner.getResultSet();
 		try {
 			//get data from database
-			
+
 			int i = 0;
 			//for each reference
 			while (rs.next()){
-				
+
 				if ((i++ % modCount) == 0 && i!= 1 ){ logger.info("NomStatus handled: " + (i-1));}
-				
+
 				int nomStatusRelId;
 				try {
 					nomStatusRelId = rs.getInt("RIdentifier");
@@ -115,13 +116,13 @@ public class BerlinModelNameStatusImport extends BerlinModelImportBase {
 				}
 				int nomStatusFk = rs.getInt("NomStatusFk");
 				int nameId = rs.getInt("nameFk");
-				
+
 				boolean doubtful = rs.getBoolean("DoubtfulFlag");
 				String nomStatusLabel = rs.getString("NomStatus");
-				
+
 				TaxonNameBase taxonName = nameMap.get(String.valueOf(nameId));
 				//TODO doubtful
-				
+
 				if (taxonName != null ){
 					try{
 						NomenclaturalStatus nomStatus = BerlinModelTransformer.nomStatusFkToNomStatus(nomStatusFk, nomStatusLabel);
@@ -142,15 +143,15 @@ public class BerlinModelNameStatusImport extends BerlinModelImportBase {
 								getTermService().save(nomStatus.getType());
 							}
 						}
-						
+
 						//reference
 						makeReference(config, nomStatus, nameId, rs, partitioner);
-						
+
 						//Details
 						dbAttrName = "details";
 						cdmAttrName = "citationMicroReference";
 						success &= ImportHelper.addStringValue(rs, nomStatus, dbAttrName, cdmAttrName, true);
-						
+
 						//doubtful
 						if (doubtful){
 							nomStatus.addMarker(Marker.NewInstance(MarkerType.IS_DOUBTFUL(), true));
@@ -171,7 +172,7 @@ public class BerlinModelNameStatusImport extends BerlinModelImportBase {
 			}
 			logger.info("TaxonNames to save: " + namesToSave.size());
 			getNameService().save(namesToSave);
-			
+
 			return success;
 		} catch (SQLException e) {
 			logger.error("SQLException:" +  e);
@@ -186,7 +187,7 @@ public class BerlinModelNameStatusImport extends BerlinModelImportBase {
 		Class<?> cdmClass;
 		Set<String> idSet;
 		Map<Object, Map<String, ? extends CdmBase>> result = new HashMap<Object, Map<String, ? extends CdmBase>>();
-	
+
 		try{
 			Set<String> nameIdSet = new HashSet<String>();
 			Set<String> referenceIdSet = new HashSet<String>();
@@ -196,7 +197,7 @@ public class BerlinModelNameStatusImport extends BerlinModelImportBase {
 				handleForeignKey(rs, referenceIdSet, "NomStatusRefFk");
 				handleForeignKey(rs, refDetailIdSet, "NomStatusRefDetailFk");
 			}
-			
+
 			//name map
 			nameSpace = BerlinModelTaxonNameImport.NAMESPACE;
 			cdmClass = TaxonNameBase.class;
@@ -210,7 +211,7 @@ public class BerlinModelNameStatusImport extends BerlinModelImportBase {
 			idSet = referenceIdSet;
 			Map<String, Reference> referenceMap = (Map<String, Reference>)getCommonService().getSourcedObjectsByIdInSource(cdmClass, idSet, nameSpace);
 			result.put(nameSpace, referenceMap);
-			
+
 			//refDetail map
 			nameSpace = BerlinModelRefDetailImport.REFDETAIL_NAMESPACE;
 			cdmClass = Reference.class;
@@ -223,27 +224,27 @@ public class BerlinModelNameStatusImport extends BerlinModelImportBase {
 		}
 		return result;
 	}
-	
-	private boolean makeReference(IImportConfigurator config, NomenclaturalStatus nomStatus, 
-			int nameId, ResultSet rs, ResultSetPartitioner partitioner) 
+
+	private boolean makeReference(IImportConfigurator config, NomenclaturalStatus nomStatus,
+			int nameId, ResultSet rs, ResultSetPartitioner partitioner)
 			throws SQLException{
-		
+
 		Map<String, Reference> refMap = partitioner.getObjectMap(BerlinModelReferenceImport.REFERENCE_NAMESPACE);
 		Map<String, Reference> refDetailMap = partitioner.getObjectMap(BerlinModelRefDetailImport.REFDETAIL_NAMESPACE);
-		
+
 		Object nomRefFkObj = rs.getObject("NomStatusRefFk");
 		Object nomRefDetailFkObj = rs.getObject("NomStatusRefDetailFk");
 		//TODO
 //		boolean refDetailPrelim = rs.getBoolean("RefDetailPrelim");
-		
+
 		boolean success = true;
 		//nomenclatural Reference
 		if (refMap != null){
 			if (nomRefFkObj != null){
 				String nomRefFk = String.valueOf(nomRefFkObj);
 				String nomRefDetailFk = String.valueOf(nomRefDetailFkObj);
-				Reference<?> ref = getReferenceFromMaps(refDetailMap, refMap, nomRefDetailFk, nomRefFk);									
-				
+				Reference ref = getReferenceFromMaps(refDetailMap, refMap, nomRefDetailFk, nomRefFk);
+
 				//setRef
 				if (ref == null ){
 					//TODO
@@ -256,7 +257,7 @@ public class BerlinModelNameStatusImport extends BerlinModelImportBase {
 		}
 		return success;
 	}
-	
+
 	/* (non-Javadoc)
 	 * @see eu.etaxonomy.cdm.io.common.CdmIoBase#doCheck(eu.etaxonomy.cdm.io.common.IoStateBase)
 	 */
@@ -266,11 +267,12 @@ public class BerlinModelNameStatusImport extends BerlinModelImportBase {
 		return validator.validate(state);
 	}
 
-	
+
 	/* (non-Javadoc)
 	 * @see eu.etaxonomy.cdm.io.common.CdmIoBase#isIgnore(eu.etaxonomy.cdm.io.common.IImportConfigurator)
 	 */
-	protected boolean isIgnore(BerlinModelImportState state){
+	@Override
+    protected boolean isIgnore(BerlinModelImportState state){
 		return ! state.getConfig().isDoNameStatus();
 	}
 

@@ -58,7 +58,7 @@ public class FaunaEuropaeaImportConfigurator extends ImportConfiguratorBase<Faun
 
 	/* Max number of taxa to be saved with one service call */
 	private int limitSave = 5000;
-	private Reference<?> auctReference;
+	private Reference auctReference;
 
 	@Override
     @SuppressWarnings("unchecked")
@@ -103,7 +103,7 @@ public class FaunaEuropaeaImportConfigurator extends ImportConfiguratorBase<Faun
 	 * @see eu.etaxonomy.cdm.io.common.ImportConfiguratorBase#getSourceReference()
 	 */
 	@Override
-	public Reference<?> getSourceReference() {
+	public Reference getSourceReference() {
 		//TODO
 		if (this.sourceReference == null){
 			logger.warn("getSource Reference not yet fully implemented");
@@ -122,7 +122,7 @@ public class FaunaEuropaeaImportConfigurator extends ImportConfiguratorBase<Faun
 	/* (non-Javadoc)
 	 * @see eu.etaxonomy.cdm.io.common.ImportConfiguratorBase#getSourceReference()
 	 */
-	public Reference<?> getAuctReference() {
+	public Reference getAuctReference() {
 		//TODO
 		if (auctReference == null){
 			auctReference = ReferenceFactory.newPersonalCommunication();
@@ -212,7 +212,7 @@ public class FaunaEuropaeaImportConfigurator extends ImportConfiguratorBase<Faun
 	/**
 	 * @param auctReference the auctReference to set
 	 */
-	public void setAuctReference(Reference<?> auctReference) {
+	public void setAuctReference(Reference auctReference) {
 		this.auctReference = auctReference;
 	}
 

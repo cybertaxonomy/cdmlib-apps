@@ -1,8 +1,8 @@
 /**
 * Copyright (C) 2007 EDIT
-* European Distributed Institute of Taxonomy 
+* European Distributed Institute of Taxonomy
 * http://www.e-taxonomy.eu
-* 
+*
 * The contents of this file are subject to the Mozilla Public License Version 1.1
 * See LICENSE.TXT at the top of this package for the full license terms.
 */
@@ -33,31 +33,31 @@ import eu.etaxonomy.cdm.model.reference.ReferenceFactory;
  */
 public class CaryoActivator extends SourceBase{
 	private static final Logger logger = Logger.getLogger(CaryoActivator.class);
-	
+
 	//database validation status (create, update, validate ...)
 	static final DbSchemaValidation hbm2dll = DbSchemaValidation.CREATE;
 	static final Source source = caryo_len61();
 
-	
+
 	static final ICdmDataSource cdmDestination = CdmDestinations.localH2();
 //	static final ICdmDataSource cdmDestination = CdmDestinations.cdm_test_local_mysql();
 //	static final ICdmDataSource cdmDestination = CdmDestinations.cdm_local_postgres_CdmTest();
-	
+
 	static final String classificationName = "Caryophyllales";
-	
+
 	//classification
 	static final UUID classificationUuid = UUID.fromString("9edc58b5-de3b-43aa-9f31-1ede7c009c2b");
-	
+
 	//check - import
 	static final CHECK check = CHECK.IMPORT_WITHOUT_CHECK;
-	
+
 	//taxa
 	static final boolean doTaxa = true;
 	static final boolean doDeduplicate = true;
-	
-	
+
+
 	private void doImport(ICdmDataSource cdmDestination){
-		
+
 		//make Source
 		CaryoImportConfigurator config= CaryoImportConfigurator.NewInstance(source, cdmDestination);
 		config.setClassificationUuid(classificationUuid);
@@ -66,10 +66,10 @@ public class CaryoActivator extends SourceBase{
 		config.setDbSchemaValidation(hbm2dll);
 		config.setSourceReferenceTitle("NCU - Caryophyllales, v0.4");
 		config.setClassificationName(classificationName);
-		
+
 		CdmDefaultImport<CaryoImportConfigurator> myImport = new CdmDefaultImport<CaryoImportConfigurator>();
 
-		
+
 		//...
 		if (true){
 			System.out.println("Start import from ("+ source.toString() + ") ...");
@@ -77,9 +77,9 @@ public class CaryoActivator extends SourceBase{
 			myImport.invoke(config);
 			System.out.println("End import from ("+ source.toString() + ")...");
 		}
-		
-		
-		
+
+
+
 		//deduplicate
 		if (doDeduplicate){
 			ICdmApplicationConfiguration app = myImport.getCdmAppController();
@@ -90,11 +90,11 @@ public class CaryoActivator extends SourceBase{
 			count = app.getReferenceService().deduplicate(Reference.class, null, null);
 			logger.warn("Deduplicated " + count + " references.");
 		}
-		
+
 	}
 
-	private Reference<?> getSourceReference(String string) {
-		Reference<?> result = ReferenceFactory.newGeneric();
+	private Reference getSourceReference(String string) {
+		Reference result = ReferenceFactory.newGeneric();
 		result.setTitleCache(string);
 		return result;
 	}
@@ -119,5 +119,5 @@ public class CaryoActivator extends SourceBase{
 		CaryoActivator me = new CaryoActivator();
 		me.doImport(cdmDestination);
 	}
-	
+
 }

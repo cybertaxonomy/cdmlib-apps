@@ -1,8 +1,8 @@
 /**
 * Copyright (C) 2007 EDIT
-* European Distributed Institute of Taxonomy 
+* European Distributed Institute of Taxonomy
 * http://www.e-taxonomy.eu
-* 
+*
 * The contents of this file are subject to the Mozilla Public License Version 1.1
 * See LICENSE.TXT at the top of this package for the full license terms.
 */
@@ -56,15 +56,15 @@ import eu.etaxonomy.cdm.strategy.parser.NonViralNameParserImpl;
 @Component
 public class CentralAfricaChecklistTaxonImport  extends CentralAfricaChecklistImportBase<TaxonBase> implements IMappingImport<TaxonBase, CentralAfricaChecklistImportState>{
 	private static final Logger logger = Logger.getLogger(CentralAfricaChecklistTaxonImport.class);
-	
+
 	private NonViralNameParserImpl parser = NonViralNameParserImpl.NewInstance();
-	
+
 	private Map<UUID, Taxon> higherTaxonMap;
-	
+
 	private Integer TREE_ID = null;
-	
+
 	private DbImportMapping<?,?> mapping;
-	
+
 	private int modCount = 10000;
 	private static final String pluralString = "taxa";
 	private static final String dbTableName = "checklist";
@@ -74,8 +74,8 @@ public class CentralAfricaChecklistTaxonImport  extends CentralAfricaChecklistIm
 	public CentralAfricaChecklistTaxonImport(){
 		super(pluralString, dbTableName, cdmTargetClass);
 	}
-	
-	
+
+
 
 	/* (non-Javadoc)
 	 * @see eu.etaxonomy.cdm.io.erms.ErmsImportBase#getIdQuery()
@@ -91,22 +91,23 @@ public class CentralAfricaChecklistTaxonImport  extends CentralAfricaChecklistIm
 	/* (non-Javadoc)
 	 * @see eu.etaxonomy.cdm.io.eflora.centralAfrica.checklist.CentralAfricaChecklistImportBase#getMapping()
 	 */
-	protected DbImportMapping getMapping() {
+	@Override
+    protected DbImportMapping getMapping() {
 		if (mapping == null){
 			mapping = new DbImportMapping();
-			
+
  			mapping.addMapper(DbImportObjectCreationMapper.NewInstance(this, "pk", TAXON_NAMESPACE)); //id + tu_status
-		
+
 			UUID uuidKew = CentralAfricaChecklistTransformer.uuidAcceptedKew;
 			mapping.addMapper(DbImportMarkerMapper.NewInstance("accepted kew", uuidKew, "Accepted Kew", "Accepted Kew", "Kew", null));
-			
+
 			UUID uuidGeneva = CentralAfricaChecklistTransformer.uuidAcceptedGeneva;
 			mapping.addMapper(DbImportMarkerMapper.NewInstance("accepted geneva", uuidGeneva, "Accepted Geneva", "Accepted Geneva", "Geneva", null));
 
 			UUID uuidItis = CentralAfricaChecklistTransformer.uuidAcceptedItis;
 			mapping.addMapper(DbImportMarkerMapper.NewInstance("accepted itis", uuidItis, "Accepted ITIS", "Accepted ITIS", "ITIS", null));
 		}
-		
+
 		return mapping;
 	}
 
@@ -122,7 +123,7 @@ public class CentralAfricaChecklistTaxonImport  extends CentralAfricaChecklistIm
 		return strRecordQuery;
 	}
 
-	
+
 	@Override
 	public boolean doPartition(ResultSetPartitioner partitioner, CentralAfricaChecklistImportState state) {
 		higherTaxonMap = new HashMap<UUID, Taxon>();
@@ -145,9 +146,9 @@ public class CentralAfricaChecklistTaxonImport  extends CentralAfricaChecklistIm
 		Class<?> cdmClass;
 		Set<String> idSet;
 		Set<String> referenceIdSet = new HashSet<String>();
-		
+
 		Map<Object, Map<String, ? extends CdmBase>> result = new HashMap<Object, Map<String, ? extends CdmBase>>();
-		
+
 		try{
 			while (rs.next()){
 				handleForeignKey(rs, referenceIdSet, "source");
@@ -165,28 +166,28 @@ public class CentralAfricaChecklistTaxonImport  extends CentralAfricaChecklistIm
 		}
 		return result;
 	}
-	
+
 	@Override
 	public TaxonBase<?> createObject(ResultSet rs, CentralAfricaChecklistImportState state) throws SQLException {
 		BotanicalName speciesName = BotanicalName.NewInstance(Rank.SPECIES());
-		
-		Reference<?> sec = state.getConfig().getSourceReference();
+
+		Reference sec = state.getConfig().getSourceReference();
 		getReferenceService().saveOrUpdate(sec);
-		
+
 		String familyString = rs.getString("family");
 		String genusString = rs.getString("genus");
 		String speciesString = rs.getString("species");
 		String authorityString = rs.getString("authority");
-		
+
 		if (logger.isDebugEnabled()){
 			System.out.println(familyString + " " + genusString + " " + speciesString);
 		}
-		
+
 		Taxon speciesTaxon = Taxon.NewInstance(speciesName, sec);;
 		speciesName.setGenusOrUninomial(genusString);
 		speciesName.setSpecificEpithet(speciesString);
 		parser.handleAuthors(speciesName, CdmUtils.concat(" ", new String[] {"", genusString, speciesString, authorityString}), authorityString);
-		
+
 		//family
 		Taxon familyTaxon = null;
 		if (StringUtils.isNotBlank(familyString)){
@@ -197,10 +198,10 @@ public class CentralAfricaChecklistTaxonImport  extends CentralAfricaChecklistIm
 				familyTaxon = Taxon.NewInstance(familyName, sec);
 				saveHigherTaxon(state, familyTaxon, familyString, null);
 			}
-			getTaxonService().saveOrUpdate(familyTaxon);	
+			getTaxonService().saveOrUpdate(familyTaxon);
 		}
-		
-		
+
+
 		//genus
 		Taxon genusTaxon = getHigherTaxon(state, familyString, genusString);
 		if (genusTaxon == null){
@@ -217,24 +218,24 @@ public class CentralAfricaChecklistTaxonImport  extends CentralAfricaChecklistIm
 
 		String sourceString = rs.getString("source");
 		String sourceId = rs.getString("source_id");
-		
-		Reference<?> sourceRef = state.getRelatedObject(REFERENCE_NAMESPACE, sourceString, Reference.class);
+
+		Reference sourceRef = state.getRelatedObject(REFERENCE_NAMESPACE, sourceString, Reference.class);
 		speciesTaxon.addSource(OriginalSourceType.Import, sourceId, REFERENCE_NAMESPACE, sourceRef, null);
-		
+
 		//geneva id
-		Reference<?> genevaReference = state.getGenevaReference();
+		Reference genevaReference = state.getGenevaReference();
 		Object genevaId = rs.getObject("geneva_ID");
 		speciesTaxon.addSource(OriginalSourceType.Import, String.valueOf(genevaId), null, genevaReference, null);
-		
+
 		//distribution
 		handleDistribution(rs, speciesTaxon);
-		
+
 		return speciesTaxon;
 	}
-	
+
 	private void handleDistribution(ResultSet rs, Taxon speciesTaxon) throws SQLException {
 		TaxonDescription description = TaxonDescription.NewInstance(speciesTaxon);
-		
+
 		Boolean isCongo = rs.getBoolean("drc");
 		Boolean isBurundi = rs.getBoolean("burundi");
 		Boolean isRwanda = rs.getBoolean("rwanda");
@@ -273,7 +274,7 @@ public class CentralAfricaChecklistTaxonImport  extends CentralAfricaChecklistIm
 	private Taxon getHigherTaxon(CentralAfricaChecklistImportState state, String family, String genus) {
 		String higherName = normalizeHigherTaxonName(family, genus);
 		UUID uuid = state.getHigherTaxon(higherName);
-		
+
 		Taxon taxon = null;
 		if (uuid != null){
 			taxon = higherTaxonMap.get(uuid);
@@ -302,7 +303,7 @@ public class CentralAfricaChecklistTaxonImport  extends CentralAfricaChecklistIm
 //		UUID uuid = state.getTreeUuid(sec);
 //		Classification tree;
 //		tree = state.getTree(sec);
-//		
+//
 //		if (tree == null){
 //			tree = makeTreeMemSave(state, sec);
 //		}
@@ -314,9 +315,9 @@ public class CentralAfricaChecklistTaxonImport  extends CentralAfricaChecklistIm
 //		}
 //		return (childNode != null);
 //	}
-	
+
 	//TODO use Mapper
-	private boolean makeTaxonomicallyIncluded(CentralAfricaChecklistImportState state, Integer treeRefFk, Taxon child, Taxon parent, Reference<?> citation, String microCitation){
+	private boolean makeTaxonomicallyIncluded(CentralAfricaChecklistImportState state, Integer treeRefFk, Taxon child, Taxon parent, Reference citation, String microCitation){
 		String treeKey;
 		UUID treeUuid;
 		if (treeRefFk == null){
@@ -340,14 +341,14 @@ public class CentralAfricaChecklistTaxonImport  extends CentralAfricaChecklistIm
 			}
 			state.addRelatedObject(DbImportTaxIncludedInMapper.TAXONOMIC_TREE_NAMESPACE, treeKey, tree);
 		}
-		
+
 		TaxonNode childNode = tree.addParentChild(parent, child, citation, microCitation);
 		return (childNode != null);
 	}
 
 
-	private Reference<?> makeGenevaReference(CentralAfricaChecklistImportState state) {
-		Reference<?> result = ReferenceFactory.newDatabase();
+	private Reference makeGenevaReference(CentralAfricaChecklistImportState state) {
+		Reference result = ReferenceFactory.newDatabase();
 		result.setTitleCache(state.getConfig().getGenevaReferenceTitle(), true);
 		result.setUuid(state.getConfig().getUuidGenevaReference());
 		return result;
@@ -358,7 +359,7 @@ public class CentralAfricaChecklistTaxonImport  extends CentralAfricaChecklistIm
 		IOValidator<CentralAfricaChecklistImportState> validator = new CentralAfricaChecklistTaxonImportValidator();
 		return validator.validate(state);
 	}
-	
+
 	@Override
 	protected boolean isIgnore(CentralAfricaChecklistImportState state){
 		return ! state.getConfig().isDoTaxa();

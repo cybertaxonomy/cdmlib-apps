@@ -1,8 +1,8 @@
 /**
 * Copyright (C) 2007 EDIT
-* European Distributed Institute of Taxonomy 
+* European Distributed Institute of Taxonomy
 * http://www.e-taxonomy.eu
-* 
+*
 * The contents of this file are subject to the Mozilla Public License Version 1.1
 * See LICENSE.TXT at the top of this package for the full license terms.
 */
@@ -44,9 +44,9 @@ import eu.etaxonomy.cdm.model.taxon.TaxonBase;
 public class ErmsDrImport  extends ErmsImportBase<Distribution> {
 	@SuppressWarnings("unused")
 	private static final Logger logger = Logger.getLogger(ErmsDrImport.class);
-	
+
 	private DbImportMapping<ErmsImportState, ErmsImportConfigurator> mapping;
-	
+
 	private static final String pluralString = "distributions";
 	private static final String dbTableName = "dr";
 	private static final Class<?> cdmTargetClass = Distribution.class;
@@ -57,8 +57,8 @@ public class ErmsDrImport  extends ErmsImportBase<Distribution> {
 
 	@Override
 	protected String getRecordQuery(ErmsImportConfigurator config) {
-		String strRecordQuery = 
-			" SELECT dr.*, tu.tu_acctaxon, tu.id " + 
+		String strRecordQuery =
+			" SELECT dr.*, tu.tu_acctaxon, tu.id " +
 			" FROM dr INNER JOIN tu ON dr.tu_id = tu.id " +
 			" WHERE ( dr.id IN (" + ID_LIST_TOKEN + ") )";
 		return strRecordQuery;
@@ -69,15 +69,15 @@ public class ErmsDrImport  extends ErmsImportBase<Distribution> {
 	protected DbImportMapping<ErmsImportState, ErmsImportConfigurator> getMapping() {
 		if (mapping == null){
 			mapping = new DbImportMapping<ErmsImportState, ErmsImportConfigurator>();
-			
+
 			PresenceAbsenceTerm status = PresenceAbsenceTerm.PRESENT();
 			DbImportDistributionCreationMapper<?> distributionMapper = DbImportDistributionCreationMapper.NewFixedStatusInstance("id", DR_NAMESPACE, "tu_acctaxon", ErmsTaxonImport.TAXON_NAMESPACE, status);
 			distributionMapper.setSource("source_id", REFERENCE_NAMESPACE, null);
 			mapping.addMapper(distributionMapper);
-			
+
 			mapping.addMapper(DbImportObjectMapper.NewInstance("gu_id", "area", ErmsAreaImport.AREA_NAMESPACE));
 			mapping.addMapper(DbImportAnnotationMapper.NewInstance("note", AnnotationType.EDITORIAL()));
-			
+
 			mapping.addMapper(DbIgnoreMapper.NewInstance("unacceptsource_id"));
 			mapping.addMapper(DbIgnoreMapper.NewInstance("unacceptreason"));
 			mapping.addMapper(DbIgnoreMapper.NewInstance("valid_flag"));
@@ -100,11 +100,11 @@ public class ErmsDrImport  extends ErmsImportBase<Distribution> {
 			mapping.addMapper(DbIgnoreMapper.NewInstance("min_abundance"));
 			mapping.addMapper(DbIgnoreMapper.NewInstance("max_abundance"));
 
-			
+
 		}
 		return mapping;
 	}
-	
+
 
 	@Override
 	public Map<Object, Map<String, ? extends CdmBase>> getRelatedObjectsForPartition(ResultSet rs, ErmsImportState state) {
@@ -112,7 +112,7 @@ public class ErmsDrImport  extends ErmsImportBase<Distribution> {
 		Class<?> cdmClass;
 		Set<String> idSet;
 		Map<Object, Map<String, ? extends CdmBase>> result = new HashMap<Object, Map<String, ? extends CdmBase>>();
-		
+
 		try{
 			Set<String> taxonIdSet = new HashSet<String>();
 			Set<String> areaIdSet = new HashSet<String>();
@@ -122,42 +122,42 @@ public class ErmsDrImport  extends ErmsImportBase<Distribution> {
 				handleForeignKey(rs, areaIdSet, "gu_id");
 				handleForeignKey(rs, sourceIdSet, "source_id");
 			}
-			
+
 			//taxon map
 			nameSpace = ErmsTaxonImport.TAXON_NAMESPACE;
 			cdmClass = TaxonBase.class;
 			idSet = taxonIdSet;
 			Map<String, TaxonBase<?>> taxonMap = (Map<String, TaxonBase<?>>)getCommonService().getSourcedObjectsByIdInSource(cdmClass, idSet, nameSpace);
 			result.put(nameSpace, taxonMap);
-			
+
 			//areas
 			nameSpace = ErmsAreaImport.AREA_NAMESPACE;
 			cdmClass = NamedArea.class;
 			idSet = areaIdSet;
 			Map<String, NamedArea> areaMap = (Map<String, NamedArea>)getCommonService().getSourcedObjectsByIdInSource(cdmClass, idSet, nameSpace);
 			result.put(nameSpace, areaMap);
-			
+
 			//reference map
 			nameSpace = ErmsReferenceImport.REFERENCE_NAMESPACE;
 			cdmClass = Reference.class;
 			idSet = sourceIdSet;
-			Map<String, Reference<?>> referenceMap = (Map<String, Reference<?>>)getCommonService().getSourcedObjectsByIdInSource(cdmClass, idSet, nameSpace);
+			Map<String, Reference> referenceMap = (Map<String, Reference>)getCommonService().getSourcedObjectsByIdInSource(cdmClass, idSet, nameSpace);
 			result.put(nameSpace, referenceMap);
 
-			
+
 		} catch (SQLException e) {
 			throw new RuntimeException(e);
 		}
 		return result;
 	}
-	
+
 	/**
 	 * @param distribution
 	 * @param source_id
-	 * @param state 
+	 * @param state
 	 */
 	private void addSource(Distribution distribution, Integer source_id, ErmsImportState state) {
-		Reference<?> ref = (Reference)state.getRelatedObject(ErmsReferenceImport.REFERENCE_NAMESPACE, String.valueOf(source_id));
+		Reference ref = (Reference)state.getRelatedObject(ErmsReferenceImport.REFERENCE_NAMESPACE, String.valueOf(source_id));
 		distribution.addSource(OriginalSourceType.PrimaryTaxonomicSource, null, null, ref, null);
 	}
 
@@ -178,11 +178,12 @@ public class ErmsDrImport  extends ErmsImportBase<Distribution> {
 		IOValidator<ErmsImportState> validator = new ErmsDrImportValidator();
 		return validator.validate(state);
 	}
-	
+
 	/* (non-Javadoc)
 	 * @see eu.etaxonomy.cdm.io.common.CdmIoBase#isIgnore(eu.etaxonomy.cdm.io.common.IImportConfigurator)
 	 */
-	protected boolean isIgnore(ErmsImportState state){
+	@Override
+    protected boolean isIgnore(ErmsImportState state){
 		return ! state.getConfig().isDoOccurrence();
 	}
 

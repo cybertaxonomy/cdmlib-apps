@@ -73,7 +73,7 @@ public class EdaphobaseSynonymyImport extends EdaphobaseImportBase {
     public boolean doPartition(ResultSetPartitioner partitioner, EdaphobaseImportState state) {
         ResultSet rs = partitioner.getResultSet();
         Map<String, TaxonBase> map = partitioner.getObjectMap(TAXON_NAMESPACE);
-        Reference<?> sourceReference = state.getTransactionalSourceReference();
+        Reference sourceReference = state.getTransactionalSourceReference();
 
         Set<TaxonBase> taxaToSave = new HashSet<>();
         try {

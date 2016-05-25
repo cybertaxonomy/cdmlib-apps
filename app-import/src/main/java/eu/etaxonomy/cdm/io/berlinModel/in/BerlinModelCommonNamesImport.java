@@ -1,8 +1,8 @@
 /**
 * Copyright (C) 2007 EDIT
-* European Distributed Institute of Taxonomy 
+* European Distributed Institute of Taxonomy
 * http://www.e-taxonomy.eu
-* 
+*
 * The contents of this file are subject to the Mozilla Public License Version 1.1
 * See LICENSE.TXT at the top of this package for the full license terms.
 */
@@ -52,7 +52,7 @@ import eu.etaxonomy.cdm.model.taxon.Taxon;
 import eu.etaxonomy.cdm.model.taxon.TaxonBase;
 
 /**
- * 
+ *
  * @author a.mueller
  * @created 20.03.2008
  */
@@ -63,10 +63,10 @@ public class BerlinModelCommonNamesImport  extends BerlinModelImportBase {
 	public static final UUID REFERENCE_LANGUAGE_ISO639_2_UUID = UUID.fromString("40c4f8dd-3d9c-44a4-b77a-76e137a89a5f");
 	public static final UUID REFERENCE_LANGUAGE_STRING_UUID = UUID.fromString("2a1b678f-c27d-48c1-b43e-98fd0d426305");
 	public static final UUID STATUS_ANNOTATION_UUID = UUID.fromString("e3f7b80a-1286-458d-812c-5e818f731968");
-	
+
 	public static final String NAMESPACE = "common name";
-	
-	
+
+
 	private static final String pluralString = "common names";
 	private static final String dbTableName = "emCommonName";
 
@@ -77,29 +77,29 @@ public class BerlinModelCommonNamesImport  extends BerlinModelImportBase {
 	public BerlinModelCommonNamesImport(){
 		super(dbTableName, pluralString);
 	}
-	
+
 	@Override
 	protected String getIdQuery(BerlinModelImportState state) {
 		String result = " SELECT CommonNameId FROM emCommonName WHERE (1=1) ";
 		if (StringUtils.isNotBlank(state.getConfig().getCommonNameFilter())){
 			result += " AND " + state.getConfig().getCommonNameFilter();
 		}
-		
+
 		return result;
 	}
 
 	@Override
 	protected String getRecordQuery(BerlinModelImportConfigurator config) {
 		String recordQuery = "";
-		recordQuery = 
+		recordQuery =
 				" SELECT     cn.CommonNameId, cn.CommonName, PTaxon.RIdentifier AS taxonId, cn.PTNameFk, cn.RefFk AS refId, cn.Status, cn.RegionFks, cn.MisNameRefFk, " +
 					       "               cn.NameInSourceFk, cn.Created_When, cn.Updated_When, cn.Created_Who, cn.Updated_Who, cn.Note AS Notes, languageCommonName.Language, " +
 					       "               languageCommonName.LanguageOriginal, languageCommonName.ISO639_1, languageCommonName.ISO639_2,   " +
 					       "               emLanguageReference.RefFk AS languageRefRefFk, emLanguageReference.ReferenceShort, emLanguageReference.ReferenceLong,  " +
-					       "               emLanguageReference.LanguageFk, languageReferenceLanguage.Language AS refLanguage, languageReferenceLanguage.ISO639_2 AS refLanguageIso639_2,  "+ 
+					       "               emLanguageReference.LanguageFk, languageReferenceLanguage.Language AS refLanguage, languageReferenceLanguage.ISO639_2 AS refLanguageIso639_2,  "+
 					       "               misappliedTaxon.RIdentifier AS misappliedTaxonId " +
 					" FROM         PTaxon AS misappliedTaxon RIGHT OUTER JOIN " +
-					    "                  emLanguage AS languageReferenceLanguage RIGHT OUTER JOIN " + 
+					    "                  emLanguage AS languageReferenceLanguage RIGHT OUTER JOIN " +
 					               "       emLanguageReference ON languageReferenceLanguage.LanguageId = emLanguageReference.LanguageFk RIGHT OUTER JOIN " +
 					               "       emCommonName AS cn INNER JOIN " +
 					               "       PTaxon ON cn.PTNameFk = PTaxon.PTNameFk AND cn.PTRefFk = PTaxon.PTRefFk ON  " +
@@ -109,7 +109,7 @@ public class BerlinModelCommonNamesImport  extends BerlinModelImportBase {
 			" WHERE cn.CommonNameId IN (" + ID_LIST_TOKEN + ")";
 		return recordQuery;
 	}
-	
+
 	@Override
 	protected void doInvoke(BerlinModelImportState state) {
 		try {
@@ -122,26 +122,26 @@ public class BerlinModelCommonNamesImport  extends BerlinModelImportBase {
 		super.doInvoke(state);
 		return;
 	}
-	
+
 	/**
-	 * @param state 
-	 * 
+	 * @param state
+	 *
 	 */
 	private void makeRegions(BerlinModelImportState state) {
 		try {
 			SortedSet<Integer> regionFks = new TreeSet<Integer>();
 			Source source = state.getConfig().getSource();
-			
+
 			//fill set with all regionFk from emCommonName.regionFks
 			getRegionFks(state, regionFks, source);
 			//concat filter string
 			String sqlWhere = getSqlWhere(regionFks);
-			
+
 			//get E+M - TDWG Mapping
 			Map<String, String> emTdwgMap = getEmTdwgMap(source);
 			//fill regionMap
 			fillRegionMap(state, sqlWhere, emTdwgMap);
-			
+
 			return;
 		} catch (NumberFormatException e) {
 			e.printStackTrace();
@@ -158,17 +158,17 @@ public class BerlinModelCommonNamesImport  extends BerlinModelImportBase {
 	@Override
 	public boolean doPartition(ResultSetPartitioner partitioner, BerlinModelImportState state)  {
 		boolean success = true ;
-		
+
 		Set<TaxonBase> taxaToSave = new HashSet<TaxonBase>();
-		Map<String, Taxon> taxonMap = (Map<String, Taxon>) partitioner.getObjectMap(BerlinModelTaxonImport.NAMESPACE);
-		Map<String, TaxonNameBase> taxonNameMap = (Map<String, TaxonNameBase>) partitioner.getObjectMap(BerlinModelTaxonNameImport.NAMESPACE);
-		
-		Map<String, Reference> refMap = (Map<String, Reference>) partitioner.getObjectMap(BerlinModelReferenceImport.REFERENCE_NAMESPACE);
-		
+		Map<String, Taxon> taxonMap = partitioner.getObjectMap(BerlinModelTaxonImport.NAMESPACE);
+		Map<String, TaxonNameBase> taxonNameMap = partitioner.getObjectMap(BerlinModelTaxonNameImport.NAMESPACE);
+
+		Map<String, Reference> refMap = partitioner.getObjectMap(BerlinModelReferenceImport.REFERENCE_NAMESPACE);
+
 		Map<String, Language> iso6392Map = new HashMap<String, Language>();
-		
+
 	//	logger.warn("MisappliedNameRefFk  not yet implemented for Common Names");
-		
+
 		ResultSet rs = partitioner.getResultSet();
 		try{
 			while (rs.next()){
@@ -190,18 +190,18 @@ public class BerlinModelCommonNamesImport  extends BerlinModelImportBase {
 				String status = rs.getString("Status");
 				Integer nameInSourceFk = nullSafeInt( rs, "NameInSourceFk");
 				Integer misappliedTaxonId = nullSafeInt( rs, "misappliedTaxonId");
-				
+
 				//regions
 				String regionFks  = rs.getString("RegionFks");
 				String[] regionFkSplit = regionFks.split(",");
-				
+
 				//commonNameString
 				if (isBlank(commonNameString)){
 					String message = "CommonName is empty or null. Do not import record for taxon " + taxonId;
 					logger.warn(message);
 					continue;
 				}
-				
+
 				//taxon
 				Taxon taxon = null;
 				TaxonBase<?> taxonBase  = taxonMap.get(String.valueOf(taxonId));
@@ -214,10 +214,10 @@ public class BerlinModelCommonNamesImport  extends BerlinModelImportBase {
 				}else{
 					taxon = CdmBase.deproxy(taxonBase, Taxon.class);
 				}
-				
+
 				//Language
 				Language language = getAndHandleLanguage(iso6392Map, iso639_2, iso639_1, languageString, originalLanguageString, state);
-				
+
 				//CommonTaxonName
 				List<CommonTaxonName> commonTaxonNames = new ArrayList<CommonTaxonName>();
 				for (String regionFk : regionFkSplit){ //
@@ -242,7 +242,7 @@ public class BerlinModelCommonNamesImport  extends BerlinModelImportBase {
 						description.addElement(commonTaxonName);
 					}
 				}
-					
+
 				//Reference/Source
 				if (! CdmUtils.nullSafeEqual(refId, languageRefRefFk)){
 					//use strRefId if languageRefFk is null
@@ -252,14 +252,14 @@ public class BerlinModelCommonNamesImport  extends BerlinModelImportBase {
 						logger.warn("CommonName.RefFk (" + CdmUtils.Nz(refId) + ") and LanguageReference.RefFk " + (languageRefRefFk==null? "null" : languageRefRefFk)  + " are not equal. I will import only languageReference.RefFk");
 					}
 				}
-				
-				Reference<?> reference = refMap.get(String.valueOf(languageRefRefFk));
+
+				Reference reference = refMap.get(String.valueOf(languageRefRefFk));
 				if (reference == null && languageRefRefFk != null){
 					logger.warn("CommonName reference was null but reference exists. languageRefRefFk = " + languageRefRefFk + "; commonNameId = " + commonNameId);
 				}
 				String microCitation = null;
 				String originalNameString = null;
-				
+
 				TaxonNameBase<?,?> nameUsedInSource = taxonNameMap.get(String.valueOf(nameInSourceFk));
 				if (nameInSourceFk != null && nameUsedInSource == null){
 					logger.warn("Name used in source (" + nameInSourceFk + ") was not found for common name " + commonNameId);
@@ -268,8 +268,8 @@ public class BerlinModelCommonNamesImport  extends BerlinModelImportBase {
 				for (CommonTaxonName commonTaxonName : commonTaxonNames){
 					commonTaxonName.addSource(source);
 				}
-				
-				
+
+
 				//MisNameRef
 				if (misNameRefFk != null){
 					//Taxon misappliedName = getMisappliedName(biblioRefMap, nomRefMap, misNameRefFk, taxon);
@@ -284,8 +284,8 @@ public class BerlinModelCommonNamesImport  extends BerlinModelImportBase {
 							logger.warn("Misapplied name taxon is not of type Taxon but " + misTaxonBase.getClass().getSimpleName());
 						}
 					}else{
-						
-						Reference<?> sec = refMap.get(String.valueOf(misNameRefFk));
+
+						Reference sec = refMap.get(String.valueOf(misNameRefFk));
 						if (nameUsedInSource == null || sec == null){
 							logger.warn("Taxon name or misapplied name reference is null for common name " + commonNameId);
 						}else{
@@ -299,31 +299,31 @@ public class BerlinModelCommonNamesImport  extends BerlinModelImportBase {
 						}
 					}
 					if (misappliedNameTaxon != null){
-						
+
 						if (! taxon.getMisappliedNames().contains(misappliedNameTaxon)){
 							taxon.addMisappliedName(misappliedNameTaxon,state.getTransactionalSourceReference(), null);
 							logger.warn("Misapplied name for common name was not found related to the accepted taxon. Created new relationship. CommonNameId: " + commonNameId);
 						}
-						
+
 						TaxonDescription misappliedNameDescription = getDescription(misappliedNameTaxon);
 						for (CommonTaxonName commonTaxonName : commonTaxonNames){
 							CommonTaxonName commonNameClone = (CommonTaxonName)commonTaxonName.clone();
 							misappliedNameDescription.addElement(commonNameClone);
-						}	
+						}
 					}else{
 						logger.warn("Misapplied name is null for common name " + commonNameId);
 					}
-					
+
 				}
-				
-				
+
+
 				//reference extensions
 				if (reference != null){
 					if (StringUtils.isNotBlank(refLanguage)){
 						ExtensionType refLanguageExtensionType = getExtensionType( state, REFERENCE_LANGUAGE_STRING_UUID, "reference language","The language of the reference","ref. lang.");
 						Extension.NewInstance(reference, refLanguage, refLanguageExtensionType);
 					}
-					
+
 					if (StringUtils.isNotBlank(refLanguageIso639_2)){
 						ExtensionType refLanguageIsoExtensionType = getExtensionType( state, REFERENCE_LANGUAGE_ISO639_2_UUID, "reference language iso 639-2","The iso 639-2 code of the references language","ref. lang. 639-2");
 						Extension.NewInstance(reference, refLanguageIso639_2, refLanguageIsoExtensionType);
@@ -331,7 +331,7 @@ public class BerlinModelCommonNamesImport  extends BerlinModelImportBase {
 				}else if (isNotBlank(refLanguage) || isNotBlank(refLanguageIso639_2)){
 					logger.warn("Reference is null (" + languageRefRefFk + ") but refLanguage (" + CdmUtils.Nz(refLanguage) + ") or iso639_2 (" + CdmUtils.Nz(refLanguageIso639_2) + ") was not null for common name ("+ commonNameId +")");
 				}
-				
+
 				//status
 				if (isNotBlank(status)){
 					AnnotationType statusAnnotationType = getAnnotationType( state, STATUS_ANNOTATION_UUID, "status","The status of this object","status", null);
@@ -340,7 +340,7 @@ public class BerlinModelCommonNamesImport  extends BerlinModelImportBase {
 						commonTaxonName.addAnnotation(annotation);
 					}
 				}
-				
+
 				//Notes
 				for (CommonTaxonName commonTaxonName : commonTaxonNames){
 					doIdCreatedUpdatedNotes(state, commonTaxonName, rs, String.valueOf(commonNameId), NAMESPACE);
@@ -354,8 +354,8 @@ public class BerlinModelCommonNamesImport  extends BerlinModelImportBase {
 			return false;
 		} catch (ClassCastException e) {
 			e.printStackTrace();
-		} 	
-			
+		}
+
 		//	logger.info( i + " names handled");
 		getTaxonService().save(taxaToSave);
 		return success;
@@ -367,7 +367,7 @@ public class BerlinModelCommonNamesImport  extends BerlinModelImportBase {
 	 * @param iso639_2
 	 * @param languageString
 	 * @param originalLanguageString
-	 * @param state 
+	 * @param state
 	 * @return
 	 */
 	private Language getAndHandleLanguage(Map<String, Language> iso639Map,	String iso639_2, String iso639_1, String languageString, String originalLanguageString, BerlinModelImportState state) {
@@ -375,7 +375,7 @@ public class BerlinModelCommonNamesImport  extends BerlinModelImportBase {
 		if (isNotBlank(iso639_2)|| isNotBlank(iso639_1)  ){
 			//TODO test performance, implement in state
 			language = getLanguageFromIsoMap(iso639Map, iso639_2, iso639_1);
-			
+
 			if (language == null){
 				language = getTermService().getLanguageByIso(iso639_2);
 				iso639Map.put(iso639_2, language);
@@ -437,9 +437,9 @@ public class BerlinModelCommonNamesImport  extends BerlinModelImportBase {
 				getTermService().saveOrUpdate(language);
 			}
 		}
-		
+
 	}
-	
+
 
 
 	/**
@@ -449,21 +449,21 @@ public class BerlinModelCommonNamesImport  extends BerlinModelImportBase {
 	 * @param source
 	 * @return
 	 * @throws SQLException
-	 * 
+	 *
 	 */
 	private void getRegionFks(BerlinModelImportState state, SortedSet<Integer> regionFks, Source source) throws SQLException {
 		String sql = " SELECT DISTINCT RegionFks FROM emCommonName";
 		if (state.getConfig().getCommonNameFilter() != null){
-			sql += " WHERE " + state.getConfig().getCommonNameFilter(); 
+			sql += " WHERE " + state.getConfig().getCommonNameFilter();
 		}
-		
+
 		ResultSet rs = source.getResultSet(sql);
 		while (rs.next()){
-			String strRegionFks = rs.getString("RegionFks"); 
+			String strRegionFks = rs.getString("RegionFks");
 			if (isBlank(strRegionFks)){
 				continue;
 			}
-			
+
 			String[] regionFkArray = strRegionFks.split(",");
 			for (String regionFk: regionFkArray){
 				regionFk = regionFk.trim();
@@ -526,7 +526,7 @@ public class BerlinModelCommonNamesImport  extends BerlinModelImportBase {
 	/**
 	 * Returns the are for a given TDWG code. See {@link #getEmTdwgMap(Source)} for exceptions from
 	 * the TDWG code
-	 * @param state 
+	 * @param state
 	 * @param tdwgCode
 	 */
 	private NamedArea getNamedArea(BerlinModelImportState state, String tdwgCode) {
@@ -559,7 +559,7 @@ public class BerlinModelCommonNamesImport  extends BerlinModelImportBase {
 	private String getSqlWhere(SortedSet<Integer> regionFks) {
 		String sqlWhere = "";
 		for (Integer regionFk : regionFks){
-			sqlWhere += regionFk + ","; 
+			sqlWhere += regionFk + ",";
 		}
 		sqlWhere = sqlWhere.substring(0, sqlWhere.length()-1);
 		return sqlWhere;
@@ -567,7 +567,7 @@ public class BerlinModelCommonNamesImport  extends BerlinModelImportBase {
 
 	/**
 	 * Returns a map which is filled by the emCode->TdwgCode mapping defined in emArea.
-	 * Some exceptions are defined for emCode 'Ab','Rf','Uk' and some additional mapping is added 
+	 * Some exceptions are defined for emCode 'Ab','Rf','Uk' and some additional mapping is added
 	 * for 'Ab / Ab(A)', 'Ga / Ga(F)', 'It / It(I)', 'Ar / Ar(A)','Hs / Hs(S)'
 	 * @param source
 	 * @throws SQLException
@@ -583,7 +583,7 @@ public class BerlinModelCommonNamesImport  extends BerlinModelImportBase {
 			String TDWGCode = rs.getString("TDWGCode");
 			if (StringUtils.isNotBlank(emCode) ){
 				emCode = emCode.trim();
-				if (emCode.equalsIgnoreCase("Ab") || emCode.equalsIgnoreCase("Rf")|| 
+				if (emCode.equalsIgnoreCase("Ab") || emCode.equalsIgnoreCase("Rf")||
 						emCode.equalsIgnoreCase("Uk") || emCode.equalsIgnoreCase("Gg")){
 					emTdwgMap.put(emCode, emCode);
 				}else if (StringUtils.isNotBlank(TDWGCode)){
@@ -597,7 +597,7 @@ public class BerlinModelCommonNamesImport  extends BerlinModelImportBase {
 		emTdwgMap.put("Uk / Uk(U)", "Uk");
 		emTdwgMap.put("Ar / Ar(A)", "TCS-AR");
 		emTdwgMap.put("Hs / Hs(S)", "SPA-SP");
-		
+
 		return emTdwgMap;
 	}
 
@@ -626,7 +626,7 @@ public class BerlinModelCommonNamesImport  extends BerlinModelImportBase {
 		Class<?> cdmClass;
 		Set<String> idSet;
 		Map<Object, Map<String, ? extends CdmBase>> result = new HashMap<Object, Map<String, ? extends CdmBase>>();
-		
+
 		String pos = "0";
 		try{
 			Set<String> taxonIdSet = new HashSet<String>();
@@ -641,21 +641,21 @@ public class BerlinModelCommonNamesImport  extends BerlinModelImportBase {
 				handleForeignKey(rs, nameIdSet, "PTNameFk");
 				handleForeignKey(rs, referenceIdSet, "MisNameRefFk");
 			}
-			
+
 			//name map
 			nameSpace = BerlinModelTaxonNameImport.NAMESPACE;
 			cdmClass = TaxonNameBase.class;
 			idSet = nameIdSet;
 			Map<String, TaxonNameBase<?,?>> nameMap = (Map<String, TaxonNameBase<?,?>>)getCommonService().getSourcedObjectsByIdInSource(cdmClass, idSet, nameSpace);
 			result.put(nameSpace, nameMap);
-			
+
 			//taxon map
 			nameSpace = BerlinModelTaxonImport.NAMESPACE;
 			cdmClass = TaxonBase.class;
 			idSet = taxonIdSet;
 			Map<String, TaxonBase<?>> taxonMap = (Map<String, TaxonBase<?>>)getCommonService().getSourcedObjectsByIdInSource(cdmClass, idSet, nameSpace);
 			result.put(nameSpace, taxonMap);
-			
+
 			//reference map
 			nameSpace = BerlinModelReferenceImport.REFERENCE_NAMESPACE;
 			cdmClass = Reference.class;
@@ -670,7 +670,7 @@ public class BerlinModelCommonNamesImport  extends BerlinModelImportBase {
 		}
 		return result;
 	}
-		
+
 
 	@Override
 	protected boolean doCheck(BerlinModelImportState state){

@@ -2025,7 +2025,7 @@ public final class PesiTransformer extends ExportTransformerBase implements IExp
 	 * @param reference The {@link Reference Reference}.
 	 * @return The {@link SourceCategory SourceCategory} representation in PESI.
 	 */
-	public static Integer reference2SourceCategoryFK(Reference<?> reference) {
+	public static Integer reference2SourceCategoryFK(Reference reference) {
 		if (reference == null){
 			return null;
 		} else if (reference.getType().equals(ReferenceType.Article)) {
@@ -2069,7 +2069,7 @@ public final class PesiTransformer extends ExportTransformerBase implements IExp
 	 * @param reference The {@link Reference Reference}.
 	 * @return The {@link SourceCategoryCache SourceCategoryCache}.
 	 */
-	public String getCacheByReference(Reference<?> reference) {
+	public String getCacheByReference(Reference reference) {
 		if (reference == null){
 			return null;
 		}else{

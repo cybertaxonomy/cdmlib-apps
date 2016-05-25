@@ -714,7 +714,7 @@ public class EfloraTaxonImport  extends EfloraImportBase implements ICdmIO<Eflor
 	private void makeOriginalSourceReferences(ISourceable sourcable, String splitter, String refAll) {
 		String[] splits = refAll.split(splitter);
 		for (String strRef: splits){
-			Reference<?> ref = ReferenceFactory.newGeneric();
+			Reference ref = ReferenceFactory.newGeneric();
 			ref.setTitleCache(strRef, true);
 			String refDetail = parseReferenceYearAndDetail(ref);
 			sourcable.addSource(OriginalSourceType.PrimaryTaxonomicSource, null, null, ref, refDetail);
@@ -1360,7 +1360,7 @@ public class EfloraTaxonImport  extends EfloraImportBase implements ICdmIO<Eflor
 	 * @param value
 	 */
 	protected TeamOrPersonBase handleNameUsage(Taxon taxon, NonViralName<?> name, String referenceTitle, TeamOrPersonBase lastTeam) {
-		Reference<?> ref = ReferenceFactory.newGeneric();
+		Reference ref = ReferenceFactory.newGeneric();
 		referenceTitle = removeStartingSymbols(referenceTitle, ref);
 
 		ref.setTitleCache(referenceTitle, true);

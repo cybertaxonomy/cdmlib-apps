@@ -53,9 +53,9 @@ public class TaxonXImportLauncher {
   static final ICdmDataSource cdmDestination = CdmDestinations.cdm_test_local_mysql_test();
 //    static final ICdmDataSource cdmDestination = CdmDestinations.cdm_production_piB("piB_nephrolepis");
 //    static final ICdmDataSource cdmDestination = CdmDestinations.cdm_local_piB("guianas");
-    
+
     static final CHECK check = CHECK.IMPORT_WITHOUT_CHECK;
-    
+
     private enum FilterType{MODS, TAXON};
 
 
@@ -66,7 +66,7 @@ public class TaxonXImportLauncher {
 
     public static void main(String[] args) {
     	String[] spiderModsList = new String[] {"zt03768p138","zt03750p196","zt03666p193","zt03664p068","zt03646p592","zt03507p056","zt03415p057","zt03383p038","zt03305p052","zt03228p068","zt03131p034","zt02963p068","zt02883p068","zt02814p018","zt02739p050","zt02730p043","zt02637p054","zt02593p127","zt02551p068","zt02534p036","zt02526p053","zt02427p035","zt02361p012","zt02267p068","zt02223p047","zt01826p058","zt01775p024","zt01744p040","zt01529p060","zt01004p028","zt00904","zt00872","zt00619","zt00109","DippenaarSchoeman1989Penestominae","Simon1902Cribellates","Simon1903Penestominae","Lehtinen1967CribellatePenestominae"};
-    	
+
     	String[] taxonList = new String[]  {"Campylopus"}; //{"Eupolybothrus","Polybothrus"}, Chenopodium, Lactarius, Campylopus, Nephrolepis, Comaroma (spiders)
 //       /*ants Anochetus*/ String[] modsList = new String[] {"3924" /*, "3743", "4375", "6757", "6752", "3481", "21401_fisher_smith_plos_2008", "2592", "4096", "6877", "6192", "8071"  */};
 //        String[] modsList = new String[] {"21367", "21365", "8171", "6877", "21820", "3641", "6757"};
@@ -74,24 +74,24 @@ public class TaxonXImportLauncher {
 //        suite: , };//,"3540555099"};
 //        modsList = new String[] {"Zapparoli-1986-Eupolybothrus-fasciatus"};
 //    	taxonList = spiderModsList;
-    	
+
     	FilterType filterType = FilterType.TAXON;
-        
+
     	NomenclaturalCode tnomenclature = NomenclaturalCode.ICNAFP;
 
         String defaultClassification= null;// "Nephrolepis";
         boolean alwaysUseDefaultClassification = false;
-        
+
         boolean useOldUnparsedSynonymExtraction = false;
 
-        
-        
-        
+
+
+
         Map<String,List<URI>>documentMap = new HashMap<String, List<URI>>();
 
         /*HOW TO HANDLE SECUNDUM REFERENCE*/
         boolean reuseSecundum = askIfReuseSecundum();
-        Reference<?> secundum = null;
+        Reference secundum = null;
         if (!reuseSecundum) {
             secundum = askForSecundum();
         }
@@ -104,7 +104,7 @@ public class TaxonXImportLauncher {
         ICdmDataSource destination = cdmDestination;
         TaxonXImportConfigurator config = prepareTaxonXImport(destination,reuseSecundum, secundum, tnomenclature, alwaysUseDefaultClassification);
         config.setUseOldUnparsedSynonymExtraction(useOldUnparsedSynonymExtraction);
-        
+
         config.setImportClassificationName(defaultClassification);
         log.info("Start import from  TaxonX Data");
 
@@ -151,16 +151,16 @@ public class TaxonXImportLauncher {
      *
      */
     private static void prepareReferenceAndSource(TaxonXImportConfigurator taxonxImportConfigurator, URI source) {
-        Reference<?> reference = ReferenceFactory.newGeneric();
+        Reference reference = ReferenceFactory.newGeneric();
         //            String tref = askQuestion("Import source? (ie Plazi document ID)");
         String tref="PLAZI - "+source.getPath().split("/")[source.getPath().split("/").length-1];
         reference.setTitleCache(tref,true);
         reference.setTitle(tref);
-        
+
         taxonxImportConfigurator.setSourceReference(reference);
         TaxonXImportConfigurator.setSourceRef(reference);
 
-        Reference<?> referenceUrl = ReferenceFactory.newWebPage();
+        Reference referenceUrl = ReferenceFactory.newWebPage();
         referenceUrl.setTitleCache(source.toString(), true);
         referenceUrl.setTitle(source.toString());
         reference.setUri(source);
@@ -174,11 +174,11 @@ public class TaxonXImportLauncher {
      * @param destination
      * @param reuseSecundum
      * @param secundum
-     * @param tnomenclature 
-     * @param alwaysUseDefaultClassification 
+     * @param tnomenclature
+     * @param alwaysUseDefaultClassification
      * @return
      */
-    private static TaxonXImportConfigurator prepareTaxonXImport(ICdmDataSource destination, boolean reuseSecundum, Reference<?> secundum, NomenclaturalCode tnomenclature, boolean alwaysUseDefaultClassification) {
+    private static TaxonXImportConfigurator prepareTaxonXImport(ICdmDataSource destination, boolean reuseSecundum, Reference secundum, NomenclaturalCode tnomenclature, boolean alwaysUseDefaultClassification) {
         TaxonXImportConfigurator taxonxImportConfigurator = TaxonXImportConfigurator.NewInstance(destination);
 
         //taxonxImportConfigurator.setClassificationName(taxonxImportConfigurator.getSourceReferenceTitle());
@@ -300,9 +300,9 @@ public class TaxonXImportLauncher {
 	}
 
 	private static Map<String, List<String>> fillDocumentMap(FilterType filterType,
-			String[] filterList, String urlstr) 
+			String[] filterList, String urlstr)
 					throws MalformedURLException, IOException {
-		
+
 		Map<String, List<String>> documents = new HashMap<String, List<String>>();
 		List<String> docList;
 		String inputLine;
@@ -327,7 +327,7 @@ public class TaxonXImportLauncher {
 		            String taxon = inputLine.split("taxon=\"")[1].split("\"")[0];
 		            String docID=inputLine.split("docId=\"")[1].split("\"")[0];
 		            System.out.println("docID: "+docID);
-		            
+
 		            String link=inputLine.split("link=\"")[1].split("\"")[0];
 		            String pageStart = inputLine.split("startPage=\"")[1].split("\"")[0];
 		            String pageEnd = inputLine.split("endPage=\"")[1].split("\"")[0];
@@ -341,7 +341,7 @@ public class TaxonXImportLauncher {
 		    }
 		}
 		System.out.println("documents created");
-		
+
 		return documents;
 	}
 
@@ -415,7 +415,7 @@ public class TaxonXImportLauncher {
     /**
      * @return
      */
-    private static Reference<?> askForSecundum() {
+    private static Reference askForSecundum() {
         //        logger.info("getFullReference for "+ name);
         JTextArea textArea = new JTextArea("Enter the secundum name");
         JScrollPane scrollPane = new JScrollPane(textArea);
@@ -433,7 +433,7 @@ public class TaxonXImportLauncher {
                 null,
                 null,
                 null);
-        Reference<?> ref = ReferenceFactory.newGeneric();
+        Reference ref = ReferenceFactory.newGeneric();
         ref.setTitle(s);
         return ref;
     }

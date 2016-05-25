@@ -259,7 +259,7 @@ public class BerlinModelReferenceImport extends BerlinModelImportBase {
 
 				//for the concept reference a fixed uuid may be needed -> change uuid
 				Integer sourceSecId = (Integer)config.getSourceSecId();
-				Reference<?> sec = refToSave.get(sourceSecId);
+				Reference sec = refToSave.get(sourceSecId);
 
 				if (sec != null){
 					sec.setUuid(config.getSecUuid());
@@ -309,9 +309,9 @@ public class BerlinModelReferenceImport extends BerlinModelImportBase {
 
 					if (inRefFk != null){
 
-						Reference<?> thisRef = relatedReferencesMap.get(String.valueOf(refId));
+						Reference thisRef = relatedReferencesMap.get(String.valueOf(refId));
 
-						Reference<?> inRef = relatedReferencesMap.get(String.valueOf(inRefFk));
+						Reference inRef = relatedReferencesMap.get(String.valueOf(inRefFk));
 
 						if (thisRef != null){
 							if (inRef == null){
@@ -410,7 +410,7 @@ public class BerlinModelReferenceImport extends BerlinModelImportBase {
 			Boolean thesisFlag = (Boolean)valueMap.get("thesisFlag".toLowerCase());
 
 
-			Reference<?> referenceBase;
+			Reference referenceBase;
 			logger.debug("RefCategoryFk: " + categoryFk);
 
 			if (thesisFlag){
@@ -489,7 +489,7 @@ public class BerlinModelReferenceImport extends BerlinModelImportBase {
 				BerlinModelImportState state,
 				ResultSetPartitioner partitioner,
 				int refId,
-				Reference<?> ref,
+				Reference ref,
 				RefCounter refCounter,
 				Map<Integer, Reference> refToSave
 				) throws SQLException{
@@ -506,7 +506,7 @@ public class BerlinModelReferenceImport extends BerlinModelImportBase {
 		String strNomAuthorTeamFk = String.valueOf(nomAuthorTeamFk);
 		TeamOrPersonBase<?> nomAuthor = teamMap.get(strNomAuthorTeamFk);
 
-		Reference<?> sourceReference = state.getTransactionalSourceReference();
+		Reference sourceReference = state.getTransactionalSourceReference();
 
 		//preliminary
 		if (isPreliminary){
@@ -545,7 +545,7 @@ public class BerlinModelReferenceImport extends BerlinModelImportBase {
 	 * @param referenceBase
 	 * @param nomReference
 	 */
-	private void copyCreatedUpdated(Reference<?> biblioReference, Reference nomReference) {
+	private void copyCreatedUpdated(Reference biblioReference, Reference nomReference) {
 		biblioReference.setCreatedBy(nomReference.getCreatedBy());
 		biblioReference.setCreated(nomReference.getCreated());
 		biblioReference.setUpdatedBy(nomReference.getUpdatedBy());
@@ -553,7 +553,7 @@ public class BerlinModelReferenceImport extends BerlinModelImportBase {
 
 	}
 
-	private Reference<?> makeArticle (Map<String, Object> valueMap, Map<Integer, Reference> refToSave, Map<String, Reference> relatedReferences){
+	private Reference makeArticle (Map<String, Object> valueMap, Map<Integer, Reference> refToSave, Map<String, Reference> relatedReferences){
 
 		IArticle article = ReferenceFactory.newArticle();
 		Object inRefFk = valueMap.get("inRefFk".toLowerCase());
@@ -569,13 +569,13 @@ public class BerlinModelReferenceImport extends BerlinModelImportBase {
 			logger.warn ("Article has no inreference: " + refId);
 		}
 		makeStandardMapper(valueMap, (Reference)article); //url, pages, series, volume
-		return (Reference<?>)article;
+		return (Reference)article;
 	}
 
-	private Reference<?> makePartOfOtherTitle (Map<String, Object> valueMap,
+	private Reference makePartOfOtherTitle (Map<String, Object> valueMap,
 			Map<Integer, Reference> refToSave, Map<String, Reference> relatedReferences){
 
-		Reference<?> result;
+		Reference result;
 		Object inRefFk = valueMap.get("inRefFk".toLowerCase());
 		Integer inRefCategoryFk = (Integer)valueMap.get("inRefCategoryFk".toLowerCase());
 		Integer refId = (Integer)valueMap.get("refId".toLowerCase());
@@ -591,7 +591,7 @@ public class BerlinModelReferenceImport extends BerlinModelImportBase {
 		}else if (inRefCategoryFk == REF_BOOK){
 			//BookSection
 			IBookSection bookSection = ReferenceFactory.newBookSection();
-			result = (Reference<?>)bookSection;
+			result = (Reference)bookSection;
 		}else if (inRefCategoryFk == REF_ARTICLE){
 			//Article
 			logger.info("Reference (refId = " + refId + ") of type 'part_of_other_title' is part of 'article'." +
@@ -635,24 +635,24 @@ public class BerlinModelReferenceImport extends BerlinModelImportBase {
 		return result;
 	}
 
-	private Reference<?> makeWebSite(Map<String, Object> valueMap){
+	private Reference makeWebSite(Map<String, Object> valueMap){
 		if (logger.isDebugEnabled()){logger.debug("RefType 'Website'");}
-		Reference<?> webPage = ReferenceFactory.newWebPage();
+		Reference webPage = ReferenceFactory.newWebPage();
 		makeStandardMapper(valueMap, webPage); //placePublished, publisher
 		return webPage;
 	}
 
-	private Reference<?> makeUnknown(Map<String, Object> valueMap){
+	private Reference makeUnknown(Map<String, Object> valueMap){
 		if (logger.isDebugEnabled()){logger.debug("RefType 'Unknown'");}
-		Reference<?> generic = ReferenceFactory.newGeneric();
+		Reference generic = ReferenceFactory.newGeneric();
 //		generic.setSeries(series);
 		makeStandardMapper(valueMap, generic); //pages, placePublished, publisher, series, volume
 		return generic;
 	}
 
-	private Reference<?> makeInformal(Map<String, Object> valueMap){
+	private Reference makeInformal(Map<String, Object> valueMap){
 		if (logger.isDebugEnabled()){logger.debug("RefType 'Informal'");}
-		Reference<?> generic = ReferenceFactory.newGeneric();
+		Reference generic = ReferenceFactory.newGeneric();
 //		informal.setSeries(series);
 		makeStandardMapper(valueMap, generic);//editor, pages, placePublished, publisher, series, volume
 		String informal = (String)valueMap.get("InformalRefCategory".toLowerCase());
@@ -662,16 +662,16 @@ public class BerlinModelReferenceImport extends BerlinModelImportBase {
 		return generic;
 	}
 
-	private Reference<?> makeDatabase(Map<String, Object> valueMap){
+	private Reference makeDatabase(Map<String, Object> valueMap){
 		if (logger.isDebugEnabled()){logger.debug("RefType 'Database'");}
-		Reference<?> database =  ReferenceFactory.newDatabase();
+		Reference database =  ReferenceFactory.newDatabase();
 		makeStandardMapper(valueMap, database); //?
 		return database;
 	}
 
-	private Reference<?> makeJournal(Map<String, Object> valueMap){
+	private Reference makeJournal(Map<String, Object> valueMap){
 		if (logger.isDebugEnabled()){logger.debug("RefType 'Journal'");}
-		Reference<?> journal = ReferenceFactory.newJournal();
+		Reference journal = ReferenceFactory.newJournal();
 
 		Set<String> omitAttributes = new HashSet<String>();
 		String series = "series";
@@ -684,12 +684,12 @@ public class BerlinModelReferenceImport extends BerlinModelImportBase {
 		return journal;
 	}
 
-	private Reference<?> makeBook(
+	private Reference makeBook(
 				Map<String, Object> valueMap,
 				Map<Integer, Reference> refToSave,
 				Map<String, Reference> relatedReferences){
 		if (logger.isDebugEnabled()){logger.debug("RefType 'Book'");}
-		Reference<?> book = ReferenceFactory.newBook();
+		Reference book = ReferenceFactory.newBook();
 		Integer refId = (Integer)valueMap.get("refId".toLowerCase());
 
 		//Set bookAttributes = new String[]{"edition", "isbn", "pages","publicationTown","publisher","volume"};
@@ -729,11 +729,11 @@ public class BerlinModelReferenceImport extends BerlinModelImportBase {
 	 * @param relatedNomReferences
 	 * @return
 	 */
-	private Reference<?> getReferenceFromMaps(
+	private Reference getReferenceFromMaps(
 			int inRefFkInt,
 			Map<Integer, Reference> refToSaveMap,
 			Map<String, Reference> relatedRefMap) {
-		Reference<?> result = null;
+		Reference result = null;
 		result = refToSaveMap.get(inRefFkInt);
 		if (result == null){
 			result = relatedRefMap.get(String.valueOf(inRefFkInt));
@@ -741,38 +741,38 @@ public class BerlinModelReferenceImport extends BerlinModelImportBase {
 		return result;
 	}
 
-	private Reference<?> makePrintSeries(Map<String, Object> valueMap){
+	private Reference makePrintSeries(Map<String, Object> valueMap){
 		if (logger.isDebugEnabled()){logger.debug("RefType 'PrintSeries'");}
-		Reference<?> printSeries = ReferenceFactory.newPrintSeries();
+		Reference printSeries = ReferenceFactory.newPrintSeries();
 		makeStandardMapper(valueMap, printSeries, null);
 		return printSeries;
 	}
 
-	private Reference<?> makeProceedings(Map<String, Object> valueMap){
+	private Reference makeProceedings(Map<String, Object> valueMap){
 		if (logger.isDebugEnabled()){logger.debug("RefType 'Proceedings'");}
-		Reference<?> proceedings = ReferenceFactory.newProceedings();
+		Reference proceedings = ReferenceFactory.newProceedings();
 		makeStandardMapper(valueMap, proceedings, null);
 		return proceedings;
 	}
 
-	private Reference<?> makeThesis(Map<String, Object> valueMap){
+	private Reference makeThesis(Map<String, Object> valueMap){
 		if (logger.isDebugEnabled()){logger.debug("RefType 'Thesis'");}
-		Reference<?> thesis = ReferenceFactory.newThesis();
+		Reference thesis = ReferenceFactory.newThesis();
 		makeStandardMapper(valueMap, thesis, null);
 		return thesis;
 	}
 
 
-	private Reference<?> makeJournalVolume(Map<String, Object> valueMap){
+	private Reference makeJournalVolume(Map<String, Object> valueMap){
 		if (logger.isDebugEnabled()){logger.debug("RefType 'JournalVolume'");}
 		//Proceedings proceedings = Proceedings.NewInstance();
-		Reference<?> journalVolume = ReferenceFactory.newGeneric();
+		Reference journalVolume = ReferenceFactory.newGeneric();
 		makeStandardMapper(valueMap, journalVolume, null);
 		logger.warn("Journal volumes not yet implemented. Generic created instead but with errors");
 		return journalVolume;
 	}
 
-	private boolean makeStandardMapper(Map<String, Object> valueMap, Reference<?> ref){
+	private boolean makeStandardMapper(Map<String, Object> valueMap, Reference ref){
 		return makeStandardMapper(valueMap, ref, null);
 	}
 

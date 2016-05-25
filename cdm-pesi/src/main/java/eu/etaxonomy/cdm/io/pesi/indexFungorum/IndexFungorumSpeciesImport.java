@@ -11,10 +11,8 @@ package eu.etaxonomy.cdm.io.pesi.indexFungorum;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
@@ -23,11 +21,8 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.springframework.stereotype.Component;
 
-import eu.etaxonomy.cdm.api.service.config.MatchingTaxonConfigurator;
 import eu.etaxonomy.cdm.common.CdmUtils;
-import eu.etaxonomy.cdm.hibernate.HibernateProxyHelper;
 import eu.etaxonomy.cdm.io.common.ResultSetPartitioner;
-import eu.etaxonomy.cdm.io.common.Source;
 import eu.etaxonomy.cdm.io.pesi.erms.ErmsTransformer;
 import eu.etaxonomy.cdm.io.pesi.out.PesiTransformer;
 import eu.etaxonomy.cdm.model.common.CdmBase;
@@ -35,12 +30,10 @@ import eu.etaxonomy.cdm.model.common.Extension;
 import eu.etaxonomy.cdm.model.common.ExtensionType;
 import eu.etaxonomy.cdm.model.name.NomenclaturalCode;
 import eu.etaxonomy.cdm.model.name.NonViralName;
-import eu.etaxonomy.cdm.model.name.TaxonNameBase;
 import eu.etaxonomy.cdm.model.reference.Reference;
 import eu.etaxonomy.cdm.model.taxon.Classification;
 import eu.etaxonomy.cdm.model.taxon.Taxon;
 import eu.etaxonomy.cdm.model.taxon.TaxonBase;
-import eu.etaxonomy.cdm.model.taxon.TaxonNode;
 import eu.etaxonomy.cdm.strategy.parser.NonViralNameParserImpl;
 
 
@@ -54,7 +47,7 @@ public class IndexFungorumSpeciesImport  extends IndexFungorumImportBase {
 
 	private static final String pluralString = "species";
 	private static final String dbTableName = "[tblPESIfungi-IFdata]";
-	
+
 
 	public IndexFungorumSpeciesImport(){
 		super(pluralString, dbTableName, null);
@@ -91,8 +84,8 @@ public class IndexFungorumSpeciesImport  extends IndexFungorumImportBase {
     protected void doInvoke(IndexFungorumImportState state){
         System.out.println("start make " + getPluralString() + " ...");
         super.doInvoke(state);
-        
-       
+
+
 
 
 	}
@@ -100,7 +93,7 @@ public class IndexFungorumSpeciesImport  extends IndexFungorumImportBase {
 	@Override
 	public boolean doPartition(ResultSetPartitioner partitioner, IndexFungorumImportState state) {
 		boolean success = true;
-		Reference<?> sourceReference = state.getRelatedObject(NAMESPACE_REFERENCE, SOURCE_REFERENCE, Reference.class);
+		Reference sourceReference = state.getRelatedObject(NAMESPACE_REFERENCE, SOURCE_REFERENCE, Reference.class);
 		ResultSet rs = partitioner.getResultSet();
 		Classification classification = getClassification(state);
 
@@ -164,7 +157,7 @@ public class IndexFungorumSpeciesImport  extends IndexFungorumImportBase {
 	}
 
 
-	
+
 
 
 
@@ -204,7 +197,7 @@ public class IndexFungorumSpeciesImport  extends IndexFungorumImportBase {
 
 
 			//sourceReference
-			Reference<?> sourceReference = getReferenceService().find(PesiTransformer.uuidSourceRefIndexFungorum);
+			Reference sourceReference = getReferenceService().find(PesiTransformer.uuidSourceRefIndexFungorum);
 			Map<String, Reference> referenceMap = new HashMap<String, Reference>();
 			referenceMap.put(SOURCE_REFERENCE, sourceReference);
 			result.put(NAMESPACE_REFERENCE, referenceMap);

@@ -1,8 +1,8 @@
 /**
 * Copyright (C) 2007 EDIT
-* European Distributed Institute of Taxonomy 
+* European Distributed Institute of Taxonomy
 * http://www.e-taxonomy.eu
-* 
+*
 * The contents of this file are subject to the Mozilla Public License Version 1.1
 * See LICENSE.TXT at the top of this package for the full license terms.
 */
@@ -41,7 +41,7 @@ import eu.etaxonomy.cdm.model.taxon.TaxonBase;
 @Component
 public class IndexFungorumDistributionImport  extends IndexFungorumImportBase {
 	private static final Logger logger = Logger.getLogger(IndexFungorumDistributionImport.class);
-	
+
 	private static final String pluralString = "distributions";
 	private static final String dbTableName = "[tblPESIfungi]";
 
@@ -50,8 +50,8 @@ public class IndexFungorumDistributionImport  extends IndexFungorumImportBase {
 	}
 
 
-	
-	
+
+
 	@Override
 	protected String getIdQuery() {
 		String result = " SELECT PreferredNameIFnumber FROM " + getTableName() +
@@ -67,7 +67,7 @@ public class IndexFungorumDistributionImport  extends IndexFungorumImportBase {
 	 */
 	@Override
 	protected String getRecordQuery(IndexFungorumImportConfigurator config) {
-		String strRecordQuery = 
+		String strRecordQuery =
 				" SELECT distribution.* " +
 				" FROM tblPESIfungi AS distribution  " +
 			" WHERE ( distribution.PreferredNameIFnumber  IN (" + ID_LIST_TOKEN + ") )" +
@@ -75,20 +75,20 @@ public class IndexFungorumDistributionImport  extends IndexFungorumImportBase {
 		return strRecordQuery;
 	}
 
-	
+
 	@Override
 	public boolean doPartition(ResultSetPartitioner partitioner, IndexFungorumImportState state) {
 		boolean success = true;
-//		Reference<?> sourceReference = state.getRelatedObject(NAMESPACE_REFERENCE, SOURCE_REFERENCE, Reference.class);
+//		Reference sourceReference = state.getRelatedObject(NAMESPACE_REFERENCE, SOURCE_REFERENCE, Reference.class);
 		ResultSet rs = partitioner.getResultSet();
-		
+
 		try {
 			//column names that do not hold distribution information
 			Set<String> excludedColumns = new HashSet<String>();
 			excludedColumns.add("PreferredName");
 			excludedColumns.add("PreferredNameIFnumber");
 			excludedColumns.add("PreferredNameFDCnumber");
-			
+
 			PresenceAbsenceTerm status = PresenceAbsenceTerm.PRESENT();
 			MarkerType noLastActionMarkerType = getNoLastActionMarkerType(state);
 			while (rs.next()){
@@ -96,12 +96,12 @@ public class IndexFungorumDistributionImport  extends IndexFungorumImportBase {
 				//get taxon description
 				Integer id = rs.getInt("PreferredNameIFnumber");
 				Taxon taxon = state.getRelatedObject(NAMESPACE_SPECIES, String.valueOf(id), Taxon.class);
-				Reference<?> ref = null;
+				Reference ref = null;
 				if (taxon == null){
 					logger.debug("taxon is null for id " + id);
 				} else{
 					TaxonDescription description = getTaxonDescription(taxon, ref, false, true);
-				
+
 					//handle single distributions
 					int count = rs.getMetaData().getColumnCount();
 					for (int i=1; i <= count; i++ ){
@@ -120,17 +120,17 @@ public class IndexFungorumDistributionImport  extends IndexFungorumImportBase {
 								//no last action
 								distribution.addMarker(Marker.NewInstance(noLastActionMarkerType, true));
 							}
-							
+
 						}
 					}
 					getTaxonService().saveOrUpdate(taxon);
 				}
-				
+
 				//save
-				
+
 			}
 
-			
+
 		} catch (Exception e) {
 			e.printStackTrace();
 			logger.error(e.getMessage());
@@ -140,10 +140,10 @@ public class IndexFungorumDistributionImport  extends IndexFungorumImportBase {
 		return success;
 	}
 
-	
+
 	private Taxon getParentTaxon(IndexFungorumImportState state, ResultSet rs) throws SQLException {
 		Integer genusId = rs.getInt("PreferredNameFDCnumber");
-		
+
 		Taxon taxon = state.getRelatedObject(NAMESPACE_GENERA, String.valueOf(genusId), Taxon.class);
 		if (taxon == null){
 			logger.warn("Taxon not found for " + genusId);
@@ -158,38 +158,38 @@ public class IndexFungorumDistributionImport  extends IndexFungorumImportBase {
 		Class<?> cdmClass;
 		Set<String> idSet;
 		Map<Object, Map<String, ? extends CdmBase>> result = new HashMap<Object, Map<String, ? extends CdmBase>>();
-		
+
 		try{
 			Set<String> taxonIdSet = new HashSet<String>();
 			while (rs.next()){
 				handleForeignKey(rs, taxonIdSet, "PreferredNameIFnumber" );
 			}
-			
+
 			//taxon map
 			nameSpace = NAMESPACE_SPECIES;
 			cdmClass = TaxonBase.class;
 			idSet = taxonIdSet;
 			Map<String, TaxonBase> taxonMap = (Map<String, TaxonBase>)getCommonService().getSourcedObjectsByIdInSource(cdmClass, idSet, nameSpace);
 			result.put(nameSpace, taxonMap);
-			
+
 			//sourceReference
-			Reference<?> sourceReference = getReferenceService().find(PesiTransformer.uuidSourceRefIndexFungorum);
+			Reference sourceReference = getReferenceService().find(PesiTransformer.uuidSourceRefIndexFungorum);
 			Map<String, Reference> referenceMap = new HashMap<String, Reference>();
 			referenceMap.put(SOURCE_REFERENCE, sourceReference);
 			result.put(NAMESPACE_REFERENCE, referenceMap);
-			
+
 		} catch (SQLException e) {
 			throw new RuntimeException(e);
 		}
 		return result;
 	}
-	
+
 
 	@Override
 	protected boolean doCheck(IndexFungorumImportState state){
 		return true;
 	}
-	
+
 	@Override
 	protected boolean isIgnore(IndexFungorumImportState state){
 		return ! state.getConfig().isDoOccurrence();

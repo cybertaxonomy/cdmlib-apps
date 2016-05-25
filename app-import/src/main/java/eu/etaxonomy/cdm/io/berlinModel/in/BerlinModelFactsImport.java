@@ -1,8 +1,8 @@
 /**
 * Copyright (C) 2007 EDIT
-* European Distributed Institute of Taxonomy 
+* European Distributed Institute of Taxonomy
 * http://www.e-taxonomy.eu
-* 
+*
 * The contents of this file are subject to the Mozilla Public License Version 1.1
 * See LICENSE.TXT at the top of this package for the full license terms.
 */
@@ -64,16 +64,16 @@ public class BerlinModelFactsImport  extends BerlinModelImportBase {
 	private static final Logger logger = Logger.getLogger(BerlinModelFactsImport.class);
 
 	public static final String NAMESPACE = "Fact";
-	
+
 	public static final String SEQUENCE_PREFIX = "ORDER: ";
-	
+
 	private int modCount = 10000;
 	private static final String pluralString = "facts";
 	private static final String dbTableName = "Fact";
 
 	//FIXME don't use as class variable
 	private Map<Integer, Feature> featureMap;
-	
+
 	public BerlinModelFactsImport(){
 		super(dbTableName, pluralString);
 	}
@@ -87,34 +87,34 @@ public class BerlinModelFactsImport  extends BerlinModelImportBase {
 			return featureVocabulary;
 		} catch (UnknownCdmTypeException e) {
 			logger.error("Feature vocabulary not available. New vocabulary created");
-			return TermVocabulary.NewInstance(TermType.Feature, "User Defined Feature Vocabulary", "User Defined Feature Vocabulary", null, null); 
+			return TermVocabulary.NewInstance(TermType.Feature, "User Defined Feature Vocabulary", "User Defined Feature Vocabulary", null, null);
 		}
 	}
-	
+
 	private Map<Integer, Feature>  invokeFactCategories(BerlinModelImportState state){
-		
+
 		Map<Integer, Feature>  result = state.getConfig().getFeatureMap();
 		Source source = state.getConfig().getSource();
-		
+
 		try {
 			//get data from database
-			String strQuery = 
-					" SELECT FactCategory.* " + 
+			String strQuery =
+					" SELECT FactCategory.* " +
 					" FROM FactCategory "+
                     " WHERE (1=1)";
 			ResultSet rs = source.getResultSet(strQuery) ;
 
-			
+
 			TermVocabulary<Feature> featureVocabulary = getFeatureVocabulary();
 			int i = 0;
 			//for each reference
 			while (rs.next()){
-				
+
 				if ((i++ % modCount) == 0 && i!= 1 ){ logger.info("FactCategories handled: " + (i-1));}
-				
+
 				int factCategoryId = rs.getInt("factCategoryId");
 				String factCategory = rs.getString("factCategory");
-				
+
 				Feature feature;
 				try {
 					feature = BerlinModelTransformer.factCategory2Feature(factCategoryId);
@@ -134,7 +134,7 @@ public class BerlinModelFactsImport  extends BerlinModelImportBase {
 //					locExtensionFormName	nvarchar(80)	Checked
 //					RankRestrictionFk	int	Checked
 				}
-								
+
 				result.put(factCategoryId, feature);
 			}
 			return result;
@@ -155,7 +155,7 @@ public class BerlinModelFactsImport  extends BerlinModelImportBase {
 		super.doInvoke(state);
 		return;
 	}
-		
+
 
 	@Override
 	protected String getIdQuery(BerlinModelImportState state) {
@@ -171,14 +171,14 @@ public class BerlinModelFactsImport  extends BerlinModelImportBase {
 
 	@Override
 	protected String getRecordQuery(BerlinModelImportConfigurator config) {
-			String strQuery = 
-					" SELECT Fact.*, PTaxon.RIdentifier as taxonId, RefDetail.Details " + 
+			String strQuery =
+					" SELECT Fact.*, PTaxon.RIdentifier as taxonId, RefDetail.Details " +
 					" FROM Fact " +
                       	" INNER JOIN PTaxon ON Fact.PTNameFk = PTaxon.PTNameFk AND Fact.PTRefFk = PTaxon.PTRefFk " +
                       	" LEFT OUTER JOIN RefDetail ON Fact.FactRefDetailFk = RefDetail.RefDetailId AND Fact.FactRefFk = RefDetail.RefFk " +
               	" WHERE (FactId IN (" + ID_LIST_TOKEN + "))";
 			    strQuery += getOrderBy(config);
-				
+
 		return strQuery;
 	}
 
@@ -197,26 +197,26 @@ public class BerlinModelFactsImport  extends BerlinModelImportBase {
 		}
 		return result;
 	}
-	
+
 	@Override
 	public boolean doPartition(ResultSetPartitioner partitioner, BerlinModelImportState state) {
 		boolean success = true ;
 		BerlinModelImportConfigurator config = state.getConfig();
 		Set<TaxonBase> taxaToSave = new HashSet<TaxonBase>();
-		Map<String, TaxonBase> taxonMap = (Map<String, TaxonBase>) partitioner.getObjectMap(BerlinModelTaxonImport.NAMESPACE);
-		Map<String, Reference> refMap = (Map<String, Reference>) partitioner.getObjectMap(BerlinModelReferenceImport.REFERENCE_NAMESPACE);
-		
+		Map<String, TaxonBase> taxonMap = partitioner.getObjectMap(BerlinModelTaxonImport.NAMESPACE);
+		Map<String, Reference> refMap = partitioner.getObjectMap(BerlinModelReferenceImport.REFERENCE_NAMESPACE);
+
 		ResultSet rs = partitioner.getResultSet();
-		
-		Reference<?> sourceRef = state.getTransactionalSourceReference();
-			
+
+		Reference sourceRef = state.getTransactionalSourceReference();
+
 		try{
 			int i = 0;
 			//for each fact
 			while (rs.next()){
 				try{
 					if ((i++ % modCount) == 0){ logger.info("Facts handled: " + (i-1));}
-					
+
 					int factId = rs.getInt("factId");
 					Integer taxonId = nullSafeInt(rs, "taxonId");
 					Integer factRefFkInt = nullSafeInt(rs, "factRefFk");
@@ -225,10 +225,10 @@ public class BerlinModelFactsImport  extends BerlinModelImportBase {
 					String fact = CdmUtils.Nz(rs.getString("Fact"));
 					String notes = CdmUtils.Nz(rs.getString("notes"));
 					Boolean doubtfulFlag = rs.getBoolean("DoubtfulFlag");
-					
+
 					TaxonBase<?> taxonBase = getTaxon(taxonMap, taxonId, taxonId);
 					Feature feature = getFeature(featureMap, categoryFkInt) ;
-					
+
 					if (taxonBase == null){
 						logger.warn("Taxon for Fact " + factId + " does not exist in store");
 						success = false;
@@ -238,12 +238,12 @@ public class BerlinModelFactsImport  extends BerlinModelImportBase {
 							success = false;
 							continue;
 						}
-					
+
 						//textData
 						TextData textData = null;
 						boolean newTextData = true;
-	
-						// For Cichorieae DB: If fact category is 31 (Systematics) and there is already a Systematics TextData 
+
+						// For Cichorieae DB: If fact category is 31 (Systematics) and there is already a Systematics TextData
 						// description element append the fact text to the existing TextData
 						if(categoryFkInt.equals(31)) {
 							Set<DescriptionElementBase> descriptionElements = taxonDescription.getElements();
@@ -264,11 +264,11 @@ public class BerlinModelFactsImport  extends BerlinModelImportBase {
 								}
 							}
 						}
-						
-						if(newTextData == true)	{ 
-							textData = TextData.NewInstance(); 
+
+						if(newTextData == true)	{
+							textData = TextData.NewInstance();
 						}
-						
+
 						//for diptera database
 						if (categoryFkInt.equals(99) && notes.contains("<OriginalName>")){
 //							notes = notes.replaceAll("<OriginalName>", "");
@@ -280,19 +280,19 @@ public class BerlinModelFactsImport  extends BerlinModelImportBase {
 							//example <a href="http://euromed.luomus.fi/euromed_map.php?taxon=280629&size=medium">distribution</a>
 							fact = fact.replace("<a href=\"", "").replace("\">distribution</a>", "");
 						}
-						
+
 						//TODO textData.putText(fact, bmiConfig.getFactLanguage());  //doesn't work because  bmiConfig.getFactLanguage() is not not a persistent Language Object
 						//throws  in thread "main" org.springframework.dao.InvalidDataAccessApiUsageException: object references an unsaved transient instance - save the transient instance before flushing: eu.etaxonomy.cdm.model.common.Language; nested exception is org.hibernate.TransientObjectException: object references an unsaved transient instance - save the transient instance before flushing: eu.etaxonomy.cdm.model.common.Language
 						if (! taxonDescription.isImageGallery()){
 							textData.putText(Language.DEFAULT(), fact);
 							textData.setFeature(feature);
 						}
-						
+
 						//reference
-						Reference<?> citation = null;
+						Reference citation = null;
 						String factRefFk = String.valueOf(factRefFkInt);
 						if (factRefFkInt != null){
-							citation = refMap.get(factRefFk);	
+							citation = refMap.get(factRefFk);
 						}
 						if (citation == null && (factRefFkInt != null)){
 							logger.warn("Citation not found in referenceMap: " + factRefFk);
@@ -314,7 +314,7 @@ public class BerlinModelFactsImport  extends BerlinModelImportBase {
 							Boolean publishFlag = rs.getBoolean(strPublishFlag);
 							textData.addMarker(Marker.NewInstance(MarkerType.PUBLISH(), publishFlag));
 						}
-						
+
 						//Sequence
 						Integer sequence = rs.getInt("Sequence");
 						if (sequence != null && sequence != 999){
@@ -325,7 +325,7 @@ public class BerlinModelFactsImport  extends BerlinModelImportBase {
 							Annotation annotation = Annotation.NewInstance(strSequence, Language.DEFAULT());
 							textData.addAnnotation(annotation);
 						}
-						
+
 						//						if (categoryFkObj == FACT_DESCRIPTION){
 	//						//;
 	//					}else if (categoryFkObj == FACT_OBSERVATION){
@@ -336,18 +336,18 @@ public class BerlinModelFactsImport  extends BerlinModelImportBase {
 	//						//TODO
 	//						//logger.warn("FactCategory " + categoryFk + " not yet implemented");
 	//					}
-						
+
 						//notes
 						doCreatedUpdatedNotes(state, textData, rs);
 						doId(state, textData, factId, "Fact");
-						
+
 						//TODO
 						//Designation References -> unclear how to map to CDM
-						
-						
+
+
 						//sequence -> textData is not an identifiable entity therefore extensions are not possible
 						//fact category better
-						
+
 						taxaToSave.add(taxonBase);
 					}
 				} catch (Exception re){
@@ -359,14 +359,14 @@ public class BerlinModelFactsImport  extends BerlinModelImportBase {
 			}
 			logger.info("Facts handled: " + (i-1));
 			logger.info("Taxa to save: " + taxaToSave.size());
-			getTaxonService().save(taxaToSave);	
+			getTaxonService().save(taxaToSave);
 		}catch(SQLException e){
 			throw new RuntimeException(e);
 		}
 		return success;
 	}
 
-	private TaxonDescription getMyTaxonDescripion(TaxonBase taxonBase, BerlinModelImportState state, Integer categoryFk, Integer taxonId, int factId, String fact, Reference<?> sourceRef) {
+	private TaxonDescription getMyTaxonDescripion(TaxonBase taxonBase, BerlinModelImportState state, Integer categoryFk, Integer taxonId, int factId, String fact, Reference sourceRef) {
 		Taxon taxon = null;
 		if ( taxonBase instanceof Taxon ) {
 			taxon = (Taxon) taxonBase;
@@ -374,10 +374,10 @@ public class BerlinModelFactsImport  extends BerlinModelImportBase {
 			logger.warn("TaxonBase " + (taxonId==null?"(null)":taxonId) + " for Fact " + factId + " was not of type Taxon but: " + taxonBase.getClass().getSimpleName());
 			return null;
 		}
-		
+
 		TaxonDescription taxonDescription = null;
 		Set<TaxonDescription> descriptionSet= taxon.getDescriptions();
-		
+
 		boolean isImage = false;
 		Media media = null;
 		//for diptera images
@@ -385,13 +385,13 @@ public class BerlinModelFactsImport  extends BerlinModelImportBase {
 			isImage = true;
 			media = Media.NewInstance();
 			taxonDescription = makeImage(state, fact, media, descriptionSet, taxon);
-			
-			
-			
+
+
+
 			if (taxonDescription == null){
 				return null;
 			}
-			
+
 			TextData textData = null;
 			for (DescriptionElementBase el:  taxonDescription.getElements()){
 				if (el.isInstanceOf(TextData.class)){
@@ -405,7 +405,7 @@ public class BerlinModelFactsImport  extends BerlinModelImportBase {
 			textData.addMedia(media);
 		}
 		//all others (no image) -> getDescription
-		else{ 
+		else{
 			for (TaxonDescription desc: descriptionSet){
 				if (! desc.isImageGallery()){
 					taxonDescription = desc;
@@ -427,7 +427,7 @@ public class BerlinModelFactsImport  extends BerlinModelImportBase {
 		Class<?> cdmClass;
 		Set<String> idSet;
 		Map<Object, Map<String, ? extends CdmBase>> result = new HashMap<Object, Map<String, ? extends CdmBase>>();
-			
+
 		try{
 			Set<String> taxonIdSet = new HashSet<String>();
 			Set<String> referenceIdSet = new HashSet<String>();
@@ -439,7 +439,7 @@ public class BerlinModelFactsImport  extends BerlinModelImportBase {
 				handleForeignKey(rs, refDetailIdSet, "FactRefDetailFk");
 				handleForeignKey(rs, refDetailIdSet, "PTDesignationRefDetailFk");
 		}
-			
+
 			//taxon map
 			nameSpace = BerlinModelTaxonImport.NAMESPACE;
 			cdmClass = TaxonBase.class;
@@ -453,32 +453,32 @@ public class BerlinModelFactsImport  extends BerlinModelImportBase {
 			idSet = referenceIdSet;
 			Map<String, Reference> referenceMap = (Map<String, Reference>)getCommonService().getSourcedObjectsByIdInSource(cdmClass, idSet, nameSpace);
 			result.put(nameSpace, referenceMap);
-			
+
 			//refDetail map
 			nameSpace = BerlinModelRefDetailImport.REFDETAIL_NAMESPACE;
 			cdmClass = Reference.class;
 			idSet = refDetailIdSet;
 			Map<String, Reference> refDetailMap= (Map<String, Reference>)getCommonService().getSourcedObjectsByIdInSource(cdmClass, idSet, nameSpace);
 			result.put(nameSpace, refDetailMap);
-	
+
 		} catch (SQLException e) {
 			throw new RuntimeException(e);
 	}
 		return result;
 	}
-	
-	
+
+
 	/**
-	 * @param state 
-	 * @param media 
-	 * @param media 
-	 * @param descriptionSet 
-	 * 
+	 * @param state
+	 * @param media
+	 * @param media
+	 * @param descriptionSet
+	 *
 	 */
 	private TaxonDescription makeImage(BerlinModelImportState state, String fact, Media media, Set<TaxonDescription> descriptionSet, Taxon taxon) {
 		TaxonDescription taxonDescription = null;
-		Reference<?> sourceRef = state.getTransactionalSourceReference();
-		Integer size = null; 
+		Reference sourceRef = state.getTransactionalSourceReference();
+		Integer size = null;
 		ImageInfo imageInfo = null;
 		URI uri;
 		try {
@@ -498,9 +498,9 @@ public class BerlinModelFactsImport  extends BerlinModelImportBase {
 		media.addRepresentation(mediaRepresentation);
 		ImageFile image = ImageFile.NewInstance(uri, size, imageInfo);
 		mediaRepresentation.addRepresentationPart(image);
-		
+
 		taxonDescription = taxon.getOrCreateImageGallery(sourceRef == null ? null :sourceRef.getTitleCache());
-		
+
 		return taxonDescription;
 	}
 
@@ -510,24 +510,24 @@ public class BerlinModelFactsImport  extends BerlinModelImportBase {
 		}else{
 			return null;
 		}
-		
+
 	}
-	
+
 	private Feature getFeature(Map<Integer, Feature>  featureMap, Integer categoryFkInt){
 		if (categoryFkInt != null){
-			return featureMap.get(categoryFkInt); 
+			return featureMap.get(categoryFkInt);
 		}else{
 			return null;
 		}
-		
+
 	}
-	
+
 	@Override
 	protected boolean doCheck(BerlinModelImportState state){
 		IOValidator<BerlinModelImportState> validator = new BerlinModelFactsImportValidator();
 		return validator.validate(state);
 	}
-				
+
 	@Override
 	protected boolean isIgnore(BerlinModelImportState state){
 		return ! state.getConfig().isDoFacts();

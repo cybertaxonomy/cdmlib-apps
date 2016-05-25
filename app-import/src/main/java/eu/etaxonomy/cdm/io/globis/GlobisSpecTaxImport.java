@@ -1,8 +1,8 @@
 /**
 * Copyright (C) 2007 EDIT
-* European Distributed Institute of Taxonomy 
+* European Distributed Institute of Taxonomy
 * http://www.e-taxonomy.eu
-* 
+*
 * The contents of this file are subject to the Mozilla Public License Version 1.1
 * See LICENSE.TXT at the top of this package for the full license terms.
 */
@@ -65,14 +65,14 @@ import eu.etaxonomy.cdm.strategy.exceptions.UnknownCdmTypeException;
  * @created 20.02.2010
  */
 @Component
-public class GlobisSpecTaxImport  extends GlobisImportBase<Reference<?>> implements IMappingImport<Reference<?>, GlobisImportState>{
+public class GlobisSpecTaxImport  extends GlobisImportBase<Reference> implements IMappingImport<Reference, GlobisImportState>{
 	private static final Logger logger = Logger.getLogger(GlobisSpecTaxImport.class);
-	
+
 	private int modCount = 10000;
 	private static final String pluralString = "taxa";
 	private static final String dbTableName = "specTax";
 	private static final Class<?> cdmTargetClass = Reference.class;
-	
+
 	private static UUID uuidCitedTypeLocality = UUID.fromString("ca431e0a-84ec-4828-935f-df4c8f5cf880");
 	private static UUID uuidCitedTypeMaterial = UUID.fromString("8395021a-e596-4a55-9794-8c03aaad9e16");
 
@@ -82,59 +82,59 @@ public class GlobisSpecTaxImport  extends GlobisImportBase<Reference<?>> impleme
 
 	@Override
 	protected String getIdQuery() {
-		String strRecordQuery = 
-			" SELECT specTaxId " + 
-			" FROM " + dbTableName; 
-		return strRecordQuery;	
+		String strRecordQuery =
+			" SELECT specTaxId " +
+			" FROM " + dbTableName;
+		return strRecordQuery;
 	}
 
 	@Override
 	protected String getRecordQuery(GlobisImportConfigurator config) {
-		String strRecordQuery = 
+		String strRecordQuery =
 			" SELECT t.*, t.DateCreated as Created_When, t.CreatedBy as Created_Who," +
-			"        t.ModifiedBy as Updated_who, t.DateModified as Updated_When, t.SpecRemarks as Notes " + 
+			"        t.ModifiedBy as Updated_who, t.DateModified as Updated_When, t.SpecRemarks as Notes " +
 			" FROM " + getTableName() + " t " +
 			" WHERE ( t.specTaxId IN (" + ID_LIST_TOKEN + ") )";
 		return strRecordQuery;
 	}
-	
+
 
 	@Override
 	public boolean doPartition(ResultSetPartitioner partitioner, GlobisImportState state) {
 		boolean success = true;
-		
+
 		Set<TaxonBase> objectsToSave = new HashSet<TaxonBase>();
 		Set<TaxonNameBase> namesToSave = new HashSet<TaxonNameBase>();
-		
-		Map<String, Taxon> taxonMap = (Map<String, Taxon>) partitioner.getObjectMap(TAXON_NAMESPACE);
-		Map<String, Reference> referenceMap = (Map<String, Reference>) partitioner.getObjectMap(REFERENCE_NAMESPACE);
-		
+
+		Map<String, Taxon> taxonMap = partitioner.getObjectMap(TAXON_NAMESPACE);
+		Map<String, Reference> referenceMap = partitioner.getObjectMap(REFERENCE_NAMESPACE);
+
 		ResultSet rs = partitioner.getResultSet();
-		
+
 		try {
-			
+
 			int i = 0;
 
 			//for each reference
             while (rs.next()){
-                
+
         		if ((i++ % modCount) == 0 && i!= 1 ){ logger.info(pluralString + " handled: " + (i-1));}
-				
+
         		Integer specTaxId = rs.getInt("SpecTaxId");
         		Integer acceptedTaxonId = nullSafeInt(rs, "SpecCurrspecID");
         		String specSystaxRank = rs.getString("SpecSystaxRank");
-        		
-        		//ignore: CountryDummy, currentSpecies, DepositoryDisplay, DepositoryDummy, ReferenceDisplay, 
+
+        		//ignore: CountryDummy, currentSpecies, DepositoryDisplay, DepositoryDummy, ReferenceDisplay,
         		//        SpecDescriptionImageFile, all *Valid*
-        		
+
 				try {
-					
+
 					//source ref
-					Reference<?> sourceRef = state.getTransactionalSourceReference();
-				
+					Reference sourceRef = state.getTransactionalSourceReference();
+
 					Taxon acceptedTaxon =  taxonMap.get(String.valueOf(acceptedTaxonId));
 					TaxonBase<?> thisTaxon = null;
-					
+
 					ZoologicalName name = null;
 					if (isBlank(specSystaxRank) ){
 						name = makeName(state, rs, specTaxId);
@@ -157,40 +157,40 @@ public class GlobisSpecTaxImport  extends GlobisImportBase<Reference<?>> impleme
 						logger.warn(String.format("Unhandled specSystaxRank %s in specTaxId %d", specSystaxRank, specTaxId));
 						name = makeName(state, rs, specTaxId);
 					}
-					
+
 					if (thisTaxon != null){
 						name = CdmBase.deproxy(thisTaxon.getName(), ZoologicalName.class);
 					}else{
 						if (name == null){
 							name = makeName(state, rs, specTaxId);
 						}
-						
+
 						thisTaxon = Taxon.NewInstance(name, sourceRef);
 						objectsToSave.add(thisTaxon);
 					}
 					if (name == null){
 						throw new RuntimeException("Name is still null");
 					}
-					
+
 					handleNomRef(state, referenceMap, rs, name, specTaxId);
-				
+
 					handleTypeInformation(state,rs, name, specTaxId);
-				
-				
+
+
 //					this.doIdCreatedUpdatedNotes(state, ref, rs, refId, REFERENCE_NAMESPACE);
-				
+
 					if (acceptedTaxon != null){
-						objectsToSave.add(acceptedTaxon); 
+						objectsToSave.add(acceptedTaxon);
 					}
-					
+
 					//makeMarker1(state, rs, name);   //ignore!
-					
+
 					//make not available
 					makeNotAvailable(state, rs, name, specTaxId);
-					
+
 					//maken invalid
-					//TODO 
-					
+					//TODO
+
 					//SpecCitedTypeLocality
 					String citedTypeLocality = rs.getString("SpecCitedTypeLocality");
 					if (isNotBlank(citedTypeLocality)){
@@ -207,21 +207,21 @@ public class GlobisSpecTaxImport  extends GlobisImportBase<Reference<?>> impleme
 					}
 
 					name.addSource(OriginalSourceType.Import, String.valueOf(specTaxId), SPEC_TAX_NAMESPACE, state.getTransactionalSourceReference(), null);
-					
+
 					namesToSave.add(name);
-					
+
 
 				} catch (Exception e) {
 					logger.warn("Exception in specTax: SpecTaxId " + specTaxId + ". " + e.getMessage());
 					e.printStackTrace();
-				} 
-                
+				}
+
             }
-           
+
 			logger.warn(pluralString + " to save: " + objectsToSave.size());
-			getTaxonService().save(objectsToSave);	
+			getTaxonService().save(objectsToSave);
 			getNameService().save(namesToSave);
-			
+
 			return success;
 		} catch (Exception e) {
 			logger.error("Exception: " +  e);
@@ -233,7 +233,7 @@ public class GlobisSpecTaxImport  extends GlobisImportBase<Reference<?>> impleme
 	private void makeNotAvailable(GlobisImportState state, ResultSet rs, ZoologicalName name, int id) throws SQLException {
 		String notAvailableStr = rs.getString("SpecNotAvailable");
 		String notAvailableReason = rs.getString("SpecNotAvailableReason");
-		
+
 		if (isNotBlank(notAvailableStr) && notAvailableStr.contains("not available")){
 			if (isBlank(notAvailableReason)){
 				logger.warn("Blank notAvailableReason has available: " + id);
@@ -251,9 +251,9 @@ public class GlobisSpecTaxImport  extends GlobisImportBase<Reference<?>> impleme
 
 
 		//OLD
-//				if (notAvailableStr.contains("not available") ){ 
+//				if (notAvailableStr.contains("not available") ){
 //					UUID uuidNotAvailableMarkerType = state.getTransformer().getMarkerTypeUuid("not available");
-//					
+//
 //					MarkerType markerType = getMarkerType(state, uuidNotAvailableMarkerType, "not available", "not available", null);
 //					name.addMarker(Marker.NewInstance(markerType, true));
 //				}
@@ -267,15 +267,15 @@ public class GlobisSpecTaxImport  extends GlobisImportBase<Reference<?>> impleme
 //				name.addExtension(notAvailableReason, notAvailableReasonExtType);
 //			} catch (UndefinedTransformerMethodException e) {
 //				e.printStackTrace();
-//			} 
+//			}
 //		}
-		
+
 	}
 
 
 
 
-	
+
 	private NomenclaturalStatus getNomStatus(GlobisImportState state, String notAvailableReason, int id) {
 		NomenclaturalStatus status = NomenclaturalStatus.NewInstance(NomenclaturalStatusType.ZOO_NOT_AVAILABLE());
 		status.setRuleConsidered(notAvailableReason);
@@ -307,7 +307,7 @@ public class GlobisSpecTaxImport  extends GlobisImportBase<Reference<?>> impleme
 				if (marker1Str.contains("checked") || marker1Str.contains("berpr") ){ //überprüft
 					UUID uuidCheckedMarkerType;
 						uuidCheckedMarkerType = state.getTransformer().getMarkerTypeUuid("checked");
-					
+
 					MarkerType markerType = getMarkerType(state, uuidCheckedMarkerType, "checked", "checked", null);
 					name.addMarker(Marker.NewInstance(markerType, true));
 				}
@@ -320,7 +320,7 @@ public class GlobisSpecTaxImport  extends GlobisImportBase<Reference<?>> impleme
 		} catch (UndefinedTransformerMethodException e) {
 			e.printStackTrace();
 		}
-		
+
 	}
 
 
@@ -328,29 +328,29 @@ public class GlobisSpecTaxImport  extends GlobisImportBase<Reference<?>> impleme
 			String citedTypeLocality, String featureLabel) {
 		Feature feature = getFeature(state, featureUuid,featureLabel,featureLabel, null, null);
 		getTaxonNameDescription(name, false, true);
-		
+
 	}
 
 
 	private Pattern patternAll = Pattern.compile("(.+,\\s.+)(\\(.+\\))");
-	
+
 
 	private void handleTypeInformation(GlobisImportState state, ResultSet rs, ZoologicalName name, Integer specTaxId) throws SQLException {
 		if (! hasTypeInformation(rs)){
 			return;
 		}
-		
+
 		FieldUnit fieldObservation = makeTypeFieldObservation(state, rs);
-		
+
 		//typeDepository
 		String specTypeDepositoriesStr = rs.getString("SpecTypeDepository");
-		String[] specTypeDepositories; 
+		String[] specTypeDepositories;
 		if (isNotBlank(specTypeDepositoriesStr) ){
 			specTypeDepositories = specTypeDepositoriesStr.trim().split(";");
 		}else{
 			specTypeDepositories = new String[0];
 		}
-		
+
 		//TODO several issues
 		if (specTypeDepositories.length == 0){
 			DerivedUnit specimen = makeSingleTypeSpecimen(fieldObservation);
@@ -359,10 +359,10 @@ public class GlobisSpecTaxImport  extends GlobisImportBase<Reference<?>> impleme
 		}else{
 			for (String specTypeDepositoryStr : specTypeDepositories){
 				specTypeDepositoryStr = specTypeDepositoryStr.trim();
-				
+
 				//Specimen
 				DerivedUnit specimen = makeSingleTypeSpecimen(fieldObservation);
-	
+
 				if (specTypeDepositoryStr.equals("??")){
 					//unknown
 					//TODO marker unknown ?
@@ -376,7 +376,7 @@ public class GlobisSpecTaxImport  extends GlobisImportBase<Reference<?>> impleme
 				}else{
 					specTypeDepositoryStr = makeAdditionalSpecimenInformation(
 							specTypeDepositoryStr, specimen, specTaxId);
-					
+
 					Collection collection = makeCollection(state, specTypeDepositoryStr, specimen, specTaxId);
 					String collectionCode = collection.getCode();
 					if (isBlank(collectionCode)){
@@ -385,15 +385,15 @@ public class GlobisSpecTaxImport  extends GlobisImportBase<Reference<?>> impleme
 					if (isBlank(collectionCode)){
 						logger.warn("Collection has empty representation: " + specTypeDepositoryStr + ", specTaxId" +  specTaxId);
 					}
-					makeTypeIdInSource(state, specimen, collectionCode , specTaxId);	
+					makeTypeIdInSource(state, specimen, collectionCode , specTaxId);
 				}
-				
+
 				//type Designation
 				makeTypeDesignation(name, rs, specimen, specTaxId);
 			}
 		}
 
-		
+
 	}
 
 
@@ -428,19 +428,19 @@ public class GlobisSpecTaxImport  extends GlobisImportBase<Reference<?>> impleme
 
 
 	/**
-	 * @param state 
+	 * @param state
 	 * @param specTypeDepositoryStr
 	 * @param specimen
-	 * @param specTaxId 
+	 * @param specTaxId
 	 */
 	protected Collection makeCollection(GlobisImportState state, String specTypeDepositoryStr, DerivedUnit specimen, Integer specTaxId) {
-		
+
 		//Collection
 		specTypeDepositoryStr = specTypeDepositoryStr.replace("Washington, D.C.", "Washington@ D.C.")
 				.replace("St.-Raymond, Quebec", "St.-Raymond@ Quebec")
 				.replace("St.Petersburg", "St. Petersburg");
-		
-		
+
+
 		Collection collection = handleSpecialCase(specTypeDepositoryStr, state, specimen);
 		if (collection == null){
 			String[] split = specTypeDepositoryStr.split(",");
@@ -459,11 +459,11 @@ public class GlobisSpecTaxImport  extends GlobisImportBase<Reference<?>> impleme
 					collection.setCode("??");
 					//TODO deduplicate ??
 				}
-				
+
 			}else{
 				String collectionStr = split[0];
 				String location = split[1].replace("@", ",").trim();
-				
+
 				collection = state.getRelatedObject(COLLECTION_NAMESPACE, collectionStr, Collection.class);
 				if (collection == null){
 					collection = Collection.NewInstance();
@@ -474,15 +474,15 @@ public class GlobisSpecTaxImport  extends GlobisImportBase<Reference<?>> impleme
 					}
 					collection.setTownOrLocation(location);
 					state.addRelatedObject(COLLECTION_NAMESPACE, collection.getCode(), collection);
-						
+
 				}else if (! CdmUtils.nullSafeEqual(location, collection.getTownOrLocation())){
 					if (! normalizeTownOrLocation(location, collection)){
 						String message = "Location (%s) is not equal to location (%s) of existing collection, specTaxId: " + specTaxId;
 						logger.warn(String.format(message, location, collection.getTownOrLocation(), collection.getCode()));
 					}
-					
+
 				}
-				
+
 				specimen.setCollection(collection);
 			}
 		}
@@ -567,49 +567,49 @@ public class GlobisSpecTaxImport  extends GlobisImportBase<Reference<?>> impleme
 				return true;
 			} else if ("coll. Dantchenko".equals(collection.getName())){
 				if (! "Moscow".equals(collection.getTownOrLocation())){
-					collection.setTownOrLocation("Moscow");  
+					collection.setTownOrLocation("Moscow");
 					getCollectionService().saveOrUpdate(collection);
 				}
 				return true;
 			} else if ("coll. S. Nakano".equals(collection.getName())){
 				if (! "Tokyo".equals(collection.getTownOrLocation())){
-					collection.setTownOrLocation("Tokyo");  
+					collection.setTownOrLocation("Tokyo");
 					getCollectionService().saveOrUpdate(collection);
 				}
 				return true;
 			} else if ("coll. A. Yagishita".equals(collection.getName())){
 				if (! "Toride Ibaraki".equals(collection.getTownOrLocation())){
-					collection.setTownOrLocation("Toride Ibaraki");  
+					collection.setTownOrLocation("Toride Ibaraki");
 					getCollectionService().saveOrUpdate(collection);
 				}
 				return true;
 			} else if ("coll. H. Sugiyama".equals(collection.getName())){
 				if (! "Gifu".equals(collection.getTownOrLocation())){
-					collection.setTownOrLocation("Gifu");  
+					collection.setTownOrLocation("Gifu");
 					getCollectionService().saveOrUpdate(collection);
 				}
 				return true;
 			} else if ("MDMO".equals(collection.getCode())){
 				if (! "Moscow".equals(collection.getTownOrLocation())){
-					collection.setTownOrLocation("Moscow");  
+					collection.setTownOrLocation("Moscow");
 					getCollectionService().saveOrUpdate(collection);
 				}
 				return true;
 			} else if ("coll. W. Eckweiler".equals(collection.getName())){
 				if (! "Frankfurt am Main".equals(collection.getTownOrLocation())){
-					collection.setTownOrLocation("Frankfurt am Main");  
+					collection.setTownOrLocation("Frankfurt am Main");
 					getCollectionService().saveOrUpdate(collection);
 				}
 				return true;
 			} else if ("coll. T. Frankenbach".equals(collection.getName())){
 				if (! "Wangen".equals(collection.getTownOrLocation())){
-					collection.setTownOrLocation("Wangen");  
+					collection.setTownOrLocation("Wangen");
 					getCollectionService().saveOrUpdate(collection);
 				}
 				return true;
 			}
 		}
-		
+
 		return result;
 	}
 
@@ -669,7 +669,7 @@ public class GlobisSpecTaxImport  extends GlobisImportBase<Reference<?>> impleme
 				state.addRelatedObject(COLLECTION_NAMESPACE, collection.getName(), collection);
 			}
 			specimen.setCollection(collection);
-			
+
 		}else if (specTypeDepositoryStr.equals("coll. L. V. Kaabak, A .V. Sotshivko & V. V. Titov, Moscow")){
 			String colName = "coll. L. V. Kaabak, A .V. Sotshivko & V. V. Titov";
 			collection = state.getRelatedObject(COLLECTION_NAMESPACE, colName, Collection.class);
@@ -713,8 +713,8 @@ public class GlobisSpecTaxImport  extends GlobisImportBase<Reference<?>> impleme
 		}else{
 			collection = null;
 		}
-		
-		
+
+
 		return collection;
 	}
 
@@ -722,7 +722,7 @@ public class GlobisSpecTaxImport  extends GlobisImportBase<Reference<?>> impleme
 	 * @param specTypeDepositoriesStr
 	 * @param specTypeDepositoryStr
 	 * @param specimen
-	 * @param specTaxId 
+	 * @param specTaxId
 	 * @return
 	 */
 	protected String makeAdditionalSpecimenInformation( String specTypeDepositoryStr, DerivedUnit specimen, Integer specTaxId) {
@@ -731,26 +731,26 @@ public class GlobisSpecTaxImport  extends GlobisImportBase<Reference<?>> impleme
 			Marker.NewInstance(specimen, true, MarkerType.IS_DOUBTFUL());
 			specTypeDepositoryStr = specTypeDepositoryStr.substring(0, specTypeDepositoryStr.length() -1).trim();
 		}
-		
+
 		//brackets
 		Matcher matcher = patternAll.matcher(specTypeDepositoryStr);
 		if (matcher.find()){
 			//has brackets
 			String brackets = matcher.group(2);
 			brackets = brackets.substring(1, brackets.length()-1);
-			
+
 			//TODO this is unwanted according to Alexander
 			brackets = brackets.replace("[mm]", "\u2642\u2642");
 			brackets = brackets.replace("[m]", "\u2642");
 			brackets = brackets.replace("[ff]", "\u2640\u2640");
 			brackets = brackets.replace("[f]", "\u2640");
 			brackets = brackets.replace("[m/f]", "\u26a5");
-			
+
 			if (brackets.contains("[") || brackets.contains("]")){
 				logger.warn ("There are still '[', ']' in the bracket part: " + brackets + "; specTaxId: " + specTaxId);
 			}
-			
-			//TODO replace mm/ff by Unicode male 
+
+			//TODO replace mm/ff by Unicode male
 			specimen.setTitleCache(brackets, true);
 			specTypeDepositoryStr = matcher.group(1).trim();
 		}
@@ -781,14 +781,14 @@ public class GlobisSpecTaxImport  extends GlobisImportBase<Reference<?>> impleme
 	 * @return
 	 * @throws SQLException
 	 */
-	protected FieldUnit makeTypeFieldObservation(GlobisImportState state, 
+	protected FieldUnit makeTypeFieldObservation(GlobisImportState state,
 			ResultSet rs) throws SQLException {
-		
+
 		String countryString = rs.getString("SpecTypeCountry");
-		
+
 		SpecimenOrObservationType unitType = SpecimenOrObservationType.PreservedSpecimen;
 		DerivedUnitFacade facade = DerivedUnitFacade.NewInstance(unitType);
-		
+
 		NamedArea typeCountry = getCountry(state, countryString);
 		facade.setCountry(typeCountry);
 		FieldUnit fieldObservation = facade.innerFieldUnit();
@@ -800,11 +800,11 @@ public class GlobisSpecTaxImport  extends GlobisImportBase<Reference<?>> impleme
 
 	/**
 	 * @param name
-	 * @param rs 
+	 * @param rs
 	 * @param status
 	 * @param specimen
-	 * @param specTaxId 
-	 * @throws SQLException 
+	 * @param specTaxId
+	 * @throws SQLException
 	 */
 	protected void makeTypeDesignation(ZoologicalName name, ResultSet rs, DerivedUnit specimen, Integer specTaxId) throws SQLException {
 		//type
@@ -814,7 +814,7 @@ public class GlobisSpecTaxImport  extends GlobisImportBase<Reference<?>> impleme
 		SpecimenTypeDesignation typeDesignation = SpecimenTypeDesignation.NewInstance();
 		typeDesignation.setTypeStatus(status);
 		typeDesignation.setTypeSpecimen(specimen);
-		
+
 		name.addTypeDesignation(typeDesignation, true);
 	}
 
@@ -848,15 +848,15 @@ public class GlobisSpecTaxImport  extends GlobisImportBase<Reference<?>> impleme
 	 * @param referenceMap
 	 * @param rs
 	 * @param name
-	 * @param specTaxId 
+	 * @param specTaxId
 	 * @return
 	 * @throws SQLException
 	 */
-	private Reference<?> handleNomRef(GlobisImportState state, Map<String, Reference> referenceMap, ResultSet rs,
+	private Reference handleNomRef(GlobisImportState state, Map<String, Reference> referenceMap, ResultSet rs,
 			ZoologicalName name, Integer specTaxId) throws SQLException {
 		//ref
 		Integer refId = nullSafeInt(rs, "fiSpecRefID");
-		Reference<?> nomRef = null;
+		Reference nomRef = null;
 		if (refId != null){
 			nomRef = referenceMap.get(String.valueOf(refId));
 			if (nomRef == null && state.getConfig().getDoReferences().equals(state.getConfig().getDoReferences().ALL)){
@@ -865,7 +865,7 @@ public class GlobisSpecTaxImport  extends GlobisImportBase<Reference<?>> impleme
 				name.setNomenclaturalReference(nomRef);
 			}
 		}
-		
+
 		//refDetail
 		String refDetail = rs.getString("SpecPage");
 		if (isNotBlank(refDetail)){
@@ -876,16 +876,16 @@ public class GlobisSpecTaxImport  extends GlobisImportBase<Reference<?>> impleme
 
 
 
-	
+
 	private void validateAcceptedTaxon(Taxon acceptedTaxon, ResultSet rs, Integer specTaxId, Integer acceptedTaxonId) throws SQLException {
 		if (acceptedTaxon == null){
 			logger.warn("Accepted taxon is null for taxon taxon to validate. SpecTaxId " + specTaxId + ", accTaxonId: " + acceptedTaxonId);
 			return;
 		}
-		
-		//TODO 
+
+		//TODO
 		ZoologicalName name = CdmBase.deproxy(acceptedTaxon.getName(), ZoologicalName.class);
-		
+
 		String specName = rs.getString("SpecName");
 		if (! name.getSpecificEpithet().equals(specName)){
 			logger.warn(String.format("Species epithet is not equal for accepted taxon: %s - %s. SpecTaxId: %d", name.getSpecificEpithet(), specName, specTaxId));
@@ -898,9 +898,9 @@ public class GlobisSpecTaxImport  extends GlobisImportBase<Reference<?>> impleme
 
 	private Synonym getSynonym(GlobisImportState state, ResultSet rs, Integer specTaxId) throws SQLException {
 		ZoologicalName name = makeName(state, rs, specTaxId);
-				
+
 		Synonym synonym = Synonym.NewInstance(name, state.getTransactionalSourceReference());
-		
+
 		return synonym;
 	}
 
@@ -910,7 +910,7 @@ public class GlobisSpecTaxImport  extends GlobisImportBase<Reference<?>> impleme
 	/**
 	 * @param state
 	 * @param rs
-	 * @param specTaxId 
+	 * @param specTaxId
 	 * @return
 	 * @throws SQLException
 	 */
@@ -926,18 +926,18 @@ public class GlobisSpecTaxImport  extends GlobisImportBase<Reference<?>> impleme
 				e.printStackTrace();
 			}
 		}
-		
+
 		//name
 		ZoologicalName name = ZoologicalName.NewInstance(rank);
 		makeNamePartsAndCache(state, rs, rankStr, name);
-		
+
 
 //		name.setGenusOrUninomial(genusOrUninomial);
 		String authorStr = rs.getString("SpecAuthor");
 		String yearStr = rs.getString("SpecYear");
 		String authorAndYearStr = CdmUtils.concat(", ", authorStr, yearStr);
 		handleAuthorAndYear(authorAndYearStr, name, specTaxId, state);
-		
+
 		return name;
 	}
 
@@ -950,8 +950,8 @@ public class GlobisSpecTaxImport  extends GlobisImportBase<Reference<?>> impleme
 		String citedSpecies = rs.getString("SpecCitedSpecies");
 		String citedSubspecies = rs.getString("SpecCitedSubspecies");
 		String lastEpithet = rs.getString("SpecName");
-		
-		
+
+
 		String cache = CdmUtils.concat(" ", new String[]{citedFamily, citedGenus, citedSpecies, citedSubspecies, rank, lastEpithet});
 		name.setGenusOrUninomial(citedGenus);
 		//TODO separate authors
@@ -963,7 +963,7 @@ public class GlobisSpecTaxImport  extends GlobisImportBase<Reference<?>> impleme
 				name.setInfraSpecificEpithet(lastEpithet);
 			}
 		}
-		
+
 		//TODO check if cache needs protection
 		name.setNameCache(cache, true);
 	}
@@ -973,20 +973,20 @@ public class GlobisSpecTaxImport  extends GlobisImportBase<Reference<?>> impleme
 		String nameSpace;
 		Class<?> cdmClass;
 		Set<String> idSet;
-		
+
 		Set<AgentBase> agents = state.getAgents();
 		getAgentService().saveOrUpdate(agents);
-		
+
 		Map<Object, Map<String, ? extends CdmBase>> result = new HashMap<Object, Map<String, ? extends CdmBase>>();
 		try{
 			Set<String> taxonIdSet = new HashSet<String>();
 			Set<String> referenceIdSet = new HashSet<String>();
-			
+
 			while (rs.next()){
 				handleForeignKey(rs, taxonIdSet, "SpecCurrspecID");
 				handleForeignKey(rs, referenceIdSet, "fiSpecRefID");
 			}
-			
+
 			//taxon map
 			nameSpace = TAXON_NAMESPACE;
 			cdmClass = Taxon.class;
@@ -1000,7 +1000,7 @@ public class GlobisSpecTaxImport  extends GlobisImportBase<Reference<?>> impleme
 			idSet = referenceIdSet;
 			Map<String, Reference> referenceMap = (Map<String, Reference>)getCommonService().getSourcedObjectsByIdInSource(cdmClass, idSet, nameSpace);
 			result.put(nameSpace, referenceMap);
-			
+
 			//collection map
 			nameSpace = COLLECTION_NAMESPACE;
 			List<Collection> listCollection = getCollectionService().list(Collection.class, null, null, null, null);
@@ -1015,13 +1015,13 @@ public class GlobisSpecTaxImport  extends GlobisImportBase<Reference<?>> impleme
 				}
 			}
 			result.put(nameSpace, collectionMap);
-			
+
 		} catch (SQLException e) {
 			throw new RuntimeException(e);
 		}
 		return result;
 	}
-	
+
 	/* (non-Javadoc)
 	 * @see eu.etaxonomy.cdm.io.common.CdmIoBase#doCheck(eu.etaxonomy.cdm.io.common.IImportConfigurator)
 	 */
@@ -1030,12 +1030,13 @@ public class GlobisSpecTaxImport  extends GlobisImportBase<Reference<?>> impleme
 		IOValidator<GlobisImportState> validator = new GlobisSpecTaxaImportValidator();
 		return validator.validate(state);
 	}
-	
-	
+
+
 	/* (non-Javadoc)
 	 * @see eu.etaxonomy.cdm.io.common.CdmIoBase#isIgnore(eu.etaxonomy.cdm.io.common.IImportConfigurator)
 	 */
-	protected boolean isIgnore(GlobisImportState state){
+	@Override
+    protected boolean isIgnore(GlobisImportState state){
 		return ! state.getConfig().isDoSpecTaxa();
 	}
 
@@ -1043,7 +1044,7 @@ public class GlobisSpecTaxImport  extends GlobisImportBase<Reference<?>> impleme
 
 
 	@Override
-	public Reference<?> createObject(ResultSet rs, GlobisImportState state)
+	public Reference createObject(ResultSet rs, GlobisImportState state)
 			throws SQLException {
 		// not needed
 		return null;

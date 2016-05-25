@@ -125,7 +125,7 @@ public class BerlinModelOccurrenceImport  extends BerlinModelImportBase {
 	private TermVocabulary<NamedArea> createEuroMedAreas(BerlinModelImportState state) throws SQLException {
 		logger.warn("Start creating E+M areas");
 		Source source = state.getConfig().getSource();
-		Reference<?> sourceReference = state.getConfig().getSourceReference();
+		Reference sourceReference = state.getConfig().getSourceReference();
 
 		TransactionStatus txStatus = this.startTransaction();
 
@@ -269,8 +269,8 @@ public class BerlinModelOccurrenceImport  extends BerlinModelImportBase {
 	 * @param sourceReference
 	 * @return
 	 */
-	private Reference<?> getSourceReference(Reference<?> sourceReference) {
-		Reference<?> persistentSourceReference = getReferenceService().find(sourceReference.getUuid());  //just to be sure
+	private Reference getSourceReference(Reference sourceReference) {
+		Reference persistentSourceReference = getReferenceService().find(sourceReference.getUuid());  //just to be sure
 		if (persistentSourceReference != null){
 			sourceReference = persistentSourceReference;
 		}
@@ -293,7 +293,7 @@ public class BerlinModelOccurrenceImport  extends BerlinModelImportBase {
 			MarkerType euroMedAreaMarkerType, ExtensionType isoCodeExtType,
 			ExtensionType tdwgCodeExtType, ExtensionType mclCodeExtType,
 			NamedAreaLevel areaLevelTop, NamedAreaLevel areaLevelEm1, NamedAreaLevel areaLevelEm2,
-			Reference<?> sourceReference, NamedArea euroMedArea, NamedArea level1Area) throws SQLException {
+			Reference sourceReference, NamedArea euroMedArea, NamedArea level1Area) throws SQLException {
 		Integer areaId = rs.getInt("AreaId");
 		String emCode = nullSafeTrim(rs.getString("EMCode"));
 		String isoCode = nullSafeTrim(rs.getString("ISOCode"));
@@ -449,7 +449,7 @@ public class BerlinModelOccurrenceImport  extends BerlinModelImportBase {
 						alternativeStatusString = CdmUtils.concat(",", stringArray);
 					}
 
-					Reference<?> sourceRef = state.getTransactionalSourceReference();
+					Reference sourceRef = state.getTransactionalSourceReference();
 
 					List<NamedArea> areas = makeAreaList(state, rs,	occurrenceId);
 
@@ -622,7 +622,7 @@ public class BerlinModelOccurrenceImport  extends BerlinModelImportBase {
 	 * @param taxonMap
 	 * @return
 	 */
-	private TaxonDescription getTaxonDescription(int newTaxonId, int oldTaxonId, TaxonDescription oldDescription, Map<String, TaxonBase<?>> taxonMap, int occurrenceId, Reference<?> sourceSec){
+	private TaxonDescription getTaxonDescription(int newTaxonId, int oldTaxonId, TaxonDescription oldDescription, Map<String, TaxonBase<?>> taxonMap, int occurrenceId, Reference sourceSec){
 		TaxonDescription result = null;
 		if (oldDescription == null || newTaxonId != oldTaxonId){
 			TaxonBase<?> taxonBase = taxonMap.get(String.valueOf(newTaxonId));

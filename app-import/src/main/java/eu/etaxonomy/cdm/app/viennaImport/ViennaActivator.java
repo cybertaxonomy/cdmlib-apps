@@ -1,8 +1,8 @@
 /**
 * Copyright (C) 2007 EDIT
-* European Distributed Institute of Taxonomy 
+* European Distributed Institute of Taxonomy
 * http://www.e-taxonomy.eu
-* 
+*
 * The contents of this file are subject to the Mozilla Public License Version 1.1
 * See LICENSE.TXT at the top of this package for the full license terms.
 */
@@ -26,10 +26,8 @@ import eu.etaxonomy.cdm.io.common.Source;
 import eu.etaxonomy.cdm.model.agent.Person;
 import eu.etaxonomy.cdm.model.common.Annotation;
 import eu.etaxonomy.cdm.model.common.IdentifiableSource;
-import eu.etaxonomy.cdm.model.common.OriginalSourceType;
 import eu.etaxonomy.cdm.model.media.ImageFile;
 import eu.etaxonomy.cdm.model.media.Media;
-import eu.etaxonomy.cdm.model.name.BotanicalName;
 import eu.etaxonomy.cdm.model.name.TaxonNameBase;
 import eu.etaxonomy.cdm.model.occurrence.DerivedUnit;
 import eu.etaxonomy.cdm.model.occurrence.DeterminationEvent;
@@ -46,10 +44,10 @@ import eu.etaxonomy.cdm.strategy.parser.NonViralNameParserImpl;
  */
 public class ViennaActivator {
 	private static final Logger logger = Logger.getLogger(ViennaActivator.class);
-	
+
 	static final Source berlinModelSource = ViennaActivator.VIENNA();
-	
-	
+
+
 	public static Source VIENNA(){
 		//	Vienna Asteraceae
 		String dbms = "ODBC";
@@ -58,14 +56,14 @@ public class ViennaActivator {
 		String userName = "webUser";
 		return  makeSource(dbms, strServer, strDB, -1, userName, null);
 	}
-	
+
 	public boolean invoke(){
 		boolean result = true;
 		boolean withCdm = false;
 		berlinModelSource.setQuery("SELECT * FROM vienna"); // WHERE ID1 <> 1
 		CdmApplicationController app = null;
-		
-		
+
+
 		try {
 			if (withCdm){
 				app = CdmApplicationController.NewInstance(CdmDestinations.localH2());
@@ -77,8 +75,8 @@ public class ViennaActivator {
 			result = false;
 			return result;
 		}
-		
-			
+
+
 		ResultSet rs = berlinModelSource.getResultSet();
 		try {
 			while (rs.next()){
@@ -97,14 +95,14 @@ public class ViennaActivator {
 				String locality = rs.getString("Locality");
 				String assigned = rs.getString("assigned");
 				String history = rs.getString("history");
-				
+
 				if (! family.equals("Asteraceae")){
 					logger.warn("Family not Asteracea: ID= " + strId);
 				}
-				Reference<?> sec = ReferenceFactory.newDatabase();
+				Reference sec = ReferenceFactory.newDatabase();
 				sec.setTitleCache("Vienna Asteraceae Images", true);
-				
-				TaxonNameBase<?,?> taxonName = (BotanicalName)NonViralNameParserImpl.NewInstance().parseFullName(strTaxonName);
+
+				TaxonNameBase<?,?> taxonName = NonViralNameParserImpl.NewInstance().parseFullName(strTaxonName);
 				if (withCdm){
 					List<TaxonNameBase> names = app.getNameService().getNamesByName(strTaxonName);
 					if (names.size() == 0){
@@ -117,11 +115,11 @@ public class ViennaActivator {
 					}
 				}
 				Taxon taxon = Taxon.NewInstance(taxonName, sec);
-				
+
 				logger.info("Create new specimen ...");
 				DerivedUnit specimenx = DerivedUnit.NewPreservedSpecimenInstance();
 				DerivedUnitFacade specimen = DerivedUnitFacade.NewInstance(SpecimenOrObservationType.PreservedSpecimen);
-				
+
 				specimen.setCatalogNumber(catalogNumber);
 				specimen.setStoredUnder(taxonName);   //??
 				//TODO
@@ -129,11 +127,11 @@ public class ViennaActivator {
 				specimen.addAnnotation(Annotation.NewDefaultLanguageInstance(annotation));
 				specimen.addDetermination(getDetermination(taxon, strActor));
 				specimen.addDerivedUnitMedia(getMedia(uriPath, strId));
-				
+
 				//Original ID
 				specimen.addSource(IdentifiableSource.NewDataImportInstance(strId));
-				
-				
+
+
 			}
 		} catch (SQLException e) {
 			logger.warn("Error when reading record!!");
@@ -142,7 +140,7 @@ public class ViennaActivator {
 		}
 		return result;
 	}
-	
+
 	private Media getMedia(String uriPath, String id){
 		//"http://131.130.131.9/database/img/imgBrowser.php?ID=50599";
 		String uriString = uriPath + id;
@@ -162,7 +160,7 @@ public class ViennaActivator {
 			return null;
 		}
 	}
-	
+
 	private DeterminationEvent getDetermination(Taxon taxon, String actor){
 		logger.info("Create determination event");
 		DeterminationEvent determinationEvent = DeterminationEvent.NewInstance();
@@ -171,9 +169,9 @@ public class ViennaActivator {
 		determinationEvent.setActor(person);
 		return determinationEvent;
 	}
-	
-	
-	
+
+
+
 	/**
 	 * @param args
 	 */
@@ -181,8 +179,8 @@ public class ViennaActivator {
 		ViennaActivator viennaAct = new ViennaActivator();
 		viennaAct.invoke();
 	}
-	
-	
+
+
 	/**
 	 * Initialises source
 	 * @return true, if connection established

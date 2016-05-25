@@ -1,9 +1,9 @@
 // $Id$
 /**
 * Copyright (C) 2009 EDIT
-* European Distributed Institute of Taxonomy 
+* European Distributed Institute of Taxonomy
 * http://www.e-taxonomy.eu
-* 
+*
 * The contents of this file are subject to the Mozilla Public License Version 1.1
 * See LICENSE.TXT at the top of this package for the full license terms.
 */
@@ -19,8 +19,8 @@ import org.apache.log4j.Logger;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.TransactionStatus;
 
-import eu.etaxonomy.cdm.io.common.Source;
 import eu.etaxonomy.cdm.io.common.IExportConfigurator.DO_REFERENCES;
+import eu.etaxonomy.cdm.io.common.Source;
 import eu.etaxonomy.cdm.io.common.mapping.out.DbExtensionMapper;
 import eu.etaxonomy.cdm.io.common.mapping.out.DbStringMapper;
 import eu.etaxonomy.cdm.io.common.mapping.out.DbTimePeriodMapper;
@@ -105,7 +105,7 @@ public class PesiSourceExport extends PesiExportBase {
 			logger.info("*** Started Making " + pluralString + " ...");
 
 			PesiExportConfigurator pesiExportConfigurator = state.getConfig();
-			
+
 			// Get the limit for objects to save within a single transaction.
 			int limit = pesiExportConfigurator.getLimitSave();
 
@@ -114,7 +114,7 @@ public class PesiSourceExport extends PesiExportBase {
 
 			// PESI: Clear the database table Source.
 			//doDelete(state);  -> done by stored procedure
-			
+
 			// Get specific mappings: (CDM) Reference -> (PESI) Source
 			PesiExportMapping mapping = getMapping();
 
@@ -134,7 +134,7 @@ public class PesiSourceExport extends PesiExportBase {
 			while ((list = getReferenceService().list(null, limit, count, null, null)).size() > 0) {
 
 				logger.debug("Fetched " + list.size() + " " + pluralString + ". Exporting...");
-				for (Reference<?> reference : list) {
+				for (Reference reference : list) {
 					doCount(count++, modCount, pluralString);
 					success &= mapping.invoke(reference);
 				}
@@ -155,7 +155,7 @@ public class PesiSourceExport extends PesiExportBase {
 			// Commit transaction
 			commitTransaction(txStatus);
 			logger.info("Committed transaction.");
-			
+
 			logger.info("*** Finished Making " + pluralString + " ..." + getSuccessString(success));
 
 			if (!success){
@@ -176,8 +176,8 @@ public class PesiSourceExport extends PesiExportBase {
 	 * @return Whether the delete operation was successful or not.
 	 */
 	protected boolean doDelete(PesiExportState state) {
-		PesiExportConfigurator pesiConfig = (PesiExportConfigurator) state.getConfig();
-		
+		PesiExportConfigurator pesiConfig = state.getConfig();
+
 		String sql;
 		Source destination =  pesiConfig.getDestination();
 
@@ -195,10 +195,10 @@ public class PesiSourceExport extends PesiExportBase {
 		sql = "DELETE FROM " + dbTableName;
 		destination.setQuery(sql);
 		destination.update(sql);
-		
+
 		return true;
 	}
-	
+
 	/**
 	 * Returns the <code>IMIS_Id</code> attribute.
 	 * @param reference The {@link Reference Reference}.
@@ -206,10 +206,10 @@ public class PesiSourceExport extends PesiExportBase {
 	 * @see MethodMapper
 	 */
 	@SuppressWarnings("unused")
-	private static Integer getIMIS_Id(Reference<?> reference) {
+	private static Integer getIMIS_Id(Reference reference) {
 		return null;
 	}
-	
+
 	/**
 	 * Returns the <code>SourceCategoryFK</code> attribute.
 	 * @param reference The {@link Reference Reference}.
@@ -217,7 +217,7 @@ public class PesiSourceExport extends PesiExportBase {
 	 * @see MethodMapper
 	 */
 	@SuppressWarnings("unused")
-	private static Integer getSourceCategoryFK(Reference<?> reference) {
+	private static Integer getSourceCategoryFK(Reference reference) {
 		Integer result = null;
 		try {
 		result = PesiTransformer.reference2SourceCategoryFK(reference);
@@ -226,7 +226,7 @@ public class PesiSourceExport extends PesiExportBase {
 		}
 		return result;
 	}
-	
+
 	/**
 	 * Returns the <code>SourceCategoryCache</code> attribute.
 	 * @param reference The {@link Reference Reference}.
@@ -234,7 +234,7 @@ public class PesiSourceExport extends PesiExportBase {
 	 * @see MethodMapper
 	 */
 	@SuppressWarnings("unused")
-	private static String getSourceCategoryCache(Reference<?> reference, PesiExportState state) {
+	private static String getSourceCategoryCache(Reference reference, PesiExportState state) {
 		return state.getTransformer().getCacheByReference(reference);
 	}
 
@@ -245,14 +245,14 @@ public class PesiSourceExport extends PesiExportBase {
 	 * @see MethodMapper
 	 */
 	@SuppressWarnings("unused")
-	private static String getName(Reference<?> reference) {
+	private static String getName(Reference reference) {
 		if (reference != null) {
 			return reference.getTitleCache(); // was getTitle()
 		} else {
 			return null;
 		}
 	}
-	
+
 	/**
 	 * Returns the <code>AuthorString</code> attribute. The corresponding CDM attribute is the <code>titleCache</code> of an <code>authorTeam</code>.
 	 * @param reference The {@link Reference Reference}.
@@ -260,7 +260,7 @@ public class PesiSourceExport extends PesiExportBase {
 	 * @see MethodMapper
 	 */
 	@SuppressWarnings("unused")
-	private static String getAuthorString(Reference<?> reference) {
+	private static String getAuthorString(Reference reference) {
 		String result = null;
 
 		try {
@@ -276,7 +276,7 @@ public class PesiSourceExport extends PesiExportBase {
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-		
+
 		return result;
 	}
 
@@ -287,7 +287,7 @@ public class PesiSourceExport extends PesiExportBase {
 	 * @see MethodMapper
 	 */
 	@SuppressWarnings("unused")
-	private static String getNomRefCache(Reference<?> reference) {
+	private static String getNomRefCache(Reference reference) {
 		return null;
 //		if (reference != null) {
 //			return reference.getTitleCache();
@@ -303,7 +303,7 @@ public class PesiSourceExport extends PesiExportBase {
 	 * @see MethodMapper
 	 */
 	@SuppressWarnings("unused")
-	private static String getNotes(Reference<?> reference) {
+	private static String getNotes(Reference reference) {
 		// TODO
 		return null;
 	}
@@ -315,14 +315,14 @@ public class PesiSourceExport extends PesiExportBase {
 	 * @see MethodMapper
 	 */
 	@SuppressWarnings("unused")
-	private static String getRefIdInSource(Reference<?> reference) {
+	private static String getRefIdInSource(Reference reference) {
 		String result = null;
 
 		try {
 		if (reference != null) {
 			Set<IdentifiableSource> sourceAll = reference.getSources();
 			Set<IdentifiableSource> sourceCandidates = filterOriginalPesiDbSources(sourceAll);
-			
+
 			if (sourceCandidates.size() == 1) {
 				result = sourceCandidates.iterator().next().getIdInSource();
 			} else if (sourceCandidates.size() > 1) {
@@ -367,14 +367,14 @@ public class PesiSourceExport extends PesiExportBase {
 	 * @see MethodMapper
 	 */
 	@SuppressWarnings("unused")
-	private static String getOriginalDB(Reference<?> reference) {
+	private static String getOriginalDB(Reference reference) {
 		String result = "";
 
 		try {
 		if (reference != null) {
 			Set<IdentifiableSource> sourcesAll = reference.getSources();
-			Set<IdentifiableSource> sourceCandidates = filterOriginalPesiDbSources(sourcesAll); 
-			
+			Set<IdentifiableSource> sourceCandidates = filterOriginalPesiDbSources(sourcesAll);
+
 			if (sourceCandidates.size() == 1) {
 				Reference citation = sourceCandidates.iterator().next().getCitation();
 				if (citation != null) {
@@ -421,9 +421,9 @@ public class PesiSourceExport extends PesiExportBase {
 	private PesiExportMapping getMapping() {
 		PesiExportMapping mapping = new PesiExportMapping(dbTableName);
 		ExtensionType extensionType = null;
-		
+
 		mapping.addMapper(IdMapper.NewInstance("SourceId"));
-		
+
 		// IMIS_Id
 		extensionType = (ExtensionType)getTermService().find(ErmsTransformer.IMIS_UUID);
 		if (extensionType != null) {
@@ -431,7 +431,7 @@ public class PesiSourceExport extends PesiExportBase {
 		} else {
 			mapping.addMapper(MethodMapper.NewInstance("IMIS_Id", this));
 		}
-		
+
 		mapping.addMapper(MethodMapper.NewInstance("SourceCategoryFK", this));
 		mapping.addMapper(MethodMapper.NewInstance("SourceCategoryCache", this, Reference.class, PesiExportState.class));
 		mapping.addMapper(MethodMapper.NewInstance("Name", this));

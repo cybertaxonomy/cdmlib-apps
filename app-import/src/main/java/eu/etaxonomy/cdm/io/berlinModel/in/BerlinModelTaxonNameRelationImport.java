@@ -1,8 +1,8 @@
 /**
 * Copyright (C) 2007 EDIT
-* European Distributed Institute of Taxonomy 
+* European Distributed Institute of Taxonomy
 * http://www.e-taxonomy.eu
-* 
+*
 * The contents of this file are subject to the Mozilla Public License Version 1.1
 * See LICENSE.TXT at the top of this package for the full license terms.
 */
@@ -23,10 +23,10 @@ import static eu.etaxonomy.cdm.io.berlinModel.BerlinModelTransformer.NAME_REL_IS
 import static eu.etaxonomy.cdm.io.berlinModel.BerlinModelTransformer.NAME_REL_IS_REJECTED_TYPE_OF;
 import static eu.etaxonomy.cdm.io.berlinModel.BerlinModelTransformer.NAME_REL_IS_REPLACED_SYNONYM_FOR;
 import static eu.etaxonomy.cdm.io.berlinModel.BerlinModelTransformer.NAME_REL_IS_SECOND_PARENT_OF;
+import static eu.etaxonomy.cdm.io.berlinModel.BerlinModelTransformer.NAME_REL_IS_TREATED_AS_LATER_HOMONYM_OF;
 import static eu.etaxonomy.cdm.io.berlinModel.BerlinModelTransformer.NAME_REL_IS_TYPE_OF;
 import static eu.etaxonomy.cdm.io.berlinModel.BerlinModelTransformer.NAME_REL_IS_VALIDATION_OF;
 import static eu.etaxonomy.cdm.io.berlinModel.BerlinModelTransformer.NAME_REL_TYPE_NOT_DESIGNATED;
-import static eu.etaxonomy.cdm.io.berlinModel.BerlinModelTransformer.NAME_REL_IS_TREATED_AS_LATER_HOMONYM_OF;
 
 import java.lang.reflect.Method;
 import java.sql.ResultSet;
@@ -69,12 +69,12 @@ public class BerlinModelTaxonNameRelationImport extends BerlinModelImportBase {
 	private static final String pluralString = "name relations";
 	private static final String dbTableName = "RelName";
 
-	
+
 	public BerlinModelTaxonNameRelationImport(){
 		super(dbTableName, pluralString);
 	}
 
-	
+
 	@Override
 	protected String getIdQuery(BerlinModelImportState state) {
 		if (StringUtils.isNotBlank(state.getConfig().getNameIdTable())){
@@ -87,16 +87,16 @@ public class BerlinModelTaxonNameRelationImport extends BerlinModelImportBase {
 			return super.getIdQuery(state);
 		}
 	}
-	
+
 
 	@Override
 	protected String getRecordQuery(BerlinModelImportConfigurator config) {
-			String strQuery = 
-					" SELECT RelName.*, FromName.nameId as name1Id, ToName.nameId as name2Id, RefDetail.Details " + 
+			String strQuery =
+					" SELECT RelName.*, FromName.nameId as name1Id, ToName.nameId as name2Id, RefDetail.Details " +
 					" FROM Name as FromName INNER JOIN " +
                       	" RelName ON FromName.NameId = RelName.NameFk1 INNER JOIN " +
                       	" Name AS ToName ON RelName.NameFk2 = ToName.NameId LEFT OUTER JOIN "+
-                      	" RefDetail ON RelName.RefDetailFK = RefDetail.RefDetailId " + 
+                      	" RefDetail ON RelName.RefDetailFK = RefDetail.RefDetailId " +
             " WHERE (RelNameId IN ("+ID_LIST_TOKEN +"))";
 		return strQuery;
 	}
@@ -106,18 +106,18 @@ public class BerlinModelTaxonNameRelationImport extends BerlinModelImportBase {
 		boolean success = true ;
 		BerlinModelImportConfigurator config = state.getConfig();
 		Set<TaxonNameBase> nameToSave = new HashSet<TaxonNameBase>();
-		Map<String, TaxonNameBase> nameMap = (Map<String, TaxonNameBase>) partitioner.getObjectMap(BerlinModelTaxonNameImport.NAMESPACE);
+		Map<String, TaxonNameBase> nameMap = partitioner.getObjectMap(BerlinModelTaxonNameImport.NAMESPACE);
 		Map<String, Reference> refMap = partitioner.getObjectMap(BerlinModelReferenceImport.REFERENCE_NAMESPACE);
-		
+
 		ResultSet rs = partitioner.getResultSet();
 		try {
-			
+
 			int i = 0;
 			//for each name relation
 			while (rs.next()){
-				
+
 				if ((i++ % modCount) == 0 && i!= 1 ){ logger.info("RelName handled: " + (i-1));}
-				
+
 				int relNameId = rs.getInt("RelNameId");
 				int name1Id = rs.getInt("name1Id");
 				int name2Id = rs.getInt("name2Id");
@@ -125,26 +125,26 @@ public class BerlinModelTaxonNameRelationImport extends BerlinModelImportBase {
 				String details = rs.getString("details");
 				int relQualifierFk = rs.getInt("relNameQualifierFk");
 				String notes = rs.getString("notes");
-				
+
 				TaxonNameBase<?,?> nameFrom = nameMap.get(String.valueOf(name1Id));
 				TaxonNameBase<?,?> nameTo = nameMap.get(String.valueOf(name2Id));
-				
-				
-				Reference<?> citation = null;
+
+
+				Reference citation = null;
 				if (relRefFkObj != null){
 					String relRefFk = String.valueOf(relRefFkObj);
 					//get nomRef
 					citation = refMap.get(relRefFk);
 				}
-				
+
 				//TODO (preliminaryFlag = true testen
 				String microcitation = details;
-				String rule = null;  
-				
+				String rule = null;
+
 				if (nameFrom != null && nameTo != null){
-					success = handleNameRelationship(success, config, name1Id, name2Id,	relQualifierFk, 
+					success = handleNameRelationship(success, config, name1Id, name2Id,	relQualifierFk,
 							notes, nameFrom, nameTo, citation, microcitation, rule);
-					
+
 					if (! nameFrom.isProtectedTitleCache()){
 						nameFrom.setTitleCache(null);
 						nameFrom.getTitleCache();
@@ -154,7 +154,7 @@ public class BerlinModelTaxonNameRelationImport extends BerlinModelImportBase {
 						nameTo.getTitleCache();
 					}
 					nameToSave.add(nameFrom);
-					
+
 					//TODO
 					//ID
 					//etc.
@@ -171,11 +171,11 @@ public class BerlinModelTaxonNameRelationImport extends BerlinModelImportBase {
 					success = false;
 				}
 			}
-			
-			
+
+
 			partitioner.startDoSave();
 			getNameService().save(nameToSave);
-			
+
 			return success;
 		} catch (SQLException e) {
 			logger.error("SQLException:" +  e);
@@ -200,7 +200,7 @@ public class BerlinModelTaxonNameRelationImport extends BerlinModelImportBase {
 	private boolean handleNameRelationship(boolean success,
 				BerlinModelImportConfigurator config, int name1Id, int name2Id,
 				int relQualifierFk, String notes, TaxonNameBase nameFrom,
-				TaxonNameBase nameTo, Reference<?> citation,
+				TaxonNameBase nameTo, Reference citation,
 				String microcitation, String rule) {
 		AnnotatableEntity nameRelationship = null;
 		if (relQualifierFk == NAME_REL_IS_BASIONYM_FOR){
@@ -222,7 +222,7 @@ public class BerlinModelTaxonNameRelationImport extends BerlinModelImportBase {
 			boolean isConservedType = (relQualifierFk == NAME_REL_IS_CONSERVED_TYPE_OF);
 			boolean isLectoType = (relQualifierFk == NAME_REL_IS_LECTOTYPE_OF);
 			boolean isNotDesignated = (relQualifierFk == NAME_REL_TYPE_NOT_DESIGNATED);
-			
+
 			NameTypeDesignationStatus status = null;
 			String originalNameString = null;
 			//TODO addToAllNames true or false?
@@ -242,7 +242,7 @@ public class BerlinModelTaxonNameRelationImport extends BerlinModelImportBase {
 				}
 				nameRelationship = nameTo.addNameTypeDesignation(nameFrom, citation, microcitation, originalNameString, status, isRejectedType, isConservedType, /*isLectoType,*/ isNotDesignated, addToAllNames);
 			}
-			
+
 		}else if (relQualifierFk == NAME_REL_IS_ORTHOGRAPHIC_VARIANT_OF){
 			nameRelationship = nameFrom.addRelationshipToName(nameTo, NameRelationshipType.ORTHOGRAPHIC_VARIANT(), citation, microcitation, rule) ;
 		}else if (relQualifierFk == NAME_REL_IS_ALTERNATIVE_NAME_FOR){
@@ -257,9 +257,9 @@ public class BerlinModelTaxonNameRelationImport extends BerlinModelImportBase {
 				HybridRelationshipType hybridRelType = BerlinModelTransformer.relNameId2HybridRel(relQualifierFk);
 				BotanicalName parent = (BotanicalName)nameFrom;
 				BotanicalName child = (BotanicalName)nameTo;
-				
+
 				nameRelationship = parent.addHybridChild(child, hybridRelType, rule);
-				
+
 			} catch (UnknownCdmTypeException e) {
 				logger.warn(e);
 				success = false;
@@ -274,7 +274,7 @@ public class BerlinModelTaxonNameRelationImport extends BerlinModelImportBase {
 					logger.error(e.getMessage());
 					logger.warn("NameRelationship could not be imported");
 					success = false;
-				} 
+				}
 			}else{
 				logger.warn("NameRelationShipType " + relQualifierFk + " not yet implemented");
 				success = false;
@@ -290,7 +290,7 @@ public class BerlinModelTaxonNameRelationImport extends BerlinModelImportBase {
 		Class<?> cdmClass;
 		Set<String> idSet;
 		Map<Object, Map<String, ? extends CdmBase>> result = new HashMap<Object, Map<String, ? extends CdmBase>>();
-		
+
 		try{
 			Set<String> nameIdSet = new HashSet<String>();
 			Set<String> referenceIdSet = new HashSet<String>();
@@ -301,7 +301,7 @@ public class BerlinModelTaxonNameRelationImport extends BerlinModelImportBase {
 				handleForeignKey(rs, referenceIdSet, "RefFk");
 				handleForeignKey(rs, refDetailIdSet, "RefDetailFk");
 	}
-	
+
 			//name map
 			nameSpace = BerlinModelTaxonNameImport.NAMESPACE;
 			cdmClass = TaxonNameBase.class;
@@ -315,7 +315,7 @@ public class BerlinModelTaxonNameRelationImport extends BerlinModelImportBase {
 			idSet = referenceIdSet;
 			Map<String, Reference> referenceMap = (Map<String, Reference>)getCommonService().getSourcedObjectsByIdInSource(cdmClass, idSet, nameSpace);
 			result.put(nameSpace, referenceMap);
-	
+
 			//refDetail map
 			nameSpace = BerlinModelRefDetailImport.REFDETAIL_NAMESPACE;
 			cdmClass = Reference.class;
@@ -328,7 +328,7 @@ public class BerlinModelTaxonNameRelationImport extends BerlinModelImportBase {
 				}
 		return result;
 	}
-				
+
 	/* (non-Javadoc)
 	 * @see eu.etaxonomy.cdm.io.common.CdmIoBase#doCheck(eu.etaxonomy.cdm.io.common.IImportConfigurator)
 	 */
@@ -337,13 +337,14 @@ public class BerlinModelTaxonNameRelationImport extends BerlinModelImportBase {
 		IOValidator<BerlinModelImportState> validator = new BerlinModelTaxonNameRelationImportValidator();
 		return validator.validate(state);
 	}
-			
+
 	/* (non-Javadoc)
 	 * @see eu.etaxonomy.cdm.io.common.CdmIoBase#isIgnore(eu.etaxonomy.cdm.io.common.IImportConfigurator)
 	 */
-	protected boolean isIgnore(BerlinModelImportState state){
+	@Override
+    protected boolean isIgnore(BerlinModelImportState state){
 		return ! state.getConfig().isDoRelNames();
 		}
 
-	
+
 }

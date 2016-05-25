@@ -68,7 +68,7 @@ public class SpecimenImportActivator {
 
             //            specimenImportConfigurator.setDoCreateIndividualsAssociations(true);
 
-            Reference<?> ref = ReferenceFactory.newBook();
+            Reference ref = ReferenceFactory.newBook();
             ref.setUuid(UUID.fromString("98b0a618-a95b-464e-943a-25aaaef202f6"));//observations
             ref.setTitle("Chenopodium vulvaria observations from the British Isles");
             //

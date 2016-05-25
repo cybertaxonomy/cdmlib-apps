@@ -112,7 +112,7 @@ implements ICdmImport<FaunaEuropaeaImportConfigurator,FaunaEuropaeaImportState> 
 	 * @param state
 	 * @param sourceRef
 	 */
-	protected Classification getClassificationFor(FaunaEuropaeaImportState state, Reference<?> sourceRef) {
+	protected Classification getClassificationFor(FaunaEuropaeaImportState state, Reference sourceRef) {
 
 		Classification tree;
 		UUID treeUuid = state.getTreeUuid(sourceRef);

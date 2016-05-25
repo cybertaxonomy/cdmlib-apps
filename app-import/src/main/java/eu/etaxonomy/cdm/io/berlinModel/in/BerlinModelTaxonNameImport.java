@@ -470,7 +470,7 @@ public class BerlinModelTaxonNameImport extends BerlinModelImportBase {
 				String nomRefFk = String.valueOf(nomRefFkObj);
 				String nomRefDetailFk = String.valueOf(nomRefDetailFkObj);
 				//get nomRef
-				Reference<?> nomReference =
+				Reference nomReference =
 					getReferenceFromMaps(refDetailMap, refMap, nomRefDetailFk, nomRefFk);
 
 

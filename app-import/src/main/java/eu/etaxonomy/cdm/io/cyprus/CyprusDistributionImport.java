@@ -67,8 +67,8 @@ public class CyprusDistributionImport extends ExcelImporterBase<CyprusImportStat
 	protected static final String REFERENCE_COLUMN = "source";
 
 
-	private Reference<?> refMeikle1977 = ReferenceFactory.newGeneric();
-	private Reference<?> refMeikle1985 = ReferenceFactory.newGeneric();
+	private Reference refMeikle1977 = ReferenceFactory.newGeneric();
+	private Reference refMeikle1985 = ReferenceFactory.newGeneric();
 
 	private final Map<String, Taxon> taxonWithAuthorStore = new HashMap<String, Taxon>();
 	private final Map<String, Taxon> taxonNameOnlyStore = new HashMap<String, Taxon>();
@@ -114,7 +114,7 @@ public class CyprusDistributionImport extends ExcelImporterBase<CyprusImportStat
 			return;
 		}
 		Taxon taxon = getTaxon(state, taxonStr);
-		Reference<?> ref = getReference(taxonLight.getReference());
+		Reference ref = getReference(taxonLight.getReference());
 		if (taxon != null){
 			makeDistribution(state, taxon, taxonLight.getDistribution(), ref);
 			getTaxonService().save(taxon);
@@ -129,7 +129,7 @@ public class CyprusDistributionImport extends ExcelImporterBase<CyprusImportStat
 	protected static final boolean NO_IMAGE_GALLERY = false;
 	protected static final boolean IMAGE_GALLERY = false;
 
-	private void makeDistribution(CyprusImportState state, Taxon taxon, String distributionStr, Reference<?> ref) {
+	private void makeDistribution(CyprusImportState state, Taxon taxon, String distributionStr, Reference ref) {
 
 //		TaxonDescription description = getTaxonDescription(taxon, NO_IMAGE_GALLERY, CREATE);
 		TaxonDescription description = getNewDescription(state, taxon);
@@ -148,7 +148,7 @@ public class CyprusDistributionImport extends ExcelImporterBase<CyprusImportStat
 	}
 
 	private TaxonDescription getNewDescription(CyprusImportState state, Taxon taxon) {
-		Reference<?> excelRef = state.getConfig().getSourceReference();
+		Reference excelRef = state.getConfig().getSourceReference();
 		TaxonDescription desc = TaxonDescription.NewInstance(taxon, false);
 		desc.setTitleCache(excelRef.getTitleCache() + " for " + taxon.getTitleCache(), true);
 		desc.addSource(OriginalSourceType.Import, null, null, excelRef, null);
@@ -249,8 +249,8 @@ public class CyprusDistributionImport extends ExcelImporterBase<CyprusImportStat
 		return result;
 	}
 
-	private Reference<?> getReference(String referenceStr) {
-		Reference<?> result;
+	private Reference getReference(String referenceStr) {
+		Reference result;
 		if ("Meikle 1977".equals(referenceStr)){
 			result = refMeikle1977;
 		}else if("Meikle 1985".equals(referenceStr)){

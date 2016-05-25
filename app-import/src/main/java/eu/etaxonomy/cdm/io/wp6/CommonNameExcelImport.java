@@ -1,8 +1,8 @@
 /**
  * Copyright (C) 2007 EDIT
- * European Distributed Institute of Taxonomy 
+ * European Distributed Institute of Taxonomy
  * http://www.e-taxonomy.eu
- * 
+ *
  * The contents of this file are subject to the Mozilla Public License Version 1.1
  * See LICENSE.TXT at the top of this package for the full license terms.
  */
@@ -31,8 +31,8 @@ import eu.etaxonomy.cdm.model.common.TermVocabulary;
 import eu.etaxonomy.cdm.model.description.CommonTaxonName;
 import eu.etaxonomy.cdm.model.description.DescriptionElementSource;
 import eu.etaxonomy.cdm.model.description.TaxonDescription;
-import eu.etaxonomy.cdm.model.location.NamedArea;
 import eu.etaxonomy.cdm.model.location.Country;
+import eu.etaxonomy.cdm.model.location.NamedArea;
 import eu.etaxonomy.cdm.model.reference.Reference;
 import eu.etaxonomy.cdm.model.taxon.Taxon;
 import eu.etaxonomy.cdm.persistence.query.OrderHint;
@@ -56,13 +56,13 @@ public class CommonNameExcelImport extends ExcelImporterBase<CichorieaeCommonNam
 	private Map<String, NamedArea> areaStore = new HashMap<String, NamedArea>();
 	private Map<String, Language> languageStore = new HashMap<String, Language>();
 
-	
+
 	@Override
 	protected boolean isIgnore(CichorieaeCommonNameImportState state) {
 		return false;
 	}
-	
-	
+
+
 	/* (non-Javadoc)
 	 * @see eu.etaxonomy.cdm.io.common.CdmIoBase#doCheck(eu.etaxonomy.cdm.io.common.IoStateBase)
 	 */
@@ -72,14 +72,14 @@ public class CommonNameExcelImport extends ExcelImporterBase<CichorieaeCommonNam
 		return true;
 	}
 
-	
+
 	@Override
     protected void analyzeRecord(HashMap<String, String> record, CichorieaeCommonNameImportState state) {
 		Set<String> keys = record.keySet();
-    	
+
     	CommonNameRow row = new CommonNameRow();
     	state.setCommonNameRow(row);
-    	
+
     	for (String originalKey: keys) {
     		String indexedKey = CdmUtils.removeDuplicateWhitespace(originalKey.trim()).toString();
     		String[] split = indexedKey.split("_");
@@ -94,27 +94,27 @@ public class CommonNameExcelImport extends ExcelImporterBase<CichorieaeCommonNam
 					continue;
 				}
     		}
-    		
-    		String value = (String) record.get(indexedKey);
+
+    		String value = record.get(indexedKey);
     		if (! StringUtils.isBlank(value)) {
     			if (logger.isDebugEnabled()) { logger.debug(key + ": " + value); }
         		value = CdmUtils.removeDuplicateWhitespace(value.trim()).toString();
     		}else{
     			continue;
     		}
-    		
-    		
+
+
     		if (key.equalsIgnoreCase(SPECIES_COLUMN)) {
     			row.parseSpecies(value);
-    			
+
 			} else if(key.equalsIgnoreCase(COMMON_NAME_COLUMN)) {
 				row.setCommonNames(value);
-				
+
 			} else if(key.equalsIgnoreCase(REFERENCE_COLUMN)) {
 				row.setReference(value);
 			} else if(key.equalsIgnoreCase(DISTIRBUTION_COLUMN)) {
 				//do nothing
-    			
+
 			} else if(key.equalsIgnoreCase(AREA_COLUMN)) {
 				row.setArea(value);
  			} else {
@@ -124,25 +124,25 @@ public class CommonNameExcelImport extends ExcelImporterBase<CichorieaeCommonNam
     	}
     	return;
     }
-	
-	
-	/** 
+
+
+	/**
 	 *  Stores taxa records in DB
 	 */
 	@Override
     protected void firstPass(CichorieaeCommonNameImportState state) {
-		
+
 		CommonNameRow taxonLight = state.getCommonNameRow();
 		//species name
 		String speciesStr = taxonLight.getSpecies();
 		TaxonDescription taxonDesc = getTaxon(state, speciesStr);
-		Reference<?> ref = getReference(state, taxonLight);
+		Reference ref = getReference(state, taxonLight);
 
 		NamedArea area = getArea(state, taxonLight.getArea());
-		
+
 		makeCommonNames(state, taxonLight.getCommonNames(), taxonDesc, ref, area, taxonLight.getNameUsedInSource());
 
-//		OLD 
+//		OLD
 //		TaxonNameBase nameUsedInSource = getNameUsedInSource(state, taxonLight.getNameUsedInSource());
 
 		getTaxonService().save(taxonDesc.getTaxon());
@@ -169,13 +169,13 @@ public class CommonNameExcelImport extends ExcelImporterBase<CichorieaeCommonNam
 	}
 
 
-	
+
 	private NamedArea getArea(CichorieaeCommonNameImportState state, String area) {
 		NamedArea result;
 		List<OrderHint> orderHints = null;
 		List<Criterion> criteria = null;
 		result = areaStore.get(area);
-		
+
 		if (result == null){
 			try {
 				result = state.getTransformer().getNamedAreaByKey(area);
@@ -213,7 +213,7 @@ public class CommonNameExcelImport extends ExcelImporterBase<CichorieaeCommonNam
 
 
 	Map<String, TaxonDescription> taxonStore = new HashMap<String, TaxonDescription>();
-	
+
 	private TaxonDescription getTaxon(CichorieaeCommonNameImportState state, String taxonNameStr) {
 		TaxonDescription desc;
 		Taxon taxon;
@@ -224,7 +224,7 @@ public class CommonNameExcelImport extends ExcelImporterBase<CichorieaeCommonNam
 			taxon = getTaxonService().findBestMatchingTaxon(taxonNameStr);
 //			TaxonNameBase name = BotanicalName.NewInstance(Rank.SPECIES());
 //			name.setTitleCache(taxonNameStr, true);
-//			
+//
 //			result = Taxon.NewInstance(name, null);
 			if (taxon == null){
 				logger.warn("Taxon not found: " +  taxonNameStr);
@@ -238,7 +238,7 @@ public class CommonNameExcelImport extends ExcelImporterBase<CichorieaeCommonNam
 	}
 
 	private TaxonDescription getNewDescription(CichorieaeCommonNameImportState state, Taxon taxon) {
-		Reference<?> excelRef = state.getConfig().getSourceReference();
+		Reference excelRef = state.getConfig().getSourceReference();
 		TaxonDescription desc = TaxonDescription.NewInstance(taxon, false);
 		desc.setTitleCache("Common Names Excel import", true);
 		desc.addSource(OriginalSourceType.Import, null, null, excelRef, null);
@@ -299,8 +299,8 @@ public class CommonNameExcelImport extends ExcelImporterBase<CichorieaeCommonNam
 							logger.warn("Language not defined: " + languageKey)  ;
 						}
 					}else if (result.getId() == 0){
-//						UUID uuidLanguageVoc = UUID.fromString("45ac7043-7f5e-4f37-92f2-3874aaaef2de"); 
-						UUID uuidLanguageVoc = UUID.fromString("434cea89-9052-4567-b2db-ff77f42e9084"); 
+//						UUID uuidLanguageVoc = UUID.fromString("45ac7043-7f5e-4f37-92f2-3874aaaef2de");
+						UUID uuidLanguageVoc = UUID.fromString("434cea89-9052-4567-b2db-ff77f42e9084");
 						TermVocabulary<Language> voc = getVocabulary(TermType.Language, uuidLanguageVoc, "User Defined Languages", "User Defined Languages", null, null, false, result);
 //						TermVocabulary<Language> voc = getVocabularyService().find(uuidLanguageVoc);
 						voc.addTerm(result);
@@ -318,7 +318,7 @@ public class CommonNameExcelImport extends ExcelImporterBase<CichorieaeCommonNam
 	}
 
 
-	/** 
+	/**
 	 *  Stores parent-child, synonym and common name relationships
 	 */
 	@Override
@@ -340,9 +340,9 @@ public class CommonNameExcelImport extends ExcelImporterBase<CichorieaeCommonNam
 //				return null;
 //			}
 //		}
-//		
+//
 //	}
 
 
-	
+
 }

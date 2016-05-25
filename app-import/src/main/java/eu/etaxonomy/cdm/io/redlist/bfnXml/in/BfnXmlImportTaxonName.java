@@ -398,7 +398,7 @@ public class BfnXmlImportTaxonName extends BfnXmlImportBase {
 //						}
 //					}
 
-					Reference<?> microRef = config.isFillSecondList() ?
+					Reference microRef = config.isFillSecondList() ?
 					        state.getSecondListSecRef():
 					        state.getFirstListSecRef();
 					state.setCurrentMicroRef(microRef);

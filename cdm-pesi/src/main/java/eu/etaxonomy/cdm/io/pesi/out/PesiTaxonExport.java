@@ -1728,7 +1728,7 @@ public class PesiTaxonExport extends PesiExportBase {
 	private static String getSourceNameCache(TaxonNameBase taxonName) {
 		NonViralName<?> nvn = CdmBase.deproxy(taxonName, NonViralName.class);
 		if (nvn != null){
-			Reference<?> nomRef = (Reference)nvn.getNomenclaturalReference();
+			Reference nomRef = (Reference)nvn.getNomenclaturalReference();
 			if (nomRef != null){
 				return nomRef.getAbbrevTitleCache();
 			}
@@ -2070,7 +2070,7 @@ public class PesiTaxonExport extends PesiExportBase {
 				logger.warn("There is no Pesi source!" +taxonName.getUuid() + " (" + taxonName.getTitleCache() +")");
 			}
 			for (IdentifiableSource source : sources) {
-				Reference<?> ref = source.getCitation();
+				Reference ref = source.getCitation();
 				UUID refUuid = ref.getUuid();
 				String idInSource = source.getIdInSource();
 				if (refUuid.equals(BerlinModelTransformer.uuidSourceRefEuroMed)){
@@ -2402,7 +2402,7 @@ public class PesiTaxonExport extends PesiExportBase {
 	 * @return The <code>ExpertFk</code> attribute.
 	 * @see MethodMapper
 	 */
-	private static Integer getExpertFk(Reference<?> reference, PesiExportState state) {
+	private static Integer getExpertFk(Reference reference, PesiExportState state) {
 		Integer result = state.getDbId(reference);
 		return result;
 	}
@@ -2436,7 +2436,7 @@ public class PesiTaxonExport extends PesiExportBase {
 	 * @return The <code>SpeciesExpertFk</code> attribute.
 	 * @see MethodMapper
 	 */
-	private static Integer getSpeciesExpertFk(Reference<?> reference, PesiExportState state) {
+	private static Integer getSpeciesExpertFk(Reference reference, PesiExportState state) {
 		Integer result = state.getDbId(reference);
 		return result;
 	}
@@ -2452,7 +2452,7 @@ public class PesiTaxonExport extends PesiExportBase {
 		BitSet bitSet = new BitSet();
 		Set<IdentifiableSource> sources = getPesiSources(identEntity);
 		for (IdentifiableSource source : sources) {
-			Reference<?> ref = source.getCitation();
+			Reference ref = source.getCitation();
 			UUID refUuid = ref.getUuid();
 			if (refUuid.equals(BerlinModelTransformer.uuidSourceRefEuroMed)){
 				bitSet.set(PesiTransformer.SOURCE_EM);

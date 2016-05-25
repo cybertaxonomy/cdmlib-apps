@@ -66,7 +66,7 @@ public class BfnXmlImportMetaData extends BfnXmlImportBase implements ICdmIO<Bfn
 			debVersion = elDataSet.getAttributeValue("debversion");
 			timeStamp = elDataSet.getAttributeValue("timestamp");
 
-			Reference<?> sourceReference = ReferenceFactory.newGeneric();
+			Reference sourceReference = ReferenceFactory.newGeneric();
 			sourceReference.setTitle(sourceFileName);
 			TimePeriod parsedTimePeriod = TimePeriodParser.parseString(timeStamp);
 			sourceReference.setDatePublished(parsedTimePeriod);
@@ -93,7 +93,7 @@ public class BfnXmlImportMetaData extends BfnXmlImportBase implements ICdmIO<Bfn
 							@SuppressWarnings("unchecked")
                             List<Element> children = elMetaData.getChildren();
 							String kurzlitA = children.get(0).getTextNormalize();
-							Reference<?> sourceReference = ReferenceFactory.newGeneric();
+							Reference sourceReference = ReferenceFactory.newGeneric();
 							sourceReference.setTitle(kurzlitA);
 							state.setFirstListSecRef(sourceReference);
 
@@ -109,7 +109,7 @@ public class BfnXmlImportMetaData extends BfnXmlImportBase implements ICdmIO<Bfn
 							@SuppressWarnings("unchecked")
                             List<Element> children = elMetaData.getChildren();
 							String kurzlitB = children.get(0).getTextNormalize();
-							Reference<?> sourceReference = ReferenceFactory.newGeneric();
+							Reference sourceReference = ReferenceFactory.newGeneric();
 							sourceReference.setTitle(kurzlitB);
 							state.setSecondListSecRef(sourceReference);
 						}
