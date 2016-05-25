@@ -78,9 +78,10 @@ public class RedListUtil {
 
 
     //column names
+    public static final String NAMNR = "NAMNR";
+    public static final String SEQNUM = "SEQNUM";
     public static final String GUELT = "GUELT";
     public static final String LOWER = "LOWER";
-    public static final String NAMNR = "NAMNR";
     public static final String AUTOR_BASI = "AUTOR_BASI";
     public static final String AUTOR_KOMB = "AUTOR_KOMB";
     public static final String ZUSATZ = "ZUSATZ";
