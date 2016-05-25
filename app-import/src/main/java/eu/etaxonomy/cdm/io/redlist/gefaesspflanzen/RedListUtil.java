@@ -13,6 +13,8 @@ import java.util.UUID;
 
 import org.apache.log4j.Logger;
 
+import eu.etaxonomy.cdm.common.UTF8;
+
 /**
  * @author pplitzner
  * @date Mar 7, 2016
@@ -71,6 +73,8 @@ public class RedListUtil {
     public static final String HYB_NF = "nf";
     public static final String HYB_XU = "xu";
     public static final String HYB_GF = "gf";
+
+    public static final String HYB_SIGN = UTF8.HYBRID.toString();
 
 
     //column names

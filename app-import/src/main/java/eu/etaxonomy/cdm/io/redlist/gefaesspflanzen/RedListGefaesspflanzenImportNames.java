@@ -20,6 +20,7 @@ import org.apache.log4j.Logger;
 import org.springframework.stereotype.Component;
 
 import eu.etaxonomy.cdm.common.CdmUtils;
+import eu.etaxonomy.cdm.hibernate.HibernateProxyHelper;
 import eu.etaxonomy.cdm.io.common.DbImportBase;
 import eu.etaxonomy.cdm.io.common.IPartitionedIO;
 import eu.etaxonomy.cdm.io.common.ImportHelper;
@@ -31,6 +32,7 @@ import eu.etaxonomy.cdm.model.common.CdmBase;
 import eu.etaxonomy.cdm.model.name.BotanicalName;
 import eu.etaxonomy.cdm.model.name.NomenclaturalStatus;
 import eu.etaxonomy.cdm.model.name.NomenclaturalStatusType;
+import eu.etaxonomy.cdm.model.name.NonViralName;
 import eu.etaxonomy.cdm.model.name.Rank;
 import eu.etaxonomy.cdm.model.name.TaxonNameBase;
 import eu.etaxonomy.cdm.model.taxon.Synonym;
@@ -38,6 +40,7 @@ import eu.etaxonomy.cdm.model.taxon.Taxon;
 import eu.etaxonomy.cdm.model.taxon.TaxonBase;
 import eu.etaxonomy.cdm.model.taxon.TaxonRelationship;
 import eu.etaxonomy.cdm.model.taxon.TaxonRelationshipType;
+import eu.etaxonomy.cdm.strategy.parser.NonViralNameParserImpl;
 
 /**
  *
@@ -130,7 +133,7 @@ public class RedListGefaesspflanzenImportNames extends DbImportBase<RedListGefae
         String relationS = rs.getString(RedListUtil.S);
 
         //---NAME---
-        BotanicalName name = importName(state, id, taxNameString, rangString, ep1String, ep2String, ep3String,
+        NonViralName name = importName(state, id, taxNameString, rangString, ep1String, ep2String, ep3String,
                 nomZusatzString, hybString, namesToSave);
 
 
@@ -209,7 +212,7 @@ public class RedListGefaesspflanzenImportNames extends DbImportBase<RedListGefae
     }
 
     private TaxonBase importTaxon(long id, String taxNameString, String gueltString, String authorBasiString,
-            String hybString, BotanicalName name) {
+            String hybString, NonViralName name) {
         TaxonBase taxonBase = null;
         if(authorBasiString.trim().contains(RedListUtil.AUCT)){
             taxonBase = Taxon.NewInstance(name, null);
@@ -232,7 +235,7 @@ public class RedListGefaesspflanzenImportNames extends DbImportBase<RedListGefae
 
     private void importAuthors(RedListGefaesspflanzenImportState state, ResultSet rs, long id, String nomZusatzString,
             String taxZusatzString, String zusatzString, String authorKombString, String authorBasiString,
-            BotanicalName name) throws SQLException {
+            NonViralName name) throws SQLException {
         //combination author
         if(authorKombString.contains(RedListUtil.EX)){
             //TODO: what happens with multiple ex authors??
@@ -303,7 +306,7 @@ public class RedListGefaesspflanzenImportNames extends DbImportBase<RedListGefae
         checkAuthorShipConsistency(id, nomZusatzString, taxZusatzString, zusatzString, authorString, authorshipCache);
     }
 
-    private BotanicalName importName(RedListGefaesspflanzenImportState state, long id, String taxNameString,
+    private NonViralName importName(RedListGefaesspflanzenImportState state, long id, String taxNameString,
             String rangString, String ep1String, String ep2String, String ep3String, String nomZusatzString,
             String hybString, Set<TaxonNameBase> namesToSave) {
         if(CdmUtils.isBlank(taxNameString) && CdmUtils.isBlank(ep1String)){
@@ -311,7 +314,7 @@ public class RedListGefaesspflanzenImportNames extends DbImportBase<RedListGefae
         }
 
         Rank rank = makeRank(id, state, rangString);
-        BotanicalName name = BotanicalName.NewInstance(rank);
+        NonViralName name = BotanicalName.NewInstance(rank);
 
         //ep1 should always be present
         if(CdmUtils.isBlank(ep1String)){
@@ -322,10 +325,7 @@ public class RedListGefaesspflanzenImportNames extends DbImportBase<RedListGefae
             name.setSpecificEpithet(ep2String);
         }
         if(CdmUtils.isNotBlank(ep3String)){
-            if(rank==Rank.SUBSPECIES() ||
-                    rank==Rank.VARIETY()){
-                name.setInfraSpecificEpithet(ep3String);
-            }
+            name.setInfraSpecificEpithet(ep3String);
         }
         //nomenclatural status
         if(CdmUtils.isNotBlank(nomZusatzString)){
@@ -335,11 +335,40 @@ public class RedListGefaesspflanzenImportNames extends DbImportBase<RedListGefae
             }
         }
         //hybrid
-        if(hybString.equals(RedListUtil.HYB_X)){
-            name.setBinomHybrid(true);
-        }
-        else if(hybString.equals(RedListUtil.HYB_XF)){
-            name.setTrinomHybrid(true);
+        if(CdmUtils.isNotBlank(hybString)){
+            if(hybString.equals(RedListUtil.HYB_X)){
+                name.setBinomHybrid(true);
+            }
+            else if(hybString.equals(RedListUtil.HYB_XF)){
+                name.setHybridFormula(true);
+                if(ep1String.contains(RedListUtil.HYB_SIGN)){
+                    RedListUtil.logMessage(id, "EPI1 has hybrid signs but with flag: "+RedListUtil.HYB_XF, logger);
+                }
+                else if(ep2String.contains(RedListUtil.HYB_SIGN)){
+                    String[] split = ep2String.split(RedListUtil.HYB_SIGN);
+                    if(split.length!=2){
+                        RedListUtil.logMessage(id, "Multiple hybrid signs found in "+ep2String, logger);
+                    }
+                    String hybridFormula1 = ep1String+" "+split[0].trim();
+                    String hybridFormula2 = ep1String+" "+split[1].trim();
+                    if(CdmUtils.isNotBlank(ep3String)){
+                        hybridFormula1 += " "+ep3String;
+                        hybridFormula2 += " "+ep3String;
+                    }
+                    String fullFormula = hybridFormula1+" "+RedListUtil.HYB_SIGN+" "+hybridFormula2;
+                    name = NonViralNameParserImpl.NewInstance().parseFullName(fullFormula);
+                }
+                else if(ep3String.contains(RedListUtil.HYB_SIGN)){
+                    String[] split = ep3String.split(RedListUtil.HYB_SIGN);
+                    if(split.length!=2){
+                        RedListUtil.logMessage(id, "Multiple hybrid signs found in "+ep3String, logger);
+                    }
+                    String hybridFormula1 = ep1String+" "+ep2String+" "+split[0];
+                    String hybridFormula2 = ep1String+" "+ep2String+" "+split[1];
+                    String fullFormula = hybridFormula1+" "+RedListUtil.HYB_SIGN+" "+hybridFormula2;
+                    name = NonViralNameParserImpl.NewInstance().parseFullName(fullFormula);
+                }
+            }
         }
         //add source
         ImportHelper.setOriginalSource(name, state.getTransactionalSourceReference(), id, RedListUtil.NAME_NAMESPACE);
@@ -368,15 +397,25 @@ public class RedListGefaesspflanzenImportNames extends DbImportBase<RedListGefae
     }
 
     private void checkTaxonNameConsistency(long id, String taxNameString, String hybString, TaxonBase taxonBase) {
-        String nameCache = ((BotanicalName)taxonBase.getName()).getNameCache().trim();
+        if(hybString.equals(RedListUtil.HYB_XF)){
+            if(HibernateProxyHelper.deproxy(taxonBase.getName(),NonViralName.class).getHybridChildRelations().isEmpty()){
+                RedListUtil.logMessage(id, "Hybrid name but no hybrid child relations", logger);
+                return;
+            }
+            return;
+        }
+
+
+        String nameCache = HibernateProxyHelper.deproxy(taxonBase.getName(), NonViralName.class).getNameCache().trim();
 
         if(taxNameString.endsWith("agg.")){
             taxNameString = taxNameString.replace("agg.", "aggr.");
         }
-        if(hybString.equalsIgnoreCase(RedListUtil.HYB_X)){
+        if(hybString.equals(RedListUtil.HYB_X)){
             taxNameString = taxNameString.replace("× ", "×");//hybrid sign has no space after it in titleCache for binomial hybrids
         }
-        if(taxNameString.endsWith(Rank.SPECIESGROUP().toString())){
+//        if(taxNameString.endsWith(Rank.SPECIESGROUP().toString())){
+        if(taxNameString.endsWith("species group")){
             taxNameString.replaceAll(Rank.SPECIESGROUP().toString(), "- Gruppe");
             if(!taxNameString.trim().equals(nameCache)){
                 taxNameString.replaceAll(Rank.SPECIESGROUP().toString(), "- group");
