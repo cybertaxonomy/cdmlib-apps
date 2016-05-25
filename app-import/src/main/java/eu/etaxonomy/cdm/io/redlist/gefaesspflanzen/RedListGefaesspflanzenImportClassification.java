@@ -132,11 +132,19 @@ public class RedListGefaesspflanzenImportClassification extends DbImportBase<Red
 
         //Gesamtliste
         TaxonBase taxonBaseGL = state.getRelatedObject(RedListUtil.TAXON_GESAMTLISTE_NAMESPACE, String.valueOf(id), TaxonBase.class);
+        TaxonBase parentBaseGL = state.getRelatedObject(RedListUtil.TAXON_GESAMTLISTE_NAMESPACE, parentId, TaxonBase.class);
+        if(parentBaseGL!=null && !parentBaseGL.isInstanceOf(Taxon.class)){
+            RedListUtil.logMessage(id, parentBaseGL+" is no taxon but is a parent of "+taxonBaseGL+" (Gesamtliste)", logger);
+        }
         Taxon parentGL = (Taxon) state.getRelatedObject(RedListUtil.TAXON_GESAMTLISTE_NAMESPACE, parentId, TaxonBase.class);
         createParentChildNodes(gesamtListeClassification, id, gueltString, taxZusatzString, taxonBaseGL, parentGL);
 
         //Checkliste
         TaxonBase taxonBaseCL = state.getRelatedObject(RedListUtil.TAXON_CHECKLISTE_NAMESPACE, String.valueOf(id), TaxonBase.class);
+        TaxonBase parentBaseCL = state.getRelatedObject(RedListUtil.TAXON_CHECKLISTE_NAMESPACE, parentId, TaxonBase.class);
+        if(parentBaseCL!=null && !parentBaseCL.isInstanceOf(Taxon.class)){
+            RedListUtil.logMessage(id, parentBaseCL+" is no taxon but is a parent of "+taxonBaseCL+" (Checkliste)", logger);
+        }
         Taxon parentCL = (Taxon) state.getRelatedObject(RedListUtil.TAXON_CHECKLISTE_NAMESPACE, parentId, TaxonBase.class);
         if(taxonBaseCL!=null){//null check necessary because not all taxa exist in the checklist
             createParentChildNodes(checklistClassification, id, gueltString, taxZusatzString, taxonBaseCL, parentCL);
@@ -169,7 +177,7 @@ public class RedListGefaesspflanzenImportClassification extends DbImportBase<Red
     private void createParentChildNodes(Classification classification, long id, String gueltString,
             String taxZusatzString, TaxonBase taxonBase, Taxon parent) {
         if(taxonBase==null){
-            RedListUtil.logMessage(id, "child taxon/synonym of "+parent+"  is null. ("+classification.getTitleCache()+")" , logger);
+            RedListUtil.logMessage(id, "child taxon/synonym of "+parent+"  is null. ("+classification.generateTitle()+")" , logger);
             return;
         }
         //taxon
