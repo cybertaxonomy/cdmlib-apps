@@ -147,6 +147,7 @@ public class RedListGefaesspflanzenImportNames extends DbImportBase<RedListGefae
             RedListUtil.logMessage(id, "Taxon for name "+name+" could not be created.", logger);
             return;
         }
+        taxonBase.setSec(state.getConfig().getSourceReference());
 
         //---CONCEPT RELATIONSHIPS---
         /*check if taxon/synonym also exists in other classification
