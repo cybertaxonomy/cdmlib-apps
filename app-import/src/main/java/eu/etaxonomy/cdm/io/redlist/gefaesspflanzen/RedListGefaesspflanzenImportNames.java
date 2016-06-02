@@ -29,6 +29,9 @@ import eu.etaxonomy.cdm.io.common.mapping.UndefinedTransformerMethodException;
 import eu.etaxonomy.cdm.model.agent.AgentBase;
 import eu.etaxonomy.cdm.model.agent.TeamOrPersonBase;
 import eu.etaxonomy.cdm.model.common.CdmBase;
+import eu.etaxonomy.cdm.model.common.Language;
+import eu.etaxonomy.cdm.model.description.CommonTaxonName;
+import eu.etaxonomy.cdm.model.description.TaxonDescription;
 import eu.etaxonomy.cdm.model.name.BotanicalName;
 import eu.etaxonomy.cdm.model.name.NomenclaturalStatus;
 import eu.etaxonomy.cdm.model.name.NomenclaturalStatusType;
@@ -119,6 +122,7 @@ public class RedListGefaesspflanzenImportNames extends DbImportBase<RedListGefae
         String zusatzString = rs.getString(RedListUtil.ZUSATZ);
         String nonString = rs.getString(RedListUtil.NON);
         String sensuString = rs.getString(RedListUtil.SENSU);
+        String trivialString = rs.getString(RedListUtil.TRIVIAL);
         String authorKombString = rs.getString(RedListUtil.AUTOR_KOMB);
         String authorBasiString = rs.getString(RedListUtil.AUTOR_BASI);
         String hybString = rs.getString(RedListUtil.HYB);
@@ -142,7 +146,7 @@ public class RedListGefaesspflanzenImportNames extends DbImportBase<RedListGefae
                 authorBasiString, name);
 
         //---TAXON---
-        TaxonBase taxonBase = importTaxon(id, taxNameString, gueltString, authorBasiString, hybString, name);
+        TaxonBase taxonBase = importTaxon(id, taxNameString, gueltString, authorBasiString, hybString, trivialString, name);
         if(taxonBase==null){
             RedListUtil.logMessage(id, "Taxon for name "+name+" could not be created.", logger);
             return;
@@ -213,7 +217,7 @@ public class RedListGefaesspflanzenImportNames extends DbImportBase<RedListGefae
     }
 
     private TaxonBase importTaxon(long id, String taxNameString, String gueltString, String authorBasiString,
-            String hybString, NonViralName name) {
+            String hybString, String trivialString, NonViralName name) {
         TaxonBase taxonBase = null;
         if(authorBasiString.trim().contains(RedListUtil.AUCT)){
             taxonBase = Taxon.NewInstance(name, null);
@@ -227,6 +231,13 @@ public class RedListGefaesspflanzenImportNames extends DbImportBase<RedListGefae
         }
         else{
             return null;
+        }
+
+        //common name
+        if(taxonBase.isInstanceOf(Taxon.class) && trivialString!=null){
+            Taxon taxon = HibernateProxyHelper.deproxy(taxonBase, Taxon.class);
+            TaxonDescription description = TaxonDescription.NewInstance(taxon);
+            description.addElement(CommonTaxonName.NewInstance(trivialString, Language.getDefaultLanguage()));
         }
 
         //check taxon name consistency
