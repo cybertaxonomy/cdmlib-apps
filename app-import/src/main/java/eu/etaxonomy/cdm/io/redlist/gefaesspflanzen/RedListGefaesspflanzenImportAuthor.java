@@ -83,7 +83,6 @@ public class RedListGefaesspflanzenImportAuthor extends DbImportBase<RedListGefa
         try{
             while(rs.next()){
                 String authorName = rs.getString(columnName);
-                TeamOrPersonBase teamOrPerson = null;
                 if(CdmUtils.isNotBlank(authorName)){
                     makePerson(state, authorName);
                 }
@@ -98,7 +97,7 @@ public class RedListGefaesspflanzenImportAuthor extends DbImportBase<RedListGefa
         if(authorName.trim().equals(RedListUtil.AUCT)){
             return;
         }
-        TeamOrPersonBase teamOrPerson;
+        TeamOrPersonBase<?> teamOrPerson;
         //check if there are ex authors
         if(authorName.contains(RedListUtil.EX)){
             String[] split = authorName.split(RedListUtil.EX);

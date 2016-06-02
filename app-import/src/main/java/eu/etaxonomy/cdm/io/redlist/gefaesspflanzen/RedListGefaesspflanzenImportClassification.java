@@ -131,8 +131,8 @@ public class RedListGefaesspflanzenImportClassification extends DbImportBase<Red
         String taxZusatzString = rs.getString(RedListUtil.TAX_ZUSATZ);
 
         //Gesamtliste
-        TaxonBase taxonBaseGL = state.getRelatedObject(RedListUtil.TAXON_GESAMTLISTE_NAMESPACE, String.valueOf(id), TaxonBase.class);
-        TaxonBase parentBaseGL = state.getRelatedObject(RedListUtil.TAXON_GESAMTLISTE_NAMESPACE, parentId, TaxonBase.class);
+        TaxonBase<?> taxonBaseGL = state.getRelatedObject(RedListUtil.TAXON_GESAMTLISTE_NAMESPACE, String.valueOf(id), TaxonBase.class);
+        TaxonBase<?> parentBaseGL = state.getRelatedObject(RedListUtil.TAXON_GESAMTLISTE_NAMESPACE, parentId, TaxonBase.class);
         if(parentBaseGL!=null && !parentBaseGL.isInstanceOf(Taxon.class)){
             RedListUtil.logMessage(id, parentBaseGL+" is no taxon but is a parent of "+taxonBaseGL+" (Gesamtliste)", logger);
         }
@@ -140,8 +140,8 @@ public class RedListGefaesspflanzenImportClassification extends DbImportBase<Red
         createParentChildNodes(gesamtListeClassification, id, gueltString, taxZusatzString, taxonBaseGL, parentGL);
 
         //Checkliste
-        TaxonBase taxonBaseCL = state.getRelatedObject(RedListUtil.TAXON_CHECKLISTE_NAMESPACE, String.valueOf(id), TaxonBase.class);
-        TaxonBase parentBaseCL = state.getRelatedObject(RedListUtil.TAXON_CHECKLISTE_NAMESPACE, parentId, TaxonBase.class);
+        TaxonBase<?> taxonBaseCL = state.getRelatedObject(RedListUtil.TAXON_CHECKLISTE_NAMESPACE, String.valueOf(id), TaxonBase.class);
+        TaxonBase<?> parentBaseCL = state.getRelatedObject(RedListUtil.TAXON_CHECKLISTE_NAMESPACE, parentId, TaxonBase.class);
         if(parentBaseCL!=null && !parentBaseCL.isInstanceOf(Taxon.class)){
             RedListUtil.logMessage(id, parentBaseCL+" is no taxon but is a parent of "+taxonBaseCL+" (Checkliste)", logger);
         }
@@ -175,7 +175,7 @@ public class RedListGefaesspflanzenImportClassification extends DbImportBase<Red
     }
 
     private void createParentChildNodes(Classification classification, long id, String gueltString,
-            String taxZusatzString, TaxonBase taxonBase, Taxon parent) {
+            String taxZusatzString, TaxonBase<?> taxonBase, Taxon parent) {
         if(taxonBase==null){
             RedListUtil.logMessage(id, "child taxon/synonym of "+parent+"  is null. ("+classification.generateTitle()+")" , logger);
             return;
