@@ -452,6 +452,7 @@ public class RedListGefaesspflanzenImportNames extends DbImportBase<RedListGefae
         if(taxNameString.endsWith("- group")){
             taxNameString.replaceAll("- group", "species group");
         }
+        taxNameString = taxNameString.replace("[ranglos]", "[unranked]");
         if(!taxNameString.trim().equals(nameCache)){
             RedListUtil.logMessage(id, "Taxon name inconsistent! taxon.titleCache <-> Column "+RedListUtil.TAXNAME+": "+nameCache+" <-> "+taxNameString, logger);
         }
