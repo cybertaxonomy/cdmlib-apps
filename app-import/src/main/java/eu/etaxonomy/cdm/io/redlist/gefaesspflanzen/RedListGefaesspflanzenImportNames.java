@@ -340,6 +340,9 @@ public class RedListGefaesspflanzenImportNames extends DbImportBase<RedListGefae
             if(hybString.equals(RedListUtil.HYB_X)){
                 name.setBinomHybrid(true);
             }
+            else if(hybString.equals(RedListUtil.HYB_G)){
+                name.setMonomHybrid(true);
+            }
             else if(hybString.equals(RedListUtil.HYB_XF)){
                 name.setHybridFormula(true);
                 if(ep1String.contains(RedListUtil.HYB_SIGN)){
@@ -369,6 +372,20 @@ public class RedListGefaesspflanzenImportNames extends DbImportBase<RedListGefae
                     String fullFormula = hybridFormula1+" "+RedListUtil.HYB_SIGN+" "+hybridFormula2;
                     name = NonViralNameParserImpl.NewInstance().parseFullName(fullFormula);
                 }
+            }
+            else if(hybString.equals(RedListUtil.HYB_N)){
+                name = NonViralNameParserImpl.NewInstance().parseFullName(ep1String+" "+ep2String+" nothosubsp. "+ep3String);
+            }
+            else if(hybString.equals(RedListUtil.HYB_GF)){
+                if(ep1String.contains(RedListUtil.HYB_SIGN)){
+                    name = NonViralNameParserImpl.NewInstance().parseFullName(ep1String);
+                }
+                else{
+                    RedListUtil.logMessage(id, "HYB is "+hybString+" but "+RedListUtil.HYB+" does not contain "+RedListUtil.HYB_SIGN, logger);
+                }
+            }
+            else{
+                logger.error("HYB value "+hybString+" not yet handled");
             }
         }
         //add source
