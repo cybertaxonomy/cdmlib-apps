@@ -328,7 +328,7 @@ public class RedListGefaesspflanzenImportNames extends DbImportBase<RedListGefae
             RedListUtil.logMessage(id, "No name found!", logger);
         }
 
-        Rank rank = makeRank(id, state, rangString);
+        Rank rank = makeRank(id, state, rangString, ep3String!=null);
         NonViralName<?> name = BotanicalName.NewInstance(rank);
 
         //ep1 should always be present
@@ -457,10 +457,21 @@ public class RedListGefaesspflanzenImportNames extends DbImportBase<RedListGefae
         }
     }
 
-    private Rank makeRank(long id, RedListGefaesspflanzenImportState state, String rankStr) {
+    private Rank makeRank(long id, RedListGefaesspflanzenImportState state, String rankStr, boolean hasSpecificEpithet) {
         Rank rank = null;
         try {
-            rank = state.getTransformer().getRankByKey(rankStr);
+            if(rankStr.equals("ORA")){
+                //special handling for ORA because of two possibilities
+                if(hasSpecificEpithet){
+                    return Rank.UNRANKED_INFRASPECIFIC();
+                }
+                else{
+                    return Rank.UNRANKED_INFRAGENERIC();
+                }
+            }
+            else{
+                rank = state.getTransformer().getRankByKey(rankStr);
+            }
         } catch (UndefinedTransformerMethodException e) {
             e.printStackTrace();
         }
