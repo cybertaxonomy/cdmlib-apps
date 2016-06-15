@@ -171,6 +171,7 @@ public class RedListGefaesspflanzenImportClassification extends DbImportBase<Red
 
     private void addTaxonToClassification(Classification classification, String classificationNamespace, long id, RedListGefaesspflanzenImportState state){
         Taxon taxon = HibernateProxyHelper.deproxy(state.getRelatedObject(classificationNamespace, String.valueOf(id), TaxonBase.class), Taxon.class);
+        taxon.setSec(classification.getReference());
         classification.addChildTaxon(taxon, null, null);
     }
 

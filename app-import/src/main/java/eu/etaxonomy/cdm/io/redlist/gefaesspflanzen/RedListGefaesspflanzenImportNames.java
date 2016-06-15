@@ -133,7 +133,6 @@ public class RedListGefaesspflanzenImportNames extends DbImportBase<RedListGefae
             RedListUtil.logMessage(id, "Taxon for name "+name+" could not be created.", logger);
             return;
         }
-        taxonBase.setSec(state.getConfig().getSourceReference());
 
         //---CONCEPT RELATIONSHIPS---
         /*check if taxon/synonym also exists in other classification
@@ -183,7 +182,6 @@ public class RedListGefaesspflanzenImportNames extends DbImportBase<RedListGefae
      */
     private void cloneTaxon(TaxonBase<?> taxonBase, TaxonNameBase<?, ?> name, TaxonRelationshipType relationFromCloneToTaxon, Set<TaxonBase<?>> taxaToSave, long id, String sourceNameSpace, boolean reverseRelation, boolean doubtful, RedListGefaesspflanzenImportState state){
         TaxonBase<?> clone = (TaxonBase<?>) taxonBase.clone();
-        clone.setName(name);
         if(taxonBase.isInstanceOf(Taxon.class)){
             TaxonRelationship taxonRelation;
             if(reverseRelation){
