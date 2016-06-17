@@ -41,9 +41,9 @@ public class CubaActivator {
 	//database validation status (create, update, validate ...)
 	static DbSchemaValidation hbm2dll = DbSchemaValidation.VALIDATE;
 
-//    static final ICdmDataSource cdmDestination = CdmDestinations.localH2();
+    static final ICdmDataSource cdmDestination = CdmDestinations.localH2();
 //	static final ICdmDataSource cdmDestination = CdmDestinations.cdm_test_local_mysql_test();
-    static final ICdmDataSource cdmDestination = CdmDestinations.cdm_cuba_production();
+//    static final ICdmDataSource cdmDestination = CdmDestinations.cdm_cuba_production();
 
 	static boolean invers = true;
 
