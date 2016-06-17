@@ -85,7 +85,7 @@ public class FaunaEuropaeaUsersImport extends FaunaEuropaeaImportBase {
 		logger.warn("Start User doInvoke");
 		ProfilerController.memorySnapshot();
 		*/
-		
+
 		if (!state.getConfig().isDoAuthors()){
 			return;
 		}
