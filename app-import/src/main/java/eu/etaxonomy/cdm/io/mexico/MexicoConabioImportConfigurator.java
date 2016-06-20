@@ -52,7 +52,9 @@ public class MexicoConabioImportConfigurator extends ExcelImportConfiguratorBase
     @Override
     protected void makeIoClassList() {
         ioClassList = new Class[]{
-                MexicoConabioTaxonImport.class
+                MexicoConabioTaxonImport.class,
+                MexicoConabioDistributionImport.class,
+                MexicoConabioCommonNamesImport.class
         };
     }
 

@@ -12,6 +12,7 @@ package eu.etaxonomy.cdm.io.mexico;
 import java.net.URI;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Set;
 import java.util.UUID;
 
 import org.apache.commons.lang3.StringUtils;
@@ -44,30 +45,39 @@ public class MexicoConabioCommonNamesImport<CONFIG extends MexicoConabioImportCo
     private TermVocabulary<Language> languagesVoc;
     private Map<String, Language> languagesMap = new HashMap<>();
 
+    private Map<String, Taxon> taxonIdMap;
+
+
+    @Override
+    protected String getWorksheetName() {
+        return "NombresComunes";
+    }
 
     @Override
     protected void firstPass(SimpleExcelTaxonImportState<CONFIG> state) {
         initLanguageVocabulary(state);
+        initTaxa();
 
         String line = state.getCurrentLine() + ": ";
         HashMap<String, String> record = state.getOriginalRecord();
 
         String idCat = getValue(record, "IdCAT");
-        Taxon taxon = state.getHigherTaxon(idCat);
+        Taxon taxon = taxonIdMap.get(idCat);
         if (taxon == null){
             logger.warn(line + "Taxon could not be found: " + idCat);
         }else{
             TaxonDescription desc = getTaxonDescription(taxon);
             String nomComunStr = getValue(record, "NomComun");
-            String langStr = getValue(record, "Lengua");
+            String langStr = getValueNd(record, "Lengua");
             Language language = languagesMap.get(langStr);
-            if (language == null){
+            if (language == null && langStr != null){
                 logger.warn("Language not found: " + langStr);
             }
 
             String refStr = getValue(record, "ReferenciasNombreComun");
             CommonTaxonName commonName = CommonTaxonName.NewInstance(nomComunStr,
                     language, null);
+            desc.addElement(commonName);
 
             Reference ref = getReference(state, refStr);
             if (ref != null){
@@ -77,6 +87,15 @@ public class MexicoConabioCommonNamesImport<CONFIG extends MexicoConabioImportCo
 
 
             getTaxonService().save(taxon);
+        }
+    }
+
+    @SuppressWarnings("unchecked")
+    private void initTaxa() {
+        if (taxonIdMap == null){
+            Set<String> existingKeys = MexicoConabioTaxonImport.taxonIdMap.keySet();
+            taxonIdMap = (Map<String, Taxon>)getCommonService().getSourcedObjectsByIdInSource(Taxon.class,
+                    existingKeys, MexicoConabioTaxonImport.TAXON_NAMESPACE);
         }
     }
 
@@ -100,12 +119,31 @@ public class MexicoConabioCommonNamesImport<CONFIG extends MexicoConabioImportCo
     private void createLanguagesVoc(SimpleExcelTaxonImportState<CONFIG> state) {
         URI termSourceUri = null;
         String label = "Mexican States";
-        String description = "Mexican States as used by the CONABIO Rubiaceae database";
+        String description = "Mexican languages as used by the CONABIO Rubiaceae database";
         languagesVoc = TermVocabulary.NewInstance(TermType.Language,
                 description, label, null, termSourceUri);
         languagesVoc.setUuid(MexicoConabioTransformer.uuidMexicanLanguagesVoc);
 
-        addLanguage(state, "Aguascalientes", MexicoConabioTransformer.uuidAguascalientes);
+        addLanguage(state, "Chontal", MexicoConabioTransformer.uuidChontal);
+        addLanguage(state, "Chinanteco", MexicoConabioTransformer.uuidChinanteco);
+        addLanguage(state, "Chiapaneca", MexicoConabioTransformer.uuidChiapaneca);
+        addLanguage(state, "Huasteco", MexicoConabioTransformer.uuidHuasteco);
+        addLanguage(state, "Español-Maya", MexicoConabioTransformer.uuidEspanol_Maya);
+        addLanguage(state, "Guarijío", MexicoConabioTransformer.uuidGuarijio);
+        addLanguage(state, "Huave", MexicoConabioTransformer.uuidHuave);
+        addLanguage(state, "Español", MexicoConabioTransformer.uuidEspanol);
+        addLanguage(state, "Maya", MexicoConabioTransformer.uuidMaya);
+        addLanguage(state, "Lacandón", MexicoConabioTransformer.uuidLacandon);
+        addLanguage(state, "Inglés", MexicoConabioTransformer.uuidIngles);
+        addLanguage(state, "Itzmal", MexicoConabioTransformer.uuidItzmal);
+        addLanguage(state, "Náhuatl", MexicoConabioTransformer.uuidNahuatl);
+        addLanguage(state, "Tarahumara", MexicoConabioTransformer.uuidTarahumara);
+        addLanguage(state, "Otomí", MexicoConabioTransformer.uuidOtomi);
+        addLanguage(state, "Mixe", MexicoConabioTransformer.uuidMixe);
+        addLanguage(state, "Tseltal", MexicoConabioTransformer.uuidTseltal);
+        addLanguage(state, "Zapoteco", MexicoConabioTransformer.uuidZapoteco);
+        addLanguage(state, "Totonaco", MexicoConabioTransformer.uuidTotonaco);
+        addLanguage(state, "Tarasco", MexicoConabioTransformer.uuidTarasco);
 
         this.getVocabularyService().save(languagesVoc);
 
@@ -154,6 +192,15 @@ public class MexicoConabioCommonNamesImport<CONFIG extends MexicoConabioImportCo
         }else{
             TaxonDescription desc = TaxonDescription.NewInstance(taxon);
             return desc;
+        }
+    }
+
+    private String getValueNd(HashMap<String, String> record, String string) {
+        String value = getValue(record, string);
+        if ("ND".equals(value)){
+            return null;
+        }else{
+            return value;
         }
     }
 

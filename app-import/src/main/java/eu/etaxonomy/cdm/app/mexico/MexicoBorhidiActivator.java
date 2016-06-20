@@ -20,6 +20,7 @@ import eu.etaxonomy.cdm.database.ICdmDataSource;
 import eu.etaxonomy.cdm.io.common.CdmDefaultImport;
 import eu.etaxonomy.cdm.io.common.IImportConfigurator.CHECK;
 import eu.etaxonomy.cdm.io.mexico.MexicoBorhidiImportConfigurator;
+import eu.etaxonomy.cdm.io.mexico.MexicoConabioTransformer;
 import eu.etaxonomy.cdm.model.agent.Person;
 import eu.etaxonomy.cdm.model.reference.Reference;
 import eu.etaxonomy.cdm.model.reference.ReferenceFactory;
@@ -37,8 +38,8 @@ public class MexicoBorhidiActivator {
     //database validation status (create, update, validate ...)
     static DbSchemaValidation hbm2dll = DbSchemaValidation.CREATE;
 
-    static final ICdmDataSource cdmDestination = CdmDestinations.localH2();
-//  static final ICdmDataSource cdmDestination = CdmDestinations.cdm_test_local_mysql_test();
+//    static final ICdmDataSource cdmDestination = CdmDestinations.localH2();
+  static final ICdmDataSource cdmDestination = CdmDestinations.cdm_test_local_mysql_test();
 //    static final ICdmDataSource cdmDestination = CdmDestinations.cdm_mexico_rubiaceae_production();
 
     static boolean invers = true;
@@ -64,7 +65,7 @@ public class MexicoBorhidiActivator {
 //    static final boolean doTaxa = false;
 //    static final boolean doDeduplicate = true;
 
-    private void doImport(ICdmDataSource cdmDestination){
+    protected void doImport(ICdmDataSource cdmDestination){
 
         URI source = borhidi();
 
@@ -87,16 +88,10 @@ public class MexicoBorhidiActivator {
         logger.warn(message);
 
         config.setSourceReference(getSourceReference(sourceReferenceTitle));
-//        config.setDoVocabularies(doVocabularies);
 
         CdmDefaultImport<MexicoBorhidiImportConfigurator> myImport = new CdmDefaultImport<MexicoBorhidiImportConfigurator>();
 
         myImport.invoke(config);
-
-//        if (makeFeatureTree){
-//            FeatureTree tree = makeFeatureNodes(myImport.getCdmAppController().getTermService());
-//            myImport.getCdmAppController().getFeatureTreeService().saveOrUpdate(tree);
-//        }
 
         System.out.println("End import from ("+ source.toString() + ")...");
 
@@ -110,15 +105,15 @@ public class MexicoBorhidiActivator {
 
     private Reference getSourceReference(@SuppressWarnings("unused") String string) {
         Reference result = ReferenceFactory.newBook();
-//        result.setTitleCache(string, true);
         result.setTitle("Rubiáceas de México");
         result.setPlacePublished("Budapest");
         result.setPublisher("Akadémiai Kiadó");
-        result.setPages("512 pp.");
-        result.setDatePublished(TimePeriodParser.parseString("2006"));
+        result.setPages("608 pp.");
+        result.setDatePublished(TimePeriodParser.parseString("2012"));
         Person borhidi = Person.NewTitledInstance("Borhidi");
         borhidi.setFirstname("Attila");
         result.setAuthorship(borhidi);
+        result.setUuid(MexicoConabioTransformer.uuidReferenceBorhidi);
         return result;
     }
 

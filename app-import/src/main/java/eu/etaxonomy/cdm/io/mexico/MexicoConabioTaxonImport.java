@@ -11,6 +11,7 @@ package eu.etaxonomy.cdm.io.mexico;
 
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -24,6 +25,7 @@ import eu.etaxonomy.cdm.model.agent.Person;
 import eu.etaxonomy.cdm.model.agent.Team;
 import eu.etaxonomy.cdm.model.common.Annotation;
 import eu.etaxonomy.cdm.model.common.AnnotationType;
+import eu.etaxonomy.cdm.model.common.CdmBase;
 import eu.etaxonomy.cdm.model.common.Extension;
 import eu.etaxonomy.cdm.model.common.ExtensionType;
 import eu.etaxonomy.cdm.model.common.Language;
@@ -42,6 +44,8 @@ import eu.etaxonomy.cdm.model.taxon.Synonym;
 import eu.etaxonomy.cdm.model.taxon.SynonymRelationshipType;
 import eu.etaxonomy.cdm.model.taxon.Taxon;
 import eu.etaxonomy.cdm.model.taxon.TaxonBase;
+import eu.etaxonomy.cdm.model.taxon.TaxonRelationship;
+import eu.etaxonomy.cdm.model.taxon.TaxonRelationshipType;
 import eu.etaxonomy.cdm.strategy.exceptions.UnknownCdmTypeException;
 import eu.etaxonomy.cdm.strategy.parser.TimePeriodParser;
 
@@ -58,7 +62,15 @@ public class MexicoConabioTaxonImport<CONFIG extends MexicoConabioImportConfigur
 
     private static final Logger logger = Logger.getLogger(MexicoConabioTaxonImport.class);
 
-    private final Map<String, TaxonBase<?>> taxonIdMap = new HashMap<>();
+    public static final String TAXON_NAMESPACE = "Taxonomia";
+
+    @Override
+    protected String getWorksheetName() {
+        return "Taxonomia";
+    }
+
+    //dirty I know, but who cares, needed by distribution and commmon name import
+    protected static final Map<String, TaxonBase<?>> taxonIdMap = new HashMap<>();
 
     private Classification classification;
 
@@ -122,13 +134,10 @@ public class MexicoConabioTaxonImport<CONFIG extends MexicoConabioImportConfigur
         }
 
         String idCat = getValue(record, "IdCAT");
-        this.addOriginalSource(taxonBase, idCat, "IdCAT", state.getConfig().getSourceReference());
+        this.addOriginalSource(taxonBase, idCat, TAXON_NAMESPACE, state.getConfig().getSourceReference());
 
         getTaxonService().save(taxonBase);
         taxonIdMap.put(idCat, taxonBase);
-        if (taxonBase instanceof Taxon){
-            state.putHigherTaxon(idCat, (Taxon)taxonBase);
-        }
 
     }
 
@@ -182,7 +191,6 @@ public class MexicoConabioTaxonImport<CONFIG extends MexicoConabioImportConfigur
 
         String authorStr = getValueNd(record, "AutorSinAnio");
         String nameStr = getValue(record, "Nombre");
-        String fullNameStr = nameStr + (authorStr != null ? " " + authorStr : "");
         String nomRefStr = getValue(record, "CitaNomenclatural");
         String refType = getValue(record, "ReferenceType");
         String idCat = getValue(record, "IdCAT");
@@ -191,9 +199,15 @@ public class MexicoConabioTaxonImport<CONFIG extends MexicoConabioImportConfigur
         Rank rank = null;
         try {
             rank = state.getTransformer().getRankByKey(rankStr);
+            if (Rank.SUBSPECIES().equals(rank) || Rank.VARIETY().equals(rank)){
+                int i = nameStr.lastIndexOf(" ");
+                nameStr = nameStr.substring(0, i) + " " + rank.getAbbreviation() + nameStr.substring(i);
+            }
         } catch (UndefinedTransformerMethodException e) {
             logger.warn(line + "Rank not recognized: " + rankStr);
         }
+
+        String fullNameStr = nameStr + (authorStr != null ? " " + authorStr : "");
 
         BotanicalName fullName = (BotanicalName)nameParser.parseFullName(fullNameStr, NomenclaturalCode.ICNAFP, rank);
         if (fullName.isProtectedTitleCache()){
@@ -203,35 +217,32 @@ public class MexicoConabioTaxonImport<CONFIG extends MexicoConabioImportConfigur
         }
         BotanicalName existingName = getExistingName(state, fullName);
 
-        String refNameStr = fullNameStr;
-        if ("A".equals(refType)){  //Article
-            refNameStr = fullNameStr + " in " + nomRefStr;
-        }else if ("B".equals(refType)){   //Book
-            refNameStr = fullNameStr + ", " + nomRefStr;
-        }
+        String refNameStr = getRefNameStr(nomRefStr, refType, fullNameStr);
 
-        BotanicalName referencedName = (BotanicalName)nameParser.parseFullName(refNameStr, NomenclaturalCode.ICNAFP, rank);
+        BotanicalName referencedName = (BotanicalName)nameParser.parseReferencedName(refNameStr, NomenclaturalCode.ICNAFP, rank);
         if (referencedName.isProtectedFullTitleCache() || referencedName.isProtectedTitleCache()){
             logger.warn(line + "Referenced name could not be parsed: " + refNameStr );
-            BotanicalName tmp = (BotanicalName)nameParser.parseFullName(refNameStr, NomenclaturalCode.ICNAFP, rank);
-
         }else{
             replaceAuthorNames(state, referencedName);
         }
 
         BotanicalName result= referencedName;
+        Boolean equal = null;
         if (existingName != null){
             String existingRefTitle = existingName.getFullTitleCache();
             String conabioRefTitle = referencedName.getFullTitleCache();
-            addNomRefExtension(state, referencedName);
             if (!existingRefTitle.equals(conabioRefTitle)){
                 existingName.setNomenclaturalMicroReference(referencedName.getNomenclaturalMicroReference());
                 existingName.setNomenclaturalReference(referencedName.getNomenclaturalReference());
-                result = existingName;
+                equal = false;
+            }else{
+                equal = true;
             }
+            result = existingName;
         }
+        addNomRefExtension(state, result, equal);
 
-        if (annotation != null && (annotation.equals("nom. illeg.") || annotation.equals("nom. cons."))){
+        if (annotation != null && ! annotation.equals("nom. illeg.") && ! annotation.equals("nom. cons.")){
             try {
                 NomenclaturalStatusType nomStatusType = NomenclaturalStatusType.getNomenclaturalStatusTypeByAbbreviation(annotation, result);
                 result.addStatus(NomenclaturalStatus.NewInstance(nomStatusType));
@@ -240,21 +251,42 @@ public class MexicoConabioTaxonImport<CONFIG extends MexicoConabioImportConfigur
             }
         }
 
-        this.addOriginalSource(result, idCat, "IdCAT", state.getConfig().getSourceReference());
+        this.addOriginalSource(result, idCat, TAXON_NAMESPACE + "_Name", state.getConfig().getSourceReference());
 
         return result;
     }
 
+
+
+    /**
+     * @param nomRefStr
+     * @param refType
+     * @param fullNameStr
+     * @return
+     */
+    private String getRefNameStr(String nomRefStr, String refType, String fullNameStr) {
+        String refNameStr = fullNameStr;
+        if ("A".equals(refType)){  //Article
+            refNameStr = fullNameStr + " in " + nomRefStr;
+        }else if ("B".equals(refType)){   //Book
+            refNameStr = fullNameStr + ", " + nomRefStr;
+        }
+        return refNameStr;
+    }
+
     /**
      * @param state
+     * @param equal
      * @param referencedName
      */
-    private void addNomRefExtension(SimpleExcelTaxonImportState<CONFIG> state, BotanicalName name) {
+    private void addNomRefExtension(SimpleExcelTaxonImportState<CONFIG> state, BotanicalName name, Boolean equal) {
+        String equalStr = equal == null ? "" : equal == true ? "EQUAL\n" : "NOT EQUAL\n";
+        name.setFullTitleCache(null, false);
         String newExtensionStr = name.getFullTitleCache() + " - CONABIO";
         UUID uuidNomRefExtension = MexicoConabioTransformer.uuidNomRefExtension;
         for (Extension extension : name.getExtensions()){
             if (extension.getType().getUuid().equals(uuidNomRefExtension)){
-                extension.setValue(extension.getValue() + "\n" + newExtensionStr);
+                extension.setValue(equalStr + extension.getValue() + "\n" + newExtensionStr);
                 return;
             }
         }
@@ -318,21 +350,66 @@ public class MexicoConabioTaxonImport<CONFIG extends MexicoConabioImportConfigur
             if (parent == null){
                 logger.warn(line + "Parent is missing: "+ parentStr);
             }else{
+                Taxon taxon = (Taxon)taxonBase;
                 Reference relRef = null;  //TODO
-                classification.addParentChild(parent, (Taxon)taxonBase, relRef, null);
+                classification.addParentChild(parent, taxon, relRef, null);
+                makeConceptRelation(line, taxon.getName());
+
             }
         }else if (statusStr.startsWith("sin")){
             parent = (Taxon)taxonIdMap.get(relStr);
             if (parent == null){
-                logger.warn(line + "Parent is missing: "+ relStr);
+                logger.warn(line + "Accepted taxon is missing: "+ relStr);
             }else{
+                Synonym synonym = (Synonym)taxonBase;
                 Reference synRef = null; //null
-                parent.addSynonym((Synonym)taxonBase, SynonymRelationshipType.SYNONYM_OF(), synRef, null);
+                parent.addSynonym(synonym, SynonymRelationshipType.SYNONYM_OF(), synRef, null);
+                makeConceptRelation(line, synonym.getName());
             }
         }
     }
 
      /**
+     * @param line
+     * @param name
+     */
+    private void makeConceptRelation(String line, TaxonNameBase<?,?> name) {
+        if (name.getTaxonBases().size()==2){
+            Iterator<TaxonBase> it = name.getTaxonBases().iterator();
+            Taxon taxon1 = getAccepted(it.next());
+            Taxon taxon2 = getAccepted(it.next());
+            Reference citation = null;
+            TaxonRelationship rel;
+            if (taxon1.getSec().getUuid().equals(MexicoConabioTransformer.uuidReferenceBorhidi)){
+                rel = taxon1.addTaxonRelation(taxon2, TaxonRelationshipType.CONGRUENT_TO(),
+                        citation, null);
+            }else{
+                rel = taxon2.addTaxonRelation(taxon1, TaxonRelationshipType.CONGRUENT_TO(),
+                        citation, null);
+            }
+            rel.setDoubtful(true);
+        }else if (name.getTaxonBases().size()>2){
+            logger.warn(line + "Names with more than 2 taxa not yet handled");
+        }
+
+    }
+
+    /**
+     * @param next
+     * @return
+     */
+    private Taxon getAccepted(TaxonBase<?> taxonBase) {
+        if (taxonBase.isInstanceOf(Taxon.class)){
+            return CdmBase.deproxy(taxonBase, Taxon.class);
+        }else{
+            Synonym syn = CdmBase.deproxy(taxonBase, Synonym.class);
+            return syn.getAcceptedTaxa().iterator().next();
+        }
+    }
+
+
+
+    /**
      * @return
      */
     private Classification getClassification(SimpleExcelTaxonImportState<CONFIG> state) {

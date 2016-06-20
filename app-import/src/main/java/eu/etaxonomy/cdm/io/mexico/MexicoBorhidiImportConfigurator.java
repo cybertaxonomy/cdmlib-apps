@@ -25,7 +25,7 @@ import eu.etaxonomy.cdm.model.name.NomenclaturalCode;
 public class MexicoBorhidiImportConfigurator extends ExcelImportConfiguratorBase{
     private static final long serialVersionUID = -4793138681632122831L;
 
-    private static IInputTransformer defaultTransformer = new MexicoBorhidiTransformer();
+    private static IInputTransformer defaultTransformer = new MexicoConabioTransformer();
 
     /**
      * @param source

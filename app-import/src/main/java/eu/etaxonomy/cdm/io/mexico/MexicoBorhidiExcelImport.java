@@ -88,7 +88,7 @@ public class MexicoBorhidiExcelImport<CONFIG extends MexicoBorhidiImportConfigur
         String tropicosId = record.get("OutputNameID");
         if (isNotBlank(tropicosId)){
             String tropicosIdTypeLabel = "Tropicos Name Identifier";
-            UUID uuid = MexicoBorhidiTransformer.uuidTropicosNameIdentifier;
+            UUID uuid = MexicoConabioTransformer.uuidTropicosNameIdentifier;
             TermVocabulary<DefinedTerm> voc = null;  //for now it goes to user defined voc
             DefinedTerm identifierType = this.getIdentiferType(state, uuid, tropicosIdTypeLabel, tropicosIdTypeLabel, null, voc);
             Identifier<Taxon> identifier = Identifier.NewInstance(tropicosId, identifierType);
@@ -159,7 +159,7 @@ public class MexicoBorhidiExcelImport<CONFIG extends MexicoBorhidiImportConfigur
     //                volume = volume + "(" + issue + ")";
     //            }
                 volume = volumeDetail[0];
-                String detail = volumeDetail.length > 1 ? volumeDetail[1] : null;
+                String detail = volumeDetail.length > 1 ? volumeDetail[1].trim() : null;
 
                 //            String detail = page;
                 name.setNomenclaturalMicroReference(detail);

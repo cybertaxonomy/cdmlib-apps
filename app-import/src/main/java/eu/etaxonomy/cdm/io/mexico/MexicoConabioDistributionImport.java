@@ -11,12 +11,16 @@ package eu.etaxonomy.cdm.io.mexico;
 
 import java.net.URI;
 import java.util.HashMap;
+import java.util.Map;
+import java.util.Set;
 import java.util.UUID;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
 import org.springframework.stereotype.Component;
 
+import eu.etaxonomy.cdm.ext.geo.GeoServiceArea;
+import eu.etaxonomy.cdm.ext.geo.GeoServiceAreaAnnotatedMapping;
 import eu.etaxonomy.cdm.io.common.mapping.UndefinedTransformerMethodException;
 import eu.etaxonomy.cdm.model.common.OrderedTermVocabulary;
 import eu.etaxonomy.cdm.model.common.OriginalSourceType;
@@ -45,15 +49,33 @@ public class MexicoConabioDistributionImport<CONFIG extends MexicoConabioImportC
     private OrderedTermVocabulary<NamedArea> stateAreasVoc;
     private NamedArea mexico;
 
+    private Map<String, Taxon> taxonIdMap;
+
+
+    @Override
+    protected String getWorksheetName() {
+        return "DistribucionEstatal";
+    }
+
+    @SuppressWarnings("unchecked")
+    private void initTaxa() {
+        if (taxonIdMap == null){
+            Set<String> existingKeys = MexicoConabioTaxonImport.taxonIdMap.keySet();
+            taxonIdMap = (Map<String, Taxon>)getCommonService().getSourcedObjectsByIdInSource(Taxon.class,
+                    existingKeys, MexicoConabioTaxonImport.TAXON_NAMESPACE);
+        }
+    }
+
     @Override
     protected void firstPass(SimpleExcelTaxonImportState<CONFIG> state) {
         initAreaVocabulary(state);
+        initTaxa();
 
         String line = state.getCurrentLine() + ": ";
         HashMap<String, String> record = state.getOriginalRecord();
 
         String idCat = getValue(record, "IdCAT");
-        Taxon taxon = state.getHigherTaxon(idCat);
+        Taxon taxon = taxonIdMap.get(idCat);
         if (taxon == null){
             logger.warn(line + "Taxon could not be found: " + idCat);
         }else{
@@ -61,20 +83,25 @@ public class MexicoConabioDistributionImport<CONFIG extends MexicoConabioImportC
 
             String distrStatusStr = getValue(record, "TipoDistribucion");
             try {
-                PresenceAbsenceTerm mexicanDistributionStatus = state.getTransformer().getPresenceTermByKey(distrStatusStr);
-                if (mexicanDistributionStatus != null){
-                    Distribution mexicanDistribution = Distribution.NewInstance(mexico, mexicanDistributionStatus);
-                    desc.addElement(mexicanDistribution);
-                    String refStr = getValue(record, "ReferenciaTipoDistribucion");
-                    Reference ref = getReference(state, refStr);
-                    if (ref != null){
-                        mexicanDistribution.addSource(OriginalSourceType.PrimaryTaxonomicSource,
-                                null, null, ref, null);
+                if (distrStatusStr != null){
+                    PresenceAbsenceTerm mexicanDistributionStatus = state.getTransformer().getPresenceTermByKey(distrStatusStr);
+                    if (mexicanDistributionStatus == null){
+                        UUID statusUuid = state.getTransformer().getPresenceTermUuid(distrStatusStr);
+                        mexicanDistributionStatus = getPresenceTerm(state, statusUuid,
+                                distrStatusStr, distrStatusStr, null, false);
                     }
-
+                    if (mexicanDistributionStatus != null){
+                        Distribution mexicanDistribution = Distribution.NewInstance(mexico, mexicanDistributionStatus);
+                        desc.addElement(mexicanDistribution);
+                        String refStr = getValue(record, "ReferenciaTipoDistribucion");
+                        Reference ref = getReference(state, refStr);
+                        if (ref != null){
+                            mexicanDistribution.addSource(OriginalSourceType.PrimaryTaxonomicSource,
+                                    null, null, ref, null);
+                        }
+                    }
                 }
             } catch (UndefinedTransformerMethodException e) {}
-
 
             handleDistribution(state, desc, "AGUASCALIENTES", MexicoConabioTransformer.uuidAguascalientes, line);
             handleDistribution(state, desc, "BAJA CALIFORNIA", MexicoConabioTransformer.uuidBaja_california, line);
@@ -181,7 +208,9 @@ public class MexicoConabioDistributionImport<CONFIG extends MexicoConabioImportC
      * @param state
      * @return
      */
+    @SuppressWarnings("unchecked")
     private void createStateAreasVoc(SimpleExcelTaxonImportState<CONFIG> state) {
+        //voc
         URI termSourceUri = null;
         String label = "Mexican States";
         String description = "Mexican States as used by the CONABIO Rubiaceae database";
@@ -189,62 +218,95 @@ public class MexicoConabioDistributionImport<CONFIG extends MexicoConabioImportC
                 description, label, null, termSourceUri);
         stateAreasVoc.setUuid(MexicoConabioTransformer.uuidMexicanStatesVoc);
 
+        //mexico country
         String mexicoLabel = "Mexico (Country)";
-        NamedArea newArea = NamedArea.NewInstance(
+        mexico = NamedArea.NewInstance(
                 mexicoLabel, mexicoLabel, null);
-        newArea.setUuid(MexicoConabioTransformer.uuidMexicoCountry);
-        stateAreasVoc.addTerm(newArea);
+        mexico.setUuid(MexicoConabioTransformer.uuidMexicoCountry);
+        stateAreasVoc.addTerm(mexico);
+         addMapping(mexico, "mex_adm0", "iso", "MEX");
 
-        addArea(state, "Aguascalientes", MexicoConabioTransformer.uuidAguascalientes);
-        addArea(state, "Baja California", MexicoConabioTransformer.uuidBaja_california);
-        addArea(state, "Baja California Sur", MexicoConabioTransformer.uuidBaja_california_sur);
-        addArea(state, "Campeche", MexicoConabioTransformer.uuidCampeche);
-        addArea(state, "Coahuila de Zaragoza", MexicoConabioTransformer.uuidCoahuila_de_zaragoza);
-        addArea(state, "Colima", MexicoConabioTransformer.uuidColima);
-        addArea(state, "Chiapas", MexicoConabioTransformer.uuidChiapas);
-        addArea(state, "Chihuahua", MexicoConabioTransformer.uuidChihuahua);
-        addArea(state, "Distrito ederal", MexicoConabioTransformer.uuidDistrito_federal);
-        addArea(state, "Durango", MexicoConabioTransformer.uuidDurango);
-        addArea(state, "Guanajuato", MexicoConabioTransformer.uuidGuanajuato);
-        addArea(state, "Guerrero", MexicoConabioTransformer.uuidGuerrero);
-        addArea(state, "Hidalgo", MexicoConabioTransformer.uuidHidalgo);
-        addArea(state, "Jalisco", MexicoConabioTransformer.uuidJalisco);
-        addArea(state, "Mexico", MexicoConabioTransformer.uuidMexico);
-        addArea(state, "Michoacan de Ocampo", MexicoConabioTransformer.uuidMichoacan_de_ocampo);
-        addArea(state, "Morelos", MexicoConabioTransformer.uuidMorelos);
-        addArea(state, "Nayarit", MexicoConabioTransformer.uuidNayarit);
-        addArea(state, "Nuevo Leon", MexicoConabioTransformer.uuidNuevo_leon);
-        addArea(state, "Oaxaca", MexicoConabioTransformer.uuidOaxaca);
-        addArea(state, "Puebla", MexicoConabioTransformer.uuidPuebla);
-        addArea(state, "Queretaro de Arteaga", MexicoConabioTransformer.uuidQueretaro_de_arteaga);
-        addArea(state, "Quintana Roo", MexicoConabioTransformer.uuidQuintana_roo);
-        addArea(state, "San luis Potosi", MexicoConabioTransformer.uuidSan_luis_potosi);
-        addArea(state, "Sinaloa", MexicoConabioTransformer.uuidSinaloa);
-        addArea(state, "Sonora", MexicoConabioTransformer.uuidSonora);
-        addArea(state, "Tabasco", MexicoConabioTransformer.uuidTabasco);
-        addArea(state, "Tamaulipas", MexicoConabioTransformer.uuidTamaulipas);
-        addArea(state, "Tlaxcala", MexicoConabioTransformer.uuidTlaxcala);
-        addArea(state, "Veracruz de Ignacio de la Llave", MexicoConabioTransformer.uuidVeracruz_de_ignacio_de_la_llave);
-        addArea(state, "Yucatan", MexicoConabioTransformer.uuidYucatan);
-        addArea(state, "Zacatecas", MexicoConabioTransformer.uuidZacatecas);
+         //Example with almost all areas is Chiococca alba
+         addArea(state, "Aguascalientes", MexicoConabioTransformer.uuidAguascalientes);
+         addArea(state, "Baja California", MexicoConabioTransformer.uuidBaja_california);
+         addArea(state, "Baja California Sur", MexicoConabioTransformer.uuidBaja_california_sur);
+         addArea(state, "Campeche", MexicoConabioTransformer.uuidCampeche);
+         addArea(state, "Coahuila de Zaragoza", MexicoConabioTransformer.uuidCoahuila_de_zaragoza, "Coahuila");
+         addArea(state, "Colima", MexicoConabioTransformer.uuidColima);
+         addArea(state, "Chiapas", MexicoConabioTransformer.uuidChiapas);
+         addArea(state, "Chihuahua", MexicoConabioTransformer.uuidChihuahua);
+         addArea(state, "Distrito Federal", MexicoConabioTransformer.uuidDistrito_federal);
+         addArea(state, "Durango", MexicoConabioTransformer.uuidDurango);
+         addArea(state, "Guanajuato", MexicoConabioTransformer.uuidGuanajuato);
+         addArea(state, "Guerrero", MexicoConabioTransformer.uuidGuerrero);
+         addArea(state, "Hidalgo", MexicoConabioTransformer.uuidHidalgo);
+         addArea(state, "Jalisco", MexicoConabioTransformer.uuidJalisco);
+        //??
+        addArea(state, "México", MexicoConabioTransformer.uuidMexico, null, 15);
+        //??
+        addArea(state, "Michoacan de Ocampo", MexicoConabioTransformer.uuidMichoacan_de_ocampo, "Michoacán");
+         addArea(state, "Morelos", MexicoConabioTransformer.uuidMorelos);
+         addArea(state, "Nayarit", MexicoConabioTransformer.uuidNayarit);
+        //gibt beim mapping vielleicht Probleme wg. des Accents
+        addArea(state, "Nuevo Leon", MexicoConabioTransformer.uuidNuevo_leon, "Nuevo León");
+         addArea(state, "Oaxaca", MexicoConabioTransformer.uuidOaxaca);
+         addArea(state, "Puebla", MexicoConabioTransformer.uuidPuebla);
+        //noch testen
+        addArea(state, "Queretaro de Arteaga", MexicoConabioTransformer.uuidQueretaro_de_arteaga, "Querétaro");
+         addArea(state, "Quintana Roo", MexicoConabioTransformer.uuidQuintana_roo);
+        //Problem
+        addArea(state, "San Luis Potosí", MexicoConabioTransformer.uuidSan_luis_potosi);
+         addArea(state, "Sinaloa", MexicoConabioTransformer.uuidSinaloa);
+         addArea(state, "Sonora", MexicoConabioTransformer.uuidSonora);
+         addArea(state, "Tabasco", MexicoConabioTransformer.uuidTabasco);
+         addArea(state, "Tamaulipas", MexicoConabioTransformer.uuidTamaulipas);
+         addArea(state, "Tlaxcala", MexicoConabioTransformer.uuidTlaxcala);
+         addArea(state, "Veracruz de Ignacio de la Llave", MexicoConabioTransformer.uuidVeracruz_de_ignacio_de_la_llave, "Veracruz");
+        //??
+        addArea(state, "Yucatán", MexicoConabioTransformer.uuidYucatan);
+         addArea(state, "Zacatecas", MexicoConabioTransformer.uuidZacatecas);
 
         this.getVocabularyService().save(stateAreasVoc);
 
         return;
     }
 
+
+    private void addArea(SimpleExcelTaxonImportState<CONFIG> state, String areaLabel, UUID uuid) {
+        addArea(state, areaLabel, uuid, areaLabel);  //short cut if label and mapping label are equal
+    }
+
+    private void addArea(SimpleExcelTaxonImportState<CONFIG> state, String areaLabel, UUID uuid, String mappingLabel) {
+        addArea(state, areaLabel, uuid, mappingLabel, null);  //short cut if label and mapping label are equal
+    }
+
+
     /**
      * @param state
      * @param string
      * @param uuidaguascalientes
      */
-    private void addArea(SimpleExcelTaxonImportState<CONFIG> state, String areaLabel, UUID uuid) {
+    private void addArea(SimpleExcelTaxonImportState<CONFIG> state, String areaLabel, UUID uuid, String mappingLabel, Integer id1) {
         String abbrev = null;
         NamedArea newArea = NamedArea.NewInstance(
                 areaLabel, areaLabel, abbrev);
         newArea.setUuid(uuid);
         newArea.setPartOf(mexico);
         stateAreasVoc.addTerm(newArea);
+        if (id1 != null){
+            addMapping(newArea, "mex_adm1", "id_1", String.valueOf(id1));
+        }else if (mappingLabel != null){
+            addMapping(newArea, "mex_adm1", "name_1", mappingLabel);
+        }
+
+
+    }
+
+    private void addMapping(NamedArea area, String mapping_layer, String mapping_field, String abbrev) {
+        GeoServiceAreaAnnotatedMapping mapping = (GeoServiceAreaAnnotatedMapping)this.getBean("geoServiceAreaAnnotatedMapping");
+        GeoServiceArea geoServiceArea = new GeoServiceArea();
+        geoServiceArea.add(mapping_layer, mapping_field, abbrev);
+        mapping.set(area, geoServiceArea);
     }
 
     @Override
