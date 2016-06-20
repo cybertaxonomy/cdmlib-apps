@@ -241,21 +241,22 @@ public class MexicoConabioDistributionImport<CONFIG extends MexicoConabioImportC
          addArea(state, "Guerrero", MexicoConabioTransformer.uuidGuerrero);
          addArea(state, "Hidalgo", MexicoConabioTransformer.uuidHidalgo);
          addArea(state, "Jalisco", MexicoConabioTransformer.uuidJalisco);
-        //??
+        //id_1
         addArea(state, "México", MexicoConabioTransformer.uuidMexico, null, 15);
-        //??
-        addArea(state, "Michoacan de Ocampo", MexicoConabioTransformer.uuidMichoacan_de_ocampo, "Michoacán");
+        //id_1
+        addArea(state, "Michoacan de Ocampo", MexicoConabioTransformer.uuidMichoacan_de_ocampo, "Michoacán", 16);
          addArea(state, "Morelos", MexicoConabioTransformer.uuidMorelos);
          addArea(state, "Nayarit", MexicoConabioTransformer.uuidNayarit);
         //gibt beim mapping vielleicht Probleme wg. des Accents
-        addArea(state, "Nuevo Leon", MexicoConabioTransformer.uuidNuevo_leon, "Nuevo León");
+        //id_1
+        addArea(state, "Nuevo Leon", MexicoConabioTransformer.uuidNuevo_leon, "Nuevo León", 19);
          addArea(state, "Oaxaca", MexicoConabioTransformer.uuidOaxaca);
          addArea(state, "Puebla", MexicoConabioTransformer.uuidPuebla);
-        //noch testen
-        addArea(state, "Queretaro de Arteaga", MexicoConabioTransformer.uuidQueretaro_de_arteaga, "Querétaro");
+        //id_1
+        addArea(state, "Queretaro de Arteaga", MexicoConabioTransformer.uuidQueretaro_de_arteaga, "Querétaro", 22);
          addArea(state, "Quintana Roo", MexicoConabioTransformer.uuidQuintana_roo);
-        //Problem
-        addArea(state, "San Luis Potosí", MexicoConabioTransformer.uuidSan_luis_potosi);
+        //id_1
+        addArea(state, "San Luis Potosí", MexicoConabioTransformer.uuidSan_luis_potosi,null ,24);
          addArea(state, "Sinaloa", MexicoConabioTransformer.uuidSinaloa);
          addArea(state, "Sonora", MexicoConabioTransformer.uuidSonora);
          addArea(state, "Tabasco", MexicoConabioTransformer.uuidTabasco);
@@ -263,7 +264,7 @@ public class MexicoConabioDistributionImport<CONFIG extends MexicoConabioImportC
          addArea(state, "Tlaxcala", MexicoConabioTransformer.uuidTlaxcala);
          addArea(state, "Veracruz de Ignacio de la Llave", MexicoConabioTransformer.uuidVeracruz_de_ignacio_de_la_llave, "Veracruz");
         //??
-        addArea(state, "Yucatán", MexicoConabioTransformer.uuidYucatan);
+        addArea(state, "Yucatán", MexicoConabioTransformer.uuidYucatan, null, 31);
          addArea(state, "Zacatecas", MexicoConabioTransformer.uuidZacatecas);
 
         this.getVocabularyService().save(stateAreasVoc);
