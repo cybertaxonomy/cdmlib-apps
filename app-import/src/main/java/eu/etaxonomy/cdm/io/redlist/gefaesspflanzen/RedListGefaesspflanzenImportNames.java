@@ -91,8 +91,8 @@ public class RedListGefaesspflanzenImportNames extends DbImportBase<RedListGefae
     @Override
     public boolean doPartition(ResultSetPartitioner partitioner, RedListGefaesspflanzenImportState state) {
         ResultSet rs = partitioner.getResultSet();
-        Set<TaxonNameBase<?,?>> namesToSave = new HashSet<TaxonNameBase<?,?>>();
-        Set<TaxonBase<?>> taxaToSave = new HashSet<TaxonBase<?>>();
+        Set<TaxonNameBase> namesToSave = new HashSet<TaxonNameBase>();
+        Set<TaxonBase> taxaToSave = new HashSet<TaxonBase>();
         try {
             while (rs.next()){
                 makeSingleNameAndTaxon(state, rs, namesToSave, taxaToSave);
@@ -102,12 +102,12 @@ public class RedListGefaesspflanzenImportNames extends DbImportBase<RedListGefae
             e.printStackTrace();
         }
 
-        getNameService().saveOrUpdate((TaxonNameBase) namesToSave);
-        getTaxonService().saveOrUpdate((TaxonBase) taxaToSave);
+        getNameService().saveOrUpdate(namesToSave);
+        getTaxonService().saveOrUpdate(taxaToSave);
         return true;
     }
 
-    private void makeSingleNameAndTaxon(RedListGefaesspflanzenImportState state, ResultSet rs, Set<TaxonNameBase<?,?>> namesToSave, Set<TaxonBase<?>> taxaToSave)
+    private void makeSingleNameAndTaxon(RedListGefaesspflanzenImportState state, ResultSet rs, Set<TaxonNameBase> namesToSave, Set<TaxonBase> taxaToSave)
             throws SQLException {
         long id = rs.getLong(RedListUtil.NAMNR);
         String clTaxonString = rs.getString(RedListUtil.CL_TAXON);
@@ -139,7 +139,6 @@ public class RedListGefaesspflanzenImportNames extends DbImportBase<RedListGefae
         TaxonBase<?> checklistTaxon = null;
         if(CdmUtils.isNotBlank(clTaxonString) && !clTaxonString.trim().equals("-")){
             checklistTaxon = (TaxonBase<?>) taxonBase.clone();
-            //TODO what to do with synonyms?
             if(checklistTaxon.isInstanceOf(Taxon.class)){
                 TaxonRelationship relation = HibernateProxyHelper.deproxy(checklistTaxon, Taxon.class).addTaxonRelation(HibernateProxyHelper.deproxy(taxonBase, Taxon.class), TaxonRelationshipType.CONGRUENT_TO(), null, null);
                 relation.setDoubtful(true);
@@ -163,7 +162,7 @@ public class RedListGefaesspflanzenImportNames extends DbImportBase<RedListGefae
         taxaToSave.add(taxonBase);
     }
 
-    private void addConceptRelation(String relationString, String classificationNamespace, TaxonBase<?> gesamtListeTaxon, TaxonBase<?> checkListenTaxon, Set<TaxonBase<?>> taxaToSave, long id, RedListGefaesspflanzenImportState state){
+    private void addConceptRelation(String relationString, String classificationNamespace, TaxonBase<?> gesamtListeTaxon, TaxonBase<?> checkListenTaxon, Set<TaxonBase> taxaToSave, long id, RedListGefaesspflanzenImportState state){
         if(CdmUtils.isNotBlank(relationString) && !relationString.equals(".")){
             String substring = relationString.substring(relationString.length()-1, relationString.length());
             TaxonRelationshipType taxonRelationshipTypeByKey = new RedListGefaesspflanzenTransformer().getTaxonRelationshipTypeByKey(substring);
@@ -189,7 +188,7 @@ public class RedListGefaesspflanzenImportNames extends DbImportBase<RedListGefae
      * This can be changed with parameter <i>reverseRelation</i>
      * @return cloned taxon
      */
-    private Taxon cloneTaxon(final TaxonBase<?> gesamtListeTaxon, final TaxonBase<?> checklisteTaxon, TaxonRelationshipType relationFromCloneToTaxon, Set<TaxonBase<?>> taxaToSave, long id, String sourceNameSpace, boolean reverseRelation, boolean doubtful, RedListGefaesspflanzenImportState state){
+    private Taxon cloneTaxon(final TaxonBase<?> gesamtListeTaxon, final TaxonBase<?> checklisteTaxon, TaxonRelationshipType relationFromCloneToTaxon, Set<TaxonBase> taxaToSave, long id, String sourceNameSpace, boolean reverseRelation, boolean doubtful, RedListGefaesspflanzenImportState state){
         Taxon acceptedGesamtListeTaxon = getAcceptedTaxon(gesamtListeTaxon);
         Taxon acceptedChecklistTaxon = getAcceptedTaxon(checklisteTaxon);
         Taxon clonedTaxon = null;
@@ -346,7 +345,7 @@ public class RedListGefaesspflanzenImportNames extends DbImportBase<RedListGefae
         checkAuthorShipConsistency(id, nomZusatzString, taxZusatzString, zusatzString, authorString, authorshipCache);
     }
 
-    private NonViralName<?> importName(RedListGefaesspflanzenImportState state, ResultSet rs, Set<TaxonNameBase<?,?>> namesToSave) throws SQLException {
+    private NonViralName<?> importName(RedListGefaesspflanzenImportState state, ResultSet rs, Set<TaxonNameBase> namesToSave) throws SQLException {
 
         long id = rs.getLong(RedListUtil.NAMNR);
         String taxNameString = rs.getString(RedListUtil.TAXNAME);
@@ -370,7 +369,12 @@ public class RedListGefaesspflanzenImportNames extends DbImportBase<RedListGefae
         }
         name.setGenusOrUninomial(ep1String);
         if(CdmUtils.isNotBlank(ep2String)){
-            name.setSpecificEpithet(ep2String);
+            if(rank!=null && rank.isInfraGeneric()){
+                name.setInfraGenericEpithet(ep2String);
+            }
+            else{
+                name.setSpecificEpithet(ep2String);
+            }
         }
         if(CdmUtils.isNotBlank(ep3String)){
             name.setInfraSpecificEpithet(ep3String);
@@ -480,10 +484,10 @@ public class RedListGefaesspflanzenImportNames extends DbImportBase<RedListGefae
             taxNameString = taxNameString.replace(RedListUtil.HYB_SIGN+" ", RedListUtil.HYB_SIGN);//hybrid sign has no space after it in titleCache for binomial hybrids
         }
         if(taxNameString.endsWith("- Gruppe")){
-            taxNameString.replaceAll("- Gruppe", "species group");
+            taxNameString = taxNameString.replaceAll("- Gruppe", "species group");
         }
         if(taxNameString.endsWith("- group")){
-            taxNameString.replaceAll("- group", "species group");
+            taxNameString = taxNameString.replaceAll("- group", "species group");
         }
         taxNameString = taxNameString.replace("[ranglos]", "[unranked]");
         if(!taxNameString.trim().equals(nameCache)){
