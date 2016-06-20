@@ -135,65 +135,100 @@ public class RedListGefaesspflanzenImportNames extends DbImportBase<RedListGefae
         }
 
         //---CONCEPT RELATIONSHIPS---
-        /*check if taxon/synonym also exists in other classification
-         * 1. create new taxon with the same name (in that classification)
-         * 2. create concept relationship between both
-         */
         //checklist
+        TaxonBase<?> checklistTaxon = null;
         if(CdmUtils.isNotBlank(clTaxonString) && !clTaxonString.trim().equals("-")){
-            cloneTaxon(taxonBase, name, TaxonRelationshipType.CONGRUENT_TO(), taxaToSave, id, RedListUtil.TAXON_CHECKLISTE_NAMESPACE, false, true, state);
+            checklistTaxon = (TaxonBase<?>) taxonBase.clone();
+            //TODO what to do with synonyms?
+            if(checklistTaxon.isInstanceOf(Taxon.class)){
+                TaxonRelationship relation = HibernateProxyHelper.deproxy(checklistTaxon, Taxon.class).addTaxonRelation(HibernateProxyHelper.deproxy(taxonBase, Taxon.class), TaxonRelationshipType.CONGRUENT_TO(), null, null);
+                relation.setDoubtful(true);
+            }
+
+            ImportHelper.setOriginalSource(checklistTaxon, state.getTransactionalSourceReference(), id, RedListUtil.TAXON_CHECKLISTE_NAMESPACE);
+            taxaToSave.add(checklistTaxon);
         }
         //E, W, K, AW, AO, R, O, S
-        addConceptRelation(relationE, RedListUtil.CLASSIFICATION_NAMESPACE_E, taxonBase, name, taxaToSave, id, state);
-        addConceptRelation(relationW, RedListUtil.CLASSIFICATION_NAMESPACE_W, taxonBase, name, taxaToSave, id, state);
-        addConceptRelation(relationK, RedListUtil.CLASSIFICATION_NAMESPACE_K, taxonBase, name, taxaToSave, id, state);
-        addConceptRelation(relationAW, RedListUtil.CLASSIFICATION_NAMESPACE_AW, taxonBase, name, taxaToSave, id, state);
-        addConceptRelation(relationAO, RedListUtil.CLASSIFICATION_NAMESPACE_AO, taxonBase, name, taxaToSave, id, state);
-        addConceptRelation(relationR, RedListUtil.CLASSIFICATION_NAMESPACE_R, taxonBase, name, taxaToSave, id, state);
-        addConceptRelation(relationO, RedListUtil.CLASSIFICATION_NAMESPACE_O, taxonBase, name, taxaToSave, id, state);
-        addConceptRelation(relationS, RedListUtil.CLASSIFICATION_NAMESPACE_S, taxonBase, name, taxaToSave, id, state);
+        addConceptRelation(relationE, RedListUtil.CLASSIFICATION_NAMESPACE_E, taxonBase, checklistTaxon, taxaToSave, id, state);
+        addConceptRelation(relationW, RedListUtil.CLASSIFICATION_NAMESPACE_W, taxonBase, checklistTaxon, taxaToSave, id, state);
+        addConceptRelation(relationK, RedListUtil.CLASSIFICATION_NAMESPACE_K, taxonBase, checklistTaxon, taxaToSave, id, state);
+        addConceptRelation(relationAW, RedListUtil.CLASSIFICATION_NAMESPACE_AW, taxonBase, checklistTaxon, taxaToSave, id, state);
+        addConceptRelation(relationAO, RedListUtil.CLASSIFICATION_NAMESPACE_AO, taxonBase, checklistTaxon, taxaToSave, id, state);
+        addConceptRelation(relationR, RedListUtil.CLASSIFICATION_NAMESPACE_R, taxonBase, checklistTaxon, taxaToSave, id, state);
+        addConceptRelation(relationO, RedListUtil.CLASSIFICATION_NAMESPACE_O, taxonBase, checklistTaxon, taxaToSave, id, state);
+        addConceptRelation(relationS, RedListUtil.CLASSIFICATION_NAMESPACE_S, taxonBase, checklistTaxon, taxaToSave, id, state);
 
         //NOTE: the source has to be added after cloning or otherwise the clone would also get the source
         ImportHelper.setOriginalSource(taxonBase, state.getTransactionalSourceReference(), id, RedListUtil.TAXON_GESAMTLISTE_NAMESPACE);
         taxaToSave.add(taxonBase);
     }
 
-    private void addConceptRelation(String relationString, String classificationNamespace, TaxonBase<?> taxonBase, TaxonNameBase<?,?> name, Set<TaxonBase<?>> taxaToSave, long id, RedListGefaesspflanzenImportState state){
+    private void addConceptRelation(String relationString, String classificationNamespace, TaxonBase<?> gesamtListeTaxon, TaxonBase<?> checkListenTaxon, Set<TaxonBase<?>> taxaToSave, long id, RedListGefaesspflanzenImportState state){
         if(CdmUtils.isNotBlank(relationString) && !relationString.equals(".")){
             String substring = relationString.substring(relationString.length()-1, relationString.length());
             TaxonRelationshipType taxonRelationshipTypeByKey = new RedListGefaesspflanzenTransformer().getTaxonRelationshipTypeByKey(substring);
             if(taxonRelationshipTypeByKey==null){
-                RedListUtil.logMessage(id, "Could not interpret relationship "+relationString+" for taxon "+taxonBase.generateTitle(), logger);
+                RedListUtil.logMessage(id, "Could not interpret relationship "+relationString+" for taxon "+gesamtListeTaxon.generateTitle(), logger);
             }
             //there is no type "included in" so we have to reverse the direction
             if(substring.equals("<")){
-                cloneTaxon(taxonBase, name, taxonRelationshipTypeByKey, taxaToSave, id, classificationNamespace, true, false, state);
+                cloneTaxon(gesamtListeTaxon, checkListenTaxon, taxonRelationshipTypeByKey, taxaToSave, id, classificationNamespace, true, false, state);
             }
             else{
-                cloneTaxon(taxonBase, name, taxonRelationshipTypeByKey, taxaToSave, id, classificationNamespace, false, false, state);
+                cloneTaxon(gesamtListeTaxon, checkListenTaxon, taxonRelationshipTypeByKey, taxaToSave, id, classificationNamespace, false, false, state);
             }
         }
     }
 
     /**
+     * 1. clone new taxon of gesamtListeTaxon with the same name (in that classification)<br>
+     * 2. create concept relationship from clone to gesamtListeTaxon/checklisteTaxon or from its accepted taxon if it is synonym<br>
+     *<br>
      * <b>NOTE:</b> the {@link TaxonRelationshipType} passed as parameter is
      * directed <b>from the clone</b> to the taxon.<br>
      * This can be changed with parameter <i>reverseRelation</i>
+     * @return cloned taxon
      */
-    private void cloneTaxon(TaxonBase<?> taxonBase, TaxonNameBase<?, ?> name, TaxonRelationshipType relationFromCloneToTaxon, Set<TaxonBase<?>> taxaToSave, long id, String sourceNameSpace, boolean reverseRelation, boolean doubtful, RedListGefaesspflanzenImportState state){
-        TaxonBase<?> clone = (TaxonBase<?>) taxonBase.clone();
-        if(taxonBase.isInstanceOf(Taxon.class)){
-            TaxonRelationship taxonRelation;
-            if(reverseRelation){
-                taxonRelation = ((Taxon) taxonBase).addTaxonRelation((Taxon) clone, relationFromCloneToTaxon, null, null);
-            }
-            else {
-                taxonRelation = ((Taxon) clone).addTaxonRelation((Taxon) taxonBase, relationFromCloneToTaxon, null, null);
-            }
-            taxonRelation.setDoubtful(doubtful);
+    private Taxon cloneTaxon(final TaxonBase<?> gesamtListeTaxon, final TaxonBase<?> checklisteTaxon, TaxonRelationshipType relationFromCloneToTaxon, Set<TaxonBase<?>> taxaToSave, long id, String sourceNameSpace, boolean reverseRelation, boolean doubtful, RedListGefaesspflanzenImportState state){
+        Taxon acceptedGesamtListeTaxon = getAcceptedTaxon(gesamtListeTaxon);
+        Taxon acceptedChecklistTaxon = getAcceptedTaxon(checklisteTaxon);
+        Taxon clonedTaxon = null;
+
+        if(gesamtListeTaxon.isInstanceOf(Taxon.class)){
+            clonedTaxon = HibernateProxyHelper.deproxy(gesamtListeTaxon.clone(), Taxon.class);
         }
-        ImportHelper.setOriginalSource(clone, state.getTransactionalSourceReference(), id, sourceNameSpace);
-        taxaToSave.add(clone);
+        else if(gesamtListeTaxon.isInstanceOf(Synonym.class)){
+            clonedTaxon = Taxon.NewInstance(gesamtListeTaxon.getName(), gesamtListeTaxon.getSec());
+        }
+        else{
+            RedListUtil.logMessage(id, "Taxon base "+gesamtListeTaxon+" is neither taxon nor synonym! Taxon could not be cloned", logger);
+            return null;
+        }
+
+        if(reverseRelation){
+            if(acceptedGesamtListeTaxon!=null){
+                TaxonRelationship taxonRelation = acceptedGesamtListeTaxon.addTaxonRelation(clonedTaxon, relationFromCloneToTaxon, null, null);
+                taxonRelation.setDoubtful(doubtful);
+            }
+            if(acceptedChecklistTaxon!=null) {
+                TaxonRelationship taxonRelation = acceptedChecklistTaxon.addTaxonRelation(clonedTaxon, relationFromCloneToTaxon, null, null);
+                taxonRelation.setDoubtful(doubtful);
+            }
+        }
+        else {
+            if(acceptedGesamtListeTaxon!=null){
+                TaxonRelationship taxonRelation = clonedTaxon.addTaxonRelation(acceptedGesamtListeTaxon, relationFromCloneToTaxon, null, null);
+                taxonRelation.setDoubtful(doubtful);
+            }
+            if(acceptedChecklistTaxon!=null) {
+                TaxonRelationship taxonRelation = clonedTaxon.addTaxonRelation(acceptedChecklistTaxon, relationFromCloneToTaxon, null, null);
+                taxonRelation.setDoubtful(doubtful);
+            }
+        }
+
+        ImportHelper.setOriginalSource(clonedTaxon, state.getTransactionalSourceReference(), id, sourceNameSpace);
+        taxaToSave.add(clonedTaxon);
+        return clonedTaxon;
     }
 
     private TaxonBase<?> importTaxon(ResultSet rs, NonViralName<?> name) throws SQLException {
