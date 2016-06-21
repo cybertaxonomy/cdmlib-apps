@@ -60,25 +60,37 @@ public final class RedListGefaesspflanzenTransformer extends InputTransformerBas
         if (key.equals("nom. cons.")){return NomenclaturalStatusType.CONSERVED();}
         else if (key.equals("nom. illeg.")){return NomenclaturalStatusType.ILLEGITIMATE();}
         else if (key.equals("nom. inval.")){return NomenclaturalStatusType.INVALID();}
+        //TODO bei sowas wie nom. inval. (sine typus) kann (sin typus) in NomenclaturalStatus.ruleConsidered gespeichert werden
+//        else if (key.equals("nom. inval. (sine typus)")){return NomenclaturalStatusType.INVALID();}//TODO Rudi fragen
+//        else if (key.equals("nom. inval. (sine descr.)")){return NomenclaturalStatusType.INVALID();}//TODO Rudi fragen
+//        else if (key.equals("nom. inval. (sine descr. lat.)")){return NomenclaturalStatusType.INVALID();}//TODO Rudi fragen
+//        else if (key.equals("nom. inval. (sine basion.)")){return NomenclaturalStatusType.INVALID();}//TODO Rudi fragen
+//        else if (key.equals("nom. inval. (nom. non accept.)")){return NomenclaturalStatusType.INVALID();}//TODO Rudi fragen
         else if (key.equals("nom. ambig.")){return NomenclaturalStatusType.AMBIGUOUS();}
         else if (key.equals("nom. nud.")){return NomenclaturalStatusType.NUDUM();}
+        else if (key.equals("nom. dub.")){return NomenclaturalStatusType.DOUBTFUL();}
         else if (key.equals("nom. rejic.")){return NomenclaturalStatusType.REJECTED();}
+        else if (key.equals("nom. rejic. prop.")){return NomenclaturalStatusType.REJECTED_PROP();}
         else if (key.equals("nom. utique rejic.")){return NomenclaturalStatusType.UTIQUE_REJECTED();}
         else if (key.equals("nom. utique rejic. pro.")){return NomenclaturalStatusType.UTIQUE_REJECTED_PROP();}
         else if (key.equals("comb. nov.")){return NomenclaturalStatusType.COMB_NOV();}
+        else if (key.equals("nom. illeg. (nom. superfl.)")){return NomenclaturalStatusType.SUPERFLUOUS();}
+        else if (key.equals("nom. inval. (nom. nud.)")){return NomenclaturalStatusType.NUDUM();}
+        else if (key.equals("nom. nud.")){return NomenclaturalStatusType.NUDUM();}
+        else if (key.equals("nom. inval. (op. utique oppr.)")){return NomenclaturalStatusType.OPUS_UTIQUE_OPPR();}
+        else if (key.equals("nom. inval. (nom. prov.)")){return NomenclaturalStatusType.PROVISIONAL();}
         return null;
     }
 
     public TaxonRelationshipType getTaxonRelationshipTypeByKey(String key) {
         if (key == null){return null;}
         else {
-            //        if (key.equals("<")){return TaxonRelationshipType.();}//TODO: what to do here?
             if (key.equals("=")){return TaxonRelationshipType.CONGRUENT_TO();}
             else if (key.equals(">")){return TaxonRelationshipType.INCLUDES();}
             else if (key.equals("<")){return TaxonRelationshipType.INCLUDES();}
             else if (key.equals("!")){return TaxonRelationshipType.OVERLAPS();}
-//            else if (key.equals("?")){return TaxonRelationshipType.;}//TODO: what to do here?
-            //        else if (key.equals("x")){return TaxonRelationshipType.();}//TODO: what to do here?
+            else if (key.equals("?")){return TaxonRelationshipType.UNCLEAR();}
+            else if (key.equals("x")){return TaxonRelationshipType.NOT_YET_WORKED_ON();}
         }
         return null;
     }
