@@ -3,7 +3,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>eu.etaxonomy.cdm</groupId>
     <artifactId>app-parent</artifactId>
-	<version>3.5.1-SNAPSHOT</version>
+	<version>4.2.0-SNAPSHOT</version>
     <name>CDM Applications Parent</name>
     <description>The Java implementation of the Common Data Model (CDM), the data model for EDIT's internet platform for cybertaxonomy.</description>
     <url>http://wp5.e-taxonomy.eu/cdmlib/</url>
@@ -21,7 +21,7 @@
         <module>cdmlib-remote-webapp</module>
     </modules>
     <properties>
-		<java.codelevel>1.6</java.codelevel>
+		<java.codelevel>1.7</java.codelevel>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     </properties>
     <licenses>
@@ -198,63 +198,6 @@
                 </configuration>
             </plugin>
             <plugin>
-                <groupId>com.agilejava.docbkx</groupId>
-                <artifactId>docbkx-maven-plugin</artifactId>
-                <version>2.0.9</version>
-                <executions>
-                    <execution>
-                        <goals>
-                            <goal>generate-html</goal>
-                            <goal>generate-pdf</goal>
-                        </goals>
-                        <phase>pre-site</phase>
-                    </execution>
-                </executions>
-                <dependencies>
-                    <dependency>
-                        <groupId>org.docbook</groupId>
-                        <artifactId>docbook-xml</artifactId>
-                        <version>4.4</version>
-                        <scope>runtime</scope>
-                    </dependency>
-                </dependencies>
-                <configuration>
-                    <includes>ReferenceDocumentation.xml</includes>
-                    <chunkedOutput>true</chunkedOutput>
-                    <htmlStylesheet>resources/css/html.css</htmlStylesheet>
-                    <xincludeSupported>true</xincludeSupported>
-                    <!--<htmlCustomization>src/docbkx/resources/xsl/html_chunk.xsl</htmlCustomization>-->
-                    <!-- if anyone can get the xsl-fo customization to work properly, then by all
-                        means use it
-                        <foCustomization>src/docbkx/resources/xsl/fopdf.xsl</foCustomization>
-                    -->
-                    <entities>
-                        <entity>
-                            <name>version</name>
-                            <value>${project.version}</value>
-                        </entity>
-                    </entities>
-                    <!--We want the final documentation and the required resources to end up in
-              the right place-->
-                    <postProcess>
-                        <copy todir="target/site/reference">
-                            <fileset dir="target/docbkx">
-                                <include name="**/*.html" />
-                                <include name="**/*.pdf" />
-                            </fileset>
-                        </copy>
-                        <copy todir="target/site/reference/html">
-                            <fileset dir="src/docbkx">
-                                <include name="**/*.css" />
-                                <include name="**/*.png" />
-                                <include name="**/*.gif" />
-                                <include name="**/*.jpg" />
-                            </fileset>
-                        </copy>
-                    </postProcess>
-                </configuration>
-            </plugin>
-            <plugin>
                 <groupId>org.codehaus.mojo</groupId>
                 <artifactId>wagon-maven-plugin</artifactId>
                 <version>1.0-beta-3</version>
@@ -279,16 +222,7 @@
 		</plugins>
 	</build>
     <!-- **** DEPENDENCIES **** -->
- <!--  <dependencies>
-        <dependency>
-            <groupId>junit</groupId>
-            <artifactId>junit</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>log4j</groupId>
-            <artifactId>log4j</artifactId>
-        </dependency>
-    </dependencies>  -->
+
     <dependencyManagement>
         <dependencies>
             <dependency>
