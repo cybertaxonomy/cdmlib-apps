@@ -171,8 +171,10 @@ public class RedListGefaesspflanzenImportClassification extends DbImportBase<Red
 
     private void addTaxonToClassification(Classification classification, String classificationNamespace, long id, RedListGefaesspflanzenImportState state){
         Taxon taxon = HibernateProxyHelper.deproxy(state.getRelatedObject(classificationNamespace, String.valueOf(id), TaxonBase.class), Taxon.class);
-        taxon.setSec(classification.getReference());
-        classification.addChildTaxon(taxon, null, null);
+        if(taxon!=null){//not all taxa exist in these classifications
+            taxon.setSec(classification.getReference());
+            classification.addChildTaxon(taxon, null, null);
+        }
     }
 
     private void createParentChildNodes(Classification classification, long id, String gueltString,
@@ -259,10 +261,16 @@ public class RedListGefaesspflanzenImportClassification extends DbImportBase<Red
         } catch (SQLException e) {
             e.printStackTrace();
         }
-        Map<String, TaxonBase> taxonMapGesamtListe = (Map<String, TaxonBase>) getCommonService().getSourcedObjectsByIdInSource(TaxonBase.class, idSet, RedListUtil.TAXON_GESAMTLISTE_NAMESPACE);
-        result.put(RedListUtil.TAXON_GESAMTLISTE_NAMESPACE, taxonMapGesamtListe);
-        Map<String, TaxonBase> taxonMapCheckliste = (Map<String, TaxonBase>) getCommonService().getSourcedObjectsByIdInSource(TaxonBase.class, idSet, RedListUtil.TAXON_CHECKLISTE_NAMESPACE);
-        result.put(RedListUtil.TAXON_CHECKLISTE_NAMESPACE, taxonMapCheckliste);
+        result.put(RedListUtil.TAXON_GESAMTLISTE_NAMESPACE, (Map<String, TaxonBase>) getCommonService().getSourcedObjectsByIdInSource(TaxonBase.class, idSet, RedListUtil.TAXON_GESAMTLISTE_NAMESPACE));
+        result.put(RedListUtil.TAXON_CHECKLISTE_NAMESPACE, (Map<String, TaxonBase>) getCommonService().getSourcedObjectsByIdInSource(TaxonBase.class, idSet, RedListUtil.TAXON_CHECKLISTE_NAMESPACE));
+        result.put(RedListUtil.CLASSIFICATION_NAMESPACE_E, (Map<String, TaxonBase>) getCommonService().getSourcedObjectsByIdInSource(TaxonBase.class, idSet, RedListUtil.CLASSIFICATION_NAMESPACE_E));
+        result.put(RedListUtil.CLASSIFICATION_NAMESPACE_W, (Map<String, TaxonBase>) getCommonService().getSourcedObjectsByIdInSource(TaxonBase.class, idSet, RedListUtil.CLASSIFICATION_NAMESPACE_W));
+        result.put(RedListUtil.CLASSIFICATION_NAMESPACE_K, (Map<String, TaxonBase>) getCommonService().getSourcedObjectsByIdInSource(TaxonBase.class, idSet, RedListUtil.CLASSIFICATION_NAMESPACE_K));
+        result.put(RedListUtil.CLASSIFICATION_NAMESPACE_AW, (Map<String, TaxonBase>) getCommonService().getSourcedObjectsByIdInSource(TaxonBase.class, idSet, RedListUtil.CLASSIFICATION_NAMESPACE_AW));
+        result.put(RedListUtil.CLASSIFICATION_NAMESPACE_AO, (Map<String, TaxonBase>) getCommonService().getSourcedObjectsByIdInSource(TaxonBase.class, idSet, RedListUtil.CLASSIFICATION_NAMESPACE_AO));
+        result.put(RedListUtil.CLASSIFICATION_NAMESPACE_R, (Map<String, TaxonBase>) getCommonService().getSourcedObjectsByIdInSource(TaxonBase.class, idSet, RedListUtil.CLASSIFICATION_NAMESPACE_R));
+        result.put(RedListUtil.CLASSIFICATION_NAMESPACE_O, (Map<String, TaxonBase>) getCommonService().getSourcedObjectsByIdInSource(TaxonBase.class, idSet, RedListUtil.CLASSIFICATION_NAMESPACE_O));
+        result.put(RedListUtil.CLASSIFICATION_NAMESPACE_S, (Map<String, TaxonBase>) getCommonService().getSourcedObjectsByIdInSource(TaxonBase.class, idSet, RedListUtil.CLASSIFICATION_NAMESPACE_S));
         return result;
     }
 
