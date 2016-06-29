@@ -41,6 +41,7 @@ import eu.etaxonomy.cdm.model.common.ExtensionType;
 import eu.etaxonomy.cdm.model.common.Language;
 import eu.etaxonomy.cdm.model.common.Marker;
 import eu.etaxonomy.cdm.model.common.MarkerType;
+import eu.etaxonomy.cdm.model.common.OrderedTermVocabulary;
 import eu.etaxonomy.cdm.model.common.OriginalSourceType;
 import eu.etaxonomy.cdm.model.common.TermType;
 import eu.etaxonomy.cdm.model.common.TermVocabulary;
@@ -401,7 +402,7 @@ public class BerlinModelOccurrenceImport  extends BerlinModelImportBase {
 		String label = "E+M areas";
 		String abbrev = null;
 		URI termSourceUri = null;
-		TermVocabulary<NamedArea> result = TermVocabulary.NewInstance(type, description, label, abbrev, termSourceUri);
+		OrderedTermVocabulary<NamedArea> result = OrderedTermVocabulary.NewInstance(type, description, label, abbrev, termSourceUri);
 
 		result.setUuid(BerlinModelTransformer.uuidVocEuroMedAreas);
 		getVocabularyService().save(result);
