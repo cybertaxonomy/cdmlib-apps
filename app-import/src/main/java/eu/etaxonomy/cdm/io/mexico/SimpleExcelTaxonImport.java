@@ -9,6 +9,7 @@
 */
 package eu.etaxonomy.cdm.io.mexico;
 
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -26,6 +27,7 @@ import eu.etaxonomy.cdm.model.agent.TeamOrPersonBase;
 import eu.etaxonomy.cdm.model.common.IdentifiableSource;
 import eu.etaxonomy.cdm.model.name.BotanicalName;
 import eu.etaxonomy.cdm.model.name.Rank;
+import eu.etaxonomy.cdm.model.reference.INomenclaturalReference;
 import eu.etaxonomy.cdm.model.reference.Reference;
 import eu.etaxonomy.cdm.model.taxon.Taxon;
 import eu.etaxonomy.cdm.model.taxon.TaxonNode;
@@ -52,11 +54,6 @@ public abstract class SimpleExcelTaxonImport<CONFIG extends ExcelImportConfigura
     protected void analyzeRecord(HashMap<String, String> record, SimpleExcelTaxonImportState<CONFIG> state) {
         //override only if needed
     }
-
-//    @Override
-//    protected void firstPass(SimpelExcelTaxonImportState<CONFIG> state) {
-//        // TODO Auto-generated method stub
-//    }
 
     @Override
     protected void secondPass(SimpleExcelTaxonImportState<CONFIG> state) {
@@ -128,7 +125,6 @@ public abstract class SimpleExcelTaxonImport<CONFIG extends ExcelImportConfigura
         }
 
         higherNode.addChildTaxon(taxon, null, null);
-        taxon.addSource(makeOriginalSource(state));
     }
 
     /**
@@ -149,7 +145,7 @@ public abstract class SimpleExcelTaxonImport<CONFIG extends ExcelImportConfigura
      * @param state
      * @param name
      */
-    protected void replaceAuthorNames(SimpleExcelTaxonImportState<CONFIG> state, BotanicalName name) {
+    protected void replaceAuthorNamesAndNomRef(SimpleExcelTaxonImportState<CONFIG> state, BotanicalName name) {
         TeamOrPersonBase<?> combAuthor = name.getCombinationAuthorship();
         name.setCombinationAuthorship(getExistingAuthor(state, combAuthor));
 
@@ -162,6 +158,73 @@ public abstract class SimpleExcelTaxonImport<CONFIG extends ExcelImportConfigura
         TeamOrPersonBase<?> exBasioAuthor = name.getExBasionymAuthorship();
         name.setExBasionymAuthorship(getExistingAuthor(state, exBasioAuthor));
 
+        INomenclaturalReference nomRef = name.getNomenclaturalReference();
+        if (nomRef != null){
+            TeamOrPersonBase<?> refAuthor = nomRef.getAuthorship();
+            nomRef.setAuthorship(getExistingAuthor(state, refAuthor));
+
+            Reference existingRef = getExistingReference(state, (Reference)nomRef);
+            if (existingRef != null){
+                name.setNomenclaturalReference(existingRef);
+            }
+        }
+    }
+
+     /**
+     * @param state
+     * @param nomRef
+     */
+    private Reference getExistingReference(SimpleExcelTaxonImportState<CONFIG> state, Reference ref) {
+        if (ref == null){
+            return null;
+        }else{
+            initRerenceMap(state);
+            Reference result = state.getReference(ref.getTitleCache());
+            if (result == null){
+                result = ref;
+                Reference inRef = result.getInReference();
+                if (inRef != null){
+                    result.setInReference(getExistingReference(state, result.getInReference()));
+                }
+                state.putReference(result.getTitleCache(), result);
+            }
+            return result;
+        }
+    }
+
+    boolean referenceMapIsInitialized;
+
+    /**
+     * @param state
+     */
+    private void initRerenceMap(SimpleExcelTaxonImportState<CONFIG> state) {
+        if (!referenceMapIsInitialized){
+            List<String> propertyPaths = Arrays.asList("");
+            List<Reference> existingReferences = this.getReferenceService().list(null, null, null, null, propertyPaths);
+            for (Reference ref : existingReferences){
+                state.putReference(ref.getTitleCache(), ref);
+            }
+            referenceMapIsInitialized = true;
+        }
+
+    }
+
+    boolean agentMapIsInitialized = false;
+
+    /**
+     * @param state
+     *
+     */
+    @SuppressWarnings("rawtypes")
+    private void initAgentMap(SimpleExcelTaxonImportState<CONFIG> state) {
+        if (!agentMapIsInitialized){
+            List<String> propertyPaths = Arrays.asList("");
+            List<TeamOrPersonBase> existingAgents = this.getAgentService().list(null, null, null, null, propertyPaths);
+            for (TeamOrPersonBase agent : existingAgents){
+                state.putAgentBase(agent.getTitleCache(), agent);
+            }
+            agentMapIsInitialized = true;
+        }
     }
 
     /**
@@ -174,6 +237,7 @@ public abstract class SimpleExcelTaxonImport<CONFIG extends ExcelImportConfigura
         if (author == null){
             return null;
         }else{
+            initAgentMap(state);
             TeamOrPersonBase<?> result = state.getAgentBase(author.getTitleCache());
             if (result == null){
                 state.putAgentBase(author.getTitleCache(), author);
@@ -185,6 +249,7 @@ public abstract class SimpleExcelTaxonImport<CONFIG extends ExcelImportConfigura
             return result;
         }
     }
+
 
     /**
      * @param state

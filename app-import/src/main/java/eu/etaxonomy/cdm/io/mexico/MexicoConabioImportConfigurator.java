@@ -16,6 +16,7 @@ import eu.etaxonomy.cdm.io.common.ImportStateBase;
 import eu.etaxonomy.cdm.io.common.mapping.IInputTransformer;
 import eu.etaxonomy.cdm.io.excel.common.ExcelImportConfiguratorBase;
 import eu.etaxonomy.cdm.model.name.NomenclaturalCode;
+import eu.etaxonomy.cdm.model.reference.Reference;
 
 /**
  * @author a.mueller
@@ -24,6 +25,8 @@ import eu.etaxonomy.cdm.model.name.NomenclaturalCode;
  */
 public class MexicoConabioImportConfigurator extends ExcelImportConfiguratorBase{
     private static final long serialVersionUID = -2795059530001736347L;
+
+    private Reference secReference;
 
     private boolean doTaxa = true;
     private boolean doDistributions = true;
@@ -98,6 +101,21 @@ public class MexicoConabioImportConfigurator extends ExcelImportConfiguratorBase
      */
     public void setDoCommonNames(boolean doCommonNames) {
         this.doCommonNames = doCommonNames;
+    }
+
+    /**
+     * @return the secReference
+     */
+    public Reference getSecReference() {
+        return secReference;
+    }
+
+
+    /**
+     * @param secReference
+     */
+    public void setSecReference(Reference secReference) {
+        this.secReference = secReference;
     }
 
 }

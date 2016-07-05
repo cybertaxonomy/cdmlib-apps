@@ -22,13 +22,17 @@ import org.springframework.stereotype.Component;
 import eu.etaxonomy.cdm.ext.geo.GeoServiceArea;
 import eu.etaxonomy.cdm.ext.geo.GeoServiceAreaAnnotatedMapping;
 import eu.etaxonomy.cdm.io.common.mapping.UndefinedTransformerMethodException;
+import eu.etaxonomy.cdm.model.common.Language;
 import eu.etaxonomy.cdm.model.common.OrderedTermVocabulary;
 import eu.etaxonomy.cdm.model.common.OriginalSourceType;
+import eu.etaxonomy.cdm.model.common.Representation;
 import eu.etaxonomy.cdm.model.common.TermType;
 import eu.etaxonomy.cdm.model.description.Distribution;
 import eu.etaxonomy.cdm.model.description.PresenceAbsenceTerm;
 import eu.etaxonomy.cdm.model.description.TaxonDescription;
 import eu.etaxonomy.cdm.model.location.NamedArea;
+import eu.etaxonomy.cdm.model.location.NamedAreaLevel;
+import eu.etaxonomy.cdm.model.location.NamedAreaType;
 import eu.etaxonomy.cdm.model.reference.Reference;
 import eu.etaxonomy.cdm.model.reference.ReferenceFactory;
 import eu.etaxonomy.cdm.model.taxon.Taxon;
@@ -174,7 +178,7 @@ public class MexicoConabioDistributionImport<CONFIG extends MexicoConabioImportC
             Distribution dist = Distribution.NewInstance(area, PresenceAbsenceTerm.PRESENT());
             desc.addElement(dist);
         }else if (value != null){
-            logger.warn(line + "Unrecognized distribution status '"+value+"' for " + key);
+            logger.warn(line + "Unrecognized distribution status '" + value + "' for " + key);
         }
     }
 
@@ -217,6 +221,8 @@ public class MexicoConabioDistributionImport<CONFIG extends MexicoConabioImportC
         stateAreasVoc = OrderedTermVocabulary.NewInstance(TermType.NamedArea,
                 description, label, null, termSourceUri);
         stateAreasVoc.setUuid(MexicoConabioTransformer.uuidMexicanStatesVoc);
+        Representation rep = Representation.NewInstance("Estados Méxicanos", "Estados Méxicanos", null, Language.SPANISH_CASTILIAN());
+        stateAreasVoc.addRepresentation(rep);
 
         //mexico country
         String mexicoLabel = "Mexico (Country)";
@@ -293,14 +299,14 @@ public class MexicoConabioDistributionImport<CONFIG extends MexicoConabioImportC
                 areaLabel, areaLabel, abbrev);
         newArea.setUuid(uuid);
         newArea.setPartOf(mexico);
+        newArea.setLevel(NamedAreaLevel.STATE());
+        newArea.setType(NamedAreaType.ADMINISTRATION_AREA());
         stateAreasVoc.addTerm(newArea);
         if (id1 != null){
             addMapping(newArea, "mex_adm1", "id_1", String.valueOf(id1));
         }else if (mappingLabel != null){
             addMapping(newArea, "mex_adm1", "name_1", mappingLabel);
         }
-
-
     }
 
     private void addMapping(NamedArea area, String mapping_layer, String mapping_field, String abbrev) {

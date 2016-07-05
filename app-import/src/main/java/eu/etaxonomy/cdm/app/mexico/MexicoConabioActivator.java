@@ -14,13 +14,19 @@ import java.util.UUID;
 
 import org.apache.log4j.Logger;
 
+import eu.etaxonomy.cdm.api.application.ICdmApplicationConfiguration;
 import eu.etaxonomy.cdm.app.common.CdmDestinations;
 import eu.etaxonomy.cdm.database.DbSchemaValidation;
 import eu.etaxonomy.cdm.database.ICdmDataSource;
 import eu.etaxonomy.cdm.io.common.CdmDefaultImport;
 import eu.etaxonomy.cdm.io.common.IImportConfigurator.CHECK;
 import eu.etaxonomy.cdm.io.mexico.MexicoConabioImportConfigurator;
+import eu.etaxonomy.cdm.io.mexico.MexicoConabioTransformer;
+import eu.etaxonomy.cdm.model.agent.Institution;
 import eu.etaxonomy.cdm.model.agent.Person;
+import eu.etaxonomy.cdm.model.common.Language;
+import eu.etaxonomy.cdm.model.common.Representation;
+import eu.etaxonomy.cdm.model.common.TimePeriod;
 import eu.etaxonomy.cdm.model.description.Feature;
 import eu.etaxonomy.cdm.model.description.FeatureNode;
 import eu.etaxonomy.cdm.model.description.FeatureTree;
@@ -54,8 +60,6 @@ public class MexicoConabioActivator {
     static final UUID classificationUuid = UUID.fromString("61968b43-e881-4043-b5c2-ba192e8f72dc");
     private static final String classificationName = "Rubiaceae Conabio";
 
-    static final String sourceReferenceTitle = "OchaXXX";
-
     //check - import
     static final CHECK check = CHECK.IMPORT_WITHOUT_CHECK;
 
@@ -72,7 +76,6 @@ public class MexicoConabioActivator {
         config.setDoDistributions(doDistributions);
         config.setDoCommonNames(doCommonNames);
         config.setDbSchemaValidation(hbm2dll);
-        config.setSourceReferenceTitle(sourceReferenceTitle);
 
         config.setSource(source);
         String fileName = source.toString();
@@ -82,19 +85,19 @@ public class MexicoConabioActivator {
         System.out.println(message);
         logger.warn(message);
 
-        config.setSourceReference(getSourceReference(sourceReferenceTitle));
+        config.setSourceReference(getSourceReference());
+        config.setSecReference(getSecReference());
 
         CdmDefaultImport<MexicoConabioImportConfigurator> myImport = new CdmDefaultImport<MexicoConabioImportConfigurator>();
 
         myImport.invoke(config);
 
         if (true){
-            FeatureTree tree = makeFeatureNodes();
+            FeatureTree tree = makeFeatureNodes(myImport.getCdmAppController());
             myImport.getCdmAppController().getFeatureTreeService().saveOrUpdate(tree);
         }
 
         System.out.println("End import from ("+ source.toString() + ")...");
-
     }
 
 
@@ -103,32 +106,55 @@ public class MexicoConabioActivator {
         return URI.create("file:////BGBM-PESIHPC/Mexico/CONABIO-Rubiaceae.xlsx");
     }
 
-    private Reference getSourceReference(String string) {
-        Reference result = ReferenceFactory.newGeneric();
-        result.setTitleCache(string, true);
-//        result.setTitle("Rubiáceas de México");
-//        result.setPlacePublished("Budapest");
-//        result.setPublisher("Akadémiai Kiadó");
-//        result.setPages("512 pp.");
-        result.setDatePublished(TimePeriodParser.parseString("2016"));
-        Person author = Person.NewTitledInstance(string);
-        author.setFirstname("Helga");
-        result.setAuthorship(author);
-//        result.setUuid(MexicoConabioTransformer.uuidReferenceBorhidi);
+    private Reference getSourceReference() {
+        Reference result = ReferenceFactory.newDatabase();
+        result.setTitleCache("CONABIO database", true);
+        TimePeriod tp = TimePeriodParser.parseString("2016");
+        tp.setStartMonth(5);
+        result.setDatePublished(tp);
+        Institution inst = Institution.NewNamedInstance("CONABIO");
+        result.setInstitution(inst);
         return result;
     }
 
-    private FeatureTree makeFeatureNodes(){
+    private Reference getSecReference() {
+        Reference result = ReferenceFactory.newDatabase();
+        result.setTitle("Rubiáceas de México");
+        result.setDatePublished(TimePeriodParser.parseString("2016"));
+        Person author = Person.NewInstance();
+        author.setFirstname("Helga");
+        author.setLastname("Ochoterena Booth");
+        result.setAuthorship(author);
+        result.setUuid(MexicoConabioTransformer.uuidReferenceConabio);
+        return result;
+    }
+
+    private FeatureTree makeFeatureNodes(ICdmApplicationConfiguration app){
 
         FeatureTree result = FeatureTree.NewInstance(featureTreeUuid);
         result.setTitleCache("Mexico Rubiaceae Feature Tree", true);
         FeatureNode root = result.getRoot();
         FeatureNode newNode;
 
-        newNode = FeatureNode.NewInstance(Feature.DISTRIBUTION());
+        Feature distribution = Feature.DISTRIBUTION();
+        Representation rep = Representation.NewInstance("Distribución", "Distribución", null, Language.SPANISH_CASTILIAN());
+        distribution.addRepresentation(rep);
+        app.getTermService().saveOrUpdate(distribution);
+        newNode = FeatureNode.NewInstance(distribution);
         root.addChild(newNode);
 
-        newNode = FeatureNode.NewInstance(Feature.COMMON_NAME());
+        Feature commonName = Feature.COMMON_NAME();
+        rep = Representation.NewInstance("Nombres comunes", "Nombres comunes", null, Language.SPANISH_CASTILIAN());
+        commonName.addRepresentation(rep);
+        app.getTermService().saveOrUpdate(commonName);
+        newNode = FeatureNode.NewInstance(commonName);
+        root.addChild(newNode);
+
+        Feature notes = Feature.NOTES();
+        rep = Representation.NewInstance("Notas", "Notas", null, Language.SPANISH_CASTILIAN());
+        notes.addRepresentation(rep);
+        app.getTermService().saveOrUpdate(notes);
+        newNode = FeatureNode.NewInstance(notes);
         root.addChild(newNode);
 
         return result;

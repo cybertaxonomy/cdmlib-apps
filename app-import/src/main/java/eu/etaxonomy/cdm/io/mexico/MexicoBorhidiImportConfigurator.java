@@ -16,6 +16,7 @@ import eu.etaxonomy.cdm.io.common.ImportStateBase;
 import eu.etaxonomy.cdm.io.common.mapping.IInputTransformer;
 import eu.etaxonomy.cdm.io.excel.common.ExcelImportConfiguratorBase;
 import eu.etaxonomy.cdm.model.name.NomenclaturalCode;
+import eu.etaxonomy.cdm.model.reference.Reference;
 
 /**
  * @author a.mueller
@@ -26,6 +27,7 @@ public class MexicoBorhidiImportConfigurator extends ExcelImportConfiguratorBase
     private static final long serialVersionUID = -4793138681632122831L;
 
     private static IInputTransformer defaultTransformer = new MexicoConabioTransformer();
+    private Reference secReference;
 
     /**
      * @param source
@@ -54,6 +56,22 @@ public class MexicoBorhidiImportConfigurator extends ExcelImportConfiguratorBase
         ioClassList = new Class[]{
                 MexicoBorhidiExcelImport.class
         };
+    }
+
+
+    /**
+     * @return the secReference
+     */
+    public Reference getSecReference() {
+        return secReference;
+    }
+
+
+    /**
+     * @param secReference
+     */
+    public void setSecReference(Reference secReference) {
+        this.secReference = secReference;
     }
 
 }

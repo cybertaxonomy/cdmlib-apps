@@ -32,14 +32,12 @@ public class MexicoConabioTransformer extends InputTransformerBase{
 
     public static UUID uuidTropicosNameIdentifier = UUID.fromString("6205e531-75b0-4f2a-9a9c-b1247fb080ab");
     public static UUID uuidReferenceBorhidi = UUID.fromString("f76a535b-a1fd-437c-a09d-f94eddae2b5e");
-
+    public static UUID uuidReferenceConabio = UUID.fromString("7183652f-d7ca-45a7-9383-265996d3d10f");
 
     public static final UUID uuidNomRefExtension = UUID.fromString("0a7e2f5f-c62d-43e1-874a-07cb1dbb9fa0");
 
     public static final UUID uuidStatusExotica = UUID.fromString("f7264a1d-5037-4d9a-9758-d81fea057e1b");
     public static final UUID uuidStatusExoticaInvasora = UUID.fromString("4d135810-4af8-48ca-82f4-d4741d00d067");
-
-
 
     public static final UUID uuidMexicanStatesVoc = UUID.fromString("88556d4c-a171-4e14-ac56-3154d88f429b");
 

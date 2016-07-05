@@ -17,12 +17,14 @@ import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
 import org.springframework.stereotype.Component;
 
 import eu.etaxonomy.cdm.io.common.mapping.UndefinedTransformerMethodException;
 import eu.etaxonomy.cdm.model.agent.Person;
 import eu.etaxonomy.cdm.model.agent.Team;
+import eu.etaxonomy.cdm.model.agent.TeamOrPersonBase;
 import eu.etaxonomy.cdm.model.common.Annotation;
 import eu.etaxonomy.cdm.model.common.AnnotationType;
 import eu.etaxonomy.cdm.model.common.CdmBase;
@@ -37,8 +39,10 @@ import eu.etaxonomy.cdm.model.name.NomenclaturalStatusType;
 import eu.etaxonomy.cdm.model.name.NonViralName;
 import eu.etaxonomy.cdm.model.name.Rank;
 import eu.etaxonomy.cdm.model.name.TaxonNameBase;
+import eu.etaxonomy.cdm.model.reference.INomenclaturalReference;
 import eu.etaxonomy.cdm.model.reference.Reference;
 import eu.etaxonomy.cdm.model.reference.ReferenceFactory;
+import eu.etaxonomy.cdm.model.reference.ReferenceType;
 import eu.etaxonomy.cdm.model.taxon.Classification;
 import eu.etaxonomy.cdm.model.taxon.Synonym;
 import eu.etaxonomy.cdm.model.taxon.SynonymRelationshipType;
@@ -114,11 +118,13 @@ public class MexicoConabioTaxonImport<CONFIG extends MexicoConabioImportConfigur
 
         //Name
         BotanicalName speciesName = makeName(line, record, state);
-        String statusStr = getValue(record, "EstatusNombre");
 
+        //sec
         String secRefStr = getValueNd(record, "ReferenciaNombre");
         Reference sec = getSecRef(state, secRefStr, line);
 
+        //status
+        String statusStr = getValue(record, "EstatusNombre");
         TaxonBase<?> taxonBase;
         if ("aceptado".equals(statusStr)){
             taxonBase = Taxon.NewInstance(speciesName, sec);
@@ -128,14 +134,17 @@ public class MexicoConabioTaxonImport<CONFIG extends MexicoConabioImportConfigur
             throw new RuntimeException(line + " Status not recognized: " + statusStr);
         }
 
+        //annotation
         String annotation = getValue(record, "Anotacion al Taxon");
         if (annotation != null && (!annotation.equals("nom. illeg.") || !annotation.equals("nom. cons."))){
             taxonBase.addAnnotation(Annotation.NewInstance(annotation, AnnotationType.EDITORIAL(), Language.SPANISH_CASTILIAN()));
         }
 
+        //id
         String idCat = getValue(record, "IdCAT");
         this.addOriginalSource(taxonBase, idCat, TAXON_NAMESPACE, state.getConfig().getSourceReference());
 
+        //save
         getTaxonService().save(taxonBase);
         taxonIdMap.put(idCat, taxonBase);
 
@@ -153,31 +162,56 @@ public class MexicoConabioTaxonImport<CONFIG extends MexicoConabioImportConfigur
         if (result == null && secRefStr != null){
             result = ReferenceFactory.newBook();
             TimePeriod tp = TimePeriodParser.parseString(secRefStr.substring(secRefStr.length()-4));
-            String authorStr = secRefStr.substring(0, secRefStr.length()-6);
-            if (! (authorStr + ", " + tp.getYear()).equals(secRefStr)){
+            String authorStrPart = secRefStr.substring(0, secRefStr.length()-6);
+            if (! (authorStrPart + ", " + tp.getYear()).equals(secRefStr)){
                 logger.warn(line + "Sec ref could not be parsed: " + secRefStr);
             }else{
                 result.setDatePublished(tp);
             }
-
-            if (authorStr.contains(",") || authorStr.contains("&")){
-                //TODO split
-                Team team = Team.NewTitledInstance(authorStr, null);
-                result.setAuthorship(team);
-            }else if (authorStr.equals("Tropicos") || authorStr.equals("The plant list")
-                    || authorStr.equals("APG IV")){
-                result.setTitle(authorStr);
-
+            TeamOrPersonBase<?> author = state.getAgentBase(authorStrPart);
+            if (author == null){
+                if (authorStrPart.contains("&")){
+                    Team team = Team.NewInstance();
+                    String[] authorSplit = authorStrPart.split("&");
+                    String[] firstAuthorSplit = authorSplit[0].trim().split(",");
+                    for (String authorStr : firstAuthorSplit){
+                        addTeamMember(team, authorStr);
+                    }
+                    addTeamMember(team, authorSplit[1]);
+                    result.setAuthorship(team);
+                    state.putAgentBase(team.getTitleCache(), team);
+                }else if (authorStrPart.equalsIgnoreCase("Tropicos") || authorStrPart.equalsIgnoreCase("The Plant List")
+                        || authorStrPart.equalsIgnoreCase("APG IV")){
+                    result.setTitle(authorStrPart);
+                }else{
+                    Person person = Person.NewInstance();
+                    person.setLastname(authorStrPart);
+                    result.setAuthorship(person);
+                    state.putAgentBase(person.getTitleCache(), person);
+                }
             }else{
-                Person person = Person.NewTitledInstance(authorStr);
-                result.setAuthorship(person);
+                result.setAuthorship(author);
             }
-
+            state.putReference(secRefStr, result);
         }else if(secRefStr == null){
-            logger.warn(line + "Empty secRefStr not yet implemented");
+            return state.getConfig().getSecReference();
         }
 
         return result;
+    }
+
+
+
+    /**
+     * @param team
+     * @param author
+     */
+    private void addTeamMember(Team team, String author) {
+        if (StringUtils.isNotBlank(author)){
+            Person person = Person.NewInstance();
+            person.setLastname(author.trim());
+            team.addTeamMember(person);
+        }
     }
 
 
@@ -196,6 +230,8 @@ public class MexicoConabioTaxonImport<CONFIG extends MexicoConabioImportConfigur
         String idCat = getValue(record, "IdCAT");
         String rankStr = getValue(record, "CategoriaTaxonomica");
         String annotation = getValue(record, "Anotacion al Taxon");
+
+        //rank
         Rank rank = null;
         try {
             rank = state.getTransformer().getRankByKey(rankStr);
@@ -207,25 +243,30 @@ public class MexicoConabioTaxonImport<CONFIG extends MexicoConabioImportConfigur
             logger.warn(line + "Rank not recognized: " + rankStr);
         }
 
+        //name + author
         String fullNameStr = nameStr + (authorStr != null ? " " + authorStr : "");
 
         BotanicalName fullName = (BotanicalName)nameParser.parseFullName(fullNameStr, NomenclaturalCode.ICNAFP, rank);
         if (fullName.isProtectedTitleCache()){
             logger.warn(line + "Name could not be parsed: " + fullNameStr );
         }else{
-            replaceAuthorNames(state, fullName);
+            replaceAuthorNamesAndNomRef(state, fullName);
         }
         BotanicalName existingName = getExistingName(state, fullName);
 
+        //reference
         String refNameStr = getRefNameStr(nomRefStr, refType, fullNameStr);
 
         BotanicalName referencedName = (BotanicalName)nameParser.parseReferencedName(refNameStr, NomenclaturalCode.ICNAFP, rank);
         if (referencedName.isProtectedFullTitleCache() || referencedName.isProtectedTitleCache()){
             logger.warn(line + "Referenced name could not be parsed: " + refNameStr );
         }else{
-            replaceAuthorNames(state, referencedName);
+            addSourcesToReferences(referencedName, state);
+            replaceAuthorNamesAndNomRef(state, referencedName);
         }
+        adaptRefTypeForGeneric(referencedName, refType);
 
+        //compare nom. ref. with Borhidi
         BotanicalName result= referencedName;
         Boolean equal = null;
         if (existingName != null){
@@ -242,7 +283,8 @@ public class MexicoConabioTaxonImport<CONFIG extends MexicoConabioImportConfigur
         }
         addNomRefExtension(state, result, equal);
 
-        if (annotation != null && ! annotation.equals("nom. illeg.") && ! annotation.equals("nom. cons.")){
+        //status
+        if (annotation != null && (annotation.equals("nom. illeg.") || annotation.equals("nom. cons."))){
             try {
                 NomenclaturalStatusType nomStatusType = NomenclaturalStatusType.getNomenclaturalStatusTypeByAbbreviation(annotation, result);
                 result.addStatus(NomenclaturalStatus.NewInstance(nomStatusType));
@@ -259,17 +301,64 @@ public class MexicoConabioTaxonImport<CONFIG extends MexicoConabioImportConfigur
 
 
     /**
+     * @param name
+     * @param state
+     */
+    private void addSourcesToReferences(BotanicalName name, SimpleExcelTaxonImportState<CONFIG> state) {
+        Reference nomRef = (Reference)name.getNomenclaturalReference();
+        if (nomRef != null){
+            nomRef.addSource(makeOriginalSource(state));
+            if (nomRef.getInReference() != null){
+                nomRef.getInReference().addSource(makeOriginalSource(state));
+            }
+        }
+    }
+
+
+
+    /**
+     * @param referencedName
+     * @param refType
+     */
+    private void adaptRefTypeForGeneric(BotanicalName referencedName, String refTypeStr) {
+        INomenclaturalReference ref = referencedName.getNomenclaturalReference();
+        if (ref == null){
+            return;
+        }
+        ReferenceType refType = refTypeByRefTypeStr(refTypeStr);
+        if (ref.getType() != refType && refType == ReferenceType.Book){
+            ref.setType(refType);
+        }
+    }
+
+
+    private ReferenceType refTypeByRefTypeStr(String refType){
+        if ("A".equals(refType)){  //Article
+            return ReferenceType.Article;
+        }else if ("B".equals(refType)){   //Book
+            return ReferenceType.Book;
+        }else if (refType == null){   //Book
+            return null;
+        }else{
+            throw new IllegalArgumentException("RefType not supported " + refType);
+        }
+    }
+
+    /**
      * @param nomRefStr
      * @param refType
      * @param fullNameStr
      * @return
      */
-    private String getRefNameStr(String nomRefStr, String refType, String fullNameStr) {
+    private String getRefNameStr(String nomRefStr, String refTypeStr, String fullNameStr) {
         String refNameStr = fullNameStr;
-        if ("A".equals(refType)){  //Article
+        ReferenceType refType = refTypeByRefTypeStr(refTypeStr);
+        if (refType == ReferenceType.Article){
             refNameStr = fullNameStr + " in " + nomRefStr;
-        }else if ("B".equals(refType)){   //Book
+        }else if (refType == ReferenceType.Book){
             refNameStr = fullNameStr + ", " + nomRefStr;
+        }else if (refType == null && nomRefStr != null){
+            logger.warn("RefType is null but nomRefStr exists");
         }
         return refNameStr;
     }
@@ -302,8 +391,16 @@ public class MexicoConabioTaxonImport<CONFIG extends MexicoConabioImportConfigur
      * @param fullName
      * @return
      */
-    @SuppressWarnings("rawtypes")
     private BotanicalName getExistingName(SimpleExcelTaxonImportState<CONFIG> state, BotanicalName fullName) {
+        initExistinNames(state);
+        return (BotanicalName)state.getName(fullName.getTitleCache());
+    }
+
+    /**
+     * @param state
+     */
+    @SuppressWarnings("rawtypes")
+    private void initExistinNames(SimpleExcelTaxonImportState<CONFIG> state) {
         if (!nameMapIsInitialized){
             List<String> propertyPaths = Arrays.asList("");
             List<TaxonNameBase> existingNames = this.getNameService().list(null, null, null, null, propertyPaths);
@@ -312,8 +409,9 @@ public class MexicoConabioTaxonImport<CONFIG extends MexicoConabioImportConfigur
             }
             nameMapIsInitialized = true;
         }
-        return (BotanicalName)state.getName(fullName.getTitleCache());
     }
+
+
 
     /**
      * @param record
@@ -417,7 +515,7 @@ public class MexicoConabioTaxonImport<CONFIG extends MexicoConabioImportConfigur
             MexicoConabioImportConfigurator config = state.getConfig();
             classification = Classification.NewInstance(config.getClassificationName());
             classification.setUuid(config.getClassificationUuid());
-            classification.setReference(config.getSourceReference());
+            classification.setReference(config.getSecReference());
             getClassificationService().save(classification);
         }
         return classification;

@@ -21,6 +21,7 @@ import org.apache.log4j.Logger;
 import org.springframework.stereotype.Component;
 
 import eu.etaxonomy.cdm.common.CdmUtils;
+import eu.etaxonomy.cdm.common.UTF8;
 import eu.etaxonomy.cdm.model.common.DefinedTerm;
 import eu.etaxonomy.cdm.model.common.Extension;
 import eu.etaxonomy.cdm.model.common.ExtensionType;
@@ -53,7 +54,7 @@ public class MexicoBorhidiExcelImport<CONFIG extends MexicoBorhidiImportConfigur
     private static final long serialVersionUID = -3607776356577606657L;
 
     private  static List<String> expectedKeys= Arrays.asList(new String[]{
-            "FullnameNoAuthors","OutputNameID","OutputFullNameWithAuthors"
+            "FullnameNoAuthors","OutputNameID","OutputFullNameWithAuthors","RefType"
             ,"OutputAbbreviatedTitle","OutputCollation","OutputVolume",
             "OutputIssue","OutputPage","OutputTitlePageYear","OutputYearPublished",
             "OutputBHLLink"});
@@ -76,25 +77,15 @@ public class MexicoBorhidiExcelImport<CONFIG extends MexicoBorhidiImportConfigur
         BotanicalName speciesName = makeName(record, state);
 
         //Taxon
-        Reference sec = state.getConfig().getSourceReference();
+        Reference sec = state.getConfig().getSecReference();
         Taxon taxon = Taxon.NewInstance(speciesName, sec);
         TaxonNode rubiaceae = getHighestNode(state);
-//        rubiaceae.addChildTaxon(taxon, null, null);
+
+        taxon.addSource(makeOriginalSource(state));
+
 
         //make genus
         makeGenus(state, speciesName, sec, taxon, rubiaceae);
-
-        //add tropicos identifier
-        String tropicosId = record.get("OutputNameID");
-        if (isNotBlank(tropicosId)){
-            String tropicosIdTypeLabel = "Tropicos Name Identifier";
-            UUID uuid = MexicoConabioTransformer.uuidTropicosNameIdentifier;
-            TermVocabulary<DefinedTerm> voc = null;  //for now it goes to user defined voc
-            DefinedTerm identifierType = this.getIdentiferType(state, uuid, tropicosIdTypeLabel, tropicosIdTypeLabel, null, voc);
-            Identifier<Taxon> identifier = Identifier.NewInstance(tropicosId, identifierType);
-            taxon.addIdentifier(identifier);
-        }
-
     }
 
 
@@ -108,7 +99,7 @@ public class MexicoBorhidiExcelImport<CONFIG extends MexicoBorhidiImportConfigur
             MexicoBorhidiImportConfigurator config = state.getConfig();
             classification = Classification.NewInstance(state.getConfig().getClassificationName());
             classification.setUuid(config.getClassificationUuid());
-            classification.setReference(config.getSourceReference());
+            classification.setReference(config.getSecReference());
             BotanicalName nameRubiaceae = BotanicalName.NewInstance(Rank.FAMILY());
             nameRubiaceae.setGenusOrUninomial("Rubiaceae");
             Taxon rubiaceaeTaxon = Taxon.NewInstance(nameRubiaceae, classification.getReference());
@@ -127,39 +118,56 @@ public class MexicoBorhidiExcelImport<CONFIG extends MexicoBorhidiImportConfigur
         String line = state.getCurrentLine() + ": ";
 
         String fullNameStr = getValue(record, "OutputFullNameWithAuthors");
-        String volume = getValue(record, "OutputVolume");
-        String issue = getValue(record, "OutputIssue");
-        String page = getValue(record, "OutputPage");
+//        String volume = getValue(record, "OutputVolume");
+//        String issue = getValue(record, "OutputIssue");
+//        String page = getValue(record, "OutputPage");
         String titleYear = getValue(record, "OutputTitlePageYear");
         String publishedYear = getValue(record, "OutputYearPublished");
         String refAbbrevTitle = getValue(record, "OutputAbbreviatedTitle");
         String outputCollation = getValue(record, "OutputCollation");
+        String refType = getValue(record, "RefType");
+
 
         BotanicalName name = (BotanicalName)nameParser.parseFullName(fullNameStr, NomenclaturalCode.ICNAFP, Rank.SPECIES());
         if (name.isProtectedTitleCache()){
+            //for the 2 ined. names
+            name = (BotanicalName)nameParser.parseReferencedName(fullNameStr, NomenclaturalCode.ICNAFP, Rank.SPECIES());
+        }
+        if (name.isProtectedTitleCache()){
             logger.warn(line + "Name could not be parsed: " + fullNameStr );
         }else{
-            replaceAuthorNames(state, name);
+            replaceAuthorNamesAndNomRef(state, name);
         }
 
-        String[] volumeDetail = makeVolumeDetail(outputCollation);
-
         if (refAbbrevTitle != null){
-            if (volume != null){
+            String[] volumeDetail = makeVolumeDetail(outputCollation);
+            String detail;
+            String volume = null;
+            if (volumeDetail.length > 1){
+                volume = volumeDetail[0].trim();
+                detail = volumeDetail[1].trim();
+            }else{
+                detail = volumeDetail[0].trim();
+            }
+
+            refAbbrevTitle = refAbbrevTitle.trim();
+            boolean isArticle = "A".equalsIgnoreCase(refType);
+
+            if (isArticle){
+                if (! "A".equalsIgnoreCase(refType)){
+                    logger.warn(line + "RefType problem with article " + refType);
+                }
+
                 Reference journal = state.getReference(refAbbrevTitle);
                 if (journal == null){
                     journal = ReferenceFactory.newJournal();
                     journal.setAbbrevTitle(refAbbrevTitle);
                     state.putReference(refAbbrevTitle, journal);
+                    journal.addSource(makeOriginalSource(state));
+
                 }
                 Reference article = ReferenceFactory.newArticle();
 
-                //volume + issue
-    //            if (isNotBlank(issue)){
-    //                volume = volume + "(" + issue + ")";
-    //            }
-                volume = volumeDetail[0];
-                String detail = volumeDetail.length > 1 ? volumeDetail[1].trim() : null;
 
                 //            String detail = page;
                 name.setNomenclaturalMicroReference(detail);
@@ -167,8 +175,10 @@ public class MexicoBorhidiExcelImport<CONFIG extends MexicoBorhidiImportConfigur
                 article.setVolume(CdmUtils.Ne(volume));
                 article.setInReference(journal);
 
-                titleYear = (isBlank(publishedYear)? titleYear : "\"" + titleYear + "\"[" + publishedYear + "]");
+                titleYear = (isBlank(publishedYear)? titleYear : UTF8.ENGLISH_QUOT_START + titleYear + UTF8.ENGLISH_QUOT_END + "[" + publishedYear + "]");
                 article.setDatePublished(TimePeriodParser.parseString(titleYear));
+
+                article.setAuthorship(name.getCombinationAuthorship());
 
                 Reference existingArticle = state.getReference(article.getTitleCache());
                 if (existingArticle != null){
@@ -176,19 +186,21 @@ public class MexicoBorhidiExcelImport<CONFIG extends MexicoBorhidiImportConfigur
                 }else{
                     name.setNomenclaturalReference(article);
                     state.putReference(article.getTitleCache(), article);
+                    article.addSource(makeOriginalSource(state));
                 }
             }else{
+                if (! "B".equalsIgnoreCase(refType)){
+                    logger.warn(line + "RefType problem with book" + refType);
+                }
 
                 Reference book = ReferenceFactory.newBook();
                 book.setAbbrevTitle(refAbbrevTitle);
 
-                if (volumeDetail.length > 1){
-                    logger.warn(line + "Book outputCollation has volume part");
-                }
-
                 //year
-                titleYear = (isBlank(publishedYear)? titleYear : "\"" + titleYear + "\"[" + publishedYear + "]");
+                titleYear = (isBlank(publishedYear)? titleYear : UTF8.ENGLISH_QUOT_START + titleYear + UTF8.ENGLISH_QUOT_END + "[" + publishedYear + "]");
                 book.setDatePublished(TimePeriodParser.parseString(titleYear));
+
+                book.setAuthorship(name.getCombinationAuthorship());
 
                 //deduplicate
                 Reference existingBook = state.getReference(book.getTitleCache());
@@ -199,15 +211,14 @@ public class MexicoBorhidiExcelImport<CONFIG extends MexicoBorhidiImportConfigur
                     state.putReference(book.getTitleCache(), book);
                 }
 
-                //micro ref
-                String detail = outputCollation;
+                book.setVolume(volume);
+
                 //String detail = page;
                 name.setNomenclaturalMicroReference(detail);
             }
         }
 
         addNomRefExtension(state, name);
-
 
         //add protologue
         String bhlLink = record.get("OutputBHLLink");
@@ -225,6 +236,20 @@ public class MexicoBorhidiExcelImport<CONFIG extends MexicoBorhidiImportConfigur
                 logger.warn(line + "URI could not be parsed: " + e.getMessage());
             }
         }
+
+        //add tropicos identifier
+        String tropicosId = record.get("OutputNameID");
+        if (isNotBlank(tropicosId)){
+            String tropicosIdTypeLabel = "Tropicos Name Identifier";
+            UUID uuid = MexicoConabioTransformer.uuidTropicosNameIdentifier;
+            TermVocabulary<DefinedTerm> voc = null;  //for now it goes to user defined voc
+            DefinedTerm identifierType = this.getIdentiferType(state, uuid, tropicosIdTypeLabel, tropicosIdTypeLabel, null, voc);
+            Identifier<Taxon> identifier = Identifier.NewInstance(tropicosId, identifierType);
+            name.addIdentifier(identifier);
+        }
+
+        name.addSource(makeOriginalSource(state));
+
 
         return name;
     }

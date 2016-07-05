@@ -56,8 +56,6 @@ public class MexicoBorhidiActivator {
     static final UUID classificationUuid = UUID.fromString("8ebb2076-d849-47e0-ad32-4fe08ca61cac");
     private static final String classificationName = "Rubiaceae Borhidi";
 
-    static final String sourceReferenceTitle = "Rubiáceas de México";
-
     //check - import
     static final CHECK check = CHECK.IMPORT_WITHOUT_CHECK;
 
@@ -74,10 +72,8 @@ public class MexicoBorhidiActivator {
         config.setClassificationUuid(classificationUuid);
         config.setClassificationName(classificationName);
         config.setCheck(check);
-//        config.setDoTaxa(doTaxa);
         config.setDbSchemaValidation(hbm2dll);
-        config.setSourceReferenceTitle(sourceReferenceTitle);
-//        config.setDoVocabularies(doVocabularies);
+        config.setSecReference(getSecReference());
 
         config.setSource(source);
         String fileName = source.toString();
@@ -87,7 +83,7 @@ public class MexicoBorhidiActivator {
         System.out.println(message);
         logger.warn(message);
 
-        config.setSourceReference(getSourceReference(sourceReferenceTitle));
+        config.setSourceReference(getSourceReference());
 
         CdmDefaultImport<MexicoBorhidiImportConfigurator> myImport = new CdmDefaultImport<MexicoBorhidiImportConfigurator>();
 
@@ -103,7 +99,17 @@ public class MexicoBorhidiActivator {
         return URI.create("file:////BGBM-PESIHPC/Mexico/Borhidi_2012.xlsx");
     }
 
-    private Reference getSourceReference(@SuppressWarnings("unused") String string) {
+
+    private Reference getSourceReference() {
+        Reference result = ReferenceFactory.newGeneric();
+        result.setTitle("Borhidi 2012 accepted spp checked in TROPICOS.XLSX");
+        Person borhidi = Person.NewTitledInstance("Borhidi");
+        borhidi.setFirstname("Attila");
+        result.setAuthorship(borhidi);
+        return result;
+    }
+
+    private Reference getSecReference() {
         Reference result = ReferenceFactory.newBook();
         result.setTitle("Rubiáceas de México");
         result.setPlacePublished("Budapest");
