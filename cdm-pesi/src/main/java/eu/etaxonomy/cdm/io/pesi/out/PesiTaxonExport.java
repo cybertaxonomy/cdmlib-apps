@@ -792,7 +792,7 @@ public class PesiTaxonExport extends PesiExportBase {
 
 
 
-		while ((taxonList  = getTaxonService().listTaxaByName(Taxon.class, "*", "*", "*", "*", Rank.SPECIES(), pageSize, pageNumber)).size() > 0) {
+		while ((taxonList  = getTaxonService().listTaxaByName(Taxon.class, "*", "*", "*", "*", "*", Rank.SPECIES(), pageSize, pageNumber)).size() > 0) {
 			HashMap<Integer, TaxonNameBase<?,?>> inferredSynonymsDataToBeSaved = new HashMap<Integer, TaxonNameBase<?,?>>();
 
 			logger.info("Fetched " + taxonList.size() + " " + parentPluralString + ". Exporting...");
@@ -819,7 +819,7 @@ public class PesiTaxonExport extends PesiExportBase {
 			pageNumber++;
 		}
 		taxonList = null;
-		while ((taxonList  = getTaxonService().listTaxaByName(Taxon.class, "*", "*", "*", "*", Rank.SUBSPECIES(), pageSize, pageNumber)).size() > 0) {
+		while ((taxonList  = getTaxonService().listTaxaByName(Taxon.class, "*", "*", "*", "*", "*", Rank.SUBSPECIES(), pageSize, pageNumber)).size() > 0) {
 			HashMap<Integer, TaxonNameBase<?,?>> inferredSynonymsDataToBeSaved = new HashMap<Integer, TaxonNameBase<?,?>>();
 
 			logger.info("Fetched " + taxonList.size() + " " + parentPluralString + ". Exporting...");
@@ -1730,9 +1730,9 @@ public class PesiTaxonExport extends PesiExportBase {
 		if (nvn != null){
 			Reference nomRef = (Reference)nvn.getNomenclaturalReference();
 			if (nomRef != null){
+			    logger.warn("Semantics of getAbbrevTitleCache has changed. Please check if output is still correct. See #5388");
 				return nomRef.getAbbrevTitleCache();
 			}
-
 		}
 		return null;
 	}

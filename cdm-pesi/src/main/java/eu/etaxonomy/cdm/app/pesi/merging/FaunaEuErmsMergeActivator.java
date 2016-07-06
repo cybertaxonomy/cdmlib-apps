@@ -77,10 +77,10 @@ public class FaunaEuErmsMergeActivator {
 
 		//set the ranks of Agnatha and Gnathostomata to 50 instead of 45
 		List<TaxonBase> taxaToChangeRank = new ArrayList<TaxonBase>();
-		Pager<TaxonBase> agnatha = sc.appCtrInit.getTaxonService().findTaxaByName(TaxonBase.class, "Agnatha", null, null, null, Rank.INFRAPHYLUM(), 10, 0);
+		Pager<TaxonBase> agnatha = sc.appCtrInit.getTaxonService().findTaxaByName(TaxonBase.class, "Agnatha", null, null, null, "*", Rank.INFRAPHYLUM(), 10, 0);
 		List<TaxonBase> agnathaList = agnatha.getRecords();
 		taxaToChangeRank.addAll(agnathaList);
-		Pager<TaxonBase> gnathostomata = sc.appCtrInit.getTaxonService().findTaxaByName(TaxonBase.class, "Gnathostomata", null, null, null, Rank.INFRAPHYLUM(), 10, 0);
+		Pager<TaxonBase> gnathostomata = sc.appCtrInit.getTaxonService().findTaxaByName(TaxonBase.class, "Gnathostomata", null, null, null, "*", Rank.INFRAPHYLUM(), 10, 0);
 		List<TaxonBase> gnathostomataList = gnathostomata.getRecords();
 		taxaToChangeRank.addAll(gnathostomataList);
 
@@ -94,12 +94,6 @@ public class FaunaEuErmsMergeActivator {
 		//erms is synonym, faunaEu as well
 
 		// erms is accepted, faunaEu as well
-
-
-
-
-
-
 
 	}
 
