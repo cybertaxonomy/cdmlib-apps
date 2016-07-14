@@ -15,6 +15,8 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import org.apache.log4j.Logger;
 import org.springframework.stereotype.Component;
@@ -61,6 +63,8 @@ public class RedListGefaesspflanzenImportNames extends DbImportBase<RedListGefae
     private static final String tableName = "Rote Liste Gefäßpflanzen";
 
     private static final String pluralString = "names";
+
+    private static final boolean STRICT_TITLE_CHECK = false;
 
     public RedListGefaesspflanzenImportNames() {
         super(tableName, pluralString);
@@ -258,7 +262,7 @@ public class RedListGefaesspflanzenImportNames extends DbImportBase<RedListGefae
         if(taxonBase.isInstanceOf(Taxon.class) && trivialString!=null){
             Taxon taxon = HibernateProxyHelper.deproxy(taxonBase, Taxon.class);
             TaxonDescription description = TaxonDescription.NewInstance(taxon);
-            description.addElement(CommonTaxonName.NewInstance(trivialString, Language.getDefaultLanguage()));
+            description.addElement(CommonTaxonName.NewInstance(trivialString, Language.GERMAN()));
         }
 
         //check taxon name consistency
@@ -381,9 +385,19 @@ public class RedListGefaesspflanzenImportNames extends DbImportBase<RedListGefae
         }
         //nomenclatural status
         if(CdmUtils.isNotBlank(nomZusatzString)){
-            NomenclaturalStatusType status = makeNomenclaturalStatus(id, state, nomZusatzString);
-            if(status!=null){
-                name.addStatus(NomenclaturalStatus.NewInstance(status));
+            NomenclaturalStatusType statusType = makeNomenclaturalStatus(id, state, nomZusatzString);
+            if(statusType!=null){
+                NomenclaturalStatus status = NomenclaturalStatus.NewInstance(statusType);
+                //special case for invalid names where the DB entry contains
+                //additional information in brackets e.g. "nom. inval. (sine basion.)"
+                if(statusType.equals(NomenclaturalStatusType.INVALID())){
+                    Pattern pattern = Pattern.compile("\\((.*?)\\)");
+                    Matcher matcher = pattern.matcher(nomZusatzString);
+                    if (matcher.find()){
+                        status.setRuleConsidered(matcher.group(1));
+                    }
+                }
+                name.addStatus(status);
             }
         }
         //hybrid
@@ -460,8 +474,15 @@ public class RedListGefaesspflanzenImportNames extends DbImportBase<RedListGefae
         if(authorString.equals(RedListUtil.AUCT)){
             authorString = "";
         }
-        if(!authorString.equals(authorshipCache)){
-            RedListUtil.logMessage(id, "Authorship inconsistent! name.authorhshipCache <-> Column "+RedListUtil.AUTOR+": "+authorshipCache+" <-> "+authorString, logger);
+        if(STRICT_TITLE_CHECK){
+            if(!authorString.equals(authorshipCache)){
+                RedListUtil.logMessage(id, "Authorship inconsistent! name.authorhshipCache <-> Column "+RedListUtil.AUTOR+": "+authorshipCache+" <-> "+authorString, logger);
+            }
+        }
+        else{
+            if(!authorString.startsWith(authorshipCache)){
+                RedListUtil.logMessage(id, "Authorship inconsistent! name.authorhshipCache <-> Column "+RedListUtil.AUTOR+": "+authorshipCache+" <-> "+authorString, logger);
+            }
         }
     }
 
@@ -476,22 +497,49 @@ public class RedListGefaesspflanzenImportNames extends DbImportBase<RedListGefae
 
 
         String nameCache = HibernateProxyHelper.deproxy(taxonBase.getName(), NonViralName.class).getNameCache().trim();
+        taxNameString = taxNameString.trim();
+        taxNameString.replaceAll(" +", " ");
 
         if(taxNameString.endsWith("agg.")){
             taxNameString = taxNameString.replace("agg.", "aggr.");
         }
-        if(hybString.equals(RedListUtil.HYB_X)){
-            taxNameString = taxNameString.replace(RedListUtil.HYB_SIGN+" ", RedListUtil.HYB_SIGN);//hybrid sign has no space after it in titleCache for binomial hybrids
+        if(taxNameString.endsWith("aggr.")){
+            taxNameString = taxNameString.replaceFirst(" ", " (");
+            taxNameString = taxNameString.replace(" aggr.", ") aggr.");
         }
-        if(taxNameString.endsWith("- Gruppe")){
+
+        if(hybString.equals(RedListUtil.HYB_X)){
+            taxNameString = taxNameString.replace(" "+RedListUtil.HYB_SIGN+" ", " "+RedListUtil.HYB_SIGN);//hybrid sign has no space after it in titleCache for binomial hybrids
+            taxNameString = taxNameString.replace(" x ", " "+RedListUtil.HYB_SIGN);//in some cases a standard 'x' is used
+        }
+        else if(hybString.equals(RedListUtil.HYB_G)){
+            taxNameString = taxNameString.replace("X ", RedListUtil.HYB_SIGN);
+        }
+        else if(hybString.equals(RedListUtil.HYB_GF)){
+            taxNameString = taxNameString.replace(" "+RedListUtil.HYB_SIGN, " x");
+        }
+
+        if(taxNameString.endsWith("- Gruppe")){String a ="Festuca ×xx Lolium <-> Festuca ×× Lolium";
             taxNameString = taxNameString.replaceAll("- Gruppe", "species group");
         }
         if(taxNameString.endsWith("- group")){
             taxNameString = taxNameString.replaceAll("- group", "species group");
         }
+        if(taxNameString.endsWith("species group")){
+            taxNameString = taxNameString.replaceFirst(" ", " (");
+            taxNameString = taxNameString.replace(" species group", ") species group");
+        }
+
         taxNameString = taxNameString.replace("[ranglos]", "[unranked]");
-        if(!taxNameString.trim().equals(nameCache)){
-            RedListUtil.logMessage(id, "Taxon name inconsistent! taxon.titleCache <-> Column "+RedListUtil.TAXNAME+": "+nameCache+" <-> "+taxNameString, logger);
+        if(STRICT_TITLE_CHECK){
+            if(!taxNameString.trim().equals(nameCache)){
+                RedListUtil.logMessage(id, "Taxon name inconsistent! taxon.titleCache <-> Column "+RedListUtil.TAXNAME+": "+nameCache+" <-> "+taxNameString, logger);
+            }
+        }
+        else{
+            if(!taxNameString.startsWith(nameCache)){
+                RedListUtil.logMessage(id, "Taxon name inconsistent! taxon.titleCache <-> Column "+RedListUtil.TAXNAME+": "+nameCache+" <-> "+taxNameString, logger);
+            }
         }
     }
 
