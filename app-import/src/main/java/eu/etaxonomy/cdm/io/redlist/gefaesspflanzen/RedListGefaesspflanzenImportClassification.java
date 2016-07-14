@@ -217,6 +217,9 @@ public class RedListGefaesspflanzenImportClassification extends DbImportBase<Red
             taxon.setTitleCache(null);//Reset title cache to see sec ref in title
             classification.addChildTaxon(taxon, null, null);
         }
+        getTaxonService().saveOrUpdate(taxon);
+        getTaxonService().saveOrUpdate(gesamtListeTaxon);
+        getTaxonService().saveOrUpdate(checklisteTaxon);
     }
 
     private void createParentChildNodes(Classification classification, long id, String gueltString,
