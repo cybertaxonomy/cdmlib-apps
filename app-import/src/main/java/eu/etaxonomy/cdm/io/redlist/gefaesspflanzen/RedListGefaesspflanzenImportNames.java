@@ -339,7 +339,7 @@ public class RedListGefaesspflanzenImportNames extends DbImportBase<RedListGefae
         }
         name.setGenusOrUninomial(ep1String);
         if(CdmUtils.isNotBlank(ep2String)){
-            if(rank!=null && rank.isInfraGeneric()){
+            if(rank!=null && rank.isInfraGenericButNotSpeciesGroup()){
                 name.setInfraGenericEpithet(ep2String);
             }
             else{
@@ -465,7 +465,7 @@ public class RedListGefaesspflanzenImportNames extends DbImportBase<RedListGefae
     private void checkTaxonNameConsistency(long id, String taxNameString, String hybString, TaxonBase<?> taxonBase) {
         if(hybString.equals(RedListUtil.HYB_XF)){
             if(HibernateProxyHelper.deproxy(taxonBase.getName(),NonViralName.class).getHybridChildRelations().isEmpty()){
-                RedListUtil.logMessage(id, "Hybrid name but no hybrid child relations", logger);
+                RedListUtil.logMessage(id, "Hybrid name but no hybrid child relations: "+taxonBase.getTitleCache(), logger);
                 return;
             }
             return;
@@ -478,10 +478,6 @@ public class RedListGefaesspflanzenImportNames extends DbImportBase<RedListGefae
 
         if(taxNameString.endsWith("agg.")){
             taxNameString = taxNameString.replace("agg.", "aggr.");
-        }
-        if(taxNameString.endsWith("aggr.")){
-            taxNameString = taxNameString.replaceFirst(" ", " (");
-            taxNameString = taxNameString.replace(" aggr.", ") aggr.");
         }
 
         if(hybString.equals(RedListUtil.HYB_X)){
@@ -500,10 +496,6 @@ public class RedListGefaesspflanzenImportNames extends DbImportBase<RedListGefae
         }
         if(taxNameString.endsWith("- group")){
             taxNameString = taxNameString.replaceAll("- group", "species group");
-        }
-        if(taxNameString.endsWith("species group")){
-            taxNameString = taxNameString.replaceFirst(" ", " (");
-            taxNameString = taxNameString.replace(" species group", ") species group");
         }
 
         taxNameString = taxNameString.replace("[ranglos]", "[unranked]");
