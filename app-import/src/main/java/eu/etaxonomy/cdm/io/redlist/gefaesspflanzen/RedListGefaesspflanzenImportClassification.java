@@ -27,6 +27,7 @@ import eu.etaxonomy.cdm.io.common.IPartitionedIO;
 import eu.etaxonomy.cdm.io.common.ResultSetPartitioner;
 import eu.etaxonomy.cdm.model.common.CdmBase;
 import eu.etaxonomy.cdm.model.common.Language;
+import eu.etaxonomy.cdm.model.common.TimePeriod;
 import eu.etaxonomy.cdm.model.reference.Reference;
 import eu.etaxonomy.cdm.model.reference.ReferenceFactory;
 import eu.etaxonomy.cdm.model.taxon.Classification;
@@ -75,16 +76,16 @@ public class RedListGefaesspflanzenImportClassification extends DbImportBase<Red
 
     @Override
     protected void doInvoke(RedListGefaesspflanzenImportState state) {
-        makeClassification("Gesamtliste", state.getConfig().getClassificationUuid(), "Gesamtliste_ref", RedListUtil.gesamtListeReferenceUuid, state);
-        makeClassification("Checkliste", RedListUtil.checkListClassificationUuid, "Checkliste_ref", RedListUtil.checkListReferenceUuid, state);
-        makeClassification("E", RedListUtil.uuidClassificationE, "E_ref", RedListUtil.uuidClassificationReferenceE, state);
-        makeClassification("W", RedListUtil.uuidClassificationW, "W_ref", RedListUtil.uuidClassificationReferenceW, state);
-        makeClassification("K", RedListUtil.uuidClassificationK, "K_ref", RedListUtil.uuidClassificationReferenceK, state);
-        makeClassification("AW", RedListUtil.uuidClassificationAW, "AW_ref", RedListUtil.uuidClassificationReferenceAW, state);
-        makeClassification("AO", RedListUtil.uuidClassificationAO, "AO_ref", RedListUtil.uuidClassificationReferenceAO, state);
-        makeClassification("R", RedListUtil.uuidClassificationR, "R_ref", RedListUtil.uuidClassificationReferenceR, state);
-        makeClassification("O", RedListUtil.uuidClassificationO, "O_ref", RedListUtil.uuidClassificationReferenceO, state);
-        makeClassification("S", RedListUtil.uuidClassificationS, "S_ref", RedListUtil.uuidClassificationReferenceS, state);
+        makeClassification("Gesamtliste", state.getConfig().getClassificationUuid(), "Gesamtliste", null, RedListUtil.gesamtListeReferenceUuid, state);
+        makeClassification("Checkliste", RedListUtil.checkListClassificationUuid, "Checkliste", null, RedListUtil.checkListReferenceUuid, state);
+        makeClassification("E", RedListUtil.uuidClassificationE, "Ehrendorfer", null, RedListUtil.uuidClassificationReferenceE, state);
+        makeClassification("W", RedListUtil.uuidClassificationW, "Wisskirchen (Standardliste)", 1998, RedListUtil.uuidClassificationReferenceW, state);
+        makeClassification("K", RedListUtil.uuidClassificationK, "Korneck (Rote Liste)", 1996, RedListUtil.uuidClassificationReferenceK, state);
+        makeClassification("AW", RedListUtil.uuidClassificationAW, "Atlas (Westdeutschland)", 1988, RedListUtil.uuidClassificationReferenceAW, state);
+        makeClassification("AO", RedListUtil.uuidClassificationAO, "Atlas (Ostdeutschland)", 1996, RedListUtil.uuidClassificationReferenceAO, state);
+        makeClassification("R", RedListUtil.uuidClassificationR, "Rothmaler", 2011, RedListUtil.uuidClassificationReferenceR, state);
+        makeClassification("O", RedListUtil.uuidClassificationO, "Oberdorfer", 2001, RedListUtil.uuidClassificationReferenceO, state);
+        makeClassification("S", RedListUtil.uuidClassificationS, "Schmeil-Fitschen", 2011, RedListUtil.uuidClassificationReferenceS, state);
         super.doInvoke(state);
     }
 
@@ -275,13 +276,16 @@ public class RedListGefaesspflanzenImportClassification extends DbImportBase<Red
         return result;
     }
 
-    private void makeClassification(String classificationName, UUID classificationUuid, String referenceName, UUID referenceUuid, RedListGefaesspflanzenImportState state) {
+    private void makeClassification(String classificationName, UUID classificationUuid, String referenceName, Integer yearPublished, UUID referenceUuid, RedListGefaesspflanzenImportState state) {
         Classification classification = Classification.NewInstance(classificationName, Language.DEFAULT());
         classification.setUuid(classificationUuid);
-        Reference gesamtListeReference = ReferenceFactory.newGeneric();
-        gesamtListeReference.setTitle(referenceName);
-        gesamtListeReference.setUuid(referenceUuid);
-        classification.setReference(gesamtListeReference);
+        Reference reference = ReferenceFactory.newGeneric();
+        reference.setTitle(referenceName);
+        reference.setUuid(referenceUuid);
+        classification.setReference(reference);
+        if(yearPublished!=null){
+            reference.setDatePublished(TimePeriod.NewInstance(yearPublished));
+        }
         getClassificationService().save(classification);
     }
 
