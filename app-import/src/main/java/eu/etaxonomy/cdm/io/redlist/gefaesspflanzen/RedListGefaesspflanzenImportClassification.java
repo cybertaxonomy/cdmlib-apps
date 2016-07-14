@@ -36,6 +36,7 @@ import eu.etaxonomy.cdm.model.taxon.SynonymRelationship;
 import eu.etaxonomy.cdm.model.taxon.SynonymRelationshipType;
 import eu.etaxonomy.cdm.model.taxon.Taxon;
 import eu.etaxonomy.cdm.model.taxon.TaxonBase;
+import eu.etaxonomy.cdm.model.taxon.TaxonRelationshipType;
 
 /**
  *
@@ -131,6 +132,15 @@ public class RedListGefaesspflanzenImportClassification extends DbImportBase<Red
         String gueltString = rs.getString(RedListUtil.GUELT);
         String taxZusatzString = rs.getString(RedListUtil.TAX_ZUSATZ);
 
+        String relationE = rs.getString(RedListUtil.E);
+        String relationW = rs.getString(RedListUtil.W);
+        String relationK = rs.getString(RedListUtil.K);
+        String relationAW = rs.getString(RedListUtil.AW);
+        String relationAO = rs.getString(RedListUtil.AO);
+        String relationR = rs.getString(RedListUtil.R);
+        String relationO = rs.getString(RedListUtil.O);
+        String relationS = rs.getString(RedListUtil.S);
+
         //Gesamtliste
         TaxonBase<?> taxonBaseGL = state.getRelatedObject(RedListUtil.TAXON_GESAMTLISTE_NAMESPACE, String.valueOf(id), TaxonBase.class);
         TaxonBase<?> parentBaseGL = state.getRelatedObject(RedListUtil.TAXON_GESAMTLISTE_NAMESPACE, parentId, TaxonBase.class);
@@ -160,18 +170,48 @@ public class RedListGefaesspflanzenImportClassification extends DbImportBase<Red
         }
 
         //add taxa for concept relationships to E, W, K, AW, AO, R, O, S
-        addTaxonToClassification(classificationE, RedListUtil.CLASSIFICATION_NAMESPACE_E, id, state);
-        addTaxonToClassification(classificationW, RedListUtil.CLASSIFICATION_NAMESPACE_W, id, state);
-        addTaxonToClassification(classificationK, RedListUtil.CLASSIFICATION_NAMESPACE_K, id, state);
-        addTaxonToClassification(classificationAW, RedListUtil.CLASSIFICATION_NAMESPACE_AW, id, state);
-        addTaxonToClassification(classificationAO, RedListUtil.CLASSIFICATION_NAMESPACE_AO, id, state);
-        addTaxonToClassification(classificationR, RedListUtil.CLASSIFICATION_NAMESPACE_R, id, state);
-        addTaxonToClassification(classificationO, RedListUtil.CLASSIFICATION_NAMESPACE_O, id, state);
-        addTaxonToClassification(classificationS, RedListUtil.CLASSIFICATION_NAMESPACE_S, id, state);
+        addTaxonToClassification(classificationE, RedListUtil.CLASSIFICATION_NAMESPACE_E, relationE, taxonBaseGL, taxonBaseCL, id, state);
+        addTaxonToClassification(classificationW, RedListUtil.CLASSIFICATION_NAMESPACE_W, relationW, taxonBaseGL, taxonBaseCL, id, state);
+        addTaxonToClassification(classificationK, RedListUtil.CLASSIFICATION_NAMESPACE_K, relationK, taxonBaseGL, taxonBaseCL, id, state);
+        addTaxonToClassification(classificationAW, RedListUtil.CLASSIFICATION_NAMESPACE_AW, relationAW, taxonBaseGL, taxonBaseCL, id, state);
+        addTaxonToClassification(classificationAO, RedListUtil.CLASSIFICATION_NAMESPACE_AO, relationAO, taxonBaseGL, taxonBaseCL, id, state);
+        addTaxonToClassification(classificationR, RedListUtil.CLASSIFICATION_NAMESPACE_R, relationR, taxonBaseGL, taxonBaseCL, id, state);
+        addTaxonToClassification(classificationO, RedListUtil.CLASSIFICATION_NAMESPACE_O, relationO, taxonBaseGL, taxonBaseCL, id, state);
+        addTaxonToClassification(classificationS, RedListUtil.CLASSIFICATION_NAMESPACE_S, relationS, taxonBaseGL, taxonBaseCL, id, state);
     }
 
-    private void addTaxonToClassification(Classification classification, String classificationNamespace, long id, RedListGefaesspflanzenImportState state){
+    private void addTaxonToClassification(Classification classification, String classificationNamespace, String relationString, final TaxonBase<?> gesamtListeTaxon, final TaxonBase<?> checklisteTaxon, long id, RedListGefaesspflanzenImportState state){
         Taxon taxon = HibernateProxyHelper.deproxy(state.getRelatedObject(classificationNamespace, String.valueOf(id), TaxonBase.class), Taxon.class);
+        //add concept relation to gesamtliste and checkliste
+        if(CdmUtils.isNotBlank(relationString) && !relationString.equals(".")){
+            //if the related concept in gesamtliste/checkliste is a synonym then we
+            //create a relation to the accepted taxon
+            Taxon acceptedGesamtListeTaxon = getAcceptedTaxon(gesamtListeTaxon);
+            Taxon acceptedChecklistTaxon = getAcceptedTaxon(checklisteTaxon);
+            String relationSubstring = relationString.substring(relationString.length()-1, relationString.length());
+            TaxonRelationshipType taxonRelationshipTypeByKey = new RedListGefaesspflanzenTransformer().getTaxonRelationshipTypeByKey(relationSubstring);
+            if(taxonRelationshipTypeByKey==null){
+                RedListUtil.logMessage(id, "Could not interpret relationship "+relationString+" for taxon "+gesamtListeTaxon.generateTitle(), logger);
+            }
+            //there is no type "included in" so we have to reverse the direction
+            if(relationSubstring.equals("<")){
+                if(acceptedGesamtListeTaxon!=null){
+                    acceptedGesamtListeTaxon.addTaxonRelation(taxon, taxonRelationshipTypeByKey, null, null);
+                }
+                if(acceptedChecklistTaxon!=null) {
+                    acceptedChecklistTaxon.addTaxonRelation(taxon, taxonRelationshipTypeByKey, null, null);
+                }
+            }
+            else{
+                if(acceptedGesamtListeTaxon!=null){
+                    taxon.addTaxonRelation(acceptedGesamtListeTaxon, taxonRelationshipTypeByKey, null, null);
+                }
+                if(acceptedChecklistTaxon!=null) {
+                    taxon.addTaxonRelation(acceptedChecklistTaxon, taxonRelationshipTypeByKey, null, null);
+                }
+            }
+        }
+
         if(taxon!=null){//not all taxa exist in these classifications
             taxon.setSec(classification.getReference());
             taxon.setTitleCache(null);//Reset title cache to reflect sec ref in title
