@@ -214,7 +214,7 @@ public class RedListGefaesspflanzenImportClassification extends DbImportBase<Red
 
         if(taxon!=null){//not all taxa exist in these classifications
             taxon.setSec(classification.getReference());
-            taxon.setTitleCache(null);//Reset title cache to reflect sec ref in title
+            taxon.setTitleCache(null);//Reset title cache to see sec ref in title
             classification.addChildTaxon(taxon, null, null);
         }
     }
