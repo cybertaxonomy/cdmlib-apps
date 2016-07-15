@@ -117,6 +117,14 @@ public class RedListGefaesspflanzenImportNames extends DbImportBase<RedListGefae
             throws SQLException {
         long id = rs.getLong(RedListUtil.NAMNR);
         String clTaxonString = rs.getString(RedListUtil.CL_TAXON);
+        String relationE = rs.getString(RedListUtil.E);
+        String relationW = rs.getString(RedListUtil.W);
+        String relationK = rs.getString(RedListUtil.K);
+        String relationAW = rs.getString(RedListUtil.AW);
+        String relationAO = rs.getString(RedListUtil.AO);
+        String relationR = rs.getString(RedListUtil.R);
+        String relationO = rs.getString(RedListUtil.O);
+        String relationS = rs.getString(RedListUtil.S);
 
         //---NAME---
         NonViralName<?> name = importName(state, rs, namesToSave);
@@ -133,6 +141,15 @@ public class RedListGefaesspflanzenImportNames extends DbImportBase<RedListGefae
         }
 
         //---CONCEPT RELATIONSHIPS---
+        //E, W, K, AW, AO, R, O, S
+        cloneTaxon(taxonBase, relationE, RedListUtil.CLASSIFICATION_NAMESPACE_E, taxaToSave, id, state);
+        cloneTaxon(taxonBase, relationW, RedListUtil.CLASSIFICATION_NAMESPACE_W, taxaToSave, id, state);
+        cloneTaxon(taxonBase, relationK, RedListUtil.CLASSIFICATION_NAMESPACE_K, taxaToSave, id, state);
+        cloneTaxon(taxonBase, relationAW, RedListUtil.CLASSIFICATION_NAMESPACE_AW, taxaToSave, id, state);
+        cloneTaxon(taxonBase, relationAO, RedListUtil.CLASSIFICATION_NAMESPACE_AO, taxaToSave, id, state);
+        cloneTaxon(taxonBase, relationR, RedListUtil.CLASSIFICATION_NAMESPACE_R, taxaToSave, id, state);
+        cloneTaxon(taxonBase, relationO, RedListUtil.CLASSIFICATION_NAMESPACE_O, taxaToSave, id, state);
+        cloneTaxon(taxonBase, relationS, RedListUtil.CLASSIFICATION_NAMESPACE_S, taxaToSave, id, state);
         //checklist
         TaxonBase<?> checklistTaxon = null;
         if(CdmUtils.isNotBlank(clTaxonString) && !clTaxonString.trim().equals("-")){
@@ -145,38 +162,29 @@ public class RedListGefaesspflanzenImportNames extends DbImportBase<RedListGefae
             ImportHelper.setOriginalSource(checklistTaxon, state.getTransactionalSourceReference(), id, RedListUtil.TAXON_CHECKLISTE_NAMESPACE);
             taxaToSave.add(checklistTaxon);
         }
-        //E, W, K, AW, AO, R, O, S
-        cloneTaxon(taxonBase, RedListUtil.CLASSIFICATION_NAMESPACE_E, taxaToSave, id, state);
-        cloneTaxon(taxonBase, RedListUtil.CLASSIFICATION_NAMESPACE_W, taxaToSave, id, state);
-        cloneTaxon(taxonBase, RedListUtil.CLASSIFICATION_NAMESPACE_K, taxaToSave, id, state);
-        cloneTaxon(taxonBase, RedListUtil.CLASSIFICATION_NAMESPACE_AW, taxaToSave, id, state);
-        cloneTaxon(taxonBase, RedListUtil.CLASSIFICATION_NAMESPACE_AO, taxaToSave, id, state);
-        cloneTaxon(taxonBase, RedListUtil.CLASSIFICATION_NAMESPACE_R, taxaToSave, id, state);
-        cloneTaxon(taxonBase, RedListUtil.CLASSIFICATION_NAMESPACE_O, taxaToSave, id, state);
-        cloneTaxon(taxonBase, RedListUtil.CLASSIFICATION_NAMESPACE_S, taxaToSave, id, state);
 
         //NOTE: the source has to be added after cloning or otherwise the clone would also get the source
         ImportHelper.setOriginalSource(taxonBase, state.getTransactionalSourceReference(), id, RedListUtil.TAXON_GESAMTLISTE_NAMESPACE);
         taxaToSave.add(taxonBase);
     }
 
-    private Taxon cloneTaxon(final TaxonBase<?> gesamtListeTaxon, String sourceNameSpace, Set<TaxonBase> taxaToSave, long id, RedListGefaesspflanzenImportState state){
-        Taxon clonedTaxon = null;
+    private void cloneTaxon(final TaxonBase<?> gesamtListeTaxon, String relationString, String sourceNameSpace, Set<TaxonBase> taxaToSave, long id, RedListGefaesspflanzenImportState state){
+        if(CdmUtils.isNotBlank(relationString) && !relationString.equals(".")){
+            Taxon clonedTaxon = null;
 
-        if(gesamtListeTaxon.isInstanceOf(Taxon.class)){
-            clonedTaxon = HibernateProxyHelper.deproxy(gesamtListeTaxon.clone(), Taxon.class);
+            if(gesamtListeTaxon.isInstanceOf(Taxon.class)){
+                clonedTaxon = HibernateProxyHelper.deproxy(gesamtListeTaxon.clone(), Taxon.class);
+            }
+            else if(gesamtListeTaxon.isInstanceOf(Synonym.class)){
+                clonedTaxon = Taxon.NewInstance(gesamtListeTaxon.getName(), gesamtListeTaxon.getSec());
+            }
+            else{
+                RedListUtil.logMessage(id, "Taxon base "+gesamtListeTaxon+" is neither taxon nor synonym! Taxon could not be cloned", logger);
+                return;
+            }
+            ImportHelper.setOriginalSource(clonedTaxon, state.getTransactionalSourceReference(), id, sourceNameSpace);
+            taxaToSave.add(clonedTaxon);
         }
-        else if(gesamtListeTaxon.isInstanceOf(Synonym.class)){
-            clonedTaxon = Taxon.NewInstance(gesamtListeTaxon.getName(), gesamtListeTaxon.getSec());
-        }
-        else{
-            RedListUtil.logMessage(id, "Taxon base "+gesamtListeTaxon+" is neither taxon nor synonym! Taxon could not be cloned", logger);
-            return null;
-        }
-
-        ImportHelper.setOriginalSource(clonedTaxon, state.getTransactionalSourceReference(), id, sourceNameSpace);
-        taxaToSave.add(clonedTaxon);
-        return clonedTaxon;
     }
 
     private TaxonBase<?> importTaxon(ResultSet rs, NonViralName<?> name) throws SQLException {
