@@ -183,7 +183,7 @@ public class RedListGefaesspflanzenImportClassification extends DbImportBase<Red
     private void addTaxonToClassification(Classification classification, String classificationNamespace, String relationString, final TaxonBase<?> gesamtListeTaxon, final TaxonBase<?> checklisteTaxon, long id, RedListGefaesspflanzenImportState state){
         Taxon taxon = HibernateProxyHelper.deproxy(state.getRelatedObject(classificationNamespace, String.valueOf(id), TaxonBase.class), Taxon.class);
         //add concept relation to gesamtliste and checkliste
-        if(CdmUtils.isNotBlank(relationString) && !relationString.equals(".")){
+        if(taxon!=null && CdmUtils.isNotBlank(relationString) && !relationString.equals(".")){
             //if the related concept in gesamtliste/checkliste is a synonym then we
             //create a relation to the accepted taxon
             Taxon acceptedGesamtListeTaxon = getAcceptedTaxon(gesamtListeTaxon);
@@ -210,16 +210,16 @@ public class RedListGefaesspflanzenImportClassification extends DbImportBase<Red
                     taxon.addTaxonRelation(acceptedChecklistTaxon, taxonRelationshipTypeByKey, null, null);
                 }
             }
-        }
 
-        if(taxon!=null){//not all taxa exist in these classifications
             taxon.setSec(classification.getReference());
             taxon.setTitleCache(null);//Reset title cache to see sec ref in title
             classification.addChildTaxon(taxon, null, null);
+            getTaxonService().saveOrUpdate(taxon);
+            getTaxonService().saveOrUpdate(gesamtListeTaxon);
+            if(checklisteTaxon!=null){
+                getTaxonService().saveOrUpdate(checklisteTaxon);
+            }
         }
-        getTaxonService().saveOrUpdate(taxon);
-        getTaxonService().saveOrUpdate(gesamtListeTaxon);
-        getTaxonService().saveOrUpdate(checklisteTaxon);
     }
 
     private void createParentChildNodes(Classification classification, long id, String gueltString,
