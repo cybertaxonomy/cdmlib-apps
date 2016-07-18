@@ -106,6 +106,8 @@ public class RedListUtil {
     public static final String EHRD = "EHRD";
     public static final String WISSK = "WISSK";
 
+    public static final String FAMILIE = "FAMILIE";
+
     public static final String E = "E";
     public static final String W = "W";
     public static final String K = "K";
