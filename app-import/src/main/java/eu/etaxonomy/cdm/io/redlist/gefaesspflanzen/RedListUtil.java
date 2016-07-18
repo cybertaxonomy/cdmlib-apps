@@ -98,6 +98,13 @@ public class RedListUtil {
     public static final String AUTOR = "AUTOR";
     public static final String CL_TAXON = "CL_TAXON";
     public static final String HYB = "HYB";
+    public static final String FORMEL = "FORMEL";
+    public static final String FLOR = "FLOR";
+    public static final String ATLAS_IDX = "ATLAS_IDX";
+    public static final String KART = "KART";
+    public static final String RL2015 = "RL2015";
+    public static final String EHRD = "EHRD";
+    public static final String WISSK = "WISSK";
 
     public static final String E = "E";
     public static final String W = "W";

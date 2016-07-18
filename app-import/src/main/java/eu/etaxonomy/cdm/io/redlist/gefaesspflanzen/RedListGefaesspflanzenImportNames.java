@@ -30,6 +30,8 @@ import eu.etaxonomy.cdm.io.common.ResultSetPartitioner;
 import eu.etaxonomy.cdm.io.common.mapping.UndefinedTransformerMethodException;
 import eu.etaxonomy.cdm.model.agent.AgentBase;
 import eu.etaxonomy.cdm.model.agent.TeamOrPersonBase;
+import eu.etaxonomy.cdm.model.common.Annotation;
+import eu.etaxonomy.cdm.model.common.AnnotationType;
 import eu.etaxonomy.cdm.model.common.CdmBase;
 import eu.etaxonomy.cdm.model.common.Language;
 import eu.etaxonomy.cdm.model.description.CommonTaxonName;
@@ -242,6 +244,12 @@ public class RedListGefaesspflanzenImportNames extends DbImportBase<RedListGefae
         String trivialString = rs.getString(RedListUtil.TRIVIAL);
         String authorBasiString = rs.getString(RedListUtil.AUTOR_BASI);
         String hybString = rs.getString(RedListUtil.HYB);
+        String florString = rs.getString(RedListUtil.FLOR);
+        String atlasIdxString = rs.getString(RedListUtil.ATLAS_IDX);
+        String kartString = rs.getString(RedListUtil.KART);
+        String rl2015String = rs.getString(RedListUtil.RL2015);
+        String ehrdString = rs.getString(RedListUtil.EHRD);
+        String wisskString = rs.getString(RedListUtil.WISSK);
 
         TaxonBase<?> taxonBase = null;
         if(authorBasiString.trim().contains(RedListUtil.AUCT)){
@@ -265,9 +273,23 @@ public class RedListGefaesspflanzenImportNames extends DbImportBase<RedListGefae
             description.addElement(CommonTaxonName.NewInstance(trivialString, Language.GERMAN()));
         }
 
+        //add annotations
+        addAnnotation(RedListUtil.FLOR+": "+florString, taxonBase);
+        addAnnotation(RedListUtil.ATLAS_IDX+": "+atlasIdxString, taxonBase);
+        addAnnotation(RedListUtil.KART+": "+kartString, taxonBase);
+        addAnnotation(RedListUtil.RL2015+": "+rl2015String, taxonBase);
+        addAnnotation(RedListUtil.EHRD+": "+ehrdString, taxonBase);
+        addAnnotation(RedListUtil.WISSK+": "+wisskString, taxonBase);
+
         //check taxon name consistency
         checkTaxonNameConsistency(id, taxNameString, hybString, taxonBase);
         return taxonBase;
+    }
+
+    private void addAnnotation(String string, TaxonBase<?> taxonBase) {
+        if(CdmUtils.isNotBlank(string)){
+            taxonBase.addAnnotation(Annotation.NewInstance(string, AnnotationType.TECHNICAL(), Language.GERMAN()));
+        }
     }
 
     private void importAuthors(RedListGefaesspflanzenImportState state, ResultSet rs, NonViralName<?> name) throws SQLException {
@@ -359,6 +381,7 @@ public class RedListGefaesspflanzenImportNames extends DbImportBase<RedListGefae
         String ep3String = rs.getString(RedListUtil.EPI3);
         String nomZusatzString = rs.getString(RedListUtil.NOM_ZUSATZ);
         String hybString = rs.getString(RedListUtil.HYB);
+        String formelString = rs.getString(RedListUtil.FORMEL);
 
         if(CdmUtils.isBlank(taxNameString) && CdmUtils.isBlank(ep1String)){
             RedListUtil.logMessage(id, "No name found!", logger);
@@ -402,6 +425,13 @@ public class RedListGefaesspflanzenImportNames extends DbImportBase<RedListGefae
         }
         //hybrid
         if(CdmUtils.isNotBlank(hybString)){
+            //save hybrid formula
+            if(CdmUtils.isNotBlank(formelString)){
+                Annotation annotation = Annotation.NewDefaultLanguageInstance(formelString);
+                annotation.setAnnotationType(AnnotationType.TECHNICAL());
+                name.addAnnotation(annotation);
+            }
+
             if(hybString.equals(RedListUtil.HYB_X)){
                 name.setBinomHybrid(true);
             }
@@ -449,6 +479,9 @@ public class RedListGefaesspflanzenImportNames extends DbImportBase<RedListGefae
                     RedListUtil.logMessage(id, "HYB is "+hybString+" but "+RedListUtil.HYB+" does not contain "+RedListUtil.HYB_SIGN, logger);
                 }
             }
+            else if(hybString.equals(RedListUtil.HYB_XS)){
+                //nothing to do
+            }
             else{
                 logger.error("HYB value "+hybString+" not yet handled");
             }
@@ -480,7 +513,7 @@ public class RedListGefaesspflanzenImportNames extends DbImportBase<RedListGefae
             }
         }
         else{
-            if(!authorString.startsWith(authorshipCache)){
+            if(CdmUtils.isNotBlank(authorString) && !authorString.startsWith(authorshipCache)){
                 RedListUtil.logMessage(id, "Authorship inconsistent! name.authorhshipCache <-> Column "+RedListUtil.AUTOR+": "+authorshipCache+" <-> "+authorString, logger);
             }
         }
