@@ -38,6 +38,7 @@ import eu.etaxonomy.cdm.model.description.CommonTaxonName;
 import eu.etaxonomy.cdm.model.description.TaxonDescription;
 import eu.etaxonomy.cdm.model.name.BotanicalName;
 import eu.etaxonomy.cdm.model.name.CultivarPlantName;
+import eu.etaxonomy.cdm.model.name.NomenclaturalCode;
 import eu.etaxonomy.cdm.model.name.NomenclaturalStatus;
 import eu.etaxonomy.cdm.model.name.NomenclaturalStatusType;
 import eu.etaxonomy.cdm.model.name.NonViralName;
@@ -234,7 +235,7 @@ public class RedListGefaesspflanzenImportNames extends DbImportBase<RedListGefae
         addAnnotation(RedListUtil.WISSK+": "+wisskString, taxonBase);
 
         //check taxon name consistency
-        checkTaxonNameConsistency(id, taxNameString, hybString, taxonBase);
+        checkTaxonConsistency(id, taxNameString, hybString, taxonBase);
         return taxonBase;
     }
 
@@ -252,6 +253,7 @@ public class RedListGefaesspflanzenImportNames extends DbImportBase<RedListGefae
         String zusatzString = rs.getString(RedListUtil.ZUSATZ);
         String authorKombString = rs.getString(RedListUtil.AUTOR_KOMB);
         String authorBasiString = rs.getString(RedListUtil.AUTOR_BASI);
+        String hybString = rs.getString(RedListUtil.HYB);
 
         //combination author
         if(authorKombString.contains(RedListUtil.EX)){
@@ -319,8 +321,7 @@ public class RedListGefaesspflanzenImportNames extends DbImportBase<RedListGefae
 
         //check authorship consistency
         String authorString = rs.getString(RedListUtil.AUTOR);
-        String authorshipCache = name.getAuthorshipCache();
-        checkAuthorShipConsistency(id, nomZusatzString, taxZusatzString, zusatzString, authorString, authorshipCache);
+        checkNameConsistency(id, nomZusatzString, taxZusatzString, zusatzString, authorString, hybString, name);
     }
 
     private NonViralName<?> importName(RedListGefaesspflanzenImportState state, ResultSet rs, Set<TaxonNameBase> namesToSave) throws SQLException {
@@ -366,93 +367,86 @@ public class RedListGefaesspflanzenImportNames extends DbImportBase<RedListGefae
                     name.setSpecificEpithet(ep2String);
                 }
             }
-        }
-        //hybrid
-        if(CdmUtils.isNotBlank(hybString)){
-            //save hybrid formula
-            if(CdmUtils.isNotBlank(formelString)){
-                Annotation annotation = Annotation.NewDefaultLanguageInstance(formelString);
-                annotation.setAnnotationType(AnnotationType.TECHNICAL());
-                name.addAnnotation(annotation);
+            if(CdmUtils.isNotBlank(ep3String)){
+                name.setInfraSpecificEpithet(ep3String);
             }
 
-            if(hybString.equals(RedListUtil.HYB_X)){
-                name.setBinomHybrid(true);
-                if(CdmUtils.isNotBlank(ep3String)){
-                    name.setInfraSpecificEpithet(ep3String);
+
+            //nomenclatural status
+            if(CdmUtils.isNotBlank(nomZusatzString)){
+                NomenclaturalStatusType statusType = makeNomenclaturalStatus(id, state, nomZusatzString);
+                if(statusType!=null){
+                    NomenclaturalStatus status = NomenclaturalStatus.NewInstance(statusType);
+                    //special case for invalid names where the DB entry contains
+                    //additional information in brackets e.g. "nom. inval. (sine basion.)"
+                    if(statusType.equals(NomenclaturalStatusType.INVALID())){
+                        Pattern pattern = Pattern.compile("\\((.*?)\\)");
+                        Matcher matcher = pattern.matcher(nomZusatzString);
+                        if (matcher.find()){
+                            status.setRuleConsidered(matcher.group(1));
+                        }
+                    }
+                    name.addStatus(status);
                 }
-                //nomenclatural status
-                if(CdmUtils.isNotBlank(nomZusatzString)){
-                    NomenclaturalStatusType statusType = makeNomenclaturalStatus(id, state, nomZusatzString);
-                    if(statusType!=null){
-                        NomenclaturalStatus status = NomenclaturalStatus.NewInstance(statusType);
-                        //special case for invalid names where the DB entry contains
-                        //additional information in brackets e.g. "nom. inval. (sine basion.)"
-                        if(statusType.equals(NomenclaturalStatusType.INVALID())){
-                            Pattern pattern = Pattern.compile("\\((.*?)\\)");
-                            Matcher matcher = pattern.matcher(nomZusatzString);
-                            if (matcher.find()){
-                                status.setRuleConsidered(matcher.group(1));
-                            }
+            }
+            //hybrid
+            if(CdmUtils.isNotBlank(hybString)){
+                //save hybrid formula
+                if(CdmUtils.isNotBlank(formelString)){
+                    Annotation annotation = Annotation.NewDefaultLanguageInstance(formelString);
+                    annotation.setAnnotationType(AnnotationType.TECHNICAL());
+                    name.addAnnotation(annotation);
+                }
+
+                if(hybString.equals(RedListUtil.HYB_X)){
+                    name.setBinomHybrid(true);
+                }
+                else if(hybString.equals(RedListUtil.HYB_G)){
+                    name.setMonomHybrid(true);
+                }
+                else if(hybString.equals(RedListUtil.HYB_XF)){
+                    name.setHybridFormula(true);
+                    if(ep1String.contains(RedListUtil.HYB_SIGN)){
+                        RedListUtil.logMessage(id, "EPI1 has hybrid signs but with flag: "+RedListUtil.HYB_XF, logger);
+                    }
+                    else if(ep2String.contains(RedListUtil.HYB_SIGN)){
+                        String[] split = ep2String.split(RedListUtil.HYB_SIGN);
+                        if(split.length!=2){
+                            RedListUtil.logMessage(id, "Multiple hybrid signs found in "+ep2String, logger);
                         }
-                        name.addStatus(status);
+                        String hybridFormula1 = ep1String+" "+split[0].trim();
+                        String hybridFormula2 = ep1String+" "+split[1].trim();
+                        if(CdmUtils.isNotBlank(ep3String)){
+                            hybridFormula1 += " "+ep3String;
+                            hybridFormula2 += " "+ep3String;
+                        }
+                        String fullFormula = hybridFormula1+" "+RedListUtil.HYB_SIGN+" "+hybridFormula2;
+                        name = NonViralNameParserImpl.NewInstance().parseFullName(fullFormula, NomenclaturalCode.ICNAFP, rank);
+                    }
+                    else if(ep3String.contains(RedListUtil.HYB_SIGN)){
+                        String[] split = ep3String.split(RedListUtil.HYB_SIGN);
+                        if(split.length!=2){
+                            RedListUtil.logMessage(id, "Multiple hybrid signs found in "+ep3String, logger);
+                        }
+                        String hybridFormula1 = ep1String+" "+ep2String+" "+split[0];
+                        String hybridFormula2 = ep1String+" "+ep2String+" "+split[1];
+                        String fullFormula = hybridFormula1+" "+RedListUtil.HYB_SIGN+" "+hybridFormula2;
+                        name = NonViralNameParserImpl.NewInstance().parseFullName(fullFormula);
                     }
                 }
-                //hybrid
-                if(CdmUtils.isNotBlank(hybString)){
-                    if(hybString.equals(RedListUtil.HYB_X)){
-                        name.setBinomHybrid(true);
-                    }
-                    else if(hybString.equals(RedListUtil.HYB_G)){
-                        name.setMonomHybrid(true);
-                    }
-                    else if(hybString.equals(RedListUtil.HYB_XF)){
-                        name.setHybridFormula(true);
-                        if(ep1String.contains(RedListUtil.HYB_SIGN)){
-                            RedListUtil.logMessage(id, "EPI1 has hybrid signs but with flag: "+RedListUtil.HYB_XF, logger);
-                        }
-                        else if(ep2String.contains(RedListUtil.HYB_SIGN)){
-                            String[] split = ep2String.split(RedListUtil.HYB_SIGN);
-                            if(split.length!=2){
-                                RedListUtil.logMessage(id, "Multiple hybrid signs found in "+ep2String, logger);
-                            }
-                            String hybridFormula1 = ep1String+" "+split[0].trim();
-                            String hybridFormula2 = ep1String+" "+split[1].trim();
-                            if(CdmUtils.isNotBlank(ep3String)){
-                                hybridFormula1 += " "+ep3String;
-                                hybridFormula2 += " "+ep3String;
-                            }
-                            String fullFormula = hybridFormula1+" "+RedListUtil.HYB_SIGN+" "+hybridFormula2;
-                            name = NonViralNameParserImpl.NewInstance().parseFullName(fullFormula);
-                        }
-                        else if(ep3String.contains(RedListUtil.HYB_SIGN)){
-                            String[] split = ep3String.split(RedListUtil.HYB_SIGN);
-                            if(split.length!=2){
-                                RedListUtil.logMessage(id, "Multiple hybrid signs found in "+ep3String, logger);
-                            }
-                            String hybridFormula1 = ep1String+" "+ep2String+" "+split[0];
-                            String hybridFormula2 = ep1String+" "+ep2String+" "+split[1];
-                            String fullFormula = hybridFormula1+" "+RedListUtil.HYB_SIGN+" "+hybridFormula2;
-                            name = NonViralNameParserImpl.NewInstance().parseFullName(fullFormula);
-                        }
-                    }
-                    else if(hybString.equals(RedListUtil.HYB_N)){
-                        name = NonViralNameParserImpl.NewInstance().parseFullName(ep1String+" "+ep2String+" nothosubsp. "+ep3String);
-                    }
-                    else if(hybString.equals(RedListUtil.HYB_GF)){
-                        if(ep1String.contains(RedListUtil.HYB_SIGN)){
-                            name = NonViralNameParserImpl.NewInstance().parseFullName(ep1String);
-                        }
-                        else{
-                            RedListUtil.logMessage(id, "HYB is "+hybString+" but "+RedListUtil.HYB+" does not contain "+RedListUtil.HYB_SIGN, logger);
-                        }
-                    }
-                    else if(hybString.equals(RedListUtil.HYB_XS)){
-                        //nothing to do
+                else if(hybString.equals(RedListUtil.HYB_N)){
+                    name = NonViralNameParserImpl.NewInstance().parseFullName(taxNameString);
+                }
+                else if(hybString.equals(RedListUtil.HYB_GF)){
+                    if(ep1String.contains(RedListUtil.HYB_SIGN)){
+                        name = NonViralNameParserImpl.NewInstance().parseFullName(ep1String);
                     }
                     else{
-                        logger.error("HYB value "+hybString+" not yet handled");
+                        RedListUtil.logMessage(id, "HYB is "+hybString+" but "+RedListUtil.HYB+" does not contain "+RedListUtil.HYB_SIGN, logger);
                     }
+                }
+                else if(hybString.equals(RedListUtil.HYB_XS)){
+                    //nothing to do
                 }
                 else{
                     logger.error("HYB value "+hybString+" not yet handled");
@@ -466,8 +460,17 @@ public class RedListGefaesspflanzenImportNames extends DbImportBase<RedListGefae
         return name;
     }
 
-    private void checkAuthorShipConsistency(long id, String nomZusatzString, String taxZusatzString,
-            String zusatzString, String authorString, String authorshipCache) {
+    private void checkNameConsistency(long id, String nomZusatzString, String taxZusatzString,
+            String zusatzString, String authorString, String hybString, NonViralName<?> name) {
+        String authorshipCache = name.getAuthorshipCache();
+        if(hybString.equals(RedListUtil.HYB_XF)){
+            if(name.getHybridChildRelations().isEmpty()){
+                RedListUtil.logMessage(id, "Hybrid formula but no hybrid child relations: "+name.getTitleCache(), logger);
+                return;
+            }
+            return;
+        }
+
         if(CdmUtils.isNotBlank(zusatzString)){
             authorString = authorString.replace(", "+zusatzString, "");
         }
@@ -492,16 +495,7 @@ public class RedListGefaesspflanzenImportNames extends DbImportBase<RedListGefae
         }
     }
 
-    private void checkTaxonNameConsistency(long id, String taxNameString, String hybString, TaxonBase<?> taxonBase) {
-        if(hybString.equals(RedListUtil.HYB_XF)){
-            if(HibernateProxyHelper.deproxy(taxonBase.getName(),NonViralName.class).getHybridChildRelations().isEmpty()){
-                RedListUtil.logMessage(id, "Hybrid name but no hybrid child relations: "+taxonBase.getTitleCache(), logger);
-                return;
-            }
-            return;
-        }
-
-
+    private void checkTaxonConsistency(long id, String taxNameString, String hybString, TaxonBase<?> taxonBase) {
         String nameCache = HibernateProxyHelper.deproxy(taxonBase.getName(), NonViralName.class).getNameCache().trim();
         taxNameString = taxNameString.trim();
         taxNameString.replaceAll(" +", " ");
@@ -521,7 +515,7 @@ public class RedListGefaesspflanzenImportNames extends DbImportBase<RedListGefae
             taxNameString = taxNameString.replace(" "+RedListUtil.HYB_SIGN, " x");
         }
 
-        if(taxNameString.endsWith("- Gruppe")){String a ="Festuca ×xx Lolium <-> Festuca ×× Lolium";
+        if(taxNameString.endsWith("- Gruppe")){
             taxNameString = taxNameString.replaceAll("- Gruppe", "species group");
         }
         if(taxNameString.endsWith("- group")){
@@ -531,12 +525,12 @@ public class RedListGefaesspflanzenImportNames extends DbImportBase<RedListGefae
         taxNameString = taxNameString.replace("[ranglos]", "[unranked]");
         if(STRICT_TITLE_CHECK){
             if(!taxNameString.trim().equals(nameCache)){
-                RedListUtil.logMessage(id, "Taxon name inconsistent! taxon.titleCache <-> Column "+RedListUtil.TAXNAME+": "+nameCache+" <-> "+taxNameString, logger);
+                RedListUtil.logMessage(id, "Taxon name inconsistent! taxon.nameCache <-> Column "+RedListUtil.TAXNAME+": "+nameCache+" <-> "+taxNameString, logger);
             }
         }
         else{
             if(!taxNameString.startsWith(nameCache)){
-                RedListUtil.logMessage(id, "Taxon name inconsistent! taxon.titleCache <-> Column "+RedListUtil.TAXNAME+": "+nameCache+" <-> "+taxNameString, logger);
+                RedListUtil.logMessage(id, "Taxon name inconsistent! taxon.nameCache <-> Column "+RedListUtil.TAXNAME+": "+nameCache+" <-> "+taxNameString, logger);
             }
         }
     }
