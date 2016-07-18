@@ -11,6 +11,7 @@ package eu.etaxonomy.cdm.io.redlist.gefaesspflanzen;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
@@ -95,14 +96,16 @@ public class RedListGefaesspflanzenImportClassification extends DbImportBase<Red
     private void importFamilies(Classification gesamtListe, Classification checkliste,
             RedListGefaesspflanzenImportState state) {
         for(UUID uuid:state.getFamilyMap().values()){
-            Taxon familyGL = HibernateProxyHelper.deproxy(getTaxonService().load(uuid), Taxon.class);
+            Taxon familyGL = HibernateProxyHelper.deproxy(getTaxonService().load(uuid, Arrays.asList(new String[]{"*"})), Taxon.class);
             Taxon familyCL = (Taxon) familyGL.clone();
 
             gesamtListe.addChildTaxon(familyGL, null, null);
             familyGL.setSec(gesamtListe.getReference());
+            familyGL.setTitleCache(null);
 
             checkliste.addChildTaxon(familyCL, null, null);
             familyCL.setSec(checkliste.getReference());
+            familyCL.setTitleCache(null);
         }
     }
 
