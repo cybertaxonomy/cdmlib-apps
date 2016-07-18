@@ -71,7 +71,7 @@ public class RedListGefaesspflanzenImportFamily extends DbImportBase<RedListGefa
         Map<String, UUID> familyMap = new HashMap<>();
 
         String query = "SELECT DISTINCT f.FAMILIE "
-                + " FROM V_TAXATLAS_D20_FAMILIEN f";
+                + " FROM GATTUNG_FAMILIE f";
 
         ResultSet rs = state.getConfig().getSource().getResultSet(query);
         while(rs.next()){
