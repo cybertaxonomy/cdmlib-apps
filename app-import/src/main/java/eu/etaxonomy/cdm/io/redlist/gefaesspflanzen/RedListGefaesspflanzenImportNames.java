@@ -37,6 +37,7 @@ import eu.etaxonomy.cdm.model.common.Language;
 import eu.etaxonomy.cdm.model.description.CommonTaxonName;
 import eu.etaxonomy.cdm.model.description.TaxonDescription;
 import eu.etaxonomy.cdm.model.name.BotanicalName;
+import eu.etaxonomy.cdm.model.name.CultivarPlantName;
 import eu.etaxonomy.cdm.model.name.NomenclaturalStatus;
 import eu.etaxonomy.cdm.model.name.NomenclaturalStatusType;
 import eu.etaxonomy.cdm.model.name.NonViralName;
@@ -338,40 +339,32 @@ public class RedListGefaesspflanzenImportNames extends DbImportBase<RedListGefae
             RedListUtil.logMessage(id, "No name found!", logger);
         }
 
+        NonViralName<?> name = null;
         Rank rank = makeRank(id, state, rangString, ep3String!=null);
-        NonViralName<?> name = BotanicalName.NewInstance(rank);
+        //cultivar
+        if(rank!= null && rank.equals(Rank.CULTIVAR())){
+            CultivarPlantName cultivar = CultivarPlantName.NewInstance(rank);
+            cultivar.setGenusOrUninomial(ep1String);
+            cultivar.setSpecificEpithet(ep2String);
+            cultivar.setCultivarName(ep3String);
+            name = cultivar;
+        }
+        //botanical names
+        else{
+            name = BotanicalName.NewInstance(rank);
 
-        //ep1 should always be present
-        if(CdmUtils.isBlank(ep1String)){
-            RedListUtil.logMessage(id, RedListUtil.EPI1+" is empty!", logger);
-        }
-        name.setGenusOrUninomial(ep1String);
-        if(CdmUtils.isNotBlank(ep2String)){
-            if(rank!=null && rank.isInfraGenericButNotSpeciesGroup()){
-                name.setInfraGenericEpithet(ep2String);
+            //ep1 should always be present
+            if(CdmUtils.isBlank(ep1String)){
+                RedListUtil.logMessage(id, RedListUtil.EPI1+" is empty!", logger);
             }
-            else{
-                name.setSpecificEpithet(ep2String);
-            }
-        }
-        if(CdmUtils.isNotBlank(ep3String)){
-            name.setInfraSpecificEpithet(ep3String);
-        }
-        //nomenclatural status
-        if(CdmUtils.isNotBlank(nomZusatzString)){
-            NomenclaturalStatusType statusType = makeNomenclaturalStatus(id, state, nomZusatzString);
-            if(statusType!=null){
-                NomenclaturalStatus status = NomenclaturalStatus.NewInstance(statusType);
-                //special case for invalid names where the DB entry contains
-                //additional information in brackets e.g. "nom. inval. (sine basion.)"
-                if(statusType.equals(NomenclaturalStatusType.INVALID())){
-                    Pattern pattern = Pattern.compile("\\((.*?)\\)");
-                    Matcher matcher = pattern.matcher(nomZusatzString);
-                    if (matcher.find()){
-                        status.setRuleConsidered(matcher.group(1));
-                    }
+            name.setGenusOrUninomial(ep1String);
+            if(CdmUtils.isNotBlank(ep2String)){
+                if(rank!=null && rank.isInfraGenericButNotSpeciesGroup()){
+                    name.setInfraGenericEpithet(ep2String);
                 }
-                name.addStatus(status);
+                else{
+                    name.setSpecificEpithet(ep2String);
+                }
             }
         }
         //hybrid
@@ -385,56 +378,85 @@ public class RedListGefaesspflanzenImportNames extends DbImportBase<RedListGefae
 
             if(hybString.equals(RedListUtil.HYB_X)){
                 name.setBinomHybrid(true);
-            }
-            else if(hybString.equals(RedListUtil.HYB_G)){
-                name.setMonomHybrid(true);
-            }
-            else if(hybString.equals(RedListUtil.HYB_XF)){
-                name.setHybridFormula(true);
-                if(ep1String.contains(RedListUtil.HYB_SIGN)){
-                    RedListUtil.logMessage(id, "EPI1 has hybrid signs but with flag: "+RedListUtil.HYB_XF, logger);
+                if(CdmUtils.isNotBlank(ep3String)){
+                    name.setInfraSpecificEpithet(ep3String);
                 }
-                else if(ep2String.contains(RedListUtil.HYB_SIGN)){
-                    String[] split = ep2String.split(RedListUtil.HYB_SIGN);
-                    if(split.length!=2){
-                        RedListUtil.logMessage(id, "Multiple hybrid signs found in "+ep2String, logger);
+                //nomenclatural status
+                if(CdmUtils.isNotBlank(nomZusatzString)){
+                    NomenclaturalStatusType statusType = makeNomenclaturalStatus(id, state, nomZusatzString);
+                    if(statusType!=null){
+                        NomenclaturalStatus status = NomenclaturalStatus.NewInstance(statusType);
+                        //special case for invalid names where the DB entry contains
+                        //additional information in brackets e.g. "nom. inval. (sine basion.)"
+                        if(statusType.equals(NomenclaturalStatusType.INVALID())){
+                            Pattern pattern = Pattern.compile("\\((.*?)\\)");
+                            Matcher matcher = pattern.matcher(nomZusatzString);
+                            if (matcher.find()){
+                                status.setRuleConsidered(matcher.group(1));
+                            }
+                        }
+                        name.addStatus(status);
                     }
-                    String hybridFormula1 = ep1String+" "+split[0].trim();
-                    String hybridFormula2 = ep1String+" "+split[1].trim();
-                    if(CdmUtils.isNotBlank(ep3String)){
-                        hybridFormula1 += " "+ep3String;
-                        hybridFormula2 += " "+ep3String;
-                    }
-                    String fullFormula = hybridFormula1+" "+RedListUtil.HYB_SIGN+" "+hybridFormula2;
-                    name = NonViralNameParserImpl.NewInstance().parseFullName(fullFormula);
                 }
-                else if(ep3String.contains(RedListUtil.HYB_SIGN)){
-                    String[] split = ep3String.split(RedListUtil.HYB_SIGN);
-                    if(split.length!=2){
-                        RedListUtil.logMessage(id, "Multiple hybrid signs found in "+ep3String, logger);
+                //hybrid
+                if(CdmUtils.isNotBlank(hybString)){
+                    if(hybString.equals(RedListUtil.HYB_X)){
+                        name.setBinomHybrid(true);
                     }
-                    String hybridFormula1 = ep1String+" "+ep2String+" "+split[0];
-                    String hybridFormula2 = ep1String+" "+ep2String+" "+split[1];
-                    String fullFormula = hybridFormula1+" "+RedListUtil.HYB_SIGN+" "+hybridFormula2;
-                    name = NonViralNameParserImpl.NewInstance().parseFullName(fullFormula);
-                }
-            }
-            else if(hybString.equals(RedListUtil.HYB_N)){
-                name = NonViralNameParserImpl.NewInstance().parseFullName(ep1String+" "+ep2String+" nothosubsp. "+ep3String);
-            }
-            else if(hybString.equals(RedListUtil.HYB_GF)){
-                if(ep1String.contains(RedListUtil.HYB_SIGN)){
-                    name = NonViralNameParserImpl.NewInstance().parseFullName(ep1String);
+                    else if(hybString.equals(RedListUtil.HYB_G)){
+                        name.setMonomHybrid(true);
+                    }
+                    else if(hybString.equals(RedListUtil.HYB_XF)){
+                        name.setHybridFormula(true);
+                        if(ep1String.contains(RedListUtil.HYB_SIGN)){
+                            RedListUtil.logMessage(id, "EPI1 has hybrid signs but with flag: "+RedListUtil.HYB_XF, logger);
+                        }
+                        else if(ep2String.contains(RedListUtil.HYB_SIGN)){
+                            String[] split = ep2String.split(RedListUtil.HYB_SIGN);
+                            if(split.length!=2){
+                                RedListUtil.logMessage(id, "Multiple hybrid signs found in "+ep2String, logger);
+                            }
+                            String hybridFormula1 = ep1String+" "+split[0].trim();
+                            String hybridFormula2 = ep1String+" "+split[1].trim();
+                            if(CdmUtils.isNotBlank(ep3String)){
+                                hybridFormula1 += " "+ep3String;
+                                hybridFormula2 += " "+ep3String;
+                            }
+                            String fullFormula = hybridFormula1+" "+RedListUtil.HYB_SIGN+" "+hybridFormula2;
+                            name = NonViralNameParserImpl.NewInstance().parseFullName(fullFormula);
+                        }
+                        else if(ep3String.contains(RedListUtil.HYB_SIGN)){
+                            String[] split = ep3String.split(RedListUtil.HYB_SIGN);
+                            if(split.length!=2){
+                                RedListUtil.logMessage(id, "Multiple hybrid signs found in "+ep3String, logger);
+                            }
+                            String hybridFormula1 = ep1String+" "+ep2String+" "+split[0];
+                            String hybridFormula2 = ep1String+" "+ep2String+" "+split[1];
+                            String fullFormula = hybridFormula1+" "+RedListUtil.HYB_SIGN+" "+hybridFormula2;
+                            name = NonViralNameParserImpl.NewInstance().parseFullName(fullFormula);
+                        }
+                    }
+                    else if(hybString.equals(RedListUtil.HYB_N)){
+                        name = NonViralNameParserImpl.NewInstance().parseFullName(ep1String+" "+ep2String+" nothosubsp. "+ep3String);
+                    }
+                    else if(hybString.equals(RedListUtil.HYB_GF)){
+                        if(ep1String.contains(RedListUtil.HYB_SIGN)){
+                            name = NonViralNameParserImpl.NewInstance().parseFullName(ep1String);
+                        }
+                        else{
+                            RedListUtil.logMessage(id, "HYB is "+hybString+" but "+RedListUtil.HYB+" does not contain "+RedListUtil.HYB_SIGN, logger);
+                        }
+                    }
+                    else if(hybString.equals(RedListUtil.HYB_XS)){
+                        //nothing to do
+                    }
+                    else{
+                        logger.error("HYB value "+hybString+" not yet handled");
+                    }
                 }
                 else{
-                    RedListUtil.logMessage(id, "HYB is "+hybString+" but "+RedListUtil.HYB+" does not contain "+RedListUtil.HYB_SIGN, logger);
+                    logger.error("HYB value "+hybString+" not yet handled");
                 }
-            }
-            else if(hybString.equals(RedListUtil.HYB_XS)){
-                //nothing to do
-            }
-            else{
-                logger.error("HYB value "+hybString+" not yet handled");
             }
         }
         //add source
