@@ -57,6 +57,7 @@ public final class RedListGefaesspflanzenTransformer extends InputTransformerBas
     @Override
     public NomenclaturalStatusType getNomenclaturalStatusByKey(String key) throws UndefinedTransformerMethodException {
         if (key == null){return null;}
+        key = key.trim();
         if (key.equals("nom. cons.")){return NomenclaturalStatusType.CONSERVED();}
         else if (key.equals("nom. illeg.")){return NomenclaturalStatusType.ILLEGITIMATE();}
         else if (key.equals("nom. inval.")){return NomenclaturalStatusType.INVALID();}

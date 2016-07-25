@@ -498,13 +498,13 @@ public class RedListGefaesspflanzenImportNames extends DbImportBase<RedListGefae
     private void checkTaxonConsistency(long id, String taxNameString, String hybString, TaxonBase<?> taxonBase) {
         String nameCache = HibernateProxyHelper.deproxy(taxonBase.getName(), NonViralName.class).getNameCache().trim();
         taxNameString = taxNameString.trim();
-        taxNameString.replaceAll(" +", " ");
+        taxNameString = taxNameString.replaceAll(" +", " ");
 
         if(taxNameString.endsWith("agg.")){
             taxNameString = taxNameString.replace("agg.", "aggr.");
         }
 
-        if(hybString.equals(RedListUtil.HYB_X)){
+        if(hybString.equals(RedListUtil.HYB_X) || hybString.equals(RedListUtil.HYB_N)){
             taxNameString = taxNameString.replace(" "+RedListUtil.HYB_SIGN+" ", " "+RedListUtil.HYB_SIGN);//hybrid sign has no space after it in titleCache for binomial hybrids
             taxNameString = taxNameString.replace(" x ", " "+RedListUtil.HYB_SIGN);//in some cases a standard 'x' is used
         }
@@ -523,6 +523,9 @@ public class RedListGefaesspflanzenImportNames extends DbImportBase<RedListGefae
         }
 
         taxNameString = taxNameString.replace("[ranglos]", "[unranked]");
+        if(taxonBase.getName().getRank()!=null && taxonBase.getName().getRank().equals(Rank.PROLES())){
+            taxNameString = taxNameString.replace("proles", "prol.");
+        }
         if(STRICT_TITLE_CHECK){
             if(!taxNameString.trim().equals(nameCache)){
                 RedListUtil.logMessage(id, "Taxon name inconsistent! taxon.nameCache <-> Column "+RedListUtil.TAXNAME+": "+nameCache+" <-> "+taxNameString, logger);
