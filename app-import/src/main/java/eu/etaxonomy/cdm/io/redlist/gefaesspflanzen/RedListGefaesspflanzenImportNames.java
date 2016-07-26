@@ -419,7 +419,8 @@ public class RedListGefaesspflanzenImportNames extends DbImportBase<RedListGefae
                         String hybridFormula1 = ep1String+" "+split[0].trim();
                         String hybridFormula2 = ep1String+" "+split[1].trim();
                         //check if the specific epithets are from the same genus or not like e.g. EPI2 = pratensis × Lolium multiflorum
-                        if(split[1].split(" ").length>1){
+                        String[] secondHybrid = split[1].trim().split(" ");
+                        if(secondHybrid.length>1 && secondHybrid[0].matches("[A-Z].*")){
                             hybridFormula2 = split[1];
                         }
                         if(CdmUtils.isNotBlank(ep3String)){
@@ -466,7 +467,8 @@ public class RedListGefaesspflanzenImportNames extends DbImportBase<RedListGefae
     private void checkNameConsistency(long id, String nomZusatzString, String taxZusatzString,
             String zusatzString, String authorString, String hybString, NonViralName<?> name) {
         String authorshipCache = name.getAuthorshipCache();
-        if(hybString.equals(RedListUtil.HYB_XF)){
+        //FIXME: remove split length check when name parser can parse multiple hybrid parents
+        if(hybString.equals(RedListUtil.HYB_XF) && name.getTitleCache().split(RedListUtil.HYB_SIGN).length==2){
             if(name.getHybridChildRelations().isEmpty()){
                 RedListUtil.logMessage(id, "Hybrid formula but no hybrid child relations: "+name.getTitleCache(), logger);
                 return;
