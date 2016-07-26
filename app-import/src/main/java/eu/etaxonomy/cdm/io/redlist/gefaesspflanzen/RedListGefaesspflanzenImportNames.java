@@ -418,6 +418,10 @@ public class RedListGefaesspflanzenImportNames extends DbImportBase<RedListGefae
                         String[] split = ep2String.split(RedListUtil.HYB_SIGN);
                         String hybridFormula1 = ep1String+" "+split[0].trim();
                         String hybridFormula2 = ep1String+" "+split[1].trim();
+                        //check if the specific epithets are from the same genus or not like e.g. EPI2 = pratensis × Lolium multiflorum
+                        if(split[1].split(" ").length>1){
+                            hybridFormula2 = split[1];
+                        }
                         if(CdmUtils.isNotBlank(ep3String)){
                             hybridFormula1 += " "+ep3String;
                             hybridFormula2 += " "+ep3String;
