@@ -57,6 +57,7 @@ public class RedListUtil {
     public static final String CLASSIFICATION_NAMESPACE_R = "classification_namespace_r";
     public static final String CLASSIFICATION_NAMESPACE_O = "classification_namespace_o";
     public static final String CLASSIFICATION_NAMESPACE_S = "classification_namespace_s";
+    public static final String FAMILY_NAMESPACE = "family_namespace";
 
 
     //cell content
