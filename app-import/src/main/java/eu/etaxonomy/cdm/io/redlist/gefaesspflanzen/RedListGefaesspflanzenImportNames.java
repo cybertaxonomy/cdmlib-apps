@@ -397,8 +397,13 @@ public class RedListGefaesspflanzenImportNames extends DbImportBase<RedListGefae
                     annotation.setAnnotationType(AnnotationType.TECHNICAL());
                     name.addAnnotation(annotation);
                 }
-
-                if(hybString.equals(RedListUtil.HYB_X)){
+                //more than two hybrids not yet handled by name parser
+                //TODO: use parser when implemented to fully support hybrids
+                if(taxNameString.split(RedListUtil.HYB_SIGN).length>2){
+                    name = BotanicalName.NewInstance(rank);
+                    name.setTitleCache(taxNameString, true);
+                }
+                else if(hybString.equals(RedListUtil.HYB_X)){
                     name.setBinomHybrid(true);
                 }
                 else if(hybString.equals(RedListUtil.HYB_G)){
@@ -411,9 +416,6 @@ public class RedListGefaesspflanzenImportNames extends DbImportBase<RedListGefae
                     }
                     else if(ep2String.contains(RedListUtil.HYB_SIGN)){
                         String[] split = ep2String.split(RedListUtil.HYB_SIGN);
-                        if(split.length!=2){
-                            RedListUtil.logMessage(id, "Multiple hybrid signs found in "+ep2String, logger);
-                        }
                         String hybridFormula1 = ep1String+" "+split[0].trim();
                         String hybridFormula2 = ep1String+" "+split[1].trim();
                         if(CdmUtils.isNotBlank(ep3String)){
@@ -425,9 +427,6 @@ public class RedListGefaesspflanzenImportNames extends DbImportBase<RedListGefae
                     }
                     else if(ep3String.contains(RedListUtil.HYB_SIGN)){
                         String[] split = ep3String.split(RedListUtil.HYB_SIGN);
-                        if(split.length!=2){
-                            RedListUtil.logMessage(id, "Multiple hybrid signs found in "+ep3String, logger);
-                        }
                         String hybridFormula1 = ep1String+" "+ep2String+" "+split[0];
                         String hybridFormula2 = ep1String+" "+ep2String+" "+split[1];
                         String fullFormula = hybridFormula1+" "+RedListUtil.HYB_SIGN+" "+hybridFormula2;
