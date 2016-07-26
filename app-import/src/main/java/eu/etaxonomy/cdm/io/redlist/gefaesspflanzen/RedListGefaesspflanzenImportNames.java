@@ -430,15 +430,15 @@ public class RedListGefaesspflanzenImportNames extends DbImportBase<RedListGefae
                         String hybridFormula1 = ep1String+" "+ep2String+" "+split[0];
                         String hybridFormula2 = ep1String+" "+ep2String+" "+split[1];
                         String fullFormula = hybridFormula1+" "+RedListUtil.HYB_SIGN+" "+hybridFormula2;
-                        name = NonViralNameParserImpl.NewInstance().parseFullName(fullFormula);
+                        name = NonViralNameParserImpl.NewInstance().parseFullName(fullFormula, NomenclaturalCode.ICNAFP, rank);
                     }
                 }
                 else if(hybString.equals(RedListUtil.HYB_N)){
-                    name = NonViralNameParserImpl.NewInstance().parseFullName(taxNameString);
+                    name = NonViralNameParserImpl.NewInstance().parseFullName(taxNameString, NomenclaturalCode.ICNAFP, rank);
                 }
                 else if(hybString.equals(RedListUtil.HYB_GF)){
                     if(ep1String.contains(RedListUtil.HYB_SIGN)){
-                        name = NonViralNameParserImpl.NewInstance().parseFullName(ep1String);
+                        name = NonViralNameParserImpl.NewInstance().parseFullName(ep1String, NomenclaturalCode.ICNAFP, rank);
                     }
                     else{
                         RedListUtil.logMessage(id, "HYB is "+hybString+" but "+RedListUtil.HYB+" does not contain "+RedListUtil.HYB_SIGN, logger);
