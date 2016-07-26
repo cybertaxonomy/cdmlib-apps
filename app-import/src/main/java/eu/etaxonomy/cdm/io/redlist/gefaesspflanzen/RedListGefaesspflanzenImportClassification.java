@@ -70,7 +70,7 @@ public class RedListGefaesspflanzenImportClassification extends DbImportBase<Red
 
     @Override
     protected String getRecordQuery(RedListGefaesspflanzenImportConfigurator config) {
-        String result = "select e.*, f.FAMILIE "
+        String result = "select distinct e.*, f.FAMILIE "
                 + "from V_TAXATLAS_D20_EXPORT e, GATTUNG_FAMILIE f "
                 + "where e.EPI1 = f.GATTUNG and e.NAMNR IN (@IDSET)";
         result = result.replace("@IDSET", IPartitionedIO.ID_LIST_TOKEN);
