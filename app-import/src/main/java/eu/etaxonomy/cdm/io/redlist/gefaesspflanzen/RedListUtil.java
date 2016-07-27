@@ -45,6 +45,8 @@ public class RedListUtil {
     public static final UUID uuidClassificationO = UUID.fromString("e19bb2e6-d898-4793-8cd4-d866eeb1f872");
     public static final UUID uuidClassificationS = UUID.fromString("53e81162-5c2d-425b-bbe6-6e8d12e85790");
 
+    public static final UUID uuidRankCollectionSpecies = UUID.fromString("6056e143-4efe-4632-b532-27699ed62884");
+
     public static final String NAME_NAMESPACE = "name";
     public static final String AUTHOR_NAMESPACE = "author";
     public static final String TAXON_GESAMTLISTE_NAMESPACE = "taxon_gesamt_liste";
