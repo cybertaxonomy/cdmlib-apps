@@ -59,6 +59,23 @@
   		<version>${project.version}</version>
   	</dependency>
       <dependency>
+        <!--
+              need to specify this dependency,
+              otherwise org.springframework.orm.hibernate5.HibernateTransactionManager is not found.
+              The dependency to cdmlib-io brings an old version:
+              [INFO] eu.etaxonomy:imports:jar:4.3.0-SNAPSHOT
+              [INFO] \- eu.etaxonomy:cdmlib-io:jar:4.3.0-SNAPSHOT:compile
+              [INFO]    \- eu.etaxonomy:cdmlib-ext:jar:4.3.0-SNAPSHOT:compile
+              [INFO]       \- eu.etaxonomy:cdmlib-services:jar:4.3.0-SNAPSHOT:compile
+              [INFO]          \- eu.etaxonomy:cdmlib-persistence:jar:4.3.0-SNAPSHOT:compile
+              [INFO]             \- org.springframework:spring-orm:jar:3.2.0.RELEASE:compile
+          -->
+          <groupId>eu.etaxonomy</groupId>
+          <artifactId>cdmlib-persistence</artifactId>
+          <version>${project.version}</version>
+      </dependency>
+
+      <dependency>
         <groupId>com.itextpdf</groupId>
         <artifactId>itextpdf</artifactId>
         <version>5.5.8</version>
