@@ -34,6 +34,7 @@ import eu.etaxonomy.cdm.model.common.Annotation;
 import eu.etaxonomy.cdm.model.common.AnnotationType;
 import eu.etaxonomy.cdm.model.common.CdmBase;
 import eu.etaxonomy.cdm.model.common.Language;
+import eu.etaxonomy.cdm.model.common.OrderedTermVocabulary;
 import eu.etaxonomy.cdm.model.description.CommonTaxonName;
 import eu.etaxonomy.cdm.model.description.TaxonDescription;
 import eu.etaxonomy.cdm.model.name.BotanicalName;
@@ -43,6 +44,7 @@ import eu.etaxonomy.cdm.model.name.NomenclaturalStatus;
 import eu.etaxonomy.cdm.model.name.NomenclaturalStatusType;
 import eu.etaxonomy.cdm.model.name.NonViralName;
 import eu.etaxonomy.cdm.model.name.Rank;
+import eu.etaxonomy.cdm.model.name.RankClass;
 import eu.etaxonomy.cdm.model.name.TaxonNameBase;
 import eu.etaxonomy.cdm.model.taxon.Synonym;
 import eu.etaxonomy.cdm.model.taxon.Taxon;
@@ -136,7 +138,7 @@ public class RedListGefaesspflanzenImportNames extends DbImportBase<RedListGefae
         importAuthors(state, rs, name);
 
         //---TAXON---
-        TaxonBase<?> taxonBase = importTaxon(rs, name);
+        TaxonBase<?> taxonBase = importTaxon(rs, name, state);
         if(taxonBase==null){
             RedListUtil.logMessage(id, "Taxon for name "+name+" could not be created.", logger);
             return;
@@ -189,7 +191,7 @@ public class RedListGefaesspflanzenImportNames extends DbImportBase<RedListGefae
         }
     }
 
-    private TaxonBase<?> importTaxon(ResultSet rs, NonViralName<?> name) throws SQLException {
+    private TaxonBase<?> importTaxon(ResultSet rs, NonViralName<?> name, RedListGefaesspflanzenImportState state) throws SQLException {
 
         long id = rs.getLong(RedListUtil.NAMNR);
         String taxNameString = rs.getString(RedListUtil.TAXNAME);
@@ -235,7 +237,7 @@ public class RedListGefaesspflanzenImportNames extends DbImportBase<RedListGefae
         addAnnotation(RedListUtil.WISSK+": "+wisskString, taxonBase);
 
         //check taxon name consistency
-        checkTaxonConsistency(id, taxNameString, hybString, taxonBase);
+        checkTaxonConsistency(id, taxNameString, hybString, taxonBase, state);
         return taxonBase;
     }
 
@@ -500,7 +502,7 @@ public class RedListGefaesspflanzenImportNames extends DbImportBase<RedListGefae
         }
     }
 
-    private void checkTaxonConsistency(long id, String taxNameString, String hybString, TaxonBase<?> taxonBase) {
+    private void checkTaxonConsistency(long id, String taxNameString, String hybString, TaxonBase<?> taxonBase, RedListGefaesspflanzenImportState state) {
         String nameCache = HibernateProxyHelper.deproxy(taxonBase.getName(), NonViralName.class).getNameCache().trim();
         taxNameString = taxNameString.trim();
         taxNameString = taxNameString.replaceAll(" +", " ");
@@ -528,8 +530,13 @@ public class RedListGefaesspflanzenImportNames extends DbImportBase<RedListGefae
         }
 
         taxNameString = taxNameString.replace("[ranglos]", "[unranked]");
-        if(taxonBase.getName().getRank()!=null && taxonBase.getName().getRank().equals(Rank.PROLES())){
-            taxNameString = taxNameString.replace("proles", "prol.");
+        if(taxonBase.getName().getRank()!=null){
+            if(taxonBase.getName().getRank().equals(Rank.PROLES())){
+                taxNameString = taxNameString.replace("proles", "prol.");
+            }
+            else if(taxonBase.getName().getRank().equals(state.getRank(RedListUtil.uuidRankCollectionSpecies))){
+                taxNameString = taxNameString.replace("\"Sammelart\"", "\"Coll. Species\"");
+            }
         }
         if(STRICT_TITLE_CHECK){
             if(!taxNameString.trim().equals(nameCache)){
@@ -554,6 +561,9 @@ public class RedListGefaesspflanzenImportNames extends DbImportBase<RedListGefae
                 else{
                     return Rank.UNRANKED_INFRAGENERIC();
                 }
+            }
+            else if(rankStr.equals("SAM")){
+                return getRank(state, RedListUtil.uuidRankCollectionSpecies, "Collective Species", "Collective Species", "\"Coll. Species\"", (OrderedTermVocabulary<Rank>) Rank.GENUS().getVocabulary(), null, RankClass.SpeciesGroup);
             }
             else{
                 rank = state.getTransformer().getRankByKey(rankStr);

@@ -10,6 +10,8 @@
 
 package eu.etaxonomy.cdm.io.redlist.gefaesspflanzen;
 
+import java.util.UUID;
+
 import org.apache.log4j.Logger;
 
 import eu.etaxonomy.cdm.io.common.mapping.InputTransformerBase;
@@ -29,6 +31,13 @@ public final class RedListGefaesspflanzenTransformer extends InputTransformerBas
 
     @SuppressWarnings("unused")
 	private static final Logger logger = Logger.getLogger(RedListGefaesspflanzenTransformer.class);
+
+    @Override
+    public UUID getRankUuid(String key) throws UndefinedTransformerMethodException {
+        if (key == null){return null;}
+        if (key.equals("SAM")){return RedListUtil.uuidRankCollectionSpecies;}
+        return null;
+    }
 
     @Override
     public Rank getRankByKey(String key) throws UndefinedTransformerMethodException {
