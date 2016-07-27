@@ -411,7 +411,7 @@ public class RedListGefaesspflanzenImportNames extends DbImportBase<RedListGefae
                 else if(hybString.equals(RedListUtil.HYB_G)){
                     name.setMonomHybrid(true);
                 }
-                else if(hybString.equals(RedListUtil.HYB_XF)){
+                else if(hybString.equals(RedListUtil.HYB_XF) || hybString.equals(RedListUtil.HYB_NF) ){
                     name.setHybridFormula(true);
                     if(ep1String.contains(RedListUtil.HYB_SIGN)){
                         RedListUtil.logMessage(id, "EPI1 has hybrid signs but with flag: "+RedListUtil.HYB_XF, logger);
