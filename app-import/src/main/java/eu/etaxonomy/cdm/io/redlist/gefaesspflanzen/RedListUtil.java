@@ -73,7 +73,6 @@ public class RedListUtil {
     public static final String HYB_XS = "xs";
     public static final String HYB_N = "n";
     public static final String HYB_G = "g";
-    public static final String HYB_NF = "nf";
     public static final String HYB_XU = "xu";
     public static final String HYB_GF = "gf";
 
