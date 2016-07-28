@@ -952,11 +952,11 @@ public final class PesiTransformer extends ExportTransformerBase implements IExp
 			} else if (presenceTerm.equals(PresenceAbsenceTerm.NATIVE())) {
 				result = STATUS_NATIVE;
 			} else if (presenceTerm.equals(PresenceAbsenceTerm.INTRODUCED()) ||
-					presenceTerm.equals(PresenceAbsenceTerm.INTRODUCED_ADVENTITIOUS()) ||
+					presenceTerm.equals(PresenceAbsenceTerm.CASUAL()) ||
 					presenceTerm.equals(PresenceAbsenceTerm.INTRODUCED_UNCERTAIN_DEGREE_OF_NATURALISATION())) {
 				result = STATUS_INTRODUCED;
 			} else if (presenceTerm.equals(PresenceAbsenceTerm.NATURALISED())
-					|| presenceTerm.equals(PresenceAbsenceTerm.INTRODUCED_NATURALIZED())) {
+					|| presenceTerm.equals(PresenceAbsenceTerm.NATURALISED())) {
 				result = STATUS_NATURALISED;
 			} else if (presenceTerm.equals(PresenceAbsenceTerm.INVASIVE())) {
 				result = STATUS_INVASIVE;
