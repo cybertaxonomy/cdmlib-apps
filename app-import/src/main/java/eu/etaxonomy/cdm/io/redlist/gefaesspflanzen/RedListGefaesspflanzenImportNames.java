@@ -30,6 +30,7 @@ import eu.etaxonomy.cdm.io.common.ResultSetPartitioner;
 import eu.etaxonomy.cdm.io.common.mapping.UndefinedTransformerMethodException;
 import eu.etaxonomy.cdm.model.agent.AgentBase;
 import eu.etaxonomy.cdm.model.agent.TeamOrPersonBase;
+import eu.etaxonomy.cdm.model.common.AnnotatableEntity;
 import eu.etaxonomy.cdm.model.common.Annotation;
 import eu.etaxonomy.cdm.model.common.AnnotationType;
 import eu.etaxonomy.cdm.model.common.CdmBase;
@@ -242,9 +243,9 @@ public class RedListGefaesspflanzenImportNames extends DbImportBase<RedListGefae
         return taxonBase;
     }
 
-    private void addAnnotation(String string, TaxonBase<?> taxonBase) {
+    private void addAnnotation(String string, AnnotatableEntity entity) {
         if(CdmUtils.isNotBlank(string)){
-            taxonBase.addAnnotation(Annotation.NewInstance(string, AnnotationType.TECHNICAL(), Language.GERMAN()));
+            entity.addAnnotation(Annotation.NewInstance(string, AnnotationType.TECHNICAL(), Language.GERMAN()));
         }
     }
 
@@ -473,6 +474,11 @@ public class RedListGefaesspflanzenImportNames extends DbImportBase<RedListGefae
                 }
             }
         }
+
+        if(rangString.equals("SPI")){
+            addAnnotation("Rank in source: subspecies principes", name);
+        }
+
         //add source
         ImportHelper.setOriginalSource(name, state.getTransactionalSourceReference(), id, RedListUtil.NAME_NAMESPACE);
 
