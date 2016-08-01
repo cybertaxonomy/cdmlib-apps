@@ -383,7 +383,7 @@ public class RedListGefaesspflanzenImportNames extends DbImportBase<RedListGefae
                     NomenclaturalStatus status = NomenclaturalStatus.NewInstance(statusType);
                     //special case for invalid names where the DB entry contains
                     //additional information in brackets e.g. "nom. inval. (sine basion.)"
-                    if(statusType.equals(NomenclaturalStatusType.INVALID())){
+                    if(statusType.equals(NomenclaturalStatusType.INVALID()) || statusType.equals(NomenclaturalStatusType.REJECTED()) ){
                         Pattern pattern = Pattern.compile("\\((.*?)\\)");
                         Matcher matcher = pattern.matcher(nomZusatzString);
                         if (matcher.find()){
@@ -413,7 +413,7 @@ public class RedListGefaesspflanzenImportNames extends DbImportBase<RedListGefae
                 else if(hybString.equals(RedListUtil.HYB_G)){
                     name.setMonomHybrid(true);
                 }
-                else if(hybString.equals(RedListUtil.HYB_XF)){
+                else if(hybString.equals(RedListUtil.HYB_XF) || hybString.equals(RedListUtil.HYB_XU)){
                     name.setHybridFormula(true);
                     if(ep1String.contains(RedListUtil.HYB_SIGN)){
                         RedListUtil.logMessage(id, "EPI1 has hybrid signs but with flag: "+RedListUtil.HYB_XF, logger);
@@ -475,10 +475,6 @@ public class RedListGefaesspflanzenImportNames extends DbImportBase<RedListGefae
             }
         }
 
-        if(rangString.equals("SPI")){
-            addAnnotation("Rank in source: subspecies principes", name);
-        }
-
         //add source
         ImportHelper.setOriginalSource(name, state.getTransactionalSourceReference(), id, RedListUtil.NAME_NAMESPACE);
 
@@ -524,7 +520,7 @@ public class RedListGefaesspflanzenImportNames extends DbImportBase<RedListGefae
 
     private void checkTaxonConsistency(long id, String taxNameString, String hybString, String epi1String, TaxonBase<?> taxonBase, RedListGefaesspflanzenImportState state) {
         if(taxNameString.split(RedListUtil.HYB_SIGN).length>2){
-            RedListUtil.logMessage(id, "multiple hybrid signs. No name check for "+taxNameString, logger);
+            RedListUtil.logInfoMessage(id, "multiple hybrid signs. No name check for "+taxNameString, logger);
             return;
         }
 
@@ -544,7 +540,7 @@ public class RedListGefaesspflanzenImportNames extends DbImportBase<RedListGefae
             taxNameString = taxNameString.replace("X ", RedListUtil.HYB_SIGN);
         }
         else if(hybString.equals(RedListUtil.HYB_GF)){
-            taxNameString = taxNameString.replace(" "+RedListUtil.HYB_SIGN, " x");
+            taxNameString = taxNameString.replace(" "+RedListUtil.HYB_SIGN+" ", " "+RedListUtil.HYB_SIGN);
         }
         else if(hybString.equals(RedListUtil.HYB_XF)){
             nameCache = taxonBase.getName().getTitleCache();
@@ -610,6 +606,12 @@ public class RedListGefaesspflanzenImportNames extends DbImportBase<RedListGefae
             }
             else if(rankStr.equals("LUS")){
                 return getRank(state, RedListUtil.uuidRankLusus, "Lusus", "Lusus", "lusus", (OrderedTermVocabulary<Rank>) Rank.GENUS().getVocabulary(), null, RankClass.Infraspecific);
+            }
+            else if(rankStr.equals("SPI")){
+                return getRank(state, RedListUtil.uuidRankSubspeciesPrincipes, "Subspecies principes", "Subspecies principes", "subsp. princ.", (OrderedTermVocabulary<Rank>) Rank.GENUS().getVocabulary(), null, RankClass.Infraspecific);
+            }
+            else if(rankStr.equals("KMB")){
+                return getRank(state, RedListUtil.uuidRankCombination, "Combination", "Combination", "", (OrderedTermVocabulary<Rank>) Rank.GENUS().getVocabulary(), null, RankClass.Infraspecific);
             }
             else{
                 rank = state.getTransformer().getRankByKey(rankStr);
