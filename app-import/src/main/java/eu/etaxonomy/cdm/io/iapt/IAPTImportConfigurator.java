@@ -49,7 +49,7 @@ public class IAPTImportConfigurator extends ExcelImportConfiguratorBase{
 
     @Override
     public ImportStateBase getNewState() {
-        return new SimpleExcelTaxonImportState<>(this);
+        return new IAPTImportState(this);
     }
 
     @Override

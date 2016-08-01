@@ -14,32 +14,34 @@ import eu.etaxonomy.cdm.io.mexico.SimpleExcelTaxonImport;
 import eu.etaxonomy.cdm.io.mexico.SimpleExcelTaxonImportState;
 import eu.etaxonomy.cdm.model.common.*;
 import eu.etaxonomy.cdm.model.name.*;
-import eu.etaxonomy.cdm.model.reference.INomenclaturalReference;
 import eu.etaxonomy.cdm.model.reference.Reference;
 import eu.etaxonomy.cdm.model.taxon.*;
-import eu.etaxonomy.cdm.strategy.exceptions.StringNotParsableException;
-import eu.etaxonomy.cdm.strategy.parser.INonViralNameParser;
 import eu.etaxonomy.cdm.strategy.parser.NonViralNameParserImpl;
+import org.apache.commons.lang.StringEscapeUtils;
 import org.apache.commons.lang.StringUtils;
+import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 import org.springframework.stereotype.Component;
 
 import java.util.*;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * @author a.mueller
  * @created 05.01.2016
  */
 
-@Component
+@Component("iAPTExcelImport")
 public class IAPTExcelImport<CONFIG extends IAPTImportConfigurator> extends SimpleExcelTaxonImport<CONFIG> {
     private static final long serialVersionUID = -747486709409732371L;
     private static final Logger logger = Logger.getLogger(IAPTExcelImport.class);
+    public static final String ANNOTATION_MARKER_STRING = "[*]";
 
 
     private static UUID ROOT_UUID = UUID.fromString("4137fd2a-20f6-4e70-80b9-f296daf51d82");
 
-    private static INonViralNameParser<?> nameParser = NonViralNameParserImpl.NewInstance();
+    private static NonViralNameParserImpl nameParser = NonViralNameParserImpl.NewInstance();
 
     private final static String REGISTRATIONNO_PK= "RegistrationNo_Pk";
     private final static String HIGHERTAXON= "HigherTaxon";
@@ -61,41 +63,107 @@ public class IAPTExcelImport<CONFIG extends IAPTImportConfigurator> extends Simp
     private  static List<String> expectedKeys= Arrays.asList(new String[]{
             REGISTRATIONNO_PK, HIGHERTAXON, FULLNAME, AUTHORSSPELLING, LITSTRING, REGISTRATION, TYPE, CAVEATS, FULLBASIONYM, FULLSYNSUBST, NOTESTXT, REGDATE, NAMESTRING, BASIONYMSTRING, SYNSUBSTSTR, AUTHORSTRING});
 
+    private static final Pattern nomRefTokenizeP = Pattern.compile("^(.*):\\s([^\\.:]+)\\.(.*)$");
+    private static final Pattern nomRefPubYearExtractP = Pattern.compile("(.*?)(1[7,8,9][0-9]{2}).*$|^.*?[0-9]{1,2}([\\./])[0-1]?[0-9]\\3([0-9]{2})\\.$"); // 1700 - 1999
 
     private Taxon makeTaxon(HashMap<String, String> record, SimpleExcelTaxonImportState<CONFIG> state,
                             TaxonNode higherTaxonNode, boolean isSynonym) {
 
         String line = state.getCurrentLine() + ": ";
 
-        String fullNameStr = getValue(record, FULLNAME);
-        String nameStr = getValue(record, NAMESTRING);
-        String authorStr = getValue(record, AUTHORSTRING);
+        String titleCacheStr = getValue(record, FULLNAME, true);
+        String nameStr = getValue(record, NAMESTRING, true);
+        String authorStr = getValue(record, AUTHORSTRING, true);
+        String nomRefStr = getValue(record, LITSTRING, true);
 
-        String sourceReference = getValue(record, LITSTRING);
+        String nomRefTitle = null;
+        String nomRefDetail = null;
+        String nomRefPupDate = null;
+        String nomRefPupYear = null;
 
-        BotanicalName taxonName = (BotanicalName) nameParser.parseFullName(fullNameStr, NomenclaturalCode.ICNAFP, null);
-        if (taxonName.isProtectedTitleCache()) {
-            logger.warn(line + "Name could not be parsed: " + fullNameStr);
+        // preprocess nomRef: separate citation, reference detail, publishing date
+        if(!StringUtils.isEmpty(nomRefStr)){
+            nomRefStr = nomRefStr.trim();
+            Matcher m = nomRefTokenizeP.matcher(nomRefStr);
+            if(m.matches()){
+                nomRefTitle = m.group(1);
+                nomRefDetail = m.group(2);
+                nomRefPupDate = m.group(3);
+
+                // nomRefDetail.replaceAll("[\\:\\.\\s]", ""); // TODO integrate into nomRefTokenizeP
+                Matcher m2 = nomRefPubYearExtractP.matcher(nomRefPupDate);
+                if(m2.matches()){
+                    nomRefPupYear = m2.group(2);
+                    if(nomRefPupYear.length() == 2 ){
+                        // it is an abbreviated year from the 19** years
+                        nomRefPupYear = "19" + nomRefPupYear;
+                    }
+                    nomRefTitle = nomRefTitle + ": " + nomRefDetail + ". " + nomRefPupYear + ".";
+                } else {
+                    logger.warn("Pub year not found in " + nomRefStr );
+                }
+
+            } else {
+                nomRefTitle = nomRefStr;
+            }
+        }
+
+
+        BotanicalName taxonName;
+        Map<String, AnnotationType> nameAnnotations = new HashMap<>();
+
+        if(titleCacheStr.endsWith(ANNOTATION_MARKER_STRING) && authorStr.endsWith(ANNOTATION_MARKER_STRING)){
+            nameAnnotations.put("Author abbreviation not checked.", AnnotationType.EDITORIAL());
+            titleCacheStr = titleCacheStr.replace(ANNOTATION_MARKER_STRING, "").trim();
+            authorStr = authorStr.replace(ANNOTATION_MARKER_STRING, "").trim();
+        }
+
+        if(!StringUtils.isEmpty(nomRefTitle)){
+            String referenceSeparator = nomRefTitle.startsWith("in ") ? " " : ", ";
+            String taxonFullNameStr = titleCacheStr + referenceSeparator + nomRefTitle;
+            logger.debug(":::::" + taxonFullNameStr);
+            taxonName = (BotanicalName) nameParser.parseReferencedName(taxonFullNameStr, NomenclaturalCode.ICNAFP, null);
         } else {
+            taxonName = (BotanicalName) nameParser.parseFullName(titleCacheStr, NomenclaturalCode.ICNAFP, null);
+        }
+
+        if (taxonName.isProtectedTitleCache()) {
+            logger.warn(line + "Name could not be parsed: " + titleCacheStr);
+        } else {
+
+            boolean doRestoreTitleCacheStr = false;
+            // Check titleCache
+            String generatedTitleCache = taxonName.getTitleCache();
+            if (!generatedTitleCache.trim().equals(titleCacheStr)) {
+                logger.warn(line + "The generated titleCache differs from the imported string : " + generatedTitleCache + " <> " + titleCacheStr + " will restore original titleCacheStr");
+                doRestoreTitleCacheStr = true;
+            }
             // Check Name
-            if (!taxonName.getNameCache().equals(nameStr)) {
+            if (!taxonName.getNameCache().trim().equals(nameStr)) {
                 logger.warn(line + "parsed nameCache differs from " + NAMESTRING + " : " + taxonName.getNameCache() + " <> " + nameStr);
             }
-            // Check Author
-            INomenclaturalReference nomRef = taxonName.getNomenclaturalReference();
-            if (!nomRef.getAuthorship().getTitleCache().equals(authorStr)) {
-                logger.warn(line + "parsed nomRef.authorship differs from " + AUTHORSTRING + " : " + nomRef.getAuthorship().getTitleCache() + " <> " + authorStr);
-                // preserve current titleCache
-                taxonName.setProtectedTitleCache(true);
-                try {
-                    nameParser.parseAuthors(taxonName, authorStr);
-                } catch (StringNotParsableException e) {
-                    logger.error("    " + authorStr + " can not be parsed");
-                }
+
+            //  Author
+            //nameParser.handleAuthors(taxonName, titleCacheStr, authorStr);
+            //if (!titleCacheStr.equals(taxonName.getTitleCache())) {
+            //    logger.warn(line + "titleCache has changed after setting authors, will restore original titleCacheStr");
+            //    doRestoreTitleCacheStr = true;
+            //}
+
+            if(doRestoreTitleCacheStr){
+                taxonName.setTitleCache(titleCacheStr, true);
             }
 
             // deduplicate
             replaceAuthorNamesAndNomRef(state, taxonName);
+
+            // Annotations
+            if(!nameAnnotations.isEmpty()){
+                for(String text : nameAnnotations.keySet()){
+                    taxonName.addAnnotation(Annotation.NewInstance(text, nameAnnotations.get(text), Language.DEFAULT()));
+                }
+                getNameService().save(taxonName);
+            }
         }
 
         Reference sec = state.getConfig().getSecReference();
@@ -150,14 +218,20 @@ public class IAPTExcelImport<CONFIG extends IAPTImportConfigurator> extends Simp
     /**
      * @param record
      * @param originalKey
+     * @param doUnescapeHtmlEntities
      * @return
      */
-    private String getValue(HashMap<String, String> record, String originalKey) {
+    private String getValue(HashMap<String, String> record, String originalKey, boolean doUnescapeHtmlEntities) {
         String value = record.get(originalKey);
         if (! StringUtils.isBlank(value)) {
-        	if (logger.isDebugEnabled()) { logger.debug(originalKey + ": " + value); }
+        	if (logger.isDebugEnabled()) {
+        	    logger.debug(originalKey + ": " + value);
+        	}
         	value = CdmUtils.removeDuplicateWhitespace(value.trim()).toString();
-        	return value;
+            if(doUnescapeHtmlEntities){
+                value = StringEscapeUtils.unescapeHtml(value);
+            }
+        	return value.trim();
         }else{
         	return null;
         }
@@ -174,7 +248,9 @@ public class IAPTExcelImport<CONFIG extends IAPTImportConfigurator> extends Simp
 	    boolean isSynonymOnly = false;
 
         String line = state.getCurrentLine() + ": ";
+        logger.setLevel(Level.DEBUG);
         HashMap<String, String> record = state.getOriginalRecord();
+        logger.debug(record.toString());
 
         Set<String> keys = record.keySet();
         for (String key: keys) {
@@ -183,6 +259,7 @@ public class IAPTExcelImport<CONFIG extends IAPTImportConfigurator> extends Simp
             }
         }
 
+        String reg_id = record.get(REGISTRATIONNO_PK);
         //higherTaxon
         TaxonNode higherTaxon = getHigherTaxon(record, (IAPTImportState)state);
 
@@ -219,7 +296,7 @@ public class IAPTExcelImport<CONFIG extends IAPTImportConfigurator> extends Simp
 
         ITaxonTreeNode rootNode = getClassification(state);
         for (String htn :  higherTaxaNames) {
-            htn = htn.trim();
+            htn = StringUtils.capitalize(htn.trim());
             Taxon higherTaxon = state.getHigherTaxon(htn);
             if (higherTaxon != null){
                 higherTaxonNode = higherTaxon.getTaxonNodes().iterator().next();
@@ -227,52 +304,57 @@ public class IAPTExcelImport<CONFIG extends IAPTImportConfigurator> extends Simp
                 BotanicalName name = makeHigherTaxonName(state, htn);
                 Reference sec = state.getSecReference();
                 higherTaxon = Taxon.NewInstance(name, sec);
+                getTaxonService().save(higherTaxon);
                 higherTaxonNode = rootNode.addChildTaxon(higherTaxon, sec, null);
                 state.putHigherTaxon(htn, higherTaxon);
-                rootNode = higherTaxonNode;
+                getClassificationService().saveTreeNode(higherTaxonNode);
             }
+            rootNode = higherTaxonNode;
         }
         return higherTaxonNode;
     }
 
     private BotanicalName makeHigherTaxonName(IAPTImportState state, String name) {
-        // Abteilung: -phyta (bei Pflanzen), -mycota (bei Pilzen)
-        // Unterabteilung: -phytina (bei Pflanzen), -mycotina (bei Pilzen)
-        // Klasse: -opsida (bei Pflanzen), -phyceae (bei Algen), -mycetes (bei Pilzen)
-        // Unterklasse: -idae (bei Pflanzen), -phycidae (bei Algen), -mycetidae (bei Pilzen)
-        // Ordnung: -ales
-        // Unterordnung: -ineae
-        // Familie: -aceae
-        // Unterfamilie: -oideae
-        // Tribus: -eae
-        // Subtribus: -inae
-        Rank rank = Rank.UNKNOWN_RANK();
-        if(name.matches("phyta$|mycota$")){
-            rank = Rank.SECTION_BOTANY();
-        } else if(name.matches("phytina$|mycotina$")){
-            rank = Rank.SUBSECTION_BOTANY();
-        } else if(name.matches("opsida$|phyceae$|mycetes$")){
-            rank = Rank.CLASS();
-        } else if(name.matches("idae$|phycidae$|mycetidae$")){
-            rank = Rank.SUBCLASS();
-        } else if(name.matches("ales$")){
-            rank = Rank.ORDER();
-        } else if(name.matches("ineae$")){
-            rank = Rank.SUBORDER();
-        } else if(name.matches("aceae$")){
-            rank = Rank.FAMILY();
-        } else if(name.matches("oideae$")){
-            rank = Rank.SUBFAMILY();
-        } else if(name.matches("eae$")){
-            rank = Rank.TRIBE();
-        } else if(name.matches("inae$")){
-            rank = Rank.SUBTRIBE();
-        }
+
+        Rank rank = guessRank(name);
 
         BotanicalName taxonName = BotanicalName.NewInstance(rank);
         taxonName.addSource(makeOriginalSource(state));
         taxonName.setGenusOrUninomial(StringUtils.capitalize(name));
         return taxonName;
+    }
+
+    private Rank guessRank(String name) {
+
+        // normalize
+        name = name.replaceAll("\\(.*\\)", "").trim();
+
+        if(name.matches("^Plantae$|^Fungi$|^Musci$")){
+           return Rank.KINGDOM();
+        } else if(name.matches(".*incertae sedis$|^Fossil no group assigned$")){
+           return Rank.FAMILY();
+        } else if(name.matches(".*phyta$|.*mycota$")){
+           return Rank.SECTION_BOTANY();
+        } else if(name.matches(".*phytina$|.*mycotina$")){
+           return Rank.SUBSECTION_BOTANY();
+        } else if(name.matches(".*opsida$|.*phyceae$|.*mycetes$|.*ones$")){
+           return Rank.CLASS();
+        } else if(name.matches(".*idae$|.*phycidae$|.*mycetidae$")){
+           return Rank.SUBCLASS();
+        } else if(name.matches(".*ales$")){
+           return Rank.ORDER();
+        } else if(name.matches(".*ineae$")){
+           return Rank.SUBORDER();
+        } else if(name.matches(".*oideae$")){
+           return Rank.SUBFAMILY();
+        } else if(name.matches(".*eae$")){
+           return Rank.TRIBE();
+        } else if(name.matches(".*inae$")){
+           return Rank.SUBTRIBE();
+        } else if(name.matches(".*ae$")){
+           return Rank.FAMILY();
+        }
+        return Rank.UNKNOWN_RANK();
     }
 
 

@@ -13,6 +13,8 @@ import java.io.File;
 import java.net.URI;
 import java.util.UUID;
 
+import eu.etaxonomy.cdm.database.DatabaseTypeEnum;
+import org.apache.log4j.Appender;
 import org.apache.log4j.Logger;
 
 import eu.etaxonomy.cdm.app.common.CdmDestinations;
@@ -23,6 +25,7 @@ import eu.etaxonomy.cdm.io.common.IImportConfigurator.CHECK;
 import eu.etaxonomy.cdm.io.iapt.IAPTImportConfigurator;
 import eu.etaxonomy.cdm.model.reference.Reference;
 import eu.etaxonomy.cdm.model.reference.ReferenceFactory;
+import org.apache.log4j.RollingFileAppender;
 
 
 /**
@@ -34,11 +37,17 @@ public class IAPTActivator {
     private static final Logger logger = Logger.getLogger(IAPTActivator.class);
 
     //database validation status (create, update, validate ...)
-    static DbSchemaValidation hbm2dll = DbSchemaValidation.VALIDATE;
+    static DbSchemaValidation hbm2dll = DbSchemaValidation.CREATE;
 
-    static final ICdmDataSource cdmDestination = CdmDestinations.localH2();
-//  static final ICdmDataSource cdmDestination = CdmDestinations.cdm_test_local_mysql_test();
-//    static final ICdmDataSource cdmDestination = CdmDestinations.cdm_cuba_production();
+    static ICdmDataSource cdmDestination = null;
+    static {
+        DatabaseTypeEnum dbType = DatabaseTypeEnum.MySQL;
+        String cdmServer = "127.0.0.1";
+        String cdmDB = "cdm_algea_registry";
+        String cdmUserName = "edit";
+        cdmDestination =  CdmDestinations.makeDestination(dbType, cdmServer, cdmDB, -1, cdmUserName, null);
+        // cdmDestination = CdmDestinations.localH2();
+    }
 
     static boolean invers = true;
 
@@ -110,7 +119,7 @@ public class IAPTActivator {
 
 
     public static URI iapt() {
-        File f = new File("~/data/Projekte/Algea Name Registry/registry/sources/IAPT/Registration_DB_from_BGBM17-cleaned.xls");
+        File f = new File(System.getProperty("user.home") + "/data/Projekte/Algea Name Registry/registry/sources/IAPT/Registration_DB_from_BGBM17-cleaned.xls");
         return f.toURI();
     }
 
@@ -118,6 +127,7 @@ public class IAPTActivator {
      * @param args
      */
     public static void main(String[] args) {
+
         IAPTActivator me = new IAPTActivator();
         me.doImport(cdmDestination);
     }
