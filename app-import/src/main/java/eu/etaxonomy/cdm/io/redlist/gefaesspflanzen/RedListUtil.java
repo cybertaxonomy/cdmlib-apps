@@ -49,6 +49,8 @@ public class RedListUtil {
     public static final UUID uuidRankSubproles = UUID.fromString("47bd1439-c2ba-4c4e-994f-9c60853258f8");
     public static final UUID uuidRankModification = UUID.fromString("1c6e16f5-f7a5-41a5-9cc4-53c1438478c9");
     public static final UUID uuidRankLusus = UUID.fromString("4c8e12f6-2c16-4eda-a7d9-2fd247dcce789");
+    public static final UUID uuidRankSubspeciesPrincipes = UUID.fromString("b6b9351b-6beb-431d-8c7a-d30fe0cf3a90");
+    public static final UUID uuidRankCombination = UUID.fromString("ec2c580e-416a-4ecf-85df-d03641f3bd64");
 
     public static final String NAME_NAMESPACE = "name";
     public static final String AUTHOR_NAMESPACE = "author";
@@ -124,6 +126,10 @@ public class RedListUtil {
 
     public static void logMessage(long id, String message, Logger logger){
         logger.error(NAMNR+": "+id+" "+message);
+    }
+
+    public static void logInfoMessage(long id, String message, Logger logger){
+        logger.info(NAMNR+": "+id+" "+message);
     }
 
 }

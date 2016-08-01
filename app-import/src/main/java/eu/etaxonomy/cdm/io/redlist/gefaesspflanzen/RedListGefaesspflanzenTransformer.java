@@ -88,6 +88,7 @@ public final class RedListGefaesspflanzenTransformer extends InputTransformerBas
         else if (key.equals("nom. nud.")){return NomenclaturalStatusType.NUDUM();}
         else if (key.equals("nom. dub.")){return NomenclaturalStatusType.DOUBTFUL();}
         else if (key.equals("nom. rejic.")){return NomenclaturalStatusType.REJECTED();}
+        else if (key.startsWith("nom. rejic. (")){return NomenclaturalStatusType.REJECTED();}
         else if (key.equals("nom. rejic. prop.")){return NomenclaturalStatusType.REJECTED_PROP();}
         else if (key.equals("nom. utique rejic.")){return NomenclaturalStatusType.UTIQUE_REJECTED();}
         else if (key.equals("nom. utique rejic. pro.")){return NomenclaturalStatusType.UTIQUE_REJECTED_PROP();}
