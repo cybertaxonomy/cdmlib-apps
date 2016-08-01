@@ -195,6 +195,7 @@ public class RedListGefaesspflanzenImportNames extends DbImportBase<RedListGefae
 
         long id = rs.getLong(RedListUtil.NAMNR);
         String taxNameString = rs.getString(RedListUtil.TAXNAME);
+        String epi1String = rs.getString(RedListUtil.EPI1);
         String gueltString = rs.getString(RedListUtil.GUELT);
         String trivialString = rs.getString(RedListUtil.TRIVIAL);
         String authorBasiString = rs.getString(RedListUtil.AUTOR_BASI);
@@ -237,7 +238,7 @@ public class RedListGefaesspflanzenImportNames extends DbImportBase<RedListGefae
         addAnnotation(RedListUtil.WISSK+": "+wisskString, taxonBase);
 
         //check taxon name consistency
-        checkTaxonConsistency(id, taxNameString, hybString, taxonBase, state);
+        checkTaxonConsistency(id, taxNameString, hybString, epi1String, taxonBase, state);
         return taxonBase;
     }
 
@@ -420,9 +421,13 @@ public class RedListGefaesspflanzenImportNames extends DbImportBase<RedListGefae
                         String[] split = ep2String.split(RedListUtil.HYB_SIGN);
                         String hybridFormula1 = ep1String+" "+split[0].trim();
                         String hybridFormula2 = ep1String+" "+split[1].trim();
-                        //check if the specific epithets are from the same genus or not like e.g. EPI2 = pratensis × Lolium multiflorum
+                        //check if the genus is mentioned in EP2 or not
                         String[] secondHybrid = split[1].trim().split(" ");
-                        if(secondHybrid.length>1 && secondHybrid[0].matches("[A-Z].*")){
+                        //check if the genus is abbreviated like e.g. Centaurea jacea × C. decipiens
+                        if(secondHybrid.length>1 && secondHybrid[0].matches("[A-Z]\\.")){
+                            hybridFormula2 = ep1String+" "+split[1].trim().substring(2);
+                        }
+                        else if(secondHybrid.length>1 && secondHybrid[0].matches("[A-Z].*")){
                             hybridFormula2 = split[1];
                         }
                         if(CdmUtils.isNotBlank(ep3String)){
@@ -436,6 +441,15 @@ public class RedListGefaesspflanzenImportNames extends DbImportBase<RedListGefae
                         String[] split = ep3String.split(RedListUtil.HYB_SIGN);
                         String hybridFormula1 = ep1String+" "+ep2String+" "+split[0];
                         String hybridFormula2 = ep1String+" "+ep2String+" "+split[1];
+                        //check if the genus is mentioned in EP3 or not
+                        String[] secondHybrid = split[1].trim().split(" ");
+                        //check if the genus is abbreviated like e.g. Centaurea jacea jacea × C. jacea subsp. decipiens
+                        if(secondHybrid.length>1 && secondHybrid[0].matches("[A-Z]\\.")){
+                            hybridFormula2 = ep1String+" "+split[1].trim().substring(2);
+                        }
+                        else if(secondHybrid.length>1 && secondHybrid[0].matches("[A-Z].*")){
+                            hybridFormula2 = split[1];
+                        }
                         String fullFormula = hybridFormula1+" "+RedListUtil.HYB_SIGN+" "+hybridFormula2;
                         name = NonViralNameParserImpl.NewInstance().parseFullName(fullFormula, NomenclaturalCode.ICNAFP, rank);
                     }
@@ -502,7 +516,12 @@ public class RedListGefaesspflanzenImportNames extends DbImportBase<RedListGefae
         }
     }
 
-    private void checkTaxonConsistency(long id, String taxNameString, String hybString, TaxonBase<?> taxonBase, RedListGefaesspflanzenImportState state) {
+    private void checkTaxonConsistency(long id, String taxNameString, String hybString, String epi1String, TaxonBase<?> taxonBase, RedListGefaesspflanzenImportState state) {
+        if(taxNameString.split(RedListUtil.HYB_SIGN).length>2){
+            RedListUtil.logMessage(id, "multiple hybrid signs. No name check for "+taxNameString, logger);
+            return;
+        }
+
         String nameCache = HibernateProxyHelper.deproxy(taxonBase.getName(), NonViralName.class).getNameCache().trim();
         taxNameString = taxNameString.trim();
         taxNameString = taxNameString.replaceAll(" +", " ");
@@ -520,6 +539,18 @@ public class RedListGefaesspflanzenImportNames extends DbImportBase<RedListGefae
         }
         else if(hybString.equals(RedListUtil.HYB_GF)){
             taxNameString = taxNameString.replace(" "+RedListUtil.HYB_SIGN, " x");
+        }
+        else if(hybString.equals(RedListUtil.HYB_XF)){
+            nameCache = taxonBase.getName().getTitleCache();
+            if(nameCache.contains("sec")){
+                nameCache = nameCache.substring(0, nameCache.indexOf("sec"));
+            }
+            if(taxNameString.matches((".*[A-Z]\\..*"))){
+                taxNameString = taxNameString.replaceAll("[A-Z]\\.", epi1String);
+            }
+            if(taxNameString.matches((".*"+RedListUtil.HYB_SIGN+"\\s[a-z].*"))){
+                taxNameString = taxNameString.replaceAll(RedListUtil.HYB_SIGN+" ", RedListUtil.HYB_SIGN+" "+epi1String+" ");
+            }
         }
 
         if(taxNameString.endsWith("- Gruppe")){
@@ -564,6 +595,15 @@ public class RedListGefaesspflanzenImportNames extends DbImportBase<RedListGefae
             }
             else if(rankStr.equals("SAM")){
                 return getRank(state, RedListUtil.uuidRankCollectionSpecies, "Collective Species", "Collective Species", "\"Coll. Species\"", (OrderedTermVocabulary<Rank>) Rank.GENUS().getVocabulary(), null, RankClass.SpeciesGroup);
+            }
+            else if(rankStr.equals("SPR")){
+                return getRank(state, RedListUtil.uuidRankSubproles, "Subproles", "Subproles", "subproles", (OrderedTermVocabulary<Rank>) Rank.GENUS().getVocabulary(), null, RankClass.Infraspecific);
+            }
+            else if(rankStr.equals("MOD")){
+                return getRank(state, RedListUtil.uuidRankModification, "Modification", "Modification", "modificatio", (OrderedTermVocabulary<Rank>) Rank.GENUS().getVocabulary(), null, RankClass.Infraspecific);
+            }
+            else if(rankStr.equals("LUS")){
+                return getRank(state, RedListUtil.uuidRankLusus, "Lusus", "Lusus", "lusus", (OrderedTermVocabulary<Rank>) Rank.GENUS().getVocabulary(), null, RankClass.Infraspecific);
             }
             else{
                 rank = state.getTransformer().getRankByKey(rankStr);
