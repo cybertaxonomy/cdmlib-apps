@@ -17,6 +17,7 @@ import eu.etaxonomy.cdm.model.name.*;
 import eu.etaxonomy.cdm.model.reference.Reference;
 import eu.etaxonomy.cdm.model.taxon.*;
 import eu.etaxonomy.cdm.strategy.parser.NonViralNameParserImpl;
+import org.apache.commons.lang.ArrayUtils;
 import org.apache.commons.lang.StringEscapeUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Level;
@@ -66,8 +67,10 @@ public class IAPTExcelImport<CONFIG extends IAPTImportConfigurator> extends Simp
     private static final Pattern nomRefTokenizeP = Pattern.compile("^(.*):\\s([^\\.:]+)\\.(.*)$");
     private static final Pattern nomRefPubYearExtractP = Pattern.compile("(.*?)(1[7,8,9][0-9]{2}).*$|^.*?[0-9]{1,2}([\\./])[0-1]?[0-9]\\3([0-9]{2})\\.$"); // 1700 - 1999
 
+    private MarkerType markerTypeFossil = null;
+
     private Taxon makeTaxon(HashMap<String, String> record, SimpleExcelTaxonImportState<CONFIG> state,
-                            TaxonNode higherTaxonNode, boolean isSynonym) {
+                            TaxonNode higherTaxonNode, boolean isSynonym, boolean isFossil) {
 
         String line = state.getCurrentLine() + ": ";
 
@@ -75,6 +78,7 @@ public class IAPTExcelImport<CONFIG extends IAPTImportConfigurator> extends Simp
         String nameStr = getValue(record, NAMESTRING, true);
         String authorStr = getValue(record, AUTHORSTRING, true);
         String nomRefStr = getValue(record, LITSTRING, true);
+        String authorsSpelling = getValue(record, AUTHORSSPELLING, true);
 
         String nomRefTitle = null;
         String nomRefDetail = null;
@@ -94,6 +98,12 @@ public class IAPTExcelImport<CONFIG extends IAPTImportConfigurator> extends Simp
                 Matcher m2 = nomRefPubYearExtractP.matcher(nomRefPupDate);
                 if(m2.matches()){
                     nomRefPupYear = m2.group(2);
+                    if(nomRefPupYear == null){
+                        nomRefPupYear = m2.group(4);
+                    }
+                    if(nomRefPupYear == null){
+                        logger.error("nomRefPupYear in " + nomRefStr + " is  NULL" );
+                    }
                     if(nomRefPupYear.length() == 2 ){
                         // it is an abbreviated year from the 19** years
                         nomRefPupYear = "19" + nomRefPupYear;
@@ -108,16 +118,19 @@ public class IAPTExcelImport<CONFIG extends IAPTImportConfigurator> extends Simp
             }
         }
 
-
         BotanicalName taxonName;
+        // cache field for the taxonName.titleCache
+        String taxonNameTitleCache = null;
         Map<String, AnnotationType> nameAnnotations = new HashMap<>();
 
-        if(titleCacheStr.endsWith(ANNOTATION_MARKER_STRING) && authorStr.endsWith(ANNOTATION_MARKER_STRING)){
+        // TitleCache preprocessing
+        if(titleCacheStr.endsWith(ANNOTATION_MARKER_STRING) || authorStr.endsWith(ANNOTATION_MARKER_STRING)){
             nameAnnotations.put("Author abbreviation not checked.", AnnotationType.EDITORIAL());
             titleCacheStr = titleCacheStr.replace(ANNOTATION_MARKER_STRING, "").trim();
             authorStr = authorStr.replace(ANNOTATION_MARKER_STRING, "").trim();
         }
 
+        // parse the full taxon name
         if(!StringUtils.isEmpty(nomRefTitle)){
             String referenceSeparator = nomRefTitle.startsWith("in ") ? " " : ", ";
             String taxonFullNameStr = titleCacheStr + referenceSeparator + nomRefTitle;
@@ -127,20 +140,21 @@ public class IAPTExcelImport<CONFIG extends IAPTImportConfigurator> extends Simp
             taxonName = (BotanicalName) nameParser.parseFullName(titleCacheStr, NomenclaturalCode.ICNAFP, null);
         }
 
+        taxonNameTitleCache = taxonName.getTitleCache().trim();
         if (taxonName.isProtectedTitleCache()) {
             logger.warn(line + "Name could not be parsed: " + titleCacheStr);
         } else {
 
             boolean doRestoreTitleCacheStr = false;
             // Check titleCache
-            String generatedTitleCache = taxonName.getTitleCache();
-            if (!generatedTitleCache.trim().equals(titleCacheStr)) {
-                logger.warn(line + "The generated titleCache differs from the imported string : " + generatedTitleCache + " <> " + titleCacheStr + " will restore original titleCacheStr");
+            if (!taxonNameTitleCache.equals(titleCacheStr)) {
+                logger.warn(line + "The generated titleCache differs from the imported string : " + taxonNameTitleCache + " <> " + titleCacheStr + " will restore original titleCacheStr");
                 doRestoreTitleCacheStr = true;
             }
             // Check Name
-            if (!taxonName.getNameCache().trim().equals(nameStr)) {
-                logger.warn(line + "parsed nameCache differs from " + NAMESTRING + " : " + taxonName.getNameCache() + " <> " + nameStr);
+            String nameCache = taxonName.getNameCache();
+            if (!nameCache.trim().equals(nameStr)) {
+                logger.warn(line + "parsed nameCache differs from " + NAMESTRING + " : " + nameCache + " <> " + nameStr);
             }
 
             //  Author
@@ -156,18 +170,50 @@ public class IAPTExcelImport<CONFIG extends IAPTImportConfigurator> extends Simp
 
             // deduplicate
             replaceAuthorNamesAndNomRef(state, taxonName);
+        }
 
-            // Annotations
-            if(!nameAnnotations.isEmpty()){
-                for(String text : nameAnnotations.keySet()){
-                    taxonName.addAnnotation(Annotation.NewInstance(text, nameAnnotations.get(text), Language.DEFAULT()));
-                }
-                getNameService().save(taxonName);
+        // Annotations
+        if(!nameAnnotations.isEmpty()){
+            for(String text : nameAnnotations.keySet()){
+                taxonName.addAnnotation(Annotation.NewInstance(text, nameAnnotations.get(text), Language.DEFAULT()));
             }
+            getNameService().save(taxonName);
+        }
+
+        // Namerelations
+        if(!StringUtils.isEmpty(authorsSpelling)){
+            authorsSpelling = authorsSpelling.replaceFirst("Author's spelling:", "").replaceAll("\"", "").trim();
+
+            String[] authorSpellingTokens = StringUtils.split(authorsSpelling, " ");
+            String[] nameStrTokens = StringUtils.split(nameStr, " ");
+
+            ArrayUtils.reverse(authorSpellingTokens);
+            ArrayUtils.reverse(nameStrTokens);
+
+            for (int i = 0; i < nameStrTokens.length; i++){
+                if(i < authorSpellingTokens.length){
+                    nameStrTokens[i] = authorSpellingTokens[i];
+                }
+            }
+            ArrayUtils.reverse(nameStrTokens);
+
+            String misspelledNameStr = StringUtils.join (nameStrTokens, ' ');
+            // build the fullnameString of the misspelled name
+            misspelledNameStr = taxonNameTitleCache.replace(nameStr, misspelledNameStr);
+
+            TaxonNameBase misspelledName = (BotanicalName) nameParser.parseReferencedName(misspelledNameStr, NomenclaturalCode.ICNAFP, null);
+            misspelledName.addRelationshipToName(taxonName, NameRelationshipType.MISSPELLING(), null);
+            getNameService().save(misspelledName);
         }
 
         Reference sec = state.getConfig().getSecReference();
         Taxon taxon = Taxon.NewInstance(taxonName, sec);
+
+        // Markers
+        if(isFossil){
+            taxon.addMarker(Marker.NewInstance(markerTypeFossil(), true));
+        }
+
         getTaxonService().save(taxon);
         if(higherTaxonNode != null){
             higherTaxonNode.addChildTaxon(taxon, null, null);
@@ -260,11 +306,18 @@ public class IAPTExcelImport<CONFIG extends IAPTImportConfigurator> extends Simp
         }
 
         String reg_id = record.get(REGISTRATIONNO_PK);
+
         //higherTaxon
-        TaxonNode higherTaxon = getHigherTaxon(record, (IAPTImportState)state);
+        String higherTaxaString = record.get(HIGHERTAXON);
+        boolean isFossil = false;
+        if(higherTaxaString.startsWith("FOSSIL ")){
+            higherTaxaString = higherTaxaString.replace("FOSSIL ", "");
+            isFossil = true;
+        }
+        TaxonNode higherTaxon = getHigherTaxon(higherTaxaString, (IAPTImportState)state);
 
        //Taxon
-        Taxon taxon = makeTaxon(record, state, higherTaxon, isSynonymOnly);
+        Taxon taxon = makeTaxon(record, state, higherTaxon, isSynonymOnly, isFossil);
         if (taxon == null && ! isSynonymOnly){
             logger.warn(line + "taxon could not be created and is null");
             return;
@@ -281,8 +334,8 @@ public class IAPTExcelImport<CONFIG extends IAPTImportConfigurator> extends Simp
 		return;
     }
 
-    private TaxonNode getHigherTaxon(HashMap<String, String> record, IAPTImportState state) {
-        String higherTaxaString = record.get(HIGHERTAXON);
+    private TaxonNode getHigherTaxon(String higherTaxaString, IAPTImportState state) {
+
         // higherTaxaString is like
         // - DICOTYLEDONES: LEGUMINOSAE: MIMOSOIDEAE
         // - FOSSIL DICOTYLEDONES: PROTEACEAE
@@ -374,6 +427,14 @@ public class IAPTExcelImport<CONFIG extends IAPTImportConfigurator> extends Simp
             state.putReference(uuidRef, ref);
         }
         return ref;
+    }
+
+    private MarkerType markerTypeFossil(){
+        if(this.markerTypeFossil == null){
+            markerTypeFossil = MarkerType.NewInstance("isFossilTaxon", "isFossil", null);
+            getTermService().save(this.markerTypeFossil);
+        }
+        return markerTypeFossil;
     }
 
 
