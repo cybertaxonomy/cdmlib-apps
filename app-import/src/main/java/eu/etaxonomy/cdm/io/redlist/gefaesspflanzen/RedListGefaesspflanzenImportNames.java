@@ -416,7 +416,7 @@ public class RedListGefaesspflanzenImportNames extends DbImportBase<RedListGefae
                 else if(hybString.equals(RedListUtil.HYB_XF) || hybString.equals(RedListUtil.HYB_XU)){
                     name.setHybridFormula(true);
                     if(ep1String.contains(RedListUtil.HYB_SIGN)){
-                        RedListUtil.logMessage(id, "EPI1 has hybrid signs but with flag: "+RedListUtil.HYB_XF, logger);
+                        name = NonViralNameParserImpl.NewInstance().parseFullName(ep1String, NomenclaturalCode.ICNAFP, rank);
                     }
                     else if(ep2String.contains(RedListUtil.HYB_SIGN)){
                         String[] split = ep2String.split(RedListUtil.HYB_SIGN);
@@ -528,9 +528,6 @@ public class RedListGefaesspflanzenImportNames extends DbImportBase<RedListGefae
         taxNameString = taxNameString.trim();
         taxNameString = taxNameString.replaceAll(" +", " ");
 
-        if(taxNameString.endsWith("agg.")){
-            taxNameString = taxNameString.replace("agg.", "aggr.");
-        }
 
         if(hybString.equals(RedListUtil.HYB_X) || hybString.equals(RedListUtil.HYB_N)){
             taxNameString = taxNameString.replace(" "+RedListUtil.HYB_SIGN+" ", " "+RedListUtil.HYB_SIGN);//hybrid sign has no space after it in titleCache for binomial hybrids
@@ -562,7 +559,9 @@ public class RedListGefaesspflanzenImportNames extends DbImportBase<RedListGefae
             taxNameString = taxNameString.replaceAll("- group", "species group");
         }
 
+        taxNameString = taxNameString.replace("agg.", "aggr.");
         taxNameString = taxNameString.replace("[ranglos]", "[unranked]");
+
         if(taxonBase.getName().getRank()!=null){
             if(taxonBase.getName().getRank().equals(Rank.PROLES())){
                 taxNameString = taxNameString.replace("proles", "prol.");
