@@ -197,6 +197,8 @@ public class RedListGefaesspflanzenImportNames extends DbImportBase<RedListGefae
         long id = rs.getLong(RedListUtil.NAMNR);
         String taxNameString = rs.getString(RedListUtil.TAXNAME);
         String epi1String = rs.getString(RedListUtil.EPI1);
+        String epi2String = rs.getString(RedListUtil.EPI2);
+        String epi3String = rs.getString(RedListUtil.EPI3);
         String gueltString = rs.getString(RedListUtil.GUELT);
         String trivialString = rs.getString(RedListUtil.TRIVIAL);
         String authorBasiString = rs.getString(RedListUtil.AUTOR_BASI);
@@ -239,7 +241,7 @@ public class RedListGefaesspflanzenImportNames extends DbImportBase<RedListGefae
         addAnnotation(RedListUtil.WISSK+": "+wisskString, taxonBase);
 
         //check taxon name consistency
-        checkTaxonConsistency(id, taxNameString, hybString, epi1String, taxonBase, state);
+        checkTaxonConsistency(id, taxNameString, hybString, epi1String, epi2String, epi3String, taxonBase, state);
         return taxonBase;
     }
 
@@ -415,45 +417,8 @@ public class RedListGefaesspflanzenImportNames extends DbImportBase<RedListGefae
                 }
                 else if(hybString.equals(RedListUtil.HYB_XF) || hybString.equals(RedListUtil.HYB_XU)){
                     name.setHybridFormula(true);
-                    if(ep1String.contains(RedListUtil.HYB_SIGN)){
-                        name = NonViralNameParserImpl.NewInstance().parseFullName(ep1String, NomenclaturalCode.ICNAFP, rank);
-                    }
-                    else if(ep2String.contains(RedListUtil.HYB_SIGN)){
-                        String[] split = ep2String.split(RedListUtil.HYB_SIGN);
-                        String hybridFormula1 = ep1String+" "+split[0].trim();
-                        String hybridFormula2 = ep1String+" "+split[1].trim();
-                        //check if the genus is mentioned in EP2 or not
-                        String[] secondHybrid = split[1].trim().split(" ");
-                        //check if the genus is abbreviated like e.g. Centaurea jacea × C. decipiens
-                        if(secondHybrid.length>1 && secondHybrid[0].matches("[A-Z]\\.")){
-                            hybridFormula2 = ep1String+" "+split[1].trim().substring(2);
-                        }
-                        else if(secondHybrid.length>1 && secondHybrid[0].matches("[A-Z].*")){
-                            hybridFormula2 = split[1];
-                        }
-                        if(CdmUtils.isNotBlank(ep3String)){
-                            hybridFormula1 += " "+rank.getAbbreviation()+" "+ep3String;
-                            hybridFormula2 += " "+rank.getAbbreviation()+" "+ep3String;
-                        }
-                        String fullFormula = hybridFormula1+" "+RedListUtil.HYB_SIGN+" "+hybridFormula2;
-                        name = NonViralNameParserImpl.NewInstance().parseFullName(fullFormula, NomenclaturalCode.ICNAFP, rank);
-                    }
-                    else if(ep3String.contains(RedListUtil.HYB_SIGN)){
-                        String[] split = ep3String.split(RedListUtil.HYB_SIGN);
-                        String hybridFormula1 = ep1String+" "+ep2String+" "+rank.getAbbreviation()+" "+split[0];
-                        String hybridFormula2 = ep1String+" "+ep2String+" "+rank.getAbbreviation()+" "+split[1];
-                        //check if the genus is mentioned in EP3 or not
-                        String[] secondHybrid = split[1].trim().split(" ");
-                        //check if the genus is abbreviated like e.g. Centaurea jacea jacea × C. jacea subsp. decipiens
-                        if(secondHybrid.length>1 && secondHybrid[0].matches("[A-Z]\\.")){
-                            hybridFormula2 = ep1String+" "+split[1].trim().substring(2);
-                        }
-                        else if(secondHybrid.length>1 && secondHybrid[0].matches("[A-Z].*")){
-                            hybridFormula2 = split[1];
-                        }
-                        String fullFormula = hybridFormula1+" "+RedListUtil.HYB_SIGN+" "+hybridFormula2;
-                        name = NonViralNameParserImpl.NewInstance().parseFullName(fullFormula, NomenclaturalCode.ICNAFP, rank);
-                    }
+                    String fullFormula = buildHybridFormula(ep1String, ep2String, ep3String, rank);
+                    name = NonViralNameParserImpl.NewInstance().parseFullName(fullFormula, NomenclaturalCode.ICNAFP, rank);
                 }
                 else if(hybString.equals(RedListUtil.HYB_N)){
                     name = NonViralNameParserImpl.NewInstance().parseFullName(taxNameString, NomenclaturalCode.ICNAFP, rank);
@@ -480,6 +445,48 @@ public class RedListGefaesspflanzenImportNames extends DbImportBase<RedListGefae
 
         namesToSave.add(name);
         return name;
+    }
+
+    private String buildHybridFormula(String ep1String, String ep2String, String ep3String, Rank rank) {
+        String fullFormula = null;
+        if(ep1String.contains(RedListUtil.HYB_SIGN)){
+            fullFormula = ep1String;
+        }
+        else if(ep2String.contains(RedListUtil.HYB_SIGN)){
+            String[] split = ep2String.split(RedListUtil.HYB_SIGN);
+            String hybridFormula1 = ep1String+" "+split[0].trim();
+            String hybridFormula2 = ep1String+" "+split[1].trim();
+            //check if the genus is mentioned in EP2 or not
+            String[] secondHybrid = split[1].trim().split(" ");
+            //check if the genus is abbreviated like e.g. Centaurea jacea × C. decipiens
+            if(secondHybrid.length>1 && secondHybrid[0].matches("[A-Z]\\.")){
+                hybridFormula2 = ep1String+" "+split[1].trim().substring(3);
+            }
+            else if(secondHybrid.length>1 && secondHybrid[0].matches("[A-Z].*")){
+                hybridFormula2 = split[1].trim();
+            }
+            if(CdmUtils.isNotBlank(ep3String)){
+                hybridFormula1 += " "+rank.getAbbreviation()+" "+ep3String;
+                hybridFormula2 += " "+rank.getAbbreviation()+" "+ep3String;
+            }
+            fullFormula = hybridFormula1+" "+RedListUtil.HYB_SIGN+" "+hybridFormula2;
+        }
+        else if(ep3String.contains(RedListUtil.HYB_SIGN)){
+            String[] split = ep3String.split(RedListUtil.HYB_SIGN);
+            String hybridFormula1 = ep1String+" "+ep2String+" "+rank.getAbbreviation()+" "+split[0].trim();
+            String hybridFormula2 = ep1String+" "+ep2String+" "+rank.getAbbreviation()+" "+split[1].trim();
+            //check if the genus is mentioned in EP3 or not
+            String[] secondHybrid = split[1].trim().split(" ");
+            //check if the genus is abbreviated like e.g. Centaurea jacea jacea × C. jacea subsp. decipiens
+            if(secondHybrid.length>1 && secondHybrid[0].matches("[A-Z]\\.")){
+                hybridFormula2 = ep1String+" "+split[1].trim().substring(3);
+            }
+            else if(secondHybrid.length>1 && secondHybrid[0].matches("[A-Z].*")){
+                hybridFormula2 = split[1].trim();
+            }
+            fullFormula = hybridFormula1+" "+RedListUtil.HYB_SIGN+" "+hybridFormula2;
+        }
+        return fullFormula;
     }
 
     private void checkNameConsistency(long id, String nomZusatzString, String taxZusatzString,
@@ -518,7 +525,7 @@ public class RedListGefaesspflanzenImportNames extends DbImportBase<RedListGefae
         }
     }
 
-    private void checkTaxonConsistency(long id, String taxNameString, String hybString, String epi1String, TaxonBase<?> taxonBase, RedListGefaesspflanzenImportState state) {
+    private void checkTaxonConsistency(long id, String taxNameString, String hybString, String epi1String, String epi2String, String epi3String, TaxonBase<?> taxonBase, RedListGefaesspflanzenImportState state) {
         if(taxNameString.split(RedListUtil.HYB_SIGN).length>2){
             RedListUtil.logInfoMessage(id, "multiple hybrid signs. No name check for "+taxNameString, logger);
             return;
@@ -544,11 +551,11 @@ public class RedListGefaesspflanzenImportNames extends DbImportBase<RedListGefae
             if(nameCache.contains("sec")){
                 nameCache = nameCache.substring(0, nameCache.indexOf("sec"));
             }
-            if(taxNameString.matches((".*[A-Z]\\..*"))){
-                taxNameString = taxNameString.replaceAll("[A-Z]\\.", epi1String);
+            if(!STRICT_TITLE_CHECK){
+                taxNameString = buildHybridFormula(epi1String, epi2String, epi3String, taxonBase.getName().getRank());
             }
-            if(taxNameString.matches((".*"+RedListUtil.HYB_SIGN+"\\s[a-z].*"))){
-                taxNameString = taxNameString.replaceAll(RedListUtil.HYB_SIGN+" ", RedListUtil.HYB_SIGN+" "+epi1String+" ");
+            if(taxNameString.split(RedListUtil.HYB_SIGN).length==1){
+                taxNameString = taxNameString.replace(RedListUtil.HYB_SIGN+" ", RedListUtil.HYB_SIGN);
             }
         }
 
