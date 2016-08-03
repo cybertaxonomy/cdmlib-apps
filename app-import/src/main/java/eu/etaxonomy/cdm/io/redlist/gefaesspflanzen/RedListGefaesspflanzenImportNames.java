@@ -397,12 +397,6 @@ public class RedListGefaesspflanzenImportNames extends DbImportBase<RedListGefae
             }
             //hybrid
             if(CdmUtils.isNotBlank(hybString)){
-                //save hybrid formula
-                if(CdmUtils.isNotBlank(formelString)){
-                    Annotation annotation = Annotation.NewDefaultLanguageInstance(formelString);
-                    annotation.setAnnotationType(AnnotationType.TECHNICAL());
-                    name.addAnnotation(annotation);
-                }
                 //more than two hybrids not yet handled by name parser
                 //TODO: use parser when implemented to fully support hybrids
                 if(taxNameString.split(RedListUtil.HYB_SIGN).length>2){
@@ -436,6 +430,12 @@ public class RedListGefaesspflanzenImportNames extends DbImportBase<RedListGefae
                 }
                 else{
                     logger.error("HYB value "+hybString+" not yet handled");
+                }
+                //save hybrid formula
+                if(CdmUtils.isNotBlank(formelString)){
+                    Annotation annotation = Annotation.NewDefaultLanguageInstance(formelString);
+                    annotation.setAnnotationType(AnnotationType.TECHNICAL());
+                    name.addAnnotation(annotation);
                 }
             }
         }
