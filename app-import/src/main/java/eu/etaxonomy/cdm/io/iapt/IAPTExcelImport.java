@@ -68,6 +68,7 @@ public class IAPTExcelImport<CONFIG extends IAPTImportConfigurator> extends Simp
     private static final Pattern nomRefPubYearExtractP = Pattern.compile("(.*?)(1[7,8,9][0-9]{2}).*$|^.*?[0-9]{1,2}([\\./])[0-1]?[0-9]\\3([0-9]{2})\\.$"); // 1700 - 1999
 
     private MarkerType markerTypeFossil = null;
+    private Rank rankUnrankedPseudoClass = null;
 
     private Taxon makeTaxon(HashMap<String, String> record, SimpleExcelTaxonImportState<CONFIG> state,
                             TaxonNode higherTaxonNode, boolean isSynonym, boolean isFossil) {
@@ -79,6 +80,7 @@ public class IAPTExcelImport<CONFIG extends IAPTImportConfigurator> extends Simp
         String authorStr = getValue(record, AUTHORSTRING, true);
         String nomRefStr = getValue(record, LITSTRING, true);
         String authorsSpelling = getValue(record, AUTHORSSPELLING, true);
+        String notesTxt = getValue(record, NOTESTXT, true);
 
         String nomRefTitle = null;
         String nomRefDetail = null;
@@ -111,6 +113,8 @@ public class IAPTExcelImport<CONFIG extends IAPTImportConfigurator> extends Simp
                     nomRefTitle = nomRefTitle + ": " + nomRefDetail + ". " + nomRefPupYear + ".";
                 } else {
                     logger.warn("Pub year not found in " + nomRefStr );
+                    // FIXME in in J. Eur. Orchideen 30: 128. 30.09.97 (Vorabdr.).
+
                 }
 
             } else {
@@ -124,7 +128,7 @@ public class IAPTExcelImport<CONFIG extends IAPTImportConfigurator> extends Simp
         Map<String, AnnotationType> nameAnnotations = new HashMap<>();
 
         // TitleCache preprocessing
-        if(titleCacheStr.endsWith(ANNOTATION_MARKER_STRING) || authorStr.endsWith(ANNOTATION_MARKER_STRING)){
+        if(titleCacheStr.endsWith(ANNOTATION_MARKER_STRING) || (authorStr != null && authorStr.endsWith(ANNOTATION_MARKER_STRING))){
             nameAnnotations.put("Author abbreviation not checked.", AnnotationType.EDITORIAL());
             titleCacheStr = titleCacheStr.replace(ANNOTATION_MARKER_STRING, "").trim();
             authorStr = authorStr.replace(ANNOTATION_MARKER_STRING, "").trim();
@@ -146,15 +150,25 @@ public class IAPTExcelImport<CONFIG extends IAPTImportConfigurator> extends Simp
         } else {
 
             boolean doRestoreTitleCacheStr = false;
-            // Check titleCache
-            if (!taxonNameTitleCache.equals(titleCacheStr)) {
+
+            // Check if titleCache and nameCache are plausible
+            String titleCacheCompareStr = titleCacheStr;
+            String nameCache = taxonName.getNameCache();
+            String nameCompareStr = nameStr;
+            if(taxonName.isBinomHybrid()){
+                titleCacheCompareStr = titleCacheCompareStr.replace(" x ", " ×");
+                nameCompareStr = nameCompareStr.replace(" x ", " ×");
+            }
+            if(taxonName.isBinomHybrid()){
+                titleCacheCompareStr = titleCacheCompareStr.replaceAll("^X ", "× ");
+                nameCompareStr = nameCompareStr.replace("^X ", "× ");
+            }
+            if (!taxonNameTitleCache.equals(titleCacheCompareStr)) {
                 logger.warn(line + "The generated titleCache differs from the imported string : " + taxonNameTitleCache + " <> " + titleCacheStr + " will restore original titleCacheStr");
                 doRestoreTitleCacheStr = true;
             }
-            // Check Name
-            String nameCache = taxonName.getNameCache();
-            if (!nameCache.trim().equals(nameStr)) {
-                logger.warn(line + "parsed nameCache differs from " + NAMESTRING + " : " + nameCache + " <> " + nameStr);
+            if (!nameCache.trim().equals(nameCompareStr)) {
+                logger.warn(line + "The parsed nameCache differs from " + NAMESTRING + " : " + nameCache + " <> " + nameCompareStr);
             }
 
             //  Author
@@ -178,6 +192,10 @@ public class IAPTExcelImport<CONFIG extends IAPTImportConfigurator> extends Simp
                 taxonName.addAnnotation(Annotation.NewInstance(text, nameAnnotations.get(text), Language.DEFAULT()));
             }
             getNameService().save(taxonName);
+        }
+        if(!StringUtils.isEmpty(notesTxt)){
+            notesTxt = notesTxt.replace("Notes: ", "").trim();
+            taxonName.addAnnotation(Annotation.NewInstance(notesTxt, AnnotationType.EDITORIAL(), Language.DEFAULT()));
         }
 
         // Namerelations
@@ -228,34 +246,34 @@ public class IAPTExcelImport<CONFIG extends IAPTImportConfigurator> extends Simp
      * @param state
      * @return
      */
-    private TaxonNode getClassification(IAPTImportState state) {
+    private TaxonNode getClassificationRootNode(IAPTImportState state) {
 
-        Classification classification = state.getClassification();
-        if (classification == null){
-            IAPTImportConfigurator config = state.getConfig();
-            classification = Classification.NewInstance(state.getConfig().getClassificationName());
-            classification.setUuid(config.getClassificationUuid());
-            classification.setReference(config.getSecReference());
-            classification = getClassificationService().find(state.getConfig().getClassificationUuid());
-        }
+     //   Classification classification = state.getClassification();
+     //   if (classification == null){
+     //       IAPTImportConfigurator config = state.getConfig();
+     //       classification = Classification.NewInstance(state.getConfig().getClassificationName());
+     //       classification.setUuid(config.getClassificationUuid());
+     //       classification.setReference(config.getSecReference());
+     //       classification = getClassificationService().find(state.getConfig().getClassificationUuid());
+     //   }
         TaxonNode rootNode = state.getRootNode();
         if (rootNode == null){
             rootNode = getTaxonNodeService().find(ROOT_UUID);
         }
         if (rootNode == null){
-            Reference sec = state.getSecReference();
+            Classification classification = state.getClassification();
             if (classification == null){
+                Reference sec = state.getSecReference();
                 String classificationName = state.getConfig().getClassificationName();
-                //TODO
                 Language language = Language.DEFAULT();
                 classification = Classification.NewInstance(classificationName, sec, language);
                 state.setClassification(classification);
                 classification.setUuid(state.getConfig().getClassificationUuid());
                 classification.getRootNode().setUuid(ROOT_UUID);
+                getClassificationService().save(classification);
             }
-
-            getClassificationService().save(classification);
             rootNode = classification.getRootNode();
+            state.setRootNode(rootNode);
         }
         return rootNode;
     }
@@ -293,15 +311,15 @@ public class IAPTExcelImport<CONFIG extends IAPTImportConfigurator> extends Simp
 
 	    boolean isSynonymOnly = false;
 
-        String line = state.getCurrentLine() + ": ";
+        String lineNumber = state.getCurrentLine() + ": ";
         logger.setLevel(Level.DEBUG);
         HashMap<String, String> record = state.getOriginalRecord();
-        logger.debug(record.toString());
+        logger.debug(lineNumber + record.toString());
 
         Set<String> keys = record.keySet();
         for (String key: keys) {
             if (! expectedKeys.contains(key)){
-                logger.warn(line + "Unexpected Key: " + key);
+                logger.warn(lineNumber + "Unexpected Key: " + key);
             }
         }
 
@@ -319,13 +337,10 @@ public class IAPTExcelImport<CONFIG extends IAPTImportConfigurator> extends Simp
        //Taxon
         Taxon taxon = makeTaxon(record, state, higherTaxon, isSynonymOnly, isFossil);
         if (taxon == null && ! isSynonymOnly){
-            logger.warn(line + "taxon could not be created and is null");
+            logger.warn(lineNumber + "taxon could not be created and is null");
             return;
         }
         ((IAPTImportState)state).setCurrentTaxon(taxon);
-
-        //(Notas)
-        //makeNotes(record, state);
 
         //Syn.
         //makeSynonyms(record, state, !isSynonymOnly);
@@ -347,7 +362,7 @@ public class IAPTExcelImport<CONFIG extends IAPTImportConfigurator> extends Simp
         String[] higherTaxaNames = higherTaxaString.toLowerCase().replaceAll("[\\[\\]]", "").split(":");
         TaxonNode higherTaxonNode = null;
 
-        ITaxonTreeNode rootNode = getClassification(state);
+        ITaxonTreeNode rootNode = getClassificationRootNode(state);
         for (String htn :  higherTaxaNames) {
             htn = StringUtils.capitalize(htn.trim());
             Taxon higherTaxon = state.getHigherTaxon(htn);
@@ -382,15 +397,17 @@ public class IAPTExcelImport<CONFIG extends IAPTImportConfigurator> extends Simp
         // normalize
         name = name.replaceAll("\\(.*\\)", "").trim();
 
-        if(name.matches("^Plantae$|^Fungi$|^Musci$")){
+        if(name.matches("^Plantae$|^Fungi$")){
            return Rank.KINGDOM();
-        } else if(name.matches(".*incertae sedis$|^Fossil no group assigned$")){
+        } else if(name.matches("Incertae sedis$|^No group assigned$")){
            return Rank.FAMILY();
         } else if(name.matches(".*phyta$|.*mycota$")){
            return Rank.SECTION_BOTANY();
         } else if(name.matches(".*phytina$|.*mycotina$")){
            return Rank.SUBSECTION_BOTANY();
-        } else if(name.matches(".*opsida$|.*phyceae$|.*mycetes$|.*ones$")){
+        } else if(name.matches("Gymnospermae$|.*ones$")){ // Monocotyledones, Dicotyledones
+            return rankUnrankedPseudoClass();
+        } else if(name.matches(".*opsida$|.*phyceae$|.*mycetes$|.*ones$|^Musci$|^Hepaticae$")){
            return Rank.CLASS();
         } else if(name.matches(".*idae$|.*phycidae$|.*mycetidae$")){
            return Rank.SUBCLASS();
@@ -398,16 +415,29 @@ public class IAPTExcelImport<CONFIG extends IAPTImportConfigurator> extends Simp
            return Rank.ORDER();
         } else if(name.matches(".*ineae$")){
            return Rank.SUBORDER();
+        } else if(name.matches(".*aceae$")){
+            return Rank.FAMILY();
         } else if(name.matches(".*oideae$")){
            return Rank.SUBFAMILY();
-        } else if(name.matches(".*eae$")){
-           return Rank.TRIBE();
-        } else if(name.matches(".*inae$")){
+        } else
+        //    if(name.matches(".*eae$")){
+        //    return Rank.TRIBE();
+        // } else
+            if(name.matches(".*inae$")){
            return Rank.SUBTRIBE();
         } else if(name.matches(".*ae$")){
            return Rank.FAMILY();
         }
         return Rank.UNKNOWN_RANK();
+    }
+
+    private Rank rankUnrankedPseudoClass() {
+
+        if(rankUnrankedPseudoClass == null){
+            rankUnrankedPseudoClass = Rank.NewInstance(RankClass.Suprageneric, "Unranked pseudo class", " ", " ");
+            getTermService().save(rankUnrankedPseudoClass);
+        }
+        return rankUnrankedPseudoClass;
     }
 
 

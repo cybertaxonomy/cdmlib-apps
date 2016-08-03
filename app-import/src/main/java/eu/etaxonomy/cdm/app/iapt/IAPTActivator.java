@@ -13,6 +13,7 @@ import java.io.File;
 import java.net.URI;
 import java.util.UUID;
 
+import eu.etaxonomy.cdm.common.monitor.DefaultProgressMonitor;
 import eu.etaxonomy.cdm.database.DatabaseTypeEnum;
 import org.apache.log4j.Appender;
 import org.apache.log4j.Logger;
@@ -79,6 +80,7 @@ public class IAPTActivator {
         config.setDbSchemaValidation(hbm2dll);
         config.setSourceReferenceTitle(sourceReferenceTitle);
         config.setSecReference(secRef);
+        config.setProgressMonitor(DefaultProgressMonitor.NewInstance());
 
         CdmDefaultImport<IAPTImportConfigurator> myImport = new CdmDefaultImport<>();
 
@@ -119,7 +121,7 @@ public class IAPTActivator {
 
 
     public static URI iapt() {
-        File f = new File(System.getProperty("user.home") + "/data/Projekte/Algea Name Registry/registry/sources/IAPT/Registration_DB_from_BGBM17-cleaned.xls");
+        File f = new File(System.getProperty("user.home") + "/data/Projekte/Algea Name Registry/registry/sources/IAPT/Registration_DB_from_BGBM17-cleaned-02.xls");
         return f.toURI();
     }
 
