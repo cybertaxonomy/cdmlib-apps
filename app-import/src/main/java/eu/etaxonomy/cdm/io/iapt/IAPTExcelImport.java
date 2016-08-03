@@ -68,7 +68,9 @@ public class IAPTExcelImport<CONFIG extends IAPTImportConfigurator> extends Simp
     private static final Pattern nomRefPubYearExtractP = Pattern.compile("(.*?)(1[7,8,9][0-9]{2}).*$|^.*?[0-9]{1,2}([\\./])[0-1]?[0-9]\\3([0-9]{2})\\.$"); // 1700 - 1999
 
     private MarkerType markerTypeFossil = null;
-    private Rank rankUnrankedPseudoClass = null;
+    private Rank rankUnrankedSupraGeneric = null;
+    private Rank familyIncertisSedis = null;
+    private AnnotationType annotationTypeCaveats = null;
 
     private Taxon makeTaxon(HashMap<String, String> record, SimpleExcelTaxonImportState<CONFIG> state,
                             TaxonNode higherTaxonNode, boolean isSynonym, boolean isFossil) {
@@ -81,6 +83,7 @@ public class IAPTExcelImport<CONFIG extends IAPTImportConfigurator> extends Simp
         String nomRefStr = getValue(record, LITSTRING, true);
         String authorsSpelling = getValue(record, AUTHORSSPELLING, true);
         String notesTxt = getValue(record, NOTESTXT, true);
+        String caveats = getValue(record, CAVEATS, true);
 
         String nomRefTitle = null;
         String nomRefDetail = null;
@@ -159,9 +162,12 @@ public class IAPTExcelImport<CONFIG extends IAPTImportConfigurator> extends Simp
                 titleCacheCompareStr = titleCacheCompareStr.replace(" x ", " ×");
                 nameCompareStr = nameCompareStr.replace(" x ", " ×");
             }
-            if(taxonName.isBinomHybrid()){
+            if(taxonName.isMonomHybrid()){
                 titleCacheCompareStr = titleCacheCompareStr.replaceAll("^X ", "× ");
                 nameCompareStr = nameCompareStr.replace("^X ", "× ");
+            }
+            if(authorStr.contains(" et ")){
+                titleCacheCompareStr = titleCacheCompareStr.replaceAll(" et ", " & ");
             }
             if (!taxonNameTitleCache.equals(titleCacheCompareStr)) {
                 logger.warn(line + "The generated titleCache differs from the imported string : " + taxonNameTitleCache + " <> " + titleCacheStr + " will restore original titleCacheStr");
@@ -197,6 +203,11 @@ public class IAPTExcelImport<CONFIG extends IAPTImportConfigurator> extends Simp
             notesTxt = notesTxt.replace("Notes: ", "").trim();
             taxonName.addAnnotation(Annotation.NewInstance(notesTxt, AnnotationType.EDITORIAL(), Language.DEFAULT()));
         }
+        if(!StringUtils.isEmpty(caveats)){
+            caveats = caveats.replace("Caveats: ", "").trim();
+            taxonName.addAnnotation(Annotation.NewInstance(caveats, annotationTypeCaveats(), Language.DEFAULT()));
+        }
+        //
 
         // Namerelations
         if(!StringUtils.isEmpty(authorsSpelling)){
@@ -399,14 +410,14 @@ public class IAPTExcelImport<CONFIG extends IAPTImportConfigurator> extends Simp
 
         if(name.matches("^Plantae$|^Fungi$")){
            return Rank.KINGDOM();
-        } else if(name.matches("Incertae sedis$|^No group assigned$")){
-           return Rank.FAMILY();
+        } else if(name.matches("^Incertae sedis$|^No group assigned$")){
+           return rankFamilyIncertisSedis();
         } else if(name.matches(".*phyta$|.*mycota$")){
            return Rank.SECTION_BOTANY();
         } else if(name.matches(".*phytina$|.*mycotina$")){
            return Rank.SUBSECTION_BOTANY();
         } else if(name.matches("Gymnospermae$|.*ones$")){ // Monocotyledones, Dicotyledones
-            return rankUnrankedPseudoClass();
+            return rankUnrankedSupraGeneric();
         } else if(name.matches(".*opsida$|.*phyceae$|.*mycetes$|.*ones$|^Musci$|^Hepaticae$")){
            return Rank.CLASS();
         } else if(name.matches(".*idae$|.*phycidae$|.*mycetidae$")){
@@ -431,13 +442,30 @@ public class IAPTExcelImport<CONFIG extends IAPTImportConfigurator> extends Simp
         return Rank.UNKNOWN_RANK();
     }
 
-    private Rank rankUnrankedPseudoClass() {
+    private Rank rankUnrankedSupraGeneric() {
 
-        if(rankUnrankedPseudoClass == null){
-            rankUnrankedPseudoClass = Rank.NewInstance(RankClass.Suprageneric, "Unranked pseudo class", " ", " ");
-            getTermService().save(rankUnrankedPseudoClass);
+        if(rankUnrankedSupraGeneric == null){
+            rankUnrankedSupraGeneric = Rank.NewInstance(RankClass.Suprageneric, "Unranked supra generic", " ", " ");
+            getTermService().save(rankUnrankedSupraGeneric);
         }
-        return rankUnrankedPseudoClass;
+        return rankUnrankedSupraGeneric;
+    }
+
+    private Rank rankFamilyIncertisSedis() {
+
+        if(familyIncertisSedis == null){
+            familyIncertisSedis = Rank.NewInstance(RankClass.Suprageneric, "Family incertis sedis", " ", " ");
+            getTermService().save(familyIncertisSedis);
+        }
+        return familyIncertisSedis;
+    }
+
+    private AnnotationType annotationTypeCaveats(){
+        if(annotationTypeCaveats == null){
+            annotationTypeCaveats = AnnotationType.NewInstance("Caveats", "Caveats", "");
+            getTermService().save(annotationTypeCaveats);
+        }
+        return annotationTypeCaveats;
     }
 
 
