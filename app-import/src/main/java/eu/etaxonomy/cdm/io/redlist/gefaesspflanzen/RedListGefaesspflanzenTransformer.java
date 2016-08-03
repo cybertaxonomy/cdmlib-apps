@@ -61,12 +61,6 @@ public final class RedListGefaesspflanzenTransformer extends InputTransformerBas
         else if (key.equals("FAM")){return Rank.FAMILY();}
         else if (key.equals("SLU")){return Rank.SUBLUSUS();}
         else if (key.equals("SPI")){return Rank.SUBSPECIES();}
-        //FIXME implement ranks
-//        else if (key.equals("LUS")){return Rank.LUSUS();}
-//        else if (key.equals("SPR")){return Rank.SUBPROLES();}
-//        else if (key.equals("SAM")){return Rank.SAMMELART();}
-//        else if (key.equals("MOD")){return Rank.MODIFICATIO();}
-//        else if (key.equals("KMB")){return Rank.COMBINATION();}
         else if (key.equals("GRO") || key.equals("GRU")){return Rank.SPECIESGROUP();}
         else if (key.equals("?")){return Rank.UNKNOWN_RANK();}
         return null;
