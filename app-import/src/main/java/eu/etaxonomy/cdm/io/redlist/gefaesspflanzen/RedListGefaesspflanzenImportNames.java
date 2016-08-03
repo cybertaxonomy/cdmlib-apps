@@ -79,16 +79,16 @@ public class RedListGefaesspflanzenImportNames extends DbImportBase<RedListGefae
 
     @Override
     protected String getIdQuery(RedListGefaesspflanzenImportState state) {
-        return "SELECT NAMNR "
+        return "SELECT SEQNUM "
                 + "FROM V_TAXATLAS_D20_EXPORT t "
-                + " ORDER BY NAMNR";
+                + " ORDER BY SEQNUM";
     }
 
     @Override
     protected String getRecordQuery(RedListGefaesspflanzenImportConfigurator config) {
         String result = " SELECT * "
                 + " FROM V_TAXATLAS_D20_EXPORT t "
-                + " WHERE t.NAMNR IN (@IDSET)";
+                + " WHERE t.SEQNUM IN (@IDSET)";
         result = result.replace("@IDSET", IPartitionedIO.ID_LIST_TOKEN);
         return result;
     }
@@ -345,7 +345,7 @@ public class RedListGefaesspflanzenImportNames extends DbImportBase<RedListGefae
         }
 
         NonViralName<?> name = null;
-        Rank rank = makeRank(id, state, rangString, ep3String!=null);
+        Rank rank = makeRank(id, state, rangString, CdmUtils.isNotBlank(ep3String));
         //cultivar
         if(rank!= null && rank.equals(Rank.CULTIVAR())){
             CultivarPlantName cultivar = CultivarPlantName.NewInstance(rank);
@@ -432,16 +432,16 @@ public class RedListGefaesspflanzenImportNames extends DbImportBase<RedListGefae
                             hybridFormula2 = split[1];
                         }
                         if(CdmUtils.isNotBlank(ep3String)){
-                            hybridFormula1 += " "+ep3String;
-                            hybridFormula2 += " "+ep3String;
+                            hybridFormula1 += " "+rank.getAbbreviation()+" "+ep3String;
+                            hybridFormula2 += " "+rank.getAbbreviation()+" "+ep3String;
                         }
                         String fullFormula = hybridFormula1+" "+RedListUtil.HYB_SIGN+" "+hybridFormula2;
                         name = NonViralNameParserImpl.NewInstance().parseFullName(fullFormula, NomenclaturalCode.ICNAFP, rank);
                     }
                     else if(ep3String.contains(RedListUtil.HYB_SIGN)){
                         String[] split = ep3String.split(RedListUtil.HYB_SIGN);
-                        String hybridFormula1 = ep1String+" "+ep2String+" "+split[0];
-                        String hybridFormula2 = ep1String+" "+ep2String+" "+split[1];
+                        String hybridFormula1 = ep1String+" "+ep2String+" "+rank.getAbbreviation()+" "+split[0];
+                        String hybridFormula2 = ep1String+" "+ep2String+" "+rank.getAbbreviation()+" "+split[1];
                         //check if the genus is mentioned in EP3 or not
                         String[] secondHybrid = split[1].trim().split(" ");
                         //check if the genus is abbreviated like e.g. Centaurea jacea jacea × C. jacea subsp. decipiens

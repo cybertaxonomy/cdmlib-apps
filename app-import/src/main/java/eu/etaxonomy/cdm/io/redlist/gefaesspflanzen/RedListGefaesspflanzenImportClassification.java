@@ -63,16 +63,16 @@ public class RedListGefaesspflanzenImportClassification extends DbImportBase<Red
 
     @Override
     protected String getIdQuery(RedListGefaesspflanzenImportState state) {
-        return "SELECT NAMNR "
+        return "SELECT SEQNUM "
                 + "FROM V_TAXATLAS_D20_EXPORT t "
-                + " ORDER BY NAMNR";
+                + " ORDER BY SEQNUM";
     }
 
     @Override
     protected String getRecordQuery(RedListGefaesspflanzenImportConfigurator config) {
         String result = "select distinct e.*, f.FAMILIE "
                 + "from V_TAXATLAS_D20_EXPORT e, GATTUNG_FAMILIE f "
-                + "where e.EPI1 = f.GATTUNG and e.NAMNR IN (@IDSET)";
+                + "where e.EPI1 = f.GATTUNG and e.SEQNUM IN (@IDSET)";
         result = result.replace("@IDSET", IPartitionedIO.ID_LIST_TOKEN);
         return result;
     }
