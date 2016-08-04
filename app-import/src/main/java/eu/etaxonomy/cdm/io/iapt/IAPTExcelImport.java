@@ -9,11 +9,15 @@
 
 package eu.etaxonomy.cdm.io.iapt;
 
+import eu.etaxonomy.cdm.api.facade.DerivedUnitFacade;
 import eu.etaxonomy.cdm.common.CdmUtils;
 import eu.etaxonomy.cdm.io.mexico.SimpleExcelTaxonImport;
 import eu.etaxonomy.cdm.io.mexico.SimpleExcelTaxonImportState;
 import eu.etaxonomy.cdm.model.common.*;
 import eu.etaxonomy.cdm.model.name.*;
+import eu.etaxonomy.cdm.model.occurrence.DerivedUnit;
+import eu.etaxonomy.cdm.model.occurrence.FieldUnit;
+import eu.etaxonomy.cdm.model.occurrence.SpecimenOrObservationType;
 import eu.etaxonomy.cdm.model.reference.Reference;
 import eu.etaxonomy.cdm.model.taxon.*;
 import eu.etaxonomy.cdm.strategy.parser.NonViralNameParserImpl;
@@ -66,6 +70,21 @@ public class IAPTExcelImport<CONFIG extends IAPTImportConfigurator> extends Simp
 
     private static final Pattern nomRefTokenizeP = Pattern.compile("^(.*):\\s([^\\.:]+)\\.(.*)$");
     private static final Pattern nomRefPubYearExtractP = Pattern.compile("(.*?)(1[7,8,9][0-9]{2}).*$|^.*?[0-9]{1,2}([\\./])[0-1]?[0-9]\\3([0-9]{2})\\.$"); // 1700 - 1999
+    private static final Pattern typeSplitPattern =  Pattern.compile("^(?:\"*[Tt]ype: (?<type>.*?))(?:[Hh]olotype:(?<holotype>.*?))?(?:[Ii]sotype[^:]*:(?<isotype>.*))?$");
+    enum TypesName {
+        type, holotype, isotype;
+
+        public SpecimenTypeDesignationStatus status(){
+            switch (this) {
+                case holotype:
+                    return SpecimenTypeDesignationStatus.HOLOTYPE();
+                case isotype:
+                    return SpecimenTypeDesignationStatus.ISOTYPE();
+                default:
+                    return null;
+            }
+        }
+    }
 
     private MarkerType markerTypeFossil = null;
     private Rank rankUnrankedSupraGeneric = null;
@@ -73,7 +92,7 @@ public class IAPTExcelImport<CONFIG extends IAPTImportConfigurator> extends Simp
     private AnnotationType annotationTypeCaveats = null;
 
     private Taxon makeTaxon(HashMap<String, String> record, SimpleExcelTaxonImportState<CONFIG> state,
-                            TaxonNode higherTaxonNode, boolean isSynonym, boolean isFossil) {
+                            TaxonNode higherTaxonNode, boolean isFossil) {
 
         String line = state.getCurrentLine() + ": ";
 
@@ -84,6 +103,9 @@ public class IAPTExcelImport<CONFIG extends IAPTImportConfigurator> extends Simp
         String authorsSpelling = getValue(record, AUTHORSSPELLING, true);
         String notesTxt = getValue(record, NOTESTXT, true);
         String caveats = getValue(record, CAVEATS, true);
+        String fullSynSubstStr = getValue(record, FULLSYNSUBST, true);
+        String synSubstStr = getValue(record, SYNSUBSTSTR, true);
+        String typeStr = getValue(record, TYPE, true);
 
         String nomRefTitle = null;
         String nomRefDetail = null;
@@ -125,10 +147,129 @@ public class IAPTExcelImport<CONFIG extends IAPTImportConfigurator> extends Simp
             }
         }
 
-        BotanicalName taxonName;
-        // cache field for the taxonName.titleCache
+        BotanicalName taxonName = makeBotanicalName(state, titleCacheStr, nameStr, authorStr, nomRefTitle);
+
+        if(!StringUtils.isEmpty(notesTxt)){
+            notesTxt = notesTxt.replace("Notes: ", "").trim();
+            taxonName.addAnnotation(Annotation.NewInstance(notesTxt, AnnotationType.EDITORIAL(), Language.DEFAULT()));
+        }
+        if(!StringUtils.isEmpty(caveats)){
+            caveats = caveats.replace("Caveats: ", "").trim();
+            taxonName.addAnnotation(Annotation.NewInstance(caveats, annotationTypeCaveats(), Language.DEFAULT()));
+        }
+        //
+
+        // Namerelations
+        if(!StringUtils.isEmpty(authorsSpelling)){
+            authorsSpelling = authorsSpelling.replaceFirst("Author's spelling:", "").replaceAll("\"", "").trim();
+
+            String[] authorSpellingTokens = StringUtils.split(authorsSpelling, " ");
+            String[] nameStrTokens = StringUtils.split(nameStr, " ");
+
+            ArrayUtils.reverse(authorSpellingTokens);
+            ArrayUtils.reverse(nameStrTokens);
+
+            for (int i = 0; i < nameStrTokens.length; i++){
+                if(i < authorSpellingTokens.length){
+                    nameStrTokens[i] = authorSpellingTokens[i];
+                }
+            }
+            ArrayUtils.reverse(nameStrTokens);
+
+            String misspelledNameStr = StringUtils.join (nameStrTokens, ' ');
+            // build the fullnameString of the misspelled name
+            misspelledNameStr = taxonName.getTitleCache().replace(nameStr, misspelledNameStr);
+
+            TaxonNameBase misspelledName = (BotanicalName) nameParser.parseReferencedName(misspelledNameStr, NomenclaturalCode.ICNAFP, null);
+            misspelledName.addRelationshipToName(taxonName, NameRelationshipType.MISSPELLING(), null);
+            getNameService().save(misspelledName);
+        }
+
+        // Replaced Synonyms
+        if(!StringUtils.isEmpty(fullSynSubstStr)){
+            fullSynSubstStr = fullSynSubstStr.replace("Syn. subst.: ", "");
+            BotanicalName replacedSynonymName = makeBotanicalName(state, fullSynSubstStr, synSubstStr, null, null);
+            replacedSynonymName.addReplacedSynonym(taxonName, null, null, null);
+            getNameService().save(replacedSynonymName);
+        }
+
+        Reference sec = state.getConfig().getSecReference();
+        Taxon taxon = Taxon.NewInstance(taxonName, sec);
+
+        // Markers
+        if(isFossil){
+            taxon.addMarker(Marker.NewInstance(markerTypeFossil(), true));
+        }
+
+        // Types
+        if(!StringUtils.isEmpty(typeStr)){
+            Matcher m = typeSplitPattern.matcher(typeStr);
+
+            if(m.matches()){
+                String typeString = m.group(TypesName.type.name());
+                boolean isFieldUnit = typeStr.matches(".*([°']|\\d+\\s?m\\s|\\d+\\s?km\\s).*"); // check for location or unit m, km
+
+                if(isFieldUnit) {
+                    // type as fieldUnit
+                    FieldUnit fu = FieldUnit.NewInstance();
+                    fu.setTitleCache(typeString, true);
+                    getOccurrenceService().save(fu);
+
+                    // all others ..
+                    addSpecimenTypes(taxonName, fu, m.group(TypesName.holotype.name()), TypesName.holotype, false);
+                    addSpecimenTypes(taxonName, fu, m.group(TypesName.isotype.name()), TypesName.isotype, true);
+                } else {
+                    TaxonNameBase typeName = nameParser.parseFullName(typeString);
+                    taxonName.addNameTypeDesignation(typeName, null, null, null, NameTypeDesignationStatus.AUTOMATIC(), true, true, true, true);
+                }
+            }
+            getNameService().save(taxonName);
+
+        }
+
+        getTaxonService().save(taxon);
+        if(higherTaxonNode != null){
+            higherTaxonNode.addChildTaxon(taxon, null, null);
+            getTaxonNodeService().save(higherTaxonNode);
+        }
+
+        return taxon;
+
+    }
+
+    private void addSpecimenTypes(BotanicalName taxonName, FieldUnit fieldUnit, String typeStr, TypesName typeName, boolean multiple){
+        if(StringUtils.isEmpty(typeStr)){
+            return;
+        }
+        typeStr = typeStr.trim().replaceAll("\\.$", "");
+
+        List<String> typeData = new ArrayList<>();
+        if(multiple){
+            String[] tokens = typeStr.split("\\s?,\\s?");
+            for (String t : tokens) {
+                if(!t.isEmpty()){
+                    typeData.add(t.trim());
+                }
+            }
+        } else {
+            typeData.add(typeStr.trim());
+        }
+
+        for(String type : typeData){
+            DerivedUnitFacade facade = DerivedUnitFacade.NewInstance(SpecimenOrObservationType.OtherSpecimen, fieldUnit);
+            facade.setTitleCache(type, true);
+            DerivedUnit specimen = facade.innerDerivedUnit();
+            taxonName.addSpecimenTypeDesignation(specimen, typeName.status(), null, null, null, false, true);
+       }
+    }
+
+    private BotanicalName makeBotanicalName(SimpleExcelTaxonImportState<CONFIG> state, String titleCacheStr, String nameStr, String authorStr, String nomRefTitle) {
+
+        BotanicalName taxonName;// cache field for the taxonName.titleCache
         String taxonNameTitleCache = null;
         Map<String, AnnotationType> nameAnnotations = new HashMap<>();
+
+        String line = state.getCurrentLine() + ": ";
 
         // TitleCache preprocessing
         if(titleCacheStr.endsWith(ANNOTATION_MARKER_STRING) || (authorStr != null && authorStr.endsWith(ANNOTATION_MARKER_STRING))){
@@ -166,7 +307,7 @@ public class IAPTExcelImport<CONFIG extends IAPTImportConfigurator> extends Simp
                 titleCacheCompareStr = titleCacheCompareStr.replaceAll("^X ", "× ");
                 nameCompareStr = nameCompareStr.replace("^X ", "× ");
             }
-            if(authorStr.contains(" et ")){
+            if(authorStr != null && authorStr.contains(" et ")){
                 titleCacheCompareStr = titleCacheCompareStr.replaceAll(" et ", " & ");
             }
             if (!taxonNameTitleCache.equals(titleCacheCompareStr)) {
@@ -199,58 +340,7 @@ public class IAPTExcelImport<CONFIG extends IAPTImportConfigurator> extends Simp
             }
             getNameService().save(taxonName);
         }
-        if(!StringUtils.isEmpty(notesTxt)){
-            notesTxt = notesTxt.replace("Notes: ", "").trim();
-            taxonName.addAnnotation(Annotation.NewInstance(notesTxt, AnnotationType.EDITORIAL(), Language.DEFAULT()));
-        }
-        if(!StringUtils.isEmpty(caveats)){
-            caveats = caveats.replace("Caveats: ", "").trim();
-            taxonName.addAnnotation(Annotation.NewInstance(caveats, annotationTypeCaveats(), Language.DEFAULT()));
-        }
-        //
-
-        // Namerelations
-        if(!StringUtils.isEmpty(authorsSpelling)){
-            authorsSpelling = authorsSpelling.replaceFirst("Author's spelling:", "").replaceAll("\"", "").trim();
-
-            String[] authorSpellingTokens = StringUtils.split(authorsSpelling, " ");
-            String[] nameStrTokens = StringUtils.split(nameStr, " ");
-
-            ArrayUtils.reverse(authorSpellingTokens);
-            ArrayUtils.reverse(nameStrTokens);
-
-            for (int i = 0; i < nameStrTokens.length; i++){
-                if(i < authorSpellingTokens.length){
-                    nameStrTokens[i] = authorSpellingTokens[i];
-                }
-            }
-            ArrayUtils.reverse(nameStrTokens);
-
-            String misspelledNameStr = StringUtils.join (nameStrTokens, ' ');
-            // build the fullnameString of the misspelled name
-            misspelledNameStr = taxonNameTitleCache.replace(nameStr, misspelledNameStr);
-
-            TaxonNameBase misspelledName = (BotanicalName) nameParser.parseReferencedName(misspelledNameStr, NomenclaturalCode.ICNAFP, null);
-            misspelledName.addRelationshipToName(taxonName, NameRelationshipType.MISSPELLING(), null);
-            getNameService().save(misspelledName);
-        }
-
-        Reference sec = state.getConfig().getSecReference();
-        Taxon taxon = Taxon.NewInstance(taxonName, sec);
-
-        // Markers
-        if(isFossil){
-            taxon.addMarker(Marker.NewInstance(markerTypeFossil(), true));
-        }
-
-        getTaxonService().save(taxon);
-        if(higherTaxonNode != null){
-            higherTaxonNode.addChildTaxon(taxon, null, null);
-            getTaxonNodeService().save(higherTaxonNode);
-        }
-
-        return taxon;
-
+        return taxonName;
     }
 
     /**
@@ -320,8 +410,6 @@ public class IAPTExcelImport<CONFIG extends IAPTImportConfigurator> extends Simp
 	@Override
     protected void firstPass(SimpleExcelTaxonImportState<CONFIG> state) {
 
-	    boolean isSynonymOnly = false;
-
         String lineNumber = state.getCurrentLine() + ": ";
         logger.setLevel(Level.DEBUG);
         HashMap<String, String> record = state.getOriginalRecord();
@@ -346,30 +434,18 @@ public class IAPTExcelImport<CONFIG extends IAPTImportConfigurator> extends Simp
         TaxonNode higherTaxon = getHigherTaxon(higherTaxaString, (IAPTImportState)state);
 
        //Taxon
-        Taxon taxon = makeTaxon(record, state, higherTaxon, isSynonymOnly, isFossil);
-        if (taxon == null && ! isSynonymOnly){
+        Taxon taxon = makeTaxon(record, state, higherTaxon, isFossil);
+        if (taxon == null){
             logger.warn(lineNumber + "taxon could not be created and is null");
             return;
         }
         ((IAPTImportState)state).setCurrentTaxon(taxon);
-
-        //Syn.
-        //makeSynonyms(record, state, !isSynonymOnly);
 
 
 		return;
     }
 
     private TaxonNode getHigherTaxon(String higherTaxaString, IAPTImportState state) {
-
-        // higherTaxaString is like
-        // - DICOTYLEDONES: LEGUMINOSAE: MIMOSOIDEAE
-        // - FOSSIL DICOTYLEDONES: PROTEACEAE
-        // - [fungi]
-        // - [no group assigned]
-        if(higherTaxaString.equals("[no group assigned]")){
-            return null;
-        }
         String[] higherTaxaNames = higherTaxaString.toLowerCase().replaceAll("[\\[\\]]", "").split(":");
         TaxonNode higherTaxonNode = null;
 
@@ -494,7 +570,6 @@ public class IAPTExcelImport<CONFIG extends IAPTImportConfigurator> extends Simp
         }
         return markerTypeFossil;
     }
-
 
 
 }

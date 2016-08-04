@@ -81,6 +81,7 @@ public class IAPTActivator {
         config.setSourceReferenceTitle(sourceReferenceTitle);
         config.setSecReference(secRef);
         config.setProgressMonitor(DefaultProgressMonitor.NewInstance());
+        // config.setBatchSize(100); // causes Error during managed flush [Don't change the reference to a collection with delete-orphan enabled : eu.etaxonomy.cdm.model.taxon.TaxonNode.annotations]
 
         CdmDefaultImport<IAPTImportConfigurator> myImport = new CdmDefaultImport<>();
 
@@ -121,7 +122,7 @@ public class IAPTActivator {
 
 
     public static URI iapt() {
-        File f = new File(System.getProperty("user.home") + "/data/Projekte/Algea Name Registry/registry/sources/IAPT/Registration_DB_from_BGBM17-cleaned-02.xls");
+        File f = new File(System.getProperty("user.home") + "/data/Projekte/Algea Name Registry/registry/sources/IAPT/iapt-100.xls");
         return f.toURI();
     }
 
