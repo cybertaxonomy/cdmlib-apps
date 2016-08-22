@@ -56,8 +56,8 @@ public class SpecimenImport {
             specimenImportConfigurator.setSourceSecId("specimen");
             specimenImportConfigurator.setCheck(check);
             specimenImportConfigurator.setDbSchemaValidation(hbm2dll);
-            specimenImportConfigurator.setReuseExistingMetadata(true);
-            specimenImportConfigurator.reuseExistingDescriptiveGroups(true);
+            specimenImportConfigurator.setReuseExistingMetaData(true);
+            specimenImportConfigurator.setReuseExistingDescriptiveGroups(true);
 //
             specimenImportConfigurator.setReuseExistingTaxaWhenPossible(true);
 //
