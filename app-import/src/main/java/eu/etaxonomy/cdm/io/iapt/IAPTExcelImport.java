@@ -26,6 +26,8 @@ import org.apache.commons.lang.StringEscapeUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
+import org.joda.time.DateTimeFieldType;
+import org.joda.time.Partial;
 import org.springframework.stereotype.Component;
 
 import java.util.*;
@@ -68,9 +70,34 @@ public class IAPTExcelImport<CONFIG extends IAPTImportConfigurator> extends Simp
     private  static List<String> expectedKeys= Arrays.asList(new String[]{
             REGISTRATIONNO_PK, HIGHERTAXON, FULLNAME, AUTHORSSPELLING, LITSTRING, REGISTRATION, TYPE, CAVEATS, FULLBASIONYM, FULLSYNSUBST, NOTESTXT, REGDATE, NAMESTRING, BASIONYMSTRING, SYNSUBSTSTR, AUTHORSTRING});
 
-    private static final Pattern nomRefTokenizeP = Pattern.compile("^(.*):\\s([^\\.:]+)\\.(.*)$");
-    private static final Pattern nomRefPubYearExtractP = Pattern.compile("(.*?)(1[7,8,9][0-9]{2}).*$|^.*?[0-9]{1,2}([\\./])[0-1]?[0-9]\\3([0-9]{2})\\.$"); // 1700 - 1999
+    private static final Pattern nomRefTokenizeP = Pattern.compile("^(.*):\\s([^\\.:]+)\\.(.*?)\\.?$");
+    private static final Pattern[] nomRefPubDatePs = new Pattern[]{
+            // all patterns cover the years 1700 - 1999
+            Pattern.compile("^(?<year>1[7,8,9][0-9]{2})$"), // only year, like '1969'
+            Pattern.compile("^(?<day>[0-9]{1,2})([\\./])(?<month>[0-1]?[0-9])\\2(?<year>(?:1[7,8,9])?[0-9]{2})$"), // full date like 12.04.1969 or 12/04/1969
+            Pattern.compile("^(?:(?<day>[0-9]{1,2})[\\./]?\\s)?(?<monthName>[\\S\\D]+)\\s(?<year>(?:1[7,8,9])?[0-9]{2})$") // full date like 12. April 1969 or april 1999 or April 99
+        };
     private static final Pattern typeSplitPattern =  Pattern.compile("^(?:\"*[Tt]ype: (?<type>.*?))(?:[Hh]olotype:(?<holotype>.*?))?(?:[Ii]sotype[^:]*:(?<isotype>.*))?$");
+
+    private static Map<String, Integer> monthFromNameMap = new HashMap<>();
+    static {
+        String[] ck = new String[]{"leden", "únor", "březen", "duben", "květen", "červen", "červenec ", "srpen", "září", "říjen", "listopad", "prosinec"};
+        String[] fr = new String[]{"janvier", "février", "mars", "avril", "mai", "juin", "juillet", "août", "septembre", "octobre", "novembre", "décembre"};
+        String[] de = new String[]{"januar", "februar", "märz", "april", "mai", "juni", "juli", "august", "september", "oktober", "november", "dezember"};
+        String[] en = new String[]{"january", "february", "march", "april", "may", "june", "july", "august", "september", "october", "november", "december"};
+
+        String[][] perLang =  new String[][]{ck, de, fr, en};
+
+        for (String[] months: perLang) {
+            for(int m = 1; m < 13; m++){
+                monthFromNameMap.put(months[m - 1], m);
+            }
+        }
+
+        // special cases
+        monthFromNameMap.put("Mar", 3);
+    }
+
     enum TypesName {
         type, holotype, isotype;
 
@@ -110,6 +137,9 @@ public class IAPTExcelImport<CONFIG extends IAPTImportConfigurator> extends Simp
         String nomRefTitle = null;
         String nomRefDetail = null;
         String nomRefPupDate = null;
+        String nomRefPupDay = null;
+        String nomRefPupMonth = null;
+        String nomRefPupMonthName = null;
         String nomRefPupYear = null;
 
         // preprocess nomRef: separate citation, reference detail, publishing date
@@ -119,28 +149,64 @@ public class IAPTExcelImport<CONFIG extends IAPTImportConfigurator> extends Simp
             if(m.matches()){
                 nomRefTitle = m.group(1);
                 nomRefDetail = m.group(2);
-                nomRefPupDate = m.group(3);
+                nomRefPupDate = m.group(3).trim();
 
                 // nomRefDetail.replaceAll("[\\:\\.\\s]", ""); // TODO integrate into nomRefTokenizeP
-                Matcher m2 = nomRefPubYearExtractP.matcher(nomRefPupDate);
-                if(m2.matches()){
-                    nomRefPupYear = m2.group(2);
-                    if(nomRefPupYear == null){
-                        nomRefPupYear = m2.group(4);
-                    }
-                    if(nomRefPupYear == null){
-                        logger.error("nomRefPupYear in " + nomRefStr + " is  NULL" );
-                    }
-                    if(nomRefPupYear.length() == 2 ){
-                        // it is an abbreviated year from the 19** years
-                        nomRefPupYear = "19" + nomRefPupYear;
-                    }
-                    nomRefTitle = nomRefTitle + ": " + nomRefDetail + ". " + nomRefPupYear + ".";
-                } else {
-                    logger.warn("Pub year not found in " + nomRefStr );
-                    // FIXME in in J. Eur. Orchideen 30: 128. 30.09.97 (Vorabdr.).
+                for(Pattern p : nomRefPubDatePs){
+                    Matcher m2 = p.matcher(nomRefPupDate);
+                    if(m2.matches()){
+                        try {
+                            nomRefPupYear = m2.group("year");
+                        } catch (IllegalArgumentException e){
+                            // named capture group not found
+                        }
+                        try {
+                            nomRefPupMonth = m2.group("month");
+                        } catch (IllegalArgumentException e){
+                            // named capture group not found
+                        }
+                        try {
+                            nomRefPupMonthName = m2.group("monthName");
+                            nomRefPupMonth = monthFromName(nomRefPupMonthName);
+                        } catch (IllegalArgumentException e){
+                            // named capture group not found
+                        }
+                        try {
+                            nomRefPupDay = m2.group("day");
+                        } catch (IllegalArgumentException e){
+                            // named capture group not found
+                        }
 
+                        if(nomRefPupYear == null){
+                            logger.error("nomRefPupYear in " + nomRefStr + " is  NULL" );
+                        }
+                        if(nomRefPupYear.length() == 2 ){
+                            // it is an abbreviated year from the 19** years
+                            nomRefPupYear = "19" + nomRefPupYear;
+                        }
+                        nomRefTitle = nomRefTitle + ": " + nomRefDetail + ". " + nomRefPupYear + ".";
+                        break;
+                    }
                 }
+                if(nomRefPupYear == null){
+                    logger.warn("Pub year not found in " + nomRefPupDate + " from " + nomRefStr );
+                    // FIXME in in J. Eur. Orchideen 30: 128. 30.09.97 (Vorabdr.).
+                }
+                List<DateTimeFieldType> types = new ArrayList<>();
+                List<Integer> values = new ArrayList<>();
+                if(nomRefPupYear != null){
+                    types.add(DateTimeFieldType.year());
+                    values.add(Integer.parseInt(nomRefPupYear));
+                }
+                if(nomRefPupMonth != null){
+                    types.add(DateTimeFieldType.monthOfYear());
+                    values.add(Integer.parseInt(nomRefPupMonth));
+                }
+                if(nomRefPupDay != null){
+                    types.add(DateTimeFieldType.dayOfMonth());
+                    values.add(Integer.parseInt(nomRefPupDay));
+                }
+                Partial pupDate = new Partial(types.toArray(new DateTimeFieldType[types.size()]), ArrayUtils.toPrimitive(values.toArray(new Integer[values.size()])));
 
             } else {
                 nomRefTitle = nomRefStr;
@@ -237,6 +303,18 @@ public class IAPTExcelImport<CONFIG extends IAPTImportConfigurator> extends Simp
 
     }
 
+    private String monthFromName(String monthName) {
+
+        Integer month = monthFromNameMap.get(monthName.toLowerCase());
+        if(month == null){
+            logger.warn("Unknown month: " + monthName);
+            return null;
+        } else {
+            return month.toString();
+        }
+    }
+
+
     private void addSpecimenTypes(BotanicalName taxonName, FieldUnit fieldUnit, String typeStr, TypesName typeName, boolean multiple){
         if(StringUtils.isEmpty(typeStr)){
             return;
@@ -263,7 +341,8 @@ public class IAPTExcelImport<CONFIG extends IAPTImportConfigurator> extends Simp
        }
     }
 
-    private BotanicalName makeBotanicalName(SimpleExcelTaxonImportState<CONFIG> state, String titleCacheStr, String nameStr, String authorStr, String nomRefTitle) {
+    private BotanicalName makeBotanicalName(SimpleExcelTaxonImportState<CONFIG> state, String titleCacheStr, String nameStr,
+                                            String authorStr, String nomRefTitle) {
 
         BotanicalName taxonName;// cache field for the taxonName.titleCache
         String taxonNameTitleCache = null;
