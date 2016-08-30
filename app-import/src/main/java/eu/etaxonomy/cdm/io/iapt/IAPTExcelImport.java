@@ -445,10 +445,13 @@ public class IAPTExcelImport<CONFIG extends IAPTImportConfigurator> extends Simp
         value = StringUtils.replace(value, "i$U", "ï");
         // Special-cases
         value = StringUtils.replace(value, "&yacute", "ý");
-        value = StringUtils.replace(value, "<L", "Ł");
+        value = StringUtils.replace(value, ">L", "Ł"); // corrected rule
         value = StringUtils.replace(value, "E>U$D", "З");
         value = StringUtils.replace(value, "S>U$E", "Ş");
         value = StringUtils.replace(value, "s$E", "ş");
+
+        value = StringUtils.replace(value, "c$k", "č");
+        value = StringUtils.replace(value, " U$K", " Š");
 
         return value;
     }
