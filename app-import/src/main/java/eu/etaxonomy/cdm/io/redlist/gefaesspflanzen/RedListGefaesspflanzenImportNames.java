@@ -263,22 +263,17 @@ public class RedListGefaesspflanzenImportNames extends DbImportBase<RedListGefae
 
         //combination author
         if(authorKombString.contains(RedListUtil.EX)){
-            //TODO: what happens with multiple ex authors??
+            // multiple ex authors will be reduced to only the last one
+            // e.g. Almq. ex Sternström ex Dahlst. -> Almq. ex Dahlst.
             String[] kombSplit = authorKombString.split(RedListUtil.EX);
-            if(kombSplit.length!=2){
-                RedListUtil.logMessage(id, "Multiple ex combination authors found", logger);
-            }
-            for (int i = 0; i < kombSplit.length; i++) {
-                if(i==0){
-                    //first author is ex author
-                    TeamOrPersonBase<?> authorKomb = (TeamOrPersonBase<?>) state.getRelatedObject(RedListUtil.AUTHOR_NAMESPACE, kombSplit[i]);
-                    name.setExCombinationAuthorship(authorKomb);
-                }
-                else{
-                    TeamOrPersonBase<?> authorKomb = (TeamOrPersonBase<?>) state.getRelatedObject(RedListUtil.AUTHOR_NAMESPACE, kombSplit[i]);
-                    name.setCombinationAuthorship(authorKomb);
-                }
-            }
+            //first author is ex combination author
+            String exAuthorString = kombSplit[0];
+            TeamOrPersonBase<?> exAuthor = (TeamOrPersonBase<?>) state.getRelatedObject(RedListUtil.AUTHOR_NAMESPACE, exAuthorString);
+            name.setExCombinationAuthorship(exAuthor);
+            //the last author is the combination author
+            String authorString = kombSplit[kombSplit.length-1];
+            TeamOrPersonBase<?> combAuthor = (TeamOrPersonBase<?>) state.getRelatedObject(RedListUtil.AUTHOR_NAMESPACE, authorString);
+            name.setCombinationAuthorship(combAuthor);
         }
         else if(authorKombString.trim().contains(RedListUtil.AUCT)){
             RedListUtil.logMessage(id, "AUCT information in "+RedListUtil.AUTOR_KOMB+" column", logger);
