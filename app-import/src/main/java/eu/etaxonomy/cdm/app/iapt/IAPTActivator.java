@@ -15,7 +15,6 @@ import java.util.UUID;
 
 import eu.etaxonomy.cdm.common.monitor.DefaultProgressMonitor;
 import eu.etaxonomy.cdm.database.DatabaseTypeEnum;
-import org.apache.log4j.Appender;
 import org.apache.log4j.Logger;
 
 import eu.etaxonomy.cdm.app.common.CdmDestinations;
@@ -26,7 +25,6 @@ import eu.etaxonomy.cdm.io.common.IImportConfigurator.CHECK;
 import eu.etaxonomy.cdm.io.iapt.IAPTImportConfigurator;
 import eu.etaxonomy.cdm.model.reference.Reference;
 import eu.etaxonomy.cdm.model.reference.ReferenceFactory;
-import org.apache.log4j.RollingFileAppender;
 
 
 /**
@@ -36,6 +34,10 @@ import org.apache.log4j.RollingFileAppender;
  */
 public class IAPTActivator {
     private static final Logger logger = Logger.getLogger(IAPTActivator.class);
+
+    public static final String DATA_FILE_0_100 = "fileURI-100.xls";
+    public static final String DATA_FILE_FULL = "Registration_DB_from_BGBM17.xls";
+    public static final String DATA_FILE = DATA_FILE_0_100;
 
     //database validation status (create, update, validate ...)
     static DbSchemaValidation hbm2dll = DbSchemaValidation.CREATE;
@@ -62,12 +64,10 @@ public class IAPTActivator {
     //check - import
     static final CHECK check = CHECK.IMPORT_WITHOUT_CHECK;
 
-    static final boolean doTaxa = false;
-
 
     private void doImport(ICdmDataSource cdmDestination){
 
-        URI source = iapt();  //just any
+        URI source = fileURI();
 
         Reference secRef = ReferenceFactory.newDatabase();
         secRef.setTitle("IAPT");
@@ -85,7 +85,7 @@ public class IAPTActivator {
 
         CdmDefaultImport<IAPTImportConfigurator> myImport = new CdmDefaultImport<>();
 
-        doSingleSource(iapt(), config, myImport);
+        doSingleSource(fileURI(), config, myImport);
 
         System.exit(0);
 
@@ -121,8 +121,8 @@ public class IAPTActivator {
 
 
 
-    public static URI iapt() {
-        File f = new File(System.getProperty("user.home") + "/data/Projekte/Algea Name Registry/registry/sources/IAPT/iapt-100.xls");
+    public static URI fileURI() {
+        File f = new File(System.getProperty("user.home") + "/data/Projekte/Algea Name Registry/registry/sources/IAPT/" + DATA_FILE);
         return f.toURI();
     }
 
