@@ -27,10 +27,5 @@ public final class IAPTTransformer extends InputTransformerBase {
 	private static final Logger logger = Logger.getLogger(IAPTTransformer.class);
 
     //references
-    public static final UUID uuidRefFRC = UUID.fromString("c1caf6a2-5083-4f44-8f97-9abe23a84cd8");
-    public static final UUID uuidRefAS = UUID.fromString("1f15291a-b4c5-4e15-960f-d0145a250539");
-    public static final UUID uuidRefFC = UUID.fromString("c5a0bfb8-85b2-422d-babe-423aa2e24c35");
-
-
 
 }
