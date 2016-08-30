@@ -388,6 +388,9 @@ public class IAPTExcelImport<CONFIG extends IAPTImportConfigurator> extends Simp
      */
     private String getValue(HashMap<String, String> record, String originalKey, boolean doUnescapeHtmlEntities) {
         String value = record.get(originalKey);
+
+        value = fixCharacters(value);
+
         if (! StringUtils.isBlank(value)) {
         	if (logger.isDebugEnabled()) {
         	    logger.debug(originalKey + ": " + value);
@@ -402,9 +405,56 @@ public class IAPTExcelImport<CONFIG extends IAPTImportConfigurator> extends Simp
         }
     }
 
+    /**
+     * Fixes broken characters.
+     * For details see
+     * http://dev.e-taxonomy.eu/redmine/issues/6035
+     *
+     * @param value
+     * @return
+     */
+    private String fixCharacters(String value) {
+
+        value = StringUtils.replace(value, "s$K", "š");
+        value = StringUtils.replace(value, "n$K", "ň");
+        value = StringUtils.replace(value, "e$K", "ě");
+        value = StringUtils.replace(value, "r$K", "ř");
+        value = StringUtils.replace(value, "c$K", "č");
+        value = StringUtils.replace(value, "z$K", "ž");
+        value = StringUtils.replace(value, "S>U$K", "Š");
+        value = StringUtils.replace(value, "C>U$K", "Č");
+        value = StringUtils.replace(value, "R>U$K", "Ř");
+        value = StringUtils.replace(value, "Z>U$K", "Ž");
+        value = StringUtils.replace(value, "g$K", "ǧ");
+        value = StringUtils.replace(value, "s$A", "ś");
+        value = StringUtils.replace(value, "n$A", "ń");
+        value = StringUtils.replace(value, "c$A", "ć");
+        value = StringUtils.replace(value, "e$E", "ę");
+        value = StringUtils.replace(value, "o$H", "õ");
+        value = StringUtils.replace(value, "s$C", "ş");
+        value = StringUtils.replace(value, "t$C", "ț");
+        value = StringUtils.replace(value, "S>U$C", "Ş");
+        value = StringUtils.replace(value, "a$O", "å");
+        value = StringUtils.replace(value, "A>U$O", "Å");
+        value = StringUtils.replace(value, "u$O", "ů");
+        value = StringUtils.replace(value, "g$B", "ğ");
+        value = StringUtils.replace(value, "g$B", "ĕ");
+        value = StringUtils.replace(value, "a$B", "ă");
+        value = StringUtils.replace(value, "l$/", "ł");
+        value = StringUtils.replace(value, ">i", "ı");
+        value = StringUtils.replace(value, "i$U", "ï");
+        // Special-cases
+        value = StringUtils.replace(value, "&yacute", "ý");
+        value = StringUtils.replace(value, "<L", "Ł");
+        value = StringUtils.replace(value, "E>U$D", "З");
+        value = StringUtils.replace(value, "S>U$E", "Ş");
+        value = StringUtils.replace(value, "s$E", "ş");
+
+        return value;
+    }
 
 
-	/**
+    /**
 	 *  Stores taxa records in DB
 	 */
 	@Override
