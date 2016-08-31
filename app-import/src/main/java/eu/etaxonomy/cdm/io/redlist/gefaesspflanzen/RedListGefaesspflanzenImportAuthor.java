@@ -100,10 +100,10 @@ public class RedListGefaesspflanzenImportAuthor extends DbImportBase<RedListGefa
         TeamOrPersonBase<?> teamOrPerson;
         //check if there are ex authors
         if(authorName.contains(RedListUtil.EX)){
-            String[] split = authorName.split(RedListUtil.EX);
-            for (int i = 0; i < split.length; i++) {
-                makePerson(state, split[i].trim());
-            }
+            String author = RedListUtil.getAuthorOfExAuthorshipString(authorName);
+            String exAuthor = RedListUtil.getExAuthorOfExAuthorshipString(authorName);
+            makePerson(state, author);
+            makePerson(state, exAuthor);
         }
         //check if it is a team
         if(authorName.contains("&")){

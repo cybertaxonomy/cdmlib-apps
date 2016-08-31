@@ -132,4 +132,20 @@ public class RedListUtil {
         logger.info(NAMNR+": "+id+" "+message);
     }
 
+    public static String getAuthorOfExAuthorshipString(String authorshipString){
+        return getAuthorOfExAuthorship(authorshipString, false);
+    }
+
+    public static String getExAuthorOfExAuthorshipString(String authorshipString){
+        return getAuthorOfExAuthorship(authorshipString, true);
+    }
+
+    private static String getAuthorOfExAuthorship(String authorshipString, boolean isExAuthor){
+        String[] split = authorshipString.split(EX);
+        if(split.length>0){
+            return isExAuthor?split[0].trim():split[split.length-1].trim();
+        }
+        return null;
+    }
+
 }
