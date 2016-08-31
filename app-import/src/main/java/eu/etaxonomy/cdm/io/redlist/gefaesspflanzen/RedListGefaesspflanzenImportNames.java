@@ -265,13 +265,12 @@ public class RedListGefaesspflanzenImportNames extends DbImportBase<RedListGefae
         if(authorKombString.contains(RedListUtil.EX)){
             // multiple ex authors will be reduced to only the last one
             // e.g. Almq. ex Sternström ex Dahlst. -> Almq. ex Dahlst.
-            String[] kombSplit = authorKombString.split(RedListUtil.EX);
             //first author is ex combination author
-            String exAuthorString = kombSplit[0];
+            String exAuthorString = RedListUtil.getExAuthorOfExAuthorshipString(authorKombString);
             TeamOrPersonBase<?> exAuthor = (TeamOrPersonBase<?>) state.getRelatedObject(RedListUtil.AUTHOR_NAMESPACE, exAuthorString);
             name.setExCombinationAuthorship(exAuthor);
             //the last author is the combination author
-            String authorString = kombSplit[kombSplit.length-1];
+            String authorString = RedListUtil.getAuthorOfExAuthorshipString(authorKombString);
             TeamOrPersonBase<?> combAuthor = (TeamOrPersonBase<?>) state.getRelatedObject(RedListUtil.AUTHOR_NAMESPACE, authorString);
             name.setCombinationAuthorship(combAuthor);
         }
@@ -284,29 +283,19 @@ public class RedListGefaesspflanzenImportNames extends DbImportBase<RedListGefae
         }
         //basionym author
         if(authorBasiString.contains(RedListUtil.EX)){
-            String[] basiSplit = authorBasiString.split(RedListUtil.EX);
-            for (int i = 0; i < basiSplit.length; i++) {
-                if(basiSplit.length!=2){
-                    RedListUtil.logMessage(id, "Multiple ex basionymn authors found", logger);
-                }
-                if(i==0){
-                    TeamOrPersonBase<?> authorBasi= (TeamOrPersonBase<?>) state.getRelatedObject(RedListUtil.AUTHOR_NAMESPACE, basiSplit[i]);
-                    if(CdmUtils.isBlank(authorKombString)){
-                        name.setExCombinationAuthorship(authorBasi);
-                    }
-                    else{
-                        name.setExBasionymAuthorship(authorBasi);
-                    }
-                }
-                else{
-                    TeamOrPersonBase<?> authorBasi= (TeamOrPersonBase<?>) state.getRelatedObject(RedListUtil.AUTHOR_NAMESPACE, basiSplit[i]);
-                    if(CdmUtils.isBlank(authorKombString)){
-                        name.setCombinationAuthorship(authorBasi);
-                    }
-                    else{
-                        name.setBasionymAuthorship(authorBasi);
-                    }
-                }
+            TeamOrPersonBase<?> authorExBasi= (TeamOrPersonBase<?>) state.getRelatedObject(RedListUtil.AUTHOR_NAMESPACE, RedListUtil.getExAuthorOfExAuthorshipString(authorBasiString));
+            if(CdmUtils.isBlank(authorKombString)){
+                name.setExCombinationAuthorship(authorExBasi);
+            }
+            else{
+                name.setExBasionymAuthorship(authorExBasi);
+            }
+            TeamOrPersonBase<?> authorBasi= (TeamOrPersonBase<?>) state.getRelatedObject(RedListUtil.AUTHOR_NAMESPACE, RedListUtil.getAuthorOfExAuthorshipString(authorBasiString));
+            if(CdmUtils.isBlank(authorKombString)){
+                name.setCombinationAuthorship(authorBasi);
+            }
+            else{
+                name.setBasionymAuthorship(authorBasi);
             }
         }
         else if(CdmUtils.isNotBlank(authorBasiString)){
@@ -507,6 +496,11 @@ public class RedListGefaesspflanzenImportNames extends DbImportBase<RedListGefae
         }
         if(authorString.equals(RedListUtil.AUCT)){
             authorString = "";
+        }
+        if(authorString.contains(RedListUtil.EX)){
+            String exAuthor = RedListUtil.getExAuthorOfExAuthorshipString(authorString);
+            String author = RedListUtil.getAuthorOfExAuthorshipString(authorString);
+            authorString = exAuthor+RedListUtil.EX+author;
         }
         if(STRICT_TITLE_CHECK){
             if(!authorString.equals(authorshipCache)){
