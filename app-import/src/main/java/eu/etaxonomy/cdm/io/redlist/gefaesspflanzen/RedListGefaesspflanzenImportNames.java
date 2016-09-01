@@ -497,10 +497,8 @@ public class RedListGefaesspflanzenImportNames extends DbImportBase<RedListGefae
         if(authorString.equals(RedListUtil.AUCT)){
             authorString = "";
         }
-        if(authorString.contains(RedListUtil.EX)){
-            String exAuthor = RedListUtil.getExAuthorOfExAuthorshipString(authorString);
-            String author = RedListUtil.getAuthorOfExAuthorshipString(authorString);
-            authorString = exAuthor+RedListUtil.EX+author;
+        if(!STRICT_TITLE_CHECK && authorString.matches(".*ex.*ex.*")){
+            return;
         }
         if(STRICT_TITLE_CHECK){
             if(!authorString.equals(authorshipCache)){
