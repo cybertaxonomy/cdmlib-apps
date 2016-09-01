@@ -29,7 +29,8 @@ public class RedListGefaesspflanzenImportState extends DbImportStateBase<RedList
 	private static final Logger logger = Logger.getLogger(RedListGefaesspflanzenImportState.class);
 
 	private final Map<String, UUID> authorMap = new HashMap<String, UUID>();
-	private Map<String, UUID> familyMap = new HashMap<String, UUID>();
+	private Map<String, UUID> familyMapGesamtListe = new HashMap<String, UUID>();
+	private Map<String, UUID> familyMapCheckliste = new HashMap<String, UUID>();
 	private UUID checklistClassificationUuid;
 
     protected RedListGefaesspflanzenImportState(RedListGefaesspflanzenImportConfigurator config) {
@@ -48,12 +49,20 @@ public class RedListGefaesspflanzenImportState extends DbImportStateBase<RedList
         return checklistClassificationUuid;
     }
 
-    public Map<String, UUID> getFamilyMap() {
-        return familyMap;
+    public Map<String, UUID> getFamilyMapGesamtListe() {
+        return familyMapGesamtListe;
     }
 
-    public void setFamilyMap(Map<String, UUID> familyMap) {
-        this.familyMap = familyMap;
+    public void setFamilyMapGesamtListe(Map<String, UUID> familyMap) {
+        this.familyMapGesamtListe = familyMap;
+    }
+
+    public Map<String, UUID> getFamilyMapCheckliste() {
+        return familyMapCheckliste;
+    }
+
+    public void setFamilyMapCheckliste(Map<String, UUID> familyMapCheckliste) {
+        this.familyMapCheckliste = familyMapCheckliste;
     }
 
 }
