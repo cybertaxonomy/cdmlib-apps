@@ -68,7 +68,8 @@ public class RedListGefaesspflanzenImportFamily extends DbImportBase<RedListGefa
 
 
     private void importFamilies(RedListGefaesspflanzenImportState state) throws SQLException {
-        Map<String, UUID> familyMap = new HashMap<>();
+        Map<String, UUID> familyMapGL = new HashMap<>();
+        Map<String, UUID> familyMapCL = new HashMap<>();
 
         String query = "SELECT DISTINCT f.FAMILIE "
                 + " FROM GATTUNG_FAMILIE f";
@@ -78,11 +79,16 @@ public class RedListGefaesspflanzenImportFamily extends DbImportBase<RedListGefa
             String familieStr = rs.getString("FAMILIE");
             BotanicalName name = BotanicalName.NewInstance(Rank.FAMILY());
             name.setGenusOrUninomial(familieStr);
-            Taxon family = Taxon.NewInstance(name, null);
-            familyMap.put(familieStr, family.getUuid());
-            getTaxonService().saveOrUpdate(family);
+            Taxon familyGL = Taxon.NewInstance(name, null);
+            familyMapGL.put(familieStr, familyGL.getUuid());
+            getTaxonService().saveOrUpdate(familyGL);
+            //clone for checkliste
+            Taxon familyCL = (Taxon) familyGL.clone();
+            familyMapCL.put(familieStr, familyCL.getUuid());
+            getTaxonService().save(familyCL);
         }
-        state.setFamilyMap(familyMap);
+        state.setFamilyMapGesamtListe(familyMapGL);
+        state.setFamilyMapCheckliste(familyMapCL);
     }
 
     @Override
