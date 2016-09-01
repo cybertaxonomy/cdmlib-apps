@@ -584,7 +584,8 @@ public class RedListGefaesspflanzenImportNames extends DbImportBase<RedListGefae
             if(rankStr.equals("ORA")){
                 //special handling for ORA because of two possibilities
                 if(hasSpecificEpithet){
-                    return Rank.UNRANKED_INFRASPECIFIC();
+                    //re-load term because the representation was changed before
+                    return (Rank) getTermService().load(Rank.uuidInfraspecificTaxon);
                 }
                 else{
                     return Rank.UNRANKED_INFRAGENERIC();
