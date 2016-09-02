@@ -21,6 +21,7 @@ import java.util.Map.Entry;
 import java.util.Set;
 import java.util.UUID;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.TransactionStatus;
@@ -29,7 +30,6 @@ import eu.etaxonomy.cdm.io.common.IImportConfigurator;
 import eu.etaxonomy.cdm.io.common.IImportConfigurator.DO_REFERENCES;
 import eu.etaxonomy.cdm.io.common.ImportHelper;
 import eu.etaxonomy.cdm.io.common.Source;
-import eu.etaxonomy.cdm.model.agent.Team;
 import eu.etaxonomy.cdm.model.agent.TeamOrPersonBase;
 import eu.etaxonomy.cdm.model.common.CdmBase;
 import eu.etaxonomy.cdm.model.common.OriginalSourceBase;
@@ -43,6 +43,7 @@ import eu.etaxonomy.cdm.model.reference.ReferenceFactory;
 import eu.etaxonomy.cdm.model.taxon.Synonym;
 import eu.etaxonomy.cdm.model.taxon.Taxon;
 import eu.etaxonomy.cdm.model.taxon.TaxonBase;
+import eu.etaxonomy.cdm.strategy.parser.NonViralNameParserImpl;
 
 
 /**
@@ -161,6 +162,7 @@ public class FaunaEuropaeaRefImport extends FaunaEuropaeaImportBase {
 			String selectQueryRefs) {
 		TransactionStatus txStatus = null;
 		int count;
+		Map<String, Reference> inReferences = new HashMap<String, Reference>();
 		try {
 			ResultSet rsRefs = source.getResultSet(countQueryRefs);
 			rsRefs.next();
@@ -199,7 +201,7 @@ public class FaunaEuropaeaRefImport extends FaunaEuropaeaImportBase {
 					txStatus = startTransaction();
 					references = new HashMap<Integer,Reference>(limit);
 					authors = new HashMap<String,TeamOrPersonBase<?>>(limit);
-
+					//inReferences = new HashMap<String, Reference>(limit);
 					if(logger.isInfoEnabled()) {
 						logger.info("i = " + i + " - Reference import transaction started");
 					}
@@ -213,14 +215,32 @@ public class FaunaEuropaeaRefImport extends FaunaEuropaeaImportBase {
 //				reference.setTitleCache(title);
 				reference.setTitle(title);
 				reference.setDatePublished(ImportHelper.getDatePublished(year));
-				reference.setTitleCache(title + " " +refSource , true);
+				Reference inReference;
+				Reference tempInReference;
+				if (!StringUtils.isBlank(refSource)) {
+				    tempInReference = (Reference)NonViralNameParserImpl.NewInstance().parseReferenceTitle(refSource, null, false);
+				    if (inReferences.containsKey(tempInReference.getTitleCache())){
+				        inReference = inReferences.get(tempInReference.getTitleCache());
+
+				    }else{
+				        inReference = (Reference) tempInReference.clone();
+				        inReference.setPages(null);
+				        inReference.setEdition(null);
+				        inReferences.put(inReference.getTitleCache(), inReference);
+
+				    }
+				    reference.setPages(tempInReference.getPages());
+                    reference.setEdition(tempInReference.getEdition());
+                    tempInReference = null;
+                    reference.setInReference(inReference);
+				}
 
 				if (!authors.containsKey(refAuthor)) {
 					if (refAuthor == null) {
 						logger.warn("Reference author is null");
 					}
-					author = Team.NewInstance();
-					author.setTitleCache(refAuthor, true);
+					author = FaunaEuropaeaAuthorImport.parseNomAuthorString(refAuthor);
+
 					authors.put(refAuthor,author);
 					if (logger.isTraceEnabled()) {
 						logger.trace("Stored author (" + refAuthor + ")");
@@ -279,6 +299,7 @@ public class FaunaEuropaeaRefImport extends FaunaEuropaeaImportBase {
 			logger.error("SQLException:" +  e);
 			state.setUnsuccessfull();
 		}
+		inReferences = null;
 
 	}
 

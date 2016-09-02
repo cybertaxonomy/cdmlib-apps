@@ -39,6 +39,11 @@ public class FaunaEuropaeaAuthorImport extends FaunaEuropaeaImportBase {
 	private static int modCount = 1000;
 	private final static String authorSeparator = ", ";
 	private final static String lastAuthorSeparator = " & ";
+	 protected static String fWs = "\\s*";
+	 protected static String oWs = "\\s+";
+	 protected static String finalTeamSplitter = "(" + fWs + "(&)" + fWs + "|" + oWs + "et" + oWs + ")";
+	protected static String notFinalTeamSplitter = "((?:" + fWs + "," + fWs + ")(?!([A-Z][\\.]))"+"|" + finalTeamSplitter + ")";
+	protected static String test = "(,\\s(?![A-Z][.|\\s|$]))|" + finalTeamSplitter ;
 
 
 	/* (non-Javadoc)
@@ -198,5 +203,37 @@ public class FaunaEuropaeaAuthorImport extends FaunaEuropaeaImportBase {
         author.getTitleCache();
         return author;
 	}
+
+    /**
+     * @param refAuthor
+     * @return
+     */
+    public static TeamOrPersonBase<?> parseNomAuthorString(String refAuthor) {
+        TeamOrPersonBase<?> author = null;
+        //possible strings: Lastname, A., Lastname B. & Lastname C.
+        //Lastname A, Lastname B & Lastname
+        //Lastname A Lastname B & Lastname C
+        String[] teamMembers = refAuthor.split(test);
+
+        String lastMember;
+
+        Person teamMember;
+        author = Team.NewInstance();
+        if (teamMembers.length>1){
+            for(String member:teamMembers){
+                if (!member.trim().equals("")){
+                    teamMember = Person.NewInstance();
+                    teamMember.setTitleCache(member, true);
+                   ((Team)author).addTeamMember(teamMember);
+                }
+            }
+        }else{
+            author = Person.NewInstance();
+            author.setTitleCache(refAuthor, true);
+
+        }
+        author.getTitleCache();
+        return author;
+    }
 
 }
