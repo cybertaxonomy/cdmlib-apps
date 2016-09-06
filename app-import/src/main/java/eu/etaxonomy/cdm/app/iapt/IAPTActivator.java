@@ -38,7 +38,7 @@ public class IAPTActivator {
     public static final String DATA_FILE_0_100 = "fileURI-100.xls";
     public static final String DATA_FILE_FULL = "Registration_DB_from_BGBM17.xls";
     public static final String DATA_ENCODING_PROBLEMS = "encoding-problems.xls";
-    public static final String DATA_FILE = DATA_ENCODING_PROBLEMS;
+    public static final String DATA_FILE = DATA_FILE_FULL;
 
     //database validation status (create, update, validate ...)
     static DbSchemaValidation hbm2dll = DbSchemaValidation.CREATE;

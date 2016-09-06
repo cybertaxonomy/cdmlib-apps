@@ -72,10 +72,16 @@ public class IAPTExcelImport<CONFIG extends IAPTImportConfigurator> extends Simp
 
     private static final Pattern nomRefTokenizeP = Pattern.compile("^(.*):\\s([^\\.:]+)\\.(.*?)\\.?$");
     private static final Pattern[] nomRefPubDatePs = new Pattern[]{
+            // NOTE:
+            // The order of the patterns is extremely important!!!
+            //
             // all patterns cover the years 1700 - 1999
             Pattern.compile("^(?<year>1[7,8,9][0-9]{2})$"), // only year, like '1969'
-            Pattern.compile("^(?<day>[0-9]{1,2})([\\./])(?<month>[0-1]?[0-9])\\2(?<year>(?:1[7,8,9])?[0-9]{2})$"), // full date like 12.04.1969 or 12/04/1969
-            Pattern.compile("^(?:(?<day>[0-9]{1,2})[\\./]?\\s)?(?<monthName>[\\S\\D]+)\\s(?<year>(?:1[7,8,9])?[0-9]{2})$") // full date like 12. April 1969 or april 1999 or April 99
+            Pattern.compile("^(?<monthName>\\p{L}+\\.?)\\s(?<day>[0-9]{1,2})(?:st|rd|th)?\\.?,?\\s(?<year>(?:1[7,8,9])?[0-9]{2})$"), // full date like April 12, 1969 or april 12th 1999
+            Pattern.compile("^(?<monthName>\\p{L}+\\.?),?\\s(?<year>(?:1[7,8,9])?[0-9]{2})$"), // April 99 or April, 1999 or Apr. 12
+            Pattern.compile("^(?<day>[0-9]{1,2})([\\.\\-/])(?<month>[0-1]?[0-9])\\2(?<year>(?:1[7,8,9])?[0-9]{2})$"), // full date like 12.04.1969 or 12/04/1969 or 12-04-1969
+            Pattern.compile("^(?<month>[0-1]?[0-9])([\\.\\-/])(?<year>(?:1[7,8,9])?[0-9]{2})$"), // partial date like 04.1969 or 04/1969 or 04-1969
+            Pattern.compile("^(?<day>[0-9]{1,2})(?:[\\./]|th|rd)?\\s(?<monthName>\\p{L}+\\.?),?\\s(?<year>(?:1[7,8,9])?[0-9]{2})$"), // full date like 12. April 1969 or april 1999 or 22 Dec.1999
         };
     private static final Pattern typeSplitPattern =  Pattern.compile("^(?:\"*[Tt]ype: (?<type>.*?))(?:[Hh]olotype:(?<holotype>.*?))?(?:[Ii]sotype[^:]*:(?<isotype>.*))?$");
 
@@ -85,17 +91,25 @@ public class IAPTExcelImport<CONFIG extends IAPTImportConfigurator> extends Simp
         String[] fr = new String[]{"janvier", "février", "mars", "avril", "mai", "juin", "juillet", "août", "septembre", "octobre", "novembre", "décembre"};
         String[] de = new String[]{"januar", "februar", "märz", "april", "mai", "juni", "juli", "august", "september", "oktober", "november", "dezember"};
         String[] en = new String[]{"january", "february", "march", "april", "may", "june", "july", "august", "september", "october", "november", "december"};
+        String[] it = new String[]{"gennaio", "febbraio", "marzo", "aprile", "maggio", "giugno", "luglio", "agosto", "settembre", "ottobre", "novembre", "dicembre"};
+        String[] sp = new String[]{"enero", "febrero", "marzo", "abril", "mayo", "junio", "julio", "agosto", "septiembre", "octubre", "noviembre", "diciembre"};
+        String[] de_abbrev = new String[]{"jan.", "feb.", "märz", "apr.", "mai", "jun.", "jul.", "aug.", "sept.", "okt.", "nov.", "dez."};
+        String[] en_abbrev = new String[]{"jan.", "feb.", "mar.", "apr.", "may", "jun.", "jul.", "aug.", "sep.", "oct.", "nov.", "dec."};
+        String[] port = new String[]{"Janeiro", "Fevereiro", "Março", "Abril", "Maio", "Junho", "Julho", "Agosto", "Setembro", "Outubro", "Novembro", "Dezembro"};
+        String[] rom_num = new String[]{"i", "ii", "iii", "iv", "v", "vi", "vii", "viii", "ix", "x", "xi", "xii"};
 
-        String[][] perLang =  new String[][]{ck, de, fr, en};
+        String[][] perLang =  new String[][]{ck, de, fr, en, it, sp, port, de_abbrev, en_abbrev, rom_num};
 
         for (String[] months: perLang) {
             for(int m = 1; m < 13; m++){
-                monthFromNameMap.put(months[m - 1], m);
+                monthFromNameMap.put(months[m - 1].toLowerCase(), m);
             }
         }
 
         // special cases
-        monthFromNameMap.put("Mar", 3);
+        monthFromNameMap.put("mar", 3);
+        monthFromNameMap.put("dec", 12);
+        monthFromNameMap.put("Februari", 2);
     }
 
     enum TypesName {
@@ -123,6 +137,7 @@ public class IAPTExcelImport<CONFIG extends IAPTImportConfigurator> extends Simp
 
         String line = state.getCurrentLine() + ": ";
 
+        String regNumber = getValue(record, REGISTRATIONNO_PK, false);
         String titleCacheStr = getValue(record, FULLNAME, true);
         String nameStr = getValue(record, NAMESTRING, true);
         String authorStr = getValue(record, AUTHORSTRING, true);
@@ -167,7 +182,7 @@ public class IAPTExcelImport<CONFIG extends IAPTImportConfigurator> extends Simp
                         }
                         try {
                             nomRefPupMonthName = m2.group("monthName");
-                            nomRefPupMonth = monthFromName(nomRefPupMonthName);
+                            nomRefPupMonth = monthFromName(nomRefPupMonthName, regNumber);
                         } catch (IllegalArgumentException e){
                             // named capture group not found
                         }
@@ -189,8 +204,7 @@ public class IAPTExcelImport<CONFIG extends IAPTImportConfigurator> extends Simp
                     }
                 }
                 if(nomRefPupYear == null){
-                    logger.warn("Pub year not found in " + nomRefPupDate + " from " + nomRefStr );
-                    // FIXME in in J. Eur. Orchideen 30: 128. 30.09.97 (Vorabdr.).
+                    logger.warn("Pub date not found in [" + regNumber + "]: " + nomRefPupDate + " from " + nomRefStr );
                 }
                 List<DateTimeFieldType> types = new ArrayList<>();
                 List<Integer> values = new ArrayList<>();
@@ -303,11 +317,11 @@ public class IAPTExcelImport<CONFIG extends IAPTImportConfigurator> extends Simp
 
     }
 
-    private String monthFromName(String monthName) {
+    private String monthFromName(String monthName, String regNumber) {
 
         Integer month = monthFromNameMap.get(monthName.toLowerCase());
         if(month == null){
-            logger.warn("Unknown month: " + monthName);
+            logger.warn("Unknown month [" + regNumber + "]: " + monthName + " (" + monthName.toLowerCase() + ")");
             return null;
         } else {
             return month.toString();
