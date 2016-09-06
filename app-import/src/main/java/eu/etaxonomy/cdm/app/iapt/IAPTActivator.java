@@ -35,10 +35,10 @@ import eu.etaxonomy.cdm.model.reference.ReferenceFactory;
 public class IAPTActivator {
     private static final Logger logger = Logger.getLogger(IAPTActivator.class);
 
-    public static final String DATA_FILE_0_100 = "fileURI-100.xls";
+    public static final String DATA_FILE_0_100 = "iapt-100.xls";
     public static final String DATA_FILE_FULL = "Registration_DB_from_BGBM17.xls";
     public static final String DATA_ENCODING_PROBLEMS = "encoding-problems.xls";
-    public static final String DATA_FILE = DATA_FILE_FULL;
+    public static final String DATA_FILE = DATA_FILE_0_100;
 
     //database validation status (create, update, validate ...)
     static DbSchemaValidation hbm2dll = DbSchemaValidation.CREATE;

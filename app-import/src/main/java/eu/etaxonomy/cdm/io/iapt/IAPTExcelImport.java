@@ -28,6 +28,8 @@ import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 import org.joda.time.DateTimeFieldType;
 import org.joda.time.Partial;
+import org.joda.time.format.DateTimeFormat;
+import org.joda.time.format.DateTimeFormatter;
 import org.springframework.stereotype.Component;
 
 import java.util.*;
@@ -81,6 +83,7 @@ public class IAPTExcelImport<CONFIG extends IAPTImportConfigurator> extends Simp
             Pattern.compile("^(?<monthName>\\p{L}+\\.?),?\\s(?<year>(?:1[7,8,9])?[0-9]{2})$"), // April 99 or April, 1999 or Apr. 12
             Pattern.compile("^(?<day>[0-9]{1,2})([\\.\\-/])(?<month>[0-1]?[0-9])\\2(?<year>(?:1[7,8,9])?[0-9]{2})$"), // full date like 12.04.1969 or 12/04/1969 or 12-04-1969
             Pattern.compile("^(?<month>[0-1]?[0-9])([\\.\\-/])(?<year>(?:1[7,8,9])?[0-9]{2})$"), // partial date like 04.1969 or 04/1969 or 04-1969
+            Pattern.compile("^(?<year>(?:1[7,8,9])?[0-9]{2})([\\.\\-/])(?<month>[0-1]?[0-9])$"),//  partial date like 1999-04
             Pattern.compile("^(?<day>[0-9]{1,2})(?:[\\./]|th|rd)?\\s(?<monthName>\\p{L}+\\.?),?\\s(?<year>(?:1[7,8,9])?[0-9]{2})$"), // full date like 12. April 1969 or april 1999 or 22 Dec.1999
         };
     private static final Pattern typeSplitPattern =  Pattern.compile("^(?:\"*[Tt]ype: (?<type>.*?))(?:[Hh]olotype:(?<holotype>.*?))?(?:[Ii]sotype[^:]*:(?<isotype>.*))?$");
@@ -112,6 +115,8 @@ public class IAPTExcelImport<CONFIG extends IAPTImportConfigurator> extends Simp
         monthFromNameMap.put("Februari", 2);
     }
 
+    DateTimeFormatter formatterYear = DateTimeFormat.forPattern("yyyy");
+
     enum TypesName {
         type, holotype, isotype;
 
@@ -138,6 +143,7 @@ public class IAPTExcelImport<CONFIG extends IAPTImportConfigurator> extends Simp
         String line = state.getCurrentLine() + ": ";
 
         String regNumber = getValue(record, REGISTRATIONNO_PK, false);
+        String regStr = getValue(record, REGISTRATION, true);
         String titleCacheStr = getValue(record, FULLNAME, true);
         String nameStr = getValue(record, NAMESTRING, true);
         String authorStr = getValue(record, AUTHORSTRING, true);
@@ -149,13 +155,11 @@ public class IAPTExcelImport<CONFIG extends IAPTImportConfigurator> extends Simp
         String synSubstStr = getValue(record, SYNSUBSTSTR, true);
         String typeStr = getValue(record, TYPE, true);
 
+
         String nomRefTitle = null;
-        String nomRefDetail = null;
+        String nomRefDetail;
         String nomRefPupDate = null;
-        String nomRefPupDay = null;
-        String nomRefPupMonth = null;
-        String nomRefPupMonthName = null;
-        String nomRefPupYear = null;
+        Partial pupDate = null;
 
         // preprocess nomRef: separate citation, reference detail, publishing date
         if(!StringUtils.isEmpty(nomRefStr)){
@@ -166,68 +170,27 @@ public class IAPTExcelImport<CONFIG extends IAPTImportConfigurator> extends Simp
                 nomRefDetail = m.group(2);
                 nomRefPupDate = m.group(3).trim();
 
-                // nomRefDetail.replaceAll("[\\:\\.\\s]", ""); // TODO integrate into nomRefTokenizeP
-                for(Pattern p : nomRefPubDatePs){
-                    Matcher m2 = p.matcher(nomRefPupDate);
-                    if(m2.matches()){
-                        try {
-                            nomRefPupYear = m2.group("year");
-                        } catch (IllegalArgumentException e){
-                            // named capture group not found
-                        }
-                        try {
-                            nomRefPupMonth = m2.group("month");
-                        } catch (IllegalArgumentException e){
-                            // named capture group not found
-                        }
-                        try {
-                            nomRefPupMonthName = m2.group("monthName");
-                            nomRefPupMonth = monthFromName(nomRefPupMonthName, regNumber);
-                        } catch (IllegalArgumentException e){
-                            // named capture group not found
-                        }
-                        try {
-                            nomRefPupDay = m2.group("day");
-                        } catch (IllegalArgumentException e){
-                            // named capture group not found
-                        }
-
-                        if(nomRefPupYear == null){
-                            logger.error("nomRefPupYear in " + nomRefStr + " is  NULL" );
-                        }
-                        if(nomRefPupYear.length() == 2 ){
-                            // it is an abbreviated year from the 19** years
-                            nomRefPupYear = "19" + nomRefPupYear;
-                        }
-                        nomRefTitle = nomRefTitle + ": " + nomRefDetail + ". " + nomRefPupYear + ".";
-                        break;
-                    }
+                pupDate = parsePubDate(regNumber, nomRefStr, nomRefPupDate);
+                if (pupDate != null) {
+                    nomRefTitle = nomRefTitle + ": " + nomRefDetail + ". " + pupDate.toString(formatterYear) + ".";
                 }
-                if(nomRefPupYear == null){
-                    logger.warn("Pub date not found in [" + regNumber + "]: " + nomRefPupDate + " from " + nomRefStr );
-                }
-                List<DateTimeFieldType> types = new ArrayList<>();
-                List<Integer> values = new ArrayList<>();
-                if(nomRefPupYear != null){
-                    types.add(DateTimeFieldType.year());
-                    values.add(Integer.parseInt(nomRefPupYear));
-                }
-                if(nomRefPupMonth != null){
-                    types.add(DateTimeFieldType.monthOfYear());
-                    values.add(Integer.parseInt(nomRefPupMonth));
-                }
-                if(nomRefPupDay != null){
-                    types.add(DateTimeFieldType.dayOfMonth());
-                    values.add(Integer.parseInt(nomRefPupDay));
-                }
-                Partial pupDate = new Partial(types.toArray(new DateTimeFieldType[types.size()]), ArrayUtils.toPrimitive(values.toArray(new Integer[values.size()])));
-
             } else {
                 nomRefTitle = nomRefStr;
             }
         }
 
         BotanicalName taxonName = makeBotanicalName(state, titleCacheStr, nameStr, authorStr, nomRefTitle);
+
+        // always add the original strings of parsed data as annotation
+        taxonName.addAnnotation(Annotation.NewInstance("imported and parsed data strings:" +
+                        "\n -  '" + LITSTRING + "': "+ nomRefStr +
+                        "\n -  '" + TYPE + "': " + typeStr +
+                        "\n -  '" + REGISTRATION  + "': " + regStr
+                , AnnotationType.TECHNICAL(), Language.DEFAULT()));
+
+        if(pupDate != null) {
+            taxonName.getNomenclaturalReference().setDatePublished(TimePeriod.NewInstance(pupDate));
+        }
 
         if(!StringUtils.isEmpty(notesTxt)){
             notesTxt = notesTxt.replace("Notes: ", "").trim();
@@ -315,6 +278,79 @@ public class IAPTExcelImport<CONFIG extends IAPTImportConfigurator> extends Simp
 
         return taxon;
 
+    }
+
+    private Partial parsePubDate(String regNumber, String nomRefStr, String nomRefPupDate) {
+
+        Partial pupDate = null;
+        boolean parseError = false;
+        String nomRefPupDay = null;
+        String nomRefPupMonth = null;
+        String nomRefPupMonthName = null;
+        String nomRefPupYear = null;
+
+
+        // nomRefDetail.replaceAll("[\\:\\.\\s]", ""); // TODO integrate into nomRefTokenizeP
+        for(Pattern p : nomRefPubDatePs){
+            Matcher m2 = p.matcher(nomRefPupDate);
+            if(m2.matches()){
+                try {
+                    nomRefPupYear = m2.group("year");
+                } catch (IllegalArgumentException e){
+                    // named capture group not found
+                }
+                try {
+                    nomRefPupMonth = m2.group("month");
+                } catch (IllegalArgumentException e){
+                    // named capture group not found
+                }
+                try {
+                    nomRefPupMonthName = m2.group("monthName");
+                    nomRefPupMonth = monthFromName(nomRefPupMonthName, regNumber);
+                    if(nomRefPupMonth == null){
+                        parseError = true;
+                    }
+                } catch (IllegalArgumentException e){
+                    // named capture group not found
+                }
+                try {
+                    nomRefPupDay = m2.group("day");
+                } catch (IllegalArgumentException e){
+                    // named capture group not found
+                }
+
+                if(nomRefPupYear == null){
+                    logger.error("nomRefPupYear in " + nomRefStr + " is  NULL" );
+                    parseError = true;
+                }
+                if(nomRefPupYear.length() == 2 ){
+                    // it is an abbreviated year from the 19** years
+                    nomRefPupYear = "19" + nomRefPupYear;
+                }
+
+                break;
+            }
+        }
+        if(nomRefPupYear == null){
+            logger.warn("Pub date not found in [" + regNumber + "]: " + nomRefPupDate + " from " + nomRefStr );
+            parseError = true;
+        }
+        List<DateTimeFieldType> types = new ArrayList<>();
+        List<Integer> values = new ArrayList<>();
+        if(!parseError) {
+            types.add(DateTimeFieldType.year());
+            values.add(Integer.parseInt(nomRefPupYear));
+            if (nomRefPupMonth != null) {
+                types.add(DateTimeFieldType.monthOfYear());
+                values.add(Integer.parseInt(nomRefPupMonth));
+            }
+            if (nomRefPupDay != null) {
+                types.add(DateTimeFieldType.dayOfMonth());
+                values.add(Integer.parseInt(nomRefPupDay));
+            }
+            pupDate = new Partial(types.toArray(new DateTimeFieldType[types.size()]), ArrayUtils.toPrimitive(values.toArray(new Integer[values.size()])));
+        }
+        return pupDate;
     }
 
     private String monthFromName(String monthName, String regNumber) {
