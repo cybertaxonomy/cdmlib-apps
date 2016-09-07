@@ -82,6 +82,8 @@ public class IAPTExcelImport<CONFIG extends IAPTImportConfigurator> extends Simp
             Pattern.compile("^(?<monthName>\\p{L}+\\.?)\\s(?<day>[0-9]{1,2})(?:st|rd|th)?\\.?,?\\s(?<year>(?:1[7,8,9])?[0-9]{2})$"), // full date like April 12, 1969 or april 12th 1999
             Pattern.compile("^(?<monthName>\\p{L}+\\.?),?\\s(?<year>(?:1[7,8,9])?[0-9]{2})$"), // April 99 or April, 1999 or Apr. 12
             Pattern.compile("^(?<day>[0-9]{1,2})([\\.\\-/])(?<month>[0-1]?[0-9])\\2(?<year>(?:1[7,8,9])?[0-9]{2})$"), // full date like 12.04.1969 or 12/04/1969 or 12-04-1969
+            Pattern.compile("^(?<day>[0-9]{1,2})([\\.\\-/])(?<month>[IVX]{1,2})\\2(?<year>(?:1[7,8,9])?[0-9]{2})$"), // full date like 12-VI-1969
+            Pattern.compile("^(?:(?<day>[0-9]{1,2})\\sde\\s)(?<monthName>\\p{L}+)\\sde\\s(?<year>(?:1[7,8,9])?[0-9]{2})$"), // full and partial date like 12 de Enero de 1999 or Enero de 1999
             Pattern.compile("^(?<month>[0-1]?[0-9])([\\.\\-/])(?<year>(?:1[7,8,9])?[0-9]{2})$"), // partial date like 04.1969 or 04/1969 or 04-1969
             Pattern.compile("^(?<year>(?:1[7,8,9])?[0-9]{2})([\\.\\-/])(?<month>[0-1]?[0-9])$"),//  partial date like 1999-04
             Pattern.compile("^(?<day>[0-9]{1,2})(?:[\\./]|th|rd)?\\s(?<monthName>\\p{L}+\\.?),?\\s(?<year>(?:1[7,8,9])?[0-9]{2})$"), // full date like 12. April 1969 or april 1999 or 22 Dec.1999
