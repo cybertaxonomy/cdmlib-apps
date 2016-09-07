@@ -13,11 +13,11 @@ import eu.etaxonomy.cdm.api.facade.DerivedUnitFacade;
 import eu.etaxonomy.cdm.common.CdmUtils;
 import eu.etaxonomy.cdm.io.mexico.SimpleExcelTaxonImport;
 import eu.etaxonomy.cdm.io.mexico.SimpleExcelTaxonImportState;
+import eu.etaxonomy.cdm.model.agent.Institution;
 import eu.etaxonomy.cdm.model.common.*;
 import eu.etaxonomy.cdm.model.name.*;
-import eu.etaxonomy.cdm.model.occurrence.DerivedUnit;
-import eu.etaxonomy.cdm.model.occurrence.FieldUnit;
-import eu.etaxonomy.cdm.model.occurrence.SpecimenOrObservationType;
+import eu.etaxonomy.cdm.model.occurrence.*;
+import eu.etaxonomy.cdm.model.occurrence.Collection;
 import eu.etaxonomy.cdm.model.reference.Reference;
 import eu.etaxonomy.cdm.model.taxon.*;
 import eu.etaxonomy.cdm.strategy.parser.NonViralNameParserImpl;
@@ -86,9 +86,20 @@ public class IAPTExcelImport<CONFIG extends IAPTImportConfigurator> extends Simp
             Pattern.compile("^(?<year>(?:1[7,8,9])?[0-9]{2})([\\.\\-/])(?<month>[0-1]?[0-9])$"),//  partial date like 1999-04
             Pattern.compile("^(?<day>[0-9]{1,2})(?:[\\./]|th|rd)?\\s(?<monthName>\\p{L}+\\.?),?\\s(?<year>(?:1[7,8,9])?[0-9]{2})$"), // full date like 12. April 1969 or april 1999 or 22 Dec.1999
         };
-    private static final Pattern typeSplitPattern =  Pattern.compile("^(?:\"*[Tt]ype: (?<type>.*?))(?:[Hh]olotype:(?<holotype>.*?))?(?:[Ii]sotype[^:]*:(?<isotype>.*))?$");
+    private static final Pattern typeSplitPattern =  Pattern.compile("^(?:\"*[Tt]ype: (?<type>.*?))(?:[Hh]olotype:(?<holotype>.*?)\\.?)?(?:[Ii]sotype[^:]*:(?<isotype>.*)\\.?)?\\.?$");
+
+    // AccessionNumbers: , #.*, n°:?, 96/3293, No..*, -?\w{1,3}-[0-9\-/]*
+    private static final Pattern accessionNumberOnlyPattern = Pattern.compile("^(?<accNumber>(?:n°\\:?\\s?|#|No\\.?\\s?)?[\\d\\w\\-/]*)$");
+
+    private static final Pattern[] specimenTypePatterns = new Pattern[]{
+            Pattern.compile("^(?<colCode>[A-Z]+|CPC Micropaleontology Lab\\.?)\\s+(?:\\((?<institute>.*[^\\)])\\))(?<accNumber>.*)?$"), // like: GAUF (Gansu Agricultural University) No. 1207-1222
+            Pattern.compile("^(?<colCode>[A-Z]+|CPC Micropaleontology Lab\\.?)\\s+(?:Coll\\.\\s(?<subCollection>[^\\.,;]*)(.))(?<accNumber>.*)?$"), // like KASSEL Coll. Krasske, Praep. DII 78
+            Pattern.compile("^(?:Coll\\.\\s(?<subCollection>[^\\.,;]*)(.))(?<institute>.*)\\2(?<accNumber>.*)?$"), // like Coll. Lange-Bertalot, Bot. Inst., Univ. Frankfurt/Main, Germany Praep. Neukaledonien OTL 62
+            Pattern.compile("^(?<colCode>[A-Z]+)(?:\\s+(?<accNumber>.*))?$"), // identifies the Collection code and takes the rest as accessionNumber if any
+    };
 
     private static Map<String, Integer> monthFromNameMap = new HashMap<>();
+
     static {
         String[] ck = new String[]{"leden", "únor", "březen", "duben", "květen", "červen", "červenec ", "srpen", "září", "říjen", "listopad", "prosinec"};
         String[] fr = new String[]{"janvier", "février", "mars", "avril", "mai", "juin", "juillet", "août", "septembre", "octobre", "novembre", "décembre"};
@@ -115,7 +126,11 @@ public class IAPTExcelImport<CONFIG extends IAPTImportConfigurator> extends Simp
         monthFromNameMap.put("Februari", 2);
     }
 
+
     DateTimeFormatter formatterYear = DateTimeFormat.forPattern("yyyy");
+
+    private Map<String, Collection> collectionMap = new HashMap<>();
+
 
     enum TypesName {
         type, holotype, isotype;
@@ -179,7 +194,7 @@ public class IAPTExcelImport<CONFIG extends IAPTImportConfigurator> extends Simp
             }
         }
 
-        BotanicalName taxonName = makeBotanicalName(state, titleCacheStr, nameStr, authorStr, nomRefTitle);
+        BotanicalName taxonName = makeBotanicalName(state, regNumber, titleCacheStr, nameStr, authorStr, nomRefTitle);
 
         // always add the original strings of parsed data as annotation
         taxonName.addAnnotation(Annotation.NewInstance("imported and parsed data strings:" +
@@ -231,7 +246,7 @@ public class IAPTExcelImport<CONFIG extends IAPTImportConfigurator> extends Simp
         // Replaced Synonyms
         if(!StringUtils.isEmpty(fullSynSubstStr)){
             fullSynSubstStr = fullSynSubstStr.replace("Syn. subst.: ", "");
-            BotanicalName replacedSynonymName = makeBotanicalName(state, fullSynSubstStr, synSubstStr, null, null);
+            BotanicalName replacedSynonymName = makeBotanicalName(state, regNumber, fullSynSubstStr, synSubstStr, null, null);
             replacedSynonymName.addReplacedSynonym(taxonName, null, null, null);
             getNameService().save(replacedSynonymName);
         }
@@ -246,28 +261,7 @@ public class IAPTExcelImport<CONFIG extends IAPTImportConfigurator> extends Simp
 
         // Types
         if(!StringUtils.isEmpty(typeStr)){
-            Matcher m = typeSplitPattern.matcher(typeStr);
-
-            if(m.matches()){
-                String typeString = m.group(TypesName.type.name());
-                boolean isFieldUnit = typeStr.matches(".*([°']|\\d+\\s?m\\s|\\d+\\s?km\\s).*"); // check for location or unit m, km
-
-                if(isFieldUnit) {
-                    // type as fieldUnit
-                    FieldUnit fu = FieldUnit.NewInstance();
-                    fu.setTitleCache(typeString, true);
-                    getOccurrenceService().save(fu);
-
-                    // all others ..
-                    addSpecimenTypes(taxonName, fu, m.group(TypesName.holotype.name()), TypesName.holotype, false);
-                    addSpecimenTypes(taxonName, fu, m.group(TypesName.isotype.name()), TypesName.isotype, true);
-                } else {
-                    TaxonNameBase typeName = nameParser.parseFullName(typeString);
-                    taxonName.addNameTypeDesignation(typeName, null, null, null, NameTypeDesignationStatus.AUTOMATIC(), true, true, true, true);
-                }
-            }
-            getNameService().save(taxonName);
-
+            makeTypeData(typeStr, taxonName, regNumber);
         }
 
         getTaxonService().save(taxon);
@@ -278,6 +272,31 @@ public class IAPTExcelImport<CONFIG extends IAPTImportConfigurator> extends Simp
 
         return taxon;
 
+    }
+
+    private void makeTypeData(String typeStr, BotanicalName taxonName, String regNumber) {
+
+        Matcher m = typeSplitPattern.matcher(typeStr);
+
+        if(m.matches()){
+            String typeString = m.group(TypesName.type.name());
+            boolean isFieldUnit = typeStr.matches(".*([°']|\\d+\\s?m\\s|\\d+\\s?km\\s).*"); // check for location or unit m, km
+
+            if(isFieldUnit) {
+                // type as fieldUnit
+                FieldUnit fu = FieldUnit.NewInstance();
+                fu.setTitleCache(typeString, true);
+                getOccurrenceService().save(fu);
+
+                // all others ..
+                addSpecimenTypes(taxonName, fu, m.group(TypesName.holotype.name()), TypesName.holotype, false, regNumber);
+                addSpecimenTypes(taxonName, fu, m.group(TypesName.isotype.name()), TypesName.isotype, true, regNumber);
+            } else {
+                TaxonNameBase typeName = nameParser.parseFullName(typeString);
+                taxonName.addNameTypeDesignation(typeName, null, null, null, NameTypeDesignationStatus.AUTOMATIC(), true, true, true, true);
+            }
+        }
+        getNameService().save(taxonName);
     }
 
     private Partial parsePubDate(String regNumber, String nomRefStr, String nomRefPupDate) {
@@ -332,7 +351,7 @@ public class IAPTExcelImport<CONFIG extends IAPTImportConfigurator> extends Simp
             }
         }
         if(nomRefPupYear == null){
-            logger.warn("Pub date not found in [" + regNumber + "]: " + nomRefPupDate + " from " + nomRefStr );
+            logger.warn(csvReportLine(regNumber, "Pub date", nomRefPupDate, "in", nomRefStr, "not parsable"));
             parseError = true;
         }
         List<DateTimeFieldType> types = new ArrayList<>();
@@ -357,7 +376,7 @@ public class IAPTExcelImport<CONFIG extends IAPTImportConfigurator> extends Simp
 
         Integer month = monthFromNameMap.get(monthName.toLowerCase());
         if(month == null){
-            logger.warn("Unknown month [" + regNumber + "]: " + monthName + " (" + monthName.toLowerCase() + ")");
+            logger.warn(csvReportLine(regNumber, "Unknown month name", monthName));
             return null;
         } else {
             return month.toString();
@@ -365,40 +384,172 @@ public class IAPTExcelImport<CONFIG extends IAPTImportConfigurator> extends Simp
     }
 
 
-    private void addSpecimenTypes(BotanicalName taxonName, FieldUnit fieldUnit, String typeStr, TypesName typeName, boolean multiple){
+    private void addSpecimenTypes(BotanicalName taxonName, FieldUnit fieldUnit, String typeStr, TypesName typeName, boolean multiple, String regNumber){
+
         if(StringUtils.isEmpty(typeStr)){
             return;
         }
         typeStr = typeStr.trim().replaceAll("\\.$", "");
 
-        List<String> typeData = new ArrayList<>();
+        Collection collection = null;
+        DerivedUnit specimen = null;
+
+        List<DerivedUnit> specimens = new ArrayList<>();
         if(multiple){
             String[] tokens = typeStr.split("\\s?,\\s?");
             for (String t : tokens) {
+                // command to  list all complex parsabel types:
+                // csvcut -t -c RegistrationNo_Pk,Type iapt.csv | csvgrep -c Type -m "Holotype" | egrep -o 'Holotype:\s([A-Z]*\s)[^.]*?'
+                // csvcut -t -c RegistrationNo_Pk,Type iapt.csv | csvgrep -c Type -m "Holotype" | egrep -o 'Isotype[^:]*:\s([A-Z]*\s)[^.]*?'
+
                 if(!t.isEmpty()){
-                    typeData.add(t.trim());
+                    // trying to parse the string
+                    specimen = parseSpecimenType(fieldUnit, typeName, collection, t, regNumber);
+                    if(specimen != null){
+                        specimens.add(specimen);
+                    } else {
+                        // parsing was not successful make simple specimen
+                        specimens.add(makeSpecimenType(fieldUnit, t));
+                    }
                 }
             }
         } else {
-            typeData.add(typeStr.trim());
+            specimen = parseSpecimenType(fieldUnit, typeName, collection, typeStr, regNumber);
+            if(specimen != null) {
+                specimens.add(specimen);
+                // remember current collection
+                collection = specimen.getCollection();
+            } else {
+                // parsing was not successful make simple specimen
+                specimens.add(makeSpecimenType(fieldUnit, typeStr));
+            }
         }
 
-        for(String type : typeData){
-            DerivedUnitFacade facade = DerivedUnitFacade.NewInstance(SpecimenOrObservationType.OtherSpecimen, fieldUnit);
-            facade.setTitleCache(type, true);
-            DerivedUnit specimen = facade.innerDerivedUnit();
-            taxonName.addSpecimenTypeDesignation(specimen, typeName.status(), null, null, null, false, true);
+        for(DerivedUnit s : specimens){
+            taxonName.addSpecimenTypeDesignation(s, typeName.status(), null, null, null, false, true);
        }
     }
 
-    private BotanicalName makeBotanicalName(SimpleExcelTaxonImportState<CONFIG> state, String titleCacheStr, String nameStr,
+    private DerivedUnit makeSpecimenType(FieldUnit fieldUnit, String titleCache) {
+        DerivedUnit specimen;DerivedUnitFacade facade = DerivedUnitFacade.NewInstance(SpecimenOrObservationType.PreservedSpecimen, fieldUnit);
+        facade.setTitleCache(titleCache.trim(), true);
+        specimen = facade.innerDerivedUnit();
+        return specimen;
+    }
+
+    /**
+     *
+     * @param fieldUnit
+     * @param typeName
+     * @param collection
+     * @param text
+     * @param regNumber
+     * @return
+     */
+    private DerivedUnit parseSpecimenType(FieldUnit fieldUnit, TypesName typeName, Collection collection, String text, String regNumber) {
+
+        DerivedUnit specimen = null;
+
+        String collectionCode = null;
+        String subCollectionStr = null;
+        String instituteStr = null;
+        String accessionNumber = null;
+
+        boolean unusualAccessionNumber = false;
+
+        text = text.trim();
+
+        // 1.  For Isotypes often the accession number is noted alone if the
+        //     preceeding entry has a collection code.
+        if(typeName .equals(TypesName.isotype) && collection != null){
+            Matcher m = accessionNumberOnlyPattern.matcher(text);
+            if(m.matches()){
+                try {
+                    accessionNumber = m.group("accNumber");
+                    specimen = makeSpecimenType(fieldUnit, collection, accessionNumber);
+                } catch (IllegalArgumentException e){
+                    // match group acc_number not found
+                }
+            }
+        }
+
+        //2. try it the 'normal' way
+        if(specimen == null) {
+            for (Pattern p : specimenTypePatterns) {
+                Matcher m = p.matcher(text);
+                if (m.matches()) {
+                    // collection code is mandatory
+                    try {
+                        collectionCode = m.group("colCode");
+                    } catch (IllegalArgumentException e){
+                        logger.warn(csvReportLine(regNumber, "match group colCode not found"));
+                        continue;
+                    }
+                    try {
+                        subCollectionStr = m.group("subCollection");
+                    } catch (IllegalArgumentException e){
+                        // match group subCollection not found
+                    }
+                    try {
+                        instituteStr = m.group("institute");
+                    } catch (IllegalArgumentException e){
+                        // match group col_name not found
+                    }
+                    try {
+                        accessionNumber = m.group("accNumber");
+
+                        // try to improve the accessionNumber
+                        if(accessionNumber!= null) {
+                            accessionNumber = accessionNumber.trim();
+                            Matcher m2 = accessionNumberOnlyPattern.matcher(accessionNumber);
+                            String betterAccessionNumber = null;
+                            if (m2.matches()) {
+                                try {
+                                    betterAccessionNumber = m.group("accNumber");
+                                } catch (IllegalArgumentException e) {
+                                    // match group acc_number not found
+                                }
+                            }
+                            if (betterAccessionNumber != null) {
+                                accessionNumber = betterAccessionNumber;
+                            } else {
+                                unusualAccessionNumber = true;
+                            }
+                        }
+
+                    } catch (IllegalArgumentException e){
+                        // match group acc_number not found
+                    }
+
+                    collection = getCollection(collectionCode, instituteStr, subCollectionStr);
+                    specimen = makeSpecimenType(fieldUnit, collection, accessionNumber);
+                    break;
+                }
+            }
+        }
+        if(specimen == null) {
+            logger.warn(csvReportLine(regNumber, "Could not parse specimen type", typeName.name().toString(), text));
+        }
+        if(unusualAccessionNumber){
+            logger.warn(csvReportLine(regNumber, "Unusual accession number", typeName.name().toString(), text, accessionNumber));
+        }
+        return specimen;
+    }
+
+    private DerivedUnit makeSpecimenType(FieldUnit fieldUnit, Collection collection, String accessionNumber) {
+
+        DerivedUnitFacade facade = DerivedUnitFacade.NewInstance(SpecimenOrObservationType.PreservedSpecimen, fieldUnit);
+        facade.setCollection(collection);
+        facade.setAccessionNumber(accessionNumber);
+        return facade.innerDerivedUnit();
+    }
+
+    private BotanicalName makeBotanicalName(SimpleExcelTaxonImportState<CONFIG> state, String regNumber, String titleCacheStr, String nameStr,
                                             String authorStr, String nomRefTitle) {
 
         BotanicalName taxonName;// cache field for the taxonName.titleCache
         String taxonNameTitleCache = null;
         Map<String, AnnotationType> nameAnnotations = new HashMap<>();
-
-        String line = state.getCurrentLine() + ": ";
 
         // TitleCache preprocessing
         if(titleCacheStr.endsWith(ANNOTATION_MARKER_STRING) || (authorStr != null && authorStr.endsWith(ANNOTATION_MARKER_STRING))){
@@ -419,7 +570,7 @@ public class IAPTExcelImport<CONFIG extends IAPTImportConfigurator> extends Simp
 
         taxonNameTitleCache = taxonName.getTitleCache().trim();
         if (taxonName.isProtectedTitleCache()) {
-            logger.warn(line + "Name could not be parsed: " + titleCacheStr);
+            logger.warn(csvReportLine(regNumber, "Name could not be parsed", titleCacheStr));
         } else {
 
             boolean doRestoreTitleCacheStr = false;
@@ -440,17 +591,17 @@ public class IAPTExcelImport<CONFIG extends IAPTImportConfigurator> extends Simp
                 titleCacheCompareStr = titleCacheCompareStr.replaceAll(" et ", " & ");
             }
             if (!taxonNameTitleCache.equals(titleCacheCompareStr)) {
-                logger.warn(line + "The generated titleCache differs from the imported string : " + taxonNameTitleCache + " <> " + titleCacheStr + " will restore original titleCacheStr");
+                logger.warn(csvReportLine(regNumber, "The generated titleCache differs from the imported string", taxonNameTitleCache, " != ", titleCacheStr, " ==> original titleCacheStr has been restored"));
                 doRestoreTitleCacheStr = true;
             }
             if (!nameCache.trim().equals(nameCompareStr)) {
-                logger.warn(line + "The parsed nameCache differs from " + NAMESTRING + " : " + nameCache + " <> " + nameCompareStr);
+                logger.warn(csvReportLine(regNumber, "The parsed nameCache differs from field '" + NAMESTRING + "'", nameCache, " != ", nameCompareStr));
             }
 
             //  Author
             //nameParser.handleAuthors(taxonName, titleCacheStr, authorStr);
             //if (!titleCacheStr.equals(taxonName.getTitleCache())) {
-            //    logger.warn(line + "titleCache has changed after setting authors, will restore original titleCacheStr");
+            //    logger.warn(regNumber + ": titleCache has changed after setting authors, will restore original titleCacheStr");
             //    doRestoreTitleCacheStr = true;
             //}
 
@@ -506,6 +657,35 @@ public class IAPTExcelImport<CONFIG extends IAPTImportConfigurator> extends Simp
             state.setRootNode(rootNode);
         }
         return rootNode;
+    }
+
+    private Collection getCollection(String collectionCode, String instituteStr, String subCollectionStr){
+
+        Collection superCollection = null;
+        if(subCollectionStr != null){
+            superCollection = getCollection(collectionCode, instituteStr, null);
+            collectionCode = subCollectionStr;
+            instituteStr = null;
+        }
+
+        final String key = collectionCode + "-#i:" + StringUtils.defaultString(instituteStr);
+
+        Collection collection = collectionMap.get(key);
+
+        if(collection == null) {
+            collection = Collection.NewInstance();
+            collection.setCode(collectionCode);
+            if(instituteStr != null){
+                collection.setInstitute(Institution.NewNamedInstance(instituteStr));
+            }
+            if(superCollection != null){
+                collection.setSuperCollection(superCollection);
+            }
+            collectionMap.put(key, collection);
+            getCollectionService().save(collection);
+        }
+
+        return collection;
     }
 
 
@@ -592,7 +772,7 @@ public class IAPTExcelImport<CONFIG extends IAPTImportConfigurator> extends Simp
 	@Override
     protected void firstPass(SimpleExcelTaxonImportState<CONFIG> state) {
 
-        String lineNumber = state.getCurrentLine() + ": ";
+        String lineNumber = "L#" + state.getCurrentLine() + ": ";
         logger.setLevel(Level.DEBUG);
         HashMap<String, String> record = state.getOriginalRecord();
         logger.debug(lineNumber + record.toString());
@@ -751,6 +931,16 @@ public class IAPTExcelImport<CONFIG extends IAPTImportConfigurator> extends Simp
             getTermService().save(this.markerTypeFossil);
         }
         return markerTypeFossil;
+    }
+
+    private String csvReportLine(String regId, String message, String ... fields){
+        StringBuilder out = new StringBuilder("regID#");
+        out.append(regId).append(",\"").append(message).append('"');
+
+        for(String f : fields){
+            out.append(",\"").append(f).append('"');
+        }
+        return out.toString();
     }
 
 
