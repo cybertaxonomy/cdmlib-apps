@@ -14,6 +14,8 @@ import eu.etaxonomy.cdm.common.CdmUtils;
 import eu.etaxonomy.cdm.io.mexico.SimpleExcelTaxonImport;
 import eu.etaxonomy.cdm.io.mexico.SimpleExcelTaxonImportState;
 import eu.etaxonomy.cdm.model.agent.Institution;
+import eu.etaxonomy.cdm.model.agent.Person;
+import eu.etaxonomy.cdm.model.agent.TeamOrPersonBase;
 import eu.etaxonomy.cdm.model.common.*;
 import eu.etaxonomy.cdm.model.name.*;
 import eu.etaxonomy.cdm.model.occurrence.*;
@@ -73,22 +75,27 @@ public class IAPTExcelImport<CONFIG extends IAPTImportConfigurator> extends Simp
             REGISTRATIONNO_PK, HIGHERTAXON, FULLNAME, AUTHORSSPELLING, LITSTRING, REGISTRATION, TYPE, CAVEATS, FULLBASIONYM, FULLSYNSUBST, NOTESTXT, REGDATE, NAMESTRING, BASIONYMSTRING, SYNSUBSTSTR, AUTHORSTRING});
 
     private static final Pattern nomRefTokenizeP = Pattern.compile("^(.*):\\s([^\\.:]+)\\.(.*?)\\.?$");
-    private static final Pattern[] nomRefPubDatePs = new Pattern[]{
+    private static final Pattern[] datePatterns = new Pattern[]{
             // NOTE:
             // The order of the patterns is extremely important!!!
             //
             // all patterns cover the years 1700 - 1999
             Pattern.compile("^(?<year>1[7,8,9][0-9]{2})$"), // only year, like '1969'
             Pattern.compile("^(?<monthName>\\p{L}+\\.?)\\s(?<day>[0-9]{1,2})(?:st|rd|th)?\\.?,?\\s(?<year>(?:1[7,8,9])?[0-9]{2})$"), // full date like April 12, 1969 or april 12th 1999
-            Pattern.compile("^(?<monthName>\\p{L}+\\.?),?\\s(?<year>(?:1[7,8,9])?[0-9]{2})$"), // April 99 or April, 1999 or Apr. 12
-            Pattern.compile("^(?<day>[0-9]{1,2})([\\.\\-/])(?<month>[0-1]?[0-9])\\2(?<year>(?:1[7,8,9])?[0-9]{2})$"), // full date like 12.04.1969 or 12/04/1969 or 12-04-1969
+            Pattern.compile("^(?<monthName>\\p{L}+\\.?),?\\s?(?<year>(?:1[7,8,9])?[0-9]{2})$"), // April 99 or April, 1999 or Apr. 12
+            Pattern.compile("^(?<day>[0-9]{1,2})([\\.\\-/])(\\s?)(?<month>[0-1]?[0-9])\\2\\3(?<year>(?:1[7,8,9])?[0-9]{2})$"), // full date like 12.04.1969 or 12. 04. 1969 or 12/04/1969 or 12-04-1969
             Pattern.compile("^(?<day>[0-9]{1,2})([\\.\\-/])(?<month>[IVX]{1,2})\\2(?<year>(?:1[7,8,9])?[0-9]{2})$"), // full date like 12-VI-1969
-            Pattern.compile("^(?:(?<day>[0-9]{1,2})\\sde\\s)(?<monthName>\\p{L}+)\\sde\\s(?<year>(?:1[7,8,9])?[0-9]{2})$"), // full and partial date like 12 de Enero de 1999 or Enero de 1999
+            Pattern.compile("^(?:(?<day>[0-9]{1,2})(?:\\sde)\\s)(?<monthName>\\p{L}+)\\sde\\s(?<year>(?:1[7,8,9])?[0-9]{2})$"), // full and partial date like 12 de Enero de 1999 or Enero de 1999
             Pattern.compile("^(?<month>[0-1]?[0-9])([\\.\\-/])(?<year>(?:1[7,8,9])?[0-9]{2})$"), // partial date like 04.1969 or 04/1969 or 04-1969
             Pattern.compile("^(?<year>(?:1[7,8,9])?[0-9]{2})([\\.\\-/])(?<month>[0-1]?[0-9])$"),//  partial date like 1999-04
-            Pattern.compile("^(?<day>[0-9]{1,2})(?:[\\./]|th|rd)?\\s(?<monthName>\\p{L}+\\.?),?\\s(?<year>(?:1[7,8,9])?[0-9]{2})$"), // full date like 12. April 1969 or april 1999 or 22 Dec.1999
+            Pattern.compile("^(?<month>[IVX]{1,2})([\\.\\-/])(?<year>(?:1[7,8,9])?[0-9]{2})$"), // partial date like VI-1969
+            Pattern.compile("^(?<day>[0-9]{1,2})(?:[\\./]|th|rd|st)?\\s(?<monthName>\\p{L}+\\.?),?\\s?(?<year>(?:1[7,8,9])?[0-9]{2})$"), // full date like 12. April 1969 or april 1999 or 22 Dec.1999
         };
-    private static final Pattern typeSplitPattern =  Pattern.compile("^(?:\"*[Tt]ype: (?<type>.*?))(?:[Hh]olotype:(?<holotype>.*?)\\.?)?(?:[Ii]sotype[^:]*:(?<isotype>.*)\\.?)?\\.?$");
+    private static final Pattern typeSplitPattern =  Pattern.compile("^(?:\"*[Tt]ype: (?<fieldUnit>.*?))(?:[Hh]olotype:(?<holotype>.*?)\\.?)?(?:[Ii]sotype[^:]*:(?<isotype>.*)\\.?)?\\.?$");
+
+    private static final Pattern collectorPattern =  Pattern.compile(".*?\\(leg\\.\\s+([^\\)]*)\\)|.*?\\sleg\\.\\s+(.*?)\\.?$");
+    private static final Pattern collectionDataPattern =  Pattern.compile("^(?<collector>[^,]*),\\s?(?<detail>.*?)\\.?$");
+    private static final Pattern collectorsNumber =  Pattern.compile("^([nN]o\\.\\s.*)$");
 
     // AccessionNumbers: , #.*, n°:?, 96/3293, No..*, -?\w{1,3}-[0-9\-/]*
     private static final Pattern accessionNumberOnlyPattern = Pattern.compile("^(?<accNumber>(?:n°\\:?\\s?|#|No\\.?\\s?)?[\\d\\w\\-/]*)$");
@@ -96,7 +103,7 @@ public class IAPTExcelImport<CONFIG extends IAPTImportConfigurator> extends Simp
     private static final Pattern[] specimenTypePatterns = new Pattern[]{
             Pattern.compile("^(?<colCode>[A-Z]+|CPC Micropaleontology Lab\\.?)\\s+(?:\\((?<institute>.*[^\\)])\\))(?<accNumber>.*)?$"), // like: GAUF (Gansu Agricultural University) No. 1207-1222
             Pattern.compile("^(?<colCode>[A-Z]+|CPC Micropaleontology Lab\\.?)\\s+(?:Coll\\.\\s(?<subCollection>[^\\.,;]*)(.))(?<accNumber>.*)?$"), // like KASSEL Coll. Krasske, Praep. DII 78
-            Pattern.compile("^(?:Coll\\.\\s(?<subCollection>[^\\.,;]*)(.))(?<institute>.*)\\2(?<accNumber>.*)?$"), // like Coll. Lange-Bertalot, Bot. Inst., Univ. Frankfurt/Main, Germany Praep. Neukaledonien OTL 62
+            Pattern.compile("^(?:Coll\\.\\s(?<subCollection>[^\\.,;]*)(.))(?<institute>.*?)(?<accNumber>Praep\\..*)?$"), // like Coll. Lange-Bertalot, Bot. Inst., Univ. Frankfurt/Main, Germany Praep. Neukaledonien OTL 62
             Pattern.compile("^(?<colCode>[A-Z]+)(?:\\s+(?<accNumber>.*))?$"), // identifies the Collection code and takes the rest as accessionNumber if any
     };
 
@@ -135,7 +142,7 @@ public class IAPTExcelImport<CONFIG extends IAPTImportConfigurator> extends Simp
 
 
     enum TypesName {
-        type, holotype, isotype;
+        fieldUnit, holotype, isotype;
 
         public SpecimenTypeDesignationStatus status(){
             switch (this) {
@@ -187,9 +194,11 @@ public class IAPTExcelImport<CONFIG extends IAPTImportConfigurator> extends Simp
                 nomRefDetail = m.group(2);
                 nomRefPupDate = m.group(3).trim();
 
-                pupDate = parsePubDate(regNumber, nomRefStr, nomRefPupDate);
+                pupDate = parseDate(regNumber, nomRefPupDate);
                 if (pupDate != null) {
                     nomRefTitle = nomRefTitle + ": " + nomRefDetail + ". " + pupDate.toString(formatterYear) + ".";
+                } else {
+                    logger.warn(csvReportLine(regNumber, "Pub date", nomRefPupDate, "in", nomRefStr, "not parsable"));
                 }
             } else {
                 nomRefTitle = nomRefStr;
@@ -263,7 +272,7 @@ public class IAPTExcelImport<CONFIG extends IAPTImportConfigurator> extends Simp
 
         // Types
         if(!StringUtils.isEmpty(typeStr)){
-            makeTypeData(typeStr, taxonName, regNumber);
+            makeTypeData(typeStr, taxonName, regNumber, state);
         }
 
         getTaxonService().save(taxon);
@@ -276,98 +285,180 @@ public class IAPTExcelImport<CONFIG extends IAPTImportConfigurator> extends Simp
 
     }
 
-    private void makeTypeData(String typeStr, BotanicalName taxonName, String regNumber) {
+    private void makeTypeData(String typeStr, BotanicalName taxonName, String regNumber, SimpleExcelTaxonImportState<CONFIG> state) {
 
         Matcher m = typeSplitPattern.matcher(typeStr);
 
         if(m.matches()){
-            String typeString = m.group(TypesName.type.name());
-            boolean isFieldUnit = typeStr.matches(".*([°']|\\d+\\s?m\\s|\\d+\\s?km\\s).*"); // check for location or unit m, km
-
-            if(isFieldUnit) {
-                // type as fieldUnit
-                FieldUnit fu = FieldUnit.NewInstance();
-                fu.setTitleCache(typeString, true);
-                getOccurrenceService().save(fu);
-
-                // all others ..
-                addSpecimenTypes(taxonName, fu, m.group(TypesName.holotype.name()), TypesName.holotype, false, regNumber);
-                addSpecimenTypes(taxonName, fu, m.group(TypesName.isotype.name()), TypesName.isotype, true, regNumber);
-            } else {
-                TaxonNameBase typeName = nameParser.parseFullName(typeString);
-                taxonName.addNameTypeDesignation(typeName, null, null, null, NameTypeDesignationStatus.AUTOMATIC(), true, true, true, true);
+            String fieldUnitStr = m.group(TypesName.fieldUnit.name());
+            // boolean isFieldUnit = typeStr.matches(".*([°']|\\d+\\s?m\\s|\\d+\\s?km\\s).*"); // check for location or unit m, km // makes no sense!!!!
+            FieldUnit fieldUnit = parseFieldUnit(fieldUnitStr, regNumber, state);
+            if(fieldUnit == null) {
+                // create a field unit with only a titleCache using the fieldUnitStr substring
+                fieldUnit = FieldUnit.NewInstance();
+                fieldUnit.setTitleCache(fieldUnitStr, true);
+                getOccurrenceService().save(fieldUnit);
             }
+            getOccurrenceService().save(fieldUnit);
+
+            // all others ..
+            addSpecimenTypes(taxonName, fieldUnit, m.group(TypesName.holotype.name()), TypesName.holotype, false, regNumber);
+            addSpecimenTypes(taxonName, fieldUnit, m.group(TypesName.isotype.name()), TypesName.isotype, true, regNumber);
+
+        } else {
+            // create a field unit with only a titleCache using the full typeStr
+            FieldUnit fieldUnit = FieldUnit.NewInstance();
+            fieldUnit.setTitleCache(typeStr, true);
+            getOccurrenceService().save(fieldUnit);
+            logger.warn(csvReportLine(regNumber, "Type field can not be parsed", typeStr));
         }
         getNameService().save(taxonName);
     }
 
-    private Partial parsePubDate(String regNumber, String nomRefStr, String nomRefPupDate) {
+    /**
+     * Currently only parses the collector, fieldNumber and the collection date.
+     *
+     * @param fieldUnitStr
+     * @param regNumber
+     * @param state
+     * @return null if the fieldUnitStr could not be parsed
+     */
+    private FieldUnit parseFieldUnit(String fieldUnitStr, String regNumber, SimpleExcelTaxonImportState<CONFIG> state) {
+
+        FieldUnit fieldUnit = null;
+
+        Matcher m1 = collectorPattern.matcher(fieldUnitStr);
+        if(m1.matches()){
+            String collectionData = m1.group(1); // like (leg. Metzeltin, 30. 9. 1996)
+            if(collectionData == null){
+                collectionData = m1.group(2); // like leg. Metzeltin, 30. 9. 1996
+            }
+            if(collectionData == null){
+                return null;
+            }
+
+            String collectorStr = null;
+            String detailStr = null;
+            Partial date = null;
+            String fieldNumber = null;
+
+            Matcher m2 = collectionDataPattern.matcher(collectionData);
+            if(m2.matches()){
+                collectorStr = m2.group("collector");
+                detailStr = m2.group("detail");
+
+                // Try to make sense of the detailStr
+                if(detailStr != null){
+                    detailStr = detailStr.trim();
+                    // 1. try to parse as date
+                    date = parseDate(regNumber, detailStr);
+                    if(date == null){
+                        // 2. try to parse as number
+                        if(collectorsNumber.matcher(detailStr).matches()){
+                            fieldNumber = detailStr;
+                        }
+                    }
+                }
+                if(date == null && fieldNumber == null){
+                    // detailed parsing not possible, so need fo fallback
+                    collectorStr = collectionData;
+                }
+            }
+
+            if(collectorStr != null) {
+                fieldUnit = FieldUnit.NewInstance();
+                GatheringEvent ge = GatheringEvent.NewInstance();
+
+                TeamOrPersonBase agent =  state.getAgentBase(collectorStr);
+                if(agent == null) {
+                    agent = Person.NewTitledInstance(collectorStr);
+                    getAgentService().save(agent);
+                    state.putAgentBase(collectorStr, agent);
+                }
+                ge.setCollector(agent);
+
+                if(date != null){
+                    ge.setGatheringDate(date);
+                }
+
+                getEventBaseService().save(ge);
+                fieldUnit.setGatheringEvent(ge);
+
+                if(fieldNumber != null) {
+                    fieldUnit.setFieldNumber(fieldNumber);
+                }
+                getOccurrenceService().save(fieldUnit);
+            }
+        }
+
+        return fieldUnit;
+    }
+
+    private Partial parseDate(String regNumber, String dateStr) {
 
         Partial pupDate = null;
         boolean parseError = false;
-        String nomRefPupDay = null;
-        String nomRefPupMonth = null;
-        String nomRefPupMonthName = null;
-        String nomRefPupYear = null;
 
+        String day = null;
+        String month = null;
+        String monthName = null;
+        String year = null;
 
-        // nomRefDetail.replaceAll("[\\:\\.\\s]", ""); // TODO integrate into nomRefTokenizeP
-        for(Pattern p : nomRefPubDatePs){
-            Matcher m2 = p.matcher(nomRefPupDate);
+        for(Pattern p : datePatterns){
+            Matcher m2 = p.matcher(dateStr);
             if(m2.matches()){
                 try {
-                    nomRefPupYear = m2.group("year");
+                    year = m2.group("year");
                 } catch (IllegalArgumentException e){
                     // named capture group not found
                 }
                 try {
-                    nomRefPupMonth = m2.group("month");
+                    month = m2.group("month");
                 } catch (IllegalArgumentException e){
                     // named capture group not found
                 }
+
                 try {
-                    nomRefPupMonthName = m2.group("monthName");
-                    nomRefPupMonth = monthFromName(nomRefPupMonthName, regNumber);
-                    if(nomRefPupMonth == null){
+                    monthName = m2.group("monthName");
+                    month = monthFromName(monthName, regNumber);
+                    if(month == null){
                         parseError = true;
                     }
                 } catch (IllegalArgumentException e){
                     // named capture group not found
                 }
                 try {
-                    nomRefPupDay = m2.group("day");
+                    day = m2.group("day");
                 } catch (IllegalArgumentException e){
                     // named capture group not found
                 }
 
-                if(nomRefPupYear == null){
-                    logger.error("nomRefPupYear in " + nomRefStr + " is  NULL" );
+                if(year != null){
+                    if (year.length() == 2) {
+                        // it is an abbreviated year from the 19** years
+                        year = "19" + year;
+                    }
+                    break;
+                } else {
                     parseError = true;
                 }
-                if(nomRefPupYear.length() == 2 ){
-                    // it is an abbreviated year from the 19** years
-                    nomRefPupYear = "19" + nomRefPupYear;
-                }
-
-                break;
             }
         }
-        if(nomRefPupYear == null){
-            logger.warn(csvReportLine(regNumber, "Pub date", nomRefPupDate, "in", nomRefStr, "not parsable"));
+        if(year == null){
             parseError = true;
         }
         List<DateTimeFieldType> types = new ArrayList<>();
         List<Integer> values = new ArrayList<>();
         if(!parseError) {
             types.add(DateTimeFieldType.year());
-            values.add(Integer.parseInt(nomRefPupYear));
-            if (nomRefPupMonth != null) {
+            values.add(Integer.parseInt(year));
+            if (month != null) {
                 types.add(DateTimeFieldType.monthOfYear());
-                values.add(Integer.parseInt(nomRefPupMonth));
+                values.add(Integer.parseInt(month));
             }
-            if (nomRefPupDay != null) {
+            if (day != null) {
                 types.add(DateTimeFieldType.dayOfMonth());
-                values.add(Integer.parseInt(nomRefPupDay));
+                values.add(Integer.parseInt(day));
             }
             pupDate = new Partial(types.toArray(new DateTimeFieldType[types.size()]), ArrayUtils.toPrimitive(values.toArray(new Integer[values.size()])));
         }
@@ -484,8 +575,7 @@ public class IAPTExcelImport<CONFIG extends IAPTImportConfigurator> extends Simp
                     try {
                         collectionCode = m.group("colCode");
                     } catch (IllegalArgumentException e){
-                        logger.warn(csvReportLine(regNumber, "match group colCode not found"));
-                        continue;
+                        // match group colCode not found
                     }
                     try {
                         subCollectionStr = m.group("subCollection");
@@ -523,6 +613,10 @@ public class IAPTExcelImport<CONFIG extends IAPTImportConfigurator> extends Simp
                         // match group acc_number not found
                     }
 
+                    if(collectionCode == null && instituteStr == null){
+                        logger.warn(csvReportLine(regNumber, "neither 'collectionCode' nor 'institute' found in ", text));
+                        continue;
+                    }
                     collection = getCollection(collectionCode, instituteStr, subCollectionStr);
                     specimen = makeSpecimenType(fieldUnit, collection, accessionNumber);
                     break;
@@ -530,7 +624,7 @@ public class IAPTExcelImport<CONFIG extends IAPTImportConfigurator> extends Simp
             }
         }
         if(specimen == null) {
-            logger.warn(csvReportLine(regNumber, "Could not parse specimen type", typeName.name().toString(), text));
+            logger.warn(csvReportLine(regNumber, "Could not parse specimen fieldUnit", typeName.name().toString(), text));
         }
         if(unusualAccessionNumber){
             logger.warn(csvReportLine(regNumber, "Unusual accession number", typeName.name().toString(), text, accessionNumber));
@@ -542,7 +636,9 @@ public class IAPTExcelImport<CONFIG extends IAPTImportConfigurator> extends Simp
 
         DerivedUnitFacade facade = DerivedUnitFacade.NewInstance(SpecimenOrObservationType.PreservedSpecimen, fieldUnit);
         facade.setCollection(collection);
-        facade.setAccessionNumber(accessionNumber);
+        if(accessionNumber != null){
+            facade.setAccessionNumber(accessionNumber);
+        }
         return facade.innerDerivedUnit();
     }
 

@@ -39,7 +39,8 @@ public class IAPTActivator {
     public static final String DATA_FILE_FULL = "Registration_DB_from_BGBM17.xls";
     public static final String DATA_ENCODING_PROBLEMS = "encoding-problems.xls";
     public static final String DATA_IAPT_TYPES_100 = "iapt-types-100.xls";
-    public static final String DATA_FILE = DATA_FILE_FULL;
+    public static final String DATA_TYPE_LEG_100 = "iapt-type-leg-100.xls";
+    public static final String DATA_FILE = DATA_TYPE_LEG_100;   
 
     //database validation status (create, update, validate ...)
     static DbSchemaValidation hbm2dll = DbSchemaValidation.CREATE;
