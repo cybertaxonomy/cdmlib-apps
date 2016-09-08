@@ -295,6 +295,7 @@ public class IAPTExcelImport<CONFIG extends IAPTImportConfigurator> extends Simp
             FieldUnit fieldUnit = parseFieldUnit(fieldUnitStr, regNumber, state);
             if(fieldUnit == null) {
                 // create a field unit with only a titleCache using the fieldUnitStr substring
+                logger.warn(csvReportLine(regNumber, "Type: fielUnitStr can not be parsed", fieldUnitStr));
                 fieldUnit = FieldUnit.NewInstance();
                 fieldUnit.setTitleCache(fieldUnitStr, true);
                 getOccurrenceService().save(fieldUnit);
@@ -310,7 +311,7 @@ public class IAPTExcelImport<CONFIG extends IAPTImportConfigurator> extends Simp
             FieldUnit fieldUnit = FieldUnit.NewInstance();
             fieldUnit.setTitleCache(typeStr, true);
             getOccurrenceService().save(fieldUnit);
-            logger.warn(csvReportLine(regNumber, "Type field can not be parsed", typeStr));
+            logger.warn(csvReportLine(regNumber, "Type: field 'Type' can not be parsed", typeStr));
         }
         getNameService().save(taxonName);
     }
@@ -614,7 +615,7 @@ public class IAPTExcelImport<CONFIG extends IAPTImportConfigurator> extends Simp
                     }
 
                     if(collectionCode == null && instituteStr == null){
-                        logger.warn(csvReportLine(regNumber, "neither 'collectionCode' nor 'institute' found in ", text));
+                        logger.warn(csvReportLine(regNumber, "Type: neither 'collectionCode' nor 'institute' found in ", text));
                         continue;
                     }
                     collection = getCollection(collectionCode, instituteStr, subCollectionStr);
@@ -624,10 +625,10 @@ public class IAPTExcelImport<CONFIG extends IAPTImportConfigurator> extends Simp
             }
         }
         if(specimen == null) {
-            logger.warn(csvReportLine(regNumber, "Could not parse specimen fieldUnit", typeName.name().toString(), text));
+            logger.warn(csvReportLine(regNumber, "Type: Could not parse specimen", typeName.name().toString(), text));
         }
         if(unusualAccessionNumber){
-            logger.warn(csvReportLine(regNumber, "Unusual accession number", typeName.name().toString(), text, accessionNumber));
+            logger.warn(csvReportLine(regNumber, "Type: Unusual accession number", typeName.name().toString(), text, accessionNumber));
         }
         return specimen;
     }
