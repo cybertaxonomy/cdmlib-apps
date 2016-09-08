@@ -176,6 +176,8 @@ public class IAPTExcelImport<CONFIG extends IAPTImportConfigurator> extends Simp
         String notesTxt = getValue(record, NOTESTXT, true);
         String caveats = getValue(record, CAVEATS, true);
         String fullSynSubstStr = getValue(record, FULLSYNSUBST, true);
+        String fullBasionymStr = getValue(record, FULLBASIONYM, true);
+        String basionymNameStr = getValue(record, FULLBASIONYM, true);
         String synSubstStr = getValue(record, SYNSUBSTSTR, true);
         String typeStr = getValue(record, TYPE, true);
 
@@ -226,7 +228,8 @@ public class IAPTExcelImport<CONFIG extends IAPTImportConfigurator> extends Simp
             caveats = caveats.replace("Caveats: ", "").trim();
             taxonName.addAnnotation(Annotation.NewInstance(caveats, annotationTypeCaveats(), Language.DEFAULT()));
         }
-        //
+
+        getNameService().save(taxonName);
 
         // Namerelations
         if(!StringUtils.isEmpty(authorsSpelling)){
@@ -264,6 +267,18 @@ public class IAPTExcelImport<CONFIG extends IAPTImportConfigurator> extends Simp
 
         Reference sec = state.getConfig().getSecReference();
         Taxon taxon = Taxon.NewInstance(taxonName, sec);
+
+        // Basionym
+        if(fullBasionymStr != null){
+            fullBasionymStr = fullBasionymStr.replaceAll("^\\w*:\\s", ""); // Strip off the leading 'Basionym: "
+            BotanicalName basionym = makeBotanicalName(state, regNumber, fullBasionymStr, basionymNameStr, null, null);
+            getNameService().save(basionym);
+            taxonName.addBasionym(basionym);
+
+            Synonym syn = Synonym.NewInstance(basionym, sec);
+            taxon.addSynonym(syn, SynonymRelationshipType.HOMOTYPIC_SYNONYM_OF());
+            getTaxonService().save(syn);
+        }
 
         // Markers
         if(isFossil){
@@ -654,7 +669,9 @@ public class IAPTExcelImport<CONFIG extends IAPTImportConfigurator> extends Simp
         if(titleCacheStr.endsWith(ANNOTATION_MARKER_STRING) || (authorStr != null && authorStr.endsWith(ANNOTATION_MARKER_STRING))){
             nameAnnotations.put("Author abbreviation not checked.", AnnotationType.EDITORIAL());
             titleCacheStr = titleCacheStr.replace(ANNOTATION_MARKER_STRING, "").trim();
-            authorStr = authorStr.replace(ANNOTATION_MARKER_STRING, "").trim();
+            if(authorStr != null) {
+                authorStr = authorStr.replace(ANNOTATION_MARKER_STRING, "").trim();
+            }
         }
 
         // parse the full taxon name
