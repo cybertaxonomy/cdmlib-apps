@@ -310,7 +310,7 @@ public class IAPTExcelImport<CONFIG extends IAPTImportConfigurator> extends Simp
             FieldUnit fieldUnit = parseFieldUnit(fieldUnitStr, regNumber, state);
             if(fieldUnit == null) {
                 // create a field unit with only a titleCache using the fieldUnitStr substring
-                logger.warn(csvReportLine(regNumber, "Type: fielUnitStr can not be parsed", fieldUnitStr));
+                logger.warn(csvReportLine(regNumber, "Type: fieldUnitStr can not be parsed", fieldUnitStr));
                 fieldUnit = FieldUnit.NewInstance();
                 fieldUnit.setTitleCache(fieldUnitStr, true);
                 getOccurrenceService().save(fieldUnit);
