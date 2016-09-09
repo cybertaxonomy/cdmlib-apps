@@ -302,7 +302,6 @@ public class IAPTExcelImport<CONFIG extends IAPTImportConfigurator> extends Simp
         }
 
         return taxon;
-
     }
 
     private void makeTypeData(String typeStr, BotanicalName taxonName, String regNumber, SimpleExcelTaxonImportState<CONFIG> state) {
