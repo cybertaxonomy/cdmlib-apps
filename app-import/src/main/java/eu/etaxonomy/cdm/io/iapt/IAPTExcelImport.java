@@ -21,6 +21,7 @@ import eu.etaxonomy.cdm.model.name.*;
 import eu.etaxonomy.cdm.model.occurrence.*;
 import eu.etaxonomy.cdm.model.occurrence.Collection;
 import eu.etaxonomy.cdm.model.reference.Reference;
+import eu.etaxonomy.cdm.model.reference.ReferenceType;
 import eu.etaxonomy.cdm.model.taxon.*;
 import eu.etaxonomy.cdm.strategy.parser.NonViralNameParserImpl;
 import org.apache.commons.lang.ArrayUtils;
@@ -74,7 +75,7 @@ public class IAPTExcelImport<CONFIG extends IAPTImportConfigurator> extends Simp
     private  static List<String> expectedKeys= Arrays.asList(new String[]{
             REGISTRATIONNO_PK, HIGHERTAXON, FULLNAME, AUTHORSSPELLING, LITSTRING, REGISTRATION, TYPE, CAVEATS, FULLBASIONYM, FULLSYNSUBST, NOTESTXT, REGDATE, NAMESTRING, BASIONYMSTRING, SYNSUBSTSTR, AUTHORSTRING});
 
-    private static final Pattern nomRefTokenizeP = Pattern.compile("^(.*):\\s([^\\.:]+)\\.(.*?)\\.?$");
+    private static final Pattern nomRefTokenizeP = Pattern.compile("^(?<title>.*):\\s(?<detail>[^\\.:]+)\\.(?<date>.*?)(?:\\s\\((?<issue>[^\\)]*)\\)\\s*)\\.?$");
     private static final Pattern[] datePatterns = new Pattern[]{
             // NOTE:
             // The order of the patterns is extremely important!!!
@@ -164,8 +165,6 @@ public class IAPTExcelImport<CONFIG extends IAPTImportConfigurator> extends Simp
     private Taxon makeTaxon(HashMap<String, String> record, SimpleExcelTaxonImportState<CONFIG> state,
                             TaxonNode higherTaxonNode, boolean isFossil) {
 
-        String line = state.getCurrentLine() + ": ";
-
         String regNumber = getValue(record, REGISTRATIONNO_PK, false);
         String regStr = getValue(record, REGISTRATION, true);
         String titleCacheStr = getValue(record, FULLNAME, true);
@@ -185,6 +184,7 @@ public class IAPTExcelImport<CONFIG extends IAPTImportConfigurator> extends Simp
         String nomRefTitle = null;
         String nomRefDetail;
         String nomRefPupDate = null;
+        String nomRefIssue = null;
         Partial pupDate = null;
 
         // preprocess nomRef: separate citation, reference detail, publishing date
@@ -192,9 +192,10 @@ public class IAPTExcelImport<CONFIG extends IAPTImportConfigurator> extends Simp
             nomRefStr = nomRefStr.trim();
             Matcher m = nomRefTokenizeP.matcher(nomRefStr);
             if(m.matches()){
-                nomRefTitle = m.group(1);
-                nomRefDetail = m.group(2);
-                nomRefPupDate = m.group(3).trim();
+                nomRefTitle = m.group("title");
+                nomRefDetail = m.group("detail");
+                nomRefPupDate = m.group("date").trim();
+                nomRefIssue = m.group("issue");
 
                 pupDate = parseDate(regNumber, nomRefPupDate);
                 if (pupDate != null) {
@@ -218,6 +219,10 @@ public class IAPTExcelImport<CONFIG extends IAPTImportConfigurator> extends Simp
 
         if(pupDate != null) {
             taxonName.getNomenclaturalReference().setDatePublished(TimePeriod.NewInstance(pupDate));
+        }
+        if(nomRefIssue != null) {
+            taxonName.getNomenclaturalReference().setType(ReferenceType.Book);
+            ((Reference)taxonName.getNomenclaturalReference()).setVolume(nomRefIssue);
         }
 
         if(!StringUtils.isEmpty(notesTxt)){
