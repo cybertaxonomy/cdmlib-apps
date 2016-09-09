@@ -40,7 +40,8 @@ public class IAPTActivator {
     public static final String DATA_ENCODING_PROBLEMS = "encoding-problems.xls";
     public static final String DATA_IAPT_TYPES_100 = "iapt-types-100.xls";
     public static final String DATA_TYPE_LEG_100 = "iapt-type-leg-100.xls";
-    public static final String DATA_FILE = DATA_TYPE_LEG_100;
+    public static final String DATA_NAME_TYPES = "iapt-name-types.xls";
+    public static final String DATA_FILE = DATA_NAME_TYPES;
 
     //database validation status (create, update, validate ...)
     static DbSchemaValidation hbm2dll = DbSchemaValidation.CREATE;
@@ -133,7 +134,6 @@ public class IAPTActivator {
      * @param args
      */
     public static void main(String[] args) {
-
         IAPTActivator me = new IAPTActivator();
         me.doImport(cdmDestination);
     }

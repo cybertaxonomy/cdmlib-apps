@@ -24,6 +24,7 @@ import eu.etaxonomy.cdm.model.reference.Reference;
 import eu.etaxonomy.cdm.model.reference.ReferenceType;
 import eu.etaxonomy.cdm.model.taxon.*;
 import eu.etaxonomy.cdm.strategy.parser.NonViralNameParserImpl;
+import eu.etaxonomy.cdm.strategy.parser.ParserProblem;
 import org.apache.commons.lang.ArrayUtils;
 import org.apache.commons.lang.StringEscapeUtils;
 import org.apache.commons.lang.StringUtils;
@@ -92,7 +93,11 @@ public class IAPTExcelImport<CONFIG extends IAPTImportConfigurator> extends Simp
             Pattern.compile("^(?<month>[IVX]{1,2})([\\.\\-/])(?<year>(?:1[7,8,9])?[0-9]{2})$"), // partial date like VI-1969
             Pattern.compile("^(?<day>[0-9]{1,2})(?:[\\./]|th|rd|st)?\\s(?<monthName>\\p{L}+\\.?),?\\s?(?<year>(?:1[7,8,9])?[0-9]{2})$"), // full date like 12. April 1969 or april 1999 or 22 Dec.1999
         };
-    private static final Pattern typeSplitPattern =  Pattern.compile("^(?:\"*[Tt]ype: (?<fieldUnit>.*?))(?:[Hh]olotype:(?<holotype>.*?)\\.?)?(?:[Ii]sotype[^:]*:(?<isotype>.*)\\.?)?\\.?$");
+    private static final Pattern typeSpecimenSplitPattern =  Pattern.compile("^(?:\"*[Tt]ype: (?<fieldUnit>.*?))(?:[Hh]olotype:(?<holotype>.*?)\\.?)?(?:[Ii]sotype[^:]*:(?<isotype>.*)\\.?)?\\.?$");
+
+    private static final Pattern typeNameBasionymPattern =  Pattern.compile("\\([Bb]asionym\\s?\\:\\s?(?<basionymName>[^\\)]*).*$");
+    private static final Pattern typeNameNotePattern =  Pattern.compile("\\[([^\\[]*)"); // matches the inner of '[...]'
+    private static final Pattern typeNameSpecialSplitPattern =  Pattern.compile("(?<note>.*\\;.*?)\\:(?<agent>)\\;(<name>.*)");
 
     private static final Pattern collectorPattern =  Pattern.compile(".*?(?<fullStr1>\\(leg\\.\\s+(?<data1>[^\\)]*)\\))|.*?(?<fullStr2>\\sleg\\.\\s+(?<data2>.*?)\\.?)$");
     private static final Pattern collectionDataPattern =  Pattern.compile("^(?<collector>[^,]*),\\s?(?<detail>.*?)\\.?$");
@@ -292,7 +297,12 @@ public class IAPTExcelImport<CONFIG extends IAPTImportConfigurator> extends Simp
 
         // Types
         if(!StringUtils.isEmpty(typeStr)){
-            makeTypeData(typeStr, taxonName, regNumber, state);
+
+            if(taxonName.getRank().isSpecies() || taxonName.getRank().isLower(Rank.SPECIES())) {
+                makeSpecimenTypeData(typeStr, taxonName, regNumber, state);
+            } else {
+                makeNameTypeData(typeStr, taxonName, regNumber, state);
+            }
         }
 
         getTaxonService().save(taxon);
@@ -304,9 +314,9 @@ public class IAPTExcelImport<CONFIG extends IAPTImportConfigurator> extends Simp
         return taxon;
     }
 
-    private void makeTypeData(String typeStr, BotanicalName taxonName, String regNumber, SimpleExcelTaxonImportState<CONFIG> state) {
+    private void makeSpecimenTypeData(String typeStr, BotanicalName taxonName, String regNumber, SimpleExcelTaxonImportState<CONFIG> state) {
 
-        Matcher m = typeSplitPattern.matcher(typeStr);
+        Matcher m = typeSpecimenSplitPattern.matcher(typeStr);
 
         if(m.matches()){
             String fieldUnitStr = m.group(TypesName.fieldUnit.name());
@@ -333,6 +343,76 @@ public class IAPTExcelImport<CONFIG extends IAPTImportConfigurator> extends Simp
             logger.warn(csvReportLine(regNumber, "Type: field 'Type' can not be parsed", typeStr));
         }
         getNameService().save(taxonName);
+    }
+
+    private void makeNameTypeData(String typeStr, BotanicalName taxonName, String regNumber, SimpleExcelTaxonImportState<CONFIG> state) {
+
+        String nameStr = typeStr.replaceAll("^Type\\s?\\:\\s?", "");
+        if(nameStr.isEmpty()) {
+            return;
+        }
+
+        String basionymNameStr = null;
+        String noteStr = null;
+        String agentStr = null;
+
+        Matcher m;
+
+        if(typeStr.startsWith("not to be indicated")){
+            // Special case:
+            // Type: not to be indicated (Art. H.9.1. Tokyo Code); stated parent genera: Hechtia Klotzsch; Deuterocohnia Mez
+            // FIXME
+            m = typeNameSpecialSplitPattern.matcher(nameStr);
+            if(m.matches()){
+                nameStr = m.group("name");
+                noteStr = m.group("note");
+                agentStr = m.group("agent");
+                // TODO better import of agent?
+                if(agentStr != null){
+                    noteStr = noteStr + ": " + agentStr;
+                }
+            }
+        } else {
+            // Generic case
+            m = typeNameBasionymPattern.matcher(nameStr);
+            if (m.find()) {
+                basionymNameStr = m.group("basionymName");
+                if (basionymNameStr != null) {
+                    nameStr = nameStr.replace(m.group(0), "");
+                }
+            }
+
+            m = typeNameNotePattern.matcher(nameStr);
+            if (m.find()) {
+                noteStr = m.group(1);
+                if (noteStr != null) {
+                    nameStr = nameStr.replace(m.group(0), "");
+                }
+            }
+        }
+
+        BotanicalName typeName = (BotanicalName) nameParser.parseFullName(nameStr, NomenclaturalCode.ICNAFP, null);
+
+        if(typeName.isProtectedTitleCache() || typeName.getNomenclaturalReference() != null && typeName.getNomenclaturalReference().isProtectedTitleCache()) {
+            logger.warn(csvReportLine(regNumber, "NameType not parsable", typeStr, nameStr));
+        }
+
+        if(basionymNameStr != null){
+            BotanicalName basionymName = (BotanicalName) nameParser.parseFullName(nameStr, NomenclaturalCode.ICNAFP, null);
+            getNameService().save(basionymName);
+            typeName.addBasionym(basionymName);
+        }
+
+
+        NameTypeDesignation nameTypeDesignation = NameTypeDesignation.NewInstance();
+        nameTypeDesignation.setTypeName(typeName);
+        getNameService().save(typeName);
+
+        if(noteStr != null){
+            nameTypeDesignation.addAnnotation(Annotation.NewInstance(noteStr, AnnotationType.EDITORIAL(), Language.UNKNOWN_LANGUAGE()));
+        }
+        taxonName.addNameTypeDesignation(typeName, null, null, null, null, false);
+
     }
 
     /**
