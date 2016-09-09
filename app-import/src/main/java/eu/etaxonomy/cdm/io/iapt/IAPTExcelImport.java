@@ -94,7 +94,7 @@ public class IAPTExcelImport<CONFIG extends IAPTImportConfigurator> extends Simp
         };
     private static final Pattern typeSplitPattern =  Pattern.compile("^(?:\"*[Tt]ype: (?<fieldUnit>.*?))(?:[Hh]olotype:(?<holotype>.*?)\\.?)?(?:[Ii]sotype[^:]*:(?<isotype>.*)\\.?)?\\.?$");
 
-    private static final Pattern collectorPattern =  Pattern.compile(".*?\\(leg\\.\\s+([^\\)]*)\\)|.*?\\sleg\\.\\s+(.*?)\\.?$");
+    private static final Pattern collectorPattern =  Pattern.compile(".*?(?<fullStr1>\\(leg\\.\\s+(?<data1>[^\\)]*)\\))|.*?(?<fullStr2>\\sleg\\.\\s+(?<data2>.*?)\\.?)$");
     private static final Pattern collectionDataPattern =  Pattern.compile("^(?<collector>[^,]*),\\s?(?<detail>.*?)\\.?$");
     private static final Pattern collectorsNumber =  Pattern.compile("^([nN]o\\.\\s.*)$");
 
@@ -349,20 +349,27 @@ public class IAPTExcelImport<CONFIG extends IAPTImportConfigurator> extends Simp
 
         Matcher m1 = collectorPattern.matcher(fieldUnitStr);
         if(m1.matches()){
-            String collectionData = m1.group(1); // like (leg. Metzeltin, 30. 9. 1996)
-            if(collectionData == null){
-                collectionData = m1.group(2); // like leg. Metzeltin, 30. 9. 1996
+
+            String collectorData = m1.group(2); // like (leg. Metzeltin, 30. 9. 1996)
+            String removal = m1.group(1);
+            if(collectorData == null){
+                collectorData = m1.group(4); // like leg. Metzeltin, 30. 9. 1996
+                removal = m1.group(3);
             }
-            if(collectionData == null){
+            if(collectorData == null){
                 return null;
             }
+
+            // the fieldUnitStr is parsable
+            // remove all collectorData from the fieldUnitStr and use the rest as locality
+            String locality = fieldUnitStr.replace(removal, "");
 
             String collectorStr = null;
             String detailStr = null;
             Partial date = null;
             String fieldNumber = null;
 
-            Matcher m2 = collectionDataPattern.matcher(collectionData);
+            Matcher m2 = collectionDataPattern.matcher(collectorData);
             if(m2.matches()){
                 collectorStr = m2.group("collector");
                 detailStr = m2.group("detail");
@@ -381,34 +388,38 @@ public class IAPTExcelImport<CONFIG extends IAPTImportConfigurator> extends Simp
                 }
                 if(date == null && fieldNumber == null){
                     // detailed parsing not possible, so need fo fallback
-                    collectorStr = collectionData;
+                    collectorStr = collectorData;
                 }
             }
 
-            if(collectorStr != null) {
-                fieldUnit = FieldUnit.NewInstance();
-                GatheringEvent ge = GatheringEvent.NewInstance();
-
-                TeamOrPersonBase agent =  state.getAgentBase(collectorStr);
-                if(agent == null) {
-                    agent = Person.NewTitledInstance(collectorStr);
-                    getAgentService().save(agent);
-                    state.putAgentBase(collectorStr, agent);
-                }
-                ge.setCollector(agent);
-
-                if(date != null){
-                    ge.setGatheringDate(date);
-                }
-
-                getEventBaseService().save(ge);
-                fieldUnit.setGatheringEvent(ge);
-
-                if(fieldNumber != null) {
-                    fieldUnit.setFieldNumber(fieldNumber);
-                }
-                getOccurrenceService().save(fieldUnit);
+            if(collectorStr == null) {
+                collectorStr = collectorData;
             }
+
+            fieldUnit = FieldUnit.NewInstance();
+            GatheringEvent ge = GatheringEvent.NewInstance();
+            ge.setLocality(LanguageString.NewInstance(locality, Language.UNKNOWN_LANGUAGE()));
+
+            TeamOrPersonBase agent =  state.getAgentBase(collectorStr);
+            if(agent == null) {
+                agent = Person.NewTitledInstance(collectorStr);
+                getAgentService().save(agent);
+                state.putAgentBase(collectorStr, agent);
+            }
+            ge.setCollector(agent);
+
+            if(date != null){
+                ge.setGatheringDate(date);
+            }
+
+            getEventBaseService().save(ge);
+            fieldUnit.setGatheringEvent(ge);
+
+            if(fieldNumber != null) {
+                fieldUnit.setFieldNumber(fieldNumber);
+            }
+            getOccurrenceService().save(fieldUnit);
+
         }
 
         return fieldUnit;
