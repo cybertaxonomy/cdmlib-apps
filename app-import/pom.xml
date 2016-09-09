@@ -35,11 +35,6 @@
     </plugins>
   </build>
   <repositories>
-       <!-- codehaus mule repository needed for yourkit  -->
-       <repository>
-           <id>CodehausMuleRepository</id>
-           <url>http://dist.codehaus.org/mule/dependencies/maven2/</url>
-       </repository>
       <!-- the cdm internal repository -->
       <repository>
           <id>EditRepository</id>
