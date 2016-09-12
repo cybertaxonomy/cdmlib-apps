@@ -111,7 +111,7 @@ public class IAPTExcelImport<CONFIG extends IAPTImportConfigurator> extends Simp
     private static final Pattern[] specimenTypePatterns = new Pattern[]{
             Pattern.compile("^(?<colCode>[A-Z]+|CPC Micropaleontology Lab\\.?)\\s+(?:\\((?<institute>.*[^\\)])\\))(?<accNumber>.*)?$"), // like: GAUF (Gansu Agricultural University) No. 1207-1222
             Pattern.compile("^(?<colCode>[A-Z]+|CPC Micropaleontology Lab\\.?)\\s+(?:Coll\\.\\s(?<subCollection>[^\\.,;]*)(.))(?<accNumber>.*)?$"), // like KASSEL Coll. Krasske, Praep. DII 78
-            Pattern.compile("^(?:Coll\\.\\s(?<subCollection>[^\\.,;]*)(.))(?<institute>.*?)(?<accNumber>Praep\\..*)?$"), // like Coll. Lange-Bertalot, Bot. Inst., Univ. Frankfurt/Main, Germany Praep. Neukaledonien OTL 62
+            Pattern.compile("^(?<Collection>:Coll\\.\\s.*?)\\s(?<accNumber>Praep\\..*)?$"), // like Coll. Lange-Bertalot, Bot. Inst., Univ. Frankfurt/Main, Germany Praep. Neukaledonien OTL 62
             Pattern.compile("^(?<colCode>[A-Z]+)(?:\\s+(?<accNumber>.*))?$"), // identifies the Collection code and takes the rest as accessionNumber if any
     };
 
