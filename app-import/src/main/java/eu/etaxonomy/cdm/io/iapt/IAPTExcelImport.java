@@ -196,6 +196,7 @@ public class IAPTExcelImport<CONFIG extends IAPTImportConfigurator> extends Simp
         Partial pupDate = null;
 
         boolean restoreOriginalReference = false;
+        boolean nameIsValid = true;
 
         // preprocess nomRef: separate citation, reference detail, publishing date
         if(!StringUtils.isEmpty(nomRefStr)){
@@ -257,10 +258,18 @@ public class IAPTExcelImport<CONFIG extends IAPTImportConfigurator> extends Simp
         if(!StringUtils.isEmpty(notesTxt)){
             notesTxt = notesTxt.replace("Notes: ", "").trim();
             taxonName.addAnnotation(Annotation.NewInstance(notesTxt, AnnotationType.EDITORIAL(), Language.DEFAULT()));
+            nameIsValid = false;
+
         }
         if(!StringUtils.isEmpty(caveats)){
             caveats = caveats.replace("Caveats: ", "").trim();
             taxonName.addAnnotation(Annotation.NewInstance(caveats, annotationTypeCaveats(), Language.DEFAULT()));
+            nameIsValid = false;
+        }
+
+        if(nameIsValid){
+            // Status is always considered valid if no notes and cavets are set
+            taxonName.addStatus(NomenclaturalStatus.NewInstance(NomenclaturalStatusType.VALID()));
         }
 
         getNameService().save(taxonName);
