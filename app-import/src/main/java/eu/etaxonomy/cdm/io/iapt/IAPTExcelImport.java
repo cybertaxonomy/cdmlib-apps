@@ -1087,9 +1087,9 @@ public class IAPTExcelImport<CONFIG extends IAPTImportConfigurator> extends Simp
         } else if(name.matches("^Incertae sedis$|^No group assigned$")){
            return rankFamilyIncertisSedis();
         } else if(name.matches(".*phyta$|.*mycota$")){
-           return Rank.SECTION_BOTANY();
+           return Rank.PHYLUM();
         } else if(name.matches(".*phytina$|.*mycotina$")){
-           return Rank.SUBSECTION_BOTANY();
+           return Rank.SUBPHYLUM();
         } else if(name.matches("Gymnospermae$|.*ones$")){ // Monocotyledones, Dicotyledones
             return rankUnrankedSupraGeneric();
         } else if(name.matches(".*opsida$|.*phyceae$|.*mycetes$|.*ones$|^Musci$|^Hepaticae$")){
