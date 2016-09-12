@@ -998,6 +998,11 @@ public class IAPTExcelImport<CONFIG extends IAPTImportConfigurator> extends Simp
         value = StringUtils.replace(value, "c$k", "č");
         value = StringUtils.replace(value, " U$K", " Š");
 
+        value = StringUtils.replace(value, "B.O>U>!", "Ø");
+        value = StringUtils.replace(value, "S$K", "Ŝ");
+        value = StringUtils.replace(value, "§B>i", "ğ");
+
+
         return value;
     }
 
