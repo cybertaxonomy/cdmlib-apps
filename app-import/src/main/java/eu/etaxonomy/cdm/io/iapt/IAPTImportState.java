@@ -38,6 +38,8 @@ public class IAPTImportState extends SimpleExcelTaxonImportState<IAPTImportConfi
 
 	private final Map<String, UUID> higherTaxonUuidMap = new HashMap<String, UUID>();
 
+    private final Map<String, Taxon> genusTaxonMap = new HashMap<String, Taxon>();
+
 	private final Map<String, BotanicalName> familyNameMap = new HashMap<String, BotanicalName>();
 
 	//classification
@@ -96,14 +98,9 @@ public class IAPTImportState extends SimpleExcelTaxonImportState<IAPTImportConfi
         return higherTaxonUuidMap.containsKey(higherName);
     }
 
-    //family names
-    public BotanicalName getFamilyName(String familyStr) {
-        return familyNameMap.get(familyStr);
+    public Map<String, Taxon> getGenusTaxonMap() {
+        return genusTaxonMap;
     }
-    public void putFamilyName(String familyStr, BotanicalName name) {
-        familyNameMap.put(familyStr, name);
-    }
-
 
     Map<UUID, Reference> refMap = new HashMap<UUID, Reference>();
     //reference

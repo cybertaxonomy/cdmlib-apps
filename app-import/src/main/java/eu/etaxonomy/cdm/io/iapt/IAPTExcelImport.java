@@ -10,6 +10,7 @@
 package eu.etaxonomy.cdm.io.iapt;
 
 import eu.etaxonomy.cdm.api.facade.DerivedUnitFacade;
+import eu.etaxonomy.cdm.api.service.pager.Pager;
 import eu.etaxonomy.cdm.common.CdmUtils;
 import eu.etaxonomy.cdm.io.mexico.SimpleExcelTaxonImport;
 import eu.etaxonomy.cdm.io.mexico.SimpleExcelTaxonImportState;
@@ -340,9 +341,24 @@ public class IAPTExcelImport<CONFIG extends IAPTImportConfigurator> extends Simp
         }
 
         getTaxonService().save(taxon);
+
+        if(taxonName.getRank().equals(Rank.SPECIES()) || taxonName.getRank().isLower(Rank.SPECIES())){
+            // try to find the genus, it should have been imported already, Genera are coming first in the import file
+            Taxon genus = ((IAPTImportState)state).getGenusTaxonMap().get(taxonName.getGenusOrUninomial());
+            if(genus != null){
+                higherTaxonNode = genus.getTaxonNodes().iterator().next();
+            } else {
+                logger.info(csvReportLine(regNumber, "Parent genus not found for", nameStr));
+            }
+        }
+
         if(higherTaxonNode != null){
             higherTaxonNode.addChildTaxon(taxon, null, null);
             getTaxonNodeService().save(higherTaxonNode);
+        }
+
+        if(taxonName.getRank().isGenus()){
+            ((IAPTImportState)state).getGenusTaxonMap().put(taxonName.getGenusOrUninomial(), taxon);
         }
 
         return taxon;
@@ -1054,6 +1070,7 @@ public class IAPTExcelImport<CONFIG extends IAPTImportConfigurator> extends Simp
         ((IAPTImportState)state).setCurrentTaxon(taxon);
 
 
+        logger.info("#of imported Genera: " + ((IAPTImportState) state).getGenusTaxonMap().size());
 		return;
     }
 
