@@ -77,7 +77,7 @@ public class IAPTExcelImport<CONFIG extends IAPTImportConfigurator> extends Simp
     private  static List<String> expectedKeys= Arrays.asList(new String[]{
             REGISTRATIONNO_PK, HIGHERTAXON, FULLNAME, AUTHORSSPELLING, LITSTRING, REGISTRATION, TYPE, CAVEATS, FULLBASIONYM, FULLSYNSUBST, NOTESTXT, REGDATE, NAMESTRING, BASIONYMSTRING, SYNSUBSTSTR, AUTHORSTRING});
 
-    private static final Pattern nomRefTokenizeP = Pattern.compile("^(?<title>.*):\\s(?<detail>[^\\.:]+)\\.(?<date>.*?)(?:\\s\\((?<issue>[^\\)]*)\\)\\s*)\\.?$");
+    private static final Pattern nomRefTokenizeP = Pattern.compile("^(?<title>.*):\\s(?<detail>[^\\.:]+)\\.(?<date>.*?)(?:\\s\\((?<issue>[^\\)]*)\\)\\s*)?\\.?$");
     private static final Pattern[] datePatterns = new Pattern[]{
             // NOTE:
             // The order of the patterns is extremely important!!!
