@@ -226,7 +226,6 @@ public class IAPTExcelImport<CONFIG extends IAPTImportConfigurator> extends Simp
             taxonName.getNomenclaturalReference().setDatePublished(TimePeriod.NewInstance(pupDate));
         }
         if(nomRefIssue != null) {
-            taxonName.getNomenclaturalReference().setType(ReferenceType.Book);
             ((Reference)taxonName.getNomenclaturalReference()).setVolume(nomRefIssue);
         }
 
