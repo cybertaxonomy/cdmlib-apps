@@ -21,6 +21,7 @@ import eu.etaxonomy.cdm.model.name.*;
 import eu.etaxonomy.cdm.model.occurrence.*;
 import eu.etaxonomy.cdm.model.occurrence.Collection;
 import eu.etaxonomy.cdm.model.reference.Reference;
+import eu.etaxonomy.cdm.model.reference.ReferenceFactory;
 import eu.etaxonomy.cdm.model.reference.ReferenceType;
 import eu.etaxonomy.cdm.model.taxon.*;
 import eu.etaxonomy.cdm.strategy.parser.NonViralNameParserImpl;
@@ -167,6 +168,8 @@ public class IAPTExcelImport<CONFIG extends IAPTImportConfigurator> extends Simp
     private Rank familyIncertisSedis = null;
     private AnnotationType annotationTypeCaveats = null;
 
+    private Reference bookVariedadesTradicionales = null;
+
     private Taxon makeTaxon(HashMap<String, String> record, SimpleExcelTaxonImportState<CONFIG> state,
                             TaxonNode higherTaxonNode, boolean isFossil) {
 
@@ -192,9 +195,27 @@ public class IAPTExcelImport<CONFIG extends IAPTImportConfigurator> extends Simp
         String nomRefIssue = null;
         Partial pupDate = null;
 
+        boolean restoreOriginalReference = false;
+
         // preprocess nomRef: separate citation, reference detail, publishing date
         if(!StringUtils.isEmpty(nomRefStr)){
             nomRefStr = nomRefStr.trim();
+
+            // handle the special case which is hard to parse:
+            //
+            // Las variedades tradicionales de frutales de la Cuenca del Río Segura. Catálogo Etnobotánico (1): Frutos secos, oleaginosos, frutales de hueso, almendros y frutales de pepita: 154. 1997.
+            if(nomRefStr.startsWith("Las variedades tradicionales de frutales ")){
+
+                if(bookVariedadesTradicionales == null){
+                    bookVariedadesTradicionales = ReferenceFactory.newBook();
+                    bookVariedadesTradicionales.setTitle("Las variedades tradicionales de frutales de la Cuenca del Río Segura. Catálogo Etnobotánico (1): Frutos secos, oleaginosos, frutales de hueso, almendros y frutales de pepita");
+                    bookVariedadesTradicionales.setDatePublished(TimePeriod.NewInstance(1997));
+                    getReferenceService().save(bookVariedadesTradicionales);
+                }
+                nomRefStr = nomRefStr.replaceAll("^.*?\\:.*?\\:", "Las variedades tradicionales:");
+                restoreOriginalReference = true;
+            }
+
             Matcher m = nomRefTokenizeP.matcher(nomRefStr);
             if(m.matches()){
                 nomRefTitle = m.group("title");
@@ -222,12 +243,16 @@ public class IAPTExcelImport<CONFIG extends IAPTImportConfigurator> extends Simp
                         "\n -  '" + REGISTRATION  + "': " + regStr
                 , AnnotationType.TECHNICAL(), Language.DEFAULT()));
 
+        if(restoreOriginalReference){
+            taxonName.setNomenclaturalReference(bookVariedadesTradicionales);
+        }
         if(pupDate != null) {
             taxonName.getNomenclaturalReference().setDatePublished(TimePeriod.NewInstance(pupDate));
         }
         if(nomRefIssue != null) {
             ((Reference)taxonName.getNomenclaturalReference()).setVolume(nomRefIssue);
         }
+
 
         if(!StringUtils.isEmpty(notesTxt)){
             notesTxt = notesTxt.replace("Notes: ", "").trim();
@@ -280,6 +305,7 @@ public class IAPTExcelImport<CONFIG extends IAPTImportConfigurator> extends Simp
         // Basionym
         if(fullBasionymStr != null){
             fullBasionymStr = fullBasionymStr.replaceAll("^\\w*:\\s", ""); // Strip off the leading 'Basionym: "
+            basionymNameStr = basionymNameStr.replaceAll("^\\w*:\\s", ""); // Strip off the leading 'Basionym: "
             BotanicalName basionym = makeBotanicalName(state, regNumber, fullBasionymStr, basionymNameStr, null, null);
             getNameService().save(basionym);
             taxonName.addBasionym(basionym);
