@@ -89,19 +89,19 @@ public class IAPTExcelImport<CONFIG extends IAPTImportConfigurator> extends Simp
             Pattern.compile("^(?<monthName>\\p{L}+\\.?),?\\s?(?<year>(?:1[7,8,9])?[0-9]{2})$"), // April 99 or April, 1999 or Apr. 12
             Pattern.compile("^(?<day>[0-9]{1,2})([\\.\\-/])(\\s?)(?<month>[0-1]?[0-9])\\2\\3(?<year>(?:1[7,8,9])?[0-9]{2})$"), // full date like 12.04.1969 or 12. 04. 1969 or 12/04/1969 or 12-04-1969
             Pattern.compile("^(?<day>[0-9]{1,2})([\\.\\-/])(?<monthName>[IVX]{1,2})\\2(?<year>(?:1[7,8,9])?[0-9]{2})$"), // full date like 12-VI-1969
-            Pattern.compile("^(?:(?<day>[0-9]{1,2})(?:\\sde)\\s)?(?<monthName>\\p{L}+)\\sde\\s(?<year>(?:1[7,8,9])?[0-9]{2})$"), // full and partial date like 12 de Enero de 1999 or Enero de 1999
+            Pattern.compile("^(?:(?<day>[0-9]{1,2})(?:\\sde)?\\s)?(?<monthName>\\p{L}+)(?:\\sde)?\\s(?<year>(?:1[7,8,9])?[0-9]{2})$"), // full and partial date like 12 de Enero de 1999 or Enero de 1999
             Pattern.compile("^(?<month>[0-1]?[0-9])([\\.\\-/])(?<year>(?:1[7,8,9])?[0-9]{2})$"), // partial date like 04.1969 or 04/1969 or 04-1969
             Pattern.compile("^(?<year>(?:1[7,8,9])?[0-9]{2})([\\.\\-/])(?<month>[0-1]?[0-9])$"),//  partial date like 1999-04
             Pattern.compile("^(?<monthName>[IVX]{1,2})([\\.\\-/])(?<year>(?:1[7,8,9])?[0-9]{2})$"), // partial date like VI-1969
             Pattern.compile("^(?<day>[0-9]{1,2})(?:[\\./]|th|rd|st)?\\s(?<monthName>\\p{L}+\\.?),?\\s?(?<year>(?:1[7,8,9])?[0-9]{2})$"), // full date like 12. April 1969 or april 1999 or 22 Dec.1999
         };
-    private static final Pattern typeSpecimenSplitPattern =  Pattern.compile("^(?:\"*[Tt]ype: (?<fieldUnit>.*?))(?:[Hh]olotype:(?<holotype>.*?)\\.?)?(?:[Ii]sotype.*?[:\\(](?<isotype>.*)\\.?)?\\.?$");
+    protected static final Pattern typeSpecimenSplitPattern =  Pattern.compile("^(?:\"*[Tt]ype: (?<fieldUnit>.*?))(?:[Hh]olotype:(?<holotype>.*?)\\.?)?(?:[Ii]sotype[^:]*:(?<isotype>.*)\\.?)?\\.?$");
 
     private static final Pattern typeNameBasionymPattern =  Pattern.compile("\\([Bb]asionym\\s?\\:\\s?(?<basionymName>[^\\)]*).*$");
     private static final Pattern typeNameNotePattern =  Pattern.compile("\\[([^\\[]*)"); // matches the inner of '[...]'
     private static final Pattern typeNameSpecialSplitPattern =  Pattern.compile("(?<note>.*\\;.*?)\\:(?<agent>)\\;(<name>.*)");
 
-    private static final Pattern collectorPattern =  Pattern.compile(".*?(?<fullStr1>\\(leg\\.\\s+(?<data1>[^\\)]*)\\))|.*?(?<fullStr2>\\sleg\\.\\s+(?<data2>.*?)\\.?)$");
+    protected static final Pattern collectorPattern =  Pattern.compile(".*?(?<fullStr1>\\([Ll]eg\\.\\s+(?<data1>[^\\)]*)\\)).*$|.*?(?<fullStr2>\\s[Ll]eg\\.\\:?\\s+(?<data2>.*?)\\.?)$|^(?<fullStr3>[Ll]eg\\.\\:?\\s+(?<data3>.*?)\\.?)");
     private static final Pattern collectionDataPattern =  Pattern.compile("^(?<collector>[^,]*),\\s?(?<detail>.*?)\\.?$");
     private static final Pattern collectorsNumber =  Pattern.compile("^([nN]o\\.\\s.*)$");
 
@@ -479,18 +479,22 @@ public class IAPTExcelImport<CONFIG extends IAPTImportConfigurator> extends Simp
      * @param state
      * @return null if the fieldUnitStr could not be parsed
      */
-    private FieldUnit parseFieldUnit(String fieldUnitStr, String regNumber, SimpleExcelTaxonImportState<CONFIG> state) {
+    protected FieldUnit parseFieldUnit(String fieldUnitStr, String regNumber, SimpleExcelTaxonImportState<CONFIG> state) {
 
         FieldUnit fieldUnit = null;
 
         Matcher m1 = collectorPattern.matcher(fieldUnitStr);
         if(m1.matches()){
 
-            String collectorData = m1.group(2); // like (leg. Metzeltin, 30. 9. 1996)
+            String collectorData = m1.group(2); // like ... (leg. Metzeltin, 30. 9. 1996)
             String removal = m1.group(1);
             if(collectorData == null){
-                collectorData = m1.group(4); // like leg. Metzeltin, 30. 9. 1996
+                collectorData = m1.group(4); // like ... leg. Metzeltin, 30. 9. 1996
                 removal = m1.group(3);
+            }
+            if(collectorData == null){
+                collectorData = m1.group(6); // like ^leg. J. J. Halda 18.3.1997$
+                removal = null;
             }
             if(collectorData == null){
                 return null;
@@ -498,7 +502,10 @@ public class IAPTExcelImport<CONFIG extends IAPTImportConfigurator> extends Simp
 
             // the fieldUnitStr is parsable
             // remove all collectorData from the fieldUnitStr and use the rest as locality
-            String locality = fieldUnitStr.replace(removal, "");
+            String locality = null;
+            if(removal != null){
+                locality = fieldUnitStr.replace(removal, "");
+            }
 
             String collectorStr = null;
             String detailStr = null;
@@ -534,7 +541,9 @@ public class IAPTExcelImport<CONFIG extends IAPTImportConfigurator> extends Simp
 
             fieldUnit = FieldUnit.NewInstance();
             GatheringEvent ge = GatheringEvent.NewInstance();
-            ge.setLocality(LanguageString.NewInstance(locality, Language.UNKNOWN_LANGUAGE()));
+            if(locality != null){
+                ge.setLocality(LanguageString.NewInstance(locality, Language.UNKNOWN_LANGUAGE()));
+            }
 
             TeamOrPersonBase agent =  state.getAgentBase(collectorStr);
             if(agent == null) {
