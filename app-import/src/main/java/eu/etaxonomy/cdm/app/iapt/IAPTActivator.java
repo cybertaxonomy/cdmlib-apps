@@ -11,10 +11,12 @@ package eu.etaxonomy.cdm.app.iapt;
 
 import java.io.File;
 import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.UUID;
 
 import eu.etaxonomy.cdm.common.monitor.DefaultProgressMonitor;
 import eu.etaxonomy.cdm.database.DatabaseTypeEnum;
+import eu.etaxonomy.cdm.model.common.TimePeriod;
 import org.apache.log4j.Logger;
 
 import eu.etaxonomy.cdm.app.common.CdmDestinations;
@@ -77,13 +79,24 @@ public class IAPTActivator {
         Reference secRef = ReferenceFactory.newDatabase();
         secRef.setTitle("IAPT");
 
+        Reference sourceRef = ReferenceFactory.newDatabase();
+        sourceRef.setTitle("IAPT Registration of Plant Names Database");
+        sourceRef.setDatePublished(TimePeriod.NewInstance(1998, 2016));
+        sourceRef.setOrganization("International Association for Plant Taxonomy");
+        try {
+            sourceRef.setUri(new URI("http://archive.bgbm.org/scripts/ASP/registration/regSearch.asp"));
+        } catch (URISyntaxException e) {
+            e.printStackTrace();
+        }
+
+
         //make Source
         IAPTImportConfigurator config= IAPTImportConfigurator.NewInstance(source, cdmDestination);
         config.setClassificationUuid(classificationUuid);
         config.setClassificationName(classificationName);
         config.setCheck(check);
         config.setDbSchemaValidation(hbm2dll);
-        config.setSourceReferenceTitle(sourceReferenceTitle);
+        config.setSourceReference(sourceRef);
         config.setSecReference(secRef);
         config.setProgressMonitor(DefaultProgressMonitor.NewInstance());
         // config.setBatchSize(100); // causes Error during managed flush [Don't change the reference to a collection with delete-orphan enabled : eu.etaxonomy.cdm.model.taxon.TaxonNode.annotations]

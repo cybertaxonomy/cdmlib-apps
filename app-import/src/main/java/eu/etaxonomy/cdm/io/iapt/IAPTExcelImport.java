@@ -879,8 +879,12 @@ public class IAPTExcelImport<CONFIG extends IAPTImportConfigurator> extends Simp
             for(String text : nameAnnotations.keySet()){
                 taxonName.addAnnotation(Annotation.NewInstance(text, nameAnnotations.get(text), Language.DEFAULT()));
             }
-            getNameService().save(taxonName);
         }
+
+        taxonName.addSource(OriginalSourceType.Import, regNumber, null, state.getConfig().getSourceReference(), null);
+
+        getNameService().save(taxonName);
+
         return taxonName;
     }
 
@@ -1023,9 +1027,13 @@ public class IAPTExcelImport<CONFIG extends IAPTImportConfigurator> extends Simp
         value = StringUtils.replace(value, "c$k", "č");
         value = StringUtils.replace(value, " U$K", " Š");
 
-        value = StringUtils.replace(value, "B.O>U>!", "Ø");
+        value = StringUtils.replace(value, "O>U>!", "Ø");
+        value = StringUtils.replace(value, "o>!", "ø");
         value = StringUtils.replace(value, "S$K", "Ŝ");
-        value = StringUtils.replace(value, "§B>i", "ğ");
+        value = StringUtils.replace(value, ">l", "ğ");
+
+        value = StringUtils.replace(value, "§B>i", "ł");
+
 
 
         return value;
