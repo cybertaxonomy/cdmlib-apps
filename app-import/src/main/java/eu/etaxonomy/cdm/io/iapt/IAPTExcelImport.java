@@ -88,11 +88,11 @@ public class IAPTExcelImport<CONFIG extends IAPTImportConfigurator> extends Simp
             Pattern.compile("^(?<monthName>\\p{L}+\\.?)\\s(?<day>[0-9]{1,2})(?:st|rd|th)?\\.?,?\\s(?<year>(?:1[7,8,9])?[0-9]{2})$"), // full date like April 12, 1969 or april 12th 1999
             Pattern.compile("^(?<monthName>\\p{L}+\\.?),?\\s?(?<year>(?:1[7,8,9])?[0-9]{2})$"), // April 99 or April, 1999 or Apr. 12
             Pattern.compile("^(?<day>[0-9]{1,2})([\\.\\-/])(\\s?)(?<month>[0-1]?[0-9])\\2\\3(?<year>(?:1[7,8,9])?[0-9]{2})$"), // full date like 12.04.1969 or 12. 04. 1969 or 12/04/1969 or 12-04-1969
-            Pattern.compile("^(?<day>[0-9]{1,2})([\\.\\-/])(?<month>[IVX]{1,2})\\2(?<year>(?:1[7,8,9])?[0-9]{2})$"), // full date like 12-VI-1969
-            Pattern.compile("^(?:(?<day>[0-9]{1,2})(?:\\sde)\\s)(?<monthName>\\p{L}+)\\sde\\s(?<year>(?:1[7,8,9])?[0-9]{2})$"), // full and partial date like 12 de Enero de 1999 or Enero de 1999
+            Pattern.compile("^(?<day>[0-9]{1,2})([\\.\\-/])(?<monthName>[IVX]{1,2})\\2(?<year>(?:1[7,8,9])?[0-9]{2})$"), // full date like 12-VI-1969
+            Pattern.compile("^(?:(?<day>[0-9]{1,2})(?:\\sde)\\s)?(?<monthName>\\p{L}+)\\sde\\s(?<year>(?:1[7,8,9])?[0-9]{2})$"), // full and partial date like 12 de Enero de 1999 or Enero de 1999
             Pattern.compile("^(?<month>[0-1]?[0-9])([\\.\\-/])(?<year>(?:1[7,8,9])?[0-9]{2})$"), // partial date like 04.1969 or 04/1969 or 04-1969
             Pattern.compile("^(?<year>(?:1[7,8,9])?[0-9]{2})([\\.\\-/])(?<month>[0-1]?[0-9])$"),//  partial date like 1999-04
-            Pattern.compile("^(?<month>[IVX]{1,2})([\\.\\-/])(?<year>(?:1[7,8,9])?[0-9]{2})$"), // partial date like VI-1969
+            Pattern.compile("^(?<monthName>[IVX]{1,2})([\\.\\-/])(?<year>(?:1[7,8,9])?[0-9]{2})$"), // partial date like VI-1969
             Pattern.compile("^(?<day>[0-9]{1,2})(?:[\\./]|th|rd|st)?\\s(?<monthName>\\p{L}+\\.?),?\\s?(?<year>(?:1[7,8,9])?[0-9]{2})$"), // full date like 12. April 1969 or april 1999 or 22 Dec.1999
         };
     private static final Pattern typeSpecimenSplitPattern =  Pattern.compile("^(?:\"*[Tt]ype: (?<fieldUnit>.*?))(?:[Hh]olotype:(?<holotype>.*?)\\.?)?(?:[Ii]sotype[^:]*:(?<isotype>.*)\\.?)?\\.?$");
@@ -111,7 +111,8 @@ public class IAPTExcelImport<CONFIG extends IAPTImportConfigurator> extends Simp
     private static final Pattern[] specimenTypePatterns = new Pattern[]{
             Pattern.compile("^(?<colCode>[A-Z]+|CPC Micropaleontology Lab\\.?)\\s+(?:\\((?<institute>.*[^\\)])\\))(?<accNumber>.*)?$"), // like: GAUF (Gansu Agricultural University) No. 1207-1222
             Pattern.compile("^(?<colCode>[A-Z]+|CPC Micropaleontology Lab\\.?)\\s+(?:Coll\\.\\s(?<subCollection>[^\\.,;]*)(.))(?<accNumber>.*)?$"), // like KASSEL Coll. Krasske, Praep. DII 78
-            Pattern.compile("^(?<Collection>:Coll\\.\\s.*?)\\s(?<accNumber>Praep\\..*)?$"), // like Coll. Lange-Bertalot, Bot. Inst., Univ. Frankfurt/Main, Germany Praep. Neukaledonien OTL 62
+            Pattern.compile("^(?<institute>Coll\\.\\s.*?)\\s+(?<accNumber>(Praep|slide).*)?$"), // like Coll. Lange-Bertalot, Bot. Inst., Univ. Frankfurt/Main, Germany Praep. Neukaledonien OTL 62
+           //  Pattern.compile("^.*(?<accNumber>Praep.*)$"), // like Coll. Lange-Bertalot, Bot. Inst., Univ. Frankfurt/Main, Germany Praep. Neukaledonien OTL 62
             Pattern.compile("^(?<colCode>[A-Z]+)(?:\\s+(?<accNumber>.*))?$"), // identifies the Collection code and takes the rest as accessionNumber if any
     };
 
@@ -170,6 +171,11 @@ public class IAPTExcelImport<CONFIG extends IAPTImportConfigurator> extends Simp
     private AnnotationType annotationTypeCaveats = null;
 
     private Reference bookVariedadesTradicionales = null;
+
+    /**
+     * HACK for unit simple testing
+     */
+    boolean _testMode = System.getProperty("TEST_MODE") != null;
 
     private Taxon makeTaxon(HashMap<String, String> record, SimpleExcelTaxonImportState<CONFIG> state,
                             TaxonNode higherTaxonNode, boolean isFossil) {
@@ -555,7 +561,7 @@ public class IAPTExcelImport<CONFIG extends IAPTImportConfigurator> extends Simp
         return fieldUnit;
     }
 
-    private Partial parseDate(String regNumber, String dateStr) {
+    protected Partial parseDate(String regNumber, String dateStr) {
 
         Partial pupDate = null;
         boolean parseError = false;
@@ -700,11 +706,12 @@ public class IAPTExcelImport<CONFIG extends IAPTImportConfigurator> extends Simp
      * @param regNumber
      * @return
      */
-    private DerivedUnit parseSpecimenType(FieldUnit fieldUnit, TypesName typeName, Collection collection, String text, String regNumber) {
+    protected DerivedUnit parseSpecimenType(FieldUnit fieldUnit, TypesName typeName, Collection collection, String text, String regNumber) {
 
         DerivedUnit specimen = null;
 
         String collectionCode = null;
+        String collectionTitle = null;
         String subCollectionStr = null;
         String instituteStr = null;
         String accessionNumber = null;
@@ -732,21 +739,23 @@ public class IAPTExcelImport<CONFIG extends IAPTImportConfigurator> extends Simp
             for (Pattern p : specimenTypePatterns) {
                 Matcher m = p.matcher(text);
                 if (m.matches()) {
-                    // collection code is mandatory
+                    // collection code or collectionTitle is mandatory
                     try {
                         collectionCode = m.group("colCode");
                     } catch (IllegalArgumentException e){
                         // match group colCode not found
                     }
-                    try {
-                        subCollectionStr = m.group("subCollection");
-                    } catch (IllegalArgumentException e){
-                        // match group subCollection not found
-                    }
+
                     try {
                         instituteStr = m.group("institute");
                     } catch (IllegalArgumentException e){
                         // match group col_name not found
+                    }
+
+                    try {
+                        subCollectionStr = m.group("subCollection");
+                    } catch (IllegalArgumentException e){
+                        // match group subCollection not found
                     }
                     try {
                         accessionNumber = m.group("accNumber");
@@ -947,7 +956,9 @@ public class IAPTExcelImport<CONFIG extends IAPTImportConfigurator> extends Simp
                 collection.setSuperCollection(superCollection);
             }
             collectionMap.put(key, collection);
-            getCollectionService().save(collection);
+            if(!_testMode) {
+                getCollectionService().save(collection);
+            }
         }
 
         return collection;
