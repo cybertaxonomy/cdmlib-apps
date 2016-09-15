@@ -65,6 +65,13 @@ public class IAPTImportTest {
                 "KASSEL Coll. Krasske, Praep. DII 78",
                 "Coll. Lange-Bertalot, Botanisches Institut, Frankfurt am Main slide Eh-B 91",
                 "Coll. Østrup, Botan. Museum Copenhagen, Dänemark Praep. 3944",
+                "Coll. L.P.B.V. No. 0736",
+                "Coll. Ruhr University-Bochum, Inst. of Geology No. 11532",
+                "Coll. Paläontol. Inst. Univ. Bucuresti. Nr. 2515",
+                "Coll. Dr.h.c. R. Mundlos (Bad Friedrichshall, später Stuttgart) Inv. Nr. P 1396",
+                "Inst. Geological Sciences, Acad. Sci. Belarus, Minsk N 212 A",
+                "Coll. Lange-Bertalot, Bot. Inst., Univ. Frankfurt/Main, Germany",
+                "in coll. H. F. Paulus (Wien)",
 
 
         };

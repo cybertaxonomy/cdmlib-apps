@@ -95,7 +95,7 @@ public class IAPTExcelImport<CONFIG extends IAPTImportConfigurator> extends Simp
             Pattern.compile("^(?<monthName>[IVX]{1,2})([\\.\\-/])(?<year>(?:1[7,8,9])?[0-9]{2})$"), // partial date like VI-1969
             Pattern.compile("^(?<day>[0-9]{1,2})(?:[\\./]|th|rd|st)?\\s(?<monthName>\\p{L}+\\.?),?\\s?(?<year>(?:1[7,8,9])?[0-9]{2})$"), // full date like 12. April 1969 or april 1999 or 22 Dec.1999
         };
-    private static final Pattern typeSpecimenSplitPattern =  Pattern.compile("^(?:\"*[Tt]ype: (?<fieldUnit>.*?))(?:[Hh]olotype:(?<holotype>.*?)\\.?)?(?:[Ii]sotype[^:]*:(?<isotype>.*)\\.?)?\\.?$");
+    private static final Pattern typeSpecimenSplitPattern =  Pattern.compile("^(?:\"*[Tt]ype: (?<fieldUnit>.*?))(?:[Hh]olotype:(?<holotype>.*?)\\.?)?(?:[Ii]sotype.*?[:\\(](?<isotype>.*)\\.?)?\\.?$");
 
     private static final Pattern typeNameBasionymPattern =  Pattern.compile("\\([Bb]asionym\\s?\\:\\s?(?<basionymName>[^\\)]*).*$");
     private static final Pattern typeNameNotePattern =  Pattern.compile("\\[([^\\[]*)"); // matches the inner of '[...]'
@@ -111,8 +111,8 @@ public class IAPTExcelImport<CONFIG extends IAPTImportConfigurator> extends Simp
     private static final Pattern[] specimenTypePatterns = new Pattern[]{
             Pattern.compile("^(?<colCode>[A-Z]+|CPC Micropaleontology Lab\\.?)\\s+(?:\\((?<institute>.*[^\\)])\\))(?<accNumber>.*)?$"), // like: GAUF (Gansu Agricultural University) No. 1207-1222
             Pattern.compile("^(?<colCode>[A-Z]+|CPC Micropaleontology Lab\\.?)\\s+(?:Coll\\.\\s(?<subCollection>[^\\.,;]*)(.))(?<accNumber>.*)?$"), // like KASSEL Coll. Krasske, Praep. DII 78
-            Pattern.compile("^(?<institute>Coll\\.\\s.*?)\\s+(?<accNumber>(Praep|slide).*)?$"), // like Coll. Lange-Bertalot, Bot. Inst., Univ. Frankfurt/Main, Germany Praep. Neukaledonien OTL 62
-           //  Pattern.compile("^.*(?<accNumber>Praep.*)$"), // like Coll. Lange-Bertalot, Bot. Inst., Univ. Frankfurt/Main, Germany Praep. Neukaledonien OTL 62
+            Pattern.compile("^(?:in\\s)?(?<institute>[Cc]oll\\.\\s.*?)(?:\\s+(?<accNumber>(Praep\\.|slide|No\\.|Inv\\. Nr\\.|Nr\\.).*))?$"), // like Coll. Lange-Bertalot, Bot. Inst., Univ. Frankfurt/Main, Germany Praep. Neukaledonien OTL 62
+            Pattern.compile("^(?<institute>Inst\\.\\s.*?)\\s+(?<accNumber>N\\s.*)?$"), // like Inst. Geological Sciences, Acad. Sci. Belarus, Minsk N 212 A
             Pattern.compile("^(?<colCode>[A-Z]+)(?:\\s+(?<accNumber>.*))?$"), // identifies the Collection code and takes the rest as accessionNumber if any
     };
 
