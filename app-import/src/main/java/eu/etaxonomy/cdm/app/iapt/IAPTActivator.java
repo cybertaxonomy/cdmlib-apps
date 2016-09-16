@@ -44,7 +44,7 @@ public class IAPTActivator {
     public static final String DATA_TYPE_LEG_100 = "iapt-type-leg-100.xls";
     public static final String DATA_NAME_TYPES = "iapt-name-types.xls";
     public static final String DATA_SINGLE = "single.xls";
-    public static final String DATA_FILE = DATA_FILE_0_100;
+    public static final String DATA_FILE = DATA_FILE_FULL;
 
     //database validation status (create, update, validate ...)
     static DbSchemaValidation hbm2dll = DbSchemaValidation.CREATE;

@@ -151,8 +151,11 @@ public class IAPTExcelImport<CONFIG extends IAPTImportConfigurator> extends Simp
     DateTimeFormatter formatterYear = DateTimeFormat.forPattern("yyyy");
 
     private Map<String, Collection> collectionMap = new HashMap<>();
+
     private ExtensionType extensionTypeIAPTRegData = null;
 
+    private Set<String> nameSet = new HashSet<>();
+    private DefinedTermBase duplicateRegistration = null;
 
     enum TypesName {
         fieldUnit, holotype, isotype;
@@ -339,6 +342,11 @@ public class IAPTExcelImport<CONFIG extends IAPTImportConfigurator> extends Simp
         if(isFossil){
             taxon.addMarker(Marker.NewInstance(markerTypeFossil(), true));
         }
+        if(!nameSet.add(titleCacheStr)){
+            taxonName.addMarker(Marker.NewInstance(markerDuplicateRegistration(), true));
+            logger.warn(csvReportLine(regNumber, "Duplicate registration of", titleCacheStr));
+        }
+
 
         // Types
         if(!StringUtils.isEmpty(typeStr)){
@@ -1286,6 +1294,14 @@ public class IAPTExcelImport<CONFIG extends IAPTImportConfigurator> extends Simp
         if(this.markerTypeFossil == null){
             markerTypeFossil = MarkerType.NewInstance("isFossilTaxon", "isFossil", null);
             getTermService().save(this.markerTypeFossil);
+        }
+        return markerTypeFossil;
+    }
+
+    private MarkerType markerDuplicateRegistration(){
+        if(this.duplicateRegistration == null){
+            duplicateRegistration = MarkerType.NewInstance("duplicateRegistration", "duplicateRegistration", null);
+            getTermService().save(this.duplicateRegistration);
         }
         return markerTypeFossil;
     }
