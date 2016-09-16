@@ -141,7 +141,8 @@ public class IAPTExcelImport<CONFIG extends IAPTImportConfigurator> extends Simp
         // special cases
         monthFromNameMap.put("mar", 3);
         monthFromNameMap.put("dec", 12);
-        monthFromNameMap.put("Februari", 2);
+        monthFromNameMap.put("februari", 2);
+        monthFromNameMap.put("març", 3);
     }
 
 

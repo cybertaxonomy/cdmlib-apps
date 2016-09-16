@@ -1,6 +1,7 @@
 package eu.etaxonomy.cdm.io.iapt;
 
 import eu.etaxonomy.cdm.model.occurrence.Collection;
+import eu.etaxonomy.cdm.model.occurrence.DerivedUnit;
 import eu.etaxonomy.cdm.model.occurrence.FieldUnit;
 import org.junit.Before;
 import org.junit.Test;
@@ -25,6 +26,7 @@ public class IAPTImportTest extends Assert {
     public void testDateParser(){
 
         String[] dateStrings = new String[]{
+                "25 februari 1998",
                 "April 12, 1969",
                 "april 12th 1999",
                 "April 99",
@@ -86,27 +88,30 @@ public class IAPTImportTest extends Assert {
         FieldUnit fu = FieldUnit.NewInstance();
         Collection collection = null;
 
-        String[] typeStrings = new String[]{
-                "Coll. Lange-Bertalot, Bot. Inst., Univ. Frankfurt/Main, Germany Praep. No. Eu-PL 72",
-                "LE 1700b-114",
-                "AD 99530159",
-                "STU P 1425",
-                "GAUF (Gansu Agricultural University) No. 1207-1222",
-                "KASSEL Coll. Krasske, Praep. DII 78",
-                "Coll. Lange-Bertalot, Botanisches Institut, Frankfurt am Main slide Eh-B 91",
-                "Coll. Østrup, Botan. Museum Copenhagen, Dänemark Praep. 3944",
-                "Coll. L.P.B.V. No. 0736",
-                "Coll. Ruhr University-Bochum, Inst. of Geology No. 11532",
-                "Coll. Paläontol. Inst. Univ. Bucuresti. Nr. 2515",
-                "Coll. Dr.h.c. R. Mundlos (Bad Friedrichshall, später Stuttgart) Inv. Nr. P 1396",
-                "Inst. Geological Sciences, Acad. Sci. Belarus, Minsk N 212 A",
-                "Coll. Lange-Bertalot, Bot. Inst., Univ. Frankfurt/Main, Germany",
-                "in coll. H. F. Paulus (Wien)",
-
-
+        String[][] typeStrings = new String[][]{
+                new String[]{ "Coll. Lange-Bertalot, Bot. Inst., Univ. Frankfurt/Main, Germany Praep. No. Eu-PL 72", "Praep. No. Eu-PL 72"},
+                new String[]{ "LE 1700b-114", "1700b-114"},
+                new String[]{ "AD 99530159", "99530159"},
+                new String[]{"STU P 1425", "P 1425"},
+                new String[]{"GAUF (Gansu Agricultural University) No. 1207-1222", " No. 1207-1222"},
+                new String[]{ "KASSEL Coll. Krasske, Praep. DII 78", "Praep. DII 78"},
+                new String[]{ "Coll. Lange-Bertalot, Botanisches Institut, Frankfurt am Main slide Eh-B 91", "slide Eh-B 91"},
+                new String[]{ "Coll. Østrup, Botan. Museum Copenhagen, Dänemark Praep. 3944", "Praep. 3944"},
+                new String[]{ "Coll. L.P.B.V. No. 0736", "No. 0736"},
+                new String[]{ "Coll. Ruhr University-Bochum, Inst. of Geology No. 11532", "No. 11532"},
+                new String[]{ "Coll. Paläontol. Inst. Univ. Bucuresti. Nr. 2515", "Nr. 2515"},
+                new String[]{ "Coll. Dr.h.c. R. Mundlos (Bad Friedrichshall, später Stuttgart) Inv. Nr. P 1396", "Inv. Nr. P 1396"},
+                new String[]{ "Inst. Geological Sciences, Acad. Sci. Belarus, Minsk N 212 A", "N 212 A"},
+                new String[]{ "Coll. Lange-Bertalot, Bot. Inst., Univ. Frankfurt/Main, Germany"},
+                new String[]{ "in coll. H. F. Paulus (Wien)"},
         };
-        for (String t: typeStrings) {
-            assertNotNull("Could not parse: " + t, importer.parseSpecimenType(fu, IAPTExcelImport.TypesName.holotype, collection, t, "0"));
+
+        for (String t[]: typeStrings) {
+            DerivedUnit specimen = importer.parseSpecimenType(fu, IAPTExcelImport.TypesName.holotype, collection, t[0], "0");
+            assertNotNull("Could not parse: " + t[0], specimen);
+            if(t.length > 1){
+                assertEquals(t[1], specimen.getAccessionNumber());
+            }
         }
 
     }
