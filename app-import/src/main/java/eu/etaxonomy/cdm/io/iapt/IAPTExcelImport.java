@@ -10,7 +10,6 @@
 package eu.etaxonomy.cdm.io.iapt;
 
 import eu.etaxonomy.cdm.api.facade.DerivedUnitFacade;
-import eu.etaxonomy.cdm.api.service.pager.Pager;
 import eu.etaxonomy.cdm.common.CdmUtils;
 import eu.etaxonomy.cdm.io.mexico.SimpleExcelTaxonImport;
 import eu.etaxonomy.cdm.io.mexico.SimpleExcelTaxonImportState;
@@ -23,10 +22,8 @@ import eu.etaxonomy.cdm.model.occurrence.*;
 import eu.etaxonomy.cdm.model.occurrence.Collection;
 import eu.etaxonomy.cdm.model.reference.Reference;
 import eu.etaxonomy.cdm.model.reference.ReferenceFactory;
-import eu.etaxonomy.cdm.model.reference.ReferenceType;
 import eu.etaxonomy.cdm.model.taxon.*;
 import eu.etaxonomy.cdm.strategy.parser.NonViralNameParserImpl;
-import eu.etaxonomy.cdm.strategy.parser.ParserProblem;
 import org.apache.commons.lang.ArrayUtils;
 import org.apache.commons.lang.StringEscapeUtils;
 import org.apache.commons.lang.StringUtils;
@@ -341,7 +338,7 @@ public class IAPTExcelImport<CONFIG extends IAPTImportConfigurator> extends Simp
         if(!StringUtils.isEmpty(typeStr)){
 
             if(taxonName.getRank().isSpecies() || taxonName.getRank().isLower(Rank.SPECIES())) {
-                makeSpecimenTypeData(typeStr, taxonName, regNumber, state);
+                makeSpecimenTypeData(typeStr, taxonName, regNumber, state, false);
             } else {
                 makeNameTypeData(typeStr, taxonName, regNumber, state);
             }
@@ -371,7 +368,7 @@ public class IAPTExcelImport<CONFIG extends IAPTImportConfigurator> extends Simp
         return taxon;
     }
 
-    private void makeSpecimenTypeData(String typeStr, BotanicalName taxonName, String regNumber, SimpleExcelTaxonImportState<CONFIG> state) {
+    private void makeSpecimenTypeData(String typeStr, BotanicalName taxonName, String regNumber, SimpleExcelTaxonImportState<CONFIG> state, boolean isFossil) {
 
         Matcher m = typeSpecimenSplitPattern.matcher(typeStr);
 
@@ -388,9 +385,16 @@ public class IAPTExcelImport<CONFIG extends IAPTImportConfigurator> extends Simp
             }
             getOccurrenceService().save(fieldUnit);
 
+            SpecimenOrObservationType specimenType;
+            if(isFossil){
+                specimenType = SpecimenOrObservationType.Fossil;
+            } else {
+                specimenType = SpecimenOrObservationType.PreservedSpecimen;
+            }
+
             // all others ..
-            addSpecimenTypes(taxonName, fieldUnit, m.group(TypesName.holotype.name()), TypesName.holotype, false, regNumber);
-            addSpecimenTypes(taxonName, fieldUnit, m.group(TypesName.isotype.name()), TypesName.isotype, true, regNumber);
+            addSpecimenTypes(taxonName, fieldUnit, m.group(TypesName.holotype.name()), TypesName.holotype, false, regNumber, specimenType);
+            addSpecimenTypes(taxonName, fieldUnit, m.group(TypesName.isotype.name()), TypesName.isotype, true, regNumber, specimenType);
 
         } else {
             // create a field unit with only a titleCache using the full typeStr
@@ -654,7 +658,7 @@ public class IAPTExcelImport<CONFIG extends IAPTImportConfigurator> extends Simp
     }
 
 
-    private void addSpecimenTypes(BotanicalName taxonName, FieldUnit fieldUnit, String typeStr, TypesName typeName, boolean multiple, String regNumber){
+    private void addSpecimenTypes(BotanicalName taxonName, FieldUnit fieldUnit, String typeStr, TypesName typeName, boolean multiple, String regNumber, SpecimenOrObservationType specimenType){
 
         if(StringUtils.isEmpty(typeStr)){
             return;
@@ -679,7 +683,7 @@ public class IAPTExcelImport<CONFIG extends IAPTImportConfigurator> extends Simp
                         specimens.add(specimen);
                     } else {
                         // parsing was not successful make simple specimen
-                        specimens.add(makeSpecimenType(fieldUnit, t));
+                        specimens.add(makeSpecimenType(fieldUnit, t, specimenType));
                     }
                 }
             }
@@ -691,7 +695,7 @@ public class IAPTExcelImport<CONFIG extends IAPTImportConfigurator> extends Simp
                 collection = specimen.getCollection();
             } else {
                 // parsing was not successful make simple specimen
-                specimens.add(makeSpecimenType(fieldUnit, typeStr));
+                specimens.add(makeSpecimenType(fieldUnit, typeStr, SpecimenOrObservationType.PreservedSpecimen));
             }
         }
 
@@ -700,8 +704,8 @@ public class IAPTExcelImport<CONFIG extends IAPTImportConfigurator> extends Simp
        }
     }
 
-    private DerivedUnit makeSpecimenType(FieldUnit fieldUnit, String titleCache) {
-        DerivedUnit specimen;DerivedUnitFacade facade = DerivedUnitFacade.NewInstance(SpecimenOrObservationType.PreservedSpecimen, fieldUnit);
+    private DerivedUnit makeSpecimenType(FieldUnit fieldUnit, String titleCache, SpecimenOrObservationType specimenType) {
+        DerivedUnit specimen;DerivedUnitFacade facade = DerivedUnitFacade.NewInstance(specimenType, fieldUnit);
         facade.setTitleCache(titleCache.trim(), true);
         specimen = facade.innerDerivedUnit();
         return specimen;
