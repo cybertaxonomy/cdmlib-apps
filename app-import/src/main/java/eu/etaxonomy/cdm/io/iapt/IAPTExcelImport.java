@@ -9,6 +9,8 @@
 
 package eu.etaxonomy.cdm.io.iapt;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import eu.etaxonomy.cdm.api.facade.DerivedUnitFacade;
 import eu.etaxonomy.cdm.common.CdmUtils;
 import eu.etaxonomy.cdm.io.mexico.SimpleExcelTaxonImport;
@@ -113,6 +115,9 @@ public class IAPTExcelImport<CONFIG extends IAPTImportConfigurator> extends Simp
             Pattern.compile("^(?<colCode>[A-Z]+)(?:\\s+(?<accNumber>.*))?$"), // identifies the Collection code and takes the rest as accessionNumber if any
     };
 
+
+    private static final Pattern registrationPattern = Pattern.compile("^Registration date\\:\\s(?<regdate>\\d\\d\\.\\d\\d\\.\\d\\d); no\\.\\:\\s(?<regid>\\d+);\\soffice\\:\\s(?<office>.*?)\\.(?:\\s\\[Form no\\.\\:\\s(?<formNo>d+)\\])?$"); // Registration date: 29.06.98; no.: 2922; office: Berlin.
+
     private static Map<String, Integer> monthFromNameMap = new HashMap<>();
 
     static {
@@ -146,6 +151,7 @@ public class IAPTExcelImport<CONFIG extends IAPTImportConfigurator> extends Simp
     DateTimeFormatter formatterYear = DateTimeFormat.forPattern("yyyy");
 
     private Map<String, Collection> collectionMap = new HashMap<>();
+    private ExtensionType extensionTypeIAPTRegData = null;
 
 
     enum TypesName {
@@ -1102,9 +1108,60 @@ public class IAPTExcelImport<CONFIG extends IAPTImportConfigurator> extends Simp
         }
         ((IAPTImportState)state).setCurrentTaxon(taxon);
 
+        // Registration
+        IAPTRegData regData = makeIAPTRegData(state);
+        ObjectMapper mapper = new ObjectMapper();
+        try {
+            String regdataJson = mapper.writeValueAsString(regData);
+            Extension.NewInstance(taxon.getName(), regdataJson, getExtensionTypeIAPTRegData());
+            getNameService().save(taxon.getName());
+        } catch (JsonProcessingException e) {
+            logger.error("Error on converting IAPTRegData", e);
+        }
 
         logger.info("#of imported Genera: " + ((IAPTImportState) state).getGenusTaxonMap().size());
 		return;
+    }
+
+    private ExtensionType getExtensionTypeIAPTRegData() {
+        if(extensionTypeIAPTRegData == null){
+            extensionTypeIAPTRegData = ExtensionType.NewInstance("IAPTRegData.json", "IAPTRegData.json", "");
+            getTermService().save(extensionTypeIAPTRegData);
+        }
+        return extensionTypeIAPTRegData;
+    }
+
+    private IAPTRegData makeIAPTRegData(SimpleExcelTaxonImportState<CONFIG> state) {
+
+        HashMap<String, String> record = state.getOriginalRecord();
+        String registrationStr = getValue(record, REGISTRATION);
+        String regDateStr = getValue(record, REGDATE);
+        String regStr = getValue(record, REGISTRATION, true);
+
+        String dateStr = null;
+        String office = null;
+        Integer regID = null;
+        Integer formNo = null;
+
+        Matcher m = registrationPattern.matcher(registrationStr);
+        if(m.matches()){
+            dateStr = m.group("regdate");
+            if(parseDate( regStr, dateStr) == null){
+                // check for valid dates
+                logger.warn(csvReportLine(regStr, REGISTRATION + ": could not parse date", dateStr, " in ", registrationStr));
+            };
+            office = m.group("office");
+            regID = Integer.valueOf(m.group("regid"));
+            try {
+                formNo = Integer.valueOf(m.group("formNo"));
+            } catch(IllegalArgumentException e){
+                // ignore
+            }
+        } else {
+            logger.warn(csvReportLine(regStr, REGISTRATION + ": could not be parsed", registrationStr));
+        }
+        IAPTRegData regData = new IAPTRegData(dateStr, office, regID, formNo);
+        return regData;
     }
 
     private TaxonNode getHigherTaxon(String higherTaxaString, IAPTImportState state) {
