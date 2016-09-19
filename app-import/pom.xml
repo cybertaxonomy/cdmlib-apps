@@ -40,11 +40,6 @@
           <id>EditRepository</id>
           <url>http://wp5.e-taxonomy.eu/mavenrepo/</url>
       </repository>
-      <!-- the cdm internal repository -->
-      <repository>
-          <id>EditRepository</id>
-          <url>http://wp5.e-taxonomy.eu/mavenrepo/</url>
-      </repository>
   </repositories>
   <dependencies>
 	<dependency>
