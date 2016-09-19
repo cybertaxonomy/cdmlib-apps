@@ -12,6 +12,7 @@ package eu.etaxonomy.cdm.io.mexico;
 import java.util.HashMap;
 import java.util.Map;
 
+import eu.etaxonomy.cdm.model.taxon.Classification;
 import org.apache.log4j.Logger;
 
 import eu.etaxonomy.cdm.io.excel.common.ExcelImportConfiguratorBase;

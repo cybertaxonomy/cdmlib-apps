@@ -1,6 +1,5 @@
 .idea/
 imports.iml
-src/main/java/eu/etaxonomy/cdm/app/iapt/
-src/main/java/eu/etaxonomy/cdm/io/iapt/
 src/main/main.iml
 src/test/test.iml
+error.log
