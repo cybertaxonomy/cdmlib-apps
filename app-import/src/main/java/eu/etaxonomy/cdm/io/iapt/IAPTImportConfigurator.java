@@ -34,6 +34,8 @@ public class IAPTImportConfigurator extends ExcelImportConfiguratorBase{
 
     private Reference secReference;
 
+    boolean doAlgeaeOnly;
+
 
     public static IAPTImportConfigurator NewInstance(URI source, ICdmDataSource destination) {
         return new IAPTImportConfigurator(source, destination);
@@ -75,5 +77,12 @@ public class IAPTImportConfigurator extends ExcelImportConfiguratorBase{
         this.secReference = secReference;
     }
 
+    public void setDoAlgeaeOnly(boolean doAlgeaeOnly) {
+        this.doAlgeaeOnly = doAlgeaeOnly;
+    }
+
+    public boolean isDoAlgeaeOnly() {
+        return doAlgeaeOnly;
+    }
 }
 

@@ -46,6 +46,10 @@ public class IAPTActivator {
     public static final String DATA_SINGLE = "single.xls";
     public static final String DATA_FILE = DATA_FILE_FULL;
 
+    public static final Boolean algaeOnly = true;
+
+    // ====================================================================================
+
     //database validation status (create, update, validate ...)
     static DbSchemaValidation hbm2dll = DbSchemaValidation.CREATE;
 
@@ -99,6 +103,7 @@ public class IAPTActivator {
         config.setSourceReference(sourceRef);
         config.setSecReference(secRef);
         config.setProgressMonitor(DefaultProgressMonitor.NewInstance());
+        config.setDoAlgeaeOnly(algaeOnly);
         // config.setBatchSize(100); // causes Error during managed flush [Don't change the reference to a collection with delete-orphan enabled : eu.etaxonomy.cdm.model.taxon.TaxonNode.annotations]
 
         CdmDefaultImport<IAPTImportConfigurator> myImport = new CdmDefaultImport<>();

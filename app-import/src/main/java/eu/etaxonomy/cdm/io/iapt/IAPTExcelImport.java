@@ -261,11 +261,14 @@ public class IAPTExcelImport<CONFIG extends IAPTImportConfigurator> extends Simp
         if(restoreOriginalReference){
             taxonName.setNomenclaturalReference(bookVariedadesTradicionales);
         }
-        if(pupDate != null) {
-            taxonName.getNomenclaturalReference().setDatePublished(TimePeriod.NewInstance(pupDate));
-        }
-        if(nomRefIssue != null) {
-            ((Reference)taxonName.getNomenclaturalReference()).setVolume(nomRefIssue);
+
+        if(taxonName.getNomenclaturalReference() != null){
+            if(pupDate != null) {
+                taxonName.getNomenclaturalReference().setDatePublished(TimePeriod.NewInstance(pupDate));
+            }
+            if(nomRefIssue != null) {
+                ((Reference)taxonName.getNomenclaturalReference()).setVolume(nomRefIssue);
+            }
         }
 
 
@@ -1085,6 +1088,10 @@ public class IAPTExcelImport<CONFIG extends IAPTImportConfigurator> extends Simp
 	@Override
     protected void firstPass(SimpleExcelTaxonImportState<CONFIG> state) {
 
+        if(excludeFromImport(state)){
+            return;
+        }
+
         String lineNumber = "L#" + state.getCurrentLine() + ": ";
         logger.setLevel(Level.DEBUG);
         HashMap<String, String> record = state.getOriginalRecord();
@@ -1129,6 +1136,14 @@ public class IAPTExcelImport<CONFIG extends IAPTImportConfigurator> extends Simp
 
         logger.info("#of imported Genera: " + ((IAPTImportState) state).getGenusTaxonMap().size());
 		return;
+    }
+
+    private boolean excludeFromImport(SimpleExcelTaxonImportState<CONFIG> state) {
+        if(state.getConfig().isDoAlgeaeOnly()){
+            return !getValue(state.getOriginalRecord(), HIGHERTAXON, true).matches(".*?PHYCEAE\\s*$");
+        }
+
+        return false;
     }
 
     private ExtensionType getExtensionTypeIAPTRegData() {
