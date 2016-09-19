@@ -1140,7 +1140,7 @@ public class IAPTExcelImport<CONFIG extends IAPTImportConfigurator> extends Simp
 
     private boolean excludeFromImport(SimpleExcelTaxonImportState<CONFIG> state) {
         if(state.getConfig().isDoAlgeaeOnly()){
-            return !getValue(state.getOriginalRecord(), HIGHERTAXON, true).matches(".*?PHYCEAE\\s*$");
+            return !getValue(state.getOriginalRecord(), HIGHERTAXON, true).matches(".*?PHYCEAE(?:$|\\s+)");
         }
 
         return false;
