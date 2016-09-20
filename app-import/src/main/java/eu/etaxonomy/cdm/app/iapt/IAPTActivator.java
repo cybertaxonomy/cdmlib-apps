@@ -46,7 +46,7 @@ public class IAPTActivator {
     public static final String DATA_SINGLE = "single.xls";
     public static final String DATA_FILE = DATA_FILE_FULL;
 
-    public static final Boolean algaeOnly = true;
+    public static final Boolean algaeOnly = false;
 
     // ====================================================================================
 

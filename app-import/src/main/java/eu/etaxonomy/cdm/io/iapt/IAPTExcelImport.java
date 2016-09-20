@@ -1075,8 +1075,7 @@ public class IAPTExcelImport<CONFIG extends IAPTImportConfigurator> extends Simp
         value = StringUtils.replace(value, ">l", "ğ");
 
         value = StringUtils.replace(value, "§B>i", "ł");
-
-
+        value = StringUtils.replace(value, "¤", "ń");
 
         return value;
     }
@@ -1139,8 +1138,8 @@ public class IAPTExcelImport<CONFIG extends IAPTImportConfigurator> extends Simp
     }
 
     private boolean excludeFromImport(SimpleExcelTaxonImportState<CONFIG> state) {
-        boolean include = false;
         if(state.getConfig().isDoAlgeaeOnly()){
+            boolean include = false;
             String higherTaxon = getValue(state.getOriginalRecord(), HIGHERTAXON, true);
             String fullNameStr = getValue(state.getOriginalRecord(), FULLNAME, true);
             include |= higherTaxon.matches(".*?PHYCEAE(?:$|\\s+)");
@@ -1155,9 +1154,10 @@ public class IAPTExcelImport<CONFIG extends IAPTImportConfigurator> extends Simp
                     "Navicula "
                 })
             include |= fullNameStr.startsWith(test);
+            return !include;
         }
 
-        return !include;
+        return false;
     }
 
     private ExtensionType getExtensionTypeIAPTRegData() {
