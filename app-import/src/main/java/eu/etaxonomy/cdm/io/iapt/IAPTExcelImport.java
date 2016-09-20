@@ -1139,11 +1139,25 @@ public class IAPTExcelImport<CONFIG extends IAPTImportConfigurator> extends Simp
     }
 
     private boolean excludeFromImport(SimpleExcelTaxonImportState<CONFIG> state) {
+        boolean include = false;
         if(state.getConfig().isDoAlgeaeOnly()){
-            return !getValue(state.getOriginalRecord(), HIGHERTAXON, true).matches(".*?PHYCEAE(?:$|\\s+)");
+            String higherTaxon = getValue(state.getOriginalRecord(), HIGHERTAXON, true);
+            String fullNameStr = getValue(state.getOriginalRecord(), FULLNAME, true);
+            include |= higherTaxon.matches(".*?PHYCEAE(?:$|\\s+)");
+            for(String test : new String[]{
+                    "Bolidophyceae ",
+                    "Phaeothamniophyceae ",
+                    "Bolidomonadales ",
+                    "Bolidomonadaceae ",
+                    "Aureoumbra ",
+                    "Bolidomonas ",
+                    "Seagriefia ",
+                    "Navicula "
+                })
+            include |= fullNameStr.startsWith(test);
         }
 
-        return false;
+        return !include;
     }
 
     private ExtensionType getExtensionTypeIAPTRegData() {
