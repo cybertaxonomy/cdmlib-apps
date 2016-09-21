@@ -523,7 +523,8 @@ public class RedListGefaesspflanzenImportNames extends DbImportBase<RedListGefae
         taxNameString = taxNameString.replaceAll(" +", " ");
 
 
-        if(hybString.equals(RedListUtil.HYB_X) || hybString.equals(RedListUtil.HYB_N)){
+        if((hybString.equals(RedListUtil.HYB_X) || hybString.equals(RedListUtil.HYB_N))
+                && nameCache.matches(".*\\s"+RedListUtil.HYB_SIGN+"\\w.*")){
             taxNameString = taxNameString.replace(" "+RedListUtil.HYB_SIGN+" ", " "+RedListUtil.HYB_SIGN);//hybrid sign has no space after it in titleCache for binomial hybrids
             taxNameString = taxNameString.replace(" x ", " "+RedListUtil.HYB_SIGN);//in some cases a standard 'x' is used
         }
