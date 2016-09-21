@@ -277,12 +277,6 @@ public class RedListGefaesspflanzenImportClassification extends DbImportBase<Red
 
             taxon.setSec(classification.getReference());
             classification.addChildTaxon(taxon, null, null);
-            //TODO is saving and setting the title cache to null neccessary?
-            getTaxonService().saveOrUpdate(taxon);
-            getTaxonService().saveOrUpdate(gesamtListeTaxon);
-            if(checklisteTaxon!=null){
-                getTaxonService().saveOrUpdate(checklisteTaxon);
-            }
             taxon.setTitleCache(null);//Reset title cache to see sec ref in title
         }
     }
