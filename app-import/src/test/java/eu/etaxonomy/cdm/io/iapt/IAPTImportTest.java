@@ -1,25 +1,26 @@
 package eu.etaxonomy.cdm.io.iapt;
 
+import java.util.regex.Matcher;
+
+import org.junit.Assert;
+import org.junit.Before;
+import org.junit.Test;
+
 import eu.etaxonomy.cdm.model.occurrence.Collection;
 import eu.etaxonomy.cdm.model.occurrence.DerivedUnit;
 import eu.etaxonomy.cdm.model.occurrence.FieldUnit;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.Assert;
-
-import java.util.regex.Matcher;
 
 /**
  * Created by andreas on 9/15/16.
  */
 public class IAPTImportTest extends Assert {
 
-    IAPTExcelImport importer = null;
+    IAPTExcelImport<IAPTImportConfigurator> importer = null;
 
     @Before
     public void setup(){
         System.getProperties().put("TEST_MODE", "1");
-        importer = new IAPTExcelImport();
+        importer = new IAPTExcelImport<>();
     }
 
     @Test
@@ -70,7 +71,7 @@ public class IAPTImportTest extends Assert {
                         "B 147519-147520, LE 146520."}
         };
         for (String[] t: typeStrings) {
-            Matcher m = importer.typeSpecimenSplitPattern.matcher(t[0]);
+            Matcher m = IAPTExcelImport.typeSpecimenSplitPattern.matcher(t[0]);
             assertTrue("typeSpecimenSplitPattern is not matching: " + t[0], m.matches());
             if(!t[1].isEmpty()){
                 assertEquals(t[1], m.group("holotype").trim());
@@ -131,7 +132,7 @@ public class IAPTImportTest extends Assert {
                 "leg. J. J. Halda 18.3.1997"
         };
         for (String t: typeStrings) {
-            assertTrue("collectorPattern is not matching: " + t, importer.collectorPattern.matcher(t).matches());
+            assertTrue("collectorPattern is not matching: " + t, IAPTExcelImport.collectorPattern.matcher(t).matches());
         }
     }
 }
