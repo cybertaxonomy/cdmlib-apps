@@ -9,6 +9,8 @@
 */
 package eu.etaxonomy.cdm.io.edaphobase;
 
+import java.util.UUID;
+
 import org.apache.log4j.Logger;
 
 import eu.etaxonomy.cdm.io.common.mapping.InputTransformerBase;
@@ -24,6 +26,9 @@ public class EdaphobaseImportTransformer extends InputTransformerBase {
     private static final long serialVersionUID = 1011498282020827250L;
     @SuppressWarnings("unused")
     private static final Logger logger = Logger.getLogger(EdaphobaseImportTransformer.class);
+
+    private static final UUID uuidTaxGrossgruppeMarker = UUID.fromString("71f22f44-5131-4d54-8362-1c77ac5c567a");
+    private static final UUID uuidEdaphoRankMarker = UUID.fromString("6eaeffd2-b89b-436b-b0ee-75af5f0a9b81");
 
     @Override
     public Rank getRankByKey(String key) throws UndefinedTransformerMethodException {
@@ -55,11 +60,17 @@ public class EdaphobaseImportTransformer extends InputTransformerBase {
         return null;
     }
 
-//    @Override
-//    public UUID getRankUuid(String key) throws UndefinedTransformerMethodException {
-//        // TODO Auto-generated method stub
-//        return super.getRankUuid(key);
-//    }
+    @Override
+    public UUID getMarkerTypeUuid(String key) throws UndefinedTransformerMethodException {
+        if (key == null){
+            return null;
+        }else if (key.equals("TaxGrossgruppe")){
+            return uuidTaxGrossgruppeMarker;
+        }else if (key.equals("EdaphoRankMarker")){
+            return uuidEdaphoRankMarker;
+        }
+        return null;
+    }
 
 
 

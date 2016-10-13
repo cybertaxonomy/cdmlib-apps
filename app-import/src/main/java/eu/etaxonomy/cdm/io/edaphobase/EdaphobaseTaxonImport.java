@@ -28,6 +28,10 @@ import eu.etaxonomy.cdm.io.common.ResultSetPartitioner;
 import eu.etaxonomy.cdm.io.common.mapping.UndefinedTransformerMethodException;
 import eu.etaxonomy.cdm.model.agent.TeamOrPersonBase;
 import eu.etaxonomy.cdm.model.common.CdmBase;
+import eu.etaxonomy.cdm.model.common.Language;
+import eu.etaxonomy.cdm.model.common.Marker;
+import eu.etaxonomy.cdm.model.common.MarkerType;
+import eu.etaxonomy.cdm.model.common.Representation;
 import eu.etaxonomy.cdm.model.name.Rank;
 import eu.etaxonomy.cdm.model.name.ZoologicalName;
 import eu.etaxonomy.cdm.model.reference.Reference;
@@ -75,7 +79,7 @@ public class EdaphobaseTaxonImport extends EdaphobaseImportBase {
                     + " LEFT JOIN tax_taxon ppt ON pt.parent_taxon_fk = ppt.taxon_id"
                     + " LEFT OUTER JOIN tax_rank_en r ON r.element_id = t.tax_rank_fk "
                     + " LEFT OUTER JOIN tax_rank_en pr ON pr.element_id = pt.tax_rank_fk "
-                    + " LEFT OUTER JOIN tax_rank_en ppr ON pr.element_id = ppt.tax_rank_fk "
+                    + " LEFT OUTER JOIN tax_rank_en ppr ON ppr.element_id = ppt.tax_rank_fk "
                 + " WHERE t.taxon_id IN (@IDSET)";
         result = result.replace("@IDSET", IPartitionedIO.ID_LIST_TOKEN);
         return result;
@@ -94,11 +98,9 @@ public class EdaphobaseTaxonImport extends EdaphobaseImportBase {
         try {
             while (rs.next()){
                 makeSingleTaxon(state, rs, taxaToSave);
-
             }
-        } catch (SQLException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
+        } catch (SQLException | UndefinedTransformerMethodException e) {
+             e.printStackTrace();
         }
 
         getTaxonService().saveOrUpdate(taxaToSave);
@@ -110,9 +112,10 @@ public class EdaphobaseTaxonImport extends EdaphobaseImportBase {
      * @param rs
      * @param taxaToSave
      * @throws SQLException
+     * @throws UndefinedTransformerMethodException
      */
     private void makeSingleTaxon(EdaphobaseImportState state, ResultSet rs, Set<TaxonBase> taxaToSave)
-            throws SQLException {
+            throws SQLException, UndefinedTransformerMethodException {
         Integer id = nullSafeInt(rs, "taxon_id");
         Integer year = nullSafeInt(rs, "tax_year");
         boolean isBrackets = rs.getBoolean("tax_brackets");
@@ -142,12 +145,16 @@ public class EdaphobaseTaxonImport extends EdaphobaseImportBase {
 
         //Name etc.
         Rank rank = makeRank(state, rankStr);
+        checkRankMarker(state, rank);
         ZoologicalName name = ZoologicalName.NewInstance(rank);
         setNamePart(nameStr, rank, name);
         Rank parentRank = makeRank(state, parentRankStr);
         setNamePart(parentNameStr, parentRank, name);
         Rank parentParentRank = makeRank(state, grandParentRankStr);
         setNamePart(grandParentNameStr, parentParentRank, name);
+        if (parentParentRank != null && parentParentRank.isLower(Rank.GENUS()) || isBlank(name.getGenusOrUninomial()) ){
+            logger.warn("Grandparent rank is lower than genus for " + name.getTitleCache() + " (edapho-id: " + id + "; cdm-id: " + name.getId());
+        }
 
         //Authors
         if (StringUtils.isNotBlank(authorName)){
@@ -175,7 +182,7 @@ public class EdaphobaseTaxonImport extends EdaphobaseImportBase {
         }
         name.setNomenclaturalMicroReference(StringUtils.isBlank(pages)? null : pages);
 
-
+        //taxon
         Reference secRef = state.getRelatedObject(REFERENCE_NAMESPACE, state.getConfig().getSecUuid().toString(), Reference.class);
         if (secRef == null){
             secRef = makeSecRef(state);
@@ -185,6 +192,7 @@ public class EdaphobaseTaxonImport extends EdaphobaseImportBase {
         }else{
             taxonBase = Synonym.NewInstance(name, secRef);
         }
+        handleTaxonomicGroupMarker(state, taxonBase, isGroup);
         taxaToSave.add(taxonBase);
 
         //remarks
@@ -195,6 +203,44 @@ public class EdaphobaseTaxonImport extends EdaphobaseImportBase {
         ImportHelper.setOriginalSource(name, state.getTransactionalSourceReference(), id, TAXON_NAMESPACE);
     }
 
+
+    /**
+     * @param state
+     * @param rank
+     * @throws UndefinedTransformerMethodException
+     */
+    private void checkRankMarker(EdaphobaseImportState state, Rank rank) throws UndefinedTransformerMethodException {
+
+        Set<Marker> markers = rank.getMarkers();
+        if ( markers.size() == 0){  //we assume that no markers exist. at least not for markers of unused ranks
+            UUID edaphoRankMarkerTypeUuid = state.getTransformer().getMarkerTypeUuid("EdaphoRankMarker");
+            MarkerType marker = getMarkerType(state, edaphoRankMarkerTypeUuid, "Edaphobase rank", "Rank used in Edaphobase", "EdaRk" );
+            Representation rep = Representation.NewInstance("Rang, verwendet in Edaphobase", "Edaphobase Rang", "EdaRg", Language.GERMAN());
+            marker.addRepresentation(rep);
+            rank.addMarker(Marker.NewInstance(marker, true));
+            getTermService().saveOrUpdate(rank);
+        }
+    }
+
+    /**
+     * @param state
+     * @param isGroup
+     * @param taxonBase
+     */
+    private void handleTaxonomicGroupMarker(EdaphobaseImportState state, TaxonBase<?> taxonBase, boolean isGroup) {
+        if (! isGroup){
+            return;
+        }else{
+            try {
+                MarkerType markerType = getMarkerType(state, state.getTransformer().getMarkerTypeUuid("TaxGrossgruppe"), "Tax. Gruppe", "Taxonomische Grossgruppe", "TGG", null, Language.GERMAN());
+                if (taxonBase.isInstanceOf(Synonym.class)){
+                    logger.warn("Syonym is marked as 'taxonomische Grossgruppe'");
+                }
+                taxonBase.addMarker(Marker.NewInstance(markerType, true));
+            } catch (UndefinedTransformerMethodException e) {
+            }
+        }
+    }
 
     /**
      * @param state
