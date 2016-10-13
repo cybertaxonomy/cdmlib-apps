@@ -39,7 +39,6 @@ import eu.etaxonomy.cdm.model.description.TaxonNameDescription;
 import eu.etaxonomy.cdm.model.location.Country;
 import eu.etaxonomy.cdm.model.location.NamedAreaType;
 import eu.etaxonomy.cdm.model.name.BotanicalName;
-import eu.etaxonomy.cdm.model.name.NomenclaturalCode;
 import eu.etaxonomy.cdm.model.name.Rank;
 import eu.etaxonomy.cdm.model.name.TaxonNameBase;
 import eu.etaxonomy.cdm.model.occurrence.DerivedUnit;
@@ -68,7 +67,7 @@ public class TestDatabase {
 
 		logger.info("Setting DB " + dbname);
 		String password = AccountStore.readOrStorePassword(dbname, server, username, null);
-		ICdmDataSource datasource = CdmDataSource.NewMySqlInstance(server, dbname, username, password, NomenclaturalCode.ICNAFP);
+		ICdmDataSource datasource = CdmDataSource.NewMySqlInstance(server, dbname, username, password);
 		return datasource;
 	}
 

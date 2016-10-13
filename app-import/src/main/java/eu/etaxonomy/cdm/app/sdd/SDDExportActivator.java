@@ -1,9 +1,9 @@
 // $Id$
 /**
 * Copyright (C) 2009 EDIT
-* European Distributed Institute of Taxonomy 
+* European Distributed Institute of Taxonomy
 * http://www.e-taxonomy.eu
-* 
+*
 * The contents of this file are subject to the Mozilla Public License Version 1.1
 * See LICENSE.TXT at the top of this package for the full license terms.
 */
@@ -12,8 +12,6 @@ package eu.etaxonomy.cdm.app.sdd;
 import java.io.File;
 import java.net.MalformedURLException;
 import java.sql.SQLException;
-
-import junit.framework.Assert;
 
 import org.apache.log4j.Logger;
 
@@ -26,7 +24,7 @@ import eu.etaxonomy.cdm.database.ICdmDataSource;
 import eu.etaxonomy.cdm.io.common.CdmDefaultExport;
 import eu.etaxonomy.cdm.io.common.IExportConfigurator.DO_REFERENCES;
 import eu.etaxonomy.cdm.io.sdd.out.SDDExportConfigurator;
-import eu.etaxonomy.cdm.model.name.NomenclaturalCode;
+import junit.framework.Assert;
 
 /**
  * @author l.morris
@@ -42,8 +40,8 @@ public class SDDExportActivator {
 	//private static final String destinationFolder = "C:/tmp/viola/exports_SDD";
 
 	/** NUMBER_ROWS_TO_RETRIEVE = 0 is the default case to retrieve all rows.
-	 * For testing purposes: If NUMBER_ROWS_TO_RETRIEVE >0 then retrieve 
-	 *  as many rows as specified for agents, references, etc. 
+	 * For testing purposes: If NUMBER_ROWS_TO_RETRIEVE >0 then retrieve
+	 *  as many rows as specified for agents, references, etc.
 	 *  Only root taxa and no synonyms and relationships are retrieved. */
 	private static final int NUMBER_ROWS_TO_RETRIEVE = 0;
 
@@ -56,7 +54,7 @@ public class SDDExportActivator {
 		ICdmDataSource datasource = CdmDataSource.NewH2EmbeddedInstance(dbname, username, "");
 		return datasource;
 	}
-	
+
     private static ICdmDataSource customDataSource() {
 
         CdmPersistentDataSource loadedDataSource = null;
@@ -65,15 +63,15 @@ public class SDDExportActivator {
        String dataSourceName = CdmUtils.readInputLine("Database name: ");
        String username = CdmUtils.readInputLine("Username: ");
        String password = CdmUtils.readInputLine("Password: ");
-       
+
        dataSourceName = (dataSourceName.equals("")) ? "cdm_test3" : dataSourceName;
        username = (username.equals("")) ? "ljm" : username;
-       
+
        //ICdmDataSource dataSource = CdmDataSource.NewMySqlInstance("127.0.0.1", "cdm_test3", 3306, "ljm", password, NomenclaturalCode.ICBN);
-       ICdmDataSource dataSource = CdmDataSource.NewMySqlInstance("127.0.0.1", dataSourceName, 3306, username, password, NomenclaturalCode.ICNAFP);
+       ICdmDataSource dataSource = CdmDataSource.NewMySqlInstance("127.0.0.1", dataSourceName, 3306, username, password);
        //ICdmDataSource dataSource = CdmDataSource.NewMySqlInstance("127.0.0.1", "cdm_edit_cichorieae", 3306, "ljm", password, NomenclaturalCode.ICBN);
-       //ICdmDataSource dataSource = 
-       CdmDataSource.NewMySqlInstance("160.45.63.201", "cdm_edit_cichorieae", 3306, "edit", password, NomenclaturalCode.ICNAFP);
+       //ICdmDataSource dataSource =
+       CdmDataSource.NewMySqlInstance("160.45.63.201", "cdm_edit_cichorieae", 3306, "edit", password);
        boolean connectionAvailable;
        try {
            connectionAvailable = dataSource.testConnection();
@@ -92,18 +90,17 @@ public class SDDExportActivator {
        try {
            loadedDataSource = CdmPersistentDataSource.NewInstance(dataSourceName);
 //			CdmApplicationController.NewInstance(loadedDataSource, DbSchemaValidation.CREATE);
-           NomenclaturalCode loadedCode = loadedDataSource.getNomenclaturalCode();
-
-           Assert.assertEquals(NomenclaturalCode.ICNAFP, loadedCode);
+//           NomenclaturalCode loadedCode = loadedDataSource.getNomenclaturalCode();
+//
+//           Assert.assertEquals(NomenclaturalCode.ICNAFP, loadedCode);
        } catch (DataSourceNotFoundException e) {
-           // TODO Auto-generated catch block
            e.printStackTrace();
        }
        //return loadedDataSource;
        return dataSource;
    }
-	
-	
+
+
 
 	private static final Logger logger = Logger.getLogger(ViolaExportActivator.class);
 
@@ -141,17 +138,17 @@ public class SDDExportActivator {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		
-		//lorna//SDDExportConfigurator sddExportConfigurator = 
+
+		//lorna//SDDExportConfigurator sddExportConfigurator =
 			//SDDExportConfigurator.NewInstance(sourceDb, destinationFileName, destinationFolder);
-		
-		SDDExportConfigurator sddExportConfigurator = 
+
+		SDDExportConfigurator sddExportConfigurator =
 				SDDExportConfigurator.NewInstance(sourceDb, exporturlStr);
-		
-		
-		CdmDefaultExport<SDDExportConfigurator> sddExport = 
+
+
+		CdmDefaultExport<SDDExportConfigurator> sddExport =
 			new CdmDefaultExport<SDDExportConfigurator>();
-		
+
 		sddExportConfigurator.setSource(sourceDb);
 		//lorna//sddExportConfigurator.setDestination(destinationFile);
 		sddExportConfigurator.setDbSchemaValidation(DbSchemaValidation.VALIDATE);
@@ -187,7 +184,7 @@ public class SDDExportActivator {
 	public static void main(String[] args) {
 
 		SDDExportActivator sddex = new SDDExportActivator();
-		
+
 		sddex.invokeExport();
 
 	}

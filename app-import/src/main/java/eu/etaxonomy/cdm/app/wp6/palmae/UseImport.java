@@ -1,8 +1,8 @@
 /**
 * Copyright (C) 2007 EDIT
-* European Distributed Institute of Taxonomy 
+* European Distributed Institute of Taxonomy
 * http://www.e-taxonomy.eu
-* 
+*
 * The contents of this file are subject to the Mozilla Public License Version 1.1
 * See LICENSE.TXT at the top of this package for the full license terms.
 */
@@ -91,10 +91,10 @@ public class UseImport {
 		ICdmDataSource destination;
 		if (dbType.equals(DatabaseTypeEnum.MySQL)) {
 			destination = CdmDataSource.NewMySqlInstance(cdmServer, cdmDB,
-					port, cdmUserName, pwd, null);
+					port, cdmUserName, pwd);
 		} else if (dbType.equals(DatabaseTypeEnum.PostgreSQL)) {
 			destination = CdmDataSource.NewPostgreSQLInstance(cdmServer, cdmDB,
-					port, cdmUserName, pwd, null);
+					port, cdmUserName, pwd);
 		} else {
 			// TODO others
 			throw new RuntimeException("Unsupported DatabaseType");
@@ -104,17 +104,17 @@ public class UseImport {
 
 	public boolean importFromExcelSS(String xlsPath) throws InvalidFormatException {
 		boolean success = true;
-		
+
 		CdmApplicationController applicationController = CdmApplicationController.NewInstance(dataSource());
 		ConversationHolder conversation = applicationController.NewConversation();
 		conversation.startTransaction();
-		
+
 		ITaxonService service = applicationController.getTaxonService();
 		ITermService termService = applicationController.getTermService();
 		IDescriptionService descService = applicationController.getDescriptionService();
 		IReferenceService referenceService = applicationController.getReferenceService();
 		InputStream inputStream = null;
-		
+
 		try {
 			inputStream = new FileInputStream(xlsPath);
 
@@ -125,21 +125,21 @@ public class UseImport {
 		}
 
 //		POIFSFileSystem fileSystem = null;
-		
+
 		try {
 //			fileSystem = new POIFSFileSystem(inputStream);
 //
 //			HSSFWorkbook workBook = new HSSFWorkbook(fileSystem);
 			Workbook workBook = WorkbookFactory.create(inputStream);
 
-			
+
 			Sheet sheet = workBook.getSheetAt(0);
 			Iterator<Row> rows = sheet.rowIterator();
 			// Iterator rows = sheet.rowIterator();
 			ArrayList<ArrayList<String>> lstUpdates = new ArrayList<ArrayList<String>>();
 			Set<Integer> lstTaxonIDs = new HashSet<Integer>();
 			//Set<Integer> lstTaxonIDs;
-		
+
 
 			while (rows.hasNext()) {
 
@@ -526,19 +526,19 @@ public class UseImport {
 			e.printStackTrace();
 		}
 
-	
+
 		try {
 //			POIFSFileSystem fileSystem = new POIFSFileSystem(inputStream);
 //			HSSFWorkbook workBook = new HSSFWorkbook(fileSystem);
 
 			Workbook workBook = WorkbookFactory.create(inputStream);
 
-			
+
 			Sheet sheet = workBook.getSheetAt(0);
 			Iterator<Row> rows = sheet.rowIterator();
 
 			ArrayList<ArrayList<String>> lstUpdates = new ArrayList<ArrayList<String>>();
-		
+
 			while (rows.hasNext()) {
 
 				Row row = rows.next();
@@ -585,21 +585,21 @@ public class UseImport {
 					vocabularyService.saveOrUpdate(stateVocabulary);
 					conversation.commit(true);
 					break;
-				
+
 				//case 1: = HumanGroup
 				case 1:
 					Pager<DefinedTerm> humanGroupPager = termService.findByRepresentationText(lstUpdate.get(1), DefinedTerm.class, null, null);
-					
+
 					DefinedTerm humanGroup = null;
 					DefinedTerm ethnicGroup = null;
 					if(humanGroupPager.getCount()>0) {
 						humanGroup = humanGroupPager.getRecords().get(0);
 					}
-					
+
 					if(humanGroup == null) {
 						humanGroup = DefinedTerm.NewModifierInstance(lstUpdate.get(1), lstUpdate.get(1), null);
 					}
-					
+
 					if(lstUpdate.size() >2) {
 						ethnicGroup = DefinedTerm.NewModifierInstance(lstUpdate.get(2), lstUpdate.get(2), null);
 						humanGroup.addIncludes(ethnicGroup);
@@ -608,16 +608,16 @@ public class UseImport {
 					vocabularyService.saveOrUpdate(humanGroupVocabulary);
 					conversation.commit(true);
 					break;
-				
+
 				//case 2: = Country
 				case 2:
 					Pager<DefinedTerm> countryPager = termService.findByRepresentationText(lstUpdate.get(1), DefinedTerm.class, null, null);
 					DefinedTermBase country = null;
-					
+
 					if(countryPager.getCount()>0) {
 						country = countryPager.getRecords().get(0);
 					}
-					
+
 					if(country == null) {
 						country = NamedArea.NewInstance(lstUpdate.get(1), lstUpdate.get(1), null);
 						countryVocabulary.addTerm(country);
@@ -625,16 +625,16 @@ public class UseImport {
 					}
 					conversation.commit(true);
 					break;
-				
+
 				//case 3: //plantPart
 				case 3:
 					Pager<DefinedTerm> plantPartPager = termService.findByRepresentationText(lstUpdate.get(1), DefinedTerm.class, null, null);
 					DefinedTerm plantPart = null;
-					
+
 					if(plantPartPager.getCount()>0) {
 						plantPart = plantPartPager.getRecords().get(0);
 					}
-					
+
 					if(plantPart == null) {
 						plantPart = DefinedTerm.NewModifierInstance(lstUpdate.get(1), lstUpdate.get(1), null);
 						plantPartVocabulary.addTerm(plantPart);
@@ -667,19 +667,19 @@ public class UseImport {
 			System.out.println("File not found in the specified path.");
 			e.printStackTrace();
 		}
-		
+
 		try {
 //			POIFSFileSystem fileSystem = new POIFSFileSystem(inputStream);
 //			HSSFWorkbook workBook = new HSSFWorkbook(fileSystem);
-			
+
 			Workbook workBook = WorkbookFactory.create(inputStream);
 
-			
+
 			Sheet sheet = workBook.getSheetAt(0);
 			Iterator<Row> rows = sheet.rowIterator();
 			// Iterator rows = sheet.rowIterator();
 			//Set<Integer> lstTaxonIDs;
-		
+
 
 			while (rows.hasNext()) {
 
@@ -763,7 +763,7 @@ public class UseImport {
 			}
 			countryVocabulary = TermVocabulary.NewInstance(TermType.NamedArea, "Country", "Country", null, termSourceUri);
 			countryVocabulary.setUuid(UUID.fromString("116c51f1-e63a-46f7-a258-e1149a42868b"));
-			
+
 			vocabularyService.saveOrUpdate(countryVocabulary);
 			conversation.commit(true);
 		}
@@ -815,18 +815,18 @@ public class UseImport {
 				FeatureNode useSumFeatureNode = FeatureNode.NewInstance(featureUseSummary);
 				palmWebFeatureTree.getRoot().addChild(useSumFeatureNode);
 			}
-			
+
 			vocabularyService.saveOrUpdate(featureVocabulary);
 			featureTreeService.saveOrUpdate(palmWebFeatureTree);
 			conversation.commit(true);
-			
+
 		}
 		if(notAvailModPager.getCount() == 0) {
 			DefinedTerm notAvailMod = DefinedTerm.NewInstance(TermType.Modifier, "N/A", "N/A", null);
 			termService.saveOrUpdate(notAvailMod);
 			conversation.commit(true);
 		}
-		
+
 		if(notAvailStatePager.getCount() == 0) {
 			State notAvailState = State.NewInstance("N/A", "N/A", null);
 			termService.saveOrUpdate(notAvailState);
@@ -845,7 +845,7 @@ public class UseImport {
 			vocabularyService.saveOrUpdate(featureVocabulary);
 			featureTreeService.saveOrUpdate(palmWebFeatureTree);
 			conversation.commit(true);
-			
+
 		}
 		if(featureUseSummary == null) {
 			featureUseSummary = Feature.NewInstance("Use Summary", "Use Summary", null);
@@ -861,10 +861,10 @@ public class UseImport {
 			featureTreeService.saveOrUpdate(palmWebFeatureTree);
 			conversation.commit(true);
 		}*/
-		
+
 		conversation.close();
 		applicationController.close();
-		
+
 		return success;
 	}
 
@@ -872,7 +872,7 @@ public class UseImport {
 		UseImport uiImport = new UseImport();
 		// String xlsPath = ".//toload.xlsx";
 		//String xlsPath = "C://workspace//CDM Trunk//UseImport//src//main//java//eu//etaxonomy//cdm//toLoad2.xls";
-		
+
 		uiImport.setupNecessaryItems();
 		try {
 			uiImport.loadTerms();
