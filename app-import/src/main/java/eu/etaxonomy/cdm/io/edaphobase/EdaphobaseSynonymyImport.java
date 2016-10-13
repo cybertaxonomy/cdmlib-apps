@@ -24,7 +24,7 @@ import eu.etaxonomy.cdm.io.common.ResultSetPartitioner;
 import eu.etaxonomy.cdm.model.common.CdmBase;
 import eu.etaxonomy.cdm.model.reference.Reference;
 import eu.etaxonomy.cdm.model.taxon.Synonym;
-import eu.etaxonomy.cdm.model.taxon.SynonymRelationshipType;
+import eu.etaxonomy.cdm.model.taxon.SynonymType;
 import eu.etaxonomy.cdm.model.taxon.Taxon;
 import eu.etaxonomy.cdm.model.taxon.TaxonBase;
 
@@ -41,7 +41,7 @@ public class EdaphobaseSynonymyImport extends EdaphobaseImportBase {
 
     private static final String tableName = "tax_synonym";
 
-    private static final String pluralString = "synonym relationships";
+    private static final String pluralString = "related synonyms";
 
 
     /**
@@ -92,7 +92,7 @@ public class EdaphobaseSynonymyImport extends EdaphobaseImportBase {
                     if (synonymCandidate == null){
                         logger.warn("Synonym " + synId + " not found for synonymRelations (tax_synonym): " + id);
                     }else if (synonymCandidate.isInstanceOf(Taxon.class)){
-                        String message = "Synonym ("+synId+") is not synonym but accepted (valid). Can't add synonym relationship for tax_synonym: "+id;
+                        String message = "Synonym ("+synId+") is not synonym but accepted (valid). Can't add synonym for tax_synonym: "+id;
                         logger.warn(message);
                     }else{
                         Synonym synonym = CdmBase.deproxy(synonymCandidate, Synonym.class);
@@ -100,11 +100,11 @@ public class EdaphobaseSynonymyImport extends EdaphobaseImportBase {
                         if (accepted == null){
                             logger.warn("Accepted(parent) taxon " + accId + " not found for tax_synonym " + id );
                         }else if(accepted.isInstanceOf(Synonym.class)){
-                            String message = "Taxon ("+accId+") is not accepted but synonym. Can't add synonym relationship for tax_synonym: "+id;
+                            String message = "Taxon ("+accId+") is not accepted but synonym. Can't add synonym for tax_synonym: "+id;
                             logger.warn(message);
                         }else{
                             Taxon taxon = CdmBase.deproxy(accepted, Taxon.class);
-                            taxon.addSynonym(synonym, SynonymRelationshipType.SYNONYM_OF());
+                            taxon.addSynonym(synonym, SynonymType.SYNONYM_OF());
                             taxaToSave.add(synonym);
                             taxaToSave.add(taxon);
                         }

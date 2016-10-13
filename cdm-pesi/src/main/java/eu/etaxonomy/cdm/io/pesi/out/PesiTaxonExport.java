@@ -60,8 +60,6 @@ import eu.etaxonomy.cdm.model.common.MarkerType;
 import eu.etaxonomy.cdm.model.common.RelationshipBase;
 import eu.etaxonomy.cdm.model.name.BacterialName;
 import eu.etaxonomy.cdm.model.name.BotanicalName;
-import eu.etaxonomy.cdm.model.name.HybridRelationship;
-import eu.etaxonomy.cdm.model.name.NameRelationship;
 import eu.etaxonomy.cdm.model.name.NameTypeDesignation;
 import eu.etaxonomy.cdm.model.name.NameTypeDesignationStatus;
 import eu.etaxonomy.cdm.model.name.NomenclaturalCode;
@@ -74,12 +72,10 @@ import eu.etaxonomy.cdm.model.reference.INomenclaturalReference;
 import eu.etaxonomy.cdm.model.reference.Reference;
 import eu.etaxonomy.cdm.model.taxon.Classification;
 import eu.etaxonomy.cdm.model.taxon.Synonym;
-import eu.etaxonomy.cdm.model.taxon.SynonymRelationship;
-import eu.etaxonomy.cdm.model.taxon.SynonymRelationshipType;
+import eu.etaxonomy.cdm.model.taxon.SynonymType;
 import eu.etaxonomy.cdm.model.taxon.Taxon;
 import eu.etaxonomy.cdm.model.taxon.TaxonBase;
 import eu.etaxonomy.cdm.model.taxon.TaxonNode;
-import eu.etaxonomy.cdm.model.taxon.TaxonRelationship;
 import eu.etaxonomy.cdm.profiler.ProfilerController;
 import eu.etaxonomy.cdm.strategy.cache.HTMLTagRules;
 import eu.etaxonomy.cdm.strategy.cache.TagEnum;
@@ -919,7 +915,7 @@ public class PesiTaxonExport extends PesiExportBase {
 							//if (name.isSpecies() || name.isInfraSpecific()){
 								inferredSynonyms  = getTaxonService().createAllInferredSynonyms(acceptedTaxon, classification, true);
 							//}
-//								inferredSynonyms = getTaxonService().createInferredSynonyms(classification, acceptedTaxon, SynonymRelationshipType.INFERRED_GENUS_OF());
+//								inferredSynonyms = getTaxonService().createInferredSynonyms(classification, acceptedTaxon, SynonymType.INFERRED_GENUS_OF());
 							if (inferredSynonyms != null) {
 								for (Synonym synonym : inferredSynonyms) {
 //									TaxonNameBase<?,?> synonymName = synonym.getName();
@@ -931,37 +927,32 @@ public class PesiTaxonExport extends PesiExportBase {
 
 									localSuccess &= mapping.invoke(synonym);
 									//get SynonymRelationship and export
-									if (synonym.getSynonymRelations().isEmpty() ){
-										SynonymRelationship synRel;
+									if (synonym.getAcceptedTaxon() == null ){
 										IdentifiableSource source = synonym.getSources().iterator().next();
 										if (source.getIdNamespace().contains("Potential combination")){
-											synRel = acceptedTaxon.addSynonym(synonym, SynonymRelationshipType.POTENTIAL_COMBINATION_OF());
-											logger.error(synonym.getTitleCache() + " has no synonym relationship to " + acceptedTaxon.getTitleCache() + " type is set to potential combination");
+											acceptedTaxon.addSynonym(synonym, SynonymType.POTENTIAL_COMBINATION_OF());
+											logger.error(synonym.getTitleCache() + " is not attached to " + acceptedTaxon.getTitleCache() + " type is set to potential combination");
 										} else if (source.getIdNamespace().contains("Inferred Genus")){
-											synRel = acceptedTaxon.addSynonym(synonym, SynonymRelationshipType.INFERRED_GENUS_OF());
-											logger.error(synonym.getTitleCache() + " has no synonym relationship to " + acceptedTaxon.getTitleCache() + " type is set to inferred genus");
+											acceptedTaxon.addSynonym(synonym, SynonymType.INFERRED_GENUS_OF());
+											logger.error(synonym.getTitleCache() + " is not attached to " + acceptedTaxon.getTitleCache() + " type is set to inferred genus");
 										} else if (source.getIdNamespace().contains("Inferred Epithet")){
-											synRel = acceptedTaxon.addSynonym(synonym, SynonymRelationshipType.INFERRED_EPITHET_OF());
-											logger.error(synonym.getTitleCache() + " has no synonym relationship to " + acceptedTaxon.getTitleCache() + " type is set to inferred epithet");
+											acceptedTaxon.addSynonym(synonym, SynonymType.INFERRED_EPITHET_OF());
+											logger.error(synonym.getTitleCache() + " is not attached to " + acceptedTaxon.getTitleCache() + " type is set to inferred epithet");
 										} else{
-											synRel = acceptedTaxon.addSynonym(synonym, SynonymRelationshipType.INFERRED_SYNONYM_OF());
-											logger.error(synonym.getTitleCache() + " has no synonym relationship to " + acceptedTaxon.getTitleCache() + " type is set to inferred synonym");
+											acceptedTaxon.addSynonym(synonym, SynonymType.INFERRED_SYNONYM_OF());
+											logger.error(synonym.getTitleCache() + " is not attached to " + acceptedTaxon.getTitleCache() + " type is set to inferred synonym");
 										}
 
-										localSuccess &= synRelMapping.invoke(synRel);
+										localSuccess &= synRelMapping.invoke(synonym);
 										if (!localSuccess) {
 											logger.error("Synonym relationship export failed " + synonym.getTitleCache() + " accepted taxon: " + acceptedTaxon.getUuid() + " (" + acceptedTaxon.getTitleCache()+")");
 										}
-										synRel = null;
 									} else {
-										for (SynonymRelationship synRel: synonym.getSynonymRelations()){
-											localSuccess &= synRelMapping.invoke(synRel);
-											if (!localSuccess) {
-												logger.error("Synonym relationship export failed " + synonym.getTitleCache() + " accepted taxon: " + acceptedTaxon.getUuid() + " (" + acceptedTaxon.getTitleCache()+")");
-											} else {
-												logger.info("Synonym relationship successfully exported: " + synonym.getTitleCache() + "  " +acceptedTaxon.getUuid() + " (" + acceptedTaxon.getTitleCache()+")");
-											}
-											synRel = null;
+										localSuccess &= synRelMapping.invoke(synonym);
+										if (!localSuccess) {
+											logger.error("Synonym relationship export failed " + synonym.getTitleCache() + " accepted taxon: " + acceptedTaxon.getUuid() + " (" + acceptedTaxon.getTitleCache()+")");
+										} else {
+											logger.info("Synonym relationship successfully exported: " + synonym.getTitleCache() + "  " +acceptedTaxon.getUuid() + " (" + acceptedTaxon.getTitleCache()+")");
 										}
 									}
 
@@ -2486,91 +2477,6 @@ public class PesiTaxonExport extends PesiExportBase {
 			cacheStrategy = botanicalNameStrategy;
 		}
 		return cacheStrategy;
-	}
-
-	/**
-	 * Returns the <code>TaxonFk1</code> attribute. It corresponds to a CDM <code>TaxonRelationship</code>.
-	 * @param relationship The {@link RelationshipBase Relationship}.
-	 * @param state The {@link PesiExportState PesiExportState}.
-	 * @return The <code>TaxonFk1</code> attribute.
-	 * @see MethodMapper
-	 */
-	private static Integer getTaxonFk1(RelationshipBase<?, ?, ?> relationship, PesiExportState state) {
-
-		return getObjectFk(relationship, state, true);
-	}
-
-	/**
-	 * Returns the <code>TaxonFk2</code> attribute. It corresponds to a CDM <code>SynonymRelationship</code>.
-	 * @param relationship The {@link RelationshipBase Relationship}.
-	 * @param state The {@link PesiExportState PesiExportState}.
-	 * @return The <code>TaxonFk2</code> attribute.
-	 * @see MethodMapper
-	 */
-	private static Integer getTaxonFk2(RelationshipBase<?, ?, ?> relationship, PesiExportState state) {
-		return getObjectFk(relationship, state, false);
-	}
-
-	/**
-	 * Returns the database key of an object in the given relationship.
-	 * @param relationship {@link RelationshipBase RelationshipBase}.
-	 * @param state {@link PesiExportState PesiExportState}.
-	 * @param isFrom A boolean value indicating whether the database key of the parent or child in this relationship is searched. <code>true</code> means the child is searched. <code>false</code> means the parent is searched.
-	 * @return The database key of an object in the given relationship.
-	 */
-	private static Integer getObjectFk(RelationshipBase<?, ?, ?> relationship, PesiExportState state, boolean isFrom) {
-		TaxonBase<?> taxonBase = null;
-		if (relationship.isInstanceOf(TaxonRelationship.class)) {
-			TaxonRelationship tr = (TaxonRelationship)relationship;
-			taxonBase = (isFrom) ? tr.getFromTaxon():  tr.getToTaxon();
-		} else if (relationship.isInstanceOf(SynonymRelationship.class)) {
-			SynonymRelationship sr = (SynonymRelationship)relationship;
-			taxonBase = (isFrom) ? sr.getSynonym() : sr.getAcceptedTaxon();
-		} else if (relationship.isInstanceOf(NameRelationship.class) ||  relationship.isInstanceOf(HybridRelationship.class)) {
-			if (isFrom){
-				return state.getDbId(state.getCurrentFromObject());
-			}else{
-				return state.getDbId(state.getCurrentToObject());
-			}
-		}
-		if (taxonBase != null) {
-			if (! isPesiTaxon(taxonBase)){
-				logger.warn("Related taxonBase is not a PESI taxon. Taxon: " + taxonBase.getId() + "/" + taxonBase.getUuid() + "; TaxonRel: " +  relationship.getId() + "(" + relationship.getType().getTitleCache() + ")");
-				return null;
-			}else{
-				return state.getDbId(taxonBase);
-			}
-
-		}
-		logger.warn("No taxon found in state for relationship: " + relationship.toString());
-		return null;
-	}
-
-	/**
-	 * Returns the <code>RelQualifierCache</code> attribute.
-	 * @param relationship The {@link RelationshipBase Relationship}.
-	 * @return The <code>RelQualifierCache</code> attribute.
-	 * @see MethodMapper
-	 */
-	@SuppressWarnings("unused")
-	private static String getRelQualifierCache(RelationshipBase<?, ?, ?> relationship, PesiExportState state) {
-		String result = null;
-		NomenclaturalCode code = null;
-		if (relationship.isInstanceOf(TaxonRelationship.class)){
-			code = CdmBase.deproxy(relationship, TaxonRelationship.class).getToTaxon().getName().getNomenclaturalCode();
-		}else if (relationship.isInstanceOf(SynonymRelationship.class)){
-			code = CdmBase.deproxy(relationship, SynonymRelationship.class).getAcceptedTaxon().getName().getNomenclaturalCode();
-		}else if (relationship.isInstanceOf(NameRelationship.class)){
-			code = CdmBase.deproxy(relationship,  NameRelationship.class).getFromName().getNomenclaturalCode();
-		}else if (relationship.isInstanceOf(HybridRelationship.class)){
-			code = CdmBase.deproxy(relationship,  HybridRelationship.class).getParentName().getNomenclaturalCode();
-		}
-		if (code != null) {
-			result = state.getConfig().getTransformer().getCacheByRelationshipType(relationship, code);
-		} else {
-			logger.error("NomenclaturalCode is NULL while creating the following relationship: " + relationship.getUuid());
-		}
-		return result;
 	}
 
 	/**

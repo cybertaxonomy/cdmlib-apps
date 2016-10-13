@@ -1,8 +1,8 @@
 /**
 * Copyright (C) 2007 EDIT
-* European Distributed Institute of Taxonomy 
+* European Distributed Institute of Taxonomy
 * http://www.e-taxonomy.eu
-* 
+*
 * The contents of this file are subject to the Mozilla Public License Version 1.1
 * See LICENSE.TXT at the top of this package for the full license terms.
 */
@@ -13,8 +13,6 @@ import java.io.File;
 import java.lang.reflect.Method;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.util.HashSet;
-import java.util.Set;
 
 import org.apache.log4j.Logger;
 
@@ -26,24 +24,25 @@ import eu.etaxonomy.cdm.io.common.IImportConfigurator;
 import eu.etaxonomy.cdm.io.common.Source;
 import eu.etaxonomy.cdm.io.common.mapping.IInputTransformer;
 import eu.etaxonomy.cdm.model.name.NomenclaturalCode;
-import eu.etaxonomy.cdm.model.taxon.Synonym;
 
 /**
  * @author a.mueller
  * @created 20.03.2008
  */
 public class BerlinModelImportConfigurator extends DbImportConfiguratorBase<BerlinModelImportState> implements IImportConfigurator{
-	private static Logger logger = Logger.getLogger(BerlinModelImportConfigurator.class);
+    private static final long serialVersionUID = 70300913255425256L;
+
+    private static Logger logger = Logger.getLogger(BerlinModelImportConfigurator.class);
 
 	public static BerlinModelImportConfigurator NewInstance(Source berlinModelSource, ICdmDataSource destination){
 			return new BerlinModelImportConfigurator(berlinModelSource, destination);
 	}
 
 	private PublishMarkerChooser taxonPublishMarker = PublishMarkerChooser.ALL;
-	
+
 	//TODO
 	private static IInputTransformer defaultTransformer = null;
-	
+
 	private boolean doNameStatus = true;
 	private boolean doRelNames = true;
 	private boolean doCommonNames = true;
@@ -56,7 +55,7 @@ public class BerlinModelImportConfigurator extends DbImportConfiguratorBase<Berl
 	private DO_REFERENCES doReferences = DO_REFERENCES.ALL;
 	private boolean doTaxonNames = true;
 	private boolean doTypes = true;
-	
+
 	//taxa
 	private boolean doTaxa = true;
 	private boolean doRelTaxa = true;
@@ -64,22 +63,19 @@ public class BerlinModelImportConfigurator extends DbImportConfiguratorBase<Berl
 	private boolean useSingleClassification = false;
 	private boolean includeFlatClassifications = false;  //concepts with no taxon relationship (even no misapplied name or synonym rel)
 	private boolean includeAllNonMisappliedRelatedClassifications = true;  //all concepts with any relationship except for misapplied name relationships
-	
+
 	//occurrences
 	private boolean isSplitTdwgCodes = true;
-	
+
 	private boolean useEmAreaVocabulary = false;
 
 	private boolean includesEmCode = true;  // in Campanula we do not have an EMCOde
-	private boolean allowInfraSpecTaxonRank = true; 
+	private boolean allowInfraSpecTaxonRank = true;
 
 	private Method namerelationshipTypeMethod;
 	private Method uuidForDefTermMethod;
 	private Method nameTypeDesignationStatusMethod;
-	
-	private Set<Synonym> proParteSynonyms = new HashSet<Synonym>();
-	private Set<Synonym> partialSynonyms = new HashSet<Synonym>();
-	
+
 	// NameFact stuff
 	private URL mediaUrl;
 	private File mediaPath;
@@ -87,13 +83,13 @@ public class BerlinModelImportConfigurator extends DbImportConfiguratorBase<Berl
 	private boolean isIgnore0AuthorTeam = false;
 
 	private boolean switchSpeciesGroup = false;
-	
+
 	//Term labels
 	private String infrGenericRankAbbrev = null;
 	private String infrSpecificRankAbbrev = null;
-	
+
 	private boolean removeHttpMapsAnchor = false;
-	
+
 	//Data Filter
 
 	private String taxonTable = "PTaxon";
@@ -109,11 +105,12 @@ public class BerlinModelImportConfigurator extends DbImportConfiguratorBase<Berl
 	private String occurrenceFilter = null;
 	private String occurrenceSourceFilter = null;
 	private String webMarkerFilter = null;
-	
+
 	//specific functions
 	private Method 	makeUrlForTaxon = null;
 
-	protected void makeIoClassList(){
+	@Override
+    protected void makeIoClassList(){
 		ioClassList = new Class[]{
 				BerlinModelGeneralImportValidator.class
 				, BerlinModelUserImport.class
@@ -134,15 +131,16 @@ public class BerlinModelImportConfigurator extends DbImportConfiguratorBase<Berl
 				, BerlinModelOccurrenceSourceImport.class
 				, BerlinModelWebMarkerCategoryImport.class
 				, BerlinModelWebMarkerImport.class
-		};	
+		};
 	}
-	
-	
-	
+
+
+
 	/* (non-Javadoc)
 	 * @see eu.etaxonomy.cdm.io.common.IImportConfigurator#getNewState()
 	 */
-	public BerlinModelImportState getNewState() {
+	@Override
+    public BerlinModelImportState getNewState() {
 		return new BerlinModelImportState(this);
 	}
 
@@ -156,8 +154,8 @@ public class BerlinModelImportConfigurator extends DbImportConfiguratorBase<Berl
 	protected BerlinModelImportConfigurator(Source berlinModelSource, ICdmDataSource destination) {
 	   super(berlinModelSource, destination, NomenclaturalCode.ICNAFP, defaultTransformer); //default for Berlin Model
 	}
-	
-	
+
+
 	/**
 	 * Import name relationships yes/no?.
 	 * @return
@@ -167,24 +165,6 @@ public class BerlinModelImportConfigurator extends DbImportConfiguratorBase<Berl
 	}
 	public void setDoRelNames(boolean doRelNames) {
 		this.doRelNames = doRelNames;
-	}
-	
-	
-	
-	protected void addProParteSynonym(Synonym proParteSynonym){
-		this.proParteSynonyms.add(proParteSynonym);
-	}
-	
-	protected boolean isProParteSynonym(Synonym synonym){
-		return this.proParteSynonyms.contains(synonym);
-	}
-	
-	protected void addPartialSynonym(Synonym partialSynonym){
-		this.partialSynonyms.add(partialSynonym);
-	}
-	
-	protected boolean isPartialSynonym(Synonym synonym){
-		return this.partialSynonyms.contains(synonym);
 	}
 
 	/**
@@ -214,7 +194,7 @@ public class BerlinModelImportConfigurator extends DbImportConfiguratorBase<Berl
 	public void setMediaPath(File mediaPath) {
 		this.mediaPath = mediaPath;
 	}
-	
+
 	public void setMediaPath(String mediaPathString){
 		this.mediaPath = new File(mediaPathString);
 	}
@@ -236,7 +216,7 @@ public class BerlinModelImportConfigurator extends DbImportConfiguratorBase<Berl
 
 	/**
 	 * set to 0 for unlimited
-	 * 
+	 *
 	 * @param maximumNumberOfNameFacts the maximumNumberOfNameFacts to set
 	 */
 	public void setMaximumNumberOfNameFacts(int maximumNumberOfNameFacts) {
@@ -271,7 +251,7 @@ public class BerlinModelImportConfigurator extends DbImportConfiguratorBase<Berl
 	public void setNamerelationshipTypeMethod(Method namerelationshipTypeMethod) {
 		this.namerelationshipTypeMethod = namerelationshipTypeMethod;
 	}
-	
+
 	/**
 	 * @return the taxonPublishMarker
 	 */
@@ -321,15 +301,15 @@ public class BerlinModelImportConfigurator extends DbImportConfiguratorBase<Berl
 			Method nameTypeDesignationStatusMethod) {
 		this.nameTypeDesignationStatusMethod = nameTypeDesignationStatusMethod;
 	}
-	
+
 	public boolean isDoNameStatus() {
 		return doNameStatus;
 	}
 	public void setDoNameStatus(boolean doNameStatus) {
 		this.doNameStatus = doNameStatus;
 	}
-	
-	
+
+
 	public boolean isDoCommonNames() {
 		return doCommonNames;
 	}
@@ -340,9 +320,9 @@ public class BerlinModelImportConfigurator extends DbImportConfiguratorBase<Berl
 	 */
 	public void setDoCommonNames(boolean doCommonNames) {
 		this.doCommonNames = doCommonNames;
-		
+
 	}
-	
+
 	public boolean isDoFacts() {
 		return doFacts;
 	}
@@ -350,7 +330,7 @@ public class BerlinModelImportConfigurator extends DbImportConfiguratorBase<Berl
 		this.doFacts = doFacts;
 	}
 
-	
+
 	public boolean isDoOccurrence() {
 		return doOccurrence;
 	}
@@ -373,14 +353,14 @@ public class BerlinModelImportConfigurator extends DbImportConfiguratorBase<Berl
 	public void setDoUser(boolean doUser) {
 		this.doUser = doUser;
 	}
-	
+
 	public boolean isDoNameFacts() {
 		return doNameFacts;
 	}
 	public void setDoNameFacts(boolean doNameFacts) {
 		this.doNameFacts = doNameFacts;
 	}
-	
+
 	public boolean isDoAuthors() {
 		return doAuthors;
 	}
@@ -394,7 +374,7 @@ public class BerlinModelImportConfigurator extends DbImportConfiguratorBase<Berl
 	public void setDoReferences(DO_REFERENCES doReferences) {
 		this.doReferences = doReferences;
 	}
-	
+
 	public boolean isDoTaxonNames() {
 		return doTaxonNames;
 	}
@@ -484,7 +464,7 @@ public class BerlinModelImportConfigurator extends DbImportConfiguratorBase<Berl
 	public String getFactFilter() {
 		return factFilter;
 	}
-	
+
 	public void setRefDetailFilter(String refDetailFilter) {
 		this.refDetailFilter = refDetailFilter;
 	}
@@ -620,7 +600,7 @@ public class BerlinModelImportConfigurator extends DbImportConfiguratorBase<Berl
 	}
 	public void setIncludesEmCode(boolean includesEmCode) {
 		this.includesEmCode = includesEmCode;
-		
+
 	}
 
 
@@ -639,7 +619,7 @@ public class BerlinModelImportConfigurator extends DbImportConfiguratorBase<Berl
 		this.includeAllNonMisappliedRelatedClassifications = includeAllNonMisappliedRelatedClassifications;
 	}
 
-	
+
 	public boolean isUseEmAreaVocabulary() {
 		return useEmAreaVocabulary;
 	}

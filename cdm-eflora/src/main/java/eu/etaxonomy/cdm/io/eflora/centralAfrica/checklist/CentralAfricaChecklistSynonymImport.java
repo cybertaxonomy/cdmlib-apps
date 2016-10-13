@@ -30,7 +30,7 @@ import eu.etaxonomy.cdm.model.name.BotanicalName;
 import eu.etaxonomy.cdm.model.name.Rank;
 import eu.etaxonomy.cdm.model.reference.Reference;
 import eu.etaxonomy.cdm.model.taxon.Synonym;
-import eu.etaxonomy.cdm.model.taxon.SynonymRelationshipType;
+import eu.etaxonomy.cdm.model.taxon.SynonymType;
 import eu.etaxonomy.cdm.model.taxon.Taxon;
 import eu.etaxonomy.cdm.model.taxon.TaxonBase;
 import eu.etaxonomy.cdm.strategy.parser.NonViralNameParserImpl;
@@ -150,7 +150,7 @@ public class CentralAfricaChecklistSynonymImport  extends CentralAfricaChecklist
 		parser.handleAuthors(speciesName, CdmUtils.concat(" ", new String[] {"", genusString, speciesString, authorityString}), authorityString);
 		
 		if (taxon != null){
-			taxon.addSynonym(synonym, SynonymRelationshipType.SYNONYM_OF());
+			taxon.addSynonym(synonym, SynonymType.SYNONYM_OF());
 		}else{
 			logger.warn("Taxon (" + accId + ") not available for Synonym " + synonym.getTitleCache());
 		}

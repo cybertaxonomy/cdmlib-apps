@@ -41,7 +41,6 @@ import eu.etaxonomy.cdm.model.name.TaxonNameBase;
 import eu.etaxonomy.cdm.model.reference.Reference;
 import eu.etaxonomy.cdm.model.reference.ReferenceFactory;
 import eu.etaxonomy.cdm.model.taxon.Synonym;
-import eu.etaxonomy.cdm.model.taxon.SynonymRelationship;
 import eu.etaxonomy.cdm.model.taxon.Taxon;
 import eu.etaxonomy.cdm.model.taxon.TaxonBase;
 
@@ -206,8 +205,8 @@ public class CyprusAltitudeActivator {
 
 	private boolean hasSynonym(Taxon t, TaxonBase<?> base) {
 		if (base.isInstanceOf(Synonym.class)){
-			for (SynonymRelationship rel : t.getSynonymRelations()){
-				if (rel.getSynonym().equals(base)){
+			for (Synonym syn : t.getSynonyms()){
+				if (syn.equals(base)){
 					return true;
 				}
 			}

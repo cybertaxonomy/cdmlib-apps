@@ -54,7 +54,7 @@ import eu.etaxonomy.cdm.model.occurrence.FieldUnit;
 import eu.etaxonomy.cdm.model.occurrence.SpecimenOrObservationType;
 import eu.etaxonomy.cdm.model.reference.Reference;
 import eu.etaxonomy.cdm.model.taxon.Synonym;
-import eu.etaxonomy.cdm.model.taxon.SynonymRelationshipType;
+import eu.etaxonomy.cdm.model.taxon.SynonymType;
 import eu.etaxonomy.cdm.model.taxon.Taxon;
 import eu.etaxonomy.cdm.model.taxon.TaxonBase;
 import eu.etaxonomy.cdm.strategy.exceptions.UnknownCdmTypeException;
@@ -147,7 +147,7 @@ public class GlobisSpecTaxImport  extends GlobisImportBase<Reference> implements
 								logger.warn("Accepted taxon (" + acceptedTaxonId + ") not found for synonym "+ specTaxId);
 							}
 						}else{
-							acceptedTaxon.addSynonym(synonym, SynonymRelationshipType.SYNONYM_OF());
+							acceptedTaxon.addSynonym(synonym, SynonymType.SYNONYM_OF());
 							thisTaxon = synonym;
 						}
 					}else if (specSystaxRank.equals("species")){

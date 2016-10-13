@@ -48,8 +48,7 @@ import eu.etaxonomy.cdm.model.occurrence.DerivedUnit;
 import eu.etaxonomy.cdm.model.reference.Reference;
 import eu.etaxonomy.cdm.model.reference.ReferenceType;
 import eu.etaxonomy.cdm.model.taxon.Synonym;
-import eu.etaxonomy.cdm.model.taxon.SynonymRelationship;
-import eu.etaxonomy.cdm.model.taxon.SynonymRelationshipType;
+import eu.etaxonomy.cdm.model.taxon.SynonymType;
 import eu.etaxonomy.cdm.model.taxon.Taxon;
 import eu.etaxonomy.cdm.model.taxon.TaxonBase;
 import eu.etaxonomy.cdm.model.taxon.TaxonRelationshipType;
@@ -2178,7 +2177,7 @@ public final class PesiTransformer extends ExportTransformerBase implements IExp
 		RelationshipTermBase<?> type = relation.getType();
 		if (type.equals(TaxonRelationshipType.MISAPPLIED_NAME_FOR())) {
 			return IS_MISAPPLIED_NAME_FOR;
-		} else if (type.equals(SynonymRelationshipType.SYNONYM_OF())) {
+		} else if (type.equals(SynonymType.SYNONYM_OF())) {
 			SynonymRelationship synRel = CdmBase.deproxy(relation, SynonymRelationship.class);
 			if (synRel.isProParte()){
 				return IS_PRO_PARTE_SYNONYM_OF;
@@ -2187,7 +2186,7 @@ public final class PesiTransformer extends ExportTransformerBase implements IExp
 			}else{
 				return IS_SYNONYM_OF;
 			}
-		} else if (type.equals(SynonymRelationshipType.HOMOTYPIC_SYNONYM_OF())) {
+		} else if (type.equals(SynonymType.HOMOTYPIC_SYNONYM_OF())) {
 			SynonymRelationship synRel = CdmBase.deproxy(relation, SynonymRelationship.class);
 			if (synRel.isProParte()){
 				return IS_PRO_PARTE_AND_HOMOTYPIC_SYNONYM_OF;
@@ -2196,7 +2195,7 @@ public final class PesiTransformer extends ExportTransformerBase implements IExp
 			}else{
 				return IS_HOMOTYPIC_SYNONYM_OF;
 			}
-		} else if (type.equals(SynonymRelationshipType.HETEROTYPIC_SYNONYM_OF())) {
+		} else if (type.equals(SynonymType.HETEROTYPIC_SYNONYM_OF())) {
 			SynonymRelationship synRel = CdmBase.deproxy(relation, SynonymRelationship.class);
 			if (synRel.isProParte()){
 				return IS_PRO_PARTE_AND_HETEROTYPIC_SYNONYM_OF;
@@ -2205,11 +2204,11 @@ public final class PesiTransformer extends ExportTransformerBase implements IExp
 			}else{
 				return IS_HETEROTYPIC_SYNONYM_OF;
 			}
-		} else if (type.equals(SynonymRelationshipType.INFERRED_EPITHET_OF())) {
+		} else if (type.equals(SynonymType.INFERRED_EPITHET_OF())) {
 			return IS_INFERRED_EPITHET_FOR;
-		} else if (type.equals(SynonymRelationshipType.INFERRED_GENUS_OF())) {
+		} else if (type.equals(SynonymType.INFERRED_GENUS_OF())) {
 			return IS_INFERRED_GENUS_FOR;
-		} else if (type.equals(SynonymRelationshipType.POTENTIAL_COMBINATION_OF())) {
+		} else if (type.equals(SynonymType.POTENTIAL_COMBINATION_OF())) {
 			return IS_POTENTIAL_COMBINATION_FOR;
 		} else if (type.equals(NameRelationshipType.BASIONYM())) {
 			return IS_BASIONYM_FOR;

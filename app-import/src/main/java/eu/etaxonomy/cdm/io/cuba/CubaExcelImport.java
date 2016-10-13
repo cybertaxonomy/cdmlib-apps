@@ -58,8 +58,8 @@ import eu.etaxonomy.cdm.model.reference.Reference;
 import eu.etaxonomy.cdm.model.reference.ReferenceFactory;
 import eu.etaxonomy.cdm.model.taxon.Classification;
 import eu.etaxonomy.cdm.model.taxon.ITaxonTreeNode;
-import eu.etaxonomy.cdm.model.taxon.SynonymRelationship;
-import eu.etaxonomy.cdm.model.taxon.SynonymRelationshipType;
+import eu.etaxonomy.cdm.model.taxon.Synonym;
+import eu.etaxonomy.cdm.model.taxon.SynonymType;
 import eu.etaxonomy.cdm.model.taxon.Taxon;
 import eu.etaxonomy.cdm.model.taxon.TaxonNode;
 import eu.etaxonomy.cdm.model.taxon.TaxonRelationshipType;
@@ -429,8 +429,8 @@ public class CubaExcelImport extends ExcelImporterBase<CubaImportState> {
             name.addSource(makeOriginalSource(state));
             NomenclaturalStatus status = NomenclaturalStatus.NewInstance( NomenclaturalStatusType.INVALID());
             name.addStatus(status);
-            SynonymRelationship sr = state.getCurrentTaxon().addSynonymName(name, SynonymRelationshipType.SYNONYM_OF());
-            sr.getSynonym().addSource(makeOriginalSource(state));
+            Synonym syn = state.getCurrentTaxon().addSynonymName(name, SynonymType.SYNONYM_OF());
+            syn.addSource(makeOriginalSource(state));
         }else if (sphalmMatcher.matches()){
             String firstPart = sphalmMatcher.group(1);
             String sphalmPart = synonymStr.replace(firstPart, "").replace("“","").replace("”","").trim();
@@ -438,10 +438,10 @@ public class CubaExcelImport extends ExcelImporterBase<CubaImportState> {
 //            NomenclaturalStatus status = NomenclaturalStatus.NewInstance( NomenclaturalStatusType.INVALID());
 //            name.addStatus(status);
             name.addSource(makeOriginalSource(state));
-            SynonymRelationship sr = state.getCurrentTaxon().addSynonymName(name, SynonymRelationshipType.SYNONYM_OF());
-            sr.getSynonym().setAppendedPhrase(sphalmPart);
-            sr.getSynonym().setSec(null);
-            sr.getSynonym().addSource(makeOriginalSource(state));
+            Synonym syn = state.getCurrentTaxon().addSynonymName(name, SynonymType.SYNONYM_OF());
+            syn.setAppendedPhrase(sphalmPart);
+            syn.setSec(null);
+            syn.addSource(makeOriginalSource(state));
         }else if (acceptedMatcher.matches()){
             String firstPart = acceptedMatcher.group(1);
             String homonymPart = acceptedMatcher.groupCount() < 2 ? null : acceptedMatcher.group(2);
@@ -461,9 +461,9 @@ public class CubaExcelImport extends ExcelImporterBase<CubaImportState> {
             if (isHomonym){
                 homonyms.add(synName);
             }
-            SynonymRelationship sr = state.getCurrentTaxon().addHeterotypicSynonymName(synName);
-            sr.getSynonym().setDoubtful(isDoubtful);
-            sr.getSynonym().addSource(makeOriginalSource(state));
+            Synonym syn = state.getCurrentTaxon().addHeterotypicSynonymName(synName);
+            syn.setDoubtful(isDoubtful);
+            syn.addSource(makeOriginalSource(state));
             List<BotanicalName> list = handleHomotypicGroup(secondPart, state, synName, true, homonyms, homonymPart, isDoubtful);
             checkFirstSynonym(state, list, isFirstSynonym, synonymStr, true);
 
@@ -472,8 +472,8 @@ public class CubaExcelImport extends ExcelImporterBase<CubaImportState> {
             if (synName.isProtectedTitleCache()){
                 logger.warn(line + "Special heterotypic synonym could not be parsed correctly:" + synonymStr);
             }
-            SynonymRelationship sr = state.getCurrentTaxon().addHeterotypicSynonymName(synName);
-            sr.getSynonym().addSource(makeOriginalSource(state));
+            Synonym syn = state.getCurrentTaxon().addHeterotypicSynonymName(synName);
+            syn.addSource(makeOriginalSource(state));
         }else{
             logger.warn(line + "Synonym entry does not match: " + synonymStr);
         }
@@ -615,12 +615,12 @@ public class CubaExcelImport extends ExcelImporterBase<CubaImportState> {
                 homonyms.add(newName);
             }
             if (isHeterotypic){
-                SynonymRelationship sr = state.getCurrentTaxon().addHeterotypicSynonymName(newName, homotypicGroup, null, null);
-                sr.getSynonym().setDoubtful(isDoubtful);
-                sr.getSynonym().addSource(makeOriginalSource(state));
+                Synonym syn = state.getCurrentTaxon().addHeterotypicSynonymName(newName, null, null, homotypicGroup);
+                syn.setDoubtful(isDoubtful);
+                syn.addSource(makeOriginalSource(state));
 //                newName.addBasionym(homotypicName);
             }else{
-                state.getCurrentTaxon().addHomotypicSynonymName(newName, null, null);
+                state.getCurrentTaxon().addHomotypicSynonymName(newName);
             }
             handleBasionym(state, homotypicNameList, homonyms, newName);
             homotypicNameList.add(newName);

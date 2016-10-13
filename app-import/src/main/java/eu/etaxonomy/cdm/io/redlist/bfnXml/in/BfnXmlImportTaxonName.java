@@ -51,7 +51,7 @@ import eu.etaxonomy.cdm.model.name.TaxonNameBase;
 import eu.etaxonomy.cdm.model.reference.Reference;
 import eu.etaxonomy.cdm.model.taxon.Classification;
 import eu.etaxonomy.cdm.model.taxon.Synonym;
-import eu.etaxonomy.cdm.model.taxon.SynonymRelationshipType;
+import eu.etaxonomy.cdm.model.taxon.SynonymType;
 import eu.etaxonomy.cdm.model.taxon.Taxon;
 import eu.etaxonomy.cdm.model.taxon.TaxonBase;
 import eu.etaxonomy.cdm.model.taxon.TaxonRelationship;
@@ -470,7 +470,7 @@ public class BfnXmlImportTaxonName extends BfnXmlImportBase {
 
 						//TODO find best matching Taxa
 						Synonym synonym = Synonym.NewInstance(nameBase, state.getCurrentMicroRef());
-						taxon.addSynonym(synonym, SynonymRelationshipType.SYNONYM_OF());
+						taxon.addSynonym(synonym, SynonymType.SYNONYM_OF());
 
 					} catch (UnknownCdmTypeException e) {
 						logger.warn("Name with id " + taxonId + " has unknown nomenclatural code.");

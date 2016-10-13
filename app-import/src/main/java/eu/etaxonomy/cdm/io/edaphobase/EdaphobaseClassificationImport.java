@@ -128,7 +128,7 @@ public class EdaphobaseClassificationImport extends EdaphobaseImportBase {
 //                                logger.warn(message);
 //                            }else{
 //                                Taxon accepted = CdmBase.deproxy(parent, Taxon.class);
-////                                accepted.addSynonym(synonym, SynonymRelationshipType.SYNONYM_OF());
+////                                accepted.addSynonym(synonym, SynonymType.SYNONYM_OF());
 //                                taxaToSave.add(accepted);
 //                            }
                         }

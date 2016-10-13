@@ -1,9 +1,9 @@
 // $Id$
 /**
 * Copyright (C) 2007 EDIT
-* European Distributed Institute of Taxonomy 
+* European Distributed Institute of Taxonomy
 * http://www.e-taxonomy.eu
-* 
+*
 * The contents of this file are subject to the Mozilla Public License Version 1.1
 * See LICENSE.TXT at the top of this package for the full license terms.
 */
@@ -42,23 +42,23 @@ public class PalmaePostImportUpdater {
 	private static final Logger logger = Logger.getLogger(PalmaePostImportUpdater.class);
 
 	static final ICdmDataSource cdmDestination = CdmDestinations.localH2Palmae();
-	
-	
+
+
 	private String relationships = "relationships";
 	private String taxonomicAccounts = "taxonomic accounts";
 	private String fossilRecord = "fossil record";
-	
+
 	public boolean updateMissingFeatures(ICdmDataSource dataSource) {
 		try{
 			int count = 0;
 			UUID featureTreeUuid = PalmaeActivator.featureTreeUuid;
 			CdmApplicationController cdmApp = CdmApplicationController.NewInstance(dataSource, DbSchemaValidation.VALIDATE);
-			
+
 			TransactionStatus tx = cdmApp.startTransaction();
-			
+
 			FeatureTree tree = cdmApp.getFeatureTreeService().find(featureTreeUuid);
 			FeatureNode root = tree.getRoot();
-			
+
 			List<Feature> featureList = cdmApp.getTermService().list(Feature.class, null, null, null, null);
 			for (Feature feature : featureList){
 				String label = feature.getLabel();
@@ -88,9 +88,9 @@ public class PalmaePostImportUpdater {
 			logger.error("ERROR in feature tree update");
 			return false;
 		}
-		
+
 	}
-	
+
 	public boolean updateNameUsage(ICdmDataSource dataSource) {
 		try{
 			boolean result = true;
@@ -102,7 +102,7 @@ public class PalmaePostImportUpdater {
 			int count = cdmApp.getTaxonService().count(Taxon.class);
 			List<TaxonBase> taxonList = cdmApp.getTaxonService().list(TaxonBase.class, 100000, page, null, null);
 			int i = 0;
-			
+
 			IReference treatmentReference = (IReference) cdmApp.getCommonService().getSourcedObjectByIdInSource(Reference.class, "palm_pub_ed_999999", "PublicationCitation");
 			if (treatmentReference == null){
 				logger.error("Treatment reference could not be found");
@@ -110,7 +110,7 @@ public class PalmaePostImportUpdater {
 			}else{
 				for (TaxonBase nameUsage : taxonList){
 					if ((i++ % 100) == 0){System.out.println(i);};
-	
+
 					try {
 						//if not in treatment
 						if (! isInTreatment(nameUsage, treatmentReference, false)){
@@ -156,11 +156,11 @@ public class PalmaePostImportUpdater {
 			logger.error("ERROR in name usage update");
 			return false;
 		}
-		
+
 	}
 
 	/**
-	 * @param nameUsage 
+	 * @param nameUsage
 	 * @return
 	 */
 	private Taxon getAcceptedTreatmentTaxon(TaxonBase nameUsage, IReference treatmentReference) {
@@ -174,11 +174,11 @@ public class PalmaePostImportUpdater {
 				}
 			}else if (candidate instanceof Synonym){
 				Synonym synonym = (Synonym)candidate;
-				Set<Taxon> accTaxa = synonym.getAcceptedTaxa();
+				Taxon accTaxon = synonym.getAcceptedTaxon();
 				if (isInTreatment(synonym, treatmentReference, true)){
 					hasSynonymInTreatment = true;
 				}
-				for (Taxon accTaxon : accTaxa){
+				if (accTaxon != null){
 					if (isInTreatment(accTaxon, treatmentReference, false)){
 						return accTaxon;
 					}
@@ -195,7 +195,7 @@ public class PalmaePostImportUpdater {
 
 	/**
 	 * @param taxonBase
-	 * @param treatmentReference 
+	 * @param treatmentReference
 	 * @return
 	 */
 	private boolean isInTreatment(TaxonBase taxonBase, IReference treatmentReference, boolean silent) {
@@ -209,7 +209,8 @@ public class PalmaePostImportUpdater {
 				}else if (taxonBase instanceof Synonym){
 					Synonym synonym = (Synonym)taxonBase;
 					boolean hasAccTaxonInTreatment = false;
-					for (Taxon accTaxon : synonym.getAcceptedTaxa()){
+					Taxon accTaxon = synonym.getAcceptedTaxon();
+					if (accTaxon != null){
 						hasAccTaxonInTreatment |= isInTreatment(accTaxon, treatmentReference, false);
 					}
 					if (hasAccTaxonInTreatment == false){
@@ -230,7 +231,8 @@ public class PalmaePostImportUpdater {
 				}else if (taxonBase instanceof Synonym){
 					Synonym synonym = (Synonym)taxonBase;
 					boolean hasAccTaxonInTreatment = false;
-					for (Taxon accTaxon : synonym.getAcceptedTaxa()){
+					Taxon accTaxon = synonym.getAcceptedTaxon();
+					if (accTaxon != null){
 						hasAccTaxonInTreatment |= isInTreatment(accTaxon, treatmentReference, false);
 					}
 					if (hasAccTaxonInTreatment == true){
@@ -243,7 +245,7 @@ public class PalmaePostImportUpdater {
 			return false;
 		}
 	}
-	
+
 	/**
 	 * @param taxonCandidate
 	 * @param taxon
@@ -266,8 +268,8 @@ public class PalmaePostImportUpdater {
 		myDescription.addElement(textData);
 		return true;
 	}
-	
-	
+
+
 	/**
 	 * @param args
 	 */

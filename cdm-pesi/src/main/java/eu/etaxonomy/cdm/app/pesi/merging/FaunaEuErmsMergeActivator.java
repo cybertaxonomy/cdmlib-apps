@@ -28,7 +28,6 @@ import eu.etaxonomy.cdm.model.common.Credit;
 import eu.etaxonomy.cdm.model.common.Extension;
 import eu.etaxonomy.cdm.model.common.IdentifiableSource;
 import eu.etaxonomy.cdm.model.common.Marker;
-import eu.etaxonomy.cdm.model.common.RelationshipBase.Direction;
 import eu.etaxonomy.cdm.model.description.Distribution;
 import eu.etaxonomy.cdm.model.description.Feature;
 import eu.etaxonomy.cdm.model.description.TaxonDescription;
@@ -37,7 +36,6 @@ import eu.etaxonomy.cdm.model.name.Rank;
 import eu.etaxonomy.cdm.model.name.ZoologicalName;
 import eu.etaxonomy.cdm.model.reference.Reference;
 import eu.etaxonomy.cdm.model.taxon.Synonym;
-import eu.etaxonomy.cdm.model.taxon.SynonymRelationship;
 import eu.etaxonomy.cdm.model.taxon.Taxon;
 import eu.etaxonomy.cdm.model.taxon.TaxonBase;
 import eu.etaxonomy.cdm.model.taxon.TaxonNode;
@@ -225,41 +223,28 @@ public class FaunaEuErmsMergeActivator {
 		// update nameRelationships -> if the nameRelationship does not exist, then create a new one with ermsAcc as relatedTo TaxonName
 		updateNameRelationships(ermsAccFaEuSyn);
 
-		//delete all synonymRelationships of FaunaEu Syn
+		//delete all synonyms of FaunaEu Syn
 		for (List<String> rowList: ermsAccFaEuSyn){
 			UUID faunaUUID = UUID.fromString(rowList.get(faunaEuUuid));
 			//UUID ermsUUID = UUID.fromString(rowList.get(ermsUuid));
 			Synonym syn = (Synonym)appCtrInit.getTaxonService().find(faunaUUID);
-			appCtrInit.getTaxonService().deleteSynonymRelationships(syn);
+			appCtrInit.getTaxonService().deleteSynonym(syn, null);
 		}
 
 		//merge the infos of
-
-
 	}
 
 	private  void mergeErmsSynFaunaEuAcc (List<List<String>> ermsAccFaEuSyn){
-		//occurence: verkn�pfe statt dem Fauna Europaea Taxon das akzeptierte Taxon, des Synonyms mit der Occurence (CDM -> distribution)
-		//suche distribution (�ber das Taxon der TaxonDescription), dessen Taxon, das entsprechende Fauna Eu Taxon ist und verkn�pfe es mit dem akzeptieren Taxon des Erms Syn
-		Taxon taxonFaunaEu = null;
-		Taxon taxonErms = null;
-		Synonym synErms = null;
+		//occurence: verknüpfe statt dem Fauna Europaea Taxon das akzeptierte Taxon, des Synonyms mit der Occurence (CDM -> distribution)
+		//suche distribution (über das Taxon der TaxonDescription), dessen Taxon, das entsprechende Fauna Eu Taxon ist und verkn�pfe es mit dem akzeptieren Taxon des Erms Syn
 		for (List<String> row: ermsAccFaEuSyn){
-			taxonFaunaEu = (Taxon)appCtrInit.getTaxonService().find(UUID.fromString(row.get(faunaEuUuid)));
-			synErms = (Synonym)appCtrInit.getTaxonService().find(UUID.fromString(row.get(ermsUuid)));
+		    Taxon taxonFaunaEu = (Taxon)appCtrInit.getTaxonService().find(UUID.fromString(row.get(faunaEuUuid)));
+			Synonym synErms = (Synonym)appCtrInit.getTaxonService().find(UUID.fromString(row.get(ermsUuid)));
 			synErms = HibernateProxyHelper.deproxy(synErms, Synonym.class);
-			Set<SynonymRelationship> synRel=synErms.getSynonymRelations();
+			Taxon taxonErms = synErms.getAcceptedTaxon();
 
-			if (synRel.size()>1){
-				//TODO: which Relationship??
-				Iterator<SynonymRelationship> iterator = synRel.iterator();
-				taxonErms = iterator.next().getAcceptedTaxon();
-			}else if (synRel.size() == 1){
-				Iterator<SynonymRelationship> iterator = synRel.iterator();
-				taxonErms = iterator.next().getAcceptedTaxon();
-			} else {
-				taxonErms = null;
-				logger.debug("There is no SynonymRelationship for the synonym" + synErms.getTitleCache());
+			if (taxonErms == null){
+				logger.debug("There is no accepted taxon for the synonym" + synErms.getTitleCache());
 			}
 
 			Set<Feature> features = new HashSet<Feature>();
@@ -374,7 +359,7 @@ public class FaunaEuErmsMergeActivator {
 			taxonFaunaEu = (Taxon)appCtrInit.getTaxonService().find(UUID.fromString(row.get(faunaEuUuid)));
 			synErms = (Synonym)appCtrInit.getTaxonService().find(UUID.fromString(row.get(ermsUuid)));
 			acceptedTaxa.clear();
-			acceptedTaxa.addAll( synErms.getAcceptedTaxa());
+			acceptedTaxa.add( synErms.getAcceptedTaxon());
 			if (!acceptedTaxa.isEmpty()){
 				taxonErms = acceptedTaxa.iterator().next();
 				if (acceptedTaxa.size() > 1){
@@ -386,25 +371,28 @@ public class FaunaEuErmsMergeActivator {
 			}
 
 			if (taxonErms != null){
-				List<SynonymRelationship> relTaxonFaunaEu = appCtrInit.getTaxonService().listSynonymRelationships(taxonFaunaEu, null, 100, 0, null, null, Direction.relatedTo);
-				List<SynonymRelationship> relTaxonErms = appCtrInit.getTaxonService().listSynonymRelationships(taxonErms, null, 100, 0, null, null, Direction.relatedTo);
+				List<Synonym> synsTaxonFaunaEu = appCtrInit.getTaxonService().getSynonyms(taxonFaunaEu, null, 1000, 0, null, null);
 
-				List<SynonymRelationship> deleteRel = new ArrayList<SynonymRelationship>();
-				for (SynonymRelationship relFauEu: relTaxonFaunaEu){
-					//TODO: wenn es noch keine SynonymRelationship gibt zu einem Synonym mit gleichem Namen, dann erzeuge die SynonymRelationship vom FaunaEuSyn (des FaunaEu Taxons, dass identischen Namen hat) zum akzeptierten Taxon des Erms Syn
+				List<Synonym> synsTaxonErms = appCtrInit.getTaxonService().getSynonyms(taxonErms, null, 1000, 0, null, null);
+
+				List<Synonym> deleteRel = new ArrayList<>();
+				for (Synonym synFauEu: synsTaxonFaunaEu){
+					//TODO: wenn es noch keine SynonymRelationship gibt zu einem Synonym mit gleichem Namen,
+				    //dann erzeuge die SynonymRelationship vom FaunaEuSyn (des FaunaEu Taxons, das
+				    //identischen Namen hat) zum akzeptierten Taxon des Erms Syn
 					boolean createNewRelationship = true;
-					for (SynonymRelationship relErms: relTaxonErms){
-						if (relErms.getSynonym().getTitleCache().equals(relFauEu.getSynonym().getTitleCache())){
+					for (Synonym relErms: synsTaxonErms){
+						if (relErms.getTitleCache().equals(synFauEu.getTitleCache())){
 							//es gibt schon eine Relationship zu einem Synonym mit dem gleichen Namen wie das FaunaEu Synonym, also Relationship l�schen.
 							createNewRelationship = false;
 							break;
 						}
 					}
 					if (createNewRelationship){
-						taxonErms.addSynonym(relFauEu.getSynonym(), relFauEu.getType());
+						taxonErms.addSynonym(synFauEu, synFauEu.getType());
 					}
 
-					deleteRel.add(relFauEu);
+					deleteRel.add(synFauEu);
 				}
 			}
 
@@ -477,13 +465,12 @@ public class FaunaEuErmsMergeActivator {
 	//if name, rank, and status (accepted) are the same, then move the synonyms of faunaEu taxon to the erms taxon
 
 	private void moveFaunaEuSynonymsToErmsTaxon(Taxon faunaEu, Taxon erms){
-		Set<SynonymRelationship> synRel =faunaEu.getSynonymRelations();
-		Iterator<SynonymRelationship> synRelIterator = synRel.iterator();
-		SynonymRelationship rel;
+		Set<Synonym> syns =faunaEu.getSynonyms();
+		Iterator<Synonym> synRelIterator = syns.iterator();
 		while (synRelIterator.hasNext()){
-			rel = synRelIterator.next();
-			faunaEu.removeSynonym(rel.getSynonym());
-			erms.addSynonym(rel.getSynonym(), rel.getType());
+			Synonym syn = synRelIterator.next();
+			faunaEu.removeSynonym(syn);
+			erms.addSynonym(syn, syn.getType());
 		}
 	}
 

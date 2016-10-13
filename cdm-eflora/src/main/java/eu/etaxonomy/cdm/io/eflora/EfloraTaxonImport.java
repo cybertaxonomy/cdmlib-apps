@@ -74,7 +74,7 @@ import eu.etaxonomy.cdm.model.reference.Reference;
 import eu.etaxonomy.cdm.model.reference.ReferenceFactory;
 import eu.etaxonomy.cdm.model.reference.ReferenceType;
 import eu.etaxonomy.cdm.model.taxon.Classification;
-import eu.etaxonomy.cdm.model.taxon.SynonymRelationshipType;
+import eu.etaxonomy.cdm.model.taxon.SynonymType;
 import eu.etaxonomy.cdm.model.taxon.Taxon;
 import eu.etaxonomy.cdm.model.taxon.TaxonBase;
 import eu.etaxonomy.cdm.model.taxon.TaxonNode;
@@ -1651,9 +1651,9 @@ public class EfloraTaxonImport  extends EfloraImportBase implements ICdmIO<Eflor
 		NonViralName name;
 		if (isSynonym){
 			name = BotanicalName.NewInstance(Rank.SPECIES(), homotypicalGroup);
-			SynonymRelationshipType synonymType = SynonymRelationshipType.HETEROTYPIC_SYNONYM_OF();
+			SynonymType synonymType = SynonymType.HETEROTYPIC_SYNONYM_OF();
 			if (taxon.getHomotypicGroup().equals(homotypicalGroup)){
-				synonymType = SynonymRelationshipType.HOMOTYPIC_SYNONYM_OF();
+				synonymType = SynonymType.HOMOTYPIC_SYNONYM_OF();
 			}
 			taxon.addSynonymName(name, synonymType);
 		}else{

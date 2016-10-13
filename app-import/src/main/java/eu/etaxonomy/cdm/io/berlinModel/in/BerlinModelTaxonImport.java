@@ -186,10 +186,10 @@ public class BerlinModelTaxonImport  extends BerlinModelImportBase {
 						synonym = Synonym.NewInstance(taxonName, reference);
 						taxonBase = synonym;
 						if (statusFk == T_STATUS_PRO_PARTE_SYN){
-							config.addProParteSynonym(synonym);
+						    synonym.setProParte(true);
 						}
 						if (statusFk == T_STATUS_PARTIAL_SYN){
-							config.addPartialSynonym(synonym);
+							synonym.setPartial(true);
 						}
 					}else{
 						logger.warn("TaxonStatus " + statusFk + " not yet implemented. Taxon (RIdentifier = " + taxonId + ") left out.");

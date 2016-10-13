@@ -226,19 +226,14 @@ public class FaunaEuropaeaVernacularNamesImport extends FaunaEuropaeaImportBase 
 					taxon = CdmBase.deproxy(taxonBase, Taxon.class);
 				} else {
 					Synonym syn = CdmBase.deproxy(taxonBase, Synonym.class);
-					if (syn.getAcceptedTaxa().size()>0){
-						taxon = syn.getAcceptedTaxa().iterator().next();
-					}
+					taxon = syn.getAcceptedTaxon();
 					logger.warn("TaxonBase (" + taxonBase.getId() + " is not of type Taxon but: "
 							+ taxonBase.getClass().getSimpleName() + " using accepted Taxon for vernacular name");
 					continue;
 				}
 
-
-				Set<TaxonDescription> descriptionSet = taxon.getDescriptions();
 				taxonDescription = TaxonDescription.NewInstance();
 				taxon.addDescription(taxonDescription);
-
 
 				taxonUuid = taxonBase.getUuid();
 				fauEuHelperTaxon= fauEuTaxonMap.get(taxonUuid);

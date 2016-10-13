@@ -49,7 +49,6 @@ import eu.etaxonomy.cdm.strategy.parser.NonViralNameParserImpl;
 /**
  * @author a.babadshanjan
  * @created 12.05.2009
- * @version 1.0
  */
 @Component
 public class FaunaEuropaeaRefImport extends FaunaEuropaeaImportBase {
@@ -492,15 +491,7 @@ public class FaunaEuropaeaRefImport extends FaunaEuropaeaImportBase {
 			boolean isSynonym = taxonBase.isInstanceOf(Synonym.class);
 			if (isSynonym) {
 				Synonym syn = CdmBase.deproxy(taxonBase, Synonym.class);
-				Set<Taxon> acceptedTaxa = syn.getAcceptedTaxa();
-				if (acceptedTaxa.size() > 0) {
-					taxon = syn.getAcceptedTaxa().iterator().next();
-					//logger.warn("Synonym (" + taxonBase.getUuid() + ") has accepted taxon" + taxon.getUuid());
-				} else {
-//								if (logger.isDebugEnabled()) {
-					logger.warn("Synonym (" + taxonBase.getUuid() + ") does not have accepted taxa");
-//								}
-				}
+				taxon = syn.getAcceptedTaxon();
 			} else {
 				taxon = CdmBase.deproxy(taxonBase, Taxon.class);
 			}

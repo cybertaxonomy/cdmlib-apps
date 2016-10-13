@@ -33,7 +33,6 @@ import eu.etaxonomy.cdm.model.name.Rank;
 import eu.etaxonomy.cdm.model.name.TaxonNameBase;
 import eu.etaxonomy.cdm.model.taxon.Classification;
 import eu.etaxonomy.cdm.model.taxon.Synonym;
-import eu.etaxonomy.cdm.model.taxon.SynonymRelationship;
 import eu.etaxonomy.cdm.model.taxon.Taxon;
 import eu.etaxonomy.cdm.model.taxon.TaxonBase;
 import eu.etaxonomy.cdm.model.taxon.TaxonNode;
@@ -404,11 +403,10 @@ public class PesiRelTaxonExport extends PesiExportBase {
 
 	private boolean saveSynonymAndSynNameRelationships(PesiExportState state, Taxon childNodeTaxon) {
 		boolean success = true;
-		for (SynonymRelationship synRel : childNodeTaxon.getSynonymRelations()) { // synonyms of accepted taxon
-			Synonym synonym = synRel.getSynonym();
+		for (Synonym synonym : childNodeTaxon.getSynonyms()) { // synonyms of accepted taxon
 			TaxonNameBase<?,?> synonymTaxonName = synonym.getName();
 			if (! isPesiTaxon(synonym)){
-				logger.warn("Synonym " + synonym.getId() + " of synonym relation " + synRel.getId() + " is not a PESI taxon. Can't export relationship");
+				logger.warn("Synonym " + synonym.getId() + " is not a PESI taxon. Can't export relationship");
 				continue;
 			}
 
@@ -416,20 +414,16 @@ public class PesiRelTaxonExport extends PesiExportBase {
 			invokeSynonyms(state, synonymTaxonName);
 
 
+			try {
+				if (neededValuesNotNull(synonym, state)) {
+					doCount(count++, modCount, pluralString);
+					success &= mapping.invoke(synonym);
 
-			Set<SynonymRelationship> synonymRelations = synonym.getSynonymRelations();
-			state.setCurrentFromObject(synonym);
-			for (SynonymRelationship synonymRelationship : synonymRelations) {  //needed? Maybe to make sure that there are no partial synonym relations missed ??
-				try {
-					if (neededValuesNotNull(synonymRelationship, state)) {
-						doCount(count++, modCount, pluralString);
-						success &= mapping.invoke(synonymRelationship);
-
-					}
-				} catch (SQLException e) {
-					logger.error("SynonymRelationship (" + synonymRelationship.getUuid() + ") could not be stored : " + e.getMessage());
 				}
+			} catch (SQLException e) {
+				logger.error("Synonym (" + synonym.getUuid() + ") could not be stored : " + e.getMessage());
 			}
+
 
 			// SynonymNameRelationship
 			success &= saveNameRelationships(state, synonym);
@@ -563,6 +557,16 @@ public class PesiRelTaxonExport extends PesiExportBase {
 			return false;
 		}
 	}
+
+	private boolean neededValuesNotNull(Synonym synonym, PesiExportState state) {
+	    boolean result = true;
+        if (getTaxonFk1(synonym, state) == null) {
+            logger.warn("TaxonFk1 is NULL, but is not allowed to be. Therefore no record was written to export database for this relationship: " + relationship.getUuid());
+            result = false;
+        }
+        return result;
+	}
+
 
 	/**
 	 * Checks whether needed values for an entity are NULL.

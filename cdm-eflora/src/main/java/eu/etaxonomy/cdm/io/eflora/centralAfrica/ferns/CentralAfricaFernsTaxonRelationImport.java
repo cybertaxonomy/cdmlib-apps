@@ -54,8 +54,7 @@ import eu.etaxonomy.cdm.model.name.TaxonNameBase;
 import eu.etaxonomy.cdm.model.reference.Reference;
 import eu.etaxonomy.cdm.model.taxon.Classification;
 import eu.etaxonomy.cdm.model.taxon.Synonym;
-import eu.etaxonomy.cdm.model.taxon.SynonymRelationship;
-import eu.etaxonomy.cdm.model.taxon.SynonymRelationshipType;
+import eu.etaxonomy.cdm.model.taxon.SynonymType;
 import eu.etaxonomy.cdm.model.taxon.Taxon;
 import eu.etaxonomy.cdm.model.taxon.TaxonBase;
 import eu.etaxonomy.cdm.model.taxon.TaxonNode;
@@ -242,8 +241,8 @@ public class CentralAfricaFernsTaxonRelationImport  extends CentralAfricaFernsIm
 
 
 	/**
-	 * Handles records with status synonym. A synonym relationship to the accepted taxon
-	 * is created.
+	 * Handles records with status synonym. The synonym is attached to the accepted taxon.
+	 *
 	 * @param rs
 	 * @param state
 	 * @return
@@ -264,9 +263,9 @@ public class CentralAfricaFernsTaxonRelationImport  extends CentralAfricaFernsIm
 		if (taxonBase != null){
 			if (taxonBase.isInstanceOf(Taxon.class)){
 				Taxon taxon = CdmBase.deproxy(taxonBase, Taxon.class);
-				SynonymRelationship rel = taxon.addSynonym(synonym, SynonymRelationshipType.SYNONYM_OF());
+				taxon.addSynonym(synonym, SynonymType.SYNONYM_OF());
 				if ("p.p.".equalsIgnoreCase(nomRemarksString)){
-					rel.setProParte(true);
+					synonym.setProParte(true);
 				}
 			}else{
 				logger.warn("Accepted taxon (" + accTaxonId + ") for synonym (" + synonymId +") is not of type 'Current'");
