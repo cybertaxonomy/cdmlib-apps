@@ -927,13 +927,13 @@ public class CubaExcelImport extends ExcelImporterBase<CubaImportState> {
                 state.putHigherTaxon(genusStr, genus);
             }
         }
+        taxon.addSource(makeOriginalSource(state));
+
+        TaxonNode newNode = higherNode.addChildTaxon(taxon, null, null);
         if(isAbsent){
             botanicalName.setTitleCache(taxonStrOrig, true);
-            taxon.setExcluded(true);
+            newNode.setExcluded(true);
         }
-
-        higherNode.addChildTaxon(taxon, null, null);
-        taxon.addSource(makeOriginalSource(state));
 
         return taxon;
     }
