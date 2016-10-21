@@ -201,7 +201,7 @@ public class CdmDestinations {
 	}
 
 	public static ICdmDataSource localH2(String database, String username, String filePath){
-		return CdmDataSource.NewH2EmbeddedInstance(database, "sa", "", filePath);
+		return CdmDataSource.NewH2EmbeddedInstance(database, username, "", filePath);
 	}
 
 	public static ICdmDataSource localH2Salvador(){
