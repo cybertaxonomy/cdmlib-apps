@@ -1,8 +1,8 @@
 /**
  * Copyright (C) 2007 EDIT
- * European Distributed Institute of Taxonomy 
+ * European Distributed Institute of Taxonomy
  * http://www.e-taxonomy.eu
- * 
+ *
  * The contents of this file are subject to the Mozilla Public License Version 1.1
  * See LICENSE.TXT at the top of this package for the full license terms.
  */
@@ -14,9 +14,8 @@ import java.net.URISyntaxException;
 import java.net.URL;
 import java.sql.SQLException;
 
-import junit.framework.Assert;
-
 import org.apache.log4j.Logger;
+import org.springframework.util.Assert;
 
 import eu.etaxonomy.cdm.common.CdmUtils;
 import eu.etaxonomy.cdm.database.CdmDataSource;
@@ -59,10 +58,10 @@ public class SDDImportActivator {
        String dataSourceName = CdmUtils.readInputLine("Database name: ");
        String username = CdmUtils.readInputLine("Username: ");
        String password = CdmUtils.readInputLine("Password: ");
-       
+
        dataSourceName = (dataSourceName.equals("")) ? "cdm_test4" : dataSourceName;
        username = (username.equals("")) ? "ljm" : username;
-       
+
        ICdmDataSource dataSource = CdmDataSource.NewMySqlInstance("127.0.0.1", dataSourceName, 3306, username, password, NomenclaturalCode.ICNAFP);
        //ICdmDataSource dataSource = CdmDataSource.NewMySqlInstance("127.0.0.1", "cdm_edit_cichorieae", 3306, "ljm", password, NomenclaturalCode.ICBN);
        //ICdmDataSource dataSource = CdmDataSource.NewMySqlInstance("160.45.63.201", "cdm_edit_cichorieae", 3306, "edit", password, NomenclaturalCode.ICBN);
@@ -70,7 +69,7 @@ public class SDDImportActivator {
        try {
            connectionAvailable = dataSource.testConnection();
            logger.debug("LORNA connection avaiable " + connectionAvailable);
-           Assert.assertTrue("Testdatabase is not available", connectionAvailable);
+           Assert.isTrue(connectionAvailable, "Testdatabase is not available");
 
        } catch (ClassNotFoundException e1) {
            // TODO Auto-generated catch block
@@ -86,7 +85,7 @@ public class SDDImportActivator {
 //			CdmApplicationController.NewInstance(loadedDataSource, DbSchemaValidation.CREATE);
            NomenclaturalCode loadedCode = loadedDataSource.getNomenclaturalCode();
 
-           Assert.assertEquals(NomenclaturalCode.ICNAFP, loadedCode);
+           Assert.isTrue(NomenclaturalCode.ICNAFP.equals(loadedCode));
        } catch (DataSourceNotFoundException e) {
            // TODO Auto-generated catch block
            e.printStackTrace();
@@ -114,22 +113,22 @@ public class SDDImportActivator {
 	        source = url.toURI();
 			//source = new URI("/eu/etaxonomy/cdm/app/sdd/SDDImportTest-input3.xml");
 			System.out.println("Start import from SDD("+ source.toString() + ") ...");
-		
+
 		//	ICdmDataSource destination = CdmDestinations.localH2("cdm","sa","C:/Documents and Settings/lis/Mes documents/CDMtest/");
 			//lorna//ICdmDataSource destination = CdmDestinations.localH2(args[3],"sa",args[2]);
 			ICdmDataSource destination = customDataSource();
-	
+
 			SDDImportConfigurator sddImportConfigurator = SDDImportConfigurator.NewInstance(source,  destination);
-	
+
 			///sddImportConfigurator.setSourceSecId(sourceSecId);
-	
+
 			///sddImportConfigurator.setCheck(check);
 			///sddImportConfigurator.setDbSchemaValidation(hbm2dll);
-	
+
 			// invoke import
 			CdmDefaultImport<SDDImportConfigurator> sddImport = new CdmDefaultImport<SDDImportConfigurator>();
 			sddImport.invoke(sddImportConfigurator);
-	
+
 			System.out.println("End import from SDD ("+ source.toString() + ")...");
 		} catch (URISyntaxException e) {
 			e.printStackTrace();
