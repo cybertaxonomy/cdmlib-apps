@@ -27,7 +27,6 @@ import org.springframework.transaction.TransactionStatus;
 
 import com.microsoft.sqlserver.jdbc.SQLServerException;
 
-import eu.etaxonomy.cdm.profiler.ProfilerController;
 import eu.etaxonomy.cdm.io.berlinModel.BerlinModelTransformer;
 import eu.etaxonomy.cdm.io.common.DbExportStateBase;
 import eu.etaxonomy.cdm.io.common.Source;
@@ -70,6 +69,7 @@ import eu.etaxonomy.cdm.model.name.NonViralName;
 import eu.etaxonomy.cdm.model.name.TaxonNameBase;
 import eu.etaxonomy.cdm.model.taxon.Taxon;
 import eu.etaxonomy.cdm.model.taxon.TaxonBase;
+import eu.etaxonomy.cdm.profiler.ProfilerController;
 /**
  * The export class for {@link eu.etaxonomy.cdm.model.description.DescriptionElementBase DescriptionElements}.<p>
  * Inserts into DataWarehouse database table <code>Note</code>.<p>
@@ -216,11 +216,11 @@ public class PesiDescriptionExport extends PesiExportBase {
 					success &= handleSingleTaxon(taxon, state, notesMapping, occurrenceMapping, addSourceSourceMapping,
 						additionalSourceMapping, vernacularMapping, imageMapping);
 				}
-				
+
 			}
 			taxonList = null;
 			state.setCurrentTaxon(null);
-			
+
 			// Commit transaction
 			commitTransaction(txStatus);
 			logger.info("Exported " + (count - pastCount) + " " + pluralString + ". Total: " + count);
@@ -332,12 +332,12 @@ public class PesiDescriptionExport extends PesiExportBase {
 			PesiExportMapping vernacularMapping, PesiExportMapping imageMapping) throws SQLException {
 		boolean success = true;
 
-		
+
 		Set<DescriptionBase<?>> descriptions = new HashSet<DescriptionBase<?>>();
 		descriptions.addAll(taxon.getDescriptions());
 
 		for (DescriptionBase<?> desc : descriptions){
-			
+
 
 			boolean isImageGallery = desc.isImageGallery();
 			for (DescriptionElementBase element : desc.getElements()){
@@ -755,7 +755,7 @@ public class PesiDescriptionExport extends PesiExportBase {
 			multilanguageText = individualsAssociation.getDescription();
 		} else if (descriptionElement.isInstanceOf(TaxonInteraction.class)) {
 			TaxonInteraction taxonInteraction = CdmBase.deproxy(descriptionElement, TaxonInteraction.class);
-			multilanguageText = taxonInteraction.getDescriptions();
+			multilanguageText = taxonInteraction.getDescription();
 		} else {
 			logger.debug("Given descriptionElement does not support languages. Hence LanguageCache could not be determined: " + descriptionElement.getUuid());
 		}
