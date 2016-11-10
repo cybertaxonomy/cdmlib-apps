@@ -397,10 +397,6 @@ public class CdmDestinations {
         return CdmDataSource.NewH2EmbeddedInstance("cdmEdapho", "sa", "");
     }
 
-	public static ICdmDataSource localH2(String database, String username, String filePath){
-		return CdmDataSource.NewH2EmbeddedInstance(database, "sa", "", filePath, null);
-	}
-
 	public static ICdmDataSource localH2Salvador(){
 		return CdmDataSource.NewH2EmbeddedInstance("salvador", "sa", "");
 	}
@@ -445,6 +441,22 @@ public class CdmDestinations {
 		String cdmUserName = "edit";
 		return makeDestination(dbType, cdmServer, cdmDB, -1, cdmUserName, null);
 	}
+
+    public static ICdmDataSource cdm_salvador_preview(){
+        DatabaseTypeEnum dbType = DatabaseTypeEnum.MySQL;
+        String cdmServer = "160.45.63.175";
+        String cdmDB = "cdm_salvador";
+        String cdmUserName = "edit";
+        return makeDestination(dbType, cdmServer, cdmDB, -1, cdmUserName, null);
+    }
+
+    public static ICdmDataSource cdm_salvador_production(){
+        DatabaseTypeEnum dbType = DatabaseTypeEnum.MySQL;
+        String cdmServer = "160.45.63.171";
+        String cdmDB = "cdm_production_salvador";
+        String cdmUserName = "edit";
+        return makeDestination(dbType, cdmServer, cdmDB, -1, cdmUserName, null);
+    }
 
 	public static ICdmDataSource cdm_edit_cichorieae_local_PG(){
 		DatabaseTypeEnum dbType = DatabaseTypeEnum.PostgreSQL;
