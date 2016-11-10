@@ -205,7 +205,7 @@ public class SynthesysCacheActivator {
 //				}
 				taxonName = nvnpi.parseFullName(scientificName);
 				if (withCdm){
-					names = app.getNameService().getNamesByName(scientificName);
+					names = app.getNameService().findByName(null, scientificName, null, null, null, null, null, null).getRecords();
 					if (names.size() == 0){
 						System.out.println("Name not found: " + scientificName);
 					}else{

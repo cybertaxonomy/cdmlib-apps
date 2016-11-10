@@ -15,6 +15,7 @@ import java.net.URL;
 import java.sql.SQLException;
 
 import org.apache.log4j.Logger;
+import org.springframework.util.Assert;
 
 import eu.etaxonomy.cdm.common.CdmUtils;
 import eu.etaxonomy.cdm.database.CdmDataSource;
@@ -25,7 +26,6 @@ import eu.etaxonomy.cdm.database.ICdmDataSource;
 import eu.etaxonomy.cdm.io.common.CdmDefaultImport;
 import eu.etaxonomy.cdm.io.common.IImportConfigurator.CHECK;
 import eu.etaxonomy.cdm.io.sdd.in.SDDImportConfigurator;
-import junit.framework.Assert;
 
 /**
  * @author h.fradin
@@ -68,7 +68,7 @@ public class SDDImportActivator {
        try {
            connectionAvailable = dataSource.testConnection();
            logger.debug("LORNA connection avaiable " + connectionAvailable);
-           Assert.assertTrue("Testdatabase is not available", connectionAvailable);
+           Assert.isTrue(connectionAvailable, "Testdatabase is not available");
 
        } catch (ClassNotFoundException e1) {
            e1.printStackTrace();

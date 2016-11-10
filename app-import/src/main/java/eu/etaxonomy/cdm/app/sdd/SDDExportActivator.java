@@ -1,4 +1,3 @@
-// $Id$
 /**
 * Copyright (C) 2009 EDIT
 * European Distributed Institute of Taxonomy
@@ -14,6 +13,7 @@ import java.net.MalformedURLException;
 import java.sql.SQLException;
 
 import org.apache.log4j.Logger;
+import org.springframework.util.Assert;
 
 import eu.etaxonomy.cdm.common.CdmUtils;
 import eu.etaxonomy.cdm.database.CdmDataSource;
@@ -76,7 +76,7 @@ public class SDDExportActivator {
        try {
            connectionAvailable = dataSource.testConnection();
            System.out.println("LORNA connection available " + connectionAvailable);
-           Assert.assertTrue("Testdatabase is not available", connectionAvailable);
+           Assert.isTrue(connectionAvailable, "Testdatabase is not available");
 
        } catch (ClassNotFoundException e1) {
            // TODO Auto-generated catch block
