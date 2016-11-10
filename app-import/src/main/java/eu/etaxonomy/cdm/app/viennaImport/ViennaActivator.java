@@ -104,7 +104,7 @@ public class ViennaActivator {
 
 				TaxonNameBase<?,?> taxonName = NonViralNameParserImpl.NewInstance().parseFullName(strTaxonName);
 				if (withCdm){
-					List<TaxonNameBase> names = app.getNameService().getNamesByName(strTaxonName);
+					List<TaxonNameBase> names = app.getNameService().findByName(null, strTaxonName, null, null, null, null, null, null).getRecords();
 					if (names.size() == 0){
 						logger.warn("Name not found: " + strTaxonName);
 					}else{
