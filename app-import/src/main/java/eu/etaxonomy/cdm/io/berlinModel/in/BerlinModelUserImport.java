@@ -34,7 +34,9 @@ import eu.etaxonomy.cdm.model.common.User;
  */
 @Component
 public class BerlinModelUserImport extends BerlinModelImportBase {
-	private static final Logger logger = Logger.getLogger(BerlinModelUserImport.class);
+    private static final long serialVersionUID = 3277951604022442721L;
+
+    private static final Logger logger = Logger.getLogger(BerlinModelUserImport.class);
 
 	public static final String NAMESPACE = "User";
 
