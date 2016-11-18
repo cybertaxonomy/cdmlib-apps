@@ -90,6 +90,10 @@ public class SalvadorActivator {
 	static final boolean doMarker = true;
 	static final boolean doUser = true;
 
+	static final boolean isSalvador = true;
+
+	static String factFilter = " factCategoryFk NOT IN  (1980, 1500, 1950, 1700) ";
+
 
 // ************************ NONE **************************************** //
 
@@ -155,6 +159,8 @@ public class SalvadorActivator {
 
 		config.setNamerelationshipTypeMethod(getHandleNameRelationshipTypeMethod());
 		config.setUserTransformationMethod(getTransformUsernameMethod());
+		config.setSalvador(isSalvador);
+		config.setFactFilter(factFilter);
 
 		// invoke import
 		CdmDefaultImport<BerlinModelImportConfigurator> bmImport = new CdmDefaultImport<BerlinModelImportConfigurator>();

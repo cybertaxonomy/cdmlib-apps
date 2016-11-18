@@ -56,6 +56,8 @@ public class BerlinModelImportConfigurator extends DbImportConfiguratorBase<Berl
 	private boolean doTaxonNames = true;
 	private boolean doTypes = true;
 
+	private boolean isSalvador = false;
+
 	//taxa
 	private boolean doTaxa = true;
 	private boolean doRelTaxa = true;
@@ -91,7 +93,6 @@ public class BerlinModelImportConfigurator extends DbImportConfiguratorBase<Berl
 	private boolean removeHttpMapsAnchor = false;
 
 	//Data Filter
-
 	private String taxonTable = "PTaxon";
 	private String classificationQuery = null;
 	private String relTaxaIdQuery = null;
@@ -626,5 +627,9 @@ public class BerlinModelImportConfigurator extends DbImportConfiguratorBase<Berl
 	public void setUseEmAreaVocabulary(boolean useEmAreaVocabulary) {
 		this.useEmAreaVocabulary = useEmAreaVocabulary;
 	}
+
+
+    public boolean isSalvador() {return isSalvador;}
+    public void setSalvador(boolean isSalvador) {this.isSalvador = isSalvador;}
 
 }

@@ -33,19 +33,26 @@ import eu.etaxonomy.cdm.io.berlinModel.in.validation.BerlinModelFactsImportValid
 import eu.etaxonomy.cdm.io.common.IOValidator;
 import eu.etaxonomy.cdm.io.common.ResultSetPartitioner;
 import eu.etaxonomy.cdm.io.common.Source;
-import eu.etaxonomy.cdm.io.common.mapping.UndefinedTransformerMethodException;
 import eu.etaxonomy.cdm.model.common.Annotation;
+import eu.etaxonomy.cdm.model.common.AnnotationType;
 import eu.etaxonomy.cdm.model.common.CdmBase;
 import eu.etaxonomy.cdm.model.common.Language;
+import eu.etaxonomy.cdm.model.common.LanguageString;
 import eu.etaxonomy.cdm.model.common.Marker;
 import eu.etaxonomy.cdm.model.common.MarkerType;
+import eu.etaxonomy.cdm.model.common.Representation;
 import eu.etaxonomy.cdm.model.common.TermType;
 import eu.etaxonomy.cdm.model.common.TermVocabulary;
+import eu.etaxonomy.cdm.model.description.CommonTaxonName;
 import eu.etaxonomy.cdm.model.description.DescriptionElementBase;
 import eu.etaxonomy.cdm.model.description.DescriptionElementSource;
+import eu.etaxonomy.cdm.model.description.Distribution;
 import eu.etaxonomy.cdm.model.description.Feature;
+import eu.etaxonomy.cdm.model.description.PresenceAbsenceTerm;
 import eu.etaxonomy.cdm.model.description.TaxonDescription;
 import eu.etaxonomy.cdm.model.description.TextData;
+import eu.etaxonomy.cdm.model.location.Country;
+import eu.etaxonomy.cdm.model.location.NamedArea;
 import eu.etaxonomy.cdm.model.media.ImageFile;
 import eu.etaxonomy.cdm.model.media.Media;
 import eu.etaxonomy.cdm.model.media.MediaRepresentation;
@@ -57,11 +64,12 @@ import eu.etaxonomy.cdm.strategy.exceptions.UnknownCdmTypeException;
 /**
  * @author a.mueller
  * @created 20.03.2008
- * @version 1.0
  */
 @Component
 public class BerlinModelFactsImport  extends BerlinModelImportBase {
-	private static final Logger logger = Logger.getLogger(BerlinModelFactsImport.class);
+    private static final long serialVersionUID = 4095154818163504795L;
+
+    private static final Logger logger = Logger.getLogger(BerlinModelFactsImport.class);
 
 	public static final String NAMESPACE = "Fact";
 
@@ -80,15 +88,20 @@ public class BerlinModelFactsImport  extends BerlinModelImportBase {
 
 
 	private TermVocabulary<Feature> getFeatureVocabulary(){
-		try {
-			//TODO work around until service method works
-			TermVocabulary<Feature> featureVocabulary =  BerlinModelTransformer.factCategory2Feature(1).getVocabulary();
-			//TermVocabulary<Feature> vocabulary = getTermService().getVocabulary(vocabularyUuid);
-			return featureVocabulary;
-		} catch (UnknownCdmTypeException e) {
-			logger.error("Feature vocabulary not available. New vocabulary created");
-			return TermVocabulary.NewInstance(TermType.Feature, "User Defined Feature Vocabulary", "User Defined Feature Vocabulary", null, null);
-		}
+	    TermVocabulary<Feature> newVoc = TermVocabulary.NewInstance(TermType.Feature, "User Defined Feature Vocabulary", "User Defined Feature Vocabulary", null, null);
+	    getVocabularyService().save(newVoc);
+
+	    return newVoc;
+
+//	    try {
+//			//TODO work around until service method works
+//			TermVocabulary<Feature> featureVocabulary =  BerlinModelTransformer.factCategory2Feature(1).getVocabulary();
+//			//TermVocabulary<Feature> vocabulary = getTermService().getVocabulary(vocabularyUuid);
+//			return featureVocabulary;
+//		} catch (UnknownCdmTypeException e) {
+//			logger.error("Feature vocabulary not available. New vocabulary created");
+//			return TermVocabulary.NewInstance(TermType.Feature, "User Defined Feature Vocabulary", "User Defined Feature Vocabulary", null, null);
+//		}
 	}
 
 	private Map<Integer, Feature>  invokeFactCategories(BerlinModelImportState state){
@@ -102,6 +115,10 @@ public class BerlinModelFactsImport  extends BerlinModelImportBase {
 					" SELECT FactCategory.* " +
 					" FROM FactCategory "+
                     " WHERE (1=1)";
+			if (state.getConfig().isSalvador()){
+			    strQuery += strQuery.replace("factCategoryFk", "factCategoryId");
+			}
+
 			ResultSet rs = source.getResultSet(strQuery) ;
 
 
@@ -126,6 +143,9 @@ public class BerlinModelFactsImport  extends BerlinModelImportBase {
 						featureUuid = UUID.randomUUID();
 					}
 					feature = getFeature(state, featureUuid, factCategory, factCategory, null, featureVocabulary);
+					if (state.getConfig().isSalvador()){
+					    adaptNewSalvadorFeature(factCategoryId, feature);
+					}
 
 					//TODO
 //					MaxFactNumber	int	Checked
@@ -141,15 +161,63 @@ public class BerlinModelFactsImport  extends BerlinModelImportBase {
 		} catch (SQLException e) {
 			logger.error("SQLException:" +  e);
 			return null;
-		} catch (UndefinedTransformerMethodException e1) {
-			logger.error("UndefinedTransformerMethodException:" +  e1);
-			e1.printStackTrace();
-			return null;
 		}
-
 	}
 
-	@Override
+
+    /**
+     * @param factCategoryId
+     * @param feature
+     */
+    private void adaptNewSalvadorFeature(int factCategoryId, Feature feature) {
+        if (factCategoryId == 306){
+            addSpanishFactCategoryName(feature, "Nombre(s) común(es)");
+        } else if (factCategoryId == 307){
+            addSpanishFactCategoryName(feature, "Muestras de herbario");
+        } else if (factCategoryId == 310){
+            addEnglishFactCategoryName(feature, "Other references for taxon");
+        } else if (factCategoryId == 309){
+            addEnglishFactCategoryName(feature, "Report (reference) for El Salvador");
+        } else if (factCategoryId == 311){
+            addEnglishFactCategoryName(feature, "Taxon illustration references");
+        } else if (factCategoryId == 312){
+            addSpanishFactCategoryName(feature, "Imágen");
+        } else if (factCategoryId == 350){
+            addSpanishFactCategoryName(feature, "Descripción");
+        } else if (factCategoryId == 303){
+            addEnglishFactCategoryName(feature, "General distribution");
+        } else if (factCategoryId == 2000){
+            addEnglishFactCategoryName(feature, "Habitat in El Salvador");
+        } else if (factCategoryId == 302){
+            addSpanishFactCategoryName(feature, "Usos");
+        } else if (factCategoryId == 1800){
+            addEnglishFactCategoryName(feature, "Specimen notes");
+        } else if (factCategoryId == 1900){
+            addEnglishFactCategoryName(feature, "Editorial notes");
+        }
+
+    }
+
+
+    /**
+     * @param feature
+     * @param string
+     */
+    private void addSpanishFactCategoryName(Feature feature, String label) {
+        feature.getRepresentations().add(Representation.NewInstance(label, label, null, Language.SPANISH_CASTILIAN()));
+    }
+
+    /**
+     * @param feature
+     * @param string
+     */
+    private void addEnglishFactCategoryName(Feature feature, String label) {
+        feature.getRepresentations().iterator().next().setLanguage(Language.SPANISH_CASTILIAN());
+        feature.getRepresentations().add(Representation.NewInstance(label, label, null, Language.ENGLISH()));
+    }
+
+
+    @Override
 	protected void doInvoke(BerlinModelImportState state) {
 		featureMap = invokeFactCategories(state);
 		super.doInvoke(state);
@@ -188,6 +256,9 @@ public class BerlinModelFactsImport  extends BerlinModelImportBase {
 		try{
 			if (config.getSource().checkColumnExists("Fact", "Sequence")){
 				result = " ORDER By Fact.Sequence, Fact.FactId";
+				if (config.isSalvador()){
+				    result = " ORDER By Fact.FactCategoryFk, Fact.Sequence, Fact.FactId";
+				}
 			}else{
 				result = " ORDER By Fact.FactId";
 			}
@@ -269,10 +340,9 @@ public class BerlinModelFactsImport  extends BerlinModelImportBase {
 							textData = TextData.NewInstance();
 						}
 
+
 						//for diptera database
 						if (categoryFkInt.equals(99) && notes.contains("<OriginalName>")){
-//							notes = notes.replaceAll("<OriginalName>", "");
-//							notes = notes.replaceAll("</OriginalName>", "");
 							fact = notes + ": " +  fact ;
 						}
 						//for E+M maps
@@ -283,9 +353,28 @@ public class BerlinModelFactsImport  extends BerlinModelImportBase {
 
 						//TODO textData.putText(fact, bmiConfig.getFactLanguage());  //doesn't work because  bmiConfig.getFactLanguage() is not not a persistent Language Object
 						//throws  in thread "main" org.springframework.dao.InvalidDataAccessApiUsageException: object references an unsaved transient instance - save the transient instance before flushing: eu.etaxonomy.cdm.model.common.Language; nested exception is org.hibernate.TransientObjectException: object references an unsaved transient instance - save the transient instance before flushing: eu.etaxonomy.cdm.model.common.Language
+
+						Language lang = Language.DEFAULT();
+						if (state.getConfig().isSalvador()){
+						    lang = getSalvadorFactLanguage(factId);
+						}
 						if (! taxonDescription.isImageGallery()){
-							textData.putText(Language.DEFAULT(), fact);
+							textData.putText(lang, fact);
 							textData.setFeature(feature);
+						}
+
+						DescriptionElementBase deb = textData;
+
+						if (state.getConfig().isSalvador()){
+						    if (factId == 306){
+						        deb = CommonTaxonName.NewInstance(fact, Language.SPANISH_CASTILIAN(), Country.ELSALVADORREPUBLICOF());
+						    }else if (factId == 307){
+						        Distribution salvadorDistribution = salvadorDistributionFromMuestrasDeHerbar((Taxon)taxonBase, fact);
+			                      //notes
+		                        doCreatedUpdatedNotes(state, salvadorDistribution, rs);
+		                        doId(state, salvadorDistribution, factId, "Fact");
+		                        taxonDescription.addElement(salvadorDistribution);
+						    }
 						}
 
 						//reference
@@ -300,30 +389,32 @@ public class BerlinModelFactsImport  extends BerlinModelImportBase {
 						}
 						if (citation != null || StringUtils.isNotBlank(details)){
 							DescriptionElementSource originalSource = DescriptionElementSource.NewPrimarySourceInstance(citation, details);
-							textData.addSource(originalSource);
+							deb.addSource(originalSource);
 						}
-						taxonDescription.addElement(textData);
+						taxonDescription.addElement(deb);
 						//doubtfulFlag
 						if (doubtfulFlag){
-							textData.addMarker(Marker.NewInstance(MarkerType.IS_DOUBTFUL(), true));
+							deb.addMarker(Marker.NewInstance(MarkerType.IS_DOUBTFUL(), true));
 						}
 						//publisheFlag
 						String strPublishFlag = "publishFlag";
 						boolean publishFlagExists = state.getConfig().getSource().checkColumnExists(dbTableName, strPublishFlag);
 						if (publishFlagExists){
 							Boolean publishFlag = rs.getBoolean(strPublishFlag);
-							textData.addMarker(Marker.NewInstance(MarkerType.PUBLISH(), publishFlag));
+							if (publishFlag == false){
+							    deb.addMarker(Marker.NewInstance(MarkerType.PUBLISH(), publishFlag));
+							}
 						}
 
 						//Sequence
 						Integer sequence = rs.getInt("Sequence");
-						if (sequence != null && sequence != 999){
+						if (sequence != 999){
 							String strSequence = String.valueOf(sequence);
 							strSequence = SEQUENCE_PREFIX + strSequence;
 							//TODO make it an Extension when possible
 							//Extension datesExtension = Extension.NewInstance(textData, strSequence, ExtensionType.ORDER());
-							Annotation annotation = Annotation.NewInstance(strSequence, Language.DEFAULT());
-							textData.addAnnotation(annotation);
+							Annotation annotation = Annotation.NewInstance(strSequence, AnnotationType.TECHNICAL(), Language.ENGLISH());
+							deb.addAnnotation(annotation);
 						}
 
 						//						if (categoryFkObj == FACT_DESCRIPTION){
@@ -338,8 +429,8 @@ public class BerlinModelFactsImport  extends BerlinModelImportBase {
 	//					}
 
 						//notes
-						doCreatedUpdatedNotes(state, textData, rs);
-						doId(state, textData, factId, "Fact");
+						doCreatedUpdatedNotes(state, deb, rs);
+						doId(state, deb, factId, "Fact");
 
 						//TODO
 						//Designation References -> unclear how to map to CDM
@@ -366,7 +457,69 @@ public class BerlinModelFactsImport  extends BerlinModelImportBase {
 		return success;
 	}
 
-	private TaxonDescription getMyTaxonDescripion(TaxonBase taxonBase, BerlinModelImportState state, Integer categoryFk, Integer taxonId, int factId, String fact, Reference sourceRef) {
+
+	private Map<String, NamedArea> salvadorAreaMap = null;
+    private Distribution salvadorDistributionFromMuestrasDeHerbar(Taxon taxon, String fact) {
+        if (salvadorAreaMap == null){
+            salvadorAreaMap = new HashMap<>();
+            TermVocabulary<NamedArea> salvadorAreas = getVocabulary(TermType.NamedArea, BerlinModelTransformer.uuidSalvadorAreas,
+                    "Salvador areas", "Salvador areas", null, null, true, NamedArea.NewInstance());
+            getVocabularyService().save(salvadorAreas);
+        }
+        Distribution result = null;
+        String areaString = fact.split(" ")[0];
+        NamedArea area = salvadorAreaMap.get(areaString);
+        if (area == null){
+            logger.info("Added Salvador area: " + areaString);
+            TermVocabulary<NamedArea> voc = getVocabulary(TermType.NamedArea, BerlinModelTransformer.uuidSalvadorAreas,
+                    "Salvador areas", "Salvador areas", null, null, true, NamedArea.NewInstance());
+            NamedArea newArea = NamedArea.NewInstance(areaString, areaString, null);
+            voc.addTerm(newArea);
+            getTermService().saveOrUpdate(newArea);
+            salvadorAreaMap.put(areaString, newArea);
+        }
+        PresenceAbsenceTerm state = getSalvadorDistributionState(taxon);
+        result = Distribution.NewInstance(area, state);
+        return result;
+    }
+
+    private PresenceAbsenceTerm getSalvadorDistributionState(Taxon taxon) {
+        boolean hasGlobalDist = false;
+        for (TaxonDescription desc : taxon.getDescriptions()){
+            for (DescriptionElementBase deb : desc.getElements()){
+                if (deb.getFeature().getUuid().equals(BerlinModelTransformer.uuidFeatureDistributionGlobal)){
+                    hasGlobalDist = true;
+                    TextData textData = CdmBase.deproxy(deb, TextData.class);
+                    for (LanguageString text : textData.getMultilanguageText().values()){
+                        if (text.getText().contains("El Salvador")){
+                            return PresenceAbsenceTerm.NATIVE();
+                        }
+                    }
+                }
+            }
+        }
+        if (!hasGlobalDist){
+            logger.warn("No global distribution found: " + taxon.getTitleCache());
+        }
+        return hasGlobalDist ? PresenceAbsenceTerm.CULTIVATED(): PresenceAbsenceTerm.PRESENT();
+    }
+
+
+    /**
+     * @param factId
+     * @return
+     */
+    private Language getSalvadorFactLanguage(int factId) {
+        if (factId == 350){
+            return Language.ENGLISH();
+        }else if (factId == 1800 || factId == 1900){
+            return Language.UNDETERMINED();
+        }
+        return Language.SPANISH_CASTILIAN();
+    }
+
+
+    private TaxonDescription getMyTaxonDescripion(TaxonBase taxonBase, BerlinModelImportState state, Integer categoryFk, Integer taxonId, int factId, String fact, Reference sourceRef) {
 		Taxon taxon = null;
 		if ( taxonBase instanceof Taxon ) {
 			taxon = (Taxon) taxonBase;
@@ -378,15 +531,11 @@ public class BerlinModelFactsImport  extends BerlinModelImportBase {
 		TaxonDescription taxonDescription = null;
 		Set<TaxonDescription> descriptionSet= taxon.getDescriptions();
 
-		boolean isImage = false;
 		Media media = null;
 		//for diptera images
 		if (categoryFk == 51){  //TODO check also FactCategory string
-			isImage = true;
 			media = Media.NewInstance();
 			taxonDescription = makeImage(state, fact, media, descriptionSet, taxon);
-
-
 
 			if (taxonDescription == null){
 				return null;
