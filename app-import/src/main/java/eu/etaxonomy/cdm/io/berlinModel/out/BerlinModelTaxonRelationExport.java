@@ -32,11 +32,12 @@ import eu.etaxonomy.cdm.model.taxon.TaxonRelationship;
 /**
  * @author a.mueller
  * @created 20.03.2008
- * @version 1.0
  */
 @Component
 public class BerlinModelTaxonRelationExport extends BerlinModelExportBase<RelationshipBase> {
-	private static final Logger logger = Logger.getLogger(BerlinModelTaxonRelationExport.class);
+    private static final long serialVersionUID = -7568153921512019118L;
+
+    private static final Logger logger = Logger.getLogger(BerlinModelTaxonRelationExport.class);
 
 	private static int modCount = 1000;
 	private static final String dbTableName = "RelPTaxon";
@@ -48,15 +49,11 @@ public class BerlinModelTaxonRelationExport extends BerlinModelExportBase<Relati
 		super();
 	}
 
-	/* (non-Javadoc)
-	 * @see eu.etaxonomy.cdm.io.common.CdmIoBase#doCheck(eu.etaxonomy.cdm.io.common.IImportConfigurator)
-	 */
 	@Override
 	protected boolean doCheck(BerlinModelExportState state){
 		boolean result = true;
+		logger.warn("Exporting synonym relationships not implemented anymore. See https://dev.e-taxonomy.eu/redmine/issues/5974 for reasons.");
 		logger.warn("Checking for " + pluralString + " not yet implemented");
-		//result &= checkArticlesWithoutJournal(bmiConfig);
-		//result &= checkPartOfJournal(bmiConfig);
 
 		return result;
 	}
@@ -90,17 +87,16 @@ public class BerlinModelTaxonRelationExport extends BerlinModelExportBase<Relati
 
 			TransactionStatus txStatus = startTransaction(true);
 
-			List<RelationshipBase> list = getTaxonService().getAllRelationships(100000000, 0);
+			List<TaxonRelationship> list = getTaxonService().listTaxonRelationships(null,  null,  null,  null,  null);
 
 			CdmDbExportMapping<BerlinModelExportState, BerlinModelExportConfigurator, IExportTransformer> mapping = getMapping();
 			mapping.initialize(state);
 
 			int count = 0;
-			for (RelationshipBase<?,?,?> rel : list){
-				if (rel.isInstanceOf(TaxonRelationship.class) || rel.isInstanceOf(SynonymRelationship.class)){
-					doCount(count++, modCount, pluralString);
-					success &= mapping.invoke(rel);
-				}
+			for (TaxonRelationship rel : list){
+				doCount(count++, modCount, pluralString);
+				success &= mapping.invoke(rel);
+
 			}
 			commitTransaction(txStatus);
 			logger.info("end make " + pluralString + " ..." + getSuccessString(success));
@@ -130,10 +126,6 @@ public class BerlinModelTaxonRelationExport extends BerlinModelExportBase<Relati
 		return true;
 	}
 
-
-	/* (non-Javadoc)
-	 * @see eu.etaxonomy.cdm.io.common.CdmIoBase#isIgnore(eu.etaxonomy.cdm.io.common.IImportConfigurator)
-	 */
 	@Override
     protected boolean isIgnore(BerlinModelExportState state){
 		return ! state.getConfig().isDoRelTaxa();
@@ -170,9 +162,10 @@ public class BerlinModelTaxonRelationExport extends BerlinModelExportBase<Relati
 		if (rel.isInstanceOf(TaxonRelationship.class)){
 			TaxonRelationship tr = (TaxonRelationship)rel;
 			taxon = (isFrom) ? tr.getFromTaxon():  tr.getToTaxon();
-		}else if (rel.isInstanceOf(SynonymRelationship.class)){
-			SynonymRelationship sr = (SynonymRelationship)rel;
-			taxon = (isFrom) ? sr.getSynonym() : sr.getAcceptedTaxon();
+		//#5974 we need a new mapper for synonym relationships
+//		}else if (rel.isInstanceOf(SynonymRelationship.class)){
+//			SynonymRelationship sr = (SynonymRelationship)rel;
+//			taxon = (isFrom) ? sr.getSynonym() : sr.getAcceptedTaxon();
 		}
 		if (taxon != null){
 			CdmBase cdmBase = (isName) ? taxon.getName(): taxon.getSec();
@@ -182,10 +175,6 @@ public class BerlinModelTaxonRelationExport extends BerlinModelExportBase<Relati
 		return null;
 	}
 
-
-	/* (non-Javadoc)
-	 * @see eu.etaxonomy.cdm.io.berlinModel.out.BerlinModelExportBase#getStandardMethodParameter()
-	 */
 	@Override
 	public Class<? extends CdmBase> getStandardMethodParameter() {
 		return standardMethodParameter;
