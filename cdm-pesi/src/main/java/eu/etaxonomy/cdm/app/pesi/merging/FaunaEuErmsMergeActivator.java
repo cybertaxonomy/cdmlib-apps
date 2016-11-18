@@ -371,9 +371,11 @@ public class FaunaEuErmsMergeActivator {
 			}
 
 			if (taxonErms != null){
-				List<Synonym> synsTaxonFaunaEu = appCtrInit.getTaxonService().getSynonyms(taxonFaunaEu, null, 1000, 0, null, null);
+				Pager<Synonym> synsTaxonFaunaEuPager = appCtrInit.getTaxonService().getSynonyms(taxonFaunaEu, null, null, null, null, null);
+				List<Synonym> synsTaxonFaunaEu = synsTaxonFaunaEuPager.getRecords();
 
-				List<Synonym> synsTaxonErms = appCtrInit.getTaxonService().getSynonyms(taxonErms, null, 1000, 0, null, null);
+				Pager<Synonym> synsTaxonErmsPager = appCtrInit.getTaxonService().getSynonyms(taxonErms, null, null, null, null, null);
+				List<Synonym> synsTaxonErms = synsTaxonErmsPager.getRecords();
 
 				List<Synonym> deleteRel = new ArrayList<>();
 				for (Synonym synFauEu: synsTaxonFaunaEu){

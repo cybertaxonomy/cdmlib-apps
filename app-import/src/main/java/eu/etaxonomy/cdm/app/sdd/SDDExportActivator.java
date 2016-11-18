@@ -24,7 +24,6 @@ import eu.etaxonomy.cdm.database.ICdmDataSource;
 import eu.etaxonomy.cdm.io.common.CdmDefaultExport;
 import eu.etaxonomy.cdm.io.common.IExportConfigurator.DO_REFERENCES;
 import eu.etaxonomy.cdm.io.sdd.out.SDDExportConfigurator;
-import junit.framework.Assert;
 
 /**
  * @author l.morris

@@ -1,16 +1,14 @@
 /**
 * Copyright (C) 2007 EDIT
-* European Distributed Institute of Taxonomy 
+* European Distributed Institute of Taxonomy
 * http://www.e-taxonomy.eu
-* 
+*
 * The contents of this file are subject to the Mozilla Public License Version 1.1
 * See LICENSE.TXT at the top of this package for the full license terms.
 */
 
 package eu.etaxonomy.cdm.io.redlist.bfnXml;
 
-//import static junit.framework.Assert.assertNotNull;
-//import static junit.framework.Assert.assertTrue;
 //
 //import java.net.URISyntaxException;
 //import java.net.URL;
@@ -40,40 +38,40 @@ package eu.etaxonomy.cdm.io.redlist.bfnXml;
 //
 //	@SpringBeanByType
 //	INameService nameService;
-//	
+//
 //	@SpringBeanByType
 //	ITaxonService taxonService;
 //
 //	@SpringBeanByType
 //	IClassificationService classificationService;
-//	
+//
 //	private IImportConfigurator configurator;
-//	
+//
 //	@Before(value = "")
 //	public void setUp() throws URISyntaxException {
-//		
+//
 //		String inputFile = "/eu/etaxonomy/cdm/io/bfnXml/bfnXmlTest-input.xml";
 //		URL url = this.getClass().getResource(inputFile);
 //		assertNotNull("URL for the test file '" + inputFile + "' does not exist", url);
 //		configurator = BfnXmlImportConfigurator.NewInstance(url.toURI(), null);
 //		assertNotNull("Configurator could not be created", configurator);
 //	}
-//	
+//
 //	@Test
 //	public void testInit() {
 //		assertNotNull("cdmTcsXmlImport should not be null", defaultImport);
 //		assertNotNull("nameService should not be null", nameService);
 //	}
-//	
+//
 //	@Test
 //	public void testDoInvoke() {
 //		boolean result = defaultImport.invoke(configurator);
 //		assertTrue("Return value for import.invoke should be true", result);
-		
-		
-		
-		
-		
+
+
+
+
+
 //		List<Classification> classificationList = classificationService.list(Classification.class, null, null, null, null);
 //		if(classificationList != null && !classificationList.isEmpty()){
 //			for(Classification classification:classificationList){
@@ -87,7 +85,7 @@ package eu.etaxonomy.cdm.io.redlist.bfnXml;
 //		}
 //		List<TaxonBase> taxonBaseList = taxonService.list(TaxonBase.class, null, null, null, null);
 //		for(TaxonBase taxon:taxonBaseList){
-//			
+//
 //			if(taxon instanceof Taxon){
 //			logger.info("Taxon: "+taxon.getTitleCache());
 //			}

@@ -108,11 +108,6 @@ public class CdmDestinations {
 		return CdmDataSource.NewH2EmbeddedInstance("cdm", "sa", "");
 	}
 
-	public static ICdmDataSource localH2(String database, String username, String filePath){
-		return CdmDataSource.NewH2EmbeddedInstance(database, "sa", "", filePath);
-	}
-
-
 	public static ICdmDataSource localH2EuroMed(){
 		return CdmDataSource.NewH2EmbeddedInstance("euroMed", "sa", "");
 	}
