@@ -39,7 +39,7 @@ import eu.etaxonomy.cdm.model.name.Rank;
 import eu.etaxonomy.cdm.model.reference.Reference;
 import eu.etaxonomy.cdm.model.taxon.Classification;
 import eu.etaxonomy.cdm.model.taxon.Synonym;
-import eu.etaxonomy.cdm.model.taxon.SynonymRelationshipType;
+import eu.etaxonomy.cdm.model.taxon.SynonymType;
 import eu.etaxonomy.cdm.model.taxon.Taxon;
 import eu.etaxonomy.cdm.model.taxon.TaxonBase;
 import eu.etaxonomy.cdm.strategy.parser.INonViralNameParser;
@@ -333,8 +333,8 @@ public class CyprusExcelImport extends ExcelImporterBase<CyprusImportState> {
 			if (! speciesIsExisting){
 				makeHigherTaxa(state, taxonLight, speciesTaxon, citation, microCitation);
 			}
-			makeHomotypicSynonyms(state, citation, microCitation, homotypicSynonymList, mainTaxon);
-			makeHeterotypicSynonyms(state, citation, microCitation, heterotypicSynonymList, mainTaxon);
+			makeHomotypicSynonyms(state, homotypicSynonymList, mainTaxon);
+			makeHeterotypicSynonyms(state, heterotypicSynonymList, mainTaxon);
 			makeSystematics(systematicsString, mainTaxon);
 			makeEndemism(endemismString, mainTaxon);
 			makeStatus(statusString, mainTaxon);
@@ -378,21 +378,21 @@ public class CyprusExcelImport extends ExcelImporterBase<CyprusImportState> {
 
 
 	private void makeHomotypicSynonyms(CyprusImportState state,
-			Reference citation, String microCitation, List<String> homotypicSynonymList, Taxon mainTaxon) {
+			List<String> homotypicSynonymList, Taxon mainTaxon) {
 		for (String homotypicSynonym: homotypicSynonymList){
 			if (StringUtils.isNotBlank(homotypicSynonym)){
 				Synonym synonym = (Synonym)createTaxon(state, null, homotypicSynonym, Synonym.class, nc);
-				mainTaxon.addHomotypicSynonym(synonym, citation, microCitation);
+				mainTaxon.addHomotypicSynonym(synonym);
 			}
 		}
 	}
 
 
-	private void makeHeterotypicSynonyms(CyprusImportState state, Reference citation, String microCitation, List<String> heterotypicSynonymList, Taxon mainTaxon) {
+	private void makeHeterotypicSynonyms(CyprusImportState state, List<String> heterotypicSynonymList, Taxon mainTaxon) {
 		for (String heterotypicSynonym: heterotypicSynonymList){
 			if (StringUtils.isNotBlank(heterotypicSynonym)){
 				Synonym synonym = (Synonym)createTaxon(state, null, heterotypicSynonym, Synonym.class, nc);
-				mainTaxon.addSynonym(synonym, SynonymRelationshipType.HETEROTYPIC_SYNONYM_OF(), citation, microCitation);
+				mainTaxon.addSynonym(synonym, SynonymType.HETEROTYPIC_SYNONYM_OF());
 			}
 		}
 	}

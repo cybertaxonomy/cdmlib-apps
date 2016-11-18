@@ -34,8 +34,7 @@ import eu.etaxonomy.cdm.model.reference.Reference;
 import eu.etaxonomy.cdm.model.reference.ReferenceFactory;
 import eu.etaxonomy.cdm.model.taxon.Classification;
 import eu.etaxonomy.cdm.model.taxon.Synonym;
-import eu.etaxonomy.cdm.model.taxon.SynonymRelationship;
-import eu.etaxonomy.cdm.model.taxon.SynonymRelationshipType;
+import eu.etaxonomy.cdm.model.taxon.SynonymType;
 import eu.etaxonomy.cdm.model.taxon.Taxon;
 import eu.etaxonomy.cdm.model.taxon.TaxonBase;
 import eu.etaxonomy.cdm.model.taxon.TaxonRelationshipType;
@@ -316,24 +315,25 @@ public class RedListGefaesspflanzenImportClassification extends DbImportBase<Red
             }
             //basionym
             if(gueltString.equals(RedListUtil.GUELT_BASIONYM)){
-                parent.addHomotypicSynonym((Synonym) taxonBase, null, null);
+                parent.addHomotypicSynonym((Synonym) taxonBase);
                 parent.getName().addBasionym(taxonBase.getName());
             }
             //regular synonym
             else{
-                SynonymRelationship synonymRelationship = parent.addSynonym((Synonym) taxonBase, SynonymRelationshipType.HETEROTYPIC_SYNONYM_OF(), null, null);
+                Synonym synonym = (Synonym) taxonBase;
+                parent.addSynonym((Synonym) taxonBase, SynonymType.HETEROTYPIC_SYNONYM_OF());
 
                 //TAX_ZUSATZ
                 if(CdmUtils.isNotBlank(taxZusatzString)){
                     if(taxZusatzString.trim().equals("p. p.")){
-                        synonymRelationship.setProParte(true);
+                        synonym.setProParte(true);
                     }
                     else if(taxZusatzString.trim().equals("s. l. p. p.")){
-                        synonymRelationship.setProParte(true);
+                        synonym.setProParte(true);
                         taxonBase.setAppendedPhrase("s. l.");
                     }
                     else if(taxZusatzString.trim().equals("s. str. p. p.")){
-                        synonymRelationship.setProParte(true);
+                        synonym.setProParte(true);
                         taxonBase.setAppendedPhrase("s. str.");
                     }
                     else if(taxZusatzString.trim().equals("s. l.")

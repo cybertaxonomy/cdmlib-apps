@@ -13,7 +13,6 @@ import org.apache.log4j.Logger;
 
 import eu.etaxonomy.cdm.database.ICdmDataSource;
 import eu.etaxonomy.cdm.io.common.DbImportConfiguratorBase;
-import eu.etaxonomy.cdm.io.common.IImportConfigurator;
 import eu.etaxonomy.cdm.io.common.Source;
 import eu.etaxonomy.cdm.model.name.NomenclaturalCode;
 import eu.etaxonomy.cdm.model.reference.Reference;
@@ -26,7 +25,6 @@ import eu.etaxonomy.cdm.model.reference.ReferenceFactory;
  */
 public class EdaphobaseImportConfigurator
         extends DbImportConfiguratorBase<EdaphobaseImportState>
-        implements IImportConfigurator
 {
     private static final long serialVersionUID = 5397992611211404553L;
     @SuppressWarnings("unused")

@@ -109,7 +109,7 @@ public class CdmDestinations {
 	}
 
 	public static ICdmDataSource localH2(String database, String username, String filePath){
-		return CdmDataSource.NewH2EmbeddedInstance(database, "sa", "", filePath, null);
+		return CdmDataSource.NewH2EmbeddedInstance(database, "sa", "", filePath);
 	}
 
 
@@ -173,9 +173,9 @@ public class CdmDestinations {
 		pwd = AccountStore.readOrStorePassword(cdmServer, cdmDB, cdmUserName, pwd);
 		ICdmDataSource destination;
 		if(dbType.equals(DatabaseTypeEnum.MySQL)){
-			destination = CdmDataSource.NewMySqlInstance(cdmServer, cdmDB, port, cdmUserName, pwd, null);
+			destination = CdmDataSource.NewMySqlInstance(cdmServer, cdmDB, port, cdmUserName, pwd);
 		} else if(dbType.equals(DatabaseTypeEnum.PostgreSQL)){
-			destination = CdmDataSource.NewPostgreSQLInstance(cdmServer, cdmDB, port, cdmUserName, pwd, null);
+			destination = CdmDataSource.NewPostgreSQLInstance(cdmServer, cdmDB, port, cdmUserName, pwd);
 		} else {
 			//TODO others
 			throw new RuntimeException("Unsupported DatabaseType");

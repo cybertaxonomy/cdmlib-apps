@@ -26,7 +26,6 @@ import eu.etaxonomy.cdm.database.ICdmDataSource;
 import eu.etaxonomy.cdm.io.common.CdmDefaultImport;
 import eu.etaxonomy.cdm.io.common.IImportConfigurator.CHECK;
 import eu.etaxonomy.cdm.io.sdd.in.SDDImportConfigurator;
-import eu.etaxonomy.cdm.model.name.NomenclaturalCode;
 
 /**
  * @author h.fradin
@@ -62,7 +61,7 @@ public class SDDImportActivator {
        dataSourceName = (dataSourceName.equals("")) ? "cdm_test4" : dataSourceName;
        username = (username.equals("")) ? "ljm" : username;
 
-       ICdmDataSource dataSource = CdmDataSource.NewMySqlInstance("127.0.0.1", dataSourceName, 3306, username, password, NomenclaturalCode.ICNAFP);
+       ICdmDataSource dataSource = CdmDataSource.NewMySqlInstance("127.0.0.1", dataSourceName, 3306, username, password);
        //ICdmDataSource dataSource = CdmDataSource.NewMySqlInstance("127.0.0.1", "cdm_edit_cichorieae", 3306, "ljm", password, NomenclaturalCode.ICBN);
        //ICdmDataSource dataSource = CdmDataSource.NewMySqlInstance("160.45.63.201", "cdm_edit_cichorieae", 3306, "edit", password, NomenclaturalCode.ICBN);
        boolean connectionAvailable;
@@ -72,10 +71,8 @@ public class SDDImportActivator {
            Assert.isTrue(connectionAvailable, "Testdatabase is not available");
 
        } catch (ClassNotFoundException e1) {
-           // TODO Auto-generated catch block
            e1.printStackTrace();
        } catch (SQLException e1) {
-           // TODO Auto-generated catch block
            e1.printStackTrace();
        }
 
@@ -83,11 +80,7 @@ public class SDDImportActivator {
        try {
            loadedDataSource = CdmPersistentDataSource.NewInstance(dataSourceName);
 //			CdmApplicationController.NewInstance(loadedDataSource, DbSchemaValidation.CREATE);
-           NomenclaturalCode loadedCode = loadedDataSource.getNomenclaturalCode();
-
-           Assert.isTrue(NomenclaturalCode.ICNAFP.equals(loadedCode));
        } catch (DataSourceNotFoundException e) {
-           // TODO Auto-generated catch block
            e.printStackTrace();
        }
        //return loadedDataSource;

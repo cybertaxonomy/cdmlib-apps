@@ -43,8 +43,7 @@ import eu.etaxonomy.cdm.model.name.ZoologicalName;
 import eu.etaxonomy.cdm.model.reference.Reference;
 import eu.etaxonomy.cdm.model.taxon.Classification;
 import eu.etaxonomy.cdm.model.taxon.Synonym;
-import eu.etaxonomy.cdm.model.taxon.SynonymRelationship;
-import eu.etaxonomy.cdm.model.taxon.SynonymRelationshipType;
+import eu.etaxonomy.cdm.model.taxon.SynonymType;
 import eu.etaxonomy.cdm.model.taxon.Taxon;
 import eu.etaxonomy.cdm.model.taxon.TaxonBase;
 import eu.etaxonomy.cdm.model.taxon.TaxonNode;
@@ -158,7 +157,7 @@ public class FaunaEuropaeaRelTaxonIncludeImport extends FaunaEuropaeaImportBase 
 		*/
 		if (state.getConfig().isDoHeterotypicSynonyms()) {
 			if(logger.isInfoEnabled()) {
-				logger.info("Start making heterotypic synonym relationships...");
+				logger.info("Start making heterotypic synonyms ...");
 			}
 			processHeterotypicSynonyms(state, ALL_SYNONYM_FROM_CLAUSE);
 		}
@@ -843,7 +842,7 @@ public class FaunaEuropaeaRelTaxonIncludeImport extends FaunaEuropaeaImportBase 
 	}
 
 
-	/* Creates heterotypic synonym relationships.
+	/* Creates heterotypic synonyms.
 	 * Synonym-accepted taxon pairs are retrieved in blocks via findByUUID(Set<UUID>) from CDM DB.
 	 */
 	private void createHeterotypicSynonyms(FaunaEuropaeaImportState state, Map<UUID, UUID> fromToMap) {
@@ -913,7 +912,7 @@ public class FaunaEuropaeaRelTaxonIncludeImport extends FaunaEuropaeaImportBase 
 				if (synonym != null && acceptedTaxon != null) {
 
 					//TODO: in case original genus exists must add synonym to original genus instead of to accepted taxon
-					acceptedTaxon.addSynonym(synonym, SynonymRelationshipType.HETEROTYPIC_SYNONYM_OF());
+					acceptedTaxon.addSynonym(synonym, SynonymType.HETEROTYPIC_SYNONYM_OF());
 
 					if (logger.isDebugEnabled()) {
 						logger.debug("Accepted taxon - synonym (" + mappedAcceptedTaxonUuid + " - " + synonymUuid +
@@ -938,7 +937,7 @@ public class FaunaEuropaeaRelTaxonIncludeImport extends FaunaEuropaeaImportBase 
 					}
 				}
 			} catch (Exception e) {
-				logger.error("Error creating synonym relationship: accepted taxon-synonym (" +
+				logger.error("Error attaching synonym to accepted taxon (" +
 						mappedAcceptedTaxonUuid + "-" + synonymUuid + ": "+ synonymTaxonBase.getTitleCache() +")", e);
 			}
 		}
@@ -1076,8 +1075,8 @@ public class FaunaEuropaeaRelTaxonIncludeImport extends FaunaEuropaeaImportBase 
                     if (taxonBase instanceof Synonym){
                         logger.debug("synonym has relationship to associated specialist. " + taxonBase.getTitleCache());
                         syn = HibernateProxyHelper.deproxy(taxonBase, Synonym.class);
-                        if (!syn.getAcceptedTaxa().isEmpty()){
-                            taxon = syn.getAcceptedTaxa().iterator().next();
+                        if (syn.getAcceptedTaxon() != null){
+                            taxon = syn.getAcceptedTaxon();
                             syn = null;
                         }
                     } else{
@@ -1272,7 +1271,7 @@ public class FaunaEuropaeaRelTaxonIncludeImport extends FaunaEuropaeaImportBase 
                                inferredSynonymsLocal = getTaxonService().createAllInferredSynonyms(acceptedTaxon, classification, true);
                               // logger.info("number of inferred synonyms: " + inferredSynonyms.size());
                            //}
-//                             inferredSynonyms = getTaxonService().createInferredSynonyms(classification, acceptedTaxon, SynonymRelationshipType.INFERRED_GENUS_OF());
+//                             inferredSynonyms = getTaxonService().createInferredSynonyms(classification, acceptedTaxon, SynonymType.INFERRED_GENUS_OF());
                            if (inferredSynonymsLocal != null) {
                                for (TaxonBase synonym : inferredSynonymsLocal) {
 //                                 TaxonNameBase<?,?> synonymName = synonym.getName();
@@ -1282,34 +1281,27 @@ public class FaunaEuropaeaRelTaxonIncludeImport extends FaunaEuropaeaImportBase 
 
 
                                    //get SynonymRelationship and export
-                                   if (((Synonym)synonym).getSynonymRelations().isEmpty() ){
-                                       SynonymRelationship synRel;
+                                   if (((Synonym)synonym).getAcceptedTaxon() == null ){
                                        IdentifiableSource source = ((Synonym)synonym).getSources().iterator().next();
                                        if (source.getIdNamespace().contains("Potential combination")){
-                                           synRel = acceptedTaxon.addSynonym((Synonym)synonym, SynonymRelationshipType.POTENTIAL_COMBINATION_OF());
-                                           logger.error(synonym.getTitleCache() + " has no synonym relationship to " + acceptedTaxon.getTitleCache() + " type is set to potential combination");
+                                           acceptedTaxon.addSynonym((Synonym)synonym, SynonymType.POTENTIAL_COMBINATION_OF());
+                                           logger.error(synonym.getTitleCache() + " is not attached to " + acceptedTaxon.getTitleCache() + " type is set to potential combination");
                                        } else if (source.getIdNamespace().contains("Inferred Genus")){
-                                           synRel = acceptedTaxon.addSynonym((Synonym)synonym, SynonymRelationshipType.INFERRED_GENUS_OF());
-                                           logger.error(synonym.getTitleCache() + " has no synonym relationship to " + acceptedTaxon.getTitleCache() + " type is set to inferred genus");
+                                           acceptedTaxon.addSynonym((Synonym)synonym, SynonymType.INFERRED_GENUS_OF());
+                                           logger.error(synonym.getTitleCache() + " is not attached to " + acceptedTaxon.getTitleCache() + " type is set to inferred genus");
                                        } else if (source.getIdNamespace().contains("Inferred Epithet")){
-                                           synRel = acceptedTaxon.addSynonym((Synonym)synonym, SynonymRelationshipType.INFERRED_EPITHET_OF());
-                                           logger.error(synonym.getTitleCache() + " has no synonym relationship to " + acceptedTaxon.getTitleCache() + " type is set to inferred epithet");
+                                           acceptedTaxon.addSynonym((Synonym)synonym, SynonymType.INFERRED_EPITHET_OF());
+                                           logger.error(synonym.getTitleCache() + " is not attached to " + acceptedTaxon.getTitleCache() + " type is set to inferred epithet");
                                        } else{
-                                           synRel = acceptedTaxon.addSynonym((Synonym)synonym, SynonymRelationshipType.INFERRED_SYNONYM_OF());
-                                           logger.error(synonym.getTitleCache() + " has no synonym relationship to " + acceptedTaxon.getTitleCache() + " type is set to inferred synonym");
+                                           acceptedTaxon.addSynonym((Synonym)synonym, SynonymType.INFERRED_SYNONYM_OF());
+                                           logger.error(synonym.getTitleCache() + " is not attached to " + acceptedTaxon.getTitleCache() + " type is set to inferred synonym");
                                        }
 
-
-
-                                       synRel = null;
                                    } else {
-                                       for (SynonymRelationship synRel: ((Synonym)synonym).getSynonymRelations()){
-                                           if (!localSuccess) {
-                                               logger.error("Synonym relationship export failed " + synonym.getTitleCache() + " accepted taxon: " + acceptedTaxon.getUuid() + " (" + acceptedTaxon.getTitleCache()+")");
-                                           } else {
-                                              // logger.info("Synonym relationship successfully exported: " + synonym.getTitleCache() + "  " +acceptedTaxon.getUuid() + " (" + acceptedTaxon.getTitleCache()+")");
-                                           }
-                                           synRel = null;
+                                       if (!localSuccess) {
+                                           logger.error("Synonym relationship export failed " + synonym.getTitleCache() + " accepted taxon: " + acceptedTaxon.getUuid() + " (" + acceptedTaxon.getTitleCache()+")");
+                                       } else {
+                                          // logger.info("Synonym relationship successfully exported: " + synonym.getTitleCache() + "  " +acceptedTaxon.getUuid() + " (" + acceptedTaxon.getTitleCache()+")");
                                        }
                                    }
 

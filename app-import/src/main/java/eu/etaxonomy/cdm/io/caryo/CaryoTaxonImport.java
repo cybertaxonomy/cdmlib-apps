@@ -45,7 +45,7 @@ import eu.etaxonomy.cdm.model.reference.Reference;
 import eu.etaxonomy.cdm.model.reference.ReferenceFactory;
 import eu.etaxonomy.cdm.model.taxon.Classification;
 import eu.etaxonomy.cdm.model.taxon.Synonym;
-import eu.etaxonomy.cdm.model.taxon.SynonymRelationshipType;
+import eu.etaxonomy.cdm.model.taxon.SynonymType;
 import eu.etaxonomy.cdm.model.taxon.Taxon;
 import eu.etaxonomy.cdm.model.taxon.TaxonBase;
 import eu.etaxonomy.cdm.strategy.exceptions.UnknownCdmTypeException;
@@ -203,7 +203,7 @@ public class CaryoTaxonImport  extends DbImportBase<CaryoImportState, CaryoImpor
 			}
 			name.addBasionym(basionym);
 			Synonym syn = Synonym.NewInstance(basionym, state.getTransactionalSourceReference());
-			taxon.addSynonym(syn, SynonymRelationshipType.HOMOTYPIC_SYNONYM_OF());
+			taxon.addSynonym(syn, SynonymType.HOMOTYPIC_SYNONYM_OF());
 			getTaxonService().save(syn);
 		}
 

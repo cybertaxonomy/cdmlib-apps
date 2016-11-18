@@ -9,23 +9,17 @@
 
 package eu.etaxonomy.cdm.io.iapt;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import eu.etaxonomy.cdm.api.facade.DerivedUnitFacade;
-import eu.etaxonomy.cdm.common.CdmUtils;
-import eu.etaxonomy.cdm.io.mexico.SimpleExcelTaxonImport;
-import eu.etaxonomy.cdm.io.mexico.SimpleExcelTaxonImportState;
-import eu.etaxonomy.cdm.model.agent.Institution;
-import eu.etaxonomy.cdm.model.agent.Person;
-import eu.etaxonomy.cdm.model.agent.TeamOrPersonBase;
-import eu.etaxonomy.cdm.model.common.*;
-import eu.etaxonomy.cdm.model.name.*;
-import eu.etaxonomy.cdm.model.occurrence.*;
-import eu.etaxonomy.cdm.model.occurrence.Collection;
-import eu.etaxonomy.cdm.model.reference.Reference;
-import eu.etaxonomy.cdm.model.reference.ReferenceFactory;
-import eu.etaxonomy.cdm.model.taxon.*;
-import eu.etaxonomy.cdm.strategy.parser.NonViralNameParserImpl;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.UUID;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
 import org.apache.commons.lang.ArrayUtils;
 import org.apache.commons.lang.StringEscapeUtils;
 import org.apache.commons.lang.StringUtils;
@@ -37,9 +31,52 @@ import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
 import org.springframework.stereotype.Component;
 
-import java.util.*;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+
+import eu.etaxonomy.cdm.api.facade.DerivedUnitFacade;
+import eu.etaxonomy.cdm.common.CdmUtils;
+import eu.etaxonomy.cdm.io.mexico.SimpleExcelTaxonImport;
+import eu.etaxonomy.cdm.io.mexico.SimpleExcelTaxonImportState;
+import eu.etaxonomy.cdm.model.agent.Institution;
+import eu.etaxonomy.cdm.model.agent.Person;
+import eu.etaxonomy.cdm.model.agent.TeamOrPersonBase;
+import eu.etaxonomy.cdm.model.common.Annotation;
+import eu.etaxonomy.cdm.model.common.AnnotationType;
+import eu.etaxonomy.cdm.model.common.DefinedTermBase;
+import eu.etaxonomy.cdm.model.common.Extension;
+import eu.etaxonomy.cdm.model.common.ExtensionType;
+import eu.etaxonomy.cdm.model.common.IdentifiableSource;
+import eu.etaxonomy.cdm.model.common.Language;
+import eu.etaxonomy.cdm.model.common.LanguageString;
+import eu.etaxonomy.cdm.model.common.Marker;
+import eu.etaxonomy.cdm.model.common.MarkerType;
+import eu.etaxonomy.cdm.model.common.OriginalSourceType;
+import eu.etaxonomy.cdm.model.common.TimePeriod;
+import eu.etaxonomy.cdm.model.name.BotanicalName;
+import eu.etaxonomy.cdm.model.name.NameRelationshipType;
+import eu.etaxonomy.cdm.model.name.NameTypeDesignation;
+import eu.etaxonomy.cdm.model.name.NomenclaturalCode;
+import eu.etaxonomy.cdm.model.name.NomenclaturalStatus;
+import eu.etaxonomy.cdm.model.name.NomenclaturalStatusType;
+import eu.etaxonomy.cdm.model.name.Rank;
+import eu.etaxonomy.cdm.model.name.RankClass;
+import eu.etaxonomy.cdm.model.name.SpecimenTypeDesignationStatus;
+import eu.etaxonomy.cdm.model.name.TaxonNameBase;
+import eu.etaxonomy.cdm.model.occurrence.Collection;
+import eu.etaxonomy.cdm.model.occurrence.DerivedUnit;
+import eu.etaxonomy.cdm.model.occurrence.FieldUnit;
+import eu.etaxonomy.cdm.model.occurrence.GatheringEvent;
+import eu.etaxonomy.cdm.model.occurrence.SpecimenOrObservationType;
+import eu.etaxonomy.cdm.model.reference.Reference;
+import eu.etaxonomy.cdm.model.reference.ReferenceFactory;
+import eu.etaxonomy.cdm.model.taxon.Classification;
+import eu.etaxonomy.cdm.model.taxon.ITaxonTreeNode;
+import eu.etaxonomy.cdm.model.taxon.Synonym;
+import eu.etaxonomy.cdm.model.taxon.SynonymType;
+import eu.etaxonomy.cdm.model.taxon.Taxon;
+import eu.etaxonomy.cdm.model.taxon.TaxonNode;
+import eu.etaxonomy.cdm.strategy.parser.NonViralNameParserImpl;
 
 /**
  * @author a.mueller
@@ -312,7 +349,7 @@ public class IAPTExcelImport<CONFIG extends IAPTImportConfigurator> extends Simp
             // build the fullnameString of the misspelled name
             misspelledNameStr = taxonName.getTitleCache().replace(nameStr, misspelledNameStr);
 
-            TaxonNameBase misspelledName = (BotanicalName) nameParser.parseReferencedName(misspelledNameStr, NomenclaturalCode.ICNAFP, null);
+            TaxonNameBase misspelledName = nameParser.parseReferencedName(misspelledNameStr, NomenclaturalCode.ICNAFP, null);
             misspelledName.addRelationshipToName(taxonName, NameRelationshipType.MISSPELLING(), null);
             getNameService().save(misspelledName);
         }
@@ -337,7 +374,7 @@ public class IAPTExcelImport<CONFIG extends IAPTImportConfigurator> extends Simp
             taxonName.addBasionym(basionym);
 
             Synonym syn = Synonym.NewInstance(basionym, sec);
-            taxon.addSynonym(syn, SynonymRelationshipType.HOMOTYPIC_SYNONYM_OF());
+            taxon.addSynonym(syn, SynonymType.HOMOTYPIC_SYNONYM_OF());
             getTaxonService().save(syn);
         }
 
@@ -1152,8 +1189,9 @@ public class IAPTExcelImport<CONFIG extends IAPTImportConfigurator> extends Simp
                     "Bolidomonas ",
                     "Seagriefia ",
                     "Navicula "
-                })
-            include |= fullNameStr.startsWith(test);
+                }) {
+                include |= fullNameStr.startsWith(test);
+            }
             return !include;
         }
 

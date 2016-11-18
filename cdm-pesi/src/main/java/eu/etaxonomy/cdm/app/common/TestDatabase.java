@@ -38,7 +38,6 @@ import eu.etaxonomy.cdm.model.description.TaxonNameDescription;
 import eu.etaxonomy.cdm.model.location.Country;
 import eu.etaxonomy.cdm.model.location.NamedAreaType;
 import eu.etaxonomy.cdm.model.name.BotanicalName;
-import eu.etaxonomy.cdm.model.name.NomenclaturalCode;
 import eu.etaxonomy.cdm.model.name.Rank;
 import eu.etaxonomy.cdm.model.name.TaxonNameBase;
 import eu.etaxonomy.cdm.model.occurrence.DerivedUnit;
@@ -47,7 +46,7 @@ import eu.etaxonomy.cdm.model.reference.Reference;
 import eu.etaxonomy.cdm.model.reference.ReferenceFactory;
 import eu.etaxonomy.cdm.model.taxon.Classification;
 import eu.etaxonomy.cdm.model.taxon.Synonym;
-import eu.etaxonomy.cdm.model.taxon.SynonymRelationshipType;
+import eu.etaxonomy.cdm.model.taxon.SynonymType;
 import eu.etaxonomy.cdm.model.taxon.Taxon;
 import eu.etaxonomy.cdm.model.taxon.TaxonBase;
 import eu.etaxonomy.cdm.model.taxon.TaxonNode;
@@ -67,7 +66,7 @@ public class TestDatabase {
 
 		logger.info("Setting DB " + dbname);
 		String password = AccountStore.readOrStorePassword(dbname, server, username, null);
-		ICdmDataSource datasource = CdmDataSource.NewMySqlInstance(server, dbname, username, password, NomenclaturalCode.ICNAFP);
+		ICdmDataSource datasource = CdmDataSource.NewMySqlInstance(server, dbname, username, password);
 		return datasource;
 	}
 
@@ -286,10 +285,10 @@ public class TestDatabase {
 		syn12 = Synonym.NewInstance(synName12, sec);
 		syn2 = Synonym.NewInstance(synName2, sec);
 
-		child1.addSynonym(syn11, SynonymRelationshipType.HOMOTYPIC_SYNONYM_OF());
-		child1.addSynonym(syn12, SynonymRelationshipType.HETEROTYPIC_SYNONYM_OF());
-		child2.addSynonym(syn2, SynonymRelationshipType.HETEROTYPIC_SYNONYM_OF());
-		freeT.addSynonym(synFree, SynonymRelationshipType.HETEROTYPIC_SYNONYM_OF());
+		child1.addSynonym(syn11, SynonymType.HOMOTYPIC_SYNONYM_OF());
+		child1.addSynonym(syn12, SynonymType.HETEROTYPIC_SYNONYM_OF());
+		child2.addSynonym(syn2, SynonymType.HETEROTYPIC_SYNONYM_OF());
+		freeT.addSynonym(synFree, SynonymType.HETEROTYPIC_SYNONYM_OF());
 
 		taxonBases.add(synFree);
 		taxonBases.add(syn11);

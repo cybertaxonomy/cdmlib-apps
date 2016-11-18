@@ -1,8 +1,8 @@
 /**
 * Copyright (C) 2007 EDIT
-* European Distributed Institute of Taxonomy 
+* European Distributed Institute of Taxonomy
 * http://www.e-taxonomy.eu
-* 
+*
 * The contents of this file are subject to the Mozilla Public License Version 1.1
 * See LICENSE.TXT at the top of this package for the full license terms.
 */
@@ -30,7 +30,7 @@ import eu.etaxonomy.cdm.model.name.BotanicalName;
 import eu.etaxonomy.cdm.model.name.Rank;
 import eu.etaxonomy.cdm.model.reference.Reference;
 import eu.etaxonomy.cdm.model.taxon.Synonym;
-import eu.etaxonomy.cdm.model.taxon.SynonymRelationshipType;
+import eu.etaxonomy.cdm.model.taxon.SynonymType;
 import eu.etaxonomy.cdm.model.taxon.Taxon;
 import eu.etaxonomy.cdm.model.taxon.TaxonBase;
 import eu.etaxonomy.cdm.strategy.parser.NonViralNameParserImpl;
@@ -43,15 +43,15 @@ import eu.etaxonomy.cdm.strategy.parser.NonViralNameParserImpl;
 @Component
 public class CentralAfricaChecklistSynonymImport  extends CentralAfricaChecklistImportBase<TaxonBase> implements IMappingImport<TaxonBase, CentralAfricaChecklistImportState>{
 	private static final Logger logger = Logger.getLogger(CentralAfricaChecklistSynonymImport.class);
-	
+
 	private NonViralNameParserImpl parser = NonViralNameParserImpl.NewInstance();
-	
-	
+
+
 	private DbImportMapping<?, ?> mapping;
-	
+
 	//second path is not used anymore, there is now an ErmsTaxonRelationImport class instead
 //	private boolean isSecondPath = false;
-	
+
 //	private int modCount = 10000;
 	private static final String pluralString = "synonyms";
 	private static final String dbTableName = "synonyms";
@@ -61,8 +61,8 @@ public class CentralAfricaChecklistSynonymImport  extends CentralAfricaChecklist
 	public CentralAfricaChecklistSynonymImport(){
 		super(pluralString, dbTableName, cdmTargetClass);
 	}
-	
-	
+
+
 
 	/* (non-Javadoc)
 	 * @see eu.etaxonomy.cdm.io.erms.ErmsImportBase#getIdQuery()
@@ -77,13 +77,14 @@ public class CentralAfricaChecklistSynonymImport  extends CentralAfricaChecklist
 	/* (non-Javadoc)
 	 * @see eu.etaxonomy.cdm.io.erms.ErmsImportBase#getMapping()
 	 */
-	protected DbImportMapping getMapping() {
+	@Override
+    protected DbImportMapping getMapping() {
 		if (mapping == null){
 			mapping = new DbImportMapping();
-			
+
 			mapping.addMapper(DbImportObjectCreationMapper.NewInstance(this, "syn_id", SYNONYM_NAMESPACE));
 			//TODO Synonym mapper gibts es auch
-			
+
 		}
 		return mapping;
 	}
@@ -106,7 +107,7 @@ public class CentralAfricaChecklistSynonymImport  extends CentralAfricaChecklist
 		Class<?> cdmClass;
 		Set<String> idSet;
 		Map<Object, Map<String, ? extends CdmBase>> result = new HashMap<Object, Map<String, ? extends CdmBase>>();
-		
+
 		try{
 				Set<String> taxonIdSet = new HashSet<String>();
 				while (rs.next()){
@@ -125,32 +126,33 @@ public class CentralAfricaChecklistSynonymImport  extends CentralAfricaChecklist
 		}
 		return result;
 	}
-	
+
 
 	/* (non-Javadoc)
 	 * @see eu.etaxonomy.cdm.io.common.mapping.IMappingImport#createObject(java.sql.ResultSet)
 	 */
-	public TaxonBase createObject(ResultSet rs, CentralAfricaChecklistImportState state) throws SQLException {
+	@Override
+    public TaxonBase createObject(ResultSet rs, CentralAfricaChecklistImportState state) throws SQLException {
 		BotanicalName speciesName = BotanicalName.NewInstance(Rank.SPECIES());
-		
-		
+
+
 		Integer accId = rs.getInt("acc_id");
 		Taxon taxon = CdmBase.deproxy(state.getRelatedObject(TAXON_NAMESPACE, String.valueOf(accId)), Taxon.class);
-		
+
 		Reference sec = taxon.getSec();
-		
+
 		String genusString = rs.getString("synonym genus");
 		String speciesString = rs.getString("synonym species");
 		String authorityString = rs.getString("synonym authority");
-		
+
 		Synonym synonym = Synonym.NewInstance(speciesName, sec);
 
 		speciesName.setGenusOrUninomial(genusString);
 		speciesName.setSpecificEpithet(speciesString);
 		parser.handleAuthors(speciesName, CdmUtils.concat(" ", new String[] {"", genusString, speciesString, authorityString}), authorityString);
-		
+
 		if (taxon != null){
-			taxon.addSynonym(synonym, SynonymRelationshipType.SYNONYM_OF());
+			taxon.addSynonym(synonym, SynonymType.SYNONYM_OF());
 		}else{
 			logger.warn("Taxon (" + accId + ") not available for Synonym " + synonym.getTitleCache());
 		}
@@ -166,12 +168,13 @@ public class CentralAfricaChecklistSynonymImport  extends CentralAfricaChecklist
 		IOValidator<CentralAfricaChecklistImportState> validator = new CentralAfricaChecklistTaxonImportValidator();
 		return validator.validate(state);
 	}
-	
-	
+
+
 	/* (non-Javadoc)
 	 * @see eu.etaxonomy.cdm.io.common.CdmIoBase#isIgnore(eu.etaxonomy.cdm.io.common.IImportConfigurator)
 	 */
-	protected boolean isIgnore(CentralAfricaChecklistImportState state){
+	@Override
+    protected boolean isIgnore(CentralAfricaChecklistImportState state){
 		return ! state.getConfig().isDoTaxa();
 	}
 

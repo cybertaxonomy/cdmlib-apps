@@ -24,7 +24,7 @@ import eu.etaxonomy.cdm.database.ICdmDataSource;
 import eu.etaxonomy.cdm.io.common.CdmDefaultExport;
 import eu.etaxonomy.cdm.io.common.IExportConfigurator.DO_REFERENCES;
 import eu.etaxonomy.cdm.io.sdd.out.SDDExportConfigurator;
-import eu.etaxonomy.cdm.model.name.NomenclaturalCode;
+import junit.framework.Assert;
 
 /**
  * @author l.morris
@@ -68,10 +68,10 @@ public class SDDExportActivator {
        username = (username.equals("")) ? "ljm" : username;
 
        //ICdmDataSource dataSource = CdmDataSource.NewMySqlInstance("127.0.0.1", "cdm_test3", 3306, "ljm", password, NomenclaturalCode.ICBN);
-       ICdmDataSource dataSource = CdmDataSource.NewMySqlInstance("127.0.0.1", dataSourceName, 3306, username, password, NomenclaturalCode.ICNAFP);
+       ICdmDataSource dataSource = CdmDataSource.NewMySqlInstance("127.0.0.1", dataSourceName, 3306, username, password);
        //ICdmDataSource dataSource = CdmDataSource.NewMySqlInstance("127.0.0.1", "cdm_edit_cichorieae", 3306, "ljm", password, NomenclaturalCode.ICBN);
        //ICdmDataSource dataSource =
-       CdmDataSource.NewMySqlInstance("160.45.63.201", "cdm_edit_cichorieae", 3306, "edit", password, NomenclaturalCode.ICNAFP);
+       CdmDataSource.NewMySqlInstance("160.45.63.201", "cdm_edit_cichorieae", 3306, "edit", password);
        boolean connectionAvailable;
        try {
            connectionAvailable = dataSource.testConnection();
@@ -90,11 +90,10 @@ public class SDDExportActivator {
        try {
            loadedDataSource = CdmPersistentDataSource.NewInstance(dataSourceName);
 //			CdmApplicationController.NewInstance(loadedDataSource, DbSchemaValidation.CREATE);
-           NomenclaturalCode loadedCode = loadedDataSource.getNomenclaturalCode();
-
-           Assert.isTrue(NomenclaturalCode.ICNAFP.equals(loadedCode));
+//           NomenclaturalCode loadedCode = loadedDataSource.getNomenclaturalCode();
+//
+//           Assert.assertEquals(NomenclaturalCode.ICNAFP, loadedCode);
        } catch (DataSourceNotFoundException e) {
-           // TODO Auto-generated catch block
            e.printStackTrace();
        }
        //return loadedDataSource;

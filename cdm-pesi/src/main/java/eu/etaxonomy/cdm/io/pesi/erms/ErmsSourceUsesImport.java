@@ -46,7 +46,6 @@ import eu.etaxonomy.cdm.model.description.TextData;
 import eu.etaxonomy.cdm.model.name.TaxonNameBase;
 import eu.etaxonomy.cdm.model.reference.Reference;
 import eu.etaxonomy.cdm.model.taxon.Synonym;
-import eu.etaxonomy.cdm.model.taxon.SynonymRelationship;
 import eu.etaxonomy.cdm.model.taxon.Taxon;
 import eu.etaxonomy.cdm.model.taxon.TaxonBase;
 import eu.etaxonomy.cdm.model.taxon.TaxonRelationship;
@@ -215,19 +214,13 @@ public class ErmsSourceUsesImport  extends ErmsImportBase<CommonTaxonName> {
 		//if taxon base is a synonym, add the description to the accepted taxon
 		if (taxonBase.isInstanceOf(Synonym.class)){
 			Synonym synonym = CdmBase.deproxy(taxonBase, Synonym.class);
-			Set<Taxon> taxa = synonym.getAcceptedTaxa();
-			if (taxa.size() < 1){
+			taxon = synonym.getAcceptedTaxon();
+			if (taxon == null){
 				String warning = "Synonym "+ strTaxonId + " has no accepted taxon";
 				logger.warn(warning);
 				return null;
 				//throw new IllegalStateException(warning);
-			}else if (taxa.size() > 1){
-				String warning = "Synonym "+ strTaxonId + " has more than 1 accepted taxon";
-				logger.warn(warning);
-				return null;
-				//throw new IllegalStateException(warning);
 			}
-			taxon = taxa.iterator().next();
 			//add synonym name as name used in source
 			source.setNameUsedInSource(synonym.getName());
 		}else{
@@ -272,14 +265,8 @@ public class ErmsSourceUsesImport  extends ErmsImportBase<CommonTaxonName> {
 			}
 		}else{
 			Synonym synonym =CdmBase.deproxy(taxonBase, Synonym.class);
-			Set<SynonymRelationship> synRels = synonym.getSynonymRelations();
-			if (synRels.size() != 1){
-				logger.warn("Synonym (" + strTaxonId + ") has not 1 but " + synRels.size() + " relations!");
-			}else{
-				SynonymRelationship synRel = synRels.iterator().next();
-				synRel.setCitation(ref);
-				synRel.setCitationMicroReference(strPageNr);
-			}
+			synonym.setSec(ref);
+			synonym.setSecMicroReference(strPageNr);
 		}
 
 		return taxonBase;

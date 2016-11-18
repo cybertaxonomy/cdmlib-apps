@@ -611,7 +611,7 @@ public class FaunaEuropaeaTaxonNameImport extends FaunaEuropaeaImportBase  {
 
 				// homotypic synonym
 				Taxon taxon = taxonBase.deproxy(taxonBase, Taxon.class);
-				taxon.addHomotypicSynonym(synonym, fauEuConfig.getSourceReference(), null);
+				taxon.addHomotypicSynonym(synonym);
 
 				if (logger.isDebugEnabled()) {
 					logger.debug("Homotypic synonym created (" + fauEuTaxon.getId() + ")");

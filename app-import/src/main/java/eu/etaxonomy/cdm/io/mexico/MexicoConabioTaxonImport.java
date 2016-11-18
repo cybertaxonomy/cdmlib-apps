@@ -45,7 +45,7 @@ import eu.etaxonomy.cdm.model.reference.ReferenceFactory;
 import eu.etaxonomy.cdm.model.reference.ReferenceType;
 import eu.etaxonomy.cdm.model.taxon.Classification;
 import eu.etaxonomy.cdm.model.taxon.Synonym;
-import eu.etaxonomy.cdm.model.taxon.SynonymRelationshipType;
+import eu.etaxonomy.cdm.model.taxon.SynonymType;
 import eu.etaxonomy.cdm.model.taxon.Taxon;
 import eu.etaxonomy.cdm.model.taxon.TaxonBase;
 import eu.etaxonomy.cdm.model.taxon.TaxonRelationship;
@@ -460,8 +460,7 @@ public class MexicoConabioTaxonImport<CONFIG extends MexicoConabioImportConfigur
                 logger.warn(line + "Accepted taxon is missing: "+ relStr);
             }else{
                 Synonym synonym = (Synonym)taxonBase;
-                Reference synRef = null; //null
-                parent.addSynonym(synonym, SynonymRelationshipType.SYNONYM_OF(), synRef, null);
+                parent.addSynonym(synonym, SynonymType.SYNONYM_OF());
                 makeConceptRelation(line, synonym.getName());
             }
         }
@@ -501,7 +500,7 @@ public class MexicoConabioTaxonImport<CONFIG extends MexicoConabioImportConfigur
             return CdmBase.deproxy(taxonBase, Taxon.class);
         }else{
             Synonym syn = CdmBase.deproxy(taxonBase, Synonym.class);
-            return syn.getAcceptedTaxa().iterator().next();
+            return syn.getAcceptedTaxon();
         }
     }
 
