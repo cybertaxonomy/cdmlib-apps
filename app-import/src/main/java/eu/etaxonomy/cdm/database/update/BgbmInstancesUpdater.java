@@ -26,30 +26,32 @@ public class BgbmInstancesUpdater {
 //	private static String testServer = "160.45.63.175";
 	private static String testServer = "edit-test.bgbm.fu-berlin.de";  //preliminary
 
-	private static String[] integrationDatabases = new String[]{/**/"cdm_integration_cichorieae",
-		"cdm_integration_cyprus", "cdm_integration_diptera",  "cdm_integration_flora_malesiana",
-		"cdm_integration_palmae"};
+	private static String[] integrationDatabases = new String[]{
+	   "cdm_integration_cichorieae",
+		"cdm_integration_cyprus", "cdm_integration_diptera",
+	    "cdm_integration_flora_malesiana",
+		"cdm_integration_palmae","cdm_integration_reference"
+	};
 
 	private static String[] testDatabases = new String[]{
 	    "cdm_Test_Caryophyllales", "cdm_bgbm_edit_usergroup",
 	    "cdm_campanulaceae", "cdm_campanulaceae_082014",
-//	    "cdm_caryo_amaranthaceae", "cdm_caryo_caryophyllales",  //veraltete Versionen
-	    "cdm_caryophyllales", "cdm_caryophyllales_tcs","cdm_caryophyllales_ws",
 		"cdm_col","cdm_corvidae", "cdm_cyprus","cdm_edaphobase_test",
 		"cdm_edit_algaterra", "cdm_edit_cichorieae",
-//		"cdm_edit_diptera",    //veraltete Versionen
 		"cdm_edit_flora_central_africa", "cdm_edit_flora_malesiana",
 		"cdm_edit_globis", "cdm_edit_palmae",
 		"cdm_flora_cuba", "cdm_flora_guianas",
-//	   "cdm_flora_malesiana_prospective",    //veraltete Versionen
-		"cdm_flore_gabon", "cdm_ipni_Caryophyllaceae",
+		"cdm_flore_gabon",
+	    "cdm_iapt",
 		"cdm_mt_moose", "cdm_mt_standardliste",
 		"cdm_pesi_erms", "cdm_pesi_euromed", "cdm_pesi_fauna_europaea",
+		"cdm_phycobank",
 		"cdm_proibiosphere_chenopodium_pilot",
 		"cdm_rem_conf_ak", "cdm_rem_conf_am", "cdm_rem_conf_kl", "cdm_rem_conf_pp",
 		"cdm_rl_animalia","cdm_rl_mammalia", "cdm_rl_plantae",
-//		"cdm_salvador",    //leer
-		"cdm_vibrant_index"
+		"cdm_salvador",
+        "cdm_test_euromed",
+        "cdm_vibrant_index"
 		};
 
 	private static String[] testDatabasesOthers = new String[]{"cdm_caryo_amaranthaceae",
