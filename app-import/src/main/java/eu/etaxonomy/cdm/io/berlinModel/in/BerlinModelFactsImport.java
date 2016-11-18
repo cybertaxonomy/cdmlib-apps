@@ -116,7 +116,7 @@ public class BerlinModelFactsImport  extends BerlinModelImportBase {
 					" FROM FactCategory "+
                     " WHERE (1=1)";
 			if (state.getConfig().isSalvador()){
-			    strQuery += strQuery.replace("factCategoryFk", "factCategoryId");
+			    strQuery += strQuery + state.getConfig().getFactFilter().replace("factCategoryFk", "factCategoryId");
 			}
 
 			ResultSet rs = source.getResultSet(strQuery) ;
@@ -146,6 +146,8 @@ public class BerlinModelFactsImport  extends BerlinModelImportBase {
 					if (state.getConfig().isSalvador()){
 					    adaptNewSalvadorFeature(factCategoryId, feature);
 					}
+                    //id
+                    doId(state, feature, factCategoryId, "FactCategory");
 
 					//TODO
 //					MaxFactNumber	int	Checked
@@ -336,6 +338,10 @@ public class BerlinModelFactsImport  extends BerlinModelImportBase {
 							}
 						}
 
+						if (taxonDescription.isImageGallery()){
+						    newTextData = false;
+						    textData = (TextData)taxonDescription.getElements().iterator().next();
+						}
 						if(newTextData == true)	{
 							textData = TextData.NewInstance();
 						}
@@ -366,9 +372,9 @@ public class BerlinModelFactsImport  extends BerlinModelImportBase {
 						DescriptionElementBase deb = textData;
 
 						if (state.getConfig().isSalvador()){
-						    if (factId == 306){
+						    if (categoryFkInt == 306){
 						        deb = CommonTaxonName.NewInstance(fact, Language.SPANISH_CASTILIAN(), Country.ELSALVADORREPUBLICOF());
-						    }else if (factId == 307){
+						    }else if (categoryFkInt == 307){
 						        Distribution salvadorDistribution = salvadorDistributionFromMuestrasDeHerbar((Taxon)taxonBase, fact);
 			                      //notes
 		                        doCreatedUpdatedNotes(state, salvadorDistribution, rs);
@@ -532,8 +538,8 @@ public class BerlinModelFactsImport  extends BerlinModelImportBase {
 		Set<TaxonDescription> descriptionSet= taxon.getDescriptions();
 
 		Media media = null;
-		//for diptera images
-		if (categoryFk == 51){  //TODO check also FactCategory string
+		//for diptera / salvador images
+		if (categoryFk == 51 || categoryFk == 312){  //TODO check also FactCategory string
 			media = Media.NewInstance();
 			taxonDescription = makeImage(state, fact, media, descriptionSet, taxon);
 
@@ -627,9 +633,8 @@ public class BerlinModelFactsImport  extends BerlinModelImportBase {
 	private TaxonDescription makeImage(BerlinModelImportState state, String fact, Media media, Set<TaxonDescription> descriptionSet, Taxon taxon) {
 		TaxonDescription taxonDescription = null;
 		Reference sourceRef = state.getTransactionalSourceReference();
-		Integer size = null;
-		ImageInfo imageInfo = null;
 		URI uri;
+		ImageInfo imageInfo = null;
 		try {
 			uri = new URI(fact.trim());
 		} catch (URISyntaxException e) {
@@ -637,13 +642,18 @@ public class BerlinModelFactsImport  extends BerlinModelImportBase {
 			return null;
 		}
 		try {
-			imageInfo = ImageInfo.NewInstance(uri, 0);
+			if (!state.getConfig().isSalvador()){
+			    imageInfo = ImageInfo.NewInstance(uri, 0);
+			}
 		} catch (IOException e) {
 			logger.error("IOError reading image metadata." , e);
 		} catch (HttpException e) {
 			logger.error("HttpException reading image metadata." , e);
 		}
-		MediaRepresentation mediaRepresentation = MediaRepresentation.NewInstance(imageInfo.getMimeType(), null);
+		Integer size = null;
+		String mimeType = imageInfo == null ? null : imageInfo.getMimeType();
+		String suffix = imageInfo == null ? null : imageInfo.getSuffix();
+		MediaRepresentation mediaRepresentation = MediaRepresentation.NewInstance(mimeType, suffix);
 		media.addRepresentation(mediaRepresentation);
 		ImageFile image = ImageFile.NewInstance(uri, size, imageInfo);
 		mediaRepresentation.addRepresentationPart(image);
@@ -653,7 +663,7 @@ public class BerlinModelFactsImport  extends BerlinModelImportBase {
 		return taxonDescription;
 	}
 
-	private TaxonBase getTaxon(Map<String, TaxonBase> taxonMap, Integer taxonIdObj, Number taxonId){
+	private TaxonBase<?> getTaxon(Map<String, TaxonBase> taxonMap, Integer taxonIdObj, Number taxonId){
 		if (taxonIdObj != null){
 			return taxonMap.get(String.valueOf(taxonId));
 		}else{

@@ -66,6 +66,8 @@ public class SalvadorActivator {
 	//ignore null
 	static final boolean ignoreNull = true;
 
+    static final boolean isSalvador = true;
+
 // ****************** ALL *****************************************
 
 	//authors
@@ -90,7 +92,6 @@ public class SalvadorActivator {
 	static final boolean doMarker = true;
 	static final boolean doUser = true;
 
-	static final boolean isSalvador = true;
 
 	static String factFilter = " factCategoryFk NOT IN  (1980, 1500, 1950, 1700) ";
 
