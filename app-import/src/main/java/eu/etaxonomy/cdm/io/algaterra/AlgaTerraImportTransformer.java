@@ -1,5 +1,5 @@
 /**
- * 
+ *
  */
 package eu.etaxonomy.cdm.io.algaterra;
 
@@ -45,7 +45,7 @@ public class AlgaTerraImportTransformer extends BerlinModelTransformer {
 	public static final UUID uuidFeatureRaphe = UUID.fromString("b6743a16-23d4-4645-a63d-3b2f711971c1");
 	public static final UUID uuidFeatureShape = UUID.fromString("a8f9b43f-53cb-4f0c-bb5e-8f9f8748882b");
 	public static final UUID uuidFeatureSymmetrie = UUID.fromString("cc5e4ce9-c259-4744-9c99-f16144ca7a55");
-	
+
 	public static final UUID uuidFeatureApices = UUID.fromString("34d3dd86-cfce-4b65-9866-71a9be020edf");
 	public static final UUID uuidFeatureChloroplastNumber = UUID.fromString("d1ef5be9-9c67-4ed0-84d4-d3bb57adddd9");
 	public static final UUID uuidFeaturePyrenoid = UUID.fromString("6a42b427-69be-4cc1-a2de-fd813474d522");
@@ -64,7 +64,7 @@ public class AlgaTerraImportTransformer extends BerlinModelTransformer {
 	public static final UUID uuidFeatureCentralAreaValve1 = UUID.fromString("cacd7b76-080c-4de2-a19d-c3f382729a04");
 	public static final UUID uuidFeatureAxialAreaValve1 = UUID.fromString("450578cd-0a53-4fe0-9d43-aecfc1d7fdd9");
 	public static final UUID uuidFeatureHasRapheValve1 = UUID.fromString("69acb582-7a3e-4e12-9a9e-ab1871e0a0c9");
-	
+
 	public static final UUID uuidFeatureValve2 = UUID.fromString("5e34f17f-9628-4a3d-a974-df4e709d68fb");
 	public static final UUID uuidFeatureStriaeFrequencyValve2 = UUID.fromString("db8f1200-5c17-4410-a58d-d93abcb3059b");
 	public static final UUID uuidFeatureStriaeOrientationMidValve2 = UUID.fromString("87d50361-25f6-4d10-a830-ce17c9392825");
@@ -73,9 +73,9 @@ public class AlgaTerraImportTransformer extends BerlinModelTransformer {
 	public static final UUID uuidFeatureAxialAreaValve2 = UUID.fromString("0d84c46b-789f-430a-ab55-81e2b280d8d4");
 	public static final UUID uuidFeatureHasRapheValve2 = UUID.fromString("b0d99b12-8de2-43e6-83d0-2e94ca71a53e");
 	public static final UUID uuidFeatureSalinity = UUID.fromString("2c9377d6-73d9-4401-a113-799eb3752ef3");
-	
+
 	public static final UUID uuidFeatureLivingSpecimen = UUID.fromString("0f167e2e-6494-4cf6-93a5-d92266626ec9");
-	
+
 
 	public static final UUID uuidVocChloroplastPosition = UUID.fromString("0ef57573-09e0-4ed6-a6bc-d80a8f927113");
 	public static final UUID uuidVocChloroplastShape = UUID.fromString("7777329d-a5e5-4f3d-a85b-2cd5be82080a");
@@ -86,7 +86,7 @@ public class AlgaTerraImportTransformer extends BerlinModelTransformer {
 	public static final UUID uuidVocShape = UUID.fromString("11f9f0af-da1b-44a0-8673-99e418ad6b97");
 	public static final UUID uuidVocSymmetry = UUID.fromString("3b7b921f-5d49-4cd7-b73d-29c4710f95da");
 
-	
+
 	public static final UUID uuidMeasurementUnitMgL = UUID.fromString("7ac302c5-3cbd-4334-964a-bf5d11eb9ead");
 	public static final UUID uuidMeasurementUnitMolMol = UUID.fromString("96b78d78-3e49-448f-8100-e7779b71dd53");
 	public static final UUID uuidMeasurementUnitMicroMolSiL = UUID.fromString("2cb8bc85-a4af-42f1-b80b-34c36c9f75d4");
@@ -95,16 +95,16 @@ public class AlgaTerraImportTransformer extends BerlinModelTransformer {
 	public static final UUID uuidMeasurementUnitPercent = UUID.fromString("3ea3110e-f048-4bed-8bfe-33c60f63626f");
 	public static final UUID uuidMeasurementUnitCm = UUID.fromString("3ea3110e-f048-4bed-8bfe-33c60f63626f");
 	public static final UUID uuidMeasurementUnitMicroSiCm = UUID.fromString("3ea3110e-f048-4bed-8bfe-33c60f63626f");
-	
-	
+
+
 	public static final UUID uuidNamedAreaVocAlgaTerraInformalAreas = UUID.fromString("ebce2f16-2a5d-4845-b4b8-f7841796a093");
 	public static final UUID uuidNamedAreaPatagonia = UUID.fromString("e0423d0a-87c3-41aa-afa3-8f2a86aa06dd");
 	public static final UUID uuidNamedAreaTierraDelFuego = UUID.fromString("53cf6dc2-b5cc-42be-9fad-7158b8f682f4");
 	public static final UUID uuidNamedAreaBorneo = UUID.fromString("6bb908af-be16-402b-973b-3ea20df1d70d");
-	
+
 	public static final UUID uuidKindOfUnitVoc = UUID.fromString("400d3ef7-1882-4ed6-bb76-f98f636b595c");
-	
-	
+
+
 	/* (non-Javadoc)
 	 * @see eu.etaxonomy.cdm.io.common.mapping.IInputTransformer#getFeatureByKey(java.lang.String)
 	 */
@@ -113,10 +113,7 @@ public class AlgaTerraImportTransformer extends BerlinModelTransformer {
 		throw new UndefinedTransformerMethodException(warning);
 	}
 
-	/* (non-Javadoc)
-	 * @see eu.etaxonomy.cdm.io.common.mapping.IInputTransformer#getFeatureUuid(java.lang.String)
-	 */
-	public static UUID getFeatureUuid(String key) throws UndefinedTransformerMethodException {
+	public static UUID getFeatureUuid(String key) {
 		if (key == null){ return null;
 		}else if(key.equalsIgnoreCase("pH")){return uuidFeaturePH;
 		}else if(key.equalsIgnoreCase("Conductivity")){return uuidFeatureConductivity;
@@ -143,13 +140,13 @@ public class AlgaTerraImportTransformer extends BerlinModelTransformer {
 		}else if (key.equalsIgnoreCase("Raphe")){return uuidFeatureRaphe;
 		}else if (key.equalsIgnoreCase("Shape")){return uuidFeatureShape;
 		}else if (key.equalsIgnoreCase("Symmetry")){return uuidFeatureSymmetrie;
-		
+
 		}else if (key.equalsIgnoreCase("Apices")){return uuidFeatureApices;
 		}else if (key.equalsIgnoreCase("Chloroplast Number")){return uuidFeatureChloroplastNumber;
 		}else if (key.equalsIgnoreCase("Pyrenoid")){return uuidFeaturePyrenoid;
 		}else if (key.equalsIgnoreCase("Cell Wall")){return uuidFeatureCellWall;
 		}else if (key.equalsIgnoreCase("Reproductive Stages")){return uuidFeatureReproductiveStages;
-	
+
 		}else if (key.equalsIgnoreCase("Valve 1")){return uuidFeatureValve1;
 		}else if (key.equalsIgnoreCase("Striae Frequency Valve 1")){return uuidFeatureStriaeFrequencyValve1;
 		}else if (key.equalsIgnoreCase("Striae Orientation Mid Valve 1")){return uuidFeatureStriaeOrientationMidValve1;
@@ -174,12 +171,12 @@ public class AlgaTerraImportTransformer extends BerlinModelTransformer {
 		}
 	}
 
-	
+
 	public static UUID getMeasurementUnitUuid(String key) {
-		if (key == null){ return null;	
+		if (key == null){ return null;
 		}else if (key.equalsIgnoreCase("mg/L")){ return uuidMeasurementUnitMgL;
 		}else if (key.equalsIgnoreCase("mol/mol")){ return uuidMeasurementUnitMolMol;
-		}else if (key.equalsIgnoreCase("\u00B5mol Si/L")){return uuidMeasurementUnitMicroMolSiL;   //µmol Si/L 
+		}else if (key.equalsIgnoreCase("\u00B5mol Si/L")){return uuidMeasurementUnitMicroMolSiL;   //µmol Si/L
 		}else if (key.equalsIgnoreCase("\u00B5mol/L")){	return uuidMeasurementUnitMicroMolL;	//µmol/L
 		}else if (key.equalsIgnoreCase("\u00B0C")){ return uuidMeasurementUnitDegreeC;           //°C
 		}else if (key.equalsIgnoreCase("%")){ return uuidMeasurementUnitPercent;

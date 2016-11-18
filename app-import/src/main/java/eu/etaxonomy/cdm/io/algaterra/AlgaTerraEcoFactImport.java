@@ -27,7 +27,6 @@ import eu.etaxonomy.cdm.io.berlinModel.in.BerlinModelImportConfigurator;
 import eu.etaxonomy.cdm.io.berlinModel.in.BerlinModelImportState;
 import eu.etaxonomy.cdm.io.common.IOValidator;
 import eu.etaxonomy.cdm.io.common.ResultSetPartitioner;
-import eu.etaxonomy.cdm.io.common.mapping.UndefinedTransformerMethodException;
 import eu.etaxonomy.cdm.model.common.CdmBase;
 import eu.etaxonomy.cdm.model.common.DefinedTerm;
 import eu.etaxonomy.cdm.model.common.DefinedTermBase;
@@ -330,11 +329,7 @@ public class AlgaTerraEcoFactImport  extends AlgaTerraSpecimenImportBase {
 
 
 	private UUID getParameterFeatureUuid(AlgaTerraImportState state, String key) {
-		try {
-			return AlgaTerraImportTransformer.getFeatureUuid(key);
-		} catch (UndefinedTransformerMethodException e) {
-			throw new RuntimeException(e);
-		}
+		return AlgaTerraImportTransformer.getFeatureUuid(key);
 	}
 
 

@@ -29,7 +29,6 @@ import eu.etaxonomy.cdm.io.berlinModel.in.BerlinModelImportState;
 import eu.etaxonomy.cdm.io.common.IOValidator;
 import eu.etaxonomy.cdm.io.common.ResultSetPartitioner;
 import eu.etaxonomy.cdm.io.common.Source;
-import eu.etaxonomy.cdm.io.common.mapping.UndefinedTransformerMethodException;
 import eu.etaxonomy.cdm.model.common.CdmBase;
 import eu.etaxonomy.cdm.model.common.DefinedTerm;
 import eu.etaxonomy.cdm.model.common.OriginalSourceType;
@@ -218,11 +217,7 @@ public class AlgaTerraMorphologyImport  extends AlgaTerraSpecimenImportBase {
 		String baseNameCamel = baseName.replace(" ", "");
 
 		UUID uuidFeature = null;
-		try {
-			uuidFeature = AlgaTerraImportTransformer.getFeatureUuid(baseName);
-		} catch (UndefinedTransformerMethodException e) {
-			throw new RuntimeException(e);
-		}
+		uuidFeature = AlgaTerraImportTransformer.getFeatureUuid(baseName);
 		Feature feature = getFeature(state, uuidFeature, baseName, baseName, null, algaTerraMorphoFeatures);
 		algaTerraMorphoFeatures.addTerm(feature);
 		featureMap.put(baseNameCamel, feature);
@@ -555,11 +550,7 @@ public class AlgaTerraMorphologyImport  extends AlgaTerraSpecimenImportBase {
 
 
 	private UUID getParameterFeatureUuid(AlgaTerraImportState state, String key) {
-		try {
-			return AlgaTerraImportTransformer.getFeatureUuid(key);
-		} catch (UndefinedTransformerMethodException e) {
-			throw new RuntimeException(e);
-		}
+		return AlgaTerraImportTransformer.getFeatureUuid(key);
 	}
 
 
