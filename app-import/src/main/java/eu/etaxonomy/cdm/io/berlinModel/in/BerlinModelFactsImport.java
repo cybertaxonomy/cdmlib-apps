@@ -116,11 +116,10 @@ public class BerlinModelFactsImport  extends BerlinModelImportBase {
 					" FROM FactCategory "+
                     " WHERE (1=1)";
 			if (state.getConfig().isSalvador()){
-			    strQuery += strQuery + state.getConfig().getFactFilter().replace("factCategoryFk", "factCategoryId");
+			    strQuery += " AND " + state.getConfig().getFactFilter().replace("factCategoryFk", "factCategoryId");
 			}
 
 			ResultSet rs = source.getResultSet(strQuery) ;
-
 
 			TermVocabulary<Feature> featureVocabulary = getFeatureVocabulary();
 			int i = 0;
