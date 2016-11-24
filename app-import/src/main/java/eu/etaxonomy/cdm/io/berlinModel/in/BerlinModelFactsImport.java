@@ -20,6 +20,8 @@ import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
 
+import javax.validation.constraints.NotNull;
+
 import org.apache.commons.lang.StringUtils;
 import org.apache.http.HttpException;
 import org.apache.log4j.Logger;
@@ -361,7 +363,7 @@ public class BerlinModelFactsImport  extends BerlinModelImportBase {
 
 						Language lang = Language.DEFAULT();
 						if (state.getConfig().isSalvador()){
-						    lang = getSalvadorFactLanguage(factId);
+						    lang = getSalvadorFactLanguage(categoryFkInt);
 						}
 						if (! taxonDescription.isImageGallery()){
 							textData.putText(lang, fact);
@@ -375,10 +377,11 @@ public class BerlinModelFactsImport  extends BerlinModelImportBase {
 						        deb = CommonTaxonName.NewInstance(fact, Language.SPANISH_CASTILIAN(), Country.ELSALVADORREPUBLICOF());
 						    }else if (categoryFkInt == 307){
 						        Distribution salvadorDistribution = salvadorDistributionFromMuestrasDeHerbar((Taxon)taxonBase, fact);
-			                      //notes
-		                        doCreatedUpdatedNotes(state, salvadorDistribution, rs);
-		                        doId(state, salvadorDistribution, factId, "Fact");
-		                        taxonDescription.addElement(salvadorDistribution);
+						        if (salvadorDistribution != null){
+						            //id
+						            doId(state, salvadorDistribution, factId, "Fact");
+						            mergeSalvadorDistribution(taxonDescription, salvadorDistribution);
+						        }
 						    }
 						}
 
@@ -463,7 +466,36 @@ public class BerlinModelFactsImport  extends BerlinModelImportBase {
 	}
 
 
-	private Map<String, NamedArea> salvadorAreaMap = null;
+	/**
+     * @param taxonDescription
+     * @param salvadorDistribution
+     */
+    private void mergeSalvadorDistribution(TaxonDescription taxonDescription,
+            @NotNull Distribution newDistribution) {
+        Distribution existingDistribution = null;
+        for (DescriptionElementBase deb : taxonDescription.getElements()){
+            if (deb.isInstanceOf(Distribution.class)){
+                Distribution distribution = CdmBase.deproxy(deb, Distribution.class);
+                if (distribution.getArea() != null && distribution.getArea().equals(newDistribution.getArea())){
+                    existingDistribution = distribution;
+                    break;
+                }else if (distribution.getArea() == null){
+                    logger.warn("Area for distribution is null: " + distribution.getUuid());
+                }
+            }
+        }
+        if (existingDistribution == null){
+            taxonDescription.addElement(newDistribution);
+        }else if(!existingDistribution.getStatus().equals(newDistribution.getStatus())){
+            //should not happen
+            logger.warn("Taxon has areas with different distribution states: " + taxonDescription.getTaxon().getTitleCache());
+        }else{
+            //do nothing, distribution already exists
+        }
+    }
+
+
+    private Map<String, NamedArea> salvadorAreaMap = null;
     private Distribution salvadorDistributionFromMuestrasDeHerbar(Taxon taxon, String fact) {
         if (salvadorAreaMap == null){
             salvadorAreaMap = new HashMap<>();
@@ -472,20 +504,26 @@ public class BerlinModelFactsImport  extends BerlinModelImportBase {
             getVocabularyService().save(salvadorAreas);
         }
         Distribution result = null;
-        String areaString = fact.split(" ")[0];
-        NamedArea area = salvadorAreaMap.get(areaString);
-        if (area == null){
-            logger.info("Added Salvador area: " + areaString);
-            TermVocabulary<NamedArea> voc = getVocabulary(TermType.NamedArea, BerlinModelTransformer.uuidSalvadorAreas,
-                    "Salvador areas", "Salvador areas", null, null, true, NamedArea.NewInstance());
-            NamedArea newArea = NamedArea.NewInstance(areaString, areaString, null);
-            voc.addTerm(newArea);
-            getTermService().saveOrUpdate(newArea);
-            salvadorAreaMap.put(areaString, newArea);
+        String[] areaStrings = fact.split(":");
+        if (areaStrings.length > 1){
+            String areaString = areaStrings[0];
+            NamedArea area = salvadorAreaMap.get(areaString);
+            if (area == null){
+                logger.info("Added Salvador area: " + areaString);
+                TermVocabulary<NamedArea> voc = getVocabulary(TermType.NamedArea, BerlinModelTransformer.uuidSalvadorAreas,
+                        "Salvador areas", "Salvador areas", null, null, true, NamedArea.NewInstance());
+                NamedArea newArea = NamedArea.NewInstance(areaString, areaString, null);
+                newArea.getRepresentations().iterator().next().setLanguage(Language.SPANISH_CASTILIAN());
+                voc.addTerm(newArea);
+                getTermService().saveOrUpdate(newArea);
+                salvadorAreaMap.put(areaString, newArea);
+            }
+            PresenceAbsenceTerm state = getSalvadorDistributionState(taxon);
+            result = Distribution.NewInstance(area, state);
+            return result;
+        }else{
+            return null;
         }
-        PresenceAbsenceTerm state = getSalvadorDistributionState(taxon);
-        result = Distribution.NewInstance(area, state);
-        return result;
     }
 
     private PresenceAbsenceTerm getSalvadorDistributionState(Taxon taxon) {
@@ -514,10 +552,10 @@ public class BerlinModelFactsImport  extends BerlinModelImportBase {
      * @param factId
      * @return
      */
-    private Language getSalvadorFactLanguage(int factId) {
-        if (factId == 350){
+    private Language getSalvadorFactLanguage(int categoryFkInt) {
+        if (categoryFkInt == 350){
             return Language.ENGLISH();
-        }else if (factId == 1800 || factId == 1900){
+        }else if (categoryFkInt == 1800 || categoryFkInt == 1900){
             return Language.UNDETERMINED();
         }
         return Language.SPANISH_CASTILIAN();
@@ -560,14 +598,33 @@ public class BerlinModelFactsImport  extends BerlinModelImportBase {
 		}
 		//all others (no image) -> getDescription
 		else{
-			for (TaxonDescription desc: descriptionSet){
-				if (! desc.isImageGallery()){
-					taxonDescription = desc;
+			boolean isPublic = ! (categoryFk == 1800 || categoryFk == 1900 || categoryFk == 2000);
+		    for (TaxonDescription desc: descriptionSet){
+
+			    if (! desc.isImageGallery()){
+					if (state.getConfig().isSalvador()){
+					    if (desc.isDefault() && isPublic || !desc.isDefault() && !isPublic){
+					        taxonDescription = desc;
+					        break;
+					    }
+					}else{
+					    taxonDescription = desc;
+					    break;
+					}
 				}
 			}
 			if (taxonDescription == null){
 				taxonDescription = TaxonDescription.NewInstance();
 				taxonDescription.setTitleCache(sourceRef == null ? null : sourceRef.getTitleCache(), true);
+				if (state.getConfig().isSalvador()){
+				    String title = "Factual data for " + taxon.getName().getTitleCache();
+				    if (isPublic){
+				        taxonDescription.setDefault(isPublic);
+				    }else{
+				        title = "Non public f" + title.substring(1);
+				    }
+				    taxonDescription.setTitleCache(title, true);
+				}
 				taxon.addDescription(taxonDescription);
 			}
 		}
