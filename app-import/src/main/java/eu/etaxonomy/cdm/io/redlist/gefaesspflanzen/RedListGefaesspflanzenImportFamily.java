@@ -11,6 +11,8 @@ package eu.etaxonomy.cdm.io.redlist.gefaesspflanzen;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
@@ -24,6 +26,7 @@ import eu.etaxonomy.cdm.model.common.CdmBase;
 import eu.etaxonomy.cdm.model.name.BotanicalName;
 import eu.etaxonomy.cdm.model.name.Rank;
 import eu.etaxonomy.cdm.model.taxon.Taxon;
+import eu.etaxonomy.cdm.model.taxon.TaxonBase;
 
 /**
  *
@@ -60,16 +63,17 @@ public class RedListGefaesspflanzenImportFamily extends DbImportBase<RedListGefa
     @Override
     protected void doInvoke(RedListGefaesspflanzenImportState state) {
         try {
-            importFamilies(state);
+            Collection<TaxonBase> families = importFamilies(state);
+            getTaxonService().save(families);
         } catch (SQLException e) {
             e.printStackTrace();
         }
     }
 
 
-    private void importFamilies(RedListGefaesspflanzenImportState state) throws SQLException {
+    private Collection<TaxonBase> importFamilies(RedListGefaesspflanzenImportState state) throws SQLException {
         Map<String, UUID> familyMapGL = new HashMap<>();
-        Map<String, UUID> familyMapCL = new HashMap<>();
+        Collection<TaxonBase> families = new ArrayList<TaxonBase>();
 
         String query = "SELECT DISTINCT f.FAMILIE "
                 + " FROM GATTUNG_FAMILIE f";
@@ -79,16 +83,12 @@ public class RedListGefaesspflanzenImportFamily extends DbImportBase<RedListGefa
             String familieStr = rs.getString("FAMILIE");
             BotanicalName name = BotanicalName.NewInstance(Rank.FAMILY());
             name.setGenusOrUninomial(familieStr);
-            Taxon familyGL = Taxon.NewInstance(name, null);
-            familyMapGL.put(familieStr, familyGL.getUuid());
-            getTaxonService().saveOrUpdate(familyGL);
-            //clone for checkliste
-            Taxon familyCL = (Taxon) familyGL.clone();
-            familyMapCL.put(familieStr, familyCL.getUuid());
-            getTaxonService().save(familyCL);
+            Taxon family = Taxon.NewInstance(name, null);
+            familyMapGL.put(familieStr, family.getUuid());
+            families.add(family);
         }
         state.setFamilyMapGesamtListe(familyMapGL);
-        state.setFamilyMapCheckliste(familyMapCL);
+        return families;
     }
 
     @Override

@@ -50,8 +50,6 @@ import eu.etaxonomy.cdm.model.name.TaxonNameBase;
 import eu.etaxonomy.cdm.model.taxon.Synonym;
 import eu.etaxonomy.cdm.model.taxon.Taxon;
 import eu.etaxonomy.cdm.model.taxon.TaxonBase;
-import eu.etaxonomy.cdm.model.taxon.TaxonRelationship;
-import eu.etaxonomy.cdm.model.taxon.TaxonRelationshipType;
 import eu.etaxonomy.cdm.strategy.parser.NonViralNameParserImpl;
 
 /**
@@ -155,18 +153,6 @@ public class RedListGefaesspflanzenImportNames extends DbImportBase<RedListGefae
         cloneTaxon(taxonBase, relationR, RedListUtil.CLASSIFICATION_NAMESPACE_R, taxaToSave, id, state);
         cloneTaxon(taxonBase, relationO, RedListUtil.CLASSIFICATION_NAMESPACE_O, taxaToSave, id, state);
         cloneTaxon(taxonBase, relationS, RedListUtil.CLASSIFICATION_NAMESPACE_S, taxaToSave, id, state);
-        //checklist
-        TaxonBase<?> checklistTaxon = null;
-        if(CdmUtils.isNotBlank(clTaxonString) && !clTaxonString.trim().equals("-")){
-            checklistTaxon = (TaxonBase<?>) taxonBase.clone();
-            if(checklistTaxon.isInstanceOf(Taxon.class)){
-                TaxonRelationship relation = HibernateProxyHelper.deproxy(checklistTaxon, Taxon.class).addTaxonRelation(HibernateProxyHelper.deproxy(taxonBase, Taxon.class), TaxonRelationshipType.CONGRUENT_TO(), null, null);
-                relation.setDoubtful(true);
-            }
-
-            ImportHelper.setOriginalSource(checklistTaxon, state.getTransactionalSourceReference(), id, RedListUtil.TAXON_CHECKLISTE_NAMESPACE);
-            taxaToSave.add(checklistTaxon);
-        }
 
         //NOTE: the source has to be added after cloning or otherwise the clone would also get the source
         ImportHelper.setOriginalSource(taxonBase, state.getTransactionalSourceReference(), id, RedListUtil.TAXON_GESAMTLISTE_NAMESPACE);

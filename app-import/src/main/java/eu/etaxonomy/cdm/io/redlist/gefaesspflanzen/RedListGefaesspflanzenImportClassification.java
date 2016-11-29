@@ -88,24 +88,19 @@ public class RedListGefaesspflanzenImportClassification extends DbImportBase<Red
         makeClassification("Rothmaler", RedListUtil.uuidClassificationR, "Rothmaler", 2011, RedListUtil.uuidClassificationReferenceR, state);
         makeClassification("Oberdorfer", RedListUtil.uuidClassificationO, "Oberdorfer", 2001, RedListUtil.uuidClassificationReferenceO, state);
         makeClassification("Schmeil-Fitschen", RedListUtil.uuidClassificationS, "Schmeil-Fitschen", 2011, RedListUtil.uuidClassificationReferenceS, state);
-//        importFamilies(gesamtListe, checkliste, state);
+        importFamilies(gesamtListe, checkliste, state);
         super.doInvoke(state);
     }
 
 
     private void importFamilies(Classification gesamtListe, Classification checkliste, RedListGefaesspflanzenImportState state) {
         for(UUID uuid:state.getFamilyMapGesamtListe().values()){
-            Taxon familyGL = HibernateProxyHelper.deproxy(getTaxonService().load(uuid, Arrays.asList(new String[]{"*"})), Taxon.class);
-            Taxon familyCL = (Taxon) familyGL.clone();
-            getTaxonService().saveOrUpdate(familyCL);
+            Taxon family = HibernateProxyHelper.deproxy(getTaxonService().load(uuid, Arrays.asList(new String[]{"*"})), Taxon.class);
 
-            gesamtListe.addParentChild(null, familyGL, null, null);
-            familyGL.setSec(gesamtListe.getReference());
-            familyGL.setTitleCache(null);
-
-            checkliste.addParentChild(null, familyCL, null, null);
-            familyCL.setSec(checkliste.getReference());
-            familyCL.setTitleCache(null);
+            gesamtListe.addParentChild(null, family, null, null);
+            checkliste.addParentChild(null, family, null, null);
+            family.setSec(gesamtListe.getReference());
+            family.setTitleCache(null);
 
             getClassificationService().saveOrUpdate(gesamtListe);
             getClassificationService().saveOrUpdate(checkliste);
@@ -161,6 +156,7 @@ public class RedListGefaesspflanzenImportClassification extends DbImportBase<Red
         String gueltString = rs.getString(RedListUtil.GUELT);
         String taxZusatzString = rs.getString(RedListUtil.TAX_ZUSATZ);
         String familieString = rs.getString(RedListUtil.FAMILIE);
+        String clTaxonString = rs.getString(RedListUtil.CL_TAXON);
 
         String relationE = rs.getString(RedListUtil.E);
         String relationW = rs.getString(RedListUtil.W);
@@ -172,85 +168,61 @@ public class RedListGefaesspflanzenImportClassification extends DbImportBase<Red
         String relationS = rs.getString(RedListUtil.S);
 
         //Gesamtliste
-        TaxonBase<?> taxonBaseGL = state.getRelatedObject(RedListUtil.TAXON_GESAMTLISTE_NAMESPACE, String.valueOf(id), TaxonBase.class);
-        Taxon parentGL = state.getRelatedObject(RedListUtil.TAXON_GESAMTLISTE_NAMESPACE, parentId, Taxon.class);
-        if(parentGL!=null && !parentGL.isInstanceOf(Taxon.class)){
-            RedListUtil.logMessage(id, parentGL+" is no taxon but is a parent of "+taxonBaseGL+" (Gesamtliste)", logger);
+        TaxonBase<?> taxonBase = state.getRelatedObject(RedListUtil.TAXON_GESAMTLISTE_NAMESPACE, String.valueOf(id), TaxonBase.class);
+        Taxon parent = state.getRelatedObject(RedListUtil.TAXON_GESAMTLISTE_NAMESPACE, parentId, Taxon.class);
+        if(parent!=null && !parent.isInstanceOf(Taxon.class)){
+            RedListUtil.logMessage(id, parent+" is no taxon but is a parent of "+taxonBase+" (Gesamtliste)", logger);
         }
         //add to family if no parent found
-        if(parentGL==null){
-            if(!taxonBaseGL.isInstanceOf(Taxon.class)){
-                RedListUtil.logMessage(id, taxonBaseGL+" has no parent but is not a taxon.", logger);
+        if(parent==null){
+            if(!taxonBase.isInstanceOf(Taxon.class)){
+                RedListUtil.logMessage(id, taxonBase+" has no parent but is not a taxon.", logger);
             }
             else{
                 Taxon family = (Taxon) state.getRelatedObject(RedListUtil.FAMILY_NAMESPACE_GESAMTLISTE, familieString);
-                gesamtListeClassification.addParentChild(family, HibernateProxyHelper.deproxy(taxonBaseGL, Taxon.class), null, null);
+                gesamtListeClassification.addParentChild(family, HibernateProxyHelper.deproxy(taxonBase, Taxon.class), null, null);
+                //Buttler/Checklist taxon
+                if(CdmUtils.isNotBlank(clTaxonString) && clTaxonString.equals("b")){
+                    checklistClassification.addParentChild(family, HibernateProxyHelper.deproxy(taxonBase, Taxon.class), null, null);
+                }
                 if(family.getTaxonNodes().isEmpty()){
                     gesamtListeClassification.addChildTaxon(family, null, null);
+                    //do not add empty families to checklist classification
+                    if(!getClassificationService().listChildNodesOfTaxon(family.getUuid(), RedListUtil.checkListClassificationUuid, null, null, null).isEmpty()){
+                        checklistClassification.addChildTaxon(family, null, null);
+                    }
                 }
             }
         }
         //add to higher taxon
         else{
-            createParentChildNodes(gesamtListeClassification, id, gueltString, taxZusatzString, taxonBaseGL, parentGL);
-        }
-
-        //Checkliste
-        TaxonBase<?> taxonBaseCL = state.getRelatedObject(RedListUtil.TAXON_CHECKLISTE_NAMESPACE, String.valueOf(id), TaxonBase.class);
-        Taxon parentCL = state.getRelatedObject(RedListUtil.TAXON_CHECKLISTE_NAMESPACE, parentId, Taxon.class);
-        if(parentCL!=null && !parentCL.isInstanceOf(Taxon.class)){
-            RedListUtil.logMessage(id, parentCL+" is no taxon but is a parent of "+taxonBaseCL+" (Checkliste)", logger);
-        }
-        if(taxonBaseCL!=null){//null check necessary because not all taxa exist in the checklist
-            //add to family if no parent found
-            if(parentCL==null){
-                if(!taxonBaseCL.isInstanceOf(Taxon.class)){
-                    RedListUtil.logMessage(id, taxonBaseCL+" has no parent but is not a taxon.", logger);
-                }
-                else{
-                    Taxon family = (Taxon) state.getRelatedObject(RedListUtil.FAMILY_NAMESPACE_CHECKLISTE, familieString);
-                    checklistClassification.addParentChild(family, HibernateProxyHelper.deproxy(taxonBaseCL, Taxon.class), null, null);
-                    if(family.getTaxonNodes().isEmpty()){
-                        checklistClassification.addChildTaxon(family, null, null);
-                    }
-                }
+            createParentChildNodes(gesamtListeClassification, id, gueltString, taxZusatzString, taxonBase, parent);
+            //Buttler/Checklist taxon
+            if(CdmUtils.isNotBlank(clTaxonString) && clTaxonString.equals("b")){
+                createParentChildNodes(checklistClassification, id, gueltString, taxZusatzString, taxonBase, parent);
             }
-            //add to higher taxon
-            else{
-                createParentChildNodes(checklistClassification, id, gueltString, taxZusatzString, taxonBaseCL, parentCL);
-            }
-        }
-
-        //check uuids
-        if(taxonBaseGL!= null && taxonBaseCL!=null
-                && taxonBaseGL.getUuid().equals(taxonBaseCL.getUuid())){
-            RedListUtil.logMessage(id, "Same UUID for "+taxonBaseGL+ " (Gesamtliste) and "+taxonBaseCL+" (Checkliste)", logger);
-        }
-        if(parentGL!=null && parentCL!=null && parentGL.getUuid().equals(parentCL.getUuid())){
-            RedListUtil.logMessage(id, "Same UUID for "+parentGL+ " (Gesamtliste) and "+parentCL+" (Checkliste)", logger);
         }
 
         //add taxa for concept relationships to E, W, K, AW, AO, R, O, S
-        addTaxonToClassification(classificationE, RedListUtil.CLASSIFICATION_NAMESPACE_E, relationE, taxonBaseGL, taxonBaseCL, id, state);
-        addTaxonToClassification(classificationW, RedListUtil.CLASSIFICATION_NAMESPACE_W, relationW, taxonBaseGL, taxonBaseCL, id, state);
-        addTaxonToClassification(classificationK, RedListUtil.CLASSIFICATION_NAMESPACE_K, relationK, taxonBaseGL, taxonBaseCL, id, state);
-        addTaxonToClassification(classificationAW, RedListUtil.CLASSIFICATION_NAMESPACE_AW, relationAW, taxonBaseGL, taxonBaseCL, id, state);
-        addTaxonToClassification(classificationAO, RedListUtil.CLASSIFICATION_NAMESPACE_AO, relationAO, taxonBaseGL, taxonBaseCL, id, state);
-        addTaxonToClassification(classificationR, RedListUtil.CLASSIFICATION_NAMESPACE_R, relationR, taxonBaseGL, taxonBaseCL, id, state);
-        addTaxonToClassification(classificationO, RedListUtil.CLASSIFICATION_NAMESPACE_O, relationO, taxonBaseGL, taxonBaseCL, id, state);
-        addTaxonToClassification(classificationS, RedListUtil.CLASSIFICATION_NAMESPACE_S, relationS, taxonBaseGL, taxonBaseCL, id, state);
+        addTaxonToClassification(classificationE, RedListUtil.CLASSIFICATION_NAMESPACE_E, relationE, taxonBase, id, state);
+        addTaxonToClassification(classificationW, RedListUtil.CLASSIFICATION_NAMESPACE_W, relationW, taxonBase, id, state);
+        addTaxonToClassification(classificationK, RedListUtil.CLASSIFICATION_NAMESPACE_K, relationK, taxonBase, id, state);
+        addTaxonToClassification(classificationAW, RedListUtil.CLASSIFICATION_NAMESPACE_AW, relationAW, taxonBase, id, state);
+        addTaxonToClassification(classificationAO, RedListUtil.CLASSIFICATION_NAMESPACE_AO, relationAO, taxonBase, id, state);
+        addTaxonToClassification(classificationR, RedListUtil.CLASSIFICATION_NAMESPACE_R, relationR, taxonBase, id, state);
+        addTaxonToClassification(classificationO, RedListUtil.CLASSIFICATION_NAMESPACE_O, relationO, taxonBase, id, state);
+        addTaxonToClassification(classificationS, RedListUtil.CLASSIFICATION_NAMESPACE_S, relationS, taxonBase, id, state);
     }
 
 
 
-    private void addTaxonToClassification(Classification classification, String classificationNamespace, String relationString, final TaxonBase<?> gesamtListeTaxon, final TaxonBase<?> checklisteTaxon, long id, RedListGefaesspflanzenImportState state){
+    private void addTaxonToClassification(Classification classification, String classificationNamespace, String relationString, final TaxonBase<?> gesamtListeTaxon, long id, RedListGefaesspflanzenImportState state){
         Taxon taxon = HibernateProxyHelper.deproxy(state.getRelatedObject(classificationNamespace, String.valueOf(id), TaxonBase.class), Taxon.class);
-        //add concept relation to gesamtliste and checkliste
+        //add concept relation to gesamtliste/checkliste
         if(taxon!=null && CdmUtils.isNotBlank(relationString) && !relationString.equals(".")){
             //if the related concept in gesamtliste/checkliste is a synonym then we
             //create a relation to the accepted taxon
             Taxon acceptedGesamtListeTaxon = getAcceptedTaxon(gesamtListeTaxon);
-            Taxon acceptedChecklistTaxon = getAcceptedTaxon(checklisteTaxon);
             String relationSubstring = relationString.substring(relationString.length()-1, relationString.length());
             TaxonRelationshipType taxonRelationshipTypeByKey = new RedListGefaesspflanzenTransformer().getTaxonRelationshipTypeByKey(relationSubstring);
             if(taxonRelationshipTypeByKey==null){
@@ -261,16 +233,10 @@ public class RedListGefaesspflanzenImportClassification extends DbImportBase<Red
                 if(acceptedGesamtListeTaxon!=null){
                     acceptedGesamtListeTaxon.addTaxonRelation(taxon, taxonRelationshipTypeByKey, null, null);
                 }
-                if(acceptedChecklistTaxon!=null) {
-                    acceptedChecklistTaxon.addTaxonRelation(taxon, taxonRelationshipTypeByKey, null, null);
-                }
             }
             else{
                 if(acceptedGesamtListeTaxon!=null){
                     taxon.addTaxonRelation(acceptedGesamtListeTaxon, taxonRelationshipTypeByKey, null, null);
-                }
-                if(acceptedChecklistTaxon!=null) {
-                    taxon.addTaxonRelation(acceptedChecklistTaxon, taxonRelationshipTypeByKey, null, null);
                 }
             }
 
@@ -367,7 +333,6 @@ public class RedListGefaesspflanzenImportClassification extends DbImportBase<Red
         }
         //add taxa and their parent taxa
         result.put(RedListUtil.TAXON_GESAMTLISTE_NAMESPACE, (Map<String, TaxonBase>) getCommonService().getSourcedObjectsByIdInSource(TaxonBase.class, idSet, RedListUtil.TAXON_GESAMTLISTE_NAMESPACE));
-        result.put(RedListUtil.TAXON_CHECKLISTE_NAMESPACE, (Map<String, TaxonBase>) getCommonService().getSourcedObjectsByIdInSource(TaxonBase.class, idSet, RedListUtil.TAXON_CHECKLISTE_NAMESPACE));
         result.put(RedListUtil.CLASSIFICATION_NAMESPACE_E, (Map<String, TaxonBase>) getCommonService().getSourcedObjectsByIdInSource(TaxonBase.class, idSet, RedListUtil.CLASSIFICATION_NAMESPACE_E));
         result.put(RedListUtil.CLASSIFICATION_NAMESPACE_W, (Map<String, TaxonBase>) getCommonService().getSourcedObjectsByIdInSource(TaxonBase.class, idSet, RedListUtil.CLASSIFICATION_NAMESPACE_W));
         result.put(RedListUtil.CLASSIFICATION_NAMESPACE_K, (Map<String, TaxonBase>) getCommonService().getSourcedObjectsByIdInSource(TaxonBase.class, idSet, RedListUtil.CLASSIFICATION_NAMESPACE_K));
@@ -384,12 +349,6 @@ public class RedListGefaesspflanzenImportClassification extends DbImportBase<Red
             familyMapGL.put(entry.getKey(), HibernateProxyHelper.deproxy(getTaxonService().load(entry.getValue()), Taxon.class));
         }
         result.put(RedListUtil.FAMILY_NAMESPACE_GESAMTLISTE, familyMapGL);
-        //checkliste
-        Map<String, Taxon> familyMapCL = new HashMap<String, Taxon>();
-        for (Entry<String, UUID> entry: state.getFamilyMapCheckliste().entrySet()) {
-            familyMapCL.put(entry.getKey(), HibernateProxyHelper.deproxy(getTaxonService().load(entry.getValue()), Taxon.class));
-        }
-        result.put(RedListUtil.FAMILY_NAMESPACE_CHECKLISTE, familyMapCL);
         return result;
     }
 

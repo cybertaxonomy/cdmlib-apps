@@ -55,7 +55,6 @@ public class RedListUtil {
     public static final String NAME_NAMESPACE = "name";
     public static final String AUTHOR_NAMESPACE = "author";
     public static final String TAXON_GESAMTLISTE_NAMESPACE = "taxon_gesamt_liste";
-    public static final String TAXON_CHECKLISTE_NAMESPACE = "taxon_checkliste";
     public static final String CLASSIFICATION_NAMESPACE_E = "classification_namespace_e";
     public static final String CLASSIFICATION_NAMESPACE_W = "classification_namespace_w";
     public static final String CLASSIFICATION_NAMESPACE_K = "classification_namespace_k";
@@ -65,7 +64,6 @@ public class RedListUtil {
     public static final String CLASSIFICATION_NAMESPACE_O = "classification_namespace_o";
     public static final String CLASSIFICATION_NAMESPACE_S = "classification_namespace_s";
     public static final String FAMILY_NAMESPACE_GESAMTLISTE = "family_namespace_gesamtliste";
-    public static final String FAMILY_NAMESPACE_CHECKLISTE = "family_namespace_checkliste";
 
 
     //cell content

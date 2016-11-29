@@ -73,7 +73,7 @@ public class CdmDestinations {
 	public static ICdmDataSource cdm_test_local_mysql(){
 		DatabaseTypeEnum dbType = DatabaseTypeEnum.MySQL;
 		String cdmServer = "127.0.0.1";
-		String cdmDB = "cdm_test";
+		String cdmDB = "rl2020_gefaesspflanzen";
 		String cdmUserName = "root";
 		return makeDestination(dbType, cdmServer, cdmDB, -1, cdmUserName, null);
 	}
