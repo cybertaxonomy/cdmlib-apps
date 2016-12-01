@@ -94,7 +94,7 @@ public class RedListGefaesspflanzenImportClassification extends DbImportBase<Red
 
 
     private void importFamilies(Classification gesamtListe, Classification checkliste, RedListGefaesspflanzenImportState state) {
-        for(UUID uuid:state.getFamilyMapGesamtListe().values()){
+        for(UUID uuid:state.getFamilyMap().values()){
             Taxon family = HibernateProxyHelper.deproxy(getTaxonService().load(uuid, Arrays.asList(new String[]{"*"})), Taxon.class);
 
             gesamtListe.addParentChild(null, family, null, null);
@@ -356,7 +356,7 @@ public class RedListGefaesspflanzenImportClassification extends DbImportBase<Red
         //add families
         //gesamtliste
         Map<String, Taxon> familyMapGL = new HashMap<String, Taxon>();
-        for (Entry<String, UUID> entry: state.getFamilyMapGesamtListe().entrySet()) {
+        for (Entry<String, UUID> entry: state.getFamilyMap().entrySet()) {
             familyMapGL.put(entry.getKey(), HibernateProxyHelper.deproxy(getTaxonService().load(entry.getValue()), Taxon.class));
         }
         result.put(RedListUtil.FAMILY_NAMESPACE_GESAMTLISTE, familyMapGL);

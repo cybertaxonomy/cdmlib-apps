@@ -30,10 +30,10 @@ import eu.etaxonomy.cdm.io.common.ResultSetPartitioner;
 import eu.etaxonomy.cdm.io.common.mapping.UndefinedTransformerMethodException;
 import eu.etaxonomy.cdm.model.agent.AgentBase;
 import eu.etaxonomy.cdm.model.agent.TeamOrPersonBase;
-import eu.etaxonomy.cdm.model.common.AnnotatableEntity;
 import eu.etaxonomy.cdm.model.common.Annotation;
 import eu.etaxonomy.cdm.model.common.AnnotationType;
 import eu.etaxonomy.cdm.model.common.CdmBase;
+import eu.etaxonomy.cdm.model.common.ExtensionType;
 import eu.etaxonomy.cdm.model.common.Language;
 import eu.etaxonomy.cdm.model.common.OrderedTermVocabulary;
 import eu.etaxonomy.cdm.model.description.CommonTaxonName;
@@ -71,6 +71,18 @@ public class RedListGefaesspflanzenImportNames extends DbImportBase<RedListGefae
 
     private static final boolean STRICT_TITLE_CHECK = false;
 
+    private ExtensionType extensionTypeFlor;
+
+    private ExtensionType extensionTypeAtlasIdx;
+
+    private ExtensionType extensionTypeKart;
+
+    private ExtensionType extensionTypeRl2015;
+
+    private ExtensionType extensionTypeEhrd;
+
+    private ExtensionType extensionTypeWissk;
+
     public RedListGefaesspflanzenImportNames() {
         super(tableName, pluralString);
     }
@@ -93,9 +105,25 @@ public class RedListGefaesspflanzenImportNames extends DbImportBase<RedListGefae
 
     @Override
     protected void doInvoke(RedListGefaesspflanzenImportState state) {
+        makeExtensionTypes();
         super.doInvoke(state);
     }
 
+
+    private void makeExtensionTypes() {
+        extensionTypeFlor = ExtensionType.NewInstance(RedListUtil.FLOR, RedListUtil.FLOR, "");
+        extensionTypeAtlasIdx = ExtensionType.NewInstance(RedListUtil.ATLAS_IDX, RedListUtil.ATLAS_IDX, "");
+        extensionTypeKart = ExtensionType.NewInstance(RedListUtil.KART, RedListUtil.KART, "");
+        extensionTypeRl2015 = ExtensionType.NewInstance(RedListUtil.RL2015, RedListUtil.RL2015, "");
+        extensionTypeEhrd = ExtensionType.NewInstance(RedListUtil.EHRD, RedListUtil.EHRD, "");
+        extensionTypeWissk = ExtensionType.NewInstance(RedListUtil.WISSK, RedListUtil.WISSK, "");
+        getTermService().saveOrUpdate(extensionTypeFlor);
+        getTermService().saveOrUpdate(extensionTypeAtlasIdx);
+        getTermService().saveOrUpdate(extensionTypeKart);
+        getTermService().saveOrUpdate(extensionTypeRl2015);
+        getTermService().saveOrUpdate(extensionTypeEhrd);
+        getTermService().saveOrUpdate(extensionTypeWissk);
+    }
 
     @Override
     public boolean doPartition(ResultSetPartitioner partitioner, RedListGefaesspflanzenImportState state) {
@@ -218,22 +246,16 @@ public class RedListGefaesspflanzenImportNames extends DbImportBase<RedListGefae
         }
 
         //add annotations
-        addAnnotation(RedListUtil.FLOR+": "+florString, taxonBase);
-        addAnnotation(RedListUtil.ATLAS_IDX+": "+atlasIdxString, taxonBase);
-        addAnnotation(RedListUtil.KART+": "+kartString, taxonBase);
-        addAnnotation(RedListUtil.RL2015+": "+rl2015String, taxonBase);
-        addAnnotation(RedListUtil.EHRD+": "+ehrdString, taxonBase);
-        addAnnotation(RedListUtil.WISSK+": "+wisskString, taxonBase);
+        taxonBase.addExtension(florString, extensionTypeFlor);
+        taxonBase.addExtension(atlasIdxString, extensionTypeAtlasIdx);
+        taxonBase.addExtension(kartString, extensionTypeKart);
+        taxonBase.addExtension(rl2015String, extensionTypeRl2015);
+        taxonBase.addExtension(ehrdString, extensionTypeEhrd);
+        taxonBase.addExtension(wisskString, extensionTypeWissk);
 
         //check taxon name consistency
         checkTaxonConsistency(id, taxNameString, hybString, epi1String, epi2String, epi3String, taxonBase, state);
         return taxonBase;
-    }
-
-    private void addAnnotation(String string, AnnotatableEntity entity) {
-        if(CdmUtils.isNotBlank(string)){
-            entity.addAnnotation(Annotation.NewInstance(string, AnnotationType.TECHNICAL(), Language.GERMAN()));
-        }
     }
 
     private void importAuthors(RedListGefaesspflanzenImportState state, ResultSet rs, NonViralName<?> name) throws SQLException {

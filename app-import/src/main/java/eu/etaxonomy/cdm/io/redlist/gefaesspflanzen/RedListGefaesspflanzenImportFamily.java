@@ -72,7 +72,7 @@ public class RedListGefaesspflanzenImportFamily extends DbImportBase<RedListGefa
 
 
     private Collection<TaxonBase> importFamilies(RedListGefaesspflanzenImportState state) throws SQLException {
-        Map<String, UUID> familyMapGL = new HashMap<>();
+        Map<String, UUID> familyMap = new HashMap<>();
         Collection<TaxonBase> families = new ArrayList<TaxonBase>();
 
         String query = "SELECT DISTINCT f.FAMILIE "
@@ -84,10 +84,10 @@ public class RedListGefaesspflanzenImportFamily extends DbImportBase<RedListGefa
             BotanicalName name = BotanicalName.NewInstance(Rank.FAMILY());
             name.setGenusOrUninomial(familieStr);
             Taxon family = Taxon.NewInstance(name, null);
-            familyMapGL.put(familieStr, family.getUuid());
+            familyMap.put(familieStr, family.getUuid());
             families.add(family);
         }
-        state.setFamilyMapGesamtListe(familyMapGL);
+        state.setFamilyMap(familyMap);
         return families;
     }
 
