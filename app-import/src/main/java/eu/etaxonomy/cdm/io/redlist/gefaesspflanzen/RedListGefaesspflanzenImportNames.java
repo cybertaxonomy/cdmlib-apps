@@ -119,7 +119,6 @@ public class RedListGefaesspflanzenImportNames extends DbImportBase<RedListGefae
     private void makeSingleNameAndTaxon(RedListGefaesspflanzenImportState state, ResultSet rs, Set<TaxonNameBase> namesToSave, Set<TaxonBase> taxaToSave)
             throws SQLException {
         long id = rs.getLong(RedListUtil.NAMNR);
-        String clTaxonString = rs.getString(RedListUtil.CL_TAXON);
         String relationE = rs.getString(RedListUtil.E);
         String relationW = rs.getString(RedListUtil.W);
         String relationK = rs.getString(RedListUtil.K);

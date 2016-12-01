@@ -199,7 +199,16 @@ public class RedListGefaesspflanzenImportClassification extends DbImportBase<Red
             createParentChildNodes(gesamtListeClassification, id, gueltString, taxZusatzString, taxonBase, parent);
             //Buttler/Checklist taxon
             if(CdmUtils.isNotBlank(clTaxonString) && clTaxonString.equals("b")){
-                createParentChildNodes(checklistClassification, id, gueltString, taxZusatzString, taxonBase, parent);
+                if(taxonBase.isInstanceOf(Taxon.class)){
+                    createParentChildNodes(checklistClassification, id, gueltString, taxZusatzString, taxonBase, parent);
+                }
+                else if(taxonBase.isInstanceOf(Synonym.class)){
+                    //if it is a synonym it is already added to the accepted taxon
+                    //so we just change the sec reference
+                    taxonBase.setSec(checklistClassification.getReference());
+                    taxonBase.setTitleCache(null);
+                }
+
             }
         }
 
@@ -262,6 +271,8 @@ public class RedListGefaesspflanzenImportClassification extends DbImportBase<Red
                     return;
                 }
                 parent.addMisappliedName((Taxon) taxonBase, null, null);
+                //return because misapplied names do not have sec references
+                return;
             }
             else{
                 classification.addParentChild(parent, (Taxon)taxonBase, null, null);
