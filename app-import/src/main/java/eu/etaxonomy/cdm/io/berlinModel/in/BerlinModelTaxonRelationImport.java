@@ -60,7 +60,9 @@ import eu.etaxonomy.cdm.strategy.exceptions.UnknownCdmTypeException;
  */
 @Component
 public class BerlinModelTaxonRelationImport  extends BerlinModelImportBase  {
-	private static final Logger logger = Logger.getLogger(BerlinModelTaxonRelationImport.class);
+    private static final long serialVersionUID = -7234926279240842557L;
+
+    private static final Logger logger = Logger.getLogger(BerlinModelTaxonRelationImport.class);
 
 	public static final String TREE_NAMESPACE = "PTRefFk";
 
