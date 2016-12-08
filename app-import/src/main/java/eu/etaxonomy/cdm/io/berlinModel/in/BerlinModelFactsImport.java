@@ -701,9 +701,7 @@ public class BerlinModelFactsImport  extends BerlinModelImportBase {
 	        Reference sourceRef = state.getTransactionalSourceReference();
     		URI uri;
     		URI thumbUri;
-    		ImageInfo imageInfo = null;
-    		ImageInfo thumbImageInfo = null;
-    		if (!state.getConfig().isSalvador()){
+    		if (state.getConfig().isSalvador()){
     		    String thumbs = "thumbs/";
     		    String uriStr = "http://media.e-taxonomy.eu/salvador/berendsohn-et-al-%s/%s.jpg";
     		    Integer intFact = Integer.valueOf(fact);
@@ -711,10 +709,12 @@ public class BerlinModelFactsImport  extends BerlinModelImportBase {
     		    int page = intFact + 249;
                 if (intFact >= 263){
     		        vol = "2016";
+    		        page = intFact + (intFact < 403 ? 95 : 96);
     		    }else if (intFact >= 142){
     		        vol = "2012";
     		        page = intFact + (intFact < 255 ? 3 : 4);
     		    }
+                media.putTitle(Language.SPANISH_CASTILIAN(), fact);
     		    Reference ref = getSalvadorReference(vol);
     		    media.addSource(OriginalSourceType.PrimaryMediaSource, "Fig. " + fact, null, ref, String.valueOf(page));
     		    media.setArtist(getSalvadorArtist());
@@ -723,28 +723,14 @@ public class BerlinModelFactsImport  extends BerlinModelImportBase {
     		    String thumbUriStr = String.format(uriStr, vol, thumbs + fact);
     		    uri = new URI(uriStr);
     		    thumbUri = new URI(thumbUriStr);
-    		    if (!state.getConfig().isSalvador()){
-                    try {
-                        imageInfo = ImageInfo.NewInstance(uri, 0);
-                    } catch (IOException | HttpException e) {
-                        logger.error("Error when reading image meta: " + e);
-                    }
-                    try {
-                        thumbImageInfo = ImageInfo.NewInstance(thumbUri, 0);
-                    } catch (IOException | HttpException e) {
-                        logger.error("Error when reading image meta: " + e);
-                    }
-                }
     		}else{
     		    uri = new URI(fact.trim());
     		    thumbUri = null;
     		}
 
-    		Integer size = null;
-
-    		makeMediaRepresentation(media, uri, imageInfo, size);
+    		makeMediaRepresentation(media, uri);
     		if (thumbUri != null){
-                makeMediaRepresentation(media, thumbUri, thumbImageInfo, size);
+                makeMediaRepresentation(media, thumbUri);
     		}
 
     		taxonDescription = taxon.getOrCreateImageGallery(sourceRef == null ? null :sourceRef.getTitleCache());
@@ -758,9 +744,9 @@ public class BerlinModelFactsImport  extends BerlinModelImportBase {
     private Rights getSalvadorCopyright(String vol) {
         String text;
         if ("2009".equals(vol)){
-            text = "(c) Botanic Garden and Botanical Museum Berlin-Dahlem & Asociación Jardín Botánico La Laguna. Berlin, Antiguo Cuscatlán 2009.";
+            text = "(c) Jardín Botánico y Museo Botánico Berlin-Dahlem & Asociación Jardín Botánico La Laguna. Berlin, Antiguo Cuscatlán 2009.";
         }else if ("2012".equals(vol)){
-            text = "(c) Botanic Garden and Botanical Museum Berlin-Dahlem & Asociación Jardín Botánico La Laguna. Berlin, Antiguo Cuscatlán 2012.";
+            text = "(c) Jardín Botánico y Museo Botánico Berlin-Dahlem & Asociación Jardín Botánico La Laguna. Berlin, Antiguo Cuscatlán 2012.";
         }else if ("2016".equals(vol)){
             text = "(c) Jardín Botánico y Museo Botánico Berlin-Dahlem & Asociación Jardín Botánico La Laguna. Berlin, Antiguo Cuscatlán 2016.";
         }else{
@@ -868,7 +854,14 @@ public class BerlinModelFactsImport  extends BerlinModelImportBase {
      * @param imageInfo
      * @param size
      */
-    private void makeMediaRepresentation(Media media, URI uri, ImageInfo imageInfo, Integer size) {
+    private void makeMediaRepresentation(Media media, URI uri) {
+        ImageInfo imageInfo = null;
+        Integer size = null;
+        try {
+            imageInfo = ImageInfo.NewInstance(uri, 0);
+        } catch (IOException | HttpException e) {
+            logger.error("Error when reading image meta: " + e + ", "+ uri.toString());
+        }
         String mimeType = imageInfo == null ? null : imageInfo.getMimeType();
         String suffix = imageInfo == null ? null : imageInfo.getSuffix();
         MediaRepresentation mediaRepresentation = MediaRepresentation.NewInstance(mimeType, suffix);
