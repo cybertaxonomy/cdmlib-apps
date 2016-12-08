@@ -16,6 +16,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
@@ -27,7 +28,9 @@ import org.apache.http.HttpException;
 import org.apache.log4j.Logger;
 import org.springframework.stereotype.Component;
 
+import au.com.bytecode.opencsv.CSVReader;
 import eu.etaxonomy.cdm.common.CdmUtils;
+import eu.etaxonomy.cdm.common.UTF8;
 import eu.etaxonomy.cdm.common.media.ImageInfo;
 import eu.etaxonomy.cdm.database.update.DatabaseTypeNotSupportedException;
 import eu.etaxonomy.cdm.io.berlinModel.BerlinModelTransformer;
@@ -41,6 +44,7 @@ import eu.etaxonomy.cdm.model.agent.Team;
 import eu.etaxonomy.cdm.model.common.Annotation;
 import eu.etaxonomy.cdm.model.common.AnnotationType;
 import eu.etaxonomy.cdm.model.common.CdmBase;
+import eu.etaxonomy.cdm.model.common.IdentifiableSource;
 import eu.etaxonomy.cdm.model.common.Language;
 import eu.etaxonomy.cdm.model.common.LanguageString;
 import eu.etaxonomy.cdm.model.common.Marker;
@@ -703,7 +707,7 @@ public class BerlinModelFactsImport  extends BerlinModelImportBase {
     		URI thumbUri;
     		if (state.getConfig().isSalvador()){
     		    String thumbs = "thumbs/";
-    		    String uriStr = "http://media.e-taxonomy.eu/salvador/berendsohn-et-al-%s/%s.jpg";
+    		    String uriStrFormat = "http://media.e-taxonomy.eu/salvador/berendsohn-et-al-%s/%s.jpg";
     		    Integer intFact = Integer.valueOf(fact);
     		    String vol = "2009";
     		    int page = intFact + 249;
@@ -714,13 +718,17 @@ public class BerlinModelFactsImport  extends BerlinModelImportBase {
     		        vol = "2012";
     		        page = intFact + (intFact < 255 ? 3 : 4);
     		    }
-                media.putTitle(Language.SPANISH_CASTILIAN(), fact);
+                String title = getSalvadorImageTitle(intFact);
+                media.putTitle(Language.SPANISH_CASTILIAN(), title);
+
     		    Reference ref = getSalvadorReference(vol);
-    		    media.addSource(OriginalSourceType.PrimaryMediaSource, "Fig. " + fact, null, ref, String.valueOf(page));
+    		    String originalName = getSalvadorImageNameInfo(intFact);
+    		    IdentifiableSource source = media.addSource(OriginalSourceType.PrimaryMediaSource, fact, "Fig.", ref, String.valueOf(page));
+    		    source.setOriginalNameString(originalName);
     		    media.setArtist(getSalvadorArtist());
     		    media.addRights(getSalvadorCopyright(vol));
-    		    uriStr = String.format(uriStr, vol, fact);
-    		    String thumbUriStr = String.format(uriStr, vol, thumbs + fact);
+    		    String uriStr = String.format(uriStrFormat, vol, fact);
+    		    String thumbUriStr = String.format(uriStrFormat, vol, thumbs + fact);
     		    uri = new URI(uriStr);
     		    thumbUri = new URI(thumbUriStr);
     		}else{
@@ -740,6 +748,56 @@ public class BerlinModelFactsImport  extends BerlinModelImportBase {
         }
 		return taxonDescription;
 	}
+
+
+	private Map<Integer, String[]> salvadorImages = null;
+    private String getSalvadorImageTitle(Integer intFact) {
+        initSalvadorImagesFile();
+        String[] line = salvadorImages.get(intFact);
+        if (line == null){
+            logger.warn("Could not find salvador image metadata for " + intFact);
+            return String.valueOf(intFact);
+        }else{
+            int i = 2;
+            String result = CdmUtils.concat(" " + UTF8.EN_DASH + " ", line[i], line[i + 1]);
+            return result;
+        }
+    }
+
+    private String getSalvadorImageNameInfo(Integer intFact) {
+        initSalvadorImagesFile();
+        String[] line = salvadorImages.get(intFact);
+        if (line == null){
+            logger.warn("Could not find salvador image metadata for " + intFact);
+            return String.valueOf(intFact);
+        }else{
+            int i = 1;
+            String result = line[i].substring("Fig. ".length() + line[0].length()).trim();
+            return result;
+        }
+    }
+
+    /**
+     *
+     */
+    private void initSalvadorImagesFile() {
+        if (salvadorImages == null){
+            salvadorImages = new HashMap<>();
+            try {
+                CSVReader reader = new CSVReader(CdmUtils.getUtf8ResourceReader("salvador" + CdmUtils.getFolderSeperator() + "SalvadorImages.csv"),';');
+                List<String[]> lines = reader.readAll();
+                for (String[] line : lines){
+                    if(! "ID".equals(line[0])){
+                        salvadorImages.put(Integer.valueOf(line[0]), line);
+                    }
+                }
+                reader.close();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
 
     private Rights getSalvadorCopyright(String vol) {
         String text;
