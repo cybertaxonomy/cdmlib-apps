@@ -92,7 +92,7 @@ public class SalvadorActivator {
 	static final boolean doCommonNames = false; //CommonNames do not exist in Salvador DB
 
 	//etc.
-	static final boolean doMarker = true;
+	static final boolean doMarker = false;   //#3937  markers must not be imported
 	static final boolean doUser = true;
 
 
