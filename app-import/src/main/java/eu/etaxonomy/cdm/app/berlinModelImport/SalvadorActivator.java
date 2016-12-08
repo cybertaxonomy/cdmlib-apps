@@ -13,7 +13,9 @@ import java.lang.reflect.Method;
 import java.util.UUID;
 
 import org.apache.log4j.Logger;
+import org.springframework.transaction.TransactionStatus;
 
+import eu.etaxonomy.cdm.api.application.ICdmApplicationConfiguration;
 import eu.etaxonomy.cdm.app.common.CdmDestinations;
 import eu.etaxonomy.cdm.database.DbSchemaValidation;
 import eu.etaxonomy.cdm.database.ICdmDataSource;
@@ -24,6 +26,7 @@ import eu.etaxonomy.cdm.io.common.IImportConfigurator.CHECK;
 import eu.etaxonomy.cdm.io.common.IImportConfigurator.DO_REFERENCES;
 import eu.etaxonomy.cdm.io.common.ImportResult;
 import eu.etaxonomy.cdm.io.common.Source;
+import eu.etaxonomy.cdm.model.description.FeatureTree;
 import eu.etaxonomy.cdm.model.name.NomenclaturalCode;
 import eu.etaxonomy.cdm.model.name.NonViralName;
 
@@ -50,7 +53,7 @@ public class SalvadorActivator {
 	static final UUID secUuid = UUID.fromString("d03ef02a-f226-4cb1-bdb4-f6c154f08a34");
 	static final int sourceSecId = 7331;
 
-	static final UUID featureTreeUuid = UUID.fromString("ae9615b8-bc60-4ed0-ad96-897f9226d568");
+	static final UUID featureTreeUuid = UUID.fromString("9d0e5628-2eda-43ed-bc59-138a7e39ce56");
 	static final Object[] featureKeyList = new Integer[]{302, 303, 306, 307, 309, 310, 311, 312, 350, 1500, 1800, 1900, 1950, 1980, 2000, 10299};
 	static boolean isIgnore0AuthorTeam = true;  //special case for Salvador.
 	static boolean doExport = false;
@@ -166,9 +169,42 @@ public class SalvadorActivator {
 		// invoke import
 		CdmDefaultImport<BerlinModelImportConfigurator> bmImport = new CdmDefaultImport<BerlinModelImportConfigurator>();
 		ImportResult result = bmImport.invoke(config);
+
+		createFeatureTree(config, bmImport);
+
 		System.out.println("End import from BerlinModel ("+ source.getDatabase() + ")...");
 		return result;
 	}
+
+    //create feature tree
+    private void createFeatureTree(BerlinModelImportConfigurator config,
+            CdmDefaultImport<BerlinModelImportConfigurator> bmImport)
+    {
+        if (config.isDoFacts() && (config.getCheck().isImport()  )  ){
+            try {
+                ICdmApplicationConfiguration app = bmImport.getCdmAppController();
+                TransactionStatus tx = app.startTransaction();
+
+                //make feature tree
+                FeatureTree tree = TreeCreator.flatTree(featureTreeUuid, config.getFeatureMap(), featureKeyList);
+
+//                FeatureNode distributionNode = FeatureNode.NewInstance(Feature.DISTRIBUTION());
+//                tree.getRoot().addChild(distributionNode, 1);
+//                FeatureNode commonNameNode = FeatureNode.NewInstance(Feature.COMMON_NAME());
+//                tree.getRoot().addChild(commonNameNode, 2);
+//
+//                FeatureNode imageNode = FeatureNode.NewInstance(Feature.IMAGE());
+//                tree.getRoot().addChild(imageNode);
+
+                app.getFeatureTreeService().saveOrUpdate(tree);
+
+                app.commitTransaction(tx);
+            } catch (Exception e) {
+                e.printStackTrace();
+                logger.error("Exception in createFeatureTree: " + e.getMessage());
+            }
+        }
+    }
 
 
 	/**
