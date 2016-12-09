@@ -63,6 +63,8 @@ import eu.etaxonomy.cdm.model.description.TaxonDescription;
 import eu.etaxonomy.cdm.model.description.TextData;
 import eu.etaxonomy.cdm.model.location.Country;
 import eu.etaxonomy.cdm.model.location.NamedArea;
+import eu.etaxonomy.cdm.model.location.NamedAreaLevel;
+import eu.etaxonomy.cdm.model.location.NamedAreaType;
 import eu.etaxonomy.cdm.model.media.ImageFile;
 import eu.etaxonomy.cdm.model.media.Media;
 import eu.etaxonomy.cdm.model.media.MediaRepresentation;
@@ -484,6 +486,7 @@ public class BerlinModelFactsImport  extends BerlinModelImportBase {
      */
     private void mergeSalvadorDistribution(TaxonDescription taxonDescription,
             @NotNull Distribution newDistribution) {
+
         Distribution existingDistribution = null;
         for (DescriptionElementBase deb : taxonDescription.getElements()){
             if (deb.isInstanceOf(Distribution.class)){
@@ -523,12 +526,19 @@ public class BerlinModelFactsImport  extends BerlinModelImportBase {
             if (area == null){
                 logger.info("Added Salvador area: " + areaString);
                 TermVocabulary<NamedArea> voc = getVocabulary(TermType.NamedArea, BerlinModelTransformer.uuidSalvadorAreas,
-                        "Salvador areas", "Salvador areas", null, null, true, NamedArea.NewInstance());
+                        "Salvador departments", "Salvador departments", null, null, true, NamedArea.NewInstance());
+                if (voc.getRepresentation(Language.SPANISH_CASTILIAN()) == null){
+                    voc.addRepresentation(Representation.NewInstance("Salvador departamentos", "Salvador departamentos", "dep.", Language.SPANISH_CASTILIAN()));
+                    getVocabularyService().saveOrUpdate(voc);
+                }
                 NamedArea newArea = NamedArea.NewInstance(areaString, areaString, null);
                 newArea.getRepresentations().iterator().next().setLanguage(Language.SPANISH_CASTILIAN());
+                newArea.setLevel(NamedAreaLevel.DEPARTMENT());
+                newArea.setType(NamedAreaType.ADMINISTRATION_AREA());
                 voc.addTerm(newArea);
                 getTermService().saveOrUpdate(newArea);
                 salvadorAreaMap.put(areaString, newArea);
+                area = newArea;
             }
             PresenceAbsenceTerm state = getSalvadorDistributionState(taxon);
             result = Distribution.NewInstance(area, state);
@@ -713,17 +723,17 @@ public class BerlinModelFactsImport  extends BerlinModelImportBase {
     		    int page = intFact + 249;
                 if (intFact >= 263){
     		        vol = "2016";
-    		        page = intFact + (intFact < 403 ? 95 : 96);
+    		        page = intFact - (intFact < 403 ? 95 : 94);
     		    }else if (intFact >= 142){
     		        vol = "2012";
     		        page = intFact + (intFact < 255 ? 3 : 4);
     		    }
-                String title = getSalvadorImageTitle(intFact);
-                media.putTitle(Language.SPANISH_CASTILIAN(), title);
+                String description = getSalvadorImageTitle(intFact);
+                media.putDescription(Language.SPANISH_CASTILIAN(), description);
 
     		    Reference ref = getSalvadorReference(vol);
     		    String originalName = getSalvadorImageNameInfo(intFact);
-    		    IdentifiableSource source = media.addSource(OriginalSourceType.PrimaryMediaSource, fact, "Fig.", ref, String.valueOf(page));
+    		    IdentifiableSource source = media.addSource(OriginalSourceType.PrimaryMediaSource, fact, "Fig.", ref, "p. " + page);
     		    source.setOriginalNameString(originalName);
     		    media.setArtist(getSalvadorArtist());
     		    media.addRights(getSalvadorCopyright(vol));
@@ -777,9 +787,6 @@ public class BerlinModelFactsImport  extends BerlinModelImportBase {
         }
     }
 
-    /**
-     *
-     */
     private void initSalvadorImagesFile() {
         if (salvadorImages == null){
             salvadorImages = new HashMap<>();
@@ -787,8 +794,13 @@ public class BerlinModelFactsImport  extends BerlinModelImportBase {
                 CSVReader reader = new CSVReader(CdmUtils.getUtf8ResourceReader("salvador" + CdmUtils.getFolderSeperator() + "SalvadorImages.csv"),';');
                 List<String[]> lines = reader.readAll();
                 for (String[] line : lines){
-                    if(! "ID".equals(line[0])){
-                        salvadorImages.put(Integer.valueOf(line[0]), line);
+                    String first = line[0];
+                    if(! "ID".equals(first)){
+                        try {
+                            salvadorImages.put(Integer.valueOf(first), line);
+                        } catch (NumberFormatException e) {
+                            logger.warn("Number not recognized: " + first);
+                        }
                     }
                 }
                 reader.close();
@@ -799,21 +811,36 @@ public class BerlinModelFactsImport  extends BerlinModelImportBase {
     }
 
 
+    private Rights rights1;
+    private Rights rights2;
+    private Rights rights3;
+
     private Rights getSalvadorCopyright(String vol) {
-        String text;
+        initRights();
         if ("2009".equals(vol)){
-            text = "(c) Jardín Botánico y Museo Botánico Berlin-Dahlem & Asociación Jardín Botánico La Laguna. Berlin, Antiguo Cuscatlán 2009.";
+            return rights1;
         }else if ("2012".equals(vol)){
-            text = "(c) Jardín Botánico y Museo Botánico Berlin-Dahlem & Asociación Jardín Botánico La Laguna. Berlin, Antiguo Cuscatlán 2012.";
+            return rights1;
         }else if ("2016".equals(vol)){
-            text = "(c) Jardín Botánico y Museo Botánico Berlin-Dahlem & Asociación Jardín Botánico La Laguna. Berlin, Antiguo Cuscatlán 2016.";
+            return rights3;
         }else{
             throw new RuntimeException("Volume not recognized: " + vol);
         }
-        Rights result = Rights.NewInstance(text, Language.SPANISH_CASTILIAN(), RightsType.COPYRIGHT());
-        return result;
     }
 
+    private void initRights(){
+        if (rights1 == null){
+            String text = "(c) Jardín Botánico y Museo Botánico Berlin-Dahlem & Asociación Jardín Botánico La Laguna. Berlin, Antiguo Cuscatlán 2009.";
+            rights1 = Rights.NewInstance(text, Language.SPANISH_CASTILIAN(), RightsType.COPYRIGHT());
+            text = "(c) Jardín Botánico y Museo Botánico Berlin-Dahlem & Asociación Jardín Botánico La Laguna. Berlin, Antiguo Cuscatlán 2012.";
+            rights2 = Rights.NewInstance(text, Language.SPANISH_CASTILIAN(), RightsType.COPYRIGHT());
+            text = "(c) Jardín Botánico y Museo Botánico Berlin-Dahlem & Asociación Jardín Botánico La Laguna. Berlin, Antiguo Cuscatlán 2016.";
+            rights3 = Rights.NewInstance(text, Language.SPANISH_CASTILIAN(), RightsType.COPYRIGHT());
+            getCommonService().save(rights1);
+            getCommonService().save(rights2);
+            getCommonService().save(rights3);
+        }
+    }
 
     private Integer salvadorArtistId;
     private AgentBase<?> getSalvadorArtist() {
@@ -916,7 +943,7 @@ public class BerlinModelFactsImport  extends BerlinModelImportBase {
         ImageInfo imageInfo = null;
         Integer size = null;
         try {
-            imageInfo = ImageInfo.NewInstance(uri, 0);
+            imageInfo = ImageInfo.NewInstance(uri, 30);
         } catch (IOException | HttpException e) {
             logger.error("Error when reading image meta: " + e + ", "+ uri.toString());
         }
