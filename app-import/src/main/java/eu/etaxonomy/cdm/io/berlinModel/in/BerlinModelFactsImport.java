@@ -16,6 +16,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
@@ -27,7 +28,9 @@ import org.apache.http.HttpException;
 import org.apache.log4j.Logger;
 import org.springframework.stereotype.Component;
 
+import au.com.bytecode.opencsv.CSVReader;
 import eu.etaxonomy.cdm.common.CdmUtils;
+import eu.etaxonomy.cdm.common.UTF8;
 import eu.etaxonomy.cdm.common.media.ImageInfo;
 import eu.etaxonomy.cdm.database.update.DatabaseTypeNotSupportedException;
 import eu.etaxonomy.cdm.io.berlinModel.BerlinModelTransformer;
@@ -35,13 +38,18 @@ import eu.etaxonomy.cdm.io.berlinModel.in.validation.BerlinModelFactsImportValid
 import eu.etaxonomy.cdm.io.common.IOValidator;
 import eu.etaxonomy.cdm.io.common.ResultSetPartitioner;
 import eu.etaxonomy.cdm.io.common.Source;
+import eu.etaxonomy.cdm.model.agent.AgentBase;
+import eu.etaxonomy.cdm.model.agent.Person;
+import eu.etaxonomy.cdm.model.agent.Team;
 import eu.etaxonomy.cdm.model.common.Annotation;
 import eu.etaxonomy.cdm.model.common.AnnotationType;
 import eu.etaxonomy.cdm.model.common.CdmBase;
+import eu.etaxonomy.cdm.model.common.IdentifiableSource;
 import eu.etaxonomy.cdm.model.common.Language;
 import eu.etaxonomy.cdm.model.common.LanguageString;
 import eu.etaxonomy.cdm.model.common.Marker;
 import eu.etaxonomy.cdm.model.common.MarkerType;
+import eu.etaxonomy.cdm.model.common.OriginalSourceType;
 import eu.etaxonomy.cdm.model.common.Representation;
 import eu.etaxonomy.cdm.model.common.TermType;
 import eu.etaxonomy.cdm.model.common.TermVocabulary;
@@ -55,13 +63,19 @@ import eu.etaxonomy.cdm.model.description.TaxonDescription;
 import eu.etaxonomy.cdm.model.description.TextData;
 import eu.etaxonomy.cdm.model.location.Country;
 import eu.etaxonomy.cdm.model.location.NamedArea;
+import eu.etaxonomy.cdm.model.location.NamedAreaLevel;
+import eu.etaxonomy.cdm.model.location.NamedAreaType;
 import eu.etaxonomy.cdm.model.media.ImageFile;
 import eu.etaxonomy.cdm.model.media.Media;
 import eu.etaxonomy.cdm.model.media.MediaRepresentation;
+import eu.etaxonomy.cdm.model.media.Rights;
+import eu.etaxonomy.cdm.model.media.RightsType;
 import eu.etaxonomy.cdm.model.reference.Reference;
+import eu.etaxonomy.cdm.model.reference.ReferenceFactory;
 import eu.etaxonomy.cdm.model.taxon.Taxon;
 import eu.etaxonomy.cdm.model.taxon.TaxonBase;
 import eu.etaxonomy.cdm.strategy.exceptions.UnknownCdmTypeException;
+import eu.etaxonomy.cdm.strategy.parser.TimePeriodParser;
 
 /**
  * @author a.mueller
@@ -472,6 +486,7 @@ public class BerlinModelFactsImport  extends BerlinModelImportBase {
      */
     private void mergeSalvadorDistribution(TaxonDescription taxonDescription,
             @NotNull Distribution newDistribution) {
+
         Distribution existingDistribution = null;
         for (DescriptionElementBase deb : taxonDescription.getElements()){
             if (deb.isInstanceOf(Distribution.class)){
@@ -511,12 +526,19 @@ public class BerlinModelFactsImport  extends BerlinModelImportBase {
             if (area == null){
                 logger.info("Added Salvador area: " + areaString);
                 TermVocabulary<NamedArea> voc = getVocabulary(TermType.NamedArea, BerlinModelTransformer.uuidSalvadorAreas,
-                        "Salvador areas", "Salvador areas", null, null, true, NamedArea.NewInstance());
+                        "Salvador departments", "Salvador departments", null, null, true, NamedArea.NewInstance());
+                if (voc.getRepresentation(Language.SPANISH_CASTILIAN()) == null){
+                    voc.addRepresentation(Representation.NewInstance("Salvador departamentos", "Salvador departamentos", "dep.", Language.SPANISH_CASTILIAN()));
+                    getVocabularyService().saveOrUpdate(voc);
+                }
                 NamedArea newArea = NamedArea.NewInstance(areaString, areaString, null);
                 newArea.getRepresentations().iterator().next().setLanguage(Language.SPANISH_CASTILIAN());
+                newArea.setLevel(NamedAreaLevel.DEPARTMENT());
+                newArea.setType(NamedAreaType.ADMINISTRATION_AREA());
                 voc.addTerm(newArea);
                 getTermService().saveOrUpdate(newArea);
                 salvadorAreaMap.put(areaString, newArea);
+                area = newArea;
             }
             PresenceAbsenceTerm state = getSalvadorDistributionState(taxon);
             result = Distribution.NewInstance(area, state);
@@ -684,40 +706,254 @@ public class BerlinModelFactsImport  extends BerlinModelImportBase {
 	 * @param media
 	 * @param media
 	 * @param descriptionSet
+	 * @throws URISyntaxException
 	 *
 	 */
 	private TaxonDescription makeImage(BerlinModelImportState state, String fact, Media media, Set<TaxonDescription> descriptionSet, Taxon taxon) {
 		TaxonDescription taxonDescription = null;
-		Reference sourceRef = state.getTransactionalSourceReference();
-		URI uri;
-		ImageInfo imageInfo = null;
 		try {
-			uri = new URI(fact.trim());
+	        Reference sourceRef = state.getTransactionalSourceReference();
+    		URI uri;
+    		URI thumbUri;
+    		if (state.getConfig().isSalvador()){
+    		    String thumbs = "thumbs/";
+    		    String uriStrFormat = "http://media.e-taxonomy.eu/salvador/berendsohn-et-al-%s/%s.jpg";
+    		    Integer intFact = Integer.valueOf(fact);
+    		    String vol = "2009";
+    		    int page = intFact + 249;
+                if (intFact >= 263){
+    		        vol = "2016";
+    		        page = intFact - (intFact < 403 ? 95 : 94);
+    		    }else if (intFact >= 142){
+    		        vol = "2012";
+    		        page = intFact + (intFact < 255 ? 3 : 4);
+    		    }
+                String description = getSalvadorImageTitle(intFact);
+                media.putDescription(Language.SPANISH_CASTILIAN(), description);
+
+    		    Reference ref = getSalvadorReference(vol);
+    		    String originalName = getSalvadorImageNameInfo(intFact);
+    		    IdentifiableSource source = media.addSource(OriginalSourceType.PrimaryMediaSource, fact, "Fig.", ref, "p. " + page);
+    		    source.setOriginalNameString(originalName);
+    		    media.setArtist(getSalvadorArtist());
+    		    media.addRights(getSalvadorCopyright(vol));
+    		    String uriStr = String.format(uriStrFormat, vol, fact);
+    		    String thumbUriStr = String.format(uriStrFormat, vol, thumbs + fact);
+    		    uri = new URI(uriStr);
+    		    thumbUri = new URI(thumbUriStr);
+    		}else{
+    		    uri = new URI(fact.trim());
+    		    thumbUri = null;
+    		}
+
+    		makeMediaRepresentation(media, uri);
+    		if (thumbUri != null){
+                makeMediaRepresentation(media, thumbUri);
+    		}
+
+    		taxonDescription = taxon.getOrCreateImageGallery(sourceRef == null ? null :sourceRef.getTitleCache());
 		} catch (URISyntaxException e) {
-			logger.warn("URISyntaxException. Image could not be imported: " + fact);
-			return null;
-		}
-		try {
-			if (!state.getConfig().isSalvador()){
-			    imageInfo = ImageInfo.NewInstance(uri, 0);
-			}
-		} catch (IOException e) {
-			logger.error("IOError reading image metadata." , e);
-		} catch (HttpException e) {
-			logger.error("HttpException reading image metadata." , e);
-		}
-		Integer size = null;
-		String mimeType = imageInfo == null ? null : imageInfo.getMimeType();
-		String suffix = imageInfo == null ? null : imageInfo.getSuffix();
-		MediaRepresentation mediaRepresentation = MediaRepresentation.NewInstance(mimeType, suffix);
-		media.addRepresentation(mediaRepresentation);
-		ImageFile image = ImageFile.NewInstance(uri, size, imageInfo);
-		mediaRepresentation.addRepresentationPart(image);
-
-		taxonDescription = taxon.getOrCreateImageGallery(sourceRef == null ? null :sourceRef.getTitleCache());
-
+            logger.warn("URISyntaxException. Image could not be imported: " + fact);
+            return null;
+        }
 		return taxonDescription;
 	}
+
+
+	private Map<Integer, String[]> salvadorImages = null;
+    private String getSalvadorImageTitle(Integer intFact) {
+        initSalvadorImagesFile();
+        String[] line = salvadorImages.get(intFact);
+        if (line == null){
+            logger.warn("Could not find salvador image metadata for " + intFact);
+            return String.valueOf(intFact);
+        }else{
+            int i = 2;
+            String result = CdmUtils.concat(" " + UTF8.EN_DASH + " ", line[i], line[i + 1]);
+            return result;
+        }
+    }
+
+    private String getSalvadorImageNameInfo(Integer intFact) {
+        initSalvadorImagesFile();
+        String[] line = salvadorImages.get(intFact);
+        if (line == null){
+            logger.warn("Could not find salvador image metadata for " + intFact);
+            return String.valueOf(intFact);
+        }else{
+            int i = 1;
+            String result = line[i].substring("Fig. ".length() + line[0].length()).trim();
+            return result;
+        }
+    }
+
+    private void initSalvadorImagesFile() {
+        if (salvadorImages == null){
+            salvadorImages = new HashMap<>();
+            try {
+                CSVReader reader = new CSVReader(CdmUtils.getUtf8ResourceReader("salvador" + CdmUtils.getFolderSeperator() + "SalvadorImages.csv"),';');
+                List<String[]> lines = reader.readAll();
+                for (String[] line : lines){
+                    String first = line[0];
+                    if(! "ID".equals(first)){
+                        try {
+                            salvadorImages.put(Integer.valueOf(first), line);
+                        } catch (NumberFormatException e) {
+                            logger.warn("Number not recognized: " + first);
+                        }
+                    }
+                }
+                reader.close();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
+
+    private Rights rights1;
+    private Rights rights2;
+    private Rights rights3;
+
+    private Rights getSalvadorCopyright(String vol) {
+        initRights();
+        if ("2009".equals(vol)){
+            return rights1;
+        }else if ("2012".equals(vol)){
+            return rights1;
+        }else if ("2016".equals(vol)){
+            return rights3;
+        }else{
+            throw new RuntimeException("Volume not recognized: " + vol);
+        }
+    }
+
+    private void initRights(){
+        if (rights1 == null){
+            String text = "(c) Jardín Botánico y Museo Botánico Berlin-Dahlem & Asociación Jardín Botánico La Laguna. Berlin, Antiguo Cuscatlán 2009.";
+            rights1 = Rights.NewInstance(text, Language.SPANISH_CASTILIAN(), RightsType.COPYRIGHT());
+            text = "(c) Jardín Botánico y Museo Botánico Berlin-Dahlem & Asociación Jardín Botánico La Laguna. Berlin, Antiguo Cuscatlán 2012.";
+            rights2 = Rights.NewInstance(text, Language.SPANISH_CASTILIAN(), RightsType.COPYRIGHT());
+            text = "(c) Jardín Botánico y Museo Botánico Berlin-Dahlem & Asociación Jardín Botánico La Laguna. Berlin, Antiguo Cuscatlán 2016.";
+            rights3 = Rights.NewInstance(text, Language.SPANISH_CASTILIAN(), RightsType.COPYRIGHT());
+            getCommonService().save(rights1);
+            getCommonService().save(rights2);
+            getCommonService().save(rights3);
+        }
+    }
+
+    private Integer salvadorArtistId;
+    private AgentBase<?> getSalvadorArtist() {
+        if (salvadorArtistId == null){
+            Person person = Person.NewInstance();
+            person.setFirstname("José Gerver");
+            person.setLastname("Molina");
+            salvadorArtistId = getAgentService().save(person).getId();
+            return person;
+        }else{
+            return getAgentService().find(salvadorArtistId);
+        }
+    }
+
+    private Integer salvadorRef1Id;
+    private Integer salvadorRef2Id;
+    private Integer salvadorRef3Id;
+
+    private Reference getSalvadorReference(String vol){
+        if (salvadorRef1Id == null){
+            makeSalvadorReferences();
+        }
+        if ("2009".equals(vol)){
+            return getReferenceService().find(salvadorRef1Id);
+        }else if ("2012".equals(vol)){
+            return getReferenceService().find(salvadorRef2Id);
+        }else if ("2016".equals(vol)){
+            return getReferenceService().find(salvadorRef3Id);
+        }else{
+            throw new RuntimeException("Volume not recognized: " + vol);
+        }
+
+    }
+
+    private void makeSalvadorReferences() {
+        Person walter = Person.NewTitledInstance("Berendsohn, W. G.");
+        walter.setFirstname("Walter G.");
+        walter.setLastname("Berendsohn");
+        Person katja = Person.NewTitledInstance("Gruber, Anne Kathrina");
+        katja.setFirstname("Anne Katharina");
+        katja.setLastname("Gruber");
+        Person monte = Person.NewTitledInstance("Monterrosa Salomón, J.");
+        Person olmedo = Person.NewTitledInstance("Olmedo Galán, P.");
+        Person rodriguez = Person.NewTitledInstance("Rodríguez Delcid, D");
+
+        Team team1 = Team.NewInstance();
+        team1.addTeamMember(walter);
+        team1.addTeamMember(katja);
+        team1.addTeamMember(monte);
+
+        Team team2 = Team.NewInstance();
+        team2.addTeamMember(walter);
+        team2.addTeamMember(katja);
+        team2.addTeamMember(rodriguez);
+        team2.addTeamMember(olmedo);
+
+        Reference vol1 = ReferenceFactory.newBook();
+        Reference vol2 = ReferenceFactory.newBook();
+        Reference vol3 = ReferenceFactory.newBook();
+
+        vol1.setAuthorship(team1);
+        vol2.setAuthorship(team1);
+        vol3.setAuthorship(team2);
+
+        vol1.setDatePublished(TimePeriodParser.parseString("2009"));
+        vol2.setDatePublished(TimePeriodParser.parseString("2012"));
+        vol3.setDatePublished(TimePeriodParser.parseString("2016"));
+
+        Reference englera = ReferenceFactory.newPrintSeries("Englera");
+        vol1.setInSeries(englera);
+        vol2.setInSeries(englera);
+        vol3.setInSeries(englera);
+
+        vol1.setTitle("Nova Silva Cuscatlanica, Árboles nativos e introducidos de El Salvador - Parte 1: Angiospermae - Familias A-L");
+        vol2.setTitle("Nova Silva Cuscatlanica, Árboles nativos e introducidos de El Salvador - Parte 2: Angiospermae - Familias M-P y Pteridophyta");
+        vol3.setTitle("Nova Silva Cuscatlanica, Árboles nativos e introducidos de El Salvador - Parte 3: Angiospermae - Familias R-Z y Gymnospermae");
+
+        vol1.setVolume("29(1)");
+        vol2.setVolume("29(2)");
+        vol3.setVolume("29(3)");
+
+        vol1.setPages("1-438");
+        vol2.setVolume("1-300");
+        vol3.setVolume("1-356");
+
+        salvadorRef1Id = getReferenceService().save(vol1).getId();
+        salvadorRef2Id = getReferenceService().find(getReferenceService().saveOrUpdate(vol2)).getId();
+        salvadorRef3Id = getReferenceService().find(getReferenceService().saveOrUpdate(vol3)).getId();
+        return;
+    }
+
+
+    /**
+     * @param media
+     * @param uri
+     * @param imageInfo
+     * @param size
+     */
+    private void makeMediaRepresentation(Media media, URI uri) {
+        ImageInfo imageInfo = null;
+        Integer size = null;
+        try {
+            imageInfo = ImageInfo.NewInstance(uri, 30);
+        } catch (IOException | HttpException e) {
+            logger.error("Error when reading image meta: " + e + ", "+ uri.toString());
+        }
+        String mimeType = imageInfo == null ? null : imageInfo.getMimeType();
+        String suffix = imageInfo == null ? null : imageInfo.getSuffix();
+        MediaRepresentation mediaRepresentation = MediaRepresentation.NewInstance(mimeType, suffix);
+        media.addRepresentation(mediaRepresentation);
+        ImageFile image = ImageFile.NewInstance(uri, size, imageInfo);
+        mediaRepresentation.addRepresentationPart(image);
+    }
 
 	private TaxonBase<?> getTaxon(Map<String, TaxonBase> taxonMap, Integer taxonIdObj, Number taxonId){
 		if (taxonIdObj != null){
