@@ -58,10 +58,11 @@ import eu.etaxonomy.cdm.model.description.DescriptionElementBase;
 import eu.etaxonomy.cdm.model.description.DescriptionElementSource;
 import eu.etaxonomy.cdm.model.description.Distribution;
 import eu.etaxonomy.cdm.model.description.Feature;
+import eu.etaxonomy.cdm.model.description.FeatureNode;
+import eu.etaxonomy.cdm.model.description.FeatureTree;
 import eu.etaxonomy.cdm.model.description.PresenceAbsenceTerm;
 import eu.etaxonomy.cdm.model.description.TaxonDescription;
 import eu.etaxonomy.cdm.model.description.TextData;
-import eu.etaxonomy.cdm.model.location.Country;
 import eu.etaxonomy.cdm.model.location.NamedArea;
 import eu.etaxonomy.cdm.model.location.NamedAreaLevel;
 import eu.etaxonomy.cdm.model.location.NamedAreaType;
@@ -124,8 +125,14 @@ public class BerlinModelFactsImport  extends BerlinModelImportBase {
 
 		Map<Integer, Feature>  result = state.getConfig().getFeatureMap();
 		Source source = state.getConfig().getSource();
+        boolean createFeatureTree = state.getConfig().isSalvador();  //for some reason feature tree creation does not work for salavdor
 
-		try {
+        FeatureTree featureTree = (!createFeatureTree) ? null : FeatureTree.NewInstance(state.getConfig().getFeatureTreeUuid());
+        if (createFeatureTree){
+            featureTree.setTitleCache(state.getConfig().getFeatureTreeTitle(), true);
+        }
+
+        try {
 			//get data from database
 			String strQuery =
 					" SELECT FactCategory.* " +
@@ -173,6 +180,12 @@ public class BerlinModelFactsImport  extends BerlinModelImportBase {
 				}
 
 				result.put(factCategoryId, feature);
+				if (createFeatureTree){
+				    featureTree.getRoot().addChild(FeatureNode.NewInstance(feature));
+				}
+			}
+			if (createFeatureTree){
+			    getFeatureTreeService().save(featureTree);
 			}
 			return result;
 		} catch (SQLException e) {
@@ -388,7 +401,8 @@ public class BerlinModelFactsImport  extends BerlinModelImportBase {
 
 						if (state.getConfig().isSalvador()){
 						    if (categoryFkInt == 306){
-						        deb = CommonTaxonName.NewInstance(fact, Language.SPANISH_CASTILIAN(), Country.ELSALVADORREPUBLICOF());
+						        NamedArea area = null;  // for now we do not set an area as it can not be disabled in dataportals via css yet
+						        deb = CommonTaxonName.NewInstance(fact, Language.SPANISH_CASTILIAN(), area);
 						    }else if (categoryFkInt == 307){
 						        Distribution salvadorDistribution = salvadorDistributionFromMuestrasDeHerbar((Taxon)taxonBase, fact);
 						        if (salvadorDistribution != null){
@@ -914,9 +928,9 @@ public class BerlinModelFactsImport  extends BerlinModelImportBase {
         vol2.setInSeries(englera);
         vol3.setInSeries(englera);
 
-        vol1.setTitle("Nova Silva Cuscatlanica, Árboles nativos e introducidos de El Salvador - Parte 1: Angiospermae - Familias A-L");
-        vol2.setTitle("Nova Silva Cuscatlanica, Árboles nativos e introducidos de El Salvador - Parte 2: Angiospermae - Familias M-P y Pteridophyta");
-        vol3.setTitle("Nova Silva Cuscatlanica, Árboles nativos e introducidos de El Salvador - Parte 3: Angiospermae - Familias R-Z y Gymnospermae");
+        vol1.setTitle("Nova Silva Cuscatlanica, Árboles nativos e introducidos de El Salvador - Parte 1: Angiospermae - Familias A a L");
+        vol2.setTitle("Nova Silva Cuscatlanica, Árboles nativos e introducidos de El Salvador - Parte 2: Angiospermae - Familias M a P y Pteridophyta");
+        vol3.setTitle("Nova Silva Cuscatlanica, Árboles nativos e introducidos de El Salvador - Parte 3: Angiospermae - Familias R a Z y Gymnospermae");
 
         vol1.setVolume("29(1)");
         vol2.setVolume("29(2)");
@@ -925,6 +939,11 @@ public class BerlinModelFactsImport  extends BerlinModelImportBase {
         vol1.setPages("1-438");
         vol2.setVolume("1-300");
         vol3.setVolume("1-356");
+
+        String placePublished = "Berlin: Botanic Garden and Botanical Museum Berlin; Antiguo Cuscatlán: Asociación Jardín Botánico La Laguna, El Salvador";
+        vol1.setPlacePublished(placePublished);
+        vol2.setPlacePublished(placePublished);
+        vol3.setPlacePublished(placePublished);
 
         salvadorRef1Id = getReferenceService().save(vol1).getId();
         salvadorRef2Id = getReferenceService().find(getReferenceService().saveOrUpdate(vol2)).getId();

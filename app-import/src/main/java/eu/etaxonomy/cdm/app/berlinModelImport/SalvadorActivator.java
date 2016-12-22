@@ -47,14 +47,14 @@ public class SalvadorActivator {
 	static DbSchemaValidation hbm2dll = DbSchemaValidation.CREATE;
 	static final Source berlinModelSource = BerlinModelSources.El_Salvador();
 //	static final ICdmDataSource cdmDestination = CdmDestinations.localH2();
-    static final ICdmDataSource cdmDestination = CdmDestinations.cdm_salvador_preview();
-//    static final ICdmDataSource cdmDestination = CdmDestinations.cdm_salvador_production();
+//    static final ICdmDataSource cdmDestination = CdmDestinations.cdm_salvador_preview();
+    static final ICdmDataSource cdmDestination = CdmDestinations.cdm_salvador_production();
 	static final UUID treeUuid = UUID.fromString("b010c84d-6049-45f4-9f13-c065101eaa26");
 	static final UUID secUuid = UUID.fromString("d03ef02a-f226-4cb1-bdb4-f6c154f08a34");
 	static final int sourceSecId = 7331;
 
 	static final UUID featureTreeUuid = UUID.fromString("9d0e5628-2eda-43ed-bc59-138a7e39ce56");
-	static final Object[] featureKeyList = new Integer[]{302, 303, 306, 307, 309, 310, 311, 312, 350, 1500, 1800, 1900, 1950, 1980, 2000, 10299};
+	static final Object[] featureKeyList = new Integer[]{302, 303, 306, 307, 309, 310, 311, 312, 350, 1500, 1800, 1900, 1950, 1980, 2000};
 	static boolean isIgnore0AuthorTeam = true;  //special case for Salvador.
 	static boolean doExport = false;
 	static boolean useClassification = true;
@@ -96,7 +96,9 @@ public class SalvadorActivator {
 	static final boolean doUser = true;
 
 
-	static String factFilter = " factCategoryFk NOT IN  (1980, 1500, 1950, 1700) ";
+	static String factFilter = " factCategoryFk NOT IN  ("
+//	        + "302, 303, 306, 307, 309, 311, 310, "
+	        + "1980, 1500, 1950, 1700) ";
 
 
 // ************************ NONE **************************************** //
@@ -154,6 +156,8 @@ public class SalvadorActivator {
 		config.setDoMarker(doMarker);
 		config.setDoUser(doUser);
 
+		config.setTaxonNoteAsFeature(true);
+
 		config.setDbSchemaValidation(hbm2dll);
 
 		config.setCheck(check);
@@ -165,6 +169,9 @@ public class SalvadorActivator {
 		config.setUserTransformationMethod(getTransformUsernameMethod());
 		config.setSalvador(isSalvador);
 		config.setFactFilter(factFilter);
+
+		config.setFeatureTreeUuid(featureTreeUuid);
+		config.setFeatureTreeTitle("Salvador Portal Feature Tree");
 
 		// invoke import
 		CdmDefaultImport<BerlinModelImportConfigurator> bmImport = new CdmDefaultImport<BerlinModelImportConfigurator>();
@@ -178,12 +185,11 @@ public class SalvadorActivator {
 
     //create feature tree
     private void createFeatureTree(BerlinModelImportConfigurator config,
-            CdmDefaultImport<BerlinModelImportConfigurator> bmImport)
-    {
+            CdmDefaultImport<BerlinModelImportConfigurator> bmImport){
         if (config.isDoFacts() && (config.getCheck().isImport()  )  ){
             try {
                 ICdmApplicationConfiguration app = bmImport.getCdmAppController();
-                TransactionStatus tx = app.startTransaction();
+                TransactionStatus tx = app.startTransaction(false);
 
                 //make feature tree
                 FeatureTree tree = TreeCreator.flatTree(featureTreeUuid, config.getFeatureMap(), featureKeyList);
