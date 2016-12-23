@@ -38,6 +38,7 @@ import eu.etaxonomy.cdm.model.common.CdmBase;
 import eu.etaxonomy.cdm.model.common.Extension;
 import eu.etaxonomy.cdm.model.common.ExtensionType;
 import eu.etaxonomy.cdm.model.common.Language;
+import eu.etaxonomy.cdm.model.description.Feature;
 import eu.etaxonomy.cdm.model.description.TaxonDescription;
 import eu.etaxonomy.cdm.model.description.TextData;
 import eu.etaxonomy.cdm.model.name.TaxonNameBase;
@@ -298,8 +299,12 @@ public class BerlinModelTaxonImport  extends BerlinModelImportBase {
 	 * @param notes
      */
     private void makeTaxonomicNote(BerlinModelImportState state, Taxon taxon, String notes) {
-        TaxonDescription desc = getTaxonDescription(taxon, false, true);
-        desc.addElement(TextData.NewInstance(notes, Language.SPANISH_CASTILIAN(), null));
+        if (isNotBlank(notes)){
+            TaxonDescription desc = getTaxonDescription(taxon, false, true);
+            desc.setDefault(true);  //hard coded for Salvador, not used elsewhere as far as I can see
+            TextData textData = TextData.NewInstance(Feature.NOTES() , notes, Language.SPANISH_CASTILIAN(), null);
+            desc.addElement(textData);
+        }
     }
 
     @Override

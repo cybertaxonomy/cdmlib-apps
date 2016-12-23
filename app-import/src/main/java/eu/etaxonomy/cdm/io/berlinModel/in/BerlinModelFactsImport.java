@@ -180,11 +180,13 @@ public class BerlinModelFactsImport  extends BerlinModelImportBase {
 				}
 
 				result.put(factCategoryId, feature);
-				if (createFeatureTree){
+				if (createFeatureTree && isPublicFeature(factCategoryId)){
 				    featureTree.getRoot().addChild(FeatureNode.NewInstance(feature));
 				}
 			}
 			if (createFeatureTree){
+			    featureTree.getRoot().addChild(FeatureNode.NewInstance(Feature.DISTRIBUTION()),2);
+                featureTree.getRoot().addChild(FeatureNode.NewInstance(Feature.NOTES()), featureTree.getRoot().getChildCount()-1);
 			    getFeatureTreeService().save(featureTree);
 			}
 			return result;
@@ -634,7 +636,7 @@ public class BerlinModelFactsImport  extends BerlinModelImportBase {
 		}
 		//all others (no image) -> getDescription
 		else{
-			boolean isPublic = ! (categoryFk == 1800 || categoryFk == 1900 || categoryFk == 2000);
+			boolean isPublic = isPublicFeature(categoryFk);
 		    for (TaxonDescription desc: descriptionSet){
 
 			    if (! desc.isImageGallery()){
@@ -666,6 +668,15 @@ public class BerlinModelFactsImport  extends BerlinModelImportBase {
 		}
 		return taxonDescription;
 	}
+
+
+    /**
+     * @param categoryFk
+     * @return
+     */
+    private boolean isPublicFeature(Integer categoryFk) {
+        return ! (categoryFk == 1800 || categoryFk == 1900 || categoryFk == 2000);
+    }
 
 
 	@Override
@@ -742,7 +753,10 @@ public class BerlinModelFactsImport  extends BerlinModelImportBase {
     		        vol = "2012";
     		        page = intFact + (intFact < 255 ? 3 : 4);
     		    }
-                String description = getSalvadorImageTitle(intFact);
+
+                String title = getSalvadorImageTitle(intFact, vol);
+                media.putTitle(Language.LATIN(), title);
+                String description = getSalvadorImageDescription(intFact);
                 media.putDescription(Language.SPANISH_CASTILIAN(), description);
 
     		    Reference ref = getSalvadorReference(vol);
@@ -774,8 +788,27 @@ public class BerlinModelFactsImport  extends BerlinModelImportBase {
 	}
 
 
-	private Map<Integer, String[]> salvadorImages = null;
-    private String getSalvadorImageTitle(Integer intFact) {
+	/**
+     * @param intFact
+     * @param vol
+     * @return
+     */
+    private String getSalvadorImageTitle(Integer intFact, String vol) {
+        initSalvadorImagesFile();
+        String[] line = salvadorImages.get(intFact);
+        if (line == null){
+            logger.warn("Could not find salvador image metadata for " + intFact);
+            return String.valueOf(intFact);
+        }else{
+            String name = getSalvadorImageNameInfo(intFact);
+            String result = UTF8.ENGLISH_QUOT_START +  name + UTF8.ENGLISH_QUOT_END + " [Berendsohn & al. " + vol + "]";
+            return result;
+        }
+    }
+
+
+    private Map<Integer, String[]> salvadorImages = null;
+    private String getSalvadorImageDescription(Integer intFact) {
         initSalvadorImagesFile();
         String[] line = salvadorImages.get(intFact);
         if (line == null){
