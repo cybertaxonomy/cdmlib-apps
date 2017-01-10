@@ -54,7 +54,7 @@ public class SalvadorActivator {
 	static final int sourceSecId = 7331;
 
 	static final UUID featureTreeUuid = UUID.fromString("9d0e5628-2eda-43ed-bc59-138a7e39ce56");
-	static final Object[] featureKeyList = new Integer[]{302, 303, 306, 307, 309, 310, 311, 312, 350, 1500, 1800, 1900, 1950, 1980, 2000};
+	static final Object[] featureKeyList = new Integer[]{302, 303, 306, 307, 309, 310, 311, 312, 1500, 1800, 1900, 1950, 1980, 2000};
 	static boolean isIgnore0AuthorTeam = true;  //special case for Salvador.
 	static boolean doExport = false;
 	static boolean useClassification = true;
@@ -98,7 +98,7 @@ public class SalvadorActivator {
 
 	static String factFilter = " factCategoryFk NOT IN  ("
 //	        + "302, 303, 306, 307, 309, 311, 310, "
-	        + "1980, 1500, 1950, 1700) ";
+	        + "1980, 1500, 1950, 1700, 350) ";
 
 
 // ************************ NONE **************************************** //
