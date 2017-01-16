@@ -166,7 +166,7 @@ public class RedListGefaesspflanzenImportNames extends DbImportBase<RedListGefae
         //---TAXON---
         TaxonBase<?> taxonBase = importTaxon(rs, name, state);
         if(taxonBase==null){
-            RedListUtil.logMessage(id, "Taxon for name "+name+" could not be created.", logger);
+            RedListUtil.logMessage(id, "!SERIOUS ERROR! Taxon for name "+name+" could not be created!", logger);
             return;
         }
 
@@ -235,6 +235,7 @@ public class RedListGefaesspflanzenImportNames extends DbImportBase<RedListGefae
             taxonBase = Synonym.NewInstance(name, null);
         }
         else{
+            RedListUtil.logMessage(id, "Taxon was not created!! Unknown value for "+RedListUtil.GUELT+"!", logger);
             return null;
         }
 
@@ -614,6 +615,9 @@ public class RedListGefaesspflanzenImportNames extends DbImportBase<RedListGefae
             }
             else if(rankStr.equals("KMB")){
                 return getRank(state, RedListUtil.uuidRankCombination, "Combination", "Combination", "", (OrderedTermVocabulary<Rank>) Rank.GENUS().getVocabulary(), null, RankClass.Infraspecific);
+            }
+            else if(rankStr.equals("'FO")){
+                return getRank(state, RedListUtil.uuidRankForme, "Forme'", "Forme'", "", (OrderedTermVocabulary<Rank>) Rank.GENUS().getVocabulary(), null, RankClass.Infraspecific);
             }
             else{
                 rank = state.getTransformer().getRankByKey(rankStr);

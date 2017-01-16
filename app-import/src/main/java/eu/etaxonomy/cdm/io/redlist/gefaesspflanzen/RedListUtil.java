@@ -50,6 +50,7 @@ public class RedListUtil {
     public static final UUID uuidRankLusus = UUID.fromString("4c8e12f6-2c16-4eda-a7d9-2fd247dcce789");
     public static final UUID uuidRankSubspeciesPrincipes = UUID.fromString("b6b9351b-6beb-431d-8c7a-d30fe0cf3a90");
     public static final UUID uuidRankCombination = UUID.fromString("ec2c580e-416a-4ecf-85df-d03641f3bd64");
+    public static final UUID uuidRankForme = UUID.fromString("05b4f66f-5559-4e44-bbb8-70744a5ea64a");
 
     public static final String NAME_NAMESPACE = "name";
     public static final String AUTHOR_NAMESPACE = "author";
@@ -71,6 +72,8 @@ public class RedListUtil {
     public static final String GUELT_BASIONYM = "b";
     public static final String GUELT_SYNONYM = "x";
     public static final String GUELT_ACCEPTED_TAXON = "1";
+    public static final String CL_TAXON_B = "b";
+    public static final String CL_TAXON_K = "k";
     public static final String HYB_X = "x";
     public static final String HYB_XF = "xf";
     public static final String HYB_XS = "xs";
@@ -86,7 +89,7 @@ public class RedListUtil {
     public static final String NAMNR = "NAMNR";
     public static final String SEQNUM = "SEQNUM";
     public static final String GUELT = "GUELT";
-    public static final String LOWER = "LOWER";
+    public static final String LOWER = "LOWER_G";
     public static final String AUTOR_BASI = "AUTOR_BASI";
     public static final String AUTOR_KOMB = "AUTOR_KOMB";
     public static final String ZUSATZ = "ZUSATZ";
@@ -120,7 +123,8 @@ public class RedListUtil {
     public static final String AO = "AO";
     public static final String R = "R";
     public static final String O = "O";
-    public static final String S = "S";
+    public static final String S = "S1";
+    public static final String S2 = "S2";
 
     public static void logMessage(long id, String message, Logger logger){
         logger.error(NAMNR+": "+id+" "+message);

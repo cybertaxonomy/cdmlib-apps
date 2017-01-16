@@ -169,6 +169,7 @@ public class RedListGefaesspflanzenImportClassification extends DbImportBase<Red
 
         //Gesamtliste
         TaxonBase<?> taxonBase = state.getRelatedObject(RedListUtil.TAXON_GESAMTLISTE_NAMESPACE, String.valueOf(id), TaxonBase.class);
+        taxonBase.setSec(gesamtListeClassification.getReference());
         Taxon parent = state.getRelatedObject(RedListUtil.TAXON_GESAMTLISTE_NAMESPACE, parentId, Taxon.class);
         if(parent!=null && !parent.isInstanceOf(Taxon.class)){
             RedListUtil.logMessage(id, parent+" is no taxon but is a parent of "+taxonBase+" (Gesamtliste)", logger);
@@ -182,8 +183,9 @@ public class RedListGefaesspflanzenImportClassification extends DbImportBase<Red
                 Taxon family = (Taxon) state.getRelatedObject(RedListUtil.FAMILY_NAMESPACE_GESAMTLISTE, familieString);
                 gesamtListeClassification.addParentChild(family, HibernateProxyHelper.deproxy(taxonBase, Taxon.class), null, null);
                 //Buttler/Checklist taxon
-                if(CdmUtils.isNotBlank(clTaxonString) && clTaxonString.equals("b")){
+                if(CdmUtils.isNotBlank(clTaxonString) && clTaxonString.equals(RedListUtil.CL_TAXON_B)){
                     checklistClassification.addParentChild(family, HibernateProxyHelper.deproxy(taxonBase, Taxon.class), null, null);
+                    taxonBase.setSec(checklistClassification.getReference());
                 }
                 if(family.getTaxonNodes().isEmpty()){
                     gesamtListeClassification.addChildTaxon(family, null, null);
@@ -198,19 +200,25 @@ public class RedListGefaesspflanzenImportClassification extends DbImportBase<Red
         else{
             createParentChildNodes(gesamtListeClassification, id, gueltString, taxZusatzString, taxonBase, parent);
             //Buttler/Checklist taxon
-            if(CdmUtils.isNotBlank(clTaxonString) && clTaxonString.equals("b")){
-                if(taxonBase.isInstanceOf(Taxon.class)){
-                    createParentChildNodes(checklistClassification, id, gueltString, taxZusatzString, taxonBase, parent);
+            if(CdmUtils.isNotBlank(clTaxonString) && clTaxonString.equals(RedListUtil.CL_TAXON_B)){
+                if(!checklistClassification.isTaxonInTree(parent)){
+                    RedListUtil.logInfoMessage(id, parent+" is parent taxon but is not in checklist. Skipping child "+taxonBase, logger);
                 }
-                else if(taxonBase.isInstanceOf(Synonym.class)){
-                    //if it is a synonym it is already added to the accepted taxon
-                    //so we just change the sec reference
-                    taxonBase.setSec(checklistClassification.getReference());
-                    taxonBase.setTitleCache(null);
+                else{
+                    if(taxonBase.isInstanceOf(Taxon.class)){
+                        createParentChildNodes(checklistClassification, id, gueltString, taxZusatzString, taxonBase, parent);
+                    }
+                    else if(taxonBase.isInstanceOf(Synonym.class)){
+                        //if it is a synonym it is already added to the accepted taxon
+                        //so we just change the sec reference
+                        taxonBase.setSec(checklistClassification.getReference());
+                        taxonBase.setTitleCache(null);
+                    }
                 }
 
             }
         }
+        taxonBase.setTitleCache(null, false);//refresh title cache
 
         //add taxa for concept relationships to E, W, K, AW, AO, R, O, S
         addTaxonToClassification(classificationE, RedListUtil.CLASSIFICATION_NAMESPACE_E, relationE, taxonBase, id, state);
@@ -325,7 +333,6 @@ public class RedListGefaesspflanzenImportClassification extends DbImportBase<Red
         }
         //set sec reference
         taxonBase.setSec(classification.getReference());
-        taxonBase.setTitleCache(null, false);//refresh title cache
     }
 
     @Override
