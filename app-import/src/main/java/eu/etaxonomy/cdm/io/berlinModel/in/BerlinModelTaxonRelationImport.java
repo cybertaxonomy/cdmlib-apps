@@ -300,6 +300,10 @@ public class BerlinModelTaxonRelationImport  extends BerlinModelImportBase  {
 							}
 							handleAllRelatedTaxa(state, toTaxon, classificationMap, treeRefFk);
 							Synonym synonym = (Synonym)taxon1;
+							if (synonym.getAcceptedTaxon()!= null){
+							    logger.warn("Synonym already has an accepted taxon. Create clone.");
+							    synonym = (Synonym)synonym.clone();
+							}
 							makeSynRel(relQualifierFk, toTaxon, synonym, citation, microcitation);
 							if (isNotBlank(notes)){
 	                            logger.warn("Notes for synonym relationship or unknown taxon relationship not handled");

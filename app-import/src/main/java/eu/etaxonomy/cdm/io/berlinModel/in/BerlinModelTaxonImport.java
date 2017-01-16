@@ -37,6 +37,10 @@ import eu.etaxonomy.cdm.model.agent.Person;
 import eu.etaxonomy.cdm.model.common.CdmBase;
 import eu.etaxonomy.cdm.model.common.Extension;
 import eu.etaxonomy.cdm.model.common.ExtensionType;
+import eu.etaxonomy.cdm.model.common.Language;
+import eu.etaxonomy.cdm.model.description.Feature;
+import eu.etaxonomy.cdm.model.description.TaxonDescription;
+import eu.etaxonomy.cdm.model.description.TextData;
 import eu.etaxonomy.cdm.model.name.TaxonNameBase;
 import eu.etaxonomy.cdm.model.reference.Reference;
 import eu.etaxonomy.cdm.model.taxon.Synonym;
@@ -47,11 +51,12 @@ import eu.etaxonomy.cdm.model.taxon.TaxonBase;
 /**
  * @author a.mueller
  * @created 20.03.2008
- * @version 1.0
  */
 @Component
 public class BerlinModelTaxonImport  extends BerlinModelImportBase {
-	private static final Logger logger = Logger.getLogger(BerlinModelTaxonImport.class);
+    private static final long serialVersionUID = -1186364983750790695L;
+
+    private static final Logger logger = Logger.getLogger(BerlinModelTaxonImport.class);
 
 	public static final String NAMESPACE = "Taxon";
 
@@ -255,7 +260,11 @@ public class BerlinModelTaxonImport  extends BerlinModelImportBase {
 					}
 
 					//Notes
-					doIdCreatedUpdatedNotes(state, taxonBase, rs, taxonId, NAMESPACE);
+					boolean excludeNotes = state.getConfig().isTaxonNoteAsFeature() && taxonBase.isInstanceOf(Taxon.class);
+					doIdCreatedUpdatedNotes(state, taxonBase, rs, taxonId, NAMESPACE, false, excludeNotes);
+					if (excludeNotes){
+					    makeTaxonomicNote(state, CdmBase.deproxy(taxonBase, Taxon.class), rs.getString("Notes"));
+					}
 
 					//external url
 					if (config.getMakeUrlForTaxon() != null){
@@ -284,7 +293,21 @@ public class BerlinModelTaxonImport  extends BerlinModelImportBase {
 		return success;
 	}
 
-	@Override
+	/**
+     * @param state
+     * @param taxonBase
+	 * @param notes
+     */
+    private void makeTaxonomicNote(BerlinModelImportState state, Taxon taxon, String notes) {
+        if (isNotBlank(notes)){
+            TaxonDescription desc = getTaxonDescription(taxon, false, true);
+            desc.setDefault(true);  //hard coded for Salvador, not used elsewhere as far as I can see
+            TextData textData = TextData.NewInstance(Feature.NOTES() , notes, Language.SPANISH_CASTILIAN(), null);
+            desc.addElement(textData);
+        }
+    }
+
+    @Override
 	public Map<Object, Map<String, ? extends CdmBase>> getRelatedObjectsForPartition(ResultSet rs, BerlinModelImportState state) {
 		String nameSpace;
 		Class<?> cdmClass;

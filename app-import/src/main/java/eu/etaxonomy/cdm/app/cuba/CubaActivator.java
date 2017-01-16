@@ -310,6 +310,7 @@ public class CubaActivator {
 	public static void main(String[] args) {
 	    CubaActivator me = new CubaActivator();
 		me.doImport(cdmDestination);
+	    System.exit(0);
 	}
 
 }

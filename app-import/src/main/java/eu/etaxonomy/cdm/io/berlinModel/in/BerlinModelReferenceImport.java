@@ -76,9 +76,13 @@ import eu.etaxonomy.cdm.model.reference.ReferenceFactory;
  */
 @Component
 public class BerlinModelReferenceImport extends BerlinModelImportBase {
-	private static final Logger logger = Logger.getLogger(BerlinModelReferenceImport.class);
+    private static final long serialVersionUID = -3667566958769967591L;
+
+    private static final Logger logger = Logger.getLogger(BerlinModelReferenceImport.class);
 
 	public static final String REFERENCE_NAMESPACE = "Reference";
+	private static final String REF_AUTHOR_NAMESPACE = "Reference.refAuthorString";
+
 
 	public static final UUID REF_DEPOSITED_AT_UUID = UUID.fromString("23ca88c7-ce73-41b2-8ca3-2cb22f013beb");
 	public static final UUID REF_SOURCE_UUID = UUID.fromString("d6432582-2216-4b08-b0db-76f6c1013141");
@@ -239,7 +243,8 @@ public class BerlinModelReferenceImport extends BerlinModelImportBase {
 
 		Map<Integer, Reference> refToSave = new HashMap<Integer, Reference>();
 
-		Map<String, Reference> relatedReferences = partitioner.getObjectMap(REFERENCE_NAMESPACE);
+		@SuppressWarnings("unchecked")
+        Map<String, Reference> relatedReferences = partitioner.getObjectMap(REFERENCE_NAMESPACE);
 
 		BerlinModelImportConfigurator config = state.getConfig();
 
@@ -350,22 +355,38 @@ public class BerlinModelReferenceImport extends BerlinModelImportBase {
 		Map<Object, Map<String, ? extends CdmBase>> result = new HashMap<Object, Map<String, ? extends CdmBase>>();
 
 		try{
-			Set<String> teamIdSet = new HashSet<String>();
-			Set<String> referenceIdSet = new HashSet<String>();
+			Set<String> teamIdSet = new HashSet<>();
+			Set<String> referenceIdSet = new HashSet<>();
+			Set<String> teamStringSet = new HashSet<>();
 
 			while (rs.next()){
 				handleForeignKey(rs, teamIdSet, "NomAuthorTeamFk");
 				handleForeignKey(rs, referenceIdSet, "InRefFk");
+				handleForeignKey(rs, teamStringSet, "refAuthorString");
 				//TODO only needed in second path but state not available here to check if state is second path
 				handleForeignKey(rs, referenceIdSet, "refId");
+			}
+
+			Set<String> teamStringSet2 = new HashSet<>();
+			for (String teamString : teamStringSet){
+			    teamStringSet2.add(teamString.replace("'", "´"));
 			}
 
 			//team map
 			nameSpace = BerlinModelAuthorTeamImport.NAMESPACE;
 			cdmClass = Team.class;
 			idSet = teamIdSet;
-			Map<String, Team> teamMap = (Map<String, Team>)getCommonService().getSourcedObjectsByIdInSource(cdmClass, idSet, nameSpace);
+			@SuppressWarnings("unchecked")
+            Map<String, Team> teamMap = (Map<String, Team>)getCommonService().getSourcedObjectsByIdInSource(cdmClass, idSet, nameSpace);
 			result.put(nameSpace, teamMap);
+
+            //refAuthor map
+            nameSpace = REF_AUTHOR_NAMESPACE;
+            cdmClass = Team.class;
+            idSet = teamStringSet2;
+            @SuppressWarnings("unchecked")
+            Map<String, Team> refAuthorMap = (Map<String, Team>)getCommonService().getSourcedObjectsByIdInSource(cdmClass, idSet, nameSpace);
+            result.put(nameSpace, refAuthorMap);
 
 			//reference map
 			nameSpace = BerlinModelReferenceImport.REFERENCE_NAMESPACE;
@@ -399,7 +420,8 @@ public class BerlinModelReferenceImport extends BerlinModelImportBase {
 				Map<Integer, Reference> refToSave,
 				Map<String, Reference> relatedReferences,
 				RefCounter refCounter){
-		boolean success = true;
+
+	    boolean success = true;
 
 		Integer refId = null;
 		try {
@@ -494,7 +516,8 @@ public class BerlinModelReferenceImport extends BerlinModelImportBase {
 				Map<Integer, Reference> refToSave
 				) throws SQLException{
 
-		Map<String, Team> teamMap = partitioner.getObjectMap(BerlinModelAuthorTeamImport.NAMESPACE);
+		@SuppressWarnings("unchecked")
+        Map<String, Team> teamMap = partitioner.getObjectMap(BerlinModelAuthorTeamImport.NAMESPACE);
 
 		String refCache = rs.getString("refCache");
 		String nomRefCache = rs.getString("nomRefCache");
@@ -523,7 +546,7 @@ public class BerlinModelReferenceImport extends BerlinModelImportBase {
 		}
 
 		//author
-		TeamOrPersonBase<?> author = getAuthorship(refAuthorString , nomAuthor);
+		TeamOrPersonBase<?> author = getAuthorship(state, refAuthorString , nomAuthor);
 		ref.setAuthorship(author);
 
 		//save
@@ -694,7 +717,7 @@ public class BerlinModelReferenceImport extends BerlinModelImportBase {
 
 		//Set bookAttributes = new String[]{"edition", "isbn", "pages","publicationTown","publisher","volume"};
 
-		Set<String> omitAttributes = new HashSet<String>();
+		Set<String> omitAttributes = new HashSet<>();
 		String attrSeries = "series";
 //		omitAttributes.add(attrSeries);
 
@@ -844,16 +867,21 @@ public class BerlinModelReferenceImport extends BerlinModelImportBase {
 	}
 
 
-	private static TeamOrPersonBase<?> getAuthorship(String authorString, TeamOrPersonBase<?> nomAuthor){
-		TeamOrPersonBase<?> result;
+	private static TeamOrPersonBase<?> getAuthorship(BerlinModelImportState state, String authorString, TeamOrPersonBase<?> nomAuthor){
+
+	    TeamOrPersonBase<?> result;
 		if (nomAuthor != null){
 			result = nomAuthor;
 		} else if (StringUtils.isNotBlank(authorString)){
-			//FIXME check for existing team / persons
-			TeamOrPersonBase<?> team = Team.NewInstance();
-			team.setNomenclaturalTitle(authorString);
-			team.setTitleCache(authorString, true);
-			team.setNomenclaturalTitle(authorString);
+			//TODO match with existing Persons/Teams
+		    Team team = state.getRelatedObject(REF_AUTHOR_NAMESPACE, authorString, Team.class);
+			if (team == null){
+			    team = Team.NewInstance();
+			    team.setNomenclaturalTitle(authorString);
+			    team.setTitleCache(authorString, true);
+			    state.addRelatedObject(REF_AUTHOR_NAMESPACE, authorString, team);
+			    team.addImportSource(authorString, REF_AUTHOR_NAMESPACE, state.getConfig().getSourceReference(), null);
+			}
 			result = team;
 		}else{
 			result = null;
@@ -869,7 +897,7 @@ public class BerlinModelReferenceImport extends BerlinModelImportBase {
 	 * @return
 	 */
 	public Set<String> getObligatoryAttributes(boolean lowerCase, BerlinModelImportConfigurator config){
-		Set<String> result = new HashSet<String>();
+		Set<String> result = new HashSet<>();
 		Class<ICdmImport>[] ioClassList = config.getIoClassList();
 		logger.warn("getObligatoryAttributes has been commented because it still needs to be adapted to the new package structure");
 		result.addAll(Arrays.asList(unclearMappers));
@@ -881,7 +909,7 @@ public class BerlinModelReferenceImport extends BerlinModelImportBase {
 		}
 		result.addAll(mapping.getSourceAttributes());
 		if (lowerCase){
-			Set<String> lowerCaseResult = new HashSet<String>();
+			Set<String> lowerCaseResult = new HashSet<>();
 			for (String str : result){
 				if (str != null){lowerCaseResult.add(str.toLowerCase());}
 			}

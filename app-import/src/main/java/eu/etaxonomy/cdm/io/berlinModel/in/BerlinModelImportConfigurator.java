@@ -13,6 +13,7 @@ import java.io.File;
 import java.lang.reflect.Method;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.UUID;
 
 import org.apache.log4j.Logger;
 
@@ -20,7 +21,6 @@ import eu.etaxonomy.cdm.database.ICdmDataSource;
 import eu.etaxonomy.cdm.io.berlinModel.in.BerlinModelTaxonImport.PublishMarkerChooser;
 import eu.etaxonomy.cdm.io.berlinModel.in.validation.BerlinModelGeneralImportValidator;
 import eu.etaxonomy.cdm.io.common.DbImportConfiguratorBase;
-import eu.etaxonomy.cdm.io.common.IImportConfigurator;
 import eu.etaxonomy.cdm.io.common.Source;
 import eu.etaxonomy.cdm.io.common.mapping.IInputTransformer;
 import eu.etaxonomy.cdm.model.name.NomenclaturalCode;
@@ -29,7 +29,7 @@ import eu.etaxonomy.cdm.model.name.NomenclaturalCode;
  * @author a.mueller
  * @created 20.03.2008
  */
-public class BerlinModelImportConfigurator extends DbImportConfiguratorBase<BerlinModelImportState> implements IImportConfigurator{
+public class BerlinModelImportConfigurator extends DbImportConfiguratorBase<BerlinModelImportState>{
     private static final long serialVersionUID = 70300913255425256L;
 
     private static Logger logger = Logger.getLogger(BerlinModelImportConfigurator.class);
@@ -110,7 +110,16 @@ public class BerlinModelImportConfigurator extends DbImportConfiguratorBase<Berl
 	//specific functions
 	private Method 	makeUrlForTaxon = null;
 
-	@Override
+	private UUID featureTreeUuid;
+	private String featureTreeTitle;
+
+    private boolean isTaxonNoteAsFeature = false;
+
+
+    public boolean isTaxonNoteAsFeature() {return isTaxonNoteAsFeature;}
+    public void setTaxonNoteAsFeature(boolean isTaxonNoteAsFeature) {this.isTaxonNoteAsFeature = isTaxonNoteAsFeature;}
+
+    @Override
     protected void makeIoClassList(){
 		ioClassList = new Class[]{
 				BerlinModelGeneralImportValidator.class
@@ -631,5 +640,22 @@ public class BerlinModelImportConfigurator extends DbImportConfiguratorBase<Berl
 
     public boolean isSalvador() {return isSalvador;}
     public void setSalvador(boolean isSalvador) {this.isSalvador = isSalvador;}
+
+    public UUID getFeatureTreeUuid() {
+        return featureTreeUuid;
+    }
+    public void setFeatureTreeUuid(UUID featureTreeUuid) {
+        this.featureTreeUuid = featureTreeUuid;
+    }
+
+    public String getFeatureTreeTitle() {
+        return featureTreeTitle;
+    }
+    public void setFeatureTreeTitle(String featureTreeTitle) {
+        this.featureTreeTitle = featureTreeTitle;
+    }
+
+
+
 
 }
