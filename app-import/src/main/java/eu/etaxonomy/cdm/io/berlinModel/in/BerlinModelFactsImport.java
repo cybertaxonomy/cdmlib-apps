@@ -51,6 +51,7 @@ import eu.etaxonomy.cdm.model.common.Marker;
 import eu.etaxonomy.cdm.model.common.MarkerType;
 import eu.etaxonomy.cdm.model.common.OriginalSourceType;
 import eu.etaxonomy.cdm.model.common.Representation;
+import eu.etaxonomy.cdm.model.common.TermBase;
 import eu.etaxonomy.cdm.model.common.TermType;
 import eu.etaxonomy.cdm.model.common.TermVocabulary;
 import eu.etaxonomy.cdm.model.description.CommonTaxonName;
@@ -203,9 +204,9 @@ public class BerlinModelFactsImport  extends BerlinModelImportBase {
      */
     private void adaptNewSalvadorFeature(int factCategoryId, Feature feature) {
         if (factCategoryId == 306){
-            addSpanishFactCategoryName(feature, "Nombre(s) común(es)");
+            addSpanishRepresentationLabel(feature, "Nombre(s) común(es)");
         } else if (factCategoryId == 307){
-            addSpanishFactCategoryName(feature, "Muestras de herbario");
+            addSpanishRepresentationLabel(feature, "Muestras de herbario");
         } else if (factCategoryId == 310){
             addEnglishFactCategoryName(feature, "Other references for taxon");
         } else if (factCategoryId == 309){
@@ -213,15 +214,15 @@ public class BerlinModelFactsImport  extends BerlinModelImportBase {
         } else if (factCategoryId == 311){
             addEnglishFactCategoryName(feature, "Taxon illustration references");
         } else if (factCategoryId == 312){
-            addSpanishFactCategoryName(feature, "Imágen");
+            addSpanishRepresentationLabel(feature, "Imágen");
         } else if (factCategoryId == 350){
-            addSpanishFactCategoryName(feature, "Descripción");
+            addSpanishRepresentationLabel(feature, "Descripción");
         } else if (factCategoryId == 303){
             addEnglishFactCategoryName(feature, "General distribution");
         } else if (factCategoryId == 2000){
             addEnglishFactCategoryName(feature, "Habitat in El Salvador");
         } else if (factCategoryId == 302){
-            addSpanishFactCategoryName(feature, "Usos");
+            addSpanishRepresentationLabel(feature, "Usos");
         } else if (factCategoryId == 1800){
             addEnglishFactCategoryName(feature, "Specimen notes");
         } else if (factCategoryId == 1900){
@@ -235,8 +236,8 @@ public class BerlinModelFactsImport  extends BerlinModelImportBase {
      * @param feature
      * @param string
      */
-    private void addSpanishFactCategoryName(Feature feature, String label) {
-        feature.getRepresentations().add(Representation.NewInstance(label, label, null, Language.SPANISH_CASTILIAN()));
+    private void addSpanishRepresentationLabel(TermBase term, String label) {
+        term.getRepresentations().add(Representation.NewInstance(label, label, null, Language.SPANISH_CASTILIAN()));
     }
 
     /**
@@ -251,13 +252,30 @@ public class BerlinModelFactsImport  extends BerlinModelImportBase {
 
     @Override
 	protected void doInvoke(BerlinModelImportState state) {
+        if (state.getConfig().isSalvador()){
+            invokeSpanishTermLabels();
+        }
 		featureMap = invokeFactCategories(state);
 		super.doInvoke(state);
 		return;
 	}
 
 
-	@Override
+	/**
+     *
+     */
+    private void invokeSpanishTermLabels() {
+        addSpanishRepresentationLabel(Feature.NOTES(), "Notas");
+        addSpanishRepresentationLabel(NamedAreaLevel.DEPARTMENT(), "Departamento");
+        addSpanishRepresentationLabel(PresenceAbsenceTerm.NATIVE(), "nativo");
+        addSpanishRepresentationLabel(PresenceAbsenceTerm.CULTIVATED(), "cultivado");
+        addSpanishRepresentationLabel(PresenceAbsenceTerm.PRESENT(), "presente");
+
+
+    }
+
+
+    @Override
 	protected String getIdQuery(BerlinModelImportState state) {
 		String result = super.getIdQuery(state);
 		if (StringUtils.isNotBlank(state.getConfig().getFactFilter())){
