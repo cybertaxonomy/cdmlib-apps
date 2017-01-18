@@ -57,11 +57,11 @@ public class BfnXmlImportFeature extends BfnXmlImportBase implements ICdmIO<BfnX
             "childNodes.taxon.name",
             "taxonNodes",
             "taxonNodes.taxon",
-            "synonymRelations",
+            "synonyms",
             "taxon.*",
             "taxon.sec",
             "taxon.name.*",
-            "taxon.synonymRelations",
+            "taxon.synonyms",
             "termVocabulary.*",
             "terms"
 

@@ -111,11 +111,11 @@ public class BfnXmlImportAddtionalTerms extends BfnXmlImportBase {
             "childNodes.taxon.name",
             "taxonNodes",
             "taxonNodes.taxon",
-            "synonymRelations",
+            "synonyms",
             "taxon.*",
             "taxon.sec",
             "taxon.name.*",
-            "taxon.synonymRelations",
+            "taxon.synonyms",
             "termVocabulary.*",
             "terms",
             "namedArea"
