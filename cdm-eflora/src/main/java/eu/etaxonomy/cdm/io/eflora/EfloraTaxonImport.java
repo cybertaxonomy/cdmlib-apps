@@ -58,10 +58,10 @@ import eu.etaxonomy.cdm.model.description.TaxonDescription;
 import eu.etaxonomy.cdm.model.description.TextData;
 import eu.etaxonomy.cdm.model.name.BotanicalName;
 import eu.etaxonomy.cdm.model.name.HomotypicalGroup;
+import eu.etaxonomy.cdm.model.name.INonViralName;
 import eu.etaxonomy.cdm.model.name.NameRelationshipType;
 import eu.etaxonomy.cdm.model.name.NameTypeDesignation;
 import eu.etaxonomy.cdm.model.name.NomenclaturalCode;
-import eu.etaxonomy.cdm.model.name.NonViralName;
 import eu.etaxonomy.cdm.model.name.Rank;
 import eu.etaxonomy.cdm.model.name.SpecimenTypeDesignation;
 import eu.etaxonomy.cdm.model.name.SpecimenTypeDesignationStatus;
@@ -610,7 +610,7 @@ public class EfloraTaxonImport  extends EfloraImportBase implements ICdmIO<Eflor
 		if (strGoto == null){
 			return "";
 		}
-		String strGenusName = CdmBase.deproxy(taxon.getName(), NonViralName.class).getGenusOrUninomial();
+		String strGenusName = taxon.getName().getGenusOrUninomial();
 		strGoto = strGoto.replaceAll("\\([^\\(\\)]*\\)", "");  //replace all brackets
 		strGoto = strGoto.replaceAll("\\s+", " "); //replace multiple whitespaces by exactly one whitespace
 
@@ -622,7 +622,7 @@ public class EfloraTaxonImport  extends EfloraImportBase implements ICdmIO<Eflor
 				split[i] = strGenusName;
 			}
 //			if (isInfraSpecificMarker(single)){
-//				String strSpeciesName = CdmBase.deproxy(taxon.getName(), NonViralName.class).getSpecificEpithet();
+//				String strSpeciesName = taxon.getName().getSpecificEpithet();
 //				split[i] = strGenusName + " " + strSpeciesName + " ";
 //			}
 			result = (result + " " + split[i]).trim();
@@ -1152,11 +1152,12 @@ public class EfloraTaxonImport  extends EfloraImportBase implements ICdmIO<Eflor
 	 */
 	//body/taxon/
 	private HomotypicalGroup handleNomTaxon(EfloraImportState state, Element elNom, Taxon taxon, HomotypicalGroup homotypicalGroup, boolean isSynonym) {
-		NonViralName name = makeName(taxon, homotypicalGroup, isSynonym);
-		String num = null;
+	    INonViralName nvn = makeName(taxon, homotypicalGroup, isSynonym);
+	    TaxonNameBase<?,?> name = TaxonNameBase.castAndDeproxy(nvn);
+	    String num = null;
 
 		boolean hasGenusInfo = false;
-		TeamOrPersonBase lastTeam = null;
+		TeamOrPersonBase<?> lastTeam = null;
 
 		//genus
 		List<Element> elGenus = XmlHelp.getAttributedChildListWithValue(elNom, "name", "class", "genus");
@@ -1262,19 +1263,19 @@ public class EfloraTaxonImport  extends EfloraImportBase implements ICdmIO<Eflor
 	}
 
 
-	private void handleQuestionMark(NonViralName name, Taxon taxon) {
+	private void handleQuestionMark(INonViralName name, Taxon taxon) {
 		int count = name.getTaxonBases().size();
 		if (count != 1){
 			logger.warn("Name has " + count + " taxa. This is not handled for question mark");
 		}else{
-			TaxonBase taxonBase = (TaxonBase)name.getTaxonBases().iterator().next();
+			TaxonBase taxonBase = name.getTaxonBases().iterator().next();
 			taxonBase.setDoubtful(true);
 		}
 	}
 
 
 	//merge with handleNomTaxon
-	private void handleHomonym(EfloraImportState state, Element elHomonym, NonViralName upperName) {
+	private void handleHomonym(EfloraImportState state, Element elHomonym, TaxonNameBase upperName) {
 		verifyNoAttribute(elHomonym);
 
 		//hommonym name
@@ -1326,7 +1327,6 @@ public class EfloraTaxonImport  extends EfloraImportBase implements ICdmIO<Eflor
 		}else{
 			upperName.addRelationshipToName(homonymName, relType, null);
 		}
-
 	}
 
 
@@ -1347,7 +1347,7 @@ public class EfloraTaxonImport  extends EfloraImportBase implements ICdmIO<Eflor
 	}
 
 
-	private void handleNameNote(NonViralName name, String value) {
+	private void handleNameNote(INonViralName name, String value) {
 		logger.warn("Name note: " + value + ". Available in portal?");
 		Annotation annotation = Annotation.NewInstance(value, AnnotationType.EDITORIAL(), Language.DEFAULT());
 		name.addAnnotation(annotation);
@@ -1359,7 +1359,7 @@ public class EfloraTaxonImport  extends EfloraImportBase implements ICdmIO<Eflor
 	 * @param name
 	 * @param value
 	 */
-	protected TeamOrPersonBase handleNameUsage(Taxon taxon, NonViralName<?> name, String referenceTitle, TeamOrPersonBase lastTeam) {
+	protected TeamOrPersonBase handleNameUsage(Taxon taxon, INonViralName name, String referenceTitle, TeamOrPersonBase lastTeam) {
 		Reference ref = ReferenceFactory.newGeneric();
 		referenceTitle = removeStartingSymbols(referenceTitle, ref);
 
@@ -1374,7 +1374,7 @@ public class EfloraTaxonImport  extends EfloraImportBase implements ICdmIO<Eflor
 
 		TaxonDescription description = getDescription(taxon);
 		TextData textData = TextData.NewInstance(Feature.CITATION());
-		textData.addSource(OriginalSourceType.PrimaryTaxonomicSource, null, null, ref, microReference, name, null);
+		textData.addSource(OriginalSourceType.PrimaryTaxonomicSource, null, null, ref, microReference, (TaxonNameBase)name, null);
 		description.addElement(textData);
 		return team;
 	}
@@ -1489,7 +1489,7 @@ public class EfloraTaxonImport  extends EfloraImportBase implements ICdmIO<Eflor
 	 * @param name
 	 * @return
 	 */
-	protected String parseHomonym(String detail, NonViralName name) {
+	protected String parseHomonym(String detail, TaxonNameBase name) {
 		String result;
 		if (detail == null){
 			return detail;
@@ -1521,7 +1521,7 @@ public class EfloraTaxonImport  extends EfloraImportBase implements ICdmIO<Eflor
 			homonymName.setSpecificEpithet(name.getSpecificEpithet());
 			homonymName.setInfraSpecificEpithet(name.getInfraSpecificEpithet());
 			Reference homonymNomRef = ReferenceFactory.newGeneric();
-			homonymNomRef.setTitleCache(homonymString);
+			homonymNomRef.setTitleCache(homonymString, true);
 			String homonymNomRefDetail = parseReferenceYearAndDetail(homonymNomRef);
 			homonymName.setNomenclaturalMicroReference(homonymNomRefDetail);
 			String authorTitle = homonymNomRef.getTitleCache();
@@ -1558,7 +1558,7 @@ public class EfloraTaxonImport  extends EfloraImportBase implements ICdmIO<Eflor
 	 * @param name
 	 * @param value
 	 */
-	protected TeamOrPersonBase handleNomenclaturalReference(NonViralName name, String value) {
+	protected TeamOrPersonBase handleNomenclaturalReference(TaxonNameBase name, String value) {
 		Reference nomRef = ReferenceFactory.newGeneric();
 		nomRef.setTitleCache(value, true);
 		parseNomStatus(nomRef, name);
@@ -1566,7 +1566,7 @@ public class EfloraTaxonImport  extends EfloraImportBase implements ICdmIO<Eflor
 		name.setNomenclaturalReference(nomRef);
 		microReference = parseHomonym(microReference, name);
 		name.setNomenclaturalMicroReference(microReference);
-		TeamOrPersonBase  team = name.getCombinationAuthorship();
+		TeamOrPersonBase<?> team = name.getCombinationAuthorship();
 		if (team == null){
 			logger.warn("Name has nom. ref. but no author team. Name: " + name.getTitleCache() + ", Nom.Ref.: " + value);
 		}else{
@@ -1575,7 +1575,7 @@ public class EfloraTaxonImport  extends EfloraImportBase implements ICdmIO<Eflor
 		return team;
 	}
 
-	private void handleInfrAuthor(EfloraImportState state, Element elAuthor, NonViralName name, boolean overwrite) {
+	private void handleInfrAuthor(EfloraImportState state, Element elAuthor, INonViralName name, boolean overwrite) {
 		String strAuthor = elAuthor.getValue().trim();
 		if (strAuthor.endsWith(",")){
 			strAuthor = strAuthor.substring(0, strAuthor.length() -1);
@@ -1600,7 +1600,7 @@ public class EfloraTaxonImport  extends EfloraImportBase implements ICdmIO<Eflor
 	 * @param infraRank
 	 * @return
 	 */
-	private Rank handleInfRank(NonViralName name, List<Element> elInfraRank, Rank infraRank) {
+	private Rank handleInfRank(INonViralName name, List<Element> elInfraRank, Rank infraRank) {
 		if (elInfraRank.size() == 1){
 			String strRank = elInfraRank.get(0).getTextNormalize();
 			try {
@@ -1622,7 +1622,7 @@ public class EfloraTaxonImport  extends EfloraImportBase implements ICdmIO<Eflor
 	}
 
 
-	private void handleInfrEpi(NonViralName<?> name, Rank infraRank, String value) {
+	private void handleInfrEpi(INonViralName name, Rank infraRank, String value) {
 		if (infraRank != null && infraRank.isInfraSpecific()){
 			name.setInfraSpecificEpithet(value);
 			if (CdmUtils.isCapital(value)){
@@ -1647,8 +1647,8 @@ public class EfloraTaxonImport  extends EfloraImportBase implements ICdmIO<Eflor
 	 * @param isSynonym
 	 * @return
 	 */
-	private NonViralName makeName(Taxon taxon,HomotypicalGroup homotypicalGroup, boolean isSynonym) {
-		NonViralName name;
+	private TaxonNameBase makeName(Taxon taxon,HomotypicalGroup homotypicalGroup, boolean isSynonym) {
+		TaxonNameBase<?,?> name;
 		if (isSynonym){
 			name = BotanicalName.NewInstance(Rank.SPECIES(), homotypicalGroup);
 			SynonymType synonymType = SynonymType.HETEROTYPIC_SYNONYM_OF();
@@ -1657,7 +1657,7 @@ public class EfloraTaxonImport  extends EfloraImportBase implements ICdmIO<Eflor
 			}
 			taxon.addSynonymName(name, synonymType);
 		}else{
-			name = (NonViralName)taxon.getName();
+			name = taxon.getName();
 		}
 		return name;
 	}
@@ -1667,7 +1667,7 @@ public class EfloraTaxonImport  extends EfloraImportBase implements ICdmIO<Eflor
 	 * @param element
 	 * @param taxon
 	 */
-	private void handleInfraspecificEpithet(Element element, String attrValue, NonViralName<?> name) {
+	private void handleInfraspecificEpithet(Element element, String attrValue, INonViralName name) {
 		String value = element.getTextNormalize();
 		if (value.indexOf("subsp.") != -1){
 			//TODO genus and species epi
@@ -1690,7 +1690,7 @@ public class EfloraTaxonImport  extends EfloraImportBase implements ICdmIO<Eflor
 	 * @param element
 	 * @param name
 	 */
-	private void handleBasionymAuthor(EfloraImportState state, Element elBasionymAuthor, NonViralName name, boolean overwrite) {
+	private void handleBasionymAuthor(EfloraImportState state, Element elBasionymAuthor, INonViralName name, boolean overwrite) {
 		String strAuthor = elBasionymAuthor.getValue().trim();
 		Pattern reBasionymAuthor = Pattern.compile("^\\(.*\\)$");
 		if (reBasionymAuthor.matcher(strAuthor).matches()){
@@ -1714,7 +1714,7 @@ public class EfloraTaxonImport  extends EfloraImportBase implements ICdmIO<Eflor
 	 * @param name
 	 * @param elNom
 	 */
-	private void handleNameAuthors(Element elAuthor, NonViralName name) {
+	private void handleNameAuthors(Element elAuthor, INonViralName name) {
 		if (name.getCombinationAuthorship() != null){
 			logger.warn("Name already has a combination author. Name: " +  name.getTitleCache() + ", Author: " + elAuthor.getTextNormalize());
 		}
@@ -1955,18 +1955,18 @@ public class EfloraTaxonImport  extends EfloraImportBase implements ICdmIO<Eflor
 	 * @param value
 	 * @param taxonNameBase
 	 */
-	private void handleSubGenus(String value, TaxonNameBase taxonNameBase) {
+	private void handleSubGenus(String value, INonViralName taxonNameBase) {
 		String name = value.replace("Subgenus", "").trim();
-		((NonViralName)taxonNameBase).setInfraGenericEpithet(name);
+		taxonNameBase.setInfraGenericEpithet(name);
 	}
 
 	/**
 	 * @param value
 	 * @param taxonNameBase
 	 */
-	private void handleSection(String value, TaxonNameBase taxonNameBase) {
+	private void handleSection(String value, INonViralName taxonNameBase) {
 		String name = value.replace("Section", "").trim();
-		((NonViralName)taxonNameBase).setInfraGenericEpithet(name);
+		taxonNameBase.setInfraGenericEpithet(name);
 	}
 
 	/**
@@ -2000,7 +2000,7 @@ public class EfloraTaxonImport  extends EfloraImportBase implements ICdmIO<Eflor
 	 * @param value
 	 * @param taxonNameBase
 	 */
-	protected void handleGenus(String value, TaxonNameBase taxonName) {
+	protected void handleGenus(String value, INonViralName taxonName) {
 		Matcher matcher = rexGenusAuthor.matcher(value);
 		if (matcher.find()){
 			String author = matcher.group();
@@ -2010,9 +2010,8 @@ public class EfloraTaxonImport  extends EfloraImportBase implements ICdmIO<Eflor
 			team.setTitleCache(author, true);
 			Credit credit = Credit.NewInstance(team, null);
 			taxonName.addCredit(credit);
-//			NonViralName nvn = (NonViralName)taxonName;
-//			nvn.setCombinationAuthorship(team);
-//			nvn.setGenusOrUninomial(genus);
+//			taxonName.setCombinationAuthorship(team);
+//			taxonName.setGenusOrUninomial(genus);
 		}else{
 			logger.info("No Author match for " + value);
 		}
@@ -2170,7 +2169,7 @@ public class EfloraTaxonImport  extends EfloraImportBase implements ICdmIO<Eflor
 	 * @param ref
 	 * @param nonViralName
 	 */
-	protected void parseNomStatus(Reference ref, NonViralName nonViralName) {
+	protected void parseNomStatus(Reference ref, TaxonNameBase nonViralName) {
 		String titleToParse = ref.getTitleCache();
 
 		String noStatusTitle = parser.parseNomStatus(titleToParse, nonViralName, true);

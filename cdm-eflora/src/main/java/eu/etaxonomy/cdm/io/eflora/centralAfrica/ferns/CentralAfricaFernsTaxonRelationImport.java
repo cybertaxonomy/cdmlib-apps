@@ -48,7 +48,7 @@ import eu.etaxonomy.cdm.model.location.NamedArea;
 import eu.etaxonomy.cdm.model.location.NamedAreaLevel;
 import eu.etaxonomy.cdm.model.location.NamedAreaType;
 import eu.etaxonomy.cdm.model.name.BotanicalName;
-import eu.etaxonomy.cdm.model.name.NonViralName;
+import eu.etaxonomy.cdm.model.name.INonViralName;
 import eu.etaxonomy.cdm.model.name.Rank;
 import eu.etaxonomy.cdm.model.name.TaxonNameBase;
 import eu.etaxonomy.cdm.model.reference.Reference;
@@ -142,7 +142,7 @@ public class CentralAfricaFernsTaxonRelationImport  extends CentralAfricaFernsIm
 
 		List<Taxon> taxonList = getTaxonService().list(Taxon.class, null, null, null, propPath );
 		for (Taxon taxon : taxonList){
-			NonViralName<?> nvn = CdmBase.deproxy(taxon.getName(), NonViralName.class);
+			INonViralName nvn = taxon.getName();
 			UUID uuid = taxon.getUuid();
 			String nameCache = nvn.getNameCache();
 			String titleCache = nvn.getTitleCache();
@@ -401,8 +401,8 @@ public class CentralAfricaFernsTaxonRelationImport  extends CentralAfricaFernsIm
 	 * @param constructedHigherTaxon
 	 */
 	private Taxon mergeExistingAndConstructedTaxon(CentralAfricaFernsImportState state, Taxon existingTaxon, Taxon constructedTaxon) {
-		NonViralName<?> constructedName = CdmBase.deproxy(constructedTaxon.getName(), NonViralName.class);
-		NonViralName<?> existingName = CdmBase.deproxy(existingTaxon.getName(), NonViralName.class);
+		INonViralName constructedName = constructedTaxon.getName();
+		INonViralName existingName = existingTaxon.getName();
 		if (constructedName.hasAuthors()){
 			if (! existingName.hasAuthors()){
 				logger.warn(state.getTaxonNumber() + " - Constrcucted name ("+constructedName.getTitleCache()+") has authors but existing name ("+existingName.getTitleCache()+") has no authors");
@@ -574,7 +574,7 @@ public class CentralAfricaFernsTaxonRelationImport  extends CentralAfricaFernsIm
 	 * @param name2
 	 * @return
 	 */
-	private boolean authorsMatch(NonViralName<?> name1, NonViralName<?> name2) {
+	private boolean authorsMatch(INonViralName name1, INonViralName name2) {
 		String combinationAuthor1 = name1.computeCombinationAuthorNomenclaturalTitle();
 		String combinationAuthor2 = name2.computeCombinationAuthorNomenclaturalTitle();
 		String basionymAuthor1 = name1.computeBasionymAuthorNomenclaturalTitle();
@@ -1187,8 +1187,8 @@ public class CentralAfricaFernsTaxonRelationImport  extends CentralAfricaFernsIm
 	 * @param existingHigherTaxon
 	 */
 	private boolean mergeAuthors_old(Taxon higherTaxon, Taxon existingHigherTaxon) {
-		NonViralName<?> existingName = CdmBase.deproxy(higherTaxon.getName(), NonViralName.class);
-		NonViralName<?> newName = CdmBase.deproxy(existingHigherTaxon.getName(), NonViralName.class);
+		INonViralName existingName = higherTaxon.getName();
+		INonViralName newName = existingHigherTaxon.getName();
 		if (existingName == newName){
 			return true;
 		}

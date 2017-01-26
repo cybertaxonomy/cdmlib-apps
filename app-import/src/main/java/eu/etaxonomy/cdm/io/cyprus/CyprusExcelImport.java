@@ -32,9 +32,8 @@ import eu.etaxonomy.cdm.model.description.PresenceAbsenceTerm;
 import eu.etaxonomy.cdm.model.description.TaxonDescription;
 import eu.etaxonomy.cdm.model.description.TextData;
 import eu.etaxonomy.cdm.model.location.NamedArea;
-import eu.etaxonomy.cdm.model.name.BotanicalName;
+import eu.etaxonomy.cdm.model.name.INonViralName;
 import eu.etaxonomy.cdm.model.name.NomenclaturalCode;
-import eu.etaxonomy.cdm.model.name.NonViralName;
 import eu.etaxonomy.cdm.model.name.Rank;
 import eu.etaxonomy.cdm.model.reference.Reference;
 import eu.etaxonomy.cdm.model.taxon.Classification;
@@ -517,15 +516,14 @@ public class CyprusExcelImport extends ExcelImporterBase<CyprusImportState> {
 	private TaxonBase createTaxon(CyprusImportState state, Rank rank, String taxonNameStr,
 			Class statusClass, NomenclaturalCode nc) {
 		TaxonBase taxonBase;
-		NonViralName taxonNameBase = null;
+		INonViralName taxonNameBase = null;
 		if (nc == NomenclaturalCode.ICVCN){
 			logger.warn("ICVCN not yet supported");
 
 		}else{
-			taxonNameBase =(NonViralName) nc.getNewTaxonNameInstance(rank);
-			//NonViralName nonViralName = (NonViralName)taxonNameBase;
-			INonViralNameParser parser = nameParser;//NonViralNameParserImpl.NewInstance();
-			taxonNameBase = (NonViralName<BotanicalName>)parser.parseFullName(taxonNameStr, nc, rank);
+			taxonNameBase = nc.getNewTaxonNameInstance(rank);
+			INonViralNameParser<INonViralName> parser = nameParser;//NonViralNameParserImpl.NewInstance();
+			taxonNameBase = parser.parseFullName(taxonNameStr, nc, rank);
 
 			//taxonNameBase.setNameCache(taxonNameStr);
 

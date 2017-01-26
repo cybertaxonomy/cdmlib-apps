@@ -31,7 +31,7 @@ import eu.etaxonomy.cdm.model.description.Feature;
 import eu.etaxonomy.cdm.model.description.TaxonDescription;
 import eu.etaxonomy.cdm.model.description.TextData;
 import eu.etaxonomy.cdm.model.name.HomotypicalGroup;
-import eu.etaxonomy.cdm.model.name.NonViralName;
+import eu.etaxonomy.cdm.model.name.INonViralName;
 import eu.etaxonomy.cdm.model.name.SpecimenTypeDesignation;
 import eu.etaxonomy.cdm.model.name.TaxonNameBase;
 import eu.etaxonomy.cdm.model.name.TypeDesignationBase;
@@ -47,16 +47,12 @@ import eu.etaxonomy.cdm.strategy.parser.TimePeriodParser;
  */
 @Component
 public class CentralAfricaEricaceaeTaxonImport  extends EfloraTaxonImport  {
-	private static final Logger logger = Logger.getLogger(CentralAfricaEricaceaeTaxonImport.class);
+    private static final long serialVersionUID = 6442665916458420942L;
+    private static final Logger logger = Logger.getLogger(CentralAfricaEricaceaeTaxonImport.class);
 
 
-
-
-	/* (non-Javadoc)
-	 * @see eu.etaxonomy.cdm.io.eflora.EfloraTaxonImport#handleNomenclaturalReference(eu.etaxonomy.cdm.model.name.NonViralName, java.lang.String)
-	 */
 	@Override
-	protected TeamOrPersonBase handleNomenclaturalReference(NonViralName name, String value) {
+	protected TeamOrPersonBase handleNomenclaturalReference(TaxonNameBase name, String value) {
 		Reference nomRef = ReferenceFactory.newGeneric();
 		nomRef.setTitleCache(value, true);
 		parseNomStatus(nomRef, name);
@@ -68,8 +64,8 @@ public class CentralAfricaEricaceaeTaxonImport  extends EfloraTaxonImport  {
 		microReference = parseHomonym(microReference, name);
 		name.setNomenclaturalMicroReference(microReference);
 
-		TeamOrPersonBase  nameTeam = CdmBase.deproxy(name.getCombinationAuthorship(), TeamOrPersonBase.class);
-		TeamOrPersonBase  refTeam = nomRef.getAuthorship();
+		TeamOrPersonBase<?>  nameTeam = CdmBase.deproxy(name.getCombinationAuthorship(), TeamOrPersonBase.class);
+		TeamOrPersonBase<?>  refTeam = nomRef.getAuthorship();
 		if (nameTeam == null ){
 			logger.warn("Name has nom. ref. but no author team. Name: " + name.getTitleCache() + ", Nom.Ref.: " + value);
 		}else if (refTeam == null ){
@@ -167,7 +163,9 @@ public class CentralAfricaEricaceaeTaxonImport  extends EfloraTaxonImport  {
 	 * @param value
 	 */
 	@Override
-	protected TeamOrPersonBase<?> handleNameUsage(Taxon taxon, NonViralName<?> name, String referenceTitle, TeamOrPersonBase lastTeam) {
+	protected TeamOrPersonBase<?> handleNameUsage(Taxon taxon, INonViralName name,
+	        String referenceTitle, TeamOrPersonBase lastTeam) {
+
 		Reference ref = ReferenceFactory.newGeneric();
 
 		ref.setTitleCache(referenceTitle, true);
@@ -190,7 +188,7 @@ public class CentralAfricaEricaceaeTaxonImport  extends EfloraTaxonImport  {
 	//		parseReferenceType(ref);
 
 			TextData textData = TextData.NewInstance(Feature.CITATION());
-			textData.addSource(OriginalSourceType.PrimaryTaxonomicSource, null, null, singleRef, microReference, name, null);
+			textData.addSource(OriginalSourceType.PrimaryTaxonomicSource, null, null, singleRef, microReference, (TaxonNameBase) name, null);
 			description.addElement(textData);
 		}
 		return team;
@@ -229,7 +227,7 @@ public class CentralAfricaEricaceaeTaxonImport  extends EfloraTaxonImport  {
 
 	}
 
-	protected TeamOrPersonBase getReferenceAuthor (Reference ref, NonViralName name) {
+	protected TeamOrPersonBase getReferenceAuthor (Reference ref, INonViralName name) {
 		String titleString = ref.getTitleCache();
 		String re = "\\(.*\\)";
 		Pattern pattern = Pattern.compile(re);
@@ -248,7 +246,7 @@ public class CentralAfricaEricaceaeTaxonImport  extends EfloraTaxonImport  {
 
 	}
 
-	private TeamOrPersonBase getAuthorTeam(String authorString, NonViralName name) {
+	private TeamOrPersonBase getAuthorTeam(String authorString, INonViralName name) {
 		//TODO atomize
 //		TeamOrPersonBase nameTeam = CdmBase.deproxy(name.getCombinationAuthorship(), TeamOrPersonBase.class);
 //		String nameTeamTitle = nameTeam == null ? "" : nameTeam.getNomenclaturalTitle();
@@ -367,7 +365,7 @@ public class CentralAfricaEricaceaeTaxonImport  extends EfloraTaxonImport  {
 	}
 
 	@Override
-    protected void handleGenus(String value, TaxonNameBase taxonName) {
+    protected void handleGenus(String value, INonViralName taxonName) {
 		// do nothing
 	}
 

@@ -45,12 +45,12 @@ import eu.etaxonomy.cdm.model.common.CdmBase;
 import eu.etaxonomy.cdm.model.common.ExtensionType;
 import eu.etaxonomy.cdm.model.common.TimePeriod;
 import eu.etaxonomy.cdm.model.name.BotanicalName;
+import eu.etaxonomy.cdm.model.name.INonViralName;
 import eu.etaxonomy.cdm.model.name.NameTypeDesignation;
 import eu.etaxonomy.cdm.model.name.NameTypeDesignationStatus;
 import eu.etaxonomy.cdm.model.name.NomenclaturalCode;
 import eu.etaxonomy.cdm.model.name.NomenclaturalStatus;
 import eu.etaxonomy.cdm.model.name.NomenclaturalStatusType;
-import eu.etaxonomy.cdm.model.name.NonViralName;
 import eu.etaxonomy.cdm.model.name.Rank;
 import eu.etaxonomy.cdm.model.name.SpecimenTypeDesignation;
 import eu.etaxonomy.cdm.model.name.SpecimenTypeDesignationStatus;
@@ -647,13 +647,13 @@ public class CentralAfricaFernsTaxonImport  extends CentralAfricaFernsImportBase
 		if (StringUtils.isNotBlank(referenceString) || StringUtils.isNotBlank(volume) ||
 					StringUtils.isNotBlank(pages) || StringUtils.isNotBlank(illustrations) ||
 					StringUtils.isNotBlank(datePublishedString) || StringUtils.isNotBlank(paperTitle)){
-			NonViralName<?> name = CdmBase.deproxy(taxonBase.getName(), NonViralName.class);
+			INonViralName name = taxonBase.getName();
 			Reference reference = ReferenceFactory.newGeneric();
 			reference.setAuthorship(name.getCombinationAuthorship());
 			reference.setTitle(referenceString);
 			reference.setVolume(volume);
 			reference.setEdition(part);
-			Reference inrefernce = null;
+			Reference inreference = null;
 			//TODO parser
 			TimePeriod datePublished = TimePeriodParser.parseString(datePublishedString);
 			reference.setDatePublished(datePublished);
@@ -697,7 +697,7 @@ public class CentralAfricaFernsTaxonImport  extends CentralAfricaFernsImportBase
 
 			TaxonBase<?> taxonBase = state.getRelatedObject(state.CURRENT_OBJECT_NAMESPACE, state.CURRENT_OBJECT_ID, TaxonBase.class);
 			if (StringUtils.isNotBlank(nomRemarksString)){
-				NonViralName name = CdmBase.deproxy(taxonBase.getName(), NonViralName.class);
+				INonViralName name = taxonBase.getName();
 				parseNomRemark(state, name, nomRemarksString.trim(),taxonStatus, taxonNumber);
 			}
 			return taxonBase;
@@ -707,7 +707,7 @@ public class CentralAfricaFernsTaxonImport  extends CentralAfricaFernsImportBase
 	}
 
 
-	private void parseNomRemark(CentralAfricaFernsImportState state, NonViralName name, String nomRemarksString, String taxonStatus, String taxonNumber) {
+	private void parseNomRemark(CentralAfricaFernsImportState state, INonViralName name, String nomRemarksString, String taxonStatus, String taxonNumber) {
 
 		if (nomRemarksString.equalsIgnoreCase("comb. illeg.")){
 			name.addStatus(NomenclaturalStatus.NewInstance(NomenclaturalStatusType.COMBINATION_ILLEGITIMATE()));
