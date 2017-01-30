@@ -1,8 +1,8 @@
 /**
 * Copyright (C) 2007 EDIT
-* European Distributed Institute of Taxonomy 
+* European Distributed Institute of Taxonomy
 * http://www.e-taxonomy.eu
-* 
+*
 * The contents of this file are subject to the Mozilla Public License Version 1.1
 * See LICENSE.TXT at the top of this package for the full license terms.
 */
@@ -28,6 +28,7 @@ import eu.etaxonomy.cdm.io.redlist.validation.RoteListeDbTaxonImportValidator;
 import eu.etaxonomy.cdm.model.common.CdmBase;
 import eu.etaxonomy.cdm.model.name.BotanicalName;
 import eu.etaxonomy.cdm.model.name.Rank;
+import eu.etaxonomy.cdm.model.name.TaxonNameFactory;
 import eu.etaxonomy.cdm.model.taxon.Taxon;
 import eu.etaxonomy.cdm.model.taxon.TaxonBase;
 import eu.etaxonomy.cdm.strategy.parser.NonViralNameParserImpl;
@@ -42,15 +43,15 @@ import eu.etaxonomy.cdm.strategy.parser.NonViralNameParserImpl;
 public class RoteListeDbTaxonImport  extends RoteListeDbImportBase<TaxonBase> implements IMappingImport<TaxonBase, RoteListeDbImportState>{
 	@SuppressWarnings("unused")
 	private static final Logger logger = Logger.getLogger(RoteListeDbTaxonImport.class);
-	
+
 	private NonViralNameParserImpl parser = NonViralNameParserImpl.NewInstance();
-	
+
 	private Map<UUID, Taxon> higherTaxonMap;
-	
+
 	private Integer TREE_ID = null;
-	
+
 	private DbImportMapping mapping;
-	
+
 	private int modCount = 10000;
 	private static final String pluralString = "taxa";
 	private static final String dbTableName = "checklist";
@@ -60,8 +61,8 @@ public class RoteListeDbTaxonImport  extends RoteListeDbImportBase<TaxonBase> im
 	public RoteListeDbTaxonImport(){
 		super(pluralString, dbTableName, cdmTargetClass);
 	}
-	
-	
+
+
 	@Override
 	protected String getIdQuery() {
 		String strQuery = " SELECT pk FROM " + dbTableName +
@@ -73,14 +74,14 @@ public class RoteListeDbTaxonImport  extends RoteListeDbImportBase<TaxonBase> im
 	protected DbImportMapping getMapping() {
 		if (mapping == null){
 			mapping = new DbImportMapping();
-			
+
 // 			mapping.addMapper(DbImportObjectCreationMapper.NewInstance(this, "pk", TAXON_NAMESPACE)); //id + tu_status
-//		
+//
 //			UUID uuidKew = RoteListeDbTransformer.uuidAcceptedKew;
 //			mapping.addMapper(DbImportMarkerMapper.NewInstance("accepted kew", uuidKew, "Accepted Kew", "Accepted Kew", "Kew", null));
-			
+
 		}
-		
+
 		return mapping;
 	}
 
@@ -93,7 +94,7 @@ public class RoteListeDbTaxonImport  extends RoteListeDbImportBase<TaxonBase> im
 		return strRecordQuery;
 	}
 
-	
+
 	@Override
 	public boolean doPartition(ResultSetPartitioner partitioner, RoteListeDbImportState state) {
 		boolean success = super.doPartition(partitioner, state);
@@ -109,9 +110,9 @@ public class RoteListeDbTaxonImport  extends RoteListeDbImportBase<TaxonBase> im
 		Class<?> cdmClass;
 		Set<String> idSet;
 		Set<String> referenceIdSet = new HashSet<String>();
-		
+
 		Map<Object, Map<String, ? extends CdmBase>> result = new HashMap<Object, Map<String, ? extends CdmBase>>();
-		
+
 		try{
 			while (rs.next()){
 				handleForeignKey(rs, referenceIdSet, "source");
@@ -129,47 +130,47 @@ public class RoteListeDbTaxonImport  extends RoteListeDbImportBase<TaxonBase> im
 		}
 		return result;
 	}
-	
+
 
 	@Override
 	public TaxonBase createObject(ResultSet rs, RoteListeDbImportState state) throws SQLException {
-		BotanicalName speciesName = BotanicalName.NewInstance(Rank.SPECIES());
-		
+		BotanicalName speciesName = TaxonNameFactory.NewBotanicalInstance(Rank.SPECIES());
+
 //		Reference sec = state.getConfig().getSourceReference();
 //		getReferenceService().saveOrUpdate(sec);
-//		
+//
 //		String familyString = rs.getString("family");
 //		String genusString = rs.getString("genus");
 //		String speciesString = rs.getString("species");
 //		String authorityString = rs.getString("authority");
-//		
+//
 //		if (logger.isDebugEnabled()){
 //			System.out.println(familyString + " " + genusString + " " + speciesString);
 //		}
-//		
+//
 //		Taxon speciesTaxon = Taxon.NewInstance(speciesName, sec);;
 //		speciesName.setGenusOrUninomial(genusString);
 //		speciesName.setSpecificEpithet(speciesString);
 //		parser.handleAuthors(speciesName, CdmUtils.concat(" ", new String[] {"", genusString, speciesString, authorityString}), authorityString);
-//		
+//
 //		//family
 //		Taxon familyTaxon = null;
 //		if (StringUtils.isNotBlank(familyString)){
 //			familyTaxon = getHigherTaxon(state, familyString, null);
 //			if (familyTaxon == null){
-//				BotanicalName familyName = BotanicalName.NewInstance(Rank.FAMILY());
+//				BotanicalName familyName = TaxonNameFactory.NewBotanicalInstance(Rank.FAMILY());
 //				familyName.setGenusOrUninomial(familyString);
 //				familyTaxon = Taxon.NewInstance(familyName, sec);
 //				saveHigherTaxon(state, familyTaxon, familyString, null);
 //			}
-//			getTaxonService().saveOrUpdate(familyTaxon);	
+//			getTaxonService().saveOrUpdate(familyTaxon);
 //		}
-//		
-//		
+//
+//
 //		//genus
 //		Taxon genusTaxon = getHigherTaxon(state, familyString, genusString);
 //		if (genusTaxon == null){
-//			BotanicalName genusName = BotanicalName.NewInstance(Rank.GENUS());
+//			BotanicalName genusName = TaxonNameFactory.NewBotanicalInstance(Rank.GENUS());
 //			genusName.setGenusOrUninomial(genusString);
 //			genusTaxon = Taxon.NewInstance(genusName, sec);
 //			saveHigherTaxon(state, genusTaxon, familyString, genusString);
@@ -182,16 +183,16 @@ public class RoteListeDbTaxonImport  extends RoteListeDbImportBase<TaxonBase> im
 //
 //		String sourceString = rs.getString("source");
 //		String sourceId = rs.getString("source_id");
-//		
+//
 //		Reference sourceRef = state.getRelatedObject(REFERENCE_NAMESPACE, sourceString, Reference.class);
 //		speciesTaxon.addSource(sourceId, REFERENCE_NAMESPACE, sourceRef, null);
-//		
-//		
+//
+//
 //		//distribution
 //		handleDistribution(rs, speciesTaxon);
-//		
+//
 //		return speciesTaxon;
-		
+
 		return null;
 	}
 
@@ -201,8 +202,8 @@ public class RoteListeDbTaxonImport  extends RoteListeDbImportBase<TaxonBase> im
 		IOValidator<RoteListeDbImportState> validator = new RoteListeDbTaxonImportValidator();
 		return validator.validate(state);
 	}
-	
-	
+
+
 	@Override
 	protected boolean isIgnore(RoteListeDbImportState state){
 		return ! state.getConfig().isDoTaxa();

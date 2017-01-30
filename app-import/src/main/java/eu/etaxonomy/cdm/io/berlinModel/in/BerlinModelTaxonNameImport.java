@@ -43,6 +43,7 @@ import eu.etaxonomy.cdm.model.name.CultivarPlantName;
 import eu.etaxonomy.cdm.model.name.NonViralName;
 import eu.etaxonomy.cdm.model.name.Rank;
 import eu.etaxonomy.cdm.model.name.TaxonNameBase;
+import eu.etaxonomy.cdm.model.name.TaxonNameFactory;
 import eu.etaxonomy.cdm.model.name.ZoologicalName;
 import eu.etaxonomy.cdm.model.reference.INomenclaturalReference;
 import eu.etaxonomy.cdm.model.reference.Reference;
@@ -191,11 +192,11 @@ public class BerlinModelTaxonNameImport extends BerlinModelImportBase {
 						//check cultivar
 						if (taxonNameBase instanceof BotanicalName){
 							if (isNotBlank(strCultivarGroupName) && isNotBlank(strCultivarName)){
-								taxonNameBase = CultivarPlantName.NewInstance(rank);
+								taxonNameBase = TaxonNameFactory.NewCultivarInstance(rank);
 							}
 						}
 					}else{
-						taxonNameBase = NonViralName.NewInstance(rank);
+						taxonNameBase = TaxonNameFactory.NewNonViralInstance(rank);
 					}
 					if (uuid != null){
 						taxonNameBase.setUuid(UUID.fromString(uuid));

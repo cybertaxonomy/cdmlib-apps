@@ -66,6 +66,7 @@ import eu.etaxonomy.cdm.model.name.Rank;
 import eu.etaxonomy.cdm.model.name.SpecimenTypeDesignation;
 import eu.etaxonomy.cdm.model.name.SpecimenTypeDesignationStatus;
 import eu.etaxonomy.cdm.model.name.TaxonNameBase;
+import eu.etaxonomy.cdm.model.name.TaxonNameFactory;
 import eu.etaxonomy.cdm.model.name.TypeDesignationBase;
 import eu.etaxonomy.cdm.model.occurrence.DerivedUnit;
 import eu.etaxonomy.cdm.model.reference.IBook;
@@ -150,7 +151,7 @@ public class EfloraTaxonImport  extends EfloraImportBase implements ICdmIO<Eflor
 					logger.warn("body has element other than 'taxon'");
 				}
 
-				BotanicalName botanicalName = BotanicalName.NewInstance(Rank.SPECIES());
+				BotanicalName botanicalName = TaxonNameFactory.NewBotanicalInstance(Rank.SPECIES());
 				Taxon taxon = Taxon.NewInstance(botanicalName, state.getConfig().getSourceReference());
 
 				handleTaxonAttributes(elTaxon, taxon, state);
@@ -1279,7 +1280,7 @@ public class EfloraTaxonImport  extends EfloraImportBase implements ICdmIO<Eflor
 		verifyNoAttribute(elHomonym);
 
 		//hommonym name
-		BotanicalName homonymName = BotanicalName.NewInstance(upperName.getRank());
+		BotanicalName homonymName = TaxonNameFactory.NewBotanicalInstance(upperName.getRank());
 		homonymName.setGenusOrUninomial(upperName.getGenusOrUninomial());
 		homonymName.setInfraGenericEpithet(upperName.getInfraGenericEpithet());
 		homonymName.setSpecificEpithet(upperName.getSpecificEpithet());
@@ -1515,7 +1516,7 @@ public class EfloraTaxonImport  extends EfloraImportBase implements ICdmIO<Eflor
 			String homonymString = detail.substring(end);
 
 			//hommonym name
-			BotanicalName homonymName = BotanicalName.NewInstance(name.getRank());
+			BotanicalName homonymName = TaxonNameFactory.NewBotanicalInstance(name.getRank());
 			homonymName.setGenusOrUninomial(name.getGenusOrUninomial());
 			homonymName.setInfraGenericEpithet(name.getInfraGenericEpithet());
 			homonymName.setSpecificEpithet(name.getSpecificEpithet());
@@ -1650,7 +1651,7 @@ public class EfloraTaxonImport  extends EfloraImportBase implements ICdmIO<Eflor
 	private TaxonNameBase makeName(Taxon taxon,HomotypicalGroup homotypicalGroup, boolean isSynonym) {
 		TaxonNameBase<?,?> name;
 		if (isSynonym){
-			name = BotanicalName.NewInstance(Rank.SPECIES(), homotypicalGroup);
+			name = TaxonNameFactory.NewBotanicalInstance(Rank.SPECIES(), homotypicalGroup);
 			SynonymType synonymType = SynonymType.HETEROTYPIC_SYNONYM_OF();
 			if (taxon.getHomotypicGroup().equals(homotypicalGroup)){
 				synonymType = SynonymType.HOMOTYPIC_SYNONYM_OF();

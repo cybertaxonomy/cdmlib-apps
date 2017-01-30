@@ -222,7 +222,7 @@ public class CommonNameExcelImport extends ExcelImporterBase<CichorieaeCommonNam
 			desc = taxonStore.get(taxonNameStr);
 		}else{
 			taxon = getTaxonService().findBestMatchingTaxon(taxonNameStr);
-//			TaxonNameBase name = BotanicalName.NewInstance(Rank.SPECIES());
+//			TaxonNameBase name = TaxonNameFactory.NewBotanicalInstance(Rank.SPECIES());
 //			name.setTitleCache(taxonNameStr, true);
 //
 //			result = Taxon.NewInstance(name, null);

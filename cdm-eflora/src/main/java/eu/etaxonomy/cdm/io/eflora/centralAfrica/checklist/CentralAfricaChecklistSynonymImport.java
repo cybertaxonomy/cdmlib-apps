@@ -28,6 +28,7 @@ import eu.etaxonomy.cdm.io.eflora.centralAfrica.checklist.validation.CentralAfri
 import eu.etaxonomy.cdm.model.common.CdmBase;
 import eu.etaxonomy.cdm.model.name.BotanicalName;
 import eu.etaxonomy.cdm.model.name.Rank;
+import eu.etaxonomy.cdm.model.name.TaxonNameFactory;
 import eu.etaxonomy.cdm.model.reference.Reference;
 import eu.etaxonomy.cdm.model.taxon.Synonym;
 import eu.etaxonomy.cdm.model.taxon.SynonymType;
@@ -42,7 +43,9 @@ import eu.etaxonomy.cdm.strategy.parser.NonViralNameParserImpl;
  */
 @Component
 public class CentralAfricaChecklistSynonymImport  extends CentralAfricaChecklistImportBase<TaxonBase> implements IMappingImport<TaxonBase, CentralAfricaChecklistImportState>{
-	private static final Logger logger = Logger.getLogger(CentralAfricaChecklistSynonymImport.class);
+    private static final long serialVersionUID = 954395388404224712L;
+
+    private static final Logger logger = Logger.getLogger(CentralAfricaChecklistSynonymImport.class);
 
 	private NonViralNameParserImpl parser = NonViralNameParserImpl.NewInstance();
 
@@ -63,20 +66,12 @@ public class CentralAfricaChecklistSynonymImport  extends CentralAfricaChecklist
 	}
 
 
-
-	/* (non-Javadoc)
-	 * @see eu.etaxonomy.cdm.io.erms.ErmsImportBase#getIdQuery()
-	 */
 	@Override
 	protected String getIdQuery() {
 		String strQuery = " SELECT syn_id FROM " + dbTableName + strOrderBy;
 		return strQuery;
 	}
 
-
-	/* (non-Javadoc)
-	 * @see eu.etaxonomy.cdm.io.erms.ErmsImportBase#getMapping()
-	 */
 	@Override
     protected DbImportMapping getMapping() {
 		if (mapping == null){
@@ -89,9 +84,6 @@ public class CentralAfricaChecklistSynonymImport  extends CentralAfricaChecklist
 		return mapping;
 	}
 
-	/* (non-Javadoc)
-	 * @see eu.etaxonomy.cdm.io.berlinModel.in.BerlinModelImportBase#getRecordQuery(eu.etaxonomy.cdm.io.berlinModel.in.BerlinModelImportConfigurator)
-	 */
 	@Override
 	protected String getRecordQuery(CentralAfricaChecklistImportConfigurator config) {
 		String strSelect = " SELECT * ";
@@ -127,13 +119,9 @@ public class CentralAfricaChecklistSynonymImport  extends CentralAfricaChecklist
 		return result;
 	}
 
-
-	/* (non-Javadoc)
-	 * @see eu.etaxonomy.cdm.io.common.mapping.IMappingImport#createObject(java.sql.ResultSet)
-	 */
 	@Override
     public TaxonBase createObject(ResultSet rs, CentralAfricaChecklistImportState state) throws SQLException {
-		BotanicalName speciesName = BotanicalName.NewInstance(Rank.SPECIES());
+		BotanicalName speciesName = TaxonNameFactory.NewBotanicalInstance(Rank.SPECIES());
 
 
 		Integer accId = rs.getInt("acc_id");
@@ -160,24 +148,15 @@ public class CentralAfricaChecklistSynonymImport  extends CentralAfricaChecklist
 	}
 
 
-	/* (non-Javadoc)
-	 * @see eu.etaxonomy.cdm.io.common.CdmIoBase#doCheck(eu.etaxonomy.cdm.io.common.IImportConfigurator)
-	 */
 	@Override
 	protected boolean doCheck(CentralAfricaChecklistImportState state){
 		IOValidator<CentralAfricaChecklistImportState> validator = new CentralAfricaChecklistTaxonImportValidator();
 		return validator.validate(state);
 	}
 
-
-	/* (non-Javadoc)
-	 * @see eu.etaxonomy.cdm.io.common.CdmIoBase#isIgnore(eu.etaxonomy.cdm.io.common.IImportConfigurator)
-	 */
 	@Override
     protected boolean isIgnore(CentralAfricaChecklistImportState state){
 		return ! state.getConfig().isDoTaxa();
 	}
-
-
 
 }

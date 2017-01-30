@@ -55,6 +55,7 @@ import eu.etaxonomy.cdm.model.name.Rank;
 import eu.etaxonomy.cdm.model.name.SpecimenTypeDesignation;
 import eu.etaxonomy.cdm.model.name.SpecimenTypeDesignationStatus;
 import eu.etaxonomy.cdm.model.name.TaxonNameBase;
+import eu.etaxonomy.cdm.model.name.TaxonNameFactory;
 import eu.etaxonomy.cdm.model.name.TypeDesignationBase;
 import eu.etaxonomy.cdm.model.occurrence.Collection;
 import eu.etaxonomy.cdm.model.occurrence.DerivedUnit;
@@ -771,7 +772,7 @@ public class CentralAfricaFernsTaxonImport  extends CentralAfricaFernsImportBase
 	 */
 	@Override
     public TaxonBase createObject(ResultSet rs, CentralAfricaFernsImportState state) throws SQLException {
-		BotanicalName taxonName = BotanicalName.NewInstance(null);
+		BotanicalName taxonName = TaxonNameFactory.NewBotanicalInstance(null);
 		Reference sec = state.getConfig().getSourceReference();
 
 		String taxonNumber = rs.getString("Taxon number");

@@ -40,6 +40,7 @@ import eu.etaxonomy.cdm.model.description.TaxonDescription;
 import eu.etaxonomy.cdm.model.location.NamedArea;
 import eu.etaxonomy.cdm.model.name.BotanicalName;
 import eu.etaxonomy.cdm.model.name.Rank;
+import eu.etaxonomy.cdm.model.name.TaxonNameFactory;
 import eu.etaxonomy.cdm.model.reference.Reference;
 import eu.etaxonomy.cdm.model.reference.ReferenceFactory;
 import eu.etaxonomy.cdm.model.taxon.Classification;
@@ -169,7 +170,7 @@ public class CentralAfricaChecklistTaxonImport  extends CentralAfricaChecklistIm
 
 	@Override
 	public TaxonBase<?> createObject(ResultSet rs, CentralAfricaChecklistImportState state) throws SQLException {
-		BotanicalName speciesName = BotanicalName.NewInstance(Rank.SPECIES());
+		BotanicalName speciesName = TaxonNameFactory.NewBotanicalInstance(Rank.SPECIES());
 
 		Reference sec = state.getConfig().getSourceReference();
 		getReferenceService().saveOrUpdate(sec);
@@ -193,7 +194,7 @@ public class CentralAfricaChecklistTaxonImport  extends CentralAfricaChecklistIm
 		if (StringUtils.isNotBlank(familyString)){
 			familyTaxon = getHigherTaxon(state, familyString, null);
 			if (familyTaxon == null){
-				BotanicalName familyName = BotanicalName.NewInstance(Rank.FAMILY());
+				BotanicalName familyName = TaxonNameFactory.NewBotanicalInstance(Rank.FAMILY());
 				familyName.setGenusOrUninomial(familyString);
 				familyTaxon = Taxon.NewInstance(familyName, sec);
 				saveHigherTaxon(state, familyTaxon, familyString, null);
@@ -205,7 +206,7 @@ public class CentralAfricaChecklistTaxonImport  extends CentralAfricaChecklistIm
 		//genus
 		Taxon genusTaxon = getHigherTaxon(state, familyString, genusString);
 		if (genusTaxon == null){
-			BotanicalName genusName = BotanicalName.NewInstance(Rank.GENUS());
+			BotanicalName genusName = TaxonNameFactory.NewBotanicalInstance(Rank.GENUS());
 			genusName.setGenusOrUninomial(genusString);
 			genusTaxon = Taxon.NewInstance(genusName, sec);
 			saveHigherTaxon(state, genusTaxon, familyString, genusString);

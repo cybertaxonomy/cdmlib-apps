@@ -32,6 +32,7 @@ import eu.etaxonomy.cdm.model.common.Marker;
 import eu.etaxonomy.cdm.model.common.MarkerType;
 import eu.etaxonomy.cdm.model.common.Representation;
 import eu.etaxonomy.cdm.model.name.Rank;
+import eu.etaxonomy.cdm.model.name.TaxonNameFactory;
 import eu.etaxonomy.cdm.model.name.ZoologicalName;
 import eu.etaxonomy.cdm.model.reference.Reference;
 import eu.etaxonomy.cdm.model.reference.ReferenceFactory;
@@ -145,7 +146,7 @@ public class EdaphobaseTaxonImport extends EdaphobaseImportBase {
         //Name etc.
         Rank rank = makeRank(state, rankStr);
         checkRankMarker(state, rank);
-        ZoologicalName name = ZoologicalName.NewInstance(rank);
+        ZoologicalName name = TaxonNameFactory.NewZoologicalInstance(rank);
         setNamePart(nameStr, rank, name);
         Rank parentRank = makeRank(state, parentRankStr);
         setNamePart(parentNameStr, parentRank, name);

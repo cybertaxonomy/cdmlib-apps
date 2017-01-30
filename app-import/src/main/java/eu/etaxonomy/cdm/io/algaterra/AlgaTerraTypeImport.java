@@ -43,11 +43,11 @@ import eu.etaxonomy.cdm.model.common.DefinedTerm;
 import eu.etaxonomy.cdm.model.common.IdentifiableSource;
 import eu.etaxonomy.cdm.model.common.Language;
 import eu.etaxonomy.cdm.model.common.User;
-import eu.etaxonomy.cdm.model.name.BotanicalName;
 import eu.etaxonomy.cdm.model.name.Rank;
 import eu.etaxonomy.cdm.model.name.SpecimenTypeDesignation;
 import eu.etaxonomy.cdm.model.name.SpecimenTypeDesignationStatus;
 import eu.etaxonomy.cdm.model.name.TaxonNameBase;
+import eu.etaxonomy.cdm.model.name.TaxonNameFactory;
 import eu.etaxonomy.cdm.model.occurrence.Collection;
 import eu.etaxonomy.cdm.model.occurrence.DerivedUnit;
 import eu.etaxonomy.cdm.model.occurrence.FieldUnit;
@@ -340,7 +340,7 @@ public class AlgaTerraTypeImport  extends AlgaTerraSpecimenImportBase {
 			result = taxonNameMap.get(String.valueOf(nameId));
 		}else{
 			//for testing
-			result = BotanicalName.NewInstance(Rank.SPECIES());
+			result = TaxonNameFactory.NewBotanicalInstance(Rank.SPECIES());
 		}
 		return result;
 	}

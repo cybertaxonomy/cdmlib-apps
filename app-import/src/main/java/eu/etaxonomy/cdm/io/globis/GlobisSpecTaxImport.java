@@ -46,6 +46,7 @@ import eu.etaxonomy.cdm.model.name.Rank;
 import eu.etaxonomy.cdm.model.name.SpecimenTypeDesignation;
 import eu.etaxonomy.cdm.model.name.SpecimenTypeDesignationStatus;
 import eu.etaxonomy.cdm.model.name.TaxonNameBase;
+import eu.etaxonomy.cdm.model.name.TaxonNameFactory;
 import eu.etaxonomy.cdm.model.name.ZoologicalName;
 import eu.etaxonomy.cdm.model.occurrence.Collection;
 import eu.etaxonomy.cdm.model.occurrence.DerivationEvent;
@@ -928,7 +929,7 @@ public class GlobisSpecTaxImport  extends GlobisImportBase<Reference> implements
 		}
 
 		//name
-		ZoologicalName name = ZoologicalName.NewInstance(rank);
+		ZoologicalName name = TaxonNameFactory.NewZoologicalInstance(rank);
 		makeNamePartsAndCache(state, rs, rankStr, name);
 
 

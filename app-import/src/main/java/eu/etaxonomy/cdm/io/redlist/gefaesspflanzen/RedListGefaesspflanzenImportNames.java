@@ -38,7 +38,6 @@ import eu.etaxonomy.cdm.model.common.Language;
 import eu.etaxonomy.cdm.model.common.OrderedTermVocabulary;
 import eu.etaxonomy.cdm.model.description.CommonTaxonName;
 import eu.etaxonomy.cdm.model.description.TaxonDescription;
-import eu.etaxonomy.cdm.model.name.BotanicalName;
 import eu.etaxonomy.cdm.model.name.CultivarPlantName;
 import eu.etaxonomy.cdm.model.name.NomenclaturalCode;
 import eu.etaxonomy.cdm.model.name.NomenclaturalStatus;
@@ -47,6 +46,7 @@ import eu.etaxonomy.cdm.model.name.NonViralName;
 import eu.etaxonomy.cdm.model.name.Rank;
 import eu.etaxonomy.cdm.model.name.RankClass;
 import eu.etaxonomy.cdm.model.name.TaxonNameBase;
+import eu.etaxonomy.cdm.model.name.TaxonNameFactory;
 import eu.etaxonomy.cdm.model.taxon.Synonym;
 import eu.etaxonomy.cdm.model.taxon.Taxon;
 import eu.etaxonomy.cdm.model.taxon.TaxonBase;
@@ -342,7 +342,7 @@ public class RedListGefaesspflanzenImportNames extends DbImportBase<RedListGefae
         Rank rank = makeRank(id, state, rangString, CdmUtils.isNotBlank(ep3String));
         //cultivar
         if(rank!= null && rank.equals(Rank.CULTIVAR())){
-            CultivarPlantName cultivar = CultivarPlantName.NewInstance(rank);
+            CultivarPlantName cultivar = TaxonNameFactory.NewCultivarInstance(rank);
             cultivar.setGenusOrUninomial(ep1String);
             cultivar.setSpecificEpithet(ep2String);
             cultivar.setCultivarName(ep3String);
@@ -350,7 +350,7 @@ public class RedListGefaesspflanzenImportNames extends DbImportBase<RedListGefae
         }
         //botanical names
         else{
-            name = BotanicalName.NewInstance(rank);
+            name = TaxonNameFactory.NewBotanicalInstance(rank);
 
             //ep1 should always be present
             if(CdmUtils.isBlank(ep1String)){
@@ -392,7 +392,7 @@ public class RedListGefaesspflanzenImportNames extends DbImportBase<RedListGefae
                 //more than two hybrids not yet handled by name parser
                 //TODO: use parser when implemented to fully support hybrids
                 if(taxNameString.split(RedListUtil.HYB_SIGN).length>2){
-                    name = BotanicalName.NewInstance(rank);
+                    name = TaxonNameFactory.NewBotanicalInstance(rank);
                     name.setTitleCache(taxNameString, true);
                 }
                 else if(hybString.equals(RedListUtil.HYB_X)){

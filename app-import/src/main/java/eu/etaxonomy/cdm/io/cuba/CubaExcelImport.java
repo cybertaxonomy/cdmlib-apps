@@ -54,6 +54,7 @@ import eu.etaxonomy.cdm.model.name.NomenclaturalStatus;
 import eu.etaxonomy.cdm.model.name.NomenclaturalStatusType;
 import eu.etaxonomy.cdm.model.name.Rank;
 import eu.etaxonomy.cdm.model.name.TaxonNameBase;
+import eu.etaxonomy.cdm.model.name.TaxonNameFactory;
 import eu.etaxonomy.cdm.model.reference.Reference;
 import eu.etaxonomy.cdm.model.reference.ReferenceFactory;
 import eu.etaxonomy.cdm.model.taxon.Classification;
@@ -918,7 +919,7 @@ public class CubaExcelImport extends ExcelImporterBase<CubaImportState> {
             if (genus != null){
                 higherNode = genus.getTaxonNodes().iterator().next();
             }else{
-                BotanicalName name = BotanicalName.NewInstance(Rank.GENUS());
+                BotanicalName name = TaxonNameFactory.NewBotanicalInstance(Rank.GENUS());
                 name.addSource(makeOriginalSource(state));
                 name.setGenusOrUninomial(genusStr);
                 genus = Taxon.NewInstance(name, sec);
@@ -1223,7 +1224,7 @@ public class CubaExcelImport extends ExcelImporterBase<CubaImportState> {
     private BotanicalName makeFamilyName(CubaImportState state, String famStr) {
         BotanicalName name = state.getFamilyName(famStr);
         if (name == null){
-            name = BotanicalName.NewInstance(Rank.FAMILY());
+            name = TaxonNameFactory.NewBotanicalInstance(Rank.FAMILY());
             name.setGenusOrUninomial(famStr);
             state.putFamilyName(famStr, name);
             name.addSource(makeOriginalSource(state));
@@ -1257,7 +1258,7 @@ public class CubaExcelImport extends ExcelImporterBase<CubaImportState> {
                 classification.getRootNode().setUuid(rootUuid);
             }
 
-            BotanicalName plantaeName = BotanicalName.NewInstance(Rank.KINGDOM());
+            BotanicalName plantaeName = TaxonNameFactory.NewBotanicalInstance(Rank.KINGDOM());
             plantaeName.setGenusOrUninomial("Plantae");
             Taxon plantae = Taxon.NewInstance(plantaeName, sec);
             TaxonNode plantaeNode = classification.addChildTaxon(plantae, null, null);

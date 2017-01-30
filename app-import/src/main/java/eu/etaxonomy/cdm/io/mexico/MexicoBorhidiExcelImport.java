@@ -34,6 +34,7 @@ import eu.etaxonomy.cdm.model.media.Media;
 import eu.etaxonomy.cdm.model.name.BotanicalName;
 import eu.etaxonomy.cdm.model.name.NomenclaturalCode;
 import eu.etaxonomy.cdm.model.name.Rank;
+import eu.etaxonomy.cdm.model.name.TaxonNameFactory;
 import eu.etaxonomy.cdm.model.reference.Reference;
 import eu.etaxonomy.cdm.model.reference.ReferenceFactory;
 import eu.etaxonomy.cdm.model.taxon.Classification;
@@ -99,7 +100,7 @@ public class MexicoBorhidiExcelImport<CONFIG extends MexicoBorhidiImportConfigur
             classification = Classification.NewInstance(state.getConfig().getClassificationName());
             classification.setUuid(config.getClassificationUuid());
             classification.setReference(config.getSecReference());
-            BotanicalName nameRubiaceae = BotanicalName.NewInstance(Rank.FAMILY());
+            BotanicalName nameRubiaceae = TaxonNameFactory.NewBotanicalInstance(Rank.FAMILY());
             nameRubiaceae.setGenusOrUninomial("Rubiaceae");
             Taxon rubiaceaeTaxon = Taxon.NewInstance(nameRubiaceae, classification.getReference());
             rubiaceaeNode = classification.addChildTaxon(rubiaceaeTaxon, null, null);

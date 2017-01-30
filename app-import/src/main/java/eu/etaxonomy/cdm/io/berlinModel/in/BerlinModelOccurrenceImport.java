@@ -628,7 +628,7 @@ public class BerlinModelOccurrenceImport  extends BerlinModelImportBase {
 		if (oldDescription == null || newTaxonId != oldTaxonId){
 			TaxonBase<?> taxonBase = taxonMap.get(String.valueOf(newTaxonId));
 			//TODO for testing
-			//TaxonBase taxonBase = Taxon.NewInstance(BotanicalName.NewInstance(Rank.SPECIES()), null);
+			//TaxonBase taxonBase = Taxon.NewInstance(TaxonNameFactory.NewBotanicalInstance(Rank.SPECIES()), null);
 			Taxon taxon;
 			if ( taxonBase instanceof Taxon ) {
 				taxon = (Taxon) taxonBase;

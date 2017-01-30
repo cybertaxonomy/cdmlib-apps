@@ -23,6 +23,7 @@ import eu.etaxonomy.cdm.io.mexico.SimpleExcelTaxonImportState;
 import eu.etaxonomy.cdm.model.common.Language;
 import eu.etaxonomy.cdm.model.name.BotanicalName;
 import eu.etaxonomy.cdm.model.name.Rank;
+import eu.etaxonomy.cdm.model.name.TaxonNameFactory;
 import eu.etaxonomy.cdm.model.reference.Reference;
 import eu.etaxonomy.cdm.model.taxon.Classification;
 import eu.etaxonomy.cdm.model.taxon.ITaxonTreeNode;
@@ -163,7 +164,7 @@ public class FloraHellenicaTaxonImport extends SimpleExcelTaxonImport<FloraHelle
      */
     private TaxonNode makeGenusNode(SimpleExcelTaxonImportState<FloraHellenicaImportConfigurator> state,
             HashMap<String, String> record, String genusStr) {
-        BotanicalName name = BotanicalName.NewInstance(Rank.GENUS());
+        BotanicalName name = TaxonNameFactory.NewBotanicalInstance(Rank.GENUS());
         name.setGenusOrUninomial(genusStr);
         Taxon genus = Taxon.NewInstance(name, getSecReference(state));
         TaxonNode family = getFamilyTaxon(record, state);
@@ -229,7 +230,7 @@ public class FloraHellenicaTaxonImport extends SimpleExcelTaxonImport<FloraHelle
      * @return
      */
     private BotanicalName makeFamilyName(SimpleExcelTaxonImportState<FloraHellenicaImportConfigurator> state, String famStr) {
-        BotanicalName name = BotanicalName.NewInstance(Rank.FAMILY());
+        BotanicalName name = TaxonNameFactory.NewBotanicalInstance(Rank.FAMILY());
         name.setGenusOrUninomial(famStr);
         name.addSource(makeOriginalSource(state));
         return name;
@@ -247,7 +248,7 @@ public class FloraHellenicaTaxonImport extends SimpleExcelTaxonImport<FloraHelle
             classification.setUuid(state.getConfig().getClassificationUuid());
             classification.getRootNode().setUuid(rootUuid);
 
-            BotanicalName plantaeName = BotanicalName.NewInstance(Rank.KINGDOM());
+            BotanicalName plantaeName = TaxonNameFactory.NewBotanicalInstance(Rank.KINGDOM());
             plantaeName.setGenusOrUninomial("Plantae");
             Taxon plantae = Taxon.NewInstance(plantaeName, sec);
             TaxonNode plantaeNode = classification.addChildTaxon(plantae, null, null);

@@ -19,6 +19,7 @@ import eu.etaxonomy.cdm.model.agent.AgentBase;
 import eu.etaxonomy.cdm.model.agent.TeamOrPersonBase;
 import eu.etaxonomy.cdm.model.name.BotanicalName;
 import eu.etaxonomy.cdm.model.name.Rank;
+import eu.etaxonomy.cdm.model.name.TaxonNameFactory;
 import eu.etaxonomy.cdm.model.reference.Reference;
 import eu.etaxonomy.cdm.model.taxon.Taxon;
 import eu.etaxonomy.cdm.model.taxon.TaxonBase;
@@ -80,7 +81,7 @@ public class TestTransaction {
 	    	List<Taxon> taxa = appCtr.getTaxonService().list(Taxon.class, MAX_ENTRIES, 0, null, null);
 
 			name1 =
-				BotanicalName.NewInstance(rankSpecies, "Hyoseris", null, "lucida", null, author, null, "1", null);
+				TaxonNameFactory.NewBotanicalInstance(rankSpecies, "Hyoseris", null, "lucida", null, author, null, "1", null);
             // Calendula L.
 			taxon1 = taxa.get(0);
 			child1 = Taxon.NewInstance(name1, sec);
@@ -93,7 +94,7 @@ public class TestTransaction {
 			TransactionStatus txStatTwo = appCtr.startTransaction();
 
 			name2 =
-				BotanicalName.NewInstance(rankSpecies, "Hyoseris", null, "scabra", null, author, null, "2", null);
+				TaxonNameFactory.NewBotanicalInstance(rankSpecies, "Hyoseris", null, "scabra", null, author, null, "2", null);
             // Sonchus L.
 	    	taxon2 = taxa.get(1);
 			child2 = Taxon.NewInstance(name2, sec);
@@ -158,7 +159,7 @@ public class TestTransaction {
 	    	List<Taxon> taxa = appCtr.getTaxonService().list(Taxon.class, MAX_ENTRIES, 0, null, null);
 
 			name1 =
-				BotanicalName.NewInstance(rankSpecies, "Launaea", null, "child1", null, author, null, "1", null);
+				TaxonNameFactory.NewBotanicalInstance(rankSpecies, "Launaea", null, "child1", null, author, null, "1", null);
 			// Cichorium intybus L.
 	    	taxon1 = taxa.get(5);
 			child1 = Taxon.NewInstance(name1, sec);
@@ -171,7 +172,7 @@ public class TestTransaction {
 			TransactionStatus txStatTwo = appCtr.startTransaction();
 
 			name2 =
-				BotanicalName.NewInstance(rankSpecies, "Reichardia", null, "child2", null, author, null, "2", null);
+				TaxonNameFactory.NewBotanicalInstance(rankSpecies, "Reichardia", null, "child2", null, author, null, "2", null);
 			// Cichorium intybus L.
 	    	taxon2 = taxa.get(5);
 			child2 = Taxon.NewInstance(name2, sec);
@@ -257,7 +258,7 @@ public class TestTransaction {
 	    	Reference sec = references.get(0);
 
 			name1 =
-				BotanicalName.NewInstance(rankSpecies, "NewTaxon1", null, "taxon1", null, author, null, "1", null);
+				TaxonNameFactory.NewBotanicalInstance(rankSpecies, "NewTaxon1", null, "taxon1", null, author, null, "1", null);
 	    	taxon1 = Taxon.NewInstance(name1, sec);
 			t1uuid = appCtr.getTaxonService().saveOrUpdate(taxon1);
 			//t1uuid = appCtr.getTaxonService().saveTaxon(taxon1, txStatOne);
@@ -270,7 +271,7 @@ public class TestTransaction {
 			//getSession().
 
 			name1_ =
-				BotanicalName.NewInstance(rankSpecies, "NewTaxon1_", null, "taxon1_", null, author, null, "1_", null);
+				TaxonNameFactory.NewBotanicalInstance(rankSpecies, "NewTaxon1_", null, "taxon1_", null, author, null, "1_", null);
 	    	taxon1_ = appCtr.getTaxonService().find(t1uuid);
 
 			/* ************** Commit Transaction #1 ******************************** */

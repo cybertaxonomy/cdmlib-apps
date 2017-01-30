@@ -51,6 +51,7 @@ import eu.etaxonomy.cdm.model.name.BotanicalName;
 import eu.etaxonomy.cdm.model.name.INonViralName;
 import eu.etaxonomy.cdm.model.name.Rank;
 import eu.etaxonomy.cdm.model.name.TaxonNameBase;
+import eu.etaxonomy.cdm.model.name.TaxonNameFactory;
 import eu.etaxonomy.cdm.model.reference.Reference;
 import eu.etaxonomy.cdm.model.taxon.Classification;
 import eu.etaxonomy.cdm.model.taxon.Synonym;
@@ -789,7 +790,7 @@ public class CentralAfricaFernsTaxonRelationImport  extends CentralAfricaFernsIm
 
 	private BotanicalName handleInfraSpecific(Rank lowerTaxonRank, Epithets epithets) {
 
-		BotanicalName taxonName = BotanicalName.NewInstance(null);
+		BotanicalName taxonName = TaxonNameFactory.NewBotanicalInstance(null);
 		Rank newRank = null;
 
 		if (StringUtils.isNotBlank(epithets.subFormaName)   && lowerTaxonRank.isLower(Rank.SUBFORM())){

@@ -271,7 +271,7 @@ public class CyprusDistributionImport extends ExcelImporterBase<CyprusImportStat
 			result = taxonNameOnlyStore.get(taxonStr);
 		}else {
 //			result = getTaxonService().findBestMatchingTaxon(taxonStr);
-//			TaxonNameBase name = BotanicalName.NewInstance(Rank.SPECIES());
+//			TaxonNameBase name = TaxonNameFactory.NewBotanicalInstance(Rank.SPECIES());
 //			name.setTitleCache(taxonStr, true);
 //
 //			result = Taxon.NewInstance(name, null);

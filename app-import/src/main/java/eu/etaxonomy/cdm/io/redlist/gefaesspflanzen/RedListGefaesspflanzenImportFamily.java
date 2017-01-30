@@ -25,6 +25,7 @@ import eu.etaxonomy.cdm.io.common.ResultSetPartitioner;
 import eu.etaxonomy.cdm.model.common.CdmBase;
 import eu.etaxonomy.cdm.model.name.BotanicalName;
 import eu.etaxonomy.cdm.model.name.Rank;
+import eu.etaxonomy.cdm.model.name.TaxonNameFactory;
 import eu.etaxonomy.cdm.model.taxon.Taxon;
 import eu.etaxonomy.cdm.model.taxon.TaxonBase;
 
@@ -81,7 +82,7 @@ public class RedListGefaesspflanzenImportFamily extends DbImportBase<RedListGefa
         ResultSet rs = state.getConfig().getSource().getResultSet(query);
         while(rs.next()){
             String familieStr = rs.getString("FAMILIE");
-            BotanicalName name = BotanicalName.NewInstance(Rank.FAMILY());
+            BotanicalName name = TaxonNameFactory.NewBotanicalInstance(Rank.FAMILY());
             name.setGenusOrUninomial(familieStr);
             Taxon family = Taxon.NewInstance(name, null);
             familyMap.put(familieStr, family.getUuid());

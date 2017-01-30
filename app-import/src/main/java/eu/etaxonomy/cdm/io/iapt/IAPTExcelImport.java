@@ -63,6 +63,7 @@ import eu.etaxonomy.cdm.model.name.Rank;
 import eu.etaxonomy.cdm.model.name.RankClass;
 import eu.etaxonomy.cdm.model.name.SpecimenTypeDesignationStatus;
 import eu.etaxonomy.cdm.model.name.TaxonNameBase;
+import eu.etaxonomy.cdm.model.name.TaxonNameFactory;
 import eu.etaxonomy.cdm.model.occurrence.Collection;
 import eu.etaxonomy.cdm.model.occurrence.DerivedUnit;
 import eu.etaxonomy.cdm.model.occurrence.FieldUnit;
@@ -1267,7 +1268,7 @@ public class IAPTExcelImport<CONFIG extends IAPTImportConfigurator> extends Simp
 
         Rank rank = guessRank(name);
 
-        BotanicalName taxonName = BotanicalName.NewInstance(rank);
+        BotanicalName taxonName = TaxonNameFactory.NewBotanicalInstance(rank);
         taxonName.addSource(makeOriginalSource(state));
         taxonName.setGenusOrUninomial(StringUtils.capitalize(name));
         return taxonName;

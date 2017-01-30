@@ -32,6 +32,7 @@ import eu.etaxonomy.cdm.model.description.PresenceAbsenceTerm;
 import eu.etaxonomy.cdm.model.description.TaxonDescription;
 import eu.etaxonomy.cdm.model.location.NamedArea;
 import eu.etaxonomy.cdm.model.name.Rank;
+import eu.etaxonomy.cdm.model.name.TaxonNameFactory;
 import eu.etaxonomy.cdm.model.name.ZoologicalName;
 import eu.etaxonomy.cdm.model.reference.Reference;
 import eu.etaxonomy.cdm.model.taxon.Classification;
@@ -346,7 +347,7 @@ public class GlobisCurrentSpeciesImport  extends GlobisImportBase<Taxon> {
 		String key = keyEpithet + "@" + CdmUtils.Nz(author) + "@" + rank.getTitleCache();
 		Taxon taxon = taxonMap.get(key);
 		if (taxon == null){
-			ZoologicalName name = ZoologicalName.NewInstance(rank);
+			ZoologicalName name = TaxonNameFactory.NewZoologicalInstance(rank);
 			name.setGenusOrUninomial(uninomial);
 			if (isNotBlank(infraGenericEpi)){
 				name.setInfraGenericEpithet(infraGenericEpi);
@@ -388,7 +389,7 @@ public class GlobisCurrentSpeciesImport  extends GlobisImportBase<Taxon> {
 		String author = rs.getString("dtSpcAutor");
 
 
-		ZoologicalName zooName = ZoologicalName.NewInstance(Rank.SPECIES());
+		ZoologicalName zooName = TaxonNameFactory.NewZoologicalInstance(Rank.SPECIES());
 		zooName.setSpecificEpithet(speciesEpi);
 		if (StringUtils.isNotBlank(subGenusEpi)){
 			zooName.setInfraGenericEpithet(subGenusEpi);

@@ -26,6 +26,7 @@ import eu.etaxonomy.cdm.model.agent.TeamOrPersonBase;
 import eu.etaxonomy.cdm.model.common.IdentifiableSource;
 import eu.etaxonomy.cdm.model.name.BotanicalName;
 import eu.etaxonomy.cdm.model.name.Rank;
+import eu.etaxonomy.cdm.model.name.TaxonNameFactory;
 import eu.etaxonomy.cdm.model.reference.INomenclaturalReference;
 import eu.etaxonomy.cdm.model.reference.Reference;
 import eu.etaxonomy.cdm.model.taxon.Taxon;
@@ -113,7 +114,7 @@ public abstract class SimpleExcelTaxonImport<CONFIG extends ExcelImportConfigura
             if (genus != null){
                 higherNode = genus.getTaxonNodes().iterator().next();
             }else{
-                BotanicalName genusName = BotanicalName.NewInstance(Rank.GENUS());
+                BotanicalName genusName = TaxonNameFactory.NewBotanicalInstance(Rank.GENUS());
                 genusName.addSource(makeOriginalSource(state));
                 genusName.setGenusOrUninomial(genusStr);
                 genus = Taxon.NewInstance(genusName, sec);
