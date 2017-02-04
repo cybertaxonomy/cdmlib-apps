@@ -211,14 +211,18 @@ public class EdaphobaseTaxonImport extends EdaphobaseImportBase {
      */
     private void checkRankMarker(EdaphobaseImportState state, Rank rank) throws UndefinedTransformerMethodException {
 
-        Set<Marker> markers = rank.getMarkers();
-        if ( markers.size() == 0){  //we assume that no markers exist. at least not for markers of unused ranks
-            UUID edaphoRankMarkerTypeUuid = state.getTransformer().getMarkerTypeUuid("EdaphoRankMarker");
-            MarkerType marker = getMarkerType(state, edaphoRankMarkerTypeUuid, "Edaphobase rank", "Rank used in Edaphobase", "EdaRk" );
-            Representation rep = Representation.NewInstance("Rang, verwendet in Edaphobase", "Edaphobase Rang", "EdaRg", Language.GERMAN());
-            marker.addRepresentation(rep);
-            rank.addMarker(Marker.NewInstance(marker, true));
-            getTermService().saveOrUpdate(rank);
+        if (rank != null){
+            Set<Marker> markers = rank.getMarkers();
+            if ( markers.size() == 0){  //we assume that no markers exist. at least not for markers of unused ranks
+                UUID edaphoRankMarkerTypeUuid = state.getTransformer().getMarkerTypeUuid("EdaphoRankMarker");
+                MarkerType marker = getMarkerType(state, edaphoRankMarkerTypeUuid, "Edaphobase rank", "Rank used in Edaphobase", "EdaRk" );
+                Representation rep = Representation.NewInstance("Rang, verwendet in Edaphobase", "Edaphobase Rang", "EdaRg", Language.GERMAN());
+                marker.addRepresentation(rep);
+                rank.addMarker(Marker.NewInstance(marker, true));
+                getTermService().saveOrUpdate(rank);
+            }
+        }else{
+            logger.warn("Rank is null and marker can not be set");
         }
     }
 

@@ -343,9 +343,9 @@ public abstract class AlgaTerraSpecimenImportBase extends BerlinModelImportBase{
 	protected abstract String getFieldObservationNameSpace();
 
 
-	protected DescriptionBase getFieldObservationDescription(DerivedUnitFacade facade) {
-		Set<DescriptionBase> descriptions = facade.innerFieldUnit().getDescriptions();
-		for (DescriptionBase desc : descriptions){
+	protected DescriptionBase<?> getFieldObservationDescription(DerivedUnitFacade facade) {
+		Set<DescriptionBase<?>> descriptions = (Set)facade.innerFieldUnit().getDescriptions();
+		for (DescriptionBase<?> desc : descriptions){
 			if (desc.isImageGallery() == false){
 				return desc;
 			}
