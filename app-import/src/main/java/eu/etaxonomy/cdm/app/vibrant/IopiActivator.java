@@ -26,10 +26,9 @@ import eu.etaxonomy.cdm.io.common.IImportConfigurator.CHECK;
 import eu.etaxonomy.cdm.io.common.IImportConfigurator.DO_REFERENCES;
 import eu.etaxonomy.cdm.io.common.IImportConfigurator.EDITOR;
 import eu.etaxonomy.cdm.io.common.Source;
-import eu.etaxonomy.cdm.model.common.CdmBase;
 import eu.etaxonomy.cdm.model.common.ExtensionType;
+import eu.etaxonomy.cdm.model.name.INonViralName;
 import eu.etaxonomy.cdm.model.name.NomenclaturalCode;
-import eu.etaxonomy.cdm.model.name.NonViralName;
 import eu.etaxonomy.cdm.model.name.Rank;
 import eu.etaxonomy.cdm.model.taxon.TaxonBase;
 
@@ -255,7 +254,7 @@ public class IopiActivator {
 		String taxonName = "";
 		String rankStr = "";
 
-		NonViralName<?>  name = CdmBase.deproxy(taxon.getName(), NonViralName.class);
+		INonViralName  name = taxon.getName();
 		Rank rank = name.getRank();
 		rankStr = transformFeRanks(rank);
 

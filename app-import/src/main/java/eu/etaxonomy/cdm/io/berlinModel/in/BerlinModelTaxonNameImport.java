@@ -40,6 +40,9 @@ import eu.etaxonomy.cdm.model.common.Language;
 import eu.etaxonomy.cdm.model.common.Representation;
 import eu.etaxonomy.cdm.model.name.BotanicalName;
 import eu.etaxonomy.cdm.model.name.CultivarPlantName;
+import eu.etaxonomy.cdm.model.name.IBotanicalName;
+import eu.etaxonomy.cdm.model.name.INonViralName;
+import eu.etaxonomy.cdm.model.name.IZoologicalName;
 import eu.etaxonomy.cdm.model.name.NonViralName;
 import eu.etaxonomy.cdm.model.name.Rank;
 import eu.etaxonomy.cdm.model.name.TaxonNameBase;
@@ -263,7 +266,7 @@ public class BerlinModelTaxonNameImport extends BerlinModelImportBase {
 
 					//NonViralName
 					if (taxonNameBase instanceof NonViralName){
-						NonViralName<?> nonViralName = (NonViralName<?>)taxonNameBase;
+						INonViralName nonViralName = taxonNameBase;
 
 						//authorTeams
 						if (teamMap != null ){
@@ -281,12 +284,12 @@ public class BerlinModelTaxonNameImport extends BerlinModelImportBase {
 
 					//zoologicalName
 					if (taxonNameBase instanceof ZoologicalName){
-						ZoologicalName zooName = (ZoologicalName)taxonNameBase;
+						IZoologicalName zooName = taxonNameBase;
 						makeZoologialName(rs, zooName, nameId);
 					}
 					//botanicalName
 					else if (taxonNameBase instanceof BotanicalName){
-						BotanicalName botName = (BotanicalName)taxonNameBase;
+						IBotanicalName botName = taxonNameBase;
 						success &= makeBotanicalNamePart(rs, botName) ;
 
 					}
@@ -299,7 +302,7 @@ public class BerlinModelTaxonNameImport extends BerlinModelImportBase {
 						taxonNameBase.setTitleCache(fullNameCache, true);
 						taxonNameBase.setFullTitleCache(taxonNameBase.getFullTitleCache(), true);
 						if (taxonNameBase instanceof NonViralName){
-							NonViralName<?> nvn = (NonViralName<?>)taxonNameBase;
+							INonViralName nvn = taxonNameBase;
 							nvn.setNameCache(nameCache, true);
 							nvn.setAuthorshipCache(nvn.getAuthorshipCache(), true);
 						}
@@ -390,7 +393,7 @@ public class BerlinModelTaxonNameImport extends BerlinModelImportBase {
 		return result;
 	}
 
-	private boolean makeZoologialName(ResultSet rs, ZoologicalName zooName, int nameId)
+	private boolean makeZoologialName(ResultSet rs, IZoologicalName zooName, int nameId)
 					throws SQLException{
 		boolean success = true;
 		//publicationYear
@@ -416,7 +419,7 @@ public class BerlinModelTaxonNameImport extends BerlinModelImportBase {
 		return success;
 	}
 
-	private boolean makeBotanicalNamePart(ResultSet rs, BotanicalName botanicalName)throws SQLException{
+	private boolean makeBotanicalNamePart(ResultSet rs, IBotanicalName botanicalName)throws SQLException{
 		boolean success = true;
 		String dbAttrName;
 		String cdmAttrName;

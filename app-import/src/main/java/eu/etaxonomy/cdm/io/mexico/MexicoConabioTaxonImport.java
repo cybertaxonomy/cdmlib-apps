@@ -32,10 +32,10 @@ import eu.etaxonomy.cdm.model.common.ExtensionType;
 import eu.etaxonomy.cdm.model.common.Language;
 import eu.etaxonomy.cdm.model.common.TimePeriod;
 import eu.etaxonomy.cdm.model.name.BotanicalName;
+import eu.etaxonomy.cdm.model.name.IBotanicalName;
 import eu.etaxonomy.cdm.model.name.NomenclaturalCode;
 import eu.etaxonomy.cdm.model.name.NomenclaturalStatus;
 import eu.etaxonomy.cdm.model.name.NomenclaturalStatusType;
-import eu.etaxonomy.cdm.model.name.NonViralName;
 import eu.etaxonomy.cdm.model.name.Rank;
 import eu.etaxonomy.cdm.model.name.TaxonNameBase;
 import eu.etaxonomy.cdm.model.reference.INomenclaturalReference;
@@ -303,7 +303,7 @@ public class MexicoConabioTaxonImport<CONFIG extends MexicoConabioImportConfigur
      * @param name
      * @param state
      */
-    private void addSourcesToReferences(BotanicalName name, SimpleExcelTaxonImportState<CONFIG> state) {
+    private void addSourcesToReferences(IBotanicalName name, SimpleExcelTaxonImportState<CONFIG> state) {
         Reference nomRef = (Reference)name.getNomenclaturalReference();
         if (nomRef != null){
             nomRef.addSource(makeOriginalSource(state));
@@ -319,7 +319,7 @@ public class MexicoConabioTaxonImport<CONFIG extends MexicoConabioImportConfigur
      * @param referencedName
      * @param refType
      */
-    private void adaptRefTypeForGeneric(BotanicalName referencedName, String refTypeStr) {
+    private void adaptRefTypeForGeneric(IBotanicalName referencedName, String refTypeStr) {
         INomenclaturalReference ref = referencedName.getNomenclaturalReference();
         if (ref == null){
             return;
@@ -404,7 +404,7 @@ public class MexicoConabioTaxonImport<CONFIG extends MexicoConabioImportConfigur
             List<String> propertyPaths = Arrays.asList("");
             List<TaxonNameBase> existingNames = this.getNameService().list(null, null, null, null, propertyPaths);
             for (TaxonNameBase tnb : existingNames){
-                state.putName(tnb.getTitleCache(), (NonViralName<?>)tnb);
+                state.putName(tnb.getTitleCache(), tnb);
             }
             nameMapIsInitialized = true;
         }

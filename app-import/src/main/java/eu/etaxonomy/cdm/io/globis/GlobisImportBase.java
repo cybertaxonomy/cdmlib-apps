@@ -44,7 +44,7 @@ import eu.etaxonomy.cdm.model.common.Language;
 import eu.etaxonomy.cdm.model.common.User;
 import eu.etaxonomy.cdm.model.location.Country;
 import eu.etaxonomy.cdm.model.location.NamedArea;
-import eu.etaxonomy.cdm.model.name.ZoologicalName;
+import eu.etaxonomy.cdm.model.name.IZoologicalName;
 import eu.etaxonomy.cdm.strategy.exceptions.StringNotParsableException;
 import eu.etaxonomy.cdm.strategy.parser.INonViralNameParser;
 import eu.etaxonomy.cdm.strategy.parser.NonViralNameParserImpl;
@@ -112,7 +112,7 @@ public abstract class GlobisImportBase<CDM_BASE extends CdmBase> extends CdmImpo
 	 * @param authorAndYear
 	 * @param zooName
 	 */
-	protected void handleAuthorAndYear(String authorAndYear, ZoologicalName zooName, Integer id, GlobisImportState state) {
+	protected void handleAuthorAndYear(String authorAndYear, IZoologicalName zooName, Integer id, GlobisImportState state) {
 		if (isBlank(authorAndYear)){
 			return;
 		}else if ("[Denis & Schifferm\u00FCller], 1775".equals(authorAndYear)){
@@ -144,7 +144,7 @@ public abstract class GlobisImportBase<CDM_BASE extends CdmBase> extends CdmImpo
 	 * @param zooName
 	 * @param state
 	 */
-	private void handleDenisSchiffermueller(ZoologicalName zooName,
+	private void handleDenisSchiffermueller(IZoologicalName zooName,
 			GlobisImportState state) {
 		String teamStr = "Denis & Schifferm\u00FCller";
 		Team team = state.getTeam(teamStr);
@@ -159,7 +159,7 @@ public abstract class GlobisImportBase<CDM_BASE extends CdmBase> extends CdmImpo
 	}
 
 
-	private void deduplicateAuthors(ZoologicalName zooName, GlobisImportState state) {
+	private void deduplicateAuthors(IZoologicalName zooName, GlobisImportState state) {
 		zooName.setCombinationAuthorship(getExistingAuthor(zooName.getCombinationAuthorship(), state));
 		zooName.setExCombinationAuthorship(getExistingAuthor(zooName.getExCombinationAuthorship(), state));
 		zooName.setBasionymAuthorship(getExistingAuthor(zooName.getBasionymAuthorship(), state));

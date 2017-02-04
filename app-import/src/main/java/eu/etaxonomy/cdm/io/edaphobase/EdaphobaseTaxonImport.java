@@ -31,9 +31,9 @@ import eu.etaxonomy.cdm.model.common.Language;
 import eu.etaxonomy.cdm.model.common.Marker;
 import eu.etaxonomy.cdm.model.common.MarkerType;
 import eu.etaxonomy.cdm.model.common.Representation;
+import eu.etaxonomy.cdm.model.name.IZoologicalName;
 import eu.etaxonomy.cdm.model.name.Rank;
 import eu.etaxonomy.cdm.model.name.TaxonNameFactory;
-import eu.etaxonomy.cdm.model.name.ZoologicalName;
 import eu.etaxonomy.cdm.model.reference.Reference;
 import eu.etaxonomy.cdm.model.reference.ReferenceFactory;
 import eu.etaxonomy.cdm.model.taxon.Synonym;
@@ -146,7 +146,7 @@ public class EdaphobaseTaxonImport extends EdaphobaseImportBase {
         //Name etc.
         Rank rank = makeRank(state, rankStr);
         checkRankMarker(state, rank);
-        ZoologicalName name = TaxonNameFactory.NewZoologicalInstance(rank);
+        IZoologicalName name = TaxonNameFactory.NewZoologicalInstance(rank);
         setNamePart(nameStr, rank, name);
         Rank parentRank = makeRank(state, parentRankStr);
         setNamePart(parentNameStr, parentRank, name);
@@ -307,7 +307,7 @@ public class EdaphobaseTaxonImport extends EdaphobaseImportBase {
         return result;
     }
 
-    private void setNamePart(String nameStr, Rank rank, ZoologicalName name) {
+    private void setNamePart(String nameStr, Rank rank, IZoologicalName name) {
         if (rank != null){
             if (rank.isSupraGeneric() || rank.isGenus()){
                 if (StringUtils.isBlank(name.getGenusOrUninomial())){

@@ -38,11 +38,12 @@ import eu.etaxonomy.cdm.model.common.Language;
 import eu.etaxonomy.cdm.model.common.OrderedTermVocabulary;
 import eu.etaxonomy.cdm.model.description.CommonTaxonName;
 import eu.etaxonomy.cdm.model.description.TaxonDescription;
-import eu.etaxonomy.cdm.model.name.CultivarPlantName;
+import eu.etaxonomy.cdm.model.name.ICultivarPlantName;
+import eu.etaxonomy.cdm.model.name.INonViralName;
+import eu.etaxonomy.cdm.model.name.ITaxonNameBase;
 import eu.etaxonomy.cdm.model.name.NomenclaturalCode;
 import eu.etaxonomy.cdm.model.name.NomenclaturalStatus;
 import eu.etaxonomy.cdm.model.name.NomenclaturalStatusType;
-import eu.etaxonomy.cdm.model.name.NonViralName;
 import eu.etaxonomy.cdm.model.name.Rank;
 import eu.etaxonomy.cdm.model.name.RankClass;
 import eu.etaxonomy.cdm.model.name.TaxonNameBase;
@@ -128,8 +129,8 @@ public class RedListGefaesspflanzenImportNames extends DbImportBase<RedListGefae
     @Override
     public boolean doPartition(ResultSetPartitioner partitioner, RedListGefaesspflanzenImportState state) {
         ResultSet rs = partitioner.getResultSet();
-        Set<TaxonNameBase> namesToSave = new HashSet<TaxonNameBase>();
-        Set<TaxonBase> taxaToSave = new HashSet<TaxonBase>();
+        Set<ITaxonNameBase> namesToSave = new HashSet<>();
+        Set<TaxonBase> taxaToSave = new HashSet<>();
         try {
             while (rs.next()){
                 makeSingleNameAndTaxon(state, rs, namesToSave, taxaToSave);
@@ -139,12 +140,12 @@ public class RedListGefaesspflanzenImportNames extends DbImportBase<RedListGefae
             e.printStackTrace();
         }
 
-        getNameService().saveOrUpdate(namesToSave);
+        getNameService().saveOrUpdate(TaxonNameBase.castAndDeproxy(namesToSave));
         getTaxonService().saveOrUpdate(taxaToSave);
         return true;
     }
 
-    private void makeSingleNameAndTaxon(RedListGefaesspflanzenImportState state, ResultSet rs, Set<TaxonNameBase> namesToSave, Set<TaxonBase> taxaToSave)
+    private void makeSingleNameAndTaxon(RedListGefaesspflanzenImportState state, ResultSet rs, Set<ITaxonNameBase> namesToSave, Set<TaxonBase> taxaToSave)
             throws SQLException {
         long id = rs.getLong(RedListUtil.NAMNR);
         String relationE = rs.getString(RedListUtil.E);
@@ -157,7 +158,7 @@ public class RedListGefaesspflanzenImportNames extends DbImportBase<RedListGefae
         String relationS = rs.getString(RedListUtil.S);
 
         //---NAME---
-        NonViralName<?> name = importName(state, rs, namesToSave);
+        INonViralName name = importName(state, rs, namesToSave);
 
 
         //--- AUTHORS ---
@@ -205,7 +206,7 @@ public class RedListGefaesspflanzenImportNames extends DbImportBase<RedListGefae
         }
     }
 
-    private TaxonBase<?> importTaxon(ResultSet rs, NonViralName<?> name, RedListGefaesspflanzenImportState state) throws SQLException {
+    private TaxonBase<?> importTaxon(ResultSet rs, INonViralName name, RedListGefaesspflanzenImportState state) throws SQLException {
 
         long id = rs.getLong(RedListUtil.NAMNR);
         String taxNameString = rs.getString(RedListUtil.TAXNAME);
@@ -259,7 +260,7 @@ public class RedListGefaesspflanzenImportNames extends DbImportBase<RedListGefae
         return taxonBase;
     }
 
-    private void importAuthors(RedListGefaesspflanzenImportState state, ResultSet rs, NonViralName<?> name) throws SQLException {
+    private void importAuthors(RedListGefaesspflanzenImportState state, ResultSet rs, INonViralName name) throws SQLException {
 
         long id = rs.getLong(RedListUtil.NAMNR);
         String nomZusatzString = rs.getString(RedListUtil.NOM_ZUSATZ);
@@ -322,7 +323,7 @@ public class RedListGefaesspflanzenImportNames extends DbImportBase<RedListGefae
         checkNameConsistency(id, nomZusatzString, taxZusatzString, zusatzString, authorString, hybString, name);
     }
 
-    private NonViralName<?> importName(RedListGefaesspflanzenImportState state, ResultSet rs, Set<TaxonNameBase> namesToSave) throws SQLException {
+    private INonViralName importName(RedListGefaesspflanzenImportState state, ResultSet rs, Set<ITaxonNameBase> namesToSave) throws SQLException {
 
         long id = rs.getLong(RedListUtil.NAMNR);
         String taxNameString = rs.getString(RedListUtil.TAXNAME);
@@ -338,11 +339,11 @@ public class RedListGefaesspflanzenImportNames extends DbImportBase<RedListGefae
             RedListUtil.logMessage(id, "No name found!", logger);
         }
 
-        NonViralName<?> name = null;
+        INonViralName name = null;
         Rank rank = makeRank(id, state, rangString, CdmUtils.isNotBlank(ep3String));
         //cultivar
         if(rank!= null && rank.equals(Rank.CULTIVAR())){
-            CultivarPlantName cultivar = TaxonNameFactory.NewCultivarInstance(rank);
+            ICultivarPlantName cultivar = TaxonNameFactory.NewCultivarInstance(rank);
             cultivar.setGenusOrUninomial(ep1String);
             cultivar.setSpecificEpithet(ep2String);
             cultivar.setCultivarName(ep3String);
@@ -482,7 +483,7 @@ public class RedListGefaesspflanzenImportNames extends DbImportBase<RedListGefae
     }
 
     private void checkNameConsistency(long id, String nomZusatzString, String taxZusatzString,
-            String zusatzString, String authorString, String hybString, NonViralName<?> name) {
+            String zusatzString, String authorString, String hybString, INonViralName name) {
         String authorshipCache = name.getAuthorshipCache();
         //FIXME: remove split length check when name parser can parse multiple hybrid parents
         if(hybString.equals(RedListUtil.HYB_XF) && name.getTitleCache().split(RedListUtil.HYB_SIGN).length==2){
@@ -526,7 +527,7 @@ public class RedListGefaesspflanzenImportNames extends DbImportBase<RedListGefae
             return;
         }
 
-        String nameCache = HibernateProxyHelper.deproxy(taxonBase.getName(), NonViralName.class).getNameCache().trim();
+        String nameCache = taxonBase.getName().getNameCache().trim();
         taxNameString = taxNameString.trim();
         taxNameString = taxNameString.replaceAll(" +", " ");
 

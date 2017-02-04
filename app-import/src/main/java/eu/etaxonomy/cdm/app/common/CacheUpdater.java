@@ -126,11 +126,7 @@ public class CacheUpdater {
 //	static final boolean doSequence = true;
 //
 //	//Names
-//	static final boolean doViralName = true;
-//	static final boolean doNonViralName = true;
-//	static final boolean doBotanicalName = true;
-//	static final boolean doZoologicalName = true;
-//	static final boolean doCultivarPlantName = true;
+//	static final boolean doTaxonName = true;
 //
 //	static final boolean doClassification = true;
 //

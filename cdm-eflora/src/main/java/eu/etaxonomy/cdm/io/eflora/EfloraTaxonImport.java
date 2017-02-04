@@ -56,8 +56,8 @@ import eu.etaxonomy.cdm.model.description.PolytomousKey;
 import eu.etaxonomy.cdm.model.description.PolytomousKeyNode;
 import eu.etaxonomy.cdm.model.description.TaxonDescription;
 import eu.etaxonomy.cdm.model.description.TextData;
-import eu.etaxonomy.cdm.model.name.BotanicalName;
 import eu.etaxonomy.cdm.model.name.HomotypicalGroup;
+import eu.etaxonomy.cdm.model.name.IBotanicalName;
 import eu.etaxonomy.cdm.model.name.INonViralName;
 import eu.etaxonomy.cdm.model.name.NameRelationshipType;
 import eu.etaxonomy.cdm.model.name.NameTypeDesignation;
@@ -151,7 +151,7 @@ public class EfloraTaxonImport  extends EfloraImportBase implements ICdmIO<Eflor
 					logger.warn("body has element other than 'taxon'");
 				}
 
-				BotanicalName botanicalName = TaxonNameFactory.NewBotanicalInstance(Rank.SPECIES());
+				IBotanicalName botanicalName = TaxonNameFactory.NewBotanicalInstance(Rank.SPECIES());
 				Taxon taxon = Taxon.NewInstance(botanicalName, state.getConfig().getSourceReference());
 
 				handleTaxonAttributes(elTaxon, taxon, state);
@@ -1064,7 +1064,7 @@ public class EfloraTaxonImport  extends EfloraImportBase implements ICdmIO<Eflor
 		//clean
 		typeText = cleanNameType(typeText);
 		//create name
-		BotanicalName nameType = (BotanicalName)parser.parseFullName(typeText, NomenclaturalCode.ICNAFP, Rank.SPECIES());
+		TaxonNameBase<?,?> nameType = (TaxonNameBase<?,?>)parser.parseFullName(typeText, NomenclaturalCode.ICNAFP, Rank.SPECIES());
 		((NameTypeDesignation) typeDesignation).setTypeName(nameType);
 		//TODO wie können NameTypes den Namen zugeordnet werden? -  wird aber vom Portal via NameCache matching gemacht
 	}
@@ -1280,7 +1280,7 @@ public class EfloraTaxonImport  extends EfloraImportBase implements ICdmIO<Eflor
 		verifyNoAttribute(elHomonym);
 
 		//hommonym name
-		BotanicalName homonymName = TaxonNameFactory.NewBotanicalInstance(upperName.getRank());
+		TaxonNameBase<?,?> homonymName = TaxonNameFactory.NewBotanicalInstance(upperName.getRank());
 		homonymName.setGenusOrUninomial(upperName.getGenusOrUninomial());
 		homonymName.setInfraGenericEpithet(upperName.getInfraGenericEpithet());
 		homonymName.setSpecificEpithet(upperName.getSpecificEpithet());
@@ -1516,7 +1516,7 @@ public class EfloraTaxonImport  extends EfloraImportBase implements ICdmIO<Eflor
 			String homonymString = detail.substring(end);
 
 			//hommonym name
-			BotanicalName homonymName = TaxonNameFactory.NewBotanicalInstance(name.getRank());
+			TaxonNameBase<?,?> homonymName = TaxonNameFactory.NewBotanicalInstance(name.getRank());
 			homonymName.setGenusOrUninomial(name.getGenusOrUninomial());
 			homonymName.setInfraGenericEpithet(name.getInfraGenericEpithet());
 			homonymName.setSpecificEpithet(name.getSpecificEpithet());
@@ -1559,7 +1559,7 @@ public class EfloraTaxonImport  extends EfloraImportBase implements ICdmIO<Eflor
 	 * @param name
 	 * @param value
 	 */
-	protected TeamOrPersonBase handleNomenclaturalReference(TaxonNameBase name, String value) {
+	protected TeamOrPersonBase handleNomenclaturalReference(TaxonNameBase<?,?> name, String value) {
 		Reference nomRef = ReferenceFactory.newGeneric();
 		nomRef.setTitleCache(value, true);
 		parseNomStatus(nomRef, name);
@@ -2170,7 +2170,7 @@ public class EfloraTaxonImport  extends EfloraImportBase implements ICdmIO<Eflor
 	 * @param ref
 	 * @param nonViralName
 	 */
-	protected void parseNomStatus(Reference ref, TaxonNameBase nonViralName) {
+	protected void parseNomStatus(Reference ref, INonViralName nonViralName) {
 		String titleToParse = ref.getTitleCache();
 
 		String noStatusTitle = parser.parseNomStatus(titleToParse, nonViralName, true);

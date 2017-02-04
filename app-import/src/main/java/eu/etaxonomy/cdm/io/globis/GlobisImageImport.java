@@ -38,6 +38,7 @@ import eu.etaxonomy.cdm.model.common.Marker;
 import eu.etaxonomy.cdm.model.common.MarkerType;
 import eu.etaxonomy.cdm.model.common.OriginalSourceType;
 import eu.etaxonomy.cdm.model.media.Media;
+import eu.etaxonomy.cdm.model.name.IZoologicalName;
 import eu.etaxonomy.cdm.model.name.ZoologicalName;
 import eu.etaxonomy.cdm.model.occurrence.Collection;
 import eu.etaxonomy.cdm.model.occurrence.DerivedUnit;
@@ -161,7 +162,7 @@ public class GlobisImageImport  extends GlobisImportBase<Taxon> {
         				}
 
     					//try to find specTaxName
-        				ZoologicalName specTaxTaxonName = specTaxNameMap.get(String.valueOf(spectaxID));
+        				IZoologicalName specTaxTaxonName = specTaxNameMap.get(String.valueOf(spectaxID));
             			if (specTaxTaxonName != null){
             				title = " taxon name " + specTaxTaxonName.getTitleCache();
             			}else{
@@ -213,7 +214,7 @@ public class GlobisImageImport  extends GlobisImportBase<Taxon> {
 
 						//add to image gallery (discuss if this is also needed if taxon is already added to type specimen
 //						Taxon taxon = taxonMap.get(String.valueOf(taxonID));
-						ZoologicalName specTaxTaxonName = specTaxNameMap.get(String.valueOf(spectaxID));
+						IZoologicalName specTaxTaxonName = specTaxNameMap.get(String.valueOf(spectaxID));
 
 //
 //						if (taxon == null){

@@ -47,8 +47,8 @@ import eu.etaxonomy.cdm.io.common.ResultSetPartitioner;
 import eu.etaxonomy.cdm.model.agent.Person;
 import eu.etaxonomy.cdm.model.common.AnnotatableEntity;
 import eu.etaxonomy.cdm.model.common.CdmBase;
-import eu.etaxonomy.cdm.model.name.BotanicalName;
 import eu.etaxonomy.cdm.model.name.HybridRelationshipType;
+import eu.etaxonomy.cdm.model.name.IBotanicalName;
 import eu.etaxonomy.cdm.model.name.NameRelationshipType;
 import eu.etaxonomy.cdm.model.name.NameTypeDesignationStatus;
 import eu.etaxonomy.cdm.model.name.NonViralName;
@@ -255,8 +255,8 @@ public class BerlinModelTaxonNameRelationImport extends BerlinModelImportBase {
 			}
 			try {
 				HybridRelationshipType hybridRelType = BerlinModelTransformer.relNameId2HybridRel(relQualifierFk);
-				BotanicalName parent = (BotanicalName)nameFrom;
-				BotanicalName child = (BotanicalName)nameTo;
+				IBotanicalName parent = nameFrom;
+				IBotanicalName child = nameTo;
 
 				nameRelationship = parent.addHybridChild(child, hybridRelType, rule);
 

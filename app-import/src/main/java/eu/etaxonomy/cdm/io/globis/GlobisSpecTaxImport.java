@@ -39,6 +39,7 @@ import eu.etaxonomy.cdm.model.common.MarkerType;
 import eu.etaxonomy.cdm.model.common.OriginalSourceType;
 import eu.etaxonomy.cdm.model.description.Feature;
 import eu.etaxonomy.cdm.model.location.NamedArea;
+import eu.etaxonomy.cdm.model.name.IZoologicalName;
 import eu.etaxonomy.cdm.model.name.NomenclaturalCode;
 import eu.etaxonomy.cdm.model.name.NomenclaturalStatus;
 import eu.etaxonomy.cdm.model.name.NomenclaturalStatusType;
@@ -136,7 +137,7 @@ public class GlobisSpecTaxImport  extends GlobisImportBase<Reference> implements
 					Taxon acceptedTaxon =  taxonMap.get(String.valueOf(acceptedTaxonId));
 					TaxonBase<?> thisTaxon = null;
 
-					ZoologicalName name = null;
+					IZoologicalName name = null;
 					if (isBlank(specSystaxRank) ){
 						name = makeName(state, rs, specTaxId);
 					}else if (specSystaxRank.equals("synonym")){
@@ -209,7 +210,7 @@ public class GlobisSpecTaxImport  extends GlobisImportBase<Reference> implements
 
 					name.addSource(OriginalSourceType.Import, String.valueOf(specTaxId), SPEC_TAX_NAMESPACE, state.getTransactionalSourceReference(), null);
 
-					namesToSave.add(name);
+					namesToSave.add(TaxonNameBase.castAndDeproxy(name));
 
 
 				} catch (Exception e) {
@@ -231,7 +232,7 @@ public class GlobisSpecTaxImport  extends GlobisImportBase<Reference> implements
 	}
 
 
-	private void makeNotAvailable(GlobisImportState state, ResultSet rs, ZoologicalName name, int id) throws SQLException {
+	private void makeNotAvailable(GlobisImportState state, ResultSet rs, IZoologicalName name, int id) throws SQLException {
 		String notAvailableStr = rs.getString("SpecNotAvailable");
 		String notAvailableReason = rs.getString("SpecNotAvailableReason");
 
@@ -300,7 +301,7 @@ public class GlobisSpecTaxImport  extends GlobisImportBase<Reference> implements
 	 * @throws SQLException
 	 */
 	@SuppressWarnings("unused")
-	private void makeMarker1(GlobisImportState state, ResultSet rs, ZoologicalName name) throws SQLException {
+	private void makeMarker1(GlobisImportState state, ResultSet rs, IZoologicalName name) throws SQLException {
 		String marker1Str = rs.getString("Marker1");
 		try {
 			if (isNotBlank(marker1Str)){
@@ -325,10 +326,10 @@ public class GlobisSpecTaxImport  extends GlobisImportBase<Reference> implements
 	}
 
 
-	private void addNameDescription(GlobisImportState state, ZoologicalName name, UUID featureUuid,
+	private void addNameDescription(GlobisImportState state, IZoologicalName name, UUID featureUuid,
 			String citedTypeLocality, String featureLabel) {
 		Feature feature = getFeature(state, featureUuid,featureLabel,featureLabel, null, null);
-		getTaxonNameDescription(name, false, true);
+		getTaxonNameDescription((TaxonNameBase<?,?>)name, false, true);
 
 	}
 
@@ -336,7 +337,7 @@ public class GlobisSpecTaxImport  extends GlobisImportBase<Reference> implements
 	private Pattern patternAll = Pattern.compile("(.+,\\s.+)(\\(.+\\))");
 
 
-	private void handleTypeInformation(GlobisImportState state, ResultSet rs, ZoologicalName name, Integer specTaxId) throws SQLException {
+	private void handleTypeInformation(GlobisImportState state, ResultSet rs, IZoologicalName name, Integer specTaxId) throws SQLException {
 		if (! hasTypeInformation(rs)){
 			return;
 		}
@@ -807,7 +808,7 @@ public class GlobisSpecTaxImport  extends GlobisImportBase<Reference> implements
 	 * @param specTaxId
 	 * @throws SQLException
 	 */
-	protected void makeTypeDesignation(ZoologicalName name, ResultSet rs, DerivedUnit specimen, Integer specTaxId) throws SQLException {
+	protected void makeTypeDesignation(IZoologicalName name, ResultSet rs, DerivedUnit specimen, Integer specTaxId) throws SQLException {
 		//type
 		String specType = rs.getString("SpecType");
 		SpecimenTypeDesignationStatus status = getTypeDesigType(specType, specTaxId);
@@ -854,7 +855,7 @@ public class GlobisSpecTaxImport  extends GlobisImportBase<Reference> implements
 	 * @throws SQLException
 	 */
 	private Reference handleNomRef(GlobisImportState state, Map<String, Reference> referenceMap, ResultSet rs,
-			ZoologicalName name, Integer specTaxId) throws SQLException {
+			IZoologicalName name, Integer specTaxId) throws SQLException {
 		//ref
 		Integer refId = nullSafeInt(rs, "fiSpecRefID");
 		Reference nomRef = null;
@@ -885,7 +886,7 @@ public class GlobisSpecTaxImport  extends GlobisImportBase<Reference> implements
 		}
 
 		//TODO
-		ZoologicalName name = CdmBase.deproxy(acceptedTaxon.getName(), ZoologicalName.class);
+		IZoologicalName name = acceptedTaxon.getName();
 
 		String specName = rs.getString("SpecName");
 		if (! name.getSpecificEpithet().equals(specName)){
@@ -898,7 +899,7 @@ public class GlobisSpecTaxImport  extends GlobisImportBase<Reference> implements
 
 
 	private Synonym getSynonym(GlobisImportState state, ResultSet rs, Integer specTaxId) throws SQLException {
-		ZoologicalName name = makeName(state, rs, specTaxId);
+		TaxonNameBase<?,?> name = (TaxonNameBase<?,?>)makeName(state, rs, specTaxId);
 
 		Synonym synonym = Synonym.NewInstance(name, state.getTransactionalSourceReference());
 
@@ -915,7 +916,7 @@ public class GlobisSpecTaxImport  extends GlobisImportBase<Reference> implements
 	 * @return
 	 * @throws SQLException
 	 */
-	protected ZoologicalName makeName(GlobisImportState state, ResultSet rs, Integer specTaxId)
+	protected IZoologicalName makeName(GlobisImportState state, ResultSet rs, Integer specTaxId)
 			throws SQLException {
 		//rank
 		String rankStr = rs.getString("SpecRank");
@@ -929,7 +930,7 @@ public class GlobisSpecTaxImport  extends GlobisImportBase<Reference> implements
 		}
 
 		//name
-		ZoologicalName name = TaxonNameFactory.NewZoologicalInstance(rank);
+		IZoologicalName name = TaxonNameFactory.NewZoologicalInstance(rank);
 		makeNamePartsAndCache(state, rs, rankStr, name);
 
 
@@ -945,7 +946,7 @@ public class GlobisSpecTaxImport  extends GlobisImportBase<Reference> implements
 
 
 
-	private void makeNamePartsAndCache(GlobisImportState state, ResultSet rs, String rank, ZoologicalName name) throws SQLException {
+	private void makeNamePartsAndCache(GlobisImportState state, ResultSet rs, String rank, IZoologicalName name) throws SQLException {
 		String citedFamily = rs.getString("SpecCitedFamily");
 		String citedGenus = rs.getString("SpecCitedGenus");
 		String citedSpecies = rs.getString("SpecCitedSpecies");

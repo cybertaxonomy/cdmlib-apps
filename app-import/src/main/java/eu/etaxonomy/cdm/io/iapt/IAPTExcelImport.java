@@ -54,6 +54,7 @@ import eu.etaxonomy.cdm.model.common.MarkerType;
 import eu.etaxonomy.cdm.model.common.OriginalSourceType;
 import eu.etaxonomy.cdm.model.common.TimePeriod;
 import eu.etaxonomy.cdm.model.name.BotanicalName;
+import eu.etaxonomy.cdm.model.name.IBotanicalName;
 import eu.etaxonomy.cdm.model.name.NameRelationshipType;
 import eu.etaxonomy.cdm.model.name.NameTypeDesignation;
 import eu.etaxonomy.cdm.model.name.NomenclaturalCode;
@@ -713,7 +714,7 @@ public class IAPTExcelImport<CONFIG extends IAPTImportConfigurator> extends Simp
     }
 
 
-    private void addSpecimenTypes(BotanicalName taxonName, FieldUnit fieldUnit, String typeStr, TypesName typeName, boolean multiple, String regNumber, SpecimenOrObservationType specimenType){
+    private void addSpecimenTypes(IBotanicalName taxonName, FieldUnit fieldUnit, String typeStr, TypesName typeName, boolean multiple, String regNumber, SpecimenOrObservationType specimenType){
 
         if(StringUtils.isEmpty(typeStr)){
             return;

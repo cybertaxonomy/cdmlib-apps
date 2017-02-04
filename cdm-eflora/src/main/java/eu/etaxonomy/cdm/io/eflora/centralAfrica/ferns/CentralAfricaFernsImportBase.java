@@ -1,49 +1,31 @@
 /**
 * Copyright (C) 2007 EDIT
-* European Distributed Institute of Taxonomy 
+* European Distributed Institute of Taxonomy
 * http://www.e-taxonomy.eu
-* 
+*
 * The contents of this file are subject to the Mozilla Public License Version 1.1
 * See LICENSE.TXT at the top of this package for the full license terms.
 */
 
 package eu.etaxonomy.cdm.io.eflora.centralAfrica.ferns;
 
-import java.lang.reflect.Method;
 import java.sql.ResultSet;
-import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
-import java.sql.Timestamp;
-import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
-import org.joda.time.DateTime;
 
-import eu.etaxonomy.cdm.common.CdmUtils;
 import eu.etaxonomy.cdm.io.common.CdmImportBase;
 import eu.etaxonomy.cdm.io.common.ICdmIO;
 import eu.etaxonomy.cdm.io.common.IPartitionedIO;
-import eu.etaxonomy.cdm.io.common.ImportHelper;
 import eu.etaxonomy.cdm.io.common.ResultSetPartitioner;
 import eu.etaxonomy.cdm.io.common.Source;
-import eu.etaxonomy.cdm.io.common.IImportConfigurator.EDITOR;
 import eu.etaxonomy.cdm.io.common.mapping.DbImportMapping;
-import eu.etaxonomy.cdm.model.agent.Team;
-import eu.etaxonomy.cdm.model.common.AnnotatableEntity;
-import eu.etaxonomy.cdm.model.common.Annotation;
-import eu.etaxonomy.cdm.model.common.AnnotationType;
 import eu.etaxonomy.cdm.model.common.CdmBase;
-import eu.etaxonomy.cdm.model.common.ExtensionType;
-import eu.etaxonomy.cdm.model.common.IdentifiableEntity;
-import eu.etaxonomy.cdm.model.common.Language;
-import eu.etaxonomy.cdm.model.common.MarkerType;
-import eu.etaxonomy.cdm.model.common.User;
-import eu.etaxonomy.cdm.model.name.BotanicalName;
+import eu.etaxonomy.cdm.model.name.IBotanicalName;
 import eu.etaxonomy.cdm.model.name.Rank;
 import eu.etaxonomy.cdm.strategy.parser.NonViralNameParserImpl;
 
@@ -54,27 +36,27 @@ import eu.etaxonomy.cdm.strategy.parser.NonViralNameParserImpl;
  */
 public abstract class CentralAfricaFernsImportBase<CDM_BASE extends CdmBase> extends CdmImportBase<CentralAfricaFernsImportConfigurator, CentralAfricaFernsImportState> implements ICdmIO<CentralAfricaFernsImportState>, IPartitionedIO<CentralAfricaFernsImportState> {
 	private static final Logger logger = Logger.getLogger(CentralAfricaFernsImportBase.class);
-	
+
 	public static final UUID ID_IN_SOURCE_EXT_UUID = UUID.fromString("23dac094-e793-40a4-bad9-649fc4fcfd44");
-	
+
 	protected static final String TAXON_NAMESPACE = "African_pteridophytes_Taxon";
 	protected static final String NAME_NAMESPACE = "African_pteridophytes_Name";
 	protected static final String HIGHER_TAXON_NAMESPACE = "African_pteridophytes_Higher_Taxon";
-	
+
 	private NonViralNameParserImpl parser = NonViralNameParserImpl.NewInstance();
-	
+
 
 	private String pluralString;
 	private String dbTableName;
 	//TODO needed?
 	private Class cdmTargetClass;
-	
 
-	
-	
+
+
+
 	/**
 	 * @param dbTableName
-	 * @param dbTableName2 
+	 * @param dbTableName2
 	 */
 	public CentralAfricaFernsImportBase(String pluralString, String dbTableName, Class cdmTargetClass) {
 		this.pluralString = pluralString;
@@ -82,11 +64,12 @@ public abstract class CentralAfricaFernsImportBase<CDM_BASE extends CdmBase> ext
 		this.cdmTargetClass = cdmTargetClass;
 	}
 
-	protected void doInvoke(CentralAfricaFernsImportState state){
+	@Override
+    protected void doInvoke(CentralAfricaFernsImportState state){
 		logger.info("start make " + getPluralString() + " ...");
 		CentralAfricaFernsImportConfigurator config = state.getConfig();
 		Source source = config.getSource();
-			
+
 		String strIdQuery = getIdQuery();
 		String strRecordQuery = getRecordQuery(config);
 
@@ -101,18 +84,19 @@ public abstract class CentralAfricaFernsImportBase<CDM_BASE extends CdmBase> ext
 			state.setUnsuccessfull();
 			return;
 		}
-		
+
 		logger.info("end make " + getPluralString() + " ... " + getSuccessString(true));
 		return;
 	}
-	
-	public boolean doPartition(ResultSetPartitioner partitioner, CentralAfricaFernsImportState state) {
+
+	@Override
+    public boolean doPartition(ResultSetPartitioner partitioner, CentralAfricaFernsImportState state) {
 		boolean success = true ;
 		Set objectsToSave = new HashSet();
-		
+
  		DbImportMapping<?, ?> mapping = getMapping();
 		mapping.initialize(state, cdmTargetClass);
-		
+
 		ResultSet rs = partitioner.getResultSet();
 		try{
 			while (rs.next()){
@@ -122,19 +106,19 @@ public abstract class CentralAfricaFernsImportBase<CDM_BASE extends CdmBase> ext
 			logger.error("SQLException:" +  e);
 			return false;
 		}
-	
+
 		partitioner.startDoSave();
 		getCommonService().save(objectsToSave);
 		return success;
 	}
 
 
-	
+
 	/**
 	 * @return
 	 */
 	protected abstract DbImportMapping<?, ?> getMapping();
-	
+
 	/**
 	 * @return
 	 */
@@ -147,11 +131,12 @@ public abstract class CentralAfricaFernsImportBase<CDM_BASE extends CdmBase> ext
 		String result = " SELECT id FROM " + getTableName();
 		return result;
 	}
-	
+
 	/* (non-Javadoc)
 	 * @see eu.etaxonomy.cdm.io.berlinModel.in.IPartitionedIO#getPluralString()
 	 */
-	public String getPluralString(){
+	@Override
+    public String getPluralString(){
 		return pluralString;
 	}
 
@@ -161,8 +146,8 @@ public abstract class CentralAfricaFernsImportBase<CDM_BASE extends CdmBase> ext
 	protected String getTableName(){
 		return this.dbTableName;
 	}
-	
-	
+
+
 	/**
 	 * Reads a foreign key field from the result set and adds its value to the idSet.
 	 * @param rs
@@ -177,7 +162,7 @@ public abstract class CentralAfricaFernsImportBase<CDM_BASE extends CdmBase> ext
 			idSet.add(id);
 		}
 	}
-	
+
 	/**
 	 * Returns true if i is a multiple of recordsPerTransaction
 	 * @param i
@@ -188,15 +173,15 @@ public abstract class CentralAfricaFernsImportBase<CDM_BASE extends CdmBase> ext
 		startTransaction();
 		return (i % recordsPerLoop) == 0;
 	}
-	
+
 	protected void doLogPerLoop(int count, int recordsPerLog, String pluralString){
 		if ((count % recordsPerLog ) == 0 && count!= 0 ){ logger.info(pluralString + " handled: " + (count));}
 	}
-	
-	
-	
-	protected void setAuthor(BotanicalName taxonName, ResultSet rs, String taxonNumber, boolean isHigherTaxon) throws SQLException {
-		
+
+
+
+	protected void setAuthor(IBotanicalName taxonName, ResultSet rs, String taxonNumber, boolean isHigherTaxon) throws SQLException {
+
 		String authorsFull = null;
 		String authorsAbbrev = null;
 		if (! isHigherTaxon){
@@ -247,7 +232,7 @@ public abstract class CentralAfricaFernsImportBase<CDM_BASE extends CdmBase> ext
 					authorString = authorsAbbrev;
 					if (StringUtils.isBlank(authorString)){
 						logger.warn("Authors abbrev string could not be defined");
-						authorString = authorsFull;	
+						authorString = authorsFull;
 					}
 				}
 			}
@@ -256,10 +241,10 @@ public abstract class CentralAfricaFernsImportBase<CDM_BASE extends CdmBase> ext
 			authorString = authorsAbbrev;
 			if (StringUtils.isBlank(authorString)){
 				logger.warn(taxonNumber + ": Authors abbrev string could not be defined");
-				authorString = authorsFull;	
+				authorString = authorsFull;
 			}
 		}
-		
+
 		if (StringUtils.isNotBlank(authorString)){
 			parser.handleAuthors(taxonName, taxonName.getNameCache().trim() + " " + authorString, authorString);
 		}
@@ -274,9 +259,9 @@ public abstract class CentralAfricaFernsImportBase<CDM_BASE extends CdmBase> ext
 	//		}
 		}
 	}
-	
-	
 
 
-	
+
+
+
 }

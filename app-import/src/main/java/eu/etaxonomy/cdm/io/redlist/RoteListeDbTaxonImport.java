@@ -26,7 +26,7 @@ import eu.etaxonomy.cdm.io.common.mapping.DbImportMapping;
 import eu.etaxonomy.cdm.io.common.mapping.IMappingImport;
 import eu.etaxonomy.cdm.io.redlist.validation.RoteListeDbTaxonImportValidator;
 import eu.etaxonomy.cdm.model.common.CdmBase;
-import eu.etaxonomy.cdm.model.name.BotanicalName;
+import eu.etaxonomy.cdm.model.name.IBotanicalName;
 import eu.etaxonomy.cdm.model.name.Rank;
 import eu.etaxonomy.cdm.model.name.TaxonNameFactory;
 import eu.etaxonomy.cdm.model.taxon.Taxon;
@@ -134,7 +134,7 @@ public class RoteListeDbTaxonImport  extends RoteListeDbImportBase<TaxonBase> im
 
 	@Override
 	public TaxonBase createObject(ResultSet rs, RoteListeDbImportState state) throws SQLException {
-		BotanicalName speciesName = TaxonNameFactory.NewBotanicalInstance(Rank.SPECIES());
+		IBotanicalName speciesName = TaxonNameFactory.NewBotanicalInstance(Rank.SPECIES());
 
 //		Reference sec = state.getConfig().getSourceReference();
 //		getReferenceService().saveOrUpdate(sec);
@@ -158,7 +158,7 @@ public class RoteListeDbTaxonImport  extends RoteListeDbImportBase<TaxonBase> im
 //		if (StringUtils.isNotBlank(familyString)){
 //			familyTaxon = getHigherTaxon(state, familyString, null);
 //			if (familyTaxon == null){
-//				BotanicalName familyName = TaxonNameFactory.NewBotanicalInstance(Rank.FAMILY());
+//				TaxonNameBase<?,?> familyName = TaxonNameFactory.NewBotanicalInstance(Rank.FAMILY());
 //				familyName.setGenusOrUninomial(familyString);
 //				familyTaxon = Taxon.NewInstance(familyName, sec);
 //				saveHigherTaxon(state, familyTaxon, familyString, null);
@@ -170,7 +170,7 @@ public class RoteListeDbTaxonImport  extends RoteListeDbImportBase<TaxonBase> im
 //		//genus
 //		Taxon genusTaxon = getHigherTaxon(state, familyString, genusString);
 //		if (genusTaxon == null){
-//			BotanicalName genusName = TaxonNameFactory.NewBotanicalInstance(Rank.GENUS());
+//			TaxonNameBase<?,?> genusName = TaxonNameFactory.NewBotanicalInstance(Rank.GENUS());
 //			genusName.setGenusOrUninomial(genusString);
 //			genusTaxon = Taxon.NewInstance(genusName, sec);
 //			saveHigherTaxon(state, genusTaxon, familyString, genusString);

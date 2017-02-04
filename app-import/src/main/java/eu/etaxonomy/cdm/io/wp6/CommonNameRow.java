@@ -1,8 +1,8 @@
 /**
 * Copyright (C) 2009 EDIT
-* European Distributed Institute of Taxonomy 
+* European Distributed Institute of Taxonomy
 * http://www.e-taxonomy.eu
-* 
+*
 * The contents of this file are subject to the Mozilla Public License Version 1.1
 * See LICENSE.TXT at the top of this package for the full license terms.
 */
@@ -19,7 +19,7 @@ import java.util.regex.Pattern;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 
-import eu.etaxonomy.cdm.model.name.BotanicalName;
+import eu.etaxonomy.cdm.model.name.IBotanicalName;
 import eu.etaxonomy.cdm.model.name.NomenclaturalCode;
 import eu.etaxonomy.cdm.strategy.parser.INonViralNameParser;
 import eu.etaxonomy.cdm.strategy.parser.NonViralNameParserImpl;
@@ -37,19 +37,19 @@ public class CommonNameRow {
 	private String reference;
 	private String area;
 	private String nameUsedInSource;
-	
+
 	private Map<String, List<String>> commonNames = new HashMap<String, List<String>>();
-	
-	
+
+
 	public CommonNameRow() {
 		this.species = "";
 		this.reference =  "";
 		this.area =  "";
 		commonNames = new HashMap<String, List<String>>();
 	}
-	
-// **************************** GETTER / SETTER *********************************/	
-	
+
+// **************************** GETTER / SETTER *********************************/
+
 	public void setCommonNames(String commonNamesString){
 		commonNamesString = makeNameUsedInSource(commonNamesString);
 		String[] split = commonNamesString.split(";");
@@ -87,7 +87,7 @@ public class CommonNameRow {
 			}
 		}
 	}
-	
+
 	private String makeNameUsedInSource(String commonNamesString) {
 		String[] split = commonNamesString.split(":");
 		if (split.length > 1){
@@ -105,10 +105,10 @@ public class CommonNameRow {
 	public Map<String, List<String>> getCommonNames() {
 		return commonNames;
 	}
-	
+
 	public void parseSpecies(String species){
-		INonViralNameParser parser = NonViralNameParserImpl.NewInstance();
-		BotanicalName name = (BotanicalName)parser.parseFullName(species, NomenclaturalCode.ICNAFP, null);
+		INonViralNameParser<?> parser = NonViralNameParserImpl.NewInstance();
+		IBotanicalName name = (IBotanicalName)parser.parseFullName(species, NomenclaturalCode.ICNAFP, null);
 		if (name.isProtectedTitleCache()){
 			logger.warn("Name could not be parsed: " + species);
 		}
@@ -118,7 +118,7 @@ public class CommonNameRow {
 	public String getSpecies() {
 		return species;
 	}
-	
+
 	public void setSpecies(String species) {
 		this.species = species;
 	}
@@ -138,7 +138,7 @@ public class CommonNameRow {
 	public void setArea(String area) {
 		this.area = area;
 	}
-	
+
 	public String getArea() {
 		return area;
 	}
@@ -152,5 +152,5 @@ public class CommonNameRow {
 	}
 
 
-	
+
 }

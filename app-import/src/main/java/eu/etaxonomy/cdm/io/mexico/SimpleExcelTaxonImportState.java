@@ -11,14 +11,13 @@ package eu.etaxonomy.cdm.io.mexico;
 import java.util.HashMap;
 import java.util.Map;
 
-import eu.etaxonomy.cdm.model.taxon.Classification;
 import org.apache.log4j.Logger;
 
 import eu.etaxonomy.cdm.io.excel.common.ExcelImportConfiguratorBase;
 import eu.etaxonomy.cdm.io.excel.common.ExcelImportState;
 import eu.etaxonomy.cdm.io.excel.common.ExcelRowBase;
 import eu.etaxonomy.cdm.model.agent.TeamOrPersonBase;
-import eu.etaxonomy.cdm.model.name.NonViralName;
+import eu.etaxonomy.cdm.model.name.INonViralName;
 import eu.etaxonomy.cdm.model.reference.Reference;
 import eu.etaxonomy.cdm.model.taxon.Taxon;
 
@@ -40,7 +39,7 @@ public class SimpleExcelTaxonImportState<CONFIG extends ExcelImportConfiguratorB
     private final Map<String, Taxon> higherTaxonTaxonMap = new HashMap<String, Taxon>();
 
     //using titleCache
-    private Map<String, NonViralName<?>> nameMap = new HashMap<>();
+    private Map<String, INonViralName> nameMap = new HashMap<>();
 
 
 // ************************* CONSTRUCTUR *******************************/
@@ -81,10 +80,10 @@ public class SimpleExcelTaxonImportState<CONFIG extends ExcelImportConfiguratorB
     }
 
     //names
-    public void putName(String titleCache, NonViralName<?> name){
+    public void putName(String titleCache, INonViralName name){
         nameMap.put(titleCache, name);
     }
-    public NonViralName<?> getName(String titleCache){
+    public INonViralName getName(String titleCache){
         return nameMap.get(titleCache);
     }
 

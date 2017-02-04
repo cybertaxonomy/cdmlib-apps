@@ -47,6 +47,7 @@ import eu.etaxonomy.cdm.model.description.TextData;
 import eu.etaxonomy.cdm.model.location.NamedArea;
 import eu.etaxonomy.cdm.model.name.BotanicalName;
 import eu.etaxonomy.cdm.model.name.HomotypicalGroup;
+import eu.etaxonomy.cdm.model.name.IBotanicalName;
 import eu.etaxonomy.cdm.model.name.NameRelationship;
 import eu.etaxonomy.cdm.model.name.NameRelationshipType;
 import eu.etaxonomy.cdm.model.name.NomenclaturalCode;
@@ -391,7 +392,7 @@ public class CubaExcelImport extends ExcelImporterBase<CubaImportState> {
         Matcher heterotypicMatcher = heterotypicRegEx.matcher(synonymStr);
         Matcher sphalmMatcher = sphalmRegEx.matcher(synonymStr);
 
-        List<BotanicalName> homonyms = new ArrayList<>();
+        List<IBotanicalName> homonyms = new ArrayList<>();
         if (missapliedMatcher.matches()){
             boolean doubtful = missapliedMatcher.group(1) != null;
             String firstPart = missapliedMatcher.group(2);
@@ -446,7 +447,7 @@ public class CubaExcelImport extends ExcelImporterBase<CubaImportState> {
         }else if (acceptedMatcher.matches()){
             String firstPart = acceptedMatcher.group(1);
             String homonymPart = acceptedMatcher.groupCount() < 2 ? null : acceptedMatcher.group(2);
-            List<BotanicalName> list = handleHomotypicGroup(firstPart, state, (BotanicalName)state.getCurrentTaxon().getName(), false, homonyms, homonymPart, false);
+            List<IBotanicalName> list = handleHomotypicGroup(firstPart, state, state.getCurrentTaxon().getName(), false, homonyms, homonymPart, false);
             checkFirstSynonym(state, list, isFirstSynonym, synonymStr, false);
         }else if(heterotypicMatcher.matches()){
             String firstPart = heterotypicMatcher.group(1).trim();
@@ -465,7 +466,7 @@ public class CubaExcelImport extends ExcelImporterBase<CubaImportState> {
             Synonym syn = state.getCurrentTaxon().addHeterotypicSynonymName(synName);
             syn.setDoubtful(isDoubtful);
             syn.addSource(makeOriginalSource(state));
-            List<BotanicalName> list = handleHomotypicGroup(secondPart, state, synName, true, homonyms, homonymPart, isDoubtful);
+            List<IBotanicalName> list = handleHomotypicGroup(secondPart, state, synName, true, homonyms, homonymPart, isDoubtful);
             checkFirstSynonym(state, list, isFirstSynonym, synonymStr, true);
 
         }else if (isSpecialHeterotypic(synonymStr)){
@@ -487,14 +488,14 @@ public class CubaExcelImport extends ExcelImporterBase<CubaImportState> {
      * @param synonymStr
      * @param b
      */
-    private void checkFirstSynonym(CubaImportState state, List<BotanicalName> list, boolean isFirstSynonym, String synonymStr, boolean isHeterotypicMatcher) {
+    private void checkFirstSynonym(CubaImportState state, List<IBotanicalName> list, boolean isFirstSynonym, String synonymStr, boolean isHeterotypicMatcher) {
         if (!isFirstSynonym){
             return;
         }
         String line = state.getCurrentLine() + ": ";
-        BotanicalName currentName = isHeterotypicMatcher? (BotanicalName)state.getCurrentTaxon().getName(): list.get(0);
+        IBotanicalName currentName = isHeterotypicMatcher? (IBotanicalName)state.getCurrentTaxon().getName(): list.get(0);
         boolean currentHasBasionym = currentName.getBasionymAuthorship() != null;
-        BotanicalName firstSynonym = isHeterotypicMatcher ? list.get(0): list.get(1);
+        IBotanicalName firstSynonym = isHeterotypicMatcher ? list.get(0): list.get(1);
 //        if (list.size() <= 1){
 //            logger.error(line + "homotypic list size is 1 but shouldn't");
 //            return;
@@ -584,15 +585,15 @@ public class CubaExcelImport extends ExcelImporterBase<CubaImportState> {
      * @param taxon
      * @param homotypicalGroup
      */
-    private List<BotanicalName> handleHomotypicGroup(String homotypicStrOrig,
+    private List<IBotanicalName> handleHomotypicGroup(String homotypicStrOrig,
             CubaImportState state,
-            BotanicalName homotypicName,
+            IBotanicalName homotypicName,
             boolean isHeterotypic,
-            List<BotanicalName> homonyms,
+            List<IBotanicalName> homonyms,
             String homonymPart,
             boolean isDoubtful) {
 
-        List<BotanicalName> homotypicNameList = new ArrayList<>();
+        List<IBotanicalName> homotypicNameList = new ArrayList<>();
         homotypicNameList.add(homotypicName);
 
         String homotypicStr = homotypicStrOrig;
@@ -607,7 +608,7 @@ public class CubaExcelImport extends ExcelImporterBase<CubaImportState> {
         for (String split : splits){
             split = replaceHomonIlleg(split);
             boolean isHomonym = split.matches(".*" + HOMONYM_MARKER);
-            BotanicalName newName = makeName(state, split);
+            TaxonNameBase<?,?> newName = makeName(state, split);
             newName.setHomotypicalGroup(homotypicGroup);  //not really necessary as this is later set anyway
             if (newName.isProtectedTitleCache()){
                 logger.warn(state.getCurrentLine() + ": homotypic name part could not be parsed: " + split);
@@ -647,7 +648,7 @@ public class CubaExcelImport extends ExcelImporterBase<CubaImportState> {
      * @param state
      * @param currentBasionym
      */
-    private void makeHomonyms(List<BotanicalName> homonyms, String homonymPartOrig, CubaImportState state,
+    private void makeHomonyms(List<IBotanicalName> homonyms, String homonymPartOrig, CubaImportState state,
             HomotypicalGroup homotypicGroup) {
         String line = state.getCurrentLine() + ": ";
         String homonymPart = homonymPartOrig == null ? "" : homonymPartOrig.trim();
@@ -688,7 +689,7 @@ public class CubaExcelImport extends ExcelImporterBase<CubaImportState> {
     private void handleSimpleBlockingNames(String[] splitsi,
             CubaImportState state,
             HomotypicalGroup homotypicGroup) {
-        List<BotanicalName> replacementNameCandidates = new ArrayList<>();
+        List<IBotanicalName> replacementNameCandidates = new ArrayList<>();
         for (String spliti : splitsi){
 
             String split = spliti.replaceAll("^non\\s+", "");
@@ -696,9 +697,9 @@ public class CubaExcelImport extends ExcelImporterBase<CubaImportState> {
             if (newName.isProtectedTitleCache()){
                 logger.warn(state.getCurrentLine() + ": blocking name could not be parsed: " + split);
             }
-            Set<BotanicalName> typifiedNames = (Set)homotypicGroup.getTypifiedNames();
-            Set<BotanicalName> candidates = new HashSet<>();
-            for (BotanicalName name : typifiedNames){
+            Set<IBotanicalName> typifiedNames = (Set)homotypicGroup.getTypifiedNames();
+            Set<IBotanicalName> candidates = new HashSet<>();
+            for (IBotanicalName name : typifiedNames){
                 if (name.getGenusOrUninomial() != null && name.getGenusOrUninomial().equals(newName.getGenusOrUninomial())){
                     if (name.getStatus().isEmpty() || ! name.getStatus().iterator().next().getType().equals(NomenclaturalStatusType.ILLEGITIMATE())){
                         candidates.add(name);
@@ -706,7 +707,7 @@ public class CubaExcelImport extends ExcelImporterBase<CubaImportState> {
                 }
             }
             if (candidates.size() == 1){
-                BotanicalName blockedName = candidates.iterator().next();
+                TaxonNameBase<?,?> blockedName = (TaxonNameBase<?,?>)candidates.iterator().next();
                 newName.addRelationshipToName(blockedName, NameRelationshipType.BLOCKING_NAME_FOR(), null);
                 replacementNameCandidates.add(blockedName);
             }else{
@@ -722,7 +723,7 @@ public class CubaExcelImport extends ExcelImporterBase<CubaImportState> {
      */
     private void makeReplacedSynonymIfPossible(CubaImportState state,
             HomotypicalGroup homotypicGroup,
-            List<BotanicalName> replacementNameCandidates) {
+            List<IBotanicalName> replacementNameCandidates) {
         String line = state.getCurrentLine() +": ";
         List<BotanicalName> replacedCandidates = new ArrayList<>();
         for (TaxonNameBase<?, ?> typifiedName : homotypicGroup.getTypifiedNames()){
@@ -736,8 +737,8 @@ public class CubaExcelImport extends ExcelImporterBase<CubaImportState> {
             }
         }
         if (replacedCandidates.size() == 1){
-            BotanicalName replacedSynonym = replacedCandidates.iterator().next();
-            for (BotanicalName replacementName : replacementNameCandidates){
+            TaxonNameBase<?,?> replacedSynonym = replacedCandidates.iterator().next();
+            for (IBotanicalName replacementName : replacementNameCandidates){
                 replacementName.addReplacedSynonym(replacedSynonym, null, null, null);
             }
         }else if (replacedCandidates.size() < 1){
@@ -752,9 +753,9 @@ public class CubaExcelImport extends ExcelImporterBase<CubaImportState> {
      * @param homotypicGroup
      * @param newName
      */
-    private void handleBasionym(CubaImportState state, List<BotanicalName> homotypicNameList,
-            List<BotanicalName> homonyms, BotanicalName newName) {
-        for (BotanicalName existingName : homotypicNameList){
+    private void handleBasionym(CubaImportState state, List<IBotanicalName> homotypicNameList,
+            List<IBotanicalName> homonyms, IBotanicalName newName) {
+        for (IBotanicalName existingName : homotypicNameList){
             if (existingName != newName){  //should not happen anymore, as new name is added later
                 boolean onlyIfNotYetExists = true;
                 createBasionymRelationIfPossible(state, existingName, newName, homonyms.contains(newName), onlyIfNotYetExists);
@@ -768,10 +769,11 @@ public class CubaExcelImport extends ExcelImporterBase<CubaImportState> {
      * @param name2
      * @return
      */
-    private void createBasionymRelationIfPossible(CubaImportState state, BotanicalName name1, BotanicalName name2,
+    private void createBasionymRelationIfPossible(CubaImportState state, IBotanicalName name1,
+            IBotanicalName name2,
             boolean name2isHomonym, boolean onlyIfNotYetExists) {
-        BotanicalName basionymName = name1;
-        BotanicalName newCombination = name2;
+        TaxonNameBase<?,?> basionymName = TaxonNameBase.castAndDeproxy(name1);
+        TaxonNameBase<?,?> newCombination = TaxonNameBase.castAndDeproxy(name2);
         //exactly one name must have a basionym author
         if (name1.getBasionymAuthorship() == null && name2.getBasionymAuthorship() == null
                 || name1.getBasionymAuthorship() != null && name2.getBasionymAuthorship() != null){
@@ -780,8 +782,8 @@ public class CubaExcelImport extends ExcelImporterBase<CubaImportState> {
 
         //switch order if necessary
         if (! name2isHomonym && basionymName.getBasionymAuthorship() != null && newCombination.getBasionymAuthorship() == null){
-            basionymName = name2;
-            newCombination = name1;
+            basionymName = TaxonNameBase.castAndDeproxy(name2);
+            newCombination = TaxonNameBase.castAndDeproxy(name1);
         }
         if (matchAuthor(basionymName.getCombinationAuthorship(), newCombination.getBasionymAuthorship())
                 && matchLastNamePart(basionymName, newCombination)){
@@ -799,7 +801,7 @@ public class CubaExcelImport extends ExcelImporterBase<CubaImportState> {
      * @param basionymName
      * @return
      */
-    private boolean isLegitimate(BotanicalName basionymName) {
+    private boolean isLegitimate(IBotanicalName basionymName) {
         for (NomenclaturalStatus nomStatus : basionymName.getStatus()){
             if (nomStatus.getType()!= null && nomStatus.getType().isIllegitimateType()){
                     return false;
@@ -819,7 +821,7 @@ public class CubaExcelImport extends ExcelImporterBase<CubaImportState> {
      * @param newCombination
      * @return
      */
-    private boolean matchLastNamePart(BotanicalName name1, BotanicalName name2) {
+    private boolean matchLastNamePart(IBotanicalName name1, IBotanicalName name2) {
         String lastNamePart1 = name1.getLastNamePart();
         String lastNamePart2 = name2.getLastNamePart();
         if (lastNamePart1 != null && lastNamePart2 != null){
@@ -984,7 +986,7 @@ public class CubaExcelImport extends ExcelImporterBase<CubaImportState> {
     /**
      * @param result
      */
-    private void normalizeAuthors(BotanicalName result) {
+    private void normalizeAuthors(IBotanicalName result) {
         result.setCombinationAuthorship(normalizeAuthor(result.getCombinationAuthorship()));
         result.setExCombinationAuthorship(normalizeAuthor(result.getExCombinationAuthorship()));
         result.setExBasionymAuthorship(normalizeAuthor(result.getExBasionymAuthorship()));

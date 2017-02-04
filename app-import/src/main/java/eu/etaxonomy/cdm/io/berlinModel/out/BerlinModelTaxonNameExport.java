@@ -35,6 +35,7 @@ import eu.etaxonomy.cdm.io.common.mapping.out.MethodMapper;
 import eu.etaxonomy.cdm.model.common.CdmBase;
 import eu.etaxonomy.cdm.model.common.ExtensionType;
 import eu.etaxonomy.cdm.model.common.MarkerType;
+import eu.etaxonomy.cdm.model.name.INonViralName;
 import eu.etaxonomy.cdm.model.name.NomenclaturalStatus;
 import eu.etaxonomy.cdm.model.name.NonViralName;
 import eu.etaxonomy.cdm.model.name.TaxonNameBase;
@@ -138,7 +139,7 @@ public class BerlinModelTaxonNameExport extends BerlinModelExportBase<TaxonNameB
 		//publicationYear
 		//originalPublicationYear
 		//breed
-		NonViralName<?> n = null;
+//		INonViralName n = null;
 		//n.getNomenclaturalMicroReference()
 		return mapping;
 	}
@@ -246,7 +247,7 @@ public class BerlinModelTaxonNameExport extends BerlinModelExportBase<TaxonNameB
 
 	//called by MethodMapper
 	@SuppressWarnings("unused")
-	private static Integer getRankFk(NonViralName<?> name){
+	private static Integer getRankFk(INonViralName name){
 		Integer result = BerlinModelTransformer.rank2RankId(name.getRank());
 		if (result == null){
 			logger.warn ("Rank = null is not allowed in Berlin Model. Rank was changed to KINGDOM: " + name);
@@ -263,7 +264,7 @@ public class BerlinModelTaxonNameExport extends BerlinModelExportBase<TaxonNameB
 
 	//called by MethodMapper
 	@SuppressWarnings("unused")
-	private static String getSupraGenericName(NonViralName<?> name){
+	private static String getSupraGenericName(INonViralName name){
 		if (name.isSupraGeneric()){
 			return name.getGenusOrUninomial();
 		}else{
@@ -273,7 +274,7 @@ public class BerlinModelTaxonNameExport extends BerlinModelExportBase<TaxonNameB
 
 	//called by MethodMapper
 	@SuppressWarnings("unused")
-	private static String getGenus(NonViralName<?> name){
+	private static String getGenus(INonViralName name){
 		if (! name.isSupraGeneric()){
 			return name.getGenusOrUninomial();
 		}else{
@@ -283,7 +284,7 @@ public class BerlinModelTaxonNameExport extends BerlinModelExportBase<TaxonNameB
 
 	//called by MethodMapper
 	@SuppressWarnings("unused")
-	private static String getNameCache(NonViralName<?> name){
+	private static String getNameCache(INonViralName name){
 		if (name.isProtectedNameCache()){
 			return name.getNameCache();
 		}else{
@@ -293,7 +294,7 @@ public class BerlinModelTaxonNameExport extends BerlinModelExportBase<TaxonNameB
 
 	//called by MethodMapper
 	@SuppressWarnings("unused")
-	private static String getFullNameCache(NonViralName<?> name){
+	private static String getFullNameCache(INonViralName name){
 		if (name.isProtectedTitleCache()){
 			return name.getTitleCache();
 		}else{
@@ -303,7 +304,7 @@ public class BerlinModelTaxonNameExport extends BerlinModelExportBase<TaxonNameB
 
 	//called by MethodMapper
 	@SuppressWarnings("unused")
-	private static Boolean getPreliminaryFlag(NonViralName<?> name){
+	private static Boolean getPreliminaryFlag(INonViralName name){
 		if (name.isProtectedTitleCache() || name.isProtectedNameCache()){
 			if (name.isProtectedTitleCache() && name.isProtectedNameCache()){
 				logger.warn("protectedTitleCache and protectedNameCache do not have the same value for name " + name.getTitleCache() + ". This can not be mapped appropriately to the Berlin Model ");

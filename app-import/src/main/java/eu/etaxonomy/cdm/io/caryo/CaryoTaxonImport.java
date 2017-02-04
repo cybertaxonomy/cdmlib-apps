@@ -31,11 +31,12 @@ import eu.etaxonomy.cdm.model.common.CdmBase;
 import eu.etaxonomy.cdm.model.common.Language;
 import eu.etaxonomy.cdm.model.common.OriginalSourceType;
 import eu.etaxonomy.cdm.model.common.TimePeriod;
-import eu.etaxonomy.cdm.model.name.BotanicalName;
+import eu.etaxonomy.cdm.model.name.IBotanicalName;
 import eu.etaxonomy.cdm.model.name.NameTypeDesignation;
 import eu.etaxonomy.cdm.model.name.NomenclaturalStatus;
 import eu.etaxonomy.cdm.model.name.NomenclaturalStatusType;
 import eu.etaxonomy.cdm.model.name.Rank;
+import eu.etaxonomy.cdm.model.name.TaxonNameBase;
 import eu.etaxonomy.cdm.model.name.TaxonNameFactory;
 import eu.etaxonomy.cdm.model.reference.IArticle;
 import eu.etaxonomy.cdm.model.reference.IBook;
@@ -160,7 +161,7 @@ public class CaryoTaxonImport  extends DbImportBase<CaryoImportState, CaryoImpor
 //        	      ,[OriginalCitation]
 
 
-				BotanicalName name = TaxonNameFactory.NewBotanicalInstance(Rank.GENUS());
+				IBotanicalName name = TaxonNameFactory.NewBotanicalInstance(Rank.GENUS());
 				name.setGenusOrUninomial(genus);
 				makeAuthors(name, autoren, id);
 				INomenclaturalReference nomRef = makeNomRef(state, rs, id);
@@ -197,8 +198,8 @@ public class CaryoTaxonImport  extends DbImportBase<CaryoImportState, CaryoImpor
 
 	private void handleBasionym(CaryoImportState state, ResultSet rs, Taxon taxon, String basioStr, Integer id) {
 		if (StringUtils.isNotBlank(basioStr)){
-			BotanicalName name = (BotanicalName) taxon.getName();
-			BotanicalName basionym = TaxonNameFactory.PARSED_BOTANICAL_REFERENCE(basioStr);
+			IBotanicalName name = taxon.getName();
+			TaxonNameBase<?,?> basionym = TaxonNameFactory.PARSED_BOTANICAL_REFERENCE(basioStr);
 			if (basionym.hasProblem()){
 				logger.warn("Problem when parsing basionym ("+id+"): " +  basioStr);
 			}
@@ -219,8 +220,8 @@ public class CaryoTaxonImport  extends DbImportBase<CaryoImportState, CaryoImpor
 		if (StringUtils.isBlank(type) || "to be designated".equalsIgnoreCase(type)){
 			return;
 		}else{
-			BotanicalName name = (BotanicalName)taxon.getName();
-			BotanicalName typeName = TaxonNameFactory.NewBotanicalInstance(Rank.SPECIES());
+			IBotanicalName name = taxon.getName();
+			TaxonNameBase<?,?> typeName = TaxonNameFactory.NewBotanicalInstance(Rank.SPECIES());
 			if ("not designated".equalsIgnoreCase(type)){
 				desig.setNotDesignated(true);
 			}else{
@@ -270,7 +271,7 @@ public class CaryoTaxonImport  extends DbImportBase<CaryoImportState, CaryoImpor
 
 
 
-	private String makeTypeNomStatus(BotanicalName typeName, String type) {
+	private String makeTypeNomStatus(IBotanicalName typeName, String type) {
 		if (type.endsWith(", nom. illeg.")){
 			type = type.replaceAll(", nom. illeg.", "");
 			typeName.addStatus(NomenclaturalStatus.NewInstance(NomenclaturalStatusType.ILLEGITIMATE()));
@@ -281,7 +282,7 @@ public class CaryoTaxonImport  extends DbImportBase<CaryoImportState, CaryoImpor
 
 
 
-	private void makeStatus(BotanicalName name, String nomStatusStr, Integer id) throws SQLException {
+	private void makeStatus(IBotanicalName name, String nomStatusStr, Integer id) throws SQLException {
 //	      ,[NomenclaturalStatus]
 
 		if (StringUtils.isNotBlank(nomStatusStr)){
@@ -455,7 +456,7 @@ public class CaryoTaxonImport  extends DbImportBase<CaryoImportState, CaryoImpor
 
 
 
-	private void makeAuthors(BotanicalName name, String autoren, Integer id) {
+	private void makeAuthors(IBotanicalName name, String autoren, Integer id) {
 		String[] parsedAuthorTeams = getParsedAuthors(autoren);
 		name.setBasionymAuthorship(getTeam(parsedAuthorTeams[0], id));
 		name.setExBasionymAuthorship(getTeam(parsedAuthorTeams[1], id));
@@ -749,7 +750,7 @@ public class CaryoTaxonImport  extends DbImportBase<CaryoImportState, CaryoImpor
 			String family = rs.getString("family");
 			if (familyMap.get(family) == null ){
 
-				BotanicalName name = TaxonNameFactory.NewBotanicalInstance(Rank.FAMILY());
+				IBotanicalName name = TaxonNameFactory.NewBotanicalInstance(Rank.FAMILY());
 				name.setGenusOrUninomial(family);
 				Taxon taxon = Taxon.NewInstance(name, state.getTransactionalSourceReference());
 				classification.addChildTaxon(taxon, null, null);

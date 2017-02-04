@@ -31,7 +31,6 @@ import eu.etaxonomy.cdm.model.description.TaxonDescription;
 import eu.etaxonomy.cdm.model.location.Country;
 import eu.etaxonomy.cdm.model.name.BotanicalName;
 import eu.etaxonomy.cdm.model.name.NomenclaturalCode;
-import eu.etaxonomy.cdm.model.name.NonViralName;
 import eu.etaxonomy.cdm.model.name.Rank;
 import eu.etaxonomy.cdm.model.name.RankClass;
 import eu.etaxonomy.cdm.model.name.TaxonNameBase;
@@ -401,7 +400,7 @@ public class GermanSLTaxonImport<CONFIG extends GermanSLImportConfigurator>
             List<String> propertyPaths = Arrays.asList("");
             List<TaxonNameBase> existingNames = this.getNameService().list(null, null, null, null, propertyPaths);
             for (TaxonNameBase tnb : existingNames){
-                state.putName(tnb.getTitleCache(), (NonViralName<?>)tnb);
+                state.putName(tnb.getTitleCache(), tnb);
             }
             nameMapIsInitialized = true;
         }

@@ -26,7 +26,7 @@ import eu.etaxonomy.cdm.io.common.mapping.DbImportObjectCreationMapper;
 import eu.etaxonomy.cdm.io.common.mapping.IMappingImport;
 import eu.etaxonomy.cdm.io.eflora.centralAfrica.checklist.validation.CentralAfricaChecklistTaxonImportValidator;
 import eu.etaxonomy.cdm.model.common.CdmBase;
-import eu.etaxonomy.cdm.model.name.BotanicalName;
+import eu.etaxonomy.cdm.model.name.IBotanicalName;
 import eu.etaxonomy.cdm.model.name.Rank;
 import eu.etaxonomy.cdm.model.name.TaxonNameFactory;
 import eu.etaxonomy.cdm.model.reference.Reference;
@@ -121,7 +121,7 @@ public class CentralAfricaChecklistSynonymImport  extends CentralAfricaChecklist
 
 	@Override
     public TaxonBase createObject(ResultSet rs, CentralAfricaChecklistImportState state) throws SQLException {
-		BotanicalName speciesName = TaxonNameFactory.NewBotanicalInstance(Rank.SPECIES());
+		IBotanicalName speciesName = TaxonNameFactory.NewBotanicalInstance(Rank.SPECIES());
 
 
 		Integer accId = rs.getInt("acc_id");

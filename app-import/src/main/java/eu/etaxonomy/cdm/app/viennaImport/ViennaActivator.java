@@ -28,6 +28,7 @@ import eu.etaxonomy.cdm.model.common.Annotation;
 import eu.etaxonomy.cdm.model.common.IdentifiableSource;
 import eu.etaxonomy.cdm.model.media.ImageFile;
 import eu.etaxonomy.cdm.model.media.Media;
+import eu.etaxonomy.cdm.model.name.INonViralName;
 import eu.etaxonomy.cdm.model.name.TaxonNameBase;
 import eu.etaxonomy.cdm.model.occurrence.DerivedUnit;
 import eu.etaxonomy.cdm.model.occurrence.DeterminationEvent;
@@ -102,7 +103,7 @@ public class ViennaActivator {
 				Reference sec = ReferenceFactory.newDatabase();
 				sec.setTitleCache("Vienna Asteraceae Images", true);
 
-				TaxonNameBase<?,?> taxonName = NonViralNameParserImpl.NewInstance().parseFullName(strTaxonName);
+				INonViralName taxonName = NonViralNameParserImpl.NewInstance().parseFullName(strTaxonName);
 				if (withCdm){
 					List<TaxonNameBase> names = app.getNameService().findByName(null, strTaxonName, null, null, null, null, null, null).getRecords();
 					if (names.size() == 0){
@@ -121,7 +122,7 @@ public class ViennaActivator {
 				DerivedUnitFacade specimen = DerivedUnitFacade.NewInstance(SpecimenOrObservationType.PreservedSpecimen);
 
 				specimen.setCatalogNumber(catalogNumber);
-				specimen.setStoredUnder(taxonName);   //??
+				specimen.setStoredUnder(TaxonNameBase.castAndDeproxy(taxonName));   //??
 				//TODO
 				//specimen.setCollection(collection);
 				specimen.addAnnotation(Annotation.NewDefaultLanguageInstance(annotation));

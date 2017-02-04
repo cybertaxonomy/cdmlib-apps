@@ -27,6 +27,7 @@ import eu.etaxonomy.cdm.io.common.IImportConfigurator.DO_REFERENCES;
 import eu.etaxonomy.cdm.io.common.ImportResult;
 import eu.etaxonomy.cdm.io.common.Source;
 import eu.etaxonomy.cdm.model.description.FeatureTree;
+import eu.etaxonomy.cdm.model.name.INonViralName;
 import eu.etaxonomy.cdm.model.name.NomenclaturalCode;
 import eu.etaxonomy.cdm.model.name.NonViralName;
 
@@ -244,7 +245,7 @@ public class SalvadorActivator {
 
 	//used by BerlinModelImportConfigurator
 	@SuppressWarnings("unused")
-	private static boolean handleNameRelationshipType(Integer relQualifierFk, NonViralName nameTo, NonViralName nameFrom){
+	private static boolean handleNameRelationshipType(Integer relQualifierFk, INonViralName nameTo, NonViralName nameFrom){
 		if (relQualifierFk == 72){
 			nameTo.getHomotypicalGroup().merge(nameFrom.getHomotypicalGroup());
 			return true;

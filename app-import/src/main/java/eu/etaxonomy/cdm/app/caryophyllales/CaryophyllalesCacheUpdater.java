@@ -69,11 +69,7 @@ public class CaryophyllalesCacheUpdater {
 //		static final boolean doSequence = true;
 	//
 //		//Names
-//		static final boolean doViralName = true;
-//		static final boolean doNonViralName = true;
-//		static final boolean doBotanicalName = true;
-//		static final boolean doZoologicalName = true;
-//		static final boolean doCultivarPlantName = true;
+//		static final boolean doTaxonNameBase = true;
 	//
 //		static final boolean doClassification = true;
 	//

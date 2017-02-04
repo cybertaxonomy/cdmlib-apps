@@ -58,7 +58,6 @@ public class EdaphobaseActivator {
     private static final boolean doReferences = true;
 
 
-
     //check - import
     static CHECK check = CHECK.IMPORT_WITHOUT_CHECK;
 

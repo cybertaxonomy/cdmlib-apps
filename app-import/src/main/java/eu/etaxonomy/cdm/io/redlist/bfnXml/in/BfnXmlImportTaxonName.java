@@ -45,7 +45,6 @@ import eu.etaxonomy.cdm.model.location.NamedArea;
 import eu.etaxonomy.cdm.model.name.NomenclaturalCode;
 import eu.etaxonomy.cdm.model.name.NomenclaturalStatus;
 import eu.etaxonomy.cdm.model.name.NomenclaturalStatusType;
-import eu.etaxonomy.cdm.model.name.NonViralName;
 import eu.etaxonomy.cdm.model.name.Rank;
 import eu.etaxonomy.cdm.model.name.TaxonNameBase;
 import eu.etaxonomy.cdm.model.reference.Reference;
@@ -765,7 +764,7 @@ public class BfnXmlImportTaxonName extends BfnXmlImportBase {
 	 * @return
 	 * @throws UnknownCdmTypeException
 	 */
-	private TaxonNameBase<?, ?> parseNonviralNames(Rank rank, String strAuthor, String strSupplement, Element elWissName)
+	private TaxonNameBase<?,?> parseNonviralNames(Rank rank, String strAuthor, String strSupplement, Element elWissName)
 			throws UnknownCdmTypeException {
 		TaxonNameBase<?,?> taxonNameBase = null;
 
@@ -784,9 +783,8 @@ public class BfnXmlImportTaxonName extends BfnXmlImportBase {
 		if(strSupplement != null && !strSupplement.isEmpty()){
 			strScientificName = StringUtils.remove(strScientificName, strSupplement);
 		}
-		NonViralName<?> nonViralName = null;
 		NonViralNameParserImpl parser = NonViralNameParserImpl.NewInstance();
-		nonViralName = parser.parseFullName(strScientificName, nomenclaturalCode, rank);
+		TaxonNameBase<?,?> nonViralName = (TaxonNameBase<?,?>)parser.parseFullName(strScientificName, nomenclaturalCode, rank);
 		if(nonViralName.hasProblem()){
 			for(ParserProblem p:nonViralName.getParsingProblems()){
 				logger.warn(++parsingProblemCounter + " " +nonViralName.getTitleCache() +" "+p.toString());

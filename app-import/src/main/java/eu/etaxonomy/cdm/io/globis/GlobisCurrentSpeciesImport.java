@@ -31,6 +31,7 @@ import eu.etaxonomy.cdm.model.description.Distribution;
 import eu.etaxonomy.cdm.model.description.PresenceAbsenceTerm;
 import eu.etaxonomy.cdm.model.description.TaxonDescription;
 import eu.etaxonomy.cdm.model.location.NamedArea;
+import eu.etaxonomy.cdm.model.name.IZoologicalName;
 import eu.etaxonomy.cdm.model.name.Rank;
 import eu.etaxonomy.cdm.model.name.TaxonNameFactory;
 import eu.etaxonomy.cdm.model.name.ZoologicalName;
@@ -303,8 +304,8 @@ public class GlobisCurrentSpeciesImport  extends GlobisImportBase<Taxon> {
 	 * @return
 	 */
 	private boolean compareTaxa(Taxon taxon1, Taxon taxon2) {
-		ZoologicalName name1 = CdmBase.deproxy(taxon1.getName(), ZoologicalName.class);
-		ZoologicalName name2 = CdmBase.deproxy(taxon2.getName(), ZoologicalName.class);
+		IZoologicalName name1 = taxon1.getName();
+		IZoologicalName name2 = taxon2.getName();
 		if (!name1.getRank().equals(name2.getRank())){
 			return false;
 		}
@@ -347,7 +348,7 @@ public class GlobisCurrentSpeciesImport  extends GlobisImportBase<Taxon> {
 		String key = keyEpithet + "@" + CdmUtils.Nz(author) + "@" + rank.getTitleCache();
 		Taxon taxon = taxonMap.get(key);
 		if (taxon == null){
-			ZoologicalName name = TaxonNameFactory.NewZoologicalInstance(rank);
+			IZoologicalName name = TaxonNameFactory.NewZoologicalInstance(rank);
 			name.setGenusOrUninomial(uninomial);
 			if (isNotBlank(infraGenericEpi)){
 				name.setInfraGenericEpithet(infraGenericEpi);
@@ -389,7 +390,7 @@ public class GlobisCurrentSpeciesImport  extends GlobisImportBase<Taxon> {
 		String author = rs.getString("dtSpcAutor");
 
 
-		ZoologicalName zooName = TaxonNameFactory.NewZoologicalInstance(Rank.SPECIES());
+		IZoologicalName zooName = TaxonNameFactory.NewZoologicalInstance(Rank.SPECIES());
 		zooName.setSpecificEpithet(speciesEpi);
 		if (StringUtils.isNotBlank(subGenusEpi)){
 			zooName.setInfraGenericEpithet(subGenusEpi);

@@ -48,6 +48,7 @@ import eu.etaxonomy.cdm.model.location.NamedArea;
 import eu.etaxonomy.cdm.model.location.NamedAreaLevel;
 import eu.etaxonomy.cdm.model.location.NamedAreaType;
 import eu.etaxonomy.cdm.model.name.BotanicalName;
+import eu.etaxonomy.cdm.model.name.IBotanicalName;
 import eu.etaxonomy.cdm.model.name.INonViralName;
 import eu.etaxonomy.cdm.model.name.Rank;
 import eu.etaxonomy.cdm.model.name.TaxonNameBase;
@@ -429,8 +430,8 @@ public class CentralAfricaFernsTaxonRelationImport  extends CentralAfricaFernsIm
 	 */
 	private Taxon handleUnequalAuthors(Taxon existingParentTaxon, Taxon constructedHigherTaxon) {
 		Taxon result;
-		BotanicalName existingName = CdmBase.deproxy(existingParentTaxon.getName(), BotanicalName.class);
-		BotanicalName constructedName = (BotanicalName)constructedHigherTaxon.getName();
+		IBotanicalName existingName = existingParentTaxon.getName();
+		IBotanicalName constructedName = constructedHigherTaxon.getName();
 		//current strategy: if constructedName has no authors (and parentName has
 		if (! constructedName.hasAuthors()){
 			result = existingParentTaxon;
@@ -451,8 +452,8 @@ public class CentralAfricaFernsTaxonRelationImport  extends CentralAfricaFernsIm
 	 * @return
 	 */
 	private Taxon handleUnequalNameCaches(Taxon parentTaxon, Taxon constructedHigherTaxon) {
-		BotanicalName parentName = CdmBase.deproxy(parentTaxon.getName(), BotanicalName.class);
-		BotanicalName constructedName = (BotanicalName)constructedHigherTaxon.getName();
+		IBotanicalName parentName = parentTaxon.getName();
+		IBotanicalName constructedName = constructedHigherTaxon.getName();
 		logger.warn("handleUnequalNameCaches not yet implemented");
 		return constructedHigherTaxon;
 	}
@@ -466,8 +467,8 @@ public class CentralAfricaFernsTaxonRelationImport  extends CentralAfricaFernsIm
 	 * @return
 	 */
 	private Taxon handleUnequalRanks(Taxon parentTaxon, Taxon constructedHigherTaxon) {
-		BotanicalName parentName = CdmBase.deproxy(parentTaxon.getName(), BotanicalName.class);
-		BotanicalName constructedName = (BotanicalName)constructedHigherTaxon.getName();
+		IBotanicalName parentName = parentTaxon.getName();
+		IBotanicalName constructedName = constructedHigherTaxon.getName();
 		int compare = compareRanks(parentName, constructedName);
 		Taxon lowerTaxon = parentTaxon;
 		Taxon grandParentTaxon = constructedHigherTaxon;
@@ -496,7 +497,7 @@ public class CentralAfricaFernsTaxonRelationImport  extends CentralAfricaFernsIm
 	 * @return
 	 */
 	private Taxon findExistingNonParentTaxon(CentralAfricaFernsImportState state, Taxon constructedHigherTaxon) {
-		BotanicalName constructedName = CdmBase.deproxy(constructedHigherTaxon.getName(), BotanicalName.class);
+		IBotanicalName constructedName = constructedHigherTaxon.getName();
 		String titleCache = constructedName.getTitleCache();
 		String nameCache = constructedName.getNameCache();
 		UUID existingUuid = titleCacheTaxonMap.get(titleCache);
@@ -526,8 +527,8 @@ public class CentralAfricaFernsTaxonRelationImport  extends CentralAfricaFernsIm
 	 * @return
 	 */
 	private Taxon checkIsGrandParent(Taxon childTaxon, Taxon grandParentTaxon) {
-		BotanicalName lowerName = CdmBase.deproxy(childTaxon.getName(), BotanicalName.class);
-		BotanicalName higherName = CdmBase.deproxy(grandParentTaxon.getName(), BotanicalName.class);
+		IBotanicalName lowerName = childTaxon.getName();
+		IBotanicalName higherName = CdmBase.deproxy(grandParentTaxon.getName(), BotanicalName.class);
 
 		//TODO was wenn lowerTaxon constructed ist
 		logger.warn("checkIsGrandParent not yet fully implemented");
@@ -552,7 +553,7 @@ public class CentralAfricaFernsTaxonRelationImport  extends CentralAfricaFernsIm
 	 * @param name2
 	 * @return
 	 */
-	private boolean nameCachesMatch(BotanicalName name1, BotanicalName name2) {
+	private boolean nameCachesMatch(IBotanicalName name1, IBotanicalName name2) {
 		return CdmUtils.nullSafeEqual(name1.getNameCache(), name2.getNameCache());
 	}
 
@@ -563,8 +564,8 @@ public class CentralAfricaFernsTaxonRelationImport  extends CentralAfricaFernsIm
 	 * @return
 	 */
 	private boolean nameCachesMatch(Taxon taxon1, Taxon taxon2) {
-		BotanicalName name1 = CdmBase.deproxy(taxon1.getName(), BotanicalName.class);
-		BotanicalName name2 = CdmBase.deproxy(taxon2.getName(), BotanicalName.class);
+		IBotanicalName name1 = taxon1.getName();
+		IBotanicalName name2 = taxon2.getName();
 		return nameCachesMatch(name1, name2);
 	}
 
@@ -599,8 +600,8 @@ public class CentralAfricaFernsTaxonRelationImport  extends CentralAfricaFernsIm
 	 * @return
 	 */
 	private boolean authorsMatch(Taxon taxon1, Taxon taxon2) {
-		BotanicalName name1 = CdmBase.deproxy(taxon1.getName(), BotanicalName.class);
-		BotanicalName name2 = CdmBase.deproxy(taxon2.getName(), BotanicalName.class);
+		IBotanicalName name1 = taxon1.getName();
+		IBotanicalName name2 = taxon2.getName();
 		return authorsMatch(name1, name2);
 	}
 
@@ -610,7 +611,7 @@ public class CentralAfricaFernsTaxonRelationImport  extends CentralAfricaFernsIm
 	 * @param constructedName
 	 * @return
 	 */
-	private int compareRanks(BotanicalName name1, BotanicalName name2) {
+	private int compareRanks(IBotanicalName name1, IBotanicalName name2) {
 		return name1.getRank().compareTo(name2.getRank());
 	}
 
@@ -621,8 +622,8 @@ public class CentralAfricaFernsTaxonRelationImport  extends CentralAfricaFernsIm
 	 * @return
 	 */
 	private int compareRanks(Taxon taxon1, Taxon taxon2) {
-		BotanicalName name1 = CdmBase.deproxy(taxon1.getName(), BotanicalName.class);
-		BotanicalName name2 = CdmBase.deproxy(taxon2.getName(), BotanicalName.class);
+		IBotanicalName name1 = taxon1.getName();
+		IBotanicalName name2 = taxon2.getName();
 		return compareRanks(name1, name2);
 	}
 
@@ -635,7 +636,7 @@ public class CentralAfricaFernsTaxonRelationImport  extends CentralAfricaFernsIm
 	 * @param name2
 	 * @return
 	 */
-	private boolean namesMatch(BotanicalName name1, BotanicalName name2) {
+	private boolean namesMatch(IBotanicalName name1, IBotanicalName name2) {
 		return compareRanks(name1, name2)==0 && nameCachesMatch(name1, name2) && authorsMatch(name1, name2);
 	}
 
@@ -647,8 +648,8 @@ public class CentralAfricaFernsTaxonRelationImport  extends CentralAfricaFernsIm
 	 * @return
 	 */
 	private boolean namesMatch(Taxon taxon1, Taxon taxon2) {
-		BotanicalName name1 = CdmBase.deproxy(taxon1.getName(), BotanicalName.class);
-		BotanicalName name2 = CdmBase.deproxy(taxon2.getName(), BotanicalName.class);
+		IBotanicalName name1 = taxon1.getName();
+		IBotanicalName name2 = taxon2.getName();
 		return namesMatch(name1, name2);
 	}
 
@@ -687,7 +688,7 @@ public class CentralAfricaFernsTaxonRelationImport  extends CentralAfricaFernsIm
 	 * @return
 	 */
 	private Taxon saveConstructedTaxon(CentralAfricaFernsImportState state, Taxon constructedHigherTaxon) {
-		BotanicalName constructedName = CdmBase.deproxy(constructedHigherTaxon.getName(), BotanicalName.class);
+		IBotanicalName constructedName = constructedHigherTaxon.getName();
 		String nameCache = constructedName.getNameCache();
 		String titleCache = constructedName.getTitleCache();
 		nameCacheTaxonMap.put(nameCache, constructedHigherTaxon.getUuid());
@@ -762,9 +763,9 @@ public class CentralAfricaFernsTaxonRelationImport  extends CentralAfricaFernsIm
 	private Taxon constructNextHigherTaxon(CentralAfricaFernsImportState state, ResultSet rs, Taxon childTaxon, Epithets epithets) throws SQLException {
 
 		Taxon result = null;
-		BotanicalName childName = CdmBase.deproxy(childTaxon.getName(), BotanicalName.class);
+		IBotanicalName childName = CdmBase.deproxy(childTaxon.getName());
 		Rank childRank = childName.getRank();
-		BotanicalName higherName;
+		IBotanicalName higherName;
 		higherName = handleInfraSpecific(childRank, epithets);
 		if (higherName.getRank() == null){
 			handleSpecies(childRank, higherName,  epithets);
@@ -788,9 +789,9 @@ public class CentralAfricaFernsTaxonRelationImport  extends CentralAfricaFernsIm
 		return result;
 	}
 
-	private BotanicalName handleInfraSpecific(Rank lowerTaxonRank, Epithets epithets) {
+	private IBotanicalName handleInfraSpecific(Rank lowerTaxonRank, Epithets epithets) {
 
-		BotanicalName taxonName = TaxonNameFactory.NewBotanicalInstance(null);
+		IBotanicalName taxonName = TaxonNameFactory.NewBotanicalInstance(null);
 		Rank newRank = null;
 
 		if (StringUtils.isNotBlank(epithets.subFormaName)   && lowerTaxonRank.isLower(Rank.SUBFORM())){
@@ -819,7 +820,7 @@ public class CentralAfricaFernsTaxonRelationImport  extends CentralAfricaFernsIm
 		return taxonName;
 	}
 
-	private BotanicalName handleSpecies(Rank lowerTaxonRank, BotanicalName taxonName, Epithets epithets) {
+	private IBotanicalName handleSpecies(Rank lowerTaxonRank, IBotanicalName taxonName, Epithets epithets) {
 		Rank newRank = null;
 
 		if (StringUtils.isNotBlank(epithets.specificEpithet)  && lowerTaxonRank.isLower(Rank.SPECIES())){
@@ -833,7 +834,7 @@ public class CentralAfricaFernsTaxonRelationImport  extends CentralAfricaFernsIm
 		return taxonName;
 	}
 
-	private BotanicalName handleInfraGeneric(Rank lowerTaxonRank, BotanicalName taxonName, Epithets epithets) {
+	private IBotanicalName handleInfraGeneric(Rank lowerTaxonRank, IBotanicalName taxonName, Epithets epithets) {
 		Rank newRank = null;
 
 		if (StringUtils.isNotBlank(epithets.seriesName)  && lowerTaxonRank.isLower(Rank.SERIES())){
@@ -858,7 +859,7 @@ public class CentralAfricaFernsTaxonRelationImport  extends CentralAfricaFernsIm
 
 
 
-	private BotanicalName handleUninomial(Rank lowerTaxonRank, BotanicalName taxonName,  Epithets epithets) {
+	private IBotanicalName handleUninomial(Rank lowerTaxonRank, IBotanicalName taxonName,  Epithets epithets) {
 
 		Rank newRank = null;
 		if (StringUtils.isNotBlank(epithets.genusName) && lowerTaxonRank.isLower(Rank.GENUS())){

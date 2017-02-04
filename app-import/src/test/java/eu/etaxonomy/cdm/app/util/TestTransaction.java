@@ -17,7 +17,7 @@ import eu.etaxonomy.cdm.database.DbSchemaValidation;
 import eu.etaxonomy.cdm.database.ICdmDataSource;
 import eu.etaxonomy.cdm.model.agent.AgentBase;
 import eu.etaxonomy.cdm.model.agent.TeamOrPersonBase;
-import eu.etaxonomy.cdm.model.name.BotanicalName;
+import eu.etaxonomy.cdm.model.name.IBotanicalName;
 import eu.etaxonomy.cdm.model.name.Rank;
 import eu.etaxonomy.cdm.model.name.TaxonNameFactory;
 import eu.etaxonomy.cdm.model.reference.Reference;
@@ -64,7 +64,7 @@ public class TestTransaction {
 			System.exit(1);
 		}
 
-		BotanicalName name1, name2;
+		IBotanicalName name1, name2;
 		Rank rankSpecies = Rank.SPECIES();
 		Taxon taxon1, taxon2, child1, child2;
 
@@ -142,7 +142,7 @@ public class TestTransaction {
 			System.exit(1);
 		}
 
-		BotanicalName name1, name2;
+		IBotanicalName name1, name2;
 		Rank rankSpecies = Rank.SPECIES();
 		Taxon taxon1, taxon2, child1, child2;
 
@@ -241,7 +241,7 @@ public class TestTransaction {
 			System.exit(1);
 		}
 
-		BotanicalName name1, name1_;
+		IBotanicalName name1, name1_;
 		Rank rankSpecies = Rank.SPECIES();
 		Taxon taxon1;
 		TaxonBase taxon1_;

@@ -52,7 +52,7 @@ public class CentralAfricaEricaceaeTaxonImport  extends EfloraTaxonImport  {
 
 
 	@Override
-	protected TeamOrPersonBase handleNomenclaturalReference(TaxonNameBase name, String value) {
+	protected TeamOrPersonBase handleNomenclaturalReference(TaxonNameBase<?,?> name, String value) {
 		Reference nomRef = ReferenceFactory.newGeneric();
 		nomRef.setTitleCache(value, true);
 		parseNomStatus(nomRef, name);

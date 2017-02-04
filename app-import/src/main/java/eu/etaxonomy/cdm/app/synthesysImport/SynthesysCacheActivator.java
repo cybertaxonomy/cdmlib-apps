@@ -35,6 +35,7 @@ import eu.etaxonomy.cdm.model.common.LanguageString;
 import eu.etaxonomy.cdm.model.location.Country;
 import eu.etaxonomy.cdm.model.location.NamedArea;
 import eu.etaxonomy.cdm.model.location.Point;
+import eu.etaxonomy.cdm.model.name.ITaxonNameBase;
 import eu.etaxonomy.cdm.model.name.TaxonNameBase;
 import eu.etaxonomy.cdm.model.occurrence.Collection;
 import eu.etaxonomy.cdm.model.occurrence.DerivationEvent;
@@ -164,14 +165,14 @@ public class SynthesysCacheActivator {
 				derivedThing =  DerivedUnit.NewInstance(SpecimenOrObservationType.Observation);
 			}
 
-			TaxonNameBase<?,?> taxonName = null;
+			ITaxonNameBase taxonName = null;
 			Taxon taxon = null;
 			DeterminationEvent determinationEvent = null;
 			List<TaxonNameBase> names = null;
 			NonViralNameParserImpl nvnpi = NonViralNameParserImpl.NewInstance();
 			String scientificName="";
 			boolean preferredFlag=false;
-			System.out.println(this.identificationList);
+//			System.out.println(this.identificationList);
 			for (int i = 0; i < this.identificationList.size(); i++) {
 				this.fullScientificNameString = this.identificationList.get(i);
 				this.fullScientificNameString = this.fullScientificNameString.replaceAll(" et ", " & ");
@@ -187,22 +188,6 @@ public class SynthesysCacheActivator {
                     scientificName = this.fullScientificNameString;
                 }
 
-//				taxonName = nvnpi.parseFullName(this.fullScientificNameString,NomenclaturalCode.ICZN(),null);
-//				if (taxonName.hasProblem()){
-//				System.out.println("pb ICZN");
-//				taxonName  = nvnpi.parseFullName(this.fullScientificNameString,NomenclaturalCode.ICBN(),null);
-//				if (taxonName.hasProblem()){
-//				System.out.println("pb ICBN");
-//				taxonName = nvnpi.parseFullName(this.fullScientificNameString,NomenclaturalCode.ICNB(), null);
-//				if (taxonName.hasProblem()){
-//				System.out.println("pb ICNB");
-//				taxonName = nvnpi.parseFullName(this.fullScientificNameString,NomenclaturalCode.ICNCP(), null);
-//				if (taxonName.hasProblem()){
-//				System.out.println("pb ICNCP");
-//				}
-//				}
-//				}
-//				}
 				taxonName = nvnpi.parseFullName(scientificName);
 				if (withCdm){
 					names = app.getNameService().findByName(null, scientificName, null, null, null, null, null, null).getRecords();
@@ -219,7 +204,7 @@ public class SynthesysCacheActivator {
 
 
 //				tx = app.startTransaction();
-				app.getNameService().saveOrUpdate(taxonName);
+				app.getNameService().saveOrUpdate(TaxonNameBase.castAndDeproxy(taxonName));
 				taxon = Taxon.NewInstance(taxonName, sec); //TODO use real reference for sec
 //				app.commitTransaction(tx);
 

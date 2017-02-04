@@ -34,7 +34,7 @@ import eu.etaxonomy.cdm.model.description.State;
 import eu.etaxonomy.cdm.model.description.StateData;
 import eu.etaxonomy.cdm.model.description.TaxonDescription;
 import eu.etaxonomy.cdm.model.description.TextData;
-import eu.etaxonomy.cdm.model.name.NonViralName;
+import eu.etaxonomy.cdm.model.name.INonViralName;
 import eu.etaxonomy.cdm.model.name.Rank;
 import eu.etaxonomy.cdm.model.taxon.Classification;
 import eu.etaxonomy.cdm.model.taxon.Synonym;
@@ -241,7 +241,7 @@ public class BfnXmlTaxonNameExport extends BfnXmlExportBase {
         Element wissName = new Element(BfnXmlConstants.EL_WISSNAME);
         parent.addContent(wissName);
 
-        NonViralName<?> name = HibernateProxyHelper.deproxy(taxon.getName(), NonViralName.class);
+        INonViralName name = taxon.getName();
         Rank rank = name.getRank();
         //epithet 1,2,3
         exportEpithet(taxon, wissName, name, rank);
@@ -267,7 +267,7 @@ public class BfnXmlTaxonNameExport extends BfnXmlExportBase {
         addNanteil(wissName, BfnXmlConstants.BEREICH_WISSNAME, name.getTitleCache());
     }
 
-    private void exportEpithet(TaxonBase<?> taxon, Element wissName, NonViralName<?> name, Rank rank) {
+    private void exportEpithet(TaxonBase<?> taxon, Element wissName, INonViralName name, Rank rank) {
         //eindeutiger Code
         Set<IdentifiableSource> sources = taxon.getSources();
         for (IdentifiableSource identifiableSource : sources) {

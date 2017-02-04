@@ -33,7 +33,6 @@ import eu.etaxonomy.cdm.model.description.DescriptionElementSource;
 import eu.etaxonomy.cdm.model.description.Feature;
 import eu.etaxonomy.cdm.model.description.TaxonDescription;
 import eu.etaxonomy.cdm.model.description.TextData;
-import eu.etaxonomy.cdm.model.name.NonViralName;
 import eu.etaxonomy.cdm.model.name.TaxonNameBase;
 import eu.etaxonomy.cdm.model.taxon.Taxon;
 
@@ -131,13 +130,12 @@ public class DipteraPostImportUpdater {
 
 
 	private void fillNameMaps(List<TaxonNameBase> nameList, Map<String, TaxonNameBase> nameMap, Map<String, TaxonNameBase> duplicateMap) {
-		for (TaxonNameBase name : nameList){
-			NonViralName nvn = name.deproxy(name, NonViralName.class);
-			String nameCache = nvn.getNameCache();
+		for (TaxonNameBase<?,?> name : nameList){
+			String nameCache = name.getNameCache();
 			if (nameMap.containsKey(nameCache)){
-				duplicateMap.put(nameCache, nvn);
+				duplicateMap.put(nameCache, name);
 			}else{
-				nameMap.put(nameCache, nvn);
+				nameMap.put(nameCache, name);
 			}
 		}
 	}

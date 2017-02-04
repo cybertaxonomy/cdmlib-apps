@@ -107,7 +107,7 @@ public class EdaphobaseClassificationImport extends EdaphobaseImportBase {
                         TaxonBase<?> child = state.getRelatedObject(TAXON_NAMESPACE, String.valueOf(id), TaxonBase.class);
 //                        TaxonNameBase<?,?> childName = child.getName();
 
-//                        handleMissingNameParts(CdmBase.deproxy(childName, NonViralName.class), CdmBase.deproxy(parentName, NonViralName.class));
+//                        handleMissingNameParts(CdmBase.deproxy(childName, TaxonNameBase.class), CdmBase.deproxy(parentName, NonViralName.class));
 
                         if (isValid){
                             if (parent.isInstanceOf(Synonym.class)){
@@ -153,7 +153,7 @@ public class EdaphobaseClassificationImport extends EdaphobaseImportBase {
 //     * @param childName
 //     * @param parentName
 //     */
-//    private void handleMissingNameParts(NonViralName<?> childName, NonViralName<?> parentName) {
+//    private void handleMissingNameParts(INonViralName childName, INonViralName parentName) {
 //        if (childName.getGenusOrUninomial())
 //    }
 
