@@ -25,7 +25,7 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.transaction.TransactionStatus;
 
 import eu.etaxonomy.cdm.api.application.FirstDataInserter;
-import eu.etaxonomy.cdm.api.application.ICdmApplicationConfiguration;
+import eu.etaxonomy.cdm.api.application.ICdmRepository;
 import eu.etaxonomy.cdm.api.service.IGroupService;
 import eu.etaxonomy.cdm.api.service.description.TransmissionEngineDistribution;
 import eu.etaxonomy.cdm.api.service.description.TransmissionEngineDistribution.AggregationMode;
@@ -269,7 +269,7 @@ public class EuroMedActivator {
             CdmDefaultImport<BerlinModelImportConfigurator> bmImport) {
 
         if (config.isDoTaxonNames() && (config.getCheck().isImport() )  ){
-			ICdmApplicationConfiguration app = bmImport.getCdmAppController();
+			ICdmRepository app = bmImport.getCdmAppController();
 			TransactionStatus tx = app.startTransaction();
 			try {
 				Rank sectBot = (Rank)app.getTermService().find(Rank.SECTION_BOTANY().getUuid());
@@ -299,7 +299,7 @@ public class EuroMedActivator {
     {
 	    if (config.isDoFacts() && (config.getCheck().isImport()  )  ){
 			try {
-                ICdmApplicationConfiguration app = bmImport.getCdmAppController();
+                ICdmRepository app = bmImport.getCdmAppController();
                 TransactionStatus tx = app.startTransaction();
 
                 //make feature tree
@@ -325,7 +325,7 @@ public class EuroMedActivator {
             CdmDefaultImport<BerlinModelImportConfigurator> bmImport) {
 	    if (config.isDoFacts() && (config.getCheck().isImport()  )  ){
 	        try {
-                ICdmApplicationConfiguration app = bmImport.getCdmAppController();
+                ICdmRepository app = bmImport.getCdmAppController();
                 TransactionStatus tx = app.startTransaction();
 
                 DefinedTermBase<?> commonNameFeature = app.getTermService().find(Feature.COMMON_NAME().getUuid());
@@ -347,7 +347,7 @@ public class EuroMedActivator {
 
         if (doRunTransmissionEngine && (config.getCheck().isImport()  )  ){
             try {
-                ICdmApplicationConfiguration app = bmImport.getCdmAppController();
+                ICdmRepository app = bmImport.getCdmAppController();
 
                 final List<String> term_init_strategy = Arrays.asList(new String []{
                         "representations"
@@ -384,7 +384,7 @@ public class EuroMedActivator {
 //
 //        if (config.isDoOccurrence() && (config.getCheck().isImport())){
 //	        try {
-//                ICdmApplicationConfiguration app = bmImport.getCdmAppController();
+//                ICdmRepository app = bmImport.getCdmAppController();
 //                TransactionStatus tx = app.startTransaction();
 //
 //                MarkerType hiddenAreaMarkerType = MarkerType.NewInstance("Used to hide distributions for the named areas in publications", "Hidden Area", null);
@@ -416,7 +416,7 @@ public class EuroMedActivator {
 //	    }
 //    }
 //
-//    private void hideArea(ICdmApplicationConfiguration app, MarkerType hiddenAreaMarkerType, UUID areaUuid) {
+//    private void hideArea(ICdmRepository app, MarkerType hiddenAreaMarkerType, UUID areaUuid) {
 //        NamedArea area = (NamedArea)app.getTermService().find(areaUuid);
 //        area.addMarker(Marker.NewInstance(hiddenAreaMarkerType, true));
 //        app.getTermService().saveOrUpdate(area);
@@ -434,7 +434,7 @@ public class EuroMedActivator {
                String wmsLayerName = "euromed_2013";
                Set<UUID> areaUuidSet = null;
 
-               ICdmApplicationConfiguration app = bmImport.getCdmAppController();
+               ICdmRepository app = bmImport.getCdmAppController();
                IEditGeoService geoService = (IEditGeoService)app.getBean("editGeoService");
 
                Map<NamedArea, String> resultMap;
@@ -468,7 +468,7 @@ public class EuroMedActivator {
 
         try {
             if (config.isDoRelTaxa() && (config.getCheck().isImport())){
-                ICdmApplicationConfiguration app = bmImport.getCdmAppController();
+                ICdmRepository app = bmImport.getCdmAppController();
                 TransactionStatus tx = app.startTransaction();
 
                 //eraabstraube

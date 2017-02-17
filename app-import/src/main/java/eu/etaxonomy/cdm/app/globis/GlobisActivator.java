@@ -13,7 +13,7 @@ import java.util.UUID;
 
 import org.apache.log4j.Logger;
 
-import eu.etaxonomy.cdm.api.application.ICdmApplicationConfiguration;
+import eu.etaxonomy.cdm.api.application.ICdmRepository;
 import eu.etaxonomy.cdm.app.common.CdmDestinations;
 import eu.etaxonomy.cdm.app.common.CdmImportSources;
 import eu.etaxonomy.cdm.common.AccountStore;
@@ -140,12 +140,12 @@ public class GlobisActivator {
 			
 			String user = CdmUtils.readInputLine("Please insert username : ");
 			String pwd = CdmUtils.readInputLine("Please insert password for user '" + CdmUtils.Nz(user) + "': ");
-			ICdmApplicationConfiguration app = globisImport.getCdmAppController();
+			ICdmRepository app = globisImport.getCdmAppController();
 			app.getUserService().save(User.NewInstance(user, pwd));
 		}
 		
 		if (config.getCheck().equals(CHECK.CHECK_AND_IMPORT)  || config.getCheck().equals(CHECK.IMPORT_WITHOUT_CHECK)    ){
-			ICdmApplicationConfiguration app = globisImport.getCdmAppController();
+			ICdmRepository app = globisImport.getCdmAppController();
 			ISourceable<?> obj = app.getCommonService().getSourcedObjectByIdInSource(ZoologicalName.class, "1000027", null);
 			logger.info(obj);
 			

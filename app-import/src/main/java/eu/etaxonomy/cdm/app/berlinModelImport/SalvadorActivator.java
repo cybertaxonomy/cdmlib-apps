@@ -15,7 +15,7 @@ import java.util.UUID;
 import org.apache.log4j.Logger;
 import org.springframework.transaction.TransactionStatus;
 
-import eu.etaxonomy.cdm.api.application.ICdmApplicationConfiguration;
+import eu.etaxonomy.cdm.api.application.ICdmRepository;
 import eu.etaxonomy.cdm.app.common.CdmDestinations;
 import eu.etaxonomy.cdm.database.DbSchemaValidation;
 import eu.etaxonomy.cdm.database.ICdmDataSource;
@@ -189,7 +189,7 @@ public class SalvadorActivator {
             CdmDefaultImport<BerlinModelImportConfigurator> bmImport){
         if (config.isDoFacts() && (config.getCheck().isImport()  )  ){
             try {
-                ICdmApplicationConfiguration app = bmImport.getCdmAppController();
+                ICdmRepository app = bmImport.getCdmAppController();
                 TransactionStatus tx = app.startTransaction(false);
 
                 //make feature tree

@@ -145,7 +145,8 @@ public abstract class SimpleExcelTaxonImport<CONFIG extends ExcelImportConfigura
      * @param state
      * @param name
      */
-    protected void replaceAuthorNamesAndNomRef(SimpleExcelTaxonImportState<CONFIG> state, BotanicalName name) {
+    protected void replaceAuthorNamesAndNomRef(SimpleExcelTaxonImportState<CONFIG> state,
+            BotanicalName name) {
         TeamOrPersonBase<?> combAuthor = name.getCombinationAuthorship();
         name.setCombinationAuthorship(getExistingAuthor(state, combAuthor));
 

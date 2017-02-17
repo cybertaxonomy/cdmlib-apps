@@ -15,7 +15,7 @@ import java.util.UUID;
 import org.apache.log4j.Logger;
 
 import eu.etaxonomy.cdm.api.application.CdmApplicationController;
-import eu.etaxonomy.cdm.api.application.ICdmApplicationConfiguration;
+import eu.etaxonomy.cdm.api.application.ICdmRepository;
 import eu.etaxonomy.cdm.api.service.ITermService;
 import eu.etaxonomy.cdm.app.common.CdmDestinations;
 import eu.etaxonomy.cdm.database.DbSchemaValidation;
@@ -161,7 +161,7 @@ public class CubaActivator {
 		if (doDeduplicate){
 		    logger.warn("Start deduplication ...");
 
-		    ICdmApplicationConfiguration app = myImport.getCdmAppController();
+		    ICdmRepository app = myImport.getCdmAppController();
 			if (app == null){
                 app = CdmApplicationController.NewInstance(cdmDestination, hbm2dll, false);
             }

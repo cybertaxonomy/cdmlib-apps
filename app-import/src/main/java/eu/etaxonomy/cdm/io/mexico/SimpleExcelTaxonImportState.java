@@ -36,7 +36,7 @@ public class SimpleExcelTaxonImportState<CONFIG extends ExcelImportConfiguratorB
 
     private Map<String, TeamOrPersonBase<?>> agentMap = new HashMap<>();
 
-    private final Map<String, Taxon> higherTaxonTaxonMap = new HashMap<String, Taxon>();
+    private final Map<String, Taxon> higherTaxonTaxonMap = new HashMap<>();
 
     //using titleCache
     private Map<String, INonViralName> nameMap = new HashMap<>();
@@ -51,6 +51,7 @@ public class SimpleExcelTaxonImportState<CONFIG extends ExcelImportConfiguratorB
     }
 
  //************************ PUTTER / GETTER *****************************/
+
     public void putReference(String title, Reference ref){
         refMap.put(title, ref);
     }

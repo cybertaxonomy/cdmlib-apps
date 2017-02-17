@@ -148,7 +148,7 @@ public class MTMooseActivator {
 		bmImport.invoke(config);
 
 //		if (doFacts && (config.getCheck().equals(CHECK.CHECK_AND_IMPORT)  || config.getCheck().equals(CHECK.IMPORT_WITHOUT_CHECK) )   ){
-//			ICdmApplicationConfiguration app = bmImport.getCdmAppController();
+//			ICdmRepository app = bmImport.getCdmAppController();
 //			
 //			//make feature tree
 //			FeatureTree tree = TreeCreator.flatTree(featureTreeUuid, config.getFeatureMap(), featureKeyList);

@@ -16,7 +16,7 @@ import java.util.UUID;
 
 import org.apache.log4j.Logger;
 
-import eu.etaxonomy.cdm.api.application.ICdmApplicationConfiguration;
+import eu.etaxonomy.cdm.api.application.ICdmRepository;
 import eu.etaxonomy.cdm.app.berlinModelImport.BerlinModelSources;
 import eu.etaxonomy.cdm.app.berlinModelImport.TreeCreator;
 import eu.etaxonomy.cdm.app.common.CdmDestinations;
@@ -219,7 +219,7 @@ public class CichorieaeActivator {
 		success = bmImport.invoke(bmImportConfigurator);
 
 		if (doFacts && (bmImportConfigurator.getCheck().equals(CHECK.CHECK_AND_IMPORT)  || bmImportConfigurator.getCheck().equals(CHECK.IMPORT_WITHOUT_CHECK) )   ){
-			ICdmApplicationConfiguration app = bmImport.getCdmAppController();
+			ICdmRepository app = bmImport.getCdmAppController();
 			ISourceable obj = app.getCommonService().getSourcedObjectByIdInSource(ZoologicalName.class, "1000027", null);
 			logger.info(obj);
 
