@@ -19,6 +19,8 @@ import java.util.UUID;
 import org.apache.log4j.Logger;
 import org.springframework.transaction.TransactionStatus;
 
+import eu.etaxonomy.cdm.api.application.CdmApplicationController;
+import eu.etaxonomy.cdm.api.application.ICdmRepository;
 import eu.etaxonomy.cdm.api.service.ITermService;
 import eu.etaxonomy.cdm.database.DbSchemaValidation;
 import eu.etaxonomy.cdm.database.ICdmDataSource;
@@ -30,6 +32,8 @@ import eu.etaxonomy.cdm.io.common.mapping.IInputTransformer;
 import eu.etaxonomy.cdm.io.common.mapping.UndefinedTransformerMethodException;
 import eu.etaxonomy.cdm.io.eflora.floraMalesiana.FloraMalesianaTransformer;
 import eu.etaxonomy.cdm.io.markup.MarkupImportConfigurator;
+import eu.etaxonomy.cdm.model.agent.Person;
+import eu.etaxonomy.cdm.model.agent.Team;
 import eu.etaxonomy.cdm.model.description.Feature;
 import eu.etaxonomy.cdm.model.description.FeatureNode;
 import eu.etaxonomy.cdm.model.description.FeatureTree;
@@ -62,23 +66,31 @@ public class NepenthesActivator extends EfloraActivatorBase {
 
 	static final boolean reuseState = true;  //when running multiple imports
 
-	//feature tree uuid
-	public static final UUID featureTreeUuid = UUID.fromString("ef2e2978-1ea4-44d2-a819-4e79b372b9b7");
-	private static final String featureTreeTitle = "Nepenthes Feature Tree";
-
-	//classification
-	static final UUID classificationUuid = UUID.fromString("a245793a-a70f-4fcf-a626-dd4aa6d2aa1c");
-	static final String classificationTitle = "Nepenthes";
 
 	//check - import
 	static CHECK check = CHECK.IMPORT_WITHOUT_CHECK;
 
 	static boolean doPrintKeys = false;
+	static boolean doDeduplicate = false;
 
 	//taxa
 	static final boolean doTaxa = true;
 
+
+    //feature tree uuid
+    public static final UUID featureTreeUuid = UUID.fromString("ef2e2978-1ea4-44d2-a819-4e79b372b9b7");
+    private static final String featureTreeTitle = "Nepenthaceae Feature Tree";
+
+    //classification
+    static final UUID classificationUuid = UUID.fromString("a245793a-a70f-4fcf-a626-dd4aa6d2aa1c");
+    static final String classificationTitle = "Nepenthaceae";
+
+    static final UUID specimenNotSeenMarkerTypeUuid = UUID.fromString("fb8ad1dd-ac70-4453-bc33-a9eeafd5e439");
+    static final String specimenNotSeenMarkerTypeLabel = "Not seen for Flora Malesiana";
+
 	private final boolean replaceStandardKeyTitles = false;
+	private boolean ignoreLocalityClass = true;
+	private boolean handleWriterManually = true;
 
 	private final IIoObserver observer = new LoggingIoObserver();
 	private final Set<IIoObserver> observerList = new HashSet<>();
@@ -91,31 +103,34 @@ public class NepenthesActivator extends EfloraActivatorBase {
 		}
 
 		//make Source
-//		URI source = fmSource13_small;
-		URI source = null;
+        URI source = null;
 
-		MarkupImportConfigurator markupConfig= MarkupImportConfigurator.NewInstance(source, cdmDestination);
-		markupConfig.setClassificationUuid(classificationUuid);
-		markupConfig.setClassificationName(classificationTitle);
-		markupConfig.setDoTaxa(doTaxa);
-		markupConfig.setCheck(check);
-		markupConfig.setDoPrintKeys(doPrintKeys);
-		markupConfig.setDbSchemaValidation(hbm2dll);
-		markupConfig.setObservers(observerList);
-		markupConfig.setReplaceStandardKeyTitles(replaceStandardKeyTitles);
-		markupConfig.setReuseExistingState(reuseState);
-		markupConfig.setKnownCollections(getKnownCollections());
+		MarkupImportConfigurator config= MarkupImportConfigurator.NewInstance(source, cdmDestination);
+		config.setClassificationUuid(classificationUuid);
+		config.setClassificationName(classificationTitle);
+		config.setDoTaxa(doTaxa);
+		config.setCheck(check);
+		config.setDoPrintKeys(doPrintKeys);
+		config.setDbSchemaValidation(hbm2dll);
+		config.setObservers(observerList);
+		config.setReplaceStandardKeyTitles(replaceStandardKeyTitles);
+		config.setReuseExistingState(reuseState);
+		config.setIgnoreLocalityClass(ignoreLocalityClass);
+		config.setHandleWriterManually(handleWriterManually);
+		config.setKnownCollections(getKnownCollections());
+		config.setSpecimenNotSeenMarkerTypeUuid(specimenNotSeenMarkerTypeUuid);
+		config.setSpecimenNotSeenMarkerTypeLabel(specimenNotSeenMarkerTypeLabel);
 
-		markupConfig.setSourceReference(getSourceReference("Flora Malesiana - Vol. 13"));
+		config.setSourceReference(getSourceReference("Flora Malesiana - Vol. 15"));
 
 		CdmDefaultImport<MarkupImportConfigurator> myImport = new CdmDefaultImport<>();
 
 
 		//Vol15
-		doSource(true, fmSource15, "Flora Malesiana - vol. 15", markupConfig, myImport);
+		doSource(true, fmSource15, "Flora Malesiana - vol. 15", config, myImport);
 
 
-		makeAutomatedFeatureTree(myImport.getCdmAppController(), markupConfig.getState(),
+		makeAutomatedFeatureTree(myImport.getCdmAppController(), config.getState(),
 				featureTreeUuid, featureTreeTitle);
 
 //		makeGeoService();
@@ -134,6 +149,22 @@ public class NepenthesActivator extends EfloraActivatorBase {
 			myImport.getCdmAppController().commitTransaction(tx);
 		}
 
+	      //deduplicate
+        if (doDeduplicate){
+            ICdmRepository app = myImport.getCdmAppController();
+            if (app == null){
+                app = CdmApplicationController.NewInstance(cdmDestination, hbm2dll, false);
+            }
+//            app.getAgentService().updateTitleCache(Team.class, null, null, null);
+//            return;
+          int count = app.getAgentService().deduplicate(Person.class, null, null);
+          logger.warn("Deduplicated " + count + " persons.");
+          count = app.getAgentService().deduplicate(Team.class, null, null);
+//            logger.warn("Deduplicated " + count + " teams.");
+          count = app.getReferenceService().deduplicate(Reference.class, null, null);
+          logger.warn("Deduplicated " + count + " references.");
+        }
+
 	}
 
 	/**
@@ -141,7 +172,7 @@ public class NepenthesActivator extends EfloraActivatorBase {
      */
     private List<String> getKnownCollections() {
         List<String> result = Arrays.asList(new String[]
-                {"Nippon Dental College","Nagoya","Sabah National Parks Herbarium"}) ;
+                {"Nippon Dental College","Nagoya","Sabah National Parks Herbarium","K-Wall"}) ;
         return result;
     }
 
@@ -166,39 +197,52 @@ public class NepenthesActivator extends EfloraActivatorBase {
 		FloraMalesianaTransformer transformer = new FloraMalesianaTransformer();
 
 		FeatureTree result = FeatureTree.NewInstance(UUID.randomUUID());
-		result.setTitleCache("Flora Malesiana Presentation Feature Tree - Old", true);
+		result.setTitleCache("Flora Malesiana Nepenthaceae Simple Feature Tree", true);
 		FeatureNode root = result.getRoot();
 		FeatureNode newNode;
+
+		newNode = FeatureNode.NewInstance(Feature.CITATION());
+        root.addChild(newNode);
+
 
 		newNode = FeatureNode.NewInstance(Feature.DESCRIPTION());
 		root.addChild(newNode);
 
-		addFeataureNodesByStringList(descriptionFeatureList, newNode, transformer, service);
+	    newNode = FeatureNode.NewInstance(Feature.DISTRIBUTION());
+	    root.addChild(newNode);
 
-		addFeataureNodesByStringList(generellDescriptionsUpToAnatomyList, root, transformer, service);
-		newNode = FeatureNode.NewInstance(Feature.ANATOMY());
-		addFeataureNodesByStringList(anatomySubfeatureList, newNode, transformer, service);
+        newNode = FeatureNode.NewInstance(Feature.ECOLOGY());
+        root.addChild(newNode);
 
-		newNode = addFeataureNodesByStringList(generellDescriptionsFromAnatomyToPhytoChemoList, root, transformer, service);
-		addFeataureNodesByStringList(phytoChemoSubFeaturesList, newNode, transformer, service);
+        newNode = FeatureNode.NewInstance(Feature.SPECIMEN());
+        root.addChild(newNode);
 
-		newNode = addFeataureNodesByStringList(generellDescriptionsFromPhytoChemoList, root, transformer, service);
+        newNode = FeatureNode.NewInstance(Feature.NOTES());
+        root.addChild(newNode);
 
+//		addFeataureNodesByStringList(descriptionFeatureList, newNode, transformer, service);
 
-		newNode = FeatureNode.NewInstance(Feature.DISTRIBUTION());
-		root.addChild(newNode);
+//		addFeataureNodesByStringList(generellDescriptionsUpToAnatomyList, root, transformer, service);
+//		newNode = FeatureNode.NewInstance(Feature.ANATOMY());
+//		addFeataureNodesByStringList(anatomySubfeatureList, newNode, transformer, service);
+//
+//		newNode = addFeataureNodesByStringList(generellDescriptionsFromAnatomyToPhytoChemoList, root, transformer, service);
+//		addFeataureNodesByStringList(phytoChemoSubFeaturesList, newNode, transformer, service);
+//
+//		newNode = addFeataureNodesByStringList(generellDescriptionsFromPhytoChemoList, root, transformer, service);
+//
+//
 
-		newNode = FeatureNode.NewInstance(Feature.ECOLOGY());
-		root.addChild(newNode);
-		addFeataureNodesByStringList(habitatEcologyList, root, transformer, service);
+//
+//		newNode = FeatureNode.NewInstance(Feature.ECOLOGY());
+//		root.addChild(newNode);
+//		addFeataureNodesByStringList(habitatEcologyList, root, transformer, service);
+//
+//		newNode = FeatureNode.NewInstance(Feature.USES());
+//		root.addChild(newNode);
+//
+//		addFeataureNodesByStringList(chomosomesList, root, transformer, service);
 
-		newNode = FeatureNode.NewInstance(Feature.USES());
-		root.addChild(newNode);
-
-		addFeataureNodesByStringList(chomosomesList, root, transformer, service);
-
-		newNode = FeatureNode.NewInstance(Feature.CITATION());
-		root.addChild(newNode);
 
 		return result;
 	}
