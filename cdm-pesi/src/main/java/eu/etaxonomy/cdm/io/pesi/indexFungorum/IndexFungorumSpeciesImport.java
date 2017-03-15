@@ -28,8 +28,8 @@ import eu.etaxonomy.cdm.io.pesi.out.PesiTransformer;
 import eu.etaxonomy.cdm.model.common.CdmBase;
 import eu.etaxonomy.cdm.model.common.Extension;
 import eu.etaxonomy.cdm.model.common.ExtensionType;
+import eu.etaxonomy.cdm.model.name.INonViralName;
 import eu.etaxonomy.cdm.model.name.NomenclaturalCode;
-import eu.etaxonomy.cdm.model.name.NonViralName;
 import eu.etaxonomy.cdm.model.reference.Reference;
 import eu.etaxonomy.cdm.model.taxon.Classification;
 import eu.etaxonomy.cdm.model.taxon.Taxon;
@@ -113,7 +113,7 @@ public class IndexFungorumSpeciesImport  extends IndexFungorumImportBase {
 				//Rank rank = Rank.SPECIES();
 
 				NonViralNameParserImpl parser = NonViralNameParserImpl.NewInstance();
-				NonViralName<?> name = parser.parseSimpleName(preferredName, NomenclaturalCode.ICNAFP, null);
+				INonViralName name = parser.parseSimpleName(preferredName, NomenclaturalCode.ICNAFP, null);
 
 				Taxon taxon = Taxon.NewInstance(name, sourceReference);
 				//if name is infraspecific the parent should be the species not the genus

@@ -48,6 +48,7 @@ import eu.etaxonomy.cdm.model.common.MarkerType;
 import eu.etaxonomy.cdm.model.name.NomenclaturalStatus;
 import eu.etaxonomy.cdm.model.name.Rank;
 import eu.etaxonomy.cdm.model.name.TaxonNameBase;
+import eu.etaxonomy.cdm.model.name.TaxonNameFactory;
 import eu.etaxonomy.cdm.model.name.ZoologicalName;
 import eu.etaxonomy.cdm.model.reference.Reference;
 import eu.etaxonomy.cdm.model.taxon.Synonym;
@@ -351,7 +352,7 @@ public class FaunaEuropaeaTaxonNameImport extends FaunaEuropaeaImportBase  {
 				Reference sourceReference = fauEuConfig.getSourceReference();
 				Reference auctReference = fauEuConfig.getAuctReference();
 
-				ZoologicalName zooName = ZoologicalName.NewInstance(rank);
+				ZoologicalName zooName = TaxonNameFactory.NewZoologicalInstance(rank);
 				TeamOrPersonBase<?> author = authorStore.get(autId);
 
 				zooName.setCombinationAuthorship(author);
@@ -580,7 +581,7 @@ public class FaunaEuropaeaTaxonNameImport extends FaunaEuropaeaImportBase  {
 			ZoologicalName zooName = taxonName.deproxy(taxonName, ZoologicalName.class);
 
 			// create basionym
-			ZoologicalName basionym = ZoologicalName.NewInstance(taxonName.getRank());
+			ZoologicalName basionym =TaxonNameFactory.NewZoologicalInstance(taxonName.getRank());
 			basionym.setCombinationAuthorship(zooName.getCombinationAuthorship());
 			basionym.setPublicationYear(zooName.getPublicationYear());
 

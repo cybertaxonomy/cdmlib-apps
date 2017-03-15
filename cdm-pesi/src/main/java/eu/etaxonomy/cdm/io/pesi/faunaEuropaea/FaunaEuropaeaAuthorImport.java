@@ -13,6 +13,7 @@ import java.sql.SQLException;
 import java.util.Collection;
 import java.util.Map;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.TransactionStatus;
@@ -25,6 +26,7 @@ import eu.etaxonomy.cdm.model.agent.Person;
 import eu.etaxonomy.cdm.model.agent.Team;
 import eu.etaxonomy.cdm.model.agent.TeamOrPersonBase;
 import eu.etaxonomy.cdm.model.common.CdmBase;
+import eu.etaxonomy.cdm.strategy.parser.NonViralNameParserImpl;
 
 
 /**
@@ -34,7 +36,13 @@ import eu.etaxonomy.cdm.model.common.CdmBase;
  */
 @Component
 public class FaunaEuropaeaAuthorImport extends FaunaEuropaeaImportBase {
-	private static final Logger logger = Logger.getLogger(FaunaEuropaeaAuthorImport.class);
+
+    /**
+     *
+     */
+    private static final long serialVersionUID = 1L;
+
+    private static final Logger logger = Logger.getLogger(FaunaEuropaeaAuthorImport.class);
 
 	private static int modCount = 1000;
 	private final static String authorSeparator = ", ";
@@ -118,17 +126,22 @@ public class FaunaEuropaeaAuthorImport extends FaunaEuropaeaImportBase {
 				TeamOrPersonBase<?> author = null;
 
 				try {
-				    author = parseAuthorString(authorName);
-				    ImportHelper.setOriginalSource(author, fauEuConfig.getSourceReference(), authorId, namespace);
+				    NonViralNameParserImpl parser = NonViralNameParserImpl.NewInstance();
 
-					if (!authorStore.containsId(authorId)) {
-						authorStore.put(authorId, author);
-						if (logger.isDebugEnabled()) { logger.debug("Stored author (" + authorId + ") " + authorName); }
-					} else {
-						logger.warn("Not imported author with duplicated aut_id (" + authorId + ") " + authorName);
-					}
+			        if (StringUtils.isNotBlank(authorName)){
+			            //author = parser.author(authorName);
+			            author = this.parseNomAuthorString(authorName);
+    			        ImportHelper.setOriginalSource(author, fauEuConfig.getSourceReference(), authorId, namespace);
+
+    					if (!authorStore.containsId(authorId)) {
+    						authorStore.put(authorId, author);
+    						if (logger.isDebugEnabled()) { logger.debug("Stored author (" + authorId + ") " + authorName); }
+    					} else {
+    						logger.warn("Not imported author with duplicated aut_id (" + authorId + ") " + authorName);
+    					}
+			        }
 				} catch (Exception e) {
-					logger.warn("An exception occurred when creating author with id " + authorId + ". Author could not be saved.");
+					logger.warn("An exception occurred when creating author with id " + authorId + ". Author could not be saved." + e.getMessage());
 				}
 			}
 
@@ -159,7 +172,7 @@ public class FaunaEuropaeaAuthorImport extends FaunaEuropaeaImportBase {
 		return ! state.getConfig().isDoAuthors();
 	}
 
-	public static TeamOrPersonBase<?> parseAuthorString(String authorName){
+	public static TeamOrPersonBase<?> parseAuthorStringOld(String authorName){
 	    TeamOrPersonBase<?> author = null;
 	    String[] teamMembers = authorName.split(authorSeparator);
         String lastMember;
@@ -213,6 +226,7 @@ public class FaunaEuropaeaAuthorImport extends FaunaEuropaeaImportBase {
         //possible strings: Lastname, A., Lastname B. & Lastname C.
         //Lastname A, Lastname B & Lastname
         //Lastname A Lastname B & Lastname C
+        //Lastname, J & Lastname, L
         String[] teamMembers = refAuthor.split(test);
 
         String lastMember;

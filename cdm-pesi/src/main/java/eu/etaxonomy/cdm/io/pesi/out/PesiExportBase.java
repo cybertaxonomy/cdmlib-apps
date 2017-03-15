@@ -31,6 +31,7 @@ import eu.etaxonomy.cdm.model.description.TaxonNameDescription;
 import eu.etaxonomy.cdm.model.description.TextData;
 import eu.etaxonomy.cdm.model.name.BotanicalName;
 import eu.etaxonomy.cdm.model.name.HybridRelationship;
+import eu.etaxonomy.cdm.model.name.INonViralName;
 import eu.etaxonomy.cdm.model.name.NameRelationship;
 import eu.etaxonomy.cdm.model.name.NameRelationshipType;
 import eu.etaxonomy.cdm.model.name.NonViralName;
@@ -173,17 +174,19 @@ public abstract class PesiExportBase extends DbExportBase<PesiExportConfigurator
 		List<CLASS> result = new ArrayList<CLASS>();
 		String[] propertyPaths = null;
 		String orderHints = null;
-		List<CLASS> list = (List<CLASS>)getTaxonService().getAllRelationships(limit, partitionCount * limit);
+		//TODO: fix!!!!
 
-		if (list.isEmpty()){
-			return null;
-		}
-
-		for (CLASS rel : list){
-			if (isPesiTaxonOrSynonymRelationship(rel)){
-				result.add(rel);
-			}
-		}
+//		List<CLASS> list = (List<CLASS>)getTaxonService().getAllRelationships(limit, partitionCount * limit);
+//
+//		if (list.isEmpty()){
+//			return null;
+//		}
+//
+//		for (CLASS rel : list){
+//			if (isPesiTaxonOrSynonymRelationship(rel)){
+//				result.add(rel);
+//			}
+//		}
 		return result;
 	}
 
@@ -213,12 +216,14 @@ public abstract class PesiExportBase extends DbExportBase<PesiExportConfigurator
 	protected boolean isPesiTaxonOrSynonymRelationship(RelationshipBase rel){
 		TaxonBase<?> fromTaxon;
 		Taxon toTaxon;
-		if (rel.isInstanceOf(SynonymRelationship.class)){
-			SynonymRelationship synRel = CdmBase.deproxy(rel, SynonymRelationship.class);
-			fromTaxon = synRel.getSynonym();
-			toTaxon = synRel.getAcceptedTaxon();
-			synRel = null;
-		}else if (rel.isInstanceOf(TaxonRelationship.class)){
+		// TODO:fix!!!
+//		if (rel.isInstanceOf(SynonymRelationship.class)){
+//			SynonymRelationship synRel = CdmBase.deproxy(rel, SynonymRelationship.class);
+//			fromTaxon = synRel.getSynonym();
+//			toTaxon = synRel.getAcceptedTaxon();
+//			synRel = null;
+//		}else
+		    if (rel.isInstanceOf(TaxonRelationship.class)){
 			TaxonRelationship taxRel = CdmBase.deproxy(rel, TaxonRelationship.class);
 			fromTaxon = taxRel.getFromTaxon();
 			toTaxon = taxRel.getToTaxon();
@@ -272,7 +277,7 @@ public abstract class PesiExportBase extends DbExportBase<PesiExportConfigurator
 		//include hybrid parents, but no childs
 		NonViralName nvn = CdmBase.deproxy(taxonName, NonViralName.class);
 		for (HybridRelationship rel : (Set<HybridRelationship>)nvn.getHybridParentRelations()){
-			NonViralName<?> child = rel.getHybridName();
+			INonViralName child = rel.getHybridName();
 			if (hasPesiTaxon(child)){
 				return true;
 			}
@@ -299,7 +304,7 @@ public abstract class PesiExportBase extends DbExportBase<PesiExportConfigurator
 	 * @param taxonName
 	 * @return
 	 */
-	protected boolean hasPesiTaxon(TaxonNameBase<?,?> taxonName) {
+	protected boolean hasPesiTaxon(INonViralName taxonName) {
 		for (TaxonBase<?> taxon : taxonName.getTaxonBases()){
 			if (isPesiTaxon(taxon)){
 				return true;

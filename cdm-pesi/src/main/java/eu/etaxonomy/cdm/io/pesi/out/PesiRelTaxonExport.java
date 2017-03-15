@@ -560,7 +560,7 @@ public class PesiRelTaxonExport extends PesiExportBase {
 	private boolean neededValuesNotNull(Synonym synonym, PesiExportState state) {
 	    boolean result = true;
         if (getTaxonFk1(synonym, state) == null) {
-            logger.warn("TaxonFk1 is NULL, but is not allowed to be. Therefore no record was written to export database for this relationship: " + relationship.getUuid());
+            logger.warn("TaxonFk1 is NULL, but is not allowed to be. Therefore no record was written to export database for this relationship: " + synonym.getUuid());
             result = false;
         }
         return result;
@@ -622,6 +622,18 @@ public class PesiRelTaxonExport extends PesiExportBase {
 	}
 
 	/**
+     * Returns the <code>TaxonFk1</code> attribute. It corresponds to a CDM <code>TaxonRelationship</code>.
+     * @param relationship The {@link RelationshipBase Relationship}.
+     * @param state The {@link PesiExportState PesiExportState}.
+     * @return The <code>TaxonFk1</code> attribute.
+     * @see MethodMapper
+     */
+    private static Integer getTaxonFk1(Synonym synonym, PesiExportState state) {
+        return synonym.getAcceptedTaxon().getId();
+    }
+
+
+	/**
 	 * Returns the <code>TaxonFk2</code> attribute. It corresponds to a CDM <code>SynonymRelationship</code>.
 	 * @param relationship The {@link RelationshipBase Relationship}.
 	 * @param state The {@link PesiExportState PesiExportState}.
@@ -662,12 +674,12 @@ public class PesiRelTaxonExport extends PesiExportBase {
 			code = name.getNomenclaturalCode();
 			rel = null;
 
-		}else if (relationship.isInstanceOf(SynonymRelationship.class)){
-			SynonymRelationship rel = CdmBase.deproxy(relationship, SynonymRelationship.class);
-			taxon = rel.getAcceptedTaxon();
-			name = taxon.getName();
-			code = name.getNomenclaturalCode();
-			rel = null;
+//		}else if (relationship.isInstanceOf(SynonymRelationship.class)){
+//			SynonymRelationship rel = CdmBase.deproxy(relationship, SynonymRelationship.class);
+//			taxon = rel.getAcceptedTaxon();
+//			name = taxon.getName();
+//			code = name.getNomenclaturalCode();
+//			rel = null;
 
 		}else if (relationship.isInstanceOf(NameRelationship.class)){
 			NameRelationship rel = CdmBase.deproxy(relationship,  NameRelationship.class);
@@ -715,9 +727,10 @@ public class PesiRelTaxonExport extends PesiExportBase {
 		if (relationship.isInstanceOf(TaxonRelationship.class)) {
 			TaxonRelationship tr = (TaxonRelationship)relationship;
 			taxonBase = (isFrom) ? tr.getFromTaxon():  tr.getToTaxon();
-		} else if (relationship.isInstanceOf(SynonymRelationship.class)) {
-			SynonymRelationship sr = (SynonymRelationship)relationship;
-			taxonBase = (isFrom) ? sr.getSynonym() : sr.getAcceptedTaxon();
+
+//		} else if (relationship.isInstanceOf(SynonymRelationship.class)) {
+//			SynonymRelationship sr = (SynonymRelationship)relationship;
+//			taxonBase = (isFrom) ? sr.getSynonym() : sr.getAcceptedTaxon();
 		} else if (relationship.isInstanceOf(NameRelationship.class) ||  relationship.isInstanceOf(HybridRelationship.class)) {
 			if (isFrom){
 				return state.getDbId(state.getCurrentFromObject());

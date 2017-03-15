@@ -238,8 +238,9 @@ public class FaunaEuropaeaRefImport extends FaunaEuropaeaImportBase {
 					if (refAuthor == null) {
 						logger.warn("Reference author is null");
 					}
+					NonViralNameParserImpl parser = new NonViralNameParserImpl();
+					//author = parser.author(refAuthor);
 					author = FaunaEuropaeaAuthorImport.parseNomAuthorString(refAuthor);
-
 					authors.put(refAuthor,author);
 					if (logger.isTraceEnabled()) {
 						logger.trace("Stored author (" + refAuthor + ")");

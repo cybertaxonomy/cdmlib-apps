@@ -38,6 +38,7 @@ import eu.etaxonomy.cdm.model.common.ExtensionType;
 import eu.etaxonomy.cdm.model.name.NomenclaturalCode;
 import eu.etaxonomy.cdm.model.name.NonViralName;
 import eu.etaxonomy.cdm.model.name.Rank;
+import eu.etaxonomy.cdm.model.name.TaxonNameFactory;
 import eu.etaxonomy.cdm.model.name.ZoologicalName;
 import eu.etaxonomy.cdm.model.reference.Reference;
 import eu.etaxonomy.cdm.model.taxon.Synonym;
@@ -97,7 +98,7 @@ public class ErmsTaxonImport  extends ErmsImportBase<TaxonBase<?>> implements IM
 			ExtensionType displayNameExtType = getExtensionType(ErmsTransformer.uuidDisplayName, "display name", "display name", "display name");
 			mapping.addMapper(DbImportExtensionMapper.NewInstance("tu_displayname", displayNameExtType));
 			ExtensionType fuzzyNameExtType = getExtensionType(ErmsTransformer.uuidFuzzyName, "fuzzy name", "fuzzy name", "fuzzy name");
-			mapping.addMapper(DbImportExtensionMapper.NewInstance("tu_fuzzyname", fuzzyNameExtType));
+		//	mapping.addMapper(DbImportExtensionMapper.NewInstance("tu_fuzzyname", fuzzyNameExtType));
 			mapping.addMapper(DbImportStringMapper.NewInstance("tu_authority", "(NonViralName)name.authorshipCache"));
 
 			ExtensionType fossilStatusExtType = getExtensionType(ErmsTransformer.uuidFossilStatus, "fossil status", "fossil status", "fos. stat.");
@@ -378,7 +379,7 @@ public class ErmsTaxonImport  extends ErmsImportBase<TaxonBase<?>> implements IM
 		if (nc != null){
 			result = (NonViralName<?>)nc.getNewTaxonNameInstance(rank);
 		}else{
-			result = NonViralName.NewInstance(rank);
+			result = TaxonNameFactory.NewNonViralInstance(rank);
 		}
 		//cache strategy
 		if (result instanceof ZoologicalName){

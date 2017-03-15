@@ -24,9 +24,9 @@ import org.springframework.stereotype.Component;
 import eu.etaxonomy.cdm.io.common.ResultSetPartitioner;
 import eu.etaxonomy.cdm.io.pesi.out.PesiTransformer;
 import eu.etaxonomy.cdm.model.common.CdmBase;
-import eu.etaxonomy.cdm.model.name.BotanicalName;
 import eu.etaxonomy.cdm.model.name.NonViralName;
 import eu.etaxonomy.cdm.model.name.Rank;
+import eu.etaxonomy.cdm.model.name.TaxonNameFactory;
 import eu.etaxonomy.cdm.model.reference.Reference;
 import eu.etaxonomy.cdm.model.taxon.Classification;
 import eu.etaxonomy.cdm.model.taxon.Taxon;
@@ -94,7 +94,7 @@ public class IndexFungorumGeneraImport  extends IndexFungorumImportBase {
 				}
 
 				Rank rank = Rank.GENUS();
-				NonViralName<?> name = BotanicalName.NewInstance(rank);
+				NonViralName<?> name = TaxonNameFactory.NewBotanicalInstance(rank);
 				name.setGenusOrUninomial(preferredName);
 
 				Taxon taxon = Taxon.NewInstance(name, sourceReference);

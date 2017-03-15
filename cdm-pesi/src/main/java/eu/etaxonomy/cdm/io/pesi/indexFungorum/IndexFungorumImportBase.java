@@ -39,7 +39,7 @@ import eu.etaxonomy.cdm.model.common.LSID;
 import eu.etaxonomy.cdm.model.common.Marker;
 import eu.etaxonomy.cdm.model.common.MarkerType;
 import eu.etaxonomy.cdm.model.common.OriginalSourceType;
-import eu.etaxonomy.cdm.model.name.NonViralName;
+import eu.etaxonomy.cdm.model.name.INonViralName;
 import eu.etaxonomy.cdm.model.reference.Reference;
 import eu.etaxonomy.cdm.model.reference.ReferenceFactory;
 import eu.etaxonomy.cdm.model.taxon.Classification;
@@ -266,7 +266,7 @@ public abstract class IndexFungorumImportBase extends CdmImportBase<IndexFungoru
 	}
 
 
-	protected void makeAuthorAndPublication(IndexFungorumImportState state, ResultSet rs, NonViralName name) throws SQLException {
+	protected void makeAuthorAndPublication(IndexFungorumImportState state, ResultSet rs, INonViralName name) throws SQLException {
 		//authors
 		NonViralNameParserImpl parser = NonViralNameParserImpl.NewInstance();
 		String authorStr = rs.getString("AUTHORS");
