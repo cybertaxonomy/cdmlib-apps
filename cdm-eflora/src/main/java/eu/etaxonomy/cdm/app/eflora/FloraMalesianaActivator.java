@@ -59,7 +59,7 @@ public class FloraMalesianaActivator extends EfloraActivatorBase {
 	//5880 / 121834
 	//2 footnote issues
 	//habitat: 6 syso, + ???
-	private final boolean includeVol04 = ! includeBase;
+	private final boolean includeVol04 = includeBase;
 	//6258  / 110625
 	//11 sysos, + ??
 	private final boolean includeVol05 = includeBase;
@@ -151,7 +151,7 @@ public class FloraMalesianaActivator extends EfloraActivatorBase {
 	private final boolean includeVol20 = includeBase;
 	//1735     /   19469
 	//no syso, no covered, medium # lifecycle and very few references
-	private final boolean includeVol21 = includeBase;
+	private final boolean includeVol21 = ! includeBase;
 
 //Ser II
 	//5798  / 123.627
