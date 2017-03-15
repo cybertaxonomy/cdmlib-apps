@@ -14,7 +14,7 @@ import java.util.UUID;
 
 import org.apache.log4j.Logger;
 
-import eu.etaxonomy.cdm.api.application.ICdmApplicationConfiguration;
+import eu.etaxonomy.cdm.api.application.ICdmRepository;
 import eu.etaxonomy.cdm.api.service.ITermService;
 import eu.etaxonomy.cdm.database.ICdmDataSource;
 import eu.etaxonomy.cdm.io.common.CdmDefaultImport;
@@ -55,7 +55,7 @@ public class EfloraActivatorBase {
 		return config;
 	}
 	
-	protected FeatureTree makeAutomatedFeatureTree(ICdmApplicationConfiguration app, 
+	protected FeatureTree makeAutomatedFeatureTree(ICdmRepository app, 
 			MarkupImportState state, UUID featureTreeUuid, String featureTreeTitle){
 		System.out.println("Start creating automated Feature Tree");
 		FeatureTree tree = FeatureTree.NewInstance(featureTreeUuid);

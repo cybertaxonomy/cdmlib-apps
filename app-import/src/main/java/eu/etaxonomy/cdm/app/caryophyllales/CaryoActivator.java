@@ -13,7 +13,7 @@ import java.util.UUID;
 
 import org.apache.log4j.Logger;
 
-import eu.etaxonomy.cdm.api.application.ICdmApplicationConfiguration;
+import eu.etaxonomy.cdm.api.application.ICdmRepository;
 import eu.etaxonomy.cdm.app.berlinModelImport.SourceBase;
 import eu.etaxonomy.cdm.app.common.CdmDestinations;
 import eu.etaxonomy.cdm.database.DbSchemaValidation;
@@ -82,7 +82,7 @@ public class CaryoActivator extends SourceBase{
 
 		//deduplicate
 		if (doDeduplicate){
-			ICdmApplicationConfiguration app = myImport.getCdmAppController();
+			ICdmRepository app = myImport.getCdmAppController();
 			int count = app.getAgentService().deduplicate(Person.class, null, null);
 			logger.warn("Deduplicated " + count + " persons.");
 //			count = app.getAgentService().deduplicate(Team.class, null, null);

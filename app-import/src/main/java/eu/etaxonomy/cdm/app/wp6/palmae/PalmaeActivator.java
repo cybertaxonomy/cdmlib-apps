@@ -16,7 +16,7 @@ import java.util.UUID;
 
 import org.apache.log4j.Logger;
 
-import eu.etaxonomy.cdm.api.application.ICdmApplicationConfiguration;
+import eu.etaxonomy.cdm.api.application.ICdmRepository;
 import eu.etaxonomy.cdm.app.common.CdmDestinations;
 import eu.etaxonomy.cdm.app.images.ImageImportConfigurator;
 import eu.etaxonomy.cdm.app.tcs.TcsSources;
@@ -121,7 +121,7 @@ public class PalmaeActivator {
 
 			//make feature tree
 			logger.info("Make feature tree");
-			ICdmApplicationConfiguration app = tcsImport.getCdmAppController();
+			ICdmRepository app = tcsImport.getCdmAppController();
 
 			FeatureTree tree = getFeatureTree();
 			app.getFeatureTreeService().saveOrUpdate(tree);

@@ -16,7 +16,7 @@ import java.util.UUID;
 import org.apache.log4j.Logger;
 import org.springframework.transaction.TransactionStatus;
 
-import eu.etaxonomy.cdm.api.application.ICdmApplicationConfiguration;
+import eu.etaxonomy.cdm.api.application.ICdmRepository;
 import eu.etaxonomy.cdm.app.berlinModelImport.BerlinModelSources;
 import eu.etaxonomy.cdm.app.common.CdmDestinations;
 import eu.etaxonomy.cdm.database.DbSchemaValidation;
@@ -175,7 +175,7 @@ public class TaraxacumActivator {
 		success = bmImport.invoke(bmImportConfigurator);
 
 		if (bmImportConfigurator.getCheck().equals(CHECK.CHECK_AND_IMPORT)  || bmImportConfigurator.getCheck().equals(CHECK.IMPORT_WITHOUT_CHECK)    ){
-			ICdmApplicationConfiguration app = bmImport.getCdmAppController();
+			ICdmRepository app = bmImport.getCdmAppController();
 			TransactionStatus tx = app.startTransaction();
 			//make feature tree
 //			FeatureTree tree = TreeCreator.flatTree(featureTreeUuid, bmImportConfigurator.getFeatureMap(), featureKeyList);
@@ -194,7 +194,7 @@ public class TaraxacumActivator {
 	}
 
 
-	public boolean mergeIntoCichorieae(ICdmApplicationConfiguration app){
+	public boolean mergeIntoCichorieae(ICdmRepository app){
 		boolean success = true;
 	//	String taraxTaraxacumUuidStr = "9a7bced0-fa1a-432e-9cca-57b62219cde6";
 		String taraxTaraxacumUuidStr = "b86f1156-091c-494d-a9c9-c84d71058f98";

@@ -13,7 +13,7 @@ import java.util.UUID;
 
 import org.apache.log4j.Logger;
 
-import eu.etaxonomy.cdm.api.application.ICdmApplicationConfiguration;
+import eu.etaxonomy.cdm.api.application.ICdmRepository;
 import eu.etaxonomy.cdm.app.common.CdmDestinations;
 import eu.etaxonomy.cdm.database.DbSchemaValidation;
 import eu.etaxonomy.cdm.database.ICdmDataSource;
@@ -128,7 +128,7 @@ public class MexicoConabioActivator {
         return result;
     }
 
-    private FeatureTree makeFeatureNodes(ICdmApplicationConfiguration app){
+    private FeatureTree makeFeatureNodes(ICdmRepository app){
 
         FeatureTree result = FeatureTree.NewInstance(featureTreeUuid);
         result.setTitleCache("Mexico Rubiaceae Feature Tree", true);
