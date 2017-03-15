@@ -91,6 +91,8 @@ public class NepenthesActivator extends EfloraActivatorBase {
 	private final boolean replaceStandardKeyTitles = false;
 	private boolean ignoreLocalityClass = true;
 	private boolean handleWriterManually = true;
+	private boolean doExtensionForTaxonTitle = false;
+
 
 	private final IIoObserver observer = new LoggingIoObserver();
 	private final Set<IIoObserver> observerList = new HashSet<>();
@@ -120,6 +122,7 @@ public class NepenthesActivator extends EfloraActivatorBase {
 		config.setKnownCollections(getKnownCollections());
 		config.setSpecimenNotSeenMarkerTypeUuid(specimenNotSeenMarkerTypeUuid);
 		config.setSpecimenNotSeenMarkerTypeLabel(specimenNotSeenMarkerTypeLabel);
+		config.setDoExtensionForTaxonTitle(doExtensionForTaxonTitle);
 
 		config.setSourceReference(getSourceReference("Flora Malesiana - Vol. 15"));
 
