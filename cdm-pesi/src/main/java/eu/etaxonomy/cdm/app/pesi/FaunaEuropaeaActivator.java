@@ -13,7 +13,7 @@ import java.util.UUID;
 
 import org.apache.log4j.Logger;
 
-import eu.etaxonomy.cdm.api.application.ICdmApplicationConfiguration;
+import eu.etaxonomy.cdm.api.application.ICdmRepository;
 import eu.etaxonomy.cdm.app.common.CdmDestinations;
 import eu.etaxonomy.cdm.database.DbSchemaValidation;
 import eu.etaxonomy.cdm.database.ICdmDataSource;
@@ -161,7 +161,7 @@ public class FaunaEuropaeaActivator {
 			FeatureTree featureTree = FeatureTree.NewInstance(UUID.fromString("ff59b9ad-1fb8-4aa4-a8ba-79d62123d0fb"));
 			FeatureNode root = featureTree.getRoot();
 
-			ICdmApplicationConfiguration app = fauEuImport.getCdmAppController();
+			ICdmRepository app = fauEuImport.getCdmAppController();
 			Feature citationFeature = (Feature)app.getTermService().find(UUID.fromString("99b2842f-9aa7-42fa-bd5f-7285311e0101"));
 			FeatureNode citationNode = FeatureNode.NewInstance(citationFeature);
 			root.addChild(citationNode);
