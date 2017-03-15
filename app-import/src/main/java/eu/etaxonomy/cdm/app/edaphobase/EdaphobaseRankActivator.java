@@ -20,6 +20,7 @@ import eu.etaxonomy.cdm.database.ICdmDataSource;
 import eu.etaxonomy.cdm.io.common.CdmDefaultImport;
 import eu.etaxonomy.cdm.io.common.IImportConfigurator.CHECK;
 import eu.etaxonomy.cdm.io.terms.RepresentationCsvImportConfigurator;
+import eu.etaxonomy.cdm.model.common.Language;
 
 /**
  * @author a.mueller
@@ -31,34 +32,32 @@ public class EdaphobaseRankActivator {
     private static final Logger logger = Logger.getLogger(EdaphobaseRankActivator.class);
 
     //database validation status (create, update, validate ...)
-    static DbSchemaValidation dbSchemaValidation = DbSchemaValidation.CREATE;
+    static DbSchemaValidation dbSchemaValidation = DbSchemaValidation.VALIDATE;
 
     static final ICdmDataSource cdmDestination = CdmDestinations.localH2();
 //    static final ICdmDataSource cdmDestination = CdmDestinations.cdm_local_edaphobase();
 //    static final ICdmDataSource cdmDestination = CdmDestinations.cdm_production_edaphobase();
 
-    static final InputStreamReader rankSource = getGermanRanks();
-
     //check - import
     static CHECK check = CHECK.IMPORT_WITHOUT_CHECK;
 
-    private void doImport(InputStreamReader source, ICdmDataSource cdmDestination){
+    private void doImport(ICdmDataSource cdmDestination){
 
-
+        InputStreamReader source = getGermanRanks();
         RepresentationCsvImportConfigurator config= RepresentationCsvImportConfigurator.NewInstance(source, cdmDestination);
         config.setDbSchemaValidation(dbSchemaValidation);
+        config.setLanguageUuid(Language.uuidGerman);
 
         CdmDefaultImport<RepresentationCsvImportConfigurator> myImport = new CdmDefaultImport<RepresentationCsvImportConfigurator>();
         myImport.invoke(config);
 
+        config.setLanguageUuid(Language.uuidLatin);
+        config.setSource(getLatinRanks());
+        myImport.invoke(config);
+
     }
 
-
-    /**
-     * @return
-     * @throws IOException
-     */
-    private static InputStreamReader getGermanRanks() {
+    private InputStreamReader getGermanRanks() {
         String filename = "Rank_de.csv";
         String path = "terms" + CdmUtils.getFolderSeperator() + filename;
         try {
@@ -69,7 +68,19 @@ public class EdaphobaseRankActivator {
             System.exit(-1);
             return null;
         }
+    }
 
+    private InputStreamReader getLatinRanks() {
+        String filename = "Rank_la.csv";
+        String path = "terms" + CdmUtils.getFolderSeperator() + filename;
+        try {
+            InputStreamReader input = CdmUtils.getUtf8ResourceReader(path);
+            return input;
+        } catch (IOException e) {
+            e.printStackTrace();
+            System.exit(-1);
+            return null;
+        }
     }
 
 
@@ -78,7 +89,7 @@ public class EdaphobaseRankActivator {
      */
     public static void main(String[] args) {
         EdaphobaseRankActivator me = new EdaphobaseRankActivator();
-        me.doImport(rankSource, cdmDestination);
+        me.doImport(cdmDestination);
         System.exit(0);
     }
 }
