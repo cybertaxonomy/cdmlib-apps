@@ -29,7 +29,6 @@ public class MexicoConabioTransformer extends InputTransformerBase{
 
     private static final Logger logger = Logger.getLogger(MexicoConabioTransformer.class);
 
-    public static UUID uuidTropicosNameIdentifier = UUID.fromString("6205e531-75b0-4f2a-9a9c-b1247fb080ab");
     public static UUID uuidReferenceBorhidi = UUID.fromString("f76a535b-a1fd-437c-a09d-f94eddae2b5e");
     public static UUID uuidReferenceConabio = UUID.fromString("7183652f-d7ca-45a7-9383-265996d3d10f");
 

@@ -241,7 +241,7 @@ public class MexicoBorhidiExcelImport<CONFIG extends MexicoBorhidiImportConfigur
         String tropicosId = record.get("OutputNameID");
         if (isNotBlank(tropicosId)){
             String tropicosIdTypeLabel = "Tropicos Name Identifier";
-            UUID uuid = MexicoConabioTransformer.uuidTropicosNameIdentifier;
+            UUID uuid = DefinedTerm.uuidTropicosNameIdentifier;
             TermVocabulary<DefinedTerm> voc = null;  //for now it goes to user defined voc
             DefinedTerm identifierType = this.getIdentiferType(state, uuid, tropicosIdTypeLabel, tropicosIdTypeLabel, null, voc);
             Identifier<Taxon> identifier = Identifier.NewInstance(tropicosId, identifierType);
