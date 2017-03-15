@@ -40,6 +40,7 @@ import eu.etaxonomy.cdm.model.location.NamedAreaType;
 import eu.etaxonomy.cdm.model.name.BotanicalName;
 import eu.etaxonomy.cdm.model.name.Rank;
 import eu.etaxonomy.cdm.model.name.TaxonNameBase;
+import eu.etaxonomy.cdm.model.name.TaxonNameFactory;
 import eu.etaxonomy.cdm.model.occurrence.DerivedUnit;
 import eu.etaxonomy.cdm.model.occurrence.SpecimenOrObservationBase;
 import eu.etaxonomy.cdm.model.reference.Reference;
@@ -195,27 +196,27 @@ public class TestDatabase {
 
         // taxonomic names
 
-		nameRoot1 = BotanicalName.NewInstance(rankGenus,"Calendula",null,null,null,linne,null,"p.100", null);
+		nameRoot1 = TaxonNameFactory.NewBotanicalInstance(rankGenus,"Calendula",null,null,null,linne,null,"p.100", null);
 		nameRoot1.addDescription(taxNameDescription);
 		nameRoot1.addDescription(newTaxNameDesc);
-		name1 = BotanicalName.NewInstance(rankSpecies,"Calendula",null,"arvensis",null,linne,null,"p.1", null);
-		synName11 = BotanicalName.NewInstance(rankSpecies,"Caltha",null,"arvensis",null,linne,null,"p.11", null);
-		synName12 = BotanicalName.NewInstance(rankSpecies,"Calendula",null,"sancta",null,linne,null,"p.12", null);
+		name1 = TaxonNameFactory.NewBotanicalInstance(rankSpecies,"Calendula",null,"arvensis",null,linne,null,"p.1", null);
+		synName11 = TaxonNameFactory.NewBotanicalInstance(rankSpecies,"Caltha",null,"arvensis",null,linne,null,"p.11", null);
+		synName12 = TaxonNameFactory.NewBotanicalInstance(rankSpecies,"Calendula",null,"sancta",null,linne,null,"p.12", null);
 
-		name2 = BotanicalName.NewInstance(rankSpecies,"Calendula",null,"lanzae",null,linne,null,"p.2", null);
-		synName2 = BotanicalName.NewInstance(rankSpecies,"Calendula",null,"echinata",null,linne,null,"p.2", null);
+		name2 = TaxonNameFactory.NewBotanicalInstance(rankSpecies,"Calendula",null,"lanzae",null,linne,null,"p.2", null);
+		synName2 = TaxonNameFactory.NewBotanicalInstance(rankSpecies,"Calendula",null,"echinata",null,linne,null,"p.2", null);
 
-		name21 = BotanicalName.NewInstance(rankSubspecies,"Calendula",null,"lanzea","something",linne,null,"p.1", null);
+		name21 = TaxonNameFactory.NewBotanicalInstance(rankSubspecies,"Calendula",null,"lanzea","something",linne,null,"p.1", null);
 		//name211 = BotanicalName.NewInstance(rankSpecies,"Calendula",null,"lanzea",null,linne,null,"p.1", null);
 		//name212 = BotanicalName.NewInstance(rankSpecies,"Calendula",null,"lanzea",null,linne,null,"p.1", null);
 
 		nameRoot2 =
-			BotanicalName.NewInstance(rankGenus,"Sonchus",null,null,null,linne,null,"p.200", null);
-		nameR2_1 = BotanicalName.NewInstance(rankSpecies,"Sonchus",null,"child1",null,linne,null,"p.1", null);
-		nameR2_2 = BotanicalName.NewInstance(rankSpecies,"Sonchus",null,"child2",null,linne,null,"p.2", null);
+		        TaxonNameFactory.NewBotanicalInstance(rankGenus,"Sonchus",null,null,null,linne,null,"p.200", null);
+		nameR2_1 = TaxonNameFactory.NewBotanicalInstance(rankSpecies,"Sonchus",null,"child1",null,linne,null,"p.1", null);
+		nameR2_2 = TaxonNameFactory.NewBotanicalInstance(rankSpecies,"Sonchus",null,"child2",null,linne,null,"p.2", null);
 
-		nameFree = BotanicalName.NewInstance(rankSpecies,"Cichorium",null,"intybus",null,linne,null,"p.200", null);
-		synNameFree = BotanicalName.NewInstance(rankSpecies,"Cichorium",null,"balearicum",null,linne,null,"p.2", null);
+		nameFree = TaxonNameFactory.NewBotanicalInstance(rankSpecies,"Cichorium",null,"intybus",null,linne,null,"p.200", null);
+		synNameFree = TaxonNameFactory.NewBotanicalInstance(rankSpecies,"Cichorium",null,"balearicum",null,linne,null,"p.2", null);
 
 		taxonomicNames.add(nameRoot1);
 		taxonomicNames.add(name1);
