@@ -201,8 +201,28 @@ public class EdaphobaseTaxonImport extends EdaphobaseImportBase {
         //id
         ImportHelper.setOriginalSource(taxonBase, state.getTransactionalSourceReference(), id, TAXON_NAMESPACE);
         ImportHelper.setOriginalSource(name, state.getTransactionalSourceReference(), id, TAXON_NAMESPACE);
+        handleExampleIdentifiers(taxonBase, id);
     }
 
+
+    static Map<Integer,UUID> idMap = new HashMap<>();
+    static{
+        idMap.put(86594, UUID.fromString("715c2370-45a4-450c-99f7-e196758979ca"));  //Aporrectodea caliginosa
+        idMap.put(86593, UUID.fromString("230f1a69-5dcd-4829-a01c-17490a2fdf34"));  //Aporrectodea
+        idMap.put(86684, UUID.fromString("0982dc0e-1a79-45a0-8abc-8166625b94b8"));  //Achaeta
+        idMap.put(104328, UUID.fromString("15f0b5f8-44e4-4ae1-8b40-f36f0a049b27")); //Chamaedrilus
+        idMap.put(97537, UUID.fromString("899c62e3-a116-4c5b-b22a-c76e761cc32e"));  //Araeolaimoides caecus
+    }
+
+    /**
+     * @param taxonBase
+     * @param id
+     */
+    private void handleExampleIdentifiers(TaxonBase<?> taxonBase, Integer id) {
+        if (idMap.get(id) != null){
+            taxonBase.setUuid(idMap.get(id));
+        }
+    }
 
     /**
      * @param state
