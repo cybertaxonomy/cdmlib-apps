@@ -101,13 +101,14 @@ public class BerlinModelTaxonRelationExport extends BerlinModelExportBase<Relati
 			commitTransaction(txStatus);
 			logger.info("end make " + pluralString + " ..." + getSuccessString(success));
 			if (!success){
-				state.setUnsuccessfull();
+                String message = "An undefined error occurred during taxon relation export";
+                state.getResult().addError(message);
 			}
 			return;
 		}catch(SQLException e){
 			e.printStackTrace();
 			logger.error(e.getMessage());
-			state.setUnsuccessfull();
+			state.getResult().addException(e);
 			return;
 		}
 	}

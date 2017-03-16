@@ -1,8 +1,8 @@
 /**
 * Copyright (C) 2007 EDIT
-* European Distributed Institute of Taxonomy 
+* European Distributed Institute of Taxonomy
 * http://www.e-taxonomy.eu
-* 
+*
 * The contents of this file are subject to the Mozilla Public License Version 1.1
 * See LICENSE.TXT at the top of this package for the full license terms.
 */
@@ -45,7 +45,7 @@ public class BerlinModelAuthorExport extends BerlinModelExportBase<Person> {
 	public BerlinModelAuthorExport(){
 		super();
 	}
-	
+
 
 	@Override
 	protected boolean doCheck(BerlinModelExportState state){
@@ -53,10 +53,10 @@ public class BerlinModelAuthorExport extends BerlinModelExportBase<Person> {
 		logger.warn("Checking for "+pluralString+" not yet implemented");
 		//result &= checkArticlesWithoutJournal(bmiConfig);
 		//result &= checkPartOfJournal(bmiConfig);
-		
+
 		return result;
 	}
-	
+
 	private CdmDbExportMapping<BerlinModelExportState, BerlinModelExportConfigurator, IExportTransformer> getMapping(){
 		String tableName = dbTableName;
 		CdmDbExportMapping<BerlinModelExportState, BerlinModelExportConfigurator, IExportTransformer> mapping = new CdmDbExportMapping<BerlinModelExportState, BerlinModelExportConfigurator, IExportTransformer>(tableName);
@@ -71,29 +71,26 @@ public class BerlinModelAuthorExport extends BerlinModelExportBase<Person> {
 //		mapping.addMapper(DbExtensionMapper.NewInstance(ExtensionType.ABBREVIATION(),Kürzel")); //Initials used instead
 //		mapping.addMapper(DbExtensionMapper.NewInstance(ExtensionType.ABBREVIATION(), "DraftKürz")); //Initials used instead
 		mapping.addMapper(CreatedAndNotesMapper.NewInstance());
-		
+
 		return mapping;
 	}
-	
-	/* (non-Javadoc)
-	 * @see eu.etaxonomy.cdm.io.berlinModel.out.BerlinModelExportBase#doInvoke(eu.etaxonomy.cdm.io.berlinModel.out.BerlinModelExportState)
-	 */
+
 	@Override
 	protected void doInvoke(BerlinModelExportState state) {
 		try{
 			boolean success = true;
-			BerlinModelExportConfigurator bmeConfig = (BerlinModelExportConfigurator)state.getConfig();
-			
+			BerlinModelExportConfigurator bmeConfig = state.getConfig();
+
 			logger.info("start make "+pluralString+" ...");
 			doDelete(bmeConfig);
-			
+
 			TransactionStatus txStatus = startTransaction(true);
 			Class<Person> clazz = Person.class;
 			List<Person> persons = getAgentService().list(clazz, 100000000, 0, null, null);
-			
+
 			CdmDbExportMapping<BerlinModelExportState, BerlinModelExportConfigurator, IExportTransformer> mapping = getMapping();
 			mapping.initialize(state);
-			
+
 			logger.info("save "+pluralString+" ...");
 			int count = 0;
 			for (AgentBase<?> agent : persons){
@@ -102,23 +99,24 @@ public class BerlinModelAuthorExport extends BerlinModelExportBase<Person> {
 					success &= mapping.invoke(agent);
 				}
 			}
-			
+
 			commitTransaction(txStatus);
 			logger.info("end make "+pluralString+"  ..." + getSuccessString(success));
 			if (!success){
-				state.setUnsuccessfull();
+                String message = "An undefined error occurred during Author export";
+                state.getResult().addError(message);
 			}
 			return;
 		}catch(SQLException e){
 			e.printStackTrace();
 			logger.error(e.getMessage());
-			state.setUnsuccessfull();
+			state.getResult().addException(e);
 			return;
 		}
 	}
-	
+
 	protected boolean doDelete(BerlinModelExportConfigurator config){
-		
+
 		//TODO make more generic for all BerlinModelExport classes
 		String sql;
 		Source destination =  config.getDestination();
@@ -134,7 +132,7 @@ public class BerlinModelAuthorExport extends BerlinModelExportBase<Person> {
 		sql = "DELETE FROM PTaxon";
 		destination.setQuery(sql);
 		destination.update(sql);
-		
+
 		//NameHistory
 		sql = "DELETE FROM NameHistory";
 		destination.setQuery(sql);
@@ -173,8 +171,8 @@ public class BerlinModelAuthorExport extends BerlinModelExportBase<Person> {
 		destination.update(sql);
 		return true;
 	}
-	
-	
+
+
 	/* (non-Javadoc)
 	 * @see eu.etaxonomy.cdm.io.common.CdmIoBase#isIgnore(eu.etaxonomy.cdm.io.common.IIoConfigurator)
 	 */

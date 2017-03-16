@@ -1,8 +1,8 @@
 /**
 * Copyright (C) 2007 EDIT
-* European Distributed Institute of Taxonomy 
+* European Distributed Institute of Taxonomy
 * http://www.e-taxonomy.eu
-* 
+*
 * The contents of this file are subject to the Mozilla Public License Version 1.1
 * See LICENSE.TXT at the top of this package for the full license terms.
 */
@@ -17,9 +17,10 @@ import eu.etaxonomy.cdm.app.common.CdmDestinations;
 import eu.etaxonomy.cdm.database.ICdmDataSource;
 import eu.etaxonomy.cdm.io.berlinModel.out.BerlinModelExportConfigurator;
 import eu.etaxonomy.cdm.io.common.CdmDefaultExport;
-import eu.etaxonomy.cdm.io.common.Source;
+import eu.etaxonomy.cdm.io.common.ExportResult;
 import eu.etaxonomy.cdm.io.common.IExportConfigurator.CHECK;
 import eu.etaxonomy.cdm.io.common.IExportConfigurator.DO_REFERENCES;
+import eu.etaxonomy.cdm.io.common.Source;
 import eu.etaxonomy.cdm.model.name.NomenclaturalCode;
 
 
@@ -39,10 +40,10 @@ public class SalvadorExport {
 	static final int sourceSecId = 7331;
 	static final int isHomotypicId = 72;
 	static boolean useClassification = true;
-	
+
 //	static final UUID featureTreeUuid = UUID.fromString("ae9615b8-bc60-4ed0-ad96-897f9226d568");
-//	static final Object[] featureKeyList = new Integer[]{302, 303, 306, 307, 309, 310, 311, 312, 350, 1500, 1800, 1900, 1950, 1980, 2000, 10299}; 
-	
+//	static final Object[] featureKeyList = new Integer[]{302, 303, 306, 307, 309, 310, 311, 312, 350, 1500, 1800, 1900, 1950, 1980, 2000, 10299};
+
 	//check - import
 	static final CHECK check = CHECK.EXPORT_WITHOUT_CHECK;
 
@@ -51,7 +52,7 @@ public class SalvadorExport {
 	static final NomenclaturalCode nomenclaturalCode  = NomenclaturalCode.ICNAFP;
 
 // ****************** ALL *****************************************
-	
+
 	//authors
 	static final boolean doAuthors = true;
 	//references
@@ -61,7 +62,7 @@ public class SalvadorExport {
 	static final boolean doRelNames = true;
 	static final boolean doTypes = false;  //Types do not exist in El_Salvador DB
 	static final boolean doNameFacts = false;  //Name Facts do not exist in El_Salvador DB
-	
+
 	//taxa
 	static final boolean doTaxa = true;
 	static final boolean doRelTaxa = true;
@@ -69,7 +70,7 @@ public class SalvadorExport {
 	static final boolean doOccurences = false; //occurrences do not exist in Salvador
 
 // ************************ NONE **************************************** //
-	
+
 //	//authors
 //	static final boolean doAuthors = false;
 //	static final boolean doAuthorTeams = false;
@@ -79,22 +80,22 @@ public class SalvadorExport {
 //	static final boolean doTaxonNames = true;
 //	static final boolean doTypes = false;
 //	static final boolean doNameFacts = false;
-//	
+//
 //	//taxa
 //	static final boolean doTaxa = false;
 //	static final boolean doRelTaxa = false;
 //	static final boolean doFacts = false;
 //	static final boolean doOccurences = false;
-//	
-	
-	public boolean 	doExport(ICdmDataSource source){
+//
+
+	public ExportResult	doExport(ICdmDataSource source){
 		System.out.println("Start export to Berlin Model ("+ berlinModelDestination.getDatabase() + ") ...");
-		
+
 		//make BerlinModel Source
 		Source destination = berlinModelDestination;
-		
+
 		BerlinModelExportConfigurator bmExportConfigurator = BerlinModelExportConfigurator.NewInstance(destination, source);
-		
+
 //		bmExportConfigurator.setSecUuid(secUuid);
 //		bmExportConfigurator.setSourceSecId(sourceSecId);
 //		bmExportConfigurator.setNomenclaturalCode(nomenclaturalCode);
@@ -105,7 +106,7 @@ public class SalvadorExport {
 		bmExportConfigurator.setDoTaxonNames(doTaxonNames);
 		bmExportConfigurator.setDoRelNames(doRelNames);
 		bmExportConfigurator.setDoNameFacts(doNameFacts);
-		
+
 		bmExportConfigurator.setDoTaxa(doTaxa);
 		bmExportConfigurator.setDoRelTaxa(doRelTaxa);
 		bmExportConfigurator.setDoFacts(doFacts);
@@ -116,14 +117,14 @@ public class SalvadorExport {
 
 		// invoke import
 		CdmDefaultExport<BerlinModelExportConfigurator> bmExport = new CdmDefaultExport<BerlinModelExportConfigurator>();
-		boolean result = bmExport.invoke(bmExportConfigurator);
-		
-		System.out.println("End export to BerlinModel ("+ destination.getDatabase() + ")..." + (result? "(successful)":"(with errors)"));
+		ExportResult result = bmExport.invoke(bmExportConfigurator);
+
+		System.out.println("End export to BerlinModel ("+ destination.getDatabase() + ")..." + "("+result.getState().toString()+")");
 		return result;
 	}
 
-	
-	
+
+
 	/**
 	 * @param args
 	 */
@@ -133,8 +134,8 @@ public class SalvadorExport {
 
 		ex.doExport(source);
 	}
-	
-	
-	
+
+
+
 
 }

@@ -182,13 +182,14 @@ public class BerlinModelTaxonNameExport extends BerlinModelExportBase<TaxonNameB
 			logger.info("end make " + pluralString+ " ..." + getSuccessString(success));
 
 			if (!success){
-				state.setUnsuccessfull();
+                String message = "An undefined error occurred during Taxonname export";
+                state.getResult().addError(message);
 			}
 			return;
 		}catch(SQLException e){
 			e.printStackTrace();
 			logger.error(e.getMessage());
-			state.setUnsuccessfull();
+			state.getResult().addException(e);
 			return;
 		}
 	}

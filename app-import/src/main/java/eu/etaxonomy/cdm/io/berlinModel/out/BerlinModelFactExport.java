@@ -1,8 +1,8 @@
 /**
 * Copyright (C) 2007 EDIT
-* European Distributed Institute of Taxonomy 
+* European Distributed Institute of Taxonomy
 * http://www.e-taxonomy.eu
-* 
+*
 * The contents of this file are subject to the Mozilla Public License Version 1.1
 * See LICENSE.TXT at the top of this package for the full license terms.
 */
@@ -63,7 +63,7 @@ public class BerlinModelFactExport extends BerlinModelExportBase<TextData> {
 	public BerlinModelFactExport(){
 		super();
 	}
-	
+
 	/* (non-Javadoc)
 	 * @see eu.etaxonomy.cdm.io.common.CdmIoBase#doCheck(eu.etaxonomy.cdm.io.common.IImportConfigurator)
 	 */
@@ -73,10 +73,10 @@ public class BerlinModelFactExport extends BerlinModelExportBase<TextData> {
 		logger.warn("Checking for " + pluralString + " not yet implemented");
 		//result &= checkArticlesWithoutJournal(bmiConfig);
 		//result &= checkPartOfJournal(bmiConfig);
-		
+
 		return result;
 	}
-	
+
 	private CdmDbExportMapping<BerlinModelExportState, BerlinModelExportConfigurator, IExportTransformer> getMapping(){
 		String tableName = dbTableName;
 		CdmDbExportMapping<BerlinModelExportState, BerlinModelExportConfigurator, IExportTransformer> mapping = new CdmDbExportMapping<BerlinModelExportState, BerlinModelExportConfigurator, IExportTransformer>(tableName);
@@ -85,7 +85,7 @@ public class BerlinModelFactExport extends BerlinModelExportBase<TextData> {
 		mapping.addMapper(MethodMapper.NewInstance("PTRefFk", this.getClass(), "getPTRefFk", TextData.class, DbExportStateBase.class));
 		mapping.addMapper(MethodMapper.NewInstance("Fact", this));
 		mapping.addMapper(MethodMapper.NewInstance("FactCategoryFk", this));
-		
+
 		mapping.addMapper(DbObjectMapper.NewInstance("citation", "FactRefFk"));
 		mapping.addMapper(RefDetailMapper.NewInstance("citationMicroReference","citation", "FactRefDetailFk"));
 		mapping.addMapper(DbObjectMapper.NewInstance("citation", "PTDesignationRefFk"));
@@ -94,32 +94,33 @@ public class BerlinModelFactExport extends BerlinModelExportBase<TextData> {
 		mapping.addMapper(DbMarkerMapper.NewInstance(MarkerType.IS_DOUBTFUL(), "PublishFlag", true));
 		mapping.addMapper(DbIntegerAnnotationMapper.NewInstance(BerlinModelFactsImport.SEQUENCE_PREFIX, "Sequence", 999));
 		mapping.addMapper(CreatedAndNotesMapper.NewInstance());
-		
+
 		//TODO
 //	       designationRef
 		return mapping;
 	}
-	
-	protected void doInvoke(BerlinModelExportState state){
+
+	@Override
+    protected void doInvoke(BerlinModelExportState state){
 		try{
 			logger.info("start make " + pluralString + " ...");
 			boolean success = true ;
 			doDelete(state);
-			
+
 			TransactionStatus txStatus = startTransaction(true);
-			
+
 			List<DescriptionBase> list = getDescriptionService().list(null,1000000000, 0,null,null);
-			
+
 			CdmDbExportMapping<BerlinModelExportState, BerlinModelExportConfigurator, IExportTransformer> mapping = getMapping();
 			mapping.initialize(state);
-			
-			this.source = state.getConfig().getDestination(); 
+
+			this.source = state.getConfig().getDestination();
 			int count = 0;
 			for (DescriptionBase<?> desc : list){
 				for (DescriptionElementBase descEl : desc.getElements()){
 					doCount(count++, modCount, pluralString);
 					if (descEl.isInstanceOf(TextData.class)){
-						success &= mapping.invoke(descEl);		
+						success &= mapping.invoke(descEl);
 					}else{
 						logger.warn (descEl.getClass().getSimpleName() + " not yet supported for Fact Export.");
 					}
@@ -127,25 +128,26 @@ public class BerlinModelFactExport extends BerlinModelExportBase<TextData> {
 			}
 			commitTransaction(txStatus);
 			logger.info("end make " + pluralString + " ..." + getSuccessString(success));
-			
+
 			if (!success){
-				state.setUnsuccessfull();
+                String message = "An undefined error occurred during Fact export";
+                state.getResult().addError(message);
 			}
 			return;
 		}catch(SQLException e){
 			e.printStackTrace();
 			logger.error(e.getMessage());
-			state.setUnsuccessfull();
+			state.getResult().addException(e);
 			return;
 		}
 	}
 
-	
 
-	
+
+
 	protected boolean doDelete(BerlinModelExportState state){
 		BerlinModelExportConfigurator bmeConfig = state.getConfig();
-		
+
 		String sql;
 		Source destination =  bmeConfig.getDestination();
 		//Fact
@@ -155,15 +157,16 @@ public class BerlinModelFactExport extends BerlinModelExportBase<TextData> {
 
 		return true;
 	}
-		
-	
+
+
 	/* (non-Javadoc)
 	 * @see eu.etaxonomy.cdm.io.common.CdmIoBase#isIgnore(eu.etaxonomy.cdm.io.common.IImportConfigurator)
 	 */
-	protected boolean isIgnore(BerlinModelExportState state){
+	@Override
+    protected boolean isIgnore(BerlinModelExportState state){
 		return ! state.getConfig().isDoFacts();
 	}
-	
+
 	//called by MethodMapper
 	@SuppressWarnings("unused")
 	private static Integer getFactCategoryFk(TextData textData){
@@ -178,14 +181,14 @@ public class BerlinModelFactExport extends BerlinModelExportBase<TextData> {
 		}
 		return catFk;
 	}
-	
-	
+
+
 	//called by MethodMapper
 	@SuppressWarnings("unused")
 	private static Integer getPTNameFk(TextData textData, DbExportStateBase<?, IExportTransformer> state){
 		return getObjectFk(textData, state, true);
 	}
-	
+
 	//called by MethodMapper
 	@SuppressWarnings("unused")
 	private static Integer getPTRefFk(TextData textData, DbExportStateBase<?, IExportTransformer> state){
@@ -205,12 +208,12 @@ public class BerlinModelFactExport extends BerlinModelExportBase<TextData> {
 		logger.warn("No taxon found for description: " + textData.toString());
 		return null;
 	}
-	
+
 	//called by MethodMapper
 	@SuppressWarnings("unused")
 	private static String getFact(TextData textData){
 //		Map<Language, LanguageString> map = textData.getMultilanguageText();
-		
+
 		String result = textData.getText(Language.DEFAULT());
 		if (result == null){
 			Map<Language, LanguageString> map = textData.getMultilanguageText();
@@ -224,9 +227,9 @@ public class BerlinModelFactExport extends BerlinModelExportBase<TextData> {
 		}
 		return result;
 	}
-	
+
 	private static Map<Feature, Integer> featureMap = new HashMap<Feature, Integer>();
-	
+
 	@Deprecated  //TODO quick and dirty for Salvador export
 	private static Integer findCategory(Feature feature){
 		if (featureMap.get(feature) != null){
@@ -251,8 +254,8 @@ public class BerlinModelFactExport extends BerlinModelExportBase<TextData> {
 		featureMap.put(feature, result);
 		return result;
 	}
-		
-	
+
+
 	/* (non-Javadoc)
 	 * @see eu.etaxonomy.cdm.io.berlinModel.out.BerlinModelExportBase#getStandardMethodParameter()
 	 */

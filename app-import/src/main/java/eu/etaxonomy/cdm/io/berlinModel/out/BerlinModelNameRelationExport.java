@@ -1,8 +1,8 @@
 /**
 * Copyright (C) 2007 EDIT
-* European Distributed Institute of Taxonomy 
+* European Distributed Institute of Taxonomy
 * http://www.e-taxonomy.eu
-* 
+*
 * The contents of this file are subject to the Mozilla Public License Version 1.1
 * See LICENSE.TXT at the top of this package for the full license terms.
 */
@@ -54,7 +54,7 @@ public class BerlinModelNameRelationExport extends BerlinModelExportBase<Relatio
 	public BerlinModelNameRelationExport(){
 		super();
 	}
-	
+
 	/* (non-Javadoc)
 	 * @see eu.etaxonomy.cdm.io.common.CdmIoBase#doCheck(eu.etaxonomy.cdm.io.common.IImportConfigurator)
 	 */
@@ -64,10 +64,10 @@ public class BerlinModelNameRelationExport extends BerlinModelExportBase<Relatio
 		logger.warn("Checking for " + pluralString + " not yet implemented");
 		//result &= checkArticlesWithoutJournal(bmiConfig);
 		//result &= checkPartOfJournal(bmiConfig);
-		
+
 		return result;
 	}
-	
+
 	private CdmDbExportMapping<BerlinModelExportState, BerlinModelExportConfigurator, IExportTransformer> getMapping(){
 		String tableName = dbTableName;
 		CdmDbExportMapping<BerlinModelExportState, BerlinModelExportConfigurator, IExportTransformer> mapping = new CdmDbExportMapping<BerlinModelExportState, BerlinModelExportConfigurator, IExportTransformer>(tableName);
@@ -76,29 +76,30 @@ public class BerlinModelNameRelationExport extends BerlinModelExportBase<Relatio
 		mapping.addMapper(DbObjectMapper.NewInstance("fromName", "NameFk1"));
 		mapping.addMapper(DbObjectMapper.NewInstance("toName", "NameFk2"));
 
-		
+
 		mapping.addMapper(MethodMapper.NewInstance("RelNameQualifierFk", this));
-		
+
 		mapping.addMapper(DbObjectMapper.NewInstance("citation", "RefFk"));
 		mapping.addMapper(RefDetailMapper.NewInstance("citationMicroReference","citation", "RefDetailFk"));
 		mapping.addMapper(CreatedAndNotesMapper.NewInstance());
-		
+
 		return mapping;
 	}
-	
-	protected void doInvoke(BerlinModelExportState state){
+
+	@Override
+    protected void doInvoke(BerlinModelExportState state){
 		try{
 			logger.info("start make " + pluralString + " ...");
 			boolean success = true ;
 			doDelete(state);
-			
+
 			TransactionStatus txStatus = startTransaction(true);
-			
+
 			List<RelationshipBase> list = getNameService().getAllRelationships(100000000, 0);
-			
+
 			CdmDbExportMapping<BerlinModelExportState, BerlinModelExportConfigurator, IExportTransformer> mapping = getMapping();
 			mapping.initialize(state);
-			
+
 			int count = 0;
 			for (RelationshipBase<?,?,?> rel : list){
 				if (rel.isInstanceOf(NameRelationship.class) || rel.isInstanceOf(HybridRelationship.class )){
@@ -107,23 +108,24 @@ public class BerlinModelNameRelationExport extends BerlinModelExportBase<Relatio
 				}
 			}
 			commitTransaction(txStatus);
-			
+
 			success &= makeIsHomotypicRelation(state, mapping);
-			
+
 			logger.info("end make " + pluralString + " ..." + getSuccessString(success));
 			if (!success){
-				state.setUnsuccessfull();
+                String message = "An undefined error occurred during name relation export";
+                state.getResult().addError(message);
 			}
 			return;
 		}catch(SQLException e){
 			e.printStackTrace();
 			logger.error(e.getMessage());
-			state.setUnsuccessfull();
+			state.getResult().addException(e);
 			return;
 		}
 	}
 
-	
+
 	private boolean makeIsHomotypicRelation(BerlinModelExportState state, CdmDbExportMapping<BerlinModelExportState, BerlinModelExportConfigurator, IExportTransformer> mapping){
 		boolean success = true ;
 		try{
@@ -132,14 +134,14 @@ public class BerlinModelNameRelationExport extends BerlinModelExportBase<Relatio
 				return success;
 			}
 			logger.info("start make IsHomotypicRelations ...");
-			
+
 			TransactionStatus txStatus = startTransaction(true);
-			
+
 			List<HomotypicalGroup> list = getNameService().getAllHomotypicalGroups(100000000, 0);
-			
+
 			int count = 0;
 			modCount = 1000;
-			Set<NameRelationship> basionymNameRels = new HashSet<NameRelationship>(); 
+			Set<NameRelationship> basionymNameRels = new HashSet<NameRelationship>();
 			for (HomotypicalGroup homoGroup : list){
 				doCount(count++, modCount, "homotypical groups");
 				Set<TaxonNameBase> allNames = homoGroup.getTypifiedNames();
@@ -157,16 +159,16 @@ public class BerlinModelNameRelationExport extends BerlinModelExportBase<Relatio
 				}
 			}
 			commitTransaction(txStatus);
-			
+
 			logger.info("end make homotypical groups ... " +  getSuccessString(success));
 			return success;
 		}catch(SQLException e){
 			logger.error(e.getMessage());
 			e.printStackTrace();
 			return false;
-		}	
+		}
 	}
-	
+
 	private boolean invokeIsHomotypic(BerlinModelExportState state, CdmDbExportMapping<BerlinModelExportState, BerlinModelExportConfigurator, IExportTransformer> mapping, TaxonNameBase fromName, TaxonNameBase toName, Reference refId, String microCitation) throws SQLException{
 		try{
 			logger.info(fromName.getTitleCache() + "->" + toName.getTitleCache());
@@ -179,7 +181,7 @@ public class BerlinModelNameRelationExport extends BerlinModelExportBase<Relatio
 			int fromNameId = state.getDbId(fromName);
 			int toNameId = state.getDbId(toName);
 			int catId = state.getConfig().getIsHomotypicId();
-			String query = "INSERT INTO relName (relNameId, nameFk1, nameFk2, RelNameQualifierFk) " + 
+			String query = "INSERT INTO relName (relNameId, nameFk1, nameFk2, RelNameQualifierFk) " +
 				" VALUES ("+maxId+","+fromNameId+","+toNameId+","+catId+")";
 			int ui = state.getConfig().getDestination().getConnection().createStatement().executeUpdate(query);
 		}catch(SQLException e){
@@ -196,10 +198,10 @@ public class BerlinModelNameRelationExport extends BerlinModelExportBase<Relatio
 		}
 		return result;
 	}
-	
+
 	protected boolean doDelete(BerlinModelExportState state){
 		BerlinModelExportConfigurator bmeConfig = state.getConfig();
-		
+
 		String sql;
 		Source destination =  bmeConfig.getDestination();
 		//RelPTaxon
@@ -209,15 +211,16 @@ public class BerlinModelNameRelationExport extends BerlinModelExportBase<Relatio
 
 		return true;
 	}
-		
-	
+
+
 	/* (non-Javadoc)
 	 * @see eu.etaxonomy.cdm.io.common.CdmIoBase#isIgnore(eu.etaxonomy.cdm.io.common.IImportConfigurator)
 	 */
-	protected boolean isIgnore(BerlinModelExportState state){
+	@Override
+    protected boolean isIgnore(BerlinModelExportState state){
 		return ! state.getConfig().isDoRelNames();
 	}
-	
+
 	//called by MethodMapper
 	@SuppressWarnings("unused")
 	private static Integer getRelNameQualifierFk(RelationshipBase<?, ?, ?> rel) throws Exception {
@@ -232,7 +235,7 @@ public class BerlinModelNameRelationExport extends BerlinModelExportBase<Relatio
 			return BerlinModelTransformer.nameRel2RelNameQualifierFk(rel);
 //		}
 	}
-	
+
 	/* (non-Javadoc)
 	 * @see eu.etaxonomy.cdm.io.berlinModel.out.BerlinModelExportBase#getStandardMethodParameter()
 	 */

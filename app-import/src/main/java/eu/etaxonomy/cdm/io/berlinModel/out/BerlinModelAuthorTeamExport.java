@@ -1,8 +1,8 @@
 /**
 * Copyright (C) 2007 EDIT
-* European Distributed Institute of Taxonomy 
+* European Distributed Institute of Taxonomy
 * http://www.e-taxonomy.eu
-* 
+*
 * The contents of this file are subject to the Mozilla Public License Version 1.1
 * See LICENSE.TXT at the top of this package for the full license terms.
 */
@@ -41,11 +41,11 @@ public class BerlinModelAuthorTeamExport extends BerlinModelExportBase<Team> {
 	private static final String dbTableName = "AuthorTeam";
 	private static final String pluralString = "AuthorTeams";
 	private static final Class<? extends CdmBase> standardMethodParameter = Team.class;
-	
+
 	public BerlinModelAuthorTeamExport(){
 		super();
 	}
-	
+
 	/* (non-Javadoc)
 	 * @see eu.etaxonomy.cdm.io.common.CdmIoBase#doCheck(eu.etaxonomy.cdm.io.common.IImportConfigurator)
 	 */
@@ -54,10 +54,10 @@ public class BerlinModelAuthorTeamExport extends BerlinModelExportBase<Team> {
 		boolean result = true;
 		logger.warn("Checking for "+pluralString+" not yet implemented");
 		//result &= checkArticlesWithoutJournal(bmiConfig);
-		
+
 		return result;
 	}
-	
+
 	public CdmDbExportMapping<BerlinModelExportState, BerlinModelExportConfigurator, IExportTransformer> getMapping(){
 		String tableName = dbTableName;
 		CdmDbExportMapping<BerlinModelExportState, BerlinModelExportConfigurator, IExportTransformer> mapping = new CdmDbExportMapping<BerlinModelExportState, BerlinModelExportConfigurator, IExportTransformer>(tableName);
@@ -69,7 +69,7 @@ public class BerlinModelAuthorTeamExport extends BerlinModelExportBase<Team> {
 		mapping.addCollectionMapping(getTeamMemberMapping());
 		return mapping;
 	}
-	
+
 	private CollectionExportMapping getTeamMemberMapping(){
 		String tableName = "AuthorTeamSequence";
 		String collectionAttribute = "teamMembers";
@@ -80,23 +80,24 @@ public class BerlinModelAuthorTeamExport extends BerlinModelExportBase<Team> {
 		mapping.addMapper(IdMapper.NewInstance("AuthorFk"));
 		return mapping;
 	}
-	
-	
-	protected void doInvoke(BerlinModelExportState state){
+
+
+	@Override
+    protected void doInvoke(BerlinModelExportState state){
 		try{
-			BerlinModelExportConfigurator bmeConfig = (BerlinModelExportConfigurator)state.getConfig();
-			
+			BerlinModelExportConfigurator bmeConfig = state.getConfig();
+
 			logger.info("start make "+pluralString+" ...");
 			boolean success = true ;
 			doDelete(bmeConfig);
-			
+
 			TransactionStatus txStatus = startTransaction(true);
 			Class<Team> clazz = Team.class;
 			List<? extends AgentBase> list = getAgentService().list(clazz, 100000000, 0,null,null);
-			
+
 			CdmDbExportMapping<BerlinModelExportState, BerlinModelExportConfigurator, IExportTransformer> mapping = getMapping();
 			mapping.initialize(state);
-			
+
 			logger.info("save "+pluralString+" ...");
 			int count = 0;
 			for (AgentBase<?> team : list){
@@ -105,22 +106,23 @@ public class BerlinModelAuthorTeamExport extends BerlinModelExportBase<Team> {
 					success &= mapping.invoke(team);
 				}
 			}
-			
+
 			commitTransaction(txStatus);
-			
+
 			logger.info("end make "+pluralString+"  ..." + getSuccessString(success));
 			if (!success){
-				state.setUnsuccessfull();
+                String message = "An undefined error occurred during AuthorTeam export";
+                state.getResult().addError(message);
 			}
 			return;
 		}catch(SQLException e){
 			e.printStackTrace();
 			logger.error(e.getMessage());
-			state.setUnsuccessfull();
+			state.getResult().addException(e);
 			return;
 		}
 	}
-	
+
 	protected boolean doDelete(BerlinModelExportConfigurator config){
 		String sql;
 		Source destination =  config.getDestination();
@@ -136,7 +138,7 @@ public class BerlinModelAuthorTeamExport extends BerlinModelExportBase<Team> {
 		sql = "DELETE FROM PTaxon";
 		destination.setQuery(sql);
 		destination.update(sql);
-		
+
 		//NameHistory
 		sql = "DELETE FROM NameHistory";
 		destination.setQuery(sql);
@@ -171,7 +173,7 @@ public class BerlinModelAuthorTeamExport extends BerlinModelExportBase<Team> {
 		destination.update(sql);
 		return true;
 	}
-	
+
 	//called by MethodMapper
 	@SuppressWarnings("unused")
 	private static String getAuthorTeamCache(Team team){
@@ -191,12 +193,13 @@ public class BerlinModelAuthorTeamExport extends BerlinModelExportBase<Team> {
 			return null;
 		}
 	}
-	
-	
+
+
 	/* (non-Javadoc)
 	 * @see eu.etaxonomy.cdm.io.common.CdmIoBase#isIgnore(eu.etaxonomy.cdm.io.common.IImportConfigurator)
 	 */
-	protected boolean isIgnore(BerlinModelExportState state){
+	@Override
+    protected boolean isIgnore(BerlinModelExportState state){
 		return ! state.getConfig().isDoAuthors();
 	}
 

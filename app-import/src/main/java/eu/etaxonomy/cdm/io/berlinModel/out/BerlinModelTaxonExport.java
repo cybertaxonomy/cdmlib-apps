@@ -1,8 +1,8 @@
 /**
 * Copyright (C) 2007 EDIT
-* European Distributed Institute of Taxonomy 
+* European Distributed Institute of Taxonomy
 * http://www.e-taxonomy.eu
-* 
+*
 * The contents of this file are subject to the Mozilla Public License Version 1.1
 * See LICENSE.TXT at the top of this package for the full license terms.
 */
@@ -50,7 +50,7 @@ public class BerlinModelTaxonExport extends BerlinModelExportBase<TaxonBase> {
 	public BerlinModelTaxonExport(){
 		super();
 	}
-	
+
 	/* (non-Javadoc)
 	 * @see eu.etaxonomy.cdm.io.common.CdmIoBase#doCheck(eu.etaxonomy.cdm.io.common.IImportConfigurator)
 	 */
@@ -60,10 +60,10 @@ public class BerlinModelTaxonExport extends BerlinModelExportBase<TaxonBase> {
 		logger.warn("Checking for " + pluralString + " not yet implemented");
 		//result &= checkArticlesWithoutJournal(bmiConfig);
 		//result &= checkPartOfJournal(bmiConfig);
-		
+
 		return result;
 	}
-	
+
 	private CdmDbExportMapping<BerlinModelExportState, BerlinModelExportConfigurator, IExportTransformer> getMapping(){
 		String tableName = dbTableName;
 		CdmDbExportMapping<BerlinModelExportState, BerlinModelExportConfigurator, IExportTransformer> mapping = new CdmDbExportMapping<BerlinModelExportState, BerlinModelExportConfigurator, IExportTransformer>(tableName);
@@ -73,7 +73,7 @@ public class BerlinModelTaxonExport extends BerlinModelExportBase<TaxonBase> {
 		mapping.addMapper(MethodMapper.NewInstance("DoubtfulFlag", this) );
 		mapping.addMapper(DbBooleanMapper.NewInstance("useNameCache", "UseNameCacheFlag", false));
 		mapping.addMapper(DbStringMapper.NewFacultativeInstance("appendedPhrase", "NamePhrase"));
-		
+
 		//detail
 		ExtensionType detailExtensionType = (ExtensionType)getTermService().find(BerlinModelTransformer.DETAIL_EXT_UUID);
 		if (detailExtensionType != null){
@@ -96,7 +96,7 @@ public class BerlinModelTaxonExport extends BerlinModelExportBase<TaxonBase> {
 //		}
 		//publisheFlag
 		mapping.addMapper(DbMarkerMapper.NewInstance(MarkerType.PUBLISH(), "PublishFlag", true));
-		
+
 		//notes
 		mapping.addMapper(CreatedAndNotesMapper.NewInstance());
 
@@ -106,20 +106,21 @@ public class BerlinModelTaxonExport extends BerlinModelExportBase<TaxonBase> {
 
 		return mapping;
 	}
-	
-	protected void doInvoke(BerlinModelExportState state){
+
+	@Override
+    protected void doInvoke(BerlinModelExportState state){
 		try{
 			logger.info("start make " + pluralString + " ...");
 			boolean success = true ;
 			doDelete(state);
-			
+
 			TransactionStatus txStatus = startTransaction(true);
-			
+
 			List<TaxonBase> list = getTaxonService().list(null,100000000, 0, null, null);
-			
+
 			CdmDbExportMapping<BerlinModelExportState, BerlinModelExportConfigurator, IExportTransformer> mapping = getMapping();
 			mapping.initialize(state);
-			
+
 			int count = 0;
 			for (TaxonBase<?> taxon : list){
 				doCount(count++, modCount, pluralString);
@@ -128,23 +129,24 @@ public class BerlinModelTaxonExport extends BerlinModelExportBase<TaxonBase> {
 			commitTransaction(txStatus);
 			logger.info("end make " + pluralString + " ..." + getSuccessString(success));
 			if (!success){
-				state.setUnsuccessfull();
+			    String message = "An undefined error occurred during Taxon export";
+			    state.getResult().addError(message);
 			}
 			return;
 		}catch(SQLException e){
 			e.printStackTrace();
 			logger.error(e.getMessage());
-			state.setUnsuccessfull();
+			state.getResult().addException(e);
 			return;
 		}
 	}
 
-	
 
-	
+
+
 	protected boolean doDelete(BerlinModelExportState state){
 		BerlinModelExportConfigurator bmeConfig = state.getConfig();
-		
+
 		String sql;
 		Source destination =  bmeConfig.getDestination();
 		//RelPTaxon
@@ -162,21 +164,22 @@ public class BerlinModelTaxonExport extends BerlinModelExportBase<TaxonBase> {
 
 		return true;
 	}
-		
-	
+
+
 	/* (non-Javadoc)
 	 * @see eu.etaxonomy.cdm.io.common.CdmIoBase#isIgnore(eu.etaxonomy.cdm.io.common.IImportConfigurator)
 	 */
-	protected boolean isIgnore(BerlinModelExportState state){
+	@Override
+    protected boolean isIgnore(BerlinModelExportState state){
 		return ! state.getConfig().isDoTaxa();
 	}
-	
+
 	//called by MethodMapper
 	@SuppressWarnings("unused")
 	private static Integer getStatusFk(TaxonBase<?> taxon){
 		return BerlinModelTransformer.taxonBase2statusFk(taxon);
 	}
-	
+
 	@SuppressWarnings("unused")
 	private static String getDoubtfulFlag(TaxonBase<?> taxon){
 		if (taxon.isDoubtful()){
@@ -185,7 +188,7 @@ public class BerlinModelTaxonExport extends BerlinModelExportBase<TaxonBase> {
 			return "a";
 		}
 	}
-	
+
 	/* (non-Javadoc)
 	 * @see eu.etaxonomy.cdm.io.berlinModel.out.BerlinModelExportBase#getStandardMethodParameter()
 	 */
