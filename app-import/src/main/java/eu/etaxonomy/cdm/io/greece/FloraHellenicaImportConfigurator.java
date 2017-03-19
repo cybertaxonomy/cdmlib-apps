@@ -54,7 +54,10 @@ public class FloraHellenicaImportConfigurator extends ExcelImportConfiguratorBas
     @Override
     protected void makeIoClassList() {
         ioClassList = new Class[]{
-                FloraHellenicaTaxonImport.class
+                FloraHellenicaTaxonImport.class,
+                FloraHellenicaExcludedTaxonImport.class,
+                FloraHellenicaSynonymImport.class,
+                FloraHellenicaCommentsImport.class,
         };
     }
 }

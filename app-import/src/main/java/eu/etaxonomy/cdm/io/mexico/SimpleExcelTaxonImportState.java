@@ -41,6 +41,7 @@ public class SimpleExcelTaxonImportState<CONFIG extends ExcelImportConfiguratorB
     //using titleCache
     private Map<String, INonViralName> nameMap = new HashMap<>();
 
+    private final Map<String, Taxon> taxonMap = new HashMap<>();
 
 // ************************* CONSTRUCTUR *******************************/
     /**
@@ -86,6 +87,20 @@ public class SimpleExcelTaxonImportState<CONFIG extends ExcelImportConfiguratorB
     }
     public INonViralName getName(String titleCache){
         return nameMap.get(titleCache);
+    }
+
+    //higher taxon
+    public Taxon getTaxon(String key) {
+        return taxonMap.get(key);
+    }
+    public Taxon putTaxon(String key, Taxon taxon) {
+        return taxonMap.put(key, taxon);
+    }
+    public Taxon removeTaxon(String key) {
+        return taxonMap.remove(key);
+    }
+    public boolean containsTaxon(String key) {
+        return taxonMap.containsKey(key);
     }
 
 }
