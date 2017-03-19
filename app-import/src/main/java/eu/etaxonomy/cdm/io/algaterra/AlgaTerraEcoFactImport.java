@@ -58,7 +58,9 @@ import eu.etaxonomy.cdm.model.reference.Reference;
  */
 @Component
 public class AlgaTerraEcoFactImport  extends AlgaTerraSpecimenImportBase {
-	private static final Logger logger = Logger.getLogger(AlgaTerraEcoFactImport.class);
+
+    private static final long serialVersionUID = 2918870166537160882L;
+    private static final Logger logger = Logger.getLogger(AlgaTerraEcoFactImport.class);
 
 
 	private static int modCount = 5000;
@@ -303,10 +305,7 @@ public class AlgaTerraEcoFactImport  extends AlgaTerraSpecimenImportBase {
 			}else if (isNotBlank(valueStr) || isNotBlank(unitStr) ){
 				logger.warn("There is value or unit without parameter: " + i);
 			}
-
-
 		}
-
 	}
 
 	private String normalizeAndModifyValue(AlgaTerraImportState state, String valueStr, Set<DefinedTerm> valueModifier) {

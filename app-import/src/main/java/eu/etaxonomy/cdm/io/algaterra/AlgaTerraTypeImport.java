@@ -60,7 +60,9 @@ import eu.etaxonomy.cdm.model.reference.Reference;
  */
 @Component
 public class AlgaTerraTypeImport  extends AlgaTerraSpecimenImportBase {
-	private static final Logger logger = Logger.getLogger(AlgaTerraTypeImport.class);
+
+    private static final long serialVersionUID = 32400936433601479L;
+    private static final Logger logger = Logger.getLogger(AlgaTerraTypeImport.class);
 
 
 	private static int modCount = 5000;

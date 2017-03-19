@@ -56,7 +56,9 @@ import eu.etaxonomy.cdm.model.taxon.Taxon;
  * @created 12.09.2012
  */
 public abstract class AlgaTerraSpecimenImportBase extends BerlinModelImportBase{
-	private static final Logger logger = Logger.getLogger(AlgaTerraSpecimenImportBase.class);
+    private static final long serialVersionUID = -1741703900571072861L;
+
+    private static final Logger logger = Logger.getLogger(AlgaTerraSpecimenImportBase.class);
 
 	public static final String ECO_FACT_FIELD_OBSERVATION_NAMESPACE = "EcoFact_FieldObservation";
 	public static final String ECO_FACT_DERIVED_UNIT_NAMESPACE = "EcoFact_DerivedUnit";
@@ -220,8 +222,8 @@ public abstract class AlgaTerraSpecimenImportBase extends BerlinModelImportBase{
 	}
 
 	//tmp
-	static Map<Integer, UUID> subL4Mapping = new HashMap<Integer, UUID>();
-	static Map<Integer, UUID> materialCategoryMapping = new HashMap<Integer, UUID>();
+	static Map<Integer, UUID> subL4Mapping = new HashMap<>();
+	static Map<Integer, UUID> materialCategoryMapping = new HashMap<>();
 
 	protected String getLocalityString(){
 		return "Locality";

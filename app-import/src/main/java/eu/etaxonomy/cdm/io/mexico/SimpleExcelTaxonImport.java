@@ -71,7 +71,7 @@ public abstract class SimpleExcelTaxonImport<CONFIG extends ExcelImportConfigura
      * The value is trimmed and empty values are set to <code>null</code>.
      * @param record
      * @param originalKey
-     * @return
+     * @return the value
      */
     protected String getValue(Map<String, String> record, String originalKey) {
         String value = record.get(originalKey);
