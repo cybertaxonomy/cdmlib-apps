@@ -72,10 +72,6 @@ public class AlgaTerraDnaImport  extends AlgaTerraSpecimenImportBase {
 	}
 
 
-
-	/* (non-Javadoc)
-	 * @see eu.etaxonomy.cdm.io.berlinModel.in.BerlinModelImportBase#getIdQuery()
-	 */
 	@Override
 	protected String getIdQuery(BerlinModelImportState bmState) {
 		AlgaTerraImportState state = (AlgaTerraImportState)bmState;
@@ -368,12 +364,12 @@ public class AlgaTerraDnaImport  extends AlgaTerraSpecimenImportBase {
 		String nameSpace;
 		Class<?> cdmClass;
 		Set<String> idSet;
-		Map<Object, Map<String, ? extends CdmBase>> result = new HashMap<Object, Map<String, ? extends CdmBase>>();
+		Map<Object, Map<String, ? extends CdmBase>> result = new HashMap<>();
 
 		try{
-			Set<String> taxonIdSet = new HashSet<String>();
+			Set<String> taxonIdSet = new HashSet<>();
 
-			Set<String> ecoFactFkSet = new HashSet<String>();
+			Set<String> ecoFactFkSet = new HashSet<>();
 
 			while (rs.next()){
 				handleForeignKey(rs, taxonIdSet, "taxonId");

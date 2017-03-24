@@ -41,10 +41,10 @@ public class TestActivator {
 
 	//static final Source faunaEuropaeaSource = FaunaEuropaeaSources.faunEu();
 //	static final ICdmDataSource cdmDestination = CdmDestinations.cdm_test_local_mysql();
-//	static final ICdmDataSource cdmDestination = CdmDestinations.localH2();
+	static final ICdmDataSource cdmDestination = CdmDestinations.localH2();
 //	static final ICdmDataSource cdmDestination = CdmDestinations.cdm_flora_central_africa_production();
 //	static final ICdmDataSource cdmDestination = CdmDestinations.cdm_edit_cichorieae_preview();
-	static final ICdmDataSource cdmDestination = CdmDestinations.cdm_cyprus_production();
+//	static final ICdmDataSource cdmDestination = CdmDestinations.cdm_cyprus_production();
 
 
 	static final int limitSave = 2000;

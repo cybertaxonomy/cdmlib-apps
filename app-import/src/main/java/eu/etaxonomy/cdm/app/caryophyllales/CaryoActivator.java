@@ -29,7 +29,6 @@ import eu.etaxonomy.cdm.model.reference.ReferenceFactory;
 /**
  * @author a.mueller
  * @created 16.10.2012
- * @version 1.0
  */
 public class CaryoActivator extends SourceBase{
 	private static final Logger logger = Logger.getLogger(CaryoActivator.class);

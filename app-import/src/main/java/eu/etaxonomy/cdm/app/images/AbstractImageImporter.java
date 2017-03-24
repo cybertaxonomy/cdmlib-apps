@@ -1,8 +1,8 @@
 /**
 * Copyright (C) 2007 EDIT
-* European Distributed Institute of Taxonomy 
+* European Distributed Institute of Taxonomy
 * http://www.e-taxonomy.eu
-* 
+*
 * The contents of this file are subject to the Mozilla Public License Version 1.1
 * See LICENSE.TXT at the top of this package for the full license terms.
 */
@@ -14,25 +14,25 @@ import org.springframework.transaction.TransactionStatus;
 
 import eu.etaxonomy.cdm.api.application.CdmApplicationController;
 import eu.etaxonomy.cdm.api.service.IAgentService;
+import eu.etaxonomy.cdm.api.service.IClassificationService;
 import eu.etaxonomy.cdm.api.service.ICommonService;
 import eu.etaxonomy.cdm.api.service.IDescriptionService;
 import eu.etaxonomy.cdm.api.service.IReferenceService;
 import eu.etaxonomy.cdm.api.service.ITaxonService;
-import eu.etaxonomy.cdm.api.service.IClassificationService;
-import eu.etaxonomy.cdm.io.common.CdmIoBase;
-import eu.etaxonomy.cdm.io.common.ICdmIO;
+import eu.etaxonomy.cdm.io.common.CdmImportBase;
 
 /**
- * 
  * @author n.hoffmann
  * @created 11.11.2008
- * @version 1.0
  */
-public abstract class AbstractImageImporter extends CdmIoBase<ImageImportState> implements ICdmIO<ImageImportState> {
-	private static final Logger logger = Logger.getLogger(AbstractImageImporter.class);
-	
+public abstract class AbstractImageImporter
+        extends CdmImportBase<ImageImportConfigurator, ImageImportState> {
+
+    private static final long serialVersionUID = 6178173988325980060L;
+    private static final Logger logger = Logger.getLogger(AbstractImageImporter.class);
+
 	protected CdmApplicationController appCtr;
-	
+
 	protected CdmApplicationController cdmApp;
 	protected ITaxonService taxonService;
 	protected IClassificationService classificationService;
@@ -41,7 +41,7 @@ public abstract class AbstractImageImporter extends CdmIoBase<ImageImportState> 
 	protected IDescriptionService descriptionService;
 	protected IReferenceService referenceService;
 	protected ICommonService commonService;
-	
+
 	/* (non-Javadoc)
 	 * @see eu.etaxonomy.cdm.io.common.CdmIoBase#doInvoke(eu.etaxonomy.cdm.io.common.IImportConfigurator, java.util.Map)
 	 */
@@ -49,9 +49,9 @@ public abstract class AbstractImageImporter extends CdmIoBase<ImageImportState> 
 	public void doInvoke(ImageImportState state) {
 		//cdmApp = config.getCdmAppController();
 		//if (config instanceof ImageImportConfigurator){
-		
+
 		TransactionStatus status = startTransaction();
-		
+
 		taxonService = getTaxonService();
 		agentService = getAgentService();
 		referenceService = getReferenceService();
@@ -59,16 +59,16 @@ public abstract class AbstractImageImporter extends CdmIoBase<ImageImportState> 
 		classificationService = getClassificationService();
 
 		invokeImageImport(state);
-		
+
 		commitTransaction(status);
-		
+
 		return;
 	}
 
 	/**
-	 * This method defines the image import. 
+	 * This method defines the image import.
 	 * It should take care of where to get the images from and what object they get attached to.
-	 * 
+	 *
 	 * @param config
 	 */
 	protected abstract void invokeImageImport(ImageImportState state);
@@ -94,5 +94,5 @@ public abstract class AbstractImageImporter extends CdmIoBase<ImageImportState> 
 	}
 
 
-	
+
 }

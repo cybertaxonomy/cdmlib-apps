@@ -1,8 +1,8 @@
 /**
 * Copyright (C) 2007 EDIT
-* European Distributed Institute of Taxonomy 
+* European Distributed Institute of Taxonomy
 * http://www.e-taxonomy.eu
-* 
+*
 * The contents of this file are subject to the Mozilla Public License Version 1.1
 * See LICENSE.TXT at the top of this package for the full license terms.
 */
@@ -22,7 +22,7 @@ import org.springframework.transaction.TransactionStatus;
 import eu.etaxonomy.cdm.api.service.ICommonService;
 import eu.etaxonomy.cdm.app.wp6.palmae.config.PalmaeProtologueImportConfigurator;
 import eu.etaxonomy.cdm.common.CdmUtils;
-import eu.etaxonomy.cdm.io.common.CdmIoBase;
+import eu.etaxonomy.cdm.io.common.CdmImportBase;
 import eu.etaxonomy.cdm.io.common.DefaultImportState;
 import eu.etaxonomy.cdm.model.description.Feature;
 import eu.etaxonomy.cdm.model.description.TaxonNameDescription;
@@ -36,11 +36,13 @@ import eu.etaxonomy.cdm.model.name.TaxonNameBase;
 /**
  * @author a.mueller
  * @created 29.07.2008
- * @version 1.0
  */
 @Component
-public class ProtologueImport extends CdmIoBase<DefaultImportState<PalmaeProtologueImportConfigurator>>  {
-	private static final Logger logger = Logger.getLogger(ProtologueImport.class);
+public class ProtologueImport
+        extends CdmImportBase<PalmaeProtologueImportConfigurator, DefaultImportState<PalmaeProtologueImportConfigurator>>{
+
+    private static final long serialVersionUID = 4580327331805229644L;
+    private static final Logger logger = Logger.getLogger(ProtologueImport.class);
 
 	private String pluralString = "protologues";
 	private static int modCount = 200;
@@ -49,11 +51,12 @@ public class ProtologueImport extends CdmIoBase<DefaultImportState<PalmaeProtolo
 		super();
 	}
 
-	public void doInvoke(DefaultImportState<PalmaeProtologueImportConfigurator> state){
+	@Override
+    public void doInvoke(DefaultImportState<PalmaeProtologueImportConfigurator> state){
 		logger.info("start make Protologues from files ...");
-		
+
 		Set<TaxonNameBase> nameStore = new HashSet<TaxonNameBase>();
-		
+
 		PalmaeProtologueImportConfigurator config = state.getConfig();
 		File source = config.getSource();
 		TaxonNameBase name;
@@ -78,7 +81,7 @@ public class ProtologueImport extends CdmIoBase<DefaultImportState<PalmaeProtolo
 		logger.info("end make Protologues from files ...");
 		return;
 	}
-	
+
 	private void storeName(Set<TaxonNameBase> nameStore, TaxonNameBase name, DefaultImportState<PalmaeProtologueImportConfigurator> state){
 		if (name != null){
 			nameStore.add(name);
@@ -88,21 +91,21 @@ public class ProtologueImport extends CdmIoBase<DefaultImportState<PalmaeProtolo
 			return;
 		}
 	}
-		
+
 	private TaxonNameBase importFile(File file, DefaultImportState<PalmaeProtologueImportConfigurator> state){
 		String originalSourceId = file.getName();
 		originalSourceId =originalSourceId.replace("_P.pdf", "");
 		originalSourceId =originalSourceId.replace("_tc_", "_tn_");
 		String namespace = state.getConfig().getOriginalSourceTaxonNamespace();
-		
-		
+
+
 		//for testing only
 		TaxonNameBase taxonName = getTaxonName(originalSourceId, namespace);
 		if (taxonName == null){
 			logger.warn("Name not found for " + originalSourceId);
 			return null;
 		}
-		
+
 //		TaxonNameDescription nameDescription = null;
 //		if (taxonName.getDescriptions().size() > 0){
 //			nameDescription = (TaxonNameDescription)taxonName.getDescriptions().iterator().next();
@@ -118,13 +121,13 @@ public class ProtologueImport extends CdmIoBase<DefaultImportState<PalmaeProtolo
 				description.addElement(protolog);
 				return taxonName;
 			}
-			
+
 		}catch(NullPointerException e){
 			logger.warn("MediaUrl and/or MediaPath not set. Could not get protologue.");
 			return null;
 		}
 		return null;
-		
+
 	}
 
 	private TaxonNameDescription getNameDescription(TaxonNameBase taxonName) {
@@ -135,26 +138,26 @@ public class ProtologueImport extends CdmIoBase<DefaultImportState<PalmaeProtolo
 			result = TaxonNameDescription.NewInstance();
 			taxonName.addDescription(result);
 		}
-		
+
 		return result;
 	}
-	
+
 	private Media getMedia(DefaultImportState<PalmaeProtologueImportConfigurator> state, File file){
 		try {
 			//File file = (File)state.getConfig().getSource();
 			String url = file.toURI().toURL().toString();
-			String mimeTypePdf = "application/pdf"; 
-			String suffixPdf = "pdf"; 
-			String urlStringPdf = state.getConfig().getUrlString() + file.getName(); 
+			String mimeTypePdf = "application/pdf";
+			String suffixPdf = "pdf";
+			String urlStringPdf = state.getConfig().getUrlString() + file.getName();
 			URI uri = CdmUtils.string2Uri(urlStringPdf);
 			Integer size = null;
-			
-			if (file.exists()){  
+
+			if (file.exists()){
 				Media media = Media.NewInstance();
-			    
-				MediaRepresentation representationPdf = MediaRepresentation.NewInstance(mimeTypePdf, suffixPdf); 
-			    representationPdf.addRepresentationPart(MediaRepresentationPart.NewInstance(uri, size)); 
-			    media.addRepresentation(representationPdf); 
+
+				MediaRepresentation representationPdf = MediaRepresentation.NewInstance(mimeTypePdf, suffixPdf);
+			    representationPdf.addRepresentationPart(MediaRepresentationPart.NewInstance(uri, size));
+			    media.addRepresentation(representationPdf);
 			    return media;
 			}else{
 				return null;
@@ -163,33 +166,35 @@ public class ProtologueImport extends CdmIoBase<DefaultImportState<PalmaeProtolo
 			logger.error(e.getMessage());
 			return null;
 		}
-		
+
  	}
-	
+
 	private TaxonNameBase getTaxonName(String originalSourceId, String namespace){
 		TaxonNameBase result;
 		ICommonService commonService = getCommonService();
-		
+
 		result = (TaxonNameBase)commonService.getSourcedObjectByIdInSource(TaxonNameBase.class, originalSourceId , namespace);
 		if (result == null){
 			logger.warn("Taxon (id: " + originalSourceId + ", namespace: " + namespace + ") could not be found");
 		}
 		return result;
 	}
-	
-	
-	public boolean doCheck(DefaultImportState state){
+
+
+	@Override
+    public boolean doCheck(DefaultImportState state){
 		boolean result = true;
 		return result;
 	}
-	
+
 	/* (non-Javadoc)
 	 * @see eu.etaxonomy.cdm.io.common.CdmIoBase#isIgnore(eu.etaxonomy.cdm.io.common.IImportConfigurator)
 	 */
-	protected boolean isIgnore(DefaultImportState state){
+	@Override
+    protected boolean isIgnore(DefaultImportState state){
 		return false; // ! state.getConfig();
 	}
-	
+
 	protected void doCount(int count, int modCount, String pluralString){
 		if ((count % modCount ) == 0 && count!= 0 ){ logger.info(pluralString + " handled: " + (count));}
 	}

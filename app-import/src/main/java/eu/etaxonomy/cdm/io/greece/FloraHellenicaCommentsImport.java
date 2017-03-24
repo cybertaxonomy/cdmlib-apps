@@ -24,9 +24,10 @@ import eu.etaxonomy.cdm.model.description.TextData;
 import eu.etaxonomy.cdm.model.taxon.Taxon;
 
 /**
+ * Import for the Flora Hellenica taxon comments.
+ *
  * @author a.mueller
  * @date 14.12.2016
- *
  */
 
 @Component
@@ -99,6 +100,5 @@ public class FloraHellenicaCommentsImport<CONFIG extends FloraHellenicaImportCon
         getTaxonService().saveOrUpdate(acceptedTaxon);
         return ;
     }
-
 
 }
