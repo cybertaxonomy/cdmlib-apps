@@ -65,14 +65,14 @@ public class CacheUpdater {
 			config = CacheUpdaterConfigurator.NewInstance(destination, classListStrings);
 
 			// invoke import
-			CdmDefaultImport<CacheUpdaterConfigurator> myImport = new CdmDefaultImport<CacheUpdaterConfigurator>();
+			CdmDefaultImport<CacheUpdaterConfigurator> myImport = new CdmDefaultImport<>();
 			result = myImport.invoke(config);
 			//String successString = success ? "successful" : " with errors ";
 			//System.out.println("End updating caches for "+ destination.getDatabase() + "..." +  successString);
 			return result;
 		} catch (ClassNotFoundException e) {
 			logger.error(e);
-			result.setSuccess(false);
+			result.addException(e);
 			return result;
 		}
 	}

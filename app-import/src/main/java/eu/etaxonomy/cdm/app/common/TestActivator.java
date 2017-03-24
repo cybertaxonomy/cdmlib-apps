@@ -107,42 +107,19 @@ public class TestActivator {
 
 		URI	uri = URI.create("file:///C:/localCopy/Data/xper/Cichorieae-DA2.sdd.xml");
 		SDDImportConfigurator configurator = SDDImportConfigurator.NewInstance(uri, destination);
-		CdmDefaultImport<SDDImportConfigurator> myImport = new CdmDefaultImport<SDDImportConfigurator>();
+		CdmDefaultImport<SDDImportConfigurator> myImport = new CdmDefaultImport<>();
 
 		myImport.setCdmAppController(app);
 
 		ImportResult result = myImport.invoke(configurator);
-		System.out.println(result.getReports().toString());
+		System.out.println(result.toString());
 
 		if (true){
 			return;
 		}
 
-//		app.changeDataSource(destination);
-//		ICdmDataSource cdmDestination = CdmDestinations.cdm_edit_cichorieae_preview();
-//		app.changeDataSource(cdmDestination);
-//		ITaxonServiceConfigurator<?> conf = TaxonServiceConfiguratorImpl.NewInstance();
-//		conf.setDoSynonyms(true);
-//		conf.setDoTaxa(true);
-//		conf.setMatchMode(MatchMode.BEGINNING);
-//		conf.setTitleSearchString("L*");
-//		conf.setPageNumber(0);
-//		conf.setPageSize(50);
-//		Set<NamedArea> areas = new HashSet<NamedArea>();
-//		areas.add(TdwgArea.getAreaByTdwgAbbreviation("GER"));
-//		//conf.setNamedAreas(areas);
-//
-//		Pager<IdentifiableEntity> taxaAndSyn = app.getTaxonService().findTaxaAndNames(conf);
-//		List<IdentifiableEntity> taxList = taxaAndSyn.getRecords();
-//
-//		for (IdentifiableEntity<?> ent: taxList){
-//
-//			System.err.println(ent.getTitleCache());
-//		}
 
 
-
-		System.out.println("End importing Fauna Europaea data");
 	}
 
 

@@ -111,13 +111,11 @@ public class DipteraPostImportUpdater {
 			//commit
 			cdmApp.commitTransaction(tx);
 			logger.warn("Citations updated!");
-			result.setSuccess(true);
 			return result;
 		} catch (Exception e) {
 			e.printStackTrace();
-			logger.error("ERROR in citation update");
-			result.setSuccess(false);
-			result.addReport(e.getMessage().getBytes());
+			result.addError("ERROR in citation update");
+			result.addException(e);
 			return result;
 		}
 

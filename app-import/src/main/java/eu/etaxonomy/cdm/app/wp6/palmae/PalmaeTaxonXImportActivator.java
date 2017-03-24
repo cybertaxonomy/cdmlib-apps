@@ -75,8 +75,7 @@ public class PalmaeTaxonXImportActivator {
 				success = importFile(cdmImport, taxonXImportConfigurator, source);
 
 			} catch (URISyntaxException e) {
-				success.setSuccess(false);
-				success.addReport(e.getMessage().getBytes());
+				success.addException(e);
 				e.printStackTrace();
 			}
 		}
@@ -93,8 +92,7 @@ public class PalmaeTaxonXImportActivator {
 					success = importFile(cdmImport, taxonXImportConfigurator, file);
 				} catch (URISyntaxException e) {
 					success = new ImportResult();
-					success.setSuccess(false);
-					success.addReport(e.getMessage().getBytes());
+					success.addException(e);
 					e.printStackTrace();
 				}
 			}else{
@@ -123,7 +121,7 @@ public class PalmaeTaxonXImportActivator {
 		} catch (MalformedURLException e) {
 			logger.warn(e);
 			success = new ImportResult();
-			success.setSuccess(false);
+			success.addException(e);
 			return success;
 		}
 	}

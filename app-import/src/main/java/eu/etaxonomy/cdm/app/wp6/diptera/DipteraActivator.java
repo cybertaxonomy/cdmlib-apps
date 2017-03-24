@@ -173,7 +173,7 @@ public class DipteraActivator {
 		} catch (Exception e) {
 			e.printStackTrace();
 			success = new ImportResult();
-			success.setSuccess(false);
+			success.addException(e);
 			return success;
 		}
 

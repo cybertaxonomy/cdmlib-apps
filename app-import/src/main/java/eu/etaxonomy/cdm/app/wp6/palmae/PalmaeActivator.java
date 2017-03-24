@@ -130,11 +130,9 @@ public class PalmaeActivator {
 		} catch (URISyntaxException e) {
 			e.printStackTrace();
 			success = new ImportResult();
-			success.setSuccess(false);
-			success.addReport(e.getMessage().getBytes());
+			success.addException(e);
 			return success;
 		}
-
 	}
 
 

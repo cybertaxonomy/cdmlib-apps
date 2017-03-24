@@ -240,17 +240,12 @@ public class CichorieaeActivator {
 				System.out.println("Start Taraxacum import from BerlinModel ...");
 				TaraxacumActivator taraxacumActivator = new TaraxacumActivator();
 				ImportResult successTaraxacum =  taraxacumActivator.doImport(destination, DbSchemaValidation.UPDATE);
-				success.setSuccess(success.isSuccess() & successTaraxacum.isSuccess());
-				for (byte [] report : successTaraxacum.getReports()){
-				    success.addReport(report);
-				}
+				success.merge(successTaraxacum);
 				logger.warn("Taraxacum import still needs to be tested");
 				System.out.println("End Taraxacum import from BerlinModel ...");
 			}
 		} catch (Exception e) {
-            success.setSuccess(false);
-            String report = "Exception occurred during Taraxacum import.";
-            success.addReport(report.getBytes());
+		    success.addException(e);
 			logger.error("Exception occurred during Taraxacum import.");
 			e.printStackTrace();
 		}
@@ -268,14 +263,11 @@ public class CichorieaeActivator {
 				imageConfigurator.setSecUuid(secUuid);
 				imageConfigurator.setClassificationUuid(classificationUuid);
 				ImportResult resultImageImport = imageImporter.invoke(imageConfigurator);
-				success.setSuccess(resultImageImport.isSuccess() & success.isSuccess());
-				for (byte[] report : resultImageImport.getReports()){
-				    success.addReport(report);
-				}
+				success.merge(resultImageImport);
 			} catch (URISyntaxException e) {
 				e.printStackTrace();
 			}
-				System.out.println("End importing images ...");
+			System.out.println("End importing images ...");
 		}
 		logger.warn("!!!! NOTE: RefDetail notes and RelPTaxon notes are not imported automatically. Please check for these notes and import them manually.");
 

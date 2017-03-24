@@ -118,8 +118,7 @@ public class CichorieaeCacheUpdater {
 		} catch (ClassNotFoundException e) {
 			logger.error(e);
 			success = new ImportResult();
-			success.setSuccess(false);
-			success.addReport(e.getMessage().getBytes());
+			success.addException(e);
 			return success;
 		}
 	}
