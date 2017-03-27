@@ -94,7 +94,7 @@ public class CaryoActivator extends SourceBase{
 
 	private Reference getSourceReference(String string) {
 		Reference result = ReferenceFactory.newGeneric();
-		result.setTitleCache(string);
+		result.setTitleCache(string, true);
 		return result;
 	}
 
