@@ -111,7 +111,7 @@ public class FloraHellenicaExcludedTaxonImport<CONFIG extends FloraHellenicaImpo
         taxon.addImportSource(noStr, getWorksheetName(), getSourceCitation(state), null);
         TaxonNode excludedNode = familyTaxon.addChildTaxon(taxon, getSecReference(state), null);
         excludedNode.setExcluded(true);
-        getTaxonNodeService().save(excludedNode);
+        getTaxonNodeService().saveOrUpdate(excludedNode);
         return excludedNode;
     }
 
@@ -142,7 +142,7 @@ public class FloraHellenicaExcludedTaxonImport<CONFIG extends FloraHellenicaImpo
             ITaxonTreeNode groupNode = getExcludedFamilyTaxon(state);
             familyNode = groupNode.addChildTaxon(family, sec, null);
             state.putHigherTaxon(familyStr, family);
-            getTaxonNodeService().save(familyNode);
+            getTaxonNodeService().saveOrUpdate(familyNode);
 //            logger.warn(state.getCurrentLine() +": " + "Family not found for excluded taxon");
         }
         return familyNode;
@@ -163,7 +163,7 @@ public class FloraHellenicaExcludedTaxonImport<CONFIG extends FloraHellenicaImpo
         Taxon taxon = Taxon.NewInstance(name, getSecReference(state));
         excludedFamilyNode = plantae.addChildTaxon(taxon, getSourceCitation(state), null);
         excludedFamilyNode.setExcluded(true);
-        getTaxonNodeService().save(excludedFamilyNode);
+        getTaxonNodeService().saveOrUpdate(excludedFamilyNode);
         return excludedFamilyNode;
     }
 

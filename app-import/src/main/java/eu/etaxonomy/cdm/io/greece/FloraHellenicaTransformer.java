@@ -66,9 +66,13 @@ public class FloraHellenicaTransformer extends InputTransformerBase{
     protected static final UUID uuidHabitatR = UUID.fromString("ebe8ffba-7155-4dbe-9b09-faa38a61276a");
     protected static final UUID uuidHabitatW = UUID.fromString("b72dc722-d85b-4496-8828-1eeccb37849a");
 
+    //status
+    protected static final UUID uuidFloraHellenicaStatusVoc = UUID.fromString("a0d39c0a-4e6f-4d0f-827c-cefd793d5b09");
+    protected static final UUID uuidStatusRangeRestricted = UUID.fromString("3ba59506-9f4d-4eb7-b22d-0085f6cc27d0");
+    protected static final UUID uuidStatusRangeRestrictedDoubtfully = UUID.fromString("78e64023-e9d6-4bb2-88cd-a400118ddfcf");
+
     //Chorological Category
     protected static final UUID uuidFloraHellenicaChorologicalVoc = UUID.fromString("7c95ac7f-e3ea-46c2-863f-9ad663f5086c");
-    //Chorological Category
     public static final UUID uuidFloraHellenicaChorologyFeature = UUID.fromString("fab27b99-c480-4873-bcfc-39235f6d0c5d");
 
     protected static final UUID uuidChorologicalBk = UUID.fromString("53a75041-b8ab-4890-82a3-f29117db8609");
@@ -93,5 +97,47 @@ public class FloraHellenicaTransformer extends InputTransformerBase{
     protected static final UUID uuidChorologicalCo = UUID.fromString("9ec7e14c-43a7-4086-9840-9beb6689655d");
     protected static final UUID uuidChorologicalStar = UUID.fromString("2fb30e13-4fa6-46e8-928e-4ddecec63d62");
 
+    protected static final UUID uuidChorologicaltrop = UUID.fromString("fc204567-efac-4677-a978-56e8c1cff5be");
+    protected static final UUID uuidChorologicalsubtrop = UUID.fromString("d3acbf5e-ee13-41a0-89f2-520f43b71f59");
+    protected static final UUID uuidChorologicalpaleotrop = UUID.fromString("989c6edb-92ed-48f1-b6ed-4f24ecec73c8");
+    protected static final UUID uuidChorologicalneotrop = UUID.fromString("92ed494d-f294-424b-a8b6-e9cec6f5c7d3");
+    protected static final UUID uuidChorologicalpantrop = UUID.fromString("1b5b74ea-1ebf-4822-b4b6-121c513efe1d");
+    protected static final UUID uuidChorologicalN_Am = UUID.fromString("ab2d5adb-b29f-4463-a99a-4c5ed21f131f");
+    protected static final UUID uuidChorologicalS_Am = UUID.fromString("6b587c6e-b96a-4d8d-a963-3e1b82aea483");
+    protected static final UUID uuidChorologicalE_As = UUID.fromString("9f818f24-87ba-4cf7-adfb-442573ab0e66");
+    protected static final UUID uuidChorologicalSE_As = UUID.fromString("f63700d1-3327-4300-ac54-3474c7cd6630");
+    protected static final UUID uuidChorologicalS_Afr = UUID.fromString("a2918074-a09e-4491-9789-72984230f647");
+    protected static final UUID uuidChorologicalArab = UUID.fromString("ed62dc2f-e741-4728-936d-fc02b74e4ec0");
+    protected static final UUID uuidChorologicalArab_NE_Afr = UUID.fromString("07ce7798-585d-4488-a2fa-cdd9464e9761");
+    protected static final UUID uuidChorologicalCaucas = UUID.fromString("0656ed2c-5523-4ae1-bc37-75feeed8c914");
+    protected static final UUID uuidChorologicalPontic = UUID.fromString("b70cbdc3-8201-4da3-b8ca-cfa2dd2852b9");
+    protected static final UUID uuidChorologicalEurop = UUID.fromString("14bad9e4-fd7c-4d6b-910a-d74f48a38eb1");
+    protected static final UUID uuidChorologicalAustral = UUID.fromString("13217177-94c4-4b4f-84bb-6b04729e5063");
+
+    protected static final UUID uuidChorological__Co_ = UUID.fromString("72ffbc62-7c0a-4d88-9663-ead7499b8a26");
+    protected static final UUID uuidChorologicalW_Med = UUID.fromString("9dca0ce0-177b-4674-b43a-ce2802c27010");
+    protected static final UUID uuidChorologicalC_Med = UUID.fromString("0026029d-6aa0-4b71-bcf4-572ed7d2eec1");
+    protected static final UUID uuidChorologicalW_Eur = UUID.fromString("e9aeb881-f659-4f77-94bc-140d30d53627");
+    protected static final UUID uuidChorologicalS_Eur = UUID.fromString("d4726968-6334-4073-9ff9-271adb8114a8");
+    protected static final UUID uuidChorologicalC_Am = UUID.fromString("f93f3e62-048a-4d3a-a481-c3a43c329811");
+    protected static final UUID uuidChorologicalC_As = UUID.fromString("3b384884-5862-4426-b906-82d3049cf87a");
+    protected static final UUID uuidChorologicalSW_As = UUID.fromString("ce6bd344-049c-4e48-b2c5-dd9baeed73af");
+    protected static final UUID uuidChorologicalUnknown = UUID.fromString("e5a98a56-4916-4f3d-849f-10276051208a");
+    protected static final UUID uuidChorologicalN_Afr = UUID.fromString("6cf2b057-1c8c-4756-98e6-559c1e330915");
+    protected static final UUID uuidChorologicalAm = UUID.fromString("2474ada3-d6ee-402f-a59f-df6164066766");
+    protected static final UUID uuidChorologicalPaleosubtrop = UUID.fromString("bd65ea55-6841-424f-8ecc-57c5adb9b558");
+    protected static final UUID uuidChorologicalSW_Eur = UUID.fromString("394bb97f-7fbd-44e3-ba2d-af52abf5a302");
+
+    protected static final UUID uuidChorologicalS_As = UUID.fromString("6440fb40-6304-423b-a952-2e99911c4fc5");
+    protected static final UUID uuidChorologicalNE_Afr = UUID.fromString("48fb80a7-e350-4563-812b-7931d5cf1675");
+    protected static final UUID uuidChorologicalNW_Afr = UUID.fromString("1c713f25-0f1f-43f4-b644-2d985b9d2f6e");
+    protected static final UUID uuidChorologicalTrop_Afr = UUID.fromString("a67c04e6-4d1f-4238-9b25-0454d3611513");
+    protected static final UUID uuidChorologicalAfr = UUID.fromString("751c28cc-05af-4778-9eba-dfa5b23aa664");
+    protected static final UUID uuidChorologicalAs = UUID.fromString("8258ab53-2f30-4b4d-8e67-69219b79eb1b");
+    protected static final UUID uuidChorologicalW_As = UUID.fromString("537c7670-3f35-4295-a177-8ac2b3e3315c");
+    protected static final UUID uuidChorologicalC_Eur = UUID.fromString("88c129f8-d45b-48f3-b8bc-6f1e4ea1d902");
+    protected static final UUID uuidChorologicalE_Afr = UUID.fromString("1a56fc84-93a2-4414-af63-3d3c83f8e8d9");
+    protected static final UUID uuidChorologicalW_Austr = UUID.fromString("271d503b-9279-46cb-ac14-184f44e07498");
+    protected static final UUID uuidChorologicaltrop_As = UUID.fromString("c357a2e4-85d1-46ab-abb1-df0211f5f8bd");
 
 }

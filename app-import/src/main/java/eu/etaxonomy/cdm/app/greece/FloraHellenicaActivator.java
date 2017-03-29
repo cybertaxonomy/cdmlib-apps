@@ -13,17 +13,12 @@ import java.util.UUID;
 
 import org.apache.log4j.Logger;
 
-import eu.etaxonomy.cdm.api.service.ITermService;
 import eu.etaxonomy.cdm.app.common.CdmDestinations;
 import eu.etaxonomy.cdm.database.DbSchemaValidation;
 import eu.etaxonomy.cdm.database.ICdmDataSource;
 import eu.etaxonomy.cdm.io.common.CdmDefaultImport;
 import eu.etaxonomy.cdm.io.common.IImportConfigurator.CHECK;
 import eu.etaxonomy.cdm.io.greece.FloraHellenicaImportConfigurator;
-import eu.etaxonomy.cdm.io.greece.FloraHellenicaTransformer;
-import eu.etaxonomy.cdm.model.description.Feature;
-import eu.etaxonomy.cdm.model.description.FeatureNode;
-import eu.etaxonomy.cdm.model.description.FeatureTree;
 
 /**
  *
@@ -41,8 +36,8 @@ public class FloraHellenicaActivator {
     //database validation status (create, update, validate ...)
     static DbSchemaValidation hbm2dll = DbSchemaValidation.CREATE;
 
-    static final ICdmDataSource cdmDestination = CdmDestinations.localH2();
-//  static final ICdmDataSource cdmDestination = CdmDestinations.cdm_test_local_mysql_test();
+//    static final ICdmDataSource cdmDestination = CdmDestinations.localH2();
+  static final ICdmDataSource cdmDestination = CdmDestinations.cdm_test_local_mysql_test();
 //    static final ICdmDataSource cdmDestination = CdmDestinations.cdm_greece_checklist_production();
 
     //feature tree uuid
@@ -73,48 +68,16 @@ public class FloraHellenicaActivator {
         config.setDbSchemaValidation(hbm2dll);
 //        config.setSourceReferenceTitle(sourceReferenceTitle);
 //        config.setDoVocabularies(doVocabularies);
+        config.setUuidFeatureTree(featureTreeUuid);
+        config.setFeatureTreeTitle(featureTreeTitle);
 
-        CdmDefaultImport<FloraHellenicaImportConfigurator> myImport = new CdmDefaultImport<FloraHellenicaImportConfigurator>();
+        CdmDefaultImport<FloraHellenicaImportConfigurator> myImport = new CdmDefaultImport<>();
         myImport.invoke(config);
 
-        FeatureTree tree = makeFeatureNodes(myImport.getCdmAppController().getTermService());
-        myImport.getCdmAppController().getFeatureTreeService().saveOrUpdate(tree);
+//        FeatureTree tree = makeFeatureNodes(myImport.getCdmAppController().getTermService());
+//        myImport.getCdmAppController().getFeatureTreeService().saveOrUpdate(tree);
     }
 
-    private FeatureTree makeFeatureNodes(ITermService service){
-
-        FeatureTree result = FeatureTree.NewInstance(featureTreeUuid);
-        result.setTitleCache(featureTreeTitle, true);
-        FeatureNode root = result.getRoot();
-        FeatureNode newNode;
-
-        Feature newFeature = (Feature)service.find(Feature.DISTRIBUTION().getUuid());
-        newNode = FeatureNode.NewInstance(newFeature);
-        root.addChild(newNode);
-
-        newFeature = (Feature)service.find(FloraHellenicaTransformer.uuidFloraHellenicaChorologyFeature);
-        newNode = FeatureNode.NewInstance(newFeature);
-        root.addChild(newNode);
-
-        newFeature = (Feature)service.find(Feature.LIFEFORM().getUuid());
-        newNode = FeatureNode.NewInstance(newFeature);
-        root.addChild(newNode);
-
-        newFeature = (Feature)service.find(Feature.HABITAT().getUuid());
-        newNode = FeatureNode.NewInstance(newFeature);
-        root.addChild(newNode);
-
-
-        newFeature = (Feature)service.find(Feature.NOTES().getUuid());
-        newNode = FeatureNode.NewInstance(newFeature);
-        root.addChild(newNode);
-
-        return result;
-    }
-
-    private URI greekChecklist_OldVersion(){
-        return URI.create("file:////BGBM-PESIHPC/Greece/VPG_FINAL_June_2016.xlsx");
-    }
 
     private URI greekChecklist(){
         return URI.create("file:////BGBM-PESIHPC/Greece/VPG_FINAL_WITH_SYNONYMS_21.01.2017.xlsx");

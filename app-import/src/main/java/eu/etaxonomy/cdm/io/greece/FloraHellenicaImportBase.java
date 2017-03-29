@@ -33,8 +33,6 @@ public abstract class FloraHellenicaImportBase<CONFIG extends FloraHellenicaImpo
     private static final Logger logger = Logger.getLogger(FloraHellenicaImportBase.class);
 
 
-
-
     /**
      * @param taxon
      * @return
