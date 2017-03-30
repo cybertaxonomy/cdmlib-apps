@@ -201,6 +201,7 @@ public class FloraHellenicaTaxonImport<CONFIG extends FloraHellenicaImportConfig
         Feature choroFeature = getFeature(state, FloraHellenicaTransformer.uuidFloraHellenicaChorologyFeature,
                 "Chorology", "The Chorological Category", "Choro", null);
         CategoricalData catData = CategoricalData.NewInstance(choroFeature);
+        catData.setOrderRelevant(true);
 
         String[] splits = value.split(" & ");
         replaceDirection(splits, line);
@@ -219,6 +220,10 @@ public class FloraHellenicaTaxonImport<CONFIG extends FloraHellenicaImportConfig
                 }
             }
         }
+        if (catData.getStateData().size() > 1){
+            catData.setOrderRelevant(true);
+        }
+
         desc.addElement(catData);
     }
 
