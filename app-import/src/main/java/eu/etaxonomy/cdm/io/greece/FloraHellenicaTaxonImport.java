@@ -223,7 +223,6 @@ public class FloraHellenicaTaxonImport<CONFIG extends FloraHellenicaImportConfig
         if (catData.getStateData().size() > 1){
             catData.setOrderRelevant(true);
         }
-
         desc.addElement(catData);
     }
 
