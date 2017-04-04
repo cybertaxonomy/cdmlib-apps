@@ -29,6 +29,9 @@ public class FloraHellenicaImportConfigurator extends ExcelImportConfiguratorBas
     private static IInputTransformer defaultTransformer = new FloraHellenicaTransformer();
     private Reference secReference;
 
+    private boolean isDoImages = true;
+
+
 
     /**
      * @param source
@@ -59,6 +62,17 @@ public class FloraHellenicaImportConfigurator extends ExcelImportConfiguratorBas
                 FloraHellenicaExcludedTaxonImport.class,
                 FloraHellenicaSynonymImport.class,
                 FloraHellenicaCommentsImport.class,
+                FloraHellenicaImageImport.class,
         };
+    }
+
+
+    public boolean isDoImages() {
+        return isDoImages;
+    }
+
+
+    public void setDoImages(boolean isDoImages) {
+        this.isDoImages = isDoImages;
     }
 }

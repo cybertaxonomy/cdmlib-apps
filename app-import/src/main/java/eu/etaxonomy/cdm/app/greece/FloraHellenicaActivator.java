@@ -37,8 +37,8 @@ public class FloraHellenicaActivator {
     static DbSchemaValidation hbm2dll = DbSchemaValidation.CREATE;
 
 //    static final ICdmDataSource cdmDestination = CdmDestinations.localH2();
-  static final ICdmDataSource cdmDestination = CdmDestinations.cdm_test_local_mysql_test();
-//    static final ICdmDataSource cdmDestination = CdmDestinations.cdm_greece_checklist_production();
+//  static final ICdmDataSource cdmDestination = CdmDestinations.cdm_test_local_mysql_test();
+    static final ICdmDataSource cdmDestination = CdmDestinations.cdm_greece_checklist_production();
 
     //feature tree uuid
     public static final UUID featureTreeUuid = UUID.fromString("9e1e0e81-7475-4b28-8619-b7f42cd760b6");
@@ -51,6 +51,8 @@ public class FloraHellenicaActivator {
 
     //check - import
     static final CHECK check = CHECK.IMPORT_WITHOUT_CHECK;
+
+    boolean doImages = true;
 
     boolean doVocabularies = (hbm2dll == DbSchemaValidation.CREATE);
 
@@ -70,6 +72,7 @@ public class FloraHellenicaActivator {
 //        config.setDoVocabularies(doVocabularies);
         config.setUuidFeatureTree(featureTreeUuid);
         config.setFeatureTreeTitle(featureTreeTitle);
+        config.setDoImages(doImages);
 
         CdmDefaultImport<FloraHellenicaImportConfigurator> myImport = new CdmDefaultImport<>();
         myImport.invoke(config);
