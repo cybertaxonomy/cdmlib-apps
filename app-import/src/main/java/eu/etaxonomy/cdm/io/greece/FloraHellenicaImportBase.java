@@ -81,6 +81,8 @@ public abstract class FloraHellenicaImportBase<CONFIG extends FloraHellenicaImpo
             String message = state.getCurrentLine()+  ": Accepted taxon could not be found: " + accStr;
             logger.warn(message);
             return null;
+        }else{
+            accTaxon = (Taxon)getTaxonService().find(accTaxon.getUuid());
         }
         return accTaxon;
     }

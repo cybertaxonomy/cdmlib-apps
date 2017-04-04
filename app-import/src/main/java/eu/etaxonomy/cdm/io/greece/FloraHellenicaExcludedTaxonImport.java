@@ -15,6 +15,7 @@ import java.util.Set;
 
 import org.apache.log4j.Logger;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.TransactionStatus;
 
 import eu.etaxonomy.cdm.io.mexico.SimpleExcelTaxonImportState;
 import eu.etaxonomy.cdm.model.name.BotanicalName;
@@ -60,11 +61,17 @@ public class FloraHellenicaExcludedTaxonImport<CONFIG extends FloraHellenicaImpo
         return "excluded taxa";
     }
 
+    private boolean isFirst = true;
+    private TransactionStatus tx = null;
     /**
      * {@inheritDoc}
      */
     @Override
     protected void firstPass(SimpleExcelTaxonImportState<CONFIG> state) {
+        if (isFirst){
+            tx = this.startTransaction();
+            isFirst = false;
+        }
 
         String line = state.getCurrentLine() + ": ";
         HashMap<String, String> record = state.getOriginalRecord();
@@ -80,6 +87,14 @@ public class FloraHellenicaExcludedTaxonImport<CONFIG extends FloraHellenicaImpo
         TaxonNode taxonNode = makeTaxon(state, line, record, noStr);
         if (taxonNode != null){
             state.putTaxon(noStr, taxonNode.getTaxon());
+        }
+    }
+
+    @Override
+    protected void secondPass(SimpleExcelTaxonImportState<CONFIG> state) {
+        if (tx != null){
+            this.commitTransaction(tx);
+            tx = null;
         }
     }
 

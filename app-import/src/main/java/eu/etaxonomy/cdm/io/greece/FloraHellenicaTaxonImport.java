@@ -18,6 +18,7 @@ import java.util.UUID;
 
 import org.apache.log4j.Logger;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.TransactionStatus;
 
 import eu.etaxonomy.cdm.api.service.ITermService;
 import eu.etaxonomy.cdm.common.CdmUtils;
@@ -84,7 +85,7 @@ public class FloraHellenicaTaxonImport<CONFIG extends FloraHellenicaImportConfig
 
 
    private  static List<String> expectedKeys= Arrays.asList(new String[]{
-            "Unique ID","Group","Family","Genus","Species","Species Author","Subspecies","Subspecies Author",
+            "Unique ID","uuid","Group","Family","Genus","Species","Species Author","Subspecies","Subspecies Author",
             "IoI","NPi","SPi","Pe","StE","EC","NC","NE","NAe","WAe","Kik","KK","EAe",
             STATUS,CHOROLOGICAL_CATEGOGY,LIFE_FORM,"A","C","G","H","M","P","R","W", "Taxon"
     });
@@ -98,11 +99,18 @@ public class FloraHellenicaTaxonImport<CONFIG extends FloraHellenicaImportConfig
         return "valid taxa names";
     }
 
+
+    private boolean isFirst = true;
+    private TransactionStatus tx = null;
     /**
      * {@inheritDoc}
      */
     @Override
     protected void firstPass(SimpleExcelTaxonImportState<CONFIG> state) {
+        if (isFirst){
+            tx = this.startTransaction();
+            isFirst = false;
+        }
         initAreaVocabulary(state);
         initLifeformVocabulary(state);
         initHabitatVocabulary(state);
@@ -137,6 +145,16 @@ public class FloraHellenicaTaxonImport<CONFIG extends FloraHellenicaImportConfig
 
         state.putTaxon(noStr, taxon);
     }
+
+
+    @Override
+    protected void secondPass(SimpleExcelTaxonImportState<CONFIG> state) {
+        if (tx != null){
+            this.commitTransaction(tx);
+            tx = null;
+        }
+    }
+
 
     boolean hasFeatureTree = false;
     /**
@@ -373,6 +391,8 @@ public class FloraHellenicaTaxonImport<CONFIG extends FloraHellenicaImportConfig
         String speciesAuthorStr = getValue(record, "Species Author");
         String subSpeciesStr = getValue(record, "Subspecies");
         String subSpeciesAuthorStr = getValue(record, "Subspecies Author");
+        String uuidStr = getValue(record, "uuid");
+        UUID uuid = UUID.fromString(uuidStr);
         boolean isSubSpecies = isNotBlank(subSpeciesStr);
         boolean isAutonym = isSubSpecies && speciesStr.equals(subSpeciesStr);
         if (isSubSpecies && ! isAutonym && isBlank(subSpeciesAuthorStr)){
@@ -399,6 +419,7 @@ public class FloraHellenicaTaxonImport<CONFIG extends FloraHellenicaImportConfig
         Taxon taxon = Taxon.NewInstance(name, getSecReference(state));
         taxon.addImportSource(noStr, getWorksheetName(), getSourceCitation(state), null);
 //        String parentStr = isSubSpecies ? makeSpeciesKey(genusStr, speciesStr, speciesAuthorStr) : genusStr;
+        taxon.setUuid(uuid);
         String parentStr = genusStr;
         boolean genusAsBefore = genusStr.equals(lastGenus);
         boolean speciesAsBefore = speciesStr.equals(lastSpecies);
@@ -906,26 +927,27 @@ public class FloraHellenicaTaxonImport<CONFIG extends FloraHellenicaImportConfig
         //FIXME
 //        addMapping(greece, xx "mex_adm0", "iso", "MEX");
 
-        addArea(state, "IoI", "Ionian Islands", FloraHellenicaTransformer.uuidAreaIoI);
-        addArea(state, "NPi", "North Pindos", FloraHellenicaTransformer.uuidAreaNPi);
-        addArea(state, "SPi", "South Pindos", FloraHellenicaTransformer.uuidAreaSPi);
-        addArea(state, "Pe", "Peloponnisos", FloraHellenicaTransformer.uuidAreaPe);
-        addArea(state, "StE", "Sterea Ellas", FloraHellenicaTransformer.uuidAreaStE);
-        addArea(state, "EC", "East Central Greece", FloraHellenicaTransformer.uuidAreaEC);
-        addArea(state, "NC", "North Central Greece", FloraHellenicaTransformer.uuidAreaNC);
-        addArea(state, "NE", "North-East Greece", FloraHellenicaTransformer.uuidAreaNE);
-        addArea(state, "NAe", "North Aegean islands", FloraHellenicaTransformer.uuidAreaNAe);
-        addArea(state, "WAe", "West Aegean islands", FloraHellenicaTransformer.uuidAreaWAe);
-        addArea(state, "Kik", "Kiklades", FloraHellenicaTransformer.uuidAreaKik);
-        addArea(state, "KK", "Kriti and Karpathos", FloraHellenicaTransformer.uuidAreaKK);
-        addArea(state, "EAe", "East Aegean islands", FloraHellenicaTransformer.uuidAreaEAe);
+        addArea(state, "IoI", "Ionian Islands", 4, FloraHellenicaTransformer.uuidAreaIoI);
+        addArea(state, "NPi", "North Pindos", 13, FloraHellenicaTransformer.uuidAreaNPi);
+        addArea(state, "SPi", "South Pindos", 11, FloraHellenicaTransformer.uuidAreaSPi);
+        addArea(state, "Pe", "Peloponnisos", 1, FloraHellenicaTransformer.uuidAreaPe);
+        addArea(state, "StE", "Sterea Ellas", 12, FloraHellenicaTransformer.uuidAreaStE);
+        addArea(state, "EC", "East Central Greece", 5, FloraHellenicaTransformer.uuidAreaEC);
+        addArea(state, "NC", "North Central Greece", 2, FloraHellenicaTransformer.uuidAreaNC);
+        addArea(state, "NE", "North-East Greece", 10, FloraHellenicaTransformer.uuidAreaNE);
+        addArea(state, "NAe", "North Aegean islands", 7, FloraHellenicaTransformer.uuidAreaNAe);
+        addArea(state, "WAe", "West Aegean islands", 9, FloraHellenicaTransformer.uuidAreaWAe);
+        addArea(state, "Kik", "Kiklades", 8, FloraHellenicaTransformer.uuidAreaKik);
+        addArea(state, "KK", "Kriti and Karpathos", 6, FloraHellenicaTransformer.uuidAreaKK);
+        addArea(state, "EAe", "East Aegean islands", 3, FloraHellenicaTransformer.uuidAreaEAe);
 
         this.getVocabularyService().save(areasVoc);
         return;
     }
 
-    private void addArea(SimpleExcelTaxonImportState<CONFIG> state, String abbrevLabel, String areaLabel, UUID uuid) {
-        addArea(state, abbrevLabel, areaLabel, uuid, areaLabel);  //short cut if label and mapping label are equal
+    private void addArea(SimpleExcelTaxonImportState<CONFIG> state, String abbrevLabel, String areaLabel,
+            Integer id, UUID uuid) {
+        addArea(state, abbrevLabel, areaLabel, uuid, String.valueOf(id));  //short cut if label and mapping label are equal
     }
 
     private void addArea(SimpleExcelTaxonImportState<CONFIG> state, String abbrevLabel, String areaLabel,
@@ -939,7 +961,8 @@ public class FloraHellenicaTaxonImport<CONFIG extends FloraHellenicaImportConfig
      * @param string
      * @param uuidaguascalientes
      */
-    private void addArea(SimpleExcelTaxonImportState<CONFIG> state, String abbrevLabel, String areaLabel, UUID uuid, String mappingLabel, Integer id1) {
+    private void addArea(SimpleExcelTaxonImportState<CONFIG> state, String abbrevLabel, String areaLabel,
+            UUID uuid, String mappingLabel, Integer id1) {
         NamedArea newArea = NamedArea.NewInstance(
                 areaLabel, areaLabel, abbrevLabel);
         newArea.setIdInVocabulary(abbrevLabel);
@@ -948,11 +971,8 @@ public class FloraHellenicaTaxonImport<CONFIG extends FloraHellenicaImportConfig
         newArea.setLevel(null);
         newArea.setType(NamedAreaType.NATURAL_AREA());
         areasVoc.addTerm(newArea);
-        //FIXME
-        if (id1 != null){
-            addMapping(newArea, "mex_adm1", "id_1", String.valueOf(id1));
-        }else if (mappingLabel != null){
-            addMapping(newArea, "mex_adm1", "name_1", mappingLabel);
+        if (mappingLabel != null){
+            addMapping(newArea, "phytogeographical_regions_of_greece", "id", mappingLabel);
         }
     }
 
