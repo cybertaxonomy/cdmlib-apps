@@ -10,6 +10,7 @@
 package eu.etaxonomy.cdm.app.berlinModelImport;
 
 import java.lang.reflect.Method;
+import java.util.List;
 import java.util.UUID;
 
 import org.apache.log4j.Logger;
@@ -26,9 +27,13 @@ import eu.etaxonomy.cdm.io.common.IImportConfigurator.CHECK;
 import eu.etaxonomy.cdm.io.common.IImportConfigurator.DO_REFERENCES;
 import eu.etaxonomy.cdm.io.common.ImportResult;
 import eu.etaxonomy.cdm.io.common.Source;
+import eu.etaxonomy.cdm.model.common.GrantedAuthorityImpl;
+import eu.etaxonomy.cdm.model.common.Group;
+import eu.etaxonomy.cdm.model.common.User;
 import eu.etaxonomy.cdm.model.description.FeatureTree;
 import eu.etaxonomy.cdm.model.name.INonViralName;
 import eu.etaxonomy.cdm.model.name.NomenclaturalCode;
+import eu.etaxonomy.cdm.persistence.hibernate.permission.Role;
 
 
 /**
@@ -46,9 +51,9 @@ public class SalvadorActivator {
 	//database validation status (create, update, validate ...)
 	static DbSchemaValidation hbm2dll = DbSchemaValidation.CREATE;
 	static final Source berlinModelSource = BerlinModelSources.El_Salvador();
-	static final ICdmDataSource cdmDestination = CdmDestinations.localH2();
+//	static final ICdmDataSource cdmDestination = CdmDestinations.localH2();
 //    static final ICdmDataSource cdmDestination = CdmDestinations.cdm_salvador_preview();
-//    static final ICdmDataSource cdmDestination = CdmDestinations.cdm_salvador_production();
+    static final ICdmDataSource cdmDestination = CdmDestinations.cdm_salvador_production();
 	static final UUID treeUuid = UUID.fromString("b010c84d-6049-45f4-9f13-c065101eaa26");
 	static final UUID secUuid = UUID.fromString("d03ef02a-f226-4cb1-bdb4-f6c154f08a34");
 	static final int sourceSecId = 7331;
@@ -60,7 +65,7 @@ public class SalvadorActivator {
 	static boolean useClassification = true;
 
 	//check - import
-	static final CHECK check = CHECK.CHECK_AND_IMPORT;
+	static final CHECK check = CHECK.IMPORT_WITHOUT_CHECK;
 	static final IImportConfigurator.EDITOR editor = IImportConfigurator.EDITOR.EDITOR_AS_EDITOR;
 
 	//NomenclaturalCode
@@ -115,14 +120,15 @@ public class SalvadorActivator {
 //	static final boolean doNameFacts = false;
 //
 //	//taxa
-//	static final boolean doTaxa = true;
-//	static final boolean doRelTaxa = true;
+//	static final boolean doTaxa = false;
+//	static final boolean doRelTaxa = false;
 //	static final boolean doFacts = false;
 //	static final boolean doOccurences = false;
+//	static final boolean doCommonNames = false;
 //
 //	//etc.
 //	static final boolean doMarker = false;
-//	static final boolean doUser = false;
+//	static final boolean doUser = true;
 
 
 	public ImportResult doImport(ICdmDataSource destination){
@@ -179,9 +185,49 @@ public class SalvadorActivator {
 
 		createFeatureTree(config, bmImport);
 
+		addUsers(config, bmImport);
+
 		System.out.println("End import from BerlinModel ("+ source.getDatabase() + ")...");
 		return result;
 	}
+
+    /**
+     * @param config
+     * @param bmImport
+     */
+    private void addUsers(BerlinModelImportConfigurator config, CdmDefaultImport<BerlinModelImportConfigurator> bmImport) {
+        if (config.isDoUser()){
+            ICdmRepository app = bmImport.getCdmAppController();
+            TransactionStatus tx = app.startTransaction(false);
+
+            //admin
+            Group adminGroup = Group.NewInstance("Admins");
+            GrantedAuthorityImpl roleAdmin = app.getGrantedAuthorityService().findAuthorityString(Role.ROLE_ADMIN.getAuthority());
+            adminGroup.addGrantedAuthority(roleAdmin);
+
+//            UserDetails wgbDetails = app.getUserService().loadUserByUsername("w.berendsohn");
+            List<User> users = app.getUserService().listByUsername("w.berendsohn", null, null, null, null, null, null);
+            for (User user: users){
+                adminGroup.addMember(user);
+            }
+            users = app.getUserService().listByUsername("admin", null, null, null, null, null, null);
+            for (User user: users){
+                adminGroup.addMember(user);
+            }
+            app.getGroupService().saveOrUpdate(adminGroup);
+
+            //gruber
+            List<Group> editorGroups = app.getGroupService().listByName("Editor", null, null, null, null, null, null);
+            for (Group editorGroup: editorGroups){
+                users = app.getUserService().listByUsername("k.gruber", null, null, null, null, null, null);
+                for (User user: users){
+                    editorGroup.addMember(user);
+                }
+            }
+            app.commitTransaction(tx);
+        }
+
+    }
 
     //create feature tree
     private void createFeatureTree(BerlinModelImportConfigurator config,

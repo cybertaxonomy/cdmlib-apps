@@ -88,8 +88,6 @@ public class BerlinModelUserImport extends BerlinModelImportBase {
 					}
 					User user = User.NewInstance(username, pwd);
 
-					Person person = Person.NewInstance();
-					user.setPerson(person);
 
 					/*
 					 * this is a crucial call, otherwise the password will not be set correctly
@@ -99,9 +97,14 @@ public class BerlinModelUserImport extends BerlinModelImportBase {
 					getUserService().createUser(user);
 
 
+
 					dbAttrName = "RealName";
-					cdmAttrName = "TitleCache";
-					success &= ImportHelper.addStringValue(rs, person, dbAttrName, cdmAttrName, false);
+					if (isNotBlank(rs.getString(dbAttrName))){
+					    cdmAttrName = "TitleCache";
+					    Person person = Person.NewInstance();
+					    user.setPerson(person);
+					    success &= ImportHelper.addStringValue(rs, person, dbAttrName, cdmAttrName, false);
+					}
 
 					users.add(user);
 					state.putUser(username, user);
