@@ -16,6 +16,7 @@ import java.util.Map;
 
 import org.apache.log4j.Logger;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.TransactionStatus;
 
 import eu.etaxonomy.cdm.config.Configuration;
 import eu.etaxonomy.cdm.io.berlinModel.in.validation.BerlinModelUserImportValidator;
@@ -72,8 +73,10 @@ public class BerlinModelUserImport extends BerlinModelImportBase {
 		ResultSet rs = source.getResultSet(strQuery) ;
 		Collection<User> users = new ArrayList<>();
 
+
+		TransactionStatus tx = this.startTransaction();
 		int i = 0;
-		//for each reference
+		//for each user
 		try{
 			while (rs.next()){
 				try{
@@ -88,6 +91,14 @@ public class BerlinModelUserImport extends BerlinModelImportBase {
 					}
 					User user = User.NewInstance(username, pwd);
 
+					dbAttrName = "RealName";
+					String realName = rs.getString(dbAttrName);
+					if (isNotBlank(realName)){
+					    cdmAttrName = "TitleCache";
+					    Person person = Person.NewInstance();
+					    user.setPerson(person);
+					    success &= ImportHelper.addStringValue(rs, person, dbAttrName, cdmAttrName, false);
+					}
 
 					/*
 					 * this is a crucial call, otherwise the password will not be set correctly
@@ -95,16 +106,6 @@ public class BerlinModelUserImport extends BerlinModelImportBase {
 					 */
 					authenticate(Configuration.adminLogin, Configuration.adminPassword);
 					getUserService().createUser(user);
-
-
-
-					dbAttrName = "RealName";
-					if (isNotBlank(rs.getString(dbAttrName))){
-					    cdmAttrName = "TitleCache";
-					    Person person = Person.NewInstance();
-					    user.setPerson(person);
-					    success &= ImportHelper.addStringValue(rs, person, dbAttrName, cdmAttrName, false);
-					}
 
 					users.add(user);
 					state.putUser(username, user);
@@ -123,6 +124,8 @@ public class BerlinModelUserImport extends BerlinModelImportBase {
 
 		logger.info("save " + i + " "+pluralString + " ...");
 		getUserService().saveOrUpdate(users);
+
+		this.commitTransaction(tx);
 
 		logger.info("end make "+pluralString+" ..." + getSuccessString(success));;
 		if (!success){
