@@ -13,6 +13,8 @@ import eu.etaxonomy.cdm.io.common.ICdmIO;
 import eu.etaxonomy.cdm.io.common.IPartitionedIO;
 
 /**
+ * Base class for imports from Edaphobase.
+ *
  * @author a.mueller
  * @date 18.12.2015
  *

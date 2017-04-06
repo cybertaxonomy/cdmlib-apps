@@ -28,6 +28,8 @@ import eu.etaxonomy.cdm.model.taxon.Taxon;
 import eu.etaxonomy.cdm.model.taxon.TaxonBase;
 
 /**
+ * Import class for synonym relationships in Edaphobase.
+ *
  * @author a.mueller
  * @date 21.12.2015
  *
@@ -37,9 +39,7 @@ public class EdaphobaseSynonymyImport extends EdaphobaseImportBase {
     private static final long serialVersionUID = 6641343927320994726L;
 
     private static final Logger logger = Logger.getLogger(EdaphobaseSynonymyImport.class);
-
     private static final String tableName = "tax_synonym";
-
     private static final String pluralString = "related synonyms";
 
 
@@ -71,7 +71,6 @@ public class EdaphobaseSynonymyImport extends EdaphobaseImportBase {
     @Override
     public boolean doPartition(ResultSetPartitioner partitioner, EdaphobaseImportState state) {
         ResultSet rs = partitioner.getResultSet();
-        Map<String, TaxonBase> map = partitioner.getObjectMap(TAXON_NAMESPACE);
         Reference sourceReference = state.getTransactionalSourceReference();
 
         Set<TaxonBase> taxaToSave = new HashSet<>();
@@ -118,7 +117,6 @@ public class EdaphobaseSynonymyImport extends EdaphobaseImportBase {
 
             }
         } catch (SQLException e) {
-            // TODO Auto-generated catch block
             e.printStackTrace();
         }
 
@@ -145,6 +143,7 @@ public class EdaphobaseSynonymyImport extends EdaphobaseImportBase {
             nameSpace = TAXON_NAMESPACE;
             cdmClass = TaxonBase.class;
             idSet = taxonIdSet;
+            @SuppressWarnings("rawtypes")
             Map<String, TaxonBase> taxonMap = (Map<String, TaxonBase>)getCommonService().getSourcedObjectsByIdInSource(cdmClass, idSet, nameSpace);
             result.put(nameSpace, taxonMap);
 
