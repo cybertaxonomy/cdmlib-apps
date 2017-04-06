@@ -40,12 +40,13 @@ import eu.etaxonomy.cdm.persistence.query.OrderHint;
 /**
  * @author a.babadshanjan
  * @created 08.01.2009
- * @version 1.0
  */
 
 @Component
 public class CommonNameExcelImport extends ExcelImporterBase<CichorieaeCommonNameImportState> {
-	private static final Logger logger = Logger.getLogger(CommonNameExcelImport.class);
+
+    private static final long serialVersionUID = 747044451715401750L;
+    private static final Logger logger = Logger.getLogger(CommonNameExcelImport.class);
 
 	protected static final String SPECIES_COLUMN = "Art";
 	protected static final String COMMON_NAME_COLUMN = "common name";
@@ -62,10 +63,6 @@ public class CommonNameExcelImport extends ExcelImporterBase<CichorieaeCommonNam
 		return false;
 	}
 
-
-	/* (non-Javadoc)
-	 * @see eu.etaxonomy.cdm.io.common.CdmIoBase#doCheck(eu.etaxonomy.cdm.io.common.IoStateBase)
-	 */
 	@Override
 	protected boolean doCheck(CichorieaeCommonNameImportState state) {
 		logger.warn("DoCheck not yet implemented for CommonNameExcelImport");
