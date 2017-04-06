@@ -53,9 +53,12 @@ public class EdaphobaseSynonymyImport extends EdaphobaseImportBase {
 
     @Override
     protected String getIdQuery(EdaphobaseImportState state) {
-        return "SELECT tax_synonym_id  "
-                + " FROM tax_synonym "
-                + " ORDER BY tax_synonym.a_taxon_fk_taxon_id ";
+        return "    SELECT sr.tax_synonym_id  "
+                + " FROM tax_synonym sr "
+                + "  INNER JOIN tax_taxon s ON s.taxon_id = sr.a_taxon_fk_taxon_id "
+                + "  INNER JOIN tax_taxon t ON t.taxon_id = sr.b_taxon_fk_taxon_id "
+                + " WHERE  s.valid = false AND t.valid = true AND sr.synonym_role = 11614 "
+                + " ORDER BY sr.a_taxon_fk_taxon_id ";
     }
 
     @Override
@@ -102,7 +105,13 @@ public class EdaphobaseSynonymyImport extends EdaphobaseImportBase {
                             logger.warn(message);
                         }else{
                             Taxon taxon = CdmBase.deproxy(accepted, Taxon.class);
+                            if (synonym.getAcceptedTaxon()!= null){
+                                String message = "Synonym ("+synId+") already has an accepted taxon. Have to clone synonym. RelId: " + id;
+                                logger.warn(message);
+                                synonym = (Synonym)synonym.clone();
+                            }
                             taxon.addSynonym(synonym, SynonymType.SYNONYM_OF());
+                            state.addSynonymWithAcceptedTaxon(synId);
                             taxaToSave.add(synonym);
                             taxaToSave.add(taxon);
                         }

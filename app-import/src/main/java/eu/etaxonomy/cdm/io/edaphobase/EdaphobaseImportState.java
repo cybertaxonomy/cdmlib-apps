@@ -9,7 +9,9 @@
 package eu.etaxonomy.cdm.io.edaphobase;
 
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 import java.util.UUID;
 
 import org.apache.log4j.Logger;
@@ -26,6 +28,7 @@ public class EdaphobaseImportState extends DbImportStateBase<EdaphobaseImportCon
     private static final Logger logger = Logger.getLogger(EdaphobaseImportState.class);
 
     private final Map<String, UUID> authorMap = new HashMap<>();
+    private final Set<Integer> synonymsWithAcceptedTaxa = new HashSet<>();
 
     /**
      * @param config
@@ -40,5 +43,13 @@ public class EdaphobaseImportState extends DbImportStateBase<EdaphobaseImportCon
 
     public void setAuthorMap(Map<String, UUID> authorMap){
         this.authorMap.putAll(authorMap);
+    }
+
+    public void addSynonymWithAcceptedTaxon(Integer synId){
+        synonymsWithAcceptedTaxa.add(synId);
+    }
+
+    public boolean hasAcceptedTaxon (Integer synId){
+        return synonymsWithAcceptedTaxa.contains(synId);
     }
 }

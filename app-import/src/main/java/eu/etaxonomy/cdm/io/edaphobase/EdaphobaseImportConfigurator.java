@@ -75,6 +75,7 @@ public class EdaphobaseImportConfigurator
                 EdaphobaseInReferenceImport.class,
                 EdaphobaseTaxonImport.class,
                 EdaphobaseSynonymyImport.class,
+                EdaphobaseSynonymy2Import.class,
                 EdaphobaseClassificationImport.class
         };
     }
