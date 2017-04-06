@@ -29,7 +29,6 @@ import eu.etaxonomy.cdm.io.common.Source;
 import eu.etaxonomy.cdm.model.description.FeatureTree;
 import eu.etaxonomy.cdm.model.name.INonViralName;
 import eu.etaxonomy.cdm.model.name.NomenclaturalCode;
-import eu.etaxonomy.cdm.model.name.NonViralName;
 
 
 /**
@@ -47,9 +46,9 @@ public class SalvadorActivator {
 	//database validation status (create, update, validate ...)
 	static DbSchemaValidation hbm2dll = DbSchemaValidation.CREATE;
 	static final Source berlinModelSource = BerlinModelSources.El_Salvador();
-//	static final ICdmDataSource cdmDestination = CdmDestinations.localH2();
+	static final ICdmDataSource cdmDestination = CdmDestinations.localH2();
 //    static final ICdmDataSource cdmDestination = CdmDestinations.cdm_salvador_preview();
-    static final ICdmDataSource cdmDestination = CdmDestinations.cdm_salvador_production();
+//    static final ICdmDataSource cdmDestination = CdmDestinations.cdm_salvador_production();
 	static final UUID treeUuid = UUID.fromString("b010c84d-6049-45f4-9f13-c065101eaa26");
 	static final UUID secUuid = UUID.fromString("d03ef02a-f226-4cb1-bdb4-f6c154f08a34");
 	static final int sourceSecId = 7331;
@@ -175,7 +174,7 @@ public class SalvadorActivator {
 		config.setFeatureTreeTitle("Salvador Portal Feature Tree");
 
 		// invoke import
-		CdmDefaultImport<BerlinModelImportConfigurator> bmImport = new CdmDefaultImport<BerlinModelImportConfigurator>();
+		CdmDefaultImport<BerlinModelImportConfigurator> bmImport = new CdmDefaultImport<>();
 		ImportResult result = bmImport.invoke(config);
 
 		createFeatureTree(config, bmImport);
@@ -233,7 +232,7 @@ public class SalvadorActivator {
 	private Method getHandleNameRelationshipTypeMethod(){
 		String methodName = "handleNameRelationshipType";
 		try {
-			Method method = this.getClass().getDeclaredMethod(methodName, Integer.class, NonViralName.class, NonViralName.class);
+			Method method = this.getClass().getDeclaredMethod(methodName, Integer.class, INonViralName.class, INonViralName.class);
 			method.setAccessible(true);
 			return method;
 		} catch (Exception e) {
@@ -245,7 +244,7 @@ public class SalvadorActivator {
 
 	//used by BerlinModelImportConfigurator
 	@SuppressWarnings("unused")
-	private static boolean handleNameRelationshipType(Integer relQualifierFk, INonViralName nameTo, NonViralName nameFrom){
+	private static boolean handleNameRelationshipType(Integer relQualifierFk, INonViralName nameTo, INonViralName nameFrom){
 		if (relQualifierFk == 72){
 			nameTo.getHomotypicalGroup().merge(nameFrom.getHomotypicalGroup());
 			return true;
