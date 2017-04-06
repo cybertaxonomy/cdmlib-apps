@@ -580,8 +580,7 @@ public class EuroMedActivator {
                 }
             }
             if(isMissing){
-                GrantedAuthorityImpl newGa = GrantedAuthorityImpl.NewInstance();
-                newGa.setAuthority(a);
+                GrantedAuthorityImpl newGa = GrantedAuthorityImpl.NewInstance(a);
                 group.addGrantedAuthority(newGa);
                 logger.info("New GrantedAuthority '" + a + "' added  to '" + groupName + "'");
             }
