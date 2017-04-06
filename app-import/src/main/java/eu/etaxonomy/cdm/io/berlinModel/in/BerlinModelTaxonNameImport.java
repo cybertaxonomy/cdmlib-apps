@@ -55,11 +55,12 @@ import eu.etaxonomy.cdm.strategy.exceptions.UnknownCdmTypeException;
 /**
  * @author a.mueller
  * @created 20.03.2008
- * @version 1.0
  */
 @Component
 public class BerlinModelTaxonNameImport extends BerlinModelImportBase {
-	private static final boolean BLANK_TO_NULL = true;
+    private static final long serialVersionUID = -8860800694286602016L;
+
+    private static final boolean BLANK_TO_NULL = true;
 
 	private static final Logger logger = Logger.getLogger(BerlinModelTaxonNameImport.class);
 
