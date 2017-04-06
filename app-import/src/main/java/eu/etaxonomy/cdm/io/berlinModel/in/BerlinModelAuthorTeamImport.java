@@ -1,8 +1,8 @@
 /**
 * Copyright (C) 2007 EDIT
-* European Distributed Institute of Taxonomy 
+* European Distributed Institute of Taxonomy
 * http://www.e-taxonomy.eu
-* 
+*
 * The contents of this file are subject to the Mozilla Public License Version 1.1
 * See LICENSE.TXT at the top of this package for the full license terms.
 */
@@ -32,18 +32,18 @@ import eu.etaxonomy.cdm.model.common.CdmBase;
 /**
  * @author a.mueller
  * @created 20.03.2008
- * @version 1.0
  */
 @Component
 public class BerlinModelAuthorTeamImport extends BerlinModelImportBase {
-	private static final Logger logger = Logger.getLogger(BerlinModelAuthorTeamImport.class);
+
+    private static final long serialVersionUID = -4318481607033688522L;
+    private static final Logger logger = Logger.getLogger(BerlinModelAuthorTeamImport.class);
 
 	public static final String NAMESPACE = "AuthorTeam";
-	
-	private static int modCount = 1000;
+
 	private static final String pluralString = "AuthorTeams";
 	private static final String dbTableName = "AuthorTeam";
-	 
+
 	//TODO pass it in other way, not as a class variable
 	private ResultSet rsSequence;
 	private Source source;
@@ -52,28 +52,29 @@ public class BerlinModelAuthorTeamImport extends BerlinModelImportBase {
 		super(dbTableName, pluralString);
 	}
 
-	
-	protected void doInvoke(BerlinModelImportState state){
+
+	@Override
+    protected void doInvoke(BerlinModelImportState state){
 		BerlinModelImportConfigurator config = state.getConfig();
 		source = config.getSource();
 
 		logger.info("start make " + pluralString + " ...");
-				
+
 		//queryStrings
 		String strIdQuery = getIdQuery(state);
-		
+
 		String strRecordQuery = getRecordQuery(config);
 		String strWhere = " WHERE (1=1) ";
 		if (state.getConfig().getAuthorTeamFilter() != null){
 			strWhere += " AND " + state.getConfig().getAuthorTeamFilter();
 			strWhere = strWhere.replaceFirst("authorTeamId", "authorTeamFk");
 		}
-		String strQuerySequence = 
+		String strQuerySequence =
 			" SELECT *  " +
             " FROM AuthorTeamSequence " +
-				strWhere + 	
+				strWhere +
             " ORDER By authorTeamFk, Sequence ";
-		
+
 		int recordsPerTransaction = config.getRecordsPerTransaction();
 		try{
 			ResultSetPartitioner partitioner = ResultSetPartitioner.NewInstance(source, strIdQuery, strRecordQuery, recordsPerTransaction);
@@ -86,65 +87,60 @@ public class BerlinModelAuthorTeamImport extends BerlinModelImportBase {
 			state.setUnsuccessfull();
 			return;
 		}
-		
-		
+
+
 		logger.info("end make " + pluralString + " ... " + getSuccessString(true));
 		return;
 	}
-	
+
 	@Override
 	protected String getIdQuery(BerlinModelImportState state){
 		String strWhere = " WHERE (1=1) ";
 		if (state.getConfig().getAuthorTeamFilter() != null){
 			strWhere += " AND " + state.getConfig().getAuthorTeamFilter();
 		}
-		String idQuery = 
+		String idQuery =
 				" SELECT authorTeamId " +
-                " FROM AuthorTeam " + 
+                " FROM AuthorTeam " +
                 strWhere +
                 " ORDER BY authorTeamId ";
 		return idQuery;
 	}
 
-	
-	/* (non-Javadoc)
-	 * @see eu.etaxonomy.cdm.io.berlinModel.in.BerlinModelImportBase#getRecordQuery(eu.etaxonomy.cdm.io.berlinModel.in.BerlinModelImportConfigurator)
-	 */
+
 	@Override
 	protected String getRecordQuery(BerlinModelImportConfigurator config) {
-		String strRecordQuery = 
+		String strRecordQuery =
 			" SELECT *  " +
-            " FROM AuthorTeam " + 
-            " WHERE authorTeamId IN ( " + ID_LIST_TOKEN + " )" + 
+            " FROM AuthorTeam " +
+            " WHERE authorTeamId IN ( " + ID_LIST_TOKEN + " )" +
             " ORDER By authorTeamId ";
 		return strRecordQuery;
 	}
-	
 
-	/* (non-Javadoc)
-	 * @see eu.etaxonomy.cdm.io.berlinModel.in.IPartitionedIO#doPartition(eu.etaxonomy.cdm.io.berlinModel.in.ResultSetPartitioner, eu.etaxonomy.cdm.io.berlinModel.in.BerlinModelImportState)
-	 */
-	public boolean doPartition(ResultSetPartitioner partitioner, BerlinModelImportState state) {
+
+	@Override
+    public boolean doPartition(ResultSetPartitioner partitioner, BerlinModelImportState state) {
 		boolean success = true ;
 		BerlinModelImportConfigurator config = state.getConfig();
 		Set<Team> teamsToSave = new HashSet<Team>();
-		Map<String, Person> personMap = (Map<String, Person>) partitioner.getObjectMap(BerlinModelAuthorImport.NAMESPACE);
-		
+		Map<String, Person> personMap = partitioner.getObjectMap(BerlinModelAuthorImport.NAMESPACE);
+
 		ResultSet rs = partitioner.getResultSet();
 		//for each reference
 		try{
 			while (rs.next()){
 				try{
 					//if ((i++ % modCount ) == 0 && i!= 1 ){ logger.info(""+pluralString+" handled: " + (i-1));}
-					
+
 					//create Agent element
 					int teamId = rs.getInt("AuthorTeamId");
 					if (teamId == 0 && config.isIgnore0AuthorTeam()){
 						continue;
 					}
-					
+
 					Team team = Team.NewInstance();
-					
+
 					Boolean preliminaryFlag = rs.getBoolean("PreliminaryFlag");
 					String authorTeamCache = rs.getString("AuthorTeamCache");
 					String fullAuthorTeamCache = rs.getString("FullAuthorTeamCache");
@@ -153,16 +149,16 @@ public class BerlinModelAuthorTeamImport extends BerlinModelImportBase {
 					}
 					team.setTitleCache(fullAuthorTeamCache, preliminaryFlag);
 					team.setNomenclaturalTitle(authorTeamCache, preliminaryFlag);
-	
+
 					success &= makeSequence(team, teamId, rsSequence, personMap);
 					if (team.getTeamMembers().size()== 0 && preliminaryFlag == false){
 						team.setProtectedTitleCache(true);
 						team.setProtectedNomenclaturalTitleCache(true);
 					}
-					
+
 					//created, notes
 					doIdCreatedUpdatedNotes(state, team, rs, teamId, NAMESPACE);
-	
+
 					teamsToSave.add(team);
 				}catch(Exception ex){
 					logger.error(ex.getMessage());
@@ -174,7 +170,7 @@ public class BerlinModelAuthorTeamImport extends BerlinModelImportBase {
 			logger.error("SQLException:" +  e);
 			return false;
 		}
-			
+
 		//logger.info(i + " " + pluralString + " handled");
 		getAgentService().saveOrUpdate((Collection)teamsToSave);
 
@@ -187,7 +183,7 @@ public class BerlinModelAuthorTeamImport extends BerlinModelImportBase {
 		String nameSpace;
 		Class<?> cdmClass;
 		Map<Object, Map<String, ? extends CdmBase>> result = new HashMap<Object, Map<String, ? extends CdmBase>>();
-		
+
 		//person map
 		Set<String> idInSourceList = makeAuthorIdList(rs);
 		nameSpace = BerlinModelAuthorImport.NAMESPACE;
@@ -197,29 +193,29 @@ public class BerlinModelAuthorTeamImport extends BerlinModelImportBase {
 
 		return result;
 	}
-		
+
 	/**
-	 * @param rs 
+	 * @param rs
 	 * @return
-	 * @throws SQLException 
-	 * @throws SQLException 
+	 * @throws SQLException
+	 * @throws SQLException
 	 */
 	private Set<String> makeAuthorIdList(ResultSet rs) {
 		Set<String> result = new HashSet<String>();
-		
+
 		String authorTeamIdList = "";
 		try {
 			while (rs.next()){
 				int id = rs.getInt("AuthorTeamId");
 				authorTeamIdList = CdmUtils.concat(",", authorTeamIdList, String.valueOf(id));
 			}
-		
-			String strQuerySequence = 
+
+			String strQuerySequence =
 				" SELECT DISTINCT authorFk " +
-	            " FROM AuthorTeamSequence " + 
+	            " FROM AuthorTeamSequence " +
 	            " WHERE authorTeamFk IN (@) ";
 			strQuerySequence = strQuerySequence.replace("@", authorTeamIdList);
-			
+
 			rs = source.getResultSet(strQuerySequence) ;
 			while (rs.next()){
 				int authorFk = rs.getInt("authorFk");
@@ -274,22 +270,17 @@ public class BerlinModelAuthorTeamImport extends BerlinModelImportBase {
 			return false;
 		}
 	}
-	
-	
-	/* (non-Javadoc)
-	 * @see eu.etaxonomy.cdm.io.common.CdmIoBase#doCheck(eu.etaxonomy.cdm.io.common.IoStateBase)
-	 */
+
+
 	@Override
 	protected boolean doCheck(BerlinModelImportState state){
 		IOValidator<BerlinModelImportState> validator = new BerlinModelAuthorTeamImportValidator();
 		return validator.validate(state);
 	}
-	
-	
-	/* (non-Javadoc)
-	 * @see eu.etaxonomy.cdm.io.common.CdmIoBase#isIgnore(eu.etaxonomy.cdm.io.common.IImportConfigurator)
-	 */
-	protected boolean isIgnore(BerlinModelImportState state){
+
+
+	@Override
+    protected boolean isIgnore(BerlinModelImportState state){
 		return ! state.getConfig().isDoAuthors();
 	}
 

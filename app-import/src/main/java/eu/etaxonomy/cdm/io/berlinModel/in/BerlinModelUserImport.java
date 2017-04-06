@@ -70,7 +70,7 @@ public class BerlinModelUserImport extends BerlinModelImportBase {
 				" SELECT *  " +
                 " FROM "+dbTableName+" " ;
 		ResultSet rs = source.getResultSet(strQuery) ;
-		Collection<User> users = new ArrayList<User>();
+		Collection<User> users = new ArrayList<>();
 
 		int i = 0;
 		//for each reference
