@@ -77,17 +77,18 @@ public class EuroMedActivator {
 	private static final Logger logger = Logger.getLogger(EuroMedActivator.class);
 
 	//database validation status (create, update, validate ...)
-	static DbSchemaValidation hbm2dll = DbSchemaValidation.VALIDATE;
+	static DbSchemaValidation hbm2dll = DbSchemaValidation.CREATE;
+//    static final Source berlinModelSource = BerlinModelSources.euroMed_Pub2();
 	static final Source berlinModelSource = BerlinModelSources.euroMed_BGBM42();
 //	static final Source berlinModelSource = BerlinModelSources.euroMed_PESI3();
 
-	static final ICdmDataSource cdmDestination = CdmDestinations.cdm_test_euroMed();
+//    static final ICdmDataSource cdmDestination = CdmDestinations.localH2();
+//	static final ICdmDataSource cdmDestination = CdmDestinations.cdm_test_euroMed();
 //	static final ICdmDataSource cdmDestination = CdmDestinations.cdm_pesi_euromed();
 
 //	static final ICdmDataSource cdmDestination = CdmDestinations.cdm_test_local_euromed3();
-//	static final ICdmDataSource cdmDestination = CdmDestinations.cdm_test_local_mysql_test();
+	static final ICdmDataSource cdmDestination = CdmDestinations.cdm_test_local_mysql_test();
 
-//	static final ICdmDataSource cdmDestination = CdmDestinations.localH2();
 
 	static final boolean includePesiExport = false;
 
