@@ -129,7 +129,7 @@ public class BerlinModelFactsImport  extends BerlinModelImportBase {
         boolean createFeatureTree = state.getConfig().isSalvador();  //for some reason feature tree creation does not work for salavdor
 
         FeatureTree featureTree = (!createFeatureTree) ? null : FeatureTree.NewInstance(state.getConfig().getFeatureTreeUuid());
-        if (createFeatureTree){
+        if (featureTree!= null && createFeatureTree){
             featureTree.setTitleCache(state.getConfig().getFeatureTreeTitle(), true);
         }
 

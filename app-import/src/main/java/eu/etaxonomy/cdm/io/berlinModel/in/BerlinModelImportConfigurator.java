@@ -648,9 +648,11 @@ public class BerlinModelImportConfigurator extends DbImportConfiguratorBase<Berl
         this.featureTreeUuid = featureTreeUuid;
     }
 
+    @Override
     public String getFeatureTreeTitle() {
         return featureTreeTitle;
     }
+    @Override
     public void setFeatureTreeTitle(String featureTreeTitle) {
         this.featureTreeTitle = featureTreeTitle;
     }
