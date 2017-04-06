@@ -30,7 +30,6 @@ import eu.etaxonomy.cdm.io.common.Source;
 import eu.etaxonomy.cdm.model.common.GrantedAuthorityImpl;
 import eu.etaxonomy.cdm.model.common.Group;
 import eu.etaxonomy.cdm.model.common.User;
-import eu.etaxonomy.cdm.model.description.FeatureTree;
 import eu.etaxonomy.cdm.model.name.INonViralName;
 import eu.etaxonomy.cdm.model.name.NomenclaturalCode;
 import eu.etaxonomy.cdm.persistence.hibernate.permission.Role;
@@ -183,8 +182,6 @@ public class SalvadorActivator {
 		CdmDefaultImport<BerlinModelImportConfigurator> bmImport = new CdmDefaultImport<>();
 		ImportResult result = bmImport.invoke(config);
 
-		createFeatureTree(config, bmImport);
-
 		addUsers(config, bmImport);
 
 		System.out.println("End import from BerlinModel ("+ source.getDatabase() + ")...");
@@ -229,34 +226,6 @@ public class SalvadorActivator {
 
     }
 
-    //create feature tree
-    private void createFeatureTree(BerlinModelImportConfigurator config,
-            CdmDefaultImport<BerlinModelImportConfigurator> bmImport){
-        if (config.isDoFacts() && (config.getCheck().isImport()  )  ){
-            try {
-                ICdmRepository app = bmImport.getCdmAppController();
-                TransactionStatus tx = app.startTransaction(false);
-
-                //make feature tree
-                FeatureTree tree = TreeCreator.flatTree(featureTreeUuid, config.getFeatureMap(), featureKeyList);
-
-//                FeatureNode distributionNode = FeatureNode.NewInstance(Feature.DISTRIBUTION());
-//                tree.getRoot().addChild(distributionNode, 1);
-//                FeatureNode commonNameNode = FeatureNode.NewInstance(Feature.COMMON_NAME());
-//                tree.getRoot().addChild(commonNameNode, 2);
-//
-//                FeatureNode imageNode = FeatureNode.NewInstance(Feature.IMAGE());
-//                tree.getRoot().addChild(imageNode);
-
-                app.getFeatureTreeService().saveOrUpdate(tree);
-
-                app.commitTransaction(tx);
-            } catch (Exception e) {
-                e.printStackTrace();
-                logger.error("Exception in createFeatureTree: " + e.getMessage());
-            }
-        }
-    }
 
 
 	/**
