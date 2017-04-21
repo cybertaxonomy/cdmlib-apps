@@ -87,7 +87,7 @@ public class MexicoConabioActivator {
         config.setSourceReference(getSourceReference());
         config.setSecReference(getSecReference());
 
-        CdmDefaultImport<MexicoConabioImportConfigurator> myImport = new CdmDefaultImport<MexicoConabioImportConfigurator>();
+        CdmDefaultImport<MexicoConabioImportConfigurator> myImport = new CdmDefaultImport<>();
 
         myImport.invoke(config);
 

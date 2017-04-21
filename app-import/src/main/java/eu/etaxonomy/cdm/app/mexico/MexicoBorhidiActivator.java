@@ -84,7 +84,7 @@ public class MexicoBorhidiActivator {
 
         config.setSourceReference(getSourceReference());
 
-        CdmDefaultImport<MexicoBorhidiImportConfigurator> myImport = new CdmDefaultImport<MexicoBorhidiImportConfigurator>();
+        CdmDefaultImport<MexicoBorhidiImportConfigurator> myImport = new CdmDefaultImport<>();
 
         myImport.invoke(config);
 
