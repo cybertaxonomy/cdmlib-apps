@@ -65,6 +65,7 @@ import eu.etaxonomy.cdm.model.taxon.SynonymType;
 import eu.etaxonomy.cdm.model.taxon.Taxon;
 import eu.etaxonomy.cdm.model.taxon.TaxonNode;
 import eu.etaxonomy.cdm.model.taxon.TaxonRelationshipType;
+import eu.etaxonomy.cdm.strategy.homotypicgroup.BasionymRelationCreator;
 import eu.etaxonomy.cdm.strategy.parser.INonViralNameParser;
 import eu.etaxonomy.cdm.strategy.parser.NonViralNameParserImpl;
 
@@ -786,7 +787,7 @@ public class CubaExcelImport extends ExcelImporterBase<CubaImportState> {
             newCombination = TaxonNameBase.castAndDeproxy(name1);
         }
         if (matchAuthor(basionymName.getCombinationAuthorship(), newCombination.getBasionymAuthorship())
-                && matchLastNamePart(basionymName, newCombination)){
+                && BasionymRelationCreator.matchLastNamePart(basionymName, newCombination)){
             newCombination.addBasionym(basionymName);
         }else{
             if ( (newCombination.getBasionyms().isEmpty() || ! onlyIfNotYetExists)
@@ -813,37 +814,6 @@ public class CubaExcelImport extends ExcelImporterBase<CubaImportState> {
             }
         }
         return true;
-    }
-
-
-    /**
-     * @param basionymName
-     * @param newCombination
-     * @return
-     */
-    private boolean matchLastNamePart(IBotanicalName name1, IBotanicalName name2) {
-        String lastNamePart1 = name1.getLastNamePart();
-        String lastNamePart2 = name2.getLastNamePart();
-        if (lastNamePart1 != null && lastNamePart2 != null){
-            lastNamePart1 = normalizeBasionymNamePart(lastNamePart1);
-            lastNamePart2 = normalizeBasionymNamePart(lastNamePart2);
-            return (lastNamePart1.equals(lastNamePart2));
-        }else{
-            return false;
-        }
-    }
-
-    /**
-     * @param lastNamePart1
-     * @return
-     */
-    private String normalizeBasionymNamePart(String lastNamePart) {
-        String namePart = lastNamePart.toLowerCase()
-                .replaceAll("(um|us|a|is|e|os|on|or)$", "")
-                .replaceAll("er$", "r")    //e.g. ruber <-> rubra
-                .replaceAll("ese$", "s");  //e.g.  cayanensis <-> cayanenese
-                //TODO tampensis / tampense
-        return namePart;
     }
 
 
