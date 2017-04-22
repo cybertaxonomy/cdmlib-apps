@@ -31,6 +31,7 @@ import eu.etaxonomy.cdm.model.taxon.Synonym;
 import eu.etaxonomy.cdm.model.taxon.SynonymType;
 import eu.etaxonomy.cdm.model.taxon.Taxon;
 import eu.etaxonomy.cdm.model.taxon.TaxonNode;
+import eu.etaxonomy.cdm.strategy.homotypicgroup.BasionymRelationCreator;
 import eu.etaxonomy.cdm.strategy.parser.NonViralNameParserImpl;
 
 /**
@@ -58,6 +59,7 @@ public class BogotaChecklistTaxonImport<CONFIG extends BogotaChecklistImportConf
 
     private String lastGenus;
     private NonViralNameParserImpl parser = NonViralNameParserImpl.NewInstance();
+    private BasionymRelationCreator basionymCreator = new BasionymRelationCreator();
 
 
     @Override
@@ -121,7 +123,7 @@ public class BogotaChecklistTaxonImport<CONFIG extends BogotaChecklistImportConf
                 split = split.trim();
                 boolean isMisapplied = split.contains("auct.") || split.contains(" sensu ");
                 if (split.endsWith(" None")){
-                    split.replace(" None", "").trim();
+                    split = split.replace(" None", "").trim();
                 }
                 if (isMisapplied){
                     handleSingleMisapplied(state, split, line, taxon, noStr);
@@ -130,6 +132,7 @@ public class BogotaChecklistTaxonImport<CONFIG extends BogotaChecklistImportConf
                 }
             }
         }
+        basionymCreator.invoke(taxon);
     }
 
     /**
@@ -171,6 +174,8 @@ public class BogotaChecklistTaxonImport<CONFIG extends BogotaChecklistImportConf
         if (name.isProtectedTitleCache()){
             logger.warn(line + "Misapplied name could not be parsed: " + nameStr);
         }
+        deduplicationHelper.replaceAuthorNamesAndNomRef(state, name);
+
         Taxon misApp = Taxon.NewInstance(name, null);
         if (auctRequired){
             misApp.setAppendedPhrase(auctStr);
@@ -178,7 +183,6 @@ public class BogotaChecklistTaxonImport<CONFIG extends BogotaChecklistImportConf
         misApp.addImportSource(noStr, getWorksheetName(), getSourceCitation(state), null);
         name.addImportSource(noStr, getWorksheetName(), getSourceCitation(state), null);
         taxon.addMisappliedName(misApp, state.getConfig().getSecReference(), null);
-        deduplicationHelper.replaceAuthorNamesAndNomRef(state, name);
       }
 
 
@@ -196,11 +200,12 @@ public class BogotaChecklistTaxonImport<CONFIG extends BogotaChecklistImportConf
         if (name.isProtectedTitleCache()){
             logger.warn(line + "Synonym could not be parsed: " + nameStr);
         }
+        deduplicationHelper.replaceAuthorNamesAndNomRef(state, name);
+
         Synonym synonym = Synonym.NewInstance(name, getSecReference(state));
         synonym.addImportSource(noStr, getWorksheetName(), getSourceCitation(state), null);
         name.addImportSource(noStr, getWorksheetName(), getSourceCitation(state), null);
         taxon.addSynonym(synonym, SynonymType.SYNONYM_OF());
-        deduplicationHelper.replaceAuthorNamesAndNomRef(state, name);
     }
 
 
@@ -218,19 +223,20 @@ public class BogotaChecklistTaxonImport<CONFIG extends BogotaChecklistImportConf
             String[] splits = subSpeciesStr.split(",");
             for(String split : splits){
                 if (split.endsWith(" None")){
-                    split.replace(" None", "").trim();
+                    split = split.replace(" None", "").trim();
                 }
                 Rank rank = Rank.SUBSPECIES();
                 BotanicalName name = (BotanicalName)parser.parseFullName(split.trim(), state.getConfig().getNomenclaturalCode(), rank);
                 if (name.isProtectedTitleCache()){
                     logger.warn(line + "Infraspecific taxon could not be parsed: " + split.trim());
                 }
+                deduplicationHelper.replaceAuthorNamesAndNomRef(state, name);
+
                 Taxon subSpecies = Taxon.NewInstance(name, getSecReference(state));
                 subSpecies.addImportSource(noStr, getWorksheetName(), getSourceCitation(state), null);
                 name.addImportSource(noStr, getWorksheetName(), getSourceCitation(state), null);
                 TaxonNode subSpeciesNode = speciesNode.addChildTaxon(subSpecies, getSecReference(state), null);
                 getTaxonNodeService().save(subSpeciesNode);
-                deduplicationHelper.replaceAuthorNamesAndNomRef(state, name);
             }
         }
     }
@@ -260,6 +266,8 @@ public class BogotaChecklistTaxonImport<CONFIG extends BogotaChecklistImportConf
         if (name.isProtectedTitleCache()){
             logger.warn(line + "Name could not be parsed: " + nameStr);
         }
+        deduplicationHelper.replaceAuthorNamesAndNomRef(state, name);
+
         Taxon taxon = Taxon.NewInstance(name, getSecReference(state));
         taxon.addImportSource(noStr, getWorksheetName(), getSourceCitation(state), null);
         name.addImportSource(noStr, getWorksheetName(), getSourceCitation(state), null);
@@ -287,8 +295,6 @@ public class BogotaChecklistTaxonImport<CONFIG extends BogotaChecklistImportConf
                 getTaxonNodeService().save(newNode);
             }
         }
-
-        deduplicationHelper.replaceAuthorNamesAndNomRef(state, name);
 
         this.lastGenus = genusStr;
         return newNode;
@@ -350,10 +356,21 @@ public class BogotaChecklistTaxonImport<CONFIG extends BogotaChecklistImportConf
 
     protected BotanicalName makeFamilyName(SimpleExcelTaxonImportState<CONFIG> state, String famStr) {
         BotanicalName name = TaxonNameFactory.NewBotanicalInstance(Rank.FAMILY());
+        famStr = decapitalize(famStr);
         name.setGenusOrUninomial(famStr);
         name.addSource(makeOriginalSource(state));
         return name;
     }
+
+    /**
+     * @param famStr
+     * @return
+     */
+    private String decapitalize(String famStr) {
+        String result = famStr.substring(0,1) + famStr.substring(1).toLowerCase();
+        return result;
+    }
+
 
     protected Reference getSecReference(SimpleExcelTaxonImportState<CONFIG> state) {
         return state.getConfig().getSecReference();

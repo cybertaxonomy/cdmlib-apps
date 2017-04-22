@@ -19,6 +19,8 @@ import eu.etaxonomy.cdm.database.ICdmDataSource;
 import eu.etaxonomy.cdm.io.bogota.BogotaChecklistImportConfigurator;
 import eu.etaxonomy.cdm.io.common.CdmDefaultImport;
 import eu.etaxonomy.cdm.io.common.IImportConfigurator.CHECK;
+import eu.etaxonomy.cdm.model.agent.Person;
+import eu.etaxonomy.cdm.model.agent.Team;
 import eu.etaxonomy.cdm.model.name.NomenclaturalCode;
 import eu.etaxonomy.cdm.model.reference.IWebPage;
 import eu.etaxonomy.cdm.model.reference.Reference;
@@ -39,8 +41,8 @@ public class BogotaChecklistActivator {
     static DbSchemaValidation hbm2dll = DbSchemaValidation.CREATE;
 
 //    static final ICdmDataSource cdmDestination = CdmDestinations.localH2();
-  static final ICdmDataSource cdmDestination = CdmDestinations.cdm_test_local_mysql_test();
-//    static final ICdmDataSource cdmDestination = CdmDestinations.cdm_mexico_rubiaceae_production();
+//  static final ICdmDataSource cdmDestination = CdmDestinations.cdm_test_local_mysql_test();
+    static final ICdmDataSource cdmDestination = CdmDestinations.cdm_bogota_production();
 
     //classification
     static final UUID classificationUuid = UUID.fromString("c7779e17-8d45-4429-a9b0-e9c0fce93ec5");
@@ -90,22 +92,33 @@ public class BogotaChecklistActivator {
     private Reference getSourceReference() {
         Reference result = ReferenceFactory.newGeneric();
         result.setTitle("Resultados_Busqueda_avanzada_2017-04-19_0810_import.xlsx");
-//        Person borhidi = Person.NewTitledInstance("Borhidi");
-//        borhidi.setFirstname("Attila");
-//        result.setAuthorship(borhidi);
         return result;
     }
 
     private Reference getSecReference() {
         IWebPage result = ReferenceFactory.newWebPage();
-        result.setTitle("2017-04-19. En Bernal, R., S.R. Gradstein & M. Celis (eds.). 2016. Catálogo de plantas y líquenes de Colombia. Instituto de Ciencias Naturales, Universidad Nacional de Colombia, Bogotá. http://catalogoplantasdecolombia.unal.edu.co/");
+        result.setTitle("Catálogo de plantas y líquenes de Colombia");
         result.setPlacePublished("Bogotá");
+        result.setUri(URI.create("http://catalogoplantasdecolombia.unal.edu.co/"));
         result.setPublisher("Instituto de Ciencias Naturales, Universidad Nacional de Colombia");
-        result.setDatePublished(TimePeriodParser.parseString("2017-04-19"));
-//        Person borhidi = Person.NewTitledInstance("Borhidi");
-//        borhidi.setFirstname("Attila");
-//        result.setAuthorship(borhidi);
-//        result.setUuid(MexicoConabioTransformer.uuidReferenceBorhidi);
+        result.setDatePublished(TimePeriodParser.parseString("2016"));
+        result.getDatePublished().setFreeText("2016 (visited 2017-04-19)");
+
+        Team team = Team.NewInstance();
+        Person bernal = Person.NewTitledInstance("Bernal, R.");
+        bernal.setFirstname("R.");
+        bernal.setLastname("Bernal");
+        Person gradstein = Person.NewTitledInstance("Gradstein, S.R.");
+        gradstein.setFirstname("S.R.");
+        gradstein.setLastname("Gradstein");
+        Person celis = Person.NewTitledInstance("Celis, M.");
+        celis.setFirstname("M.");
+        celis.setLastname("Celis");
+        team.addTeamMember(bernal);
+        team.addTeamMember(gradstein);
+        team.addTeamMember(celis);
+        result.setAuthorship(team);
+
         return (Reference)result;
     }
 
