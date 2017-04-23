@@ -20,6 +20,7 @@ import eu.etaxonomy.cdm.common.CdmUtils;
 import eu.etaxonomy.cdm.io.common.utils.ImportDeduplicationHelper;
 import eu.etaxonomy.cdm.io.mexico.SimpleExcelTaxonImport;
 import eu.etaxonomy.cdm.io.mexico.SimpleExcelTaxonImportState;
+import eu.etaxonomy.cdm.model.common.IdentifiableSource;
 import eu.etaxonomy.cdm.model.common.Language;
 import eu.etaxonomy.cdm.model.name.BotanicalName;
 import eu.etaxonomy.cdm.model.name.Rank;
@@ -46,6 +47,7 @@ public class BogotaChecklistTaxonImport<CONFIG extends BogotaChecklistImportConf
     private static final long serialVersionUID = -884838817884874228L;
     private static final Logger logger = Logger.getLogger(BogotaChecklistTaxonImport.class);
 
+    private static final String ID_COL = "#";
     private static final String AUTHOR = "Autor";
     private static final String NAME = "Nombre";
     private static final String GENUS = "Género";
@@ -83,10 +85,11 @@ public class BogotaChecklistTaxonImport<CONFIG extends BogotaChecklistImportConf
         String line = state.getCurrentLine() + ": ";
         HashMap<String, String> record = state.getOriginalRecord();
 
-        String noStr = getValue(record, "#");
+        String noStr = getValue(record, ID_COL);
 
         //species
         TaxonNode taxonNode = makeTaxon(state, line, record, noStr);
+
         if (taxonNode != null){
             //synonyms
             makeSynonyms(state, record, line, taxonNode.getTaxon(), noStr);
@@ -171,6 +174,7 @@ public class BogotaChecklistTaxonImport<CONFIG extends BogotaChecklistImportConf
             nameStr = nameStr.replace(auctStr, "").trim();
         }
         BotanicalName name = (BotanicalName)parser.parseFullName(nameStr, state.getConfig().getNomenclaturalCode(), rank);
+        name = deduplicationHelper.getExistingName(state, name);
         if (name.isProtectedTitleCache()){
             logger.warn(line + "Misapplied name could not be parsed: " + nameStr);
         }
@@ -183,7 +187,7 @@ public class BogotaChecklistTaxonImport<CONFIG extends BogotaChecklistImportConf
         misApp.addImportSource(noStr, getWorksheetName(), getSourceCitation(state), null);
         name.addImportSource(noStr, getWorksheetName(), getSourceCitation(state), null);
         taxon.addMisappliedName(misApp, state.getConfig().getSecReference(), null);
-      }
+    }
 
 
     /**
@@ -197,6 +201,7 @@ public class BogotaChecklistTaxonImport<CONFIG extends BogotaChecklistImportConf
             String line, Taxon taxon, String noStr) {
         Rank rank = Rank.SPECIES();
         BotanicalName name = (BotanicalName)parser.parseFullName(nameStr, state.getConfig().getNomenclaturalCode(), rank);
+        name = deduplicationHelper.getExistingName(state, name);
         if (name.isProtectedTitleCache()){
             logger.warn(line + "Synonym could not be parsed: " + nameStr);
         }
@@ -227,6 +232,7 @@ public class BogotaChecklistTaxonImport<CONFIG extends BogotaChecklistImportConf
                 }
                 Rank rank = Rank.SUBSPECIES();
                 BotanicalName name = (BotanicalName)parser.parseFullName(split.trim(), state.getConfig().getNomenclaturalCode(), rank);
+                name = deduplicationHelper.getExistingName(state, name);
                 if (name.isProtectedTitleCache()){
                     logger.warn(line + "Infraspecific taxon could not be parsed: " + split.trim());
                 }
@@ -263,12 +269,14 @@ public class BogotaChecklistTaxonImport<CONFIG extends BogotaChecklistImportConf
         nameStr = CdmUtils.concat(" ", nameStr, speciesAuthorStr);
         Rank rank = Rank.SPECIES();
         BotanicalName name = (BotanicalName)parser.parseFullName(nameStr, state.getConfig().getNomenclaturalCode(), rank);
+        name = deduplicationHelper.getExistingName(state, name);
         if (name.isProtectedTitleCache()){
             logger.warn(line + "Name could not be parsed: " + nameStr);
         }
         deduplicationHelper.replaceAuthorNamesAndNomRef(state, name);
 
         Taxon taxon = Taxon.NewInstance(name, getSecReference(state));
+
         taxon.addImportSource(noStr, getWorksheetName(), getSourceCitation(state), null);
         name.addImportSource(noStr, getWorksheetName(), getSourceCitation(state), null);
 
@@ -360,6 +368,15 @@ public class BogotaChecklistTaxonImport<CONFIG extends BogotaChecklistImportConf
         name.setGenusOrUninomial(famStr);
         name.addSource(makeOriginalSource(state));
         return name;
+    }
+
+    /**
+     * @param state
+     * @return
+     */
+    @Override
+    protected IdentifiableSource makeOriginalSource(SimpleExcelTaxonImportState<CONFIG> state) {
+        return IdentifiableSource.NewDataImportInstance(getValue(state.getOriginalRecord(),ID_COL), ID_COL, state.getConfig().getSourceReference());
     }
 
     /**
