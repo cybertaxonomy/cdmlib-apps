@@ -29,7 +29,7 @@ import eu.etaxonomy.cdm.strategy.parser.TimePeriodParser;
 
 /**
  * Activator for import of Bogota Checklist
-
+ *
  * @author a.mueller
  * @date 21.04.2017
  *
