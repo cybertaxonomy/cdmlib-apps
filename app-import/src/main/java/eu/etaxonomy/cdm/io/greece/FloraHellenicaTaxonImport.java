@@ -686,12 +686,12 @@ public class FloraHellenicaTaxonImport<CONFIG extends FloraHellenicaImportConfig
                 description, label, null, termSourceUri);
         lifeformVoc.setUuid(vocUuid);
 
-        addLifeform(state, "A", "Aquatics", FloraHellenicaTransformer.uuidLifeformA);
-        addLifeform(state, "C", "Chamaephytes", FloraHellenicaTransformer.uuidLifeformC);
-        addLifeform(state, "G", "Geophytes (Cryptophytes)", FloraHellenicaTransformer.uuidLifeformG);
-        addLifeform(state, "H", "Hemicryptophytes", FloraHellenicaTransformer.uuidLifeformH);
-        addLifeform(state, "P", "Phanerophytes", FloraHellenicaTransformer.uuidLifeformP);
-        addLifeform(state, "T", "Therophytes", FloraHellenicaTransformer.uuidLifeformT);
+        addLifeform(state, "A", "Aquatic", FloraHellenicaTransformer.uuidLifeformA);
+        addLifeform(state, "C", "Chamaephyte", FloraHellenicaTransformer.uuidLifeformC);
+        addLifeform(state, "G", "Geophyte (Cryptophyte)", FloraHellenicaTransformer.uuidLifeformG);
+        addLifeform(state, "H", "Hemicryptophyte", FloraHellenicaTransformer.uuidLifeformH);
+        addLifeform(state, "P", "Phanerophyte", FloraHellenicaTransformer.uuidLifeformP);
+        addLifeform(state, "T", "Therophyte", FloraHellenicaTransformer.uuidLifeformT);
         this.getVocabularyService().save(lifeformVoc);
         return;
     }
