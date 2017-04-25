@@ -11,13 +11,10 @@ package eu.etaxonomy.cdm.io.mexico;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 
-import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 
-import eu.etaxonomy.cdm.common.CdmUtils;
 import eu.etaxonomy.cdm.io.excel.common.ExcelImportConfiguratorBase;
 import eu.etaxonomy.cdm.io.excel.common.ExcelImporterBase;
 import eu.etaxonomy.cdm.model.agent.Person;
@@ -66,23 +63,7 @@ public abstract class SimpleExcelTaxonImport<CONFIG extends ExcelImportConfigura
     }
 
 //***************************** METHODS *********************************/
-    /**
-     * Returns the value of the record map for the given key.
-     * The value is trimmed and empty values are set to <code>null</code>.
-     * @param record
-     * @param originalKey
-     * @return the value
-     */
-    protected String getValue(Map<String, String> record, String originalKey) {
-        String value = record.get(originalKey);
-        if (! StringUtils.isBlank(value)) {
-            if (logger.isDebugEnabled()) { logger.debug(originalKey + ": " + value); }
-            value = CdmUtils.removeDuplicateWhitespace(value.trim()).toString();
-            return value;
-        }else{
-            return null;
-        }
-    }
+
 
     /**
      * @param state
