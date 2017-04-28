@@ -37,6 +37,7 @@ public class FaunaEuropaeaDistributionUpdateActivator {
     static final URI source = fauEuDistrUpdateSource();
     static final CHECK check = CHECK.IMPORT_WITHOUT_CHECK;
 
+    //see also FaunaEuropaeaTransformer in pesi
     static final UUID areaVocabularyUuid = UUID.fromString("16325043-e7da-4742-b012-9ce03362a124");
 
     /**
