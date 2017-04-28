@@ -29,11 +29,12 @@ import eu.etaxonomy.cdm.strategy.exceptions.UnknownCdmTypeException;
 /**
  * @author a.babadshanjan
  * @created 12.05.2009
- * @version 1.0
  */
 
 public final class FaunaEuropaeaTransformer {
 	private static final Logger logger = Logger.getLogger(FaunaEuropaeaTransformer.class);
+
+	public static final UUID uuidFauEuArea = UUID.fromString("16325043-e7da-4742-b012-9ce03362a124");
 
 	// Query
 	public static final int Q_NO_RESTRICTION = -1;
@@ -79,24 +80,19 @@ public final class FaunaEuropaeaTransformer {
 	public static final int R_SPECIES = 21;
 	public static final int R_SUBSPECIES = 22;
 
-	public static PresenceAbsenceTerm occStatus2PresenceAbsence(int occStatusId)  throws UnknownCdmTypeException{
+	public static PresenceAbsenceTerm occStatus2PresenceAbsence(int occStatusId){
 
 		if (Integer.valueOf(occStatusId) == null) {
 			return PresenceAbsenceTerm.PRESENT();
 		}
 		switch (occStatusId){
-		case 0: return PresenceAbsenceTerm.PRESENT();
-		case 2: return PresenceAbsenceTerm.ABSENT();
-		case 1: return PresenceAbsenceTerm.PRESENT_DOUBTFULLY();
-
-		default: {
-
-			return null;
-
-
+    		case 0: return PresenceAbsenceTerm.PRESENT();
+    		case 2: return PresenceAbsenceTerm.ABSENT();
+    		case 1: return PresenceAbsenceTerm.PRESENT_DOUBTFULLY();
+    		default: {
+    		    return null;
+    		}
 		}
-
-	}
 	}
 
 
@@ -391,9 +387,9 @@ public final class FaunaEuropaeaTransformer {
 //	 	}
 
 
+	 	public final static HashMap<Integer, Language> languageFK2Language  = new HashMap<>();
 
-	 	public final static HashMap<Integer, Language> languageFK2Language  = new HashMap<Integer,Language>();
-	 	static
+        static
 	 	{
 	 		languageFK2Language.put(1, Language.ALBANIAN());
 	 		languageFK2Language.put(4, Language.AZERBAIJANI());

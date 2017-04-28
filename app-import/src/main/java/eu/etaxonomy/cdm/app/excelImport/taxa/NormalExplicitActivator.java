@@ -38,7 +38,7 @@ public class NormalExplicitActivator {
 	private static DbSchemaValidation dbSchemaValidation = DbSchemaValidation.CREATE;
 
 //	private static final ICdmDataSource destinationDb = CdmDestinations.cdm_test_jaxb();
-	private static final ICdmDataSource destinationDb = CdmDestinations.mon_cdm();
+	private static final ICdmDataSource destinationDb = CdmDestinations.localH2();
 
     public static void main(String[] args) {
 

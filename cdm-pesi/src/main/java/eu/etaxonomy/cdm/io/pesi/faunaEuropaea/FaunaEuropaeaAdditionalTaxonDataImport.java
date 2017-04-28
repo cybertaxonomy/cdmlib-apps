@@ -22,6 +22,8 @@ import org.springframework.transaction.TransactionStatus;
 
 import eu.etaxonomy.cdm.database.ICdmDataSource;
 import eu.etaxonomy.cdm.model.common.CdmBase;
+import eu.etaxonomy.cdm.model.name.INonViralName;
+import eu.etaxonomy.cdm.model.name.ITaxonNameBase;
 import eu.etaxonomy.cdm.model.name.NonViralName;
 import eu.etaxonomy.cdm.model.name.TaxonNameBase;
 import eu.etaxonomy.cdm.model.taxon.Taxon;
@@ -31,26 +33,20 @@ import eu.etaxonomy.cdm.model.taxon.TaxonBase;
 /**
  * @author a.babadshanjan
  * @created 21.08.2010
- * @version 1.0
  */
 @Component
 public class FaunaEuropaeaAdditionalTaxonDataImport extends FaunaEuropaeaImportBase  {
+    private static final long serialVersionUID = -6734273038256432559L;
 
-	private static final Logger logger = Logger.getLogger(FaunaEuropaeaAdditionalTaxonDataImport.class);
+    private static final Logger logger = Logger.getLogger(FaunaEuropaeaAdditionalTaxonDataImport.class);
 //	private static final String parentPluralString = "Synonyms";
 	private static final String pluralString = "InfraGenericEpithets";
 	//private static final String acceptedTaxonUUID = "A9C24E42-69F5-4681-9399-041E652CF338"; // any accepted taxon uuid, taken from original fauna europaea database
 
-	/* (non-Javadoc)
-	 * @see eu.etaxonomy.cdm.io.common.CdmIoBase#doCheck(eu.etaxonomy.cdm.io.common.IImportConfigurator)
-	 */
 	@Override
 	protected boolean doCheck(FaunaEuropaeaImportState state) {
 		boolean result = true;
-		FaunaEuropaeaImportConfigurator fauEuConfig = state.getConfig();
 		logger.warn("Checking for Taxa not yet fully implemented");
-//		result &= checkTaxonStatus(fauEuConfig);
-
 		return result;
 	}
 
@@ -77,7 +73,6 @@ public class FaunaEuropaeaAdditionalTaxonDataImport extends FaunaEuropaeaImportB
 	 * @return
 	 */
 	private void processAdditionalInfraGenericEpithets(FaunaEuropaeaImportState state) {
-		int count = 0;
 		int pageSize = 1000;
 		Set<UUID> uuidSet = new HashSet<UUID>();
 		FaunaEuropaeaImportConfigurator fauEuConfig = state.getConfig();
@@ -108,11 +103,11 @@ public class FaunaEuropaeaAdditionalTaxonDataImport extends FaunaEuropaeaImportB
 		if (!uuidSet.isEmpty()){
 			taxonNames = getNameService().find(uuidSet);
 
-			for (TaxonNameBase taxonName : taxonNames) {
+			for (TaxonNameBase<?,?> taxonName : taxonNames) {
 
 				// Check whether its taxonName has an infraGenericEpithet
 				if (taxonName != null && (taxonName.isInstanceOf(NonViralName.class))) {
-					NonViralName targetNonViralName = CdmBase.deproxy(taxonName, NonViralName.class);
+					INonViralName targetNonViralName = CdmBase.deproxy(taxonName, NonViralName.class);
 					String infraGenericEpithet = targetNonViralName.getInfraGenericEpithet();
 					if (infraGenericEpithet == null) {
 						String genusOrUninomial = targetNonViralName.getGenusOrUninomial();
@@ -121,22 +116,21 @@ public class FaunaEuropaeaAdditionalTaxonDataImport extends FaunaEuropaeaImportB
 								"*", "*", null, pageSize, 1);
 						if (foundTaxa.size() == 1) {
 							// one matching Taxon found
-							TaxonBase taxon = foundTaxa.iterator().next();
+							TaxonBase<?> taxon = foundTaxa.iterator().next();
 							if (taxon != null) {
-								TaxonNameBase name = taxon.getName();
+								ITaxonNameBase name = taxon.getName();
 								if (name != null && name.isInstanceOf(NonViralName.class)) {
-									NonViralName nonViralName = CdmBase.deproxy(name, NonViralName.class);
+									INonViralName nonViralName = CdmBase.deproxy(name, NonViralName.class);
 									infraGenericEpithet = nonViralName.getInfraGenericEpithet();
 
 									// set infraGenericEpithet
 	//									targetNonViralName.setInfraGenericEpithet(infraGenericEpithet);
 									logger.debug("Added an InfraGenericEpithet to this TaxonName: " + taxonName.getUuid() + " (" + taxonName.getTitleCache() + ")");
-									count++;
 								}
 							}
 						} else if (foundTaxa.size() > 1) {
 							logger.warn("Multiple taxa match search criteria: " + taxonName.getUuid() + " (" + taxonName.getTitleCache() + ")");
-							for (TaxonBase foundTaxon : foundTaxa) {
+							for (TaxonBase<?> foundTaxon : foundTaxa) {
 								logger.warn(foundTaxon.getUuid() + ", " + foundTaxon.getTitleCache());
 							}
 						} else if (foundTaxa.size() == 0) {
@@ -157,13 +151,8 @@ public class FaunaEuropaeaAdditionalTaxonDataImport extends FaunaEuropaeaImportB
 		return;
 	}
 
-
-	/* (non-Javadoc)
-	 * @see eu.etaxonomy.cdm.io.common.CdmIoBase#isIgnore(eu.etaxonomy.cdm.io.common.IoStateBase)
-	 */
 	@Override
     protected boolean isIgnore(FaunaEuropaeaImportState state) {
 		return ! state.getConfig().isDoTaxa();
 	}
-
 }

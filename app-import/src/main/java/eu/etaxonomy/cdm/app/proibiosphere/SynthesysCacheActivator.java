@@ -26,12 +26,9 @@ import eu.etaxonomy.cdm.model.reference.Reference;
 import eu.etaxonomy.cdm.model.reference.ReferenceFactory;
 
 
-
-
 /**
  * @author PK
  * @created 19.09.2008
- * @version 1.0
  */
 public class SynthesysCacheActivator {
     @SuppressWarnings("unused")
@@ -43,8 +40,8 @@ public class SynthesysCacheActivator {
     final static String xmlSource = "/home/pkelbert/Documents/Proibiosphere/ChenopodiumQuentin/dca UK records.xls";
 
 
-    static final ICdmDataSource cdmDestination = CdmDestinations.mon_cdm();
-    static DbSchemaValidation hbm2dll = DbSchemaValidation.CREATE;
+    static final ICdmDataSource cdmDestination = CdmDestinations.proibiosphere_spiders_local();
+    static DbSchemaValidation hbm2dll = DbSchemaValidation.VALIDATE;
     //    static final ICdmDataSource cdmDestination = CdmDestinations.proibiosphere_local();
     //    static DbSchemaValidation hbm2dll = DbSchemaValidation.VALIDATE;
     static final CHECK check = CHECK.IMPORT_WITHOUT_CHECK;

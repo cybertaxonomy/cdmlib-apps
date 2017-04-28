@@ -616,17 +616,6 @@ public class CdmDestinations {
 		return makeDestination(dbType, cdmServer, cdmDB, -1, cdmUserName, null);
 	}
 
-	/**
-     * patricia
-     */
-    public static ICdmDataSource mon_cdm() {
-        DatabaseTypeEnum dbType = DatabaseTypeEnum.MySQL;
-        String cdmServer = "localhost";
-        String cdmDB = "cdm_local";
-        String cdmUserName = "root";
-        return makeDestination(dbType, cdmServer, cdmDB, -1, cdmUserName, null);
-    }
-
    public static ICdmDataSource proibiosphere_chenopodium_local() {
         DatabaseTypeEnum dbType = DatabaseTypeEnum.MySQL;
         String cdmServer = "localhost";
@@ -642,23 +631,6 @@ public class CdmDestinations {
        String cdmUserName = "root";
        return makeDestination(dbType, cdmServer, cdmDB, -1, cdmUserName, null);
    }
-
-   public static ICdmDataSource proibiosphere_fungi_local() {
-       DatabaseTypeEnum dbType = DatabaseTypeEnum.MySQL;
-       String cdmServer = "localhost";
-       String cdmDB = "cdm_production_proibiosphere_fungi_pilot";
-       String cdmUserName = "root";
-       return makeDestination(dbType, cdmServer, cdmDB, -1, cdmUserName, null);
-   }
-
-   public static ICdmDataSource proibiosphere_campylopus_local() {
-       DatabaseTypeEnum dbType = DatabaseTypeEnum.MySQL;
-       String cdmServer = "localhost";
-       String cdmDB = "cdm_production_proibiosphere_campylopus_pilot";
-       String cdmUserName = "root";
-       return makeDestination(dbType, cdmServer, cdmDB, -1, cdmUserName, null);
-   }
-
 
    public static ICdmDataSource proibiosphere_eupolybothrus_local() {
        DatabaseTypeEnum dbType = DatabaseTypeEnum.MySQL;

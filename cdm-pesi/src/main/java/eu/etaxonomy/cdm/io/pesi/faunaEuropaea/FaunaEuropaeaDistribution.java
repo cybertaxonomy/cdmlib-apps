@@ -1,61 +1,27 @@
 /**
 * Copyright (C) 2009 EDIT
-* European Distributed Institute of Taxonomy 
+* European Distributed Institute of Taxonomy
 * http://www.e-taxonomy.eu
-* 
+*
 * The contents of this file are subject to the Mozilla Public License Version 1.1
 * See LICENSE.TXT at the top of this package for the full license terms.
 */
 
 package eu.etaxonomy.cdm.io.pesi.faunaEuropaea;
 
-import java.util.UUID;
-
-import org.joda.time.DateTime;
-
 /**
  * @author a.babadshanjan
  * @created 11.09.2009
- * @version 1.0
  */
 public class FaunaEuropaeaDistribution {
-	
-	private UUID taxonUuid;
-	private int taxonId;
+
 	private int distributionId;
 	private int occurrenceStatusId;
 	private int areaId;
 	private String areaName;
 	private String areaCode;
 	private int extraLimital;
-	
-	
-	
-	
-//	/**
-//	 * @return the taxonUuid
-//	 */
-//	public UUID getTaxonUuid() {
-//		return taxonUuid;
-//	}
-//	/**
-//	 * @param taxonUuid the taxonUuid to set
-//	 */
-//	public void setTaxonUuid(UUID taxonUuid) {
-//		this.taxonUuid = taxonUuid;
-//	}
-//	/**
-//	 * @return the taxonId
-//	 */
-//	public int getTaxonId() {
-//		return taxonId;
-//	}
-//	/**
-//	 * @param taxonId the taxonId to set
-//	 */
-//	public void setTaxonId(int taxonId) {
-//		this.taxonId = taxonId;
-//	}
+
 	/**
 	 * @return the distributionId
 	 */
@@ -128,6 +94,6 @@ public class FaunaEuropaeaDistribution {
 	public void setExtraLimital(int extraLimital) {
 		this.extraLimital = extraLimital;
 	}
-	
+
 
 }

@@ -32,7 +32,7 @@ public class SpecimenImport {
     final static String xmlSource = "/home/pkelbert/Documents/Proibiosphere/Presentations/Demo/ABCD/calvum.xml";
 
 
-    static final ICdmDataSource cdmDestination = CdmDestinations.mon_cdm();
+    static final ICdmDataSource cdmDestination = CdmDestinations.localH2();
 //    static final ICdmDataSource cdmDestination = CdmDestinations.makeDestination(DatabaseTypeEnum.H2, "localhost", "abcd_import_test", 8082, "root", "root");
     static final CHECK check = CHECK.IMPORT_WITHOUT_CHECK;
 
