@@ -819,7 +819,7 @@ public class BerlinModelFactsImport  extends BerlinModelImportBase {
             return String.valueOf(intFact);
         }else{
             String name = getSalvadorImageNameInfo(intFact);
-            String result = UTF8.ENGLISH_QUOT_START +  name + UTF8.ENGLISH_QUOT_END + " [Berendsohn & al. " + vol + "]";
+            String result = UTF8.QUOT_DBL_LEFT +  name + UTF8.QUOT_DBL_RIGHT + " [Berendsohn & al. " + vol + "]";
             return result;
         }
     }
