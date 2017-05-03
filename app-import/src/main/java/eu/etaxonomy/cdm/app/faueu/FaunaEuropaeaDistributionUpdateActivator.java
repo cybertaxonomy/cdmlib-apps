@@ -9,7 +9,6 @@
 package eu.etaxonomy.cdm.app.faueu;
 
 import java.net.URI;
-import java.util.List;
 import java.util.UUID;
 
 import org.apache.log4j.Logger;
@@ -58,10 +57,12 @@ public class FaunaEuropaeaDistributionUpdateActivator {
         config.setDbSchemaValidation(DbSchemaValidation.VALIDATE);
         config.setCheck(check);
         config.setNomenclaturalCode(NomenclaturalCode.ICZN);
+//        config.setCreateNewDistribution(false);
 
         try {
             ImportResult result = new CdmDefaultImport<ExcelDistributionUpdateConfigurator>().invoke(config);
-            List<byte[]> reports = result.getReports();
+            String report = result.createReport().toString();
+            System.out.print(report);
         } catch (Exception e) {
             e.printStackTrace();
         }
