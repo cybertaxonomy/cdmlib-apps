@@ -30,7 +30,7 @@ import eu.etaxonomy.cdm.model.description.PresenceAbsenceTerm;
 import eu.etaxonomy.cdm.model.description.State;
 import eu.etaxonomy.cdm.model.description.TaxonDescription;
 import eu.etaxonomy.cdm.model.location.NamedArea;
-import eu.etaxonomy.cdm.model.name.BotanicalName;
+import eu.etaxonomy.cdm.model.name.IBotanicalName;
 import eu.etaxonomy.cdm.model.name.Rank;
 import eu.etaxonomy.cdm.model.name.TaxonNameFactory;
 import eu.etaxonomy.cdm.model.reference.Reference;
@@ -388,7 +388,7 @@ public class FloraHellenicaTaxonImport<CONFIG extends FloraHellenicaImportConfig
 
         String nameStr = CdmUtils.concat(" ", nameParts);
         Rank rank = isSubSpecies ? Rank.SUBSPECIES() : Rank.SPECIES();
-        BotanicalName name = (BotanicalName)parser.parseFullName(nameStr, state.getConfig().getNomenclaturalCode(), rank);
+        IBotanicalName name = (IBotanicalName)parser.parseFullName(nameStr, state.getConfig().getNomenclaturalCode(), rank);
         if (name.isProtectedTitleCache()){
             logger.warn(line + "Name could not be parsed: " + nameStr);
         }
@@ -450,7 +450,7 @@ public class FloraHellenicaTaxonImport<CONFIG extends FloraHellenicaImportConfig
      */
     private TaxonNode makeGenusNode(SimpleExcelTaxonImportState<CONFIG> state,
             HashMap<String, String> record, String genusStr) {
-        BotanicalName name = TaxonNameFactory.NewBotanicalInstance(Rank.GENUS());
+        IBotanicalName name = TaxonNameFactory.NewBotanicalInstance(Rank.GENUS());
         name.setGenusOrUninomial(genusStr);
         name = replaceNameAuthorsAndReferences(state, name);
         Taxon genus = Taxon.NewInstance(name, getSecReference(state));
@@ -490,7 +490,7 @@ public class FloraHellenicaTaxonImport<CONFIG extends FloraHellenicaImportConfig
         if (family != null){
             familyNode = family.getTaxonNodes().iterator().next();
         }else{
-            BotanicalName name = makeFamilyName(state, familyStr);
+            IBotanicalName name = makeFamilyName(state, familyStr);
             name = replaceNameAuthorsAndReferences(state, name);
 
             Reference sec = getSecReference(state);
@@ -522,7 +522,7 @@ public class FloraHellenicaTaxonImport<CONFIG extends FloraHellenicaImportConfig
         if (group != null){
             groupNode = group.getTaxonNodes().iterator().next();
         }else{
-            BotanicalName name = makeFamilyName(state, groupStr);
+            IBotanicalName name = makeFamilyName(state, groupStr);
             name = replaceNameAuthorsAndReferences(state, name);
 
             Reference sec = getSecReference(state);
@@ -546,7 +546,7 @@ public class FloraHellenicaTaxonImport<CONFIG extends FloraHellenicaImportConfig
             classification.setUuid(state.getConfig().getClassificationUuid());
             classification.getRootNode().setUuid(rootUuid);
 
-            BotanicalName plantaeName = TaxonNameFactory.NewBotanicalInstance(Rank.KINGDOM());
+            IBotanicalName plantaeName = TaxonNameFactory.NewBotanicalInstance(Rank.KINGDOM());
             plantaeName.setGenusOrUninomial("Plantae");
             plantaeName = replaceNameAuthorsAndReferences(state, plantaeName);
 

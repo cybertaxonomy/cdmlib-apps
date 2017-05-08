@@ -18,7 +18,7 @@ import org.apache.log4j.Logger;
 import eu.etaxonomy.cdm.io.excel.common.ExcelImportState;
 import eu.etaxonomy.cdm.io.excel.common.ExcelRowBase;
 import eu.etaxonomy.cdm.model.description.PresenceAbsenceTerm;
-import eu.etaxonomy.cdm.model.name.BotanicalName;
+import eu.etaxonomy.cdm.model.name.IBotanicalName;
 import eu.etaxonomy.cdm.model.reference.Reference;
 import eu.etaxonomy.cdm.model.taxon.Classification;
 import eu.etaxonomy.cdm.model.taxon.Taxon;
@@ -32,11 +32,11 @@ public class CubaImportState extends ExcelImportState<CubaImportConfigurator, Ex
 	@SuppressWarnings("unused")
 	private static final Logger logger = Logger.getLogger(CubaImportState.class);
 
-	private final Map<String, Taxon> higherTaxonTaxonMap = new HashMap<String, Taxon>();
+	private final Map<String, Taxon> higherTaxonTaxonMap = new HashMap<>();
 
-	private final Map<String, UUID> higherTaxonUuidMap = new HashMap<String, UUID>();
+	private final Map<String, UUID> higherTaxonUuidMap = new HashMap<>();
 
-	private final Map<String, BotanicalName> familyNameMap = new HashMap<String, BotanicalName>();
+	private final Map<String, IBotanicalName> familyNameMap = new HashMap<>();
 
 	//classification
 	private Classification classification;
@@ -108,10 +108,10 @@ public class CubaImportState extends ExcelImportState<CubaImportConfigurator, Ex
     }
 
     //family names
-    public BotanicalName getFamilyName(String familyStr) {
+    public IBotanicalName getFamilyName(String familyStr) {
         return familyNameMap.get(familyStr);
     }
-    public void putFamilyName(String familyStr, BotanicalName name) {
+    public void putFamilyName(String familyStr, IBotanicalName name) {
         familyNameMap.put(familyStr, name);
     }
 

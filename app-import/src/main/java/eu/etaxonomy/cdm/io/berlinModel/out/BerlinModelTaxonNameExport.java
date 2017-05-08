@@ -37,23 +37,23 @@ import eu.etaxonomy.cdm.model.common.ExtensionType;
 import eu.etaxonomy.cdm.model.common.MarkerType;
 import eu.etaxonomy.cdm.model.name.INonViralName;
 import eu.etaxonomy.cdm.model.name.NomenclaturalStatus;
-import eu.etaxonomy.cdm.model.name.NonViralName;
-import eu.etaxonomy.cdm.model.name.TaxonNameBase;
+import eu.etaxonomy.cdm.model.name.TaxonName;
 
 
 /**
  * @author a.mueller
  * @created 20.03.2008
- * @version 1.0
  */
 @Component
-public class BerlinModelTaxonNameExport extends BerlinModelExportBase<TaxonNameBase> {
-	private static final Logger logger = Logger.getLogger(BerlinModelTaxonNameExport.class);
+public class BerlinModelTaxonNameExport extends BerlinModelExportBase<TaxonName> {
+
+    private static final long serialVersionUID = 4478799976310317219L;
+    private static final Logger logger = Logger.getLogger(BerlinModelTaxonNameExport.class);
 
 	private static int modCount = 2500;
 	private static final String dbTableName = "Name";
 	private static final String pluralString = "TaxonNames";
-	private static final Class<? extends CdmBase> standardMethodParameter = NonViralName.class;
+	private static final Class<? extends CdmBase> standardMethodParameter = TaxonName.class;
 
 	public BerlinModelTaxonNameExport(){
 		super();
@@ -66,7 +66,7 @@ public class BerlinModelTaxonNameExport extends BerlinModelExportBase<TaxonNameB
 	protected boolean doCheck(BerlinModelExportState state){
 		boolean result = true;
 		logger.warn("Checking for " + pluralString + " not yet fully implemented");
-		List<TaxonNameBase> list = getObjectList();
+		List<TaxonName> list = getObjectList();
 		checkRank(list);
 
 		//result &= checkRank(config);
@@ -74,9 +74,9 @@ public class BerlinModelTaxonNameExport extends BerlinModelExportBase<TaxonNameB
 		return result;
 	}
 
-	private boolean checkRank(List<TaxonNameBase> list){
-		List<TaxonNameBase> errorNames = new ArrayList<TaxonNameBase>();
-		for (TaxonNameBase<?,?> name : list){
+	private boolean checkRank(List<TaxonName> list){
+		List<TaxonName> errorNames = new ArrayList<>();
+		for (TaxonName<?,?> name : list){
 			if (name.getRank() == null) {
                 ;
             }
@@ -84,7 +84,7 @@ public class BerlinModelTaxonNameExport extends BerlinModelExportBase<TaxonNameB
 		}
 		if (errorNames.size() >0){
 			System.out.println("The following names have no Rank:\n=======================");
-			for (TaxonNameBase<?,?> name : errorNames){
+			for (TaxonName<?,?> name : errorNames){
 				System.out.println("  " + name.toString());
 				System.out.println("  " + name.getUuid());
 				System.out.println("  " + name.getTitleCache());
@@ -167,13 +167,13 @@ public class BerlinModelTaxonNameExport extends BerlinModelExportBase<TaxonNameB
 
 			TransactionStatus txStatus = startTransaction(true);
 			logger.info("load "+pluralString+" ...");
-			List<TaxonNameBase> names = getObjectList();
+			List<TaxonName> names = getObjectList();
 
 			CdmDbExportMapping<BerlinModelExportState, BerlinModelExportConfigurator, IExportTransformer> mapping = getMapping();
 			mapping.initialize(state);
 			logger.info("save "+pluralString+" ...");
 			int count = 0;
-			for (TaxonNameBase<?,?> name : names){
+			for (TaxonName<?,?> name : names){
 				doCount(count++, modCount, pluralString);
 				success &= mapping.invoke(name);
 				//TODO rank = null or rank < genus and genusOrUninomial != null
@@ -194,8 +194,8 @@ public class BerlinModelTaxonNameExport extends BerlinModelExportBase<TaxonNameB
 		}
 	}
 
-	protected List<TaxonNameBase> getObjectList(){
-		List<TaxonNameBase> list = getNameService().list(null,100000000, null,null,null);
+	protected List<TaxonName> getObjectList(){
+		List<TaxonName> list = getNameService().list(null,100000000, null,null,null);
 		return list;
 	}
 

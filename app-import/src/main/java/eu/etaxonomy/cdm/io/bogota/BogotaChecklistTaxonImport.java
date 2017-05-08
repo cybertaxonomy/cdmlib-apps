@@ -22,7 +22,7 @@ import eu.etaxonomy.cdm.io.mexico.SimpleExcelTaxonImport;
 import eu.etaxonomy.cdm.io.mexico.SimpleExcelTaxonImportState;
 import eu.etaxonomy.cdm.model.common.IdentifiableSource;
 import eu.etaxonomy.cdm.model.common.Language;
-import eu.etaxonomy.cdm.model.name.BotanicalName;
+import eu.etaxonomy.cdm.model.name.IBotanicalName;
 import eu.etaxonomy.cdm.model.name.Rank;
 import eu.etaxonomy.cdm.model.name.TaxonNameFactory;
 import eu.etaxonomy.cdm.model.reference.Reference;
@@ -175,7 +175,7 @@ public class BogotaChecklistTaxonImport<CONFIG extends BogotaChecklistImportConf
         }else{
             nameStr = nameStr.replace(auctStr, "").trim();
         }
-        BotanicalName name = (BotanicalName)parser.parseFullName(nameStr, state.getConfig().getNomenclaturalCode(), rank);
+        IBotanicalName name = (IBotanicalName)parser.parseFullName(nameStr, state.getConfig().getNomenclaturalCode(), rank);
         name.addImportSource(noStr, getNamespace(), getSourceCitation(state), null);
         name = deduplicationHelper.getExistingName(state, name);
         if (name.isProtectedTitleCache()){
@@ -211,7 +211,7 @@ public class BogotaChecklistTaxonImport<CONFIG extends BogotaChecklistImportConf
     private void handleSingleSynonym(SimpleExcelTaxonImportState<CONFIG> state, String nameStr,
             String line, Taxon taxon, String noStr) {
         Rank rank = Rank.SPECIES();
-        BotanicalName name = (BotanicalName)parser.parseFullName(nameStr, state.getConfig().getNomenclaturalCode(), rank);
+        IBotanicalName name = (IBotanicalName)parser.parseFullName(nameStr, state.getConfig().getNomenclaturalCode(), rank);
         name.addImportSource(noStr, getNamespace(), getSourceCitation(state), null);
         name = deduplicationHelper.getExistingName(state, name);
         if (name.isProtectedTitleCache()){
@@ -242,7 +242,7 @@ public class BogotaChecklistTaxonImport<CONFIG extends BogotaChecklistImportConf
                     split = split.replace(" None", "").trim();
                 }
                 Rank rank = Rank.SUBSPECIES();
-                BotanicalName name = (BotanicalName)parser.parseFullName(split.trim(), state.getConfig().getNomenclaturalCode(), rank);
+                IBotanicalName name = (IBotanicalName)parser.parseFullName(split.trim(), state.getConfig().getNomenclaturalCode(), rank);
                 name.addImportSource(noStr, getNamespace(), getSourceCitation(state), null);
                 name = deduplicationHelper.getExistingName(state, name);
                 if (name.isProtectedTitleCache()){
@@ -279,7 +279,7 @@ public class BogotaChecklistTaxonImport<CONFIG extends BogotaChecklistImportConf
 
         nameStr = CdmUtils.concat(" ", nameStr, speciesAuthorStr);
         Rank rank = Rank.SPECIES();
-        BotanicalName name = (BotanicalName)parser.parseFullName(nameStr, state.getConfig().getNomenclaturalCode(), rank);
+        IBotanicalName name = (IBotanicalName)parser.parseFullName(nameStr, state.getConfig().getNomenclaturalCode(), rank);
         name.addImportSource(noStr, getNamespace(), getSourceCitation(state), null);
         name = deduplicationHelper.getExistingName(state, name);
         if (name.isProtectedTitleCache()){
@@ -336,7 +336,7 @@ public class BogotaChecklistTaxonImport<CONFIG extends BogotaChecklistImportConf
         if (family != null){
             familyNode = family.getTaxonNodes().iterator().next();
         }else{
-            BotanicalName name = makeFamilyName(state, familyStr);
+            IBotanicalName name = makeFamilyName(state, familyStr);
             Reference sec = getSecReference(state);
             family = Taxon.NewInstance(name, sec);
 
@@ -360,7 +360,7 @@ public class BogotaChecklistTaxonImport<CONFIG extends BogotaChecklistImportConf
             classification.setUuid(state.getConfig().getClassificationUuid());
             classification.getRootNode().setUuid(rootUuid);
 
-            BotanicalName plantaeName = TaxonNameFactory.NewBotanicalInstance(Rank.KINGDOM());
+            IBotanicalName plantaeName = TaxonNameFactory.NewBotanicalInstance(Rank.KINGDOM());
             plantaeName.setGenusOrUninomial("Plantae");
             Taxon plantae = Taxon.NewInstance(plantaeName, sec);
             TaxonNode plantaeNode = classification.addChildTaxon(plantae, null, null);
@@ -373,8 +373,8 @@ public class BogotaChecklistTaxonImport<CONFIG extends BogotaChecklistImportConf
     }
 
 
-    protected BotanicalName makeFamilyName(SimpleExcelTaxonImportState<CONFIG> state, String famStr) {
-        BotanicalName name = TaxonNameFactory.NewBotanicalInstance(Rank.FAMILY());
+    protected IBotanicalName makeFamilyName(SimpleExcelTaxonImportState<CONFIG> state, String famStr) {
+        IBotanicalName name = TaxonNameFactory.NewBotanicalInstance(Rank.FAMILY());
         famStr = decapitalize(famStr);
         name.setGenusOrUninomial(famStr);
         name.addSource(makeOriginalSource(state));
@@ -431,7 +431,7 @@ public class BogotaChecklistTaxonImport<CONFIG extends BogotaChecklistImportConf
      */
     private TaxonNode makeGenusNode(SimpleExcelTaxonImportState<CONFIG> state,
             HashMap<String, String> record, String genusStr) {
-        BotanicalName name = TaxonNameFactory.NewBotanicalInstance(Rank.GENUS());
+        IBotanicalName name = TaxonNameFactory.NewBotanicalInstance(Rank.GENUS());
         name.setGenusOrUninomial(genusStr);
         Taxon genus = Taxon.NewInstance(name, getSecReference(state));
         TaxonNode family = getFamilyTaxon(record, state);

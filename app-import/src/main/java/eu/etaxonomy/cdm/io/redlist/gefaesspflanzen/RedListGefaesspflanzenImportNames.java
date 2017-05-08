@@ -46,7 +46,7 @@ import eu.etaxonomy.cdm.model.name.NomenclaturalStatus;
 import eu.etaxonomy.cdm.model.name.NomenclaturalStatusType;
 import eu.etaxonomy.cdm.model.name.Rank;
 import eu.etaxonomy.cdm.model.name.RankClass;
-import eu.etaxonomy.cdm.model.name.TaxonNameBase;
+import eu.etaxonomy.cdm.model.name.TaxonName;
 import eu.etaxonomy.cdm.model.name.TaxonNameFactory;
 import eu.etaxonomy.cdm.model.taxon.Synonym;
 import eu.etaxonomy.cdm.model.taxon.Taxon;
@@ -140,7 +140,7 @@ public class RedListGefaesspflanzenImportNames extends DbImportBase<RedListGefae
             e.printStackTrace();
         }
 
-        getNameService().saveOrUpdate(TaxonNameBase.castAndDeproxy(namesToSave));
+        getNameService().saveOrUpdate(TaxonName.castAndDeproxy(namesToSave));
         getTaxonService().saveOrUpdate(taxaToSave);
         return true;
     }

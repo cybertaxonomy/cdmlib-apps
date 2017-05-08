@@ -18,7 +18,7 @@ import eu.etaxonomy.cdm.database.ICdmDataSource;
 import eu.etaxonomy.cdm.io.common.CacheUpdaterConfigurator;
 import eu.etaxonomy.cdm.io.common.CdmDefaultImport;
 import eu.etaxonomy.cdm.io.common.ImportResult;
-import eu.etaxonomy.cdm.model.name.TaxonNameBase;
+import eu.etaxonomy.cdm.model.name.TaxonName;
 import eu.etaxonomy.cdm.model.reference.Reference;
 import eu.etaxonomy.cdm.model.taxon.TaxonBase;
 
@@ -50,7 +50,7 @@ public class CacheUpdater {
 //			IdentifiableEntity.class.getName(),
 //			AgentBase.class.getName(),
 			Reference.class.getName(),
-			TaxonNameBase.class.getName(),
+			TaxonName.class.getName(),
 			TaxonBase.class.getName()
 	});
 	//new ArrayList<Class<? extends IdentifiableEntity>>();

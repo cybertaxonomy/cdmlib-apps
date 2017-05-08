@@ -33,7 +33,7 @@ import eu.etaxonomy.cdm.model.description.DescriptionElementSource;
 import eu.etaxonomy.cdm.model.description.Feature;
 import eu.etaxonomy.cdm.model.description.TaxonDescription;
 import eu.etaxonomy.cdm.model.description.TextData;
-import eu.etaxonomy.cdm.model.name.TaxonNameBase;
+import eu.etaxonomy.cdm.model.name.TaxonName;
 import eu.etaxonomy.cdm.model.taxon.Taxon;
 
 /**
@@ -67,9 +67,9 @@ public class DipteraPostImportUpdater {
 			int page = 0;
 			int count = cdmApp.getTaxonService().count(Taxon.class);
 			List<Taxon> taxonList = cdmApp.getTaxonService().list(Taxon.class, 100000, page, null, null);
-			List<TaxonNameBase> nameList = cdmApp.getNameService().list(null, 100000, page, null, null);
-			Map<String, TaxonNameBase> nameMap = new HashMap<String, TaxonNameBase>();
-			Map<String, TaxonNameBase> nameDuplicateMap = new HashMap<String, TaxonNameBase>();
+			List<TaxonName> nameList = cdmApp.getNameService().list(null, 100000, page, null, null);
+			Map<String, TaxonName> nameMap = new HashMap<>();
+			Map<String, TaxonName> nameDuplicateMap = new HashMap<>();
 			fillNameMaps(nameList, nameMap, nameDuplicateMap);
 
 			int i = 0;
@@ -85,7 +85,7 @@ public class DipteraPostImportUpdater {
 					String newText = parseNewText(text);
 					citation.removeText(language);
 					citation.putText(language, newText);
-					TaxonNameBase<?,?> scientificName = getScientificName(originalNameString, nameMap, nameDuplicateMap);
+					TaxonName<?,?> scientificName = getScientificName(originalNameString, nameMap, nameDuplicateMap);
 
 					Set<DescriptionElementSource> sources = citation.getSources();
 					if (sources.size() > 1){
@@ -127,8 +127,8 @@ public class DipteraPostImportUpdater {
 	}
 
 
-	private void fillNameMaps(List<TaxonNameBase> nameList, Map<String, TaxonNameBase> nameMap, Map<String, TaxonNameBase> duplicateMap) {
-		for (TaxonNameBase<?,?> name : nameList){
+	private void fillNameMaps(List<TaxonName> nameList, Map<String, TaxonName> nameMap, Map<String, TaxonName> duplicateMap) {
+		for (TaxonName<?,?> name : nameList){
 			String nameCache = name.getNameCache();
 			if (nameMap.containsKey(nameCache)){
 				duplicateMap.put(nameCache, name);
@@ -139,17 +139,17 @@ public class DipteraPostImportUpdater {
 	}
 
 
-	private TaxonNameBase getScientificName(String originalNameString, Map<String, TaxonNameBase> nameMap, Map<String, TaxonNameBase> nameDuplicateMap) {
+	private TaxonName getScientificName(String originalNameString, Map<String, TaxonName> nameMap, Map<String, TaxonName> nameDuplicateMap) {
 		originalNameString = originalNameString.trim();
-		TaxonNameBase result = nameMap.get(originalNameString);
+		TaxonName result = nameMap.get(originalNameString);
 		if (nameDuplicateMap.containsKey(originalNameString)){
 			result = null;
 		}
 		return result;
 	}
 
-	private TaxonNameBase getScientificName(String originalNameString, INameService nameService) {
-		Pager<TaxonNameBase> names = nameService.findByName(null, originalNameString, null, null, null, null, null, null);
+	private TaxonName getScientificName(String originalNameString, INameService nameService) {
+		Pager<TaxonName> names = nameService.findByName(null, originalNameString, null, null, null, null, null, null);
 		if (names.getCount() != 1){
 			return null;
 		}else{

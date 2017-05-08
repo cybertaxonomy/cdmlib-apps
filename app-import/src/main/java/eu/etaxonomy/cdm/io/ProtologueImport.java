@@ -30,7 +30,7 @@ import eu.etaxonomy.cdm.model.description.TextData;
 import eu.etaxonomy.cdm.model.media.Media;
 import eu.etaxonomy.cdm.model.media.MediaRepresentation;
 import eu.etaxonomy.cdm.model.media.MediaRepresentationPart;
-import eu.etaxonomy.cdm.model.name.TaxonNameBase;
+import eu.etaxonomy.cdm.model.name.TaxonName;
 
 
 /**
@@ -55,11 +55,11 @@ public class ProtologueImport
     public void doInvoke(DefaultImportState<PalmaeProtologueImportConfigurator> state){
 		logger.info("start make Protologues from files ...");
 
-		Set<TaxonNameBase> nameStore = new HashSet<TaxonNameBase>();
+		Set<TaxonName> nameStore = new HashSet<>();
 
 		PalmaeProtologueImportConfigurator config = state.getConfig();
 		File source = config.getSource();
-		TaxonNameBase name;
+		TaxonName name;
 		TransactionStatus txStatus = startTransaction(false);
 		int count = 0;
 		if (source.isDirectory()){
@@ -82,7 +82,7 @@ public class ProtologueImport
 		return;
 	}
 
-	private void storeName(Set<TaxonNameBase> nameStore, TaxonNameBase name, DefaultImportState<PalmaeProtologueImportConfigurator> state){
+	private void storeName(Set<TaxonName> nameStore, TaxonName name, DefaultImportState<PalmaeProtologueImportConfigurator> state){
 		if (name != null){
 			nameStore.add(name);
 			return;
@@ -92,7 +92,7 @@ public class ProtologueImport
 		}
 	}
 
-	private TaxonNameBase importFile(File file, DefaultImportState<PalmaeProtologueImportConfigurator> state){
+	private TaxonName importFile(File file, DefaultImportState<PalmaeProtologueImportConfigurator> state){
 		String originalSourceId = file.getName();
 		originalSourceId =originalSourceId.replace("_P.pdf", "");
 		originalSourceId =originalSourceId.replace("_tc_", "_tn_");
@@ -100,7 +100,7 @@ public class ProtologueImport
 
 
 		//for testing only
-		TaxonNameBase taxonName = getTaxonName(originalSourceId, namespace);
+		TaxonName taxonName = getTaxonName(originalSourceId, namespace);
 		if (taxonName == null){
 			logger.warn("Name not found for " + originalSourceId);
 			return null;
@@ -130,7 +130,7 @@ public class ProtologueImport
 
 	}
 
-	private TaxonNameDescription getNameDescription(TaxonNameBase taxonName) {
+	private TaxonNameDescription getNameDescription(TaxonName taxonName) {
 		TaxonNameDescription result;
 		if (taxonName.getDescriptions().size()> 0){
 			result = (TaxonNameDescription)taxonName.getDescriptions().iterator().next();
@@ -169,11 +169,11 @@ public class ProtologueImport
 
  	}
 
-	private TaxonNameBase getTaxonName(String originalSourceId, String namespace){
-		TaxonNameBase result;
+	private TaxonName getTaxonName(String originalSourceId, String namespace){
+		TaxonName result;
 		ICommonService commonService = getCommonService();
 
-		result = (TaxonNameBase)commonService.getSourcedObjectByIdInSource(TaxonNameBase.class, originalSourceId , namespace);
+		result = (TaxonName)commonService.getSourcedObjectByIdInSource(TaxonName.class, originalSourceId , namespace);
 		if (result == null){
 			logger.warn("Taxon (id: " + originalSourceId + ", namespace: " + namespace + ") could not be found");
 		}

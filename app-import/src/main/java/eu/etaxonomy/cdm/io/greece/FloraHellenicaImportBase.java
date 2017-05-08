@@ -20,7 +20,7 @@ import eu.etaxonomy.cdm.io.mexico.SimpleExcelTaxonImport;
 import eu.etaxonomy.cdm.io.mexico.SimpleExcelTaxonImportState;
 import eu.etaxonomy.cdm.model.common.IdentifiableSource;
 import eu.etaxonomy.cdm.model.description.TaxonDescription;
-import eu.etaxonomy.cdm.model.name.BotanicalName;
+import eu.etaxonomy.cdm.model.name.IBotanicalName;
 import eu.etaxonomy.cdm.model.name.INonViralName;
 import eu.etaxonomy.cdm.model.name.Rank;
 import eu.etaxonomy.cdm.model.name.TaxonNameFactory;
@@ -168,7 +168,6 @@ public abstract class FloraHellenicaImportBase<CONFIG extends FloraHellenicaImpo
 
     protected BotanicalName makeFamilyName(SimpleExcelTaxonImportState<CONFIG> state,
             String famStr) {
-        BotanicalName name = TaxonNameFactory.NewBotanicalInstance(Rank.FAMILY());
         famStr = famStr.substring(0,1).toUpperCase() + famStr.substring(1).toLowerCase();
         name.setGenusOrUninomial(famStr);
         name.addSource(makeOriginalSource(state));

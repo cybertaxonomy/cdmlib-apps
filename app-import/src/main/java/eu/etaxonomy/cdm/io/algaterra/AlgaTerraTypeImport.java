@@ -46,7 +46,7 @@ import eu.etaxonomy.cdm.model.common.User;
 import eu.etaxonomy.cdm.model.name.Rank;
 import eu.etaxonomy.cdm.model.name.SpecimenTypeDesignation;
 import eu.etaxonomy.cdm.model.name.SpecimenTypeDesignationStatus;
-import eu.etaxonomy.cdm.model.name.TaxonNameBase;
+import eu.etaxonomy.cdm.model.name.TaxonName;
 import eu.etaxonomy.cdm.model.name.TaxonNameFactory;
 import eu.etaxonomy.cdm.model.occurrence.Collection;
 import eu.etaxonomy.cdm.model.occurrence.DerivedUnit;
@@ -126,9 +126,9 @@ public class AlgaTerraTypeImport  extends AlgaTerraSpecimenImportBase {
 
 
 
-		Set<TaxonNameBase> namesToSave = new HashSet<TaxonNameBase>();
+		Set<TaxonName> namesToSave = new HashSet<>();
 
-		Map<String, TaxonNameBase> taxonNameMap = partitioner.getObjectMap(BerlinModelTaxonNameImport.NAMESPACE);
+		Map<String, TaxonName> taxonNameMap = partitioner.getObjectMap(BerlinModelTaxonNameImport.NAMESPACE);
 		Map<String, DerivedUnit> ecoFactMap = partitioner.getObjectMap(AlgaTerraEcoFactImport.ECO_FACT_FIELD_OBSERVATION_NAMESPACE);
 		Map<String, DerivedUnit> typeSpecimenMap = partitioner.getObjectMap(TYPE_SPECIMEN_FIELD_OBSERVATION_NAMESPACE);
 		Map<String, Reference> refMap = partitioner.getObjectMap(BerlinModelReferenceImport.REFERENCE_NAMESPACE);
@@ -198,7 +198,7 @@ public class AlgaTerraTypeImport  extends AlgaTerraSpecimenImportBase {
 
 
 					//Designation
-					TaxonNameBase<?,?> name = getTaxonName(state, taxonNameMap, nameId);
+					TaxonName<?,?> name = getTaxonName(state, taxonNameMap, nameId);
 					SpecimenTypeDesignation designation = SpecimenTypeDesignation.NewInstance();
 					SpecimenTypeDesignationStatus status = getSpecimenTypeDesignationStatusByKey(typeStatusFk);
 					if (typeStatusFk != null && typeStatusFk.equals(39)){
@@ -336,8 +336,8 @@ public class AlgaTerraTypeImport  extends AlgaTerraSpecimenImportBase {
 	 * @param nameId
 	 * @return
 	 */
-	private TaxonNameBase<?,?> getTaxonName(AlgaTerraImportState state, Map<String, TaxonNameBase> taxonNameMap, int nameId) {
-		TaxonNameBase<?,?> result;
+	private TaxonName<?,?> getTaxonName(AlgaTerraImportState state, Map<String, TaxonName> taxonNameMap, int nameId) {
+		TaxonName<?,?> result;
 		if (state.getConfig().isDoTaxonNames()){
 			result = taxonNameMap.get(String.valueOf(nameId));
 		}else{
@@ -489,9 +489,9 @@ public class AlgaTerraTypeImport  extends AlgaTerraSpecimenImportBase {
 
 			//name map
 			nameSpace = BerlinModelTaxonNameImport.NAMESPACE;
-			cdmClass = TaxonNameBase.class;
+			cdmClass = TaxonName.class;
 			idSet = nameIdSet;
-			Map<String, TaxonNameBase> objectMap = (Map<String, TaxonNameBase>)getCommonService().getSourcedObjectsByIdInSource(cdmClass, idSet, nameSpace);
+			Map<String, TaxonName> objectMap = (Map<String, TaxonName>)getCommonService().getSourcedObjectsByIdInSource(cdmClass, idSet, nameSpace);
 			result.put(nameSpace, objectMap);
 
 			//eco fact field observation map

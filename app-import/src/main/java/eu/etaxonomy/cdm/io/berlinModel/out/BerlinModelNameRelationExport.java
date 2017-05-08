@@ -32,7 +32,7 @@ import eu.etaxonomy.cdm.model.common.RelationshipBase;
 import eu.etaxonomy.cdm.model.name.HomotypicalGroup;
 import eu.etaxonomy.cdm.model.name.HybridRelationship;
 import eu.etaxonomy.cdm.model.name.NameRelationship;
-import eu.etaxonomy.cdm.model.name.TaxonNameBase;
+import eu.etaxonomy.cdm.model.name.TaxonName;
 import eu.etaxonomy.cdm.model.reference.Reference;
 
 
@@ -144,12 +144,12 @@ public class BerlinModelNameRelationExport extends BerlinModelExportBase<Relatio
 			Set<NameRelationship> basionymNameRels = new HashSet<NameRelationship>();
 			for (HomotypicalGroup homoGroup : list){
 				doCount(count++, modCount, "homotypical groups");
-				Set<TaxonNameBase> allNames = homoGroup.getTypifiedNames();
+				Set<TaxonName> allNames = homoGroup.getTypifiedNames();
 				if (allNames.size() > 1){
-					Set<TaxonNameBase> readyNames = new HashSet<TaxonNameBase>();
-					Set<TaxonNameBase> unrelateds = homoGroup.getUnrelatedNames();
-					for (TaxonNameBase unrelated : unrelateds){
-						for (TaxonNameBase oneOfAllNames: allNames){
+					Set<TaxonName> readyNames = new HashSet<>();
+					Set<TaxonName> unrelateds = homoGroup.getUnrelatedNames();
+					for (TaxonName unrelated : unrelateds){
+						for (TaxonName oneOfAllNames: allNames){
 							if(!unrelated.equals(oneOfAllNames) && ! readyNames.contains(oneOfAllNames)){
 								success &= invokeIsHomotypic(state, mapping, unrelated, oneOfAllNames, null, null);
 							}
@@ -169,7 +169,7 @@ public class BerlinModelNameRelationExport extends BerlinModelExportBase<Relatio
 		}
 	}
 
-	private boolean invokeIsHomotypic(BerlinModelExportState state, CdmDbExportMapping<BerlinModelExportState, BerlinModelExportConfigurator, IExportTransformer> mapping, TaxonNameBase fromName, TaxonNameBase toName, Reference refId, String microCitation) throws SQLException{
+	private boolean invokeIsHomotypic(BerlinModelExportState state, CdmDbExportMapping<BerlinModelExportState, BerlinModelExportConfigurator, IExportTransformer> mapping, TaxonName fromName, TaxonName toName, Reference refId, String microCitation) throws SQLException{
 		try{
 			logger.info(fromName.getTitleCache() + "->" + toName.getTitleCache());
 			String maxQuery = " SELECT max(relNameId) as max FROM relName ";
@@ -190,8 +190,8 @@ public class BerlinModelNameRelationExport extends BerlinModelExportBase<Relatio
 		return true;
 	}
 
-	private Set<TaxonNameBase> getAllRelatedNames(Set<NameRelationship> rels){
-		Set<TaxonNameBase> result = new HashSet<TaxonNameBase>();
+	private Set<TaxonName> getAllRelatedNames(Set<NameRelationship> rels){
+		Set<TaxonName> result = new HashSet<>();
 		for (NameRelationship rel : rels){
 			result.add(rel.getFromName());
 			result.add(rel.getToName());

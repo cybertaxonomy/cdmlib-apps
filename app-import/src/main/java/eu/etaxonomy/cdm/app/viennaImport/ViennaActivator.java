@@ -29,7 +29,7 @@ import eu.etaxonomy.cdm.model.common.IdentifiableSource;
 import eu.etaxonomy.cdm.model.media.ImageFile;
 import eu.etaxonomy.cdm.model.media.Media;
 import eu.etaxonomy.cdm.model.name.INonViralName;
-import eu.etaxonomy.cdm.model.name.TaxonNameBase;
+import eu.etaxonomy.cdm.model.name.TaxonName;
 import eu.etaxonomy.cdm.model.occurrence.DerivedUnit;
 import eu.etaxonomy.cdm.model.occurrence.DeterminationEvent;
 import eu.etaxonomy.cdm.model.occurrence.SpecimenOrObservationType;
@@ -105,7 +105,7 @@ public class ViennaActivator {
 
 				INonViralName taxonName = NonViralNameParserImpl.NewInstance().parseFullName(strTaxonName);
 				if (withCdm){
-					List<TaxonNameBase> names = app.getNameService().findByName(null, strTaxonName, null, null, null, null, null, null).getRecords();
+					List<TaxonName> names = app.getNameService().findByName(null, strTaxonName, null, null, null, null, null, null).getRecords();
 					if (names.size() == 0){
 						logger.warn("Name not found: " + strTaxonName);
 					}else{
@@ -122,7 +122,7 @@ public class ViennaActivator {
 				DerivedUnitFacade specimen = DerivedUnitFacade.NewInstance(SpecimenOrObservationType.PreservedSpecimen);
 
 				specimen.setCatalogNumber(catalogNumber);
-				specimen.setStoredUnder(TaxonNameBase.castAndDeproxy(taxonName));   //??
+				specimen.setStoredUnder(TaxonName.castAndDeproxy(taxonName));   //??
 				//TODO
 				//specimen.setCollection(collection);
 				specimen.addAnnotation(Annotation.NewDefaultLanguageInstance(annotation));

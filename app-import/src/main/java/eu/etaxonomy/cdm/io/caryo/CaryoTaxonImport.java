@@ -36,7 +36,7 @@ import eu.etaxonomy.cdm.model.name.NameTypeDesignation;
 import eu.etaxonomy.cdm.model.name.NomenclaturalStatus;
 import eu.etaxonomy.cdm.model.name.NomenclaturalStatusType;
 import eu.etaxonomy.cdm.model.name.Rank;
-import eu.etaxonomy.cdm.model.name.TaxonNameBase;
+import eu.etaxonomy.cdm.model.name.TaxonName;
 import eu.etaxonomy.cdm.model.name.TaxonNameFactory;
 import eu.etaxonomy.cdm.model.reference.IArticle;
 import eu.etaxonomy.cdm.model.reference.IBook;
@@ -199,7 +199,7 @@ public class CaryoTaxonImport  extends DbImportBase<CaryoImportState, CaryoImpor
 	private void handleBasionym(CaryoImportState state, ResultSet rs, Taxon taxon, String basioStr, Integer id) {
 		if (StringUtils.isNotBlank(basioStr)){
 			IBotanicalName name = taxon.getName();
-			TaxonNameBase<?,?> basionym = TaxonNameFactory.PARSED_BOTANICAL_REFERENCE(basioStr);
+			TaxonName<?,?> basionym = (TaxonName)TaxonNameFactory.PARSED_BOTANICAL_REFERENCE(basioStr);
 			if (basionym.hasProblem()){
 				logger.warn("Problem when parsing basionym ("+id+"): " +  basioStr);
 			}
@@ -221,7 +221,7 @@ public class CaryoTaxonImport  extends DbImportBase<CaryoImportState, CaryoImpor
 			return;
 		}else{
 			IBotanicalName name = taxon.getName();
-			TaxonNameBase<?,?> typeName = TaxonNameFactory.NewBotanicalInstance(Rank.SPECIES());
+			TaxonName<?,?> typeName = TaxonNameFactory.NewBotanicalInstance(Rank.SPECIES());
 			if ("not designated".equalsIgnoreCase(type)){
 				desig.setNotDesignated(true);
 			}else{

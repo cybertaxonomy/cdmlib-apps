@@ -45,7 +45,6 @@ import eu.etaxonomy.cdm.model.description.TaxonDescription;
 import eu.etaxonomy.cdm.model.description.TaxonInteraction;
 import eu.etaxonomy.cdm.model.description.TextData;
 import eu.etaxonomy.cdm.model.location.NamedArea;
-import eu.etaxonomy.cdm.model.name.BotanicalName;
 import eu.etaxonomy.cdm.model.name.HomotypicalGroup;
 import eu.etaxonomy.cdm.model.name.IBotanicalName;
 import eu.etaxonomy.cdm.model.name.NameRelationship;
@@ -54,7 +53,7 @@ import eu.etaxonomy.cdm.model.name.NomenclaturalCode;
 import eu.etaxonomy.cdm.model.name.NomenclaturalStatus;
 import eu.etaxonomy.cdm.model.name.NomenclaturalStatusType;
 import eu.etaxonomy.cdm.model.name.Rank;
-import eu.etaxonomy.cdm.model.name.TaxonNameBase;
+import eu.etaxonomy.cdm.model.name.TaxonName;
 import eu.etaxonomy.cdm.model.name.TaxonNameFactory;
 import eu.etaxonomy.cdm.model.reference.Reference;
 import eu.etaxonomy.cdm.model.reference.ReferenceFactory;
@@ -397,7 +396,7 @@ public class CubaExcelImport extends ExcelImporterBase<CubaImportState> {
         if (missapliedMatcher.matches()){
             boolean doubtful = missapliedMatcher.group(1) != null;
             String firstPart = missapliedMatcher.group(2);
-            BotanicalName name = (BotanicalName)nameParser.parseSimpleName(firstPart, state.getConfig().getNomenclaturalCode(), Rank.SPECIES());
+            IBotanicalName name = (IBotanicalName)nameParser.parseSimpleName(firstPart, state.getConfig().getNomenclaturalCode(), Rank.SPECIES());
             name.addSource(makeOriginalSource(state));
 
             String secondPart = missapliedMatcher.group(3);
@@ -428,7 +427,7 @@ public class CubaExcelImport extends ExcelImporterBase<CubaImportState> {
             if (StringUtils.isNotBlank(afterInval)){
                 logger.warn(state.getCurrentLine() + ": After inval to be implemented: " + afterInval);
             }
-            BotanicalName name = (BotanicalName)nameParser.parseSimpleName(firstPart, state.getConfig().getNomenclaturalCode(), Rank.SPECIES());
+            TaxonName name = (TaxonName)nameParser.parseSimpleName(firstPart, state.getConfig().getNomenclaturalCode(), Rank.SPECIES());
             name.addSource(makeOriginalSource(state));
             NomenclaturalStatus status = NomenclaturalStatus.NewInstance( NomenclaturalStatusType.INVALID());
             name.addStatus(status);
@@ -437,7 +436,7 @@ public class CubaExcelImport extends ExcelImporterBase<CubaImportState> {
         }else if (sphalmMatcher.matches()){
             String firstPart = sphalmMatcher.group(1);
             String sphalmPart = synonymStr.replace(firstPart, "").replace("“","").replace("”","").trim();
-            BotanicalName name = (BotanicalName)nameParser.parseSimpleName(firstPart, state.getConfig().getNomenclaturalCode(), Rank.SPECIES());
+            TaxonName name = (TaxonName)nameParser.parseSimpleName(firstPart, state.getConfig().getNomenclaturalCode(), Rank.SPECIES());
 //            NomenclaturalStatus status = NomenclaturalStatus.NewInstance( NomenclaturalStatusType.INVALID());
 //            name.addStatus(status);
             name.addSource(makeOriginalSource(state));
@@ -457,7 +456,7 @@ public class CubaExcelImport extends ExcelImporterBase<CubaImportState> {
             boolean isDoubtful = firstPart.matches("^\\?\\s*.*");
             firstPart = replaceHomonIlleg(firstPart);
             boolean isHomonym = firstPart.matches(".*" + HOMONYM_MARKER);
-            BotanicalName synName = makeName(state, firstPart);
+            TaxonName synName = (TaxonName)makeName(state, firstPart);
             if (synName.isProtectedTitleCache()){
                 logger.warn(line + "Heterotypic base synonym could not be parsed correctly: " + firstPart);
             }
@@ -471,7 +470,7 @@ public class CubaExcelImport extends ExcelImporterBase<CubaImportState> {
             checkFirstSynonym(state, list, isFirstSynonym, synonymStr, true);
 
         }else if (isSpecialHeterotypic(synonymStr)){
-            BotanicalName synName = makeName(state, synonymStr);
+            TaxonName synName = (TaxonName)makeName(state, synonymStr);
             if (synName.isProtectedTitleCache()){
                 logger.warn(line + "Special heterotypic synonym could not be parsed correctly:" + synonymStr);
             }
@@ -609,7 +608,7 @@ public class CubaExcelImport extends ExcelImporterBase<CubaImportState> {
         for (String split : splits){
             split = replaceHomonIlleg(split);
             boolean isHomonym = split.matches(".*" + HOMONYM_MARKER);
-            TaxonNameBase<?,?> newName = makeName(state, split);
+            TaxonName<?,?> newName = (TaxonName)makeName(state, split);
             newName.setHomotypicalGroup(homotypicGroup);  //not really necessary as this is later set anyway
             if (newName.isProtectedTitleCache()){
                 logger.warn(state.getCurrentLine() + ": homotypic name part could not be parsed: " + split);
@@ -672,7 +671,7 @@ public class CubaExcelImport extends ExcelImporterBase<CubaImportState> {
         int i = 0;
         for (String split : splits){
             split = split.replaceAll("^non\\s+", "");
-            BotanicalName newName = makeName(state, split);
+            TaxonName newName = (TaxonName)makeName(state, split);
 //            BotanicalName newName = (BotanicalName)nameParser.parseReferencedName(split, state.getConfig().getNomenclaturalCode(), Rank.SPECIES());
             if (newName.isProtectedTitleCache()){
                 logger.warn(state.getCurrentLine() + ": homonym name could not be parsed: " + split);
@@ -694,7 +693,7 @@ public class CubaExcelImport extends ExcelImporterBase<CubaImportState> {
         for (String spliti : splitsi){
 
             String split = spliti.replaceAll("^non\\s+", "");
-            BotanicalName newName = makeName(state, split);
+            IBotanicalName newName = makeName(state, split);
             if (newName.isProtectedTitleCache()){
                 logger.warn(state.getCurrentLine() + ": blocking name could not be parsed: " + split);
             }
@@ -708,7 +707,7 @@ public class CubaExcelImport extends ExcelImporterBase<CubaImportState> {
                 }
             }
             if (candidates.size() == 1){
-                TaxonNameBase<?,?> blockedName = (TaxonNameBase<?,?>)candidates.iterator().next();
+                TaxonName<?,?> blockedName = (TaxonName<?,?>)candidates.iterator().next();
                 newName.addRelationshipToName(blockedName, NameRelationshipType.BLOCKING_NAME_FOR(), null);
                 replacementNameCandidates.add(blockedName);
             }else{
@@ -726,9 +725,9 @@ public class CubaExcelImport extends ExcelImporterBase<CubaImportState> {
             HomotypicalGroup homotypicGroup,
             List<IBotanicalName> replacementNameCandidates) {
         String line = state.getCurrentLine() +": ";
-        List<BotanicalName> replacedCandidates = new ArrayList<>();
-        for (TaxonNameBase<?, ?> typifiedName : homotypicGroup.getTypifiedNames()){
-            BotanicalName candidate = (BotanicalName)typifiedName;
+        List<IBotanicalName> replacedCandidates = new ArrayList<>();
+        for (TaxonName<?, ?> typifiedName : homotypicGroup.getTypifiedNames()){
+            IBotanicalName candidate = typifiedName;
             if (candidate.getBasionymAuthorship() == null){
                 if (candidate.getStatus().isEmpty()){
                     if (! replacementNameCandidates.contains(candidate)){
@@ -738,7 +737,7 @@ public class CubaExcelImport extends ExcelImporterBase<CubaImportState> {
             }
         }
         if (replacedCandidates.size() == 1){
-            TaxonNameBase<?,?> replacedSynonym = replacedCandidates.iterator().next();
+            TaxonName<?,?> replacedSynonym = (TaxonName)replacedCandidates.iterator().next();
             for (IBotanicalName replacementName : replacementNameCandidates){
                 replacementName.addReplacedSynonym(replacedSynonym, null, null, null);
             }
@@ -773,8 +772,8 @@ public class CubaExcelImport extends ExcelImporterBase<CubaImportState> {
     private void createBasionymRelationIfPossible(CubaImportState state, IBotanicalName name1,
             IBotanicalName name2,
             boolean name2isHomonym, boolean onlyIfNotYetExists) {
-        TaxonNameBase<?,?> basionymName = TaxonNameBase.castAndDeproxy(name1);
-        TaxonNameBase<?,?> newCombination = TaxonNameBase.castAndDeproxy(name2);
+        TaxonName<?,?> basionymName = TaxonName.castAndDeproxy(name1);
+        TaxonName<?,?> newCombination = TaxonName.castAndDeproxy(name2);
         //exactly one name must have a basionym author
         if (name1.getBasionymAuthorship() == null && name2.getBasionymAuthorship() == null
                 || name1.getBasionymAuthorship() != null && name2.getBasionymAuthorship() != null){
@@ -783,8 +782,8 @@ public class CubaExcelImport extends ExcelImporterBase<CubaImportState> {
 
         //switch order if necessary
         if (! name2isHomonym && basionymName.getBasionymAuthorship() != null && newCombination.getBasionymAuthorship() == null){
-            basionymName = TaxonNameBase.castAndDeproxy(name2);
-            newCombination = TaxonNameBase.castAndDeproxy(name1);
+            basionymName = TaxonName.castAndDeproxy(name2);
+            newCombination = TaxonName.castAndDeproxy(name1);
         }
         if (matchAuthor(basionymName.getCombinationAuthorship(), newCombination.getBasionymAuthorship())
                 && BasionymRelationCreator.matchLastNamePart(basionymName, newCombination)){
@@ -874,7 +873,7 @@ public class CubaExcelImport extends ExcelImporterBase<CubaImportState> {
             taxonStr.replace("auct.", "").trim();
         }
         state.setTaxonIsAbsent(isAbsent);
-        BotanicalName botanicalName = makeName(state, taxonStr);
+        IBotanicalName botanicalName = makeName(state, taxonStr);
         Reference sec = getSecReference(state);
         Taxon taxon = Taxon.NewInstance(botanicalName, sec);
         if (isAuct){
@@ -891,7 +890,7 @@ public class CubaExcelImport extends ExcelImporterBase<CubaImportState> {
             if (genus != null){
                 higherNode = genus.getTaxonNodes().iterator().next();
             }else{
-                BotanicalName name = TaxonNameFactory.NewBotanicalInstance(Rank.GENUS());
+                IBotanicalName name = TaxonNameFactory.NewBotanicalInstance(Rank.GENUS());
                 name.addSource(makeOriginalSource(state));
                 name.setGenusOrUninomial(genusStr);
                 genus = Taxon.NewInstance(name, sec);
@@ -917,7 +916,7 @@ public class CubaExcelImport extends ExcelImporterBase<CubaImportState> {
      * @param taxonStr
      * @return
      */
-    private BotanicalName makeName(CubaImportState state, String nameStrOrig) {
+    private IBotanicalName makeName(CubaImportState state, String nameStrOrig) {
         //normalize
         String nameStr = normalizeStatus(nameStrOrig);
         //orthVar
@@ -935,13 +934,13 @@ public class CubaExcelImport extends ExcelImporterBase<CubaImportState> {
             nameStr = nameStr.replace("nom. inval.", "").trim();
         }
 
-        BotanicalName result = (BotanicalName)nameParser.parseReferencedName(nameStr, nc, Rank.SPECIES());
+        TaxonName result = (TaxonName)nameParser.parseReferencedName(nameStr, nc, Rank.SPECIES());
         result.addSource(makeOriginalSource(state));
         if (isNomInval){
             result.addStatus(NomenclaturalStatus.NewInstance(NomenclaturalStatusType.INVALID()));
         }
         if (orthVar != null){
-            BotanicalName orthVarName = (BotanicalName)result.clone();
+            TaxonName orthVarName = (TaxonName)result.clone();
             orthVarName.addSource(makeOriginalSource(state));
             //TODO
             Reference citation = null;
@@ -1077,7 +1076,7 @@ public class CubaExcelImport extends ExcelImporterBase<CubaImportState> {
         if (family != null){
             familyNode = family.getTaxonNodes().iterator().next();
         }else{
-            BotanicalName name = makeFamilyName(state, familyStr);
+            TaxonName name = (TaxonName)makeFamilyName(state, familyStr);
             Reference sec = getSecReference(state);
             family = Taxon.NewInstance(name, sec);
             ITaxonTreeNode rootNode = getClassification(state);
@@ -1088,8 +1087,8 @@ public class CubaExcelImport extends ExcelImporterBase<CubaImportState> {
 
         if (isNotBlank(alternativeFamilyStr)){
             NameRelationshipType type = NameRelationshipType.ALTERNATIVE_NAME();
-            BotanicalName alternativeName = makeFamilyName(state, alternativeFamilyStr);
-            BotanicalName familyName = (BotanicalName)family.getName();
+            TaxonName alternativeName = (TaxonName)makeFamilyName(state, alternativeFamilyStr);
+            IBotanicalName familyName = family.getName();
             boolean hasRelation = false;
             for (NameRelationship nameRel : familyName.getRelationsToThisName()){
                 if (nameRel.getType().equals(type)){
@@ -1179,7 +1178,7 @@ public class CubaExcelImport extends ExcelImporterBase<CubaImportState> {
         String key = famRef.getTitle() + ":"+ famStr;
         Taxon family = state.getHigherTaxon(key);
         if (family == null){
-            BotanicalName name = makeFamilyName(state, famStr);
+            IBotanicalName name = makeFamilyName(state, famStr);
             family = Taxon.NewInstance(name, famRef);
             state.putHigherTaxon(key, family);
         }
@@ -1193,8 +1192,8 @@ public class CubaExcelImport extends ExcelImporterBase<CubaImportState> {
      * @param famStr
      * @return
      */
-    private BotanicalName makeFamilyName(CubaImportState state, String famStr) {
-        BotanicalName name = state.getFamilyName(famStr);
+    private IBotanicalName makeFamilyName(CubaImportState state, String famStr) {
+        IBotanicalName name = state.getFamilyName(famStr);
         if (name == null){
             name = TaxonNameFactory.NewBotanicalInstance(Rank.FAMILY());
             name.setGenusOrUninomial(famStr);
@@ -1230,7 +1229,7 @@ public class CubaExcelImport extends ExcelImporterBase<CubaImportState> {
                 classification.getRootNode().setUuid(rootUuid);
             }
 
-            BotanicalName plantaeName = TaxonNameFactory.NewBotanicalInstance(Rank.KINGDOM());
+            IBotanicalName plantaeName = TaxonNameFactory.NewBotanicalInstance(Rank.KINGDOM());
             plantaeName.setGenusOrUninomial("Plantae");
             Taxon plantae = Taxon.NewInstance(plantaeName, sec);
             TaxonNode plantaeNode = classification.addChildTaxon(plantae, null, null);

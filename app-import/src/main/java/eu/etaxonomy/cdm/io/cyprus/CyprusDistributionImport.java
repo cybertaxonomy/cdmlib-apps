@@ -40,7 +40,7 @@ import eu.etaxonomy.cdm.model.location.Country;
 import eu.etaxonomy.cdm.model.location.NamedArea;
 import eu.etaxonomy.cdm.model.location.NamedAreaLevel;
 import eu.etaxonomy.cdm.model.location.NamedAreaType;
-import eu.etaxonomy.cdm.model.name.BotanicalName;
+import eu.etaxonomy.cdm.model.name.TaxonName;
 import eu.etaxonomy.cdm.model.reference.Reference;
 import eu.etaxonomy.cdm.model.reference.ReferenceFactory;
 import eu.etaxonomy.cdm.model.taxon.Taxon;
@@ -48,12 +48,12 @@ import eu.etaxonomy.cdm.model.taxon.Taxon;
 /**
  * @author a.babadshanjan
  * @created 08.01.2009
- * @version 1.0
  */
 
 @Component
 public class CyprusDistributionImport extends ExcelImporterBase<CyprusImportState> {
-	private static final Logger logger = Logger.getLogger(CyprusDistributionImport.class);
+    private static final long serialVersionUID = -8527569026580975181L;
+    private static final Logger logger = Logger.getLogger(CyprusDistributionImport.class);
 
 	@Override
 	protected boolean doCheck(CyprusImportState state) {
@@ -299,7 +299,7 @@ public class CyprusDistributionImport extends ExcelImporterBase<CyprusImportStat
 				continue;
 			}
 			String nameTitle = taxon.getName().getTitleCache();
-			String nameCache = CdmBase.deproxy(taxon.getName(), BotanicalName.class).getNameCache();
+			String nameCache = CdmBase.deproxy(taxon.getName(), TaxonName.class).getNameCache();
 			Taxon returnValue = taxonWithAuthorStore.put(nameTitle, taxon);
 			if (returnValue != null){
 				logger.warn("Duplicate titleCache entry for taxon: " + nameTitle);

@@ -22,7 +22,7 @@ import org.springframework.stereotype.Component;
 import eu.etaxonomy.cdm.io.common.IPartitionedIO;
 import eu.etaxonomy.cdm.io.common.ResultSetPartitioner;
 import eu.etaxonomy.cdm.model.common.CdmBase;
-import eu.etaxonomy.cdm.model.name.TaxonNameBase;
+import eu.etaxonomy.cdm.model.name.TaxonName;
 import eu.etaxonomy.cdm.model.reference.Reference;
 import eu.etaxonomy.cdm.model.taxon.Classification;
 import eu.etaxonomy.cdm.model.taxon.Synonym;
@@ -102,12 +102,12 @@ public class EdaphobaseClassificationImport extends EdaphobaseImportBase {
                         logger.warn("Parent taxon " + parentTaxonFk + " not found for taxon " + id );
                     }else{
 
-                        TaxonNameBase<?,?> parentName = parent.getName();
+                        TaxonName<?,?> parentName = parent.getName();
 
                         TaxonBase<?> child = state.getRelatedObject(TAXON_NAMESPACE, String.valueOf(id), TaxonBase.class);
-//                        TaxonNameBase<?,?> childName = child.getName();
+//                        TaxonName<?,?> childName = child.getName();
 
-//                        handleMissingNameParts(CdmBase.deproxy(childName, TaxonNameBase.class), CdmBase.deproxy(parentName, NonViralName.class));
+//                        handleMissingNameParts(CdmBase.deproxy(childName, TaxonName.class), CdmBase.deproxy(parentName, NonViralName.class));
 
                         if (isValid){
                             if (parent.isInstanceOf(Synonym.class)){

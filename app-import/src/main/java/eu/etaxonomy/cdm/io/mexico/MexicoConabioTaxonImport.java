@@ -31,13 +31,12 @@ import eu.etaxonomy.cdm.model.common.Extension;
 import eu.etaxonomy.cdm.model.common.ExtensionType;
 import eu.etaxonomy.cdm.model.common.Language;
 import eu.etaxonomy.cdm.model.common.TimePeriod;
-import eu.etaxonomy.cdm.model.name.BotanicalName;
 import eu.etaxonomy.cdm.model.name.IBotanicalName;
 import eu.etaxonomy.cdm.model.name.NomenclaturalCode;
 import eu.etaxonomy.cdm.model.name.NomenclaturalStatus;
 import eu.etaxonomy.cdm.model.name.NomenclaturalStatusType;
 import eu.etaxonomy.cdm.model.name.Rank;
-import eu.etaxonomy.cdm.model.name.TaxonNameBase;
+import eu.etaxonomy.cdm.model.name.TaxonName;
 import eu.etaxonomy.cdm.model.reference.INomenclaturalReference;
 import eu.etaxonomy.cdm.model.reference.Reference;
 import eu.etaxonomy.cdm.model.reference.ReferenceFactory;
@@ -116,7 +115,7 @@ public class MexicoConabioTaxonImport<CONFIG extends MexicoConabioImportConfigur
         }
 
         //Name
-        BotanicalName speciesName = makeName(line, record, state);
+        IBotanicalName speciesName = makeName(line, record, state);
 
         //sec
         String secRefStr = getValueNd(record, "ReferenciaNombre");
@@ -220,7 +219,7 @@ public class MexicoConabioTaxonImport<CONFIG extends MexicoConabioImportConfigur
      * @param state
      * @return
      */
-    private BotanicalName makeName(String line, HashMap<String, String> record, SimpleExcelTaxonImportState<CONFIG> state) {
+    private IBotanicalName makeName(String line, HashMap<String, String> record, SimpleExcelTaxonImportState<CONFIG> state) {
 
         String authorStr = getValueNd(record, "AutorSinAnio");
         String nameStr = getValue(record, "Nombre");
@@ -245,18 +244,18 @@ public class MexicoConabioTaxonImport<CONFIG extends MexicoConabioImportConfigur
         //name + author
         String fullNameStr = nameStr + (authorStr != null ? " " + authorStr : "");
 
-        BotanicalName fullName = (BotanicalName)nameParser.parseFullName(fullNameStr, NomenclaturalCode.ICNAFP, rank);
+        IBotanicalName fullName = (IBotanicalName)nameParser.parseFullName(fullNameStr, NomenclaturalCode.ICNAFP, rank);
         if (fullName.isProtectedTitleCache()){
             logger.warn(line + "Name could not be parsed: " + fullNameStr );
         }else{
             replaceAuthorNamesAndNomRef(state, fullName);
         }
-        BotanicalName existingName = getExistingName(state, fullName);
+        IBotanicalName existingName = getExistingName(state, fullName);
 
         //reference
         String refNameStr = getRefNameStr(nomRefStr, refType, fullNameStr);
 
-        BotanicalName referencedName = (BotanicalName)nameParser.parseReferencedName(refNameStr, NomenclaturalCode.ICNAFP, rank);
+        IBotanicalName referencedName = (IBotanicalName)nameParser.parseReferencedName(refNameStr, NomenclaturalCode.ICNAFP, rank);
         if (referencedName.isProtectedFullTitleCache() || referencedName.isProtectedTitleCache()){
             logger.warn(line + "Referenced name could not be parsed: " + refNameStr );
         }else{
@@ -266,7 +265,7 @@ public class MexicoConabioTaxonImport<CONFIG extends MexicoConabioImportConfigur
         adaptRefTypeForGeneric(referencedName, refType);
 
         //compare nom. ref. with Borhidi
-        BotanicalName result= referencedName;
+        IBotanicalName result= referencedName;
         Boolean equal = null;
         if (existingName != null){
             String existingRefTitle = existingName.getFullTitleCache();
@@ -367,7 +366,7 @@ public class MexicoConabioTaxonImport<CONFIG extends MexicoConabioImportConfigur
      * @param equal
      * @param referencedName
      */
-    private void addNomRefExtension(SimpleExcelTaxonImportState<CONFIG> state, BotanicalName name, Boolean equal) {
+    private void addNomRefExtension(SimpleExcelTaxonImportState<CONFIG> state, IBotanicalName name, Boolean equal) {
         String equalStr = equal == null ? "" : equal == true ? "EQUAL\n" : "NOT EQUAL\n";
         name.setFullTitleCache(null, false);
         String newExtensionStr = name.getFullTitleCache() + " - CONABIO";
@@ -381,7 +380,7 @@ public class MexicoConabioTaxonImport<CONFIG extends MexicoConabioImportConfigur
         String label = "Nomenclatural reference in Sources";
         String abbrev = "Nom. ref. src.";
         ExtensionType extensionType = getExtensionType(state, uuidNomRefExtension, label, label, abbrev);
-        Extension.NewInstance(name, newExtensionStr, extensionType);
+        Extension.NewInstance((TaxonName)name, newExtensionStr, extensionType);
     }
 
     boolean nameMapIsInitialized = false;
@@ -390,9 +389,9 @@ public class MexicoConabioTaxonImport<CONFIG extends MexicoConabioImportConfigur
      * @param fullName
      * @return
      */
-    private BotanicalName getExistingName(SimpleExcelTaxonImportState<CONFIG> state, BotanicalName fullName) {
+    private IBotanicalName getExistingName(SimpleExcelTaxonImportState<CONFIG> state, IBotanicalName fullName) {
         initExistinNames(state);
-        return (BotanicalName)state.getName(fullName.getTitleCache());
+        return (IBotanicalName)state.getName(fullName.getTitleCache());
     }
 
     /**
@@ -402,8 +401,8 @@ public class MexicoConabioTaxonImport<CONFIG extends MexicoConabioImportConfigur
     private void initExistinNames(SimpleExcelTaxonImportState<CONFIG> state) {
         if (!nameMapIsInitialized){
             List<String> propertyPaths = Arrays.asList("");
-            List<TaxonNameBase> existingNames = this.getNameService().list(null, null, null, null, propertyPaths);
-            for (TaxonNameBase tnb : existingNames){
+            List<TaxonName> existingNames = this.getNameService().list(null, null, null, null, propertyPaths);
+            for (TaxonName tnb : existingNames){
                 state.putName(tnb.getTitleCache(), tnb);
             }
             nameMapIsInitialized = true;
@@ -469,7 +468,7 @@ public class MexicoConabioTaxonImport<CONFIG extends MexicoConabioImportConfigur
      * @param line
      * @param name
      */
-    private void makeConceptRelation(String line, TaxonNameBase<?,?> name) {
+    private void makeConceptRelation(String line, TaxonName<?,?> name) {
         if (name.getTaxonBases().size()==2){
             Iterator<TaxonBase> it = name.getTaxonBases().iterator();
             Taxon taxon1 = getAccepted(it.next());

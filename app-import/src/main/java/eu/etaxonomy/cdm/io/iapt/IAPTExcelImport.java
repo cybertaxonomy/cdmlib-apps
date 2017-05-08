@@ -53,7 +53,6 @@ import eu.etaxonomy.cdm.model.common.Marker;
 import eu.etaxonomy.cdm.model.common.MarkerType;
 import eu.etaxonomy.cdm.model.common.OriginalSourceType;
 import eu.etaxonomy.cdm.model.common.TimePeriod;
-import eu.etaxonomy.cdm.model.name.BotanicalName;
 import eu.etaxonomy.cdm.model.name.IBotanicalName;
 import eu.etaxonomy.cdm.model.name.NameRelationshipType;
 import eu.etaxonomy.cdm.model.name.NameTypeDesignation;
@@ -63,7 +62,7 @@ import eu.etaxonomy.cdm.model.name.NomenclaturalStatusType;
 import eu.etaxonomy.cdm.model.name.Rank;
 import eu.etaxonomy.cdm.model.name.RankClass;
 import eu.etaxonomy.cdm.model.name.SpecimenTypeDesignationStatus;
-import eu.etaxonomy.cdm.model.name.TaxonNameBase;
+import eu.etaxonomy.cdm.model.name.TaxonName;
 import eu.etaxonomy.cdm.model.name.TaxonNameFactory;
 import eu.etaxonomy.cdm.model.occurrence.Collection;
 import eu.etaxonomy.cdm.model.occurrence.DerivedUnit;
@@ -288,7 +287,7 @@ public class IAPTExcelImport<CONFIG extends IAPTImportConfigurator> extends Simp
             }
         }
 
-        BotanicalName taxonName = makeBotanicalName(state, regNumber, titleCacheStr, nameStr, authorStr, nomRefTitle);
+        TaxonName taxonName = makeBotanicalName(state, regNumber, titleCacheStr, nameStr, authorStr, nomRefTitle);
 
         // always add the original strings of parsed data as annotation
         taxonName.addAnnotation(Annotation.NewInstance("imported and parsed data strings:" +
@@ -351,7 +350,7 @@ public class IAPTExcelImport<CONFIG extends IAPTImportConfigurator> extends Simp
             // build the fullnameString of the misspelled name
             misspelledNameStr = taxonName.getTitleCache().replace(nameStr, misspelledNameStr);
 
-            TaxonNameBase misspelledName = nameParser.parseReferencedName(misspelledNameStr, NomenclaturalCode.ICNAFP, null);
+            TaxonName misspelledName = nameParser.parseReferencedName(misspelledNameStr, NomenclaturalCode.ICNAFP, null);
             misspelledName.addRelationshipToName(taxonName, NameRelationshipType.MISSPELLING(), null);
             getNameService().save(misspelledName);
         }
@@ -359,7 +358,7 @@ public class IAPTExcelImport<CONFIG extends IAPTImportConfigurator> extends Simp
         // Replaced Synonyms
         if(!StringUtils.isEmpty(fullSynSubstStr)){
             fullSynSubstStr = fullSynSubstStr.replace("Syn. subst.: ", "");
-            BotanicalName replacedSynonymName = makeBotanicalName(state, regNumber, fullSynSubstStr, synSubstStr, null, null);
+            TaxonName replacedSynonymName = makeBotanicalName(state, regNumber, fullSynSubstStr, synSubstStr, null, null);
             replacedSynonymName.addReplacedSynonym(taxonName, null, null, null);
             getNameService().save(replacedSynonymName);
         }
@@ -371,7 +370,7 @@ public class IAPTExcelImport<CONFIG extends IAPTImportConfigurator> extends Simp
         if(fullBasionymStr != null){
             fullBasionymStr = fullBasionymStr.replaceAll("^\\w*:\\s", ""); // Strip off the leading 'Basionym: "
             basionymNameStr = basionymNameStr.replaceAll("^\\w*:\\s", ""); // Strip off the leading 'Basionym: "
-            BotanicalName basionym = makeBotanicalName(state, regNumber, fullBasionymStr, basionymNameStr, null, null);
+            TaxonName basionym = makeBotanicalName(state, regNumber, fullBasionymStr, basionymNameStr, null, null);
             getNameService().save(basionym);
             taxonName.addBasionym(basionym);
 
@@ -424,7 +423,7 @@ public class IAPTExcelImport<CONFIG extends IAPTImportConfigurator> extends Simp
         return taxon;
     }
 
-    private void makeSpecimenTypeData(String typeStr, BotanicalName taxonName, String regNumber, SimpleExcelTaxonImportState<CONFIG> state, boolean isFossil) {
+    private void makeSpecimenTypeData(String typeStr, TaxonName taxonName, String regNumber, SimpleExcelTaxonImportState<CONFIG> state, boolean isFossil) {
 
         Matcher m = typeSpecimenSplitPattern.matcher(typeStr);
 
@@ -462,7 +461,7 @@ public class IAPTExcelImport<CONFIG extends IAPTImportConfigurator> extends Simp
         getNameService().save(taxonName);
     }
 
-    private void makeNameTypeData(String typeStr, BotanicalName taxonName, String regNumber, SimpleExcelTaxonImportState<CONFIG> state) {
+    private void makeNameTypeData(String typeStr, IBotanicalName taxonName, String regNumber, SimpleExcelTaxonImportState<CONFIG> state) {
 
         String nameStr = typeStr.replaceAll("^Type\\s?\\:\\s?", "");
         if(nameStr.isEmpty()) {
@@ -508,14 +507,14 @@ public class IAPTExcelImport<CONFIG extends IAPTImportConfigurator> extends Simp
             }
         }
 
-        BotanicalName typeName = (BotanicalName) nameParser.parseFullName(nameStr, NomenclaturalCode.ICNAFP, null);
+        TaxonName typeName = (TaxonName) nameParser.parseFullName(nameStr, NomenclaturalCode.ICNAFP, null);
 
         if(typeName.isProtectedTitleCache() || typeName.getNomenclaturalReference() != null && typeName.getNomenclaturalReference().isProtectedTitleCache()) {
             logger.warn(csvReportLine(regNumber, "NameType not parsable", typeStr, nameStr));
         }
 
         if(basionymNameStr != null){
-            BotanicalName basionymName = (BotanicalName) nameParser.parseFullName(nameStr, NomenclaturalCode.ICNAFP, null);
+            TaxonName basionymName = (TaxonName) nameParser.parseFullName(nameStr, NomenclaturalCode.ICNAFP, null);
             getNameService().save(basionymName);
             typeName.addBasionym(basionymName);
         }
@@ -882,10 +881,10 @@ public class IAPTExcelImport<CONFIG extends IAPTImportConfigurator> extends Simp
         return facade.innerDerivedUnit();
     }
 
-    private BotanicalName makeBotanicalName(SimpleExcelTaxonImportState<CONFIG> state, String regNumber, String titleCacheStr, String nameStr,
+    private TaxonName makeBotanicalName(SimpleExcelTaxonImportState<CONFIG> state, String regNumber, String titleCacheStr, String nameStr,
                                             String authorStr, String nomRefTitle) {
 
-        BotanicalName taxonName;// cache field for the taxonName.titleCache
+        TaxonName taxonName;// cache field for the taxonName.titleCache
         String taxonNameTitleCache = null;
         Map<String, AnnotationType> nameAnnotations = new HashMap<>();
 
@@ -903,9 +902,9 @@ public class IAPTExcelImport<CONFIG extends IAPTImportConfigurator> extends Simp
             String referenceSeparator = nomRefTitle.startsWith("in ") ? " " : ", ";
             String taxonFullNameStr = titleCacheStr + referenceSeparator + nomRefTitle;
             logger.debug(":::::" + taxonFullNameStr);
-            taxonName = (BotanicalName) nameParser.parseReferencedName(taxonFullNameStr, NomenclaturalCode.ICNAFP, null);
+            taxonName = nameParser.parseReferencedName(taxonFullNameStr, NomenclaturalCode.ICNAFP, null);
         } else {
-            taxonName = (BotanicalName) nameParser.parseFullName(titleCacheStr, NomenclaturalCode.ICNAFP, null);
+            taxonName = (TaxonName) nameParser.parseFullName(titleCacheStr, NomenclaturalCode.ICNAFP, null);
         }
 
         taxonNameTitleCache = taxonName.getTitleCache().trim();
@@ -1252,7 +1251,7 @@ public class IAPTExcelImport<CONFIG extends IAPTImportConfigurator> extends Simp
             if (higherTaxon != null){
                 higherTaxonNode = higherTaxon.getTaxonNodes().iterator().next();
             }else{
-                BotanicalName name = makeHigherTaxonName(state, htn);
+                IBotanicalName name = makeHigherTaxonName(state, htn);
                 Reference sec = state.getSecReference();
                 higherTaxon = Taxon.NewInstance(name, sec);
                 getTaxonService().save(higherTaxon);
@@ -1265,11 +1264,11 @@ public class IAPTExcelImport<CONFIG extends IAPTImportConfigurator> extends Simp
         return higherTaxonNode;
     }
 
-    private BotanicalName makeHigherTaxonName(IAPTImportState state, String name) {
+    private IBotanicalName makeHigherTaxonName(IAPTImportState state, String name) {
 
         Rank rank = guessRank(name);
 
-        BotanicalName taxonName = TaxonNameFactory.NewBotanicalInstance(rank);
+        IBotanicalName taxonName = TaxonNameFactory.NewBotanicalInstance(rank);
         taxonName.addSource(makeOriginalSource(state));
         taxonName.setGenusOrUninomial(StringUtils.capitalize(name));
         return taxonName;

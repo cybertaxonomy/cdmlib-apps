@@ -37,7 +37,7 @@ import eu.etaxonomy.cdm.model.media.ImageFile;
 import eu.etaxonomy.cdm.model.media.Media;
 import eu.etaxonomy.cdm.model.name.SpecimenTypeDesignation;
 import eu.etaxonomy.cdm.model.name.SpecimenTypeDesignationStatus;
-import eu.etaxonomy.cdm.model.name.TaxonNameBase;
+import eu.etaxonomy.cdm.model.name.TaxonName;
 import eu.etaxonomy.cdm.model.occurrence.DerivedUnit;
 import eu.etaxonomy.cdm.model.reference.Reference;
 import eu.etaxonomy.cdm.strategy.exceptions.UnknownCdmTypeException;
@@ -48,7 +48,9 @@ import eu.etaxonomy.cdm.strategy.exceptions.UnknownCdmTypeException;
  */
 @Component
 public class BerlinModelTypesImport extends BerlinModelImportBase /*implements IIO<BerlinModelImportConfigurator>*/ {
-	private static final Logger logger = Logger.getLogger(BerlinModelTypesImport.class);
+
+    private static final long serialVersionUID = -8468807718014749046L;
+    private static final Logger logger = Logger.getLogger(BerlinModelTypesImport.class);
 
 	private static int modCount = 10000;
 	private static final String pluralString = "types";
@@ -79,10 +81,10 @@ public class BerlinModelTypesImport extends BerlinModelImportBase /*implements I
 	@Override
     public boolean doPartition(ResultSetPartitioner partitioner, BerlinModelImportState state) {
 		boolean result = true;
-		Set<TaxonNameBase> namesToSave = new HashSet<TaxonNameBase>();
+		Set<TaxonName> namesToSave = new HashSet<>();
 		Map<Integer, DerivedUnit> typeMap = new HashMap<Integer, DerivedUnit>();
 
-		Map<String, TaxonNameBase> nameMap = partitioner.getObjectMap(BerlinModelTaxonNameImport.NAMESPACE);
+		Map<String, TaxonName> nameMap = partitioner.getObjectMap(BerlinModelTaxonNameImport.NAMESPACE);
 		Map<String, Reference> refMap = partitioner.getObjectMap(BerlinModelReferenceImport.REFERENCE_NAMESPACE);
 
 		BerlinModelImportConfigurator config = state.getConfig();
@@ -116,7 +118,7 @@ public class BerlinModelTypesImport extends BerlinModelImportBase /*implements I
 				//RejectedFlag false
 				//PublishFlag xxx
 
-				TaxonNameBase<?,?> taxonNameBase = nameMap.get(String.valueOf(nameId));
+				TaxonName<?,?> taxonNameBase = nameMap.get(String.valueOf(nameId));
 
 				if (taxonNameBase != null){
 					try{
@@ -189,7 +191,7 @@ public class BerlinModelTypesImport extends BerlinModelImportBase /*implements I
 
 			//name map
 			nameSpace = BerlinModelTaxonNameImport.NAMESPACE;
-			cdmClass = TaxonNameBase.class;
+			cdmClass = TaxonName.class;
 			idSet = nameIdSet;
 			Map<String, Person> objectMap = (Map<String, Person>)getCommonService().getSourcedObjectsByIdInSource(cdmClass, idSet, nameSpace);
 			result.put(nameSpace, objectMap);

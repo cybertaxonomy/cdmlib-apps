@@ -31,8 +31,8 @@ import eu.etaxonomy.cdm.model.common.OriginalSourceType;
 import eu.etaxonomy.cdm.model.description.DescriptionElementBase;
 import eu.etaxonomy.cdm.model.description.DescriptionElementSource;
 import eu.etaxonomy.cdm.model.description.Distribution;
-import eu.etaxonomy.cdm.model.name.NonViralName;
-import eu.etaxonomy.cdm.model.name.TaxonNameBase;
+import eu.etaxonomy.cdm.model.name.INonViralName;
+import eu.etaxonomy.cdm.model.name.TaxonName;
 import eu.etaxonomy.cdm.model.reference.Reference;
 
 
@@ -129,8 +129,8 @@ public class BerlinModelOccurrenceSourceImport  extends BerlinModelImportBase {
     				if (ref != null){
     					DescriptionElementSource originalSource = DescriptionElementSource.NewInstance(OriginalSourceType.PrimaryTaxonomicSource);
     					originalSource.setCitation(ref);
-    					TaxonNameBase<?, ?> taxonName;
-						taxonName = getName(state, oldName, oldNameFk);
+    					TaxonName<?,?> taxonName;
+						taxonName = TaxonName.castAndDeproxy(getName(state, oldName, oldNameFk));
 						if (taxonName != null){
     						originalSource.setNameUsedInSource(taxonName);
     					}else if(isNotBlank(oldName)){
@@ -188,9 +188,9 @@ public class BerlinModelOccurrenceSourceImport  extends BerlinModelImportBase {
 
 			//name map
 			nameSpace = BerlinModelTaxonNameImport.NAMESPACE;
-			cdmClass = TaxonNameBase.class;
+			cdmClass = TaxonName.class;
 			idSet =nameIdSet;
-			Map<String, TaxonNameBase> nameMap = (Map<String, TaxonNameBase>)getCommonService().getSourcedObjectsByIdInSource(cdmClass, idSet, nameSpace);
+			Map<String, TaxonName> nameMap = (Map<String, TaxonName>)getCommonService().getSourcedObjectsByIdInSource(cdmClass, idSet, nameSpace);
 			result.put(nameSpace, nameMap);
 
 			//reference map
@@ -226,14 +226,14 @@ public class BerlinModelOccurrenceSourceImport  extends BerlinModelImportBase {
 	 * @return
 	 */
 	boolean isFirstTimeNoNameByService = true;
-	private TaxonNameBase<?, ?> getName(BerlinModelImportState state, String oldName, Integer oldNameFk) {
-		TaxonNameBase<?,?> taxonName = (TaxonNameBase)state.getRelatedObject(BerlinModelTaxonNameImport.NAMESPACE, String.valueOf(oldNameFk));
+	private INonViralName getName(BerlinModelImportState state, String oldName, Integer oldNameFk) {
+		TaxonName<?,?> taxonName = (TaxonName)state.getRelatedObject(BerlinModelTaxonNameImport.NAMESPACE, String.valueOf(oldNameFk));
 		if (taxonName == null && oldName != null){
 			if (isFirstTimeNoNameByService){
 				logger.warn("oldName not checked against names in BerlinModel. Just take it as a string");
 				isFirstTimeNoNameByService = false;
 			}
-			List<NonViralName> names = new ArrayList<NonViralName>();
+			List<INonViralName> names = new ArrayList<>();
 //			names = getNameService().getNamesByNameCache(oldName);
 			if (names.size() == 1){
 				return names.get(0);

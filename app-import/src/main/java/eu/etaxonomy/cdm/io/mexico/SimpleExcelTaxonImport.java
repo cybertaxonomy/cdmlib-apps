@@ -21,7 +21,7 @@ import eu.etaxonomy.cdm.model.agent.Person;
 import eu.etaxonomy.cdm.model.agent.Team;
 import eu.etaxonomy.cdm.model.agent.TeamOrPersonBase;
 import eu.etaxonomy.cdm.model.common.IdentifiableSource;
-import eu.etaxonomy.cdm.model.name.BotanicalName;
+import eu.etaxonomy.cdm.model.name.IBotanicalName;
 import eu.etaxonomy.cdm.model.name.Rank;
 import eu.etaxonomy.cdm.model.name.TaxonNameFactory;
 import eu.etaxonomy.cdm.model.reference.INomenclaturalReference;
@@ -81,7 +81,7 @@ public abstract class SimpleExcelTaxonImport<CONFIG extends ExcelImportConfigura
      * @param familyNode
      */
     protected void makeGenus(SimpleExcelTaxonImportState<CONFIG> state,
-            BotanicalName speciesName,
+            IBotanicalName speciesName,
             Reference sec,
             Taxon taxon,
             TaxonNode familyNode) {
@@ -95,7 +95,7 @@ public abstract class SimpleExcelTaxonImport<CONFIG extends ExcelImportConfigura
             if (genus != null){
                 higherNode = genus.getTaxonNodes().iterator().next();
             }else{
-                BotanicalName genusName = TaxonNameFactory.NewBotanicalInstance(Rank.GENUS());
+                IBotanicalName genusName = TaxonNameFactory.NewBotanicalInstance(Rank.GENUS());
                 genusName.addSource(makeOriginalSource(state));
                 genusName.setGenusOrUninomial(genusStr);
                 genus = Taxon.NewInstance(genusName, sec);
@@ -127,7 +127,7 @@ public abstract class SimpleExcelTaxonImport<CONFIG extends ExcelImportConfigura
      * @param name
      */
     protected void replaceAuthorNamesAndNomRef(SimpleExcelTaxonImportState<CONFIG> state,
-            BotanicalName name) {
+            IBotanicalName name) {
         TeamOrPersonBase<?> combAuthor = name.getCombinationAuthorship();
         name.setCombinationAuthorship(getExistingAuthor(state, combAuthor));
 
