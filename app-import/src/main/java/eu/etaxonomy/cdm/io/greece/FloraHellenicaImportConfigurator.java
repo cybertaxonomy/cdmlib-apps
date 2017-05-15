@@ -21,15 +21,16 @@ import eu.etaxonomy.cdm.model.reference.Reference;
 /**
  * @author a.mueller
  * @date 14.12.2016
- *
  */
 public class FloraHellenicaImportConfigurator extends ExcelImportConfiguratorBase{
 
     private static final long serialVersionUID = 3782414424818991629L;
     private static IInputTransformer defaultTransformer = new FloraHellenicaTransformer();
     private Reference secReference;
+    private Reference secReference2;
 
     private boolean isDoImages = true;
+    private boolean statusAsDistribution = false;
 
 
 
@@ -58,6 +59,7 @@ public class FloraHellenicaImportConfigurator extends ExcelImportConfiguratorBas
     @Override
     protected void makeIoClassList() {
         ioClassList = new Class[]{
+                FloraHellenicaTermImport.class,
                 FloraHellenicaTaxonImport.class,
                 FloraHellenicaExcludedTaxonImport.class,
                 FloraHellenicaSynonymImport.class,
@@ -70,9 +72,33 @@ public class FloraHellenicaImportConfigurator extends ExcelImportConfiguratorBas
     public boolean isDoImages() {
         return isDoImages;
     }
-
-
     public void setDoImages(boolean isDoImages) {
         this.isDoImages = isDoImages;
     }
+
+
+    public boolean isStatusAsDistribution() {
+        return statusAsDistribution;
+    }
+    public void setStatusAsDistribution(boolean statusAsDistribution) {
+        this.statusAsDistribution = statusAsDistribution;
+    }
+
+
+    public Reference getSecReference() {
+        return secReference;
+    }
+    public void setSecReference(Reference secReference) {
+        this.secReference = secReference;
+    }
+
+
+    public Reference getSecReference2() {
+        return secReference2;
+    }
+    public void setSecReference2(Reference secReference2) {
+        this.secReference2 = secReference2;
+    }
+
+
 }

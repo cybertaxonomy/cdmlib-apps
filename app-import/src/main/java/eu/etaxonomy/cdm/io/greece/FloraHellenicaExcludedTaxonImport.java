@@ -15,10 +15,9 @@ import java.util.Set;
 
 import org.apache.log4j.Logger;
 import org.springframework.stereotype.Component;
-import org.springframework.transaction.TransactionStatus;
 
 import eu.etaxonomy.cdm.io.mexico.SimpleExcelTaxonImportState;
-import eu.etaxonomy.cdm.model.name.BotanicalName;
+import eu.etaxonomy.cdm.model.name.IBotanicalName;
 import eu.etaxonomy.cdm.model.name.INonViralName;
 import eu.etaxonomy.cdm.model.name.NomenclaturalCode;
 import eu.etaxonomy.cdm.model.name.Rank;
@@ -61,17 +60,11 @@ public class FloraHellenicaExcludedTaxonImport<CONFIG extends FloraHellenicaImpo
         return "excluded taxa";
     }
 
-    private boolean isFirst = true;
-    private TransactionStatus tx = null;
     /**
      * {@inheritDoc}
      */
     @Override
     protected void firstPass(SimpleExcelTaxonImportState<CONFIG> state) {
-        if (isFirst){
-            tx = this.startTransaction();
-            isFirst = false;
-        }
 
         String line = state.getCurrentLine() + ": ";
         HashMap<String, String> record = state.getOriginalRecord();
@@ -90,14 +83,6 @@ public class FloraHellenicaExcludedTaxonImport<CONFIG extends FloraHellenicaImpo
         }
     }
 
-    @Override
-    protected void secondPass(SimpleExcelTaxonImportState<CONFIG> state) {
-        if (tx != null){
-            this.commitTransaction(tx);
-            tx = null;
-        }
-    }
-
 
     /**
      * @param state
@@ -110,25 +95,28 @@ public class FloraHellenicaExcludedTaxonImport<CONFIG extends FloraHellenicaImpo
             HashMap<String, String> record,
             String noStr) {
 
-        TaxonNode familyTaxon = getFamilyTaxon(record, state);
-        if (familyTaxon == null){
+        TaxonNode familyTaxonNode = getFamilyTaxon(record, state);
+        familyTaxonNode = getTaxonNodeService().find(familyTaxonNode.getUuid());
+        if (familyTaxonNode == null){
             logger.warn(line + "Family not created, can't add excluded taxon: " + record.get(FAMILY));
             return null;
         }
 
         String taxonStr = getValue(record, TAXON);
         INonViralName name = parser.parseFullName(taxonStr, NomenclaturalCode.ICNAFP, null);
+        name = replaceNameAuthorsAndReferences(state, name);
         if (name.isProtectedTitleCache()){
             logger.warn(line + "Name could not be parsed: " + taxonStr);
         }
 
         Taxon taxon = Taxon.NewInstance(name, getSecReference(state));
         taxon.addImportSource(noStr, getWorksheetName(), getSourceCitation(state), null);
-        TaxonNode excludedNode = familyTaxon.addChildTaxon(taxon, getSecReference(state), null);
+        TaxonNode excludedNode = familyTaxonNode.addChildTaxon(taxon, getSecReference(state), null);
         excludedNode.setExcluded(true);
         getTaxonNodeService().saveOrUpdate(excludedNode);
         return excludedNode;
     }
+
 
 
    /**
@@ -145,12 +133,15 @@ public class FloraHellenicaExcludedTaxonImport<CONFIG extends FloraHellenicaImpo
         }
         familyStr = familyStr.trim();
 
-        Taxon family = state.getHigherTaxon(familyStr);
+//        Taxon family = state.getHigherTaxon(familyStr);
+        Taxon family = this.getHigherTaxon(record, state, FAMILY);
         TaxonNode familyNode;
         if (family != null){
             familyNode = family.getTaxonNodes().iterator().next();
         }else{
-            BotanicalName name = makeFamilyName(state, familyStr);
+            IBotanicalName name = makeFamilyName(state, familyStr);
+            name = replaceNameAuthorsAndReferences(state, name);
+
             Reference sec = getSecReference(state);
             family = Taxon.NewInstance(name, sec);
 

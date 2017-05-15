@@ -17,7 +17,6 @@ import java.util.regex.Pattern;
 
 import org.apache.log4j.Logger;
 import org.springframework.stereotype.Component;
-import org.springframework.transaction.TransactionStatus;
 
 import eu.etaxonomy.cdm.io.mexico.SimpleExcelTaxonImportState;
 import eu.etaxonomy.cdm.model.name.INonViralName;
@@ -60,17 +59,11 @@ public class FloraHellenicaSynonymImport<CONFIG extends FloraHellenicaImportConf
         return "synonyms";
     }
 
-    private boolean isFirst = true;
-    private TransactionStatus tx = null;
     /**
      * {@inheritDoc}
      */
     @Override
     protected void firstPass(SimpleExcelTaxonImportState<CONFIG> state) {
-        if (isFirst){
-            tx = this.startTransaction();
-            isFirst = false;
-        }
 
         String line = state.getCurrentLine() + ": ";
         HashMap<String, String> record = state.getOriginalRecord();
@@ -84,14 +77,8 @@ public class FloraHellenicaSynonymImport<CONFIG extends FloraHellenicaImportConf
 
         String row = "row" + state.getCurrentLine();
         TaxonBase<?> relatedTaxon = makeSynonym(state, line, record, row);
-        getTaxonService().saveOrUpdate(relatedTaxon);
-    }
-
-    @Override
-    protected void secondPass(SimpleExcelTaxonImportState<CONFIG> state) {
-        if (tx != null){
-            this.commitTransaction(tx);
-            tx = null;
+        if (relatedTaxon != null){
+            getTaxonService().saveOrUpdate(relatedTaxon);
         }
     }
 
@@ -141,6 +128,8 @@ public class FloraHellenicaSynonymImport<CONFIG extends FloraHellenicaImportConf
                 logger.warn(line + "Nom. status not recognized: " + parsedSynStr[3]);
             }
         }
+        name = replaceNameAuthorsAndReferences(state, name);
+
 
         TaxonBase<?> result;
         if (isMisapplied){
@@ -188,10 +177,12 @@ public class FloraHellenicaSynonymImport<CONFIG extends FloraHellenicaImportConf
                     split = split.replace("T.", "Taraxacum");
                 }
                 nonName = TaxonNameBase.castAndDeproxy(this.parser.parseFullName(split));
+                nonName = replaceNameAuthorsAndReferences(state, nonName);
                 name.addRelationshipFromName(nonName, NameRelationshipType.BLOCKING_NAME_FOR(), null);
             }else{
                 String nameStr = name.getNameCache() + " " + split;
                 nonName = TaxonNameBase.castAndDeproxy(this.parser.parseFullName(nameStr));
+                nonName = replaceNameAuthorsAndReferences(state, nonName);
                 name.addRelationshipToName(nonName, NameRelationshipType.LATER_HOMONYM(), null);
             }
             getNameService().saveOrUpdate(nonName);

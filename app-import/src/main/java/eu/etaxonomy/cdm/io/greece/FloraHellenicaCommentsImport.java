@@ -15,7 +15,6 @@ import java.util.Set;
 
 import org.apache.log4j.Logger;
 import org.springframework.stereotype.Component;
-import org.springframework.transaction.TransactionStatus;
 
 import eu.etaxonomy.cdm.io.mexico.SimpleExcelTaxonImportState;
 import eu.etaxonomy.cdm.model.common.Language;
@@ -54,17 +53,11 @@ public class FloraHellenicaCommentsImport<CONFIG extends FloraHellenicaImportCon
         return "comments";
     }
 
-    private boolean isFirst = true;
-    private TransactionStatus tx = null;
     /**
      * {@inheritDoc}
      */
     @Override
     protected void firstPass(SimpleExcelTaxonImportState<CONFIG> state) {
-        if (isFirst){
-            tx = this.startTransaction();
-            isFirst = false;
-        }
 
         String line = state.getCurrentLine() + ": ";
         HashMap<String, String> record = state.getOriginalRecord();
@@ -78,14 +71,6 @@ public class FloraHellenicaCommentsImport<CONFIG extends FloraHellenicaImportCon
 
         String noStr = getValue(record, "Unique ID");
         makeComment(state, line, record, noStr);
-    }
-
-    @Override
-    protected void secondPass(SimpleExcelTaxonImportState<CONFIG> state) {
-        if (tx != null){
-            this.commitTransaction(tx);
-            tx = null;
-        }
     }
 
 

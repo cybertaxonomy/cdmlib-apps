@@ -70,6 +70,9 @@ public class FloraHellenicaTransformer extends InputTransformerBase{
     protected static final UUID uuidFloraHellenicaStatusVoc = UUID.fromString("a0d39c0a-4e6f-4d0f-827c-cefd793d5b09");
     protected static final UUID uuidStatusRangeRestricted = UUID.fromString("3ba59506-9f4d-4eb7-b22d-0085f6cc27d0");
     protected static final UUID uuidStatusRangeRestrictedDoubtfully = UUID.fromString("78e64023-e9d6-4bb2-88cd-a400118ddfcf");
+    protected static final UUID uuidStatusXenophyte = UUID.fromString("dcc006d1-a6ea-4679-8da3-7496638b1774");
+    protected static final UUID uuidStatusXenophyteDoubtfully = UUID.fromString("d0b28959-9b5d-4f88-8eee-0fe35de91692");
+    protected static final UUID uuidStatusNative = UUID.fromString("a6d89ab3-23ab-44c8-ab85-895599e88260");
 
     //Chorological Category
     protected static final UUID uuidFloraHellenicaChorologicalVoc = UUID.fromString("7c95ac7f-e3ea-46c2-863f-9ad663f5086c");
