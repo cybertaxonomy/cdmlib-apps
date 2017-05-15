@@ -19,11 +19,16 @@ import org.apache.sanselan.ImageReadException;
 import org.apache.sanselan.Sanselan;
 import org.apache.sanselan.common.IImageMetadata;
 import org.apache.sanselan.common.ImageMetadata.Item;
+import org.joda.time.DateTime;
+import org.joda.time.DateTimeZone;
+import org.joda.time.format.DateTimeFormat;
+import org.joda.time.format.DateTimeFormatter;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.TransactionStatus;
 
 import eu.etaxonomy.cdm.api.service.config.MatchingTaxonConfigurator;
 import eu.etaxonomy.cdm.io.common.CdmImportBase;
+import eu.etaxonomy.cdm.io.common.utils.ImportDeduplicationHelper;
 import eu.etaxonomy.cdm.io.mexico.SimpleExcelTaxonImportState;
 import eu.etaxonomy.cdm.model.agent.Person;
 import eu.etaxonomy.cdm.model.common.Language;
@@ -49,6 +54,9 @@ public class FloraHellenicaImageImport<CONFIG extends FloraHellenicaImportConfig
 
     private static final String BASE_URL = "https://media.e-taxonomy.eu/flora-greece/";
     private static final String IMAGE_FOLDER = "////BGBM-PESIHPC/Greece/thumbs/";
+
+    @SuppressWarnings("unchecked")
+    private ImportDeduplicationHelper<SimpleExcelTaxonImportState<?>> deduplicationHelper = (ImportDeduplicationHelper<SimpleExcelTaxonImportState<?>>)ImportDeduplicationHelper.NewInstance(this);
 
     /**
      * {@inheritDoc}
@@ -118,14 +126,18 @@ public class FloraHellenicaImageImport<CONFIG extends FloraHellenicaImportConfig
                     Item item = (Item) object;
 //                    System.out.println(item.getKeyword() +  ":    " + item.getText());
                     String keyword = item.getKeyword().toLowerCase();
-                    String value = item.getText();
+                    String value = removeQuots(item.getText());
                     if("image description".equals(keyword)){
                         media.putDescription(Language.DEFAULT(), value);
-                    }else if ("artist".equals(item.getKeyword().toLowerCase())){
+                    }else if ("artist".equals(keyword)){
                         if (isNotBlank(artistStr) && ! value.contains(artistStr)){
                             logger.warn("Artist and artistStr are different: " +  artistStr  + "; " + value);
                         }
                         artistStr = value;
+                    }else if ("date time original".equalsIgnoreCase(item.getKeyword())){
+                        DateTimeFormatter f = DateTimeFormat.forPattern("yyyy:MM:dd HH:mm:ss");
+                        DateTime created = f.withZone(DateTimeZone.forID("Europe/Athens")).parseDateTime(value);
+                        media.setMediaCreated(created);
                     }
                 }
             } catch (ImageReadException | IOException e1) {
@@ -133,7 +145,17 @@ public class FloraHellenicaImageImport<CONFIG extends FloraHellenicaImportConfig
             }
             if (isNotBlank(artistStr)){
                 Person person = Person.NewInstance();
-                person.setLastname(artistStr);
+                String[] split = artistStr.split("\\+");
+                if (split.length == 1){
+                    person.setLastname(artistStr);
+                }else if (split.length == 2){
+                    person.setFirstname(split[0]);
+                    person.setLastname(split[1]);
+                }else{
+                    person.setTitleCache("artistStr", true);
+                }
+                person = (Person)deduplicationHelper.getExistingAuthor(state, person);
+
                 media.setArtist(person);
             }
 
@@ -159,6 +181,14 @@ public class FloraHellenicaImageImport<CONFIG extends FloraHellenicaImportConfig
         } catch (Exception e) {
             e.printStackTrace();
             return;
+        }
+    }
+
+    private String removeQuots(String text) {
+        if (text.startsWith("'") && text.endsWith("'")){
+            return text.substring(1, text.length() -1);
+        }else{
+            return text;
         }
     }
 

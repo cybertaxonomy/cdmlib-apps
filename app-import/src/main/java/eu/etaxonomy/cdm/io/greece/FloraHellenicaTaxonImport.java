@@ -629,11 +629,11 @@ public class FloraHellenicaTaxonImport<CONFIG extends FloraHellenicaImportConfig
             }else if ("Range-restricted".equals(value)){
                 handleSingleStatus(state, catData, FloraHellenicaTransformer.uuidStatusRangeRestricted, line);
             }else if ("?Range-restricted".equals(value)){
-                handleSingleStatus(state, catData, FloraHellenicaTransformer.uuidStatusRangeRestricted, line);
+                handleSingleStatus(state, catData, FloraHellenicaTransformer.uuidStatusRangeRestrictedDoubtfully, line);
             }else if ("Xenophyte".equals(value)){
-                handleSingleStatus(state, catData, FloraHellenicaTransformer.uuidStatusRangeRestricted, line);
+                handleSingleStatus(state, catData, FloraHellenicaTransformer.uuidStatusXenophyte, line);
             }else if ("?Xenophyte".equals(value)){
-                handleSingleStatus(state, catData, FloraHellenicaTransformer.uuidStatusRangeRestricted, line);
+                handleSingleStatus(state, catData, FloraHellenicaTransformer.uuidStatusXenophyteDoubtfully, line);
             }else {
                 logger.warn(line + "Not matching status. This should not happpen '" + value + "' for " + key);
                 return;

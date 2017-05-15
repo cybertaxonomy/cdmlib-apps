@@ -23,6 +23,7 @@ import eu.etaxonomy.cdm.io.mexico.SimpleExcelTaxonImportState;
 import eu.etaxonomy.cdm.model.common.OrderedTermBase;
 import eu.etaxonomy.cdm.model.common.OrderedTermVocabulary;
 import eu.etaxonomy.cdm.model.common.TermType;
+import eu.etaxonomy.cdm.model.common.TermVocabulary;
 import eu.etaxonomy.cdm.model.description.Feature;
 import eu.etaxonomy.cdm.model.description.FeatureNode;
 import eu.etaxonomy.cdm.model.description.FeatureTree;
@@ -440,19 +441,32 @@ public class FloraHellenicaTermImport <CONFIG extends FloraHellenicaImportConfig
         newFeature = (Feature)service.find(Feature.STATUS().getUuid());
         newNode = FeatureNode.NewInstance(newFeature);
         root.addChild(newNode);
+        newFeature.setSupportsCategoricalData(true);
+        TermVocabulary<State> voc = this.getVocabularyService().find(FloraHellenicaTransformer.uuidFloraHellenicaStatusVoc);
+        newFeature.addSupportedCategoricalEnumeration(voc);
+
 
         UUID uuid = FloraHellenicaTransformer.uuidFloraHellenicaChorologyFeature;
         newFeature = getFeature(state, uuid, "Chorology", "Chorology", null, null);
+        newFeature.setSupportsCategoricalData(true);
+        voc = this.getVocabularyService().find(FloraHellenicaTransformer.uuidFloraHellenicaChorologicalVoc);
+        newFeature.addSupportedCategoricalEnumeration(voc);
         newNode = FeatureNode.NewInstance(newFeature);
         root.addChild(newNode);
 
         newFeature = (Feature)service.find(Feature.LIFEFORM().getUuid());
         newNode = FeatureNode.NewInstance(newFeature);
         root.addChild(newNode);
+        newFeature.setSupportsCategoricalData(true);
+        voc = this.getVocabularyService().find(FloraHellenicaTransformer.uuidFloraHellenicaLifeformVoc);
+        newFeature.addSupportedCategoricalEnumeration(voc);
 
         newFeature = (Feature)service.find(Feature.HABITAT().getUuid());
         newNode = FeatureNode.NewInstance(newFeature);
         root.addChild(newNode);
+        newFeature.setSupportsCategoricalData(true);
+        voc = this.getVocabularyService().find(FloraHellenicaTransformer.uuidFloraHellenicaHabitatVoc);
+        newFeature.addSupportedCategoricalEnumeration(voc);
 
 
         newFeature = (Feature)service.find(Feature.NOTES().getUuid());
