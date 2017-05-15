@@ -13,7 +13,6 @@ import java.io.File;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URI;
-import java.net.URL;
 import java.util.List;
 import java.util.UUID;
 
@@ -165,11 +164,8 @@ public class CichorieaeImageImport extends AbstractImageImporter {
 		String urlPrefix = "http://media.bgbm.org/erez/erez?src=EditWP6/photos/";
 		String urlString = urlPrefix + fileName;
 		logger.info(urlString);
-		URL url = new URL(urlString);
 		URI uri = CdmUtils.string2Uri(urlString);
 		ImageInfo imageMetaData =ImageInfo.NewInstance(uri, 0);
-
-		//String uri = url.toString();
 
 		String mimeType = imageMetaData.getMimeType();
 		String suffix = null;
