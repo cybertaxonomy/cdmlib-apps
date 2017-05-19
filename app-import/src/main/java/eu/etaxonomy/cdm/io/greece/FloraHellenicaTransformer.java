@@ -83,10 +83,12 @@ public class FloraHellenicaTransformer extends InputTransformerBase{
     protected static final UUID uuidChorologicalBA = UUID.fromString("4bc0cb8c-5d06-466d-9ace-7f1f4d54f8a3");
     protected static final UUID uuidChorologicalBC = UUID.fromString("f9cfa10d-5d7c-4e5a-a3ca-602420e993fc");
     protected static final UUID uuidChorologicalEM = UUID.fromString("0ba71db1-b1e3-4878-bc0b-b00dc0e020ed");
+    protected static final UUID uuidChorological_dEM = UUID.fromString("1b39b3b1-b09a-42b7-8f7d-9e0ee274e313");
     protected static final UUID uuidChorologicalMe = UUID.fromString("3120f73c-252a-4399-a691-7c042f0cf46a");
     protected static final UUID uuidChorologicalMA = UUID.fromString("dafd0326-9c20-42cd-8e48-22c1ec2fb294");
     protected static final UUID uuidChorologicalME = UUID.fromString("166b2e99-9638-4814-85e1-8d83a1b9c134");
     protected static final UUID uuidChorologicalMS = UUID.fromString("54aa0d56-e76a-49fa-bde0-874aa5475e76");
+    protected static final UUID uuidChorological_dMS_ = UUID.fromString("d9966842-9926-473e-8edd-bdb1d40c86c5");
     protected static final UUID uuidChorologicalEA = UUID.fromString("8c7124a7-34f6-4c04-bae3-f5e356da8336");
     protected static final UUID uuidChorologicalES = UUID.fromString("d953cd36-c58b-47ee-8347-8d812195ca41");
     protected static final UUID uuidChorologicalEu = UUID.fromString("714e4572-4d31-4529-acb2-1f323c601b0d");
@@ -94,6 +96,7 @@ public class FloraHellenicaTransformer extends InputTransformerBase{
     protected static final UUID uuidChorologicalCt = UUID.fromString("2fdbd40d-3ac4-4a84-a6ff-438c24f9ddd7");
     protected static final UUID uuidChorologicalIT = UUID.fromString("22007c0f-85ec-46e3-b288-88c5e0b7a66a");
     protected static final UUID uuidChorologicalSS = UUID.fromString("d5ccaabf-0f18-4521-979e-9d27c3b712ea");
+    protected static final UUID uuidChorological_SS_ = UUID.fromString("97758f76-8f4d-4315-b62e-393e59a9be41");
     protected static final UUID uuidChorologicalST = UUID.fromString("4f1415db-37ac-4f9b-ade8-1df9182350ec");
     protected static final UUID uuidChorologicalBo = UUID.fromString("0760211d-a081-410d-a41d-4f3acfc69ed0");
     protected static final UUID uuidChorologicalAA = UUID.fromString("ddb45c19-135f-49f3-8dc5-04125b546d8e");

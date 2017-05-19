@@ -59,6 +59,7 @@ public class FloraHellenicaSynonymImport<CONFIG extends FloraHellenicaImportConf
         return "synonyms";
     }
 
+    boolean isFirst = true;
     /**
      * {@inheritDoc}
      */
@@ -73,6 +74,10 @@ public class FloraHellenicaSynonymImport<CONFIG extends FloraHellenicaImportConf
             if (! expectedKeys.contains(key)){
                 logger.warn(line + "Unexpected Key: " + key);
             }
+        }
+        if (isFirst){
+            System.out.println("Start excluded taxa");
+            isFirst = false;
         }
 
         String row = "row" + state.getCurrentLine();
@@ -111,14 +116,22 @@ public class FloraHellenicaSynonymImport<CONFIG extends FloraHellenicaImportConf
         boolean isNec = hasNonAuthor && parsedSynStr[2].contains(" nec ");
 
 
+        String misappliedNecAuthor = null;
         if (isMisapplied && hasNonAuthor && !isNec){
             parsedSynStr[0] = parsedSynStr[0] + " " + parsedSynStr[2];
+        }else if (isMisapplied && hasNonAuthor && isNec){
+            misappliedNecAuthor = parsedSynStr[2];
         }
 
         INonViralName nvn = parser.parseFullName(parsedSynStr[0], NomenclaturalCode.ICNAFP, null);
         if (nvn.isProtectedTitleCache()){
-            logger.warn(line + "Name could not be parsed: " + synonymStr);
+            logger.warn(line + "Name could not be parsed: " + parsedSynStr[0]  + "  (full:"  + synonymStr + ")");
         }
+        if (misappliedNecAuthor != null){
+            nvn.setAuthorshipCache(misappliedNecAuthor);
+        }
+
+
         TaxonNameBase<?,?> name = TaxonNameBase.castAndDeproxy(nvn);
         if (hasStatus){
             try {
@@ -136,7 +149,7 @@ public class FloraHellenicaSynonymImport<CONFIG extends FloraHellenicaImportConf
             result = Taxon.NewInstance(name, getMisappliedRef(state, parsedSynStr[1]));
             acceptedTaxon.addMisappliedName((Taxon)result, getSecReference(state), null);
             if (isNec){
-                logger.warn(line + "nec not yet handled for misapplied names: " + synonymStr);
+                logger.warn(line + "nec for misapplied names still needs to be checked: " + synonymStr);
             }
         }else{
             SynonymType synType = null;
@@ -161,6 +174,8 @@ public class FloraHellenicaSynonymImport<CONFIG extends FloraHellenicaImportConf
     private void handleSynonymNon(SimpleExcelTaxonImportState<CONFIG> state,
             TaxonNameBase<?, ?> name, String nonPart, String line) {
         String[] splits = nonPart.split(" nec ");
+
+        TaxonNameBase<?,?> lastHomonym = null;
         for (String split : splits){
             split = split.trim();
 //            Saponaria illyrica Ard.
@@ -169,7 +184,7 @@ public class FloraHellenicaSynonymImport<CONFIG extends FloraHellenicaImportConf
 //            S. columnae Aurnier nec (Rchb. f.) H. Fleischm.
 //            T. glaucescens Rchb.
             TaxonNameBase<?,?> nonName;
-            if (split.matches("(Saponaria illyrica Ard.|Crepis nemausensis Gouan|S. columnae Aurnier|T. glaucescens Rchb.)"
+            if (split.matches("(Saponaria illyrica Ard.|Crepis nemausensis Gouan|S. columnae Aurnier|T. glaucescens Rchb.|Linaria stricta Guss.)"
                     + "")){
                 if (split.startsWith("S.")){
                     split = split.replace("S.", "Serapias");
@@ -180,19 +195,24 @@ public class FloraHellenicaSynonymImport<CONFIG extends FloraHellenicaImportConf
                 nonName = replaceNameAuthorsAndReferences(state, nonName);
                 name.addRelationshipFromName(nonName, NameRelationshipType.BLOCKING_NAME_FOR(), null);
             }else{
-                String nameStr = name.getNameCache() + " " + split;
+                String nameStr = name.getNameCache().replace(" hort.", "") + " " + split;
                 nonName = TaxonNameBase.castAndDeproxy(this.parser.parseFullName(nameStr));
                 nonName = replaceNameAuthorsAndReferences(state, nonName);
                 name.addRelationshipToName(nonName, NameRelationshipType.LATER_HOMONYM(), null);
+                if (lastHomonym != null){
+                    nonName.addRelationshipToName(lastHomonym, NameRelationshipType.LATER_HOMONYM(), null);
+                }
+                lastHomonym = nonName;
             }
             getNameService().saveOrUpdate(nonName);
             if (nonName.isProtectedTitleCache()){
                 logger.warn(line + "Non-Name could not be parsed: " + nonName.getTitleCache());
             }
         }
-        if (splits.length>1){
-            logger.warn(line + "nec synonyms maybe not yet correctly implemented: " + name.getTitleCache() + "; " + nonPart);
-        }
+        //seems to work correctly
+//        if (splits.length>1){
+//            logger.warn(line + "nec synonyms maybe not yet correctly implemented: " + name.getTitleCache() + "; " + nonPart);
+//        }
     }
 
     private Reference flGraecReference;

@@ -396,26 +396,25 @@ public class FloraHellenicaTaxonImport<CONFIG extends FloraHellenicaImportConfig
 
         Taxon taxon = Taxon.NewInstance(name, getSecReference(state));
         taxon.addImportSource(noStr, getWorksheetName(), getSourceCitation(state), null);
-//        String parentStr = isSubSpecies ? makeSpeciesKey(genusStr, speciesStr, speciesAuthorStr) : genusStr;
+        String parentStr = isSubSpecies ?
+                makeSpeciesKey(genusStr, speciesStr, speciesAuthorStr) : genusStr;
         taxon.setUuid(uuid);
-        String parentStr = genusStr;
         boolean genusAsBefore = genusStr.equals(lastGenus);
         boolean speciesAsBefore = speciesStr.equals(lastSpecies);
         TaxonNode parent = getParent(state, parentStr);
         if (parent != null){
-//            if (!isSubSpecies && genusAsBefore || isSubSpecies && speciesAsBefore){
-            if (genusAsBefore ){
-                        //everything as expected
+            if (!isSubSpecies && genusAsBefore || isSubSpecies && speciesAsBefore){
+//            if (genusAsBefore ){
+                    //everything as expected
                 TaxonNode newNode = parent.addChildTaxon(taxon, getSecReference(state), null);
-                getTaxonNodeService().save(newNode);
+                getTaxonNodeService().saveOrUpdate(newNode);
             }else{
                 logger.warn(line + "Unexpected non-missing parent");
             }
         }else{
-//            if (isSubSpecies){
-//                logger.warn(line + "Subspecies should always have an existing parent");
-//            }else
-            if (genusAsBefore){
+            if (isSubSpecies){
+                logger.warn(line + "Subspecies should always have an existing parent");
+            }else if (genusAsBefore){
                 logger.warn(line + "Unexpected missing genus parent");
             }else{
                 parent = makeGenusNode(state, record, genusStr);

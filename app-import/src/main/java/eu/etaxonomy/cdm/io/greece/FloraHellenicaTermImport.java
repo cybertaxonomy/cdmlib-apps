@@ -211,6 +211,11 @@ public class FloraHellenicaTermImport <CONFIG extends FloraHellenicaImportConfig
         addChorological(state, chorologicalVoc, "AA", "Arctic-Alpine", "Taxa with main distribution beyound the N and aove the high-montane timerlines o fEurasia (occasionally extending to North America)", FloraHellenicaTransformer.uuidChorologicalAA);
         addChorological(state, chorologicalVoc, "Co", "Cosmopolitan", "Taxa distributed in all continents, i.e. beyond the N hemisphere. This category may be given in brackets after the known or supposed native distribution in cases of taxa that have been spread worldwide by humans", FloraHellenicaTransformer.uuidChorologicalCo);
 
+        addChorological(state, chorologicalVoc, "[SS]", "[Saharo-Sindian]", "Taxa with main distribution in arid N Africa and SQ Asia, extrazonally extending to the Mediterranean, not native in Greece", FloraHellenicaTransformer.uuidChorological_SS_);
+        addChorological(state, chorologicalVoc, "[?MS]", "[Mediterranean-SW Asian]", "Taxa distributed in one or more Mediterranean countries and extending to SW and C Asia, not native in Greece", FloraHellenicaTransformer.uuidChorological_dMS_);
+        addChorological(state, chorologicalVoc, "?EM", "? East Mediterranean", "Taxa restricted to the E Mediterranean, occasionally extending to S Italy or adjacent Caucasian countries", FloraHellenicaTransformer.uuidChorological_dEM);
+
+
         addChorological(state, chorologicalVoc, "[trop.]", "[tropical]", "", FloraHellenicaTransformer.uuidChorologicaltrop);
         addChorological(state, chorologicalVoc, "[subtrop.]", "[subtropical]", "", FloraHellenicaTransformer.uuidChorologicalsubtrop);
         addChorological(state, chorologicalVoc, "[paleotrop.]", "[paleotropical]", "", FloraHellenicaTransformer.uuidChorologicalpaleotrop);
@@ -432,9 +437,13 @@ public class FloraHellenicaTermImport <CONFIG extends FloraHellenicaImportConfig
         result.setTitleCache(state.getConfig().getFeatureTreeTitle(), true);
         FeatureNode root = result.getRoot();
         FeatureNode newNode;
-
         ITermService service = getTermService();
-        Feature newFeature = (Feature)service.find(Feature.DISTRIBUTION().getUuid());
+
+        Feature newFeature = (Feature)service.find(Feature.DESCRIPTION().getUuid());
+        newNode = FeatureNode.NewInstance(newFeature);
+        root.addChild(newNode);
+
+        newFeature = (Feature)service.find(Feature.DISTRIBUTION().getUuid());
         newNode = FeatureNode.NewInstance(newFeature);
         root.addChild(newNode);
 

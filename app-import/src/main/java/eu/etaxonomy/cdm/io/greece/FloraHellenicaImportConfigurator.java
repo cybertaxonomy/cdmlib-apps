@@ -63,8 +63,10 @@ public class FloraHellenicaImportConfigurator extends ExcelImportConfiguratorBas
                 FloraHellenicaTaxonImport.class,
                 FloraHellenicaExcludedTaxonImport.class,
                 FloraHellenicaSynonymImport.class,
+                FloraHellenicaBasionymImport.class,
                 FloraHellenicaCommentsImport.class,
                 FloraHellenicaImageImport.class,
+                FloraHellenicaImageCaptionImport.class,
         };
     }
 

@@ -22,6 +22,7 @@ import eu.etaxonomy.cdm.model.description.Feature;
 import eu.etaxonomy.cdm.model.description.TaxonDescription;
 import eu.etaxonomy.cdm.model.description.TextData;
 import eu.etaxonomy.cdm.model.taxon.Taxon;
+import eu.etaxonomy.cdm.model.taxon.TaxonNode;
 
 /**
  * Import for the Flora Hellenica taxon comments.
@@ -98,6 +99,11 @@ public class FloraHellenicaCommentsImport<CONFIG extends FloraHellenicaImportCon
         desc.addElement(comment);
         comment.addImportSource(noStr, getWorksheetName(), getSourceCitation(state), null);
         getTaxonService().saveOrUpdate(acceptedTaxon);
+
+        TaxonNode taxonNode = acceptedTaxon.getTaxonNodes().iterator().next();
+        if(taxonNode.isExcluded()){
+            taxonNode.putExcludedNote(Language.ENGLISH(), commentStr);
+        }
         return ;
     }
 

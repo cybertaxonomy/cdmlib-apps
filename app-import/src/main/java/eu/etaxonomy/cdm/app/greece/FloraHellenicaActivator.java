@@ -150,6 +150,8 @@ public class FloraHellenicaActivator {
         englera.setTitle("Englera");
         result.setInReference(englera);
         secRef = result;
+
+        secRef.setUuid(UUID.fromString("1f78fd94-3a99-4a7b-881f-71cb099ea13a"));
         return result;
     }
 
@@ -171,6 +173,8 @@ public class FloraHellenicaActivator {
         result.setDoi(DOI.fromString("http://dx.doi.org/10.3372/wi.46.46303"));
         result.setReferenceAbstract("Supplementary information on taxonomy, nomenclature, distribution within Greece, total range, life form and ecological traits of vascular plants known to occur in Greece is presented and the revised data are quantitatively analysed. Floristic discrepancies between Vascular plants of Greece: An annotated checklist (Dimopoulos & al. 2013) and relevant influential datasets (Flora europaea, Med-Checklist, Euro+Med PlantBase, etc.) are explained and clarified. An additional quantity of synonyms and misapplied names used in previous Greek floristic literature is presented. Taxonomic and floristic novelties published after 31 October 2013 are not considered.");
         result.setUri(URI.create("http://www.bioone.org/doi/full/10.3372/wi.46.46303"));
+        result.setUuid(UUID.fromString("94fad58e-34de-48b6-a130-ffa3e7cf9a3c"));
+
         return result;
     }
 
@@ -178,6 +182,8 @@ public class FloraHellenicaActivator {
         Reference result = ReferenceFactory.newDatabase();
         result.setTitle("Excelfile (VPG_FINAL_WITH_SYNONYMS_21.01.2017.xlsx) derived from ");
         result.setInReference(getSecReference());
+        result.setUuid(UUID.fromString("7e14e5d2-b3aa-486b-ba31-41dbb91d7fe3"));
+
         return result;
     }
 

@@ -31,13 +31,16 @@ import eu.etaxonomy.cdm.io.common.CdmImportBase;
 import eu.etaxonomy.cdm.io.common.utils.ImportDeduplicationHelper;
 import eu.etaxonomy.cdm.io.mexico.SimpleExcelTaxonImportState;
 import eu.etaxonomy.cdm.model.agent.Person;
+import eu.etaxonomy.cdm.model.common.CdmBase;
 import eu.etaxonomy.cdm.model.common.Language;
 import eu.etaxonomy.cdm.model.description.Feature;
 import eu.etaxonomy.cdm.model.description.TaxonDescription;
 import eu.etaxonomy.cdm.model.description.TextData;
 import eu.etaxonomy.cdm.model.media.Media;
 import eu.etaxonomy.cdm.model.reference.Reference;
+import eu.etaxonomy.cdm.model.taxon.Synonym;
 import eu.etaxonomy.cdm.model.taxon.Taxon;
+import eu.etaxonomy.cdm.model.taxon.TaxonBase;
 /**
  * Import for the Flora Hellenica images.
  *
@@ -89,7 +92,7 @@ public class FloraHellenicaImageImport<CONFIG extends FloraHellenicaImportConfig
         String[] list = file.list();
         for (String fileStr : list){
             try {
-                handleSingleFile(state, fullFolderUrl, fullThumbUrl, fileStr);
+                handleSingleFile(state, fullFolderUrl, fullThumbUrl, fileStr, plate);
             } catch (Exception e) {
                 logger.error("Error when handling file: " + fileStr + " in plate " + plate);
                 e.printStackTrace();
@@ -102,8 +105,10 @@ public class FloraHellenicaImageImport<CONFIG extends FloraHellenicaImportConfig
      * @param fullFolderUrl
      * @param fullThumbUrl
      * @param fileStr
+     * @param plate
      */
-    private void handleSingleFile(SimpleExcelTaxonImportState<CONFIG> state, String fullFolderUrl, String fullThumbUrl, String fileStr) {
+    private void handleSingleFile(SimpleExcelTaxonImportState<CONFIG> state,
+            String fullFolderUrl, String fullThumbUrl, String fileStr, int plate) {
         String[] taxonNameAndArtist = getTaxonName(fileStr);
         String taxonNameStr = taxonNameAndArtist[0];
         String taxonNameStr2 = null;
@@ -111,6 +116,12 @@ public class FloraHellenicaImageImport<CONFIG extends FloraHellenicaImportConfig
         if (fileStr.equals("RamondaSerbica(L)+Nathaliae(R)1.jpg")){
             taxonNameStr = "Ramonda serbica";
             taxonNameStr2 = "Ramonda nathaliae";
+        }else if (fileStr.contains("HypericumCerastioides")){
+            taxonNameStr = taxonNameStr.replace("HypericumCerastoides", "HypericumCerastioides");
+        }else if (fileStr.contains("StachysScardica")){
+            taxonNameStr = taxonNameStr.replace("StachysScardica", "BetonicaScardica");
+        }else if (fileStr.contains("OleaEuropaeaOleaster ")){
+            taxonNameStr = taxonNameStr.replace("OleaEuropaeaOleaster", "OleaEuropaeaEuropaea");
         }
 
         try {
@@ -159,14 +170,15 @@ public class FloraHellenicaImageImport<CONFIG extends FloraHellenicaImportConfig
                 media.setArtist(person);
             }
 
-            media.addPrimaryMediaSource(getSecReference(state), null);
+            String detail = "p. " + FloraHellenicaImageCaptionImport.startPage + 1 + plate *2;
+            media.addPrimaryMediaSource(getSecReference(state), detail);
 
 
             Taxon taxon = getAcceptedTaxon(taxonNameStr);
             makeTextData(fileStr, media, taxon);
             if (taxonNameStr2 != null){
-                getAcceptedTaxon(taxonNameStr);
-                makeTextData(fileStr, media, taxon);
+                Taxon taxon2 = getAcceptedTaxon(taxonNameStr);
+                makeTextData(fileStr, media, taxon2);
             }
 
 
@@ -200,11 +212,9 @@ public class FloraHellenicaImageImport<CONFIG extends FloraHellenicaImportConfig
         return secReference;
     }
 
+
     /**
-     * @param fileStr
-     * @param media
-     * @param taxon
-     * @return
+     * Gets the image gallery, creates
      */
     private void makeTextData(String fileStr, Media media, Taxon taxon) {
         if (taxon == null){
@@ -214,8 +224,13 @@ public class FloraHellenicaImageImport<CONFIG extends FloraHellenicaImportConfig
             return;
         }
         TaxonDescription imageGallery = taxon.getImageGallery(true);
-        TextData textData = TextData.NewInstance();
-        textData.setFeature(Feature.IMAGE());
+        TextData textData;
+        if (imageGallery.getElements().isEmpty()){
+            textData = TextData.NewInstance();
+            textData.setFeature(Feature.IMAGE());
+        }else{
+            textData = CdmBase.deproxy(imageGallery.getElements().iterator().next(), TextData.class);
+        }
         imageGallery.addElement(textData);
         textData.addMedia(media);
     }
@@ -227,9 +242,10 @@ public class FloraHellenicaImageImport<CONFIG extends FloraHellenicaImportConfig
     private Taxon getAcceptedTaxon(String taxonNameStr) {
 
         MatchingTaxonConfigurator config = new MatchingTaxonConfigurator();
+        taxonNameStr = adaptName(taxonNameStr);
         config.setTaxonNameTitle(taxonNameStr);
-        config.setIncludeSynonyms(false);
-        List<Taxon> list = (List)getTaxonService().findTaxaByName(config);
+        config.setIncludeSynonyms(true);
+        List<TaxonBase> list = getTaxonService().findTaxaByName(config);
         if (list.isEmpty()){
             logger.warn("Taxon not found for media: " + taxonNameStr);
             return null;
@@ -237,8 +253,26 @@ public class FloraHellenicaImageImport<CONFIG extends FloraHellenicaImportConfig
             if (list.size()>1){
                 logger.warn("More than 1 taxon found for media: " + taxonNameStr);
             }
-            return list.get(0);
+            TaxonBase<?> taxonBase = list.get(0);
+            Taxon result;
+            if (taxonBase.isInstanceOf(Synonym.class)){
+                result = CdmBase.deproxy(taxonBase, Synonym.class).getAcceptedTaxon();
+            }else{
+                result = CdmBase.deproxy(taxonBase, Taxon.class);
+            }
+            return result;
         }
+    }
+
+    /**
+     * @param taxonNameStr
+     * @return
+     */
+    private String adaptName(String taxonNameStr) {
+        if (taxonNameStr.equals("Hypericum cerastoides")){
+            taxonNameStr = "Hypericum cerastioides";
+        }
+        return taxonNameStr;
     }
 
     /**

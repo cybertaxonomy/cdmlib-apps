@@ -60,6 +60,7 @@ public class FloraHellenicaExcludedTaxonImport<CONFIG extends FloraHellenicaImpo
         return "excluded taxa";
     }
 
+    boolean isFirst = true;
     /**
      * {@inheritDoc}
      */
@@ -74,6 +75,10 @@ public class FloraHellenicaExcludedTaxonImport<CONFIG extends FloraHellenicaImpo
             if (! expectedKeys.contains(key)){
                 logger.warn(line + "Unexpected Key: " + key);
             }
+        }
+        if (isFirst){
+            System.out.println("Start excluded taxa");
+            isFirst = false;
         }
 
         String noStr = getValue(record, UNIQUE_ID);
