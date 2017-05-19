@@ -76,7 +76,7 @@ public class FloraHellenicaSynonymImport<CONFIG extends FloraHellenicaImportConf
             }
         }
         if (isFirst){
-            System.out.println("Start excluded taxa");
+            System.out.println("Start synonyms");
             isFirst = false;
         }
 

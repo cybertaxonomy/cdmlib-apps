@@ -9,6 +9,7 @@
 package eu.etaxonomy.cdm.io.greece;
 
 import java.net.URI;
+import java.text.ParseException;
 import java.util.UUID;
 
 import org.apache.log4j.Logger;
@@ -63,6 +64,7 @@ public class FloraHellenicaTermImport <CONFIG extends FloraHellenicaImportConfig
         initChorologicalVocabulary(state);
         initStatusVocabulary(state);
         makeFeatureTree(state);
+        makeMapColors(state);
         this.commitTransaction(tx);
     }
 
@@ -516,6 +518,21 @@ public class FloraHellenicaTermImport <CONFIG extends FloraHellenicaImportConfig
         return newStatus;
     }
 
+
+    /**
+     * @param state
+     */
+    private void makeMapColors(SimpleExcelTaxonImportState<FloraHellenicaImportConfigurator> state) {
+        PresenceAbsenceTerm presentTerm = (PresenceAbsenceTerm)getTermService().find(PresenceAbsenceTerm.uuidPresent);
+        try {
+            presentTerm.setDefaultColor("ff0000");
+            getTermService().saveOrUpdate(presentTerm);
+        } catch (ParseException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+
+    }
 
 
     /**
