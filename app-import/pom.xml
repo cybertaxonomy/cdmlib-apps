@@ -18,7 +18,7 @@
     <url>http://dev.e-taxonomy.eu/trac/browser/trunk/cdmlib-apps/app-import/</url>
   </scm>
   <properties>
-  	<java.codelevel>1.7</java.codelevel>
+  	<java.codelevel>1.8</java.codelevel>
   </properties>
   
   <dependencyManagement>
@@ -52,7 +52,7 @@
       <!-- the cdm internal repository -->
       <repository>
           <id>EditRepository</id>
-          <url>http://wp5.e-taxonomy.eu/mavenrepo/</url>
+          <url>https://cybertaxonomy.eu/mavenrepo/</url>
       </repository>
   </repositories>
   
