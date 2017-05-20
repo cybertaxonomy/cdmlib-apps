@@ -76,7 +76,9 @@ public class CyprusImagesActivator {
 //	static final ICdmDataSource cdmDestination = CdmDestinations.cdm_cyprus_dev();
 	static final ICdmDataSource cdmDestination = CdmDestinations.cdm_cyprus_production();
 
-	boolean testOnly = false;
+	static boolean testOnly = false;
+	static boolean update_notCreate = true;
+	static boolean forceUpdate = false;
 
     private static final String path = "//media/digitalimages/EditWP6/Zypern/photos/";
     private static final String urlPath = "http://media.bgbm.org/erez/erez?src=EditWP6/zypern/photos/";
@@ -99,6 +101,7 @@ public class CyprusImagesActivator {
         Pattern pattern = Pattern.compile(regEx);
 
         for (String fileName : fileList){
+
             Matcher matcher = pattern.matcher(fileName);
             if (matcher.matches()){
 //                System.out.println(fileName);
@@ -152,10 +155,8 @@ public class CyprusImagesActivator {
         try {
             String fullName = urlPath + fileName;
             Media media = getImageMedia(fullName, null, true);
-            makeMetaData(media, fileName);
-            String title = fileName.replace("_s_"," subsp. ")
-                    .replace("_"," ").replace(".jpg","").replace(".JPG","");
-            media.putTitle(Language.LATIN(), title);
+            makeMetaData(media, fileName, false);
+            makeTitle(media, fileName, false);
             if (!testOnly){
                 makeTextData(fileName, media, taxon);
             }
@@ -168,14 +169,32 @@ public class CyprusImagesActivator {
 
     /**
      * @param media
+     * @param fileName
+     * @param b
      */
-    private void makeMetaData(Media media, String fileName) {
-        //image metadata
+    private void makeTitle(Media media, String fileName, boolean updateOnly) {
+        String title = fileName.replace("_s_"," subsp. ")
+                .replace("_"," ").replace(".jpg","").replace(".JPG","");
+        if ( (!updateOnly) || media.getAllTitles().isEmpty()){
+            media.putTitle(Language.LATIN(), title);
+        }
+    }
+
+    /**
+     * @param media
+     */
+    private void makeMetaData(Media media, String fileName, boolean updateOnly) {
+
+        File file = new File(path + fileName);
+        if (!file.exists()){
+            logger.warn("File for filename " +  fileName + " does not exist.");
+            return;
+        }
 
         Map<String, String> keywords = new HashMap<>();
-        File file = new File(path + fileName);
         String copyright = null;
         String artistStr = null;
+        String created = null;
         try{
             IImageMetadata metadata = Sanselan.getMetadata(file);
             ArrayList<?> items = metadata.getItems();
@@ -197,56 +216,77 @@ public class CyprusImagesActivator {
                 }else if ("artist".equals(keyword)){
                     artistStr = value;
                 }else if ("date time original".equalsIgnoreCase(item.getKeyword())){
-                    DateTimeFormatter f = DateTimeFormat.forPattern("yyyy:MM:dd HH:mm:ss");
-                    DateTime created;
-                    try {
-                        created = f/*.withZone(DateTimeZone.forID("Europe/Athens"))*/.parseDateTime(value);
-                        media.setMediaCreated(created);
-                    } catch (Exception e) {
-                        logger.warn("Exception (" + e.getMessage() + ") when parsing create date " + value + " for file " + fileName);
-                    }
+                    created = value;
                 }
             }
         } catch (ImageReadException | IOException e1) {
             logger.warn("       Problem (" + e1.getMessage() + ") when reading metadata from file: " + fileName);
         }
+
+
+        AgentBase<?> artistAgent = null;
+        Rights right = null;
+        DateTime createdDate = null;
+        String locality = null;
+
+        //artist
         if (keywords.get("photographer") != null){
             String artist = keywords.get("photographer");
-            Person person = makePerson(artist, fileName);
-            media.setArtist(person);
+            artistAgent = makePerson(artist, fileName);
         }
         if (artistStr != null){
             if (keywords.get("photographer") == null){
-                Person person = makePerson(artistStr, fileName);
-                media.setArtist(person);
+                artistAgent = makePerson(artistStr, fileName);
             }else if (!keywords.get("photographer").toLowerCase().replace(" ", "")
                     .contains(artistStr.toLowerCase().replace(" ", ""))){
                 logger.warn("Artist '" + artistStr + "' could not be handled for " + fileName);
             }
         }
+
+        //locality
         if (keywords.get("locality") != null){
-            String locality = keywords.get("locality");
-            media.putDescription(Language.ENGLISH(), locality);
+            locality = keywords.get("locality");
         }
+
+        //copyright
         if (copyright != null){
-            if (rightsMap.get(copyright)!= null){
-                media.addRights(rightsMap.get(copyright));
+            AgentBase<?> agent;
+            if (copyright.equals("Botanic Garden and Botanical Museum Berlin-Dahlem (BGBM)")){
+                agent = Institution.NewNamedInstance(copyright);
             }else{
-                AgentBase<?> agent;
-                if (copyright.equals("Botanic Garden and Botanical Museum Berlin-Dahlem (BGBM)")){
-                    agent = Institution.NewNamedInstance(copyright);
-                }else{
-                    agent = makePerson(copyright, fileName);
-                }
-                Rights r = Rights.NewInstance(null, null, RightsType.COPYRIGHT());
-                r.setAgent(agent);
-                media.addRights(r);
-                rightsMap.put(copyright, r);
+                agent = makePerson(copyright, fileName);
+            }
+            right = Rights.NewInstance(null, null, RightsType.COPYRIGHT());
+            right.setAgent(agent);
+            right = deduplicationHelper.getExistingCopyright(null, right);
+        }
+
+        //created
+        if (created != null){
+            DateTimeFormatter f = DateTimeFormat.forPattern("yyyy:MM:dd HH:mm:ss");
+            try {
+                createdDate = f/*.withZone(DateTimeZone.forID("Europe/Athens"))*/.parseDateTime(created);
+            } catch (Exception e) {
+                logger.warn("Exception (" + e.getMessage() + ") when parsing create date " + created + " for file " + fileName);
             }
         }
-    }
 
-    private static Map<String, Rights> rightsMap = new HashMap<>();
+        boolean force = !updateOnly || forceUpdate;
+        //add to media
+        if (artistAgent != null && (force || media.getArtist() == null)){
+            media.setArtist(artistAgent);
+        }
+        if (right != null && (force || media.getRights().isEmpty())){
+            media.removeRights(right);
+            media.addRights(right);
+        }
+        if (createdDate != null && (force || media.getMediaCreated() == null)){
+            media.setMediaCreated(createdDate);
+        }
+        if (locality != null && (force || media.getDescription(Language.ENGLISH()) == null)){
+            media.putDescription(Language.ENGLISH(), locality);
+        }
+    }
 
     /**
      * @param artist
@@ -464,7 +504,7 @@ public class CyprusImagesActivator {
         return taxonNameStr;
     }
 
-	public void test(){
+	private void test(){
 	    File f = new File(path);
 	    String[] list = f.list();
 	    List<String> fullFileNames = new ArrayList<>();
@@ -476,12 +516,63 @@ public class CyprusImagesActivator {
 	    }
 	}
 
+	private void updateMetadata(ICdmDataSource cdmDestination){
+        CdmApplicationController app = CdmIoApplicationController.NewInstance(cdmDestination, hbm2dll);
+        TransactionStatus tx = app.startTransaction();
+
+        deduplicationHelper = (ImportDeduplicationHelper<SimpleExcelTaxonImportState<?>>)ImportDeduplicationHelper.NewInstance(app);
+
+        List<Media> list = app.getMediaService().list(Media.class, null, null, null, null);
+        for (Media media : list){
+            String fileName = getUrlStringForMedia(media);
+            if (fileName.startsWith(urlPath)){
+                fileName = fileName.replace(urlPath, "");
+//                System.out.println(fileName);
+//                makeMetaData(media, fileName, true);
+                makeTitle(media, fileName, true);
+            }else{
+                logger.warn("Filename does not start with standard url path: " + fileName);
+            }
+        }
+
+        if (testOnly){
+            tx.setRollbackOnly();
+        }
+        app.commitTransaction(tx);
+
+	}
+
 	/**
+     * @param media
+	 * @return
+     */
+    private String getUrlStringForMedia(Media media) {
+        String result = null;
+        for (MediaRepresentation rep : media.getRepresentations()){
+            for (MediaRepresentationPart part : rep.getParts()){
+                URI uri = part.getUri();
+                if (uri != null){
+                    if (result != null){
+                        logger.warn("More than 1 uri exists for media "+ media.getId());
+                    }else{
+                        result = uri.toString();
+                    }
+                }
+            }
+        }
+        return result;
+    }
+
+    /**
 	 * @param args
 	 */
 	public static void main(String[] args) {
 		CyprusImagesActivator me = new CyprusImagesActivator();
-		me.doImport(cdmDestination);
+		if (update_notCreate){
+		    me.updateMetadata(cdmDestination);
+		}else{
+		    me.doImport(cdmDestination);
+		}
 //		me.test();
 		System.exit(0);
 	}
