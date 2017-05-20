@@ -183,7 +183,7 @@ public class FloraHellenicaImageImport<CONFIG extends FloraHellenicaImportConfig
 
 
             if (taxonNameStr2 == null){
-                media.putTitle(Language.LATIN(), taxon == null ? "taxonNameStr" :
+                media.putTitle(Language.LATIN(), taxon == null ? taxonNameStr :
                     taxon.getName().getTitleCache());
             }else{
                 media.putTitle(Language.LATIN(), "Ramonda serbica(L) + R. nathaliae(R)");
