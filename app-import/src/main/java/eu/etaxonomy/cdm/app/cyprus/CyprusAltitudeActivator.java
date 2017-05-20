@@ -53,7 +53,6 @@ public class CyprusAltitudeActivator {
 
 	//database validation status (create, update, validate ...)
 	static DbSchemaValidation hbm2dll = DbSchemaValidation.VALIDATE;
-//	static final URI source = cyprus_distribution();
 	static final URI source = cyprus_altitude();
 
 
@@ -91,7 +90,7 @@ public class CyprusAltitudeActivator {
 
 		CdmApplicationController app = CdmIoApplicationController.NewInstance(cdmDestination, hbm2dll);
 
-		Set<TaxonBase> taxaToSave = new HashSet<TaxonBase>();
+		Set<TaxonBase> taxaToSave = new HashSet<>();
 
 		TransactionStatus tx = app.startTransaction();
 
@@ -101,18 +100,12 @@ public class CyprusAltitudeActivator {
 		Reference mikle77 = app.getReferenceService().find(uuidMikle77);
 		Reference mikle85 = app.getReferenceService().find(uuidMikle85);
 
-
 		Feature altitudeFeature = (Feature) app.getTermService().find(uuidAltitudeFeature);
 		if (altitudeFeature == null){
-//			altitudeFeature = Feature.NewInstance("Altitude", "Altitude", "alt.");
-//			altitudeFeature.setUuid(uuidAltitudeFeature);
-//			featureVoc = app.getVocabularyService().find(UUID.fromString("b187d555-f06f-4d65-9e53-da7c93f8eaa8"));
-//			featureVoc.addTerm(altitudeFeature);
 			throw new RuntimeException("Could not find altitudinal range feature");
 		}
 
 		MeasurementUnit meter = (MeasurementUnit)app.getTermService().find(UUID.fromString("8bef5055-789c-41e5-bea2-8dc2ea8ecdf6"));
-//		NamedArea cyprus = (NamedArea)app.getTermService().find(UUID.fromString("da4cce9a-439b-4cc4-8073-85dc75bae169"));
 
 		int count =1;
 		for (HashMap<String, String> row : excel){
@@ -121,13 +114,9 @@ public class CyprusAltitudeActivator {
 			UUID acceptedUuid = makeUuid(row, "acceptedNameUuid");
 			UUID parentUuid = makeUuid(row, "parentUuid");
 
-//			String altitude = row.get("Altitude-kumuliert");
-
 			String altitudeMin = row.get("Min");
 			String altitudeMax = row.get("Max");
 			String acceptedName = row.get("AcceptedName");
-
-
 
 			String source = row.get("Source");
 
@@ -142,7 +131,6 @@ public class CyprusAltitudeActivator {
 				TaxonDescription desc = getDescription(taxon, sourceRef);
 
 				hasAltitude = makeAltitude(altitudeMin, altitudeMax, altitudeFeature, sourceRef, desc, meter, count);
-//				hasAltitude = makeAltitudeOld(altitude, altitudeFeature, sourceRef, desc, meter, count);
 				if (hasAltitude){
 					if(desc.getTaxon() == null){
 						taxon.addDescription(desc);
@@ -158,16 +146,13 @@ public class CyprusAltitudeActivator {
 
 		app.getTaxonService().saveOrUpdate(taxaToSave);
 
-//		tx.setRollbackOnly();
 		app.commitTransaction(tx);
 	}
 
 
 	private Taxon getTaxon(CdmApplicationController app, UUID baseUuid, UUID acceptedUuid, UUID parentUuid, String acceptedName, int row) {
 		TaxonBase<?> base = app.getTaxonService().find(baseUuid);
-//		TaxonBase<?> parent = app.getTaxonService().find(parentUuid);
 
-		//TODO
 		Taxon result = null;
 		if (base.isInstanceOf(Taxon.class)){
 			Taxon t = CdmBase.deproxy(base, Taxon.class);
@@ -227,10 +212,6 @@ public class CyprusAltitudeActivator {
 			TaxonNameBase<?,?> nameUsedInSource = null;  //TODO
 			data.addSource(OriginalSourceType.PrimaryTaxonomicSource, null, null, sourceRef, null, nameUsedInSource, null);
 		}
-//		//Excel   //excel source not wanted by Ralf
-//		TaxonNameBase<?,?> nameUsedInSource = null;  //TODO probably we don't want this
-//		data.addSource(OriginalSourceType.Import, String.valueOf(row), "row", getSourceReference(), null, nameUsedInSource, null);
-
 		data.setUnit(meter);
 
 		Integer min = Integer.valueOf(altitudeMin);
@@ -244,42 +225,6 @@ public class CyprusAltitudeActivator {
 		desc.addElement(data);
 		return true;
 	}
-
-//	private boolean makeAltitudeOld(String altitudeOrig, Feature feature, Reference source, TaxonDescription desc, MeasurementUnit meter, int row) {
-//		String altitude = altitudeOrig.trim().replace(" ", "");
-//		Matcher matcher = altitudePattern.matcher(altitude);
-//
-//		if (matcher.matches()){
-//			QuantitativeData data = QuantitativeData.NewInstance(feature);
-//
-//			//Meikle
-//			if (source != null){
-//				TaxonNameBase<?,?> nameUsedInSource = null;  //TODO
-//				data.addSource(OriginalSourceType.PrimaryTaxonomicSource, null, null, source, null, nameUsedInSource, null);
-//			}
-//			//Excel
-//			TaxonNameBase<?,?> nameUsedInSource = null;  //TODO probably we don't want this
-//			data.addSource(OriginalSourceType.Import, String.valueOf(row), "row", getSourceReference(), null, nameUsedInSource, null);
-//			data.setUnit(meter);
-//
-//			String[] split = altitude.split("-");
-//
-//			Integer min = Integer.valueOf(split[0]);
-//			StatisticalMeasurementValue minValue = StatisticalMeasurementValue.NewInstance(StatisticalMeasure.MIN(), min);
-//			data.addStatisticalValue(minValue);
-//
-//			if (split.length > 1){
-//				Integer max = Integer.valueOf(split[1]);
-//				StatisticalMeasurementValue maxValue = StatisticalMeasurementValue.NewInstance(StatisticalMeasure.MAX(), max);
-//				data.addStatisticalValue(maxValue);
-//			}
-//			desc.addElement(data);
-//			return true;
-//		}else{
-//			logger.warn("Altitude does not match in row " + row + ": "  + altitudeOrig);
-//			return false;
-//		}
-//	}
 
 	private TaxonDescription getDescription(Taxon taxon, Reference sourceRef) {
 		if (taxon != null){
@@ -320,26 +265,15 @@ public class CyprusAltitudeActivator {
 		}
 	}
 
-//	private void getRowValues(HashMap<String, String> row) {
-//		// TODO Auto-generated method stub
-//		HashMap<String, Object> = new HashM
-//		row
-//
-//
-//	}
-
-
 	Reference sourceReference;
 	private Reference getSourceReference() {
 		if (sourceReference == null){
 			sourceReference = ReferenceFactory.newGeneric();
 			sourceReference.setTitleCache(sourceReferenceTitle, true);
-
 		}
 		return sourceReference;
 
 	}
-
 
 	//Cyprus
 	public static URI cyprus_altitude() {
@@ -361,12 +295,6 @@ public class CyprusAltitudeActivator {
 	public static void main(String[] args) {
 		CyprusAltitudeActivator me = new CyprusAltitudeActivator();
 		me.doImport(cdmDestination);
-		me.testMatcher();
-	}
-
-	private void testMatcher() {
-//		makeAltitude("0-4400", null, null);
-
 	}
 
 }
