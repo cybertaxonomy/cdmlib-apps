@@ -64,8 +64,6 @@ import eu.etaxonomy.cdm.model.description.TaxonInteraction;
 import eu.etaxonomy.cdm.model.description.TaxonNameDescription;
 import eu.etaxonomy.cdm.model.description.TextData;
 import eu.etaxonomy.cdm.model.location.NamedArea;
-import eu.etaxonomy.cdm.model.name.NonViralName;
-import eu.etaxonomy.cdm.model.name.TaxonNameBase;
 import eu.etaxonomy.cdm.model.taxon.Taxon;
 import eu.etaxonomy.cdm.model.taxon.TaxonBase;
 import eu.etaxonomy.cdm.profiler.ProfilerController;
@@ -81,7 +79,9 @@ import eu.etaxonomy.cdm.profiler.ProfilerController;
  */
 @Component
 public class PesiDescriptionExport extends PesiExportBase {
-	private static final Logger logger = Logger.getLogger(PesiDescriptionExport.class);
+
+    private static final long serialVersionUID = -1486235807814098217L;
+    private static final Logger logger = Logger.getLogger(PesiDescriptionExport.class);
 
 	private static final Class<? extends CdmBase> standardMethodParameter = DescriptionElementBase.class;
 
@@ -170,13 +170,13 @@ public class PesiDescriptionExport extends PesiExportBase {
 			logger.info("*** Finished Making " + pluralString + " ..." + getSuccessString(success));
 
 			if (!success){
-				state.setUnsuccessfull();
+				state.getResult().addError("An unknown problem occurred");
 			}
 			return;
 		} catch (SQLException e) {
 			e.printStackTrace();
 			logger.error(e.getMessage());
-			state.setUnsuccessfull();
+			state.getResult().addException(e, e.getMessage());
 		}
 	}
 

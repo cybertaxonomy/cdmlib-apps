@@ -57,16 +57,11 @@ import eu.etaxonomy.cdm.model.common.Language;
 import eu.etaxonomy.cdm.model.common.Marker;
 import eu.etaxonomy.cdm.model.common.MarkerType;
 import eu.etaxonomy.cdm.model.common.RelationshipBase;
-import eu.etaxonomy.cdm.model.name.BacterialName;
-import eu.etaxonomy.cdm.model.name.BotanicalName;
 import eu.etaxonomy.cdm.model.name.NameTypeDesignation;
 import eu.etaxonomy.cdm.model.name.NameTypeDesignationStatus;
 import eu.etaxonomy.cdm.model.name.NomenclaturalCode;
 import eu.etaxonomy.cdm.model.name.NomenclaturalStatus;
-import eu.etaxonomy.cdm.model.name.NonViralName;
 import eu.etaxonomy.cdm.model.name.Rank;
-import eu.etaxonomy.cdm.model.name.TaxonNameBase;
-import eu.etaxonomy.cdm.model.name.ZoologicalName;
 import eu.etaxonomy.cdm.model.reference.INomenclaturalReference;
 import eu.etaxonomy.cdm.model.reference.Reference;
 import eu.etaxonomy.cdm.model.taxon.Classification;
@@ -78,8 +73,6 @@ import eu.etaxonomy.cdm.model.taxon.TaxonNode;
 import eu.etaxonomy.cdm.profiler.ProfilerController;
 import eu.etaxonomy.cdm.strategy.cache.HTMLTagRules;
 import eu.etaxonomy.cdm.strategy.cache.TagEnum;
-import eu.etaxonomy.cdm.strategy.cache.name.BacterialNameDefaultCacheStrategy;
-import eu.etaxonomy.cdm.strategy.cache.name.BotanicNameDefaultCacheStrategy;
 import eu.etaxonomy.cdm.strategy.cache.name.INonViralNameCacheStrategy;
 import eu.etaxonomy.cdm.strategy.cache.name.NonViralNameDefaultCacheStrategy;
 import eu.etaxonomy.cdm.strategy.cache.name.ZooNameNoMarkerCacheStrategy;
@@ -155,17 +148,11 @@ public class PesiTaxonExport extends PesiExportBase {
 		super();
 	}
 
-	/* (non-Javadoc)
-	 * @see eu.etaxonomy.cdm.io.common.DbExportBase#getStandardMethodParameter()
-	 */
 	@Override
 	public Class<? extends CdmBase> getStandardMethodParameter() {
 		return standardMethodParameter;
 	}
 
-	/* (non-Javadoc)
-	 * @see eu.etaxonomy.cdm.io.common.CdmIoBase#doCheck(eu.etaxonomy.cdm.io.common.IoStateBase)
-	 */
 	@Override
 	protected boolean doCheck(PesiExportState state) {
 		boolean result = true;
@@ -173,9 +160,6 @@ public class PesiTaxonExport extends PesiExportBase {
 	}
 
 
-	/* (non-Javadoc)
-	 * @see eu.etaxonomy.cdm.io.common.CdmIoBase#doInvoke(eu.etaxonomy.cdm.io.common.IoStateBase)
-	 */
 	@Override
 	protected void doInvoke(PesiExportState state) {
 		try {
@@ -229,13 +213,13 @@ public class PesiTaxonExport extends PesiExportBase {
 			logger.info("*** Finished Making " + pluralString + " ..." + getSuccessString(success));
 
 			if (!success){
-				state.setUnsuccessfull();
+				state.getResult().addError("An error occurred in PesiTaxonExport.doInvoke");
 			}
 			return;
 		} catch (Exception e) {
 			e.printStackTrace();
 			logger.error(e.getMessage());
-			state.setUnsuccessfull();
+			state.getResult().addException(e);
 		}
 	}
 
@@ -1404,9 +1388,6 @@ public class PesiTaxonExport extends PesiExportBase {
 		return true;
 	}
 
-	/* (non-Javadoc)
-	 * @see eu.etaxonomy.cdm.io.common.CdmIoBase#isIgnore(eu.etaxonomy.cdm.io.common.IoStateBase)
-	 */
 	@Override
 	protected boolean isIgnore(PesiExportState state) {
 		return ! state.getConfig().isDoTaxa();

@@ -43,8 +43,11 @@ import eu.etaxonomy.cdm.model.reference.ReferenceType;
  */
 @Component
 public class PesiSourceExport extends PesiExportBase {
-	private static final Logger logger = Logger.getLogger(PesiSourceExport.class);
-	private static final Class<? extends CdmBase> standardMethodParameter = Reference.class;
+
+    private static final long serialVersionUID = -3084883718722120651L;
+    private static final Logger logger = Logger.getLogger(PesiSourceExport.class);
+
+    private static final Class<? extends CdmBase> standardMethodParameter = Reference.class;
 
 	private static int modCount = 1000;
 	public static final String dbTableName = "Source";
@@ -55,17 +58,11 @@ public class PesiSourceExport extends PesiExportBase {
 		super();
 	}
 
-	/* (non-Javadoc)
-	 * @see eu.etaxonomy.cdm.io.pesi.out.PesiExportBase#getStandardMethodParameter()
-	 */
 	@Override
 	public Class<? extends CdmBase> getStandardMethodParameter() {
 		return standardMethodParameter;
 	}
 
-	/* (non-Javadoc)
-	 * @see eu.etaxonomy.cdm.io.common.CdmIoBase#doCheck(eu.etaxonomy.cdm.io.common.IoStateBase)
-	 */
 	@Override
 	protected boolean doCheck(PesiExportState state) {
 		boolean result = true;
@@ -95,9 +92,6 @@ public class PesiSourceExport extends PesiExportBase {
 		}
 	}
 
-	/* (non-Javadoc)
-	 * @see eu.etaxonomy.cdm.io.common.CdmIoBase#doInvoke(eu.etaxonomy.cdm.io.common.IoStateBase)
-	 */
 	@Override
 	protected void doInvoke(PesiExportState state) {
 		try{
@@ -158,13 +152,13 @@ public class PesiSourceExport extends PesiExportBase {
 			logger.info("*** Finished Making " + pluralString + " ..." + getSuccessString(success));
 
 			if (!success){
-				state.setUnsuccessfull();
+				state.getResult().addError("An error occurred in PesiSourceExport.invoke");
 			}
 			return;
 		} catch (SQLException e) {
 			e.printStackTrace();
 			logger.error(e.getMessage());
-			state.setUnsuccessfull();
+			state.getResult().addException(e);
 			return;
 		}
 	}
@@ -405,9 +399,6 @@ public class PesiSourceExport extends PesiExportBase {
 		return result;
 	}
 
-	/* (non-Javadoc)
-	 * @see eu.etaxonomy.cdm.io.common.CdmIoBase#isIgnore(eu.etaxonomy.cdm.io.common.IoStateBase)
-	 */
 	@Override
 	protected boolean isIgnore(PesiExportState state) {
 		return ! state.getConfig().getDoReferences().equals(DO_REFERENCES.ALL);
@@ -446,5 +437,4 @@ public class PesiSourceExport extends PesiExportBase {
 
 		return mapping;
 	}
-
 }

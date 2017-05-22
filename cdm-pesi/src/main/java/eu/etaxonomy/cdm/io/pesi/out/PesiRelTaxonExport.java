@@ -29,7 +29,6 @@ import eu.etaxonomy.cdm.model.name.HybridRelationship;
 import eu.etaxonomy.cdm.model.name.NameRelationship;
 import eu.etaxonomy.cdm.model.name.NomenclaturalCode;
 import eu.etaxonomy.cdm.model.name.Rank;
-import eu.etaxonomy.cdm.model.name.TaxonNameBase;
 import eu.etaxonomy.cdm.model.taxon.Classification;
 import eu.etaxonomy.cdm.model.taxon.Synonym;
 import eu.etaxonomy.cdm.model.taxon.Taxon;
@@ -46,8 +45,11 @@ import eu.etaxonomy.cdm.model.taxon.TaxonRelationship;
  */
 @Component
 public class PesiRelTaxonExport extends PesiExportBase {
-	private static final Logger logger = Logger.getLogger(PesiRelTaxonExport.class);
-	private static final Class<? extends CdmBase> standardMethodParameter = RelationshipBase.class;
+
+    private static final long serialVersionUID = 67808745337549629L;
+    private static final Logger logger = Logger.getLogger(PesiRelTaxonExport.class);
+
+    private static final Class<? extends CdmBase> standardMethodParameter = RelationshipBase.class;
 
 	private static int modCount = 1000;
 	private static final String dbTableName = "RelTaxon";
@@ -63,27 +65,17 @@ public class PesiRelTaxonExport extends PesiExportBase {
 		super();
 	}
 
-	/* (non-Javadoc)
-	 * @see eu.etaxonomy.cdm.io.common.DbExportBase#getStandardMethodParameter()
-	 */
 	@Override
 	public Class<? extends CdmBase> getStandardMethodParameter() {
 		return standardMethodParameter;
 	}
 
-	/* (non-Javadoc)
-	 * @see eu.etaxonomy.cdm.io.common.CdmIoBase#doCheck(eu.etaxonomy.cdm.io.common.IoStateBase)
-	 */
 	@Override
 	protected boolean doCheck(PesiExportState state) {
 		boolean result = true;
 		return result;
 	}
 
-
-	/* (non-Javadoc)
-	 * @see eu.etaxonomy.cdm.io.common.CdmIoBase#doInvoke(eu.etaxonomy.cdm.io.common.IoStateBase)
-	 */
 	@Override
 	protected void doInvoke(PesiExportState state) {
 		try {
@@ -113,13 +105,13 @@ public class PesiRelTaxonExport extends PesiExportBase {
 			success &= doPhase02(state, mapping);
 
 			if (! success){
-				state.setUnsuccessfull();
+				state.getResult().addError("An unknown error occurred in PesiRelTaxonExport");
 			}
 
 		} catch (SQLException e) {
 			e.printStackTrace();
 			logger.error(e.getMessage());
-			state.setUnsuccessfull();
+			state.getResult().addException(e);
 			return;
 		}
 	}
@@ -321,13 +313,13 @@ public class PesiRelTaxonExport extends PesiExportBase {
 			logger.warn("*** Finished Making " + pluralString + " ..." + getSuccessString(success));
 
 			if (!success){
-				state.setUnsuccessfull();
+				state.getResult().addError("An unknown error occurred in PesiRelTaxonExport");
 			}
 			return;
 		} catch (SQLException e) {
 			e.printStackTrace();
 			logger.error(e.getMessage());
-			state.setUnsuccessfull();
+			state.getResult().addException(e);
 			return;
 		}
 	}
@@ -602,9 +594,6 @@ public class PesiRelTaxonExport extends PesiExportBase {
 		return true;
 	}
 
-	/* (non-Javadoc)
-	 * @see eu.etaxonomy.cdm.io.common.CdmIoBase#isIgnore(eu.etaxonomy.cdm.io.common.IoStateBase)
-	 */
 	@Override
 	protected boolean isIgnore(PesiExportState state) {
 		return ! state.getConfig().isDoRelTaxa();

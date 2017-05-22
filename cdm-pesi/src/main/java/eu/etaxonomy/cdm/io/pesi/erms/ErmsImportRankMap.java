@@ -1,8 +1,8 @@
 /**
 * Copyright (C) 2007 EDIT
-* European Distributed Institute of Taxonomy 
+* European Distributed Institute of Taxonomy
 * http://www.e-taxonomy.eu
-* 
+*
 * The contents of this file are subject to the Mozilla Public License Version 1.1
 * See LICENSE.TXT at the top of this package for the full license terms.
 */
@@ -18,6 +18,7 @@ import org.apache.log4j.Logger;
 import org.springframework.stereotype.Component;
 
 import eu.etaxonomy.cdm.io.common.IOValidator;
+import eu.etaxonomy.cdm.io.common.ImportResult;
 import eu.etaxonomy.cdm.io.common.Source;
 import eu.etaxonomy.cdm.io.common.mapping.DbImportMapping;
 import eu.etaxonomy.cdm.io.pesi.erms.validation.ErmsRankImportValidator;
@@ -48,8 +49,8 @@ public class ErmsImportRankMap extends ErmsImportBase<Rank>{
 
 
 	@Override
-	public boolean invoke (ErmsImportState state){
-		rankMap = new HashMap<Integer, Map<Integer,Rank>>();
+	public ImportResult invoke (ErmsImportState state){
+		rankMap = new HashMap<>();
 		Source source = state.getConfig().getSource() ;
 		String strSQL = " SELECT * FROM ranks ";
 		ResultSet rs = source.getResultSet(strSQL);
@@ -59,8 +60,8 @@ public class ErmsImportRankMap extends ErmsImportBase<Rank>{
 				Integer rankId = rs.getInt("rank_id");
 				String rankName = rs.getString("rank_name");
 				NomenclaturalCode nc = ErmsTransformer.kingdomId2NomCode(kingdomId);
-				
-				Map<Integer, Rank> kingdomMap = makeKingdomMap(rankMap, rankId);			
+
+				Map<Integer, Rank> kingdomMap = makeKingdomMap(rankMap, rankId);
 				try {
 					rankName = rankName.replace("Forma", "Form").replace("Subforma", "Subform");
 					Rank rank;
@@ -72,7 +73,7 @@ public class ErmsImportRankMap extends ErmsImportBase<Rank>{
 					if (rank == null){
 						logger.warn("Rank is null: " + rankName);
 					}
-					kingdomMap.put(kingdomId, rank);	
+					kingdomMap.put(kingdomId, rank);
 				} catch (UnknownCdmTypeException e) {
 					String errorMessage = "Rank '" + rankName + "' is not well mapped for code " + nc + ", kingdom_id = " + kingdomId + ". Rank is ignored!";
 					logger.warn(errorMessage);
@@ -83,9 +84,9 @@ public class ErmsImportRankMap extends ErmsImportBase<Rank>{
 			throw new RuntimeException(e);
 		}
 		state.setRankMap(rankMap);
-		return true;
+		return state.getResult();
 	}
-	
+
 	/**
 	 * Retrieves or creates the kingdom map (mapping kingdom to rank for a defined rank_id) and
 	 * adds it to the rank map.
@@ -137,5 +138,5 @@ public class ErmsImportRankMap extends ErmsImportBase<Rank>{
 	protected DbImportMapping<?, ?> getMapping() {
 		return null;  //not needed
 	}
-	
+
 }

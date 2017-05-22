@@ -37,9 +37,7 @@ import eu.etaxonomy.cdm.model.description.TaxonInteraction;
 import eu.etaxonomy.cdm.model.description.TaxonNameDescription;
 import eu.etaxonomy.cdm.model.location.Country;
 import eu.etaxonomy.cdm.model.location.NamedAreaType;
-import eu.etaxonomy.cdm.model.name.BotanicalName;
 import eu.etaxonomy.cdm.model.name.Rank;
-import eu.etaxonomy.cdm.model.name.TaxonNameBase;
 import eu.etaxonomy.cdm.model.name.TaxonNameFactory;
 import eu.etaxonomy.cdm.model.occurrence.DerivedUnit;
 import eu.etaxonomy.cdm.model.occurrence.SpecimenOrObservationBase;
@@ -110,7 +108,7 @@ public class TestDatabase {
 	    //List<TermBase> terms = new ArrayList<TermBase>();
 	    List<DefinedTermBase> terms = new ArrayList<DefinedTermBase>();
 	    List<Reference> references = new ArrayList<Reference>();
-	    List<TaxonNameBase> taxonomicNames = new ArrayList<TaxonNameBase>();
+	    List<TaxonNameBase> taxonomicNames = new ArrayList<>();
 	    List<TaxonBase> taxonBases = new ArrayList<TaxonBase>();
 
 	    List<Feature> features = new ArrayList<Feature>();
