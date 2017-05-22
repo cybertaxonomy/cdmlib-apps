@@ -126,8 +126,8 @@ public class BerlinModelTaxonNameRelationImport extends BerlinModelImportBase {
 				int relQualifierFk = rs.getInt("relNameQualifierFk");
 				String notes = rs.getString("notes");
 
-				TaxonName<?,?> nameFrom = nameMap.get(String.valueOf(name1Id));
-				TaxonName<?,?> nameTo = nameMap.get(String.valueOf(name2Id));
+				TaxonName nameFrom = nameMap.get(String.valueOf(name1Id));
+				TaxonName nameTo = nameMap.get(String.valueOf(name2Id));
 
 
 				Reference citation = null;

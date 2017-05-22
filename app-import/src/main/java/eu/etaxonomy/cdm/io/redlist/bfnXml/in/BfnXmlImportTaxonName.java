@@ -368,7 +368,7 @@ public class BfnXmlImportTaxonName extends BfnXmlImportBase {
 			}
 			if(elWissName.getAttributeValue(BfnXmlConstants.ATT_BEREICH, bfnNamespace).equalsIgnoreCase("wissName")){
 				try{
-					TaxonName<?, ?> nameBase = parseNonviralNames(rank,strAuthor,strSupplement,elWissName);
+					TaxonName nameBase = parseNonviralNames(rank,strAuthor,strSupplement,elWissName);
 					if(nameBase.isProtectedTitleCache() == true){
 						logger.warn("Taxon " + nameBase.getTitleCache());
 					}
@@ -465,7 +465,7 @@ public class BfnXmlImportTaxonName extends BfnXmlImportBase {
 				}
 				if(elSynDetail.getAttributeValue(BfnXmlConstants.ATT_BEREICH).equalsIgnoreCase("wissName")){
 					try{
-						TaxonName<?, ?> nameBase = parseNonviralNames(rank,strAuthor,strSupplement,elSynDetail);
+						TaxonName nameBase = parseNonviralNames(rank,strAuthor,strSupplement,elSynDetail);
 
 						//TODO find best matching Taxa
 						Synonym synonym = Synonym.NewInstance(nameBase, state.getCurrentMicroRef());
@@ -764,9 +764,9 @@ public class BfnXmlImportTaxonName extends BfnXmlImportBase {
 	 * @return
 	 * @throws UnknownCdmTypeException
 	 */
-	private TaxonName<?,?> parseNonviralNames(Rank rank, String strAuthor, String strSupplement, Element elWissName)
+	private TaxonName parseNonviralNames(Rank rank, String strAuthor, String strSupplement, Element elWissName)
 			throws UnknownCdmTypeException {
-		TaxonName<?,?> taxonNameBase = null;
+		TaxonName taxonNameBase = null;
 
 		String strScientificName = elWissName.getTextNormalize();
 		/**
@@ -784,7 +784,7 @@ public class BfnXmlImportTaxonName extends BfnXmlImportBase {
 			strScientificName = StringUtils.remove(strScientificName, strSupplement);
 		}
 		NonViralNameParserImpl parser = NonViralNameParserImpl.NewInstance();
-		TaxonName<?,?> nonViralName = (TaxonName<?,?>)parser.parseFullName(strScientificName, nomenclaturalCode, rank);
+		TaxonName nonViralName = (TaxonName)parser.parseFullName(strScientificName, nomenclaturalCode, rank);
 		if(nonViralName.hasProblem()){
 			for(ParserProblem p:nonViralName.getParsingProblems()){
 				logger.warn(++parsingProblemCounter + " " +nonViralName.getTitleCache() +" "+p.toString());

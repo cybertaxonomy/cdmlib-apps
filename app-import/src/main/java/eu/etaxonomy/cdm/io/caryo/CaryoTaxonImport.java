@@ -199,7 +199,7 @@ public class CaryoTaxonImport  extends DbImportBase<CaryoImportState, CaryoImpor
 	private void handleBasionym(CaryoImportState state, ResultSet rs, Taxon taxon, String basioStr, Integer id) {
 		if (StringUtils.isNotBlank(basioStr)){
 			IBotanicalName name = taxon.getName();
-			TaxonName<?,?> basionym = (TaxonName)TaxonNameFactory.PARSED_BOTANICAL_REFERENCE(basioStr);
+			TaxonName basionym = (TaxonName)TaxonNameFactory.PARSED_BOTANICAL_REFERENCE(basioStr);
 			if (basionym.hasProblem()){
 				logger.warn("Problem when parsing basionym ("+id+"): " +  basioStr);
 			}
@@ -221,7 +221,7 @@ public class CaryoTaxonImport  extends DbImportBase<CaryoImportState, CaryoImpor
 			return;
 		}else{
 			IBotanicalName name = taxon.getName();
-			TaxonName<?,?> typeName = TaxonNameFactory.NewBotanicalInstance(Rank.SPECIES());
+			TaxonName typeName = TaxonNameFactory.NewBotanicalInstance(Rank.SPECIES());
 			if ("not designated".equalsIgnoreCase(type)){
 				desig.setNotDesignated(true);
 			}else{

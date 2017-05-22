@@ -85,7 +85,7 @@ public class DipteraPostImportUpdater {
 					String newText = parseNewText(text);
 					citation.removeText(language);
 					citation.putText(language, newText);
-					TaxonName<?,?> scientificName = getScientificName(originalNameString, nameMap, nameDuplicateMap);
+					TaxonName scientificName = getScientificName(originalNameString, nameMap, nameDuplicateMap);
 
 					Set<DescriptionElementSource> sources = citation.getSources();
 					if (sources.size() > 1){
@@ -128,7 +128,7 @@ public class DipteraPostImportUpdater {
 
 
 	private void fillNameMaps(List<TaxonName> nameList, Map<String, TaxonName> nameMap, Map<String, TaxonName> duplicateMap) {
-		for (TaxonName<?,?> name : nameList){
+		for (TaxonName name : nameList){
 			String nameCache = name.getNameCache();
 			if (nameMap.containsKey(nameCache)){
 				duplicateMap.put(nameCache, name);

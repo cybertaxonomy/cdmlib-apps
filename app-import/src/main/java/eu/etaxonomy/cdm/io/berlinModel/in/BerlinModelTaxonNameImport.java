@@ -187,7 +187,7 @@ public class BerlinModelTaxonNameImport extends BerlinModelImportBase {
 					}
 
 					//create TaxonName
-					TaxonName<?,?> taxonName;
+					TaxonName taxonName;
 					if (config.getNomenclaturalCode() != null){
 						taxonName = config.getNomenclaturalCode().getNewTaxonNameInstance(rank);
 						//check cultivar

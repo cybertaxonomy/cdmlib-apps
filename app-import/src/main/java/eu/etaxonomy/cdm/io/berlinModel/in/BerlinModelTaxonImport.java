@@ -158,7 +158,7 @@ public class BerlinModelTaxonImport  extends BerlinModelImportBase {
 					uuid = rs.getString("UUID");
 				}
 
-				TaxonName<?,?> taxonName = null;
+				TaxonName taxonName = null;
 				taxonName  = taxonNameMap.get(String.valueOf(nameFk));
 
 				Reference reference = null;

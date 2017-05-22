@@ -608,7 +608,7 @@ public class CubaExcelImport extends ExcelImporterBase<CubaImportState> {
         for (String split : splits){
             split = replaceHomonIlleg(split);
             boolean isHomonym = split.matches(".*" + HOMONYM_MARKER);
-            TaxonName<?,?> newName = (TaxonName)makeName(state, split);
+            TaxonName newName = (TaxonName)makeName(state, split);
             newName.setHomotypicalGroup(homotypicGroup);  //not really necessary as this is later set anyway
             if (newName.isProtectedTitleCache()){
                 logger.warn(state.getCurrentLine() + ": homotypic name part could not be parsed: " + split);
@@ -707,7 +707,7 @@ public class CubaExcelImport extends ExcelImporterBase<CubaImportState> {
                 }
             }
             if (candidates.size() == 1){
-                TaxonName<?,?> blockedName = (TaxonName<?,?>)candidates.iterator().next();
+                TaxonName blockedName = (TaxonName)candidates.iterator().next();
                 newName.addRelationshipToName(blockedName, NameRelationshipType.BLOCKING_NAME_FOR(), null);
                 replacementNameCandidates.add(blockedName);
             }else{
@@ -726,7 +726,7 @@ public class CubaExcelImport extends ExcelImporterBase<CubaImportState> {
             List<IBotanicalName> replacementNameCandidates) {
         String line = state.getCurrentLine() +": ";
         List<IBotanicalName> replacedCandidates = new ArrayList<>();
-        for (TaxonName<?, ?> typifiedName : homotypicGroup.getTypifiedNames()){
+        for (TaxonName typifiedName : homotypicGroup.getTypifiedNames()){
             IBotanicalName candidate = typifiedName;
             if (candidate.getBasionymAuthorship() == null){
                 if (candidate.getStatus().isEmpty()){
@@ -737,7 +737,7 @@ public class CubaExcelImport extends ExcelImporterBase<CubaImportState> {
             }
         }
         if (replacedCandidates.size() == 1){
-            TaxonName<?,?> replacedSynonym = (TaxonName)replacedCandidates.iterator().next();
+            TaxonName replacedSynonym = (TaxonName)replacedCandidates.iterator().next();
             for (IBotanicalName replacementName : replacementNameCandidates){
                 replacementName.addReplacedSynonym(replacedSynonym, null, null, null);
             }
@@ -772,8 +772,8 @@ public class CubaExcelImport extends ExcelImporterBase<CubaImportState> {
     private void createBasionymRelationIfPossible(CubaImportState state, IBotanicalName name1,
             IBotanicalName name2,
             boolean name2isHomonym, boolean onlyIfNotYetExists) {
-        TaxonName<?,?> basionymName = TaxonName.castAndDeproxy(name1);
-        TaxonName<?,?> newCombination = TaxonName.castAndDeproxy(name2);
+        TaxonName basionymName = TaxonName.castAndDeproxy(name1);
+        TaxonName newCombination = TaxonName.castAndDeproxy(name2);
         //exactly one name must have a basionym author
         if (name1.getBasionymAuthorship() == null && name2.getBasionymAuthorship() == null
                 || name1.getBasionymAuthorship() != null && name2.getBasionymAuthorship() != null){

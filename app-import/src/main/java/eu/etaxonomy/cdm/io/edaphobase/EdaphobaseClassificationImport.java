@@ -102,10 +102,10 @@ public class EdaphobaseClassificationImport extends EdaphobaseImportBase {
                         logger.warn("Parent taxon " + parentTaxonFk + " not found for taxon " + id );
                     }else{
 
-                        TaxonName<?,?> parentName = parent.getName();
+                        TaxonName parentName = parent.getName();
 
                         TaxonBase<?> child = state.getRelatedObject(TAXON_NAMESPACE, String.valueOf(id), TaxonBase.class);
-//                        TaxonName<?,?> childName = child.getName();
+//                        TaxonName childName = child.getName();
 
 //                        handleMissingNameParts(CdmBase.deproxy(childName, TaxonName.class), CdmBase.deproxy(parentName, NonViralName.class));
 

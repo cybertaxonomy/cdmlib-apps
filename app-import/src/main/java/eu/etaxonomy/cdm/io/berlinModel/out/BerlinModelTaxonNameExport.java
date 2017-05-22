@@ -76,7 +76,7 @@ public class BerlinModelTaxonNameExport extends BerlinModelExportBase<TaxonName>
 
 	private boolean checkRank(List<TaxonName> list){
 		List<TaxonName> errorNames = new ArrayList<>();
-		for (TaxonName<?,?> name : list){
+		for (TaxonName name : list){
 			if (name.getRank() == null) {
                 ;
             }
@@ -84,7 +84,7 @@ public class BerlinModelTaxonNameExport extends BerlinModelExportBase<TaxonName>
 		}
 		if (errorNames.size() >0){
 			System.out.println("The following names have no Rank:\n=======================");
-			for (TaxonName<?,?> name : errorNames){
+			for (TaxonName name : errorNames){
 				System.out.println("  " + name.toString());
 				System.out.println("  " + name.getUuid());
 				System.out.println("  " + name.getTitleCache());
@@ -173,7 +173,7 @@ public class BerlinModelTaxonNameExport extends BerlinModelExportBase<TaxonName>
 			mapping.initialize(state);
 			logger.info("save "+pluralString+" ...");
 			int count = 0;
-			for (TaxonName<?,?> name : names){
+			for (TaxonName name : names){
 				doCount(count++, modCount, pluralString);
 				success &= mapping.invoke(name);
 				//TODO rank = null or rank < genus and genusOrUninomial != null

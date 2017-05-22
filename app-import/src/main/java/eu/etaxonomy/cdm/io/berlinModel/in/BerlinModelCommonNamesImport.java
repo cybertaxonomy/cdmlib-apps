@@ -260,7 +260,7 @@ public class BerlinModelCommonNamesImport  extends BerlinModelImportBase {
 				String microCitation = null;
 				String originalNameString = null;
 
-				TaxonName<?,?> nameUsedInSource = taxonNameMap.get(String.valueOf(nameInSourceFk));
+				TaxonName nameUsedInSource = taxonNameMap.get(String.valueOf(nameInSourceFk));
 				if (nameInSourceFk != null && nameUsedInSource == null){
 					logger.warn("Name used in source (" + nameInSourceFk + ") was not found for common name " + commonNameId);
 				}
@@ -646,7 +646,7 @@ public class BerlinModelCommonNamesImport  extends BerlinModelImportBase {
 			nameSpace = BerlinModelTaxonNameImport.NAMESPACE;
 			cdmClass = TaxonName.class;
 			idSet = nameIdSet;
-			Map<String, TaxonName<?,?>> nameMap = (Map<String, TaxonName<?,?>>)getCommonService().getSourcedObjectsByIdInSource(cdmClass, idSet, nameSpace);
+			Map<String, TaxonName> nameMap = (Map<String, TaxonName>)getCommonService().getSourcedObjectsByIdInSource(cdmClass, idSet, nameSpace);
 			result.put(nameSpace, nameMap);
 
 			//taxon map

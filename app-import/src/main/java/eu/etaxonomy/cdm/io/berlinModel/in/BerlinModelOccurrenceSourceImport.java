@@ -129,7 +129,7 @@ public class BerlinModelOccurrenceSourceImport  extends BerlinModelImportBase {
     				if (ref != null){
     					DescriptionElementSource originalSource = DescriptionElementSource.NewInstance(OriginalSourceType.PrimaryTaxonomicSource);
     					originalSource.setCitation(ref);
-    					TaxonName<?,?> taxonName;
+    					TaxonName taxonName;
 						taxonName = TaxonName.castAndDeproxy(getName(state, oldName, oldNameFk));
 						if (taxonName != null){
     						originalSource.setNameUsedInSource(taxonName);
@@ -227,7 +227,7 @@ public class BerlinModelOccurrenceSourceImport  extends BerlinModelImportBase {
 	 */
 	boolean isFirstTimeNoNameByService = true;
 	private INonViralName getName(BerlinModelImportState state, String oldName, Integer oldNameFk) {
-		TaxonName<?,?> taxonName = (TaxonName)state.getRelatedObject(BerlinModelTaxonNameImport.NAMESPACE, String.valueOf(oldNameFk));
+		TaxonName taxonName = (TaxonName)state.getRelatedObject(BerlinModelTaxonNameImport.NAMESPACE, String.valueOf(oldNameFk));
 		if (taxonName == null && oldName != null){
 			if (isFirstTimeNoNameByService){
 				logger.warn("oldName not checked against names in BerlinModel. Just take it as a string");

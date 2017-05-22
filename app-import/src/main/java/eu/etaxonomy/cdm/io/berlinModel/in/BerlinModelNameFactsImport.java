@@ -131,7 +131,7 @@ public class BerlinModelNameFactsImport  extends BerlinModelImportBase  {
 				String category = CdmUtils.Nz(rs.getString("NameFactCategory"));
 				String nameFact = CdmUtils.Nz(rs.getString("nameFact"));
 
-				TaxonName<?,?> taxonNameBase = nameMap.get(String.valueOf(nameId));
+				TaxonName taxonNameBase = nameMap.get(String.valueOf(nameId));
 				String nameFactRefFk = String.valueOf(nameFactRefFkObj);
 				Reference citation = refMap.get(nameFactRefFk);
 

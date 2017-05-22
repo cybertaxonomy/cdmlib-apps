@@ -144,8 +144,8 @@ public class TestDatabase {
 	    List<AnnotatableEntity> homotypicalGroups;
 
 		Reference citRef, sec;
-		TaxonName<?,?> name1, name2, name21, nameRoot1, nameFree, synName11, synName12, synName2, synNameFree;
-		TaxonName<?,?> nameRoot2, nameR2_1, nameR2_2;
+		TaxonName name1, name2, name21, nameRoot1, nameFree, synName11, synName12, synName2, synNameFree;
+		TaxonName nameRoot2, nameR2_1, nameR2_2;
 		Taxon child1, child2, child21, root1T, root2T, freeT;
 		Taxon childR2_1, childR2_2;
 		TaxonNode child1Node, child2Node, child21Node, root1TNode, root2TNode, freeTNode;

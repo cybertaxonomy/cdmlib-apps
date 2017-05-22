@@ -118,7 +118,7 @@ public class BerlinModelTypesImport extends BerlinModelImportBase /*implements I
 				//RejectedFlag false
 				//PublishFlag xxx
 
-				TaxonName<?,?> taxonNameBase = nameMap.get(String.valueOf(nameId));
+				TaxonName taxonNameBase = nameMap.get(String.valueOf(nameId));
 
 				if (taxonNameBase != null){
 					try{

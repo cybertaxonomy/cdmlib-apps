@@ -468,7 +468,7 @@ public class MexicoConabioTaxonImport<CONFIG extends MexicoConabioImportConfigur
      * @param line
      * @param name
      */
-    private void makeConceptRelation(String line, TaxonName<?,?> name) {
+    private void makeConceptRelation(String line, TaxonName name) {
         if (name.getTaxonBases().size()==2){
             Iterator<TaxonBase> it = name.getTaxonBases().iterator();
             Taxon taxon1 = getAccepted(it.next());

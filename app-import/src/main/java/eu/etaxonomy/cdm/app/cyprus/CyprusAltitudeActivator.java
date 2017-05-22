@@ -209,7 +209,7 @@ public class CyprusAltitudeActivator {
 
 		//Meikle
 		if (source != null){
-			TaxonName<?,?> nameUsedInSource = null;  //TODO
+			TaxonName nameUsedInSource = null;  //TODO
 			data.addSource(OriginalSourceType.PrimaryTaxonomicSource, null, null, sourceRef, null, nameUsedInSource, null);
 		}
 		data.setUnit(meter);

@@ -198,7 +198,7 @@ public class AlgaTerraTypeImport  extends AlgaTerraSpecimenImportBase {
 
 
 					//Designation
-					TaxonName<?,?> name = getTaxonName(state, taxonNameMap, nameId);
+					TaxonName name = getTaxonName(state, taxonNameMap, nameId);
 					SpecimenTypeDesignation designation = SpecimenTypeDesignation.NewInstance();
 					SpecimenTypeDesignationStatus status = getSpecimenTypeDesignationStatusByKey(typeStatusFk);
 					if (typeStatusFk != null && typeStatusFk.equals(39)){
@@ -336,8 +336,8 @@ public class AlgaTerraTypeImport  extends AlgaTerraSpecimenImportBase {
 	 * @param nameId
 	 * @return
 	 */
-	private TaxonName<?,?> getTaxonName(AlgaTerraImportState state, Map<String, TaxonName> taxonNameMap, int nameId) {
-		TaxonName<?,?> result;
+	private TaxonName getTaxonName(AlgaTerraImportState state, Map<String, TaxonName> taxonNameMap, int nameId) {
+		TaxonName result;
 		if (state.getConfig().isDoTaxonNames()){
 			result = taxonNameMap.get(String.valueOf(nameId));
 		}else{

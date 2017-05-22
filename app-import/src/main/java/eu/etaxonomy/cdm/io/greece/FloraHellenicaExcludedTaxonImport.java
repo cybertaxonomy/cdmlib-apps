@@ -169,7 +169,7 @@ public class FloraHellenicaExcludedTaxonImport<CONFIG extends FloraHellenicaImpo
         Classification classification = getClassificationService().load(state.getConfig().getClassificationUuid());
         TaxonNode plantae = classification.getChildNodes().iterator().next();
 
-        TaxonName<?,?> name = TaxonNameFactory.NewBotanicalInstance(Rank.SUPERFAMILY());
+        TaxonName name = TaxonNameFactory.NewBotanicalInstance(Rank.SUPERFAMILY());
         name.setTitleCache("Excluded", true);
         Taxon taxon = Taxon.NewInstance(name, getSecReference(state));
         excludedFamilyNode = plantae.addChildTaxon(taxon, getSourceCitation(state), null);

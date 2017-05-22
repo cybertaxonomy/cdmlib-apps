@@ -130,7 +130,7 @@ public class FloraHellenicaSynonymImport<CONFIG extends FloraHellenicaImportConf
         if (misappliedNecAuthor != null){
             nvn.setAuthorshipCache(misappliedNecAuthor);
         }
-        TaxonName<?,?> name = TaxonName.castAndDeproxy(nvn);
+        TaxonName name = TaxonName.castAndDeproxy(nvn);
 
         if (hasStatus){
             try {
@@ -171,10 +171,10 @@ public class FloraHellenicaSynonymImport<CONFIG extends FloraHellenicaImportConf
      * @param parsedSynStr
      */
     private void handleSynonymNon(SimpleExcelTaxonImportState<CONFIG> state,
-            TaxonName<?, ?> name, String nonPart, String line) {
+            TaxonName name, String nonPart, String line) {
         String[] splits = nonPart.split(" nec ");
 
-        TaxonNameBase<?,?> lastHomonym = null;
+        TaxonName lastHomonym = null;
         for (String split : splits){
             split = split.trim();
 //            Saponaria illyrica Ard.
@@ -182,7 +182,7 @@ public class FloraHellenicaSynonymImport<CONFIG extends FloraHellenicaImportConf
 //            S. columnae Aurnier
 //            S. columnae Aurnier nec (Rchb. f.) H. Fleischm.
 //            T. glaucescens Rchb.
-            TaxonName<?,?> nonName;
+            TaxonName nonName;
             if (split.matches("(Saponaria illyrica Ard.|Crepis nemausensis Gouan|S. columnae Aurnier|T. glaucescens Rchb.|Linaria stricta Guss.)"
                     + "")){
                 if (split.startsWith("S.")){

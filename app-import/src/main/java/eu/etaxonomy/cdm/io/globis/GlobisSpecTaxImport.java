@@ -328,7 +328,7 @@ public class GlobisSpecTaxImport  extends GlobisImportBase<Reference> implements
 	private void addNameDescription(GlobisImportState state, IZoologicalName name, UUID featureUuid,
 			String citedTypeLocality, String featureLabel) {
 		Feature feature = getFeature(state, featureUuid,featureLabel,featureLabel, null, null);
-		getTaxonNameDescription((TaxonName<?,?>)name, false, true);
+		getTaxonNameDescription((TaxonName)name, false, true);
 
 	}
 
@@ -898,7 +898,7 @@ public class GlobisSpecTaxImport  extends GlobisImportBase<Reference> implements
 
 
 	private Synonym getSynonym(GlobisImportState state, ResultSet rs, Integer specTaxId) throws SQLException {
-		TaxonName<?,?> name = (TaxonName<?,?>)makeName(state, rs, specTaxId);
+		TaxonName name = (TaxonName)makeName(state, rs, specTaxId);
 
 		Synonym synonym = Synonym.NewInstance(name, state.getTransactionalSourceReference());
 
