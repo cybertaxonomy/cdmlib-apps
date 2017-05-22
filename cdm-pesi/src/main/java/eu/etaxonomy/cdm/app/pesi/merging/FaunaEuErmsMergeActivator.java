@@ -31,9 +31,9 @@ import eu.etaxonomy.cdm.model.common.Marker;
 import eu.etaxonomy.cdm.model.description.Distribution;
 import eu.etaxonomy.cdm.model.description.Feature;
 import eu.etaxonomy.cdm.model.description.TaxonDescription;
+import eu.etaxonomy.cdm.model.name.IZoologicalName;
 import eu.etaxonomy.cdm.model.name.NameRelationship;
 import eu.etaxonomy.cdm.model.name.Rank;
-import eu.etaxonomy.cdm.model.name.ZoologicalName;
 import eu.etaxonomy.cdm.model.reference.Reference;
 import eu.etaxonomy.cdm.model.taxon.Synonym;
 import eu.etaxonomy.cdm.model.taxon.Taxon;
@@ -144,22 +144,22 @@ public class FaunaEuErmsMergeActivator {
 
 			if (Integer.parseInt(row.get(18)) == 1){
 				//isFaunaEu = 1 -> copy the author of Fauna Europaea to Erms
-				if (((ZoologicalName)taxonFaunaEu.getName()).getBasionymAuthorship()!= null){
-					((ZoologicalName)taxonErms.getName()).setBasionymAuthorship(((ZoologicalName)taxonFaunaEu.getName()).getBasionymAuthorship());
+				if (((IZoologicalName)taxonFaunaEu.getName()).getBasionymAuthorship()!= null){
+					((IZoologicalName)taxonErms.getName()).setBasionymAuthorship(((IZoologicalName)taxonFaunaEu.getName()).getBasionymAuthorship());
 				}
-				if (((ZoologicalName)taxonFaunaEu.getName()).getCombinationAuthorship()!= null){
-					((ZoologicalName)taxonErms.getName()).setCombinationAuthorship(((ZoologicalName)taxonFaunaEu.getName()).getCombinationAuthorship());
+				if (((IZoologicalName)taxonFaunaEu.getName()).getCombinationAuthorship()!= null){
+					((IZoologicalName)taxonErms.getName()).setCombinationAuthorship(((IZoologicalName)taxonFaunaEu.getName()).getCombinationAuthorship());
 				}
-				((ZoologicalName)taxonErms.getName()).generateAuthorship();
+				((IZoologicalName)taxonErms.getName()).generateAuthorship();
 				taxaToSave.add(taxonErms);
 			}else{
-				if (((ZoologicalName)taxonErms.getName()).getBasionymAuthorship()!= null){
-					((ZoologicalName)taxonFaunaEu.getName()).setBasionymAuthorship(((ZoologicalName)taxonErms.getName()).getBasionymAuthorship());
+				if (((IZoologicalName)taxonErms.getName()).getBasionymAuthorship()!= null){
+					((IZoologicalName)taxonFaunaEu.getName()).setBasionymAuthorship(((IZoologicalName)taxonErms.getName()).getBasionymAuthorship());
 				}
-				if (((ZoologicalName)taxonErms.getName()).getCombinationAuthorship()!= null){
-					((ZoologicalName)taxonFaunaEu.getName()).setCombinationAuthorship(((ZoologicalName)taxonErms.getName()).getCombinationAuthorship());
+				if (((IZoologicalName)taxonErms.getName()).getCombinationAuthorship()!= null){
+					((IZoologicalName)taxonFaunaEu.getName()).setCombinationAuthorship(((IZoologicalName)taxonErms.getName()).getCombinationAuthorship());
 				}
-				((ZoologicalName)taxonFaunaEu.getName()).generateAuthorship();
+				((IZoologicalName)taxonFaunaEu.getName()).generateAuthorship();
 				taxaToSave.add(taxonFaunaEu);
 			}
 

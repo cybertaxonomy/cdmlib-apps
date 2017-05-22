@@ -13,8 +13,7 @@ import org.springframework.transaction.TransactionStatus;
 import eu.etaxonomy.cdm.api.service.config.MatchingTaxonConfigurator;
 import eu.etaxonomy.cdm.hibernate.HibernateProxyHelper;
 import eu.etaxonomy.cdm.model.common.CdmBase;
-import eu.etaxonomy.cdm.model.name.NonViralName;
-import eu.etaxonomy.cdm.model.name.TaxonNameBase;
+import eu.etaxonomy.cdm.model.name.TaxonName;
 import eu.etaxonomy.cdm.model.taxon.Classification;
 import eu.etaxonomy.cdm.model.taxon.Taxon;
 import eu.etaxonomy.cdm.model.taxon.TaxonBase;
@@ -28,17 +27,17 @@ public class IndexFungorumSubSpeciesImport extends IndexFungorumImportBase {
 	private static final Logger logger = Logger.getLogger(IndexFungorumSpeciesImport.class);
 
 	private static final String pluralString = "subSpecies";
-	
-	
+
+
 	public IndexFungorumSubSpeciesImport(){
 		super(pluralString, null, null);
 
 	}
-	
+
 	public IndexFungorumSubSpeciesImport(String pluralString,
 			String dbTableName, Class cdmTargetClass) {
 		super(pluralString, dbTableName, cdmTargetClass);
-		
+
 	}
 
 	@Override
@@ -65,11 +64,11 @@ public class IndexFungorumSubSpeciesImport extends IndexFungorumImportBase {
 		// TODO Auto-generated method stub
 		return false;
 	}
-	
+
 	@Override
     protected void doInvoke(IndexFungorumImportState state){
 		System.out.println("create infraspecific - specific relationship: " + state.getInfraspecificTaxaUUIDs().size() + " taxa");
-		
+
 		 List<String> propertyPaths = new ArrayList<String>();
          propertyPaths.add("taxonNodes.*");
          propertyPaths.add("taxonNodes.classification");
@@ -82,14 +81,14 @@ public class IndexFungorumSubSpeciesImport extends IndexFungorumImportBase {
         	TransactionStatus txStatus = startTransaction();
         	Taxon infraspecificTaxon = (Taxon)getTaxonService().load(infraspecificTaxonUUID, propertyPaths);
             //HibernateProxyHelper.deproxy(infraspecificTaxon);
-            TaxonNameBase name = infraspecificTaxon.getName();
+            TaxonName name = infraspecificTaxon.getName();
 
             UUID uuid = getNameService().saveOrUpdate(name);
             String parentNameString = getParentNameInfraSpecific(name);
             System.out.println("Parent name string: " + parentNameString);
             MatchingTaxonConfigurator matchingConfig = new MatchingTaxonConfigurator();
             matchingConfig.setTaxonNameTitle(parentNameString);
-           
+
             matchingConfig.setPropertyPath(propertyPaths);
             List<TaxonBase> potentialParents = getTaxonService().findTaxaByName(matchingConfig);
                     //Taxon.class, parentNameString + "sec. ", MatchMode.BEGINNING, , pageSize, pageNumber, orderHints, propertyPaths)
@@ -97,7 +96,7 @@ public class IndexFungorumSubSpeciesImport extends IndexFungorumImportBase {
             if (potentialParents.size()>1){
                 for (TaxonBase potentialParent:potentialParents){
                     if (potentialParent.getTitleCache().equals(parentNameString + " sec*")){
-                        classification.addParentChild((Taxon)potentialParent, (Taxon)infraspecificTaxon, null, null);
+                        classification.addParentChild((Taxon)potentialParent, infraspecificTaxon, null, null);
                     }
                 }
             }else if (!potentialParents.isEmpty()){
@@ -115,8 +114,8 @@ public class IndexFungorumSubSpeciesImport extends IndexFungorumImportBase {
      * @param taxon
      * @return
      */
-    private String getParentNameInfraSpecific(TaxonNameBase taxonName){
-       NonViralName<NonViralName> name =  HibernateProxyHelper.deproxy(taxonName, NonViralName.class);
+    private String getParentNameInfraSpecific(TaxonName taxonName){
+        TaxonName name =  HibernateProxyHelper.deproxy(taxonName);
        String parentName = name.getGenusOrUninomial() + " " + name.getSpecificEpithet();
 
        return parentName;

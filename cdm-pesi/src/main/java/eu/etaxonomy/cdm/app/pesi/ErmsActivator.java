@@ -24,7 +24,7 @@ import eu.etaxonomy.cdm.io.common.Source;
 import eu.etaxonomy.cdm.io.pesi.erms.ErmsImportConfigurator;
 import eu.etaxonomy.cdm.io.pesi.out.PesiTransformer;
 import eu.etaxonomy.cdm.model.common.ISourceable;
-import eu.etaxonomy.cdm.model.name.ZoologicalName;
+import eu.etaxonomy.cdm.model.name.TaxonName;
 
 
 /**
@@ -111,7 +111,7 @@ public class ErmsActivator {
 
 		if (config.getCheck().equals(CHECK.CHECK_AND_IMPORT)  || config.getCheck().equals(CHECK.IMPORT_WITHOUT_CHECK)    ){
 			ICdmRepository app = ermsImport.getCdmAppController();
-			ISourceable obj = app.getCommonService().getSourcedObjectByIdInSource(ZoologicalName.class, "1000027", null);
+			ISourceable<?> obj = app.getCommonService().getSourcedObjectByIdInSource(TaxonName.class, "1000027", null);
 			logger.info(obj);
 
 //			//make feature tree

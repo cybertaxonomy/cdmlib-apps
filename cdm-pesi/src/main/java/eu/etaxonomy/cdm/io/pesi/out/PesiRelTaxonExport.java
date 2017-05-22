@@ -29,6 +29,7 @@ import eu.etaxonomy.cdm.model.name.HybridRelationship;
 import eu.etaxonomy.cdm.model.name.NameRelationship;
 import eu.etaxonomy.cdm.model.name.NomenclaturalCode;
 import eu.etaxonomy.cdm.model.name.Rank;
+import eu.etaxonomy.cdm.model.name.TaxonName;
 import eu.etaxonomy.cdm.model.taxon.Classification;
 import eu.etaxonomy.cdm.model.taxon.Synonym;
 import eu.etaxonomy.cdm.model.taxon.Taxon;
@@ -170,8 +171,8 @@ public class PesiRelTaxonExport extends PesiExportBase {
 		while ((list = getNextNameRelationshipPartition(null, limit, partitionCount++, null)) != null   ) {
 			for (RelationshipBase rel : list){
 				try {
-					TaxonNameBase<?,?> name1;
-					TaxonNameBase<?,?> name2;
+				    TaxonName name1;
+				    TaxonName name2;
 					if (rel.isInstanceOf(HybridRelationship.class)){
 						HybridRelationship hybridRel = CdmBase.deproxy(rel, HybridRelationship.class);
 						name1 = hybridRel.getParentName();
@@ -222,7 +223,7 @@ public class PesiRelTaxonExport extends PesiExportBase {
 		return success;
 	}
 
-	private void makeList(TaxonNameBase<?, ?> name, List<IdentifiableEntity> list) {
+	private void makeList(TaxonName name, List<IdentifiableEntity> list) {
 		if (! hasPesiTaxon(name)){
 			list.add(name);
 		}else{
@@ -395,7 +396,7 @@ public class PesiRelTaxonExport extends PesiExportBase {
 	private boolean saveSynonymAndSynNameRelationships(PesiExportState state, Taxon childNodeTaxon) {
 		boolean success = true;
 		for (Synonym synonym : childNodeTaxon.getSynonyms()) { // synonyms of accepted taxon
-			TaxonNameBase<?,?> synonymTaxonName = synonym.getName();
+		    TaxonName synonymTaxonName = synonym.getName();
 			if (! isPesiTaxon(synonym)){
 				logger.warn("Synonym " + synonym.getId() + " is not a PESI taxon. Can't export relationship");
 				continue;
@@ -425,7 +426,7 @@ public class PesiRelTaxonExport extends PesiExportBase {
 
 	private boolean saveNameRelationships(PesiExportState state, TaxonBase taxonBase) {
 		boolean success = true;
-		TaxonNameBase<?,?> childNodeTaxonName = taxonBase.getName();
+		TaxonName childNodeTaxonName = taxonBase.getName();
 
 		//from relations
 		Set<NameRelationship> nameRelations = childNodeTaxonName.getRelationsFromThisName();
@@ -446,7 +447,7 @@ public class PesiRelTaxonExport extends PesiExportBase {
 		boolean success = true;
 		for (NameRelationship nameRelation : nameRelations) {
 			try {
-				TaxonNameBase<?,?> relatedName = isFrom ? nameRelation.getToName(): nameRelation.getFromName();
+			    TaxonName relatedName = isFrom ? nameRelation.getToName(): nameRelation.getFromName();
 				if ( isPurePesiName(relatedName)){
 					success &= checkAndInvokeNameRelation(state, nameRelation, relatedName, isFrom);
 				}else{
@@ -500,7 +501,7 @@ public class PesiRelTaxonExport extends PesiExportBase {
 	 * @param state
 	 * @param sr
 	 */
-	private void invokeSynonyms(PesiExportState state, TaxonNameBase synonymTaxonName) {
+	private void invokeSynonyms(PesiExportState state, TaxonName synonymTaxonName) {
 		// Store KingdomFk and Rank information in Taxon table
 		Integer kingdomFk = PesiTransformer.nomenClaturalCode2Kingdom(synonymTaxonName.getNomenclaturalCode());
 		Integer synonymFk = state.getDbId(synonymTaxonName);
@@ -517,7 +518,7 @@ public class PesiRelTaxonExport extends PesiExportBase {
 	 * @param synonymParentTaxonFk
 	 * @param currentTaxonFk
 	 */
-	private boolean saveSynonymData(PesiExportState state, TaxonNameBase taxonName,
+	private boolean saveSynonymData(PesiExportState state, TaxonName taxonName,
 			NomenclaturalCode nomenclaturalCode, Integer kingdomFk,
 			Integer currentSynonymFk) {
 		try {
@@ -655,7 +656,7 @@ public class PesiRelTaxonExport extends PesiExportBase {
 		String result = null;
 		NomenclaturalCode code = null;
 		Taxon taxon = null;
-		TaxonNameBase name= null;
+		TaxonName name= null;
 		if (relationship.isInstanceOf(TaxonRelationship.class)){
 			TaxonRelationship rel = CdmBase.deproxy(relationship, TaxonRelationship.class);
 			taxon = rel.getToTaxon();
@@ -747,7 +748,7 @@ public class PesiRelTaxonExport extends PesiExportBase {
 	 * @return The <code>RankFk</code> attribute.
 	 * @see MethodMapper
 	 */
-	private static Integer getRankFk(TaxonNameBase taxonName, NomenclaturalCode nomenclaturalCode) {
+	private static Integer getRankFk(TaxonName taxonName, NomenclaturalCode nomenclaturalCode) {
 		Integer result = null;
 		if (nomenclaturalCode != null) {
 			if (taxonName != null && taxonName.getRank() == null) {
@@ -769,7 +770,7 @@ public class PesiRelTaxonExport extends PesiExportBase {
 	 * @return The <code>RankCache</code> attribute.
 	 * @see MethodMapper
 	 */
-	private static String getRankCache(TaxonNameBase taxonName, NomenclaturalCode nomenclaturalCode, PesiExportState state) {
+	private static String getRankCache(TaxonName taxonName, NomenclaturalCode nomenclaturalCode, PesiExportState state) {
 		if (nomenclaturalCode != null) {
 			return state.getTransformer().getCacheByRankAndKingdom(taxonName.getRank(), PesiTransformer.nomenClaturalCode2Kingdom(nomenclaturalCode));
 		}else{

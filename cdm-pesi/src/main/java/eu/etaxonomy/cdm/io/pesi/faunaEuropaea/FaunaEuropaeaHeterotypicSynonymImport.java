@@ -1,8 +1,8 @@
 /**
 * Copyright (C) 2007 EDIT
-* European Distributed Institute of Taxonomy 
+* European Distributed Institute of Taxonomy
 * http://www.e-taxonomy.eu
-* 
+*
 * The contents of this file are subject to the Mozilla Public License Version 1.1
 * See LICENSE.TXT at the top of this package for the full license terms.
 */
@@ -22,15 +22,15 @@ import eu.etaxonomy.cdm.io.common.CdmImportBase;
 import eu.etaxonomy.cdm.io.common.ICdmImport;
 import eu.etaxonomy.cdm.model.name.HomotypicalGroup;
 import eu.etaxonomy.cdm.model.name.NameRelationship;
-import eu.etaxonomy.cdm.model.name.TaxonNameBase;
+import eu.etaxonomy.cdm.model.name.TaxonName;
 import eu.etaxonomy.cdm.model.taxon.Synonym;
 import eu.etaxonomy.cdm.model.taxon.Taxon;
 import eu.etaxonomy.cdm.model.taxon.TaxonBase;
 
 /**
- * This class creates heterotypic synonymy relationships to the accepted taxon for 
- * basionym synonyms. 
- * 
+ * This class creates heterotypic synonymy relationships to the accepted taxon for
+ * basionym synonyms.
+ *
  * @author a.babadshanjan
  * @created 22.09.2009
  * @version 1.0
@@ -55,7 +55,7 @@ implements ICdmImport<FaunaEuropaeaImportConfigurator, FaunaEuropaeaImportState>
 	 */
 	@Override
 	protected void doInvoke(FaunaEuropaeaImportState state) {
-		
+
 		TransactionStatus txStatus = null;
 		List<Synonym> synonymList = null;
 		Set<Taxon> taxonSet = null;
@@ -82,19 +82,18 @@ implements ICdmImport<FaunaEuropaeaImportConfigurator, FaunaEuropaeaImportState>
 					taxonSet = new HashSet<Taxon>(limit);
 				}
 
-				if (((i % limit) == 0 && i != 1 ) || i == nbrOfSynonyms) { 
+				if (((i % limit) == 0 && i != 1 ) || i == nbrOfSynonyms) {
 
 					HomotypicalGroup homotypicalGroup = null;
-					Set<TaxonNameBase> basionyms = null;
+					Set<TaxonName> basionyms = null;
 					Set<NameRelationship> nameRelations = null;
-					TaxonNameBase basionym = null;
-					Set<TaxonBase> taxonBases = null;
-					TaxonBase taxonBase = null;
+					TaxonName basionym = null;
+					Set<Taxon> taxonBases = null;
 					Taxon acceptedTaxon = null;
-					TaxonNameBase synonymName = null;
+					TaxonName synonymName = null;
 					NameRelationship nameRelation = null;
-					TaxonNameBase acceptedName = null;
-					
+					TaxonName acceptedName = null;
+
 					for (TaxonBase synonym : synonymList) {
 						synonymName = synonym.getName();
 						if (synonymName.isGroupsBasionym()) {
@@ -109,8 +108,7 @@ implements ICdmImport<FaunaEuropaeaImportConfigurator, FaunaEuropaeaImportState>
 								}
 								taxonBases = acceptedName.getTaxa();
 								if (taxonBases != null && taxonBases.iterator().hasNext()) {
-									taxonBase = taxonBases.iterator().next();
-									acceptedTaxon = taxonBase.deproxy(taxonBase, Taxon.class);
+								    acceptedTaxon = taxonBases.iterator().next();
 									Set <Synonym> synonyms = acceptedTaxon.getSynonyms();
 									if (!synonyms.contains(synonym)){
 									//TODO: Achtung!!!!! dies wird auch bei homotypischen Synonymen aufgerufen! Dadurch wird ein weiteres Synonym erzeugt
@@ -121,13 +119,13 @@ implements ICdmImport<FaunaEuropaeaImportConfigurator, FaunaEuropaeaImportState>
 							}
 						}
 					}
-						
+
 					getTaxonService().save((Collection)taxonSet);
 					taxonSet = null;
 					synonymList = null;
 					commitTransaction(txStatus);
-					if(logger.isInfoEnabled()) { 
-						logger.info("i = " + i + " - Transaction committed"); 
+					if(logger.isInfoEnabled()) {
+						logger.info("i = " + i + " - Transaction committed");
 					}
 				}
 

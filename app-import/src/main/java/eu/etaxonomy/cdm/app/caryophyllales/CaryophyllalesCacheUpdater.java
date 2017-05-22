@@ -25,7 +25,7 @@ public class CaryophyllalesCacheUpdater {
 //				IdentifiableEntity.class.getName(),
 				//AgentBase.class.getName(),
 				//Reference.class.getName(),
-				//TaxonNameBase.class.getName(),
+				//TaxonName.class.getName(),
 				TaxonBase.class.getName()
 
 
@@ -69,7 +69,7 @@ public class CaryophyllalesCacheUpdater {
 //		static final boolean doSequence = true;
 	//
 //		//Names
-//		static final boolean doTaxonNameBase = true;
+//		static final boolean doTaxonName = true;
 	//
 //		static final boolean doClassification = true;
 	//

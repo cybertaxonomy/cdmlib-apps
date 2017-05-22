@@ -24,8 +24,8 @@ import org.springframework.transaction.TransactionStatus;
 import eu.etaxonomy.cdm.io.pesi.out.PesiTransformer;
 import eu.etaxonomy.cdm.model.common.CdmBase;
 import eu.etaxonomy.cdm.model.common.Marker;
-import eu.etaxonomy.cdm.model.name.NonViralName;
 import eu.etaxonomy.cdm.model.name.Rank;
+import eu.etaxonomy.cdm.model.name.TaxonName;
 import eu.etaxonomy.cdm.model.name.TaxonNameFactory;
 import eu.etaxonomy.cdm.model.reference.Reference;
 import eu.etaxonomy.cdm.model.taxon.Classification;
@@ -253,7 +253,7 @@ public class IndexFungorumHigherClassificationImport  extends IndexFungorumImpor
 			if (! newRank.equals(Rank.KINGDOM())){
 				logger.warn("Taxon not found for uninomial " + uninomial);
 			}
-			NonViralName<?> name = TaxonNameFactory.NewBotanicalInstance(newRank);
+			TaxonName name = TaxonNameFactory.NewBotanicalInstance(newRank);
 			name.setGenusOrUninomial(uninomial);
 			Reference sourceReference = state.getRelatedObject(NAMESPACE_REFERENCE, SOURCE_REFERENCE, Reference.class);
 			taxon = Taxon.NewInstance(name, sourceReference);
@@ -285,7 +285,7 @@ public class IndexFungorumHigherClassificationImport  extends IndexFungorumImpor
 			Map<String, TaxonBase<?>> taxonMap = new HashMap<String, TaxonBase<?>>();
 			List<Taxon> list = getTaxonService().list(Taxon.class, null, null, null, null);
 			for (Taxon taxon : list){
-				taxonMap.put(CdmBase.deproxy(taxon.getName(), NonViralName.class).getGenusOrUninomial(), taxon);
+				taxonMap.put(CdmBase.deproxy(taxon.getName()).getGenusOrUninomial(), taxon);
 			}
 			result.put(nameSpace, taxonMap);
 

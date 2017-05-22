@@ -45,7 +45,7 @@ import eu.etaxonomy.cdm.model.description.TaxonDescription;
 import eu.etaxonomy.cdm.model.description.TaxonInteraction;
 import eu.etaxonomy.cdm.model.description.TextData;
 import eu.etaxonomy.cdm.model.location.NamedArea;
-import eu.etaxonomy.cdm.model.name.TaxonNameBase;
+import eu.etaxonomy.cdm.model.name.TaxonName;
 import eu.etaxonomy.cdm.model.taxon.Taxon;
 import eu.etaxonomy.cdm.model.taxon.TaxonBase;
 
@@ -510,7 +510,7 @@ public class PesiNoteExport extends PesiExportBase {
 	 * @param state The {@link DbExportStateBase DbExportState}.
 	 * @return
 	 */
-	private static Integer getTaxonFk(TaxonNameBase<?,?> taxonName, DbExportStateBase<?, PesiTransformer> state) {
+	private static Integer getTaxonFk(TaxonName taxonName, DbExportStateBase<?, PesiTransformer> state) {
 		return state.getDbId(taxonName);
 	}
 
