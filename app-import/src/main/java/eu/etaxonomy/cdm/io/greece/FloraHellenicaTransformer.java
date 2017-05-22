@@ -25,6 +25,8 @@ public class FloraHellenicaTransformer extends InputTransformerBase{
     @SuppressWarnings("unused")
     private static final Logger logger = Logger.getLogger(FloraHellenicaTransformer.class);
 
+    //taxon info feature
+    protected static final UUID uuidFloraHellenicaTaxonInfoFeature = UUID.fromString("81f92518-eeff-43d2-8dfd-d277efdbecbe");
 
     //areas
     protected static final UUID uuidFloraHellenicaAreasVoc = UUID.fromString("4516586a-d988-456f-afbe-ed8f969fd933");

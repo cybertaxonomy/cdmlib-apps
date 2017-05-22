@@ -441,7 +441,8 @@ public class FloraHellenicaTermImport <CONFIG extends FloraHellenicaImportConfig
         FeatureNode newNode;
         ITermService service = getTermService();
 
-        Feature newFeature = (Feature)service.find(Feature.DESCRIPTION().getUuid());
+        UUID uuid = FloraHellenicaTransformer.uuidFloraHellenicaTaxonInfoFeature;
+        Feature newFeature = getFeature(state, uuid, "Taxon info", "Taxon info", null, null);
         newNode = FeatureNode.NewInstance(newFeature);
         root.addChild(newNode);
 
@@ -457,7 +458,7 @@ public class FloraHellenicaTermImport <CONFIG extends FloraHellenicaImportConfig
         newFeature.addSupportedCategoricalEnumeration(voc);
 
 
-        UUID uuid = FloraHellenicaTransformer.uuidFloraHellenicaChorologyFeature;
+        uuid = FloraHellenicaTransformer.uuidFloraHellenicaChorologyFeature;
         newFeature = getFeature(state, uuid, "Chorology", "Chorology", null, null);
         newFeature.setSupportsCategoricalData(true);
         voc = this.getVocabularyService().find(FloraHellenicaTransformer.uuidFloraHellenicaChorologicalVoc);

@@ -127,7 +127,8 @@ public class FloraHellenicaImageCaptionImport<CONFIG extends FloraHellenicaImpor
             }
             text = matcher.group(2) + laterText;
 
-            TextData textData = TextData.NewInstance(Feature.DESCRIPTION(), text, Language.ENGLISH(), null);
+            Feature feature = getFeature(state, FloraHellenicaTransformer.uuidFloraHellenicaTaxonInfoFeature);
+            TextData textData = TextData.NewInstance(feature, text, Language.ENGLISH(), null);
             td.addElement(textData);
             Reference citation = this.getSecReference(state);
             Integer myPage = startPage + plateNo * 2;
