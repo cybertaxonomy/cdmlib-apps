@@ -1,8 +1,8 @@
 /**
 * Copyright (C) 2009 EDIT
-* European Distributed Institute of Taxonomy 
+* European Distributed Institute of Taxonomy
 * http://www.e-taxonomy.eu
-* 
+*
 * The contents of this file are subject to the Mozilla Public License Version 1.1
 * See LICENSE.TXT at the top of this package for the full license terms.
 */
@@ -49,8 +49,11 @@ import eu.etaxonomy.cdm.strategy.exceptions.UnknownCdmTypeException;
  */
 @Component
 public class PesiOccurrenceExport extends PesiExportBase {
-	private static final Logger logger = Logger.getLogger(PesiOccurrenceExport.class);
-	private static final Class<? extends CdmBase> standardMethodParameter = AnnotatableEntity.class;
+
+    private static final long serialVersionUID = 1444152605658503549L;
+    private static final Logger logger = Logger.getLogger(PesiOccurrenceExport.class);
+
+    private static final Class<? extends CdmBase> standardMethodParameter = AnnotatableEntity.class;
 
 	private static int modCount = 1000;
 	private static final String dbTableName = "Occurrence";
@@ -65,31 +68,22 @@ public class PesiOccurrenceExport extends PesiExportBase {
 		super();
 	}
 
-	/* (non-Javadoc)
-	 * @see eu.etaxonomy.cdm.io.common.DbExportBase#getStandardMethodParameter()
-	 */
 	@Override
 	public Class<? extends CdmBase> getStandardMethodParameter() {
 		return standardMethodParameter;
 	}
 
-	/* (non-Javadoc)
-	 * @see eu.etaxonomy.cdm.io.common.CdmIoBase#doCheck(eu.etaxonomy.cdm.io.common.IoStateBase)
-	 */
 	@Override
 	protected boolean doCheck(PesiExportState state) {
 		boolean result = true;
 		return result;
 	}
 
-	/* (non-Javadoc)
-	 * @see eu.etaxonomy.cdm.io.common.CdmIoBase#doInvoke(eu.etaxonomy.cdm.io.common.IoStateBase)
-	 */
 	@Override
 	protected void doInvoke(PesiExportState state) {
 		try {
 			logger.error("*** Started Making " + pluralString + " ...");
-	
+
 			// Get the limit for objects to save within a single transaction.
 			int limit = state.getConfig().getLimitSave();
 
@@ -98,7 +92,7 @@ public class PesiOccurrenceExport extends PesiExportBase {
 
 			// PESI: Clear the database table Occurrence.
 //			doDelete(state);
-	
+
 			// Get specific mappings: (CDM) Occurrence -> (PESI) Occurrence
 			PesiExportMapping mapping = getMapping();
 
@@ -121,7 +115,7 @@ public class PesiOccurrenceExport extends PesiExportBase {
 				logger.error("Fetched " + list.size() + " " + parentPluralString + ".");
 				for (TaxonBase taxonBase : list) {
 					if (taxonBase.isInstanceOf(Taxon.class)) {
-						
+
 						// Set the current Taxon
 						taxon = CdmBase.deproxy(taxonBase, Taxon.class);
 
@@ -133,7 +127,7 @@ public class PesiOccurrenceExport extends PesiExportBase {
 							Set<DescriptionElementBase> descriptionElements = taxonDescription.getElements();
 							for (DescriptionElementBase descriptionElement : descriptionElements) {
 								Set<DescriptionElementSource> elementSources = descriptionElement.getSources();
-								
+
 								if (descriptionElement.isInstanceOf(Distribution.class)) {
 									Distribution distribution = CdmBase.deproxy(descriptionElement, Distribution.class);
 									setNamedArea(distribution.getArea());
@@ -148,7 +142,7 @@ public class PesiOccurrenceExport extends PesiExportBase {
 									} else {
 										for (DescriptionElementSource elementSource : elementSources) {
 											Reference reference = elementSource.getCitation();
-	
+
 											// Citations can be empty (null): Is it wrong data or just a normal case?
 											if (reference != null && state.getDbId(reference) != null) {
 												if (neededValuesNotNull(reference, state)) {
@@ -157,17 +151,17 @@ public class PesiOccurrenceExport extends PesiExportBase {
 												}
 											}
 										}
-										
+
 									}
-									
+
 									setDistribution(null);
 								}
-								
+
 							}
 						}
 					}
 				}
-				
+
 				// Commit transaction
 				commitTransaction(txStatus);
 				logger.error("Committed transaction.");
@@ -187,15 +181,15 @@ public class PesiOccurrenceExport extends PesiExportBase {
 			logger.error("Committed transaction.");
 
 			logger.error("*** Finished Making " + pluralString + " ..." + getSuccessString(success));
-			
+
 			if (!success){
-				state.setUnsuccessfull();
+			    state.getResult().addError("An error occurred in PesiOccurenExport.doInvoke");
 			}
 			return;
 		} catch (SQLException e) {
 			e.printStackTrace();
 			logger.error(e.getMessage());
-			state.setUnsuccessfull();
+			state.getResult().addException(e);
 			return;
 		}
 	}
@@ -259,8 +253,8 @@ public class PesiOccurrenceExport extends PesiExportBase {
 	 * @return Whether the delete operation was successful or not.
 	 */
 	protected boolean doDelete(PesiExportState state) {
-		PesiExportConfigurator pesiConfig = (PesiExportConfigurator) state.getConfig();
-		
+		PesiExportConfigurator pesiConfig = state.getConfig();
+
 		String sql;
 		Source destination =  pesiConfig.getDestination();
 
@@ -384,7 +378,7 @@ public class PesiOccurrenceExport extends PesiExportBase {
 	 * Returns the <code>OccurrenceStatusFk</code> attribute.
 	 * @param entity An {@link AnnotatableEntity AnnotatableEntity}.
 	 * @return The <code>OccurrenceStatusFk</code> attribute.
-	 * @throws UnknownCdmTypeException 
+	 * @throws UnknownCdmTypeException
 	 * @see MethodMapper
 	 */
 	private static Integer getOccurrenceStatusFk(AnnotatableEntity entity) {
@@ -399,8 +393,8 @@ public class PesiOccurrenceExport extends PesiExportBase {
 	 * Returns the <code>OccurrenceStatusCache</code> attribute.
 	 * @param entity An {@link AnnotatableEntity AnnotatableEntity}.
 	 * @return The <code>OccurrenceStatusCache</code> attribute.
-	 * @throws UndefinedTransformerMethodException 
-	 * @throws UnknownCdmTypeException 
+	 * @throws UndefinedTransformerMethodException
+	 * @throws UnknownCdmTypeException
 	 * @see MethodMapper
 	 */
 	@SuppressWarnings("unused")
@@ -477,7 +471,7 @@ public class PesiOccurrenceExport extends PesiExportBase {
 	 */
 	private PesiExportMapping getMapping() {
 		PesiExportMapping mapping = new PesiExportMapping(dbTableName);
-		
+
 		mapping.addMapper(MethodMapper.NewInstance("TaxonFk", this.getClass(), "getTaxonFk", standardMethodParameter, PesiExportState.class));
 		mapping.addMapper(MethodMapper.NewInstance("AreaFk", this));
 		mapping.addMapper(MethodMapper.NewInstance("TaxonFullNameCache", this));

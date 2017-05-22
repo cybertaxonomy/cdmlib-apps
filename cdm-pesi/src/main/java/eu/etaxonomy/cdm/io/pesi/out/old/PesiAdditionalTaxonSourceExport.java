@@ -201,7 +201,7 @@ public class PesiAdditionalTaxonSourceExport extends PesiExportBase {
 		} catch (SQLException e) {
 			e.printStackTrace();
 			logger.error(e.getMessage());
-			state.setUnsuccessfull();
+			state.getResult().addException(e);
 			return;
 		}
 	}
