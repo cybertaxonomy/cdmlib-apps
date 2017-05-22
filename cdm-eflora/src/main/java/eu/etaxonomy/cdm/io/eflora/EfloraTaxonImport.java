@@ -65,7 +65,7 @@ import eu.etaxonomy.cdm.model.name.NomenclaturalCode;
 import eu.etaxonomy.cdm.model.name.Rank;
 import eu.etaxonomy.cdm.model.name.SpecimenTypeDesignation;
 import eu.etaxonomy.cdm.model.name.SpecimenTypeDesignationStatus;
-import eu.etaxonomy.cdm.model.name.TaxonNameBase;
+import eu.etaxonomy.cdm.model.name.TaxonName;
 import eu.etaxonomy.cdm.model.name.TaxonNameFactory;
 import eu.etaxonomy.cdm.model.name.TypeDesignationBase;
 import eu.etaxonomy.cdm.model.occurrence.DerivedUnit;
@@ -1026,7 +1026,7 @@ public class EfloraTaxonImport  extends EfloraImportBase implements ICdmIO<Eflor
 			}else{
 				logger.error("Unhandled type designation class" + typeDesignation.getClass().getName());
 			}
-			for (TaxonNameBase name : homotypicalGroup.getTypifiedNames()){
+			for (TaxonName name : homotypicalGroup.getTypifiedNames()){
 				name.addTypeDesignation(typeDesignation, true);
 			}
 		}
@@ -1064,7 +1064,7 @@ public class EfloraTaxonImport  extends EfloraImportBase implements ICdmIO<Eflor
 		//clean
 		typeText = cleanNameType(typeText);
 		//create name
-		TaxonNameBase<?,?> nameType = (TaxonNameBase<?,?>)parser.parseFullName(typeText, NomenclaturalCode.ICNAFP, Rank.SPECIES());
+		TaxonName nameType = (TaxonName)parser.parseFullName(typeText, NomenclaturalCode.ICNAFP, Rank.SPECIES());
 		((NameTypeDesignation) typeDesignation).setTypeName(nameType);
 		//TODO wie können NameTypes den Namen zugeordnet werden? -  wird aber vom Portal via NameCache matching gemacht
 	}
@@ -1154,7 +1154,7 @@ public class EfloraTaxonImport  extends EfloraImportBase implements ICdmIO<Eflor
 	//body/taxon/
 	private HomotypicalGroup handleNomTaxon(EfloraImportState state, Element elNom, Taxon taxon, HomotypicalGroup homotypicalGroup, boolean isSynonym) {
 	    INonViralName nvn = makeName(taxon, homotypicalGroup, isSynonym);
-	    TaxonNameBase<?,?> name = TaxonNameBase.castAndDeproxy(nvn);
+	    TaxonName name = TaxonName.castAndDeproxy(nvn);
 	    String num = null;
 
 		boolean hasGenusInfo = false;
@@ -1276,11 +1276,11 @@ public class EfloraTaxonImport  extends EfloraImportBase implements ICdmIO<Eflor
 
 
 	//merge with handleNomTaxon
-	private void handleHomonym(EfloraImportState state, Element elHomonym, TaxonNameBase upperName) {
+	private void handleHomonym(EfloraImportState state, Element elHomonym, TaxonName upperName) {
 		verifyNoAttribute(elHomonym);
 
 		//hommonym name
-		TaxonNameBase<?,?> homonymName = TaxonNameFactory.NewBotanicalInstance(upperName.getRank());
+		TaxonName homonymName = TaxonNameFactory.NewBotanicalInstance(upperName.getRank());
 		homonymName.setGenusOrUninomial(upperName.getGenusOrUninomial());
 		homonymName.setInfraGenericEpithet(upperName.getInfraGenericEpithet());
 		homonymName.setSpecificEpithet(upperName.getSpecificEpithet());
@@ -1360,7 +1360,7 @@ public class EfloraTaxonImport  extends EfloraImportBase implements ICdmIO<Eflor
 	 * @param name
 	 * @param value
 	 */
-	protected TeamOrPersonBase handleNameUsage(Taxon taxon, INonViralName name, String referenceTitle, TeamOrPersonBase lastTeam) {
+	protected TeamOrPersonBase handleNameUsage(Taxon taxon, TaxonName name, String referenceTitle, TeamOrPersonBase lastTeam) {
 		Reference ref = ReferenceFactory.newGeneric();
 		referenceTitle = removeStartingSymbols(referenceTitle, ref);
 
@@ -1375,7 +1375,8 @@ public class EfloraTaxonImport  extends EfloraImportBase implements ICdmIO<Eflor
 
 		TaxonDescription description = getDescription(taxon);
 		TextData textData = TextData.NewInstance(Feature.CITATION());
-		textData.addSource(OriginalSourceType.PrimaryTaxonomicSource, null, null, ref, microReference, (TaxonNameBase)name, null);
+		textData.addSource(OriginalSourceType.PrimaryTaxonomicSource, null, null, ref, microReference,
+		        name, null);
 		description.addElement(textData);
 		return team;
 	}
@@ -1490,7 +1491,7 @@ public class EfloraTaxonImport  extends EfloraImportBase implements ICdmIO<Eflor
 	 * @param name
 	 * @return
 	 */
-	protected String parseHomonym(String detail, TaxonNameBase name) {
+	protected String parseHomonym(String detail, TaxonName name) {
 		String result;
 		if (detail == null){
 			return detail;
@@ -1516,7 +1517,7 @@ public class EfloraTaxonImport  extends EfloraImportBase implements ICdmIO<Eflor
 			String homonymString = detail.substring(end);
 
 			//hommonym name
-			TaxonNameBase<?,?> homonymName = TaxonNameFactory.NewBotanicalInstance(name.getRank());
+			TaxonName homonymName = TaxonNameFactory.NewBotanicalInstance(name.getRank());
 			homonymName.setGenusOrUninomial(name.getGenusOrUninomial());
 			homonymName.setInfraGenericEpithet(name.getInfraGenericEpithet());
 			homonymName.setSpecificEpithet(name.getSpecificEpithet());
@@ -1559,7 +1560,7 @@ public class EfloraTaxonImport  extends EfloraImportBase implements ICdmIO<Eflor
 	 * @param name
 	 * @param value
 	 */
-	protected TeamOrPersonBase handleNomenclaturalReference(TaxonNameBase<?,?> name, String value) {
+	protected TeamOrPersonBase handleNomenclaturalReference(TaxonName name, String value) {
 		Reference nomRef = ReferenceFactory.newGeneric();
 		nomRef.setTitleCache(value, true);
 		parseNomStatus(nomRef, name);
@@ -1648,8 +1649,9 @@ public class EfloraTaxonImport  extends EfloraImportBase implements ICdmIO<Eflor
 	 * @param isSynonym
 	 * @return
 	 */
-	private TaxonNameBase makeName(Taxon taxon,HomotypicalGroup homotypicalGroup, boolean isSynonym) {
-		TaxonNameBase<?,?> name;
+	private TaxonName makeName(Taxon taxon,HomotypicalGroup homotypicalGroup, boolean isSynonym) {
+
+	    TaxonName name;
 		if (isSynonym){
 			name = TaxonNameFactory.NewBotanicalInstance(Rank.SPECIES(), homotypicalGroup);
 			SynonymType synonymType = SynonymType.HETEROTYPIC_SYNONYM_OF();
@@ -1974,7 +1976,7 @@ public class EfloraTaxonImport  extends EfloraImportBase implements ICdmIO<Eflor
 	 * @param value
 	 * @param taxonNameBase
 	 */
-	private void handleSpecies(String value, TaxonNameBase taxonNameBase) {
+	private void handleSpecies(String value, TaxonName taxonNameBase) {
 		//do nothing
 	}
 
@@ -1982,7 +1984,7 @@ public class EfloraTaxonImport  extends EfloraImportBase implements ICdmIO<Eflor
 	 * @param value
 	 * @param taxonNameBase
 	 */
-	private void handleVariety(String value, TaxonNameBase taxonNameBase) {
+	private void handleVariety(String value, TaxonName taxonNameBase) {
 		//do nothing
 	}
 
@@ -1990,7 +1992,7 @@ public class EfloraTaxonImport  extends EfloraImportBase implements ICdmIO<Eflor
 	 * @param value
 	 * @param taxonNameBase
 	 */
-	private void handleSubSpecies(String value, TaxonNameBase taxonNameBase) {
+	private void handleSubSpecies(String value, TaxonName taxonNameBase) {
 		//do nothing
 	}
 

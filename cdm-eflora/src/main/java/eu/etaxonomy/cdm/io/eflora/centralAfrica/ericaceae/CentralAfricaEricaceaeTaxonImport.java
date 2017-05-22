@@ -33,7 +33,7 @@ import eu.etaxonomy.cdm.model.description.TextData;
 import eu.etaxonomy.cdm.model.name.HomotypicalGroup;
 import eu.etaxonomy.cdm.model.name.INonViralName;
 import eu.etaxonomy.cdm.model.name.SpecimenTypeDesignation;
-import eu.etaxonomy.cdm.model.name.TaxonNameBase;
+import eu.etaxonomy.cdm.model.name.TaxonName;
 import eu.etaxonomy.cdm.model.name.TypeDesignationBase;
 import eu.etaxonomy.cdm.model.reference.Reference;
 import eu.etaxonomy.cdm.model.reference.ReferenceFactory;
@@ -52,7 +52,7 @@ public class CentralAfricaEricaceaeTaxonImport  extends EfloraTaxonImport  {
 
 
 	@Override
-	protected TeamOrPersonBase handleNomenclaturalReference(TaxonNameBase<?,?> name, String value) {
+	protected TeamOrPersonBase handleNomenclaturalReference(TaxonName name, String value) {
 		Reference nomRef = ReferenceFactory.newGeneric();
 		nomRef.setTitleCache(value, true);
 		parseNomStatus(nomRef, name);
@@ -163,7 +163,7 @@ public class CentralAfricaEricaceaeTaxonImport  extends EfloraTaxonImport  {
 	 * @param value
 	 */
 	@Override
-	protected TeamOrPersonBase<?> handleNameUsage(Taxon taxon, INonViralName name,
+	protected TeamOrPersonBase<?> handleNameUsage(Taxon taxon, TaxonName name,
 	        String referenceTitle, TeamOrPersonBase lastTeam) {
 
 		Reference ref = ReferenceFactory.newGeneric();
@@ -188,7 +188,8 @@ public class CentralAfricaEricaceaeTaxonImport  extends EfloraTaxonImport  {
 	//		parseReferenceType(ref);
 
 			TextData textData = TextData.NewInstance(Feature.CITATION());
-			textData.addSource(OriginalSourceType.PrimaryTaxonomicSource, null, null, singleRef, microReference, (TaxonNameBase) name, null);
+			textData.addSource(OriginalSourceType.PrimaryTaxonomicSource, null, null, singleRef, microReference,
+			        name, null);
 			description.addElement(textData);
 		}
 		return team;
@@ -354,7 +355,7 @@ public class CentralAfricaEricaceaeTaxonImport  extends EfloraTaxonImport  {
 		typeRef = removeTypePrefix(typeRef);
 		TypeDesignationBase typeDesignation = SpecimenTypeDesignation.NewInstance();
 		makeSpecimenTypeDesignation(new StringBuffer("Type"), typeRef, typeDesignation);
-		for (TaxonNameBase name : homotypicalGroup.getTypifiedNames()){
+		for (TaxonName name : homotypicalGroup.getTypifiedNames()){
 			name.addTypeDesignation(typeDesignation, true);
 		}
 	}

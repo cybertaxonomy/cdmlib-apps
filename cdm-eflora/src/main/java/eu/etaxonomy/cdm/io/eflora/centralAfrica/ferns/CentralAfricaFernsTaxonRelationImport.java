@@ -47,11 +47,10 @@ import eu.etaxonomy.cdm.model.location.Country;
 import eu.etaxonomy.cdm.model.location.NamedArea;
 import eu.etaxonomy.cdm.model.location.NamedAreaLevel;
 import eu.etaxonomy.cdm.model.location.NamedAreaType;
-import eu.etaxonomy.cdm.model.name.BotanicalName;
 import eu.etaxonomy.cdm.model.name.IBotanicalName;
 import eu.etaxonomy.cdm.model.name.INonViralName;
 import eu.etaxonomy.cdm.model.name.Rank;
-import eu.etaxonomy.cdm.model.name.TaxonNameBase;
+import eu.etaxonomy.cdm.model.name.TaxonName;
 import eu.etaxonomy.cdm.model.name.TaxonNameFactory;
 import eu.etaxonomy.cdm.model.reference.Reference;
 import eu.etaxonomy.cdm.model.taxon.Classification;
@@ -528,7 +527,7 @@ public class CentralAfricaFernsTaxonRelationImport  extends CentralAfricaFernsIm
 	 */
 	private Taxon checkIsGrandParent(Taxon childTaxon, Taxon grandParentTaxon) {
 		IBotanicalName lowerName = childTaxon.getName();
-		IBotanicalName higherName = CdmBase.deproxy(grandParentTaxon.getName(), BotanicalName.class);
+		IBotanicalName higherName = CdmBase.deproxy(grandParentTaxon.getName());
 
 		//TODO was wenn lowerTaxon constructed ist
 		logger.warn("checkIsGrandParent not yet fully implemented");
@@ -925,7 +924,7 @@ public class CentralAfricaFernsTaxonRelationImport  extends CentralAfricaFernsIm
 			String province = rs.getString("Distribution - Province");
 			String distributionDetailed = rs.getString("Distribution - detailed");
 			if (taxonBase != null){
-				TaxonNameBase<?,?> nameUsedInSource = taxonBase.getName();
+				TaxonName nameUsedInSource = taxonBase.getName();
 				Taxon taxon = getAcceptedTaxon(taxonBase);
 				if (taxon != null){
 
@@ -1000,7 +999,7 @@ public class CentralAfricaFernsTaxonRelationImport  extends CentralAfricaFernsIm
 	 * @param taxonBase
 	 * @param countriesString
 	 */
-	private void makeCountries(CentralAfricaFernsImportState state, String taxonNumber, Taxon taxon, TaxonNameBase nameUsedInSource, String countriesString, String province, String distributionDetailed) {
+	private void makeCountries(CentralAfricaFernsImportState state, String taxonNumber, Taxon taxon, TaxonName nameUsedInSource, String countriesString, String province, String distributionDetailed) {
 		countriesString = countriesString.replaceAll("\\*", "");
 		countriesString = countriesString.replace("  ", " ");
 		countriesString = countriesString.replace(", endemic", " - endemic");
@@ -1028,7 +1027,7 @@ public class CentralAfricaFernsTaxonRelationImport  extends CentralAfricaFernsIm
 	}
 
 
-	private void makeSingleCountry(CentralAfricaFernsImportState state, String taxonNumber, Taxon taxon, TaxonNameBase nameUsedInSource, String country) throws UndefinedTransformerMethodException {
+	private void makeSingleCountry(CentralAfricaFernsImportState state, String taxonNumber, Taxon taxon, TaxonName nameUsedInSource, String country) throws UndefinedTransformerMethodException {
 		boolean areaDoubtful = false;
 		Distribution distribution = Distribution.NewInstance(null, PresenceAbsenceTerm.PRESENT());
 		Reference sourceReference = this.sourceReference;
@@ -1118,7 +1117,8 @@ public class CentralAfricaFernsTaxonRelationImport  extends CentralAfricaFernsIm
 	}
 
 
-	private String makeCountryBrackets(CentralAfricaFernsImportState state, String taxonNumber, Taxon taxon, TaxonNameBase<?,?> nameUsedInSource, String country) {
+	private String makeCountryBrackets(CentralAfricaFernsImportState state, String taxonNumber, Taxon taxon,
+	        TaxonName nameUsedInSource, String country) {
 		String[] split = (country + " ").split("\\(.*\\)");
 		if (split.length == 2){
 			String bracket = country.substring(split[0].length()+1, country.indexOf(")"));
