@@ -64,8 +64,7 @@ import eu.etaxonomy.cdm.model.description.TaxonInteraction;
 import eu.etaxonomy.cdm.model.description.TaxonNameDescription;
 import eu.etaxonomy.cdm.model.description.TextData;
 import eu.etaxonomy.cdm.model.location.NamedArea;
-import eu.etaxonomy.cdm.model.name.NonViralName;
-import eu.etaxonomy.cdm.model.name.TaxonNameBase;
+import eu.etaxonomy.cdm.model.name.TaxonName;
 import eu.etaxonomy.cdm.model.taxon.Taxon;
 import eu.etaxonomy.cdm.model.taxon.TaxonBase;
 import eu.etaxonomy.cdm.profiler.ProfilerController;
@@ -81,7 +80,9 @@ import eu.etaxonomy.cdm.profiler.ProfilerController;
  */
 @Component
 public class PesiDescriptionExport extends PesiExportBase {
-	private static final Logger logger = Logger.getLogger(PesiDescriptionExport.class);
+
+    private static final long serialVersionUID = -1486235807814098217L;
+    private static final Logger logger = Logger.getLogger(PesiDescriptionExport.class);
 
 	private static final Class<? extends CdmBase> standardMethodParameter = DescriptionElementBase.class;
 
@@ -170,13 +171,13 @@ public class PesiDescriptionExport extends PesiExportBase {
 			logger.info("*** Finished Making " + pluralString + " ..." + getSuccessString(success));
 
 			if (!success){
-				state.setUnsuccessfull();
+				state.getResult().addError("An unknown problem occurred");
 			}
 			return;
 		} catch (SQLException e) {
 			e.printStackTrace();
 			logger.error(e.getMessage());
-			state.setUnsuccessfull();
+			state.getResult().addException(e, e.getMessage());
 		}
 	}
 
@@ -276,7 +277,7 @@ public class PesiDescriptionExport extends PesiExportBase {
 				doCount(count++, modCount, "name descriptions");
 				boolean isImageGallery = desc.isImageGallery();
 
-				TaxonNameBase<?,?> name = desc.getTaxonName();
+				TaxonName name = desc.getTaxonName();
 
 				for (DescriptionElementBase element : desc.getElements()){
 					if (isPurePesiName(name)){
@@ -517,7 +518,7 @@ public class PesiDescriptionExport extends PesiExportBase {
 		ExtensionType taxCommentExtensionType = (ExtensionType)getTermService().find(PesiTransformer.taxCommentUuid);
 		ExtensionType fauCommentExtensionType = (ExtensionType)getTermService().find(PesiTransformer.fauCommentUuid);
 		ExtensionType fauExtraCodesExtensionType = (ExtensionType)getTermService().find(PesiTransformer.fauExtraCodesUuid);
-		List<TaxonNameBase> taxonNameList = null;
+		List<TaxonName> taxonNameList = null;
 
 		int count = 0;
 		int pastCount = 0;
@@ -527,7 +528,7 @@ public class PesiDescriptionExport extends PesiExportBase {
 		while ((taxonNameList = getNameService().list(null, limit, count, null, null)).size() > 0) {
 
 			logger.info("Fetched " + taxonNameList.size() + " names. Exporting...");
-			for (TaxonNameBase<?,?> taxonName : taxonNameList) {
+			for (TaxonName taxonName : taxonNameList) {
 				Set<Extension> extensions = taxonName.getExtensions();
 				for (Extension extension : extensions) {
 					if (extension.getType().equals(taxCommentExtensionType)) {
@@ -818,7 +819,7 @@ public class PesiDescriptionExport extends PesiExportBase {
 	 * @param state The {@link DbExportStateBase DbExportState}.
 	 * @return
 	 */
-	private static Integer getTaxonKey(TaxonNameBase<?,?> taxonName, DbExportStateBase<?, PesiTransformer> state) {
+	private static Integer getTaxonKey(TaxonName taxonName, DbExportStateBase<?, PesiTransformer> state) {
 		return state.getDbId(taxonName);
 	}
 
@@ -832,8 +833,8 @@ public class PesiDescriptionExport extends PesiExportBase {
 	private static String getTaxonFullNameCache(DescriptionElementBase deb, PesiExportState state) {
 
 		TaxonBase<?> taxon =  state.getCurrentTaxon();
-		TaxonNameBase<?,?> taxonName = taxon.getName();
-		NonViralName<?> nvn = CdmBase.deproxy(taxonName, NonViralName.class);
+		TaxonName taxonName = taxon.getName();
+		TaxonName nvn = CdmBase.deproxy(taxonName);
 		String result = getCacheStrategy(nvn).getTitleCache(nvn);
 		return result;
 	}

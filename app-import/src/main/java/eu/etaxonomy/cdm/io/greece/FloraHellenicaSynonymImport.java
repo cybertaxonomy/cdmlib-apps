@@ -23,7 +23,7 @@ import eu.etaxonomy.cdm.model.name.INonViralName;
 import eu.etaxonomy.cdm.model.name.NameRelationshipType;
 import eu.etaxonomy.cdm.model.name.NomenclaturalCode;
 import eu.etaxonomy.cdm.model.name.NomenclaturalStatusType;
-import eu.etaxonomy.cdm.model.name.TaxonNameBase;
+import eu.etaxonomy.cdm.model.name.TaxonName;
 import eu.etaxonomy.cdm.model.reference.Reference;
 import eu.etaxonomy.cdm.model.reference.ReferenceFactory;
 import eu.etaxonomy.cdm.model.taxon.SynonymType;
@@ -130,9 +130,8 @@ public class FloraHellenicaSynonymImport<CONFIG extends FloraHellenicaImportConf
         if (misappliedNecAuthor != null){
             nvn.setAuthorshipCache(misappliedNecAuthor);
         }
+        TaxonName name = TaxonName.castAndDeproxy(nvn);
 
-
-        TaxonNameBase<?,?> name = TaxonNameBase.castAndDeproxy(nvn);
         if (hasStatus){
             try {
                 NomenclaturalStatusType status = NomenclaturalStatusType.getNomenclaturalStatusTypeByAbbreviation(parsedSynStr[3], name);
@@ -174,10 +173,10 @@ public class FloraHellenicaSynonymImport<CONFIG extends FloraHellenicaImportConf
      * @param parsedSynStr
      */
     private void handleSynonymNon(SimpleExcelTaxonImportState<CONFIG> state,
-            TaxonNameBase<?, ?> name, String nonPart, String line) {
+            TaxonName name, String nonPart, String line) {
         String[] splits = nonPart.split(" nec ");
 
-        TaxonNameBase<?,?> lastHomonym = null;
+        TaxonName lastHomonym = null;
         for (String split : splits){
             split = split.trim();
 //            Saponaria illyrica Ard.
@@ -185,7 +184,7 @@ public class FloraHellenicaSynonymImport<CONFIG extends FloraHellenicaImportConf
 //            S. columnae Aurnier
 //            S. columnae Aurnier nec (Rchb. f.) H. Fleischm.
 //            T. glaucescens Rchb.
-            TaxonNameBase<?,?> nonName;
+            TaxonName nonName;
             if (split.matches("(Saponaria illyrica Ard.|Crepis nemausensis Gouan|S. columnae Aurnier|T. glaucescens Rchb.|Linaria stricta Guss.)"
                     + "")){
                 if (split.startsWith("S.")){
@@ -193,12 +192,12 @@ public class FloraHellenicaSynonymImport<CONFIG extends FloraHellenicaImportConf
                 }else if (split.startsWith("T.")){
                     split = split.replace("T.", "Taraxacum");
                 }
-                nonName = TaxonNameBase.castAndDeproxy(this.parser.parseFullName(split));
+                nonName = TaxonName.castAndDeproxy(this.parser.parseFullName(split));
                 nonName = replaceNameAuthorsAndReferences(state, nonName);
                 name.addRelationshipFromName(nonName, NameRelationshipType.BLOCKING_NAME_FOR(), null);
             }else{
                 String nameStr = name.getNameCache().replace(" hort.", "") + " " + split;
-                nonName = TaxonNameBase.castAndDeproxy(this.parser.parseFullName(nameStr));
+                nonName = TaxonName.castAndDeproxy(this.parser.parseFullName(nameStr));
                 nonName = replaceNameAuthorsAndReferences(state, nonName);
                 name.addRelationshipToName(nonName, NameRelationshipType.LATER_HOMONYM(), null);
                 if (lastHomonym != null){

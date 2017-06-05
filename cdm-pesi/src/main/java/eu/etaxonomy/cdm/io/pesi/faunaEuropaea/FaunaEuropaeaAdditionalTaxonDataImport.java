@@ -24,8 +24,7 @@ import eu.etaxonomy.cdm.database.ICdmDataSource;
 import eu.etaxonomy.cdm.model.common.CdmBase;
 import eu.etaxonomy.cdm.model.name.INonViralName;
 import eu.etaxonomy.cdm.model.name.ITaxonNameBase;
-import eu.etaxonomy.cdm.model.name.NonViralName;
-import eu.etaxonomy.cdm.model.name.TaxonNameBase;
+import eu.etaxonomy.cdm.model.name.TaxonName;
 import eu.etaxonomy.cdm.model.taxon.Taxon;
 import eu.etaxonomy.cdm.model.taxon.TaxonBase;
 
@@ -78,7 +77,7 @@ public class FaunaEuropaeaAdditionalTaxonDataImport extends FaunaEuropaeaImportB
 		FaunaEuropaeaImportConfigurator fauEuConfig = state.getConfig();
 		ICdmDataSource destination = fauEuConfig.getDestination();
 		TransactionStatus txStatus = null;
-		List<TaxonNameBase> taxonNames = null;
+		List<TaxonName> taxonNames = null;
 		txStatus = startTransaction(false);
 
 		String selectQuery = "SELECT t.uuid from TaxonNameBase t INNER JOIN " +
@@ -103,11 +102,11 @@ public class FaunaEuropaeaAdditionalTaxonDataImport extends FaunaEuropaeaImportB
 		if (!uuidSet.isEmpty()){
 			taxonNames = getNameService().find(uuidSet);
 
-			for (TaxonNameBase<?,?> taxonName : taxonNames) {
+			for (TaxonName taxonName : taxonNames) {
 
 				// Check whether its taxonName has an infraGenericEpithet
-				if (taxonName != null && (taxonName.isInstanceOf(NonViralName.class))) {
-					INonViralName targetNonViralName = CdmBase.deproxy(taxonName, NonViralName.class);
+				if (taxonName != null) {
+					INonViralName targetNonViralName = CdmBase.deproxy(taxonName);
 					String infraGenericEpithet = targetNonViralName.getInfraGenericEpithet();
 					if (infraGenericEpithet == null) {
 						String genusOrUninomial = targetNonViralName.getGenusOrUninomial();
@@ -119,8 +118,8 @@ public class FaunaEuropaeaAdditionalTaxonDataImport extends FaunaEuropaeaImportB
 							TaxonBase<?> taxon = foundTaxa.iterator().next();
 							if (taxon != null) {
 								ITaxonNameBase name = taxon.getName();
-								if (name != null && name.isInstanceOf(NonViralName.class)) {
-									INonViralName nonViralName = CdmBase.deproxy(name, NonViralName.class);
+								if (name != null) {
+									INonViralName nonViralName = CdmBase.deproxy(name, TaxonName.class);
 									infraGenericEpithet = nonViralName.getInfraGenericEpithet();
 
 									// set infraGenericEpithet

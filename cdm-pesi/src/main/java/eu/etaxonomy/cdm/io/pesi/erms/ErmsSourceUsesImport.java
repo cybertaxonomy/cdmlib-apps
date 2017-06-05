@@ -43,7 +43,7 @@ import eu.etaxonomy.cdm.model.description.DescriptionElementSource;
 import eu.etaxonomy.cdm.model.description.Feature;
 import eu.etaxonomy.cdm.model.description.TaxonDescription;
 import eu.etaxonomy.cdm.model.description.TextData;
-import eu.etaxonomy.cdm.model.name.TaxonNameBase;
+import eu.etaxonomy.cdm.model.name.TaxonName;
 import eu.etaxonomy.cdm.model.reference.Reference;
 import eu.etaxonomy.cdm.model.taxon.Synonym;
 import eu.etaxonomy.cdm.model.taxon.Taxon;
@@ -170,8 +170,8 @@ public class ErmsSourceUsesImport  extends ErmsImportBase<CommonTaxonName> {
 	 * @param strPageNr
 	 *
 	 */
-	private TaxonNameBase<?,?> makeOriginalDescription(ResultSetPartitioner<?> partitioner, ErmsImportState state, Reference ref, String strTaxonId, String strPageNr) {
-		TaxonNameBase<?,?> taxonName = (TaxonNameBase<?,?>)state.getRelatedObject(ErmsTaxonImport.NAME_NAMESPACE, strTaxonId);
+	private TaxonName makeOriginalDescription(ResultSetPartitioner<?> partitioner, ErmsImportState state, Reference ref, String strTaxonId, String strPageNr) {
+	    TaxonName taxonName = (TaxonName)state.getRelatedObject(ErmsTaxonImport.NAME_NAMESPACE, strTaxonId);
 		taxonName.setNomenclaturalReference(ref);
 		taxonName.setNomenclaturalMicroReference(strPageNr);
 		return taxonName;
@@ -298,7 +298,7 @@ public class ErmsSourceUsesImport  extends ErmsImportBase<CommonTaxonName> {
 	private IdentifiableEntity<?> makeCombinationReference(ResultSetPartitioner<?> partitioner, ErmsImportState state, Reference ref, String strTaxonId, String strPageNr) {
 		// Kopie von Orig. Comb.
 		//TODO ist das wirklich der richtige Name, oder muss ein verknüpfter Name verwendet werden
-		TaxonNameBase<?,?> taxonName = (TaxonNameBase<?,?>)state.getRelatedObject(ErmsTaxonImport.NAME_NAMESPACE, strTaxonId);
+	    TaxonName taxonName = (TaxonName)state.getRelatedObject(ErmsTaxonImport.NAME_NAMESPACE, strTaxonId);
 		taxonName.setNomenclaturalReference(ref);
 		taxonName.setNomenclaturalMicroReference(strPageNr);
 		return taxonName;
@@ -369,9 +369,9 @@ public class ErmsSourceUsesImport  extends ErmsImportBase<CommonTaxonName> {
 
 			//name map
 			nameSpace = ErmsTaxonImport.NAME_NAMESPACE;
-			cdmClass = TaxonNameBase.class;
+			cdmClass = TaxonName.class;
 			idSet = nameIdSet;
-			Map<String, TaxonNameBase<?,?>> nameMap = (Map<String, TaxonNameBase<?,?>>)getCommonService().getSourcedObjectsByIdInSource(cdmClass, idSet, nameSpace);
+			Map<String, TaxonName> nameMap = (Map<String, TaxonName>)getCommonService().getSourcedObjectsByIdInSource(cdmClass, idSet, nameSpace);
 			result.put(nameSpace, nameMap);
 
 			//taxon map

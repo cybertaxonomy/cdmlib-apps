@@ -29,21 +29,17 @@ import eu.etaxonomy.cdm.model.common.RelationshipBase;
 import eu.etaxonomy.cdm.model.description.Feature;
 import eu.etaxonomy.cdm.model.description.TaxonNameDescription;
 import eu.etaxonomy.cdm.model.description.TextData;
-import eu.etaxonomy.cdm.model.name.BotanicalName;
 import eu.etaxonomy.cdm.model.name.HybridRelationship;
 import eu.etaxonomy.cdm.model.name.INonViralName;
 import eu.etaxonomy.cdm.model.name.NameRelationship;
 import eu.etaxonomy.cdm.model.name.NameRelationshipType;
-import eu.etaxonomy.cdm.model.name.NonViralName;
-import eu.etaxonomy.cdm.model.name.TaxonNameBase;
-import eu.etaxonomy.cdm.model.name.ZoologicalName;
+import eu.etaxonomy.cdm.model.name.TaxonName;
 import eu.etaxonomy.cdm.model.taxon.Synonym;
 import eu.etaxonomy.cdm.model.taxon.Taxon;
 import eu.etaxonomy.cdm.model.taxon.TaxonBase;
 import eu.etaxonomy.cdm.model.taxon.TaxonRelationship;
 import eu.etaxonomy.cdm.model.taxon.TaxonRelationshipType;
 import eu.etaxonomy.cdm.persistence.query.OrderHint;
-import eu.etaxonomy.cdm.strategy.cache.name.BotanicNameDefaultCacheStrategy;
 import eu.etaxonomy.cdm.strategy.cache.name.NonViralNameDefaultCacheStrategy;
 import eu.etaxonomy.cdm.strategy.cache.name.ZooNameNoMarkerCacheStrategy;
 
@@ -53,14 +49,16 @@ import eu.etaxonomy.cdm.strategy.cache.name.ZooNameNoMarkerCacheStrategy;
  *
  */
 public abstract class PesiExportBase extends DbExportBase<PesiExportConfigurator, PesiExportState, PesiTransformer> {
-	private static final Logger logger = Logger.getLogger(PesiExportBase.class);
+
+    private static final long serialVersionUID = 6226747017958138156L;
+    private static final Logger logger = Logger.getLogger(PesiExportBase.class);
 
 	protected static final boolean IS_CACHE = true;
 
 	private static Set<NameRelationshipType> excludedRelTypes = new HashSet<NameRelationshipType>();
 
-	private static NonViralNameDefaultCacheStrategy<?> zooNameStrategy = ZooNameNoMarkerCacheStrategy.NewInstance();
-	private static NonViralNameDefaultCacheStrategy<?> botanicalNameStrategy = BotanicNameDefaultCacheStrategy.NewInstance();
+	private static NonViralNameDefaultCacheStrategy zooNameStrategy = ZooNameNoMarkerCacheStrategy.NewInstance();
+	private static NonViralNameDefaultCacheStrategy botanicalNameStrategy = NonViralNameDefaultCacheStrategy.NewInstance();
 
 	public PesiExportBase() {
 		super();
@@ -112,7 +110,7 @@ public abstract class PesiExportBase extends DbExportBase<PesiExportConfigurator
 
 
 	private boolean isPesiNameDescriptionTaxon(TaxonNameDescription nameDescription) {
-		TaxonNameBase<?,?> name = nameDescription.getTaxonName();
+		TaxonName name = nameDescription.getTaxonName();
 		if (isPurePesiName(name)){
 			return true;
 		}else{
@@ -135,18 +133,18 @@ public abstract class PesiExportBase extends DbExportBase<PesiExportConfigurator
 	 * @param partitionCount
 	 * @return
 	 */
-	protected List<NonViralName<?>> getNextPureNamePartition(Class<? extends NonViralName> clazz,int limit, int partitionCount) {
+	protected List<TaxonName> getNextPureNamePartition(Class<? extends TaxonName> clazz,int limit, int partitionCount) {
 		List<OrderHint> orderHints = new ArrayList<OrderHint>();
 		orderHints.add(new OrderHint("id", OrderHint.SortOrder.ASCENDING ));
 		List<String> propPath = Arrays.asList(new String[]{"taxonBases"});
 
-		List<NonViralName<?>> list = (List)getNameService().list(clazz, limit, partitionCount * limit, orderHints, null);
+		List<TaxonName> list = (List)getNameService().list(clazz, limit, partitionCount * limit, orderHints, null);
 		if (list.isEmpty()){
 			return null;
 		}
-		Iterator<NonViralName<?>> it = list.iterator();
+		Iterator<TaxonName> it = list.iterator();
 		while (it.hasNext()){
-			NonViralName<?> taxonName = HibernateProxyHelper.deproxy(it.next(), NonViralName.class);
+		    TaxonName taxonName = HibernateProxyHelper.deproxy(it.next());
 			if (! isPurePesiName(taxonName)){
 				it.remove();
 			}
@@ -191,8 +189,8 @@ public abstract class PesiExportBase extends DbExportBase<PesiExportConfigurator
 	}
 
 	protected boolean isPesiNameRelationship(RelationshipBase rel){
-		TaxonNameBase<?,?> name1;
-		TaxonNameBase<?,?> name2;
+		TaxonName name1;
+		TaxonName name2;
 		if (rel.isInstanceOf(HybridRelationship.class)){
 			HybridRelationship hybridRel = CdmBase.deproxy(rel, HybridRelationship.class);
 			name1 = hybridRel.getParentName();
@@ -209,7 +207,7 @@ public abstract class PesiExportBase extends DbExportBase<PesiExportConfigurator
 
 	}
 
-	private boolean isPesiName(TaxonNameBase<?,?> name) {
+	private boolean isPesiName(TaxonName name) {
 		return hasPesiTaxon(name) || isPurePesiName(name);
 	}
 
@@ -246,14 +244,14 @@ public abstract class PesiExportBase extends DbExportBase<PesiExportConfigurator
 	 * @param taxonName
 	 * @return
 	 */
-	protected boolean isPurePesiName(TaxonNameBase<?,?> taxonName){
+	protected boolean isPurePesiName(TaxonName taxonName){
 		if (hasPesiTaxon(taxonName)){
 			return false;
 		}
 
 		//from names
 		for (NameRelationship rel :taxonName.getRelationsFromThisName()){
-			TaxonNameBase<?,?> relatedName = rel.getToName();
+			TaxonName relatedName = rel.getToName();
 			if (hasPesiTaxon(relatedName)){
 				return true;
 			}
@@ -268,15 +266,15 @@ public abstract class PesiExportBase extends DbExportBase<PesiExportConfigurator
 			if (excludedRelTypes.contains(rel.getType())){
 				continue;
 			}
-			TaxonNameBase<?,?> relatedName = rel.getFromName();
+			TaxonName relatedName = rel.getFromName();
 			if (hasPesiTaxon(relatedName)){
 				return true;
 			}
 		}
 
 		//include hybrid parents, but no childs
-		NonViralName nvn = CdmBase.deproxy(taxonName, NonViralName.class);
-		for (HybridRelationship rel : (Set<HybridRelationship>)nvn.getHybridParentRelations()){
+
+		for (HybridRelationship rel : taxonName.getHybridParentRelations()){
 			INonViralName child = rel.getHybridName();
 			if (hasPesiTaxon(child)){
 				return true;
@@ -321,8 +319,8 @@ public abstract class PesiExportBase extends DbExportBase<PesiExportConfigurator
 	 * @param name
 	 * @return
 	 */
-	protected Set<TaxonBase<?>> getPesiTaxa(TaxonNameBase<?,?> name){
-		Set<TaxonBase<?>> result = new HashSet<TaxonBase<?>>();
+	protected Set<TaxonBase<?>> getPesiTaxa(TaxonName name){
+		Set<TaxonBase<?>> result = new HashSet<>();
 		for (TaxonBase<?> taxonBase : name.getTaxonBases()){
 			if (isPesiTaxon(taxonBase)){
 				result.add(taxonBase);
@@ -428,7 +426,7 @@ public abstract class PesiExportBase extends DbExportBase<PesiExportConfigurator
 
 	@Override
     protected Object getDbIdCdmWithExceptions(CdmBase cdmBase, PesiExportState state) {
-		if (cdmBase.isInstanceOf(TaxonNameBase.class)){
+		if (cdmBase.isInstanceOf(TaxonName.class)){
 			return ( cdmBase.getId() + state.getConfig().getNameIdStart() );
 		}if (isAdditionalSource(cdmBase) ){
 			return ( cdmBase.getId() + 2 * state.getConfig().getNameIdStart() );  //make it a separate variable if conflicts occur.
@@ -473,11 +471,11 @@ public abstract class PesiExportBase extends DbExportBase<PesiExportConfigurator
 
 
 
-	protected static NonViralNameDefaultCacheStrategy getCacheStrategy(TaxonNameBase<?, ?> taxonName) {
+	protected static NonViralNameDefaultCacheStrategy getCacheStrategy(TaxonName taxonName) {
 		NonViralNameDefaultCacheStrategy cacheStrategy;
-		if (taxonName.isInstanceOf(ZoologicalName.class)){
+		if (taxonName.isZoological()){
 			cacheStrategy = zooNameStrategy;
-		}else if (taxonName.isInstanceOf(BotanicalName.class)) {
+		}else if (taxonName.isBotanical()) {
 			cacheStrategy = botanicalNameStrategy;
 		}else{
 			logger.error("Unhandled taxon name type. Can't define strategy class");

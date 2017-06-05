@@ -36,7 +36,7 @@ import eu.etaxonomy.cdm.model.location.Country;
 import eu.etaxonomy.cdm.model.location.NamedArea;
 import eu.etaxonomy.cdm.model.location.Point;
 import eu.etaxonomy.cdm.model.name.ITaxonNameBase;
-import eu.etaxonomy.cdm.model.name.TaxonNameBase;
+import eu.etaxonomy.cdm.model.name.TaxonName;
 import eu.etaxonomy.cdm.model.occurrence.Collection;
 import eu.etaxonomy.cdm.model.occurrence.DerivationEvent;
 import eu.etaxonomy.cdm.model.occurrence.DerivedUnit;
@@ -168,7 +168,7 @@ public class SynthesysCacheActivator {
 			ITaxonNameBase taxonName = null;
 			Taxon taxon = null;
 			DeterminationEvent determinationEvent = null;
-			List<TaxonNameBase> names = null;
+			List<TaxonName> names = null;
 			NonViralNameParserImpl nvnpi = NonViralNameParserImpl.NewInstance();
 			String scientificName="";
 			boolean preferredFlag=false;
@@ -204,7 +204,7 @@ public class SynthesysCacheActivator {
 
 
 //				tx = app.startTransaction();
-				app.getNameService().saveOrUpdate(TaxonNameBase.castAndDeproxy(taxonName));
+				app.getNameService().saveOrUpdate(TaxonName.castAndDeproxy(taxonName));
 				taxon = Taxon.NewInstance(taxonName, sec); //TODO use real reference for sec
 //				app.commitTransaction(tx);
 
@@ -254,7 +254,7 @@ public class SynthesysCacheActivator {
 				//.searchCollectionByCode(this.collectionCode);
 			}catch(Exception e){
 				System.out.println("BLA"+e);
-				collections=new ArrayList<Collection>();
+				collections=new ArrayList<>();
 			}
 			if (collections.size() ==0){
 				System.out.println("Collection not found "+this.collectionCode);

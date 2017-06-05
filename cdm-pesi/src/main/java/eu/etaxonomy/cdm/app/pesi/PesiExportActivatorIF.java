@@ -119,7 +119,7 @@ public class PesiExportActivatorIF {
 		// invoke export
 		CdmDefaultExport<PesiExportConfigurator> pesiExport = new CdmDefaultExport<PesiExportConfigurator>();
 
-		    boolean result = pesiExport.invoke(config);
+		    boolean result = pesiExport.invoke(config).isSuccess();
 
 		System.out.println("End export to PESI ("+ destination.getDatabase() + ")..." + (result? "(successful)":"(with errors)"));
 		return result;

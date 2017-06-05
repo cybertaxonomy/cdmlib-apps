@@ -28,7 +28,7 @@ import eu.etaxonomy.cdm.model.description.TextData;
 import eu.etaxonomy.cdm.model.media.Media;
 import eu.etaxonomy.cdm.model.media.MediaRepresentation;
 import eu.etaxonomy.cdm.model.media.MediaRepresentationPart;
-import eu.etaxonomy.cdm.model.name.TaxonNameBase;
+import eu.etaxonomy.cdm.model.name.TaxonName;
 
 /**
  * @author n.hoffmann
@@ -56,14 +56,14 @@ public class PalmaeProtologueImport extends AbstractImageImporter {
 			return;
 		}
 
-		Set<TaxonNameBase> taxonNameStore = new HashSet<TaxonNameBase>();
+		Set<TaxonName> taxonNameStore = new HashSet<>();
 
 		int count = 0;
 
 		for (HashMap<String, String> row : contents){
 			count++;
 
-			TaxonNameBase taxonNameBase = null;
+			TaxonName taxonNameBase = null;
 			String species = null;
 			String taxonId = null;
 			String linkProto = null;
@@ -71,7 +71,7 @@ public class PalmaeProtologueImport extends AbstractImageImporter {
 				species = row.get(PalmaeProtologueImport.SPECIES).trim();
 				taxonId = row.get(PalmaeProtologueImport.TAXONID);
 				linkProto= row.get(PalmaeProtologueImport.LINK_PROTO).trim();
-				taxonNameBase = (TaxonNameBase)getCommonService().getSourcedObjectByIdInSource(TaxonNameBase.class, "palm_tn_" + taxonId.replace(".0", ""), "TaxonName");
+				taxonNameBase = (TaxonName)getCommonService().getSourcedObjectByIdInSource(TaxonName.class, "palm_tn_" + taxonId.replace(".0", ""), "TaxonName");
 			}catch (Exception e){
 				logger.error("The row has errors: rowNumber: " +count + ", content: "  + row, e);
 			}

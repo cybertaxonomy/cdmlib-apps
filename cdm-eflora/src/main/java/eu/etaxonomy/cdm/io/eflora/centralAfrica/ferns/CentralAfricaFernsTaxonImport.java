@@ -44,7 +44,6 @@ import eu.etaxonomy.cdm.model.common.AnnotationType;
 import eu.etaxonomy.cdm.model.common.CdmBase;
 import eu.etaxonomy.cdm.model.common.ExtensionType;
 import eu.etaxonomy.cdm.model.common.TimePeriod;
-import eu.etaxonomy.cdm.model.name.BotanicalName;
 import eu.etaxonomy.cdm.model.name.IBotanicalName;
 import eu.etaxonomy.cdm.model.name.INonViralName;
 import eu.etaxonomy.cdm.model.name.ITaxonNameBase;
@@ -56,7 +55,7 @@ import eu.etaxonomy.cdm.model.name.NomenclaturalStatusType;
 import eu.etaxonomy.cdm.model.name.Rank;
 import eu.etaxonomy.cdm.model.name.SpecimenTypeDesignation;
 import eu.etaxonomy.cdm.model.name.SpecimenTypeDesignationStatus;
-import eu.etaxonomy.cdm.model.name.TaxonNameBase;
+import eu.etaxonomy.cdm.model.name.TaxonName;
 import eu.etaxonomy.cdm.model.name.TaxonNameFactory;
 import eu.etaxonomy.cdm.model.name.TypeDesignationBase;
 import eu.etaxonomy.cdm.model.occurrence.Collection;
@@ -191,7 +190,7 @@ public class CentralAfricaFernsTaxonImport  extends CentralAfricaFernsImportBase
 
 	private TaxonBase mapTypes(ResultSet rs, CentralAfricaFernsImportState state) throws SQLException{
 		TaxonBase<?> taxonBase = state.getRelatedObject(state.CURRENT_OBJECT_NAMESPACE, state.CURRENT_OBJECT_ID, TaxonBase.class);
-		TaxonNameBase name = taxonBase.getName();
+		TaxonName name = taxonBase.getName();
 		for (int i = 1; i <= 5; i++){
 			String[] typeInfo = new String[3];
 			typeInfo = getTypeInfo(rs, i);
@@ -221,7 +220,7 @@ public class CentralAfricaFernsTaxonImport  extends CentralAfricaFernsImportBase
 
 
 
-	private void makeSingleType(CentralAfricaFernsImportState state, TaxonNameBase name, String typeString, String typeCollectorString, String typeLocationString) {
+	private void makeSingleType(CentralAfricaFernsImportState state, TaxonName name, String typeString, String typeCollectorString, String typeLocationString) {
 		if (name.getRank().isHigher(Rank.SPECIES())){
 			//TODO move to TaxonRelationImport
 			handleNameType(state, name, typeString, typeCollectorString, typeLocationString);
@@ -232,7 +231,7 @@ public class CentralAfricaFernsTaxonImport  extends CentralAfricaFernsImportBase
 
 
 
-	private void handleSpecimenType(CentralAfricaFernsImportState state, TaxonNameBase name, String typeString, String typeCollectorString, String typeLocationString) {
+	private void handleSpecimenType(CentralAfricaFernsImportState state, TaxonName name, String typeString, String typeCollectorString, String typeLocationString) {
 		List<SpecimenTypeDesignation> designations = new ArrayList<SpecimenTypeDesignation>();
 		typeLocationString = CdmUtils.Nz(typeLocationString);
 		if (typeLocationString.equalsIgnoreCase("not located")){
@@ -431,7 +430,7 @@ public class CentralAfricaFernsTaxonImport  extends CentralAfricaFernsImportBase
 
 
 
-	private void handleNameType(CentralAfricaFernsImportState state, TaxonNameBase name, String typeString, String typeCollectorString, String typeLocation) {
+	private void handleNameType(CentralAfricaFernsImportState state, TaxonName name, String typeString, String typeCollectorString, String typeLocation) {
 		String originalString = typeString; //just for testing
 		if (StringUtils.isNotBlank(typeCollectorString)){
 			logger.error(state.getTaxonNumber() + " - Type collector string for name type is not empty: " + typeCollectorString);
@@ -475,7 +474,7 @@ public class CentralAfricaFernsTaxonImport  extends CentralAfricaFernsImportBase
 			IBotanicalName[] nameTypeNames = getNameTypeName(firstName);
 			IBotanicalName nameTypeName = nameTypeNames[0];
 			IBotanicalName nameTypeAcceptedName = nameTypeNames[1];
-			nameTypeDesignation.setTypeName(TaxonNameBase.castAndDeproxy(nameTypeName));
+			nameTypeDesignation.setTypeName(TaxonName.castAndDeproxy(nameTypeName));
 			if (nameTypeName.isProtectedTitleCache()){
 				logger.error(state.getTaxonNumber() + " - Name type could not be parsed: " + nameTypeName.getTitleCache());
 			}
@@ -506,7 +505,7 @@ public class CentralAfricaFernsTaxonImport  extends CentralAfricaFernsImportBase
 		if (strName.endsWith(",")){
 			strName = strName.substring(0, strName.length() -1);
 		}
-		IBotanicalName result = (BotanicalName)NonViralNameParserImpl.NewInstance().parseFullName(strName, NomenclaturalCode.ICNAFP, Rank.SPECIES());
+		IBotanicalName result = (IBotanicalName)NonViralNameParserImpl.NewInstance().parseFullName(strName, NomenclaturalCode.ICNAFP, Rank.SPECIES());
 		return result;
 	}
 
@@ -516,7 +515,7 @@ public class CentralAfricaFernsTaxonImport  extends CentralAfricaFernsImportBase
 		//TODO implement get existing names
 		logger.info("Not yet fully implemented");
 
-		IBotanicalName[] result = new BotanicalName[2];
+		IBotanicalName[] result = new IBotanicalName[2];
 		if (strName.endsWith(",")){
 			strName = strName.substring(0, strName.length() -1);
 		}
@@ -530,11 +529,11 @@ public class CentralAfricaFernsTaxonImport  extends CentralAfricaFernsImportBase
 				acceptedName = acceptedName.substring(0, acceptedName.length()-1);
 			}
 			acceptedName = acceptedName.replaceFirst("=", "").trim();
-			result[1] = (BotanicalName)NonViralNameParserImpl.NewInstance().parseFullName(acceptedName, NomenclaturalCode.ICNAFP, null);
+			result[1] = (IBotanicalName)NonViralNameParserImpl.NewInstance().parseFullName(acceptedName, NomenclaturalCode.ICNAFP, null);
 			strName = notAcceptedName;
 		}
 
-		result[0] = (BotanicalName)NonViralNameParserImpl.NewInstance().parseFullName(strName, NomenclaturalCode.ICNAFP, Rank.SPECIES());
+		result[0] = (IBotanicalName)NonViralNameParserImpl.NewInstance().parseFullName(strName, NomenclaturalCode.ICNAFP, Rank.SPECIES());
 		return result;
 	}
 
@@ -845,7 +844,7 @@ public class CentralAfricaFernsTaxonImport  extends CentralAfricaFernsImportBase
 			taxon = Synonym.NewInstance(taxonName, sec);
 		}else{
 			logger.warn(taxonNumber + ": Status not given for taxon " );
-			taxon = Taxon.NewUnknownStatusInstance(TaxonNameBase.castAndDeproxy(taxonName), sec);
+			taxon = Taxon.NewUnknownStatusInstance(TaxonName.castAndDeproxy(taxonName), sec);
 		}
 		return taxon;
 	}

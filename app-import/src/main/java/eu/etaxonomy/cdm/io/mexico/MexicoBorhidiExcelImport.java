@@ -31,9 +31,10 @@ import eu.etaxonomy.cdm.model.description.Feature;
 import eu.etaxonomy.cdm.model.description.TaxonNameDescription;
 import eu.etaxonomy.cdm.model.description.TextData;
 import eu.etaxonomy.cdm.model.media.Media;
-import eu.etaxonomy.cdm.model.name.BotanicalName;
+import eu.etaxonomy.cdm.model.name.IBotanicalName;
 import eu.etaxonomy.cdm.model.name.NomenclaturalCode;
 import eu.etaxonomy.cdm.model.name.Rank;
+import eu.etaxonomy.cdm.model.name.TaxonName;
 import eu.etaxonomy.cdm.model.name.TaxonNameFactory;
 import eu.etaxonomy.cdm.model.reference.Reference;
 import eu.etaxonomy.cdm.model.reference.ReferenceFactory;
@@ -74,7 +75,7 @@ public class MexicoBorhidiExcelImport<CONFIG extends MexicoBorhidiImportConfigur
         }
 
         //Name
-        BotanicalName speciesName = makeName(record, state);
+        IBotanicalName speciesName = makeName(record, state);
 
         //Taxon
         Reference sec = state.getConfig().getSecReference();
@@ -100,7 +101,7 @@ public class MexicoBorhidiExcelImport<CONFIG extends MexicoBorhidiImportConfigur
             classification = Classification.NewInstance(state.getConfig().getClassificationName());
             classification.setUuid(config.getClassificationUuid());
             classification.setReference(config.getSecReference());
-            BotanicalName nameRubiaceae = TaxonNameFactory.NewBotanicalInstance(Rank.FAMILY());
+            IBotanicalName nameRubiaceae = TaxonNameFactory.NewBotanicalInstance(Rank.FAMILY());
             nameRubiaceae.setGenusOrUninomial("Rubiaceae");
             Taxon rubiaceaeTaxon = Taxon.NewInstance(nameRubiaceae, classification.getReference());
             rubiaceaeNode = classification.addChildTaxon(rubiaceaeTaxon, null, null);
@@ -114,7 +115,7 @@ public class MexicoBorhidiExcelImport<CONFIG extends MexicoBorhidiImportConfigur
      * @param state
      * @return
      */
-    private BotanicalName makeName(HashMap<String, String> record, SimpleExcelTaxonImportState<CONFIG> state) {
+    private IBotanicalName makeName(HashMap<String, String> record, SimpleExcelTaxonImportState<CONFIG> state) {
         String line = state.getCurrentLine() + ": ";
 
         String fullNameStr = getValue(record, "OutputFullNameWithAuthors");
@@ -128,10 +129,10 @@ public class MexicoBorhidiExcelImport<CONFIG extends MexicoBorhidiImportConfigur
         String refType = getValue(record, "RefType");
 
 
-        BotanicalName name = (BotanicalName)nameParser.parseFullName(fullNameStr, NomenclaturalCode.ICNAFP, Rank.SPECIES());
+        TaxonName name = (TaxonName)nameParser.parseFullName(fullNameStr, NomenclaturalCode.ICNAFP, Rank.SPECIES());
         if (name.isProtectedTitleCache()){
             //for the 2 ined. names
-            name = (BotanicalName)nameParser.parseReferencedName(fullNameStr, NomenclaturalCode.ICNAFP, Rank.SPECIES());
+            name = (TaxonName)nameParser.parseReferencedName(fullNameStr, NomenclaturalCode.ICNAFP, Rank.SPECIES());
         }
         if (name.isProtectedTitleCache()){
             logger.warn(line + "Name could not be parsed: " + fullNameStr );
@@ -271,7 +272,7 @@ public class MexicoBorhidiExcelImport<CONFIG extends MexicoBorhidiImportConfigur
      * @param state
      * @param referencedName
      */
-    private void addNomRefExtension(SimpleExcelTaxonImportState<CONFIG> state, BotanicalName name) {
+    private void addNomRefExtension(SimpleExcelTaxonImportState<CONFIG> state, IBotanicalName name) {
         String newExtensionStr = name.getFullTitleCache() + " - BORHIDI";
         UUID uuidNomRefExtension = MexicoConabioTransformer.uuidNomRefExtension;
         for (Extension extension : name.getExtensions()){
@@ -283,7 +284,7 @@ public class MexicoBorhidiExcelImport<CONFIG extends MexicoBorhidiImportConfigur
         String label = "Nomenclatural reference in Sources";
         String abbrev = "Nom. ref. src.";
         ExtensionType extensionType = getExtensionType(state, uuidNomRefExtension, label, label, abbrev);
-        Extension.NewInstance(name, newExtensionStr, extensionType);
+        Extension.NewInstance((TaxonName)name, newExtensionStr, extensionType);
     }
 
 

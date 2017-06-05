@@ -46,7 +46,7 @@ import eu.etaxonomy.cdm.model.name.NomenclaturalCode;
 import eu.etaxonomy.cdm.model.name.NomenclaturalStatus;
 import eu.etaxonomy.cdm.model.name.NomenclaturalStatusType;
 import eu.etaxonomy.cdm.model.name.Rank;
-import eu.etaxonomy.cdm.model.name.TaxonNameBase;
+import eu.etaxonomy.cdm.model.name.TaxonName;
 import eu.etaxonomy.cdm.model.reference.Reference;
 import eu.etaxonomy.cdm.model.taxon.Classification;
 import eu.etaxonomy.cdm.model.taxon.Synonym;
@@ -368,7 +368,7 @@ public class BfnXmlImportTaxonName extends BfnXmlImportBase {
 			}
 			if(elWissName.getAttributeValue(BfnXmlConstants.ATT_BEREICH, bfnNamespace).equalsIgnoreCase("wissName")){
 				try{
-					TaxonNameBase<?, ?> nameBase = parseNonviralNames(rank,strAuthor,strSupplement,elWissName);
+					TaxonName nameBase = parseNonviralNames(rank,strAuthor,strSupplement,elWissName);
 					if(nameBase.isProtectedTitleCache() == true){
 						logger.warn("Taxon " + nameBase.getTitleCache());
 					}
@@ -385,9 +385,9 @@ public class BfnXmlImportTaxonName extends BfnXmlImportBase {
 					 */
 //					TaxonBase<?> taxonBase = null;
 //					//TODO find best matching Taxa
-//					Pager<TaxonNameBase> names = getNameService().findByTitle(null, nameBase.getTitleCache(), null, null, null, null, null, null);
+//					Pager<TaxonName> names = getNameService().findByTitle(null, nameBase.getTitleCache(), null, null, null, null, null, null);
 //					//TODO  correct handling for pager
-//					List<TaxonNameBase> nameList = names.getRecords();
+//					List<TaxonName> nameList = names.getRecords();
 //					if (nameList.isEmpty()){
 //						taxonBase = Taxon.NewInstance(nameBase, config.getSourceReference());
 //					}else{
@@ -465,7 +465,7 @@ public class BfnXmlImportTaxonName extends BfnXmlImportBase {
 				}
 				if(elSynDetail.getAttributeValue(BfnXmlConstants.ATT_BEREICH).equalsIgnoreCase("wissName")){
 					try{
-						TaxonNameBase<?, ?> nameBase = parseNonviralNames(rank,strAuthor,strSupplement,elSynDetail);
+						TaxonName nameBase = parseNonviralNames(rank,strAuthor,strSupplement,elSynDetail);
 
 						//TODO find best matching Taxa
 						Synonym synonym = Synonym.NewInstance(nameBase, state.getCurrentMicroRef());
@@ -764,9 +764,9 @@ public class BfnXmlImportTaxonName extends BfnXmlImportBase {
 	 * @return
 	 * @throws UnknownCdmTypeException
 	 */
-	private TaxonNameBase<?,?> parseNonviralNames(Rank rank, String strAuthor, String strSupplement, Element elWissName)
+	private TaxonName parseNonviralNames(Rank rank, String strAuthor, String strSupplement, Element elWissName)
 			throws UnknownCdmTypeException {
-		TaxonNameBase<?,?> taxonNameBase = null;
+		TaxonName taxonNameBase = null;
 
 		String strScientificName = elWissName.getTextNormalize();
 		/**
@@ -784,7 +784,7 @@ public class BfnXmlImportTaxonName extends BfnXmlImportBase {
 			strScientificName = StringUtils.remove(strScientificName, strSupplement);
 		}
 		NonViralNameParserImpl parser = NonViralNameParserImpl.NewInstance();
-		TaxonNameBase<?,?> nonViralName = (TaxonNameBase<?,?>)parser.parseFullName(strScientificName, nomenclaturalCode, rank);
+		TaxonName nonViralName = (TaxonName)parser.parseFullName(strScientificName, nomenclaturalCode, rank);
 		if(nonViralName.hasProblem()){
 			for(ParserProblem p:nonViralName.getParsingProblems()){
 				logger.warn(++parsingProblemCounter + " " +nonViralName.getTitleCache() +" "+p.toString());

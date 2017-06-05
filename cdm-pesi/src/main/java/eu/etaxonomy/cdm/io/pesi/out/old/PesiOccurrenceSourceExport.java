@@ -1,8 +1,8 @@
 /**
 * Copyright (C) 2009 EDIT
-* European Distributed Institute of Taxonomy 
+* European Distributed Institute of Taxonomy
 * http://www.e-taxonomy.eu
-* 
+*
 * The contents of this file are subject to the Mozilla Public License Version 1.1
 * See LICENSE.TXT at the top of this package for the full license terms.
 */
@@ -55,13 +55,13 @@ public class PesiOccurrenceSourceExport extends PesiExportBase {
 	private static final String parentPluralString = "Taxa";
 	private static Taxon taxon = null;
 
-//*************** CONSTRUCTOR ******************************/	
-	
+//*************** CONSTRUCTOR ******************************/
+
 	public PesiOccurrenceSourceExport() {
 		super();
 	}
-	
-//************************************************************/	
+
+//************************************************************/
 
 	@Override
 	public Class<? extends CdmBase> getStandardMethodParameter() {
@@ -78,7 +78,7 @@ public class PesiOccurrenceSourceExport extends PesiExportBase {
 	protected void doInvoke(PesiExportState state) {
 		try {
 			logger.error("*** Started Making " + pluralString + " ...");
-	
+
 			String occurrenceSql = "Insert into OccurrenceSource (OccurrenceFk, SourceFk, SourceNameCache, OldTaxonName) " +
 			"values (?, ?, ?, ?)";
 			Connection con = state.getConfig().getDestination().getConnection();
@@ -92,7 +92,7 @@ public class PesiOccurrenceSourceExport extends PesiExportBase {
 
 			// PESI: Clear the database table OccurrenceSource.
 			doDelete(state);
-	
+
 			// Get specific mappings: (CDM) ? -> (PESI) OccurrenceSource
 			PesiExportMapping mapping = getMapping();
 
@@ -105,7 +105,7 @@ public class PesiOccurrenceSourceExport extends PesiExportBase {
 			int pastCount = 0;
 			TransactionStatus txStatus = null;
 			List<TaxonBase> list = null;
-			
+
 			// Start transaction
 			txStatus = startTransaction(true);
 			logger.error("Started new transaction. Fetching some " + parentPluralString + " first (max: " + limit + ") ...");
@@ -127,7 +127,7 @@ public class PesiOccurrenceSourceExport extends PesiExportBase {
 							Set<DescriptionElementBase> descriptionElements = taxonDescription.getElements();
 							for (DescriptionElementBase descriptionElement : descriptionElements) {
 								Set<DescriptionElementSource> elementSources = descriptionElement.getSources();
-								
+
 								// Focus on descriptionElements with sources.
 								if (elementSources.size() > 0) {
 									for (DescriptionElementSource elementSource : elementSources) {
@@ -138,16 +138,16 @@ public class PesiOccurrenceSourceExport extends PesiExportBase {
 
 											// Lookup sourceFk
 											Integer sourceFk = getSourceFk(reference, state);
-											
+
 											if (sourceFk != null && ! state.alreadyProcessedSource(sourceFk)) {
 												doCount(count++, modCount, pluralString);
-												
+
 												// Add to processed sourceFk's since sourceFk's can be scanned more than once.
 												state.addToProcessedSources(sourceFk);
-												
+
 												// Query the database for all entries in table 'Occurrence' with the sourceFk just determined.
 												Set<Integer> occurrenceIds = getOccurrenceIds(sourceFk, state);
-	
+
 												// Insert as many entries in database table 'OccurrenceSource' as occurrenceId's were determined.
 												insertColumns(stmt, reference, sourceFk, occurrenceIds);
 											}
@@ -155,14 +155,14 @@ public class PesiOccurrenceSourceExport extends PesiExportBase {
 										}
 									}
 								}
-								
+
 							}
 						}
 					}
 				}
-				
+
 				state.clearAlreadyProcessedSources();
-				
+
 				// Commit transaction
 				commitTransaction(txStatus);
 				logger.error("Committed transaction.");
@@ -176,21 +176,21 @@ public class PesiOccurrenceSourceExport extends PesiExportBase {
 			if (list.size() == 0) {
 				logger.error("No " + pluralString + " left to fetch.");
 			}
-			
+
 			list = null;
 			// Commit transaction
 			commitTransaction(txStatus);
 			logger.error("Committed transaction.");
-	
+
 			logger.error("*** Finished Making " + pluralString + " ..." + getSuccessString(success));
 			if (!success){
-				state.setUnsuccessfull();
+				state.getResult().addError("An error occurred in PesiOccurenSourceExport.doInvoke");
 			}
 			return;
 		} catch (SQLException e) {
 			e.printStackTrace();
 			logger.error(e.getMessage());
-			state.setUnsuccessfull();
+			state.getResult().addException(e);
 			return;
 		}
 	}
@@ -228,7 +228,7 @@ public class PesiOccurrenceSourceExport extends PesiExportBase {
 		Connection con = state.getConfig().getDestination().getConnection();
 		PreparedStatement stmt = null;
 		Set<Integer> occurrenceIds = new HashSet();
-		
+
 		try {
 			stmt = con.prepareStatement(occurrenceSql);
 			stmt.setInt(1, sourceFk);
@@ -250,8 +250,8 @@ public class PesiOccurrenceSourceExport extends PesiExportBase {
 	 * @return Whether the delete operation was successful or not.
 	 */
 	protected boolean doDelete(PesiExportState state) {
-		PesiExportConfigurator pesiConfig = (PesiExportConfigurator) state.getConfig();
-		
+		PesiExportConfigurator pesiConfig = state.getConfig();
+
 		String sql;
 		Source destination =  pesiConfig.getDestination();
 
@@ -279,7 +279,7 @@ public class PesiOccurrenceSourceExport extends PesiExportBase {
 		Integer result = null;
 		return result;
 	}
-	
+
 	/**
 	 * Returns the <code>SourceFk</code> attribute.
 	 * @param entity An {@link AnnotatableEntity AnnotatableEntity}.
@@ -295,7 +295,7 @@ public class PesiOccurrenceSourceExport extends PesiExportBase {
 		}
 		return result;
 	}
-	
+
 	/**
 	 * Returns the <code>SourceNameCache</code> attribute.
 	 * @param entity An {@link AnnotatableEntity AnnotatableEntity}.
@@ -310,7 +310,7 @@ public class PesiOccurrenceSourceExport extends PesiExportBase {
 		}
 		return result;
 	}
-	
+
 	/**
 	 * Returns the <code>OldTaxonName</code> attribute.
 	 * @param entity An {@link AnnotatableEntity AnnotatableEntity}.

@@ -1,8 +1,8 @@
 /**
 * Copyright (C) 2009 EDIT
-* European Distributed Institute of Taxonomy 
+* European Distributed Institute of Taxonomy
 * http://www.e-taxonomy.eu
-* 
+*
 * The contents of this file are subject to the Mozilla Public License Version 1.1
 * See LICENSE.TXT at the top of this package for the full license terms.
 */
@@ -16,8 +16,8 @@ import org.springframework.stereotype.Component;
 import org.springframework.transaction.TransactionStatus;
 
 import eu.etaxonomy.cdm.io.common.DbExportStateBase;
-import eu.etaxonomy.cdm.io.common.Source;
 import eu.etaxonomy.cdm.io.common.IExportConfigurator.DO_REFERENCES;
+import eu.etaxonomy.cdm.io.common.Source;
 import eu.etaxonomy.cdm.io.common.mapping.out.MethodMapper;
 import eu.etaxonomy.cdm.io.pesi.out.PesiExportBase;
 import eu.etaxonomy.cdm.io.pesi.out.PesiExportConfigurator;
@@ -74,7 +74,7 @@ public class PesiNoteSourceExport extends PesiExportBase {
 	protected void doInvoke(PesiExportState state) {
 		try {
 			logger.error("*** Started Making " + pluralString + " ...");
-	
+
 			// Get the limit for objects to save within a single transaction.
 //			int pageSize = state.getConfig().getLimitSave();
 			int pageSize = 1000;
@@ -87,7 +87,7 @@ public class PesiNoteSourceExport extends PesiExportBase {
 
 			// PESI: Clear the database table NoteSource.
 			doDelete(state);
-	
+
 			// Get specific mappings: (CDM) ? -> (PESI) NoteSource
 			PesiExportMapping mapping = getMapping();
 
@@ -99,7 +99,7 @@ public class PesiNoteSourceExport extends PesiExportBase {
 			int pastCount = 0;
 			TransactionStatus txStatus = null;
 			List<DescriptionElementBase> list = null;
-			
+
 			// Start transaction
 			txStatus = startTransaction(true);
 			logger.info("Started new transaction. Fetching some " + pluralString + " (max: " + pageSize + ") ...");
@@ -107,7 +107,7 @@ public class PesiNoteSourceExport extends PesiExportBase {
 
 				logger.info("Fetched " + list.size() + " " + pluralString + ". Exporting...");
 				for (DescriptionElementBase descriptionElement : list) {
-					
+
 					if (getNoteCategoryFk(descriptionElement) != null && neededValuesNotNull(descriptionElement, state)) {
 						doCount(count++, modCount, pluralString);
 						success &= mapping.invoke(descriptionElement);
@@ -119,7 +119,7 @@ public class PesiNoteSourceExport extends PesiExportBase {
 				logger.debug("Committed transaction.");
 				logger.info("Exported " + (count - pastCount) + " " + pluralString + ". Total: " + count);
 				pastCount = count;
-	
+
 				// Start transaction
 				txStatus = startTransaction(true);
 				logger.info("Started new transaction. Fetching some " + pluralString + " (max: " + pageSize + ") ...");
@@ -130,22 +130,22 @@ public class PesiNoteSourceExport extends PesiExportBase {
 			if (list.size() == 0) {
 				logger.info("No " + pluralString + " left to fetch.");
 			}
-			
+
 			list = null;
 			// Commit transaction
 			commitTransaction(txStatus);
 			logger.debug("Committed transaction.");
-	
+
 			logger.info("*** Finished Making " + pluralString + " ..." + getSuccessString(success));
-			
+
 			if (!success){
-				state.setUnsuccessfull();
+			    state.getResult().addError("An error occurred in PesiNoteSourceExport");
 			}
 			return;
 		} catch (SQLException e) {
 			e.printStackTrace();
 			logger.error(e.getMessage());
-			state.setUnsuccessfull();
+			state.getResult().addException(e);
 			return;
 		}
 	}
@@ -169,8 +169,8 @@ public class PesiNoteSourceExport extends PesiExportBase {
 	 * @return Whether the delete operation was successful or not.
 	 */
 	protected boolean doDelete(PesiExportState state) {
-		PesiExportConfigurator pesiConfig = (PesiExportConfigurator) state.getConfig();
-		
+		PesiExportConfigurator pesiConfig = state.getConfig();
+
 		String sql;
 		Source destination =  pesiConfig.getDestination();
 
@@ -213,7 +213,7 @@ public class PesiNoteSourceExport extends PesiExportBase {
 		result = state.getDbId(descriptionElement);
 		return result;
 	}
-	
+
 	/**
 	 * Returns the <code>SourceFk</code> attribute.
 	 * @param description The {@link TaxonDescription TaxonDescription}.
@@ -226,7 +226,7 @@ public class PesiNoteSourceExport extends PesiExportBase {
 		result = state.getDbId(descriptionElement);
 		return result;
 	}
-	
+
 	/**
 	 * Returns the <code>SourceNameCache</code> attribute.
 	 * @param descriptionElement The {@link DescriptionElementBase DescriptionElement}.
@@ -246,7 +246,7 @@ public class PesiNoteSourceExport extends PesiExportBase {
 
 		return result;
 	}
-	
+
 	/**
 	 * Returns the <code>SourceDetail</code> attribute.
 	 * @param descriptionElement The {@link DescriptionElementBase DescriptionElement}.

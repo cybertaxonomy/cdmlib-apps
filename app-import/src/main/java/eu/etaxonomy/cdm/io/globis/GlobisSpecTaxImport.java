@@ -46,9 +46,8 @@ import eu.etaxonomy.cdm.model.name.NomenclaturalStatusType;
 import eu.etaxonomy.cdm.model.name.Rank;
 import eu.etaxonomy.cdm.model.name.SpecimenTypeDesignation;
 import eu.etaxonomy.cdm.model.name.SpecimenTypeDesignationStatus;
-import eu.etaxonomy.cdm.model.name.TaxonNameBase;
+import eu.etaxonomy.cdm.model.name.TaxonName;
 import eu.etaxonomy.cdm.model.name.TaxonNameFactory;
-import eu.etaxonomy.cdm.model.name.ZoologicalName;
 import eu.etaxonomy.cdm.model.occurrence.Collection;
 import eu.etaxonomy.cdm.model.occurrence.DerivationEvent;
 import eu.etaxonomy.cdm.model.occurrence.DerivedUnit;
@@ -105,8 +104,8 @@ public class GlobisSpecTaxImport  extends GlobisImportBase<Reference> implements
 	public boolean doPartition(ResultSetPartitioner partitioner, GlobisImportState state) {
 		boolean success = true;
 
-		Set<TaxonBase> objectsToSave = new HashSet<TaxonBase>();
-		Set<TaxonNameBase> namesToSave = new HashSet<TaxonNameBase>();
+		Set<TaxonBase> objectsToSave = new HashSet<>();
+		Set<TaxonName> namesToSave = new HashSet<>();
 
 		Map<String, Taxon> taxonMap = partitioner.getObjectMap(TAXON_NAMESPACE);
 		Map<String, Reference> referenceMap = partitioner.getObjectMap(REFERENCE_NAMESPACE);
@@ -161,7 +160,7 @@ public class GlobisSpecTaxImport  extends GlobisImportBase<Reference> implements
 					}
 
 					if (thisTaxon != null){
-						name = CdmBase.deproxy(thisTaxon.getName(), ZoologicalName.class);
+						name = CdmBase.deproxy(thisTaxon.getName(), TaxonName.class);
 					}else{
 						if (name == null){
 							name = makeName(state, rs, specTaxId);
@@ -210,7 +209,7 @@ public class GlobisSpecTaxImport  extends GlobisImportBase<Reference> implements
 
 					name.addSource(OriginalSourceType.Import, String.valueOf(specTaxId), SPEC_TAX_NAMESPACE, state.getTransactionalSourceReference(), null);
 
-					namesToSave.add(TaxonNameBase.castAndDeproxy(name));
+					namesToSave.add(TaxonName.castAndDeproxy(name));
 
 
 				} catch (Exception e) {
@@ -329,7 +328,7 @@ public class GlobisSpecTaxImport  extends GlobisImportBase<Reference> implements
 	private void addNameDescription(GlobisImportState state, IZoologicalName name, UUID featureUuid,
 			String citedTypeLocality, String featureLabel) {
 		Feature feature = getFeature(state, featureUuid,featureLabel,featureLabel, null, null);
-		getTaxonNameDescription((TaxonNameBase<?,?>)name, false, true);
+		getTaxonNameDescription((TaxonName)name, false, true);
 
 	}
 
@@ -899,7 +898,7 @@ public class GlobisSpecTaxImport  extends GlobisImportBase<Reference> implements
 
 
 	private Synonym getSynonym(GlobisImportState state, ResultSet rs, Integer specTaxId) throws SQLException {
-		TaxonNameBase<?,?> name = (TaxonNameBase<?,?>)makeName(state, rs, specTaxId);
+		TaxonName name = (TaxonName)makeName(state, rs, specTaxId);
 
 		Synonym synonym = Synonym.NewInstance(name, state.getTransactionalSourceReference());
 

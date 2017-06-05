@@ -1,8 +1,8 @@
 /**
 * Copyright (C) 2009 EDIT
-* European Distributed Institute of Taxonomy 
+* European Distributed Institute of Taxonomy
 * http://www.e-taxonomy.eu
-* 
+*
 * The contents of this file are subject to the Mozilla Public License Version 1.1
 * See LICENSE.TXT at the top of this package for the full license terms.
 */
@@ -35,28 +35,28 @@ public class PesiExportActivatorERMS {
 	static final Source pesiDestination = PesiDestinations.pesi_test_local_CDM_ERMS2PESI();
 //	static final Source pesiDestination = PesiDestinations.pesi_test_local_CDM_FE2PESI();
 //	static final Source pesiDestination = PesiDestinations.pesi_test_local_CDM_ERMS2PESI();
-	
+
 	static final ICdmDataSource cdmSource = CdmDestinations.cdm_test_local_mysql_erms();
 	//Taxon names can't be mapped to their CDM ids as PESI Taxon table mainly holds taxa and there IDs. We ad nameIdStart to the TaxonName id to get a unique id
 	static final int nameIdStart = 10000000;
 	static final IdType idType = IdType.CDM_ID_WITH_EXCEPTIONS;
 
 	static final int partitionSize = 1000;
-	
+
 	//check - export
 	static final CHECK check = CHECK.EXPORT_WITHOUT_CHECK;
 
 	//NomenclaturalCode
 	static final NomenclaturalCode nomenclaturalCode  = NomenclaturalCode.ICNAFP;
-	
+
 	static final boolean deleteAll = true;
-	
-	
+
+
 // ****************** ALL *****************************************
-	
+
 	//references
 	static final DO_REFERENCES doReferences =  DO_REFERENCES.ALL;
-	
+
 	//taxa
 	static final boolean doTaxa = true;
 	static final boolean doTreeIndex = true;
@@ -64,20 +64,20 @@ public class PesiExportActivatorERMS {
 	static final boolean doInferredSynonyms = false;
 	static final boolean doRelTaxa = true;
 	static final boolean doDescriptions = true;
-	
+
 	static final boolean doNotes = true;
 	static final boolean doNoteSources = true;
 	static final boolean doAdditionalTaxonSource = true;
 	static final boolean doOccurrence = true;
 	static final boolean doOccurrenceSource = true;
 	static final boolean doImage = true;
-	
+
 
 // ************************ NONE **************************************** //
-	
+
 //	//references
 //	static final DO_REFERENCES doReferences =  DO_REFERENCES.NONE;
-//	
+//
 //	//taxa
 //	static final boolean doTaxa = false;
 //	static final boolean doRelTaxa = false;
@@ -90,17 +90,17 @@ public class PesiExportActivatorERMS {
 //	static final boolean doTreeIndex = true;
 //	static final boolean doRank = true;
 //	static final boolean doInferredSynonyms = true;
-	
-	
+
+
 	public boolean 	doExport(ICdmDataSource source){
 		System.out.println("Start export to PESI ("+ pesiDestination.getDatabase() + ") ...");
-		
+
 		//make PESI Source
 		Source destination = pesiDestination;
 		PesiTransformer transformer = new PesiTransformer(destination);
-		
+
 		PesiExportConfigurator config = PesiExportConfigurator.NewInstance(destination, source, transformer);
-		
+
 		config.setDoTaxa(doTaxa);
 		config.setDoRelTaxa(doRelTaxa);
 		config.setDoOccurrence(doOccurrence);
@@ -113,7 +113,7 @@ public class PesiExportActivatorERMS {
 		config.setDoRank(doRank);
 		config.setDoInferredSynonyms(doInferredSynonyms);
 		config.setDoDescription(doDescriptions);
-		
+
 		config.setCheck(check);
 		config.setLimitSave(partitionSize);
 		config.setIdType(idType);
@@ -124,12 +124,12 @@ public class PesiExportActivatorERMS {
 
 		// invoke export
 		CdmDefaultExport<PesiExportConfigurator> pesiExport = new CdmDefaultExport<PesiExportConfigurator>();
-		boolean result = pesiExport.invoke(config);
-		
+		boolean result = pesiExport.invoke(config).isSuccess();
+
 		System.out.println("End export to PESI ("+ destination.getDatabase() + ")..." + (result? "(successful)":"(with errors)"));
 		return result;
 	}
-		
+
 	/**
 	 * @param args
 	 */

@@ -23,7 +23,7 @@ import eu.etaxonomy.cdm.model.name.IBotanicalName;
 import eu.etaxonomy.cdm.model.name.INonViralName;
 import eu.etaxonomy.cdm.model.name.NomenclaturalCode;
 import eu.etaxonomy.cdm.model.name.Rank;
-import eu.etaxonomy.cdm.model.name.TaxonNameBase;
+import eu.etaxonomy.cdm.model.name.TaxonName;
 import eu.etaxonomy.cdm.model.name.TaxonNameFactory;
 import eu.etaxonomy.cdm.model.reference.Reference;
 import eu.etaxonomy.cdm.model.reference.ReferenceFactory;
@@ -198,7 +198,7 @@ public class FloraHellenicaExcludedTaxonImport<CONFIG extends FloraHellenicaImpo
         Classification classification = getClassificationService().load(state.getConfig().getClassificationUuid());
         TaxonNode plantae = classification.getChildNodes().iterator().next();
 
-        TaxonNameBase<?,?> name = TaxonNameFactory.NewBotanicalInstance(Rank.SUPERFAMILY());
+        TaxonName name = TaxonNameFactory.NewBotanicalInstance(Rank.SUPERFAMILY());
         name.setTitleCache("Excluded", true);
         Taxon taxon = Taxon.NewInstance(name, getSecReference(state));
         excludedFamilyNode = plantae.addChildTaxon(taxon, getSourceCitation(state), null);

@@ -39,7 +39,7 @@ import eu.etaxonomy.cdm.model.common.MarkerType;
 import eu.etaxonomy.cdm.model.common.OriginalSourceType;
 import eu.etaxonomy.cdm.model.media.Media;
 import eu.etaxonomy.cdm.model.name.IZoologicalName;
-import eu.etaxonomy.cdm.model.name.ZoologicalName;
+import eu.etaxonomy.cdm.model.name.TaxonName;
 import eu.etaxonomy.cdm.model.occurrence.Collection;
 import eu.etaxonomy.cdm.model.occurrence.DerivedUnit;
 import eu.etaxonomy.cdm.model.occurrence.DeterminationEvent;
@@ -110,12 +110,12 @@ public class GlobisImageImport  extends GlobisImportBase<Taxon> {
 	public boolean doPartition(ResultSetPartitioner partitioner, GlobisImportState state) {
 		boolean success = true;
 
-		Set<Media> objectsToSave = new HashSet<Media>();
+		Set<Media> objectsToSave = new HashSet<>();
 
 		Map<String, DerivedUnit> typeMap = partitioner.getObjectMap(TYPE_NAMESPACE);
 
 		Map<String, Taxon> taxonMap = partitioner.getObjectMap(TAXON_NAMESPACE);
-		Map<String, ZoologicalName> specTaxNameMap = partitioner.getObjectMap(SPEC_TAX_NAMESPACE);
+		Map<String, TaxonName> specTaxNameMap = partitioner.getObjectMap(SPEC_TAX_NAMESPACE);
 
 		ResultSet rs = partitioner.getResultSet();
 
@@ -418,9 +418,9 @@ public class GlobisImageImport  extends GlobisImportBase<Taxon> {
 		Set<String> idSet;
 		Map<Object, Map<String, ? extends CdmBase>> result = new HashMap<Object, Map<String, ? extends CdmBase>>();
 		try{
-			Set<String> currSpecIdSet = new HashSet<String>();
-			Set<String> specTaxIdSet = new HashSet<String>();
-			Set<String> typeIdSet = new HashSet<String>();
+			Set<String> currSpecIdSet = new HashSet<>();
+			Set<String> specTaxIdSet = new HashSet<>();
+			Set<String> typeIdSet = new HashSet<>();
 
 			while (rs.next()){
 				handleForeignKey(rs, currSpecIdSet, "SpecCurrspecID");
@@ -430,9 +430,9 @@ public class GlobisImageImport  extends GlobisImportBase<Taxon> {
 
 			//specTax map
 			nameSpace = SPEC_TAX_NAMESPACE;
-			cdmClass = ZoologicalName.class;
+			cdmClass = TaxonName.class;
 			idSet = specTaxIdSet;
-			Map<String, ZoologicalName> specTaxNameMap = (Map<String, ZoologicalName>)getCommonService().getSourcedObjectsByIdInSource(cdmClass, idSet, nameSpace);
+			Map<String, TaxonName> specTaxNameMap = (Map<String, TaxonName>)getCommonService().getSourcedObjectsByIdInSource(cdmClass, idSet, nameSpace);
 			result.put(nameSpace, specTaxNameMap);
 
 //			//taxon map

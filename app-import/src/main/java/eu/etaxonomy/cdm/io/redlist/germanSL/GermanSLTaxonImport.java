@@ -29,11 +29,11 @@ import eu.etaxonomy.cdm.model.common.OrderedTermVocabulary;
 import eu.etaxonomy.cdm.model.description.CommonTaxonName;
 import eu.etaxonomy.cdm.model.description.TaxonDescription;
 import eu.etaxonomy.cdm.model.location.Country;
-import eu.etaxonomy.cdm.model.name.BotanicalName;
+import eu.etaxonomy.cdm.model.name.IBotanicalName;
 import eu.etaxonomy.cdm.model.name.NomenclaturalCode;
 import eu.etaxonomy.cdm.model.name.Rank;
 import eu.etaxonomy.cdm.model.name.RankClass;
-import eu.etaxonomy.cdm.model.name.TaxonNameBase;
+import eu.etaxonomy.cdm.model.name.TaxonName;
 import eu.etaxonomy.cdm.model.reference.Reference;
 import eu.etaxonomy.cdm.model.reference.ReferenceFactory;
 import eu.etaxonomy.cdm.model.taxon.Synonym;
@@ -109,7 +109,7 @@ public class GermanSLTaxonImport<CONFIG extends GermanSLImportConfigurator>
 
         //Name
         NameResult nameResult = makeName(line, record, state);
-        BotanicalName taxonName = nameResult.name;
+        IBotanicalName taxonName = nameResult.name;
 
       //sec
         String secRefStr = getValue(record, SEC);
@@ -262,7 +262,7 @@ public class GermanSLTaxonImport<CONFIG extends GermanSLImportConfigurator>
 
 
     private class NameResult{
-        BotanicalName name;
+        IBotanicalName name;
         boolean proParte = false;
         String sensu = null;
         String auct = null;
@@ -311,7 +311,7 @@ public class GermanSLTaxonImport<CONFIG extends GermanSLImportConfigurator>
         //name+author
         String fullNameStr = CdmUtils.concat(" ", nameStr, authorStr);
 
-        BotanicalName fullName = (BotanicalName)nameParser.parseReferencedName(fullNameStr, NomenclaturalCode.ICNAFP, rank);
+        IBotanicalName fullName = (IBotanicalName)nameParser.parseReferencedName(fullNameStr, NomenclaturalCode.ICNAFP, rank);
         if (fullName.isProtectedTitleCache()){
             logger.warn(line + "Name could not be parsed: " + fullNameStr );
         }else{
@@ -320,7 +320,7 @@ public class GermanSLTaxonImport<CONFIG extends GermanSLImportConfigurator>
 //        BotanicalName existingName = getExistingName(state, fullName);
 
         //TODO handle existing name
-        BotanicalName name = fullName;
+        IBotanicalName name = fullName;
         this.addOriginalSource(name, specieNrStr, TAXON_NAMESPACE + "_Name", state.getConfig().getSourceReference());
 
         result.name = name;
@@ -386,9 +386,9 @@ public class GermanSLTaxonImport<CONFIG extends GermanSLImportConfigurator>
      * @param fullName
      * @return
      */
-    private BotanicalName getExistingName(SimpleExcelTaxonImportState<CONFIG> state, BotanicalName fullName) {
+    private IBotanicalName getExistingName(SimpleExcelTaxonImportState<CONFIG> state, IBotanicalName fullName) {
         initExistinNames(state);
-        return (BotanicalName)state.getName(fullName.getTitleCache());
+        return (IBotanicalName)state.getName(fullName.getTitleCache());
     }
 
     /**
@@ -398,8 +398,8 @@ public class GermanSLTaxonImport<CONFIG extends GermanSLImportConfigurator>
     private void initExistinNames(SimpleExcelTaxonImportState<CONFIG> state) {
         if (!nameMapIsInitialized){
             List<String> propertyPaths = Arrays.asList("");
-            List<TaxonNameBase> existingNames = this.getNameService().list(null, null, null, null, propertyPaths);
-            for (TaxonNameBase tnb : existingNames){
+            List<TaxonName> existingNames = this.getNameService().list(null, null, null, null, propertyPaths);
+            for (TaxonName tnb : existingNames){
                 state.putName(tnb.getTitleCache(), tnb);
             }
             nameMapIsInitialized = true;

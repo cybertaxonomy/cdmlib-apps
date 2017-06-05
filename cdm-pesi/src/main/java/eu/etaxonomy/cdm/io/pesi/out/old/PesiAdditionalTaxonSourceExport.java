@@ -28,7 +28,7 @@ import eu.etaxonomy.cdm.model.description.DescriptionElementBase;
 import eu.etaxonomy.cdm.model.description.DescriptionElementSource;
 import eu.etaxonomy.cdm.model.description.TaxonDescription;
 import eu.etaxonomy.cdm.model.description.TextData;
-import eu.etaxonomy.cdm.model.name.TaxonNameBase;
+import eu.etaxonomy.cdm.model.name.TaxonName;
 import eu.etaxonomy.cdm.model.reference.Reference;
 import eu.etaxonomy.cdm.model.taxon.Taxon;
 import eu.etaxonomy.cdm.model.taxon.TaxonBase;
@@ -53,7 +53,7 @@ public class PesiAdditionalTaxonSourceExport extends PesiExportBase {
 	private static boolean sourceUse_AdditionalSource = false;
 	private static boolean sourceUse_NomenclaturalReference = false;
 	private static boolean sourceUse_SourceOfSynonymy = false;
-	private static TaxonNameBase currentTaxonName = null;
+	private static TaxonName currentTaxonName = null;
 	private static String citationMicroReference = null;
 
 	public PesiAdditionalTaxonSourceExport() {
@@ -153,7 +153,7 @@ public class PesiAdditionalTaxonSourceExport extends PesiExportBase {
 										Reference reference = elementSource.getCitation();
 
 										// Check whether it was a synonym originally
-										TaxonNameBase<?,?> nameUsedInSource = elementSource.getNameUsedInSource();
+										TaxonName nameUsedInSource = elementSource.getNameUsedInSource();
 										if (nameUsedInSource != null) {
 											// It was a synonym originally: Set currentTaxonName to synonym's taxonName
 											currentTaxonName = nameUsedInSource;
@@ -201,7 +201,7 @@ public class PesiAdditionalTaxonSourceExport extends PesiExportBase {
 		} catch (SQLException e) {
 			e.printStackTrace();
 			logger.error(e.getMessage());
-			state.setUnsuccessfull();
+			state.getResult().addException(e);
 			return;
 		}
 	}

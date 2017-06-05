@@ -13,13 +13,10 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 
-import eu.etaxonomy.cdm.io.mexico.SimpleExcelTaxonImportState;
 import org.apache.log4j.Logger;
 
-import eu.etaxonomy.cdm.io.excel.common.ExcelImportState;
-import eu.etaxonomy.cdm.io.excel.common.ExcelRowBase;
+import eu.etaxonomy.cdm.io.mexico.SimpleExcelTaxonImportState;
 import eu.etaxonomy.cdm.model.description.PresenceAbsenceTerm;
-import eu.etaxonomy.cdm.model.name.BotanicalName;
 import eu.etaxonomy.cdm.model.reference.Reference;
 import eu.etaxonomy.cdm.model.taxon.Classification;
 import eu.etaxonomy.cdm.model.taxon.Taxon;
@@ -33,13 +30,11 @@ public class IAPTImportState extends SimpleExcelTaxonImportState<IAPTImportConfi
 	@SuppressWarnings("unused")
 	private static final Logger logger = Logger.getLogger(IAPTImportState.class);
 
-	private final Map<String, Taxon> higherTaxonTaxonMap = new HashMap<String, Taxon>();
+	private final Map<String, Taxon> higherTaxonTaxonMap = new HashMap<>();
 
-	private final Map<String, UUID> higherTaxonUuidMap = new HashMap<String, UUID>();
+	private final Map<String, UUID> higherTaxonUuidMap = new HashMap<>();
 
-    private final Map<String, Taxon> genusTaxonMap = new HashMap<String, Taxon>();
-
-	private final Map<String, BotanicalName> familyNameMap = new HashMap<String, BotanicalName>();
+    private final Map<String, Taxon> genusTaxonMap = new HashMap<>();
 
 	//classification
 	private Classification classification;
@@ -70,15 +65,19 @@ public class IAPTImportState extends SimpleExcelTaxonImportState<IAPTImportConfi
 	}
 
     //higher taxon
+    @Override
     public Taxon getHigherTaxon(String higherName) {
         return higherTaxonTaxonMap.get(higherName);
     }
-	public Taxon putHigherTaxon(String higherName, Taxon taxon) {
+	@Override
+    public Taxon putHigherTaxon(String higherName, Taxon taxon) {
 		return higherTaxonTaxonMap.put(higherName, taxon);
 	}
-	public Taxon removeHigherTaxon(String higherName) {
+	@Override
+    public Taxon removeHigherTaxon(String higherName) {
 		return higherTaxonTaxonMap.remove(higherName);
 	}
+    @Override
     public boolean containsHigherTaxon(String higherName) {
         return higherTaxonTaxonMap.containsKey(higherName);
     }

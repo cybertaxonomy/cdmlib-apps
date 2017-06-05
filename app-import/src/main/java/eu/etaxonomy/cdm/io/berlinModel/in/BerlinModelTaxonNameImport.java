@@ -38,16 +38,13 @@ import eu.etaxonomy.cdm.model.common.Extension;
 import eu.etaxonomy.cdm.model.common.ExtensionType;
 import eu.etaxonomy.cdm.model.common.Language;
 import eu.etaxonomy.cdm.model.common.Representation;
-import eu.etaxonomy.cdm.model.name.BotanicalName;
-import eu.etaxonomy.cdm.model.name.CultivarPlantName;
 import eu.etaxonomy.cdm.model.name.IBotanicalName;
+import eu.etaxonomy.cdm.model.name.ICultivarPlantName;
 import eu.etaxonomy.cdm.model.name.INonViralName;
 import eu.etaxonomy.cdm.model.name.IZoologicalName;
-import eu.etaxonomy.cdm.model.name.NonViralName;
 import eu.etaxonomy.cdm.model.name.Rank;
-import eu.etaxonomy.cdm.model.name.TaxonNameBase;
+import eu.etaxonomy.cdm.model.name.TaxonName;
 import eu.etaxonomy.cdm.model.name.TaxonNameFactory;
-import eu.etaxonomy.cdm.model.name.ZoologicalName;
 import eu.etaxonomy.cdm.model.reference.INomenclaturalReference;
 import eu.etaxonomy.cdm.model.reference.Reference;
 import eu.etaxonomy.cdm.strategy.exceptions.UnknownCdmTypeException;
@@ -146,7 +143,7 @@ public class BerlinModelTaxonNameImport extends BerlinModelImportBase {
 		String cdmAttrName;
 		boolean success = true ;
 		BerlinModelImportConfigurator config = state.getConfig();
-		Set<TaxonNameBase> namesToSave = new HashSet<TaxonNameBase>();
+		Set<TaxonName> namesToSave = new HashSet<>();
 		Map<String, Team> teamMap = partitioner.getObjectMap(BerlinModelAuthorTeamImport.NAMESPACE);
 
 		ResultSet rs = partitioner.getResultSet();
@@ -189,21 +186,21 @@ public class BerlinModelTaxonNameImport extends BerlinModelImportBase {
 						logger.warn("Rank did not yet exist: " +  rank.getTitleCache());
 					}
 
-					//create TaxonNameBase
-					TaxonNameBase<?,?> taxonNameBase;
+					//create TaxonName
+					TaxonName taxonName;
 					if (config.getNomenclaturalCode() != null){
-						taxonNameBase = config.getNomenclaturalCode().getNewTaxonNameInstance(rank);
+						taxonName = config.getNomenclaturalCode().getNewTaxonNameInstance(rank);
 						//check cultivar
-						if (taxonNameBase instanceof BotanicalName){
+						if (taxonName.isBotanical()){
 							if (isNotBlank(strCultivarGroupName) && isNotBlank(strCultivarName)){
-								taxonNameBase = TaxonNameFactory.NewCultivarInstance(rank);
+								taxonName = TaxonNameFactory.NewCultivarInstance(rank);
 							}
 						}
 					}else{
-						taxonNameBase = TaxonNameFactory.NewNonViralInstance(rank);
+						taxonName = TaxonNameFactory.NewNonViralInstance(rank);
 					}
 					if (uuid != null){
-						taxonNameBase.setUuid(UUID.fromString(uuid));
+						taxonName.setUuid(UUID.fromString(uuid));
 					}
 
 					if (rank == null){
@@ -219,32 +216,32 @@ public class BerlinModelTaxonNameImport extends BerlinModelImportBase {
 						dbAttrName = "genus";
 					}
 					cdmAttrName = "genusOrUninomial";
-					success &= ImportHelper.addStringValue(rs, taxonNameBase, dbAttrName, cdmAttrName, BLANK_TO_NULL);
+					success &= ImportHelper.addStringValue(rs, taxonName, dbAttrName, cdmAttrName, BLANK_TO_NULL);
 
 					dbAttrName = "genusSubdivisionEpi";
 					cdmAttrName = "infraGenericEpithet";
-					success &= ImportHelper.addStringValue(rs, taxonNameBase, dbAttrName, cdmAttrName, BLANK_TO_NULL);
+					success &= ImportHelper.addStringValue(rs, taxonName, dbAttrName, cdmAttrName, BLANK_TO_NULL);
 
 					dbAttrName = "speciesEpi";
 					cdmAttrName = "specificEpithet";
-					success &= ImportHelper.addStringValue(rs, taxonNameBase, dbAttrName, cdmAttrName, BLANK_TO_NULL);
+					success &= ImportHelper.addStringValue(rs, taxonName, dbAttrName, cdmAttrName, BLANK_TO_NULL);
 
 
 					dbAttrName = "infraSpeciesEpi";
 					cdmAttrName = "infraSpecificEpithet";
-					success &= ImportHelper.addStringValue(rs, taxonNameBase, dbAttrName, cdmAttrName, BLANK_TO_NULL);
+					success &= ImportHelper.addStringValue(rs, taxonName, dbAttrName, cdmAttrName, BLANK_TO_NULL);
 
 					dbAttrName = "unnamedNamePhrase";
 					cdmAttrName = "appendedPhrase";
-					success &= ImportHelper.addStringValue(rs, taxonNameBase, dbAttrName, cdmAttrName, BLANK_TO_NULL);
+					success &= ImportHelper.addStringValue(rs, taxonName, dbAttrName, cdmAttrName, BLANK_TO_NULL);
 
 					//Details
 					dbAttrName = "details";
 					cdmAttrName = "nomenclaturalMicroReference";
-					success &= ImportHelper.addStringValue(rs, taxonNameBase, dbAttrName, cdmAttrName, BLANK_TO_NULL);
+					success &= ImportHelper.addStringValue(rs, taxonName, dbAttrName, cdmAttrName, BLANK_TO_NULL);
 
 					//nomRef
-					success &= makeNomenclaturalReference(config, taxonNameBase, nameId, rs, partitioner);
+					success &= makeNomenclaturalReference(config, taxonName, nameId, rs, partitioner);
 
 					//Source_Acc
 					boolean colExists = true;
@@ -257,17 +254,17 @@ public class BerlinModelTaxonNameImport extends BerlinModelImportBase {
 						String sourceAcc = rs.getString("Source_Acc");
 						if (StringUtils.isNotBlank(sourceAcc)){
 							ExtensionType sourceAccExtensionType = getExtensionType(state, SOURCE_ACC_UUID, "Source_Acc","Source_Acc","Source_Acc");
-							Extension datesExtension = Extension.NewInstance(taxonNameBase, sourceAcc, sourceAccExtensionType);
+							Extension datesExtension = Extension.NewInstance(taxonName, sourceAcc, sourceAccExtensionType);
 						}
 					}
 
 					//created, notes
 					boolean excludeUpdated = true;
-					success &= doIdCreatedUpdatedNotes(state, taxonNameBase, rs, nameId, NAMESPACE, excludeUpdated, false);
+					success &= doIdCreatedUpdatedNotes(state, taxonName, rs, nameId, NAMESPACE, excludeUpdated, false);
 
 					//NonViralName
-					if (taxonNameBase instanceof NonViralName){
-						INonViralName nonViralName = taxonNameBase;
+					if (taxonName.isNonViral()){
+						INonViralName nonViralName = taxonName;
 
 						//authorTeams
 						if (teamMap != null ){
@@ -284,13 +281,13 @@ public class BerlinModelTaxonNameImport extends BerlinModelImportBase {
 
 
 					//zoologicalName
-					if (taxonNameBase instanceof ZoologicalName){
-						IZoologicalName zooName = taxonNameBase;
+					if (taxonName.isZoological()){
+						IZoologicalName zooName = taxonName;
 						makeZoologialName(rs, zooName, nameId);
 					}
 					//botanicalName
-					else if (taxonNameBase instanceof BotanicalName){
-						IBotanicalName botName = taxonNameBase;
+					else if (taxonName.isBotanical()){
+						IBotanicalName botName = taxonName;
 						success &= makeBotanicalNamePart(rs, botName) ;
 
 					}
@@ -300,15 +297,15 @@ public class BerlinModelTaxonNameImport extends BerlinModelImportBase {
 					Boolean hybridFormulaFlag = rs.getBoolean("HybridFormulaFlag");  //hybrid flag does not lead to cache update in Berlin Model
 					if (preliminaryFlag == true || hybridFormulaFlag == true){
 						//Computes all caches and sets
-						taxonNameBase.setTitleCache(fullNameCache, true);
-						taxonNameBase.setFullTitleCache(taxonNameBase.getFullTitleCache(), true);
-						if (taxonNameBase instanceof NonViralName){
-							INonViralName nvn = taxonNameBase;
+						taxonName.setTitleCache(fullNameCache, true);
+						taxonName.setFullTitleCache(taxonName.getFullTitleCache(), true);
+						if (taxonName.isNonViral()){
+							INonViralName nvn = taxonName;
 							nvn.setNameCache(nameCache, true);
 							nvn.setAuthorshipCache(nvn.getAuthorshipCache(), true);
 						}
 					}
-					namesToSave.add(taxonNameBase);
+					namesToSave.add(taxonName);
 
 				}
 				catch (UnknownCdmTypeException e) {
@@ -444,10 +441,10 @@ public class BerlinModelTaxonNameImport extends BerlinModelImportBase {
 		try {
 			String strCultivarGroupName = rs.getString("CultivarGroupName");
 			String strCultivarName = rs.getString("CultivarName");
-			if (botanicalName instanceof CultivarPlantName){
-				CultivarPlantName cultivarName = (CultivarPlantName)botanicalName;
+			if (botanicalName.isCultivar()){
+				ICultivarPlantName cultivarName = (ICultivarPlantName)botanicalName;
 				String concatCultivarName = CdmUtils.concat("-", strCultivarName, strCultivarGroupName);
-				if (CdmUtils.isNotEmpty(strCultivarGroupName) && CdmUtils.isNotEmpty(strCultivarName)){
+				if (isNotBlank(strCultivarGroupName) && isNotBlank(strCultivarName)){
 					logger.warn("CDM does not support cultivarGroupName and CultivarName together: " + concatCultivarName);
 				}
 				cultivarName.setCultivarName(strCultivarGroupName);
@@ -459,7 +456,7 @@ public class BerlinModelTaxonNameImport extends BerlinModelImportBase {
 	}
 
 
-	private boolean makeNomenclaturalReference(IImportConfigurator config, TaxonNameBase taxonNameBase,
+	private boolean makeNomenclaturalReference(IImportConfigurator config, TaxonName taxonNameBase,
 					int nameId, ResultSet rs, ResultSetPartitioner partitioner) throws SQLException{
 		Map<String, Reference> refMap = partitioner.getObjectMap(BerlinModelReferenceImport.REFERENCE_NAMESPACE);
 		Map<String, Reference> refDetailMap = partitioner.getObjectMap(BerlinModelRefDetailImport.REFDETAIL_NAMESPACE);

@@ -36,10 +36,9 @@ import eu.etaxonomy.cdm.io.pesi.out.PesiTaxonExport;
 import eu.etaxonomy.cdm.model.common.CdmBase;
 import eu.etaxonomy.cdm.model.common.ExtensionType;
 import eu.etaxonomy.cdm.model.name.NomenclaturalCode;
-import eu.etaxonomy.cdm.model.name.NonViralName;
 import eu.etaxonomy.cdm.model.name.Rank;
+import eu.etaxonomy.cdm.model.name.TaxonName;
 import eu.etaxonomy.cdm.model.name.TaxonNameFactory;
-import eu.etaxonomy.cdm.model.name.ZoologicalName;
 import eu.etaxonomy.cdm.model.reference.Reference;
 import eu.etaxonomy.cdm.model.taxon.Synonym;
 import eu.etaxonomy.cdm.model.taxon.Taxon;
@@ -249,7 +248,7 @@ public class ErmsTaxonImport  extends ErmsImportBase<TaxonBase<?>> implements IM
 		String parent3Name = rs.getString("parent3name");
 //		Integer parent3Rank = rs.getInt("parent3rank");
 
-		NonViralName<?> taxonName = getTaxonName(rs, state);
+		TaxonName taxonName = getTaxonName(rs, state);
 		//set epithets
 		if (taxonName.isGenus() || taxonName.isSupraGeneric()){
 			taxonName.setGenusOrUninomial(tuName);
@@ -321,7 +320,7 @@ public class ErmsTaxonImport  extends ErmsImportBase<TaxonBase<?>> implements IM
 	 * @param taxonName
 	 * @param meId
 	 */
-	private void handleException(Integer parent1Rank, NonViralName<?> taxonName, String displayName, Integer meId) {
+	private void handleException(Integer parent1Rank, TaxonName taxonName, String displayName, Integer meId) {
 		logger.warn("Parent of infra specific taxon is higher than species. Used nameCache: " + displayName +  "; id=" + meId) ;
 		taxonName.setNameCache(displayName);
 	}
@@ -345,7 +344,7 @@ public class ErmsTaxonImport  extends ErmsImportBase<TaxonBase<?>> implements IM
 	 * @param parent1Rank
 	 * @param taxonName
 	 */
-	private void getGenusAndInfraGenus(String parentName, String grandParentName, Integer parent1Rank, NonViralName<?> taxonName) {
+	private void getGenusAndInfraGenus(String parentName, String grandParentName, Integer parent1Rank, TaxonName taxonName) {
 		if (parent1Rank <220 && parent1Rank > 180){
 			//parent is infrageneric
 			taxonName.setInfraGenericEpithet(parentName);
@@ -361,8 +360,8 @@ public class ErmsTaxonImport  extends ErmsImportBase<TaxonBase<?>> implements IM
 	 * @return
 	 * @throws SQLException
 	 */
-	private NonViralName<?> getTaxonName(ResultSet rs, ErmsImportState state) throws SQLException {
-		NonViralName<?> result;
+	private TaxonName getTaxonName(ResultSet rs, ErmsImportState state) throws SQLException {
+	    TaxonName result;
 		Integer kingdomId = parseKingdomId(rs);
 		Integer intRank = rs.getInt("tu_rank");
 
@@ -377,13 +376,13 @@ public class ErmsTaxonImport  extends ErmsImportBase<TaxonBase<?>> implements IM
 			logger.warn("Rank is null. KingdomId: " + kingdomId + ", rankId: " +  intRank);
 		}
 		if (nc != null){
-			result = (NonViralName<?>)nc.getNewTaxonNameInstance(rank);
+			result = nc.getNewTaxonNameInstance(rank);
 		}else{
 			result = TaxonNameFactory.NewNonViralInstance(rank);
 		}
 		//cache strategy
-		if (result instanceof ZoologicalName){
-			NonViralNameDefaultCacheStrategy<?> cacheStrategy = PesiTaxonExport.zooNameStrategy;
+		if (result.isZoological()){
+			NonViralNameDefaultCacheStrategy cacheStrategy = PesiTaxonExport.zooNameStrategy;
 			result.setCacheStrategy(cacheStrategy);
 		}
 

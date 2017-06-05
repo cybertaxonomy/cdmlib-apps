@@ -45,7 +45,7 @@ import eu.etaxonomy.cdm.model.description.TaxonDescription;
 import eu.etaxonomy.cdm.model.description.TaxonInteraction;
 import eu.etaxonomy.cdm.model.description.TextData;
 import eu.etaxonomy.cdm.model.location.NamedArea;
-import eu.etaxonomy.cdm.model.name.TaxonNameBase;
+import eu.etaxonomy.cdm.model.name.TaxonName;
 import eu.etaxonomy.cdm.model.taxon.Taxon;
 import eu.etaxonomy.cdm.model.taxon.TaxonBase;
 
@@ -118,13 +118,13 @@ public class PesiNoteExport extends PesiExportBase {
 			logger.info("*** Finished Making " + pluralString + " ..." + getSuccessString(success));
 
 			if (!success){
-				state.setUnsuccessfull();
+			    state.getResult().addError("An error occurred in PesiNoteExport");
 			}
 			return;
 		} catch (SQLException e) {
 			e.printStackTrace();
 			logger.error(e.getMessage());
-			state.setUnsuccessfull();
+			state.getResult().addException(e);
 		}
 	}
 
@@ -510,7 +510,7 @@ public class PesiNoteExport extends PesiExportBase {
 	 * @param state The {@link DbExportStateBase DbExportState}.
 	 * @return
 	 */
-	private static Integer getTaxonFk(TaxonNameBase<?,?> taxonName, DbExportStateBase<?, PesiTransformer> state) {
+	private static Integer getTaxonFk(TaxonName taxonName, DbExportStateBase<?, PesiTransformer> state) {
 		return state.getDbId(taxonName);
 	}
 

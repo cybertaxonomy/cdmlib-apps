@@ -47,7 +47,7 @@ import eu.etaxonomy.cdm.model.media.ImageFile;
 import eu.etaxonomy.cdm.model.media.Media;
 import eu.etaxonomy.cdm.model.media.MediaRepresentation;
 import eu.etaxonomy.cdm.model.media.MediaRepresentationPart;
-import eu.etaxonomy.cdm.model.name.TaxonNameBase;
+import eu.etaxonomy.cdm.model.name.TaxonName;
 import eu.etaxonomy.cdm.model.reference.Reference;
 
 
@@ -105,15 +105,12 @@ public class BerlinModelNameFactsImport  extends BerlinModelImportBase  {
 		return strQuery;
 	}
 
-	/* (non-Javadoc)
-	 * @see eu.etaxonomy.cdm.io.berlinModel.in.IPartitionedIO#doPartition(eu.etaxonomy.cdm.io.berlinModel.in.ResultSetPartitioner, eu.etaxonomy.cdm.io.berlinModel.in.BerlinModelImportState)
-	 */
 	@Override
     public boolean doPartition(ResultSetPartitioner partitioner, BerlinModelImportState state) {
 		boolean success = true ;
 		BerlinModelImportConfigurator config = state.getConfig();
-		Set<TaxonNameBase> nameToSave = new HashSet<TaxonNameBase>();
-		Map<String, TaxonNameBase> nameMap = partitioner.getObjectMap(BerlinModelTaxonNameImport.NAMESPACE);
+		Set<TaxonName> nameToSave = new HashSet<>();
+		Map<String, TaxonName> nameMap = partitioner.getObjectMap(BerlinModelTaxonNameImport.NAMESPACE);
 		Map<String, Reference> refMap = partitioner.getObjectMap(BerlinModelReferenceImport.REFERENCE_NAMESPACE);
 
 		ResultSet rs = partitioner.getResultSet();
@@ -134,7 +131,7 @@ public class BerlinModelNameFactsImport  extends BerlinModelImportBase  {
 				String category = CdmUtils.Nz(rs.getString("NameFactCategory"));
 				String nameFact = CdmUtils.Nz(rs.getString("nameFact"));
 
-				TaxonNameBase<?,?> taxonNameBase = nameMap.get(String.valueOf(nameId));
+				TaxonName taxonNameBase = nameMap.get(String.valueOf(nameId));
 				String nameFactRefFk = String.valueOf(nameFactRefFkObj);
 				Reference citation = refMap.get(nameFactRefFk);
 
@@ -243,7 +240,7 @@ public class BerlinModelNameFactsImport  extends BerlinModelImportBase  {
 
 			//name map
 			nameSpace = BerlinModelTaxonNameImport.NAMESPACE;
-			cdmClass = TaxonNameBase.class;
+			cdmClass = TaxonName.class;
 			idSet = nameIdSet;
 			Map<String, Person> objectMap = (Map<String, Person>)getCommonService().getSourcedObjectsByIdInSource(cdmClass, idSet, nameSpace);
 			result.put(nameSpace, objectMap);

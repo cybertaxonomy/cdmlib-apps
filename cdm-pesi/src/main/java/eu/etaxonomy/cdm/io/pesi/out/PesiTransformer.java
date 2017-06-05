@@ -42,7 +42,7 @@ import eu.etaxonomy.cdm.model.name.NameTypeDesignationStatus;
 import eu.etaxonomy.cdm.model.name.NomenclaturalCode;
 import eu.etaxonomy.cdm.model.name.NomenclaturalStatusType;
 import eu.etaxonomy.cdm.model.name.Rank;
-import eu.etaxonomy.cdm.model.name.TaxonNameBase;
+import eu.etaxonomy.cdm.model.name.TaxonName;
 import eu.etaxonomy.cdm.model.occurrence.DerivedUnit;
 import eu.etaxonomy.cdm.model.reference.Reference;
 import eu.etaxonomy.cdm.model.reference.ReferenceType;
@@ -2367,7 +2367,7 @@ public final class PesiTransformer extends ExportTransformerBase implements IExp
 		return result;
 	}
 
-	public static Integer getQualityStatusKeyBySource(BitSet sources, TaxonNameBase<?,?> taxonName) {
+	public static Integer getQualityStatusKeyBySource(BitSet sources, TaxonName taxonName) {
 		if (sources.get(SOURCE_EM)){
 			return QUALITY_STATUS_ADD_BY_DBMT;
 		}else if (sources.get(SOURCE_ERMS)){
@@ -2393,8 +2393,8 @@ public final class PesiTransformer extends ExportTransformerBase implements IExp
 	}
 
 
-	private static Set<String> getAllQualityStatus(TaxonNameBase<?, ?> taxonName) {
-		Set<String> result = new HashSet<String>();
+	private static Set<String> getAllQualityStatus(TaxonName taxonName) {
+		Set<String> result = new HashSet<>();
 		for (TaxonBase<?> taxonBase : taxonName.getTaxonBases()){
 			result.addAll(taxonBase.getExtensions(ErmsTransformer.uuidQualityStatus));
 		}

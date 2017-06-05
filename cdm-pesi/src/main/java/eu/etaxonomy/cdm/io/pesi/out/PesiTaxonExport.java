@@ -57,16 +57,12 @@ import eu.etaxonomy.cdm.model.common.Language;
 import eu.etaxonomy.cdm.model.common.Marker;
 import eu.etaxonomy.cdm.model.common.MarkerType;
 import eu.etaxonomy.cdm.model.common.RelationshipBase;
-import eu.etaxonomy.cdm.model.name.BacterialName;
-import eu.etaxonomy.cdm.model.name.BotanicalName;
 import eu.etaxonomy.cdm.model.name.NameTypeDesignation;
 import eu.etaxonomy.cdm.model.name.NameTypeDesignationStatus;
 import eu.etaxonomy.cdm.model.name.NomenclaturalCode;
 import eu.etaxonomy.cdm.model.name.NomenclaturalStatus;
-import eu.etaxonomy.cdm.model.name.NonViralName;
 import eu.etaxonomy.cdm.model.name.Rank;
-import eu.etaxonomy.cdm.model.name.TaxonNameBase;
-import eu.etaxonomy.cdm.model.name.ZoologicalName;
+import eu.etaxonomy.cdm.model.name.TaxonName;
 import eu.etaxonomy.cdm.model.reference.INomenclaturalReference;
 import eu.etaxonomy.cdm.model.reference.Reference;
 import eu.etaxonomy.cdm.model.taxon.Classification;
@@ -78,8 +74,6 @@ import eu.etaxonomy.cdm.model.taxon.TaxonNode;
 import eu.etaxonomy.cdm.profiler.ProfilerController;
 import eu.etaxonomy.cdm.strategy.cache.HTMLTagRules;
 import eu.etaxonomy.cdm.strategy.cache.TagEnum;
-import eu.etaxonomy.cdm.strategy.cache.name.BacterialNameDefaultCacheStrategy;
-import eu.etaxonomy.cdm.strategy.cache.name.BotanicNameDefaultCacheStrategy;
 import eu.etaxonomy.cdm.strategy.cache.name.INonViralNameCacheStrategy;
 import eu.etaxonomy.cdm.strategy.cache.name.NonViralNameDefaultCacheStrategy;
 import eu.etaxonomy.cdm.strategy.cache.name.ZooNameNoMarkerCacheStrategy;
@@ -122,10 +116,8 @@ public class PesiTaxonExport extends PesiExportBase {
 	private static ExtensionType expertNameExtensionType;
 	private static ExtensionType speciesExpertNameExtensionType;
 	private static ExtensionType cacheCitationExtensionType;
-	public static NonViralNameDefaultCacheStrategy<?> zooNameStrategy = ZooNameNoMarkerCacheStrategy.NewInstance();
-	public static NonViralNameDefaultCacheStrategy<?> botanicalNameStrategy = BotanicNameDefaultCacheStrategy.NewInstance();
-	public static NonViralNameDefaultCacheStrategy<?> nonViralNameStrategy = NonViralNameDefaultCacheStrategy.NewInstance();
-	public static NonViralNameDefaultCacheStrategy<?> bacterialNameStrategy = BacterialNameDefaultCacheStrategy.NewInstance();
+	public static NonViralNameDefaultCacheStrategy zooNameStrategy = ZooNameNoMarkerCacheStrategy.NewInstance();
+	public static NonViralNameDefaultCacheStrategy nonViralNameStrategy = NonViralNameDefaultCacheStrategy.NewInstance();
 	private static int currentTaxonId;
 
 
@@ -155,17 +147,11 @@ public class PesiTaxonExport extends PesiExportBase {
 		super();
 	}
 
-	/* (non-Javadoc)
-	 * @see eu.etaxonomy.cdm.io.common.DbExportBase#getStandardMethodParameter()
-	 */
 	@Override
 	public Class<? extends CdmBase> getStandardMethodParameter() {
 		return standardMethodParameter;
 	}
 
-	/* (non-Javadoc)
-	 * @see eu.etaxonomy.cdm.io.common.CdmIoBase#doCheck(eu.etaxonomy.cdm.io.common.IoStateBase)
-	 */
 	@Override
 	protected boolean doCheck(PesiExportState state) {
 		boolean result = true;
@@ -173,9 +159,6 @@ public class PesiTaxonExport extends PesiExportBase {
 	}
 
 
-	/* (non-Javadoc)
-	 * @see eu.etaxonomy.cdm.io.common.CdmIoBase#doInvoke(eu.etaxonomy.cdm.io.common.IoStateBase)
-	 */
 	@Override
 	protected void doInvoke(PesiExportState state) {
 		try {
@@ -229,13 +212,13 @@ public class PesiTaxonExport extends PesiExportBase {
 			logger.info("*** Finished Making " + pluralString + " ..." + getSuccessString(success));
 
 			if (!success){
-				state.setUnsuccessfull();
+				state.getResult().addError("An error occurred in PesiTaxonExport.doInvoke");
 			}
 			return;
 		} catch (Exception e) {
 			e.printStackTrace();
 			logger.error(e.getMessage());
-			state.setUnsuccessfull();
+			state.getResult().addException(e);
 		}
 	}
 
@@ -305,9 +288,9 @@ public class PesiTaxonExport extends PesiExportBase {
 
 			for (TaxonBase<?> taxon : list) {
 				doCount(count++, modCount, pluralString);
-				TaxonNameBase<?,?> taxonName = taxon.getName();
+				TaxonName taxonName = taxon.getName();
 
-				NonViralName<?> nvn = CdmBase.deproxy(taxonName, NonViralName.class);
+				TaxonName nvn = CdmBase.deproxy(taxonName);
 				System.err.println(nvn.getTitleCache());
 				if (! nvn.isProtectedTitleCache()){
 					nvn.setTitleCache(null, false);
@@ -379,7 +362,7 @@ public class PesiTaxonExport extends PesiExportBase {
 	}
 
 
-	private void validatePhaseOne(TaxonBase<?> taxon, NonViralName taxonName) {
+	private void validatePhaseOne(TaxonBase<?> taxon, TaxonName taxonName) {
 		// Check whether some rules are violated
 		nomenclaturalCode = taxonName.getNomenclaturalCode();
 		String genusOrUninomial = taxonName.getGenusOrUninomial();
@@ -682,7 +665,7 @@ public class PesiTaxonExport extends PesiExportBase {
 
 			logger.debug("Fetched " + list.size() + " " + pluralString + ". Exporting...");
 			for (TaxonBase<?> taxon : list) {
-				TaxonNameBase<?,?> taxonName = taxon.getName();
+				TaxonName taxonName = taxon.getName();
 				// Determine expertFk
 //				Integer expertFk = makeExpertFk(state, taxonName);
 //
@@ -788,7 +771,7 @@ public class PesiTaxonExport extends PesiExportBase {
 
 
 		while ((taxonList  = getTaxonService().listTaxaByName(Taxon.class, "*", "*", "*", "*", "*", Rank.SPECIES(), pageSize, pageNumber)).size() > 0) {
-			HashMap<Integer, TaxonNameBase<?,?>> inferredSynonymsDataToBeSaved = new HashMap<Integer, TaxonNameBase<?,?>>();
+			HashMap<Integer, TaxonName> inferredSynonymsDataToBeSaved = new HashMap<Integer, TaxonName>();
 
 			logger.info("Fetched " + taxonList.size() + " " + parentPluralString + ". Exporting...");
 			inferredSynonymsDataToBeSaved.putAll(createInferredSynonymsForTaxonList(state, mapping,
@@ -815,7 +798,7 @@ public class PesiTaxonExport extends PesiExportBase {
 		}
 		taxonList = null;
 		while ((taxonList  = getTaxonService().listTaxaByName(Taxon.class, "*", "*", "*", "*", "*", Rank.SUBSPECIES(), pageSize, pageNumber)).size() > 0) {
-			HashMap<Integer, TaxonNameBase<?,?>> inferredSynonymsDataToBeSaved = new HashMap<Integer, TaxonNameBase<?,?>>();
+			HashMap<Integer, TaxonName> inferredSynonymsDataToBeSaved = new HashMap<>();
 
 			logger.info("Fetched " + taxonList.size() + " " + parentPluralString + ". Exporting...");
 			inferredSynonymsDataToBeSaved.putAll(createInferredSynonymsForTaxonList(state, mapping,
@@ -867,7 +850,7 @@ public class PesiTaxonExport extends PesiExportBase {
 	 * @param inferredSynonymsDataToBeSaved
 	 * @return
 	 */
-	private HashMap<Integer, TaxonNameBase<?, ?>> createInferredSynonymsForTaxonList(PesiExportState state,
+	private HashMap<Integer, TaxonName> createInferredSynonymsForTaxonList(PesiExportState state,
 			PesiExportMapping mapping, PesiExportMapping synRelMapping,	 List<TaxonBase> taxonList) {
 
 		Taxon acceptedTaxon;
@@ -875,16 +858,16 @@ public class PesiTaxonExport extends PesiExportBase {
 		List<Synonym> inferredSynonyms = null;
 		boolean localSuccess = true;
 
-		HashMap<Integer, TaxonNameBase<?,?>> inferredSynonymsDataToBeSaved = new HashMap<Integer, TaxonNameBase<?,?>>();
+		HashMap<Integer, TaxonName> inferredSynonymsDataToBeSaved = new HashMap<Integer, TaxonName>();
 
 		for (TaxonBase<?> taxonBase : taxonList) {
 
 			if (taxonBase.isInstanceOf(Taxon.class)) { // this should always be the case since we should have fetched accepted taxon only, but you never know...
 				acceptedTaxon = CdmBase.deproxy(taxonBase, Taxon.class);
-				TaxonNameBase<?,?> taxonName = acceptedTaxon.getName();
+				TaxonName taxonName = acceptedTaxon.getName();
 
-				if (taxonName.isInstanceOf(ZoologicalName.class)) {
-					nomenclaturalCode  = taxonName.getNomenclaturalCode();
+				if (taxonName.isZoological()) {
+					nomenclaturalCode  = taxonName.getNameType();
 					kingdomFk = PesiTransformer.nomenClaturalCode2Kingdom(nomenclaturalCode);
 
 					Set<TaxonNode> taxonNodes = acceptedTaxon.getTaxonNodes();
@@ -910,14 +893,14 @@ public class PesiTaxonExport extends PesiExportBase {
 
 					if (classification != null) {
 						try{
-							TaxonNameBase name = acceptedTaxon.getName();
+						    TaxonName name = acceptedTaxon.getName();
 							//if (name.isSpecies() || name.isInfraSpecific()){
 								inferredSynonyms  = getTaxonService().createAllInferredSynonyms(acceptedTaxon, classification, true);
 							//}
 //								inferredSynonyms = getTaxonService().createInferredSynonyms(classification, acceptedTaxon, SynonymType.INFERRED_GENUS_OF());
 							if (inferredSynonyms != null) {
 								for (Synonym synonym : inferredSynonyms) {
-//									TaxonNameBase<?,?> synonymName = synonym.getName();
+//									TaxonName synonymName = synonym.getName();
 									MarkerType markerType =getUuidMarkerType(PesiTransformer.uuidMarkerGuidIsMissing, state);
 									synonym.addMarker(Marker.NewInstance(markerType, true));
 									// Both Synonym and its TaxonName have no valid Id yet
@@ -996,7 +979,7 @@ public class PesiTaxonExport extends PesiExportBase {
 			mapping.initialize(state);
 			int count = 0;
 			int pastCount = 0;
-			List<NonViralName<?>> list;
+			List<TaxonName> list;
 			success = true;
 			// Get the limit for objects to save within a single transaction.
 			int limit = state.getConfig().getLimitSave();
@@ -1011,7 +994,7 @@ public class PesiTaxonExport extends PesiExportBase {
 			while ((list = getNextPureNamePartition(null, limit, partitionCount++)) != null   ) {
 
 				logger.info("Fetched " + list.size() + " names without taxa. Exporting...");
-				for (TaxonNameBase<?,?> taxonName : list) {
+				for (TaxonName taxonName : list) {
 					doCount(count++, modCount, pluralString);
 					success &= mapping.invoke(taxonName);
 					//additional source
@@ -1103,7 +1086,7 @@ public class PesiTaxonExport extends PesiExportBase {
 			TaxonNode node = CdmBase.deproxy(parentNode, TaxonNode.class);
 			Taxon parentTaxon = node.getTaxon();
 			if (parentTaxon != null) {
-				TaxonNameBase<?,?> parentTaxonName = parentTaxon.getName();
+				TaxonName parentTaxonName = parentTaxon.getName();
 				if (parentTaxonName != null && parentTaxonName.getRank().equals(ancestorRank)) {
 					result = true;
 				}
@@ -1150,7 +1133,7 @@ public class PesiTaxonExport extends PesiExportBase {
 		if (childTaxon != null) {
 			if (isPesiTaxon(childTaxon)){
 				Integer taxonId = state.getDbId(childTaxon);
-				TaxonNameBase<?,?> childName = childTaxon.getName();
+				TaxonName childName = childTaxon.getName();
 				if (taxonId != null) {
 					Rank childRank = childName.getRank();
 					if (childRank != null) {
@@ -1274,7 +1257,7 @@ public class PesiTaxonExport extends PesiExportBase {
 	 * @param kindomFk The KingdomFk.
 	 * @return Whether save was successful or not.
 	 */
-	private boolean invokeRankDataAndKingdomFk(TaxonNameBase<?,?> taxonName, NomenclaturalCode nomenclaturalCode, Integer taxonFk, Integer kingdomFk, PesiExportState state) {
+	private boolean invokeRankDataAndKingdomFk(TaxonName taxonName, NomenclaturalCode nomenclaturalCode, Integer taxonFk, Integer kingdomFk, PesiExportState state) {
 		try {
 			Integer rankFk = getRankFk(taxonName, nomenclaturalCode);
 			if (rankFk != null) {
@@ -1324,7 +1307,7 @@ public class PesiTaxonExport extends PesiExportBase {
 	 * @param speciesExpertFk The SpeciesExpertFk.
 	 * @return Whether save was successful or not.
 	 */
-	private boolean invokeRankDataAndTypeNameFkAndKingdomFk(TaxonNameBase<?,?> taxonName, NomenclaturalCode nomenclaturalCode,
+	private boolean invokeRankDataAndTypeNameFkAndKingdomFk(TaxonName taxonName, NomenclaturalCode nomenclaturalCode,
 			Integer taxonFk, Integer typeNameFk, Integer kingdomFkk, PesiExportState state) {
 		try {
 			int index = 1;
@@ -1404,9 +1387,6 @@ public class PesiTaxonExport extends PesiExportBase {
 		return true;
 	}
 
-	/* (non-Javadoc)
-	 * @see eu.etaxonomy.cdm.io.common.CdmIoBase#isIgnore(eu.etaxonomy.cdm.io.common.IoStateBase)
-	 */
 	@Override
 	protected boolean isIgnore(PesiExportState state) {
 		return ! state.getConfig().isDoTaxa();
@@ -1419,7 +1399,7 @@ public class PesiTaxonExport extends PesiExportBase {
 	 * @return
 	 */
 	@SuppressWarnings("unused")  //used by mapper
-	private static Integer getKingdomFk(TaxonNameBase taxonName){
+	private static Integer getKingdomFk(TaxonName taxonName){
 		return PesiTransformer.nomenClaturalCode2Kingdom(taxonName.getNomenclaturalCode());
 	}
 
@@ -1456,7 +1436,7 @@ public class PesiTaxonExport extends PesiExportBase {
 	 * @return
 	 */
 	@SuppressWarnings("unused")  //used by mapper
-	private static Integer getRankFk(TaxonNameBase<?,?> taxonName) {
+	private static Integer getRankFk(TaxonName taxonName) {
 		return getRankFk(taxonName, taxonName.getNomenclaturalCode());
 	}
 
@@ -1468,7 +1448,7 @@ public class PesiTaxonExport extends PesiExportBase {
 	 * @return The <code>RankFk</code> attribute.
 	 * @see MethodMapper
 	 */
-	private static Integer getRankFk(TaxonNameBase<?,?> taxonName, NomenclaturalCode nomenclaturalCode) {
+	private static Integer getRankFk(TaxonName taxonName, NomenclaturalCode nomenclaturalCode) {
 		Integer result = null;
 		try {
 			if (nomenclaturalCode != null) {
@@ -1496,7 +1476,7 @@ public class PesiTaxonExport extends PesiExportBase {
 	 * @return
 	 */
 	@SuppressWarnings("unused")  //used by mapper
-	private static String getRankCache(TaxonNameBase<?,?> taxonName, PesiExportState state) {
+	private static String getRankCache(TaxonName taxonName, PesiExportState state) {
 		return getRankCache(taxonName, taxonName.getNomenclaturalCode(), state);
 	}
 
@@ -1509,7 +1489,7 @@ public class PesiTaxonExport extends PesiExportBase {
 	 * @return The <code>RankCache</code> attribute.
 	 * @see MethodMapper
 	 */
-	private static String getRankCache(TaxonNameBase<?,?> taxonName, NomenclaturalCode nomenclaturalCode, PesiExportState state) {
+	private static String getRankCache(TaxonName taxonName, NomenclaturalCode nomenclaturalCode, PesiExportState state) {
 		if (nomenclaturalCode != null) {
 			return state.getTransformer().getCacheByRankAndKingdom(taxonName.getRank(), PesiTransformer.nomenClaturalCode2Kingdom(nomenclaturalCode));
 		}else{
@@ -1528,7 +1508,7 @@ public class PesiTaxonExport extends PesiExportBase {
 	 */
 	@SuppressWarnings("unused")  //used by Mapper
 	private static String getDisplayName(TaxonBase<?> taxon) {
-		TaxonNameBase<?,?> taxonName = taxon.getName();
+		TaxonName taxonName = taxon.getName();
 		String result = getDisplayName(taxonName);
 		if (isMisappliedName(taxon)){
 			result = result + " " + getAuthorString(taxon);
@@ -1548,9 +1528,9 @@ public class PesiTaxonExport extends PesiExportBase {
 			String result = null;
 			boolean isNonViralName = false;
 			String authorshipCache = null;
-			TaxonNameBase<?,?> taxonName = taxon.getName();
-			if (taxonName != null && taxonName.isInstanceOf(NonViralName.class)){
-				authorshipCache = CdmBase.deproxy(taxonName, NonViralName.class).getAuthorshipCache();
+			TaxonName taxonName = taxon.getName();
+			if (taxonName != null && taxonName.isNonViral()){
+				authorshipCache = taxonName.getAuthorshipCache();
 				isNonViralName = true;
 			}
 			result = authorshipCache;
@@ -1600,17 +1580,17 @@ public class PesiTaxonExport extends PesiExportBase {
 	 * @see MethodMapper
 	 */
 	@SuppressWarnings("unused")  //used by Mapper
-	private static String getDisplayName(TaxonNameBase<?,?> taxonName) {
+	private static String getDisplayName(TaxonName taxonName) {
 		// TODO: extension?
 		if (taxonName == null) {
 			return null;
 		}else{
-			INonViralNameCacheStrategy<NonViralName<?>> cacheStrategy = getCacheStrategy(taxonName);
+			INonViralNameCacheStrategy cacheStrategy = getCacheStrategy(taxonName);
 			HTMLTagRules tagRules = new HTMLTagRules().
 					addRule(TagEnum.name, "i").
 					addRule(TagEnum.nomStatus, "@status@");
 
-			NonViralName<?> nvn = CdmBase.deproxy(taxonName, NonViralName.class);
+			TaxonName nvn = CdmBase.deproxy(taxonName);
 			String result = cacheStrategy.getFullTitleCache(nvn, tagRules);
 			cacheStrategy = null;
 			nvn = null;
@@ -1619,7 +1599,7 @@ public class PesiTaxonExport extends PesiExportBase {
 	}
 
 	@SuppressWarnings("unused")
-	private static String getGUID(TaxonNameBase<?,?> taxonName) {
+	private static String getGUID(TaxonName taxonName) {
 		UUID uuid = taxonName.getUuid();
 		String result = "NameUUID:" + uuid.toString();
 		return result;
@@ -1634,7 +1614,7 @@ public class PesiTaxonExport extends PesiExportBase {
 	*/
 	@SuppressWarnings("unused")
 	private static String getWebShowName(TaxonBase<?> taxon) {
-		TaxonNameBase<?,?> taxonName = taxon.getName();
+		TaxonName taxonName = taxon.getName();
 		String result = getWebShowName(taxonName);
 		if (isMisappliedName(taxon)){
 			result = result + " " + getAuthorString(taxon);
@@ -1648,18 +1628,15 @@ public class PesiTaxonExport extends PesiExportBase {
 	 * @return The <code>WebShowName</code> attribute.
 	 * @see MethodMapper
 	 */
-	private static String getWebShowName(TaxonNameBase<?,?> taxonName) {
+	private static String getWebShowName(TaxonName taxonName) {
 		//TODO extensions?
 		if (taxonName == null) {
 			return null;
 		}else{
-			INonViralNameCacheStrategy<NonViralName<?>> cacheStrategy = getCacheStrategy(taxonName);
+			INonViralNameCacheStrategy cacheStrategy = getCacheStrategy(taxonName);
 
 			HTMLTagRules tagRules = new HTMLTagRules().addRule(TagEnum.name, "i");
-			NonViralName<?> nvn = CdmBase.deproxy(taxonName, NonViralName.class);
-			String result = cacheStrategy.getTitleCache(nvn, tagRules);
-			cacheStrategy = null;
-			nvn = null;
+			String result = cacheStrategy.getTitleCache(taxonName, tagRules);
 			return result;
 		}
 	}
@@ -1672,13 +1649,10 @@ public class PesiTaxonExport extends PesiExportBase {
 	 * @see MethodMapper
 	 */
 	@SuppressWarnings("unused")
-	private static String getWebSearchName(TaxonNameBase<?,?> taxonName) {
+	private static String getWebSearchName(TaxonName taxonName) {
 		//TODO extensions?
-		NonViralName<?> nvn = CdmBase.deproxy(taxonName, NonViralName.class);
-		NonViralNameDefaultCacheStrategy<NonViralName<?>> strategy = getCacheStrategy(nvn);
-		String result = strategy.getNameCache(nvn);
-		strategy = null;
-		nvn = null;
+		NonViralNameDefaultCacheStrategy strategy = getCacheStrategy(taxonName);
+		String result = strategy.getNameCache(taxonName);
 		return result;
 	}
 
@@ -1690,22 +1664,19 @@ public class PesiTaxonExport extends PesiExportBase {
 	 * @see MethodMapper
 	 */
 	@SuppressWarnings("unused")
-	private static String getFullName(TaxonNameBase taxonName) {
+	private static String getFullName(TaxonName taxonName) {
 		//TODO extensions?
-		NonViralName<?> nvn = CdmBase.deproxy(taxonName, NonViralName.class);
-		String result = getCacheStrategy(nvn).getTitleCache(nvn);
-		Iterator<TaxonBase> taxa = taxonName.getTaxa().iterator();
+		String result = getCacheStrategy(taxonName).getTitleCache(taxonName);
+		Iterator<Taxon> taxa = taxonName.getTaxa().iterator();
 		if (taxonName.getTaxa().size() >0){
 			if (taxonName.getTaxa().size() == 1){
-				TaxonBase taxon = taxa.next();
+				Taxon taxon = taxa.next();
 				if (isMisappliedName(taxon)){
 					result = result + " " + getAuthorString(taxon);
 				}
 				taxon = null;
 			}
 		}
-		taxa = null;
-		nvn = null;
 		return result;
 	}
 
@@ -1715,10 +1686,9 @@ public class PesiTaxonExport extends PesiExportBase {
 	 * @return
 	 */
 	@SuppressWarnings("unused")
-	private static String getSourceNameCache(TaxonNameBase taxonName) {
-		NonViralName<?> nvn = CdmBase.deproxy(taxonName, NonViralName.class);
-		if (nvn != null){
-			Reference nomRef = (Reference)nvn.getNomenclaturalReference();
+	private static String getSourceNameCache(TaxonName taxonName) {
+		if (taxonName != null){
+			Reference nomRef = (Reference)taxonName.getNomenclaturalReference();
 			if (nomRef != null){
 			    logger.warn("Semantics of getAbbrevTitleCache has changed. Please check if output is still correct. See #5388");
 				return nomRef.getAbbrevTitleCache();
@@ -1756,7 +1726,7 @@ public class PesiTaxonExport extends PesiExportBase {
 	 * @see MethodMapper
 	 */
 	@SuppressWarnings("unused")
-	private static String getNomRefString(TaxonNameBase<?,?> taxonName) {
+	private static String getNomRefString(TaxonName taxonName) {
 		INomenclaturalReference ref = taxonName.getNomenclaturalReference();
 		if (ref == null){
 			return null;
@@ -1775,7 +1745,7 @@ public class PesiTaxonExport extends PesiExportBase {
 	 * @see MethodMapper
 	 */
 	@SuppressWarnings("unused")
-	private static Integer getNameStatusFk(TaxonNameBase<?,?> taxonName) {
+	private static Integer getNameStatusFk(TaxonName taxonName) {
 		Integer result = null;
 
 		NomenclaturalStatus state = getNameStatus(taxonName);
@@ -1793,7 +1763,7 @@ public class PesiTaxonExport extends PesiExportBase {
 	 * @see MethodMapper
 	 */
 	@SuppressWarnings("unused")
-	private static String getNameStatusCache(TaxonNameBase taxonName, PesiExportState state) throws UndefinedTransformerMethodException {
+	private static String getNameStatusCache(TaxonName taxonName, PesiExportState state) throws UndefinedTransformerMethodException {
 		String result = null;
 		NomenclaturalStatus status = getNameStatus(taxonName);
 		if (status != null) {
@@ -1803,11 +1773,10 @@ public class PesiTaxonExport extends PesiExportBase {
 	}
 
 
-	private static NomenclaturalStatus getNameStatus(TaxonNameBase<?,?> taxonName) {
+	private static NomenclaturalStatus getNameStatus(TaxonName taxonName) {
 		try {
-			if (taxonName != null && (taxonName.isInstanceOf(NonViralName.class))) {
-				NonViralName<?> nonViralName = CdmBase.deproxy(taxonName, NonViralName.class);
-				Set<NomenclaturalStatus> states = nonViralName.getStatus();
+			if (taxonName != null) {
+			    Set<NomenclaturalStatus> states = taxonName.getStatus();
 				if (states.size() == 1) {
 					NomenclaturalStatus status = states.iterator().next();
 					return status;
@@ -1867,14 +1836,14 @@ public class PesiTaxonExport extends PesiExportBase {
 	 * @return The <code>TypeNameFk</code> attribute.
 	 * @see MethodMapper
 	 */
-	private static Integer getTypeNameFk(TaxonNameBase<?,?> taxonNameBase, PesiExportState state) {
+	private static Integer getTypeNameFk(TaxonName taxonNameBase, PesiExportState state) {
 		Integer result = null;
 		if (taxonNameBase != null) {
 			Set<NameTypeDesignation> nameTypeDesignations = taxonNameBase.getNameTypeDesignations();
 			if (nameTypeDesignations.size() == 1) {
 				NameTypeDesignation nameTypeDesignation = nameTypeDesignations.iterator().next();
 				if (nameTypeDesignation != null) {
-					TaxonNameBase<?,?> typeName = nameTypeDesignation.getTypeName();
+					TaxonName typeName = nameTypeDesignation.getTypeName();
 					if (typeName != null) {
 						result = state.getDbId(typeName);
 					}
@@ -1893,7 +1862,7 @@ public class PesiTaxonExport extends PesiExportBase {
 	 * @see MethodMapper
 	 */
 	@SuppressWarnings("unused")
-	private static String getTypeFullnameCache(TaxonNameBase<?,?> taxonName) {
+	private static String getTypeFullnameCache(TaxonName taxonName) {
 		String result = null;
 
 		try {
@@ -1902,7 +1871,7 @@ public class PesiTaxonExport extends PesiExportBase {
 			if (nameTypeDesignations.size() == 1) {
 				NameTypeDesignation nameTypeDesignation = nameTypeDesignations.iterator().next();
 				if (nameTypeDesignation != null) {
-					TaxonNameBase<?,?> typeName = nameTypeDesignation.getTypeName();
+					TaxonName typeName = nameTypeDesignation.getTypeName();
 					if (typeName != null) {
 						result = typeName.getTitleCache();
 					}
@@ -1925,7 +1894,7 @@ public class PesiTaxonExport extends PesiExportBase {
 	 * @return The <code>QualityStatusFk</code> attribute.
 	 * @see MethodMapper
 	 */
-	private static Integer getQualityStatusFk(TaxonNameBase taxonName) {
+	private static Integer getQualityStatusFk(TaxonName taxonName) {
 		BitSet sources = getSources(taxonName);
 		return PesiTransformer.getQualityStatusKeyBySource(sources, taxonName);
 	}
@@ -1939,7 +1908,7 @@ public class PesiTaxonExport extends PesiExportBase {
 	 * @see MethodMapper
 	 */
 	@SuppressWarnings("unused")
-	private static String getQualityStatusCache(TaxonNameBase taxonName, PesiExportState state) throws UndefinedTransformerMethodException {
+	private static String getQualityStatusCache(TaxonName taxonName, PesiExportState state) throws UndefinedTransformerMethodException {
 		return state.getTransformer().getQualityStatusCacheByKey(getQualityStatusFk(taxonName));
 	}
 
@@ -1951,7 +1920,7 @@ public class PesiTaxonExport extends PesiExportBase {
 	 * @see MethodMapper
 	 */
 	@SuppressWarnings("unused")
-	private static Integer getTypeDesignationStatusFk(TaxonNameBase<?,?> taxonName) {
+	private static Integer getTypeDesignationStatusFk(TaxonName taxonName) {
 		Integer result = null;
 
 		try {
@@ -1979,7 +1948,7 @@ public class PesiTaxonExport extends PesiExportBase {
 	 * @see MethodMapper
 	 */
 	@SuppressWarnings("unused")
-	private static String getTypeDesignationStatusCache(TaxonNameBase<?,?> taxonName) {
+	private static String getTypeDesignationStatusCache(TaxonName taxonName) {
 		String result = null;
 
 		try {
@@ -2144,9 +2113,9 @@ public class PesiTaxonExport extends PesiExportBase {
 		Set<IdentifiableSource> sources = new java.util.HashSet<IdentifiableSource>();
 
 		//Taxon Names
-		if (identEntity.isInstanceOf(TaxonNameBase.class)){
+		if (identEntity.isInstanceOf(TaxonName.class)){
 			// Sources from TaxonName
-			TaxonNameBase taxonName = CdmBase.deproxy(identEntity, TaxonNameBase.class);
+		    TaxonName taxonName = CdmBase.deproxy(identEntity, TaxonName.class);
 			Set<IdentifiableSource> testSources = identEntity.getSources();
 			sources = filterPesiSources(identEntity.getSources());
 
@@ -2245,7 +2214,7 @@ public class PesiTaxonExport extends PesiExportBase {
 	private static String getCacheCitation(TaxonBase taxon) {
 		// !!! See also doPhaseUpdates
 
-		TaxonNameBase<?,?> taxonName = taxon.getName();
+		TaxonName taxonName = taxon.getName();
 		String result = "";
 		//TODO implement anew for taxa
 		try {
@@ -2460,20 +2429,20 @@ public class PesiTaxonExport extends PesiExportBase {
 
 	}
 
-	protected static NonViralNameDefaultCacheStrategy getCacheStrategy(TaxonNameBase<?, ?> taxonName) {
-		taxonName = CdmBase.deproxy(taxonName, TaxonNameBase.class);
-		NonViralNameDefaultCacheStrategy<?> cacheStrategy;
-		if (taxonName.isInstanceOf(ZoologicalName.class)){
+	protected static NonViralNameDefaultCacheStrategy getCacheStrategy(TaxonName taxonName) {
+		taxonName = CdmBase.deproxy(taxonName);
+		NonViralNameDefaultCacheStrategy cacheStrategy;
+		if (taxonName.isZoological()){
 			cacheStrategy = zooNameStrategy;
-		}else if (taxonName.isInstanceOf(BotanicalName.class)) {
-			cacheStrategy = botanicalNameStrategy;
-		}else if (taxonName.getClass().equals(NonViralName.class)) {
+		}else if (taxonName.isBotanical()) {
 			cacheStrategy = nonViralNameStrategy;
-		}else if (taxonName.getClass().equals(BacterialName.class)) {
-			cacheStrategy = bacterialNameStrategy;
+		}else if (taxonName.isNonViral()) {
+			cacheStrategy = nonViralNameStrategy;
+		}else if (taxonName.isBacterial()) {
+			cacheStrategy = nonViralNameStrategy;
 		}else{
 			logger.error("Unhandled taxon name type. Can't define strategy class");
-			cacheStrategy = botanicalNameStrategy;
+			cacheStrategy = nonViralNameStrategy;
 		}
 		return cacheStrategy;
 	}
@@ -2538,7 +2507,7 @@ public class PesiTaxonExport extends PesiExportBase {
 		mapping.addMapper(DbExtensionMapper.NewInstance(extensionTypeExpertName, "ExpertName"));
 
 //		mapping.addMapper(MethodMapper.NewInstance("ParentTaxonFk", this, TaxonBase.class, PesiExportState.class));  //by AM, doesn't work, FK exception
-		mapping.addMapper(ObjectChangeMapper.NewInstance(TaxonBase.class, TaxonNameBase.class, "Name"));
+		mapping.addMapper(ObjectChangeMapper.NewInstance(TaxonBase.class, TaxonName.class, "Name"));
 
 		addNameMappers(mapping);
 
@@ -2558,19 +2527,19 @@ public class PesiTaxonExport extends PesiExportBase {
 
 		//		mapping.addMapper(MethodMapper.NewInstance("TaxonStatusFk", this.getClass(), "getTaxonStatusFk", standardMethodParameter, PesiExportState.class));
 
-		mapping.addMapper(MethodMapper.NewInstance("KingdomFk", this, TaxonNameBase.class));
-		mapping.addMapper(MethodMapper.NewInstance("RankFk", this, TaxonNameBase.class));
-		mapping.addMapper(MethodMapper.NewInstance("RankCache", this, TaxonNameBase.class, PesiExportState.class));
+		mapping.addMapper(MethodMapper.NewInstance("KingdomFk", this, TaxonName.class));
+		mapping.addMapper(MethodMapper.NewInstance("RankFk", this, TaxonName.class));
+		mapping.addMapper(MethodMapper.NewInstance("RankCache", this, TaxonName.class, PesiExportState.class));
 		mapping.addMapper(DbConstantMapper.NewInstance("TaxonStatusFk", Types.INTEGER , PesiTransformer.T_STATUS_UNACCEPTED));
 		mapping.addMapper(DbConstantMapper.NewInstance("TaxonStatusCache", Types.VARCHAR , state.getTransformer().getTaxonStatusCacheByKey( PesiTransformer.T_STATUS_UNACCEPTED)));
 		mapping.addMapper(DbStringMapper.NewInstance("AuthorshipCache", "AuthorString").setBlankToNull(true));
-		mapping.addMapper(MethodMapper.NewInstance("WebShowName", this, TaxonNameBase.class));
-		mapping.addMapper(MethodMapper.NewInstance("GUID", this, TaxonNameBase.class));
+		mapping.addMapper(MethodMapper.NewInstance("WebShowName", this, TaxonName.class));
+		mapping.addMapper(MethodMapper.NewInstance("GUID", this, TaxonName.class));
 
 
 
 		// DisplayName
-		mapping.addMapper(MethodMapper.NewInstance("DisplayName", this, TaxonNameBase.class));
+		mapping.addMapper(MethodMapper.NewInstance("DisplayName", this, TaxonName.class));
 
 		mapping.addMapper(DbLastActionMapper.NewInstance("LastActionDate", false));
 		mapping.addMapper(DbLastActionMapper.NewInstance("LastAction", true));
@@ -2588,22 +2557,22 @@ public class PesiTaxonExport extends PesiExportBase {
 		mapping.addMapper(DbStringMapper.NewInstance("InfraSpecificEpithet", "InfraSpecificEpithet"));
 
 //		mapping.addMapper(DbStringMapper.NewInstance("NameCache", "WebSearchName"));  //does not work as we need other cache strategy
-		mapping.addMapper(MethodMapper.NewInstance("WebSearchName", this, TaxonNameBase.class));
+		mapping.addMapper(MethodMapper.NewInstance("WebSearchName", this, TaxonName.class));
 
 //		mapping.addMapper(DbStringMapper.NewInstance("TitleCache", "FullName"));    //does not work as we need other cache strategy
-		mapping.addMapper(MethodMapper.NewInstance("FullName", this, TaxonNameBase.class));
+		mapping.addMapper(MethodMapper.NewInstance("FullName", this, TaxonName.class));
 
 
-		mapping.addMapper(MethodMapper.NewInstance("NomRefString", this, TaxonNameBase.class));
+		mapping.addMapper(MethodMapper.NewInstance("NomRefString", this, TaxonName.class));
 
-		mapping.addMapper(MethodMapper.NewInstance("NameStatusFk", this, TaxonNameBase.class));
-		mapping.addMapper(MethodMapper.NewInstance("NameStatusCache", this, TaxonNameBase.class, PesiExportState.class));
-		mapping.addMapper(MethodMapper.NewInstance("TypeFullnameCache", this, TaxonNameBase.class));
+		mapping.addMapper(MethodMapper.NewInstance("NameStatusFk", this, TaxonName.class));
+		mapping.addMapper(MethodMapper.NewInstance("NameStatusCache", this, TaxonName.class, PesiExportState.class));
+		mapping.addMapper(MethodMapper.NewInstance("TypeFullnameCache", this, TaxonName.class));
 		//TODO TypeNameFk
 
 		//quality status
-		mapping.addMapper(MethodMapper.NewInstance("QualityStatusFk", this, TaxonNameBase.class));
-		mapping.addMapper(MethodMapper.NewInstance("QualityStatusCache", this, TaxonNameBase.class, PesiExportState.class));
+		mapping.addMapper(MethodMapper.NewInstance("QualityStatusFk", this, TaxonName.class));
+		mapping.addMapper(MethodMapper.NewInstance("QualityStatusCache", this, TaxonName.class, PesiExportState.class));
 
 		mapping.addMapper(MethodMapper.NewInstance("IdInSource", this, IdentifiableEntity.class));
 		mapping.addMapper(MethodMapper.NewInstance("OriginalDB", this, IdentifiableEntity.class) );
@@ -2628,11 +2597,11 @@ public class PesiTaxonExport extends PesiExportBase {
 		PesiExportMapping mapping = new PesiExportMapping(dbTableAdditionalSourceRel);
 
 		mapping.addMapper(IdMapper.NewInstance("TaxonFk"));
-		mapping.addMapper(ObjectChangeMapper.NewInstance(TaxonBase.class, TaxonNameBase.class, "Name"));
+		mapping.addMapper(ObjectChangeMapper.NewInstance(TaxonBase.class, TaxonName.class, "Name"));
 
 		mapping.addMapper(DbObjectMapper.NewInstance("NomenclaturalReference", "SourceFk"));
 //		mapping.addMapper(DbObjectMapper.NewInstance("NomenclaturalReference", "SourceNameCache", IS_CACHE));
-		mapping.addMapper(MethodMapper.NewInstance("SourceNameCache", this, TaxonNameBase.class));
+		mapping.addMapper(MethodMapper.NewInstance("SourceNameCache", this, TaxonName.class));
 
 
 		//we have only nomenclatural references here

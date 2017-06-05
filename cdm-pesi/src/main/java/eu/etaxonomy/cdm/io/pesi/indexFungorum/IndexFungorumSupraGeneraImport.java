@@ -19,8 +19,8 @@ import org.springframework.transaction.TransactionStatus;
 
 import eu.etaxonomy.cdm.io.pesi.out.PesiTransformer;
 import eu.etaxonomy.cdm.model.common.CdmBase;
-import eu.etaxonomy.cdm.model.name.NonViralName;
 import eu.etaxonomy.cdm.model.name.Rank;
+import eu.etaxonomy.cdm.model.name.TaxonName;
 import eu.etaxonomy.cdm.model.name.TaxonNameFactory;
 import eu.etaxonomy.cdm.model.reference.Reference;
 import eu.etaxonomy.cdm.model.taxon.Taxon;
@@ -84,7 +84,7 @@ public class IndexFungorumSupraGeneraImport  extends IndexFungorumImportBase {
 
 				//name
 				Rank rank = state.getTransformer().getRankByKey(String.valueOf(rankFk));
-				NonViralName<?> name = TaxonNameFactory.NewBotanicalInstance(rank);
+				TaxonName name = TaxonNameFactory.NewBotanicalInstance(rank);
 				name.setGenusOrUninomial(supragenericNames);
 				/*if (preferredName != null && !preferredName.equals(supragenericNames)){
 					logger.warn("Suprageneric names and preferredName is not equal. This case is not yet handled by IF import. I take SupragenericNames for import. RECORD NUMBER" +id);
@@ -117,7 +117,7 @@ public class IndexFungorumSupraGeneraImport  extends IndexFungorumImportBase {
 
 
 	private Taxon makeTaxon(IndexFungorumImportState state, String uninomial, Rank rank) {
-		NonViralName<?> name = TaxonNameFactory.NewBotanicalInstance(rank);
+	    TaxonName name = TaxonNameFactory.NewBotanicalInstance(rank);
 		name.setGenusOrUninomial(uninomial);
 		return Taxon.NewInstance(name, state.getConfig().getSourceReference());
 	}

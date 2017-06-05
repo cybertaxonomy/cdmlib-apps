@@ -46,7 +46,7 @@ import eu.etaxonomy.cdm.model.description.DescriptionElementSource;
 import eu.etaxonomy.cdm.model.description.TaxonDescription;
 import eu.etaxonomy.cdm.model.location.Country;
 import eu.etaxonomy.cdm.model.location.NamedArea;
-import eu.etaxonomy.cdm.model.name.TaxonNameBase;
+import eu.etaxonomy.cdm.model.name.TaxonName;
 import eu.etaxonomy.cdm.model.reference.Reference;
 import eu.etaxonomy.cdm.model.taxon.Taxon;
 import eu.etaxonomy.cdm.model.taxon.TaxonBase;
@@ -159,9 +159,9 @@ public class BerlinModelCommonNamesImport  extends BerlinModelImportBase {
 	public boolean doPartition(ResultSetPartitioner partitioner, BerlinModelImportState state)  {
 		boolean success = true ;
 
-		Set<TaxonBase> taxaToSave = new HashSet<TaxonBase>();
+		Set<TaxonBase> taxaToSave = new HashSet<>();
 		Map<String, Taxon> taxonMap = partitioner.getObjectMap(BerlinModelTaxonImport.NAMESPACE);
-		Map<String, TaxonNameBase> taxonNameMap = partitioner.getObjectMap(BerlinModelTaxonNameImport.NAMESPACE);
+		Map<String, TaxonName> taxonNameMap = partitioner.getObjectMap(BerlinModelTaxonNameImport.NAMESPACE);
 
 		Map<String, Reference> refMap = partitioner.getObjectMap(BerlinModelReferenceImport.REFERENCE_NAMESPACE);
 
@@ -260,7 +260,7 @@ public class BerlinModelCommonNamesImport  extends BerlinModelImportBase {
 				String microCitation = null;
 				String originalNameString = null;
 
-				TaxonNameBase<?,?> nameUsedInSource = taxonNameMap.get(String.valueOf(nameInSourceFk));
+				TaxonName nameUsedInSource = taxonNameMap.get(String.valueOf(nameInSourceFk));
 				if (nameInSourceFk != null && nameUsedInSource == null){
 					logger.warn("Name used in source (" + nameInSourceFk + ") was not found for common name " + commonNameId);
 				}
@@ -625,13 +625,13 @@ public class BerlinModelCommonNamesImport  extends BerlinModelImportBase {
 		String nameSpace;
 		Class<?> cdmClass;
 		Set<String> idSet;
-		Map<Object, Map<String, ? extends CdmBase>> result = new HashMap<Object, Map<String, ? extends CdmBase>>();
+		Map<Object, Map<String, ? extends CdmBase>> result = new HashMap<>();
 
 		String pos = "0";
 		try{
-			Set<String> taxonIdSet = new HashSet<String>();
-			Set<String> nameIdSet = new HashSet<String>();
-			Set<String> referenceIdSet = new HashSet<String>();
+			Set<String> taxonIdSet = new HashSet<>();
+			Set<String> nameIdSet = new HashSet<>();
+			Set<String> referenceIdSet = new HashSet<>();
 			while (rs.next()){
 				handleForeignKey(rs, taxonIdSet, "taxonId");
 				handleForeignKey(rs, taxonIdSet, "misappliedTaxonId");
@@ -644,9 +644,9 @@ public class BerlinModelCommonNamesImport  extends BerlinModelImportBase {
 
 			//name map
 			nameSpace = BerlinModelTaxonNameImport.NAMESPACE;
-			cdmClass = TaxonNameBase.class;
+			cdmClass = TaxonName.class;
 			idSet = nameIdSet;
-			Map<String, TaxonNameBase<?,?>> nameMap = (Map<String, TaxonNameBase<?,?>>)getCommonService().getSourcedObjectsByIdInSource(cdmClass, idSet, nameSpace);
+			Map<String, TaxonName> nameMap = (Map<String, TaxonName>)getCommonService().getSourcedObjectsByIdInSource(cdmClass, idSet, nameSpace);
 			result.put(nameSpace, nameMap);
 
 			//taxon map

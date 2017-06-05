@@ -33,8 +33,8 @@ import eu.etaxonomy.cdm.model.description.TaxonDescription;
 import eu.etaxonomy.cdm.model.location.NamedArea;
 import eu.etaxonomy.cdm.model.name.IZoologicalName;
 import eu.etaxonomy.cdm.model.name.Rank;
+import eu.etaxonomy.cdm.model.name.TaxonName;
 import eu.etaxonomy.cdm.model.name.TaxonNameFactory;
-import eu.etaxonomy.cdm.model.name.ZoologicalName;
 import eu.etaxonomy.cdm.model.reference.Reference;
 import eu.etaxonomy.cdm.model.taxon.Classification;
 import eu.etaxonomy.cdm.model.taxon.Taxon;
@@ -166,7 +166,7 @@ public class GlobisCurrentSpeciesImport  extends GlobisImportBase<Taxon> {
 					nextHigherTaxon = genus;
 
 					//subgenus
-					String subGenusStr = CdmBase.deproxy(species.getName(), ZoologicalName.class).getInfraGenericEpithet();
+					String subGenusStr = CdmBase.deproxy(species.getName(), TaxonName.class).getInfraGenericEpithet();
 					String subGenusAuthorStr = rs.getString("dtSpcSubgenaktauthor");
 					boolean hasSubgenus = StringUtils.isNotBlank(subGenusStr) || StringUtils.isNotBlank(subGenusAuthorStr);
 					if (hasSubgenus){

@@ -38,8 +38,7 @@ import eu.etaxonomy.cdm.model.common.IdentifiableSource;
 import eu.etaxonomy.cdm.model.common.Marker;
 import eu.etaxonomy.cdm.model.common.MarkerType;
 import eu.etaxonomy.cdm.model.name.Rank;
-import eu.etaxonomy.cdm.model.name.TaxonNameBase;
-import eu.etaxonomy.cdm.model.name.ZoologicalName;
+import eu.etaxonomy.cdm.model.name.TaxonName;
 import eu.etaxonomy.cdm.model.reference.Reference;
 import eu.etaxonomy.cdm.model.taxon.Classification;
 import eu.etaxonomy.cdm.model.taxon.Synonym;
@@ -1153,7 +1152,7 @@ public class FaunaEuropaeaRelTaxonIncludeImport extends FaunaEuropaeaImportBase 
 
 
 	        while ((taxonList  = getTaxonService().listTaxaByName(Taxon.class, "*", "*", "*", "*", "*", Rank.SPECIES(), pageSize, pageNumber)).size() > 0) {
-	            HashMap<Integer, TaxonNameBase<?,?>> inferredSynonymsDataToBeSaved = new HashMap<Integer, TaxonNameBase<?,?>>();
+	            HashMap<Integer, TaxonName> inferredSynonymsDataToBeSaved = new HashMap<>();
 
 	            logger.info("Fetched " + taxonList.size() + " " + parentPluralString + ". Importing...");
 	            synonymList = createInferredSynonymsForTaxonList(state,  taxonList);
@@ -1177,7 +1176,7 @@ public class FaunaEuropaeaRelTaxonIncludeImport extends FaunaEuropaeaImportBase 
 	        }
 	        taxonList = null;
 	        while ((taxonList  = getTaxonService().listTaxaByName(Taxon.class, "*", "*", "*", "*", "*", Rank.SUBSPECIES(), pageSize, pageNumber)).size() > 0) {
-	            HashMap<Integer, TaxonNameBase<?,?>> inferredSynonymsDataToBeSaved = new HashMap<Integer, TaxonNameBase<?,?>>();
+	            HashMap<Integer, TaxonName> inferredSynonymsDataToBeSaved = new HashMap<>();
 
 	            logger.info("Fetched " + taxonList.size() + " " + parentPluralString  + ". Exporting...");
 	            synonymList = createInferredSynonymsForTaxonList(state, taxonList);
@@ -1233,15 +1232,15 @@ public class FaunaEuropaeaRelTaxonIncludeImport extends FaunaEuropaeaImportBase 
        List<Synonym> inferredSynonymsLocal= new ArrayList<Synonym>();
        boolean localSuccess = true;
 
-       HashMap<Integer, TaxonNameBase<?,?>> inferredSynonymsDataToBeSaved = new HashMap<Integer, TaxonNameBase<?,?>>();
+       HashMap<Integer, TaxonName> inferredSynonymsDataToBeSaved = new HashMap<>();
 
        for (TaxonBase<?> taxonBase : taxonList) {
 
            if (taxonBase.isInstanceOf(Taxon.class)) { // this should always be the case since we should have fetched accepted taxon only, but you never know...
                acceptedTaxon = CdmBase.deproxy(taxonBase, Taxon.class);
-               TaxonNameBase<?,?> taxonName = acceptedTaxon.getName();
+               TaxonName taxonName = acceptedTaxon.getName();
 
-               if (taxonName.isInstanceOf(ZoologicalName.class)) {
+               if (taxonName.isZoological()) {
                    Set<TaxonNode> taxonNodes = acceptedTaxon.getTaxonNodes();
                    TaxonNode singleNode = null;
 
@@ -1265,7 +1264,7 @@ public class FaunaEuropaeaRelTaxonIncludeImport extends FaunaEuropaeaImportBase 
 
                    if (classification != null) {
                        try{
-                           TaxonNameBase name = acceptedTaxon.getName();
+                           TaxonName name = acceptedTaxon.getName();
 
                             //if (name.isSpecies() || name.isInfraSpecific()){
                                inferredSynonymsLocal = getTaxonService().createAllInferredSynonyms(acceptedTaxon, classification, true);

@@ -31,18 +31,20 @@ import eu.etaxonomy.cdm.model.common.CdmBase;
 import eu.etaxonomy.cdm.model.common.Marker;
 import eu.etaxonomy.cdm.model.common.MarkerType;
 import eu.etaxonomy.cdm.model.name.NomenclaturalStatus;
-import eu.etaxonomy.cdm.model.name.TaxonNameBase;
+import eu.etaxonomy.cdm.model.name.TaxonName;
 import eu.etaxonomy.cdm.model.reference.Reference;
 import eu.etaxonomy.cdm.strategy.exceptions.UnknownCdmTypeException;
 
 /**
  * @author a.mueller
  * @created 20.03.2008
- * @version 1.0
  */
 @Component
 public class BerlinModelNameStatusImport extends BerlinModelImportBase {
-	private static final Logger logger = Logger.getLogger(BerlinModelNameStatusImport.class);
+
+    private static final long serialVersionUID = 6984893930082868489L;
+
+    private static final Logger logger = Logger.getLogger(BerlinModelNameStatusImport.class);
 
 	private int modCount = 5000;
 	private static final String pluralString = "nomenclatural status";
@@ -85,18 +87,15 @@ public class BerlinModelNameStatusImport extends BerlinModelImportBase {
 		return strQuery;
 	}
 
-	/* (non-Javadoc)
-	 * @see eu.etaxonomy.cdm.io.berlinModel.in.IPartitionedIO#doPartition(eu.etaxonomy.cdm.io.berlinModel.in.ResultSetPartitioner, eu.etaxonomy.cdm.io.berlinModel.in.BerlinModelImportState)
-	 */
 	@Override
     public boolean doPartition(ResultSetPartitioner partitioner,BerlinModelImportState state) {
 		boolean success = true;
 		String dbAttrName;
 		String cdmAttrName;
 
-		Set<TaxonNameBase> namesToSave = new HashSet<TaxonNameBase>();
+		Set<TaxonName> namesToSave = new HashSet<>();
 		BerlinModelImportConfigurator config = state.getConfig();
-		Map<String, TaxonNameBase> nameMap = partitioner.getObjectMap(BerlinModelTaxonNameImport.NAMESPACE);
+		Map<String, TaxonName> nameMap = partitioner.getObjectMap(BerlinModelTaxonNameImport.NAMESPACE);
 
 		ResultSet rs = partitioner.getResultSet();
 		try {
@@ -120,7 +119,7 @@ public class BerlinModelNameStatusImport extends BerlinModelImportBase {
 				boolean doubtful = rs.getBoolean("DoubtfulFlag");
 				String nomStatusLabel = rs.getString("NomStatus");
 
-				TaxonNameBase taxonName = nameMap.get(String.valueOf(nameId));
+				TaxonName taxonName = nameMap.get(String.valueOf(nameId));
 				//TODO doubtful
 
 				if (taxonName != null ){
@@ -200,7 +199,7 @@ public class BerlinModelNameStatusImport extends BerlinModelImportBase {
 
 			//name map
 			nameSpace = BerlinModelTaxonNameImport.NAMESPACE;
-			cdmClass = TaxonNameBase.class;
+			cdmClass = TaxonName.class;
 			idSet = nameIdSet;
 			Map<String, Person> nameMap = (Map<String, Person>)getCommonService().getSourcedObjectsByIdInSource(cdmClass, idSet, nameSpace);
 			result.put(nameSpace, nameMap);

@@ -22,7 +22,6 @@ import eu.etaxonomy.cdm.database.ICdmDataSource;
 import eu.etaxonomy.cdm.ext.ipni.IpniService;
 import eu.etaxonomy.cdm.ext.ipni.IpniServiceNamesConfigurator;
 import eu.etaxonomy.cdm.io.common.utils.ImportDeduplicationHelper;
-import eu.etaxonomy.cdm.model.name.BotanicalName;
 import eu.etaxonomy.cdm.model.name.IBotanicalName;
 import eu.etaxonomy.cdm.model.name.Rank;
 import eu.etaxonomy.cdm.model.reference.Reference;
@@ -117,7 +116,7 @@ private void doSingleImport(CdmApplicationController app, Reference ipniSec, Cla
     IpniService ipniService = new IpniService();//(IpniService)app.getBean("ipniService");
 
     Rank rank = null;
-      List<BotanicalName> names = ipniService.getNamesAdvanced(null, "Nepenthes", null, null, null, null,
+      List<IBotanicalName> names = ipniService.getNamesAdvanced(null, "Nepenthes", null, null, null, null,
               null, null, rank, namesConfig, app);
 
       System.out.println(names.size());

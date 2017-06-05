@@ -39,7 +39,7 @@ import eu.etaxonomy.cdm.model.description.TaxonNameDescription;
 import eu.etaxonomy.cdm.model.location.Country;
 import eu.etaxonomy.cdm.model.location.NamedAreaType;
 import eu.etaxonomy.cdm.model.name.Rank;
-import eu.etaxonomy.cdm.model.name.TaxonNameBase;
+import eu.etaxonomy.cdm.model.name.TaxonName;
 import eu.etaxonomy.cdm.model.name.TaxonNameFactory;
 import eu.etaxonomy.cdm.model.occurrence.DerivedUnit;
 import eu.etaxonomy.cdm.model.occurrence.SpecimenOrObservationBase;
@@ -101,15 +101,15 @@ public class TestDatabase {
 	 */
 	private static DataSet buildDataSet() {
 
-		List<AgentBase> agents = new ArrayList<AgentBase>();
-	    List<VersionableEntity> agentData = new ArrayList<VersionableEntity>();
-	    //List<Agent> agentData = new ArrayList<Agent>();
+		List<AgentBase> agents = new ArrayList<>();
+	    List<VersionableEntity> agentData = new ArrayList<>();
+	    //List<Agent> agentData = new ArrayList<>();
 
-	    //List<TermBase> terms = new ArrayList<TermBase>();
-	    List<DefinedTermBase> terms = new ArrayList<DefinedTermBase>();
+	    //List<TermBase> terms = new ArrayList<>();
+	    List<DefinedTermBase> terms = new ArrayList<>();
 	    List<Reference> references = new ArrayList<Reference>();
-	    List<TaxonNameBase> taxonomicNames = new ArrayList<TaxonNameBase>();
-	    List<TaxonBase> taxonBases = new ArrayList<TaxonBase>();
+	    List<TaxonName> taxonomicNames = new ArrayList<>();
+	    List<TaxonBase> taxonBases = new ArrayList<>();
 
 	    List<Feature> features = new ArrayList<Feature>();
 
@@ -144,8 +144,8 @@ public class TestDatabase {
 	    List<AnnotatableEntity> homotypicalGroups;
 
 		Reference citRef, sec;
-		TaxonNameBase<?,?> name1, name2, name21, nameRoot1, nameFree, synName11, synName12, synName2, synNameFree;
-		TaxonNameBase<?,?> nameRoot2, nameR2_1, nameR2_2;
+		TaxonName name1, name2, name21, nameRoot1, nameFree, synName11, synName12, synName2, synNameFree;
+		TaxonName nameRoot2, nameR2_1, nameR2_2;
 		Taxon child1, child2, child21, root1T, root2T, freeT;
 		Taxon childR2_1, childR2_2;
 		TaxonNode child1Node, child2Node, child21Node, root1TNode, root2TNode, freeTNode;

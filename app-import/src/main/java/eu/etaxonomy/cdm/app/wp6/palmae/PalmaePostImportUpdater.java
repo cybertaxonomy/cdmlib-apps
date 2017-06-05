@@ -26,7 +26,7 @@ import eu.etaxonomy.cdm.model.description.FeatureNode;
 import eu.etaxonomy.cdm.model.description.FeatureTree;
 import eu.etaxonomy.cdm.model.description.TaxonDescription;
 import eu.etaxonomy.cdm.model.description.TextData;
-import eu.etaxonomy.cdm.model.name.TaxonNameBase;
+import eu.etaxonomy.cdm.model.name.TaxonName;
 import eu.etaxonomy.cdm.model.reference.IReference;
 import eu.etaxonomy.cdm.model.reference.Reference;
 import eu.etaxonomy.cdm.model.taxon.Synonym;
@@ -164,7 +164,7 @@ public class PalmaePostImportUpdater {
 	 */
 	private Taxon getAcceptedTreatmentTaxon(TaxonBase nameUsage, IReference treatmentReference) {
 		boolean hasSynonymInTreatment = false;
-		TaxonNameBase name = nameUsage.getName();
+		TaxonName name = nameUsage.getName();
 		Set<TaxonBase> candidateList = name.getTaxonBases();
 		for (TaxonBase candidate : candidateList){
 			if (candidate instanceof Taxon){

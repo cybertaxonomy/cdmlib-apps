@@ -51,19 +51,19 @@ import eu.etaxonomy.cdm.model.name.HybridRelationshipType;
 import eu.etaxonomy.cdm.model.name.IBotanicalName;
 import eu.etaxonomy.cdm.model.name.NameRelationshipType;
 import eu.etaxonomy.cdm.model.name.NameTypeDesignationStatus;
-import eu.etaxonomy.cdm.model.name.NonViralName;
-import eu.etaxonomy.cdm.model.name.TaxonNameBase;
+import eu.etaxonomy.cdm.model.name.TaxonName;
 import eu.etaxonomy.cdm.model.reference.Reference;
 import eu.etaxonomy.cdm.strategy.exceptions.UnknownCdmTypeException;
 
 /**
  * @author a.mueller
  * @created 20.03.2008
- * @version 1.0
  */
 @Component
 public class BerlinModelTaxonNameRelationImport extends BerlinModelImportBase {
-	private static final Logger logger = Logger.getLogger(BerlinModelTaxonNameRelationImport.class);
+
+    private static final long serialVersionUID = 1197601822023101796L;
+    private static final Logger logger = Logger.getLogger(BerlinModelTaxonNameRelationImport.class);
 
 	private static int modCount = 5000;
 	private static final String pluralString = "name relations";
@@ -105,8 +105,8 @@ public class BerlinModelTaxonNameRelationImport extends BerlinModelImportBase {
 	public boolean doPartition(ResultSetPartitioner partitioner, BerlinModelImportState state) {
 		boolean success = true ;
 		BerlinModelImportConfigurator config = state.getConfig();
-		Set<TaxonNameBase> nameToSave = new HashSet<TaxonNameBase>();
-		Map<String, TaxonNameBase> nameMap = partitioner.getObjectMap(BerlinModelTaxonNameImport.NAMESPACE);
+		Set<TaxonName> nameToSave = new HashSet<>();
+		Map<String, TaxonName> nameMap = partitioner.getObjectMap(BerlinModelTaxonNameImport.NAMESPACE);
 		Map<String, Reference> refMap = partitioner.getObjectMap(BerlinModelReferenceImport.REFERENCE_NAMESPACE);
 
 		ResultSet rs = partitioner.getResultSet();
@@ -126,8 +126,8 @@ public class BerlinModelTaxonNameRelationImport extends BerlinModelImportBase {
 				int relQualifierFk = rs.getInt("relNameQualifierFk");
 				String notes = rs.getString("notes");
 
-				TaxonNameBase<?,?> nameFrom = nameMap.get(String.valueOf(name1Id));
-				TaxonNameBase<?,?> nameTo = nameMap.get(String.valueOf(name2Id));
+				TaxonName nameFrom = nameMap.get(String.valueOf(name1Id));
+				TaxonName nameTo = nameMap.get(String.valueOf(name2Id));
 
 
 				Reference citation = null;
@@ -199,8 +199,8 @@ public class BerlinModelTaxonNameRelationImport extends BerlinModelImportBase {
 	 */
 	private boolean handleNameRelationship(boolean success,
 				BerlinModelImportConfigurator config, int name1Id, int name2Id,
-				int relQualifierFk, String notes, TaxonNameBase nameFrom,
-				TaxonNameBase nameTo, Reference citation,
+				int relQualifierFk, String notes, TaxonName nameFrom,
+				TaxonName nameTo, Reference citation,
 				String microcitation, String rule) {
 		AnnotatableEntity nameRelationship = null;
 		if (relQualifierFk == NAME_REL_IS_BASIONYM_FOR){
@@ -249,10 +249,6 @@ public class BerlinModelTaxonNameRelationImport extends BerlinModelImportBase {
 			nameRelationship = nameFrom.addRelationshipToName(nameTo, NameRelationshipType.ALTERNATIVE_NAME(), citation, microcitation, rule) ;
 		}else if (relQualifierFk == NAME_REL_IS_FIRST_PARENT_OF || relQualifierFk == NAME_REL_IS_SECOND_PARENT_OF || relQualifierFk == NAME_REL_IS_FEMALE_PARENT_OF || relQualifierFk == NAME_REL_IS_MALE_PARENT_OF){
 			//HybridRelationships
-			if (! (nameTo instanceof NonViralName ) || ! (nameFrom instanceof NonViralName)){
-				logger.warn("HybridrelationshipNames ("+name1Id +"," + name2Id +") must be of type NonViralNameName but are not");
-				success = false;
-			}
 			try {
 				HybridRelationshipType hybridRelType = BerlinModelTransformer.relNameId2HybridRel(relQualifierFk);
 				IBotanicalName parent = nameFrom;
@@ -304,7 +300,7 @@ public class BerlinModelTaxonNameRelationImport extends BerlinModelImportBase {
 
 			//name map
 			nameSpace = BerlinModelTaxonNameImport.NAMESPACE;
-			cdmClass = TaxonNameBase.class;
+			cdmClass = TaxonName.class;
 			idSet = nameIdSet;
 			Map<String, Person> objectMap = (Map<String, Person>)getCommonService().getSourcedObjectsByIdInSource(cdmClass, idSet, nameSpace);
 			result.put(nameSpace, objectMap);
