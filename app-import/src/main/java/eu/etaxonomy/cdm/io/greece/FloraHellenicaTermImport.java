@@ -326,7 +326,7 @@ public class FloraHellenicaTermImport <CONFIG extends FloraHellenicaImportConfig
      */
     private void addLifeform(SimpleExcelTaxonImportState<FloraHellenicaImportConfigurator> state,
             OrderedTermVocabulary<State> lifeformVoc, String abbrevLabel, String label, UUID uuidlifeform) {
-        State lifeForm = addState(state, abbrevLabel, label, label, uuidlifeform, lifeformVoc);
+        addState(state, abbrevLabel, label, label, uuidlifeform, lifeformVoc);
     }
 
 

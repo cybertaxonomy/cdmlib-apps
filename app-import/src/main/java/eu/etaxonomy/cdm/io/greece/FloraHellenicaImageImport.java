@@ -37,6 +37,8 @@ import eu.etaxonomy.cdm.model.description.Feature;
 import eu.etaxonomy.cdm.model.description.TaxonDescription;
 import eu.etaxonomy.cdm.model.description.TextData;
 import eu.etaxonomy.cdm.model.media.Media;
+import eu.etaxonomy.cdm.model.media.Rights;
+import eu.etaxonomy.cdm.model.media.RightsType;
 import eu.etaxonomy.cdm.model.reference.Reference;
 import eu.etaxonomy.cdm.model.taxon.Synonym;
 import eu.etaxonomy.cdm.model.taxon.Taxon;
@@ -168,6 +170,12 @@ public class FloraHellenicaImageImport<CONFIG extends FloraHellenicaImportConfig
                 person = (Person)deduplicationHelper.getExistingAuthor(state, person);
 
                 media.setArtist(person);
+                //copyright
+                Rights right = Rights.NewInstance();
+                right.setType(RightsType.COPYRIGHT());
+                right.setAgent(person);
+                right = deduplicationHelper.getExistingCopyright(state, right);
+                media.addRights(right);
             }
 
             String detail = "p. " + FloraHellenicaImageCaptionImport.startPage + 1 + plate *2;

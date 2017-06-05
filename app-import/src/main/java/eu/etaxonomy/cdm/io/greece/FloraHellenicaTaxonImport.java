@@ -387,6 +387,11 @@ public class FloraHellenicaTaxonImport<CONFIG extends FloraHellenicaImportConfig
         }
 
         String nameStr = CdmUtils.concat(" ", nameParts);
+        boolean isSensuStrictu = false;
+        if (nameStr.endsWith("s.str.")){
+            isSensuStrictu = true;
+            nameStr = nameStr.substring(0, nameStr.length() - "s.str.".length() ).trim();
+        }
         Rank rank = isSubSpecies ? Rank.SUBSPECIES() : Rank.SPECIES();
         BotanicalName name = (BotanicalName)parser.parseFullName(nameStr, state.getConfig().getNomenclaturalCode(), rank);
         if (name.isProtectedTitleCache()){
@@ -396,6 +401,9 @@ public class FloraHellenicaTaxonImport<CONFIG extends FloraHellenicaImportConfig
 
         Taxon taxon = Taxon.NewInstance(name, getSecReference(state));
         taxon.addImportSource(noStr, getWorksheetName(), getSourceCitation(state), null);
+        if (isSensuStrictu){
+            taxon.setAppendedPhrase("s.str.");
+        }
         String parentStr = isSubSpecies ?
                 makeSpeciesKey(genusStr, speciesStr, speciesAuthorStr) : genusStr;
         taxon.setUuid(uuid);

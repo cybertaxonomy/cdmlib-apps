@@ -146,7 +146,9 @@ public class FloraHellenicaSynonymImport<CONFIG extends FloraHellenicaImportConf
 
         TaxonBase<?> result;
         if (isMisapplied){
-            result = Taxon.NewInstance(name, getMisappliedRef(state, parsedSynStr[1]));
+            Reference sec = null;// getMisappliedRef(state, parsedSynStr[1]);
+            result = Taxon.NewInstance(name, sec);
+            result.setAppendedPhrase(getMisappliedRef(state, parsedSynStr[1]));
             acceptedTaxon.addMisappliedName((Taxon)result, getSecReference(state), null);
             if (isNec){
                 logger.warn(line + "nec for misapplied names still needs to be checked: " + synonymStr);
@@ -228,11 +230,15 @@ public class FloraHellenicaSynonymImport<CONFIG extends FloraHellenicaImportConf
      * @param string
      * @return
      */
-    private Reference getMisappliedRef(SimpleExcelTaxonImportState<CONFIG> state, String refString) {
+    private String getMisappliedRef(SimpleExcelTaxonImportState<CONFIG> state, String refString) {
+//        if ("fl. graec.".equals(refString)){
+//            return flGraecReference;
+//        }else if ("balc.".equals(refString)){
+//            return balkanReference;
         if ("fl. graec.".equals(refString)){
-            return flGraecReference;
+          return "auct. fl. graec.";
         }else if ("balc.".equals(refString)){
-            return balkanReference;
+          return "auct. balc.";
         }else{
             logger.warn("Auct. reference not recognized: " + refString);
             return null;

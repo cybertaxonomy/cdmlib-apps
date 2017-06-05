@@ -17,6 +17,8 @@ import org.apache.log4j.Logger;
 import org.springframework.stereotype.Component;
 
 import eu.etaxonomy.cdm.io.mexico.SimpleExcelTaxonImportState;
+import eu.etaxonomy.cdm.model.agent.Person;
+import eu.etaxonomy.cdm.model.common.TimePeriod;
 import eu.etaxonomy.cdm.model.name.IBotanicalName;
 import eu.etaxonomy.cdm.model.name.INonViralName;
 import eu.etaxonomy.cdm.model.name.NomenclaturalCode;
@@ -24,6 +26,7 @@ import eu.etaxonomy.cdm.model.name.Rank;
 import eu.etaxonomy.cdm.model.name.TaxonNameBase;
 import eu.etaxonomy.cdm.model.name.TaxonNameFactory;
 import eu.etaxonomy.cdm.model.reference.Reference;
+import eu.etaxonomy.cdm.model.reference.ReferenceFactory;
 import eu.etaxonomy.cdm.model.taxon.Classification;
 import eu.etaxonomy.cdm.model.taxon.ITaxonTreeNode;
 import eu.etaxonomy.cdm.model.taxon.Taxon;
@@ -108,13 +111,26 @@ public class FloraHellenicaExcludedTaxonImport<CONFIG extends FloraHellenicaImpo
         }
 
         String taxonStr = getValue(record, TAXON);
+        Reference sec = getSecReference(state);
+        if (taxonStr.endsWith(" sec. Hayek 1929")){
+            sec = makeHayek1929();
+            taxonStr = taxonStr.substring(0, taxonStr.length() - " sec. Hayek 1929".length()).trim();
+        }
+        boolean isSensuStrictu = false;
+        if (taxonStr.endsWith("s.str.")){
+            isSensuStrictu = true;
+            taxonStr = taxonStr.substring(0, taxonStr.length() - "s.str.".length() ).trim();
+        }
         INonViralName name = parser.parseFullName(taxonStr, NomenclaturalCode.ICNAFP, null);
         name = replaceNameAuthorsAndReferences(state, name);
         if (name.isProtectedTitleCache()){
             logger.warn(line + "Name could not be parsed: " + taxonStr);
         }
 
-        Taxon taxon = Taxon.NewInstance(name, getSecReference(state));
+        Taxon taxon = Taxon.NewInstance(name, sec);
+        if (isSensuStrictu){
+            taxon.setAppendedPhrase("s.str.");
+        }
         taxon.addImportSource(noStr, getWorksheetName(), getSourceCitation(state), null);
         TaxonNode excludedNode = familyTaxonNode.addChildTaxon(taxon, getSecReference(state), null);
         excludedNode.setExcluded(true);
@@ -125,6 +141,19 @@ public class FloraHellenicaExcludedTaxonImport<CONFIG extends FloraHellenicaImpo
 
 
    /**
+     * @return
+     */
+    private Reference makeHayek1929() {
+        Reference ref = ReferenceFactory.newGeneric();
+        Person hayek = Person.NewInstance();
+        hayek.setLastname("Hayek");
+        ref.setAuthorship(hayek);
+        ref.setDatePublished(TimePeriod.NewInstance(1929));
+        return ref;
+    }
+
+
+/**
      * @param record
      * @param state
      * @return

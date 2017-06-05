@@ -65,19 +65,18 @@ import eu.etaxonomy.cdm.model.taxon.TaxonBase;
 
 /**
  * @author a.mueller
- * @created 16.12.2010
+ * @created 05.2017
  */
 public class CyprusImagesActivator {
 	private static final Logger logger = Logger.getLogger(CyprusImagesActivator.class);
 
-	//database validation status (create, update, validate ...)
-    static DbSchemaValidation hbm2dll = DbSchemaValidation.VALIDATE;
 
 //	static final ICdmDataSource cdmDestination = CdmDestinations.cdm_cyprus_dev();
 	static final ICdmDataSource cdmDestination = CdmDestinations.cdm_cyprus_production();
 
-	static boolean testOnly = false;
+	static boolean testOnly = true;
 	static boolean update_notCreate = true;
+	//if true, data will always be updated, if false, only missing data will be updated
 	static boolean forceUpdate = false;
 
     private static final String path = "//media/digitalimages/EditWP6/Zypern/photos/";
@@ -88,10 +87,10 @@ public class CyprusImagesActivator {
 
 	private void doImport(ICdmDataSource cdmDestination){
 
-		CdmApplicationController app = CdmIoApplicationController.NewInstance(cdmDestination, hbm2dll);
+		CdmApplicationController app = CdmIoApplicationController.NewInstance(cdmDestination, DbSchemaValidation.VALIDATE);
 		TransactionStatus tx = app.startTransaction();
 
-		deduplicationHelper = (ImportDeduplicationHelper<SimpleExcelTaxonImportState<?>>)ImportDeduplicationHelper.NewInstance(app);
+		deduplicationHelper = (ImportDeduplicationHelper)ImportDeduplicationHelper.NewInstance(app);
 
         File file = new File(path);
         String[] fileList = file.list();
@@ -447,7 +446,8 @@ public class CyprusImagesActivator {
         List<TaxonBase> list = app.getTaxonService().findTaxaByName(config);
         if (list.isEmpty()){
 //            logger.warn("Taxon not found for media: " + taxonNameStr);
-            taxonNameStr = taxonNameStr.replaceFirst(" ", UTF8.HYBRID.toString() + " ");
+            taxonNameStr = taxonNameStr.replaceFirst(" ", " " + UTF8.HYBRID.toString());
+            config.setTaxonNameTitle(taxonNameStr);
             list = app.getTaxonService().findTaxaByName(config);
             if (list.isEmpty()){
                 return null;
@@ -517,7 +517,7 @@ public class CyprusImagesActivator {
 	}
 
 	private void updateMetadata(ICdmDataSource cdmDestination){
-        CdmApplicationController app = CdmIoApplicationController.NewInstance(cdmDestination, hbm2dll);
+        CdmApplicationController app = CdmIoApplicationController.NewInstance(cdmDestination, DbSchemaValidation.VALIDATE);
         TransactionStatus tx = app.startTransaction();
 
         deduplicationHelper = (ImportDeduplicationHelper<SimpleExcelTaxonImportState<?>>)ImportDeduplicationHelper.NewInstance(app);
@@ -527,9 +527,11 @@ public class CyprusImagesActivator {
             String fileName = getUrlStringForMedia(media);
             if (fileName.startsWith(urlPath)){
                 fileName = fileName.replace(urlPath, "");
-//                System.out.println(fileName);
-//                makeMetaData(media, fileName, true);
-                makeTitle(media, fileName, true);
+                if (fileName.equals("Acinos_exiguus_C1.jpg")){  //for debugging only
+//                  System.out.println(fileName);
+                    makeMetaData(media, fileName, true);
+                    makeTitle(media, fileName, true);
+                }
             }else{
                 logger.warn("Filename does not start with standard url path: " + fileName);
             }
