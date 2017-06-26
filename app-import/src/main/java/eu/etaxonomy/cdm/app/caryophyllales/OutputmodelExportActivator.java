@@ -25,7 +25,6 @@ import eu.etaxonomy.cdm.database.ICdmDataSource;
 import eu.etaxonomy.cdm.io.common.CdmDefaultExport;
 import eu.etaxonomy.cdm.io.common.ExportResult;
 import eu.etaxonomy.cdm.io.common.ExportResultType;
-import eu.etaxonomy.cdm.io.outputmodel.OutputModelConfigurator;
 
 /**
  * @author k.luther

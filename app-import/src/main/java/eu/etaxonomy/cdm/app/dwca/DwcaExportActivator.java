@@ -137,7 +137,7 @@ public class DwcaExportActivator {
 
 		config.setFeatureExclusions(featureExclusions);
 		// invoke import
-		CdmDefaultExport<DwcaTaxExportConfigurator> bmExport = new CdmDefaultExport<DwcaTaxExportConfigurator>();
+		CdmDefaultExport<DwcaTaxExportConfigurator> bmExport = new CdmDefaultExport<>();
 		ExportResult result = bmExport.invoke(config);
 
 		System.out.println("End export to DWC-A ("+ fileDestination + ")..." + "("+result.getState().toString()+")");
