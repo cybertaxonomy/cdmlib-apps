@@ -24,11 +24,12 @@ import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import org.apache.commons.imaging.ImageReadException;
+import org.apache.commons.imaging.Imaging;
+import org.apache.commons.imaging.common.GenericImageMetadata.GenericImageMetadataItem;
+import org.apache.commons.imaging.common.ImageMetadata;
+import org.apache.commons.imaging.common.ImageMetadata.ImageMetadataItem;
 import org.apache.log4j.Logger;
-import org.apache.sanselan.ImageReadException;
-import org.apache.sanselan.Sanselan;
-import org.apache.sanselan.common.IImageMetadata;
-import org.apache.sanselan.common.ImageMetadata.Item;
 import org.joda.time.DateTime;
 import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
@@ -195,31 +196,37 @@ public class CyprusImagesActivator {
         String artistStr = null;
         String created = null;
         try{
-            IImageMetadata metadata = Sanselan.getMetadata(file);
-            ArrayList<?> items = metadata.getItems();
+//            IImageMetadata metadata = Sanselan.getMetadata(file);
+            ImageMetadata metadata = Imaging.getMetadata(file);
+            List<? extends ImageMetadataItem> items = metadata.getItems();
             for (Object object : items){
-                Item item = (Item) object;
+                ImageMetadataItem metadataItem = (ImageMetadataItem) object;
 //                System.out.println(item.getKeyword() +  ":    " + item.getText());
-                String keyword = item.getKeyword().toLowerCase();
-                String value =removeQuots(item.getText());
+                if (metadataItem instanceof GenericImageMetadataItem){
+                    GenericImageMetadataItem item = (GenericImageMetadataItem) metadataItem;
 
-                if("keywords".equals(keyword)){
-                    String[] splits = value.split(":");
-                    if (splits.length == 2){
-                        keywords.put(splits[0].trim().toLowerCase(), splits[1].trim());
-                    }else{
-                        logger.warn("Keyword has not correct format and can not be parsed: " + value +  "  for file " + fileName);
+                    String keyword = item.getKeyword().toLowerCase();
+                    String value =removeQuots(item.getText());
+
+                    if("keywords".equals(keyword)){
+                        String[] splits = value.split(":");
+                        if (splits.length == 2){
+                            keywords.put(splits[0].trim().toLowerCase(), splits[1].trim());
+                        }else{
+                            logger.warn("Keyword has not correct format and can not be parsed: " + value +  "  for file " + fileName);
+                        }
+                    }else if ("Copyright Notice".equalsIgnoreCase(keyword)){
+                        copyright = value;
+                    }else if ("artist".equals(keyword)){
+                        artistStr = value;
+                    }else if ("date time original".equalsIgnoreCase(item.getKeyword())){
+                        created = value;
                     }
-                }else if ("Copyright Notice".equalsIgnoreCase(keyword)){
-                    copyright = value;
-                }else if ("artist".equals(keyword)){
-                    artistStr = value;
-                }else if ("date time original".equalsIgnoreCase(item.getKeyword())){
-                    created = value;
                 }
             }
         } catch (ImageReadException | IOException e1) {
             logger.warn("       Problem (" + e1.getMessage() + ") when reading metadata from file: " + fileName);
+            e1.printStackTrace();
         }
 
 
