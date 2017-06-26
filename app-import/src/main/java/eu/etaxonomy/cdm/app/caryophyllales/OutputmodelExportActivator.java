@@ -22,6 +22,7 @@ import eu.etaxonomy.cdm.app.common.CdmDestinations;
 import eu.etaxonomy.cdm.app.util.TestDatabase;
 import eu.etaxonomy.cdm.database.DbSchemaValidation;
 import eu.etaxonomy.cdm.database.ICdmDataSource;
+import eu.etaxonomy.cdm.io.cdmLight.CdmLightExportConfigurator;
 import eu.etaxonomy.cdm.io.common.CdmDefaultExport;
 import eu.etaxonomy.cdm.io.common.ExportResult;
 import eu.etaxonomy.cdm.io.common.ExportResultType;
@@ -48,19 +49,14 @@ private static final ICdmDataSource cdmSource = CdmDestinations.cdm_local_caryop
 
 
 
-        OutputModelConfigurator outputModelExportConfigurator;
+        CdmLightExportConfigurator cdmlightExportConfigurator = new CdmLightExportConfigurator(null);
 
-        outputModelExportConfigurator = new OutputModelConfigurator(null);
-
-
-
-        CdmDefaultExport<OutputModelConfigurator> outputModelExport =
-            new CdmDefaultExport<OutputModelConfigurator>();
+        CdmDefaultExport<CdmLightExportConfigurator> cdmLightExport = new CdmDefaultExport<>();
 
 
         // invoke export
         logger.debug("Invoking OutputModel export");
-        ExportResult result = outputModelExport.invoke(outputModelExportConfigurator);
+        ExportResult result = cdmLightExport.invoke(cdmlightExportConfigurator);
         return result;
 
     }
