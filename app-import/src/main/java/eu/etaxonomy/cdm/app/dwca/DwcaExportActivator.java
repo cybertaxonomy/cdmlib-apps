@@ -120,11 +120,11 @@ public class DwcaExportActivator {
 		DwcaTaxExportConfigurator config = DwcaTaxExportConfigurator.NewInstance(source, new File(destination), emlRecord);
 
 		config.setDoTaxa(doTaxa);
-		config.setDoResourceRelation(doResourceRelation);
+		config.setDoResourceRelations(doResourceRelation);
 		config.setDoTypesAndSpecimen(doTypesAndSpecimen);
 		config.setDoVernacularNames(doVernacularNames);
 		config.setDoReferences(doReferences);
-		config.setDoDescription(doDescription);
+		config.setDoDescriptions(doDescription);
 		config.setDoDistributions(doDistributions);
 		config.setDoImages(doImages);
 		config.setDoMetaData(doMetaData);

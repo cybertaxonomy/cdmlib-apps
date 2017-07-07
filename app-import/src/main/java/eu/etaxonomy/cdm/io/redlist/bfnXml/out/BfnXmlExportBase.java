@@ -9,6 +9,8 @@
 
 package eu.etaxonomy.cdm.io.redlist.bfnXml.out;
 
+import java.io.File;
+
 import org.apache.log4j.Logger;
 import org.jdom2.Attribute;
 import org.jdom2.Element;
@@ -23,7 +25,7 @@ import eu.etaxonomy.cdm.io.redlist.bfnXml.BfnXmlConstants;
  * @date May 3, 2016
  *
  */
-public abstract class BfnXmlExportBase extends CdmExportBase<BfnXmlExportConfigurator, BfnXmlExportState, IExportTransformer> {
+public abstract class BfnXmlExportBase extends CdmExportBase<BfnXmlExportConfigurator, BfnXmlExportState, IExportTransformer, File> {
 
     private static final long serialVersionUID = 1115122553345412881L;
 
@@ -37,7 +39,7 @@ public abstract class BfnXmlExportBase extends CdmExportBase<BfnXmlExportConfigu
         Element iwert = new Element(BfnXmlConstants.EL_IWERT);
         iwert.setAttribute(new Attribute(BfnXmlConstants.ATT_STANDARDNAME, standardNameValue));
         parent.addContent(iwert);
-    
+
         Element wert = new Element(BfnXmlConstants.EL_WERT);
         wert.addContent(wertString);
         iwert.addContent(wert);

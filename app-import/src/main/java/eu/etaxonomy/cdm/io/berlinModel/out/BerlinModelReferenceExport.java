@@ -46,11 +46,13 @@ import eu.etaxonomy.cdm.model.reference.ReferenceType;
 /**
  * @author a.mueller
  * @created 20.03.2008
- * @version 1.0
  */
 @Component
 public class BerlinModelReferenceExport extends BerlinModelExportBase<Reference> {
-	private static final Logger logger = Logger.getLogger(BerlinModelReferenceExport.class);
+
+    private static final long serialVersionUID = 7866036354323372595L;
+
+    private static final Logger logger = Logger.getLogger(BerlinModelReferenceExport.class);
 
 	private static int modCount = 1000;
 	private static final String dbTableName = "Reference";
@@ -61,9 +63,6 @@ public class BerlinModelReferenceExport extends BerlinModelExportBase<Reference>
 		super();
 	}
 
-	/* (non-Javadoc)
-	 * @see eu.etaxonomy.cdm.io.common.CdmIoBase#doCheck(eu.etaxonomy.cdm.io.common.IImportConfigurator)
-	 */
 	@Override
 	protected boolean doCheck(BerlinModelExportState state){
 		boolean result = true;

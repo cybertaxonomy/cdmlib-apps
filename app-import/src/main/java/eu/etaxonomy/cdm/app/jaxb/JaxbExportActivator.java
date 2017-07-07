@@ -1,8 +1,8 @@
 /**
  * Copyright (C) 2008 EDIT
- * European Distributed Institute of Taxonomy 
+ * European Distributed Institute of Taxonomy
  * http://www.e-taxonomy.eu
- * 
+ *
  * The contents of this file are subject to the Mozilla Public License Version 1.1
  * See LICENSE.TXT at the top of this package for the full license terms.
  */
@@ -36,41 +36,41 @@ public class JaxbExportActivator {
 	/* SerializeFrom DB **/
 //	private static final ICdmDataSource cdmSource = CdmDestinations.localH2();
 	private static final ICdmDataSource cdmSource = CdmDestinations.cdm_production_flora_deutschland();
-	
+
 	// Export:
 	private static String exportFileName = "file:/F:/data/redlist/standardliste/standardliste_jaxb.xml";
 
 	/** NUMBER_ROWS_TO_RETRIEVE = 0 is the default case to retrieve all rows.
-	 * For testing purposes: If NUMBER_ROWS_TO_RETRIEVE >0 then retrieve 
-	 *  as many rows as specified for agents, references, etc. 
+	 * For testing purposes: If NUMBER_ROWS_TO_RETRIEVE >0 then retrieve
+	 *  as many rows as specified for agents, references, etc.
 	 *  Only root taxa and no synonyms and relationships are retrieved. */
 	private static final int NUMBER_ROWS_TO_RETRIEVE = 0;
 
 	private static final Logger logger = Logger.getLogger(JaxbImportActivator.class);
 
-	private void invokeExport(ICdmDataSource sourceParam, URI uri) {
+	private void invokeExport(ICdmDataSource sourceParam, File file) {
 //		String server = "localhost";
 //		String database = "EDITimport";
 //		String username = "edit";
 //		sourceParam = CdmDataSource.NewMySqlInstance(server, database, username, AccountStore.readOrStorePassword(server, database, username, null));
 
-		
-		
+
+
 		JaxbExportConfigurator jaxbExportConfigurator;
-		if (uri !=null && sourceParam != null){
-			jaxbExportConfigurator = JaxbExportConfigurator.NewInstance(sourceParam, uri);
-		}else if (sourceParam != null){			
-			jaxbExportConfigurator = JaxbExportConfigurator.NewInstance(sourceParam, URI.create(exportFileName));
-		} else if (uri !=null ){
-			jaxbExportConfigurator = JaxbExportConfigurator.NewInstance(cdmSource, uri);
+		if (file !=null && sourceParam != null){
+			jaxbExportConfigurator = JaxbExportConfigurator.NewInstance(sourceParam, file);
+		}else if (sourceParam != null){
+			jaxbExportConfigurator = JaxbExportConfigurator.NewInstance(sourceParam, new File(exportFileName));
+		} else if (file !=null ){
+			jaxbExportConfigurator = JaxbExportConfigurator.NewInstance(cdmSource, file);
 		} else{
-			jaxbExportConfigurator = JaxbExportConfigurator.NewInstance(cdmSource, URI.create(exportFileName));
+			jaxbExportConfigurator = JaxbExportConfigurator.NewInstance(cdmSource, new File(exportFileName));
 		}
-		
-		
-		CdmDefaultExport<JaxbExportConfigurator> jaxbExport = 
+
+
+		CdmDefaultExport<JaxbExportConfigurator> jaxbExport =
 			new CdmDefaultExport<JaxbExportConfigurator>();
-		
+
 
 		// invoke export
 		logger.debug("Invoking Jaxb export");
@@ -78,8 +78,9 @@ public class JaxbExportActivator {
 
 	}
 	public static String chooseFile(String[] args) {
-		if(args == null)
-			return null;
+		if(args == null) {
+            return null;
+        }
 		for (String dest: args){
 			if (dest.endsWith(".xml")){
 				return args[0];
@@ -88,9 +89,9 @@ public class JaxbExportActivator {
 		return null;
 	}
 
-	
 
-	
+
+
 	private CdmApplicationController initDb(ICdmDataSource db) {
 
 		// Init source DB
@@ -99,7 +100,7 @@ public class JaxbExportActivator {
 		return appCtrInit;
 	}
 
-	
+
 	// Load test data to DB
 	private void loadTestData(CdmApplicationController appCtrInit) {
 		TestDatabase.loadTestData("", appCtrInit);
@@ -122,8 +123,8 @@ public class JaxbExportActivator {
 			File myFile = new File(uri);
 			PrintWriter writer = new PrintWriter(new OutputStreamWriter(new FileOutputStream(myFile), "UTF8"), true);
 			sc.initDb(source);  //does this make sense here (it starts the appControler even if it is not needed later
-					
-			sc.invokeExport(source, uri);
+
+			sc.invokeExport(source, new File(file));
 		} catch (UnsupportedEncodingException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -131,7 +132,7 @@ public class JaxbExportActivator {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		
+
 	}
 
 }

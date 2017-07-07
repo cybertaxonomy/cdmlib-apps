@@ -31,11 +31,13 @@ import eu.etaxonomy.cdm.model.common.CdmBase;
 /**
  * @author a.mueller
  * @created 20.03.2008
- * @version 1.0
  */
 @Component
 public class BerlinModelAuthorTeamExport extends BerlinModelExportBase<Team> {
-	private static final Logger logger = Logger.getLogger(BerlinModelAuthorTeamExport.class);
+
+    private static final long serialVersionUID = 3089928128608037344L;
+
+    private static final Logger logger = Logger.getLogger(BerlinModelAuthorTeamExport.class);
 
 	private static int modCount = 1000;
 	private static final String dbTableName = "AuthorTeam";
@@ -46,9 +48,6 @@ public class BerlinModelAuthorTeamExport extends BerlinModelExportBase<Team> {
 		super();
 	}
 
-	/* (non-Javadoc)
-	 * @see eu.etaxonomy.cdm.io.common.CdmIoBase#doCheck(eu.etaxonomy.cdm.io.common.IImportConfigurator)
-	 */
 	@Override
 	protected boolean doCheck(BerlinModelExportState state){
 		boolean result = true;
@@ -60,7 +59,8 @@ public class BerlinModelAuthorTeamExport extends BerlinModelExportBase<Team> {
 
 	public CdmDbExportMapping<BerlinModelExportState, BerlinModelExportConfigurator, IExportTransformer> getMapping(){
 		String tableName = dbTableName;
-		CdmDbExportMapping<BerlinModelExportState, BerlinModelExportConfigurator, IExportTransformer> mapping = new CdmDbExportMapping<BerlinModelExportState, BerlinModelExportConfigurator, IExportTransformer>(tableName);
+		CdmDbExportMapping<BerlinModelExportState, BerlinModelExportConfigurator, IExportTransformer> mapping
+		            = new CdmDbExportMapping<>(tableName);
 		mapping.addMapper(IdMapper.NewInstance("AuthorTeamId"));
 		mapping.addMapper(MethodMapper.NewInstance("AuthorTeamCache", this));
 		mapping.addMapper(MethodMapper.NewInstance("FullAuthorTeamCache", this));
