@@ -25,7 +25,8 @@ import org.springframework.stereotype.Component;
 
 import eu.etaxonomy.cdm.common.CdmUtils;
 import eu.etaxonomy.cdm.io.common.mapping.UndefinedTransformerMethodException;
-import eu.etaxonomy.cdm.io.excel.common.ExcelImporterBase;
+import eu.etaxonomy.cdm.io.excel.common.ExcelImportBase;
+import eu.etaxonomy.cdm.io.excel.common.ExcelRowBase;
 import eu.etaxonomy.cdm.model.agent.Person;
 import eu.etaxonomy.cdm.model.agent.Team;
 import eu.etaxonomy.cdm.model.agent.TeamOrPersonBase;
@@ -74,7 +75,8 @@ import eu.etaxonomy.cdm.strategy.parser.NonViralNameParserImpl;
  */
 
 @Component
-public class CubaExcelImport extends ExcelImporterBase<CubaImportState> {
+public class CubaExcelImport
+        extends ExcelImportBase<CubaImportState, CubaImportConfigurator, ExcelRowBase> {
     private static final long serialVersionUID = -747486709409732371L;
     private static final Logger logger = Logger.getLogger(CubaExcelImport.class);
 

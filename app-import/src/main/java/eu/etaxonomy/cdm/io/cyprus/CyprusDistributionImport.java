@@ -26,7 +26,8 @@ import eu.etaxonomy.cdm.api.service.pager.Pager;
 import eu.etaxonomy.cdm.common.CdmUtils;
 import eu.etaxonomy.cdm.io.common.mapping.IInputTransformer;
 import eu.etaxonomy.cdm.io.common.mapping.UndefinedTransformerMethodException;
-import eu.etaxonomy.cdm.io.excel.common.ExcelImporterBase;
+import eu.etaxonomy.cdm.io.excel.common.ExcelImportBase;
+import eu.etaxonomy.cdm.io.excel.common.ExcelRowBase;
 import eu.etaxonomy.cdm.model.common.CdmBase;
 import eu.etaxonomy.cdm.model.common.OriginalSourceType;
 import eu.etaxonomy.cdm.model.common.TermType;
@@ -51,7 +52,8 @@ import eu.etaxonomy.cdm.model.taxon.Taxon;
  */
 
 @Component
-public class CyprusDistributionImport extends ExcelImporterBase<CyprusImportState> {
+public class CyprusDistributionImport
+       extends ExcelImportBase<CyprusImportState, CyprusImportConfigurator, ExcelRowBase> {
     private static final long serialVersionUID = -8527569026580975181L;
     private static final Logger logger = Logger.getLogger(CyprusDistributionImport.class);
 

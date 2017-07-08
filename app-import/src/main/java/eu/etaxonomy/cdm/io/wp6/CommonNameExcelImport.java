@@ -22,7 +22,8 @@ import org.springframework.stereotype.Component;
 
 import eu.etaxonomy.cdm.common.CdmUtils;
 import eu.etaxonomy.cdm.io.common.mapping.UndefinedTransformerMethodException;
-import eu.etaxonomy.cdm.io.excel.common.ExcelImporterBase;
+import eu.etaxonomy.cdm.io.excel.common.ExcelImportBase;
+import eu.etaxonomy.cdm.io.excel.common.ExcelRowBase;
 import eu.etaxonomy.cdm.model.common.DefinedTermBase;
 import eu.etaxonomy.cdm.model.common.Language;
 import eu.etaxonomy.cdm.model.common.OriginalSourceType;
@@ -43,7 +44,8 @@ import eu.etaxonomy.cdm.persistence.query.OrderHint;
  */
 
 @Component
-public class CommonNameExcelImport extends ExcelImporterBase<CichorieaeCommonNameImportState> {
+public class CommonNameExcelImport
+            extends ExcelImportBase<CichorieaeCommonNameImportState, CommonNameImportConfigurator, ExcelRowBase> {
 
     private static final long serialVersionUID = 747044451715401750L;
     private static final Logger logger = Logger.getLogger(CommonNameExcelImport.class);

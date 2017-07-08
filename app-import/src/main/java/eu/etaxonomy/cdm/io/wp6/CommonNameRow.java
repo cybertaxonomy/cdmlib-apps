@@ -27,9 +27,9 @@ import eu.etaxonomy.cdm.strategy.parser.NonViralNameParserImpl;
 /**
  * @author a.babadshanjan
  * @created 13.01.2009
- * @version 1.0
  */
 public class CommonNameRow {
+
 	private static final Logger logger = Logger.getLogger(CommonNameRow.class);
 
 

@@ -15,8 +15,9 @@ import java.util.Set;
 
 import org.apache.log4j.Logger;
 
+import eu.etaxonomy.cdm.io.excel.common.ExcelImportBase;
 import eu.etaxonomy.cdm.io.excel.common.ExcelImportConfiguratorBase;
-import eu.etaxonomy.cdm.io.excel.common.ExcelImporterBase;
+import eu.etaxonomy.cdm.io.excel.common.ExcelRowBase;
 import eu.etaxonomy.cdm.model.agent.Person;
 import eu.etaxonomy.cdm.model.agent.Team;
 import eu.etaxonomy.cdm.model.agent.TeamOrPersonBase;
@@ -38,7 +39,7 @@ import eu.etaxonomy.cdm.strategy.parser.NonViralNameParserImpl;
  * @date 16.06.2016
  */
 public abstract class SimpleExcelTaxonImport<CONFIG extends ExcelImportConfiguratorBase>
-        extends ExcelImporterBase<SimpleExcelTaxonImportState<CONFIG>>{
+        extends ExcelImportBase<SimpleExcelTaxonImportState<CONFIG>, CONFIG, ExcelRowBase>{
 
     private static final long serialVersionUID = -4345647703312616421L;
 

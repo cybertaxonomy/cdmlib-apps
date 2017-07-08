@@ -24,7 +24,8 @@ import eu.etaxonomy.cdm.common.CdmUtils;
 import eu.etaxonomy.cdm.io.common.TdwgAreaProvider;
 import eu.etaxonomy.cdm.io.common.mapping.IInputTransformer;
 import eu.etaxonomy.cdm.io.common.mapping.UndefinedTransformerMethodException;
-import eu.etaxonomy.cdm.io.excel.common.ExcelImporterBase;
+import eu.etaxonomy.cdm.io.excel.common.ExcelImportBase;
+import eu.etaxonomy.cdm.io.excel.common.ExcelRowBase;
 import eu.etaxonomy.cdm.model.common.Language;
 import eu.etaxonomy.cdm.model.description.Distribution;
 import eu.etaxonomy.cdm.model.description.Feature;
@@ -50,8 +51,12 @@ import eu.etaxonomy.cdm.strategy.parser.NonViralNameParserImpl;
  */
 
 @Component
-public class CyprusExcelImport extends ExcelImporterBase<CyprusImportState> {
-	private static final Logger logger = Logger.getLogger(CyprusExcelImport.class);
+public class CyprusExcelImport
+        extends ExcelImportBase<CyprusImportState, CyprusImportConfigurator, ExcelRowBase> {
+
+    private static final long serialVersionUID = 4449832452730987788L;
+
+    private static final Logger logger = Logger.getLogger(CyprusExcelImport.class);
 
 	public static Set<String> validMarkers = new HashSet<String>(Arrays.asList(new String[]{"", "valid", "accepted", "a", "v", "t"}));
 	public static Set<String> synonymMarkers = new HashSet<String>(Arrays.asList(new String[]{"", "invalid", "synonym", "s", "i"}));
@@ -127,14 +132,13 @@ public class CyprusExcelImport extends ExcelImporterBase<CyprusImportState> {
     	state.setCyprusRow(cyprusRow);
 
     	for (String originalKey: keys) {
-    		Integer index = 0;
     		String indexedKey = CdmUtils.removeDuplicateWhitespace(originalKey.trim()).toString();
     		String[] split = indexedKey.split("_");
     		String key = split[0];
     		if (split.length > 1){
     			String indexString = split[1];
     			try {
-					index = Integer.valueOf(indexString);
+					Integer.valueOf(indexString);
 				} catch (NumberFormatException e) {
 					String message = "Index must be integer";
 					logger.error(message);
@@ -193,7 +197,7 @@ public class CyprusExcelImport extends ExcelImporterBase<CyprusImportState> {
     	return;
     }
 
-	private static INonViralNameParser nameParser = NonViralNameParserImpl.NewInstance();
+	private static INonViralNameParser<INonViralName> nameParser = NonViralNameParserImpl.NewInstance();
 	private static NomenclaturalCode nc = NomenclaturalCode.ICNAFP;
 	private Feature redBookCategory;
 	private Feature endemism;
@@ -513,9 +517,9 @@ public class CyprusExcelImport extends ExcelImporterBase<CyprusImportState> {
 	 * @param nc
 	 * @return
 	 */
-	private TaxonBase createTaxon(CyprusImportState state, Rank rank, String taxonNameStr,
-			Class statusClass, NomenclaturalCode nc) {
-		TaxonBase taxonBase;
+	private TaxonBase<?> createTaxon(CyprusImportState state, Rank rank, String taxonNameStr,
+			Class<?> statusClass, NomenclaturalCode nc) {
+		TaxonBase<?> taxonBase;
 		INonViralName taxonNameBase = null;
 		if (nc == NomenclaturalCode.ICVCN){
 			logger.warn("ICVCN not yet supported");
@@ -552,7 +556,7 @@ public class CyprusExcelImport extends ExcelImporterBase<CyprusImportState> {
 		Classification tree = state.getTree(sec);
 		if (tree == null){
 			tree = makeTree(state, sec);
-			tree.setTitleCache(state.getConfig().getSourceReferenceTitle());
+			tree.setTitleCache(state.getConfig().getSourceReferenceTitle(), true);
 		}
 		if (sec.equals(childTaxon.getSec())){
 			success &=  (null !=  tree.addParentChild(parentTaxon, childTaxon, citation, microCitation));

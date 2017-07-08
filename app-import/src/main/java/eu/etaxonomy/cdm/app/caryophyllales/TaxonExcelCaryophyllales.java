@@ -1,10 +1,10 @@
 package eu.etaxonomy.cdm.app.caryophyllales;
 
 import eu.etaxonomy.cdm.io.excel.taxa.NormalExplicitRow;
+import eu.etaxonomy.cdm.io.excel.taxa.TaxonExcelImportBase;
 import eu.etaxonomy.cdm.io.excel.taxa.TaxonExcelImportState;
-import eu.etaxonomy.cdm.io.excel.taxa.TaxonExcelImporterBase;
 
-public class TaxonExcelCaryophyllales extends TaxonExcelImporterBase {
+public class TaxonExcelCaryophyllales extends TaxonExcelImportBase {
     private static final long serialVersionUID = 7516628978483172010L;
     protected static final String AUTHOR_COLUMN = "Authorship";
 	protected static final String SPECIES_HYBRID_MARKER = "Species hybrid marker";
