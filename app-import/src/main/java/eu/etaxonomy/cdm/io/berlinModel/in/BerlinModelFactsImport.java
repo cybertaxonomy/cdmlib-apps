@@ -106,7 +106,7 @@ public class BerlinModelFactsImport  extends BerlinModelImportBase {
 
 
 	private TermVocabulary<Feature> getFeatureVocabulary(){
-	    TermVocabulary<Feature> newVoc = TermVocabulary.NewInstance(TermType.Feature, "User Defined Feature Vocabulary", "User Defined Feature Vocabulary", null, null);
+	    TermVocabulary<Feature> newVoc = TermVocabulary.NewInstance(TermType.Feature, "Berlin Model Import Feature Vocabulary", "Berlin Model Import Feature Vocabulary", null, null);
 	    getVocabularyService().save(newVoc);
 
 	    return newVoc;
