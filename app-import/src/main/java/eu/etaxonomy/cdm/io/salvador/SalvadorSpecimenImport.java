@@ -505,6 +505,7 @@ public class SalvadorSpecimenImport
         makeCollector(state, 1, team, record, row);
         makeCollector(state, 2, team, record, row);
         makeCollector(state, 3, team, record, row);
+        makeCollector(state, 4, team, record, row);
         if (team.getTeamMembers().size() == 0){
             return null;
         }else if (team.getTeamMembers().size() == 1){
