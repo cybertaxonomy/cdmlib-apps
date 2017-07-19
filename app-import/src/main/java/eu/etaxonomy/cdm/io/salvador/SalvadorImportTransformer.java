@@ -23,4 +23,6 @@ public class SalvadorImportTransformer extends InputTransformerBase {
 
     public static UUID uuidSalvadorFeatureVoc = UUID.fromString("a159c5e3-12b3-4c12-85e6-b16220621adc");
 
+    public static UUID uuidSalvadorTextSpecimenOldFeature = UUID.fromString("d29de161-9b8e-4e09-90ce-621946053720");
+
 }

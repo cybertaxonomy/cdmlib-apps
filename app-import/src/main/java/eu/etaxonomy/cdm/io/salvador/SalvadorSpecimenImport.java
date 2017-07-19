@@ -425,6 +425,10 @@ public class SalvadorSpecimenImport
 
     private Feature getTexSpecimenFeature() {
         if (textSpecimenFeature == null){
+            UUID uuidSpecimenTextOld = SalvadorImportTransformer.uuidSalvadorTextSpecimenOldFeature;
+            textSpecimenFeature = (Feature)getTermService().find(uuidSpecimenTextOld);
+        }
+        if (textSpecimenFeature == null){
             String label = "Text Specimen";
             textSpecimenFeature = Feature.NewInstance(label, label, null);
             UUID vocUuid = SalvadorImportTransformer.uuidSalvadorFeatureVoc;
@@ -434,6 +438,7 @@ public class SalvadorSpecimenImport
                         "User defined features", "User defined features", null, null);
                 getVocabularyService().save(voc);
             }
+            textSpecimenFeature.setUuid(SalvadorImportTransformer.uuidSalvadorTextSpecimenOldFeature);
             voc.addTerm(textSpecimenFeature);
             getTermService().saveOrUpdate(textSpecimenFeature);
         }
