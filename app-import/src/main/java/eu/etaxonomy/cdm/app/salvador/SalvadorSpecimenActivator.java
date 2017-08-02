@@ -14,7 +14,6 @@ import java.net.URI;
 import org.apache.log4j.Logger;
 
 import eu.etaxonomy.cdm.app.common.CdmDestinations;
-import eu.etaxonomy.cdm.app.mexico.MexicoBorhidiActivator;
 import eu.etaxonomy.cdm.database.DbSchemaValidation;
 import eu.etaxonomy.cdm.database.ICdmDataSource;
 import eu.etaxonomy.cdm.database.update.CdmUpdater;
@@ -31,7 +30,7 @@ import eu.etaxonomy.cdm.model.reference.ReferenceFactory;
  *
  */
 public class SalvadorSpecimenActivator {
-    private static final Logger logger = Logger.getLogger(MexicoBorhidiActivator.class);
+    private static final Logger logger = Logger.getLogger(SalvadorSpecimenActivator.class);
 
     //database validation status (create, update, validate ...)
     static DbSchemaValidation hbm2dll = DbSchemaValidation.VALIDATE;

@@ -74,8 +74,10 @@ public class SalvadorSpecimenImport
         initDedupHelper();
         try {
             UUID factUuid = UUID.fromString(state.getCurrentRecord().get("specimenFactUuid"));
+
             if (existingFieldUnits.get(factUuid)== null){
-                FieldUnit fieldUnit = getFieldUnit(state);
+
+                FieldUnit fieldUnit = makeFieldUnit(state);
                 DerivedUnitFacade facade = DerivedUnitFacade.NewInstance(
                         SpecimenOrObservationType.PreservedSpecimen, fieldUnit);
                 makeFieldUnitData(state, facade);
@@ -117,7 +119,11 @@ public class SalvadorSpecimenImport
      */
     private void makeSpecimenDuplicate(SalvadorSpecimenImportState state,
             DerivedUnitFacade facade) {
+
         Map<String, String> record = state.getCurrentRecord();
+
+        TaxonDescription desc = getTaxonDescription(state, record);
+
         int row = state.getRow();
         String herbariaStr = record.get("Herbaria");
         String[] splits = herbariaStr.split(";");
@@ -133,38 +139,42 @@ public class SalvadorSpecimenImport
                     URI uri = URI.create(uriStr);
                     facade.setPreferredStableUri(uri);
                 }
+                IndividualsAssociation assoc = IndividualsAssociation.NewInstance(facade.innerDerivedUnit());
+                assoc.setFeature(Feature.SPECIMEN());
+                desc.addElement(assoc);
             }
+
         }
     }
 
 
     private Map<UUID, FieldUnit> fieldUnitMap = new HashMap<>();
     private Map<UUID, UUID> existingFieldUnits = new HashMap<>();
-    private FieldUnit getFieldUnit(SalvadorSpecimenImportState state) {
+    private FieldUnit makeFieldUnit(SalvadorSpecimenImportState state) {
 
         Map<String, String> record = state.getCurrentRecord();
-        int row = state.getRow();
         UUID factUuid = UUID.fromString(record.get("specimenFactUuid"));
 
         TextData textSpecimen = (TextData)getDescriptionService().getDescriptionElementByUuid(factUuid);
         textSpecimen.setFeature(getTexSpecimenFeature());
 
-        TaxonDescription desc = getTaxonDescription(state, textSpecimen, record, row);
         FieldUnit fieldUnit = FieldUnit.NewInstance();
-        IndividualsAssociation assoc = IndividualsAssociation.NewInstance(fieldUnit);
-        assoc.setFeature(Feature.SPECIMEN());
-        desc.addElement(assoc);
+
         fieldUnitMap.put(factUuid, fieldUnit);
         existingFieldUnits.put(factUuid, fieldUnit.getUuid());
 
         return fieldUnit;
     }
 
+    //taxonUuid, TaxonDescription map
     private Map<UUID, TaxonDescription> taxonDescMap = new HashMap<>();
+    //taxonUuid, TaxonDescription.uuid map
     private Map<UUID, UUID> existingTaxonDescs = new HashMap<>();
 
     private TaxonDescription getTaxonDescription(SalvadorSpecimenImportState state,
-            TextData textSpecimen, Map<String, String> record, int row) {
+            Map<String, String> record) {
+
+        int row = state.getRow();
         UUID taxonUuid = UUID.fromString(record.get("taxonUuid"));
         TaxonDescription taxonDesc = taxonDescMap.get(taxonUuid);
         if (taxonDesc == null && existingTaxonDescs.get(taxonUuid) != null){
@@ -172,8 +182,9 @@ public class SalvadorSpecimenImport
             taxonDescMap.put(taxonUuid, taxonDesc);
         }
         if (taxonDesc == null){
-            Taxon taxon = CdmBase.deproxy(textSpecimen.getInDescription(),
-                    TaxonDescription.class).getTaxon();
+
+            Taxon taxon = (Taxon)getTaxonService().find(taxonUuid);
+
             taxonDesc = TaxonDescription.NewInstance(taxon);
             taxonDesc.setTitleCache("JACQ import for " + taxon.getName().getTitleCache(), true);
             taxonDesc.addImportSource(null, null, state.getConfig().getSourceReference(), String.valueOf(row));
@@ -194,6 +205,9 @@ public class SalvadorSpecimenImport
     private void makeSpecimen(SalvadorSpecimenImportState state, DerivedUnitFacade facade) {
 
         Map<String, String> record = state.getCurrentRecord();
+
+        TaxonDescription desc = getTaxonDescription(state, record);
+
         int row = state.getRow();
         String herbariaStr = record.get("Herbaria");
         String laguUuidStr = record.get("LAGU_UUID");
@@ -226,6 +240,10 @@ public class SalvadorSpecimenImport
                     unit.setPreferredStableUri(uri);
                 }
             }
+
+            IndividualsAssociation assoc = IndividualsAssociation.NewInstance(unit);
+            assoc.setFeature(Feature.SPECIMEN());
+            desc.addElement(assoc);
         }
     }
 
@@ -282,10 +300,16 @@ public class SalvadorSpecimenImport
         //CollectionDate
         String collectionDate = record.get("CollectionDate");
         if (collectionDate != null){
-            DateTimeFormatter f = DateTimeFormat.forPattern("yyyy-MM-dd");
-            collectionDate = collectionDate.replace(" 00:00:00", "");
-            DateTime dateTime = f.parseDateTime(collectionDate);
-            TimePeriod tp = TimePeriod.NewInstance(dateTime, null);
+            TimePeriod tp;
+            if (collectionDate.equals("1987")){
+                tp = TimePeriod.NewInstance(1987);
+                state.getResult().addWarning("Only year is not correct: " + collectionDate, state.getRow());
+            }else{
+                DateTimeFormatter f = DateTimeFormat.forPattern("yyyy-MM-dd");
+                collectionDate = collectionDate.replace(" 00:00:00", "");
+                DateTime dateTime = f.parseDateTime(collectionDate);
+                tp = TimePeriod.NewInstance(dateTime, null);
+            }
             facade.getGatheringEvent(true).setTimeperiod(tp);
         }
         //Country
@@ -404,7 +428,7 @@ public class SalvadorSpecimenImport
      */
     private ExtensionType getExtensionType() {
         if (identificationHistoryType == null){
-            identificationHistoryType = ExtensionType.NewInstance("Identification History", "IdentificationHistory", null);
+            identificationHistoryType = ExtensionType.NewInstance("Identification History", "Identification History", null);
             UUID vocUuid = uuidUserDefinedExtensionTypeVocabulary;
             TermVocabulary<ExtensionType> voc = getVocabularyService().find(vocUuid);
             if (voc == null){
@@ -506,17 +530,23 @@ public class SalvadorSpecimenImport
     private TeamOrPersonBase<?> makeCollectorTeam(SalvadorSpecimenImportState state, Map<String, String> record, int row) {
 
         Team team = Team.NewInstance();
-        makeCollector(state, 0, team, record, row);
-        makeCollector(state, 1, team, record, row);
-        makeCollector(state, 2, team, record, row);
-        makeCollector(state, 3, team, record, row);
-        makeCollector(state, 4, team, record, row);
-        if (team.getTeamMembers().size() == 0){
-            return null;
-        }else if (team.getTeamMembers().size() == 1){
-            return team.getTeamMembers().get(0);
-        }else{
+        String first = record.get("COLLECTOR_0");
+        if(first != null && first.startsWith("Grupo Ecológico")){
+            team.setTitleCache(first, true);
             return team;
+        }else{
+            makeCollector(state, 0, team, record, row);
+            makeCollector(state, 1, team, record, row);
+            makeCollector(state, 2, team, record, row);
+            makeCollector(state, 3, team, record, row);
+            makeCollector(state, 4, team, record, row);
+            if (team.getTeamMembers().size() == 0){
+                return null;
+            }else if (team.getTeamMembers().size() == 1){
+                return team.getTeamMembers().get(0);
+            }else{
+                return team;
+            }
         }
     }
 
@@ -527,29 +557,41 @@ public class SalvadorSpecimenImport
         if (str == null){
             return;
         }else{
-            Person person = parsePerson(state, str, row);
-            team.addTeamMember(person);
+            parsePerson(state, str, team, row);
         }
         return ;
     }
 
     /**
      * @param str
+     * @param team
      * @param row
      * @param importResult
      */
-    private Person parsePerson(SalvadorSpecimenImportState state, String str, int row) {
+    private void parsePerson(SalvadorSpecimenImportState state, String str, Team team, int row) {
         Person result = Person.NewInstance();
-        String regEx = "(.*),([A-Z]\\.)+";
+        String regEx = "(.*),(([A-Z]\\.)+(\\sde)?)";
         Pattern pattern = Pattern.compile(regEx);
         Matcher matcher = pattern.matcher(str);
 
+        String noInitials = "(Campo|Chinchilla|Campos|Claus|Desconocido|Fomtg|Huezo|Martínez|"
+                + "Quezada|Romero|Ruíz|Sandoval|Serrano|Vásquez|Cabrera|Calderón)";
 
         if (matcher.matches()){
             String lastname = matcher.group(1);
             result.setLastname(lastname);
             String initials = matcher.group(2);
             result.setInitials(initials);
+        }else if (str.matches(noInitials)){
+            result.setLastname(str);
+        }else if (str.matches("Martínez, F. de M.")){
+            result.setLastname("Martínez");
+            result.setInitials("F. de M.");
+        }else if (str.equals("et al.")){
+            team.setHasMoreMembers(true);
+            return;
+        }else if (str.startsWith("Grupo Ecológico")){
+            result.setLastname(str);
         }else{
             String message = "Collector did not match pattern: " + str;
             state.getResult().addWarning(message, row);
@@ -557,7 +599,8 @@ public class SalvadorSpecimenImport
         }
         result = (Person)dedupHelper.getExistingAuthor(null, result);
 
-        return result;
+        team.addTeamMember(result);
+        return ;
     }
 
 
