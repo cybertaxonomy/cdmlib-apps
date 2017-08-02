@@ -491,16 +491,16 @@ public class EuroMedActivator {
                 app.getUserService().saveOrUpdate(userEraabStraube);
 
                 //groups
-                Group groupEditor = app.getGroupService().load(Group.groupEditorUuid);
+                Group groupEditor = app.getGroupService().load(Group.GROUP_EDITOR_UUID);
                 groupEditor.addMember(userEraabStraube);
                 app.getGroupService().saveOrUpdate(groupEditor);
 
-                Group groupProjectManager = app.getGroupService().load(Group.groupProjectManagerUuid);
+                Group groupProjectManager = app.getGroupService().load(Group.GROUP_PROJECT_MANAGER_UUID);
                 groupProjectManager.addMember(userEraabStraube);
                 app.getGroupService().saveOrUpdate(groupProjectManager);
 
                 String[] publishRoles = new String[]{Role.ROLE_PUBLISH.toString()};
-                Group groupPublisher = checkGroup(app.getGroupService(), Group.groupPublisherUuid, "Publisher", publishRoles);
+                Group groupPublisher = checkGroup(app.getGroupService(), Group.GROUP_PUBLISHER_UUID, "Publisher", publishRoles);
                 groupPublisher.addMember(userEraabStraube);
                 app.getGroupService().saveOrUpdate(groupPublisher);
 
