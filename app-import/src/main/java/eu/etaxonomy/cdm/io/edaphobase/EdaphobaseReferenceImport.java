@@ -37,14 +37,12 @@ import eu.etaxonomy.cdm.model.reference.ReferenceFactory;
 public class EdaphobaseReferenceImport extends EdaphobaseImportBase {
     private static final long serialVersionUID = 6895687693249076160L;
 
-    @SuppressWarnings("unused")
     private static final Logger logger = Logger.getLogger(EdaphobaseReferenceImport.class);
 
     private static final String tableName = "lit_document";
 
     private static final String pluralString = "documents";
-//
-//    private static final Object AUTHOR_NAMESPACE = "tax_author_name";
+
 
     /**
      * @param tableName
@@ -80,12 +78,9 @@ public class EdaphobaseReferenceImport extends EdaphobaseImportBase {
         Set<Reference> referencesToSave = new HashSet<>();
         try {
             while (rs.next()){
-
                 handleSingleReference(state, rs, referencesToSave);
-
             }
         } catch (SQLException e) {
-            // TODO Auto-generated catch block
             e.printStackTrace();
         }
 

@@ -285,7 +285,7 @@ public class EdaphobaseTaxonImport extends EdaphobaseImportBase {
         Map<Object, Map<String, ? extends CdmBase>> result = new HashMap<>();
         Map<String, TeamOrPersonBase<?>> authorMap = new HashMap<>();
         Set<String> authorSet = new HashSet<>();
-        Set<String> referenceIdSet = new HashSet<String>();
+        Set<String> referenceIdSet = new HashSet<>();
 
         try {
             while (rs.next()){

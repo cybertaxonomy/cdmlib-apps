@@ -29,7 +29,7 @@ import eu.etaxonomy.cdm.model.taxon.TaxonBase;
 import eu.etaxonomy.cdm.model.taxon.TaxonRelationshipType;
 
 /**
- * Import class for synonym relationships in Edaphobase.
+ * Import class for synonym relationships in edaphobase.
  *
  * @author a.mueller
  * @date 21.12.2015
