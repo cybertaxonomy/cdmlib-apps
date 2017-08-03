@@ -76,6 +76,9 @@ public class ColDwcaImportActivator {
 	//deduplicate
 	static final boolean doDeduplicate = false;
 
+	//auditing
+	static final boolean registerAuditing = false;
+
 	//mapping type
 	static final MappingType mappingType = MappingType.DatabaseMapping;
 	static final String databaseMappingFile = "C:/Users/a.mueller/.cdmLibrary/log/colMappingAnnual";
@@ -111,7 +114,9 @@ public class ColDwcaImportActivator {
 		config.setHandleAllRefsAsCitation(handleAllRefsAsCitation);
 		config.setNoQuotes(isNoQuotes);
 
-		CdmDefaultImport<DwcaImportConfigurator> myImport = new CdmDefaultImport<DwcaImportConfigurator>();
+		config.setRegisterAuditing(registerAuditing);
+
+		CdmDefaultImport<DwcaImportConfigurator> myImport = new CdmDefaultImport<>();
 
 
 		//...
