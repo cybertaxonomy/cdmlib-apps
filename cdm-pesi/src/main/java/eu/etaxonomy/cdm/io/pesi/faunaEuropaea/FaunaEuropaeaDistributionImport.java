@@ -678,6 +678,8 @@ public class FaunaEuropaeaDistributionImport extends FaunaEuropaeaImportBase {
 				} else {
 					taxonDescription = TaxonDescription.NewInstance();
 					taxon.addDescription(taxonDescription);
+					taxonDescription.setDefault(true);
+					//addOriginalSource(taxonDescription, null, "Default Import", state.getConfig().getSourceReference());
 				}
 
 				taxonUuid = taxonBase.getUuid();

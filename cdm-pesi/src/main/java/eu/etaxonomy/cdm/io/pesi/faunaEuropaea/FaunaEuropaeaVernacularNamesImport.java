@@ -35,10 +35,12 @@ public class FaunaEuropaeaVernacularNamesImport extends FaunaEuropaeaImportBase 
 	private static final Logger logger = Logger.getLogger(FaunaEuropaeaVernacularNamesImport.class);
 
 	private HashMap<String, Reference> sourceMap = new HashMap<String, Reference>();
+	private Reference pesiProject = ReferenceFactory.newDatabase();
 
 	@Override
 	protected void doInvoke(FaunaEuropaeaImportState state) {
 		int limit = state.getConfig().getLimitSave();
+		pesiProject.setTitle("PESI");
 
 		if (state.getConfig().isDoVernacularNames()){
 			/* Taxon store for retrieving taxa from and saving taxa to CDM */
@@ -231,8 +233,9 @@ public class FaunaEuropaeaVernacularNamesImport extends FaunaEuropaeaImportBase 
 							+ taxonBase.getClass().getSimpleName() + " using accepted Taxon for vernacular name");
 					continue;
 				}
-
 				taxonDescription = TaxonDescription.NewInstance();
+				addOriginalSource(taxonDescription, null, "CommonNameDefaultImport", pesiProject);
+
 				taxon.addDescription(taxonDescription);
 
 				taxonUuid = taxonBase.getUuid();
@@ -297,7 +300,9 @@ public class FaunaEuropaeaVernacularNamesImport extends FaunaEuropaeaImportBase 
 						verName.setArea(NamedArea.NORTH_AMERICA());
 					}
 					verName.setCreated(null);
-					addOriginalSource(verName, null, null, sourceMap.get(fauEuHelperVernacularName.getSource()));
+					if (fauEuHelperVernacularName.getSource() != null){
+					    addOriginalSource(verName, null, null, sourceMap.get(fauEuHelperVernacularName.getSource()));
+					}
 					taxonDescription.addElement(verName);
 
 				}

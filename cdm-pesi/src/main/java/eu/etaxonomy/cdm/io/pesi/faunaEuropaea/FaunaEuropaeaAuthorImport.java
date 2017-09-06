@@ -47,11 +47,13 @@ public class FaunaEuropaeaAuthorImport extends FaunaEuropaeaImportBase {
 	private static int modCount = 1000;
 	private final static String authorSeparator = ", ";
 	private final static String lastAuthorSeparator = " & ";
+	private static String capitalWord = "\\p{javaUpperCase}\\p{javaLowerCase}*";
 	 protected static String fWs = "\\s*";
 	 protected static String oWs = "\\s+";
 	 protected static String finalTeamSplitter = "(" + fWs + "(&)" + fWs + "|" + oWs + "et" + oWs + ")";
 	protected static String notFinalTeamSplitter = "((?:" + fWs + "," + fWs + ")(?!([A-Z][\\.]))"+"|" + finalTeamSplitter + ")";
-	protected static String test = "(,\\s(?![A-Z][.|\\s|$]))|" + finalTeamSplitter ;
+	protected static String test = "(, \\s(?!([A-Z].|\\s|$))|,$)" ;
+	//protected static String test = "((,\\s("+capitalWord+")+)|(,($|,?!(\\s))))";
 
 
 	/* (non-Javadoc)
@@ -227,13 +229,17 @@ public class FaunaEuropaeaAuthorImport extends FaunaEuropaeaImportBase {
         //Lastname A, Lastname B & Lastname
         //Lastname A Lastname B & Lastname C
         //Lastname, J & Lastname, L
-        String[] teamMembers = refAuthor.split(test);
+        String[] firstTeamMembers = refAuthor.split(finalTeamSplitter);
+        String[] teamMembers = null;
+        String lastMember = null;
+        lastMember = firstTeamMembers[firstTeamMembers.length-1];
 
-        String lastMember;
-
+        if (firstTeamMembers.length == 2){
+            teamMembers = firstTeamMembers[0].split(test);
+        }
         Person teamMember;
         author = Team.NewInstance();
-        if (teamMembers.length>1){
+        if (teamMembers != null){
             for(String member:teamMembers){
                 if (!member.trim().equals("")){
                     teamMember = Person.NewInstance();
@@ -241,9 +247,25 @@ public class FaunaEuropaeaAuthorImport extends FaunaEuropaeaImportBase {
                    ((Team)author).addTeamMember(teamMember);
                 }
             }
+            teamMember = Person.NewInstance();
+            teamMember.setTitleCache(lastMember, true);
+            ((Team)author).addTeamMember(teamMember);
+
         }else{
-            author = Person.NewInstance();
-            author.setTitleCache(refAuthor, true);
+            teamMembers = lastMember.split(test);
+            if (teamMembers.length >1){
+                for(String member:teamMembers){
+                    if (!member.trim().equals("")){
+                        teamMember = Person.NewInstance();
+                        teamMember.setTitleCache(member, true);
+                       ((Team)author).addTeamMember(teamMember);
+                    }
+                }
+            }else{
+                author = Person.NewInstance();
+                author.setTitleCache(lastMember, true);
+            }
+
 
         }
         author.getTitleCache();
