@@ -203,7 +203,8 @@ public class BerlinModelReferenceImport extends BerlinModelImportBase {
 		int recordsPerTransaction = config.getRecordsPerTransaction();
 		try{
 			//firstPath
-			ResultSetPartitioner partitioner = ResultSetPartitioner.NewInstance(source, strIdQueryFirstPath, strRecordQuery, recordsPerTransaction);
+			ResultSetPartitioner<BerlinModelImportState> partitioner =
+			        ResultSetPartitioner.NewInstance(source, strIdQueryFirstPath, strRecordQuery, recordsPerTransaction);
 			while (partitioner.nextPartition()){
 				partitioner.doPartition(this, state);
 			}
@@ -241,7 +242,7 @@ public class BerlinModelReferenceImport extends BerlinModelImportBase {
 		}
 		boolean success = true;
 
-		Map<Integer, Reference> refToSave = new HashMap<Integer, Reference>();
+		Map<Integer, Reference> refToSave = new HashMap<>();
 
 		@SuppressWarnings("unchecked")
         Map<String, Reference> relatedReferences = partitioner.getObjectMap(REFERENCE_NAMESPACE);
@@ -352,7 +353,7 @@ public class BerlinModelReferenceImport extends BerlinModelImportBase {
 		Class<?> cdmClass;
 		Set<String> idSet;
 
-		Map<Object, Map<String, ? extends CdmBase>> result = new HashMap<Object, Map<String, ? extends CdmBase>>();
+		Map<Object, Map<String, ? extends CdmBase>> result = new HashMap<>();
 
 		try{
 			Set<String> teamIdSet = new HashSet<>();
@@ -696,7 +697,7 @@ public class BerlinModelReferenceImport extends BerlinModelImportBase {
 		if (logger.isDebugEnabled()){logger.debug("RefType 'Journal'");}
 		Reference journal = ReferenceFactory.newJournal();
 
-		Set<String> omitAttributes = new HashSet<String>();
+		Set<String> omitAttributes = new HashSet<>();
 		String series = "series";
 //		omitAttributes.add(series);
 
@@ -818,7 +819,7 @@ public class BerlinModelReferenceImport extends BerlinModelImportBase {
 	private boolean makeStandardSingleMapper(Map<String, Object> valueMap, CdmBase cdmBase, CdmSingleAttributeMapperBase mapper, Set<String> omitAttributes){
 		boolean result = true;
 		if (omitAttributes == null){
-			omitAttributes = new HashSet<String>();
+			omitAttributes = new HashSet<>();
 		}
 		if (mapper instanceof DbImportExtensionMapper){
 			result &= ((DbImportExtensionMapper)mapper).invoke(valueMap, cdmBase);
@@ -848,12 +849,12 @@ public class BerlinModelReferenceImport extends BerlinModelImportBase {
 
 	private boolean makeMultipleValueAddMapper(Map<String, Object> valueMap, CdmBase cdmBase, CdmOneToManyMapper<CdmBase, CdmBase, CdmSingleAttributeMapperBase> mapper, Set<String> omitAttributes){
 		if (omitAttributes == null){
-			omitAttributes = new HashSet<String>();
+			omitAttributes = new HashSet<>();
 		}
 		boolean result = true;
 		String destinationAttribute = mapper.getSingleAttributeName();
-		List<Object> sourceValues = new ArrayList<Object>();
-		List<Class> classes = new ArrayList<Class>();
+		List<Object> sourceValues = new ArrayList<>();
+		List<Class> classes = new ArrayList<>();
 		for (CdmSingleAttributeMapperBase singleMapper : mapper.getSingleMappers()){
 			String sourceAttribute = singleMapper.getSourceAttribute();
 			Object value = valueMap.get(sourceAttribute);
@@ -880,7 +881,7 @@ public class BerlinModelReferenceImport extends BerlinModelImportBase {
 			    team.setNomenclaturalTitle(authorString);
 			    team.setTitleCache(authorString, true);
 			    state.addRelatedObject(REF_AUTHOR_NAMESPACE, authorString, team);
-			    team.addImportSource(authorString, REF_AUTHOR_NAMESPACE, state.getConfig().getSourceReference(), null);
+			    team.addImportSource(authorString, REF_AUTHOR_NAMESPACE, state.getTransactionalSourceReference(), null);
 			}
 			result = team;
 		}else{
