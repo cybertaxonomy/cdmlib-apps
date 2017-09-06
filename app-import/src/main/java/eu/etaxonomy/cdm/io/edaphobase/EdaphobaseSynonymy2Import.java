@@ -240,7 +240,7 @@ public class EdaphobaseSynonymy2Import extends EdaphobaseImportBase {
 
     @Override
     protected boolean doCheck(EdaphobaseImportState state) {
-        return false;
+        return true;
     }
 
     @Override

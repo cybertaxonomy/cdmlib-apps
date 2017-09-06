@@ -138,7 +138,7 @@ public class EdaphobaseAuthorImport extends EdaphobaseImportBase {
 
     @Override
     protected boolean doCheck(EdaphobaseImportState state) {
-        return false;
+        return true;
     }
 
     @Override

@@ -238,7 +238,7 @@ public class EdaphobaseReferenceImport extends EdaphobaseImportBase {
 
     @Override
     protected boolean doCheck(EdaphobaseImportState state) {
-        return false;
+        return true;
     }
 
     @Override
