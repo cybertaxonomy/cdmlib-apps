@@ -1,8 +1,8 @@
 /**
 * Copyright (C) 2007 EDIT
-* European Distributed Institute of Taxonomy 
+* European Distributed Institute of Taxonomy
 * http://www.e-taxonomy.eu
-* 
+*
 * The contents of this file are subject to the Mozilla Public License Version 1.1
 * See LICENSE.TXT at the top of this package for the full license terms.
 */
@@ -16,12 +16,13 @@ import eu.etaxonomy.cdm.io.common.mapping.InputTransformerBase;
 /**
  * @author a.mueller
  * @created 27.08.2012
- * @version 1.0
  */
 public final class RoteListeDbTransformer extends InputTransformerBase {
-	@SuppressWarnings("unused")
-	private static final Logger logger = Logger.getLogger(RoteListeDbTransformer.class);
-	
 
-	
+    private static final long serialVersionUID = 2860380785882516488L;
+    @SuppressWarnings("unused")
+	private static final Logger logger = Logger.getLogger(RoteListeDbTransformer.class);
+
+
+
 }

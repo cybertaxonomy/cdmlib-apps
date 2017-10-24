@@ -59,7 +59,8 @@ public class BogotaChecklistTaxonImport<CONFIG extends BogotaChecklistImportConf
     private static UUID plantaeUuid = UUID.fromString("032fc183-eb4f-4f19-a290-28597a849096");
 
     @SuppressWarnings("unchecked")
-    private ImportDeduplicationHelper<SimpleExcelTaxonImportState<?>> deduplicationHelper = (ImportDeduplicationHelper<SimpleExcelTaxonImportState<?>>)ImportDeduplicationHelper.NewStandaloneInstance();
+    private ImportDeduplicationHelper<SimpleExcelTaxonImportState<?>> deduplicationHelper
+           = (ImportDeduplicationHelper<SimpleExcelTaxonImportState<?>>)ImportDeduplicationHelper.NewStandaloneInstance();
 
     private String lastGenus;
     private NonViralNameParserImpl parser = NonViralNameParserImpl.NewInstance();
