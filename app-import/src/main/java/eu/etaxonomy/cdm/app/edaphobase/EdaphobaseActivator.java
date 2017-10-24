@@ -37,7 +37,8 @@ public class EdaphobaseActivator {
     //database validation status (create, update, validate ...)
     static DbSchemaValidation dbSchemaValidation = DbSchemaValidation.CREATE;
 
-    static final Source edaphoSource = CdmImportSources.EDAPHOBASE();
+//    static final Source edaphoSource = CdmImportSources.EDAPHOBASE();
+    static final Source edaphoSource = CdmImportSources.EDAPHOBASE5();
 
 //    static final ICdmDataSource cdmDestination = CdmDestinations.localH2();
 //    static final ICdmDataSource cdmDestination = CdmDestinations.cdm_local_edaphobase();

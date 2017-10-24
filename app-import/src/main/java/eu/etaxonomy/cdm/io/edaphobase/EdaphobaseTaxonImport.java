@@ -72,14 +72,14 @@ public class EdaphobaseTaxonImport extends EdaphobaseImportBase {
 
     @Override
     protected String getRecordQuery(EdaphobaseImportConfigurator config) {
-        String result = " SELECT DISTINCT t.*, r.value as rankStr, pr.value as parentRankStr, ppr.value as grandParentRankStr, "
+        String result = " SELECT DISTINCT t.*, r.value_summary as rankStr, pr.value_summary as parentRankStr, ppr.value_summary as grandParentRankStr, "
                     + " pt.name as parentName, ppt.name as grandParentName "
                 + " FROM tax_taxon t "
                     + " LEFT JOIN tax_taxon pt ON t.parent_taxon_fk = pt.taxon_id "
                     + " LEFT JOIN tax_taxon ppt ON pt.parent_taxon_fk = ppt.taxon_id"
-                    + " LEFT OUTER JOIN tax_rank_en r ON r.element_id = t.tax_rank_fk "
-                    + " LEFT OUTER JOIN tax_rank_en pr ON pr.element_id = pt.tax_rank_fk "
-                    + " LEFT OUTER JOIN tax_rank_en ppr ON ppr.element_id = ppt.tax_rank_fk "
+                    + " LEFT OUTER JOIN selective_list.element r ON r.element_id = t.tax_rank_fk "
+                    + " LEFT OUTER JOIN selective_list.element pr ON pr.element_id = pt.tax_rank_fk "
+                    + " LEFT OUTER JOIN selective_list.element ppr ON ppr.element_id = ppt.tax_rank_fk "
                 + " WHERE t.taxon_id IN (@IDSET)";
         result = result.replace("@IDSET", IPartitionedIO.ID_LIST_TOKEN);
         return result;
@@ -143,6 +143,10 @@ public class EdaphobaseTaxonImport extends EdaphobaseImportBase {
 
         TaxonBase<?> taxonBase;
 
+        rankStr= extractEnglish(rankStr);
+        parentRankStr= extractEnglish(parentRankStr);
+        grandParentRankStr= extractEnglish(grandParentRankStr);
+
         //Name etc.
         Rank rank = makeRank(state, rankStr);
         checkRankMarker(state, rank);
@@ -202,6 +206,24 @@ public class EdaphobaseTaxonImport extends EdaphobaseImportBase {
         ImportHelper.setOriginalSource(taxonBase, state.getTransactionalSourceReference(), id, TAXON_NAMESPACE);
         ImportHelper.setOriginalSource(name, state.getTransactionalSourceReference(), id, TAXON_NAMESPACE);
         handleExampleIdentifiers(taxonBase, id);
+    }
+
+
+    /**
+     * @param rankStr
+     * @return
+     */
+    private String extractEnglish(String rankStr) {
+        if (rankStr == null){
+            return null;
+        }
+        String[] splits = rankStr.split(", ");
+        if (splits.length != 3){
+            String message = "Wrong rank format: "+  rankStr;
+            logger.error(message);
+            return null;
+        }
+        return splits[1].trim();
     }
 
 
@@ -337,7 +359,7 @@ public class EdaphobaseTaxonImport extends EdaphobaseImportBase {
                 if (StringUtils.isBlank(name.getGenusOrUninomial())){
                     name.setGenusOrUninomial(nameStr);
                 }
-            }else if (rank.isInfraGeneric()){
+            }else if (rank.isInfraGenericButNotSpeciesGroup()){
                 if (StringUtils.isBlank(name.getInfraGenericEpithet())){
                     name.setInfraGenericEpithet(nameStr);
                 }

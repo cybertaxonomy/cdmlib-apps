@@ -55,7 +55,9 @@ public class EdaphobaseImportTransformer extends InputTransformerBase {
         else if (key.equals("Form")){return Rank.FORM();}
         else if (key.equals("Infraorder")){return Rank.INFRAORDER();}
 //        else if (key.equals("Hyporder")){return Rank.HYPORDER();}
-//        else if (key.equals("Group")){return Rank.GREX();}
+
+        //to be discussed, but handles epithet correctly during import
+        else if (key.equals("Group")){return Rank.SPECIESGROUP();}
         return null;
     }
 
