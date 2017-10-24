@@ -34,7 +34,9 @@ import eu.etaxonomy.cdm.model.reference.ReferenceFactory;
 
 @Component
 public class BfnXmlImportConfigurator extends ImportConfiguratorBase<BfnXmlImportState, URI>  {
-	private static final Logger logger = Logger.getLogger(BfnXmlImportConfigurator.class);
+    private static final long serialVersionUID = -1647291548711127385L;
+
+    private static final Logger logger = Logger.getLogger(BfnXmlImportConfigurator.class);
 
 	//TODO
 	private static IInputTransformer defaultTransformer = null;
@@ -46,18 +48,7 @@ public class BfnXmlImportConfigurator extends ImportConfiguratorBase<BfnXmlImpor
     private boolean doAdditionalTerms = true;
 
     private boolean doInformationImport = true;
-    private boolean fillSecondList = false;
     private boolean hasSecondList = false;
-
-
-
-    public boolean isFillSecondList() {
-		return fillSecondList;
-	}
-
-	public void setFillSecondList(boolean fillSecondList) {
-		this.fillSecondList = fillSecondList;
-	}
 
 
 	//	rdfNamespace
@@ -69,12 +60,13 @@ public class BfnXmlImportConfigurator extends ImportConfiguratorBase<BfnXmlImpor
 	@Override
 	protected void makeIoClassList(){
 		ioClassList = new Class[]{
+		        BfnXmlImportReferences.class,
 				BfnXmlImportAddtionalTerms.class,
 				BfnXmlImportMetaData.class,
 				BfnXmlImportFeature.class,
 				BfnXmlImportTaxonName.class
 		};
-	};
+	}
 
 	public static BfnXmlImportConfigurator NewInstance(URI uri,
 			ICdmDataSource destination){
@@ -165,7 +157,6 @@ public class BfnXmlImportConfigurator extends ImportConfiguratorBase<BfnXmlImpor
 	public Namespace getBfnXmlNamespace() {
 		return bfnXmlNamespace;
 	}
-
 	public void setBfnXmlNamespace(Namespace bfnXmlNamespace) {
 		this.bfnXmlNamespace = bfnXmlNamespace;
 	}
@@ -183,7 +174,6 @@ public class BfnXmlImportConfigurator extends ImportConfiguratorBase<BfnXmlImpor
 	public boolean isDoMetaData() {
 		return doMetaData;
 	}
-
 	/**
 	 * @param doMetaData the doMetaData to set
 	 */
@@ -195,7 +185,6 @@ public class BfnXmlImportConfigurator extends ImportConfiguratorBase<BfnXmlImpor
 	public boolean isDoInformationImport() {
 		return doInformationImport;
 	}
-
 	public void setDoInformationImport(boolean doInformationImport) {
 		this.doInformationImport = doInformationImport;
 	}
@@ -203,15 +192,14 @@ public class BfnXmlImportConfigurator extends ImportConfiguratorBase<BfnXmlImpor
 	public boolean isHasSecondList() {
 		return hasSecondList;
 	}
-
 	public void setHasSecondList(boolean hasSecondList) {
 		this.hasSecondList = hasSecondList;
 	}
 
-	public void setNomenclaturalCode(NomenclaturalCode nomenclaturalCode) {
+	@Override
+    public void setNomenclaturalCode(NomenclaturalCode nomenclaturalCode) {
 		this.nomenclaturalCode = nomenclaturalCode;
 	}
-
 	@Override
     public NomenclaturalCode getNomenclaturalCode(){
 		return nomenclaturalCode;
@@ -223,8 +211,6 @@ public class BfnXmlImportConfigurator extends ImportConfiguratorBase<BfnXmlImpor
     public boolean isDoFeature() {
         return doFeature;
     }
-
-
     /**
      * @param doFeature the doFeature to set
      */
@@ -238,7 +224,6 @@ public class BfnXmlImportConfigurator extends ImportConfiguratorBase<BfnXmlImpor
     public boolean isDoAdditionalTerms() {
         return doAdditionalTerms;
     }
-
     /**
      * @param doAdditionalTerms the doAdditionalTerms to set
      */

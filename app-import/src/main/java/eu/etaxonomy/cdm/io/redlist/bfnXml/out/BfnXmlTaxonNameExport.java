@@ -22,6 +22,7 @@ import eu.etaxonomy.cdm.hibernate.HibernateProxyHelper;
 import eu.etaxonomy.cdm.io.redlist.bfnXml.BfnXmlConstants;
 import eu.etaxonomy.cdm.io.redlist.bfnXml.in.BfnXmlTransformer;
 import eu.etaxonomy.cdm.model.common.DefinedTerm;
+import eu.etaxonomy.cdm.model.common.ExtensionType;
 import eu.etaxonomy.cdm.model.common.IdentifiableSource;
 import eu.etaxonomy.cdm.model.common.Language;
 import eu.etaxonomy.cdm.model.common.OriginalSourceType;
@@ -196,7 +197,8 @@ public class BfnXmlTaxonNameExport extends BfnXmlExportBase {
         parent.addContent(taxonym);
 
         //reihenfolge attribute
-        taxonym.setAttribute(BfnXmlConstants.ATT_REIHENFOLGE, getIdentifier(taxon, BfnXmlConstants.UUID_REIHENFOLGE_IDENTIFIER_TYPE));
+        taxonym.setAttribute(BfnXmlConstants.ATT_REIHENFOLGE, getExtension(taxon, ExtensionType.ORDER()));
+                //getIdentifier(taxon, BfnXmlConstants.UUID_REIHENFOLGE_IDENTIFIER_TYPE));
 
         //taxNr attribute
         taxonym.setAttribute(BfnXmlConstants.ATT_TAXNR, getIdentifier(taxon, BfnXmlConstants.UUID_TAX_NR_IDENTIFIER_TYPE));
@@ -223,6 +225,24 @@ public class BfnXmlTaxonNameExport extends BfnXmlExportBase {
         exportFactualData(taxon, taxonym);
 
 
+    }
+
+    /**
+     * @param taxon
+     * @param order
+     * @return
+     */
+    private String getExtension(Taxon taxon, ExtensionType order) {
+        Set<String> set = taxon.getExtensions(order);
+        if (set.size() != 1){
+            logger.warn("Exactly 1 order extension should exist, but has " +  set.size());
+            if (set.size() > 1){
+                return set.iterator().next();
+            }
+            return null;
+        }else{
+            return set.iterator().next();
+        }
     }
 
     private String getIdentifier(Taxon taxon, UUID identifierUuid) {
@@ -353,8 +373,8 @@ public class BfnXmlTaxonNameExport extends BfnXmlExportBase {
             Taxon taxon1 = o1.getTaxon();
             Taxon taxon2 = o2.getTaxon();
 
-            int reihenfolge1 = Integer.parseInt(getIdentifier(taxon1, BfnXmlConstants.UUID_REIHENFOLGE_IDENTIFIER_TYPE));
-            int reihenfolge2 = Integer.parseInt(getIdentifier(taxon2, BfnXmlConstants.UUID_REIHENFOLGE_IDENTIFIER_TYPE));
+            int reihenfolge1 = Integer.parseInt(getExtension(taxon1, ExtensionType.ORDER()));
+            int reihenfolge2 = Integer.parseInt(getExtension(taxon2, ExtensionType.ORDER()));
 
             return reihenfolge1-reihenfolge2;
         }

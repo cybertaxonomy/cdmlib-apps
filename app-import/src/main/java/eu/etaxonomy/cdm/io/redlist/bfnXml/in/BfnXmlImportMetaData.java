@@ -13,7 +13,6 @@ import java.util.List;
 
 import org.apache.log4j.Logger;
 import org.jdom.Element;
-import org.jdom.Namespace;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.TransactionStatus;
 
@@ -32,7 +31,9 @@ import eu.etaxonomy.cdm.strategy.parser.TimePeriodParser;
  */
 @Component
 public class BfnXmlImportMetaData extends BfnXmlImportBase implements ICdmIO<BfnXmlImportState> {
-	private static final Logger logger = Logger.getLogger(BfnXmlImportMetaData.class);
+
+    private static final long serialVersionUID = 4180700081829559594L;
+    private static final Logger logger = Logger.getLogger(BfnXmlImportMetaData.class);
 	private String sourceFileName;
 	private String debVersion;
 	private String timeStamp;
@@ -50,7 +51,7 @@ public class BfnXmlImportMetaData extends BfnXmlImportBase implements ICdmIO<Bfn
 
 	@Override
 	public void doInvoke(BfnXmlImportState state){
-		logger.warn("start import MetaData...");
+		logger.info("start import MetaData...");
 
 		//TODO only dirty quick fix for now
 		state.setFirstClassificationName(state.getConfig().getClassificationName());
@@ -58,11 +59,17 @@ public class BfnXmlImportMetaData extends BfnXmlImportBase implements ICdmIO<Bfn
 		ResultWrapper<Boolean> success = ResultWrapper.NewInstance(true);
 
 		BfnXmlImportConfigurator config = state.getConfig();
+
+		state.setFirstListSecRef(null);
+
 		Element elDataSet = getDataSetElement(config);
-		Namespace bfnNamespace = config.getBfnXmlNamespace();
+
 		//create complete source object
 		if(elDataSet.getName().equalsIgnoreCase(BfnXmlConstants.EL_DEB_EXPORT)){
 			sourceFileName = elDataSet.getAttributeValue("source");
+			if (sourceFileName.equals("rldb_print.xls")){
+			    sourceFileName = retrieveFileName(config.getSource().toString());
+			}
 			debVersion = elDataSet.getAttributeValue("debversion");
 			timeStamp = elDataSet.getAttributeValue("timestamp");
 
@@ -84,7 +91,6 @@ public class BfnXmlImportMetaData extends BfnXmlImportBase implements ICdmIO<Bfn
 
 					TransactionStatus tx = startTransaction();
 
-					String bfnElementName = "METADATEN";
 					@SuppressWarnings("unchecked")
                     List<Element> elMetaDataList  = currentElement.getChildren();
 					//for each taxonName
@@ -93,9 +99,9 @@ public class BfnXmlImportMetaData extends BfnXmlImportBase implements ICdmIO<Bfn
 							@SuppressWarnings("unchecked")
                             List<Element> children = elMetaData.getChildren();
 							String kurzlitA = children.get(0).getTextNormalize();
-							Reference sourceReference = ReferenceFactory.newGeneric();
-							sourceReference.setTitle(kurzlitA);
-							state.setFirstListSecRef(sourceReference);
+							Reference secReference = ReferenceFactory.newGeneric();
+							secReference.setTitle(kurzlitA);
+							state.setFirstListSecRef(secReference);
 
 						}
 						else if( elMetaData.getAttributeValue(BfnXmlConstants.ATT_STANDARDNAME).equalsIgnoreCase("Klassifikation_A")){
@@ -109,23 +115,23 @@ public class BfnXmlImportMetaData extends BfnXmlImportBase implements ICdmIO<Bfn
 							@SuppressWarnings("unchecked")
                             List<Element> children = elMetaData.getChildren();
 							String kurzlitB = children.get(0).getTextNormalize();
-							Reference sourceReference = ReferenceFactory.newGeneric();
-							sourceReference.setTitle(kurzlitB);
-							state.setSecondListSecRef(sourceReference);
+							Reference secReference = ReferenceFactory.newGeneric();
+							secReference.setTitle(kurzlitB);
+							state.setSecondListSecRef(secReference);
 						}
 						else if( elMetaData.getAttributeValue(BfnXmlConstants.ATT_STANDARDNAME).equalsIgnoreCase("Klassifikation_B")){
 							@SuppressWarnings("unchecked")
                             List<Element> children = elMetaData.getChildren();
-							String klassifikation_B = children.get(0).getTextNormalize();
-							state.setSecondClassificationName(klassifikation_B);
+							String classification_B = children.get(0).getTextNormalize();
+							state.setSecondClassificationName(classification_B);
 
 						}
 
 					}
 
+
 					logger.warn("end import MetaData ...");
 					commitTransaction(tx);
-
 
 					if (!success.getValue()){
 						state.setUnsuccessfull();
@@ -136,11 +142,28 @@ public class BfnXmlImportMetaData extends BfnXmlImportBase implements ICdmIO<Bfn
 				}
 			}
 		}
+		if (state.getFirstListSecRef() == null){
+		    //usage of sourceRefUuid is maybe not 100% correct here as we use it for sec reference
+		    Reference secReference = getReferenceService().find(state.getConfig().getSourceRefUuid());
+//            Reference secReference = ReferenceFactory.newGeneric();
+//            secReference.setTitle(state.getFirstClassificationName());
+            state.setFirstListSecRef(secReference);
+            state.setCurrentSecundumRef(secReference);
+        }
 		return;
 
 	}
 
-	@Override
+	/**
+     * @param string
+     * @return
+     */
+    private String retrieveFileName(String uri) {
+        String[] splits = uri.split("/");
+        return splits[splits.length - 1 ];
+    }
+
+    @Override
 	protected boolean isIgnore(BfnXmlImportState state) {
 		return ! state.getConfig().isDoMetaData();
 	}

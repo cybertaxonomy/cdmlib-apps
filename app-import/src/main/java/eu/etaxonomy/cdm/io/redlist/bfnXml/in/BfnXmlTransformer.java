@@ -190,6 +190,16 @@ public final class BfnXmlTransformer {
 		}else if (redListCode.equals("#dtpl_TaxBez_UNGLEICH#")){return "-";
 		}else if (StringUtils.isBlank(redListCode)){return "keine Angabe";
 		}
+		else if (redListCode.matches("(ex|es|ss?|mh|h|sh|\\?|nb|kn)")){
+		    return redListCode;
+		}else if (redListCode.equals("")){
+		    return "";
+		}
+		else if (redListCode.matches("(<<?<?|\\(<\\)|>|!!?|\\(!\\))")){
+            return redListCode;
+        }else if (redListCode.matches("(0|1|2|3|G|R|V)")){
+            return redListCode;
+        }
 		else {
 			throw new UnknownCdmTypeException("Unknown Redlist Code " + redListCode);
 		}

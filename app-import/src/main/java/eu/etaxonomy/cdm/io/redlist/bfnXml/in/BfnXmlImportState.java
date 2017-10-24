@@ -18,19 +18,21 @@ import eu.etaxonomy.cdm.model.description.CommonTaxonName;
 import eu.etaxonomy.cdm.model.reference.Reference;
 
 /**
- * @author a.mueller
- * @created 11.05.2009
- * @version 1.0
+ * @author a.oppermann
+ * @created 2013
  */
 public class BfnXmlImportState extends ImportStateBase<BfnXmlImportConfigurator, BfnXmlImportBase>{
-	private Reference refA;
-	private Reference refB;
-	private Reference currentMicroRef;
+    @SuppressWarnings("unused")
+    private static final Logger logger = Logger.getLogger(BfnXmlImportState.class);
+
+    private Reference firstListSecRef;
+	private Reference secondListSecRef;
+	private Reference currentSecundumRef;
 	private Reference completeSourceRef;
 	private String classificationA;
 	private String classificationB;
-	@SuppressWarnings("unused")
-	private static final Logger logger = Logger.getLogger(BfnXmlImportState.class);
+
+    private boolean fillSecondList = false;
 
 	//TODO make it better
 	private Map<String, CommonTaxonName> commonNameMap = null;
@@ -43,42 +45,46 @@ public class BfnXmlImportState extends ImportStateBase<BfnXmlImportConfigurator,
 		return commonNameMap;
 	}
 
-
-
 	public void setCommonNameMap(Map<String, CommonTaxonName> commonNameMap) {
 		this.commonNameMap = commonNameMap;
 	}
 
-	public void setFirstListSecRef(Reference ref) {
-		this.refA = ref;
+
+    public Reference getFirstListSecRef(){
+        return firstListSecRef;
+    }
+    public void setFirstListSecRef(Reference ref) {
+		this.firstListSecRef = ref;
 	}
 
+    public Reference getSecondListSecRef(){
+        return secondListSecRef;
+    }
 	public void setSecondListSecRef(Reference ref) {
-		this.refB = ref;
+		this.secondListSecRef = ref;
 	}
 
-	public Reference getFirstListSecRef(){
-		return refA;
-	}
-
-	public Reference getSecondListSecRef(){
-		return refB;
-	}
-
-	public void setCurrentMicroRef(Reference currentRef) {
-		this.currentMicroRef = currentRef;
-	}
+	/**
+	 * The import file as reference, not the book
+	 * @return
+	 */
 	public Reference getCompleteSourceRef() {
 		return completeSourceRef;
 	}
-
+	/**
+	 * {@link #getCompleteSourceRef()}
+	 */
 	public void setCompleteSourceRef(Reference completeSourceRef) {
 		this.completeSourceRef = completeSourceRef;
 	}
 
-	public Reference getCurrentMicroRef(){
-		return currentMicroRef;
+	public Reference getCurrentSecRef(){
+		return currentSecundumRef;
 	}
+    public void setCurrentSecundumRef(Reference currentRef) {
+        this.currentSecundumRef = currentRef;
+    }
+
 	public void setFirstClassificationName(String classificationA) {
 		  this.classificationA = classificationA;
 	}
@@ -95,12 +101,12 @@ public class BfnXmlImportState extends ImportStateBase<BfnXmlImportConfigurator,
 		return  classificationB;
 	}
 
-//	/* (non-Javadoc)
-//	 * @see eu.etaxonomy.cdm.io.common.IoStateBase#initialize(eu.etaxonomy.cdm.io.common.IoConfiguratorBase)
-//	 */
-//	@Override
-//	public void initialize(TcsXmlImportConfigurator config) {
-//
-//	}
+
+    public boolean isFillSecondList() {
+        return fillSecondList;
+    }
+    public void setFillSecondList(boolean fillSecondList) {
+        this.fillSecondList = fillSecondList;
+    }
 
 }

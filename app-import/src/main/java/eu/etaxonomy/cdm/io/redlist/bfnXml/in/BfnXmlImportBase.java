@@ -1,8 +1,8 @@
 /**
 * Copyright (C) 2007 EDIT
-* European Distributed Institute of Taxonomy 
+* European Distributed Institute of Taxonomy
 * http://www.e-taxonomy.eu
-* 
+*
 * The contents of this file are subject to the Mozilla Public License Version 1.1
 * See LICENSE.TXT at the top of this package for the full license terms.
 */
@@ -18,13 +18,13 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
 import org.jdom.Content;
 import org.jdom.Element;
 import org.jdom.Namespace;
 import org.jdom.Text;
 
-import eu.etaxonomy.cdm.common.CdmUtils;
 import eu.etaxonomy.cdm.common.ResultWrapper;
 import eu.etaxonomy.cdm.common.XmlHelp;
 import eu.etaxonomy.cdm.io.common.CdmImportBase;
@@ -43,7 +43,9 @@ import eu.etaxonomy.cdm.model.reference.ReferenceFactory;
  *
  */
 public abstract class BfnXmlImportBase  extends CdmImportBase<BfnXmlImportConfigurator, BfnXmlImportState> {
-	private static final Logger logger = Logger.getLogger(BfnXmlImportBase.class);
+    private static final long serialVersionUID = 3390179691538955000L;
+
+    private static final Logger logger = Logger.getLogger(BfnXmlImportBase.class);
 
 	protected static Namespace nsTcom = Namespace.getNamespace("http://rs.tdwg.org/ontology/voc/Common#");
 	protected static Namespace nsTn = Namespace.getNamespace("http://rs.tdwg.org/ontology/voc/TaxonName#");
@@ -51,29 +53,18 @@ public abstract class BfnXmlImportBase  extends CdmImportBase<BfnXmlImportConfig
 	protected static Namespace nsTc = Namespace.getNamespace("http://rs.tdwg.org/ontology/voc/TaxonConcept#");
 	protected static Namespace nsTpub = Namespace.getNamespace("http://rs.tdwg.org/ontology/voc/PublicationCitation#");
 	protected static Namespace nsTpalm = Namespace.getNamespace("http://wp5.e-taxonomy.eu/import/palmae/common");
-	
-	
-	protected abstract void doInvoke(BfnXmlImportState state);
-	
-//	/* (non-Javadoc)
-//	 * @see eu.etaxonomy.cdm.io.common.CdmIoBase#doInvoke(eu.etaxonomy.cdm.io.common.IImportConfigurator, 
-//	 *  eu.etaxonomy.cdm.api.application.CdmApplicationController, java.util.Map)
-//	 */
-//	@Override
-//	protected boolean doInvoke(IImportConfigurator config, 
-//			Map<String, MapWrapper<? extends CdmBase>> stores){ 
-//		BfnXmlImportState state = ((BfnXmlImportConfigurator)config).getState();
-//		state.setConfig((BfnXmlImportConfigurator)config);
-//		return doInvoke(state);
-//	}
-	
-	
-	protected boolean makeStandardMapper(Element parentElement, CdmBase ref, Set<String> omitAttributes, 
+
+
+	@Override
+    protected abstract void doInvoke(BfnXmlImportState state);
+
+
+	protected boolean makeStandardMapper(Element parentElement, CdmBase ref, Set<String> omitAttributes,
 			CdmSingleAttributeXmlMapperBase[] classMappers){
 		if (omitAttributes == null){
-			omitAttributes = new HashSet<String>();
+			omitAttributes = new HashSet<>();
 		}
-		boolean result = true;	
+		boolean result = true;
 		for (CdmSingleAttributeXmlMapperBase mapper : classMappers){
 			Object value = getValue(mapper, parentElement);
 			//write to destination
@@ -84,9 +75,9 @@ public abstract class BfnXmlImportBase  extends CdmImportBase<BfnXmlImportConfig
 				}
 			}
 		}
-		return true;
+		return result;
 	}
-	
+
 	private Object getValue(CdmSingleAttributeXmlMapperBase mapper, Element parentElement){
 		String sourceAttribute = mapper.getSourceAttribute();
 		Namespace sourceNamespace = mapper.getSourceNamespace(parentElement);
@@ -100,17 +91,18 @@ public abstract class BfnXmlImportBase  extends CdmImportBase<BfnXmlImportConfig
 		Object value = child.getTextTrim();
 		return value;
 	}
-	
+
 	protected boolean checkAdditionalContents(Element parentElement, CdmSingleAttributeXmlMapperBase[] classMappers,
 			CdmSingleAttributeXmlMapperBase[] operationalMappers, CdmSingleAttributeXmlMapperBase[] unclearMappers){
 		List<Content> additionalContentList = new ArrayList<Content>();
-		List<Content> contentList = parentElement.getContent();
+		@SuppressWarnings("unchecked")
+        List<Content> contentList = parentElement.getContent();
 		List<CdmSingleAttributeXmlMapperBase> mapperList = new ArrayList<CdmSingleAttributeXmlMapperBase>();
-		
+
 		mapperList.addAll(Arrays.asList(classMappers));
 		mapperList.addAll(Arrays.asList(operationalMappers));
 		mapperList.addAll(Arrays.asList(unclearMappers));
-		
+
 		for(Content content: contentList){
 			boolean contentExists = false;
 			if (content instanceof Element){
@@ -120,7 +112,7 @@ public abstract class BfnXmlImportBase  extends CdmImportBase<BfnXmlImportConfig
 						break;
 					}
 				}
-				
+
 			}else if (content instanceof Text){
 				//empty Text
 				if (((Text)content).getTextNormalize().equals("")){
@@ -129,7 +121,7 @@ public abstract class BfnXmlImportBase  extends CdmImportBase<BfnXmlImportConfig
 					//
 				}
 			}
-			
+
 			if (contentExists == false){
 				additionalContentList.add(content);
 			}
@@ -139,10 +131,10 @@ public abstract class BfnXmlImportBase  extends CdmImportBase<BfnXmlImportConfig
 		}
 		return (additionalContentList.size() == 0);
 	}
-	
+
 	protected Element getDataSetElement(BfnXmlImportConfigurator bfnConfig){
 		Element root = bfnConfig.getSourceRoot();
-		
+
 		if (! "DEBExport".equals(root.getName())){//"DataSet"
 			logger.error("Root element is not 'DEBExport'");
 			return null;
@@ -156,10 +148,10 @@ public abstract class BfnXmlImportBase  extends CdmImportBase<BfnXmlImportConfig
 			return null;
 		}
 		//TODO prevent multiple elements
-		
+
 		return root;
 	}
-	
+
 //	static public boolean checkFirstTwoFunctionElements(List<Object> objList){
 //		if (! (objList.get(0) instanceof BfnXmlImportConfigurator)){
 //			logger.error("first method object has wrong type. Must be " + BfnXmlImportConfigurator.class.getSimpleName() + " but is " + (objList.get(0) == null ? "null": objList.get(0).getClass().getSimpleName()));
@@ -171,11 +163,12 @@ public abstract class BfnXmlImportBase  extends CdmImportBase<BfnXmlImportConfig
 //		}
 //		return true;
 //	}
-	
-	
+
+
 	protected boolean testAdditionalElements(Element parentElement, List<String> excludeList){
 		boolean result = true;
-		List<Element> list = parentElement.getChildren();
+		@SuppressWarnings("unchecked")
+        List<Element> list = parentElement.getChildren();
 		for (Element element : list){
 			if (! excludeList.contains(element.getName())){
 				logger.warn("Unknown element (" + element.getName() + ") in parent element (" + parentElement.getName() + ")");
@@ -184,8 +177,8 @@ public abstract class BfnXmlImportBase  extends CdmImportBase<BfnXmlImportConfig
 		}
 		return result;
 	}
-	
-	
+
+
 	protected <T extends IdentifiableEntity> T makeReferenceType(Element element, Class<? extends T> clazz, MapWrapper<? extends T> objectMap, ResultWrapper<Boolean> success){
 		T result = null;
 		String linkType = element.getAttributeValue("linkType");
@@ -214,8 +207,8 @@ public abstract class BfnXmlImportBase  extends CdmImportBase<BfnXmlImportConfig
 		}
 		return result;
 	}
-	
-	
+
+
 	protected Reference makeAccordingTo(Element elAccordingTo, MapWrapper<Reference> referenceMap, ResultWrapper<Boolean> success){
 		Reference result = null;
 		if (elAccordingTo != null){
@@ -226,7 +219,7 @@ public abstract class BfnXmlImportBase  extends CdmImportBase<BfnXmlImportConfig
 			childName = "Simple";
 			obligatory = true;
 			Element elSimple = XmlHelp.getSingleChildElement(success, elAccordingTo, childName, elAccordingTo.getNamespace(), obligatory);
-			
+
 			if (elAccordingToDetailed != null){
 				result = makeAccordingToDetailed(elAccordingToDetailed, referenceMap, success);
 			}else{
@@ -237,40 +230,40 @@ public abstract class BfnXmlImportBase  extends CdmImportBase<BfnXmlImportConfig
 		}
 		return result;
 	}
-	
-	
+
+
 	private Reference makeAccordingToDetailed(Element elAccordingToDetailed, MapWrapper<Reference> referenceMap, ResultWrapper<Boolean> success){
 		Reference result = null;
-		Namespace tcsNamespace = elAccordingToDetailed.getNamespace();
 		if (elAccordingToDetailed != null){
+		    Namespace tcsNamespace = elAccordingToDetailed.getNamespace();
 			//AuthorTeam
 			String childName = "AuthorTeam";
 			boolean obligatory = false;
 			Element elAuthorTeam = XmlHelp.getSingleChildElement(success, elAccordingToDetailed, childName, tcsNamespace, obligatory);
 			makeAccordingToAuthorTeam(elAuthorTeam, success);
-			
+
 			//PublishedIn
 			childName = "PublishedIn";
 			obligatory = false;
 			Element elPublishedIn = XmlHelp.getSingleChildElement(success, elAccordingToDetailed, childName, tcsNamespace, obligatory);
 			result = makeReferenceType(elPublishedIn, Reference.class, referenceMap, success);
-			
+
 			//MicroReference
 			childName = "MicroReference";
 			obligatory = false;
 			Element elMicroReference = XmlHelp.getSingleChildElement(success, elAccordingToDetailed, childName, tcsNamespace, obligatory);
 			if (elMicroReference != null){
 				String microReference = elMicroReference.getTextNormalize();
-				if (CdmUtils.Nz(microReference).equals("")){
+				if (StringUtils.isNotBlank(microReference)){
 					//TODO
-					logger.warn("MicroReference not yet implemented for AccordingToDetailed");	
+					logger.warn("MicroReference not yet implemented for AccordingToDetailed");
 				}
 			}
 		}
 		return result;
 	}
 
-	private Team makeAccordingToAuthorTeam(Element elAuthorTeam, ResultWrapper<Boolean> succes){
+	private Team makeAccordingToAuthorTeam(Element elAuthorTeam, ResultWrapper<Boolean> success){
 		Team result = null;
 		if (elAuthorTeam != null){
 			//TODO
@@ -278,7 +271,4 @@ public abstract class BfnXmlImportBase  extends CdmImportBase<BfnXmlImportConfig
 		}
 		return result;
 	}
-
-
-
 }

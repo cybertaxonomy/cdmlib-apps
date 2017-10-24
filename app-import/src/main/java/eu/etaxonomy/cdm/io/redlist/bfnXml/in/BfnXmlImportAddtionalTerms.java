@@ -39,6 +39,8 @@ import eu.etaxonomy.cdm.strategy.exceptions.UnknownCdmTypeException;
 @Component
 public class BfnXmlImportAddtionalTerms extends BfnXmlImportBase {
 
+    private static final long serialVersionUID = 8997499338798245806L;
+
     private static final Logger logger = Logger.getLogger(BfnXmlImportAddtionalTerms.class);
 
     public enum Vocabulary{
@@ -143,40 +145,6 @@ public class BfnXmlImportAddtionalTerms extends BfnXmlImportBase {
 		return;
 
 	}
-//
-//
-//	private void createGermanNamedAreas(BfnXmlImportState state ,IVocabularyService vocabularyService, ITermService termService) {
-//		int id = 0;
-//		NamedArea parentGermany = null;
-//		for(String strGermanState:GERMAN_FEDERAL_STATES){
-//			UUID germanStateUUID;
-//			try {
-//				germanStateUUID = BfnXmlTransformer.getGermanStateUUID(strGermanState);
-//			} catch (UnknownCdmTypeException e) {
-//				logger.warn("Could not match german state to uuid: "+e.toString());
-//				germanStateUUID = UUID.randomUUID();
-//			}
-//			NamedArea germanState = (NamedArea)termService.load(germanStateUUID);
-//			if(germanState != null){
-//				//already in the db, so no need to step through the whole process again.
-//				return;
-//			}else{
-//				germanState = NamedArea.NewInstance(strGermanState, strGermanState, strGermanState);
-//				germanState.setUuid(germanStateUUID);
-//				germanState.setType(NamedAreaType.ADMINISTRATION_AREA());
-//				germanState.setIdInVocabulary(Integer.toString(id));;
-//				if(strGermanState.equalsIgnoreCase("Deutschland")){
-//					germanState.setLevel(NamedAreaLevel.COUNTRY());
-//					parentGermany = germanState;
-//				}else{
-//					germanState.setLevel(NamedAreaLevel.STATE());
-//					germanState.setPartOf(parentGermany);
-//				}
-//			}
-//			createOrUpdateTermVocabulary(TermType.NamedArea, vocabularyService, germanState, "German Federal States");
-//			id++;
-//		}
-//	}
 
 	private void createGermanTerms(IVocabularyService vocabularyService,ITermService termService , List<String> termList, Vocabulary vocabulary){
 	   NamedArea parentGermany = null;
@@ -201,6 +169,8 @@ public class BfnXmlImportAddtionalTerms extends BfnXmlImportBase {
                logger.warn("Could not match term to uuid: "+e.toString());
                termUuuid = UUID.randomUUID();
            }
+
+           @SuppressWarnings("rawtypes")
            DefinedTermBase term = termService.load(termUuuid);
            if(term != null){
                //already in the db, so no need to step through the whole process again.
@@ -298,6 +268,4 @@ public class BfnXmlImportAddtionalTerms extends BfnXmlImportBase {
         //TODO needs to be implemented
         return result;
     }
-
-
 }

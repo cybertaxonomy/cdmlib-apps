@@ -10,7 +10,6 @@
 package eu.etaxonomy.cdm.io.redlist.bfnXml.in;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.UUID;
 
@@ -26,6 +25,7 @@ import eu.etaxonomy.cdm.common.XmlHelp;
 import eu.etaxonomy.cdm.io.common.ICdmIO;
 import eu.etaxonomy.cdm.io.redlist.bfnXml.BfnXmlConstants;
 import eu.etaxonomy.cdm.model.common.DefinedTermBase;
+import eu.etaxonomy.cdm.model.common.IdentifiableEntity;
 import eu.etaxonomy.cdm.model.common.OrderedTermVocabulary;
 import eu.etaxonomy.cdm.model.common.TermType;
 import eu.etaxonomy.cdm.model.common.TermVocabulary;
@@ -41,40 +41,21 @@ import eu.etaxonomy.cdm.strategy.exceptions.UnknownCdmTypeException;
  */
 @Component
 public class BfnXmlImportFeature extends BfnXmlImportBase implements ICdmIO<BfnXmlImportState> {
-	private static final Logger logger = Logger.getLogger(BfnXmlImportFeature.class);
+    private static final long serialVersionUID = 3545757825059662424L;
+    private static final Logger logger = Logger.getLogger(BfnXmlImportFeature.class);
 
 	public BfnXmlImportFeature(){
 		super();
 	}
 
 
-    /** Hibernate classification vocabulary initialisation strategy */
-    private static final List<String> VOC_CLASSIFICATION_INIT_STRATEGY = Arrays.asList(new String[] {
-            "classification.$",
-            "classification.rootNodes",
-            "childNodes",
-            "childNodes.taxon",
-            "childNodes.taxon.name",
-            "taxonNodes",
-            "taxonNodes.taxon",
-            "synonyms",
-            "taxon.*",
-            "taxon.sec",
-            "taxon.name.*",
-            "taxon.synonyms",
-            "termVocabulary.*",
-            "terms"
-
-    });
-
 	@Override
 	@SuppressWarnings({ "unchecked", "rawtypes" })
 	public void doInvoke(BfnXmlImportState state){
+	    logger.info("start create Features in CDM...");
 
 		IVocabularyService vocabularyService = getVocabularyService();
 
-
-		logger.warn("start create Features in CDM...");
 		ResultWrapper<Boolean> success = ResultWrapper.NewInstance(true);
 		String childName;
 		boolean obligatory;
@@ -186,6 +167,7 @@ public class BfnXmlImportFeature extends BfnXmlImportBase implements ICdmIO<BfnX
 			e.printStackTrace();
 		}
 		Feature redListCat = getFeature(state, featureUUID, strRlKat, strRlKat, strRlKat, null);
+		addSource(redListCat, state);
 		redListCat.setSupportsCategoricalData(supportsCategoricalData);
 		//TODO implement German, but currently titleCache generation does not yet work correctly with another language
 //		redListCat.getRepresentation(Language.DEFAULT()).setLanguage(Language.GERMAN());
@@ -196,10 +178,25 @@ public class BfnXmlImportFeature extends BfnXmlImportBase implements ICdmIO<BfnX
 			String childElementName = BfnXmlConstants.EL_LWERT;
 			createOrUpdateStates(bfnNamespace, elListValues, childElementName, redListCat, state);
 		}
-		createOrUpdateTermVocabulary(TermType.Feature, vocabularyService, redListCat, BfnXmlConstants.VOC_REDLIST_FEATURES);
+		TermVocabulary<?> voc = createOrUpdateTermVocabulary(TermType.Feature, vocabularyService, redListCat, BfnXmlConstants.VOC_REDLIST_FEATURES);
+	    addSource(voc, state);
 	}
 
-	@SuppressWarnings({ "rawtypes" })
+	/**
+     * @param redListCat
+     * @param state
+     */
+    private void addSource(IdentifiableEntity<?> redListCat, BfnXmlImportState state) {
+        if (redListCat.getSources().isEmpty()){
+            String id = null;
+            String idNamespace = null;
+            String detail = null;
+            redListCat.addImportSource(id, idNamespace, state.getCompleteSourceRef(), detail);
+        }
+    }
+
+
+    @SuppressWarnings({ "rawtypes" })
 	private TermVocabulary createOrUpdateTermVocabulary(TermType termType, IVocabularyService vocabularyService, DefinedTermBase term, String strTermVocabulary) {
 
         //create/get red list feature vocabulary
@@ -219,7 +216,7 @@ public class BfnXmlImportFeature extends BfnXmlImportBase implements ICdmIO<BfnX
 
 		List<Element> elListValueList = elListValues.getChildren(childElementName, bfnNamespace);
 
-		OrderedTermVocabulary termVocabulary = null;
+		OrderedTermVocabulary stateVocabulary = null;
 		for(Element elListValue:elListValueList){
 			String listValue = elListValue.getTextNormalize();
 			String matchedListValue;
@@ -235,7 +232,7 @@ public class BfnXmlImportFeature extends BfnXmlImportBase implements ICdmIO<BfnX
 				matchedListValue = BfnXmlTransformer.redListString2RedListCode(listValue);
 			} catch (UnknownCdmTypeException e) {
 				matchedListValue = listValue;
-				logger.warn("No matched red list code found for \""+redListCat.toString()+":" + listValue + "\". Use original label instead. ");
+				logger.warn("No matched red list code found for \"" + redListCat.getTitleCache() + ":" + listValue + "\". Use original label instead. ");
 			}
 			try {
 				stateTermUuid = BfnXmlTransformer.getRedlistStateTermUUID(matchedListValue, redListCat.getTitleCache());
@@ -244,22 +241,23 @@ public class BfnXmlImportFeature extends BfnXmlImportBase implements ICdmIO<BfnX
 				//TODO: needs to be fixed for "eindeutiger Code"
 				logger.warn("could not finde state term uuid for " + matchedListValue + " and redlist category"+ redListCat.getTitleCache()+"\n"+e);
 			}
-			String vocName = redListCat.toString()+" States";
-			termVocabulary = (OrderedTermVocabulary) getVocabulary(TermType.State, vocabularyStateUuid, vocName, vocName, vocName, null, true, null);
-			State stateTerm = getStateTerm(state, stateTermUuid, matchedListValue, matchedListValue, matchedListValue, termVocabulary);
+			String vocName = redListCat.getTitleCache() + " States";
+			stateVocabulary = (OrderedTermVocabulary) getVocabulary(TermType.State, vocabularyStateUuid, vocName, vocName, vocName, null, true, null);
+	        addSource(stateVocabulary, state);
+			State stateTerm = getStateTerm(state, stateTermUuid, matchedListValue, matchedListValue, matchedListValue, stateVocabulary);
+			addSource(stateTerm, state);
+			if(stateVocabulary != null){
+			    redListCat.addSupportedCategoricalEnumeration(stateVocabulary);
+			    getTermService().saveOrUpdate(redListCat);
+			}
+			stateVocabulary = null;
 		}
-		if(termVocabulary != null){
-			redListCat.addSupportedCategoricalEnumeration(termVocabulary);
-			getTermService().saveOrUpdate(redListCat);
-		}
-
 	}
 
 
     @Override
     public boolean doCheck(BfnXmlImportState state){
         boolean result = true;
-        //TODO needs to be implemented
         return result;
     }
 
@@ -267,6 +265,5 @@ public class BfnXmlImportFeature extends BfnXmlImportBase implements ICdmIO<BfnX
 	protected boolean isIgnore(BfnXmlImportState state){
 		return ! state.getConfig().isDoFeature();
 	}
-
 
 }

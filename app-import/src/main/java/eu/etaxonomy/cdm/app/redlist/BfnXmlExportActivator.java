@@ -4,7 +4,7 @@
  * http://www.e-taxonomy.eu
  */
 
-package eu.etaxonomy.cdm.app.redlist.out;
+package eu.etaxonomy.cdm.app.redlist;
 
 import java.io.File;
 import java.io.FileWriter;
@@ -20,7 +20,6 @@ import org.jdom2.output.Format;
 import org.jdom2.output.XMLOutputter;
 
 import eu.etaxonomy.cdm.app.common.CdmDestinations;
-import eu.etaxonomy.cdm.app.sdd.ViolaExportActivator;
 import eu.etaxonomy.cdm.database.ICdmDataSource;
 import eu.etaxonomy.cdm.io.common.CdmDefaultExport;
 import eu.etaxonomy.cdm.io.redlist.bfnXml.BfnXmlConstants;
@@ -33,9 +32,9 @@ import eu.etaxonomy.cdm.io.redlist.bfnXml.out.BfnXmlExportTransformer;
  * @date May 3, 2016
  *
  */
-public class BfnXmlExport {
+public class BfnXmlExportActivator {
 
-	private static final Logger logger = Logger.getLogger(ViolaExportActivator.class);
+	private static final Logger logger = Logger.getLogger(BfnXmlExportActivator.class);
 
     protected Document document;
 
@@ -82,7 +81,7 @@ public class BfnXmlExport {
     }
 
 	public static void main(String[] args) {
-		BfnXmlExport export = new BfnXmlExport();
+		BfnXmlExportActivator export = new BfnXmlExportActivator();
 		export.invokeExport();
 	}
 
