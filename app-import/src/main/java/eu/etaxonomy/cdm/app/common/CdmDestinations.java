@@ -33,7 +33,15 @@ public class CdmDestinations {
     public static ICdmDataSource cdm_redlist_animalia_production(){
         DatabaseTypeEnum dbType = DatabaseTypeEnum.MySQL;
         String cdmServer = "160.45.63.171";
-        String cdmDB = "cdm_production_rl_animals";
+        String cdmDB = "cdm_production_rl_animalia";
+        String cdmUserName = "edit";
+        return makeDestination(dbType, cdmServer, cdmDB, -1, cdmUserName, null);
+    }
+
+    public static ICdmDataSource cdm_redlist_animalia_production_final(){
+        DatabaseTypeEnum dbType = DatabaseTypeEnum.MySQL;
+        String cdmServer = "160.45.63.171";
+        String cdmDB = "cdm_production_rl_animalia_final";
         String cdmUserName = "edit";
         return makeDestination(dbType, cdmServer, cdmDB, -1, cdmUserName, null);
     }
