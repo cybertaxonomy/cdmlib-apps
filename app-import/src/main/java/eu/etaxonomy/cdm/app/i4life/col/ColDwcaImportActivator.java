@@ -36,15 +36,23 @@ import eu.etaxonomy.cdm.model.reference.ReferenceFactory;
 public class ColDwcaImportActivator {
 	private static final Logger logger = Logger.getLogger(ColDwcaImportActivator.class);
 
-	//database validation status (create, update, validate ...)
-//	static DbSchemaValidation hbm2dll = DbSchemaValidation.CREATE;
+	//handled by ImportSteps now
+    //static DbSchemaValidation hbm2dll = DbSchemaValidation.CREATE;
 
-	static final ImportSteps importSteps = ImportSteps.TaxaAndExtensions;
+	static final ImportSteps importSteps = ImportSteps.ExtensionsOnly;
 	static final UUID stateUuid = UUID.fromString("7e1da388-0039-4ba3-b0dc-b2bebbf507db");
 
 	static final URI source = dwca_col_All();
 
-	static final ICdmDataSource cdmDestination = CdmDestinations.cdm_test_col();
+//	static final ICdmDataSource cdmDestination = CdmDestinations.cdm_test_col();
+	static final ICdmDataSource cdmDestination = CdmDestinations.cdm_col_local();
+
+	 static final String databaseMappingFile = "C:/Users/a.mueller/.cdmLibrary/log/colMappingAnnual";
+//    static final String databaseMappingFile = "C:/Users/a.mueller/.cdmLibrary/log/localCol";
+//     static final String databaseMappingFile = "C:/Users/a.mueller/.cdmLibrary/log/colPoales";
+
+    //classification name
+    static String classificationName = "Catalogue of Life 2017";
 
 
 	static boolean isNoQuotes = true;
@@ -52,9 +60,6 @@ public class ColDwcaImportActivator {
 
 	//classification
 	static final UUID classificationUuid = UUID.fromString("29d4011f-a6dd-4081-beb8-559ba6b84a6b");
-
-	//classification name
-	static String classificationName = "Catalogue of Life 2015";
 
 	//default nom code is ICZN as it allows adding publication year
 	static final NomenclaturalCode defaultNomCode = NomenclaturalCode.ICZN;
@@ -81,7 +86,6 @@ public class ColDwcaImportActivator {
 
 	//mapping type
 	static final MappingType mappingType = MappingType.DatabaseMapping;
-	static final String databaseMappingFile = "C:/Users/a.mueller/.cdmLibrary/log/colMappingAnnual";
 
 	private void doImport(ICdmDataSource cdmDestination){
 
@@ -127,8 +131,6 @@ public class ColDwcaImportActivator {
 			System.out.println("End import from ("+ source.toString() + ")...");
 		}
 
-
-
 		//deduplicate
 		if (doDeduplicate){
 			ICdmRepository app = myImport.getCdmAppController();
@@ -154,8 +156,9 @@ public class ColDwcaImportActivator {
 	    //http://www.catalogueoflife.org/DCA_Export/
 //	    URI sourceUrl = URI.create("file:////BGBM-PESIHPC/CoL/archive-complete_2015_07_02.zip");
 //        sourceUrl = URI.create("file:////BGBM-PESIHPC/CoL/archive-complete_2015_07_02_test.zip");
-        URI sourceUrl = URI.create("file:////BGBM-PESIHPC/CoL/2015-03-18-archive-complete.zip");
+        URI sourceUrl = URI.create("file:////BGBM-PESIHPC/CoL/2017-annual.zip");
 //	    URI sourceUrl = URI.create("file:////Pesiimport3/col/col_20Nov2012.zip");
+//        URI sourceUrl = URI.create("file:////BGBM-PESIHPC/CoL/archive-genus-haitobolus-bl3.zip");
         return sourceUrl;
 	}
 
@@ -218,6 +221,7 @@ public class ColDwcaImportActivator {
 	public static void main(String[] args) {
 		ColDwcaImportActivator me = new ColDwcaImportActivator();
 		me.doImport(cdmDestination);
+		System.exit(0);
 	}
 
 }
