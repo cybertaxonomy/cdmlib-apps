@@ -57,6 +57,7 @@ public class EdaphobaseActivator {
     private static final boolean doTaxa = true;
     private static final boolean doSynonyms = true;
     private static final boolean doReferences = true;
+    private static final boolean doDescriptions = true;
 
 
     //check - import
@@ -73,8 +74,10 @@ public class EdaphobaseActivator {
         config.setDoTaxa(doTaxa);
         config.setDoReferences(doReferences);
         config.setDoSynonyms(doSynonyms);
+        config.setDoDescriptions(doDescriptions);
+        config.setCheck(check);
 
-        CdmDefaultImport<EdaphobaseImportConfigurator> myImport = new CdmDefaultImport<EdaphobaseImportConfigurator>();
+        CdmDefaultImport<EdaphobaseImportConfigurator> myImport = new CdmDefaultImport<>();
         myImport.invoke(config);
 
         FeatureTree tree = makeFeatureNodes(myImport.getCdmAppController().getTermService());

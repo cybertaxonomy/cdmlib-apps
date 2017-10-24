@@ -41,6 +41,11 @@ public class EdaphobaseImportConfigurator
     public boolean isDoReferences() {return doReferences;}
     public void setDoReferences(boolean doReferences) {this.doReferences = doReferences;}
 
+    private boolean doDescriptions = true;
+    public boolean isDoDescriptions() {return doDescriptions;}
+    public void setDoDescriptions(boolean doDescriptions) {this.doDescriptions = doDescriptions;}
+
+
     private String edaphobaseSecundumTitle;
     public String getEdaphobaseSecundumTitle() {return edaphobaseSecundumTitle;}
     public void setEdaphobaseSecundumTitle(String edaphobaseSecundumTitle) {this.edaphobaseSecundumTitle = edaphobaseSecundumTitle;}
@@ -76,7 +81,8 @@ public class EdaphobaseImportConfigurator
                 EdaphobaseTaxonImport.class,
                 EdaphobaseSynonymyImport.class,
                 EdaphobaseSynonymy2Import.class,
-                EdaphobaseClassificationImport.class
+                EdaphobaseClassificationImport.class,
+//                EdaphobaseDescriptionImport.class,
         };
     }
 
