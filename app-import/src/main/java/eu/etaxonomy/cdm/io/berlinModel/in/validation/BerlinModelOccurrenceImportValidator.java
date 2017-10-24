@@ -36,52 +36,55 @@ public class BerlinModelOccurrenceImportValidator implements IOValidator<BerlinM
 		System.out.println("Checking for Occurrence not yet fully implemented");
 		return result;
 	}
-	
-	
+
+
 	//******************************** CHECK *************************************************
-		
+
 	private static boolean checkTaxonIsAccepted(BerlinModelImportConfigurator config){
 		try {
 			boolean result = true;
 			Source source = config.getSource();
-			String strQuery = "SELECT emOccurrence.OccurrenceId, PTaxon.StatusFk, Name.FullNameCache, Status.Status, PTaxon.PTRefFk, Reference.RefCache " + 
+			String strQuery = "SELECT emOccurrence.OccurrenceId, PTaxon.StatusFk, Name.FullNameCache, "
+			                + " Status.Status, PTaxon.PTRefFk, Reference.RefCache, emArea.EMCode, emOccurrence.* " +
 						" FROM emOccurrence INNER JOIN " +
-							" PTaxon ON emOccurrence.PTNameFk = PTaxon.PTNameFk AND emOccurrence.PTRefFk = PTaxon.PTRefFk INNER JOIN " + 
+							" PTaxon ON emOccurrence.PTNameFk = PTaxon.PTNameFk AND emOccurrence.PTRefFk = PTaxon.PTRefFk INNER JOIN " +
 			                " Name ON PTaxon.PTNameFk = Name.NameId INNER JOIN " +
+			                " emArea ON emOccurrence.AreaFk = emArea.AreaId INNER JOIN " +
 			                " Status ON PTaxon.StatusFk = Status.StatusId LEFT OUTER JOIN " +
-			                " Reference ON PTaxon.PTRefFk = Reference.RefId " + 
+			                " Reference ON PTaxon.PTRefFk = Reference.RefId " +
 						" WHERE (PTaxon.StatusFk NOT IN ( 1, 5))  ";
 
 			if (StringUtils.isNotBlank(config.getOccurrenceFilter())){
-				strQuery += String.format(" AND (%s) ", config.getOccurrenceFilter()) ; 
+				strQuery += String.format(" AND (%s) ", config.getOccurrenceFilter()) ;
 			}
 
-			
-			ResultSet resulSet = source.getResultSet(strQuery);
+
+			ResultSet resultSet = source.getResultSet(strQuery);
 			boolean firstRow = true;
-			while (resulSet.next()){
+			while (resultSet.next()){
 				if (firstRow){
 					System.out.println("========================================================");
 					System.out.println("There are Occurrences for a taxon that is not accepted!");
 					System.out.println("--------------------------------------------------------");
 					System.out.println(strQuery);
 					System.out.println("========================================================");
-					
+
 				}
-				int occurrenceId = resulSet.getInt("OccurrenceId");
+				int occurrenceId = resultSet.getInt("OccurrenceId");
 //					int statusFk = resulSet.getInt("StatusFk");
-				String status = resulSet.getString("Status");
-				String fullNameCache = resulSet.getString("FullNameCache");
-				String ptRefFk = resulSet.getString("PTRefFk");
-				String ptRef = resulSet.getString("RefCache");
-				
-				System.out.println("OccurrenceId:" + occurrenceId + "\n  Status: " + status + 
+				String status = resultSet.getString("Status");
+				String fullNameCache = resultSet.getString("FullNameCache");
+				String ptRefFk = resultSet.getString("PTRefFk");
+				String ptRef = resultSet.getString("RefCache");
+				String area = resultSet.getString("EMCode");
+
+				System.out.println("OccurrenceId:" + occurrenceId + "\n  Status: " + status +
 						"\n  FullNameCache: " + fullNameCache +  "\n  ptRefFk: " + ptRefFk +
-						"\n  sec: " + ptRef );
-				
+						"\n  sec: " + ptRef + "\n area: " + area) ;
+
 				result = firstRow = false;
 			}
-			
+
 			return result;
 		} catch (SQLException e) {
 			e.printStackTrace();

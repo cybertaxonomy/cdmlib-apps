@@ -77,7 +77,7 @@ public class EuroMedActivator {
 	private static final Logger logger = Logger.getLogger(EuroMedActivator.class);
 
 	//database validation status (create, update, validate ...)
-	static DbSchemaValidation hbm2dll = DbSchemaValidation.CREATE;
+	static DbSchemaValidation hbm2dll = DbSchemaValidation.VALIDATE;
 //    static final Source berlinModelSource = BerlinModelSources.euroMed_Pub2();
 	static final Source berlinModelSource = BerlinModelSources.euroMed_BGBM42();
 //	static final Source berlinModelSource = BerlinModelSources.euroMed_PESI3();
@@ -86,8 +86,8 @@ public class EuroMedActivator {
 //	static final ICdmDataSource cdmDestination = CdmDestinations.cdm_test_euroMed();
 //	static final ICdmDataSource cdmDestination = CdmDestinations.cdm_pesi_euromed();
 
-//	static final ICdmDataSource cdmDestination = CdmDestinations.cdm_test_local_euromed3();
-	static final ICdmDataSource cdmDestination = CdmDestinations.cdm_test_local_mysql_test();
+	static final ICdmDataSource cdmDestination = CdmDestinations.cdm_test_local_euromed();
+//	static final ICdmDataSource cdmDestination = CdmDestinations.cdm_test_local_mysql_test();
 
 
 	static final boolean includePesiExport = false;
@@ -95,7 +95,7 @@ public class EuroMedActivator {
 	static final int sourceSecId = 7000000; //500000
 	static final UUID classificationUuid = UUID.fromString("314a68f9-8449-495a-91c2-92fde8bcf344");
 	static final boolean useSingleClassification = true;
-	static final String classificationName = "Euro+Med 2014";
+	static final String classificationName = "Euro+Med 2017";
 	static final UUID featureTreeUuid = UUID.fromString("6a5e1c2b-ec0d-46c8-9c7d-a2059267ffb7");
 	static final Object[] featureKeyList = new Integer[]{1, 31, 4, 98, 41};
 
@@ -447,7 +447,7 @@ public class EuroMedActivator {
 
                    resultMap = geoService.mapShapeFileToNamedAreas(
                                reader, idSearchFields , wmsLayerName , areaVocabularyUuid, areaUuidSet);
-                   Map<String, String> flatResultMap = new HashMap<String, String>(resultMap.size());
+                   Map<String, String> flatResultMap = new HashMap<>(resultMap.size());
                    for(NamedArea area : resultMap.keySet()){
                        flatResultMap.put(area.getTitleCache() + " [" + area.getUuid() + "]", resultMap.get(area));
                    }
@@ -605,6 +605,7 @@ public class EuroMedActivator {
 //			PesiExportActivatorEM exportActivator = new PesiExportActivatorEM();
 //			exportActivator.doExport(cdmRepository);
 		}
+		System.exit(0);
 
 	}
 
