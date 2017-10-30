@@ -50,7 +50,7 @@ public class BfnXmlExportConceptRelations extends BfnXmlExportBase {
 	    Document document = state.getConfig().getDocument();
 	    Element konzeptbeziehungen = null;
 	    List<Classification> list = getClassificationService().list(Classification.class, null, null, null, null);
-	    DefinedTerm taxNrIdentifierType = HibernateProxyHelper.deproxy(getTermService().load(BfnXmlConstants.UUID_TAX_NR_IDENTIFIER_TYPE), DefinedTerm.class);
+	    DefinedTerm taxNrIdentifierType = HibernateProxyHelper.deproxy(getTermService().load(BfnXmlTransformer.UUID_TAX_NR_IDENTIFIER_TYPE), DefinedTerm.class);
 	    for (Classification classification : list) {
             List<TaxonNode> childNodes = classification.getChildNodes();
             for (TaxonNode taxonNode : childNodes) {

@@ -21,6 +21,7 @@ import eu.etaxonomy.cdm.model.reference.IBookSection;
 import eu.etaxonomy.cdm.model.reference.IReference;
 import eu.etaxonomy.cdm.model.reference.Reference;
 import eu.etaxonomy.cdm.model.reference.ReferenceFactory;
+import eu.etaxonomy.cdm.model.reference.ReferenceType;
 
 /**
  * Imports all Reference data, by first testing if they already exist.
@@ -105,58 +106,58 @@ public class BfnXmlImportReferences extends BfnXmlImportBase  {
 		IBook band3 = createBand3(state, series);
 		IBook band6 = createBand6(state, series);
 
-        Reference band1_brutvoegel = createBand1_brutvoegel(state, band1);
-        Reference band1_kriechtiere = createBand1_kriechtiere(state, band1);
-        Reference band1_lurche = createBand1_lurche(state, band1);
-        Reference band1_saeugetiere = createBand1_saeugetiere(state, band1);
-        Reference band1_suessfische = createBand1_suessfische(state, band1);
+        createBand1_brutvoegel(state, band1);
+        createBand1_kriechtiere(state, band1);
+        createBand1_lurche(state, band1);
+        createBand1_saeugetiere(state, band1);
+        createBand1_suessfische(state, band1);
 
-        Reference band2_bodenlebendenWirbellosenMeerestiere = createBand2_bodenlebendenWirbellosenMeerestiere(state, band1);
-//        Reference band2_artenarmeWeichtiergruppen = createBand2_artenarmeWeichtiergruppen(state, band2);
-//        Reference band2_asselspinnen = createBand2_asselspinnen(state, band2);
-//        Reference band2_flohkrebse = createBand2_flohkrebse(state, band2);
-//        Reference band2_igelwuermer = createBand2_igelwuermer(state, band2);
-//        Reference band2_kumazeen = createBand2_kumazeen(state, band2);
-//        Reference band2_marineAsseln = createBand2_marineAsseln(state, band2);
-        Reference band2_marineMakroalgen = createBand2_marineMakroalgen(state, band2);
-//        Reference band2_marineMoostierchen = createBand2_marineMoostierchen(state, band2);
-//        Reference band2_marineMuscheln = createBand2_marineMuscheln(state, band2);
-//        Reference band2_marineSchnecken = createBand2_marineSchnecken(state, band2);
-        Reference band2_meeresfischeUndNeunaugen = createBand2_meeresfischeUndNeunaugen(state, band2);
-//        Reference band2_nesseltiere = createBand2_nesseltiere(state, band2);
-//        Reference band2_schaedellose = createBand2_schaedellose(state, band2);
-//        Reference band2_schwaemme = createBand2_schwaemme(state, band2);
-//        Reference band2_seepocken = createBand2_seepocken(state, band2);
-//        Reference band2_seescheiden = createBand2_seescheiden(state, band2);
-//        Reference band2_stachelhaeuter = createBand2_stachelhaeuter(state, band2);
-//        Reference band2_vielborster = createBand2_vielborster(state, band2);
-//        Reference band2_wenigborster = createBand2_wenigborster(state, band2);
-//        Reference band2_zehnfusskrebse = createBand2_zehnfusskrebse(state, band2);
+        createBand2_bodenlebendenWirbellosenMeerestiere(state, band1);
+//        createBand2_artenarmeWeichtiergruppen(state, band2);
+//        createBand2_asselspinnen(state, band2);
+//        createBand2_flohkrebse(state, band2);
+//        createBand2_igelwuermer(state, band2);
+//        createBand2_kumazeen(state, band2);
+//        createBand2_marineAsseln(state, band2);
+        createBand2_marineMakroalgen(state, band2);
+//        createBand2_marineMoostierchen(state, band2);
+//        createBand2_marineMuscheln(state, band2);
+//        createBand2_marineSchnecken(state, band2);
+        createBand2_meeresfischeUndNeunaugen(state, band2);
+//        createBand2_nesseltiere(state, band2);
+//        createBand2_schaedellose(state, band2);
+//        createBand2_schwaemme(state, band2);
+//        createBand2_seepocken(state, band2);
+//        createBand2_seescheiden(state, band2);
+//        createBand2_stachelhaeuter(state, band2);
+//        createBand2_vielborster(state, band2);
+//        createBand2_wenigborster(state, band2);
+//        createBand2_zehnfusskrebse(state, band2);
 
-        Reference band3_ameisen = createBand3_ameisen(state, band3);
-        Reference band3_bienen = createBand3_bienen(state, band3);
-        Reference band3_binnenmollusken = createBand3_binnenmollusken(state, band3);
-        Reference band3_eulenfalter = createBand3_eulenfalter(state, band3);
-        Reference band3_fransenfluegler = createBand3_fransenfluegler(state, band3);
-        Reference band3_heuschrecken = createBand3_heuschrecken(state, band3);
-        Reference band3_ohrwuermer = createBand3_ohrwuermer(state, band3);
-        Reference band3_pflanzenwespen = createBand3_pflanzenwespen(state, band3);
-        Reference band3_raubfliegen = createBand3_raubfliegen(state, band3);
-        Reference band3_schaben = createBand3_schaben(state, band3);
-        Reference band3_schwebfliegen = createBand3_schwebfliegen(state, band3);
-        Reference band3_spanner = createBand3_spanner(state, band3);
-        Reference band3_spinner = createBand3_spinner(state, band3);
-        Reference band3_tagfalter = createBand3_tagfalter(state, band3);
-        Reference band3_tanzfliegen = createBand3_tanzfliegen(state, band3);
-        Reference band3_wespen = createBand3_wespen(state, band3);
-        Reference band3_zuenslerfalter = createBand3_zuenslerfalter(state, band3);
+        createBand3_ameisen(state, band3);
+        createBand3_bienen(state, band3);
+        createBand3_binnenmollusken(state, band3);
+        createBand3_eulenfalter(state, band3);
+        createBand3_fransenfluegler(state, band3);
+        createBand3_heuschrecken(state, band3);
+        createBand3_ohrwuermer(state, band3);
+        createBand3_pflanzenwespen(state, band3);
+        createBand3_raubfliegen(state, band3);
+        createBand3_schaben(state, band3);
+        createBand3_schwebfliegen(state, band3);
+        createBand3_spanner(state, band3);
+        createBand3_spinner(state, band3);
+        createBand3_tagfalter(state, band3);
+        createBand3_tanzfliegen(state, band3);
+        createBand3_wespen(state, band3);
+        createBand3_zuenslerfalter(state, band3);
 
 
-        Reference band6_flechtenUndPilze = createBand6_flechtenUndPilze(state, band6);
-//        Reference band6_flechten = createBand6_flechten(state, band6);
-//        Reference band6_flechtenaehnlichePilze = createBand6_flechtenaehnlichePilze(state, band6);
-//        Reference band6_lichenicolePilze = createBand6_lichenicolePilze(state, band6);
-        Reference band6_myxomyzeten = createBand6_myxomyzeten(state, band6);
+        createBand6_flechtenUndPilze(state, band6);
+//        createBand6_flechten(state, band6);
+//        createBand6_flechtenaehnlichePilze(state, band6);
+//        createBand6_lichenicolePilze(state, band6);
+        createBand6_myxomyzeten(state, band6);
 
 	}
 
@@ -1469,6 +1470,7 @@ public class BfnXmlImportReferences extends BfnXmlImportBase  {
         result.setSeriesPart("Naturschutz und Biologische Vielfalt 70 (6)");
         Team team = makeTeamBand6();
         result.setAuthorship(team);
+        result.setTitleCache("LUDWIG, G. & MATZKE-HAJEK, G. (Red.): Rote Liste gefährdeter Tiere, Pflanzen und Pilze Deutschlands. Band 6: Pilze (Teil 2) – Flechten und Myxomyzeten. – Münster (Landwirtschaftsverlag). – Naturschutz und Biologische Vielfalt 70 (6)", true);
         return saveReference(result);
     }
 
@@ -1503,6 +1505,7 @@ public class BfnXmlImportReferences extends BfnXmlImportBase  {
         result.setSeriesPart("Naturschutz und Biologische Vielfalt 70 (3)");
         Team team = makeTeamBand3();
         result.setAuthorship(team);
+        result.setTitleCache("BINOT-HAFKE, M.; BALZER, S.; BECKER, N.; GRUTTKE, H.; HAUPT, H.; HOFBAUER, N.; LUDWIG, G.; MATZKE-HAJEK, G. & STRAUCH, M. (Red.): Rote Liste gefährdeter Tiere, Pflanzen und Pilze Deutschlands, Band 3: Wirbellose Tiere (Teil 1). – Münster (Landwirtschaftsverlag). – Naturschutz und Biologische Vielfalt 70 (3)", true);
         return saveReference(result);
     }
 
@@ -1561,8 +1564,8 @@ public class BfnXmlImportReferences extends BfnXmlImportBase  {
         result.setPlacePublished("Münster (Landwirtschaftsverlag)");
         result.setSeriesPart("Naturschutz und Biologische Vielfalt 70 (2)");
         Team team = makeTeamBand2();
-
         result.setAuthorship(team);
+        result.setTitleCache("BECKER, N.; HAUPT, H.; HOFBAUER, N.; LUDWIG, G. & NEHRING, S. (Red.): Rote Liste gefährdeter Tiere, Pflanzen und Pilze Deutschlands, Band 2: Meeresorganismen. – Münster (Landwirt¬schaftsverlag). – Naturschutz und Biologische Vielfalt 70 (2)", true);
         return saveReference(result);
     }
 
@@ -1607,6 +1610,7 @@ public class BfnXmlImportReferences extends BfnXmlImportBase  {
         result.setTitle("Rote Liste gefährdeter Tiere, Pflanzen und Pilze Deutschlands, Band 1: Wirbeltiere.");
         result.setPlacePublished("Münster (Landwirtschaftsverlag)");
         result.setSeriesPart("Naturschutz und Biologische Vielfalt 70 (1)");
+        result.setTitleCache("HAUPT, H.; LUDWIG, G.; GRUTTKE, H.; BINOT-HAFKE, M.; OTTO, C. & PAULY, A. (Red.): Rote Liste gefährdeter Tiere, Pflanzen und Pilze Deutschlands, Band 1: Wirbeltiere. – Münster (Landwirtschaftsverlag). – Naturschutz und Biologische Vielfalt 70 (1)", true);
         Team team = makeTeamBand1();
 
         result.setAuthorship(team);
@@ -1736,6 +1740,10 @@ public class BfnXmlImportReferences extends BfnXmlImportBase  {
         Reference result = getReferenceService().find(ref.getUuid());
         if (result == null){
             result = (Reference)ref;
+            if (result.getType().equals(ReferenceType.BookSection)){
+//                result.setProtectedTitleCache(false);
+                result.setTitleCache(result.getAbbrevTitleCache(), true);
+            }
             getReferenceService().saveOrUpdate(result);
         }
         return result;

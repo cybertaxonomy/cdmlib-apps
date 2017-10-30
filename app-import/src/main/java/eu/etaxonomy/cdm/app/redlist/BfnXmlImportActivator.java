@@ -9,7 +9,6 @@
 
 package eu.etaxonomy.cdm.app.redlist;
 
-import static eu.etaxonomy.cdm.io.redlist.bfnXml.in.BfnXmlImportReferences.uuidBand1_brutvoegel;
 import static eu.etaxonomy.cdm.io.redlist.bfnXml.in.BfnXmlImportReferences.uuidBand1_kriechtiere;
 import static eu.etaxonomy.cdm.io.redlist.bfnXml.in.BfnXmlImportReferences.uuidBand1_lurche;
 import static eu.etaxonomy.cdm.io.redlist.bfnXml.in.BfnXmlImportReferences.uuidBand1_saeugetiere;
@@ -42,12 +41,18 @@ import java.util.UUID;
 
 import org.apache.log4j.Logger;
 
+import eu.etaxonomy.cdm.api.application.ICdmRepository;
 import eu.etaxonomy.cdm.app.common.CdmDestinations;
 import eu.etaxonomy.cdm.database.DbSchemaValidation;
 import eu.etaxonomy.cdm.database.ICdmDataSource;
 import eu.etaxonomy.cdm.io.common.CdmDefaultImport;
 import eu.etaxonomy.cdm.io.common.IImportConfigurator.CHECK;
 import eu.etaxonomy.cdm.io.redlist.bfnXml.in.BfnXmlImportConfigurator;
+import eu.etaxonomy.cdm.io.redlist.bfnXml.in.BfnXmlImportReferences;
+import eu.etaxonomy.cdm.io.redlist.bfnXml.in.BfnXmlTransformer;
+import eu.etaxonomy.cdm.model.metadata.CdmPreference;
+import eu.etaxonomy.cdm.model.metadata.PreferencePredicate;
+import eu.etaxonomy.cdm.model.metadata.PreferenceSubject;
 import eu.etaxonomy.cdm.model.name.NomenclaturalCode;
 
 /**
@@ -63,11 +68,10 @@ public class BfnXmlImportActivator {
 //	static final ICdmDataSource cdmDestination = CdmDestinations.cdm_redlist_plant_localhost();
 //	static final ICdmDataSource cdmDestination = CdmDestinations.localH2();
 //	static final ICdmDataSource cdmDestination = CdmDestinations.cdm_test_local_mysql();
-	static final ICdmDataSource cdmDestination = CdmDestinations.cdm_redlist_animalia_production_final();
+//	static final ICdmDataSource cdmDestination = CdmDestinations.cdm_redlist_animalia_production_final();
+    static final ICdmDataSource cdmDestination = CdmDestinations.cdm_redlist_mammalia_test();
 
-//	private static final String strSource = "/eu/etaxonomy/cdm/io/bfnXml/";
 	private static final String sourceUriBase = "file:////BGBM-PESIHPC/RoteListen/RoteListenXml/";
-//	private static final String sourceUriBase = "file:///home/pplitzner/Rote%20Listen%202020/doctronic/";
 
 	//nom Code
 	private static final NomenclaturalCode nomenclaturalCode = NomenclaturalCode.ICZN;
@@ -76,16 +80,12 @@ public class BfnXmlImportActivator {
 	static final CHECK check = CHECK.IMPORT_WITHOUT_CHECK;
 
 
-	//authors
 	static final boolean doMetaData = true;
-	//names
 	static final boolean doTaxonNames = true;
-	//feature
 	static final boolean doFeature = true;
-	//feature
     static final boolean doAdditionalTerms = true;
 
-    private final String filename;
+    private String filename;
 
 	public BfnXmlImportActivator(String fileName){
 		filename = fileName;
@@ -98,14 +98,15 @@ public class BfnXmlImportActivator {
 		URI source;
 		try {
 		    source = URI.create(sourceUriBase + filename);
-//			source = this.getClass().getResource(strSource + filename).toURI();
 		    config.setSource(source);
 
 			//if xmllist has two lists
-			config.setHasSecondList(true);
+			config.setHasSecondList(filename.contains("BFN_Saeuger"));
 			config.setNomenclaturalCode(nomenclaturalCode);
 			config.setDoMetaData(doMetaData);
 			config.setDoTaxonNames(doTaxonNames);
+			config.setDoFeature(doFeature);
+			config.setDoAdditionalTerms(doAdditionalTerms);
 
 			config.setCheck(check);
 			config.setDbSchemaValidation(schemaValidation);
@@ -123,6 +124,7 @@ public class BfnXmlImportActivator {
 			// invoke import
 			bfnImport.invoke(config);
 
+			setVaadinPreferences(bfnImport, nomenclaturalCode);
 			logger.info("End");
 			System.out.println("End import from BfnXML ("+ source.toString() + ")...");
 		} catch (Exception e) {
@@ -131,7 +133,8 @@ public class BfnXmlImportActivator {
 
 	}
 
-	/**
+
+    /**
 	 * @param args
 	 */
 	public static void main(String[] args) {
@@ -151,12 +154,12 @@ public class BfnXmlImportActivator {
 //
 //				Animals
 		        //band1
-				"rldb_print_v4_0_1_0_Brutvoegel.xml",uuidBand1_brutvoegel.toString(),
+				"rldb_print_v4_0_1_0_Brutvoegel.xml",BfnXmlImportReferences.uuidBand1_brutvoegel.toString(), //Brutvögel
 				"rldb_print_v4_0_1_0_Reptilien_1.xml",uuidBand1_kriechtiere.toString(),
-                "rldb_print_v4_0_1_0_Amphibien.xml",uuidBand1_lurche.toString(),
-                "RoteListe_v4_0_6_0_BFN_Saeuger_korr.xml",uuidBand1_saeugetiere.toString(),
+                "rldb_print_v4_0_1_0_Amphibien.xml",uuidBand1_lurche.toString(),  //Kriechtiere
+                "RoteListe_v4_0_6_0_BFN_Saeuger_korr.xml",uuidBand1_saeugetiere.toString(), //Säugetiere
                 "rldb_print_v4_0_1_0_Fische.xml",uuidBand1_suessfische.toString(),
-
+                //
 		        //band2
 		        "rldb_print_v4_0_1_0_artenarmeWeichtiergruppen_121127_verantw_syn.xml",uuidBand2_bodenlebendenWirbellosenMeerestiere.toString(),
 		        "rldb_print_v4_0_1_0_Asselspinnen_120907_verantw_syn.xml",uuidBand2_bodenlebendenWirbellosenMeerestiere.toString(),
@@ -169,38 +172,38 @@ public class BfnXmlImportActivator {
 		        "rldb_print_v4_0_1_0_Schnecken_130206_verantw_syn.xml",uuidBand2_bodenlebendenWirbellosenMeerestiere.toString(),
 		        "rldb_print_v4_0_1_0_Meeresfische_syn.xml",uuidBand2_meeresfischeUndNeunaugen.toString(),
 		        "rldb_print_v4_0_1_0_Nesseltiere_130104_verantw_syn.xml",uuidBand2_bodenlebendenWirbellosenMeerestiere.toString(),
-		        "rldb_print_v4_0_1_0_Schaedellose_120907_verantw_syn.xml",uuidBand2_bodenlebendenWirbellosenMeerestiere.toString(),
-		        "rldb_print_v4_0_1_0_Schwaemme_121127_verantw_syn.xml",uuidBand2_bodenlebendenWirbellosenMeerestiere.toString(),
+		        "rldb_print_v4_0_1_0_Schaedellose_120907_verantw_syn.xml",uuidBand2_bodenlebendenWirbellosenMeerestiere.toString(), //Schädellose
+		        "rldb_print_v4_0_1_0_Schwaemme_121127_verantw_syn.xml",uuidBand2_bodenlebendenWirbellosenMeerestiere.toString(), //Schwämme
 		        "rldb_print_v4_0_1_0_Seepocken_121128_verantw_syn.xml",uuidBand2_bodenlebendenWirbellosenMeerestiere.toString(),
 		        "rldb_print_v4_0_1_0_Seescheiden_121128_verantw_syn.xml",uuidBand2_bodenlebendenWirbellosenMeerestiere.toString(),
-		        "rldb_print_v4_0_1_0_Stachelhaeuter_121128_verantw_syn.xml",uuidBand2_bodenlebendenWirbellosenMeerestiere.toString(),
+		        "rldb_print_v4_0_1_0_Stachelhaeuter_121128_verantw_syn.xml",uuidBand2_bodenlebendenWirbellosenMeerestiere.toString(), //Stachelhäuter
 		        "rldb_print_v4_0_1_0_Vielborster_130206_verantw_syn.xml",uuidBand2_bodenlebendenWirbellosenMeerestiere.toString(),
 		        "rldb_print_v4_0_1_0_Wenigborster_121128_verantw_syn.xml",uuidBand2_bodenlebendenWirbellosenMeerestiere.toString(),
 		        "rldb_print_v4_0_1_0_Zehnfusskrebse_130104_verantw_syn.xml", uuidBand2_bodenlebendenWirbellosenMeerestiere.toString(),
-
+		        //
 		        //band3
-			    "rldb_print_v4_0_1_0_Ameisen_110609_rev120113_syn.xml", uuidBand3_ameisen.toString(),
-			    "rldb_print_v4_0_1_0_Bienen_PWKorr_HG_120413_DF_120612_syn.xml",uuidBand3_bienen.toString(),
+			    "rldb_print_v4_0_1_0_Ameisen_110609_rev120113_syn.xml", uuidBand3_ameisen.toString(), //Hymenoptera: Formicidae
+			    "rldb_print_v4_0_1_0_Bienen_PWKorr_HG_120413_DF_120612_syn.xml",uuidBand3_bienen.toString(),  //Hymnenoptera: Apidae
 			    "rldb_print_v4_0_1_0_Binnenmollusken_0alle_120413_DF_syn.xml",uuidBand3_binnenmollusken.toString(),
 			    //eulenfalter - korrekt?
-			    "rldb_print_v4_0_1_0_Eulen_Korruebern_23-05-2012_KorrV_syn.xml",uuidBand3_eulenfalter.toString(),
+			    "rldb_print_v4_0_1_0_Eulen_Korruebern_23-05-2012_KorrV_syn.xml",uuidBand3_eulenfalter.toString(), //Eulen & Korrübern
 			    "rldb_print_v4_0_1_0_Thysanoptera_120413_DF_korrV_Verantw.xml",uuidBand3_fransenfluegler.toString(),
-			    "rldb_print_v4_0_1_0_Heuschrecken_syn.xml",uuidBand3_heuschrecken.toString(),
-			    "rldb_print_v4_0_1_0_Ohrwuermer_DF_syn.xml",uuidBand3_ohrwuermer.toString(),
-			    "rldb_print_v4_0_1_0_Pflanzenwespen_280711_Autor_110815_HG2_120413_DF_syn.xml",uuidBand3_pflanzenwespen.toString(),
+			    "rldb_print_v4_0_1_0_Heuschrecken_syn.xml",uuidBand3_heuschrecken.toString(),  //Saltatoria
+			    "rldb_print_v4_0_1_0_Ohrwuermer_DF_syn.xml",uuidBand3_ohrwuermer.toString(),   //Dermaptera
+			    "rldb_print_v4_0_1_0_Pflanzenwespen_280711_Autor_110815_HG2_120413_DF_syn.xml",uuidBand3_pflanzenwespen.toString(), //Hymenoptera: Symphata
 			    "rldb_print_v4_0_1_0_Asilidae_GMH_Wolff_110314_HGxls_120413_DF_korrV_Verantw_syn.xml",uuidBand3_raubfliegen.toString(),
 			    "rldb_print_v4_0_1_0_Blattoptera_140413_DF_syn.xml",uuidBand3_schaben.toString(),
-			    "rldb_print_v4_0_1_0_Schwebfliegen_111103_KorrAS_120413_DF_syn.xml",uuidBand3_schwebfliegen.toString(),
+			    "rldb_print_v4_0_1_0_Schwebfliegen_111103_KorrAS_120413_DF_syn.xml",uuidBand3_schwebfliegen.toString(), //Diptera: Syrphidae
 			    //spanner - korrekt?
-				"rldb_print_v4_0_1_0_Eulenspinner_Spanner_13-06-2012_KorrV_syn.xml",uuidBand3_spanner.toString(),
+				"rldb_print_v4_0_1_0_Eulenspinner_Spanner_13-06-2012_KorrV_syn.xml",uuidBand3_spanner.toString(), //Eulenspinner & Spanner
 			    "rldb_print_v4_0_1_0_Spinner_Oktober2011_eingearbKorr_120124_Korruebern_MB_02-05-2012_KorrV_syn.xml",uuidBand3_spinner.toString(),
 			    "rldb_print_v4_0_1_0_Tagfalter_06-06-2012_KorrV_syn.xml",uuidBand3_tagfalter.toString(),
-			    "rldb_print_v4_0_1_0_Empidoidea_120413_DF.xml",uuidBand3_tanzfliegen.toString(),
+			    "rldb_print_v4_0_1_0_Empidoidea_120413_DF.xml",uuidBand3_tanzfliegen.toString(),  //Empidoidea
 			    //wespen - fehlen ????? => siehe auch titel des Referenz Word Files
 			    "rldb_print_v4_0_1_0_Pyraloidea_Februar_2012_Korruebern_MB_24-04-2012_syn.xml",uuidBand3_zuenslerfalter.toString()
 
 
-//		        //the 4 first lists
+//		        //the 4 first lists, THESE ARE DUPLICATES
 //		        "RoteListe_v4_0_6_0_BFN_Saeuger_korr.xml",
 //                "rldb_print_v4_0_1_0_Amphibien.xml",
 //                "rldb_print_v4_0_1_0_Reptilien_1.xml",
@@ -241,5 +244,30 @@ public class BfnXmlImportActivator {
 		Scanner keyboard = new Scanner(System.in);
 		keyboard.nextLine();
 	}
+
+    /**
+     * @param bfnImport
+     * @param nomCode
+     */
+    private void setVaadinPreferences(CdmDefaultImport<BfnXmlImportConfigurator> bfnImport, NomenclaturalCode nomCode) {
+        ICdmRepository app = bfnImport.getCdmAppController();
+        CdmPreference statusPref = CdmPreference.NewInstance(
+                PreferenceSubject.NewVaadinInstance(),
+                PreferencePredicate.AvailableDistributionStatus,
+                BfnXmlTransformer.uuidStatusVorkommend,
+                BfnXmlTransformer.uuidStatusUnsicher,
+                BfnXmlTransformer.uuidStatusAbgelehnt,
+                BfnXmlTransformer.uuidStatusKeinNachweis
+                );
+        app.getPreferenceService().set(statusPref);
+        CdmPreference areaVocPref = CdmPreference.NewInstance(
+                PreferenceSubject.NewVaadinInstance(),
+                PreferencePredicate.AvailableDistributionAreaVocabularies,
+                BfnXmlTransformer.uuidVocGermanFederalStates);
+        app.getPreferenceService().set(areaVocPref);
+        CdmPreference nomCodePref = CdmPreference.NewDatabaseInstance(PreferencePredicate.NomenclaturalCode, "eu.etaxonomy.cdm.model.name.NomenclaturalCode." + nomCode.getUuid());
+        app.getPreferenceService().set(nomCodePref);
+
+    }
 }
 

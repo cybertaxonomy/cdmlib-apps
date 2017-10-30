@@ -227,6 +227,14 @@ public class CdmDestinations {
 //	}
 
 
+   public static ICdmDataSource cdm_redlist_mammalia_test(){
+        DatabaseTypeEnum dbType = DatabaseTypeEnum.MySQL;
+        String cdmServer = "160.45.63.175";
+        String cdmDB = "cdm_rl_mammalia";
+        String cdmUserName = "edit";
+        return makeDestination(dbType, cdmServer, cdmDB, -1, cdmUserName, null);
+    }
+
 	public static ICdmDataSource cdm_redlist_moose_dev(){
 		DatabaseTypeEnum dbType = DatabaseTypeEnum.MySQL;
 		String cdmServer = "160.45.63.175";

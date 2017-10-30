@@ -27,13 +27,11 @@ import eu.etaxonomy.cdm.api.service.IClassificationService;
 import eu.etaxonomy.cdm.api.service.ITaxonService;
 import eu.etaxonomy.cdm.common.ResultWrapper;
 import eu.etaxonomy.cdm.common.XmlHelp;
-import eu.etaxonomy.cdm.io.common.utils.ImportDeduplicationHelper;
 import eu.etaxonomy.cdm.io.redlist.bfnXml.BfnXmlConstants;
 import eu.etaxonomy.cdm.model.common.CdmBase;
 import eu.etaxonomy.cdm.model.common.DefinedTermBase;
 import eu.etaxonomy.cdm.model.common.ExtensionType;
 import eu.etaxonomy.cdm.model.common.Language;
-import eu.etaxonomy.cdm.model.common.TermVocabulary;
 import eu.etaxonomy.cdm.model.description.CategoricalData;
 import eu.etaxonomy.cdm.model.description.CommonTaxonName;
 import eu.etaxonomy.cdm.model.description.DescriptionElementBase;
@@ -79,8 +77,7 @@ public class BfnXmlImportTaxonName extends BfnXmlImportBase {
 	private Map<Integer, Taxon> firstList;
 	private Map<Integer, Taxon> secondList;
 
-	@SuppressWarnings("unchecked")
-    private ImportDeduplicationHelper<BfnXmlImportState> deduplicationHelper = (ImportDeduplicationHelper<BfnXmlImportState>)ImportDeduplicationHelper.NewInstance(this);
+//    private ImportDeduplicationHelper<BfnXmlImportState> deduplicationHelper = (ImportDeduplicationHelper<BfnXmlImportState>)ImportDeduplicationHelper.NewInstance(this);
 
 	public BfnXmlImportTaxonName(){
 		super();
@@ -90,8 +87,10 @@ public class BfnXmlImportTaxonName extends BfnXmlImportBase {
 	@Override
 	@SuppressWarnings({"rawtypes" })
 	public void doInvoke(BfnXmlImportState state){
-		ITaxonService taxonService = getTaxonService();
 
+		TransactionStatus tx = startTransaction();
+
+		ITaxonService taxonService = getTaxonService();
 		BfnXmlImportConfigurator config = state.getConfig();
 		nomenclaturalCode = config.getNomenclaturalCode();
 		Element elDataSet = getDataSetElement(config);
@@ -107,21 +106,20 @@ public class BfnXmlImportTaxonName extends BfnXmlImportBase {
 				currentElement = (Element)object;
 				//import taxon lists
 				if(currentElement.getName().equalsIgnoreCase(BfnXmlConstants.EL_ROTELISTEDATEN)){
-					TransactionStatus tx = startTransaction();
+
 					Map<UUID, TaxonBase> savedTaxonMap = extractTaxonNames(state, taxonService, config, currentElement, bfnNamespace);
 					createOrUpdateClassification(state, taxonService, savedTaxonMap, currentElement);
 				    state.setFillSecondList(true);
-					commitTransaction(tx);
+
 				}//import concept relations of taxon lists
 				if(config.isHasSecondList()){
 					if(currentElement.getName().equalsIgnoreCase(BfnXmlConstants.EL_KONZEPTBEZIEHUNGEN)){
-						TransactionStatus tx = startTransaction();
 						extractTaxonConceptRelationShips(bfnNamespace,currentElement);
-						commitTransaction(tx);
 					}
 				}
 			}
 		}
+        commitTransaction(tx);
 		return;
 	}
 
@@ -210,7 +208,8 @@ public class BfnXmlImportTaxonName extends BfnXmlImportBase {
 	private Map<UUID, TaxonBase> extractTaxonNames(BfnXmlImportState state,
 			ITaxonService taxonService, BfnXmlImportConfigurator config,
 			Element elDataSet, Namespace bfnNamespace) {
-		logger.info("start make TaxonNames...");
+
+	    logger.info("start make TaxonNames...");
 		Map<Integer, Taxon> taxonMap = new LinkedHashMap<>();
 		ResultWrapper<Boolean> success = ResultWrapper.NewInstance(true);
 		String childName;
@@ -241,6 +240,7 @@ public class BfnXmlImportTaxonName extends BfnXmlImportBase {
 				childElementName = "SYNONYM";
 				createOrUpdateSynonym(taxon, success, obligatory, bfnNamespace, childElementName,elSynonyms, taxonId, state);
 			}
+
 			//for vernacular name
 			childName = BfnXmlConstants.EL_DEUTSCHENAMEN;
 			Element elVernacularName = XmlHelp.getSingleChildElement(success, elTaxon, childName, bfnNamespace, obligatory);
@@ -248,14 +248,14 @@ public class BfnXmlImportTaxonName extends BfnXmlImportBase {
 				childElementName = BfnXmlConstants.EL_DNAME;
 				createOrUpdateVernacularName(taxon, bfnNamespace, childElementName, elVernacularName, state);
 			}
+
 			//for each information concerning the taxon element
 			//TODO Information block
 			if(config.isDoInformationImport()){
 				childName = BfnXmlConstants.EL_INFORMATIONEN;
 				Element elInformations = XmlHelp.getSingleChildElement(success, elTaxon, childName, bfnNamespace, obligatory);
 				if(elInformations != null){
-					childElementName = BfnXmlConstants.EL_BEZUGSRAUM;
-					createOrUpdateInformation(taxon, bfnNamespace, childElementName, elInformations, state);
+				    createOrUpdateInformation(taxon, bfnNamespace, elInformations, state);
 				}
 			}
 			taxonMap.put(Integer.parseInt(taxonId), taxon);
@@ -265,9 +265,7 @@ public class BfnXmlImportTaxonName extends BfnXmlImportBase {
 		prepareListforConceptImport(state, taxonMap);
 
 		Map<UUID, TaxonBase> savedTaxonMap = taxonService.saveOrUpdate((Collection)taxonMap.values());
-		//FIXME: after first list don't import metadata yet
-		//TODO: import information for second taxon list.
-		config.setDoInformationImport(false);
+
 		logger.info("end makeTaxonNames ...");
 		if (!success.getValue()){
 			state.setUnsuccessfull();
@@ -365,7 +363,6 @@ public class BfnXmlImportTaxonName extends BfnXmlImportBase {
 			if(elWissName.getAttributeValue(BfnXmlConstants.ATT_BEREICH, bfnNamespace).equalsIgnoreCase("wissName")){
 				try{
 					TaxonName name = parseNonviralNames(rank,strAuthor,strSupplement,elWissName);
-					deduplicationHelper.replaceAuthorNamesAndNomRef(state, name);
 					if(name.isProtectedTitleCache() == true){
 						logger.warn("Taxon " + name.getTitleCache());
 					}
@@ -378,22 +375,8 @@ public class BfnXmlImportTaxonName extends BfnXmlImportBase {
 						name.addStatus(NomenclaturalStatus.NewInstance(NomenclaturalStatusType.ILLEGITIMATE()));
 					}
 
-					/**
-					 *  BFN does not want any name matching yet
-					 */
-//					TaxonBase<?> taxonBase = null;
-//					//TODO find best matching Taxa
-//					Pager<TaxonName> names = getNameService().findByTitle(null, nameBase.getTitleCache(), null, null, null, null, null, null);
-//					//TODO  correct handling for pager
-//					List<TaxonName> nameList = names.getRecords();
-//					if (nameList.isEmpty()){
-//						taxonBase = Taxon.NewInstance(nameBase, config.getSourceReference());
-//					}else{
-//						taxonBase = Taxon.NewInstance(nameList.get(0), config.getSourceReference());
-//						if (nameList.size()>1){
-//							logger.warn("More than 1 matching taxon name found for " + nameBase.getTitleCache());
-//						}
-//					}
+	                //no deduplication wanted by BfN
+//                  deduplicationHelper.replaceAuthorNamesAndNomRef(state, name);
 
 					Reference secRef = state.isFillSecondList() ?
 					        state.getSecondListSecRef():
@@ -406,9 +389,9 @@ public class BfnXmlImportTaxonName extends BfnXmlImportBase {
 					taxon.addImportSource(uniqueID, namespace, state.getCompleteSourceRef(), null);
                     name.addImportSource(uniqueID, namespace, state.getCompleteSourceRef(), null);
 
-					taxon.addIdentifier(taxonId, getIdentiferType(state, BfnXmlConstants.UUID_TAX_NR_IDENTIFIER_TYPE, "taxNr", "TaxNr attribute of Bfn Xml file", "taxNr", null));
+					taxon.addIdentifier(taxonId, getIdentiferType(state, BfnXmlTransformer.UUID_TAX_NR_IDENTIFIER_TYPE, "taxNr", "TaxNr attribute of Bfn Xml file", "taxNr", null));
 					taxon.addExtension(reihenfolge, ExtensionType.ORDER());
-					taxon.addIdentifier(reihenfolge, getIdentiferType(state, BfnXmlConstants.UUID_REIHENFOLGE_IDENTIFIER_TYPE, "reihenfolge", "reihenfolge attribute of Bfn Xml file", "reihenfolge", null));
+					taxon.addIdentifier(reihenfolge, getIdentiferType(state, BfnXmlTransformer.UUID_REIHENFOLGE_IDENTIFIER_TYPE, "reihenfolge", "reihenfolge attribute of Bfn Xml file", "reihenfolge", null));
 				} catch (UnknownCdmTypeException e) {
 					success.setValue(false);
 				}
@@ -533,9 +516,11 @@ public class BfnXmlImportTaxonName extends BfnXmlImportBase {
 
 	@SuppressWarnings("unchecked")
 	private void createOrUpdateInformation(Taxon taxon,
-			Namespace bfnNamespace, String childElementName,
+			Namespace bfnNamespace,
 			Element elInformations,
 			BfnXmlImportState state){
+
+	    String childElementName = BfnXmlConstants.EL_BEZUGSRAUM;
 
 		List<Element> elInformationList = elInformations.getChildren(childElementName, bfnNamespace);
 
@@ -545,12 +530,15 @@ public class BfnXmlImportTaxonName extends BfnXmlImportBase {
 			if(elInfo.getName().equalsIgnoreCase(BfnXmlConstants.EL_BEZUGSRAUM) && elInfo.getAttributeValue("name").equalsIgnoreCase("Bund")){
 				childElementName = BfnXmlConstants.EL_IWERT;
 				TaxonDescription taxonDescription = getTaxonDescription(taxon, false, true);
-				UUID germanStateUUID;
 				try {
-					germanStateUUID = BfnXmlTransformer.getGermanStateUUID("Deutschland");
+				    UUID  germanStateUUID = BfnXmlTransformer.getAreaUUID("Deutschland");
 					NamedArea area = (NamedArea)getTermService().load(germanStateUUID);
 					//FIXME GEOSCOPE_ID CANNOT BE NULL Exception
-//					taxonDescription.addGeoScope(area);
+					if (area != null){
+					    taxonDescription.addGeoScope(area);
+					}else{
+					    logger.warn("Did not find area 'Deutschland'");
+					}
 				} catch (UnknownCdmTypeException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
@@ -560,6 +548,7 @@ public class BfnXmlImportTaxonName extends BfnXmlImportBase {
 				for(Element elInfoDetail : elInfoDetailList){
 					if(elInfoDetail.getAttributeValue(BfnXmlConstants.ATT_STANDARDNAME).equalsIgnoreCase(BfnXmlConstants.VOC_RL_KAT)){
 						makeFeatures(taxonDescription, elInfoDetail, state, false);
+						createDistributionStatus(elInfoDetail, state, taxonDescription);
 					}
 					if(elInfoDetail.getAttributeValue(BfnXmlConstants.ATT_STANDARDNAME).equalsIgnoreCase(BfnXmlConstants.VOC_KAT)){
 						makeFeatures(taxonDescription, elInfoDetail, state, false);
@@ -605,67 +594,67 @@ public class BfnXmlImportTaxonName extends BfnXmlImportBase {
 					}
 					//create german federal states distribution status
 					if(elInfoDetail.getAttributeValue(BfnXmlConstants.ATT_STANDARDNAME).equalsIgnoreCase("BW")){
-                        createGermanDistributionStatus(taxon, elInfoDetail, state, taxonDescription);
+                        createDistributionStatus(elInfoDetail, state, taxonDescription);
                     }
 					//create german federal states distribution status
 					if(elInfoDetail.getAttributeValue(BfnXmlConstants.ATT_STANDARDNAME).equalsIgnoreCase("BY")){
-					    createGermanDistributionStatus(taxon, elInfoDetail, state, taxonDescription);
+					    createDistributionStatus(elInfoDetail, state, taxonDescription);
 					}
 					//create german federal states distribution status
 					if(elInfoDetail.getAttributeValue(BfnXmlConstants.ATT_STANDARDNAME).equalsIgnoreCase("BE")){
-					    createGermanDistributionStatus(taxon, elInfoDetail, state, taxonDescription);
+					    createDistributionStatus(elInfoDetail, state, taxonDescription);
 					}
 					//create german federal states distribution status
 					if(elInfoDetail.getAttributeValue(BfnXmlConstants.ATT_STANDARDNAME).equalsIgnoreCase("BB")){
-					    createGermanDistributionStatus(taxon, elInfoDetail, state, taxonDescription);
+					    createDistributionStatus(elInfoDetail, state, taxonDescription);
 					}
 					//create german federal states distribution status
 					if(elInfoDetail.getAttributeValue(BfnXmlConstants.ATT_STANDARDNAME).equalsIgnoreCase("HB")){
-					    createGermanDistributionStatus(taxon, elInfoDetail, state, taxonDescription);
+					    createDistributionStatus(elInfoDetail, state, taxonDescription);
 					}
 					//create german federal states distribution status
 					if(elInfoDetail.getAttributeValue(BfnXmlConstants.ATT_STANDARDNAME).equalsIgnoreCase("HH")){
-					    createGermanDistributionStatus(taxon, elInfoDetail, state, taxonDescription);
+					    createDistributionStatus(elInfoDetail, state, taxonDescription);
 					}
 					//create german federal states distribution status
 					if(elInfoDetail.getAttributeValue(BfnXmlConstants.ATT_STANDARDNAME).equalsIgnoreCase("HE")){
-					    createGermanDistributionStatus(taxon, elInfoDetail, state, taxonDescription);
+					    createDistributionStatus(elInfoDetail, state, taxonDescription);
 					}
 					//create german federal states distribution status
 					if(elInfoDetail.getAttributeValue(BfnXmlConstants.ATT_STANDARDNAME).equalsIgnoreCase("MV")){
-					    createGermanDistributionStatus(taxon, elInfoDetail, state, taxonDescription);
+					    createDistributionStatus(elInfoDetail, state, taxonDescription);
 					}
 					//create german federal states distribution status
 					if(elInfoDetail.getAttributeValue(BfnXmlConstants.ATT_STANDARDNAME).equalsIgnoreCase("NI")){
-					    createGermanDistributionStatus(taxon, elInfoDetail, state, taxonDescription);
+					    createDistributionStatus(elInfoDetail, state, taxonDescription);
 					}
 					//create german federal states distribution status
 					if(elInfoDetail.getAttributeValue(BfnXmlConstants.ATT_STANDARDNAME).equalsIgnoreCase("NW")){
-					    createGermanDistributionStatus(taxon, elInfoDetail, state, taxonDescription);
+					    createDistributionStatus(elInfoDetail, state, taxonDescription);
 					}
 					//create german federal states distribution status
 					if(elInfoDetail.getAttributeValue(BfnXmlConstants.ATT_STANDARDNAME).equalsIgnoreCase("RP")){
-					    createGermanDistributionStatus(taxon, elInfoDetail, state, taxonDescription);
+					    createDistributionStatus(elInfoDetail, state, taxonDescription);
 					}
 					//create german federal states distribution status
 					if(elInfoDetail.getAttributeValue(BfnXmlConstants.ATT_STANDARDNAME).equalsIgnoreCase("SL")){
-					    createGermanDistributionStatus(taxon, elInfoDetail, state, taxonDescription);
+					    createDistributionStatus(elInfoDetail, state, taxonDescription);
 					}
 					//create german federal states distribution status
 					if(elInfoDetail.getAttributeValue(BfnXmlConstants.ATT_STANDARDNAME).equalsIgnoreCase("SN")){
-					    createGermanDistributionStatus(taxon, elInfoDetail, state, taxonDescription);
+					    createDistributionStatus(elInfoDetail, state, taxonDescription);
 					}
 					//create german federal states distribution status
 					if(elInfoDetail.getAttributeValue(BfnXmlConstants.ATT_STANDARDNAME).equalsIgnoreCase("ST")){
-					    createGermanDistributionStatus(taxon, elInfoDetail, state, taxonDescription);
+					    createDistributionStatus(elInfoDetail, state, taxonDescription);
 					}
 					//create german federal states distribution status
 					if(elInfoDetail.getAttributeValue(BfnXmlConstants.ATT_STANDARDNAME).equalsIgnoreCase("SH")){
-					    createGermanDistributionStatus(taxon, elInfoDetail, state, taxonDescription);
+					    createDistributionStatus(elInfoDetail, state, taxonDescription);
 					}
 					//create german federal states distribution status
 					if(elInfoDetail.getAttributeValue(BfnXmlConstants.ATT_STANDARDNAME).equalsIgnoreCase("TH")){
-					    createGermanDistributionStatus(taxon, elInfoDetail, state, taxonDescription);
+					    createDistributionStatus(elInfoDetail, state, taxonDescription);
 					}
 				}
 			}
@@ -707,7 +696,9 @@ public class BfnXmlImportTaxonName extends BfnXmlImportBase {
 		} catch (UnknownCdmTypeException e) {
 			transformedRlKatValue = strRlKatValue;
 		}
-		Feature redListFeature = getFeature(state, featureUUID);
+		if (featureUUID == null){
+		    logger.warn("featureUUID is null for " + strRlKat);
+		}
 		State rlState = null;
 		//if is text data a state is not needed
 		if(!isTextData){
@@ -717,8 +708,8 @@ public class BfnXmlImportTaxonName extends BfnXmlImportBase {
 				stateTermUUID = UUID.randomUUID();
 				randomStateUUID = true;
 			}
-			if(randomStateUUID || stateTermUUID == BfnXmlConstants.stateTermEmpty){
-				if(stateTermUUID == BfnXmlConstants.stateTermEmpty) {
+			if(randomStateUUID || stateTermUUID == BfnXmlTransformer.stateTermEmpty){
+				if(stateTermUUID == BfnXmlTransformer.stateTermEmpty) {
                     transformedRlKatValue = "keine Angabe";
                 }
 				rlState = getStateTerm(state, stateTermUUID, transformedRlKatValue, transformedRlKatValue, transformedRlKatValue, null);
@@ -726,15 +717,21 @@ public class BfnXmlImportTaxonName extends BfnXmlImportBase {
 				rlState = getStateTerm(state, stateTermUUID);
 			}
 		}
-		if(isTextData){
-			TextData textData = TextData.NewInstance(redListFeature);
-			textData.putText(Language.GERMAN(), strRlKatValue);
-			DescriptionElementBase descriptionElement = textData;
-			taxonDescription.addElement(descriptionElement);
+
+		if (featureUUID != null){
+		    Feature redListFeature = getFeature(state, featureUUID);
+		    if(isTextData){
+		        TextData textData = TextData.NewInstance(redListFeature);
+		        textData.putText(Language.GERMAN(), strRlKatValue);
+		        DescriptionElementBase descriptionElement = textData;
+		        taxonDescription.addElement(descriptionElement);
+		    }else{
+		        CategoricalData catData = CategoricalData.NewInstance(rlState, redListFeature);
+		        DescriptionElementBase descriptionElement = catData;
+		        taxonDescription.addElement(descriptionElement);
+		    }
 		}else{
-			CategoricalData catData = CategoricalData.NewInstance(rlState, redListFeature);
-			DescriptionElementBase descriptionElement = catData;
-			taxonDescription.addElement(descriptionElement);
+		    logger.warn("Not descriptive data imported");
 		}
 	}
 
@@ -847,37 +844,48 @@ public class BfnXmlImportTaxonName extends BfnXmlImportBase {
      * @param germanState, the abbreviated label for the German state
      *
      */
-    private void createGermanDistributionStatus(Taxon taxon, Element elInfoDetail, BfnXmlImportState state,
+    private void createDistributionStatus(Element elInfoDetail, BfnXmlImportState state,
             TaxonDescription taxonDescription){
 
         String strDistributionValue = elInfoDetail.getChild(BfnXmlConstants.EL_WERT).getValue();
-        String strGermanState = elInfoDetail.getAttributeValue(BfnXmlConstants.ATT_STANDARDNAME);
+        if (strDistributionValue.startsWith("#dtpl_RLKat")){
+            try {
+                strDistributionValue = BfnXmlTransformer.redListString2RedListCode(strDistributionValue);
+            } catch (UnknownCdmTypeException e) {
+                logger.warn("RL Kategorie " + strDistributionValue + " konnte nicht gematched werden ");
+            }
+        }
+        String strArea = elInfoDetail.getAttributeValue(BfnXmlConstants.ATT_STANDARDNAME);
+        if (strArea.equals("RL Kat.")){
+            strArea = "Deutschland";
+        }
         //match DistributionValue
-        UUID matchedDistributionUUID = null;
-        PresenceAbsenceTerm status = null;
+        UUID matchedDistributionUUID;
         try {
             matchedDistributionUUID = BfnXmlTransformer.matchDistributionValue(strDistributionValue);
-            DefinedTermBase load = getTermService().load(matchedDistributionUUID);
-            if(load.isInstanceOf(PresenceAbsenceTerm.class)) {
-                status = CdmBase.deproxy(load, PresenceAbsenceTerm.class);
-            }else{
-                logger.warn(strDistributionValue + " is not PresenceAbsence Term " + load.getTitleCache() + " " + load.getTermType().toString());
-                return;
-            }
         } catch (UnknownCdmTypeException e1) {
-            logger.warn("could not match xml value "+ strDistributionValue +" to distribution status for "+strGermanState);
-            e1.printStackTrace();
+            logger.warn("could not match xml value "+ strDistributionValue +" to distribution status for "+strArea);
+//            e1.printStackTrace();
+            return;
+        }
+        if (matchedDistributionUUID == null){
+            return;
+        }
+        PresenceAbsenceTerm status;
+        DefinedTermBase<?> load = getTermService().load(matchedDistributionUUID);
+        if(load.isInstanceOf(PresenceAbsenceTerm.class)) {
+            status = CdmBase.deproxy(load, PresenceAbsenceTerm.class);
+        }else{
+            logger.warn(strDistributionValue + " is not PresenceAbsence Term " + load.getTitleCache() + " " + load.getTermType().toString());
             return;
         }
         //load vocabulary and german state
-        UUID vocabularyUUID = null;
-        TermVocabulary vocabulary = null;
         UUID stateUUID = null;
 
         try {
-            stateUUID = BfnXmlTransformer.getGermanStateUUID(strGermanState);
+            stateUUID = BfnXmlTransformer.getAreaUUID(strArea);
         } catch (UnknownCdmTypeException e1) {
-            logger.warn("could not match state" + strGermanState + " to UUID");
+            logger.warn("could not match state" + strArea + " to UUID");
             e1.printStackTrace();
             return;
         }
@@ -903,7 +911,7 @@ public class BfnXmlImportTaxonName extends BfnXmlImportBase {
 //            }
 //
 //        }
-        //create new taxon description
+        //add to taxon description
         DescriptionElementBase descriptionElement = Distribution.NewInstance(area, status);
         taxonDescription.addElement(descriptionElement);
     }

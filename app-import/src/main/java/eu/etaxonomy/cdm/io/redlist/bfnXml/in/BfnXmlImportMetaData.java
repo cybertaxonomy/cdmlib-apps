@@ -9,6 +9,7 @@
 
 package eu.etaxonomy.cdm.io.redlist.bfnXml.in;
 
+import java.util.Arrays;
 import java.util.List;
 
 import org.apache.log4j.Logger;
@@ -144,7 +145,7 @@ public class BfnXmlImportMetaData extends BfnXmlImportBase implements ICdmIO<Bfn
 		}
 		if (state.getFirstListSecRef() == null){
 		    //usage of sourceRefUuid is maybe not 100% correct here as we use it for sec reference
-		    Reference secReference = getReferenceService().find(state.getConfig().getSourceRefUuid());
+		    Reference secReference = getReferenceService().load(state.getConfig().getSourceRefUuid(), Arrays.asList("authorship.teamMembers"));
 //            Reference secReference = ReferenceFactory.newGeneric();
 //            secReference.setTitle(state.getFirstClassificationName());
             state.setFirstListSecRef(secReference);

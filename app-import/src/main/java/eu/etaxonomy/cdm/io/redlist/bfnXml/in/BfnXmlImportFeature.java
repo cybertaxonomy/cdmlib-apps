@@ -81,7 +81,7 @@ public class BfnXmlImportFeature extends BfnXmlImportBase implements ICdmIO<BfnX
 
 					String bfnElementName = BfnXmlConstants.EL_EIGENSCHAFT;
 					List<Element> elFeatureList = elFeatureNames.getChildren(bfnElementName, bfnNamespace);
-					List<Feature> featureList = new ArrayList<Feature>();
+					List<Feature> featureList = new ArrayList<>();
 					//for each taxonName
 					for (Element elFeature : elFeatureList){
 
@@ -200,7 +200,7 @@ public class BfnXmlImportFeature extends BfnXmlImportBase implements ICdmIO<BfnX
 	private TermVocabulary createOrUpdateTermVocabulary(TermType termType, IVocabularyService vocabularyService, DefinedTermBase term, String strTermVocabulary) {
 
         //create/get red list feature vocabulary
-        TermVocabulary<DefinedTermBase> termVocabulary = getVocabulary(termType, BfnXmlConstants.vocRLFeatures, BfnXmlConstants.VOC_REDLIST_FEATURES, BfnXmlConstants.VOC_REDLIST_FEATURES, BfnXmlConstants.VOC_REDLIST_FEATURES, null, false, null);
+        TermVocabulary<DefinedTermBase> termVocabulary = getVocabulary(termType, BfnXmlTransformer.vocRLFeatures, BfnXmlConstants.VOC_REDLIST_FEATURES, BfnXmlConstants.VOC_REDLIST_FEATURES, BfnXmlConstants.VOC_REDLIST_FEATURES, null, false, null);
 		termVocabulary.addTerm(term);
 		vocabularyService.saveOrUpdate(termVocabulary);
 

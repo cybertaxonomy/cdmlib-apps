@@ -164,7 +164,7 @@ public class BfnXmlTaxonNameExport extends BfnXmlExportBase {
     private void exportFeatures(Element roteListeDaten) {
         Element eigenschaften = new Element(BfnXmlConstants.EL_EIGENSCHAFTEN);
         roteListeDaten.addContent(eigenschaften);
-        TermVocabulary<Feature> redListFeaturesVoc = getVocabularyService().load(BfnXmlConstants.vocRLFeatures);
+        TermVocabulary<Feature> redListFeaturesVoc = getVocabularyService().load(BfnXmlTransformer.vocRLFeatures);
         Set<Feature> terms = redListFeaturesVoc.getTerms();
         for (Feature feature : terms) {
             //export red list features
@@ -201,7 +201,7 @@ public class BfnXmlTaxonNameExport extends BfnXmlExportBase {
                 //getIdentifier(taxon, BfnXmlConstants.UUID_REIHENFOLGE_IDENTIFIER_TYPE));
 
         //taxNr attribute
-        taxonym.setAttribute(BfnXmlConstants.ATT_TAXNR, getIdentifier(taxon, BfnXmlConstants.UUID_TAX_NR_IDENTIFIER_TYPE));
+        taxonym.setAttribute(BfnXmlConstants.ATT_TAXNR, getIdentifier(taxon, BfnXmlTransformer.UUID_TAX_NR_IDENTIFIER_TYPE));
 
 
         exportWissName(taxon, taxonym);

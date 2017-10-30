@@ -18,7 +18,6 @@ import org.apache.log4j.Logger;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.TransactionStatus;
 
-import eu.etaxonomy.cdm.api.service.ITermService;
 import eu.etaxonomy.cdm.api.service.IVocabularyService;
 import eu.etaxonomy.cdm.model.common.DefinedTermBase;
 import eu.etaxonomy.cdm.model.common.OrderedTermBase;
@@ -32,7 +31,11 @@ import eu.etaxonomy.cdm.model.location.NamedAreaType;
 import eu.etaxonomy.cdm.strategy.exceptions.UnknownCdmTypeException;
 /**
  *
+ * This class creates all area vocabularies and all distribution status vocabularies
+ * for the German redlists.
+ *
  * @author a.oppermann
+ * @author a.mueller
  * @date 04.07.2013
  *
  */
@@ -45,6 +48,10 @@ public class BfnXmlImportAddtionalTerms extends BfnXmlImportBase {
 
     public enum Vocabulary{
         GERMAN_FEDERAL_STATES("Bundesländer"),
+        GERMAN_COMBINED_STATES("Kombinierte Bundesländer"),
+        GERMAN_MARINE_ALGAE_AREAS("Marine Algen Gebiete"),
+        GERMAN_MARINE_INVERTEBRATE_AREAS("Marine Invertebraten Gebiete"),
+
         GERMAN_PRESENCE_TERMS("Vorkommensstatus"),
         GERMAN_ESTABLISHMENT_TERMS("Etablierungsstatus");
 
@@ -62,16 +69,21 @@ public class BfnXmlImportAddtionalTerms extends BfnXmlImportBase {
 
 
     private static final List<String> GERMAN_PRESENCE_ABSENCE_TERMS = Arrays.asList(new String[] {
-            "a:abwesend",
-            "aa:abwesend - ausgestorben",
-            "af:abwesend - frühere Fehleingabe",
-            "v:vorkommend",
-            "v+:vorkommend - in Einbürgerung befindlich",
-            "ve:vorkommend - etabliert",
-            "vk:vorkommend - kultiviert, domestiziert",
-            "vu:vorkommend - unbeständig",
-            "vs:vorkommend - Vorkommen unsicher",
-            "s:vorkommend - unsicher"
+            "x:" + BfnXmlTransformer.VORHANDEN ,
+            "?:" + BfnXmlTransformer.VORHANDEN_UNSICHER,
+            "#:" + BfnXmlTransformer.ABWESEND_ABGELEHNT,
+            "-:" + BfnXmlTransformer.ABWESEND_KEIN_NACHWEIS,
+
+            "a:" + BfnXmlTransformer.ABWESEND,
+            "aa:"  + BfnXmlTransformer.ABWESEND_AUSGESTORBEN,
+            "an:"  + BfnXmlTransformer.ABWESEND_SEIT1980,
+            "af:" + BfnXmlTransformer.ABWESEND_FEHLEINGABE,
+
+            "v+:" + BfnXmlTransformer.VORHANDEN_EINBUERGERUNG,
+            "ve:" + BfnXmlTransformer.VORHANDEN_ETABLIERT,
+            "vk:" + BfnXmlTransformer.VORHANDEN_KULTIVIERT_DOMESTIZIERT,
+            "vu:" + BfnXmlTransformer.VORHANDEN_UNBESTAENDIG,
+            "v?:" + BfnXmlTransformer.VORHANDEN_VORKOMMEN_UNSICHER,
 
     });
 
@@ -103,6 +115,27 @@ public class BfnXmlImportAddtionalTerms extends BfnXmlImportBase {
             "TH:Thüringen"
     });
 
+    private static final List<String> GERMAN_COMBINED_STATES = Arrays.asList(new String[] {
+            "BB+BE:Brandenburg und Berlin",
+            "SH+HH:Schleswig-Holstein und Hamburg"
+    });
+
+    private static final List<String> GERMAN_MARINE_ALGAE_AREAS = Arrays.asList(new String[] {
+            "HGL:Helgoland",
+            "NIW:Niedersächsisches Wattenmeer",
+            "SHW:Schleswig-Holsteinisches Wattenmeer",
+            "SHO:Schleswig-Holsteinische Ostsee",
+            "MVO:Mecklenburg-Vorpommerische Ostsee"
+    });
+
+    private static final List<String> GERMAN_MARINE_INVERTEBRATE_AREAS = Arrays.asList(new String[] {
+            "ÄWN:Ästuarien und Watt Nordsee",
+            "SuN:Sublitoral Nordsee",
+            "Hel:Helgoland2",  //TODO: the 2 is a workaround to distinguish from Algae Helgoloand, still needs to be discussed with BfN if these are 2 different areas
+            "Dog:Doggerbank",
+            "Ost:Ostsee"
+    });
+
 
     /** Hibernate classification vocabulary initialization strategy */
     private static final List<String> VOC_CLASSIFICATION_INIT_STRATEGY = Arrays.asList(new String[] {
@@ -121,7 +154,6 @@ public class BfnXmlImportAddtionalTerms extends BfnXmlImportBase {
             "termVocabulary.*",
             "terms",
             "namedArea"
-
     });
 
 
@@ -133,37 +165,41 @@ public class BfnXmlImportAddtionalTerms extends BfnXmlImportBase {
 	@Override
 	public void doInvoke(BfnXmlImportState state){
 		logger.info("create german terms ...");
-		IVocabularyService vocabularyService = getVocabularyService();
-		ITermService termService = getTermService();
+
 		TransactionStatus tx = startTransaction();
-//		createGermanNamedAreas(state, vocabularyService, termService);
-		createGermanTerms(vocabularyService, termService, GERMAN_FEDERAL_STATES, Vocabulary.GERMAN_FEDERAL_STATES);
-		createGermanTerms(vocabularyService, termService, GERMAN_PRESENCE_ABSENCE_TERMS, Vocabulary.GERMAN_PRESENCE_TERMS);
-		createGermanTerms(vocabularyService, termService, GERMAN_ESTABLISHMENT_STATUS_TERMS, Vocabulary.GERMAN_ESTABLISHMENT_TERMS);
+		//areas
+		createTerms(GERMAN_FEDERAL_STATES, Vocabulary.GERMAN_FEDERAL_STATES, TermType.NamedArea);
+		createTerms(GERMAN_MARINE_ALGAE_AREAS, Vocabulary.GERMAN_MARINE_ALGAE_AREAS, TermType.NamedArea);
+		createTerms(GERMAN_MARINE_INVERTEBRATE_AREAS, Vocabulary.GERMAN_MARINE_INVERTEBRATE_AREAS, TermType.NamedArea);
+		createTerms(GERMAN_COMBINED_STATES, Vocabulary.GERMAN_COMBINED_STATES, TermType.NamedArea);
+		//distribution status
+        createTerms(GERMAN_PRESENCE_ABSENCE_TERMS, Vocabulary.GERMAN_PRESENCE_TERMS, TermType.PresenceAbsenceTerm);
+		createTerms(GERMAN_ESTABLISHMENT_STATUS_TERMS, Vocabulary.GERMAN_ESTABLISHMENT_TERMS, TermType.PresenceAbsenceTerm);
+
 		commitTransaction(tx);
 		logger.info("end create german terms.");
 		return;
 
 	}
 
-	private void createGermanTerms(IVocabularyService vocabularyService,ITermService termService , List<String> termList, Vocabulary vocabulary){
+	private void createTerms(List<String> termList, Vocabulary vocabulary, TermType termType){
 	   NamedArea parentGermany = null;
-	   PresenceAbsenceTerm parent = null;
+	   PresenceAbsenceTerm lastParent = null;
 	   int id = 0;
-       for(String strGermanTerm:termList){
+       for(String strTerm : termList){
            //Split string into label and abbrevated label
-           String[] splittedStrings = StringUtils.splitByWholeSeparator(strGermanTerm, ":");
+           String[] splittedStrings = StringUtils.splitByWholeSeparator(strTerm, ":");
            String abbrevatedLabel = splittedStrings[0];
            String label = splittedStrings[1];
            //get UUID and load existing term
            UUID termUuuid = null;
            try {
-               if(vocabulary.equals(Vocabulary.GERMAN_PRESENCE_TERMS)){
+               if(vocabulary == Vocabulary.GERMAN_PRESENCE_TERMS){
                    termUuuid = BfnXmlTransformer.getGermanAbsenceTermUUID(label);
-               }else if(vocabulary.equals(Vocabulary.GERMAN_ESTABLISHMENT_TERMS)){
+               }else if(vocabulary == Vocabulary.GERMAN_ESTABLISHMENT_TERMS){
                    termUuuid = BfnXmlTransformer.getGermanEstablishmentTermUUID(label);
-               }else if(vocabulary.equals(Vocabulary.GERMAN_FEDERAL_STATES)){
-                   termUuuid = BfnXmlTransformer.getGermanStateUUID(label);
+               }else if(termType == TermType.NamedArea){
+                   termUuuid = BfnXmlTransformer.getAreaUUID(label);
                }
            } catch (UnknownCdmTypeException e) {
                logger.warn("Could not match term to uuid: "+e.toString());
@@ -171,45 +207,48 @@ public class BfnXmlImportAddtionalTerms extends BfnXmlImportBase {
            }
 
            @SuppressWarnings("rawtypes")
-           DefinedTermBase term = termService.load(termUuuid);
+           DefinedTermBase term = getTermService().load(termUuuid);
            if(term != null){
                //already in the db, so no need to step through the whole process again.
                return;
            }else{
-               if(vocabulary.equals(Vocabulary.GERMAN_FEDERAL_STATES)){
+               if(termType == TermType.NamedArea){
                    //Namedareas
-                   term = NamedArea.NewInstance(label, label, abbrevatedLabel);
-                   ((NamedArea) term).setType(NamedAreaType.ADMINISTRATION_AREA());
+                   NamedArea namedArea = NamedArea.NewInstance(label, label, abbrevatedLabel);
+                   term = namedArea;
                    term.setIdInVocabulary(Integer.toString(id));
-                   if(label.equalsIgnoreCase("Deutschland")){
-                       ((NamedArea) term).setLevel(NamedAreaLevel.COUNTRY());
-                       parentGermany = (NamedArea) term;
+                   if (vocabulary == Vocabulary.GERMAN_FEDERAL_STATES){
+                       namedArea.setType(NamedAreaType.ADMINISTRATION_AREA());
+                       if(label.equalsIgnoreCase("Deutschland")){
+                           namedArea.setLevel(NamedAreaLevel.COUNTRY());
+                           parentGermany = (NamedArea) term;
+                       }else{
+                           namedArea.setLevel(NamedAreaLevel.STATE());
+                           term.setPartOf(parentGermany);
+                       }
                    }else{
-                       ((NamedArea) term).setLevel(NamedAreaLevel.STATE());
-                       term.setPartOf(parentGermany);
+                       if (vocabulary == Vocabulary.GERMAN_COMBINED_STATES){
+                           namedArea.setType(NamedAreaType.ADMINISTRATION_AREA());
+                       }else{
+                           namedArea.setType(NamedAreaType.NATURAL_AREA());
+                       }
                    }
                }else{
                    term = PresenceAbsenceTerm.NewPresenceInstance(label, label, abbrevatedLabel);
                    term.setIdInVocabulary(abbrevatedLabel);
                    if(vocabulary.equals(Vocabulary.GERMAN_PRESENCE_TERMS)){
                        //create hierarchy of terms
-                       if(label.equalsIgnoreCase("abwesend")){
-                           parent = (PresenceAbsenceTerm) term;
-                       }else if(label.equalsIgnoreCase("vorkommend")){
-                           parent = (PresenceAbsenceTerm) term;
-                       }else{
-                           ((PresenceAbsenceTerm)term).setPartOf(parent);
+                       if(abbrevatedLabel.length() >1 ){
+                           ((PresenceAbsenceTerm)term).setPartOf(lastParent);
+                       }else {
+                           lastParent = (PresenceAbsenceTerm) term;
                        }
                    }
                }
                term.setUuid(termUuuid);
            }
-           if(vocabulary.equals(Vocabulary.GERMAN_FEDERAL_STATES)){
-               createOrUpdateTermVocabulary(TermType.NamedArea, vocabularyService, term, vocabulary.toString());
-               id++;
-           }else{
-               createOrUpdateTermVocabulary(TermType.PresenceAbsenceTerm, vocabularyService, term, vocabulary.toString());
-           }
+           createOrUpdateTermVocabulary(termType, getVocabularyService(), term, vocabulary.toString());
+           id++;
        }
 	}
 
