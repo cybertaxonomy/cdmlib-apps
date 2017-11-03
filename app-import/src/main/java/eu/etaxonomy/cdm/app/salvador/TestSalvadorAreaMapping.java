@@ -30,6 +30,7 @@ import eu.etaxonomy.cdm.io.api.application.CdmIoApplicationController;
  *
  */
 public class TestSalvadorAreaMapping {
+    @SuppressWarnings("unused")
     private static final Logger logger = Logger.getLogger(TestSalvadorAreaMapping.class);
 
     //database validation status (create, update, validate ...)
@@ -43,17 +44,12 @@ public class TestSalvadorAreaMapping {
     protected void doTest(ICdmDataSource cdmDestination){
 
         CdmIoApplicationController app = CdmIoApplicationController.NewInstance(cdmDestination, hbm2dll);
-
         try {
             doTest2(app);
         } catch (Exception e) {
-            // TODO Auto-generated catch block
             e.printStackTrace();
         }
-
     }
-
-
 
 
     /**
@@ -65,19 +61,18 @@ public class TestSalvadorAreaMapping {
 //      Taxon taxon = (Taxon)app.getTaxonService().find(taxonUuid);
       Object geoServiceObj = app.getBean("editGeoService");
       EditGeoService geoService;
-    try {
-        geoService = getTargetObject(geoServiceObj);
+        try {
+            geoService = getTargetObject(geoServiceObj);
 
 
-      Set<InfoPart> partSet = new HashSet<>();
-      partSet.add(InfoPart.mapUriParams);
+          Set<InfoPart> partSet = new HashSet<>();
+          partSet.add(InfoPart.mapUriParams);
 
-      EnumSet<InfoPart> parts = EnumSet.copyOf(partSet);
-      geoService.composeDistributionInfoFor(parts, taxonUuid, false, false, null, null, null, null, null, null, null);
-    } catch (Exception e) {
-        // TODO Auto-generated catch block
-        e.printStackTrace();
-    }
+          EnumSet<InfoPart> parts = EnumSet.copyOf(partSet);
+          geoService.composeDistributionInfoFor(parts, taxonUuid, false, false, null, null, null, null, null, null, null);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     protected <T> T getTargetObject(Object proxy) throws Exception {
