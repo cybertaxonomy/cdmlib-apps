@@ -45,6 +45,7 @@ import eu.etaxonomy.cdm.model.name.TaxonName;
 import eu.etaxonomy.cdm.model.occurrence.Collection;
 import eu.etaxonomy.cdm.model.occurrence.DerivedUnit;
 import eu.etaxonomy.cdm.model.occurrence.DeterminationEvent;
+import eu.etaxonomy.cdm.model.occurrence.FieldUnit;
 import eu.etaxonomy.cdm.model.reference.Reference;
 import eu.etaxonomy.cdm.model.taxon.Synonym;
 import eu.etaxonomy.cdm.model.taxon.Taxon;
@@ -189,7 +190,12 @@ public class BogotaSpecimenImport<CONFIG extends BogotaSpecimenImportConfigurato
     private TaxonDescription getTaxonDescription(SimpleExcelSpecimenImportState<CONFIG> state, String line,
             Taxon taxon) {
         Reference ref = getSourceCitation(state);
-        TaxonDescription desc = this.getTaxonDescription(taxon, ref, ! IMAGE_GALLERY, CREATE);
+        TaxonDescription desc = this.getTaxonDescription(taxon, ref, ! IMAGE_GALLERY, ! CREATE);
+        if (desc == null){
+            //TODO move title creation into base method
+            desc = this.getTaxonDescription(taxon, ref, ! IMAGE_GALLERY, CREATE);
+            desc.setTitleCache("Specimen Excel import for " +  taxon.getName().getTitleCache(), true);
+        }
         return desc;
     }
 
@@ -214,6 +220,8 @@ public class BogotaSpecimenImport<CONFIG extends BogotaSpecimenImportConfigurato
         makeCollection(facade, state, line, record);
         DerivedUnit specimen = facade.innerDerivedUnit();
         specimen.addSource(makeOriginalSource(state));
+        FieldUnit fieldUnit = facade.innerFieldUnit();
+        fieldUnit.addSource(makeOriginalSource(state));
         return specimen;
     }
 
@@ -477,7 +485,7 @@ public class BogotaSpecimenImport<CONFIG extends BogotaSpecimenImportConfigurato
                 String full = person.getTitleCache();
                 if (!full.equals(collectors)){
                     person.setTitleCache(collectors, true);
-                    //TODO longterm, collector cache
+                    //TODO use setCollectorTitle in future
                 }
             }else{
                 person.setTitleCache(collectors, true);
@@ -579,9 +587,6 @@ public class BogotaSpecimenImport<CONFIG extends BogotaSpecimenImportConfigurato
         }else{
             Person person = Person.NewInstance();
             person.setTitleCache(identifier, true);
-//            String format = "([A-Z]\\.){1,3}" +
-//                    NonViralNameParserImplRegExBase.capitalWord +
-//                    "(-" + NonViralNameParserImplRegExBase.capitalWord;
 
             String[] splits = identifier.split("\\.");
             int length = splits.length;
