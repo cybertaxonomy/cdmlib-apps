@@ -119,18 +119,11 @@ public class BogotaSpecimenImport<CONFIG extends BogotaSpecimenImportConfigurato
         return "To be imported";
     }
 
-//    private boolean isFirst = true;
-//    private TransactionStatus tx = null;
-
     /**
      * {@inheritDoc}
      */
     @Override
     protected void firstPass(SimpleExcelSpecimenImportState<CONFIG> state) {
-//        if (isFirst){
-//            tx = this.startTransaction();
-//            isFirst = false;
-//        }
 
         HashMap<String, String> record = state.getOriginalRecord();
 
@@ -719,15 +712,6 @@ public class BogotaSpecimenImport<CONFIG extends BogotaSpecimenImportConfigurato
             //TODO
             return null;
         }
-    }
-
-
-    @Override
-    protected void secondPass(SimpleExcelSpecimenImportState<CONFIG> state) {
-//        if (tx != null){
-//            this.commitTransaction(tx);
-//            tx = null;
-//        }
     }
 
     @Override
