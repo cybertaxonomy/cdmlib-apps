@@ -20,9 +20,12 @@ import eu.etaxonomy.cdm.io.bogota.BogotaSpecimenImportConfigurator;
 import eu.etaxonomy.cdm.io.common.CdmDefaultImport;
 import eu.etaxonomy.cdm.io.common.IImportConfigurator.CHECK;
 import eu.etaxonomy.cdm.io.common.ImportResult;
+import eu.etaxonomy.cdm.model.agent.Team;
 import eu.etaxonomy.cdm.model.name.NomenclaturalCode;
+import eu.etaxonomy.cdm.model.reference.IDatabase;
 import eu.etaxonomy.cdm.model.reference.Reference;
 import eu.etaxonomy.cdm.model.reference.ReferenceFactory;
+import eu.etaxonomy.cdm.strategy.parser.TimePeriodParser;
 
 /**
  * Activator for import of Bogota Checklist
@@ -38,11 +41,10 @@ public class BogotaSpecimenActivator {
 //  static final ICdmDataSource cdmDestination = CdmDestinations.cdm_test_local_bogota();
     static final ICdmDataSource cdmDestination = CdmDestinations.cdm_bogota_production();
 
-//    int minRow = 6;
-//    int maxRow = 15; //minRow + 11999;
+    int minRow = 1;
+    int maxRow = 1000000; //minRow + 11999;
+    boolean onlyNonCdmTaxa = true;
 
-    int minRow = 180;
-    int maxRow = 191; //minRow + 11999;
 
     boolean dedupRefs = false;
     boolean dedupAuthors = false;
@@ -63,7 +65,9 @@ public class BogotaSpecimenActivator {
         config.setMinLineNumber(minRow);
         config.setMaxLineNumber(maxRow);
         config.setDeduplicateReferences(dedupRefs);
+        config.setSecReference(getSecReference());
         config.setDeduplicateAuthors(dedupAuthors);
+        config.setOnlyNonCdmTaxa(onlyNonCdmTaxa);
 
         config.setSource(source);
         String fileName = source.toString();
@@ -96,6 +100,22 @@ public class BogotaSpecimenActivator {
         result.setTitle("Flora_de_Bogota_Dataset_20170901_GB20171011_14607-entries-to-import_GB_20171016.xlsx");
         result.setUuid(UUID.fromString("05e8c346-4809-4323-a484-822c92ad033d"));
         return result;
+    }
+
+    private Reference getSecReference() {
+
+        IDatabase result = ReferenceFactory.newDatabase();
+//        result.setTitleCache("Herbario. 2017. Identificaciones de muestras de herbario en el banco de datos del Jardín Botánico Nacional José Celestino Mutis. Bogotá [exportados 18-sep-2017]", true);
+        result.setTitle("Identificaciones de muestras de herbario en el banco de datos del Jardín Botánico Nacional José Celestino Mutis.");
+        result.setPlacePublished("Bogotá");
+        result.setDatePublished(TimePeriodParser.parseString("2017"));
+        result.getDatePublished().setFreeText("2017 [exportados 18-sep-2017]");
+
+        Team team = Team.NewTitledInstance("Herbario", null);
+        result.setAuthorship(team);
+
+        result.setUuid(UUID.fromString("2bbc08ba-20d2-46cf-bf57-88b90a717733"));
+        return (Reference)result;
     }
 
 

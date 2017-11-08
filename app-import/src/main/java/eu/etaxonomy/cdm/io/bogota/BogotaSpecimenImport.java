@@ -9,7 +9,9 @@
 */
 package eu.etaxonomy.cdm.io.bogota;
 
+import java.util.Arrays;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
@@ -39,9 +41,12 @@ import eu.etaxonomy.cdm.model.location.NamedAreaLevel;
 import eu.etaxonomy.cdm.model.location.NamedAreaType;
 import eu.etaxonomy.cdm.model.location.Point;
 import eu.etaxonomy.cdm.model.location.ReferenceSystem;
+import eu.etaxonomy.cdm.model.name.NomenclaturalCode;
+import eu.etaxonomy.cdm.model.name.Rank;
 import eu.etaxonomy.cdm.model.name.SpecimenTypeDesignation;
 import eu.etaxonomy.cdm.model.name.SpecimenTypeDesignationStatus;
 import eu.etaxonomy.cdm.model.name.TaxonName;
+import eu.etaxonomy.cdm.model.name.TaxonNameFactory;
 import eu.etaxonomy.cdm.model.occurrence.Collection;
 import eu.etaxonomy.cdm.model.occurrence.DerivedUnit;
 import eu.etaxonomy.cdm.model.occurrence.DeterminationEvent;
@@ -50,8 +55,11 @@ import eu.etaxonomy.cdm.model.reference.Reference;
 import eu.etaxonomy.cdm.model.taxon.Synonym;
 import eu.etaxonomy.cdm.model.taxon.Taxon;
 import eu.etaxonomy.cdm.model.taxon.TaxonBase;
+import eu.etaxonomy.cdm.model.taxon.TaxonNode;
 import eu.etaxonomy.cdm.strategy.exceptions.UnknownCdmTypeException;
 import eu.etaxonomy.cdm.strategy.parser.DeterminationModifierParser;
+import eu.etaxonomy.cdm.strategy.parser.INonViralNameParser;
+import eu.etaxonomy.cdm.strategy.parser.NonViralNameParserImpl;
 import eu.etaxonomy.cdm.strategy.parser.SpecimenTypeParser;
 import eu.etaxonomy.cdm.strategy.parser.TimePeriodParser;
 
@@ -111,8 +119,9 @@ public class BogotaSpecimenImport<CONFIG extends BogotaSpecimenImportConfigurato
 
 //    @SuppressWarnings("unchecked")
     private ImportDeduplicationHelper<SimpleExcelSpecimenImportState<?>> deduplicationHelper;
-//           = (ImportDeduplicationHelper<SimpleExcelSpecimenImportState<?>>)ImportDeduplicationHelper.NewStandaloneInstance();
 
+    private final Map<String, TaxonNode> taxonNodeMap = new HashMap<>();
+    private Reference secRef;
 
     @Override
     protected String getWorksheetName() {
@@ -136,25 +145,168 @@ public class BogotaSpecimenImport<CONFIG extends BogotaSpecimenImportConfigurato
         try {
 
             //species
-            TaxonBase<?> taxonBase = getOrCreateTaxon(state, line, record, voucherId);
-
+            TaxonBase<?> taxonBase = getTaxonByCdmId(state, line, record, voucherId);
             if (taxonBase != null){
-                Taxon taxon = getTaxon(taxonBase);
-
-                TaxonDescription taxonDescription = getTaxonDescription(state, line, taxon);
-
-                DerivedUnit specimen = makeSpecimen(state, line, record, voucherId, taxonBase);
-
-                IndividualsAssociation indAssoc = IndividualsAssociation.NewInstance(specimen);
-                indAssoc.addImportSource(voucherId, COL_VOUCHER_ID, getSourceCitation(state), null);
-                taxonDescription.addElement(indAssoc);
-
+                handleRecordForTaxon(state, voucherId, line, taxonBase);
+            }else if (record.get(COL_TAXON_UUID)!= null){
+                //  do nothing
+            }else{
+                taxonBase = getOrCreateNewTaxon(state, record, line);
+                handleRecordForTaxon(state, voucherId, line, taxonBase);
             }
+
         } catch (Exception e) {
             state.getResult().addError("An unexpected exception appeared in record", e, null, line);
             e.printStackTrace();
         }
 
+    }
+
+    /**
+     * @param state
+     * @param record
+     * @param line
+     * @return
+     */
+    private Taxon getOrCreateNewTaxon(SimpleExcelSpecimenImportState<CONFIG> state,
+            HashMap<String, String> record, String line) {
+        String familyStr = record.get(COL_FAMILY);
+        String genusStr = record.get(COL_GENUS);
+        initTaxonMap(state);
+        TaxonName speciesName = makeSpeciesName(state, line);
+        String titleCache = speciesName.getTitleCache();
+        TaxonNode existingSpeciesNode = taxonNodeMap.get(titleCache);
+        if (existingSpeciesNode != null){
+            return existingSpeciesNode.getTaxon();
+        }else{
+            Reference sec = getSecReference(state);
+            Taxon newTaxon = Taxon.NewInstance(speciesName, sec);
+            newTaxon.addSource(makeOriginalSource(state));
+            TaxonNode existingGenusNode = taxonNodeMap.get(genusStr);
+            if (existingGenusNode == null){
+                TaxonName genusName = TaxonNameFactory.NewBotanicalInstance(Rank.GENUS());
+                genusName.setGenusOrUninomial(genusStr);
+                Taxon newGenus = Taxon.NewInstance(genusName, sec);
+                newGenus.addSource(makeOriginalSource(state));
+                TaxonNode existingFamilyNode = taxonNodeMap.get(familyStr);
+                if (existingFamilyNode == null){
+                    TaxonName familyName = TaxonNameFactory.NewBotanicalInstance(Rank.FAMILY());
+                    familyName.setGenusOrUninomial(familyStr);
+                    Taxon newFamily = Taxon.NewInstance(familyName, sec);
+                    newFamily.addSource(makeOriginalSource(state));
+                    TaxonNode plantaeNode = taxonNodeMap.get("Plantae");
+                    existingFamilyNode = plantaeNode.addChildTaxon(newFamily, null, null);
+                    save(existingFamilyNode);
+                }
+                existingGenusNode = existingFamilyNode.addChildTaxon(newGenus, null, null);
+                save(existingGenusNode);
+            }
+            existingSpeciesNode = existingGenusNode.addChildTaxon(newTaxon, null, null);
+            save(existingSpeciesNode);
+            return newTaxon;
+        }
+
+    }
+
+    /**
+     * @param existingFamilyNode
+     */
+    private void save(TaxonNode node) {
+        getTaxonNodeService().saveOrUpdate(node);
+        taxonNodeMap.put(node.getTaxon().getName().getTitleCache(), node);
+
+    }
+
+    /**
+     * @param state
+     * @return
+     */
+    private Reference getSecReference(SimpleExcelSpecimenImportState<CONFIG> state) {
+        if (this.secRef == null){
+            Reference sec = state.getConfig().getSecReference();
+            this.secRef = getReferenceService().find(sec.getUuid());
+            if (this.secRef == null){
+                this.secRef = sec;
+                getReferenceService().save(sec);
+            }
+        }
+
+
+        return this.secRef;
+    }
+
+    /**
+     * @param state
+     * @param record
+     * @param line
+     * @return
+     */
+    private TaxonName makeSpeciesName(SimpleExcelSpecimenImportState<CONFIG> state, String line) {
+        HashMap<String, String> record = state.getOriginalRecord();
+        String genus = record.get(COL_GENUS);
+        String species = record.get(COL_SPECIFIC_EPI);
+        String basionymAuthorStr = record.get(COL_BASIONYM_AUTHOR);
+        String authorStr = record.get(COL_AUTHOR);
+        INonViralNameParser<?> parser = NonViralNameParserImpl.NewInstance();
+        String fullName = genus + " " +  species +
+                (basionymAuthorStr == null ? "" : " ("+basionymAuthorStr+")")
+                + " " + authorStr;
+        TaxonName newName = (TaxonName)parser.parseFullName(fullName , NomenclaturalCode.ICNAFP, Rank.SPECIES());
+        String titleCache = newName.getTitleCache();
+        if (newName.isProtectedTitleCache()){
+            state.getResult().addWarning("Name not parsable: " +  fullName);
+        }
+        if (taxonNodeMap.get(titleCache)== null){
+            getDeduplicationHelper(state).replaceAuthorNamesAndNomRef(state, newName);
+            newName.addSource(makeOriginalSource(state));
+        }
+
+        return newName;
+    }
+
+    /**
+     * @param state
+     *
+     */
+    private void initTaxonMap(SimpleExcelSpecimenImportState<CONFIG> state) {
+        if (taxonNodeMap.isEmpty()){
+            List<String> propertyPaths = Arrays.asList(new String[]{"taxon.name"});
+            List<TaxonNode> list = getTaxonNodeService().list(null, null, null, null, propertyPaths);
+            for (TaxonNode node : list){
+                if (node.getTaxon()!= null){
+                    String strName = node.getTaxon().getName().getTitleCache();
+                    TaxonNode existingNode = taxonNodeMap.get(strName);
+                    if (existingNode != null){
+                        state.getResult().addWarning("Taxon name exists more than once while initializing taxon map: " + strName, "initTaxonMap");
+                    }else{
+                        taxonNodeMap.put(strName, node);
+                    }
+                }
+            }
+        }
+    }
+
+    /**
+     * @param state
+     * @param record
+     * @param voucherId
+     * @param line
+     * @param taxonBase
+     * @param taxon
+     */
+    protected void handleRecordForTaxon(SimpleExcelSpecimenImportState<CONFIG> state,
+            String voucherId, String line, TaxonBase<?> taxonBase) {
+
+        HashMap<String, String> record = state.getOriginalRecord();
+        Taxon taxon = getTaxon(taxonBase);
+
+        TaxonDescription taxonDescription = getTaxonDescription(state, line, taxon);
+
+        DerivedUnit specimen = makeSpecimen(state, line, record, voucherId, taxonBase);
+
+        IndividualsAssociation indAssoc = IndividualsAssociation.NewInstance(specimen);
+        indAssoc.addImportSource(voucherId, COL_VOUCHER_ID, getSourceCitation(state), null);
+        taxonDescription.addElement(indAssoc);
     }
 
 
@@ -682,11 +834,11 @@ public class BogotaSpecimenImport<CONFIG extends BogotaSpecimenImportConfigurato
      * @param noStr
      * @return
      */
-    private TaxonBase<?> getOrCreateTaxon(SimpleExcelSpecimenImportState<CONFIG> state, String line,
+    private TaxonBase<?> getTaxonByCdmId(SimpleExcelSpecimenImportState<CONFIG> state, String line,
             HashMap<String, String> record, String noStr) {
 
         String strUuidTaxon = record.get(COL_TAXON_UUID);
-        if (strUuidTaxon != null){
+        if (strUuidTaxon != null && ! state.getConfig().isOnlyNonCdmTaxa()){
             UUID uuidTaxon;
             try {
                 uuidTaxon = UUID.fromString(strUuidTaxon);
@@ -702,14 +854,6 @@ public class BogotaSpecimenImport<CONFIG extends BogotaSpecimenImportConfigurato
             }
             return result;
         }else{
-            TaxonName taxonName = null;
-            Reference sec = null;
-            Taxon result = Taxon.NewInstance(taxonName, sec);
-            result.addSource(makeOriginalSource(state));
-            //TODO export uuid
-
-//            state.getResult().addInfo("Taxon");
-            //TODO
             return null;
         }
     }

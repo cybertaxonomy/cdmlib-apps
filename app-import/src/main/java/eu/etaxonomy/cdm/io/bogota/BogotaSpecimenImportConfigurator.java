@@ -14,6 +14,7 @@ import java.net.URI;
 import eu.etaxonomy.cdm.database.ICdmDataSource;
 import eu.etaxonomy.cdm.io.common.ImportStateBase;
 import eu.etaxonomy.cdm.io.excel.common.ExcelImportConfiguratorBase;
+import eu.etaxonomy.cdm.model.reference.Reference;
 
 /**
  * @author a.mueller
@@ -26,6 +27,9 @@ public class BogotaSpecimenImportConfigurator extends ExcelImportConfiguratorBas
 
     private int minLineNumber = 0;
     private int maxLineNumber = 1000000;
+
+    private Reference secReference;
+    private boolean onlyNonCdmTaxa;
 
     /**
      * @param source
@@ -77,5 +81,20 @@ public class BogotaSpecimenImportConfigurator extends ExcelImportConfiguratorBas
         this.maxLineNumber = maxLineNumber;
     }
 
+    public Reference getSecReference() {
+        return secReference;
+    }
+
+    public void setSecReference(Reference secReference) {
+        this.secReference = secReference;
+    }
+
+    public boolean isOnlyNonCdmTaxa() {
+        return onlyNonCdmTaxa;
+    }
+
+    public void setOnlyNonCdmTaxa(boolean onlyNonCdmTaxa) {
+        this.onlyNonCdmTaxa = onlyNonCdmTaxa;
+    }
 
 }

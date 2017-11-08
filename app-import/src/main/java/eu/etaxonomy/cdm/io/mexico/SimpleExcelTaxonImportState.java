@@ -18,6 +18,7 @@ import eu.etaxonomy.cdm.io.excel.common.ExcelImportState;
 import eu.etaxonomy.cdm.io.excel.common.ExcelRowBase;
 import eu.etaxonomy.cdm.model.agent.TeamOrPersonBase;
 import eu.etaxonomy.cdm.model.name.INonViralName;
+import eu.etaxonomy.cdm.model.name.TaxonName;
 import eu.etaxonomy.cdm.model.reference.Reference;
 import eu.etaxonomy.cdm.model.taxon.Taxon;
 
@@ -32,14 +33,14 @@ public class SimpleExcelTaxonImportState<CONFIG extends ExcelImportConfiguratorB
     @SuppressWarnings("unused")
     private static final Logger logger = Logger.getLogger(SimpleExcelTaxonImportState.class);
 
-    private Map<String, Reference> refMap = new HashMap<>();
+    private final Map<String, Reference> refMap = new HashMap<>();
 
-    private Map<String, TeamOrPersonBase<?>> agentMap = new HashMap<>();
+    private final Map<String, TeamOrPersonBase<?>> agentMap = new HashMap<>();
 
     private final Map<String, Taxon> higherTaxonTaxonMap = new HashMap<>();
 
     //using titleCache
-    private Map<String, INonViralName> nameMap = new HashMap<>();
+    private Map<String, TaxonName> nameMap = new HashMap<>();
 
     private final Map<String, Taxon> taxonMap = new HashMap<>();
 
@@ -82,7 +83,7 @@ public class SimpleExcelTaxonImportState<CONFIG extends ExcelImportConfiguratorB
     }
 
     //names
-    public void putName(String titleCache, INonViralName name){
+    public void putName(String titleCache, TaxonName name){
         nameMap.put(titleCache, name);
     }
     public INonViralName getName(String titleCache){
