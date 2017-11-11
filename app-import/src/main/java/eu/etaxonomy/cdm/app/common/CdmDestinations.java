@@ -311,7 +311,7 @@ public class CdmDestinations {
     public static ICdmDataSource cdm_greece_checklist_production(){
         DatabaseTypeEnum dbType = DatabaseTypeEnum.MySQL;
         String cdmServer = "160.45.63.171";
-        String cdmDB = "cdm_production_flora_hellenica";
+        String cdmDB = "cdm_production_flora_greece";
         String cdmUserName = "edit";
         return makeDestination(dbType, cdmServer, cdmDB, -1, cdmUserName, null);
     }

@@ -331,7 +331,7 @@ public class CyprusImagesActivator {
             if (el.isInstanceOf(TextData.class)){
                 textData = CdmBase.deproxy(el, TextData.class);
             }else{
-                logger.warn("Image gallery had non-textdata description elmenet: " +  fileStr);
+                logger.warn("Image gallery had non-textdata description element: " +  fileStr);
             }
         }
         if (textData == null){
