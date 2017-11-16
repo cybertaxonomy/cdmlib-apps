@@ -8,7 +8,7 @@
 */
 package eu.etaxonomy.cdm.io.salvador;
 
-import eu.etaxonomy.cdm.io.csv.CsvImportState;
+import eu.etaxonomy.cdm.io.csv.in.CsvImportState;
 
 /**
  * @author a.mueller

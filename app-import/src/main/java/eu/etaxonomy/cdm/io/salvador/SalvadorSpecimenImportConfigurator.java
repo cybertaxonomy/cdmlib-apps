@@ -13,8 +13,8 @@ import java.net.URI;
 
 import eu.etaxonomy.cdm.database.ICdmDataSource;
 import eu.etaxonomy.cdm.io.common.mapping.IInputTransformer;
-import eu.etaxonomy.cdm.io.csv.CsvImportConfiguratorBase;
-import eu.etaxonomy.cdm.io.csv.CsvImportState;
+import eu.etaxonomy.cdm.io.csv.in.CsvImportConfiguratorBase;
+import eu.etaxonomy.cdm.io.csv.in.CsvImportState;
 
 /**
  * @author a.mueller

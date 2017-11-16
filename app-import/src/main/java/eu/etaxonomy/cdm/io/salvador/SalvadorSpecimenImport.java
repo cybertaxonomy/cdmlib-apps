@@ -26,7 +26,7 @@ import org.springframework.stereotype.Component;
 
 import eu.etaxonomy.cdm.api.facade.DerivedUnitFacade;
 import eu.etaxonomy.cdm.io.common.utils.ImportDeduplicationHelper;
-import eu.etaxonomy.cdm.io.csv.CsvImportBase;
+import eu.etaxonomy.cdm.io.csv.in.CsvImportBase;
 import eu.etaxonomy.cdm.model.agent.Person;
 import eu.etaxonomy.cdm.model.agent.Team;
 import eu.etaxonomy.cdm.model.agent.TeamOrPersonBase;
