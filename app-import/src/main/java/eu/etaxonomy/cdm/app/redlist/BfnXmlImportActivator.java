@@ -69,7 +69,7 @@ public class BfnXmlImportActivator {
 //	static final ICdmDataSource cdmDestination = CdmDestinations.localH2();
 //	static final ICdmDataSource cdmDestination = CdmDestinations.cdm_test_local_mysql();
 //	static final ICdmDataSource cdmDestination = CdmDestinations.cdm_redlist_animalia_production_final();
-    static final ICdmDataSource cdmDestination = CdmDestinations.cdm_redlist_mammalia_test();
+    static final ICdmDataSource cdmDestination = CdmDestinations.cdm_test_redlist_mammalia();
 
 	private static final String sourceUriBase = "file:////BGBM-PESIHPC/RoteListen/RoteListenXml/";
 

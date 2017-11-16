@@ -25,7 +25,7 @@ public class RedListGefaesspflanzenActivator {
 
 //	static final ICdmDataSource cdmDestination = CdmDestinations.localH2();
 //	static final ICdmDataSource cdmDestination = CdmDestinations.cdm_production_redlist_gefaesspflanzen();
-  static final ICdmDataSource cdmDestination = CdmDestinations.cdm_test_local_mysql();
+  static final ICdmDataSource cdmDestination = CdmDestinations.cdm_local_test_mysql();
 
 	//feature tree uuid
 	public static final UUID featureTreeUuid = UUID.fromString("8a78ac1f-b2de-4e9e-bb14-319da0b4a790");

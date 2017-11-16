@@ -40,7 +40,7 @@ public class IldisActivator {
 	static DbSchemaValidation hbm2dll = DbSchemaValidation.CREATE;
 	static final Source berlinModelSource = BerlinModelSources.ILDIS();
 //	static final ICdmDataSource cdmDestination = CdmDestinations.cdm_ildis_dev();
-	static final ICdmDataSource cdmDestination = CdmDestinations.cdm_test_local_mysql();
+	static final ICdmDataSource cdmDestination = CdmDestinations.cdm_local_test_mysql();
 
 
 	static final UUID secUuid = UUID.fromString("a7f29364-ce98-4c1d-ad2e-3d889cc5885c");

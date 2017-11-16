@@ -36,7 +36,7 @@ public class SalvadorSpecimenActivator {
     static DbSchemaValidation hbm2dll = DbSchemaValidation.VALIDATE;
 
 //    static final ICdmDataSource cdmDestination = CdmDestinations.cdm_test_local_mysql_test();
-    static final ICdmDataSource cdmDestination = CdmDestinations.cdm_salvador_preview();
+    static final ICdmDataSource cdmDestination = CdmDestinations.cdm_test_salvador();
 //    static final ICdmDataSource cdmDestination = CdmDestinations.cdm_salvador_production();
 
     //check - import

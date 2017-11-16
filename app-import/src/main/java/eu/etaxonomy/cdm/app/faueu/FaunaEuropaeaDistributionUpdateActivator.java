@@ -32,7 +32,7 @@ public class FaunaEuropaeaDistributionUpdateActivator {
     private static final Logger logger = Logger.getLogger(FaunaEuropaeaDistributionUpdateActivator.class);
 
 //    static final ICdmDataSource cdmDestination = CdmDestinations.cdm_test_local_faunaEu_mysql();
-    static final ICdmDataSource cdmDestination = CdmDestinations.cdm_pesi_fauna_europaea();
+    static final ICdmDataSource cdmDestination = CdmDestinations.cdm_test_pesi_fauna_europaea();
     static final URI source = fauEuDistrUpdateSource();
     static final CHECK check = CHECK.IMPORT_WITHOUT_CHECK;
 

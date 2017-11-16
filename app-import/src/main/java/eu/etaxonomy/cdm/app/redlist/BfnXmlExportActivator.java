@@ -40,7 +40,7 @@ public class BfnXmlExportActivator {
 
 	private void invokeExport() {
 
-		ICdmDataSource sourceDb = CdmDestinations.cdm_test_local_mysql();
+		ICdmDataSource sourceDb = CdmDestinations.cdm_local_test_mysql();
 		BfnXmlExportTransformer transformer = new BfnXmlExportTransformer();
 		File destination = new File("/home/pplitzner/Rote Listen 2020/doctronic/export.xml");
         document = createDocument(sourceDb);

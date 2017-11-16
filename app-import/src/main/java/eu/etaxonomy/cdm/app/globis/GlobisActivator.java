@@ -42,7 +42,7 @@ public class GlobisActivator {
 	static final Source globisSource = CdmImportSources.GLOBIS_MDB_20140113_PESIIMPORT_SQLSERVER();
 //	static final ICdmDataSource cdmDestination = CdmDestinations.localH2();
 //	static final ICdmDataSource cdmDestination = CdmDestinations.cdm_test_local_mysql();
-	static final ICdmDataSource cdmDestination = CdmDestinations.cdm_globis_dev();
+	static final ICdmDataSource cdmDestination = CdmDestinations.cdm_test_globis();
 //	static final ICdmDataSource cdmDestination = CdmDestinations.cdm_globis_production();
 
 

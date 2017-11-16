@@ -86,7 +86,7 @@ public class EuroMedActivator {
 //	static final ICdmDataSource cdmDestination = CdmDestinations.cdm_test_euroMed();
 //	static final ICdmDataSource cdmDestination = CdmDestinations.cdm_pesi_euromed();
 
-	static final ICdmDataSource cdmDestination = CdmDestinations.cdm_test_local_euromed();
+	static final ICdmDataSource cdmDestination = CdmDestinations.cdm_local_test_euromed();
 //	static final ICdmDataSource cdmDestination = CdmDestinations.cdm_test_local_mysql_test();
 
 

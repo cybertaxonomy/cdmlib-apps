@@ -84,7 +84,7 @@ public class SynthesysCacheActivator {
             specimenImportConfigurator.setTaxonReference(null);
 
             // invoke import
-            CdmDefaultImport<SpecimenSynthesysExcelImportConfigurator> specimenImport = new CdmDefaultImport<SpecimenSynthesysExcelImportConfigurator>();
+            CdmDefaultImport<SpecimenSynthesysExcelImportConfigurator> specimenImport = new CdmDefaultImport<>();
             //new Test().invoke(tcsImportConfigurator);
             specimenImport.invoke(specimenImportConfigurator);
             System.out.println("End import from SpecimenData ("+ source.toString() + ")...");

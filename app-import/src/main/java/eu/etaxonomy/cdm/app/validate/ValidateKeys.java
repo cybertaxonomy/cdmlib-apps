@@ -14,7 +14,7 @@ public class ValidateKeys {
 	 * @param args
 	 */
 	public static void main(String[] args) {
-		ICdmDataSource source = CdmDestinations.cdm_cichorieae_preview();
+		ICdmDataSource source = CdmDestinations.cdm_test_cichorieae();
 //		String server = "160.45.63.";
 //		String database = "";
 //		int port = 3306;

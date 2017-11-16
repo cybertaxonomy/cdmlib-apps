@@ -45,7 +45,7 @@ public class ColDwcaImportActivator {
 	static final URI source = dwca_col_All();
 
 //	static final ICdmDataSource cdmDestination = CdmDestinations.cdm_test_col();
-	static final ICdmDataSource cdmDestination = CdmDestinations.cdm_col_local();
+	static final ICdmDataSource cdmDestination = CdmDestinations.cdm_local_col();
 
 	 static final String databaseMappingFile = "C:/Users/a.mueller/.cdmLibrary/log/colMappingAnnual";
 //    static final String databaseMappingFile = "C:/Users/a.mueller/.cdmLibrary/log/localCol";
