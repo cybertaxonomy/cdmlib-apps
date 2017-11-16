@@ -47,8 +47,6 @@ private static final ICdmDataSource cdmSource = CdmDestinations.cdm_local_caryop
 //      String username = "edit";
 //      sourceParam = CdmDataSource.NewMySqlInstance(server, database, username, AccountStore.readOrStorePassword(server, database, username, null));
 
-
-
         CdmLightExportConfigurator cdmlightExportConfigurator = new CdmLightExportConfigurator(null);
 
         CdmDefaultExport<CdmLightExportConfigurator> cdmLightExport = new CdmDefaultExport<>();
@@ -71,8 +69,6 @@ private static final ICdmDataSource cdmSource = CdmDestinations.cdm_local_caryop
         }
         return null;
     }
-
-
 
 
     private CdmApplicationController initDb(ICdmDataSource db) {
@@ -99,9 +95,7 @@ private static final ICdmDataSource cdmSource = CdmDestinations.cdm_local_caryop
         ICdmDataSource source = CdmDestinations.chooseDestination(args) != null ? CdmDestinations.chooseDestination(args) : cdmSource;
       //  String file = chooseFile(args);
 
-
         try {
-
 
             sc.initDb(source);  //does this make sense here (it starts the appControler even if it is not needed later
 
@@ -121,17 +115,11 @@ private static final ICdmDataSource cdmSource = CdmDestinations.cdm_local_caryop
                         // TODO Auto-generated catch block
                         e.printStackTrace();
                     }
-
-
                 }
             }
-
-
         } catch (FileNotFoundException e) {
             // TODO Auto-generated catch block
             e.printStackTrace();
         }
-
     }
-
 }

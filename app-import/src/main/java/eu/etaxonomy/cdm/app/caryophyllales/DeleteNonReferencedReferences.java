@@ -13,48 +13,38 @@ import eu.etaxonomy.cdm.io.operation.config.DeleteNonReferencedReferencesConfigu
 
 public class DeleteNonReferencedReferences {
 
+		@SuppressWarnings("unused")
+        private static final Logger logger = Logger.getLogger(DeleteNonReferencedReferences.class);
 
+		//database validation status (create, update, validate ...)
+		static DbSchemaValidation hbm2dll = DbSchemaValidation.VALIDATE;
+		static final ICdmDataSource cdmDestination = CdmDestinations.cdm_local_caryo();
 
+		private ImportResult doInvoke(ICdmDataSource destination){
+			ImportResult result = new ImportResult();
 
+			DeleteNonReferencedReferencesConfigurator config;
+			config = DeleteNonReferencedReferencesConfigurator.NewInstance(destination);
 
-			private static final Logger logger = Logger.getLogger(DeleteNonReferencedReferences.class);
+			// invoke import
+			CdmDefaultImport<DeleteNonReferencedReferencesConfigurator> myImport = new CdmDefaultImport<>();
+			result = myImport.invoke(config);
+			//String successString = success ? "successful" : " with errors ";
+			//System.out.println("End updating caches for "+ destination.getDatabase() + "..." +  successString);
+			return result;
+		}
 
-			//database validation status (create, update, validate ...)
-			static DbSchemaValidation hbm2dll = DbSchemaValidation.VALIDATE;
-			static final ICdmDataSource cdmDestination = CdmDestinations.cdm_local_caryo();
+		/**
+		 * @param args
+		 */
+		public static void main(String[] args) {
+			ICdmDataSource destination = CdmDestinations.chooseDestination(args) != null ? CdmDestinations.chooseDestination(args) : cdmDestination;
 
-
-
-
-
-			private ImportResult doInvoke(ICdmDataSource destination){
-				ImportResult result = new ImportResult();
-
-				DeleteNonReferencedReferencesConfigurator config;
-				config = DeleteNonReferencedReferencesConfigurator.NewInstance(cdmDestination);
-
-				// invoke import
-				CdmDefaultImport<DeleteNonReferencedReferencesConfigurator> myImport = new CdmDefaultImport<DeleteNonReferencedReferencesConfigurator>();
-				result = myImport.invoke(config);
-				//String successString = success ? "successful" : " with errors ";
-				//System.out.println("End updating caches for "+ destination.getDatabase() + "..." +  successString);
-				return result;
-			}
-
-			/**
-			 * @param args
-			 */
-			public static void main(String[] args) {
-				ICdmDataSource destination = CdmDestinations.chooseDestination(args) != null ? CdmDestinations.chooseDestination(args) : cdmDestination;
-
-				System.out.println("Start deleting non referenced objects for "+ destination.getDatabase() + "...");
-				DeleteNonReferencedReferences me = new DeleteNonReferencedReferences();
-				me.doInvoke(destination);
-
-			}
+			System.out.println("Start deleting non referenced objects for "+ destination.getDatabase() + "...");
+			DeleteNonReferencedReferences me = new DeleteNonReferencedReferences();
+			me.doInvoke(destination);
 
 		}
 
-
-
+	}
 
