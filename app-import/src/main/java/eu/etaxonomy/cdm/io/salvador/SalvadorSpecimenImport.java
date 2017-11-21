@@ -606,6 +606,7 @@ public class SalvadorSpecimenImport
 
     @Override
     protected void refreshTransactionStatus(SalvadorSpecimenImportState state) {
+        super.refreshTransactionStatus(state);
         collectionMap = new HashMap<>();
         fieldUnitMap = new HashMap<>();
         taxonDescMap = new HashMap<>();
