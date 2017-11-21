@@ -75,8 +75,8 @@ public class CyprusImagesActivator {
 //	static final ICdmDataSource cdmDestination = CdmDestinations.cdm_cyprus_dev();
 	static final ICdmDataSource cdmDestination = CdmDestinations.cdm_cyprus_production();
 
-	static boolean testOnly = true;
-	static boolean update_notCreate = true;
+	static boolean testOnly = false;
+	static boolean update_notCreate = false;
 	//if true, data will always be updated, if false, only missing data will be updated
 	static boolean forceUpdate = false;
 
