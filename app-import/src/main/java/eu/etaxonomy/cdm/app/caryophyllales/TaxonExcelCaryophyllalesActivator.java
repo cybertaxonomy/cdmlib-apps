@@ -13,12 +13,6 @@ import eu.etaxonomy.cdm.io.csv.caryophyllales.out.CsvNameExportConfigurator;
 import eu.etaxonomy.cdm.model.name.NomenclaturalCode;
 
 
-
-
-
-
-
-
 public class TaxonExcelCaryophyllalesActivator {
 
 
@@ -45,7 +39,7 @@ public class TaxonExcelCaryophyllalesActivator {
 
 	    	//export.invoke(csvNameExportConfigurator.getNewState());
 	    	CdmDefaultExport<CsvNameExportConfigurator> normalExplicitImport =
-				new CdmDefaultExport<CsvNameExportConfigurator>();
+				new CdmDefaultExport<>();
 
 			// invoke import
 			//logger.debug("Invoking Normal Explicit Excel import");

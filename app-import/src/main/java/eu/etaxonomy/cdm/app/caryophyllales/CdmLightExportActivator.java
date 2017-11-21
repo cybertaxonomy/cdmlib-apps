@@ -32,14 +32,14 @@ import eu.etaxonomy.cdm.io.common.ExportResultType;
  * @date 24.03.2017
  *
  */
-public class OutputmodelExportActivator {
+public class CdmLightExportActivator {
 private static final ICdmDataSource cdmSource = CdmDestinations.cdm_local_caryophyllales_nepenthaceae();
 
     // Export:
     private static String exportFileName = "file://C://Users//k.luther//Documents//Caryophyllales//OutputModel";
 
 
-    private static final Logger logger = Logger.getLogger(OutputmodelExportActivator.class);
+    private static final Logger logger = Logger.getLogger(CdmLightExportActivator.class);
 
     private ExportResult invokeExport(ICdmDataSource sourceParam, URI uri) {
 //      String server = "localhost";
@@ -91,7 +91,7 @@ private static final ICdmDataSource cdmSource = CdmDestinations.cdm_local_caryop
      */
     public static void main(String[] args) {
 
-        OutputmodelExportActivator sc = new OutputmodelExportActivator();
+        CdmLightExportActivator sc = new CdmLightExportActivator();
         ICdmDataSource source = CdmDestinations.chooseDestination(args) != null ? CdmDestinations.chooseDestination(args) : cdmSource;
       //  String file = chooseFile(args);
 
