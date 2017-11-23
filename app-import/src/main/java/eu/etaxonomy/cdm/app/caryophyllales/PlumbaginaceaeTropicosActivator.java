@@ -40,11 +40,16 @@ public class PlumbaginaceaeTropicosActivator {
 
 //    static final ICdmDataSource cdmDestination = CdmDestinations.localH2();
 //    static final ICdmDataSource cdmDestination = CdmDestinations.cdm_test_test1();
-//    static final ICdmDataSource cdmDestination = CdmDestinations.cdm_production_caryophyllales_spp();
-  static final ICdmDataSource cdmDestination = CdmDestinations.cdm_local_caryo_spp();
+    static final ICdmDataSource cdmDestination = CdmDestinations.cdm_production_caryophyllales_spp();
+//    static final ICdmDataSource cdmDestination = CdmDestinations.cdm_local_caryo_spp();
 
     static final boolean createTaxa = true;
     static int transactionLineCount = 100;
+    static boolean allowTropicosDuplicates = true;
+    static boolean allowIpniDuplicates = true;
+    static boolean allowWfoDuplicates = false;
+    static boolean addAuthorsToReferences = true;
+    static boolean reportDuplicateIdentifier = true;
 
     static final String classificationName = "Tropicos Plumbaginaceae";
     static final UUID parentNodeUuid = UUID.fromString("46755269-5b06-4308-9871-c55850610769");
@@ -67,6 +72,11 @@ public class PlumbaginaceaeTropicosActivator {
             config.setSourceReference(getSourceReference());
             config.setParentNodeUuid(parentNodeUuid);
             config.setTransactionLineCount(transactionLineCount);
+            config.setAllowIpniDuplicates(allowIpniDuplicates);
+            config.setAllowTropicosDuplicates(allowTropicosDuplicates);
+            config.setAllowWfoDuplicates(allowWfoDuplicates);
+            config.setAddAuthorsToReference(addAuthorsToReferences);
+            config.setReportDuplicateIdentifier(reportDuplicateIdentifier);
 
             CdmDefaultImport<TropicosNameImportConfigurator> myImport = new CdmDefaultImport<>();
             ImportResult result = myImport.invoke(config);
@@ -78,7 +88,8 @@ public class PlumbaginaceaeTropicosActivator {
 
     private URI getPlumbaginaceaeTropicosUri(){
 //        String fileName = "TropicosNameImportTest-input.txt";
-        String fileName = "TropicosOutput2CDM_Plumbaginaceae.txt";
+        String fileName = "TropicosOutput2CDM-rev-output_Plumbaginaceae.txt";
+//        String fileName = "TropicosOutput2CDM_Plumbaginaceae.txt";
 
         URI uri = URI.create("file:////BGBM-PESIHPC/Caryophyllales/" +  fileName);
         return uri;
