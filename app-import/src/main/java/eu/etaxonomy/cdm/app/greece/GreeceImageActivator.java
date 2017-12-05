@@ -14,6 +14,7 @@ import java.util.UUID;
 import org.apache.log4j.Logger;
 
 import eu.etaxonomy.cdm.app.common.CdmDestinations;
+import eu.etaxonomy.cdm.database.DatabaseTypeEnum;
 import eu.etaxonomy.cdm.database.DbSchemaValidation;
 import eu.etaxonomy.cdm.database.ICdmDataSource;
 import eu.etaxonomy.cdm.io.common.CdmDefaultImport;
@@ -55,11 +56,12 @@ public class GreeceImageActivator {
 
     private void doImport(ICdmDataSource cdmDestination){
 
+        DbSchemaValidation schemaVal = cdmDestination.getDatabaseType() == DatabaseTypeEnum.H2 ? DbSchemaValidation.CREATE : DbSchemaValidation.VALIDATE;
         URI source = greekChecklist();  //just any
         //make Source
         MediaExcelImportConfigurator config = MediaExcelImportConfigurator.NewInstance(source, cdmDestination);
         config.setCheck(check);
-        config.setDbSchemaValidation(DbSchemaValidation.VALIDATE);
+        config.setDbSchemaValidation(schemaVal);
         config.setSourceReference(getSourceReference());
         config.setNomenclaturalCode(NomenclaturalCode.ICNAFP);
 
