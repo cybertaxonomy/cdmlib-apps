@@ -36,9 +36,9 @@ import eu.etaxonomy.cdm.strategy.parser.TimePeriodParser;
  * @author a.mueller
  * @date 13.12.2016
  */
-public class FloraHellenicaActivator {
+public class GreeceActivator {
     @SuppressWarnings("unused")
-    private static final Logger logger = Logger.getLogger(FloraHellenicaActivator.class);
+    private static final Logger logger = Logger.getLogger(GreeceActivator.class);
 
     //database validation status (create, update, validate ...)
     static DbSchemaValidation hbm2dll = DbSchemaValidation.CREATE;
@@ -191,7 +191,7 @@ public class FloraHellenicaActivator {
      * @param args
      */
     public static void main(String[] args) {
-        FloraHellenicaActivator me = new FloraHellenicaActivator();
+        GreeceActivator me = new GreeceActivator();
         me.doImport(cdmDestination);
         System.exit(0);
     }
