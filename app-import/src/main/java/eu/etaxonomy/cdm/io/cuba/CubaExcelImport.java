@@ -86,7 +86,7 @@ public class CubaExcelImport
 
 
     private static UUID rootUuid = UUID.fromString("206d42e4-ac32-4f20-a093-14826014e667");
-    private static UUID plantaeUuid = UUID.fromString("139e7314-dd19-4286-a01d-8cc94ef77a09");
+    private static UUID spermatophytaUuid = UUID.fromString("139e7314-dd19-4286-a01d-8cc94ef77a09");
 
     private static INonViralNameParser<?> nameParser = NonViralNameParserImpl.NewInstance();
     private static NomenclaturalCode nc = NomenclaturalCode.ICNAFP;
@@ -1323,7 +1323,7 @@ public class CubaExcelImport
         }
         TaxonNode rootNode = state.getRootNode();
         if (rootNode == null){
-            rootNode = getTaxonNodeService().find(plantaeUuid);
+            rootNode = getTaxonNodeService().find(spermatophytaUuid);
         }
         if (rootNode == null){
             Reference sec = getSecReference(state);
@@ -1337,15 +1337,15 @@ public class CubaExcelImport
                 classification.getRootNode().setUuid(rootUuid);
             }
 
-            IBotanicalName plantaeName = TaxonNameFactory.NewBotanicalInstance(Rank.KINGDOM());
-            plantaeName.setGenusOrUninomial("Plantae");
-            Taxon plantae = Taxon.NewInstance(plantaeName, sec);
-            TaxonNode plantaeNode = classification.addChildTaxon(plantae, null, null);
-            plantaeNode.setUuid(plantaeUuid);
-            state.setRootNode(plantaeNode);
+            IBotanicalName spermatophytaName = TaxonNameFactory.NewBotanicalInstance(Rank.DIVISION());
+            spermatophytaName.setGenusOrUninomial("Spermatophyta");
+            Taxon spermatophyta = Taxon.NewInstance(spermatophytaName, sec);
+            TaxonNode spermatophytaNode = classification.addChildTaxon(spermatophyta, null, null);
+            spermatophytaNode.setUuid(spermatophytaUuid);
+            state.setRootNode(spermatophytaNode);
             getClassificationService().save(classification);
 
-            rootNode = plantaeNode;
+            rootNode = spermatophytaNode;
         }
         return rootNode;
     }
