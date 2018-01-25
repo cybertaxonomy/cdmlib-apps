@@ -64,6 +64,7 @@ import eu.etaxonomy.cdm.model.taxon.Synonym;
 import eu.etaxonomy.cdm.model.taxon.SynonymType;
 import eu.etaxonomy.cdm.model.taxon.Taxon;
 import eu.etaxonomy.cdm.model.taxon.TaxonNode;
+import eu.etaxonomy.cdm.model.taxon.TaxonRelationship;
 import eu.etaxonomy.cdm.model.taxon.TaxonRelationshipType;
 import eu.etaxonomy.cdm.strategy.homotypicgroup.BasionymRelationCreator;
 import eu.etaxonomy.cdm.strategy.parser.INonViralNameParser;
@@ -405,8 +406,13 @@ public class CubaExcelImport
             Taxon misappliedNameTaxon = Taxon.NewInstance(name, null);
             misappliedNameTaxon.addSource(makeOriginalSource(state));
             misappliedNameTaxon.setDoubtful(doubtful);
+            boolean isProParteMisapplied = false;
             if (secondPart.startsWith("sensu")){
                 secondPart = secondPart.substring(5).trim();
+                if (secondPart.endsWith(" p.p.")){
+                    secondPart = secondPart.replaceAll(" p.p.$", "");
+                    isProParteMisapplied = true;
+                }
                 Reference sensu;
                 if (isConcreteReference(secondPart)) {
                     List<Reference> sensuRefs = getConcreteReferences(secondPart, state);
@@ -431,7 +437,10 @@ public class CubaExcelImport
             }
             //TODO
             Reference relRef = null;
-            state.getCurrentTaxon().addMisappliedName(misappliedNameTaxon, relRef, null);
+            TaxonRelationship rel = state.getCurrentTaxon().addMisappliedName(misappliedNameTaxon, relRef, null);
+            if (isProParteMisapplied){
+                rel.setType(TaxonRelationshipType.PRO_PARTE_MISAPPLIED_NAME_FOR());
+            }
         }else if (nomInvalMatcher.matches()){
             String firstPart = nomInvalMatcher.group(1);
             String afterInval = nomInvalMatcher.group(2);
@@ -500,7 +509,7 @@ public class CubaExcelImport
         boolean result = false;
         String[] splits = secondPart.split(",");
         for (String split : splits){
-            split = split.trim();
+            split = split.trim().replaceAll(" p.p.$", "");
             result = split.equals("Griseb. 2") || split.equals("Sauv. 3")
                     || split.equals("Grisebach 5") || split.equals("Griseb. 78") ;
             if (result == false){
@@ -514,7 +523,7 @@ public class CubaExcelImport
         List<Reference> result = new ArrayList<>();
         String[] splits = secondPart.split(",");
         for (String split : splits){
-            split = split.trim();
+            split = split.trim().replaceAll(" p.p.$", "");
             if (split.equals("Griseb. 2")){
                 result.add(getSourceByNumber("2", state));
             }else if (split.equals("Sauv. 3")){
