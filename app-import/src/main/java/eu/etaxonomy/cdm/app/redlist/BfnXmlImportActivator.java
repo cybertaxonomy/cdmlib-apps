@@ -9,6 +9,29 @@
 
 package eu.etaxonomy.cdm.app.redlist;
 
+import static eu.etaxonomy.cdm.io.redlist.bfnXml.in.BfnXmlImportReferences.uuidBand1_kriechtiere;
+import static eu.etaxonomy.cdm.io.redlist.bfnXml.in.BfnXmlImportReferences.uuidBand1_lurche;
+import static eu.etaxonomy.cdm.io.redlist.bfnXml.in.BfnXmlImportReferences.uuidBand1_saeugetiere;
+import static eu.etaxonomy.cdm.io.redlist.bfnXml.in.BfnXmlImportReferences.uuidBand1_suessfische;
+import static eu.etaxonomy.cdm.io.redlist.bfnXml.in.BfnXmlImportReferences.uuidBand2_bodenlebendenWirbellosenMeerestiere;
+import static eu.etaxonomy.cdm.io.redlist.bfnXml.in.BfnXmlImportReferences.uuidBand2_meeresfischeUndNeunaugen;
+import static eu.etaxonomy.cdm.io.redlist.bfnXml.in.BfnXmlImportReferences.uuidBand3_ameisen;
+import static eu.etaxonomy.cdm.io.redlist.bfnXml.in.BfnXmlImportReferences.uuidBand3_bienen;
+import static eu.etaxonomy.cdm.io.redlist.bfnXml.in.BfnXmlImportReferences.uuidBand3_binnenmollusken;
+import static eu.etaxonomy.cdm.io.redlist.bfnXml.in.BfnXmlImportReferences.uuidBand3_eulenfalter;
+import static eu.etaxonomy.cdm.io.redlist.bfnXml.in.BfnXmlImportReferences.uuidBand3_fransenfluegler;
+import static eu.etaxonomy.cdm.io.redlist.bfnXml.in.BfnXmlImportReferences.uuidBand3_heuschrecken;
+import static eu.etaxonomy.cdm.io.redlist.bfnXml.in.BfnXmlImportReferences.uuidBand3_ohrwuermer;
+import static eu.etaxonomy.cdm.io.redlist.bfnXml.in.BfnXmlImportReferences.uuidBand3_pflanzenwespen;
+import static eu.etaxonomy.cdm.io.redlist.bfnXml.in.BfnXmlImportReferences.uuidBand3_raubfliegen;
+import static eu.etaxonomy.cdm.io.redlist.bfnXml.in.BfnXmlImportReferences.uuidBand3_schaben;
+import static eu.etaxonomy.cdm.io.redlist.bfnXml.in.BfnXmlImportReferences.uuidBand3_schwebfliegen;
+import static eu.etaxonomy.cdm.io.redlist.bfnXml.in.BfnXmlImportReferences.uuidBand3_spanner;
+import static eu.etaxonomy.cdm.io.redlist.bfnXml.in.BfnXmlImportReferences.uuidBand3_spinner;
+import static eu.etaxonomy.cdm.io.redlist.bfnXml.in.BfnXmlImportReferences.uuidBand3_tagfalter;
+import static eu.etaxonomy.cdm.io.redlist.bfnXml.in.BfnXmlImportReferences.uuidBand3_tanzfliegen;
+import static eu.etaxonomy.cdm.io.redlist.bfnXml.in.BfnXmlImportReferences.uuidBand3_zuenslerfalter;
+
 import java.net.URI;
 import java.util.Arrays;
 import java.util.Iterator;
@@ -45,8 +68,8 @@ public class BfnXmlImportActivator {
 //	static final ICdmDataSource cdmDestination = CdmDestinations.cdm_redlist_plant_localhost();
 //	static final ICdmDataSource cdmDestination = CdmDestinations.localH2();
 //	static final ICdmDataSource cdmDestination = CdmDestinations.cdm_test_local_mysql();
-	static final ICdmDataSource cdmDestination = CdmDestinations.cdm_redlist_animalia_production_final();
-//    static final ICdmDataSource cdmDestination = CdmDestinations.cdm_test_redlist_mammalia();
+//	static final ICdmDataSource cdmDestination = CdmDestinations.cdm_redlist_animalia_production_final();
+    static final ICdmDataSource cdmDestination = CdmDestinations.cdm_test_redlist_mammalia();
 
 	private static final String sourceUriBase = "file:////BGBM-PESIHPC/RoteListen/RoteListenXml/";
 
@@ -130,61 +153,61 @@ public class BfnXmlImportActivator {
 //				"rldb_print_v4_0_1_0_Myxo_110708_korr_syn_neu.xml",uuidBand6_myxomyzeten.toString(),
 //
 //				Animals
-//		        //band1
-//				"rldb_print_v4_0_1_0_Brutvoegel.xml",BfnXmlImportReferences.uuidBand1_brutvoegel.toString(), //Brutvögel
-//				"rldb_print_v4_0_1_0_Reptilien_1.xml",uuidBand1_kriechtiere.toString(),
-//                "rldb_print_v4_0_1_0_Amphibien.xml",uuidBand1_lurche.toString(),  //Kriechtiere
-//                "RoteListe_v4_0_6_0_BFN_Saeuger_korr.xml",uuidBand1_saeugetiere.toString(), //Säugetiere
-//                "rldb_print_v4_0_1_0_Fische.xml",uuidBand1_suessfische.toString(),
-//                //
-//		        //band2
-//		        "rldb_print_v4_0_1_0_artenarmeWeichtiergruppen_121127_verantw_syn.xml",uuidBand2_bodenlebendenWirbellosenMeerestiere.toString(),
-//		        "rldb_print_v4_0_1_0_Asselspinnen_120907_verantw_syn.xml",uuidBand2_bodenlebendenWirbellosenMeerestiere.toString(),
-//		        "rldb_print_v4_0_1_0_Flohkrebse_121128_verantw_syn.xml",uuidBand2_bodenlebendenWirbellosenMeerestiere.toString(),
-//		        "rldb_print_v4_0_1_0_Igelwuermer_120907_verantw.xml",uuidBand2_bodenlebendenWirbellosenMeerestiere.toString(),
-//		        "rldb_print_v4_0_1_0_Kumazeen_120709_verantw_syn.xml",uuidBand2_bodenlebendenWirbellosenMeerestiere.toString(),
-//		        "rldb_print_v4_0_1_0_Asseln_121128_verantw_syn.xml",uuidBand2_bodenlebendenWirbellosenMeerestiere.toString(),
-//		        "rldb_print_v4_0_1_0_Moostierchen_121128_verantw_syn.xml",uuidBand2_bodenlebendenWirbellosenMeerestiere.toString(),
-//		        "rldb_print_v4_0_1_0_Muscheln_121128_verantw_syn.xml",uuidBand2_bodenlebendenWirbellosenMeerestiere.toString(),
-//		        "rldb_print_v4_0_1_0_Schnecken_130206_verantw_syn.xml",uuidBand2_bodenlebendenWirbellosenMeerestiere.toString(),
-//		        "rldb_print_v4_0_1_0_Meeresfische_syn.xml",uuidBand2_meeresfischeUndNeunaugen.toString(),
-//		        "rldb_print_v4_0_1_0_Nesseltiere_130104_verantw_syn.xml",uuidBand2_bodenlebendenWirbellosenMeerestiere.toString(),
-//		        "rldb_print_v4_0_1_0_Schaedellose_120907_verantw_syn.xml",uuidBand2_bodenlebendenWirbellosenMeerestiere.toString(), //Schädellose
-//		        "rldb_print_v4_0_1_0_Schwaemme_121127_verantw_syn.xml",uuidBand2_bodenlebendenWirbellosenMeerestiere.toString(), //Schwämme
-//		        "rldb_print_v4_0_1_0_Seepocken_121128_verantw_syn.xml",uuidBand2_bodenlebendenWirbellosenMeerestiere.toString(),
-//		        "rldb_print_v4_0_1_0_Seescheiden_121128_verantw_syn.xml",uuidBand2_bodenlebendenWirbellosenMeerestiere.toString(),
-//		        "rldb_print_v4_0_1_0_Stachelhaeuter_121128_verantw_syn.xml",uuidBand2_bodenlebendenWirbellosenMeerestiere.toString(), //Stachelhäuter
-//		        "rldb_print_v4_0_1_0_Vielborster_130206_verantw_syn.xml",uuidBand2_bodenlebendenWirbellosenMeerestiere.toString(),
-//		        "rldb_print_v4_0_1_0_Wenigborster_121128_verantw_syn.xml",uuidBand2_bodenlebendenWirbellosenMeerestiere.toString(),
-//		        "rldb_print_v4_0_1_0_Zehnfusskrebse_130104_verantw_syn.xml", uuidBand2_bodenlebendenWirbellosenMeerestiere.toString(),
-//		        //
-//		        //band3
-//			    "rldb_print_v4_0_1_0_Ameisen_110609_rev120113_syn.xml", uuidBand3_ameisen.toString(), //Hymenoptera: Formicidae
-//			    "rldb_print_v4_0_1_0_Bienen_PWKorr_HG_120413_DF_120612_syn.xml",uuidBand3_bienen.toString(),  //Hymnenoptera: Apidae
-//			    "rldb_print_v4_0_1_0_Binnenmollusken_0alle_120413_DF_syn.xml",uuidBand3_binnenmollusken.toString(),
-//			    //eulenfalter - korrekt?
-//			    "rldb_print_v4_0_1_0_Eulen_Korruebern_23-05-2012_KorrV_syn.xml",uuidBand3_eulenfalter.toString(), //Eulen & Korrübern
-//			    "rldb_print_v4_0_1_0_Thysanoptera_120413_DF_korrV_Verantw.xml",uuidBand3_fransenfluegler.toString(),
-//			    "rldb_print_v4_0_1_0_Heuschrecken_syn.xml",uuidBand3_heuschrecken.toString(),  //Saltatoria
-//			    "rldb_print_v4_0_1_0_Ohrwuermer_DF_syn.xml",uuidBand3_ohrwuermer.toString(),   //Dermaptera
-//			    "rldb_print_v4_0_1_0_Pflanzenwespen_280711_Autor_110815_HG2_120413_DF_syn.xml",uuidBand3_pflanzenwespen.toString(), //Hymenoptera: Symphata
-//			    "rldb_print_v4_0_1_0_Asilidae_GMH_Wolff_110314_HGxls_120413_DF_korrV_Verantw_syn.xml",uuidBand3_raubfliegen.toString(),
-//			    "rldb_print_v4_0_1_0_Blattoptera_140413_DF_syn.xml",uuidBand3_schaben.toString(),
-//			    "rldb_print_v4_0_1_0_Schwebfliegen_111103_KorrAS_120413_DF_syn.xml",uuidBand3_schwebfliegen.toString(), //Diptera: Syrphidae
-//			    //spanner - korrekt?
-//				"rldb_print_v4_0_1_0_Eulenspinner_Spanner_13-06-2012_KorrV_syn.xml",uuidBand3_spanner.toString(), //Eulenspinner & Spanner
-//			    "rldb_print_v4_0_1_0_Spinner_Oktober2011_eingearbKorr_120124_Korruebern_MB_02-05-2012_KorrV_syn.xml",uuidBand3_spinner.toString(),
-//			    "rldb_print_v4_0_1_0_Tagfalter_06-06-2012_KorrV_syn.xml",uuidBand3_tagfalter.toString(),
-//			    "rldb_print_v4_0_1_0_Empidoidea_120413_DF.xml",uuidBand3_tanzfliegen.toString(),  //Empidoidea
-//			    //wespen - fehlen ????? => siehe auch titel des Referenz Word Files
-//			    "rldb_print_v4_0_1_0_Pyraloidea_Februar_2012_Korruebern_MB_24-04-2012_syn.xml",uuidBand3_zuenslerfalter.toString()
+		        //band1
+				"rldb_print_v4_0_1_0_Brutvoegel.xml",BfnXmlImportReferences.uuidBand1_brutvoegel.toString(), //Brutvögel
+				"rldb_print_v4_0_1_0_Reptilien_1.xml",uuidBand1_kriechtiere.toString(),
+                "rldb_print_v4_0_1_0_Amphibien.xml",uuidBand1_lurche.toString(),  //Kriechtiere
+                "RoteListe_v4_0_6_0_BFN_Saeuger_korr.xml",uuidBand1_saeugetiere.toString(), //Säugetiere
+                "rldb_print_v4_0_1_0_Fische.xml",uuidBand1_suessfische.toString(),
+                //
+		        //band2
+		        "rldb_print_v4_0_1_0_artenarmeWeichtiergruppen_121127_verantw_syn.xml",uuidBand2_bodenlebendenWirbellosenMeerestiere.toString(),
+		        "rldb_print_v4_0_1_0_Asselspinnen_120907_verantw_syn.xml",uuidBand2_bodenlebendenWirbellosenMeerestiere.toString(),
+		        "rldb_print_v4_0_1_0_Flohkrebse_121128_verantw_syn.xml",uuidBand2_bodenlebendenWirbellosenMeerestiere.toString(),
+		        "rldb_print_v4_0_1_0_Igelwuermer_120907_verantw.xml",uuidBand2_bodenlebendenWirbellosenMeerestiere.toString(),
+		        "rldb_print_v4_0_1_0_Kumazeen_120709_verantw_syn.xml",uuidBand2_bodenlebendenWirbellosenMeerestiere.toString(),
+		        "rldb_print_v4_0_1_0_Asseln_121128_verantw_syn.xml",uuidBand2_bodenlebendenWirbellosenMeerestiere.toString(),
+		        "rldb_print_v4_0_1_0_Moostierchen_121128_verantw_syn.xml",uuidBand2_bodenlebendenWirbellosenMeerestiere.toString(),
+		        "rldb_print_v4_0_1_0_Muscheln_121128_verantw_syn.xml",uuidBand2_bodenlebendenWirbellosenMeerestiere.toString(),
+		        "rldb_print_v4_0_1_0_Schnecken_130206_verantw_syn.xml",uuidBand2_bodenlebendenWirbellosenMeerestiere.toString(),
+		        "rldb_print_v4_0_1_0_Meeresfische_syn.xml",uuidBand2_meeresfischeUndNeunaugen.toString(),
+		        "rldb_print_v4_0_1_0_Nesseltiere_130104_verantw_syn.xml",uuidBand2_bodenlebendenWirbellosenMeerestiere.toString(),
+		        "rldb_print_v4_0_1_0_Schaedellose_120907_verantw_syn.xml",uuidBand2_bodenlebendenWirbellosenMeerestiere.toString(), //Schädellose
+		        "rldb_print_v4_0_1_0_Schwaemme_121127_verantw_syn.xml",uuidBand2_bodenlebendenWirbellosenMeerestiere.toString(), //Schwämme
+		        "rldb_print_v4_0_1_0_Seepocken_121128_verantw_syn.xml",uuidBand2_bodenlebendenWirbellosenMeerestiere.toString(),
+		        "rldb_print_v4_0_1_0_Seescheiden_121128_verantw_syn.xml",uuidBand2_bodenlebendenWirbellosenMeerestiere.toString(),
+		        "rldb_print_v4_0_1_0_Stachelhaeuter_121128_verantw_syn.xml",uuidBand2_bodenlebendenWirbellosenMeerestiere.toString(), //Stachelhäuter
+		        "rldb_print_v4_0_1_0_Vielborster_130206_verantw_syn.xml",uuidBand2_bodenlebendenWirbellosenMeerestiere.toString(),
+		        "rldb_print_v4_0_1_0_Wenigborster_121128_verantw_syn.xml",uuidBand2_bodenlebendenWirbellosenMeerestiere.toString(),
+		        "rldb_print_v4_0_1_0_Zehnfusskrebse_130104_verantw_syn.xml", uuidBand2_bodenlebendenWirbellosenMeerestiere.toString(),
+		        //
+		        //band3
+			    "rldb_print_v4_0_1_0_Ameisen_110609_rev120113_syn.xml", uuidBand3_ameisen.toString(), //Hymenoptera: Formicidae
+			    "rldb_print_v4_0_1_0_Bienen_PWKorr_HG_120413_DF_120612_syn.xml",uuidBand3_bienen.toString(),  //Hymnenoptera: Apidae
+			    "rldb_print_v4_0_1_0_Binnenmollusken_0alle_120413_DF_syn.xml",uuidBand3_binnenmollusken.toString(),
+			    //eulenfalter - korrekt?
+			    "rldb_print_v4_0_1_0_Eulen_Korruebern_23-05-2012_KorrV_syn.xml",uuidBand3_eulenfalter.toString(), //Eulen & Korrübern
+			    "rldb_print_v4_0_1_0_Thysanoptera_120413_DF_korrV_Verantw.xml",uuidBand3_fransenfluegler.toString(),
+			    "rldb_print_v4_0_1_0_Heuschrecken_syn.xml",uuidBand3_heuschrecken.toString(),  //Saltatoria
+			    "rldb_print_v4_0_1_0_Ohrwuermer_DF_syn.xml",uuidBand3_ohrwuermer.toString(),   //Dermaptera
+			    "rldb_print_v4_0_1_0_Pflanzenwespen_280711_Autor_110815_HG2_120413_DF_syn.xml",uuidBand3_pflanzenwespen.toString(), //Hymenoptera: Symphata
+			    "rldb_print_v4_0_1_0_Asilidae_GMH_Wolff_110314_HGxls_120413_DF_korrV_Verantw_syn.xml",uuidBand3_raubfliegen.toString(),
+			    "rldb_print_v4_0_1_0_Blattoptera_140413_DF_syn.xml",uuidBand3_schaben.toString(),
+			    "rldb_print_v4_0_1_0_Schwebfliegen_111103_KorrAS_120413_DF_syn.xml",uuidBand3_schwebfliegen.toString(), //Diptera: Syrphidae
+			    //spanner - korrekt?
+				"rldb_print_v4_0_1_0_Eulenspinner_Spanner_13-06-2012_KorrV_syn.xml",uuidBand3_spanner.toString(), //Eulenspinner & Spanner
+			    "rldb_print_v4_0_1_0_Spinner_Oktober2011_eingearbKorr_120124_Korruebern_MB_02-05-2012_KorrV_syn.xml",uuidBand3_spinner.toString(),
+			    "rldb_print_v4_0_1_0_Tagfalter_06-06-2012_KorrV_syn.xml",uuidBand3_tagfalter.toString(),
+			    "rldb_print_v4_0_1_0_Empidoidea_120413_DF.xml",uuidBand3_tanzfliegen.toString(),  //Empidoidea
+			    //wespen - fehlen ????? => siehe auch titel des Referenz Word Files
+			    "rldb_print_v4_0_1_0_Pyraloidea_Februar_2012_Korruebern_MB_24-04-2012_syn.xml",uuidBand3_zuenslerfalter.toString()
 
 
 //		        //the 4 first lists, THESE ARE DUPLICATES
-//		        "RoteListe_v4_0_6_0_BFN_Saeuger_korr.xml",BfnXmlImportReferences.uuidBand1_saeugetiere.toString(),
-                "rldb_print_v4_0_1_0_Amphibien.xml",BfnXmlImportReferences.uuidBand1_lurche.toString(),
-                "rldb_print_v4_0_1_0_Reptilien_1.xml",BfnXmlImportReferences.uuidBand1_kriechtiere.toString(),
-                "rldb_print_v4_0_1_0_Heuschrecken_syn.xml", BfnXmlImportReferences.uuidBand3_heuschrecken.toString()
+//		        "RoteListe_v4_0_6_0_BFN_Saeuger_korr.xml",
+//                "rldb_print_v4_0_1_0_Amphibien.xml",
+//                "rldb_print_v4_0_1_0_Reptilien_1.xml",
+//                "rldb_print_v4_0_1_0_Heuschrecken_syn.xml"
 
 				);
 
