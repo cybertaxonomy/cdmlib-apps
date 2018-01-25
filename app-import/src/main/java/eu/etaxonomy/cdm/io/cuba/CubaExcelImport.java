@@ -36,7 +36,6 @@ import eu.etaxonomy.cdm.model.common.CdmBase;
 import eu.etaxonomy.cdm.model.common.IdentifiableSource;
 import eu.etaxonomy.cdm.model.common.Language;
 import eu.etaxonomy.cdm.model.common.OriginalSourceType;
-import eu.etaxonomy.cdm.model.common.Representation;
 import eu.etaxonomy.cdm.model.description.DescriptionElementBase;
 import eu.etaxonomy.cdm.model.description.DescriptionElementSource;
 import eu.etaxonomy.cdm.model.description.Distribution;
@@ -44,7 +43,6 @@ import eu.etaxonomy.cdm.model.description.Feature;
 import eu.etaxonomy.cdm.model.description.PresenceAbsenceTerm;
 import eu.etaxonomy.cdm.model.description.TaxonDescription;
 import eu.etaxonomy.cdm.model.description.TaxonInteraction;
-import eu.etaxonomy.cdm.model.description.TextData;
 import eu.etaxonomy.cdm.model.location.NamedArea;
 import eu.etaxonomy.cdm.model.name.HomotypicalGroup;
 import eu.etaxonomy.cdm.model.name.IBotanicalName;
@@ -87,6 +85,7 @@ public class CubaExcelImport
 
     private static UUID rootUuid = UUID.fromString("206d42e4-ac32-4f20-a093-14826014e667");
     private static UUID spermatophytaUuid = UUID.fromString("139e7314-dd19-4286-a01d-8cc94ef77a09");
+    private static UUID pteridophytaUuid = UUID.fromString("cd2a7c42-4e2b-4a42-8044-18c8e3ccb76d");
 
     private static INonViralNameParser<?> nameParser = NonViralNameParserImpl.NewInstance();
     private static NomenclaturalCode nc = NomenclaturalCode.ICNAFP;
@@ -1323,7 +1322,7 @@ public class CubaExcelImport
         }
         TaxonNode rootNode = state.getRootNode();
         if (rootNode == null){
-            rootNode = getTaxonNodeService().find(spermatophytaUuid);
+            rootNode = getTaxonNodeService().find(pteridophytaUuid);
         }
         if (rootNode == null){
             Reference sec = getSecReference(state);
@@ -1570,10 +1569,10 @@ public class CubaExcelImport
 
         TaxonDescription desc = getTaxonDescription(taxon, false, true);
 
-        UUID altFamUuid1;
+//        UUID altFamUuid1;
         UUID altFamUuid2;
         try {
-            altFamUuid1 = state.getTransformer().getFeatureUuid("Alt.Fam.");
+//            altFamUuid1 = state.getTransformer().getFeatureUuid("Alt.Fam.");
             altFamUuid2 = state.getTransformer().getFeatureUuid("Alt.Fam.2");
         } catch (UndefinedTransformerMethodException e) {
             throw new RuntimeException(e);
@@ -1583,28 +1582,29 @@ public class CubaExcelImport
         Taxon famTaxon = makeAlternativeFamilyTaxon(state, famStr, famRef);
 
 
-        //TextData
-        Feature feature1 = getFeature(state, altFamUuid1, "Families in other Floras (Text)", "Families in other Floras (Text)", "Other floras", null);
-        feature1.addRepresentation(Representation.NewInstance("Familias en otras Floras", "Familias en otras Floras", null, Language.SPANISH_CASTILIAN()));
-//        TextData textData = TextData.NewInstance(feature1, famStr, Language.DEFAULT(), null);
-        TextData textData = TextData.NewInstance(feature1, null, Language.DEFAULT(), null);
-        textData.addSource(OriginalSourceType.PrimaryTaxonomicSource, null,null, famRef, null, famTaxon.getName(),null);
-        desc.addElement(textData);
+        //TextData  //not used anymore
+//        Feature feature1 = getFeature(state, altFamUuid1, "Families in other Floras (Text)", "Families in other Floras (Text)", "Other floras", null);
+//        feature1.addRepresentation(Representation.NewInstance("Familias en otras Floras", "Familias en otras Floras", null, Language.SPANISH_CASTILIAN()));
+////        TextData textData = TextData.NewInstance(feature1, famStr, Language.DEFAULT(), null);
+//        TextData textData = TextData.NewInstance(feature1, null, Language.DEFAULT(), null);
+//        textData.putText(Language.SPANISH_CASTILIAN(), "Familias en otras Floras");
+//        textData.addSource(OriginalSourceType.PrimaryTaxonomicSource, null,null, famRef, null, famTaxon.getName(),null);
+//        desc.addElement(textData);
 
 
 
         //TaxonInteraction
-        Feature feature2 = getFeature(state, altFamUuid2, "Families in other Floras", "Families in other Floras", "Other floras(2)", null);
-        feature2.setSupportsTaxonInteraction(true);
-        feature2.addRepresentation(Representation.NewInstance("Familias en otras Floras", "Familias en otras Floras", null, Language.SPANISH_CASTILIAN()));
+        Feature feature2 = getFeature(state, altFamUuid2, "Families in other Floras", "Families in other Floras", "Other floras", null);
+        //feature should exist already
+//        feature2.setSupportsTaxonInteraction(true);
+//        feature2.addRepresentation(Representation.NewInstance("Familias en otras Floras", "Familias en otras Floras", null, Language.SPANISH_CASTILIAN()));
         TaxonInteraction taxInteract = TaxonInteraction.NewInstance(feature2);
-        textData.putText(Language.SPANISH_CASTILIAN(), "Familias en otras Floras");
         taxInteract.setTaxon2(famTaxon);
         taxInteract.addSource(OriginalSourceType.PrimaryTaxonomicSource, null,null, famRef, null);
         desc.addElement(taxInteract);
 
-        //Concept Relation
-        famTaxon.addTaxonRelation(taxon, TaxonRelationshipType.INCLUDES(), taxon.getSec(), null);
+        //Concept Relation  //not used anymore
+//        famTaxon.addTaxonRelation(taxon, TaxonRelationshipType.INCLUDES(), taxon.getSec(), null);
 
     }
 
