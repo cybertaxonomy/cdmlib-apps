@@ -32,7 +32,7 @@ public final class CubaTransformer extends InputTransformerBase {
     public static final UUID uuidRefFRC = UUID.fromString("c1caf6a2-5083-4f44-8f97-9abe23a84cd8");
     public static final UUID uuidRefAS = UUID.fromString("1f15291a-b4c5-4e15-960f-d0145a250539");
     public static final UUID uuidRefFC = UUID.fromString("c5a0bfb8-85b2-422d-babe-423aa2e24c35");
-    public static final UUID uuidRefSanchez = UUID.fromString("d861aa65-9c56-4405-84c8-cdaa65b01f0b");
+    public static final UUID uuidRefSanchez = UUID.fromString("251a51e2-8371-42e2-b042-063ecaaef241");
 
     //refPteridophyta
     protected static final UUID uuidRefPteridophyta78 = UUID.fromString("e9f68d98-c706-4bb6-8cbf-2be1f3897469");
@@ -40,7 +40,7 @@ public final class CubaTransformer extends InputTransformerBase {
     protected static final UUID uuidRefPteridophyta3 = UUID.fromString("80f83b9a-2aa4-4dfb-bbcd-457d3ed9e836");
     protected static final UUID uuidRefPteridophyta5 = UUID.fromString("bf41be7c-5832-4659-be47-66b94bf393f4");
     protected static final UUID uuidRefPteridophyta8_82 = UUID.fromString("21ca49a2-4243-4041-b876-13dfbcc7abb8");
-    protected static final UUID uuidRefPteridophyta7 = UUID.fromString("251a51e2-8371-42e2-b042-063ecaaef241");
+    protected static final UUID uuidRefPteridophyta7 = uuidRefSanchez;
 
 
     //featureUUID

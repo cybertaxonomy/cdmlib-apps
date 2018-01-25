@@ -35,7 +35,6 @@ import eu.etaxonomy.cdm.model.common.AnnotationType;
 import eu.etaxonomy.cdm.model.common.CdmBase;
 import eu.etaxonomy.cdm.model.common.IdentifiableSource;
 import eu.etaxonomy.cdm.model.common.Language;
-import eu.etaxonomy.cdm.model.common.OriginalSourceType;
 import eu.etaxonomy.cdm.model.description.DescriptionElementBase;
 import eu.etaxonomy.cdm.model.description.DescriptionElementSource;
 import eu.etaxonomy.cdm.model.description.Distribution;
@@ -1600,7 +1599,7 @@ public class CubaExcelImport
 //        feature2.addRepresentation(Representation.NewInstance("Familias en otras Floras", "Familias en otras Floras", null, Language.SPANISH_CASTILIAN()));
         TaxonInteraction taxInteract = TaxonInteraction.NewInstance(feature2);
         taxInteract.setTaxon2(famTaxon);
-        taxInteract.addSource(OriginalSourceType.PrimaryTaxonomicSource, null,null, famRef, null);
+//        taxInteract.addSource(OriginalSourceType.PrimaryTaxonomicSource, null,null, famRef, null);
         desc.addElement(taxInteract);
 
         //Concept Relation  //not used anymore
