@@ -90,8 +90,8 @@ public class CubaExcelImport
     private static INonViralNameParser<?> nameParser = NonViralNameParserImpl.NewInstance();
     private static NomenclaturalCode nc = NomenclaturalCode.ICNAFP;
 
-    private  static List<String> expectedKeys= Arrays.asList(new String[]{
-            "Fam. default","Fam. FRC","Fam. A&S","Fam. FC",
+    private  static List<String> expectedKeys = Arrays.asList(new String[]{
+            "Fam. default","Fam. FRC","Fam. A&S","Fam. FC","Fam. Sánchez 2017",
             "Taxón","(Notas)","Syn.","End","Ind","Ind? D","Nat","Dud P","Adv","Cult C","CuW","PR PR*","Art","Hab(*)","May","Mat","IJ","CuC","VC","Ci","SS","CA","Cam","LT","CuE","Gr","Ho","SC","Gu","Esp","Ja","PR","Men","Bah","Cay","AmN","AmC","AmS","VM"});
 
 	@Override
@@ -407,12 +407,21 @@ public class CubaExcelImport
             misappliedNameTaxon.setDoubtful(doubtful);
             if (secondPart.startsWith("sensu")){
                 secondPart = secondPart.substring(5).trim();
-                if (secondPart.contains(" ")){
-                    logger.warn(line + "CHECK: Second part contains more than 1 word. Check if this is correct: " + secondPart);
+                Reference sensu;
+                if (isConcreteReference(secondPart)) {
+                    List<Reference> sensuRefs = getConcreteReferences(secondPart, state);
+                    if (sensuRefs.size() > 1){
+                        logger.warn(line + "MAs > 1 not yet handled: " + secondPart);
+                    }
+                    sensu = sensuRefs.get(0);
+                }else{
+                    if (secondPart.contains(" ")){
+                        logger.warn(line + "CHECK: Second part contains more than 1 word. Check if this is correct: " + secondPart);
+                    }
+                    sensu = ReferenceFactory.newGeneric();
+                    Team team = Team.NewTitledInstance(secondPart, null);
+                    sensu.setAuthorship(team);
                 }
-                Reference sensu = ReferenceFactory.newGeneric();
-                Team team = Team.NewTitledInstance(secondPart, null);
-                sensu.setAuthorship(team);
                 misappliedNameTaxon.setSec(sensu);
             }else if (secondPart.matches(auctRegExStr)){
                 secondPart = secondPart.replace("p. p.", "p.p.");
@@ -482,6 +491,45 @@ public class CubaExcelImport
             logger.warn(line + "Synonym entry does not match: " + synonymStr);
         }
     }
+
+    /**
+     * @param secondPart
+     * @return
+     */
+    private boolean isConcreteReference(String secondPart) {
+        boolean result = false;
+        String[] splits = secondPart.split(",");
+        for (String split : splits){
+            split = split.trim();
+            result = split.equals("Griseb. 2") || split.equals("Sauv. 3")
+                    || split.equals("Grisebach 5") || split.equals("Griseb. 78") ;
+            if (result == false){
+                return result;
+            }
+        }
+        return result;
+    }
+
+    private List<Reference> getConcreteReferences(String secondPart, CubaImportState state) {
+        List<Reference> result = new ArrayList<>();
+        String[] splits = secondPart.split(",");
+        for (String split : splits){
+            split = split.trim();
+            if (split.equals("Griseb. 2")){
+                result.add(getSourceByNumber("2", state));
+            }else if (split.equals("Sauv. 3")){
+                result.add(getSourceByNumber("3", state));
+            }else if (split.equals("Grisebach 5")){
+                result.add(getSourceByNumber("5", state));
+            }else if (split.equals("Griseb. 78")){
+                result.add(getSourceByNumber("78", state));
+            }else{
+                logger.warn("Concrete reference does not match: " + split);
+            }
+        }
+        return result;
+    }
+
 
     /**
      * @param state
@@ -565,16 +613,62 @@ public class CubaExcelImport
             }
             TaxonDescription desc = getTaxonDescription(state.getCurrentTaxon(), false, true);
             PresenceAbsenceTerm status =  makeProvinceStatus(areaKey, record, state);
-            if (status == null){
+            Reference source = getAreaSourceByNumber(areaKey, record, state);
+            if (status == null && source == null){
                 logger.warn(state.getCurrentLine() + ": Province distribution status could not be defined: " + record.get(areaKey));
+            }else if (status == null){
+                status = PresenceAbsenceTerm.NATIVE();
             }
             Distribution distribution = Distribution.NewInstance(area, status);
             desc.addElement(distribution);
             distribution.addSource(makeDescriptionSource(state));
+            if (source != null){
+                distribution.addPrimaryTaxonomicSource(source, null);
+            }
         } catch (UndefinedTransformerMethodException e) {
             e.printStackTrace();
         }
 
+    }
+
+
+    /**
+     * @param areaKey
+     * @param record
+     * @param state
+     */
+    private Reference getAreaSourceByNumber(String areaKey, HashMap<String, String> record, CubaImportState state) {
+        String statusStr = record.get(areaKey);
+        if (statusStr == null){
+            return null;
+        }else{
+            statusStr = statusStr.trim();
+        }
+        if ("p 78".equals(statusStr)){
+            statusStr = "78";
+        }else if ("– 7".equals(statusStr)){
+            statusStr = "7";
+        }
+        return getSourceByNumber(statusStr, state);
+    }
+
+    private Reference getSourceByNumber(String number, CubaImportState state) {
+        if ("78".equals(number)){
+            return makeReference(state, CubaTransformer.uuidRefPteridophyta78);
+        }else if ("1".equals(number)){
+            return makeReference(state, CubaTransformer.uuidRefPteridophyta2);
+        }else if ("2".equals(number)){
+            return makeReference(state, CubaTransformer.uuidRefPteridophyta2);
+        }else if ("3".equals(number)){
+            return makeReference(state, CubaTransformer.uuidRefPteridophyta3);
+        }else if ("5".equals(number)){
+            return makeReference(state, CubaTransformer.uuidRefPteridophyta5);
+        }else if ("8".equals(number)){
+            return makeReference(state, CubaTransformer.uuidRefPteridophyta8_82);
+        }else if ("7".equals(number)){
+            return makeReference(state, CubaTransformer.uuidRefPteridophyta7);
+        }
+        return null;
     }
 
 
@@ -898,12 +992,14 @@ public class CubaExcelImport
                 genus = Taxon.NewInstance(name, sec);
                 genus.addSource(makeOriginalSource(state));
                 higherNode = familyNode.addChildTaxon(genus, null, null);
+                getTaxonNodeService().saveOrUpdate(higherNode);
                 state.putHigherTaxon(genusStr, genus);
             }
         }
         taxon.addSource(makeOriginalSource(state));
 
         TaxonNode newNode = higherNode.addChildTaxon(taxon, null, null);
+        getTaxonNodeService().saveOrUpdate(newNode);
         if(isAbsent){
             botanicalName.setTitleCache(taxonStrOrig, true);
             newNode.setExcluded(true);
@@ -1083,6 +1179,7 @@ public class CubaExcelImport
             family = Taxon.NewInstance(name, sec);
             ITaxonTreeNode rootNode = getClassification(state);
             familyNode = rootNode.addChildTaxon(family, sec, null);
+            this.getTaxonNodeService().saveOrUpdate(familyNode);
             state.putHigherTaxon(familyStr, family);
 
         }
@@ -1154,7 +1251,7 @@ public class CubaExcelImport
                             hasExternalPresence = true;
                             if (state.isEndemic()){
                                 String name = taxon.getName().getTitleCache();
-                                logger.error(state.getCurrentLine() +": Taxon ("+name+")is endemic but has non-cuban distribution: " + area.getIdInVocabulary() + "-" + status.getIdInVocabulary());
+                                logger.warn(state.getCurrentLine() +": Taxon ("+name+")is endemic but has non-cuban distribution: " + area.getIdInVocabulary() + "-" + status.getIdInVocabulary());
                                 return;
                             }
                         }
@@ -1164,7 +1261,7 @@ public class CubaExcelImport
         }
         if (!state.isEndemic() && ! hasExternalPresence){
             String name = taxon.getName().getTitleCache();
-            logger.error(state.getCurrentLine() +": Taxon ("+name+")is not endemic but has no non-cuban distribution" );
+            logger.error(state.getCurrentLine() +": Taxon ("+name+") is not endemic but has no non-cuban distribution" );
         }
     }
 
@@ -1406,17 +1503,32 @@ public class CubaExcelImport
             TaxonNode familyTaxon,
             Taxon taxon) {
 
+        CubaImportConfigurator config = state.getConfig();
+
         String famFRC = record.get("Fam. FRC");
         String famAS = record.get("Fam. A&S");
         String famFC = record.get("Fam. FC");
+        String famSanchez2017 = record.get("Fam. Sánchez 2017");
 
-        Reference refFRC = makeReference(state, CubaTransformer.uuidRefFRC);
-        Reference refAS = makeReference(state, CubaTransformer.uuidRefAS);
-        Reference refFC = makeReference(state, CubaTransformer.uuidRefFC);
+        if (config.isDoAltFlorasFRC()){
+            Reference refFRC = makeReference(state, CubaTransformer.uuidRefFRC);
+            makeSingleAlternativeFamily(state, taxon, famFRC, refFRC);
+        }
 
-        makeSingleAlternativeFamily(state, taxon, famFRC, refFRC);
-        makeSingleAlternativeFamily(state, taxon, famAS, refAS);
-        makeSingleAlternativeFamily(state, taxon, famFC, refFC);
+        if (config.isDoAltFlorasAS()){
+            Reference refAS = makeReference(state, CubaTransformer.uuidRefAS);
+            makeSingleAlternativeFamily(state, taxon, famAS, refAS);
+        }
+
+        if (config.isDoAltFlorasFC()){
+            Reference refFC = makeReference(state, CubaTransformer.uuidRefFC);
+            makeSingleAlternativeFamily(state, taxon, famFC, refFC);
+        }
+
+        if (config.isDoAltFlorasSanchez2017()){
+            Reference refSanchez2017 = makeReference(state, CubaTransformer.uuidRefSanchez);
+            makeSingleAlternativeFamily(state, taxon, famSanchez2017, refSanchez2017);
+        }
     }
 
 
@@ -1545,6 +1657,11 @@ public class CubaExcelImport
         PresenceAbsenceTerm status = state.getTransformer().getPresenceTermByKey(statusStr);
         if (status == null){
 //            PresenceAbsenceTerm highestStatus = state.getHighestStatusForTaxon();
+            if ("– 7".equals(statusStr)){
+                statusStr = "–";
+            }else if ("p 78".equals(statusStr)){
+                statusStr = "p";
+            }
             if (state.isCubanProvince() && isMinus(statusStr)){
 //                getAbsenceTermForStatus(state, highestStatus);
                 //we now handle cuban provinces same as external regions
@@ -1553,9 +1670,12 @@ public class CubaExcelImport
                 status = state.getTransformer().getPresenceTermByKey("--");
             }else{
 //                logger.warn("Unhandled status str for provinces / external regions: " + statusStr);
+
                 UUID statusUuid = state.getTransformer().getPresenceTermUuid(statusStr);
                 if (statusUuid == null){
-                    logger.error(state.getCurrentLine() + ": Undefined status str for provinces / external regions. No UUID given: '" + statusStr + "'");
+                    if (! ("78".equals(statusStr)|| "1".equals(statusStr)||"8".equals(statusStr))){
+                        logger.error(state.getCurrentLine() + ": Undefined status str for provinces / external regions. No UUID given: '" + statusStr + "'");
+                    }
                 }else{
                     status = getPresenceTerm(state, statusUuid, statusStr, statusStr, statusStr, false);
                 }

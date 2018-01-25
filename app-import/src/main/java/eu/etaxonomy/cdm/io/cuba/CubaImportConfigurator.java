@@ -10,7 +10,6 @@
 package eu.etaxonomy.cdm.io.cuba;
 
 import java.net.URI;
-import java.util.UUID;
 
 import org.apache.log4j.Logger;
 
@@ -36,9 +35,13 @@ public class CubaImportConfigurator extends ExcelImportConfiguratorBase {
 
     private String cubaReferenceTitle;
 
-    private UUID uuidCyprusReference = UUID.fromString("b5281cd3-9d5d-4ae2-8d55-b62a592ce846");
-
 	private boolean isDoTaxa;
+
+	private boolean doAltFlorasSanchez2017;
+    private boolean doAltFlorasFRC;
+    private boolean doAltFlorasFC;
+    private boolean doAltFlorasAS;
+
 
     private boolean doVocabularies;
     public void setDoVocabularies(boolean doVocabularies) {this.doVocabularies = doVocabularies;}
@@ -99,16 +102,6 @@ public class CubaImportConfigurator extends ExcelImportConfiguratorBase {
 	}
 
 
-	public void setUuidCyprusReference(UUID uuidCyprusReference) {
-		this.uuidCyprusReference = uuidCyprusReference;
-	}
-
-
-	public UUID getUuidCyprusReference() {
-		return uuidCyprusReference;
-	}
-
-
 	public void setCubaReferenceTitle(String cyprusReferenceTitle) {
 		this.cubaReferenceTitle = cyprusReferenceTitle;
 	}
@@ -125,6 +118,34 @@ public class CubaImportConfigurator extends ExcelImportConfiguratorBase {
 	public boolean isDoTaxa() {
 		return isDoTaxa;
 	}
+
+
+	//************* ALT FLORAS ********************/
+
+	public boolean isDoAltFlorasSanchez2017() {
+        return doAltFlorasSanchez2017;
+    }
+    public void setDoAltFlorasSanchez2017(boolean doAltFlorasSanchez2017) {
+        this.doAltFlorasSanchez2017 = doAltFlorasSanchez2017;
+    }
+    public boolean isDoAltFlorasFRC() {
+        return doAltFlorasFRC;
+    }
+    public void setDoAltFlorasFRC(boolean doAltFlorasFRC) {
+        this.doAltFlorasFRC = doAltFlorasFRC;
+    }
+    public boolean isDoAltFlorasFC() {
+        return doAltFlorasFC;
+    }
+    public void setDoAltFlorasFC(boolean doAltFlorasFC) {
+        this.doAltFlorasFC = doAltFlorasFC;
+    }
+    public boolean isDoAltFlorasAS() {
+        return doAltFlorasAS;
+    }
+    public void setDoAltFlorasAS(boolean doAltFlorasAS) {
+        this.doAltFlorasAS = doAltFlorasAS;
+    }
 
 
 

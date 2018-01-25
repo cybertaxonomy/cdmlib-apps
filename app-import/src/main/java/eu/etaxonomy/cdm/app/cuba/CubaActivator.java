@@ -41,9 +41,10 @@ public class CubaActivator {
 	//database validation status (create, update, validate ...)
 	static DbSchemaValidation hbm2dll = DbSchemaValidation.VALIDATE;
 
-    static final ICdmDataSource cdmDestination = CdmDestinations.localH2();
+//  static final ICdmDataSource cdmDestination = CdmDestinations.localH2();
 //	static final ICdmDataSource cdmDestination = CdmDestinations.cdm_test_local_mysql_test();
-//    static final ICdmDataSource cdmDestination = CdmDestinations.cdm_cuba_production();
+    static final ICdmDataSource cdmDestination = CdmDestinations.cdm_local_cuba();
+//  static final ICdmDataSource cdmDestination = CdmDestinations.cdm_cuba_production();
 
 	static boolean invers = true;
 
@@ -64,6 +65,7 @@ public class CubaActivator {
     boolean doOrchidaceae = include;
     boolean doRubiaceae = include;
     boolean doUrticaceae = include;
+    boolean doPteridophyta = !include;
 
     static boolean include = !invers;
 
@@ -81,8 +83,13 @@ public class CubaActivator {
 	static final CHECK check = CHECK.IMPORT_WITHOUT_CHECK;
 
 	boolean doVocabularies = (hbm2dll == DbSchemaValidation.CREATE);
-	static final boolean doTaxa = false;
-	static final boolean doDeduplicate = true;
+	static final boolean doTaxa = true;
+	static final boolean doDeduplicate = false;
+
+	static final boolean doAltFlorasSanchez2017 = true;
+	static final boolean doAltFlorasFRC = true;
+	static final boolean doAltFlorasFC = false;
+	static final boolean doAltFlorasAS = false;
 
 
 	private void doImport(ICdmDataSource cdmDestination){
@@ -99,8 +106,12 @@ public class CubaActivator {
 		config.setDbSchemaValidation(hbm2dll);
 		config.setSourceReferenceTitle(sourceReferenceTitle);
 		config.setDoVocabularies(doVocabularies);
+		config.setDoAltFlorasAS(doAltFlorasAS);
+		config.setDoAltFlorasFC(doAltFlorasFC);
+		config.setDoAltFlorasFRC(doAltFlorasFRC);
+		config.setDoAltFlorasSanchez2017(doAltFlorasSanchez2017);
 
-		CdmDefaultImport<CubaImportConfigurator> myImport = new CdmDefaultImport<CubaImportConfigurator>();
+		CdmDefaultImport<CubaImportConfigurator> myImport = new CdmDefaultImport<>();
 
 
 		//...
@@ -154,6 +165,9 @@ public class CubaActivator {
         }
         if (doUrticaceae){
             doSingleSource(urticaceae(), config, myImport, doVocabularies);
+        }
+        if (doPteridophyta){
+            doSingleSource(pteridophyta(), config, myImport, doVocabularies);
         }
 
 
@@ -302,6 +316,10 @@ public class CubaActivator {
     //Rubiaceae
     public static URI rubiaceae() {
         return URI.create("file:////BGBM-PESIHPC/Cuba/Rubiaceae.xlsx");
+    }
+    //Rubiaceae
+    public static URI pteridophyta() {
+        return URI.create("file:////BGBM-PESIHPC/Cuba/Pteridophyta.xlsx");
     }
 
 	/**
