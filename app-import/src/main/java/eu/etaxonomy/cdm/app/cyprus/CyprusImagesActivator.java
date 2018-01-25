@@ -466,7 +466,7 @@ public class CyprusImagesActivator {
             Iterator<TaxonBase> it = list.iterator();
             while (it.hasNext()){
                 Taxon next = (Taxon)it.next();
-                if (next.getTaxonNodes().isEmpty() && !next.getTaxonForMisappliedName().isEmpty()){
+                if (next.getTaxonNodes().isEmpty() && !next.getTaxaForMisappliedName(true).isEmpty()){
                     it.remove();
                 }
             }
