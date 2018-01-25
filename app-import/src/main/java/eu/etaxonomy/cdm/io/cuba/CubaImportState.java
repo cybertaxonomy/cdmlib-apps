@@ -116,7 +116,7 @@ public class CubaImportState extends ExcelImportState<CubaImportConfigurator, Ex
     }
 
 
-    Map<UUID, Reference> refMap = new HashMap<UUID, Reference>();
+    Map<UUID, Reference> refMap = new HashMap<>();
     //reference
     public Reference getReference(UUID uuidRef) {
         return refMap.get(uuidRef);
