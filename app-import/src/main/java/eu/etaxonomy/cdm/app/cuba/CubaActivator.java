@@ -44,7 +44,7 @@ public class CubaActivator {
 //  static final ICdmDataSource cdmDestination = CdmDestinations.localH2();
 //	static final ICdmDataSource cdmDestination = CdmDestinations.cdm_test_local_mysql_test();
     static final ICdmDataSource cdmDestination = CdmDestinations.cdm_local_cuba();
-//  static final ICdmDataSource cdmDestination = CdmDestinations.cdm_cuba_production();
+//  static final ICdmDataSource cdmDestination = CdmDestinations.cdm_production_flora_cuba();
 
 	static boolean invers = true;
 

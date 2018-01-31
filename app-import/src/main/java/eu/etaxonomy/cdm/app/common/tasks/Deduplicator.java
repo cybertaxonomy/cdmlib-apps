@@ -35,13 +35,14 @@ public class Deduplicator {
 //  static DbSchemaValidation hbm2dll = DbSchemaValidation.VALIDATE;
 //  static final ICdmDataSource cdmDestination = CdmDestinations.cdm_production_cichorieae();
 //  static final ICdmDataSource cdmDestination = CdmDestinations.localH2();
-    static final ICdmDataSource cdmDestination = CdmDestinations.cdm_production_caryophyllales_spp();
-//  static final ICdmDataSource cdmDestination = CdmDestinations.cdm_local_caryo_spp();
+//    static final ICdmDataSource cdmDestination = CdmDestinations.cdm_production_caryophyllales_spp();
+    static final ICdmDataSource cdmDestination = CdmDestinations.cdm_production_flora_cuba();
+    //  static final ICdmDataSource cdmDestination = CdmDestinations.cdm_local_caryo_spp();
 
 
 
-   static boolean doPersons = false;
-   static boolean doTeams = true;
+   static boolean doPersons = true;
+   static boolean doTeams = false;
    static boolean doReferences = false;
 
 
