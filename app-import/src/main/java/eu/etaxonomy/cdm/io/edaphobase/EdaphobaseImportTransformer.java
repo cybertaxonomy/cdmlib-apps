@@ -29,6 +29,12 @@ public class EdaphobaseImportTransformer extends InputTransformerBase {
     private static final UUID uuidTaxGrossgruppeMarker = UUID.fromString("71f22f44-5131-4d54-8362-1c77ac5c567a");
     private static final UUID uuidEdaphoRankMarker = UUID.fromString("6eaeffd2-b89b-436b-b0ee-75af5f0a9b81");
 
+    protected static final UUID uuidVocFeatureQuantitative = UUID.fromString("8d449d74-5997-431f-af2d-409113b5b74e");
+    protected static final UUID uuidVocFeatureBiological = UUID.fromString("f366ddf8-51da-436d-b4f4-8e86721adae6");
+    protected static final UUID uuidVocFeatureMorpho = UUID.fromString("1ecf1157-6943-4790-b015-fde07c2d00d3");
+
+
+
     @Override
     public Rank getRankByKey(String key) throws UndefinedTransformerMethodException {
         if (key == null){return null;}

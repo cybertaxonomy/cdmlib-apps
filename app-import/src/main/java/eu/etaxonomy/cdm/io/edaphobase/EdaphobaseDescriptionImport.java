@@ -110,10 +110,13 @@ public class EdaphobaseDescriptionImport extends EdaphobaseImportBase {
         try {
             @SuppressWarnings("unchecked")
             TermVocabulary<Feature> vocQuant = TermVocabulary.NewInstance(TermType.Feature, "Edaphobase quantitative features", "Quantitative features", "quant.", null);
+            vocQuant.setUuid(EdaphobaseImportTransformer.uuidVocFeatureQuantitative);
             @SuppressWarnings("unchecked")
             TermVocabulary<Feature> vocBiology = TermVocabulary.NewInstance(TermType.Feature, "Edaphobase biological features", "Biological features", "biol.", null);
+            vocBiology.setUuid(EdaphobaseImportTransformer.uuidVocFeatureBiological);
             @SuppressWarnings("unchecked")
             TermVocabulary<Feature> vocMorphology = TermVocabulary.NewInstance(TermType.Feature, "Edaphobase morphological features", "Morphological features", "morph.", null);
+            vocBiology.setUuid(EdaphobaseImportTransformer.uuidVocFeatureMorpho);
 
             while (rs.next()){
                handleSingleFeature(state, rs, vocQuant, vocBiology, vocMorphology);
@@ -122,7 +125,6 @@ public class EdaphobaseDescriptionImport extends EdaphobaseImportBase {
             getVocabularyService().save(vocBiology);
             getVocabularyService().save(vocMorphology);
         } catch (SQLException e) {
-            // TODO Auto-generated catch block
             e.printStackTrace();
         }
     }
@@ -192,7 +194,6 @@ public class EdaphobaseDescriptionImport extends EdaphobaseImportBase {
             //TODO term type
             TermVocabulary<State> categoryVoc = makeCategoricalVocabulary(state, list, listName);
             feature.addSupportedCategoricalEnumeration(categoryVoc);
-
         }
 
         //unit_fk
@@ -287,6 +288,7 @@ public class EdaphobaseDescriptionImport extends EdaphobaseImportBase {
     }
 
     /**
+     * Checks if the value for these attributes is blank
      * @param state
      * @param rs
      * @param strings
