@@ -13,9 +13,9 @@
   <name>App Import</name>
   <description>A collection of diverse imports to the EDIT CDM Platform</description>
   <scm>
-    <connection>scm:svn:http://dev.e-taxonomy.eu/svn/trunk/cdmlib-apps/app-import/</connection>
-    <developerConnection>scm:svn:https://dev.e-taxonomy.eu/svn/trunk/cdmlib-apps/app-import/</developerConnection>
-    <url>http://dev.e-taxonomy.eu/trac/browser/trunk/cdmlib-apps/app-import/</url>
+    <connection>scm:git:https://dev.e-taxonomy.eu/git/cdmlib-apps.git</connection>
+    <developerConnection>scm:git:ssh://git@dev.e-taxonomy.eu/var/git/cdmlib-apps.git</developerConnection>
+    <url>https://dev.e-taxonomy.eu/gitweb/cdmlib-apps.git/tree/HEAD:/app-import</url>
   </scm>
   <properties>
   	<java.codelevel>1.8</java.codelevel>

@@ -12,11 +12,11 @@
 	<artifactId>cdmlib-app</artifactId>
 	<name>CDM Parent</name>
 	<description>The parent package for EDIT's cdmLibrary</description>
-	<scm>
-		<connection>scm:svn:http://dev.e-taxonomy.eu/svn/trunk/cdmlib/cdmlib-io/</connection>
-		<developerConnection>scm:svn:http://dev.e-taxonomy.eu/svn/trunk/cdmlib/cdmlib-io/</developerConnection>
-		<url>http://dev.e-taxonomy.eu/trac/browser/trunk/cdmlib/cdmlib-io/</url>
-	</scm>
+  <scm>
+    <connection>scm:git:https://dev.e-taxonomy.eu/git/cdmlib-apps.git</connection>
+    <developerConnection>scm:git:ssh://git@dev.e-taxonomy.eu/var/git/cdmlib-apps.git</developerConnection>
+    <url>https://dev.e-taxonomy.eu/gitweb/cdmlib-apps.git/tree</url>
+  </scm>
 	<build>
 		<plugins>
 			<plugin>
