@@ -38,11 +38,11 @@ public class EdaphobaseActivator {
     static DbSchemaValidation dbSchemaValidation = DbSchemaValidation.CREATE;
 
 //    static final Source edaphoSource = CdmImportSources.EDAPHOBASE();
-    static final Source edaphoSource = CdmImportSources.EDAPHOBASE5();
+    static final Source edaphoSource = CdmImportSources.EDAPHOBASE6();
 
 //    static final ICdmDataSource cdmDestination = CdmDestinations.localH2();
-//    static final ICdmDataSource cdmDestination = CdmDestinations.cdm_local_edaphobase();
-    static final ICdmDataSource cdmDestination = CdmDestinations.cdm_production_edaphobase();
+    static final ICdmDataSource cdmDestination = CdmDestinations.cdm_local_edaphobase();
+//    static final ICdmDataSource cdmDestination = CdmDestinations.cdm_production_edaphobase();
 
     //feature tree uuid
     private static final UUID featureTreeUuid = UUID.fromString("a543d66a-e310-4b3e-a9fa-b729afefad16");
@@ -57,7 +57,7 @@ public class EdaphobaseActivator {
     private static final boolean doTaxa = true;
     private static final boolean doSynonyms = true;
     private static final boolean doReferences = true;
-    private static final boolean doDescriptions = true;
+    private static final boolean doDescriptions = false;
 
 
     //check - import

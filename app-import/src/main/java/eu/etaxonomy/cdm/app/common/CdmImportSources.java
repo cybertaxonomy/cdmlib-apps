@@ -136,10 +136,10 @@ public class CdmImportSources extends SourceBase{
         return  makeSource(dbms, strServer, strDB, port, userName, null);
     }
 
-    public static Source EDAPHOBASE5(){
+    public static Source EDAPHOBASE6(){
         String dbms = Source.POSTGRESQL9;
         String strServer = "130.133.70.26";  //BGBM-PESISQL
-        String strDB = "edaphobase5";
+        String strDB = "edaphobase6";
         int port = 5432;
         String userName = "postgres";
         return  makeSource(dbms, strServer, strDB, port, userName, null);

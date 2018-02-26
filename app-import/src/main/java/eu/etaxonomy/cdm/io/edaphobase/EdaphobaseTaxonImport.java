@@ -30,9 +30,11 @@ import eu.etaxonomy.cdm.model.common.CdmBase;
 import eu.etaxonomy.cdm.model.common.Language;
 import eu.etaxonomy.cdm.model.common.Marker;
 import eu.etaxonomy.cdm.model.common.MarkerType;
+import eu.etaxonomy.cdm.model.common.OrderedTermVocabulary;
 import eu.etaxonomy.cdm.model.common.Representation;
 import eu.etaxonomy.cdm.model.name.IZoologicalName;
 import eu.etaxonomy.cdm.model.name.Rank;
+import eu.etaxonomy.cdm.model.name.RankClass;
 import eu.etaxonomy.cdm.model.name.TaxonNameFactory;
 import eu.etaxonomy.cdm.model.reference.Reference;
 import eu.etaxonomy.cdm.model.reference.ReferenceFactory;
@@ -72,14 +74,16 @@ public class EdaphobaseTaxonImport extends EdaphobaseImportBase {
 
     @Override
     protected String getRecordQuery(EdaphobaseImportConfigurator config) {
-        String result = " SELECT DISTINCT t.*, r.value_summary as rankStr, pr.value_summary as parentRankStr, ppr.value_summary as grandParentRankStr, "
-                    + " pt.name as parentName, ppt.name as grandParentName "
+        String result = " SELECT DISTINCT t.*, r.value_summary as rankStr, pr.value_summary as parentRankStr, ppr.value_summary as grandParentRankStr, pppr.value_summary as grandGrandParentRankStr, "
+                    + " pt.name as parentName, ppt.name as grandParentName, pppt.name as grandGrandParentName "
                 + " FROM tax_taxon t "
                     + " LEFT JOIN tax_taxon pt ON t.parent_taxon_fk = pt.taxon_id "
-                    + " LEFT JOIN tax_taxon ppt ON pt.parent_taxon_fk = ppt.taxon_id"
+                    + " LEFT JOIN tax_taxon ppt ON pt.parent_taxon_fk = ppt.taxon_id "
+                    + " LEFT JOIN tax_taxon pppt ON ppt.parent_taxon_fk = pppt.taxon_id "
                     + " LEFT OUTER JOIN selective_list.element r ON r.element_id = t.tax_rank_fk "
                     + " LEFT OUTER JOIN selective_list.element pr ON pr.element_id = pt.tax_rank_fk "
                     + " LEFT OUTER JOIN selective_list.element ppr ON ppr.element_id = ppt.tax_rank_fk "
+                    + " LEFT OUTER JOIN selective_list.element pppr ON pppr.element_id = pppt.tax_rank_fk "
                 + " WHERE t.taxon_id IN (@IDSET)";
         result = result.replace("@IDSET", IPartitionedIO.ID_LIST_TOKEN);
         return result;
@@ -138,14 +142,17 @@ public class EdaphobaseTaxonImport extends EdaphobaseImportBase {
         String rankStr = rs.getString("rankStr");
         String parentRankStr = rs.getString("parentRankStr");
         String grandParentRankStr = rs.getString("grandParentRankStr");
+        String grandGrandParentRankStr = rs.getString("grandGrandParentRankStr");
         String parentNameStr = rs.getString("parentName");
         String grandParentNameStr = rs.getString("grandParentName");
+        String grandGrandParentNameStr = rs.getString("grandGrandParentName");
 
         TaxonBase<?> taxonBase;
 
         rankStr= extractEnglish(rankStr);
         parentRankStr= extractEnglish(parentRankStr);
         grandParentRankStr= extractEnglish(grandParentRankStr);
+        grandGrandParentRankStr= extractEnglish(grandGrandParentRankStr);
 
         //Name etc.
         Rank rank = makeRank(state, rankStr);
@@ -156,8 +163,11 @@ public class EdaphobaseTaxonImport extends EdaphobaseImportBase {
         setNamePart(parentNameStr, parentRank, name);
         Rank parentParentRank = makeRank(state, grandParentRankStr);
         setNamePart(grandParentNameStr, parentParentRank, name);
-        if (parentParentRank != null && parentParentRank.isLower(Rank.GENUS()) || isBlank(name.getGenusOrUninomial()) ){
-            logger.warn("Grandparent rank is lower than genus for " + name.getTitleCache() + " (edapho-id: " + id + "; cdm-id: " + name.getId());
+        Rank grandParentParentRank = makeRank(state, grandGrandParentRankStr);
+        setNamePart(grandGrandParentNameStr, grandParentParentRank, name);
+        if (grandParentParentRank != null && grandParentParentRank.isLower(Rank.GENUS()) || isBlank(name.getGenusOrUninomial()) ){
+            logger.warn("Grand-Grandparent rank is lower than genus for " +
+                    name.getTitleCache() + " (edapho-id: " + id + "; cdm-id: " + name.getId() + ")");
         }
 
         //Authors
@@ -255,7 +265,7 @@ public class EdaphobaseTaxonImport extends EdaphobaseImportBase {
 
         if (rank != null){
             Set<Marker> markers = rank.getMarkers();
-            if ( markers.size() == 0){  //we assume that no markers exist. at least not for markers of unused ranks
+            if ( markers.size() == 0){  //we assume that no markers exist, at least not for markers of unused ranks
                 UUID edaphoRankMarkerTypeUuid = state.getTransformer().getMarkerTypeUuid("EdaphoRankMarker");
                 MarkerType marker = getMarkerType(state, edaphoRankMarkerTypeUuid, "Edaphobase rank", "Rank used in Edaphobase", "EdaRk" );
                 Representation rep = Representation.NewInstance("Rang, verwendet in Edaphobase", "Edaphobase Rang", "EdaRg", Language.GERMAN());
@@ -264,7 +274,7 @@ public class EdaphobaseTaxonImport extends EdaphobaseImportBase {
                 getTermService().saveOrUpdate(rank);
             }
         }else{
-            logger.warn("Rank is null and marker can not be set");
+            logger.info("Rank is null and marker can not be set");
         }
     }
 
@@ -356,19 +366,19 @@ public class EdaphobaseTaxonImport extends EdaphobaseImportBase {
     private void setNamePart(String nameStr, Rank rank, IZoologicalName name) {
         if (rank != null){
             if (rank.isSupraGeneric() || rank.isGenus()){
-                if (StringUtils.isBlank(name.getGenusOrUninomial())){
+                if (isBlank(name.getGenusOrUninomial())){
                     name.setGenusOrUninomial(nameStr);
                 }
             }else if (rank.isInfraGenericButNotSpeciesGroup()){
-                if (StringUtils.isBlank(name.getInfraGenericEpithet())){
+                if (isBlank(name.getInfraGenericEpithet())){
                     name.setInfraGenericEpithet(nameStr);
                 }
             }else if (rank.isSpeciesAggregate() || rank.isSpecies()){
-                if (StringUtils.isBlank(name.getSpecificEpithet())){
+                if (isBlank(name.getSpecificEpithet())){
                     name.setSpecificEpithet(nameStr);
                 }
             }else if (rank.isInfraSpecific()){
-                if (StringUtils.isBlank(name.getInfraSpecificEpithet())){
+                if (isBlank(name.getInfraSpecificEpithet())){
                     name.setInfraSpecificEpithet(nameStr);
                 }
             }
@@ -379,6 +389,19 @@ public class EdaphobaseTaxonImport extends EdaphobaseImportBase {
         Rank rank = null;
         try {
             rank = state.getTransformer().getRankByKey(rankStr);
+            if (rank == null && rankStr != null){
+                if (rankStr.equals("Cohort")){
+                    //position not really clear #7285
+                    Rank lowerRank = Rank.SUPERORDER();
+                    rank = this.getRank(state, Rank.uuidCohort, "Cohort", "Cohort", null,
+                            (OrderedTermVocabulary<Rank>)Rank.GENUS().getVocabulary(),
+                            lowerRank, RankClass.Suprageneric);
+                }else if (rankStr.equals("Hyporder")){
+                    rank = this.getRank(state, Rank.uuidHyporder, "Hyporder", "Hyporder", null,
+                            (OrderedTermVocabulary<Rank>)Rank.GENUS().getVocabulary(),
+                            Rank.SUBORDER(), RankClass.Suprageneric);
+                }
+            }
         } catch (UndefinedTransformerMethodException e) {
             e.printStackTrace();
         }
