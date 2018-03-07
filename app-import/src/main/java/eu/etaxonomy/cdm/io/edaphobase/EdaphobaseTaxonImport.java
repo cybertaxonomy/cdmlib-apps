@@ -91,9 +91,30 @@ public class EdaphobaseTaxonImport extends EdaphobaseImportBase {
 
     @Override
     protected void doInvoke(EdaphobaseImportState state) {
+        makeIncludedInList(state);
         super.doInvoke(state);
     }
 
+    private Set<Integer> includedInTaxa = new HashSet<>();
+
+    /**
+     * @param state
+     */
+    private void makeIncludedInList(EdaphobaseImportState state) {
+        String sql = "SELECT sr.a_taxon_fk_taxon_id "
+                + " FROM tax_synonym sr "
+                + " WHERE sr.synonym_role <> 11614 ";
+        ResultSet rs = state.getConfig().getSource().getResultSet(sql);
+        try {
+            while (rs.next()){
+                Integer synId = rs.getInt("a_taxon_fk_taxon_id");
+                includedInTaxa.add(synId);
+            }
+        } catch (SQLException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+    }
 
     @Override
     public boolean doPartition(ResultSetPartitioner partitioner, EdaphobaseImportState state) {
@@ -146,6 +167,8 @@ public class EdaphobaseTaxonImport extends EdaphobaseImportBase {
         String parentNameStr = rs.getString("parentName");
         String grandParentNameStr = rs.getString("grandParentName");
         String grandGrandParentNameStr = rs.getString("grandGrandParentName");
+
+        isValid = checkValid(state, id, isValid);
 
         TaxonBase<?> taxonBase;
 
@@ -218,6 +241,22 @@ public class EdaphobaseTaxonImport extends EdaphobaseImportBase {
         handleExampleIdentifiers(taxonBase, id);
     }
 
+
+    /**
+     * @param state
+     * @param id
+     * @param isValid
+     * @return
+     */
+    private boolean checkValid(EdaphobaseImportState state, Integer id, boolean isValid) {
+        if (isValid){
+            return isValid;
+        }else if (includedInTaxa.contains(id)){
+            return true;
+        }else{
+            return isValid;
+        }
+    }
 
     /**
      * @param rankStr
