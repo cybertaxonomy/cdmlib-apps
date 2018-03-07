@@ -25,7 +25,6 @@ import eu.etaxonomy.cdm.model.common.Language;
 /**
  * @author a.mueller
  * @date 04.12.2015
- *
  */
 public class EdaphobaseRankActivator {
     @SuppressWarnings("unused")
@@ -48,7 +47,7 @@ public class EdaphobaseRankActivator {
         config.setDbSchemaValidation(dbSchemaValidation);
         config.setLanguageUuid(Language.uuidGerman);
 
-        CdmDefaultImport<RepresentationCsvImportConfigurator> myImport = new CdmDefaultImport<RepresentationCsvImportConfigurator>();
+        CdmDefaultImport<RepresentationCsvImportConfigurator> myImport = new CdmDefaultImport<>();
         myImport.invoke(config);
 
         config.setLanguageUuid(Language.uuidLatin);

@@ -29,11 +29,15 @@ import eu.etaxonomy.cdm.model.taxon.TaxonBase;
 import eu.etaxonomy.cdm.model.taxon.TaxonRelationshipType;
 
 /**
- * Import class for synonym relationships in edaphobase.
+ * Import class for synonym relationships in edaphobase
+ * which are NOT pure synonym relationships.
+ * Therefore either
+ *  role A must be valid,
+ *  role B must be invalid or
+ *  synonym_role <> 11614
  *
  * @author a.mueller
  * @date 21.12.2015
- *
  */
 @Component
 public class EdaphobaseSynonymy2Import extends EdaphobaseImportBase {

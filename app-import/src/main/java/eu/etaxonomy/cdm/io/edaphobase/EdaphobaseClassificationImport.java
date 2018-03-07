@@ -111,7 +111,7 @@ public class EdaphobaseClassificationImport extends EdaphobaseImportBase {
 
                         if (isValid){
                             if (parent.isInstanceOf(Synonym.class)){
-                                logger.warn("Parent taxon (" + parentTaxonFk + " is not valid for valid child " + id);
+                                logger.warn("Parent taxon (" + parentTaxonFk + " is not valid for valid child " + id + ")");
                             }else{
                                 Taxon accParent = CdmBase.deproxy(parent, Taxon.class);
                                 classification.addParentChild(accParent, (Taxon)child, sourceReference, null);
