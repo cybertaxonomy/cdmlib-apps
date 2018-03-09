@@ -22,7 +22,6 @@ import org.springframework.stereotype.Component;
 import eu.etaxonomy.cdm.io.common.IPartitionedIO;
 import eu.etaxonomy.cdm.io.common.ResultSetPartitioner;
 import eu.etaxonomy.cdm.model.common.CdmBase;
-import eu.etaxonomy.cdm.model.name.TaxonName;
 import eu.etaxonomy.cdm.model.reference.Reference;
 import eu.etaxonomy.cdm.model.taxon.Classification;
 import eu.etaxonomy.cdm.model.taxon.Synonym;
@@ -81,65 +80,11 @@ public class EdaphobaseClassificationImport extends EdaphobaseImportBase {
         ResultSet rs = partitioner.getResultSet();
         Map<String, Classification> map = partitioner.getObjectMap(CLASSIFICATION_NAMESPACE);
         Classification classification = map.get(state.getConfig().getClassificationUuid().toString());
-        Reference sourceReference = state.getTransactionalSourceReference();
 
         Set<TaxonBase> taxaToSave = new HashSet<>();
         try {
             while (rs.next()){
-                int id = rs.getInt("taxon_id");
-                 //parentTaxonFk
-                boolean isValid = rs.getBoolean("valid");
-//                boolean idDeleted = rs.getBoolean("deleted");
-//                String treeIndex = rs.getString("path_to_root");
-//                Integer rankFk = rs.getInt("tax_rank_fk");
-//                String officialRemark = rs.getString("official_remark");
-//                boolean isGroup = rs.getBoolean("taxonomic_group");
-                Integer parentTaxonFk = nullSafeInt(rs, "parent_taxon_fk");
-
-                if (parentTaxonFk != null){
-                    TaxonBase<?> parent = state.getRelatedObject(TAXON_NAMESPACE, parentTaxonFk.toString(), TaxonBase.class);
-                    if (parent == null){
-                        logger.warn("Parent taxon " + parentTaxonFk + " not found for taxon " + id );
-                    }else{
-
-                        TaxonName parentName = parent.getName();
-
-                        TaxonBase<?> child = state.getRelatedObject(TAXON_NAMESPACE, String.valueOf(id), TaxonBase.class);
-//                        TaxonName childName = child.getName();
-
-//                        handleMissingNameParts(CdmBase.deproxy(childName, TaxonName.class), CdmBase.deproxy(parentName, NonViralName.class));
-
-                        if (isValid){
-                            if (parent.isInstanceOf(Synonym.class)){
-                                logger.warn("Parent taxon (" + parentTaxonFk + " is not valid for valid child " + id + ")");
-                            }else{
-                                Taxon accParent = CdmBase.deproxy(parent, Taxon.class);
-                                classification.addParentChild(accParent, (Taxon)child, sourceReference, null);
-                                taxaToSave.add(accParent);
-                            }
-                        }else{
-//                            Synonym synonym = CdmBase.deproxy(child, Synonym.class);
-//                            if (synonym == null){
-//                                logger.warn("Synonym " + id + " not found for taxon ");
-//                            }
-//                            if(parent.isInstanceOf(Synonym.class)){
-//                                String message = "Taxon ("+parentTaxonFk+") is not accepted but synonym. Can't add synonym ("+id+")";
-//                                logger.warn(message);
-//                            }else{
-//                                Taxon accepted = CdmBase.deproxy(parent, Taxon.class);
-////                                accepted.addSynonym(synonym, SynonymType.SYNONYM_OF());
-//                                taxaToSave.add(accepted);
-//                            }
-                        }
-                    }
-                }
-
-//              //id
-//              String nameSpace = "tax_taxon";
-//              ImportHelper.setOriginalSource(taxonBase, state.getTransactionalSourceReference(), id, nameSpace);
-//              ImportHelper.setOriginalSource(name, state.getTransactionalSourceReference(), id, nameSpace);
-
-
+                handleSingleRecord(state, rs, classification, taxaToSave);
             }
         } catch (SQLException e) {
             e.printStackTrace();
@@ -147,6 +92,77 @@ public class EdaphobaseClassificationImport extends EdaphobaseImportBase {
 
         getTaxonService().saveOrUpdate(taxaToSave);
         return true;
+    }
+
+/**
+     * @param state
+     * @param rs
+ * @param taxaToSave
+ * @param classification
+ * @throws SQLException
+     */
+    private void handleSingleRecord(EdaphobaseImportState state, ResultSet rs, Classification classification, Set<TaxonBase> taxaToSave) throws SQLException {
+        Reference sourceReference = state.getTransactionalSourceReference();
+
+        int id = rs.getInt("taxon_id");
+        boolean isDeleted = rs.getBoolean("deleted");
+        if (isDeleted){
+            logger.warn("Deleted not handled according to mail Stephan 2018-03-07. ID: " + id );
+            return;
+        }
+
+         //parentTaxonFk
+        boolean isValid = rs.getBoolean("valid");
+//        boolean idDeleted = rs.getBoolean("deleted");
+//        String treeIndex = rs.getString("path_to_root");
+//        Integer rankFk = rs.getInt("tax_rank_fk");
+//        String officialRemark = rs.getString("official_remark");
+//        boolean isGroup = rs.getBoolean("taxonomic_group");
+        Integer parentTaxonFk = nullSafeInt(rs, "parent_taxon_fk");
+
+        if (parentTaxonFk != null){
+            TaxonBase<?> parent = state.getRelatedObject(TAXON_NAMESPACE, parentTaxonFk.toString(), TaxonBase.class);
+            if (parent == null){
+                logger.warn("Parent taxon " + parentTaxonFk + " not found for taxon " + id );
+            }else{
+
+                TaxonBase<?> child = state.getRelatedObject(TAXON_NAMESPACE, String.valueOf(id), TaxonBase.class);
+
+                if (isValid){
+                    if (parent.isInstanceOf(Synonym.class)){
+                        logger.warn("Parent taxon (" + parentTaxonFk + " is not valid for valid child " + id + ")");
+                    }else{
+                        Taxon accParent = CdmBase.deproxy(parent, Taxon.class);
+                        if (child == null){
+                            logger.warn("Child not found. ID= " + id);
+                        }
+                        classification.addParentChild(accParent, (Taxon)child, sourceReference, null);
+                        taxaToSave.add(accParent);
+                    }
+                }else{
+//                    Synonym synonym = CdmBase.deproxy(child, Synonym.class);
+//                    if (synonym == null){
+//                        logger.warn("Synonym " + id + " not found for taxon ");
+//                    }
+//                    if(parent.isInstanceOf(Synonym.class)){
+//                        String message = "Taxon ("+parentTaxonFk+") is not accepted but synonym. Can't add synonym ("+id+")";
+//                        logger.warn(message);
+//                    }else{
+//                        Taxon accepted = CdmBase.deproxy(parent, Taxon.class);
+////                        accepted.addSynonym(synonym, SynonymType.SYNONYM_OF());
+//                        taxaToSave.add(accepted);
+//                    }
+                }
+            }
+        }
+
+//      //id
+//      String nameSpace = "tax_taxon";
+//      ImportHelper.setOriginalSource(taxonBase, state.getTransactionalSourceReference(), id, nameSpace);
+//      ImportHelper.setOriginalSource(name, state.getTransactionalSourceReference(), id, nameSpace);
+
+
+
     }
 
 //    /**

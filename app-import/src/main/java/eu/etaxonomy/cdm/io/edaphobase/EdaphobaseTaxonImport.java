@@ -25,7 +25,12 @@ import eu.etaxonomy.cdm.io.common.IPartitionedIO;
 import eu.etaxonomy.cdm.io.common.ImportHelper;
 import eu.etaxonomy.cdm.io.common.ResultSetPartitioner;
 import eu.etaxonomy.cdm.io.common.mapping.UndefinedTransformerMethodException;
+import eu.etaxonomy.cdm.model.agent.Person;
+import eu.etaxonomy.cdm.model.agent.Team;
 import eu.etaxonomy.cdm.model.agent.TeamOrPersonBase;
+import eu.etaxonomy.cdm.model.common.AnnotatableEntity;
+import eu.etaxonomy.cdm.model.common.Annotation;
+import eu.etaxonomy.cdm.model.common.AnnotationType;
 import eu.etaxonomy.cdm.model.common.CdmBase;
 import eu.etaxonomy.cdm.model.common.Language;
 import eu.etaxonomy.cdm.model.common.Marker;
@@ -33,6 +38,7 @@ import eu.etaxonomy.cdm.model.common.MarkerType;
 import eu.etaxonomy.cdm.model.common.OrderedTermVocabulary;
 import eu.etaxonomy.cdm.model.common.Representation;
 import eu.etaxonomy.cdm.model.name.IZoologicalName;
+import eu.etaxonomy.cdm.model.name.NomenclaturalStatusType;
 import eu.etaxonomy.cdm.model.name.Rank;
 import eu.etaxonomy.cdm.model.name.RankClass;
 import eu.etaxonomy.cdm.model.name.TaxonNameFactory;
@@ -41,6 +47,7 @@ import eu.etaxonomy.cdm.model.reference.ReferenceFactory;
 import eu.etaxonomy.cdm.model.taxon.Synonym;
 import eu.etaxonomy.cdm.model.taxon.Taxon;
 import eu.etaxonomy.cdm.model.taxon.TaxonBase;
+import eu.etaxonomy.cdm.strategy.parser.NonViralNameParserImplRegExBase;
 
 /**
  * @author a.mueller
@@ -117,8 +124,9 @@ public class EdaphobaseTaxonImport extends EdaphobaseImportBase {
     }
 
     @Override
-    public boolean doPartition(ResultSetPartitioner partitioner, EdaphobaseImportState state) {
+    public boolean doPartition(@SuppressWarnings("rawtypes") ResultSetPartitioner partitioner, EdaphobaseImportState state) {
         ResultSet rs = partitioner.getResultSet();
+        @SuppressWarnings("rawtypes")
         Set<TaxonBase> taxaToSave = new HashSet<>();
         try {
             while (rs.next()){
@@ -151,7 +159,7 @@ public class EdaphobaseTaxonImport extends EdaphobaseImportBase {
         //rankFk
         Integer nomRefId = nullSafeInt(rs, "tax_document");
         boolean isValid = rs.getBoolean("valid");
-        boolean idDeleted = rs.getBoolean("deleted");
+        boolean isDeleted = rs.getBoolean("deleted");
         String displayString = rs.getString("display_string");
         Integer version = nullSafeInt(rs, "versionfield");
         String pages = rs.getString("pages");
@@ -168,7 +176,22 @@ public class EdaphobaseTaxonImport extends EdaphobaseImportBase {
         String grandParentNameStr = rs.getString("grandParentName");
         String grandGrandParentNameStr = rs.getString("grandGrandParentName");
 
+
+        if (isDeleted){
+            logger.warn("Deleted not handled according to mail Stephan 2018-03-07. ID: " + id );
+            return;
+        }
+        boolean nameAdditionUsed =  isBlank(nameAddition);
+        if (!nameAdditionUsed){
+            nameAddition = nameAddition.trim();
+        }
+
         isValid = checkValid(state, id, isValid);
+
+        //for debug only
+        if (id.equals(97600) || id.equals(97601)){
+            logger.debug("now");
+        }
 
         TaxonBase<?> taxonBase;
 
@@ -181,20 +204,25 @@ public class EdaphobaseTaxonImport extends EdaphobaseImportBase {
         Rank rank = makeRank(state, rankStr);
         checkRankMarker(state, rank);
         IZoologicalName name = TaxonNameFactory.NewZoologicalInstance(rank);
-        setNamePart(nameStr, rank, name);
-        Rank parentRank = makeRank(state, parentRankStr);
-        setNamePart(parentNameStr, parentRank, name);
-        Rank parentParentRank = makeRank(state, grandParentRankStr);
-        setNamePart(grandParentNameStr, parentParentRank, name);
-        Rank grandParentParentRank = makeRank(state, grandGrandParentRankStr);
-        setNamePart(grandGrandParentNameStr, grandParentParentRank, name);
-        if (grandParentParentRank != null && grandParentParentRank.isLower(Rank.GENUS()) || isBlank(name.getGenusOrUninomial()) ){
-            logger.warn("Grand-Grandparent rank is lower than genus for " +
-                    name.getTitleCache() + " (edapho-id: " + id + "; cdm-id: " + name.getId() + ")");
+        if (rank == null){
+            name.setNameCache(nameStr, true);
+        }else{
+            setNamePart(nameStr, rank, name);
+            Rank parentRank = makeRank(state, parentRankStr);
+            setNamePart(parentNameStr, parentRank, name);
+            Rank parentParentRank = makeRank(state, grandParentRankStr);
+            setNamePart(grandParentNameStr, parentParentRank, name);
+            Rank grandParentParentRank = makeRank(state, grandGrandParentRankStr);
+            setNamePart(grandGrandParentNameStr, grandParentParentRank, name);
+            if (grandParentParentRank != null && grandParentParentRank.isLower(Rank.GENUS()) || isBlank(name.getGenusOrUninomial()) && !name.isProtectedNameCache()){
+                logger.warn("Grand-Grandparent rank is lower than genus for " +
+                        name.getTitleCache() + " (edapho-id: " + id + "; cdm-id: " + name.getId() + ")");
+            }
         }
 
         //Authors
-        if (StringUtils.isNotBlank(authorName)){
+        if (isNotBlank(authorName)){
+            authorName = authorName.replace(" et ", " & ");
             TeamOrPersonBase<?> author = state.getRelatedObject(AUTHOR_NAMESPACE, authorName, TeamOrPersonBase.class);
             if (author == null){
                 logger.warn("Author not found in state: "  + authorName);
@@ -207,6 +235,58 @@ public class EdaphobaseTaxonImport extends EdaphobaseImportBase {
                     name.setPublicationYear(year);
                 }
             }
+        }
+
+        String capitalWord = NonViralNameParserImplRegExBase.capitalWord;
+        String autNam = "(" + capitalWord + "( in "+capitalWord+")?|Schuurmans Stekhoven|Winiszewska-Ślipińska|Fürst von Lieven|de Coninck|de Man|de Ley|de Grisse|"
+                + "van der Linde|Pschorn-Walcher|van der Berg|J. Goddey)";
+        if (isNotBlank(nameAddition) && nameAddition.matches("(\\[|\\()?nomen.*")){
+            if ("(nomen oblitum)".equals(nameAddition) ){
+                name.addStatus(NomenclaturalStatusType.ZOO_OBLITUM(), null, null);
+            }else if ("nomen dubium".equals(nameAddition) || "[nomen dubium]".equals(nameAddition)){
+                name.addStatus(NomenclaturalStatusType.DOUBTFUL(), null, null);
+            }else if ("nomen nudum".equals(nameAddition)){
+                name.addStatus(NomenclaturalStatusType.NUDUM(), null, null);
+            }else if (nameAddition.matches("nomen nudum \\["+autNam+"\\, 19\\d{2}]")){
+                name.addStatus(NomenclaturalStatusType.NUDUM(), null, null);
+                Person nomNudAuthor = parseNomenNudumAuthor(state, name, nameAddition);
+                if (name.getCombinationAuthorship()!= null || name.getBasionymAuthorship() != null){
+                    logger.warn("Author already exists for nomen nudum name with author. ID: " + id);
+                }
+                name.setCombinationAuthorship(nomNudAuthor);
+            }else{
+                logger.warn("'nomen xxx' name addition not recognized: " + nameAddition + ". ID: " + id);
+            }
+            nameAdditionUsed = true;
+        }
+        if (isNotBlank(nameAddition) && nameAddition.matches(autNam + "((, "+autNam+")? & " + autNam + ")?" +    ", \\d{4}")){
+            nameAddition = nameAddition.replace(" et ", " & ");
+            int pos = nameAddition.length()-6;
+            String authorStr = nameAddition.substring(0, pos);
+            Integer naYear = Integer.valueOf(nameAddition.substring(pos +  2));
+            if (name.getPublicationYear() != null){
+                logger.warn("Publication year already exists. ID=" +  id);
+            }
+            name.setPublicationYear(naYear);
+            TeamOrPersonBase<?> author = getNameAdditionAuthor(authorStr);
+            if (name.getCombinationAuthorship() != null){
+                logger.warn("Combination author already exists. ID=" +  id);
+            }
+            name.setCombinationAuthorship(author);
+            nameAdditionUsed = true;
+        }
+        if (isNotBlank(nameAddition) && nameAddition.matches("(nec|non) " + capitalWord +  ", \\d{4}")){
+            String str = nameAddition.substring(4);
+            String[] split = str.split(",");
+            IZoologicalName homonym = (IZoologicalName)name.clone();
+            homonym.setCombinationAuthorship(null);
+            homonym.setBasionymAuthorship(null);
+            homonym.setPublicationYear(null);
+            homonym.setOriginalPublicationYear(null);
+            TeamOrPersonBase<?> author = getNameAdditionAuthor(split[0]);
+            homonym.setCombinationAuthorship(author);
+            homonym.setPublicationYear(Integer.valueOf(split[1].trim()));
+            nameAdditionUsed = true;
         }
 
         //nomRef
@@ -232,15 +312,79 @@ public class EdaphobaseTaxonImport extends EdaphobaseImportBase {
         handleTaxonomicGroupMarker(state, taxonBase, isGroup);
         taxaToSave.add(taxonBase);
 
+        //sensu, auct.
+        if (isNotBlank(nameAddition) && (nameAddition.startsWith("sensu ") || "auct.".equals(nameAddition))){
+            nameAddition = nameAddition.replace(" et ", " & ");
+            taxonBase.setSec(null);
+            taxonBase.setAppendedPhrase(nameAddition);
+            //TODO
+            nameAdditionUsed = true;
+        }
+
         //remarks
-        doNotes(taxonBase, remark);
+        doNotes(taxonBase, remark, AnnotationType.TECHNICAL());
+        doNotes(taxonBase, officialRemark, AnnotationType.EDITORIAL());
 
         //id
         ImportHelper.setOriginalSource(taxonBase, state.getTransactionalSourceReference(), id, TAXON_NAMESPACE);
         ImportHelper.setOriginalSource(name, state.getTransactionalSourceReference(), id, TAXON_NAMESPACE);
         handleExampleIdentifiers(taxonBase, id);
+
+        if (!nameAdditionUsed){
+            logger.warn("name_addition not recognized: " +  nameAddition + ". ID="+id);
+            name.setAppendedPhrase(nameAddition);
+        }
+        String orig = displayString.replace("nomen nudum [Hirschmann, 1951]", "Hirschmann, 1951")
+                .replace("  ", " ");
+        String nameTitleCache = name.getTitleCache().replace("species group", "group");
+        String taxonTitleCache = taxonBase.getTitleCache().replace("species group", "group");
+        if (!orig.equals(nameTitleCache) && !orig.equals(name.getFullTitleCache()) && !orig.equals(taxonTitleCache)){
+            String titleCache = taxonBase.getAppendedPhrase() != null ? taxonBase.getTitleCache() : name.getTitleCache();
+            logger.warn("Displaystring differs from titleCache. ID=" + id + ".\n   " + displayString + "\n   " + titleCache);
+        }
     }
 
+
+    /**
+     * @param authorStr
+     * @return
+     */
+    private TeamOrPersonBase<?> getNameAdditionAuthor(String authorStr) {
+        TeamOrPersonBase<?> result;
+        String[] splits = authorStr.split("(, | & )");
+        if (splits.length == 1){
+            Person person = Person.NewInstance();
+            person.setNomenclaturalTitle(splits[0]);
+            result = person;
+        }else{
+            Team team = Team.NewInstance();
+            for (String split: splits){
+                Person person = Person.NewInstance();
+                person.setNomenclaturalTitle(split);
+                team.addTeamMember(person);
+            }
+            result = team;
+        }
+        //TODO deduplicate
+        return result;
+    }
+
+    /**
+     * @param state
+     * @param nameAddition
+     * @return
+     */
+    private Person parseNomenNudumAuthor(EdaphobaseImportState state, IZoologicalName name, String nameAddition) {
+        nameAddition = nameAddition.replace("nomen nudum [", "").replace("tz, 195]", "tz, 1952]")
+                .replace("]", "");
+        String[] split = nameAddition.split(", ");
+        Integer year = Integer.valueOf(split[1]);
+        name.setPublicationYear(year);
+        //TODO deduplicate
+        Person author = Person.NewInstance();
+        author.setNomenclaturalTitle(split[0].trim());
+        return author;
+    }
 
     /**
      * @param state
@@ -445,6 +589,20 @@ public class EdaphobaseTaxonImport extends EdaphobaseImportBase {
             e.printStackTrace();
         }
         return rank;
+    }
+
+    protected void doNotes(AnnotatableEntity annotatableEntity, String notes, AnnotationType type) {
+        if (StringUtils.isNotBlank(notes) && annotatableEntity != null ){
+            String notesString = String.valueOf(notes);
+            if (notesString.length() > 65530 ){
+                notesString = notesString.substring(0, 65530) + "...";
+                logger.warn("Notes string is longer than 65530 and was truncated: " + annotatableEntity);
+            }
+            Annotation notesAnnotation = Annotation.NewInstance(notesString, Language.UNDETERMINED());
+            //notesAnnotation.setAnnotationType(AnnotationType.EDITORIAL());
+            //notes.setCommentator(bmiConfig.getCommentator());
+            annotatableEntity.addAnnotation(notesAnnotation);
+        }
     }
 
     @Override

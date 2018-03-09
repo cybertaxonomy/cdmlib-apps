@@ -98,6 +98,13 @@ public class EdaphobaseAuthorImport extends EdaphobaseImportBase {
             while(rs.next()){
                 List<Person> singlePersons = new ArrayList<>();
                 String authorStr = rs.getString("tax_author_name");
+                authorStr = authorStr.replace(" et ", " & ");
+
+                boolean isEtAl = false;
+                if (authorStr.endsWith(" & al.")){
+                    isEtAl = true;
+                    authorStr = authorStr.substring(0, authorStr.length()-6).trim();
+                }
 
                 String[] splits = authorStr.split("\\s*&\\s*");
                 for (String split : splits){
@@ -105,14 +112,16 @@ public class EdaphobaseAuthorImport extends EdaphobaseImportBase {
                     for (String commaSplit : commaSplits){
                         Person person = personMap.get(commaSplit);
                         if (person == null){
-                            person = Person.NewTitledInstance(commaSplit);
+                            person = Person.NewInstance();
+                            person.setNomenclaturalTitle(commaSplit);
                             personMap.put(commaSplit, person);
                         }
                         singlePersons.add(person);
                     }
                 }
-                if (singlePersons.size() > 1){
+                if (singlePersons.size() > 1 || singlePersons.size() ==  1 && isEtAl){
                     Team team = Team.NewInstance();
+                    team.setHasMoreMembers(isEtAl);
                     for (Person person: singlePersons){
                         team.addTeamMember(person);
                     }
