@@ -101,12 +101,13 @@ public class EdaphobaseAuthorImport extends EdaphobaseImportBase {
                 authorStr = authorStr.replace(" et ", " & ");
 
                 boolean isEtAl = false;
+                String noEtAlAuthorStr = authorStr;
                 if (authorStr.endsWith(" & al.")){
                     isEtAl = true;
-                    authorStr = authorStr.substring(0, authorStr.length()-6).trim();
+                    noEtAlAuthorStr = authorStr.substring(0, authorStr.length()-6).trim();
                 }
 
-                String[] splits = authorStr.split("\\s*&\\s*");
+                String[] splits = noEtAlAuthorStr.split("\\s*&\\s*");
                 for (String split : splits){
                     String[] commaSplits = split.split("\\s*,\\s*");
                     for (String commaSplit : commaSplits){

@@ -189,7 +189,7 @@ public class EdaphobaseTaxonImport extends EdaphobaseImportBase {
         isValid = checkValid(state, id, isValid);
 
         //for debug only
-        if (id.equals(97600) || id.equals(97601)){
+        if (id.equals(979370000) ){
             logger.debug("now");
         }
 
@@ -505,7 +505,10 @@ public class EdaphobaseTaxonImport extends EdaphobaseImportBase {
         try {
             while (rs.next()){
                 String authorStr = rs.getString("tax_author_name");
-                authorSet.add(authorStr);
+                if (authorStr != null){
+                    authorStr = authorStr.replace(" et ", " & ");
+                    authorSet.add(authorStr);
+                }
                 handleForeignKey(rs, referenceIdSet, "tax_document");
             }
         } catch (SQLException e) {
