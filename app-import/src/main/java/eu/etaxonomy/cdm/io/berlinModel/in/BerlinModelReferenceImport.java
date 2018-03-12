@@ -149,7 +149,7 @@ public class BerlinModelReferenceImport extends BerlinModelImportBase {
 
 	//type to count the references nomReferences that have been created and saved
 	private class RefCounter{
-		RefCounter() {refCount = 0;};
+		RefCounter() {refCount = 0;}
 		int refCount;
 
 		@Override
@@ -182,8 +182,6 @@ public class BerlinModelReferenceImport extends BerlinModelImportBase {
 		String referenceTable = CdmUtils.Nz(state.getConfig().getReferenceIdTable());
 		referenceTable = referenceTable.isEmpty() ? " Reference"  : referenceTable + " as Reference ";
 		String strIdFrom = String.format(strFrom, referenceTable );
-
-		String strSelectIdBase = strSelectId + strIdFrom;
 
 		String referenceFilter = CdmUtils.Nz(state.getConfig().getReferenceIdTable());
 		if (! referenceFilter.isEmpty()){
@@ -441,7 +439,7 @@ public class BerlinModelReferenceImport extends BerlinModelImportBase {
 			}else if (categoryFk == REF_JOURNAL){
 				referenceBase = makeJournal(valueMap);
 			}else if(categoryFk == REF_BOOK){
-				referenceBase = makeBook(valueMap, refToSave, relatedReferences);
+				referenceBase = makeBook(valueMap);
 			}else if(categoryFk == REF_DATABASE){
 				referenceBase = makeDatabase(valueMap);
 			}else if(categoryFk == REF_INFORMAL){
@@ -455,11 +453,11 @@ public class BerlinModelReferenceImport extends BerlinModelImportBase {
 			}else if(categoryFk == REF_CONFERENCE_PROCEEDINGS){
 				referenceBase = makeProceedings(valueMap);
 			}else if(categoryFk == REF_ARTICLE){
-				referenceBase = makeArticle(valueMap, refToSave, relatedReferences);
+				referenceBase = makeArticle(valueMap);
 			}else if(categoryFk == REF_JOURNAL_VOLUME){
 				referenceBase = makeJournalVolume(valueMap);
 			}else if(categoryFk == REF_PART_OF_OTHER_TITLE){
-				referenceBase = makePartOfOtherTitle(valueMap, refToSave, relatedReferences);
+				referenceBase = makePartOfOtherTitle(valueMap);
 			}else{
 				logger.warn("Unknown categoryFk (" + categoryFk + "). Create 'Generic instead'");
 				referenceBase = ReferenceFactory.newGeneric();
@@ -577,7 +575,7 @@ public class BerlinModelReferenceImport extends BerlinModelImportBase {
 
 	}
 
-	private Reference makeArticle (Map<String, Object> valueMap, Map<Integer, Reference> refToSave, Map<String, Reference> relatedReferences){
+	private Reference makeArticle (Map<String, Object> valueMap){
 
 		IArticle article = ReferenceFactory.newArticle();
 		Object inRefFk = valueMap.get("inRefFk".toLowerCase());
@@ -596,8 +594,7 @@ public class BerlinModelReferenceImport extends BerlinModelImportBase {
 		return (Reference)article;
 	}
 
-	private Reference makePartOfOtherTitle (Map<String, Object> valueMap,
-			Map<Integer, Reference> refToSave, Map<String, Reference> relatedReferences){
+	private Reference makePartOfOtherTitle (Map<String, Object> valueMap){
 
 		Reference result;
 		Object inRefFk = valueMap.get("inRefFk".toLowerCase());
@@ -709,9 +706,8 @@ public class BerlinModelReferenceImport extends BerlinModelImportBase {
 	}
 
 	private Reference makeBook(
-				Map<String, Object> valueMap,
-				Map<Integer, Reference> refToSave,
-				Map<String, Reference> relatedReferences){
+				Map<String, Object> valueMap){
+
 		if (logger.isDebugEnabled()){logger.debug("RefType 'Book'");}
 		Reference book = ReferenceFactory.newBook();
 		Integer refId = (Integer)valueMap.get("refId".toLowerCase());

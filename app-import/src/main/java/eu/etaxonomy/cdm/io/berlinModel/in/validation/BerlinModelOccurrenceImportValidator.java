@@ -80,7 +80,7 @@ public class BerlinModelOccurrenceImportValidator implements IOValidator<BerlinM
 
 				System.out.println("OccurrenceId:" + occurrenceId + "\n  Status: " + status +
 						"\n  FullNameCache: " + fullNameCache +  "\n  ptRefFk: " + ptRefFk +
-						"\n  sec: " + ptRef + "\n area: " + area) ;
+						"\n  sec: " + ptRef + "\n  area: " + area) ;
 
 				result = firstRow = false;
 			}
