@@ -42,6 +42,7 @@ import org.apache.log4j.Logger;
 import org.springframework.stereotype.Component;
 
 import eu.etaxonomy.cdm.common.CdmUtils;
+import eu.etaxonomy.cdm.common.DOI;
 import eu.etaxonomy.cdm.io.berlinModel.in.validation.BerlinModelReferenceImportValidator;
 import eu.etaxonomy.cdm.io.common.ICdmImport;
 import eu.etaxonomy.cdm.io.common.IImportConfigurator;
@@ -591,6 +592,11 @@ public class BerlinModelReferenceImport extends BerlinModelImportBase {
 			logger.warn ("Article has no inreference: " + refId);
 		}
 		makeStandardMapper(valueMap, (Reference)article); //url, pages, series, volume
+		String url = (String)valueMap.get("url");
+		if (url != null && url.contains("dx.doi.org")){
+		    article.setDoi(DOI.fromString(url));
+		    article.setUri(null);
+		}
 		return (Reference)article;
 	}
 
