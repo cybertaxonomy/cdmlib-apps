@@ -219,7 +219,7 @@ public class BerlinModelCommonNamesImport  extends BerlinModelImportBase {
 				Language language = getAndHandleLanguage(iso6392Map, iso639_2, iso639_1, languageString, originalLanguageString, state);
 
 				//CommonTaxonName
-				List<CommonTaxonName> commonTaxonNames = new ArrayList<CommonTaxonName>();
+				List<CommonTaxonName> commonTaxonNames = new ArrayList<>();
 				for (String regionFk : regionFkSplit){ //
 					CommonTaxonName commonTaxonName;
 					if (commonTaxonNames.size() == 0){

@@ -205,7 +205,7 @@ public class BerlinModelTaxonNameImport extends BerlinModelImportBase {
 
 					if (rank == null){
 						//TODO rank should never be null or a more sophisticated algorithm has to be implemented for genus/supraGenericName
-						logger.warn("Rank is null. Genus epethiton was imported. May be wrong");
+						logger.warn("Rank is null. Genus epithet was imported. May be wrong");
 						success = false;
 					}
 

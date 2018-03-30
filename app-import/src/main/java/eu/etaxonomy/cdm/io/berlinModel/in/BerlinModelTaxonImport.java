@@ -217,13 +217,13 @@ public class BerlinModelTaxonImport  extends BerlinModelImportBase {
 
 					//detail
 					String detail = rs.getString("Detail");
-					if (StringUtils.isNotBlank(detail)){
+					if (isNotBlank(detail)){
 						ExtensionType detailExtensionType = getExtensionType(state, BerlinModelTransformer.DETAIL_EXT_UUID, "micro reference","micro reference","micro ref.");
 						Extension.NewInstance(taxonBase, detail, detailExtensionType);
 					}
 					//idInSource
 					String idInSource = rs.getString("IdInSource");
-					if (StringUtils.isNotBlank(idInSource)){
+					if (isNotBlank(idInSource)){
 						ExtensionType detailExtensionType = getExtensionType(state, BerlinModelTransformer.ID_IN_SOURCE_EXT_UUID, "Berlin Model IdInSource","Berlin Model IdInSource","BM source id");
 						Extension.NewInstance(taxonBase, idInSource, detailExtensionType);
 					}

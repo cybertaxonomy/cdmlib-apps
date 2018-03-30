@@ -90,16 +90,18 @@ public class BerlinModelTaxonRelationImport  extends BerlinModelImportBase  {
 		//reference map
 		String nameSpace = BerlinModelReferenceImport.REFERENCE_NAMESPACE;
 		Class<?> cdmClass = Reference.class;
-		Map<String, Reference> refMap = (Map<String, Reference>)getCommonService().getSourcedObjectsByIdInSource(cdmClass, idSet, nameSpace);
+		@SuppressWarnings("unchecked")
+        Map<String, Reference> refMap = (Map<String, Reference>)getCommonService().getSourcedObjectsByIdInSource(cdmClass, idSet, nameSpace);
 
-		String treeName = "Classification - No Name";
+		String classificationName = "Classification - No Name";
 
 		ResultSet rs = state.getConfig().getSource().getResultSet(getClassificationQuery(state)) ;
 		int i = 0;
 		//for each reference
 		try {
 			//TODO handle case useSingleClassification = true && sourceSecId = null, which returns no record
-			while (rs.next()){
+			boolean isFirst = true;
+		    while (rs.next()){
 
 				try {
 					if ((i++ % modCount) == 0 && i!= 1 ){ logger.info("RelPTaxa handled: " + (i-1));}
@@ -109,13 +111,16 @@ public class BerlinModelTaxonRelationImport  extends BerlinModelImportBase  {
 					Reference ref = refMap.get(ptRefFk);
 
 					String refCache = rs.getString("RefCache");
-					if (StringUtils.isNotBlank(refCache)){
-						treeName = refCache;
+					if (isNotBlank(refCache)){
+						classificationName = refCache;
 					}
 					if (ref != null && StringUtils.isNotBlank(ref.getTitleCache())){
-						treeName = ref.getTitleCache();
+						classificationName = ref.getTitleCache();
 					}
-					Classification tree = Classification.NewInstance(treeName);
+					if (isFirst && isNotBlank(state.getConfig().getClassificationName())){
+					    classificationName = state.getConfig().getClassificationName();
+					}
+					Classification tree = Classification.NewInstance(classificationName);
 					tree.setReference(ref);
 					if (i == 1 && state.getConfig().getClassificationUuid() != null){
 						tree.setUuid(state.getConfig().getClassificationUuid());
@@ -125,6 +130,7 @@ public class BerlinModelTaxonRelationImport  extends BerlinModelImportBase  {
 
 					getClassificationService().save(tree);
 					state.putClassificationUuidInt(ptRefFkInt, tree);
+					isFirst = false;
 				} catch (Exception e) {
 					logger.error("Error in BerlinModleTaxonRelationImport.makeClassifications: " + e.getMessage());
 					e.printStackTrace();
@@ -220,19 +226,19 @@ public class BerlinModelTaxonRelationImport  extends BerlinModelImportBase  {
 	@Override
 	protected String getRecordQuery(BerlinModelImportConfigurator config) {
 		String strQuery =
-			" SELECT RelPTaxon.*, FromTaxon.RIdentifier as taxon1Id, ToTaxon.RIdentifier as taxon2Id, ToTaxon.PTRefFk as treeRefFk, FromTaxon.PTRefFk as fromRefFk, q.is_concept_relation " +
-			" FROM PTaxon as FromTaxon " +
-              	" INNER JOIN RelPTaxon ON FromTaxon.PTNameFk = RelPTaxon.PTNameFk1 AND FromTaxon.PTRefFk = RelPTaxon.PTRefFk1 " +
-              	" INNER JOIN PTaxon AS ToTaxon ON RelPTaxon.PTNameFk2 = ToTaxon.PTNameFk AND RelPTaxon.PTRefFk2 = ToTaxon.PTRefFk " +
+			" SELECT RelPTaxon.*, fromTaxon.RIdentifier as taxon1Id, toTaxon.RIdentifier as taxon2Id, toTaxon.PTRefFk as treeRefFk, fromTaxon.PTRefFk as fromRefFk, q.is_concept_relation " +
+			" FROM PTaxon as fromTaxon " +
+              	" INNER JOIN RelPTaxon ON fromTaxon.PTNameFk = relPTaxon.PTNameFk1 AND fromTaxon.PTRefFk = relPTaxon.PTRefFk1 " +
+              	" INNER JOIN PTaxon AS toTaxon ON RelPTaxon.PTNameFk2 = ToTaxon.PTNameFk AND RelPTaxon.PTRefFk2 = ToTaxon.PTRefFk " +
               	" INNER JOIN RelPTQualifier q ON q.RelPTQualifierId = RelPTaxon.RelQualifierFk " +
-            " WHERE RelPTaxon.RelPTaxonId IN ("+ID_LIST_TOKEN+") ORDER BY RelPTaxon.RelPTaxonId ";
+            " WHERE RelPTaxon.RelPTaxonId IN ("+ID_LIST_TOKEN+") " +
+            " ORDER BY RelPTaxon.RelPTaxonId ";
 		return strQuery;
 	}
 
 	@Override
 	public boolean doPartition(ResultSetPartitioner partitioner, BerlinModelImportState state) {
 		boolean success = true ;
-		BerlinModelImportConfigurator config = state.getConfig();
 		Set<TaxonBase> taxaToSave = new HashSet<TaxonBase>();
 		Map<String, TaxonBase> taxonMap = partitioner.getObjectMap(BerlinModelTaxonImport.NAMESPACE);
 		Map<Integer, Classification> classificationMap = new HashMap<Integer, Classification>();
@@ -250,7 +256,7 @@ public class BerlinModelTaxonRelationImport  extends BerlinModelImportBase  {
 				int relPTaxonId = rs.getInt("RelPTaxonId");
 				Integer taxon1Id = nullSafeInt(rs, "taxon1Id");
 				Integer taxon2Id = nullSafeInt(rs, "taxon2Id");
-				int relQualifierFk = 0;
+				int relQualifierFk = -1;
 				try {
 					Integer relRefFk = nullSafeInt(rs,"relRefFk");
 					int treeRefFk = rs.getInt("treeRefFk");
@@ -301,13 +307,10 @@ public class BerlinModelTaxonRelationImport  extends BerlinModelImportBase  {
 							handleAllRelatedTaxa(state, toTaxon, classificationMap, treeRefFk);
 							Synonym synonym = (Synonym)taxon1;
 							if (synonym.getAcceptedTaxon()!= null){
-							    logger.warn("Synonym already has an accepted taxon. Create clone.");
+							    logger.warn("RelID: " + relPTaxonId + ". Synonym ("+taxon1Id +") already has an accepted taxon. Create clone.");
 							    synonym = (Synonym)synonym.clone();
 							}
 							makeSynRel(relQualifierFk, toTaxon, synonym, citation, microcitation);
-							if (isNotBlank(notes)){
-	                            logger.warn("Notes for synonym relationship or unknown taxon relationship not handled");
-	                        }
 
 							if (relQualifierFk == TAX_REL_IS_SYNONYM_OF ||
 									relQualifierFk == TAX_REL_IS_HOMOTYPIC_SYNONYM_OF ||
@@ -323,7 +326,7 @@ public class BerlinModelTaxonRelationImport  extends BerlinModelImportBase  {
 							        synonym.setPartial(true);
 							}else{
 								success = false;
-								logger.warn("Proparte/Partial not yet implemented for TaxonRelationShipType " + relQualifierFk);
+								logger.warn("Synonym relationship type not yet implemented: " + relQualifierFk);
 							}
 						}else if (isConceptRelationship){
 							ResultWrapper<Boolean> isInverse = ResultWrapper.NewInstance(false);
@@ -360,7 +363,7 @@ public class BerlinModelTaxonRelationImport  extends BerlinModelImportBase  {
 						if (taxonRelationship != null){
 						    doNotes(taxonRelationship, notes);
 						}else if (isNotBlank(notes)){
-						    logger.warn("Notes for synonym relationship or unknown taxon relationship not handled");
+						    logger.warn("Notes for synonym relationship or unknown taxon relationship not handled. RelID: " + relPTaxonId + ". Note: " + notes);
 						}
 						taxaToSave.add(taxon2);
 
