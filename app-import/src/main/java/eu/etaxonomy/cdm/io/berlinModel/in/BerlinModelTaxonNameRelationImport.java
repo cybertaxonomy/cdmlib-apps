@@ -285,12 +285,12 @@ public class BerlinModelTaxonNameRelationImport extends BerlinModelImportBase {
 		String nameSpace;
 		Class<?> cdmClass;
 		Set<String> idSet;
-		Map<Object, Map<String, ? extends CdmBase>> result = new HashMap<Object, Map<String, ? extends CdmBase>>();
+		Map<Object, Map<String, ? extends CdmBase>> result = new HashMap<>();
 
 		try{
-			Set<String> nameIdSet = new HashSet<String>();
-			Set<String> referenceIdSet = new HashSet<String>();
-			Set<String> refDetailIdSet = new HashSet<String>();
+			Set<String> nameIdSet = new HashSet<>();
+			Set<String> referenceIdSet = new HashSet<>();
+			Set<String> refDetailIdSet = new HashSet<>();
 			while (rs.next()){
 				handleForeignKey(rs, nameIdSet, "name1Id");
 				handleForeignKey(rs, nameIdSet, "name2Id");
@@ -325,18 +325,12 @@ public class BerlinModelTaxonNameRelationImport extends BerlinModelImportBase {
 		return result;
 	}
 
-	/* (non-Javadoc)
-	 * @see eu.etaxonomy.cdm.io.common.CdmIoBase#doCheck(eu.etaxonomy.cdm.io.common.IImportConfigurator)
-	 */
 	@Override
 	protected boolean doCheck(BerlinModelImportState state){
 		IOValidator<BerlinModelImportState> validator = new BerlinModelTaxonNameRelationImportValidator();
 		return validator.validate(state);
 	}
 
-	/* (non-Javadoc)
-	 * @see eu.etaxonomy.cdm.io.common.CdmIoBase#isIgnore(eu.etaxonomy.cdm.io.common.IImportConfigurator)
-	 */
 	@Override
     protected boolean isIgnore(BerlinModelImportState state){
 		return ! state.getConfig().isDoRelNames();

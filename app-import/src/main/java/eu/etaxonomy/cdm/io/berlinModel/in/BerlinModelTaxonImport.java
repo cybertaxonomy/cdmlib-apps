@@ -253,7 +253,7 @@ public class BerlinModelTaxonImport  extends BerlinModelImportBase {
 					}
 
 					//
-					if (resultSetHasColumn(rs,"LastScrutiny")){
+					if (resultSetHasColumn(rs, "LastScrutiny")){
 						String lastScrutiny = rs.getString("LastScrutiny");
 						//TODO strange, why not Extension last scrutiny? To match PESI? Is there a difference
 						//to LastScrutinyFK and SpeciesExpertFK?
@@ -339,11 +339,11 @@ public class BerlinModelTaxonImport  extends BerlinModelImportBase {
 		String nameSpace;
 		Class<?> cdmClass;
 		Set<String> idSet;
-		Map<Object, Map<String, ? extends CdmBase>> result = new HashMap<Object, Map<String, ? extends CdmBase>>();
+		Map<Object, Map<String, ? extends CdmBase>> result = new HashMap<>();
 
 		try{
-			Set<String> nameIdSet = new HashSet<String>();
-			Set<String> referenceIdSet = new HashSet<String>();
+			Set<String> nameIdSet = new HashSet<>();
+			Set<String> referenceIdSet = new HashSet<>();
 			while (rs.next()){
 				handleForeignKey(rs, nameIdSet, "PTNameFk");
 				handleForeignKey(rs, referenceIdSet, "PTRefFk");

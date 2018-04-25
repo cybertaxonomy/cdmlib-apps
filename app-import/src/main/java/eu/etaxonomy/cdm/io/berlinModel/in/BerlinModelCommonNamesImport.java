@@ -58,7 +58,9 @@ import eu.etaxonomy.cdm.model.taxon.TaxonBase;
  */
 @Component
 public class BerlinModelCommonNamesImport  extends BerlinModelImportBase {
-	private static final Logger logger = Logger.getLogger(BerlinModelCommonNamesImport.class);
+    private static final long serialVersionUID = -8921948187177864321L;
+
+    private static final Logger logger = Logger.getLogger(BerlinModelCommonNamesImport.class);
 
 	public static final UUID REFERENCE_LANGUAGE_ISO639_2_UUID = UUID.fromString("40c4f8dd-3d9c-44a4-b77a-76e137a89a5f");
 	public static final UUID REFERENCE_LANGUAGE_STRING_UUID = UUID.fromString("2a1b678f-c27d-48c1-b43e-98fd0d426305");
@@ -72,7 +74,7 @@ public class BerlinModelCommonNamesImport  extends BerlinModelImportBase {
 
 
 	//map that stores the regions (named areas) and makes them accessible via the regionFk
-	private Map<String, NamedArea> regionMap = new HashMap<String, NamedArea>();
+	private Map<String, NamedArea> regionMap = new HashMap<>();
 
 	public BerlinModelCommonNamesImport(){
 		super(dbTableName, pluralString);
@@ -81,7 +83,7 @@ public class BerlinModelCommonNamesImport  extends BerlinModelImportBase {
 	@Override
 	protected String getIdQuery(BerlinModelImportState state) {
 		String result = " SELECT CommonNameId FROM emCommonName WHERE (1=1) ";
-		if (StringUtils.isNotBlank(state.getConfig().getCommonNameFilter())){
+		if (isNotBlank(state.getConfig().getCommonNameFilter())){
 			result += " AND " + state.getConfig().getCommonNameFilter();
 		}
 
@@ -129,7 +131,7 @@ public class BerlinModelCommonNamesImport  extends BerlinModelImportBase {
 	 */
 	private void makeRegions(BerlinModelImportState state) {
 		try {
-			SortedSet<Integer> regionFks = new TreeSet<Integer>();
+			SortedSet<Integer> regionFks = new TreeSet<>();
 			Source source = state.getConfig().getSource();
 
 			//fill set with all regionFk from emCommonName.regionFks
@@ -160,12 +162,14 @@ public class BerlinModelCommonNamesImport  extends BerlinModelImportBase {
 		boolean success = true ;
 
 		Set<TaxonBase> taxaToSave = new HashSet<>();
-		Map<String, Taxon> taxonMap = partitioner.getObjectMap(BerlinModelTaxonImport.NAMESPACE);
-		Map<String, TaxonName> taxonNameMap = partitioner.getObjectMap(BerlinModelTaxonNameImport.NAMESPACE);
+		@SuppressWarnings("unchecked")
+        Map<String, Taxon> taxonMap = partitioner.getObjectMap(BerlinModelTaxonImport.NAMESPACE);
+		@SuppressWarnings("unchecked")
+        Map<String, TaxonName> taxonNameMap = partitioner.getObjectMap(BerlinModelTaxonNameImport.NAMESPACE);
+		@SuppressWarnings("unchecked")
+        Map<String, Reference> refMap = partitioner.getObjectMap(BerlinModelReferenceImport.REFERENCE_NAMESPACE);
 
-		Map<String, Reference> refMap = partitioner.getObjectMap(BerlinModelReferenceImport.REFERENCE_NAMESPACE);
-
-		Map<String, Language> iso6392Map = new HashMap<String, Language>();
+		Map<String, Language> iso6392Map = new HashMap<>();
 
 	//	logger.warn("MisappliedNameRefFk  not yet implemented for Common Names");
 
@@ -231,7 +235,7 @@ public class BerlinModelCommonNamesImport  extends BerlinModelImportBase {
 					regionFk = regionFk.trim();
 					NamedArea area = regionMap.get(regionFk);
 					if (area == null){
-						if (regionFkSplit.length > 1 && StringUtils.isNotBlank(regionFk)){
+						if (regionFkSplit.length > 1 && isNotBlank(regionFk)){
 							logger.warn("Area for " + regionFk + " not defined in regionMap.");
 						}else{
 							//no region is defined
@@ -507,7 +511,7 @@ public class BerlinModelCommonNamesImport  extends BerlinModelImportBase {
 			}else if (splitRegion.length == 2){
 				String emCode = splitRegion[1].trim();
 				String tdwgCode = emTdwgMap.get(emCode);
-				if (StringUtils.isNotBlank(tdwgCode) ){
+				if (isNotBlank(tdwgCode) ){
 					NamedArea tdwgArea = getNamedArea(state, tdwgCode);
 					regionMap.put(String.valueOf(regionId), tdwgArea);
 				}else {
@@ -575,18 +579,18 @@ public class BerlinModelCommonNamesImport  extends BerlinModelImportBase {
 	private Map<String, String> getEmTdwgMap(Source source) throws SQLException {
 		String sql;
 		ResultSet rs;
-		Map<String, String> emTdwgMap = new HashMap<String, String>();
+		Map<String, String> emTdwgMap = new HashMap<>();
 		sql = " SELECT EmCode, TDWGCode FROM emArea ";
 		rs = source.getResultSet(sql);
 		while (rs.next()){
 			String emCode = rs.getString("EMCode");
 			String TDWGCode = rs.getString("TDWGCode");
-			if (StringUtils.isNotBlank(emCode) ){
+			if (isNotBlank(emCode) ){
 				emCode = emCode.trim();
 				if (emCode.equalsIgnoreCase("Ab") || emCode.equalsIgnoreCase("Rf")||
 						emCode.equalsIgnoreCase("Uk") || emCode.equalsIgnoreCase("Gg")){
 					emTdwgMap.put(emCode, emCode);
-				}else if (StringUtils.isNotBlank(TDWGCode)){
+				}else if (isNotBlank(TDWGCode)){
 					emTdwgMap.put(emCode, TDWGCode.trim());
 				}
 			}
@@ -646,21 +650,24 @@ public class BerlinModelCommonNamesImport  extends BerlinModelImportBase {
 			nameSpace = BerlinModelTaxonNameImport.NAMESPACE;
 			cdmClass = TaxonName.class;
 			idSet = nameIdSet;
-			Map<String, TaxonName> nameMap = (Map<String, TaxonName>)getCommonService().getSourcedObjectsByIdInSource(cdmClass, idSet, nameSpace);
+			@SuppressWarnings("unchecked")
+            Map<String, TaxonName> nameMap = (Map<String, TaxonName>)getCommonService().getSourcedObjectsByIdInSource(cdmClass, idSet, nameSpace);
 			result.put(nameSpace, nameMap);
 
 			//taxon map
 			nameSpace = BerlinModelTaxonImport.NAMESPACE;
 			cdmClass = TaxonBase.class;
 			idSet = taxonIdSet;
-			Map<String, TaxonBase<?>> taxonMap = (Map<String, TaxonBase<?>>)getCommonService().getSourcedObjectsByIdInSource(cdmClass, idSet, nameSpace);
+			@SuppressWarnings("unchecked")
+            Map<String, TaxonBase<?>> taxonMap = (Map<String, TaxonBase<?>>)getCommonService().getSourcedObjectsByIdInSource(cdmClass, idSet, nameSpace);
 			result.put(nameSpace, taxonMap);
 
 			//reference map
 			nameSpace = BerlinModelReferenceImport.REFERENCE_NAMESPACE;
 			cdmClass = Reference.class;
 			idSet = referenceIdSet;
-			Map<String, Reference> referenceMap = (Map<String, Reference>)getCommonService().getSourcedObjectsByIdInSource(cdmClass, idSet, nameSpace);
+			@SuppressWarnings("unchecked")
+            Map<String, Reference> referenceMap = (Map<String, Reference>)getCommonService().getSourcedObjectsByIdInSource(cdmClass, idSet, nameSpace);
 			result.put(nameSpace, referenceMap);
 			// TODO remove if problem with duplicate DescElement_Annot id is solved
 		} catch (SQLException e) {
