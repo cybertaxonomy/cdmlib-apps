@@ -47,7 +47,7 @@ import eu.etaxonomy.cdm.model.taxon.TaxonBase;
  * Import for the Flora Hellenica images.
  *
  * @author a.mueller
- * @date 03.04.2017
+ * @since 03.04.2017
  */
 
 @Component

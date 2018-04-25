@@ -30,7 +30,7 @@ import eu.etaxonomy.cdm.model.name.NomenclaturalCode;
 
 /**
  * @author a.mueller
- * @date 03.12.2010
+ * @since 03.12.2010
  *
  */
 public class IldisActivator {

@@ -27,7 +27,7 @@ import eu.etaxonomy.cdm.io.sdd.out.SDDExportConfigurator;
 
 /**
  * @author l.morris
- * @date 29 Nov 2012
+ * @since 29 Nov 2012
  *
  */
 public class SDDExportActivator {

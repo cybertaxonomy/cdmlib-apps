@@ -39,7 +39,7 @@ import eu.etaxonomy.cdm.model.reference.ReferenceFactory;
 
 /**
  * @author a.oppermann
- * @date 03.07.2013
+ * @since 03.07.2013
  *
  */
 public abstract class BfnXmlImportBase  extends CdmImportBase<BfnXmlImportConfigurator, BfnXmlImportState> {

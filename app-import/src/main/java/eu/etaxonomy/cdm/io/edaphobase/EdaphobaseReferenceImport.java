@@ -30,7 +30,7 @@ import eu.etaxonomy.cdm.model.reference.ReferenceFactory;
 
 /**
  * @author a.mueller
- * @date 18.12.2015
+ * @since 18.12.2015
  *
  */
 @Component

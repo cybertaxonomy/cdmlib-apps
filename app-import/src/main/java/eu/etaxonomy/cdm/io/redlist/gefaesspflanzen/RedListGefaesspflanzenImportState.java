@@ -20,7 +20,7 @@ import eu.etaxonomy.cdm.io.common.DbImportStateBase;
 /**
  *
  * @author pplitzner
- * @date Mar 1, 2016
+ * @since Mar 1, 2016
  *
  */
 public class RedListGefaesspflanzenImportState extends DbImportStateBase<RedListGefaesspflanzenImportConfigurator, RedListGefaesspflanzenImportState>{

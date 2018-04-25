@@ -18,7 +18,7 @@ import eu.etaxonomy.cdm.model.reference.Reference;
 
 /**
  * @author a.mueller
- * @date 21.04.2017
+ * @since 21.04.2017
  *
  */
 public class BogotaSpecimenImportConfigurator extends ExcelImportConfiguratorBase{

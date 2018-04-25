@@ -27,7 +27,7 @@ import eu.etaxonomy.cdm.strategy.parser.TimePeriodParser;
 /**
  *
  * @author a.oppermann
- * @date 04.07.2013
+ * @since 04.07.2013
  *
  */
 @Component

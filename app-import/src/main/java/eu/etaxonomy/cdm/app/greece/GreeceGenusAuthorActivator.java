@@ -27,7 +27,7 @@ import eu.etaxonomy.cdm.model.reference.ReferenceFactory;
 
 /**
  * @author a.mueller
- * @date 08.12.2017
+ * @since 08.12.2017
  *
  */
 public class GreeceGenusAuthorActivator {

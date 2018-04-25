@@ -11,7 +11,7 @@ package eu.etaxonomy.cdm.io.redlist.bfnXml.in;
 
 /**
  * @author a.oppermann
- * @date 03.07.2013
+ * @since 03.07.2013
  *
  */
 import java.io.InputStream;

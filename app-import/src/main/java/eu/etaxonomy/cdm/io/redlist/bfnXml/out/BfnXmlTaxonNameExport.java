@@ -48,7 +48,7 @@ import eu.etaxonomy.cdm.model.taxon.TaxonNode;
 /**
  *
  * @author pplitzner
- * @date May 3, 2016
+ * @since May 3, 2016
  *
  */
 @Component

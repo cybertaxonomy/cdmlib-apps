@@ -53,7 +53,7 @@ import eu.etaxonomy.cdm.strategy.parser.TimePeriodParser;
 
 /**
  * @author a.mueller
- * @date 16.06.2016
+ * @since 16.06.2016
  *
  */
 @Component

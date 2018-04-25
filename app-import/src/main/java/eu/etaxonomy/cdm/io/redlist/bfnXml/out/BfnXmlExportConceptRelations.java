@@ -30,7 +30,7 @@ import eu.etaxonomy.cdm.model.taxon.TaxonRelationship;
 /**
  *
  * @author pplitzner
- * @date May 3, 2016
+ * @since May 3, 2016
  *
  */
 @Component

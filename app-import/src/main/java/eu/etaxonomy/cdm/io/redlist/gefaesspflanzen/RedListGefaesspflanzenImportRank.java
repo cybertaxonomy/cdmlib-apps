@@ -25,7 +25,7 @@ import eu.etaxonomy.cdm.model.name.Rank;
 /**
  *
  * @author pplitzner
- * @date Mar 1, 2016
+ * @since Mar 1, 2016
  *
  */
 

@@ -19,7 +19,7 @@ import eu.etaxonomy.cdm.model.name.Rank;
 
 /**
  * @author a.mueller
- * @date 25.11.2016
+ * @since 25.11.2016
  *
  */
 public class GermanSLTransformer  extends InputTransformerBase{

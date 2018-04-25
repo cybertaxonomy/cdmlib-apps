@@ -27,7 +27,7 @@ import eu.etaxonomy.cdm.model.reference.ReferenceType;
  * Imports all Reference data, by first testing if they already exist.
  *
  * @author a.mueller
- * @date 23.07.2017
+ * @since 23.07.2017
  */
 @Component
 public class BfnXmlImportReferences extends BfnXmlImportBase  {

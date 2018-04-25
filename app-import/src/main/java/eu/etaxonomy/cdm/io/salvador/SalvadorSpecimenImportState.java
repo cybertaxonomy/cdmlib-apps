@@ -12,7 +12,7 @@ import eu.etaxonomy.cdm.io.csv.in.CsvImportState;
 
 /**
  * @author a.mueller
- * @date 08.07.2017
+ * @since 08.07.2017
  *
  */
 public class SalvadorSpecimenImportState

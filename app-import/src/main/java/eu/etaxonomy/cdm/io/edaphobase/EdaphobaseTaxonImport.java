@@ -51,7 +51,7 @@ import eu.etaxonomy.cdm.strategy.parser.NonViralNameParserImplRegExBase;
 
 /**
  * @author a.mueller
- * @date 18.12.2015
+ * @since 18.12.2015
  *
  */
 @Component

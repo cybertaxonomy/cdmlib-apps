@@ -28,7 +28,7 @@ import eu.etaxonomy.cdm.strategy.parser.TimePeriodParser;
 /**
  * Activator for import of Borhidi Rubiaceae (Mexico)
  * @author a.mueller
- * @date 16.06.2016
+ * @since 16.06.2016
  *
  */
 public class MexicoBorhidiActivator {

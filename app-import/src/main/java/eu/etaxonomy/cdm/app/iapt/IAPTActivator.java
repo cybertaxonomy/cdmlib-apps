@@ -31,7 +31,7 @@ import eu.etaxonomy.cdm.model.reference.ReferenceFactory;
 
 /**
  * @author a.kohlbecker
- * @date Jul 26, 2016
+ * @since Jul 26, 2016
  *
  */
 public class IAPTActivator {

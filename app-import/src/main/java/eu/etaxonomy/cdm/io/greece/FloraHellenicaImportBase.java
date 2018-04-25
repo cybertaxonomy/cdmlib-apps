@@ -30,7 +30,7 @@ import eu.etaxonomy.cdm.model.taxon.Taxon;
 
 /**
  * @author a.mueller
- * @date 14.12.2016
+ * @since 14.12.2016
  */
 
 public abstract class FloraHellenicaImportBase<CONFIG extends FloraHellenicaImportConfigurator>

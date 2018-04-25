@@ -9,7 +9,7 @@ import eu.etaxonomy.cdm.model.name.NomenclaturalCode;
 /**
  *
  * @author pplitzner
- * @date Mar 1, 2016
+ * @since Mar 1, 2016
  *
  */
 @SuppressWarnings("serial")

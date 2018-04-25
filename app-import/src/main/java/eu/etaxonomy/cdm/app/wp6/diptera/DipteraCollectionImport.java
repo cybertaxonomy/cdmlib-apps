@@ -35,7 +35,7 @@ import eu.etaxonomy.cdm.model.occurrence.SpecimenOrObservationBase;
 
 /**
  * @author a.mueller
- * @date 07.04.2010
+ * @since 07.04.2010
  *
  */
 public class DipteraCollectionImport {

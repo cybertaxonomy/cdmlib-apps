@@ -37,7 +37,7 @@ import eu.etaxonomy.cdm.model.taxon.TaxonRelationshipType;
  *  synonym_role <> 11614
  *
  * @author a.mueller
- * @date 21.12.2015
+ * @since 21.12.2015
  */
 @Component
 public class EdaphobaseSynonymy2Import extends EdaphobaseImportBase {

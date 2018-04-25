@@ -26,7 +26,7 @@ import eu.etaxonomy.cdm.io.api.application.CdmIoApplicationController;
 
 /**
  * @author a.mueller
- * @date 08.07.2017
+ * @since 08.07.2017
  *
  */
 public class TestSalvadorAreaMapping {

@@ -14,7 +14,7 @@ import org.springframework.context.ApplicationListener;
 
 /**
  * @author a.mueller
- * @date 28.09.2011
+ * @since 28.09.2011
  *
  */
 public class AppImportApplicationListener implements ApplicationListener<ApplicationEvent> {

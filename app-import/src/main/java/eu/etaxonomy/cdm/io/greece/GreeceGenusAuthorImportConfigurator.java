@@ -17,7 +17,7 @@ import eu.etaxonomy.cdm.io.mexico.SimpleExcelTaxonImportState;
 
 /**
  * @author a.mueller
- * @date 08.12.2017
+ * @since 08.12.2017
  *
  */
 public class GreeceGenusAuthorImportConfigurator

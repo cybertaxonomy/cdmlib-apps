@@ -50,7 +50,7 @@ import eu.etaxonomy.cdm.model.taxon.TaxonBase;
 
 /**
  * @author a.mueller
- * @created 20.03.2008
+ * @since 20.03.2008
  */
 @Component
 public class BerlinModelTaxonImport  extends BerlinModelImportBase {

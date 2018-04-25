@@ -19,7 +19,7 @@ import eu.etaxonomy.cdm.model.reference.Reference;
 
 /**
  * @author a.mueller
- * @date 16.06.2016
+ * @since 16.06.2016
  *
  */
 public class MexicoBorhidiImportConfigurator extends ExcelImportConfiguratorBase{

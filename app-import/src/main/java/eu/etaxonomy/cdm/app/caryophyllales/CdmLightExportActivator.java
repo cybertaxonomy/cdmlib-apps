@@ -29,7 +29,7 @@ import eu.etaxonomy.cdm.io.common.ExportResultType;
 
 /**
  * @author k.luther
- * @date 24.03.2017
+ * @since 24.03.2017
  *
  */
 public class CdmLightExportActivator {

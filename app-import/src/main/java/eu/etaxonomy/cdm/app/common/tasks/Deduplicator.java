@@ -24,7 +24,7 @@ import eu.etaxonomy.cdm.model.reference.Reference;
  * CAUTION: Deduplicating teams does not yet work correctly. Team members are often duplicated.
  *
  * @author a.mueller
- * @date 24.11.2017
+ * @since 24.11.2017
  *
  */
 public class Deduplicator {

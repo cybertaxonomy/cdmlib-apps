@@ -27,7 +27,7 @@ import eu.etaxonomy.cdm.model.common.CdmBase;
 
 /**
  * @author pplitzner
- * @date Feb 29, 2016
+ * @since Feb 29, 2016
  *
  */
 @Component

@@ -54,7 +54,7 @@ import eu.etaxonomy.cdm.model.taxon.Taxon;
 
 /**
  * @author a.mueller
- * @date 08.07.2017
+ * @since 08.07.2017
  *
  */
 @Component

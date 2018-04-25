@@ -24,7 +24,7 @@ import eu.etaxonomy.cdm.model.name.NomenclaturalCode;
 
 /**
  * @author a.mueller
- * @date 27.04.2017
+ * @since 27.04.2017
  *
  */
 public class FaunaEuropaeaDistributionUpdateActivator {

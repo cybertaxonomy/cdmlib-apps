@@ -14,7 +14,7 @@ import eu.etaxonomy.cdm.io.common.mapping.InputTransformerBase;
 
 /**
  * @author a.mueller
- * @date 08.07.2017
+ * @since 08.07.2017
  *
  */
 public class SalvadorImportTransformer extends InputTransformerBase {

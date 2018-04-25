@@ -24,7 +24,7 @@ import eu.etaxonomy.cdm.model.common.Language;
 
 /**
  * @author a.mueller
- * @date 04.12.2015
+ * @since 04.12.2015
  */
 public class EdaphobaseRankActivator {
     @SuppressWarnings("unused")

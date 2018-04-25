@@ -35,7 +35,7 @@ import eu.etaxonomy.cdm.model.taxon.Taxon;
 
 /**
  * @author a.mueller
- * @date 13.05.2017
+ * @since 13.05.2017
  *
  */
 public class ImageImportTest {

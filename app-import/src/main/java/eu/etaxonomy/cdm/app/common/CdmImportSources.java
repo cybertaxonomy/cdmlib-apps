@@ -19,7 +19,7 @@ import eu.etaxonomy.cdm.io.common.Source;
 
 /**
  * @author a.mueller
- * @date 21.04.2010
+ * @since 21.04.2010
  *
  */
 public class CdmImportSources extends SourceBase{

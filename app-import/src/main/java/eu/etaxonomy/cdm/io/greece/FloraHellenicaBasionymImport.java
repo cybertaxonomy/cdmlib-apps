@@ -22,7 +22,7 @@ import eu.etaxonomy.cdm.strategy.homotypicgroup.BasionymRelationCreator;
  * Creates basionym relationships for all taxa.
  *
  * @author a.mueller
- * @date 03.04.2017
+ * @since 03.04.2017
  */
 
 @Component

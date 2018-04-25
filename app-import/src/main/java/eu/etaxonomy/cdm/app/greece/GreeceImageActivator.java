@@ -32,7 +32,7 @@ import eu.etaxonomy.cdm.model.reference.ReferenceFactory;
  * https://dev.e-taxonomy.eu/redmine/issues/6286
  *
  * @author a.mueller
- * @date 13.12.2016
+ * @since 13.12.2016
  */
 public class GreeceImageActivator {
     @SuppressWarnings("unused")

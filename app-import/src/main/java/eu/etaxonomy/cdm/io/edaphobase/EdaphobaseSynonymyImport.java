@@ -31,7 +31,7 @@ import eu.etaxonomy.cdm.model.taxon.TaxonBase;
  * Import class for synonym relationships in Edaphobase.
  *
  * @author a.mueller
- * @date 21.12.2015
+ * @since 21.12.2015
  *
  */
 @Component

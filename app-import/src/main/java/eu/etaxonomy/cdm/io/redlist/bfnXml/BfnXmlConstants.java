@@ -14,7 +14,7 @@ import eu.etaxonomy.cdm.model.common.Language;
 
 /**
  * @author pplitzner
- * @date May 3, 2016
+ * @since May 3, 2016
  *
  */
 public class BfnXmlConstants {

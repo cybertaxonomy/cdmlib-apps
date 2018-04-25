@@ -20,7 +20,7 @@ import eu.etaxonomy.cdm.io.common.DbImportStateBase;
 
 /**
  * @author a.mueller
- * @date 18.12.2015
+ * @since 18.12.2015
  *
  */
 public class EdaphobaseImportState extends DbImportStateBase<EdaphobaseImportConfigurator, EdaphobaseImportState>{

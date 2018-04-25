@@ -16,7 +16,7 @@ import eu.etaxonomy.cdm.io.common.IPartitionedIO;
  * Base class for imports from Edaphobase.
  *
  * @author a.mueller
- * @date 18.12.2015
+ * @since 18.12.2015
  *
  */
 public abstract class EdaphobaseImportBase

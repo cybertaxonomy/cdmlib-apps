@@ -16,7 +16,7 @@ import eu.etaxonomy.cdm.common.UTF8;
 
 /**
  * @author pplitzner
- * @date Mar 7, 2016
+ * @since Mar 7, 2016
  *
  */
 public class RedListUtil {

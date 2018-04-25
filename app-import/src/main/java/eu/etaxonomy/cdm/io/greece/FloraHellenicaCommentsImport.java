@@ -28,7 +28,7 @@ import eu.etaxonomy.cdm.model.taxon.TaxonNode;
  * Import for the Flora Hellenica taxon comments.
  *
  * @author a.mueller
- * @date 14.12.2016
+ * @since 14.12.2016
  */
 
 @Component

@@ -22,7 +22,7 @@ import eu.etaxonomy.cdm.io.redlist.bfnXml.BfnXmlConstants;
 /**
  *
  * @author pplitzner
- * @date May 3, 2016
+ * @since May 3, 2016
  *
  */
 public abstract class BfnXmlExportBase extends CdmExportBase<BfnXmlExportConfigurator, BfnXmlExportState, IExportTransformer, File> {

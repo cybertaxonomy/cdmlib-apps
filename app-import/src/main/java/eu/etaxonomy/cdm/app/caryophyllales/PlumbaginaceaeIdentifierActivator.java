@@ -28,7 +28,7 @@ import eu.etaxonomy.cdm.model.name.TaxonName;
 
 /**
  * @author a.mueller
- * @date 18.10.2017
+ * @since 18.10.2017
  *
  */
 public class PlumbaginaceaeIdentifierActivator {

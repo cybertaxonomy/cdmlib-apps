@@ -26,7 +26,7 @@ import eu.etaxonomy.cdm.model.reference.ReferenceFactory;
 
 /**
  * @author a.mueller
- * @date 08.07.2017
+ * @since 08.07.2017
  *
  */
 public class SalvadorSpecimenActivator {

@@ -34,7 +34,7 @@ import eu.etaxonomy.cdm.strategy.parser.TimePeriodParser;
  * https://dev.e-taxonomy.eu/redmine/issues/6286
  *
  * @author a.mueller
- * @date 13.12.2016
+ * @since 13.12.2016
  */
 public class GreeceActivator {
     @SuppressWarnings("unused")

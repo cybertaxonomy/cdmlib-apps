@@ -56,7 +56,7 @@ import eu.etaxonomy.cdm.strategy.parser.NonViralNameParserImpl;
 /**
  *
  * @author pplitzner
- * @date Mar 1, 2016
+ * @since Mar 1, 2016
  *
  */
 

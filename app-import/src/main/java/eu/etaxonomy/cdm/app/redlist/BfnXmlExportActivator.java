@@ -29,7 +29,7 @@ import eu.etaxonomy.cdm.io.redlist.bfnXml.out.BfnXmlExportTransformer;
 /**
  *
  * @author pplitzner
- * @date May 3, 2016
+ * @since May 3, 2016
  *
  */
 public class BfnXmlExportActivator {

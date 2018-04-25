@@ -36,7 +36,7 @@ import eu.etaxonomy.cdm.strategy.parser.NonViralNameParserImpl;
  * Simple Excel import class that works without default state class
  * {@link SimpleExcelTaxonImportState}
  * @author a.mueller
- * @date 16.06.2016
+ * @since 16.06.2016
  */
 public abstract class SimpleExcelTaxonImport<CONFIG extends ExcelImportConfiguratorBase>
         extends ExcelImportBase<SimpleExcelTaxonImportState<CONFIG>, CONFIG, ExcelRowBase>{

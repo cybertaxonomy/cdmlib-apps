@@ -20,7 +20,7 @@ import eu.etaxonomy.cdm.io.common.XmlExportState;
 /**
  *
  * @author pplitzner
- * @date May 3, 2016
+ * @since May 3, 2016
  *
  */
 public class BfnXmlExportState extends XmlExportState<BfnXmlExportConfigurator>{

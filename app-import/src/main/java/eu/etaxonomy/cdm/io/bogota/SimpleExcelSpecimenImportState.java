@@ -16,7 +16,7 @@ import eu.etaxonomy.cdm.io.excel.common.ExcelRowBase;
 
 /**
  * @author a.mueller
- * @date 16.06.2016
+ * @since 16.06.2016
  *
  */
 public class SimpleExcelSpecimenImportState<CONFIG extends ExcelImportConfiguratorBase>
