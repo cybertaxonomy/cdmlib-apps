@@ -38,6 +38,8 @@ import eu.etaxonomy.cdm.model.common.CdmBase;
 import eu.etaxonomy.cdm.model.common.Extension;
 import eu.etaxonomy.cdm.model.common.ExtensionType;
 import eu.etaxonomy.cdm.model.common.Language;
+import eu.etaxonomy.cdm.model.common.Marker;
+import eu.etaxonomy.cdm.model.common.MarkerType;
 import eu.etaxonomy.cdm.model.description.Feature;
 import eu.etaxonomy.cdm.model.description.TaxonDescription;
 import eu.etaxonomy.cdm.model.description.TextData;
@@ -253,10 +255,35 @@ public class BerlinModelTaxonImport  extends BerlinModelImportBase {
 					//
 					if (resultSetHasColumn(rs,"LastScrutiny")){
 						String lastScrutiny = rs.getString("LastScrutiny");
-						ExtensionType extensionTypeSpeciesExpert = getExtensionType(state, BerlinModelTransformer.uuidSpeciesExpertName, "Species Expert", "Species Expert", "Species Expert");
-						taxonBase.addExtension(lastScrutiny, extensionTypeSpeciesExpert);
-						ExtensionType extensionTypeExpert = getExtensionType(state, BerlinModelTransformer.uuidExpertName, "Expert", "Expert for a taxonomic group", "Expert");
-						taxonBase.addExtension(lastScrutiny, extensionTypeExpert);
+						//TODO strange, why not Extension last scrutiny? To match PESI? Is there a difference
+						//to LastScrutinyFK and SpeciesExpertFK?
+						if (isNotBlank(lastScrutiny)){
+						    ExtensionType extensionTypeSpeciesExpert = getExtensionType(state, BerlinModelTransformer.uuidSpeciesExpertName, "Species Expert", "Species Expert", "Species Expert");
+						    taxonBase.addExtension(lastScrutiny, extensionTypeSpeciesExpert);
+						    ExtensionType extensionTypeExpert = getExtensionType(state, BerlinModelTransformer.uuidExpertName, "Expert", "Expert for a taxonomic group", "Expert");
+						    taxonBase.addExtension(lastScrutiny, extensionTypeExpert);
+						}
+					}
+					//
+					if (resultSetHasColumn(rs, "IsExcludedMarker")){
+					    boolean isExcluded = rs.getBoolean("IsExcludedMarker");
+					    if (isExcluded){
+					        String extension = rs.getString("IsExcludedExtension");
+					        String valueless = "not accepted: taxonomically valueless local or singular biotype";
+					        String provisional = "provisional: probably a taxonomically valueless local or singular biotype";
+
+					        MarkerType markerType = null;
+					        if (valueless.equals(extension)){
+					            markerType = getMarkerType(state, BerlinModelTransformer.uuidTaxonomicallyValueless, "taxonomically valueless", valueless, "valueless");
+					        }else if (provisional.equals(extension)){
+                                markerType = getMarkerType(state, BerlinModelTransformer.uuidProbablyTaxonomicallyValueless, "probably taxonomically valueless", provisional, "provisional");
+                            }
+					        if (markerType != null){
+					            taxonBase.addMarker(Marker.NewInstance(markerType, true));
+					        }else{
+					            logger.warn("IsExcludedExtension not regonized for taxon " + taxonId + "; " + extension);
+					        }
+					    }
 					}
 
 					//Notes
