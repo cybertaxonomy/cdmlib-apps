@@ -50,6 +50,15 @@ public class EdaphobaseImportConfigurator
     public String getEdaphobaseSecundumTitle() {return edaphobaseSecundumTitle;}
     public void setEdaphobaseSecundumTitle(String edaphobaseSecundumTitle) {this.edaphobaseSecundumTitle = edaphobaseSecundumTitle;}
 
+    //logging
+    private boolean ignoreSubgenus = true;
+    public boolean isIgnoreSubgenus() {return ignoreSubgenus;}
+    public void setIgnoreSubgenus(boolean ignoreSubgenus) {this.ignoreSubgenus = ignoreSubgenus;}
+
+    private boolean ignore4nomial = true;
+    public boolean isIgnore4nomial() {return ignore4nomial;}
+    public void setIgnore4nomial(boolean ignore4nomial) {this.ignore4nomial = ignore4nomial;}
+
 
     /**
      * @param source

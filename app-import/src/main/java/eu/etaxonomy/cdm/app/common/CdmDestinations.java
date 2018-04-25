@@ -390,6 +390,33 @@ public class CdmDestinations {
         return makeDestination(dbType, cdmServer, cdmDB, -1, cdmUserName, null);
     }
 
+    public static ICdmDataSource cdm_postgres_edaphobase(){
+        DatabaseTypeEnum dbType = DatabaseTypeEnum.PostgreSQL;
+        String cdmServer = "130.133.70.26";
+        String cdmDB = "cdm_edaphobase";
+        String cdmUserName = "edaphobase";
+        int port = 5433;
+        return makeDestination(dbType, cdmServer, cdmDB, port, cdmUserName, null);
+    }
+
+    public static ICdmDataSource cdm_test_postgres_edaphobase(){
+        DatabaseTypeEnum dbType = DatabaseTypeEnum.PostgreSQL;
+        String cdmServer = "160.45.63.175";
+        String cdmDB = "cdm_edaphobase";
+        String cdmUserName = "edaphobase";
+        int port = 5432;
+        return makeDestination(dbType, cdmServer, cdmDB, port, cdmUserName, null);
+    }
+
+    public static ICdmDataSource cdm_test_postgres__ssh_edaphobase(){
+        DatabaseTypeEnum dbType = DatabaseTypeEnum.PostgreSQL;
+        String cdmServer = "localhost";
+        String cdmDB = "cdm_edaphobase";
+        String cdmUserName = "edaphobase";
+        int port = 13306;
+        return makeDestination(dbType, cdmServer, cdmDB, port, cdmUserName, null);
+    }
+
     public static ICdmDataSource cdm_local_caryo_spp(){
         DatabaseTypeEnum dbType = DatabaseTypeEnum.MySQL;
         String cdmServer = "127.0.0.1";

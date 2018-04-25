@@ -175,6 +175,7 @@ public class EdaphobaseTaxonImport extends EdaphobaseImportBase {
         String parentNameStr = rs.getString("parentName");
         String grandParentNameStr = rs.getString("grandParentName");
         String grandGrandParentNameStr = rs.getString("grandGrandParentName");
+        String editUuid = rs.getString("edit_uuid");
 
 
         if (isDeleted){
@@ -297,7 +298,7 @@ public class EdaphobaseTaxonImport extends EdaphobaseImportBase {
             }
             name.setNomenclaturalReference(nomRef);
         }
-        name.setNomenclaturalMicroReference(StringUtils.isBlank(pages)? null : pages);
+        name.setNomenclaturalMicroReference(isBlank(pages)? null : pages);
 
         //taxon
         Reference secRef = state.getRelatedObject(REFERENCE_NAMESPACE, state.getConfig().getSecUuid().toString(), Reference.class);
@@ -328,22 +329,41 @@ public class EdaphobaseTaxonImport extends EdaphobaseImportBase {
         //id
         ImportHelper.setOriginalSource(taxonBase, state.getTransactionalSourceReference(), id, TAXON_NAMESPACE);
         ImportHelper.setOriginalSource(name, state.getTransactionalSourceReference(), id, TAXON_NAMESPACE);
+        taxonBase.setUuid(UUID.fromString(editUuid));
         handleExampleIdentifiers(taxonBase, id);
 
         if (!nameAdditionUsed){
             logger.warn("name_addition not recognized: " +  nameAddition + ". ID="+id);
             name.setAppendedPhrase(nameAddition);
         }
-        String orig = displayString.replace("nomen nudum [Hirschmann, 1951]", "Hirschmann, 1951")
-                .replace("  ", " ");
-        String nameTitleCache = name.getTitleCache().replace("species group", "group");
-        String taxonTitleCache = taxonBase.getTitleCache().replace("species group", "group");
-        if (!orig.equals(nameTitleCache) && !orig.equals(name.getFullTitleCache()) && !orig.equals(taxonTitleCache)){
+
+        if (titleCacheDiffers(state, displayString, name, taxonBase)){
             String titleCache = taxonBase.getAppendedPhrase() != null ? taxonBase.getTitleCache() : name.getTitleCache();
             logger.warn("Displaystring differs from titleCache. ID=" + id + ".\n   " + displayString + "\n   " + titleCache);
         }
     }
 
+
+    /**
+     * @param state
+     * @param displayString
+     * @param name
+     * @param taxonBase
+     * @return
+     */
+    private boolean titleCacheDiffers(EdaphobaseImportState state, String displayString, IZoologicalName name, TaxonBase<?> taxonBase) {
+        String orig = displayString.replace("nomen nudum [Hirschmann, 1951]", "Hirschmann, 1951")
+                .replace("  ", " ");
+        String nameTitleCache = name.getTitleCache().replace("species group", "group");
+        String taxonTitleCache = taxonBase.getTitleCache().replace("species group", "group");
+
+//        if (state.getConfig().isIgnore4nomial() && orig.matches(".* subsp"))
+        boolean result =
+                !orig.equals(nameTitleCache)
+                && !orig.equals(name.getFullTitleCache())
+                && !orig.equals(taxonTitleCache);
+        return result;
+    }
 
     /**
      * @param authorStr
@@ -436,6 +456,7 @@ public class EdaphobaseTaxonImport extends EdaphobaseImportBase {
     private void handleExampleIdentifiers(TaxonBase<?> taxonBase, Integer id) {
         if (idMap.get(id) != null){
             taxonBase.setUuid(idMap.get(id));
+            logger.warn("Override UUID for specific taxa. ID="+ id +  "; uuid="+idMap.get(id) + "; name="+ taxonBase.getName().getTitleCache());
         }
     }
 

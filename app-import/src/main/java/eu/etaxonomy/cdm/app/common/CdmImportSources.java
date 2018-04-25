@@ -145,4 +145,13 @@ public class CdmImportSources extends SourceBase{
         return  makeSource(dbms, strServer, strDB, port, userName, null);
     }
 
+    public static Source EDAPHOBASE8(){
+        String dbms = Source.POSTGRESQL9;  //TODO 10
+        String strServer = "130.133.70.26";  //BGBM-PESISQL
+        String strDB = "edaphobase8";
+        int port = 5433;
+        String userName = "edaphobase";
+        return  makeSource(dbms, strServer, strDB, port, userName, null);
+    }
+
 }
