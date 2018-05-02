@@ -24,7 +24,7 @@ import eu.etaxonomy.cdm.model.name.NomenclaturalCode;
 /**
  * @author a.mueller
  * @author e.-m.lee
- * @date 16.02.2010
+ * @since 16.02.2010
  *
  */
 public class PesiExportActivatorEM {

@@ -23,7 +23,7 @@ import eu.etaxonomy.cdm.io.pesi.out.PesiTransformer;
 /**
  * @author a.mueller
  * @author e.-m.lee
- * @date 16.02.2010
+ * @since 16.02.2010
  *
  */
 public class PesiExportActivator {

@@ -23,7 +23,7 @@ import eu.etaxonomy.cdm.model.taxon.TaxonBase;
  * <li>Phase 3:	Export of additional data: Rank data, KingdomFk, TypeNameFk, expertFk and speciesExpertFk.
  * <li>Phase 4:	Export of Inferred Synonyms.</ul>
  * @author e.-m.lee
- * @date 23.02.2010
+ * @since 23.02.2010
  *
  */
 @Component

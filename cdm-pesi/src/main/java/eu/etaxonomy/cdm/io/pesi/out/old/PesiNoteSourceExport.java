@@ -34,7 +34,7 @@ import eu.etaxonomy.cdm.model.taxon.Taxon;
  * The export class for NoteSources.
  * Inserts into DataWarehouse database table <code>NoteSource</code>.
  * @author e.-m.lee
- * @date 03.03.2010
+ * @since 03.03.2010
  *
  */
 @Component

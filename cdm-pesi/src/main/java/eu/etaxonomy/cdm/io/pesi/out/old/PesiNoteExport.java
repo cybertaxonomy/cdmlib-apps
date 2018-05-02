@@ -56,7 +56,7 @@ import eu.etaxonomy.cdm.model.taxon.TaxonBase;
  * <li>Phase 1:	Export of DescriptionElements as Notes.
  * <li>Phase 2:	Export of TaxonName extensions <code>taxComment</code>, <code>fauComment</code> and <code>fauExtraCodes</code> as Notes.</ul>
  * @author e.-m.lee
- * @date 23.02.2010
+ * @since 23.02.2010
  *
  */
 @Component

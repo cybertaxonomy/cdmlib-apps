@@ -32,7 +32,7 @@ import eu.etaxonomy.cdm.model.taxon.TaxonBase;
 
 /**
  * @author a.mueller
- * @date 27.02.2017
+ * @since 27.02.2017
  *
  */
 public class NepenthaceIpniActivator {

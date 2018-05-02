@@ -19,7 +19,7 @@ import eu.etaxonomy.cdm.model.reference.ReferenceFactory;
 
 /**
  * @author e.-m.lee
- * @date 12.02.2010
+ * @since 12.02.2010
  *
  */
 public class PesiExportConfigurator extends DbExportConfiguratorBase<PesiExportState, PesiTransformer> implements IExportConfigurator<PesiExportState, PesiTransformer> {

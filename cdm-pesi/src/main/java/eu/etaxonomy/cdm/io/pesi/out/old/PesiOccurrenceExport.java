@@ -44,7 +44,7 @@ import eu.etaxonomy.cdm.strategy.exceptions.UnknownCdmTypeException;
  * The export class for {@link eu.etaxonomy.cdm.model.description.Distribution Distributions}.<p>
  * Inserts into DataWarehouse database table <code>Occurrence</code>.
  * @author e.-m.lee
- * @date 02.03.2010
+ * @since 02.03.2010
  *
  */
 @Component

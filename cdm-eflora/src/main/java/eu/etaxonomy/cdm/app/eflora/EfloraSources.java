@@ -14,7 +14,7 @@ import org.apache.log4j.Logger;
 
 /**
  * @author a.mueller
- * @date 09.06.2010
+ * @since 09.06.2010
  *
  */
 public class EfloraSources {

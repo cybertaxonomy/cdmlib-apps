@@ -28,7 +28,7 @@ import eu.etaxonomy.cdm.model.taxon.TaxonBase;
  * The export state class.
  * Holds data needed while the export classes are running.
  * @author e.-m.lee
- * @date 12.02.2010
+ * @since 12.02.2010
  *
  */
 public class PesiExportState extends DbExportStateBase<PesiExportConfigurator, PesiTransformer>{

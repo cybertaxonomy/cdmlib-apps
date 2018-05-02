@@ -37,7 +37,7 @@ import eu.etaxonomy.cdm.model.taxon.TaxonBase;
  * The export class for additional information linked to {@link eu.etaxonomy.cdm.model.taxon.Taxon Taxa} and {@link eu.etaxonomy.cdm.model.reference.Reference References}.<p>
  * Inserts into DataWarehouse database table <code>AdditionalTaxonSource</code>.
  * @author e.-m.lee
- * @date 23.02.2010
+ * @since 23.02.2010
  *
  */
 @Component

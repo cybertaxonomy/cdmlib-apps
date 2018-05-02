@@ -45,7 +45,7 @@ import eu.etaxonomy.cdm.strategy.cache.name.ZooNameNoMarkerCacheStrategy;
 
 /**
  * @author e.-m.lee
- * @date 12.02.2010
+ * @since 12.02.2010
  *
  */
 public abstract class PesiExportBase extends DbExportBase<PesiExportConfigurator, PesiExportState, PesiTransformer> {

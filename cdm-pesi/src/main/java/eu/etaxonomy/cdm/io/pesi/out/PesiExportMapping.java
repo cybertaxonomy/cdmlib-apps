@@ -14,7 +14,7 @@ import eu.etaxonomy.cdm.io.common.mapping.out.CdmDbExportMapping;
 
 /**
  * @author e.-m.lee
- * @date 24.02.2010
+ * @since 24.02.2010
  *
  */
 public class PesiExportMapping extends CdmDbExportMapping<PesiExportState,PesiExportConfigurator, PesiTransformer> {

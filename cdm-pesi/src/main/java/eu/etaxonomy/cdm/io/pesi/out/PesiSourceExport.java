@@ -38,7 +38,7 @@ import eu.etaxonomy.cdm.model.reference.ReferenceType;
  * The export class for {@link eu.etaxonomy.cdm.model.reference.Reference References}.<p>
  * Inserts into DataWarehouse database table <code>Source</code>.
  * @author e.-m.lee
- * @date 11.02.2010
+ * @since 11.02.2010
  *
  */
 @Component
