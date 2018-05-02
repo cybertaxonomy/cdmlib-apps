@@ -28,7 +28,7 @@ import eu.etaxonomy.cdm.model.reference.ReferenceFactory;
 
 /**
  * @author PK
- * @created 19.09.2008
+ * @since 19.09.2008
  */
 public class SynthesysCacheActivator {
     @SuppressWarnings("unused")

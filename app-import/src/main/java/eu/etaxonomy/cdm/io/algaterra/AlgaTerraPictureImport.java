@@ -38,7 +38,7 @@ import eu.etaxonomy.cdm.model.taxon.TaxonBase;
 /**
  * Import for AlgaTerra images from table 
  * @author a.mueller
- * @created 18.01.2013
+ * @since 18.01.2013
  */
 @Component
 public class AlgaTerraPictureImport  extends AlgaTerraImageImportBase {

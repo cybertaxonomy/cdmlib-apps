@@ -31,7 +31,7 @@ import eu.etaxonomy.cdm.model.reference.Reference;
 
 /**
  * @author a.mueller
- * @created 25.02.2014
+ * @since 25.02.2014
  */
 @Component
 public class GlobisAuthorImport  extends GlobisImportBase<TeamOrPersonBase<?>> implements IMappingImport<TeamOrPersonBase<?>, GlobisImportState>{

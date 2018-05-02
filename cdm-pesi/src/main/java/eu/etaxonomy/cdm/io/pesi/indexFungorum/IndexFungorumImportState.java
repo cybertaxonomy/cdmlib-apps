@@ -27,7 +27,7 @@ import eu.etaxonomy.cdm.model.taxon.TaxonBase;
 
 /**
  * @author a.mueller
- * @created 11.05.2009
+ * @since 11.05.2009
  * @version 1.0
  */
 public class IndexFungorumImportState extends DbImportStateBase<IndexFungorumImportConfigurator, IndexFungorumImportState>{

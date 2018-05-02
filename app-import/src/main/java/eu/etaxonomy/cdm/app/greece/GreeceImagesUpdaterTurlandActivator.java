@@ -27,7 +27,7 @@ import eu.etaxonomy.cdm.model.media.Rights;
 
 /**
  * @author a.mueller
- * @created 05.2017
+ * @since 05.2017
  */
 public class GreeceImagesUpdaterTurlandActivator {
 	@SuppressWarnings("unused")

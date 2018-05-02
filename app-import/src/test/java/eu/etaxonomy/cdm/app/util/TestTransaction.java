@@ -26,7 +26,7 @@ import eu.etaxonomy.cdm.model.taxon.TaxonBase;
 
 /**
  * @author a.babadshanjan
- * @created 27.10.2008
+ * @since 27.10.2008
  */
 public class TestTransaction {
 

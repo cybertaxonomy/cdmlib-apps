@@ -51,7 +51,7 @@ import eu.etaxonomy.cdm.strategy.match.IMatchStrategy;
  * TODO not working at the moment
  *
  * @author n.hoffmann
- * @created 18.11.2008
+ * @since 18.11.2008
  */
 @Component
 public class PalmaeImageImport extends AbstractImageImporter {

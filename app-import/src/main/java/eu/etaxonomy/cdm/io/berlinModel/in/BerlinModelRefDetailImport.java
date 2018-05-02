@@ -35,7 +35,7 @@ import eu.etaxonomy.cdm.model.reference.ReferenceFactory;
  * and therefore left out here.
  *
  * @author a.mueller
- * @created 20.03.2008
+ * @since 20.03.2008
  */
 @Component
 public class BerlinModelRefDetailImport extends BerlinModelImportBase {

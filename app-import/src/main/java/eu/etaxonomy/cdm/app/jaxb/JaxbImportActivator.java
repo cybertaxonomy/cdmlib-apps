@@ -25,7 +25,7 @@ import eu.etaxonomy.cdm.io.jaxb.JaxbImportConfigurator;
 
 /**
  * @author a.babadshanjan
- * @created 25.09.2008
+ * @since 25.09.2008
  * 
  * NOTE: the result may go into 
  * cdmlib-persistence\target\test-classes\eu\etaxonomy\cdm\h2\LocalH2

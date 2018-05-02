@@ -26,7 +26,7 @@ import eu.etaxonomy.cdm.io.common.IImportConfigurator;
  * TODO not working at the moment
  *
  * @author n.hoffmann
- * @created 18.11.2008
+ * @since 18.11.2008
  * @version 1.0
  */
 public class PalmaeImageActivator  {

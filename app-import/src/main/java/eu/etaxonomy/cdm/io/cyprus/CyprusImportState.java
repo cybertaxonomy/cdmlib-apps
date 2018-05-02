@@ -20,7 +20,7 @@ import eu.etaxonomy.cdm.model.taxon.Taxon;
 
 /**
  * @author a.mueller
- * @created 11.05.2009
+ * @since 11.05.2009
  * @version 1.0
  */
 public class CyprusImportState extends ExcelImportState<CyprusImportConfigurator, ExcelRowBase>{

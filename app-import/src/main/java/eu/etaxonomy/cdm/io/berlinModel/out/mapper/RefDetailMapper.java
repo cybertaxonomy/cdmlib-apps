@@ -29,7 +29,7 @@ import eu.etaxonomy.cdm.model.reference.Reference;
 
 /**
  * @author a.mueller
- * @created 12.05.2009
+ * @since 12.05.2009
  */
 public class RefDetailMapper extends DbSingleAttributeExportMapperBase<BerlinModelExportState>
         implements IDbExportMapper<BerlinModelExportState, IExportTransformer>{

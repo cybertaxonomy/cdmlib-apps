@@ -55,7 +55,7 @@ import eu.etaxonomy.cdm.model.taxon.TaxonBase;
 
 /**
  * @author a.mueller
- * @created 01.09.2012
+ * @since 01.09.2012
  */
 @Component
 public class AlgaTerraDnaImport  extends AlgaTerraSpecimenImportBase {

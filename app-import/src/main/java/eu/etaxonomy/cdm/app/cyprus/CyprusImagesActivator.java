@@ -66,7 +66,7 @@ import eu.etaxonomy.cdm.model.taxon.TaxonBase;
 
 /**
  * @author a.mueller
- * @created 05.2017
+ * @since 05.2017
  */
 public class CyprusImagesActivator {
 	private static final Logger logger = Logger.getLogger(CyprusImagesActivator.class);

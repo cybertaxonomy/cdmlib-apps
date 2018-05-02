@@ -20,7 +20,7 @@ import eu.etaxonomy.cdm.model.common.MarkerType;
 
 /**
  * @author a.mueller
- * @created 01.03.2010
+ * @since 01.03.2010
  */
 public final class CaryoTransformer extends InputTransformerBase {
 

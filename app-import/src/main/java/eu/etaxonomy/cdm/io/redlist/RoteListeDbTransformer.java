@@ -15,7 +15,7 @@ import eu.etaxonomy.cdm.io.common.mapping.InputTransformerBase;
 
 /**
  * @author a.mueller
- * @created 27.08.2012
+ * @since 27.08.2012
  */
 public final class RoteListeDbTransformer extends InputTransformerBase {
 

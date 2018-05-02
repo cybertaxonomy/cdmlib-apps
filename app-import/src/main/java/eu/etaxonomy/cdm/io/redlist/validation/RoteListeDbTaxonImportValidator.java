@@ -17,7 +17,7 @@ import eu.etaxonomy.cdm.io.redlist.RoteListeDbImportState;
 
 /**
  * @author a.mueller
- * @created 17.02.2010
+ * @since 17.02.2010
  * @version 1.0
  */
 public class RoteListeDbTaxonImportValidator implements IOValidator<RoteListeDbImportState>{

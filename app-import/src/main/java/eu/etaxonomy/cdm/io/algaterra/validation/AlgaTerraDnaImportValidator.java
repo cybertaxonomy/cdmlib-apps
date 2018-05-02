@@ -20,7 +20,7 @@ import eu.etaxonomy.cdm.io.common.Source;
 
 /**
  * @author a.mueller
- * @created 26.02.2013
+ * @since 26.02.2013
  */
 public class AlgaTerraDnaImportValidator implements IOValidator<BerlinModelImportState> {
 	@SuppressWarnings("unused")

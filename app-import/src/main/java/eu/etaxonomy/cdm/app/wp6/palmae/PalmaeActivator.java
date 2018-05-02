@@ -37,7 +37,7 @@ import eu.etaxonomy.cdm.model.description.FeatureTree;
 
 /**
  * @author a.mueller
- * @created 20.06.2008
+ * @since 20.06.2008
  */
 public class PalmaeActivator {
 	private static final Logger logger = Logger.getLogger(PalmaeActivator.class);

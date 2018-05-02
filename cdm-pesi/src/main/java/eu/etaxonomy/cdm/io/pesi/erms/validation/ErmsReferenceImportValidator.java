@@ -22,7 +22,7 @@ import eu.etaxonomy.cdm.io.pesi.erms.ErmsImportState;
 
 /**
  * @author a.mueller
- * @created 17.02.2010
+ * @since 17.02.2010
  * @version 1.0
  */
 public class ErmsReferenceImportValidator implements IOValidator<ErmsImportState>{

@@ -37,7 +37,7 @@ import eu.etaxonomy.cdm.strategy.parser.NonViralNameParserImpl;
 /**
  * TODO do we still need this class?
  * @author a.mueller
- * @created 27.08.2012
+ * @since 27.08.2012
  */
 @Component
 public class RoteListeDbTaxonImport  extends RoteListeDbImportBase<TaxonBase> implements IMappingImport<TaxonBase, RoteListeDbImportState>{

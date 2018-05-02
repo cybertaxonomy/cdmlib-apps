@@ -20,7 +20,7 @@ import eu.etaxonomy.cdm.model.common.MarkerType;
 
 /**
  * @author a.mueller
- * @created 11.05.2009
+ * @since 11.05.2009
  * @version 1.0
  */
 public class BerlinModelImportState extends DbImportStateBase<BerlinModelImportConfigurator, BerlinModelImportState>{

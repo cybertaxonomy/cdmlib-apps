@@ -42,7 +42,7 @@ import eu.etaxonomy.cdm.model.common.User;
 
 /**
  * @author a.mueller
- * @created 27.08.2012
+ * @since 27.08.2012
  * @version 1.0
  */
 public abstract class RoteListeDbImportBase<CDM_BASE extends CdmBase> extends CdmImportBase<RoteListeDbImportConfigurator, RoteListeDbImportState> implements ICdmIO<RoteListeDbImportState>, IPartitionedIO<RoteListeDbImportState> {

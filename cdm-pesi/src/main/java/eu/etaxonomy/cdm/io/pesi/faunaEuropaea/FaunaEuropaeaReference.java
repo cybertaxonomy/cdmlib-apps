@@ -15,7 +15,7 @@ import eu.etaxonomy.cdm.model.reference.Reference;
 
 /**
  * @author a.babadshanjan
- * @created 13.09.2009
+ * @since 13.09.2009
  * @version 1.0
  */
 public class FaunaEuropaeaReference {

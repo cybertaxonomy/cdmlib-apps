@@ -24,7 +24,7 @@ import eu.etaxonomy.cdm.model.reference.ReferenceFactory;
 
 /**
  * @author a.mueller
- * @created 27.08.2012
+ * @since 27.08.2012
  * @version 1.0
  */
 public class RoteListeDbImportConfigurator extends DbImportConfiguratorBase<RoteListeDbImportState> implements IImportConfigurator{

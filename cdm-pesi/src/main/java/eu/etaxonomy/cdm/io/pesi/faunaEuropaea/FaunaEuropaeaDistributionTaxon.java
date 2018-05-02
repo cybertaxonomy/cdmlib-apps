@@ -15,7 +15,7 @@ import java.util.UUID;
 
 /**
  * @author a.babadshanjan
- * @created 10.09.2009
+ * @since 10.09.2009
  * @version 1.0
  */
 public class FaunaEuropaeaDistributionTaxon {

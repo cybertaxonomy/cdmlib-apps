@@ -53,7 +53,7 @@ import eu.etaxonomy.cdm.model.taxon.TaxonNode;
 
 /**
  * @author a.babadshanjan
- * @created 28.10.2008
+ * @since 28.10.2008
  */
 public class TestDatabase {
 

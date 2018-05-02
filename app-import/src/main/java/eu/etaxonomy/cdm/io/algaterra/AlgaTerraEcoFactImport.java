@@ -54,7 +54,7 @@ import eu.etaxonomy.cdm.model.reference.Reference;
 
 /**
  * @author a.mueller
- * @created 01.09.2012
+ * @since 01.09.2012
  */
 @Component
 public class AlgaTerraEcoFactImport  extends AlgaTerraSpecimenImportBase {

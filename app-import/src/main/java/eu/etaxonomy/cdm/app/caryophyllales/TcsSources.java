@@ -21,7 +21,7 @@ import eu.etaxonomy.cdm.app.sdd.SDDSources;
 
 /**
  * @author k.luther
- * @created May 2014
+ * @since May 2014
  */
 public class TcsSources {
 	private static final Logger logger = Logger.getLogger(TcsSources.class);

@@ -28,7 +28,7 @@ import eu.etaxonomy.cdm.strategy.exceptions.UnknownCdmTypeException;
 
 /**
  * @author a.babadshanjan
- * @created 12.05.2009
+ * @since 12.05.2009
  */
 
 public final class FaunaEuropaeaTransformer {

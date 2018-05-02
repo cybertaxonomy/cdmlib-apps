@@ -38,7 +38,7 @@ import eu.etaxonomy.cdm.model.taxon.TaxonBase;
 
 /**
  * @author a.mueller
- * @created 20.02.2010
+ * @since 20.02.2010
  */
 @Component
 public class ErmsDrImport  extends ErmsImportBase<Distribution> {

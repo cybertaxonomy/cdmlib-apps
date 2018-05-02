@@ -20,7 +20,7 @@ import eu.etaxonomy.cdm.model.taxon.TaxonBase;
 
 /**
  * @author k.luther
- * @created 19.08.2014
+ * @since 19.08.2014
  */
 @Component
 public class IndexFungorumSubSpeciesImport extends IndexFungorumImportBase {

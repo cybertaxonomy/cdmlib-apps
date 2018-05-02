@@ -30,7 +30,7 @@ import eu.etaxonomy.cdm.model.reference.ReferenceFactory;
 
 /**
  * @author a.mueller
- * @created 03.04.2012
+ * @since 03.04.2012
  * @version 1.0
  */
 public class DwcaScratchpadImportActivator {

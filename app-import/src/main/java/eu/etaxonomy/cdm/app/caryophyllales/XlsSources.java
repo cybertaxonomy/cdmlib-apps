@@ -21,7 +21,7 @@ import org.apache.log4j.Logger;
 
 /**
  * @author k.luther
- * @created Jun 2015
+ * @since Jun 2015
  */
 public class XlsSources {
 	@SuppressWarnings("unused")

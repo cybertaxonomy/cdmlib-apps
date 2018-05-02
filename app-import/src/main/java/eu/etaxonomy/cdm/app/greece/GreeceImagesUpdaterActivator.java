@@ -31,7 +31,7 @@ import eu.etaxonomy.cdm.model.media.MediaRepresentationPart;
 
 /**
  * @author a.mueller
- * @created 05.2017
+ * @since 05.2017
  */
 public class GreeceImagesUpdaterActivator {
 	private static final Logger logger = Logger.getLogger(GreeceImagesUpdaterActivator.class);

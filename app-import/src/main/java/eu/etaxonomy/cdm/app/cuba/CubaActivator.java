@@ -33,7 +33,7 @@ import eu.etaxonomy.cdm.model.reference.ReferenceFactory;
 
 /**
  * @author a.mueller
- * @created 04.01.2016
+ * @since 04.01.2016
  */
 public class CubaActivator {
 	private static final Logger logger = Logger.getLogger(CubaActivator.class);

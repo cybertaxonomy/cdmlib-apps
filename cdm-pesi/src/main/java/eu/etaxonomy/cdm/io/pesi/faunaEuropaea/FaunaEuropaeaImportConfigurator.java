@@ -22,7 +22,7 @@ import eu.etaxonomy.cdm.model.reference.ReferenceFactory;
 
 /**
  * @author a.babadshanjan
- * @created 08.05.2009
+ * @since 08.05.2009
  * @version 1.0
  */
 public class FaunaEuropaeaImportConfigurator extends ImportConfiguratorBase<FaunaEuropaeaImportState, Source> implements IImportConfigurator {

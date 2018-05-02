@@ -39,7 +39,7 @@ import eu.etaxonomy.cdm.strategy.parser.NonViralNameParserImpl;
 
 /**
  * @author a.mueller
- * @created 27.02.2012
+ * @since 27.02.2012
  */
 @Component
 public class IndexFungorumSpeciesImport  extends IndexFungorumImportBase {

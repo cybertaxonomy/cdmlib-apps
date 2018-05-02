@@ -51,7 +51,7 @@ import eu.etaxonomy.cdm.strategy.parser.NonViralNameParserImpl;
 
 /**
  * @author PK
- * @created 19.09.2008
+ * @since 19.09.2008
  * @version 1.0
  */
 public class SynthesysCacheActivator {

@@ -17,7 +17,7 @@ import eu.etaxonomy.cdm.database.ICdmDataSource;
 
 /**
  * @author a.babadshanjan
- * @created 19.09.2008
+ * @since 19.09.2008
  */
 public class CdmDiffActivator {
 

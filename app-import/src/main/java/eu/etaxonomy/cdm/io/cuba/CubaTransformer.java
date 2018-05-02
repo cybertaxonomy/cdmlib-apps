@@ -20,7 +20,7 @@ import eu.etaxonomy.cdm.model.description.PresenceAbsenceTerm;
 
 /**
  * @author a.mueller
- * @created 01.03.2010
+ * @since 01.03.2010
  */
 public final class CubaTransformer extends InputTransformerBase {
     private static final long serialVersionUID = 1070018208741186271L;

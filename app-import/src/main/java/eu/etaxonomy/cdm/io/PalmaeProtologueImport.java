@@ -32,7 +32,7 @@ import eu.etaxonomy.cdm.model.name.TaxonName;
 
 /**
  * @author n.hoffmann
- * @created 19.11.2008
+ * @since 19.11.2008
  */
 @Component
 public class PalmaeProtologueImport extends AbstractImageImporter {

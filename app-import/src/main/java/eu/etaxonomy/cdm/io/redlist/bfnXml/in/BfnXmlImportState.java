@@ -19,7 +19,7 @@ import eu.etaxonomy.cdm.model.reference.Reference;
 
 /**
  * @author a.oppermann
- * @created 2013
+ * @since 2013
  */
 public class BfnXmlImportState extends ImportStateBase<BfnXmlImportConfigurator, BfnXmlImportBase>{
     @SuppressWarnings("unused")

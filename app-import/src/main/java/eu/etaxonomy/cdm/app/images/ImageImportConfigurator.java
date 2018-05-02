@@ -24,7 +24,7 @@ import eu.etaxonomy.cdm.model.reference.ReferenceFactory;
 
 /**
  * @author n.hoffmann
- * @created 11.11.2008
+ * @since 11.11.2008
  * @version 1.0
  */
 public class ImageImportConfigurator extends ImportConfiguratorBase<ImageImportState, URI> implements IImportConfigurator {

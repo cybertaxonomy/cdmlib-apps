@@ -43,7 +43,7 @@ import eu.etaxonomy.cdm.model.reference.ReferenceFactory;
 
 /**
  * @author a.mueller
- * @created 20.06.2008
+ * @since 20.06.2008
  */
 public class NepenthesActivator extends EfloraActivatorBase {
 	private static final Logger logger = Logger.getLogger(NepenthesActivator.class);

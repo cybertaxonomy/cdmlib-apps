@@ -16,7 +16,7 @@ import eu.etaxonomy.cdm.io.common.IOValidator;
 
 /**
  * @author a.mueller
- * @created 17.02.2010
+ * @since 17.02.2010
  */
 public class BerlinModelWebMarkerCategoryImportValidator implements IOValidator<BerlinModelImportState> {
 	@SuppressWarnings("unused")

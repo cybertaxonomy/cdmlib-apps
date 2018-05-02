@@ -53,7 +53,7 @@ import eu.etaxonomy.cdm.model.taxon.Taxon;
 
 /**
  * @author a.mueller
- * @created 12.09.2012
+ * @since 12.09.2012
  */
 public abstract class AlgaTerraSpecimenImportBase extends BerlinModelImportBase{
     private static final long serialVersionUID = -1741703900571072861L;

@@ -30,7 +30,7 @@ import eu.etaxonomy.cdm.model.taxon.Taxon;
 
 /**
  * @author a.mueller
- * @created 12.09.2012
+ * @since 12.09.2012
  */
 public abstract class AlgaTerraImageImportBase extends BerlinModelImportBase{
 	private static final Logger logger = Logger.getLogger(AlgaTerraImageImportBase.class);

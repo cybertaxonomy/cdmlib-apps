@@ -31,7 +31,7 @@ import eu.etaxonomy.cdm.model.reference.ReferenceFactory;
 
 /**
  * @author a.mueller
- * @created 10.11.2011
+ * @since 10.11.2011
  */
 public class DwcaImportActivator {
 	private static final Logger logger = Logger.getLogger(DwcaImportActivator.class);

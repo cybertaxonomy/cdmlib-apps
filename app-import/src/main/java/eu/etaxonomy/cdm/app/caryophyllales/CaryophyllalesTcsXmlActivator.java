@@ -25,7 +25,7 @@ import eu.etaxonomy.cdm.io.tcsxml.in.TcsXmlImportConfigurator;
 
 /**
  * @author a.mueller
- * @created 20.06.2008
+ * @since 20.06.2008
  */
 public class CaryophyllalesTcsXmlActivator {
 	private static final Logger logger = Logger.getLogger(CaryophyllalesTcsXmlActivator.class);

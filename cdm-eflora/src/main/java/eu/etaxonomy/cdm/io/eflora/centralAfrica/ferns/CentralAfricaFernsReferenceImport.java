@@ -32,7 +32,7 @@ import eu.etaxonomy.cdm.model.reference.ReferenceFactory;
 
 /**
  * @author a.mueller
- * @created 20.02.2010
+ * @since 20.02.2010
  */
 @Component
 public class CentralAfricaFernsReferenceImport  extends CentralAfricaFernsImportBase<Reference> implements IMappingImport<Reference, CentralAfricaFernsImportState>{

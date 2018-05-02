@@ -31,7 +31,7 @@ import eu.etaxonomy.cdm.model.taxon.TaxonBase;
 
 /**
  * @author a.babadshanjan
- * @created 21.08.2010
+ * @since 21.08.2010
  */
 @Component
 public class FaunaEuropaeaAdditionalTaxonDataImport extends FaunaEuropaeaImportBase  {

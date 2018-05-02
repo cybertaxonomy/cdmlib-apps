@@ -11,7 +11,7 @@ package eu.etaxonomy.cdm.io.pesi.faunaEuropaea;
 
 /**
  * @author a.babadshanjan
- * @created 11.09.2009
+ * @since 11.09.2009
  */
 public class FaunaEuropaeaDistribution {
 

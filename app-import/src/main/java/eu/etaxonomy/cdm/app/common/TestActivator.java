@@ -33,7 +33,7 @@ import eu.etaxonomy.cdm.model.name.NomenclaturalCode;
 
 /**
  * @author a.babadshanjan
- * @created 12.05.2009
+ * @since 12.05.2009
  */
 public class TestActivator {
 	@SuppressWarnings("unused")

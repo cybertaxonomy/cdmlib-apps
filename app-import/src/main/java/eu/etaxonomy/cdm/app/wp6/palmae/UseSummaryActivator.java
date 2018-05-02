@@ -25,7 +25,7 @@ import eu.etaxonomy.cdm.model.name.NomenclaturalCode;
  * Activator for palms use summary excel import
  *
  * @author a.mueller
- * @created 18.07.2011
+ * @since 18.07.2011
  *
  */
 public class UseSummaryActivator {

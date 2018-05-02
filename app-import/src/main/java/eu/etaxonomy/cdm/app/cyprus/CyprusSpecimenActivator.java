@@ -25,7 +25,7 @@ import eu.etaxonomy.cdm.model.reference.ReferenceFactory;
 
 /**
  * @author a.mueller
- * @created 16.12.2010
+ * @since 16.12.2010
  * @version 1.0
  */
 public class CyprusSpecimenActivator {

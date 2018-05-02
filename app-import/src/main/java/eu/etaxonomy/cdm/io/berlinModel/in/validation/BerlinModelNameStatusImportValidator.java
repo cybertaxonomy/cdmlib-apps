@@ -16,7 +16,7 @@ import eu.etaxonomy.cdm.io.common.IOValidator;
 
 /**
  * @author a.mueller
- * @created 17.02.2010
+ * @since 17.02.2010
  */
 public class BerlinModelNameStatusImportValidator implements IOValidator<BerlinModelImportState> {
 	private static final Logger logger = Logger.getLogger(BerlinModelNameStatusImportValidator.class);

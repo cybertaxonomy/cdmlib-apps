@@ -50,7 +50,7 @@ import eu.etaxonomy.cdm.model.taxon.TaxonBase;
 /**
  * Alga Terra Import für den Fact mit FactId =202 (Ecology)
  * @author a.mueller
- * @created 01.09.2012
+ * @since 01.09.2012
  */
 @Component
 public class AlgaTerraFactEcologyImport  extends AlgaTerraSpecimenImportBase {

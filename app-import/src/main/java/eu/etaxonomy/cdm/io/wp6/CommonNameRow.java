@@ -26,7 +26,7 @@ import eu.etaxonomy.cdm.strategy.parser.NonViralNameParserImpl;
 
 /**
  * @author a.babadshanjan
- * @created 13.01.2009
+ * @since 13.01.2009
  */
 public class CommonNameRow {
 

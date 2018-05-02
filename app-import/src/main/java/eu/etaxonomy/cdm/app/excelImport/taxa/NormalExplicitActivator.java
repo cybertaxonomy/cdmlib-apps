@@ -22,7 +22,7 @@ import eu.etaxonomy.cdm.model.name.NomenclaturalCode;
 
 /**
  * @author a.babadshanjan
- * @created 06.01.2009
+ * @since 06.01.2009
  *
  */
 public class NormalExplicitActivator {

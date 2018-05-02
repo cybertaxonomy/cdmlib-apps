@@ -39,7 +39,7 @@ import eu.etaxonomy.cdm.model.common.User;
 
 /**
  * @author a.babadshanjan
- * @created 23.08.2010
+ * @since 23.08.2010
  */
 @Component
 public class FaunaEuropaeaUsersImport extends FaunaEuropaeaImportBase {

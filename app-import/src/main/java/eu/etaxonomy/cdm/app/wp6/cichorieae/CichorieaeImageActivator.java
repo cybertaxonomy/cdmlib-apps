@@ -24,7 +24,7 @@ import eu.etaxonomy.cdm.io.wp6.CichorieaeImageImport;
 
 /**
  * @author n.hoffmann
- * @created 18.11.2008
+ * @since 18.11.2008
  * @version 1.0
  */
 public class CichorieaeImageActivator  {

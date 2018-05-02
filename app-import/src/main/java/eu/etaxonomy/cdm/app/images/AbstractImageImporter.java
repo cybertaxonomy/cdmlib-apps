@@ -23,7 +23,7 @@ import eu.etaxonomy.cdm.io.common.CdmImportBase;
 
 /**
  * @author n.hoffmann
- * @created 11.11.2008
+ * @since 11.11.2008
  */
 public abstract class AbstractImageImporter
         extends CdmImportBase<ImageImportConfigurator, ImageImportState> {

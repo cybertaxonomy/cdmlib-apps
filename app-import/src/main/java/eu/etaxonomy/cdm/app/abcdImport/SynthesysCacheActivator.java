@@ -27,8 +27,7 @@ import eu.etaxonomy.cdm.io.specimen.excel.in.SpecimenSynthesysExcelImportConfigu
 
 /**
  * @author PK
- * @created 19.09.2008
- * @version 1.0
+ * @since 19.09.2008
  */
 public class SynthesysCacheActivator {
     @SuppressWarnings("unused")
@@ -82,8 +81,5 @@ public class SynthesysCacheActivator {
         } catch (URISyntaxException e) {
             e.printStackTrace();
         }
-
     }
-
-
 }

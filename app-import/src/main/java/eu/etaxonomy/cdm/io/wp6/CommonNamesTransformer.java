@@ -22,7 +22,7 @@ import eu.etaxonomy.cdm.model.location.NamedArea;
 
 /**
  * @author a.mueller
- * @created 01.03.2010
+ * @since 01.03.2010
  * @version 1.0
  */
 public final class CommonNamesTransformer extends InputTransformerBase {

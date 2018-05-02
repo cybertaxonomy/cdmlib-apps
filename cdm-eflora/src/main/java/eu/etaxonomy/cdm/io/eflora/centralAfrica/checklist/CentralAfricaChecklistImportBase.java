@@ -42,7 +42,7 @@ import eu.etaxonomy.cdm.model.common.User;
 
 /**
  * @author a.mueller
- * @created 20.03.2008
+ * @since 20.03.2008
  * @version 1.0
  */
 public abstract class CentralAfricaChecklistImportBase<CDM_BASE extends CdmBase> extends CdmImportBase<CentralAfricaChecklistImportConfigurator, CentralAfricaChecklistImportState> implements ICdmIO<CentralAfricaChecklistImportState>, IPartitionedIO<CentralAfricaChecklistImportState> {

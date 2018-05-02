@@ -25,7 +25,7 @@ import eu.etaxonomy.cdm.io.common.IImportConfigurator;
 
 /**
  * @author n.hoffmann
- * @created 19.11.2008
+ * @since 19.11.2008
  * @version 2.0 (18.02.2009)
  */
 public class PalmaeExcelProtologueActivator {

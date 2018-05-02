@@ -28,7 +28,7 @@ import eu.etaxonomy.cdm.model.common.CdmBase;
 /**
  * For validating general consistencies like existence of tables, etc.
  * @author a.mueller
- * @created 10.06.2009
+ * @since 10.06.2009
  * @version 1.0
  */
 @Component

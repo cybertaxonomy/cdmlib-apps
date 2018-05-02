@@ -24,7 +24,7 @@ import eu.etaxonomy.cdm.model.taxon.TaxonNode;
 
 /**
  * @author a.mueller
- * @created 11.05.2009
+ * @since 11.05.2009
  */
 public class IAPTImportState extends SimpleExcelTaxonImportState<IAPTImportConfigurator> {
 	@SuppressWarnings("unused")

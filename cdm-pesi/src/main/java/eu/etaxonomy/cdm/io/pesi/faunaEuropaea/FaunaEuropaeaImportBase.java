@@ -32,7 +32,7 @@ import eu.etaxonomy.cdm.model.taxon.Classification;
 
 /**
  * @author a.babadshanjan
- * @created 11.05.2009
+ * @since 11.05.2009
  * @version 1.0
  */
 public abstract class FaunaEuropaeaImportBase extends CdmImportBase<FaunaEuropaeaImportConfigurator, FaunaEuropaeaImportState>

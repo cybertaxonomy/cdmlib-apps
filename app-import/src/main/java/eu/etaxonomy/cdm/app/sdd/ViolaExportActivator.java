@@ -19,7 +19,7 @@ import eu.etaxonomy.cdm.io.sdd.out.SDDExportConfigurator;
 
 /**
  * @author h.fradin (from a.babadshanjan eu.etaxonomy.cdm.app.jaxb.CdmExportImportActivator)
- * @created 09.12.2008
+ * @since 09.12.2008
  */
 public class ViolaExportActivator {
 

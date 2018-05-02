@@ -13,7 +13,7 @@ import eu.etaxonomy.cdm.model.description.Feature;
 
 /**
  * @author a.mueller
- * @created 13.09.2012
+ * @since 13.09.2012
  *
  */
 public class AlgaTerraImportTransformer extends BerlinModelTransformer {

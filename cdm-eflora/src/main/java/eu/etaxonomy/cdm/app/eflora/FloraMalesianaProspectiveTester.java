@@ -25,7 +25,7 @@ import eu.etaxonomy.cdm.io.common.events.LoggingIoObserver;
 
 /**
  * @author a.mueller
- * @created 15.06.2013
+ * @since 15.06.2013
  */
 public class FloraMalesianaProspectiveTester extends EfloraActivatorBase {
 	@SuppressWarnings("unused")

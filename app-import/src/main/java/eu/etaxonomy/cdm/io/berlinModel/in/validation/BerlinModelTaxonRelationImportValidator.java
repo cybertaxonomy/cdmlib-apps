@@ -22,7 +22,7 @@ import eu.etaxonomy.cdm.io.common.Source;
 
 /**
  * @author a.mueller
- * @created 17.02.2010
+ * @since 17.02.2010
  */
 public class BerlinModelTaxonRelationImportValidator implements IOValidator<BerlinModelImportState> {
 	@SuppressWarnings("unused")

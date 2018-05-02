@@ -29,7 +29,7 @@ import eu.etaxonomy.cdm.io.jaxb.JaxbExportConfigurator;
 
 /**
  * @author a.babadshanjan
- * @created 25.09.2008
+ * @since 25.09.2008
  */
 public class JaxbExportActivator {
 

@@ -39,7 +39,7 @@ import eu.etaxonomy.cdm.model.taxon.TaxonBase;
 
 /**
  * @author n.hoffmann
- * @created 18.11.2008
+ * @since 18.11.2008
  * @version 1.0
  */
 @Component

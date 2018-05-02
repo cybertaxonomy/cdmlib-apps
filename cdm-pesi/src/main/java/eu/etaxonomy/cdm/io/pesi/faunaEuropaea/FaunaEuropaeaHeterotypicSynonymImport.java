@@ -32,7 +32,7 @@ import eu.etaxonomy.cdm.model.taxon.TaxonBase;
  * basionym synonyms.
  *
  * @author a.babadshanjan
- * @created 22.09.2009
+ * @since 22.09.2009
  * @version 1.0
  */
 @Component

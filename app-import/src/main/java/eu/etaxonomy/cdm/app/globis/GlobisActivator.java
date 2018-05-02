@@ -32,7 +32,7 @@ import eu.etaxonomy.cdm.model.name.TaxonName;
 
 /**
  * @author a.mueller
- * @created 14.04.2010
+ * @since 14.04.2010
  */
 public class GlobisActivator {
 	private static final Logger logger = Logger.getLogger(GlobisActivator.class);

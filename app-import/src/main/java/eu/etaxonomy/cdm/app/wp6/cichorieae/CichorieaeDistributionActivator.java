@@ -22,7 +22,7 @@ import eu.etaxonomy.cdm.io.excel.distribution.DistributionImportConfigurator;
 
 /**
  * @author a.babadshanjan
- * @created 31.10.2008
+ * @since 31.10.2008
  */
 public class CichorieaeDistributionActivator {
 	

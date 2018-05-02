@@ -50,7 +50,7 @@ import eu.etaxonomy.cdm.strategy.parser.TimePeriodParser;
 
 /**
  * @author a.mueller
- * @created 27.02.2012
+ * @since 27.02.2012
  */
 public abstract class IndexFungorumImportBase extends CdmImportBase<IndexFungorumImportConfigurator, IndexFungorumImportState> implements ICdmIO<IndexFungorumImportState>, IPartitionedIO<IndexFungorumImportState> {
 	private static final Logger logger = Logger.getLogger(IndexFungorumImportBase.class);

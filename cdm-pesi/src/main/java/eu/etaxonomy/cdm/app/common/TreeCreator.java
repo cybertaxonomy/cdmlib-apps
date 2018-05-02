@@ -21,7 +21,7 @@ import eu.etaxonomy.cdm.model.description.FeatureTree;
 
 /**
  * @author a.mueller
- * @created 03.07.2008
+ * @since 03.07.2008
  * @version 1.0
  */
 public class TreeCreator {

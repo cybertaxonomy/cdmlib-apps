@@ -15,7 +15,7 @@ import org.apache.log4j.Logger;
 
 /**
  * @author a.babadshanjan
- * @created 13.01.2009
+ * @since 13.01.2009
  * @version 1.0
  */
 public class CyprusDistributionRow {

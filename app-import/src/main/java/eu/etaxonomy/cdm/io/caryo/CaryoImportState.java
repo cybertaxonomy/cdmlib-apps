@@ -15,7 +15,7 @@ import eu.etaxonomy.cdm.io.common.DbImportStateBase;
 
 /**
  * @author a.mueller
- * @created 11.05.2009
+ * @since 11.05.2009
  * @version 1.0
  */
 public class CaryoImportState extends DbImportStateBase<CaryoImportConfigurator, CaryoImportState>{

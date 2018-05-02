@@ -27,7 +27,7 @@ import eu.etaxonomy.cdm.model.name.NomenclaturalCode;
 
 /**
  * @author a.mueller
- * @created 20.03.2008
+ * @since 20.03.2008
  */
 public class BerlinModelImportConfigurator extends DbImportConfiguratorBase<BerlinModelImportState>{
     private static final long serialVersionUID = 70300913255425256L;

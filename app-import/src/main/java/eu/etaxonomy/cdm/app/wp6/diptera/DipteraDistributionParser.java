@@ -46,7 +46,7 @@ import eu.etaxonomy.cdm.model.taxon.TaxonBase;
 
 /**
  * @author a.mueller
- * @created 17.10.2008
+ * @since 17.10.2008
  * @version 1.0
  */
 public class DipteraDistributionParser {

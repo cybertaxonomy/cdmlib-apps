@@ -26,7 +26,7 @@ import eu.etaxonomy.cdm.model.taxon.TaxonNode;
 
 /**
  * @author a.mueller
- * @created 11.05.2009
+ * @since 11.05.2009
  */
 public class CubaImportState extends ExcelImportState<CubaImportConfigurator, ExcelRowBase>{
 	@SuppressWarnings("unused")

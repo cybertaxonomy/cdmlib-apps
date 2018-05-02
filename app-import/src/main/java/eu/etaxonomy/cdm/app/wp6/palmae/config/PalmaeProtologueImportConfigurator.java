@@ -23,7 +23,7 @@ import eu.etaxonomy.cdm.model.reference.ReferenceFactory;
 
 /**
  * @author a.mueller
- * @created 23.06.2009
+ * @since 23.06.2009
  * @version 1.0
  */
 public class PalmaeProtologueImportConfigurator extends	ImportConfiguratorBase<DefaultImportState, File> {

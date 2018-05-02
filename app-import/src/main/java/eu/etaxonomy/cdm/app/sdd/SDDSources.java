@@ -17,7 +17,7 @@ import org.apache.log4j.Logger;
 
 /**
  * @author h.fradin
- * @created 24.10.2008
+ * @since 24.10.2008
  * @version 1.0
  */
 public class SDDSources {

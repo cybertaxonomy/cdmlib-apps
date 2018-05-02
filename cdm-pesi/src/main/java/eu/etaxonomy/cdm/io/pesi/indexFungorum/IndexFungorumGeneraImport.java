@@ -35,7 +35,7 @@ import eu.etaxonomy.cdm.model.taxon.TaxonBase;
 
 /**
  * @author a.mueller
- * @created 27.02.2012
+ * @since 27.02.2012
  */
 @Component
 public class IndexFungorumGeneraImport  extends IndexFungorumImportBase {

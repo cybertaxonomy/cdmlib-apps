@@ -35,7 +35,7 @@ import eu.etaxonomy.cdm.model.taxon.TaxonBase;
 
 /**
  * @author a.mueller
- * @created 01.10.2009
+ * @since 01.10.2009
  */
 public class PalmaePostImportUpdater {
 	private static final Logger logger = Logger.getLogger(PalmaePostImportUpdater.class);

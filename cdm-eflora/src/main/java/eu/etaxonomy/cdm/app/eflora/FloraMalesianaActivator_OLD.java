@@ -34,7 +34,7 @@ import eu.etaxonomy.cdm.model.reference.ReferenceFactory;
 
 /**
  * @author a.mueller
- * @created 20.06.2008
+ * @since 20.06.2008
  * @version 1.0
  */
 public class FloraMalesianaActivator_OLD {

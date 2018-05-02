@@ -47,7 +47,7 @@ import eu.etaxonomy.cdm.strategy.parser.NonViralNameParserImpl;
 
 /**
  * @author a.babadshanjan
- * @created 08.01.2009
+ * @since 08.01.2009
  */
 
 @Component
