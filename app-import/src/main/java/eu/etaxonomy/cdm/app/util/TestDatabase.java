@@ -126,7 +126,7 @@ public class TestDatabase {
 
 	    SpecimenOrObservationBase<?> specimen = DerivedUnit.NewPreservedSpecimenInstance();
 
-	    specimen.setIndividualCount(12);
+	    specimen.setIndividualCount("12");
 
 
 	    Feature featureIndAss = Feature.INDIVIDUALS_ASSOCIATION();
