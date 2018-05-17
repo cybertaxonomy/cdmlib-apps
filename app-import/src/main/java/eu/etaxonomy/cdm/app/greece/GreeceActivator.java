@@ -102,43 +102,43 @@ public class GreeceActivator {
         Team team = Team.NewInstance();
 
         Person person = Person.NewInstance();
-        person.setFirstname("P.");
-        person.setLastname("Dimopoulos");
+        person.setGivenName("P.");
+        person.setFamilyName("Dimopoulos");
         team.addTeamMember(person);
 
         person = Person.NewInstance();
-        person.setFirstname("Th.");
-        person.setLastname("Raus");
+        person.setGivenName("Th.");
+        person.setFamilyName("Raus");
         team.addTeamMember(person);
 
         person = Person.NewInstance();
-        person.setFirstname("E.");
-        person.setLastname("Bergmeier");
+        person.setGivenName("E.");
+        person.setFamilyName("Bergmeier");
         team.addTeamMember(person);
 
         person = Person.NewInstance();
-        person.setFirstname("Th.");
-        person.setLastname("Constantinidis");
+        person.setGivenName("Th.");
+        person.setFamilyName("Constantinidis");
         team.addTeamMember(person);
 
         person = Person.NewInstance();
-        person.setFirstname("G.");
-        person.setLastname("Iatrou");
+        person.setGivenName("G.");
+        person.setFamilyName("Iatrou");
         team.addTeamMember(person);
 
         person = Person.NewInstance();
-        person.setFirstname("S.");
-        person.setLastname("Kokkini");
+        person.setGivenName("S.");
+        person.setFamilyName("Kokkini");
         team.addTeamMember(person);
 
         person = Person.NewInstance();
-        person.setFirstname("A.");
-        person.setLastname("Strid");
+        person.setGivenName("A.");
+        person.setFamilyName("Strid");
         team.addTeamMember(person);
 
         person = Person.NewInstance();
-        person.setFirstname("D.");
-        person.setLastname("Tzanoudakis");
+        person.setGivenName("D.");
+        person.setFamilyName("Tzanoudakis");
         team.addTeamMember(person);
 
         result.setAuthorship(team);

@@ -189,37 +189,37 @@ public class BfnXmlImportReferences extends BfnXmlImportBase  {
 
         Person person1 = Person.NewInstance();
         person1.setInitials("M.");
-        person1.setLastname("Schnittler");
+        person1.setFamilyName("Schnittler");
         team.addTeamMember(person1);
 
         Person person2 = Person.NewInstance();
         person2.setInitials("V.");
-        person2.setLastname("Kummer");
+        person2.setFamilyName("Kummer");
         team.addTeamMember(person2);
 
         Person person3 = Person.NewInstance();
         person3.setInitials("A.");
-        person3.setLastname("Kuhnt");
+        person3.setFamilyName("Kuhnt");
         team.addTeamMember(person3);
 
         Person person4 = Person.NewInstance();
         person4.setInitials("L.");
-        person4.setLastname("Kriegelsteiner");
+        person4.setFamilyName("Kriegelsteiner");
         team.addTeamMember(person4);
 
         Person person5 = Person.NewInstance();
         person5.setInitials("L.");
-        person5.setLastname("Flatau");
+        person5.setFamilyName("Flatau");
         team.addTeamMember(person5);
 
         Person person6 = Person.NewInstance();
         person6.setInitials("H.");
-        person6.setLastname("Müller");
+        person6.setFamilyName("Müller");
         team.addTeamMember(person5);
 
         Person person7 = Person.NewInstance();
         person7.setInitials("U.");
-        person7.setLastname("Täglich");
+        person7.setFamilyName("Täglich");
         team.addTeamMember(person7);
 
         return team;
@@ -253,87 +253,87 @@ public class BfnXmlImportReferences extends BfnXmlImportBase  {
 
         Person person1 = Person.NewInstance();
         person1.setInitials("V.");
-        person1.setLastname("Wirth");
+        person1.setFamilyName("Wirth");
         team.addTeamMember(person1);
 
         Person person2 = Person.NewInstance();
         person2.setInitials("M.");
-        person2.setLastname("Hauck");
+        person2.setFamilyName("Hauck");
         team.addTeamMember(person2);
 
         Person person3 = Person.NewInstance();
         person3.setInitials("W.");
-        person3.setLastname("von Brackel");
+        person3.setFamilyName("von Brackel");
         team.addTeamMember(person3);
 
         Person person4 = Person.NewInstance();
         person4.setInitials("R.");
-        person4.setLastname("Cezanne");
+        person4.setFamilyName("Cezanne");
         team.addTeamMember(person4);
 
         Person person5 = Person.NewInstance();
         person5.setInitials("U.");
-        person5.setLastname("de Bruyn");
+        person5.setFamilyName("de Bruyn");
         team.addTeamMember(person5);
 
         Person person6 = Person.NewInstance();
         person6.setInitials("O.");
-        person6.setLastname("Dürhammer");
+        person6.setFamilyName("Dürhammer");
         team.addTeamMember(person5);
 
         Person person7 = Person.NewInstance();
         person7.setInitials("M.");
-        person7.setLastname("Eichler");
+        person7.setFamilyName("Eichler");
         team.addTeamMember(person7);
 
         Person person8 = Person.NewInstance();
         person8.setInitials("A.");
-        person8.setLastname("Gnüchtel");
+        person8.setFamilyName("Gnüchtel");
         team.addTeamMember(person8);
 
         Person person9 = Person.NewInstance();
         person9.setInitials("V.");
-        person9.setLastname("John");
+        person9.setFamilyName("John");
         team.addTeamMember(person9);
 
         Person person10 = Person.NewInstance();
         person10.setInitials("B.");
-        person10.setLastname("Litterski");
+        person10.setFamilyName("Litterski");
         team.addTeamMember(person10);
 
         Person person11 = Person.NewInstance();
         person11.setInitials("V.");
-        person11.setLastname("Otte");
+        person11.setFamilyName("Otte");
         team.addTeamMember(person11);
 
         Person person12 = Person.NewInstance();
         person12.setInitials("U.");
-        person12.setLastname("Schiefelbein");
+        person12.setFamilyName("Schiefelbein");
         team.addTeamMember(person12);
 
         Person person13 = Person.NewInstance();
         person13.setInitials("P.");
-        person13.setLastname("Scholz");
+        person13.setFamilyName("Scholz");
         team.addTeamMember(person13);
 
         Person person14 = Person.NewInstance();
         person14.setInitials("M.");
-        person14.setLastname("Schultz");
+        person14.setFamilyName("Schultz");
         team.addTeamMember(person14);
 
         Person person15 = Person.NewInstance();
         person15.setInitials("R.");
-        person15.setLastname("Stordeur");
+        person15.setFamilyName("Stordeur");
         team.addTeamMember(person15);
 
         Person person16 = Person.NewInstance();
         person16.setInitials("T.");
-        person16.setLastname("Feuerer");
+        person16.setFamilyName("Feuerer");
         team.addTeamMember(person16);
 
         Person person17 = Person.NewInstance();
         person17.setInitials("D.");
-        person17.setLastname("Heinrich");
+        person17.setFamilyName("Heinrich");
         team.addTeamMember(person17);
 
         return team;
@@ -363,7 +363,7 @@ public class BfnXmlImportReferences extends BfnXmlImportBase  {
     private Person makeTeamBand3_zuenslerfalter() {
         Person person = Person.NewInstance();
         person.setInitials("M.");
-        person.setLastname("Nuss");
+        person.setFamilyName("Nuss");
         return person;
     }
 
@@ -389,7 +389,7 @@ public class BfnXmlImportReferences extends BfnXmlImportBase  {
     private Person makeTeamBand3_wespen() {
         Person person = Person.NewInstance();
         person.setInitials("C.");
-        person.setLastname("Schmid-Egger");
+        person.setFamilyName("Schmid-Egger");
         return person;
     }
 
@@ -421,12 +421,12 @@ public class BfnXmlImportReferences extends BfnXmlImportBase  {
 
         Person person1 = Person.NewInstance();
         person1.setInitials("H.");
-        person1.setLastname("Meyer");
+        person1.setFamilyName("Meyer");
         team.addTeamMember(person1);
 
         Person person2 = Person.NewInstance();
         person2.setInitials("R.");
-        person2.setLastname("Wagner");
+        person2.setFamilyName("Wagner");
         team.addTeamMember(person2);
 
         return team;
@@ -460,7 +460,7 @@ public class BfnXmlImportReferences extends BfnXmlImportBase  {
 
         Person person1 = Person.NewInstance();
         person1.setInitials("R.");
-        person1.setLastname("Reinhardt");
+        person1.setFamilyName("Reinhardt");
         team.addTeamMember(person1);
 
         Person person2 = makeBolz();
@@ -497,17 +497,17 @@ public class BfnXmlImportReferences extends BfnXmlImportBase  {
 
         Person person1 = Person.NewInstance();
         person1.setInitials("E.");
-        person1.setLastname("Rennwald");
+        person1.setFamilyName("Rennwald");
         team.addTeamMember(person1);
 
         Person person2 = Person.NewInstance();
         person2.setInitials("T.");
-        person2.setLastname("Sobczyk");
+        person2.setFamilyName("Sobczyk");
         team.addTeamMember(person2);
 
         Person person3 = Person.NewInstance();
         person3.setInitials("A.");
-        person3.setLastname("Hofmann");
+        person3.setFamilyName("Hofmann");
         team.addTeamMember(person3);
 
         return team;
@@ -541,37 +541,37 @@ public class BfnXmlImportReferences extends BfnXmlImportBase  {
 
         Person person1 = Person.NewInstance();
         person1.setInitials("R.");
-        person1.setLastname("Trusch");
+        person1.setFamilyName("Trusch");
         team.addTeamMember(person1);
 
         Person person2 = Person.NewInstance();
         person2.setInitials("J.");
-        person2.setLastname("Gelbrecht");
+        person2.setFamilyName("Gelbrecht");
         team.addTeamMember(person2);
 
         Person person3 = Person.NewInstance();
         person3.setInitials("A.");
-        person3.setLastname("Schmidt");
+        person3.setFamilyName("Schmidt");
         team.addTeamMember(person3);
 
         Person person4 = Person.NewInstance();
         person4.setInitials("C.");
-        person4.setLastname("Schönborn");
+        person4.setFamilyName("Schönborn");
         team.addTeamMember(person4);
 
         Person person5 = Person.NewInstance();
         person5.setInitials("H.");
-        person5.setLastname("Schumacher");
+        person5.setFamilyName("Schumacher");
         team.addTeamMember(person5);
 
         Person person6 = Person.NewInstance();
         person6.setInitials("H.");
-        person6.setLastname("Wegner");
+        person6.setFamilyName("Wegner");
         team.addTeamMember(person5);
 
         Person person7 = Person.NewInstance();
         person7.setInitials("W.");
-        person7.setLastname("Wolf");
+        person7.setFamilyName("Wolf");
         team.addTeamMember(person7);
 
         return team;
@@ -605,22 +605,22 @@ public class BfnXmlImportReferences extends BfnXmlImportBase  {
 
         Person person1 = Person.NewInstance();
         person1.setInitials("A.");
-        person1.setLastname("Ssymank");
+        person1.setFamilyName("Ssymank");
         team.addTeamMember(person1);
 
         Person person2 = Person.NewInstance();
         person2.setInitials("D.");
-        person2.setLastname("Doczkal");
+        person2.setFamilyName("Doczkal");
         team.addTeamMember(person2);
 
         Person person3 = Person.NewInstance();
         person3.setInitials("K.");
-        person3.setLastname("Rennwald");
+        person3.setFamilyName("Rennwald");
         team.addTeamMember(person3);
 
         Person person4 = Person.NewInstance();
         person4.setInitials("F.");
-        person4.setLastname("Dziock");
+        person4.setFamilyName("Dziock");
         team.addTeamMember(person4);
 
         return team;
@@ -657,7 +657,7 @@ public class BfnXmlImportReferences extends BfnXmlImportBase  {
 
         Person person2 = Person.NewInstance();
         person2.setInitials("H.");
-        person2.setLastname("Bohn");
+        person2.setFamilyName("Bohn");
         team.addTeamMember(person2);
 
         return team;
@@ -689,7 +689,7 @@ public class BfnXmlImportReferences extends BfnXmlImportBase  {
     private Person makeTeamBand3_raubfliegen() {
         Person ludwig = Person.NewInstance();
         ludwig.setInitials("D.");
-        ludwig.setLastname("Wolff");
+        ludwig.setFamilyName("Wolff");
         return ludwig;
     }
 
@@ -721,27 +721,27 @@ public class BfnXmlImportReferences extends BfnXmlImportBase  {
 
         Person person1 = Person.NewInstance();
         person1.setInitials("A.D.");
-        person1.setLastname("Liston");
+        person1.setFamilyName("Liston");
         team.addTeamMember(person1);
 
         Person person2 = Person.NewInstance();
         person2.setInitials("E.");
-        person2.setLastname("Jansen");
+        person2.setFamilyName("Jansen");
         team.addTeamMember(person2);
 
         Person person3 = Person.NewInstance();
         person3.setInitials("S.M.");
-        person3.setLastname("Blank");
+        person3.setFamilyName("Blank");
         team.addTeamMember(person3);
 
         Person person4 = Person.NewInstance();
         person4.setInitials("M.");
-        person4.setLastname("Kraus");
+        person4.setFamilyName("Kraus");
         team.addTeamMember(person4);
 
         Person person5 = Person.NewInstance();
         person5.setInitials("A.");
-        person5.setLastname("Taeger");
+        person5.setFamilyName("Taeger");
         team.addTeamMember(person5);
 
         return team;
@@ -775,7 +775,7 @@ public class BfnXmlImportReferences extends BfnXmlImportBase  {
 
         Person person1 = Person.NewInstance();
         person1.setInitials("D.");
-        person1.setLastname("Matzke");
+        person1.setFamilyName("Matzke");
         team.addTeamMember(person1);
 
         Person person2 = makeKoehlerG();
@@ -805,17 +805,17 @@ public class BfnXmlImportReferences extends BfnXmlImportBase  {
 
         Person person1 = Person.NewInstance();
         person1.setInitials("S.");
-        person1.setLastname("Mass");
+        person1.setFamilyName("Mass");
         team.addTeamMember(person1);
 
         Person person2 = Person.NewInstance();
         person2.setInitials("P.");
-        person2.setLastname("Detzel");
+        person2.setFamilyName("Detzel");
         team.addTeamMember(person2);
 
         Person person3 = Person.NewInstance();
         person3.setInitials("A.");
-        person3.setLastname("Staudt");
+        person3.setFamilyName("Staudt");
         team.addTeamMember(person3);
 
         return team;
@@ -838,7 +838,7 @@ public class BfnXmlImportReferences extends BfnXmlImportBase  {
     private Person makeTeamBand3_fransenfluegler() {
         Person person = Person.NewInstance();
         person.setInitials("R.");
-        person.setLastname("zur Strassen");
+        person.setFamilyName("zur Strassen");
         return person;
     }
 
@@ -870,7 +870,7 @@ public class BfnXmlImportReferences extends BfnXmlImportBase  {
 
         Person person1 = Person.NewInstance();
         person1.setInitials("V.");
-        person1.setLastname("Wachlin");
+        person1.setFamilyName("Wachlin");
         team.addTeamMember(person1);
 
         Person person2 = makeBolz();
@@ -903,12 +903,12 @@ public class BfnXmlImportReferences extends BfnXmlImportBase  {
 
         Person person1 = Person.NewInstance();
         person1.setInitials("J.");
-        person1.setLastname("Jungbluth");
+        person1.setFamilyName("Jungbluth");
         team.addTeamMember(person1);
 
         Person person2 = Person.NewInstance();
         person2.setInitials("D. von");
-        person2.setLastname("Knorre");
+        person2.setFamilyName("Knorre");
         team.addTeamMember(person2);
 
         return team;
@@ -942,37 +942,37 @@ public class BfnXmlImportReferences extends BfnXmlImportBase  {
 
         Person person1 = Person.NewInstance();
         person1.setInitials("P.");
-        person1.setLastname("Westrich");
+        person1.setFamilyName("Westrich");
         team.addTeamMember(person1);
 
         Person person2 = Person.NewInstance();
         person2.setInitials("U.");
-        person2.setLastname("Frommer");
+        person2.setFamilyName("Frommer");
         team.addTeamMember(person2);
 
         Person person3 = Person.NewInstance();
         person3.setInitials("K.");
-        person3.setLastname("Mandery");
+        person3.setFamilyName("Mandery");
         team.addTeamMember(person3);
 
         Person person4 = Person.NewInstance();
         person4.setInitials("H.");
-        person4.setLastname("Riemann");
+        person4.setFamilyName("Riemann");
         team.addTeamMember(person4);
 
         Person person5 = Person.NewInstance();
         person5.setInitials("H.");
-        person5.setLastname("Ruhnke");
+        person5.setFamilyName("Ruhnke");
         team.addTeamMember(person5);
 
         Person person6 = Person.NewInstance();
         person6.setInitials("C.");
-        person6.setLastname("Saure");
+        person6.setFamilyName("Saure");
         team.addTeamMember(person5);
 
         Person person7 = Person.NewInstance();
         person7.setInitials("J.");
-        person7.setLastname("Voith");
+        person7.setFamilyName("Voith");
         team.addTeamMember(person7);
 
         return team;
@@ -1004,7 +1004,7 @@ public class BfnXmlImportReferences extends BfnXmlImportBase  {
     private Person makeTeamBand3_ameisen() {
         Person person = Person.NewInstance();
         person.setInitials("B.");
-        person.setLastname("Seifert");
+        person.setFamilyName("Seifert");
         return person;
     }
 
@@ -1036,52 +1036,52 @@ public class BfnXmlImportReferences extends BfnXmlImportBase  {
 
         Person person1 = Person.NewInstance();
         person1.setInitials("R.");
-        person1.setLastname("Thiel");
+        person1.setFamilyName("Thiel");
         team.addTeamMember(person1);
 
         Person person2 = Person.NewInstance();
         person2.setInitials("H.");
-        person2.setLastname("Winkler");
+        person2.setFamilyName("Winkler");
         team.addTeamMember(person2);
 
         Person person3 = Person.NewInstance();
         person3.setInitials("U.");
-        person3.setLastname("Böttcher");
+        person3.setFamilyName("Böttcher");
         team.addTeamMember(person3);
 
         Person person4 = Person.NewInstance();
         person4.setInitials("A.");
-        person4.setLastname("Dänhardt");
+        person4.setFamilyName("Dänhardt");
         team.addTeamMember(person4);
 
         Person person5 = Person.NewInstance();
         person5.setInitials("R.");
-        person5.setLastname("Fricke");
+        person5.setFamilyName("Fricke");
         team.addTeamMember(person5);
 
         Person person6 = Person.NewInstance();
         person6.setInitials("M.");
-        person6.setLastname("George");
+        person6.setFamilyName("George");
         team.addTeamMember(person5);
 
         Person person7 = Person.NewInstance();
         person7.setInitials("M.");
-        person7.setLastname("Kloppmann");
+        person7.setFamilyName("Kloppmann");
         team.addTeamMember(person7);
 
         Person person8 = Person.NewInstance();
         person8.setInitials("T.");
-        person8.setLastname("Schaarschmidth");
+        person8.setFamilyName("Schaarschmidth");
         team.addTeamMember(person8);
 
         Person person9 = Person.NewInstance();
         person9.setInitials("C.");
-        person9.setLastname("Ubl");
+        person9.setFamilyName("Ubl");
         team.addTeamMember(person9);
 
         Person person10 = Person.NewInstance();
         person10.setInitials("R.");
-        person10.setLastname("Vorberg");
+        person10.setFamilyName("Vorberg");
         team.addTeamMember(person10);
 
         return team;
@@ -1116,22 +1116,22 @@ public class BfnXmlImportReferences extends BfnXmlImportBase  {
 
         Person person1 = Person.NewInstance();
         person1.setInitials("D.");
-        person1.setLastname("Schories");
+        person1.setFamilyName("Schories");
         team.addTeamMember(person1);
 
         Person person2 = Person.NewInstance();
         person2.setInitials("R.");
-        person2.setLastname("Kuhlenkamp");
+        person2.setFamilyName("Kuhlenkamp");
         team.addTeamMember(person2);
 
         Person person3 = Person.NewInstance();
         person3.setInitials("H.");
-        person3.setLastname("Schubert");
+        person3.setFamilyName("Schubert");
         team.addTeamMember(person3);
 
         Person person4 = Person.NewInstance();
         person4.setInitials("U.");
-        person4.setLastname("Selig");
+        person4.setFamilyName("Selig");
         team.addTeamMember(person4);
 
         return team;
@@ -1165,92 +1165,92 @@ public class BfnXmlImportReferences extends BfnXmlImportBase  {
 
         Person person1 = Person.NewInstance();
         person1.setInitials("E.");
-        person1.setLastname("Rachor");
+        person1.setFamilyName("Rachor");
         team.addTeamMember(person1);
 
         Person person2 = Person.NewInstance();
         person2.setInitials("R.");
-        person2.setLastname("Bönsch");
+        person2.setFamilyName("Bönsch");
         team.addTeamMember(person2);
 
         Person person3 = Person.NewInstance();
         person3.setInitials("K.");
-        person3.setLastname("Boos");
+        person3.setFamilyName("Boos");
         team.addTeamMember(person3);
 
         Person person4 = Person.NewInstance();
         person4.setInitials("F.");
-        person4.setLastname("Gosselck");
+        person4.setFamilyName("Gosselck");
         team.addTeamMember(person4);
 
         Person person5 = Person.NewInstance();
         person5.setInitials("M.");
-        person5.setLastname("Grotjahn");
+        person5.setFamilyName("Grotjahn");
         team.addTeamMember(person5);
 
         Person person6 = Person.NewInstance();
         person6.setInitials("C.-P.");
-        person6.setLastname("Günter");
+        person6.setFamilyName("Günter");
         team.addTeamMember(person5);
 
         Person person7 = Person.NewInstance();
         person7.setInitials("M.");
-        person7.setLastname("Gusky");
+        person7.setFamilyName("Gusky");
         team.addTeamMember(person7);
 
         Person person8 = Person.NewInstance();
         person8.setInitials("L.");
-        person8.setLastname("Gutow");
+        person8.setFamilyName("Gutow");
         team.addTeamMember(person8);
 
         Person person9 = Person.NewInstance();
         person9.setInitials("W.");
-        person9.setLastname("Heiber");
+        person9.setFamilyName("Heiber");
         team.addTeamMember(person9);
 
         Person person10 = Person.NewInstance();
         person10.setInitials("P.");
-        person10.setLastname("Jantschik");
+        person10.setFamilyName("Jantschik");
         team.addTeamMember(person10);
 
         Person person11 = Person.NewInstance();
         person11.setInitials("H.-J.");
-        person11.setLastname("Krieg");
+        person11.setFamilyName("Krieg");
         team.addTeamMember(person11);
 
         Person person12 = Person.NewInstance();
         person12.setInitials("R.");
-        person12.setLastname("Krone");
+        person12.setFamilyName("Krone");
         team.addTeamMember(person12);
 
         Person person13 = Person.NewInstance();
         person13.setInitials("P.");
-        person13.setLastname("Nehmer");
+        person13.setFamilyName("Nehmer");
         team.addTeamMember(person13);
 
         Person person14 = Person.NewInstance();
         person14.setInitials("K.");
-        person14.setLastname("Reichert");
+        person14.setFamilyName("Reichert");
         team.addTeamMember(person14);
 
         Person person15 = Person.NewInstance();
         person15.setInitials("H.");
-        person15.setLastname("Reiss");
+        person15.setFamilyName("Reiss");
         team.addTeamMember(person15);
 
         Person person16 = Person.NewInstance();
         person16.setInitials("A.");
-        person16.setLastname("Schröder");
+        person16.setFamilyName("Schröder");
         team.addTeamMember(person16);
 
         Person person17 = Person.NewInstance();
         person17.setInitials("J.");
-        person17.setLastname("Witt");
+        person17.setFamilyName("Witt");
         team.addTeamMember(person17);
 
         Person person18 = Person.NewInstance();
         person18.setInitials("M.L.");
-        person18.setLastname("Zettler");
+        person18.setFamilyName("Zettler");
         team.addTeamMember(person18);
 
         return team;
@@ -1282,7 +1282,7 @@ public class BfnXmlImportReferences extends BfnXmlImportBase  {
     private Person makeTeamBand1_suessfische() {
         Person person = Person.NewInstance();
         person.setInitials("J.");
-        person.setLastname("Freyhof");
+        person.setFamilyName("Freyhof");
         return person;
     }
 
@@ -1314,7 +1314,7 @@ public class BfnXmlImportReferences extends BfnXmlImportBase  {
 
         Person person1 = Person.NewInstance();
         person1.setInitials("H.");
-        person1.setLastname("Meinig");
+        person1.setFamilyName("Meinig");
         team.addTeamMember(person1);
 
         Person person2 = makeBoye();
@@ -1322,7 +1322,7 @@ public class BfnXmlImportReferences extends BfnXmlImportBase  {
 
         Person person3 = Person.NewInstance();
         person3.setInitials("R.");
-        person3.setLastname("Hutterer");
+        person3.setFamilyName("Hutterer");
         team.addTeamMember(person3);
 
         return team;
@@ -1356,27 +1356,27 @@ public class BfnXmlImportReferences extends BfnXmlImportBase  {
 
         Person person1 = Person.NewInstance();
         person1.setInitials("K.-D.");
-        person1.setLastname("Kühnel");
+        person1.setFamilyName("Kühnel");
         team.addTeamMember(person1);
 
         Person person2 = Person.NewInstance();
         person2.setInitials("A.");
-        person2.setLastname("Geiger");
+        person2.setFamilyName("Geiger");
         team.addTeamMember(person2);
 
         Person person3 = Person.NewInstance();
         person3.setInitials("H.");
-        person3.setLastname("Laufer");
+        person3.setFamilyName("Laufer");
         team.addTeamMember(person3);
 
         Person person4 = Person.NewInstance();
         person4.setInitials("R.");
-        person4.setLastname("Podloucky");
+        person4.setFamilyName("Podloucky");
         team.addTeamMember(person4);
 
         Person person5 = Person.NewInstance();
         person5.setInitials("M.");
-        person5.setLastname("Schlüpmann");
+        person5.setFamilyName("Schlüpmann");
         team.addTeamMember(person5);
 
         return team;
@@ -1432,17 +1432,17 @@ public class BfnXmlImportReferences extends BfnXmlImportBase  {
 
         Person person1 = Person.NewInstance();
         person1.setInitials("P.");
-        person1.setLastname("Südbeck");
+        person1.setFamilyName("Südbeck");
         team.addTeamMember(person1);
 
         Person person2 = Person.NewInstance();
         person2.setInitials("H.-G.");
-        person2.setLastname("Bauer");
+        person2.setFamilyName("Bauer");
         team.addTeamMember(person2);
 
         Person person3 = Person.NewInstance();
         person3.setInitials("M.");
-        person3.setLastname("Boschert");
+        person3.setFamilyName("Boschert");
         team.addTeamMember(person3);
 
         Person person4 = makeBoye();
@@ -1450,7 +1450,7 @@ public class BfnXmlImportReferences extends BfnXmlImportBase  {
 
         Person person5 = Person.NewInstance();
         person5.setInitials("W.");
-        person5.setLastname("Knief");
+        person5.setFamilyName("Knief");
         team.addTeamMember(person5);
 
         return team;
@@ -1522,7 +1522,7 @@ public class BfnXmlImportReferences extends BfnXmlImportBase  {
 
         Person person2 = Person.NewInstance();
         person2.setInitials("S.");
-        person2.setLastname("Balzer");
+        person2.setFamilyName("Balzer");
         team.addTeamMember(person2);
 
         Person person3 = makeBeckerN();
@@ -1545,7 +1545,7 @@ public class BfnXmlImportReferences extends BfnXmlImportBase  {
 
         Person person9 = Person.NewInstance();
         person9.setInitials("M.");
-        person9.setLastname("Strauch");
+        person9.setFamilyName("Strauch");
         team.addTeamMember(person9);
 
         return team;
@@ -1592,7 +1592,7 @@ public class BfnXmlImportReferences extends BfnXmlImportBase  {
 
         Person nehring = Person.NewInstance();
         nehring.setInitials("S.");
-        nehring.setLastname("Nehring");
+        nehring.setFamilyName("Nehring");
         team.addTeamMember(nehring);
 
         return team;
@@ -1638,12 +1638,12 @@ public class BfnXmlImportReferences extends BfnXmlImportBase  {
 
         Person otto = Person.NewInstance();
         otto.setInitials("C.");
-        otto.setLastname("Otto");
+        otto.setFamilyName("Otto");
         team.addTeamMember(otto);
 
         Person pauly = Person.NewInstance();
         pauly.setInitials("A.");
-        pauly.setLastname("Pauly");
+        pauly.setFamilyName("Pauly");
         team.addTeamMember(pauly);
         return team;
     }
@@ -1655,70 +1655,70 @@ public class BfnXmlImportReferences extends BfnXmlImportBase  {
     private Person makeBinotHafke() {
         Person binotHafke = Person.NewInstance();
         binotHafke.setInitials("M.");
-        binotHafke.setLastname("Binot-Hafke");
+        binotHafke.setFamilyName("Binot-Hafke");
         return binotHafke;
     }
 
     private Person makeHaupt() {
         Person haupt = Person.NewInstance();
         haupt.setInitials("H.");
-        haupt.setLastname("Haupt");
+        haupt.setFamilyName("Haupt");
         return haupt;
     }
 
     private Person makeLudwig() {
         Person ludwig = Person.NewInstance();
         ludwig.setInitials("G.");
-        ludwig.setLastname("Ludwig");
+        ludwig.setFamilyName("Ludwig");
         return ludwig;
     }
 
     private Person makeBolz() {
         Person person = Person.NewInstance();
         person.setInitials("R.");
-        person.setLastname("Bolz");
+        person.setFamilyName("Bolz");
         return person;
     }
 
     private Person makeKoehlerG() {
         Person person = Person.NewInstance();
         person.setInitials("G.");
-        person.setLastname("Köhler");
+        person.setFamilyName("Köhler");
         return person;
     }
 
     private Person makeHofbauer() {
         Person person = Person.NewInstance();
         person.setInitials("N.");
-        person.setLastname("Hofbauer");
+        person.setFamilyName("Hofbauer");
         return person;
     }
 
     private Person makeBoye() {
         Person person = Person.NewInstance();
         person.setInitials("P.");
-        person.setLastname("Boye");
+        person.setFamilyName("Boye");
         return person;
     }
 
     private Person makeBeckerN() {
         Person person = Person.NewInstance();
         person.setInitials("N.");
-        person.setLastname("Becker");
+        person.setFamilyName("Becker");
         return person;
     }
 
     private Person makeGruttkeH() {
         Person person = Person.NewInstance();
         person.setInitials("H.");
-        person.setLastname("Gruttke");
+        person.setFamilyName("Gruttke");
         return person;
     }
 
     private Person makeMatzkeHajek() {
         Person person = Person.NewInstance();
         person.setInitials("G.");
-        person.setLastname("Matzke-Hajek");
+        person.setFamilyName("Matzke-Hajek");
         return person;
     }
 

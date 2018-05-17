@@ -96,7 +96,7 @@ public class GermanSLActivator {
         Reference result = ReferenceFactory.newGeneric();
         result.setTitle("GermanSL.xslx");
         Person florian = Person.NewTitledInstance("Jansen");
-        florian.setFirstname("Florian");
+        florian.setGivenName("Florian");
         result.setAuthorship(florian);
         return result;
     }
@@ -109,7 +109,7 @@ public class GermanSLActivator {
 //        result.setPages("608 pp.");
 //        result.setDatePublished(TimePeriodParser.parseString("2012"));
 //        Person borhidi = Person.NewTitledInstance("Borhidi");
-//        borhidi.setFirstname("Attila");
+//        borhidi.setGivenName("Attila");
 //        result.setAuthorship(borhidi);
 //        result.setUuid(MexicoConabioTransformer.uuidReferenceBorhidi);
         return result;

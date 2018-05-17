@@ -244,8 +244,8 @@ public class PalmaeImageImport extends AbstractImageImporter {
 						if (metaData.containsKey(MetaData.ARTIST)){
 							//TODO search for the person first and then create the object...
 							artist = Person.NewTitledInstance(metaData.get(MetaData.ARTIST).replace("'", ""));
-							artist.setFirstname(getFirstName(metaData.get(MetaData.ARTIST)).replace("'", ""));
-							artist.setLastname(getLastName(metaData.get(MetaData.ARTIST)).replace("'", ""));
+							artist.setGivenName(getGivenName(metaData.get(MetaData.ARTIST)).replace("'", ""));
+							artist.setFamilyName(getFamilyName(metaData.get(MetaData.ARTIST)).replace("'", ""));
 
 							IMatchStrategy matchStrategy = DefaultMatchStrategy.NewInstance(AgentBase.class);
 							try{
@@ -266,11 +266,11 @@ public class PalmaeImageImport extends AbstractImageImporter {
 							Rights copyright = Rights.NewInstance();
 							copyright.setType(RightsType.COPYRIGHT());
 							Person copyrightOwner;
-							if (artist != null && !artist.getLastname().equalsIgnoreCase(getLastName(metaData.get(MetaData.COPYRIGHT)))){
+							if (artist != null && !artist.getFamilyName().equalsIgnoreCase(getFamilyName(metaData.get(MetaData.COPYRIGHT)))){
 								copyrightOwner = Person.NewInstance();
 
-								copyrightOwner.setFirstname(getFirstName(metaData.get(MetaData.COPYRIGHT)));
-								copyrightOwner.setLastname(getLastName(metaData.get(MetaData.COPYRIGHT)));
+								copyrightOwner.setGivenName(getGivenName(metaData.get(MetaData.COPYRIGHT)));
+								copyrightOwner.setFamilyName(getFamilyName(metaData.get(MetaData.COPYRIGHT)));
 							}else
 							{
 								copyrightOwner = artist;
@@ -314,7 +314,7 @@ public class PalmaeImageImport extends AbstractImageImporter {
 		return;
 	}
 
-	private String getFirstName(String artist){
+	private String getGivenName(String artist){
 		if (artist == null){
 			return "";
 		}
@@ -334,7 +334,7 @@ public class PalmaeImageImport extends AbstractImageImporter {
 		}
 	}
 
-	private String getLastName(String artist){
+	private String getFamilyName(String artist){
 
 		if (artist.contains(",")){
 			String [] artistSplits = artist.split(",");

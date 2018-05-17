@@ -62,8 +62,8 @@ public class BerlinModelAuthorExport extends BerlinModelExportBase<Person> {
 		CdmDbExportMapping<BerlinModelExportState, BerlinModelExportConfigurator, IExportTransformer> mapping = new CdmDbExportMapping<BerlinModelExportState, BerlinModelExportConfigurator, IExportTransformer>(tableName);
 		mapping.addMapper(IdMapper.NewInstance("AuthorId"));
 		mapping.addMapper(DbStringMapper.NewInstance("nomenclaturalTitle", "Abbrev"));
-		mapping.addMapper(DbStringMapper.NewInstance("firstname", "FirstName"));
-		mapping.addMapper(DbStringMapper.NewInstance("lastname", "LastName"));
+		mapping.addMapper(DbStringMapper.NewInstance("givenname", "FirstName"));
+		mapping.addMapper(DbStringMapper.NewInstance("familyname", "LastName"));
 		mapping.addMapper(DbTimePeriodMapper.NewInstance("lifespan", "Dates"));
 		mapping.addMapper(DbExtensionMapper.NewInstance(ExtensionType.NOMENCLATURAL_STANDARD(), "NomStandard"));
 		mapping.addMapper(DbExtensionMapper.NewInstance(ExtensionType.AREA_OF_INTREREST(), "AreaOfInterest"));

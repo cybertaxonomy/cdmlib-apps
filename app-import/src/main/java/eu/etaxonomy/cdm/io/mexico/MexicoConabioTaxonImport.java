@@ -183,7 +183,7 @@ public class MexicoConabioTaxonImport<CONFIG extends MexicoConabioImportConfigur
                     result.setTitle(authorStrPart);
                 }else{
                     Person person = Person.NewInstance();
-                    person.setLastname(authorStrPart);
+                    person.setFamilyName(authorStrPart);
                     result.setAuthorship(person);
                     state.putAgentBase(person.getTitleCache(), person);
                 }
@@ -207,7 +207,7 @@ public class MexicoConabioTaxonImport<CONFIG extends MexicoConabioImportConfigur
     private void addTeamMember(Team team, String author) {
         if (StringUtils.isNotBlank(author)){
             Person person = Person.NewInstance();
-            person.setLastname(author.trim());
+            person.setFamilyName(author.trim());
             team.addTeamMember(person);
         }
     }

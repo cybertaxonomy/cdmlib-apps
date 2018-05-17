@@ -483,8 +483,8 @@ public class EuroMedActivator {
                 }
                 if (userEraabStraube.getPerson() == null){
                     Person eckhard = Person.NewInstance();
-                    eckhard.setLastname("von Raab-Straube");
-                    eckhard.setFirstname("Eckhard");
+                    eckhard.setFamilyName("von Raab-Straube");
+                    eckhard.setGivenName("Eckhard");
                     eckhard.setPrefix("Dr.");
                     userEraabStraube.setPerson(eckhard);
                 }

@@ -623,7 +623,7 @@ public class BogotaSpecimenImport<CONFIG extends BogotaSpecimenImportConfigurato
         }else if (collectorType.equals("Brother") || collectorType.equals("Person")){
             Person person = Person.NewInstance();
             if (collectorType.equals("Person")){
-                person.setLastname(record.get(COL_COLLECTOR_LASTNAME));
+                person.setFamilyName(record.get(COL_COLLECTOR_LASTNAME));
                 String initials = CdmUtils.concat("", record.get(COL_COLLECTOR_FIRSTNAME), record.get(COL_COLLECTOR_MIDDLENAME));
                 initials = (initials == null)? null : initials.replaceAll("\\s", "");
                 person.setInitials(initials);
@@ -635,7 +635,7 @@ public class BogotaSpecimenImport<CONFIG extends BogotaSpecimenImportConfigurato
             }else{
                 person.setTitleCache(collectors, true);
                 person.setPrefix("Hno.");
-                person.setFirstname(collectors.replace("Hno.", "").trim());
+                person.setGivenName(collectors.replace("Hno.", "").trim());
             }
             collector = person;
         }else if (collectorType.equals("Group")){
@@ -743,12 +743,12 @@ public class BogotaSpecimenImport<CONFIG extends BogotaSpecimenImportConfigurato
                 splits[length - 2]= splits[length - 2]+"." + splits[length - 1];
                 length--;
             }
-            String lastName = splits[length - 1];
+            String familyName = splits[length - 1];
             String initials = null;
             for (int i= 0; i < length-1;i++){
                 initials = CdmUtils.concat("", initials, splits[i]+".");
             }
-            person.setLastname(lastName);
+            person.setFamilyName(familyName);
             person.setInitials(initials);
             TeamOrPersonBase<?> result = getDeduplicationHelper(state).getExistingAuthor(state, person);
             return result;

@@ -74,8 +74,8 @@ public class SynthesysCacheActivator {
             Reference reference = ReferenceFactory.newGeneric();
             reference.setTitleCache("Chenopodium vulvaria observations from the Botanical Society of the British Isles", true);
             Person p = Person.NewInstance();
-            p.setFirstname("Quentin");
-            p.setLastname("Groom");
+            p.setGivenName("Quentin");
+            p.setFamilyName("Groom");
             p.addEmailAddress("qgroom@bsbi.co.uk");
             reference.setAuthorship(p);
             reference.setOrganization("Botanical Society of the British Isles");

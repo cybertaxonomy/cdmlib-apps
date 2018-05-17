@@ -106,14 +106,14 @@ public class BogotaChecklistActivator {
 
         Team team = Team.NewInstance();
         Person bernal = Person.NewTitledInstance("Bernal, R.");
-        bernal.setFirstname("R.");
-        bernal.setLastname("Bernal");
+        bernal.setGivenName("R.");
+        bernal.setFamilyName("Bernal");
         Person gradstein = Person.NewTitledInstance("Gradstein, S.R.");
-        gradstein.setFirstname("S.R.");
-        gradstein.setLastname("Gradstein");
+        gradstein.setGivenName("S.R.");
+        gradstein.setFamilyName("Gradstein");
         Person celis = Person.NewTitledInstance("Celis, M.");
-        celis.setFirstname("M.");
-        celis.setLastname("Celis");
+        celis.setGivenName("M.");
+        celis.setFamilyName("Celis");
         team.addTeamMember(bernal);
         team.addTeamMember(gradstein);
         team.addTeamMember(celis);

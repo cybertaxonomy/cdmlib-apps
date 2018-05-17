@@ -578,20 +578,20 @@ public class SalvadorSpecimenImport
                 + "Quezada|Romero|Ruíz|Sandoval|Serrano|Vásquez|Cabrera|Calderón)";
 
         if (matcher.matches()){
-            String lastname = matcher.group(1);
-            result.setLastname(lastname);
+            String familyname = matcher.group(1);
+            result.setFamilyName(familyname);
             String initials = matcher.group(2);
             result.setInitials(initials);
         }else if (str.matches(noInitials)){
-            result.setLastname(str);
+            result.setFamilyName(str);
         }else if (str.matches("Martínez, F. de M.")){
-            result.setLastname("Martínez");
+            result.setFamilyName("Martínez");
             result.setInitials("F. de M.");
         }else if (str.equals("et al.")){
             team.setHasMoreMembers(true);
             return;
         }else if (str.startsWith("Grupo Ecológico")){
-            result.setLastname(str);
+            result.setFamilyName(str);
         }else{
             String message = "Collector did not match pattern: " + str;
             state.getResult().addWarning(message, row);

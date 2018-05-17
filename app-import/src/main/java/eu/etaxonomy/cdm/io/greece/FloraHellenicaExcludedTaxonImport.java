@@ -146,7 +146,7 @@ public class FloraHellenicaExcludedTaxonImport<CONFIG extends FloraHellenicaImpo
     private Reference makeHayek1929() {
         Reference ref = ReferenceFactory.newGeneric();
         Person hayek = Person.NewInstance();
-        hayek.setLastname("Hayek");
+        hayek.setFamilyName("Hayek");
         ref.setAuthorship(hayek);
         ref.setDatePublished(TimePeriod.NewInstance(1929));
         return ref;

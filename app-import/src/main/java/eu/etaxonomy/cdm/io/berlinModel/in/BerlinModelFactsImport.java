@@ -911,8 +911,8 @@ public class BerlinModelFactsImport  extends BerlinModelImportBase {
     private AgentBase<?> getSalvadorArtist() {
         if (salvadorArtistId == null){
             Person person = Person.NewInstance();
-            person.setFirstname("José Gerver");
-            person.setLastname("Molina");
+            person.setGivenName("José Gerver");
+            person.setFamilyName("Molina");
             salvadorArtistId = getAgentService().save(person).getId();
             return person;
         }else{
@@ -942,11 +942,11 @@ public class BerlinModelFactsImport  extends BerlinModelImportBase {
 
     private void makeSalvadorReferences() {
         Person walter = Person.NewTitledInstance("Berendsohn, W. G.");
-        walter.setFirstname("Walter G.");
-        walter.setLastname("Berendsohn");
+        walter.setGivenName("Walter G.");
+        walter.setFamilyName("Berendsohn");
         Person katja = Person.NewTitledInstance("Gruber, Anne Kathrina");
-        katja.setFirstname("Anne Katharina");
-        katja.setLastname("Gruber");
+        katja.setGivenName("Anne Katharina");
+        katja.setFamilyName("Gruber");
         Person monte = Person.NewTitledInstance("Monterrosa Salomón, J.");
         Person olmedo = Person.NewTitledInstance("Olmedo Galán, P.");
         Person rodriguez = Person.NewTitledInstance("Rodríguez Delcid, D");

@@ -76,11 +76,11 @@ public class CubaVocabularyImport extends CdmImportBase<CubaImportConfigurator, 
         refAS.setUuid(CubaTransformer.uuidRefAS);
         refAS.setTitle("Catalogue of seed plants of the West Indies");
         Person acevedo = Person.NewInstance();
-        acevedo.setFirstname("Pedro");
-        acevedo.setLastname("Acevedo-Rodríguez");
+        acevedo.setGivenName("Pedro");
+        acevedo.setFamilyName("Acevedo-Rodríguez");
         Person strong = Person.NewInstance();
-        strong.setFirstname("Mark T.");
-        strong.setLastname("Strong");
+        strong.setGivenName("Mark T.");
+        strong.setFamilyName("Strong");
         Team asTeam = Team.NewInstance();
         asTeam.addTeamMember(acevedo);
         asTeam.addTeamMember(strong);

@@ -1,15 +1,14 @@
 /**
 * Copyright (C) 2007 EDIT
-* European Distributed Institute of Taxonomy 
+* European Distributed Institute of Taxonomy
 * http://www.e-taxonomy.eu
-* 
+*
 * The contents of this file are subject to the Mozilla Public License Version 1.1
 * See LICENSE.TXT at the top of this package for the full license terms.
 */
 package eu.etaxonomy.cdm.io.berlinModel.in;
 
 import java.sql.ResultSet;
-import java.sql.SQLException;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
@@ -18,7 +17,6 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.springframework.stereotype.Component;
 
-import eu.etaxonomy.cdm.common.CdmUtils;
 import eu.etaxonomy.cdm.io.berlinModel.in.validation.BerlinModelAuthorImportValidator;
 import eu.etaxonomy.cdm.io.common.IOValidator;
 import eu.etaxonomy.cdm.io.common.ImportHelper;
@@ -34,41 +32,42 @@ import eu.etaxonomy.cdm.strategy.parser.TimePeriodParser;
 /**
  * Supported attributes:
  * - AuthorId, Abbrev, FirstName, LastName, Dates, AreaOfInterest, NomStandard, createUpdateNotes
- * 
+ *
  * @author a.mueller
  * @since 20.03.2008
- * @version 1.0
  */
 @Component
 public class BerlinModelAuthorImport extends BerlinModelImportBase {
-	private static final boolean BLANK_TO_NULL = true;
+    private static final long serialVersionUID = 2155984573495140615L;
+
+    private static final boolean BLANK_TO_NULL = true;
 
 	private static final Logger logger = Logger.getLogger(BerlinModelAuthorImport.class);
 
 	public static final String NAMESPACE = "Author";
-	
+
 //	private static int recordsPerLog = 5000;
 	private static final String dbTableName = "Author";
 	private static final String pluralString = "Authors";
-	
+
 	public BerlinModelAuthorImport(){
 		super(dbTableName, pluralString);
 	}
-	
+
 	@Override
 	protected String getIdQuery(BerlinModelImportState state) {
 		String result = " SELECT authorId FROM " + getTableName();
 		if (StringUtils.isNotBlank(state.getConfig().getAuthorFilter())){
-			result += " WHERE " +  state.getConfig().getAuthorFilter(); 
-		} 
+			result += " WHERE " +  state.getConfig().getAuthorFilter();
+		}
 		return result;
 	}
 
 	@Override
 	protected String getRecordQuery(BerlinModelImportConfigurator config) {
-		String strRecordQuery = 
+		String strRecordQuery =
 			" SELECT * " +
-            " FROM " + dbTableName + " " + 
+            " FROM " + dbTableName + " " +
             " WHERE authorId IN ( " + ID_LIST_TOKEN + " )";
 		return strRecordQuery;
 	}
@@ -77,40 +76,40 @@ public class BerlinModelAuthorImport extends BerlinModelImportBase {
 	public boolean doPartition(ResultSetPartitioner partitioner, BerlinModelImportState state)  {
 		String dbAttrName;
 		String cdmAttrName;
-		Map<Integer, Person> personMap = new HashMap<Integer, Person>();
-		
+		Map<Integer, Person> personMap = new HashMap<>();
+
 		boolean success = true;
 		ResultSet rs = partitioner.getResultSet();
 		try{
 			//for each author
 			while (rs.next()){
-					
+
 			//	partitioner.doLogPerLoop(recordsPerLog, pluralString);
-				
+
 					//create Agent element
 					int authorId = rs.getInt("AuthorId");
-					
+
 					Person author = Person.NewInstance();
-					
+
 					dbAttrName = "Abbrev";
 					cdmAttrName = "nomenclaturalTitle";
 					success &= ImportHelper.addStringValue(rs, author, dbAttrName, cdmAttrName, BLANK_TO_NULL);
 
 					dbAttrName = "FirstName";
-					cdmAttrName = "firstname";
+					cdmAttrName = "givenname";
 					success &= ImportHelper.addStringValue(rs, author, dbAttrName, cdmAttrName, BLANK_TO_NULL);
-					
+
 					dbAttrName = "LastName";
-					cdmAttrName = "lastname";
+					cdmAttrName = "familyname";
 					success &= ImportHelper.addStringValue(rs, author, dbAttrName, cdmAttrName, BLANK_TO_NULL);
-					
+
 					String dates = rs.getString("dates");
 					if (dates != null){
 						dates.trim();
 						TimePeriod lifespan = TimePeriodParser.parseString(dates);
 						author.setLifespan(lifespan);
 					}
-					
+
 //				    //AreaOfInterest
 					String areaOfInterest = rs.getString("AreaOfInterest");
 					if (StringUtils.isNotBlank(areaOfInterest)){
@@ -122,8 +121,8 @@ public class BerlinModelAuthorImport extends BerlinModelImportBase {
 					if (StringUtils.isNotBlank(nomStandard)){
 						Extension.NewInstance(author, nomStandard, ExtensionType.NOMENCLATURAL_STANDARD());
 					}
-					
-					
+
+
 					//initials
 					String initials = null;
 					for (int j = 1; j <= rs.getMetaData().getColumnCount(); j++){
@@ -141,11 +140,11 @@ public class BerlinModelAuthorImport extends BerlinModelImportBase {
 				doIdCreatedUpdatedNotes(state, author, rs, authorId, NAMESPACE);
 
 				personMap.put(authorId, author);
-	
+
 			} //while rs.hasNext()
 			//logger.info("save " + i + " "+pluralString + " ...");
 			getAgentService().save((Collection)personMap.values());
-			
+
 				}catch(Exception ex){
 					logger.error(ex.getMessage());
 					ex.printStackTrace();
@@ -160,13 +159,13 @@ public class BerlinModelAuthorImport extends BerlinModelImportBase {
 		// no related objects exist
 		return result;
 	}
-			
+
 	@Override
 	protected boolean doCheck(BerlinModelImportState state){
 		IOValidator<BerlinModelImportState> validator = new BerlinModelAuthorImportValidator();
 		return validator.validate(state);
 	}
-	
+
 	@Override
 	protected boolean isIgnore(BerlinModelImportState state){
 		return ! state.getConfig().isDoAuthors();

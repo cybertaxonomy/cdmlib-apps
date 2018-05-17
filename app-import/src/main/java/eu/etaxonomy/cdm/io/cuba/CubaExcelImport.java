@@ -889,7 +889,7 @@ public class CubaExcelImport
             newCombination = TaxonName.castAndDeproxy(name1);
         }
         if (matchAuthor(basionymName.getCombinationAuthorship(), newCombination.getBasionymAuthorship())
-                && BasionymRelationCreator.matchLastNamePart(basionymName, newCombination)){
+                && BasionymRelationCreator.matchFamilyNamePart(basionymName, newCombination)){
             newCombination.addBasionym(basionymName);
         }else{
             if ( (newCombination.getBasionyms().isEmpty() || ! onlyIfNotYetExists)
@@ -1108,9 +1108,9 @@ public class CubaExcelImport
         }
 
         String[] splits = title.split("\\s+");
-        int nNotFirstName = isFilius ? 2 : 1;
-        person.setLastname(splits[splits.length - nNotFirstName] + (isFilius? " f." : ""));
-        person.setFirstname(CdmUtils.concat(" ", Arrays.copyOfRange(splits, 0, splits.length-nNotFirstName)));
+        int nNotGivenName = isFilius ? 2 : 1;
+        person.setFamilyName(splits[splits.length - nNotGivenName] + (isFilius? " f." : ""));
+        person.setGivenName(CdmUtils.concat(" ", Arrays.copyOfRange(splits, 0, splits.length-nNotGivenName)));
         return person;
     }
 

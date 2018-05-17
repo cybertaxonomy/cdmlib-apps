@@ -103,7 +103,7 @@ public class MexicoBorhidiActivator {
         Reference result = ReferenceFactory.newGeneric();
         result.setTitle("Borhidi 2012 accepted spp checked in TROPICOS.XLSX");
         Person borhidi = Person.NewTitledInstance("Borhidi");
-        borhidi.setFirstname("Attila");
+        borhidi.setGivenName("Attila");
         result.setAuthorship(borhidi);
         return result;
     }
@@ -116,7 +116,7 @@ public class MexicoBorhidiActivator {
         result.setPages("608 pp.");
         result.setDatePublished(TimePeriodParser.parseString("2012"));
         Person borhidi = Person.NewTitledInstance("Borhidi");
-        borhidi.setFirstname("Attila");
+        borhidi.setGivenName("Attila");
         result.setAuthorship(borhidi);
         result.setUuid(MexicoConabioTransformer.uuidReferenceBorhidi);
         return result;

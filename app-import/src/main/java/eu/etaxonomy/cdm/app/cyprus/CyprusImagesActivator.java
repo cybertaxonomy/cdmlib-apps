@@ -304,8 +304,8 @@ public class CyprusImagesActivator {
         Matcher matcher = Pattern.compile(regEx).matcher(artist);
         Person person = Person.NewInstance();
         if (matcher.matches()){
-            person.setFirstname(matcher.group(1).trim());
-            person.setLastname(matcher.group(2).trim());
+            person.setGivenName(matcher.group(1).trim());
+            person.setFamilyName(matcher.group(2).trim());
         }else{
             person.setTitleCache(artist, true);
             logger.warn("Person could not be parsed: " + artist + " for file " + fileName);

@@ -160,10 +160,10 @@ public class FloraHellenicaImageImport<CONFIG extends FloraHellenicaImportConfig
                 Person person = Person.NewInstance();
                 String[] split = artistStr.split("\\+");
                 if (split.length == 1){
-                    person.setLastname(artistStr);
+                    person.setFamilyName(artistStr);
                 }else if (split.length == 2){
-                    person.setFirstname(split[0]);
-                    person.setLastname(split[1]);
+                    person.setGivenName(split[0]);
+                    person.setFamilyName(split[1]);
                 }else{
                     person.setTitleCache("artistStr", true);
                 }

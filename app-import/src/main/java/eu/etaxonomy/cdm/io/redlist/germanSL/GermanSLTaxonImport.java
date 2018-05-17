@@ -247,7 +247,7 @@ public class GermanSLTaxonImport<CONFIG extends GermanSLImportConfigurator>
 //                    result.setTitle(authorStrPart);
 //                }else{
 //                    Person person = Person.NewInstance();
-//                    person.setLastname(authorStrPart);
+//                    person.setFamilyName(authorStrPart);
 //                    result.setAuthorship(person);
 //                    state.putAgentBase(person.getTitleCache(), person);
 //                }

@@ -121,8 +121,8 @@ public class MexicoConabioActivator {
         result.setTitle("Rubiáceas de México");
         result.setDatePublished(TimePeriodParser.parseString("2016"));
         Person author = Person.NewInstance();
-        author.setFirstname("Helga");
-        author.setLastname("Ochoterena Booth");
+        author.setGivenName("Helga");
+        author.setFamilyName("Ochoterena Booth");
         result.setAuthorship(author);
         result.setUuid(MexicoConabioTransformer.uuidReferenceConabio);
         return result;
