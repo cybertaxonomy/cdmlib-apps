@@ -50,6 +50,7 @@ import eu.etaxonomy.cdm.model.agent.Institution;
 import eu.etaxonomy.cdm.model.agent.Person;
 import eu.etaxonomy.cdm.model.common.CdmBase;
 import eu.etaxonomy.cdm.model.common.Language;
+import eu.etaxonomy.cdm.model.common.TimePeriod;
 import eu.etaxonomy.cdm.model.description.DescriptionElementBase;
 import eu.etaxonomy.cdm.model.description.Feature;
 import eu.etaxonomy.cdm.model.description.TaxonDescription;
@@ -287,7 +288,7 @@ public class CyprusImagesActivator {
             media.addRights(right);
         }
         if (createdDate != null && (force || media.getMediaCreated() == null)){
-            media.setMediaCreated(createdDate);
+            media.setMediaCreated(TimePeriod.NewInstance(createdDate));
         }
         if (locality != null && (force || media.getDescription(Language.ENGLISH()) == null)){
             media.putDescription(Language.ENGLISH(), locality);

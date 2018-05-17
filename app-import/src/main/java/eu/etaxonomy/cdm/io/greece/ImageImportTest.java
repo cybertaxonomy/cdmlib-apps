@@ -27,6 +27,7 @@ import org.joda.time.format.DateTimeFormatter;
 import eu.etaxonomy.cdm.common.media.ImageInfo;
 import eu.etaxonomy.cdm.io.common.utils.ImportDeduplicationHelper;
 import eu.etaxonomy.cdm.model.agent.AgentBase;
+import eu.etaxonomy.cdm.model.common.TimePeriod;
 import eu.etaxonomy.cdm.model.description.TaxonDescription;
 import eu.etaxonomy.cdm.model.description.TextData;
 import eu.etaxonomy.cdm.model.media.ImageFile;
@@ -109,7 +110,7 @@ public class ImageImportTest {
                     int height = imageMetaData.getHeight();
                     int width = imageMetaData.getWidth();
                     Integer size = null;
-                    DateTime mediaCreated = null;
+                    TimePeriod mediaCreated = null;
                     AgentBase<?> artist = null;
                     Media media = ImageFile.NewMediaInstance(mediaCreated, artist, uri, mimeType, suffix, size, height, width);
 

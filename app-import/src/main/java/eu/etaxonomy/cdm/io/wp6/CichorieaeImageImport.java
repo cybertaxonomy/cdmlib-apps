@@ -18,7 +18,6 @@ import java.util.UUID;
 
 import org.apache.http.HttpException;
 import org.apache.log4j.Logger;
-import org.joda.time.DateTime;
 import org.springframework.stereotype.Component;
 
 import eu.etaxonomy.cdm.app.images.AbstractImageImporter;
@@ -28,6 +27,7 @@ import eu.etaxonomy.cdm.common.media.ImageInfo;
 import eu.etaxonomy.cdm.model.agent.AgentBase;
 import eu.etaxonomy.cdm.model.common.Language;
 import eu.etaxonomy.cdm.model.common.LanguageString;
+import eu.etaxonomy.cdm.model.common.TimePeriod;
 import eu.etaxonomy.cdm.model.description.TaxonDescription;
 import eu.etaxonomy.cdm.model.description.TextData;
 import eu.etaxonomy.cdm.model.media.ImageFile;
@@ -172,7 +172,7 @@ public class CichorieaeImageImport extends AbstractImageImporter {
 		int height = imageMetaData.getHeight();
 		int width = imageMetaData.getWidth();
 		Integer size = null;
-		DateTime mediaCreated = null;
+		TimePeriod mediaCreated = null;
 		AgentBase<?> artist = null;
 
 //		ImageFile image = ImageFile.NewInstance(uri, size, height, width);
