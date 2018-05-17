@@ -970,9 +970,9 @@ public class BerlinModelFactsImport  extends BerlinModelImportBase {
         vol2.setAuthorship(team1);
         vol3.setAuthorship(team2);
 
-        vol1.setDatePublished(TimePeriodParser.parseString("2009"));
-        vol2.setDatePublished(TimePeriodParser.parseString("2012"));
-        vol3.setDatePublished(TimePeriodParser.parseString("2016"));
+        vol1.setDatePublished(TimePeriodParser.parseStringVerbatim("2009"));
+        vol2.setDatePublished(TimePeriodParser.parseStringVerbatim("2012"));
+        vol3.setDatePublished(TimePeriodParser.parseStringVerbatim("2016"));
 
         Reference englera = ReferenceFactory.newPrintSeries("Englera");
         vol1.setInSeries(englera);

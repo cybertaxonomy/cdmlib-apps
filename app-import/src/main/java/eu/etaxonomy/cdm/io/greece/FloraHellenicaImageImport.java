@@ -33,6 +33,7 @@ import eu.etaxonomy.cdm.io.mexico.SimpleExcelTaxonImportState;
 import eu.etaxonomy.cdm.model.agent.Person;
 import eu.etaxonomy.cdm.model.common.CdmBase;
 import eu.etaxonomy.cdm.model.common.Language;
+import eu.etaxonomy.cdm.model.common.TimePeriod;
 import eu.etaxonomy.cdm.model.description.Feature;
 import eu.etaxonomy.cdm.model.description.TaxonDescription;
 import eu.etaxonomy.cdm.model.description.TextData;
@@ -150,7 +151,7 @@ public class FloraHellenicaImageImport<CONFIG extends FloraHellenicaImportConfig
                     }else if ("date time original".equalsIgnoreCase(item.getKeyword())){
                         DateTimeFormatter f = DateTimeFormat.forPattern("yyyy:MM:dd HH:mm:ss");
                         DateTime created = f.withZone(DateTimeZone.forID("Europe/Athens")).parseDateTime(value);
-                        media.setMediaCreated(created);
+                        media.setMediaCreated(TimePeriod.NewInstance(created));
                     }
                 }
             } catch (ImageReadException | IOException e1) {

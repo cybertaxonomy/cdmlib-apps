@@ -52,7 +52,7 @@ import eu.etaxonomy.cdm.model.common.LanguageString;
 import eu.etaxonomy.cdm.model.common.Marker;
 import eu.etaxonomy.cdm.model.common.MarkerType;
 import eu.etaxonomy.cdm.model.common.OriginalSourceType;
-import eu.etaxonomy.cdm.model.common.TimePeriod;
+import eu.etaxonomy.cdm.model.common.VerbatimTimePeriod;
 import eu.etaxonomy.cdm.model.name.IBotanicalName;
 import eu.etaxonomy.cdm.model.name.NameRelationshipType;
 import eu.etaxonomy.cdm.model.name.NameTypeDesignation;
@@ -262,7 +262,7 @@ public class IAPTExcelImport<CONFIG extends IAPTImportConfigurator> extends Simp
                 if(bookVariedadesTradicionales == null){
                     bookVariedadesTradicionales = ReferenceFactory.newBook();
                     bookVariedadesTradicionales.setTitle("Las variedades tradicionales de frutales de la Cuenca del Río Segura. Catálogo Etnobotánico (1): Frutos secos, oleaginosos, frutales de hueso, almendros y frutales de pepita");
-                    bookVariedadesTradicionales.setDatePublished(TimePeriod.NewInstance(1997));
+                    bookVariedadesTradicionales.setDatePublished(VerbatimTimePeriod.NewVerbatimInstance(1997));
                     getReferenceService().save(bookVariedadesTradicionales);
                 }
                 nomRefStr = nomRefStr.replaceAll("^.*?\\:.*?\\:", "Las variedades tradicionales:");
@@ -302,10 +302,10 @@ public class IAPTExcelImport<CONFIG extends IAPTImportConfigurator> extends Simp
 
         if(taxonName.getNomenclaturalReference() != null){
             if(pupDate != null) {
-                taxonName.getNomenclaturalReference().setDatePublished(TimePeriod.NewInstance(pupDate));
+                taxonName.getNomenclaturalReference().setDatePublished(VerbatimTimePeriod.NewVerbatimInstance(pupDate));
             }
             if(nomRefIssue != null) {
-                ((Reference)taxonName.getNomenclaturalReference()).setVolume(nomRefIssue);
+                taxonName.getNomenclaturalReference().setVolume(nomRefIssue);
             }
         }
 

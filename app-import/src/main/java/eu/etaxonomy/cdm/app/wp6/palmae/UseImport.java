@@ -54,7 +54,7 @@ import eu.etaxonomy.cdm.model.common.Marker;
 import eu.etaxonomy.cdm.model.common.MarkerType;
 import eu.etaxonomy.cdm.model.common.TermType;
 import eu.etaxonomy.cdm.model.common.TermVocabulary;
-import eu.etaxonomy.cdm.model.common.TimePeriod;
+import eu.etaxonomy.cdm.model.common.VerbatimTimePeriod;
 import eu.etaxonomy.cdm.model.description.CategoricalData;
 import eu.etaxonomy.cdm.model.description.Feature;
 import eu.etaxonomy.cdm.model.description.FeatureNode;
@@ -187,9 +187,9 @@ public class UseImport {
 				citation.setTitle(lstUpdate.get(4));
 
 				//citation.
-				TimePeriod year = TimePeriod.NewInstance(Integer.parseInt(lstUpdate.get(5)));
+				VerbatimTimePeriod year = VerbatimTimePeriod.NewVerbatimInstance(Integer.parseInt(lstUpdate.get(5)));
 				citation.setDatePublished(year);
-				citation.setTitleCache(lstUpdate.get(6));
+				citation.setTitleCache(lstUpdate.get(6), true);
 				//citation.
 				for(TaxonBase taxon : taxa) {
 					String taxonUUID = taxon.getUuid().toString();
@@ -197,7 +197,6 @@ public class UseImport {
 					if(idTaxonToUpdate.equals(taxonUUID)) {
 						logger.info("Processing Taxn " + taxon.getTitleCache() + " with UUID: " + taxon.getUuid());
 						if(taxon.isInstanceOf(Synonym.class)) {
-							Taxon bestCandidate = null;
 							Synonym synonym = CdmBase.deproxy(taxon, Synonym.class);
 							Taxon acceptetdTaxon = synonym.getAcceptedTaxon();
 							if(acceptetdTaxon != null){

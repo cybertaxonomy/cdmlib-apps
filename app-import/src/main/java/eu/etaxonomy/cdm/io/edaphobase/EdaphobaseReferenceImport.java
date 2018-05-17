@@ -24,7 +24,7 @@ import eu.etaxonomy.cdm.io.common.IPartitionedIO;
 import eu.etaxonomy.cdm.io.common.ImportHelper;
 import eu.etaxonomy.cdm.io.common.ResultSetPartitioner;
 import eu.etaxonomy.cdm.model.common.CdmBase;
-import eu.etaxonomy.cdm.model.common.TimePeriod;
+import eu.etaxonomy.cdm.model.common.VerbatimTimePeriod;
 import eu.etaxonomy.cdm.model.reference.Reference;
 import eu.etaxonomy.cdm.model.reference.ReferenceFactory;
 
@@ -150,7 +150,7 @@ public class EdaphobaseReferenceImport extends EdaphobaseImportBase {
             ref.setPages(pageStr);
         }
         if (year != null){
-            ref.setDatePublished(TimePeriod.NewInstance(year));
+            ref.setDatePublished(VerbatimTimePeriod.NewVerbatimInstance(year));
         }
         ref.setVolume(volume);
         ref.setReferenceAbstract(abstractt);

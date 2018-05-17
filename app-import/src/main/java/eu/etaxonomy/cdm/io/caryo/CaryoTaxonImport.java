@@ -30,7 +30,7 @@ import eu.etaxonomy.cdm.model.common.Annotation;
 import eu.etaxonomy.cdm.model.common.CdmBase;
 import eu.etaxonomy.cdm.model.common.Language;
 import eu.etaxonomy.cdm.model.common.OriginalSourceType;
-import eu.etaxonomy.cdm.model.common.TimePeriod;
+import eu.etaxonomy.cdm.model.common.VerbatimTimePeriod;
 import eu.etaxonomy.cdm.model.name.IBotanicalName;
 import eu.etaxonomy.cdm.model.name.NameTypeDesignation;
 import eu.etaxonomy.cdm.model.name.NomenclaturalStatus;
@@ -358,7 +358,7 @@ public class CaryoTaxonImport  extends DbImportBase<CaryoImportState, CaryoImpor
 	}
 
 	private void makeDate(CaryoImportState state, ResultSet rs, INomenclaturalReference ref, Integer id) throws SQLException {
-		TimePeriod tp = TimePeriod.NewInstance();
+	    VerbatimTimePeriod tp = VerbatimTimePeriod.NewVerbatimInstance();
 		String pre1 = rs.getString("DatePre1");
 		String pre2 = rs.getString("DatePre2");
 		Float year1 = nullSafeFloat(rs, "DateYear1");

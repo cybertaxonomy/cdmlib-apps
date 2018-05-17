@@ -29,7 +29,7 @@ import eu.etaxonomy.cdm.io.common.IPartitionedIO;
 import eu.etaxonomy.cdm.io.common.ResultSetPartitioner;
 import eu.etaxonomy.cdm.model.common.CdmBase;
 import eu.etaxonomy.cdm.model.common.Language;
-import eu.etaxonomy.cdm.model.common.TimePeriod;
+import eu.etaxonomy.cdm.model.common.VerbatimTimePeriod;
 import eu.etaxonomy.cdm.model.reference.Reference;
 import eu.etaxonomy.cdm.model.reference.ReferenceFactory;
 import eu.etaxonomy.cdm.model.taxon.Classification;
@@ -40,10 +40,8 @@ import eu.etaxonomy.cdm.model.taxon.TaxonBase;
 import eu.etaxonomy.cdm.model.taxon.TaxonRelationshipType;
 
 /**
- *
  * @author pplitzner
  * @since Mar 1, 2016
- *
  */
 
 @Component
@@ -236,7 +234,7 @@ public class RedListGefaesspflanzenImportClassification extends DbImportBase<Red
     private void addTaxonToClassification(Classification classification, String classificationNamespace, String relationString, final TaxonBase<?> gesamtListeTaxon, long id, RedListGefaesspflanzenImportState state){
         Taxon taxon = HibernateProxyHelper.deproxy(state.getRelatedObject(classificationNamespace, String.valueOf(id), TaxonBase.class), Taxon.class);
         //add concept relation to gesamtliste/checkliste
-        if(taxon!=null && CdmUtils.isNotBlank(relationString) && !relationString.equals(".")){
+        if(taxon!=null && isNotBlank(relationString) && !relationString.equals(".")){
             //if the related concept in gesamtliste/checkliste is a synonym then we
             //create a relation to the accepted taxon
             Taxon acceptedGesamtListeTaxon = getAcceptedTaxon(gesamtListeTaxon);
@@ -286,7 +284,7 @@ public class RedListGefaesspflanzenImportClassification extends DbImportBase<Red
                 classification.addParentChild(parent, (Taxon)taxonBase, null, null);
             }
 
-            if(CdmUtils.isNotBlank(taxZusatzString)){
+            if(isNotBlank(taxZusatzString)){
                 if(taxZusatzString.trim().equals("p. p.")){
                     RedListUtil.logMessage(id, "pro parte for accepted taxon "+taxonBase, logger);
                 }
@@ -306,10 +304,10 @@ public class RedListGefaesspflanzenImportClassification extends DbImportBase<Red
             //regular synonym
             else{
                 Synonym synonym = (Synonym) taxonBase;
-                parent.addSynonym((Synonym) taxonBase, SynonymType.HETEROTYPIC_SYNONYM_OF());
+                parent.addSynonym(synonym, SynonymType.HETEROTYPIC_SYNONYM_OF());
 
                 //TAX_ZUSATZ
-                if(CdmUtils.isNotBlank(taxZusatzString)){
+                if(isNotBlank(taxZusatzString)){
                     if(taxZusatzString.trim().equals("p. p.")){
                         synonym.setProParte(true);
                     }
@@ -378,7 +376,7 @@ public class RedListGefaesspflanzenImportClassification extends DbImportBase<Red
         reference.setUuid(referenceUuid);
         classification.setReference(reference);
         if(yearPublished!=null){
-            reference.setDatePublished(TimePeriod.NewInstance(yearPublished));
+            reference.setDatePublished(VerbatimTimePeriod.NewVerbatimInstance(yearPublished));
         }
         return getClassificationService().save(classification);
     }

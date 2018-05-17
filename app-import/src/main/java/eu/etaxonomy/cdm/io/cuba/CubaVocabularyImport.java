@@ -85,7 +85,7 @@ public class CubaVocabularyImport extends CdmImportBase<CubaImportConfigurator, 
         asTeam.addTeamMember(acevedo);
         asTeam.addTeamMember(strong);
         refAS.setAuthorship(asTeam);
-        refAS.setDatePublished(TimePeriodParser.parseString("2012-01-01"));
+        refAS.setDatePublished(TimePeriodParser.parseStringVerbatim("2012-01-01"));
         refAS.setVolume("98");
         refAS.setPages("i-xxv, 1-1192");
         refAS.setIssn("0081-024X");

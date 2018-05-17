@@ -108,7 +108,7 @@ public class BogotaSpecimenActivator {
 //        result.setTitleCache("Herbario. 2017. Identificaciones de muestras de herbario en el banco de datos del Jardín Botánico Nacional José Celestino Mutis. Bogotá [exportados 18-sep-2017]", true);
         result.setTitle("Identificaciones de muestras de herbario en el banco de datos del Jardín Botánico Nacional José Celestino Mutis.");
         result.setPlacePublished("Bogotá");
-        result.setDatePublished(TimePeriodParser.parseString("2017"));
+        result.setDatePublished(TimePeriodParser.parseStringVerbatim("2017"));
         result.getDatePublished().setFreeText("2017 [exportados 18-sep-2017]");
 
         Team team = Team.NewTitledInstance("Herbario", null);

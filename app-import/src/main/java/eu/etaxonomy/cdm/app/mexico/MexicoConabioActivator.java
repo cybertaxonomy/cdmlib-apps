@@ -25,7 +25,7 @@ import eu.etaxonomy.cdm.model.agent.Institution;
 import eu.etaxonomy.cdm.model.agent.Person;
 import eu.etaxonomy.cdm.model.common.Language;
 import eu.etaxonomy.cdm.model.common.Representation;
-import eu.etaxonomy.cdm.model.common.TimePeriod;
+import eu.etaxonomy.cdm.model.common.VerbatimTimePeriod;
 import eu.etaxonomy.cdm.model.description.Feature;
 import eu.etaxonomy.cdm.model.description.FeatureNode;
 import eu.etaxonomy.cdm.model.description.FeatureTree;
@@ -108,7 +108,7 @@ public class MexicoConabioActivator {
     private Reference getSourceReference() {
         Reference result = ReferenceFactory.newDatabase();
         result.setTitleCache("CONABIO database", true);
-        TimePeriod tp = TimePeriodParser.parseString("2016");
+        VerbatimTimePeriod tp = TimePeriodParser.parseStringVerbatim("2016");
         tp.setStartMonth(5);
         result.setDatePublished(tp);
         Institution inst = Institution.NewNamedInstance("CONABIO");
@@ -119,7 +119,7 @@ public class MexicoConabioActivator {
     private Reference getSecReference() {
         Reference result = ReferenceFactory.newDatabase();
         result.setTitle("Rubiáceas de México");
-        result.setDatePublished(TimePeriodParser.parseString("2016"));
+        result.setDatePublished(TimePeriodParser.parseStringVerbatim("2016"));
         Person author = Person.NewInstance();
         author.setGivenName("Helga");
         author.setFamilyName("Ochoterena Booth");

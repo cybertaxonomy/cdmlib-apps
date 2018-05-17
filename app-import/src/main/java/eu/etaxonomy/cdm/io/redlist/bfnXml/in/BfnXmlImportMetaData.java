@@ -20,7 +20,7 @@ import org.springframework.transaction.TransactionStatus;
 import eu.etaxonomy.cdm.common.ResultWrapper;
 import eu.etaxonomy.cdm.io.common.ICdmIO;
 import eu.etaxonomy.cdm.io.redlist.bfnXml.BfnXmlConstants;
-import eu.etaxonomy.cdm.model.common.TimePeriod;
+import eu.etaxonomy.cdm.model.common.VerbatimTimePeriod;
 import eu.etaxonomy.cdm.model.reference.Reference;
 import eu.etaxonomy.cdm.model.reference.ReferenceFactory;
 import eu.etaxonomy.cdm.strategy.parser.TimePeriodParser;
@@ -76,7 +76,7 @@ public class BfnXmlImportMetaData extends BfnXmlImportBase implements ICdmIO<Bfn
 
 			Reference sourceReference = ReferenceFactory.newGeneric();
 			sourceReference.setTitle(sourceFileName);
-			TimePeriod parsedTimePeriod = TimePeriodParser.parseString(timeStamp);
+			VerbatimTimePeriod parsedTimePeriod = TimePeriodParser.parseStringVerbatim(timeStamp);
 			sourceReference.setDatePublished(parsedTimePeriod);
 			state.setCompleteSourceRef(sourceReference);
 		}

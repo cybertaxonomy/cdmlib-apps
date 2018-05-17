@@ -30,7 +30,7 @@ import eu.etaxonomy.cdm.model.common.CdmBase;
 import eu.etaxonomy.cdm.model.common.Extension;
 import eu.etaxonomy.cdm.model.common.ExtensionType;
 import eu.etaxonomy.cdm.model.common.Language;
-import eu.etaxonomy.cdm.model.common.TimePeriod;
+import eu.etaxonomy.cdm.model.common.VerbatimTimePeriod;
 import eu.etaxonomy.cdm.model.name.IBotanicalName;
 import eu.etaxonomy.cdm.model.name.NomenclaturalCode;
 import eu.etaxonomy.cdm.model.name.NomenclaturalStatus;
@@ -159,7 +159,7 @@ public class MexicoConabioTaxonImport<CONFIG extends MexicoConabioImportConfigur
         Reference result = state.getReference(secRefStr);
         if (result == null && secRefStr != null){
             result = ReferenceFactory.newBook();
-            TimePeriod tp = TimePeriodParser.parseString(secRefStr.substring(secRefStr.length()-4));
+            VerbatimTimePeriod tp = TimePeriodParser.parseStringVerbatim(secRefStr.substring(secRefStr.length()-4));
             String authorStrPart = secRefStr.substring(0, secRefStr.length()-6);
             if (! (authorStrPart + ", " + tp.getYear()).equals(secRefStr)){
                 logger.warn(line + "Sec ref could not be parsed: " + secRefStr);
@@ -303,7 +303,7 @@ public class MexicoConabioTaxonImport<CONFIG extends MexicoConabioImportConfigur
      * @param state
      */
     private void addSourcesToReferences(IBotanicalName name, SimpleExcelTaxonImportState<CONFIG> state) {
-        Reference nomRef = (Reference)name.getNomenclaturalReference();
+        Reference nomRef = name.getNomenclaturalReference();
         if (nomRef != null){
             nomRef.addSource(makeOriginalSource(state));
             if (nomRef.getInReference() != null){

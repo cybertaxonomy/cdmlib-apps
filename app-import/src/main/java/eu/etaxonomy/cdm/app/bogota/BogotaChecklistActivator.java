@@ -101,7 +101,7 @@ public class BogotaChecklistActivator {
         result.setPlacePublished("Bogotá");
         result.setUri(URI.create("http://catalogoplantasdecolombia.unal.edu.co/"));
         result.setPublisher("Instituto de Ciencias Naturales, Universidad Nacional de Colombia");
-        result.setDatePublished(TimePeriodParser.parseString("2016"));
+        result.setDatePublished(TimePeriodParser.parseStringVerbatim("2016"));
         result.getDatePublished().setFreeText("2016 (visited 2017-04-19)");
 
         Team team = Team.NewInstance();

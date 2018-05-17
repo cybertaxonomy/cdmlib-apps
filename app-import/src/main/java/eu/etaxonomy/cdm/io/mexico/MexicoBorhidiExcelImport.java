@@ -177,7 +177,7 @@ public class MexicoBorhidiExcelImport<CONFIG extends MexicoBorhidiImportConfigur
                 article.setInReference(journal);
 
                 titleYear = (isBlank(publishedYear)? titleYear : UTF8.QUOT_DBL_LOW9 + titleYear + UTF8.QUOT_DBL_HIGH_REV9 + "[" + publishedYear + "]");
-                article.setDatePublished(TimePeriodParser.parseString(titleYear));
+                article.setDatePublished(TimePeriodParser.parseStringVerbatim(titleYear));
 
                 article.setAuthorship(name.getCombinationAuthorship());
 
@@ -199,7 +199,7 @@ public class MexicoBorhidiExcelImport<CONFIG extends MexicoBorhidiImportConfigur
 
                 //year
                 titleYear = (isBlank(publishedYear)? titleYear : UTF8.QUOT_DBL_LOW9 + titleYear + UTF8.QUOT_DBL_HIGH_REV9 + "[" + publishedYear + "]");
-                book.setDatePublished(TimePeriodParser.parseString(titleYear));
+                book.setDatePublished(TimePeriodParser.parseStringVerbatim(titleYear));
 
                 book.setAuthorship(name.getCombinationAuthorship());
 

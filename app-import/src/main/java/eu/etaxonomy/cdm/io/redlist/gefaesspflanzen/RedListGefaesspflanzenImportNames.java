@@ -188,7 +188,7 @@ public class RedListGefaesspflanzenImportNames extends DbImportBase<RedListGefae
     }
 
     private void cloneTaxon(final TaxonBase<?> gesamtListeTaxon, String relationString, String sourceNameSpace, Set<TaxonBase> taxaToSave, long id, RedListGefaesspflanzenImportState state){
-        if(CdmUtils.isNotBlank(relationString) && !relationString.equals(".")){
+        if(isNotBlank(relationString) && !relationString.equals(".")){
             Taxon clonedTaxon = null;
 
             if(gesamtListeTaxon.isInstanceOf(Taxon.class)){

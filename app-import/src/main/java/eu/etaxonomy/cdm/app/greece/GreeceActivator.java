@@ -97,7 +97,7 @@ public class GreeceActivator {
         }
         Reference result = ReferenceFactory.newBook();
         result.setTitle("Vascular plants of Greece: An annotated checklist.");
-        result.setDatePublished(TimePeriodParser.parseString("2013"));
+        result.setDatePublished(TimePeriodParser.parseStringVerbatim("2013"));
 
         Team team = Team.NewInstance();
 
@@ -158,7 +158,7 @@ public class GreeceActivator {
     private Reference getSecReference2(){
         Reference result = ReferenceFactory.newArticle();
         result.setTitle("Vascular plants of Greece: An annotated checklist. Supplement");
-        result.setDatePublished(TimePeriodParser.parseString("26.10.2016"));
+        result.setDatePublished(TimePeriodParser.parseStringVerbatim("26.10.2016"));
 
         TeamOrPersonBase<?> team = getSecReference().getAuthorship();
                 result.setAuthorship(team);

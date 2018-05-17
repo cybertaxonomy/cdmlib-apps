@@ -114,7 +114,7 @@ public class MexicoBorhidiActivator {
         result.setPlacePublished("Budapest");
         result.setPublisher("Akadémiai Kiadó");
         result.setPages("608 pp.");
-        result.setDatePublished(TimePeriodParser.parseString("2012"));
+        result.setDatePublished(TimePeriodParser.parseStringVerbatim("2012"));
         Person borhidi = Person.NewTitledInstance("Borhidi");
         borhidi.setGivenName("Attila");
         result.setAuthorship(borhidi);

@@ -18,7 +18,7 @@ import org.springframework.stereotype.Component;
 
 import eu.etaxonomy.cdm.io.mexico.SimpleExcelTaxonImportState;
 import eu.etaxonomy.cdm.model.agent.Person;
-import eu.etaxonomy.cdm.model.common.TimePeriod;
+import eu.etaxonomy.cdm.model.common.VerbatimTimePeriod;
 import eu.etaxonomy.cdm.model.name.IBotanicalName;
 import eu.etaxonomy.cdm.model.name.INonViralName;
 import eu.etaxonomy.cdm.model.name.NomenclaturalCode;
@@ -148,7 +148,7 @@ public class FloraHellenicaExcludedTaxonImport<CONFIG extends FloraHellenicaImpo
         Person hayek = Person.NewInstance();
         hayek.setFamilyName("Hayek");
         ref.setAuthorship(hayek);
-        ref.setDatePublished(TimePeriod.NewInstance(1929));
+        ref.setDatePublished(VerbatimTimePeriod.NewVerbatimInstance(1929));
         return ref;
     }
 

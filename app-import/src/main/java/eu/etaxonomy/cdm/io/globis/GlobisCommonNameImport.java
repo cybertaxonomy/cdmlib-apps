@@ -26,7 +26,7 @@ import eu.etaxonomy.cdm.model.agent.TeamOrPersonBase;
 import eu.etaxonomy.cdm.model.common.CdmBase;
 import eu.etaxonomy.cdm.model.common.Language;
 import eu.etaxonomy.cdm.model.common.OriginalSourceType;
-import eu.etaxonomy.cdm.model.common.TimePeriod;
+import eu.etaxonomy.cdm.model.common.VerbatimTimePeriod;
 import eu.etaxonomy.cdm.model.description.CommonTaxonName;
 import eu.etaxonomy.cdm.model.description.TaxonDescription;
 import eu.etaxonomy.cdm.model.location.Country;
@@ -193,7 +193,7 @@ public class GlobisCommonNameImport  extends GlobisImportBase<Taxon> {
 				result = ReferenceFactory.newGeneric();
 				result.setTitleCache(details, true);
 				result.setTitle(title);
-				result.setDatePublished(TimePeriod.NewInstance(year));
+				result.setDatePublished(VerbatimTimePeriod.NewVerbatimInstance(year));
 
 				TeamOrPersonBase<?> author;
 				String[] authorSplit = authors.split("&");

@@ -214,7 +214,7 @@ public class GlobisReferenceImport  extends GlobisImportBase<Reference> implemen
 			//RefYear
 			//TODO check correct parsing for [] and full dates
 			if (isNotBlank(refYear)){
-				ref.setDatePublished(TimePeriodParser.parseString(refYear));
+				ref.setDatePublished(TimePeriodParser.parseStringVerbatim(refYear));
 			}
 
 			//refPages
