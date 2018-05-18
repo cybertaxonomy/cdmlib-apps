@@ -15,9 +15,7 @@ import java.util.Set;
 import org.apache.log4j.Logger;
 import org.springframework.stereotype.Component;
 
-import eu.etaxonomy.cdm.io.mexico.SimpleExcelTaxonImport;
 import eu.etaxonomy.cdm.io.mexico.SimpleExcelTaxonImportState;
-import eu.etaxonomy.cdm.model.common.CdmBase;
 import eu.etaxonomy.cdm.model.reference.Reference;
 import eu.etaxonomy.cdm.model.taxon.Classification;
 import eu.etaxonomy.cdm.model.taxon.Synonym;
@@ -31,8 +29,7 @@ import eu.etaxonomy.cdm.model.taxon.TaxonBase;
  *
  */
 @Component
-public class GermanSLTaxonRelationImport<CONFIG extends GermanSLImportConfigurator>
-            extends SimpleExcelTaxonImport<CONFIG> {
+public class GermanSLTaxonRelationImport extends GermanSLImporBase {
 
     private static final long serialVersionUID = 3381597141845204995L;
 
@@ -50,7 +47,7 @@ public class GermanSLTaxonRelationImport<CONFIG extends GermanSLImportConfigurat
     private int count = 0;
 
     @Override
-    protected void firstPass(SimpleExcelTaxonImportState<CONFIG> state) {
+    protected void firstPass(SimpleExcelTaxonImportState<GermanSLImportConfigurator> state) {
         count++;
         Map<String, String> record = state.getOriginalRecord();
         String line = state.getCurrentLine() + ": ";
@@ -59,11 +56,12 @@ public class GermanSLTaxonRelationImport<CONFIG extends GermanSLImportConfigurat
         String acceptedStr = getValue(record, GermanSLTaxonImport.VALID_NR);
         String idStr = getValue(record, GermanSLTaxonImport.SPECIES_NR);
         String statusStr = getValue(record, GermanSLTaxonImport.SYNONYM);
+        NameResult nameResult = GermanSLTaxonImport.makeName (line, record, state);
 
         Classification classification = getClassification(state);
         TaxonBase<?> taxonBase = GermanSLTaxonImport.taxonIdMap.get(idStr);
         Taxon parent;
-        if (isAccepted(statusStr)){
+        if (isAccepted(statusStr, nameResult)){
             TaxonBase<?> parentTmp = GermanSLTaxonImport.taxonIdMap.get(parentStr);
             if (parentTmp == null){
                 logger.warn(line + "Parent is missing: "+ parentStr);
@@ -100,38 +98,12 @@ public class GermanSLTaxonRelationImport<CONFIG extends GermanSLImportConfigurat
     }
 
 
-    private boolean isAccepted(String statusStr){
-        if ("FALSE()".equals(statusStr) || "0".equals(statusStr) || "false".equalsIgnoreCase(statusStr)){
-            return true;
-        } else if ("TRUE()".equals(statusStr) || "1".equals(statusStr)|| "true".equalsIgnoreCase(statusStr)){
-            return false;
-        }else{
-            logger.warn("Unhandled taxon status: " + statusStr);
-            return false;
-        }
-    }
-
-
-    /**
-     * @param next
-     * @return
-     */
-    private Taxon getAccepted(TaxonBase<?> taxonBase) {
-        if (taxonBase.isInstanceOf(Taxon.class)){
-            return CdmBase.deproxy(taxonBase, Taxon.class);
-        }else{
-            Synonym syn = CdmBase.deproxy(taxonBase, Synonym.class);
-            return syn.getAcceptedTaxon();
-        }
-    }
-
-
     boolean needsFinalSave = true;
     /**
      * {@inheritDoc}
      */
     @Override
-    protected void secondPass(SimpleExcelTaxonImportState<CONFIG> state) {
+    protected void secondPass(SimpleExcelTaxonImportState<GermanSLImportConfigurator> state) {
         if (needsFinalSave){
             getTaxonService().saveOrUpdate(taxaToSave);
             needsFinalSave = false;
@@ -142,7 +114,7 @@ public class GermanSLTaxonRelationImport<CONFIG extends GermanSLImportConfigurat
     /**
      * @return
      */
-    private Classification getClassification(SimpleExcelTaxonImportState<CONFIG> state) {
+    private Classification getClassification(SimpleExcelTaxonImportState<GermanSLImportConfigurator> state) {
         if (classification == null){
             GermanSLImportConfigurator config = state.getConfig();
             classification = Classification.NewInstance(config.getClassificationName());
@@ -154,7 +126,7 @@ public class GermanSLTaxonRelationImport<CONFIG extends GermanSLImportConfigurat
     }
 
     @Override
-    protected boolean isIgnore(SimpleExcelTaxonImportState<CONFIG> state) {
+    protected boolean isIgnore(SimpleExcelTaxonImportState<GermanSLImportConfigurator> state) {
         return ! state.getConfig().isDoTaxa();
     }
 }

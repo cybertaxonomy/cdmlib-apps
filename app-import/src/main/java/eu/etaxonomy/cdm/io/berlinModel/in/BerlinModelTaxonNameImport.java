@@ -33,6 +33,7 @@ import eu.etaxonomy.cdm.io.common.Source;
 import eu.etaxonomy.cdm.model.agent.Person;
 import eu.etaxonomy.cdm.model.agent.Team;
 import eu.etaxonomy.cdm.model.agent.TeamOrPersonBase;
+import eu.etaxonomy.cdm.model.common.Annotation;
 import eu.etaxonomy.cdm.model.common.CdmBase;
 import eu.etaxonomy.cdm.model.common.Extension;
 import eu.etaxonomy.cdm.model.common.ExtensionType;
@@ -260,7 +261,9 @@ public class BerlinModelTaxonNameImport extends BerlinModelImportBase {
 
 					//created, notes
 					boolean excludeUpdated = true;
-					success &= doIdCreatedUpdatedNotes(state, taxonName, rs, nameId, NAMESPACE, excludeUpdated, false);
+					boolean excludeNotes = true;
+					success &= doIdCreatedUpdatedNotes(state, taxonName, rs, nameId, NAMESPACE, excludeUpdated, excludeNotes);
+					handleNameNotes(state, taxonName, rs, nameId);
 
 					//NonViralName
 					if (taxonName.isNonViral()){
@@ -326,7 +329,72 @@ public class BerlinModelTaxonNameImport extends BerlinModelImportBase {
 	}
 
 
-	private Rank handleProlesAndRaceSublusus(BerlinModelImportState state, ResultSet rs, Rank rank) throws SQLException {
+	/**
+     * @param state
+     * @param taxonName
+     * @param rs
+     * @param nameId
+	 * @throws SQLException
+     */
+    private void handleNameNotes(BerlinModelImportState state, TaxonName taxonName, ResultSet rs, int nameId) throws SQLException {
+        String notesOrig = rs.getString("notes");
+        String notes = filterNotes(notesOrig, nameId);
+        if (isNotBlank(notes) && taxonName != null ){
+            String notesString = String.valueOf(notes);
+            if (notesString.length() > 65530 ){
+                notesString = notesString.substring(0, 65530) + "...";
+                logger.warn("Notes string is longer than 65530 and was truncated: " + taxonName);
+            }
+            Annotation notesAnnotation = Annotation.NewInstance(notesString, Language.DEFAULT());
+            //notesAnnotation.setAnnotationType(AnnotationType.EDITORIAL());
+            //notes.setCommentator(bmiConfig.getCommentator());
+            taxonName.addAnnotation(notesAnnotation);
+        }
+
+    }
+
+    private static final String MCL = "MCL\\s?[0-9]{1,3}(\\-[0-9]{1,4}(\\-[0-9]{1,4}(\\-[0-9]{1,4}(\\-[0-9]{1,3})?)?)?)?";
+    /**
+     * @param notes
+     */
+    private String filterNotes(String notes, int nameId) {
+        String result;
+        if (isBlank(notes)){
+            result = null;
+        }else if (notes.matches("Acc:.*")){
+            if (notes.matches("Acc: .*\\$$") || (notes.matches("Acc: .*"+MCL))){
+                result = null;
+            }else if (notes.matches("Acc: .*(\\$|"+MCL+")\\s*\\{.*\\}")){
+                notes = notes.substring(notes.indexOf("{")+1, notes.length()-1);
+                result = notes;
+            }else if (notes.matches("Acc: .*(\\$|"+MCL+")\\s*\\[.*\\]")){
+                notes = notes.substring(notes.indexOf("[")+1, notes.length()-1);
+                result = notes;
+            }else{
+                logger.warn("Name id: " + nameId + ". Namenote: " + notes);
+                result = notes;
+            }
+        }else if (notes.matches("Syn:.*")){
+            if (notes.matches("Syn: .*\\$$") || (notes.matches("Syn: .*"+MCL))){
+                result = null;
+            }else if (notes.matches("Syn: .*(\\$|"+MCL+")\\s*\\{.*\\}")){
+                notes = notes.substring(notes.indexOf("{")+1, notes.length()-1);
+                result = notes;
+            }else if (notes.matches("Syn: .*(\\$|"+MCL+")\\s*\\[.*\\]")){
+                notes = notes.substring(notes.indexOf("[")+1, notes.length()-1);
+                result = notes;
+            }else{
+                logger.warn("Name id: " + nameId + ". Namenote: " + notes);
+                result = notes;
+            }
+        }else{
+            result = notes;
+        }
+        return result;
+    }
+
+
+    private Rank handleProlesAndRaceSublusus(BerlinModelImportState state, ResultSet rs, Rank rank) throws SQLException {
 		Rank result;
 		String rankAbbrev = rs.getString("RankAbbrev");
 //		String rankStr = rs.getString("Rank");

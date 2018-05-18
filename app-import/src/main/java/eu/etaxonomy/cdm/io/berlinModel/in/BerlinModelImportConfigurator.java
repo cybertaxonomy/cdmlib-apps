@@ -57,6 +57,7 @@ public class BerlinModelImportConfigurator extends DbImportConfiguratorBase<Berl
 	private boolean doTypes = true;
 
 	private boolean isSalvador = false;
+	private boolean isEuroMed = false;
 
 	//taxa
 	private boolean doTaxa = true;
@@ -640,6 +641,9 @@ public class BerlinModelImportConfigurator extends DbImportConfiguratorBase<Berl
 
     public boolean isSalvador() {return isSalvador;}
     public void setSalvador(boolean isSalvador) {this.isSalvador = isSalvador;}
+
+    public boolean isEuroMed() {return isEuroMed;}
+    public void setEuroMed(boolean isEuroMed) {this.isEuroMed = isEuroMed;}
 
     public UUID getFeatureTreeUuid() {
         return featureTreeUuid;

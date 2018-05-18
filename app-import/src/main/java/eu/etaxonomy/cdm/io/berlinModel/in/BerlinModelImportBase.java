@@ -34,8 +34,6 @@ import eu.etaxonomy.cdm.model.description.DescriptionElementBase;
 import eu.etaxonomy.cdm.model.location.Country;
 import eu.etaxonomy.cdm.model.location.NamedArea;
 import eu.etaxonomy.cdm.model.location.NamedAreaType;
-import eu.etaxonomy.cdm.model.name.Rank;
-import eu.etaxonomy.cdm.model.name.TaxonNameFactory;
 import eu.etaxonomy.cdm.model.reference.Reference;
 import eu.etaxonomy.cdm.model.taxon.Taxon;
 import eu.etaxonomy.cdm.model.taxon.TaxonBase;
@@ -44,7 +42,9 @@ import eu.etaxonomy.cdm.model.taxon.TaxonBase;
  * @author a.mueller
  * @since 20.03.2008
  */
-public abstract class BerlinModelImportBase extends DbImportBase<BerlinModelImportState, BerlinModelImportConfigurator>  implements ICdmIO<BerlinModelImportState>, IPartitionedIO<BerlinModelImportState> {
+public abstract class BerlinModelImportBase
+            extends DbImportBase<BerlinModelImportState, BerlinModelImportConfigurator>
+            implements ICdmIO<BerlinModelImportState>, IPartitionedIO<BerlinModelImportState> {
     private static final long serialVersionUID = -4982506434258587864L;
     private static final Logger logger = Logger.getLogger(BerlinModelImportBase.class);
 
@@ -192,9 +192,9 @@ public abstract class BerlinModelImportBase extends DbImportBase<BerlinModelImpo
 		TaxonBase<?> taxonBase = taxonMap.get(String.valueOf(taxonId));
 
 		//TODO for testing
-		if (taxonBase == null && ! state.getConfig().isDoTaxa()){
-			taxonBase = Taxon.NewInstance(TaxonNameFactory.NewBotanicalInstance(Rank.SPECIES()), null);
-		}
+//		if (taxonBase == null && ! state.getConfig().isDoTaxa()){
+//			taxonBase = Taxon.NewInstance(TaxonNameFactory.NewBotanicalInstance(Rank.SPECIES()), null);
+//		}
 
 		Taxon taxon;
 		if ( taxonBase instanceof Taxon ) {
@@ -376,7 +376,7 @@ public abstract class BerlinModelImportBase extends DbImportBase<BerlinModelImpo
 			return getNamedArea(state, BerlinModelTransformer.uuidTerceira, "Menorca", "Euro+Med area 'Menorca'", "Bl(N)", null, null);
 		}
 
-		logger.warn("Area(em: '" + em + "', tdwg: '" + tdwg +"') could not be found for occurrence import");
+		logger.warn("Area(em: '" + em + "', tdwg: '" + tdwg +"') could not be found");
 
 		return null;
 	}

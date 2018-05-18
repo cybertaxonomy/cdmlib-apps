@@ -238,10 +238,10 @@ public class BerlinModelOccurrenceSourceImport  extends BerlinModelImportBase {
 			if (names.size() == 1){
 				return names.get(0);
 			}else {
-				if (names.size()> 2){
+				if (names.size()> 1){
 					logger.info("There is more than one name matching oldName: " + oldName + ".");
 				}
-				return null;
+				return names.get(0);
 				//taxonName = nameParser.parseSimpleName(oldName);
 			}
 		}

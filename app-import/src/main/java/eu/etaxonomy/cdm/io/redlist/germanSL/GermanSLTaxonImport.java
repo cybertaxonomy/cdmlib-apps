@@ -20,7 +20,6 @@ import org.springframework.stereotype.Component;
 
 import eu.etaxonomy.cdm.common.CdmUtils;
 import eu.etaxonomy.cdm.io.common.mapping.UndefinedTransformerMethodException;
-import eu.etaxonomy.cdm.io.mexico.SimpleExcelTaxonImport;
 import eu.etaxonomy.cdm.io.mexico.SimpleExcelTaxonImportState;
 import eu.etaxonomy.cdm.model.common.CdmBase;
 import eu.etaxonomy.cdm.model.common.DefinedTerm;
@@ -46,8 +45,8 @@ import eu.etaxonomy.cdm.model.taxon.TaxonBase;
  *
  */
 @Component
-public class GermanSLTaxonImport<CONFIG extends GermanSLImportConfigurator>
-            extends SimpleExcelTaxonImport<CONFIG> {
+public class GermanSLTaxonImport
+            extends GermanSLImporBase {
 
     private static final long serialVersionUID = 236093186271666895L;
 
@@ -99,7 +98,7 @@ public class GermanSLTaxonImport<CONFIG extends GermanSLImportConfigurator>
 
 
     @Override
-    protected void firstPass(SimpleExcelTaxonImportState<CONFIG> state) {
+    protected void firstPass(SimpleExcelTaxonImportState<GermanSLImportConfigurator> state) {
         String line = state.getCurrentLine() + ": ";
         HashMap<String, String> record = state.getOriginalRecord();
 
@@ -119,16 +118,16 @@ public class GermanSLTaxonImport<CONFIG extends GermanSLImportConfigurator>
         //status
         String statusStr = getValue(record, SYNONYM);
         TaxonBase<?> taxonBase;
-        if (isAccepted(statusStr)){
+        if (isAccepted(statusStr, nameResult)){
             taxonBase = Taxon.NewInstance(taxonName, sec);
-            if (nameResult.proParte){
-                logger.warn(line + "accepted taxon can not be pro parte");
-            }
+//            if (nameResult.proParte){
+//                logger.warn(line + "accepted taxon can not be pro parte in GermanSL");
+//            }
         }else{
             Synonym syn = Synonym.NewInstance(taxonName, sec);
-            if (nameResult.proParte){
-                syn.setProParte(true);
-            }
+//            if (nameResult.proParte){
+//                syn.setProParte(true);
+//            }
             taxonBase = syn;
         }
         if (!isBlank(nameResult.sensu)){
@@ -217,7 +216,7 @@ public class GermanSLTaxonImport<CONFIG extends GermanSLImportConfigurator>
      * @param secRefStr
      * @return
      */
-    private Reference getSecRef(SimpleExcelTaxonImportState<CONFIG> state, String secRefStr, String line) {
+    private Reference getSecRef(SimpleExcelTaxonImportState<GermanSLImportConfigurator> state, String secRefStr, String line) {
         Reference result = state.getReference(secRefStr);
         if (result == null && secRefStr != null){
             result = ReferenceFactory.newGeneric();
@@ -261,19 +260,13 @@ public class GermanSLTaxonImport<CONFIG extends GermanSLImportConfigurator>
     }
 
 
-    private class NameResult{
-        IBotanicalName name;
-        boolean proParte = false;
-        String sensu = null;
-        String auct = null;
-    }
 
     /**
      * @param record
      * @param state
      * @return
      */
-    private NameResult makeName(String line, HashMap<String, String> record, SimpleExcelTaxonImportState<CONFIG> state) {
+    public NameResult makeName(String line, HashMap<String, String> record, SimpleExcelTaxonImportState<GermanSLImportConfigurator> state) {
 
         String specieNrStr = getValue(record, SPECIES_NR);
         String nameStr = getValue(record, ABBREVIAT);
@@ -335,7 +328,7 @@ public class GermanSLTaxonImport<CONFIG extends GermanSLImportConfigurator>
      * @param rankStr
      * @return
      */
-    private Rank makeRank(String line, SimpleExcelTaxonImportState<CONFIG> state, String rankStr) {
+    private Rank makeRank(String line, SimpleExcelTaxonImportState<GermanSLImportConfigurator> state, String rankStr) {
         Rank rank = null;
         try {
             rank = state.getTransformer().getRankByKey(rankStr);
@@ -386,7 +379,7 @@ public class GermanSLTaxonImport<CONFIG extends GermanSLImportConfigurator>
      * @param fullName
      * @return
      */
-    private IBotanicalName getExistingName(SimpleExcelTaxonImportState<CONFIG> state, IBotanicalName fullName) {
+    private IBotanicalName getExistingName(SimpleExcelTaxonImportState<GermanSLImportConfigurator> state, IBotanicalName fullName) {
         initExistinNames(state);
         return (IBotanicalName)state.getName(fullName.getTitleCache());
     }
@@ -395,7 +388,7 @@ public class GermanSLTaxonImport<CONFIG extends GermanSLImportConfigurator>
      * @param state
      */
     @SuppressWarnings("rawtypes")
-    private void initExistinNames(SimpleExcelTaxonImportState<CONFIG> state) {
+    private void initExistinNames(SimpleExcelTaxonImportState<GermanSLImportConfigurator> state) {
         if (!nameMapIsInitialized){
             List<String> propertyPaths = Arrays.asList("");
             List<TaxonName> existingNames = this.getNameService().list(null, null, null, null, propertyPaths);
@@ -429,19 +422,6 @@ public class GermanSLTaxonImport<CONFIG extends GermanSLImportConfigurator>
     }
 
 
-
-    private boolean isAccepted(String statusStr){
-        if ("FALSE()".equals(statusStr) || "0".equals(statusStr) || "false".equalsIgnoreCase(statusStr)){
-            return true;
-        } else if ("TRUE()".equals(statusStr) || "1".equals(statusStr)|| "true".equalsIgnoreCase(statusStr)){
-            return false;
-        }else{
-            logger.warn("Unhandled taxon status: " + statusStr);
-            return false;
-        }
-    }
-
-
     /**
      * @param next
      * @return
@@ -457,7 +437,7 @@ public class GermanSLTaxonImport<CONFIG extends GermanSLImportConfigurator>
 
 
     @Override
-    protected boolean isIgnore(SimpleExcelTaxonImportState<CONFIG> state) {
+    protected boolean isIgnore(SimpleExcelTaxonImportState<GermanSLImportConfigurator> state) {
         return ! state.getConfig().isDoTaxa();
     }
 }

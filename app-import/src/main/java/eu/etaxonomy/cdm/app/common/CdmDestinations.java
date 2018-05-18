@@ -121,7 +121,7 @@ public class CdmDestinations {
         return makeDestination(dbType, cdmServer, cdmDB, -1, cdmUserName, null);
     }
 
-	public static ICdmDataSource cdm_local_test_euromed(){
+	public static ICdmDataSource cdm_local_euromed(){
 		DatabaseTypeEnum dbType = DatabaseTypeEnum.MySQL;
 		String cdmServer = "127.0.0.1";
 		String cdmDB = "euroMed";
@@ -133,7 +133,7 @@ public class CdmDestinations {
 		DatabaseTypeEnum dbType = DatabaseTypeEnum.MySQL;
 		String cdmServer = "127.0.0.1";
 		String cdmDB = "euroMed2";
-		String cdmUserName = "root";
+		String cdmUserName = "edit";
 		return makeDestination(dbType, cdmServer, cdmDB, -1, cdmUserName, null);
 	}
 	public static ICdmDataSource cdm_local_test_euromed3(){

@@ -104,7 +104,7 @@ public class BerlinModelTaxonImport  extends BerlinModelImportBase {
 	protected String getRecordQuery(BerlinModelImportConfigurator config) {
 		String sqlSelect = " SELECT pt.*  ";
 		String sqlFrom = " FROM PTaxon pt ";
-		if (isEuroMed(config) ){
+		if (config.isEuroMed()){
 			sqlFrom = " FROM PTaxon AS pt " +
 							" INNER JOIN v_cdm_exp_taxaAll AS em ON pt.RIdentifier = em.RIdentifier " +
 							" LEFT OUTER JOIN Reference r ON pt.LastScrutinyFk = r.RefId ";
@@ -119,10 +119,6 @@ public class BerlinModelTaxonImport  extends BerlinModelImportBase {
 //			" FROM PTaxon " + state.getConfig().getTaxonTable();
 //			" WHERE ( RIdentifier IN (" + ID_LIST_TOKEN + ") )";
 		return strRecordQuery;
-	}
-
-	private boolean isEuroMed(BerlinModelImportConfigurator config) {
-		return config.getTaxonTable().trim().equals("v_cdm_exp_taxaAll");
 	}
 
 	@Override
@@ -143,7 +139,7 @@ public class BerlinModelTaxonImport  extends BerlinModelImportBase {
 		ResultSet rs = partitioner.getResultSet();
 		try{
 			boolean publishFlagExists = state.getConfig().getSource().checkColumnExists("PTaxon", "PublishFlag");
-			boolean isEuroMed = isEuroMed(state.getConfig());
+			boolean isEuroMed = config.isEuroMed();
 			while (rs.next()){
 
 			//	if ((i++ % modCount) == 0 && i!= 1 ){ logger.info("PTaxa handled: " + (i-1));}
@@ -183,21 +179,23 @@ public class BerlinModelTaxonImport  extends BerlinModelImportBase {
 				Taxon taxon;
 				try {
 					logger.debug(statusFk);
-					if (statusFk == T_STATUS_ACCEPTED || statusFk == T_STATUS_UNRESOLVED ){
+					if (statusFk == T_STATUS_ACCEPTED || statusFk == T_STATUS_UNRESOLVED
+					        || statusFk == T_STATUS_PRO_PARTE_SYN || statusFk == T_STATUS_PARTIAL_SYN ){
 						taxon = Taxon.NewInstance(taxonName, reference);
 						taxonBase = taxon;
 						if (statusFk == T_STATUS_UNRESOLVED){
 							taxon.setTaxonStatusUnknown(true);
 						}
-					}else if (statusFk == T_STATUS_SYNONYM || statusFk == T_STATUS_PRO_PARTE_SYN || statusFk == T_STATUS_PARTIAL_SYN){
+						//TODO marker for pp and partial?
+					}else if (statusFk == T_STATUS_SYNONYM ){
 						synonym = Synonym.NewInstance(taxonName, reference);
 						taxonBase = synonym;
-						if (statusFk == T_STATUS_PRO_PARTE_SYN){
-						    synonym.setProParte(true);
-						}
-						if (statusFk == T_STATUS_PARTIAL_SYN){
-							synonym.setPartial(true);
-						}
+//						if (statusFk == T_STATUS_PRO_PARTE_SYN){
+//						    synonym.setProParte(true);
+//						}
+//						if (statusFk == T_STATUS_PARTIAL_SYN){
+//							synonym.setPartial(true);
+//						}
 					}else{
 						logger.warn("TaxonStatus " + statusFk + " not yet implemented. Taxon (RIdentifier = " + taxonId + ") left out.");
 						success = false;

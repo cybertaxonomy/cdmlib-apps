@@ -34,13 +34,14 @@ public class BgbmInstancesUpdater {
 	};
 
 	private static String[] testDatabases = new String[]{
-	    "cdm_col",
+//	    "cdm_col",
 	    "cdm_Test_Caryophyllales",
 	    "cdm_additivity_test",
         "cdm_bgbm_edit_usergroup",
 	    "cdm_campanulaceae","cdm_caryo_nepenthes",
-		"cdm_corvidae", "cdm_cyprus","cdm_edaphobase_test",
-		"cdm_edit_algaterra", "cdm_edit_cichorieae",
+	    "cdm_caryo_spp","cdm_causcasus_workshop",
+        "cdm_corvidae", "cdm_cyprus","cdm_edaphobase_test",
+		"cdm_edit_algaterra", "cdm_edit_algaterranew","cdm_edit_cichorieae",
 		"cdm_edit_flora_central_africa", "cdm_edit_flora_malesiana",
 		"cdm_edit_globis", "cdm_edit_palmae",
 		"cdm_flora_cuba", "cdm_flora_guianas",
@@ -53,7 +54,7 @@ public class BgbmInstancesUpdater {
 		"cdm_proibiosphere_chenopodium_pilot",
 		"cdm_rem_conf_ak", "cdm_rem_conf_am", "cdm_rem_conf_kl", "cdm_rem_conf_pp",
 		"cdm_rl_animalia","cdm_rl_german_sl","cdm_rl_mammalia", "cdm_rl_plantae",
-		"cdm_salvador",
+		"cdm_salvador","cdm_test1","cdm_test2",
         "cdm_test_euromed",
         "cdm_vibrant_index"
 		};
@@ -70,11 +71,11 @@ public class BgbmInstancesUpdater {
 		"cdm_production_campanulaceae",
 		"cdm_production_caryo_amaranthaceae",
 		"cdm_production_caryo_nepenthaceae",
-		"cdm_production_caryo_nyctaginaceae",
         "cdm_production_caryophyllales",
         "cdm_production_caryophyllales_spp",
         "cdm_production_cichorieae",
-		"cdm_production_corvidae","cdm_production_cyprus",
+		"cdm_production_corvidae",
+	    "cdm_production_cyprus",
 		"cdm_production_diptera",
 		"cdm_production_edaphobase",
         "cdm_production_euromed",
@@ -88,6 +89,7 @@ public class BgbmInstancesUpdater {
         "cdm_production_flora_malesiana_prospective",
 		"cdm_production_flore_gabon",
 		"cdm_production_globis",
+		"cdm_production_myristicaceae",
 		"cdm_production_palmae",
 		"cdm_production_phycobank",
 		"cdm_production_piB_ants_pilot",
@@ -98,8 +100,8 @@ public class BgbmInstancesUpdater {
 		"cdm_production_piB_nephrolepis_pilot",
 		"cdm_production_piB_spiders_pilot",
 		"cdm_production_rl_animalia",
+        "cdm_production_rl_animalia_final",
 		"cdm_production_rl_armeria_demo",
-        "cdm_production_rl_fungi",
 		"cdm_production_rl_german_sl",
         "cdm_production_rl_lumbricidae",
         "cdm_production_rl_mammalia",
@@ -109,7 +111,7 @@ public class BgbmInstancesUpdater {
         "cdm_production_rubiaceae_mexico",
         "cdm_production_salvador",
 		"cdm_production_vibrant_index"
-	    };
+	};
 
 
 	static BgbmServer bgbmServer = BgbmServer.TEST;

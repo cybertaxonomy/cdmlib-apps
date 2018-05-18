@@ -293,7 +293,17 @@ public class BerlinModelTaxonRelationImport  extends BerlinModelImportBase  {
 								taxonRelationship = makeTaxonomicallyIncluded(state, classificationMap, treeRefFk, fromTaxon, toTaxon, citation, microcitation);
 							}else if (relQualifierFk == TAX_REL_IS_MISAPPLIED_NAME_OF){
 								 taxonRelationship = toTaxon.addMisappliedName(fromTaxon, citation, microcitation);
-							}else{
+                            }else if (relQualifierFk == TAX_REL_IS_PROPARTE_SYN_OF ||
+                                    //TODO homo/hetero
+                                    relQualifierFk == TAX_REL_IS_PROPARTE_HOMOTYPIC_SYNONYM_OF ||
+                                    relQualifierFk == TAX_REL_IS_PROPARTE_HETEROTYPIC_SYNONYM_OF ){
+                                    toTaxon.addProparteSynonym(fromTaxon, citation, microcitation);
+                            }else if(relQualifierFk == TAX_REL_IS_PARTIAL_SYN_OF ||
+                                    //TODO homo/hetero
+                                    relQualifierFk == TAX_REL_IS_PARTIAL_HOMOTYPIC_SYNONYM_OF ||
+                                    relQualifierFk == TAX_REL_IS_PARTIAL_HETEROTYPIC_SYNONYM_OF ){
+                                toTaxon.addPartialSynonym(fromTaxon, citation, microcitation);
+                            }else{
 								handleAllRelatedTaxa(state, fromTaxon, classificationMap, fromRefFk);
 								handleAllRelatedTaxa(state, toTaxon, classificationMap, treeRefFk);
 								logger.warn("Unhandled taxon relationship: RelId:" + relPTaxonId + "; QualifierId: " + relQualifierFk);
@@ -316,14 +326,14 @@ public class BerlinModelTaxonRelationImport  extends BerlinModelImportBase  {
 									relQualifierFk == TAX_REL_IS_HOMOTYPIC_SYNONYM_OF ||
 									relQualifierFk == TAX_REL_IS_HETEROTYPIC_SYNONYM_OF){
 								//pro parte already set by taxon mapping
-							}else if (relQualifierFk == TAX_REL_IS_PROPARTE_SYN_OF ||
-									relQualifierFk == TAX_REL_IS_PROPARTE_HOMOTYPIC_SYNONYM_OF ||
-									relQualifierFk == TAX_REL_IS_PROPARTE_HETEROTYPIC_SYNONYM_OF ){
-									synonym.setProParte(true);
-							}else if(relQualifierFk == TAX_REL_IS_PARTIAL_SYN_OF ||
-									relQualifierFk == TAX_REL_IS_PARTIAL_HOMOTYPIC_SYNONYM_OF ||
-									relQualifierFk == TAX_REL_IS_PARTIAL_HETEROTYPIC_SYNONYM_OF ){
-							        synonym.setPartial(true);
+//							}else if (relQualifierFk == TAX_REL_IS_PROPARTE_SYN_OF ||
+//									relQualifierFk == TAX_REL_IS_PROPARTE_HOMOTYPIC_SYNONYM_OF ||
+//									relQualifierFk == TAX_REL_IS_PROPARTE_HETEROTYPIC_SYNONYM_OF ){
+//									synonym.setProParte(true);
+//							}else if(relQualifierFk == TAX_REL_IS_PARTIAL_SYN_OF ||
+//									relQualifierFk == TAX_REL_IS_PARTIAL_HOMOTYPIC_SYNONYM_OF ||
+//									relQualifierFk == TAX_REL_IS_PARTIAL_HETEROTYPIC_SYNONYM_OF ){
+//							        synonym.setPartial(true);
 							}else{
 								success = false;
 								logger.warn("Synonym relationship type not yet implemented: " + relQualifierFk);
@@ -610,6 +620,15 @@ public class BerlinModelTaxonRelationImport  extends BerlinModelImportBase  {
 		if (relQualifierFk == TAX_REL_IS_INCLUDED_IN ||
 				relQualifierFk == TAX_REL_IS_MISAPPLIED_NAME_OF){
 			return true;
+		}else if (relQualifierFk == TAX_REL_IS_PROPARTE_SYN_OF ||
+	                relQualifierFk == TAX_REL_IS_PARTIAL_SYN_OF ||
+	                relQualifierFk == TAX_REL_IS_PROPARTE_HOMOTYPIC_SYNONYM_OF ||
+	                relQualifierFk == TAX_REL_IS_PROPARTE_HETEROTYPIC_SYNONYM_OF ||
+	                relQualifierFk == TAX_REL_IS_PARTIAL_HOMOTYPIC_SYNONYM_OF ||
+	                relQualifierFk == TAX_REL_IS_PARTIAL_HETEROTYPIC_SYNONYM_OF
+                    ){
+	            return true;
+
 		}else{
 			return false;
 		}

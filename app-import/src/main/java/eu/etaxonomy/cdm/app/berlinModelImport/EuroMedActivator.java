@@ -77,25 +77,26 @@ public class EuroMedActivator {
 	private static final Logger logger = Logger.getLogger(EuroMedActivator.class);
 
 	//database validation status (create, update, validate ...)
-	static DbSchemaValidation hbm2dll = DbSchemaValidation.VALIDATE;
+	static DbSchemaValidation hbm2dll = DbSchemaValidation.CREATE;
 //    static final Source berlinModelSource = BerlinModelSources.euroMed_Pub2();
 	static final Source berlinModelSource = BerlinModelSources.euroMed_BGBM42();
 //	static final Source berlinModelSource = BerlinModelSources.euroMed_PESI3();
-
-//    static final ICdmDataSource cdmDestination = CdmDestinations.localH2();
+//
+  static final ICdmDataSource cdmDestination = CdmDestinations.localH2();
 //	static final ICdmDataSource cdmDestination = CdmDestinations.cdm_test_euroMed();
-//	static final ICdmDataSource cdmDestination = CdmDestinations.cdm_pesi_euromed();
 
-	static final ICdmDataSource cdmDestination = CdmDestinations.cdm_local_test_euromed();
-//	static final ICdmDataSource cdmDestination = CdmDestinations.cdm_test_local_mysql_test();
+//	static final ICdmDataSource cdmDestination = CdmDestinations.cdm_local_euromed();
 
+
+    //check - import
+    static final CHECK check = CHECK.CHECK_ONLY;
 
 	static final boolean includePesiExport = false;
 
 	static final int sourceSecId = 7000000; //500000
 	static final UUID classificationUuid = UUID.fromString("314a68f9-8449-495a-91c2-92fde8bcf344");
 	static final boolean useSingleClassification = true;
-	static final String classificationName = "Euro+Med 2017";
+	static final String classificationName = "Euro+Med 2018";
 	static final UUID featureTreeUuid = UUID.fromString("6a5e1c2b-ec0d-46c8-9c7d-a2059267ffb7");
 	static final Object[] featureKeyList = new Integer[]{1, 31, 4, 98, 41};
 
@@ -104,8 +105,6 @@ public class EuroMedActivator {
 
 	static final int partitionSize = 2500;
 
-	//check - import
-	static final CHECK check = CHECK.IMPORT_WITHOUT_CHECK;
 
 	//editor - import
 	static final EDITOR editor = EDITOR.EDITOR_AS_EDITOR;
@@ -144,8 +143,8 @@ public class EuroMedActivator {
 	static String occurrenceSourceFilter = " occurrenceFk IN ( SELECT occurrenceId FROM v_cdm_exp_occurrenceAll )";
 	static String commonNameFilter = " commonNameId IN ( SELECT commonNameId FROM v_cdm_exp_commonNamesAll )";
 	static String webMarkerFilter = " TableNameFk <> 500 OR ( RIdentifierFk IN (SELECT RIdentifier FROM v_cdm_exp_taxaAll)) ";
-	static String authorTeamFilter = null; // " authorTeamId IN (SELECT authorTeamId FROM v_cdm_exp_authorTeamsAll) ";
-	static String authorFilter = null;  // " authorId IN (SELECT authorId FROM v_cdm_exp_authorsAll) ";
+	static String authorTeamFilter = /* null;  //*/ " authorTeamId IN (SELECT authorTeamId FROM v_cdm_exp_authorTeamsAll) ";
+	static String authorFilter = /* null;  //*/ " authorId IN (SELECT authorId FROM v_cdm_exp_authorsAll) ";
 
 
 
@@ -162,19 +161,19 @@ public class EuroMedActivator {
 	static final boolean doTaxonNames = true;
 	static final boolean doRelNames = true;
 	static final boolean doNameStatus = true;
-	static final boolean doTypes = false;  //serious types do not exist in E+M
+	static final boolean doTypes = false;  //serious types do not exist in E+M except for name types which are handled in name relations
 	static final boolean doNameFacts = true;
 
 	//taxa
 	static final boolean doTaxa = true;
 	static final boolean doFacts = true;
-	static final boolean doCommonNames = true;
+	static final boolean doCommonNames = false;
 	static final boolean doOccurences = true;
-	static final boolean doRelTaxa = false;
+	static final boolean doRelTaxa = true;
 	static final boolean doRunTransmissionEngine = (hbm2dll == DbSchemaValidation.VALIDATE);
 
 	//etc.
-	static final boolean doMarker = true;
+	static final boolean doMarker = false;
 
 
 	public void importEm2CDM (Source source, ICdmDataSource destination, DbSchemaValidation hbm2dll){
@@ -205,6 +204,8 @@ public class EuroMedActivator {
 
 		config.setDoMarker(doMarker ^ invers);
 		config.setDoUser(doUser ^ invers);
+
+		config.setEuroMed(true);
 
 		config.setUseClassification(useClassification);
 		config.setSourceRefUuid(BerlinModelTransformer.uuidSourceRefEuroMed);

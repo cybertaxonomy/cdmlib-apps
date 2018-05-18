@@ -36,7 +36,6 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
-import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.springframework.stereotype.Component;
 
@@ -46,6 +45,8 @@ import eu.etaxonomy.cdm.io.common.IOValidator;
 import eu.etaxonomy.cdm.io.common.ResultSetPartitioner;
 import eu.etaxonomy.cdm.model.agent.Person;
 import eu.etaxonomy.cdm.model.common.AnnotatableEntity;
+import eu.etaxonomy.cdm.model.common.Annotation;
+import eu.etaxonomy.cdm.model.common.AnnotationType;
 import eu.etaxonomy.cdm.model.common.CdmBase;
 import eu.etaxonomy.cdm.model.name.HybridRelationshipType;
 import eu.etaxonomy.cdm.model.name.IBotanicalName;
@@ -77,15 +78,24 @@ public class BerlinModelTaxonNameRelationImport extends BerlinModelImportBase {
 
 	@Override
 	protected String getIdQuery(BerlinModelImportState state) {
-		if (StringUtils.isNotBlank(state.getConfig().getNameIdTable())){
-			String result = super.getIdQuery(state);
-			result += " WHERE nameFk1 IN (SELECT NameId FROM %s) OR ";
-			result += "       nameFk2 IN (SELECT NameId FROM %s)";
-			result = String.format(result, state.getConfig().getNameIdTable(),state.getConfig().getNameIdTable() );
-			return result;
+		String nameIdTable = state.getConfig().getNameIdTable();
+		String result = super.getIdQuery(state);
+	    if (isNotBlank(nameIdTable)){
+			if (state.getConfig().isEuroMed()){
+			    result += " WHERE nameFk1 IN (SELECT NameId FROM %s) AND RelNameQualifierFk NOT IN (1, 3, 9, 10, 16, 6, 61) OR ";
+			    result += "       nameFk2 IN (SELECT NameId FROM %s) AND RelNameQualifierFk NOT IN (2) ";
+			    //2 is unclear, 17 should be in both, 62 links names to itself
+			    result = String.format(result, nameIdTable, nameIdTable);
+			}else{
+			    result += " WHERE nameFk1 IN (SELECT NameId FROM %s) OR ";
+			    result += "       nameFk2 IN (SELECT NameId FROM %s) ";
+			    result = String.format(result, nameIdTable, nameIdTable );
+			}
+
 		}else{
-			return super.getIdQuery(state);
+			//
 		}
+	    return result;
 	}
 
 
@@ -143,7 +153,7 @@ public class BerlinModelTaxonNameRelationImport extends BerlinModelImportBase {
 
 				if (nameFrom != null && nameTo != null){
 					success = handleNameRelationship(success, config, name1Id, name2Id,	relQualifierFk,
-							notes, nameFrom, nameTo, citation, microcitation, rule);
+							notes, nameFrom, nameTo, citation, microcitation, rule, relNameId);
 
 					if (! nameFrom.isProtectedTitleCache()){
 						nameFrom.setTitleCache(null);
@@ -195,13 +205,14 @@ public class BerlinModelTaxonNameRelationImport extends BerlinModelImportBase {
 	 * @param citation
 	 * @param microcitation
 	 * @param rule
+	 * @param relNameId
 	 * @return
 	 */
 	private boolean handleNameRelationship(boolean success,
 				BerlinModelImportConfigurator config, int name1Id, int name2Id,
 				int relQualifierFk, String notes, TaxonName nameFrom,
 				TaxonName nameTo, Reference citation,
-				String microcitation, String rule) {
+				String microcitation, String rule, int relNameId) {
 		AnnotatableEntity nameRelationship = null;
 		if (relQualifierFk == NAME_REL_IS_BASIONYM_FOR){
 			nameRelationship = nameTo.addBasionym(nameFrom, citation, microcitation, rule);
@@ -240,7 +251,11 @@ public class BerlinModelTaxonNameRelationImport extends BerlinModelImportBase {
 				if (isLectoType){
 					status = NameTypeDesignationStatus.LECTOTYPE();
 				}
-				nameRelationship = nameTo.addNameTypeDesignation(nameFrom, citation, microcitation, originalNameString, status, isRejectedType, isConservedType, /*isLectoType,*/ isNotDesignated, addToAllNames);
+				if (isNotDesignated && nameTo == nameFrom){
+				    nameFrom = null;  //E+M case
+				}
+
+				nameRelationship = nameTo.addNameTypeDesignation(nameFrom, citation, microcitation, originalNameString, status, isRejectedType, isConservedType, isNotDesignated, addToAllNames);
 			}
 
 		}else if (relQualifierFk == NAME_REL_IS_ORTHOGRAPHIC_VARIANT_OF){
@@ -276,7 +291,18 @@ public class BerlinModelTaxonNameRelationImport extends BerlinModelImportBase {
 				success = false;
 			}
 		}
-		doNotes(nameRelationship, notes);
+		Annotation annotation = doNotes(nameRelationship, notes);
+		if (config.isEuroMed() && annotation != null){
+		    if (relQualifierFk == NAME_REL_IS_BASIONYM_FOR){
+		        annotation.setAnnotationType(AnnotationType.TECHNICAL());
+		    }else if ((relQualifierFk == NAME_REL_IS_LECTOTYPE_OF) && !notes.contains("designated")){
+		        annotation.setAnnotationType(AnnotationType.TECHNICAL());
+		    }else{
+		        logger.warn("Annotation type not defined for name relationship " + relNameId);
+		    }
+		}else if (annotation != null){
+            logger.warn("Annotation type not defined for name relationship " + relNameId);
+		}
 		return success;
 	}
 
