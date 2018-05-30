@@ -1,8 +1,8 @@
 /**
 * Copyright (C) 2007 EDIT
-* European Distributed Institute of Taxonomy 
+* European Distributed Institute of Taxonomy
 * http://www.e-taxonomy.eu
-* 
+*
 * The contents of this file are subject to the Mozilla Public License Version 1.1
 * See LICENSE.TXT at the top of this package for the full license terms.
 */
@@ -38,30 +38,30 @@ public class BerlinModelTaxonRelationImportValidator implements IOValidator<Berl
 		result &= checkTaxaWithNoRelations(state);
 		return result;
 	}
-	
-	
+
+
 	private boolean checkInActivatedStatus(BerlinModelImportState state){
 		try {
 			boolean result = true;
 			BerlinModelImportConfigurator config = state.getConfig();
 			Source source = state.getConfig().getSource();
-			String strSQL = 
+			String strSQL =
 				" SELECT RelPTaxon.RelPTaxonId, RelPTaxon.RelQualifierFk, FromName.FullNameCache AS FromName, RelPTaxon.PTNameFk1 AS FromNameID, "  +
-		    			" Status.Status AS FromStatus, ToName.FullNameCache AS ToName, RelPTaxon.PTNameFk2 AS ToNameId, ToStatus.Status AS ToStatus, FromTaxon.DoubtfulFlag AS doubtfulFrom, ToTaxon.DoubtfulFlag AS doubtfulTo" + 
-    			" FROM PTaxon AS FromTaxon " + 
-    				" INNER JOIN RelPTaxon ON FromTaxon.PTNameFk = RelPTaxon.PTNameFk1 AND FromTaxon.PTRefFk = RelPTaxon.PTRefFk1 " + 
-    				" INNER JOIN PTaxon AS ToTaxon ON RelPTaxon.PTNameFk2 = ToTaxon.PTNameFk AND RelPTaxon.PTRefFk2 = ToTaxon.PTRefFk " + 
-    				" INNER JOIN Name AS ToName ON ToTaxon.PTNameFk = ToName.NameId " + 
-    				" INNER JOIN Name AS FromName ON FromTaxon.PTNameFk = FromName.NameId " + 
-    				" INNER JOIN Status ON FromTaxon.StatusFk = Status.StatusId AND FromTaxon.StatusFk = Status.StatusId " + 
+		    			" Status.Status AS FromStatus, ToName.FullNameCache AS ToName, RelPTaxon.PTNameFk2 AS ToNameId, ToStatus.Status AS ToStatus, FromTaxon.DoubtfulFlag AS doubtfulFrom, ToTaxon.DoubtfulFlag AS doubtfulTo" +
+    			" FROM PTaxon AS FromTaxon " +
+    				" INNER JOIN RelPTaxon ON FromTaxon.PTNameFk = RelPTaxon.PTNameFk1 AND FromTaxon.PTRefFk = RelPTaxon.PTRefFk1 " +
+    				" INNER JOIN PTaxon AS ToTaxon ON RelPTaxon.PTNameFk2 = ToTaxon.PTNameFk AND RelPTaxon.PTRefFk2 = ToTaxon.PTRefFk " +
+    				" INNER JOIN Name AS ToName ON ToTaxon.PTNameFk = ToName.NameId " +
+    				" INNER JOIN Name AS FromName ON FromTaxon.PTNameFk = FromName.NameId " +
+    				" INNER JOIN Status ON FromTaxon.StatusFk = Status.StatusId AND FromTaxon.StatusFk = Status.StatusId " +
     				" INNER JOIN Status AS ToStatus ON ToTaxon.StatusFk = ToStatus.StatusId AND ToTaxon.StatusFk = ToStatus.StatusId " +
 				" WHERE (RelPTaxon.RelQualifierFk = - 99) ";
-			
+
 			if (StringUtils.isNotBlank(config.getRelTaxaIdQuery())){
 				strSQL += String.format(" AND (RelPTaxon.RelPTaxonId IN " +
-                        " ( %s ) )" , config.getRelTaxaIdQuery()) ; 
+                        " ( %s ) )" , config.getRelTaxaIdQuery()) ;
 			}
-			
+
 //			System.out.println(strSQL);
 			ResultSet rs = source.getResultSet(strSQL);
 			boolean firstRow = true;
@@ -73,35 +73,35 @@ public class BerlinModelTaxonRelationImportValidator implements IOValidator<Berl
 					System.out.println("There are TaxonRelationships with status 'inactivated'(-99)!");
 					System.out.println("========================================================");
 				}
-				
+
 				int relPTaxonId = rs.getInt("RelPTaxonId");
 				String fromName = rs.getString("FromName");
 				int fromNameID = rs.getInt("FromNameID");
 				String fromStatus = rs.getString("FromStatus");
-				
+
 				String toName = rs.getString("ToName");
 				int toNameId = rs.getInt("ToNameId");
 				String toStatus = rs.getString("ToStatus");
 				String doubtfulFrom = String.valueOf(rs.getObject("doubtfulFrom"));
 				String doubtfulTo = String.valueOf(rs.getObject("doubtfulTo"));
-				
-				
-				System.out.println("RelPTaxonId:" + relPTaxonId + 
-						"\n  FromName: " + fromName + "\n  FromNameID: " + fromNameID + "\n  FromStatus: " + fromStatus + "\n  FromDoubtful: " + doubtfulFrom + 
+
+
+				System.out.println("RelPTaxonId:" + relPTaxonId +
+						"\n  FromName: " + fromName + "\n  FromNameID: " + fromNameID + "\n  FromStatus: " + fromStatus + "\n  FromDoubtful: " + doubtfulFrom +
 						"\n  ToName: " + toName + "\n  ToNameId: " + toNameId + "\n  ToStatus: " + toStatus + "\n  ToDoubtful: " + doubtfulTo );
 				result = firstRow = false;
 			}
 			if (i > 0){
 				System.out.println(" ");
 			}
-			
+
 			return result;
 		} catch (SQLException e) {
 			e.printStackTrace();
 			return false;
 		}
 	}
-	
+
 	/**
 	 * @param state
 	 * @return
@@ -111,15 +111,15 @@ public class BerlinModelTaxonRelationImportValidator implements IOValidator<Berl
 		try {
 			BerlinModelImportConfigurator config = state.getConfig();
 			Source source = config.getSource();
-			String strQuery = 
-				"SELECT count(*) AS n FROM RelPTaxon " + 
+			String strQuery =
+				"SELECT count(*) AS n FROM RelPTaxon " +
 				" WHERE (Notes IS NOT NULL) AND (RTRIM(LTRIM(Notes)) <> '') ";
-			
+
 			if (StringUtils.isNotBlank(config.getRelTaxaIdQuery())){
 				strQuery += String.format(" AND (RelPTaxon.RelPTaxonId IN " +
-                        " ( %s ) ) " , config.getRelTaxaIdQuery()) ; 
+                        " ( %s ) ) " , config.getRelTaxaIdQuery()) ;
 			}
-			
+
 			ResultSet rs = source.getResultSet(strQuery);
 			rs.next();
 			int n;
@@ -129,14 +129,14 @@ public class BerlinModelTaxonRelationImportValidator implements IOValidator<Berl
 				System.out.println("There are " + n + " RelPTaxa with a note. Notes for RelPTaxa are not imported!");
 				System.out.println("========================================================");
 				success = false;
-				
+
 			}
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
 		return success;
 	}
-	
+
 	/**
 	 * @param state
 	 * @return
@@ -145,21 +145,21 @@ public class BerlinModelTaxonRelationImportValidator implements IOValidator<Berl
 		boolean success = true;
 		try {
 			BerlinModelImportConfigurator config = state.getConfig();
-			
+
 			Source source = config.getSource();
-			String strQuery = 
+			String strQuery =
 				"SELECT RelPTaxon.RelPTaxonId, RelPTQualifier, PTaxon.RIdentifier, Name.FullNameCache fromName, PTaxon.PTRefFk, Name.NameId as fromNameId, AcceptedName.FullNameCache acceptedName" +
 				" FROM RelPTaxon INNER JOIN PTaxon ON RelPTaxon.PTNameFk1 = PTaxon.PTNameFk AND RelPTaxon.PTRefFk1 = PTaxon.PTRefFk " +
 					" INNER JOIN RelPTQualifier ON RelPTaxon.RelQualifierFk = RelPTQualifier.RelPTQualifierId " +
 					" LEFT OUTER JOIN Name ON PTaxon.PTNameFk = Name.NameId " +
 					" LEFT OUTER JOIN Name AS AcceptedName ON RelPTaxon.PTNameFk2 = AcceptedName.NameId " +
 				" WHERE (PTaxon.StatusFk = 1) AND (RelPTaxon.RelQualifierFk IN (2, 4, 5, 6, 7)) ";
-			
+
 			if (StringUtils.isNotBlank(config.getRelTaxaIdQuery())){
 				strQuery += String.format(" AND (RelPTaxon.RelPTaxonId IN " +
-                        " ( %s ) )" , config.getRelTaxaIdQuery()) ; 
+                        " ( %s ) )" , config.getRelTaxaIdQuery()) ;
 			}
-			
+
 			ResultSet rs = source.getResultSet(strQuery);
 			boolean firstRow = true;
 			while (rs.next()){
@@ -176,9 +176,9 @@ public class BerlinModelTaxonRelationImportValidator implements IOValidator<Berl
 				int fromRefFk = rs.getInt("PTRefFk");
 				int fromNameId = rs.getInt("fromNameId");
 				String toName = rs.getString("acceptedName");
-				
-				System.out.println("RelPTaxonId:" + relPTaxonId + 
-						"\n TaxonRIdentifier: " + fromIdentifier + "\n name: " + fromName + "\n nameId: " + fromNameId + "\n RefFk: " + fromRefFk + "\n RelType: " + relType  
+
+				System.out.println("RelPTaxonId:" + relPTaxonId +
+						"\n TaxonRIdentifier: " + fromIdentifier + "\n name: " + fromName + "\n nameId: " + fromNameId + "\n RefFk: " + fromRefFk + "\n RelType: " + relType
 						+ "\n acceptedName: " + toName //+ "\n  ToNameId: " + toNameId + "\n  ToStatus: " + toStatus + "\n  ToDoubtful: " + doubtfulTo )
 						);
 				success = (firstRow = false);
@@ -188,8 +188,8 @@ public class BerlinModelTaxonRelationImportValidator implements IOValidator<Berl
 		}
 		return success;
 	}
-	
-	
+
+
 	/**
 	 * @param state
 	 * @return
@@ -198,21 +198,21 @@ public class BerlinModelTaxonRelationImportValidator implements IOValidator<Berl
 		boolean success = true;
 		try {
 			BerlinModelImportConfigurator config = state.getConfig();
-			
+
 			Source source = config.getSource();
-			String strQuery = 
+			String strQuery =
 				"SELECT RelPTaxon.RelPTaxonId, RelPTQualifier, PTaxon.RIdentifier,PTaxon.StatusFk as fromStatus, Name.FullNameCache fromName, PTaxon.PTRefFk, Name.NameId as fromNameId, AcceptedName.FullNameCache acceptedName" +
 				" FROM RelPTaxon INNER JOIN PTaxon ON RelPTaxon.PTNameFk1 = PTaxon.PTNameFk AND RelPTaxon.PTRefFk1 = PTaxon.PTRefFk " +
 					" INNER JOIN RelPTQualifier ON RelPTaxon.RelQualifierFk = RelPTQualifier.RelPTQualifierId " +
 					" LEFT OUTER JOIN Name ON PTaxon.PTNameFk = Name.NameId " +
 					" LEFT OUTER JOIN Name AS AcceptedName ON RelPTaxon.PTNameFk2 = AcceptedName.NameId " +
 				" WHERE (PTaxon.StatusFk IN (2,3,4)) AND (RelPTaxon.RelQualifierFk NOT IN (2, 4, 5, 6, 7, 101, 102, 103, 104, -99)) ";
-			
+
 			if (StringUtils.isNotBlank(config.getRelTaxaIdQuery())){
 				strQuery += String.format(" AND (RelPTaxon.RelPTaxonId IN " +
-                        " ( %s ) )" , config.getRelTaxaIdQuery()) ; 
+                        " ( %s ) )" , config.getRelTaxaIdQuery()) ;
 			}
-			
+
 			ResultSet rs = source.getResultSet(strQuery);
 			boolean firstRow = true;
 			while (rs.next()){
@@ -231,9 +231,9 @@ public class BerlinModelTaxonRelationImportValidator implements IOValidator<Berl
 				int fromRefFk = rs.getInt("PTRefFk");
 				int fromNameId = rs.getInt("fromNameId");
 				String toName = rs.getString("acceptedName");
-				
-				System.out.println("RelPTaxonId:" + relPTaxonId + 
-						"\n TaxonRIdentifier: " + fromIdentifier + "\n name: " + fromName + "\n nameId: " + fromNameId + "\n RefFk: " + fromRefFk + "\n RelType: " + relType  
+
+				System.out.println("RelPTaxonId:" + relPTaxonId +
+						"\n TaxonRIdentifier: " + fromIdentifier + "\n name: " + fromName + "\n nameId: " + fromNameId + "\n RefFk: " + fromRefFk + "\n RelType: " + relType
 						+ "\n toName: " + toName //+ "\n  ToNameId: " + toNameId + "\n  ToStatus: " + toStatus + "\n  ToDoubtful: " + doubtfulTo )
 						);
 				success = (firstRow = false);
@@ -243,7 +243,7 @@ public class BerlinModelTaxonRelationImportValidator implements IOValidator<Berl
 		}
 		return success;
 	}
-	
+
 	/**
 	 * @param state
 	 * @return
@@ -252,52 +252,60 @@ public class BerlinModelTaxonRelationImportValidator implements IOValidator<Berl
 		boolean success = true;
 		try {
 			BerlinModelImportConfigurator config = state.getConfig();
-			
+
 			Source source = config.getSource();
-			String strQuery = 
-				" SELECT pt.PTRefFk AS secRefFk, dbo.Reference.RefCache AS secRef, dbo.Name.FullNameCache, Name.NameId, Status.Status " +
+	        String strSelect = " SELECT pt.PTRefFk AS secRefFk, r.RefCache AS secRef, n.FullNameCache, n.NameId, st.Status ";
+	        String strCount = " SELECT count(*) as n ";
+	        String strQueryBase =
 				" FROM PTaxon AS pt LEFT OUTER JOIN " +
-                      	" Status ON pt.StatusFk = Status.StatusId LEFT OUTER JOIN " + 
-				        " Reference ON pt.PTRefFk = dbo.Reference.RefId LEFT OUTER JOIN " + 
-				        " Name ON pt.PTNameFk = dbo.Name.NameId LEFT OUTER JOIN " +
-				        " RelPTaxon ON pt.PTNameFk = dbo.RelPTaxon.PTNameFk2 AND pt.PTRefFk = dbo.RelPTaxon.PTRefFk2 LEFT OUTER JOIN " +
-				        " RelPTaxon AS RelPTaxon_1 ON pt.PTNameFk = RelPTaxon_1.PTNameFk1 AND pt.PTRefFk = RelPTaxon_1.PTRefFk1 " + 
-				" WHERE (RelPTaxon_1.RelQualifierFk IS NULL) AND (dbo.RelPTaxon.RelQualifierFk IS NULL) AND pt.statusFK <> 6 " + 
-				" ORDER BY Reference.RefCache, pt.PTRefFk, Name.FullNameCache, statusFK";
+                      	" Status st ON pt.StatusFk = st.StatusId LEFT OUTER JOIN " +
+				        " Reference r ON pt.PTRefFk = r.RefId LEFT OUTER JOIN " +
+				        " Name n ON pt.PTNameFk = n.NameId LEFT OUTER JOIN " +
+				        " RelPTaxon rel1 ON pt.PTNameFk = rel1.PTNameFk2 AND pt.PTRefFk = rel1.PTRefFk2 LEFT OUTER JOIN " +
+				        " RelPTaxon AS rel2 ON pt.PTNameFk = rel2.PTNameFk1 AND pt.PTRefFk = rel2.PTRefFk1 " +
+				" WHERE (rel2.RelQualifierFk IS NULL) AND (rel1.RelQualifierFk IS NULL) AND pt.statusFK <> 6 ";
+			String strOrderBy =	" ORDER BY r.RefCache, pt.PTRefFk, n.FullNameCache, pt.statusFK ";
+			if (state.getConfig().isEuroMed()){
+			    strQueryBase += " AND pt.RIdentifier IN (SELECT RIdentifier FROM v_cdm_exp_taxaAll) AND (pt.IsExcludedMarker = 0 OR  pt.IsExcludedMarker IS NULL) " ;
+			}
 
 			//project filter
 //			if (StringUtils.isNotBlank(config.getRelTaxaIdQuery())){
 //				strQuery += String.format(" AND (RelPTaxon.RelPTaxonId IN " +
-//                        " ( %s ) )" , config.getRelTaxaIdQuery()) ; 
+//                        " ( %s ) )" , config.getRelTaxaIdQuery()) ;
 //			}
-			
-			ResultSet rs = source.getResultSet(strQuery);
-			boolean firstRow = true;
-			while (rs.next()){
-				if (firstRow){
-					System.out.println("=====================================================================");
-					System.out.println("There are taxa without any taxon relationship and not being orphaned!");
-					System.out.println("=====================================================================");
-				}
 
-				int secRefFk = rs.getInt("secRefFk");
+			ResultSet rs = source.getResultSet(strCount + strQueryBase);
+			rs.next();
+			int n = rs.getInt("n");
+            if (n > 0){
+                System.out.println("=======================================================================");
+                System.out.println("There are "+n+" taxa without any taxon relationship and not being orphaned!");
+                System.out.println("=======================================================================");
+            }
+
+			rs = source.getResultSet(strSelect + strQueryBase + strOrderBy);
+			while (rs.next()){
+
+			    int secRefFk = rs.getInt("secRefFk");
 				String secRef = rs.getString("secRef");
 				String nameCache = rs.getString("FullNameCache");
 				int nameId = rs.getInt("NameId");
 				String status = rs.getString("Status");
-				
-				System.out.println("SecRef:" + secRefFk + 
-						"\n secRef: " + secRef + "\n name: " + nameCache + "\n nameId: " + nameId 
-						+ "\n status: " + status 
+
+				System.out.println("SecRef:" + secRefFk +
+						"\n secRef: " + secRef + "\n name: " + nameCache + "\n nameId: " + nameId
+						+ "\n status: " + status
 					);
-				success = (firstRow = false);
 			}
+			success = (n == 0);
 		} catch (SQLException e) {
 			e.printStackTrace();
+			success = false;
 		}
 		return success;
 	}
-	
+
 
 
 }
