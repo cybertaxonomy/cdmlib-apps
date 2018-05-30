@@ -96,11 +96,11 @@ public class BerlinModelAuthorImport extends BerlinModelImportBase {
 					success &= ImportHelper.addStringValue(rs, author, dbAttrName, cdmAttrName, BLANK_TO_NULL);
 
 					dbAttrName = "FirstName";
-					cdmAttrName = "givenname";
+					cdmAttrName = "givenName";
 					success &= ImportHelper.addStringValue(rs, author, dbAttrName, cdmAttrName, BLANK_TO_NULL);
 
 					dbAttrName = "LastName";
-					cdmAttrName = "familyname";
+					cdmAttrName = "familyName";
 					success &= ImportHelper.addStringValue(rs, author, dbAttrName, cdmAttrName, BLANK_TO_NULL);
 
 					String dates = rs.getString("dates");
