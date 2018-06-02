@@ -135,13 +135,13 @@ public class BerlinModelImportConfigurator extends DbImportConfiguratorBase<Berl
 				, BerlinModelNameFactsImport.class
 				, BerlinModelTypesImport.class
 				, BerlinModelTaxonImport.class
-				, BerlinModelTaxonRelationImport.class
 				, BerlinModelCommonNamesImport.class
 				, BerlinModelFactsImport.class
 				, BerlinModelOccurrenceImport.class
 				, BerlinModelOccurrenceSourceImport.class
 				, BerlinModelWebMarkerCategoryImport.class
 				, BerlinModelWebMarkerImport.class
+				, BerlinModelTaxonRelationImport.class
 		};
 	}
 
