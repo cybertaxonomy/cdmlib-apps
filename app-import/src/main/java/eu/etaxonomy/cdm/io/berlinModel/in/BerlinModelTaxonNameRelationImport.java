@@ -82,8 +82,9 @@ public class BerlinModelTaxonNameRelationImport extends BerlinModelImportBase {
 		String result = super.getIdQuery(state);
 	    if (isNotBlank(nameIdTable)){
 			if (state.getConfig().isEuroMed()){
-			    result += " WHERE nameFk1 IN (SELECT NameId FROM %s) AND RelNameQualifierFk NOT IN (1, 3, 9, 10, 16, 6, 61) OR ";
-			    result += "       nameFk2 IN (SELECT NameId FROM %s) AND RelNameQualifierFk NOT IN (2) ";
+			    result += " WHERE nameFk1 IN (SELECT NameId FROM %s) AND RelNameQualifierFk IN (2, 4, 5, 13, 14, 15, 17, 18, 37, 62) OR ";
+			    result += "       nameFk2 IN (SELECT NameId FROM %s)  ";
+			    //the first part is only to check if there are relations that we have maybe missed.
 			    //2 is unclear, 17 should be in both, 62 links names to itself
 			    result = String.format(result, nameIdTable, nameIdTable);
 			}else{
