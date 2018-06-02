@@ -39,6 +39,8 @@ import eu.etaxonomy.cdm.model.common.Language;
 import eu.etaxonomy.cdm.model.common.Marker;
 import eu.etaxonomy.cdm.model.common.MarkerType;
 import eu.etaxonomy.cdm.model.common.Representation;
+import eu.etaxonomy.cdm.model.common.TermType;
+import eu.etaxonomy.cdm.model.common.TermVocabulary;
 import eu.etaxonomy.cdm.model.description.CommonTaxonName;
 import eu.etaxonomy.cdm.model.description.DescriptionElementSource;
 import eu.etaxonomy.cdm.model.description.TaxonDescription;
@@ -369,8 +371,12 @@ public class BerlinModelCommonNamesImport  extends BerlinModelImportBase {
 
 				//status
 				if (isNotBlank(status)){
-					MarkerType recommendedMarkerType = getMarkerType( state, COMMONNAME_STATUS_RECOMMENDED_UUID, "recommended","If the common name has the status recommended (see also status 'synonym', if none of them is true the default status is 'unassessed')","recommended", null);
-					MarkerType synonymMarkerType = getMarkerType( state, COMMONNAME_STATUS_SYNONYM_UUID, "synonym","If the common name has the status synonym (see also status 'recommended', if none of them is true the default status is 'unassessed')","synonym", null);
+				    TermVocabulary<MarkerType> markerTypeVoc = getVocabulary(TermType.MarkerType, BerlinModelTransformer.uuidVocEMMarkerType,
+				            "Euro+Med marker type vocabulary", "E+M marker types", null, null, false, MarkerType.COMPLETE());
+				    MarkerType recommendedMarkerType = getMarkerType( state, COMMONNAME_STATUS_RECOMMENDED_UUID, "recommended","If the common name has the status recommended (see also status 'synonym', if none of them is true the default status is 'unassessed')",
+				            "recommended", markerTypeVoc);
+					MarkerType synonymMarkerType = getMarkerType( state, COMMONNAME_STATUS_SYNONYM_UUID, "synonym","If the common name has the status synonym (see also status 'recommended', if none of them is true the default status is 'unassessed')",
+					        "synonym", markerTypeVoc);
                     for (CommonTaxonName commonTaxonName : commonTaxonNames){
                         Marker marker = null;
                         if (status.equals("recommended")){
