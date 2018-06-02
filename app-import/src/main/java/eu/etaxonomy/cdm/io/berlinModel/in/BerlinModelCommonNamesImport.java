@@ -32,8 +32,6 @@ import eu.etaxonomy.cdm.io.common.IOValidator;
 import eu.etaxonomy.cdm.io.common.ResultSetPartitioner;
 import eu.etaxonomy.cdm.io.common.Source;
 import eu.etaxonomy.cdm.io.common.TdwgAreaProvider;
-import eu.etaxonomy.cdm.model.common.Annotation;
-import eu.etaxonomy.cdm.model.common.AnnotationType;
 import eu.etaxonomy.cdm.model.common.CdmBase;
 import eu.etaxonomy.cdm.model.common.Extension;
 import eu.etaxonomy.cdm.model.common.ExtensionType;
@@ -64,7 +62,8 @@ public class BerlinModelCommonNamesImport  extends BerlinModelImportBase {
 
 	public static final UUID REFERENCE_LANGUAGE_ISO639_2_UUID = UUID.fromString("40c4f8dd-3d9c-44a4-b77a-76e137a89a5f");
 	public static final UUID REFERENCE_LANGUAGE_STRING_UUID = UUID.fromString("2a1b678f-c27d-48c1-b43e-98fd0d426305");
-	public static final UUID STATUS_ANNOTATION_UUID = UUID.fromString("e3f7b80a-1286-458d-812c-5e818f731968");
+	public static final UUID COMMONNAME_STATUS_RECOMMENDED_UUID = UUID.fromString("e3f7b80a-1286-458d-812c-5e818f731968");
+	public static final UUID COMMONNAME_STATUS_SYNONYM_UUID = UUID.fromString("169b2d97-a706-49de-b28b-c67f0ee6764b");
 
 	public static final String NAMESPACE = "common name";
 
@@ -370,10 +369,22 @@ public class BerlinModelCommonNamesImport  extends BerlinModelImportBase {
 
 				//status
 				if (isNotBlank(status)){
-					AnnotationType statusAnnotationType = getAnnotationType( state, STATUS_ANNOTATION_UUID, "status","The status of this object","status", null);
-					for (CommonTaxonName commonTaxonName : commonTaxonNames){
-						Annotation annotation = Annotation.NewInstance(status, statusAnnotationType, Language.DEFAULT());
-						commonTaxonName.addAnnotation(annotation);
+					MarkerType recommendedMarkerType = getMarkerType( state, COMMONNAME_STATUS_RECOMMENDED_UUID, "recommended","If the common name has the status recommended (see also status 'synonym', if none of them is true the default status is 'unassessed')","recommended", null);
+					MarkerType synonymMarkerType = getMarkerType( state, COMMONNAME_STATUS_SYNONYM_UUID, "synonym","If the common name has the status synonym (see also status 'recommended', if none of them is true the default status is 'unassessed')","synonym", null);
+                    for (CommonTaxonName commonTaxonName : commonTaxonNames){
+                        Marker marker = null;
+                        if (status.equals("recommended")){
+						    marker = Marker.NewInstance(recommendedMarkerType, true);
+                        }else if (status.equals("synonym")){
+                            marker = Marker.NewInstance(synonymMarkerType, true);
+                        }else if (status.equals("unassessed")){
+                            //do nothing
+                        }else{
+						    logger.warn("Unknown common name status: " + status);
+						}
+                        if (marker != null){
+                            commonTaxonName.addMarker(marker);
+                        }
 					}
 				}
 
