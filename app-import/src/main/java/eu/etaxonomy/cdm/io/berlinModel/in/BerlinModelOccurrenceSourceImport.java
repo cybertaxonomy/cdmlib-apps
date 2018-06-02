@@ -235,8 +235,8 @@ public class BerlinModelOccurrenceSourceImport  extends BerlinModelImportBase {
 			}
 			List<INonViralName> names = new ArrayList<>();
 //			names = getNameService().getNamesByNameCache(oldName);
-			if (names.size() == 1){
-				return names.get(0);
+			if (names.isEmpty()){
+				return null;
 			}else {
 				if (names.size()> 1){
 					logger.info("There is more than one name matching oldName: " + oldName + ".");
