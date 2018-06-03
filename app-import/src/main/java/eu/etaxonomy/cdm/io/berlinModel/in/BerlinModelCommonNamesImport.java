@@ -216,9 +216,14 @@ public class BerlinModelCommonNamesImport  extends BerlinModelImportBase {
 				    lastCommonNameId = commonNameId;
 				}
 
+				final String NO_REGION = "";
 				//regions
 				String regionFks  = rs.getString("RegionFks");
-				String[] regionFkSplit = (regionFks==null)? new String[0] : regionFks.split(",");
+				String[] regionFkSplit = (regionFks==null)? new String[]{NO_REGION} : regionFks.trim().split(",");
+				if (regionFkSplit.length == 0){
+				    String message = "regionFkSplit should never be empty but was for common name id " + commonNameId;
+                    logger.warn(message);
+				}
 
 				//commonNameString
 				if (isBlank(commonNameString)){
@@ -267,16 +272,16 @@ public class BerlinModelCommonNamesImport  extends BerlinModelImportBase {
 					regionFk = regionFk.trim();
 					NamedArea area = regionMap.get(regionFk);
 					if (area == null){
-						if (regionFkSplit.length > 1 && isNotBlank(regionFk)){
+						if (isNotBlank(regionFk) && regionFk != NO_REGION){
 							logger.warn("Area for " + regionFk + " not defined in regionMap.");
 						}else{
 							//no region is defined
 						}
 					}else{
 						commonTaxonName.setArea(area);
-						TaxonDescription description = getDescription(taxon);
-						description.addElement(commonTaxonName);
 					}
+					TaxonDescription description = getDescription(taxon);
+					description.addElement(commonTaxonName);
 				}
 
 				//Reference/Source
@@ -339,14 +344,17 @@ public class BerlinModelCommonNamesImport  extends BerlinModelImportBase {
 					if (misappliedNameTaxon != null){
 
 						if (! taxon.getMisappliedNames(false).contains(misappliedNameTaxon)){
-							taxon.addMisappliedName(misappliedNameTaxon,state.getTransactionalSourceReference(), null);
+							taxon.addMisappliedName(misappliedNameTaxon, state.getTransactionalSourceReference(), null);
 							logger.warn("Misapplied name for common name was not found related to the accepted taxon. Created new relationship. CommonNameId: " + commonNameId);
 						}
 
+						//add common name also to missaplied taxon
+						//TODO is this really wanted
 						TaxonDescription misappliedNameDescription = getDescription(misappliedNameTaxon);
 						for (CommonTaxonName commonTaxonName : commonTaxonNames){
 							CommonTaxonName commonNameClone = (CommonTaxonName)commonTaxonName.clone();
 							misappliedNameDescription.addElement(commonNameClone);
+							doIdCreatedUpdatedNotes(state, commonNameClone, rs, String.valueOf(commonNameId), NAMESPACE);
 						}
 					}else{
 						//wird schon oben gelogged
