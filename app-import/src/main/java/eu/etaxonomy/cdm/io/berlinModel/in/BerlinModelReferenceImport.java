@@ -123,8 +123,8 @@ public class BerlinModelReferenceImport extends BerlinModelImportBase {
 		new CdmUriMapper("url", "uri"),
 		DbImportExtensionMapper.NewInstance("NomStandard", ExtensionType.NOMENCLATURAL_STANDARD()),
 		DbImportExtensionMapper.NewInstance("DateString", DATE_STRING_UUID, "Date String", "Date String", "dates"),
-		DbImportExtensionMapper.NewInstance("RefDepositedAt", REF_DEPOSITED_AT_UUID, "RefDepositedAt", "reference is deposited at", "at"),
-		DbImportExtensionMapper.NewInstance("RefSource", REF_SOURCE_UUID, "RefSource", "reference source", "source"),
+		DbImportExtensionMapper.NewInstance("RefDepositedAt", REF_DEPOSITED_AT_UUID, "Ref. deposited at", "Reference is deposited at", "at"),
+		DbImportExtensionMapper.NewInstance("RefSource", REF_SOURCE_UUID, "RefSource", "Reference Source", "source"),
 		DbImportMarkerMapper.NewInstance("isPaper", IS_PAPER_UUID, "is paper", "is paper", "paper", false)
 	};
 

@@ -17,7 +17,6 @@ import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
 
-import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.springframework.stereotype.Component;
 
@@ -253,9 +252,9 @@ public class BerlinModelTaxonNameImport extends BerlinModelImportBase {
 					}
 					if (colExists){
 						String sourceAcc = rs.getString("Source_Acc");
-						if (StringUtils.isNotBlank(sourceAcc)){
+						if (isNotBlank(sourceAcc)){
 							ExtensionType sourceAccExtensionType = getExtensionType(state, SOURCE_ACC_UUID, "Source_Acc","Source_Acc","Source_Acc");
-							Extension datesExtension = Extension.NewInstance(taxonName, sourceAcc, sourceAccExtensionType);
+							Extension.NewInstance(taxonName, sourceAcc, sourceAccExtensionType);
 						}
 					}
 
