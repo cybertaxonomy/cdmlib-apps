@@ -112,13 +112,13 @@ public class BerlinModelAuthorImport extends BerlinModelImportBase {
 
 //				    //AreaOfInterest
 					String areaOfInterest = rs.getString("AreaOfInterest");
-					if (StringUtils.isNotBlank(areaOfInterest)){
+					if (isNotBlank(areaOfInterest)){
 						Extension.NewInstance(author, areaOfInterest, ExtensionType.AREA_OF_INTREREST());
 					}
 
 					//nomStandard
 					String nomStandard = rs.getString("NomStandard");
-					if (StringUtils.isNotBlank(nomStandard)){
+					if (isNotBlank(nomStandard)){
 						Extension.NewInstance(author, nomStandard, ExtensionType.NOMENCLATURAL_STANDARD());
 					}
 
@@ -145,11 +145,11 @@ public class BerlinModelAuthorImport extends BerlinModelImportBase {
 			//logger.info("save " + i + " "+pluralString + " ...");
 			getAgentService().save((Collection)personMap.values());
 
-				}catch(Exception ex){
-					logger.error(ex.getMessage());
-					ex.printStackTrace();
-					success = false;
-				}
+		}catch(Exception ex){
+			logger.error(ex.getMessage());
+			ex.printStackTrace();
+			success = false;
+		}
 		return success;
 		}
 
