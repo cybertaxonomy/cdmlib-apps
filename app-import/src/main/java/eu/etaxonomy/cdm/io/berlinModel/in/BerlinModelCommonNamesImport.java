@@ -355,15 +355,14 @@ public class BerlinModelCommonNamesImport  extends BerlinModelImportBase {
 
 				}
 
-
 				//reference extensions
 				if (reference != null){
-					if (StringUtils.isNotBlank(refLanguage)){
+					if (isNotBlank(refLanguage) && !reference.hasExtension(REFERENCE_LANGUAGE_STRING_UUID, refLanguage)){
 						ExtensionType refLanguageExtensionType = getExtensionType( state, REFERENCE_LANGUAGE_STRING_UUID, "reference language","The language of the reference","ref. lang.");
 						Extension.NewInstance(reference, refLanguage, refLanguageExtensionType);
 					}
 
-					if (StringUtils.isNotBlank(refLanguageIso639_2)){
+					if (isNotBlank(refLanguageIso639_2) && !reference.hasExtension(REFERENCE_LANGUAGE_ISO639_2_UUID, refLanguage)){
 						ExtensionType refLanguageIsoExtensionType = getExtensionType( state, REFERENCE_LANGUAGE_ISO639_2_UUID, "reference language iso 639-2","The iso 639-2 code of the references language","ref. lang. 639-2");
 						Extension.NewInstance(reference, refLanguageIso639_2, refLanguageIsoExtensionType);
 					}
@@ -419,7 +418,7 @@ public class BerlinModelCommonNamesImport  extends BerlinModelImportBase {
 
 	}
 
-	/**
+    /**
 	 * @param iso6392Map
 	 * @param iso639_2
 	 * @param languageString

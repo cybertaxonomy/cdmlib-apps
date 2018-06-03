@@ -188,7 +188,8 @@ public class RedListGefaesspflanzenImportClassification extends DbImportBase<Red
                 if(family.getTaxonNodes().isEmpty()){
                     gesamtListeClassification.addChildTaxon(family, null, null);
                     //do not add empty families to checklist classification
-                    if(!getClassificationService().listChildNodesOfTaxon(family.getUuid(), RedListUtil.checkListClassificationUuid, null, null, null).isEmpty()){
+                    if(!getClassificationService().listChildNodesOfTaxon(family.getUuid(), RedListUtil.checkListClassificationUuid,
+                            true, null, null, null).isEmpty()){
                         checklistClassification.addChildTaxon(family, null, null);
                     }
                 }

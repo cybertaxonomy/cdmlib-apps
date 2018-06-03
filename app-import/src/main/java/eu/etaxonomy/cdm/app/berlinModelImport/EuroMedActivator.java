@@ -77,19 +77,19 @@ public class EuroMedActivator {
 	private static final Logger logger = Logger.getLogger(EuroMedActivator.class);
 
 	//database validation status (create, update, validate ...)
-	static DbSchemaValidation hbm2dll = DbSchemaValidation.CREATE;
+	static DbSchemaValidation hbm2dll = DbSchemaValidation.VALIDATE;
 //    static final Source berlinModelSource = BerlinModelSources.euroMed_Pub2();
 	static final Source berlinModelSource = BerlinModelSources.euroMed_BGBM42();
 //	static final Source berlinModelSource = BerlinModelSources.euroMed_PESI3();
 //
-  static final ICdmDataSource cdmDestination = CdmDestinations.localH2();
-//	static final ICdmDataSource cdmDestination = CdmDestinations.cdm_test_euroMed();
+//  static final ICdmDataSource cdmDestination = CdmDestinations.localH2();
+	static final ICdmDataSource cdmDestination = CdmDestinations.cdm_test_euroMed();
 
 //	static final ICdmDataSource cdmDestination = CdmDestinations.cdm_local_euromed();
 
 
     //check - import
-    static final CHECK check = CHECK.CHECK_ONLY;
+    static final CHECK check = CHECK.IMPORT_WITHOUT_CHECK;
 
 	static final boolean includePesiExport = false;
 
@@ -143,8 +143,8 @@ public class EuroMedActivator {
 	static String occurrenceSourceFilter = " occurrenceFk IN ( SELECT occurrenceId FROM v_cdm_exp_occurrenceAll )";
 	static String commonNameFilter = " commonNameId IN ( SELECT commonNameId FROM v_cdm_exp_commonNamesAll )";
 	static String webMarkerFilter = " TableNameFk <> 500 OR ( RIdentifierFk IN (SELECT RIdentifier FROM v_cdm_exp_taxaAll)) ";
-	static String authorTeamFilter = /* null;  //*/ " authorTeamId IN (SELECT authorTeamId FROM v_cdm_exp_authorTeamsAll) ";
-	static String authorFilter = /* null;  //*/ " authorId IN (SELECT authorId FROM v_cdm_exp_authorsAll) ";
+	static String authorTeamFilter = null;  //*/ " authorTeamId IN (SELECT authorTeamId FROM v_cdm_exp_authorTeamsAll) ";
+	static String authorFilter =  null;  //*/ " authorId IN (SELECT authorId FROM v_cdm_exp_authorsAll) ";
 
 
 
@@ -166,10 +166,10 @@ public class EuroMedActivator {
 
 	//taxa
 	static final boolean doTaxa = true;
-	static final boolean doFacts = true;
+	static final boolean doFacts = false;
 	static final boolean doCommonNames = false;
-	static final boolean doOccurences = true;
-	static final boolean doRelTaxa = true;
+	static final boolean doOccurences = false;
+	static final boolean doRelTaxa = false;
 	static final boolean doRunTransmissionEngine = (hbm2dll == DbSchemaValidation.VALIDATE);
 
 	//etc.
