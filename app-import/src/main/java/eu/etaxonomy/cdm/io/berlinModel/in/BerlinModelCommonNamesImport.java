@@ -298,7 +298,9 @@ public class BerlinModelCommonNamesImport  extends BerlinModelImportBase {
 
 				TaxonName nameUsedInSource = taxonNameMap.get(String.valueOf(nameInSourceFk));
 				if (nameInSourceFk != null && nameUsedInSource == null){
-					logger.warn("Name used in source (" + nameInSourceFk + ") was not found for common name " + commonNameId);
+					if (nameInSourceFk != -1 || !state.getConfig().isEuroMed()){
+					    logger.warn("Name used in source (" + nameInSourceFk + ") was not found for common name " + commonNameId);
+					}
 				}
 				for (CommonTaxonName commonTaxonName : commonTaxonNames){
 				    DescriptionElementSource source = DescriptionElementSource.NewPrimarySourceInstance(reference, microCitation, nameUsedInSource, originalNameString);
