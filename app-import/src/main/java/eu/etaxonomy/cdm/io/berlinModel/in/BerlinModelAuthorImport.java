@@ -132,8 +132,8 @@ public class BerlinModelAuthorImport extends BerlinModelImportBase {
 							break;
 						}
 					}
-					if (StringUtils.isNotBlank(initials)){
-						Extension initialsExtension = Extension.NewInstance(author, initials, ExtensionType.ABBREVIATION());
+					if (isNotBlank(initials)){
+						author.setInitials(initials);
 					}
 
 					//created, notes
