@@ -29,6 +29,9 @@ import eu.etaxonomy.cdm.model.common.Annotation;
 import eu.etaxonomy.cdm.model.common.AnnotationType;
 import eu.etaxonomy.cdm.model.common.IdentifiableEntity;
 import eu.etaxonomy.cdm.model.common.Language;
+import eu.etaxonomy.cdm.model.common.MarkerType;
+import eu.etaxonomy.cdm.model.common.TermType;
+import eu.etaxonomy.cdm.model.common.TermVocabulary;
 import eu.etaxonomy.cdm.model.common.User;
 import eu.etaxonomy.cdm.model.description.DescriptionElementBase;
 import eu.etaxonomy.cdm.model.location.Country;
@@ -381,5 +384,13 @@ public abstract class BerlinModelImportBase
 		return null;
 	}
 
+    /**
+     * @return
+     */
+    protected TermVocabulary<MarkerType> getEuroMedMarkerTypeVoc() {
+        TermVocabulary<MarkerType> markerTypeVoc = getVocabulary(TermType.MarkerType, BerlinModelTransformer.uuidVocEMMarkerType,
+                "Euro+Med marker type vocabulary", "E+M marker types", null, null, false, MarkerType.COMPLETE());
+        return markerTypeVoc;
+    }
 
 }

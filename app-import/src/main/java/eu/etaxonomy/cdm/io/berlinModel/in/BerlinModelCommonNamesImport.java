@@ -39,7 +39,6 @@ import eu.etaxonomy.cdm.model.common.Language;
 import eu.etaxonomy.cdm.model.common.Marker;
 import eu.etaxonomy.cdm.model.common.MarkerType;
 import eu.etaxonomy.cdm.model.common.Representation;
-import eu.etaxonomy.cdm.model.common.TermType;
 import eu.etaxonomy.cdm.model.common.TermVocabulary;
 import eu.etaxonomy.cdm.model.description.CommonTaxonName;
 import eu.etaxonomy.cdm.model.description.DescriptionElementSource;
@@ -333,7 +332,8 @@ public class BerlinModelCommonNamesImport  extends BerlinModelImportBase {
 							logger.warn("Taxon name or misapplied name reference is null for common name " + commonNameId);
 						}else{
 							misappliedNameTaxon = Taxon.NewInstance(nameUsedInSource, sec);
-							MarkerType misCommonNameMarker = getMarkerType(state, BerlinModelTransformer.uuidMisappliedCommonName,"Misapplied Common Name in Berlin Model", "Misapplied taxon was automatically created by Berlin Model import for a common name with a misapplied name reference", "MCN");
+							MarkerType misCommonNameMarker = getMarkerType(state, BerlinModelTransformer.uuidMisappliedCommonName,"Misapplied Common Name in Berlin Model",
+							        "Misapplied taxon was automatically created by Berlin Model import for a common name with a misapplied name reference", "MCN", getEuroMedMarkerTypeVoc());
 							Marker marker = Marker.NewInstance(misCommonNameMarker, true);
 							misappliedNameTaxon.addMarker(marker);
 							taxaToSave.add(misappliedNameTaxon);
@@ -380,8 +380,7 @@ public class BerlinModelCommonNamesImport  extends BerlinModelImportBase {
 
 				//status
 				if (isNotBlank(status)){
-				    TermVocabulary<MarkerType> markerTypeVoc = getVocabulary(TermType.MarkerType, BerlinModelTransformer.uuidVocEMMarkerType,
-				            "Euro+Med marker type vocabulary", "E+M marker types", null, null, false, MarkerType.COMPLETE());
+				    TermVocabulary<MarkerType> markerTypeVoc = getEuroMedMarkerTypeVoc();
 				    MarkerType recommendedMarkerType = getMarkerType( state, COMMONNAME_STATUS_RECOMMENDED_UUID, "recommended","If the common name has the status recommended (see also status 'synonym', if none of them is true the default status is 'unassessed')",
 				            "recommended", markerTypeVoc);
 					MarkerType synonymMarkerType = getMarkerType( state, COMMONNAME_STATUS_SYNONYM_UUID, "synonym","If the common name has the status synonym (see also status 'recommended', if none of them is true the default status is 'unassessed')",
@@ -425,6 +424,7 @@ public class BerlinModelCommonNamesImport  extends BerlinModelImportBase {
 		return success;
 
 	}
+
 
     /**
 	 * @param iso6392Map

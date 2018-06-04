@@ -134,8 +134,8 @@ public class BerlinModelOccurrenceImport  extends BerlinModelImportBase {
 
 		TermVocabulary<NamedArea> euroMedAreas = makeEmptyEuroMedVocabulary();
 
-		MarkerType eurMarkerType = getMarkerType(state, BerlinModelTransformer.uuidEurArea, "eur", "eur Area", "eur");
-		MarkerType euroMedAreaMarkerType = getMarkerType(state, BerlinModelTransformer.uuidEurMedArea, "EuroMedArea", "EuroMedArea", "EuroMedArea");
+		MarkerType eurMarkerType = getMarkerType(state, BerlinModelTransformer.uuidEurArea, "eur", "eur Area", "eur", getEuroMedMarkerTypeVoc());
+		MarkerType euroMedAreaMarkerType = getMarkerType(state, BerlinModelTransformer.uuidEurMedArea, "EuroMedArea", "EuroMedArea", "EuroMedArea", getEuroMedMarkerTypeVoc());
 		ExtensionType isoCodeExtType = getExtensionType(state, BerlinModelTransformer.uuidIsoCode, "IsoCode", "IsoCode", "iso");
 		ExtensionType tdwgCodeExtType = getExtensionType(state, BerlinModelTransformer.uuidTdwgAreaCode, "TDWG code", "TDWG Area code", "tdwg");
 		ExtensionType mclCodeExtType = getExtensionType(state, BerlinModelTransformer.uuidMclCode, "MCL code", "MedCheckList code", "mcl");
@@ -230,7 +230,8 @@ public class BerlinModelOccurrenceImport  extends BerlinModelImportBase {
                 logger.error(message);
                 System.out.println(message);
             }
-            MarkerType hiddenAreaMarkerType = getMarkerType(state, BerlinModelTransformer.uuidHiddenArea, "Hidden Area","Used to hide distributions for the named areas in publications", null, vocUserDefinedMarkerTypes);
+            MarkerType hiddenAreaMarkerType = getMarkerType(state, BerlinModelTransformer.uuidHiddenArea,
+                    "Hidden Area","Used to hide distributions for the named areas in publications", null, getEuroMedMarkerTypeVoc());
 
             //Add hidden area marker to Rs(C) and Rs(N)
             hideArea(euroMedAreasVoc, hiddenAreaMarkerType, BerlinModelTransformer.uuidRs);
