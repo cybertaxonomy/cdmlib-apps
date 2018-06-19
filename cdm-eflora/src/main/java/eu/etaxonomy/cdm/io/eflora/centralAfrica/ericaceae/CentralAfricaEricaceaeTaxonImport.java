@@ -330,7 +330,7 @@ public class CentralAfricaEricaceaeTaxonImport  extends EfloraTaxonImport  {
 		List<Person> ipniAuthors = ipniService.getAuthors(nameTeamString, null, null, null, null, null);
 		if (ipniAuthors != null){
 			for (Person ipniAuthor : ipniAuthors){
-				if (ipniAuthor.getLastname() != null && ipniAuthor.getLastname().equalsIgnoreCase(refAuthorTeam.getTitleCache())){
+				if (ipniAuthor.getFamilyName() != null && ipniAuthor.getFamilyName().equalsIgnoreCase(refAuthorTeam.getTitleCache())){
 					return true;
 				}
 				logger.warn(ipniAuthor.getTitleCache() + " <-> " + refAuthorTeam.getTitleCache());
