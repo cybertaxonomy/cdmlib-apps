@@ -65,7 +65,7 @@ public class CichorieaeImageImport extends AbstractImageImporter {
 					if (taxonName == null){
 						continue;
 					}
-					List<TaxonBase> taxa = taxonService.searchTaxaByName(taxonName, state.getConfig().getSourceReference());
+					List<TaxonBase> taxa = taxonService.searchByName(taxonName, true, state.getConfig().getSourceReference());
 					if(taxa.size() == 0){
 						logger.warn("no taxon with this name found: " + taxonName);
 					} else {

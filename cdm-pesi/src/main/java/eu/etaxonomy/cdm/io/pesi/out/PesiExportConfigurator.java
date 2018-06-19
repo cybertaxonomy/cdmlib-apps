@@ -22,7 +22,9 @@ import eu.etaxonomy.cdm.model.reference.ReferenceFactory;
  * @since 12.02.2010
  *
  */
-public class PesiExportConfigurator extends DbExportConfiguratorBase<PesiExportState, PesiTransformer> implements IExportConfigurator<PesiExportState, PesiTransformer> {
+public class PesiExportConfigurator extends DbExportConfiguratorBase<PesiExportState, PesiTransformer, Source>
+        implements IExportConfigurator<PesiExportState, PesiTransformer> {
+
 	@SuppressWarnings("unused")
 	private static Logger logger = Logger.getLogger(PesiExportConfigurator.class);
 	private int limitSave = 2000;

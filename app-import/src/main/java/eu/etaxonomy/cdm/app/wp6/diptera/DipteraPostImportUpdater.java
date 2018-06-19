@@ -65,7 +65,6 @@ public class DipteraPostImportUpdater {
 			logger.warn("start updating citations ... application context started");
 			int modCount = 100;
 			int page = 0;
-			int count = cdmApp.getTaxonService().count(Taxon.class);
 			List<Taxon> taxonList = cdmApp.getTaxonService().list(Taxon.class, 100000, page, null, null);
 			List<TaxonName> nameList = cdmApp.getNameService().list(null, 100000, page, null, null);
 			Map<String, TaxonName> nameMap = new HashMap<>();

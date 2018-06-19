@@ -409,14 +409,14 @@ public class FaunaEuErmsMergeActivator {
 
 	//wenn Name und Rang identisch sind und auch der Status gleich, dann alle Informationen vom Fauna Europaea Taxon/Synonym zum Erms Taxon/Synonym
 
-	private void moveAllInformationsFromFaunaEuToErms(TaxonBase faunaEu, TaxonBase erms){
+	private void moveAllInformationsFromFaunaEuToErms(TaxonBase<?> faunaEu, TaxonBase<?> erms){
 		Set<Annotation> annotations = faunaEu.getAnnotations();
 		Set<Extension> extensions = faunaEu.getExtensions();
 		Set<Marker> markers = faunaEu.getMarkers();
 		List<Credit> credits = faunaEu.getCredits();
 		if (faunaEu instanceof Taxon){
 			Set<TaxonDescription> descriptions = ((Taxon)faunaEu).getDescriptions();
-			Set<Taxon> misappliedNames = ((Taxon)faunaEu).getMisappliedNames();
+			Set<Taxon> misappliedNames = ((Taxon)faunaEu).getMisappliedNames(true);
 
 			if (erms instanceof Taxon){
 				Iterator<TaxonDescription> descriptionsIterator = descriptions.iterator();

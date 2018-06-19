@@ -246,7 +246,7 @@ public class EuroMedActivator {
 		config.setSwitchSpeciesGroup(switchSpeciesGroup);
 
 		// invoke import
-		CdmDefaultImport<BerlinModelImportConfigurator> bmImport = new CdmDefaultImport<BerlinModelImportConfigurator>();
+		CdmDefaultImport<BerlinModelImportConfigurator> bmImport = new CdmDefaultImport<>();
 		bmImport.invoke(config);
 
 		renameRanks(config, bmImport);
@@ -278,14 +278,14 @@ public class EuroMedActivator {
 				Representation repr = sectBot.getRepresentation(Language.ENGLISH());
 				repr.setAbbreviatedLabel(repr.getAbbreviatedLabel().replace("(bot.)", "").trim());
 				repr.setLabel(repr.getLabel().replace("(Botany)", "").trim());
-				sectBot.setTitleCache(null, false);  //to definetely update the titleCache also
+				sectBot.setTitleCache(null, false);  //to definitely update the titleCache also
 				app.getTermService().saveOrUpdate(sectBot);
 
 				Rank subSectBot = (Rank)app.getTermService().find(Rank.SECTION_BOTANY().getUuid());
 				repr = subSectBot.getRepresentation(Language.ENGLISH());
 				repr.setAbbreviatedLabel(repr.getAbbreviatedLabel().replace("(bot.)", "").trim());
 				repr.setLabel(repr.getLabel().replace("(Botany)", "").trim());
-				subSectBot.setTitleCache(null, false);  //to definetely update the titleCache also
+				subSectBot.setTitleCache(null, false);  //to definitely update the titleCache also
 				app.getTermService().saveOrUpdate(subSectBot);
 				app.commitTransaction(tx);
 			} catch (Exception e) {

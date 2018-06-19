@@ -1,8 +1,8 @@
 /**
 * Copyright (C) 2007 EDIT
-* European Distributed Institute of Taxonomy 
+* European Distributed Institute of Taxonomy
 * http://www.e-taxonomy.eu
-* 
+*
 * The contents of this file are subject to the Mozilla Public License Version 1.1
 * See LICENSE.TXT at the top of this package for the full license terms.
 */
@@ -45,15 +45,18 @@ import eu.etaxonomy.cdm.model.common.User;
 /**
  * @author a.mueller
  * @since 20.03.2008
- * @version 1.0
  */
-public abstract class ErmsImportBase<CDM_BASE extends CdmBase> extends CdmImportBase<ErmsImportConfigurator, ErmsImportState> implements ICdmIO<ErmsImportState>, IPartitionedIO<ErmsImportState> {
-	private static final Logger logger = Logger.getLogger(ErmsImportBase.class);
-	
+public abstract class ErmsImportBase<CDM_BASE extends CdmBase>
+             extends CdmImportBase<ErmsImportConfigurator, ErmsImportState>
+             implements ICdmIO<ErmsImportState>, IPartitionedIO<ErmsImportState> {
+
+    private static final long serialVersionUID = 3856605408484122428L;
+    private static final Logger logger = Logger.getLogger(ErmsImportBase.class);
+
 	public static final UUID ID_IN_SOURCE_EXT_UUID = UUID.fromString("23dac094-e793-40a4-bad9-649fc4fcfd44");
-	
+
 	//NAMESPACES
-	
+
 	protected static final String AREA_NAMESPACE = "gu";
 	protected static final String DR_NAMESPACE = "dr";
 	protected static final String IMAGE_NAMESPACE = "Images";
@@ -67,19 +70,19 @@ public abstract class ErmsImportBase<CDM_BASE extends CdmBase> extends CdmImport
 	protected static final String VERNACULAR_NAMESPACE = "Vernaculars";
 	protected static final String FEATURE_NAMESPACE = "note.type";
 	protected static final String EXTENSION_TYPE_NAMESPACE = "ExtensionType";
-	
-	
+
+
 
 	private String pluralString;
 	private String dbTableName;
 	//TODO needed?
 	private Class cdmTargetClass;
 
-	
-	
+
+
 	/**
 	 * @param dbTableName
-	 * @param dbTableName2 
+	 * @param dbTableName2
 	 */
 	public ErmsImportBase(String pluralString, String dbTableName, Class cdmTargetClass) {
 		this.pluralString = pluralString;
@@ -87,17 +90,18 @@ public abstract class ErmsImportBase<CDM_BASE extends CdmBase> extends CdmImport
 		this.cdmTargetClass = cdmTargetClass;
 	}
 
-	protected void doInvoke(ErmsImportState state){
+	@Override
+    protected void doInvoke(ErmsImportState state){
 		logger.info("start make " + getPluralString() + " ...");
 		ErmsImportConfigurator config = state.getConfig();
 		Source source = config.getSource();
-			
+
 		String strIdQuery = getIdQuery();
 		String strRecordQuery = getRecordQuery(config);
 
 		int recordsPerTransaction = config.getRecordsPerTransaction();
 		recordsPerTransaction = recordsPerTransaction / divideCountBy();
-		
+
 		try{
 			ResultSetPartitioner partitioner = ResultSetPartitioner.NewInstance(source, strIdQuery, strRecordQuery, recordsPerTransaction);
 			while (partitioner.nextPartition()){
@@ -108,18 +112,19 @@ public abstract class ErmsImportBase<CDM_BASE extends CdmBase> extends CdmImport
 			state.setUnsuccessfull();
 			return;
 		}
-		
+
 		logger.info("end make " + getPluralString() + " ... " + getSuccessString(true));
 		return;
 	}
-	
-	public boolean doPartition(ResultSetPartitioner partitioner, ErmsImportState state) {
+
+	@Override
+    public boolean doPartition(ResultSetPartitioner partitioner, ErmsImportState state) {
 		boolean success = true ;
 		Set<CdmBase> objectsToSave = new HashSet<CdmBase>();
-		
+
  		DbImportMapping<?, ?> mapping = getMapping();
 		mapping.initialize(state, cdmTargetClass);
-		
+
 		ResultSet rs = partitioner.getResultSet();
 		try{
 			while (rs.next()){
@@ -129,19 +134,19 @@ public abstract class ErmsImportBase<CDM_BASE extends CdmBase> extends CdmImport
 			logger.error("SQLException:" +  e);
 			return false;
 		}
-	
+
 		partitioner.startDoSave();
 		getCommonService().save(objectsToSave);
 		return success;
 	}
 
 
-	
+
 	/**
 	 * @return
 	 */
 	protected abstract DbImportMapping<?, ?> getMapping();
-	
+
 	/**
 	 * @return
 	 */
@@ -154,11 +159,12 @@ public abstract class ErmsImportBase<CDM_BASE extends CdmBase> extends CdmImport
 		String result = " SELECT id FROM " + getTableName();
 		return result;
 	}
-	
+
 	/* (non-Javadoc)
 	 * @see eu.etaxonomy.cdm.io.berlinModel.in.IPartitionedIO#getPluralString()
 	 */
-	public String getPluralString(){
+	@Override
+    public String getPluralString(){
 		return pluralString;
 	}
 
@@ -168,7 +174,7 @@ public abstract class ErmsImportBase<CDM_BASE extends CdmBase> extends CdmImport
 	protected String getTableName(){
 		return this.dbTableName;
 	}
-	
+
 	protected boolean doIdCreatedUpdatedNotes(ErmsImportState state, IdentifiableEntity identifiableEntity, ResultSet rs, long id, String namespace)
 			throws SQLException{
 		boolean success = true;
@@ -178,8 +184,8 @@ public abstract class ErmsImportBase<CDM_BASE extends CdmBase> extends CdmImport
 		success &= doCreatedUpdatedNotes(state, identifiableEntity, rs, namespace);
 		return success;
 	}
-	
-	
+
+
 	protected boolean doCreatedUpdatedNotes(ErmsImportState state, AnnotatableEntity annotatableEntity, ResultSet rs, String namespace)
 			throws SQLException{
 
@@ -195,9 +201,9 @@ public abstract class ErmsImportBase<CDM_BASE extends CdmBase> extends CdmImport
 			//Table "Name" has no updated when/who
 		}
 		String notes = rs.getString("notes");
-		
+
 		boolean success  = true;
-		
+
 		//Created When, Who, Updated When Who
 		if (config.getEditor() == null || config.getEditor().equals(EDITOR.NO_EDITORS)){
 			//do nothing
@@ -222,8 +228,8 @@ public abstract class ErmsImportBase<CDM_BASE extends CdmBase> extends CdmImport
 		}else {
 			logger.warn("Editor type not yet implemented: " + config.getEditor());
 		}
-		
-		
+
+
 		//notes
 		if (CdmUtils.isNotEmpty(notes)){
 			String notesString = String.valueOf(notes);
@@ -238,13 +244,13 @@ public abstract class ErmsImportBase<CDM_BASE extends CdmBase> extends CdmImport
 		}
 		return success;
 	}
-	
+
 	private User getUser(String userString, ErmsImportState state){
 		if (CdmUtils.isEmpty(userString)){
 			return null;
 		}
 		userString = userString.trim();
-		
+
 		User user = state.getUser(userString);
 		if (user == null){
 			user = getTransformedUser(userString,state);
@@ -257,7 +263,7 @@ public abstract class ErmsImportBase<CDM_BASE extends CdmBase> extends CdmImport
 		}
 		return user;
 	}
-	
+
 	private User getTransformedUser(String userString, ErmsImportState state){
 		Method method = state.getConfig().getUserTransformationMethod();
 		if (method == null){
@@ -273,19 +279,19 @@ public abstract class ErmsImportBase<CDM_BASE extends CdmBase> extends CdmImport
 	}
 
 	private User makeNewUser(String userString, ErmsImportState state){
-		String pwd = getPassword(); 
+		String pwd = getPassword();
 		User user = User.NewInstance(userString, pwd);
 		state.putUser(userString, user);
 		getUserService().save(user);
 		logger.info("Added new user: " + userString);
 		return user;
 	}
-	
+
 	private String getPassword(){
 		String result = UUID.randomUUID().toString();
 		return result;
 	}
-	
+
 	private DateTime getDateTime(Object timeString){
 		if (timeString == null){
 			return null;
@@ -300,7 +306,7 @@ public abstract class ErmsImportBase<CDM_BASE extends CdmBase> extends CdmImport
 		}
 		return dateTime;
 	}
-	
+
 	protected boolean resultSetHasColumn(ResultSet rs, String columnName){
 		try {
 			ResultSetMetaData metaData = rs.getMetaData();
@@ -315,15 +321,15 @@ public abstract class ErmsImportBase<CDM_BASE extends CdmBase> extends CdmImport
             return false;
 		}
 	}
-	
+
 	protected boolean checkSqlServerColumnExists(Source source, String tableName, String columnName){
 		String strQuery = "SELECT  Count(t.id) as n " +
 				" FROM sysobjects AS t " +
 				" INNER JOIN syscolumns AS c ON t.id = c.id " +
-				" WHERE (t.xtype = 'U') AND " + 
-				" (t.name = '" + tableName + "') AND " + 
+				" WHERE (t.xtype = 'U') AND " +
+				" (t.name = '" + tableName + "') AND " +
 				" (c.name = '" + columnName + "')";
-		ResultSet rs = source.getResultSet(strQuery) ;		
+		ResultSet rs = source.getResultSet(strQuery) ;
 		int n;
 		try {
 			rs.next();
@@ -333,9 +339,9 @@ public abstract class ErmsImportBase<CDM_BASE extends CdmBase> extends CdmImport
 			e.printStackTrace();
 			return false;
 		}
-		
+
 	}
-	
+
 	/**
 	 * Returns a map that holds all values of a ResultSet. This is needed if a value needs to
 	 * be accessed twice
@@ -359,7 +365,7 @@ public abstract class ErmsImportBase<CDM_BASE extends CdmBase> extends CdmImport
 			throw e;
 		}
 	}
-	
+
 	protected ExtensionType getExtensionType(UUID uuid, String label, String text, String labelAbbrev){
 		ExtensionType extensionType = (ExtensionType)getTermService().find(uuid);
 		if (extensionType == null){
@@ -369,7 +375,7 @@ public abstract class ErmsImportBase<CDM_BASE extends CdmBase> extends CdmImport
 		}
 		return extensionType;
 	}
-	
+
 	protected MarkerType getMarkerType(UUID uuid, String label, String text, String labelAbbrev){
 		MarkerType markerType = (MarkerType)getTermService().find(uuid);
 		if (markerType == null){
@@ -379,7 +385,7 @@ public abstract class ErmsImportBase<CDM_BASE extends CdmBase> extends CdmImport
 		}
 		return markerType;
 	}
-	
+
 
 	/**
 	 * Reads a foreign key field from the result set and adds its value to the idSet.
@@ -395,9 +401,9 @@ public abstract class ErmsImportBase<CDM_BASE extends CdmBase> extends CdmImport
 			idSet.add(id);
 		}
 	}
-	
+
 	protected int divideCountBy() { return 1;}
-	
+
 	/**
 	 * Returns true if i is a multiple of recordsPerTransaction
 	 * @param i
@@ -408,12 +414,12 @@ public abstract class ErmsImportBase<CDM_BASE extends CdmBase> extends CdmImport
 		startTransaction();
 		return (i % recordsPerLoop) == 0;
 	}
-	
+
 	protected void doLogPerLoop(int count, int recordsPerLog, String pluralString){
 		if ((count % recordsPerLog ) == 0 && count!= 0 ){ logger.info(pluralString + " handled: " + (count));}
 	}
-	
 
 
-	
+
+
 }

@@ -75,7 +75,7 @@ import eu.etaxonomy.cdm.profiler.ProfilerController;
 import eu.etaxonomy.cdm.strategy.cache.HTMLTagRules;
 import eu.etaxonomy.cdm.strategy.cache.TagEnum;
 import eu.etaxonomy.cdm.strategy.cache.name.INonViralNameCacheStrategy;
-import eu.etaxonomy.cdm.strategy.cache.name.NonViralNameDefaultCacheStrategy;
+import eu.etaxonomy.cdm.strategy.cache.name.TaxonNameDefaultCacheStrategy;
 import eu.etaxonomy.cdm.strategy.cache.name.ZooNameNoMarkerCacheStrategy;
 
 /**
@@ -116,8 +116,8 @@ public class PesiTaxonExport extends PesiExportBase {
 	private static ExtensionType expertNameExtensionType;
 	private static ExtensionType speciesExpertNameExtensionType;
 	private static ExtensionType cacheCitationExtensionType;
-	public static NonViralNameDefaultCacheStrategy zooNameStrategy = ZooNameNoMarkerCacheStrategy.NewInstance();
-	public static NonViralNameDefaultCacheStrategy nonViralNameStrategy = NonViralNameDefaultCacheStrategy.NewInstance();
+	public static TaxonNameDefaultCacheStrategy zooNameStrategy = ZooNameNoMarkerCacheStrategy.NewInstance();
+	public static TaxonNameDefaultCacheStrategy nonViralNameStrategy = TaxonNameDefaultCacheStrategy.NewInstance();
 	private static int currentTaxonId;
 
 
@@ -528,6 +528,7 @@ public class PesiTaxonExport extends PesiExportBase {
 	// 2nd Round: Add ParentTaxonFk, TreeIndex to each Taxon
 	private boolean doPhase02_OLD(PesiExportState state) {
 		boolean success = true;
+		boolean includeUnpublished = false;
 		if (! state.getConfig().isDoTreeIndex()){
 			logger.info ("Ignore PHASE 2: ParentTaxonFk and TreeIndex");
 			return success;
@@ -563,7 +564,8 @@ public class PesiTaxonExport extends PesiExportBase {
 				txStatus = startTransaction(true);
 				logger.info("Started transaction to fetch all rootNodes specific to Rank " + rank.getLabel() + " ...");
 
-				rankSpecificRootNodes = getClassificationService().listRankSpecificRootNodes(classification, rank, null, null, null);
+				rankSpecificRootNodes = getClassificationService().listRankSpecificRootNodes(classification, rank,
+				        includeUnpublished, null, null, null);
 				logger.info("Fetched " + rankSpecificRootNodes.size() + " RootNodes for Rank " + rank.getLabel());
 
 				commitTransaction(txStatus);
@@ -1651,7 +1653,7 @@ public class PesiTaxonExport extends PesiExportBase {
 	@SuppressWarnings("unused")
 	private static String getWebSearchName(TaxonName taxonName) {
 		//TODO extensions?
-		NonViralNameDefaultCacheStrategy strategy = getCacheStrategy(taxonName);
+	    TaxonNameDefaultCacheStrategy strategy = getCacheStrategy(taxonName);
 		String result = strategy.getNameCache(taxonName);
 		return result;
 	}
@@ -1688,7 +1690,7 @@ public class PesiTaxonExport extends PesiExportBase {
 	@SuppressWarnings("unused")
 	private static String getSourceNameCache(TaxonName taxonName) {
 		if (taxonName != null){
-			Reference nomRef = (Reference)taxonName.getNomenclaturalReference();
+			Reference nomRef = taxonName.getNomenclaturalReference();
 			if (nomRef != null){
 			    logger.warn("Semantics of getAbbrevTitleCache has changed. Please check if output is still correct. See #5388");
 				return nomRef.getAbbrevTitleCache();
@@ -2429,9 +2431,9 @@ public class PesiTaxonExport extends PesiExportBase {
 
 	}
 
-	protected static NonViralNameDefaultCacheStrategy getCacheStrategy(TaxonName taxonName) {
+	protected static TaxonNameDefaultCacheStrategy getCacheStrategy(TaxonName taxonName) {
 		taxonName = CdmBase.deproxy(taxonName);
-		NonViralNameDefaultCacheStrategy cacheStrategy;
+		TaxonNameDefaultCacheStrategy cacheStrategy;
 		if (taxonName.isZoological()){
 			cacheStrategy = zooNameStrategy;
 		}else if (taxonName.isBotanical()) {

@@ -93,7 +93,7 @@ public class RedListGefaesspflanzenImportClassification extends DbImportBase<Red
 
     private void importFamilies(Classification gesamtListe, Classification checkliste, RedListGefaesspflanzenImportState state) {
         for(UUID uuid:state.getFamilyMap().values()){
-            Taxon family = HibernateProxyHelper.deproxy(getTaxonService().load(uuid, Arrays.asList(new String[]{"*"})), Taxon.class);
+            Taxon family = HibernateProxyHelper.deproxy(getTaxonService().load(uuid, true, Arrays.asList(new String[]{"*"})), Taxon.class);
 
             gesamtListe.addParentChild(null, family, null, null);
             checkliste.addParentChild(null, family, null, null);

@@ -40,7 +40,7 @@ import eu.etaxonomy.cdm.model.taxon.TaxonBase;
 import eu.etaxonomy.cdm.model.taxon.TaxonRelationship;
 import eu.etaxonomy.cdm.model.taxon.TaxonRelationshipType;
 import eu.etaxonomy.cdm.persistence.query.OrderHint;
-import eu.etaxonomy.cdm.strategy.cache.name.NonViralNameDefaultCacheStrategy;
+import eu.etaxonomy.cdm.strategy.cache.name.TaxonNameDefaultCacheStrategy;
 import eu.etaxonomy.cdm.strategy.cache.name.ZooNameNoMarkerCacheStrategy;
 
 /**
@@ -55,10 +55,10 @@ public abstract class PesiExportBase extends DbExportBase<PesiExportConfigurator
 
 	protected static final boolean IS_CACHE = true;
 
-	private static Set<NameRelationshipType> excludedRelTypes = new HashSet<NameRelationshipType>();
+	private static Set<NameRelationshipType> excludedRelTypes = new HashSet<>();
 
-	private static NonViralNameDefaultCacheStrategy zooNameStrategy = ZooNameNoMarkerCacheStrategy.NewInstance();
-	private static NonViralNameDefaultCacheStrategy botanicalNameStrategy = NonViralNameDefaultCacheStrategy.NewInstance();
+	private static TaxonNameDefaultCacheStrategy zooNameStrategy = ZooNameNoMarkerCacheStrategy.NewInstance();
+	private static TaxonNameDefaultCacheStrategy botanicalNameStrategy = TaxonNameDefaultCacheStrategy.NewInstance();
 
 	public PesiExportBase() {
 		super();
@@ -471,8 +471,8 @@ public abstract class PesiExportBase extends DbExportBase<PesiExportConfigurator
 
 
 
-	protected static NonViralNameDefaultCacheStrategy getCacheStrategy(TaxonName taxonName) {
-		NonViralNameDefaultCacheStrategy cacheStrategy;
+	protected static TaxonNameDefaultCacheStrategy getCacheStrategy(TaxonName taxonName) {
+	    TaxonNameDefaultCacheStrategy cacheStrategy;
 		if (taxonName.isZoological()){
 			cacheStrategy = zooNameStrategy;
 		}else if (taxonName.isBotanical()) {

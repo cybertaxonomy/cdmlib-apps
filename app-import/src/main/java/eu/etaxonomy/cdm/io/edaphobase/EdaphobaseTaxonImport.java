@@ -442,6 +442,7 @@ public class EdaphobaseTaxonImport extends EdaphobaseImportBase {
 
     static Map<Integer,UUID> idMap = new HashMap<>();
     static{
+        logger.warn("Loading example UUIDs. Switch off once examples are adapted!");
         idMap.put(86594, UUID.fromString("715c2370-45a4-450c-99f7-e196758979ca"));  //Aporrectodea caliginosa
         idMap.put(86593, UUID.fromString("230f1a69-5dcd-4829-a01c-17490a2fdf34"));  //Aporrectodea
         idMap.put(86684, UUID.fromString("0982dc0e-1a79-45a0-8abc-8166625b94b8"));  //Achaeta

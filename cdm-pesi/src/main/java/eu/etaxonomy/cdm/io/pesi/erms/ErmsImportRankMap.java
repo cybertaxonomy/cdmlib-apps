@@ -35,7 +35,9 @@ import eu.etaxonomy.cdm.strategy.exceptions.UnknownCdmTypeException;
  */
 @Component
 public class ErmsImportRankMap extends ErmsImportBase<Rank>{
-	private static final Logger logger = Logger.getLogger(ErmsImportRankMap.class);
+
+    private static final long serialVersionUID = -3956071827341860580L;
+    private static final Logger logger = Logger.getLogger(ErmsImportRankMap.class);
 
 	private Map<Integer, Map<Integer,Rank>> rankMap;
 

@@ -43,7 +43,7 @@ import eu.etaxonomy.cdm.model.reference.Reference;
 import eu.etaxonomy.cdm.model.taxon.Synonym;
 import eu.etaxonomy.cdm.model.taxon.Taxon;
 import eu.etaxonomy.cdm.model.taxon.TaxonBase;
-import eu.etaxonomy.cdm.strategy.cache.name.NonViralNameDefaultCacheStrategy;
+import eu.etaxonomy.cdm.strategy.cache.name.TaxonNameDefaultCacheStrategy;
 
 
 /**
@@ -382,7 +382,7 @@ public class ErmsTaxonImport  extends ErmsImportBase<TaxonBase<?>> implements IM
 		}
 		//cache strategy
 		if (result.isZoological()){
-			NonViralNameDefaultCacheStrategy cacheStrategy = PesiTaxonExport.zooNameStrategy;
+		    TaxonNameDefaultCacheStrategy cacheStrategy = PesiTaxonExport.zooNameStrategy;
 			result.setCacheStrategy(cacheStrategy);
 		}
 

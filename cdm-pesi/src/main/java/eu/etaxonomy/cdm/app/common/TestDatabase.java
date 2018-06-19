@@ -23,7 +23,6 @@ import eu.etaxonomy.cdm.model.agent.AgentBase;
 import eu.etaxonomy.cdm.model.agent.Institution;
 import eu.etaxonomy.cdm.model.agent.InstitutionalMembership;
 import eu.etaxonomy.cdm.model.agent.Person;
-import eu.etaxonomy.cdm.model.common.AnnotatableEntity;
 import eu.etaxonomy.cdm.model.common.DefinedTermBase;
 import eu.etaxonomy.cdm.model.common.TimePeriod;
 import eu.etaxonomy.cdm.model.common.VersionableEntity;
@@ -127,22 +126,13 @@ public class TestDatabase {
 
 	    SpecimenOrObservationBase<?> specimen = DerivedUnit.NewPreservedSpecimenInstance();
 
-	    specimen.setIndividualCount(12);
+	    specimen.setIndividualCount("12");
 
-
-	    Feature featureIndAss = Feature.INDIVIDUALS_ASSOCIATION();
 	    TaxonNameDescription newTaxNameDesc = TaxonNameDescription.NewInstance();
-//	    newTaxNameDesc.addFeature(featureIndAss);  //was removed from model in 3.3
 	    IndividualsAssociation indAss = IndividualsAssociation.NewInstance();
 	    indAss.setAssociatedSpecimenOrObservation(specimen);
 
 	    newTaxNameDesc.addElement(indAss);
-
-
-
-
-//	    List<Synonym> synonyms = new ArrayList<Synonym>();
-	    List<AnnotatableEntity> homotypicalGroups;
 
 		Reference citRef, sec;
 		TaxonName name1, name2, name21, nameRoot1, nameFree, synName11, synName12, synName2, synNameFree;
@@ -179,7 +169,7 @@ public class TestDatabase {
 		//Contact contact1 = new Contact();
 		//contact1.setEmail("someone@somewhere.org");
 		InstitutionalMembership membership
-		= new InstitutionalMembership(institute, linne, period, "Biodiversity", "Head");
+		    = new InstitutionalMembership(institute, linne, period, "Biodiversity", "Head");
 		//agentData.add(contact1);
 
 		agentData.add(membership);

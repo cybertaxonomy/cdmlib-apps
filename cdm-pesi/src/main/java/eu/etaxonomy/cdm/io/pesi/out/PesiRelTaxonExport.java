@@ -233,9 +233,6 @@ public class PesiRelTaxonExport extends PesiExportBase {
 		}
 	}
 
-	/* (non-Javadoc)
-	 * @see eu.etaxonomy.cdm.io.common.CdmIoBase#doInvoke(eu.etaxonomy.cdm.io.common.IoStateBase)
-	 */
 	protected void doInvoke_Old(PesiExportState state) {
 		try {
 			logger.info("*** Started Making " + pluralString + " ...");
@@ -276,13 +273,15 @@ public class PesiRelTaxonExport extends PesiExportBase {
 
 			logger.info("Fetched " + classificationList.size() + " classification(s).");
 
+			boolean includeUnpublished = false;
 			for (Classification classification : classificationList) {
 				for (Rank rank : rankList) {
 
 					txStatus = startTransaction(true);
 					logger.info("Started transaction to fetch all rootNodes specific to Rank " + rank.getLabel() + " ...");
 
-					List<TaxonNode> rankSpecificRootNodes = getClassificationService().listRankSpecificRootNodes(classification, rank, null, null, null);
+					List<TaxonNode> rankSpecificRootNodes = getClassificationService()
+					        .listRankSpecificRootNodes(classification, rank, includeUnpublished, null, null, null);
 					logger.info("Fetched " + rankSpecificRootNodes.size() + " RootNodes for Rank " + rank.getLabel());
 
 					commitTransaction(txStatus);

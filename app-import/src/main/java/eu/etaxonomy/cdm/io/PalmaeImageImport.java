@@ -196,7 +196,7 @@ public class PalmaeImageImport extends AbstractImageImporter {
 
 					List<TaxonBase> taxa = new ArrayList<>();
 					if (taxonName != null){
-						taxa = taxonService.searchTaxaByName(taxonName, sec);
+						taxa = taxonService.searchByName(taxonName, true, sec);
 					}else{
 						logger.error("TaxonName is null "  + " in " + file.getName());
 					}
