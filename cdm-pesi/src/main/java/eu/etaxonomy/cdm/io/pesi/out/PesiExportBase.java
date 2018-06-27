@@ -9,7 +9,6 @@
 package eu.etaxonomy.cdm.io.pesi.out;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
@@ -133,12 +132,12 @@ public abstract class PesiExportBase extends DbExportBase<PesiExportConfigurator
 	 * @param partitionCount
 	 * @return
 	 */
-	protected List<TaxonName> getNextPureNamePartition(Class<? extends TaxonName> clazz,int limit, int partitionCount) {
+	protected List<TaxonName> getNextPureNamePartition(Class<TaxonName> clazz,int limit, int partitionCount) {
 		List<OrderHint> orderHints = new ArrayList<OrderHint>();
 		orderHints.add(new OrderHint("id", OrderHint.SortOrder.ASCENDING ));
-		List<String> propPath = Arrays.asList(new String[]{"taxonBases"});
+//		List<String> propPath = Arrays.asList(new String[]{"taxonBases"});
 
-		List<TaxonName> list = (List)getNameService().list(clazz, limit, partitionCount * limit, orderHints, null);
+		List<TaxonName> list = getNameService().list(clazz, limit, partitionCount * limit, orderHints, null);
 		if (list.isEmpty()){
 			return null;
 		}

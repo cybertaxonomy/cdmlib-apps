@@ -266,7 +266,7 @@ public class GermanSLTaxonImport
      * @param state
      * @return
      */
-    public NameResult makeName(String line, HashMap<String, String> record, SimpleExcelTaxonImportState<GermanSLImportConfigurator> state) {
+    public NameResult makeName(String line, Map<String, String> record, SimpleExcelTaxonImportState<GermanSLImportConfigurator> state) {
 
         String specieNrStr = getValue(record, SPECIES_NR);
         String nameStr = getValue(record, ABBREVIAT);
