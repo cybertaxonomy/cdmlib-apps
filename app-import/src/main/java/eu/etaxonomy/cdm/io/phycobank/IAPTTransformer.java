@@ -7,9 +7,7 @@
 * See LICENSE.TXT at the top of this package for the full license terms.
 */
 
-package eu.etaxonomy.cdm.io.iapt;
-
-import java.util.UUID;
+package eu.etaxonomy.cdm.io.phycobank;
 
 import org.apache.log4j.Logger;
 

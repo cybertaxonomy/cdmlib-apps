@@ -7,7 +7,7 @@
  * See LICENSE.TXT at the top of this package for the full license terms.
  */
 
-package eu.etaxonomy.cdm.io.iapt;
+package eu.etaxonomy.cdm.io.phycobank;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -539,7 +539,7 @@ public class IAPTExcelImport<CONFIG extends IAPTImportConfigurator> extends Simp
      * @param state
      * @return null if the fieldUnitStr could not be parsed
      */
-    protected FieldUnit parseFieldUnit(String fieldUnitStr, String regNumber, SimpleExcelTaxonImportState<CONFIG> state) {
+    private FieldUnit parseFieldUnit(String fieldUnitStr, String regNumber, SimpleExcelTaxonImportState<CONFIG> state) {
 
         FieldUnit fieldUnit = null;
 
@@ -780,7 +780,6 @@ public class IAPTExcelImport<CONFIG extends IAPTImportConfigurator> extends Simp
         DerivedUnit specimen = null;
 
         String collectionCode = null;
-        String collectionTitle = null;
         String subCollectionStr = null;
         String instituteStr = null;
         String accessionNumber = null;

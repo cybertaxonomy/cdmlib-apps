@@ -1,7 +1,5 @@
-package eu.etaxonomy.cdm.io.iapt;
+package eu.etaxonomy.cdm.io.phycobank;
 
-
-import org.joda.time.Partial;
 
 /**
  * Created by andreas on 9/16/16.

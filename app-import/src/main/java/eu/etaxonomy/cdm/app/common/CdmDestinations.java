@@ -62,7 +62,15 @@ public class CdmDestinations {
 		return makeDestination(dbType, cdmServer, cdmDB, -1, cdmUserName, null);
 	}
 
-	public static ICdmDataSource cdm_local_test_mysql(){
+    public static ICdmDataSource cdm_local_test_mysql(){
+        DatabaseTypeEnum dbType = DatabaseTypeEnum.MySQL;
+        String cdmServer = "127.0.0.1";
+        String cdmDB = "test";
+        String cdmUserName = "root";
+        return makeDestination(dbType, cdmServer, cdmDB, -1, cdmUserName, null);
+    }
+
+	public static ICdmDataSource cdm_local_redlist_gefaesspflanzen(){
 		DatabaseTypeEnum dbType = DatabaseTypeEnum.MySQL;
 		String cdmServer = "127.0.0.1";
 		String cdmDB = "rl2020_gefaesspflanzen";

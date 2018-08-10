@@ -7,7 +7,7 @@
 * See LICENSE.TXT at the top of this package for the full license terms.
 */
 
-package eu.etaxonomy.cdm.io.iapt;
+package eu.etaxonomy.cdm.io.phycobank;
 
 import java.util.HashMap;
 import java.util.Map;

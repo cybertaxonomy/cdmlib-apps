@@ -6,19 +6,16 @@
 * The contents of this file are subject to the Mozilla Public License Version 1.1
 * See LICENSE.TXT at the top of this package for the full license terms.
 */
-package eu.etaxonomy.cdm.io.iapt;
+package eu.etaxonomy.cdm.io.phycobank;
+
+import java.net.URI;
 
 import eu.etaxonomy.cdm.database.ICdmDataSource;
 import eu.etaxonomy.cdm.io.common.ImportStateBase;
 import eu.etaxonomy.cdm.io.common.mapping.IInputTransformer;
 import eu.etaxonomy.cdm.io.excel.common.ExcelImportConfiguratorBase;
-import eu.etaxonomy.cdm.io.mexico.MexicoBorhidiExcelImport;
-import eu.etaxonomy.cdm.io.mexico.MexicoConabioTransformer;
-import eu.etaxonomy.cdm.io.mexico.SimpleExcelTaxonImportState;
 import eu.etaxonomy.cdm.model.name.NomenclaturalCode;
 import eu.etaxonomy.cdm.model.reference.Reference;
-
-import java.net.URI;
 
 /**
  * @author a.mueller
@@ -60,18 +57,9 @@ public class IAPTImportConfigurator extends ExcelImportConfiguratorBase{
         };
     }
 
-
-    /**
-     * @return the secReference
-     */
     public Reference getSecReference() {
         return secReference;
     }
-
-
-    /**
-     * @param secReference
-     */
     public void setSecReference(Reference secReference) {
         this.secReference = secReference;
     }
@@ -79,7 +67,6 @@ public class IAPTImportConfigurator extends ExcelImportConfiguratorBase{
     public void setDoAlgeaeOnly(boolean doAlgeaeOnly) {
         this.doAlgeaeOnly = doAlgeaeOnly;
     }
-
     public boolean isDoAlgeaeOnly() {
         return doAlgeaeOnly;
     }
