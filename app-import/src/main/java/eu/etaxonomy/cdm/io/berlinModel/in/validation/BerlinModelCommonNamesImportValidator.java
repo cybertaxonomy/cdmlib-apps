@@ -56,7 +56,7 @@ public class BerlinModelCommonNamesImportValidator implements IOValidator<Berlin
             int count = rs.getInt("n");
             if (count > 0){
                 System.out.println("========================================================");
-                System.out.println("There are " + count + " common names that have a name usedInSourceFk = -1.");
+                System.out.println("There are " + count + " common names that have a nameInSourceFk = -1.");
                 System.out.println("========================================================");
             }
             String sql =
