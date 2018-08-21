@@ -1,4 +1,4 @@
-package eu.etaxonomy.cdm.io.iapt;
+package eu.etaxonomy.cdm.io.phycobank;
 
 import java.util.regex.Matcher;
 
