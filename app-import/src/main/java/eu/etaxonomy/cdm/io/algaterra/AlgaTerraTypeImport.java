@@ -367,7 +367,7 @@ public class AlgaTerraTypeImport  extends AlgaTerraSpecimenImportBase {
 				logger.warn("Uuid was null. This should not happen.");
 			}
 			DefinedTerm kindOfUnit = getKindOfUnit(state, uuid, matCat, null, null, null);  //all terms should exist already
-			facade.setKindOfUnit(kindOfUnit);
+			facade.setFieldUnitKindOfUnit(kindOfUnit);
 		}else{
 			logger.warn("Material Category was null. This is not expected");
 		}
