@@ -24,7 +24,6 @@ import eu.etaxonomy.cdm.common.CdmUtils;
 import eu.etaxonomy.cdm.io.common.mapping.UndefinedTransformerMethodException;
 import eu.etaxonomy.cdm.io.excel.common.ExcelImportBase;
 import eu.etaxonomy.cdm.io.excel.common.ExcelRowBase;
-import eu.etaxonomy.cdm.model.common.DefinedTermBase;
 import eu.etaxonomy.cdm.model.common.Language;
 import eu.etaxonomy.cdm.model.common.OriginalSourceType;
 import eu.etaxonomy.cdm.model.common.TermType;
@@ -182,13 +181,13 @@ public class CommonNameExcelImport
 				e.printStackTrace();
 			}
 			if (result == null){
-				List<DefinedTermBase> candidates = getTermService().findByTitle(Country.class, area, null, criteria, null, null, orderHints, null).getRecords();
+				List<? extends NamedArea> candidates = getTermService().findByTitle(Country.class, area, null, criteria, null, null, orderHints, null).getRecords();
 				if (candidates.size() == 0){
 					candidates = getTermService().findByTitle(NamedArea.class, area, null, criteria, null, null, orderHints, null).getRecords();
 				}
 				if (candidates.size()>0){
 					//TODO
-					result = (NamedArea)candidates.get(0);
+					result = candidates.get(0);
 				}else{
 					UUID uuidArea;
 					try {

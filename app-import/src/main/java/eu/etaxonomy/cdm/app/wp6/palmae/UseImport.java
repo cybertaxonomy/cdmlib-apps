@@ -273,10 +273,10 @@ public class UseImport {
 		MarkerType useMarkerType = (MarkerType) termService.find(UUID.fromString("2e6e42d9-e92a-41f4-899b-03c0ac64f039"));
 		Feature featureUseRecord = (Feature) termService.find(UUID.fromString("8125a59d-b4d5-4485-89ea-67306297b599"));
 		Feature featureUseSummary = (Feature) termService.find(UUID.fromString("6acb0348-c070-4512-a37c-67bcac016279"));
-		Pager<DefinedTermBase>  notAvailModPager = termService.findByTitle(DefinedTerm.class, "N/A", null, null, null, null, null, null);
-		Pager<DefinedTermBase>  notAvailStatePager = termService.findByTitle(State.class, "N/A", null, null, null, null, null, null);
-		DefinedTerm notAvailMod = (DefinedTerm) notAvailModPager.getRecords().get(0);
-		State notAvailState = (State) notAvailStatePager.getRecords().get(0);
+		Pager<DefinedTerm>  notAvailModPager = termService.findByTitle(DefinedTerm.class, "N/A", null, null, null, null, null, null);
+		Pager<State>  notAvailStatePager = termService.findByTitle(State.class, "N/A", null, null, null, null, null, null);
+		DefinedTerm notAvailMod = notAvailModPager.getRecords().get(0);
+		State notAvailState = notAvailStatePager.getRecords().get(0);
 
 		int i = 0;
 		int j = 0;
@@ -284,7 +284,7 @@ public class UseImport {
 			for (ArrayList<String> lstUseSummary : lstUseSummaries) {
 				i++;
 				String idTaxonToUpdate = lstUseSummary.get(3);
-				TaxonBase taxon = taxonService.find(UUID.fromString(idTaxonToUpdate));
+				TaxonBase<?> taxon = taxonService.find(UUID.fromString(idTaxonToUpdate));
 				if (taxon != null) {
 					TaxonDescription newUseDescription = TaxonDescription.NewInstance();
 					Marker useMarker = Marker.NewInstance(useMarkerType, true);
@@ -312,10 +312,10 @@ public class UseImport {
 							useRecord.setFeature(featureUseRecord);
 							String modifyingText = "";
 							if(lstUseRecord.get(3) != null && lstUseRecord.get(3).length() > 0) {
-								Pager<DefinedTermBase> useCategoryPager = termService.findByTitle(State.class, lstUseRecord.get(3), null, null, null, null, null, null);
+								Pager<State> useCategoryPager = termService.findByTitle(State.class, lstUseRecord.get(3), null, null, null, null, null, null);
 								State useCategory = null;
 								if(useCategoryPager.getCount() > 0) {
-									useCategory = (State) useCategoryPager.getRecords().get(0);
+									useCategory = useCategoryPager.getRecords().get(0);
 								} else {
 									useCategory = notAvailState;
 								}
@@ -338,10 +338,10 @@ public class UseImport {
 							}
 
 							if(lstUseRecord.get(4) != null && lstUseRecord.get(4).length() > 0) {
-								Pager<DefinedTermBase> useSubCategoryPager = termService.findByTitle(State.class, lstUseRecord.get(4), null, null, null, null, null, null);
+								Pager<State> useSubCategoryPager = termService.findByTitle(State.class, lstUseRecord.get(4), null, null, null, null, null, null);
 								State useSubCategory = null;
 								if(useSubCategoryPager.getCount() > 0) {
-									useSubCategory = (State) useSubCategoryPager.getRecords().get(0);
+									useSubCategory = useSubCategoryPager.getRecords().get(0);
 
 								} else {
 									useSubCategory = notAvailState;
@@ -363,10 +363,10 @@ public class UseImport {
 
 							}
 							if(lstUseRecord.get(5) != null && lstUseRecord.get(5).length() > 0) {
-								Pager<DefinedTermBase> countryPager = termService.findByTitle(DefinedTerm.class, lstUseRecord.get(5), null, null, null, null, null, null);
+								Pager<DefinedTerm> countryPager = termService.findByTitle(DefinedTerm.class, lstUseRecord.get(5), null, null, null, null, null, null);
 								DefinedTerm country = null;
 								if(countryPager.getCount() > 0) {
-									country = (DefinedTerm) countryPager.getRecords().get(0);
+									country = countryPager.getRecords().get(0);
 								} else {
 									country = notAvailMod;
 								}
@@ -379,10 +379,10 @@ public class UseImport {
 							}
 
 							if(lstUseRecord.get(6) != null && lstUseRecord.get(6).length() > 0) {
-								Pager<DefinedTermBase> plantPartPager = termService.findByTitle(DefinedTerm.class, lstUseRecord.get(6), null, null, null, null, null, null);
+								Pager<DefinedTerm> plantPartPager = termService.findByTitle(DefinedTerm.class, lstUseRecord.get(6), null, null, null, null, null, null);
 								DefinedTerm plantPart = null;
 								if(plantPartPager.getCount() > 0) {
-									plantPart = (DefinedTerm) plantPartPager.getRecords().get(0);
+									plantPart = plantPartPager.getRecords().get(0);
 								} else {
 									plantPart = notAvailMod;
 								}
@@ -394,10 +394,10 @@ public class UseImport {
 								useRecord.addModifier(plantPart);
 							}
 							if(lstUseRecord.get(7) != null && lstUseRecord.get(7).length() > 0) {
-								Pager<DefinedTermBase> humanGroupPager = termService.findByTitle(DefinedTerm.class, lstUseRecord.get(7), null, null, null, null, null, null);
+								Pager<DefinedTerm> humanGroupPager = termService.findByTitle(DefinedTerm.class, lstUseRecord.get(7), null, null, null, null, null, null);
 								DefinedTerm humanGroup = null;
 								if(humanGroupPager.getCount() > 0) {
-									humanGroup = (DefinedTerm) humanGroupPager.getRecords().get(0);
+									humanGroup = humanGroupPager.getRecords().get(0);
 								} else {
 									humanGroup = notAvailMod;
 								}
@@ -409,10 +409,10 @@ public class UseImport {
 								useRecord.addModifier(humanGroup);
 							}
 							if(lstUseRecord.get(8) != null && lstUseRecord.get(8).length() > 0) {
-								Pager<DefinedTermBase> ethnicGroupPager = termService.findByTitle(DefinedTerm.class, lstUseRecord.get(8), null, null, null, null, null, null);
+								Pager<DefinedTerm> ethnicGroupPager = termService.findByTitle(DefinedTerm.class, lstUseRecord.get(8), null, null, null, null, null, null);
 								DefinedTerm ethnicGroup = null;
 								if(ethnicGroupPager.getCount() > 0) {
-									ethnicGroup = (DefinedTerm) ethnicGroupPager.getRecords().get(0);
+									ethnicGroup = ethnicGroupPager.getRecords().get(0);
 									modifyingText += ethnicGroup.toString() + ";";
 								} else {
 									ethnicGroup = notAvailMod;
@@ -700,8 +700,8 @@ public class UseImport {
 		TermVocabulary<DefinedTerm> countryVocabulary = vocabularyService.find(UUID.fromString("116c51f1-e63a-46f7-a258-e1149a42868b"));
 		TermVocabulary<DefinedTerm> plantPartVocabulary = vocabularyService.find(UUID.fromString("369914fe-d54b-4063-99ce-abc81d30ad35"));
 		TermVocabulary<DefinedTerm> humanGroupVocabulary =  vocabularyService.find(UUID.fromString("ca46cea5-bdf7-438d-9cd8-e2793d2178dc"));
-		Pager<DefinedTermBase>  notAvailModPager = termService.findByTitle(DefinedTerm.class, "N/A", null, null, null, null, null, null);
-		Pager<DefinedTermBase>  notAvailStatePager = termService.findByTitle(State.class, "N/A", null, null, null, null, null, null);
+		Pager<DefinedTerm>  notAvailModPager = termService.findByTitle(DefinedTerm.class, "N/A", null, null, null, null, null, null);
+		Pager<State>  notAvailStatePager = termService.findByTitle(State.class, "N/A", null, null, null, null, null, null);
 
 		conversation.startTransaction();
 		if (existingMarkertype == null) {
