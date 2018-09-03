@@ -310,7 +310,7 @@ public class BerlinModelReferenceImport extends BerlinModelImportBase {
 					if ((i++ % modCount) == 0 && i!= 1 ){ logger.info("References handled: " + (i-1) + " in round -" );}
 
 					Integer refId = rs.getInt("refId");
-					Integer inRefFk = rs.getInt("inRefFk");
+					Integer inRefFk = nullSafeInt(rs, "inRefFk");
 
 					if (inRefFk != null){
 
@@ -324,8 +324,13 @@ public class BerlinModelReferenceImport extends BerlinModelImportBase {
 							}
 							thisRef.setInReference(inRef);
 							refToSave.put(refId, thisRef);
-							thisRef.setTitleCache(null);
-							thisRef.getTitleCache();
+							if(!thisRef.isProtectedTitleCache()){
+							    thisRef.setTitleCache(null);
+							    thisRef.getTitleCache();
+							}
+						}
+						if(inRefFk.equals(0)){
+						    logger.warn("InRefFk is 0 for refId "+ refId);
 						}
 					}
 

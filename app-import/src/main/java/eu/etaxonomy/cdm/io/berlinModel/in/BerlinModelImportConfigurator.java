@@ -66,6 +66,9 @@ public class BerlinModelImportConfigurator extends DbImportConfiguratorBase<Berl
 	private boolean useSingleClassification = false;
 	private boolean includeFlatClassifications = false;  //concepts with no taxon relationship (even no misapplied name or synonym rel)
 	private boolean includeAllNonMisappliedRelatedClassifications = true;  //all concepts with any relationship except for misapplied name relationships
+	private boolean useLastScrutinyAsSec = false;
+
+	private boolean warnForDifferingSynonymReference = true;   //do not warn for E+M as it uses last scrutiny
 
 	//occurrences
 	private boolean isSplitTdwgCodes = true;
@@ -661,7 +664,18 @@ public class BerlinModelImportConfigurator extends DbImportConfiguratorBase<Berl
         this.featureTreeTitle = featureTreeTitle;
     }
 
+    public boolean isUseLastScrutinyAsSec() {
+        return useLastScrutinyAsSec;
+    }
+    public void setUseLastScrutinyAsSec(boolean useLastScrutinyAsSec) {
+        this.useLastScrutinyAsSec = useLastScrutinyAsSec;
+    }
 
-
+    public boolean isWarnForDifferingSynonymReference() {
+        return warnForDifferingSynonymReference;
+    }
+    public void setWarnForDifferingSynonymReference(boolean warnForDifferingSynonymReference) {
+        this.warnForDifferingSynonymReference = warnForDifferingSynonymReference;
+    }
 
 }

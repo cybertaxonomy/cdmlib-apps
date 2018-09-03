@@ -320,7 +320,7 @@ public class BerlinModelTaxonRelationImport  extends BerlinModelImportBase  {
 							    logger.warn("RelID: " + relPTaxonId + ". Synonym ("+taxon1Id +") already has an accepted taxon. Create clone.");
 							    synonym = (Synonym)synonym.clone();
 							}
-							makeSynRel(relQualifierFk, toTaxon, synonym, citation, microcitation);
+							makeSynRel(state, relQualifierFk, toTaxon, synonym, citation, microcitation);
 
 							if (relQualifierFk == TAX_REL_IS_SYNONYM_OF ||
 									relQualifierFk == TAX_REL_IS_HOMOTYPIC_SYNONYM_OF ||
@@ -572,8 +572,8 @@ public class BerlinModelTaxonRelationImport  extends BerlinModelImportBase  {
 	}
 
 
-	private void makeSynRel (int relQualifierFk, Taxon toTaxon, Synonym synonym, Reference citation, String microcitation){
-		if (citation != null && !citation.equals(synonym.getSec())){
+	private void makeSynRel (BerlinModelImportState state, int relQualifierFk, Taxon toTaxon, Synonym synonym, Reference citation, String microcitation){
+		if (state.getConfig().isWarnForDifferingSynonymReference() && citation != null && !citation.equals(synonym.getSec())){
 		    logger.warn("A synonym relationship citation is given and differs from synonym secundum. This can not be handled in CDM");
 		}
 		if (isNotBlank(microcitation)  && !microcitation.equals(synonym.getSecMicroReference())){

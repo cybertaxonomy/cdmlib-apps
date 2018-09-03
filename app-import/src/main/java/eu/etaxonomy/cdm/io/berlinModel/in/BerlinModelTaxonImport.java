@@ -56,6 +56,11 @@ import eu.etaxonomy.cdm.model.taxon.TaxonBase;
  */
 @Component
 public class BerlinModelTaxonImport  extends BerlinModelImportBase {
+    /**
+     *
+     */
+    private static final String LAST_SCRUTINY_FK = "lastScrutinyFk";
+
     private static final long serialVersionUID = -1186364983750790695L;
 
     private static final Logger logger = Logger.getLogger(BerlinModelTaxonImport.class);
@@ -106,9 +111,14 @@ public class BerlinModelTaxonImport  extends BerlinModelImportBase {
 		String sqlFrom = " FROM PTaxon pt ";
 		if (config.isEuroMed()){
 			sqlFrom = " FROM PTaxon AS pt " +
-							" INNER JOIN v_cdm_exp_taxaAll AS em ON pt.RIdentifier = em.RIdentifier " +
-							" LEFT OUTER JOIN Reference r ON pt.LastScrutinyFk = r.RefId ";
-			sqlSelect += " , em.MA, r.RefCache as LastScrutiny ";
+							" INNER JOIN v_cdm_exp_taxaAll AS em ON pt.RIdentifier = em.RIdentifier ";
+			if (!config.isUseLastScrutinyAsSec()){
+			    sqlFrom += " LEFT OUTER JOIN Reference r ON pt.LastScrutinyFk = r.RefId ";
+			}
+			sqlSelect += " , em.MA ";
+			if (!config.isUseLastScrutinyAsSec()){
+			    sqlSelect += ", r.RefCache as LastScrutiny ";
+            }
 		}
 
 
@@ -156,12 +166,31 @@ public class BerlinModelTaxonImport  extends BerlinModelImportBase {
 					uuid = rs.getString("UUID");
 				}
 
+
 				TaxonName taxonName = null;
 				taxonName  = taxonNameMap.get(String.valueOf(nameFk));
 
 				Reference reference = null;
-				String refFk = String.valueOf(refFkInt);
-				reference = refMap.get(refFk);
+				String refFkStr = String.valueOf(refFkInt);
+				reference = refMap.get(refFkStr);
+
+				Reference lastScrutinyRef = null;
+                if (state.getConfig().isUseLastScrutinyAsSec() && resultSetHasColumn(rs,LAST_SCRUTINY_FK)){
+                    Integer lastScrutinyFk = nullSafeInt(rs,LAST_SCRUTINY_FK);
+                    if (lastScrutinyFk != null){
+                        String lastScrutinyFkStr = String.valueOf(lastScrutinyFk);
+                        if (lastScrutinyFkStr != null){
+                            lastScrutinyRef = refMap.get(lastScrutinyFkStr);
+                            if (lastScrutinyRef == null){
+                                logger.warn("Last scrutiny reference "+lastScrutinyFkStr+" could not be found "
+                                        + "for taxon " + taxonId);
+                            }
+                            if(!StringUtils.right(refFkStr, 5).equals("00000")){
+                                logger.warn("Unexpected secFk " + refFkStr + " for taxon with last scrutiny. Taxon id " + taxonId);
+                            }
+                        }
+                    }
+                }
 
 				if(! config.isIgnoreNull()){
 					if (taxonName == null ){
@@ -169,7 +198,7 @@ public class BerlinModelTaxonImport  extends BerlinModelImportBase {
 						success = false;
 						continue; //next taxon
 					}else if (reference == null ){
-						logger.warn("Reference belonging to taxon could not be found in store. Taxon will not be imported");
+						logger.warn("Sec Reference belonging to taxon could not be found in store. Taxon will not be imported");
 						success = false;
 						continue; //next taxon
 					}
@@ -177,18 +206,19 @@ public class BerlinModelTaxonImport  extends BerlinModelImportBase {
 				TaxonBase<?> taxonBase;
 				Synonym synonym;
 				Taxon taxon;
+				Reference sec = lastScrutinyRef != null? lastScrutinyRef: reference;
 				try {
 					logger.debug(statusFk);
 					if (statusFk == T_STATUS_ACCEPTED || statusFk == T_STATUS_UNRESOLVED
 					        || statusFk == T_STATUS_PRO_PARTE_SYN || statusFk == T_STATUS_PARTIAL_SYN ){
-						taxon = Taxon.NewInstance(taxonName, reference);
+						taxon = Taxon.NewInstance(taxonName, sec);
 						taxonBase = taxon;
 						if (statusFk == T_STATUS_UNRESOLVED){
 							taxon.setTaxonStatusUnknown(true);
 						}
 						//TODO marker for pp and partial?
 					}else if (statusFk == T_STATUS_SYNONYM ){
-						synonym = Synonym.NewInstance(taxonName, reference);
+						synonym = Synonym.NewInstance(taxonName, sec);
 						taxonBase = synonym;
 //						if (statusFk == T_STATUS_PRO_PARTE_SYN){
 //						    synonym.setProParte(true);
@@ -250,8 +280,8 @@ public class BerlinModelTaxonImport  extends BerlinModelImportBase {
 						}
 					}
 
-					//
-					if (resultSetHasColumn(rs, "LastScrutiny")){
+					//  does not exist anymore as we use last scrutiny now as sec ref
+					if (!state.getConfig().isUseLastScrutinyAsSec() && resultSetHasColumn(rs, "LastScrutiny")){
 						String lastScrutiny = rs.getString("LastScrutiny");
 						//TODO strange, why not Extension last scrutiny? To match PESI? Is there a difference
 						//to LastScrutinyFK and SpeciesExpertFK?
@@ -345,6 +375,9 @@ public class BerlinModelTaxonImport  extends BerlinModelImportBase {
 			while (rs.next()){
 				handleForeignKey(rs, nameIdSet, "PTNameFk");
 				handleForeignKey(rs, referenceIdSet, "PTRefFk");
+				if (state.getConfig().isUseLastScrutinyAsSec() && resultSetHasColumn(rs, LAST_SCRUTINY_FK)){
+				    handleForeignKey(rs, referenceIdSet, LAST_SCRUTINY_FK);
+				}
 			}
 
 			//name map
@@ -381,7 +414,5 @@ public class BerlinModelTaxonImport  extends BerlinModelImportBase {
 	protected boolean isIgnore(BerlinModelImportState state){
 		return ! state.getConfig().isDoTaxa();
 	}
-
-
 
 }
