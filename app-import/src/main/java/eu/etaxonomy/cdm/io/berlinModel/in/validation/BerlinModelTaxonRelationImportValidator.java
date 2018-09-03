@@ -36,6 +36,7 @@ public class BerlinModelTaxonRelationImportValidator implements IOValidator<Berl
 		result &= checkConceptRelationsWithSynonymTaxa(state);
 		result &= checkRelPTaxonWithNotes(state);
 		result &= checkTaxaWithNoRelations(state);
+		result &= checkTaxonRelationsWithDifferingRelReferences(state);
 		return result;
 	}
 
@@ -305,6 +306,54 @@ public class BerlinModelTaxonRelationImportValidator implements IOValidator<Berl
 		}
 		return success;
 	}
+
+	   private boolean checkTaxonRelationsWithDifferingRelReferences(BerlinModelImportState state) {
+	        boolean success = true;
+	        try {
+	            BerlinModelImportConfigurator config = state.getConfig();
+
+	            Source source = config.getSource();
+	            String strSelect = " SELECT rel.RelQualifierFk, rel.RelRefFk, syn.PTRefFk,  * ";
+	            String strCount = " SELECT count(*) as n ";
+	            String strQueryBase =
+	                "  SELECT rel.RelQualifierFk, rel.RelRefFk, syn.PTRefFk,  * " +
+	                "  FROM RelPTaxon rel " +
+	                "    INNER JOIN PTaxon syn ON rel.PTRefFk1 = syn.PTRefFk AND rel.PTNameFk1 = syn.PTNameFk " +
+	                "  WHERE rel.RelRefFk IS NOT NULL AND rel.RelRefFk <> syn.PTRefFk AND rel.RelRefFk <> rel.PTRefFk2 " +
+//	                -- AND rel.RelQualifierFk in (2, 6,7, 101, 102, 103, 104)
+	                "   ";
+	            String strOrderBy = " ORDER BY rel.RelQualifierFk, rel.RelRefFk, syn.PTRefFk ";
+
+	            ResultSet rs = source.getResultSet(strCount + strQueryBase);
+	            rs.next();
+	            int n = rs.getInt("n");
+	            if (n > 0){
+	                System.out.println("=======================================================================");
+	                System.out.println("There are "+n+" relationship with references that differ from taxon reference. This is mostly problematic for synonym relationships as they can not store these references!");
+	                System.out.println("=======================================================================");
+	            }
+
+	            rs = source.getResultSet(strSelect + strQueryBase + strOrderBy);
+	            while (rs.next()){
+
+	                int secRefFk = rs.getInt("secRefFk");
+	                String secRef = rs.getString("secRef");
+	                String nameCache = rs.getString("FullNameCache");
+	                int nameId = rs.getInt("NameId");
+	                String status = rs.getString("Status");
+
+	                System.out.println("SecRef:" + secRefFk +
+	                        "\n secRef: " + secRef + "\n name: " + nameCache + "\n nameId: " + nameId
+	                        + "\n status: " + status
+	                    );
+	            }
+	            success = (n == 0);
+	        } catch (SQLException e) {
+	            e.printStackTrace();
+	            success = false;
+	        }
+	        return success;
+	    }
 
 
 
