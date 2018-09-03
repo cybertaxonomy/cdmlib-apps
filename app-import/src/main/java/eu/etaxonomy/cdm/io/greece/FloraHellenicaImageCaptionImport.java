@@ -9,8 +9,8 @@
 package eu.etaxonomy.cdm.io.greece;
 
 import java.util.Arrays;
-import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -65,7 +65,7 @@ public class FloraHellenicaImageCaptionImport<CONFIG extends FloraHellenicaImpor
     protected void firstPass(SimpleExcelTaxonImportState<CONFIG> state) {
 
         String line = state.getCurrentLine() + ": ";
-        HashMap<String, String> record = state.getOriginalRecord();
+        Map<String, String> record = state.getOriginalRecord();
 
         Set<String> keys = record.keySet();
         for (String key: keys) {
@@ -83,7 +83,7 @@ public class FloraHellenicaImageCaptionImport<CONFIG extends FloraHellenicaImpor
     Integer plateNo = 0;
     private Taxon makeCaption(SimpleExcelTaxonImportState<CONFIG> state,
             String line,
-            HashMap<String, String> record) {
+            Map<String, String> record) {
 
         String text = getValue(record, TEXT);
         if (text.matches("Plate \\d\\d?")){

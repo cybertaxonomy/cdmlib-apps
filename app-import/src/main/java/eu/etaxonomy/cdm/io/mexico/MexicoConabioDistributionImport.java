@@ -9,7 +9,6 @@
 package eu.etaxonomy.cdm.io.mexico;
 
 import java.net.URI;
-import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
@@ -75,7 +74,7 @@ public class MexicoConabioDistributionImport<CONFIG extends MexicoConabioImportC
         initTaxa();
 
         String line = state.getCurrentLine() + ": ";
-        HashMap<String, String> record = state.getOriginalRecord();
+        Map<String, String> record = state.getOriginalRecord();
 
         String idCat = getValue(record, "IdCAT");
         Taxon taxon = taxonIdMap.get(idCat);
@@ -170,7 +169,7 @@ public class MexicoConabioDistributionImport<CONFIG extends MexicoConabioImportC
      */
     private void handleDistribution(SimpleExcelTaxonImportState<CONFIG> state, TaxonDescription desc, String key,
             UUID uuid, String line) {
-        HashMap<String, String> record = state.getOriginalRecord();
+        Map<String, String> record = state.getOriginalRecord();
         String value = getValue(record, key);
         if ("1".equals(value)){
             NamedArea area = getNamedArea(state, uuid, null, null, null, null, null);

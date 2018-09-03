@@ -108,7 +108,7 @@ public abstract class FloraHellenicaImportBase<CONFIG extends FloraHellenicaImpo
      * @param state
      * @return
      */
-    protected Taxon getAcceptedTaxon(HashMap<String, String> record,
+    protected Taxon getAcceptedTaxon(Map<String, String> record,
             SimpleExcelTaxonImportState<CONFIG> state, String key) {
 
         String accStr = getValue(record, key);
@@ -144,7 +144,7 @@ public abstract class FloraHellenicaImportBase<CONFIG extends FloraHellenicaImpo
      * @param state
      * @return
      */
-    protected Taxon getHigherTaxon(HashMap<String, String> record,
+    protected Taxon getHigherTaxon(Map<String, String> record,
             SimpleExcelTaxonImportState<CONFIG> state, String key) {
 
         String accStr = getValue(record, key);

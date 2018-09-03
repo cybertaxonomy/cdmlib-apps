@@ -94,7 +94,7 @@ public class FloraHellenicaTaxonImport<CONFIG extends FloraHellenicaImportConfig
         initOtherTerms(state);
 
         String line = state.getCurrentLine() + ": ";
-        HashMap<String, String> record = state.getOriginalRecord();
+        Map<String, String> record = state.getOriginalRecord();
 
         Set<String> keys = record.keySet();
         for (String key: keys) {
@@ -185,7 +185,7 @@ public class FloraHellenicaTaxonImport<CONFIG extends FloraHellenicaImportConfig
     private void makeChorologicalCategory(SimpleExcelTaxonImportState<CONFIG> state, String line, String noStr,
             TaxonDescription desc) {
 
-        HashMap<String, String> record = state.getOriginalRecord();
+        Map<String, String> record = state.getOriginalRecord();
         String valueStr = getValue(record, CHOROLOGICAL_CATEGOGY);
 
         String value = valueStr;
@@ -260,7 +260,7 @@ public class FloraHellenicaTaxonImport<CONFIG extends FloraHellenicaImportConfig
      */
     private void makeLifeform(SimpleExcelTaxonImportState<CONFIG> state, String line, String noStr,
             TaxonDescription desc) {
-        HashMap<String, String> record = state.getOriginalRecord();
+        Map<String, String> record = state.getOriginalRecord();
         String value = getValue(record, LIFE_FORM);
         String[] splits = value.split("\\s+");
         if (splits.length > 2){
@@ -309,7 +309,7 @@ public class FloraHellenicaTaxonImport<CONFIG extends FloraHellenicaImportConfig
      */
     private void handleHabitat(SimpleExcelTaxonImportState<CONFIG> state, CategoricalData catData, String label,
             UUID uuidHabitat, String line, String noStr) {
-        HashMap<String, String> record = state.getOriginalRecord();
+        Map<String, String> record = state.getOriginalRecord();
         String value = getValue(record, "" + label);
         if (value == null){
             //do nothing
@@ -354,7 +354,7 @@ public class FloraHellenicaTaxonImport<CONFIG extends FloraHellenicaImportConfig
      * @param noStr
      * @return
      */
-    private Taxon makeTaxon(SimpleExcelTaxonImportState<CONFIG> state, String line, HashMap<String, String> record,
+    private Taxon makeTaxon(SimpleExcelTaxonImportState<CONFIG> state, String line, Map<String, String> record,
             String noStr) {
 
         TaxonNode familyTaxon = getFamilyTaxon(record, state);
@@ -457,7 +457,7 @@ public class FloraHellenicaTaxonImport<CONFIG extends FloraHellenicaImportConfig
      * @return
      */
     private TaxonNode makeGenusNode(SimpleExcelTaxonImportState<CONFIG> state,
-            HashMap<String, String> record, String genusStr) {
+            Map<String, String> record, String genusStr) {
         IBotanicalName name = TaxonNameFactory.NewBotanicalInstance(Rank.GENUS());
         name.setGenusOrUninomial(genusStr);
         name = replaceNameAuthorsAndReferences(state, name);
@@ -486,7 +486,7 @@ public class FloraHellenicaTaxonImport<CONFIG extends FloraHellenicaImportConfig
      * @param state
      * @return
      */
-    private TaxonNode getFamilyTaxon(HashMap<String, String> record, SimpleExcelTaxonImportState<CONFIG> state) {
+    private TaxonNode getFamilyTaxon(Map<String, String> record, SimpleExcelTaxonImportState<CONFIG> state) {
         String familyStr = getValue(record, "Family");
         if (familyStr == null){
             return null;
@@ -518,7 +518,7 @@ public class FloraHellenicaTaxonImport<CONFIG extends FloraHellenicaImportConfig
      * @param state
      * @return
      */
-    private TaxonNode getGroupTaxon(HashMap<String, String> record, SimpleExcelTaxonImportState<CONFIG> state) {
+    private TaxonNode getGroupTaxon(Map<String, String> record, SimpleExcelTaxonImportState<CONFIG> state) {
         String groupStr = getValue(record, "Group");
         if (groupStr == null){
             return null;
@@ -575,7 +575,7 @@ public class FloraHellenicaTaxonImport<CONFIG extends FloraHellenicaImportConfig
      */
     private void handleDistribution(SimpleExcelTaxonImportState<CONFIG> state,
                 TaxonDescription desc, String key, UUID uuid, String line, String id) {
-        HashMap<String, String> record = state.getOriginalRecord();
+        Map<String, String> record = state.getOriginalRecord();
         String value = getValue(record, key);
         if (value == null || value.matches("[x\\.\\?]")){
             NamedArea area = getNamedArea(state, uuid, null, null, null, null, null);
@@ -603,7 +603,7 @@ public class FloraHellenicaTaxonImport<CONFIG extends FloraHellenicaImportConfig
 
     private void handleStatus(SimpleExcelTaxonImportState<CONFIG> state,
             TaxonDescription desc, String key, UUID uuid, String line, String id) {
-        HashMap<String, String> record = state.getOriginalRecord();
+        Map<String, String> record = state.getOriginalRecord();
         String value = getValue(record, key);
         DescriptionElementBase descEl;
         if (state.getConfig().isStatusAsDistribution()){
@@ -654,7 +654,7 @@ public class FloraHellenicaTaxonImport<CONFIG extends FloraHellenicaImportConfig
     private void handleSingleStatus(SimpleExcelTaxonImportState<CONFIG> state, CategoricalData catData,
             UUID uuidStatus, String line) {
 
-        HashMap<String, String> record = state.getOriginalRecord();
+        Map<String, String> record = state.getOriginalRecord();
         String value = getValue(record, "Status");
         if (value == null || value.matches("(\\??Range-restricted|\\??Xenophyte)")){
             State statusState = this.getStateTerm(state, uuidStatus, null, null, null, statusVoc);

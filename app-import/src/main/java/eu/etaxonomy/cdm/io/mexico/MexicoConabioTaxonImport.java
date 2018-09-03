@@ -103,7 +103,7 @@ public class MexicoConabioTaxonImport<CONFIG extends MexicoConabioImportConfigur
     @Override
     protected void firstPass(SimpleExcelTaxonImportState<CONFIG> state) {
         String line = state.getCurrentLine() + ": ";
-        HashMap<String, String> record = state.getOriginalRecord();
+        Map<String, String> record = state.getOriginalRecord();
 
         Set<String> keys = record.keySet();
 
@@ -219,7 +219,7 @@ public class MexicoConabioTaxonImport<CONFIG extends MexicoConabioImportConfigur
      * @param state
      * @return
      */
-    private IBotanicalName makeName(String line, HashMap<String, String> record, SimpleExcelTaxonImportState<CONFIG> state) {
+    private IBotanicalName makeName(String line, Map<String, String> record, SimpleExcelTaxonImportState<CONFIG> state) {
 
         String authorStr = getValueNd(record, "AutorSinAnio");
         String nameStr = getValue(record, "Nombre");
@@ -416,7 +416,7 @@ public class MexicoConabioTaxonImport<CONFIG extends MexicoConabioImportConfigur
      * @param string
      * @return
      */
-    private String getValueNd(HashMap<String, String> record, String string) {
+    private String getValueNd(Map<String, String> record, String string) {
         String value = getValue(record, string);
         if ("ND".equals(value)){
             return null;
@@ -429,7 +429,7 @@ public class MexicoConabioTaxonImport<CONFIG extends MexicoConabioImportConfigur
     @Override
     protected void secondPass(SimpleExcelTaxonImportState<CONFIG> state) {
 //        IdCAT_AscendenteInmediato, IdCATRel, TipoRelacion
-        HashMap<String, String> record = state.getOriginalRecord();
+        Map<String, String> record = state.getOriginalRecord();
         String line = state.getCurrentLine() + ": ";
 
         String parentStr = getValue(record, "IdCAT_AscendenteInmediato");

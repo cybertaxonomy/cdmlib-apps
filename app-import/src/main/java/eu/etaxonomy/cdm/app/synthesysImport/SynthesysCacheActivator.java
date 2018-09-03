@@ -13,9 +13,9 @@ import java.io.FileNotFoundException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.ListIterator;
+import java.util.Map;
 
 import org.apache.log4j.Logger;
 import org.springframework.transaction.TransactionStatus;
@@ -78,7 +78,7 @@ public class SynthesysCacheActivator {
 	static ICdmDataSource desitination = CdmDestinations.localH2();
 
 
-	public void saveUnit(HashMap<String,String> unit){
+	public void saveUnit(Map<String,String> unit){
 		String author = unit.get("author");
 		author=author.replaceAll("None","");
 		String taxonName = unit.get("taxonName");
@@ -415,8 +415,6 @@ public class SynthesysCacheActivator {
 		return determinationEvent;
 	}
 
-
-
 	/**
 	 * @param args
 	 * @throws URISyntaxException
@@ -426,14 +424,14 @@ public class SynthesysCacheActivator {
 		logger.info("main method");
 		SynthesysCacheActivator abcdAct = new SynthesysCacheActivator();
 
-		List<HashMap<String, String>> units;
+		List<Map<String, String>> units;
 		try {
 			units = ExcelUtils.parseXLS(uri);
 		} catch (FileNotFoundException e) {
 			logger.error("FileNotFound: " + uri);
 			return;
 		}
-		HashMap<String,String> unit=null;
+		Map<String,String> unit=null;
 		for (int i=0; i<units.size();i++){
 			unit = units.get(i);
 			logger.info(unit);

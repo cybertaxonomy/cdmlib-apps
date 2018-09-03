@@ -11,9 +11,9 @@ package eu.etaxonomy.cdm.io.cuba;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
 import java.util.regex.Matcher;
@@ -94,7 +94,7 @@ public class CubaExcelImport
             "Taxón","(Notas)","Syn.","End","Ind","Ind? D","Nat","Dud P","Adv","Cult C","CuW","PR PR*","Art","Hab(*)","May","Mat","IJ","CuC","VC","Ci","SS","CA","Cam","LT","CuE","Gr","Ho","SC","Gu","Esp","Ja","PR","Men","Bah","Cay","AmN","AmC","AmS","VM"});
 
 	@Override
-    protected void analyzeRecord(HashMap<String, String> record, CubaImportState state) {
+    protected void analyzeRecord(Map<String, String> record, CubaImportState state) {
 	    //we do everything in firstPass here
     	return;
     }
@@ -105,7 +105,7 @@ public class CubaExcelImport
      * @param state
      * @param taxon
      */
-    private void makeCubanDistribution(HashMap<String, String> record, CubaImportState state) {
+    private void makeCubanDistribution(Map<String, String> record, CubaImportState state) {
         try {
             NamedArea cuba = getNamedArea(state, state.getTransformer().getNamedAreaUuid("Cu"), null, null, null, null, null);
             TaxonDescription desc = getTaxonDescription(state.getCurrentTaxon(), false, true);
@@ -127,7 +127,7 @@ public class CubaExcelImport
      * @return
      * @throws UndefinedTransformerMethodException
      */
-    private List<PresenceAbsenceTerm> makeCubanStatuss(HashMap<String, String> record, CubaImportState state) throws UndefinedTransformerMethodException {
+    private List<PresenceAbsenceTerm> makeCubanStatuss(Map<String, String> record, CubaImportState state) throws UndefinedTransformerMethodException {
         PresenceAbsenceTerm highestStatus = null;
 
         String line = state.getCurrentLine() + ": ";
@@ -361,7 +361,7 @@ public class CubaExcelImport
      * @param state
      * @param taxon
      */
-    private void makeSynonyms(HashMap<String, String> record, CubaImportState state, boolean isFirstSynonym) {
+    private void makeSynonyms(Map<String, String> record, CubaImportState state, boolean isFirstSynonym) {
 //        boolean forAccepted = true;
         String synonymStr = record.get("Syn.");
         String line = state.getCurrentLine() + ": ";
@@ -602,7 +602,7 @@ public class CubaExcelImport
      * @param taxon
      */
     private void makeSingleProvinceDistribution(String areaKey,
-            HashMap<String, String> record,
+            Map<String, String> record,
             CubaImportState state) {
         try {
             UUID areaUuid = state.getTransformer().getNamedAreaUuid(areaKey);
@@ -644,7 +644,7 @@ public class CubaExcelImport
      * @param record
      * @param state
      */
-    private Reference getAreaSourceByNumber(String areaKey, HashMap<String, String> record, CubaImportState state) {
+    private Reference getAreaSourceByNumber(String areaKey, Map<String, String> record, CubaImportState state) {
         String statusStr = record.get(areaKey);
         if (statusStr == null){
             return null;
@@ -938,7 +938,7 @@ public class CubaExcelImport
      * @param state
      * @param taxon
      */
-    private void makeNotes(HashMap<String, String> record, CubaImportState state) {
+    private void makeNotes(Map<String, String> record, CubaImportState state) {
         String notesStr = getValue(record, "(Notas)");
         if (notesStr == null){
             return;
@@ -957,7 +957,7 @@ public class CubaExcelImport
      * @param familyTaxon
      * @return
      */
-    private Taxon makeTaxon(HashMap<String, String> record, CubaImportState state, TaxonNode familyNode, boolean isSynonym) {
+    private Taxon makeTaxon(Map<String, String> record, CubaImportState state, TaxonNode familyNode, boolean isSynonym) {
         String taxonStrOrig = getValue(record, "Taxón");
         if (taxonStrOrig == null){
             return isSynonym ? state.getCurrentTaxon() : null;
@@ -1160,7 +1160,7 @@ public class CubaExcelImport
      * @param state
      * @return
      */
-    private TaxonNode getFamilyTaxon(HashMap<String, String> record, CubaImportState state) {
+    private TaxonNode getFamilyTaxon(Map<String, String> record, CubaImportState state) {
         String familyStr = getValue(record, "Fam. default");
         if (familyStr == null){
             return null;
@@ -1354,7 +1354,8 @@ public class CubaExcelImport
      * @param originalKey
      * @return
      */
-    private String getValue(HashMap<String, String> record, String originalKey) {
+    @Override
+    public String getValue(Map<String, String> record, String originalKey) {
         String value = record.get(originalKey);
         if (! StringUtils.isBlank(value)) {
         	if (logger.isDebugEnabled()) { logger.debug(originalKey + ": " + value); }
@@ -1375,7 +1376,7 @@ public class CubaExcelImport
 	    boolean isSynonymOnly = false;
 
         String line = state.getCurrentLine() + ": ";
-        HashMap<String, String> record = state.getOriginalRecord();
+        Map<String, String> record = state.getOriginalRecord();
 
         Set<String> keys = record.keySet();
         for (String key: keys) {
@@ -1505,7 +1506,7 @@ public class CubaExcelImport
      * @param familyTaxon
      * @param taxon
      */
-    private void makeAlternativeFamilies(HashMap<String, String> record,
+    private void makeAlternativeFamilies(Map<String, String> record,
             CubaImportState state,
             TaxonNode familyTaxon,
             Taxon taxon) {
@@ -1619,7 +1620,7 @@ public class CubaExcelImport
     // "CuW","PR PR*","Art","Hab(*)","May","Mat","IJ",
 //  "CuC","VC","Ci","SS","CA","Cam","LT",
 //  "CuE","Gr","Ho","SC","Gu",
-    private void makeProvincesDistribution(HashMap<String, String> record, CubaImportState state) {
+    private void makeProvincesDistribution(Map<String, String> record, CubaImportState state) {
         List<String> areaKeys = Arrays.asList(new String[]{
                 "CuW","PR PR*","Art","Hab(*)","May","Mat","IJ",
                 "CuC","VC","Ci","SS","CA","Cam","LT",
@@ -1631,7 +1632,7 @@ public class CubaExcelImport
         }
     }
 
-    private void makeOtherAreasDistribution(HashMap<String, String> record, CubaImportState state) {
+    private void makeOtherAreasDistribution(Map<String, String> record, CubaImportState state) {
         List<String> areaKeys = Arrays.asList(new String[]{
                 "Esp","Ja","PR","Men","Bah","Cay",
                 "AmN","AmC","AmS","VM"});
@@ -1653,7 +1654,7 @@ public class CubaExcelImport
      * @throws UndefinedTransformerMethodException
      */
     private PresenceAbsenceTerm makeProvinceStatus(String areaKey,
-            HashMap<String, String> record,
+            Map<String, String> record,
             CubaImportState state) throws UndefinedTransformerMethodException {
 
         String statusStr = record.get(areaKey);

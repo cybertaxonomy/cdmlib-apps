@@ -10,9 +10,9 @@
 package eu.etaxonomy.cdm.io.cyprus;
 
 import java.util.Arrays;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
 
@@ -124,7 +124,7 @@ public class CyprusExcelImport
 
 
 	@Override
-    protected void analyzeRecord(HashMap<String, String> record, CyprusImportState state) {
+    protected void analyzeRecord(Map<String, String> record, CyprusImportState state) {
 
 		Set<String> keys = record.keySet();
 

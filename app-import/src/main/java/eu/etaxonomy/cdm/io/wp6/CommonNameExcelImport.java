@@ -72,7 +72,7 @@ public class CommonNameExcelImport
 
 
 	@Override
-    protected void analyzeRecord(HashMap<String, String> record, CichorieaeCommonNameImportState state) {
+    protected void analyzeRecord(Map<String, String> record, CichorieaeCommonNameImportState state) {
 		Set<String> keys = record.keySet();
 
     	CommonNameRow row = new CommonNameRow();

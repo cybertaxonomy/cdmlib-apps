@@ -9,8 +9,8 @@
 package eu.etaxonomy.cdm.io.mexico;
 
 import java.util.Arrays;
-import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import org.apache.log4j.Logger;
@@ -49,7 +49,7 @@ public abstract class SimpleExcelTaxonImport<CONFIG extends ExcelImportConfigura
 
 
     @Override
-    protected void analyzeRecord(HashMap<String, String> record, SimpleExcelTaxonImportState<CONFIG> state) {
+    protected void analyzeRecord(Map<String, String> record, SimpleExcelTaxonImportState<CONFIG> state) {
         //override only if needed
     }
 

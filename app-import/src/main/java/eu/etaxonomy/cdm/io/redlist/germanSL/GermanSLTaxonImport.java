@@ -100,7 +100,7 @@ public class GermanSLTaxonImport
     @Override
     protected void firstPass(SimpleExcelTaxonImportState<GermanSLImportConfigurator> state) {
         String line = state.getCurrentLine() + ": ";
-        HashMap<String, String> record = state.getOriginalRecord();
+        Map<String, String> record = state.getOriginalRecord();
 
         Set<String> keys = record.keySet();
 
@@ -110,10 +110,9 @@ public class GermanSLTaxonImport
         NameResult nameResult = makeName(line, record, state);
         IBotanicalName taxonName = nameResult.name;
 
-      //sec
+        //sec
         String secRefStr = getValue(record, SEC);
         Reference sec = getSecRef(state, secRefStr, line);
-
 
         //status
         String statusStr = getValue(record, SYNONYM);

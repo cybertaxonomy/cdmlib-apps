@@ -9,8 +9,8 @@
 package eu.etaxonomy.cdm.io.greece;
 
 import java.util.Arrays;
-import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import org.apache.log4j.Logger;
@@ -61,7 +61,7 @@ public class FloraHellenicaCommentsImport<CONFIG extends FloraHellenicaImportCon
     protected void firstPass(SimpleExcelTaxonImportState<CONFIG> state) {
 
         String line = state.getCurrentLine() + ": ";
-        HashMap<String, String> record = state.getOriginalRecord();
+        Map<String, String> record = state.getOriginalRecord();
 
         Set<String> keys = record.keySet();
         for (String key: keys) {
@@ -83,7 +83,7 @@ public class FloraHellenicaCommentsImport<CONFIG extends FloraHellenicaImportCon
      * @return
      */
     private void makeComment(SimpleExcelTaxonImportState<CONFIG> state, String line,
-            HashMap<String, String> record,
+            Map<String, String> record,
             String noStr) {
 
         Taxon acceptedTaxon = getAcceptedTaxon(record, state, UNIQUE_ID_ACCEPTED);

@@ -9,7 +9,7 @@
 */
 package eu.etaxonomy.cdm.io.bogota;
 
-import java.util.HashMap;
+import java.util.Map;
 import java.util.UUID;
 
 import org.apache.log4j.Logger;
@@ -86,7 +86,7 @@ public class BogotaChecklistTaxonImport<CONFIG extends BogotaChecklistImportConf
         }
 
         String line = state.getCurrentLine() + ": ";
-        HashMap<String, String> record = state.getOriginalRecord();
+        Map<String, String> record = state.getOriginalRecord();
 
         String noStr = getValue(record, ID_COL);
 
@@ -119,7 +119,7 @@ public class BogotaChecklistTaxonImport<CONFIG extends BogotaChecklistImportConf
      * @param line
      * @param taxon
      */
-    private void makeSynonyms(SimpleExcelTaxonImportState<CONFIG> state, HashMap<String, String> record, String line,
+    private void makeSynonyms(SimpleExcelTaxonImportState<CONFIG> state, Map<String, String> record, String line,
             Taxon taxon, String noStr) {
 
         String synonymsStr = getValue(record, SINONIMOS);
@@ -233,7 +233,7 @@ public class BogotaChecklistTaxonImport<CONFIG extends BogotaChecklistImportConf
      * @param taxon
      * @param noStr
      */
-    private void makeInfraSpecific(SimpleExcelTaxonImportState<CONFIG> state, HashMap<String, String> record, String line,
+    private void makeInfraSpecific(SimpleExcelTaxonImportState<CONFIG> state, Map<String, String> record, String line,
             TaxonNode speciesNode, String noStr) {
         String subSpeciesStr = getValue(record, INFRASPECIFIC);
         if (subSpeciesStr != null){
@@ -266,7 +266,7 @@ public class BogotaChecklistTaxonImport<CONFIG extends BogotaChecklistImportConf
      * @param noStr
      * @return
      */
-    private TaxonNode makeTaxon(SimpleExcelTaxonImportState<CONFIG> state, String line, HashMap<String, String> record,
+    private TaxonNode makeTaxon(SimpleExcelTaxonImportState<CONFIG> state, String line, Map<String, String> record,
             String noStr) {
 
         TaxonNode familyTaxon = getFamilyTaxon(record, state);
@@ -325,7 +325,7 @@ public class BogotaChecklistTaxonImport<CONFIG extends BogotaChecklistImportConf
      * @param state
      * @return
      */
-    private TaxonNode getFamilyTaxon(HashMap<String, String> record, SimpleExcelTaxonImportState<CONFIG> state) {
+    private TaxonNode getFamilyTaxon(Map<String, String> record, SimpleExcelTaxonImportState<CONFIG> state) {
         String familyStr = getValue(record, FAMILIA);
         if (familyStr == null){
             return null;
@@ -431,7 +431,7 @@ public class BogotaChecklistTaxonImport<CONFIG extends BogotaChecklistImportConf
      * @return
      */
     private TaxonNode makeGenusNode(SimpleExcelTaxonImportState<CONFIG> state,
-            HashMap<String, String> record, String genusStr) {
+            Map<String, String> record, String genusStr) {
         IBotanicalName name = TaxonNameFactory.NewBotanicalInstance(Rank.GENUS());
         name.setGenusOrUninomial(genusStr);
         Taxon genus = Taxon.NewInstance(name, getSecReference(state));

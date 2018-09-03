@@ -58,7 +58,7 @@ public class MexicoConabioCommonNamesImport<CONFIG extends MexicoConabioImportCo
         initTaxa();
 
         String line = state.getCurrentLine() + ": ";
-        HashMap<String, String> record = state.getOriginalRecord();
+        Map<String, String> record = state.getOriginalRecord();
 
         String idCat = getValue(record, "IdCAT");
         Taxon taxon = taxonIdMap.get(idCat);
@@ -194,7 +194,7 @@ public class MexicoConabioCommonNamesImport<CONFIG extends MexicoConabioImportCo
         }
     }
 
-    private String getValueNd(HashMap<String, String> record, String string) {
+    private String getValueNd(Map<String, String> record, String string) {
         String value = getValue(record, string);
         if ("ND".equals(value)){
             return null;

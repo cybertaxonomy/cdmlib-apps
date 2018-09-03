@@ -73,6 +73,7 @@ public class BogotaSpecimenImport<CONFIG extends BogotaSpecimenImportConfigurato
         extends SimpleExcelSpecimenImport<CONFIG> {
 
     private static final long serialVersionUID = -884838817884874228L;
+    @SuppressWarnings("unused")
     private static final Logger logger = Logger.getLogger(BogotaSpecimenImport.class);
 
     private static final String COL_TAXON_UUID = "Platform Name ID = cdmID";
@@ -134,7 +135,7 @@ public class BogotaSpecimenImport<CONFIG extends BogotaSpecimenImportConfigurato
     @Override
     protected void firstPass(SimpleExcelSpecimenImportState<CONFIG> state) {
 
-        HashMap<String, String> record = state.getOriginalRecord();
+        Map<String, String> record = state.getOriginalRecord();
 
         String voucherId = getValue(record, COL_VOUCHER_ID);
         if (!isInInterval(state)){
@@ -169,7 +170,7 @@ public class BogotaSpecimenImport<CONFIG extends BogotaSpecimenImportConfigurato
      * @return
      */
     private Taxon getOrCreateNewTaxon(SimpleExcelSpecimenImportState<CONFIG> state,
-            HashMap<String, String> record, String line) {
+            Map<String, String> record, String line) {
         String familyStr = record.get(COL_FAMILY);
         String genusStr = record.get(COL_GENUS);
         initTaxonMap(state);
@@ -242,7 +243,7 @@ public class BogotaSpecimenImport<CONFIG extends BogotaSpecimenImportConfigurato
      * @return
      */
     private TaxonName makeSpeciesName(SimpleExcelSpecimenImportState<CONFIG> state, String line) {
-        HashMap<String, String> record = state.getOriginalRecord();
+        Map<String, String> record = state.getOriginalRecord();
         String genus = record.get(COL_GENUS);
         String species = record.get(COL_SPECIFIC_EPI);
         String basionymAuthorStr = record.get(COL_BASIONYM_AUTHOR);
@@ -297,7 +298,7 @@ public class BogotaSpecimenImport<CONFIG extends BogotaSpecimenImportConfigurato
     protected void handleRecordForTaxon(SimpleExcelSpecimenImportState<CONFIG> state,
             String voucherId, String line, TaxonBase<?> taxonBase) {
 
-        HashMap<String, String> record = state.getOriginalRecord();
+        Map<String, String> record = state.getOriginalRecord();
         Taxon taxon = getTaxon(taxonBase);
 
         TaxonDescription taxonDescription = getTaxonDescription(state, line, taxon);
@@ -353,7 +354,7 @@ public class BogotaSpecimenImport<CONFIG extends BogotaSpecimenImportConfigurato
      * @return
      */
     private DerivedUnit makeSpecimen(SimpleExcelSpecimenImportState<CONFIG> state, String line,
-            HashMap<String, String> record, String voucherId, TaxonBase<?> taxonBase) {
+            Map<String, String> record, String voucherId, TaxonBase<?> taxonBase) {
 
         DerivedUnitFacade facade = DerivedUnitFacade.NewPreservedSpecimenInstance();
         facade.setAccessionNumber(voucherId);
@@ -379,7 +380,7 @@ public class BogotaSpecimenImport<CONFIG extends BogotaSpecimenImportConfigurato
      * @param name
      */
     private void makeTypus(DerivedUnit specimen, SimpleExcelSpecimenImportState<CONFIG> state, String line,
-            HashMap<String, String> record, TaxonName name) {
+            Map<String, String> record, TaxonName name) {
         String typus = record.get(COL_TYPUS);
         if (typus != null){
             SpecimenTypeDesignationStatus status;
@@ -402,7 +403,7 @@ public class BogotaSpecimenImport<CONFIG extends BogotaSpecimenImportConfigurato
      * @param record
      */
     private void makeCollection(DerivedUnitFacade facade, SimpleExcelSpecimenImportState<CONFIG> state,
-            String line, HashMap<String, String> record) {
+            String line, Map<String, String> record) {
         String strCollection = record.get(COL_COLLECTION);
         String collectionFormat = ".*\\([A-Z]{2,4}\\)";
         if (!strCollection.matches(collectionFormat)){
@@ -440,7 +441,7 @@ public class BogotaSpecimenImport<CONFIG extends BogotaSpecimenImportConfigurato
      * @param record
      */
     private void makeHabitus(DerivedUnitFacade facade, SimpleExcelSpecimenImportState<CONFIG> state, String line,
-            HashMap<String, String> record) {
+            Map<String, String> record) {
         String habitus = record.get(COL_HABITUS);
         if (habitus != null){
             facade.setPlantDescription(habitus);
@@ -456,7 +457,7 @@ public class BogotaSpecimenImport<CONFIG extends BogotaSpecimenImportConfigurato
      * @param voucherId
      */
     private void makeLocationFields(DerivedUnitFacade facade, SimpleExcelSpecimenImportState<CONFIG> state, String line,
-            HashMap<String, String> record) {
+            Map<String, String> record) {
         //Altitude
         String strAltitudeFrom = record.get(COL_ALTITUDE_FROM);
         String strAltitudeTo = record.get(COL_ALTITUDE_TO);
@@ -595,7 +596,7 @@ public class BogotaSpecimenImport<CONFIG extends BogotaSpecimenImportConfigurato
      * @param record
      */
     private void makeCollectorFields(DerivedUnitFacade facade, SimpleExcelSpecimenImportState<CONFIG> state, String line,
-            HashMap<String, String> record) {
+            Map<String, String> record) {
 
         //collector number
         facade.setFieldNumber(record.get(COL_COLLECTOR_NUMBER));
@@ -687,7 +688,7 @@ public class BogotaSpecimenImport<CONFIG extends BogotaSpecimenImportConfigurato
      * @param taxonBase
      */
     private void makeDetermination(DerivedUnit specimen, SimpleExcelSpecimenImportState<CONFIG> state, String line,
-            HashMap<String, String> record, TaxonName taxonName) {
+            Map<String, String> record, TaxonName taxonName) {
 
         DeterminationEvent determination;
         determination = DeterminationEvent.NewInstance(taxonName, specimen);
@@ -723,7 +724,7 @@ public class BogotaSpecimenImport<CONFIG extends BogotaSpecimenImportConfigurato
      * @return
      */
     private TeamOrPersonBase<?> makeDeterminer(SimpleExcelSpecimenImportState<CONFIG> state,
-            HashMap<String, String> record, String line) {
+            Map<String, String> record, String line) {
         String identifier = record.get(COL_IDENTIFIER);
         if (identifier == null){
             return null;
@@ -763,7 +764,7 @@ public class BogotaSpecimenImport<CONFIG extends BogotaSpecimenImportConfigurato
      * @return
      */
     private TimePeriod makeIdentificationDate(SimpleExcelSpecimenImportState<CONFIG> state,
-            HashMap<String, String> record, String line) {
+            Map<String, String> record, String line) {
         String strDate = record.get(COL_IDENTIFICATION_DATE);
         if (strDate == null || strDate.equals("s.n.")){
             return null;
@@ -788,7 +789,7 @@ public class BogotaSpecimenImport<CONFIG extends BogotaSpecimenImportConfigurato
      * @return
      */
     private DefinedTerm makeDeterminationQualifier(SimpleExcelSpecimenImportState<CONFIG> state,
-            HashMap<String, String> record, String line) {
+            Map<String, String> record, String line) {
         String qualifier = record.get(COL_IDENTIFICATION_QUALIFIER);
         if (qualifier != null){
             try {
@@ -835,7 +836,7 @@ public class BogotaSpecimenImport<CONFIG extends BogotaSpecimenImportConfigurato
      * @return
      */
     private TaxonBase<?> getTaxonByCdmId(SimpleExcelSpecimenImportState<CONFIG> state, String line,
-            HashMap<String, String> record, String noStr) {
+            Map<String, String> record, String noStr) {
 
         String strUuidTaxon = record.get(COL_TAXON_UUID);
         if (strUuidTaxon != null && ! state.getConfig().isOnlyNonCdmTaxa()){

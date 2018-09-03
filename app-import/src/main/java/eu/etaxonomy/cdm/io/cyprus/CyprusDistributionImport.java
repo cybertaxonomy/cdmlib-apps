@@ -375,7 +375,7 @@ public class CyprusDistributionImport
 
 
 	@Override
-    protected void analyzeRecord(HashMap<String, String> record, CyprusImportState state) {
+    protected void analyzeRecord(Map<String, String> record, CyprusImportState state) {
 
     	Set<String> keys = record.keySet();
     	CyprusDistributionRow cyprusDistributionRow = new CyprusDistributionRow();

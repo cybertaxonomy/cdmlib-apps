@@ -11,8 +11,8 @@ package eu.etaxonomy.cdm.io.mexico;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.Arrays;
-import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
 
@@ -64,7 +64,7 @@ public class MexicoBorhidiExcelImport<CONFIG extends MexicoBorhidiImportConfigur
     @Override
     protected void firstPass(SimpleExcelTaxonImportState<CONFIG> state) {
         String line = state.getCurrentLine() + ": ";
-        HashMap<String, String> record = state.getOriginalRecord();
+        Map<String, String> record = state.getOriginalRecord();
 
         Set<String> keys = record.keySet();
         checkAllKeysExist(line, keys, expectedKeys);
@@ -115,7 +115,7 @@ public class MexicoBorhidiExcelImport<CONFIG extends MexicoBorhidiImportConfigur
      * @param state
      * @return
      */
-    private IBotanicalName makeName(HashMap<String, String> record, SimpleExcelTaxonImportState<CONFIG> state) {
+    private IBotanicalName makeName(Map<String, String> record, SimpleExcelTaxonImportState<CONFIG> state) {
         String line = state.getCurrentLine() + ": ";
 
         String fullNameStr = getValue(record, "OutputFullNameWithAuthors");

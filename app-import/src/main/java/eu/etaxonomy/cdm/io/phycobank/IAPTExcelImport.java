@@ -222,7 +222,7 @@ public class IAPTExcelImport<CONFIG extends IAPTImportConfigurator> extends Simp
      */
     boolean _testMode = System.getProperty("TEST_MODE") != null;
 
-    private Taxon makeTaxon(HashMap<String, String> record, SimpleExcelTaxonImportState<CONFIG> state,
+    private Taxon makeTaxon(Map<String, String> record, SimpleExcelTaxonImportState<CONFIG> state,
                             TaxonNode higherTaxonNode, boolean isFossil) {
 
         String regNumber = getValue(record, REGISTRATIONNO_PK, false);
@@ -1039,7 +1039,7 @@ public class IAPTExcelImport<CONFIG extends IAPTImportConfigurator> extends Simp
      * @param doUnescapeHtmlEntities
      * @return
      */
-    private String getValue(HashMap<String, String> record, String originalKey, boolean doUnescapeHtmlEntities) {
+    private String getValue(Map<String, String> record, String originalKey, boolean doUnescapeHtmlEntities) {
         String value = record.get(originalKey);
 
         value = fixCharacters(value);
@@ -1130,7 +1130,7 @@ public class IAPTExcelImport<CONFIG extends IAPTImportConfigurator> extends Simp
 
         String lineNumber = "L#" + state.getCurrentLine() + ": ";
         logger.setLevel(Level.DEBUG);
-        HashMap<String, String> record = state.getOriginalRecord();
+        Map<String, String> record = state.getOriginalRecord();
         logger.debug(lineNumber + record.toString());
 
         Set<String> keys = record.keySet();
@@ -1208,7 +1208,7 @@ public class IAPTExcelImport<CONFIG extends IAPTImportConfigurator> extends Simp
 
     private IAPTRegData makeIAPTRegData(SimpleExcelTaxonImportState<CONFIG> state) {
 
-        HashMap<String, String> record = state.getOriginalRecord();
+        Map<String, String> record = state.getOriginalRecord();
         String registrationStr = getValue(record, REGISTRATION);
         String regDateStr = getValue(record, REGDATE);
         String regStr = getValue(record, REGISTRATION, true);
@@ -1224,7 +1224,7 @@ public class IAPTExcelImport<CONFIG extends IAPTImportConfigurator> extends Simp
             if(parseDate( regStr, dateStr) == null){
                 // check for valid dates
                 logger.warn(csvReportLine(regStr, REGISTRATION + ": could not parse date", dateStr, " in ", registrationStr));
-            };
+            }
             office = m.group("office");
             regID = Integer.valueOf(m.group("regid"));
             try {

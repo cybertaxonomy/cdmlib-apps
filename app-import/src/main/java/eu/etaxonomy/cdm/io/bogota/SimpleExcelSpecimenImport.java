@@ -8,8 +8,8 @@
 */
 package eu.etaxonomy.cdm.io.bogota;
 
-import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import org.apache.log4j.Logger;
@@ -38,7 +38,7 @@ public abstract class SimpleExcelSpecimenImport<CONFIG extends ExcelImportConfig
 
 
     @Override
-    protected void analyzeRecord(HashMap<String, String> record, SimpleExcelSpecimenImportState<CONFIG> state) {
+    protected void analyzeRecord(Map<String, String> record, SimpleExcelSpecimenImportState<CONFIG> state) {
         //override only if needed
     }
 
