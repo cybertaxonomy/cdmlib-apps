@@ -77,7 +77,7 @@ public class EuroMedActivator {
 	private static final Logger logger = Logger.getLogger(EuroMedActivator.class);
 
 	//database validation status (create, update, validate ...)
-	static DbSchemaValidation hbm2dll = DbSchemaValidation.VALIDATE;
+	static DbSchemaValidation hbm2dll = DbSchemaValidation.CREATE;
 //    static final Source berlinModelSource = BerlinModelSources.euroMed_Pub2();
 	static final Source berlinModelSource = BerlinModelSources.euroMed_BGBM42();
 //	static final Source berlinModelSource = BerlinModelSources.euroMed_PESI3();
@@ -85,7 +85,32 @@ public class EuroMedActivator {
 //  static final ICdmDataSource cdmDestination = CdmDestinations.localH2();
 	static final ICdmDataSource cdmDestination = CdmDestinations.cdm_test_euroMed();
 
-//	static final ICdmDataSource cdmDestination = CdmDestinations.cdm_local_euromed();
+//    static final ICdmDataSource cdmDestination = CdmDestinations.cdm_local_euromed();
+
+	boolean invers = !(hbm2dll == DbSchemaValidation.CREATE);
+
+    static final boolean doUser = true;
+//  //authors
+    static final boolean doAuthors = true;
+    //references
+    static final DO_REFERENCES doReferences =  DO_REFERENCES.ALL;
+    //names
+    static final boolean doTaxonNames = true;
+    static final boolean doRelNames = true;
+    static final boolean doNameStatus = true;
+    static final boolean doTypes = false;  //serious types do not exist in E+M except for name types which are handled in name relations
+    static final boolean doNameFacts = true;
+
+    //taxa
+    static final boolean doTaxa = true;
+    static final boolean doFacts = true;
+    static final boolean doCommonNames = false;  //currently takes very long
+    static final boolean doOccurences = true;
+    static final boolean doRelTaxa = true;
+    static final boolean doRunTransmissionEngine = (hbm2dll == DbSchemaValidation.VALIDATE);
+
+    //etc.
+    static final boolean doMarker = false;
 
 
     //check - import
@@ -128,13 +153,16 @@ public class EuroMedActivator {
 	static final String infrGenericRankAbbrev = "[unranked]";
 	static final String infrSpecificRankAbbrev = "[unranked]";
 
+	static boolean useLastScrutinyAsSec = true;
+	static boolean warnForDifferingSynonymReference = false;
+
 
 	static String taxonTable = "v_cdm_exp_taxaAll";
 	static String classificationQuery = " SELECT DISTINCT t.PTRefFk, r.RefCache FROM PTaxon t INNER JOIN Reference r ON t.PTRefFk = r.RefId WHERE t.PTRefFk = " + sourceSecId;
 	static String relPTaxonIdQuery = " SELECT r.RelPTaxonId " +
 					" FROM RelPTaxon AS r INNER JOIN v_cdm_exp_taxaDirect AS a ON r.PTNameFk2 = a.PTNameFk AND r.PTRefFk2 = a.PTRefFk" +
-					" WHERE r.RelPTaxonID NOT IN (1883791,1883800,1883823,1883852,1883853,1883864,1883896,1883921,1883943,1883944,1883955,1883972,1884008,1884030,1884031,1884035) " + //Unpublished Kew taxa which are not imported anymore
-					" ";  // AND r.RelQualifierFk =1
+					" WHERE r.RelPTaxonID NOT IN (1874890,1874959,1874932,1874793,1874956,1874971,1874902,1874696) " + //Relations to unpublished Kew genus taxa of Bethulaceae which are not imported anymore, but Bethalaceae is still imported
+					" ";
 	static String nameIdTable = " v_cdm_exp_namesAll ";
 	static String referenceIdTable = " v_cdm_exp_refAll ";
 	static String refDetailFilter =  " RefDetailID IN (SELECT RefDetailID FROM v_cdm_exp_RefDetail) ";
@@ -150,30 +178,7 @@ public class EuroMedActivator {
 
 // **************** ALL *********************
 
-	boolean invers = !(hbm2dll == DbSchemaValidation.CREATE);
 
-	static final boolean doUser = true;
-//	//authors
-	static final boolean doAuthors = true;
-	//references
-	static final DO_REFERENCES doReferences =  DO_REFERENCES.ALL;
-	//names
-	static final boolean doTaxonNames = true;
-	static final boolean doRelNames = true;
-	static final boolean doNameStatus = true;
-	static final boolean doTypes = false;  //serious types do not exist in E+M except for name types which are handled in name relations
-	static final boolean doNameFacts = true;
-
-	//taxa
-	static final boolean doTaxa = true;
-	static final boolean doFacts = false;
-	static final boolean doCommonNames = false;
-	static final boolean doOccurences = false;
-	static final boolean doRelTaxa = false;
-	static final boolean doRunTransmissionEngine = (hbm2dll == DbSchemaValidation.VALIDATE);
-
-	//etc.
-	static final boolean doMarker = false;
 
 
 	public void importEm2CDM (Source source, ICdmDataSource destination, DbSchemaValidation hbm2dll){
@@ -211,6 +216,8 @@ public class EuroMedActivator {
 		config.setSourceRefUuid(BerlinModelTransformer.uuidSourceRefEuroMed);
 		config.setEditor(editor);
 		config.setDbSchemaValidation(hbm2dll);
+		config.setUseLastScrutinyAsSec(useLastScrutinyAsSec);
+		config.setWarnForDifferingSynonymReference(warnForDifferingSynonymReference);
 
 		// maximum number of name facts to import
 		config.setMaximumNumberOfNameFacts(maximumNumberOfNameFacts);
