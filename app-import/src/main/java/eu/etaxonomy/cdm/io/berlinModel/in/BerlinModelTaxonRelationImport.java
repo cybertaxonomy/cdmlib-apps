@@ -76,10 +76,10 @@ public class BerlinModelTaxonRelationImport  extends BerlinModelImportBase  {
 	}
 
 	/**
-	 * Creates a classification for each PTaxon reference which belongs to a taxon that is included at least in one
-	 * <i>taxonomically included</i> relationship
+	 * Creates a classification for each PTaxon reference which belongs to a taxon that is
+	 * included at least in one <i>taxonomically included</i> relationship.
+	 *
 	 * @param state
-	 * @return
 	 * @throws SQLException
 	 */
 	private void makeClassifications(BerlinModelImportState state) throws SQLException{
@@ -160,9 +160,6 @@ public class BerlinModelTaxonRelationImport  extends BerlinModelImportBase  {
 		return result;
 	}
 
-	/**
-	 * @return
-	 */
 	private String getClassificationQuery(BerlinModelImportState state) {
 		boolean includeAllClassifications = state.getConfig().isIncludeAllNonMisappliedRelatedClassifications();
 		String strQuerySelect = "SELECT PTaxon.PTRefFk, r.RefCache ";
