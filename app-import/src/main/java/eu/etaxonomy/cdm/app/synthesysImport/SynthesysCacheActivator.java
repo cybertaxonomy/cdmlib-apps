@@ -426,7 +426,7 @@ public class SynthesysCacheActivator {
 		logger.info("main method");
 		SynthesysCacheActivator abcdAct = new SynthesysCacheActivator();
 
-		ArrayList<HashMap<String, String>> units;
+		List<HashMap<String, String>> units;
 		try {
 			units = ExcelUtils.parseXLS(uri);
 		} catch (FileNotFoundException e) {

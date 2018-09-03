@@ -12,9 +12,9 @@ package eu.etaxonomy.cdm.app.cyprus;
 import java.io.FileNotFoundException;
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 import java.util.UUID;
 
@@ -79,8 +79,7 @@ public class CyprusAltitudeActivator {
 
 	private void doImport(ICdmDataSource cdmDestination){
 
-
-		ArrayList<HashMap<String, String>> excel;
+		List<HashMap<String, String>> excel;
 		try {
 			excel = ExcelUtils.parseXLS(source, "coreTax");
 		} catch (FileNotFoundException e) {

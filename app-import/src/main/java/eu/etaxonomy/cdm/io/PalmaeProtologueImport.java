@@ -11,9 +11,9 @@ package eu.etaxonomy.cdm.io;
 
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 import org.apache.log4j.Logger;
@@ -47,7 +47,7 @@ public class PalmaeProtologueImport extends AbstractImageImporter {
 	@Override
 	protected void invokeImageImport(ImageImportState state) {
 
-		ArrayList<HashMap<String, String>> contents;
+		List<HashMap<String, String>> contents;
 		try {
 			contents = ExcelUtils.parseXLS(state.getConfig().getSource());
 		} catch (/*FileNotFound*/Exception e) {
