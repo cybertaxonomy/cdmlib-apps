@@ -25,15 +25,15 @@ import eu.etaxonomy.cdm.io.common.Source;
  * @since 17.02.2010
  */
 public class BerlinModelOccurrenceImportValidator implements IOValidator<BerlinModelImportState> {
-	private static final Logger logger = Logger.getLogger(BerlinModelOccurrenceImportValidator.class);
+	@SuppressWarnings("unused")
+    private static final Logger logger = Logger.getLogger(BerlinModelOccurrenceImportValidator.class);
 
 	@Override
 	public boolean validate(BerlinModelImportState state) {
 		boolean result = true;
-		BerlinModelImportConfigurator bmiConfig = state.getConfig();
-		result &= checkTaxonIsAccepted(bmiConfig);
-		//result &= checkPartOfJournal(bmiConfig);
-		System.out.println("Checking for Occurrence not yet fully implemented");
+		BerlinModelImportConfigurator config = state.getConfig();
+		result &= checkTaxonIsAccepted(config);
+		result &= checkSourcesWithWhitespace(config);
 		return result;
 	}
 
@@ -71,7 +71,7 @@ public class BerlinModelOccurrenceImportValidator implements IOValidator<BerlinM
 
 				}
 				int occurrenceId = resultSet.getInt("OccurrenceId");
-//					int statusFk = resulSet.getInt("StatusFk");
+//			    int statusFk = resulSet.getInt("StatusFk");
 				String status = resultSet.getString("Status");
 				String fullNameCache = resultSet.getString("FullNameCache");
 				String ptRefFk = resultSet.getString("PTRefFk");
@@ -92,4 +92,40 @@ public class BerlinModelOccurrenceImportValidator implements IOValidator<BerlinM
 		}
 	}
 
+    private static boolean checkSourcesWithWhitespace(BerlinModelImportConfigurator config){
+        try {
+            boolean result = true;
+            Source source = config.getSource();
+            String strSelect = "SELECT OccurrenceId, PTNameFk, PTRefFk, AreaFk, Sources, Created_When, Created_Who, Updated_When, Updated_Who, Notes, Occurrence ";
+            String strCount = " count(*) ";
+            String strQueryBase =
+                    " FROM emOccurrence " +
+                    " WHERE (Sources LIKE '%  %') OR (Sources LIKE '% ') OR (Sources LIKE ' %') ";
+
+            ResultSet rs = source.getResultSet(strCount + strQueryBase);
+            rs.next();
+            int n = rs.getInt("n");
+            if (n > 0){
+                System.out.println("=======================================================================");
+                System.out.println("There are "+n+" occurrences with source attribute has unexpected whitespace!");
+                System.out.println("---------------------------------------------------------------");
+                System.out.println(strSelect + strQueryBase);
+                System.out.println("=======================================================================");
+            }
+
+            rs = source.getResultSet(strSelect + strQueryBase);
+            while (rs.next()){
+                int occurrenceId = rs.getInt("OccurrenceId");
+                String sources = rs.getString("Sources");
+
+                System.out.println("OccurrenceSourceId:" + occurrenceId +
+                        "\n  Sources: " + sources)
+                        ;
+            }
+            return result;
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
 }
