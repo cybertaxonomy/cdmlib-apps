@@ -80,7 +80,7 @@ public class FloraHellenicaTaxonImport<CONFIG extends FloraHellenicaImportConfig
     private NonViralNameParserImpl parser = NonViralNameParserImpl.NewInstance();
 
     @Override
-    protected String getWorksheetName() {
+    protected String getWorksheetName(CONFIG config) {
         return "valid taxa names";
     }
 
@@ -400,7 +400,7 @@ public class FloraHellenicaTaxonImport<CONFIG extends FloraHellenicaImportConfig
         name = replaceNameAuthorsAndReferences(state, name);
 
         Taxon taxon = Taxon.NewInstance(name, getSecReference(state));
-        taxon.addImportSource(noStr, getWorksheetName(), getSourceCitation(state), null);
+        taxon.addImportSource(noStr, getWorksheetName(state.getConfig()), getSourceCitation(state), null);
         if (isSensuStrictu){
             taxon.setAppendedPhrase("s.str.");
         }
@@ -595,7 +595,7 @@ public class FloraHellenicaTaxonImport<CONFIG extends FloraHellenicaImportConfig
                 return;
             }
             desc.addElement(dist);
-            dist.addImportSource(id, getWorksheetName(), getSourceCitation(state), line);
+            dist.addImportSource(id, getWorksheetName(state.getConfig()), getSourceCitation(state), line);
         }else {
             logger.warn(line + "Unrecognized distribution status '" + value + "' for " + key);
         }
@@ -648,7 +648,7 @@ public class FloraHellenicaTaxonImport<CONFIG extends FloraHellenicaImportConfig
         }
 
         desc.addElement(descEl);
-        descEl.addImportSource(id, getWorksheetName(), getSourceCitation(state), line);
+        descEl.addImportSource(id, getWorksheetName(state.getConfig()), getSourceCitation(state), line);
     }
 
     private void handleSingleStatus(SimpleExcelTaxonImportState<CONFIG> state, CategoricalData catData,

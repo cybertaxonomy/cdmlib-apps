@@ -50,7 +50,7 @@ public class FloraHellenicaCommentsImport<CONFIG extends FloraHellenicaImportCon
     });
 
     @Override
-    protected String getWorksheetName() {
+    protected String getWorksheetName(CONFIG config) {
         return "comments";
     }
 
@@ -97,7 +97,7 @@ public class FloraHellenicaCommentsImport<CONFIG extends FloraHellenicaImportCon
         TaxonDescription desc = getTaxonDescription(acceptedTaxon);
         TextData comment = TextData.NewInstance(Feature.NOTES(), commentStr, Language.ENGLISH(), null);
         desc.addElement(comment);
-        comment.addImportSource(noStr, getWorksheetName(), getSourceCitation(state), null);
+        comment.addImportSource(noStr, getWorksheetName(state.getConfig()), getSourceCitation(state), null);
         getTaxonService().saveOrUpdate(acceptedTaxon);
 
         TaxonNode taxonNode = acceptedTaxon.getTaxonNodes().iterator().next();

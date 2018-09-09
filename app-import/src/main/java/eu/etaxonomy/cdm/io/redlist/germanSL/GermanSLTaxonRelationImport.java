@@ -38,7 +38,7 @@ public class GermanSLTaxonRelationImport extends GermanSLImporBase {
     public static final String TAXON_NAMESPACE = "1.3.4";
 
     @Override
-    protected String getWorksheetName() {
+    protected String getWorksheetName(GermanSLImportConfigurator config) {
         return "1.3.4";
     }
 

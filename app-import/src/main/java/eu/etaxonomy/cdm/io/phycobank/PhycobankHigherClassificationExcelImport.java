@@ -56,9 +56,8 @@ public class PhycobankHigherClassificationExcelImport<CONFIG extends PhycobankHi
 
 
     @Override
-    protected String getWorksheetName() {
-//        return "HigherRanksEntwurfNeu";
-        return "WoRMS";
+    protected String getWorksheetName(CONFIG config) {
+        return config.getWorksheetName();
     }
 
     private class RankedUninomial{
@@ -261,7 +260,7 @@ public class PhycobankHigherClassificationExcelImport<CONFIG extends PhycobankHi
         List<Classification> classifications = getClassificationService().list(null, null, null, null, null);
         Reference sec = getSecReference(state);
         for (Classification classification: classifications){
-            if (classification.getCitation().equals(sec)){
+            if (classification.getCitation() != null && classification.getCitation().equals(sec)){
                 result = classification;
             }
         }

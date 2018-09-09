@@ -59,7 +59,7 @@ public class FloraHellenicaExcludedTaxonImport<CONFIG extends FloraHellenicaImpo
     private TaxonNode excludedFamilyNode;
 
     @Override
-    protected String getWorksheetName() {
+    protected String getWorksheetName(CONFIG config) {
         return "excluded taxa";
     }
 
@@ -131,7 +131,7 @@ public class FloraHellenicaExcludedTaxonImport<CONFIG extends FloraHellenicaImpo
         if (isSensuStrictu){
             taxon.setAppendedPhrase("s.str.");
         }
-        taxon.addImportSource(noStr, getWorksheetName(), getSourceCitation(state), null);
+        taxon.addImportSource(noStr, getWorksheetName(state.getConfig()), getSourceCitation(state), null);
         TaxonNode excludedNode = familyTaxonNode.addChildTaxon(taxon, getSecReference(state), null);
         excludedNode.setExcluded(true);
         getTaxonNodeService().saveOrUpdate(excludedNode);

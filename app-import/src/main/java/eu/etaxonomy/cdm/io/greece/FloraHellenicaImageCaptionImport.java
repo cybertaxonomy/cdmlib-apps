@@ -54,7 +54,7 @@ public class FloraHellenicaImageCaptionImport<CONFIG extends FloraHellenicaImpor
 
 
     @Override
-    protected String getWorksheetName() {
+    protected String getWorksheetName(CONFIG config) {
         return "Captions";
     }
 

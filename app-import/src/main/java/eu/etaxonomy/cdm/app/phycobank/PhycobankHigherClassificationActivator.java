@@ -45,22 +45,25 @@ public class PhycobankHigherClassificationActivator {
     static DbSchemaValidation hbm2dll = DbSchemaValidation.VALIDATE;
 
 //    static ICdmDataSource cdmDestination = CdmDestinations.localH2();
-    static ICdmDataSource cdmDestination = CdmDestinations.cdm_local_test_mysql();
+//    static ICdmDataSource cdmDestination = CdmDestinations.cdm_local_test_mysql();
+    static ICdmDataSource cdmDestination = CdmDestinations.cdm_test_phycobank();
+
+//  static Reference secRef = getSecReference_Frey();
+    static Reference secRef = getSecReference_WoRMS();
+    static String worksheetName = secRef == getSecReference_WoRMS()? "WoRMS" :
+        secRef == getSecReference_Frey()? "HigherRanksEntwurfNeu" : null;
 
     //check - import
     static final CHECK check = CHECK.IMPORT_WITHOUT_CHECK;
 
-
     private void doImport(ICdmDataSource cdmDestination){
 
         URI source = fileURI();
-
         Reference sourceRef = getSourceReference();
-//        Reference secRef = getSecReference_Frey();
-        Reference secRef = getSecReference_WoRMS();
 
         //make Source
         PhycobankHigherClassificationImportConfigurator config= PhycobankHigherClassificationImportConfigurator.NewInstance(source, cdmDestination);
+        config.setWorksheetName(worksheetName);
         config.setCheck(check);
         config.setDbSchemaValidation(hbm2dll);
         config.setSourceReference(sourceRef);
@@ -74,7 +77,7 @@ public class PhycobankHigherClassificationActivator {
 
     }
 
-    private Reference getSecReference_Frey() {
+    private static Reference getSecReference_Frey() {
         Reference result = ReferenceFactory.newBook();
         result.setTitle("Syllabus of the plant families");
         result.setDatePublished(VerbatimTimePeriod.NewVerbatimInstance(2015));
@@ -88,7 +91,7 @@ public class PhycobankHigherClassificationActivator {
         return result;
     }
 
-    private Reference getSecReference_WoRMS() {
+    private static Reference getSecReference_WoRMS() {
         Reference result = ReferenceFactory.newDatabase();
         result.setTitle("WoRMS World Register of Marine Species");
         result.setDatePublished(TimePeriodParser.parseStringVerbatim("2018-04-20"));

@@ -67,7 +67,7 @@ public class MexicoConabioTaxonImport<CONFIG extends MexicoConabioImportConfigur
     public static final String TAXON_NAMESPACE = "Taxonomia";
 
     @Override
-    protected String getWorksheetName() {
+    protected String getWorksheetName(CONFIG  config) {
         return "Taxonomia";
     }
 

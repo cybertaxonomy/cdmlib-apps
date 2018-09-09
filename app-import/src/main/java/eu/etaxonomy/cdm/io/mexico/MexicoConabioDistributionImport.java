@@ -55,7 +55,7 @@ public class MexicoConabioDistributionImport<CONFIG extends MexicoConabioImportC
 
 
     @Override
-    protected String getWorksheetName() {
+    protected String getWorksheetName(CONFIG config) {
         return "DistribucionEstatal";
     }
 

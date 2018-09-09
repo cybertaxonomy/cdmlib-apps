@@ -125,7 +125,7 @@ public class BogotaSpecimenImport<CONFIG extends BogotaSpecimenImportConfigurato
     private Reference secRef;
 
     @Override
-    protected String getWorksheetName() {
+    protected String getWorksheetName(CONFIG config) {
         return "To be imported";
     }
 

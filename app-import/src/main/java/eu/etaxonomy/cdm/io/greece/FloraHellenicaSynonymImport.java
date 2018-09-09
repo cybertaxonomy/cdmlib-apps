@@ -55,7 +55,7 @@ public class FloraHellenicaSynonymImport<CONFIG extends FloraHellenicaImportConf
     private NonViralNameParserImpl parser = NonViralNameParserImpl.NewInstance();
 
     @Override
-    protected String getWorksheetName() {
+    protected String getWorksheetName(CONFIG config) {
         return "synonyms";
     }
 
@@ -159,7 +159,7 @@ public class FloraHellenicaSynonymImport<CONFIG extends FloraHellenicaImportConf
                 handleSynonymNon(state, name, parsedSynStr[2], line);
             }
         }
-        result.addImportSource(lineId, getWorksheetName(), getSourceCitation(state), null);
+        result.addImportSource(lineId, getWorksheetName(state.getConfig()), getSourceCitation(state), null);
 
         return result;
 

@@ -48,7 +48,7 @@ public class MexicoConabioCommonNamesImport<CONFIG extends MexicoConabioImportCo
 
 
     @Override
-    protected String getWorksheetName() {
+    protected String getWorksheetName(CONFIG config) {
         return "NombresComunes";
     }
 

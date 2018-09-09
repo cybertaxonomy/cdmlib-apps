@@ -68,7 +68,7 @@ public class BogotaChecklistTaxonImport<CONFIG extends BogotaChecklistImportConf
 
 
     @Override
-    protected String getWorksheetName() {
+    protected String getWorksheetName(CONFIG config) {
         return "Resultados Busqueda Avanzada";
     }
 
@@ -177,7 +177,7 @@ public class BogotaChecklistTaxonImport<CONFIG extends BogotaChecklistImportConf
             nameStr = nameStr.replace(auctStr, "").trim();
         }
         IBotanicalName name = (IBotanicalName)parser.parseFullName(nameStr, state.getConfig().getNomenclaturalCode(), rank);
-        name.addImportSource(noStr, getNamespace(), getSourceCitation(state), null);
+        name.addImportSource(noStr, getNamespace(state.getConfig()), getSourceCitation(state), null);
         name = deduplicationHelper.getExistingName(state, name);
         if (name.isProtectedTitleCache()){
             logger.warn(line + "Misapplied name could not be parsed: " + nameStr);
@@ -188,7 +188,8 @@ public class BogotaChecklistTaxonImport<CONFIG extends BogotaChecklistImportConf
         if (auctRequired){
             misApp.setAppendedPhrase(auctStr);
         }
-        misApp.addImportSource(noStr, getNamespace(), getSourceCitation(state), null);
+        misApp.addImportSource(noStr, getNamespace(state.getConfig()),
+                getSourceCitation(state), null);
         taxon.addMisappliedName(misApp, state.getConfig().getSecReference(), null);
     }
 
@@ -197,8 +198,8 @@ public class BogotaChecklistTaxonImport<CONFIG extends BogotaChecklistImportConf
      * @param col
      * @return
      */
-    private String getNamespace() {
-        return getWorksheetName()+"."+ ID_COL;
+    private String getNamespace(CONFIG config) {
+        return getWorksheetName(config)+"."+ ID_COL;
     }
 
 
@@ -213,7 +214,7 @@ public class BogotaChecklistTaxonImport<CONFIG extends BogotaChecklistImportConf
             String line, Taxon taxon, String noStr) {
         Rank rank = Rank.SPECIES();
         IBotanicalName name = (IBotanicalName)parser.parseFullName(nameStr, state.getConfig().getNomenclaturalCode(), rank);
-        name.addImportSource(noStr, getNamespace(), getSourceCitation(state), null);
+        name.addImportSource(noStr, getNamespace(state.getConfig()), getSourceCitation(state), null);
         name = deduplicationHelper.getExistingName(state, name);
         if (name.isProtectedTitleCache()){
             logger.warn(line + "Synonym could not be parsed: " + nameStr);
@@ -221,7 +222,7 @@ public class BogotaChecklistTaxonImport<CONFIG extends BogotaChecklistImportConf
         deduplicationHelper.replaceAuthorNamesAndNomRef(state, name);
 
         Synonym synonym = Synonym.NewInstance(name, getSecReference(state));
-        synonym.addImportSource(noStr, getNamespace(), getSourceCitation(state), null);
+        synonym.addImportSource(noStr, getNamespace(state.getConfig()), getSourceCitation(state), null);
         taxon.addSynonym(synonym, SynonymType.SYNONYM_OF());
     }
 
@@ -244,7 +245,7 @@ public class BogotaChecklistTaxonImport<CONFIG extends BogotaChecklistImportConf
                 }
                 Rank rank = Rank.SUBSPECIES();
                 IBotanicalName name = (IBotanicalName)parser.parseFullName(split.trim(), state.getConfig().getNomenclaturalCode(), rank);
-                name.addImportSource(noStr, getNamespace(), getSourceCitation(state), null);
+                name.addImportSource(noStr, getNamespace(state.getConfig()), getSourceCitation(state), null);
                 name = deduplicationHelper.getExistingName(state, name);
                 if (name.isProtectedTitleCache()){
                     logger.warn(line + "Infraspecific taxon could not be parsed: " + split.trim());
@@ -252,7 +253,7 @@ public class BogotaChecklistTaxonImport<CONFIG extends BogotaChecklistImportConf
                 deduplicationHelper.replaceAuthorNamesAndNomRef(state, name);
 
                 Taxon subSpecies = Taxon.NewInstance(name, getSecReference(state));
-                subSpecies.addImportSource(noStr, getNamespace(), getSourceCitation(state), null);
+                subSpecies.addImportSource(noStr, getNamespace(state.getConfig()), getSourceCitation(state), null);
                 TaxonNode subSpeciesNode = speciesNode.addChildTaxon(subSpecies, getSecReference(state), null);
                 getTaxonNodeService().save(subSpeciesNode);
             }
@@ -281,7 +282,7 @@ public class BogotaChecklistTaxonImport<CONFIG extends BogotaChecklistImportConf
         nameStr = CdmUtils.concat(" ", nameStr, speciesAuthorStr);
         Rank rank = Rank.SPECIES();
         IBotanicalName name = (IBotanicalName)parser.parseFullName(nameStr, state.getConfig().getNomenclaturalCode(), rank);
-        name.addImportSource(noStr, getNamespace(), getSourceCitation(state), null);
+        name.addImportSource(noStr, getNamespace(state.getConfig()), getSourceCitation(state), null);
         name = deduplicationHelper.getExistingName(state, name);
         if (name.isProtectedTitleCache()){
             logger.warn(line + "Name could not be parsed: " + nameStr);
@@ -290,7 +291,7 @@ public class BogotaChecklistTaxonImport<CONFIG extends BogotaChecklistImportConf
 
         Taxon taxon = Taxon.NewInstance(name, getSecReference(state));
 
-        taxon.addImportSource(noStr, getNamespace(), getSourceCitation(state), null);
+        taxon.addImportSource(noStr, getNamespace(state.getConfig()), getSourceCitation(state), null);
 
         String parentStr = genusStr;
         boolean genusAsBefore = genusStr.equals(lastGenus);
@@ -388,7 +389,8 @@ public class BogotaChecklistTaxonImport<CONFIG extends BogotaChecklistImportConf
      */
     @Override
     protected IdentifiableSource makeOriginalSource(SimpleExcelTaxonImportState<CONFIG> state) {
-        return IdentifiableSource.NewDataImportInstance(getValue(state.getOriginalRecord(),ID_COL), getNamespace(), state.getConfig().getSourceReference());
+        return IdentifiableSource.NewDataImportInstance(getValue(state.getOriginalRecord(),ID_COL),
+                getNamespace(state.getConfig()), state.getConfig().getSourceReference());
     }
 
     /**
