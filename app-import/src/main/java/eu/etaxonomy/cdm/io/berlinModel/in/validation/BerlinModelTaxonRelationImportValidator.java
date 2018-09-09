@@ -354,7 +354,4 @@ public class BerlinModelTaxonRelationImportValidator implements IOValidator<Berl
 	        }
 	        return success;
 	    }
-
-
-
 }

@@ -236,9 +236,9 @@ public class BerlinModelTaxonRelationImport  extends BerlinModelImportBase  {
 	@Override
 	public boolean doPartition(ResultSetPartitioner partitioner, BerlinModelImportState state) {
 		boolean success = true ;
-		Set<TaxonBase> taxaToSave = new HashSet<TaxonBase>();
+		Set<TaxonBase> taxaToSave = new HashSet<>();
 		Map<String, TaxonBase> taxonMap = partitioner.getObjectMap(BerlinModelTaxonImport.NAMESPACE);
-		Map<Integer, Classification> classificationMap = new HashMap<Integer, Classification>();
+		Map<Integer, Classification> classificationMap = new HashMap<>();
 		Map<String, Reference> refMap = partitioner.getObjectMap(BerlinModelReferenceImport.REFERENCE_NAMESPACE);
 
 		ResultSet rs = partitioner.getResultSet();
@@ -465,7 +465,6 @@ public class BerlinModelTaxonRelationImport  extends BerlinModelImportBase  {
 				}
 			}
 		} catch (SQLException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		commitTransaction(txStatus);
@@ -483,16 +482,16 @@ public class BerlinModelTaxonRelationImport  extends BerlinModelImportBase  {
 	}
 
 	@Override
-	public Map<Object, Map<String, ? extends CdmBase>> getRelatedObjectsForPartition( ResultSet rs, BerlinModelImportState state) {
+	public Map<Object, Map<String, ? extends CdmBase>> getRelatedObjectsForPartition(ResultSet rs, BerlinModelImportState state) {
 		String nameSpace;
 		Class<?> cdmClass;
 		Set<String> idSet;
-		Map<Object, Map<String, ? extends CdmBase>> result = new HashMap<Object, Map<String, ? extends CdmBase>>();
+		Map<Object, Map<String, ? extends CdmBase>> result = new HashMap<>();
 
 		try{
-			Set<String> taxonIdSet = new HashSet<String>();
-			Set<String> referenceIdSet = new HashSet<String>();
-//			Set<String> classificationIdSet = new HashSet<String>();
+			Set<String> taxonIdSet = new HashSet<>();
+			Set<String> referenceIdSet = new HashSet<>();
+//			Set<String> classificationIdSet = new HashSet<>();
 			while (rs.next()){
 				handleForeignKey(rs, taxonIdSet, "taxon1Id");
 				handleForeignKey(rs, taxonIdSet, "taxon2Id");
@@ -534,16 +533,16 @@ public class BerlinModelTaxonRelationImport  extends BerlinModelImportBase  {
 		String nameSpace;
 		Class cdmClass;
 		Set<String> idSet;
-		Map<Object, Map<String, ? extends CdmBase>> result = new HashMap<Object, Map<String, ? extends CdmBase>>();
+		Map<Object, Map<String, ? extends CdmBase>> result = new HashMap<>();
 
 		try{
-			Set<String> taxonIdSet = new HashSet<String>();
-			Set<String> referenceIdSet = new HashSet<String>();
-//			Set<String> classificationIdSet = new HashSet<String>();
+			Set<String> taxonIdSet = new HashSet<>();
+			Set<String> referenceIdSet = new HashSet<>();
+//			Set<String> classificationIdSet = new HashSet<>();
 			while (rs.next()){
 				handleForeignKey(rs, taxonIdSet, "RIdentifier");
 //				handleForeignKey(rs, classificationIdSet, "treeRefFk");
-	}
+			}
 
 			//taxon map
 			nameSpace = BerlinModelTaxonImport.NAMESPACE;
