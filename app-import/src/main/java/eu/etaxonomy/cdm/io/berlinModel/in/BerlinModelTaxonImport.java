@@ -185,9 +185,10 @@ public class BerlinModelTaxonImport  extends BerlinModelImportBase {
                                 logger.warn("Last scrutiny reference "+lastScrutinyFkStr+" could not be found "
                                         + "for taxon " + taxonId);
                             }
-                            if(!StringUtils.right(refFkStr, 5).equals("00000")){
-                                logger.warn("Unexpected secFk " + refFkStr + " for taxon with last scrutiny. Taxon id " + taxonId);
-                            }
+                            //MANs do have last scrutiny => the following is not correct
+//                            if(!StringUtils.right(refFkStr, 5).equals("00000")){
+//                                logger.warn("Unexpected secFk " + refFkStr + " for taxon with last scrutiny. Taxon id " + taxonId);
+//                            }
                         }
                     }
                 }
