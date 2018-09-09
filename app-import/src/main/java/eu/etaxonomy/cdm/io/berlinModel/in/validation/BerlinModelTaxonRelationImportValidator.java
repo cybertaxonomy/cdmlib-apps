@@ -316,7 +316,6 @@ public class BerlinModelTaxonRelationImportValidator implements IOValidator<Berl
 	            String strSelect = " SELECT rel.RelQualifierFk, rel.RelRefFk, syn.PTRefFk,  * ";
 	            String strCount = " SELECT count(*) as n ";
 	            String strQueryBase =
-	                "  SELECT rel.RelQualifierFk, rel.RelRefFk, syn.PTRefFk,  * " +
 	                "  FROM RelPTaxon rel " +
 	                "    INNER JOIN PTaxon syn ON rel.PTRefFk1 = syn.PTRefFk AND rel.PTNameFk1 = syn.PTNameFk " +
 	                "  WHERE rel.RelRefFk IS NOT NULL AND rel.RelRefFk <> syn.PTRefFk AND rel.RelRefFk <> rel.PTRefFk2 " +
