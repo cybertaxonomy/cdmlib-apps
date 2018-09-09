@@ -83,11 +83,11 @@ public class EuroMedActivator {
 //	static final Source berlinModelSource = BerlinModelSources.euroMed_PESI3();
 //
 //  static final ICdmDataSource cdmDestination = CdmDestinations.localH2();
+//    static final ICdmDataSource cdmDestination = CdmDestinations.cdm_local_euromed();
 	static final ICdmDataSource cdmDestination = CdmDestinations.cdm_test_euroMed();
 
-//    static final ICdmDataSource cdmDestination = CdmDestinations.cdm_local_euromed();
-
-	boolean invers = !(hbm2dll == DbSchemaValidation.CREATE);
+    //check - import
+    static final CHECK check = CHECK.IMPORT_WITHOUT_CHECK;
 
     static final boolean doUser = true;
 //  //authors
@@ -105,16 +105,15 @@ public class EuroMedActivator {
     static final boolean doTaxa = true;
     static final boolean doFacts = true;
     static final boolean doCommonNames = false;  //currently takes very long
-    static final boolean doOccurences = true;
+    static final boolean doOccurences = false;
     static final boolean doRelTaxa = true;
     static final boolean doRunTransmissionEngine = (hbm2dll == DbSchemaValidation.VALIDATE);
 
     //etc.
     static final boolean doMarker = false;
 
+    boolean invers = !(hbm2dll == DbSchemaValidation.CREATE);
 
-    //check - import
-    static final CHECK check = CHECK.IMPORT_WITHOUT_CHECK;
 
 	static final boolean includePesiExport = false;
 
@@ -159,10 +158,12 @@ public class EuroMedActivator {
 
 	static String taxonTable = "v_cdm_exp_taxaAll";
 	static String classificationQuery = " SELECT DISTINCT t.PTRefFk, r.RefCache FROM PTaxon t INNER JOIN Reference r ON t.PTRefFk = r.RefId WHERE t.PTRefFk = " + sourceSecId;
-	static String relPTaxonIdQuery = " SELECT r.RelPTaxonId " +
-					" FROM RelPTaxon AS r INNER JOIN v_cdm_exp_taxaDirect AS a ON r.PTNameFk2 = a.PTNameFk AND r.PTRefFk2 = a.PTRefFk" +
-					" WHERE r.RelPTaxonID NOT IN (1874890,1874959,1874932,1874793,1874956,1874971,1874902,1874696) " + //Relations to unpublished Kew genus taxa of Bethulaceae which are not imported anymore, but Bethalaceae is still imported
-					" ";
+	static String relPTaxonIdQuery = " SELECT r.RelPTaxonId "
+					+ " FROM RelPTaxon AS r "
+					+ "   INNER JOIN v_cdm_exp_taxaDirect AS a ON r.PTNameFk2 = a.PTNameFk AND r.PTRefFk2 = a.PTRefFk "
+					+ "   INNER JOIN PTaxon As pt1 ON pt1.PTNameFk = r.PTNameFk1 AND pt1.PTRefFk = r.PTRefFk1 "
+					+ " WHERE r.RelPTaxonID NOT IN (1874890,1874959,1874932,1874793,1874956,1874971,1874902,1874696) " //Relations to unpublished Kew genus taxa of Bethulaceae which are not imported anymore, but Bethalaceae is still imported
+					+ "     AND NOT (pt1.PTRefFk = 8000000 AND pt1.publishFlag = 0) ";
 	static String nameIdTable = " v_cdm_exp_namesAll ";
 	static String referenceIdTable = " v_cdm_exp_refAll ";
 	static String refDetailFilter =  " RefDetailID IN (SELECT RefDetailID FROM v_cdm_exp_RefDetail) ";
