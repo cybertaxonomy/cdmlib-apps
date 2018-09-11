@@ -22,11 +22,9 @@ import eu.etaxonomy.cdm.model.name.NomenclaturalCode;
 import eu.etaxonomy.cdm.model.reference.Reference;
 import eu.etaxonomy.cdm.model.reference.ReferenceFactory;
 
-
 /**
  * @author a.mueller
  * @since 20.03.2008
- * @version 1.0
  */
 public class CyprusImportConfigurator extends ExcelImportConfiguratorBase {
     private static final long serialVersionUID = 5590553979984931651L;
@@ -45,30 +43,21 @@ public class CyprusImportConfigurator extends ExcelImportConfiguratorBase {
 
 	public static CyprusImportConfigurator NewInstance(URI source, ICdmDataSource destination){
 		return new CyprusImportConfigurator(source, destination);
-}
-
-
+	}
 
 	@Override
     protected void makeIoClassList(){
 		ioClassList = new Class[]{
-				CyprusUserImport.class,
 				CyprusExcelImport.class ,
 				CyprusDistributionImport.class ,
 
 		};
 	}
 
-
-	/* (non-Javadoc)
-	 * @see eu.etaxonomy.cdm.io.common.IImportConfigurator#getNewState()
-	 */
 	@Override
     public ImportStateBase getNewState() {
 		return new CyprusImportState(this);
 	}
-
-
 
 	private CyprusImportConfigurator(URI source, ICdmDataSource destination) {
 	   super(source, destination, defaultTransformer);
@@ -76,7 +65,6 @@ public class CyprusImportConfigurator extends ExcelImportConfiguratorBase {
 	   setSource(source);
 	   setDestination(destination);
 	}
-
 
 	@Override
     public URI getSource() {
@@ -87,9 +75,6 @@ public class CyprusImportConfigurator extends ExcelImportConfiguratorBase {
 		super.setSource(source);
 	}
 
-	/* (non-Javadoc)
-	 * @see eu.etaxonomy.cdm.io.tcsrdf.IImportConfigurator#getSourceReference()
-	 */
 	@Override
     public Reference getSourceReference() {
 		if (sourceReference == null){
@@ -101,35 +86,26 @@ public class CyprusImportConfigurator extends ExcelImportConfiguratorBase {
 		return sourceReference;
 	}
 
-	/* (non-Javadoc)
-	 * @see eu.etaxonomy.cdm.io.common.IImportConfigurator#getSourceNameString()
-	 */
 	@Override
     public String getSourceNameString() {
 		return getSource().toString();
 	}
 
-
 	public void setUuidCyprusReference(UUID uuidCyprusReference) {
 		this.uuidCyprusReference = uuidCyprusReference;
 	}
-
 
 	public UUID getUuidCyprusReference() {
 		return uuidCyprusReference;
 	}
 
-
 	public void setCyprusReferenceTitle(String cyprusReferenceTitle) {
 		this.cyprusReferenceTitle = cyprusReferenceTitle;
 	}
 
-
 	public String getCyprusReferenceTitle() {
 		return cyprusReferenceTitle;
 	}
-
-
 
 	public void setDoDistribution(boolean doDistribution) {
 		this.doDistribution = doDistribution;
@@ -139,7 +115,6 @@ public class CyprusImportConfigurator extends ExcelImportConfiguratorBase {
 		return this.doDistribution;
 	}
 
-
 	public void setDoTaxa(boolean isDoTaxa) {
 		this.isDoTaxa = isDoTaxa;
 	}
@@ -147,7 +122,5 @@ public class CyprusImportConfigurator extends ExcelImportConfiguratorBase {
 	public boolean isDoTaxa() {
 		return isDoTaxa;
 	}
-
-
 
 }
