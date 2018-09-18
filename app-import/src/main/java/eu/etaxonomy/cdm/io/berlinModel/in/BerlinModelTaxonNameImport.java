@@ -338,7 +338,8 @@ public class BerlinModelTaxonNameImport extends BerlinModelImportBase {
     private void handleNameNotes(BerlinModelImportState state, TaxonName taxonName, ResultSet rs, int nameId) throws SQLException {
         String notesOrig = rs.getString("notes");
         String notes = filterNotes(notesOrig, nameId);
-        if (isNotBlank(notes) && taxonName != null ){
+        boolean isParentalSpecies = state.getConfig().isEuroMed() && isPostulatedParentalSpeciesNote(notes);
+        if (isNotBlank(notes) && taxonName != null && !isParentalSpecies ){
             String notesString = String.valueOf(notes);
             if (notesString.length() > 65530 ){
                 notesString = notesString.substring(0, 65530) + "...";
@@ -356,7 +357,7 @@ public class BerlinModelTaxonNameImport extends BerlinModelImportBase {
     /**
      * @param notes
      */
-    private String filterNotes(String notes, int nameId) {
+    protected static String filterNotes(String notes, int nameId) {
         String result;
         if (isBlank(notes)){
             result = null;
@@ -390,6 +391,19 @@ public class BerlinModelTaxonNameImport extends BerlinModelImportBase {
             result = notes;
         }
         return result;
+    }
+
+
+    /**
+     * @param nameNotes
+     * @return
+     */
+    protected static boolean isPostulatedParentalSpeciesNote(String nameNotes) {
+        if (nameNotes == null){
+            return false;
+        }else{
+            return nameNotes.matches(".*<>.*");
+        }
     }
 
 

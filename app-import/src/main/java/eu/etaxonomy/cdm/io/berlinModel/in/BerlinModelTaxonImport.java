@@ -30,6 +30,7 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.springframework.stereotype.Component;
 
+import eu.etaxonomy.cdm.common.CdmUtils;
 import eu.etaxonomy.cdm.database.update.DatabaseTypeNotSupportedException;
 import eu.etaxonomy.cdm.io.berlinModel.BerlinModelTransformer;
 import eu.etaxonomy.cdm.io.berlinModel.in.validation.BerlinModelTaxonImportValidator;
@@ -109,11 +110,12 @@ public class BerlinModelTaxonImport  extends BerlinModelImportBase {
 
 	@Override
 	protected String getRecordQuery(BerlinModelImportConfigurator config) {
-		String sqlSelect = " SELECT pt.*  ";
+		String sqlSelect = " SELECT pt.* , n.notes nameNotes";
 		String sqlFrom = " FROM PTaxon pt ";
 		if (config.isEuroMed()){
-			sqlFrom = " FROM PTaxon AS pt " +
-							" INNER JOIN v_cdm_exp_taxaAll AS em ON pt.RIdentifier = em.RIdentifier ";
+			sqlFrom = " FROM PTaxon AS pt "
+			                + " INNER JOIN v_cdm_exp_taxaAll AS em ON pt.RIdentifier = em.RIdentifier "
+							+ " LEFT OUTER JOIN Name n ON pt.PTNameFk = n.nameId ";
 			if (!config.isUseLastScrutinyAsSec()){
 			    sqlFrom += " LEFT OUTER JOIN Reference r ON pt.LastScrutinyFk = r.RefId ";
 			}
@@ -319,8 +321,25 @@ public class BerlinModelTaxonImport  extends BerlinModelImportBase {
 
 					//Notes
 					boolean excludeNotes = state.getConfig().isTaxonNoteAsFeature() && taxonBase.isInstanceOf(Taxon.class);
-					doIdCreatedUpdatedNotes(state, taxonBase, rs, taxonId, NAMESPACE, false, excludeNotes);
-					if (excludeNotes){
+					String notes = rs.getString("Notes");
+					if (state.getConfig().isEuroMed()){
+					    if (isNotBlank(notes) && notes.startsWith("non ")){
+					        taxonBase.setAppendedPhrase(CdmUtils.concat("; ", taxonBase.getAppendedPhrase(), notes));
+					        notes = null;
+					    }
+					    String nameNotes = rs.getString("nameNotes");
+					    nameNotes = BerlinModelTaxonNameImport.filterNotes(nameNotes, 900000000 + taxonId);
+					    if (BerlinModelTaxonNameImport.isPostulatedParentalSpeciesNote(nameNotes)){
+					        nameNotes = nameNotes.replace("{", "").replace("}", "");
+					        String text = "For intermediate, so-called \"collective\" species in the genus Pilosella, a combination of the postulated parental basic species is given.";
+					        UUID parSpecUuid = BerlinModelTransformer.PARENTAL_SPECIES_EXT_UUID;
+					        ExtensionType parentalSpeciesExtType = getExtensionType(state, parSpecUuid, " Postulated parental species", text, "par. spec.");
+					        Extension.NewInstance(taxonBase, nameNotes, parentalSpeciesExtType);
+					    }
+					}
+
+					doIdCreatedUpdatedNotes(state, taxonBase, rs, taxonId, NAMESPACE, false, excludeNotes || notes == null);
+					if (excludeNotes && notes != null){
 					    makeTaxonomicNote(state, CdmBase.deproxy(taxonBase, Taxon.class), rs.getString("Notes"));
 					}
 
