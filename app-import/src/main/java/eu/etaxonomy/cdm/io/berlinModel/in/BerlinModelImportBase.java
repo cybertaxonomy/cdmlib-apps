@@ -98,7 +98,8 @@ public abstract class BerlinModelImportBase
 		return doCreatedUpdatedNotes(state, annotatableEntity, rs, excludeUpdated, false);
 	}
 
-	protected boolean doCreatedUpdatedNotes(BerlinModelImportState state, AnnotatableEntity annotatableEntity, ResultSet rs, boolean excludeUpdated, boolean excludeNotes)
+	protected boolean doCreatedUpdatedNotes(BerlinModelImportState state, AnnotatableEntity annotatableEntity,
+	        ResultSet rs, boolean excludeUpdated, boolean excludeNotes)
 			throws SQLException{
 
 		BerlinModelImportConfigurator config = state.getConfig();

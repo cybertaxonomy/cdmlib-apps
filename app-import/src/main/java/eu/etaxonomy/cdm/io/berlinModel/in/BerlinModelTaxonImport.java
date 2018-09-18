@@ -343,8 +343,6 @@ public class BerlinModelTaxonImport  extends BerlinModelImportBase {
 			return false;
 		}
 
-
-		//	logger.info( i + " names handled");
 		getTaxonService().save(taxaToSave);
 		return success;
 	}

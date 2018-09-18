@@ -294,7 +294,7 @@ public class BerlinModelTaxonRelationImport  extends BerlinModelImportBase  {
                                     //TODO homo/hetero
                                     relQualifierFk == TAX_REL_IS_PROPARTE_HOMOTYPIC_SYNONYM_OF ||
                                     relQualifierFk == TAX_REL_IS_PROPARTE_HETEROTYPIC_SYNONYM_OF ){
-                                    toTaxon.addProparteSynonym(fromTaxon, citation, microcitation);
+                                toTaxon.addProparteSynonym(fromTaxon, citation, microcitation);
                             }else if(relQualifierFk == TAX_REL_IS_PARTIAL_SYN_OF ||
                                     //TODO homo/hetero
                                     relQualifierFk == TAX_REL_IS_PARTIAL_HOMOTYPIC_SYNONYM_OF ||
@@ -322,15 +322,6 @@ public class BerlinModelTaxonRelationImport  extends BerlinModelImportBase  {
 							if (relQualifierFk == TAX_REL_IS_SYNONYM_OF ||
 									relQualifierFk == TAX_REL_IS_HOMOTYPIC_SYNONYM_OF ||
 									relQualifierFk == TAX_REL_IS_HETEROTYPIC_SYNONYM_OF){
-								//pro parte already set by taxon mapping
-//							}else if (relQualifierFk == TAX_REL_IS_PROPARTE_SYN_OF ||
-//									relQualifierFk == TAX_REL_IS_PROPARTE_HOMOTYPIC_SYNONYM_OF ||
-//									relQualifierFk == TAX_REL_IS_PROPARTE_HETEROTYPIC_SYNONYM_OF ){
-//									synonym.setProParte(true);
-//							}else if(relQualifierFk == TAX_REL_IS_PARTIAL_SYN_OF ||
-//									relQualifierFk == TAX_REL_IS_PARTIAL_HOMOTYPIC_SYNONYM_OF ||
-//									relQualifierFk == TAX_REL_IS_PARTIAL_HETEROTYPIC_SYNONYM_OF ){
-//							        synonym.setPartial(true);
 							}else{
 								success = false;
 								logger.warn("Synonym relationship type not yet implemented: " + relQualifierFk);
@@ -445,7 +436,7 @@ public class BerlinModelTaxonRelationImport  extends BerlinModelImportBase  {
 		Map<Object, Map<String, ? extends CdmBase>> maps = getRelatedObjectsForFlatPartition(rs);
 
 		Map<String, TaxonBase> taxonMap = (Map<String, TaxonBase>) maps.get(BerlinModelTaxonImport.NAMESPACE);
-		Map<Integer, Classification> classificationMap = new HashMap<Integer, Classification>();
+		Map<Integer, Classification> classificationMap = new HashMap<>();
 
 		rs = state.getConfig().getSource().getResultSet(sql);
 		try {

@@ -210,7 +210,7 @@ public class BerlinModelTaxonNameImport extends BerlinModelImportBase {
 					}
 
 					//epithets
-					if (rank != null && rank.isSupraGeneric()){
+					if (rank.isSupraGeneric()){
 						dbAttrName = "supraGenericName";
 					}else{
 						dbAttrName = "genus";
