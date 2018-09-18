@@ -18,8 +18,10 @@ import static eu.etaxonomy.cdm.io.berlinModel.BerlinModelTransformer.T_STATUS_UN
 import java.lang.reflect.Method;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
@@ -207,7 +209,7 @@ public class BerlinModelTaxonImport  extends BerlinModelImportBase {
 				TaxonBase<?> taxonBase;
 				Synonym synonym;
 				Taxon taxon;
-				Reference sec = lastScrutinyRef != null? lastScrutinyRef: reference;
+				Reference sec = (lastScrutinyRef != null && isRightAccessSec(refFkInt)) ? lastScrutinyRef: reference;
 				try {
 					logger.debug(statusFk);
 					if (statusFk == T_STATUS_ACCEPTED || statusFk == T_STATUS_UNRESOLVED
@@ -347,7 +349,18 @@ public class BerlinModelTaxonImport  extends BerlinModelImportBase {
 		return success;
 	}
 
-	/**
+
+    /**
+     * @param refFkInt
+     * @return
+     */
+    private boolean isRightAccessSec(Integer refFkInt) {
+        List<Integer> rightAccessSecs = Arrays.asList(new Integer[]{7000000, 7100000, 7200000, 7300000,
+                7400000, 7500000, 7600000, 7700000, 8000000, 8500000, 9000000});
+        return rightAccessSecs.contains(refFkInt);
+    }
+
+    /**
      * @param state
      * @param taxonBase
 	 * @param notes
