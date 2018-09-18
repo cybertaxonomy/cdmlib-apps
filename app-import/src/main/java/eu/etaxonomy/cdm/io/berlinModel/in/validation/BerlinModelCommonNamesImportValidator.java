@@ -173,8 +173,7 @@ public class BerlinModelCommonNamesImportValidator implements IOValidator<Berlin
 			int count = rs.getInt("n");
 			if (count > 0){
 				System.out.println("========================================================");
-				logger.warn("There are " + count + " common names that have a languageRefFk which can not be found in the emLanguageRefernce table.");
-
+				System.out.println("There are " + count + " common names that have a languageRefFk which can not be found in the emLanguageReference table.");
 				System.out.println("========================================================");
 			}
 			if (count > 0){
@@ -194,7 +193,7 @@ public class BerlinModelCommonNamesImportValidator implements IOValidator<Berlin
 		try {
 			boolean result = true;
 			Source source = config.getSource();
-			String strQuery = "SELECT cn.CommonNameId, cn.CommonName, pt.StatusFk, n.FullNameCache, s.Status, pt.PTRefFk, r.RefCache " +
+			String strQuery = "SELECT cn.CommonNameId, cn.CommonName, pt.StatusFk, n.FullNameCache, s.Status, pt.PTRefFk, pt.PTNameFk, r.RefCache " +
 						" FROM emCommonName cn " +
 							" INNER JOIN PTaxon pt ON cn.PTNameFk = pt.PTNameFk AND cn.PTRefFk = pt.PTRefFk " +
 			                " INNER JOIN Name n ON pt.PTNameFk = n.NameId " +
@@ -220,12 +219,15 @@ public class BerlinModelCommonNamesImportValidator implements IOValidator<Berlin
 				String status = resulSet.getString("Status");
 				String fullNameCache = resulSet.getString("FullNameCache");
 				String ptRefFk = resulSet.getString("PTRefFk");
-				String ptRef = resulSet.getString("RefCache");
+				String ptNameFk = resulSet.getString("PTNameFk");
+                String ptRef = resulSet.getString("RefCache");
 
 				System.out.println("CommonNameId: " + commonNameId + "\n CommonName: " + commonName +
 						"\n  Status: " + status +
-						"\n  FullNameCache: " + fullNameCache +  "\n  ptRefFk: " + ptRefFk +
-						"\n  sec: " + ptRef );
+						"\n  FullNameCache: " + fullNameCache +
+						"\n  ptRefFk: " + ptRefFk +
+						"\n  ptNameFk: " + ptNameFk +
+                        "\n  sec: " + ptRef );
 
 				result = firstRow = false;
 			}

@@ -24,7 +24,8 @@ import eu.etaxonomy.cdm.io.common.Source;
  * @since 17.02.2010
  */
 public class BerlinModelOccurrenceSourceImportValidator implements IOValidator<BerlinModelImportState> {
-	private static final Logger logger = Logger.getLogger(BerlinModelOccurrenceSourceImportValidator.class);
+	@SuppressWarnings("unused")
+    private static final Logger logger = Logger.getLogger(BerlinModelOccurrenceSourceImportValidator.class);
 
 	@Override
     public boolean validate(BerlinModelImportState state) {
@@ -42,7 +43,7 @@ public class BerlinModelOccurrenceSourceImportValidator implements IOValidator<B
             boolean result = true;
             Source source = config.getSource();
             String strSelect = " SELECT OccurrenceSourceId, OccurrenceFk, Source, SourceNumber, OldName, OldNameFk, PreferredReferenceFlag ";
-            String strCount = " count(*) ";
+            String strCount = " SELECT count(*) as n";
             String strQueryBase =
                     " FROM emOccurrenceSource " +
                     " WHERE SourceNumber LIKE '% %' ";

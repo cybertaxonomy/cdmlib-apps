@@ -97,7 +97,7 @@ public class BerlinModelOccurrenceImportValidator implements IOValidator<BerlinM
             boolean result = true;
             Source source = config.getSource();
             String strSelect = "SELECT OccurrenceId, PTNameFk, PTRefFk, AreaFk, Sources, Created_When, Created_Who, Updated_When, Updated_Who, Notes, Occurrence ";
-            String strCount = " SELECT count(*) ";
+            String strCount = " SELECT count(*) as n";
             String strQueryBase =
                     " FROM emOccurrence " +
                     " WHERE (Sources LIKE '%  %') OR (Sources LIKE '% ') OR (Sources LIKE ' %') ";
