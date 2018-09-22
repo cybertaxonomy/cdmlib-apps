@@ -111,6 +111,19 @@ public class BerlinModelReferenceImport extends BerlinModelImportBase {
 		return;
 	}
 
+	private Set<Integer> commonNameRefSet = null;
+	private void initializeCommonNameRefMap(BerlinModelImportState state) throws SQLException{
+	    if (state.getConfig().isEuroMed()){
+	        commonNameRefSet = new HashSet<>();
+	        String queryStr = "SELECT DISTINCT RefFk "
+	                + " FROM emCommonName ";
+	        ResultSet rs = state.getConfig().getSource().getResultSet(queryStr);
+	        while (rs.next()){
+	            commonNameRefSet.add(rs.getInt("RefFk"));
+	        }
+	    }
+	}
+
 	protected static CdmAttributeMapperBase[] classMappers = new CdmAttributeMapperBase[]{
 		new CdmStringMapper("edition", "edition"),
 		new CdmStringMapper("volume", "volume"),
@@ -169,6 +182,12 @@ public class BerlinModelReferenceImport extends BerlinModelImportBase {
 
 		boolean success = true;
 		initializeMappers(state);
+		try {
+            initializeCommonNameRefMap(state);
+        } catch (SQLException e1) {
+            e1.printStackTrace();
+            logger.error("Error in initializeCommonNameRefMap in BerlinModelReferenceimport");
+        }
 		BerlinModelImportConfigurator config = state.getConfig();
 		Source source = config.getSource();
 
@@ -565,6 +584,11 @@ public class BerlinModelReferenceImport extends BerlinModelImportBase {
 
 		//refId
 		ImportHelper.setOriginalSource(ref, sourceReference, refId, REFERENCE_NAMESPACE);
+
+		if (commonNameRefSet != null && commonNameRefSet.contains(refId)){
+            ref.addMarker(Marker.NewInstance(MarkerType.COMMON_NAME_REFERENCE(), true));
+        }
+
 
 		return true;
 	}
