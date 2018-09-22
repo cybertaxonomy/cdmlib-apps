@@ -42,7 +42,10 @@ import eu.etaxonomy.cdm.model.reference.Reference;
  */
 @Component
 public class BerlinModelOccurrenceSourceImport  extends BerlinModelImportBase {
-	private static final Logger logger = Logger.getLogger(BerlinModelOccurrenceSourceImport.class);
+
+    private static final long serialVersionUID = 1139543760239436841L;
+
+    private static final Logger logger = Logger.getLogger(BerlinModelOccurrenceSourceImport.class);
 
 	private static int modCount = 5000;
 	private static final String pluralString = "occurrence sources";

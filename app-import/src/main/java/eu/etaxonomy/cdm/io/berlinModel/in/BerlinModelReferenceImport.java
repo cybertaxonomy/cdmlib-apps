@@ -103,7 +103,8 @@ public class BerlinModelReferenceImport extends BerlinModelImportBase {
 	protected void initializeMappers(BerlinModelImportState state){
 		for (CdmAttributeMapperBase mapper: classMappers){
 			if (mapper instanceof DbSingleAttributeImportMapperBase){
-				DbSingleAttributeImportMapperBase singleMapper = (DbSingleAttributeImportMapperBase)mapper;
+				DbSingleAttributeImportMapperBase<BerlinModelImportState,Reference> singleMapper =
+				        (DbSingleAttributeImportMapperBase<BerlinModelImportState,Reference>)mapper;
 				singleMapper.initialize(state, Reference.class);
 			}
 		}
@@ -437,56 +438,56 @@ public class BerlinModelReferenceImport extends BerlinModelImportBase {
 			Boolean thesisFlag = (Boolean)valueMap.get("thesisFlag".toLowerCase());
 
 
-			Reference referenceBase;
+			Reference reference;
 			logger.debug("RefCategoryFk: " + categoryFk);
 
 			if (thesisFlag){
-				referenceBase = makeThesis(valueMap);
+				reference = makeThesis(valueMap);
 			}else if (categoryFk == REF_JOURNAL){
-				referenceBase = makeJournal(valueMap);
+				reference = makeJournal(valueMap);
 			}else if(categoryFk == REF_BOOK){
-				referenceBase = makeBook(valueMap);
+				reference = makeBook(valueMap);
 			}else if(categoryFk == REF_DATABASE){
-				referenceBase = makeDatabase(valueMap);
+				reference = makeDatabase(valueMap);
 			}else if(categoryFk == REF_INFORMAL){
-				referenceBase = makeInformal(valueMap);
+				reference = makeInformal(valueMap);
 			}else if(categoryFk == REF_WEBSITE){
-				referenceBase = makeWebSite(valueMap);
+				reference = makeWebSite(valueMap);
 			}else if(categoryFk == REF_UNKNOWN){
-				referenceBase = makeUnknown(valueMap);
+				reference = makeUnknown(valueMap);
 			}else if(categoryFk == REF_PRINT_SERIES){
-				referenceBase = makePrintSeries(valueMap);
+				reference = makePrintSeries(valueMap);
 			}else if(categoryFk == REF_CONFERENCE_PROCEEDINGS){
-				referenceBase = makeProceedings(valueMap);
+				reference = makeProceedings(valueMap);
 			}else if(categoryFk == REF_ARTICLE){
-				referenceBase = makeArticle(valueMap);
+				reference = makeArticle(valueMap);
 			}else if(categoryFk == REF_JOURNAL_VOLUME){
-				referenceBase = makeJournalVolume(valueMap);
+				reference = makeJournalVolume(valueMap);
 			}else if(categoryFk == REF_PART_OF_OTHER_TITLE){
-				referenceBase = makePartOfOtherTitle(valueMap);
+				reference = makePartOfOtherTitle(valueMap);
 			}else{
 				logger.warn("Unknown categoryFk (" + categoryFk + "). Create 'Generic instead'");
-				referenceBase = ReferenceFactory.newGeneric();
+				reference = ReferenceFactory.newGeneric();
 				success = false;
 			}
 
 			//refYear
 			String refYear = (String)valueMap.get("refYear".toLowerCase());
-			referenceBase.setDatePublished(ImportHelper.getDatePublished(refYear));
+			reference.setDatePublished(ImportHelper.getDatePublished(refYear));
 
 			//created, updated, notes
-			doCreatedUpdatedNotes(state, referenceBase, rs);
+			doCreatedUpdatedNotes(state, reference, rs);
 
 			//idInSource
 			String idInSource = (String)valueMap.get("IdInSource".toLowerCase());
 			if (isNotBlank(idInSource)){
 				IdentifiableSource source = IdentifiableSource.NewDataImportInstance(idInSource);
 				source.setIdNamespace("import to Berlin Model");
-				referenceBase.addSource(source);
+				reference.addSource(source);
 			}
 
 			//nom&BiblioReference  - must be last because a clone is created
-			success &= makeNomAndBiblioReference(rs, state, partitioner, refId, referenceBase, refCounter, refToSave);
+			success &= makeNomAndBiblioReference(rs, state, partitioner, refId, reference, refCounter, refToSave);
 
 
 		} catch (Exception e) {
@@ -551,7 +552,7 @@ public class BerlinModelReferenceImport extends BerlinModelImportBase {
 		}
 
 		//author
-		TeamOrPersonBase<?> author = getAuthorship(state, refAuthorString , nomAuthor);
+		TeamOrPersonBase<?> author = getAuthorship(state, refAuthorString, nomAuthor);
 		ref.setAuthorship(author);
 
 		//save
