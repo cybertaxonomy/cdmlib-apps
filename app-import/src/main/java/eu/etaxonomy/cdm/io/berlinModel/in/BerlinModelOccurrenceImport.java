@@ -9,7 +9,6 @@
 
 package eu.etaxonomy.cdm.io.berlinModel.in;
 
-import java.net.URI;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -18,40 +17,31 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.UUID;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.springframework.stereotype.Component;
-import org.springframework.transaction.TransactionStatus;
 
 import eu.etaxonomy.cdm.common.CdmUtils;
 import eu.etaxonomy.cdm.hibernate.HibernateProxyHelper;
 import eu.etaxonomy.cdm.io.berlinModel.BerlinModelTransformer;
 import eu.etaxonomy.cdm.io.berlinModel.in.validation.BerlinModelOccurrenceImportValidator;
-import eu.etaxonomy.cdm.io.common.CdmImportBase;
 import eu.etaxonomy.cdm.io.common.IOValidator;
 import eu.etaxonomy.cdm.io.common.ResultSetPartitioner;
-import eu.etaxonomy.cdm.io.common.Source;
 import eu.etaxonomy.cdm.io.common.TdwgAreaProvider;
 import eu.etaxonomy.cdm.model.common.Annotation;
 import eu.etaxonomy.cdm.model.common.AnnotationType;
 import eu.etaxonomy.cdm.model.common.CdmBase;
-import eu.etaxonomy.cdm.model.common.ExtensionType;
+import eu.etaxonomy.cdm.model.common.IdentifiableSource;
 import eu.etaxonomy.cdm.model.common.Language;
 import eu.etaxonomy.cdm.model.common.Marker;
 import eu.etaxonomy.cdm.model.common.MarkerType;
 import eu.etaxonomy.cdm.model.common.OrderedTermVocabulary;
-import eu.etaxonomy.cdm.model.common.OriginalSourceType;
-import eu.etaxonomy.cdm.model.common.TermType;
-import eu.etaxonomy.cdm.model.common.TermVocabulary;
 import eu.etaxonomy.cdm.model.description.DescriptionElementBase;
 import eu.etaxonomy.cdm.model.description.Distribution;
 import eu.etaxonomy.cdm.model.description.PresenceAbsenceTerm;
 import eu.etaxonomy.cdm.model.description.TaxonDescription;
 import eu.etaxonomy.cdm.model.location.NamedArea;
-import eu.etaxonomy.cdm.model.location.NamedAreaLevel;
-import eu.etaxonomy.cdm.model.location.NamedAreaType;
 import eu.etaxonomy.cdm.model.reference.Reference;
 import eu.etaxonomy.cdm.model.taxon.Taxon;
 import eu.etaxonomy.cdm.model.taxon.TaxonBase;
@@ -64,7 +54,10 @@ import eu.etaxonomy.cdm.strategy.exceptions.UnknownCdmTypeException;
  */
 @Component
 public class BerlinModelOccurrenceImport  extends BerlinModelImportBase {
-	private static final Logger logger = Logger.getLogger(BerlinModelOccurrenceImport.class);
+
+    private static final long serialVersionUID = -7918122767284077183L;
+
+    private static final Logger logger = Logger.getLogger(BerlinModelOccurrenceImport.class);
 
 	public static final String NAMESPACE = "Occurrence";
 	private static final String EM_AREA_NAMESPACE = "emArea";
@@ -104,287 +97,55 @@ public class BerlinModelOccurrenceImport  extends BerlinModelImportBase {
 		return strQuery;
 	}
 
-	private Map<Integer, NamedArea> euroMedAreas = new HashMap<Integer, NamedArea>();
+//	private Map<Integer, NamedArea> euroMedAreas = new HashMap<>();
 
 
 	@Override
 	public void doInvoke(BerlinModelImportState state) {
-		if (state.getConfig().isUseEmAreaVocabulary()){
-			try {
-				createEuroMedAreas(state);
-			} catch (Exception e) {
-				logger.error("Exception occurred when trying to create euroMed Areas");
-				e.printStackTrace();
-				state.setSuccess(false);
-			}
-		}
+//		if (state.getConfig().isUseEmAreaVocabulary()){
+//			try {
+//				createEuroMedAreas(state);
+//			} catch (Exception e) {
+//				logger.error("Exception occurred when trying to create euroMed Areas");
+//				e.printStackTrace();
+//				state.setSuccess(false);
+//			}
+//		}
 		super.doInvoke(state);
 		//reset
-		euroMedAreas = new HashMap<Integer, NamedArea>();
+//		euroMedAreas = new HashMap<>();
 	}
-
-	private TermVocabulary<NamedArea> createEuroMedAreas(BerlinModelImportState state) throws SQLException {
-		logger.warn("Start creating E+M areas");
-		Source source = state.getConfig().getSource();
-		Reference sourceReference = state.getConfig().getSourceReference();
-
-		TransactionStatus txStatus = this.startTransaction();
-
-		sourceReference = getSourceReference(sourceReference);
-
-		TermVocabulary<NamedArea> euroMedAreas = makeEmptyEuroMedVocabulary();
-
-		MarkerType eurMarkerType = getMarkerType(state, BerlinModelTransformer.uuidEurArea, "eur", "eur Area", "eur", getEuroMedMarkerTypeVoc());
-		MarkerType euroMedAreaMarkerType = getMarkerType(state, BerlinModelTransformer.uuidEurMedArea, "EuroMedArea", "EuroMedArea", "EuroMedArea", getEuroMedMarkerTypeVoc());
-		ExtensionType isoCodeExtType = getExtensionType(state, BerlinModelTransformer.uuidIsoCode, "IsoCode", "IsoCode", "iso");
-		ExtensionType tdwgCodeExtType = getExtensionType(state, BerlinModelTransformer.uuidTdwgAreaCode, "TDWG code", "TDWG Area code", "tdwg");
-		ExtensionType mclCodeExtType = getExtensionType(state, BerlinModelTransformer.uuidMclCode, "MCL code", "MedCheckList code", "mcl");
-		NamedAreaLevel areaLevelTop = getNamedAreaLevel(state, BerlinModelTransformer.uuidEuroMedAreaLevelTop, "Euro+Med top area level", "Euro+Med top area level. This level is only to be used for the area representing the complete Euro+Med area", "e+m top", null);
-		NamedAreaLevel areaLevelEm1 = getNamedAreaLevel(state, BerlinModelTransformer.uuidEuroMedAreaLevelFirst, "Euro+Med 1. area level", "Euro+Med 1. area level", "e+m 1.", null);
-		NamedAreaLevel areaLevelEm2 = getNamedAreaLevel(state, BerlinModelTransformer.uuidEuroMedAreaLevelSecond, "Euro+Med 2. area level", "Euro+Med 2. area level", "Euro+Med 1. area level", null);
-
-
-		String sql = "SELECT * , CASE WHEN EMCode = 'EM' THEN 'a' ELSE 'b' END as isEM " +
-				" FROM emArea " +
-				" ORDER BY isEM, EMCode";
-		ResultSet rs = source.getResultSet(sql);
-
-		NamedArea euroMedArea = null;
-		NamedArea lastLevel1Area = null;
-
-		//euroMedArea (EMCode = 'EM')
-		rs.next();
-		euroMedArea = makeSingleEuroMedArea(rs, eurMarkerType, euroMedAreaMarkerType, isoCodeExtType, tdwgCodeExtType, mclCodeExtType,
-				areaLevelTop, areaLevelEm1 , areaLevelEm2, sourceReference, euroMedArea, lastLevel1Area);
-		euroMedAreas.addTerm(euroMedArea);
-
-		//all other areas
-		while (rs.next()){
-			NamedArea newArea = makeSingleEuroMedArea(rs, eurMarkerType, euroMedAreaMarkerType,
-					isoCodeExtType, tdwgCodeExtType, mclCodeExtType,
-					areaLevelTop, areaLevelEm1 , areaLevelEm2, sourceReference, euroMedArea, lastLevel1Area);
-			if (newArea != null){
-    			euroMedAreas.addTerm(newArea);
-    			if (newArea.getPartOf().equals(euroMedArea)){
-    				lastLevel1Area = newArea;
-    			}
-			}
-		}
-		emAreaFinetuning(euroMedAreas, areaLevelEm2);
-
-		markAreasAsHidden(state, euroMedAreas);
-
-	    getVocabularyService().saveOrUpdate(euroMedAreas);
-
-		try {
-            commitTransaction(txStatus);
-        } catch (Exception e) {
-             e.printStackTrace();
-             logger.error("An exception occurred when trying to commit E+M Areas");
-        }
-		logger.warn("Created E+M areas");
-
-		return euroMedAreas;
-	}
-
-	/**
-     * @param areaLevelEm2
-	 * @param euroMedAreas2
-     */
-    private void emAreaFinetuning(TermVocabulary<NamedArea> euroMedAreas, NamedAreaLevel areaLevelEm2) {
-        //CZ
-        NamedArea oldArea = euroMedAreas.getTermByIdInvocabulary("Cz");
-        makeSubterm(oldArea, euroMedAreas.getTermByIdInvocabulary("Cs"), areaLevelEm2);
-        makeSubterm(oldArea, euroMedAreas.getTermByIdInvocabulary("Sk"), areaLevelEm2);
-
-        //Ju
-        oldArea = euroMedAreas.getTermByIdInvocabulary("Ju");
-        makeSubterm(oldArea, euroMedAreas.getTermByIdInvocabulary("BH"), areaLevelEm2);
-        makeSubterm(oldArea, euroMedAreas.getTermByIdInvocabulary("Cg"), areaLevelEm2);
-        makeSubterm(oldArea, euroMedAreas.getTermByIdInvocabulary("Ct"), areaLevelEm2);
-        makeSubterm(oldArea, euroMedAreas.getTermByIdInvocabulary("Mk"), areaLevelEm2);
-        makeSubterm(oldArea, euroMedAreas.getTermByIdInvocabulary("Sl"), areaLevelEm2);
-        makeSubterm(oldArea, euroMedAreas.getTermByIdInvocabulary("Sr"), areaLevelEm2);
-
-        //IJ
-        oldArea = euroMedAreas.getTermByIdInvocabulary("IJ");
-        makeSubterm(oldArea, euroMedAreas.getTermByIdInvocabulary("Ir"), areaLevelEm2);
-        makeSubterm(oldArea, euroMedAreas.getTermByIdInvocabulary("Jo"), areaLevelEm2);
-
-        //LS
-        oldArea = euroMedAreas.getTermByIdInvocabulary("LS");
-        makeSubterm(oldArea, euroMedAreas.getTermByIdInvocabulary("Le"), areaLevelEm2);
-        makeSubterm(oldArea, euroMedAreas.getTermByIdInvocabulary("Sy"), areaLevelEm2);
-
-    }
-
-    //5.Mark areas to be hidden #3979 .5
-    private void markAreasAsHidden(BerlinModelImportState state, TermVocabulary<NamedArea> euroMedAreasVoc) {
-
-        try {
-
-            @SuppressWarnings("unchecked")
-            TermVocabulary<MarkerType> vocUserDefinedMarkerTypes = getVocabularyService().find(CdmImportBase.uuidUserDefinedMarkerTypeVocabulary);
-            if (vocUserDefinedMarkerTypes == null){
-                String message = "Marker type vocabulary could not be found. Hidden areas not added.";
-                logger.error(message);
-                System.out.println(message);
-            }
-            MarkerType hiddenAreaMarkerType = getMarkerType(state, BerlinModelTransformer.uuidHiddenArea,
-                    "Hidden Area","Used to hide distributions for the named areas in publications", null, getEuroMedMarkerTypeVoc());
-
-            //Add hidden area marker to Rs(C) and Rs(N)
-            hideArea(euroMedAreasVoc, hiddenAreaMarkerType, BerlinModelTransformer.uuidRs);
-            hideArea(euroMedAreasVoc, hiddenAreaMarkerType, BerlinModelTransformer.uuidRs_B);
-            hideArea(euroMedAreasVoc, hiddenAreaMarkerType, BerlinModelTransformer.uuidRs_C);
-            hideArea(euroMedAreasVoc, hiddenAreaMarkerType, BerlinModelTransformer.uuidRs_E);
-            hideArea(euroMedAreasVoc, hiddenAreaMarkerType, BerlinModelTransformer.uuidRs_N);
-            hideArea(euroMedAreasVoc, hiddenAreaMarkerType, BerlinModelTransformer.uuidRs_K);
-            hideArea(euroMedAreasVoc, hiddenAreaMarkerType, BerlinModelTransformer.uuidRs_W);
-        } catch (Exception e) {
-            e.printStackTrace();
-            logger.error("Exception in markAreasAsHidden: " + e.getMessage());
-        }
-
-    }
-
-    private void hideArea(TermVocabulary<NamedArea> euroMedAreasVoc, MarkerType hiddenAreaMarkerType, UUID areaUuid) {
-        for (NamedArea namedArea : euroMedAreasVoc){
-            if (namedArea.getUuid().equals(areaUuid)){
-                namedArea.addMarker(Marker.NewInstance(hiddenAreaMarkerType, true));
-                return;
-            }
-        }
-    }
 
     /**
-     * @param oldArea
-     * @param namedArea
-     * @param areaLevelEm2
+     * @param emCode
+     * @return
      */
-    private void makeSubterm(NamedArea oldArea, NamedArea namedArea, NamedAreaLevel areaLevelEm2) {
-        namedArea.setLevel(areaLevelEm2);
-        namedArea.setPartOf(oldArea);
+    private NamedArea getAreaByAreaId(int areaId) {
+        NamedArea result = null;
+        String areaIdStr = String.valueOf(areaId);
+        OrderedTermVocabulary<NamedArea> voc = getAreaVoc();
+        for (NamedArea area : voc.getTerms()){
+            for (IdentifiableSource source : area.getSources()){
+                if (areaIdStr.equals(source.getIdInSource()) && BerlinModelAreaImport.NAMESPACE.equals(source.getIdNamespace())){
+                    if (result != null){
+                        logger.warn("Result for areaId already exists. areaId: " + areaId);
+                    }
+                    result = area;
+                }
+            }
+        }
+        return result;
     }
 
-    /**
-	 * @param sourceReference
-	 * @return
-	 */
-	private Reference getSourceReference(Reference sourceReference) {
-		Reference persistentSourceReference = getReferenceService().find(sourceReference.getUuid());  //just to be sure
-		if (persistentSourceReference != null){
-			sourceReference = persistentSourceReference;
-		}
-		return sourceReference;
-	}
-
-	/**
-	 * @param eurMarkerType
-	 * @param euroMedAreaMarkerType
-	 * @param isoCodeExtType
-	 * @param tdwgCodeExtType
-	 * @param mclCodeExtType
-	 * @param rs
-	 * @param areaLevelEm2
-	 * @param areaLevelEm1
-	 * @param areaLevelTop
-	 * @throws SQLException
-	 */
-	private NamedArea makeSingleEuroMedArea(ResultSet rs, MarkerType eurMarkerType,
-			MarkerType euroMedAreaMarkerType, ExtensionType isoCodeExtType,
-			ExtensionType tdwgCodeExtType, ExtensionType mclCodeExtType,
-			NamedAreaLevel areaLevelTop, NamedAreaLevel areaLevelEm1, NamedAreaLevel areaLevelEm2,
-			Reference sourceReference, NamedArea euroMedArea, NamedArea level1Area) throws SQLException {
-		Integer areaId = rs.getInt("AreaId");
-		String emCode = nullSafeTrim(rs.getString("EMCode"));
-		String isoCode = nullSafeTrim(rs.getString("ISOCode"));
-		String tdwgCode = nullSafeTrim(rs.getString("TDWGCode"));
-		String unit = nullSafeTrim(rs.getString("Unit"));
-//				      ,[Status]
-//				      ,[OutputOrder]
-		boolean eurMarker = rs.getBoolean("eur");
-		boolean euroMedAreaMarker = rs.getBoolean("EuroMedArea");
-		String notes = nullSafeTrim(rs.getString("Notes"));
-		String mclCode = nullSafeTrim(rs.getString("MCLCode"));
-		String geoSearch = nullSafeTrim(rs.getString("NameForGeoSearch"));
-
-
-
-		if (isBlank(emCode)){
-			emCode = unit;
-		}
-
-		//uuid
-		UUID uuid = BerlinModelTransformer.getEMAreaUuid(emCode);
-		NamedArea area = (NamedArea)getTermService().find(uuid);
-		if (area == null){
-			//label
-			area = NamedArea.NewInstance(geoSearch, unit, emCode);
-			if (uuid != null){
-				area.setUuid(uuid);
-			}else{
-			    if (areaId == 211 || areaId == 213){  //Additional Azores and Canary Is. area are merged into primary area, see also area.addSource part below
-			        return null;
-			    }
-				logger.warn("Uuid for emCode could not be defined: " + emCode);
-			}
-		}
-
-
-		//code
-		area.setIdInVocabulary(emCode);
-		//notes
-		if (StringUtils.isNotEmpty(notes)){
-			area.addAnnotation(Annotation.NewInstance(notes, AnnotationType.EDITORIAL(), Language.DEFAULT()));
-		}
-		//markers
-		area.addMarker(Marker.NewInstance(eurMarkerType, eurMarker));
-		area.addMarker(Marker.NewInstance(euroMedAreaMarkerType, euroMedAreaMarker));
-
-		//extensions
-		if (isNotBlank(isoCode)){
-			area.addExtension(isoCode, isoCodeExtType);
-		}
-		if (isNotBlank(tdwgCode)){
-			area.addExtension(tdwgCode, tdwgCodeExtType);
-		}
-		if (isNotBlank(mclCode)){
-			area.addExtension(mclCode, mclCodeExtType);
-		}
-
-		//type
-		area.setType(NamedAreaType.ADMINISTRATION_AREA());
-
-		//source
-		area.addSource(OriginalSourceType.Import, String.valueOf(areaId), EM_AREA_NAMESPACE, sourceReference, null);
-		//add duplicate area ids for canary
-		if (areaId == 624){ //Canary Is.
-		    area.addSource(OriginalSourceType.Import, String.valueOf(213), EM_AREA_NAMESPACE, sourceReference, null);
-		}
-		if (areaId == 210){//Azores
-            area.addSource(OriginalSourceType.Import, String.valueOf(211), EM_AREA_NAMESPACE, sourceReference, null);
+    private OrderedTermVocabulary<NamedArea> areaVoc;
+    @SuppressWarnings("unchecked")
+    private OrderedTermVocabulary<NamedArea> getAreaVoc(){
+        if (areaVoc == null){
+            areaVoc = (OrderedTermVocabulary<NamedArea>)getVocabularyService().find(BerlinModelTransformer.uuidVocEuroMedAreas);
         }
+        return areaVoc;
+    }
 
-		//parent
-		if (euroMedArea != null){
-			if (emCode.contains("(")){
-				area.setPartOf(level1Area);
-				area.setLevel(areaLevelEm2);
-			}else{
-				area.setPartOf(euroMedArea);
-				area.setLevel(areaLevelEm1);
-			}
-		}else{
-			area.setLevel(areaLevelTop);
-		}
-		this.euroMedAreas.put(areaId, area);
-
-		//save
-		getTermService().saveOrUpdate(area);
-
-		return area;
-	}
 
 	private String nullSafeTrim(String string) {
 		if (string == null){
@@ -394,26 +155,10 @@ public class BerlinModelOccurrenceImport  extends BerlinModelImportBase {
 		}
 	}
 
-	/**
-	 *
-	 */
-	private TermVocabulary<NamedArea> makeEmptyEuroMedVocabulary() {
-		TermType type = TermType.NamedArea;
-		String description = "Euro+Med area vocabulary";
-		String label = "E+M areas";
-		String abbrev = null;
-		URI termSourceUri = null;
-		OrderedTermVocabulary<NamedArea> result = OrderedTermVocabulary.NewInstance(type, description, label, abbrev, termSourceUri);
-
-		result.setUuid(BerlinModelTransformer.uuidVocEuroMedAreas);
-		getVocabularyService().save(result);
-		return result;
-	}
-
 	@Override
 	public boolean doPartition(ResultSetPartitioner partitioner, BerlinModelImportState state) {
 		boolean success = true;
-		Set<TaxonBase> taxaToSave = new HashSet<TaxonBase>();
+		Set<TaxonBase> taxaToSave = new HashSet<>();
 
 		Map<String, TaxonBase<?>> taxonMap = partitioner.getObjectMap(BerlinModelTaxonImport.NAMESPACE);
 
@@ -422,7 +167,7 @@ public class BerlinModelOccurrenceImport  extends BerlinModelImportBase {
 		try {
 			//map to store the mapping of duplicate berlin model occurrences to their real distributions
 			//duplicated may occur due to area mappings from BM areas to TDWG areas
-			Map<Integer, String> duplicateMap = new HashMap<Integer, String>();
+			Map<Integer, String> duplicateMap = new HashMap<>();
 			int oldTaxonId = -1;
 			TaxonDescription oldDescription = null;
 			int i = 0;
@@ -453,7 +198,7 @@ public class BerlinModelOccurrenceImport  extends BerlinModelImportBase {
 
 					Reference sourceRef = state.getTransactionalSourceReference();
 
-					List<NamedArea> areas = makeAreaList(state, rs,	occurrenceId);
+					List<NamedArea> areas = makeAreaList(state, partitioner, rs, occurrenceId);
 
                     //create description(elements)
                     TaxonDescription taxonDescription = getTaxonDescription(newTaxonId, oldTaxonId, oldDescription, taxonMap, occurrenceId, sourceRef);
@@ -513,6 +258,7 @@ public class BerlinModelOccurrenceImport  extends BerlinModelImportBase {
 
 	/**
 	 * @param state
+	 * @param partitioner
 	 * @param rs
 	 * @param occurrenceId
 	 * @param tdwgCodeString
@@ -521,12 +267,16 @@ public class BerlinModelOccurrenceImport  extends BerlinModelImportBase {
 	 * @throws SQLException
 	 */
 	//Create area list
-	private List<NamedArea> makeAreaList(BerlinModelImportState state, ResultSet rs, int occurrenceId) throws SQLException {
-		List<NamedArea> areas = new ArrayList<NamedArea>();
+	private List<NamedArea> makeAreaList(BerlinModelImportState state, ResultSetPartitioner partitioner, ResultSet rs, int occurrenceId) throws SQLException {
+
+	    List<NamedArea> areas = new ArrayList<>();
 
 		if (state.getConfig().isUseEmAreaVocabulary()){
-			Integer areaId = rs.getInt("AreaId");
-	        NamedArea area = this.euroMedAreas.get(areaId);
+		    Integer areaId = rs.getInt("AreaId");
+			NamedArea area = getAreaByAreaId(areaId);
+			if (area == null){
+			    logger.warn("Area for areaId " + areaId + " not found.");
+			}
 			areas.add(area);
 		}else{
 	        String tdwgCodeString = rs.getString("TDWGCode");
@@ -566,30 +316,27 @@ public class BerlinModelOccurrenceImport  extends BerlinModelImportBase {
 
 	@Override
 	public Map<Object, Map<String, ? extends CdmBase>> getRelatedObjectsForPartition(ResultSet rs, BerlinModelImportState state) {
-		String nameSpace;
-		Class<?> cdmClass;
-		Set<String> idSet;
-		Map<Object, Map<String, ? extends CdmBase>> result = new HashMap<Object, Map<String, ? extends CdmBase>>();
 
 		try{
+
+		    Map<Object, Map<String, ? extends CdmBase>> result = new HashMap<>();
 			Set<String> taxonIdSet = new HashSet<String>();
 			while (rs.next()){
 				handleForeignKey(rs, taxonIdSet, "taxonId");
 			}
 
 			//taxon map
-			nameSpace = BerlinModelTaxonImport.NAMESPACE;
-			cdmClass = TaxonBase.class;
-			idSet = taxonIdSet;
-			Map<String, TaxonBase> objectMap = (Map<String, TaxonBase>)getCommonService().getSourcedObjectsByIdInSource(cdmClass, idSet, nameSpace);
+			String nameSpace = BerlinModelTaxonImport.NAMESPACE;
+			Class<?> cdmClass = TaxonBase.class;
+			Set<String> idSet = taxonIdSet;
+			Map<String, ? extends CdmBase> objectMap = (Map<String, TaxonBase>)getCommonService().getSourcedObjectsByIdInSource(cdmClass, idSet, nameSpace);
 			result.put(nameSpace, objectMap);
 
+			return result;
 		} catch (SQLException e) {
 			throw new RuntimeException(e);
 		}
-		return result;
 	}
-
 
 
 	/**

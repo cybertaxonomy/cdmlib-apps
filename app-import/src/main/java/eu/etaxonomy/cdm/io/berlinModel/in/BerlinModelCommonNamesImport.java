@@ -24,6 +24,7 @@ import java.util.UUID;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.TransactionStatus;
 
 import eu.etaxonomy.cdm.common.CdmUtils;
 import eu.etaxonomy.cdm.io.berlinModel.BerlinModelTransformer;
@@ -31,19 +32,19 @@ import eu.etaxonomy.cdm.io.berlinModel.in.validation.BerlinModelCommonNamesImpor
 import eu.etaxonomy.cdm.io.common.IOValidator;
 import eu.etaxonomy.cdm.io.common.ResultSetPartitioner;
 import eu.etaxonomy.cdm.io.common.Source;
-import eu.etaxonomy.cdm.io.common.TdwgAreaProvider;
 import eu.etaxonomy.cdm.model.common.CdmBase;
 import eu.etaxonomy.cdm.model.common.Extension;
 import eu.etaxonomy.cdm.model.common.ExtensionType;
+import eu.etaxonomy.cdm.model.common.IdentifiableSource;
 import eu.etaxonomy.cdm.model.common.Language;
 import eu.etaxonomy.cdm.model.common.Marker;
 import eu.etaxonomy.cdm.model.common.MarkerType;
+import eu.etaxonomy.cdm.model.common.OrderedTermVocabulary;
 import eu.etaxonomy.cdm.model.common.Representation;
 import eu.etaxonomy.cdm.model.common.TermVocabulary;
 import eu.etaxonomy.cdm.model.description.CommonTaxonName;
 import eu.etaxonomy.cdm.model.description.DescriptionElementSource;
 import eu.etaxonomy.cdm.model.description.TaxonDescription;
-import eu.etaxonomy.cdm.model.location.Country;
 import eu.etaxonomy.cdm.model.location.NamedArea;
 import eu.etaxonomy.cdm.model.name.TaxonName;
 import eu.etaxonomy.cdm.model.reference.Reference;
@@ -74,7 +75,7 @@ public class BerlinModelCommonNamesImport  extends BerlinModelImportBase {
 
 
 	//map that stores the regions (named areas) and makes them accessible via the regionFk
-	private Map<String, NamedArea> regionMap = new HashMap<>();
+	private Map<String, NamedArea> regionFkToAreaMap = new HashMap<>();
 
 	public BerlinModelCommonNamesImport(){
 		super(dbTableName, pluralString);
@@ -141,18 +142,22 @@ public class BerlinModelCommonNamesImport  extends BerlinModelImportBase {
 	 */
 	private void makeRegions(BerlinModelImportState state) {
 		try {
-			SortedSet<Integer> regionFks = new TreeSet<>();
+			TransactionStatus tx = startTransaction();
+		    SortedSet<Integer> regionFks = new TreeSet<>();
 			Source source = state.getConfig().getSource();
 
 			//fill set with all regionFk from emCommonName.regionFks
-			getRegionFks(state, regionFks, source);
+			fillRegionFks(state, regionFks, source);
 			//concat filter string
 			String sqlWhere = getSqlWhere(regionFks);
 
 			//get E+M - TDWG Mapping
-			Map<String, String> emTdwgMap = getEmTdwgMap(source);
+//			Map<String, String> emTdwgMap = getEmTdwgMap(source);
+			Map<String, NamedArea> emCodeToAreaMap = getEmCodeToAreaMap(source);
 			//fill regionMap
-			fillRegionMap(state, sqlWhere, emTdwgMap);
+			fillRegionMap(state, sqlWhere, emCodeToAreaMap);
+
+			commitTransaction(tx);
 
 			return;
 		} catch (NumberFormatException e) {
@@ -167,7 +172,7 @@ public class BerlinModelCommonNamesImport  extends BerlinModelImportBase {
 	}
 
 
-	@Override
+    @Override
 	public boolean doPartition(ResultSetPartitioner partitioner, BerlinModelImportState state)  {
 		boolean success = true ;
 
@@ -269,7 +274,7 @@ public class BerlinModelCommonNamesImport  extends BerlinModelImportBase {
 					}
 					commonTaxonNames.add(commonTaxonName);
 					regionFk = regionFk.trim();
-					NamedArea area = regionMap.get(regionFk);
+					NamedArea area = regionFkToAreaMap.get(regionFk);
 					if (area == null){
 						if (isNotBlank(regionFk) && regionFk != NO_REGION){
 							logger.warn("Area for " + regionFk + " not defined in regionMap.");
@@ -310,7 +315,6 @@ public class BerlinModelCommonNamesImport  extends BerlinModelImportBase {
 				    DescriptionElementSource source = DescriptionElementSource.NewPrimarySourceInstance(reference, microCitation, nameUsedInSource, originalNameString);
 	                commonTaxonName.addSource(source);
 				}
-
 
 				//MisNameRef
 				if (misNameRefFk != null){
@@ -515,8 +519,11 @@ public class BerlinModelCommonNamesImport  extends BerlinModelImportBase {
 	 * @throws SQLException
 	 *
 	 */
-	private void getRegionFks(BerlinModelImportState state, SortedSet<Integer> regionFks, Source source) throws SQLException {
-		String sql = " SELECT DISTINCT RegionFks FROM emCommonName";
+	private void fillRegionFks(BerlinModelImportState state, SortedSet<Integer> regionFks,
+	        Source source) throws SQLException {
+		String sql =
+		          " SELECT DISTINCT RegionFks "
+		        + " FROM emCommonName";
 		if (state.getConfig().getCommonNameFilter() != null){
 			sql += " WHERE " + state.getConfig().getCommonNameFilter();
 		}
@@ -553,12 +560,14 @@ public class BerlinModelCommonNamesImport  extends BerlinModelImportBase {
 	 * @throws SQLException
 	 */
 	private void fillRegionMap(BerlinModelImportState state, String sqlWhere,
-			Map<String, String> emTdwgMap) throws SQLException {
-		Source source = state.getConfig().getSource();
-		String sql;
-		ResultSet rs;
-		sql = " SELECT RegionId, Region FROM emLanguageRegion WHERE RegionId IN ("+ sqlWhere+ ") ";
-		rs = source.getResultSet(sql);
+			Map<String, NamedArea> emCodeToAreaMap) throws SQLException {
+
+	    Source source = state.getConfig().getSource();
+		String sql =
+		      " SELECT RegionId, Region "
+		    + " FROM  emLanguageRegion "
+		    + " WHERE RegionId IN ("+ sqlWhere+ ") ";
+		ResultSet rs = source.getResultSet(sql);
 		while (rs.next()){
 			Object regionId = rs.getObject("RegionId");
 			String region = rs.getString("Region");
@@ -566,59 +575,28 @@ public class BerlinModelCommonNamesImport  extends BerlinModelImportBase {
 			if (splitRegion.length <= 1){
 				NamedArea newArea = getNamedArea(state, null, region, "Language region '" + region + "'", null, null, null);
 //				getTermService().save(newArea);
-				regionMap.put(String.valueOf(regionId), newArea);
-				logger.info("Found new area: " +  region);
+				regionFkToAreaMap.put(String.valueOf(regionId), newArea);
+				logger.warn("Found new area: " +  region);
 			}else if (splitRegion.length == 2){
-				String emCode = splitRegion[1].trim();
-				String tdwgCode = emTdwgMap.get(emCode);
-				if (isNotBlank(tdwgCode) ){
-					NamedArea tdwgArea = getNamedArea(state, tdwgCode);
-					regionMap.put(String.valueOf(regionId), tdwgArea);
-				}else {
-					NamedArea area = getOtherAreas(state, emCode, tdwgCode);
-					if (area != null){
-						regionMap.put(String.valueOf(regionId), area);
-					}else{
-						logger.warn("emCode did not map to valid tdwgCode: " +  CdmUtils.Nz(emCode) + "->" + CdmUtils.Nz(tdwgCode));
-					}
+				String emCode = splitRegion[1].trim().replace(" ", "");
+
+				NamedArea area = emCodeToAreaMap.get(emCode);
+				if (area == null){
+				    String[] splits = emCode.split("/");
+				    if (splits.length == 2){
+				        area = emCodeToAreaMap.get(splits[0]);
+		            }
+				    if (area != null){
+				        logger.warn("emCode ambigous. Use larger area: " +  CdmUtils.Nz(emCode) + "->" + regionId);
+				    }else{
+				        logger.warn("emCode not recognized. Region not defined: " +  CdmUtils.Nz(emCode) + "->" + regionId);
+				    }
+				}
+				if (area != null){
+				    regionFkToAreaMap.put(String.valueOf(regionId), area);
 				}
 			}
 		}
-	}
-
-
-	/**
-	 * Returns the are for a given TDWG code. See {@link #getEmTdwgMap(Source)} for exceptions from
-	 * the TDWG code
-	 * @param state
-	 * @param tdwgCode
-	 */
-	private NamedArea getNamedArea(BerlinModelImportState state, String tdwgCode) {
-		NamedArea area;
-		if (tdwgCode.equalsIgnoreCase("Ab")){
-			area = getNamedArea(state, BerlinModelTransformer.uuidAb, "Azerbaijan & Nakhichevan", "Azerbaijan (including Nakhichevan)",  "Ab", null, null);
-			getTermService().saveOrUpdate(area);
-		}else if (tdwgCode.equalsIgnoreCase("Uk")){
-			area = getNamedArea(state, BerlinModelTransformer.uuidUk , "Ukraine & Crimea", "Ukraine (including Crimea)", "Uk", null, null);
-			getTermService().saveOrUpdate(area);
-		}else if (tdwgCode.equalsIgnoreCase("Rf")){
-//			area = getNamedArea(state, BerlinModelTransformer.uuidRf , "Ukraine & Crimea", "Ukraine (including Crimea)", "Uk", null, null);
-//			getTermService().saveOrUpdate(area);
-			area = Country.RUSSIANFEDERATION();
-		}else if (tdwgCode.equalsIgnoreCase("Gg")){
-			area = Country.GEORGIA();
-		}else if (tdwgCode.equalsIgnoreCase("SM")){
-            area = getNamedArea(state, BerlinModelTransformer.uuidSM , "Serbia & Montenegro", "Serbia & Montenegro", "SM", null, null);
-            getTermService().saveOrUpdate(area);
-        }else if (tdwgCode.equalsIgnoreCase("Tu")){
-            area = Country.TURKEYREPUBLICOF();
-        }else{
-			area = TdwgAreaProvider.getAreaByTdwgAbbreviation(tdwgCode);
-		}
-		if (area == null){
-			logger.warn("Area is null for " + tdwgCode);
-		}
-		return area;
 	}
 
 	/**
@@ -634,43 +612,107 @@ public class BerlinModelCommonNamesImport  extends BerlinModelImportBase {
 		return sqlWhere;
 	}
 
-	/**
-	 * Returns a map which is filled by the emCode->TdwgCode mapping defined in emArea.
-	 * Some exceptions are defined for emCode 'Ab','Rf','Uk' and some additional mapping is added
-	 * for 'Ab / Ab(A)', 'Ga / Ga(F)', 'It / It(I)', 'Ar / Ar(A)','Hs / Hs(S)'
-	 * @param source
-	 * @throws SQLException
-	 */
-	private Map<String, String> getEmTdwgMap(Source source) throws SQLException {
-		String sql;
-		ResultSet rs;
-		Map<String, String> emTdwgMap = new HashMap<>();
-		sql = " SELECT EmCode, TDWGCode FROM emArea ";
-		rs = source.getResultSet(sql);
-		while (rs.next()){
-			String emCode = rs.getString("EMCode");
-			String TDWGCode = rs.getString("TDWGCode");
-			if (isNotBlank(emCode) ){
-				emCode = emCode.trim();
-				if (emCode.equalsIgnoreCase("Ab") || emCode.equalsIgnoreCase("Rf")||
-						emCode.equalsIgnoreCase("Uk") || emCode.equalsIgnoreCase("Gg")
-						|| emCode.equalsIgnoreCase("SM") || emCode.equalsIgnoreCase("Tu")){
-					emTdwgMap.put(emCode, emCode);
-				}else if (isNotBlank(TDWGCode)){
-					emTdwgMap.put(emCode, TDWGCode.trim());
-				}
-			}
-		}
-		emTdwgMap.put("Ab / Ab(A)", "Ab");
-		emTdwgMap.put("Ga / Ga(F)", "FRA-FR");
-		emTdwgMap.put("It / It(I)", "ITA");
-		emTdwgMap.put("Uk / Uk(U)", "Uk");
-		emTdwgMap.put("Ar / Ar(A)", "TCS-AR");
-		emTdwgMap.put("Hs / Hs(S)", "SPA-SP");
-		emTdwgMap.put("Hb / Hb(E)", "IRE-IR");
+//	/**
+//	 * Returns a map which is filled by the emCode->TdwgCode mapping defined in emArea.
+//	 * Some exceptions are defined for emCode 'Ab','Rf','Uk' and some additional mapping is added
+//	 * for 'Ab / Ab(A)', 'Ga / Ga(F)', 'It / It(I)', 'Ar / Ar(A)','Hs / Hs(S)'
+//	 * @param source
+//	 * @throws SQLException
+//	 */
+//	private Map<String, String> getEmTdwgMap(Source source) throws SQLException {
+//
+//		Map<String, String> emTdwgMap = new HashMap<>();
+//		String sql = " SELECT EmCode, TDWGCode "
+//		    + " FROM emArea ";
+//		ResultSet rs = source.getResultSet(sql);
+//		while (rs.next()){
+//			String emCode = rs.getString("EMCode");
+//			String TDWGCode = rs.getString("TDWGCode");
+//			if (isNotBlank(emCode) ){
+//				emCode = emCode.trim();
+//				if (emCode.equalsIgnoreCase("Ab") || emCode.equalsIgnoreCase("Rf")||
+//						emCode.equalsIgnoreCase("Uk") || emCode.equalsIgnoreCase("Gg")
+//						|| emCode.equalsIgnoreCase("SM") || emCode.equalsIgnoreCase("Tu")){
+//					emTdwgMap.put(emCode, emCode);
+//				}else if (isNotBlank(TDWGCode)){
+//					emTdwgMap.put(emCode, TDWGCode.trim());
+//				}
+//			}
+//		}
+//		emTdwgMap.put("Ab / Ab(A)", "Ab");
+//		emTdwgMap.put("Ga / Ga(F)", "FRA-FR");
+//		emTdwgMap.put("It / It(I)", "ITA");
+//		emTdwgMap.put("Uk / Uk(U)", "Uk");
+//		emTdwgMap.put("Ar / Ar(A)", "TCS-AR");
+//		emTdwgMap.put("Hs / Hs(S)", "SPA-SP");
+//		emTdwgMap.put("Hb / Hb(E)", "IRE-IR");
+//
+//		return emTdwgMap;
+//	}
 
-		return emTdwgMap;
-	}
+
+
+    /**
+     * @param source
+     * @return
+     * @throws SQLException
+     */
+    private Map<String, NamedArea> getEmCodeToAreaMap(Source source) throws SQLException {
+        Map<String, NamedArea> emCodeToAreaMap = new HashMap<>();
+        String sql =
+              " SELECT EmCode, AreaId "
+            + " FROM emArea ";
+        ResultSet rs = source.getResultSet(sql);
+        while (rs.next()){
+
+            String emCode = rs.getString("EMCode");
+            if (isNotBlank(emCode)){
+                Integer areaId = rs.getInt("AreaId");
+                NamedArea area = getAreaByAreaId(areaId);
+                if (area != null){
+                    emCodeToAreaMap.put(emCode.trim(), area);
+                }else{
+                    logger.warn("Area not found for areaId " + areaId);
+                }
+            }
+
+        }
+
+//        emTdwgMap.put("Ab / Ab(A)", "Ab");
+
+        return emCodeToAreaMap;
+    }
+
+    /**
+     * @param emCode
+     * @return
+     */
+    private NamedArea getAreaByAreaId(int areaId) {
+        NamedArea result = null;
+        String areaIdStr = String.valueOf(areaId);
+        OrderedTermVocabulary<NamedArea> voc = getAreaVoc();
+        getVocabularyService().update(voc);
+        for (NamedArea area : voc.getTerms()){
+            for (IdentifiableSource source : area.getSources()){
+                if (areaIdStr.equals(source.getIdInSource()) && BerlinModelAreaImport.NAMESPACE.equals(source.getIdNamespace())){
+                    if (result != null){
+                        logger.warn("Result for areaId already exists. areaId: " + areaId);
+                    }
+                    result = area;
+                }
+            }
+        }
+        return result;
+    }
+
+    private OrderedTermVocabulary<NamedArea> areaVoc;
+    @SuppressWarnings("unchecked")
+    private OrderedTermVocabulary<NamedArea> getAreaVoc(){
+        if (areaVoc == null){
+            areaVoc = (OrderedTermVocabulary<NamedArea>)getVocabularyService().find(BerlinModelTransformer.uuidVocEuroMedAreas);
+        }
+        return areaVoc;
+    }
 
 
 	/**
@@ -739,7 +781,7 @@ public class BerlinModelCommonNamesImport  extends BerlinModelImportBase {
 			result.put(nameSpace, referenceMap);
 			// TODO remove if problem with duplicate DescElement_Annot id is solved
 		} catch (SQLException e) {
-			throw new RuntimeException("pos: " +pos, e);
+			throw new RuntimeException("pos: " + pos, e);
 		} catch (NullPointerException nep){
 			logger.error("NullPointerException in getRelatedObjectsForPartition()");
 		}

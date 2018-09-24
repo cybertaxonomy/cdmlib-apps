@@ -287,7 +287,6 @@ public abstract class BerlinModelImportBase
 		}else if("TCS-AB;TCS-AD;TCS-GR".equals(tdwg)){
 			return Country.GEORGIA();
 
-
 		}else if("Cc".equals(em)){
 			return getNamedArea(state, BerlinModelTransformer.uuidCaucasia, "Caucasia (Ab + Ar + Gg + Rf(CS))", "Euro+Med area 'Caucasia (Ab + Ar + Gg + Rf(CS))'", "Cc", null, null);
 		}
@@ -392,6 +391,19 @@ public abstract class BerlinModelImportBase
         TermVocabulary<MarkerType> markerTypeVoc = getVocabulary(TermType.MarkerType, BerlinModelTransformer.uuidVocEMMarkerType,
                 "Euro+Med marker type vocabulary", "E+M marker types", null, null, false, MarkerType.COMPLETE());
         return markerTypeVoc;
+    }
+
+
+    /**
+     * @param sourceReference
+     * @return
+     */
+    protected Reference getSourceReference(Reference sourceReference) {
+        Reference persistentSourceReference = getReferenceService().find(sourceReference.getUuid());  //just to be sure
+        if (persistentSourceReference != null){
+            sourceReference = persistentSourceReference;
+        }
+        return sourceReference;
     }
 
 }
