@@ -64,10 +64,12 @@ public class BerlinModelAreaImport  extends BerlinModelImportBase {
 
 	@Override
 	protected String getIdQuery(BerlinModelImportState state) {
-		String result = " SELECT AreaId FROM " + getTableName();
-//		if (StringUtils.isNotBlank(state.getConfig().getOccurrenceFilter())){
-//			result += " WHERE " +  state.getConfig().getOccurrenceFilter();
-//		}
+		String result =
+		          " SELECT AreaId "
+		        + " FROM " + getTableName();
+		if (state.getConfig().isEuroMed()){
+		    result += " WHERE AreaID NOT IN (1, 21, 650, 653, 1718, 654) ";  //#3986
+		}
 		return result;
 	}
 
@@ -77,7 +79,7 @@ public class BerlinModelAreaImport  extends BerlinModelImportBase {
 		          " SELECT * "
 		        + " FROM emArea a "
                 + " WHERE (a.AreaId IN (" + ID_LIST_TOKEN + ")  )"
-//		        + " ORDER BY PTaxon.RIdentifier"
+		        + " ORDER BY a.AreaId "
                 ;
 		return strQuery;
 	}
@@ -86,7 +88,6 @@ public class BerlinModelAreaImport  extends BerlinModelImportBase {
 
 
 	private TermVocabulary<NamedArea> createEuroMedAreas(BerlinModelImportState state) throws SQLException {
-
 
 	    logger.warn("Start creating E+M areas");
 		Source source = state.getConfig().getSource();
