@@ -110,16 +110,6 @@ public class BerlinModelFactsImport  extends BerlinModelImportBase {
 	    getVocabularyService().save(newVoc);
 
 	    return newVoc;
-
-//	    try {
-//			//TODO work around until service method works
-//			TermVocabulary<Feature> featureVocabulary =  BerlinModelTransformer.factCategory2Feature(1).getVocabulary();
-//			//TermVocabulary<Feature> vocabulary = getTermService().getVocabulary(vocabularyUuid);
-//			return featureVocabulary;
-//		} catch (UnknownCdmTypeException e) {
-//			logger.error("Feature vocabulary not available. New vocabulary created");
-//			return TermVocabulary.NewInstance(TermType.Feature, "User Defined Feature Vocabulary", "User Defined Feature Vocabulary", null, null);
-//		}
 	}
 
 	private Map<Integer, Feature>  invokeFactCategories(BerlinModelImportState state){
@@ -320,10 +310,9 @@ public class BerlinModelFactsImport  extends BerlinModelImportBase {
 	}
 
 	@Override
-	public boolean doPartition(ResultSetPartitioner partitioner, BerlinModelImportState state) {
+	public boolean doPartition(@SuppressWarnings("rawtypes") ResultSetPartitioner partitioner, BerlinModelImportState state) {
 		boolean success = true ;
-		BerlinModelImportConfigurator config = state.getConfig();
-		Set<TaxonBase> taxaToSave = new HashSet<TaxonBase>();
+		Set<TaxonBase> taxaToSave = new HashSet<>();
 		Map<String, TaxonBase> taxonMap = partitioner.getObjectMap(BerlinModelTaxonImport.NAMESPACE);
 		Map<String, Reference> refMap = partitioner.getObjectMap(BerlinModelReferenceImport.REFERENCE_NAMESPACE);
 
@@ -392,6 +381,8 @@ public class BerlinModelFactsImport  extends BerlinModelImportBase {
 						}
 						if(newTextData == true)	{
 							textData = TextData.NewInstance();
+						}else if (textData == null){
+						    throw new RuntimeException("Textdata must not be null");  //does not happen, only to avoid potential NPE warnings
 						}
 
 

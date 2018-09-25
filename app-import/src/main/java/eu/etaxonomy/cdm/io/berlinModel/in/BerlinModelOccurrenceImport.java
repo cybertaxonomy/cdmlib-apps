@@ -60,7 +60,6 @@ public class BerlinModelOccurrenceImport  extends BerlinModelImportBase {
     private static final Logger logger = Logger.getLogger(BerlinModelOccurrenceImport.class);
 
 	public static final String NAMESPACE = "Occurrence";
-	private static final String EM_AREA_NAMESPACE = "emArea";
 
 	private static int modCount = 5000;
 	private static final String pluralString = "occurrences";
@@ -81,45 +80,28 @@ public class BerlinModelOccurrenceImport  extends BerlinModelImportBase {
 
 	@Override
 	protected String getRecordQuery(BerlinModelImportConfigurator config) {
-			String emCode = config.isIncludesAreaEmCode()? ", emArea.EMCode" : "";
+			String emCode = config.isIncludesAreaEmCode()? ", ar.EMCode" : "";
 			String strQuery =   //DISTINCT because otherwise emOccurrenceSource creates multiple records for a single distribution
-            " SELECT DISTINCT PTaxon.RIdentifier AS taxonId, emOccurrence.OccurrenceId, emOccurrence.Native, emOccurrence.Introduced, " +
-            		" emOccurrence.Cultivated, emOccurrence.Notes occNotes, " +
-            		" emOccurSumCat.emOccurSumCatId, emOccurSumCat.Short, emOccurSumCat.Description, " +
-                	" emOccurSumCat.OutputCode, emArea.AreaId, emArea.TDWGCode " + emCode +
-                " FROM emOccurrence INNER JOIN " +
-                	" emArea ON emOccurrence.AreaFk = emArea.AreaId INNER JOIN " +
-                	" PTaxon ON emOccurrence.PTNameFk = PTaxon.PTNameFk AND emOccurrence.PTRefFk = PTaxon.PTRefFk LEFT OUTER JOIN " +
-                	" emOccurSumCat ON emOccurrence.SummaryStatus = emOccurSumCat.emOccurSumCatId LEFT OUTER JOIN " +
-                	" emOccurrenceSource ON emOccurrence.OccurrenceId = emOccurrenceSource.OccurrenceFk " +
-            " WHERE (emOccurrence.OccurrenceId IN (" + ID_LIST_TOKEN + ")  )" +
+                " SELECT DISTINCT pt.RIdentifier AS taxonId, occ.OccurrenceId, occ.Native, occ.Introduced, " +
+            		" occ.Cultivated, occ.Notes occNotes, " +
+            		" sumcat.emOccurSumCatId, sumcat.Short, sumcat.Description, " +
+                	" sumcat.OutputCode, ar.AreaId, ar.TDWGCode " + emCode +
+                " FROM emOccurrence occ " +
+                	" INNER JOIN emArea ar ON occ.AreaFk = ar.AreaId " +
+                	" INNER JOIN PTaxon pt ON occ.PTNameFk = pt.PTNameFk AND occ.PTRefFk = pt.PTRefFk " +
+                	" LEFT OUTER JOIN emOccurSumCat sumcat ON occ.SummaryStatus = sumcat.emOccurSumCatId " +
+                	" LEFT OUTER JOIN emOccurrenceSource ocs ON occ.OccurrenceId = ocs.OccurrenceFk " +
+                " WHERE (occ.OccurrenceId IN (" + ID_LIST_TOKEN + ")  )" +
                 " ORDER BY PTaxon.RIdentifier";
 		return strQuery;
 	}
 
-//	private Map<Integer, NamedArea> euroMedAreas = new HashMap<>();
-
 
 	@Override
 	public void doInvoke(BerlinModelImportState state) {
-//		if (state.getConfig().isUseEmAreaVocabulary()){
-//			try {
-//				createEuroMedAreas(state);
-//			} catch (Exception e) {
-//				logger.error("Exception occurred when trying to create euroMed Areas");
-//				e.printStackTrace();
-//				state.setSuccess(false);
-//			}
-//		}
 		super.doInvoke(state);
-		//reset
-//		euroMedAreas = new HashMap<>();
 	}
 
-    /**
-     * @param emCode
-     * @return
-     */
     private NamedArea getAreaByAreaId(int areaId) {
         NamedArea result = null;
         String areaIdStr = String.valueOf(areaId);
@@ -156,11 +138,13 @@ public class BerlinModelOccurrenceImport  extends BerlinModelImportBase {
 	}
 
 	@Override
-	public boolean doPartition(ResultSetPartitioner partitioner, BerlinModelImportState state) {
+	public boolean doPartition(@SuppressWarnings("rawtypes") ResultSetPartitioner partitioner, BerlinModelImportState state) {
 		boolean success = true;
-		Set<TaxonBase> taxaToSave = new HashSet<>();
+		@SuppressWarnings("rawtypes")
+        Set<TaxonBase> taxaToSave = new HashSet<>();
 
-		Map<String, TaxonBase<?>> taxonMap = partitioner.getObjectMap(BerlinModelTaxonImport.NAMESPACE);
+		@SuppressWarnings("unchecked")
+        Map<String, TaxonBase<?>> taxonMap = partitioner.getObjectMap(BerlinModelTaxonImport.NAMESPACE);
 
 		ResultSet rs = partitioner.getResultSet();
 
@@ -267,7 +251,9 @@ public class BerlinModelOccurrenceImport  extends BerlinModelImportBase {
 	 * @throws SQLException
 	 */
 	//Create area list
-	private List<NamedArea> makeAreaList(BerlinModelImportState state, ResultSetPartitioner partitioner, ResultSet rs, int occurrenceId) throws SQLException {
+	private List<NamedArea> makeAreaList(BerlinModelImportState state,
+	        @SuppressWarnings("rawtypes") ResultSetPartitioner partitioner,
+	        ResultSet rs, int occurrenceId) throws SQLException {
 
 	    List<NamedArea> areas = new ArrayList<>();
 
@@ -329,7 +315,8 @@ public class BerlinModelOccurrenceImport  extends BerlinModelImportBase {
 			String nameSpace = BerlinModelTaxonImport.NAMESPACE;
 			Class<?> cdmClass = TaxonBase.class;
 			Set<String> idSet = taxonIdSet;
-			Map<String, ? extends CdmBase> objectMap = (Map<String, TaxonBase>)getCommonService().getSourcedObjectsByIdInSource(cdmClass, idSet, nameSpace);
+			@SuppressWarnings("unchecked")
+            Map<String, ? extends CdmBase> objectMap = (Map<String, TaxonBase<?>>)getCommonService().getSourcedObjectsByIdInSource(cdmClass, idSet, nameSpace);
 			result.put(nameSpace, objectMap);
 
 			return result;
