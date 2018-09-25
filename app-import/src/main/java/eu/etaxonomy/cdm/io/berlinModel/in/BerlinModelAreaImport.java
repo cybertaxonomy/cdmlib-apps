@@ -23,7 +23,6 @@ import org.springframework.transaction.TransactionStatus;
 
 import eu.etaxonomy.cdm.io.berlinModel.BerlinModelTransformer;
 import eu.etaxonomy.cdm.io.berlinModel.in.validation.BerlinModelAreaImportValidator;
-import eu.etaxonomy.cdm.io.common.CdmImportBase;
 import eu.etaxonomy.cdm.io.common.IOValidator;
 import eu.etaxonomy.cdm.io.common.ResultSetPartitioner;
 import eu.etaxonomy.cdm.io.common.Source;
@@ -188,13 +187,6 @@ public class BerlinModelAreaImport  extends BerlinModelImportBase {
 
         try {
 
-            @SuppressWarnings("unchecked")
-            TermVocabulary<MarkerType> vocUserDefinedMarkerTypes = getVocabularyService().find(CdmImportBase.uuidUserDefinedMarkerTypeVocabulary);
-            if (vocUserDefinedMarkerTypes == null){
-                String message = "Marker type vocabulary could not be found. Hidden areas not added.";
-                logger.error(message);
-                System.out.println(message);
-            }
             MarkerType hiddenAreaMarkerType = getMarkerType(state, BerlinModelTransformer.uuidHiddenArea,
                     "Hidden Area","Used to hide distributions for the named areas in publications", null, getEuroMedMarkerTypeVoc());
 

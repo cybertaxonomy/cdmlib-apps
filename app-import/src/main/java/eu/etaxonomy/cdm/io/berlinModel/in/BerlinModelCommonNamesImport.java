@@ -330,7 +330,6 @@ public class BerlinModelCommonNamesImport  extends BerlinModelImportBase {
 							logger.warn("Misapplied name taxon is not of type Taxon but " + misTaxonBase.getClass().getSimpleName());
 						}
 					}else{
-
 						Reference sec = refMap.get(String.valueOf(misNameRefFk));
 						if (nameUsedInSource == null || sec == null){
 							logger.warn("Taxon name or misapplied name reference is null for common name " + commonNameId);
