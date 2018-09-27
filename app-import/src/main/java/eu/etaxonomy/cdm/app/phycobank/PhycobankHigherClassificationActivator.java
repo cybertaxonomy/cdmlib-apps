@@ -44,14 +44,16 @@ public class PhycobankHigherClassificationActivator {
     //database validation status (create, update, validate ...)
     static DbSchemaValidation hbm2dll = DbSchemaValidation.VALIDATE;
 
-//    static ICdmDataSource cdmDestination = CdmDestinations.localH2();
+    static ICdmDataSource cdmDestination = CdmDestinations.localH2();
 //    static ICdmDataSource cdmDestination = CdmDestinations.cdm_local_test_mysql();
-    static ICdmDataSource cdmDestination = CdmDestinations.cdm_test_phycobank();
+//    static ICdmDataSource cdmDestination = CdmDestinations.cdm_test_phycobank();
 
-//  static Reference secRef = getSecReference_Frey();
-    static Reference secRef = getSecReference_WoRMS();
-    static String worksheetName = secRef == getSecReference_WoRMS()? "WoRMS" :
-        secRef == getSecReference_Frey()? "HigherRanksEntwurfNeu" : null;
+    static Reference secRef = getSecReference_Frey();
+//    static Reference secRef = getSecReference_WoRMS();
+    static String worksheetName = secRef.equals(getSecReference_WoRMS())? "WoRMS" :
+        secRef.equals(getSecReference_Frey())? "HigherRanksEntwurfNeu" : null;
+
+    static UUID uuidRefPhycobank = UUID.fromString("8058a5ec-60ee-4a04-8c17-5623e3a4795c");
 
     //check - import
     static final CHECK check = CHECK.IMPORT_WITHOUT_CHECK;
@@ -68,6 +70,7 @@ public class PhycobankHigherClassificationActivator {
         config.setDbSchemaValidation(hbm2dll);
         config.setSourceReference(sourceRef);
         config.setSecReference(secRef);
+        config.setPhycobankReference(getPhycobankReference());
         config.setProgressMonitor(DefaultProgressMonitor.NewInstance());
 
         CdmDefaultImport<PhycobankHigherClassificationImportConfigurator> myImport = new CdmDefaultImport<>();
@@ -97,6 +100,15 @@ public class PhycobankHigherClassificationActivator {
         result.setDatePublished(TimePeriodParser.parseStringVerbatim("2018-04-20"));
         result.setUri(URI.create("http://www.marinespecies.org/index.php"));
         result.setUuid(UUID.fromString("b33daeb0-8770-4ee2-92d0-80aaa87bfba2"));
+        return result;
+    }
+
+    private static Reference getPhycobankReference() {
+        Reference result = ReferenceFactory.newWebPage();
+        result.setTitle("Phycobank");
+        result.setDatePublished(TimePeriodParser.parseStringVerbatim("2018+"));
+        result.setUri(URI.create("https://www.phycobank.org/"));
+        result.setUuid(uuidRefPhycobank);
         return result;
     }
 

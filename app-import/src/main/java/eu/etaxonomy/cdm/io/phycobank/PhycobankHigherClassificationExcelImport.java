@@ -54,6 +54,9 @@ public class PhycobankHigherClassificationExcelImport<CONFIG extends PhycobankHi
     private static final List<String> propertyPaths = null;
     private static TaxonRelationshipType relType;
 
+    private Reference secReference;
+    private Reference phycobankReference;
+
 
     @Override
     protected String getWorksheetName(CONFIG config) {
@@ -78,8 +81,10 @@ public class PhycobankHigherClassificationExcelImport<CONFIG extends PhycobankHi
 	 */
 	@Override
     protected void firstPass(SimpleExcelTaxonImportState<CONFIG> state) {
-	    //TODO correct?
-	    relType = TaxonRelationshipType.TAXONOMICALLY_INCLUDED_IN();
+
+	    @SuppressWarnings("deprecation")
+        TaxonRelationshipType type = TaxonRelationshipType.TAXONOMICALLY_INCLUDED_IN();
+	    relType = type;
 
 	    String line = "line " + state.getCurrentLine();
         Map<String, String> record = state.getOriginalRecord();
@@ -113,6 +118,7 @@ public class PhycobankHigherClassificationExcelImport<CONFIG extends PhycobankHi
             Taxon taxon = getOrMakeTaxon(state, rankedUninomial, line);
             TaxonNode existingNode = taxon.getTaxonNode(getClassification(state));
             TaxonNode existingHigherNode = existingNode == null? null : existingNode.getParent();
+            //recursive call
             TaxonNode createdHigher = createOrVerifyRankedUninomials(state, rankedUninomials, line);
 //            boolean exists = verifyNextHigher(state, rankedUninomials, existingHigher);
 
@@ -216,7 +222,7 @@ public class PhycobankHigherClassificationExcelImport<CONFIG extends PhycobankHi
     protected Taxon getOrMakeTaxon(SimpleExcelTaxonImportState<CONFIG> state,
             RankedUninomial rankedUninomial, String line) {
 
-        Reference sec = getSecReference(state);
+        Reference phycobankRef = getPhycobankReference(state);
         List<TaxonName> nameCandidates = getNameService().findNamesByNameCache(
                 rankedUninomial.uninomial, MatchMode.EXACT, propertyPaths);
         List<TaxonName> names = rankedNames(state, nameCandidates, rankedUninomial.rank);
@@ -226,15 +232,15 @@ public class PhycobankHigherClassificationExcelImport<CONFIG extends PhycobankHi
             taxon = createTaxonAndName(state, rankedUninomial.uninomial,
                     rankedUninomial.rank, line);
         }else{
-            if (names.size()> 1){
+            if (names.size() > 1){
                 List<Taxon> taxa = new ArrayList<>();
                 for (TaxonName name : names){
-                    taxa.addAll(getReferencedTaxa(name, sec));
+                    taxa.addAll(getReferencedTaxa(name, state.getConfig().getPhycobankReference()));
                 }
                 if (taxa.isEmpty()){
                     logger.warn(line + ": More than 1 name matches, but no matching taxon exists. Create new taxon with arbitrary name.");
                     TaxonName name = names.get(0);
-                    taxon = getOrCreateTaxon(state, name, sec, line);
+                    taxon = getOrCreateTaxon(state, name, phycobankRef, line);
                 }else if (taxa.size() == 1){
                     taxon = taxa.get(0);
                 }else{
@@ -242,10 +248,9 @@ public class PhycobankHigherClassificationExcelImport<CONFIG extends PhycobankHi
                             + "also checking parent relationships.");
                     taxon = taxa.get(0);
                 }
-
             }else{
                 TaxonName name = names.get(0);
-                taxon = getOrCreateTaxon(state, name, sec, line);
+                taxon = getOrCreateTaxon(state, name, phycobankRef, line);
             }
         }
         return taxon;
@@ -272,7 +277,6 @@ public class PhycobankHigherClassificationExcelImport<CONFIG extends PhycobankHi
         return result;
     }
 
-    private Reference secReference;
 
     /**
      * @param state
@@ -290,6 +294,19 @@ public class PhycobankHigherClassificationExcelImport<CONFIG extends PhycobankHi
         return secReference;
     }
 
+    private Reference getPhycobankReference(SimpleExcelTaxonImportState<CONFIG> state) {
+        UUID uuid = state.getConfig().getPhycobankReference().getUuid();
+        if (phycobankReference == null || !phycobankReference.getUuid().equals(uuid)){
+            phycobankReference = getReferenceService().find(uuid);
+            if (phycobankReference == null){
+                phycobankReference = state.getConfig().getPhycobankReference();
+                getReferenceService().save(phycobankReference);
+
+            }
+        }
+        return phycobankReference;
+    }
+
 
     /**
      * @param state
@@ -302,6 +319,8 @@ public class PhycobankHigherClassificationExcelImport<CONFIG extends PhycobankHi
             Rank rank, String line) {
         TaxonName newName = TaxonNameFactory.NewBotanicalInstance(rank);
         newName.setGenusOrUninomial(uninomial);
+
+        newName.addPrimaryTaxonomicSource(getSourceReference(state));
         newName.addImportSource(null, null, getSourceReference(state), line);
 
         Taxon taxon = createTaxon(state, newName, line);
@@ -316,14 +335,14 @@ public class PhycobankHigherClassificationExcelImport<CONFIG extends PhycobankHi
      * @return
      */
     private Taxon getOrCreateTaxon(SimpleExcelTaxonImportState<CONFIG> state, TaxonName name,
-            Reference sec, String line) {
-        List<Taxon> taxa = getReferencedTaxa(name, sec);
+            Reference phycobankRef, String line) {
+        List<Taxon> taxa = getReferencedTaxa(name, phycobankRef);
         Taxon result;
         if (taxa.isEmpty()){
             return createTaxon(state, name, line);
         }else{
             if (taxa.size()> 1){
-                //TODO handle
+                logger.warn(line + ": More then 1 taxon matches for given name. Take arbitrary one.");
             }
             result = taxa.get(0);
         }
@@ -354,16 +373,14 @@ public class PhycobankHigherClassificationExcelImport<CONFIG extends PhycobankHi
      */
     private Taxon createTaxon(SimpleExcelTaxonImportState<CONFIG> state,
             TaxonName name, String line) {
-        Taxon taxon = Taxon.NewInstance(name, getSecReference(state));
+        Taxon taxon = Taxon.NewInstance(name, getPhycobankReference(state));
         taxon.addImportSource(null, null, getSourceReference(state), line);
         return taxon;
     }
 
 
     /**
-     * @param state
-     * @param nameCandidates
-     * @param rank
+     * Returns those names that match in rank
      * @return
      */
     private List<TaxonName> rankedNames(SimpleExcelTaxonImportState<CONFIG> state,
@@ -386,6 +403,7 @@ public class PhycobankHigherClassificationExcelImport<CONFIG extends PhycobankHi
      */
     private void makeConceptRelation(SimpleExcelTaxonImportState<CONFIG> state,
             TaxonNode childNode, String microCitation) {
+
         Taxon child = childNode.getTaxon();
         Taxon parent = childNode.getParent().getTaxon();
         if (parent == null){

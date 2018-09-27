@@ -29,6 +29,7 @@ public class PhycobankHigherClassificationImportConfigurator extends ExcelImport
     private static IInputTransformer defaultTransformer = new IAPTTransformer();
 
     private Reference secReference;
+    private Reference phycobankReference;
 
      public static PhycobankHigherClassificationImportConfigurator NewInstance(URI source, ICdmDataSource destination) {
         return new PhycobankHigherClassificationImportConfigurator(source, destination);
@@ -59,6 +60,14 @@ public class PhycobankHigherClassificationImportConfigurator extends ExcelImport
     }
     public void setSecReference(Reference secReference) {
         this.secReference = secReference;
+    }
+
+
+    public Reference getPhycobankReference() {
+        return phycobankReference;
+    }
+    public void setPhycobankReference(Reference phycobankReference) {
+        this.phycobankReference = phycobankReference;
     }
 
 }
