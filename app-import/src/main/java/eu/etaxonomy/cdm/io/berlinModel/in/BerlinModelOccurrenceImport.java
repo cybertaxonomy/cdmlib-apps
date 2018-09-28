@@ -34,8 +34,6 @@ import eu.etaxonomy.cdm.model.common.AnnotationType;
 import eu.etaxonomy.cdm.model.common.CdmBase;
 import eu.etaxonomy.cdm.model.common.IdentifiableSource;
 import eu.etaxonomy.cdm.model.common.Language;
-import eu.etaxonomy.cdm.model.common.Marker;
-import eu.etaxonomy.cdm.model.common.MarkerType;
 import eu.etaxonomy.cdm.model.common.OrderedTermVocabulary;
 import eu.etaxonomy.cdm.model.description.DescriptionElementBase;
 import eu.etaxonomy.cdm.model.description.Distribution;
@@ -83,7 +81,7 @@ public class BerlinModelOccurrenceImport  extends BerlinModelImportBase {
 			String emCode = config.isIncludesAreaEmCode()? ", ar.EMCode" : "";
 			String strQuery =   //DISTINCT because otherwise emOccurrenceSource creates multiple records for a single distribution
                 " SELECT DISTINCT pt.RIdentifier AS taxonId, occ.OccurrenceId, occ.Native, occ.Introduced, " +
-            		" occ.Cultivated, occ.Notes occNotes, " +
+            		" occ.Cultivated, occ.WorldDistCompl, occ.Notes occNotes, " +
             		" sumcat.emOccurSumCatId, sumcat.Short, sumcat.Description, " +
                 	" sumcat.OutputCode, ar.AreaId, ar.TDWGCode " + emCode +
                 " FROM emOccurrence occ " +
@@ -92,7 +90,7 @@ public class BerlinModelOccurrenceImport  extends BerlinModelImportBase {
                 	" LEFT OUTER JOIN emOccurSumCat sumcat ON occ.SummaryStatus = sumcat.emOccurSumCatId " +
                 	" LEFT OUTER JOIN emOccurrenceSource ocs ON occ.OccurrenceId = ocs.OccurrenceFk " +
                 " WHERE (occ.OccurrenceId IN (" + ID_LIST_TOKEN + ")  )" +
-                " ORDER BY PTaxon.RIdentifier";
+                " ORDER BY pt.RIdentifier";
 		return strQuery;
 	}
 
@@ -170,30 +168,56 @@ public class BerlinModelOccurrenceImport  extends BerlinModelImportBase {
                 Integer emStatusId = nullSafeInt(rs, "emOccurSumCatId");
 
                 try {
-                	//status
+                    //area(s)
+                    List<NamedArea> areas = makeAreaList(state, partitioner, rs, occurrenceId);
+                    if (areas.size() != 1){
+                        logger.warn("Exactly 1 area expected but was " + areas.size() + ". OccId: " + occurrenceId);
+                        if (areas.isEmpty()){
+                            continue;
+                        }
+                    }
+
+                    //status
                 	PresenceAbsenceTerm status = null;
                 	String alternativeStatusString = null;
 					if (emStatusId != null){
 						status = BerlinModelTransformer.occStatus2PresenceAbsence(emStatusId);
 					}else{
-						String[] stringArray = new String[]{rs.getString("Native"), rs.getString("Introduced"), rs.getString("Cultivated")};
-						alternativeStatusString = CdmUtils.concat(",", stringArray);
+						//EM
+					    if (state.getConfig().isEuroMed() && areas.get(0).getUuid().equals(BerlinModelTransformer.uuidEM)){
+						    String complete = rs.getString("WorldDistCompl");
+						    if (complete == null){
+						        //FIXME
+                                status = PresenceAbsenceTerm.ENDEMISM_UNKNOWN();
+                                alternativeStatusString = getStatusAnnotation(rs);
+						    }else if (complete.equals("C")){
+                                status = PresenceAbsenceTerm.ENDEMIC_FOR_THE_RELEVANT_AREA();
+                                logger.warn("EmStatusId undefined though WorldDistCompl is 'C'. This is an unexpected state. OccID: " + occurrenceId);
+						    }else if (complete.equals("I")){
+						        status = PresenceAbsenceTerm.NOT_ENDEMIC_FOR_THE_RELEVANT_AREA();
+                            }else{
+                                status = PresenceAbsenceTerm.ENDEMISM_UNKNOWN();
+                                alternativeStatusString = getStatusAnnotation(rs);
+                            }
+						}else{ //other areas
+						    alternativeStatusString = getStatusAnnotation(rs);
+						    status = getPresenceTerm(state, BerlinModelTransformer.uuidStatusUndefined, "Undefined", "Undefined status as status was not computed in Berlin Model", "none", false, null);
+						}
 					}
 
 					Reference sourceRef = state.getTransactionalSourceReference();
 
-					List<NamedArea> areas = makeAreaList(state, partitioner, rs, occurrenceId);
 
                     //create description(elements)
                     TaxonDescription taxonDescription = getTaxonDescription(newTaxonId, oldTaxonId, oldDescription, taxonMap, occurrenceId, sourceRef);
                     for (NamedArea area : areas){
                     	Distribution distribution = Distribution.NewInstance(area, status);
-                        if (status == null){
-                        	AnnotationType annotationType = AnnotationType.EDITORIAL();
-                        	Annotation annotation = Annotation.NewInstance(alternativeStatusString, annotationType, null);
-                        	distribution.addAnnotation(annotation);
-                        	distribution.addMarker(Marker.NewInstance(MarkerType.PUBLISH(), false));
+                        if (StringUtils.isNotBlank(alternativeStatusString)){
+                            AnnotationType type = getAnnotationType(state, BerlinModelTransformer.uuidAnnoTypeDistributionStatus, "Original distribution status", "Original distribution status", null, null);
+                            Annotation annotation = Annotation.NewInstance(alternativeStatusString, type, null);
+                            distribution.addAnnotation(annotation);
                         }
+
 //                      distribution.setCitation(sourceRef);
                         if (taxonDescription != null) {
                         	Distribution duplicate = checkIsNoDuplicate(taxonDescription, distribution, duplicateMap , occurrenceId);
@@ -239,6 +263,20 @@ public class BerlinModelOccurrenceImport  extends BerlinModelImportBase {
 			return false;
 		}
 	}
+
+    /**
+     * @param rs
+     * @return
+     * @throws SQLException
+     */
+    protected String getStatusAnnotation(ResultSet rs) throws SQLException {
+        String alternativeStatusString;
+        String[] stringArray = new String[]{"Native: " + rs.getString("Native"), "Introduced: "+ rs.getString("Introduced"),
+                "Cultivated: " + rs.getString("Cultivated"), "StatusUnknown: " + rs.getString("StatusUnknown"),
+                "WorldDistCompl: " + rs.getString("WorldDistCompl")};
+        alternativeStatusString = CdmUtils.concat("; ", stringArray);
+        return alternativeStatusString;
+    }
 
 	/**
 	 * @param state
