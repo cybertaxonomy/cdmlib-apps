@@ -77,14 +77,15 @@ public class EuroMedActivator {
 	private static final Logger logger = Logger.getLogger(EuroMedActivator.class);
 
 	//database validation status (create, update, validate ...)
-	static DbSchemaValidation hbm2dll = DbSchemaValidation.CREATE;
+	static DbSchemaValidation hbm2dll = DbSchemaValidation.VALIDATE;
 //    static final Source berlinModelSource = BerlinModelSources.euroMed_Pub2();
 	static final Source berlinModelSource = BerlinModelSources.euroMed_BGBM42();
 //	static final Source berlinModelSource = BerlinModelSources.euroMed_PESI3();
 //
 //  static final ICdmDataSource cdmDestination = CdmDestinations.localH2();
 //    static final ICdmDataSource cdmDestination = CdmDestinations.cdm_local_euromed();
-	static final ICdmDataSource cdmDestination = CdmDestinations.cdm_test_euroMed();
+    static final ICdmDataSource cdmDestination = CdmDestinations.cdm_local_euromed();
+//	static final ICdmDataSource cdmDestination = CdmDestinations.cdm_test_euroMed();
 
     //check - import
     static final CHECK check = CHECK.IMPORT_WITHOUT_CHECK;
@@ -98,19 +99,21 @@ public class EuroMedActivator {
     static final boolean doTaxonNames = true;
     static final boolean doRelNames = true;
     static final boolean doNameStatus = true;
-    static final boolean doTypes = false;  //serious types do not exist in E+M except for name types which are handled in name relations
     static final boolean doNameFacts = true;
+    //serious types do not exist in E+M except for name types which are handled in name relations
+    static final boolean doTypes = false;  //serious types do not exist in E+M except for name types which are handled in name relations
 
     //taxa
     static final boolean doTaxa = true;
     static final boolean doFacts = true;
-    static final boolean doCommonNames = false;  //currently takes very long
     static final boolean doOccurences = false;
     static final boolean doRelTaxa = true;
-    static final boolean doRunTransmissionEngine = (hbm2dll == DbSchemaValidation.VALIDATE);
+    static final boolean doCommonNames = false;  //currently takes very long
+
+    static final boolean doRunTransmissionEngine = false; // (hbm2dll == DbSchemaValidation.VALIDATE);
 
     //etc.
-    static final boolean doMarker = false;
+    static final boolean doMarker = false;  //no relevant markers exist
 
     boolean invers = !(hbm2dll == DbSchemaValidation.CREATE);
 
@@ -208,7 +211,7 @@ public class EuroMedActivator {
 		config.setDoOccurrence(doOccurences ^ invers);
 		config.setDoCommonNames(doCommonNames ^ invers);
 
-		config.setDoMarker(doMarker ^ invers);
+		config.setDoMarker(doMarker);
 		config.setDoUser(doUser ^ invers);
 
 		config.setEuroMed(true);
@@ -439,7 +442,7 @@ public class EuroMedActivator {
         if (config.isDoOccurrence() && (config.getCheck().isImport())){
 
 	       try {
-            UUID areaVocabularyUuid = BerlinModelTransformer.uuidVocEuroMedAreas;
+	           UUID areaVocabularyUuid = BerlinModelTransformer.uuidVocEuroMedAreas;
                List<String> idSearchFields = Arrays.asList(new String[]{"EMAREA","PARENT"});
                String wmsLayerName = "euromed_2013";
                Set<UUID> areaUuidSet = null;
@@ -449,8 +452,6 @@ public class EuroMedActivator {
 
                Map<NamedArea, String> resultMap;
                try {
-//             URL url =  ClassLoader.getSystemResource("myConfig.txt");
-//             FileReader fileReader = new FileReader(url.getFile());
                    InputStream in = EuroMedActivator.class.getResourceAsStream("/euromed/euromed_2013.csv");
                    Reader reader = new InputStreamReader(in, "UTF-8");
 
@@ -465,10 +466,10 @@ public class EuroMedActivator {
                     logger.error(message);
                     System.out.println(message);
                }
-        } catch (Exception e) {
-            e.printStackTrace();
-            logger.error("Exception in importShapefile: " + e.getMessage());
-        }
+            } catch (Exception e) {
+                e.printStackTrace();
+                logger.error("Exception in importShapefile: " + e.getMessage());
+            }
 	    }
     }
 
