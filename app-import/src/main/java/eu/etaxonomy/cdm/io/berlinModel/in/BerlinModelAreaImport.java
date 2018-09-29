@@ -68,7 +68,7 @@ public class BerlinModelAreaImport  extends BerlinModelImportBase {
 		          " SELECT AreaId "
 		        + " FROM " + getTableName();
 		if (state.getConfig().isEuroMed()){
-		    result += " WHERE AreaID NOT IN (1, 21, 650, 653, 1718, 654) ";  //#3986
+		    result += " WHERE AreaID NOT IN (1, 21, 650, 653, 1718, 654, 646, 647) ";  //#3986
 		}
 		return result;
 	}

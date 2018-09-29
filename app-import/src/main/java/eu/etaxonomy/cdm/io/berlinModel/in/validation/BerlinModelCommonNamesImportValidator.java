@@ -164,17 +164,19 @@ public class BerlinModelCommonNamesImportValidator implements IOValidator<Berlin
 			boolean result = true;
 			Source source = config.getSource();
 			String strQueryArticlesWithoutJournal = "SELECT Count(*) as n " +
-					" FROM emCommonName " +
-					" WHERE (emCommonName.LanguageRefFk NOT IN " +
+					" FROM emCommonName cn INNER JOIN PTaxon pt ON pt.PTNameFk = cn.PTNameFk AND pt.PTRefFk = cn.PTRefFk " +
+					" WHERE (cn.LanguageRefFk NOT IN " +
 							"(SELECT ReferenceId FROM emLanguageReference)) AND " +
-						"(emCommonName.LanguageRefFk is NOT NULL)";
+						"(cn.LanguageRefFk is NOT NULL) AND "
+						+ " cn.LanguageRefFk <> cn.RefFk "
+						+ " AND pt.statusFk NOT IN (6) ";
 			ResultSet rs = source.getResultSet(strQueryArticlesWithoutJournal);
 			rs.next();
 			int count = rs.getInt("n");
 			if (count > 0){
-				System.out.println("========================================================");
-				System.out.println("There are " + count + " common names that have a languageRefFk which can not be found in the emLanguageReference table.");
-				System.out.println("========================================================");
+				System.out.println("============================================================================");
+				System.out.println("There are " + count + " common names that have a languageRefFk which can not be found in the emLanguageReference table AND are not equal to RefFk.");
+				System.out.println("============================================================================");
 			}
 			if (count > 0){
 				System.out.println(" ");

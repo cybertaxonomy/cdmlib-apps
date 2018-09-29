@@ -1,5 +1,5 @@
 /**
-* Copyright (C) 2016 EDIT
+* Copyright (C) 2018 EDIT
 * European Distributed Institute of Taxonomy
 * http://www.e-taxonomy.eu
 *
@@ -20,57 +20,40 @@ import eu.etaxonomy.cdm.database.ICdmDataSource;
 import eu.etaxonomy.cdm.io.common.CdmDefaultImport;
 import eu.etaxonomy.cdm.io.common.IImportConfigurator.CHECK;
 import eu.etaxonomy.cdm.io.common.ImportResult;
-import eu.etaxonomy.cdm.io.media.in.MediaExcelImportConfigurator;
+import eu.etaxonomy.cdm.io.greece.GreeceWillingImportConfigurator;
 import eu.etaxonomy.cdm.model.name.NomenclaturalCode;
 import eu.etaxonomy.cdm.model.reference.Reference;
 import eu.etaxonomy.cdm.model.reference.ReferenceFactory;
 
 /**
- *
- * Import for Checklist of Greece.
- *
- * https://dev.e-taxonomy.eu/redmine/issues/6286
- *
  * @author a.mueller
- * @since 13.12.2016
+ * @since 21.08.2018
+ *
  */
-public class GreeceImageActivator {
+public class GreeceWillingActivator {
     @SuppressWarnings("unused")
-    private static final Logger logger = Logger.getLogger(GreeceImageActivator.class);
+    private static final Logger logger = Logger.getLogger(GreeceWillingActivator.class);
 
 
     static final ICdmDataSource cdmDestination = CdmDestinations.localH2();
-//  static final ICdmDataSource cdmDestination = CdmDestinations.cdm_test_local_mysql_test();
 //    static final ICdmDataSource cdmDestination = CdmDestinations.cdm_greece_checklist_production();
 
-//    private static final UUID sourceUuid = UUID.fromString("1964a2e5-9ec3-411e-a36a-44279230c4b9");
-    private static final UUID sourceUuid = UUID.fromString("3430d54b-1a51-4a0d-9d9f-38178f1e4de3");
+    private static final UUID sourceUuid = UUID.fromString("b96b8a10-e2a5-4a01-b2f2-435a59a7a269");
 
-//    private static final String fileName = "20171107_sent_1332_images.xlsx";
-//    private static final String fileName = "20171110_Turland_433_others_59.xlsx";
-//    private static final String fileName = "20180824_Metadata_Zarkos_images_July_2018_b.xlsx";
-//    private static final String fileName = "2018_Aug_images.xlsx";
-    private static final String fileName = "20180925_FOG_images.xlsx";
-
-//    NOTE!!: Darauf achten, dass die Header case sensitiv sind und keine Leerzeichen am Ende sein sollten, trim funktioniert seltsamerweise nicht immer
-
-    //check - import
-    static final CHECK check = CHECK.IMPORT_WITHOUT_CHECK;
-
-    boolean doImages = true;
+    private static final String fileName = "WillingImport.xslx";
 
     private void doImport(ICdmDataSource cdmDestination){
 
         DbSchemaValidation schemaVal = cdmDestination.getDatabaseType() == DatabaseTypeEnum.H2 ? DbSchemaValidation.CREATE : DbSchemaValidation.VALIDATE;
         URI source = greekChecklist();  //just any
         //make Source
-        MediaExcelImportConfigurator config = MediaExcelImportConfigurator.NewInstance(source, cdmDestination);
-        config.setCheck(check);
+        GreeceWillingImportConfigurator config = GreeceWillingImportConfigurator.NewInstance(source, cdmDestination);
+        config.setCheck(CHECK.IMPORT_WITHOUT_CHECK);
         config.setDbSchemaValidation(schemaVal);
         config.setSourceReference(getSourceReference());
         config.setNomenclaturalCode(NomenclaturalCode.ICNAFP);
 
-        CdmDefaultImport<MediaExcelImportConfigurator> myImport = new CdmDefaultImport<>();
+        CdmDefaultImport<GreeceWillingImportConfigurator> myImport = new CdmDefaultImport<>();
         ImportResult result = myImport.invoke(config);
         System.out.println(result.createReport());
 
@@ -78,12 +61,13 @@ public class GreeceImageActivator {
 
 
     private URI greekChecklist(){
-        return URI.create("file:////BGBM-PESIHPC/Greece/images/" + fileName);
+        return URI.create("file:////BGBM-PESIHPC/Greece/" + fileName);
     }
 
 
     private Reference getSourceReference(){
         Reference result = ReferenceFactory.newDatabase();
+//        xx;
         result.setTitle(fileName);
         result.setUuid(sourceUuid);
 
@@ -94,8 +78,9 @@ public class GreeceImageActivator {
      * @param args
      */
     public static void main(String[] args) {
-        GreeceImageActivator me = new GreeceImageActivator();
+        GreeceWillingActivator me = new GreeceWillingActivator();
         me.doImport(cdmDestination);
         System.exit(0);
     }
+
 }
