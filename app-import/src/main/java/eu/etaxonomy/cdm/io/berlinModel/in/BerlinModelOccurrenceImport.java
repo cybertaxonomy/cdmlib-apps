@@ -81,7 +81,7 @@ public class BerlinModelOccurrenceImport  extends BerlinModelImportBase {
 			String emCode = config.isIncludesAreaEmCode()? ", ar.EMCode" : "";
 			String strQuery =   //DISTINCT because otherwise emOccurrenceSource creates multiple records for a single distribution
                 " SELECT DISTINCT pt.RIdentifier AS taxonId, occ.OccurrenceId, occ.Native, occ.Introduced, " +
-            		" occ.Cultivated, occ.WorldDistCompl, occ.Notes occNotes, " +
+            		" occ.Cultivated, occ.StatusUnknown, occ.WorldDistCompl, occ.Notes occNotes, " +
             		" sumcat.emOccurSumCatId, sumcat.Short, sumcat.Description, " +
                 	" sumcat.OutputCode, ar.AreaId, ar.TDWGCode " + emCode +
                 " FROM emOccurrence occ " +
