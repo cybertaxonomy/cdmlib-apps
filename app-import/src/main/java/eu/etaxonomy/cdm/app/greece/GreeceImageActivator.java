@@ -39,20 +39,15 @@ public class GreeceImageActivator {
     private static final Logger logger = Logger.getLogger(GreeceImageActivator.class);
 
 
-    static final ICdmDataSource cdmDestination = CdmDestinations.localH2();
+//    static final ICdmDataSource cdmDestination = CdmDestinations.localH2();
 //  static final ICdmDataSource cdmDestination = CdmDestinations.cdm_test_local_mysql_test();
-//    static final ICdmDataSource cdmDestination = CdmDestinations.cdm_greece_checklist_production();
+    static final ICdmDataSource cdmDestination = CdmDestinations.cdm_greece_checklist_production();
 
-//    private static final UUID sourceUuid = UUID.fromString("1964a2e5-9ec3-411e-a36a-44279230c4b9");
-    private static final UUID sourceUuid = UUID.fromString("3430d54b-1a51-4a0d-9d9f-38178f1e4de3");
-
+//    private static final UUID sourceUuid = UUID.fromString("418b5885-08fb-4f1e-ac94-8f5c84b1683d");
+    private static final UUID sourceUuid = UUID.fromString("c3d300f0-86ef-4c65-8727-c594035ed7a7");
 //    private static final String fileName = "20171107_sent_1332_images.xlsx";
-//    private static final String fileName = "20171110_Turland_433_others_59.xlsx";
-//    private static final String fileName = "20180824_Metadata_Zarkos_images_July_2018_b.xlsx";
-//    private static final String fileName = "2018_Aug_images.xlsx";
-    private static final String fileName = "20180925_FOG_images.xlsx";
+    private static final String fileName = "20171110_Turland_433_others_59.xlsx";
 
-//    NOTE!!: Darauf achten, dass die Header case sensitiv sind und keine Leerzeichen am Ende sein sollten, trim funktioniert seltsamerweise nicht immer
 
     //check - import
     static final CHECK check = CHECK.IMPORT_WITHOUT_CHECK;

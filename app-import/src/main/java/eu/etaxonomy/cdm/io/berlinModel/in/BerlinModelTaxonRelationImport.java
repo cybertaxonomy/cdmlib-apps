@@ -34,7 +34,6 @@ import org.apache.log4j.Logger;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.TransactionStatus;
 
-import eu.etaxonomy.cdm.common.CdmUtils;
 import eu.etaxonomy.cdm.common.ResultWrapper;
 import eu.etaxonomy.cdm.io.berlinModel.BerlinModelTransformer;
 import eu.etaxonomy.cdm.io.berlinModel.in.validation.BerlinModelTaxonRelationImportValidator;
@@ -44,12 +43,7 @@ import eu.etaxonomy.cdm.io.common.Source;
 import eu.etaxonomy.cdm.model.common.AnnotatableEntity;
 import eu.etaxonomy.cdm.model.common.CdmBase;
 import eu.etaxonomy.cdm.model.common.IdentifiableSource;
-import eu.etaxonomy.cdm.model.name.NameRelationshipType;
-import eu.etaxonomy.cdm.model.name.NomenclaturalStatus;
-import eu.etaxonomy.cdm.model.name.NomenclaturalStatusType;
-import eu.etaxonomy.cdm.model.name.TaxonName;
 import eu.etaxonomy.cdm.model.reference.Reference;
-import eu.etaxonomy.cdm.model.reference.ReferenceFactory;
 import eu.etaxonomy.cdm.model.taxon.Classification;
 import eu.etaxonomy.cdm.model.taxon.Synonym;
 import eu.etaxonomy.cdm.model.taxon.SynonymType;
@@ -59,8 +53,6 @@ import eu.etaxonomy.cdm.model.taxon.TaxonNode;
 import eu.etaxonomy.cdm.model.taxon.TaxonRelationship;
 import eu.etaxonomy.cdm.model.taxon.TaxonRelationshipType;
 import eu.etaxonomy.cdm.strategy.exceptions.UnknownCdmTypeException;
-import eu.etaxonomy.cdm.strategy.parser.NonViralNameParserImpl;
-import eu.etaxonomy.cdm.strategy.parser.TimePeriodParser;
 
 /**
  * @author a.mueller
@@ -73,7 +65,6 @@ public class BerlinModelTaxonRelationImport  extends BerlinModelImportBase  {
     private static final Logger logger = Logger.getLogger(BerlinModelTaxonRelationImport.class);
 
 	public static final String TREE_NAMESPACE = "PTRefFk";
-	private static final Integer AUCT_REF_ID = 5959;
 
 	private static int modCount = 30000;
 	private static final String pluralString = "taxon relations";
@@ -262,8 +253,6 @@ public class BerlinModelTaxonRelationImport  extends BerlinModelImportBase  {
 				int relPTaxonId = rs.getInt("RelPTaxonId");
 				Integer taxon1Id = nullSafeInt(rs, "taxon1Id");
 				Integer taxon2Id = nullSafeInt(rs, "taxon2Id");
-				Integer ptRefFk1 = nullSafeInt(rs, "PTRefFk1");
-
 				int relQualifierFk = -1;
 				try {
 					Integer relRefFk = nullSafeInt(rs,"relRefFk");
@@ -300,51 +289,7 @@ public class BerlinModelTaxonRelationImport  extends BerlinModelImportBase  {
 							if (relQualifierFk == TAX_REL_IS_INCLUDED_IN){
 								taxonRelationship = makeTaxonomicallyIncluded(state, classificationMap, treeRefFk, fromTaxon, toTaxon, citation, microcitation);
 							}else if (relQualifierFk == TAX_REL_IS_MISAPPLIED_NAME_OF){
-								boolean isProParte = "p.p.".equals(notes);
-							    if (isProParte){
-								    notes = null;
-								}
-							    boolean isDoubtful = "?".equals(notes);
-                                if (isDoubtful){
-                                    notes = null;
-                                }
-
-                                if (notes!= null && notes.startsWith("{non ") && notes.endsWith("}")){
-                                    notes = notes.substring(1, notes.length() - 1);
-                                }
-							    //handle auct. author
-						        if (fromTaxon.getSec() == null || fromTaxon.getSec().getTitleCache().startsWith("auct.")){
-							        String existingSecTitle = fromTaxon.getSec() == null ? null : fromTaxon.getSec().getTitleCache().trim();
-						            String existingAppendedPhrase = fromTaxon.getAppendedPhrase();
-							        if (fromTaxon.getSec() == null && isBlank(existingAppendedPhrase)){
-							            existingAppendedPhrase = "auct.";
-							        }
-						            fromTaxon.setSec(null);
-							        if (isNotBlank(existingAppendedPhrase) && isNotBlank(notes)){
-							            logger.warn("Misapplied name has >1 MA relation with a note, RelId: " + relPTaxonId);
-							        }
-
-							        String newAppendedPhrase = CdmUtils.concat(", ", existingSecTitle, notes);
-							        fromTaxon.setAppendedPhrase(CdmUtils.concat("; ", existingAppendedPhrase, newAppendedPhrase));
-							        if (isBlank(fromTaxon.getAppendedPhrase())){
-							            logger.warn("Appended phrase is empty. This is probably not correct. RelID: " + relPTaxonId);
-							        }else if ("auct.".equals(fromTaxon.getAppendedPhrase())){
-							            fromTaxon.setAppendedPhrase(null);
-							        }
-							        notes = null;
-							    }else if (notes != null && notes.startsWith("non ")){
-							        fromTaxon.setAppendedPhrase(CdmUtils.concat(", ", fromTaxon.getAppendedPhrase(), notes));
-							        notes = null;
-							    }
-
-							    if (isProParte){
-							        taxonRelationship = toTaxon.addProParteMisappliedName(fromTaxon, citation, microcitation);
-							    }else{
-							        taxonRelationship = toTaxon.addMisappliedName(fromTaxon, citation, microcitation);
-	                            }
-							    if (isDoubtful){
-							        ((TaxonRelationship)taxonRelationship).setDoubtful(true);
-							    }
+								 taxonRelationship = toTaxon.addMisappliedName(fromTaxon, citation, microcitation);
                             }else if (relQualifierFk == TAX_REL_IS_PROPARTE_SYN_OF ||
                                     //TODO homo/hetero
                                     relQualifierFk == TAX_REL_IS_PROPARTE_HOMOTYPIC_SYNONYM_OF ||
@@ -381,8 +326,6 @@ public class BerlinModelTaxonRelationImport  extends BerlinModelImportBase  {
 								success = false;
 								logger.warn("Synonym relationship type not yet implemented: " + relQualifierFk);
 							}
-							//
-							notes = handleSynonymNotes(state, toTaxon, synonym, notes, relPTaxonId);
 						}else if (isConceptRelationship){
 							ResultWrapper<Boolean> isInverse = ResultWrapper.NewInstance(false);
 							ResultWrapper<Boolean> isDoubtful = ResultWrapper.NewInstance(false);
@@ -415,11 +358,10 @@ public class BerlinModelTaxonRelationImport  extends BerlinModelImportBase  {
 							success = false;
 						}
 
-						if (taxonRelationship != null && isNotBlank(notes)){
+						if (taxonRelationship != null){
 						    doNotes(taxonRelationship, notes);
-						}
-						if (isNotBlank(notes)){
-						    logger.warn("Notes in RelPTaxon should all be handled explicitly and should not exist as notes anymore. RelID: " + relPTaxonId + ". Note: " + notes);
+						}else if (isNotBlank(notes)){
+						    logger.warn("Notes for synonym relationship or unknown taxon relationship not handled. RelID: " + relPTaxonId + ". Note: " + notes);
 						}
 						taxaToSave.add(taxon2);
 
@@ -454,82 +396,7 @@ public class BerlinModelTaxonRelationImport  extends BerlinModelImportBase  {
 	}
 
 
-	/**
-     * @param toTaxon
-     * @param synonym
-     * @param notes
-     * @return
-     */
-    private String handleSynonymNotes(BerlinModelImportState state, Taxon toTaxon, Synonym synonym, String notes, int relId) {
-        if (state.getConfig().isEuroMed() && isNotBlank(notes)){
-            notes = notes.trim();
-            if (notes.startsWith("[non ") && notes.endsWith("]")){
-                notes = notes.substring(5, notes.length()-1).trim();
-                String[] splits = notes.split(", nec ");
-                for (String split : splits){
-                    String nameStr = split.replace("<i>", "").replace("</i>", "");
-                    NonViralNameParserImpl parser = NonViralNameParserImpl.NewInstance();
-                    TaxonName name;
-                    NomenclaturalStatusType status = null;
-                    if (nameStr.endsWith(", nom. rej.") || nameStr.endsWith(", nom. cons.")||nameStr.endsWith(", nom. illeg.")){
-                        String statusStr = nameStr.endsWith(", nom. rej.")? ", nom. rej.":
-                            nameStr.endsWith(", nom. cons.")? ", nom. cons.":
-                            ", nom. illeg.";
-                        nameStr = nameStr.replace(statusStr, "");
-                        statusStr = statusStr.replace(", ", "");
-                        try {
-                            status = NomenclaturalStatusType.getNomenclaturalStatusTypeByAbbreviation(statusStr, null);
-                        } catch (UnknownCdmTypeException e) {
-                            logger.warn("NomStatusType not recognized: "+  statusStr + ", RelId: " +  relId);
-                        }
-                    }
-
-                    if (nameStr.contains(",") || nameStr.contains(" in ") ){
-                        name = parser.parseReferencedName(nameStr, state.getConfig().getNomenclaturalCode(), null);
-                    }else if (nameStr.matches(".*\\s\\d{4}")){
-                        String nameStr2 = nameStr.substring(0, nameStr.length() - 5).trim();
-                        String yearStr = nameStr.substring(nameStr.length()-4);
-                        name = (TaxonName)parser.parseFullName(nameStr2, state.getConfig().getNomenclaturalCode(), null);
-                        Reference nomRef = name.getNomenclaturalReference();
-                        if (nomRef == null){
-                            nomRef = ReferenceFactory.newGeneric();
-                            name.setNomenclaturalReference(nomRef);
-                        }
-                        nomRef.setDatePublished(TimePeriodParser.parseStringVerbatim(yearStr));
-                    }else if (nameStr.endsWith(" 1831-1832")){
-                        String nameStr2 = nameStr.substring(0, nameStr.length() - 10).trim();
-                        name = (TaxonName)parser.parseFullName(nameStr2, state.getConfig().getNomenclaturalCode(), null);
-                        Reference nomRef = name.getNomenclaturalReference();
-                        if (nomRef == null){
-                            nomRef = ReferenceFactory.newGeneric();
-                            name.setNomenclaturalReference(nomRef);
-                        }
-                        nomRef.setDatePublished(TimePeriodParser.parseStringVerbatim("1831-1832"));
-                    }else{
-                        name = parser.parseReferencedName(nameStr, state.getConfig().getNomenclaturalCode(), null);
-                    }
-                    if (name.isProtectedTitleCache() || name.isProtectedNameCache()
-                            || name.getNomenclaturalReference() != null && (name.getNomenclaturalReference().isProtectedAbbrevTitleCache()|| name.getNomenclaturalReference().isProtectedTitleCache() )){
-                        logger.warn("Blocking name for synonym relation could not be parsed: " + nameStr + ", RelId: "+ relId);
-                    }
-                    if (status != null){
-                        name.addStatus(NomenclaturalStatus.NewInstance(status));
-                    }
-                    synonym.getName().addRelationshipFromName(name, NameRelationshipType.BLOCKING_NAME_FOR(), null, null, null);
-
-                    getNameService().saveOrUpdate(name);
-                }
-                return null;
-            }else{
-                return notes;
-            }
-        }else{
-            return notes;
-        }
-    }
-
-    private void handleAllRelatedTaxa(BerlinModelImportState state, Taxon taxon,
-            Map<Integer, Classification> classificationMap, Integer secRefFk) {
+	private void handleAllRelatedTaxa(BerlinModelImportState state, Taxon taxon, Map<Integer, Classification> classificationMap, Integer secRefFk) {
 		if (taxon.getTaxonNodes().size() > 0){
 			return;
 		}else{
