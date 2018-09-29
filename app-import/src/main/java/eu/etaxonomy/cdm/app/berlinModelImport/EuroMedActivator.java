@@ -317,6 +317,7 @@ public class EuroMedActivator {
 
                 //make feature tree
                 FeatureTree tree = TreeCreator.flatTree(featureTreeUuid, config.getFeatureMap(), featureKeyList);
+                tree.setTitleCache("Euro+Med Feature Tree", true);
                 FeatureNode imageNode = FeatureNode.NewInstance(Feature.IMAGE());
                 tree.getRoot().addChild(imageNode);
                 FeatureNode distributionNode = FeatureNode.NewInstance(Feature.DISTRIBUTION());
