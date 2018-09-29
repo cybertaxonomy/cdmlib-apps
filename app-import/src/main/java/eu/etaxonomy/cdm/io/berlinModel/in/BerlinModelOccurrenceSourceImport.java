@@ -11,10 +11,8 @@ package eu.etaxonomy.cdm.io.berlinModel.in;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -31,9 +29,10 @@ import eu.etaxonomy.cdm.model.common.OriginalSourceType;
 import eu.etaxonomy.cdm.model.description.DescriptionElementBase;
 import eu.etaxonomy.cdm.model.description.DescriptionElementSource;
 import eu.etaxonomy.cdm.model.description.Distribution;
-import eu.etaxonomy.cdm.model.name.INonViralName;
+import eu.etaxonomy.cdm.model.description.TaxonDescription;
 import eu.etaxonomy.cdm.model.name.TaxonName;
 import eu.etaxonomy.cdm.model.reference.Reference;
+import eu.etaxonomy.cdm.model.taxon.Taxon;
 
 
 /**
@@ -53,7 +52,8 @@ public class BerlinModelOccurrenceSourceImport  extends BerlinModelImportBase {
 
 
 	private Map<String, Integer> sourceNumberRefIdMap;
-	private Set<String> unfoundReferences = new HashSet<>();
+	private Map<String, Set<Integer>> nameCache2NameIdMap;
+	private Set<String> notFoundReferences = new HashSet<>();
 
 
 	public BerlinModelOccurrenceSourceImport(){
@@ -83,18 +83,19 @@ public class BerlinModelOccurrenceSourceImport  extends BerlinModelImportBase {
 
 	@Override
 	protected void doInvoke(BerlinModelImportState state) {
-		unfoundReferences = new HashSet<>();
+		notFoundReferences = new HashSet<>();
 
 		try {
 			sourceNumberRefIdMap = makeSourceNumberReferenceIdMap(state);
+			nameCache2NameIdMap = makeNameCache2NameIdMap(state);
 		} catch (SQLException e) {
 			e.printStackTrace();
 			throw new RuntimeException(e);
 		}
 		super.doInvoke(state);
 		sourceNumberRefIdMap = null;
-		if (unfoundReferences.size()>0){
-			String unfound = "'" + CdmUtils.concat("','", unfoundReferences.toArray(new String[]{})) + "'";
+		if (notFoundReferences.size()>0){
+			String unfound = "'" + CdmUtils.concat("','", notFoundReferences.toArray(new String[]{})) + "'";
 			logger.warn("Not found references: " + unfound);
 		}
 		return;
@@ -134,16 +135,19 @@ public class BerlinModelOccurrenceSourceImport  extends BerlinModelImportBase {
     					DescriptionElementSource originalSource = DescriptionElementSource.NewInstance(OriginalSourceType.PrimaryTaxonomicSource);
     					originalSource.setCitation(ref);
     					TaxonName taxonName;
-						taxonName = TaxonName.castAndDeproxy(getName(state, oldName, oldNameFk));
+						taxonName = TaxonName.castAndDeproxy(getName(state, oldName, oldNameFk, occurrenceSourceId, distribution));
 						if (taxonName != null){
-    						originalSource.setNameUsedInSource(taxonName);
+						    if(isNotBlank(oldName) && !oldName.equals(taxonName.getNameCache())){
+	                            originalSource.setOriginalNameString(oldName);
+	                        }
+						    originalSource.setNameUsedInSource(taxonName);
     					}else if(isNotBlank(oldName)){
     						originalSource.setOriginalNameString(oldName);
     					}
     					distribution.addSource(originalSource);
     				}else{
     					logger.warn("reference for sourceNumber "+sourceNumber+" could not be found. OccurrenceSourceId: " + occurrenceSourceId );
-    					unfoundReferences.add(sourceNumber);
+    					notFoundReferences.add(sourceNumber);
     				}
     			}else{
     				logger.warn("distribution ("+occurrenceFk+") for occurrence source (" + occurrenceSourceId + ") could not be found." );
@@ -170,18 +174,21 @@ public class BerlinModelOccurrenceSourceImport  extends BerlinModelImportBase {
 
 		try{
 			Set<String> occurrenceIdSet = new HashSet<>();
-			Set<String> referenceIdSet = new HashSet<>();
 			Set<String> nameIdSet = new HashSet<>();
 			Set<String> sourceNumberSet = new HashSet<>();
+			Set<String> oldNamesSet = new HashSet<>();
 			while (rs.next()){
 				handleForeignKey(rs, occurrenceIdSet, "occurrenceFk");
 				handleForeignKey(rs, nameIdSet, "oldNameFk");
 				sourceNumberSet.add(CdmUtils.NzTrim(rs.getString("SourceNumber")));
+				oldNamesSet.add(CdmUtils.NzTrim(rs.getString("oldName")));
 			}
 
 			sourceNumberSet.remove("");
-			referenceIdSet = handleSourceNumber(sourceNumberSet);
-
+			Set<String> referenceIdSet = handleSourceNumber(sourceNumberSet);
+            oldNamesSet.remove("");
+            Set<String> oldNameIdSet = handleOldNames(oldNamesSet);
+            nameIdSet.addAll(oldNameIdSet);
 
 			//occurrence map
 			nameSpace = BerlinModelOccurrenceImport.NAMESPACE;
@@ -224,6 +231,20 @@ public class BerlinModelOccurrenceSourceImport  extends BerlinModelImportBase {
 		return referenceIdSet;
 	}
 
+    private Set<String> handleOldNames(Set<String> oldNamesSet) {
+        Set<String> oldNameIdSet = new HashSet<>();
+
+        for(String oldName : oldNamesSet){
+            if (isNotBlank(oldName)){
+                Set<Integer> nameIds = nameCache2NameIdMap.get(oldName);
+                for (Integer nameId : nameIds){
+                    oldNameIdSet.add(String.valueOf(nameId));
+                }
+            }
+        }
+        return oldNameIdSet;
+    }
+
 
 
 	/**
@@ -233,29 +254,83 @@ public class BerlinModelOccurrenceSourceImport  extends BerlinModelImportBase {
 	 * @return
 	 */
 	boolean isFirstTimeNoNameByService = true;
-	private INonViralName getName(BerlinModelImportState state, String oldName, Integer oldNameFk) {
+	private TaxonName getName(BerlinModelImportState state, String oldName, Integer oldNameFk, Integer occSourceId, Distribution distribution) {
 		TaxonName taxonName = (TaxonName)state.getRelatedObject(BerlinModelTaxonNameImport.NAMESPACE, String.valueOf(oldNameFk));
-		if (taxonName == null && oldName != null){
-			if (isFirstTimeNoNameByService){
-				logger.warn("oldName not checked against names in BerlinModel. Just take it as a string");
-				isFirstTimeNoNameByService = false;
-			}
-			List<INonViralName> names = new ArrayList<>();
-//			names = getNameService().getNamesByNameCache(oldName);
-			if (names.isEmpty()){
-				return null;
-			}else {
-				if (names.size()> 1){
-					logger.info("There is more than one name matching oldName: " + oldName + ".");
-				}
-				return names.get(0);
-				//taxonName = nameParser.parseSimpleName(oldName);
-			}
+		if (oldNameFk != null && taxonName == null){
+		    logger.warn("OldNameFk "+oldNameFk+" exists but taxonName not found for occSource: " + occSourceId);
 		}
-		return taxonName;
+		if (isNotBlank(oldName)){
+		    if (taxonName == null){
+		        if (isFirstTimeNoNameByService){
+		            logger.warn("oldName not checked against names in BerlinModel. Just take it as a string");
+		            isFirstTimeNoNameByService = false;
+		        }
+		        Set<TaxonName> names = getOldNames(state, oldName);
+		        if (names.isEmpty()){
+		            logger.warn("No name found for freetext oldName '"+oldName+"'; occSourceId: " + occSourceId);
+		            //taxonName = nameParser.parseSimpleName(oldName);
+		            return null;
+		        }else {
+		            if (names.size()> 1){
+		                TaxonName synName = getFirstSynonymName(state, names, distribution, occSourceId);
+		                if (synName == null){
+		                    logger.warn("There is more than one matching oldName for '"+oldName+"' but none of them is a synonym of the accepted taxon. Take arbitrary one. OccSourceId: " + occSourceId);
+		                    return names.iterator().next();
+		                }else{
+		                    return synName;
+		                }
+		            }else{
+                        return names.iterator().next();
+		            }
+		        }
+		    }else if (!oldName.equals(taxonName.getNameCache())){
+		        logger.warn("Old name freetext and linked name nameCache are not equal: " + oldName + "/" + taxonName.getNameCache() + "; occSourceId: " +  occSourceId);
+	            return taxonName;
+		    }else{
+		        return taxonName;
+		    }
+		}else{
+		    return taxonName;
+		}
 	}
 
 	/**
+     * @param state
+     * @param names
+     * @param taxon
+     * @return
+     */
+    private TaxonName getFirstSynonymName(BerlinModelImportState state, Set<TaxonName> names, Distribution distribution, Integer occSourceId) {
+        Taxon taxon = CdmBase.deproxy(distribution.getInDescription(), TaxonDescription.class).getTaxon();
+        Set<TaxonName> synonyms = taxon.getSynonymNames();
+        TaxonName result = null;
+        for (TaxonName name : names){
+            if (synonyms.contains(name)){
+                if (result != null){
+                    logger.warn("There is more than 1 matching synonym for " + name.getNameCache() + "; occSourceId: " + occSourceId);
+                }
+                result = name;
+            }
+        }
+        return result;
+    }
+
+    /**
+     * @param state
+     * @param oldName
+     * @return
+     */
+    private Set<TaxonName> getOldNames(BerlinModelImportState state, String oldName) {
+        Set<Integer> nameIds = nameCache2NameIdMap.get(oldName);
+        Set<TaxonName> names = new HashSet<>(nameIds.size());
+        for (Integer id : nameIds){
+            TaxonName name = (TaxonName)state.getRelatedObject(BerlinModelTaxonNameImport.NAMESPACE, String.valueOf(id));
+            names.add(name);
+        }
+        return names;
+    }
+
+    /**
 	 * Creates a map which maps source numbers on references
 	 * @param state
 	 * @return
@@ -283,6 +358,39 @@ public class BerlinModelOccurrenceSourceImport  extends BerlinModelImportBase {
 		}
 		return result;
 	}
+
+	   /**
+     * Creates a map which maps nameCaches to nameIDs numbers on references
+     * @param state
+     * @return
+     * @throws SQLException
+     */
+    private Map<String, Set<Integer>> makeNameCache2NameIdMap(BerlinModelImportState state) throws SQLException {
+        Map<String, Set<Integer>> result = new HashMap<>();
+
+        Source source = state.getConfig().getSource();
+        String strQuery = " SELECT NameId, nameCache " +
+                          " FROM Name " +
+                          " WHERE (nameCache IS NOT NULL) AND (nameCache NOT LIKE '') ";
+
+        ResultSet rs = source.getResultSet(strQuery) ;
+        while (rs.next()){
+            int nameId = rs.getInt("NameId");
+            String nameCache = rs.getString("nameCache");
+            if (isNotBlank(nameCache)){
+                nameCache = nameCache.trim();
+                Set<Integer> set = result.get(nameCache);
+                if (set == null){
+                    set = new HashSet<>();
+                    result.put(nameCache, set);
+                }
+                set.add(nameId);
+            }
+        }
+        return result;
+    }
+
+
 
 	@Override
 	protected boolean doCheck(BerlinModelImportState state){
