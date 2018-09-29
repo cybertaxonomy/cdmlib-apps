@@ -66,29 +66,28 @@ import eu.etaxonomy.cdm.persistence.query.OrderHint;
 
 /**
  * TODO add the following to a wiki page:
- * HINT: If you are about to import into a mysql data base running under windows and if you wish to dump and restore the resulting data bas under another operation systen
+ * HINT: If you are about to import into a mysql data base running under windows and if you wish to
+ * dump and restore the resulting data bas under another operation systen
  * you must set the mysql system variable lower_case_table_names = 0 in order to create data base with table compatible names.
  *
- *
  * @author a.mueller
- *
  */
 public class EuroMedActivator {
 	private static final Logger logger = Logger.getLogger(EuroMedActivator.class);
 
 	//database validation status (create, update, validate ...)
-	static DbSchemaValidation hbm2dll = DbSchemaValidation.VALIDATE;
+	static DbSchemaValidation hbm2dll = DbSchemaValidation.CREATE;
 //    static final Source berlinModelSource = BerlinModelSources.euroMed_Pub2();
 	static final Source berlinModelSource = BerlinModelSources.euroMed_BGBM42();
 //	static final Source berlinModelSource = BerlinModelSources.euroMed_PESI3();
 //
-//  static final ICdmDataSource cdmDestination = CdmDestinations.localH2();
+  static final ICdmDataSource cdmDestination = CdmDestinations.localH2();
 //    static final ICdmDataSource cdmDestination = CdmDestinations.cdm_local_euromed();
-    static final ICdmDataSource cdmDestination = CdmDestinations.cdm_local_euromed();
+//    static final ICdmDataSource cdmDestination = CdmDestinations.cdm_local_euromed2();
 //	static final ICdmDataSource cdmDestination = CdmDestinations.cdm_test_euroMed();
 
     //check - import
-    static final CHECK check = CHECK.IMPORT_WITHOUT_CHECK;
+    static final CHECK check = CHECK.CHECK_ONLY;
 
     static final boolean doUser = true;
 //  //authors
@@ -100,15 +99,17 @@ public class EuroMedActivator {
     static final boolean doRelNames = true;
     static final boolean doNameStatus = true;
     static final boolean doNameFacts = true;
-    //serious types do not exist in E+M except for name types which are handled in name relations
-    static final boolean doTypes = false;  //serious types do not exist in E+M except for name types which are handled in name relations
 
     //taxa
     static final boolean doTaxa = true;
     static final boolean doFacts = true;
-    static final boolean doOccurences = false;
+    static final boolean doOccurences = true;
     static final boolean doRelTaxa = true;
-    static final boolean doCommonNames = false;  //currently takes very long
+    static final boolean doCommonNames = true;  //currently takes very long
+
+  //serious types do not exist in E+M except for name types which are handled in name relations
+    static final boolean doTypes = false;  //serious types do not exist in E+M except for name types which are handled in name relations
+
 
     static final boolean doRunTransmissionEngine = false; // (hbm2dll == DbSchemaValidation.VALIDATE);
 
@@ -308,8 +309,7 @@ public class EuroMedActivator {
 
     //create feature tree
     private void createFeatureTree(BerlinModelImportConfigurator config,
-            CdmDefaultImport<BerlinModelImportConfigurator> bmImport)
-    {
+            CdmDefaultImport<BerlinModelImportConfigurator> bmImport){
 	    if (config.isDoFacts() && (config.getCheck().isImport()  )  ){
 			try {
                 ICdmRepository app = bmImport.getCdmAppController();

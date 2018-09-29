@@ -54,11 +54,12 @@ import eu.etaxonomy.cdm.model.reference.Reference;
 /**
  * @author a.mueller
  * @since 20.03.2008
- * @version 1.0
  */
 @Component
 public class BerlinModelNameFactsImport  extends BerlinModelImportBase  {
-	private static final Logger logger = Logger.getLogger(BerlinModelNameFactsImport.class);
+    private static final long serialVersionUID = 4174085686074314138L;
+
+    private static final Logger logger = Logger.getLogger(BerlinModelNameFactsImport.class);
 
 	public static final String NAMESPACE = "NameFact";
 
@@ -75,8 +76,6 @@ public class BerlinModelNameFactsImport  extends BerlinModelImportBase  {
 	}
 
 
-
-
 	@Override
 	protected String getIdQuery(BerlinModelImportState state) {
 		if (StringUtils.isNotEmpty(state.getConfig().getNameIdTable())){
@@ -88,12 +87,6 @@ public class BerlinModelNameFactsImport  extends BerlinModelImportBase  {
 		}
 	}
 
-
-
-
-	/* (non-Javadoc)
-	 * @see eu.etaxonomy.cdm.io.berlinModel.in.BerlinModelImportBase#getRecordQuery(eu.etaxonomy.cdm.io.berlinModel.in.BerlinModelImportConfigurator)
-	 */
 	@Override
 	protected String getRecordQuery(BerlinModelImportConfigurator config) {
 		String strQuery =
@@ -106,7 +99,7 @@ public class BerlinModelNameFactsImport  extends BerlinModelImportBase  {
 	}
 
 	@Override
-    public boolean doPartition(ResultSetPartitioner partitioner, BerlinModelImportState state) {
+    public boolean doPartition(@SuppressWarnings("rawtypes") ResultSetPartitioner partitioner, BerlinModelImportState state) {
 		boolean success = true ;
 		BerlinModelImportConfigurator config = state.getConfig();
 		Set<TaxonName> nameToSave = new HashSet<>();
@@ -173,7 +166,7 @@ public class BerlinModelNameFactsImport  extends BerlinModelImportBase  {
 							taxonNameBase.addDescription(description);
 						}
 					}else if (category.equalsIgnoreCase(NAME_FACT_BIBLIOGRAPHY)){
-						if (StringUtils.isNotBlank(nameFact)){
+						if (isNotBlank(nameFact)){
 							TaxonNameDescription description = TaxonNameDescription.NewInstance();
 							TextData bibliography = TextData.NewInstance(Feature.CITATION());
 							//TODO language

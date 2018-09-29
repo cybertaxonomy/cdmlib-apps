@@ -53,7 +53,7 @@ public class BerlinModelOccurrenceSourceImport  extends BerlinModelImportBase {
 
 
 	private Map<String, Integer> sourceNumberRefIdMap;
-	private Set<String> unfoundReferences = new HashSet<String>();
+	private Set<String> unfoundReferences = new HashSet<>();
 
 
 	public BerlinModelOccurrenceSourceImport(){
@@ -83,7 +83,7 @@ public class BerlinModelOccurrenceSourceImport  extends BerlinModelImportBase {
 
 	@Override
 	protected void doInvoke(BerlinModelImportState state) {
-		unfoundReferences = new HashSet<String>();
+		unfoundReferences = new HashSet<>();
 
 		try {
 			sourceNumberRefIdMap = makeSourceNumberReferenceIdMap(state);
@@ -101,10 +101,11 @@ public class BerlinModelOccurrenceSourceImport  extends BerlinModelImportBase {
 	}
 
 	@Override
-	public boolean doPartition(ResultSetPartitioner partitioner, BerlinModelImportState state) {
+	public boolean doPartition(@SuppressWarnings("rawtypes") ResultSetPartitioner partitioner, BerlinModelImportState state) {
 		boolean success = true;
 		ResultSet rs = partitioner.getResultSet();
-		Map<String, Reference> refMap = partitioner.getObjectMap(BerlinModelReferenceImport.REFERENCE_NAMESPACE);
+		@SuppressWarnings("unchecked")
+        Map<String, Reference> refMap = partitioner.getObjectMap(BerlinModelReferenceImport.REFERENCE_NAMESPACE);
 
 		Set<DescriptionElementBase> objectsToSave = new HashSet<DescriptionElementBase>();
 		try {
@@ -165,13 +166,13 @@ public class BerlinModelOccurrenceSourceImport  extends BerlinModelImportBase {
 		String nameSpace;
 		Class<?> cdmClass;
 		Set<String> idSet;
-		Map<Object, Map<String, ? extends CdmBase>> result = new HashMap<Object, Map<String, ? extends CdmBase>>();
+		Map<Object, Map<String, ? extends CdmBase>> result = new HashMap<>();
 
 		try{
-			Set<String> occurrenceIdSet = new HashSet<String>();
-			Set<String> referenceIdSet = new HashSet<String>();
-			Set<String> nameIdSet = new HashSet<String>();
-			Set<String> sourceNumberSet = new HashSet<String>();
+			Set<String> occurrenceIdSet = new HashSet<>();
+			Set<String> referenceIdSet = new HashSet<>();
+			Set<String> nameIdSet = new HashSet<>();
+			Set<String> sourceNumberSet = new HashSet<>();
 			while (rs.next()){
 				handleForeignKey(rs, occurrenceIdSet, "occurrenceFk");
 				handleForeignKey(rs, nameIdSet, "oldNameFk");
@@ -179,28 +180,31 @@ public class BerlinModelOccurrenceSourceImport  extends BerlinModelImportBase {
 			}
 
 			sourceNumberSet.remove("");
-			referenceIdSet = handleSourceNumber(rs, sourceNumberSet, result);
+			referenceIdSet = handleSourceNumber(sourceNumberSet);
 
 
 			//occurrence map
 			nameSpace = BerlinModelOccurrenceImport.NAMESPACE;
 			cdmClass = Distribution.class;
 			idSet = occurrenceIdSet;
-			Map<String, Distribution> occurrenceMap = (Map<String, Distribution>)getCommonService().getSourcedObjectsByIdInSource(cdmClass, idSet, nameSpace);
+			@SuppressWarnings("unchecked")
+            Map<String, Distribution> occurrenceMap = (Map<String, Distribution>)getCommonService().getSourcedObjectsByIdInSource(cdmClass, idSet, nameSpace);
 			result.put(nameSpace, occurrenceMap);
 
 			//name map
 			nameSpace = BerlinModelTaxonNameImport.NAMESPACE;
 			cdmClass = TaxonName.class;
 			idSet =nameIdSet;
-			Map<String, TaxonName> nameMap = (Map<String, TaxonName>)getCommonService().getSourcedObjectsByIdInSource(cdmClass, idSet, nameSpace);
+			@SuppressWarnings("unchecked")
+            Map<String, TaxonName> nameMap = (Map<String, TaxonName>)getCommonService().getSourcedObjectsByIdInSource(cdmClass, idSet, nameSpace);
 			result.put(nameSpace, nameMap);
 
 			//reference map
 			nameSpace = BerlinModelReferenceImport.REFERENCE_NAMESPACE;
 			cdmClass = Reference.class;
 			idSet = referenceIdSet;
-			Map<String, Reference> referenceMap = (Map<String, Reference>)getCommonService().getSourcedObjectsByIdInSource(cdmClass, idSet, nameSpace);
+			@SuppressWarnings("unchecked")
+            Map<String, Reference> referenceMap = (Map<String, Reference>)getCommonService().getSourcedObjectsByIdInSource(cdmClass, idSet, nameSpace);
 			result.put(nameSpace, referenceMap);
 
 		} catch (SQLException e) {
@@ -209,9 +213,9 @@ public class BerlinModelOccurrenceSourceImport  extends BerlinModelImportBase {
 		return result;
 	}
 
-	private Set<String> handleSourceNumber(ResultSet rs, Set<String> sourceNumberSet, Map<Object, Map<String, ? extends CdmBase>> result) {
+	private Set<String> handleSourceNumber(Set<String> sourceNumberSet) {
 		Map<String, Integer> sourceNumberReferenceIdMap = this.sourceNumberRefIdMap;
-		Set<String> referenceIdSet = new HashSet<String>();
+		Set<String> referenceIdSet = new HashSet<>();
 
 		for(String sourceNumber : sourceNumberSet){
 			Integer refId = sourceNumberReferenceIdMap.get(sourceNumber);
@@ -258,12 +262,12 @@ public class BerlinModelOccurrenceSourceImport  extends BerlinModelImportBase {
      * @throws SQLException
 	 */
 	private Map<String, Integer> makeSourceNumberReferenceIdMap(BerlinModelImportState state) throws SQLException {
-		Map<String, Integer> result = new HashMap<String, Integer>();
+		Map<String, Integer> result = new HashMap<>();
 
 		Source source = state.getConfig().getSource();
 		String strQuery = " SELECT RefId, IdInSource " +
 						  " FROM Reference " +
-						  " WHERE     (IdInSource IS NOT NULL) AND (IdInSource NOT LIKE '') ";
+						  " WHERE (IdInSource IS NOT NULL) AND (IdInSource NOT LIKE '') ";
 
 		ResultSet rs = source.getResultSet(strQuery) ;
 		while (rs.next()){

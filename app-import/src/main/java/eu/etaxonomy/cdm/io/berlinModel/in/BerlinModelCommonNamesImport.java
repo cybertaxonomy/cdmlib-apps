@@ -173,10 +173,11 @@ public class BerlinModelCommonNamesImport  extends BerlinModelImportBase {
 
 
     @Override
-	public boolean doPartition(ResultSetPartitioner partitioner, BerlinModelImportState state)  {
+	public boolean doPartition(@SuppressWarnings("rawtypes") ResultSetPartitioner partitioner, BerlinModelImportState state)  {
 		boolean success = true ;
 
-		Set<TaxonBase> taxaToSave = new HashSet<>();
+		@SuppressWarnings("rawtypes")
+        Set<TaxonBase> taxaToSave = new HashSet<>();
 		@SuppressWarnings("unchecked")
         Map<String, Taxon> taxonMap = partitioner.getObjectMap(BerlinModelTaxonImport.NAMESPACE);
 		@SuppressWarnings("unchecked")
