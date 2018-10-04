@@ -24,7 +24,7 @@ import eu.etaxonomy.cdm.database.ICdmDataSource;
 import eu.etaxonomy.cdm.io.common.CdmDefaultImport;
 import eu.etaxonomy.cdm.io.common.IImportConfigurator.CHECK;
 import eu.etaxonomy.cdm.io.phycobank.IAPTImportConfigurator;
-import eu.etaxonomy.cdm.model.common.VerbatimTimePeriod;
+import eu.etaxonomy.cdm.model.common.TimePeriod;
 import eu.etaxonomy.cdm.model.reference.Reference;
 import eu.etaxonomy.cdm.model.reference.ReferenceFactory;
 
@@ -57,7 +57,8 @@ public class IAPTActivator {
     static {
         DatabaseTypeEnum dbType = DatabaseTypeEnum.MySQL;
         String cdmServer = "127.0.0.1";
-        String cdmDB = "cdm_algea_registry";
+        // String cdmDB = "cdm_algea_registry";
+        String cdmDB = "cdm_phycobank";
         String cdmUserName = "edit";
         cdmDestination =  CdmDestinations.makeDestination(dbType, cdmServer, cdmDB, -1, cdmUserName, null);
         // cdmDestination = CdmDestinations.localH2();
@@ -153,6 +154,9 @@ public class IAPTActivator {
      * @param args
      */
     public static void main(String[] args) {
+        if(args.length == 0){
+            logger.warn("Missing argument, valid values are: 'import' , 'createRegistrations'");
+        }
         IAPTActivator me = new IAPTActivator();
         me.doImport(cdmDestination);
     }

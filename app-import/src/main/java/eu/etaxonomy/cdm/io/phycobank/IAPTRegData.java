@@ -1,6 +1,5 @@
 package eu.etaxonomy.cdm.io.phycobank;
 
-
 /**
  * Created by andreas on 9/16/16.
  */
@@ -13,6 +12,10 @@ public class IAPTRegData {
     private String office = null;
 
     private Integer formNumber = null;
+
+    public IAPTRegData(){
+
+    }
 
     public IAPTRegData(String date, String office, Integer regID, Integer formNumber) {
         this.date = date;
