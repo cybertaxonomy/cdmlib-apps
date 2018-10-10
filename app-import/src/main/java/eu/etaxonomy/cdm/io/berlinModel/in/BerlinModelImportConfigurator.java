@@ -119,6 +119,8 @@ public class BerlinModelImportConfigurator extends DbImportConfiguratorBase<Berl
 
     private boolean isTaxonNoteAsFeature = false;
 
+    private boolean doPreliminaryRefDetailsWithNames = false;
+
 
     public boolean isTaxonNoteAsFeature() {return isTaxonNoteAsFeature;}
     public void setTaxonNoteAsFeature(boolean isTaxonNoteAsFeature) {this.isTaxonNoteAsFeature = isTaxonNoteAsFeature;}
@@ -671,6 +673,14 @@ public class BerlinModelImportConfigurator extends DbImportConfiguratorBase<Berl
     }
     public void setUseLastScrutinyAsSec(boolean useLastScrutinyAsSec) {
         this.useLastScrutinyAsSec = useLastScrutinyAsSec;
+    }
+
+
+    public boolean isDoPreliminaryRefDetailsWithNames() {
+        return doPreliminaryRefDetailsWithNames;
+    }
+    public void setDoPreliminaryRefDetailsWithNames(boolean doPreliminaryRefDetailsWithNames) {
+        this.doPreliminaryRefDetailsWithNames = doPreliminaryRefDetailsWithNames;
     }
 
     public boolean isWarnForDifferingSynonymReference() {

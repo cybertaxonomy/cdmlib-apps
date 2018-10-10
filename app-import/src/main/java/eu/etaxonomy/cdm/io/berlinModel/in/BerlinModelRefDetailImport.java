@@ -169,6 +169,9 @@ public class BerlinModelRefDetailImport extends BerlinModelImportBase {
 	@Override
 	protected boolean isIgnore(BerlinModelImportState state){
 		DO_REFERENCES doReference = state.getConfig().getDoReferences();
+		if (state.getConfig().isDoPreliminaryRefDetailsWithNames()){
+		    return true;
+		}
 		return (doReference == IImportConfigurator.DO_REFERENCES.NONE || doReference == IImportConfigurator.DO_REFERENCES.CONCEPT_REFERENCES);
 	}
 

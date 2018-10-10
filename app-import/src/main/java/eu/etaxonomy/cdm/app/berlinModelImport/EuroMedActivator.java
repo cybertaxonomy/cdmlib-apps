@@ -118,6 +118,11 @@ public class EuroMedActivator {
 
     boolean invers = !(hbm2dll == DbSchemaValidation.CREATE);
 
+    boolean doPreliminaryRefDetailsWithNames = true;
+
+    boolean logNotMatchingOldNames = false;
+    boolean logMatchingNotExportedOldNames = false;  //true
+    boolean checkOldNameIsSynonym = true;
 
 	static final boolean includePesiExport = false;
 
@@ -230,6 +235,8 @@ public class EuroMedActivator {
 		config.setInfrGenericRankAbbrev(infrGenericRankAbbrev);
 		config.setInfrSpecificRankAbbrev(infrSpecificRankAbbrev);
 		config.setRemoveHttpMapsAnchor(removeHttpMapsAnchor);
+
+		config.setDoPreliminaryRefDetailsWithNames(doPreliminaryRefDetailsWithNames);
 
 //		filter
 		config.setTaxonTable(taxonTable);

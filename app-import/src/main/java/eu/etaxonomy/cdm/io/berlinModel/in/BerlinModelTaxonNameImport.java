@@ -46,7 +46,10 @@ import eu.etaxonomy.cdm.model.name.TaxonName;
 import eu.etaxonomy.cdm.model.name.TaxonNameFactory;
 import eu.etaxonomy.cdm.model.reference.INomenclaturalReference;
 import eu.etaxonomy.cdm.model.reference.Reference;
+import eu.etaxonomy.cdm.model.reference.ReferenceFactory;
 import eu.etaxonomy.cdm.strategy.exceptions.UnknownCdmTypeException;
+import eu.etaxonomy.cdm.strategy.parser.INonViralNameParser;
+import eu.etaxonomy.cdm.strategy.parser.NonViralNameParserImpl;
 
 /**
  * @author a.mueller
@@ -559,6 +562,9 @@ public class BerlinModelTaxonNameImport extends BerlinModelImportBase {
 				Reference nomReference =
 					getReferenceFromMaps(refDetailMap, refMap, nomRefDetailFk, nomRefFk);
 
+				if(config.isDoPreliminaryRefDetailsWithNames() && refDetailPrelim){
+				    makePrelimRefDetailRef(config, rs, taxonName, nameId);
+				}
 
 				//setNomRef
 				if (nomReference == null ){
@@ -580,8 +586,99 @@ public class BerlinModelTaxonNameImport extends BerlinModelImportBase {
 		return success;
 	}
 
-	private static TeamOrPersonBase getAuthorTeam(Map<String, Team> teamMap, Object teamIdObject, int nameId, BerlinModelImportConfigurator bmiConfig){
-		if (teamIdObject == null){
+
+	private INonViralNameParser<?> parser = NonViralNameParserImpl.NewInstance();
+
+	/**
+     * @param config
+     * @param rs
+     * @param taxonName
+     * @param nameId
+	 * @throws SQLException
+     */
+    private void makePrelimRefDetailRef(IImportConfigurator config, ResultSet rs, TaxonName taxonName, int nameId) throws SQLException {
+        String fullNomRefCache = rs.getString("FullNomRefCache");
+        if (fullNomRefCache == null){
+            logger.warn("fullNomRefCache is null for preliminary refDetail. NameId: " + nameId);
+            return;
+        }else if (fullNomRefCache.trim().startsWith(": ")){
+            logger.warn("fullNomRefCache starts with for preliminary refDetail. NameId: " + nameId);
+            return;
+        }else if (fullNomRefCache.trim().startsWith("in ")){
+            String fullStr = taxonName.getTitleCache()+ " " + fullNomRefCache;
+            INonViralName newName = parser.parseReferencedName(fullStr, config.getNomenclaturalCode(), taxonName.getRank());
+            if (newName.isProtectedFullTitleCache()){
+                Reference nomRef = ReferenceFactory.newGeneric();
+                nomRef.setAbbrevTitleCache(fullNomRefCache, true);
+                taxonName.setNomenclaturalReference(nomRef);
+                //check detail
+            }else{
+                Reference nomRef = newName.getNomenclaturalReference();
+                taxonName.setNomenclaturalReference(nomRef);
+                String detail = newName.getNomenclaturalMicroReference();
+                String oldDetail = taxonName.getNomenclaturalMicroReference();
+                if (isBlank(detail)){
+                    if (isNotBlank(oldDetail)){
+                        logger.warn("Detail could not be parsed but seems to exist. NameId: " + nameId);
+                    }
+                }else{
+                    if (isNotBlank(oldDetail) && !detail.equals(oldDetail)){
+                        logger.warn("Details differ: " +  detail + " <-> " + oldDetail + ". NameId: " + nameId);
+                    }
+                    taxonName.setNomenclaturalMicroReference(detail);
+                }
+            }
+        }else{
+            String fullStrComma = taxonName.getTitleCache()+ ", " + fullNomRefCache;
+            String fullStrIn = taxonName.getTitleCache()+ " in " + fullNomRefCache;
+            INonViralName newNameComma = parser.parseReferencedName(fullStrComma, config.getNomenclaturalCode(), taxonName.getRank());
+            INonViralName newNameIn = parser.parseReferencedName(fullStrIn, config.getNomenclaturalCode(), taxonName.getRank());
+
+            INonViralName newName;
+            boolean commaProtected = newNameComma.isProtectedFullTitleCache() || (newNameComma.getNomenclaturalReference() != null
+                    && newNameComma.getNomenclaturalReference().isProtectedTitleCache());
+            boolean inProtected = newNameIn.isProtectedFullTitleCache() || (newNameIn.getNomenclaturalReference() != null
+                    && newNameIn.getNomenclaturalReference().isProtectedTitleCache());
+            if (commaProtected && !inProtected){
+                newName = newNameIn;
+            }else if (!commaProtected && inProtected){
+                newName = newNameComma;
+            }else if (commaProtected && inProtected){
+                logger.warn("Can't parse preliminary refDetail: " +  fullNomRefCache + " for name " + taxonName.getTitleCache() + "; nameId: " + nameId );
+                newName = newNameComma;
+            }else{
+                logger.warn("Can't decide ref type for preliminary refDetail: " +  fullNomRefCache + " for name " + taxonName.getTitleCache() + "; nameId: " + nameId );
+                newName = newNameComma;
+            }
+
+
+            if (newName.isProtectedFullTitleCache()){
+                Reference nomRef = ReferenceFactory.newGeneric();
+                nomRef.setAbbrevTitleCache(fullNomRefCache, true);
+                taxonName.setNomenclaturalReference(nomRef);
+                //check detail
+            }else{
+                Reference nomRef = newName.getNomenclaturalReference();
+                taxonName.setNomenclaturalReference(nomRef);
+                String detail = newName.getNomenclaturalMicroReference();
+                String oldDetail = taxonName.getNomenclaturalMicroReference();
+                if (isBlank(detail)){
+                    if (isNotBlank(oldDetail)){
+                        logger.warn("Detail could not be parsed but seems to exist. NameId: " + nameId);
+                    }
+                }else{
+                    if (isNotBlank(oldDetail) && !detail.equals(oldDetail)){
+                        logger.warn("Details differ: " +  detail + " <-> " + oldDetail + ". NameId: " + nameId);
+                    }
+                    taxonName.setNomenclaturalMicroReference(detail);
+                }
+            }
+        }
+    }
+
+
+    private static TeamOrPersonBase<?> getAuthorTeam(Map<String, Team> teamMap, Integer teamIdInt, int nameId, BerlinModelImportConfigurator config){
+		if (teamIdInt == null){
 			return null;
 		}else {
 			String teamIdStr = String.valueOf(teamIdInt);
