@@ -183,8 +183,8 @@ public class EuroMedActivator {
 	static String occurrenceSourceFilter = " occurrenceFk IN ( SELECT occurrenceId FROM v_cdm_exp_occurrenceAll )";
 	static String commonNameFilter = " commonNameId IN ( SELECT commonNameId FROM v_cdm_exp_commonNamesAll )";
 	static String webMarkerFilter = " TableNameFk <> 500 OR ( RIdentifierFk IN (SELECT RIdentifier FROM v_cdm_exp_taxaAll)) ";
-	static String authorTeamFilter = null;  //*/ " authorTeamId IN (SELECT authorTeamId FROM v_cdm_exp_authorTeamsAll) ";
-	static String authorFilter =  null;  //*/ " authorId IN (SELECT authorId FROM v_cdm_exp_authorsAll) ";
+	static String authorTeamFilter =  " authorTeamId IN (SELECT drvTmp.authorTeamId FROM (SELECT authorTeamId FROM v_cdm_exp_authorTeamsAll) as drvTmp) ";
+	static String authorFilter = null; //  " authorId IN (SELECT authorId FROM v_cdm_exp_authorsAll) ";
 
 
 
