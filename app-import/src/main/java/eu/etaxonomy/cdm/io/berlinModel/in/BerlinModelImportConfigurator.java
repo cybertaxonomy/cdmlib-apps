@@ -83,6 +83,10 @@ public class BerlinModelImportConfigurator extends DbImportConfiguratorBase<Berl
 	private Method uuidForDefTermMethod;
 	private Method nameTypeDesignationStatusMethod;
 
+	private boolean logNotMatchingOldNames = false;
+	private boolean logMatchingNotExportedOldNames = true;
+	private boolean checkOldNameIsSynonym = false;
+
 	// NameFact stuff
 	private URL mediaUrl;
 	private File mediaPath;
@@ -696,6 +700,27 @@ public class BerlinModelImportConfigurator extends DbImportConfiguratorBase<Berl
     }
     public void setWarnForDifferingSynonymReference(boolean warnForDifferingSynonymReference) {
         this.warnForDifferingSynonymReference = warnForDifferingSynonymReference;
+    }
+
+    public boolean isLogNotMatchingOldNames() {
+        return logNotMatchingOldNames;
+    }
+    public void setLogNotMatchingOldNames(boolean logNotMatchingOldNames) {
+        this.logNotMatchingOldNames = logNotMatchingOldNames;
+    }
+
+    public boolean isCheckOldNameIsSynonym() {
+        return checkOldNameIsSynonym;
+    }
+    public void setCheckOldNameIsSynonym(boolean checkOldNameIsSynonym) {
+        this.checkOldNameIsSynonym = checkOldNameIsSynonym;
+    }
+
+    public boolean isLogMatchingNotExportedOldNames() {
+        return logMatchingNotExportedOldNames;
+    }
+    public void setLogMatchingNotExportedOldNames(boolean logMatchingNotExportedOldNames) {
+        this.logMatchingNotExportedOldNames = logMatchingNotExportedOldNames;
     }
 
 }

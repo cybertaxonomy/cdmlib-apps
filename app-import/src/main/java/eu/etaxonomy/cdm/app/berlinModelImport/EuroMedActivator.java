@@ -224,6 +224,10 @@ public class EuroMedActivator {
 
 		config.setEuroMed(true);
 
+		config.setLogNotMatchingOldNames(logNotMatchingOldNames);
+		config.setLogMatchingNotExportedOldNames(logMatchingNotExportedOldNames);
+		config.setCheckOldNameIsSynonym(checkOldNameIsSynonym);
+
 		config.setUseClassification(useClassification);
 		config.setSourceRefUuid(BerlinModelTransformer.uuidSourceRefEuroMed);
 		config.setEditor(editor);
