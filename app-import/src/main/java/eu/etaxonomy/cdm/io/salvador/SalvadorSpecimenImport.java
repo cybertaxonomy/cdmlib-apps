@@ -597,7 +597,7 @@ public class SalvadorSpecimenImport
             state.getResult().addWarning(message, row);
             result.setTitleCache(str, true);
         }
-        result = (Person)dedupHelper.getExistingAuthor(null, result);
+        result = dedupHelper.getExistingAuthor(null, result);
 
         team.addTeamMember(result);
         return ;
