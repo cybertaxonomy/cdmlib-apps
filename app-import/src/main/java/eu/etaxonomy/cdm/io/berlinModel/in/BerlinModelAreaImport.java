@@ -395,7 +395,8 @@ public class BerlinModelAreaImport  extends BerlinModelImportBase {
 				logger.error("emArea table or AreaId column do not exist. Must ignore area import");
 				return true;
 			}else{
-				return false;
+			    TermVocabulary<?> voc = getVocabularyService().find(BerlinModelTransformer.uuidVocEuroMedAreas);
+		        return voc != null;
 			}
 		}
 	}

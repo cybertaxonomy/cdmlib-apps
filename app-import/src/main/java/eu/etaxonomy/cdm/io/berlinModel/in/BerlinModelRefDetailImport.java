@@ -39,7 +39,10 @@ import eu.etaxonomy.cdm.model.reference.ReferenceFactory;
  */
 @Component
 public class BerlinModelRefDetailImport extends BerlinModelImportBase {
-	private static final Logger logger = Logger.getLogger(BerlinModelRefDetailImport.class);
+
+    private static final long serialVersionUID = 894197428295813181L;
+
+    private static final Logger logger = Logger.getLogger(BerlinModelRefDetailImport.class);
 
 //	public static final String NOM_REFDETAIL_NAMESPACE = "NomRefDetail";
 //	public static final String BIBLIO_REFDETAIL_NAMESPACE = "BiblioRefDetail";
