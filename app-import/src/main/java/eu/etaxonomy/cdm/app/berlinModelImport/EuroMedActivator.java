@@ -103,8 +103,9 @@ public class EuroMedActivator {
     //taxa
     static final boolean doTaxa = true;
     static final boolean doFacts = true;
-    static final boolean doOccurences = true;
     static final boolean doRelTaxa = true;
+    static final boolean doOccurrences = false;
+    static final boolean doOccurrenceSources = true;
     static final boolean doCommonNames = true;  //currently takes very long
 
   //serious types do not exist in E+M except for name types which are handled in name relations
@@ -214,8 +215,9 @@ public class EuroMedActivator {
 		config.setDoTaxa(doTaxa ^ invers);
 		config.setDoRelTaxa(doRelTaxa ^ invers);
 		config.setDoFacts(doFacts ^ invers);
-		config.setDoOccurrence(doOccurences ^ invers);
-		config.setDoCommonNames(doCommonNames ^ invers);
+		config.setDoOccurrence(doOccurrences ^ invers);
+		config.setDoOccurrenceSources(doOccurrenceSources ^ invers);
+        config.setDoCommonNames(doCommonNames ^ invers);
 
 		config.setDoMarker(doMarker);
 		config.setDoUser(doUser ^ invers);

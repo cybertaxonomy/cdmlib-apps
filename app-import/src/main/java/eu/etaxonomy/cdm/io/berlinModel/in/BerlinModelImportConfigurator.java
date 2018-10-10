@@ -47,6 +47,7 @@ public class BerlinModelImportConfigurator extends DbImportConfiguratorBase<Berl
 	private boolean doRelNames = true;
 	private boolean doCommonNames = true;
 	private boolean doOccurrence = true;
+	private boolean doOccurrenceSources = true;
 	private boolean doMarker = true;
 	private boolean doUser = true;
 	private boolean doFacts = true;
@@ -354,6 +355,13 @@ public class BerlinModelImportConfigurator extends DbImportConfiguratorBase<Berl
 	}
 	public void setDoOccurrence(boolean doOccurrence) {
 		this.doOccurrence = doOccurrence;
+	}
+
+    public boolean isDoOccurrenceSources() {
+        return doOccurrenceSources;
+    }
+    public void setDoOccurrenceSources(boolean doOccurrenceSources) {
+        this.doOccurrenceSources = doOccurrenceSources;
 	}
 
 

@@ -400,7 +400,7 @@ public class BerlinModelOccurrenceSourceImport  extends BerlinModelImportBase {
 
 	@Override
 	protected boolean isIgnore(BerlinModelImportState state){
-		if (! state.getConfig().isDoOccurrence()){
+		if (! state.getConfig().isDoOccurrenceSources()){
 			return true;
 		}else{
 			if (!this.checkSqlServerColumnExists(state.getConfig().getSource(), "emOccurrenceSource", "OccurrenceSourceId")){
