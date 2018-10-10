@@ -148,7 +148,7 @@ public class EuroMedActivator {
 	static final NomenclaturalCode nomenclaturalCode = NomenclaturalCode.ICNAFP;
 
 	//ignore null
-	static final boolean ignoreNull = true;
+	static final boolean ignoreNull = false;
 
 	static final boolean switchSpeciesGroup = true;
 
