@@ -108,7 +108,7 @@ public class BerlinModelOccurrenceSourceImport  extends BerlinModelImportBase {
 		@SuppressWarnings("unchecked")
         Map<String, Reference> refMap = partitioner.getObjectMap(BerlinModelReferenceImport.REFERENCE_NAMESPACE);
 
-		Set<DescriptionElementBase> objectsToSave = new HashSet<DescriptionElementBase>();
+		Set<DescriptionElementBase> objectsToSave = new HashSet<>();
 		try {
 			int i = 0;
 			//for each reference

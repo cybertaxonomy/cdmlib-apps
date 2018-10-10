@@ -81,12 +81,11 @@ public class BerlinModelRefDetailImport extends BerlinModelImportBase {
 	}
 
 	@Override
-	public boolean doPartition(ResultSetPartitioner partitioner, BerlinModelImportState state) {
+	public boolean doPartition(@SuppressWarnings("rawtypes") ResultSetPartitioner partitioner, BerlinModelImportState state) {
 		boolean success = true;
 		logger.info("start make " + getPluralString() + " ...");
 
-		BerlinModelImportConfigurator config = state.getConfig();
-		Map<Integer, Reference> refDetailsToSave = new HashMap<Integer, Reference>();
+		Map<Integer, Reference> refDetailsToSave = new HashMap<>();
 
 		ResultSet rs = partitioner.getResultSet();
 		int refCount = 0;
@@ -103,13 +102,13 @@ public class BerlinModelRefDetailImport extends BerlinModelImportBase {
 				String fullNomRefCache = rs.getString("fullNomRefCache");
 				String fullRefCache = rs.getString("fullRefCache");
 
-				if ( StringUtils.isNotBlank(fullNomRefCache) || StringUtils.isNotBlank(fullRefCache)  ){
+				if ( isNotBlank(fullNomRefCache) || isNotBlank(fullRefCache)  ){
 					Reference genericReference = ReferenceFactory.newGeneric();
 
-					if (StringUtils.isNotBlank(fullNomRefCache)){
+					if (isNotBlank(fullNomRefCache)){
 						genericReference.setAbbrevTitleCache(fullNomRefCache, true);
 					}
-					if ( StringUtils.isNotBlank(fullRefCache) ){
+					if (isNotBlank(fullRefCache)){
 						genericReference.setTitleCache(fullRefCache, true);
 					}
 
@@ -154,7 +153,7 @@ public class BerlinModelRefDetailImport extends BerlinModelImportBase {
 	@Override
 	public Map<Object, Map<String, ? extends CdmBase>> getRelatedObjectsForPartition(ResultSet rs, BerlinModelImportState state) {
 
-		Map<Object, Map<String, ? extends CdmBase>> result = new HashMap<Object, Map<String, ? extends CdmBase>>();
+		Map<Object, Map<String, ? extends CdmBase>> result = new HashMap<>();
 
 		//no related objects needed
 

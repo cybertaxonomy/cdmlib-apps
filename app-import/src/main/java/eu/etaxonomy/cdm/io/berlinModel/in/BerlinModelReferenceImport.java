@@ -37,7 +37,6 @@ import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
 
-import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.springframework.stereotype.Component;
 
@@ -103,7 +102,8 @@ public class BerlinModelReferenceImport extends BerlinModelImportBase {
 	protected void initializeMappers(BerlinModelImportState state){
 		for (CdmAttributeMapperBase mapper: classMappers){
 			if (mapper instanceof DbSingleAttributeImportMapperBase){
-				DbSingleAttributeImportMapperBase<BerlinModelImportState,Reference> singleMapper =
+				@SuppressWarnings("unchecked")
+                DbSingleAttributeImportMapperBase<BerlinModelImportState,Reference> singleMapper =
 				        (DbSingleAttributeImportMapperBase<BerlinModelImportState,Reference>)mapper;
 				singleMapper.initialize(state, Reference.class);
 			}
@@ -255,8 +255,10 @@ public class BerlinModelReferenceImport extends BerlinModelImportBase {
 	}
 
 	@Override
-	public boolean doPartition(ResultSetPartitioner partitioner, BerlinModelImportState state) {
-		if (state.isReferenceSecondPath()){
+	public boolean doPartition(@SuppressWarnings("rawtypes") ResultSetPartitioner partitioner, BerlinModelImportState state) {
+        deduplicationHelper.restartSession();
+
+	    if (state.isReferenceSecondPath()){
 			return doPartitionSecondPath(partitioner, state);
 		}
 		boolean success = true;
@@ -270,32 +272,29 @@ public class BerlinModelReferenceImport extends BerlinModelImportBase {
 
 		try {
 
-				int i = 0;
-				RefCounter refCounter  = new RefCounter();
+			int i = 0;
+			RefCounter refCounter  = new RefCounter();
+			ResultSet rs = partitioner.getResultSet();
 
-				ResultSet rs = partitioner.getResultSet();
+			//for each resultset
+			while (rs.next()){
+				if ((i++ % modCount) == 0 && i!= 1 ){ logger.info("References handled: " + (i-1) + " in round -" );}
 
-				//for each resultset
-				while (rs.next()){
-					if ((i++ % modCount) == 0 && i!= 1 ){ logger.info("References handled: " + (i-1) + " in round -" );}
+				success &= makeSingleReferenceRecord(rs, state, partitioner, refToSave, relatedReferences, refCounter);
+			} // end resultSet
 
-					success &= makeSingleReferenceRecord(rs, state, partitioner, refToSave, relatedReferences, refCounter);
-				} // end resultSet
+			//for the concept reference a fixed uuid may be needed -> change uuid
+			Integer sourceSecId = (Integer)config.getSourceSecId();
+			Reference sec = refToSave.get(sourceSecId);
 
-				//for the concept reference a fixed uuid may be needed -> change uuid
-				Integer sourceSecId = (Integer)config.getSourceSecId();
-				Reference sec = refToSave.get(sourceSecId);
+			if (sec != null){
+				sec.setUuid(config.getSecUuid());
+				logger.info("SecUuid changed to: " + config.getSecUuid());
+			}
 
-				if (sec != null){
-					sec.setUuid(config.getSecUuid());
-					logger.info("SecUuid changed to: " + config.getSecUuid());
-				}
-
-				//save and store in map
-				logger.info("Save references (" + refCounter.refCount + ")");
-				getReferenceService().saveOrUpdate(refToSave.values());
-
-//			}//end resultSetList
+			//save and store in map
+			logger.info("Save references (" + refCounter.refCount + ")");
+			getReferenceService().saveOrUpdate(refToSave.values());
 
 //			logger.info("end makeReferences ..." + getSuccessString(success));;
 			return success;
@@ -313,12 +312,13 @@ public class BerlinModelReferenceImport extends BerlinModelImportBase {
 	 * @param state
 	 * @return
 	 */
-	private boolean doPartitionSecondPath(ResultSetPartitioner partitioner, BerlinModelImportState state) {
+	private boolean doPartitionSecondPath(@SuppressWarnings("rawtypes") ResultSetPartitioner partitioner, BerlinModelImportState state) {
 		boolean success = true;
 
-		Map<Integer, Reference> refToSave = new HashMap<Integer, Reference>();
+		Map<Integer, Reference> refToSave = new HashMap<>();
 
-		Map<String, Reference> relatedReferencesMap = partitioner.getObjectMap(REFERENCE_NAMESPACE);
+		@SuppressWarnings("unchecked")
+        Map<String, Reference> relatedReferencesMap = partitioner.getObjectMap(REFERENCE_NAMESPACE);
 
 		try {
 				int i = 0;
@@ -534,7 +534,7 @@ public class BerlinModelReferenceImport extends BerlinModelImportBase {
 	private boolean makeNomAndBiblioReference(
 				ResultSet rs,
 				BerlinModelImportState state,
-				ResultSetPartitioner partitioner,
+				@SuppressWarnings("rawtypes") ResultSetPartitioner partitioner,
 				int refId,
 				Reference ref,
 				RefCounter refCounter,
@@ -588,7 +588,6 @@ public class BerlinModelReferenceImport extends BerlinModelImportBase {
 		if (commonNameRefSet != null && commonNameRefSet.contains(refId)){
             ref.addMarker(Marker.NewInstance(MarkerType.COMMON_NAME_REFERENCE(), true));
         }
-
 
 		return true;
 	}
@@ -961,8 +960,5 @@ public class BerlinModelReferenceImport extends BerlinModelImportBase {
 	protected boolean isIgnore(BerlinModelImportState state){
 		return (state.getConfig().getDoReferences() == IImportConfigurator.DO_REFERENCES.NONE);
 	}
-
-
-
 
 }

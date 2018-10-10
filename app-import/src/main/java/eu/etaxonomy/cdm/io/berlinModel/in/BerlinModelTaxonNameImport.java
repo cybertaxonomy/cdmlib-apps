@@ -29,7 +29,6 @@ import eu.etaxonomy.cdm.io.common.IOValidator;
 import eu.etaxonomy.cdm.io.common.ImportHelper;
 import eu.etaxonomy.cdm.io.common.ResultSetPartitioner;
 import eu.etaxonomy.cdm.io.common.Source;
-import eu.etaxonomy.cdm.model.agent.Person;
 import eu.etaxonomy.cdm.model.agent.Team;
 import eu.etaxonomy.cdm.model.agent.TeamOrPersonBase;
 import eu.etaxonomy.cdm.model.common.Annotation;
@@ -138,13 +137,14 @@ public class BerlinModelTaxonNameImport extends BerlinModelImportBase {
 	}
 
 	@Override
-	public boolean doPartition(ResultSetPartitioner partitioner, BerlinModelImportState state) {
+	public boolean doPartition(@SuppressWarnings("rawtypes") ResultSetPartitioner partitioner, BerlinModelImportState state) {
 		String dbAttrName;
 		String cdmAttrName;
 		boolean success = true ;
 		BerlinModelImportConfigurator config = state.getConfig();
 		Set<TaxonName> namesToSave = new HashSet<>();
-		Map<String, Team> teamMap = partitioner.getObjectMap(BerlinModelAuthorTeamImport.NAMESPACE);
+		@SuppressWarnings("unchecked")
+        Map<String, Team> teamMap = partitioner.getObjectMap(BerlinModelAuthorTeamImport.NAMESPACE);
 
 		ResultSet rs = partitioner.getResultSet();
 
@@ -157,10 +157,10 @@ public class BerlinModelTaxonNameImport extends BerlinModelImportBase {
 
 				//create TaxonName element
 				int nameId = rs.getInt("nameId");
-				Object authorFk = rs.getObject("AuthorTeamFk");
-				Object exAuthorFk = rs.getObject("ExAuthorTeamFk");
-				Object basAuthorFk = rs.getObject("BasAuthorTeamFk");
-				Object exBasAuthorFk = rs.getObject("ExBasAuthorTeamFk");
+				Integer authorFk = nullSafeInt(rs, "AuthorTeamFk");
+				Integer exAuthorFk = nullSafeInt(rs, "ExAuthorTeamFk");
+				Integer basAuthorFk = nullSafeInt(rs, "BasAuthorTeamFk");
+				Integer exBasAuthorFk = nullSafeInt(rs, "ExBasAuthorTeamFk");
 				String strCultivarGroupName = rs.getString("CultivarGroupName");
 				String strCultivarName = rs.getString("CultivarName");
 				String nameCache = rs.getString("NameCache");
@@ -301,11 +301,8 @@ public class BerlinModelTaxonNameImport extends BerlinModelImportBase {
 						//Computes all caches and sets
 						taxonName.setTitleCache(fullNameCache, true);
 						taxonName.setFullTitleCache(taxonName.getFullTitleCache(), true);
-						if (taxonName.isNonViral()){
-							INonViralName nvn = taxonName;
-							nvn.setNameCache(nameCache, true);
-							nvn.setAuthorshipCache(nvn.getAuthorshipCache(), true);
-						}
+						taxonName.setNameCache(nameCache, true);
+						taxonName.setAuthorshipCache(taxonName.getAuthorshipCache(), true);
 					}
 					namesToSave.add(taxonName);
 
@@ -430,12 +427,12 @@ public class BerlinModelTaxonNameImport extends BerlinModelImportBase {
 		Class<?> cdmClass;
 		Set<String> idSet;
 
-		Map<Object, Map<String, ? extends CdmBase>> result = new HashMap<Object, Map<String, ? extends CdmBase>>();
+		Map<Object, Map<String, ? extends CdmBase>> result = new HashMap<>();
 
 		try{
-			Set<String> teamIdSet = new HashSet<String>();
-			Set<String> referenceIdSet = new HashSet<String>();
-			Set<String> refDetailIdSet = new HashSet<String>();
+			Set<String> teamIdSet = new HashSet<>();
+			Set<String> referenceIdSet = new HashSet<>();
+			Set<String> refDetailIdSet = new HashSet<>();
 			while (rs.next()){
 				handleForeignKey(rs, teamIdSet, "AuthorTeamFk");
 				handleForeignKey(rs, teamIdSet, "ExAuthorTeamFk");
@@ -447,23 +444,26 @@ public class BerlinModelTaxonNameImport extends BerlinModelImportBase {
 
 			//team map
 			nameSpace = BerlinModelAuthorTeamImport.NAMESPACE;
-			cdmClass = Team.class;
+			cdmClass = TeamOrPersonBase.class;
 			idSet = teamIdSet;
-			Map<String, Person> teamMap = (Map<String, Person>)getCommonService().getSourcedObjectsByIdInSource(cdmClass, idSet, nameSpace);
+			@SuppressWarnings("unchecked")
+            Map<String, TeamOrPersonBase<?>> teamMap = (Map<String, TeamOrPersonBase<?>>)getCommonService().getSourcedObjectsByIdInSource(cdmClass, idSet, nameSpace);
 			result.put(nameSpace, teamMap);
 
 			//reference map
 			nameSpace = BerlinModelReferenceImport.REFERENCE_NAMESPACE;
 			cdmClass = Reference.class;
 			idSet = referenceIdSet;
-			Map<String, Reference> referenceMap = (Map<String, Reference>)getCommonService().getSourcedObjectsByIdInSource(cdmClass, idSet, nameSpace);
+			@SuppressWarnings("unchecked")
+            Map<String, Reference> referenceMap = (Map<String, Reference>)getCommonService().getSourcedObjectsByIdInSource(cdmClass, idSet, nameSpace);
 			result.put(nameSpace, referenceMap);
 
 			//refDetail map
 			nameSpace = BerlinModelRefDetailImport.REFDETAIL_NAMESPACE;
 			cdmClass = Reference.class;
 			idSet = refDetailIdSet;
-			Map<String, Reference> refDetailMap= (Map<String, Reference>)getCommonService().getSourcedObjectsByIdInSource(cdmClass, idSet, nameSpace);
+			@SuppressWarnings("unchecked")
+            Map<String, Reference> refDetailMap= (Map<String, Reference>)getCommonService().getSourcedObjectsByIdInSource(cdmClass, idSet, nameSpace);
 			result.put(nameSpace, refDetailMap);
 
 		} catch (SQLException e) {
@@ -537,21 +537,24 @@ public class BerlinModelTaxonNameImport extends BerlinModelImportBase {
 	}
 
 
-	private boolean makeNomenclaturalReference(IImportConfigurator config, TaxonName taxonNameBase,
-					int nameId, ResultSet rs, ResultSetPartitioner partitioner) throws SQLException{
-		Map<String, Reference> refMap = partitioner.getObjectMap(BerlinModelReferenceImport.REFERENCE_NAMESPACE);
-		Map<String, Reference> refDetailMap = partitioner.getObjectMap(BerlinModelRefDetailImport.REFDETAIL_NAMESPACE);
+	private boolean makeNomenclaturalReference(BerlinModelImportConfigurator config, TaxonName taxonName,
+					int nameId, ResultSet rs, @SuppressWarnings("rawtypes") ResultSetPartitioner partitioner) throws SQLException{
 
-		Object nomRefFkObj = rs.getObject("NomRefFk");
-		Object nomRefDetailFkObj = rs.getObject("NomRefDetailFk");
+	    @SuppressWarnings("unchecked")
+        Map<String, Reference> refMap = partitioner.getObjectMap(BerlinModelReferenceImport.REFERENCE_NAMESPACE);
+		@SuppressWarnings("unchecked")
+        Map<String, Reference> refDetailMap = partitioner.getObjectMap(BerlinModelRefDetailImport.REFDETAIL_NAMESPACE);
+
+		Integer nomRefFkInt = nullSafeInt(rs, "NomRefFk");
+		Integer nomRefDetailFkInt = nullSafeInt(rs, "NomRefDetailFk");
 		boolean refDetailPrelim = rs.getBoolean("RefDetailPrelim");
 
 		boolean success = true;
 		//nomenclatural Reference
 		if (refMap != null){
-			if (nomRefFkObj != null){
-				String nomRefFk = String.valueOf(nomRefFkObj);
-				String nomRefDetailFk = String.valueOf(nomRefDetailFkObj);
+			if (nomRefFkInt != null){
+				String nomRefFk = String.valueOf(nomRefFkInt);
+				String nomRefDetailFk = String.valueOf(nomRefDetailFkInt);
 				//get nomRef
 				Reference nomReference =
 					getReferenceFromMaps(refDetailMap, refMap, nomRefDetailFk, nomRefFk);
@@ -562,7 +565,7 @@ public class BerlinModelTaxonNameImport extends BerlinModelImportBase {
 					//TODO
 					if (! config.isIgnoreNull()){
 						logger.warn("Nomenclatural reference (nomRefFk = " + nomRefFk + ") for TaxonName (nameId = " + nameId + ")"+
-							" was not found in reference store. Nomenclatural reference was not set!!");
+							" was not found in reference store. Nomenclatural reference not set!!");
 					}
 				}else{
 					if (! INomenclaturalReference.class.isAssignableFrom(nomReference.getClass())){
@@ -570,7 +573,7 @@ public class BerlinModelTaxonNameImport extends BerlinModelImportBase {
 								" is not assignable from INomenclaturalReference. (Class = " + nomReference.getClass()+ ")");
 					}
 					nomReference.setNomenclaturallyRelevant(true);
-					taxonNameBase.setNomenclaturalReference(nomReference);
+					taxonName.setNomenclaturalReference(nomReference);
 				}
 			}
 		}
@@ -581,13 +584,14 @@ public class BerlinModelTaxonNameImport extends BerlinModelImportBase {
 		if (teamIdObject == null){
 			return null;
 		}else {
-			String teamId = String.valueOf(teamIdObject);
-			TeamOrPersonBase author = teamMap.get(teamId);
+			String teamIdStr = String.valueOf(teamIdInt);
+			TeamOrPersonBase<?> author = teamMap.get(teamIdStr);
 			if (author == null){
 				//TODO
-				if (!bmiConfig.isIgnoreNull() && ! (teamId.equals(0) && bmiConfig.isIgnore0AuthorTeam()) ){
-					logger.warn("AuthorTeam (teamId = " + teamId + ") for TaxonName (nameId = " + nameId + ")"+
-				" was not found in authorTeam store. Relation was not set!!");}
+				if (!config.isIgnoreNull() && ! (teamIdStr.equals(0) && config.isIgnore0AuthorTeam()) ){
+					logger.warn("AuthorTeam (teamId = " + teamIdStr + ") for TaxonName (nameId = " + nameId + ")"+
+				        " was not found in authorTeam store. Relation was not set!");
+				}
 				return null;
 			}else{
 				return author;

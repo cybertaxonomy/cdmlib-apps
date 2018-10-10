@@ -44,7 +44,6 @@ public class BerlinModelAuthorTeamImport extends BerlinModelImportBase {
 	private static final String pluralString = "AuthorTeams";
 	private static final String dbTableName = "AuthorTeam";
 
-	//TODO pass it in other way, not as a class variable
 	private ResultSet rsSequence;
 	private Source source;
 
@@ -77,7 +76,7 @@ public class BerlinModelAuthorTeamImport extends BerlinModelImportBase {
 
 		int recordsPerTransaction = config.getRecordsPerTransaction();
 		try{
-			ResultSetPartitioner partitioner = ResultSetPartitioner.NewInstance(source, strIdQuery, strRecordQuery, recordsPerTransaction);
+			ResultSetPartitioner<BerlinModelImportState> partitioner = ResultSetPartitioner.NewInstance(source, strIdQuery, strRecordQuery, recordsPerTransaction);
 			rsSequence = source.getResultSet(strQuerySequence) ; //only here, to reduce deadlock/timeout probability
 			while (partitioner.nextPartition()){
 				partitioner.doPartition(this, state);

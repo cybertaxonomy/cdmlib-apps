@@ -126,26 +126,26 @@ public class BerlinModelImportConfigurator extends DbImportConfiguratorBase<Berl
     @Override
     protected void makeIoClassList(){
 		ioClassList = new Class[]{
-				BerlinModelGeneralImportValidator.class
-				, BerlinModelUserImport.class
-				, BerlinModelAuthorImport.class
-				, BerlinModelAuthorTeamImport.class
-				, BerlinModelRefDetailImport.class
-				, BerlinModelReferenceImport.class
-				, BerlinModelTaxonNameImport.class
-				, BerlinModelTaxonNameRelationImport.class
-				, BerlinModelNameStatusImport.class
-				, BerlinModelNameFactsImport.class
-				, BerlinModelTypesImport.class
-				, BerlinModelTaxonImport.class
-				, BerlinModelFactsImport.class
-				, BerlinModelAreaImport.class
-				, BerlinModelOccurrenceImport.class
-				, BerlinModelOccurrenceSourceImport.class
-				, BerlinModelWebMarkerCategoryImport.class
-				, BerlinModelWebMarkerImport.class
-				, BerlinModelTaxonRelationImport.class
-                , BerlinModelCommonNamesImport.class
+			BerlinModelGeneralImportValidator.class
+			, BerlinModelUserImport.class
+			, BerlinModelAuthorImport.class
+			, BerlinModelAuthorTeamImport.class
+			, BerlinModelRefDetailImport.class
+			, BerlinModelReferenceImport.class
+			, BerlinModelTaxonNameImport.class
+			, BerlinModelTaxonNameRelationImport.class
+			, BerlinModelNameStatusImport.class
+			, BerlinModelNameFactsImport.class
+			, BerlinModelTypesImport.class
+			, BerlinModelTaxonImport.class
+			, BerlinModelFactsImport.class
+			, BerlinModelTaxonRelationImport.class
+			, BerlinModelAreaImport.class
+			, BerlinModelOccurrenceImport.class
+			, BerlinModelOccurrenceSourceImport.class
+			, BerlinModelWebMarkerCategoryImport.class
+			, BerlinModelWebMarkerImport.class
+            , BerlinModelCommonNamesImport.class
 
 		};
 	}
