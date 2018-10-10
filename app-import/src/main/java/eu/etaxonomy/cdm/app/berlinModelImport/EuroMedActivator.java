@@ -76,18 +76,19 @@ public class EuroMedActivator {
 	private static final Logger logger = Logger.getLogger(EuroMedActivator.class);
 
 	//database validation status (create, update, validate ...)
-	static DbSchemaValidation hbm2dll = DbSchemaValidation.CREATE;
-//    static final Source berlinModelSource = BerlinModelSources.euroMed_Pub2();
+	static DbSchemaValidation hbm2dll = DbSchemaValidation.VALIDATE;
+//  static final Source berlinModelSource = BerlinModelSources.euroMed_Pub2();
 	static final Source berlinModelSource = BerlinModelSources.euroMed_BGBM42();
 //	static final Source berlinModelSource = BerlinModelSources.euroMed_PESI3();
 //
-  static final ICdmDataSource cdmDestination = CdmDestinations.localH2();
-//    static final ICdmDataSource cdmDestination = CdmDestinations.cdm_local_euromed();
+    static final ICdmDataSource cdmDestination = CdmDestinations.localH2();
+//  static final ICdmDataSource cdmDestination = CdmDestinations.cdm_local_euromed();
 //    static final ICdmDataSource cdmDestination = CdmDestinations.cdm_local_euromed2();
 //	static final ICdmDataSource cdmDestination = CdmDestinations.cdm_test_euroMed();
+//    static final ICdmDataSource cdmDestination = CdmDestinations.cdm_euroMed_production();
 
     //check - import
-    static final CHECK check = CHECK.CHECK_ONLY;
+    static final CHECK check = CHECK.IMPORT_WITHOUT_CHECK;
 
     static final boolean doUser = true;
 //  //authors
