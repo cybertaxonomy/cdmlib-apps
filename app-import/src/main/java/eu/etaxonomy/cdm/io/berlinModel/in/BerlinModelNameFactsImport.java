@@ -78,9 +78,12 @@ public class BerlinModelNameFactsImport  extends BerlinModelImportBase  {
 
 	@Override
 	protected String getIdQuery(BerlinModelImportState state) {
-		if (StringUtils.isNotEmpty(state.getConfig().getNameIdTable())){
+		if (isNotBlank(state.getConfig().getNameIdTable())){
 			String result = super.getIdQuery(state);
 			result += " WHERE ptNameFk IN (SELECT NameId FROM " + state.getConfig().getNameIdTable() + ")";
+			if (state.getConfig().isEuroMed()){
+			    result += " AND NOT (NameFactCategoryFk = 3 AND NameFactRefFk = 8500000) ";  //#7796#note-11
+			}
 			return result;
 		}else{
 			return super.getIdQuery(state);
