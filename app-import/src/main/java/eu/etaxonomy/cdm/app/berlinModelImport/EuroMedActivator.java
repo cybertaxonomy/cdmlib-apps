@@ -106,8 +106,8 @@ public class EuroMedActivator {
     static final boolean doFacts = true;
     static final boolean doRelTaxa = true;
     static final boolean doOccurrences = false;
-    static final boolean doOccurrenceSources = true;
-    static final boolean doCommonNames = true;  //currently takes very long
+    static final boolean doOccurrenceSources = false;
+    static final boolean doCommonNames = false;  //currently takes very long
 
   //serious types do not exist in E+M except for name types which are handled in name relations
     static final boolean doTypes = false;  //serious types do not exist in E+M except for name types which are handled in name relations
@@ -183,8 +183,8 @@ public class EuroMedActivator {
 	static String occurrenceSourceFilter = " occurrenceFk IN ( SELECT occurrenceId FROM v_cdm_exp_occurrenceAll )";
 	static String commonNameFilter = " commonNameId IN ( SELECT commonNameId FROM v_cdm_exp_commonNamesAll )";
 	static String webMarkerFilter = " TableNameFk <> 500 OR ( RIdentifierFk IN (SELECT RIdentifier FROM v_cdm_exp_taxaAll)) ";
-	static String authorTeamFilter =  " authorTeamId IN (SELECT drvTmp.authorTeamId FROM (SELECT authorTeamId FROM v_cdm_exp_authorTeamsAll) as drvTmp) ";
-	static String authorFilter = null; //  " authorId IN (SELECT authorId FROM v_cdm_exp_authorsAll) ";
+	static String authorTeamFilter =  " authorTeamId IN (SELECT drvTab.authorTeamId FROM (SELECT authorTeamId FROM v_cdm_exp_authorTeamsAll) as drvTab) ";
+	static String authorFilter = " authorId IN (SELECT drvTab.authorId FROM (SELECT authorId FROM v_cdm_exp_authorsAll) as drvTab) ";
 
 
 
