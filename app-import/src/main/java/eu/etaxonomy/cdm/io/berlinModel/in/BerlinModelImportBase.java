@@ -27,7 +27,9 @@ import eu.etaxonomy.cdm.io.common.TdwgAreaProvider;
 import eu.etaxonomy.cdm.model.common.AnnotatableEntity;
 import eu.etaxonomy.cdm.model.common.Annotation;
 import eu.etaxonomy.cdm.model.common.AnnotationType;
+import eu.etaxonomy.cdm.model.common.ISourceable;
 import eu.etaxonomy.cdm.model.common.IdentifiableEntity;
+import eu.etaxonomy.cdm.model.common.IdentifiableSource;
 import eu.etaxonomy.cdm.model.common.Language;
 import eu.etaxonomy.cdm.model.common.MarkerType;
 import eu.etaxonomy.cdm.model.common.TermType;
@@ -404,6 +406,18 @@ public abstract class BerlinModelImportBase
             sourceReference = persistentSourceReference;
         }
         return sourceReference;
+    }
+
+    protected static <T extends IdentifiableSource> boolean importSourceExists(ISourceable<T> sourceable, String idInSource,
+            String namespace, Reference ref) {
+        for (T source : sourceable.getSources()){
+            if (CdmUtils.nullSafeEqual(namespace, source.getIdNamespace()) &&
+                CdmUtils.nullSafeEqual(idInSource, source.getIdInSource()) &&
+                CdmUtils.nullSafeEqual(ref, source.getCitation())){
+                    return true;
+            }
+        }
+        return false;
     }
 
 }
