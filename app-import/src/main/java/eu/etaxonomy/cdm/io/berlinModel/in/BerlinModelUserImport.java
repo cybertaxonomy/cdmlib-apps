@@ -24,6 +24,7 @@ import eu.etaxonomy.cdm.io.common.IOValidator;
 import eu.etaxonomy.cdm.io.common.ImportHelper;
 import eu.etaxonomy.cdm.io.common.ResultSetPartitioner;
 import eu.etaxonomy.cdm.io.common.Source;
+import eu.etaxonomy.cdm.io.common.utils.ImportDeduplicationHelper;
 import eu.etaxonomy.cdm.model.agent.Person;
 import eu.etaxonomy.cdm.model.common.CdmBase;
 import eu.etaxonomy.cdm.model.common.User;
@@ -45,6 +46,9 @@ public class BerlinModelUserImport extends BerlinModelImportBase {
 	private static final String dbTableName = "webAuthorisation";
 	private static final String pluralString = "Users";
 
+	private ImportDeduplicationHelper<BerlinModelImportState> deduplicationHelper;
+
+
 	public BerlinModelUserImport(){
 		super(dbTableName, pluralString);
 	}
@@ -58,6 +62,7 @@ public class BerlinModelUserImport extends BerlinModelImportBase {
 	@Override
 	protected void doInvoke(BerlinModelImportState state){
 		boolean success = true;
+	    this.deduplicationHelper = ImportDeduplicationHelper.NewInstance(this, state);
 
 		BerlinModelImportConfigurator config = state.getConfig();
 		Source source = config.getSource();
@@ -69,7 +74,7 @@ public class BerlinModelUserImport extends BerlinModelImportBase {
 		//get data from database
 		String strQuery =
 				" SELECT *  " +
-                " FROM "+dbTableName+" " ;
+                " FROM " + dbTableName + " " ;
 		ResultSet rs = source.getResultSet(strQuery) ;
 		Collection<User> users = new ArrayList<>();
 
@@ -85,6 +90,7 @@ public class BerlinModelUserImport extends BerlinModelImportBase {
 					//
 					String username = rs.getString("Username");
 					String pwd = rs.getString("Password");
+					Integer id = nullSafeInt(rs, "AuthorisationId");
 
 					if (username != null){
 						username = username.trim();
@@ -96,8 +102,18 @@ public class BerlinModelUserImport extends BerlinModelImportBase {
 					if (isNotBlank(realName)){
 					    cdmAttrName = "TitleCache";
 					    Person person = Person.NewInstance();
-					    user.setPerson(person);
 					    success &= ImportHelper.addStringValue(rs, person, dbAttrName, cdmAttrName, false);
+					    //only to make deduplication work, due to issue that nomenclaturalTitle does not match because set automatically during save
+					    cdmAttrName = "nomenclaturalTitle";
+					    success &= ImportHelper.addStringValue(rs, person, dbAttrName, cdmAttrName, false);
+
+					    Person dedupPerson = deduplicatePerson(state, person);
+			            if (dedupPerson != person){
+			                logger.debug("User person deduplicated: " + id);
+			            }else{
+			                person.addImportSource(String.valueOf(id), dbTableName, state.getTransactionalSourceReference(), null);
+			            }
+			            user.setPerson(dedupPerson);
 					}
 
 					/*
@@ -133,6 +149,11 @@ public class BerlinModelUserImport extends BerlinModelImportBase {
 		}
 		return;
 	}
+
+	private Person deduplicatePerson(BerlinModelImportState state, Person person) {
+        Person result = deduplicationHelper.getExistingAuthor(state, person);
+        return result;
+    }
 
 
 	@Override
