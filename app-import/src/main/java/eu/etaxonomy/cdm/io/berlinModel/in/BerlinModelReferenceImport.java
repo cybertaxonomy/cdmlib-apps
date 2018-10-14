@@ -36,6 +36,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import org.apache.log4j.Logger;
 import org.springframework.stereotype.Component;
@@ -71,6 +73,7 @@ import eu.etaxonomy.cdm.model.reference.IBookSection;
 import eu.etaxonomy.cdm.model.reference.IPrintSeries;
 import eu.etaxonomy.cdm.model.reference.Reference;
 import eu.etaxonomy.cdm.model.reference.ReferenceFactory;
+import eu.etaxonomy.cdm.strategy.cache.agent.PersonDefaultCacheStrategy;
 import eu.etaxonomy.cdm.strategy.cache.agent.TeamDefaultCacheStrategy;
 
 /**
@@ -170,9 +173,10 @@ public class BerlinModelReferenceImport extends BerlinModelImportBase {
 	private class RefCounter{
 		RefCounter() {refCount = 0;}
 		int refCount;
+		int dedupCount;
 
 		@Override
-        public String toString(){return String.valueOf(refCount) ;};
+        public String toString(){return String.valueOf(refCount) + "/" + String.valueOf(dedupCount) ;}
 	}
 
 	@Override
@@ -199,10 +203,12 @@ public class BerlinModelReferenceImport extends BerlinModelImportBase {
 		String strSelectId = " SELECT Reference.RefId as refId ";
 		String strSelectFull =
 			" SELECT Reference.* ,InReference.RefCategoryFk as InRefCategoryFk, RefSource.RefSource " ;
-		String strFrom =  " FROM %s  " +
-		    	" LEFT OUTER JOIN Reference as InReference ON InReference.refId = Reference.inRefFk " +
-				" LEFT OUTER JOIN RefSource ON Reference.RefSourceFk = RefSource.RefSourceId " +
+		String strFrom =
+		        " FROM %s  " +
+		    	    " LEFT OUTER JOIN Reference as InReference ON InReference.refId = Reference.inRefFk " +
+		    	    " LEFT OUTER JOIN RefSource ON Reference.RefSourceFk = RefSource.RefSourceId " +
 		    	" WHERE (1=1) ";
+		String strOrderBy = " ORDER BY InReference.inRefFk, Reference.inRefFk "; //to make in-references available in first run
 		String strWherePartitioned = " AND (Reference.refId IN ("+ ID_LIST_TOKEN + ") ) ";
 
 		String referenceTable = CdmUtils.Nz(state.getConfig().getReferenceIdTable());
@@ -213,16 +219,16 @@ public class BerlinModelReferenceImport extends BerlinModelImportBase {
 		if (! referenceFilter.isEmpty()){
 			referenceFilter = " AND " + referenceFilter + " ";
 		}
-		referenceFilter = "";  //don't use it for now
+		referenceFilter = "";  //don't use it for now, in E+M the tabelle is directly used
 
-		String strIdQueryFirstPath = strSelectId + strIdFrom ;
+		String strIdQueryFirstPath = strSelectId + strIdFrom + strOrderBy ;
 		String strIdQuerySecondPath = strSelectId + strIdFrom + " AND (Reference.InRefFk is NOT NULL) ";
 
 //		if (config.getDoReferences() == CONCEPT_REFERENCES){
 //			strIdQueryNoInRef += " AND ( Reference.refId IN ( SELECT ptRefFk FROM PTaxon) ) " + referenceFilter;
 //		}
 
-		String strRecordQuery = strSelectFull + String.format(strFrom, " Reference ") + strWherePartitioned;
+		String strRecordQuery = strSelectFull + String.format(strFrom, " Reference ") + strWherePartitioned + strOrderBy;
 
 		int recordsPerTransaction = config.getRecordsPerTransaction();
 		try{
@@ -235,17 +241,14 @@ public class BerlinModelReferenceImport extends BerlinModelImportBase {
 			logger.info("end make references without in-references ... " + getSuccessString(success));
 			state.setReferenceSecondPath(true);
 
-//			if (config.getDoReferences() == ALL || config.getDoReferences() == NOMENCLATURAL){
-
 			//secondPath
-			partitioner = ResultSetPartitioner.NewInstance(source, strIdQuerySecondPath, strRecordQuery, recordsPerTransaction);
-			while (partitioner.nextPartition()){
-				partitioner.doPartition(this, state);
-			}
-			logger.info("end make references with no 1 in-reference ... " + getSuccessString(success));
-			state.setReferenceSecondPath(false);
-
+//			partitioner = ResultSetPartitioner.NewInstance(source, strIdQuerySecondPath, strRecordQuery, recordsPerTransaction);
+//			while (partitioner.nextPartition()){
+//			    //currently not used as inRef assignment fully works through sorting of idQuery now, at least in E+M
+//				partitioner.doPartition(this, state);
 //			}
+//			logger.info("end make references with no 1 in-reference ... " + getSuccessString(success));
+			state.setReferenceSecondPath(false);
 
 		} catch (SQLException e) {
 			logger.error("SQLException:" +  e);
@@ -271,8 +274,8 @@ public class BerlinModelReferenceImport extends BerlinModelImportBase {
 
 		Map<Integer, Reference> refToSave = new HashMap<>();
 
-		@SuppressWarnings("unchecked")
-        Map<String, Reference> relatedReferences = partitioner.getObjectMap(REFERENCE_NAMESPACE);
+//		@SuppressWarnings("unchecked")
+//        Map<String, Reference> relatedReferences = partitioner.getObjectMap(REFERENCE_NAMESPACE);
 
 		BerlinModelImportConfigurator config = state.getConfig();
 
@@ -286,7 +289,7 @@ public class BerlinModelReferenceImport extends BerlinModelImportBase {
 			while (rs.next()){
 				if ((i++ % modCount) == 0 && i!= 1 ){ logger.info("References handled: " + (i-1) + " in round -" );}
 
-				success &= makeSingleReferenceRecord(rs, state, partitioner, refToSave, relatedReferences, refCounter);
+				success &= makeSingleReferenceRecord(rs, state, partitioner, refToSave, refCounter);
 			} // end resultSet
 
 			//for the concept reference a fixed uuid may be needed -> change uuid
@@ -299,7 +302,8 @@ public class BerlinModelReferenceImport extends BerlinModelImportBase {
 			}
 
 			//save and store in map
-			logger.info("Save references (" + refCounter.refCount + ")");
+			logger.warn("Save references (" + refCounter.toString() + ")");  //set preliminary to warn for printing dedup count
+
 			getReferenceService().saveOrUpdate(refToSave.values());
 
 //			logger.info("end makeReferences ..." + getSuccessString(success));;
@@ -354,6 +358,8 @@ public class BerlinModelReferenceImport extends BerlinModelImportBase {
 							    thisRef.setTitleCache(null);
 							    thisRef.getTitleCache();
 							}
+						}else{
+						    logger.warn("Reference which has an inReference not found in DB. RefId: " + refId);
 						}
 						if(inRefFk.equals(0)){
 						    logger.warn("InRefFk is 0 for refId "+ refId);
@@ -363,7 +369,7 @@ public class BerlinModelReferenceImport extends BerlinModelImportBase {
 				} // end resultSet
 
 				//save and store in map
-				logger.info("Save references (" + refCounter.refCount + ")");
+				logger.info("Save in references (" + refCounter.toString() + ")");
 				getReferenceService().saveOrUpdate(refToSave.values());
 
 //			}//end resultSetList
@@ -449,7 +455,6 @@ public class BerlinModelReferenceImport extends BerlinModelImportBase {
 				BerlinModelImportState state,
 				ResultSetPartitioner<BerlinModelImportState> partitioner,
 				Map<Integer, Reference> refToSave,
-				Map<String, Reference> relatedReferences,
 				RefCounter refCounter){
 
 	    boolean success = true;
@@ -503,7 +508,8 @@ public class BerlinModelReferenceImport extends BerlinModelImportBase {
 			//created, updated, notes
 			doCreatedUpdatedNotes(state, reference, rs);
 
-			//idInSource
+			//idInSource (import from older source to berlin model)
+			//TODO do we want this being imported? Maybe as alternatvie identifier?
 			String idInSource = (String)valueMap.get("IdInSource".toLowerCase());
 			if (isNotBlank(idInSource)){
 				IdentifiableSource source = IdentifiableSource.NewDataImportInstance(idInSource);
@@ -545,25 +551,27 @@ public class BerlinModelReferenceImport extends BerlinModelImportBase {
 				Reference ref,
 				RefCounter refCounter,
 				Map<Integer, Reference> refToSave
-				) throws SQLException{
+			) throws SQLException{
 
 		@SuppressWarnings("unchecked")
         Map<String, Team> teamMap = partitioner.getObjectMap(BerlinModelAuthorTeamImport.NAMESPACE);
 
-		String refCache = rs.getString("refCache");
-		String nomRefCache = rs.getString("nomRefCache");
-		String title = rs.getString("title");
-		String nomTitleAbbrev = rs.getString("nomTitleAbbrev");
+		String refCache = trim(rs.getString("refCache"));
+		String nomRefCache = trim(rs.getString("nomRefCache"));
+		String title = trim(rs.getString("title"));
+		String nomTitleAbbrev = trim(rs.getString("nomTitleAbbrev"));
 		boolean isPreliminary = rs.getBoolean("PreliminaryFlag");
-		String refAuthorString = rs.getString("refAuthorString");
+		String refAuthorString = trim(rs.getString("refAuthorString"));
 		Integer nomAuthorTeamFk = nullSafeInt(rs, "NomAuthorTeamFk");
+		Integer inRefFk = nullSafeInt(rs, "inRefFk");
+
 
 		TeamOrPersonBase<?> nomAuthor = null;
 		if (nomAuthorTeamFk != null){
 		    String strNomAuthorTeamFk = String.valueOf(nomAuthorTeamFk);
 		    nomAuthor = teamMap.get(strNomAuthorTeamFk);
 		    if (nomAuthor == null){
-		        logger.warn("NomAuthor ("+strNomAuthorTeamFk+") not found in teamMap for " + refId);
+		        logger.warn("NomAuthor ("+strNomAuthorTeamFk+") not found in teamMap (but it should exist) for " + refId);
 		    }
 		}
 
@@ -587,25 +595,69 @@ public class BerlinModelReferenceImport extends BerlinModelImportBase {
 		TeamOrPersonBase<?> author = getAuthorship(state, refAuthorString, nomAuthor, refId);
 		ref.setAuthorship(author);
 
+		//inRef
+		Reference inRef = null;
+		if (inRefFk != null){
+		    @SuppressWarnings({"unchecked" })
+		    Map<String, Reference>  relatedReferences = partitioner.getObjectMap(REFERENCE_NAMESPACE);
+		    inRef = relatedReferences.get(String.valueOf(inRefFk));
+		    if (inRef == null){
+		        inRef = refToSave.get(inRefFk);
+		    }
+		    if (inRef == null){
+		        logger.warn("InRef not (yet) found. RefId: " + refId + "; InRef: "+ inRefFk);
+		    }else{
+		        ref.setInReference(inRef);
+		    }
+		}
+
+		Reference result = deduplicateReference(state, ref);
+		if(ref != result){
+		    //dedup not possible at this point because inRef exists but is not yet defined
+		    if (inRefFk != null && inRef == null){
+		        result = ref;
+		        logger.warn("Ref has deduplication candidate but inRef is still missing. " + inRef);
+		    }else{
+		        logger.debug("Reference was deduplicated. RefId: " + refId);
+		        //FIXME also check annotations etc. for deduplication
+		        refCounter.dedupCount++;
+		    }
+		}else{
+		    refCounter.refCount++;
+		}
+
 		//save
 		if (! refToSave.containsKey(refId)){
-			refToSave.put(refId, ref);
+			refToSave.put(refId, result);
 		}else{
+		    //should not happen
 			logger.warn("Duplicate refId in Berlin Model database. Second reference was not imported !!");
 		}
-		refCounter.refCount++;
+
 
 		//refId
-		ImportHelper.setOriginalSource(ref, sourceReference, refId, REFERENCE_NAMESPACE);
+		ImportHelper.setOriginalSource(result, sourceReference, refId, REFERENCE_NAMESPACE);
 
 		if (commonNameRefSet != null && commonNameRefSet.contains(refId)){
-            ref.addMarker(Marker.NewInstance(MarkerType.COMMON_NAME_REFERENCE(), true));
+		    result.addMarker(Marker.NewInstance(MarkerType.COMMON_NAME_REFERENCE(), true));
         }
 
 		return true;
 	}
 
 	/**
+     * @param string
+     * @return
+     */
+    private String trim(String string) {
+        if (string == null){
+            return null;
+        }else{
+            return string.trim();
+        }
+    }
+
+    /**
 	 * Copies the created and updated information from the nomReference to the cloned bibliographic reference
 	 * @param referenceBase
 	 * @param nomReference
@@ -912,32 +964,42 @@ public class BerlinModelReferenceImport extends BerlinModelImportBase {
 	}
 
 
-	private static TeamOrPersonBase<?> getAuthorship(BerlinModelImportState state, String refAuthorString,
+	private TeamOrPersonBase<?> getAuthorship(BerlinModelImportState state, String refAuthorString,
 	        TeamOrPersonBase<?> nomAuthor, Integer refId){
 
 	    TeamOrPersonBase<?> result;
 		if (nomAuthor != null){
 			result = nomAuthor;
 			if (isNotBlank(refAuthorString) && !nomAuthor.getTitleCache().equals(refAuthorString)){
-			    boolean isSimilar = handleSimilarAuthors(state, refAuthorString, nomAuthor);
+			    boolean isSimilar = handleSimilarAuthors(state, refAuthorString, nomAuthor, refId);
 			    if (! isSimilar){
-			        logger.warn("refAuthorString differs from nomAuthor.titleCache: " + refAuthorString
-			                + " <-> " + nomAuthor.getTitleCache() + "; RefId: " + refId);
+			        String message = "refAuthorString differs from nomAuthor.titleCache: " + refAuthorString
+                            + " <-> " + nomAuthor.getTitleCache() + "; RefId: " + refId;
+			        logger.warn(message);
 			    }
 			}
-
-		} else if (isNotBlank(refAuthorString)){
+		} else if (isNotBlank(refAuthorString)){//only RefAuthorString exists
 		    refAuthorString = refAuthorString.trim();
 			//TODO match with existing Persons/Teams
 		    TeamOrPersonBase<?> author = state.getRelatedObject(REF_AUTHOR_NAMESPACE, refAuthorString, TeamOrPersonBase.class);
 			if (author == null){
 			    if (!BerlinModelAuthorTeamImport.hasTeamSeparator(refAuthorString)){
-			        author = makePerson(refAuthorString, refId);
+			        author = makePerson(refAuthorString, false, refId);
 			    }else{
 			        author = makeTeam(state, refAuthorString, refId);
 			    }
 			    state.addRelatedObject(REF_AUTHOR_NAMESPACE, refAuthorString, author);
-			    author.addImportSource(refAuthorString, REF_AUTHOR_NAMESPACE, state.getTransactionalSourceReference(), null);
+			    result = deduplicatePersonOrTeam(state, author);
+
+			    if (result != author){
+                    logger.debug("RefAuthorString author deduplicated " + author);
+                }else{
+                    if (!importSourceExists(author, refAuthorString, REF_AUTHOR_NAMESPACE, state.getTransactionalSourceReference() )){
+                        author.addImportSource(refAuthorString, REF_AUTHOR_NAMESPACE, state.getTransactionalSourceReference(), null);
+                    }
+                }
+			}else{
+			    logger.debug("RefAuthor loaded from map");
 			}
 			result = author;
 		}else{
@@ -947,56 +1009,83 @@ public class BerlinModelReferenceImport extends BerlinModelImportBase {
 		return result;
 	}
 
+
     /**
      * @param state
      * @param refAuthorString
      * @param refId
      * @return
      */
-    private static Team makeTeam(BerlinModelImportState state, String refAuthorString, Integer refId) {
+    private TeamOrPersonBase<?> makeTeam(BerlinModelImportState state, String refAuthorString, Integer refId) {
         Team team = Team.NewInstance();
+        boolean hasDedupMember = false;
         if (containsEdOrColon(refAuthorString)){
             team.setTitleCache(refAuthorString, true);
         }else{
-            String[] fullTeams = BerlinModelAuthorTeamImport.splitTeam(refAuthorString);
+            String[] refAuthorTeams = BerlinModelAuthorTeamImport.splitTeam(refAuthorString);
             boolean lastWasInitials = false;
-            for (int i = 0; i< fullTeams.length ;i++){
+            for (int i = 0; i< refAuthorTeams.length ;i++){
                 if (lastWasInitials){
                     lastWasInitials = false;
                     continue;
                 }
-                String fullTeam = fullTeams[i].trim();
+                String fullTeam = refAuthorTeams[i].trim();
                 String initials = null;
-                if (fullTeams.length > i+1){
-                    String nextSplit = fullTeams[i+1].trim();
+                if (refAuthorTeams.length > i+1){
+                    String nextSplit = refAuthorTeams[i+1].trim();
                     if (isInitial(nextSplit)){
                         lastWasInitials = true;
                         initials = nextSplit;
                     }
                 }
-                Person member = makePerson(fullTeam, refId);
+                Person member = makePerson(fullTeam, isNotBlank(initials), refId);
 
-                if (initials != null && !member.isProtectedTitleCache()){
-                    member.setInitials(initials);
-                }else if (initials != null){
-                    member.setTitleCache(member.getTitleCache() + ", " + initials, true);
+                if (initials != null){
+                    if (member.getInitials() != null){
+                        logger.warn("Initials already set: " + refId);
+                    }else if (!member.isProtectedTitleCache()){
+                        member.setInitials(initials);
+                    }else {
+                        member.setTitleCache(member.getTitleCache() + ", " + initials, true);
+                    }
                 }
 
-                if (i == fullTeams.length -1 && BerlinModelAuthorTeamImport.isEtAl(member)){
+                if (i == refAuthorTeams.length -1 && BerlinModelAuthorTeamImport.isEtAl(member)){
                     team.setHasMoreMembers(true);
                 }else{
-                    Person dedupMember = deduplicatePerson(state, member);
+                    Person dedupMember = deduplicatePersonOrTeam(state, member);
                     if (dedupMember != member){
-                        logger.debug("Member deduplicated: " + refId);
+                        hasDedupMember = true;
                     }else{
-                        member.addImportSource(refAuthorString, REF_AUTHOR_NAMESPACE, state.getTransactionalSourceReference(), null);
+                        if (!importSourceExists(member, refAuthorString, REF_AUTHOR_NAMESPACE, state.getTransactionalSourceReference())){
+                            member.addImportSource(refAuthorString, REF_AUTHOR_NAMESPACE, state.getTransactionalSourceReference(), null);
+                        }
                     }
-                    //TODO add idInBM
+
                     team.addTeamMember(dedupMember);
                 }
             }
         }
 
+        TeamOrPersonBase<?> result = team;
+        if (team.getTeamMembers().size() == 1 && !team.isHasMoreMembers()){
+            Person person = team.getTeamMembers().get(0);
+            checkPerson(person, refAuthorString, hasDedupMember, refId);
+            result = person;
+        }else{
+            checkTeam(team, refAuthorString, refId);
+            result = team;
+        }
+
+        return result;
+    }
+
+    /**
+     * @param team
+     * @param refAuthorString
+     * @param refId
+     */
+    private static void checkTeam(Team team, String refAuthorString, Integer refId) {
         TeamDefaultCacheStrategy formatter = (TeamDefaultCacheStrategy) team.getCacheStrategy();
         formatter.setEtAlPosition(100);
         if (formatter.getTitleCache(team).equals(refAuthorString)){
@@ -1009,11 +1098,55 @@ public class BerlinModelReferenceImport extends BerlinModelImportBase {
             team.setProtectedTitleCache(false);
         }else if (containsEdOrColon(refAuthorString)){
             //nothing to do, it is expected to be protected
+
         }else{
             team.setTitleCache(refAuthorString, true);
             logger.warn("Creation of titleCache for team with members did not (fully) work: " + refAuthorString + " <-> " + formatter.getTitleCache(team)+ " : " + refId);
         }
-        return team;
+
+    }
+
+    /**
+     * @param hasDedupMember
+     * @param result
+     * @return
+     */
+    private static void checkPerson(Person person, String refAuthorString, boolean hasDedupMember, Integer refId) {
+        PersonDefaultCacheStrategy formatter = (PersonDefaultCacheStrategy) person.getCacheStrategy();
+
+        String oldTitleCache = person.getTitleCache();
+        boolean oldTitleCacheProtected = person.isProtectedTitleCache();
+
+        if (! oldTitleCache.equals(refAuthorString)){
+            logger.error("Old titleCache does not equal refAuthorString this should not happen. "+ oldTitleCache + " <-> " + refAuthorString + "; refId = " + refId);
+        }
+
+        boolean protect = true;
+        person.setProtectedTitleCache(false);
+        if (refAuthorString.equals(formatter.getTitleCache(person))){
+            protect = false;
+        }else if(formatter.getFullTitle(person).equals(refAuthorString)){
+            //.. or teams with initials first
+            protect = false;
+        }else{
+            //keep protected, see below
+        }
+
+        if (hasDedupMember){
+            //restore
+            //TODO maybe even do not use dedup for testing
+            person.setTitleCache(oldTitleCache, oldTitleCacheProtected);
+            if (protect != oldTitleCacheProtected){
+                logger.warn("Deduplicated person protection requirement unclear for "+refAuthorString+". New:"+protect+"/Old:"+oldTitleCacheProtected+"; RefId: " + refId);
+            }
+        }else{
+            if (protect){
+                logger.warn("Creation of titleCache for person (converted from team) with members did not (fully) work: " + refAuthorString + " <-> " + formatter.getTitleCache(person)+ " : " + refId);
+                person.setTitleCache(refAuthorString, protect);
+            }else{
+                //keep unprotected
+            }
+        }
     }
 
     /**
@@ -1023,7 +1156,9 @@ public class BerlinModelReferenceImport extends BerlinModelImportBase {
     private static boolean containsEdOrColon(String str) {
         if (str.contains(" ed.") || str.contains(" Ed.") || str.contains("(ed.")
                 || str.contains("[ed.") || str.contains("(Eds)") || str.contains("(Eds.)") ||
-                str.contains("(eds.)") || str.contains(":")|| str.contains(";")){
+                str.contains("(eds.)") || str.contains(":")|| str.contains(";") || str.contains("Publ. & Inform. Directorate")
+                || str.contains("Anonymous [Department of Botany, Faculty of Science, FER-ZPR, University of Zagreb]")
+                || str.contains("Davis, P. H. (Güner, A. & al.)")){
             return true;
         }else{
             return false;
@@ -1038,38 +1173,59 @@ public class BerlinModelReferenceImport extends BerlinModelImportBase {
         if (str == null){
             return false;
         }
-        boolean matches = str.trim().matches("(\\p{javaUpperCase}|Yu|Th|Ch|Lj|Sz|Dz|Sh)\\.?(\\s*[-\\s]\\s*(\\p{javaUpperCase}|Yu)\\.?)*(\\s+(van|von))?");
+        boolean matches = str.trim().matches("(\\p{javaUpperCase}|Yu|Ya|Th|Ch|Lj|Sz|Dz|Sh|Ju|R. M. da S)\\.?"
+                + "(\\s*[-\\s]\\s*(\\p{javaUpperCase}|Yu|Ja|Kh|Tz|Ya|Th|Ju)\\.?)*(\\s+(van|von|de|de la|del|da|van der))?");
         return matches;
     }
 
-    private static Person deduplicatePerson(BerlinModelImportState state, Person person) {
-        Person result = deduplicationHelper.getExistingAuthor(state, person);
+    private <T extends TeamOrPersonBase<?>> T deduplicatePersonOrTeam(BerlinModelImportState state,T author) {
+        T result = deduplicationHelper.getExistingAuthor(state, author);
         return result;
     }
 
-    private static Person makePerson(String full, Integer refId) {
+    private Reference deduplicateReference(BerlinModelImportState state,Reference ref) {
+        Reference result = deduplicationHelper.getExistingReference(state, ref);
+        return result;
+    }
+
+    private static Person makePerson(String full, boolean followedByInitial, Integer refId) {
         Person person = Person.NewInstance();
         person.setTitleCache(full, true);
         if (!full.matches(".*[\\s\\.].*")){
             person.setFamilyName(full);
             person.setProtectedTitleCache(false);
-        }else if (full.matches("(\\p{javaUpperCase}|Kh)\\.(\\s\\p{javaUpperCase}\\.)*\\s\\p{javaUpperCase}\\p{javaLowerCase}{2,}")){
-            String[] splits = full.split("\\s");
-            person.setFamilyName(splits[splits.length-1]);
-            String initials = splits[0];
-            for (int i = 1; i < splits.length -1; i++ ){
-                initials += " " + splits[i];
-            }
-            person.setInitials(initials);
-            person.setProtectedTitleCache(false);
+        }else{
+            parsePerson(person, full, true, followedByInitial);
         }
+
         if ((full.length() <= 2 && !full.matches("(Li|Bo|Em|Ay|Ma)")) || (full.length() == 3 && full.endsWith(".") && !full.equals("al.")) ){
-//            if (!full.matches("((L|Sm|DC|al|Sw|Qz|Fr|Ib)\\.|Hu|Ma|Hy|Wu)")){
-                logger.warn("Unexpected short nom author name part: " + full + "; " + refId);
-//            }
+            logger.warn("Unexpected short nom author name part: " + full + "; " + refId);
         }
 
         return person;
+    }
+
+    private static void parsePerson(Person person, String str, boolean preliminary, boolean followedByInitial) {
+        String capWord = "\\p{javaUpperCase}\\p{javaLowerCase}{2,}";
+        String famStart = "(Le |D'|'t |Mc|Mac|Des |d'|Du |De |Al-)";
+        String regEx = "((\\p{javaUpperCase}|Ya|Th|Ju|Kh|An)\\.([\\s-]\\p{javaUpperCase}\\.)*(\\s(de|del|da|von|van|van der|v.|af|zu|von M. Und L.))?\\s)("
+                + famStart + "?" + capWord + "((-| y | i | é | de | de la )" + capWord + ")?)";
+        Matcher matcher = Pattern.compile(regEx).matcher(str);
+        if (matcher.matches()){
+            person.setProtectedTitleCache(false);
+            String familyName = matcher.group(6).trim();
+            person.setFamilyName(familyName);
+            person.setInitials(matcher.group(1).trim());
+        }else{
+            String regEx2 = "("+ capWord + "\\s" + capWord + "|Le Sueur|Beck von Mannagetta|Di Martino|Galán de Mera|Van Der Maesen|Farga i Arquimbau|Perez de Paz|Borzatti de Loewenstern|Lo Giudice|Perez de Paz)";
+            Matcher matcher2 = Pattern.compile(regEx2).matcher(str);
+            if (followedByInitial && matcher2.matches()){
+                person.setFamilyName(str);
+                person.setProtectedTitleCache(false);
+            }else{
+                person.setTitleCache(str, preliminary);
+            }
+        }
     }
 
     /**
@@ -1079,39 +1235,164 @@ public class BerlinModelReferenceImport extends BerlinModelImportBase {
      * @return
      */
     private static boolean handleSimilarAuthors(BerlinModelImportState state, String refAuthorString,
-            TeamOrPersonBase<?> nomAuthor) {
+            TeamOrPersonBase<?> nomAuthor, int refId) {
+        String nomTitle = nomAuthor.getTitleCache();
+
         if (refAuthorString.equals(nomAuthor.getNomenclaturalTitle())){
             //nomTitle equal
             return true;
         }else{
-            String nomTitle = nomAuthor.getTitleCache();
             if (refAuthorString.replace(" & ", ", ").equals(nomTitle.replace(" & ", ", "))){
                 //nomTitle equal except for "&"
                 return true;
             }
-
-            if (refAuthorString.replace(" & ", ", ").equals(nomAuthor.getFullTitle().replace(" & ", ", "))){
+            String nomFullTitle = nomAuthor.getFullTitle();
+            if (refAuthorString.replace(" & ", ", ").equals(nomFullTitle.replace(" & ", ", "))){
                 return true;
             }
 
-            if (refAuthorString.contains(",") && !nomTitle.contains(",") && nomAuthor.isInstanceOf(Person.class)){
-                String[] splits = refAuthorString.split(",");
+            if (nomAuthor.isInstanceOf(Person.class)){
                 Person person = CdmBase.deproxy(nomAuthor, Person.class);
-                if (splits.length == 2){
-                    String newMatch = splits[1].trim() + " " + splits[0].trim();
-                    if (newMatch.equals(nomTitle)){
-                        if (isBlank(person.getFamilyName())){
-                            person.setFamilyName(splits[0].trim());
+
+                //refAuthor has initials behind, nom Author in front // the other way round is handled in firstIsFullNameOfInitialName
+                if (refAuthorString.contains(",") && !nomTitle.contains(",") ){
+                    String[] splits = refAuthorString.split(",");
+                    if (splits.length == 2){
+                        String newMatch = splits[1].trim() + " " + splits[0].trim();
+                        if (newMatch.equals(nomTitle)){
+                            if (isBlank(person.getFamilyName())){
+                                person.setFamilyName(splits[0].trim());
+                            }
+                            if (isBlank(person.getInitials())){
+                                person.setInitials(splits[1].trim());
+                            }
+                            return true;
                         }
-                        if (isBlank(person.getInitials())){
-                            person.setInitials(splits[1].trim());
-                        }
-                        return true;
                     }
                 }
+
+                if (refAuthorIsFamilyAuthorOfNomAuthor(state, refAuthorString, person)){
+                    return true;
+                }
+
+                if (firstIsFullNameOfInitialName(state, refAuthorString, person, refId)){
+                    return true;
+                }
+            }
+
+        }
+        return false;
+    }
+
+    /**
+     * @param state
+     * @param refAuthorString
+     * @param person
+     * @return
+     */
+    private static boolean refAuthorIsFamilyAuthorOfNomAuthor(BerlinModelImportState state, String refAuthorString,
+            Person person) {
+        if (refAuthorString.equals(person.getFamilyName())){
+            return true;
+        }else{
+            return false;
+        }
+    }
+
+    /**
+     * @param state
+     * @param refAuthorString
+     * @param nomAuthor
+     * @return
+     */
+    private static boolean firstIsFullNameOfInitialName(BerlinModelImportState state, String fullName,
+            Person initialAuthor, int refId) {
+        String initialName = initialAuthor.getTitleCache();
+
+        String[] fullSplits = fullName.split(",");
+        String[] initialSplits = initialName.split(",");
+
+        if (fullSplits.length == 2 && initialSplits.length == 2){
+            String[] fullGivenName = fullSplits[1].trim().split(" ");
+            String[] initialsGivenName = initialSplits[1].trim().split(" ");
+            boolean result = compareFamilyAndInitials(fullSplits[0], initialSplits[0], fullGivenName, initialsGivenName);
+            if (result){
+                setGivenName(state, fullSplits[1], initialAuthor, refId);
+            }
+            return result;
+        }else if (fullSplits.length == 1 && initialSplits.length == 2){
+            String[] fullSingleSplits = fullName.split(" ");
+            String fullFamily = fullSingleSplits[fullSingleSplits.length-1];
+            String[] fullGivenName = Arrays.copyOfRange(fullSingleSplits, 0, fullSingleSplits.length-1);
+            String[] initialsGivenName = initialSplits[1].trim().split(" ");
+            boolean result =  compareFamilyAndInitials(fullFamily, initialSplits[0], fullGivenName, initialsGivenName);
+            if (result){
+                if(hasAtLeastOneFullName(fullGivenName)){
+                    setGivenName(state, CdmUtils.concat(" ", fullGivenName), initialAuthor, refId);
+                }
+            }
+            return result;
+        }else if (fullSplits.length == 1 && initialAuthor.getInitials() == null){
+            //don't if this will be implemented, initialAuthors with only nomencl.Author set
+        }
+
+        return false;
+    }
+
+    /**
+     * @param fullGivenName
+     * @return
+     */
+    private static boolean hasAtLeastOneFullName(String[] fullGivenName) {
+        for (String singleName : fullGivenName){
+            if (!singleName.endsWith(".") && singleName.length() > 2 && !singleName.matches("(von|van)") ){
+                return true;
             }
         }
         return false;
+    }
+
+    /**
+     * @param state
+     * @param string
+     * @param initialAuthor
+     */
+    private static void setGivenName(BerlinModelImportState state, String givenName, Person person, int refId) {
+        givenName = givenName.trim();
+        if(person.getGivenName() == null || person.getGivenName().equals(givenName)){
+            person.setGivenName(givenName);
+        }else{
+            logger.warn("RefAuthor given name and existing given name differ: " + givenName + " <-> " + person.getGivenName() + "; RefId + " + refId);
+        }
+    }
+
+    /**
+     * @param fullGivenName
+     * @param initialsGivenName
+     */
+    protected static boolean compareFamilyAndInitials(String fullFamilyName, String initialsFamilyName,
+            String[] fullGivenName, String[] initialsGivenName) {
+        if (!fullFamilyName.equals(initialsFamilyName)){
+            return false;
+        }
+        if (fullGivenName.length == initialsGivenName.length){
+            for (int i =0; i< fullGivenName.length ; i++){
+                if (fullGivenName[i].length() == 0  //comma ending not allowed
+                        || initialsGivenName[i].length() != 2 //only K. or similar allowed
+                        || fullGivenName[i].length() < initialsGivenName[i].length()  //fullFirstName must be longer than abbrev Name
+                        || !initialsGivenName[i].endsWith(".") //initials must end with "."
+                        || !fullGivenName[i].startsWith(initialsGivenName[i].replace(".", ""))){ //start with same letter
+                    if (fullGivenName[i].matches("(von|van|de|zu)") && fullGivenName[i].equals(initialsGivenName[i])){
+                        continue;
+                    }else{
+                        return false;
+                    }
+                }
+            }
+            return true;
+        }else{
+            return false;
+        }
     }
 
     /**
