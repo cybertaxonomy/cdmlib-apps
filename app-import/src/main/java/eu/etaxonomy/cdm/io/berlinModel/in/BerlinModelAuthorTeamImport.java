@@ -15,6 +15,8 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import org.apache.log4j.Logger;
 import org.springframework.stereotype.Component;
@@ -29,6 +31,7 @@ import eu.etaxonomy.cdm.model.agent.Person;
 import eu.etaxonomy.cdm.model.agent.Team;
 import eu.etaxonomy.cdm.model.agent.TeamOrPersonBase;
 import eu.etaxonomy.cdm.model.common.CdmBase;
+import eu.etaxonomy.cdm.strategy.cache.agent.INomenclaturalAuthorCacheStrategy;
 
 
 /**
@@ -42,6 +45,7 @@ public class BerlinModelAuthorTeamImport extends BerlinModelImportBase {
     private static final Logger logger = Logger.getLogger(BerlinModelAuthorTeamImport.class);
 
 	public static final String NAMESPACE = "AuthorTeam";
+	   public static final String NAMESPACE_SPLIT = "AuthorTeam_Split";
 
 	private static final String pluralString = "AuthorTeams";
 	private static final String dbTableName = "AuthorTeam";
@@ -154,7 +158,7 @@ public class BerlinModelAuthorTeamImport extends BerlinModelImportBase {
 
 					Team team = Team.NewInstance();
 
-					Boolean preliminaryFlag = rs.getBoolean("PreliminaryFlag");
+					boolean preliminaryFlag = rs.getBoolean("PreliminaryFlag");
 					String authorTeamCache = rs.getString("AuthorTeamCache");
 					String fullAuthorTeamCache = rs.getString("FullAuthorTeamCache");
 					if (isBlank(fullAuthorTeamCache)){
@@ -162,22 +166,35 @@ public class BerlinModelAuthorTeamImport extends BerlinModelImportBase {
 						if (isBlank(authorTeamCache) && preliminaryFlag){
 						    logger.warn("authorTeamCache and fullAuthorTeamCache are blank/null and preliminaryFlag is true. This makes no sense and should not happen: " + teamId);
 						}
+					}else{
+					    fullAuthorTeamCache = fullAuthorTeamCache.trim();
+					}
+					if (isNotBlank(authorTeamCache)){
+					    authorTeamCache = authorTeamCache.trim();
 					}
 //					team.setTitleCache(fullAuthorTeamCache, preliminaryFlag);
 //					team.setNomenclaturalTitle(authorTeamCache, preliminaryFlag);
 
 					success &= makeSequence(state, team, teamId, rsSequence, personMap);
 
+					team.setTitleCache(fullAuthorTeamCache, preliminaryFlag);
+					team.setNomenclaturalTitle(authorTeamCache, preliminaryFlag);
+
 					TeamOrPersonBase<?> author = handleTeam(state, team, authorTeamCache,
 					        fullAuthorTeamCache, preliminaryFlag, teamId);
 
+					//in case preliminary flag is set incorrectly in BM
 					if (author == team && team.getTeamMembers().size() == 0 && preliminaryFlag == false){
                         team.setProtectedTitleCache(true);
                         team.setProtectedNomenclaturalTitleCache(true);
                     }
 
 					//created, notes
-					doIdCreatedUpdatedNotes(state, author, rs, teamId, NAMESPACE);
+//					doIdCreatedUpdatedNotes(state, author, rs, teamId, NAMESPACE);
+					doCreatedUpdatedNotes(state, author, rs);
+					if (!importSourceExists(author, String.valueOf(teamId), NAMESPACE, state.getTransactionalSourceReference())){
+					    doId(state, author, teamId, NAMESPACE);
+					}
 
 					authorsToSave.add(author);
 				}catch(Exception ex){
@@ -217,19 +234,25 @@ public class BerlinModelAuthorTeamImport extends BerlinModelImportBase {
             logger.warn("Blank authorTeamCache not yet handled: " + authorTeamId);
         }
 
+        //single person
         if (!hasTeamSeparator(authorTeamCache) && !hasTeamSeparator(fullAuthorTeamCache)){
             Person person = makePerson(fullAuthorTeamCache, authorTeamCache, preliminaryFlag, authorTeamId);
             result = deduplicatePerson(state, person);
             if (result != person){
                 logger.debug("Single person team deduplicated: " + authorTeamId);
             }else{
-                person.addImportSource(String.valueOf(authorTeamId), NAMESPACE, state.getTransactionalSourceReference(), null);
-
+                String idInSource = String.valueOf(authorTeamId);
+                if (!importSourceExists(person, idInSource, NAMESPACE, state.getTransactionalSourceReference())){
+                    person.addImportSource(idInSource, NAMESPACE, state.getTransactionalSourceReference(), null);
+                }
             }
+        //team
         }else{
             String[] fullTeams = splitTeam(fullAuthorTeamCache);
             String[] nomTeams = splitTeam(authorTeamCache);
-            if (fullTeams.length == nomTeams.length || fullTeams.length == 0){
+            if (fullTeams.length != nomTeams.length && fullTeams.length != 0){
+                logger.warn("AuthorTeamCache and fullAuthorTeamCache have not the same team size: " + authorTeamCache + " <-> " + fullAuthorTeamCache+ " : " + authorTeamId);
+            }else{
                 for (int i = 0; i< nomTeams.length ;i++){
                     String fullTeam = fullTeams.length == 0? null: fullTeams[i].trim();
                     Person member = makePerson(fullTeam, nomTeams[i].trim(), preliminaryFlag, authorTeamId);
@@ -243,42 +266,78 @@ public class BerlinModelAuthorTeamImport extends BerlinModelImportBase {
                         Person dedupMember = deduplicatePerson(state, member);
                         if (dedupMember != member){
                             logger.debug("Member deduplicated: " + authorTeamId);
+                        }else{
+                            String idInSource = String.valueOf(authorTeamId);
+                            if (!importSourceExists(member, idInSource, NAMESPACE_SPLIT, state.getTransactionalSourceReference())){
+                                member.addImportSource(idInSource, NAMESPACE_SPLIT, state.getTransactionalSourceReference(), null);
+                            }
                         }
                         //TODO add idInBM
                         team.addTeamMember(dedupMember);
                     }
                 }
                 //check nomenclatural title
-                if (team.getCacheStrategy().getNomenclaturalTitle(team).equals(authorTeamCache)){
-                    team.setProtectedNomenclaturalTitleCache(false);
-                }else if(team.getCacheStrategy().getNomenclaturalTitle(team).replace(" ,", ",").equals(authorTeamCache)){
-                    //also accept teams with ' , ' as separator as not protected
-                    team.setProtectedTitleCache(false);
-                }else{
-                    team.setNomenclaturalTitle(authorTeamCache, true);
-                    logger.warn("Creation of nomTitle for team with members did not work: " + authorTeamCache + " <-> " + team.getCacheStrategy().getNomenclaturalTitle(team)+ " : " + authorTeamId);
-                }
+                //TODO
+                checkTeamNomenclaturalTitle(team, authorTeamCache, authorTeamId);
                 //check titleCache
-                if (team.generateTitle().equals(fullAuthorTeamCache)){
-                    team.setProtectedTitleCache(false);
-                }else if(fullAuthorTeamCache == null){
-                    //do nothing
-                }else if(team.generateTitle().replace(" & ", ", ").equals(fullAuthorTeamCache.replace(" & ", ", "))){
-                    //also accept teams with ', ' as final member separator as not protected
-                    team.setProtectedTitleCache(false);
-                }else if(team.getFullTitle().replace(" & ", ", ").equals(fullAuthorTeamCache.replace(" & ", ", "))){
-                    //also accept teams with ', ' as final member separator as not protected
-                    team.setProtectedTitleCache(false);
-                }else{
-                    String fullTitle = team.getFullTitle().replace(" & ", ", ");
-                    team.setTitleCache(fullAuthorTeamCache, true);
-                    logger.warn("Creation of titleCache for team with members did not work: " + fullAuthorTeamCache + " <-> " + team.generateTitle()+ " : " + authorTeamId);
-                }
+                checkTeamTitleCache(team, fullAuthorTeamCache, authorTeamId);
+            }//same size team
+            result = deduplicateTeam(state, team);
+            if (result != team){
+                logger.debug("Dedup team");
             }else{
-                logger.warn("AuthorTeamCache and fullAuthorTeamCache have not the same team size: " + authorTeamCache + " <-> " + fullAuthorTeamCache+ " : " + authorTeamId);
+                String idInSource = String.valueOf(authorTeamId);
+                if (!importSourceExists(result, idInSource, NAMESPACE, state.getTransactionalSourceReference())){
+                    result.addImportSource(idInSource, NAMESPACE, state.getTransactionalSourceReference(), null);
+                }
             }
-        }
+        }//team
+
         return result;
+    }
+
+
+    /**
+     * @param team
+     * @param authorTeamCache
+     * @param authorTeamId
+     */
+    protected void checkTeamNomenclaturalTitle(Team team, String authorTeamCache, int authorTeamId) {
+        if (team.getCacheStrategy().getNomenclaturalTitle(team).equals(authorTeamCache)){
+            team.setProtectedNomenclaturalTitleCache(false);
+        }else if(team.getCacheStrategy().getNomenclaturalTitle(team).replace(" ,", ",").equals(authorTeamCache)){
+            //also accept teams with ' , ' as separator as not protected
+            team.setProtectedNomenclaturalTitleCache(false);
+        }else{
+            team.setNomenclaturalTitle(authorTeamCache, true);
+            logger.warn("Creation of nomTitle for team with members did not work: " + authorTeamCache + " <-> " + team.getCacheStrategy().getNomenclaturalTitle(team)+ " : " + authorTeamId);
+        }
+    }
+
+
+    /**
+     * @param team
+     * @param fullAuthorTeamCache
+     * @param authorTeamId
+     * @param formatter
+     */
+    protected void checkTeamTitleCache(Team team, String fullAuthorTeamCache, int authorTeamId) {
+        INomenclaturalAuthorCacheStrategy<Team> formatter = team.getCacheStrategy();
+        if (team.generateTitle().equals(fullAuthorTeamCache)){
+            team.setProtectedTitleCache(false);
+        }else if(fullAuthorTeamCache == null){
+            team.setProtectedTitleCache(false);
+        }else if(team.generateTitle().replace(" & ", ", ").equals(fullAuthorTeamCache.replace(" & ", ", "))){
+            //also accept teams with ', ' as final member separator as not protected
+            team.setProtectedTitleCache(false);
+        }else if(formatter.getFullTitle(team).replace(" & ", ", ").equals(fullAuthorTeamCache.replace(" & ", ", "))){
+            //also accept teams with ', ' as final member separator as not protected
+            team.setProtectedTitleCache(false);
+        }else{
+            String fullTitle = formatter.getFullTitle(team).replace(" & ", ", ");
+            team.setTitleCache(fullAuthorTeamCache, true);
+            logger.warn("Creation of titleCache for team with members did not work: " + fullAuthorTeamCache + " <-> " + team.generateTitle()+ " : " + authorTeamId);
+        }
     }
 
 
@@ -288,6 +347,11 @@ public class BerlinModelAuthorTeamImport extends BerlinModelImportBase {
      */
     private Person deduplicatePerson(BerlinModelImportState state, Person person) {
         Person result = deduplicationHelper.getExistingAuthor(state, person);
+        return result;
+    }
+
+    private Team deduplicateTeam(BerlinModelImportState state, Team team) {
+        Team result = deduplicationHelper.getExistingAuthor(state, team);
         return result;
     }
 
@@ -316,6 +380,7 @@ public class BerlinModelAuthorTeamImport extends BerlinModelImportBase {
         if (isBlank(full)){
             //do nothing
         }else if (!full.matches(".*[\\s\\.].*")){
+            //no whitespace and no . => family name
             person.setFamilyName(full);
         }else if (nom.equals(full)){
             parsePerson(person, full, preliminaryFlag);
@@ -335,22 +400,34 @@ public class BerlinModelAuthorTeamImport extends BerlinModelImportBase {
      * @param person
      */
     private void parsePerson(Person person, String str, boolean preliminary) {
-        if (str.matches("\\p{javaUpperCase}\\.(\\s\\p{javaUpperCase}\\.)*\\s\\p{javaUpperCase}\\p{javaLowerCase}{2,}")){
-            String[] splits = str.split("\\s");
-            person.setFamilyName(splits[splits.length-1]);
-            String initials = splits[0];
-            for (int i = 1; i < splits.length -1; i++ ){
-                initials += " " + splits[i];
-            }
-            person.setInitials(initials);
+        String capWord = "\\p{javaUpperCase}\\p{javaLowerCase}{2,}";
+        String famStart = "(Le |D'|'t |Mc|Mac|Des |d'|Du |De )";
+        String regEx = "(\\p{javaUpperCase}\\.([\\s-]\\p{javaUpperCase}\\.)*(\\s(de|del|da|von|van|v.|af|zu))?\\s)("
+                + famStart + "?" + capWord + "((-| y | é | de | de la )" + capWord + ")?)";
+        Matcher matcher = Pattern.compile(regEx).matcher(str);
+        if (matcher.matches()){
+
             person.setProtectedTitleCache(false);
+            //Initials + family name
+//            String[] splits = str.split("\\s");
+//            int n = matcher.groupCount();
+//            for (int i = 0; i< n; i++){
+//                String s = matcher.group(i);
+//                System.out.println(s);
+//            }
+            person.setFamilyName(matcher.group(5).trim());
+
+//            String initials = splits[0];
+//            for (int i = 1; i < splits.length -1; i++ ){
+//                initials += " " + splits[i];
+//            }
+            person.setInitials(matcher.group(1).trim());
         }else{
             person.setTitleCache(str, preliminary);
         }
-
     }
 
-    private static final String TEAM_SPLITTER = "(,|;|&| et | Et )";
+    private static final String TEAM_SPLITTER = "(,|&)";
 
     /**
      * @param fullAuthorTeamCache
