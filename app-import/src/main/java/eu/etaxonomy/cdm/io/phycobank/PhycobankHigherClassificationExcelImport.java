@@ -87,6 +87,8 @@ public class PhycobankHigherClassificationExcelImport<CONFIG extends PhycobankHi
 	    relType = type;
 
 	    String line = "line " + state.getCurrentLine();
+	    System.out.println(line);
+
         Map<String, String> record = state.getOriginalRecord();
 
         List<RankedUninomial> rankedUninomials = makeRankedUninomials(state, record);
@@ -128,7 +130,7 @@ public class PhycobankHigherClassificationExcelImport<CONFIG extends PhycobankHi
                 }else if (existingHigherNode.equals(createdHigher)){
                     //nothing to do;
                 }else{
-                    logger.warn(line + ": Inconsistency in data. Higher taxon for rank " + rankedUninomial.rank +
+                    logger.warn(line + ": Inconsistency in data. Higher taxon for rank " + rankedUninomial.rank + "/" + rankedUninomial.uninomial +
                             " differs from existing higher taxon. Higher taxonomy not created. Please check classification.");
                 }
             }else { //existingNode == null
@@ -207,7 +209,7 @@ public class PhycobankHigherClassificationExcelImport<CONFIG extends PhycobankHi
             String fieldName, Rank rank) {
         String uninomial = record.get(fieldName);
         if (isNotBlank(uninomial)){
-            list.add(new RankedUninomial(uninomial, rank));
+            list.add(new RankedUninomial(uninomial.trim(), rank));
         }
     }
 

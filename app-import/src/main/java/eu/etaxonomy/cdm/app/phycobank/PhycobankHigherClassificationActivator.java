@@ -42,16 +42,18 @@ public class PhycobankHigherClassificationActivator {
     // ====================================================================================
 
     //database validation status (create, update, validate ...)
-    static DbSchemaValidation hbm2dll = DbSchemaValidation.VALIDATE;
+    static DbSchemaValidation hbm2dll = DbSchemaValidation.VALIDATE;  //
 
-    static ICdmDataSource cdmDestination = CdmDestinations.localH2();
+//    static ICdmDataSource cdmDestination = CdmDestinations.localH2();
 //    static ICdmDataSource cdmDestination = CdmDestinations.cdm_local_test_mysql();
-//    static ICdmDataSource cdmDestination = CdmDestinations.cdm_test_phycobank();
-
+    static ICdmDataSource cdmDestination = CdmDestinations.cdm_test_phycobank();
+//TODO: Die 3 Syllabus noch richtig als 3 Referenzen anlegen (muss Henning machen), hier dann die jeweilige UUID
+// verwenden und unten den worksheetNamen entsprechend anpassen
     static Reference secRef = getSecReference_Frey();
 //    static Reference secRef = getSecReference_WoRMS();
-    static String worksheetName = secRef.equals(getSecReference_WoRMS())? "WoRMS" :
-        secRef.equals(getSecReference_Frey())? "HigherRanksEntwurfNeu" : null;
+//    static String worksheetName = secRef.equals(getSecReference_WoRMS())? "WoRMS" :
+//        secRef.equals(getSecReference_Frey())? "HigherRanksEntwurfNeu" : null;
+    static String worksheetName = "Syllabus2_1";
 
     static UUID uuidRefPhycobank = UUID.fromString("8058a5ec-60ee-4a04-8c17-5623e3a4795c");
 
@@ -121,7 +123,8 @@ public class PhycobankHigherClassificationActivator {
     }
 
     public static String fileName(){
-        return "Algen_Syllabus_NormalImplied_Test.xlsx";
+//        return "Algen_Syllabus_NormalImplied_Test.xlsx";
+        return "Algen_Syllabus_Produktion_corr.xlsx";
     }
     public static String filePath(){
         return "file:////BGBM-PESIHPC/Phycobank/";
