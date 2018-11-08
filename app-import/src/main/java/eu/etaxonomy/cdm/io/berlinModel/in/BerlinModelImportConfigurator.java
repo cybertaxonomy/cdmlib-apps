@@ -71,6 +71,9 @@ public class BerlinModelImportConfigurator extends DbImportConfiguratorBase<Berl
 
 	private boolean warnForDifferingSynonymReference = true;   //do not warn for E+M as it uses last scrutiny
 
+	//references
+	private boolean doSourceNumber = false;
+
 	//occurrences
 	private boolean isSplitTdwgCodes = true;
 
@@ -721,6 +724,13 @@ public class BerlinModelImportConfigurator extends DbImportConfiguratorBase<Berl
     }
     public void setLogMatchingNotExportedOldNames(boolean logMatchingNotExportedOldNames) {
         this.logMatchingNotExportedOldNames = logMatchingNotExportedOldNames;
+    }
+
+    public boolean isDoSourceNumber() {
+        return doSourceNumber;
+    }
+    public void setDoSourceNumber(boolean doSourceNumber) {
+        this.doSourceNumber = doSourceNumber;
     }
 
 }

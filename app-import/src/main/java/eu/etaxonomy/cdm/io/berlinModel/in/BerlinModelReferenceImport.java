@@ -44,6 +44,7 @@ import org.springframework.stereotype.Component;
 
 import eu.etaxonomy.cdm.common.CdmUtils;
 import eu.etaxonomy.cdm.common.DOI;
+import eu.etaxonomy.cdm.io.berlinModel.BerlinModelTransformer;
 import eu.etaxonomy.cdm.io.berlinModel.in.validation.BerlinModelReferenceImportValidator;
 import eu.etaxonomy.cdm.io.common.ICdmImport;
 import eu.etaxonomy.cdm.io.common.IImportConfigurator;
@@ -64,15 +65,19 @@ import eu.etaxonomy.cdm.model.agent.Person;
 import eu.etaxonomy.cdm.model.agent.Team;
 import eu.etaxonomy.cdm.model.agent.TeamOrPersonBase;
 import eu.etaxonomy.cdm.model.common.CdmBase;
+import eu.etaxonomy.cdm.model.common.DefinedTerm;
 import eu.etaxonomy.cdm.model.common.ExtensionType;
 import eu.etaxonomy.cdm.model.common.IdentifiableSource;
+import eu.etaxonomy.cdm.model.common.Identifier;
 import eu.etaxonomy.cdm.model.common.Marker;
 import eu.etaxonomy.cdm.model.common.MarkerType;
+import eu.etaxonomy.cdm.model.common.TermVocabulary;
 import eu.etaxonomy.cdm.model.reference.IArticle;
 import eu.etaxonomy.cdm.model.reference.IBookSection;
 import eu.etaxonomy.cdm.model.reference.IPrintSeries;
 import eu.etaxonomy.cdm.model.reference.Reference;
 import eu.etaxonomy.cdm.model.reference.ReferenceFactory;
+import eu.etaxonomy.cdm.model.reference.ReferenceType;
 import eu.etaxonomy.cdm.strategy.cache.agent.PersonDefaultCacheStrategy;
 import eu.etaxonomy.cdm.strategy.cache.agent.TeamDefaultCacheStrategy;
 
@@ -263,7 +268,23 @@ public class BerlinModelReferenceImport extends BerlinModelImportBase {
 		return;
 	}
 
-	@Override
+//	 not needed, data also in Reference.idInSource
+//    private void fillSourceNumberMap(BerlinModelImportState state) throws SQLException {
+//        String query = " SELECT * FROM SourceNumber2Ref ";
+//        ResultSet rs = state.getConfig().getSource().getResultSet(query);
+//        while (rs.next()){
+//            String sourceNumber = rs.getString("SourceNumber");
+//            int refId = rs.getInt("RefId");
+//            if (isNotBlank(sourceNumber)){
+//                String oldValue = sourceNumberMap.put(refId, sourceNumber.trim());
+//                if (oldValue != null){
+//                    logger.warn(">1 source number exists for refId: " + refId);
+//                }
+//            }
+//        }
+//    }
+
+    @Override
 	public boolean doPartition(@SuppressWarnings("rawtypes") ResultSetPartitioner partitioner, BerlinModelImportState state) {
         deduplicationHelper.restartSession();
 
@@ -512,9 +533,13 @@ public class BerlinModelReferenceImport extends BerlinModelImportBase {
 			//TODO do we want this being imported? Maybe as alternatvie identifier?
 			String idInSource = (String)valueMap.get("IdInSource".toLowerCase());
 			if (isNotBlank(idInSource)){
-				IdentifiableSource source = IdentifiableSource.NewDataImportInstance(idInSource);
-				source.setIdNamespace("import to Berlin Model");
-				reference.addSource(source);
+				if(!state.getConfig().isDoSourceNumber()){
+				    IdentifiableSource source = IdentifiableSource.NewDataImportInstance(idInSource);
+				    source.setIdNamespace("import to Berlin Model");
+				    reference.addSource(source);
+				}else{
+				    makeSourceNumbers(state, idInSource, reference, refId);
+				}
 			}
 
 			//nom&BiblioReference  - must be last because a clone is created
@@ -531,6 +556,34 @@ public class BerlinModelReferenceImport extends BerlinModelImportBase {
 
 
 	/**
+     * @param state
+     * @param idInSource
+     * @param reference
+     * @param refId
+     */
+    private void makeSourceNumbers(BerlinModelImportState state, String idInSource, Reference reference,
+            Integer refId) {
+        String[] splits = idInSource.split("\\|");
+        for (String split : splits){
+            split = split.trim();
+            UUID uuid = BerlinModelTransformer.uuidEMReferenceSourceNumber;
+            TermVocabulary<DefinedTerm> voc = null;  //user defined voc
+            DefinedTerm type = getIdentiferType(state, uuid, "E+M Reference Source Number", "Euro+Med Reference Source Number", "E+M Source Number", voc);
+            Identifier.NewInstance(reference, split, type);
+        }
+    }
+
+    /**
+     * @param reference
+     */
+    private void handleEdition(Reference reference) {
+        if (reference.getEdition()!= null && reference.getEdition().startsWith("ed. ")){
+            reference.setEdition(reference.getEdition().substring(4));
+        }
+
+    }
+
+    /**
 	 * Creates and saves a nom. reference and a biblio. reference after checking necessity
 	 * @param rs
 	 * @param refId
