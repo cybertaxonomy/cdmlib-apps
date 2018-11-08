@@ -254,7 +254,7 @@ public class BerlinModelReferenceImport extends BerlinModelImportBase {
 //			}
 //			logger.info("end make references with no 1 in-reference ... " + getSuccessString(success));
 			state.setReferenceSecondPath(false);
-
+			logger.warn("Parsed book volumes: " + parsedBookVolumes);
 		} catch (SQLException e) {
 			logger.error("SQLException:" +  e);
 			state.setUnsuccessfull();
@@ -526,6 +526,8 @@ public class BerlinModelReferenceImport extends BerlinModelImportBase {
 			String refYear = (String)valueMap.get("refYear".toLowerCase());
 			reference.setDatePublished(ImportHelper.getDatePublished(refYear));
 
+			handleEdition(reference);
+
 			//created, updated, notes
 			doCreatedUpdatedNotes(state, reference, rs);
 
@@ -647,6 +649,10 @@ public class BerlinModelReferenceImport extends BerlinModelImportBase {
 		//author
 		TeamOrPersonBase<?> author = getAuthorship(state, refAuthorString, nomAuthor, refId);
 		ref.setAuthorship(author);
+
+		if (ref.getType().equals(ReferenceType.Book)){
+		    extraktBookVolume(ref);
+		}
 
 		//inRef
 		Reference inRef = null;
@@ -863,7 +869,7 @@ public class BerlinModelReferenceImport extends BerlinModelImportBase {
 
 		if (logger.isDebugEnabled()){logger.debug("RefType 'Book'");}
 		Reference book = ReferenceFactory.newBook();
-		Integer refId = (Integer)valueMap.get("refId".toLowerCase());
+//		Integer refId = (Integer)valueMap.get("refId".toLowerCase());
 
 		//Set bookAttributes = new String[]{"edition", "isbn", "pages","publicationTown","publisher","volume"};
 
@@ -891,11 +897,109 @@ public class BerlinModelReferenceImport extends BerlinModelImportBase {
 			book.setInSeries(printSeries);
 		}
 		book.setEditor(null);
+
 		return book;
 
 	}
 
-	/**
+
+	int parsedBookVolumes = 0;
+    private void extraktBookVolume(Reference book) {
+        if (isExtractBookVolumeCandidate(book)){
+            String patternStr = "(.{2,})\\s(\\d{1,2})";
+            int groupIndex = 2;
+            Pattern pattern = Pattern.compile(patternStr);
+
+            String abbrevCache = book.getAbbrevTitleCache();
+            String titleCache = book.getTitleCache();
+            String vol = null;
+            String volFull = null;
+            String abbrev = book.getAbbrevTitle();
+            if (isNotBlank(abbrev)){
+                Matcher matcher = pattern.matcher(abbrev);
+                if (matcher.matches()){
+                    vol = matcher.group(groupIndex);
+                    abbrev = matcher.group(1);
+                }
+            }
+
+            String full = book.getTitle();
+            if (isNotBlank(full)){
+                Matcher matcher = pattern.matcher(full);
+                if (matcher.matches()){
+                    volFull = matcher.group(groupIndex);
+                    full = matcher.group(1);
+                }
+            }
+            if (vol != null && volFull != null){
+                if (!vol.equals(volFull)){
+                    return;
+                }
+            }else if (vol == null && volFull == null){
+                return;
+            }else if (vol == null){
+                if (isNotBlank(abbrev)){
+                    return;
+                }else{
+                    vol = volFull;
+                }
+            }else if (volFull == null){
+                if (isNotBlank(full)){
+                    return;
+                }
+            }else{
+                logger.warn("Should not happen");
+            }
+            book.setVolume(vol);
+            book.setAbbrevTitle(abbrev);
+            book.setTitle(full);
+            if (!book.getAbbrevTitleCache().equals(abbrevCache)){
+                logger.warn("Abbrev title cache for parsed book volume does not match: " + book.getAbbrevTitleCache() + " <-> "+abbrevCache);
+            }else if (!book.getTitleCache().equals(titleCache)){
+                logger.warn("Title cache for parsed book volume does not match: " + book.getTitleCache() + " <-> "+titleCache);
+            }else{
+//                System.out.println(titleCache);
+//                System.out.println(abbrevCache);
+                parsedBookVolumes++;
+            }
+        }else{
+            return;
+        }
+    }
+
+    /**
+     * @param book
+     * @return
+     */
+    private boolean isExtractBookVolumeCandidate(Reference book) {
+        if (isNotBlank(book.getVolume()) || isNotBlank(book.getEdition()) || isNotBlank(book.getSeriesPart())){
+            return false;
+        }
+        if (!checkExtractBookVolumeTitle(book.getAbbrevTitle())){
+            return false;
+        }
+        if (!checkExtractBookVolumeTitle(book.getTitle())){
+            return false;
+        }
+        return true;
+    }
+
+    /**
+     * @param abbrevTitle
+     * @return
+     */
+    private boolean checkExtractBookVolumeTitle(String title) {
+        if (title == null){
+            return true;
+        }
+        if (title.contains(",") || title.contains("ed.") || title.contains("Ed.")|| title.contains("Suppl")
+                || title.contains("Ser.")|| title.contains("ser.")) {
+            return false;
+        }
+        return true;
+    }
+
+    /**
 	 * Returns the requested object if it exists in one of both maps. Prefers the refToSaveMap in ambigious cases.
 	 * @param inRefFkInt
 	 * @param nomRefToSave
