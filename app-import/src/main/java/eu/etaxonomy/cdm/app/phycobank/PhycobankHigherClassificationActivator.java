@@ -42,11 +42,11 @@ public class PhycobankHigherClassificationActivator {
     // ====================================================================================
 
     //database validation status (create, update, validate ...)
-    static DbSchemaValidation hbm2dll = DbSchemaValidation.VALIDATE;  //
+    static DbSchemaValidation hbm2dll = DbSchemaValidation.CREATE;  //
 
-//    static ICdmDataSource cdmDestination = CdmDestinations.localH2();
+    static ICdmDataSource cdmDestination = CdmDestinations.localH2();
 //    static ICdmDataSource cdmDestination = CdmDestinations.cdm_local_test_mysql();
-    static ICdmDataSource cdmDestination = CdmDestinations.cdm_test_phycobank();
+//    static ICdmDataSource cdmDestination = CdmDestinations.cdm_test_phycobank();
 //TODO: Die 3 Syllabus noch richtig als 3 Referenzen anlegen (muss Henning machen), hier dann die jeweilige UUID
 // verwenden und unten den worksheetNamen entsprechend anpassen
     static Reference secRef = getSecReference_Frey();
