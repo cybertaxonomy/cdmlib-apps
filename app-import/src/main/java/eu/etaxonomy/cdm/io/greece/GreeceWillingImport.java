@@ -16,20 +16,32 @@ import java.util.Map;
 import java.util.UUID;
 
 import org.apache.log4j.Logger;
+import org.springframework.stereotype.Component;
 
 import eu.etaxonomy.cdm.api.facade.DerivedUnitFacade;
+import eu.etaxonomy.cdm.api.facade.DerivedUnitFacadeNotSupportedException;
 import eu.etaxonomy.cdm.api.service.config.MatchingTaxonConfigurator;
+import eu.etaxonomy.cdm.common.CdmUtils;
 import eu.etaxonomy.cdm.io.common.utils.ImportDeduplicationHelper;
 import eu.etaxonomy.cdm.io.mexico.SimpleExcelTaxonImport;
 import eu.etaxonomy.cdm.io.mexico.SimpleExcelTaxonImportState;
 import eu.etaxonomy.cdm.model.agent.Team;
+import eu.etaxonomy.cdm.model.agent.TeamOrPersonBase;
+import eu.etaxonomy.cdm.model.common.CdmBase;
 import eu.etaxonomy.cdm.model.common.Language;
 import eu.etaxonomy.cdm.model.common.TimePeriod;
+import eu.etaxonomy.cdm.model.description.Feature;
 import eu.etaxonomy.cdm.model.description.IndividualsAssociation;
 import eu.etaxonomy.cdm.model.description.TaxonDescription;
+import eu.etaxonomy.cdm.model.description.TextData;
 import eu.etaxonomy.cdm.model.location.Country;
 import eu.etaxonomy.cdm.model.media.Media;
+import eu.etaxonomy.cdm.model.media.Rights;
+import eu.etaxonomy.cdm.model.media.RightsType;
+import eu.etaxonomy.cdm.model.name.Rank;
+import eu.etaxonomy.cdm.model.name.TaxonNameFactory;
 import eu.etaxonomy.cdm.model.occurrence.Collection;
+import eu.etaxonomy.cdm.model.occurrence.DerivedUnit;
 import eu.etaxonomy.cdm.model.reference.Reference;
 import eu.etaxonomy.cdm.model.taxon.Taxon;
 import eu.etaxonomy.cdm.strategy.parser.TimePeriodParser;
@@ -37,16 +49,29 @@ import eu.etaxonomy.cdm.strategy.parser.TimePeriodParser;
 /**
  * @author a.mueller
  * @since 21.08.2018
- *
  */
+@Component
 public class GreeceWillingImport
         extends SimpleExcelTaxonImport<GreeceWillingImportConfigurator>{
+
+    /**
+     *
+     */
+    private static final String RDF_ID_NAMESPACE = "rdfID";
 
     private static final long serialVersionUID = 8258914747643501550L;
 
     private static final Logger logger = Logger.getLogger(GreeceWillingImport.class);
 
     private ImportDeduplicationHelper<SimpleExcelTaxonImportState> dedupHelper;
+
+    private String lastCollectorNumber;
+    private UUID lastDerivedUnitUuid;
+
+    private String lastTaxonTitle;
+    private UUID lastTaxonDescription;
+
+    private int count = 1;
 
 
     /**
@@ -56,6 +81,7 @@ public class GreeceWillingImport
     protected void firstPass(SimpleExcelTaxonImportState<GreeceWillingImportConfigurator> state) {
         try {
             Map<String, String> record = state.getOriginalRecord();
+
             String scientificName = record.get("ScientificName");
             String stableIdentifier = record.get("ObjectURI");
             String title = record.get("Title");
@@ -73,9 +99,12 @@ public class GreeceWillingImport
             String latitude = record.get("Latitude");
             String longitude = record.get("Longitude");
 
-            String rdfId = record.get("rdfID");
+            String rdfId = record.get(RDF_ID_NAMESPACE);
 
-            TimePeriod date = TimePeriodParser.parseEnglishDate(collectionDate, null);
+            TimePeriod date = TimePeriodParser.parseString(collectionDate);
+            if (date.getFreeText() != null){
+                System.out.println("Date could not be parsed: " + collectionDate + "; row: " + state.getCurrentLine());
+            }
 
             validate(state, "BaseOfRecords", "Specimen");
             validate(state, "InstitutionCode", "BGBM");
@@ -84,53 +113,136 @@ public class GreeceWillingImport
             validate(state, "Country", "Greece");
             validate(state, "CountryCode", "GR");
 
+            //not used, but validate just in case
+            validate(state, "HUH_PURL", "NULL");
+            validate(state, "DB", "JACQ");
+            validate(state, "CollDateISO", collectionDate);
 
-//        HerbariumID
-//        CollDateISO
+//            validate(state, "HerbariumID", collectionDate);
 
+            //open
+//          HerbariumID;
+//          HTML_URI
+
+
+            DerivedUnit lastDerivedUnit = null;
+            if (collectorNumber.equals(lastCollectorNumber)){
+                lastDerivedUnit = (DerivedUnit)getOccurrenceService().find(lastDerivedUnitUuid);
+            }
+
+
+            Reference sourceReference = getSourceReference(state);
 
             Taxon taxon = getTaxonByName(state, scientificName);
-            DerivedUnitFacade facade = DerivedUnitFacade.NewPreservedSpecimenInstance();
-
-            facade.setPreferredStableUri(URI.create(stableIdentifier));
-            facade.setFieldNumber(collectorNumber);
-            facade.setBarcode(catalogNumber);
-            facade.setCountry(Country.GREECEHELLENICREPUBLIC());
-
-            facade.setLocality(locality);
-            try {
-                facade.setExactLocationByParsing(longitude, latitude, null, null);
-            } catch (ParseException e) {
-                e.printStackTrace();
+            verifyTaxon(state, taxon, record);
+            if (taxon == null){
+                System.out.println("Taxon not found for " + scientificName + "; row:  " + state.getCurrentLine());
+//                return;
+                taxon = Taxon.NewInstance(TaxonNameFactory.NewBotanicalInstance(null), getSourceReference(state));
+                taxon.getName().setTitleCache(title, true);
             }
-            facade.setCollector(getCollector(state, collector));
-            facade.getGatheringEvent(true).setTimeperiod(date);
+            DerivedUnitFacade facade;
+            String sourceId = rdfId;
+            if (lastDerivedUnit == null){
+                facade = DerivedUnitFacade.NewPreservedSpecimenInstance();
+                facade.setFieldNumber(collectorNumber);
+                facade.setCountry(Country.GREECEHELLENICREPUBLIC());
+                facade.setLocality(locality);
+                try {
+                    facade.setExactLocationByParsing(longitude, latitude, null, null);
+                } catch (ParseException e) {
+                    e.printStackTrace();
+                }
+                facade.setCollector(getCollector(state, collector));
+                facade.getGatheringEvent(true).setTimeperiod(date);
+                facade.setPreferredStableUri(URI.create(stableIdentifier));
+                facade.setBarcode(catalogNumber);
+                facade.setCollection(getCollection(state));
+                this.addOriginalSource(facade.innerFieldUnit(), sourceId, RDF_ID_NAMESPACE, sourceReference);
+                this.addOriginalSource(facade.innerDerivedUnit(), sourceId, RDF_ID_NAMESPACE, sourceReference);
 
-            facade.setCollection(getCollection(state));
+                IndividualsAssociation specimen = IndividualsAssociation.NewInstance(facade.innerDerivedUnit());
+                if (taxon != null ){
+                    TaxonDescription description = getTaxonDescription(taxon, sourceReference, false, CREATE);
+                    description.addElement(specimen);
+                }
+                lastCollectorNumber = collectorNumber;
+                lastTaxonTitle = title;
+                lastDerivedUnitUuid = specimen.getUuid();
+                count = 1;
+            }else{
+                try {
+                    facade = DerivedUnitFacade.NewInstance(lastDerivedUnit);
+                } catch (DerivedUnitFacadeNotSupportedException e) {
+                    System.out.println("Error in " + state.getCurrentLine());
+                    e.printStackTrace();
+                    return;
+                }
+                count++;
+            }
 
-            Media media = getMedia(state,title, titleDescription, image);
+            Media media = getMedia(state,title + " (Willing " + count + ")", titleDescription, image, date, willingCollector);
             facade.addFieldObjectMedia(media);
 
-            Reference sourceReference = state.getSourceReference();
-            String sourceId = rdfId;
-            String namespace = "rdfID";
-            this.addOriginalSource(facade.innerFieldUnit(), sourceId, namespace, sourceReference);
-            this.addOriginalSource(facade.innerDerivedUnit(), sourceId, namespace, sourceReference);
-            this.addOriginalSource(media, sourceId, namespace, sourceReference);
+            TaxonDescription imageGallery = taxon.getOrCreateImageGallery(taxon.getName().getTitleCache());
+            TextData imageTextData;
+            if (imageGallery.getElements().isEmpty()){
+                imageTextData = TextData.NewInstance(Feature.IMAGE());
+                imageGallery.addElement(imageTextData);
+            }else{
+                imageTextData = (CdmBase.deproxy(imageGallery.getElements().iterator().next(), TextData.class));
+            }
+            imageTextData.addMedia(media);
 
-            TaxonDescription description = getTaxonDescription(taxon, sourceReference, false, CREATE);
-            IndividualsAssociation specimen = IndividualsAssociation.NewInstance(facade.innerDerivedUnit());
-            description.addElement(specimen);
+//            media.addPrimaryMediaSource(citation, microCitation);
+            this.addOriginalSource(media, sourceId, RDF_ID_NAMESPACE, sourceReference);
+
 
             //        getDedupHelper(state).replaceAuthorNamesAndNomRef(state, name);
+
+            getOccurrenceService().saveOrUpdate(facade.baseUnit());
+            lastDerivedUnitUuid = facade.baseUnit().getUuid();
 
         } catch (MalformedURLException e) {
             logger.warn("An error occurred during import");
         }
 
+    }
 
+    /**
+     * @param state
+     * @param record
+     */
+    private void verifyTaxon(SimpleExcelTaxonImportState<GreeceWillingImportConfigurator> state,
+            Taxon taxon, Map<String, String> record) {
 
+        if (taxon==null){
+            return;
+        }
+        String genus = record.get("Genus");
+        String specificEpi = record.get("SpecificEpithet");
+        String family = record.get("Family");
 
+        if (!CdmUtils.nullSafeEqual(genus, taxon.getName().getGenusOrUninomial())){
+            System.out.println(" Genus and taxonNameGenus not equal: " +
+                    genus + " <-> " + taxon.getName().getGenusOrUninomial() + "; row: " + state.getCurrentLine());
+        }
+        if (!CdmUtils.nullSafeEqual(specificEpi, taxon.getName().getSpecificEpithet())){
+            System.out.println(" SpecificEpi and taxonNameSpecificEpi not equal: " +
+                    specificEpi + " <-> " + taxon.getName().getSpecificEpithet() + "; row: " + state.getCurrentLine());
+        }
+        while (taxon.getTaxonNodes().size()== 1 ){
+            Taxon parent = taxon.getTaxonNodes().iterator().next().getParent().getTaxon();
+            if (parent == null){
+                break;
+            }else{
+                if (parent.getName().getRank().equals(Rank.FAMILY()) && parent.getName().getGenusOrUninomial().equals(family)){
+                    return;
+                }
+                taxon = parent;
+            }
+        }
+        System.out.println(" Family could not be verified: " + family + "; row: " + state.getCurrentLine());
     }
 
     private Collection bgbm;
@@ -144,7 +256,12 @@ public class GreeceWillingImport
             if (results.size()> 1){
                 throw new RuntimeException("More then 1 collection found for 'B'");
             }else if (results.isEmpty()){
-                throw new RuntimeException("No collection found for 'B'");
+                Collection collection = Collection.NewInstance();
+                collection.setCode("B");
+                getCollectionService().save(collection);
+                System.out.println("Collection 'B' did not exist. Created new one.");
+                return collection;
+//                throw new RuntimeException("No collection found for 'B'");
             }
             bgbm = results.get(0);
         }
@@ -169,16 +286,29 @@ public class GreeceWillingImport
      * @param state
      * @param title
      * @param titleDescription
+     * @param date
      * @param image
      * @return
      * @throws MalformedURLException
      */
     private Media getMedia(SimpleExcelTaxonImportState<GreeceWillingImportConfigurator> state, String title,
-            String titleDescription, String image) throws MalformedURLException {
+            String titleDescription, String imageUrl, TimePeriod date, TeamOrPersonBase<?> artist) throws MalformedURLException {
 
-        //TODO
-        String thumbnail = image;
-        Media media = getImageMedia(image, thumbnail, true);
+        String baseUrl = imageUrl.replace("http://ww2.bgbm.org/herbarium/images/Willing/GR/", "http://mediastorage.bgbm.org/fsi/server?type=image&source=Willing_GR/");
+        String thumbnail = baseUrl + "&width=240&profile=jpeg&quality=98";
+
+        String medium = baseUrl + "&width=350&profile=jpeg&quality=95";
+        Media media = getImageMedia(imageUrl, medium, thumbnail, true);
+
+        media.setMediaCreated(date);
+        media.setArtist(artist);
+
+        //copyright
+        Rights right = Rights.NewInstance();
+        right.setType(RightsType.COPYRIGHT());
+        right.setAgent(artist);
+        right = getDedupHelper(state).getExistingCopyright(state, right);
+        media.addRights(right);
 
         if (isNotBlank(title)){
             media.putTitle(Language.ENGLISH(), title);
@@ -187,11 +317,6 @@ public class GreeceWillingImport
             media.putDescription(Language.ENGLISH(), titleDescription);
         }
 
-
-        //TODO thumbnails etc.
-
-//        ImageInfo info = ImageInfo.NewInstanceWithMetaData(URI.create(image), 60);
-//        Media media = Media.NewInstance(uri, info.getLength(), info.getMimeType(), info.getSuffix());
         return media;
     }
 
@@ -204,12 +329,17 @@ public class GreeceWillingImport
      */
     private Team getCollector(SimpleExcelTaxonImportState<GreeceWillingImportConfigurator> state,
             String collector) {
+
         if (!"Willing,R. & Willing,E.".equals(collector)){
             throw new RuntimeException("Unexpected collector: " + collector);
         }
         if (willingCollector == null){
             UUID willingTeamUuid = UUID.fromString("ab3594a5-304f-4f19-bc8b-4a38c8abfad7");
             willingCollector = (Team)getAgentService().find(willingTeamUuid);
+            if (willingCollector == null){
+                willingCollector = Team.NewTitledInstance("Willing, R. & Willing, E.", null);
+                getAgentService().save(willingCollector);
+            }
         }
         return willingCollector;
     }
@@ -221,6 +351,7 @@ public class GreeceWillingImport
      */
     private Taxon getTaxonByName(SimpleExcelTaxonImportState<GreeceWillingImportConfigurator> state,
             String scientificName) {
+
         MatchingTaxonConfigurator config = MatchingTaxonConfigurator.NewInstance();
         config.setTaxonNameTitle(scientificName);
         config.setIncludeSynonyms(false);

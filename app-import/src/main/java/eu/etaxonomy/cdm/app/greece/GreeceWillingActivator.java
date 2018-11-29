@@ -40,7 +40,8 @@ public class GreeceWillingActivator {
 
     private static final UUID sourceUuid = UUID.fromString("b96b8a10-e2a5-4a01-b2f2-435a59a7a269");
 
-    private static final String fileName = "WillingImport.xslx";
+    private static final String fileName = "WillingImport.xlsx";
+
 
     private void doImport(ICdmDataSource cdmDestination){
 
@@ -61,14 +62,14 @@ public class GreeceWillingActivator {
 
 
     private URI greekChecklist(){
-        return URI.create("file:////BGBM-PESIHPC/Greece/" + fileName);
+        return URI.create("file:////BGBM-PESIHPC/Greece/images/" + fileName);
     }
 
 
     private Reference getSourceReference(){
         Reference result = ReferenceFactory.newDatabase();
 //        xx;
-        result.setTitle(fileName);
+        result.setTitle("BGBM Herbar");
         result.setUuid(sourceUuid);
 
         return result;
