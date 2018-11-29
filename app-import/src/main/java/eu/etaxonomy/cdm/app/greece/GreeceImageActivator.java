@@ -43,16 +43,18 @@ public class GreeceImageActivator {
 //  static final ICdmDataSource cdmDestination = CdmDestinations.cdm_test_local_mysql_test();
     static final ICdmDataSource cdmDestination = CdmDestinations.cdm_greece_checklist_production();
 
-//    private static final UUID sourceUuid = UUID.fromString("418b5885-08fb-4f1e-ac94-8f5c84b1683d");
-    private static final UUID sourceUuid = UUID.fromString("c3d300f0-86ef-4c65-8727-c594035ed7a7");
-//    private static final String fileName = "20171107_sent_1332_images.xlsx";
-    private static final String fileName = "20171110_Turland_433_others_59.xlsx";
+    private static final UUID sourceUuid = UUID.fromString("d5064e6f-bb16-4a8e-8c40-aaebb86c5954");
+//    private static final UUID sourceUuid = UUID.fromString("2bb045c8-8b0e-474b-bf60-0d2ddc2a212a");
 
+//    private static final String fileName = "20171107_sent_1332_images.xlsx";
+//    private static final String fileName = "20181024_fog_images_v2.xlsx";
+    private static final String fileName = "20181126_fog_images.xlsx";
+
+
+//    NOTE!!: Darauf achten, dass die Header case sensitiv sind und keine Leerzeichen am Ende sein sollten, trim funktioniert seltsamerweise nicht immer
 
     //check - import
     static final CHECK check = CHECK.IMPORT_WITHOUT_CHECK;
-
-    boolean doImages = true;
 
     private void doImport(ICdmDataSource cdmDestination){
 
