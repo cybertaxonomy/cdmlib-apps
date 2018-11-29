@@ -55,6 +55,8 @@ import eu.etaxonomy.cdm.model.description.FeatureTree;
 import eu.etaxonomy.cdm.model.location.NamedArea;
 import eu.etaxonomy.cdm.model.location.NamedAreaLevel;
 import eu.etaxonomy.cdm.model.location.NamedAreaType;
+import eu.etaxonomy.cdm.model.metadata.CdmPreference;
+import eu.etaxonomy.cdm.model.metadata.PreferencePredicate;
 import eu.etaxonomy.cdm.model.name.NomenclaturalCode;
 import eu.etaxonomy.cdm.model.name.Rank;
 import eu.etaxonomy.cdm.model.taxon.Taxon;
@@ -85,7 +87,7 @@ public class EuroMedActivator {
 //  static final ICdmDataSource cdmDestination = CdmDestinations.cdm_local_euromed();
 //    static final ICdmDataSource cdmDestination = CdmDestinations.cdm_local_euromed2();
 //	static final ICdmDataSource cdmDestination = CdmDestinations.cdm_test_euroMed();
-//    static final ICdmDataSource cdmDestination = CdmDestinations.cdm_euroMed_production();
+//  static final ICdmDataSource cdmDestination = CdmDestinations.cdm_production_euromed();
 
     //check - import
     static final CHECK check = CHECK.IMPORT_WITHOUT_CHECK;
@@ -96,7 +98,7 @@ public class EuroMedActivator {
     //references
     static final DO_REFERENCES doReferences =  DO_REFERENCES.ALL;
     //names
-    static final boolean doTaxonNames = true;
+    static final boolean doTaxonNames = false;
     static final boolean doRelNames = true;
     static final boolean doNameStatus = true;
     static final boolean doNameFacts = true;
@@ -105,9 +107,11 @@ public class EuroMedActivator {
     static final boolean doTaxa = true;
     static final boolean doFacts = true;
     static final boolean doRelTaxa = true;
-    static final boolean doOccurrences = false;
-    static final boolean doOccurrenceSources = false;
-    static final boolean doCommonNames = false;  //currently takes very long
+    static final boolean doOccurrences = true;
+    static final boolean doOccurrenceSources = true;
+    static final boolean doCommonNames = true;  //currently takes very long
+
+    static final boolean doNamedAreas = true;
 
   //serious types do not exist in E+M except for name types which are handled in name relations
     static final boolean doTypes = false;  //serious types do not exist in E+M except for name types which are handled in name relations
@@ -219,11 +223,13 @@ public class EuroMedActivator {
 		config.setDoOccurrence(doOccurrences ^ invers);
 		config.setDoOccurrenceSources(doOccurrenceSources ^ invers);
         config.setDoCommonNames(doCommonNames ^ invers);
+        config.setDoNamedAreas(doNamedAreas ^ invers);
 
 		config.setDoMarker(doMarker);
 		config.setDoUser(doUser ^ invers);
 
 		config.setEuroMed(true);
+		config.setDoSourceNumber(true);
 
 		config.setLogNotMatchingOldNames(logNotMatchingOldNames);
 		config.setLogMatchingNotExportedOldNames(logMatchingNotExportedOldNames);
@@ -287,12 +293,80 @@ public class EuroMedActivator {
 
         importShapefile(config, bmImport);
 
+        createPreferences(config, bmImport);
+
 //        markAreasAsHidden(config, bmImport);  //has been moved to BM occurrence import
 
 		System.out.println("End import from BerlinModel ("+ source.getDatabase() + ")...");
 	}
 
-	//Rename Ranks (still needed?)
+    private void createPreferences(BerlinModelImportConfigurator config,
+            CdmDefaultImport<BerlinModelImportConfigurator> bmImport) {
+
+        if (config.isDoUser() && (config.getCheck().isImport() )){
+            ICdmRepository app = bmImport.getCdmAppController();
+
+            //area vocs
+            CdmPreference preference = CdmPreference.NewTaxEditorInstance(PreferencePredicate.AvailableDistributionAreaVocabularies, BerlinModelTransformer.uuidVocCaucasusAreas.toString()+";" + BerlinModelTransformer.uuidVocEuroMedAreas.toString());
+            preference.setAllowOverride(false);
+            app.getPreferenceService().set(preference);
+
+            //occ status list
+            String status ="42946bd6-9c22-45ad-a910-7427e8f60bfd;9eb99fe6-59e2-4445-8e6a-478365bd0fa9;c3ee7048-15b7-4be1-b687-9ce9c1a669d6;643cf9d1-a5f1-4622-9837-82ef961e880b;0c54761e-4887-4788-9dfa-7190c88746e3;83eb0aa0-1a45-495a-a3ca-bf6958b74366;aeec2947-2700-4623-8e32-9e3a430569d1;ddeac4f2-d8fa-43b8-ad7e-ca13abdd32c7;310373bf-7df4-4d02-8cb3-bcc7448805fc;5c397f7b-59ef-4c11-a33c-45691ceda91b;925662c1-bb10-459a-8c53-da5a738ac770;61cee840-801e-41d8-bead-015ad866c2f1;e191e89a-a751-4b0c-b883-7f1de70915c9";
+            CdmPreference statusListPref = CdmPreference.NewTaxEditorInstance(PreferencePredicate.AvailableDistributionAreaVocabularies, status);
+            statusListPref.setAllowOverride(false);
+            app.getPreferenceService().set(statusListPref);
+
+            //distr. editor activated
+            CdmPreference distrEditorActive = CdmPreference.NewTaxEditorInstance(PreferencePredicate.DistributionEditorActivated, "true");
+            statusListPref.setAllowOverride(true);
+            app.getPreferenceService().set(distrEditorActive);
+
+            //idInVoc for areas
+            CdmPreference distrEditorShowIdInVocForAreas = CdmPreference.NewTaxEditorInstance(PreferencePredicate.ShowIdInVocabulary, "true");
+            distrEditorShowIdInVocForAreas.setAllowOverride(true);
+            app.getPreferenceService().set(distrEditorShowIdInVocForAreas);
+
+            //areas sort order
+            //?? correct?
+            CdmPreference distrEditorSorted = CdmPreference.NewTaxEditorInstance(PreferencePredicate.AreasSortedByIdInVocabulary, "true");
+            distrEditorSorted.setAllowOverride(true);
+            app.getPreferenceService().set(distrEditorSorted);
+
+            //distr. status uses symbol
+            //?? correct?
+            CdmPreference distrEditorStatusUseSymbols = CdmPreference.NewTaxEditorInstance(PreferencePredicate.ShowSymbolForStatus, "false");
+            distrEditorStatusUseSymbols.setAllowOverride(true);
+            app.getPreferenceService().set(distrEditorStatusUseSymbols);
+
+            //media view
+            CdmPreference showMediaView = CdmPreference.NewTaxEditorInstance(PreferencePredicate.ShowMediaView, "false");
+            showMediaView.setAllowOverride(false);
+            app.getPreferenceService().set(showMediaView);
+            //multi classification
+            CdmPreference multiClassification = CdmPreference.NewTaxEditorInstance(PreferencePredicate.DisableMultiClassification, "false");
+            multiClassification.setAllowOverride(false);
+            app.getPreferenceService().set(multiClassification);
+            //taxon node wizard
+            CdmPreference showTaxonNodeWizard = CdmPreference.NewTaxEditorInstance(PreferencePredicate.ShowTaxonNodeWizard, "false");
+            showTaxonNodeWizard.setAllowOverride(false);
+            app.getPreferenceService().set(showTaxonNodeWizard);
+
+            //import+export
+            CdmPreference showImportExportMenu = CdmPreference.NewTaxEditorInstance(PreferencePredicate.ShowImportExportMenu, "false");
+            showImportExportMenu.setAllowOverride(true);
+            app.getPreferenceService().set(showImportExportMenu);
+
+            //show specimen
+            CdmPreference showSpecimen = CdmPreference.NewTaxEditorInstance(PreferencePredicate.ShowSpecimen, "false");
+            showSpecimen.setAllowOverride(false);
+            app.getPreferenceService().set(showSpecimen);
+
+        }
+
+    }
+
+    //Rename Ranks (still needed?)
     private void renameRanks(BerlinModelImportConfigurator config,
             CdmDefaultImport<BerlinModelImportConfigurator> bmImport) {
 
@@ -498,7 +572,7 @@ public class EuroMedActivator {
                 TransactionStatus tx = app.startTransaction();
 
                 //eraabstraube
-                String eraabstraube = "eraabstraube";
+                String eraabstraube = "e.raabstraube";
                 List<User> users = app.getUserService().listByUsername(eraabstraube, MatchMode.EXACT, null, null, null, null, null);
                 User userEraabStraube;
                 if (users.isEmpty()){

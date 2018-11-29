@@ -167,7 +167,7 @@ public class BerlinModelUserImport extends BerlinModelImportBase {
 	}
 
 	@Override
-	public boolean doPartition(ResultSetPartitioner partitioner, BerlinModelImportState state) {
+	public boolean doPartition(@SuppressWarnings("rawtypes") ResultSetPartitioner partitioner, BerlinModelImportState state) {
 		return true;  // not needed at the moment
 	}
 

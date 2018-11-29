@@ -211,7 +211,7 @@ public class CdmDestinations {
 		return makeDestination(dbType, cdmServer, cdmDB, -1, cdmUserName, null);
 	}
 
-    public static ICdmDataSource cdm_euroMed_production(){
+    public static ICdmDataSource cdm_production_euromed(){
         DatabaseTypeEnum dbType = DatabaseTypeEnum.MySQL;
         String cdmServer = "160.45.63.171";
         String cdmDB = "cdm_production_euromed";
