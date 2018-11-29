@@ -45,7 +45,7 @@ import eu.etaxonomy.cdm.model.reference.Reference;
 import eu.etaxonomy.cdm.model.taxon.Taxon;
 import eu.etaxonomy.cdm.model.taxon.TaxonBase;
 import eu.etaxonomy.cdm.strategy.match.DefaultMatchStrategy;
-import eu.etaxonomy.cdm.strategy.match.IMatchStrategy;
+import eu.etaxonomy.cdm.strategy.match.IMatchStrategyEqual;
 
 /**
  * TODO not working at the moment
@@ -247,7 +247,7 @@ public class PalmaeImageImport extends AbstractImageImporter {
 							artist.setGivenName(getGivenName(metaData.get(MetaData.ARTIST)).replace("'", ""));
 							artist.setFamilyName(getFamilyName(metaData.get(MetaData.ARTIST)).replace("'", ""));
 
-							IMatchStrategy matchStrategy = DefaultMatchStrategy.NewInstance(AgentBase.class);
+							IMatchStrategyEqual matchStrategy = DefaultMatchStrategy.NewInstance(AgentBase.class);
 							try{
 								List<Person> agents = commonService.findMatching(artist, matchStrategy);
 
