@@ -56,6 +56,7 @@ public class BerlinModelImportConfigurator extends DbImportConfiguratorBase<Berl
 	private DO_REFERENCES doReferences = DO_REFERENCES.ALL;
 	private boolean doTaxonNames = true;
 	private boolean doTypes = true;
+	private boolean doNamedAreas = true;
 
 	private boolean isSalvador = false;
 	private boolean isEuroMed = false;
@@ -731,6 +732,12 @@ public class BerlinModelImportConfigurator extends DbImportConfiguratorBase<Berl
     }
     public void setDoSourceNumber(boolean doSourceNumber) {
         this.doSourceNumber = doSourceNumber;
+    }
+    public boolean isDoNamedAreas() {
+        return doNamedAreas;
+    }
+    public void setDoNamedAreas(boolean doNamedAreas) {
+        this.doNamedAreas = doNamedAreas;
     }
 
 }

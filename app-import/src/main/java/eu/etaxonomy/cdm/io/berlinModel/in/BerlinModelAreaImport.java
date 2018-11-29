@@ -87,7 +87,24 @@ public class BerlinModelAreaImport  extends BerlinModelImportBase {
 	private Map<Integer, NamedArea> euroMedAreas = new HashMap<>();
 
 
-	private TermVocabulary<NamedArea> createEuroMedAreas(BerlinModelImportState state) throws SQLException {
+    @Override
+    public boolean doPartition(@SuppressWarnings("rawtypes") ResultSetPartitioner partitioner, BerlinModelImportState state)  {
+        TermVocabulary<?> voc = getVocabularyService().find(BerlinModelTransformer.uuidVocEuroMedAreas);
+        if (voc == null){
+            try {
+                createEuroMedAreas(state);
+                createCaucasusAreas(state);
+            } catch (SQLException e) {
+                logger.warn("Exception when creating areas: " + e.getMessage());
+                e.printStackTrace();
+            }
+        }
+        return true;
+    }
+
+
+
+    private TermVocabulary<NamedArea> createEuroMedAreas(BerlinModelImportState state) throws SQLException {
 
 	    logger.warn("Start creating E+M areas");
 		Source source = state.getConfig().getSource();
@@ -344,7 +361,7 @@ public class BerlinModelAreaImport  extends BerlinModelImportBase {
 	/**
 	 *
 	 */
-	private TermVocabulary<NamedArea> makeEmptyEuroMedVocabulary() {
+	private OrderedTermVocabulary<NamedArea> makeEmptyEuroMedVocabulary() {
 		TermType type = TermType.NamedArea;
 		String description = "Euro+Med area vocabulary";
 		String label = "E+M areas";
@@ -357,24 +374,118 @@ public class BerlinModelAreaImport  extends BerlinModelImportBase {
 		return result;
 	}
 
-	@Override
-	public boolean doPartition(@SuppressWarnings("rawtypes") ResultSetPartitioner partitioner, BerlinModelImportState state)  {
-	    TermVocabulary<?> voc = getVocabularyService().find(BerlinModelTransformer.uuidVocEuroMedAreas);
-	    if (voc == null){
-	        try {
-	            createEuroMedAreas(state);
-	        } catch (SQLException e) {
-	            logger.warn("Exception when creating areas: " + e.getMessage());
-	            e.printStackTrace();
-	        }
+
+    /**
+     * @param state
+     */
+    private void createCaucasusAreas(BerlinModelImportState state) {
+        OrderedTermVocabulary<NamedArea> voc = makeEmptyCaucasusVocabulary(state);
+        NamedArea last = null;
+        last = makeSingleArea(state, voc, last, BerlinModelTransformer.uuidCauc1, "Western Ciscaucasia","WCC","1","");
+        last = makeSingleArea(state, voc, last, BerlinModelTransformer.uuidCauc1a, "Azov-Kuban","Az.-Kub.","1","a");
+        last = makeSingleArea(state, voc, last, BerlinModelTransformer.uuidCauc1b, "Western Stavropol","W. Stavr.","1","b");
+        last = makeSingleArea(state, voc, last, BerlinModelTransformer.uuidCauc2, "Eastern Ciscaucasia","ECC","2","");
+        last = makeSingleArea(state, voc, last, BerlinModelTransformer.uuidCauc2a, "Eastern Stavropol","E. Stavr.","2","a");
+        last = makeSingleArea(state, voc, last, BerlinModelTransformer.uuidCauc2b, "Terek-Kuma","Ter.-Kuma ","2","b");
+        last = makeSingleArea(state, voc, last, BerlinModelTransformer.uuidCauc2c, "Terek-Sulak","Ter.-Sul.","2","c");
+        last = makeSingleArea(state, voc, last, BerlinModelTransformer.uuidCauc3, "Western Caucasus","WC","3","");
+        last = makeSingleArea(state, voc, last, BerlinModelTransformer.uuidCauc3a, "Adagum-Pshish","Adag.-Pshish","3","a");
+        last = makeSingleArea(state, voc, last, BerlinModelTransformer.uuidCauc3b, "Belaja-Laba","Bel.-Laba","3","b");
+        last = makeSingleArea(state, voc, last, BerlinModelTransformer.uuidCauc3c, "Urup-Teberda","Urup-Teb.","3","c");
+        last = makeSingleArea(state, voc, last, BerlinModelTransformer.uuidCauc3d, "Upper Kuban","U. Kub.","3","d");
+        last = makeSingleArea(state, voc, last, BerlinModelTransformer.uuidCauc4, "Central Caucasus","CC","4","");
+        last = makeSingleArea(state, voc, last, BerlinModelTransformer.uuidCauc4a, "Upper Kuma","U. Kuma","4","a");
+        last = makeSingleArea(state, voc, last, BerlinModelTransformer.uuidCauc4b, "Malka","Malka","4","b");
+        last = makeSingleArea(state, voc, last, BerlinModelTransformer.uuidCauc4c, "Upper Terek","U. Ter.","4","c");
+        last = makeSingleArea(state, voc, last, BerlinModelTransformer.uuidCauc5, "Eastern Caucasus","EC","5","");
+        last = makeSingleArea(state, voc, last, BerlinModelTransformer.uuidCauc5a, "Assa-Argun","Assa-Arg.","5","a");
+        last = makeSingleArea(state, voc, last, BerlinModelTransformer.uuidCauc5b, "Upper Sulak","U. Sulak","5","b");
+        last = makeSingleArea(state, voc, last, BerlinModelTransformer.uuidCauc5c, "Manas-Samur","Man.-Samur","5","c");
+        last = makeSingleArea(state, voc, last, BerlinModelTransformer.uuidCauc5d, "Kubinsky","Kubin.","5","d");
+        last = makeSingleArea(state, voc, last, BerlinModelTransformer.uuidCauc6, "North-Western Transcaucasia","NWTC","6","");
+        last = makeSingleArea(state, voc, last, BerlinModelTransformer.uuidCauc6a, "Anapa-Gelendzhik","Anapa-Gel.","6","a");
+        last = makeSingleArea(state, voc, last, BerlinModelTransformer.uuidCauc6b, "Pshada-Dzubga","Pshada-Dzhubga ","6","b");
+        last = makeSingleArea(state, voc, last, BerlinModelTransformer.uuidCauc7, "Western Transcaucasia","WTC","7","");
+        last = makeSingleArea(state, voc, last, BerlinModelTransformer.uuidCauc7a, "Tuapse-Adler","Tuap.-Adl.","7","a");
+        last = makeSingleArea(state, voc, last, BerlinModelTransformer.uuidCauc7b, "Abkhasia","Abkh.","7","b");
+        last = makeSingleArea(state, voc, last, BerlinModelTransformer.uuidCauc7c, "Inguri-Rioni","Ing.-Rioni","7","c");
+        last = makeSingleArea(state, voc, last, BerlinModelTransformer.uuidCauc7d, "Rioni-Kvirili","Rioni-Kvir.","7","d");
+        last = makeSingleArea(state, voc, last, BerlinModelTransformer.uuidCauc7e, "Adzharia","Adzh.","7","e");
+        last = makeSingleArea(state, voc, last, BerlinModelTransformer.uuidCauc8, "Central Transcaucasia","CTC","8","");
+        last = makeSingleArea(state, voc, last, BerlinModelTransformer.uuidCauc8a, "Karthalinia-South Ossetia","Kart.-S. Oss.","8","a");
+        last = makeSingleArea(state, voc, last, BerlinModelTransformer.uuidCauc8b, "Trialetia-Lower Karthalinia","Trial.-L. Kart.","8","b");
+        last = makeSingleArea(state, voc, last, BerlinModelTransformer.uuidCauc8c, "Lori","Lori","8","c");
+        last = makeSingleArea(state, voc, last, BerlinModelTransformer.uuidCauc9, "Eastern Transcaucasia","ETC","9","");
+        last = makeSingleArea(state, voc, last, BerlinModelTransformer.uuidCauc9a, "Alazan-Agrichay","Alaz.-Agrich.","9","a");
+        last = makeSingleArea(state, voc, last, BerlinModelTransformer.uuidCauc9b, "Shirvan","Shirv.","9","b");
+        last = makeSingleArea(state, voc, last, BerlinModelTransformer.uuidCauc9c, "Iori-Sheki","Iori-Sheki","9","c");
+        last = makeSingleArea(state, voc, last, BerlinModelTransformer.uuidCauc9d, "Murghuz-Murovdagh","Murgh.-Murovd.","9","d");
+        last = makeSingleArea(state, voc, last, BerlinModelTransformer.uuidCauc9e, "Lower Kura","L. Kura","9","e");
+        last = makeSingleArea(state, voc, last, BerlinModelTransformer.uuidCauc9f, "Karabagh","Karab.","9","f");
+        last = makeSingleArea(state, voc, last, BerlinModelTransformer.uuidCauc10, "South-Western Transcaucasia","SWTC","10","");
+        last = makeSingleArea(state, voc, last, BerlinModelTransformer.uuidCauc10a, "Meskhetia","Meskh.","10","a");
+        last = makeSingleArea(state, voc, last, BerlinModelTransformer.uuidCauc10b, "Dzhavachetia-Upper Akhurjan","Dzhav.-U. Akh.","10","b");
+        last = makeSingleArea(state, voc, last, BerlinModelTransformer.uuidCauc10c, "Aragatz","Arag.","10","c");
+        last = makeSingleArea(state, voc, last, BerlinModelTransformer.uuidCauc11, "Southern Transcaucasia","STC","11","");
+        last = makeSingleArea(state, voc, last, BerlinModelTransformer.uuidCauc11a, "Erevan","Erev.","11","a");
+        last = makeSingleArea(state, voc, last, BerlinModelTransformer.uuidCauc11b, "Sevan","Sevan","11","b");
+        last = makeSingleArea(state, voc, last, BerlinModelTransformer.uuidCauc11c, "Daraleghiz","Dar.","11","c");
+        last = makeSingleArea(state, voc, last, BerlinModelTransformer.uuidCauc11d, "Nakhitshevan","Nakh.","11","d");
+        last = makeSingleArea(state, voc, last, BerlinModelTransformer.uuidCauc11e, "Zangezur","Zang.","11","e");
+        last = makeSingleArea(state, voc, last, BerlinModelTransformer.uuidCauc11f, "Megri-Zangelan","Megri-Zan.","11","f");
+        last = makeSingleArea(state, voc, last, BerlinModelTransformer.uuidCauc11g, "Southern Karabagh","S. Karab.","11","g");
+        makeSingleArea(state, voc, last, BerlinModelTransformer.uuidCauc12, "Talysch","T","12","");
+    }
+
+	/**
+     * @param state
+	 * @param voc
+     * @param uuidCauc1
+     * @param string
+     * @param string2
+     * @param string3
+     * @param string4
+     * @return
+     */
+    private NamedArea makeSingleArea(BerlinModelImportState state, OrderedTermVocabulary<NamedArea> voc, NamedArea last,
+            UUID uuid, String label, String labelAbbrev,
+            String mainLevel, String subLevel) {
+
+        NamedArea namedArea = NamedArea.NewInstance(label, label, labelAbbrev);
+        namedArea.setUuid(uuid);
+        if (isBlank(subLevel)){
+            namedArea.setLevel(getNamedAreaLevel(state, BerlinModelTransformer.uuidCaucasusAreaLevelFirst, "Caucasus main areas", "Caucasus main areas", "Cauc. I", null));
+        }else{
+            namedArea.setLevel(getNamedAreaLevel(state, BerlinModelTransformer.uuidCaucasusAreaLevelSecond, "Caucasus sub areas", "Caucasus sub areas", "Cauc. II", null));
+            if(last.getPartOf() != null){
+                namedArea.setPartOf(last.getPartOf());
+            }else{
+                namedArea.setPartOf(last);
+            }
         }
-	    return true;
-	}
+        String idInVoc = mainLevel + subLevel;
+        namedArea.setIdInVocabulary(idInVoc);
+        voc.addTerm(namedArea);
+        return namedArea;
+    }
 
+    /**
+     * @param state
+     */
+    private OrderedTermVocabulary<NamedArea> makeEmptyCaucasusVocabulary(BerlinModelImportState state) {
+        TermType type = TermType.NamedArea;
+        String description = "E+M Caucasus area vocabulary";
+        String label = "E+M Caucasus Areas";
+        String abbrev = null;
+        URI termSourceUri = null;
+        OrderedTermVocabulary<NamedArea> result = OrderedTermVocabulary.NewInstance(type, description, label, abbrev, termSourceUri);
+        result.setUuid(BerlinModelTransformer.uuidVocCaucasusAreas);
+        getVocabularyService().save(result);
+        return result;
+    }
 
-	@Override
+    @Override
 	public Map<Object, Map<String, ? extends CdmBase>> getRelatedObjectsForPartition(ResultSet rs, BerlinModelImportState state) {
-
 		Map<Object, Map<String, ? extends CdmBase>> result = new HashMap<>();
 		return result;
 	}
@@ -388,7 +499,9 @@ public class BerlinModelAreaImport  extends BerlinModelImportBase {
 
 	@Override
 	protected boolean isIgnore(BerlinModelImportState state){
-		if (! (state.getConfig().isDoOccurrence() || state.getConfig().isDoCommonNames())){
+		if (state.getConfig().isDoNamedAreas()){
+		    return false;
+		}else if (! (state.getConfig().isDoOccurrence() || state.getConfig().isDoCommonNames())){
 			return true;
 		}else{
 			if (!this.checkSqlServerColumnExists(state.getConfig().getSource(), "emArea", "AreaId")){
