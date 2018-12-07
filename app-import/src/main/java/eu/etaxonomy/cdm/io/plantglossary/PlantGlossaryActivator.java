@@ -42,7 +42,7 @@ public class PlantGlossaryActivator {
 	public static void main(String[] args) {
 		PlantGlossaryActivator activator = new PlantGlossaryActivator();
 		try {
-	        ICdmDataSource dataSource = CdmDestinations.makeDestination(DatabaseTypeEnum.MySQL, "127.0.0.1", "empty", 3306, "root", null);
+	        ICdmDataSource dataSource = CdmDestinations.makeDestination(DatabaseTypeEnum.MySQL, "127.0.0.1", "additivity", 3306, "root", null);
             activator.doImport(dataSource);
         } catch (FileNotFoundException e) {
             e.printStackTrace();

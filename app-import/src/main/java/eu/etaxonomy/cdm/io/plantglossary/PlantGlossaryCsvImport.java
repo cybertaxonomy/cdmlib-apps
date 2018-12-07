@@ -17,6 +17,8 @@ import org.springframework.stereotype.Component;
 
 import eu.etaxonomy.cdm.io.csv.in.CsvImportBase;
 import eu.etaxonomy.cdm.model.common.IdentifiableSource;
+import eu.etaxonomy.cdm.model.common.OriginalSourceType;
+import eu.etaxonomy.cdm.model.common.TermType;
 import eu.etaxonomy.cdm.model.common.TermVocabulary;
 import eu.etaxonomy.cdm.model.description.State;
 
@@ -52,11 +54,16 @@ public class PlantGlossaryCsvImport extends CsvImportBase<PlantGlossaryCsvImport
         State stateTerm = State.NewInstance(null, currentRecord.get(TERM_HEADER), null);
         stateTerm.setUuid(UUID.fromString(currentRecord.get(TERM_ID_HEADER)));
 
-        TermVocabulary vocabulary = importState.initVocabulary(currentRecord.get(CATEGORY_HEADER));
+        String vocName = currentRecord.get(CATEGORY_HEADER);
+        TermVocabulary vocabulary = importState.checkVocabularies(vocName);
+        if(vocabulary==null){
+            vocabulary = TermVocabulary.NewInstance(TermType.State, null, vocName, null, null);
+            importState.addVocabulary(vocabulary);
+        }
         vocabulary.addTerm(stateTerm);
 
-        IdentifiableSource importSource = importState.initSource(currentRecord.get(SOURCE_HEADER));
-        stateTerm.addSource(importSource);
+
+        stateTerm.addSource(IdentifiableSource.NewInstance(OriginalSourceType.Import, importState.getCitation().getTitle(), null, importState.getCitation(), null));
 
         getVocabularyService().saveOrUpdate(vocabulary);
         getTermService().saveOrUpdate(stateTerm);
