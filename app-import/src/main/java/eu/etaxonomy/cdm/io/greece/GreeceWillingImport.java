@@ -25,8 +25,8 @@ import eu.etaxonomy.cdm.common.CdmUtils;
 import eu.etaxonomy.cdm.io.common.utils.ImportDeduplicationHelper;
 import eu.etaxonomy.cdm.io.mexico.SimpleExcelTaxonImport;
 import eu.etaxonomy.cdm.io.mexico.SimpleExcelTaxonImportState;
+import eu.etaxonomy.cdm.model.agent.Person;
 import eu.etaxonomy.cdm.model.agent.Team;
-import eu.etaxonomy.cdm.model.agent.TeamOrPersonBase;
 import eu.etaxonomy.cdm.model.common.CdmBase;
 import eu.etaxonomy.cdm.model.common.Language;
 import eu.etaxonomy.cdm.model.common.TimePeriod;
@@ -181,7 +181,7 @@ public class GreeceWillingImport
                 count++;
             }
 
-            Media media = getMedia(state,title + " (Willing " + count + ")", titleDescription, image, date, willingCollector);
+            Media media = getMedia(state,title + " (Willing " + count + ")", titleDescription, image, date);
             facade.addFieldObjectMedia(media);
 
             TaxonDescription imageGallery = taxon.getOrCreateImageGallery(taxon.getName().getTitleCache());
@@ -292,8 +292,9 @@ public class GreeceWillingImport
      * @throws MalformedURLException
      */
     private Media getMedia(SimpleExcelTaxonImportState<GreeceWillingImportConfigurator> state, String title,
-            String titleDescription, String imageUrl, TimePeriod date, TeamOrPersonBase<?> artist) throws MalformedURLException {
+            String titleDescription, String imageUrl, TimePeriod date) throws MalformedURLException {
 
+        Person artist = getArtist(state);
         String baseUrl = imageUrl.replace("http://ww2.bgbm.org/herbarium/images/Willing/GR/", "http://mediastorage.bgbm.org/fsi/server?type=image&source=Willing_GR/");
         String thumbnail = baseUrl + "&width=240&profile=jpeg&quality=98";
 
@@ -342,6 +343,20 @@ public class GreeceWillingImport
             }
         }
         return willingCollector;
+    }
+
+    Person willingArtist;
+    private Person getArtist(SimpleExcelTaxonImportState<GreeceWillingImportConfigurator> state) {
+
+        if (willingArtist == null){
+            UUID willingArtistUuid = UUID.fromString("83ff66c7-4e51-4f6e-ac37-593a52ce3430");
+            willingArtist = (Person)getAgentService().find(willingArtistUuid);
+            if (willingArtist == null){
+                willingArtist = Person.NewTitledInstance("Willing, E.");
+                getAgentService().save(willingArtist);
+            }
+        }
+        return willingArtist;
     }
 
     /**
