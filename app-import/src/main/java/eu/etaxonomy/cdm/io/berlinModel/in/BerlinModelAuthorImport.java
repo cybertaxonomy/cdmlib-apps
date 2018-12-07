@@ -12,6 +12,7 @@ import java.sql.ResultSet;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.UUID;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
@@ -92,59 +93,67 @@ public class BerlinModelAuthorImport extends BerlinModelImportBase {
 			//for each author
 			while (rs.next()){
 
-			//	partitioner.doLogPerLoop(recordsPerLog, pluralString);
+			    //	partitioner.doLogPerLoop(recordsPerLog, pluralString);
 
-					//create Agent element
-					int authorId = rs.getInt("AuthorId");
+				//create Agent element
+				int authorId = rs.getInt("AuthorId");
 
-					Person author = Person.NewInstance();
+				Person author = Person.NewInstance();
 
-					dbAttrName = "Abbrev";
-					cdmAttrName = "nomenclaturalTitle";
-					success &= ImportHelper.addStringValue(rs, author, dbAttrName, cdmAttrName, BLANK_TO_NULL);
+				dbAttrName = "Abbrev";
+				cdmAttrName = "nomenclaturalTitle";
+				success &= ImportHelper.addStringValue(rs, author, dbAttrName, cdmAttrName, BLANK_TO_NULL);
 
-					dbAttrName = "FirstName";
-					cdmAttrName = "givenName";
-					success &= ImportHelper.addStringValue(rs, author, dbAttrName, cdmAttrName, BLANK_TO_NULL);
+				dbAttrName = "FirstName";
+				cdmAttrName = "givenName";
+				success &= ImportHelper.addStringValue(rs, author, dbAttrName, cdmAttrName, BLANK_TO_NULL);
 
-					dbAttrName = "LastName";
-					cdmAttrName = "familyName";
-					success &= ImportHelper.addStringValue(rs, author, dbAttrName, cdmAttrName, BLANK_TO_NULL);
+				dbAttrName = "LastName";
+				cdmAttrName = "familyName";
+				success &= ImportHelper.addStringValue(rs, author, dbAttrName, cdmAttrName, BLANK_TO_NULL);
 
-					String dates = rs.getString("dates");
-					if (dates != null){
-						dates.trim();
-						TimePeriod lifespan = TimePeriodParser.parseString(dates);
-						author.setLifespan(lifespan);
+				String dates = rs.getString("dates");
+				if (dates != null){
+					dates.trim();
+					TimePeriod lifespan = TimePeriodParser.parseString(dates);
+					author.setLifespan(lifespan);
+				}
+
+			    //AreaOfInterest
+				String areaOfInterest = rs.getString("AreaOfInterest");
+				if (isNotBlank(areaOfInterest)){
+					Extension.NewInstance(author, areaOfInterest, ExtensionType.AREA_OF_INTREREST());
+				}
+
+				//nomStandard
+				String nomStandard = rs.getString("NomStandard");
+				if (isNotBlank(nomStandard)){
+					Extension.NewInstance(author, nomStandard, ExtensionType.NOMENCLATURAL_STANDARD());
+				}
+
+
+				//initials
+				String initials = null;
+				for (int j = 1; j <= rs.getMetaData().getColumnCount(); j++){
+					String label = rs.getMetaData().getColumnLabel(j);
+					if (label.equalsIgnoreCase("Initials") || label.equalsIgnoreCase("Kürzel")){
+						initials = rs.getString(j);
+						break;
 					}
+				}
+				if (isNotBlank(initials)){
+					author.setInitials(initials);
+				}
 
-//				    //AreaOfInterest
-					String areaOfInterest = rs.getString("AreaOfInterest");
-					if (isNotBlank(areaOfInterest)){
-						Extension.NewInstance(author, areaOfInterest, ExtensionType.AREA_OF_INTREREST());
-					}
+                String uuid = null;
+                if (resultSetHasColumn(rs,"UUID")){
+                    uuid = rs.getString("UUID");
+                    if (uuid != null){
+                        author.setUuid(UUID.fromString(uuid));
+                    }
+                }
 
-					//nomStandard
-					String nomStandard = rs.getString("NomStandard");
-					if (isNotBlank(nomStandard)){
-						Extension.NewInstance(author, nomStandard, ExtensionType.NOMENCLATURAL_STANDARD());
-					}
-
-
-					//initials
-					String initials = null;
-					for (int j = 1; j <= rs.getMetaData().getColumnCount(); j++){
-						String label = rs.getMetaData().getColumnLabel(j);
-						if (label.equalsIgnoreCase("Initials") || label.equalsIgnoreCase("Kürzel")){
-							initials = rs.getString(j);
-							break;
-						}
-					}
-					if (isNotBlank(initials)){
-						author.setInitials(initials);
-					}
-
-					//created, notes
+			    //created, notes
 				doIdCreatedUpdatedNotes(state, author, rs, authorId, NAMESPACE);
 
 				personMap.put(authorId, author);

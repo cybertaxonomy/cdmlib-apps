@@ -543,6 +543,13 @@ public class BerlinModelReferenceImport extends BerlinModelImportBase {
 				    makeSourceNumbers(state, idInSource, reference, refId);
 				}
 			}
+            String uuid = null;
+            if (resultSetHasColumn(rs,"UUID")){
+                uuid = rs.getString("UUID");
+                if (uuid != null){
+                    reference.setUuid(UUID.fromString(uuid));
+                }
+            }
 
 			//nom&BiblioReference  - must be last because a clone is created
 			success &= makeNomAndBiblioReference(rs, state, partitioner, refId, reference, refCounter, refToSave);

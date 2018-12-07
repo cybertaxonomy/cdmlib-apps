@@ -15,6 +15,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
+import java.util.UUID;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -188,6 +189,14 @@ public class BerlinModelAuthorTeamImport extends BerlinModelImportBase {
                         team.setProtectedTitleCache(true);
                         team.setProtectedNomenclaturalTitleCache(true);
                     }
+
+		            String uuid = null;
+		            if (resultSetHasColumn(rs,"UUID")){
+		                uuid = rs.getString("UUID");
+		                if (uuid != null && !author.isPersited()){
+		                    author.setUuid(UUID.fromString(uuid));
+		                }
+		            }
 
 					//created, notes
 //					doIdCreatedUpdatedNotes(state, author, rs, teamId, NAMESPACE);
