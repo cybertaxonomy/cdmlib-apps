@@ -83,9 +83,9 @@ public class EuroMedActivator {
 	static final Source berlinModelSource = BerlinModelSources.euroMed_BGBM42();
 //	static final Source berlinModelSource = BerlinModelSources.euroMed_PESI3();
 //
-    static final ICdmDataSource cdmDestination = CdmDestinations.localH2();
+//    static final ICdmDataSource cdmDestination = CdmDestinations.localH2();
 //  static final ICdmDataSource cdmDestination = CdmDestinations.cdm_local_euromed();
-//    static final ICdmDataSource cdmDestination = CdmDestinations.cdm_local_euromed2();
+    static final ICdmDataSource cdmDestination = CdmDestinations.cdm_local_euromed2();
 //	static final ICdmDataSource cdmDestination = CdmDestinations.cdm_test_euroMed();
 //  static final ICdmDataSource cdmDestination = CdmDestinations.cdm_production_euromed();
 
