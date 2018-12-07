@@ -46,6 +46,7 @@ public class PlantGlossaryCsvImportState extends CsvImportState<PlantGlossaryCsv
         TermVocabulary vocabulary = checkVocabularies(vocName);
         if(vocabulary==null){
             vocabulary = TermVocabulary.NewInstance(TermType.State, null, vocName, null, null);
+            vocabularies.add(vocabulary);
         }
         return vocabulary;
     }
