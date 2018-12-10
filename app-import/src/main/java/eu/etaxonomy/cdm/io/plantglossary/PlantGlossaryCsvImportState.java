@@ -14,6 +14,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 import eu.etaxonomy.cdm.io.csv.in.CsvImportState;
+import eu.etaxonomy.cdm.model.agent.Institution;
 import eu.etaxonomy.cdm.model.agent.Person;
 import eu.etaxonomy.cdm.model.common.TermVocabulary;
 import eu.etaxonomy.cdm.model.common.VerbatimTimePeriod;
@@ -43,6 +44,9 @@ public class PlantGlossaryCsvImportState extends CsvImportState<PlantGlossaryCsv
         datePublished.setStartMonth(6);
         datePublished.setStartDay(13);
         citation.setDatePublished(datePublished);
+        Institution institution = Institution.NewNamedInstance("OTO System");
+        citation.setInstitution(institution);
+        citation.setEdition("Version: 0.11");
         URI uri;
         try {
             uri = new URI("https://github.com/biosemantics/glossaries/blob/925f2c1691ed00bf2b9a9cd7f83609cffae47145/Plant/0.11/Plant_glossary_term_category.csv");
