@@ -8,11 +8,15 @@
 */
 package eu.etaxonomy.cdm.io.plantglossary;
 
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.HashSet;
 import java.util.Set;
 
 import eu.etaxonomy.cdm.io.csv.in.CsvImportState;
+import eu.etaxonomy.cdm.model.agent.Person;
 import eu.etaxonomy.cdm.model.common.TermVocabulary;
+import eu.etaxonomy.cdm.model.common.VerbatimTimePeriod;
 import eu.etaxonomy.cdm.model.reference.Reference;
 import eu.etaxonomy.cdm.model.reference.ReferenceFactory;
 
@@ -32,6 +36,19 @@ public class PlantGlossaryCsvImportState extends CsvImportState<PlantGlossaryCsv
         super(config);
         citation = ReferenceFactory.newGeneric();
         citation.setTitle("fna_gloss_final_20130517");
+        Person authorship = Person.NewInstance(null, "Cui", null, "Hong");
+        citation.setAuthorship(authorship);
+        VerbatimTimePeriod datePublished = VerbatimTimePeriod.NewVerbatimInstance();
+        datePublished.setStartYear(2014);
+        datePublished.setStartMonth(6);
+        datePublished.setStartDay(13);
+        citation.setDatePublished(datePublished);
+        URI uri;
+        try {
+            uri = new URI("https://github.com/biosemantics/glossaries/blob/925f2c1691ed00bf2b9a9cd7f83609cffae47145/Plant/0.11/Plant_glossary_term_category.csv");
+            citation.setUri(uri);
+        } catch (URISyntaxException e) {
+        }
     }
 
     @Override
