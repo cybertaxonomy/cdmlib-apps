@@ -2258,7 +2258,7 @@ public final class PesiTransformer extends ExportTransformerBase implements IExp
      * @param relation
      * @return
      */
-	public static Integer synonymelation2RelTaxonQualifierFk(Synonym syn) {
+	public static Integer synonymrelation2RelTaxonQualifierFk(Synonym syn) {
         if (syn.getAcceptedTaxon() == null) {
             return null;
         }
