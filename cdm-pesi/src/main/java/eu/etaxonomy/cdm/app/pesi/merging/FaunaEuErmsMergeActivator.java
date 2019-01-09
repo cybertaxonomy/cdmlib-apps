@@ -74,7 +74,7 @@ public class FaunaEuErmsMergeActivator {
 		sc.mergeAuthors();
 
 		//set the ranks of Agnatha and Gnathostomata to 50 instead of 45
-		List<TaxonBase> taxaToChangeRank = new ArrayList<TaxonBase>();
+		List<TaxonBase> taxaToChangeRank = new ArrayList<>();
 		Pager<TaxonBase> agnatha = sc.appCtrInit.getTaxonService().findTaxaByName(TaxonBase.class, "Agnatha", null, null, null, "*", Rank.INFRAPHYLUM(), 10, 0);
 		List<TaxonBase> agnathaList = agnatha.getRecords();
 		taxaToChangeRank.addAll(agnathaList);
@@ -82,7 +82,7 @@ public class FaunaEuErmsMergeActivator {
 		List<TaxonBase> gnathostomataList = gnathostomata.getRecords();
 		taxaToChangeRank.addAll(gnathostomataList);
 
-		sc.setSpecificRank(taxaToChangeRank,Rank.SUPERCLASS());
+		sc.setSpecificRank(taxaToChangeRank, Rank.SUPERCLASS());
 
 		//ermsTaxon is accepted, fauna eu taxon is synonym
 		//ermsTaxon is synonym, faunaEu is accepted
@@ -95,9 +95,9 @@ public class FaunaEuErmsMergeActivator {
 
 	}
 
-	private static List readCsvFile(String fileName){
+	private static List<List<String>> readCsvFile(String fileName){
 
-		List<List<String>> result = new ArrayList<List<String>>();
+		List<List<String>> result = new ArrayList<>();
 		File file = new File(fileName);
 		BufferedReader bufRdr;
 		try {
@@ -106,7 +106,7 @@ public class FaunaEuErmsMergeActivator {
 			//read each line of text file
 			while((line = bufRdr.readLine()) != null){
 				StringTokenizer st = new StringTokenizer(line,",");
-				List<String> rowList = new ArrayList<String>();
+				List<String> rowList = new ArrayList<>();
 				while (st.hasMoreTokens()){
 					//get next token and store it in the array
 					rowList.add(st.nextToken());
@@ -132,9 +132,9 @@ public class FaunaEuErmsMergeActivator {
 
 		Iterator<List<String>> authorIterator = authors.iterator();
 		List<String> row;
-		TaxonBase taxonFaunaEu;
-		TaxonBase taxonErms;
-		List<TaxonBase> taxaToSave = new ArrayList<TaxonBase>();
+		TaxonBase<?> taxonFaunaEu;
+		TaxonBase<?> taxonErms;
+		List<TaxonBase<?>> taxaToSave = new ArrayList<>();
 		while (authorIterator.hasNext()){
 			row = authorIterator.next();
 			UUID uuidFaunaEu = UUID.fromString(row.get(faunaEuUuid));
@@ -162,14 +162,11 @@ public class FaunaEuErmsMergeActivator {
 				((IZoologicalName)taxonFaunaEu.getName()).generateAuthorship();
 				taxaToSave.add(taxonFaunaEu);
 			}
-
-
 		}
 	}
 
-	public void setSpecificRank(List<TaxonBase> taxa, Rank rank){
-
-		for (TaxonBase taxon: taxa){
+	private void setSpecificRank(List<TaxonBase> taxa, Rank rank){
+		for (TaxonBase<?> taxon: taxa){
 			taxon.getName().setRank(rank);
 		}
 	}
@@ -203,8 +200,8 @@ public class FaunaEuErmsMergeActivator {
 	private void mergeSameStatus(){
 		List<List<String>> sameStatus = readCsvFile(sFileName + "_names.csv");
 
-		TaxonBase taxonFaunaEu;
-		TaxonBase taxonErms;
+		TaxonBase<?> taxonFaunaEu;
+		TaxonBase<?> taxonErms;
 
 		for (List<String> row: sameStatus){
 			taxonFaunaEu = appCtrInit.getTaxonService().find(UUID.fromString(row.get(faunaEuUuid)));
@@ -215,8 +212,6 @@ public class FaunaEuErmsMergeActivator {
 			}
 		}
 	}
-
-
 
 	private void mergeErmsAccFaunaEuSyn(List<List<String>> ermsAccFaEuSyn){
 
@@ -247,9 +242,9 @@ public class FaunaEuErmsMergeActivator {
 				logger.debug("There is no accepted taxon for the synonym" + synErms.getTitleCache());
 			}
 
-			Set<Feature> features = new HashSet<Feature>();
+			Set<Feature> features = new HashSet<>();
 			features.add(Feature.DISTRIBUTION());
-			List<String> propertyPaths = new ArrayList<String>();
+			List<String> propertyPaths = new ArrayList<>();
 			propertyPaths.add("inDescription.Taxon.*");
 			List<Distribution> distributions = appCtrInit.getDescriptionService().getDescriptionElementsForTaxon(taxonFaunaEu, features, Distribution.class, 10, 0, null);
 
@@ -299,9 +294,6 @@ public class FaunaEuErmsMergeActivator {
 			}
 		}
 
-
-
-
 	}
 
 
@@ -309,7 +301,7 @@ public class FaunaEuErmsMergeActivator {
 	private void updateNameRelationships(List<List<String>> ermsAccFaEuSyn){
 		//suche alle NameRelationships aus FaunaEu und Erms, wo (faunaEu)relatedFrom.name.titleCache = (erms)relatedFrom.name.titleCache und ersetze in der faunaEu Relationship den relatedTo.name durch den relatedTo.name der erms-relationship
 		//wenn es diese relationship noch nicht gibt und der typ der gleiche ist!!
-		//wenn der relatedTo Name zu einem Erms Taxon und einem FaunaEu Synonym geh�rt
+		//wenn der relatedTo Name zu einem Erms Taxon und einem FaunaEu Synonym gehört
 
 		Synonym synFaunaEu;
 		Taxon taxonErms;
@@ -335,7 +327,6 @@ public class FaunaEuErmsMergeActivator {
 					taxonErms.getName().addRelationshipFromName(relFauEu.getFromName(), relFauEu.getType(), relFauEu.getRuleConsidered());
 				}
 			}
-
 		}
 	}
 
@@ -393,18 +384,14 @@ public class FaunaEuErmsMergeActivator {
 					if (createNewRelationship){
 						taxonErms.addSynonym(synFauEu, synFauEu.getType());
 					}
-
 					deleteRel.add(synFauEu);
 				}
 			}
-
 		}
 	}
 
-
-	private void deleteFaunaEuTaxon(Taxon taxonFaunaEu) throws ReferencedObjectUndeletableException{
+	private void deleteFaunaEuTaxon(Taxon taxonFaunaEu) throws ReferencedObjectUndeletableException {
 		appCtrInit.getTaxonService().delete(taxonFaunaEu);
-
 	}
 
 	//wenn Name und Rang identisch sind und auch der Status gleich, dann alle Informationen vom Fauna Europaea Taxon/Synonym zum Erms Taxon/Synonym
@@ -460,8 +447,6 @@ public class FaunaEuErmsMergeActivator {
 		for (Credit credit: credits){
 			erms.addCredit(credit);
 		}
-
-
 	}
 
 	//if name, rank, and status (accepted) are the same, then move the synonyms of faunaEu taxon to the erms taxon
@@ -490,8 +475,5 @@ public class FaunaEuErmsMergeActivator {
 	}
 
 	// ----------- methods for merging Erms synonyms and Fauna Europaea Taxon
-
-
-
 
 }

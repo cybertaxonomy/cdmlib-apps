@@ -29,7 +29,6 @@ public class FaunaEuErmsFindIdenticalNamesActivator {
 
 	//TODO hole aus beiden DB alle TaxonNameBases
 
-
 	private CdmApplicationController initDb(ICdmDataSource db) {
 
 		// Init source DB
@@ -51,7 +50,7 @@ public class FaunaEuErmsFindIdenticalNamesActivator {
 		CdmApplicationController appCtrFaunaEu = sc.initDb(faunaEuropaeaSource);
 		String sFileName = "c:\\test";
 		//CdmApplicationController appCtrErms = sc.initDb(ermsSource);
-		List<String> propertyPaths = new ArrayList<String>();
+		List<String> propertyPaths = new ArrayList<>();
 		propertyPaths.add("sources.*");
 		propertyPaths.add("sources.idInSource");
 		propertyPaths.add("sources.idNamespace");
@@ -71,7 +70,7 @@ public class FaunaEuErmsFindIdenticalNamesActivator {
 
 		//Collections.sort(namesOfIdenticalTaxa,taxComp);
 		System.err.println(namesOfIdenticalTaxa.get(0) + " - " + namesOfIdenticalTaxa.get(1) + " - " + namesOfIdenticalTaxa.get(2));
-		List<FaunaEuErmsMerging> mergingObjects = new ArrayList<FaunaEuErmsMerging>();
+		List<FaunaEuErmsMerging> mergingObjects = new ArrayList<>();
 		FaunaEuErmsMerging mergeObject;
 		TaxonName faunaEuTaxName;
 		TaxonName ermsTaxName;
@@ -91,24 +90,21 @@ public class FaunaEuErmsFindIdenticalNamesActivator {
 	private boolean writeSameNamesToCsVFile(
 			List<FaunaEuErmsMerging> mergingObjects, String string) {
 	    try{
-		FileWriter writer = new FileWriter(string);
+    		FileWriter writer = new FileWriter(string);
 
-	    //create Header
-	    String firstLine = "same names";
-	    createHeader(writer, firstLine);
-		for (FaunaEuErmsMerging merging : mergingObjects){
-	    	writeCsvLine(writer, merging) ;
-		}
-		writer.flush();
-		writer.close();
+    	    //create Header
+    	    String firstLine = "same names";
+    	    createHeader(writer, firstLine);
+    		for (FaunaEuErmsMerging merging : mergingObjects){
+    	    	writeCsvLine(writer, merging) ;
+    		}
+    		writer.flush();
+    		writer.close();
+    	}catch(IOException e){
+    	    return false;
+    	}
+    	return true;
 	}
-	catch(IOException e)
-	{
-	 return false;
-	}
-	return true;
-	}
-
 
 	private boolean writeSameNamesdifferentPhylumToCsv(List<FaunaEuErmsMerging> mergingObjects, String sfileName){
 		try
@@ -224,7 +220,6 @@ public class FaunaEuErmsFindIdenticalNamesActivator {
 				}
 			}
 
-
 			writer.flush();
 			writer.close();
 		}
@@ -316,7 +311,7 @@ public class FaunaEuErmsFindIdenticalNamesActivator {
 
 	private List<FaunaEuErmsMerging> createMergeObjects(List<TaxonName> names, CdmApplicationController appCtr){
 
-		List<FaunaEuErmsMerging> merge = new ArrayList<FaunaEuErmsMerging>();
+		List<FaunaEuErmsMerging> merge = new ArrayList<>();
 		TaxonName zooName, zooName2;
 		FaunaEuErmsMerging mergeObject;
 		String idInSource1;
@@ -343,15 +338,15 @@ public class FaunaEuErmsFindIdenticalNamesActivator {
 			mergeObject.setUuidErms(zooName.getUuid().toString());
 			mergeObject.setUuidFaunaEu(zooName.getUuid().toString());
 
-			Iterator sources = zooName.getSources().iterator();
+			Iterator<IdentifiableSource> sources = zooName.getSources().iterator();
 			if (sources.hasNext()){
-				IdentifiableSource source = (IdentifiableSource)sources.next();
+				IdentifiableSource source = sources.next();
 				idInSource1 = source.getIdInSource();
 				mergeObject.setIdInErms(idInSource1);
 			}
 			sources = zooName2.getSources().iterator();
 			if (sources.hasNext()){
-				IdentifiableSource source = (IdentifiableSource)sources.next();
+				IdentifiableSource source = sources.next();
 				idInSource1 = source.getIdInSource();
 				mergeObject.setIdInFaunaEu(idInSource1);
 			}
@@ -364,19 +359,19 @@ public class FaunaEuErmsFindIdenticalNamesActivator {
 			Set<Taxon> taxa = zooName.getTaxa();
 			if (!taxa.isEmpty()){
 				mergeObject.setStatInErms(true);
-				Iterator taxaIterator = taxa.iterator();
+				Iterator<Taxon> taxaIterator = taxa.iterator();
 				Taxon taxon = null;
 				while (taxaIterator.hasNext()){
-					taxon = (Taxon) taxaIterator.next();
+					taxon = taxaIterator.next();
 					if (!taxon.isMisapplication()){
 						break;
 					}
 				}
 				Set<TaxonNode> nodes = taxon.getTaxonNodes();
-				Iterator taxonNodeIterator = nodes.iterator();
+				Iterator<TaxonNode> taxonNodeIterator = nodes.iterator();
 				TaxonNode node, parentNode = null;
 				while (taxonNodeIterator.hasNext()){
-					node = (TaxonNode)taxonNodeIterator.next();
+					node = taxonNodeIterator.next();
 					if (!node.isTopmostNode()){
 						parentNode = node.getParent();
 					}
@@ -395,19 +390,19 @@ public class FaunaEuErmsFindIdenticalNamesActivator {
 			taxa = zooName2.getTaxa();
 			if (!taxa.isEmpty()){
 				mergeObject.setStatInFaunaEu(true);
-				Iterator taxaIterator = taxa.iterator();
+				Iterator<Taxon> taxaIterator = taxa.iterator();
 				Taxon taxon = null;
 				while (taxaIterator.hasNext()){
-					taxon = (Taxon) taxaIterator.next();
+					taxon = taxaIterator.next();
 					if (!taxon.isMisapplication()){
 						break;
 					}
 				}
 				Set<TaxonNode> nodes = taxon.getTaxonNodes();
-				Iterator taxonNodeIterator = nodes.iterator();
+				Iterator<TaxonNode> taxonNodeIterator = nodes.iterator();
 				TaxonNode node, parentNode = null;
 				while (taxonNodeIterator.hasNext()){
-					node = (TaxonNode)taxonNodeIterator.next();
+					node = taxonNodeIterator.next();
 					if (!node.isTopmostNode()){
 						parentNode = node.getParent();
 					}
@@ -440,9 +435,6 @@ public class FaunaEuErmsFindIdenticalNamesActivator {
 			mergeObject.setRankInErms(zooName.getRank().getLabel());
 			mergeObject.setRankInFaunaEu(zooName2.getRank().getLabel());
 
-
-
-
 			//set parent informations
 
 
@@ -472,7 +464,5 @@ public class FaunaEuErmsFindIdenticalNamesActivator {
 
 		return merge;
 
-
 	}
-
 }
