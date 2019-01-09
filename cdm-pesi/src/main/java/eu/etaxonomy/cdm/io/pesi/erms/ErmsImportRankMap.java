@@ -98,30 +98,15 @@ public class ErmsImportRankMap extends ErmsImportBase<Rank>{
 	private Map<Integer, Rank> makeKingdomMap(Map<Integer, Map<Integer, Rank>> rankMap, Integer rankId) {
 		Map<Integer, Rank> result = rankMap.get(rankId);
 		if (result == null){
-			result = new HashMap<Integer, Rank>();
+			result = new HashMap<>();
 			rankMap.put(rankId, result);
 		}
 		return result;
 	}
 
-
-	@Override
-	protected boolean doCheck(ErmsImportState state) {
-		IOValidator<ErmsImportState> rankImport = new ErmsRankImportValidator();
-		return rankImport.validate(state);
-	}
-
-
 	@Override
 	protected String getRecordQuery(ErmsImportConfigurator config) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-
-	@Override
-	protected boolean isIgnore(ErmsImportState state) {
-		return false;  //should always be called
+		return null;   // not needed
 	}
 
 	@Override
@@ -129,15 +114,19 @@ public class ErmsImportRankMap extends ErmsImportBase<Rank>{
 		return null;  // not needed
 	}
 
-	public Rank createObject(ResultSet rs, ErmsImportState state)
-			throws SQLException {
-		return null;  // not needed
-	}
-
-
 	@Override
 	protected DbImportMapping<?, ?> getMapping() {
 		return null;  //not needed
 	}
 
+    @Override
+    protected boolean doCheck(ErmsImportState state) {
+        IOValidator<ErmsImportState> rankImport = new ErmsRankImportValidator();
+        return rankImport.validate(state);
+    }
+
+    @Override
+    protected boolean isIgnore(ErmsImportState state) {
+        return false;  //should always be called
+    }
 }

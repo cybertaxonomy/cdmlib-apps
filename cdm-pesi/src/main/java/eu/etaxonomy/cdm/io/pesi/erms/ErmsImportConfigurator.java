@@ -23,20 +23,20 @@ import eu.etaxonomy.cdm.model.name.NomenclaturalCode;
 import eu.etaxonomy.cdm.model.reference.Reference;
 import eu.etaxonomy.cdm.model.reference.ReferenceFactory;
 
-
 /**
  * @author a.mueller
  * @since 20.03.2008
  */
 public class ErmsImportConfigurator
         extends DbImportConfiguratorBase<ErmsImportState>{
+
     private static final long serialVersionUID = 5434106058744720246L;
 
     @SuppressWarnings("unused")
 	private static Logger logger = Logger.getLogger(ErmsImportConfigurator.class);
 
 	public static ErmsImportConfigurator NewInstance(Source ermsSource, ICdmDataSource destination){
-			return new ErmsImportConfigurator(ermsSource, destination);
+	    return new ErmsImportConfigurator(ermsSource, destination);
 	}
 
 	/* Max number of records to be saved with one service call */
@@ -57,7 +57,8 @@ public class ErmsImportConfigurator
 
 	private static IInputTransformer defaultTransformer = new ErmsTransformer();
 
-	@Override
+	@SuppressWarnings("unchecked")
+    @Override
     protected void makeIoClassList(){
 		ioClassList = new Class[]{
 				ErmsGeneralImportValidator.class
@@ -78,16 +79,10 @@ public class ErmsImportConfigurator
 		};
 	}
 
-
-	/* (non-Javadoc)
-	 * @see eu.etaxonomy.cdm.io.common.IImportConfigurator#getNewState()
-	 */
 	@Override
     public ImportStateBase getNewState() {
 		return new ErmsImportState(this);
 	}
-
-
 
 	/**
 	 * @param berlinModelSource
@@ -98,7 +93,6 @@ public class ErmsImportConfigurator
 	   super(ermsSource, destination, NomenclaturalCode.ICZN, defaultTransformer);//default for ERMS
 	}
 
-
 	@Override
     public Source getSource() {
 		return super.getSource();
@@ -108,9 +102,6 @@ public class ErmsImportConfigurator
 		super.setSource(berlinModelSource);
 	}
 
-	/* (non-Javadoc)
-	 * @see eu.etaxonomy.cdm.io.tcsrdf.IImportConfigurator#getSourceReference()
-	 */
 	@Override
     public Reference getSourceReference() {
 		if (sourceReference == null){
@@ -125,10 +116,6 @@ public class ErmsImportConfigurator
 		return sourceReference;
 	}
 
-
-	/* (non-Javadoc)
-	 * @see eu.etaxonomy.cdm.io.common.IImportConfigurator#getSourceNameString()
-	 */
 	@Override
     public String getSourceNameString() {
 		if (this.getSource() == null){
@@ -138,107 +125,51 @@ public class ErmsImportConfigurator
 		}
 	}
 
-	/**
-	 * @return the userTransformationMethod
-	 */
 	@Override
     public Method getUserTransformationMethod() {
 		return userTransformationMethod;
 	}
-
-	/**
-	 * @param userTransformationMethod the userTransformationMethod to set
-	 */
 	@Override
     public void setUserTransformationMethod(Method userTransformationMethod) {
 		this.userTransformationMethod = userTransformationMethod;
 	}
 
-
-	/**
-	 * @return the limitSave
-	 */
 	@Override
     public int getRecordsPerTransaction() {
 		return recordsPerTransaction;
 	}
-
-	/**
-	 * @param limitSave the limitSave to set
-	 */
 	@Override
     public void setRecordsPerTransaction(int recordsPerTransaction) {
 		this.recordsPerTransaction = recordsPerTransaction;
 	}
 
-	/**
-	 * @param doVernaculars the doVernaculars to set
-	 */
 	public void setDoVernaculars(boolean doVernaculars) {
 		this.doVernaculars = doVernaculars;
 	}
-
-	/**
-	 * @return the doVernaculars
-	 */
 	public boolean isDoVernaculars() {
 		return doVernaculars;
 	}
 
-
-
-	/**
-	 * @param doLinks the doLinks to set
-	 */
 	public void setDoLinks(boolean doLinks) {
 		this.doLinks = doLinks;
 	}
-
-
-
-	/**
-	 * @return the doLinks
-	 */
 	public boolean isDoLinks() {
 		return doLinks;
 	}
 
-
-
-	/**
-	 * @param doNotes the doNotes to set
-	 */
 	public void setDoNotes(boolean doNotes) {
 		this.doNotes = doNotes;
 	}
-
-
-
-	/**
-	 * @return the doNotes
-	 */
 	public boolean isDoNotes() {
 		return doNotes;
 	}
 
-
-
-	/**
-	 * @param doImages the doImages to set
-	 */
 	public void setDoImages(boolean doImages) {
 		this.doImages = doImages;
 	}
-
-
-
-	/**
-	 * @return the doImages
-	 */
 	public boolean isDoImages() {
 		return doImages;
 	}
-
 
 	public boolean isDoOccurrence() {
 		return doOccurrence;
@@ -246,7 +177,6 @@ public class ErmsImportConfigurator
 	public void setDoOccurrence(boolean doOccurrence) {
 		this.doOccurrence = doOccurrence;
 	}
-
 
 	public DO_REFERENCES getDoReferences() {
 		return doReferences;
@@ -268,7 +198,5 @@ public class ErmsImportConfigurator
 	public void setDoRelTaxa(boolean doRelTaxa) {
 		this.doRelTaxa = doRelTaxa;
 	}
-
-
 
 }

@@ -115,7 +115,7 @@ public abstract class ErmsImportBase<CDM_BASE extends CdmBase>
 	}
 
 	@Override
-    public boolean doPartition(ResultSetPartitioner partitioner, ErmsImportState state) {
+    public boolean doPartition(@SuppressWarnings("rawtypes") ResultSetPartitioner partitioner, ErmsImportState state) {
 		boolean success = true ;
 		Set<CdmBase> objectsToSave = new HashSet<>();
 
@@ -125,7 +125,7 @@ public abstract class ErmsImportBase<CDM_BASE extends CdmBase>
 		ResultSet rs = partitioner.getResultSet();
 		try{
 			while (rs.next()){
-				success &= mapping.invoke(rs,objectsToSave);
+				success &= mapping.invoke(rs, objectsToSave);
 			}
 		} catch (SQLException e) {
 			logger.error("SQLException:" +  e);
@@ -136,8 +136,6 @@ public abstract class ErmsImportBase<CDM_BASE extends CdmBase>
 		getCommonService().save(objectsToSave);
 		return success;
 	}
-
-
 
 	/**
 	 * @return

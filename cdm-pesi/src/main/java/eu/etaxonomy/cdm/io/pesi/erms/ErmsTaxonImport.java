@@ -45,7 +45,6 @@ import eu.etaxonomy.cdm.model.taxon.Taxon;
 import eu.etaxonomy.cdm.model.taxon.TaxonBase;
 import eu.etaxonomy.cdm.strategy.cache.name.TaxonNameDefaultCacheStrategy;
 
-
 /**
  * @author a.mueller
  * @since 20.02.2010
@@ -80,7 +79,7 @@ public class ErmsTaxonImport
 	@Override
     protected DbImportMapping<ErmsImportState, ErmsImportConfigurator> getMapping() {
 		if (mapping == null){
-			mapping = new DbImportMapping<ErmsImportState, ErmsImportConfigurator>();
+			mapping = new DbImportMapping<>();
 
 			mapping.addMapper(DbImportObjectCreationMapper.NewInstance(this, "id", TAXON_NAMESPACE)); //id + tu_status
 			UUID tsnUuid = ErmsTransformer.uuidTsn;
@@ -94,7 +93,7 @@ public class ErmsTaxonImport
 			mapping.addMapper(DbImportExtensionMapper.NewInstance("tu_displayname", displayNameExtType));
 			ExtensionType fuzzyNameExtType = getExtensionType(ErmsTransformer.uuidFuzzyName, "fuzzy name", "fuzzy name", "fuzzy name");
 		//	mapping.addMapper(DbImportExtensionMapper.NewInstance("tu_fuzzyname", fuzzyNameExtType));
-			mapping.addMapper(DbImportStringMapper.NewInstance("tu_authority", "(NonViralName)name.authorshipCache"));
+			mapping.addMapper(DbImportStringMapper.NewInstance("tu_authority", "name.authorshipCache"));
 
 			ExtensionType fossilStatusExtType = getExtensionType(ErmsTransformer.uuidFossilStatus, "fossil status", "fossil status", "fos. stat.");
 			mapping.addMapper(DbImportExtensionMapper.NewInstance("fossil_name", fossilStatusExtType));
@@ -110,7 +109,6 @@ public class ErmsTaxonImport
 			mapping.addMapper(DbImportMarkerMapper.NewInstance("tu_brackish", ErmsTransformer.uuidMarkerBrackish, "brackish", "brackish", "brackish", null));
 			mapping.addMapper(DbImportMarkerMapper.NewInstance("tu_fresh", ErmsTransformer.uuidMarkerFreshwater, "freshwater", "fresh", "fresh", null));
 			mapping.addMapper(DbImportMarkerMapper.NewInstance("tu_terrestrial", ErmsTransformer.uuidMarkerTerrestrial, "terrestrial", "terrestrial", "terrestrial", null));
-
 
 //			UUID hiddenUuid = ErmsTransformer.uuidHidden;
 //			mapping.addMapper(DbImportMarkerCreationMapper.Mapper.NewInstance("qualitystatus_name", qualityUuid, "quality status", "quality status", "quality status")); //checked by Tax Editor ERMS1.1, Added by db management team (2x), checked by Tax Editor
@@ -152,7 +150,7 @@ public class ErmsTaxonImport
 	}
 
 	private Set<Integer> getAcceptedTaxaKeys(ErmsImportState state) {
-		Set<Integer> result = new HashSet<Integer>();
+		Set<Integer> result = new HashSet<>();
 		String parentCol = "tu_parent";
 		String accCol = " tu_acctaxon";
 		String idCol = " id ";
@@ -160,11 +158,12 @@ public class ErmsTaxonImport
 		String taxonTable = "tu";
 		String vernacularsTable = "vernaculars";
 		String distributionTable = "dr";
-		String sql = " SELECT DISTINCT %s FROM %s  " +
-				" UNION  SELECT %s FROM %s WHERE %s is NULL" +
-				" UNION  SELECT DISTINCT %s FROM %s " +
-				" UNION  SELECT DISTINCT %s FROM %s " +
-				" UNION  SELECT DISTINCT %s FROM %s ";
+		String sql =
+		        " SELECT DISTINCT %s FROM %s  "  //fk to parent
+		        + " UNION  SELECT %s FROM %s WHERE %s is NULL" //id of taxa not having accepted taxon
+		        + " UNION  SELECT DISTINCT %s FROM %s "  //fk to accepted taxon
+		        + " UNION  SELECT DISTINCT %s FROM %s " //vernaculars
+		        + " UNION  SELECT DISTINCT %s FROM %s ";  //distributions
 		sql = String.format(sql,
 				parentCol, taxonTable,
 				idCol, taxonTable, accCol,

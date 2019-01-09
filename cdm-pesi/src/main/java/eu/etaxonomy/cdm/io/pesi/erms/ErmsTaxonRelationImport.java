@@ -55,7 +55,6 @@ public class ErmsTaxonRelationImport extends ErmsImportBase<TaxonBase<?>> implem
 		super(pluralString, dbTableName, cdmTargetClass);
 	}
 
-
 	@Override
 	protected DbImportMapping<ErmsImportState, ErmsImportConfigurator> getMapping() {
 		if (mapping == null){
@@ -98,11 +97,11 @@ public class ErmsTaxonRelationImport extends ErmsImportBase<TaxonBase<?>> implem
 		String nameSpace;
 		Class<?> cdmClass;
 		Set<String> idSet;
-		Map<Object, Map<String, ? extends CdmBase>> result = new HashMap<Object, Map<String, ? extends CdmBase>>();
+		Map<Object, Map<String, ? extends CdmBase>> result = new HashMap<>();
 
 		try{
-			Set<String> taxonIdSet = new HashSet<String>();
-			Set<String> nameIdSet = new HashSet<String>();
+			Set<String> taxonIdSet = new HashSet<>();
+			Set<String> nameIdSet = new HashSet<>();
 			while (rs.next()){
 				handleForeignKey(rs, taxonIdSet, "parentId");
 				handleForeignKey(rs, taxonIdSet, "accParentId");
@@ -128,10 +127,11 @@ public class ErmsTaxonRelationImport extends ErmsImportBase<TaxonBase<?>> implem
             Map<String, TaxonBase<?>> taxonMap = (Map<String, TaxonBase<?>>)getCommonService().getSourcedObjectsByIdInSource(cdmClass, idSet, nameSpace);
 			result.put(nameSpace, taxonMap);
 
+			return result;
+
 		} catch (SQLException e) {
 			throw new RuntimeException(e);
 		}
-		return result;
 	}
 
 	@Override
