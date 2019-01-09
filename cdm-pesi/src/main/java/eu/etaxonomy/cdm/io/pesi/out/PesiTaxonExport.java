@@ -92,7 +92,9 @@ import eu.etaxonomy.cdm.strategy.cache.name.ZooNameNoMarkerCacheStrategy;
  */
 @Component
 public class PesiTaxonExport extends PesiExportBase {
-	private static final Logger logger = Logger.getLogger(PesiTaxonExport.class);
+    private static final long serialVersionUID = -3412722058790200078L;
+    private static final Logger logger = Logger.getLogger(PesiTaxonExport.class);
+
 	private static final Class<? extends CdmBase> standardMethodParameter = TaxonBase.class;
 
 	private static int modCount = 1000;
@@ -1989,7 +1991,7 @@ public class PesiTaxonExport extends PesiExportBase {
 		}
 		String fossilStatus = fossilStatuus.iterator().next();
 
-		int statusFk = state.getTransformer().FossilStatusCache2FossilStatusFk(fossilStatus);
+		int statusFk = state.getTransformer().fossilStatusCache2FossilStatusFk(fossilStatus);
 		return statusFk;
 	}
 
