@@ -36,7 +36,10 @@ import eu.etaxonomy.cdm.model.taxon.TaxonRelationshipType;
  */
 @Component
 public class ErmsTaxonRelationImport extends ErmsImportBase<TaxonBase<?>> implements ICheckIgnoreMapper{
-	@SuppressWarnings("unused")
+
+    private static final long serialVersionUID = 4092728796922591257L;
+
+    @SuppressWarnings("unused")
 	private static final Logger logger = Logger.getLogger(ErmsTaxonRelationImport.class);
 
 	private DbImportMapping<ErmsImportState, ErmsImportConfigurator> mapping;
@@ -62,16 +65,12 @@ public class ErmsTaxonRelationImport extends ErmsImportBase<TaxonBase<?>> implem
 
 			TaxonRelationshipType taxonRelationshipType = getTaxonRelationshipType(state, ErmsTransformer.uuidTaxRelTypeIsTaxonSynonymOf, "is taxon synonym of", "is synonym of relation used by synonym that are of class Taxon as they can not be handled differently", null, null);
 			mapping.addMapper(DbImportSynonymMapper.NewInstance("id", "tu_acctaxon", TAXON_NAMESPACE, null, taxonRelationshipType));
-			mapping.addMapper(DbImportNameTypeDesignationMapper.NewInstance("id", "tu_typetaxon", ErmsTaxonImport.NAME_NAMESPACE, "tu_typedesignationstatus"));
+			mapping.addMapper(DbImportNameTypeDesignationMapper.NewInstance("id", "tu_typetaxon", ErmsImportBase.NAME_NAMESPACE, "tu_typedesignationstatus"));
 //			mapping.addMapper(DbNotYetImplementedMapper.NewInstance("tu_acctaxon"));
 		}
 		return mapping;
 	}
 
-
-	/* (non-Javadoc)
-	 * @see eu.etaxonomy.cdm.io.erms.ErmsImportBase#getRecordQuery(eu.etaxonomy.cdm.io.erms.ErmsImportConfigurator)
-	 */
 	@Override
     protected String getRecordQuery(ErmsImportConfigurator config) {
 		//TODO get automatic by second path mappers
@@ -87,7 +86,6 @@ public class ErmsTaxonRelationImport extends ErmsImportBase<TaxonBase<?>> implem
 			" WHERE ( myTaxon.id IN (" + ID_LIST_TOKEN + ") )";
 		return strRecordQuery;
 	}
-
 
 	@Override
 	protected void doInvoke(ErmsImportState state) {
@@ -115,18 +113,19 @@ public class ErmsTaxonRelationImport extends ErmsImportBase<TaxonBase<?>> implem
 			}
 
 			//name map
-			nameSpace = ErmsTaxonImport.NAME_NAMESPACE;
+			nameSpace = ErmsImportBase.NAME_NAMESPACE;
 			cdmClass = TaxonName.class;
 			idSet = nameIdSet;
-			Map<String, TaxonName> nameMap = (Map<String, TaxonName>)getCommonService().getSourcedObjectsByIdInSource(cdmClass, idSet, nameSpace);
+			@SuppressWarnings("unchecked")
+            Map<String, TaxonName> nameMap = (Map<String, TaxonName>)getCommonService().getSourcedObjectsByIdInSource(cdmClass, idSet, nameSpace);
 			result.put(nameSpace, nameMap);
 
-
 			//taxon map
-			nameSpace = ErmsTaxonImport.TAXON_NAMESPACE;
+			nameSpace = ErmsImportBase.TAXON_NAMESPACE;
 			cdmClass = TaxonBase.class;
 			idSet = taxonIdSet;
-			Map<String, TaxonBase<?>> taxonMap = (Map<String, TaxonBase<?>>)getCommonService().getSourcedObjectsByIdInSource(cdmClass, idSet, nameSpace);
+			@SuppressWarnings("unchecked")
+            Map<String, TaxonBase<?>> taxonMap = (Map<String, TaxonBase<?>>)getCommonService().getSourcedObjectsByIdInSource(cdmClass, idSet, nameSpace);
 			result.put(nameSpace, taxonMap);
 
 		} catch (SQLException e) {
@@ -135,10 +134,6 @@ public class ErmsTaxonRelationImport extends ErmsImportBase<TaxonBase<?>> implem
 		return result;
 	}
 
-
-	/* (non-Javadoc)
-	 * @see eu.etaxonomy.cdm.io.erms.ICheckIgnoreMapper#checkIgnoreMapper(eu.etaxonomy.cdm.io.common.mapping.IDbImportMapper, java.sql.ResultSet)
-	 */
 	@Override
     public boolean checkIgnoreMapper(IDbImportMapper mapper, ResultSet rs) throws SQLException{
 		boolean result = false;
@@ -193,7 +188,4 @@ public class ErmsTaxonRelationImport extends ErmsImportBase<TaxonBase<?>> implem
 	protected boolean isIgnore(ErmsImportState state){
 		return ! state.getConfig().isDoRelTaxa();
 	}
-
-
-
 }

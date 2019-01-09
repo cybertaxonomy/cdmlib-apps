@@ -1,8 +1,8 @@
 /**
 * Copyright (C) 2007 EDIT
-* European Distributed Institute of Taxonomy 
+* European Distributed Institute of Taxonomy
 * http://www.e-taxonomy.eu
-* 
+*
 * The contents of this file are subject to the Mozilla Public License Version 1.1
 * See LICENSE.TXT at the top of this package for the full license terms.
 */
@@ -33,20 +33,22 @@ import eu.etaxonomy.cdm.model.location.NamedArea;
 import eu.etaxonomy.cdm.model.location.NamedAreaLevel;
 import eu.etaxonomy.cdm.model.location.NamedAreaType;
 
-
 /**
  * @author a.mueller
  * @since 20.02.2010
  */
 @Component
-public class ErmsAreaImport  extends ErmsImportBase<NamedArea> implements IMappingImport<NamedArea, ErmsImportState>{
-	@SuppressWarnings("unused")
+public class ErmsAreaImport
+        extends ErmsImportBase<NamedArea>
+        implements IMappingImport<NamedArea, ErmsImportState>{
+
+    private static final long serialVersionUID = 7151312300027994346L;
+
+    @SuppressWarnings("unused")
 	private static final Logger logger = Logger.getLogger(ErmsAreaImport.class);
 
-	private DbImportMapping<?,?> mapping;
-	
-	
-	private int modCount = 10000;
+	private DbImportMapping<ErmsImportState, ErmsImportConfigurator> mapping;
+
 	private static final String pluralString = "areas";
 	private static final String dbTableName = "gu";
 	private static final Class<?> cdmTargetClass = NamedArea.class;
@@ -55,26 +57,20 @@ public class ErmsAreaImport  extends ErmsImportBase<NamedArea> implements IMappi
 		super(pluralString, dbTableName, cdmTargetClass);
 	}
 
-
-	/* (non-Javadoc)
-	 * @see eu.etaxonomy.cdm.io.berlinModel.in.BerlinModelImportBase#getRecordQuery(eu.etaxonomy.cdm.io.berlinModel.in.BerlinModelImportConfigurator)
-	 */
 	@Override
 	protected String getRecordQuery(ErmsImportConfigurator config) {
-		String strRecordQuery = 
-			" SELECT * " + 
+		String strRecordQuery =
+			" SELECT * " +
 			" FROM gu " +
 			" WHERE ( gu.id IN (" + ID_LIST_TOKEN + ") )";
 		return strRecordQuery;
 	}
 
-	/* (non-Javadoc)
-	 * @see eu.etaxonomy.cdm.io.erms.ErmsImportBase#getMapping()
-	 */
-	protected DbImportMapping getMapping() {
+	@Override
+    protected DbImportMapping<ErmsImportState, ErmsImportConfigurator> getMapping() {
 		if (mapping == null){
-			mapping = new DbImportMapping();
-			
+			mapping = new DbImportMapping<>();
+
 			mapping.addMapper(DbImportObjectCreationMapper.NewInstance(this, "id", AREA_NAMESPACE)); //id
 			mapping.addMapper(DbImportStringMapper.NewInstance("gu_name", "titleCache"));
 			ExtensionType extensionType = getExtensionType( ErmsTransformer.GAZETTEER_UUID, "Gazetteer ID", "Gazetteer ID", "G-ID");
@@ -84,14 +80,14 @@ public class ErmsAreaImport  extends ErmsImportBase<NamedArea> implements IMappi
 		}
 		return mapping;
 	}
-	
+
 
 	@Override
 	public Map<Object, Map<String, ? extends CdmBase>> getRelatedObjectsForPartition(ResultSet rs, ErmsImportState state) {
-		Map<Object, Map<String, ? extends CdmBase>> result = new HashMap<Object, Map<String, ? extends CdmBase>>();
+		Map<Object, Map<String, ? extends CdmBase>> result = new HashMap<>();
 		return result;  //not needed
 	}
-	
+
 	@Override
 	public NamedArea createObject(ResultSet rs, ErmsImportState state) throws SQLException {
 		int id = rs.getInt("id");
@@ -112,15 +108,11 @@ public class ErmsAreaImport  extends ErmsImportBase<NamedArea> implements IMappi
 		IOValidator<ErmsImportState> validator = new ErmsAreaImportValidator();
 		return validator.validate(state);
 	}
-	
+
 	@Override
 	protected boolean isIgnore(ErmsImportState state){
 		//TODO
 //		return ! state.getConfig().isDoAreas();
 		return false;
 	}
-
-
-
-
 }

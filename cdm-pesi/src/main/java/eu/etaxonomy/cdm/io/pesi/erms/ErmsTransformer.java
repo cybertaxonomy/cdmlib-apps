@@ -1,8 +1,8 @@
 /**
 * Copyright (C) 2007 EDIT
-* European Distributed Institute of Taxonomy 
+* European Distributed Institute of Taxonomy
 * http://www.e-taxonomy.eu
-* 
+*
 * The contents of this file are subject to the Mozilla Public License Version 1.1
 * See LICENSE.TXT at the top of this package for the full license terms.
 */
@@ -16,7 +16,6 @@ import java.util.UUID;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 
-import eu.etaxonomy.cdm.common.CdmUtils;
 import eu.etaxonomy.cdm.io.common.mapping.InputTransformerBase;
 import eu.etaxonomy.cdm.io.common.mapping.UndefinedTransformerMethodException;
 import eu.etaxonomy.cdm.model.common.ExtensionType;
@@ -30,8 +29,10 @@ import eu.etaxonomy.cdm.model.name.NomenclaturalCode;
  * @since 01.03.2010
  */
 public final class ErmsTransformer extends InputTransformerBase {
-	private static final Logger logger = Logger.getLogger(ErmsTransformer.class);
-	
+    private static final long serialVersionUID = 1777919792691129468L;
+
+    private static final Logger logger = Logger.getLogger(ErmsTransformer.class);
+
 	public static final int SOURCE_USE_ORIGINAL_DESCRIPTION = 1;
 	public static final int SOURCE_USE_BASIS_OF_RECORD = 2;
 	public static final int SOURCE_USE_ADDITIONAL_SOURCE = 3;
@@ -40,14 +41,13 @@ public final class ErmsTransformer extends InputTransformerBase {
 	public static final int SOURCE_USE_NEW_COMBINATION_REFERENCE = 6;
 	public static final int SOURCE_USE_STATUS_SOURCE = 7;
 	public static final int SOURCE_USE_EMENDATION = 8;
-	
+
 	//taxon relationship type uuids
 	public static final UUID uuidTaxRelTypeIsTaxonSynonymOf = UUID.fromString("cc648276-0823-47b1-9deb-fa7c046e4afd");
-	
-	
+
 	//rank uuids
 	public static final UUID uuidRankSuperdomain = UUID.fromString("66d4d773-4946-4e02-b758-8903563eaa26");
-	
+
 	//language uuids
 	public static final UUID uuidEuropeanMarineWaters = UUID.fromString("47389e42-3b3c-4873-bded-ac030db86462");
 	public static final UUID uuidMediterraneanSea = UUID.fromString("bde8a624-23c4-4ac3-b381-11287f5d656a");
@@ -110,7 +110,7 @@ public final class ErmsTransformer extends InputTransformerBase {
 	public static final UUID uuidIsraeliExclusiveEconomicZoneMediterranean = UUID.fromString("d947e1c1-6d7b-47e1-ad91-703d15c5c55b");
 	public static final UUID uuidPolishExclusiveEconomicZone = UUID.fromString("dc7f8339-528b-49ec-a8d9-c2be0441e933");
 
-	
+
 
 	//feature uuids
 	public static final UUID uuidRemark = UUID.fromString("648eab77-8469-4139-bbf4-3fb26ec15864");
@@ -154,18 +154,18 @@ public final class ErmsTransformer extends InputTransformerBase {
 	public static final UUID uuidCompleteness = UUID.fromString("141f4816-78c0-4da1-8a79-5c9031e6b149");
 	public static final UUID uuidUnacceptReason = UUID.fromString("3883fb79-374d-4120-964b-9666307e3567");
 	public static final UUID uuidQualityStatus = UUID.fromString("4de84c6e-41bd-4a0e-894d-77e9ec3103d2");
-	
+
 	//MarkerTypes
 	public static final UUID uuidMarkerMarine = UUID.fromString("5da78a28-5668-4ed5-b788-10c69343f91e");
 	public static final UUID uuidMarkerBrackish = UUID.fromString("2da39f5d-67d6-4779-b40d-923dca85fe14");
 	public static final UUID uuidMarkerFreshwater = UUID.fromString("1190b182-e1d3-4986-8cc3-a6de3c115cf7");
 	public static final UUID uuidMarkerTerrestrial = UUID.fromString("5ed92edb-e2c6-48da-8367-6e82071c888f");
-	
-	
+
+
 	//language uuids
 	public static final UUID uuidLangAuns = UUID.fromString("7bb29f8f-d74b-4f7d-b673-c52debb7ae20");     //au
 	public static final UUID uuidLangChukchiLouravetlany = UUID.fromString("f85797cc-5ab3-454d-b9eb-beb75bc8eb37");   //cl
-	public static final UUID uuidLangChleuh = UUID.fromString("85132635-d696-4fc0-af12-207175b11773");    //cu 
+	public static final UUID uuidLangChleuh = UUID.fromString("85132635-d696-4fc0-af12-207175b11773");    //cu
 	public static final UUID uuidLangEnglishCanadian = UUID.fromString("43d244c4-e8cb-4c7f-951a-14d71666999c");   //ec
 	public static final UUID uuidLangEnglishUs = UUID.fromString("037bc818-b992-48ce-a40b-994980bc46d7");  //eu
 	public static final UUID uuidLangEvenKamchatcka= UUID.fromString("6ff3e21e-cabe-4583-b416-11b7120c5c0a");   //ek
@@ -181,11 +181,11 @@ public final class ErmsTransformer extends InputTransformerBase {
 	public static final UUID uuidLangTamul = UUID.fromString("9f55f493-9f2b-427c-bb55-d970822726c9");   //tm
 	public static final UUID uuidLangNentsiNenets = UUID.fromString("4697b87e-2718-4986-8f9b-361dd47b0c90");   //ne
 
-	
-	
+
+
 	//...
-	
-	
+
+
 	public static NomenclaturalCode kingdomId2NomCode(Integer kingdomId){
 		switch (kingdomId){
 			case 1: return null;
@@ -197,14 +197,14 @@ public final class ErmsTransformer extends InputTransformerBase {
 			case 7: return NomenclaturalCode.ICNAFP;  //Chromista   ??
 			case 147415: return NomenclaturalCode.ICNB;  //Monera
 			default: return null;
-	
+
 		}
-	
+
 	}
-	
-	
-	
-	
+
+
+
+
 	/* (non-Javadoc)
 	 * @see eu.etaxonomy.cdm.io.common.mapping.InputTransformerBase#getNameTypeDesignationStatusByKey(java.lang.String)
 	 */
@@ -218,7 +218,7 @@ public final class ErmsTransformer extends InputTransformerBase {
 			case 1: return NameTypeDesignationStatus.ORIGINAL_DESIGNATION();
 			case 2: return NameTypeDesignationStatus.SUBSEQUENT_DESIGNATION();
 			case 3: return NameTypeDesignationStatus.MONOTYPY();
-			default: 
+			default:
 				String warning = "Unknown name type designation status id " + key;
 				logger.warn(warning);
 				return null;
@@ -238,9 +238,10 @@ public final class ErmsTransformer extends InputTransformerBase {
 	}
 
 
-	public Language getLanguageByKey(String ermsAbbrev) throws IllegalArgumentException {
+	@Override
+    public Language getLanguageByKey(String ermsAbbrev) throws IllegalArgumentException {
 		Set<String> unhandledLanguages = new HashSet<String>();
-		if (CdmUtils.isEmpty(ermsAbbrev)){return null;
+		if (StringUtils.isBlank(ermsAbbrev)){return null;
 		}else if (ermsAbbrev.equals("ab")){return Language.ALBANIAN();
 		}else if (ermsAbbrev.equals("af")){return Language.AFRIKAANS();
 		}else if (ermsAbbrev.equals("al")){return Language.ALEUT();
@@ -271,8 +272,8 @@ public final class ErmsTransformer extends InputTransformerBase {
 		}else if (ermsAbbrev.equals("ep")){return Language.ESPERANTO();
 		}else if (ermsAbbrev.equals("es")){return Language.SPANISH_CASTILIAN();
 //		}else if (ermsAbbrev.equals("eu")){return Language.ENGLISH-UNITED STATES();  no iso //ENGLISH();
-//		}else if (ermsAbbrev.equals("ev")){return Language.EVENKI();   iso: evn  //languages of Tungusic family 
-		}else if (ermsAbbrev.equals("fa")){return Language.PERSIAN(); 
+//		}else if (ermsAbbrev.equals("ev")){return Language.EVENKI();   iso: evn  //languages of Tungusic family
+		}else if (ermsAbbrev.equals("fa")){return Language.PERSIAN();
 //		}else if (ermsAbbrev.equals("fc")){return Language.FRENCH-CANADIAN();   no iso  //FRENCH();
 		}else if (ermsAbbrev.equals("fi")){return Language.FINNISH();
 		}else if (ermsAbbrev.equals("fj")){return Language.FIJIAN();
@@ -297,7 +298,7 @@ public final class ErmsTransformer extends InputTransformerBase {
 		}else if (ermsAbbrev.equals("it")){return Language.ITALIAN();
 		}else if (ermsAbbrev.equals("ja")){return Language.JAPANESE();
 //		}else if (ermsAbbrev.equals("ji")){return Language.JIVARA();   		//??
-//		}else if (ermsAbbrev.equals("ka")){return Language.KAMCHADAL();   iso 639-3:itl //Itelmen, formerly also known as Kamchadal, is a language belonging to the Chukotko-Kamchatkan family traditionally spoken in the Kamchatka Peninsula.    
+//		}else if (ermsAbbrev.equals("ka")){return Language.KAMCHADAL();   iso 639-3:itl //Itelmen, formerly also known as Kamchadal, is a language belonging to the Chukotko-Kamchatkan family traditionally spoken in the Kamchatka Peninsula.
 //		}else if (ermsAbbrev.equals("ki")){return Language.CREOLES_PIDGINS_ENGLISH_BASED_OTHER()
 		}else if (ermsAbbrev.equals("ko")){return Language.KOREAN();
 //		}else if (ermsAbbrev.equals("kr")){return Language.KORYAK();    //iso639-3: kpy
@@ -375,14 +376,14 @@ public final class ErmsTransformer extends InputTransformerBase {
 			unhandledLanguages.add("tm");
 			unhandledLanguages.add("sh");
 			unhandledLanguages.add("yu");
-			
+
 			unhandledLanguages.add("cu");   //Chleuh
 			unhandledLanguages.add("ki");  //Krio, subset of Language.CREOLES_PIDGINS_ENGLISH_BASED_OTHER()
 			unhandledLanguages.add("mo");  //Monégasque
 
 
-			
-			
+
+
 			if (unhandledLanguages.contains(ermsAbbrev)){
 				logger.info("Unhandled language '" + ermsAbbrev + "' replaced by 'UNDETERMINED'" );
 				return Language.UNDETERMINED();
@@ -392,7 +393,7 @@ public final class ErmsTransformer extends InputTransformerBase {
 			throw new IllegalArgumentException(warning);
 		}
 	}
-	
+
 	/* (non-Javadoc)
 	 * @see eu.etaxonomy.cdm.io.common.mapping.InputTransformerBase#getLanguageUuid(java.lang.String)
 	 */
@@ -418,11 +419,11 @@ public final class ErmsTransformer extends InputTransformerBase {
 		}else if (key.equalsIgnoreCase("os")){return uuidLangOstyak;
 		}else if (key.equalsIgnoreCase("tm")){return uuidLangTamul;
 		}
-		
+
 		return super.getLanguageUuid(key);
 	}
-	
-	
+
+
 
 	/* (non-Javadoc)
 	 * @see eu.etaxonomy.cdm.io.common.mapping.InputTransformerBase#getExtensionTypeByKey(java.lang.String)
@@ -449,7 +450,7 @@ public final class ErmsTransformer extends InputTransformerBase {
 	}
 
 	public static UUID uuidFromGuName(String guName){
-		if (CdmUtils.isEmpty(guName)){return null;
+		if (StringUtils.isBlank(guName)){return null;
 		}else if (guName.equalsIgnoreCase("European Marine Waters")){ return uuidEuropeanMarineWaters;
 		}else if (guName.equalsIgnoreCase("Mediterranean Sea")){ return uuidMediterraneanSea;
 		}else if (guName.equalsIgnoreCase("White Sea")){ return uuidWhiteSea;
@@ -501,7 +502,7 @@ public final class ErmsTransformer extends InputTransformerBase {
 		}else if (guName.equalsIgnoreCase("Balear Sea")){ return uuidBalearSea;
 		}else if (guName.equalsIgnoreCase("Turkish Exclusive Economic Zone")){ return uuidTurkishExclusiveEconomicZone;
 		}else if (guName.equalsIgnoreCase("Danish Exclusive Economic Zone")){ return uuidDanishExclusiveEconomicZone;
-		
+
 		}else if (guName.equalsIgnoreCase("Bay of Biscay")){ return uuidBayOfBiscay;
 		}else if (guName.equalsIgnoreCase("Greek Exclusive Economic Zone")){ return uuidGreekExclusiveEconomicZone;
 		}else if (guName.equalsIgnoreCase("Tyrrhenian Sea")){ return uuidTyrrhenianSea;
@@ -510,14 +511,13 @@ public final class ErmsTransformer extends InputTransformerBase {
 		}else if (guName.equalsIgnoreCase("Azores Exclusive Economic Zone")){ return uuidAzoresExclusiveEconomicZone;
 		}else if (guName.equalsIgnoreCase("Israeli Exclusive Economic Zone [Mediterranean part]")){ return uuidIsraeliExclusiveEconomicZoneMediterranean;
 		}else if (guName.equalsIgnoreCase("Polish Exclusive Economic Zone")){ return uuidPolishExclusiveEconomicZone;
-		
+
 		}else{
 			throw new IllegalArgumentException("Unknown area " + guName);
 		}
-		
 	}
 
-	
+
 	public static UUID uuidFromGuId(Integer guId){
 		if (guId == null){return null;
 		}else if (guId == 7788){ return uuidEuropeanMarineWaters;
@@ -571,15 +571,15 @@ public final class ErmsTransformer extends InputTransformerBase {
 		}else if (guId == 10779){ return uuidBalearSea;
 		}else if (guId == 10782){ return uuidTurkishExclusiveEconomicZone;
 		}else if (guId == 11039){ return uuidDanishExclusiveEconomicZone;
-		
+
 		}else{
 			throw new IllegalArgumentException("Unknown area id " + guId);
 		}
 
 	}
-	
+
 	public static Feature noteType2Feature(String type){
-		if (CdmUtils.isEmpty(type)){return null;
+		if (StringUtils.isBlank(type)){return null;
 		}else if (type.equals("Remark")){return Feature.UNKNOWN();
 		}else if (type.equals("Additional information")){return Feature.UNKNOWN();
 		}else if (type.equals("Spelling")){return Feature.UNKNOWN();
@@ -618,12 +618,9 @@ public final class ErmsTransformer extends InputTransformerBase {
 		}
 	}
 
-	/* (non-Javadoc)
-	 * @see eu.etaxonomy.cdm.io.common.mapping.InputTransformerBase#getFeatureByKey(java.lang.String)
-	 */
 	@Override
 	public Feature getFeatureByKey(String key) throws UndefinedTransformerMethodException {
-		if (CdmUtils.isEmpty(key)){return null;
+		if (StringUtils.isBlank(key)){return null;
 		}else if (key.equalsIgnoreCase("Distribution")){return Feature.DISTRIBUTION();
 		}else if (key.equalsIgnoreCase("Ecology")){return Feature.ECOLOGY();
 		}else if (key.equalsIgnoreCase("Diagnosis")){return Feature.DIAGNOSIS();
@@ -634,9 +631,6 @@ public final class ErmsTransformer extends InputTransformerBase {
 		}
 	}
 
-	/* (non-Javadoc)
-	 * @see eu.etaxonomy.cdm.io.common.mapping.InputTransformerBase#getFeatureUuid(java.lang.String)
-	 */
 	@Override
 	public UUID getFeatureUuid(String key)
 			throws UndefinedTransformerMethodException {
@@ -672,7 +666,4 @@ public final class ErmsTransformer extends InputTransformerBase {
 			return null;
 		}
 	}
-	
-	
-	
 }

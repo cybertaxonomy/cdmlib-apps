@@ -35,14 +35,17 @@ import eu.etaxonomy.cdm.model.location.NamedArea;
 import eu.etaxonomy.cdm.model.reference.Reference;
 import eu.etaxonomy.cdm.model.taxon.TaxonBase;
 
-
 /**
  * @author a.mueller
  * @since 20.02.2010
  */
 @Component
-public class ErmsDrImport  extends ErmsImportBase<Distribution> {
-	@SuppressWarnings("unused")
+public class ErmsDrImport
+        extends ErmsImportBase<Distribution> {
+
+    private static final long serialVersionUID = 6169103238671736935L;
+
+    @SuppressWarnings("unused")
 	private static final Logger logger = Logger.getLogger(ErmsDrImport.class);
 
 	private DbImportMapping<ErmsImportState, ErmsImportConfigurator> mapping;
@@ -64,11 +67,10 @@ public class ErmsDrImport  extends ErmsImportBase<Distribution> {
 		return strRecordQuery;
 	}
 
-
 	@Override
 	protected DbImportMapping<ErmsImportState, ErmsImportConfigurator> getMapping() {
 		if (mapping == null){
-			mapping = new DbImportMapping<ErmsImportState, ErmsImportConfigurator>();
+			mapping = new DbImportMapping<>();
 
 			PresenceAbsenceTerm status = PresenceAbsenceTerm.PRESENT();
 			DbImportDistributionCreationMapper<?> distributionMapper = DbImportDistributionCreationMapper.NewFixedStatusInstance("id", DR_NAMESPACE, "tu_acctaxon", ErmsTaxonImport.TAXON_NAMESPACE, status);
@@ -99,24 +101,21 @@ public class ErmsDrImport  extends ErmsImportBase<Distribution> {
 			mapping.addMapper(DbIgnoreMapper.NewInstance("endday"));
 			mapping.addMapper(DbIgnoreMapper.NewInstance("min_abundance"));
 			mapping.addMapper(DbIgnoreMapper.NewInstance("max_abundance"));
-
-
 		}
 		return mapping;
 	}
-
 
 	@Override
 	public Map<Object, Map<String, ? extends CdmBase>> getRelatedObjectsForPartition(ResultSet rs, ErmsImportState state) {
 		String nameSpace;
 		Class<?> cdmClass;
 		Set<String> idSet;
-		Map<Object, Map<String, ? extends CdmBase>> result = new HashMap<Object, Map<String, ? extends CdmBase>>();
+		Map<Object, Map<String, ? extends CdmBase>> result = new HashMap<>();
 
 		try{
-			Set<String> taxonIdSet = new HashSet<String>();
-			Set<String> areaIdSet = new HashSet<String>();
-			Set<String> sourceIdSet = new HashSet<String>();
+			Set<String> taxonIdSet = new HashSet<>();
+			Set<String> areaIdSet = new HashSet<>();
+			Set<String> sourceIdSet = new HashSet<>();
 			while (rs.next()){
 				handleForeignKey(rs, taxonIdSet,"tu_acctaxon" );
 				handleForeignKey(rs, areaIdSet, "gu_id");
@@ -124,26 +123,28 @@ public class ErmsDrImport  extends ErmsImportBase<Distribution> {
 			}
 
 			//taxon map
-			nameSpace = ErmsTaxonImport.TAXON_NAMESPACE;
+			nameSpace = ErmsImportBase.TAXON_NAMESPACE;
 			cdmClass = TaxonBase.class;
 			idSet = taxonIdSet;
-			Map<String, TaxonBase<?>> taxonMap = (Map<String, TaxonBase<?>>)getCommonService().getSourcedObjectsByIdInSource(cdmClass, idSet, nameSpace);
+			@SuppressWarnings("unchecked")
+            Map<String, TaxonBase<?>> taxonMap = (Map<String, TaxonBase<?>>)getCommonService().getSourcedObjectsByIdInSource(cdmClass, idSet, nameSpace);
 			result.put(nameSpace, taxonMap);
 
 			//areas
-			nameSpace = ErmsAreaImport.AREA_NAMESPACE;
+			nameSpace = ErmsImportBase.AREA_NAMESPACE;
 			cdmClass = NamedArea.class;
 			idSet = areaIdSet;
-			Map<String, NamedArea> areaMap = (Map<String, NamedArea>)getCommonService().getSourcedObjectsByIdInSource(cdmClass, idSet, nameSpace);
+			@SuppressWarnings("unchecked")
+            Map<String, NamedArea> areaMap = (Map<String, NamedArea>)getCommonService().getSourcedObjectsByIdInSource(cdmClass, idSet, nameSpace);
 			result.put(nameSpace, areaMap);
 
 			//reference map
-			nameSpace = ErmsReferenceImport.REFERENCE_NAMESPACE;
+			nameSpace = ErmsImportBase.REFERENCE_NAMESPACE;
 			cdmClass = Reference.class;
 			idSet = sourceIdSet;
-			Map<String, Reference> referenceMap = (Map<String, Reference>)getCommonService().getSourcedObjectsByIdInSource(cdmClass, idSet, nameSpace);
+			@SuppressWarnings("unchecked")
+            Map<String, Reference> referenceMap = (Map<String, Reference>)getCommonService().getSourcedObjectsByIdInSource(cdmClass, idSet, nameSpace);
 			result.put(nameSpace, referenceMap);
-
 
 		} catch (SQLException e) {
 			throw new RuntimeException(e);
@@ -161,33 +162,20 @@ public class ErmsDrImport  extends ErmsImportBase<Distribution> {
 		distribution.addSource(OriginalSourceType.PrimaryTaxonomicSource, null, null, ref, null);
 	}
 
-	/* (non-Javadoc)
-	 * @see eu.etaxonomy.cdm.io.common.mapping.IMappingImport#createObject(java.sql.ResultSet, eu.etaxonomy.cdm.io.common.ImportStateBase)
-	 */
-	public Distribution createObject(ResultSet rs, ErmsImportState state)
+    @SuppressWarnings("unused")
+    public Distribution createObject(ResultSet rs, ErmsImportState state)
 			throws SQLException {
 		return null;  //not needed
 	}
 
-
-	/* (non-Javadoc)
-	 * @see eu.etaxonomy.cdm.io.common.CdmIoBase#doCheck(eu.etaxonomy.cdm.io.common.IImportConfigurator)
-	 */
 	@Override
 	protected boolean doCheck(ErmsImportState state){
 		IOValidator<ErmsImportState> validator = new ErmsDrImportValidator();
 		return validator.validate(state);
 	}
 
-	/* (non-Javadoc)
-	 * @see eu.etaxonomy.cdm.io.common.CdmIoBase#isIgnore(eu.etaxonomy.cdm.io.common.IImportConfigurator)
-	 */
 	@Override
     protected boolean isIgnore(ErmsImportState state){
 		return ! state.getConfig().isDoOccurrence();
 	}
-
-
-
-
 }

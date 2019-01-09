@@ -17,10 +17,10 @@ import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
 import org.springframework.stereotype.Component;
 
-import eu.etaxonomy.cdm.common.CdmUtils;
 import eu.etaxonomy.cdm.io.common.IOValidator;
 import eu.etaxonomy.cdm.io.common.mapping.DbIgnoreMapper;
 import eu.etaxonomy.cdm.io.common.mapping.DbImportExtensionMapper;
@@ -51,8 +51,12 @@ import eu.etaxonomy.cdm.strategy.cache.name.TaxonNameDefaultCacheStrategy;
  * @since 20.02.2010
  */
 @Component
-public class ErmsTaxonImport  extends ErmsImportBase<TaxonBase<?>> implements IMappingImport<TaxonBase<?>, ErmsImportState>{
-	private static final Logger logger = Logger.getLogger(ErmsTaxonImport.class);
+public class ErmsTaxonImport
+        extends ErmsImportBase<TaxonBase<?>>
+        implements IMappingImport<TaxonBase<?>, ErmsImportState>{
+
+    private static final long serialVersionUID = -7111568277264140051L;
+    private static final Logger logger = Logger.getLogger(ErmsTaxonImport.class);
 
 	public static final UUID TNS_EXT_UUID = UUID.fromString("41cb0450-ac84-4d73-905e-9c7773c23b05");
 
@@ -66,11 +70,6 @@ public class ErmsTaxonImport  extends ErmsImportBase<TaxonBase<?>> implements IM
 		super(pluralString, dbTableName, cdmTargetClass);
 	}
 
-
-
-//	/* (non-Javadoc)
-//	 * @see eu.etaxonomy.cdm.io.erms.ErmsImportBase#getIdQuery()
-//	 */
 //	@Override
 //	protected String getIdQuery() {
 //		String strQuery = " SELECT id FROM tu WHERE id < 300000 " ;
@@ -78,9 +77,6 @@ public class ErmsTaxonImport  extends ErmsImportBase<TaxonBase<?>> implements IM
 //	}
 
 
-	/* (non-Javadoc)
-	 * @see eu.etaxonomy.cdm.io.erms.ErmsImportBase#getMapping()
-	 */
 	@Override
     protected DbImportMapping<ErmsImportState, ErmsImportConfigurator> getMapping() {
 		if (mapping == null){
@@ -123,18 +119,13 @@ public class ErmsTaxonImport  extends ErmsImportBase<TaxonBase<?>> implements IM
 			mapping.addMapper(DbNotYetImplementedMapper.NewInstance("tu_sp", "included in rank/object creation"));
 			mapping.addMapper(DbIgnoreMapper.NewInstance("cache_citation", "Needs check if this is needed in PESI"));
 
-
 			//ignore
 			mapping.addMapper(DbIgnoreMapper.NewInstance("tu_fossil", "tu_fossil implemented as foreign key"));
 
 		}
-
 		return mapping;
 	}
 
-	/* (non-Javadoc)
-	 * @see eu.etaxonomy.cdm.io.berlinModel.in.BerlinModelImportBase#getRecordQuery(eu.etaxonomy.cdm.io.berlinModel.in.BerlinModelImportConfigurator)
-	 */
 	@Override
 	protected String getRecordQuery(ErmsImportConfigurator config) {
 		String strSelect = " SELECT tu.*, parent1.tu_name AS parent1name, parent2.tu_name AS parent2name, parent3.tu_name AS parent3name, "
@@ -151,10 +142,6 @@ public class ErmsTaxonImport  extends ErmsImportBase<TaxonBase<?>> implements IM
 		return strRecordQuery;
 	}
 
-
-	/* (non-Javadoc)
-	 * @see eu.etaxonomy.cdm.io.erms.ErmsImportBase#doInvoke(eu.etaxonomy.cdm.io.erms.ErmsImportState)
-	 */
 	@Override
 	protected void doInvoke(ErmsImportState state) {
 		state.setAcceptedTaxaKeys(getAcceptedTaxaKeys(state));
@@ -162,10 +149,7 @@ public class ErmsTaxonImport  extends ErmsImportBase<TaxonBase<?>> implements IM
 		//first path
 		super.doInvoke(state);
 		return;
-
 	}
-
-
 
 	private Set<Integer> getAcceptedTaxaKeys(ErmsImportState state) {
 		Set<Integer> result = new HashSet<Integer>();
@@ -201,20 +185,16 @@ public class ErmsTaxonImport  extends ErmsImportBase<TaxonBase<?>> implements IM
 		}
 	}
 
-
-
 	@Override
 	public Map<Object, Map<String, ? extends CdmBase>> getRelatedObjectsForPartition(ResultSet rs, ErmsImportState state) {
-		String nameSpace;
-		Class<?> cdmClass;
-		Set<String> idSet;
-		Map<Object, Map<String, ? extends CdmBase>> result = new HashMap<Object, Map<String, ? extends CdmBase>>();
+//		String nameSpace;
+//		Class<?> cdmClass;
+//		Set<String> idSet;
+		Map<Object, Map<String, ? extends CdmBase>> result = new HashMap<>();
 
 		try{
-				Set<String> nameIdSet = new HashSet<String>();
-				Set<String> referenceIdSet = new HashSet<String>();
+//				Set<String> referenceIdSet = new HashSet<>();
 				while (rs.next()){
-	//				handleForeignKey(rs, nameIdSet, "PTNameFk");
 	//				handleForeignKey(rs, referenceIdSet, "PTRefFk");
 				}
 
@@ -301,8 +281,6 @@ public class ErmsTaxonImport  extends ErmsImportBase<TaxonBase<?>> implements IM
 		}
 	}
 
-
-
 	private void handleNotAcceptedTaxon(Taxon taxon, int statusId, ErmsImportState state, ResultSet rs) throws SQLException {
 		ExtensionType notAccExtensionType = getExtensionType(state, ErmsTransformer.uuidErmsTaxonStatus, "ERMS taxon status", "ERMS taxon status", "status", null);
 		String statusName = rs.getString("status_name");
@@ -311,8 +289,6 @@ public class ErmsTaxonImport  extends ErmsImportBase<TaxonBase<?>> implements IM
 			taxon.addExtension(statusName, notAccExtensionType);
 		}
 	}
-
-
 
 	/**
 	 * @param parent1Rank
@@ -325,8 +301,6 @@ public class ErmsTaxonImport  extends ErmsImportBase<TaxonBase<?>> implements IM
 		taxonName.setNameCache(displayName);
 	}
 
-
-
 	/**
 	 * @param displayName
 	 * @return
@@ -335,8 +309,6 @@ public class ErmsTaxonImport  extends ErmsImportBase<TaxonBase<?>> implements IM
 		int index = displayName.indexOf("[");
 		return (index > -1);
 	}
-
-
 
 	/**
 	 * @param parent1Name
@@ -401,7 +373,7 @@ public class ErmsTaxonImport  extends ErmsImportBase<TaxonBase<?>> implements IM
 		Integer result = null;
 		String treeString = rs.getString("tu_sp");
 		if (treeString != null){
-			if (CdmUtils.isNotEmpty(treeString) && treeString.length() > 1){
+			if (StringUtils.isNotBlank(treeString) && treeString.length() > 1){
 				String strKingdom = treeString.substring(1,2);
 
 				if (! treeString.substring(0, 1).equals("#") && ! treeString.substring(2, 3).equals("#") ){
@@ -421,25 +393,14 @@ public class ErmsTaxonImport  extends ErmsImportBase<TaxonBase<?>> implements IM
 		return result;
 	}
 
-
-	/* (non-Javadoc)
-	 * @see eu.etaxonomy.cdm.io.common.CdmIoBase#doCheck(eu.etaxonomy.cdm.io.common.IImportConfigurator)
-	 */
 	@Override
 	protected boolean doCheck(ErmsImportState state){
 		IOValidator<ErmsImportState> validator = new ErmsTaxonImportValidator();
 		return validator.validate(state);
 	}
 
-
-	/* (non-Javadoc)
-	 * @see eu.etaxonomy.cdm.io.common.CdmIoBase#isIgnore(eu.etaxonomy.cdm.io.common.IImportConfigurator)
-	 */
 	@Override
     protected boolean isIgnore(ErmsImportState state){
 		return ! state.getConfig().isDoTaxa();
 	}
-
-
-
 }

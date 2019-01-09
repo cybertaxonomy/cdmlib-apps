@@ -2296,7 +2296,7 @@ public final class PesiTransformer extends ExportTransformerBase implements IExp
 	 * @param StatusCache
 	 * @return
 	 */
-	public Integer StatusCache2StatusFk(String StatusCache) {
+	public Integer statusCache2StatusFk(String StatusCache) {
 		Integer result = null;
 		if (StatusCache.equalsIgnoreCase("Checked by Taxonomic Editor: included in ERMS 1.1")) {
 			return 0;
@@ -2318,7 +2318,7 @@ public final class PesiTransformer extends ExportTransformerBase implements IExp
 	 * @param fossilStatusCache
 	 * @return
 	 */
-	public Integer FossilStatusCache2FossilStatusFk(String fossilStatusCache) {
+	public Integer fossilStatusCache2FossilStatusFk(String fossilStatusCache) {
 		Integer result = null;
 		if (fossilStatusCache.equalsIgnoreCase("recent only")) {
 			return 1;

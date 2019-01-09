@@ -1,8 +1,8 @@
 /**
 * Copyright (C) 2007 EDIT
-* European Distributed Institute of Taxonomy 
+* European Distributed Institute of Taxonomy
 * http://www.e-taxonomy.eu
-* 
+*
 * The contents of this file are subject to the Mozilla Public License Version 1.1
 * See LICENSE.TXT at the top of this package for the full license terms.
 */
@@ -15,7 +15,6 @@ import org.apache.log4j.Logger;
 
 import eu.etaxonomy.cdm.database.ICdmDataSource;
 import eu.etaxonomy.cdm.io.common.DbImportConfiguratorBase;
-import eu.etaxonomy.cdm.io.common.IImportConfigurator;
 import eu.etaxonomy.cdm.io.common.ImportStateBase;
 import eu.etaxonomy.cdm.io.common.Source;
 import eu.etaxonomy.cdm.io.common.mapping.IInputTransformer;
@@ -28,10 +27,12 @@ import eu.etaxonomy.cdm.model.reference.ReferenceFactory;
 /**
  * @author a.mueller
  * @since 20.03.2008
- * @version 1.0
  */
-public class ErmsImportConfigurator extends DbImportConfiguratorBase<ErmsImportState> implements IImportConfigurator{
-	@SuppressWarnings("unused")
+public class ErmsImportConfigurator
+        extends DbImportConfiguratorBase<ErmsImportState>{
+    private static final long serialVersionUID = 5434106058744720246L;
+
+    @SuppressWarnings("unused")
 	private static Logger logger = Logger.getLogger(ErmsImportConfigurator.class);
 
 	public static ErmsImportConfigurator NewInstance(Source ermsSource, ICdmDataSource destination){
@@ -43,7 +44,7 @@ public class ErmsImportConfigurator extends DbImportConfiguratorBase<ErmsImportS
 
 	//TODO needed ??
 	private Method userTransformationMethod;
-	
+
 	private boolean doVernaculars = true;
 	private boolean doLinks = true;
 	private boolean doNotes = true;
@@ -53,10 +54,11 @@ public class ErmsImportConfigurator extends DbImportConfiguratorBase<ErmsImportS
 	private boolean doTaxa = true;
 	private boolean doRelTaxa = true;
 
-	
+
 	private static IInputTransformer defaultTransformer = new ErmsTransformer();
-	
-	protected void makeIoClassList(){
+
+	@Override
+    protected void makeIoClassList(){
 		ioClassList = new Class[]{
 				ErmsGeneralImportValidator.class
 				, ErmsImportRankMap.class
@@ -67,20 +69,21 @@ public class ErmsImportConfigurator extends DbImportConfiguratorBase<ErmsImportS
 				, ErmsNotesImport.class
 				, ErmsVernacularSourcesImport.class
 				, ErmsNotesSourcesImport.class
-				
+
 				, ErmsAreaImport.class
 				, ErmsDrImport.class
 				, ErmsSourceUsesImport.class
 				, ErmsLinkImport.class  //kann weiter hoch
 				, ErmsImageImport.class
-		};	
+		};
 	}
-	
+
 
 	/* (non-Javadoc)
 	 * @see eu.etaxonomy.cdm.io.common.IImportConfigurator#getNewState()
 	 */
-	public ImportStateBase getNewState() {
+	@Override
+    public ImportStateBase getNewState() {
 		return new ErmsImportState(this);
 	}
 
@@ -94,19 +97,22 @@ public class ErmsImportConfigurator extends DbImportConfiguratorBase<ErmsImportS
 	private ErmsImportConfigurator(Source ermsSource, ICdmDataSource destination) {
 	   super(ermsSource, destination, NomenclaturalCode.ICZN, defaultTransformer);//default for ERMS
 	}
-	
-	
-	public Source getSource() {
-		return (Source)super.getSource();
+
+
+	@Override
+    public Source getSource() {
+		return super.getSource();
 	}
-	public void setSource(Source berlinModelSource) {
+	@Override
+    public void setSource(Source berlinModelSource) {
 		super.setSource(berlinModelSource);
 	}
 
 	/* (non-Javadoc)
 	 * @see eu.etaxonomy.cdm.io.tcsrdf.IImportConfigurator#getSourceReference()
 	 */
-	public Reference getSourceReference() {
+	@Override
+    public Reference getSourceReference() {
 		if (sourceReference == null){
 			sourceReference =  ReferenceFactory.newDatabase();
 			if (getSource() != null){
@@ -123,7 +129,8 @@ public class ErmsImportConfigurator extends DbImportConfiguratorBase<ErmsImportS
 	/* (non-Javadoc)
 	 * @see eu.etaxonomy.cdm.io.common.IImportConfigurator#getSourceNameString()
 	 */
-	public String getSourceNameString() {
+	@Override
+    public String getSourceNameString() {
 		if (this.getSource() == null){
 			return null;
 		}else{
@@ -134,29 +141,33 @@ public class ErmsImportConfigurator extends DbImportConfiguratorBase<ErmsImportS
 	/**
 	 * @return the userTransformationMethod
 	 */
-	public Method getUserTransformationMethod() {
+	@Override
+    public Method getUserTransformationMethod() {
 		return userTransformationMethod;
 	}
 
 	/**
 	 * @param userTransformationMethod the userTransformationMethod to set
 	 */
-	public void setUserTransformationMethod(Method userTransformationMethod) {
+	@Override
+    public void setUserTransformationMethod(Method userTransformationMethod) {
 		this.userTransformationMethod = userTransformationMethod;
 	}
 
-	
+
 	/**
 	 * @return the limitSave
 	 */
-	public int getRecordsPerTransaction() {
+	@Override
+    public int getRecordsPerTransaction() {
 		return recordsPerTransaction;
 	}
 
 	/**
 	 * @param limitSave the limitSave to set
 	 */
-	public void setRecordsPerTransaction(int recordsPerTransaction) {
+	@Override
+    public void setRecordsPerTransaction(int recordsPerTransaction) {
 		this.recordsPerTransaction = recordsPerTransaction;
 	}
 
@@ -227,16 +238,16 @@ public class ErmsImportConfigurator extends DbImportConfiguratorBase<ErmsImportS
 	public boolean isDoImages() {
 		return doImages;
 	}
-	
-	
+
+
 	public boolean isDoOccurrence() {
 		return doOccurrence;
 	}
 	public void setDoOccurrence(boolean doOccurrence) {
 		this.doOccurrence = doOccurrence;
 	}
-	
-	
+
+
 	public DO_REFERENCES getDoReferences() {
 		return doReferences;
 	}

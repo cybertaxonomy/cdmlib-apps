@@ -1,8 +1,8 @@
 /**
 * Copyright (C) 2007 EDIT
-* European Distributed Institute of Taxonomy 
+* European Distributed Institute of Taxonomy
 * http://www.e-taxonomy.eu
-* 
+*
 * The contents of this file are subject to the Mozilla Public License Version 1.1
 * See LICENSE.TXT at the top of this package for the full license terms.
 */
@@ -34,20 +34,20 @@ import eu.etaxonomy.cdm.model.common.Language;
 import eu.etaxonomy.cdm.model.description.CommonTaxonName;
 import eu.etaxonomy.cdm.model.taxon.TaxonBase;
 
-
 /**
  * @author a.mueller
  * @since 20.02.2010
  */
 @Component
 public class ErmsVernacularImport  extends ErmsImportBase<CommonTaxonName> {
-	@SuppressWarnings("unused")
+
+    private static final long serialVersionUID = -5928250782824234181L;
+
 	private static final Logger logger = Logger.getLogger(ErmsVernacularImport.class);
 
 	private DbImportMapping<ErmsImportState, ErmsImportConfigurator> mapping;
-	private ErmsImportState state;   //import instance is never used more than once for Erms ; dirty
-	
-	
+//	private ErmsImportState state;   //import instance is never used more than once for Erms ; dirty
+
 	private static final String pluralString = "vernaculars";
 	private static final String dbTableName = "vernaculars";
 	private static final Class<?> cdmTargetClass = CommonTaxonName.class;
@@ -58,8 +58,8 @@ public class ErmsVernacularImport  extends ErmsImportBase<CommonTaxonName> {
 
 	@Override
 	protected String getRecordQuery(ErmsImportConfigurator config) {
-		String strRecordQuery = 
-			" SELECT vernaculars.*, tu.tu_acctaxon, tu.id  " + 
+		String strRecordQuery =
+			" SELECT vernaculars.*, tu.tu_acctaxon, tu.id  " +
 			" FROM vernaculars INNER JOIN tu ON vernaculars.tu_id = tu.id  " +
 			" WHERE ( vernaculars.id IN (" + ID_LIST_TOKEN + ") )";
 		return strRecordQuery;
@@ -69,9 +69,9 @@ public class ErmsVernacularImport  extends ErmsImportBase<CommonTaxonName> {
 	protected DbImportMapping<ErmsImportState, ErmsImportConfigurator> getMapping() {
 		if (mapping == null){
 			mapping = new DbImportMapping<ErmsImportState, ErmsImportConfigurator>();
-			
-			mapping.addMapper(DbImportCommonNameCreationMapper.NewInstance("id", VERNACULAR_NAMESPACE, "tu_id", ErmsTaxonImport.TAXON_NAMESPACE));
-			
+
+			mapping.addMapper(DbImportCommonNameCreationMapper.NewInstance("id", VERNACULAR_NAMESPACE, "tu_id", ErmsImportBase.TAXON_NAMESPACE));
+
 			mapping.addMapper(DbImportObjectMapper.NewInstance("lan_id", "language", LANGUAGE_NAMESPACE));
 			mapping.addMapper(DbImportStringMapper.NewInstance("vername", "name"));
 			mapping.addMapper(DbImportAnnotationMapper.NewInstance("note", AnnotationType.EDITORIAL(), Language.DEFAULT()));
@@ -81,35 +81,35 @@ public class ErmsVernacularImport  extends ErmsImportBase<CommonTaxonName> {
 
 	@Override
 	protected void doInvoke(ErmsImportState state) {
-		this.state = state;
 		super.doInvoke(state);
 	}
-	
+
 	@Override
 	public Map<Object, Map<String, ? extends CdmBase>> getRelatedObjectsForPartition(ResultSet rs, ErmsImportState state) {
 		String nameSpace;
 		Class<?> cdmClass;
 		Set<String> idSet;
-		Map<Object, Map<String, ? extends CdmBase>> result = new HashMap<Object, Map<String, ? extends CdmBase>>();
-		
+		Map<Object, Map<String, ? extends CdmBase>> result = new HashMap<>();
+
 		try{
-			Set<String> taxonIdSet = new HashSet<String>();
-			Set<String> languageIdSet = new HashSet<String>();
+			Set<String> taxonIdSet = new HashSet<>();
+			Set<String> languageIdSet = new HashSet<>();
 			while (rs.next()){
 				handleForeignKey(rs, taxonIdSet, "tu_id");
 				handleForeignKey(rs, languageIdSet, "lan_id");
 			}
-			
+
 			//taxon map
-			nameSpace = ErmsTaxonImport.TAXON_NAMESPACE;
+			nameSpace = ErmsImportBase.TAXON_NAMESPACE;
 			cdmClass = TaxonBase.class;
 			idSet = taxonIdSet;
-			Map<String, TaxonBase<?>> taxonMap = (Map<String, TaxonBase<?>>)getCommonService().getSourcedObjectsByIdInSource(cdmClass, idSet, nameSpace);
+			@SuppressWarnings("unchecked")
+            Map<String, TaxonBase<?>> taxonMap = (Map<String, TaxonBase<?>>)getCommonService().getSourcedObjectsByIdInSource(cdmClass, idSet, nameSpace);
 			result.put(nameSpace, taxonMap);
-			
+
 			//language map
 			nameSpace = LANGUAGE_NAMESPACE;
-			Map<String, Language> languageMap = new HashMap<String, Language>();
+			Map<String, Language> languageMap = new HashMap<>();
 			ErmsTransformer transformer = new ErmsTransformer();
 			for (String lanAbbrev: languageIdSet){
 				Language language = null;
@@ -119,13 +119,13 @@ public class ErmsVernacularImport  extends ErmsImportBase<CommonTaxonName> {
 						UUID uuidLang = transformer.getLanguageUuid(lanAbbrev);
 						if (uuidLang != null){
 							language = getLanguage(state, uuidLang, lanAbbrev, lanAbbrev, lanAbbrev);
-							
+
 						}
 						if (language == null || language.equals(Language.UNDETERMINED() )){
 							logger.warn("Langauge undefined: " + lanAbbrev);
 						}
 					}
-					
+
 				} catch (IllegalArgumentException e) {
 					e.printStackTrace();
 				} catch (UndefinedTransformerMethodException e) {
@@ -134,23 +134,21 @@ public class ErmsVernacularImport  extends ErmsImportBase<CommonTaxonName> {
 				languageMap.put(lanAbbrev, language);
 			}
 			result.put(nameSpace, languageMap);
-			
+
 		} catch (SQLException e) {
 			throw new RuntimeException(e);
 		}
 		return result;
 	}
-	
+
 	@Override
 	protected boolean doCheck(ErmsImportState state){
 		IOValidator<ErmsImportState> validator = new ErmsVernacularImportValidator();
 		return validator.validate(state);
 	}
-	
-	
+
 	@Override
 	protected boolean isIgnore(ErmsImportState state){
 		return ! state.getConfig().isDoVernaculars();
 	}
-
 }

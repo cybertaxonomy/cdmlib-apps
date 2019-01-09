@@ -20,6 +20,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
 import org.joda.time.DateTime;
 
@@ -71,14 +72,10 @@ public abstract class ErmsImportBase<CDM_BASE extends CdmBase>
 	protected static final String FEATURE_NAMESPACE = "note.type";
 	protected static final String EXTENSION_TYPE_NAMESPACE = "ExtensionType";
 
-
-
 	private String pluralString;
 	private String dbTableName;
 	//TODO needed?
 	private Class cdmTargetClass;
-
-
 
 	/**
 	 * @param dbTableName
@@ -103,7 +100,7 @@ public abstract class ErmsImportBase<CDM_BASE extends CdmBase>
 		recordsPerTransaction = recordsPerTransaction / divideCountBy();
 
 		try{
-			ResultSetPartitioner partitioner = ResultSetPartitioner.NewInstance(source, strIdQuery, strRecordQuery, recordsPerTransaction);
+			ResultSetPartitioner<ErmsImportState> partitioner = ResultSetPartitioner.NewInstance(source, strIdQuery, strRecordQuery, recordsPerTransaction);
 			while (partitioner.nextPartition()){
 				partitioner.doPartition(this, state);
 			}
@@ -120,7 +117,7 @@ public abstract class ErmsImportBase<CDM_BASE extends CdmBase>
 	@Override
     public boolean doPartition(ResultSetPartitioner partitioner, ErmsImportState state) {
 		boolean success = true ;
-		Set<CdmBase> objectsToSave = new HashSet<CdmBase>();
+		Set<CdmBase> objectsToSave = new HashSet<>();
 
  		DbImportMapping<?, ?> mapping = getMapping();
 		mapping.initialize(state, cdmTargetClass);
@@ -160,9 +157,6 @@ public abstract class ErmsImportBase<CDM_BASE extends CdmBase>
 		return result;
 	}
 
-	/* (non-Javadoc)
-	 * @see eu.etaxonomy.cdm.io.berlinModel.in.IPartitionedIO#getPluralString()
-	 */
 	@Override
     public String getPluralString(){
 		return pluralString;
@@ -184,7 +178,6 @@ public abstract class ErmsImportBase<CDM_BASE extends CdmBase>
 		success &= doCreatedUpdatedNotes(state, identifiableEntity, rs, namespace);
 		return success;
 	}
-
 
 	protected boolean doCreatedUpdatedNotes(ErmsImportState state, AnnotatableEntity annotatableEntity, ResultSet rs, String namespace)
 			throws SQLException{
@@ -231,7 +224,7 @@ public abstract class ErmsImportBase<CDM_BASE extends CdmBase>
 
 
 		//notes
-		if (CdmUtils.isNotEmpty(notes)){
+		if (StringUtils.isNotBlank(notes)){
 			String notesString = String.valueOf(notes);
 			if (notesString.length() > 65530 ){
 				notesString = notesString.substring(0, 65530) + "...";
@@ -246,7 +239,7 @@ public abstract class ErmsImportBase<CDM_BASE extends CdmBase>
 	}
 
 	private User getUser(String userString, ErmsImportState state){
-		if (CdmUtils.isEmpty(userString)){
+		if (StringUtils.isBlank(userString)){
 			return null;
 		}
 		userString = userString.trim();
@@ -351,7 +344,7 @@ public abstract class ErmsImportBase<CDM_BASE extends CdmBase>
 	 */
 	protected Map<String, Object> getValueMap(ResultSet rs) throws SQLException{
 		try{
-			Map<String, Object> valueMap = new HashMap<String, Object>();
+			Map<String, Object> valueMap = new HashMap<>();
 			int colCount = rs.getMetaData().getColumnCount();
 			for (int c = 0; c < colCount ; c++){
 				Object value = rs.getObject(c+1);

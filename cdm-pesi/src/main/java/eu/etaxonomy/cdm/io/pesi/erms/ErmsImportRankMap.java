@@ -18,7 +18,6 @@ import org.apache.log4j.Logger;
 import org.springframework.stereotype.Component;
 
 import eu.etaxonomy.cdm.io.common.IOValidator;
-import eu.etaxonomy.cdm.io.common.ImportResult;
 import eu.etaxonomy.cdm.io.common.Source;
 import eu.etaxonomy.cdm.io.common.mapping.DbImportMapping;
 import eu.etaxonomy.cdm.io.pesi.erms.validation.ErmsRankImportValidator;
@@ -51,7 +50,7 @@ public class ErmsImportRankMap extends ErmsImportBase<Rank>{
 
 
 	@Override
-	public ImportResult invoke (ErmsImportState state){
+	public void invoke (ErmsImportState state){
 		rankMap = new HashMap<>();
 		Source source = state.getConfig().getSource() ;
 		String strSQL = " SELECT * FROM ranks ";
@@ -86,7 +85,7 @@ public class ErmsImportRankMap extends ErmsImportBase<Rank>{
 			throw new RuntimeException(e);
 		}
 		state.setRankMap(rankMap);
-		return state.getResult();
+		return ; //state.getResult();
 	}
 
 	/**
