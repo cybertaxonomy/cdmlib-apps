@@ -1,8 +1,8 @@
 /**
 * Copyright (C) 2007 EDIT
-* European Distributed Institute of Taxonomy 
+* European Distributed Institute of Taxonomy
 * http://www.e-taxonomy.eu
-* 
+*
 * The contents of this file are subject to the Mozilla Public License Version 1.1
 * See LICENSE.TXT at the top of this package for the full license terms.
 */
@@ -22,7 +22,7 @@ import eu.etaxonomy.cdm.io.common.Source;
 public class PesiSources {
 	@SuppressWarnings("unused")
 	private static final Logger logger = Logger.getLogger(PesiSources.class);
-	
+
 	public static Source faunEu_pesi3(){
 		//	Fauna Europaea auf pesiimport3
 		String dbms = Source.SQL_SERVER_2008;
@@ -32,7 +32,7 @@ public class PesiSources {
 		String userName = "pesiExportFaunaEu";
 		return  ImportUtils.makeSource(dbms, strServer, strDB, port, userName, null);
 	}
-	
+
 	public static Source mfn_faunEu_pesi3(){
 		//	Fauna Europaea auf pesiimport3
 		String dbms = Source.SQL_SERVER_2008;
@@ -42,7 +42,7 @@ public class PesiSources {
 		String userName = "pesiExportFaunaEu";
 		return  ImportUtils.makeSource(dbms, strServer, strDB, port, userName, null);
 	}
-	
+
 	public static Source faunEu(){
 		//	Fauna Europaea
 		String dbms = Source.SQL_SERVER_2008;
@@ -52,7 +52,7 @@ public class PesiSources {
 		String userName = "WebUser";
 		return  ImportUtils.makeSource(dbms, strServer, strDB, port, userName, null);
 	}
-	
+
 	public static Source faunaEu_previous(){
 		//	Fauna Europaea
 		String dbms = Source.SQL_SERVER_2008;
@@ -71,7 +71,7 @@ public class PesiSources {
 		String userName = "WebUser";
 		return  ImportUtils.makeSource(dbms, strServer, strDB, port, userName, null);
 	}
-	
+
 	public static Source PESI_ERMS(){
 		//	BerlinModel - Pesi-ERMS
 		String dbms = Source.SQL_SERVER_2008;
@@ -81,8 +81,8 @@ public class PesiSources {
 		String userName = "WebUser";
 		return  makeSource(dbms, strServer, strDB, port, userName, null);
 	}
-	
-	
+
+
 	public static Source PESI3_ERMS(){
 		//	BerlinModel - Pesi-ERMS
 		String dbms = Source.SQL_SERVER_2008;
@@ -92,7 +92,17 @@ public class PesiSources {
 		String userName = "pesiexport";
 		return  makeSource(dbms, strServer, strDB, port, userName, null);
 	}
-	
+
+   public static Source PESI2019_ERMS(){
+        //  BerlinModel - Pesi-ERMS
+        String dbms = Source.SQL_SERVER_2008;
+        String strServer = "BGBM-PESISQL\\SQLEXPRESS";
+        String strDB = "erms";
+        int port = 1434;
+        String userName = "pesiimport";
+        return  makeSource(dbms, strServer, strDB, port, userName, null);
+    }
+
 	public static Source PESI3_IF(){
 		//	BerlinModel - Pesi-ERMS
 		String dbms = Source.SQL_SERVER_2008;
@@ -102,7 +112,7 @@ public class PesiSources {
 		String userName = "pesiExportFaunaEu";
 		return  makeSource(dbms, strServer, strDB, port, userName, null);
 	}
-	
+
 	public static Source PESI_IF(){
 		//	BerlinModel - Pesi-IF
 		String dbms = Source.SQL_SERVER_2008;
@@ -112,7 +122,7 @@ public class PesiSources {
 		String userName = "WebUser";
 		return  makeSource(dbms, strServer, strDB, port, userName, null);
 	}
-	
+
 	/**
 	 * Initializes the source.
 	 * @param dbms
@@ -128,12 +138,12 @@ public class PesiSources {
 		Source source = null;
 		source = new Source(dbms, strServer, strDB);
 		source.setPort(port);
-			
+
 		pwd = AccountStore.readOrStorePassword(dbms, strServer, userName, pwd);
 		source.setUserAndPwd(userName, pwd);
 		// write pwd to account store
 		return source;
 	}
 
-	
+
 }

@@ -41,7 +41,8 @@ public class ErmsActivator {
 
 	//database validation status (create, update, validate ...)
 	static DbSchemaValidation hbm2dll = DbSchemaValidation.CREATE;
-	static final Source ermsSource = PesiSources.PESI3_ERMS();
+//	static final Source ermsSource = PesiSources.PESI3_ERMS();
+	static final Source ermsSource = PesiSources.PESI2019_ERMS();
 //	static final ICdmDataSource cdmDestination = CdmDestinations.cdm_pesi_erms();
 	static final ICdmDataSource cdmDestination = CdmDestinations.cdm_test_local_mysql_erms();
 	static final UUID treeUuid = UUID.fromString("6fa988a9-10b7-48b0-a370-2586fbc066eb");

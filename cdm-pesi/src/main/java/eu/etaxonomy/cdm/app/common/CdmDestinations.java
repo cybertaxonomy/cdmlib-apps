@@ -52,17 +52,8 @@ public class CdmDestinations {
 	public static ICdmDataSource cdm_test_local_mysql_erms(){
 		DatabaseTypeEnum dbType = DatabaseTypeEnum.MySQL;
 		String cdmServer = "127.0.0.1";
-		String cdmDB = "erms";
-		String cdmUserName = "root";
-		return CdmDestinations.makeDestination(dbType, cdmServer, cdmDB, -1, cdmUserName, null);
-	}
-
-
-	public static ICdmDataSource cdm_test_local_mysql_erms2(){
-		DatabaseTypeEnum dbType = DatabaseTypeEnum.MySQL;
-		String cdmServer = "127.0.0.1";
-		String cdmDB = "erms2";
-		String cdmUserName = "root";
+		String cdmDB = "pesi_erms";
+		String cdmUserName = "edit";
 		return CdmDestinations.makeDestination(dbType, cdmServer, cdmDB, -1, cdmUserName, null);
 	}
 
