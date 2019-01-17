@@ -410,7 +410,4 @@ public abstract class ErmsImportBase<CDM_BASE extends CdmBase>
 		if ((count % recordsPerLog ) == 0 && count!= 0 ){ logger.info(pluralString + " handled: " + (count));}
 	}
 
-
-
-
 }

@@ -58,7 +58,7 @@ public class ErmsTaxonRelationImport extends ErmsImportBase<TaxonBase<?>> implem
 	@Override
 	protected DbImportMapping<ErmsImportState, ErmsImportConfigurator> getMapping() {
 		if (mapping == null){
-			mapping = new DbImportMapping<ErmsImportState, ErmsImportConfigurator>();
+			mapping = new DbImportMapping<>();
 
 			mapping.addMapper(DbImportTaxIncludedInMapper.NewInstance("id", TAXON_NAMESPACE, "parentId", TAXON_NAMESPACE, "accParentId", TAXON_NAMESPACE, null));//there is only one tree
 

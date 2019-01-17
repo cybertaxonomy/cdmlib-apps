@@ -110,8 +110,6 @@ public final class ErmsTransformer extends InputTransformerBase {
 	public static final UUID uuidIsraeliExclusiveEconomicZoneMediterranean = UUID.fromString("d947e1c1-6d7b-47e1-ad91-703d15c5c55b");
 	public static final UUID uuidPolishExclusiveEconomicZone = UUID.fromString("dc7f8339-528b-49ec-a8d9-c2be0441e933");
 
-
-
 	//feature uuids
 	public static final UUID uuidRemark = UUID.fromString("648eab77-8469-4139-bbf4-3fb26ec15864");
 	public static final UUID uuidAdditionalinformation = UUID.fromString("ef00c304-ce33-45ef-9543-0b9336a2b6eb");
@@ -202,12 +200,6 @@ public final class ErmsTransformer extends InputTransformerBase {
 
 	}
 
-
-
-
-	/* (non-Javadoc)
-	 * @see eu.etaxonomy.cdm.io.common.mapping.InputTransformerBase#getNameTypeDesignationStatusByKey(java.lang.String)
-	 */
 	@Override
 	public NameTypeDesignationStatus getNameTypeDesignationStatusByKey(String key) throws UndefinedTransformerMethodException {
 		if (key == null){
@@ -225,22 +217,15 @@ public final class ErmsTransformer extends InputTransformerBase {
 		}
 	}
 
-
-
-
-	/* (non-Javadoc)
-	 * @see eu.etaxonomy.cdm.io.common.mapping.InputTransformerBase#getNameTypeDesignationStatusUuid(java.lang.String)
-	 */
 	@Override
 	public UUID getNameTypeDesignationStatusUuid(String key) throws UndefinedTransformerMethodException {
 		//nott needed
 		return super.getNameTypeDesignationStatusUuid(key);
 	}
 
-
 	@Override
     public Language getLanguageByKey(String ermsAbbrev) throws IllegalArgumentException {
-		Set<String> unhandledLanguages = new HashSet<String>();
+		Set<String> unhandledLanguages = new HashSet<>();
 		if (StringUtils.isBlank(ermsAbbrev)){return null;
 		}else if (ermsAbbrev.equals("ab")){return Language.ALBANIAN();
 		}else if (ermsAbbrev.equals("af")){return Language.AFRIKAANS();
@@ -394,9 +379,6 @@ public final class ErmsTransformer extends InputTransformerBase {
 		}
 	}
 
-	/* (non-Javadoc)
-	 * @see eu.etaxonomy.cdm.io.common.mapping.InputTransformerBase#getLanguageUuid(java.lang.String)
-	 */
 	@Override
 	public UUID getLanguageUuid(String key) throws UndefinedTransformerMethodException {
 		if (key == null){
@@ -423,11 +405,6 @@ public final class ErmsTransformer extends InputTransformerBase {
 		return super.getLanguageUuid(key);
 	}
 
-
-
-	/* (non-Javadoc)
-	 * @see eu.etaxonomy.cdm.io.common.mapping.InputTransformerBase#getExtensionTypeByKey(java.lang.String)
-	 */
 	@Override
 	public ExtensionType getExtensionTypeByKey(String key) throws UndefinedTransformerMethodException {
 		if (key == null){return null;
@@ -435,9 +412,6 @@ public final class ErmsTransformer extends InputTransformerBase {
 		return null;
 	}
 
-	/* (non-Javadoc)
-	 * @see eu.etaxonomy.cdm.io.common.mapping.InputTransformerBase#getExtensionTypeUuid(java.lang.String)
-	 */
 	@Override
 	public UUID getExtensionTypeUuid(String key)
 			throws UndefinedTransformerMethodException {
@@ -517,7 +491,6 @@ public final class ErmsTransformer extends InputTransformerBase {
 		}
 	}
 
-
 	public static UUID uuidFromGuId(Integer guId){
 		if (guId == null){return null;
 		}else if (guId == 7788){ return uuidEuropeanMarineWaters;
@@ -575,7 +548,6 @@ public final class ErmsTransformer extends InputTransformerBase {
 		}else{
 			throw new IllegalArgumentException("Unknown area id " + guId);
 		}
-
 	}
 
 	public static Feature noteType2Feature(String type){
