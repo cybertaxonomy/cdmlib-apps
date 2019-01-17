@@ -1,8 +1,8 @@
 /**
 * Copyright (C) 2007 EDIT
-* European Distributed Institute of Taxonomy 
+* European Distributed Institute of Taxonomy
 * http://www.e-taxonomy.eu
-* 
+*
 * The contents of this file are subject to the Mozilla Public License Version 1.1
 * See LICENSE.TXT at the top of this package for the full license terms.
 */
@@ -18,18 +18,16 @@ import eu.etaxonomy.cdm.io.pesi.erms.ErmsImportState;
 /**
  * @author a.mueller
  * @since 17.02.2010
- * @version 1.0
  */
 public class ErmsNoteImportValidator implements IOValidator<ErmsImportState>{
 	private static final Logger logger = Logger.getLogger(ErmsNoteImportValidator.class);
 
-	public boolean validate(ErmsImportState state){
+	@Override
+    public boolean validate(ErmsImportState state){
 		boolean result = true;
 		ErmsImportConfigurator config = state.getConfig();
 		logger.info("Checking for notes not yet fully implemented");
 //		result &= checkTaxonStatus(config);
 		return result;
 	}
-
-
 }
