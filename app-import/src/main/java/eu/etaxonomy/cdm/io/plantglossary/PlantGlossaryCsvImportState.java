@@ -10,14 +10,20 @@ package eu.etaxonomy.cdm.io.plantglossary;
 
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
+import eu.etaxonomy.cdm.api.service.ITermService;
+import eu.etaxonomy.cdm.api.service.IVocabularyService;
 import eu.etaxonomy.cdm.io.csv.in.CsvImportState;
 import eu.etaxonomy.cdm.model.agent.Institution;
 import eu.etaxonomy.cdm.model.agent.Person;
+import eu.etaxonomy.cdm.model.agent.Team;
 import eu.etaxonomy.cdm.model.common.TermVocabulary;
 import eu.etaxonomy.cdm.model.common.VerbatimTimePeriod;
+import eu.etaxonomy.cdm.model.description.State;
 import eu.etaxonomy.cdm.model.reference.Reference;
 import eu.etaxonomy.cdm.model.reference.ReferenceFactory;
 
@@ -29,6 +35,8 @@ import eu.etaxonomy.cdm.model.reference.ReferenceFactory;
  */
 public class PlantGlossaryCsvImportState extends CsvImportState<PlantGlossaryCsvImportConfigurator> {
 
+    private List<TermVocabulary> existingVocabularies = new ArrayList<>();
+    private List<State> existingTerms = new ArrayList<>();
     private Set<TermVocabulary> vocabularies = new HashSet<>();
     private final Reference citation;
 
@@ -36,20 +44,25 @@ public class PlantGlossaryCsvImportState extends CsvImportState<PlantGlossaryCsv
     protected PlantGlossaryCsvImportState(PlantGlossaryCsvImportConfigurator config) {
         super(config);
         citation = ReferenceFactory.newGeneric();
-        citation.setTitle("fna_gloss_final_20130517");
-        Person authorship = Person.NewInstance(null, "Cui", null, "Hong");
-        citation.setAuthorship(authorship);
+        citation.setTitle("FloraTerms");
+        Team team = Team.NewInstance();
+        team.addTeamMember(Person.NewInstance(null, "Cui", null, "Hong"));
+        team.addTeamMember(Person.NewInstance(null, "Cole", null, "Heather"));
+        team.addTeamMember(Person.NewInstance(null, "Endara", null, "Lorena"));
+        team.addTeamMember(Person.NewInstance(null, "Macklin", null, "James"));
+        team.addTeamMember(Person.NewInstance(null, "Sachs", null, "Joel"));
+        citation.setAuthorship(team);
         VerbatimTimePeriod datePublished = VerbatimTimePeriod.NewVerbatimInstance();
         datePublished.setStartYear(2014);
         datePublished.setStartMonth(6);
         datePublished.setStartDay(13);
         citation.setDatePublished(datePublished);
         Institution institution = Institution.NewNamedInstance("OTO System");
+        institution.addUrl(URI.create("http://biosemantics.arizona.edu/OTO/"));
         citation.setInstitution(institution);
-        citation.setEdition("Version: 0.11");
         URI uri;
         try {
-            uri = new URI("https://github.com/biosemantics/glossaries/blob/925f2c1691ed00bf2b9a9cd7f83609cffae47145/Plant/0.11/Plant_glossary_term_category.csv");
+            uri = new URI("https://terms.tdwg.org/wiki/FloraTerms");
             citation.setUri(uri);
         } catch (URISyntaxException e) {
         }
@@ -64,13 +77,23 @@ public class PlantGlossaryCsvImportState extends CsvImportState<PlantGlossaryCsv
         vocabularies.add(vocabulary);
     }
 
-    TermVocabulary checkVocabularies(String vocName){
+    TermVocabulary checkVocabularies(String vocName, IVocabularyService vocabularyService){
+        if(existingVocabularies.isEmpty()){
+            existingVocabularies = vocabularyService.list(TermVocabulary.class, null, null, null, null);
+        }
         for (TermVocabulary termVocabulary : vocabularies) {
             if(termVocabulary.getLabel().equals(vocName)){
                 return termVocabulary;
             }
         }
         return null;
+    }
+
+    public boolean isTermPresent(String termName, ITermService termService) {
+        if(existingTerms.isEmpty()){
+            existingTerms = termService.list(State.class, null, null, null, null);
+        }
+        return existingTerms.stream().map(term->term.getLabel()).anyMatch(label->label.equals(termName));
     }
 
     Reference getCitation() {

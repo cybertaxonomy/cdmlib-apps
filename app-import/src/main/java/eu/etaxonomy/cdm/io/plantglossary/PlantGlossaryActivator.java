@@ -1,8 +1,7 @@
 package eu.etaxonomy.cdm.io.plantglossary;
 
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.InputStreamReader;
+import java.io.IOException;
+import java.net.URI;
 
 import org.apache.log4j.Logger;
 
@@ -17,18 +16,18 @@ public class PlantGlossaryActivator {
 	@SuppressWarnings("unused")
 	private static final Logger logger = Logger.getLogger(PlantGlossaryActivator.class);
 
-	private void doImport(ICdmDataSource cdmDestination) throws FileNotFoundException{
+	private void doImport(ICdmDataSource cdmDestination) throws IOException{
 
 	    /*
 	     * Source file:
-	     * https://github.com/biosemantics/glossaries/blob/925f2c1691ed00bf2b9a9cd7f83609cffae47145/Plant/0.11/Plant_glossary_term_category.csv
+	     * extracted data from https://terms.tdwg.org
 	     *
-	     * Cleaning data:
-	     *  - remove all comments in csv file
-	     *  - fix "coetaneouser" by adding missing paramater for "remarks" -> "active"
+	     * Cleaning data with OpenRefine:
+	     *  - generated URI column
+	     *  - parsed term description by crawling term html pages (description are not retrieved via web interface)
 	     */
-        FileInputStream inStream = new FileInputStream("/home/pplitzner/plantglossary.csv");
-		PlantGlossaryCsvImportConfigurator config = PlantGlossaryCsvImportConfigurator.NewInstance(new InputStreamReader(inStream), cdmDestination);
+	    URI uri = URI.create("file:/home/pplitzner/projects/Additivity/plant_glossary_states.csv");
+		PlantGlossaryCsvImportConfigurator config = PlantGlossaryCsvImportConfigurator.NewInstance(uri, cdmDestination);
 		config.setCheck(CHECK.IMPORT_WITHOUT_CHECK);
 		config.setDbSchemaValidation(DbSchemaValidation.VALIDATE);
 
@@ -42,9 +41,9 @@ public class PlantGlossaryActivator {
 	public static void main(String[] args) {
 		PlantGlossaryActivator activator = new PlantGlossaryActivator();
 		try {
-	        ICdmDataSource dataSource = CdmDestinations.makeDestination(DatabaseTypeEnum.MySQL, "127.0.0.1", "additivity", 3306, "root", null);
+	        ICdmDataSource dataSource = CdmDestinations.makeDestination(DatabaseTypeEnum.MySQL, "127.0.0.1", "empty", 3306, "root", null);
             activator.doImport(dataSource);
-        } catch (FileNotFoundException e) {
+        } catch (IOException e) {
             e.printStackTrace();
         }
 	}
