@@ -6,7 +6,6 @@ import java.net.URI;
 import org.apache.log4j.Logger;
 
 import eu.etaxonomy.cdm.app.common.CdmDestinations;
-import eu.etaxonomy.cdm.database.DatabaseTypeEnum;
 import eu.etaxonomy.cdm.database.DbSchemaValidation;
 import eu.etaxonomy.cdm.database.ICdmDataSource;
 import eu.etaxonomy.cdm.io.common.CdmDefaultImport;
@@ -44,7 +43,8 @@ public class KewPlantGlossaryActivator {
 	public static void main(String[] args) {
 		KewPlantGlossaryActivator activator = new KewPlantGlossaryActivator();
 		try {
-	        ICdmDataSource dataSource = CdmDestinations.makeDestination(DatabaseTypeEnum.MySQL, "127.0.0.1", "empty", 3306, "root", null);
+//	        ICdmDataSource dataSource = CdmDestinations.makeDestination(DatabaseTypeEnum.MySQL, "127.0.0.1", "empty", 3306, "root", null);
+	        ICdmDataSource dataSource = CdmDestinations.cdm_additivity_ontology();
             activator.doImport(dataSource);
         } catch (IOException e) {
             e.printStackTrace();
