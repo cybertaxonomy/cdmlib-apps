@@ -15,6 +15,7 @@ import java.util.Map;
 import org.apache.log4j.Logger;
 import org.springframework.stereotype.Component;
 
+import eu.etaxonomy.cdm.common.CdmUtils;
 import eu.etaxonomy.cdm.io.csv.in.CsvImportBase;
 import eu.etaxonomy.cdm.model.common.Annotation;
 import eu.etaxonomy.cdm.model.common.AnnotationType;
@@ -56,7 +57,9 @@ public class PlantGlossaryStateImport extends CsvImportBase<PlantGlossaryCsvImpo
         State stateTerm = State.NewInstance(currentRecord.get(HEADER_DEFINITION), termLabel, null);
         stateTerm.setIdInVocabulary(termLabel);
         stateTerm.setUri(URI.create(currentRecord.get(HEADER_URI)));
-        stateTerm.addAnnotation(Annotation.NewInstance(currentRecord.get(HEADER_NOTES), AnnotationType.EDITORIAL(), Language.ENGLISH()));
+        if(CdmUtils.isNotBlank(currentRecord.get(HEADER_NOTES))){
+            stateTerm.addAnnotation(Annotation.NewInstance(currentRecord.get(HEADER_NOTES), AnnotationType.EDITORIAL(), Language.ENGLISH()));
+        }
 
         String vocName = currentRecord.get(HEADER_CATEGORY);
         // TODO how should we handle multiple possible categories?
