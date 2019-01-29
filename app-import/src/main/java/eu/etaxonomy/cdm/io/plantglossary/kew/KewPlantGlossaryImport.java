@@ -53,11 +53,14 @@ public class KewPlantGlossaryImport extends CsvImportBase<KewPlantGlossaryCsvImp
         }
 
         Feature structure = Feature.NewInstance(currentRecord.get(HEADER_DEFINITION), termLabel, null);
+        structure.setIdInVocabulary(termLabel);
 
         TermVocabulary vocabulary = importState.getStructureVoc();
         vocabulary.addTerm(structure);
 
-        structure.addSource(IdentifiableSource.NewInstance(OriginalSourceType.Import, importState.getCitation().getTitle(), null, importState.getCitation(), null));
+        IdentifiableSource source = IdentifiableSource.NewInstance(OriginalSourceType.Import, importState.getCitation().getTitle(), null, importState.getCitation(), null);
+        source.setIdInSource(termLabel);
+        structure.addSource(source);
 
         getVocabularyService().saveOrUpdate(vocabulary);
         getTermService().saveOrUpdate(structure);

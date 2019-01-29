@@ -54,6 +54,7 @@ public class PlantGlossaryStateImport extends CsvImportBase<PlantGlossaryCsvImpo
         }
 
         State stateTerm = State.NewInstance(currentRecord.get(HEADER_DEFINITION), termLabel, null);
+        stateTerm.setIdInVocabulary(termLabel);
         stateTerm.setUri(URI.create(currentRecord.get(HEADER_URI)));
         stateTerm.addAnnotation(Annotation.NewInstance(currentRecord.get(HEADER_NOTES), AnnotationType.EDITORIAL(), Language.ENGLISH()));
 
@@ -70,7 +71,9 @@ public class PlantGlossaryStateImport extends CsvImportBase<PlantGlossaryCsvImpo
         }
         vocabulary.addTerm(stateTerm);
 
-        stateTerm.addSource(IdentifiableSource.NewInstance(OriginalSourceType.Import, importState.getCitation().getTitle(), null, importState.getCitation(), null));
+        IdentifiableSource source = IdentifiableSource.NewInstance(OriginalSourceType.Import, importState.getCitation().getTitle(), null, importState.getCitation(), null);
+        source.setIdInSource(termLabel);
+        stateTerm.addSource(source);
 
         getVocabularyService().saveOrUpdate(vocabulary);
         getTermService().saveOrUpdate(stateTerm);

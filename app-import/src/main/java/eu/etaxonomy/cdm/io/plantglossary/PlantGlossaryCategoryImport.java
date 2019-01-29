@@ -67,7 +67,9 @@ public class PlantGlossaryCategoryImport extends CsvImportBase<PlantGlossaryCsvI
 
         importState.addVocabulary(stateVoc);
 
-        stateVoc.addSource(IdentifiableSource.NewInstance(OriginalSourceType.Import, importState.getCitation().getTitle(), null, importState.getCitation(), null));
+        IdentifiableSource source = IdentifiableSource.NewInstance(OriginalSourceType.Import, importState.getCitation().getTitle(), null, importState.getCitation(), null);
+        source.setIdInSource(vocName);
+        stateVoc.addSource(source);
 
         getVocabularyService().saveOrUpdate(stateVoc);
     }
