@@ -82,7 +82,7 @@ public class CaucasusEuroMedActivator {
 	static final Source berlinModelSource = BerlinModelSources.euroMed_BGBM42();
 
 //    static final ICdmDataSource cdmDestination = CdmDestinations.localH2();
-  static final ICdmDataSource cdmDestination = CdmDestinations.cdm_production_euromed_caucasus();
+    static final ICdmDataSource cdmDestination = CdmDestinations.cdm_production_euromed_caucasus();
 //    static final ICdmDataSource cdmDestination = CdmDestinations.cdm_local_euromed_caucasus();
 //	static final ICdmDataSource cdmDestination = CdmDestinations.cdm_test_euroMed();
 
@@ -360,7 +360,6 @@ public class CaucasusEuroMedActivator {
             showSpecimen.setAllowOverride(false);
             app.getPreferenceService().set(showSpecimen);
         }
-
     }
 
     //Rename Ranks (still needed?)
