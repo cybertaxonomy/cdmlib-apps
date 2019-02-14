@@ -9,7 +9,6 @@
 package eu.etaxonomy.cdm.app.greece;
 
 import java.net.URI;
-import java.util.UUID;
 
 import org.apache.log4j.Logger;
 
@@ -39,16 +38,16 @@ public class GreeceImageActivator {
     private static final Logger logger = Logger.getLogger(GreeceImageActivator.class);
 
 
-//    static final ICdmDataSource cdmDestination = CdmDestinations.localH2();
+    static final ICdmDataSource cdmDestination = CdmDestinations.localH2();
 //  static final ICdmDataSource cdmDestination = CdmDestinations.cdm_test_local_mysql_test();
-    static final ICdmDataSource cdmDestination = CdmDestinations.cdm_greece_checklist_production();
+//    static final ICdmDataSource cdmDestination = CdmDestinations.cdm_greece_checklist_production();
 
-    private static final UUID sourceUuid = UUID.fromString("d5064e6f-bb16-4a8e-8c40-aaebb86c5954");
+//    private static final UUID sourceUuid = UUID.fromString("0fd093fe-ffdf-4ace-847b-aad6f0659678");
 //    private static final UUID sourceUuid = UUID.fromString("2bb045c8-8b0e-474b-bf60-0d2ddc2a212a");
 
-//    private static final String fileName = "20171107_sent_1332_images.xlsx";
-//    private static final String fileName = "20181024_fog_images_v2.xlsx";
-    private static final String fileName = "20181126_fog_images.xlsx";
+//    private static final String fileName = "20181218_fog_images.xlsx";
+//    private static final String fileName = "20190117_fog_images.xlsx";
+    private static final String fileName = "20190124_fog_images.xlsx";
 
 
 //    NOTE!!: Darauf achten, dass die Header case sensitiv sind und keine Leerzeichen am Ende sein sollten, trim funktioniert seltsamerweise nicht immer
