@@ -245,7 +245,6 @@ public class ErmsTaxonImport
 			taxonName.setSpecificEpithet(parent1Name);
 			getGenusAndInfraGenus(parent2Name, parent3Name, parent2Rank, taxonName);
 		}else if (taxonName.getRank()== null){
-			logger.warn("rank super domain still needs to be implemented. Used domain instead.");
 			if ("Biota".equalsIgnoreCase(tuName)){
 				Rank rank = Rank.DOMAIN();  //should be Superdomain
 				taxonName.setRank(rank);
@@ -333,16 +332,13 @@ public class ErmsTaxonImport
 	 */
 	private TaxonName getTaxonName(ResultSet rs, ErmsImportState state) throws SQLException {
 	    TaxonName result;
-		Integer kingdomId = parseKingdomId(rs);
+		int kingdomId = parseKingdomId(rs);
 		Integer intRank = rs.getInt("tu_rank");
 
 		NomenclaturalCode nc = ErmsTransformer.kingdomId2NomCode(kingdomId);
 		Rank rank = null;
-		if (kingdomId != null){
-			rank = state.getRank(intRank, kingdomId);
-		}else{
-			logger.warn("KingdomId is null");
-		}
+		rank = state.getRank(intRank, kingdomId);
+
 		if (rank == null){
 			logger.warn("Rank is null. KingdomId: " + kingdomId + ", rankId: " +  intRank);
 		}
@@ -369,27 +365,33 @@ public class ErmsTaxonImport
 	 * @throws SQLException
 	 */
 	private int parseKingdomId(ResultSet rs) throws SQLException {
-		Integer result = null;
 		String treeString = rs.getString("tu_sp");
 		if (treeString != null){
-			if (StringUtils.isNotBlank(treeString) && treeString.length() > 1){
+		    if (StringUtils.isNotBlank(treeString) && treeString.length() > 1){
 				String strKingdom = treeString.substring(1,2);
 
 				if (! treeString.substring(0, 1).equals("#") && ! treeString.substring(2, 3).equals("#") ){
-					logger.warn("Tree string " + treeString + " has no recognized format");
+					String message = "Tree string " + treeString + " has no recognized format";
+                    logger.warn(message);
+                    throw new RuntimeException(message);
 				}else{
 					try {
-						result = Integer.valueOf(strKingdom);
+						return Integer.valueOf(strKingdom);
 					} catch (NumberFormatException e) {
-						logger.warn("Kingdom string " + strKingdom + "could not be recognized as a valid number");
+					    String message = "Kingdom string " + strKingdom + "could not be recognized as a valid number";
+						logger.warn(message);
+						throw new RuntimeException(message);
 					}
 				}
+			}else{
+                String message = "Tree string for kingdom recognition is to short: " + treeString;
+                logger.warn(message);
+                throw new RuntimeException(message);
 			}
 		}else{
-			Integer tu_id = rs.getInt("id");
-			result = tu_id;
+			int tu_id = rs.getInt("id");
+			return tu_id;
 		}
-		return result;
 	}
 
 	@Override

@@ -48,7 +48,6 @@ public class ErmsReferenceImport  extends ErmsImportBase<Reference> implements I
 
 	private DbImportMapping<ErmsImportState, ErmsImportConfigurator> mapping;
 
-	private int modCount = 10000;
 	private static final String pluralString = "sources";
 	private static final String dbTableName = "sources";
 	private static final Class cdmTargetClass = Reference.class;

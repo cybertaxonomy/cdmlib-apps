@@ -63,21 +63,38 @@ public class ErmsImportRankMap extends ErmsImportBase<Rank>{
 				NomenclaturalCode nc = ErmsTransformer.kingdomId2NomCode(kingdomId);
 
 				Map<Integer, Rank> kingdomMap = makeKingdomMap(rankMap, rankId);
-				try {
-					rankName = rankName.replace("Forma", "Form").replace("Subforma", "Subform");
-					Rank rank;
-					if (nc == null && kingdomId == 1){
-						rank = getRank(state, ErmsTransformer.uuidRankSuperdomain, "Superdomain", "Superdomain", "Superdomain", CdmBase.deproxy(Rank.GENUS().getVocabulary(), OrderedTermVocabulary.class), Rank.DOMAIN(), RankClass.Suprageneric);
-					}else{
-						rank = Rank.getRankByEnglishName(rankName, nc, false);
+				rankName = rankName.replace("Forma", "Form").replace("Subforma", "Subform");
+				Rank rank = null;
+				@SuppressWarnings("unchecked")
+				OrderedTermVocabulary<Rank> voc = CdmBase.deproxy(Rank.GENUS().getVocabulary(), OrderedTermVocabulary.class);
+				if (nc == null && kingdomId == 1){
+				    rank = Rank.DOMAIN();
+				}else{
+    				try {
+    					rank = Rank.getRankByEnglishName(rankName, nc, false);
+    				} catch (UnknownCdmTypeException e) {
 					}
+                    if (rank == null){
+                        if (kingdomId == 2){
+                            if (rankId == 85){
+                                rank = getRank(state, ErmsTransformer.uuidRankSubterclass, "Subterclass", "Subterclass", null, voc, Rank.INFRACLASS(), RankClass.Suprageneric);
+                            }else if (rankId == 122){
+                                rank = getRank(state, ErmsTransformer.uuidRankParvorder, "Parvorder", "Parvorder", null, voc, Rank.INFRACLASS(), RankClass.Suprageneric);
+                            }
+                        }
+
+                        if (kingdomId == 3){
+                            if (rankId == 214){
+                                rank = Rank.SPECIESAGGREGATE();
+                            }else if (rankId == 216){
+                                rank = getRank(state, ErmsTransformer.uuidRankCollectiveSpecies, "Collective Species", "Collective Species", "Coll. sp.", voc, Rank.INFRACLASS(), RankClass.Suprageneric);
+                            }
+                        }
+                    }
 					if (rank == null){
-						logger.warn("Rank is null: " + rankName);
+	                      logger.warn("Rank could not be defined: " + rankName + "; nomcode = " + nc + ", kingdom_id = " + kingdomId);
 					}
 					kingdomMap.put(kingdomId, rank);
-				} catch (UnknownCdmTypeException e) {
-					String errorMessage = "Rank '" + rankName + "' is not well mapped for code " + nc + ", kingdom_id = " + kingdomId + ". Rank is ignored!";
-					logger.warn(errorMessage);
 				}
 			}
 		} catch (SQLException e) {

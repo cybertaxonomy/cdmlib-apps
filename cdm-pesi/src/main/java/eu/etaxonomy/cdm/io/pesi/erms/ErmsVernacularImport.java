@@ -26,6 +26,7 @@ import eu.etaxonomy.cdm.io.common.mapping.DbImportCommonNameCreationMapper;
 import eu.etaxonomy.cdm.io.common.mapping.DbImportMapping;
 import eu.etaxonomy.cdm.io.common.mapping.DbImportObjectMapper;
 import eu.etaxonomy.cdm.io.common.mapping.DbImportStringMapper;
+import eu.etaxonomy.cdm.io.common.mapping.IInputTransformer;
 import eu.etaxonomy.cdm.io.common.mapping.UndefinedTransformerMethodException;
 import eu.etaxonomy.cdm.io.pesi.erms.validation.ErmsVernacularImportValidator;
 import eu.etaxonomy.cdm.model.common.AnnotationType;
@@ -59,9 +60,10 @@ public class ErmsVernacularImport  extends ErmsImportBase<CommonTaxonName> {
 	@Override
 	protected String getRecordQuery(ErmsImportConfigurator config) {
 		String strRecordQuery =
-			" SELECT vernaculars.*, tu.tu_acctaxon, tu.id  " +
-			" FROM vernaculars INNER JOIN tu ON vernaculars.tu_id = tu.id  " +
-			" WHERE ( vernaculars.id IN (" + ID_LIST_TOKEN + ") )";
+			" SELECT v.*, tu.tu_acctaxon, tu.id, l.*  " +
+			" FROM vernaculars v INNER JOIN tu ON v.tu_id = tu.id "
+			+ "   LEFT OUTER JOIN languages l ON l.LanID = v.lan_id " +
+			" WHERE ( v.id IN (" + ID_LIST_TOKEN + ") )";
 		return strRecordQuery;
 	}
 
@@ -91,12 +93,13 @@ public class ErmsVernacularImport  extends ErmsImportBase<CommonTaxonName> {
 		Set<String> idSet;
 		Map<Object, Map<String, ? extends CdmBase>> result = new HashMap<>();
 
+		Map<String, Language> languageMap = new HashMap<>();
 		try{
 			Set<String> taxonIdSet = new HashSet<>();
-			Set<String> languageIdSet = new HashSet<>();
+//			Set<String> languageIdSet = new HashSet<>();
 			while (rs.next()){
 				handleForeignKey(rs, taxonIdSet, "tu_id");
-				handleForeignKey(rs, languageIdSet, "lan_id");
+				addLanguage(rs, languageMap, state);
 			}
 
 			//taxon map
@@ -109,30 +112,6 @@ public class ErmsVernacularImport  extends ErmsImportBase<CommonTaxonName> {
 
 			//language map
 			nameSpace = LANGUAGE_NAMESPACE;
-			Map<String, Language> languageMap = new HashMap<>();
-			ErmsTransformer transformer = new ErmsTransformer();
-			for (String lanAbbrev: languageIdSet){
-				Language language = null;
-				try {
-					language = transformer.getLanguageByKey(lanAbbrev);
-					if (language == null || language.equals(Language.UNDETERMINED())){
-						UUID uuidLang = transformer.getLanguageUuid(lanAbbrev);
-						if (uuidLang != null){
-							language = getLanguage(state, uuidLang, lanAbbrev, lanAbbrev, lanAbbrev);
-
-						}
-						if (language == null || language.equals(Language.UNDETERMINED() )){
-							logger.warn("Langauge undefined: " + lanAbbrev);
-						}
-					}
-
-				} catch (IllegalArgumentException e) {
-					e.printStackTrace();
-				} catch (UndefinedTransformerMethodException e) {
-					e.printStackTrace();
-				}
-				languageMap.put(lanAbbrev, language);
-			}
 			result.put(nameSpace, languageMap);
 
 		} catch (SQLException e) {
@@ -141,7 +120,45 @@ public class ErmsVernacularImport  extends ErmsImportBase<CommonTaxonName> {
 		return result;
 	}
 
-	@Override
+	/**
+     * @param rs
+     * @param languageMap
+	 * @param state
+	 * @throws SQLException
+     */
+    private void addLanguage(ResultSet rs, Map<String, Language> languageMap, ErmsImportState state) throws SQLException {
+        IInputTransformer transformer = state.getTransformer();
+        String id639_1 = rs.getString("639_1");
+        String id639_2 = rs.getString("639_2");
+        String id639_3 = rs.getString("639_3");
+        String lanId = rs.getString("LanID");
+        if (id639_1 != null && Language.getLanguageByIsoCode(id639_1)!= null){
+            languageMap.put(lanId, Language.getLanguageByIsoCode(id639_1));
+        }else if (id639_2 != null && Language.getLanguageByIsoCode(id639_2)!= null){
+            languageMap.put(lanId, Language.getLanguageByIsoCode(id639_2));
+        }else{
+            Language language = null;
+            try {
+                language = transformer.getLanguageByKey(lanId);
+                if (language == null || language.equals(Language.UNDETERMINED())){
+                    UUID uuidLang = transformer.getLanguageUuid(lanId);
+                    if (uuidLang != null){
+                        language = getLanguage(state, uuidLang, rs.getString("LanName"), "LanName", "639_3");
+                    }
+                    if (language == null || language.equals(Language.UNDETERMINED() )){
+                        logger.warn("Langauge undefined: " + lanId);
+                    }
+                }
+
+            } catch (IllegalArgumentException e) {
+                e.printStackTrace();
+            } catch (UndefinedTransformerMethodException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
+    @Override
 	protected boolean doCheck(ErmsImportState state){
 		IOValidator<ErmsImportState> validator = new ErmsVernacularImportValidator();
 		return validator.validate(state);
