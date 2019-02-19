@@ -48,6 +48,7 @@ public class PhycobankHigherClassificationImportConfigurator extends ExcelImport
         return new PhycobankHigherClassificationImportState(this);
     }
 
+    @SuppressWarnings("unchecked")
     @Override
     protected void makeIoClassList() {
         ioClassList = new Class[]{

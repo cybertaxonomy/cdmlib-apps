@@ -24,6 +24,7 @@ import eu.etaxonomy.cdm.model.name.Rank;
 import eu.etaxonomy.cdm.model.name.TaxonName;
 import eu.etaxonomy.cdm.model.name.TaxonNameFactory;
 import eu.etaxonomy.cdm.model.reference.Reference;
+import eu.etaxonomy.cdm.model.reference.ReferenceFactory;
 import eu.etaxonomy.cdm.model.taxon.Classification;
 import eu.etaxonomy.cdm.model.taxon.Taxon;
 import eu.etaxonomy.cdm.model.taxon.TaxonNode;
@@ -44,6 +45,7 @@ public class PhycobankHigherClassificationExcelImport<CONFIG extends PhycobankHi
     private static final Logger logger = Logger.getLogger(PhycobankHigherClassificationExcelImport.class);
 
     private static final String GENUS = "genus";
+    private static final String SUBFAMILIA = "subfam";
     private static final String FAMILIA = "familia";
     private static final String SUBORDO = "subordo";
     private static final String ORDO = "ordo";
@@ -113,12 +115,12 @@ public class PhycobankHigherClassificationExcelImport<CONFIG extends PhycobankHi
             List<RankedUninomial> rankedUninomials, String line) {
 
         if (rankedUninomials.isEmpty()){
-            return getClassification(state).getRootNode();
+            return getClassification(state, line).getRootNode();
         }else{
             RankedUninomial rankedUninomial = rankedUninomials.get(0);
             rankedUninomials.remove(0);
             Taxon taxon = getOrMakeTaxon(state, rankedUninomial, line);
-            TaxonNode existingNode = taxon.getTaxonNode(getClassification(state));
+            TaxonNode existingNode = taxon.getTaxonNode(getClassification(state, line));
             TaxonNode existingHigherNode = existingNode == null? null : existingNode.getParent();
             //recursive call
             TaxonNode createdHigher = createOrVerifyRankedUninomials(state, rankedUninomials, line);
@@ -138,11 +140,11 @@ public class PhycobankHigherClassificationExcelImport<CONFIG extends PhycobankHi
                     logger.warn(line + ": Created higher node is null. This should not happen. Please check classification and concept relationships.");
                     return null;
                 }else{
-                    existingNode = createdHigher.addChildTaxon(taxon, getSecReference(state), line);
+                    existingNode = createdHigher.addChildTaxon(taxon, getSecReference(state, line), line);
                     getTaxonNodeService().saveOrUpdate(existingNode);
                 }
             }
-            makeConceptRelation(state, existingNode, line);
+            makeConceptRelation(state, existingNode, line, line);
             return existingNode;
         }
     }
@@ -187,6 +189,7 @@ public class PhycobankHigherClassificationExcelImport<CONFIG extends PhycobankHi
 
         List<RankedUninomial> result = new ArrayList<>();
         addRankedUninomial(result, record, GENUS, Rank.GENUS());
+        addRankedUninomial(result, record, SUBFAMILIA, Rank.SUBFAMILY());
         addRankedUninomial(result, record, FAMILIA, Rank.FAMILY());
         addRankedUninomial(result, record, SUBORDO, Rank.SUBORDER());
         addRankedUninomial(result, record, ORDO, Rank.ORDER());
@@ -240,13 +243,13 @@ public class PhycobankHigherClassificationExcelImport<CONFIG extends PhycobankHi
                     taxa.addAll(getReferencedTaxa(name, state.getConfig().getPhycobankReference()));
                 }
                 if (taxa.isEmpty()){
-                    logger.warn(line + ": More than 1 name matches, but no matching taxon exists. Create new taxon with arbitrary name.");
+                    logger.warn(line + ": (" +rankedUninomial.uninomial + ")More than 1 name matches, but no matching taxon exists. Create new taxon with arbitrary name.");
                     TaxonName name = names.get(0);
                     taxon = getOrCreateTaxon(state, name, phycobankRef, line);
                 }else if (taxa.size() == 1){
                     taxon = taxa.get(0);
                 }else{
-                    logger.warn(line + ": More than 1 taxon matches, take arbitrary one. This is unexpected and could be improved in code by "
+                    logger.warn(line + ": (" +rankedUninomial.uninomial + ") More than 1 taxon matches, take arbitrary one. This is unexpected and could be improved in code by "
                             + "also checking parent relationships.");
                     taxon = taxa.get(0);
                 }
@@ -262,10 +265,10 @@ public class PhycobankHigherClassificationExcelImport<CONFIG extends PhycobankHi
      * @param state
      * @return
      */
-    private Classification getClassification(SimpleExcelTaxonImportState<CONFIG> state) {
+    private Classification getClassification(SimpleExcelTaxonImportState<CONFIG> state, String line) {
         Classification result = null;
         List<Classification> classifications = getClassificationService().list(null, null, null, null, null);
-        Reference sec = getSecReference(state);
+        Reference sec = getSecReference(state, line);
         for (Classification classification: classifications){
             if (classification.getCitation() != null && classification.getCitation().equals(sec)){
                 result = classification;
@@ -283,14 +286,20 @@ public class PhycobankHigherClassificationExcelImport<CONFIG extends PhycobankHi
     /**
      * @param state
      */
-    private Reference getSecReference(SimpleExcelTaxonImportState<CONFIG> state) {
-        UUID uuid = state.getConfig().getSecReference().getUuid();
+    private Reference getSecReference(SimpleExcelTaxonImportState<CONFIG> state, String line) {
+        String uuidStr = state.getOriginalRecord().get("reference");
+        UUID uuid = uuidStr == null? null:UUID.fromString(uuidStr);
+        if (uuid == null){
+            logger.warn(line + ": reference uuid missing");
+            uuid = state.getConfig().getSecReference().getUuid();
+        }
         if (secReference == null || !secReference.getUuid().equals(uuid)){
             secReference = getReferenceService().find(uuid);
             if (secReference == null){
-                secReference = state.getConfig().getSecReference();
+                secReference = ReferenceFactory.newGeneric();
+                logger.warn(line + ": reference could not be found in database");
+                secReference.setUuid(uuid);
                 getReferenceService().save(secReference);
-
             }
         }
         return secReference;
@@ -404,7 +413,7 @@ public class PhycobankHigherClassificationExcelImport<CONFIG extends PhycobankHi
      * @param microCitation
      */
     private void makeConceptRelation(SimpleExcelTaxonImportState<CONFIG> state,
-            TaxonNode childNode, String microCitation) {
+            TaxonNode childNode, String microCitation, String line) {
 
         Taxon child = childNode.getTaxon();
         Taxon parent = childNode.getParent().getTaxon();
@@ -412,7 +421,7 @@ public class PhycobankHigherClassificationExcelImport<CONFIG extends PhycobankHi
             return;
         }
 
-        Reference sec = getSecReference(state);
+        Reference sec = getSecReference(state, line);
         Set<TaxonRelationship> rels = child.getRelationsFromThisTaxon();
         boolean hasRelation = false;
         for (TaxonRelationship rel : rels){

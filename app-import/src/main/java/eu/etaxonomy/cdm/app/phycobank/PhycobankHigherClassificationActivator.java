@@ -22,7 +22,6 @@ import eu.etaxonomy.cdm.database.ICdmDataSource;
 import eu.etaxonomy.cdm.io.common.CdmDefaultImport;
 import eu.etaxonomy.cdm.io.common.IImportConfigurator.CHECK;
 import eu.etaxonomy.cdm.io.phycobank.PhycobankHigherClassificationImportConfigurator;
-import eu.etaxonomy.cdm.model.agent.Person;
 import eu.etaxonomy.cdm.model.common.VerbatimTimePeriod;
 import eu.etaxonomy.cdm.model.reference.Reference;
 import eu.etaxonomy.cdm.model.reference.ReferenceFactory;
@@ -42,17 +41,13 @@ public class PhycobankHigherClassificationActivator {
     // ====================================================================================
 
     //database validation status (create, update, validate ...)
-    static DbSchemaValidation hbm2dll = DbSchemaValidation.CREATE;  //
+    static DbSchemaValidation hbm2dll = DbSchemaValidation.VALIDATE;  //
 
-    static ICdmDataSource cdmDestination = CdmDestinations.localH2();
+//    static ICdmDataSource cdmDestination = CdmDestinations.localH2();
 //    static ICdmDataSource cdmDestination = CdmDestinations.cdm_local_test_mysql();
 //    static ICdmDataSource cdmDestination = CdmDestinations.cdm_test_phycobank();
-//TODO: Die 3 Syllabus noch richtig als 3 Referenzen anlegen (muss Henning machen), hier dann die jeweilige UUID
-// verwenden und unten den worksheetNamen entsprechend anpassen
-    static Reference secRef = getSecReference_Frey();
-//    static Reference secRef = getSecReference_WoRMS();
-//    static String worksheetName = secRef.equals(getSecReference_WoRMS())? "WoRMS" :
-//        secRef.equals(getSecReference_Frey())? "HigherRanksEntwurfNeu" : null;
+    static ICdmDataSource cdmDestination = CdmDestinations.cdm_phycobank_production();
+
     static String worksheetName = "Syllabus2_1";
 
     static UUID uuidRefPhycobank = UUID.fromString("8058a5ec-60ee-4a04-8c17-5623e3a4795c");
@@ -60,7 +55,10 @@ public class PhycobankHigherClassificationActivator {
     //check - import
     static final CHECK check = CHECK.IMPORT_WITHOUT_CHECK;
 
+
     private void doImport(ICdmDataSource cdmDestination){
+        hbm2dll = (cdmDestination == CdmDestinations.cdm_phycobank_production()|| cdmDestination == CdmDestinations.cdm_test_phycobank())?
+                DbSchemaValidation.VALIDATE : hbm2dll;
 
         URI source = fileURI();
         Reference sourceRef = getSourceReference();
@@ -71,7 +69,6 @@ public class PhycobankHigherClassificationActivator {
         config.setCheck(check);
         config.setDbSchemaValidation(hbm2dll);
         config.setSourceReference(sourceRef);
-        config.setSecReference(secRef);
         config.setPhycobankReference(getPhycobankReference());
         config.setProgressMonitor(DefaultProgressMonitor.NewInstance());
 
@@ -79,30 +76,6 @@ public class PhycobankHigherClassificationActivator {
         myImport.invoke(config);
 
         System.exit(0);
-
-    }
-
-    private static Reference getSecReference_Frey() {
-        Reference result = ReferenceFactory.newBook();
-        result.setTitle("Syllabus of the plant families");
-        result.setDatePublished(VerbatimTimePeriod.NewVerbatimInstance(2015));
-        result.setPublisher("Borntraeger");
-        result.setPlacePublished("Stuttgart");
-        Person author = Person.NewInstance();
-        author.setFamilyName("Frey");
-        author.setInitials("W.");
-        result.setAuthorship(author);
-        result.setUuid(UUID.fromString("2b4a3a67-e432-4d6b-b716-081045179df9"));
-        return result;
-    }
-
-    private static Reference getSecReference_WoRMS() {
-        Reference result = ReferenceFactory.newDatabase();
-        result.setTitle("WoRMS World Register of Marine Species");
-        result.setDatePublished(TimePeriodParser.parseStringVerbatim("2018-04-20"));
-        result.setUri(URI.create("http://www.marinespecies.org/index.php"));
-        result.setUuid(UUID.fromString("b33daeb0-8770-4ee2-92d0-80aaa87bfba2"));
-        return result;
     }
 
     private static Reference getPhycobankReference() {
@@ -123,8 +96,7 @@ public class PhycobankHigherClassificationActivator {
     }
 
     public static String fileName(){
-//        return "Algen_Syllabus_NormalImplied_Test.xlsx";
-        return "Algen_Syllabus_Produktion_corr.xlsx";
+        return "Algen_Syllabus_Produktion_2019-01-08_Import_2.xlsx";
     }
     public static String filePath(){
         return "file:////BGBM-PESIHPC/Phycobank/";
