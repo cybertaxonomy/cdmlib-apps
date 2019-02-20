@@ -21,6 +21,9 @@ import eu.etaxonomy.cdm.io.csv.in.CsvImportState;
 import eu.etaxonomy.cdm.model.agent.Institution;
 import eu.etaxonomy.cdm.model.agent.Person;
 import eu.etaxonomy.cdm.model.agent.Team;
+import eu.etaxonomy.cdm.model.common.IdentifiableSource;
+import eu.etaxonomy.cdm.model.common.OriginalSourceType;
+import eu.etaxonomy.cdm.model.common.TermType;
 import eu.etaxonomy.cdm.model.common.TermVocabulary;
 import eu.etaxonomy.cdm.model.common.VerbatimTimePeriod;
 import eu.etaxonomy.cdm.model.description.State;
@@ -35,6 +38,7 @@ import eu.etaxonomy.cdm.model.reference.ReferenceFactory;
  */
 public class PlantGlossaryCsvImportState extends CsvImportState<PlantGlossaryCsvImportConfigurator> {
 
+    private TermVocabulary modifierVoc;
     private List<TermVocabulary> existingVocabularies = new ArrayList<>();
     private List<State> existingTerms = new ArrayList<>();
     private Set<TermVocabulary> vocabularies = new HashSet<>();
@@ -66,11 +70,19 @@ public class PlantGlossaryCsvImportState extends CsvImportState<PlantGlossaryCsv
             citation.setUri(uri);
         } catch (URISyntaxException e) {
         }
+
+        modifierVoc = TermVocabulary.NewInstance(TermType.Modifier);
+        modifierVoc.setLabel("Plant Glossary Modifiers");
+        modifierVoc.addSource(IdentifiableSource.NewInstance(OriginalSourceType.Import, citation.getTitle(), null, citation, null));
     }
 
     @Override
     public void resetSession(){
         super.resetSession();
+    }
+
+    public TermVocabulary getModifierVoc() {
+        return modifierVoc;
     }
 
     void addVocabulary(TermVocabulary vocabulary) {
