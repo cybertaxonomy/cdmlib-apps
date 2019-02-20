@@ -45,6 +45,7 @@ public class PlantGlossaryCsvImportConfigurator
     protected void makeIoClassList() {
         ioClassList = new Class[] {
                 PlantGlossaryCategoryImport.class,
+                PlantGlossaryCategoryAsPropertiesImport.class,
                 PlantGlossaryStateImport.class };
     }
 
