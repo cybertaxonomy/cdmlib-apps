@@ -19,8 +19,8 @@ import eu.etaxonomy.cdm.io.common.mapping.IInputTransformer;
 import eu.etaxonomy.cdm.io.eflora.EfloraImportBase;
 import eu.etaxonomy.cdm.io.eflora.EfloraTransformer;
 import eu.etaxonomy.cdm.model.common.Language;
-import eu.etaxonomy.cdm.model.description.FeatureNode;
 import eu.etaxonomy.cdm.model.description.PolytomousKeyNode;
+import eu.etaxonomy.cdm.model.term.FeatureNode;
 
 /**
  * @author a.mueller
