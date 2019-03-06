@@ -4,12 +4,12 @@ import java.util.List;
 
 import org.apache.log4j.Logger;
 
+import eu.etaxonomy.cdm.api.service.config.CacheUpdaterConfigurator;
 import eu.etaxonomy.cdm.app.common.CdmDestinations;
 import eu.etaxonomy.cdm.database.DbSchemaValidation;
 import eu.etaxonomy.cdm.database.ICdmDataSource;
 import eu.etaxonomy.cdm.io.common.CdmDefaultImport;
 import eu.etaxonomy.cdm.io.common.ImportResult;
-import eu.etaxonomy.cdm.io.operation.config.CacheUpdaterConfigurator;
 import eu.etaxonomy.cdm.model.taxon.TaxonBase;
 
 public class CaryophyllalesCacheUpdater {
