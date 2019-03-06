@@ -1024,6 +1024,18 @@ public class BerlinModelTaxonNameImport extends BerlinModelImportBase {
                     continue;
                 }
             }
+            if (ref.getType().isBook()){
+                if (ref.getAbbrevTitle().matches("(Abh|Acad|Act|Akad|Ann|Arch|Ark|"
+                            + "Ber|Bergens Mus|Bibliot|Biol\\. Skr|Boll?|Cah\\. Soc|Doc|Dokl|Erd\u00E9sz|"
+                            + "Int|Izv|Mem|Mitt|M\u00E9m|Nachr|Novit|Novye Mem|"
+                            + "Nuovi Ann|Pract|Proc|Publ|Quad|Razpr|Rec|Repert|Samml|Sitzungsber|"
+                            + "Verh)\\.\\s.*") ||
+                        ref.getAbbrevTitle().matches("(Acta|Actes|Anais|Analele|Anales|"
+                                + "Atti|Daffodil|Florist|Indian|Ionios|Monthly|Naturaleza|Orchidophile|"
+                                + "Posebna|Recueil|R[ei]vista|Spicy|Trudy)\\s.*")){
+                    continue;
+                }
+            }
 
             //title
             if (ref.getType().isPublication()){
