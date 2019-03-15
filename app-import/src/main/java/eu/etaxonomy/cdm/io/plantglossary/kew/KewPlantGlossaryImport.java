@@ -17,8 +17,9 @@ import org.springframework.stereotype.Component;
 import eu.etaxonomy.cdm.common.CdmUtils;
 import eu.etaxonomy.cdm.io.csv.in.CsvImportBase;
 import eu.etaxonomy.cdm.model.common.IdentifiableSource;
-import eu.etaxonomy.cdm.model.description.Feature;
 import eu.etaxonomy.cdm.model.reference.OriginalSourceType;
+import eu.etaxonomy.cdm.model.term.DefinedTerm;
+import eu.etaxonomy.cdm.model.term.TermType;
 import eu.etaxonomy.cdm.model.term.TermVocabulary;
 
 /**
@@ -52,7 +53,7 @@ public class KewPlantGlossaryImport extends CsvImportBase<KewPlantGlossaryCsvImp
             return;
         }
 
-        Feature structure = Feature.NewInstance(currentRecord.get(HEADER_DEFINITION), termLabel, null);
+        DefinedTerm structure = DefinedTerm.NewInstance(TermType.Structure, currentRecord.get(HEADER_DEFINITION), termLabel, null);
         structure.setIdInVocabulary(termLabel);
 
         TermVocabulary vocabulary = importState.getStructureVoc();

@@ -18,8 +18,9 @@ import org.springframework.stereotype.Component;
 import eu.etaxonomy.cdm.common.CdmUtils;
 import eu.etaxonomy.cdm.io.csv.in.CsvImportBase;
 import eu.etaxonomy.cdm.model.common.IdentifiableSource;
-import eu.etaxonomy.cdm.model.description.Feature;
 import eu.etaxonomy.cdm.model.reference.OriginalSourceType;
+import eu.etaxonomy.cdm.model.term.DefinedTerm;
+import eu.etaxonomy.cdm.model.term.TermType;
 import eu.etaxonomy.cdm.model.term.TermVocabulary;
 
 /**
@@ -53,7 +54,7 @@ public class PlantGlossaryCategoryAsPropertiesImport extends CsvImportBase<Plant
 
         String description = currentRecord.get(HEADER_DESCRIPTION);
         String uri = currentRecord.get(HEADER_URI);
-        Feature property = Feature.NewInstance(description, label, null);
+        DefinedTerm property = DefinedTerm.NewInstance(TermType.Property, description, label, null);
         property.setUri(URI.create(uri));
         property.setIdInVocabulary(label);
 

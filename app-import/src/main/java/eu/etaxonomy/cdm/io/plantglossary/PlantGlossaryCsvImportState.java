@@ -23,11 +23,11 @@ import eu.etaxonomy.cdm.model.agent.Person;
 import eu.etaxonomy.cdm.model.agent.Team;
 import eu.etaxonomy.cdm.model.common.IdentifiableSource;
 import eu.etaxonomy.cdm.model.common.VerbatimTimePeriod;
-import eu.etaxonomy.cdm.model.description.Feature;
 import eu.etaxonomy.cdm.model.description.State;
 import eu.etaxonomy.cdm.model.reference.OriginalSourceType;
 import eu.etaxonomy.cdm.model.reference.Reference;
 import eu.etaxonomy.cdm.model.reference.ReferenceFactory;
+import eu.etaxonomy.cdm.model.term.DefinedTerm;
 import eu.etaxonomy.cdm.model.term.TermType;
 import eu.etaxonomy.cdm.model.term.TermVocabulary;
 
@@ -39,7 +39,7 @@ import eu.etaxonomy.cdm.model.term.TermVocabulary;
  */
 public class PlantGlossaryCsvImportState extends CsvImportState<PlantGlossaryCsvImportConfigurator> {
 
-    private TermVocabulary<Feature> propertyVoc;
+    private TermVocabulary<DefinedTerm> propertyVoc;
     private List<TermVocabulary> existingVocabularies = new ArrayList<>();
     private List<State> existingTerms = new ArrayList<>();
     private Set<TermVocabulary> vocabularies = new HashSet<>();
@@ -72,7 +72,7 @@ public class PlantGlossaryCsvImportState extends CsvImportState<PlantGlossaryCsv
         } catch (URISyntaxException e) {
         }
 
-        propertyVoc = TermVocabulary.NewInstance(TermType.Feature, Feature.class);
+        propertyVoc = TermVocabulary.NewInstance(TermType.Property, DefinedTerm.class);
         propertyVoc.setLabel("Plant Glossary Properties");
         propertyVoc.addSource(IdentifiableSource.NewInstance(OriginalSourceType.Import, citation.getTitle(), null, citation, null));
     }
@@ -82,7 +82,7 @@ public class PlantGlossaryCsvImportState extends CsvImportState<PlantGlossaryCsv
         super.resetSession();
     }
 
-    public TermVocabulary<Feature> getPropertyVoc() {
+    public TermVocabulary<DefinedTerm> getPropertyVoc() {
         return propertyVoc;
     }
 

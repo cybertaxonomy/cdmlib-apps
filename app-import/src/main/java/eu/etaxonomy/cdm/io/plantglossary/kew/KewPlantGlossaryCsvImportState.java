@@ -16,9 +16,9 @@ import eu.etaxonomy.cdm.io.csv.in.CsvImportState;
 import eu.etaxonomy.cdm.model.agent.Institution;
 import eu.etaxonomy.cdm.model.agent.Person;
 import eu.etaxonomy.cdm.model.common.VerbatimTimePeriod;
-import eu.etaxonomy.cdm.model.description.Feature;
 import eu.etaxonomy.cdm.model.reference.Reference;
 import eu.etaxonomy.cdm.model.reference.ReferenceFactory;
+import eu.etaxonomy.cdm.model.term.DefinedTerm;
 import eu.etaxonomy.cdm.model.term.DefinedTermBase;
 import eu.etaxonomy.cdm.model.term.TermType;
 import eu.etaxonomy.cdm.model.term.TermVocabulary;
@@ -35,12 +35,12 @@ public class KewPlantGlossaryCsvImportState extends CsvImportState<KewPlantGloss
     private List<TermVocabulary> existingVocabularies = new ArrayList<>();
     private List<UuidAndTitleCache<DefinedTermBase>> existingTerms = new ArrayList<>();
     private final Reference citation;
-    private final TermVocabulary<Feature> structureVoc;
+    private final TermVocabulary<DefinedTerm> structureVoc;
 
 
     protected KewPlantGlossaryCsvImportState(KewPlantGlossaryCsvImportConfigurator config) {
         super(config);
-        structureVoc = TermVocabulary.NewInstance(TermType.Feature);
+        structureVoc = TermVocabulary.NewInstance(TermType.Structure, DefinedTerm.class);
         structureVoc.setLabel("Structures");
 
         citation = ReferenceFactory.newBook();
@@ -66,7 +66,7 @@ public class KewPlantGlossaryCsvImportState extends CsvImportState<KewPlantGloss
         return existingTerms.stream().anyMatch(term->term.getTitleCache().equals(termName));
     }
 
-    TermVocabulary<Feature> getStructureVoc() {
+    TermVocabulary<DefinedTerm> getStructureVoc() {
         return structureVoc;
     }
 

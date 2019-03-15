@@ -21,6 +21,7 @@ import eu.etaxonomy.cdm.model.common.Annotation;
 import eu.etaxonomy.cdm.model.common.AnnotationType;
 import eu.etaxonomy.cdm.model.common.IdentifiableSource;
 import eu.etaxonomy.cdm.model.common.Language;
+import eu.etaxonomy.cdm.model.description.State;
 import eu.etaxonomy.cdm.model.reference.OriginalSourceType;
 import eu.etaxonomy.cdm.model.term.TermType;
 import eu.etaxonomy.cdm.model.term.TermVocabulary;
@@ -56,7 +57,7 @@ public class PlantGlossaryCategoryImport extends CsvImportBase<PlantGlossaryCsvI
             return;
         }
 
-        TermVocabulary<?> stateVoc = TermVocabulary.NewInstance(
+        TermVocabulary<State> stateVoc = TermVocabulary.NewInstance(
                 TermType.State,
                 currentRecord.get(HEADER_DESCRIPTION),
                 vocName,
