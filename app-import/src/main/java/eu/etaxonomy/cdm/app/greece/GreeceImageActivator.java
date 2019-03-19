@@ -39,16 +39,16 @@ public class GreeceImageActivator {
     private static final Logger logger = Logger.getLogger(GreeceImageActivator.class);
 
 
-//    static final ICdmDataSource cdmDestination = CdmDestinations.localH2();
+    static final ICdmDataSource cdmDestination = CdmDestinations.localH2();
 //  static final ICdmDataSource cdmDestination = CdmDestinations.cdm_test_local_mysql_test();
-    static final ICdmDataSource cdmDestination = CdmDestinations.cdm_greece_checklist_production();
+//    static final ICdmDataSource cdmDestination = CdmDestinations.cdm_greece_checklist_production();
 
 //    private static final UUID sourceUuid = UUID.fromString("0fd093fe-ffdf-4ace-847b-aad6f0659678");
-    private static final UUID sourceUuid = UUID.fromString("7ab5b0d6-23c5-40c5-845b-002c1b21f2eb");
+    private static final UUID sourceUuid = UUID.fromString("1066b2fb-3351-4a5b-81c6-bd5894629834");
 
-//    private static final String fileName = "20181218_fog_images.xlsx";
+    private static final String fileName = "20190305_fog_images.xlsx";
 //    private static final String fileName = "20190117_fog_images.xlsx";
-    private static final String fileName = "20190124_fog_images.xlsx";
+//    private static final String fileName = "20190124_fog_images.xlsx";
 
 
 //    NOTE!!: Darauf achten, dass die Header case sensitiv sind und keine Leerzeichen am Ende sein sollten, trim funktioniert seltsamerweise nicht immer
