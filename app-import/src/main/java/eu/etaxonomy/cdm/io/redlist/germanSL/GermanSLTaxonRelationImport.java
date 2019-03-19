@@ -29,7 +29,7 @@ import eu.etaxonomy.cdm.model.taxon.TaxonBase;
  *
  */
 @Component
-public class GermanSLTaxonRelationImport extends GermanSLImporBase {
+public class GermanSLTaxonRelationImport extends GermanSLTaxonImport {
 
     private static final long serialVersionUID = 3381597141845204995L;
 
@@ -56,7 +56,7 @@ public class GermanSLTaxonRelationImport extends GermanSLImporBase {
         String acceptedStr = getValue(record, GermanSLTaxonImport.VALID_NR);
         String idStr = getValue(record, GermanSLTaxonImport.SPECIES_NR);
         String statusStr = getValue(record, GermanSLTaxonImport.SYNONYM);
-        NameResult nameResult = GermanSLTaxonImport.makeName (line, record, state);
+        NameResult nameResult = makeName (line, record, state);
 
         Classification classification = getClassification(state);
         TaxonBase<?> taxonBase = GermanSLTaxonImport.taxonIdMap.get(idStr);
