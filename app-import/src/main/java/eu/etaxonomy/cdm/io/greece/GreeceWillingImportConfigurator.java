@@ -29,6 +29,9 @@ public class GreeceWillingImportConfigurator
         return new GreeceWillingImportConfigurator(source, destination);
     }
 
+    private boolean isH2;
+    private boolean checkNamesOnly;
+
     /**
      * @param uri
      * @param destination
@@ -52,6 +55,21 @@ public class GreeceWillingImportConfigurator
         ioClassList = new Class[]{
                 GreeceWillingImport.class,
         };
+    }
+
+    public void setIsH2(boolean isH2) {
+        this.isH2 = isH2;
+    }
+    public boolean isH2() {
+        return isH2;
+    }
+
+    public boolean isCheckNamesOnly() {
+        return checkNamesOnly;
+    }
+
+    public void setCheckNamesOnly(boolean checkNamesOnly) {
+        this.checkNamesOnly = checkNamesOnly;
     }
 
 }

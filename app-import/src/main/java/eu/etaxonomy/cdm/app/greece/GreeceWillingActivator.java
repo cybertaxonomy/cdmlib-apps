@@ -37,10 +37,11 @@ public class GreeceWillingActivator {
 
     static final ICdmDataSource cdmDestination = CdmDestinations.localH2();
 //    static final ICdmDataSource cdmDestination = CdmDestinations.cdm_greece_checklist_production();
+    boolean doCheckNames = false;
 
-    private static final UUID sourceUuid = UUID.fromString("b96b8a10-e2a5-4a01-b2f2-435a59a7a269");
+    private static final UUID sourceUuid = UUID.fromString("70efe59f-8b0c-4f83-b54e-2a16f567fe8e");
 
-    private static final String fileName = "WillingImport.xlsx";
+    private static final String fileName = "WillingImport_Kreta_no_barcode_005_243.xlsx";
 
 
     private void doImport(ICdmDataSource cdmDestination){
@@ -53,6 +54,8 @@ public class GreeceWillingActivator {
         config.setDbSchemaValidation(schemaVal);
         config.setSourceReference(getSourceReference());
         config.setNomenclaturalCode(NomenclaturalCode.ICNAFP);
+        config.setIsH2(cdmDestination.getDatabaseType() == DatabaseTypeEnum.H2);
+        config.setCheckNamesOnly(doCheckNames);
 
         CdmDefaultImport<GreeceWillingImportConfigurator> myImport = new CdmDefaultImport<>();
         ImportResult result = myImport.invoke(config);

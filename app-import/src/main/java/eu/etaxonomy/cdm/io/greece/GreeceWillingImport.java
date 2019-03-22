@@ -42,6 +42,7 @@ import eu.etaxonomy.cdm.model.name.Rank;
 import eu.etaxonomy.cdm.model.name.TaxonNameFactory;
 import eu.etaxonomy.cdm.model.occurrence.Collection;
 import eu.etaxonomy.cdm.model.occurrence.DerivedUnit;
+import eu.etaxonomy.cdm.model.occurrence.SpecimenOrObservationType;
 import eu.etaxonomy.cdm.model.reference.Reference;
 import eu.etaxonomy.cdm.model.taxon.Taxon;
 import eu.etaxonomy.cdm.strategy.parser.TimePeriodParser;
@@ -54,9 +55,7 @@ import eu.etaxonomy.cdm.strategy.parser.TimePeriodParser;
 public class GreeceWillingImport
         extends SimpleExcelTaxonImport<GreeceWillingImportConfigurator>{
 
-    /**
-     *
-     */
+    private static final String HERBARIUM_ID_NAMESPACE = "HerbariumID";
     private static final String RDF_ID_NAMESPACE = "rdfID";
 
     private static final long serialVersionUID = 8258914747643501550L;
@@ -100,22 +99,27 @@ public class GreeceWillingImport
             String longitude = record.get("Longitude");
 
             String rdfId = record.get(RDF_ID_NAMESPACE);
+            String herbariumId = record.get(HERBARIUM_ID_NAMESPACE);
+
+            String baseOfRecords = record.get("BaseOfRecords");
+            String collectionCode = record.get("CollectionCode");
+            String institutionCode = record.get("InstitutionCode");
 
             TimePeriod date = TimePeriodParser.parseString(collectionDate);
             if (date.getFreeText() != null){
                 System.out.println("Date could not be parsed: " + collectionDate + "; row: " + state.getCurrentLine());
             }
 
-            validate(state, "BaseOfRecords", "Specimen");
-            validate(state, "InstitutionCode", "BGBM");
-            validate(state, "CollectionCode", "B");
+//            validate(state, "BaseOfRecords", "Specimen");
+//            validate(state, "InstitutionCode", "BGBM");
+//            validate(state, "CollectionCode", "B");
             validate(state, "HigherGeography", "Greece");
             validate(state, "Country", "Greece");
             validate(state, "CountryCode", "GR");
 
             //not used, but validate just in case
             validate(state, "HUH_PURL", "NULL");
-            validate(state, "DB", "JACQ");
+//            validate(state, "DB", "JACQ");
             validate(state, "CollDateISO", collectionDate);
 
 //            validate(state, "HerbariumID", collectionDate);
@@ -125,26 +129,45 @@ public class GreeceWillingImport
 //          HTML_URI
 
 
-            DerivedUnit lastDerivedUnit = null;
-            if (collectorNumber.equals(lastCollectorNumber)){
-                lastDerivedUnit = (DerivedUnit)getOccurrenceService().find(lastDerivedUnitUuid);
-            }
-
-
             Reference sourceReference = getSourceReference(state);
 
             Taxon taxon = getTaxonByName(state, scientificName);
             verifyTaxon(state, taxon, record);
             if (taxon == null){
                 System.out.println("Taxon not found for " + scientificName + "; row:  " + state.getCurrentLine());
-//                return;
-                taxon = Taxon.NewInstance(TaxonNameFactory.NewBotanicalInstance(null), getSourceReference(state));
-                taxon.getName().setTitleCache(title, true);
+                if (!state.getConfig().isH2()){
+                    return;
+                }else{
+                    taxon = Taxon.NewInstance(TaxonNameFactory.NewBotanicalInstance(null), getSourceReference(state));
+                    taxon.getName().setTitleCache(title, true);
+                }
             }
+            if (state.getConfig().isCheckNamesOnly()){
+                return;
+            }
+
+            DerivedUnit lastDerivedUnit = null;
+            if (collectorNumber.equals(lastCollectorNumber)){
+                lastDerivedUnit = (DerivedUnit)getOccurrenceService().find(lastDerivedUnitUuid);
+            }
+
             DerivedUnitFacade facade;
             String sourceId = rdfId;
+            String sourceNamespace = RDF_ID_NAMESPACE;
+            if (rdfId.equalsIgnoreCase("NULL")){
+                sourceId = herbariumId;
+                sourceNamespace = HERBARIUM_ID_NAMESPACE;
+            }
+
             if (lastDerivedUnit == null){
-                facade = DerivedUnitFacade.NewPreservedSpecimenInstance();
+                if (baseOfRecords.equals("Specimen")){
+                    facade = DerivedUnitFacade.NewPreservedSpecimenInstance();
+                }else if (baseOfRecords.equals("HumanObservation")){
+                    facade = DerivedUnitFacade.NewInstance(SpecimenOrObservationType.Observation, null);
+                }else {
+                    System.out.println("baseOfRecords of records not recognized: " +  baseOfRecords + "; use preserved specimen as default");
+                    facade = DerivedUnitFacade.NewPreservedSpecimenInstance();
+                }
                 facade.setFieldNumber(collectorNumber);
                 facade.setCountry(Country.GREECEHELLENICREPUBLIC());
                 facade.setLocality(locality);
@@ -156,12 +179,23 @@ public class GreeceWillingImport
                 facade.setCollector(getCollector(state, collector));
                 facade.getGatheringEvent(true).setTimeperiod(date);
                 facade.setPreferredStableUri(URI.create(stableIdentifier));
-                facade.setBarcode(catalogNumber);
-                facade.setCollection(getCollection(state));
-                this.addOriginalSource(facade.innerFieldUnit(), sourceId, RDF_ID_NAMESPACE, sourceReference);
-                this.addOriginalSource(facade.innerDerivedUnit(), sourceId, RDF_ID_NAMESPACE, sourceReference);
+                if (catalogNumber.startsWith("B")){
+                    facade.setBarcode(catalogNumber);
+                }else{
+                    facade.setCatalogNumber(catalogNumber);
+                }
+                facade.setCollection(getCollection(state, collectionCode, institutionCode));
+                this.addOriginalSource(facade.innerFieldUnit(), sourceId, sourceNamespace, sourceReference);
+                this.addOriginalSource(facade.innerDerivedUnit(), sourceId, sourceNamespace, sourceReference);
 
                 IndividualsAssociation specimen = IndividualsAssociation.NewInstance(facade.innerDerivedUnit());
+                if (baseOfRecords.equals("HumanObservation")){
+                    specimen.setFeature(Feature.OBSERVATION());
+                }else if (baseOfRecords.equals("Specimen")){
+                    specimen.setFeature(Feature.SPECIMEN());
+                }else{
+                    System.out.println("Base of record not recognized for feature selection: " + baseOfRecords);
+                }
                 if (taxon != null ){
                     TaxonDescription description = getTaxonDescription(taxon, sourceReference, false, CREATE);
                     description.addElement(specimen);
@@ -195,7 +229,7 @@ public class GreeceWillingImport
             imageTextData.addMedia(media);
 
 //            media.addPrimaryMediaSource(citation, microCitation);
-            this.addOriginalSource(media, sourceId, RDF_ID_NAMESPACE, sourceReference);
+            this.addOriginalSource(media, sourceId, sourceNamespace, sourceReference);
 
 
             //        getDedupHelper(state).replaceAuthorNamesAndNomRef(state, name);
@@ -250,18 +284,22 @@ public class GreeceWillingImport
      * @param state
      * @return
      */
-    private Collection getCollection(SimpleExcelTaxonImportState<GreeceWillingImportConfigurator> state) {
+    private Collection getCollection(SimpleExcelTaxonImportState<GreeceWillingImportConfigurator> state, String collectionCode, String institutionCode) {
         if (bgbm == null){
-            List<Collection> results = getCollectionService().searchByCode("B");
+            List<Collection> results = getCollectionService().searchByCode(collectionCode);
             if (results.size()> 1){
                 throw new RuntimeException("More then 1 collection found for 'B'");
             }else if (results.isEmpty()){
                 Collection collection = Collection.NewInstance();
-                collection.setCode("B");
+                collection.setCode(collectionCode);
                 getCollectionService().save(collection);
-                System.out.println("Collection 'B' did not exist. Created new one.");
+                System.out.println("Collection '"+collectionCode+"' did not exist. Created new one.");
                 return collection;
 //                throw new RuntimeException("No collection found for 'B'");
+            }
+            if ("B".equals(collectionCode) && !"".equals(institutionCode)
+                    || "HWilling".equals(collectionCode) && !"JACQ".equals(institutionCode)){
+                System.out.println("CollectionCode and InstitutionCode do not match expected values: " + collectionCode + "; " + institutionCode);
             }
             bgbm = results.get(0);
         }
