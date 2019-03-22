@@ -6,8 +6,8 @@ package eu.etaxonomy.cdm.database.update;
 import org.apache.log4j.Logger;
 
 import eu.etaxonomy.cdm.api.application.CdmApplicationController;
-import eu.etaxonomy.cdm.common.AccountStore;
 import eu.etaxonomy.cdm.common.monitor.DefaultProgressMonitor;
+import eu.etaxonomy.cdm.config.AccountStore;
 import eu.etaxonomy.cdm.database.CdmDataSource;
 import eu.etaxonomy.cdm.database.DbSchemaValidation;
 import eu.etaxonomy.cdm.database.ICdmDataSource;

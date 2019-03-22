@@ -12,7 +12,7 @@ package eu.etaxonomy.cdm.app.pesi;
 import org.apache.log4j.Logger;
 
 import eu.etaxonomy.cdm.app.common.ImportUtils;
-import eu.etaxonomy.cdm.common.AccountStore;
+import eu.etaxonomy.cdm.config.AccountStore;
 import eu.etaxonomy.cdm.io.common.Source;
 
 /**

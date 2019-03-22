@@ -1,8 +1,8 @@
 /**
 * Copyright (C) 2009 EDIT
-* European Distributed Institute of Taxonomy 
+* European Distributed Institute of Taxonomy
 * http://www.e-taxonomy.eu
-* 
+*
 * The contents of this file are subject to the Mozilla Public License Version 1.1
 * See LICENSE.TXT at the top of this package for the full license terms.
 */
@@ -13,7 +13,7 @@ import java.net.URL;
 
 import org.apache.log4j.Logger;
 
-import eu.etaxonomy.cdm.common.AccountStore;
+import eu.etaxonomy.cdm.config.AccountStore;
 import eu.etaxonomy.cdm.io.common.Source;
 
 /**
@@ -24,10 +24,10 @@ import eu.etaxonomy.cdm.io.common.Source;
 public class CdmImportSources {
 	@SuppressWarnings("unused")
 	private static final Logger logger = Logger.getLogger(CdmImportSources.class);
-	
+
 
 	public static Source AFRICA_CHECKLIST_ACCESS(){
-		//	
+		//
 		String dbms = Source.ACCESS;
 		String strServer = null;
 		//String strDB = "fernsTest";
@@ -37,9 +37,9 @@ public class CdmImportSources {
 		return  makeSource(dbms, strServer, strDB, port, userName, null);
 	}
 
-	
+
 	public static Source AFRICA_FERNS_ACCESS(){
-		//	
+		//
 		String dbms = Source.ACCESS;
 		String strServer = null;
 		//String strDB = "fernsTest";
@@ -48,7 +48,7 @@ public class CdmImportSources {
 		String userName = "";
 		return  makeSource(dbms, strServer, strDB, port, userName, null);
 	}
-	
+
 	public static Source GLOBIS(){
 		String dbms = Source.SQL_SERVER_2005;
 		String strServer = "LENOVO-T61";
@@ -66,7 +66,7 @@ public class CdmImportSources {
 		String userName = "sa";
 		return  makeSource(dbms, strServer, strDB, port, userName, null);
 	}
-	
+
 	public static Source GLOBIS_MDB(){
 		String dbms = Source.ACCESS;
 		String strServer = null;
@@ -75,16 +75,16 @@ public class CdmImportSources {
 		String userName = "";
 		return  makeSource(dbms, strServer, strDB, port, userName, null);
 	}
-	
-	
+
+
 	public static URI SYNTHESYS_SPECIMEN(){
 		//		tcsXmlTest.xml
 		URL url = new CdmImportSources().getClass().getResource("/specimen/SynthesysSpecimenExample.xls");
 		String sourceUrl = url.toString();
 		URI uri = URI.create(sourceUrl);
-		return uri;	
+		return uri;
 	}
-	
+
 	/**
 	 * Initializes the source.
 	 * @param dbms
@@ -100,7 +100,7 @@ public class CdmImportSources {
 		Source source = null;
 		source = new Source(dbms, strServer, strDB);
 		source.setPort(port);
-			
+
 		pwd = AccountStore.readOrStorePassword(dbms, strServer, userName, pwd);
 		source.setUserAndPwd(userName, pwd);
 		// write pwd to account store
