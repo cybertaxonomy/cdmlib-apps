@@ -121,7 +121,7 @@ public class BerlinModelTaxonNameImport extends BerlinModelImportBase {
 		String strRecordQuery =
 					"SELECT Name.* , RefDetail.RefDetailId, RefDetail.RefFk, " +
                       		" RefDetail.FullRefCache, RefDetail.FullNomRefCache, RefDetail.PreliminaryFlag AS RefDetailPrelim, RefDetail.Details, " +
-                      		" RefDetail.SecondarySources, Rank.RankAbbrev, Rank.Rank " +
+                      		" RefDetail.SecondarySources, RefDetail.Notes as detailNotes, Rank.RankAbbrev, Rank.Rank " +
                       		facultativCols +
                     " FROM Name LEFT OUTER JOIN RefDetail ON Name.NomRefDetailFk = RefDetail.RefDetailId " +
                     	                                   " AND Name.NomRefFk = RefDetail.RefFk " +
@@ -386,6 +386,13 @@ public class BerlinModelTaxonNameImport extends BerlinModelImportBase {
 					boolean excludeNotes = true;
 					success &= doIdCreatedUpdatedNotes(state, taxonName, rs, nameId, NAMESPACE, excludeUpdated, excludeNotes);
 					handleNameNotes(state, taxonName, rs, nameId);
+
+					//detail notes
+					String detailNotes = rs.getString("detailNotes");
+					if (isNotBlank(detailNotes)){
+					    Annotation detailNoteAnnotation = Annotation.NewDefaultLanguageInstance("RefDetail: " + detailNotes);
+					    taxonName.addAnnotation(detailNoteAnnotation);
+					}
 
 					//zoologicalName
 					if (taxonName.isZoological()){
