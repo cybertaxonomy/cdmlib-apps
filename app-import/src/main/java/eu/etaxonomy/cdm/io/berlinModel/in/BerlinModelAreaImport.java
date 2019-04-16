@@ -187,6 +187,8 @@ public class BerlinModelAreaImport  extends BerlinModelImportBase {
         makeSubterm(oldArea, euroMedAreas.getTermByIdInvocabulary("Mk"), areaLevelEm2);
         makeSubterm(oldArea, euroMedAreas.getTermByIdInvocabulary("Sl"), areaLevelEm2);
         makeSubterm(oldArea, euroMedAreas.getTermByIdInvocabulary("Sr"), areaLevelEm2);
+        makeSubterm(oldArea, euroMedAreas.getTermByIdInvocabulary("Yu(K)"), areaLevelEm2);
+        makeSubterm(oldArea, euroMedAreas.getTermByIdInvocabulary("SM"), areaLevelEm2);
 
         //IJ
         oldArea = euroMedAreas.getTermByIdInvocabulary("IJ");
@@ -332,7 +334,7 @@ public class BerlinModelAreaImport  extends BerlinModelImportBase {
 
 		//parent
 		if (euroMedArea != null){
-			if (emCode.contains("(")){
+			if (emCode.contains("(") && !emCode.startsWith("Yu(K)")){
 				area.setPartOf(level1Area);
 				area.setLevel(areaLevelEm2);
 			}else{
