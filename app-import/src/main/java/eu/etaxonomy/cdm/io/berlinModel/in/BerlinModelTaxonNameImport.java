@@ -1161,6 +1161,10 @@ public class BerlinModelTaxonNameImport extends BerlinModelImportBase {
         if (!CdmUtils.nullSafeEqual(refCand.ref.getAuthorship(), taxonName.getCombinationAuthorship())){
             TeamOrPersonBase<?> refAut = refCand.ref.getAuthorship();
             TeamOrPersonBase<?> nameAut = taxonName.getCombinationAuthorship();
+            if(refAut == null || nameAut == null){
+                logger.warn("refAut or nameAut was null");  //this happened once
+                return;
+            }
             try {
                 MatchResult match = MatchStrategyFactory.NewParsedTeamOrPersonInstance().invoke(refAut, nameAut, true);
                 if (match.isFailed()){
