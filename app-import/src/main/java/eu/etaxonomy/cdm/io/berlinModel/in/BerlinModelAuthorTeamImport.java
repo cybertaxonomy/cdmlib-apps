@@ -260,7 +260,7 @@ public class BerlinModelAuthorTeamImport extends BerlinModelImportBase {
             String[] fullTeams = splitTeam(fullAuthorTeamCache);
             String[] nomTeams = splitTeam(authorTeamCache);
             if (fullTeams.length != nomTeams.length && fullTeams.length != 0){
-                logger.warn("AuthorTeamCache and fullAuthorTeamCache have not the same team size: " + authorTeamCache + " <-> " + fullAuthorTeamCache+ " : " + authorTeamId);
+                logger.warn("AuthorTeamCache and fullAuthorTeamCache have not the same team size: " + authorTeamCache + " <-> " + fullAuthorTeamCache+ " ; authorTeamId=" + authorTeamId);
             }else{
                 for (int i = 0; i< nomTeams.length ;i++){
                     String fullTeam = fullTeams.length == 0? null: fullTeams[i].trim();
