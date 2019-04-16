@@ -90,6 +90,7 @@ public class BerlinModelImportConfigurator extends DbImportConfiguratorBase<Berl
 	private boolean logNotMatchingOldNames = false;
 	private boolean logMatchingNotExportedOldNames = true;
 	private boolean checkOldNameIsSynonym = false;
+	private boolean includeMANsForOldNameCheck = false;
 
 	// NameFact stuff
 	private URL mediaUrl;
@@ -738,6 +739,13 @@ public class BerlinModelImportConfigurator extends DbImportConfiguratorBase<Berl
     }
     public void setDoNamedAreas(boolean doNamedAreas) {
         this.doNamedAreas = doNamedAreas;
+    }
+
+    public boolean isIncludeMANsForOldNameCheck() {
+        return includeMANsForOldNameCheck;
+    }
+    public void setIncludeMANsForOldNameCheck(boolean includeMANsForOldNameCheck) {
+        this.includeMANsForOldNameCheck = includeMANsForOldNameCheck;
     }
 
 }

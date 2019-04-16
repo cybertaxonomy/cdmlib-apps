@@ -48,9 +48,6 @@ import eu.etaxonomy.cdm.model.taxon.TaxonNode;
 @Component
 public class BerlinModelOccurrenceSourceImport  extends BerlinModelImportBase {
 
-    /**
-     *
-     */
     private static final String EXACT = "(exact) ";
 
     private static final long serialVersionUID = 1139543760239436841L;
@@ -83,8 +80,8 @@ public class BerlinModelOccurrenceSourceImport  extends BerlinModelImportBase {
 	@Override
 	protected String getRecordQuery(BerlinModelImportConfigurator config) {
 			String strQuery =   //DISTINCT because otherwise emOccurrenceSource creates multiple records for a single distribution
-            " SELECT * " +
-                " FROM emOccurrenceSource " +
+            " SELECT occ.*, n.nameCache, n.fullNameCache " +
+                " FROM emOccurrenceSource occ LEFT OUTER JOIN Name n ON n.nameId = occ.oldNameFk " +
             " WHERE (OccurrenceSourceId IN (" + ID_LIST_TOKEN + ")  )" +
              "";
 		return strQuery;
@@ -133,6 +130,8 @@ public class BerlinModelOccurrenceSourceImport  extends BerlinModelImportBase {
     			String sourceNumber = rs.getString("SourceNumber");
     			String oldName = rs.getString("OldName");
     			Integer oldNameFk = nullSafeInt(rs, "OldNameFk");
+    			String oldNameFkCache = rs.getString("nameCache");
+    			String oldNameFkFullCache = rs.getString("fullNameCache");
 
     			Distribution distribution = (Distribution)state.getRelatedObject(BerlinModelOccurrenceImport.NAMESPACE, String.valueOf(occurrenceFk));
 
@@ -146,8 +145,7 @@ public class BerlinModelOccurrenceSourceImport  extends BerlinModelImportBase {
     				if (ref != null){
     					DescriptionElementSource originalSource = DescriptionElementSource.NewInstance(OriginalSourceType.PrimaryTaxonomicSource);
     					originalSource.setCitation(ref);
-    					TaxonName taxonName;
-						taxonName = TaxonName.castAndDeproxy(getName(state, oldName, oldNameFk, occurrenceSourceId, distribution));
+    					TaxonName taxonName = getName(state, oldName, oldNameFk, oldNameFkFullCache, oldNameFkCache, occurrenceSourceId, distribution);
 						if (taxonName != null){
 						    if(isNotBlank(oldName) && !oldName.equals(taxonName.getNameCache())){
 	                            originalSource.setOriginalNameString(oldName);
@@ -194,12 +192,14 @@ public class BerlinModelOccurrenceSourceImport  extends BerlinModelImportBase {
 				handleForeignKey(rs, nameIdSet, "oldNameFk");
 				sourceNumberSet.add(CdmUtils.NzTrim(rs.getString("SourceNumber")));
 				oldNamesSet.add(CdmUtils.NzTrim(rs.getString("oldName")));
+				oldNamesSet.add(CdmUtils.NzTrim(rs.getString("nameCache")));
+				oldNamesSet.add(CdmUtils.NzTrim(rs.getString("fullNameCache")));
 			}
 
 			sourceNumberSet.remove("");
 			Set<String> referenceIdSet = handleSourceNumber(sourceNumberSet);
             oldNamesSet.remove("");
-            Set<String> oldNameIdSet = handleOldNames(oldNamesSet);
+            Set<String> oldNameIdSet = handleRelatedOldNames(oldNamesSet);
             nameIdSet.addAll(oldNameIdSet);
 
 			//occurrence map
@@ -243,7 +243,7 @@ public class BerlinModelOccurrenceSourceImport  extends BerlinModelImportBase {
 		return referenceIdSet;
 	}
 
-    private Set<String> handleOldNames(Set<String> oldNamesSet) {
+    private Set<String> handleRelatedOldNames(Set<String> oldNamesSet) {
         Set<String> oldNameIdSet = new HashSet<>();
 
         try {
@@ -268,29 +268,45 @@ public class BerlinModelOccurrenceSourceImport  extends BerlinModelImportBase {
 
 	/**
 	 * @param state
-	 * @param oldName
+	 * @param oldNameStr
 	 * @param oldNameFk
 	 * @return
 	 */
-	private TaxonName getName(BerlinModelImportState state, String oldName, Integer oldNameFk, Integer occSourceId, Distribution distribution) {
-		TaxonName taxonName = (TaxonName)state.getRelatedObject(BerlinModelTaxonNameImport.NAMESPACE, String.valueOf(oldNameFk));
-		if (oldNameFk != null && taxonName == null){
-		    logger.warn("OldNameFk "+oldNameFk+" exists but taxonName not found for occSource: " + occSourceId);
+	private TaxonName getName(BerlinModelImportState state, String oldNameStr, Integer oldNameFk, String oldNameFkFullCache, String oldNameFkCache,
+	        Integer occSourceId, Distribution distribution) {
+		if (oldNameStr == null && oldNameFk == null){
+		    return null;
 		}
-		if (isNotBlank(oldName)){
+		boolean includeMisapplications = state.getConfig().isIncludeMANsForOldNameCheck();
+
+	    TaxonName taxonName = (TaxonName)state.getRelatedObject(BerlinModelTaxonNameImport.NAMESPACE, String.valueOf(oldNameFk));
+		if (oldNameFk != null && taxonName == null){
+		    //move down if occ source names are not loaded in name view
+		    taxonName = handleOldFreetextNameOnly(state, oldNameFkFullCache, occSourceId, distribution);
 		    if (taxonName == null){
-		        return handleOldFreetextNameOnly(state, oldName, occSourceId, distribution);
-		    }else if (!oldName.equals(taxonName.getNameCache())){
-		        logger.warn("Old name freetext and linked name nameCache are not equal: " + oldName + "/" + taxonName.getNameCache() + "; occSourceId: " +  occSourceId);
-		        checkSynonymie(state, oldNameFk, occSourceId, distribution, taxonName);
+		        taxonName = handleOldFreetextNameOnly(state, oldNameFkCache, occSourceId, distribution);
+		    }
+		    if (taxonName == null ){
+		        logger.warn("WARN: OldNameFk "+oldNameFk+" exists but taxonName not found and also search by string not successful for occSource: " + occSourceId +"; Taxon: "+getTaxonStr(distribution));
+		        oldNameStr = oldNameFkFullCache;
+		    }
+		}else if (taxonName != null){
+            taxonName = checkSynonymy(state, oldNameFk, occSourceId, distribution, taxonName, includeMisapplications);
+		}
+		if (isNotBlank(oldNameStr) && oldNameStr != null){
+		    if (taxonName == null){
+		        return handleOldFreetextNameOnly(state, oldNameStr, occSourceId, distribution);
+		    }else if (!oldNameStr.equals(taxonName.getNameCache())){
+		        logger.info("INFO: Old name freetext and linked name nameCache are not equal: " + oldNameStr + "/" + taxonName.getNameCache() +"; Taxon: "+getTaxonStr(distribution) +  "; occSourceId: " +  occSourceId);
+		        checkSynonymy(state, oldNameFk, occSourceId, distribution, taxonName, includeMisapplications);
 	            return taxonName;
 		    }else{
-		        checkSynonymie(state, oldNameFk, occSourceId, distribution, taxonName);
+		        checkSynonymy(state, oldNameFk, occSourceId, distribution, taxonName, includeMisapplications);
 	            return taxonName;
 		    }
 		}else{ //taxonName != null
 		    if (taxonName != null){
-		        checkSynonymie(state, oldNameFk, occSourceId, distribution, taxonName);
+		        checkSynonymy(state, oldNameFk, occSourceId, distribution, taxonName, includeMisapplications);
 		    }
 		    return taxonName;
 		}
@@ -324,9 +340,9 @@ public class BerlinModelOccurrenceSourceImport  extends BerlinModelImportBase {
                 TaxonName synName = getFirstSynonymName(state, names, distribution, null, occSourceId, true);
                 if (synName == null){
                     //TODO should we really use a name if not available in synonymy?
-                    String message = "There is more than one matching oldName for '"+oldName+"' but none of them is a synonym of the accepted taxon '"+getTaxonStr(distribution)+"'.";
-                    message += (!checkOldNameIsSynonym ? "Take arbitrary one. ":"") + "OccSourceId: " + occSourceId;
-                    logger.warn(message);
+                    String message = "INFO: There is more than one matching oldName for '"+oldName+"' but none of them is a synonym of the accepted taxon '"+getTaxonStr(distribution)+"'.";
+                    message += (checkOldNameIsSynonym ? "":"Take arbitrary one. ") + "OccSourceId: " + occSourceId;
+                    logger.info(message);
                     return checkOldNameIsSynonym ? null : result;
                 }else{
                     return synName;
@@ -337,7 +353,7 @@ public class BerlinModelOccurrenceSourceImport  extends BerlinModelImportBase {
                     TaxonName synName = getFirstSynonymName(state, names, distribution, null, occSourceId, true);
                     if (synName == null){
                         if (state.getConfig().isCheckOldNameIsSynonym()){
-//                            logger.warn("There is a matching oldName for '"+oldName+"' but it is not a synonym/misapplication of the accepted taxon '"+getTaxonStr(distribution)+"'. OccSourceId: " + occSourceId);
+                            logger.warn("There is a matching oldName for '"+oldName+"' but it is not a synonym/misapplication of the accepted taxon '"+getTaxonStr(distribution)+"'. OccSourceId: " + occSourceId);
                             return null;
                         }else{
                             return result;
@@ -363,32 +379,42 @@ public class BerlinModelOccurrenceSourceImport  extends BerlinModelImportBase {
      * @param distribution
      * @param taxonName
      */
-    protected void checkSynonymie(BerlinModelImportState state, Integer oldNameFk, Integer occSourceId,
-            Distribution distribution, TaxonName taxonName) {
-        if (state.getConfig().isCheckOldNameIsSynonym()){
+    protected TaxonName checkSynonymy(BerlinModelImportState state, Integer oldNameFk, Integer occSourceId,
+            Distribution distribution, TaxonName taxonName, boolean includeMisapplications) {
+
+        if (!state.getConfig().isCheckOldNameIsSynonym()){
+            return taxonName;
+        }else{
             Set<TaxonName> names = new HashSet<>();
             names.add(taxonName);
-            boolean hasTaxon = !taxonName.getTaxonBases().isEmpty();
-            String orphaned = hasTaxon ? "" : "Orphaned name: ";
-            TaxonName synName = getFirstSynonymName(state, names, distribution, null, occSourceId, false);
-            if (synName == null){
+            TaxonName synName = getFirstSynonymName(state, names, distribution, null, occSourceId, includeMisapplications);
+            if (synName != null){
+                return synName;  //same as taxonName?
+            }else{
+                boolean hasTaxon = !taxonName.getTaxonBases().isEmpty();
+                String orphaned = hasTaxon ? "" : "Orphaned name: ";
                 Set<TaxonName> existingNames = getOldNames(state, taxonName.getNameCache());
                 existingNames.remove(taxonName);
                 if (existingNames.isEmpty()){
-                    logger.warn(orphaned + "NameInSource (" + oldNameFk + " - " +taxonName.getTitleCache() + ") could not be found in synonymy of "+getTaxonStr(distribution)+". OccSourceId: " + occSourceId);
+                    logger.info("INFO:" + orphaned + "NameInSource (" + oldNameFk + " - " +taxonName.getTitleCache() + ") could not be found in synonymy. Similar name does not exist. Use the not in synonymy name. "+getTaxonStr(distribution)+". OccSourceId: " + occSourceId);
+                    return taxonName;
                 }else{
                     TaxonName existingSynonym = getFirstSynonymName(state, existingNames, distribution, null, occSourceId, false);
                     if (existingSynonym != null){
                         boolean isExact = CdmUtils.nullSafeEqual(existingSynonym.getTitleCache(),taxonName.getTitleCache());
                         String exact = isExact ? EXACT : "";
-                        logger.warn(exact + orphaned + "A similar name ("+existingSynonym.getUuid()+") can be found in synonymy but is not the nameInSource (" + oldNameFk + " - " +taxonName.getTitleCache() + "); Taxon: "+getTaxonStr(distribution)+". OccSourceId: " + occSourceId);
+                        logger.info("INFO: " + exact + orphaned + "A similar name ("+existingSynonym.getUuid()+") was found in synonymy but is not the nameInSource. Use synonymie name (" + oldNameFk + " - " +taxonName.getTitleCache() + "); Taxon: "+getTaxonStr(distribution)+". OccSourceId: " + occSourceId);
+                        return existingSynonym;
                     }else{
                         TaxonName existingMisapplication = getFirstMisapplication(state, existingNames, distribution, occSourceId);
                         if (existingMisapplication != null){
                             boolean isExact = CdmUtils.nullSafeEqual(existingMisapplication.getTitleCache(),taxonName.getTitleCache());
                             String exact = isExact ? EXACT : "";
-
-                            logger.warn(exact + orphaned + "A similar misapplied name ("+existingMisapplication.getUuid()+") can be found in misapplications but not is not the nameInSource (" + oldNameFk + " - " +taxonName.getTitleCache() + "); Taxon: "+getTaxonStr(distribution)+". OccSourceId: " + occSourceId);
+                            logger.info("INFO: " + exact + orphaned + "A similar misapplied name ("+existingMisapplication.getUuid()+") can be found in misapplications but is not the nameInSource. Use synonymie name (" + oldNameFk + " - " +taxonName.getTitleCache() + "); Taxon: "+getTaxonStr(distribution)+". OccSourceId: " + occSourceId);
+                            return existingMisapplication;
+                        }else{
+                            logger.info("INFO: NameInSource not found in synonymy. Similar names exist but also not in synonymy. Use name in source (" + oldNameFk + " - " +taxonName.getTitleCache() + "); Taxon: "+getTaxonStr(distribution)+". OccSourceId: " + occSourceId);
+                            return taxonName;
                         }
                     }
                 }
@@ -403,12 +429,14 @@ public class BerlinModelOccurrenceSourceImport  extends BerlinModelImportBase {
      * @param taxon
      * @return
      */
-    private TaxonName getFirstSynonymName(BerlinModelImportState state, Set<TaxonName> names, Distribution distribution, Taxon taxon, Integer occSourceId, boolean includeMisapplications) {
+    private TaxonName getFirstSynonymName(BerlinModelImportState state, Set<TaxonName> names, Distribution distribution,
+            Taxon taxon, Integer occSourceId, boolean includeMisapplications) {
         TaxonName result = null;
-        taxon = taxon == null ? getTaxon(distribution): taxon;
+        taxon = (taxon == null) ? getTaxon(distribution): taxon;
         Set<Synonym> synonyms = taxon.getSynonyms();
         Set<TaxonName> synonymNames = new HashSet<>();
 
+        //taxon, orthvars, synonyms and their orthvars
         synonymNames.add(taxon.getName());
         synonymNames.addAll(getOrthographicVariants(taxon));
 
@@ -478,7 +506,7 @@ public class BerlinModelOccurrenceSourceImport  extends BerlinModelImportBase {
         }
 
         if (result == null && includeMisapplications){
-            result = getFirstMisapplication(state, synonymNames, distribution, occSourceId);
+            result = getFirstMisapplication(state, names, distribution, occSourceId);
         }
 
         return result;
@@ -506,7 +534,7 @@ public class BerlinModelOccurrenceSourceImport  extends BerlinModelImportBase {
         for (TaxonName name : names){
             if (misappliedNames.contains(name)){
                 if (result != null){
-                    logger.warn("There is more than 1 matching misapplied name or invalid designation for " + name.getNameCache() + "; occSourceId: " + occSourceId);
+                    logger.info("INFO: There is more than 1 matching misapplied name or invalid designation for " + name.getNameCache() + ". Take arbitrary one.; occSourceId: " + occSourceId);
                 }
                 result = name;
             }
@@ -541,17 +569,18 @@ public class BerlinModelOccurrenceSourceImport  extends BerlinModelImportBase {
     }
 
     /**
-     * @param state
-     * @param oldName
-     * @return
+     * returns all names in DB matching the given name string.
+     * The name needs to be loaded via related objects previously.
      */
-    private Set<TaxonName> getOldNames(BerlinModelImportState state, String oldName) {
+    private Set<TaxonName> getOldNames(BerlinModelImportState state, String nameStr) {
         Set<TaxonName> names = new HashSet<>();
-        Set<Integer> nameIds = getNameIds(oldName);
+        Set<Integer> nameIds = getNameIds(nameStr);
         for (Integer id : nameIds){
             TaxonName name = (TaxonName)state.getRelatedObject(BerlinModelTaxonNameImport.NAMESPACE, String.valueOf(id));
             if (name != null){
                 names.add(name);
+            }else{
+//                logger.warn("Name for existing id "+id+" not found in related objects: " + nameStr);
             }
         }
         return names;
