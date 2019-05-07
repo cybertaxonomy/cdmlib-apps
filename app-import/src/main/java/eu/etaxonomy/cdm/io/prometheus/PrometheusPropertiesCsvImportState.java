@@ -51,11 +51,6 @@ public class PrometheusPropertiesCsvImportState extends CsvImportState<Prometheu
         citation.setPages("751-756");
     }
 
-    @Override
-    public void resetSession(){
-        super.resetSession();
-    }
-
     public boolean isTermPresent(String termName, ITermService termService) {
         if(existingTerms.isEmpty()){
             existingTerms = termService.list(State.class, null, null, null, null);

@@ -77,11 +77,6 @@ public class PlantGlossaryCsvImportState extends CsvImportState<PlantGlossaryCsv
         propertyVoc.addSource(IdentifiableSource.NewInstance(OriginalSourceType.Import, citation.getTitle(), null, citation, null));
     }
 
-    @Override
-    public void resetSession(){
-        super.resetSession();
-    }
-
     public TermVocabulary<DefinedTerm> getPropertyVoc() {
         return propertyVoc;
     }

@@ -54,11 +54,6 @@ public class KewPlantGlossaryCsvImportState extends CsvImportState<KewPlantGloss
         citation.setIsbn("978-1-84246-422-9");
     }
 
-    @Override
-    public void resetSession(){
-        super.resetSession();
-    }
-
     public boolean isTermPresent(String termName, ITermService termService) {
         if(existingTerms.isEmpty()){
             existingTerms = termService.getUuidAndTitleCache(null, "*");
