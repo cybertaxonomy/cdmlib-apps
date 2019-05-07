@@ -1,8 +1,8 @@
 /**
 * Copyright (C) 2007 EDIT
-* European Distributed Institute of Taxonomy 
+* European Distributed Institute of Taxonomy
 * http://www.e-taxonomy.eu
-* 
+*
 * The contents of this file are subject to the Mozilla Public License Version 1.1
 * See LICENSE.TXT at the top of this package for the full license terms.
 */
@@ -32,16 +32,15 @@ import eu.etaxonomy.cdm.model.common.ExtensionType;
 import eu.etaxonomy.cdm.model.description.Feature;
 import eu.etaxonomy.cdm.model.name.NomenclaturalCode;
 import eu.etaxonomy.cdm.model.taxon.TaxonBase;
-import eu.etaxonomy.cdm.model.term.FeatureNode;
 import eu.etaxonomy.cdm.model.term.FeatureTree;
 
 
 /**
  * TODO add the following to a wiki page:
- * HINT: If you are about to import into a mysql data base running under windows and if you wish to dump and restore the resulting data bas under another operation systen 
+ * HINT: If you are about to import into a mysql data base running under windows and if you wish to dump and restore the resulting data bas under another operation systen
  * you must set the mysql system variable lower_case_table_names = 0 in order to create data base with table compatible names.
- * 
- * 
+ *
+ *
  * @author a.mueller
  *
  */
@@ -52,62 +51,62 @@ public class EuroMedVibrantActivator {
 	static DbSchemaValidation hbm2dll = DbSchemaValidation.CREATE;
 //	static final Source berlinModelSource = BerlinModelSources.euroMed();
 	static final Source berlinModelSource = BerlinModelSources.euroMed_PESI3();
-	
+
 //	static final ICdmDataSource cdmDestination = CdmDestinations.cdm_pesi_euroMed();
 //	static final ICdmDataSource cdmDestination = CdmDestinations.cdm_test_local_mysql();
 	static final ICdmDataSource cdmDestination = CdmDestinations.cdm_local_test_mysql();
-	
+
 	static final boolean includePesiExport = false;
-	
+
 	static final int sourceSecId = 7000000; //500000
 	static final UUID classificationUuid = UUID.fromString("5e05ebc5-6075-45ff-81df-4cefafafa4a3");
 	static final boolean useSingleClassification = true;
-	
+
 	//from PESI-transformer
 	static UUID uuidSourceRefEuroMed = UUID.fromString("0603a84a-f024-4454-ab92-9e2ac0139126");
-	
+
 	static final UUID featureTreeUuid = UUID.fromString("eff345e7-0619-4ec3-955d-997c1fafffc3");
-	static final Object[] featureKeyList = new Integer[]{1, 31, 4, 98, 41}; 	
-	
+	static final Object[] featureKeyList = new Integer[]{1, 31, 4, 98, 41};
+
 	// set to zero for unlimited nameFacts
 	static final int maximumNumberOfNameFacts = 0;
-	
+
 	static final int partitionSize = 2500;
-	
+
 	//check - import
 	static final CHECK check = CHECK.IMPORT_WITHOUT_CHECK;
 
 	//editor - import
 	static final EDITOR editor = EDITOR.EDITOR_AS_EDITOR;
-	
+
 	//NomenclaturalCode
 	static final NomenclaturalCode nomenclaturalCode = NomenclaturalCode.ICNAFP;
 
 	//ignore null
 	static final boolean ignoreNull = true;
-	
+
 	static final boolean switchSpeciesGroup = true;
-	
+
 	static boolean useClassification = true;
-	
-	
+
+
 	static String taxonTable = "v_cdm_exp_taxaAll";
-	static String classificationQuery = " SELECT DISTINCT t.PTRefFk, r.RefCache FROM PTaxon t INNER JOIN Reference r ON t.PTRefFk = r.RefId WHERE t.PTRefFk = " + sourceSecId; 
-	static String relPTaxonIdQuery = " SELECT r.RelPTaxonId " + 
+	static String classificationQuery = " SELECT DISTINCT t.PTRefFk, r.RefCache FROM PTaxon t INNER JOIN Reference r ON t.PTRefFk = r.RefId WHERE t.PTRefFk = " + sourceSecId;
+	static String relPTaxonIdQuery = " SELECT r.RelPTaxonId " +
 					" FROM RelPTaxon AS r INNER JOIN v_cdm_exp_taxaDirect AS a ON r.PTNameFk2 = a.PTNameFk AND r.PTRefFk2 = a.PTRefFk ";
 	static String nameIdTable = " v_cdm_exp_namesAll ";
 	static String referenceIdTable = " v_cdm_exp_refAll ";
 	static String factFilter = " factId IN ( SELECT factId FROM v_cdm_exp_factsAll )";
 	static String occurrenceFilter = " occurrenceId IN ( SELECT occurrenceId FROM v_cdm_exp_occurrenceAll )";
-	static String occurrenceSourceFilter = " occurrenceFk IN ( SELECT occurrenceId FROM v_cdm_exp_occurrenceAll )"; 
+	static String occurrenceSourceFilter = " occurrenceFk IN ( SELECT occurrenceId FROM v_cdm_exp_occurrenceAll )";
 	static String commonNameFilter = " commonNameId IN ( SELECT commonNameId FROM v_cdm_exp_commonNamesAll )";
 	static String webMarkerFilter = " TableNameFk <> 500 OR ( RIdentifierFk IN (SELECT RIdentifier FROM v_cdm_exp_taxaAll)) ";
 	static String authorTeamFilter = null; // " authorTeamId IN (SELECT authorTeamId FROM v_cdm_exp_authorTeamsAll) ";
-	static String authorFilter = null;  // " authorId IN (SELECT authorId FROM v_cdm_exp_authorsAll) "; 
-	
+	static String authorFilter = null;  // " authorId IN (SELECT authorId FROM v_cdm_exp_authorsAll) ";
 
-	
-// **************** ALL *********************	
+
+
+// **************** ALL *********************
 
 	static final boolean doUser = true;
 	//authors
@@ -119,7 +118,7 @@ public class EuroMedVibrantActivator {
 	static final boolean doRelNames = true;
 	static final boolean doNameStatus = true;
 	static final boolean doNameFacts = true;
-	
+
 	//taxa
 	static final boolean doTaxa = true;
 	static final boolean doRelTaxa = true;
@@ -128,7 +127,7 @@ public class EuroMedVibrantActivator {
 	static final boolean doCommonNames = false;  //currently creates errors
 
 
-	
+
 // **************** SELECTED *********************
 
 //	static final boolean doUser = true;
@@ -142,33 +141,33 @@ public class EuroMedVibrantActivator {
 //	static final boolean doNameStatus = false;
 //	static final boolean doTypes = false;
 //	static final boolean doNameFacts = false;
-//	
-//	//taxa 
+//
+//	//taxa
 //	static final boolean doTaxa = false;
 //	static final boolean doRelTaxa = false;
 //	static final boolean doFacts = false;
 //	static final boolean doOccurences = false;
 //	static final boolean doCommonNames = false;
-//	
+//
 //	//etc.
 //	static final boolean doMarker = false;
 
 	//always false
-	static final boolean doTypes = false;  
+	static final boolean doTypes = false;
 	static final boolean doMarker = false;
 
-	
+
 	public void importEm2CDM (Source source, ICdmDataSource destination, DbSchemaValidation hbm2dll){
 		System.out.println("Start import from BerlinModel("+ source.getDatabase() + ") to " + destination.getDatabase() + " ...");
 		//make BerlinModel Source
-		
+
 		logger.warn("REMIND: Set publishFlag = 1 filter in 'v_cdm_exp_taxaDirect' view !! ");
-		
+
 		BerlinModelImportConfigurator config = BerlinModelImportConfigurator.NewInstance(source,  destination);
-		
+
 		config.setClassificationUuid(classificationUuid);
 		config.setSourceSecId(sourceSecId);
-		
+
 		config.setNomenclaturalCode(nomenclaturalCode);
 
 		try {
@@ -178,8 +177,8 @@ public class EuroMedVibrantActivator {
 			e.printStackTrace();
 			return;
 		}
-		
-		
+
+
 		config.setIgnoreNull(ignoreNull);
 		config.setDoAuthors(doAuthors);
 		config.setDoReferences(doReferences);
@@ -190,21 +189,21 @@ public class EuroMedVibrantActivator {
 		config.setDoNameFacts(doNameFacts);
 		config.setUseClassification(useClassification);
 		config.setSourceRefUuid(uuidSourceRefEuroMed);
-		
+
 		config.setDoTaxa(doTaxa);
 		config.setDoRelTaxa(doRelTaxa);
 		config.setDoFacts(doFacts);
 		config.setDoOccurrence(doOccurences);
 		config.setDoCommonNames(doCommonNames);
-		
+
 		config.setDoMarker(doMarker);
 		config.setDoUser(doUser);
 		config.setEditor(editor);
 		config.setDbSchemaValidation(hbm2dll);
-		
+
 		// maximum number of name facts to import
 		config.setMaximumNumberOfNameFacts(maximumNumberOfNameFacts);
-		
+
 //		filter
 		config.setTaxonTable(taxonTable);
 		config.setClassificationQuery(classificationQuery);
@@ -219,36 +218,34 @@ public class EuroMedVibrantActivator {
 		config.setOccurrenceSourceFilter(occurrenceSourceFilter);
 		config.setWebMarkerFilter(webMarkerFilter);
 		config.setUseSingleClassification(useSingleClassification);
-		
+
 		config.setCheck(check);
 		config.setEditor(editor);
 		config.setRecordsPerTransaction(partitionSize);
-		
+
 		config.setSwitchSpeciesGroup(switchSpeciesGroup);
-		
+
 		// invoke import
 		CdmDefaultImport<BerlinModelImportConfigurator> bmImport = new CdmDefaultImport<BerlinModelImportConfigurator>();
 		bmImport.invoke(config);
-		
+
 		if (doFacts && config.getCheck().equals(CHECK.CHECK_AND_IMPORT)  || config.getCheck().equals(CHECK.IMPORT_WITHOUT_CHECK)    ){
 			ICdmRepository app = bmImport.getCdmAppController();
-			
+
 			//make feature tree
-			FeatureTree tree = TreeCreator.flatTree(featureTreeUuid, config.getFeatureMap(), featureKeyList);
-			FeatureNode imageNode = FeatureNode.NewInstance(Feature.IMAGE());
-			tree.getRoot().addChild(imageNode);
-			FeatureNode distributionNode = FeatureNode.NewInstance(Feature.DISTRIBUTION());
-			tree.getRoot().addChild(distributionNode, 2); 
+			FeatureTree<Feature> tree = TreeCreator.flatTree(featureTreeUuid, config.getFeatureMap(), featureKeyList);
+			tree.getRoot().addChild(Feature.IMAGE());
+			tree.getRoot().addChild(Feature.DISTRIBUTION(), 2);
 			app.getFeatureTreeService().saveOrUpdate(tree);
 		}
-		
+
 		System.out.println("End import from BerlinModel ("+ source.getDatabase() + ")...");
 
 		logger.warn("REMIND: Set publishFlag back to <= 1  in 'v_cdm_exp_taxaDirect' view !! ");
 
-		
+
 	}
-	
+
 	/**
 	 * @param args
 	 */
@@ -256,10 +253,10 @@ public class EuroMedVibrantActivator {
 		EuroMedVibrantActivator importActivator = new EuroMedVibrantActivator();
 		Source source = berlinModelSource;
 		ICdmDataSource cdmRepository = CdmDestinations.chooseDestination(args) != null ? CdmDestinations.chooseDestination(args) : cdmDestination;
-		
+
 		importActivator.importEm2CDM(source, cdmRepository, hbm2dll);
 	}
-	
+
 	private static final String URLbase = "http://ww2.bgbm.org/EuroPlusMed/PTaxonDetail.asp?";
 	public static Method makeUrlForTaxon(TaxonBase<?> taxon, ResultSet rs){
 		Method result = null;
@@ -277,7 +274,7 @@ public class EuroMedVibrantActivator {
 		} catch (SQLException e) {
 			logger.warn("Exception when trying to access result set for url creation.");
 		}
-		
+
 		return result;
 	}
 

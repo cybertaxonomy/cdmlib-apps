@@ -435,24 +435,20 @@ public class FloraHellenicaTermImport <CONFIG extends FloraHellenicaImportConfig
             hasFeatureTree = true;
             return;
         }
-        FeatureTree result = FeatureTree.NewInstance(state.getConfig().getUuidFeatureTree());
+        FeatureTree<Feature> result = FeatureTree.NewInstance(state.getConfig().getUuidFeatureTree());
         result.setTitleCache(state.getConfig().getFeatureTreeTitle(), true);
-        FeatureNode root = result.getRoot();
-        FeatureNode newNode;
+        FeatureNode<Feature> root = result.getRoot();
         ITermService service = getTermService();
 
         UUID uuid = FloraHellenicaTransformer.uuidFloraHellenicaTaxonInfoFeature;
         Feature newFeature = getFeature(state, uuid, "Taxon info", "Taxon info", null, null);
-        newNode = FeatureNode.NewInstance(newFeature);
-        root.addChild(newNode);
+        root.addChild(newFeature);
 
         newFeature = (Feature)service.find(Feature.DISTRIBUTION().getUuid());
-        newNode = FeatureNode.NewInstance(newFeature);
-        root.addChild(newNode);
+        root.addChild(newFeature);
 
         newFeature = (Feature)service.find(Feature.STATUS().getUuid());
-        newNode = FeatureNode.NewInstance(newFeature);
-        root.addChild(newNode);
+        root.addChild(newFeature);
         newFeature.setSupportsCategoricalData(true);
         TermVocabulary<State> voc = this.getVocabularyService().find(FloraHellenicaTransformer.uuidFloraHellenicaStatusVoc);
         newFeature.addSupportedCategoricalEnumeration(voc);
@@ -463,27 +459,23 @@ public class FloraHellenicaTermImport <CONFIG extends FloraHellenicaImportConfig
         newFeature.setSupportsCategoricalData(true);
         voc = this.getVocabularyService().find(FloraHellenicaTransformer.uuidFloraHellenicaChorologicalVoc);
         newFeature.addSupportedCategoricalEnumeration(voc);
-        newNode = FeatureNode.NewInstance(newFeature);
-        root.addChild(newNode);
+        root.addChild(newFeature);
 
         newFeature = (Feature)service.find(Feature.LIFEFORM().getUuid());
-        newNode = FeatureNode.NewInstance(newFeature);
-        root.addChild(newNode);
+        root.addChild(newFeature);
         newFeature.setSupportsCategoricalData(true);
         voc = this.getVocabularyService().find(FloraHellenicaTransformer.uuidFloraHellenicaLifeformVoc);
         newFeature.addSupportedCategoricalEnumeration(voc);
 
         newFeature = (Feature)service.find(Feature.HABITAT().getUuid());
-        newNode = FeatureNode.NewInstance(newFeature);
-        root.addChild(newNode);
+        root.addChild(newFeature);
         newFeature.setSupportsCategoricalData(true);
         voc = this.getVocabularyService().find(FloraHellenicaTransformer.uuidFloraHellenicaHabitatVoc);
         newFeature.addSupportedCategoricalEnumeration(voc);
 
 
         newFeature = (Feature)service.find(Feature.NOTES().getUuid());
-        newNode = FeatureNode.NewInstance(newFeature);
-        root.addChild(newNode);
+        root.addChild(newFeature);
 
         getFeatureTreeService().saveOrUpdate(result);
         hasFeatureTree = true;

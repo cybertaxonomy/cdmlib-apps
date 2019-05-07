@@ -226,24 +226,20 @@ public class CubaActivator {
 		return result;
 	}
 
-	private FeatureTree makeFeatureNodes(ITermService service){
+	private FeatureTree<Feature> makeFeatureNodes(ITermService service){
 //		CyprusTransformer transformer = new CyprusTransformer();
 
-		FeatureTree result = FeatureTree.NewInstance(featureTreeUuid);
+		FeatureTree<Feature> result = FeatureTree.NewInstance(featureTreeUuid);
 		result.setTitleCache("Cuba Feature Tree", true);
-		FeatureNode root = result.getRoot();
-		FeatureNode newNode;
+		FeatureNode<Feature> root = result.getRoot();
 
-		newNode = FeatureNode.NewInstance(Feature.DISTRIBUTION());
-		root.addChild(newNode);
+		root.addChild(Feature.DISTRIBUTION());
 
 //		Feature featurAltFam = (Feature)service.find(CubaTransformer.uuidAlternativeFamily);
-//		newNode = FeatureNode.NewInstance(featurAltFam);
-//		root.addChild(newNode);
+//		root.addChild(featurAltFam);
 
 	    Feature featurAltFam2 = (Feature)service.find(CubaTransformer.uuidAlternativeFamily2);
-	    newNode = FeatureNode.NewInstance(featurAltFam2);
-	    root.addChild(newNode);
+	    root.addChild(featurAltFam2);
 
 		return result;
 	}

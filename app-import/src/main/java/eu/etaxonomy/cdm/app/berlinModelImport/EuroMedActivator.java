@@ -58,7 +58,6 @@ import eu.etaxonomy.cdm.model.name.Rank;
 import eu.etaxonomy.cdm.model.taxon.Taxon;
 import eu.etaxonomy.cdm.model.taxon.TaxonNode;
 import eu.etaxonomy.cdm.model.term.DefinedTermBase;
-import eu.etaxonomy.cdm.model.term.FeatureNode;
 import eu.etaxonomy.cdm.model.term.FeatureTree;
 import eu.etaxonomy.cdm.model.term.Representation;
 import eu.etaxonomy.cdm.persistence.hibernate.permission.Role;
@@ -404,14 +403,11 @@ public class EuroMedActivator {
                 TransactionStatus tx = app.startTransaction();
 
                 //make feature tree
-                FeatureTree tree = TreeCreator.flatTree(featureTreeUuid, config.getFeatureMap(), featureKeyList);
+                FeatureTree<Feature> tree = TreeCreator.flatTree(featureTreeUuid, config.getFeatureMap(), featureKeyList);
                 tree.setTitleCache("Euro+Med Feature Tree", true);
-                FeatureNode imageNode = FeatureNode.NewInstance(Feature.IMAGE());
-                tree.getRoot().addChild(imageNode);
-                FeatureNode distributionNode = FeatureNode.NewInstance(Feature.DISTRIBUTION());
-                tree.getRoot().addChild(distributionNode, 1);
-                FeatureNode commonNameNode = FeatureNode.NewInstance(Feature.COMMON_NAME());
-                tree.getRoot().addChild(commonNameNode, 2);
+                tree.getRoot().addChild(Feature.IMAGE());
+                tree.getRoot().addChild(Feature.DISTRIBUTION(), 1);
+                tree.getRoot().addChild(Feature.COMMON_NAME(), 2);
                 app.getFeatureTreeService().saveOrUpdate(tree);
 
                 app.commitTransaction(tx);

@@ -26,7 +26,6 @@ import eu.etaxonomy.cdm.io.common.ImportResult;
 import eu.etaxonomy.cdm.io.common.Source;
 import eu.etaxonomy.cdm.model.description.Feature;
 import eu.etaxonomy.cdm.model.name.NomenclaturalCode;
-import eu.etaxonomy.cdm.model.term.FeatureNode;
 import eu.etaxonomy.cdm.model.term.FeatureTree;
 
 
@@ -176,14 +175,12 @@ public class CampanulaceaeActivator {
 			ICdmRepository app = bmImport.getCdmAppController();
 
 			//make feature tree
-			FeatureTree tree = TreeCreator.flatTree(featureTreeUuid, bmImportConfigurator.getFeatureMap(), featureKeyList);
-			FeatureNode distributionNode = FeatureNode.NewInstance(Feature.DISTRIBUTION());
-			tree.getRoot().addChild(distributionNode, 1);
+			FeatureTree<Feature> tree = TreeCreator.flatTree(featureTreeUuid, bmImportConfigurator.getFeatureMap(), featureKeyList);
+			tree.getRoot().addChild(Feature.DISTRIBUTION(), 1);
 			app.getFeatureTreeService().saveOrUpdate(tree);
 		}
 
 		System.out.println("End import from BerlinModel ("+ source.getDatabase() + ")...");
-
 
 		logger.warn("!!!! NOTE: RefDetail notes and RelPTaxon notes are not imported automatically. Please check for these notes and import them manually.");
 

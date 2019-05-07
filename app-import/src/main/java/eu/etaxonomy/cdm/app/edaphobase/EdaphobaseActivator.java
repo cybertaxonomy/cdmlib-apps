@@ -92,20 +92,18 @@ public class EdaphobaseActivator {
         CdmDefaultImport<EdaphobaseImportConfigurator> myImport = new CdmDefaultImport<>();
         myImport.invoke(config);
 
-        FeatureTree tree = makeFeatureNodes(myImport.getCdmAppController().getTermService());
+        FeatureTree<Feature> tree = makeFeatureNodes(myImport.getCdmAppController().getTermService());
         myImport.getCdmAppController().getFeatureTreeService().saveOrUpdate(tree);
     }
 
-    private FeatureTree makeFeatureNodes(ITermService service){
+    private FeatureTree<Feature> makeFeatureNodes(ITermService service){
 
-        FeatureTree result = FeatureTree.NewInstance(featureTreeUuid);
+        FeatureTree<Feature> result = FeatureTree.NewInstance(featureTreeUuid);
         result.setTitleCache(featureTreeTitle, true);
-        FeatureNode root = result.getRoot();
-        FeatureNode newNode;
+        FeatureNode<Feature> root = result.getRoot();
 
         Feature distributionFeature = (Feature)service.find(Feature.DISTRIBUTION().getUuid());
-        newNode = FeatureNode.NewInstance(distributionFeature);
-        root.addChild(newNode);
+        root.addChild(distributionFeature);
 
         return result;
     }

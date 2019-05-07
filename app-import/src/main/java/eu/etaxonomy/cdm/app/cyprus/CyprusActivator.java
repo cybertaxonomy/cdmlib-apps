@@ -115,22 +115,18 @@ public class CyprusActivator {
 		return result;
 	}
 
-	private FeatureTree makeFeatureNodes(ITermService service){
+	private FeatureTree<Feature> makeFeatureNodes(ITermService service){
 		CyprusTransformer transformer = new CyprusTransformer();
 
-		FeatureTree result = FeatureTree.NewInstance(featureTreeUuid);
+		FeatureTree<Feature> result = FeatureTree.NewInstance(featureTreeUuid);
 		result.setTitleCache("Cyprus Feature Tree", true);
-		FeatureNode root = result.getRoot();
-		FeatureNode newNode;
+		FeatureNode<Feature> root = result.getRoot();
 
-		newNode = FeatureNode.NewInstance(Feature.STATUS());
-		root.addChild(newNode);
+		root.addChild(Feature.STATUS());
 
-		newNode = FeatureNode.NewInstance(Feature.DISTRIBUTION());
-		root.addChild(newNode);
+		root.addChild(Feature.DISTRIBUTION());
 
-		newNode = FeatureNode.NewInstance(Feature.SYSTEMATICS());
-		root.addChild(newNode);
+		root.addChild(Feature.SYSTEMATICS());
 
 		//user defined features
 		String [] featureList = new String[]{"Red Book", "Endemism"};
@@ -163,15 +159,14 @@ public class CyprusActivator {
 		}
 	}
 
-	public void addFeataureNodesByStringList(String[] featureStringList, FeatureNode root, IInputTransformer transformer, ITermService termService){
+	public void addFeataureNodesByStringList(String[] featureStringList, FeatureNode<Feature> root, IInputTransformer transformer, ITermService termService){
 		try {
 			for (String featureString : featureStringList){
 			UUID featureUuid;
 			featureUuid = transformer.getFeatureUuid(featureString);
 			Feature feature = (Feature)termService.find(featureUuid);
 			if (feature != null){
-				FeatureNode child = FeatureNode.NewInstance(feature);
-				root.addChild(child);
+				root.addChild(feature);
 			}
 		}
 		} catch (UndefinedTransformerMethodException e) {

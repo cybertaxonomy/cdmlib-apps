@@ -70,7 +70,6 @@ import eu.etaxonomy.cdm.model.reference.Reference;
 import eu.etaxonomy.cdm.model.reference.ReferenceFactory;
 import eu.etaxonomy.cdm.model.taxon.Taxon;
 import eu.etaxonomy.cdm.model.taxon.TaxonBase;
-import eu.etaxonomy.cdm.model.term.FeatureNode;
 import eu.etaxonomy.cdm.model.term.FeatureTree;
 import eu.etaxonomy.cdm.model.term.Representation;
 import eu.etaxonomy.cdm.model.term.TermBase;
@@ -172,12 +171,12 @@ public class BerlinModelFactsImport  extends BerlinModelImportBase {
 
 				result.put(factCategoryId, feature);
 				if (createFeatureTree && isPublicFeature(factCategoryId)){
-				    featureTree.getRoot().addChild(FeatureNode.NewInstance(feature));
+				    featureTree.getRoot().addChild(feature);
 				}
 			}
 			if (createFeatureTree){
-			    featureTree.getRoot().addChild(FeatureNode.NewInstance(Feature.DISTRIBUTION()),2);
-                featureTree.getRoot().addChild(FeatureNode.NewInstance(Feature.NOTES()), featureTree.getRoot().getChildCount()-1);
+			    featureTree.getRoot().addChild(Feature.DISTRIBUTION(),2);
+                featureTree.getRoot().addChild(Feature.NOTES(), featureTree.getRoot().getChildCount()-1);
 			    getFeatureTreeService().save(featureTree);
 			}
 			return result;

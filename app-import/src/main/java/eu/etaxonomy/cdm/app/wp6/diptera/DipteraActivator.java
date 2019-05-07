@@ -12,13 +12,13 @@ package eu.etaxonomy.cdm.app.wp6.diptera;
 import java.lang.reflect.Method;
 import java.util.UUID;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
 
 import eu.etaxonomy.cdm.api.application.ICdmRepository;
 import eu.etaxonomy.cdm.app.berlinModelImport.BerlinModelSources;
 import eu.etaxonomy.cdm.app.berlinModelImport.TreeCreator;
 import eu.etaxonomy.cdm.app.common.CdmDestinations;
-import eu.etaxonomy.cdm.common.CdmUtils;
 import eu.etaxonomy.cdm.database.DbSchemaValidation;
 import eu.etaxonomy.cdm.database.ICdmDataSource;
 import eu.etaxonomy.cdm.io.berlinModel.in.BerlinModelImportConfigurator;
@@ -32,7 +32,6 @@ import eu.etaxonomy.cdm.io.common.Source;
 import eu.etaxonomy.cdm.model.description.Feature;
 import eu.etaxonomy.cdm.model.name.NameTypeDesignationStatus;
 import eu.etaxonomy.cdm.model.name.NomenclaturalCode;
-import eu.etaxonomy.cdm.model.term.FeatureNode;
 import eu.etaxonomy.cdm.model.term.FeatureTree;
 
 
@@ -195,13 +194,11 @@ public class DipteraActivator {
 			}
 			//make feature tree
 			app = bmImport.getCdmAppController();
-			FeatureTree tree = TreeCreator.flatTree(featureTreeUuid, bmImportConfigurator.getFeatureMap(), featureKeyList);
+			FeatureTree<Feature> tree = TreeCreator.flatTree(featureTreeUuid, bmImportConfigurator.getFeatureMap(), featureKeyList);
 			// add image
-			FeatureNode imageNode = FeatureNode.NewInstance(Feature.IMAGE());
-			tree.getRoot().addChild(imageNode);
+			tree.getRoot().addChild(Feature.IMAGE());
 			// add distribution
-			FeatureNode distributionNode = FeatureNode.NewInstance(Feature.DISTRIBUTION());
-			tree.getRoot().addChild(distributionNode);
+			tree.getRoot().addChild(Feature.DISTRIBUTION());
 			app.getFeatureTreeService().saveOrUpdate(tree);
 		}
 		System.out.println("End import from BerlinModel ("+ source.getDatabase() + ")...");
@@ -223,16 +220,11 @@ public class DipteraActivator {
 		if (updateCollections){
 			success = updater.updateCollections(destination);
 		}
-
-
 	}
 
 
-
-
-
 	private static NameTypeDesignationStatus nameTypeDesignationStatueMethod(String note){
-		if (CdmUtils.isEmpty(note)){
+		if (StringUtils.isBlank(note)){
 			return null;
 		}
 		note = note.trim();
@@ -250,8 +242,6 @@ public class DipteraActivator {
 			logger.warn("NameTypeDesignationStatus could not be defined for: " + note);
 			return null;
 		}
-
-
 	}
 
 }

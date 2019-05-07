@@ -65,7 +65,6 @@ import eu.etaxonomy.cdm.model.taxon.Taxon;
 import eu.etaxonomy.cdm.model.taxon.TaxonBase;
 import eu.etaxonomy.cdm.model.term.DefinedTerm;
 import eu.etaxonomy.cdm.model.term.DefinedTermBase;
-import eu.etaxonomy.cdm.model.term.FeatureNode;
 import eu.etaxonomy.cdm.model.term.FeatureTree;
 import eu.etaxonomy.cdm.model.term.TermType;
 import eu.etaxonomy.cdm.model.term.TermVocabulary;
@@ -764,7 +763,7 @@ public class UseImport {
 		}
 		if(featureUseRecord == null|| featureUseSummary == null) {
 			TermVocabulary<Feature> featureVocabulary = vocabularyService.find((UUID.fromString("b187d555-f06f-4d65-9e53-da7c93f8eaa8")));
-			FeatureTree palmWebFeatureTree = featureTreeService.find(UUID.fromString("72ccce05-7cc8-4dab-8e47-bf3f5fd848a0"));
+			FeatureTree<Feature> palmWebFeatureTree = featureTreeService.find(UUID.fromString("72ccce05-7cc8-4dab-8e47-bf3f5fd848a0"));
 			//List<FeatureTree> featureTrees = CdmStore.getService(IFeatureTreeService.class).list(FeatureTree.class, null, null, null, null);
 
 			if (featureUseRecord == null ) {
@@ -773,8 +772,7 @@ public class UseImport {
 				featureUseRecord.isSupportsCategoricalData();
 				featureUseRecord.setSupportsCategoricalData(true);
 				featureVocabulary.addTerm(featureUseRecord);
-				FeatureNode useRecFeatureNode = FeatureNode.NewInstance(featureUseRecord);
-				palmWebFeatureTree.getRoot().addChild(useRecFeatureNode);
+				palmWebFeatureTree.getRoot().addChild(featureUseRecord);
 			}
 			if (featureUseSummary == null) {
 				featureUseSummary = Feature.NewInstance("Use", "Use", null);
@@ -783,8 +781,7 @@ public class UseImport {
 				featureUseSummary.setSupportsTextData(true);
 				//TermVocabulary<Feature> featureVocabulary = (TermVocabulary<Feature>)CdmStore.getService(IVocabularyService.class).find((UUID.fromString("b187d555-f06f-4d65-9e53-da7c93f8eaa8")));
 				featureVocabulary.addTerm(featureUseSummary);
-				FeatureNode useSumFeatureNode = FeatureNode.NewInstance(featureUseSummary);
-				palmWebFeatureTree.getRoot().addChild(useSumFeatureNode);
+				palmWebFeatureTree.getRoot().addChild(featureUseSummary);
 			}
 
 			vocabularyService.saveOrUpdate(featureVocabulary);

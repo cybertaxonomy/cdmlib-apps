@@ -122,7 +122,7 @@ public class PalmaeActivator {
 			logger.info("Make feature tree");
 			ICdmRepository app = tcsImport.getCdmAppController();
 
-			FeatureTree tree = getFeatureTree();
+			FeatureTree<Feature> tree = getFeatureTree();
 			app.getFeatureTreeService().saveOrUpdate(tree);
 			System.out.println("End import from TCS ("+ source.toString() + ")...");
 
@@ -136,38 +136,24 @@ public class PalmaeActivator {
 	}
 
 
-	private FeatureTree getFeatureTree(){
+	private FeatureTree<Feature> getFeatureTree(){
 
-		FeatureTree result = FeatureTree.NewInstance(featureTreeUuid);
-		FeatureNode root = result.getRoot();
+		FeatureTree<Feature> result = FeatureTree.NewInstance(featureTreeUuid);
+		FeatureNode<Feature> root = result.getRoot();
 
-		FeatureNode newNode;
-		newNode = FeatureNode.NewInstance(Feature.INTRODUCTION());
-		root.addChild(newNode);
-		newNode = FeatureNode.NewInstance(Feature.DISTRIBUTION());
-		root.addChild(newNode);
-		newNode = FeatureNode.NewInstance(Feature.BIOLOGY_ECOLOGY());
-		root.addChild(newNode);
-		newNode = FeatureNode.NewInstance(Feature.CONSERVATION());
-		root.addChild(newNode);
-		newNode = FeatureNode.NewInstance(Feature.COMMON_NAME());
-		root.addChild(newNode);
-		newNode = FeatureNode.NewInstance(Feature.ETYMOLOGY());
-		root.addChild(newNode);
-		newNode = FeatureNode.NewInstance(Feature.USES());
-		root.addChild(newNode);
-		newNode = FeatureNode.NewInstance(Feature.CULTIVATION());
-		root.addChild(newNode);
-		newNode = FeatureNode.NewInstance(Feature.DISCUSSION());
-		root.addChild(newNode);
-		newNode = FeatureNode.NewInstance(Feature.DIAGNOSIS());
-		root.addChild(newNode);
-		newNode = FeatureNode.NewInstance(Feature.DESCRIPTION());
-		root.addChild(newNode);
-		newNode = FeatureNode.NewInstance(Feature.MATERIALS_EXAMINED());
-		root.addChild(newNode);
-		newNode = FeatureNode.NewInstance(Feature.ANATOMY());
-		root.addChild(newNode);
+		root.addChild(Feature.INTRODUCTION());
+		root.addChild(Feature.DISTRIBUTION());
+		root.addChild(Feature.BIOLOGY_ECOLOGY());
+		root.addChild(Feature.CONSERVATION());
+		root.addChild(Feature.COMMON_NAME());
+		root.addChild(Feature.ETYMOLOGY());
+		root.addChild(Feature.USES());
+		root.addChild(Feature.CULTIVATION());
+		root.addChild(Feature.DISCUSSION());
+		root.addChild(Feature.DIAGNOSIS());
+		root.addChild(Feature.DESCRIPTION());
+		root.addChild(Feature.MATERIALS_EXAMINED());
+		root.addChild(Feature.ANATOMY());
 
 		return result;
 

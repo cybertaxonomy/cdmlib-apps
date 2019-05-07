@@ -36,7 +36,6 @@ import eu.etaxonomy.cdm.strategy.parser.TimePeriodParser;
 /**
  * @author a.mueller
  * @since 16.06.2016
- *
  */
 public class MexicoConabioActivator {
     private static final Logger logger = Logger.getLogger(MexicoConabioActivator.class);
@@ -92,7 +91,7 @@ public class MexicoConabioActivator {
         myImport.invoke(config);
 
         if (true){
-            FeatureTree tree = makeFeatureNodes(myImport.getCdmAppController());
+            FeatureTree<Feature> tree = makeFeatureNodes(myImport.getCdmAppController());
             myImport.getCdmAppController().getFeatureTreeService().saveOrUpdate(tree);
         }
 
@@ -128,33 +127,29 @@ public class MexicoConabioActivator {
         return result;
     }
 
-    private FeatureTree makeFeatureNodes(ICdmRepository app){
+    private FeatureTree<Feature> makeFeatureNodes(ICdmRepository app){
 
-        FeatureTree result = FeatureTree.NewInstance(featureTreeUuid);
+        FeatureTree<Feature> result = FeatureTree.NewInstance(featureTreeUuid);
         result.setTitleCache("Mexico Rubiaceae Feature Tree", true);
-        FeatureNode root = result.getRoot();
-        FeatureNode newNode;
+        FeatureNode<Feature> root = result.getRoot();
 
         Feature distribution = Feature.DISTRIBUTION();
         Representation rep = Representation.NewInstance("Distribución", "Distribución", null, Language.SPANISH_CASTILIAN());
         distribution.addRepresentation(rep);
         app.getTermService().saveOrUpdate(distribution);
-        newNode = FeatureNode.NewInstance(distribution);
-        root.addChild(newNode);
+        root.addChild(distribution);
 
         Feature commonName = Feature.COMMON_NAME();
         rep = Representation.NewInstance("Nombres comunes", "Nombres comunes", null, Language.SPANISH_CASTILIAN());
         commonName.addRepresentation(rep);
         app.getTermService().saveOrUpdate(commonName);
-        newNode = FeatureNode.NewInstance(commonName);
-        root.addChild(newNode);
+        root.addChild(commonName);
 
         Feature notes = Feature.NOTES();
         rep = Representation.NewInstance("Notas", "Notas", null, Language.SPANISH_CASTILIAN());
         notes.addRepresentation(rep);
         app.getTermService().saveOrUpdate(notes);
-        newNode = FeatureNode.NewInstance(notes);
-        root.addChild(newNode);
+        root.addChild(notes);
 
         return result;
     }

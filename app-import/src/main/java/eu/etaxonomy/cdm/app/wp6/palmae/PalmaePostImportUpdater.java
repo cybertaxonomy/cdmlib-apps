@@ -55,23 +55,20 @@ public class PalmaePostImportUpdater {
 
 			TransactionStatus tx = cdmApp.startTransaction();
 
-			FeatureTree tree = cdmApp.getFeatureTreeService().find(featureTreeUuid);
-			FeatureNode root = tree.getRoot();
+			FeatureTree<Feature> tree = cdmApp.getFeatureTreeService().find(featureTreeUuid);
+			FeatureNode<Feature> root = tree.getRoot();
 
 			List<Feature> featureList = cdmApp.getTermService().list(Feature.class, null, null, null, null);
 			for (Feature feature : featureList){
 				String label = feature.getLabel();
 				if (relationships.equals(label)){
-					FeatureNode newNode = FeatureNode.NewInstance(feature);
-					root.addChild(newNode);
+					root.addChild(feature);
 					count++;
 				}else if(taxonomicAccounts.equals(label)){
-					FeatureNode newNode = FeatureNode.NewInstance(feature);
-					root.addChild(newNode);
+					root.addChild(feature);
 					count++;
 				}else if(fossilRecord.equals(label)){
-					FeatureNode newNode = FeatureNode.NewInstance(feature);
-					root.addChild(newNode);
+					root.addChild(feature);
 					count++;
 				}
 			}
@@ -131,14 +128,13 @@ public class PalmaePostImportUpdater {
 			}
 			//add citation feature to feature tree
 			UUID featureTreeUuid = PalmaeActivator.featureTreeUuid;
-			FeatureTree tree = cdmApp.getFeatureTreeService().find(featureTreeUuid);
-			FeatureNode root = tree.getRoot();
+			FeatureTree<Feature> tree = cdmApp.getFeatureTreeService().find(featureTreeUuid);
+			FeatureNode<Feature> root = tree.getRoot();
 			List<Feature> featureList = cdmApp.getTermService().list(Feature.class, null, null, null, null);
 			count = 0;
 			for (Feature feature : featureList){
 				if (feature.equals(Feature.CITATION())){
-					FeatureNode newNode = FeatureNode.NewInstance(feature);
-					root.addChild(newNode);
+					root.addChild(feature);
 					count++;
 				}
 			}
