@@ -465,7 +465,11 @@ public class BerlinModelCommonNamesImport  extends BerlinModelImportBase {
 			language = Language.UNKNOWN_LANGUAGE();
 		} else if ("Majorcan".equalsIgnoreCase(languageString)){
 			language = getLanguage(state, BerlinModelTransformer.uuidLangMajorcan, "Majorcan", "Majorcan (original 'mallorqu\u00EDn')", null);
-		}else{
+		} else if ("High Aragonese".equalsIgnoreCase(languageString)){
+            language = getLanguage(state, BerlinModelTransformer.uuidLangHighAragonese, "High Aragonese", "High Aragonese (original 'altoaragonés')", null);
+		} else if ("Valencian".equalsIgnoreCase(languageString)){
+            language = getLanguage(state, BerlinModelTransformer.uuidLangValencian, "Valencian", "Valencian (original 'valenciano')", null);
+        }else{
 			logger.warn("language ISO 639_1 and ISO 639_2 were empty for " + languageString);
 			language = null;
 		}
@@ -582,12 +586,16 @@ public class BerlinModelCommonNamesImport  extends BerlinModelImportBase {
 
 				NamedArea area = emCodeToAreaMap.get(emCode);
 				if (area == null){
+				    area = normalizeAmbigousAreas(emCode, emCodeToAreaMap);
+				}
+				if (area == null){
+
 				    String[] splits = emCode.split("/");
 				    if (splits.length == 2){
 				        area = emCodeToAreaMap.get(splits[0]);
 		            }
 				    if (area != null){
-				        logger.warn("emCode ambigous. Use larger area: " +  CdmUtils.Nz(emCode) + "->" + regionId);
+				        logger.warn("emCode ambigous. This should not happen anymore due to normalization! Use larger area as default: " +  CdmUtils.Nz(emCode) + "->" + regionId);
 				    }else{
 				        logger.warn("emCode not recognized. Region not defined: " +  CdmUtils.Nz(emCode) + "->" + regionId);
 				    }
@@ -600,6 +608,31 @@ public class BerlinModelCommonNamesImport  extends BerlinModelImportBase {
 	}
 
 	/**
+     * Use area according to mail ERS 2018-09-24
+	 * @param emCodeToAreaMap
+     */
+    private NamedArea normalizeAmbigousAreas(String emCode, Map<String, NamedArea> emCodeToAreaMap) {
+        if (emCode == null){
+            return null;
+        }else if (emCode.equals("Ar/Ar(A)")){
+            return emCodeToAreaMap.get("Ar");
+        }else if (emCode.equals("Ab/Ab(A)")){
+            return emCodeToAreaMap.get("Ab");
+        }else if (emCode.equals("Ga/Ga(F)")){
+            return emCodeToAreaMap.get("Ga(F)");
+        }else if (emCode.equals("Hb/Hb(E)")){
+            return emCodeToAreaMap.get("Hb");
+        }else if (emCode.equals("It/It(I)")){
+            return emCodeToAreaMap.get("It");
+        }else if (emCode.equals("Uk/Uk(U)")){
+            return emCodeToAreaMap.get("Uk(U)");
+        }else if (emCode.equals("Hs/Hs(S)")){
+            return emCodeToAreaMap.get("Hs(S)");
+        }
+        return null;
+    }
+
+    /**
 	 * @param regionFks
 	 * @return
 	 */
