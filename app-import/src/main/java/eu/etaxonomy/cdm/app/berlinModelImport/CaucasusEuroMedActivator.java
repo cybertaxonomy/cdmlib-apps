@@ -320,21 +320,21 @@ public class CaucasusEuroMedActivator {
             statusListPref.setAllowOverride(true);
             app.getPreferenceService().set(distrEditorActive);
 
-            //idInVoc for areas
-            CdmPreference distrEditorShowIdInVocForAreas = CdmPreference.NewTaxEditorInstance(PreferencePredicate.ShowIdInVocabulary, "true");
-            distrEditorShowIdInVocForAreas.setAllowOverride(true);
-            app.getPreferenceService().set(distrEditorShowIdInVocForAreas);
-
-            //areas sort order
-            CdmPreference distrEditorSorted = CdmPreference.NewTaxEditorInstance(PreferencePredicate.AreasSortedByIdInVocabulary, "true");
-            distrEditorSorted.setAllowOverride(true);
-            app.getPreferenceService().set(distrEditorSorted);
-
-            //distr. status uses symbol
-            //?? correct?
-            CdmPreference distrEditorStatusUseSymbols = CdmPreference.NewTaxEditorInstance(PreferencePredicate.ShowSymbolForStatus, "false");
-            distrEditorStatusUseSymbols.setAllowOverride(true);
-            app.getPreferenceService().set(distrEditorStatusUseSymbols);
+//            //idInVoc for areas
+//            CdmPreference distrEditorShowIdInVocForAreas = CdmPreference.NewTaxEditorInstance(PreferencePredicate.ShowIdInVocabulary, "true");
+//            distrEditorShowIdInVocForAreas.setAllowOverride(true);
+//            app.getPreferenceService().set(distrEditorShowIdInVocForAreas);
+//
+//            //areas sort order
+//            CdmPreference distrEditorSorted = CdmPreference.NewTaxEditorInstance(PreferencePredicate.AreasSortedByIdInVocabulary, "true");
+//            distrEditorSorted.setAllowOverride(true);
+//            app.getPreferenceService().set(distrEditorSorted);
+//
+//            //distr. status uses symbol
+//            //?? correct?
+//            CdmPreference distrEditorStatusUseSymbols = CdmPreference.NewTaxEditorInstance(PreferencePredicate.ShowSymbolForStatus, "false");
+//            distrEditorStatusUseSymbols.setAllowOverride(true);
+//            app.getPreferenceService().set(distrEditorStatusUseSymbols);
 
 
             //media view
