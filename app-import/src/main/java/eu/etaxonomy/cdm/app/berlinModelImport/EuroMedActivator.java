@@ -78,19 +78,19 @@ public class EuroMedActivator {
 	private static final Logger logger = Logger.getLogger(EuroMedActivator.class);
 
 	//database validation status (create, update, validate ...)
-	static DbSchemaValidation hbm2dll = DbSchemaValidation.VALIDATE;
+	static DbSchemaValidation hbm2dll = DbSchemaValidation.CREATE;
 //  static final Source berlinModelSource = BerlinModelSources.euroMed_Pub2();
 	static final Source berlinModelSource = BerlinModelSources.euroMed_BGBM42();
 //	static final Source berlinModelSource = BerlinModelSources.euroMed_PESI3();
 //
-//    static final ICdmDataSource cdmDestination = CdmDestinations.localH2();
+    static final ICdmDataSource cdmDestination = CdmDestinations.localH2();
 //  static final ICdmDataSource cdmDestination = CdmDestinations.cdm_local_euromed();
-    static final ICdmDataSource cdmDestination = CdmDestinations.cdm_local_euromed2();
+//    static final ICdmDataSource cdmDestination = CdmDestinations.cdm_local_euromed2();
 //	static final ICdmDataSource cdmDestination = CdmDestinations.cdm_test_euroMed();
 //  static final ICdmDataSource cdmDestination = CdmDestinations.cdm_production_euromed();
 
     //check - import
-    static final CHECK check = CHECK.IMPORT_WITHOUT_CHECK;
+    static final CHECK check = CHECK.CHECK_ONLY;
 
     static final boolean doUser = true;
 //  //authors
@@ -98,7 +98,7 @@ public class EuroMedActivator {
     //references
     static final DO_REFERENCES doReferences =  DO_REFERENCES.ALL;
     //names
-    static final boolean doTaxonNames = false;
+    static final boolean doTaxonNames = true;
     static final boolean doRelNames = true;
     static final boolean doNameStatus = true;
     static final boolean doNameFacts = true;
@@ -128,7 +128,8 @@ public class EuroMedActivator {
 
     boolean logNotMatchingOldNames = false;
     boolean logMatchingNotExportedOldNames = false;  //true
-    boolean checkOldNameIsSynonym = true;
+    boolean checkOldNameIsSynonym = false;
+    boolean includeMANsForOldNameCheck = true;
 
 	static final boolean includePesiExport = false;
 
@@ -182,7 +183,7 @@ public class EuroMedActivator {
 	static String nameIdTable = " v_cdm_exp_namesAll ";
 	static String referenceIdTable = " v_cdm_exp_refAll ";
 	static String refDetailFilter =  " RefDetailID IN (SELECT RefDetailID FROM v_cdm_exp_RefDetail) ";
-	static String factFilter = " factId IN ( SELECT factId FROM v_cdm_exp_factsAll WHERE FactCategoryFk NOT IN (12, 14, 249, 251))";
+	static String factFilter = " factId IN ( SELECT factId FROM v_cdm_exp_factsAll WHERE FactCategoryFk NOT IN (12, 13, 14, 249, 251))";
 	static String occurrenceFilter = " occurrenceId IN ( SELECT occurrenceId FROM v_cdm_exp_occurrenceAll )";
 	static String occurrenceSourceFilter = " occurrenceFk IN ( SELECT occurrenceId FROM v_cdm_exp_occurrenceAll )";
 	static String commonNameFilter = " commonNameId IN ( SELECT commonNameId FROM v_cdm_exp_commonNamesAll )";
@@ -193,8 +194,6 @@ public class EuroMedActivator {
 
 
 // **************** ALL *********************
-
-
 
 
 	public void importEm2CDM (Source source, ICdmDataSource destination, DbSchemaValidation hbm2dll){
@@ -234,6 +233,7 @@ public class EuroMedActivator {
 		config.setLogNotMatchingOldNames(logNotMatchingOldNames);
 		config.setLogMatchingNotExportedOldNames(logMatchingNotExportedOldNames);
 		config.setCheckOldNameIsSynonym(checkOldNameIsSynonym);
+		config.setIncludeMANsForOldNameCheck(includeMANsForOldNameCheck);
 
 		config.setUseClassification(useClassification);
 		config.setSourceRefUuid(BerlinModelTransformer.uuidSourceRefEuroMed);
@@ -322,22 +322,22 @@ public class EuroMedActivator {
             statusListPref.setAllowOverride(true);
             app.getPreferenceService().set(distrEditorActive);
 
-            //idInVoc for areas
-            CdmPreference distrEditorShowIdInVocForAreas = CdmPreference.NewTaxEditorInstance(PreferencePredicate.ShowIdInVocabulary, "true");
-            distrEditorShowIdInVocForAreas.setAllowOverride(true);
-            app.getPreferenceService().set(distrEditorShowIdInVocForAreas);
-
-            //areas sort order
-            //?? correct?
-            CdmPreference distrEditorSorted = CdmPreference.NewTaxEditorInstance(PreferencePredicate.AreasSortedByIdInVocabulary, "true");
-            distrEditorSorted.setAllowOverride(true);
-            app.getPreferenceService().set(distrEditorSorted);
-
-            //distr. status uses symbol
-            //?? correct?
-            CdmPreference distrEditorStatusUseSymbols = CdmPreference.NewTaxEditorInstance(PreferencePredicate.ShowSymbolForStatus, "false");
-            distrEditorStatusUseSymbols.setAllowOverride(true);
-            app.getPreferenceService().set(distrEditorStatusUseSymbols);
+//            //idInVoc for areas
+//            CdmPreference distrEditorShowIdInVocForAreas = CdmPreference.NewTaxEditorInstance(PreferencePredicate.Sho.ShowIdInVocabulary, "true");
+//            distrEditorShowIdInVocForAreas.setAllowOverride(true);
+//            app.getPreferenceService().set(distrEditorShowIdInVocForAreas);
+//
+//            //areas sort order
+//            //?? correct?
+//            CdmPreference distrEditorSorted = CdmPreference.NewTaxEditorInstance(PreferencePredicate.AreasSortedByIdInVocabulary, "true");
+//            distrEditorSorted.setAllowOverride(true);
+//            app.getPreferenceService().set(distrEditorSorted);
+//
+//            //distr. status uses symbol
+//            //?? correct?
+//            CdmPreference distrEditorStatusUseSymbols = CdmPreference.NewTaxEditorInstance(PreferencePredicate.ShowSymbolForStatus, "false");
+//            distrEditorStatusUseSymbols.setAllowOverride(true);
+//            app.getPreferenceService().set(distrEditorStatusUseSymbols);
 
             //media view
             CdmPreference showMediaView = CdmPreference.NewTaxEditorInstance(PreferencePredicate.ShowMediaView, "false");
