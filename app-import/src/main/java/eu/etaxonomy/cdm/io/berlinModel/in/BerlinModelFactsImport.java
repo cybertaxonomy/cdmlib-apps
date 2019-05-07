@@ -662,7 +662,6 @@ public class BerlinModelFactsImport  extends BerlinModelImportBase {
 			}
 			if (taxonDescription == null){
 				taxonDescription = TaxonDescription.NewInstance();
-				taxonDescription.setTitleCache(sourceRef == null ? null : sourceRef.getTitleCache(), true);
 				if (state.getConfig().isSalvador()){
 				    String title = "Factual data for " + taxon.getName().getTitleCache();
 				    if (isPublic){
@@ -671,6 +670,10 @@ public class BerlinModelFactsImport  extends BerlinModelImportBase {
 				        title = "Non public f" + title.substring(1);
 				    }
 				    taxonDescription.setTitleCache(title, true);
+				}else if(state.getConfig().isEuroMed()){
+				    taxonDescription.setDefault(true);
+				}else{
+				    taxonDescription.setTitleCache(sourceRef == null ? null : sourceRef.getTitleCache(), true);
 				}
 				taxon.addDescription(taxonDescription);
 			}
