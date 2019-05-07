@@ -1567,7 +1567,6 @@ public class BerlinModelReferenceImport extends BerlinModelImportBase {
 	public Set<String> getObligatoryAttributes(boolean lowerCase, BerlinModelImportConfigurator config){
 		Set<String> result = new HashSet<>();
 		Class<ICdmImport>[] ioClassList = config.getIoClassList();
-		logger.warn("getObligatoryAttributes has been commented because it still needs to be adapted to the new package structure");
 		result.addAll(Arrays.asList(unclearMappers));
 		result.addAll(Arrays.asList(createdAndNotesAttributes));
 		result.addAll(Arrays.asList(operationalAttributes));
