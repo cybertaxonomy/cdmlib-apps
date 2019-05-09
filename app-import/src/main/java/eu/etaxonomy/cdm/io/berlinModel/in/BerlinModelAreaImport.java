@@ -128,6 +128,7 @@ public class BerlinModelAreaImport  extends BerlinModelImportBase {
 
 		String sql = "SELECT * , CASE WHEN EMCode = 'EM' THEN 'a' ELSE 'b' END as isEM " +
 				" FROM emArea " +
+				" WHERE areaId not IN (14, 20, 21, 33, 1, 646, 647, 653, 1718, 654) " +
 				" ORDER BY isEM, EMCode";
 		ResultSet rs = source.getResultSet(sql);
 
