@@ -11,6 +11,8 @@ package eu.etaxonomy.cdm.io.berlinModel.in.validation;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.HashSet;
+import java.util.Set;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
@@ -34,11 +36,14 @@ public class BerlinModelOccurrenceImportValidator implements IOValidator<BerlinM
 		BerlinModelImportConfigurator config = state.getConfig();
 		result &= checkTaxonIsAccepted(config);
 		result &= checkSourcesWithWhitespace(config);
+		result &= checkMissingExplicitSources(config);
 		return result;
 	}
 
 
-	//******************************** CHECK *************************************************
+
+
+    //******************************** CHECK *************************************************
 
 	private static boolean checkTaxonIsAccepted(BerlinModelImportConfigurator config){
 		try {
@@ -127,5 +132,99 @@ public class BerlinModelOccurrenceImportValidator implements IOValidator<BerlinM
             e.printStackTrace();
             return false;
         }
+    }
+
+
+    /**
+     * @param config
+     * @return
+     */
+    private boolean checkMissingExplicitSources(BerlinModelImportConfigurator config) {
+        try {
+             boolean result = true;
+            Source source = config.getSource();
+            String sql = " SELECT occ.OccurrenceId, occ.Sources, ocs.OccurrenceSourceId, ocs.SourceNumber, ar.EMCode, ar.Unit, n.FullNameCache, occ.PTRefFk  " +
+                " FROM emOccurrence occ " +
+                    " INNER JOIN emArea ar ON occ.AreaFk = ar.AreaId " +
+                    " INNER JOIN PTaxon pt ON occ.PTNameFk = pt.PTNameFk AND occ.PTRefFk = pt.PTRefFk " +
+                    " INNER JOIN Name n ON occ.PTNameFk = n.NameId  " +
+                    " LEFT OUTER JOIN emOccurSumCat sumcat ON occ.SummaryStatus = sumcat.emOccurSumCatId " +
+                    " LEFT OUTER JOIN emOccurrenceSource ocs ON occ.OccurrenceId = ocs.OccurrenceFk " +
+                " WHERE ( occurrenceId IN ( SELECT occurrenceId FROM v_cdm_exp_occurrenceAll ))" +
+                " ORDER BY occ.PTRefFk, n.fullNameCache, occ.occurrenceId";
+            ResultSet rs = source.getResultSet(sql);
+            int oldOccurrenceId = -1;
+            Set<Integer> sources = new HashSet<>();
+            int unmatched = 0;
+            while (rs.next()){
+                int occurrenceId = rs.getInt("OccurrenceId");
+                if (occurrenceId != oldOccurrenceId){
+                    checkExistingSources(sources, oldOccurrenceId, rs);
+                    String sourcesStr = rs.getString("Sources");
+                    sources = makeSources(sourcesStr);
+                    oldOccurrenceId = occurrenceId;
+                }
+                String sourceIdStr = rs.getString("SourceNumber");
+                Integer sourceId = StringUtils.isBlank(sourceIdStr) ? null: Integer.valueOf(sourceIdStr);
+                unmatched = removeSource(sources, sourceId, occurrenceId, unmatched);
+            }
+            return result;
+        } catch (Exception e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
+
+    /**
+     * @param sources
+     * @param sourceId
+     * @param unmatched
+     */
+    private int removeSource(Set<Integer> sources, Integer sourceId, int occurrenceId, int unmatched) {
+        boolean contained = sources.remove(sourceId);
+        if (sourceId != null && !contained){
+//            System.out.println("OccurrenceId(" + occurrenceId + "): sourceId " + sourceId + " not found in sources field.");
+            unmatched++;
+        }
+        return unmatched;
+    }
+
+    /**
+     * @param sources
+     * @param occurrenceId
+     * @param rs
+     * @throws SQLException
+     */
+    private void checkExistingSources(Set<Integer> sources, int occurrenceId, ResultSet rs) throws SQLException {
+        sources.remove(27133);
+        sources.remove(0);
+        if (!sources.isEmpty()){
+            String emCode = rs.getString("EMCode").trim();
+            String unit = rs.getString("Unit");
+            String name = rs.getString("FullNameCache");
+            String ref = rs.getString("PTRefFk");
+            System.out.println(name + " ("+ ref + " (occId: " + occurrenceId + ", " + emCode + ", " + unit + "): The following sources are not matched: " + sources);
+        }
+    }
+
+    private Set<Integer> makeSources(String sourcesStr) {
+        Set<Integer> result = new HashSet<>();
+        if (sourcesStr != null){
+            String[] splits = sourcesStr.split("\\|");
+            for (String split : splits){
+                split = split.trim();
+                if (StringUtils.isNotBlank(split)){
+                    Integer number;
+                    try {
+                        number = Integer.valueOf(split);
+                        result.add(number);
+                    } catch (NumberFormatException e) {
+                        e.printStackTrace();
+                    }
+                }
+            }
+        }
+
+        return result;
     }
 }
