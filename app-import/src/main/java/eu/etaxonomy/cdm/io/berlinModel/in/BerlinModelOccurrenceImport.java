@@ -182,6 +182,12 @@ public class BerlinModelOccurrenceImport  extends BerlinModelImportBase {
                 	String alternativeStatusString = null;
 					if (emStatusId != null){
 						status = BerlinModelTransformer.occStatus2PresenceAbsence(emStatusId);
+						if (state.getConfig().isEuroMed() && emStatusId == 250){
+						    String introduced = nullSafeTrim(rs.getString("Introduced"));
+						    if (emStatusId == 250 && "I(P)".equals(introduced)){
+						        status = PresenceAbsenceTerm.INTRODUCED_UNCERTAIN_DEGREE_OF_NATURALISATION();
+						    }
+						}
 					}else{
 						//EM
 					    if (state.getConfig().isEuroMed() && areas.get(0).getUuid().equals(BerlinModelTransformer.uuidEM)){
