@@ -64,31 +64,42 @@ public class BerlinModelAreaImport  extends BerlinModelImportBase {
 
 	@Override
 	protected String getIdQuery(BerlinModelImportState state) {
-		String result =
-		          " SELECT AreaId "
-		        + " FROM " + getTableName();
-		if (state.getConfig().isEuroMed()){
-		    result += " WHERE AreaID NOT IN (1, 21, 650, 653, 1718, 654, 646, 647) ";  //#3986
-		}
-		return result;
+//		String result =
+//		          " SELECT AreaId "
+//		        + " FROM " + getTableName();
+//		if (state.getConfig().isEuroMed()){
+//		    result += " WHERE AreaID NOT IN (1, 21, 650, 653, 1718, 654, 646, 647) ";  //#3986
+//		}
+//		return result;
+	    return null; //not relevant as we have no partitioning here
 	}
 
 	@Override
 	protected String getRecordQuery(BerlinModelImportConfigurator config) {
-		String strQuery =
-		          " SELECT * "
-		        + " FROM emArea a "
-                + " WHERE (a.AreaId IN (" + ID_LIST_TOKEN + ")  )"
-		        + " ORDER BY a.AreaId "
-                ;
-		return strQuery;
+//		String strQuery =
+//		          " SELECT * "
+//		        + " FROM emArea a "
+//                + " WHERE (a.AreaId IN (" + ID_LIST_TOKEN + ")  )"
+//		        + " ORDER BY a.AreaId "
+//                ;
+//		return strQuery;
+	    return null;  //not relevant as we have no partitioning here
 	}
 
 	private Map<Integer, NamedArea> euroMedAreas = new HashMap<>();
 
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
-    public boolean doPartition(@SuppressWarnings("rawtypes") ResultSetPartitioner partitioner, BerlinModelImportState state)  {
+    public boolean doPartition(@SuppressWarnings("rawtypes") ResultSetPartitioner partitioner, BerlinModelImportState state) {
+        // not relevant
+        return true;
+    }
+
+    @Override
+    public void doInvoke(BerlinModelImportState state)  {
         TermVocabulary<?> voc = getVocabularyService().find(BerlinModelTransformer.uuidVocEuroMedAreas);
         if (voc == null){
             try {
@@ -99,7 +110,7 @@ public class BerlinModelAreaImport  extends BerlinModelImportBase {
                 e.printStackTrace();
             }
         }
-        return true;
+        return;
     }
 
 
@@ -128,7 +139,7 @@ public class BerlinModelAreaImport  extends BerlinModelImportBase {
 
 		String sql = "SELECT * , CASE WHEN EMCode = 'EM' THEN 'a' ELSE 'b' END as isEM " +
 				" FROM emArea " +
-				" WHERE areaId not IN (14, 20, 21, 33, 1, 646, 647, 653, 1718, 654) " +
+				" WHERE areaId not IN (1, 14, 20, 21, 33, 646, 647, 653, 654, 1718) " +
 				" ORDER BY isEM, EMCode";
 		ResultSet rs = source.getResultSet(sql);
 
@@ -516,5 +527,6 @@ public class BerlinModelAreaImport  extends BerlinModelImportBase {
 			}
 		}
 	}
+
 
 }
