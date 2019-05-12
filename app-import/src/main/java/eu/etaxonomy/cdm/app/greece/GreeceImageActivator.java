@@ -27,9 +27,9 @@ import eu.etaxonomy.cdm.model.reference.ReferenceFactory;
 
 /**
  *
- * Import for Checklist of Greece.
+ * Import for new images for the flora of greece.
  *
- * https://dev.e-taxonomy.eu/redmine/issues/6286
+ * https://dev.e-taxonomy.eu/redmine/issues/7075
  *
  * @author a.mueller
  * @since 13.12.2016
@@ -44,10 +44,9 @@ public class GreeceImageActivator {
 //    static final ICdmDataSource cdmDestination = CdmDestinations.cdm_greece_checklist_production();
 
 //    private static final UUID sourceUuid = UUID.fromString("0fd093fe-ffdf-4ace-847b-aad6f0659678");
-    private static final UUID sourceUuid = UUID.fromString("1066b2fb-3351-4a5b-81c6-bd5894629834");
+    private static final UUID sourceUuid = UUID.fromString("9e6a3815-fb8d-46c3-a250-6d8a350d03fc");
 
-    private static final String fileName = "20190305_fog_images.xlsx";
-//    private static final String fileName = "20190117_fog_images.xlsx";
+    private static final String fileName = "20190507_fog_images.xlsx";
 //    private static final String fileName = "20190124_fog_images.xlsx";
 
 
