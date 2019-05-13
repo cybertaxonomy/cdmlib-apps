@@ -263,6 +263,7 @@ public class BerlinModelTaxonRelationImport  extends BerlinModelImportBase  {
 				Integer taxon1Id = nullSafeInt(rs, "taxon1Id");
 				Integer taxon2Id = nullSafeInt(rs, "taxon2Id");
 				Integer ptRefFk1 = nullSafeInt(rs, "PTRefFk1");
+				Integer ptRefFk2 = nullSafeInt(rs, "PTRefFk2");
 
 				int relQualifierFk = -1;
 				try {
@@ -296,14 +297,14 @@ public class BerlinModelTaxonRelationImport  extends BerlinModelImportBase  {
 								success = false;
 								continue;
 							}
+                            if(state.getConfig().isEuroMed() && CdmUtils.nullSafeEqual(relRefFk, ptRefFk2)){
+                                citation = null;
+                            }
 							Taxon fromTaxon = (Taxon)taxon1;
 							if (relQualifierFk == TAX_REL_IS_INCLUDED_IN){
-								if(state.getConfig().isEuroMed() && CdmUtils.nullSafeEqual(relRefFk, ptRefFk1)){
-								    citation = null;
-								}
 							    taxonRelationship = makeTaxonomicallyIncluded(state, classificationMap, treeRefFk, fromTaxon, toTaxon, citation, microcitation);
 							}else if (relQualifierFk == TAX_REL_IS_MISAPPLIED_NAME_OF){
-								boolean isProParte = "p.p.".equals(notes);
+							    boolean isProParte = "p.p.".equals(notes);
 							    if (isProParte){
 								    notes = null;
 								}
