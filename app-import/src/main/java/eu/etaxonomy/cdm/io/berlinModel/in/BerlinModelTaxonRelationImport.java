@@ -298,7 +298,10 @@ public class BerlinModelTaxonRelationImport  extends BerlinModelImportBase  {
 							}
 							Taxon fromTaxon = (Taxon)taxon1;
 							if (relQualifierFk == TAX_REL_IS_INCLUDED_IN){
-								taxonRelationship = makeTaxonomicallyIncluded(state, classificationMap, treeRefFk, fromTaxon, toTaxon, citation, microcitation);
+								if(state.getConfig().isEuroMed() && CdmUtils.nullSafeEqual(relRefFk, ptRefFk1)){
+								    citation = null;
+								}
+							    taxonRelationship = makeTaxonomicallyIncluded(state, classificationMap, treeRefFk, fromTaxon, toTaxon, citation, microcitation);
 							}else if (relQualifierFk == TAX_REL_IS_MISAPPLIED_NAME_OF){
 								boolean isProParte = "p.p.".equals(notes);
 							    if (isProParte){
@@ -754,7 +757,8 @@ public class BerlinModelTaxonRelationImport  extends BerlinModelImportBase  {
 		}
 	}
 
-	private TaxonNode makeTaxonomicallyIncluded(BerlinModelImportState state, Map<Integer, Classification> classificationMap, int treeRefFk, Taxon child, Taxon parent, Reference citation, String microCitation){
+	private TaxonNode makeTaxonomicallyIncluded(BerlinModelImportState state, Map<Integer, Classification> classificationMap,
+	        int treeRefFk, Taxon child, Taxon parent, Reference citation, String microCitation){
 		Classification tree = getClassificationTree(state, classificationMap, treeRefFk);
 		return tree.addParentChild(parent, child, citation, microCitation);
 	}
