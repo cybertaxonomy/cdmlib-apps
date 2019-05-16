@@ -83,7 +83,8 @@ public class BerlinModelOccurrenceImport  extends BerlinModelImportBase {
                 " SELECT DISTINCT pt.RIdentifier AS taxonId, occ.OccurrenceId, occ.Native, occ.Introduced, " +
             		" occ.Cultivated, occ.StatusUnknown, occ.WorldDistCompl, occ.Notes occNotes, " +
             		" sumcat.emOccurSumCatId, sumcat.Short, sumcat.Description, " +
-                	" sumcat.OutputCode, ar.AreaId, ar.TDWGCode " + emCode +
+                	" sumcat.OutputCode, ar.AreaId, ar.TDWGCode, "
+                	+ " occ.Created_When , occ.Updated_When, occ.Created_Who , occ.Updated_Who, occ.notes " + emCode +
                 " FROM emOccurrence occ " +
                 	" INNER JOIN emArea ar ON occ.AreaFk = ar.AreaId " +
                 	" INNER JOIN PTaxon pt ON occ.PTNameFk = pt.PTNameFk AND occ.PTRefFk = pt.PTRefFk " +
@@ -218,6 +219,8 @@ public class BerlinModelOccurrenceImport  extends BerlinModelImportBase {
                     TaxonDescription taxonDescription = getTaxonDescription(newTaxonId, oldTaxonId, oldDescription, taxonMap, occurrenceId, sourceRef);
                     for (NamedArea area : areas){
                     	Distribution distribution = Distribution.NewInstance(area, status);
+                    	boolean excludeNotes = true;
+                    	doCreatedUpdatedNotes(state, distribution, rs, false, excludeNotes);
                         if (StringUtils.isNotBlank(alternativeStatusString)){
                             AnnotationType type = getAnnotationType(state, BerlinModelTransformer.uuidAnnoTypeDistributionStatus, "Original distribution status", "Original distribution status", null, null);
                             Annotation annotation = Annotation.NewInstance(alternativeStatusString, type, null);
@@ -238,6 +241,7 @@ public class BerlinModelOccurrenceImport  extends BerlinModelImportBase {
 	                            }
                             }else{
                             	countDuplicates++;
+                            	distribution = duplicate;
                             	duplicate.addImportSource(String.valueOf(occurrenceId), NAMESPACE, state.getTransactionalSourceReference(), null);
                             	logger.info("Distribution is duplicate");	                           }
                         } else {
@@ -373,9 +377,7 @@ public class BerlinModelOccurrenceImport  extends BerlinModelImportBase {
 	/**
      * Tests if a distribution with the same tdwgArea and the same status already exists in the description.
      * If so the old distribution is returned
-     * @param description
-     * @param tdwgArea
-     * @return false, if dupplicate exists. True otherwise.
+     * @return false, if duplicate exists. True otherwise.
      */
     private Distribution checkIsNoDuplicate(TaxonDescription description, Distribution distribution, Map<Integer, String> duplicateMap, Integer bmDistributionId){
     	for (DescriptionElementBase descElBase : description.getElements()){
