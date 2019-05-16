@@ -350,14 +350,20 @@ public class BerlinModelTaxonRelationImport  extends BerlinModelImportBase  {
 							        ((TaxonRelationship)taxonRelationship).setDoubtful(true);
 							    }
                             }else if (relQualifierFk == TAX_REL_IS_PROPARTE_SYN_OF ||
-                                    //TODO homo/hetero
                                     relQualifierFk == TAX_REL_IS_PROPARTE_HOMOTYPIC_SYNONYM_OF ||
                                     relQualifierFk == TAX_REL_IS_PROPARTE_HETEROTYPIC_SYNONYM_OF ){
+                                if(relQualifierFk == TAX_REL_IS_PROPARTE_HOMOTYPIC_SYNONYM_OF){
+                                    logger.warn("Homotypic pro parte synonyms not handled in CDM. Please add homotypie manually. RelPTID: " +  relPTaxonId);
+                                }
+                                //heterotypic we expect as the normal relationship, don't store explicitly
                                 toTaxon.addProparteSynonym(fromTaxon, citation, microcitation);
                             }else if(relQualifierFk == TAX_REL_IS_PARTIAL_SYN_OF ||
-                                    //TODO homo/hetero
                                     relQualifierFk == TAX_REL_IS_PARTIAL_HOMOTYPIC_SYNONYM_OF ||
                                     relQualifierFk == TAX_REL_IS_PARTIAL_HETEROTYPIC_SYNONYM_OF ){
+                                if (relQualifierFk == TAX_REL_IS_PARTIAL_HOMOTYPIC_SYNONYM_OF ||
+                                        relQualifierFk == TAX_REL_IS_PARTIAL_HETEROTYPIC_SYNONYM_OF){
+                                    logger.warn("Homotypie and heterotypie not yet handled for partial synonyms");
+                                }
                                 toTaxon.addPartialSynonym(fromTaxon, citation, microcitation);
                             }else{
 								handleAllRelatedTaxa(state, fromTaxon, classificationMap, fromRefFk);
