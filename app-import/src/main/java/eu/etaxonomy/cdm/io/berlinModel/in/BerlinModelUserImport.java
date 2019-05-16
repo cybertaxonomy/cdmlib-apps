@@ -12,7 +12,9 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 
 import org.apache.log4j.Logger;
 import org.springframework.stereotype.Component;
@@ -77,6 +79,7 @@ public class BerlinModelUserImport extends BerlinModelImportBase {
                 " FROM " + dbTableName + " " ;
 		ResultSet rs = source.getResultSet(strQuery) ;
 		Collection<User> users = new ArrayList<>();
+		Set<String> existingUsernames = new HashSet<>();
 
 
 		TransactionStatus tx = this.startTransaction();
@@ -93,7 +96,10 @@ public class BerlinModelUserImport extends BerlinModelImportBase {
 					Integer id = nullSafeInt(rs, "AuthorisationId");
 
 					if (username != null){
-						username = username.trim();
+					    username = normalizeUsername(state, username);
+					}
+					if (existingUsernames.contains(username)){
+					    continue;
 					}
 					User user = User.NewInstance(username, pwd);
 
@@ -122,6 +128,7 @@ public class BerlinModelUserImport extends BerlinModelImportBase {
 					 */
 					authenticate(Configuration.adminLogin, Configuration.adminPassword);
 					getUserService().createUser(user);
+					existingUsernames.add(username);
 
 					users.add(user);
 					state.putUser(username, user);
@@ -150,7 +157,8 @@ public class BerlinModelUserImport extends BerlinModelImportBase {
 		return;
 	}
 
-	private Person deduplicatePerson(BerlinModelImportState state, Person person) {
+
+    private Person deduplicatePerson(BerlinModelImportState state, Person person) {
         Person result = deduplicationHelper.getExistingAuthor(state, person);
         return result;
     }

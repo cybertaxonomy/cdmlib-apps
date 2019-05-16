@@ -17,6 +17,7 @@ import java.util.Map;
 import org.apache.log4j.Logger;
 import org.joda.time.DateTime;
 
+import eu.etaxonomy.cdm.api.service.pager.Pager;
 import eu.etaxonomy.cdm.common.CdmUtils;
 import eu.etaxonomy.cdm.io.berlinModel.BerlinModelTransformer;
 import eu.etaxonomy.cdm.io.common.DbImportBase;
@@ -27,10 +28,12 @@ import eu.etaxonomy.cdm.io.common.TdwgAreaProvider;
 import eu.etaxonomy.cdm.model.common.AnnotatableEntity;
 import eu.etaxonomy.cdm.model.common.Annotation;
 import eu.etaxonomy.cdm.model.common.AnnotationType;
+import eu.etaxonomy.cdm.model.common.CdmBase;
 import eu.etaxonomy.cdm.model.common.IdentifiableEntity;
 import eu.etaxonomy.cdm.model.common.IdentifiableSource;
 import eu.etaxonomy.cdm.model.common.Language;
 import eu.etaxonomy.cdm.model.common.MarkerType;
+import eu.etaxonomy.cdm.model.common.SourcedEntityBase;
 import eu.etaxonomy.cdm.model.common.User;
 import eu.etaxonomy.cdm.model.description.DescriptionElementBase;
 import eu.etaxonomy.cdm.model.location.Country;
@@ -38,10 +41,12 @@ import eu.etaxonomy.cdm.model.location.NamedArea;
 import eu.etaxonomy.cdm.model.location.NamedAreaType;
 import eu.etaxonomy.cdm.model.reference.ISourceable;
 import eu.etaxonomy.cdm.model.reference.Reference;
+import eu.etaxonomy.cdm.model.reference.ReferenceFactory;
 import eu.etaxonomy.cdm.model.taxon.Taxon;
 import eu.etaxonomy.cdm.model.taxon.TaxonBase;
 import eu.etaxonomy.cdm.model.term.TermType;
 import eu.etaxonomy.cdm.model.term.TermVocabulary;
+import eu.etaxonomy.cdm.persistence.query.MatchMode;
 
 /**
  * @author a.mueller
@@ -107,18 +112,18 @@ public abstract class BerlinModelImportBase
 		BerlinModelImportConfigurator config = state.getConfig();
 		Object createdWhen = rs.getObject("Created_When");
 		String createdWho = rs.getString("Created_Who");
-		createdWho = handleHieraciumPilosella(createdWho);
+		createdWho = normalizeUsername(state, createdWho);
 		Object updatedWhen = null;
 		String updatedWho = null;
 		if (excludeUpdated == false){
 			try {
 				updatedWhen = rs.getObject("Updated_When");
 				updatedWho = rs.getString("Updated_who");
+				updatedWho = normalizeUsername(state, updatedWho);
 			} catch (SQLException e) {
 				//Table "Name" has no updated when/who
 			}
 		}
-		String notes = rs.getString("notes");
 
 		boolean success  = true;
 
@@ -136,12 +141,26 @@ public abstract class BerlinModelImportBase
 			annotation.setAnnotationType(AnnotationType.TECHNICAL());
 			annotatableEntity.addAnnotation(annotation);
 		}else if (config.getEditor().equals(EDITOR.EDITOR_AS_EDITOR)){
-			User creator = getUser(state, createdWho);
-			User updator = getUser(state, updatedWho);
+		    User creator;
+		    boolean xmlSourceAdded= addXmlSource(state, annotatableEntity, createdWho, false);
+		    if (xmlSourceAdded){
+		        creator = getXmlImporter(state);
+		    }else{
+		        creator = getUser(state, createdWho);
+		    }
+		    annotatableEntity.setCreatedBy(creator);
+
+		    User updator;
+		    xmlSourceAdded = addXmlSource(state, annotatableEntity, updatedWho, xmlSourceAdded);
+		    if (xmlSourceAdded){
+		        updator = getXmlImporter(state);
+		    }else{
+		        updator = getUser(state, updatedWho);
+		    }
+			annotatableEntity.setUpdatedBy(updator);
+
 			DateTime created = getDateTime(createdWhen);
 			DateTime updated = getDateTime(updatedWhen);
-			annotatableEntity.setCreatedBy(creator);
-			annotatableEntity.setUpdatedBy(updator);
 			annotatableEntity.setCreated(created);
 			annotatableEntity.setUpdated(updated);
 		}else {
@@ -151,28 +170,100 @@ public abstract class BerlinModelImportBase
 
 		//notes
 		if (! excludeNotes){
+		    String notes = rs.getString("notes");
 			doNotes(annotatableEntity, notes);
 		}
 		return success;
 	}
 
 	/**
-	 * Special usecase for EDITWP6 import where in the createdWho field the original ID is stored
-	 * @param createdWho
-	 * @return
-	 */
-	private String handleHieraciumPilosella(String createdWho) {
-		String result = createdWho;
-		if (result == null){
-			return null;
-		}else if (result.startsWith("Hieracium_Pilosella import from EM")){
-			return "Hieracium_Pilosella import from EM";
-		}else{
-			return result;
-		}
-	}
+     * @param state
+     * @return
+     */
+    private User getXmlImporter(BerlinModelImportState state) {
+        return getUser(state, "import to BM");
+    }
 
-	private DateTime getDateTime(Object timeString){
+
+    /**
+     * @param state
+	 * @param annotatableEntity
+	 * @param xmlSourceAdded
+     * @return
+     */
+    private boolean addXmlSource(BerlinModelImportState state, AnnotatableEntity annotatableEntity, String username, boolean existsAlready) {
+        if (!state.getConfig().isEuroMed() || !isXmlImport(username)){
+            return false;
+        }
+        if (isXmlImport(username) && existsAlready){
+            return true;
+        }
+        Reference ref = getXmlRef(state, username);
+        if (annotatableEntity.isInstanceOf(SourcedEntityBase.class)){
+            SourcedEntityBase<?> sourcedEntity = CdmBase.deproxy(annotatableEntity, SourcedEntityBase.class);
+            sourcedEntity.addImportSource(null, null, ref, null);
+        }else if (annotatableEntity.isInstanceOf(DescriptionElementBase.class)){
+            DescriptionElementBase descriptionElement = CdmBase.deproxy(annotatableEntity, DescriptionElementBase.class);
+            descriptionElement.addImportSource(null, null, ref, null);
+        }else{
+            return false;
+        }
+        return true;
+    }
+
+
+    /**
+     * @param state
+     * @param username
+     * @return
+     */
+    private Reference getXmlRef(BerlinModelImportState state, String username) {
+        String namespace = "IMPORT USER";
+        Reference ref = state.getRelatedObject(namespace, username, Reference.class);
+        if (ref == null){
+            if (state.getXmlImportRefUuid(username)!= null){
+                ref = getReferenceService().find(state.getXmlImportRefUuid(username));
+            }
+            if (ref == null){
+                Pager<Reference> pager = getReferenceService().findByTitle(Reference.class, username, MatchMode.EXACT, null, null, null, null, null);
+                if (pager.getCount()>0){
+                    ref = pager.getRecords().get(0);
+                    if (pager.getCount()>1){
+                        logger.warn("More then 1 reference found for " +  username);
+                    }
+                }
+            }
+            if (ref == null){
+                ref = ReferenceFactory.newDatabase();
+                ref.setTitleCache(username, true);
+                ref.setTitle(username);
+                getReferenceService().save(ref);
+            }
+            state.addRelatedObject(namespace, username, ref);
+            state.putXmlImportRefUuid(username, ref.getUuid());
+
+        }
+        return ref;
+    }
+
+
+    /**
+     * @param username
+     * @return
+     */
+    private boolean isXmlImport(String username) {
+        if (username == null){
+            return false;
+        }
+        return username.matches(".*\\.xml")
+                || username.equals("J.Li: import from pandora")
+                || username.equals("J.Li imported from pandora")
+                ||username.equals("Import from Kew Checklist 2010")
+                ||username.equals("Import from ILDIS 2010");
+    }
+
+
+    private DateTime getDateTime(Object timeString){
 		if (timeString == null){
 			return null;
 		}
@@ -418,6 +509,30 @@ public abstract class BerlinModelImportBase
             }
         }
         return false;
+    }
+
+    /**
+     * @param state
+     * @param username
+     * @return
+     */
+    protected String normalizeUsername(BerlinModelImportState state, String username) {
+        if (username == null){
+            return null;
+        }else{
+            username = username.trim();
+            if (state.getConfig().isEuroMed()){
+                if (username.matches("[A-Za-z]+[7-9][0-9]")){
+                    username = username.substring(0, username.length()-2);
+                }else if(username.matches("(mariam[1-4]|palermo|palma|paltar)")){
+                    username = "mariam";
+                }
+                if(username.matches("kapet")){
+                    username = "kpet";
+                }
+            }
+            return username;
+        }
     }
 
 }
