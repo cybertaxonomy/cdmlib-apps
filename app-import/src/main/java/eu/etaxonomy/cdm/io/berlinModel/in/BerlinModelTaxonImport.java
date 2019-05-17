@@ -307,9 +307,9 @@ public class BerlinModelTaxonImport  extends BerlinModelImportBase {
 
 					        MarkerType markerType = null;
 					        if (valueless.equals(extension)){
-					            markerType = getMarkerType(state, BerlinModelTransformer.uuidTaxonomicallyValueless, "taxonomically valueless", valueless, "valueless", getEuroMedMarkerTypeVoc());
+					            markerType = getMarkerType(state, BerlinModelTransformer.uuidTaxonomicallyValueless, "taxonomically valueless", valueless, "valueless", getEuroMedMarkerTypeVoc(state));
 					        }else if (provisional.equals(extension)){
-                                markerType = getMarkerType(state, BerlinModelTransformer.uuidProbablyTaxonomicallyValueless, "probably taxonomically valueless", provisional, "provisional", getEuroMedMarkerTypeVoc());
+                                markerType = getMarkerType(state, BerlinModelTransformer.uuidProbablyTaxonomicallyValueless, "probably taxonomically valueless", provisional, "provisional", getEuroMedMarkerTypeVoc(state));
                             }
 					        if (markerType != null){
 					            taxonBase.addMarker(Marker.NewInstance(markerType, true));

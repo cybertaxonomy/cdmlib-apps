@@ -337,7 +337,7 @@ public class BerlinModelCommonNamesImport  extends BerlinModelImportBase {
 						}else{
 							misappliedNameTaxon = Taxon.NewInstance(nameUsedInSource, sec);
 							MarkerType misCommonNameMarker = getMarkerType(state, BerlinModelTransformer.uuidMisappliedCommonName,"Misapplied Common Name in Berlin Model",
-							        "Misapplied taxon was automatically created by Berlin Model import for a common name with a misapplied name reference", "MCN", getEuroMedMarkerTypeVoc());
+							        "Misapplied taxon was automatically created by Berlin Model import for a common name with a misapplied name reference", "MCN", getEuroMedMarkerTypeVoc(state));
 							Marker marker = Marker.NewInstance(misCommonNameMarker, true);
 							misappliedNameTaxon.addMarker(marker);
 							taxaToSave.add(misappliedNameTaxon);
@@ -384,7 +384,7 @@ public class BerlinModelCommonNamesImport  extends BerlinModelImportBase {
 
 				//status
 				if (isNotBlank(status)){
-				    TermVocabulary<MarkerType> markerTypeVoc = getEuroMedMarkerTypeVoc();
+				    TermVocabulary<MarkerType> markerTypeVoc = getEuroMedMarkerTypeVoc(state);
 				    MarkerType recommendedMarkerType = getMarkerType( state, COMMONNAME_STATUS_RECOMMENDED_UUID, "recommended","If the common name has the status recommended (see also status 'synonym', if none of them is true the default status is 'unassessed')",
 				            "recommended", markerTypeVoc);
 					MarkerType synonymMarkerType = getMarkerType( state, COMMONNAME_STATUS_SYNONYM_UUID, "synonym","If the common name has the status synonym (see also status 'recommended', if none of them is true the default status is 'unassessed')",

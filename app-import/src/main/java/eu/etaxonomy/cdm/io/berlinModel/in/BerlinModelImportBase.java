@@ -478,10 +478,11 @@ public abstract class BerlinModelImportBase
 	}
 
     /**
+     * @param state
      * @return
      */
-    protected TermVocabulary<MarkerType> getEuroMedMarkerTypeVoc() {
-        TermVocabulary<MarkerType> markerTypeVoc = getVocabulary(TermType.MarkerType, BerlinModelTransformer.uuidVocEMMarkerType,
+    protected TermVocabulary<MarkerType> getEuroMedMarkerTypeVoc(BerlinModelImportState state) {
+        TermVocabulary<MarkerType> markerTypeVoc = getVocabulary(state, TermType.MarkerType, BerlinModelTransformer.uuidVocEMMarkerType,
                 "Euro+Med marker type vocabulary", "E+M marker types", null, null, false, MarkerType.COMPLETE());
         return markerTypeVoc;
     }

@@ -414,7 +414,7 @@ public class BerlinModelFactsImport  extends BerlinModelImportBase {
 						        NamedArea area = null;  // for now we do not set an area as it can not be disabled in dataportals via css yet
 						        deb = CommonTaxonName.NewInstance(fact, Language.SPANISH_CASTILIAN(), area);
 						    }else if (categoryFkInt == 307){
-						        Distribution salvadorDistribution = salvadorDistributionFromMuestrasDeHerbar((Taxon)taxonBase, fact);
+						        Distribution salvadorDistribution = salvadorDistributionFromMuestrasDeHerbar(state, (Taxon)taxonBase, fact);
 						        if (salvadorDistribution != null){
 						            //id
 						            doId(state, salvadorDistribution, factId, "Fact");
@@ -535,10 +535,10 @@ public class BerlinModelFactsImport  extends BerlinModelImportBase {
 
 
     private Map<String, NamedArea> salvadorAreaMap = null;
-    private Distribution salvadorDistributionFromMuestrasDeHerbar(Taxon taxon, String fact) {
+    private Distribution salvadorDistributionFromMuestrasDeHerbar(BerlinModelImportState importState, Taxon taxon, String fact) {
         if (salvadorAreaMap == null){
             salvadorAreaMap = new HashMap<>();
-            TermVocabulary<NamedArea> salvadorAreas = getVocabulary(TermType.NamedArea, BerlinModelTransformer.uuidSalvadorAreas,
+            TermVocabulary<NamedArea> salvadorAreas = getVocabulary(importState, TermType.NamedArea, BerlinModelTransformer.uuidSalvadorAreas,
                     "Salvador areas", "Salvador areas", null, null, true, NamedArea.NewInstance());
             getVocabularyService().save(salvadorAreas);
         }
@@ -549,7 +549,7 @@ public class BerlinModelFactsImport  extends BerlinModelImportBase {
             NamedArea area = salvadorAreaMap.get(areaString);
             if (area == null){
                 logger.info("Added Salvador area: " + areaString);
-                TermVocabulary<NamedArea> voc = getVocabulary(TermType.NamedArea, BerlinModelTransformer.uuidSalvadorAreas,
+                TermVocabulary<NamedArea> voc = getVocabulary(importState, TermType.NamedArea, BerlinModelTransformer.uuidSalvadorAreas,
                         "Salvador departments", "Salvador departments", null, null, true, NamedArea.NewInstance());
                 if (voc.getRepresentation(Language.SPANISH_CASTILIAN()) == null){
                     voc.addRepresentation(Representation.NewInstance("Salvador departamentos", "Salvador departamentos", "dep.", Language.SPANISH_CASTILIAN()));

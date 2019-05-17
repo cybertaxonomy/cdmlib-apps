@@ -359,7 +359,7 @@ public class CyprusDistributionImport
 			getTermService().save(areaLevel);
 		}
 
-		TermVocabulary<NamedArea> areaVocabulary = getVocabulary(TermType.NamedArea, CyprusTransformer.uuidCyprusDivisionsVocabulary, "Cyprus devisions", "Cyprus divisions", null, null, true, NamedArea.NewInstance());
+		TermVocabulary<NamedArea> areaVocabulary = getVocabulary(state, TermType.NamedArea, CyprusTransformer.uuidCyprusDivisionsVocabulary, "Cyprus devisions", "Cyprus divisions", null, null, true, NamedArea.NewInstance());
 		NamedArea tdwg4Cyprus = (NamedArea)getTermService().find(UUID.fromString("9d447b51-e363-4dde-ae40-84c55679983c"));
 		Country isoCountryCyprus = (Country)getTermService().find(UUID.fromString("4b13d6b8-7eca-4d42-8172-f2018051ca19"));
 

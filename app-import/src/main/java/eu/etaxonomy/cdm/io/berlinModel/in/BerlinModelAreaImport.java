@@ -127,8 +127,8 @@ public class BerlinModelAreaImport  extends BerlinModelImportBase {
 
 		TermVocabulary<NamedArea> euroMedAreasVoc = makeEmptyEuroMedVocabulary();
 
-		MarkerType eurMarkerType = getMarkerType(state, BerlinModelTransformer.uuidEurArea, "eur", "eur Area", "eur", getEuroMedMarkerTypeVoc());
-		MarkerType euroMedAreaMarkerType = getMarkerType(state, BerlinModelTransformer.uuidEurMedArea, "EuroMedArea", "EuroMedArea", "EuroMedArea", getEuroMedMarkerTypeVoc());
+		MarkerType eurMarkerType = getMarkerType(state, BerlinModelTransformer.uuidEurArea, "eur", "eur Area", "eur", getEuroMedMarkerTypeVoc(state));
+		MarkerType euroMedAreaMarkerType = getMarkerType(state, BerlinModelTransformer.uuidEurMedArea, "EuroMedArea", "EuroMedArea", "EuroMedArea", getEuroMedMarkerTypeVoc(state));
 		ExtensionType isoCodeExtType = getExtensionType(state, BerlinModelTransformer.uuidIsoCode, "IsoCode", "IsoCode", "iso");
 		ExtensionType tdwgCodeExtType = getExtensionType(state, BerlinModelTransformer.uuidTdwgAreaCode, "TDWG code", "TDWG Area code", "tdwg");
 		ExtensionType mclCodeExtType = getExtensionType(state, BerlinModelTransformer.uuidMclCode, "MCL code", "MedCheckList code", "mcl");
@@ -220,7 +220,7 @@ public class BerlinModelAreaImport  extends BerlinModelImportBase {
         try {
 
             MarkerType hiddenAreaMarkerType = getMarkerType(state, BerlinModelTransformer.uuidHiddenArea,
-                    "Hidden Area","Used to hide distributions for the named areas in publications", null, getEuroMedMarkerTypeVoc());
+                    "Hidden Area","Used to hide distributions for the named areas in publications", null, getEuroMedMarkerTypeVoc(state));
 
             //Add hidden area marker to Rs(C) and Rs(N)
             hideArea(euroMedAreasVoc, hiddenAreaMarkerType, BerlinModelTransformer.uuidRs);

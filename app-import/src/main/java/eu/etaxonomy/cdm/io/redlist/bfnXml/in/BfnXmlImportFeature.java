@@ -178,7 +178,7 @@ public class BfnXmlImportFeature extends BfnXmlImportBase implements ICdmIO<BfnX
 			String childElementName = BfnXmlConstants.EL_LWERT;
 			createOrUpdateStates(bfnNamespace, elListValues, childElementName, redListCat, state);
 		}
-		TermVocabulary<?> voc = createOrUpdateTermVocabulary(TermType.Feature, vocabularyService, redListCat, BfnXmlConstants.VOC_REDLIST_FEATURES);
+		TermVocabulary<?> voc = createOrUpdateTermVocabulary(state, TermType.Feature, vocabularyService, redListCat, BfnXmlConstants.VOC_REDLIST_FEATURES);
 	    addSource(voc, state);
 	}
 
@@ -197,10 +197,10 @@ public class BfnXmlImportFeature extends BfnXmlImportBase implements ICdmIO<BfnX
 
 
     @SuppressWarnings({ "rawtypes" })
-	private TermVocabulary createOrUpdateTermVocabulary(TermType termType, IVocabularyService vocabularyService, DefinedTermBase term, String strTermVocabulary) {
+	private TermVocabulary createOrUpdateTermVocabulary(BfnXmlImportState state, TermType termType, IVocabularyService vocabularyService, DefinedTermBase term, String strTermVocabulary) {
 
         //create/get red list feature vocabulary
-        TermVocabulary<DefinedTermBase> termVocabulary = getVocabulary(termType, BfnXmlTransformer.vocRLFeatures, BfnXmlConstants.VOC_REDLIST_FEATURES, BfnXmlConstants.VOC_REDLIST_FEATURES, BfnXmlConstants.VOC_REDLIST_FEATURES, null, false, null);
+        TermVocabulary<DefinedTermBase> termVocabulary = getVocabulary(state, termType, BfnXmlTransformer.vocRLFeatures, BfnXmlConstants.VOC_REDLIST_FEATURES, BfnXmlConstants.VOC_REDLIST_FEATURES, BfnXmlConstants.VOC_REDLIST_FEATURES, null, false, null);
 		termVocabulary.addTerm(term);
 		vocabularyService.saveOrUpdate(termVocabulary);
 
@@ -242,7 +242,7 @@ public class BfnXmlImportFeature extends BfnXmlImportBase implements ICdmIO<BfnX
 				logger.warn("could not finde state term uuid for " + matchedListValue + " and redlist category"+ redListCat.getTitleCache()+"\n"+e);
 			}
 			String vocName = redListCat.getTitleCache() + " States";
-			stateVocabulary = (OrderedTermVocabulary) getVocabulary(TermType.State, vocabularyStateUuid, vocName, vocName, vocName, null, true, null);
+			stateVocabulary = (OrderedTermVocabulary) getVocabulary(state, TermType.State, vocabularyStateUuid, vocName, vocName, vocName, null, true, null);
 	        addSource(stateVocabulary, state);
 			State stateTerm = getStateTerm(state, stateTermUuid, matchedListValue, matchedListValue, matchedListValue, stateVocabulary);
 			addSource(stateTerm, state);

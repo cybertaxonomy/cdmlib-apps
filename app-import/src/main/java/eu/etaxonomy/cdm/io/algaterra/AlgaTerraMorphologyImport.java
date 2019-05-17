@@ -191,7 +191,7 @@ public class AlgaTerraMorphologyImport  extends AlgaTerraSpecimenImportBase {
 		String vocLabel = baseName;
 		String vocAbbrevLabel = null;
 		URI termSourceUri = null;
-		TermVocabulary<State> voc = getVocabulary(TermType.State, uuidStateVocabulary,vocDescription, vocLabel, vocAbbrevLabel, termSourceUri, isOrdered, null);
+		TermVocabulary<State> voc = getVocabulary(state, TermType.State, uuidStateVocabulary,vocDescription, vocLabel, vocAbbrevLabel, termSourceUri, isOrdered, null);
 		vocabularyMap.put(vocLabel, voc);
 
 		String idField = baseNameCamel + "Id";
@@ -497,7 +497,7 @@ public class AlgaTerraMorphologyImport  extends AlgaTerraSpecimenImportBase {
 				logger.warn("Methods not yet handled: " + method);
 			}
 			//parameter
-			TermVocabulary<Feature> vocParameter = getVocabulary(TermType.Feature, uuidVocParameter, "Feature vocabulary for AlgaTerra measurement parameters", "Parameters", null, null, false, Feature.COMMON_NAME());
+			TermVocabulary<Feature> vocParameter = getVocabulary(state, TermType.Feature, uuidVocParameter, "Feature vocabulary for AlgaTerra measurement parameters", "Parameters", null, null, false, Feature.COMMON_NAME());
 			if (StringUtils.isNotBlank(parameter)){
 				UUID featureUuid = getParameterFeatureUuid(state, parameter);
 				Feature feature = getFeature(state, featureUuid, parameter, parameter, null, vocParameter);
@@ -533,13 +533,13 @@ public class AlgaTerraMorphologyImport  extends AlgaTerraSpecimenImportBase {
 	private String normalizeAndModifyValue(AlgaTerraImportState state, String valueStr, Set<DefinedTerm> valueModifier) {
 		valueStr = valueStr.replace(",", ".");
 		if (valueStr.startsWith("<")){
-			TermVocabulary<DefinedTerm> measurementValueModifierVocabulary = getVocabulary(TermType.Modifier, uuidMeasurementValueModifier, "Measurement value modifier", "Measurement value modifier", null, null, false, DefinedTerm.NewModifierInstance(null, null, null));
+			TermVocabulary<DefinedTerm> measurementValueModifierVocabulary = getVocabulary(state, TermType.Modifier, uuidMeasurementValueModifier, "Measurement value modifier", "Measurement value modifier", null, null, false, DefinedTerm.NewModifierInstance(null, null, null));
 			DefinedTerm modifier = getModifier(state, uuidModifierLowerThan, "Lower", "Lower than the given measurement value", "<", measurementValueModifierVocabulary);
 			valueModifier.add(modifier);
 			valueStr = valueStr.replace("<", "");
 		}
 		if (valueStr.startsWith(">")){
-			TermVocabulary<DefinedTerm> measurementValueModifierVocabulary = getVocabulary(TermType.Modifier, uuidMeasurementValueModifier, "Measurement value modifier", "Measurement value modifier", null, null, false, DefinedTerm.NewModifierInstance(null, null, null));
+			TermVocabulary<DefinedTerm> measurementValueModifierVocabulary = getVocabulary(state, TermType.Modifier, uuidMeasurementValueModifier, "Measurement value modifier", "Measurement value modifier", null, null, false, DefinedTerm.NewModifierInstance(null, null, null));
 			DefinedTerm modifier = getModifier(state, uuidModifierGreaterThan, "Lower", "Lower than the given measurement value", "<", measurementValueModifierVocabulary);
 			valueModifier.add(modifier);
 			valueStr = valueStr.replace(">", "");

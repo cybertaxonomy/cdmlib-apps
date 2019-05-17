@@ -110,9 +110,9 @@ public abstract class AlgaTerraSpecimenImportBase extends BerlinModelImportBase{
 
 			boolean isOrdered = true;
 			State tmp = State.NewInstance();
-			OrderedTermVocabulary<State> climateVoc = (OrderedTermVocabulary<State>)getVocabulary(TermType.State, uuidVocAlgaTerraClimate, "Climate", "Climate", abbrevLabel, uri, isOrdered, tmp);
-			OrderedTermVocabulary<State> habitatVoc = (OrderedTermVocabulary<State>)getVocabulary(TermType.State, uuidVocAlgaTerraHabitat, "Habitat", "Habitat", abbrevLabel, uri, isOrdered, tmp);
-			OrderedTermVocabulary<State> lifeformVoc = (OrderedTermVocabulary<State>)getVocabulary(TermType.State, uuidVocAlgaTerraLifeForm, "Lifeform", "Lifeform", abbrevLabel, uri, isOrdered, tmp);
+			OrderedTermVocabulary<State> climateVoc = (OrderedTermVocabulary<State>)getVocabulary(state, TermType.State, uuidVocAlgaTerraClimate, "Climate", "Climate", abbrevLabel, uri, isOrdered, tmp);
+			OrderedTermVocabulary<State> habitatVoc = (OrderedTermVocabulary<State>)getVocabulary(state, TermType.State, uuidVocAlgaTerraHabitat, "Habitat", "Habitat", abbrevLabel, uri, isOrdered, tmp);
+			OrderedTermVocabulary<State> lifeformVoc = (OrderedTermVocabulary<State>)getVocabulary(state, TermType.State, uuidVocAlgaTerraLifeForm, "Lifeform", "Lifeform", abbrevLabel, uri, isOrdered, tmp);
 
 			Feature feature = getFeature(state, uuidFeatureAlgaTerraClimate, "Climate","Climate", null, null);
 			feature.setSupportsCategoricalData(true);
@@ -163,7 +163,7 @@ public abstract class AlgaTerraSpecimenImportBase extends BerlinModelImportBase{
 			}
 
 			//material category
-			TermVocabulary<DefinedTerm> materialCategoryVoc = getVocabulary(TermType.KindOfUnit, AlgaTerraImportTransformer.uuidKindOfUnitVoc, "Alga Terra Material Category", "Alga Terra Material Category", abbrevLabel, uri, false, DefinedTerm.NewKindOfUnitInstance(null, null, null));
+			TermVocabulary<DefinedTerm> materialCategoryVoc = getVocabulary(state, TermType.KindOfUnit, AlgaTerraImportTransformer.uuidKindOfUnitVoc, "Alga Terra Material Category", "Alga Terra Material Category", abbrevLabel, uri, false, DefinedTerm.NewKindOfUnitInstance(null, null, null));
 			getVocabularyService().save(materialCategoryVoc);
 
 			String materialSql = "SELECT * FROM MaterialCategory WHERE MaterialCategoryId <> 16 ";
@@ -183,7 +183,7 @@ public abstract class AlgaTerraSpecimenImportBase extends BerlinModelImportBase{
 			}
 
 			//areas
-			OrderedTermVocabulary<NamedArea> informalAreasVoc = (OrderedTermVocabulary<NamedArea>)getVocabulary(TermType.NamedArea, AlgaTerraImportTransformer.uuidNamedAreaVocAlgaTerraInformalAreas, "AlgaTerra Specific Areas", "AlgaTerra Specific Areas", abbrevLabel, uri, true, NamedArea.NewInstance());
+			OrderedTermVocabulary<NamedArea> informalAreasVoc = (OrderedTermVocabulary<NamedArea>)getVocabulary(state, TermType.NamedArea, AlgaTerraImportTransformer.uuidNamedAreaVocAlgaTerraInformalAreas, "AlgaTerra Specific Areas", "AlgaTerra Specific Areas", abbrevLabel, uri, true, NamedArea.NewInstance());
 			getVocabularyService().save(informalAreasVoc);
 
 			String areaSql = "SELECT * FROM TDWGGazetteer WHERE subL4 = 1 ";

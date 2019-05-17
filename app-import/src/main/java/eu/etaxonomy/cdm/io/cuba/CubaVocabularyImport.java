@@ -127,7 +127,7 @@ public class CubaVocabularyImport extends CdmImportBase<CubaImportConfigurator, 
         String abbrev = null;
         boolean isOrdered = true;
         PresenceAbsenceTerm anyTerm = PresenceAbsenceTerm.PRESENT();  //just any
-        TermVocabulary<PresenceAbsenceTerm> cubaStatusVocabualary = getVocabulary(TermType.PresenceAbsenceTerm, cubaStatusVocabularyUuid, label, label, abbrev, null, isOrdered, anyTerm);
+        TermVocabulary<PresenceAbsenceTerm> cubaStatusVocabualary = getVocabulary(state, TermType.PresenceAbsenceTerm, cubaStatusVocabularyUuid, label, label, abbrev, null, isOrdered, anyTerm);
 
         final boolean PRESENT = false;
 
@@ -188,7 +188,7 @@ public class CubaVocabularyImport extends CdmImportBase<CubaImportConfigurator, 
         String abbrev = null;
         boolean isOrdered = true;
         NamedArea anyArea = NamedArea.ARCTICOCEAN();  //just any
-        TermVocabulary<NamedArea> cubaAreasVocabualary = getVocabulary(TermType.NamedArea, cubaAreasVocabularyUuid, label, label, abbrev, null, isOrdered, anyArea);
+        TermVocabulary<NamedArea> cubaAreasVocabualary = getVocabulary(state, TermType.NamedArea, cubaAreasVocabularyUuid, label, label, abbrev, null, isOrdered, anyArea);
 
         TermMatchMode matchMode = null;
 
