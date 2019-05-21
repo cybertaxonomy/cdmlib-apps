@@ -335,15 +335,11 @@ public class BerlinModelTaxonRelationImportValidator implements IOValidator<Berl
 	            rs = source.getResultSet(strSelect + strQueryBase + strOrderBy);
 	            while (rs.next()){
 
-	                int secRefFk = rs.getInt("secRefFk");
-	                String secRef = rs.getString("secRef");
-	                String nameCache = rs.getString("FullNameCache");
-	                int nameId = rs.getInt("NameId");
-	                String status = rs.getString("Status");
+	                int relPTaxonId = rs.getInt("RelPTaxonId");
 
-	                System.out.println("SecRef:" + secRefFk +
-	                        "\n secRef: " + secRef + "\n name: " + nameCache + "\n nameId: " + nameId
-	                        + "\n status: " + status
+	                System.out.println("RelPTaxonId:" + relPTaxonId
+//	                        + "\n secRef: " + secRef + "\n name: " + nameCache + "\n nameId: " + nameId
+//	                        + "\n status: " + status
 	                    );
 	            }
 	            success = (n == 0);

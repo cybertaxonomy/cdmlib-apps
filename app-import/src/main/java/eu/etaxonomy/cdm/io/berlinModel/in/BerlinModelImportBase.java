@@ -142,7 +142,7 @@ public abstract class BerlinModelImportBase
 			annotatableEntity.addAnnotation(annotation);
 		}else if (config.getEditor().equals(EDITOR.EDITOR_AS_EDITOR)){
 		    User creator;
-		    boolean xmlSourceAdded= addXmlSource(state, annotatableEntity, createdWho, false);
+		    boolean xmlSourceAdded= addXmlSource(state, rs, annotatableEntity, createdWho, false);
 		    if (xmlSourceAdded){
 		        creator = getXmlImporter(state);
 		    }else{
@@ -151,7 +151,7 @@ public abstract class BerlinModelImportBase
 		    annotatableEntity.setCreatedBy(creator);
 
 		    User updator;
-		    xmlSourceAdded = addXmlSource(state, annotatableEntity, updatedWho, xmlSourceAdded);
+		    xmlSourceAdded = addXmlSource(state, rs, annotatableEntity, updatedWho, xmlSourceAdded);
 		    if (xmlSourceAdded){
 		        updator = getXmlImporter(state);
 		    }else{
@@ -187,28 +187,40 @@ public abstract class BerlinModelImportBase
 
     /**
      * @param state
+     * @param rs
 	 * @param annotatableEntity
 	 * @param xmlSourceAdded
      * @return
+     * @throws SQLException
      */
-    private boolean addXmlSource(BerlinModelImportState state, AnnotatableEntity annotatableEntity, String username, boolean existsAlready) {
-        if (!state.getConfig().isEuroMed() || !isXmlImport(username)){
+    private boolean addXmlSource(BerlinModelImportState state, ResultSet rs, AnnotatableEntity annotatableEntity, String username, boolean existsAlready) throws SQLException {
+        if (!state.getConfig().isEuroMed()){
             return false;
         }
         if (isXmlImport(username) && existsAlready){
             return true;
         }
-        Reference ref = getXmlRef(state, username);
-        if (annotatableEntity.isInstanceOf(SourcedEntityBase.class)){
-            SourcedEntityBase<?> sourcedEntity = CdmBase.deproxy(annotatableEntity, SourcedEntityBase.class);
-            sourcedEntity.addImportSource(null, null, ref, null);
-        }else if (annotatableEntity.isInstanceOf(DescriptionElementBase.class)){
-            DescriptionElementBase descriptionElement = CdmBase.deproxy(annotatableEntity, DescriptionElementBase.class);
-            descriptionElement.addImportSource(null, null, ref, null);
-        }else{
-            return false;
+        String idInSource = getIdInSource(state, rs);
+
+        boolean isXmlUser = isXmlImport(username);
+        Reference ref = isXmlUser? getXmlRef(state, username): null;
+        if (ref != null || isNotBlank(idInSource)){
+            if (annotatableEntity.isInstanceOf(SourcedEntityBase.class)){
+                SourcedEntityBase<?> sourcedEntity = CdmBase.deproxy(annotatableEntity, SourcedEntityBase.class);
+                sourcedEntity.addImportSource(idInSource, null, ref, null);
+            }else if (annotatableEntity.isInstanceOf(DescriptionElementBase.class)){
+                DescriptionElementBase descriptionElement = CdmBase.deproxy(annotatableEntity, DescriptionElementBase.class);
+                descriptionElement.addImportSource(idInSource, null, ref, null);
+            }else {
+                return false;
+            }
         }
-        return true;
+        return isXmlUser;
+    }
+
+    //can be overriden
+    protected String getIdInSource(BerlinModelImportState state, ResultSet rs) throws SQLException {
+        return null;
     }
 
 
@@ -237,6 +249,7 @@ public abstract class BerlinModelImportBase
                 ref = ReferenceFactory.newDatabase();
                 ref.setTitleCache(username, true);
                 ref.setTitle(username);
+                ref.addImportSource(null, this.getTableName(), state.getTransactionalSourceReference(), null);
                 getReferenceService().save(ref);
             }
             state.addRelatedObject(namespace, username, ref);
@@ -256,10 +269,15 @@ public abstract class BerlinModelImportBase
             return false;
         }
         return username.matches(".*\\.xml")
-                || username.equals("J.Li: import from pandora")
-                || username.equals("J.Li imported from pandora")
+                ||username.equals("MCL-Import, a.mueller")
+                ||username.equals("pandora import (J.Li)")
                 ||username.equals("Import from Kew Checklist 2010")
-                ||username.equals("Import from ILDIS 2010");
+                ||username.equals("Import from ILDIS 2010")
+                ||username.equals("s_em_ImportCastroviejoReferences")
+                ||username.equals("s_em_ImportUotilaReferences")
+                ||username.equals("s_em_ImportValdesReferences")
+                ||username.equals("s_em_NewImportNomReferences")
+                ||username.equals("Import from Anthos 2010");
     }
 
 
@@ -527,6 +545,14 @@ public abstract class BerlinModelImportBase
                     username = username.substring(0, username.length()-2);
                 }else if(username.matches("(mariam[1-4]|palermo|palma|paltar)")){
                     username = "mariam";
+                }else if (username.matches("a.mueller.*") || "AM".equals(username)){
+                    username = "a.mueller";
+                }else if (username.matches("sh,.*")){
+                    username = "sh";
+                }else if (username.matches("J.Li.*pandora")){
+                    username = "pandora import (J.Li)";
+                }else if (username.matches("euromed")){
+                    username = "em";
                 }
                 if(username.matches("kapet")){
                     username = "kpet";

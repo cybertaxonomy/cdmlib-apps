@@ -40,6 +40,7 @@ import eu.etaxonomy.cdm.model.agent.Person;
 import eu.etaxonomy.cdm.model.common.CdmBase;
 import eu.etaxonomy.cdm.model.common.Extension;
 import eu.etaxonomy.cdm.model.common.ExtensionType;
+import eu.etaxonomy.cdm.model.common.Identifier;
 import eu.etaxonomy.cdm.model.common.Language;
 import eu.etaxonomy.cdm.model.common.Marker;
 import eu.etaxonomy.cdm.model.common.MarkerType;
@@ -51,6 +52,7 @@ import eu.etaxonomy.cdm.model.reference.Reference;
 import eu.etaxonomy.cdm.model.taxon.Synonym;
 import eu.etaxonomy.cdm.model.taxon.Taxon;
 import eu.etaxonomy.cdm.model.taxon.TaxonBase;
+import eu.etaxonomy.cdm.model.term.DefinedTerm;
 
 
 /**
@@ -253,14 +255,20 @@ public class BerlinModelTaxonImport  extends BerlinModelImportBase {
 					//detail
 					String detail = rs.getString("Detail");
 					if (isNotBlank(detail)){
-						ExtensionType detailExtensionType = getExtensionType(state, BerlinModelTransformer.DETAIL_EXT_UUID, "micro reference","micro reference","micro ref.");
-						Extension.NewInstance(taxonBase, detail, detailExtensionType);
+//						ExtensionType detailExtensionType = getExtensionType(state, BerlinModelTransformer.DETAIL_EXT_UUID, "micro reference","micro reference","micro ref.");
+//						Extension.NewInstance(taxonBase, detail, detailExtensionType);
+						taxonBase.setSecMicroReference(detail.trim());
 					}
 					//idInSource
 					String idInSource = rs.getString("IdInSource");
 					if (isNotBlank(idInSource)){
-						ExtensionType detailExtensionType = getExtensionType(state, BerlinModelTransformer.ID_IN_SOURCE_EXT_UUID, "Berlin Model IdInSource","Berlin Model IdInSource","BM source id");
-						Extension.NewInstance(taxonBase, idInSource, detailExtensionType);
+						if(!state.getConfig().isEuroMed()){
+						    ExtensionType detailExtensionType = getExtensionType(state, BerlinModelTransformer.ID_IN_SOURCE_EXT_UUID, "Berlin Model IdInSource","Berlin Model IdInSource","BM source id");
+						    Extension.NewInstance(taxonBase, idInSource.trim(), detailExtensionType);
+						}else if(isMclIdentifier(state,rs, idInSource)){
+						    DefinedTerm identifierType = getIdentiferType(state, BerlinModelTransformer.uuidEM_MCLIdentifierType, "MCL identifier", "Med-Checklist identifier", "MCL ID", null);
+						    Identifier.NewInstance(taxonBase, idInSource.trim(), identifierType);
+						}
 					}
 					//namePhrase
 					String namePhrase = rs.getString("NamePhrase");
@@ -367,6 +375,31 @@ public class BerlinModelTaxonImport  extends BerlinModelImportBase {
 		getTaxonService().save(taxaToSave);
 		return success;
 	}
+
+    /**
+     * @param state
+     * @param rs
+     * @param idInSource
+     * @return
+     * @throws SQLException
+     */
+    private boolean isMclIdentifier(BerlinModelImportState state, ResultSet rs, String idInSource) throws SQLException {
+        if (idInSource.contains("-")){
+            return true;
+        }else if (idInSource.matches("(293|303)")){
+            String created = rs.getString("Created_Who");
+            if (created.endsWith(".xml")){
+                return true;
+            }
+        }
+        return false;
+    }
+
+    @Override
+    protected String getIdInSource(BerlinModelImportState state, ResultSet rs) throws SQLException {
+        String id = rs.getString("idInSource");
+        return id;
+    }
 
 
     /**

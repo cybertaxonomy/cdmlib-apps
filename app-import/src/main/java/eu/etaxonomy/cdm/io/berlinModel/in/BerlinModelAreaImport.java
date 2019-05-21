@@ -378,7 +378,7 @@ public class BerlinModelAreaImport  extends BerlinModelImportBase {
 	private OrderedTermVocabulary<NamedArea> makeEmptyEuroMedVocabulary() {
 		TermType type = TermType.NamedArea;
 		String description = "Euro+Med area vocabulary";
-		String label = "E+M areas";
+		String label = "E+M Areas";
 		String abbrev = null;
 		URI termSourceUri = null;
 		OrderedTermVocabulary<NamedArea> result = OrderedTermVocabulary.NewInstance(type, description, label, abbrev, termSourceUri);

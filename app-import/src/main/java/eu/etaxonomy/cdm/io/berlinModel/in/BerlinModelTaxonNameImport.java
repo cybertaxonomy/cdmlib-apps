@@ -32,6 +32,7 @@ import eu.etaxonomy.cdm.io.common.IOValidator;
 import eu.etaxonomy.cdm.io.common.ImportHelper;
 import eu.etaxonomy.cdm.io.common.ResultSetPartitioner;
 import eu.etaxonomy.cdm.io.common.Source;
+import eu.etaxonomy.cdm.io.common.utils.ImportDeduplicationHelper;
 import eu.etaxonomy.cdm.model.agent.Team;
 import eu.etaxonomy.cdm.model.agent.TeamOrPersonBase;
 import eu.etaxonomy.cdm.model.common.Annotation;
@@ -78,9 +79,7 @@ public class BerlinModelTaxonNameImport extends BerlinModelImportBase {
 
 	public static final String NAMESPACE = "TaxonName";
 
-	   public static final String NAMESPACE_PRELIM = "RefDetail_Preliminary";
-
-	public static final UUID SOURCE_ACC_UUID = UUID.fromString("c3959b4f-d876-4b7a-a739-9260f4cafd1c");
+	public static final String NAMESPACE_PRELIM = "RefDetail_Preliminary";
 
 	private static int modCount = 5000;
 	private static final String pluralString = "TaxonNames";
@@ -257,6 +256,9 @@ public class BerlinModelTaxonNameImport extends BerlinModelImportBase {
 		Set<TaxonName> namesToSave = new HashSet<>();
 		@SuppressWarnings("unchecked")
         Map<String, Team> teamMap = partitioner.getObjectMap(BerlinModelAuthorTeamImport.NAMESPACE);
+		//to dedup preliminary refDetail references
+		dedupHelper.restartSession(this, null);
+
 
 		ResultSet rs = partitioner.getResultSet();
 
@@ -376,7 +378,7 @@ public class BerlinModelTaxonNameImport extends BerlinModelImportBase {
 					if (colExists){
 						String sourceAcc = rs.getString("Source_Acc");
 						if (isNotBlank(sourceAcc)){
-							ExtensionType sourceAccExtensionType = getExtensionType(state, SOURCE_ACC_UUID, "Source_Acc","Source_Acc","Source_Acc");
+							ExtensionType sourceAccExtensionType = getExtensionType(state, BerlinModelTransformer.SOURCE_ACC_UUID, "Source_Acc","Source_Acc","Source_Acc");
 							Extension.NewInstance(taxonName, sourceAcc, sourceAccExtensionType);
 						}
 					}
@@ -911,13 +913,13 @@ public class BerlinModelTaxonNameImport extends BerlinModelImportBase {
                 }else{
                     System.out.println("Final Candidates empty but author exists - should not happen: " + taxonName.getTitleCache());
                 }
-                handleNoMatch(state, taxonName, detail, genericCandidate, finalCandidates, fullNomRefCache, parsedCandidates);
+                handleNoMatch(state, refDetailId, taxonName, detail, genericCandidate, finalCandidates, fullNomRefCache, parsedCandidates);
 //                printResult(MatchType.NO_MATCH, unparsedAndName(fullNomRefCache, taxonName));
             }else if (hasOnlyUnparsedExemplars(finalCandidates)){
                 printResult(MatchType.UNPARSED, unparsedAndName(fullNomRefCache, taxonName));
             }else if (hasNoCandidateExemplars(finalCandidates)){
                 //but we can define the ref type here
-                handleNoMatch(state, taxonName, detail, genericCandidate, finalCandidates, fullNomRefCache, parsedCandidates);
+                handleNoMatch(state, refDetailId, taxonName, detail, genericCandidate, finalCandidates, fullNomRefCache, parsedCandidates);
 //                printResult(MatchType.NO_MATCH, unparsedAndName(fullNomRefCache, taxonName));
             }else{
                 String message = resultMessage(fullNomRefCache, finalCandidates, taxonName);
@@ -925,17 +927,17 @@ public class BerlinModelTaxonNameImport extends BerlinModelImportBase {
             }
         }else if (matchingCandidates.size() == 1){
             ReferenceCandidate single = matchingCandidates.iterator().next().candidate;
-            addAuthorAndDetail(taxonName, single);
+            addAuthorAndDetail(state, refDetailId, taxonName, single);
             if (single.ref.isPersited()){
                 printResult(MatchType.SINGLE_FULL_MATCH, unparsedAndName(fullNomRefCache, taxonName));
             }else{
-                single.ref.addImportSource(String.valueOf(refDetailId), BerlinModelRefDetailImport.REFDETAIL_NAMESPACE,
-                        state.getTransactionalSourceReference(), null);
+//                single.ref.addImportSource(String.valueOf(refDetailId), BerlinModelRefDetailImport.REFDETAIL_NAMESPACE,
+//                        state.getTransactionalSourceReference(), null);
                 printResult(MatchType.SINGLE_INREF_MATCH,  unparsedAndName(fullNomRefCache, taxonName));
             }
         }else{
-            FinalCandidate finCand = findBestMatchingFinalCandidate(taxonName, matchingCandidates, fullNomRefCache);
-            addAuthorAndDetail(taxonName, finCand.candidate);
+            FinalCandidate finCand = findBestMatchingFinalCandidate(state, refDetailId, taxonName, matchingCandidates, fullNomRefCache);
+//            addAuthorAndDetail(taxonName, finCand.candidate);
         }
     }
 
@@ -949,7 +951,7 @@ public class BerlinModelTaxonNameImport extends BerlinModelImportBase {
      * @param fullNomRefCache
      * @param parsedCandidates
      */
-    private void handleNoMatch(BerlinModelImportState state, TaxonName taxonName, String detail,
+    private void handleNoMatch(BerlinModelImportState state, int refDetailId, TaxonName taxonName, String detail,
             Reference genericCandidate, Set<FinalCandidate> finalCandidates, String fullNomRefCache,
             Set<Reference> parsedCandidatesAsRef) {
         Set<FinalCandidate> parsedCandidates = getParsedExemplars(finalCandidates);
@@ -962,7 +964,7 @@ public class BerlinModelTaxonNameImport extends BerlinModelImportBase {
         }else if (parsedCandidates.size() == 1){
 
             ReferenceCandidate refCand = parsedCandidates.iterator().next().exemplar;
-            addAuthorAndDetail(taxonName, refCand);
+            addAuthorAndDetail(state, refDetailId, taxonName, refCand);
             if (refCand.ref.getType() == ReferenceType.Article){
                 if(refCand.ref.getInReference().getAbbrevTitle().contains(",")){
                     printResult(MatchType.NO_MATCH_SINGLE_PARSE_ARTICLE_WITH_COMMA, unparsedAndName(fullNomRefCache, taxonName));
@@ -978,7 +980,7 @@ public class BerlinModelTaxonNameImport extends BerlinModelImportBase {
             }
         }else{
             ReferenceCandidate generCandidate = createGenericReference(parsedCandidates, detail);
-            addAuthorAndDetail(taxonName, generCandidate);
+            addAuthorAndDetail(state, refDetailId, taxonName, generCandidate);
             if (generCandidate.ref.getType() == ReferenceType.Article){
                 if(generCandidate.ref.getInReference().getAbbrevTitle().contains(",")){
                     printResult(MatchType.NO_MATCH_SINGLE_PARSE_ARTICLE_WITH_COMMA, unparsedAndName(fullNomRefCache, taxonName));
@@ -1154,33 +1156,53 @@ public class BerlinModelTaxonNameImport extends BerlinModelImportBase {
 
 
     /**
+     * @param refDetailId
+     * @param state
      * @param taxonName
      * @param single
      */
-    private void addAuthorAndDetail(TaxonName taxonName, ReferenceCandidate refCand) {
+    private void addAuthorAndDetail(BerlinModelImportState state, int refDetailId, TaxonName taxonName, ReferenceCandidate refCand) {
         if (!CdmUtils.nullSafeEqual(refCand.ref.getAuthorship(), taxonName.getCombinationAuthorship())){
-            TeamOrPersonBase<?> refAut = refCand.ref.getAuthorship();
-            TeamOrPersonBase<?> nameAut = taxonName.getCombinationAuthorship();
-            if(refAut == null || nameAut == null){
-                logger.warn("refAut or nameAut was null");  //this happened once
+            TeamOrPersonBase<?> refAuthor = refCand.ref.getAuthorship();
+            TeamOrPersonBase<?> nameAuthor = taxonName.getCombinationAuthorship();
+            if(refAuthor == null || nameAuthor == null){
+                logger.warn("refAut or nameAut was null. RefDetailId = " + refDetailId);  //this happened once
                 return;
             }
             try {
-                MatchResult match = MatchStrategyFactory.NewParsedTeamOrPersonInstance().invoke(refAut, nameAut, true);
+                MatchResult match = MatchStrategyFactory.NewParsedTeamOrPersonInstance().invoke(refAuthor, nameAuthor, true);
                 if (match.isFailed()){
                     System.out.println("not same author \n"+ match);
                 }else{
-                    taxonName.setCombinationAuthorship(refAut);
+                    taxonName.setCombinationAuthorship(refAuthor);
                 }
             } catch (MatchException e) {
                 // TODO Auto-generated catch block
                 e.printStackTrace();
             }
         }
-        //FIXME deduplicate
-        taxonName.setNomenclaturalReference(refCand.ref);
+        if (refCand.ref.getSources().isEmpty()){
+            refCand.ref.addImportSource(String.valueOf(refDetailId), BerlinModelRefDetailImport.REFDETAIL_NAMESPACE, state.getTransactionalSourceReference(), null);
+        }
+//        if (!refCand.ref.isPersited()){
+//            getReferenceService().save(refCand.ref);
+//        }
+
+        Reference nomRef = dedupHelper.getExistingReference(state, refCand.ref);
+        if (nomRef != refCand.ref){
+            System.out.println("Ref deduplicated: " + nomRef.getTitleCache() + "(RefDetId: " + refDetailId + ")");
+            if (nomRef.isPersited() && !getSession().contains(nomRef)){
+                System.out.println("Start load with uuid: " + nomRef.getUuid() + ")");
+                nomRef = getReferenceService().find(nomRef.getUuid());
+            }
+        }
+
+        taxonName.setNomenclaturalReference(nomRef);
         taxonName.setNomenclaturalMicroReference(refCand.detail);
     }
+
+    private ImportDeduplicationHelper<BerlinModelImportState> dedupHelper = ImportDeduplicationHelper.NewInstance(null, null);
+
 
 
 
@@ -1263,12 +1285,9 @@ public class BerlinModelTaxonNameImport extends BerlinModelImportBase {
 
 
     /**
-     * @param taxonName
-     * @param finalCandidates
-     * @param exemplars
-     * @return
+     * return object not really necessary here
      */
-    private FinalCandidate findBestMatchingFinalCandidate(TaxonName taxonName,
+    private FinalCandidate findBestMatchingFinalCandidate(BerlinModelImportState state, int refDetailId, TaxonName taxonName,
             Set<FinalCandidate> finalCandidates, String fullNomRefCache) {
         try {
             Set<FinalCandidate> persistentMatches = findPersistentMatch(taxonName, finalCandidates);
@@ -1278,7 +1297,7 @@ public class BerlinModelTaxonNameImport extends BerlinModelImportBase {
                     Set<FinalCandidate> successCandidatesExacts = getSuccess(exactMatches);
                     if (successCandidatesExacts.size() >= 1){
                         FinalCandidate result = successCandidatesExacts.iterator().next();
-                        addAuthorAndDetail(taxonName, result.candidate);
+                        addAuthorAndDetail(state, refDetailId, taxonName, result.candidate);
 //                        String message = resultMessage(fullNomRefCache, exactMatches, taxonName);
                         if (successCandidatesExacts.size()>1){
                             printResult(MatchType.MULTI_MULTI_PERSISTENT_MULTI_EXACT, unparsedAndName(fullNomRefCache, taxonName));
@@ -1290,12 +1309,12 @@ public class BerlinModelTaxonNameImport extends BerlinModelImportBase {
                         String message = resultMessage(fullNomRefCache, successCandidatesExacts, taxonName);
                         printResult(MatchType.MULTI_MULTI_PERSISTENT_NO_EXACT, message);
                         FinalCandidate result = persistentMatches.iterator().next();
-                        addAuthorAndDetail(taxonName, result.candidate);
+                        addAuthorAndDetail(state, refDetailId, taxonName, result.candidate);
                         return result;
                     }
                 }else{
                     FinalCandidate result = persistentMatches.iterator().next();
-                    addAuthorAndDetail(taxonName, result.candidate);
+                    addAuthorAndDetail(state, refDetailId, taxonName, result.candidate);
                     printResult(MatchType.MULTI_SINGLE_PERSISTENT, taxonName.getFullTitleCache());
                     return result;
                 }
@@ -1304,7 +1323,7 @@ public class BerlinModelTaxonNameImport extends BerlinModelImportBase {
             Set<FinalCandidate> successCandidatesExacts = getSuccess(exactMatches);
             if (successCandidatesExacts.size() >= 1){
                 FinalCandidate result = successCandidatesExacts.iterator().next();
-                addAuthorAndDetail(taxonName, result.candidate);
+                addAuthorAndDetail(state, refDetailId, taxonName, result.candidate);
                 String message = resultMessage(fullNomRefCache, exactMatches, taxonName);
                 if (successCandidatesExacts.size()>1){
                     printResult(MatchType.MULTI_NO_PERSISTENT_MULTI_EXACT, message);
@@ -1315,14 +1334,16 @@ public class BerlinModelTaxonNameImport extends BerlinModelImportBase {
                 return result;
             }else{
                 FinalCandidate result = finalCandidates.iterator().next();
-                addAuthorAndDetail(taxonName, result.candidate);
+                addAuthorAndDetail(state, refDetailId, taxonName, result.candidate);
                 String message = resultMessage(fullNomRefCache, exactMatches, taxonName);
                 printResult(MatchType.MULTI_NO_PERSISTENT_NO_EXACT, message);
                 return result;
             }
         } catch (MatchException e) {
             e.printStackTrace();
-            return finalCandidates.iterator().next();
+            FinalCandidate result = finalCandidates.iterator().next();
+            addAuthorAndDetail(state, refDetailId, taxonName, result.candidate);
+            return result;
         }
     }
 

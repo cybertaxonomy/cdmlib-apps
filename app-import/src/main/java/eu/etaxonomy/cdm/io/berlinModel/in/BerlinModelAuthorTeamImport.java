@@ -234,6 +234,7 @@ public class BerlinModelAuthorTeamImport extends BerlinModelImportBase {
      */
     private TeamOrPersonBase<?> handleTeam(BerlinModelImportState state, Team team, String authorTeamCache,
             String fullAuthorTeamCache, boolean preliminaryFlag, int authorTeamId) {
+
         if (!team.getTeamMembers().isEmpty()){
             return team;
         }

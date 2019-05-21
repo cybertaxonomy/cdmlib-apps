@@ -49,6 +49,7 @@ import eu.etaxonomy.cdm.model.taxon.Taxon;
 import eu.etaxonomy.cdm.model.taxon.TaxonBase;
 import eu.etaxonomy.cdm.model.term.OrderedTermVocabulary;
 import eu.etaxonomy.cdm.model.term.Representation;
+import eu.etaxonomy.cdm.model.term.TermType;
 import eu.etaxonomy.cdm.model.term.TermVocabulary;
 
 /**
@@ -87,7 +88,7 @@ public class BerlinModelCommonNamesImport  extends BerlinModelImportBase {
 		if (isNotBlank(state.getConfig().getCommonNameFilter())){
 			result += " AND " + state.getConfig().getCommonNameFilter();
 		}
-		result += " ORDER BY CommonNameId ";
+		result += " ORDER BY PTNameFk, CommonNameId ";
 
 		return result;
 	}
@@ -118,7 +119,7 @@ public class BerlinModelCommonNamesImport  extends BerlinModelImportBase {
                          "     LEFT OUTER JOIN PTaxon acc ON rel.PTNameFk2 = acc.PTNameFk AND rel.PTRefFk2 = acc.PTRefFk " +
                          "     LEFT OUTER JOIN Name accName ON accName.NameId = acc.PTNameFk " +
 			        " WHERE cn.CommonNameId IN (" + ID_LIST_TOKEN + ") " +
-			        " ORDER BY cn.CommonNameId ";
+			        " ORDER BY cn.PTNameFk, cn.CommonNameId ";
 
 		return recordQuery;
 	}
@@ -172,6 +173,8 @@ public class BerlinModelCommonNamesImport  extends BerlinModelImportBase {
 	}
 
 
+    private Map<String, Language> iso6392Map = new HashMap<>();
+
     @Override
 	public boolean doPartition(@SuppressWarnings("rawtypes") ResultSetPartitioner partitioner, BerlinModelImportState state)  {
 		boolean success = true ;
@@ -185,7 +188,6 @@ public class BerlinModelCommonNamesImport  extends BerlinModelImportBase {
 		@SuppressWarnings("unchecked")
         Map<String, Reference> refMap = partitioner.getObjectMap(BerlinModelReferenceImport.REFERENCE_NAMESPACE);
 
-		Map<String, Language> iso6392Map = new HashMap<>();
 
 	//	logger.warn("MisappliedNameRefFk  not yet implemented for Common Names");
 
@@ -563,7 +565,7 @@ public class BerlinModelCommonNamesImport  extends BerlinModelImportBase {
 	 * @param emTdwgMap
 	 * @throws SQLException
 	 */
-	private void fillRegionMap(BerlinModelImportState state, String sqlWhere,
+	private void fillRegionMap_old(BerlinModelImportState state, String sqlWhere,
 			Map<String, NamedArea> emCodeToAreaMap) throws SQLException {
 
 	    Source source = state.getConfig().getSource();
@@ -606,6 +608,63 @@ public class BerlinModelCommonNamesImport  extends BerlinModelImportBase {
 			}
 		}
 	}
+
+   private void fillRegionMap(BerlinModelImportState state, String sqlWhere,
+            Map<String, NamedArea> emCodeToAreaMap) throws SQLException {
+
+        OrderedTermVocabulary<NamedArea> voc = areaVoc = OrderedTermVocabulary.NewInstance(TermType.NamedArea, "Euro+Med common name areas", "E+M Common Name Areas", null, null);
+        getVocabularyService().save(areaVoc);
+
+        Map<String,NamedArea> existingAreas = new HashMap<>();
+        Source source = state.getConfig().getSource();
+        String sql =
+              " SELECT RegionId, Region "
+            + " FROM  emLanguageRegion "
+            + " WHERE RegionId IN ("+ sqlWhere+ ") "
+            + " ORDER BY Region ";
+        ResultSet rs = source.getResultSet(sql);
+        while (rs.next()){
+            Object regionId = rs.getObject("RegionId");
+            String region = rs.getString("Region");
+
+            NamedArea area;
+            if (existingAreas.containsKey(region)){
+                area = existingAreas.get(region);
+            }else{
+
+                String[] splitRegion = region.split("-");
+
+                String emMapping = "None";
+                if (splitRegion.length == 2){
+                    String emCode = splitRegion[1].trim().replace(" ", "");
+
+                    NamedArea emArea = emCodeToAreaMap.get(emCode);
+                    if (emArea == null){
+                        emArea = normalizeAmbigousAreas(emCode, emCodeToAreaMap);
+                    }
+                    if (emArea == null){
+
+                        String[] splits = emCode.split("/");
+                        if (splits.length == 2){
+                            emArea = emCodeToAreaMap.get(splits[0]);
+                        }
+                        if (emArea != null){
+                            logger.warn("emCode ambigous. This should not happen anymore due to normalization! Use larger area as default: " +  CdmUtils.Nz(emCode) + "->" + regionId);
+                        }else{
+                            logger.warn("emCode not recognized. Region not defined: " +  CdmUtils.Nz(emCode) + "->" + regionId);
+                        }
+                    }
+                    emMapping = emArea == null? "not recognized": emArea.getIdInVocabulary();
+                }
+
+                String label = splitRegion[0].trim();
+                String description = "Language region '" + region + "'; EM Area Mapping: " + emMapping ;
+                area = getNamedArea(state, null, label, description, null, null, null, voc, null);
+                existingAreas.put(region, area);
+            }
+            regionFkToAreaMap.put(String.valueOf(regionId), area);
+        }
+    }
 
 	/**
      * Use area according to mail ERS 2018-09-24
@@ -723,7 +782,7 @@ public class BerlinModelCommonNamesImport  extends BerlinModelImportBase {
     private NamedArea getAreaByAreaId(int areaId) {
         NamedArea result = null;
         String areaIdStr = String.valueOf(areaId);
-        OrderedTermVocabulary<NamedArea> voc = getAreaVoc();
+        OrderedTermVocabulary<NamedArea> voc = getEmAreaVoc();
         getVocabularyService().update(voc);
         for (NamedArea area : voc.getTerms()){
             for (IdentifiableSource source : area.getSources()){
@@ -740,7 +799,7 @@ public class BerlinModelCommonNamesImport  extends BerlinModelImportBase {
 
     private OrderedTermVocabulary<NamedArea> areaVoc;
     @SuppressWarnings("unchecked")
-    private OrderedTermVocabulary<NamedArea> getAreaVoc(){
+    private OrderedTermVocabulary<NamedArea> getEmAreaVoc(){
         if (areaVoc == null){
             areaVoc = (OrderedTermVocabulary<NamedArea>)getVocabularyService().find(BerlinModelTransformer.uuidVocEuroMedAreas);
         }

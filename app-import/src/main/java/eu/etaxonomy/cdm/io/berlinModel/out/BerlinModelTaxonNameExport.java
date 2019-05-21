@@ -17,7 +17,6 @@ import org.springframework.stereotype.Component;
 import org.springframework.transaction.TransactionStatus;
 
 import eu.etaxonomy.cdm.io.berlinModel.BerlinModelTransformer;
-import eu.etaxonomy.cdm.io.berlinModel.in.BerlinModelTaxonNameImport;
 import eu.etaxonomy.cdm.io.berlinModel.out.mapper.RefDetailMapper;
 import eu.etaxonomy.cdm.io.berlinModel.out.mapper.TeamOrPersonMapper;
 import eu.etaxonomy.cdm.io.common.Source;
@@ -123,7 +122,7 @@ public class BerlinModelTaxonNameExport extends BerlinModelExportBase<TaxonName>
 		mapping.addMapper(DbObjectMapper.NewInstance("nomenclaturalReference", "NomRefFk"));
 		mapping.addMapper(RefDetailMapper.NewInstance("nomenclaturalMicroReference","nomenclaturalReference", "NomRefDetailFk"));
 		mapping.addMapper(CreatedAndNotesMapper.NewInstance(false));
-		ExtensionType sourceAccExtensionType = (ExtensionType)getTermService().find(BerlinModelTaxonNameImport.SOURCE_ACC_UUID);
+		ExtensionType sourceAccExtensionType = (ExtensionType)getTermService().find(BerlinModelTransformer.SOURCE_ACC_UUID);
 		if (sourceAccExtensionType != null){
 			mapping.addMapper(DbExtensionMapper.NewInstance(sourceAccExtensionType, "Source_Acc"));
 		}

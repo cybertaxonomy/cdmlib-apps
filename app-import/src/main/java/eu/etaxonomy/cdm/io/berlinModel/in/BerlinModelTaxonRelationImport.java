@@ -302,7 +302,8 @@ public class BerlinModelTaxonRelationImport  extends BerlinModelImportBase  {
                             }
 							Taxon fromTaxon = (Taxon)taxon1;
 							if (relQualifierFk == TAX_REL_IS_INCLUDED_IN){
-							    taxonRelationship = makeTaxonomicallyIncluded(state, classificationMap, treeRefFk, fromTaxon, toTaxon, citation, microcitation);
+							    Boolean provisional = rs.getBoolean("Provisional");
+							    taxonRelationship = makeTaxonomicallyIncluded(state, classificationMap, treeRefFk, fromTaxon, toTaxon, citation, microcitation, provisional);
 							}else if (relQualifierFk == TAX_REL_IS_MISAPPLIED_NAME_OF){
 							    boolean isProParte = "p.p.".equals(notes);
 							    if (isProParte){
@@ -765,9 +766,11 @@ public class BerlinModelTaxonRelationImport  extends BerlinModelImportBase  {
 	}
 
 	private TaxonNode makeTaxonomicallyIncluded(BerlinModelImportState state, Map<Integer, Classification> classificationMap,
-	        int treeRefFk, Taxon child, Taxon parent, Reference citation, String microCitation){
+	        int treeRefFk, Taxon child, Taxon parent, Reference citation, String microCitation, Boolean provisional){
 		Classification tree = getClassificationTree(state, classificationMap, treeRefFk);
-		return tree.addParentChild(parent, child, citation, microCitation);
+		TaxonNode result = tree.addParentChild(parent, child, citation, microCitation);
+		result.setUnplaced(provisional);
+		return result;
 	}
 
 	private Classification getClassificationTree(BerlinModelImportState state, Map<Integer, Classification> classificationMap, int treeRefFk) {
@@ -777,7 +780,6 @@ public class BerlinModelTaxonRelationImport  extends BerlinModelImportBase  {
 			}else{
 				treeRefFk = 1;
 			}
-
 		}
 		Classification tree = classificationMap.get(treeRefFk);
 		if (tree == null){
