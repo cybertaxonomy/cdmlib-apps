@@ -43,7 +43,6 @@ import eu.etaxonomy.cdm.model.taxon.TaxonRelationshipType;
  * @author pplitzner
  * @since Mar 1, 2016
  */
-
 @Component
 @SuppressWarnings("serial")
 public class RedListGefaesspflanzenImportClassification extends DbImportBase<RedListGefaesspflanzenImportState, RedListGefaesspflanzenImportConfigurator> {

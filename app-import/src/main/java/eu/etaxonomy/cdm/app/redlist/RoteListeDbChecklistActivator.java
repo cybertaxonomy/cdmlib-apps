@@ -27,7 +27,6 @@ import eu.etaxonomy.cdm.model.reference.ReferenceFactory;
 /**
  * @author a.mueller
  * @since 20.06.2008
- * @version 1.0
  */
 public class RoteListeDbChecklistActivator {
 	@SuppressWarnings("unused")
@@ -68,7 +67,7 @@ public class RoteListeDbChecklistActivator {
 		config.setDbSchemaValidation(hbm2dll);
 		config.setRecordsPerTransaction(recordsPerTransaction);
 
-		CdmDefaultImport<RoteListeDbImportConfigurator> myImport = new CdmDefaultImport<RoteListeDbImportConfigurator>();
+		CdmDefaultImport<RoteListeDbImportConfigurator> myImport = new CdmDefaultImport<>();
 
 		System.out.println("Start import from ("+ source.toString() + ") ...");
 		config.setSourceReference(getSourceReference(sourceReference));
@@ -84,7 +83,7 @@ public class RoteListeDbChecklistActivator {
 
 	private Reference getSourceReference(String string) {
 		Reference result = ReferenceFactory.newGeneric();
-		result.setTitleCache(string);
+		result.setTitleCache(string, true);
 		return result;
 	}
 

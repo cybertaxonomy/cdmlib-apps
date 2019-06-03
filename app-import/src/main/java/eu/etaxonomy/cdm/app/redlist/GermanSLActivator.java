@@ -34,10 +34,10 @@ public class GermanSLActivator {
     //database validation status (create, update, validate ...)
     static DbSchemaValidation hbm2dll = DbSchemaValidation.CREATE;
 
-//    static final ICdmDataSource cdmDestination = CdmDestinations.localH2();
+    static final ICdmDataSource cdmDestination = CdmDestinations.localH2();
 //    static final ICdmDataSource cdmDestination = CdmDestinations.cdm_test_local_mysql_test();
 //    static final ICdmDataSource cdmDestination = CdmDestinations.cdm_redlist_germanSL_preview();
-    static final ICdmDataSource cdmDestination = CdmDestinations.cdm_germanSL_production();
+//    static final ICdmDataSource cdmDestination = CdmDestinations.cdm_germanSL_production();
 
     static String versionString = "version_1_3_4";
 

@@ -15,6 +15,10 @@ import eu.etaxonomy.cdm.io.redlist.gefaesspflanzen.RedListGefaesspflanzenImportC
 import eu.etaxonomy.cdm.model.reference.Reference;
 import eu.etaxonomy.cdm.model.reference.ReferenceFactory;
 
+/**
+ * @author pplitzner
+ * @since Mar 1, 2016
+ */
 public class RedListGefaesspflanzenActivator {
 	@SuppressWarnings("unused")
 	private static final Logger logger = Logger.getLogger(RedListGefaesspflanzenActivator.class);
@@ -24,8 +28,8 @@ public class RedListGefaesspflanzenActivator {
 	static final Source mySource = CdmImportSources.ROTE_LISTE_GEFAESSPFLANZEN_DB();
 
 //	static final ICdmDataSource cdmDestination = CdmDestinations.localH2();
+	static final ICdmDataSource cdmDestination = CdmDestinations.cdm_local_test_mysql();
 //	static final ICdmDataSource cdmDestination = CdmDestinations.cdm_production_redlist_gefaesspflanzen();
-  static final ICdmDataSource cdmDestination = CdmDestinations.cdm_local_test_mysql();
 
 	//feature tree uuid
 	public static final UUID featureTreeUuid = UUID.fromString("8a78ac1f-b2de-4e9e-bb14-319da0b4a790");
@@ -53,7 +57,7 @@ public class RedListGefaesspflanzenActivator {
 		config.setCheck(check);
 		config.setDbSchemaValidation(hbm2dll);
 
-		CdmDefaultImport<RedListGefaesspflanzenImportConfigurator> myImport = new CdmDefaultImport<RedListGefaesspflanzenImportConfigurator>();
+		CdmDefaultImport<RedListGefaesspflanzenImportConfigurator> myImport = new CdmDefaultImport<>();
 
 		System.out.println("Start import from ("+ source.toString() + ") ...");
 		config.setSourceReference(getSourceReference(sourceReference));
