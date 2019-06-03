@@ -20,13 +20,16 @@ import org.springframework.stereotype.Component;
 
 import eu.etaxonomy.cdm.common.CdmUtils;
 import eu.etaxonomy.cdm.io.common.mapping.UndefinedTransformerMethodException;
+import eu.etaxonomy.cdm.io.common.utils.ImportDeduplicationHelper;
 import eu.etaxonomy.cdm.io.mexico.SimpleExcelTaxonImportState;
 import eu.etaxonomy.cdm.model.common.CdmBase;
 import eu.etaxonomy.cdm.model.common.Language;
 import eu.etaxonomy.cdm.model.description.CommonTaxonName;
 import eu.etaxonomy.cdm.model.description.TaxonDescription;
 import eu.etaxonomy.cdm.model.location.Country;
+import eu.etaxonomy.cdm.model.name.HybridRelationship;
 import eu.etaxonomy.cdm.model.name.IBotanicalName;
+import eu.etaxonomy.cdm.model.name.NameRelationship;
 import eu.etaxonomy.cdm.model.name.NomenclaturalCode;
 import eu.etaxonomy.cdm.model.name.Rank;
 import eu.etaxonomy.cdm.model.name.RankClass;
@@ -78,12 +81,17 @@ public class GermanSLTaxonImport
 
     public static final String TAXON_NAMESPACE = "1.3.4";
 
+    @SuppressWarnings("unchecked")
+    protected ImportDeduplicationHelper<SimpleExcelTaxonImportState<?>> deduplicationHelper
+           = (ImportDeduplicationHelper<SimpleExcelTaxonImportState<?>>)ImportDeduplicationHelper.NewStandaloneInstance();
+
+
     @Override
     protected String getWorksheetName(GermanSLImportConfigurator config) {
         return "1.3.4";
     }
 
-    //dirty I know, but who cares, needed by distribution and commmon name import
+    //dirty I know, but who cares, needed by distribution and common name import
     protected static final Map<String, TaxonBase<?>> taxonIdMap = new HashMap<>();
 
 
@@ -172,11 +180,27 @@ public class GermanSLTaxonImport
 
         //id
         String id = getValue(record, SPECIES_NR);
-        this.addOriginalSource(taxonBase, id, TAXON_NAMESPACE, state.getConfig().getSourceReference());
+        this.addOriginalSource(taxonBase, id, TAXON_NAMESPACE, getSourceReference(state));
 
         //save
-//        getTaxonService().save(taxonBase);
+        getTaxonService().saveOrUpdate(taxonBase);
+        saveNameRelations(taxonBase.getName());
         taxonIdMap.put(id, taxonBase);
+    }
+
+
+    /**
+     * @param name
+     */
+    private void saveNameRelations(TaxonName name) {
+        for (HybridRelationship rel: name.getHybridChildRelations()){
+            getNameService().saveOrUpdate(rel.getParentName());
+        }
+        for (NameRelationship rel: name.getNameRelations()){
+            getNameService().saveOrUpdate(rel.getFromName());
+            getNameService().saveOrUpdate(rel.getToName());
+        }
+
     }
 
 
@@ -220,38 +244,6 @@ public class GermanSLTaxonImport
         if (result == null && secRefStr != null){
             result = ReferenceFactory.newGeneric();
             result.setTitleCache(secRefStr, true);
-
-//            TimePeriod tp = TimePeriodParser.parseString(secRefStr.substring(secRefStr.length()-4));
-//            String authorStrPart = secRefStr.substring(0, secRefStr.length()-6);
-//            if (! (authorStrPart + ", " + tp.getYear()).equals(secRefStr)){
-//                logger.warn(line + "Sec ref could not be parsed: " + secRefStr);
-//            }else{
-//                result.setDatePublished(tp);
-//            }
-//            TeamOrPersonBase<?> author = state.getAgentBase(authorStrPart);
-//            if (author == null){
-//                if (authorStrPart.contains("&")){
-//                    Team team = Team.NewInstance();
-//                    String[] authorSplit = authorStrPart.split("&");
-//                    String[] firstAuthorSplit = authorSplit[0].trim().split(",");
-//                    for (String authorStr : firstAuthorSplit){
-//                        addTeamMember(team, authorStr);
-//                    }
-//                    addTeamMember(team, authorSplit[1]);
-//                    result.setAuthorship(team);
-//                    state.putAgentBase(team.getTitleCache(), team);
-//                }else if (authorStrPart.equalsIgnoreCase("Tropicos") || authorStrPart.equalsIgnoreCase("The Plant List")
-//                        || authorStrPart.equalsIgnoreCase("APG IV")){
-//                    result.setTitle(authorStrPart);
-//                }else{
-//                    Person person = Person.NewInstance();
-//                    person.setFamilyName(authorStrPart);
-//                    result.setAuthorship(person);
-//                    state.putAgentBase(person.getTitleCache(), person);
-//                }
-//            }else{
-//                result.setAuthorship(author);
-//            }
             state.putReference(secRefStr, result);
         }
 
@@ -307,16 +299,28 @@ public class GermanSLTaxonImport
         if (fullName.isProtectedTitleCache()){
             logger.warn(line + "Name could not be parsed: " + fullNameStr );
         }else{
-            replaceAuthorNamesAndNomRef(state, fullName);
+            getDeduplicationHelper(state).replaceAuthorNamesAndNomRef(state, fullName);
+//            replaceAuthorNamesAndNomRef(state, fullName);
         }
 //        BotanicalName existingName = getExistingName(state, fullName);
 
         //TODO handle existing name
         IBotanicalName name = fullName;
-        this.addOriginalSource(name, specieNrStr, TAXON_NAMESPACE + "_Name", state.getConfig().getSourceReference());
+        this.addOriginalSource(name, specieNrStr, TAXON_NAMESPACE + "_Name", getSourceReference(state));
 
         result.name = name;
         return result;
+    }
+
+    /**
+     * @param state
+     * @return
+     */
+    protected ImportDeduplicationHelper<SimpleExcelTaxonImportState<?>> getDeduplicationHelper(SimpleExcelTaxonImportState<?> state) {
+        if (deduplicationHelper == null){
+            deduplicationHelper = ImportDeduplicationHelper.NewInstance(this, state);
+        }
+        return deduplicationHelper;
     }
 
 
@@ -342,7 +346,8 @@ public class GermanSLTaxonImport
                 }
             }
         } catch (Exception e1) {
-                logger.warn(line + "Rank not recognized: " + rankStr);
+                logger.warn(line + "Exception when trying to define rank '" + rankStr + "': " + e1.getMessage());
+                e1.printStackTrace();
         }
         return rank;
     }

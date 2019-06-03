@@ -22,6 +22,7 @@ import eu.etaxonomy.cdm.model.taxon.Synonym;
 import eu.etaxonomy.cdm.model.taxon.SynonymType;
 import eu.etaxonomy.cdm.model.taxon.Taxon;
 import eu.etaxonomy.cdm.model.taxon.TaxonBase;
+import eu.etaxonomy.cdm.model.taxon.TaxonNode;
 
 /**
  * @author a.mueller
@@ -43,7 +44,7 @@ public class GermanSLTaxonRelationImport extends GermanSLTaxonImport {
     }
 
     private Classification classification;
-    private Set<TaxonBase> taxaToSave = new HashSet<>();
+    private Set<TaxonNode> nodesToSave = new HashSet<>();
     private int count = 0;
 
     @Override
@@ -61,6 +62,7 @@ public class GermanSLTaxonRelationImport extends GermanSLTaxonImport {
         Classification classification = getClassification(state);
         TaxonBase<?> taxonBase = GermanSLTaxonImport.taxonIdMap.get(idStr);
         Taxon parent;
+        TaxonNode taxonNode = null;
         if (isAccepted(statusStr, nameResult)){
             TaxonBase<?> parentTmp = GermanSLTaxonImport.taxonIdMap.get(parentStr);
             if (parentTmp == null){
@@ -72,10 +74,11 @@ public class GermanSLTaxonRelationImport extends GermanSLTaxonImport {
                 Taxon taxon = (Taxon)taxonBase;
                 Reference relRef = null;  //TODO
                 if ("0".equals(idStr)){
-                    classification.addChildTaxon(taxon, relRef, null);
+                    taxonNode = classification.addChildTaxon(taxon, relRef, null);
                 }else{
-                    classification.addParentChild(parent, taxon, relRef, null);
+                    taxonNode = classification.addParentChild(parent, taxon, relRef, null);
                 }
+
             }
         } else {
             TaxonBase<?> parentTmp = GermanSLTaxonImport.taxonIdMap.get(acceptedStr);
@@ -89,11 +92,13 @@ public class GermanSLTaxonRelationImport extends GermanSLTaxonImport {
                 parent.addSynonym(synonym, SynonymType.SYNONYM_OF());
             }
         }
-        taxaToSave.add(taxonBase);
-        if ((count % 1000) == 0){
+        if (taxonNode != null){
+            nodesToSave.add(taxonNode);
+        }
+        if ((count % 1) == 0){
             count = 0;
-            getTaxonService().saveOrUpdate(taxaToSave);
-            taxaToSave = new HashSet<>();
+            getTaxonNodeService().saveOrUpdate(nodesToSave);
+            nodesToSave = new HashSet<>();
         }
     }
 
@@ -105,7 +110,7 @@ public class GermanSLTaxonRelationImport extends GermanSLTaxonImport {
     @Override
     protected void secondPass(SimpleExcelTaxonImportState<GermanSLImportConfigurator> state) {
         if (needsFinalSave){
-            getTaxonService().saveOrUpdate(taxaToSave);
+            getTaxonNodeService().saveOrUpdate(nodesToSave);
             needsFinalSave = false;
         }
     }
