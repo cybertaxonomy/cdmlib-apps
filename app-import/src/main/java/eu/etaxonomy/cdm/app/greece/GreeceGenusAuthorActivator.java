@@ -37,7 +37,7 @@ public class GreeceGenusAuthorActivator {
 
 //    static final ICdmDataSource cdmDestination = CdmDestinations.localH2();
 //  static final ICdmDataSource cdmDestination = CdmDestinations.cdm_test_local_mysql_test();
-    static final ICdmDataSource cdmDestination = CdmDestinations.cdm_greece_checklist_production();
+    static final ICdmDataSource cdmDestination = CdmDestinations.cdm_production_greece_checklist();
 
     private static final UUID sourceUuid = UUID.fromString("65e2cd54-8378-4949-9cb7-b973d2033da6");
     private static final String fileName = "Nov2017changes.xlsx";

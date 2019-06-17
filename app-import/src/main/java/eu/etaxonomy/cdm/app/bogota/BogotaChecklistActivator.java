@@ -42,7 +42,7 @@ public class BogotaChecklistActivator {
 
 //    static final ICdmDataSource cdmDestination = CdmDestinations.localH2();
 //  static final ICdmDataSource cdmDestination = CdmDestinations.cdm_test_local_mysql_test();
-    static final ICdmDataSource cdmDestination = CdmDestinations.cdm_bogota_production();
+    static final ICdmDataSource cdmDestination = CdmDestinations.cdm_production_bogota();
 
     //classification
     static final UUID classificationUuid = UUID.fromString("c7779e17-8d45-4429-a9b0-e9c0fce93ec5");

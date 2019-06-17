@@ -35,7 +35,7 @@ public class GreeceImagesUpdaterTurlandActivator {
 
 //  static final ICdmDataSource cdmDestination = CdmDestinations.localH2();
 //static final ICdmDataSource cdmDestination = CdmDestinations.cdm_test_local_mysql_test();
-    static final ICdmDataSource cdmDestination = CdmDestinations.cdm_greece_checklist_production();
+    static final ICdmDataSource cdmDestination = CdmDestinations.cdm_production_greece_checklist();
 
 	static boolean testOnly = false;
 

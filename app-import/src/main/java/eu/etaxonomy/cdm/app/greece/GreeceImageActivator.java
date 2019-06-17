@@ -41,7 +41,7 @@ public class GreeceImageActivator {
 
     static final ICdmDataSource cdmDestination = CdmDestinations.localH2();
 //  static final ICdmDataSource cdmDestination = CdmDestinations.cdm_test_local_mysql_test();
-//    static final ICdmDataSource cdmDestination = CdmDestinations.cdm_greece_checklist_production();
+//    static final ICdmDataSource cdmDestination = CdmDestinations.cdm_production_greece_checklist();
 
 //    private static final UUID sourceUuid = UUID.fromString("0fd093fe-ffdf-4ace-847b-aad6f0659678");
     private static final UUID sourceUuid = UUID.fromString("9e6a3815-fb8d-46c3-a250-6d8a350d03fc");

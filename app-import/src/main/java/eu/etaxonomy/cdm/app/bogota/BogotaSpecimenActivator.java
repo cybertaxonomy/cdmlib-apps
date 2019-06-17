@@ -39,7 +39,7 @@ public class BogotaSpecimenActivator {
 
 //    static final ICdmDataSource cdmDestination = CdmDestinations.localH2();
 //  static final ICdmDataSource cdmDestination = CdmDestinations.cdm_test_local_bogota();
-    static final ICdmDataSource cdmDestination = CdmDestinations.cdm_bogota_production();
+    static final ICdmDataSource cdmDestination = CdmDestinations.cdm_production_bogota();
 
     int minRow = 1;
     int maxRow = 1000000; //minRow + 11999;

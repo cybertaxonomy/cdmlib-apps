@@ -44,7 +44,7 @@ public class CampanulaceaeActivator {
 	//database validation status (create, update, validate ...)
 	static DbSchemaValidation hbm2dll = DbSchemaValidation.CREATE;
 	static final Source berlinModelSource = BerlinModelSources.Campanulaceae();
-	static final ICdmDataSource cdmDestination = CdmDestinations.cdm_campanulaceae_production();
+	static final ICdmDataSource cdmDestination = CdmDestinations.cdm_production_campanulaceae();
 
 	static final UUID secUuid = UUID.fromString("ed7dd0ea-fcdd-405d-9fe1-52652aa06119");
 	static final UUID classificationUuid = UUID.fromString("e305ddac-7200-4293-aa5d-d3426133ed9f");

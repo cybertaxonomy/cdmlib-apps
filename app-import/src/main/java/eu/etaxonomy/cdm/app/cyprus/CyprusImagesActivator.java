@@ -73,8 +73,8 @@ public class CyprusImagesActivator {
 	private static final Logger logger = Logger.getLogger(CyprusImagesActivator.class);
 
 
-//	static final ICdmDataSource cdmDestination = CdmDestinations.cdm_cyprus_dev();
-	static final ICdmDataSource cdmDestination = CdmDestinations.cdm_cyprus_production();
+	static final ICdmDataSource cdmDestination = CdmDestinations.cdm_cyprus_dev();
+//	static final ICdmDataSource cdmDestination = CdmDestinations.cdm_production_cyprus();
 
 	static boolean testOnly = false;
 	static boolean update_notCreate = false;
@@ -312,7 +312,7 @@ public class CyprusImagesActivator {
             logger.warn("Person could not be parsed: " + artist + " for file " + fileName);
         }
 
-        person = (Person)deduplicationHelper.getExistingAuthor(null, person);
+        person = deduplicationHelper.getExistingAuthor(null, person);
         return person;
     }
 

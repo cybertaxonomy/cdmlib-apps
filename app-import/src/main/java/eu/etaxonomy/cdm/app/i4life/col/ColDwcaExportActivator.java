@@ -47,7 +47,7 @@ public class ColDwcaExportActivator {
 //	private static final ICdmDataSource cdmSource = CdmDestinations.cdm_test_local_mysql();
 //	private static final ICdmDataSource cdmSource = CdmDestinations.cdm_production_cichorieae();
 //	private static final ICdmDataSource cdmSource = CdmDestinations.cdm_flora_central_africa_production();
-	private static final ICdmDataSource cdmSource = CdmDestinations.cdm_cyprus_production();
+	private static final ICdmDataSource cdmSource = CdmDestinations.cdm_production_cyprus();
 
 	private IProgressMonitor monitor = DefaultProgressMonitor.NewInstance();
 

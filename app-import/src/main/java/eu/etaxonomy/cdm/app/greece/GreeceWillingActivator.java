@@ -36,7 +36,7 @@ public class GreeceWillingActivator {
 
 
     static final ICdmDataSource cdmDestination = CdmDestinations.localH2();
-//    static final ICdmDataSource cdmDestination = CdmDestinations.cdm_greece_checklist_production();
+//    static final ICdmDataSource cdmDestination = CdmDestinations.cdm_production_greece_checklist();
     boolean doCheckNames = false;
 
     private static final UUID sourceUuid = UUID.fromString("70efe59f-8b0c-4f83-b54e-2a16f567fe8e");
