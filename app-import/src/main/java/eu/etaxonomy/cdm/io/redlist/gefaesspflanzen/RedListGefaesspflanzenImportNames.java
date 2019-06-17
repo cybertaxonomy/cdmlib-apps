@@ -127,7 +127,7 @@ public class RedListGefaesspflanzenImportNames extends DbImportBase<RedListGefae
     }
 
     @Override
-    public boolean doPartition(ResultSetPartitioner partitioner, RedListGefaesspflanzenImportState state) {
+    public boolean doPartition(@SuppressWarnings("rawtypes") ResultSetPartitioner partitioner, RedListGefaesspflanzenImportState state) {
         ResultSet rs = partitioner.getResultSet();
         Set<ITaxonNameBase> namesToSave = new HashSet<>();
         Set<TaxonBase> taxaToSave = new HashSet<>();

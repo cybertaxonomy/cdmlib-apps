@@ -30,16 +30,15 @@ import eu.etaxonomy.cdm.model.taxon.Taxon;
 import eu.etaxonomy.cdm.model.taxon.TaxonBase;
 
 /**
- *
  * @author pplitzner
  * @since Mar 1, 2016
- *
  */
-
 @Component
-@SuppressWarnings("serial")
 public class RedListGefaesspflanzenImportFamily extends DbImportBase<RedListGefaesspflanzenImportState, RedListGefaesspflanzenImportConfigurator> {
 
+    private static final long serialVersionUID = -3691432549643754281L;
+
+    @SuppressWarnings("unused")
     private static final Logger logger = Logger.getLogger(RedListGefaesspflanzenImportFamily.class);
 
     private static final String tableName = "Rote Liste Gefäßpflanzen";
@@ -73,8 +72,9 @@ public class RedListGefaesspflanzenImportFamily extends DbImportBase<RedListGefa
 
 
     private Collection<TaxonBase> importFamilies(RedListGefaesspflanzenImportState state) throws SQLException {
+
         Map<String, UUID> familyMap = new HashMap<>();
-        Collection<TaxonBase> families = new ArrayList<TaxonBase>();
+        Collection<TaxonBase> families = new ArrayList<>();
 
         String query = "SELECT DISTINCT f.FAMILIE "
                 + " FROM GATTUNG_FAMILIE f";
@@ -93,15 +93,14 @@ public class RedListGefaesspflanzenImportFamily extends DbImportBase<RedListGefa
     }
 
     @Override
-    public boolean doPartition(ResultSetPartitioner partitioner, RedListGefaesspflanzenImportState state) {
+    public boolean doPartition(@SuppressWarnings("rawtypes") ResultSetPartitioner partitioner, RedListGefaesspflanzenImportState state) {
         return true;
     }
 
     @Override
     public Map<Object, Map<String, ? extends CdmBase>> getRelatedObjectsForPartition(ResultSet rs,
             RedListGefaesspflanzenImportState state) {
-        Map<Object, Map<String, ? extends CdmBase>> result = new HashMap<>();
-        return result;
+        return new HashMap<>();
     }
 
     @Override

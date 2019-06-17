@@ -309,14 +309,14 @@ public class RedListGefaesspflanzenImportClassification extends DbImportBase<Red
                 //TAX_ZUSATZ
                 if(isNotBlank(taxZusatzString)){
                     if(taxZusatzString.trim().equals("p. p.")){
-                        synonym.setProParte(true);
+                        logger.warn(id + ": p. p. not implemented anymore");
                     }
                     else if(taxZusatzString.trim().equals("s. l. p. p.")){
-                        synonym.setProParte(true);
+                        logger.warn(id + ": p. p. not implemented anymore");
                         taxonBase.setAppendedPhrase("s. l.");
                     }
                     else if(taxZusatzString.trim().equals("s. str. p. p.")){
-                        synonym.setProParte(true);
+                        logger.warn(id + ": p. p. not implemented anymore");
                         taxonBase.setAppendedPhrase("s. str.");
                     }
                     else if(taxZusatzString.trim().equals("s. l.")

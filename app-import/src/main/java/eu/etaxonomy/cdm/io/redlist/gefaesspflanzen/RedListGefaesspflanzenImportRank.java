@@ -23,16 +23,15 @@ import eu.etaxonomy.cdm.model.common.Language;
 import eu.etaxonomy.cdm.model.name.Rank;
 
 /**
- *
  * @author pplitzner
  * @since Mar 1, 2016
- *
  */
-
 @Component
-@SuppressWarnings("serial")
 public class RedListGefaesspflanzenImportRank extends DbImportBase<RedListGefaesspflanzenImportState, RedListGefaesspflanzenImportConfigurator> {
 
+    private static final long serialVersionUID = -4568450871351071813L;
+
+    @SuppressWarnings("unused")
     private static final Logger logger = Logger.getLogger(RedListGefaesspflanzenImportRank.class);
 
     private static final String tableName = "Rote Liste Gefäßpflanzen";
@@ -63,7 +62,7 @@ public class RedListGefaesspflanzenImportRank extends DbImportBase<RedListGefaes
 
 
     @Override
-    public boolean doPartition(ResultSetPartitioner partitioner, RedListGefaesspflanzenImportState state) {
+    public boolean doPartition(@SuppressWarnings("rawtypes") ResultSetPartitioner partitioner, RedListGefaesspflanzenImportState state) {
         return true;
     }
 
