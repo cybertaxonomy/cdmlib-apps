@@ -73,7 +73,7 @@ public class CyprusImagesActivator {
 	private static final Logger logger = Logger.getLogger(CyprusImagesActivator.class);
 
 
-	static final ICdmDataSource cdmDestination = CdmDestinations.cdm_cyprus_dev();
+	static final ICdmDataSource cdmDestination = CdmDestinations.cdm_test_cyprus();
 //	static final ICdmDataSource cdmDestination = CdmDestinations.cdm_production_cyprus();
 
 	static boolean testOnly = false;

@@ -40,7 +40,7 @@ public class CyprusSpecimenActivator {
 //	static final ICdmDataSource cdmDestination = CdmDestinations.localH2();
 //	static final ICdmDataSource cdmDestination = CdmDestinations.cdm_test_local_mysql();
 	static final ICdmDataSource cdmDestination = CdmDestinations.cdm_test_cyprus();
-//	static final ICdmDataSource cdmDestination = CdmDestinations.cdm_cyprus_production();
+//	static final ICdmDataSource cdmDestination = CdmDestinations.cdm_production_cyprus();
 
 
 	//check - import

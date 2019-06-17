@@ -58,7 +58,7 @@ public class CyprusAltitudeActivator {
 
 	static final ICdmDataSource cdmDestination = CdmDestinations.localH2();
 //	static final ICdmDataSource cdmDestination = CdmDestinations.cdm_test_local_mysql_test();
-//	static final ICdmDataSource cdmDestination = CdmDestinations.cdm_cyprus_dev();
+//	static final ICdmDataSource cdmDestination = CdmDestinations.cdm_test_cyprus();
 //	static final ICdmDataSource cdmDestination = CdmDestinations.cdm_cyprus_production();
 
 
