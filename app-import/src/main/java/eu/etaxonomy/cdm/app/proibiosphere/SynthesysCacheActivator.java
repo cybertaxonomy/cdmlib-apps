@@ -40,7 +40,7 @@ public class SynthesysCacheActivator {
     final static String xmlSource = "/home/pkelbert/Documents/Proibiosphere/ChenopodiumQuentin/dca UK records.xls";
 
 
-    static final ICdmDataSource cdmDestination = CdmDestinations.proibiosphere_spiders_local();
+    static final ICdmDataSource cdmDestination = CdmDestinations.cdm_local_proibiosphere_spiders();
     static DbSchemaValidation hbm2dll = DbSchemaValidation.VALIDATE;
     //    static final ICdmDataSource cdmDestination = CdmDestinations.proibiosphere_local();
     //    static DbSchemaValidation hbm2dll = DbSchemaValidation.VALIDATE;

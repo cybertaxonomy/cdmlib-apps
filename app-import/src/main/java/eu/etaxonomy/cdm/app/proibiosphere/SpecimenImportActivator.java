@@ -37,7 +37,7 @@ public class SpecimenImportActivator {
 
 
 
-    static final ICdmDataSource cdmDestination = CdmDestinations.proibiosphere_chenopodium_local();
+    static final ICdmDataSource cdmDestination = CdmDestinations.cdm_local_proibiosphere_chenopodium();
     //check - import
     static final CHECK check = CHECK.IMPORT_WITHOUT_CHECK;
 

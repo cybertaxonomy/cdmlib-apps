@@ -37,7 +37,7 @@ public class SalvadorSpecimenActivator {
 
 //    static final ICdmDataSource cdmDestination = CdmDestinations.cdm_test_local_mysql_test();
     static final ICdmDataSource cdmDestination = CdmDestinations.cdm_test_salvador();
-//    static final ICdmDataSource cdmDestination = CdmDestinations.cdm_salvador_production();
+//    static final ICdmDataSource cdmDestination = CdmDestinations.cdm_production_salvador();
 
     //check - import
     static final CHECK check = CHECK.IMPORT_WITHOUT_CHECK;

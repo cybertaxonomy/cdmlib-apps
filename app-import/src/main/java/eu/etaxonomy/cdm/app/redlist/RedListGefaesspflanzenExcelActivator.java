@@ -32,7 +32,9 @@ public class RedListGefaesspflanzenExcelActivator {
 	static final URI mySource = redListPlantaeChecklist();
 
 //	static final ICdmDataSource cdmDestination = CdmDestinations.localH2();
-	static final ICdmDataSource cdmDestination = CdmDestinations.cdm_local_test_mysql();
+//	static final ICdmDataSource cdmDestination = CdmDestinations.cdm_local_test_mysql();
+	static final ICdmDataSource cdmDestination = CdmDestinations.cdm_local_cdmtest_mysql();
+
 //	static final ICdmDataSource cdmDestination = CdmDestinations.cdm_production_redlist_gefaesspflanzen();
 
 	//feature tree uuid

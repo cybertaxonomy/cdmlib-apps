@@ -291,7 +291,7 @@ public class CdmDestinations {
         return makeDestination(dbType, cdmServer, cdmDB, -1, cdmUserName, null);
     }
 
-    public static ICdmDataSource cdm_germanSL_production(){
+    public static ICdmDataSource cdm_production_germanSL(){
         DatabaseTypeEnum dbType = DatabaseTypeEnum.MySQL;
         String cdmServer = "160.45.63.171";
         String cdmDB = "cdm_production_rl_german_sl";
@@ -340,7 +340,7 @@ public class CdmDestinations {
         return makeDestination(dbType, cdmServer, cdmDB, -1, cdmUserName, null);
     }
 
-    public static ICdmDataSource cdm_mexico_rubiaceae_production(){
+    public static ICdmDataSource cdm_production_mexico_rubiaceae(){
         DatabaseTypeEnum dbType = DatabaseTypeEnum.MySQL;
         String cdmServer = "160.45.63.171";
         String cdmDB = "cdm_production_rubiaceae_mexico";
@@ -598,7 +598,7 @@ public class CdmDestinations {
         return makeDestination(dbType, cdmServer, cdmDB, -1, cdmUserName, null);
     }
 
-    public static ICdmDataSource cdm_salvador_production(){
+    public static ICdmDataSource cdm_production_salvador(){
         DatabaseTypeEnum dbType = DatabaseTypeEnum.MySQL;
         String cdmServer = "160.45.63.171";
         String cdmDB = "cdm_production_salvador";
@@ -702,7 +702,7 @@ public class CdmDestinations {
 		return makeDestination(dbType, cdmServer, cdmDB, -1, cdmUserName, null);
 	}
 
-   public static ICdmDataSource proibiosphere_chenopodium_local() {
+   public static ICdmDataSource cdm_local_proibiosphere_chenopodium() {
         DatabaseTypeEnum dbType = DatabaseTypeEnum.MySQL;
         String cdmServer = "localhost";
         String cdmDB = "cdm_production_proibiosphere_chenopodium_pilot";
@@ -710,7 +710,7 @@ public class CdmDestinations {
         return makeDestination(dbType, cdmServer, cdmDB, -1, cdmUserName, null);
    }
 
-   public static ICdmDataSource proibiosphere_spiders_local() {
+   public static ICdmDataSource cdm_local_proibiosphere_spiders() {
        DatabaseTypeEnum dbType = DatabaseTypeEnum.MySQL;
        String cdmServer = "localhost";
        String cdmDB = "cdm_production_proibiosphere_spiders_pilot";

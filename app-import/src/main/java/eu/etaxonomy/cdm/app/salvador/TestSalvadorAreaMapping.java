@@ -38,7 +38,7 @@ public class TestSalvadorAreaMapping {
 
 //    static final ICdmDataSource cdmDestination = CdmDestinations.cdm_test_local_mysql_test();
 //    static final ICdmDataSource cdmDestination = CdmDestinations.cdm_salvador_preview();
-    static final ICdmDataSource cdmDestination = CdmDestinations.cdm_salvador_production();
+    static final ICdmDataSource cdmDestination = CdmDestinations.cdm_production_salvador();
 
 
     protected void doTest(ICdmDataSource cdmDestination){
