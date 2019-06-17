@@ -27,9 +27,7 @@ import eu.etaxonomy.cdm.model.common.Language;
 import eu.etaxonomy.cdm.model.description.CommonTaxonName;
 import eu.etaxonomy.cdm.model.description.TaxonDescription;
 import eu.etaxonomy.cdm.model.location.Country;
-import eu.etaxonomy.cdm.model.name.HybridRelationship;
 import eu.etaxonomy.cdm.model.name.IBotanicalName;
-import eu.etaxonomy.cdm.model.name.NameRelationship;
 import eu.etaxonomy.cdm.model.name.NomenclaturalCode;
 import eu.etaxonomy.cdm.model.name.Rank;
 import eu.etaxonomy.cdm.model.name.RankClass;
@@ -188,20 +186,6 @@ public class GermanSLTaxonImport
         taxonIdMap.put(id, taxonBase);
     }
 
-
-    /**
-     * @param name
-     */
-    private void saveNameRelations(TaxonName name) {
-        for (HybridRelationship rel: name.getHybridChildRelations()){
-            getNameService().saveOrUpdate(rel.getParentName());
-        }
-        for (NameRelationship rel: name.getNameRelations()){
-            getNameService().saveOrUpdate(rel.getFromName());
-            getNameService().saveOrUpdate(rel.getToName());
-        }
-
-    }
 
 
     private String removeProparte(String authorStr) {
