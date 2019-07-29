@@ -28,9 +28,9 @@ import eu.etaxonomy.cdm.model.common.VerbatimTimePeriod;
 import eu.etaxonomy.cdm.model.description.Feature;
 import eu.etaxonomy.cdm.model.reference.Reference;
 import eu.etaxonomy.cdm.model.reference.ReferenceFactory;
-import eu.etaxonomy.cdm.model.term.FeatureNode;
-import eu.etaxonomy.cdm.model.term.FeatureTree;
 import eu.etaxonomy.cdm.model.term.Representation;
+import eu.etaxonomy.cdm.model.term.TermNode;
+import eu.etaxonomy.cdm.model.term.TermTree;
 import eu.etaxonomy.cdm.strategy.parser.TimePeriodParser;
 
 /**
@@ -91,7 +91,7 @@ public class MexicoConabioActivator {
         myImport.invoke(config);
 
         if (true){
-            FeatureTree<Feature> tree = makeFeatureNodes(myImport.getCdmAppController());
+            TermTree<Feature> tree = makeFeatureNodes(myImport.getCdmAppController());
             myImport.getCdmAppController().getFeatureTreeService().saveOrUpdate(tree);
         }
 
@@ -127,11 +127,11 @@ public class MexicoConabioActivator {
         return result;
     }
 
-    private FeatureTree<Feature> makeFeatureNodes(ICdmRepository app){
+    private TermTree<Feature> makeFeatureNodes(ICdmRepository app){
 
-        FeatureTree<Feature> result = FeatureTree.NewInstance(featureTreeUuid);
+        TermTree<Feature> result = TermTree.NewFeatureInstance(featureTreeUuid);
         result.setTitleCache("Mexico Rubiaceae Feature Tree", true);
-        FeatureNode<Feature> root = result.getRoot();
+        TermNode<Feature> root = result.getRoot();
 
         Feature distribution = Feature.DISTRIBUTION();
         Representation rep = Representation.NewInstance("Distribución", "Distribución", null, Language.SPANISH_CASTILIAN());

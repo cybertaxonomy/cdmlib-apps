@@ -65,7 +65,7 @@ import eu.etaxonomy.cdm.model.taxon.Taxon;
 import eu.etaxonomy.cdm.model.taxon.TaxonBase;
 import eu.etaxonomy.cdm.model.term.DefinedTerm;
 import eu.etaxonomy.cdm.model.term.DefinedTermBase;
-import eu.etaxonomy.cdm.model.term.FeatureTree;
+import eu.etaxonomy.cdm.model.term.TermTree;
 import eu.etaxonomy.cdm.model.term.TermType;
 import eu.etaxonomy.cdm.model.term.TermVocabulary;
 
@@ -763,7 +763,7 @@ public class UseImport {
 		}
 		if(featureUseRecord == null|| featureUseSummary == null) {
 			TermVocabulary<Feature> featureVocabulary = vocabularyService.find((UUID.fromString("b187d555-f06f-4d65-9e53-da7c93f8eaa8")));
-			FeatureTree<Feature> palmWebFeatureTree = featureTreeService.find(UUID.fromString("72ccce05-7cc8-4dab-8e47-bf3f5fd848a0"));
+			TermTree<Feature> palmWebFeatureTree = featureTreeService.find(UUID.fromString("72ccce05-7cc8-4dab-8e47-bf3f5fd848a0"));
 			//List<FeatureTree> featureTrees = CdmStore.getService(IFeatureTreeService.class).list(FeatureTree.class, null, null, null, null);
 
 			if (featureUseRecord == null ) {

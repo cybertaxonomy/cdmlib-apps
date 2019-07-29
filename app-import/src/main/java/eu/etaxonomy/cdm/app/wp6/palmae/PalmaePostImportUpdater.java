@@ -30,8 +30,8 @@ import eu.etaxonomy.cdm.model.reference.Reference;
 import eu.etaxonomy.cdm.model.taxon.Synonym;
 import eu.etaxonomy.cdm.model.taxon.Taxon;
 import eu.etaxonomy.cdm.model.taxon.TaxonBase;
-import eu.etaxonomy.cdm.model.term.FeatureNode;
-import eu.etaxonomy.cdm.model.term.FeatureTree;
+import eu.etaxonomy.cdm.model.term.TermNode;
+import eu.etaxonomy.cdm.model.term.TermTree;
 
 /**
  * @author a.mueller
@@ -55,8 +55,8 @@ public class PalmaePostImportUpdater {
 
 			TransactionStatus tx = cdmApp.startTransaction();
 
-			FeatureTree<Feature> tree = cdmApp.getFeatureTreeService().find(featureTreeUuid);
-			FeatureNode<Feature> root = tree.getRoot();
+			TermTree<Feature> tree = cdmApp.getFeatureTreeService().find(featureTreeUuid);
+			TermNode<Feature> root = tree.getRoot();
 
 			List<Feature> featureList = cdmApp.getTermService().list(Feature.class, null, null, null, null);
 			for (Feature feature : featureList){
@@ -128,8 +128,8 @@ public class PalmaePostImportUpdater {
 			}
 			//add citation feature to feature tree
 			UUID featureTreeUuid = PalmaeActivator.featureTreeUuid;
-			FeatureTree<Feature> tree = cdmApp.getFeatureTreeService().find(featureTreeUuid);
-			FeatureNode<Feature> root = tree.getRoot();
+			TermTree<Feature> tree = cdmApp.getFeatureTreeService().find(featureTreeUuid);
+			TermNode<Feature> root = tree.getRoot();
 			List<Feature> featureList = cdmApp.getTermService().list(Feature.class, null, null, null, null);
 			count = 0;
 			for (Feature feature : featureList){

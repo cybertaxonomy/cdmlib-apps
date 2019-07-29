@@ -32,7 +32,7 @@ import eu.etaxonomy.cdm.io.common.Source;
 import eu.etaxonomy.cdm.model.description.Feature;
 import eu.etaxonomy.cdm.model.name.NameTypeDesignationStatus;
 import eu.etaxonomy.cdm.model.name.NomenclaturalCode;
-import eu.etaxonomy.cdm.model.term.FeatureTree;
+import eu.etaxonomy.cdm.model.term.TermTree;
 
 
 /**
@@ -194,7 +194,7 @@ public class DipteraActivator {
 			}
 			//make feature tree
 			app = bmImport.getCdmAppController();
-			FeatureTree<Feature> tree = TreeCreator.flatTree(featureTreeUuid, bmImportConfigurator.getFeatureMap(), featureKeyList);
+			TermTree<Feature> tree = TreeCreator.flatTree(featureTreeUuid, bmImportConfigurator.getFeatureMap(), featureKeyList);
 			// add image
 			tree.getRoot().addChild(Feature.IMAGE());
 			// add distribution

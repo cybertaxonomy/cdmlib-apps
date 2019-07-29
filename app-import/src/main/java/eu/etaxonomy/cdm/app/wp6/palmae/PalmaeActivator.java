@@ -32,8 +32,8 @@ import eu.etaxonomy.cdm.io.common.IImportConfigurator.DO_REFERENCES;
 import eu.etaxonomy.cdm.io.common.ImportResult;
 import eu.etaxonomy.cdm.io.tcsrdf.TcsRdfImportConfigurator;
 import eu.etaxonomy.cdm.model.description.Feature;
-import eu.etaxonomy.cdm.model.term.FeatureNode;
-import eu.etaxonomy.cdm.model.term.FeatureTree;
+import eu.etaxonomy.cdm.model.term.TermNode;
+import eu.etaxonomy.cdm.model.term.TermTree;
 
 /**
  * @author a.mueller
@@ -122,7 +122,7 @@ public class PalmaeActivator {
 			logger.info("Make feature tree");
 			ICdmRepository app = tcsImport.getCdmAppController();
 
-			FeatureTree<Feature> tree = getFeatureTree();
+			TermTree<Feature> tree = getFeatureTree();
 			app.getFeatureTreeService().saveOrUpdate(tree);
 			System.out.println("End import from TCS ("+ source.toString() + ")...");
 
@@ -136,10 +136,10 @@ public class PalmaeActivator {
 	}
 
 
-	private FeatureTree<Feature> getFeatureTree(){
+	private TermTree<Feature> getFeatureTree(){
 
-		FeatureTree<Feature> result = FeatureTree.NewInstance(featureTreeUuid);
-		FeatureNode<Feature> root = result.getRoot();
+	    TermTree<Feature> result = TermTree.NewFeatureInstance(featureTreeUuid);
+		TermNode<Feature> root = result.getRoot();
 
 		root.addChild(Feature.INTRODUCTION());
 		root.addChild(Feature.DISTRIBUTION());

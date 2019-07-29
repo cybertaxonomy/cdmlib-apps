@@ -22,8 +22,8 @@ import eu.etaxonomy.cdm.io.common.IImportConfigurator.CHECK;
 import eu.etaxonomy.cdm.io.common.Source;
 import eu.etaxonomy.cdm.io.edaphobase.EdaphobaseImportConfigurator;
 import eu.etaxonomy.cdm.model.description.Feature;
-import eu.etaxonomy.cdm.model.term.FeatureNode;
-import eu.etaxonomy.cdm.model.term.FeatureTree;
+import eu.etaxonomy.cdm.model.term.TermNode;
+import eu.etaxonomy.cdm.model.term.TermTree;
 
 /**
  * @author a.mueller
@@ -92,15 +92,15 @@ public class EdaphobaseActivator {
         CdmDefaultImport<EdaphobaseImportConfigurator> myImport = new CdmDefaultImport<>();
         myImport.invoke(config);
 
-        FeatureTree<Feature> tree = makeFeatureNodes(myImport.getCdmAppController().getTermService());
+        TermTree<Feature> tree = makeFeatureNodes(myImport.getCdmAppController().getTermService());
         myImport.getCdmAppController().getFeatureTreeService().saveOrUpdate(tree);
     }
 
-    private FeatureTree<Feature> makeFeatureNodes(ITermService service){
+    private TermTree<Feature> makeFeatureNodes(ITermService service){
 
-        FeatureTree<Feature> result = FeatureTree.NewInstance(featureTreeUuid);
+        TermTree<Feature> result = TermTree.NewFeatureInstance(featureTreeUuid);
         result.setTitleCache(featureTreeTitle, true);
-        FeatureNode<Feature> root = result.getRoot();
+        TermNode<Feature> root = result.getRoot();
 
         Feature distributionFeature = (Feature)service.find(Feature.DISTRIBUTION().getUuid());
         root.addChild(distributionFeature);

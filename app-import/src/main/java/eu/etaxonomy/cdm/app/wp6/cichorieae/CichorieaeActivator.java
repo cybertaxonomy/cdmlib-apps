@@ -36,7 +36,7 @@ import eu.etaxonomy.cdm.model.description.Feature;
 import eu.etaxonomy.cdm.model.name.NomenclaturalCode;
 import eu.etaxonomy.cdm.model.name.TaxonName;
 import eu.etaxonomy.cdm.model.reference.ISourceable;
-import eu.etaxonomy.cdm.model.term.FeatureTree;
+import eu.etaxonomy.cdm.model.term.TermTree;
 
 
 /**
@@ -223,7 +223,7 @@ public class CichorieaeActivator {
 			logger.info(obj);
 
 			//make feature tree
-			FeatureTree<Feature> tree = TreeCreator.flatTree(featureTreeUuid, bmImportConfigurator.getFeatureMap(), featureKeyList);
+			TermTree<Feature> tree = TreeCreator.flatTree(featureTreeUuid, bmImportConfigurator.getFeatureMap(), featureKeyList);
 			tree.getRoot().addChild(Feature.IMAGE());
 			tree.getRoot().addChild(Feature.DISTRIBUTION(), 2);
 			app.getFeatureTreeService().saveOrUpdate(tree);

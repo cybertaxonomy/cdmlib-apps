@@ -70,9 +70,9 @@ import eu.etaxonomy.cdm.model.reference.Reference;
 import eu.etaxonomy.cdm.model.reference.ReferenceFactory;
 import eu.etaxonomy.cdm.model.taxon.Taxon;
 import eu.etaxonomy.cdm.model.taxon.TaxonBase;
-import eu.etaxonomy.cdm.model.term.FeatureTree;
 import eu.etaxonomy.cdm.model.term.Representation;
 import eu.etaxonomy.cdm.model.term.TermBase;
+import eu.etaxonomy.cdm.model.term.TermTree;
 import eu.etaxonomy.cdm.model.term.TermType;
 import eu.etaxonomy.cdm.model.term.TermVocabulary;
 import eu.etaxonomy.cdm.strategy.exceptions.UnknownCdmTypeException;
@@ -117,7 +117,7 @@ public class BerlinModelFactsImport  extends BerlinModelImportBase {
 		Source source = state.getConfig().getSource();
         boolean createFeatureTree = state.getConfig().isSalvador();  //for some reason feature tree creation does not work for salavdor
 
-        FeatureTree featureTree = (!createFeatureTree) ? null : FeatureTree.NewInstance(state.getConfig().getFeatureTreeUuid());
+        TermTree<Feature> featureTree = (!createFeatureTree) ? null : TermTree.NewFeatureInstance(state.getConfig().getFeatureTreeUuid());
         if (featureTree!= null && createFeatureTree){
             featureTree.setTitleCache(state.getConfig().getFeatureTreeTitle(), true);
         }

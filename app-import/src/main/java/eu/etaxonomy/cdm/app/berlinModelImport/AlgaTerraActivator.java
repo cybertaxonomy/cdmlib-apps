@@ -29,8 +29,8 @@ import eu.etaxonomy.cdm.io.common.IImportConfigurator.EDITOR;
 import eu.etaxonomy.cdm.io.common.Source;
 import eu.etaxonomy.cdm.model.description.Feature;
 import eu.etaxonomy.cdm.model.name.NomenclaturalCode;
-import eu.etaxonomy.cdm.model.term.FeatureNode;
-import eu.etaxonomy.cdm.model.term.FeatureTree;
+import eu.etaxonomy.cdm.model.term.TermNode;
+import eu.etaxonomy.cdm.model.term.TermTree;
 
 
 /**
@@ -208,7 +208,7 @@ public class AlgaTerraActivator {
 	 * @param app
 	 */
 	private void makeTaxonFeatureTree(AlgaTerraImportConfigurator config, ICdmRepository app) {
-		FeatureTree<Feature> tree = TreeCreator.flatTree(featureTreeUuid, config.getFeatureMap(), featureKeyList);
+	    TermTree<Feature> tree = TreeCreator.flatTree(featureTreeUuid, config.getFeatureMap(), featureKeyList);
 		tree.setTitleCache("AlgaTerra Taxon Feature Tree", true);
 
 		tree.getRoot().addChild(Feature.HABITAT());
@@ -236,10 +236,10 @@ public class AlgaTerraActivator {
 	 */
 	private void makeSpecimenFeatureTree(AlgaTerraImportConfigurator config, ICdmRepository app) {
 		ITermService termService = app.getTermService();
-		FeatureTree<Feature> specimenTree = FeatureTree.NewInstance(specimenFeatureTreeUuid);
+		TermTree<Feature> specimenTree = TermTree.NewFeatureInstance(specimenFeatureTreeUuid);
 //		FeatureTree specimenTree = TreeCreator.flatTree(specimenFeatureTreeUuid, config.getFeatureMap(), featureKeyList);
 		specimenTree.setTitleCache("AlgaTerra Specimen Feature Tree", true);
-		FeatureNode<Feature> root = specimenTree.getRoot();
+		TermNode<Feature> root = specimenTree.getRoot();
 
 
 		root.addChild(Feature.IMAGE());
@@ -256,7 +256,7 @@ public class AlgaTerraActivator {
 		addFeatureNodeByUuid(root, termService, AlgaTerraImportTransformer.uuidFeatureConductivity);
 		addFeatureNodeByUuid(root, termService, AlgaTerraImportTransformer.uuidFeatureWaterTemperature);
 		addFeatureNodeByUuid(root, termService, AlgaTerraImportTransformer.uuidFeatureSilica);
-		FeatureNode nitrogenNode = makeNitrogenNode(root, termService);
+		TermNode<Feature> nitrogenNode = makeNitrogenNode(root, termService);
 		addFeatureNodeByUuid(nitrogenNode, termService, AlgaTerraImportTransformer.uuidFeatureNitrate);
 		addFeatureNodeByUuid(nitrogenNode, termService, AlgaTerraImportTransformer.uuidFeatureNitrite);
 		addFeatureNodeByUuid(nitrogenNode, termService, AlgaTerraImportTransformer.uuidFeatureAmmonium);
@@ -272,10 +272,10 @@ public class AlgaTerraActivator {
 		app.getFeatureTreeService().saveOrUpdate(specimenTree);
 	}
 
-	private FeatureNode<Feature> makeNitrogenNode(FeatureNode<Feature> root, ITermService termService) {
+	private TermNode<Feature> makeNitrogenNode(TermNode<Feature> root, ITermService termService) {
 		Feature nFeature = Feature.NewInstance("Supra feature for all Nitrogen related subfeatures", "Nitrogen", "N");
 		termService.save(nFeature);
-		FeatureNode<Feature> nNode = root.addChild(nFeature);
+		TermNode<Feature> nNode = root.addChild(nFeature);
 		return nNode;
 	}
 
@@ -295,7 +295,7 @@ public class AlgaTerraActivator {
 	 * @param termService
 	 * @param featureUuid
 	 */
-	private void addFeatureNodeByUuid(FeatureNode<Feature> root, ITermService termService, UUID featureUuid) {
+	private void addFeatureNodeByUuid(TermNode<Feature> root, ITermService termService, UUID featureUuid) {
 		Feature feature = (Feature)termService.find(featureUuid);
 		if (feature != null){
 			root.addChild(feature);

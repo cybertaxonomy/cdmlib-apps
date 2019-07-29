@@ -28,8 +28,8 @@ import eu.etaxonomy.cdm.model.agent.Person;
 import eu.etaxonomy.cdm.model.description.Feature;
 import eu.etaxonomy.cdm.model.reference.Reference;
 import eu.etaxonomy.cdm.model.reference.ReferenceFactory;
-import eu.etaxonomy.cdm.model.term.FeatureNode;
-import eu.etaxonomy.cdm.model.term.FeatureTree;
+import eu.etaxonomy.cdm.model.term.TermNode;
+import eu.etaxonomy.cdm.model.term.TermTree;
 
 /**
  * @author a.mueller
@@ -210,7 +210,7 @@ public class CubaActivator {
         myImport.invoke(config);
 
         if (doVocabularies){
-            FeatureTree tree = makeFeatureNodes(myImport.getCdmAppController().getTermService());
+            TermTree<Feature> tree = makeFeatureNodes(myImport.getCdmAppController().getTermService());
             myImport.getCdmAppController().getFeatureTreeService().saveOrUpdate(tree);
             this.doVocabularies = false;
         }
@@ -226,12 +226,12 @@ public class CubaActivator {
 		return result;
 	}
 
-	private FeatureTree<Feature> makeFeatureNodes(ITermService service){
+	private TermTree<Feature> makeFeatureNodes(ITermService service){
 //		CyprusTransformer transformer = new CyprusTransformer();
 
-		FeatureTree<Feature> result = FeatureTree.NewInstance(featureTreeUuid);
+	    TermTree<Feature> result = TermTree.NewFeatureInstance(featureTreeUuid);
 		result.setTitleCache("Cuba Feature Tree", true);
-		FeatureNode<Feature> root = result.getRoot();
+		TermNode<Feature> root = result.getRoot();
 
 		root.addChild(Feature.DISTRIBUTION());
 

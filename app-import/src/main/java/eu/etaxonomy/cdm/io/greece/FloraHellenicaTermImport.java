@@ -26,10 +26,10 @@ import eu.etaxonomy.cdm.model.description.PresenceAbsenceTerm;
 import eu.etaxonomy.cdm.model.description.State;
 import eu.etaxonomy.cdm.model.location.NamedArea;
 import eu.etaxonomy.cdm.model.location.NamedAreaType;
-import eu.etaxonomy.cdm.model.term.FeatureNode;
-import eu.etaxonomy.cdm.model.term.FeatureTree;
 import eu.etaxonomy.cdm.model.term.OrderedTermBase;
 import eu.etaxonomy.cdm.model.term.OrderedTermVocabulary;
+import eu.etaxonomy.cdm.model.term.TermNode;
+import eu.etaxonomy.cdm.model.term.TermTree;
 import eu.etaxonomy.cdm.model.term.TermType;
 import eu.etaxonomy.cdm.model.term.TermVocabulary;
 
@@ -435,9 +435,9 @@ public class FloraHellenicaTermImport <CONFIG extends FloraHellenicaImportConfig
             hasFeatureTree = true;
             return;
         }
-        FeatureTree<Feature> result = FeatureTree.NewInstance(state.getConfig().getUuidFeatureTree());
+        TermTree<Feature> result = TermTree.NewFeatureInstance(state.getConfig().getUuidFeatureTree());
         result.setTitleCache(state.getConfig().getFeatureTreeTitle(), true);
-        FeatureNode<Feature> root = result.getRoot();
+        TermNode<Feature> root = result.getRoot();
         ITermService service = getTermService();
 
         UUID uuid = FloraHellenicaTransformer.uuidFloraHellenicaTaxonInfoFeature;

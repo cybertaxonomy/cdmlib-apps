@@ -26,7 +26,7 @@ import eu.etaxonomy.cdm.io.common.ImportResult;
 import eu.etaxonomy.cdm.io.common.Source;
 import eu.etaxonomy.cdm.model.description.Feature;
 import eu.etaxonomy.cdm.model.name.NomenclaturalCode;
-import eu.etaxonomy.cdm.model.term.FeatureTree;
+import eu.etaxonomy.cdm.model.term.TermTree;
 
 
 /**
@@ -175,7 +175,7 @@ public class CampanulaceaeActivator {
 			ICdmRepository app = bmImport.getCdmAppController();
 
 			//make feature tree
-			FeatureTree<Feature> tree = TreeCreator.flatTree(featureTreeUuid, bmImportConfigurator.getFeatureMap(), featureKeyList);
+			TermTree<Feature> tree = TreeCreator.flatTree(featureTreeUuid, bmImportConfigurator.getFeatureMap(), featureKeyList);
 			tree.getRoot().addChild(Feature.DISTRIBUTION(), 1);
 			app.getFeatureTreeService().saveOrUpdate(tree);
 		}

@@ -28,8 +28,8 @@ import eu.etaxonomy.cdm.model.common.IdentifiableEntity;
 import eu.etaxonomy.cdm.model.description.Feature;
 import eu.etaxonomy.cdm.model.description.State;
 import eu.etaxonomy.cdm.model.term.DefinedTermBase;
-import eu.etaxonomy.cdm.model.term.FeatureTree;
 import eu.etaxonomy.cdm.model.term.OrderedTermVocabulary;
+import eu.etaxonomy.cdm.model.term.TermTree;
 import eu.etaxonomy.cdm.model.term.TermType;
 import eu.etaxonomy.cdm.model.term.TermVocabulary;
 import eu.etaxonomy.cdm.strategy.exceptions.UnknownCdmTypeException;
@@ -148,7 +148,7 @@ public class BfnXmlImportFeature extends BfnXmlImportBase implements ICdmIO<BfnX
 	}
 
 	private void createFeatureTree(List<Feature> featureList) {
-		FeatureTree featureTree = FeatureTree.NewInstance(featureList);
+	    TermTree<Feature> featureTree = TermTree.NewInstance(featureList);
 		String featureTreeName = "RedListFeatureTree";
 		featureTree.setTitleCache(featureTreeName, true);
 		getFeatureTreeService().save(featureTree);

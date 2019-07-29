@@ -32,7 +32,7 @@ import eu.etaxonomy.cdm.model.common.ExtensionType;
 import eu.etaxonomy.cdm.model.description.Feature;
 import eu.etaxonomy.cdm.model.name.NomenclaturalCode;
 import eu.etaxonomy.cdm.model.taxon.TaxonBase;
-import eu.etaxonomy.cdm.model.term.FeatureTree;
+import eu.etaxonomy.cdm.model.term.TermTree;
 
 
 /**
@@ -233,7 +233,7 @@ public class EuroMedActivatorVibrant {
 			ICdmRepository app = bmImport.getCdmAppController();
 
 			//make feature tree
-			FeatureTree<Feature> tree = TreeCreator.flatTree(featureTreeUuid, config.getFeatureMap(), featureKeyList);
+			TermTree<Feature> tree = TreeCreator.flatTree(featureTreeUuid, config.getFeatureMap(), featureKeyList);
 			tree.getRoot().addChild(Feature.IMAGE());
 			tree.getRoot().addChild(Feature.DISTRIBUTION(), 2);
 			app.getFeatureTreeService().saveOrUpdate(tree);

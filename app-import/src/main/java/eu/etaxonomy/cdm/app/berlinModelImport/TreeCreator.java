@@ -16,8 +16,8 @@ import java.util.UUID;
 import org.apache.log4j.Logger;
 
 import eu.etaxonomy.cdm.model.description.Feature;
-import eu.etaxonomy.cdm.model.term.FeatureNode;
-import eu.etaxonomy.cdm.model.term.FeatureTree;
+import eu.etaxonomy.cdm.model.term.TermNode;
+import eu.etaxonomy.cdm.model.term.TermTree;
 
 /**
  * @author a.mueller
@@ -27,9 +27,9 @@ public class TreeCreator {
 	@SuppressWarnings("unused")
 	private static final Logger logger = Logger.getLogger(TreeCreator.class);
 
-	public static FeatureTree<Feature> flatTree(UUID featureTreeUuid, Map<Integer, Feature> featureMap, Object[] featureKeyList){
-		FeatureTree<Feature> result = FeatureTree.NewInstance(featureTreeUuid);
-		FeatureNode<Feature> root = result.getRoot();
+	public static TermTree<Feature> flatTree(UUID featureTreeUuid, Map<Integer, Feature> featureMap, Object[] featureKeyList){
+	    TermTree<Feature> result = TermTree.NewFeatureInstance(featureTreeUuid);
+	    TermNode<Feature> root = result.getRoot();
 
 		for (Object featureKey : featureKeyList){
 			Feature feature = featureMap.get(featureKey);
@@ -51,7 +51,7 @@ public class TreeCreator {
 
 		Object[] strFeatureList = new Integer[]{1,2};
 
-		FeatureTree<Feature> tree = TreeCreator.flatTree(UUID.randomUUID(), map, strFeatureList);
+		TermTree<Feature> tree = TreeCreator.flatTree(UUID.randomUUID(), map, strFeatureList);
 		System.out.println(tree.getRootChildren());
 	}
 }
