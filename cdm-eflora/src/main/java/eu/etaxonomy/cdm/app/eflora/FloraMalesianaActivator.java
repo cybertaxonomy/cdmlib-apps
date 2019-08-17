@@ -33,8 +33,8 @@ import eu.etaxonomy.cdm.model.description.Feature;
 import eu.etaxonomy.cdm.model.description.PolytomousKey;
 import eu.etaxonomy.cdm.model.reference.Reference;
 import eu.etaxonomy.cdm.model.reference.ReferenceFactory;
-import eu.etaxonomy.cdm.model.term.FeatureNode;
-import eu.etaxonomy.cdm.model.term.FeatureTree;
+import eu.etaxonomy.cdm.model.term.TermNode;
+import eu.etaxonomy.cdm.model.term.TermTree;
 
 /**
  * @author a.mueller
@@ -365,7 +365,7 @@ public class FloraMalesianaActivator extends EfloraActivatorBase {
 
 //		makeGeoService();
 
-		FeatureTree tree = makeFeatureNode(myImport.getCdmAppController().getTermService());
+		TermTree<Feature> tree = makeFeatureNode(myImport.getCdmAppController().getTermService());
 		myImport.getCdmAppController().getFeatureTreeService().saveOrUpdate(tree);
 
 		//check keys
@@ -398,43 +398,37 @@ public class FloraMalesianaActivator extends EfloraActivatorBase {
 		return result;
 	}
 
-	private FeatureTree makeFeatureNode(ITermService service){
+	private TermTree<Feature> makeFeatureNode(ITermService service){
 		FloraMalesianaTransformer transformer = new FloraMalesianaTransformer();
 
-		FeatureTree result = FeatureTree.NewInstance(UUID.randomUUID());
+		TermTree<Feature> result = TermTree.NewFeatureInstance(UUID.randomUUID());
 		result.setTitleCache("Flora Malesiana Presentation Feature Tree - Old", true);
-		FeatureNode root = result.getRoot();
-		FeatureNode newNode;
+		TermNode<Feature> root = result.getRoot();
 
-		newNode = FeatureNode.NewInstance(Feature.DESCRIPTION());
-		root.addChild(newNode);
+		TermNode<Feature> newNode = root.addChild(Feature.DESCRIPTION());
 
-		addFeataureNodesByStringList(descriptionFeatureList, newNode, transformer, service);
+		addFeatureNodesByStringList(descriptionFeatureList, newNode, transformer, service);
 
-		addFeataureNodesByStringList(generellDescriptionsUpToAnatomyList, root, transformer, service);
-		newNode = FeatureNode.NewInstance(Feature.ANATOMY());
-		addFeataureNodesByStringList(anatomySubfeatureList, newNode, transformer, service);
+		addFeatureNodesByStringList(generellDescriptionsUpToAnatomyList, root, transformer, service);
+		newNode = TermNode.NewInstance(Feature.ANATOMY());
+		addFeatureNodesByStringList(anatomySubfeatureList, newNode, transformer, service);
 
-		newNode = addFeataureNodesByStringList(generellDescriptionsFromAnatomyToPhytoChemoList, root, transformer, service);
-		addFeataureNodesByStringList(phytoChemoSubFeaturesList, newNode, transformer, service);
+		newNode = addFeatureNodesByStringList(generellDescriptionsFromAnatomyToPhytoChemoList, root, transformer, service);
+		addFeatureNodesByStringList(phytoChemoSubFeaturesList, newNode, transformer, service);
 
-		newNode = addFeataureNodesByStringList(generellDescriptionsFromPhytoChemoList, root, transformer, service);
+		newNode = addFeatureNodesByStringList(generellDescriptionsFromPhytoChemoList, root, transformer, service);
 
 
-		newNode = FeatureNode.NewInstance(Feature.DISTRIBUTION());
-		root.addChild(newNode);
+		newNode = root.addChild(Feature.DISTRIBUTION());
 
-		newNode = FeatureNode.NewInstance(Feature.ECOLOGY());
-		root.addChild(newNode);
-		addFeataureNodesByStringList(habitatEcologyList, root, transformer, service);
+		newNode = root.addChild(Feature.ECOLOGY());
+		addFeatureNodesByStringList(habitatEcologyList, root, transformer, service);
 
-		newNode = FeatureNode.NewInstance(Feature.USES());
-		root.addChild(newNode);
+		newNode = root.addChild(Feature.USES());
 
-		addFeataureNodesByStringList(chomosomesList, root, transformer, service);
+		addFeatureNodesByStringList(chomosomesList, root, transformer, service);
 
-		newNode = FeatureNode.NewInstance(Feature.CITATION());
-		root.addChild(newNode);
+		newNode = root.addChild(Feature.CITATION());
 
 		return result;
 	}
@@ -588,16 +582,16 @@ public class FloraMalesianaActivator extends EfloraActivatorBase {
 
 	};
 
-	public FeatureNode addFeataureNodesByStringList(String[] featureStringList, FeatureNode root, IInputTransformer transformer, ITermService termService){
-		FeatureNode lastChild = null;
+	public TermNode<Feature> addFeatureNodesByStringList(String[] featureStringList,
+	        TermNode<Feature> root, IInputTransformer transformer, ITermService termService){
+	    TermNode<Feature> lastChild = null;
 		try {
 			for (String featureString : featureStringList){
 				UUID featureUuid;
 				featureUuid = transformer.getFeatureUuid(featureString);
 				Feature feature = (Feature)termService.find(featureUuid);
 				if (feature != null){
-					FeatureNode child = FeatureNode.NewInstance(feature);
-					root.addChild(child);
+					root.addChild(feature);
 				}
 			}
 

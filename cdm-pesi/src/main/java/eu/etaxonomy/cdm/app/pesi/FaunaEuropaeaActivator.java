@@ -25,8 +25,8 @@ import eu.etaxonomy.cdm.io.pesi.faunaEuropaea.FaunaEuropaeaImportConfigurator;
 import eu.etaxonomy.cdm.io.pesi.out.PesiTransformer;
 import eu.etaxonomy.cdm.model.description.Feature;
 import eu.etaxonomy.cdm.model.name.NomenclaturalCode;
-import eu.etaxonomy.cdm.model.term.FeatureNode;
-import eu.etaxonomy.cdm.model.term.FeatureTree;
+import eu.etaxonomy.cdm.model.term.TermNode;
+import eu.etaxonomy.cdm.model.term.TermTree;
 
 /**
  * @author a.babadshanjan
@@ -158,20 +158,17 @@ public class FaunaEuropaeaActivator {
 		//make feature tree
 
 		if (makeFeatureTree) {
-			FeatureTree featureTree = FeatureTree.NewInstance(UUID.fromString("ff59b9ad-1fb8-4aa4-a8ba-79d62123d0fb"));
-			FeatureNode root = featureTree.getRoot();
+			TermTree<Feature> featureTree = TermTree.NewFeatureInstance(UUID.fromString("ff59b9ad-1fb8-4aa4-a8ba-79d62123d0fb"));
+			TermNode<Feature> root = featureTree.getRoot();
 
 			ICdmRepository app = fauEuImport.getCdmAppController();
 			Feature citationFeature = (Feature)app.getTermService().find(UUID.fromString("99b2842f-9aa7-42fa-bd5f-7285311e0101"));
-			FeatureNode citationNode = FeatureNode.NewInstance(citationFeature);
-			root.addChild(citationNode);
+			root.addChild(citationFeature);
 			Feature distributionFeature = (Feature)app.getTermService().find(UUID.fromString("9fc9d10c-ba50-49ee-b174-ce83fc3f80c6"));
-			FeatureNode distributionNode = FeatureNode.NewInstance(distributionFeature);
-			root.addChild(distributionNode);
+			root.addChild(distributionFeature);
 			Feature commonNameFeature = (Feature)app.getTermService().find(UUID.fromString("fc810911-51f0-4a46-ab97-6562fe263ae5"));
-			FeatureNode commonNameFeatureNode = FeatureNode.NewInstance(commonNameFeature);
-			root.addChild(commonNameFeatureNode);
-			app.getFeatureTreeService().saveOrUpdate(featureTree);
+			root.addChild(commonNameFeature);
+			app.getTermTreeService().saveOrUpdate(featureTree);
 		}
 
 		System.out.println("End importing Fauna Europaea data");

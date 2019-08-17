@@ -33,7 +33,7 @@ import eu.etaxonomy.cdm.model.agent.AgentBase;
 import eu.etaxonomy.cdm.model.agent.Contact;
 import eu.etaxonomy.cdm.model.agent.Institution;
 import eu.etaxonomy.cdm.model.agent.Person;
-import eu.etaxonomy.cdm.model.common.User;
+import eu.etaxonomy.cdm.model.permission.User;
 import eu.etaxonomy.cdm.model.reference.OriginalSourceBase;
 
 
@@ -43,16 +43,15 @@ import eu.etaxonomy.cdm.model.reference.OriginalSourceBase;
  */
 @Component
 public class FaunaEuropaeaUsersImport extends FaunaEuropaeaImportBase {
-	private static final Logger logger = Logger.getLogger(FaunaEuropaeaUsersImport.class);
+
+    private static final long serialVersionUID = 2307694402632743697L;
+    private static final Logger logger = Logger.getLogger(FaunaEuropaeaUsersImport.class);
 
 	/* Interval for progress info message when retrieving taxa */
 	private final int modCount = 10000;
 
 	 protected DefaultTransactionDefinition txDefinition = new DefaultTransactionDefinition();
 
-	/* (non-Javadoc)
-	 * @see eu.etaxonomy.cdm.io.common.CdmIoBase#doCheck(eu.etaxonomy.cdm.io.common.IImportConfigurator)
-	 */
 	@Override
 	protected boolean doCheck(FaunaEuropaeaImportState state) {
 		boolean result = true;
@@ -76,9 +75,6 @@ public class FaunaEuropaeaUsersImport extends FaunaEuropaeaImportBase {
 //		}
 	}
 
-	/* (non-Javadoc)
-	 * @see eu.etaxonomy.cdm.io.common.CdmIoBase#doInvoke(eu.etaxonomy.cdm.io.common.IImportConfigurator, eu.etaxonomy.cdm.api.application.CdmApplicationController, java.util.Map)
-	 */
 	@Override
 	protected void doInvoke(FaunaEuropaeaImportState state) {
 		/*
@@ -338,9 +334,6 @@ public class FaunaEuropaeaUsersImport extends FaunaEuropaeaImportBase {
 		}
 	}
 
-	/* (non-Javadoc)
-	 * @see eu.etaxonomy.cdm.io.common.CdmIoBase#isIgnore(eu.etaxonomy.cdm.io.common.IImportConfigurator)
-	 */
 	@Override
     protected boolean isIgnore(FaunaEuropaeaImportState state){
 		return (state.getConfig().getDoReferences() == IImportConfigurator.DO_REFERENCES.NONE);

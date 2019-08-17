@@ -11,17 +11,15 @@ package eu.etaxonomy.cdm.io.pesi.indexFungorum;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.UUID;
 
 import org.apache.log4j.Logger;
 
 import eu.etaxonomy.cdm.io.common.DbImportStateBase;
-import eu.etaxonomy.cdm.model.common.User;
 import eu.etaxonomy.cdm.model.name.Rank;
+import eu.etaxonomy.cdm.model.permission.User;
 import eu.etaxonomy.cdm.model.taxon.TaxonBase;
 import eu.etaxonomy.cdm.model.term.DefinedTermBase;
 
@@ -41,7 +39,7 @@ public class IndexFungorumImportState extends DbImportStateBase<IndexFungorumImp
 	private Map<Integer, Map<Integer,Rank>> rankMap;
 
 	private Map<String, TaxonBase> speciesMap;
-	
+
 	private List<UUID> infraspecificTaxaUUIDs = new ArrayList<UUID>();
 
 

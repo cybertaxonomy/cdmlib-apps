@@ -40,9 +40,9 @@ import eu.etaxonomy.cdm.model.location.NamedAreaType;
 import eu.etaxonomy.cdm.model.name.NomenclaturalCode;
 import eu.etaxonomy.cdm.model.reference.Reference;
 import eu.etaxonomy.cdm.model.reference.ReferenceFactory;
-import eu.etaxonomy.cdm.model.term.FeatureNode;
-import eu.etaxonomy.cdm.model.term.FeatureTree;
 import eu.etaxonomy.cdm.model.term.OrderedTermVocabulary;
+import eu.etaxonomy.cdm.model.term.TermNode;
+import eu.etaxonomy.cdm.model.term.TermTree;
 import eu.etaxonomy.cdm.model.term.TermType;
 
 /**
@@ -133,7 +133,7 @@ public class CentralAfricaEricaceaeActivator {
 		}
 
 		if (doFeatureTree){
-			FeatureTree tree = makeFeatureNode(myImport.getCdmAppController().getTermService());
+			TermTree<Feature> tree = makeFeatureNode(myImport.getCdmAppController().getTermService());
 			myImport.getCdmAppController().getFeatureTreeService().saveOrUpdate(tree);
 		}
 
@@ -285,39 +285,31 @@ public class CentralAfricaEricaceaeActivator {
 		return result;
 	}
 
-	private FeatureTree makeFeatureNode(ITermService service){
+	private TermTree<Feature> makeFeatureNode(ITermService service){
 		CentralAfricaEricaceaeTransformer transformer = new CentralAfricaEricaceaeTransformer();
 
-		FeatureTree result = FeatureTree.NewInstance(featureTreeUuid);
+		TermTree<Feature> result = TermTree.NewFeatureInstance(featureTreeUuid);
 		result.setTitleCache("Central Africa Ericaceae Feature Tree", true);
-		FeatureNode root = result.getRoot();
-		FeatureNode newNode;
+		TermNode<Feature> root = result.getRoot();
 
-		newNode = FeatureNode.NewInstance(Feature.DESCRIPTION());
-		root.addChild(newNode);
+		TermNode<Feature> newNode = root.addChild(Feature.DESCRIPTION());
 
-		addFeataureNodesByStringList(descriptionFeatureList, newNode, transformer, service);
+		addFeatureNodesByStringList(descriptionFeatureList, newNode, transformer, service);
 
-		addFeataureNodesByStringList(generellDescriptionsList, root, transformer, service);
+		addFeatureNodesByStringList(generellDescriptionsList, root, transformer, service);
 
+		newNode = root.addChild(Feature.DISTRIBUTION());
 
-		newNode = FeatureNode.NewInstance(Feature.DISTRIBUTION());
-		root.addChild(newNode);
+		newNode = root.addChild(Feature.ECOLOGY());
+		addFeatureNodesByStringList(habitatEcologyList, root, transformer, service);
 
-		newNode = FeatureNode.NewInstance(Feature.ECOLOGY());
-		root.addChild(newNode);
-		addFeataureNodesByStringList(habitatEcologyList, root, transformer, service);
+		newNode = root.addChild(Feature.USES());
 
-		newNode = FeatureNode.NewInstance(Feature.USES());
-		root.addChild(newNode);
+		addFeatureNodesByStringList(chomosomesList, root, transformer, service);
 
-		addFeataureNodesByStringList(chomosomesList, root, transformer, service);
+		newNode = root.addChild(Feature.COMMON_NAME());
 
-		newNode = FeatureNode.NewInstance(Feature.COMMON_NAME());
-		root.addChild(newNode);
-
-		newNode = FeatureNode.NewInstance(Feature.CITATION());
-		root.addChild(newNode);
+		newNode = root.addChild(Feature.CITATION());
 
 		return result;
 	}
@@ -439,15 +431,14 @@ public class CentralAfricaEricaceaeActivator {
 
 	};
 
-	public void addFeataureNodesByStringList(String[] featureStringList, FeatureNode root, IInputTransformer transformer, ITermService termService){
+	public void addFeatureNodesByStringList(String[] featureStringList, TermNode<Feature> root, IInputTransformer transformer, ITermService termService){
 		try {
 			for (String featureString : featureStringList){
 			UUID featureUuid;
 			featureUuid = transformer.getFeatureUuid(featureString);
 			Feature feature = (Feature)termService.find(featureUuid);
 			if (feature != null){
-				FeatureNode child = FeatureNode.NewInstance(feature);
-				root.addChild(child);
+				TermNode<Feature> child = root.addChild(feature);
 			}
 		}
 		} catch (UndefinedTransformerMethodException e) {

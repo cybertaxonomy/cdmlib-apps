@@ -24,8 +24,8 @@ import eu.etaxonomy.cdm.io.eflora.floraMalesiana.FloraMalesianaTransformer;
 import eu.etaxonomy.cdm.model.description.Feature;
 import eu.etaxonomy.cdm.model.reference.Reference;
 import eu.etaxonomy.cdm.model.reference.ReferenceFactory;
-import eu.etaxonomy.cdm.model.term.FeatureNode;
-import eu.etaxonomy.cdm.model.term.FeatureTree;
+import eu.etaxonomy.cdm.model.term.TermNode;
+import eu.etaxonomy.cdm.model.term.TermTree;
 
 /**
  * @author a.mueller
@@ -96,7 +96,7 @@ public class CentralAfricaFernsActivator {
 
 
 
-		FeatureTree tree = makeFeatureNode(myImport.getCdmAppController().getTermService());
+		TermTree<Feature> tree = makeFeatureNode(myImport.getCdmAppController().getTermService());
 		myImport.getCdmAppController().getFeatureTreeService().saveOrUpdate(tree);
 
 		//check keys
@@ -118,19 +118,15 @@ public class CentralAfricaFernsActivator {
 		return result;
 	}
 
-	private FeatureTree makeFeatureNode(ITermService service){
+	private TermTree<Feature> makeFeatureNode(ITermService service){
 		FloraMalesianaTransformer transformer = new FloraMalesianaTransformer();
 
-		FeatureTree result = FeatureTree.NewInstance(featureTreeUuid);
+		TermTree<Feature> result = TermTree.NewFeatureInstance(featureTreeUuid);
 		result.setTitleCache("Flora Malesiana Presentation Feature Tree", true);
-		FeatureNode root = result.getRoot();
-		FeatureNode newNode;
+		TermNode<Feature> root = result.getRoot();
+		TermNode<Feature> newNode = root.addChild(Feature.CITATION());
 
-		newNode = FeatureNode.NewInstance(Feature.CITATION());
-		root.addChild(newNode);
-
-		newNode = FeatureNode.NewInstance(Feature.DESCRIPTION());
-		root.addChild(newNode);
+		root.addChild(Feature.DESCRIPTION());
 
 		return result;
 	}

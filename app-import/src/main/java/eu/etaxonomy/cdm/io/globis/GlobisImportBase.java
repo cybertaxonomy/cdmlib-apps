@@ -41,10 +41,10 @@ import eu.etaxonomy.cdm.model.common.AnnotationType;
 import eu.etaxonomy.cdm.model.common.CdmBase;
 import eu.etaxonomy.cdm.model.common.IdentifiableEntity;
 import eu.etaxonomy.cdm.model.common.Language;
-import eu.etaxonomy.cdm.model.common.User;
 import eu.etaxonomy.cdm.model.location.Country;
 import eu.etaxonomy.cdm.model.location.NamedArea;
 import eu.etaxonomy.cdm.model.name.IZoologicalName;
+import eu.etaxonomy.cdm.model.permission.User;
 import eu.etaxonomy.cdm.strategy.exceptions.StringNotParsableException;
 import eu.etaxonomy.cdm.strategy.parser.INonViralNameParser;
 import eu.etaxonomy.cdm.strategy.parser.NonViralNameParserImpl;
@@ -54,7 +54,9 @@ import eu.etaxonomy.cdm.strategy.parser.NonViralNameParserImpl;
  * @since 20.03.2008
  */
 public abstract class GlobisImportBase<CDM_BASE extends CdmBase> extends CdmImportBase<GlobisImportConfigurator, GlobisImportState> implements ICdmIO<GlobisImportState>, IPartitionedIO<GlobisImportState> {
-	private static final Logger logger = Logger.getLogger(GlobisImportBase.class);
+
+    private static final long serialVersionUID = -7813164269152576841L;
+    private static final Logger logger = Logger.getLogger(GlobisImportBase.class);
 
 	public static final UUID ID_IN_SOURCE_EXT_UUID = UUID.fromString("23dac094-e793-40a4-bad9-649fc4fcfd44");
 

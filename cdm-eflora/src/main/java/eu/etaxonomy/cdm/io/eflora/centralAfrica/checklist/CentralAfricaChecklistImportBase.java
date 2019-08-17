@@ -1,8 +1,8 @@
 /**
 * Copyright (C) 2007 EDIT
-* European Distributed Institute of Taxonomy 
+* European Distributed Institute of Taxonomy
 * http://www.e-taxonomy.eu
-* 
+*
 * The contents of this file are subject to the Mozilla Public License Version 1.1
 * See LICENSE.TXT at the top of this package for the full license terms.
 */
@@ -38,7 +38,7 @@ import eu.etaxonomy.cdm.model.common.ExtensionType;
 import eu.etaxonomy.cdm.model.common.IdentifiableEntity;
 import eu.etaxonomy.cdm.model.common.Language;
 import eu.etaxonomy.cdm.model.common.MarkerType;
-import eu.etaxonomy.cdm.model.common.User;
+import eu.etaxonomy.cdm.model.permission.User;
 
 /**
  * @author a.mueller
@@ -47,25 +47,25 @@ import eu.etaxonomy.cdm.model.common.User;
  */
 public abstract class CentralAfricaChecklistImportBase<CDM_BASE extends CdmBase> extends CdmImportBase<CentralAfricaChecklistImportConfigurator, CentralAfricaChecklistImportState> implements ICdmIO<CentralAfricaChecklistImportState>, IPartitionedIO<CentralAfricaChecklistImportState> {
 	private static final Logger logger = Logger.getLogger(CentralAfricaChecklistImportBase.class);
-	
+
 	public static final UUID ID_IN_SOURCE_EXT_UUID = UUID.fromString("23dac094-e793-40a4-bad9-649fc4fcfd44");
-	
+
 	protected static final String SYNONYM_NAMESPACE = "synonyms";
 	protected static final String TAXON_NAMESPACE = "checklist";
 	protected static final String REFERENCE_NAMESPACE = "checklist_source";
-	
+
 
 	private String pluralString;
 	private String dbTableName;
 	//TODO needed?
 	private Class cdmTargetClass;
-	
 
-	
-	
+
+
+
 	/**
 	 * @param dbTableName
-	 * @param dbTableName2 
+	 * @param dbTableName2
 	 */
 	public CentralAfricaChecklistImportBase(String pluralString, String dbTableName, Class cdmTargetClass) {
 		this.pluralString = pluralString;
@@ -73,11 +73,12 @@ public abstract class CentralAfricaChecklistImportBase<CDM_BASE extends CdmBase>
 		this.cdmTargetClass = cdmTargetClass;
 	}
 
-	protected void doInvoke(CentralAfricaChecklistImportState state){
+	@Override
+    protected void doInvoke(CentralAfricaChecklistImportState state){
 		logger.info("start make " + getPluralString() + " ...");
 		CentralAfricaChecklistImportConfigurator config = state.getConfig();
 		Source source = config.getSource();
-			
+
 		String strIdQuery = getIdQuery();
 		String strRecordQuery = getRecordQuery(config);
 
@@ -92,18 +93,19 @@ public abstract class CentralAfricaChecklistImportBase<CDM_BASE extends CdmBase>
 			state.setUnsuccessfull();
 			return;
 		}
-		
+
 		logger.info("end make " + getPluralString() + " ... " + getSuccessString(true));
 		return;
 	}
-	
-	public boolean doPartition(ResultSetPartitioner partitioner, CentralAfricaChecklistImportState state) {
+
+	@Override
+    public boolean doPartition(ResultSetPartitioner partitioner, CentralAfricaChecklistImportState state) {
 		boolean success = true ;
 		Set<CdmBase> objectsToSave = new HashSet<CdmBase>();
-		
+
  		DbImportMapping<?, ?> mapping = getMapping();
 		mapping.initialize(state, cdmTargetClass);
-		
+
 		ResultSet rs = partitioner.getResultSet();
 		try{
 			while (rs.next()){
@@ -113,19 +115,19 @@ public abstract class CentralAfricaChecklistImportBase<CDM_BASE extends CdmBase>
 			logger.error("SQLException:" +  e);
 			return false;
 		}
-	
+
 		partitioner.startDoSave();
 		getCommonService().save(objectsToSave);
 		return success;
 	}
 
 
-	
+
 	/**
 	 * @return
 	 */
 	protected abstract DbImportMapping<?, ?> getMapping();
-	
+
 	/**
 	 * @return
 	 */
@@ -138,11 +140,12 @@ public abstract class CentralAfricaChecklistImportBase<CDM_BASE extends CdmBase>
 		String result = " SELECT id FROM " + getTableName();
 		return result;
 	}
-	
+
 	/* (non-Javadoc)
 	 * @see eu.etaxonomy.cdm.io.berlinModel.in.IPartitionedIO#getPluralString()
 	 */
-	public String getPluralString(){
+	@Override
+    public String getPluralString(){
 		return pluralString;
 	}
 
@@ -152,7 +155,7 @@ public abstract class CentralAfricaChecklistImportBase<CDM_BASE extends CdmBase>
 	protected String getTableName(){
 		return this.dbTableName;
 	}
-	
+
 	protected boolean doIdCreatedUpdatedNotes(CentralAfricaChecklistImportState state, IdentifiableEntity identifiableEntity, ResultSet rs, long id, String namespace)
 			throws SQLException{
 		boolean success = true;
@@ -162,8 +165,8 @@ public abstract class CentralAfricaChecklistImportBase<CDM_BASE extends CdmBase>
 		success &= doCreatedUpdatedNotes(state, identifiableEntity, rs, namespace);
 		return success;
 	}
-	
-	
+
+
 	protected boolean doCreatedUpdatedNotes(CentralAfricaChecklistImportState state, AnnotatableEntity annotatableEntity, ResultSet rs, String namespace)
 			throws SQLException{
 
@@ -179,9 +182,9 @@ public abstract class CentralAfricaChecklistImportBase<CDM_BASE extends CdmBase>
 			//Table "Name" has no updated when/who
 		}
 		String notes = rs.getString("notes");
-		
+
 		boolean success  = true;
-		
+
 		//Created When, Who, Updated When Who
 		if (config.getEditor() == null || config.getEditor().equals(EDITOR.NO_EDITORS)){
 			//do nothing
@@ -206,8 +209,8 @@ public abstract class CentralAfricaChecklistImportBase<CDM_BASE extends CdmBase>
 		}else {
 			logger.warn("Editor type not yet implemented: " + config.getEditor());
 		}
-		
-		
+
+
 		//notes
 		if (CdmUtils.isNotEmpty(notes)){
 			String notesString = String.valueOf(notes);
@@ -223,12 +226,12 @@ public abstract class CentralAfricaChecklistImportBase<CDM_BASE extends CdmBase>
 		return success;
 	}
 
-	
+
 	private User getUser(String createdWho, CentralAfricaChecklistImportState state) {
 		//not relevant here, for users see ERMS import
 		return null;
 	}
-	
+
 	private DateTime getDateTime(Object timeString){
 		if (timeString == null){
 			return null;
@@ -243,8 +246,8 @@ public abstract class CentralAfricaChecklistImportBase<CDM_BASE extends CdmBase>
 		}
 		return dateTime;
 	}
-	
-	
+
+
 	/**
 	 * Returns a map that holds all values of a ResultSet. This is needed if a value needs to
 	 * be accessed twice
@@ -268,7 +271,7 @@ public abstract class CentralAfricaChecklistImportBase<CDM_BASE extends CdmBase>
 			throw e;
 		}
 	}
-	
+
 	protected ExtensionType getExtensionType(UUID uuid, String label, String text, String labelAbbrev){
 		ExtensionType extensionType = (ExtensionType)getTermService().find(uuid);
 		if (extensionType == null){
@@ -278,7 +281,7 @@ public abstract class CentralAfricaChecklistImportBase<CDM_BASE extends CdmBase>
 		}
 		return extensionType;
 	}
-	
+
 	protected MarkerType getMarkerType(UUID uuid, String label, String text, String labelAbbrev){
 		MarkerType markerType = (MarkerType)getTermService().find(uuid);
 		if (markerType == null){
@@ -288,7 +291,7 @@ public abstract class CentralAfricaChecklistImportBase<CDM_BASE extends CdmBase>
 		}
 		return markerType;
 	}
-	
+
 
 	/**
 	 * Reads a foreign key field from the result set and adds its value to the idSet.
@@ -304,7 +307,7 @@ public abstract class CentralAfricaChecklistImportBase<CDM_BASE extends CdmBase>
 			idSet.add(id);
 		}
 	}
-	
+
 	/**
 	 * Returns true if i is a multiple of recordsPerTransaction
 	 * @param i
@@ -315,12 +318,12 @@ public abstract class CentralAfricaChecklistImportBase<CDM_BASE extends CdmBase>
 		startTransaction();
 		return (i % recordsPerLoop) == 0;
 	}
-	
+
 	protected void doLogPerLoop(int count, int recordsPerLog, String pluralString){
 		if ((count % recordsPerLog ) == 0 && count!= 0 ){ logger.info(pluralString + " handled: " + (count));}
 	}
-	
 
 
-	
+
+
 }

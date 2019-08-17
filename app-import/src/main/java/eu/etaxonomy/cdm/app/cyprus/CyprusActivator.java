@@ -130,7 +130,7 @@ public class CyprusActivator {
 
 		//user defined features
 		String [] featureList = new String[]{"Red Book", "Endemism"};
-		addFeataureNodesByStringList(featureList, root, transformer, service);
+		addFeatureNodesByStringList(featureList, root, transformer, service);
 
 		return result;
 	}
@@ -159,7 +159,7 @@ public class CyprusActivator {
 		}
 	}
 
-	public void addFeataureNodesByStringList(String[] featureStringList, TermNode<Feature> root, IInputTransformer transformer, ITermService termService){
+	public void addFeatureNodesByStringList(String[] featureStringList, TermNode<Feature> root, IInputTransformer transformer, ITermService termService){
 		try {
 			for (String featureString : featureStringList){
 			UUID featureUuid;

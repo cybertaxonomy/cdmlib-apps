@@ -1,5 +1,5 @@
 /**
- * 
+ *
  */
 package eu.etaxonomy.cdm.app.eflora;
 
@@ -26,8 +26,8 @@ import eu.etaxonomy.cdm.io.markup.FeatureSorterInfo;
 import eu.etaxonomy.cdm.io.markup.MarkupImportConfigurator;
 import eu.etaxonomy.cdm.io.markup.MarkupImportState;
 import eu.etaxonomy.cdm.model.description.Feature;
-import eu.etaxonomy.cdm.model.term.FeatureNode;
-import eu.etaxonomy.cdm.model.term.FeatureTree;
+import eu.etaxonomy.cdm.model.term.TermNode;
+import eu.etaxonomy.cdm.model.term.TermTree;
 
 /**
  * @author a.mueller
@@ -35,7 +35,7 @@ import eu.etaxonomy.cdm.model.term.FeatureTree;
  */
 public class EfloraActivatorBase {
 	private static final Logger logger = Logger.getLogger(EfloraActivatorBase.class);
-	
+
 	protected MarkupImportConfigurator config;
 	protected CdmDefaultImport<MarkupImportConfigurator> myImport;
 	protected IIoObserver observer = new LoggingIoObserver();
@@ -49,39 +49,37 @@ public class EfloraActivatorBase {
 		config = MarkupImportConfigurator.NewInstance(source, cdmDestination);
 		config.setObservers(observerList);
 		config.setCheck(check);
-		
-		myImport = new CdmDefaultImport<MarkupImportConfigurator>(); 
-		
+
+		myImport = new CdmDefaultImport<MarkupImportConfigurator>();
+
 		return config;
 	}
-	
-	protected FeatureTree makeAutomatedFeatureTree(ICdmRepository app, 
+
+	protected TermTree<Feature> makeAutomatedFeatureTree(ICdmRepository app,
 			MarkupImportState state, UUID featureTreeUuid, String featureTreeTitle){
 		System.out.println("Start creating automated Feature Tree");
-		FeatureTree tree = FeatureTree.NewInstance(featureTreeUuid);
+		TermTree<Feature> tree = TermTree.NewFeatureInstance(featureTreeUuid);
 		tree.setTitleCache(featureTreeTitle, true);
-		FeatureNode root = tree.getRoot();
-		
+		TermNode<Feature> root = tree.getRoot();
+
 		ITermService termService = app.getTermService();
 		FeatureSorter sorter = new FeatureSorter();
-		FeatureNode descriptionNode = null;
-		
+		TermNode<Feature> descriptionNode = null;
+
 		//general features
 		Map<String, List<FeatureSorterInfo>> generalList = state.getGeneralFeatureSorterListMap();
 		List<UUID> uuidList = sorter.getSortOrder(generalList);
 		Map<UUID, Feature> map = makeUuidMap(uuidList, termService);
 		for (UUID key : uuidList){
 			Feature feature = map.get(key);
-			FeatureNode node = FeatureNode.NewInstance(feature);
-			root.addChild(node);
+			TermNode<Feature> node = root.addChild(feature);
 			if (feature.equals(Feature.DESCRIPTION())){
 				descriptionNode = node;
 			}
 		}
-		FeatureNode newNode = FeatureNode.NewInstance(Feature.CITATION());
-		root.addChild(newNode);
-		
-		
+		TermNode<Feature> newNode = root.addChild(Feature.CITATION());
+
+
 		//description features
 		if (descriptionNode != null){
 			Map<String, List<FeatureSorterInfo>> charList = state.getCharFeatureSorterListMap();
@@ -89,7 +87,7 @@ public class EfloraActivatorBase {
 			map = makeUuidMap(uuidList, termService);
 			for (UUID key : uuidList){
 				Feature feature = map.get(key);
-				descriptionNode.addChild(FeatureNode.NewInstance(feature));
+				descriptionNode.addChild(feature);
 			}
 		}else{
 			logger.warn("No description node found. Could not create feature nodes for description features.");
@@ -97,25 +95,25 @@ public class EfloraActivatorBase {
 
 		//save tree
 		app.getFeatureTreeService().saveOrUpdate(tree);
-		
+
 		System.out.println("End creating automated Feature Tree");
-		
+
 		return tree;
 	}
-	
+
 	private Map<UUID,Feature> makeUuidMap(Collection<UUID> uuids, ITermService termService){
 		HashSet<UUID> uuidSet = new HashSet<UUID>();
 		uuidSet.addAll(uuids);
 		List<Feature> featureSet = (List)termService.find(uuidSet);
-		
+
 		Map<UUID,Feature> result = new HashMap<UUID, Feature>();
 		for (Feature feature : featureSet){
 			result.put(feature.getUuid(), feature);
 		}
 		return result;
 	}
-	
-	
+
+
 	/**
 	 * @param markupConfig
 	 * @param myImport

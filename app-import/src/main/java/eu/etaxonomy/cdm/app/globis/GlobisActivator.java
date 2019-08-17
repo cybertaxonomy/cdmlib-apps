@@ -25,9 +25,9 @@ import eu.etaxonomy.cdm.io.common.IImportConfigurator.DO_REFERENCES;
 import eu.etaxonomy.cdm.io.common.IImportConfigurator.EDITOR;
 import eu.etaxonomy.cdm.io.common.Source;
 import eu.etaxonomy.cdm.io.globis.GlobisImportConfigurator;
-import eu.etaxonomy.cdm.model.common.User;
 import eu.etaxonomy.cdm.model.name.NomenclaturalCode;
 import eu.etaxonomy.cdm.model.name.TaxonName;
+import eu.etaxonomy.cdm.model.permission.User;
 import eu.etaxonomy.cdm.model.reference.ISourceable;
 
 /**
