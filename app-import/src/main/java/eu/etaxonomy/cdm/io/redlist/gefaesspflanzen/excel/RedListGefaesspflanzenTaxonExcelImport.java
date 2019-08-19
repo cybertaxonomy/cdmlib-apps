@@ -25,6 +25,7 @@ import eu.etaxonomy.cdm.model.common.IdentifiableSource;
 import eu.etaxonomy.cdm.model.common.Language;
 import eu.etaxonomy.cdm.model.name.IBotanicalName;
 import eu.etaxonomy.cdm.model.name.Rank;
+import eu.etaxonomy.cdm.model.name.TaxonName;
 import eu.etaxonomy.cdm.model.name.TaxonNameFactory;
 import eu.etaxonomy.cdm.model.reference.Reference;
 import eu.etaxonomy.cdm.model.taxon.Classification;
@@ -156,19 +157,9 @@ public class RedListGefaesspflanzenTaxonExcelImport<CONFIG extends RedListGefaes
         }
 
 
-
         nameStr = CdmUtils.concat(" ", nameStr, authorStr);
         boolean isAuct = nameStr.endsWith("auct.");
-        boolean isGrex = nameStr.contains(" grex ");
-        boolean isSublusus = nameStr.contains(" sublusus ");
         nameStr = normalizeNameStr(nameStr);
-        boolean isRankLessInfraSpec = nameStr.matches("[A-Z][a-z]+ [a-z]+ \\[ranglos\\]+ [a-z]+ .*");
-        boolean isRankLessInfraGeneric = nameStr.matches("[A-Z][a-z]+ \\[ranglos\\]+ [A-Z][a-z]+ .*");
-        if (isRankLessInfraSpec){
-            nameStr.replace(" [ranglos] ", " subsp. ");
-        }else if (isRankLessInfraGeneric){
-            nameStr.replace(" [ranglos] ", " subg. ");
-        }
 
         Rank rank = Rank.SPECIES();
         IBotanicalName name = (IBotanicalName)parser.parseFullName(nameStr, state.getConfig().getNomenclaturalCode(), rank);
@@ -176,20 +167,6 @@ public class RedListGefaesspflanzenTaxonExcelImport<CONFIG extends RedListGefaes
         name = deduplicationHelper.getExistingName(state, name);
         if (name.isProtectedTitleCache()){
             logger.warn(line + "Name could not be parsed: " + nameStr);
-        }else if (isSublusus){
-            name.setRank(Rank.SUBLUSUS());
-        }else if (isGrex){
-            name.setRank(Rank.GREX());
-        }else if (isRankLessInfraSpec){
-            name.setRank(Rank.UNRANKED_INFRASPECIFIC());
-        }else if (isRankLessInfraGeneric){
-            name.setRank(Rank.UNRANKED_INFRAGENERIC());
-        }
-
-        String titleCache = name.getTitleCache();
-        vollName = vollName.replace(" agg.", " aggr.").replace(" (E)", "");
-        if (!titleCache.equals(vollName)){
-            logger.warn("Vollname weicht ab: " + vollName +" <-> " +  titleCache);
         }
 
         deduplicationHelper.replaceAuthorNamesAndNomRef(state, name);
@@ -213,9 +190,27 @@ public class RedListGefaesspflanzenTaxonExcelImport<CONFIG extends RedListGefaes
 
         taxon.addImportSource(noStr, getNamespace(state.getConfig()), getSourceCitation(state), null);
 
+        checkVollname(state, taxon, vollName, sensuStr, isAuct);
         return taxon;
     }
 
+
+
+    /**
+     * @param state
+     * @param taxon
+     * @param sensuStr
+     * @param isAuct
+     * @param vollName
+     */
+    private void checkVollname(SimpleExcelTaxonImportState<CONFIG> state, TaxonBase<?> taxon, String vollName, String sensuStr, boolean isAuct) {
+        TaxonName name = taxon.getName();
+        String titleCache = (sensuStr == null && !isAuct) ? name.getTitleCache() : taxon.getTitleCache();
+        vollName = vollName.replace(" agg.", " aggr.").replace(" (E)", "");
+        if (!titleCache.equals(vollName)){
+            logger.warn("Vollname weicht ab: " + vollName +" <-> " +  titleCache);
+        }
+    }
 
 
     /**
