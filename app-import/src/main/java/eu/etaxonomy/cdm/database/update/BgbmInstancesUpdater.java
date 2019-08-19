@@ -166,9 +166,9 @@ public class BgbmInstancesUpdater {
             try {
                 System.out.println(database);
                 //define step here !!!
-                SchemaUpdaterStepBase step = IndexRenamer.NewStringInstance("TaxonName",
+                SchemaUpdaterStepBase step = IndexRenamer.NewStringInstance(null, "TaxonName",
                         "taxonNameBaseNameCacheIndex", "taxonNameNameCacheIndex", "nameCache", 255);
-                SchemaUpdaterStepBase step2 = IndexRenamer.NewStringInstance("TaxonName",
+                SchemaUpdaterStepBase step2 = IndexRenamer.NewStringInstance(null, "TaxonName",
                         "taxonNameBaseTitleCacheIndex", "taxonNameTitleCacheIndex", "titleCache", 333);
                 dataSource.startTransaction();
                 step.invoke(dataSource, DefaultProgressMonitor.NewInstance(), CaseType.caseTypeOfDatasource(dataSource), result);
