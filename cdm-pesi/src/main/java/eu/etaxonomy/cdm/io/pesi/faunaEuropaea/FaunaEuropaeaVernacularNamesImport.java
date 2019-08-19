@@ -32,7 +32,10 @@ import eu.etaxonomy.cdm.model.term.TermVocabulary;
 
 @Component
 public class FaunaEuropaeaVernacularNamesImport extends FaunaEuropaeaImportBase {
-	private static final Logger logger = Logger.getLogger(FaunaEuropaeaVernacularNamesImport.class);
+
+    private static final long serialVersionUID = 168771351441040059L;
+
+    private static final Logger logger = Logger.getLogger(FaunaEuropaeaVernacularNamesImport.class);
 
 	private HashMap<String, Reference> sourceMap = new HashMap<String, Reference>();
 	private Reference pesiProject = ReferenceFactory.newDatabase();
@@ -281,7 +284,7 @@ public class FaunaEuropaeaVernacularNamesImport extends FaunaEuropaeaImportBase 
 					if (lang == null){
 						UUID uuidLanguageVoc = UUID.fromString("434cea89-9052-4567-b2db-ff77f42e9084");
 						logger.info("languageFk = " + fauEuHelperVernacularName.getLanguageFk());
-						TermVocabulary<Language> voc = getVocabulary(TermType.Language, uuidLanguageVoc, "User Defined Languages", "User Defined Languages", null, null, false, lang);
+						TermVocabulary<Language> voc = getVocabulary(state, TermType.Language, uuidLanguageVoc, "User Defined Languages", "User Defined Languages", null, null, false, lang);
 						lang = Language.NewInstance("Dummy", "", "");
 						voc.addTerm(lang);
 						lang =(Language)getTermService().save(lang);

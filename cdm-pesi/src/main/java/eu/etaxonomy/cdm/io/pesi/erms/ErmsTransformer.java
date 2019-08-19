@@ -16,7 +16,6 @@ import java.util.UUID;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 
-import eu.etaxonomy.cdm.io.berlinModel.BerlinModelTransformer;
 import eu.etaxonomy.cdm.io.common.mapping.InputTransformerBase;
 import eu.etaxonomy.cdm.io.common.mapping.UndefinedTransformerMethodException;
 import eu.etaxonomy.cdm.model.common.ExtensionType;
@@ -50,8 +49,6 @@ public final class ErmsTransformer extends InputTransformerBase {
 	public static final UUID uuidRankSuperdomain = UUID.fromString("66d4d773-4946-4e02-b758-8903563eaa26");
     public static final UUID uuidRankSubterclass = UUID.fromString("39257363-913b-4b3a-a536-b415360dfc8c");
     public static final UUID uuidRankParvorder = UUID.fromString("d26b8cae-96f9-4aee-81f2-98e36f1db7c3");
-    public static final UUID uuidRankCollectiveSpecies = BerlinModelTransformer.uuidRankCollSpecies;
-
 
 
 	//language uuids
