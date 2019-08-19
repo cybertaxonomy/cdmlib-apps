@@ -1800,7 +1800,7 @@ public final class PesiTransformer extends ExportTransformerBase implements IExp
 			} else if (rank.equals(Rank.SPECIESGROUP())) {
 				logger.warn("Rank Species Group not yet implemented");
 				result = null;
-			} else if (rank.getUuid().equals(BerlinModelTransformer.uuidRankCollSpecies)) {
+			} else if (rank.getUuid().equals(Rank.uuidCollSpecies)) {
 				result = Plantae_Coll_Species;
 			} else if (rank.equals(Rank.SPECIES())) {
 				result = Plantae_Species;
@@ -1808,9 +1808,9 @@ public final class PesiTransformer extends ExportTransformerBase implements IExp
 				result = Plantae_Subspecies;
 			} else if (rank.equals(Rank.GREX())) {
 				result = Plantae_Grex;
-			} else if (rank.getUuid().equals(BerlinModelTransformer.uuidRankProles) ) {
+			} else if (rank.getUuid().equals(Rank.uuidProles) ) {
 				result = Plantae_Proles;
-			} else if (rank.getUuid().equals(BerlinModelTransformer.uuidRankRace)) {
+			} else if (rank.getUuid().equals(Rank.uuidRace)) {
 				result = Plantae_Race;
 			} else if (rank.equals(Rank.CONVAR())) {
 				result = Plantae_Convarietas;

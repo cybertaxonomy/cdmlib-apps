@@ -87,7 +87,7 @@ public class ErmsImportRankMap extends ErmsImportBase<Rank>{
                             if (rankId == 214){
                                 rank = Rank.SPECIESAGGREGATE();
                             }else if (rankId == 216){
-                                rank = getRank(state, Rank.uuidRankCollSpecies, "Collective Species", "Collective Species", "Coll. sp.", voc, Rank.INFRACLASS(), RankClass.Suprageneric);
+                                rank = getRank(state, Rank.uuidCollSpecies, "Collective Species", "Collective Species", "Coll. sp.", voc, Rank.INFRACLASS(), RankClass.Suprageneric);
                             }
                         }
                     }
