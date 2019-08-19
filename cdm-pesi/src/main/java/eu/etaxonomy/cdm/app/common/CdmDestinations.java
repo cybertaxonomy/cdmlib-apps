@@ -196,19 +196,15 @@ public class CdmDestinations {
 				try {
 					return (ICdmDataSource) method.invoke(null, null);
 				} catch (IllegalArgumentException e) {
-					// TODO Auto-generated catch block
 					e.printStackTrace();
 				} catch (IllegalAccessException e) {
-					// TODO Auto-generated catch block
 					e.printStackTrace();
 				} catch (InvocationTargetException e) {
-					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
 			}
 		}
 		return null;
 	}
-
 }
 

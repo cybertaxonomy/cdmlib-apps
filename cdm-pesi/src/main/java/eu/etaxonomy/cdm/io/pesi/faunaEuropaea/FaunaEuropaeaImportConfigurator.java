@@ -23,10 +23,11 @@ import eu.etaxonomy.cdm.model.reference.ReferenceFactory;
 /**
  * @author a.babadshanjan
  * @since 08.05.2009
- * @version 1.0
  */
 public class FaunaEuropaeaImportConfigurator extends ImportConfiguratorBase<FaunaEuropaeaImportState, Source> implements IImportConfigurator {
-	private static final Logger logger = Logger.getLogger(FaunaEuropaeaImportConfigurator.class);
+
+    private static final long serialVersionUID = 3218446329444903409L;
+    private static final Logger logger = Logger.getLogger(FaunaEuropaeaImportConfigurator.class);
 
 	//TODO
 	private static IInputTransformer defaultTransformer = null;
