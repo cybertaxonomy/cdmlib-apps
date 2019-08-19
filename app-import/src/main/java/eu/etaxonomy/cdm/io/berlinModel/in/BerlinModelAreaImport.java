@@ -238,7 +238,7 @@ public class BerlinModelAreaImport  extends BerlinModelImportBase {
     }
 
     private void hideArea(TermVocabulary<NamedArea> euroMedAreasVoc, MarkerType hiddenAreaMarkerType, UUID areaUuid) {
-        for (NamedArea namedArea : euroMedAreasVoc){
+        for (NamedArea namedArea : euroMedAreasVoc.getTerms()){
             if (namedArea.getUuid().equals(areaUuid)){
                 namedArea.addMarker(Marker.NewInstance(hiddenAreaMarkerType, true));
                 return;
