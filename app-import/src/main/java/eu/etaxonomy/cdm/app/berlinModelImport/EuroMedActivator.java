@@ -77,7 +77,7 @@ public class EuroMedActivator {
 	private static final Logger logger = Logger.getLogger(EuroMedActivator.class);
 
 	//database validation status (create, update, validate ...)
-	static DbSchemaValidation hbm2dll = DbSchemaValidation.CREATE;
+	static DbSchemaValidation hbm2dll = DbSchemaValidation.VALIDATE;
 //  static final Source berlinModelSource = BerlinModelSources.euroMed_Pub2();
 	static final Source berlinModelSource = BerlinModelSources.euroMed_BGBM42();
 //	static final Source berlinModelSource = BerlinModelSources.euroMed_PESI3();
@@ -89,13 +89,13 @@ public class EuroMedActivator {
 //  static final ICdmDataSource cdmDestination = CdmDestinations.cdm_production_euromed();
 
     //check - import
-    static final CHECK check = CHECK.CHECK_ONLY;
+    static final CHECK check = CHECK.IMPORT_WITHOUT_CHECK;
 
     static final boolean doUser = true;
 //  //authors
     static final boolean doAuthors = true;
     //references
-    static final DO_REFERENCES doReferences =  DO_REFERENCES.ALL;
+    static final DO_REFERENCES doReferences = DO_REFERENCES.ALL;
     //names
     static final boolean doTaxonNames = true;
     static final boolean doRelNames = true;
@@ -108,7 +108,7 @@ public class EuroMedActivator {
     static final boolean doRelTaxa = true;
     static final boolean doOccurrences = true;
     static final boolean doOccurrenceSources = true;
-    static final boolean doCommonNames = true;  //currently takes very long
+    static final boolean doCommonNames = true;
 
     static final boolean doNamedAreas = true;
 
@@ -280,7 +280,7 @@ public class EuroMedActivator {
 		CdmDefaultImport<BerlinModelImportConfigurator> bmImport = new CdmDefaultImport<>();
 		bmImport.invoke(config);
 
-		renameRanks(config, bmImport);
+//		renameRanks(config, bmImport);
 
 		createFeatureTree(config, bmImport);
 
@@ -292,7 +292,7 @@ public class EuroMedActivator {
 
         importShapefile(config, bmImport);
 
-        createPreferences(config, bmImport);
+//      createPreferences(config, bmImport); => manual
 
 //        markAreasAsHidden(config, bmImport);  //has been moved to BM occurrence import
 
@@ -342,10 +342,12 @@ public class EuroMedActivator {
             CdmPreference showMediaView = CdmPreference.NewTaxEditorInstance(PreferencePredicate.ShowMediaView, "false");
             showMediaView.setAllowOverride(false);
             app.getPreferenceService().set(showMediaView);
+
             //multi classification
-            CdmPreference multiClassification = CdmPreference.NewTaxEditorInstance(PreferencePredicate.DisableMultiClassification, "false");
+            CdmPreference multiClassification = CdmPreference.NewTaxEditorInstance(PreferencePredicate.DisableMultiClassification, "true");
             multiClassification.setAllowOverride(false);
             app.getPreferenceService().set(multiClassification);
+
             //taxon node wizard
             CdmPreference showTaxonNodeWizard = CdmPreference.NewTaxEditorInstance(PreferencePredicate.ShowTaxonNodeWizard, "false");
             showTaxonNodeWizard.setAllowOverride(false);
@@ -695,13 +697,7 @@ public class EuroMedActivator {
 		ICdmDataSource cdmRepository = CdmDestinations.chooseDestination(args) != null ? CdmDestinations.chooseDestination(args) : cdmDestination;
 
 		importActivator.importEm2CDM(source, cdmRepository, hbm2dll);
-		if (includePesiExport){
-			//not available from here since E+M was moved to app-import
-//			PesiExportActivatorEM exportActivator = new PesiExportActivatorEM();
-//			exportActivator.doExport(cdmRepository);
-		}
 		System.exit(0);
-
 	}
 
 }
