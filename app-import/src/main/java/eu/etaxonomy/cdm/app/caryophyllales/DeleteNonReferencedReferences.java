@@ -34,17 +34,12 @@ public class DeleteNonReferencedReferences {
 			return result;
 		}
 
-		/**
-		 * @param args
-		 */
 		public static void main(String[] args) {
 			ICdmDataSource destination = CdmDestinations.chooseDestination(args) != null ? CdmDestinations.chooseDestination(args) : cdmDestination;
 
 			System.out.println("Start deleting non referenced objects for "+ destination.getDatabase() + "...");
 			DeleteNonReferencedReferences me = new DeleteNonReferencedReferences();
 			me.doInvoke(destination);
-
+			System.exit(0);
 		}
-
 	}
-
