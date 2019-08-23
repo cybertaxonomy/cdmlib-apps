@@ -8,6 +8,8 @@
 */
 package eu.etaxonomy.cdm.app.pesi;
 
+import java.util.UUID;
+
 import org.apache.log4j.Logger;
 
 import eu.etaxonomy.cdm.app.common.CdmDestinations;
@@ -15,7 +17,6 @@ import eu.etaxonomy.cdm.database.DbSchemaValidation;
 import eu.etaxonomy.cdm.database.ICdmDataSource;
 import eu.etaxonomy.cdm.io.common.CdmDefaultImport;
 import eu.etaxonomy.cdm.io.common.IImportConfigurator.CHECK;
-import eu.etaxonomy.cdm.io.common.IImportConfigurator.DO_REFERENCES;
 import eu.etaxonomy.cdm.io.pesi.fauEu2Cdm.FauEu2CdmImportConfigurator;
 
 /**
@@ -28,7 +29,7 @@ public class FauEu2CdmActivator {
     private static final Logger logger = Logger.getLogger(FauEu2CdmActivator.class);
 
     static final ICdmDataSource fauEuSource = CdmDestinations.cdm_pesi_fauna_europaea();
-    static final ICdmDataSource cdmDestination = CdmDestinations.cdm_test_local_mysql_erms();
+    static final ICdmDataSource cdmDestination = CdmDestinations.cdm_test_local_pesi_leer2();
 
     //check - import
     static final CHECK check = CHECK.IMPORT_WITHOUT_CHECK;
@@ -37,11 +38,8 @@ public class FauEu2CdmActivator {
 
 // ***************** ALL ************************************************//
 
-    //references
-    static final DO_REFERENCES doReferences =  DO_REFERENCES.ALL;
-
-    //taxa
-    static final boolean doTaxa = true;
+//    UUID uuidTaxonNodeFilter = UUID.fromString("0e8bc793-f434-47c4-ba82-650c3bbd83bf");
+    UUID uuidTaxonNodeFilter = UUID.fromString("7ee4983b-78a3-44c5-9af2-beb0494b5fc8");
 
 
     private void doImport(ICdmDataSource source, ICdmDataSource destination, DbSchemaValidation hbm2dll){
@@ -53,6 +51,7 @@ public class FauEu2CdmActivator {
 
 //        config.setDoTaxa(doTaxa);
         config.setDbSchemaValidation(hbm2dll);
+        config.getTaxonNodeFilter().orSubtree(uuidTaxonNodeFilter);
 
         config.setCheck(check);
 //        config.setRecordsPerTransaction(partitionSize);
@@ -72,6 +71,6 @@ public class FauEu2CdmActivator {
         ICdmDataSource cdmDB = CdmDestinations.chooseDestination(args) != null ? CdmDestinations.chooseDestination(args) : cdmDestination;
         FauEu2CdmActivator myImport = new FauEu2CdmActivator();
         myImport.doImport(fauEuSource, cdmDB, DbSchemaValidation.VALIDATE);
-
+        System.exit(0);
     }
 }
