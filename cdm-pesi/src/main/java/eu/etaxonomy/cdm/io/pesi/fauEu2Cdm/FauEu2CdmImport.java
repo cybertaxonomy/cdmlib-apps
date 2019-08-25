@@ -139,7 +139,7 @@ public class FauEu2CdmImport
         TaxonNodeOutStreamPartitioner<FauEu2CdmImportState> partitioner = TaxonNodeOutStreamPartitioner
                 .NewInstance(source(state), state, state.getConfig().getTaxonNodeFilter(), 100, monitor, null);
         monitor.subTask("Start partitioning");
-
+        partitioner.setLastCommitManually(true);
         doData(state, partitioner);
     }
 
@@ -171,7 +171,7 @@ public class FauEu2CdmImport
             node = partitioner.next();
         }
         commitTransaction(tx);
-
+        partitioner.close();
     }
 
     /**
