@@ -29,6 +29,7 @@ public abstract class FauEu2CdmImportBase
             boolean omitTermLoading = true;
             repo = CdmApplicationController.NewInstance(state.getConfig().getSource(),
                     DbSchemaValidation.VALIDATE, omitTermLoading);
+            state.setSourceRepository(repo);
         }
         return repo;
     }
