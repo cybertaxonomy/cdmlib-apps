@@ -32,14 +32,10 @@ import eu.etaxonomy.cdm.strategy.parser.NonViralNameParserImpl;
 /**
  * @author a.babadshanjan
  * @since 12.05.2009
- * @version 1.0
  */
 @Component
 public class FaunaEuropaeaAuthorImport extends FaunaEuropaeaImportBase {
 
-    /**
-     *
-     */
     private static final long serialVersionUID = 1L;
 
     private static final Logger logger = Logger.getLogger(FaunaEuropaeaAuthorImport.class);
@@ -55,10 +51,6 @@ public class FaunaEuropaeaAuthorImport extends FaunaEuropaeaImportBase {
 	protected static String test = "(, \\s(?!([A-Z].|\\s|$))|,$)" ;
 	//protected static String test = "((,\\s("+capitalWord+")+)|(,($|,?!(\\s))))";
 
-
-	/* (non-Javadoc)
-	 * @see eu.etaxonomy.cdm.io.common.CdmIoBase#doCheck(eu.etaxonomy.cdm.io.common.IImportConfigurator)
-	 */
 	@Override
 	protected boolean doCheck(FaunaEuropaeaImportState state){
 		boolean result = true;
@@ -67,9 +59,6 @@ public class FaunaEuropaeaAuthorImport extends FaunaEuropaeaImportBase {
 		return result;
 	}
 
-	/* (non-Javadoc)
-	 * @see eu.etaxonomy.cdm.io.common.CdmIoBase#doInvoke(eu.etaxonomy.cdm.io.common.IImportConfigurator, eu.etaxonomy.cdm.api.application.CdmApplicationController, java.util.Map)
-	 */
 	@Override
 	protected void doInvoke(FaunaEuropaeaImportState state){
 		/*
@@ -166,9 +155,6 @@ public class FaunaEuropaeaAuthorImport extends FaunaEuropaeaImportBase {
 		}
 	}
 
-	/* (non-Javadoc)
-	 * @see eu.etaxonomy.cdm.io.common.CdmIoBase#isIgnore(eu.etaxonomy.cdm.io.common.IImportConfigurator)
-	 */
 	@Override
     protected boolean isIgnore(FaunaEuropaeaImportState state){
 		return ! state.getConfig().isDoAuthors();

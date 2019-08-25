@@ -38,8 +38,10 @@ public class FauEu2CdmActivator {
 
 // ***************** ALL ************************************************//
 
-//    UUID uuidTaxonNodeFilter = UUID.fromString("0e8bc793-f434-47c4-ba82-650c3bbd83bf");
-    UUID uuidTaxonNodeFilter = UUID.fromString("7ee4983b-78a3-44c5-9af2-beb0494b5fc8");
+//    >50 records
+    UUID uuidTaxonNodeFilter = UUID.fromString("0e8bc793-f434-47c4-ba82-650c3bbd83bf");
+    //>17000 records
+//    UUID uuidTaxonNodeFilter = UUID.fromString("7ee4983b-78a3-44c5-9af2-beb0494b5fc8");
 
 
     private void doImport(ICdmDataSource source, ICdmDataSource destination, DbSchemaValidation hbm2dll){
@@ -55,7 +57,6 @@ public class FauEu2CdmActivator {
 
         config.setCheck(check);
 //        config.setRecordsPerTransaction(partitionSize);
-//        config.setSourceRefUuid(PesiTransformer.uuidSourceRefErms);
 
         // invoke import
         CdmDefaultImport<FauEu2CdmImportConfigurator> myImport = new CdmDefaultImport<>();

@@ -317,23 +317,10 @@ public class FauEu2CdmImport
 
     private <T extends LanguageStringBase> T  handlePersisted(LanguageStringBase lsBase) throws IllegalAccessException, InvocationTargetException, NoSuchFieldException, SecurityException, IllegalArgumentException, NoSuchMethodException {
         T result = handlePersisted((AnnotatableEntity)lsBase);
-        if (result ==null){
-            return null;
-        }
         result.setLanguage(detache(lsBase.getLanguage()));
         return result;
     }
 
-    /**
-     * @param classification
-     * @return
-     * @throws InvocationTargetException
-     * @throws IllegalAccessException
-     * @throws IllegalArgumentException
-     * @throws SecurityException
-     * @throws NoSuchFieldException
-     * @throws NoSuchMethodException
-     */
     private <T extends IdentifiableEntity> T  handlePersisted(IdentifiableEntity identifiableEntity) throws IllegalAccessException, InvocationTargetException, NoSuchFieldException, SecurityException, IllegalArgumentException, NoSuchMethodException {
         T result = handlePersisted((SourcedEntityBase)identifiableEntity);
         if (result ==null){
@@ -348,9 +335,6 @@ public class FauEu2CdmImport
 
     private <T extends TeamOrPersonBase> T  handlePersisted(TeamOrPersonBase teamOrPerson) throws IllegalAccessException, InvocationTargetException, NoSuchFieldException, SecurityException, IllegalArgumentException, NoSuchMethodException {
         T result = handlePersisted((AgentBase)teamOrPerson);
-        if (result ==null){
-            return null;
-        }
         return result;
     }
 
@@ -362,15 +346,8 @@ public class FauEu2CdmImport
 
     private <T extends TaxonBase> T  handlePersisted(TaxonBase taxonBase) throws IllegalAccessException, InvocationTargetException, NoSuchFieldException, SecurityException, IllegalArgumentException, NoSuchMethodException {
         T result = handlePersisted((IdentifiableEntity)taxonBase);
-        if (result ==null){
-            return null;
-        }
         result.setName(detache(taxonBase.getName()));
         result.setSec(detache(taxonBase.getSec()));
-//        handleCollection(result, IdentifiableEntity.class, "credits", Credit.class);
-//        handleCollection(result, IdentifiableEntity.class, "extensions", Extension.class);
-//        handleCollection(result, IdentifiableEntity.class, "identifiers", Identifier.class);
-//        handleCollection(result, IdentifiableEntity.class, "rights", Rights.class);
         return result;
     }
 
