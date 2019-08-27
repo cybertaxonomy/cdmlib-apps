@@ -24,11 +24,11 @@ import eu.etaxonomy.cdm.model.taxon.TaxonNode;
  * @since 17.08.2019
  */
 @Component
-public class FauEu2CdmImport
+public class FauEu2CdmTaxonNodeImport
         extends FauEu2CdmImportBase {
 
     private static final long serialVersionUID = -2111102574346601573L;
-    private static final Logger logger = Logger.getLogger(FauEu2CdmImport.class);
+    private static final Logger logger = Logger.getLogger(FauEu2CdmTaxonNodeImport.class);
 
 
     @Override

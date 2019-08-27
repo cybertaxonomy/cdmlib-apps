@@ -49,7 +49,7 @@ public class FauEu2CdmImportConfigurator
     @Override
     protected void makeIoClassList() {
         ioClassList = new Class[]{
-                FauEu2CdmImport.class ,
+                FauEu2CdmTaxonNodeImport.class ,
         };
     }
 
