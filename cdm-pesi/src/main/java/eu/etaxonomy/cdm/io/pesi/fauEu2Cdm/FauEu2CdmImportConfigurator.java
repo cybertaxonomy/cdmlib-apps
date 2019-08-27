@@ -28,6 +28,7 @@ public class FauEu2CdmImportConfigurator
 
     private TaxonNodeFilter taxonNodeFilter = new TaxonNodeFilter();
     private ITaxonNodeOutStreamPartitioner partitioner;
+    private boolean concurrent = false;
 
     public static FauEu2CdmImportConfigurator NewInstance(ICdmDataSource source, ICdmDataSource destination) {
         return new FauEu2CdmImportConfigurator(source, destination);
@@ -71,6 +72,13 @@ public class FauEu2CdmImportConfigurator
     }
     public void setPartitioner(ITaxonNodeOutStreamPartitioner partitioner) {
         this.partitioner = partitioner;
+    }
+
+    public boolean isConcurrent() {
+        return concurrent;
+    }
+    public void setConcurrent(boolean concurrent) {
+        this.concurrent = concurrent;
     }
 
 

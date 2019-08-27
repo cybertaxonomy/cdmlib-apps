@@ -57,6 +57,7 @@ public class FauEu2CdmActivator {
         System.out.println("Start"+importFrom);
 
         FauEu2CdmImportConfigurator config = FauEu2CdmImportConfigurator.NewInstance(source,  destination);
+        config.setConcurrent(doConcurrent);
 
         IProgressMonitor monitor = config.getProgressMonitor();
 
