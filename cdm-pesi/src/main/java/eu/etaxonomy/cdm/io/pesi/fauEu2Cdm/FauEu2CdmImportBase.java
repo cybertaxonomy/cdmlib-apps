@@ -23,13 +23,14 @@ public abstract class FauEu2CdmImportBase
     private static final long serialVersionUID = 8917991155285743172L;
 
     protected ICdmRepository source(FauEu2CdmImportState state){
-
         ICdmRepository repo = state.getSourceRepository();
         if (repo == null){
+            System.out.println("start source repo");
             boolean omitTermLoading = true;
             repo = CdmApplicationController.NewInstance(state.getConfig().getSource(),
                     DbSchemaValidation.VALIDATE, omitTermLoading);
             state.setSourceRepository(repo);
+            System.out.println("end source repo");
         }
         return repo;
     }

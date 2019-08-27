@@ -25,7 +25,9 @@ import org.springframework.stereotype.Component;
 import org.springframework.transaction.TransactionStatus;
 
 import eu.etaxonomy.cdm.common.monitor.IProgressMonitor;
+import eu.etaxonomy.cdm.io.common.ITaxonNodeOutStreamPartitioner;
 import eu.etaxonomy.cdm.io.common.TaxonNodeOutStreamPartitioner;
+import eu.etaxonomy.cdm.io.common.TaxonNodeOutStreamPartitionerConcurrent;
 import eu.etaxonomy.cdm.model.agent.AgentBase;
 import eu.etaxonomy.cdm.model.agent.Contact;
 import eu.etaxonomy.cdm.model.agent.Institution;
@@ -124,10 +126,31 @@ public class FauEu2CdmImport
     @Override
     protected void doInvoke(FauEu2CdmImportState state) {
         IProgressMonitor monitor = state.getConfig().getProgressMonitor();
-        System.out.println("start source repo");
-        source(state);
-        System.out.println("end source repo");
+
         FauEu2CdmImportConfigurator config = state.getConfig();
+        setRootId(state, config); //necessary?
+
+        ITaxonNodeOutStreamPartitioner partitioner = config.getPartitioner();
+        if (partitioner == null){
+//        @SuppressWarnings("unchecked")
+//        TaxonNodeOutStreamPartitioner<FauEu2CdmImportState> partitioner = TaxonNodeOutStreamPartitioner
+//                .NewInstance(source(state), state, state.getConfig().getTaxonNodeFilter(), 100, monitor, null);
+//        partitioner.setLastCommitManually(true);
+
+            partitioner = TaxonNodeOutStreamPartitionerConcurrent
+                    .NewInstance(state.getConfig().getSource(), state.getConfig().getTaxonNodeFilter(),
+                            1000, monitor, 1, TaxonNodeOutStreamPartitioner.fullPropertyPaths);
+
+        }
+        monitor.subTask("Start partitioning");
+        doData(state, partitioner);
+    }
+
+    /**
+     * @param state
+     * @param config
+     */
+    private void setRootId(FauEu2CdmImportState state, FauEu2CdmImportConfigurator config) {
         if (config.getTaxonNodeFilter().hasClassificationFilter()) {
             Classification classification = getClassificationService()
                     .load(config.getTaxonNodeFilter().getClassificationFilter().get(0).getUuid());
@@ -135,21 +158,9 @@ public class FauEu2CdmImport
         } else if (config.getTaxonNodeFilter().hasSubtreeFilter()) {
             state.setRootId(config.getTaxonNodeFilter().getSubtreeFilter().get(0).getUuid());
         }
-        @SuppressWarnings("unchecked")
-        TaxonNodeOutStreamPartitioner<FauEu2CdmImportState> partitioner = TaxonNodeOutStreamPartitioner
-                .NewInstance(source(state), state, state.getConfig().getTaxonNodeFilter(), 100, monitor, null);
-        monitor.subTask("Start partitioning");
-        partitioner.setLastCommitManually(true);
-        doData(state, partitioner);
     }
 
-    /**
-     * @param state
-     * @param partitioner
-     * @throws IllegalAccessException
-     * @throws InvocationTargetException
-     */
-    private void doData(FauEu2CdmImportState state, TaxonNodeOutStreamPartitioner<FauEu2CdmImportState> partitioner){
+    private void doData(FauEu2CdmImportState state, ITaxonNodeOutStreamPartitioner partitioner){
         TaxonNode node = partitioner.next();
         int partitionSize = 100;
         int count = 0;
@@ -174,11 +185,6 @@ public class FauEu2CdmImport
         partitioner.close();
     }
 
-    /**
-     * @param state
-     * @param node
-     * @return
-     */
     private TaxonNode doSingleNode(FauEu2CdmImportState state, TaxonNode node) {
         TaxonNode result = null;
         logger.info(node.treeIndex());
@@ -224,14 +230,17 @@ public class FauEu2CdmImport
     }
 
     private void handleParentTaxonNode(TaxonNode childNode) throws IllegalAccessException, InvocationTargetException, NoSuchFieldException, SecurityException, IllegalArgumentException, NoSuchMethodException {
-        TaxonNode parent = detache(childNode.getParent());
-        if (parent == null){
-            return;
-        }
+        TaxonNode parent = detache(childNode.getParent(), true);
         //TODO
         String microReference = null;
         Reference reference = null;
-        parent.addChildNode(childNode, reference, microReference);
+        if (parent == null && childNode.getClassification().getRootNode().equals(childNode)){
+            //do nothing
+        }else if (parent == null ){
+            childNode.getClassification().addChildNode(childNode, reference, microReference) ;
+        }else{
+            parent.addChildNode(childNode, reference, microReference);
+        }
     }
 
     private void setInvisible(Object holder, String fieldName, Object value) throws NoSuchFieldException, SecurityException, IllegalArgumentException, IllegalAccessException {
@@ -983,8 +992,11 @@ public class FauEu2CdmImport
         return (IIntextReferenceTarget)detache((CdmBase)cdmBase);
     }
 
-
     private <T extends CdmBase> T detache(T cdmBase) throws IllegalAccessException, InvocationTargetException, NoSuchFieldException, SecurityException, IllegalArgumentException, NoSuchMethodException {
+        return detache(cdmBase, false);
+    }
+
+    private <T extends CdmBase> T detache(T cdmBase, boolean notFromSource) throws IllegalAccessException, InvocationTargetException, NoSuchFieldException, SecurityException, IllegalArgumentException, NoSuchMethodException {
         cdmBase = CdmBase.deproxy(cdmBase);
         if (cdmBase == null ){
             return cdmBase;
@@ -1006,7 +1018,7 @@ public class FauEu2CdmImport
             logger.warn("Non persisted object not in cache and not in target DB. This should not happen: " + cdmBase.getUuid());
             return cdmBase; //should not happen anymore; either in cache or in target or persisted in source
         }else{
-            return (T)handlePersisted(cdmBase);
+            return notFromSource? null : (T)handlePersisted(cdmBase);
         }
     }
 

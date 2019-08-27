@@ -10,6 +10,7 @@ package eu.etaxonomy.cdm.io.pesi.fauEu2Cdm;
 
 import eu.etaxonomy.cdm.database.ICdmDataSource;
 import eu.etaxonomy.cdm.filter.TaxonNodeFilter;
+import eu.etaxonomy.cdm.io.common.ITaxonNodeOutStreamPartitioner;
 import eu.etaxonomy.cdm.io.common.ImportConfiguratorBase;
 import eu.etaxonomy.cdm.io.common.mapping.IInputTransformer;
 import eu.etaxonomy.cdm.model.reference.Reference;
@@ -26,6 +27,7 @@ public class FauEu2CdmImportConfigurator
     private static IInputTransformer myTransformer = null;
 
     private TaxonNodeFilter taxonNodeFilter = new TaxonNodeFilter();
+    private ITaxonNodeOutStreamPartitioner partitioner;
 
     public static FauEu2CdmImportConfigurator NewInstance(ICdmDataSource source, ICdmDataSource destination) {
         return new FauEu2CdmImportConfigurator(source, destination);
@@ -62,6 +64,13 @@ public class FauEu2CdmImportConfigurator
     }
     public void setTaxonNodeFilter(TaxonNodeFilter taxonNodeFilter) {
         this.taxonNodeFilter = taxonNodeFilter;
+    }
+
+    public ITaxonNodeOutStreamPartitioner getPartitioner() {
+        return partitioner;
+    }
+    public void setPartitioner(ITaxonNodeOutStreamPartitioner partitioner) {
+        this.partitioner = partitioner;
     }
 
 

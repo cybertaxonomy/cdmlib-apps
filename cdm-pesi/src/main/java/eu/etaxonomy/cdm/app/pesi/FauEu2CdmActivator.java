@@ -13,10 +13,15 @@ import java.util.UUID;
 import org.apache.log4j.Logger;
 
 import eu.etaxonomy.cdm.app.common.CdmDestinations;
+import eu.etaxonomy.cdm.common.monitor.IProgressMonitor;
 import eu.etaxonomy.cdm.database.DbSchemaValidation;
 import eu.etaxonomy.cdm.database.ICdmDataSource;
+import eu.etaxonomy.cdm.filter.TaxonNodeFilter.ORDER;
 import eu.etaxonomy.cdm.io.common.CdmDefaultImport;
 import eu.etaxonomy.cdm.io.common.IImportConfigurator.CHECK;
+import eu.etaxonomy.cdm.io.common.ITaxonNodeOutStreamPartitioner;
+import eu.etaxonomy.cdm.io.common.TaxonNodeOutStreamPartitioner;
+import eu.etaxonomy.cdm.io.common.TaxonNodeOutStreamPartitionerConcurrent;
 import eu.etaxonomy.cdm.io.pesi.fauEu2Cdm.FauEu2CdmImportConfigurator;
 
 /**
@@ -36,6 +41,8 @@ public class FauEu2CdmActivator {
 
     static final int partitionSize = 5000;
 
+    static final boolean doConcurrent = false;
+
 // ***************** ALL ************************************************//
 
 //    >50 records
@@ -51,9 +58,18 @@ public class FauEu2CdmActivator {
 
         FauEu2CdmImportConfigurator config = FauEu2CdmImportConfigurator.NewInstance(source,  destination);
 
+        IProgressMonitor monitor = config.getProgressMonitor();
+
 //        config.setDoTaxa(doTaxa);
         config.setDbSchemaValidation(hbm2dll);
         config.getTaxonNodeFilter().orSubtree(uuidTaxonNodeFilter);
+        config.getTaxonNodeFilter().setOrder(ORDER.TREEINDEX);
+        if (doConcurrent){
+            ITaxonNodeOutStreamPartitioner partitioner = TaxonNodeOutStreamPartitionerConcurrent
+                    .NewInstance(config.getSource(), config.getTaxonNodeFilter(),
+                            8, monitor, 1, TaxonNodeOutStreamPartitioner.fullPropertyPaths);
+            config.setPartitioner(partitioner);
+        }
 
         config.setCheck(check);
 //        config.setRecordsPerTransaction(partitionSize);
