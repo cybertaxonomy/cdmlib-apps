@@ -25,7 +25,9 @@ public class FauEu2CdmImportState
         extends ImportStateBase<FauEu2CdmImportConfigurator,CdmImportBase>{
 
     private ICdmRepository sourceRepository;
-    private UUID rootUuid;
+
+    private Map<UUID, CdmBase> permanentCache = new HashMap<>();
+
 
     protected FauEu2CdmImportState(FauEu2CdmImportConfigurator config) {
         super(config);
@@ -39,22 +41,14 @@ public class FauEu2CdmImportState
         this.sourceRepository = sourceRepository;
     }
 
-    public UUID getRootId() {
-        return rootUuid;
-    }
-    public void setRootId(UUID rootId) {
-        this.rootUuid = rootId;
+
+    public void putPermanent(UUID uuid, CdmBase cdmBase) {
+        permanentCache.put(uuid, cdmBase);
     }
 
-
-    private Map<UUID, Integer> targetMap = new HashMap<>();
-    /**
-     * @param uuid
-     * @param class1
-     */
-    public <T extends CdmBase> Integer getTarget(UUID uuid, Class<T> clazz) {
-        return targetMap.get(uuid);
-
+    public CdmBase getPermanent(UUID uuid) {
+        return permanentCache.get(uuid);
     }
+
 
 }

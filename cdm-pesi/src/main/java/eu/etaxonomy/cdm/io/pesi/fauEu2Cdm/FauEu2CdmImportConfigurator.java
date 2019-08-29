@@ -30,6 +30,9 @@ public class FauEu2CdmImportConfigurator
     private ITaxonNodeOutStreamPartitioner partitioner;
     private boolean concurrent = false;
 
+    private boolean doTaxa = true;
+    private boolean doDescriptions = true;
+
     public static FauEu2CdmImportConfigurator NewInstance(ICdmDataSource source, ICdmDataSource destination) {
         return new FauEu2CdmImportConfigurator(source, destination);
     }
@@ -50,6 +53,7 @@ public class FauEu2CdmImportConfigurator
     protected void makeIoClassList() {
         ioClassList = new Class[]{
                 FauEu2CdmTaxonNodeImport.class ,
+                FauEu2CdmDescriptionImport.class ,
         };
     }
 
@@ -79,6 +83,20 @@ public class FauEu2CdmImportConfigurator
     }
     public void setConcurrent(boolean concurrent) {
         this.concurrent = concurrent;
+    }
+
+    public boolean isDoDescriptions() {
+        return doDescriptions;
+    }
+    public void setDoDescriptions(boolean doDescriptions) {
+        this.doDescriptions = doDescriptions;
+    }
+
+    public boolean isDoTaxa() {
+        return doTaxa;
+    }
+    public void setDoTaxa(boolean doTaxa) {
+        this.doTaxa = doTaxa;
     }
 
 

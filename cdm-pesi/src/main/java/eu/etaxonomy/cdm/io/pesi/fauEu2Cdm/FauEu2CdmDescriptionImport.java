@@ -8,6 +8,9 @@
 */
 package eu.etaxonomy.cdm.io.pesi.fauEu2Cdm;
 
+import java.util.HashSet;
+import java.util.Set;
+
 import org.apache.log4j.Logger;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.TransactionStatus;
@@ -16,6 +19,7 @@ import eu.etaxonomy.cdm.common.monitor.IProgressMonitor;
 import eu.etaxonomy.cdm.io.common.ITaxonNodeOutStreamPartitioner;
 import eu.etaxonomy.cdm.io.common.TaxonNodeOutStreamPartitioner;
 import eu.etaxonomy.cdm.io.common.TaxonNodeOutStreamPartitionerConcurrent;
+import eu.etaxonomy.cdm.model.description.TaxonDescription;
 import eu.etaxonomy.cdm.model.taxon.TaxonNode;
 
 /**
@@ -23,11 +27,11 @@ import eu.etaxonomy.cdm.model.taxon.TaxonNode;
  * @since 17.08.2019
  */
 @Component
-public class FauEu2CdmTaxonNodeImport
+public class FauEu2CdmDescriptionImport
         extends FauEu2CdmImportBase {
 
     private static final long serialVersionUID = -2111102574346601573L;
-    private static final Logger logger = Logger.getLogger(FauEu2CdmTaxonNodeImport.class);
+    private static final Logger logger = Logger.getLogger(FauEu2CdmDescriptionImport.class);
 
 
     @Override
@@ -48,7 +52,7 @@ public class FauEu2CdmTaxonNodeImport
         int count = 0;
         TransactionStatus tx = startTransaction();
         while (node != null) {
-            node = doSingleNode(state, node);
+            doSingleNode(state, node);
             count++;
             if (count>=partitionSize){
                 clearCache();
@@ -67,18 +71,20 @@ public class FauEu2CdmTaxonNodeImport
         partitioner.close();
     }
 
-    private TaxonNode doSingleNode(FauEu2CdmImportState state, TaxonNode node) {
-        TaxonNode result = null;
+    private void doSingleNode(FauEu2CdmImportState state, TaxonNode node) {
+        Set<TaxonDescription> result = new HashSet<>();
         logger.info(node.treeIndex());
         try {
-            result = detache(node);
+            for (TaxonDescription desc : node.getTaxon().getDescriptions()){
+                result.add(detache(desc));
+            }
         } catch (Exception e) {
             logger.warn("Exception during detache node " + node.treeIndex());
             e.printStackTrace();
         }
         try {
-            if (result != null){
-                getTaxonNodeService().saveOrUpdate(node);
+            if (!result.isEmpty()){
+                getDescriptionService().saveOrUpdate((Set)result);
                 getCommonService().saveOrUpdate(toSave);
                 toSave.clear();
             }
@@ -86,8 +92,6 @@ public class FauEu2CdmTaxonNodeImport
             logger.warn("Exception during save node " + node.treeIndex());
              e.printStackTrace();
         }
-
-        return result;
     }
 
     private ITaxonNodeOutStreamPartitioner getPartitioner(FauEu2CdmImportState state, IProgressMonitor monitor,
@@ -110,13 +114,18 @@ public class FauEu2CdmTaxonNodeImport
 
 
     @Override
+    protected boolean doDescriptions(FauEu2CdmImportState state) {
+        return true;
+    }
+
+    @Override
     protected boolean doCheck(FauEu2CdmImportState state) {
         return false;
     }
 
     @Override
     protected boolean isIgnore(FauEu2CdmImportState state) {
-        return !state.getConfig().isDoTaxa();
+        return !state.getConfig().isDoDescriptions();
     }
 
 }

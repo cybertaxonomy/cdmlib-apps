@@ -41,14 +41,21 @@ public class FauEu2CdmActivator {
 
     static final int partitionSize = 5000;
 
+    static final boolean doTaxa = false;
+    static final boolean doDescriptions = true;
+
     static final boolean doConcurrent = false;
+    //auditing
+    static final boolean registerAuditing = false;
 
 // ***************** ALL ************************************************//
 
 //    >50 records
-    UUID uuidTaxonNodeFilter = UUID.fromString("0e8bc793-f434-47c4-ba82-650c3bbd83bf");
+//    UUID uuidTaxonNodeFilter = UUID.fromString("0e8bc793-f434-47c4-ba82-650c3bbd83bf");
     //>17000 records
 //    UUID uuidTaxonNodeFilter = UUID.fromString("7ee4983b-78a3-44c5-9af2-beb0494b5fc8");
+    //complete
+    UUID uuidTaxonNodeFilter = UUID.fromString("feaa3025-a4a9-499a-b62f-15b3b96e5c55");
 
 
     private void doImport(ICdmDataSource source, ICdmDataSource destination, DbSchemaValidation hbm2dll){
@@ -58,6 +65,8 @@ public class FauEu2CdmActivator {
 
         FauEu2CdmImportConfigurator config = FauEu2CdmImportConfigurator.NewInstance(source,  destination);
         config.setConcurrent(doConcurrent);
+        config.setDoTaxa(doTaxa);
+        config.setDoDescriptions(doDescriptions);
 
         IProgressMonitor monitor = config.getProgressMonitor();
 
@@ -75,6 +84,8 @@ public class FauEu2CdmActivator {
         config.setCheck(check);
 //        config.setRecordsPerTransaction(partitionSize);
 
+        config.setRegisterAuditing(registerAuditing);
+
         // invoke import
         CdmDefaultImport<FauEu2CdmImportConfigurator> myImport = new CdmDefaultImport<>();
         myImport.invoke(config);
@@ -82,9 +93,6 @@ public class FauEu2CdmActivator {
         System.out.println("End" + importFrom);
     }
 
-    /**
-     * @param args
-     */
     public static void main(String[] args) {
         ICdmDataSource cdmDB = CdmDestinations.chooseDestination(args) != null ? CdmDestinations.chooseDestination(args) : cdmDestination;
         FauEu2CdmActivator myImport = new FauEu2CdmActivator();
