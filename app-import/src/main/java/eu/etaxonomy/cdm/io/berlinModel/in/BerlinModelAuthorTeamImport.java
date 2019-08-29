@@ -180,6 +180,8 @@ public class BerlinModelAuthorTeamImport extends BerlinModelImportBase {
 
 					team.setTitleCache(fullAuthorTeamCache, preliminaryFlag);
 					team.setNomenclaturalTitle(authorTeamCache, preliminaryFlag);
+					//not yet supported by model
+//	                team.setOriginalNomenclaturalTitle(authorTeamCache);
 
 					TeamOrPersonBase<?> author = handleTeam(state, team, authorTeamCache,
 					        fullAuthorTeamCache, preliminaryFlag, teamId);

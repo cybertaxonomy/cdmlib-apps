@@ -152,6 +152,8 @@ public class BerlinModelReferenceImport extends BerlinModelImportBase {
 		DbImportExtensionMapper.NewInstance("RefDepositedAt", REF_DEPOSITED_AT_UUID, "Ref. deposited at", "Reference is deposited at", "at"),
 		DbImportExtensionMapper.NewInstance("RefSource", REF_SOURCE_UUID, "RefSource", "Reference Source", "source"),
 		DbImportMarkerMapper.NewInstance("isPaper", IS_PAPER_UUID, "is paper", "is paper", "paper", false)
+		//not yet supported by model
+        ,new CdmStringMapper("refAuthorString", "refAuthorString"),
 	};
 
 
@@ -279,9 +281,6 @@ public class BerlinModelReferenceImport extends BerlinModelImportBase {
 		boolean success = true;
 
 		Map<Integer, Reference> refToSave = new HashMap<>();
-
-//		@SuppressWarnings("unchecked")
-//        Map<String, Reference> relatedReferences = partitioner.getObjectMap(REFERENCE_NAMESPACE);
 
 		BerlinModelImportConfigurator config = state.getConfig();
 

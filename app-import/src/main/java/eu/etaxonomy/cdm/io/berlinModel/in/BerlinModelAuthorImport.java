@@ -103,6 +103,8 @@ public class BerlinModelAuthorImport extends BerlinModelImportBase {
 				dbAttrName = "Abbrev";
 				cdmAttrName = "nomenclaturalTitle";
 				success &= ImportHelper.addStringValue(rs, author, dbAttrName, cdmAttrName, BLANK_TO_NULL);
+				//not yet supported by model
+				success &= ImportHelper.addStringValue(rs, author, dbAttrName, "originalNomenclaturalTitle", BLANK_TO_NULL);
 
 				dbAttrName = "FirstName";
 				cdmAttrName = "givenName";
