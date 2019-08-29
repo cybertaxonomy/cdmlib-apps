@@ -268,21 +268,6 @@ public class BerlinModelReferenceImport extends BerlinModelImportBase {
 		return;
 	}
 
-//	 not needed, data also in Reference.idInSource
-//    private void fillSourceNumberMap(BerlinModelImportState state) throws SQLException {
-//        String query = " SELECT * FROM SourceNumber2Ref ";
-//        ResultSet rs = state.getConfig().getSource().getResultSet(query);
-//        while (rs.next()){
-//            String sourceNumber = rs.getString("SourceNumber");
-//            int refId = rs.getInt("RefId");
-//            if (isNotBlank(sourceNumber)){
-//                String oldValue = sourceNumberMap.put(refId, sourceNumber.trim());
-//                if (oldValue != null){
-//                    logger.warn(">1 source number exists for refId: " + refId);
-//                }
-//            }
-//        }
-//    }
 
     @Override
 	public boolean doPartition(@SuppressWarnings("rawtypes") ResultSetPartitioner partitioner, BerlinModelImportState state) {

@@ -22,8 +22,8 @@ import eu.etaxonomy.cdm.io.common.CdmDefaultImport;
 import eu.etaxonomy.cdm.io.common.IImportConfigurator.CHECK;
 import eu.etaxonomy.cdm.io.common.events.LoggingIoObserver;
 import eu.etaxonomy.cdm.io.dwca.in.DwcaDataImportConfiguratorBase.DatasetUse;
-import eu.etaxonomy.cdm.io.stream.mapping.IImportMapping.MappingType;
 import eu.etaxonomy.cdm.io.dwca.in.DwcaImportConfigurator;
+import eu.etaxonomy.cdm.io.stream.mapping.IImportMapping.MappingType;
 import eu.etaxonomy.cdm.model.agent.Person;
 import eu.etaxonomy.cdm.model.name.NomenclaturalCode;
 import eu.etaxonomy.cdm.model.reference.Reference;
@@ -107,7 +107,7 @@ public class DwcaImportActivator {
 		config.setGuessNomenclaturalReferences(guessNomRef);
 		config.setHandleAllRefsAsCitation(handleAllRefsAsCitation);
 
-		CdmDefaultImport<DwcaImportConfigurator> myImport = new CdmDefaultImport<DwcaImportConfigurator>();
+		CdmDefaultImport<DwcaImportConfigurator> myImport = new CdmDefaultImport<>();
 
 
 		//...
@@ -135,7 +135,7 @@ public class DwcaImportActivator {
 
 	private Reference getSourceReference(String string) {
 		Reference result = ReferenceFactory.newGeneric();
-		result.setTitleCache(string);
+		result.setTitleCache(string, true);
 		return result;
 	}
 
