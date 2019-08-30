@@ -71,7 +71,6 @@ import eu.etaxonomy.cdm.model.taxon.SynonymType;
 import eu.etaxonomy.cdm.model.taxon.Taxon;
 import eu.etaxonomy.cdm.model.taxon.TaxonBase;
 import eu.etaxonomy.cdm.model.taxon.TaxonNode;
-import eu.etaxonomy.cdm.profiler.ProfilerController;
 import eu.etaxonomy.cdm.strategy.cache.HTMLTagRules;
 import eu.etaxonomy.cdm.strategy.cache.TagEnum;
 import eu.etaxonomy.cdm.strategy.cache.name.INonViralNameCacheStrategy;
@@ -86,9 +85,9 @@ import eu.etaxonomy.cdm.strategy.cache.name.ZooNameNoMarkerCacheStrategy;
  * <li>Phase 2:	Export of additional data: ParenTaxonFk and TreeIndex.
  * <li>Phase 3:	Export of additional data: Rank data, KingdomFk, TypeNameFk, expertFk and speciesExpertFk.
  * <li>Phase 4:	Export of Inferred Synonyms.</ul>
+ *
  * @author e.-m.lee
  * @since 23.02.2010
- *
  */
 @Component
 public class PesiTaxonExport extends PesiExportBase {
@@ -109,8 +108,8 @@ public class PesiTaxonExport extends PesiExportBase {
 	private PreparedStatement rankUpdateStmt;
 	private NomenclaturalCode nomenclaturalCode;
 	private Integer kingdomFk;
-	private final HashMap<Rank, Rank> rank2endRankMap = new HashMap<Rank, Rank>();
-	private final List<Rank> rankList = new ArrayList<Rank>();
+	private final HashMap<Rank, Rank> rank2endRankMap = new HashMap<>();
+	private final List<Rank> rankList = new ArrayList<>();
 	private static final UUID uuidTreeIndex = UUID.fromString("28f4e205-1d02-4d3a-8288-775ea8413009");
 	private AnnotationType treeIndexAnnotationType;
 	private static ExtensionType lastActionExtensionType;
@@ -153,13 +152,6 @@ public class PesiTaxonExport extends PesiExportBase {
 	public Class<? extends CdmBase> getStandardMethodParameter() {
 		return standardMethodParameter;
 	}
-
-	@Override
-	protected boolean doCheck(PesiExportState state) {
-		boolean result = true;
-		return result;
-	}
-
 
 	@Override
 	protected void doInvoke(PesiExportState state) {
@@ -214,7 +206,7 @@ public class PesiTaxonExport extends PesiExportBase {
 			logger.info("*** Finished Making " + pluralString + " ..." + getSuccessString(success));
 
 			if (!success){
-				state.getResult().addError("An error occurred in PesiTaxonExport.doInvoke");
+				state.getResult().addError("An error occurred in PesiTaxonExport.doInvoke. Success = false");
 			}
 			return;
 		} catch (Exception e) {
@@ -278,8 +270,6 @@ public class PesiTaxonExport extends PesiExportBase {
 		TransactionStatus txStatus = startTransaction(true);
 		logger.info("Started new transaction. Fetching some " + pluralString + " (max: " + limit + ") ...");
 
-
-
 		int partitionCount = 0;
 
 		logger.info("Taking snapshot at the beginning of phase 1 of taxonExport");
@@ -307,13 +297,14 @@ public class PesiTaxonExport extends PesiExportBase {
 					nvn.setAuthorshipCache(null, false);
 				}
 				try{
-				if (nvn.getRank().equals(Rank.KINGDOM())){
-				    String treeIndex = ((Taxon)taxon).getTaxonNodes().iterator().next().treeIndex();
-				    Integer kingdomId = PesiTransformer.pesiKingdomMap.get(nvn.getGenusOrUninomial());
-				    state.getTreeIndexKingdomMap().put(treeIndex, kingdomId);
-				}}catch(NullPointerException e){
-				    logger.error(nvn.getTitleCache() + "has no Rank!");
-				    System.err.println(nvn.getTitleCache() + "has no Rank!");
+    				if (nvn.getRank().equals(Rank.KINGDOM())){
+    				    String treeIndex = ((Taxon)taxon).getTaxonNodes().iterator().next().treeIndex();
+    				    Integer kingdomId = PesiTransformer.pesiKingdomMap.get(nvn.getGenusOrUninomial());
+    				    state.getTreeIndexKingdomMap().put(treeIndex, kingdomId);
+    				}
+				}catch(NullPointerException e){
+				    logger.error(nvn.getTitleCache() + " has no Rank!");
+				    System.err.println(nvn.getTitleCache() + " has no Rank!");
 				}
 				//core mapping
 				success &= mapping.invoke(taxon);
@@ -326,9 +317,6 @@ public class PesiTaxonExport extends PesiExportBase {
 				taxon = null;
 				nvn = null;
 				taxonName = null;
-
-
-
 			}
 
 
@@ -349,31 +337,29 @@ public class PesiTaxonExport extends PesiExportBase {
 			logger.info("No " + pluralString + " left to fetch.");
 		}
 
-
-
 		// Commit transaction
 		commitTransaction(txStatus);
 		txStatus = null;
 		logger.debug("Committed transaction.");
-		list = null;
 		if (logger.isDebugEnabled()){
 			logger.debug("Taking snapshot at the end of phase 1 of taxonExport");
-			ProfilerController.memorySnapshot();
+//			ProfilerController.memorySnapshot();
 		}
 		return success;
 	}
 
 
 	private void validatePhaseOne(TaxonBase<?> taxon, TaxonName taxonName) {
-		// Check whether some rules are violated
-		nomenclaturalCode = taxonName.getNomenclaturalCode();
+
+	    // Check whether some rules are violated
+		nomenclaturalCode = taxonName.getNameType();
 		String genusOrUninomial = taxonName.getGenusOrUninomial();
 		String specificEpithet = taxonName.getSpecificEpithet();
 		String infraSpecificEpithet = taxonName.getInfraSpecificEpithet();
 		String infraGenericEpithet = taxonName.getInfraGenericEpithet();
-		Integer rank = getRankFk(taxonName, nomenclaturalCode);
+		Integer rankFk = getRankFk(taxonName, nomenclaturalCode);
 
-		if (rank == null) {
+		if (rankFk == null) {
 			logger.error("Rank was not determined: " + taxon.getUuid() + " (" + taxon.getTitleCache() + ")");
 		} else {
 
@@ -400,14 +386,14 @@ public class PesiTaxonExport extends PesiExportBase {
 				}
 			}
 
-			if (infraGenericEpithet == null && rank.intValue() == 190) {
+			if (infraGenericEpithet == null && rankFk.intValue() == 190) {
 				logger.warn("InfraGenericEpithet was not determined although it should exist for rank 190: " + taxon.getUuid() + " (" + taxon.getTitleCache() + ")");
 			}
-			if (specificEpithet != null && rank.intValue() < 216) {
-				logger.warn("SpecificEpithet was determined for rank " + rank + " although it should only exist for ranks higher or equal to 220: TaxonName " + taxonName.getUuid() + " (" + taxonName.getTitleCache() + ")");
+			if (specificEpithet != null && rankFk.intValue() < 216) {
+				logger.warn("SpecificEpithet was determined for rank " + rankFk + " although it should only exist for ranks higher or equal to 220: TaxonName " + taxonName.getUuid() + " (" + taxonName.getTitleCache() + ")");
 			}
-			if (infraSpecificEpithet != null && rank.intValue() < 225) {
-				String message = "InfraSpecificEpithet '" +infraSpecificEpithet + "' was determined for rank " + rank + " although it should only exist for ranks higher or equal to 230: "  + taxonName.getUuid() + " (" + taxonName.getTitleCache() + ")";
+			if (infraSpecificEpithet != null && rankFk.intValue() < 225) {
+				String message = "InfraSpecificEpithet '" +infraSpecificEpithet + "' was determined for rank " + rankFk + " although it should only exist for ranks higher or equal to 230: "  + taxonName.getUuid() + " (" + taxonName.getTitleCache() + ")";
 				if (StringUtils.isNotBlank(infraSpecificEpithet)){
 					logger.warn(message);
 				}else{
@@ -422,7 +408,6 @@ public class PesiTaxonExport extends PesiExportBase {
 			logger.warn("GenusOrUninomial was not determined: " + taxon.getUuid() + " (" + taxon.getTitleCache() + ")");
 		}
 	}
-
 
 
 	/**
@@ -465,7 +450,6 @@ public class PesiTaxonExport extends PesiExportBase {
 						success &= invokeParentTaxonFk(parentId, childId);
 					}
 				}
-
 			}
 
 			// Commit transaction
@@ -480,12 +464,10 @@ public class PesiTaxonExport extends PesiExportBase {
 		if (list == null ) {
 			logger.info("No " + pluralString + " left to fetch.");
 		}
-		list = null;
 		// Commit transaction
 		commitTransaction(txStatus);
 
 		return success;
-
 	}
 
 	/**
@@ -506,7 +488,6 @@ public class PesiTaxonExport extends PesiExportBase {
 		} catch (SQLException e) {
 			logger.warn ("Biota could not be requested or inserted");
 		}
-
 	}
 
 	// 4th round: Add TreeIndex to each taxon
@@ -566,8 +547,8 @@ public class PesiTaxonExport extends PesiExportBase {
 				txStatus = startTransaction(true);
 				logger.info("Started transaction to fetch all rootNodes specific to Rank " + rank.getLabel() + " ...");
 
-				rankSpecificRootNodes = getClassificationService().listRankSpecificRootNodes(classification, rank,
-				        includeUnpublished, null, null, null);
+				rankSpecificRootNodes = getClassificationService().listRankSpecificRootNodes(classification,
+				        null, rank, includeUnpublished, null, null, null);
 				logger.info("Fetched " + rankSpecificRootNodes.size() + " RootNodes for Rank " + rank.getLabel());
 
 				commitTransaction(txStatus);
@@ -1204,6 +1185,7 @@ public class PesiTaxonExport extends PesiExportBase {
 
 	/**
 	 * Inserts values into the Taxon database table.
+	 *
 	 * @param taxonName The {@link TaxonNameBase TaxonName}.
 	 * @param state The {@link PesiExportState PesiExportState}.
 	 * @param stmt The prepared statement.
@@ -1232,7 +1214,7 @@ public class PesiTaxonExport extends PesiExportBase {
 			parentTaxonFk_TreeIndex_KingdomFkStmt.executeUpdate();
 			return true;
 		} catch (SQLException e) {
-			logger.error("ParentTaxonFk (" + parentTaxonFk ==null? "-":parentTaxonFk + ") and TreeIndex could not be inserted into database for taxon "+ (currentTaxonFk == null? "-" :currentTaxonFk) + ": " + e.getMessage());
+			logger.error("ParentTaxonFk (" + (parentTaxonFk ==null? "-":parentTaxonFk) + ") and TreeIndex could not be inserted into database for taxon "+ (currentTaxonFk == null? "-" :currentTaxonFk) + ": " + e.getMessage());
 			e.printStackTrace();
 			return false;
 		}
@@ -1245,7 +1227,8 @@ public class PesiTaxonExport extends PesiExportBase {
 			parentTaxonFkStmt.executeUpdate();
 			return true;
 		} catch (SQLException e) {
-			logger.warn("ParentTaxonFk (" + parentId ==null? "-":parentId + ") could not be inserted into database for taxon "+ (childId == null? "-" :childId) + ": " + e.getMessage());
+			logger.warn("ParentTaxonFk (" + (parentId ==null? "-":parentId) + ") could not be inserted into database "
+			        + "for taxon "+ (childId == null? "-" :childId) + ": " + e.getMessage());
 			e.printStackTrace();
 			return false;
 		}
@@ -1390,12 +1373,6 @@ public class PesiTaxonExport extends PesiExportBase {
 		destination.update(sql);
 		return true;
 	}
-
-	@Override
-	protected boolean isIgnore(PesiExportState state) {
-		return ! state.getConfig().isDoTaxa();
-	}
-
 
 	/**
 	 * Creates the kingdom fk.
@@ -2617,4 +2594,14 @@ public class PesiTaxonExport extends PesiExportBase {
 		return mapping;
 	}
 
+
+    @Override
+    protected boolean doCheck(PesiExportState state) {
+        return true;
+    }
+
+    @Override
+    protected boolean isIgnore(PesiExportState state) {
+        return ! state.getConfig().isDoTaxa();
+    }
 }

@@ -227,7 +227,7 @@ public class PesiRelTaxonExport extends PesiExportBase {
 		if (! hasPesiTaxon(name)){
 			list.add(name);
 		}else{
-			for (TaxonBase taxon:  getPesiTaxa(name)){
+			for (TaxonBase<?> taxon:  getPesiTaxa(name)){
 				list.add(taxon);
 			}
 		}
@@ -281,7 +281,7 @@ public class PesiRelTaxonExport extends PesiExportBase {
 					logger.info("Started transaction to fetch all rootNodes specific to Rank " + rank.getLabel() + " ...");
 
 					List<TaxonNode> rankSpecificRootNodes = getClassificationService()
-					        .listRankSpecificRootNodes(classification, rank, includeUnpublished, null, null, null);
+					        .listRankSpecificRootNodes(classification, null, rank, includeUnpublished, null, null, null);
 					logger.info("Fetched " + rankSpecificRootNodes.size() + " RootNodes for Rank " + rank.getLabel());
 
 					commitTransaction(txStatus);

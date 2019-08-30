@@ -37,9 +37,9 @@ import eu.etaxonomy.cdm.model.reference.ReferenceType;
 /**
  * The export class for {@link eu.etaxonomy.cdm.model.reference.Reference References}.<p>
  * Inserts into DataWarehouse database table <code>Source</code>.
+ *
  * @author e.-m.lee
  * @since 11.02.2010
- *
  */
 @Component
 public class PesiSourceExport extends PesiExportBase {
@@ -52,7 +52,7 @@ public class PesiSourceExport extends PesiExportBase {
 	private static int modCount = 1000;
 	public static final String dbTableName = "Source";
 	private static final String pluralString = "Sources";
-	List<Integer> storedSourceIds = new ArrayList<Integer>();
+	List<Integer> storedSourceIds = new ArrayList<>();
 
 	public PesiSourceExport() {
 		super();
@@ -61,12 +61,6 @@ public class PesiSourceExport extends PesiExportBase {
 	@Override
 	public Class<? extends CdmBase> getStandardMethodParameter() {
 		return standardMethodParameter;
-	}
-
-	@Override
-	protected boolean doCheck(PesiExportState state) {
-		boolean result = true;
-		return result;
 	}
 
 	/**
@@ -398,6 +392,11 @@ public class PesiSourceExport extends PesiExportBase {
 
 		return result;
 	}
+
+    @Override
+    protected boolean doCheck(PesiExportState state) {
+        return true;
+    }
 
 	@Override
 	protected boolean isIgnore(PesiExportState state) {
