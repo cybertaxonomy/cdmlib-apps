@@ -52,7 +52,7 @@ public class EuroMedActivatorVibrant {
 //	static final Source berlinModelSource = BerlinModelSources.euroMed();
 	static final Source berlinModelSource = BerlinModelSources.euroMed_PESI3();
 
-//	static final ICdmDataSource cdmDestination = CdmDestinations.cdm_pesi_euroMed();
+//	static final ICdmDataSource cdmDestination = CdmDestinations.test_cdm_pesi_euroMed();
 //	static final ICdmDataSource cdmDestination = CdmDestinations.cdm_test_local_mysql();
 	static final ICdmDataSource cdmDestination = CdmDestinations.cdm_local_test_mysql();
 

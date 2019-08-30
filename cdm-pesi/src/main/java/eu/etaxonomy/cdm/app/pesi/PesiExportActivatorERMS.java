@@ -31,12 +31,13 @@ public class PesiExportActivatorERMS {
 	@SuppressWarnings("unused")
 	private static final Logger logger = Logger.getLogger(PesiExportActivatorERMS.class);
 
+	static final ICdmDataSource cdmSource = CdmDestinations.cdm_test_local_mysql_erms();
+
 	//database validation status (create, update, validate ...)
 	static final Source pesiDestination = PesiDestinations.pesi_test_local_CDM_ERMS2PESI();
 //	static final Source pesiDestination = PesiDestinations.pesi_test_local_CDM_FE2PESI();
 //	static final Source pesiDestination = PesiDestinations.pesi_test_local_CDM_ERMS2PESI();
 
-	static final ICdmDataSource cdmSource = CdmDestinations.cdm_test_local_mysql_erms();
 	//Taxon names can't be mapped to their CDM ids as PESI Taxon table mainly holds taxa and there IDs. We ad nameIdStart to the TaxonName id to get a unique id
 	static final int nameIdStart = 10000000;
 	static final IdType idType = IdType.CDM_ID_WITH_EXCEPTIONS;
@@ -123,7 +124,7 @@ public class PesiExportActivatorERMS {
 		}
 
 		// invoke export
-		CdmDefaultExport<PesiExportConfigurator> pesiExport = new CdmDefaultExport<PesiExportConfigurator>();
+		CdmDefaultExport<PesiExportConfigurator> pesiExport = new CdmDefaultExport<>();
 		boolean result = pesiExport.invoke(config).isSuccess();
 
 		System.out.println("End export to PESI ("+ destination.getDatabase() + ")..." + (result? "(successful)":"(with errors)"));
