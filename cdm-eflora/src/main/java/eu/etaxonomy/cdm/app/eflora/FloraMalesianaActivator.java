@@ -410,7 +410,7 @@ public class FloraMalesianaActivator extends EfloraActivatorBase {
 		addFeatureNodesByStringList(descriptionFeatureList, newNode, transformer, service);
 
 		addFeatureNodesByStringList(generellDescriptionsUpToAnatomyList, root, transformer, service);
-		newNode = TermNode.NewInstance(Feature.ANATOMY());
+		newNode = root.addChild(Feature.ANATOMY());  //not sure if this is correct, but it looked like the node was orphaned before
 		addFeatureNodesByStringList(anatomySubfeatureList, newNode, transformer, service);
 
 		newNode = addFeatureNodesByStringList(generellDescriptionsFromAnatomyToPhytoChemoList, root, transformer, service);
