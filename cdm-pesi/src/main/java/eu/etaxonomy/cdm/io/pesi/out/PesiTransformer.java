@@ -2396,7 +2396,7 @@ public final class PesiTransformer extends ExportTransformerBase implements IExp
 	private static Set<String> getAllQualityStatus(TaxonName taxonName) {
 		Set<String> result = new HashSet<>();
 		for (TaxonBase<?> taxonBase : taxonName.getTaxonBases()){
-			result.addAll(taxonBase.getExtensions(ErmsTransformer.uuidQualityStatus));
+			result.addAll(taxonBase.getExtensions(ErmsTransformer.uuidExtQualityStatus));
 		}
 		return result;
 	}

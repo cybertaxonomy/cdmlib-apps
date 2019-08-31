@@ -145,16 +145,17 @@ public final class ErmsTransformer extends InputTransformerBase {
 	//extension type uuids
 	public static final UUID uuidErmsTaxonStatus = UUID.fromString("859eee7f-5240-48a0-8edc-7af63557fa6e");
 
-	public static final UUID GAZETTEER_UUID = UUID.fromString("dcfa124a-1028-49cd-aea5-fdf9bd396c1a");
-	public static final UUID IMIS_UUID = UUID.fromString("ee2ac2ca-b60c-4e6f-9cad-720fcdb0a6ae");
-	public static final UUID uuidFossilStatus = UUID.fromString("ec3dffbe-a0c8-4d76-845f-5fc166a33d5b");
-	public static final UUID uuidTsn = UUID.fromString("6b0df02b-7278-4ce0-8fc9-0e6523832eb5");
-	public static final UUID uuidDisplayName = UUID.fromString("cd72225d-32c7-4b2d-a973-a95184392690");
-	public static final UUID uuidFuzzyName = UUID.fromString("8870dc69-d3a4-425f-a5a8-093a79f527a8");
-	public static final UUID uuidCredibility = UUID.fromString("909a3886-8744-49dc-b9cc-277378b81b42");
-	public static final UUID uuidCompleteness = UUID.fromString("141f4816-78c0-4da1-8a79-5c9031e6b149");
-	public static final UUID uuidUnacceptReason = UUID.fromString("3883fb79-374d-4120-964b-9666307e3567");
-	public static final UUID uuidQualityStatus = UUID.fromString("4de84c6e-41bd-4a0e-894d-77e9ec3103d2");
+	public static final UUID uuidExtTruncatedCache = UUID.fromString("4839605b-b72d-493a-94fb-e8f8acb393f9");
+    public static final UUID uuidExtGazetteer = UUID.fromString("dcfa124a-1028-49cd-aea5-fdf9bd396c1a");
+	public static final UUID uuidExtImis = UUID.fromString("ee2ac2ca-b60c-4e6f-9cad-720fcdb0a6ae");
+	public static final UUID uuidExtFossilStatus = UUID.fromString("ec3dffbe-a0c8-4d76-845f-5fc166a33d5b");
+	public static final UUID uuidExtTsn = UUID.fromString("6b0df02b-7278-4ce0-8fc9-0e6523832eb5");
+	public static final UUID uuidExtDisplayName = UUID.fromString("cd72225d-32c7-4b2d-a973-a95184392690");
+	public static final UUID uuidExtFuzzyName = UUID.fromString("8870dc69-d3a4-425f-a5a8-093a79f527a8");
+	public static final UUID uuidExtCredibility = UUID.fromString("909a3886-8744-49dc-b9cc-277378b81b42");
+	public static final UUID uuidExtCompleteness = UUID.fromString("141f4816-78c0-4da1-8a79-5c9031e6b149");
+	public static final UUID uuidExtUnacceptReason = UUID.fromString("3883fb79-374d-4120-964b-9666307e3567");
+	public static final UUID uuidExtQualityStatus = UUID.fromString("4de84c6e-41bd-4a0e-894d-77e9ec3103d2");
 
 	//MarkerTypes
 	public static final UUID uuidMarkerMarine = UUID.fromString("5da78a28-5668-4ed5-b788-10c69343f91e");

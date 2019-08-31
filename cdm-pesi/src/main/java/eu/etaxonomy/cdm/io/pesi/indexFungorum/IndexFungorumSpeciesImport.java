@@ -133,7 +133,7 @@ public class IndexFungorumSpeciesImport  extends IndexFungorumImportBase {
 
 				//fossil
 				if (FOSSIL_FUNGI.equalsIgnoreCase(phylumName)){
-					ExtensionType fossilExtType = getExtensionType(state, ErmsTransformer.uuidFossilStatus, "fossil status", "fossil status", "fos. stat.");
+					ExtensionType fossilExtType = getExtensionType(state, ErmsTransformer.uuidExtFossilStatus, "fossil status", "fossil status", "fos. stat.");
 					Extension.NewInstance(taxon, PesiTransformer.STR_FOSSIL_ONLY, fossilExtType);
 				}
 				//save

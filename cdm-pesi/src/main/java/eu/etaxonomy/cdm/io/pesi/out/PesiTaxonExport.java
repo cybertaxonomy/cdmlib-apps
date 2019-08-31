@@ -1960,7 +1960,7 @@ public class PesiTaxonExport extends PesiExportBase {
 	private static Integer getFossilStatusFk(IdentifiableEntity<?> identEntity, PesiExportState state) {
 		Integer result = null;
 
-		Set<String> fossilStatuus = identEntity.getExtensions(ErmsTransformer.uuidFossilStatus);
+		Set<String> fossilStatuus = identEntity.getExtensions(ErmsTransformer.uuidExtFossilStatus);
 		if (fossilStatuus.size() == 0){
 			return null;
 		}else if (fossilStatuus.size() > 1){
@@ -1981,7 +1981,7 @@ public class PesiTaxonExport extends PesiExportBase {
 	@SuppressWarnings("unused")
 	private static String getFossilStatusCache(IdentifiableEntity<?> identEntity, PesiExportState state) {
 		String result = null;
-		Set<String> fossilStatuus = identEntity.getExtensions(ErmsTransformer.uuidFossilStatus);
+		Set<String> fossilStatuus = identEntity.getExtensions(ErmsTransformer.uuidExtFossilStatus);
 		if (fossilStatuus.size() == 0){
 			return null;
 		}

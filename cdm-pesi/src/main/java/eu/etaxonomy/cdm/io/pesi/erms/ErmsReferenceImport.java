@@ -71,7 +71,7 @@ public class ErmsReferenceImport  extends ErmsImportBase<Reference> implements I
 			mapping = new DbImportMapping<>();
 
 			mapping.addMapper(DbImportObjectCreationMapper.NewInstance(this, "id", REFERENCE_NAMESPACE)); //id
-			ExtensionType imisExtType = getExtensionType( ErmsTransformer.IMIS_UUID, "imis", "imis", "imis");
+			ExtensionType imisExtType = getExtensionType( ErmsTransformer.uuidExtImis, "imis", "imis", "imis");
 			mapping.addMapper(DbImportExtensionMapper.NewInstance("imis_id", imisExtType));
 
 			mapping.addMapper(DbImportTruncatedStringMapper.NewInstance("source_name", "titleCache", "title"));
@@ -128,7 +128,6 @@ public class ErmsReferenceImport  extends ErmsImportBase<Reference> implements I
 
 	@Override
     protected boolean isIgnore(ErmsImportState state){
-		//TODO
 		return state.getConfig().getDoReferences() != IImportConfigurator.DO_REFERENCES.ALL;
 	}
 

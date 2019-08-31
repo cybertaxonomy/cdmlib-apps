@@ -82,27 +82,27 @@ public class ErmsTaxonImport
 			mapping = new DbImportMapping<>();
 
 			mapping.addMapper(DbImportObjectCreationMapper.NewInstance(this, "id", TAXON_NAMESPACE)); //id + tu_status
-			UUID tsnUuid = ErmsTransformer.uuidTsn;
+			UUID tsnUuid = ErmsTransformer.uuidExtTsn;
 			mapping.addMapper(DbImportLsidMapper.NewInstance("GUID", "lsid"));
 
 			ExtensionType tsnExtType = getExtensionType(tsnUuid, "TSN", "TSN", "TSN");
 			mapping.addMapper(DbImportExtensionMapper.NewInstance("tsn", tsnExtType));
 //			mapping.addMapper(DbImportStringMapper.NewInstance("tu_name", "(NonViralName)name.nameCache"));
 
-			ExtensionType displayNameExtType = getExtensionType(ErmsTransformer.uuidDisplayName, "display name", "display name", "display name");
+			ExtensionType displayNameExtType = getExtensionType(ErmsTransformer.uuidExtDisplayName, "display name", "display name", "display name");
 			mapping.addMapper(DbImportExtensionMapper.NewInstance("tu_displayname", displayNameExtType));
-			ExtensionType fuzzyNameExtType = getExtensionType(ErmsTransformer.uuidFuzzyName, "fuzzy name", "fuzzy name", "fuzzy name");
+			ExtensionType fuzzyNameExtType = getExtensionType(ErmsTransformer.uuidExtFuzzyName, "fuzzy name", "fuzzy name", "fuzzy name");
 		//	mapping.addMapper(DbImportExtensionMapper.NewInstance("tu_fuzzyname", fuzzyNameExtType));
 			mapping.addMapper(DbImportStringMapper.NewInstance("tu_authority", "name.authorshipCache"));
 
-			ExtensionType fossilStatusExtType = getExtensionType(ErmsTransformer.uuidFossilStatus, "fossil status", "fossil status", "fos. stat.");
+			ExtensionType fossilStatusExtType = getExtensionType(ErmsTransformer.uuidExtFossilStatus, "fossil status", "fossil status", "fos. stat.");
 			mapping.addMapper(DbImportExtensionMapper.NewInstance("fossil_name", fossilStatusExtType));
 //			mapping.addMapper(DbImportExtensionTypeCreationMapper.NewInstance("fossil_name", EXTENSION_TYPE_NAMESPACE, "fossil_name", "fossil_name", "fossil_name"));
 
-			ExtensionType unacceptExtType = getExtensionType(ErmsTransformer.uuidUnacceptReason, "unaccept reason", "unaccept reason", "reason");
+			ExtensionType unacceptExtType = getExtensionType(ErmsTransformer.uuidExtUnacceptReason, "unaccept reason", "unaccept reason", "reason");
 			mapping.addMapper(DbImportExtensionMapper.NewInstance("tu_unacceptreason", unacceptExtType));
 
-			ExtensionType qualityStatusExtType = getExtensionType(ErmsTransformer.uuidQualityStatus, "quality status", "quality status", "quality status");
+			ExtensionType qualityStatusExtType = getExtensionType(ErmsTransformer.uuidExtQualityStatus, "quality status", "quality status", "quality status");
 			mapping.addMapper(DbImportExtensionMapper.NewInstance("qualitystatus_name", qualityStatusExtType)); //checked by Tax Editor ERMS1.1, Added by db management team (2x), checked by Tax Editor
 
 			mapping.addMapper(DbImportMarkerMapper.NewInstance("tu_marine", ErmsTransformer.uuidMarkerMarine, "marine", "marine", "marine", null));

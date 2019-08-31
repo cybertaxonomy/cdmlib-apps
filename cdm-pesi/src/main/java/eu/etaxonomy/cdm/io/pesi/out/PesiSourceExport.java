@@ -409,14 +409,13 @@ public class PesiSourceExport extends PesiExportBase {
 	 */
 	private PesiExportMapping getMapping() {
 		PesiExportMapping mapping = new PesiExportMapping(dbTableName);
-		ExtensionType extensionType = null;
 
 		mapping.addMapper(IdMapper.NewInstance("SourceId"));
 
 		// IMIS_Id
-		extensionType = (ExtensionType)getTermService().find(ErmsTransformer.IMIS_UUID);
-		if (extensionType != null) {
-			mapping.addMapper(DbExtensionMapper.NewInstance(extensionType, "IMIS_Id"));
+		ExtensionType imisExtensionType = (ExtensionType)getTermService().find(ErmsTransformer.uuidExtImis);
+		if (imisExtensionType != null) {
+			mapping.addMapper(DbExtensionMapper.NewInstance(imisExtensionType, "IMIS_Id"));
 		} else {
 			mapping.addMapper(MethodMapper.NewInstance("IMIS_Id", this));
 		}

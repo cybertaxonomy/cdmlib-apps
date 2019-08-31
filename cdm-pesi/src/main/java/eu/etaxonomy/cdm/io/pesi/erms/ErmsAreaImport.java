@@ -73,7 +73,7 @@ public class ErmsAreaImport
 
 			mapping.addMapper(DbImportObjectCreationMapper.NewInstance(this, "id", AREA_NAMESPACE)); //id
 			mapping.addMapper(DbImportStringMapper.NewInstance("gu_name", "titleCache"));
-			ExtensionType extensionType = getExtensionType( ErmsTransformer.GAZETTEER_UUID, "Gazetteer ID", "Gazetteer ID", "G-ID");
+			ExtensionType extensionType = getExtensionType( ErmsTransformer.uuidExtGazetteer, "Gazetteer ID", "Gazetteer ID", "G-ID");
 			mapping.addMapper(DbImportExtensionMapper.NewInstance("gazetteer_id",extensionType));
 			mapping.addMapper(DbImportAnnotationMapper.NewInstance("note", AnnotationType.EDITORIAL()));
 
