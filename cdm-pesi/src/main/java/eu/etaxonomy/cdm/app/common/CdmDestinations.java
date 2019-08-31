@@ -55,7 +55,6 @@ public class CdmDestinations {
         return makeDestination(dbType, cdmServer, cdmDB, -1, cdmUserName, null);
     }
 
-
 	public static ICdmDataSource cdm_test_local_indexFungorum(){
 		DatabaseTypeEnum dbType = DatabaseTypeEnum.MySQL;
 		String cdmServer = "127.0.0.1";
@@ -63,7 +62,6 @@ public class CdmDestinations {
 		String cdmUserName = "root";
 		return makeDestination(dbType, cdmServer, cdmDB, -1, cdmUserName, null);
 	}
-
 
 	public static ICdmDataSource cdm_test_local_mysql_erms(){
 		DatabaseTypeEnum dbType = DatabaseTypeEnum.MySQL;
@@ -73,6 +71,13 @@ public class CdmDestinations {
 		return CdmDestinations.makeDestination(dbType, cdmServer, cdmDB, -1, cdmUserName, null);
 	}
 
+    public static ICdmDataSource cdm_test_local_mysql_erms2(){
+        DatabaseTypeEnum dbType = DatabaseTypeEnum.MySQL;
+        String cdmServer = "127.0.0.1";
+        String cdmDB = "cdm_pesi_erms2";
+        String cdmUserName = "edit";
+        return CdmDestinations.makeDestination(dbType, cdmServer, cdmDB, -1, cdmUserName, null);
+    }
 
 	public static ICdmDataSource cdm_test_local_mysql_test(){
 		DatabaseTypeEnum dbType = DatabaseTypeEnum.MySQL;
@@ -81,30 +86,6 @@ public class CdmDestinations {
 		String cdmUserName = "edit";
 		return makeDestination(dbType, cdmServer, cdmDB, -1, cdmUserName, null);
 	}
-	public static ICdmDataSource cdm_portal_test_localhost(){
-		DatabaseTypeEnum dbType = DatabaseTypeEnum.MySQL;
-		String cdmServer = "127.0.0.1";
-		String cdmDB = "cdm_portal_test";
-		String cdmUserName = "edit";
-		return makeDestination(dbType, cdmServer, cdmDB, -1, cdmUserName, null);
-	}
-
-	public static ICdmDataSource cdm_portal_test_localhost2(){
-		DatabaseTypeEnum dbType = DatabaseTypeEnum.MySQL;
-		String cdmServer = "127.0.0.1";
-		String cdmDB = "cdm_portal_test2";
-		String cdmUserName = "edit";
-		return makeDestination(dbType, cdmServer, cdmDB, -1, cdmUserName, null);
-	}
-
-	public static ICdmDataSource cdm_local_postgres_CdmTest(){
-		DatabaseTypeEnum dbType = DatabaseTypeEnum.PostgreSQL;
-		String cdmServer = "127.0.0.1";
-		String cdmDB = "CdmTest";
-		String cdmUserName = "edit";
-		return makeDestination(dbType, cdmServer, cdmDB, -1, cdmUserName, null);
-	}
-
 
 	public static ICdmDataSource NULL(){
 		return null;
@@ -122,15 +103,6 @@ public class CdmDestinations {
 	public static ICdmDataSource localH2Erms(){
 		return CdmDataSource.NewH2EmbeddedInstance("erms", "sa", "");
 	}
-
-	public static ICdmDataSource cdm_algaterra_preview(){
-		DatabaseTypeEnum dbType = DatabaseTypeEnum.MySQL;
-		String cdmServer = "160.45.63.201";
-		String cdmDB = "cdm_edit_algaterra";
-		String cdmUserName = "edit";
-		return makeDestination(dbType, cdmServer, cdmDB, -1, cdmUserName, null);
-	}
-
 
 	public static ICdmDataSource test_cdm_pesi_euroMed(){
 		DatabaseTypeEnum dbType = DatabaseTypeEnum.MySQL;
@@ -183,7 +155,6 @@ public class CdmDestinations {
 			throw new RuntimeException("Unsupported DatabaseType");
 		}
 		return destination;
-
 	}
 
 

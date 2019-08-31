@@ -25,13 +25,13 @@ import eu.etaxonomy.cdm.model.name.NomenclaturalCode;
  * @author a.mueller
  * @author e.-m.lee
  * @since 16.02.2010
- *
  */
 public class PesiExportActivatorERMS {
 	@SuppressWarnings("unused")
 	private static final Logger logger = Logger.getLogger(PesiExportActivatorERMS.class);
 
-	static final ICdmDataSource cdmSource = CdmDestinations.cdm_test_local_mysql_erms();
+//	static final ICdmDataSource cdmSource = CdmDestinations.cdm_test_local_mysql_erms();
+    static final ICdmDataSource cdmSource = CdmDestinations.cdm_test_local_mysql_erms2();
 
 	//database validation status (create, update, validate ...)
 	static final Source pesiDestination = PesiDestinations.pesi_test_local_CDM_ERMS2PESI();
@@ -131,14 +131,11 @@ public class PesiExportActivatorERMS {
 		return result;
 	}
 
-	/**
-	 * @param args
-	 */
 	public static void main(String[] args) {
 		PesiExportActivatorERMS ex = new PesiExportActivatorERMS();
 		ICdmDataSource source = CdmDestinations.chooseDestination(args) != null ? CdmDestinations.chooseDestination(args) : cdmSource;
 
 		ex.doExport(source);
+		System.exit(0);
 	}
-
 }

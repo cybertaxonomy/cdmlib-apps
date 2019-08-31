@@ -30,14 +30,13 @@ public class PesiExportActivator {
 	@SuppressWarnings("unused")
 	private static final Logger logger = Logger.getLogger(PesiExportActivator.class);
 
-	//database validation status (create, update, validate ...)
-//	static final Source pesiDestination = PesiDestinations.pesi_test_local_CDM_EM2PESI();
-//	static final Source pesiDestination = PesiDestinations.pesi_test_local_CDM_FE2PESI();
-	static final Source pesiDestination = PesiDestinations.pesi_test_local_CDM_ERMS2PESI();
-
 	static final ICdmDataSource cdmSource = CdmDestinations.cdm_test_local_faunaEu_mysql();
 //	static final ICdmDataSource cdmSource = CdmDestinations.cdm_test_local_mysql();
 //	static final ICdmDataSource cdmSource = CdmDestinations.cdm_test_local_mysql_test();
+
+//	static final Source pesiDestination = PesiDestinations.pesi_test_local_CDM_EM2PESI();
+//	static final Source pesiDestination = PesiDestinations.pesi_test_local_CDM_FE2PESI();
+	static final Source pesiDestination = PesiDestinations.pesi_test_local_CDM_ERMS2PESI();
 
 	//Taxon names can't be mapped to their CDM ids as PESI Taxon table mainly holds taxa and there IDs. We ad nameIdStart to the TaxonName id to get a unique id
 	static final int nameIdStart = 10000000;

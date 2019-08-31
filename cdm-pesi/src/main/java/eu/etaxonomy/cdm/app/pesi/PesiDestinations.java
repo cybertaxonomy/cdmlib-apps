@@ -17,7 +17,6 @@ import eu.etaxonomy.cdm.io.common.Source;
 /**
  * @author e.-m.lee
  * @since 16.02.2010
- *
  */
 public class PesiDestinations {
 	@SuppressWarnings("unused")
@@ -70,7 +69,7 @@ public class PesiDestinations {
 		String strServer = "pesiimport3";
 		String strDB = "CDM_ERMS2PESI";
 		int port = 1433;
-		String userName = "pesiexport";
+		String userName = "pesi2019";
 		return makeSource(dbms, strServer, strDB, port, userName, null);
 	}
 
