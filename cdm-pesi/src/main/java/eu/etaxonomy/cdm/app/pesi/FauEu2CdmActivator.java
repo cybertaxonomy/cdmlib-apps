@@ -33,7 +33,7 @@ public class FauEu2CdmActivator {
     @SuppressWarnings("unused")
     private static final Logger logger = Logger.getLogger(FauEu2CdmActivator.class);
 
-    static final ICdmDataSource fauEuSource = CdmDestinations.cdm_pesi_fauna_europaea();
+    static final ICdmDataSource fauEuSource = CdmDestinations.test_cdm_pesi_fauna_europaea();
     static final ICdmDataSource cdmDestination = CdmDestinations.cdm_test_local_pesi_leer2();
 
     //check - import

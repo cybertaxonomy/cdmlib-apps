@@ -30,15 +30,18 @@ import eu.etaxonomy.cdm.model.reference.ISourceable;
 /**
  * @author a.mueller
  */
-public class ErmsActivator {
-	private static final Logger logger = Logger.getLogger(ErmsActivator.class);
+public class ErmsImportActivator {
+	private static final Logger logger = Logger.getLogger(ErmsImportActivator.class);
 
 	//database validation status (create, update, validate ...)
 	static DbSchemaValidation hbm2dll = DbSchemaValidation.CREATE;
+
 //	static final Source ermsSource = PesiSources.PESI3_ERMS();
 	static final Source ermsSource = PesiSources.PESI2019_ERMS();
+
 //	static final ICdmDataSource cdmDestination = CdmDestinations.test_cdm_pesi_erms();
-	static final ICdmDataSource cdmDestination = CdmDestinations.cdm_test_local_mysql_erms();
+//	static final ICdmDataSource cdmDestination = CdmDestinations.cdm_test_local_mysql_erms();
+	static final ICdmDataSource cdmDestination = CdmDestinations.cdm_test_local_mysql_erms2();
 
 	static final UUID classificationUuid = UUID.fromString("6fa988a9-10b7-48b0-a370-2586fbc066eb");
 
@@ -56,29 +59,30 @@ public class ErmsActivator {
 
 // ***************** ALL ************************************************//
 
-	//references
-	static final DO_REFERENCES doReferences =  DO_REFERENCES.ALL;
-
-	//taxa
-	static final boolean doTaxa = true;
-	static final boolean doRelTaxa = true;
-	static final boolean doLinks = true;
-	static final boolean doOccurences = true;
-	static final boolean doImages = true;
-
+//	//references
+//	static final DO_REFERENCES doReferences =  DO_REFERENCES.ALL;
+//
+//	//taxa
+//	static final boolean doTaxa = true;
+//	static final boolean doRelTaxa = true;
+//	static final boolean doLinks = true;
+//	static final boolean doOccurences = true;
+//	static final boolean doImages = true;
+//  static final boolean doCommonNames = false;
 
 //******************** NONE ***************************************//
 
 
-//	//references
-//	static final DO_REFERENCES doReferences =  DO_REFERENCES.NONE;
-//
-//	//taxa
-//	static final boolean doTaxa = false;
-//	static final boolean doRelTaxa = false;
-//	static final boolean doLinks = false;
-//	static final boolean doOccurences = false;
-//
+	//references
+	static final DO_REFERENCES doReferences =  DO_REFERENCES.ALL;
+
+	//taxa
+	static final boolean doTaxa = false;
+	static final boolean doRelTaxa = false;
+	static final boolean doLinks = false;
+	static final boolean doOccurences = false;
+	static final boolean doCommonNames = false;
+
 
 
 	private void doImport(Source source, ICdmDataSource destination, DbSchemaValidation hbm2dll){
@@ -97,6 +101,7 @@ public class ErmsActivator {
 		config.setDoRelTaxa(doRelTaxa);
 		config.setDoLinks(doLinks);
 		config.setDoOccurrence(doOccurences);
+		config.setDoVernaculars(doCommonNames);
 		config.setDbSchemaValidation(hbm2dll);
 
 		config.setCheck(check);
@@ -121,12 +126,9 @@ public class ErmsActivator {
 		System.out.println("End import from ("+ source.getDatabase() + ")...");
 	}
 
-	/**
-	 * @param args
-	 */
 	public static void main(String[] args) {
 		ICdmDataSource cdmDB = CdmDestinations.chooseDestination(args) != null ? CdmDestinations.chooseDestination(args) : cdmDestination;
-		ErmsActivator ermsImport = new ErmsActivator();
+		ErmsImportActivator ermsImport = new ErmsImportActivator();
 		ermsImport.doImport(ermsSource, cdmDB, hbm2dll);
 
 		if (includeExport){

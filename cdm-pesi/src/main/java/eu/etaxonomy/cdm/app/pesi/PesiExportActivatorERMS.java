@@ -56,41 +56,43 @@ public class PesiExportActivatorERMS {
 // ****************** ALL *****************************************
 
 	//references
-	static final DO_REFERENCES doReferences =  DO_REFERENCES.ALL;
-
-	//taxa
-	static final boolean doTaxa = true;
-	static final boolean doTreeIndex = true;
-	static final boolean doRank = true;
-	static final boolean doInferredSynonyms = false;
-	static final boolean doRelTaxa = true;
-	static final boolean doDescriptions = true;
-
-	static final boolean doNotes = true;
-	static final boolean doNoteSources = true;
-	static final boolean doAdditionalTaxonSource = true;
-	static final boolean doOccurrence = true;
-	static final boolean doOccurrenceSource = true;
-	static final boolean doImage = true;
+//	static final DO_REFERENCES doReferences =  DO_REFERENCES.ALL;
+//
+//	//taxa
+//	static final boolean doTaxa = true;
+//	static final boolean doTreeIndex = true;
+//	static final boolean doRank = true;
+//	static final boolean doInferredSynonyms = false;
+//	static final boolean doRelTaxa = true;
+//	static final boolean doDescriptions = true;
+//
+//	static final boolean doNotes = true;
+//	static final boolean doNoteSources = true;
+//	static final boolean doAdditionalTaxonSource = true;
+//	static final boolean doOccurrence = true;
+//	static final boolean doOccurrenceSource = true;
+//	static final boolean doImage = true;
 
 
 // ************************ NONE **************************************** //
 
-//	//references
-//	static final DO_REFERENCES doReferences =  DO_REFERENCES.NONE;
-//
-//	//taxa
-//	static final boolean doTaxa = false;
-//	static final boolean doRelTaxa = false;
-//	static final boolean doNotes = false;
-//	static final boolean doNoteSources = false;
-//	static final boolean doAdditionalTaxonSource = false;
-//	static final boolean doOccurrence = false;
-//	static final boolean doOccurrenceSource = false;
-//	static final boolean doImage = false;
-//	static final boolean doTreeIndex = true;
-//	static final boolean doRank = true;
-//	static final boolean doInferredSynonyms = true;
+	//references
+	static final DO_REFERENCES doReferences =  DO_REFERENCES.ALL;
+
+	//taxa
+	static final boolean doTaxa = false;
+	static final boolean doTreeIndex = true;
+	static final boolean doRank = true;
+	static final boolean doInferredSynonyms = true;
+	static final boolean doRelTaxa = false;
+	static final boolean doDescriptions = false;
+
+	static final boolean doNotes = false;
+	static final boolean doNoteSources = false;
+	static final boolean doAdditionalTaxonSource = false;
+	static final boolean doOccurrence = false;
+	static final boolean doOccurrenceSource = false;
+	static final boolean doImage = false;
 
 
 	public boolean 	doExport(ICdmDataSource source){
