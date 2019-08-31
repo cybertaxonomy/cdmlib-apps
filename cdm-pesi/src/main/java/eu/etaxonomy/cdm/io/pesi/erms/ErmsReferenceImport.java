@@ -74,8 +74,10 @@ public class ErmsReferenceImport  extends ErmsImportBase<Reference> implements I
 			ExtensionType imisExtType = getExtensionType( ErmsTransformer.uuidExtImis, "imis", "imis", "imis");
 			mapping.addMapper(DbImportExtensionMapper.NewInstance("imis_id", imisExtType));
 
-			mapping.addMapper(DbImportTruncatedStringMapper.NewInstance("source_name", "titleCache", "title"));
-			mapping.addMapper(DbImportStringMapper.NewInstance("source_abstract", "referenceAbstract"));
+			ExtensionType truncatedExtType = getExtensionType( ErmsTransformer.uuidExtTruncatedCache, "truncated cache", "truncated cache", "truncated cache");
+//            mapping.addMapper(DbImportTruncatedStringMapper.NewInstance("source_name", "titleCache", "title"));
+            mapping.addMapper(DbImportTruncatedStringMapper.NewInstance("source_name", "titleCache", truncatedExtType, 800, true));
+            mapping.addMapper(DbImportStringMapper.NewInstance("source_abstract", "referenceAbstract"));
 			mapping.addMapper(DbImportAnnotationMapper.NewInstance("source_note", AnnotationType.EDITORIAL(), Language.DEFAULT()));
 
 			//or as Extension?

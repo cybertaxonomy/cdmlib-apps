@@ -14,6 +14,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.TransactionStatus;
@@ -234,11 +235,18 @@ public class PesiSourceExport extends PesiExportBase {
 	@SuppressWarnings("unused")
 	private static String getName(Reference reference) {
 		if (reference != null) {
-			return reference.getTitleCache(); // was getTitle()
+		    //TODO performance, maybe getExtensions only if titleCache ends with ... or if it has a minimum size, e.g. > 250 or >795
+		    String extensionStr = getExtension(reference, ErmsTransformer.uuidExtTruncatedCache);
+			if (StringUtils.isNotBlank(extensionStr)){
+			    return extensionStr;
+			}else{
+                return reference.getTitleCache(); // was getTitle()
+            }
 		} else {
 			return null;
 		}
 	}
+
 
 	/**
 	 * Returns the <code>AuthorString</code> attribute. The corresponding CDM attribute is the <code>titleCache</code> of an <code>authorTeam</code>.
