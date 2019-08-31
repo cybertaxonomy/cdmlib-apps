@@ -168,7 +168,7 @@ public abstract class PesiExportBase extends DbExportBase<PesiExportConfigurator
 	}
 
 	protected <CLASS extends RelationshipBase> List<CLASS> getNextTaxonRelationshipPartition( int limit, int partitionCount, List<String> propertyPath) {
-		List<CLASS> result = new ArrayList<CLASS>();
+		List<CLASS> result = new ArrayList<>();
 		String[] propertyPaths = null;
 		String orderHints = null;
 		//TODO: fix!!!!

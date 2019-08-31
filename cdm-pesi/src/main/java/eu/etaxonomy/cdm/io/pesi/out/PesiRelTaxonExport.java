@@ -72,12 +72,6 @@ public class PesiRelTaxonExport extends PesiExportBase {
 	}
 
 	@Override
-	protected boolean doCheck(PesiExportState state) {
-		boolean result = true;
-		return result;
-	}
-
-	@Override
 	protected void doInvoke(PesiExportState state) {
 		try {
 			logger.info("*** Started Making " + pluralString + " ...");
@@ -118,7 +112,7 @@ public class PesiRelTaxonExport extends PesiExportBase {
 	}
 
 
-	private boolean doPhase01(PesiExportState state, PesiExportMapping mapping2) throws SQLException {
+	private boolean doPhase01(PesiExportState state, PesiExportMapping mapping2) {
 		logger.info("PHASE 1: Taxon Relationships ...");
 		boolean success = true;
 
@@ -150,7 +144,6 @@ public class PesiRelTaxonExport extends PesiExportBase {
 			commitTransaction(txStatus);
 			txStatus = startTransaction();
 		}
-		list = null;
 		commitTransaction(txStatus);
 		return success;
 	}
@@ -187,8 +180,8 @@ public class PesiRelTaxonExport extends PesiExportBase {
 						logger.warn ("Only hybrid- and name-relationships alowed here");
 						continue;
 					}
-					List<IdentifiableEntity> fromList = new ArrayList<IdentifiableEntity>();
-					List<IdentifiableEntity> toList = new ArrayList<IdentifiableEntity>();
+					List<IdentifiableEntity> fromList = new ArrayList<>();
+					List<IdentifiableEntity> toList = new ArrayList<>();
 					makeList(name1, fromList);
 					makeList(name2, toList);
 
@@ -205,7 +198,6 @@ public class PesiRelTaxonExport extends PesiExportBase {
 					name1 = null;
 					name2 = null;
 					rel = null;
-
 
 				} catch (Exception e) {
 					logger.error(e.getMessage() + ". Relationship: " +  rel.getUuid());
@@ -594,11 +586,6 @@ public class PesiRelTaxonExport extends PesiExportBase {
 		return true;
 	}
 
-	@Override
-	protected boolean isIgnore(PesiExportState state) {
-		return ! state.getConfig().isDoRelTaxa();
-	}
-
 	/**
 	 * Returns the <code>TaxonFk1</code> attribute. It corresponds to a CDM <code>TaxonRelationship</code>.
 	 * @param relationship The {@link RelationshipBase Relationship}.
@@ -793,5 +780,15 @@ public class PesiRelTaxonExport extends PesiExportBase {
 
 		return mapping;
 	}
+
+    @Override
+    protected boolean doCheck(PesiExportState state) {
+        return true;
+    }
+
+    @Override
+    protected boolean isIgnore(PesiExportState state) {
+        return ! state.getConfig().isDoRelTaxa();
+    }
 
 }

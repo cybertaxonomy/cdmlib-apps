@@ -25,9 +25,11 @@ import eu.etaxonomy.cdm.model.reference.ReferenceFactory;
 public class PesiExportConfigurator extends DbExportConfiguratorBase<PesiExportState, PesiTransformer, Source>
         implements IExportConfigurator<PesiExportState, PesiTransformer> {
 
-	@SuppressWarnings("unused")
+    private static final long serialVersionUID = -4855001834616976415L;
+    @SuppressWarnings("unused")
 	private static Logger logger = Logger.getLogger(PesiExportConfigurator.class);
-	private int limitSave = 2000;
+
+    private int limitSave = 2000;
 
 	private Reference auctReference;
 

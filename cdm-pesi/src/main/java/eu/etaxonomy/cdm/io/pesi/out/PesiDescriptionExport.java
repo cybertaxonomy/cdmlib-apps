@@ -216,7 +216,6 @@ public class PesiDescriptionExport extends PesiExportBase {
 					success &= handleSingleTaxon(taxon, state, notesMapping, occurrenceMapping, addSourceSourceMapping,
 						additionalSourceMapping, vernacularMapping, imageMapping);
 				}
-
 			}
 			taxonList = null;
 			state.setCurrentTaxon(null);
@@ -231,7 +230,6 @@ public class PesiDescriptionExport extends PesiExportBase {
 			txStatus = startTransaction(true);
 			logger.info("Started new transaction. Fetching some " + pluralString + " (max: " + limit + ") for description import ...");
 		}
-
 
 		logger.info("No " + pluralString + " left to fetch.");
 		logger.info("Partition: " + partitionCount);

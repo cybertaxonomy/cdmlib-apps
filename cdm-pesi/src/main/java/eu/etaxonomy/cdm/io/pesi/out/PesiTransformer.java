@@ -25,7 +25,6 @@ import eu.etaxonomy.cdm.io.berlinModel.BerlinModelTransformer;
 import eu.etaxonomy.cdm.io.common.Source;
 import eu.etaxonomy.cdm.io.common.mapping.UndefinedTransformerMethodException;
 import eu.etaxonomy.cdm.io.common.mapping.out.ExportTransformerBase;
-import eu.etaxonomy.cdm.io.common.mapping.out.IExportTransformer;
 import eu.etaxonomy.cdm.io.pesi.erms.ErmsTransformer;
 import eu.etaxonomy.cdm.io.pesi.faunaEuropaea.FaunaEuropaeaTransformer;
 import eu.etaxonomy.cdm.model.common.CdmBase;
@@ -57,9 +56,8 @@ import eu.etaxonomy.cdm.strategy.exceptions.UnknownCdmTypeException;
  * @author e.-m.lee
  * @author a.mueller (update)
  * @since 16.02.2010
- *
  */
-public final class PesiTransformer extends ExportTransformerBase implements IExportTransformer{
+public final class PesiTransformer extends ExportTransformerBase{
 	private static final Logger logger = Logger.getLogger(PesiTransformer.class);
 
 	public static final String AUCT_STRING = "auct.";

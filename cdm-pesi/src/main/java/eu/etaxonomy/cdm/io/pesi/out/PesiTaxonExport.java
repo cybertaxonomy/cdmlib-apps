@@ -668,8 +668,8 @@ public class PesiTaxonExport extends PesiExportBase {
 							typeNameFk, kingdomFk, state);
 //				}
 
-					taxon = null;
-					taxonName = null;
+				taxon = null;
+				taxonName = null;
 			}
 
 			// Commit transaction
@@ -686,8 +686,6 @@ public class PesiTaxonExport extends PesiExportBase {
 			logger.info("No " + pluralString + " left to fetch.");
 		}
 
-		list = null;
-
 		// Commit transaction
 		commitTransaction(txStatus);
 
@@ -697,10 +695,6 @@ public class PesiTaxonExport extends PesiExportBase {
 		return success;
 	}
 
-	/**
-     * @param taxon
-     * @return
-     */
     private Integer findKingdomIdFromTreeIndex(TaxonBase<?> taxon,PesiExportState state) {
         if (taxon instanceof Taxon){
             Set<TaxonNode> nodes = ((Taxon)taxon).getTaxonNodes();
