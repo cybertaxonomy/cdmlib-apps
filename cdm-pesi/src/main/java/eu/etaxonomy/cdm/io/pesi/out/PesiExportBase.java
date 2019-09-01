@@ -426,8 +426,17 @@ public abstract class PesiExportBase extends DbExportBase<PesiExportConfigurator
 	@Override
     protected Object getDbIdCdmWithExceptions(CdmBase cdmBase, PesiExportState state) {
 		if (cdmBase.isInstanceOf(TaxonName.class)){
-			return ( cdmBase.getId() + state.getConfig().getNameIdStart() );
-		}if (isAdditionalSource(cdmBase) ){
+		    TaxonName name = CdmBase.deproxy(cdmBase, TaxonName.class);
+		    if (name.getTaxonBases().size()>1){
+		        logger.warn("Name has multiple taxa. Can't define correct ID. Use first one." + name.getUuid());
+		    }
+		    if (!name.getTaxonBases().isEmpty()){
+		        TaxonBase<?> tb = name.getTaxonBases().iterator().next();
+		        return this.getDbId(tb, state);
+            }else{
+                return ( cdmBase.getId() + state.getConfig().getNameIdStart() );
+            }
+		}else if (isAdditionalSource(cdmBase) ){
 			return ( cdmBase.getId() + 2 * state.getConfig().getNameIdStart() );  //make it a separate variable if conflicts occur.
 		}else{
 			return super.getDbIdCdmWithExceptions(cdmBase, state);
