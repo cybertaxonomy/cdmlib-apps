@@ -40,20 +40,18 @@ public class ErmsImportRankMap extends ErmsImportBase<Rank>{
 
 	private Map<Integer, Map<Integer,Rank>> rankMap;
 
-	/**
-	 * @param pluralString
-	 * @param dbTableName
-	 */
 	public ErmsImportRankMap() {
 		super(null, null, null);
 	}
-
 
 	@Override
 	public void invoke (ErmsImportState state){
 		rankMap = new HashMap<>();
 		Source source = state.getConfig().getSource() ;
-		String strSQL = " SELECT * FROM ranks ";
+		String strSQL = " SELECT * FROM ranks WHERE kingdom_id BETWEEN 1 AND 7";
+		//other kingdoms make problems with ranks like Section and Subsection and therefore we exclude them for now
+		logger.warn("Currently in ERMS only taxa for kingdoms 1 - 7 exist. If this changes in future, the ErmsImportRankMap needs to be adapted");
+
 		ResultSet rs = source.getResultSet(strSQL);
 		try {
 			while (rs.next()){
@@ -144,6 +142,6 @@ public class ErmsImportRankMap extends ErmsImportBase<Rank>{
 
     @Override
     protected boolean isIgnore(ErmsImportState state) {
-        return false;  //should always be called
+        return !state.getConfig().isDoTaxa();  //ranks map is only called in ErmsTaxonImport
     }
 }

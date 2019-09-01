@@ -70,7 +70,7 @@ public class ErmsVernacularImport  extends ErmsImportBase<CommonTaxonName> {
 	@Override
 	protected DbImportMapping<ErmsImportState, ErmsImportConfigurator> getMapping() {
 		if (mapping == null){
-			mapping = new DbImportMapping<ErmsImportState, ErmsImportConfigurator>();
+			mapping = new DbImportMapping<>();
 
 			mapping.addMapper(DbImportCommonNameCreationMapper.NewInstance("id", VERNACULAR_NAMESPACE, "tu_id", ErmsImportBase.TAXON_NAMESPACE));
 
@@ -120,18 +120,13 @@ public class ErmsVernacularImport  extends ErmsImportBase<CommonTaxonName> {
 		return result;
 	}
 
-	/**
-     * @param rs
-     * @param languageMap
-	 * @param state
-	 * @throws SQLException
-     */
     private void addLanguage(ResultSet rs, Map<String, Language> languageMap, ErmsImportState state) throws SQLException {
         IInputTransformer transformer = state.getTransformer();
         String id639_1 = rs.getString("639_1");
         String id639_2 = rs.getString("639_2");
         String id639_3 = rs.getString("639_3");
         String lanId = rs.getString("LanID");
+
         if (id639_1 != null && Language.getLanguageByIsoCode(id639_1)!= null){
             languageMap.put(lanId, Language.getLanguageByIsoCode(id639_1));
         }else if (id639_2 != null && Language.getLanguageByIsoCode(id639_2)!= null){
@@ -140,21 +135,29 @@ public class ErmsVernacularImport  extends ErmsImportBase<CommonTaxonName> {
             Language language = null;
             try {
                 language = transformer.getLanguageByKey(lanId);
+                persistLanguage(language);
                 if (language == null || language.equals(Language.UNDETERMINED())){
                     UUID uuidLang = transformer.getLanguageUuid(lanId);
                     if (uuidLang != null){
                         language = getLanguage(state, uuidLang, rs.getString("LanName"), "LanName", "639_3");
                     }
                     if (language == null || language.equals(Language.UNDETERMINED() )){
-                        logger.warn("Langauge undefined: " + lanId);
+                        logger.warn("Language undefined: " + lanId);
                     }
                 }
-
-            } catch (IllegalArgumentException e) {
+            } catch (IllegalArgumentException | UndefinedTransformerMethodException e) {
                 e.printStackTrace();
-            } catch (UndefinedTransformerMethodException e) {
-                e.printStackTrace();
+                logger.error("Error when retrieving language", e);
             }
+        }
+    }
+
+    private void persistLanguage(Language language) {
+        if(!language.isPersited()){
+            getTermService().saveOrUpdate(language);
+        }
+        if (!language.getVocabulary().isPersited()){
+            getVocabularyService().saveOrUpdate(language.getVocabulary());
         }
     }
 

@@ -259,7 +259,7 @@ public class ErmsTaxonImport
 		//e.g. Leucon [Platyhelminthes] ornatus
 		if (containsBrackets(displayName)){
 			taxonName.setNameCache(displayName);
-			logger.warn("Set name cache: " +  displayName + ";id =" + meId);
+			logger.warn("Set name cache: " +  displayName + "; id =" + meId);
 		}
 
 		//add original source for taxon name (taxon original source is added in mapper

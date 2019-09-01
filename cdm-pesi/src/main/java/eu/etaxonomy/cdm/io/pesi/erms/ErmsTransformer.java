@@ -9,7 +9,9 @@
 
 package eu.etaxonomy.cdm.io.pesi.erms;
 
+import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
 
@@ -23,6 +25,8 @@ import eu.etaxonomy.cdm.model.common.Language;
 import eu.etaxonomy.cdm.model.description.Feature;
 import eu.etaxonomy.cdm.model.name.NameTypeDesignationStatus;
 import eu.etaxonomy.cdm.model.name.NomenclaturalCode;
+import eu.etaxonomy.cdm.model.term.TermType;
+import eu.etaxonomy.cdm.model.term.TermVocabulary;
 
 /**
  * @author a.mueller
@@ -164,30 +168,6 @@ public final class ErmsTransformer extends InputTransformerBase {
 	public static final UUID uuidMarkerTerrestrial = UUID.fromString("5ed92edb-e2c6-48da-8367-6e82071c888f");
 
 
-	//language uuids
-	public static final UUID uuidLangAuns = UUID.fromString("7bb29f8f-d74b-4f7d-b673-c52debb7ae20");     //au
-	public static final UUID uuidLangChukchiLouravetlany = UUID.fromString("f85797cc-5ab3-454d-b9eb-beb75bc8eb37");   //cl
-	public static final UUID uuidLangChleuh = UUID.fromString("85132635-d696-4fc0-af12-207175b11773");    //cu
-	public static final UUID uuidLangEnglishCanadian = UUID.fromString("43d244c4-e8cb-4c7f-951a-14d71666999c");   //ec
-	public static final UUID uuidLangEnglishUs = UUID.fromString("037bc818-b992-48ce-a40b-994980bc46d7");  //eu
-	public static final UUID uuidLangEvenKamchatcka= UUID.fromString("6ff3e21e-cabe-4583-b416-11b7120c5c0a");   //ek
-	public static final UUID uuidLangEvenki = UUID.fromString("2773fa25-8b37-4c58-8936-b666ccbb8e1c");  //ev
-	public static final UUID uuidLangFrenchCanadian = UUID.fromString("2b9a24d1-df9d-45bf-9310-11afa1256b9a");   //fc
-	public static final UUID uuidLangHassanya = UUID.fromString("ece61834-448c-4897-98ed-a90d1253a215");    //ha
-	public static final UUID uuidLangKamchadal = UUID.fromString("61671224-9fc5-4e59-a29b-04fc3e9ffab2");  //ka
-	public static final UUID uuidLangKrio = UUID.fromString("93a1899a-dd23-4d55-b159-a427dc44ab19");   //  ki
-	public static final UUID uuidLangKoryak = UUID.fromString("e5c71f03-691c-440c-ad5c-2e120b2795d7");    //kr
-	public static final UUID uuidLangLapp = UUID.fromString("8405e039-a45c-491e-84dd-6779d1980e53");   //lp
-	public static final UUID uuidLangMonegasque = UUID.fromString("05dbbcdd-6ea1-4091-8a8b-ed023dff8070");   //mo
-	public static final UUID uuidLangOstyak = UUID.fromString("c3fda8b6-a7ce-4846-8d18-b112477316fb");//os
-	public static final UUID uuidLangTamul = UUID.fromString("9f55f493-9f2b-427c-bb55-d970822726c9");   //tm
-	public static final UUID uuidLangNentsiNenets = UUID.fromString("4697b87e-2718-4986-8f9b-361dd47b0c90");   //ne
-
-
-
-	//...
-
-
 	public static NomenclaturalCode kingdomId2NomCode(Integer kingdomId){
 		switch (kingdomId){
 			case 1: return null;
@@ -227,68 +207,22 @@ public final class ErmsTransformer extends InputTransformerBase {
 		return super.getNameTypeDesignationStatusUuid(key);
 	}
 
+	private Map<String, Language> iso639_3_languages;
+
 	@Override
     public Language getLanguageByKey(String ermsAbbrev) throws IllegalArgumentException {
-		Set<String> unhandledLanguages = new HashSet<>();
-		if (StringUtils.isBlank(ermsAbbrev)){return null;
-		}else if (ermsAbbrev.equals("ab")){return Language.ALBANIAN();
-//		}else if (ermsAbbrev.equals("au")){return Language.AUNS();  //??
-//		}else if (ermsAbbrev.equals("cl")){return Language.CHUKCHI(); // (LOURAVETLANY)(); //iso639-3: ckt //also known as Luoravetlan, Chukot and Chukcha is a Palaeosiberian language spoken by Chukchi people in the easternmost extremity of Siberia, mainly in Chukotka Autonomous Okrug.
-//		}else if (ermsAbbrev.equals("cu")){return Language.CHLEUH();
-//		}else if (ermsAbbrev.equals("ec")){return Language.ENGLISH-CANADIAN();  //no iso
-//		}else if (ermsAbbrev.equals("ek")){return Language.EVEN-KAMCHATKA(); //iso639-3: eve    Lamut, Ewen, Eben, Orich, Ilqan; Russian: ???´????? ???´?, earlier also ????????? ???´?) is a Tungusic language spoken by the Evens in Siberia
-//		}else if (ermsAbbrev.equals("eu")){return Language.ENGLISH-UNITED STATES();  no iso //ENGLISH();
-//		}else if (ermsAbbrev.equals("ev")){return Language.EVENKI();   iso: evn  //languages of Tungusic family
-//		}else if (ermsAbbrev.equals("fc")){return Language.FRENCH-CANADIAN();   no iso  //FRENCH();
-//		}else if (ermsAbbrev.equals("gu")){return Language.GUARAYO();     //GUARANI() ??
-//		}else if (ermsAbbrev.equals("ha")){return Language.HASSANYA(); Hassaniyya Arabic  ios 639-3: mey
-//		}else if (ermsAbbrev.equals("ji")){return Language.JIVARA();   		//??
-//		}else if (ermsAbbrev.equals("ka")){return Language.KAMCHADAL();   iso 639-3:itl //Itelmen, formerly also known as Kamchadal, is a language belonging to the Chukotko-Kamchatkan family traditionally spoken in the Kamchatka Peninsula.
-//		}else if (ermsAbbrev.equals("ki")){return Language.CREOLES_PIDGINS_ENGLISH_BASED_OTHER()
-//		}else if (ermsAbbrev.equals("kr")){return Language.KORYAK();    //iso639-3: kpy
-//		}else if (ermsAbbrev.equals("lp")){return Language.LAPP();      //??
-//		}else if (ermsAbbrev.equals("mh")){return Language.MAHR();   //Marathi ; Mari ??
-//		}else if (ermsAbbrev.equals("mk")){return Language.MAKAH (QWIQWIDICCIAT)();  //iso639-3: myh
-//		}else if (ermsAbbrev.equals("ne")){return Language.NENETS();   iso639-3 yrk; iso639-2: mis
-//		}else if (ermsAbbrev.equals("os")){return Language.OSTYAK();   //Ostyak on its own or in combination, can refer, especially in older literature, to several Siberian peoples and languages:
-		//																Khanty language (kca; 639-2: fiu); Ket language(ket); Selkup language(sel; 639-2: sel)
-//		}else if (ermsAbbrev.equals("pi")){return Language.PIRAYAGUARA();  //??
-//		}else if (ermsAbbrev.equals("sh")){return Language.SERBO_CROATIAN();  //hbs
-//		}else if (ermsAbbrev.equals("tm")){return Language.TAM			//??
-//		}else if (ermsAbbrev.equals("yu")){return Language.YUKAGIR();  639-2: mis;  639-3 yux (Southern Yukaghir)- ykg(Tundra Yukaghir)
+		if(iso639_3_languages == null){
+		    fillIso639_3_languages();
+		}
+	    Set<String> unhandledLanguages = new HashSet<>();
+		if (StringUtils.isBlank(ermsAbbrev)){
+		    return null;
+		}else if (iso639_3_languages.get(ermsAbbrev)!= null){
+		    return iso639_3_languages.get(ermsAbbrev);
 		}else{
-			unhandledLanguages.add("au");
-			unhandledLanguages.add("cl");
-			unhandledLanguages.add("ec");
-			unhandledLanguages.add("ek");
-			unhandledLanguages.add("eu");
-			unhandledLanguages.add("ev");
-			unhandledLanguages.add("fc");
-			unhandledLanguages.add("gu");
-			unhandledLanguages.add("ha");
-			unhandledLanguages.add("ji");
-			unhandledLanguages.add("ka");
-			unhandledLanguages.add("kr");
-			unhandledLanguages.add("lp");
-			unhandledLanguages.add("mh");
-			unhandledLanguages.add("mk");
-			unhandledLanguages.add("ne");
-			unhandledLanguages.add("os");
-			unhandledLanguages.add("pi");
-			unhandledLanguages.add("sh");
-			unhandledLanguages.add("tm");
-			unhandledLanguages.add("sh");
-			unhandledLanguages.add("yu");
-
-			unhandledLanguages.add("cu");   //Chleuh
-			unhandledLanguages.add("ki");  //Krio, subset of Language.CREOLES_PIDGINS_ENGLISH_BASED_OTHER()
-			unhandledLanguages.add("mo");  //Monégasque
-
-
-
-
+		    //unhandledLanguage.add(xxx);
 			if (unhandledLanguages.contains(ermsAbbrev)){
-				logger.info("Unhandled language '" + ermsAbbrev + "' replaced by 'UNDETERMINED'" );
+				logger.warn("Unhandled language '" + ermsAbbrev + "' replaced by 'UNDETERMINED'" );
 				return Language.UNDETERMINED();
 			}
 			String warning = "New language abbreviation " + ermsAbbrev;
@@ -297,31 +231,33 @@ public final class ErmsTransformer extends InputTransformerBase {
 		}
 	}
 
-	@Override
-	public UUID getLanguageUuid(String key) throws UndefinedTransformerMethodException {
-		if (key == null){
-			return null;
-		}else if (key.equalsIgnoreCase("au")){return uuidLangAuns;
-		}else if (key.equalsIgnoreCase("cl")){return uuidLangChukchiLouravetlany;
-		}else if (key.equalsIgnoreCase("cu")){return uuidLangChleuh;
-		}else if (key.equalsIgnoreCase("ec")){return uuidLangEnglishCanadian;
-		}else if (key.equalsIgnoreCase("ek")){return uuidLangEvenKamchatcka;
-		}else if (key.equalsIgnoreCase("eu")){return uuidLangEnglishUs;
-		}else if (key.equalsIgnoreCase("ev")){return uuidLangEvenki;
-		}else if (key.equalsIgnoreCase("fc")){return uuidLangFrenchCanadian;
-		}else if (key.equalsIgnoreCase("ha")){return uuidLangHassanya;
-		}else if (key.equalsIgnoreCase("ka")){return uuidLangKamchadal;
-		}else if (key.equalsIgnoreCase("ki")){return uuidLangKrio;
-		}else if (key.equalsIgnoreCase("kr")){return uuidLangKoryak;
-		}else if (key.equalsIgnoreCase("lp")){return uuidLangLapp;
-		}else if (key.equalsIgnoreCase("mo")){return uuidLangMonegasque;
-		}else if (key.equalsIgnoreCase("ne")){return uuidLangNentsiNenets;
-		}else if (key.equalsIgnoreCase("os")){return uuidLangOstyak;
-		}else if (key.equalsIgnoreCase("tm")){return uuidLangTamul;
-		}
+    private void fillIso639_3_languages() {
+        iso639_3_languages = new HashMap<>();
+        TermVocabulary<Language> voc639_3 = TermVocabulary.NewInstance(TermType.Language,
+                Language.class, "ISO 639-3 language subset", "ISO 639-3 languages", "ISO 639-3", null);
+        voc639_3.setUuid(Language.uuidLanguageIso639_3Vocabulary);
 
-		return super.getLanguageUuid(key);
-	}
+        addIso639_3_language(voc639_3, "swh", Language.uuidLangKiswahiliSwahili, "Kiswahili, Swahili");
+        addIso639_3_language(voc639_3, "zlm", Language.uuidLangMalay, "Malay");
+        addIso639_3_language(voc639_3, "bcc", Language.uuidLangSouthernBalochi, "Southern Balochi");
+        addIso639_3_language(voc639_3, "lij", Language.uuidLangLigurian, "Ligurian");
+        addIso639_3_language(voc639_3, "mey", Language.uuidLangHassaniyya, "Hassaniyya");
+        addIso639_3_language(voc639_3, "kri", Language.uuidLangKrio, "Krio");
+        addIso639_3_language(voc639_3, "evn", Language.uuidLangEvenki, "Evenki");
+        addIso639_3_language(voc639_3, "kpy", Language.uuidLangKoryak, "Koryak");
+        addIso639_3_language(voc639_3, "eve", Language.uuidLangEven, "Even");
+        addIso639_3_language(voc639_3, "yrk", Language.uuidLangNenets, "Nenets");
+        addIso639_3_language(voc639_3, "ckt", Language.uuidLangChukot, "Chukot");
+        addIso639_3_language(voc639_3, "aeb", Language.uuidLangTunisianArabic, "Tunisian Arabic");
+        addIso639_3_language(voc639_3, "auq", Language.uuidLangAnusKorur, "Anus, Korur");
+        addIso639_3_language(voc639_3, "kca", Language.uuidLangKhanty, "Khanty");
+    }
+
+    private void addIso639_3_language(TermVocabulary<Language> voc, String abbrev, UUID uuid, String label) {
+        Language lang = Language.NewInstance(uuid, label, abbrev);
+        voc.addTerm(lang);
+        iso639_3_languages.put(abbrev, lang);
+    }
 
 	@Override
 	public ExtensionType getExtensionTypeByKey(String key) throws UndefinedTransformerMethodException {

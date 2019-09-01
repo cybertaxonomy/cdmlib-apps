@@ -53,11 +53,6 @@ public class ErmsVernacularSourcesImport
 
 //******************************************* CONSTRUCTOR *******************************
 
-	/**
-	 * @param dbTableName
-	 * @param pluralString
-	 * @param dbTableName
-	 */
 	public ErmsVernacularSourcesImport() {
 		super(pluralString, dbTableName, cdmTargetClass);
 	}

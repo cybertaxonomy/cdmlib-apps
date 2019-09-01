@@ -50,11 +50,6 @@ public class ErmsNotesSourcesImport extends ErmsImportBase<CommonTaxonName> {
 
 //******************************************* CONSTRUCTOR *******************************
 
-	/**
-	 * @param dbTableName
-	 * @param pluralString
-	 * @param dbTableName
-	 */
 	public ErmsNotesSourcesImport() {
 		super(pluralString, dbTableName, cdmTargetClass);
 	}
@@ -134,7 +129,7 @@ public class ErmsNotesSourcesImport extends ErmsImportBase<CommonTaxonName> {
 
 	@Override
 	protected boolean isIgnore(ErmsImportState state) {
-		boolean isDo = state.getConfig().isDoVernaculars() && state.getConfig().isDoVernaculars();
+		boolean isDo = state.getConfig().isDoNotes() && state.getConfig().isDoNotes();
 		return ! isDo ;
 	}
 }

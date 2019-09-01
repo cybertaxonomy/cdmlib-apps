@@ -111,8 +111,6 @@ public class ErmsAreaImport
 
 	@Override
 	protected boolean isIgnore(ErmsImportState state){
-		//TODO
-//		return ! state.getConfig().isDoAreas();
-		return false;
+		return !state.getConfig().isDoDistributions();
 	}
 }

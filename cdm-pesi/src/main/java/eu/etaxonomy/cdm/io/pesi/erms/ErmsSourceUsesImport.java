@@ -289,7 +289,8 @@ public class ErmsSourceUsesImport  extends ErmsImportBase<CommonTaxonName> {
 	 * @param strTaxonId
 	 * @param strPageNr
 	 */
-	private IdentifiableEntity<?> makeCombinationReference(ResultSetPartitioner<?> partitioner, ErmsImportState state, Reference ref, String strTaxonId, String strPageNr) {
+	private IdentifiableEntity<?> makeCombinationReference(ResultSetPartitioner<?> partitioner,
+	        ErmsImportState state, Reference ref, String strTaxonId, String strPageNr) {
 		// Kopie von Orig. Comb.
 		//TODO ist das wirklich der richtige Name, oder muss ein verknüpfter Name verwendet werden
 	    TaxonName taxonName = (TaxonName)state.getRelatedObject(ErmsImportBase.NAME_NAMESPACE, strTaxonId);
@@ -308,7 +309,8 @@ public class ErmsSourceUsesImport  extends ErmsImportBase<CommonTaxonName> {
 	 */
 	private boolean isFirstStatusSource = true;
 	@SuppressWarnings("unused")
-    private IdentifiableEntity<?> makeStatusSource(ResultSetPartitioner<?> partitioner, ErmsImportState state, Reference ref, String strTaxonId, String strPageNr) {
+    private IdentifiableEntity<?> makeStatusSource(ResultSetPartitioner<?> partitioner,
+            ErmsImportState state, Reference ref, String strTaxonId, String strPageNr) {
 		if (isFirstStatusSource){
 			logger.warn("StatusSource not yet implemented");
 			isFirstStatusSource = false;
@@ -391,6 +393,13 @@ public class ErmsSourceUsesImport  extends ErmsImportBase<CommonTaxonName> {
 
 	}
 
+
+    @Override
+    protected DbImportMapping<?, ?> getMapping() {
+        logger.info("getMapping not implemented for EmrsSourceUsesImport");
+        return null;  // not needed because Mapping is not implemented in this class yet
+    }
+
 	@Override
 	protected boolean doCheck(ErmsImportState state){
 		IOValidator<ErmsImportState> validator = new ErmsSourceUsesImportValidator();
@@ -404,9 +413,4 @@ public class ErmsSourceUsesImport  extends ErmsImportBase<CommonTaxonName> {
 		return result;
 	}
 
-	@Override
-	protected DbImportMapping<?, ?> getMapping() {
-		logger.info("getMapping not implemented for EmrsSourceUsesImport");
-		return null;  // not needed because Mapping is not implemented in this class yet
-	}
 }

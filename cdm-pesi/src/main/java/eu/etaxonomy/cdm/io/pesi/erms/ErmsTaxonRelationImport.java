@@ -51,6 +51,9 @@ public class ErmsTaxonRelationImport extends ErmsImportBase<TaxonBase<?>> implem
 
 	private ErmsImportState state;  //ERMS import will never run in more then one instance
 
+	@Override
+    protected int divideCountBy() { return 5;}  //use only 1000 records
+
 	public ErmsTaxonRelationImport(){
 		super(pluralString, dbTableName, cdmTargetClass);
 	}
@@ -62,7 +65,8 @@ public class ErmsTaxonRelationImport extends ErmsImportBase<TaxonBase<?>> implem
 
 			mapping.addMapper(DbImportTaxIncludedInMapper.NewInstance("id", TAXON_NAMESPACE, "parentId", TAXON_NAMESPACE, "accParentId", TAXON_NAMESPACE, null));//there is only one tree
 
-			TaxonRelationshipType taxonRelationshipType = getTaxonRelationshipType(state, ErmsTransformer.uuidTaxRelTypeIsTaxonSynonymOf, "is taxon synonym of", "is synonym of relation used by synonym that are of class Taxon as they can not be handled differently", null, null);
+			TaxonRelationshipType taxonRelationshipType = getTaxonRelationshipType(state, ErmsTransformer.uuidTaxRelTypeIsTaxonSynonymOf,
+			        "is taxon synonym of", "is synonym of relation used by synonym that are of class Taxon as they can not be handled differently", null, null);
 			mapping.addMapper(DbImportSynonymMapper.NewInstance("id", "tu_acctaxon", TAXON_NAMESPACE, null, taxonRelationshipType));
 			mapping.addMapper(DbImportNameTypeDesignationMapper.NewInstance("id", "tu_typetaxon", ErmsImportBase.NAME_NAMESPACE, "tu_typedesignationstatus"));
 //			mapping.addMapper(DbNotYetImplementedMapper.NewInstance("tu_acctaxon"));
@@ -70,7 +74,15 @@ public class ErmsTaxonRelationImport extends ErmsImportBase<TaxonBase<?>> implem
 		return mapping;
 	}
 
-	@Override
+
+    @Override
+    protected String getIdQuery(){
+        String result = " SELECT id FROM " + getTableName() +
+                " ORDER BY tu_sp";
+        return result;
+    }
+
+    @Override
     protected String getRecordQuery(ErmsImportConfigurator config) {
 		//TODO get automatic by second path mappers
 		String selectAttributes = " myTaxon.id, myTaxon.tu_parent, myTaxon.tu_typetaxon, myTaxon.tu_typedesignation, " +

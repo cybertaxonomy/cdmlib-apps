@@ -33,7 +33,7 @@ public class ErmsImportActivator {
 	private static final Logger logger = Logger.getLogger(ErmsImportActivator.class);
 
 	//database validation status (create, update, validate ...)
-	static DbSchemaValidation hbm2dll = DbSchemaValidation.CREATE;
+	static DbSchemaValidation hbm2dll = DbSchemaValidation.VALIDATE;
 
 //	static final Source ermsSource = PesiSources.PESI3_ERMS();
 	static final Source ermsSource = PesiSources.PESI2019_ERMS();
@@ -54,7 +54,7 @@ public class ErmsImportActivator {
 	//ignore null
 	static final boolean ignoreNull = true;
 
-	static final boolean includeExport = true;
+	static final boolean includeExport2PESI = false;
 
 // ***************** ALL ************************************************//
 
@@ -63,25 +63,27 @@ public class ErmsImportActivator {
 //
 //	//taxa
 //	static final boolean doTaxa = true;
-//	static final boolean doRelTaxa = true;
+//	static final boolean doRelTaxa = true; //should always run with doTaxa because dependent on state from doTaxa
+//  static final boolean doCommonNames = true;
+//  static final boolean doNotes = false;
+//	static final boolean doDistributions = true;
 //	static final boolean doLinks = true;
-//	static final boolean doOccurences = true;
 //	static final boolean doImages = true;
-//  static final boolean doCommonNames = false;
 
 //******************** NONE ***************************************//
 
 
 	//references
-	static final DO_REFERENCES doReferences =  DO_REFERENCES.ALL;
+	static final DO_REFERENCES doReferences =  DO_REFERENCES.NONE;
 
 	//taxa
-	static final boolean doTaxa = false;
-	static final boolean doRelTaxa = false;
-	static final boolean doLinks = false;
-	static final boolean doOccurences = false;
+	static final boolean doTaxa = true;
+	static final boolean doRelTaxa = true; //should always run with doTaxa because dependent on state from doTaxa
 	static final boolean doCommonNames = false;
-
+	static final boolean doNotes = false;
+	static final boolean doDistributions = false;
+	static final boolean doLinks = false;
+	static final boolean doImages = false;
 
 
 	private void doImport(Source source, ICdmDataSource destination, DbSchemaValidation hbm2dll){
@@ -99,8 +101,11 @@ public class ErmsImportActivator {
 		config.setDoTaxa(doTaxa);
 		config.setDoRelTaxa(doRelTaxa);
 		config.setDoLinks(doLinks);
-		config.setDoOccurrence(doOccurences);
+		config.setDoDistributions(doDistributions);
 		config.setDoVernaculars(doCommonNames);
+		config.setDoNotes(doNotes);
+		config.setDoImages(doImages);
+
 		config.setDbSchemaValidation(hbm2dll);
 
 		config.setCheck(check);
@@ -130,8 +135,14 @@ public class ErmsImportActivator {
 		ErmsImportActivator ermsImport = new ErmsImportActivator();
 		ermsImport.doImport(ermsSource, cdmDB, hbm2dll);
 
-		if (includeExport){
+		if (includeExport2PESI){
 			PesiExportActivatorERMS ermsExport = new PesiExportActivatorERMS();
+			ermsExport.doTaxa = doTaxa;
+			ermsExport.doTreeIndex = doTaxa;
+			ermsExport.doRelTaxa = doRelTaxa;
+            ermsExport.doDescriptions = doImages;
+            ermsExport.doInferredSynonyms = doRelTaxa;
+
 			ermsExport.doExport(cdmDB);
 		}
 		System.exit(0);

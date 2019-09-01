@@ -49,7 +49,7 @@ public class ErmsImportConfigurator
 	private boolean doLinks = true;
 	private boolean doNotes = true;
 	private boolean doImages = true;
-	private boolean doOccurrence = true;
+	private boolean doDistributions = true;
 	private DO_REFERENCES doReferences = DO_REFERENCES.ALL;
 	private boolean doTaxa = true;
 	private boolean doRelTaxa = true;
@@ -72,7 +72,7 @@ public class ErmsImportConfigurator
 				, ErmsNotesSourcesImport.class
 
 				, ErmsAreaImport.class
-				, ErmsDrImport.class
+				, ErmsDistributionImport.class
 				, ErmsSourceUsesImport.class
 				, ErmsLinkImport.class  //kann weiter hoch
 				, ErmsImageImport.class
@@ -84,11 +84,6 @@ public class ErmsImportConfigurator
 		return new ErmsImportState(this);
 	}
 
-	/**
-	 * @param berlinModelSource
-	 * @param sourceReference
-	 * @param destination
-	 */
 	private ErmsImportConfigurator(Source ermsSource, ICdmDataSource destination) {
 	   super(ermsSource, destination, NomenclaturalCode.ICZN, defaultTransformer);//default for ERMS
 	}
@@ -171,11 +166,11 @@ public class ErmsImportConfigurator
 		return doImages;
 	}
 
-	public boolean isDoOccurrence() {
-		return doOccurrence;
+	public boolean isDoDistributions() {
+		return doDistributions;
 	}
-	public void setDoOccurrence(boolean doOccurrence) {
-		this.doOccurrence = doOccurrence;
+	public void setDoDistributions(boolean doDistributions) {
+		this.doDistributions = doDistributions;
 	}
 
 	public DO_REFERENCES getDoReferences() {
@@ -198,5 +193,4 @@ public class ErmsImportConfigurator
 	public void setDoRelTaxa(boolean doRelTaxa) {
 		this.doRelTaxa = doRelTaxa;
 	}
-
 }
