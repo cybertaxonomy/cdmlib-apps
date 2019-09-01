@@ -41,8 +41,6 @@ public class PesiExportActivatorERMS {
 	static final int nameIdStart = 10000000;
 	static final IdType idType = IdType.CDM_ID_WITH_EXCEPTIONS;
 
-
-
 	static final int partitionSize = 1000;
 
 	//check - export
@@ -51,26 +49,24 @@ public class PesiExportActivatorERMS {
 
 // ****************** ALL *****************************************
 
-	//references
-	static final boolean deleteAll = true;
-	static final DO_REFERENCES doReferences =  DO_REFERENCES.ALL;
-	static final boolean doTaxa = true;
-	static final boolean doTreeIndex = true;
-	static final boolean doInferredSynonyms = true;
-	static final boolean doRelTaxa = true;
-	static final boolean doDescriptions = true;
+//	static boolean deleteAll = true;
+//	static DO_REFERENCES doReferences =  DO_REFERENCES.ALL;
+//	static boolean doTaxa = true;
+//	static boolean doTreeIndex = true;
+//	static boolean doInferredSynonyms = true;
+//	static boolean doRelTaxa = true;
+//	static boolean doDescriptions = true;
 
 
 // ************************ NONE **************************************** //
 
-	//references
-//	static final boolean deleteAll = false;
-//	static final DO_REFERENCES doReferences =  DO_REFERENCES.NONE;
-//	boolean doTaxa = true;
-//	boolean doTreeIndex = true; //only with doTaxa
-//	boolean doInferredSynonyms = true; //only with doTaxa
-//	boolean doRelTaxa = true;
-//	boolean doDescriptions = false;
+	static boolean deleteAll = false;
+	static DO_REFERENCES doReferences =  DO_REFERENCES.NONE;
+	static boolean doTaxa = true;
+	static boolean doTreeIndex = true; //only with doTaxa
+	static boolean doInferredSynonyms = true; //only with doTaxa
+	static boolean doRelTaxa = true;
+	static boolean doDescriptions = false;
 
 //	static final boolean doNotes = false;
 //	static final boolean doNoteSources = false;
