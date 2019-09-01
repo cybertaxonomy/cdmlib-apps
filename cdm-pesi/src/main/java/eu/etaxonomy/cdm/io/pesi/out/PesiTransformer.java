@@ -2162,6 +2162,49 @@ public final class PesiTransformer extends ExportTransformerBase{
 		}
 	}
 
+    public String getCacheBySynonymType(Synonym synonym, NomenclaturalCode code){
+        if (synonym == null){
+            return null;
+        }else{
+            String result;
+            Integer key = synonym2RelTaxonQualifierFk(synonym);
+            if (code.equals(NomenclaturalCode.ICZN)){
+                result = this.taxRelZooQualifierCacheMap.get(key);
+                if (result == null){
+                    this.taxRelQualifierCacheMap.get(key);
+                }
+            }else{
+                result = this.taxRelQualifierCacheMap.get(key);
+            }
+            return result;
+        }
+    }
+
+    public static Integer synonym2RelTaxonQualifierFk(Synonym synonym) {
+        if (synonym == null) {
+            return null;
+        }
+        SynonymType type = synonym.getType();
+        if (type.equals(SynonymType.SYNONYM_OF())) {
+            return IS_SYNONYM_OF;
+        }else if(type.equals(SynonymType.HOMOTYPIC_SYNONYM_OF())){
+            return IS_HOMOTYPIC_SYNONYM_OF;
+        }else if(type.equals(SynonymType.HETEROTYPIC_SYNONYM_OF())){
+            return IS_HETEROTYPIC_SYNONYM_OF;
+        }else if(type.equals(SynonymType.INFERRED_EPITHET_OF())){
+            return IS_INFERRED_EPITHET_FOR;
+        }else if(type.equals(SynonymType.INFERRED_GENUS_OF())){
+            return IS_INFERRED_GENUS_FOR;
+//        }else if(type.equals(SynonymType.INFERRED_SYNONYM_OF())){
+//            return IS_;
+        }else if(type.equals(SynonymType.POTENTIAL_COMBINATION_OF())){
+            return IS_POTENTIAL_COMBINATION_FOR;
+        }else {
+            logger.warn("No equivalent synonym type found in datawarehouse for: " + type.getTitleCache());
+        }
+        return null;
+    }
+
 	/**
 	 * Returns the RelTaxonQualifierFk for a TaxonRelation.
 	 * @param relation
@@ -2201,12 +2244,6 @@ public final class PesiTransformer extends ExportTransformerBase{
 //			}else{
 //				return IS_HETEROTYPIC_SYNONYM_OF;
 //			}
-//		} else if (type.equals(SynonymType.INFERRED_EPITHET_OF())) {
-//			return IS_INFERRED_EPITHET_FOR;
-//		} else if (type.equals(SynonymType.INFERRED_GENUS_OF())) {
-//			return IS_INFERRED_GENUS_FOR;
-//		} else if (type.equals(SynonymType.POTENTIAL_COMBINATION_OF())) {
-//			return IS_POTENTIAL_COMBINATION_FOR;
 		} else if (type.equals(NameRelationshipType.BASIONYM())) {
 			return IS_BASIONYM_FOR;
 		} else if (type.equals(NameRelationshipType.LATER_HOMONYM())) {
@@ -2260,21 +2297,22 @@ public final class PesiTransformer extends ExportTransformerBase{
         if (syn.getAcceptedTaxon() == null) {
             return null;
         }
-        if (syn.isPartial()){
-            if (syn.getType().equals(SynonymType.HETEROTYPIC_SYNONYM_OF())){
-                return IS_PARTIAL_AND_HETEROTYPIC_SYNONYM_OF;
-            }else if (syn.getType().equals(SynonymType.HOMOTYPIC_SYNONYM_OF())){
-                return IS_PARTIAL_AND_HOMOTYPIC_SYNONYM_OF;
-            }
-            return IS_PARTIAL_SYNONYM_OF;
-        }else if (syn.isProParte()){
-            if (syn.getType().equals(SynonymType.HETEROTYPIC_SYNONYM_OF())){
-                return IS_PRO_PARTE_AND_HETEROTYPIC_SYNONYM_OF;
-            }else if (syn.getType().equals(SynonymType.HOMOTYPIC_SYNONYM_OF())){
-                return IS_PRO_PARTE_AND_HOMOTYPIC_SYNONYM_OF;
-            }
-            return IS_PRO_PARTE_SYNONYM_OF;
-        }else if (syn.getType().equals(SynonymType.HETEROTYPIC_SYNONYM_OF())){
+//        if (syn.isPartial()){
+//            if (syn.getType().equals(SynonymType.HETEROTYPIC_SYNONYM_OF())){
+//                return IS_PARTIAL_AND_HETEROTYPIC_SYNONYM_OF;
+//            }else if (syn.getType().equals(SynonymType.HOMOTYPIC_SYNONYM_OF())){
+//                return IS_PARTIAL_AND_HOMOTYPIC_SYNONYM_OF;
+//            }
+//            return IS_PARTIAL_SYNONYM_OF;
+//        }else if (syn.isProParte()){
+//            if (syn.getType().equals(SynonymType.HETEROTYPIC_SYNONYM_OF())){
+//                return IS_PRO_PARTE_AND_HETEROTYPIC_SYNONYM_OF;
+//            }else if (syn.getType().equals(SynonymType.HOMOTYPIC_SYNONYM_OF())){
+//                return IS_PRO_PARTE_AND_HOMOTYPIC_SYNONYM_OF;
+//            }
+//            return IS_PRO_PARTE_SYNONYM_OF;
+//        }else
+        if (syn.getType().equals(SynonymType.HETEROTYPIC_SYNONYM_OF())){
             return IS_HETEROTYPIC_SYNONYM_OF;
         } else if (syn.getType().equals(SynonymType.HOMOTYPIC_SYNONYM_OF())){
             return IS_HOMOTYPIC_SYNONYM_OF;
