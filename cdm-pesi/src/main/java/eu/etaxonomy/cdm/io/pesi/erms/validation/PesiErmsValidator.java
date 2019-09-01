@@ -15,6 +15,7 @@ import org.apache.log4j.Logger;
 
 import eu.etaxonomy.cdm.app.pesi.PesiDestinations;
 import eu.etaxonomy.cdm.app.pesi.PesiSources;
+import eu.etaxonomy.cdm.common.CdmUtils;
 import eu.etaxonomy.cdm.io.common.Source;
 
 /**
@@ -77,7 +78,7 @@ public class PesiErmsValidator {
         ResultSet srcRS = source.getResultSet("SELECT s.* FROM sources s ORDER BY s.id ");
         ResultSet destRS = destination.getResultSet("SELECT s.* FROM Source s "
                 + " WHERE s.OriginalDB = 'erms' ORDER BY s.RefIdInSource");  // +1 for the source reference "erms" but this has no OriginalDB
-        if (srcRS.next() && destRS.next()){
+        while (srcRS.next() && destRS.next()){
             success &= testSingleReference(srcRS, destRS);
         }
         return success;
@@ -86,6 +87,7 @@ public class PesiErmsValidator {
     private boolean testSingleReference(ResultSet srcRS, ResultSet destRS) throws SQLException {
         //id, RefIdInSource
         boolean success = equals("Reference ID ", srcRS.getInt("id"), destRS.getInt("RefIdInSource"));
+        success &= equals("Reference Name ", srcRS.getString("source_name"), destRS.getString("Name"));
 
         //TODO TBC
         return success;
@@ -100,7 +102,7 @@ public class PesiErmsValidator {
 
     private boolean equals(String messageStart, int nSrc, int nDest) {
         if (nSrc != nDest){
-            String message = messageStart + " must be equal, but was not. Source: "+  nSrc + "; Destination: " + nDest;
+            String message = messageStart + " must be equal, but was not.\n Source: "+  nSrc + "; Destination: " + nDest;
             logger.warn(message);
             return false;
         }else{
@@ -109,7 +111,38 @@ public class PesiErmsValidator {
         }
     }
 
+    private boolean equals(String messageStart, String strSrc, String strDest) {
+        if (!CdmUtils.nullSafeEqual(strSrc, strDest)){
+            int index = diffIndex(strSrc, strDest);
+            String message = messageStart + " must be equal, but was not at "+index+".\n  Source:      "+  strSrc + "\n  Destination: " + strDest;
+            logger.warn(message);
+            return false;
+        }else{
+            logger.info(messageStart + " were equal: " + strSrc);
+            return true;
+        }
+    }
+    /**
+     * @param strSrc
+     * @param strDest
+     * @return
+     */
+    private int diffIndex(String strSrc, String strDest) {
+        int i;
+        for (i = 0; i<strSrc.length() && i<strDest.length() ;i++) {
+            if (strSrc.charAt(i)!= strDest.charAt(i)){
+                return i;
+            }
+        }
+        if(strSrc.length()!=strDest.length()){
+            return Math.max(strSrc.length(), strDest.length());
+        }
+        return i;
+    }
+
 //** ************* MAIN ********************************************/
+
+
 
     public static void main(String[] args){
         PesiErmsValidator validator = new PesiErmsValidator();
