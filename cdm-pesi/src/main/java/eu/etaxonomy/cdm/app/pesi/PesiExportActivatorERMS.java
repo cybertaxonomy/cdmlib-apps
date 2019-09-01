@@ -41,7 +41,7 @@ public class PesiExportActivatorERMS {
 	static final int nameIdStart = 10000000;
 	static final IdType idType = IdType.CDM_ID_WITH_EXCEPTIONS;
 
-	static final boolean deleteAll = true;
+
 
 	static final int partitionSize = 1000;
 
@@ -52,9 +52,8 @@ public class PesiExportActivatorERMS {
 // ****************** ALL *****************************************
 
 	//references
+	static final boolean deleteAll = true;
 	static final DO_REFERENCES doReferences =  DO_REFERENCES.ALL;
-
-	//taxa
 	static final boolean doTaxa = true;
 	static final boolean doTreeIndex = true;
 	static final boolean doInferredSynonyms = true;
@@ -65,9 +64,8 @@ public class PesiExportActivatorERMS {
 // ************************ NONE **************************************** //
 
 	//references
+//	static final boolean deleteAll = false;
 //	static final DO_REFERENCES doReferences =  DO_REFERENCES.NONE;
-//
-//	//taxa
 //	boolean doTaxa = true;
 //	boolean doTreeIndex = true; //only with doTaxa
 //	boolean doInferredSynonyms = true; //only with doTaxa
