@@ -133,7 +133,7 @@ public abstract class PesiExportBase extends DbExportBase<PesiExportConfigurator
 	 * @return
 	 */
 	protected List<TaxonName> getNextPureNamePartition(Class<TaxonName> clazz,int limit, int partitionCount) {
-		List<OrderHint> orderHints = new ArrayList<OrderHint>();
+		List<OrderHint> orderHints = new ArrayList<>();
 		orderHints.add(new OrderHint("id", OrderHint.SortOrder.ASCENDING ));
 //		List<String> propPath = Arrays.asList(new String[]{"taxonBases"});
 

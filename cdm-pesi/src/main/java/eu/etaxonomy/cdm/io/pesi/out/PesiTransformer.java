@@ -1657,7 +1657,7 @@ public final class PesiTransformer extends ExportTransformerBase{
 	 * @param nomenclaturalCode
 	 * @return KINGDOM_ANIMALIA for NomenclaturalCode.ICZN, KINGDOM_PLANTAE for NomenclaturalCode.ICBN
 	 */
-	public static Integer nomenClaturalCode2Kingdom(NomenclaturalCode nomenclaturalCode) {
+	public static Integer nomenclaturalCode2Kingdom(NomenclaturalCode nomenclaturalCode) {
 		Integer result = null;
 		// TODO: This needs to be refined. For now we differentiate between Animalia and Plantae only.
 		if (nomenclaturalCode.equals(NomenclaturalCode.ICZN)) {

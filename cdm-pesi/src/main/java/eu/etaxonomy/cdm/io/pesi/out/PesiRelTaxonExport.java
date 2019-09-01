@@ -483,7 +483,7 @@ public class PesiRelTaxonExport extends PesiExportBase {
 	 */
 	private void invokeSynonyms(PesiExportState state, TaxonName synonymTaxonName) {
 		// Store KingdomFk and Rank information in Taxon table
-		Integer kingdomFk = PesiTransformer.nomenClaturalCode2Kingdom(synonymTaxonName.getNameType());
+		Integer kingdomFk = PesiTransformer.nomenclaturalCode2Kingdom(synonymTaxonName.getNameType());
 		Integer synonymFk = state.getDbId(synonymTaxonName);
 
 		saveSynonymData(state, synonymTaxonName, synonymTaxonName.getNameType(), kingdomFk, synonymFk);
@@ -729,9 +729,9 @@ public class PesiRelTaxonExport extends PesiExportBase {
 			if (taxonName.getRank() == null) {
 				logger.warn("Rank is null: " + taxonName.getUuid() + " (" + taxonName.getTitleCache() + ")");
 			}
-			result = PesiTransformer.rank2RankId(taxonName.getRank(), PesiTransformer.nomenClaturalCode2Kingdom(nomenclaturalCode));
+			result = PesiTransformer.rank2RankId(taxonName.getRank(), PesiTransformer.nomenclaturalCode2Kingdom(nomenclaturalCode));
 			if (result == null) {
-				logger.warn("Rank could not be determined for PESI-Kingdom-Id " + PesiTransformer.nomenClaturalCode2Kingdom(nomenclaturalCode) + " and TaxonName " + taxonName.getUuid() + " (" + taxonName.getTitleCache() + ")");
+				logger.warn("Rank could not be determined for PESI-Kingdom-Id " + PesiTransformer.nomenclaturalCode2Kingdom(nomenclaturalCode) + " and TaxonName " + taxonName.getUuid() + " (" + taxonName.getTitleCache() + ")");
 			}
 		}
 		return result;
@@ -747,7 +747,7 @@ public class PesiRelTaxonExport extends PesiExportBase {
 	 */
 	private static String getRankCache(TaxonName taxonName, NomenclaturalCode nomenclaturalCode, PesiExportState state) {
 		if (nomenclaturalCode != null) {
-			return state.getTransformer().getCacheByRankAndKingdom(taxonName.getRank(), PesiTransformer.nomenClaturalCode2Kingdom(nomenclaturalCode));
+			return state.getTransformer().getCacheByRankAndKingdom(taxonName.getRank(), PesiTransformer.nomenclaturalCode2Kingdom(nomenclaturalCode));
 		}else{
 			logger.warn("No nomenclatural code defined for rank cache search");
 			return null;
