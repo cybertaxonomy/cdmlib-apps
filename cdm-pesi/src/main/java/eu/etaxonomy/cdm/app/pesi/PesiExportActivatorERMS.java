@@ -19,7 +19,6 @@ import eu.etaxonomy.cdm.io.common.IExportConfigurator.DO_REFERENCES;
 import eu.etaxonomy.cdm.io.common.Source;
 import eu.etaxonomy.cdm.io.pesi.out.PesiExportConfigurator;
 import eu.etaxonomy.cdm.io.pesi.out.PesiTransformer;
-import eu.etaxonomy.cdm.model.name.NomenclaturalCode;
 
 /**
  * @author a.mueller
@@ -42,55 +41,45 @@ public class PesiExportActivatorERMS {
 	static final int nameIdStart = 10000000;
 	static final IdType idType = IdType.CDM_ID_WITH_EXCEPTIONS;
 
+	static final boolean deleteAll = true;
+
 	static final int partitionSize = 1000;
 
 	//check - export
 	static final CHECK check = CHECK.EXPORT_WITHOUT_CHECK;
 
-	//NomenclaturalCode
-	static final NomenclaturalCode nomenclaturalCode  = NomenclaturalCode.ICNAFP;
-
-	static final boolean deleteAll = true;
-
 
 // ****************** ALL *****************************************
-
-	//references
-//	static final DO_REFERENCES doReferences =  DO_REFERENCES.ALL;
-//
-//	//taxa
-//	static final boolean doTaxa = true;
-//	static final boolean doTreeIndex = true;
-//	static final boolean doInferredSynonyms = false;
-//	static final boolean doRelTaxa = true;
-//	static final boolean doDescriptions = true;
-//
-//	static final boolean doNotes = true;
-//	static final boolean doNoteSources = true;
-//	static final boolean doAdditionalTaxonSource = true;
-//	static final boolean doOccurrence = true;
-//	static final boolean doOccurrenceSource = true;
-//	static final boolean doImage = true;
-
-
-// ************************ NONE **************************************** //
 
 	//references
 	static final DO_REFERENCES doReferences =  DO_REFERENCES.ALL;
 
 	//taxa
-	boolean doTaxa = true;
-	boolean doTreeIndex = true; //only with doTaxa
-	boolean doInferredSynonyms = true; //only with doTaxa
-	boolean doRelTaxa = false;
-	boolean doDescriptions = false;
+	static final boolean doTaxa = true;
+	static final boolean doTreeIndex = true;
+	static final boolean doInferredSynonyms = true;
+	static final boolean doRelTaxa = true;
+	static final boolean doDescriptions = true;
 
-	static final boolean doNotes = false;
-	static final boolean doNoteSources = false;
-	static final boolean doAdditionalTaxonSource = false;
-	static final boolean doOccurrence = false;
-	static final boolean doOccurrenceSource = false;
-	static final boolean doImage = false;
+
+// ************************ NONE **************************************** //
+
+	//references
+//	static final DO_REFERENCES doReferences =  DO_REFERENCES.NONE;
+//
+//	//taxa
+//	boolean doTaxa = true;
+//	boolean doTreeIndex = true; //only with doTaxa
+//	boolean doInferredSynonyms = true; //only with doTaxa
+//	boolean doRelTaxa = true;
+//	boolean doDescriptions = false;
+
+//	static final boolean doNotes = false;
+//	static final boolean doNoteSources = false;
+//	static final boolean doAdditionalTaxonSource = false;
+//	static final boolean doOccurrence = false;
+//	static final boolean doOccurrenceSource = false;
+//	static final boolean doImage = false;
 
 
 	public boolean 	doExport(ICdmDataSource source){
@@ -110,12 +99,12 @@ public class PesiExportActivatorERMS {
 		config.setDoReferences(doReferences);
 		config.setDoDescription(doDescriptions);
 
-		config.setDoOccurrence(doOccurrence);
-		config.setDoOccurrenceSource(doOccurrenceSource);
-		config.setDoNotes(doNotes);
-		config.setDoNoteSources(doNoteSources);
-		config.setDoImages(doImage);
-		config.setDoAdditionalTaxonSource(doAdditionalTaxonSource);
+//		config.setDoOccurrence(doOccurrence);
+//		config.setDoOccurrenceSource(doOccurrenceSource);
+//		config.setDoNotes(doNotes);
+//		config.setDoNoteSources(doNoteSources);
+//		config.setDoImages(doImage);
+//		config.setDoAdditionalTaxonSource(doAdditionalTaxonSource);
 
 		config.setCheck(check);
 		config.setLimitSave(partitionSize);
