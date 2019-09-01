@@ -58,7 +58,7 @@ public class PlantGlossaryCategoryImport extends CsvImportBase<PlantGlossaryCsvI
         }
 
         TermVocabulary<State> stateVoc = TermVocabulary.NewInstance(
-                TermType.State,
+                TermType.State, State.class,
                 currentRecord.get(HEADER_DESCRIPTION),
                 vocName,
                 null,

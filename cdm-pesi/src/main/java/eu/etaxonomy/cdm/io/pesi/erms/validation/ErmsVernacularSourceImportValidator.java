@@ -20,7 +20,8 @@ import eu.etaxonomy.cdm.io.pesi.erms.ErmsImportState;
  * @since 12.03.2010
  */
 public class ErmsVernacularSourceImportValidator  implements IOValidator<ErmsImportState>{
-	private static final Logger logger = Logger.getLogger(ErmsVernacularSourceImportValidator.class);
+
+    private static final Logger logger = Logger.getLogger(ErmsVernacularSourceImportValidator.class);
 
 	@Override
     public boolean validate(ErmsImportState state){

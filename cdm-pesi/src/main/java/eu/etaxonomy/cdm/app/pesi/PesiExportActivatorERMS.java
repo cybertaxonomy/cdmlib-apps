@@ -61,7 +61,6 @@ public class PesiExportActivatorERMS {
 //	//taxa
 //	static final boolean doTaxa = true;
 //	static final boolean doTreeIndex = true;
-//	static final boolean doRank = true;
 //	static final boolean doInferredSynonyms = false;
 //	static final boolean doRelTaxa = true;
 //	static final boolean doDescriptions = true;

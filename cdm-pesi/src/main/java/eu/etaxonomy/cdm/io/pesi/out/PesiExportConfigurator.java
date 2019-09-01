@@ -12,7 +12,6 @@ import org.apache.log4j.Logger;
 
 import eu.etaxonomy.cdm.database.ICdmDataSource;
 import eu.etaxonomy.cdm.io.common.DbExportConfiguratorBase;
-import eu.etaxonomy.cdm.io.common.IExportConfigurator;
 import eu.etaxonomy.cdm.io.common.Source;
 import eu.etaxonomy.cdm.model.reference.Reference;
 import eu.etaxonomy.cdm.model.reference.ReferenceFactory;
@@ -20,10 +19,9 @@ import eu.etaxonomy.cdm.model.reference.ReferenceFactory;
 /**
  * @author e.-m.lee
  * @since 12.02.2010
- *
  */
-public class PesiExportConfigurator extends DbExportConfiguratorBase<PesiExportState, PesiTransformer, Source>
-        implements IExportConfigurator<PesiExportState, PesiTransformer> {
+public class PesiExportConfigurator
+        extends DbExportConfiguratorBase<PesiExportState, PesiTransformer, Source> {
 
     private static final long serialVersionUID = -4855001834616976415L;
     @SuppressWarnings("unused")
@@ -46,7 +44,6 @@ public class PesiExportConfigurator extends DbExportConfiguratorBase<PesiExportS
 	private boolean doTreeIndex = true;
 	private boolean doParentAndBiota = true;
 	private boolean doInferredSynonyms = true;
-	private boolean doRank = true;
 	private boolean doPureNames = true;
 	private boolean doDescription = true;
 
@@ -75,35 +72,20 @@ public class PesiExportConfigurator extends DbExportConfiguratorBase<PesiExportS
 
 	}
 
-	/**
-	 * @param pesiSource
-	 * @param cdmSource
-	 * @param transformer
-	 */
 	private PesiExportConfigurator(Source pesiSource, ICdmDataSource cdmSource, PesiTransformer transformer) {
 	   super(transformer);
 	   setSource(cdmSource);
 	   setDestination(pesiSource);
 	}
 
-	/* (non-Javadoc)
-	 * @see eu.etaxonomy.cdm.io.common.IExportConfigurator#getNewState()
-	 */
 	@Override
     public PesiExportState getNewState() {
 		return new PesiExportState(this);
 	}
 
-	/**
-	 * @return the limitSave
-	 */
 	public int getLimitSave() {
 		return limitSave;
 	}
-
-	/**
-	 * @param limitSave the limitSave to set
-	 */
 	public void setLimitSave(int limitSave) {
 		this.limitSave = limitSave;
 	}
@@ -137,8 +119,6 @@ public class PesiExportConfigurator extends DbExportConfiguratorBase<PesiExportS
 		this.doImages = doImages;
 	}
 
-
-
 	public DO_REFERENCES getDoReferences() {
 		return doReferences;
 	}
@@ -168,7 +148,6 @@ public class PesiExportConfigurator extends DbExportConfiguratorBase<PesiExportS
 	public int getNameIdStart() {
 		return nameIdStart;
 	}
-
 	public void setNameIdStart(int nameIdStart) {
 		this.nameIdStart = nameIdStart;
 	}
@@ -176,7 +155,6 @@ public class PesiExportConfigurator extends DbExportConfiguratorBase<PesiExportS
 	public boolean isDoNotes() {
 		return doNotes;
 	}
-
 	public void setDoNotes(boolean doNotes) {
 		this.doNotes = doNotes;
 	}
@@ -184,7 +162,6 @@ public class PesiExportConfigurator extends DbExportConfiguratorBase<PesiExportS
 	public boolean isDoNoteSources() {
 		return doNoteSources;
 	}
-
 	public void setDoNoteSources(boolean doNoteSources) {
 		this.doNoteSources = doNoteSources;
 	}
@@ -192,7 +169,6 @@ public class PesiExportConfigurator extends DbExportConfiguratorBase<PesiExportS
 	public boolean isDoAdditionalTaxonSource() {
 		return doAdditionalTaxonSource;
 	}
-
 	public void setDoAdditionalTaxonSource(boolean doAdditionalTaxonSource) {
 		this.doAdditionalTaxonSource = doAdditionalTaxonSource;
 	}
@@ -200,7 +176,6 @@ public class PesiExportConfigurator extends DbExportConfiguratorBase<PesiExportS
 	public boolean isDoOccurrenceSource() {
 		return doOccurrenceSource;
 	}
-
 	public void setDoOccurrenceSource(boolean doOccurrenceSource) {
 		this.doOccurrenceSource = doOccurrenceSource;
 	}
@@ -208,7 +183,6 @@ public class PesiExportConfigurator extends DbExportConfiguratorBase<PesiExportS
 	public boolean isDoTreeIndex() {
 		return this.doTreeIndex;
 	}
-
 	public void setDoTreeIndex(boolean doTreeIndex) {
 		this.doTreeIndex = doTreeIndex;
 	}
@@ -216,23 +190,13 @@ public class PesiExportConfigurator extends DbExportConfiguratorBase<PesiExportS
 	public boolean isDoInferredSynonyms() {
 		return doInferredSynonyms;
 	}
-
 	public void setDoInferredSynonyms(boolean doInferredSynonyms) {
 		this.doInferredSynonyms = doInferredSynonyms;
-	}
-
-	public boolean isDoRank() {
-		return doRank;
-	}
-
-	public void setDoRank(boolean doRank) {
-		this.doRank = doRank;
 	}
 
 	public boolean isDoPureNames() {
 		return doPureNames;
 	}
-
 	public void setDoPureNames(boolean doPureNames) {
 		this.doPureNames = doPureNames;
 	}
@@ -240,7 +204,6 @@ public class PesiExportConfigurator extends DbExportConfiguratorBase<PesiExportS
 	public boolean isDoDescription() {
 		return doDescription;
 	}
-
 	public void setDoDescription(boolean doDescription) {
 		this.doDescription = doDescription;
 	}
@@ -248,12 +211,7 @@ public class PesiExportConfigurator extends DbExportConfiguratorBase<PesiExportS
 	public boolean isDoParentAndBiota() {
 		return doParentAndBiota;
 	}
-
 	public void setDoParentAndBiota(boolean doParentAndBiota) {
 		this.doParentAndBiota = doParentAndBiota;
 	}
-
-
-
-
 }

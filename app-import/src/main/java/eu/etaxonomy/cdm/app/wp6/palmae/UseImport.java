@@ -33,10 +33,10 @@ import org.apache.poi.ss.usermodel.WorkbookFactory;
 import eu.etaxonomy.cdm.api.application.CdmApplicationController;
 import eu.etaxonomy.cdm.api.conversation.ConversationHolder;
 import eu.etaxonomy.cdm.api.service.IDescriptionService;
-import eu.etaxonomy.cdm.api.service.IFeatureTreeService;
 import eu.etaxonomy.cdm.api.service.IReferenceService;
 import eu.etaxonomy.cdm.api.service.ITaxonService;
 import eu.etaxonomy.cdm.api.service.ITermService;
+import eu.etaxonomy.cdm.api.service.ITermTreeService;
 import eu.etaxonomy.cdm.api.service.IVocabularyService;
 import eu.etaxonomy.cdm.api.service.pager.Pager;
 import eu.etaxonomy.cdm.config.AccountStore;
@@ -690,13 +690,13 @@ public class UseImport {
 		ITaxonService service = applicationController.getTaxonService();
 		ITermService termService = applicationController.getTermService();
 		IVocabularyService vocabularyService = applicationController.getVocabularyService();
-		IFeatureTreeService featureTreeService = applicationController.getFeatureTreeService();
+		ITermTreeService featureTreeService = applicationController.getTermTreeService();
 
 		MarkerType existingMarkertype = (MarkerType)termService.find(UUID.fromString("2e6e42d9-e92a-41f4-899b-03c0ac64f039"));
 		Feature featureUseRecord = (Feature) termService.find(UUID.fromString("8125a59d-b4d5-4485-89ea-67306297b599"));
 		Feature featureUseSummary = (Feature) termService.find(UUID.fromString("6acb0348-c070-4512-a37c-67bcac016279"));
 		TermVocabulary<State> stateVocabulary =  vocabularyService.find(UUID.fromString("67430d7c-fd43-4e9d-af5e-d0dca3f74931"));
-		TermVocabulary<DefinedTerm> countryVocabulary = vocabularyService.find(UUID.fromString("116c51f1-e63a-46f7-a258-e1149a42868b"));
+		TermVocabulary<NamedArea> countryVocabulary = vocabularyService.find(UUID.fromString("116c51f1-e63a-46f7-a258-e1149a42868b"));
 		TermVocabulary<DefinedTerm> plantPartVocabulary = vocabularyService.find(UUID.fromString("369914fe-d54b-4063-99ce-abc81d30ad35"));
 		TermVocabulary<DefinedTerm> humanGroupVocabulary =  vocabularyService.find(UUID.fromString("ca46cea5-bdf7-438d-9cd8-e2793d2178dc"));
 		Pager<DefinedTerm>  notAvailModPager = termService.findByTitle(DefinedTerm.class, "N/A", null, null, null, null, null, null);
@@ -719,7 +719,8 @@ public class UseImport {
 			} catch (URISyntaxException e) {
 				e.printStackTrace();
 			}
-			stateVocabulary = TermVocabulary.NewInstance(TermType.State, "Use Category", "Use Category", null, termSourceUri);
+			stateVocabulary = TermVocabulary.NewInstance(TermType.State,
+			        State.class, "Use Category", "Use Category", null, termSourceUri);
 			stateVocabulary.setUuid(UUID.fromString("67430d7c-fd43-4e9d-af5e-d0dca3f74931"));
 			vocabularyService.saveOrUpdate(stateVocabulary);
 			conversation.commit(true);
@@ -731,7 +732,8 @@ public class UseImport {
 			} catch (URISyntaxException e) {
 				e.printStackTrace();
 			}
-			countryVocabulary = TermVocabulary.NewInstance(TermType.NamedArea, "Country", "Country", null, termSourceUri);
+			countryVocabulary = TermVocabulary.NewInstance(TermType.NamedArea,
+			        NamedArea.class, "Country", "Country", null, termSourceUri);
 			countryVocabulary.setUuid(UUID.fromString("116c51f1-e63a-46f7-a258-e1149a42868b"));
 
 			vocabularyService.saveOrUpdate(countryVocabulary);
@@ -744,7 +746,8 @@ public class UseImport {
 			} catch (URISyntaxException e) {
 				e.printStackTrace();
 			}
-			plantPartVocabulary = TermVocabulary.NewInstance(TermType.Modifier, "Plant Part", "Plant Part", null, termSourceUri);
+			plantPartVocabulary = TermVocabulary.NewInstance(TermType.Modifier, DefinedTerm.class,
+			        "Plant Part", "Plant Part", null, termSourceUri);
 			plantPartVocabulary.setUuid(UUID.fromString("369914fe-d54b-4063-99ce-abc81d30ad35"));
 			vocabularyService.saveOrUpdate(plantPartVocabulary);
 			conversation.commit(true);
@@ -756,7 +759,8 @@ public class UseImport {
 			} catch (URISyntaxException e) {
 				e.printStackTrace();
 			}
-			humanGroupVocabulary = TermVocabulary.NewInstance(TermType.Modifier, "Human Group", "Human Group", null, termSourceUri);
+			humanGroupVocabulary = TermVocabulary.NewInstance(TermType.Modifier,
+			        DefinedTerm.class, "Human Group", "Human Group", null, termSourceUri);
 			humanGroupVocabulary.setUuid(UUID.fromString("ca46cea5-bdf7-438d-9cd8-e2793d2178dc"));
 			vocabularyService.saveOrUpdate(humanGroupVocabulary);
 			conversation.commit(true);

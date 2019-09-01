@@ -109,13 +109,14 @@ public class EdaphobaseDescriptionImport extends EdaphobaseImportBase {
         ResultSet rs = state.getConfig().getSource().getResultSet(sql);
         try {
             @SuppressWarnings("unchecked")
-            TermVocabulary<Feature> vocQuant = TermVocabulary.NewInstance(TermType.Feature, "Edaphobase quantitative features", "Quantitative features", "quant.", null);
+            TermVocabulary<Feature> vocQuant = TermVocabulary.NewInstance(TermType.Feature, Feature.class,
+                    "Edaphobase quantitative features", "Quantitative features", "quant.", null);
             vocQuant.setUuid(EdaphobaseImportTransformer.uuidVocFeatureQuantitative);
             @SuppressWarnings("unchecked")
-            TermVocabulary<Feature> vocBiology = TermVocabulary.NewInstance(TermType.Feature, "Edaphobase biological features", "Biological features", "biol.", null);
+            TermVocabulary<Feature> vocBiology = TermVocabulary.NewInstance(TermType.Feature, Feature.class, "Edaphobase biological features", "Biological features", "biol.", null);
             vocBiology.setUuid(EdaphobaseImportTransformer.uuidVocFeatureBiological);
             @SuppressWarnings("unchecked")
-            TermVocabulary<Feature> vocMorphology = TermVocabulary.NewInstance(TermType.Feature, "Edaphobase morphological features", "Morphological features", "morph.", null);
+            TermVocabulary<Feature> vocMorphology = TermVocabulary.NewInstance(TermType.Feature, Feature.class, "Edaphobase morphological features", "Morphological features", "morph.", null);
             vocBiology.setUuid(EdaphobaseImportTransformer.uuidVocFeatureMorpho);
 
             while (rs.next()){
@@ -210,7 +211,8 @@ public class EdaphobaseDescriptionImport extends EdaphobaseImportBase {
      * @throws SQLException
      */
     private TermVocabulary<State> makeCategoricalVocabulary(EdaphobaseImportState state, Integer list, String listName) throws SQLException {
-        TermVocabulary<State> result = TermVocabulary.NewInstance(TermType.State, listName, listName, null, null );
+        TermVocabulary<State> result = TermVocabulary.NewInstance(TermType.State,
+                State.class, listName, listName, null, null );
         String sql = " SELECT * "
                 + " FROM selective_list.element "
                 + " WHERE list_fk = " + list

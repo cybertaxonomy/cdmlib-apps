@@ -115,7 +115,6 @@ public class PesiExportActivatorEM {
 		config.setDoOccurrenceSource(doOccurrenceSource);
 		config.setDoTreeIndex(doTreeIndex);
 		config.setDoTreeIndex(doParentAndBiota);
-		config.setDoRank(doRank);
 		config.setDoInferredSynonyms(doInferredSynonyms);
 		config.setDoDescription(doDescriptions);
 

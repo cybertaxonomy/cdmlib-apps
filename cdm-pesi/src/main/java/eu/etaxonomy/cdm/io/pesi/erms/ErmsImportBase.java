@@ -147,9 +147,6 @@ public abstract class ErmsImportBase<CDM_BASE extends CdmBase>
 	 */
 	protected abstract String getRecordQuery(ErmsImportConfigurator config);
 
-	/**
-	 * @return
-	 */
 	protected String getIdQuery(){
 		String result = " SELECT id FROM " + getTableName();
 		return result;
@@ -160,9 +157,6 @@ public abstract class ErmsImportBase<CDM_BASE extends CdmBase>
 		return pluralString;
 	}
 
-	/**
-	 * @return
-	 */
 	protected String getTableName(){
 		return this.dbTableName;
 	}

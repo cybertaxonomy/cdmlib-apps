@@ -432,7 +432,7 @@ public class SalvadorSpecimenImport
             UUID vocUuid = uuidUserDefinedExtensionTypeVocabulary;
             TermVocabulary<ExtensionType> voc = getVocabularyService().find(vocUuid);
             if (voc == null){
-                voc = TermVocabulary.NewInstance(TermType.ExtensionType,
+                voc = TermVocabulary.NewInstance(TermType.ExtensionType, ExtensionType.class,
                         "User defined extension types", "User defined extension types", null, null);
                 getVocabularyService().save(voc);
             }
@@ -458,7 +458,7 @@ public class SalvadorSpecimenImport
             UUID vocUuid = SalvadorImportTransformer.uuidSalvadorFeatureVoc;
             TermVocabulary<Feature> voc = getVocabularyService().find(vocUuid);
             if (voc == null){
-                voc = TermVocabulary.NewInstance(TermType.Feature,
+                voc = TermVocabulary.NewInstance(TermType.Feature, Feature.class,
                         "User defined features", "User defined features", null, null);
                 getVocabularyService().save(voc);
             }

@@ -223,7 +223,8 @@ public class FaunaEuropaeaDistributionImport extends FaunaEuropaeaImportBase {
      *
      */
     private void createTermVocabulary(TransactionStatus txStatus, FaunaEuropaeaImportState state) {
-       TermVocabulary<NamedArea> faunaEuAreaVocabulary = TermVocabulary.NewInstance(TermType.NamedArea, "Areas for Fauna Europaea distribution data", "FE areas", "FE", null);
+       TermVocabulary<NamedArea> faunaEuAreaVocabulary = TermVocabulary.NewInstance(TermType.NamedArea,
+               NamedArea.class, "Areas for Fauna Europaea distribution data", "FE areas", "FE", null);
        faunaEuAreaVocabulary.setUuid(FaunaEuropaeaTransformer.uuidFauEuArea);
 
        NamedArea area =NamedArea.NewInstance(null, "Andorra", "AD");

@@ -718,7 +718,7 @@ public class PesiTaxonExport extends PesiExportBase {
     }
 
     //	"PHASE 5: Creating Inferred Synonyms..."
-	private boolean doPhase05(PesiExportState state, PesiExportMapping mapping, PesiExportMapping synRelMapping) throws SQLException {
+	private boolean doPhase05(PesiExportState state, PesiExportMapping mapping, PesiExportMapping synRelMapping) {
 		int count;
 		int pastCount;
 		boolean success = true;

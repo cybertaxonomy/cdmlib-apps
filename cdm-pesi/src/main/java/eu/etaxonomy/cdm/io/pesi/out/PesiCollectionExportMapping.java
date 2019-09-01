@@ -1,8 +1,8 @@
 /**
 * Copyright (C) 2009 EDIT
-* European Distributed Institute of Taxonomy 
+* European Distributed Institute of Taxonomy
 * http://www.e-taxonomy.eu
-* 
+*
 * The contents of this file are subject to the Mozilla Public License Version 1.1
 * See LICENSE.TXT at the top of this package for the full license terms.
 */
@@ -25,30 +25,28 @@ import eu.etaxonomy.cdm.model.common.CdmBase;
 /**
  * @author e.-m.lee
  * @since 24.02.2010
- *
  */
 public class PesiCollectionExportMapping extends PesiExportMapping {
 	private static final Logger logger = Logger.getLogger(CollectionExportMapping.class);
-	
+
 	private IdMapper parentMapper;
 	private DbSequenceMapper sequenceMapper;
 	private String collectionAttributeName;
-	
+
 	public static PesiCollectionExportMapping NewInstance(String tableName, String collectionAttributeName, IdMapper parentMapper){
 		return new PesiCollectionExportMapping(tableName, collectionAttributeName, parentMapper, null);
 	}
-	
+
 	public static PesiCollectionExportMapping NewInstance(String tableName, String collectionAttributeName, IdMapper parentMapper, String seqenceAttribute){
 		return NewInstance(tableName, collectionAttributeName, parentMapper, seqenceAttribute, 0);
 	}
-	
+
 	public static PesiCollectionExportMapping NewInstance(String tableName, String collectionAttributeName, IdMapper parentMapper, String seqenceAttribute, int sequenceStart){
 		DbSequenceMapper sequenceMapper = DbSequenceMapper.NewInstance(seqenceAttribute, sequenceStart);
 		PesiCollectionExportMapping result = new PesiCollectionExportMapping(tableName, collectionAttributeName, parentMapper, sequenceMapper);
 		return result;
 	}
 
-	
 	private PesiCollectionExportMapping(String tableName, String collectionAttributeName, IdMapper parentMapper, DbSequenceMapper sequenceMapper){
 		super(tableName);
 		this.parentMapper = parentMapper;
@@ -58,7 +56,6 @@ public class PesiCollectionExportMapping extends PesiExportMapping {
 		this.collectionAttributeName = collectionAttributeName;
 	}
 
-	
 	@Override
 	public boolean invoke(CdmBase parent) throws SQLException{
 		try {
@@ -79,7 +76,7 @@ public class PesiCollectionExportMapping extends PesiExportMapping {
 					}else if (mapper == this.sequenceMapper){
 						this.sequenceMapper.invoke(null);
 					}else if (mapper instanceof IDbExportMapper){
-						IDbExportMapper<DbExportStateBase<?, PesiTransformer>, PesiTransformer> dbMapper = (IDbExportMapper)mapper;
+						IDbExportMapper<DbExportStateBase<?, PesiTransformer>, PesiTransformer> dbMapper = (IDbExportMapper<DbExportStateBase<?, PesiTransformer>, PesiTransformer>)mapper;
 						try {
 							result &= dbMapper.invoke(collectionObject);
 						} catch (Exception e) {
@@ -93,7 +90,9 @@ public class PesiCollectionExportMapping extends PesiExportMapping {
 					}
 				}
 				int count = getPreparedStatement().executeUpdate();
-				if (logger.isDebugEnabled())logger.debug("Number of rows affected: " + count);
+				if (logger.isDebugEnabled()) {
+                    logger.debug("Number of rows affected: " + count);
+                }
 			}
 			return result;
 		} catch(SQLException e){
@@ -102,11 +101,9 @@ public class PesiCollectionExportMapping extends PesiExportMapping {
 			return false;
 		}
 	}
-	
-	private Collection getCollection(CdmBase cdmBase){
+
+	private Collection<CdmBase> getCollection(CdmBase cdmBase){
 		Object result = ImportHelper.getValue(cdmBase, collectionAttributeName, false, true);
-		return (Collection)result;
+		return (Collection<CdmBase>)result;
 	}
-	
-	
 }

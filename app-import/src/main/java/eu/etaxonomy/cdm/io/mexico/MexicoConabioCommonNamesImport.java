@@ -119,7 +119,7 @@ public class MexicoConabioCommonNamesImport<CONFIG extends MexicoConabioImportCo
         URI termSourceUri = null;
         String label = "Mexican States";
         String description = "Mexican languages as used by the CONABIO Rubiaceae database";
-        languagesVoc = TermVocabulary.NewInstance(TermType.Language,
+        languagesVoc = TermVocabulary.NewInstance(TermType.Language, Language.class,
                 description, label, null, termSourceUri);
         languagesVoc.setUuid(MexicoConabioTransformer.uuidMexicanLanguagesVoc);
 

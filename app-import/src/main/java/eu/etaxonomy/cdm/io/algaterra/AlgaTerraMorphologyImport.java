@@ -98,7 +98,7 @@ public class AlgaTerraMorphologyImport  extends AlgaTerraSpecimenImportBase {
 	private Map<String, Feature> featureMap = new HashMap<String, Feature>();
 	private Map<String, Map<Integer, State>> algaTerraMorphoStates = new HashMap<String, Map<Integer, State>>();
 	private TermVocabulary<Feature> algaTerraMorphoFeatures = TermVocabulary
-			.NewInstance(TermType.Feature, "Alga Terra Morphology Features", "AT Morphology Features", null, null);
+			.NewInstance(TermType.Feature, Feature.class, "Alga Terra Morphology Features", "AT Morphology Features", null, null);
 
 	private void doMorphoListen(AlgaTerraImportState state) throws SQLException{
 

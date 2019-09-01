@@ -104,7 +104,6 @@ public class PesiExportActivatorIF {
 		config.setDoNoteSources(doNoteSources);
 		config.setDoOccurrenceSource(doOccurrenceSource);
 		config.setDoTreeIndex(doTreeIndex);
-		config.setDoRank(doRank);
 		config.setDoInferredSynonyms(doInferredSynonyms);
 		config.setDoPureNames(doPureNames);
 		config.setDoDescription(doDescription);
