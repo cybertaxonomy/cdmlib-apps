@@ -79,12 +79,11 @@ public class PesiExportActivatorERMS {
 	static final DO_REFERENCES doReferences =  DO_REFERENCES.ALL;
 
 	//taxa
-	static final boolean doTaxa = false;
-	static final boolean doTreeIndex = true;
-	static final boolean doRank = true;
-	static final boolean doInferredSynonyms = true;
-	static final boolean doRelTaxa = false;
-	static final boolean doDescriptions = false;
+	boolean doTaxa = true;
+	boolean doTreeIndex = true; //only with doTaxa
+	boolean doInferredSynonyms = true; //only with doTaxa
+	boolean doRelTaxa = false;
+	boolean doDescriptions = false;
 
 	static final boolean doNotes = false;
 	static final boolean doNoteSources = false;
@@ -103,18 +102,20 @@ public class PesiExportActivatorERMS {
 
 		PesiExportConfigurator config = PesiExportConfigurator.NewInstance(destination, source, transformer);
 
+		config.setDoTreeIndex(doTreeIndex); //only with doTaxa
+		config.setDoInferredSynonyms(doInferredSynonyms); //only with doTaxa
+
 		config.setDoTaxa(doTaxa);
 		config.setDoRelTaxa(doRelTaxa);
-		config.setDoOccurrence(doOccurrence);
 		config.setDoReferences(doReferences);
-		config.setDoImages(doImage);
+		config.setDoDescription(doDescriptions);
+
+		config.setDoOccurrence(doOccurrence);
+		config.setDoOccurrenceSource(doOccurrenceSource);
 		config.setDoNotes(doNotes);
 		config.setDoNoteSources(doNoteSources);
-		config.setDoOccurrenceSource(doOccurrenceSource);
-		config.setDoTreeIndex(doTreeIndex);
-		config.setDoRank(doRank);
-		config.setDoInferredSynonyms(doInferredSynonyms);
-		config.setDoDescription(doDescriptions);
+		config.setDoImages(doImage);
+		config.setDoAdditionalTaxonSource(doAdditionalTaxonSource);
 
 		config.setCheck(check);
 		config.setLimitSave(partitionSize);
