@@ -301,9 +301,13 @@ public class PesiTaxonExport extends PesiExportBase {
 				}
 				try{
     				if (nvn.getRank().equals(Rank.KINGDOM())){
-    				    String treeIndex = ((Taxon)taxon).getTaxonNodes().iterator().next().treeIndex();
-    				    Integer kingdomId = PesiTransformer.pesiKingdomMap.get(nvn.getGenusOrUninomial());
-    				    state.getTreeIndexKingdomMap().put(treeIndex, kingdomId);
+    				    if(taxon.isInstanceOf(Taxon.class)){
+    				        String treeIndex = ((Taxon)taxon).getTaxonNodes().iterator().next().treeIndex();
+    				        Integer kingdomId = PesiTransformer.pesiKingdomMap.get(nvn.getGenusOrUninomial());
+    				        state.getTreeIndexKingdomMap().put(treeIndex, kingdomId);
+    				    }else{
+    				        logger.warn("Kingdom taxon is not of class Taxon but " + taxon.getClass().getSimpleName() + ": " + nvn.getGenusOrUninomial());
+    				    }
     				}
 				}catch(NullPointerException e){
 				    logger.error(nvn.getTitleCache() + " has no Rank!");
