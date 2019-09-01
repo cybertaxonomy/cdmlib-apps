@@ -87,8 +87,10 @@ public class PesiErmsValidator {
     private boolean testSingleReference(ResultSet srcRS, ResultSet destRS) throws SQLException {
         //id, RefIdInSource
         boolean success = equals("Reference ID ", srcRS.getInt("id"), destRS.getInt("RefIdInSource"));
-        success &= equals("Reference Name ", srcRS.getString("source_name"), destRS.getString("Name"));
-
+        success &= equals("Reference name ", srcRS.getString("source_name"), destRS.getString("Name"));
+        success &= equals("Reference note ", srcRS.getString("source_note"), destRS.getString("Notes"));
+        success &= equals("Reference link ", srcRS.getString("source_link"), destRS.getString("Link"));
+        success &= equals("Reference year ", srcRS.getString("source_year"), destRS.getString("RefYear"));
         //TODO TBC
         return success;
     }
@@ -128,6 +130,9 @@ public class PesiErmsValidator {
      * @return
      */
     private int diffIndex(String strSrc, String strDest) {
+        if (strSrc == null || strDest == null){
+            return 0;
+        }
         int i;
         for (i = 0; i<strSrc.length() && i<strDest.length() ;i++) {
             if (strSrc.charAt(i)!= strDest.charAt(i)){
