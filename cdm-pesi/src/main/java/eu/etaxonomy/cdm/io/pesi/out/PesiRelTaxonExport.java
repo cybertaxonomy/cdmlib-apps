@@ -95,22 +95,19 @@ public class PesiRelTaxonExport extends PesiExportBase {
 			//Export taxon relations
 			success &= doPhase01(state, mapping);
 
-
 			// Export name relations
 			success &= doPhase02(state, mapping);
 
 			if (! success){
 				state.getResult().addError("An unknown error occurred in PesiRelTaxonExport");
 			}
-
-		} catch (SQLException e) {
+		} catch (Exception e) {
 			e.printStackTrace();
 			logger.error(e.getMessage());
 			state.getResult().addException(e);
 			return;
 		}
 	}
-
 
 	private boolean doPhase01(PesiExportState state, PesiExportMapping mapping2) {
 		logger.info("PHASE 1: Taxon Relationships ...");
@@ -148,7 +145,7 @@ public class PesiRelTaxonExport extends PesiExportBase {
 		return success;
 	}
 
-	private boolean doPhase02(PesiExportState state, PesiExportMapping mapping2) throws SQLException {
+	private boolean doPhase02(PesiExportState state, PesiExportMapping mapping2) {
 		logger.info("PHASE 2: Name Relationships ...");
 		boolean success = true;
 
@@ -195,9 +192,6 @@ public class PesiRelTaxonExport extends PesiExportBase {
 					}
 					fromList = null;
 					toList = null;
-					name1 = null;
-					name2 = null;
-					rel = null;
 
 				} catch (Exception e) {
 					logger.error(e.getMessage() + ". Relationship: " +  rel.getUuid());
@@ -208,7 +202,6 @@ public class PesiRelTaxonExport extends PesiExportBase {
 			txStatus = startTransaction();
 		}
 		commitTransaction(txStatus);
-		list = null;
 		logger.info("End PHASE 2: Name Relationships ...");
 		state.setCurrentFromObject(null);
 		state.setCurrentToObject(null);
@@ -381,7 +374,6 @@ public class PesiRelTaxonExport extends PesiExportBase {
 			success &= saveSynonymAndSynNameRelationships(state, childNodeTaxon);
 		}
 		return success;
-
 	}
 
 	private boolean saveSynonymAndSynNameRelationships(PesiExportState state, Taxon childNodeTaxon) {
@@ -396,17 +388,14 @@ public class PesiRelTaxonExport extends PesiExportBase {
 			// Store synonym data in Taxon table
 			invokeSynonyms(state, synonymTaxonName);
 
-
 			try {
 				if (neededValuesNotNull(synonym, state)) {
 					doCount(count++, modCount, pluralString);
 					success &= mapping.invoke(synonym);
-
 				}
-			} catch (SQLException e) {
+			} catch (Exception e) {
 				logger.error("Synonym (" + synonym.getUuid() + ") could not be stored : " + e.getMessage());
 			}
-
 
 			// SynonymNameRelationship
 			success &= saveNameRelationships(state, synonym);
@@ -446,7 +435,7 @@ public class PesiRelTaxonExport extends PesiExportBase {
 						success &= checkAndInvokeNameRelation(state, nameRelation, relatedTaxon, isFrom);
 					}
 				}
-			} catch (SQLException e) {
+			} catch (Exception e) {
 				logger.error("NameRelationship " + nameRelation.getUuid() + " for " + nameRelation.getFromName().getTitleCache() + " and " + nameRelation.getToName().getTitleCache() + " could not be created: " + e.getMessage());
 				success = false;
 			}
@@ -454,7 +443,7 @@ public class PesiRelTaxonExport extends PesiExportBase {
 		return success;
 	}
 
-	private boolean checkAndInvokeNameRelation(PesiExportState state, NameRelationship nameRelation, IdentifiableEntity<?> relatedObject, boolean isFrom) throws SQLException {
+	private boolean checkAndInvokeNameRelation(PesiExportState state, NameRelationship nameRelation, IdentifiableEntity<?> relatedObject, boolean isFrom) {
 		boolean success = true;
 		if (isFrom){
 			state.setCurrentToObject(relatedObject);
@@ -480,7 +469,7 @@ public class PesiRelTaxonExport extends PesiExportBase {
 					doCount(count++, modCount, pluralString);
 					success &= mapping.invoke(taxonRelationship);
 				}
-			} catch (SQLException e) {
+			} catch (Exception e) {
 				logger.error("TaxonRelationship could not be created for this TaxonRelation (" + taxonRelationship.getUuid() + "): " + e.getMessage());
 			}
 		}
@@ -494,10 +483,10 @@ public class PesiRelTaxonExport extends PesiExportBase {
 	 */
 	private void invokeSynonyms(PesiExportState state, TaxonName synonymTaxonName) {
 		// Store KingdomFk and Rank information in Taxon table
-		Integer kingdomFk = PesiTransformer.nomenClaturalCode2Kingdom(synonymTaxonName.getNomenclaturalCode());
+		Integer kingdomFk = PesiTransformer.nomenClaturalCode2Kingdom(synonymTaxonName.getNameType());
 		Integer synonymFk = state.getDbId(synonymTaxonName);
 
-		saveSynonymData(state, synonymTaxonName, synonymTaxonName.getNomenclaturalCode(), kingdomFk, synonymFk);
+		saveSynonymData(state, synonymTaxonName, synonymTaxonName.getNameType(), kingdomFk, synonymFk);
 	}
 
 	/**
@@ -647,7 +636,7 @@ public class PesiRelTaxonExport extends PesiExportBase {
 			TaxonRelationship rel = CdmBase.deproxy(relationship, TaxonRelationship.class);
 			taxon = rel.getToTaxon();
 			name = taxon.getName();
-			code = name.getNomenclaturalCode();
+			code = name.getNameType();
 			rel = null;
 
 //		}else if (relationship.isInstanceOf(SynonymRelationship.class)){
@@ -660,13 +649,13 @@ public class PesiRelTaxonExport extends PesiExportBase {
 		}else if (relationship.isInstanceOf(NameRelationship.class)){
 			NameRelationship rel = CdmBase.deproxy(relationship,  NameRelationship.class);
 			name = rel.getFromName();
-			code =name.getNomenclaturalCode();
+			code =name.getNameType();
 			rel = null;
 
 		}else if (relationship.isInstanceOf(HybridRelationship.class)){
 			HybridRelationship rel =  CdmBase.deproxy(relationship,  HybridRelationship.class);
 			name = rel.getParentName();
-			code = name.getNomenclaturalCode();
+			code = name.getNameType();
 			rel = null;
 		}
 		taxon = null;
@@ -737,7 +726,7 @@ public class PesiRelTaxonExport extends PesiExportBase {
 	private static Integer getRankFk(TaxonName taxonName, NomenclaturalCode nomenclaturalCode) {
 		Integer result = null;
 		if (nomenclaturalCode != null) {
-			if (taxonName != null && taxonName.getRank() == null) {
+			if (taxonName.getRank() == null) {
 				logger.warn("Rank is null: " + taxonName.getUuid() + " (" + taxonName.getTitleCache() + ")");
 			}
 			result = PesiTransformer.rank2RankId(taxonName.getRank(), PesiTransformer.nomenClaturalCode2Kingdom(nomenclaturalCode));

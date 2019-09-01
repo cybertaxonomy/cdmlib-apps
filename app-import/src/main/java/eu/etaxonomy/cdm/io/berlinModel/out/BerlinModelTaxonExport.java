@@ -36,11 +36,12 @@ import eu.etaxonomy.cdm.model.taxon.TaxonBase;
 /**
  * @author a.mueller
  * @since 20.03.2008
- * @version 1.0
  */
 @Component
 public class BerlinModelTaxonExport extends BerlinModelExportBase<TaxonBase> {
-	private static final Logger logger = Logger.getLogger(BerlinModelTaxonExport.class);
+
+    private static final long serialVersionUID = 145503113573711492L;
+    private static final Logger logger = Logger.getLogger(BerlinModelTaxonExport.class);
 
 	private static int modCount = 1000;
 	private static final String dbTableName = "PTaxon";
@@ -51,9 +52,6 @@ public class BerlinModelTaxonExport extends BerlinModelExportBase<TaxonBase> {
 		super();
 	}
 
-	/* (non-Javadoc)
-	 * @see eu.etaxonomy.cdm.io.common.CdmIoBase#doCheck(eu.etaxonomy.cdm.io.common.IImportConfigurator)
-	 */
 	@Override
 	protected boolean doCheck(BerlinModelExportState state){
 		boolean result = true;
@@ -141,9 +139,6 @@ public class BerlinModelTaxonExport extends BerlinModelExportBase<TaxonBase> {
 		}
 	}
 
-
-
-
 	protected boolean doDelete(BerlinModelExportState state){
 		BerlinModelExportConfigurator bmeConfig = state.getConfig();
 
@@ -165,10 +160,6 @@ public class BerlinModelTaxonExport extends BerlinModelExportBase<TaxonBase> {
 		return true;
 	}
 
-
-	/* (non-Javadoc)
-	 * @see eu.etaxonomy.cdm.io.common.CdmIoBase#isIgnore(eu.etaxonomy.cdm.io.common.IImportConfigurator)
-	 */
 	@Override
     protected boolean isIgnore(BerlinModelExportState state){
 		return ! state.getConfig().isDoTaxa();
@@ -189,9 +180,6 @@ public class BerlinModelTaxonExport extends BerlinModelExportBase<TaxonBase> {
 		}
 	}
 
-	/* (non-Javadoc)
-	 * @see eu.etaxonomy.cdm.io.berlinModel.out.BerlinModelExportBase#getStandardMethodParameter()
-	 */
 	@Override
 	public Class<? extends CdmBase> getStandardMethodParameter() {
 		return standardMethodParameter;

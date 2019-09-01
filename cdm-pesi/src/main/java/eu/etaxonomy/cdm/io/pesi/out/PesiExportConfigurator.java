@@ -62,6 +62,7 @@ public class PesiExportConfigurator
 				PesiRelTaxonExport.class, // RelTaxonId's could be deleted from state hashmap
 				PesiDescriptionExport.class,
 				PesiFinalUpdateExport.class
+
 //				PesiNoteExport.class,
 //				PesiNoteSourceExport.class, // NoteId's could be deleted from state hashmap
 //				PesiAdditionalTaxonSourceExport.class,
@@ -69,13 +70,12 @@ public class PesiExportConfigurator
 //				PesiOccurrenceSourceExport.class,
 //				PesiImageExport.class,
 		};
-
 	}
 
 	private PesiExportConfigurator(Source pesiSource, ICdmDataSource cdmSource, PesiTransformer transformer) {
-	   super(transformer);
-	   setSource(cdmSource);
-	   setDestination(pesiSource);
+	    super(transformer);
+	    setSource(cdmSource);
+	    setDestination(pesiSource);
 	}
 
 	@Override

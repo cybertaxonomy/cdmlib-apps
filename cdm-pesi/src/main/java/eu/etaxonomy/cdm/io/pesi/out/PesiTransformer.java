@@ -759,22 +759,22 @@ public final class PesiTransformer extends ExportTransformerBase{
 	public static int STATUS_MANAGED = 7;
 	public static int STATUS_DOUBTFUL = 8;
 
-	private final Map<String, Integer> tdwgKeyMap = new HashMap<String, Integer>();
-	private final Map<Integer, String> areaCacheMap = new HashMap<Integer, String>();
-	private final Map<Integer, String> languageCacheMap  = new HashMap<Integer, String>();
-	private final Map<Integer, String> featureCacheMap  = new HashMap<Integer, String>();
-	private final Map<Integer, String> nameStatusCacheMap  = new HashMap<Integer, String>();
-	private final Map<Integer, String> qualityStatusCacheMap  = new HashMap<Integer, String>();
-	private final Map<Integer, String> taxonStatusCacheMap  = new HashMap<Integer, String>();
-	private final Map<Integer, String> taxRelQualifierCacheMap  = new HashMap<Integer, String>();
-	private final Map<Integer, String> taxRelZooQualifierCacheMap  = new HashMap<Integer, String>();
-	private final Map<Integer, String> sourceUseCacheMap  = new HashMap<Integer, String>();
-	private final Map<Integer, String> fossilStatusCacheMap  = new HashMap<Integer, String>();
-	private final Map<Integer, String> typeDesigStatusCacheMap  = new HashMap<Integer, String>();
-	private final Map<Integer, String> sourceCategoryCacheMap  = new HashMap<Integer, String>();
-	private final Map<Integer, String> occurrenceStatusCacheMap  = new HashMap<Integer, String>();
-	private final Map<Integer, Map<Integer, String>> rankCacheMap  = new  HashMap<Integer, Map<Integer, String>>();
-	private final Map<Integer, Map<Integer, String>> rankAbbrevCacheMap  = new  HashMap<Integer, Map<Integer, String>>();
+	private final Map<String, Integer> tdwgKeyMap = new HashMap<>();
+	private final Map<Integer, String> areaCacheMap = new HashMap<>();
+	private final Map<Integer, String> languageCacheMap  = new HashMap<>();
+	private final Map<Integer, String> featureCacheMap  = new HashMap<>();
+	private final Map<Integer, String> nameStatusCacheMap  = new HashMap<>();
+	private final Map<Integer, String> qualityStatusCacheMap  = new HashMap<>();
+	private final Map<Integer, String> taxonStatusCacheMap  = new HashMap<>();
+	private final Map<Integer, String> taxRelQualifierCacheMap  = new HashMap<>();
+	private final Map<Integer, String> taxRelZooQualifierCacheMap  = new HashMap<>();
+	private final Map<Integer, String> sourceUseCacheMap  = new HashMap<>();
+	private final Map<Integer, String> fossilStatusCacheMap  = new HashMap<>();
+	private final Map<Integer, String> typeDesigStatusCacheMap  = new HashMap<>();
+	private final Map<Integer, String> sourceCategoryCacheMap  = new HashMap<>();
+	private final Map<Integer, String> occurrenceStatusCacheMap  = new HashMap<>();
+	private final Map<Integer, Map<Integer, String>> rankCacheMap  = new  HashMap<>();
+	private final Map<Integer, Map<Integer, String>> rankAbbrevCacheMap  = new  HashMap<>();
 
 
 	private final Source destination;
