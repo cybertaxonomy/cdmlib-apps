@@ -39,8 +39,8 @@ public class ErmsImportActivator {
 	static final Source ermsSource = PesiSources.PESI2019_ERMS();
 
 //	static final ICdmDataSource cdmDestination = CdmDestinations.test_cdm_pesi_erms();
-//	static final ICdmDataSource cdmDestination = CdmDestinations.cdm_test_local_mysql_erms();
-	static final ICdmDataSource cdmDestination = CdmDestinations.cdm_test_local_mysql_erms2();
+	static final ICdmDataSource cdmDestination = CdmDestinations.cdm_test_local_mysql_erms();
+//	static final ICdmDataSource cdmDestination = CdmDestinations.cdm_test_local_mysql_erms2();
 
 	static final UUID classificationUuid = UUID.fromString("6fa988a9-10b7-48b0-a370-2586fbc066eb");
 
@@ -58,10 +58,7 @@ public class ErmsImportActivator {
 
 // ***************** ALL ************************************************//
 
-//	//references
 //	static final DO_REFERENCES doReferences =  DO_REFERENCES.ALL;
-//
-//	//taxa
 //	static final boolean doTaxa = true;
 //	static final boolean doRelTaxa = true; //should always run with doTaxa because dependent on state from doTaxa
 //  static final boolean doCommonNames = true;
@@ -72,11 +69,7 @@ public class ErmsImportActivator {
 
 //******************** NONE ***************************************//
 
-
-	//references
 	static final DO_REFERENCES doReferences =  DO_REFERENCES.NONE;
-
-	//taxa
 	static final boolean doTaxa = true;
 	static final boolean doRelTaxa = true; //should always run with doTaxa because dependent on state from doTaxa
 	static final boolean doCommonNames = false;
@@ -147,5 +140,4 @@ public class ErmsImportActivator {
 		}
 		System.exit(0);
 	}
-
 }
