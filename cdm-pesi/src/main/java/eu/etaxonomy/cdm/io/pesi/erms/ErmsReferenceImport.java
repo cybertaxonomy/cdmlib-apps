@@ -25,7 +25,9 @@ import eu.etaxonomy.cdm.io.common.mapping.DbImportExtensionMapper;
 import eu.etaxonomy.cdm.io.common.mapping.DbImportMapping;
 import eu.etaxonomy.cdm.io.common.mapping.DbImportObjectCreationMapper;
 import eu.etaxonomy.cdm.io.common.mapping.DbImportStringMapper;
+import eu.etaxonomy.cdm.io.common.mapping.DbImportTimePeriodMapper;
 import eu.etaxonomy.cdm.io.common.mapping.DbImportTruncatedStringMapper;
+import eu.etaxonomy.cdm.io.common.mapping.DbNotYetImplementedMapper;
 import eu.etaxonomy.cdm.io.common.mapping.IMappingImport;
 import eu.etaxonomy.cdm.io.pesi.erms.validation.ErmsReferenceImportValidator;
 import eu.etaxonomy.cdm.model.common.AnnotationType;
@@ -34,7 +36,6 @@ import eu.etaxonomy.cdm.model.common.ExtensionType;
 import eu.etaxonomy.cdm.model.common.Language;
 import eu.etaxonomy.cdm.model.reference.Reference;
 import eu.etaxonomy.cdm.model.reference.ReferenceFactory;
-
 
 /**
  * @author a.mueller
@@ -79,11 +80,15 @@ public class ErmsReferenceImport  extends ErmsImportBase<Reference> implements I
             mapping.addMapper(DbImportTruncatedStringMapper.NewInstance("source_name", "titleCache", truncatedExtType, 800, true));
             mapping.addMapper(DbImportStringMapper.NewInstance("source_abstract", "referenceAbstract"));
 			mapping.addMapper(DbImportAnnotationMapper.NewInstance("source_note", AnnotationType.EDITORIAL(), Language.DEFAULT()));
+			mapping.addMapper(DbImportTimePeriodMapper.NewVerbatimInstance("source_year", "datePublished"));
 
-			//or as Extension?
+			//TODO handle as External Link once they are available for Reference
+			logger.warn("Handle source_link as ExternalLink once available for class Reference");
 			mapping.addMapper(DbImportExtensionMapper.NewInstance("source_link", ExtensionType.URL()));
 
 			//not yet implemented
+			mapping.addMapper(DbNotYetImplementedMapper.NewInstance("source_doi", "Requires according mapper. See LSID or TimePeriod mapper as example"));
+
 			mapping.addMapper(DbIgnoreMapper.NewInstance("source_type", "Handled by ObjectCreateMapper - but mapping not yet fully correct. See comments there."));
 			mapping.addMapper(DbIgnoreMapper.NewInstance("source_orig_fn", "Currently not needed. Holds information about pdf files."));
 			mapping.addMapper(DbIgnoreMapper.NewInstance("source_openaccess", "Currently not needed. Holds information about open access of the source."));
