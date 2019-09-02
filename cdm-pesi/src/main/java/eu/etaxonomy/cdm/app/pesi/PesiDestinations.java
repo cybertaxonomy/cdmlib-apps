@@ -8,7 +8,6 @@
 */
 package eu.etaxonomy.cdm.app.pesi;
 
-
 import org.apache.log4j.Logger;
 
 import eu.etaxonomy.cdm.config.AccountStore;
@@ -23,7 +22,6 @@ public class PesiDestinations {
 	private static final Logger logger = Logger.getLogger(PesiDestinations.class);
 
 	public static Source pesi_test_local_CDM_EM2PESI(){
-		//	CDM - PESI
 		String dbms = Source.SQL_SERVER_2008;
 		String strServer = "localhost";
 		String strDB = "CDM_EM2PESI";
@@ -33,7 +31,6 @@ public class PesiDestinations {
 	}
 
 	public static Source pesi_test_local_CDM_EM2PESI_tmp(){
-		//	CDM - PESI
 		String dbms = Source.SQL_SERVER_2008;
 		String strServer = "localhost";
 		String strDB = "CDMTMP_EM2PESI";
@@ -43,7 +40,6 @@ public class PesiDestinations {
 	}
 
 	public static Source pesi_test_local_CDM_FE2PESI(){
-		//	CDM - PESI
 		String dbms = Source.SQL_SERVER_2008;
 		String strServer = "pesiimport3"; //192.168.1.223
 		String strDB = "CDM_FE2PESI";
@@ -52,9 +48,7 @@ public class PesiDestinations {
 		return makeSource(dbms, strServer, strDB, port, userName, null);
 	}
 
-
 	public static Source pesi_test_local_CDM_IF2PESI(){
-		//	CDM - PESI
 		String dbms = Source.SQL_SERVER_2008;
 		String strServer = "pesiimport3"; //192.168.1.223
 		String strDB = "CDMTMP_IF2PESI";
@@ -64,7 +58,6 @@ public class PesiDestinations {
 	}
 
 	public static Source pesi_test_local_CDM_ERMS2PESI(){
-		//	CDM - PESI
 		String dbms = Source.SQL_SERVER_2008;
 		String strServer = "pesiimport3";
 		String strDB = "CDM_ERMS2PESI";
@@ -73,7 +66,14 @@ public class PesiDestinations {
 		return makeSource(dbms, strServer, strDB, port, userName, null);
 	}
 
-
+    public static Source pesi_test_local_CDM_ERMS2PESI_2(){
+        String dbms = Source.SQL_SERVER_2008;
+        String strServer = "pesiimport3";
+        String strDB = "CDM_ERMS2PESI_2";
+        int port = 1433;
+        String userName = "pesi2019";
+        return makeSource(dbms, strServer, strDB, port, userName, null);
+    }
 
 	public static Source pesi_test_bgbm42_CDM_DWH_FaEu(){
 		//	CDM - PESI
@@ -95,6 +95,7 @@ public class PesiDestinations {
 		return makeSource(dbms, strServer, strDB, port, userName, null);
 	}
 
+
 	/**
 	 * Initializes the source.
 	 * @param dbms
@@ -103,9 +104,10 @@ public class PesiDestinations {
 	 * @param port
 	 * @param userName
 	 * @param pwd
-	 * @return the source
+	 * @return
 	 */
-	private static Source makeSource(String dbms, String strServer, String strDB, int port, String userName, String pwd ){
+	private static Source makeSource(String dbms, String strServer, String strDB,
+	        int port, String userName, String pwd ){
 		//establish connection
 		Source source = null;
 		source = new Source(dbms, strServer, strDB);
@@ -116,5 +118,4 @@ public class PesiDestinations {
 		// write pwd to account store
 		return source;
 	}
-
 }
