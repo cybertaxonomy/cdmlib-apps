@@ -57,8 +57,6 @@ public class ErmsTaxonImport
     private static final long serialVersionUID = -7111568277264140051L;
     private static final Logger logger = Logger.getLogger(ErmsTaxonImport.class);
 
-	public static final UUID TNS_EXT_UUID = UUID.fromString("41cb0450-ac84-4d73-905e-9c7773c23b05");
-
 	private DbImportMapping<ErmsImportState, ErmsImportConfigurator> mapping;
 
 	private static final String pluralString = "taxa";
@@ -82,9 +80,9 @@ public class ErmsTaxonImport
 			mapping = new DbImportMapping<>();
 
 			mapping.addMapper(DbImportObjectCreationMapper.NewInstance(this, "id", TAXON_NAMESPACE)); //id + tu_status
-			UUID tsnUuid = ErmsTransformer.uuidExtTsn;
 			mapping.addMapper(DbImportLsidMapper.NewInstance("GUID", "lsid"));
 
+			UUID tsnUuid = ErmsTransformer.uuidExtTsn;
 			ExtensionType tsnExtType = getExtensionType(tsnUuid, "TSN", "TSN", "TSN");
 			mapping.addMapper(DbImportExtensionMapper.NewInstance("tsn", tsnExtType));
 //			mapping.addMapper(DbImportStringMapper.NewInstance("tu_name", "(NonViralName)name.nameCache"));
@@ -254,8 +252,8 @@ public class ErmsTaxonImport
 				logger.warn(warning);
 				taxonName.setNameCache(tuName);
 			}
-
 		}
+
 		//e.g. Leucon [Platyhelminthes] ornatus
 		if (containsBrackets(displayName)){
 			taxonName.setNameCache(displayName);
@@ -308,12 +306,6 @@ public class ErmsTaxonImport
 		return (index > -1);
 	}
 
-	/**
-	 * @param parent1Name
-	 * @param parent2Name
-	 * @param parent1Rank
-	 * @param taxonName
-	 */
 	private void getGenusAndInfraGenus(String parentName, String grandParentName, Integer parent1Rank, TaxonName taxonName) {
 		if (parent1Rank <220 && parent1Rank > 180){
 			//parent is infrageneric
