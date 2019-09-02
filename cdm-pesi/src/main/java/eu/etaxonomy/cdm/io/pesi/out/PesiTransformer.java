@@ -62,7 +62,6 @@ public final class PesiTransformer extends ExportTransformerBase{
 
 	public static final String AUCT_STRING = "auct.";
 
-
 	//source identifiers
 	public static final int SOURCE_EM = 1;
 	public static final int SOURCE_FE = 2;
@@ -202,13 +201,11 @@ public final class PesiTransformer extends ExportTransformerBase{
 	public static int IS_INFERRED_GENUS_FOR = 302;
 	public static int IS_POTENTIAL_COMBINATION_FOR = 303;
 
-
 	//namespaces
 	public static String STR_NAMESPACE_NOMINAL_TAXON = "Nominal taxon from TAX_ID:";
 	public static String STR_NAMESPACE_INFERRED_EPITHET = "Inferred epithet from TAX_ID:";
 	public static String STR_NAMESPACE_INFERRED_GENUS = "Inferred genus from TAX_ID:";
 	public static String STR_NAMESPACE_POTENTIAL_COMBINATION = "Potential combination from TAX_ID:";
-
 
 	// Kingdoms
 	public static int KINGDOM_NULL = 0;
@@ -220,9 +217,9 @@ public final class PesiTransformer extends ExportTransformerBase{
 	public static int KINGDOM_CHROMISTA = 7;
 
 	// Kingdoms
-	public static Map<String, Integer> pesiKingdomMap = new HashMap<String, Integer>();
+	public static Map<String, Integer> pesiKingdomMap = new HashMap<>();
 
-
+	//Kingdom title
     public static String KINGDOM_PLANTAE_STRING = "Plantae";
     public static String KINGDOM_FUNGI_STRING = "Fungi";
     public static String KINGDOM_PROTOZOA_STRING = "Protozoa";
@@ -348,7 +345,7 @@ public final class PesiTransformer extends ExportTransformerBase{
 	public static int Protozoa_Variety = 240;
 	public static int Protozoa_Forma	= 260;
 
-	// Bacteria Ranks
+	//Bacteria Ranks
 	public static int Bacteria_Kingdom = 10;
 	public static int Bacteria_Subkingdom = 20;
 	public static int Bacteria_Phylum = 30;
@@ -373,7 +370,7 @@ public final class PesiTransformer extends ExportTransformerBase{
 	public static int Bacteria_Variety = 240;
 	public static int Bacteria_Forma	= 260;
 
-	// Chromista Ranks
+	//Chromista Ranks
 	public static int Chromista_Kingdom = 10;
 	public static int Chromista_Subkingdom = 20;
 	public static int Chromista_Infrakingdom = 25;
@@ -402,7 +399,7 @@ public final class PesiTransformer extends ExportTransformerBase{
 	public static int Chromista_Subvariety = 250;
 	public static int Chromista_Forma = 260;
 
-	// NoteCategory
+	//NoteCategory
 	public static int NoteCategory_description = 1;
 	public static int NoteCategory_ecology = 4;
 	public static int NoteCategory_phenology	= 5;
@@ -786,8 +783,8 @@ public final class PesiTransformer extends ExportTransformerBase{
 	}
 
 	private void fillMaps() {
-		//TDWG
 		try {
+		    //TDWG
 			String sql = " SELECT AreaId, AreaName, AreaTdwgCode, AreaEmCode, AreaFaEuCode FROM Area";
 			ResultSet rs = destination.getResultSet(sql);
 			while (rs.next()){
@@ -814,7 +811,7 @@ public final class PesiTransformer extends ExportTransformerBase{
 				//rank str
 				Map<Integer, String> kingdomMap = rankCacheMap.get(kingdomId);
 				if (kingdomMap == null){
-					kingdomMap = new HashMap<Integer, String>();
+					kingdomMap = new HashMap<>();
 					rankCacheMap.put(kingdomId, kingdomMap);
 				}
 				kingdomMap.put(rankId, rank);
@@ -826,17 +823,13 @@ public final class PesiTransformer extends ExportTransformerBase{
 				//rank abbrev
 				Map<Integer, String> kingdomAbbrevMap = rankAbbrevCacheMap.get(kingdomId);
 				if (kingdomAbbrevMap == null){
-					kingdomAbbrevMap = new HashMap<Integer, String>();
+					kingdomAbbrevMap = new HashMap<>();
 					rankAbbrevCacheMap.put(kingdomId, kingdomAbbrevMap);
 				}
 				if (StringUtils.isNotBlank(abbrev)){
 					kingdomAbbrevMap.put(rankId, abbrev);
 				}
-
 			}
-
-
-
 
 			//languageCache
 			fillSingleMap(languageCacheMap,"Language");
@@ -883,11 +876,10 @@ public final class PesiTransformer extends ExportTransformerBase{
 				}
 			}
 			rs = null;
-		} catch (SQLException e) {
-			logger.error("SQLException when trying to read area map", e);
+		} catch (Exception e) {
+			logger.error("Exception when trying to read area map", e);
 			e.printStackTrace();
 		}
-
 	}
 
 	private void fillSingleMap(Map<Integer, String> map, String tableName) throws SQLException {
@@ -2482,14 +2474,8 @@ public final class PesiTransformer extends ExportTransformerBase{
 		return result;
 	}
 
-    /**
-     * @param titleCache
-     */
     public static Integer pesiKingdomId(String titleCache) {
         return pesiKingdomMap.get(titleCache);
 
     }
-
-
-
 }

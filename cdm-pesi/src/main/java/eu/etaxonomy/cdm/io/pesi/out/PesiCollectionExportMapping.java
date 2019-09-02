@@ -8,7 +8,6 @@
 */
 package eu.etaxonomy.cdm.io.pesi.out;
 
-import java.sql.SQLException;
 import java.util.Collection;
 
 import org.apache.log4j.Logger;
@@ -57,7 +56,7 @@ public class PesiCollectionExportMapping extends PesiExportMapping {
 	}
 
 	@Override
-	public boolean invoke(CdmBase parent) throws SQLException{
+	public boolean invoke(CdmBase parent) {
 		try {
 			boolean result = true;
 			Collection<CdmBase> collection = getCollection(parent);
@@ -95,7 +94,7 @@ public class PesiCollectionExportMapping extends PesiExportMapping {
                 }
 			}
 			return result;
-		} catch(SQLException e){
+		} catch(Exception e){
 			e.printStackTrace();
 			logger.error(e.getMessage() + ": " + parent.toString());
 			return false;

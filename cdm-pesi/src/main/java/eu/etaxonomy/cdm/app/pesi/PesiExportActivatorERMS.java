@@ -37,16 +37,6 @@ public class PesiExportActivatorERMS {
 //	static final Source pesiDestination = PesiDestinations.pesi_test_local_CDM_FE2PESI();
 //	static final Source pesiDestination = PesiDestinations.pesi_test_local_CDM_ERMS2PESI();
 
-	//Taxon names can't be mapped to their CDM ids as PESI Taxon table mainly holds taxa and there IDs. We ad nameIdStart to the TaxonName id to get a unique id
-	static final int nameIdStart = 10000000;
-	static final IdType idType = IdType.CDM_ID_WITH_EXCEPTIONS;
-
-	static final int partitionSize = 1000;
-
-	//check - export
-	static final CHECK check = CHECK.EXPORT_WITHOUT_CHECK;
-
-
 // ****************** ALL *****************************************
 
 //	static boolean deleteAll = true;
@@ -56,7 +46,6 @@ public class PesiExportActivatorERMS {
 //	static boolean doInferredSynonyms = true;
 //	static boolean doRelTaxa = true;
 //	static boolean doDescriptions = true;
-
 
 // ************************ NONE **************************************** //
 
@@ -75,6 +64,16 @@ public class PesiExportActivatorERMS {
 //	static final boolean doOccurrenceSource = false;
 //	static final boolean doImage = false;
 
+	static boolean doPureNames = false;  //ERMS has no pure names
+
+	//check - export
+	static final CHECK check = CHECK.EXPORT_WITHOUT_CHECK;
+
+	//Taxon names can't be mapped to their CDM ids as PESI Taxon table mainly holds taxa and there IDs. We ad nameIdStart to the TaxonName id to get a unique id
+	static final int nameIdStart = 10000000;
+	static final IdType idType = IdType.CDM_ID_WITH_EXCEPTIONS;
+
+	static final int partitionSize = 1000;
 
 	public boolean 	doExport(ICdmDataSource source){
 		System.out.println("Start export to PESI ("+ pesiDestination.getDatabase() + ") ...");
@@ -99,6 +98,8 @@ public class PesiExportActivatorERMS {
 //		config.setDoNoteSources(doNoteSources);
 //		config.setDoImages(doImage);
 //		config.setDoAdditionalTaxonSource(doAdditionalTaxonSource);
+
+		config.setDoPureNames(doPureNames);
 
 		config.setCheck(check);
 		config.setLimitSave(partitionSize);

@@ -15,9 +15,7 @@ import java.util.Map;
 import java.util.UUID;
 
 import org.apache.log4j.Logger;
-import org.springframework.beans.factory.annotation.Autowired;
 
-import eu.etaxonomy.cdm.api.service.ITermService;
 import eu.etaxonomy.cdm.io.common.DbExportStateBase;
 import eu.etaxonomy.cdm.model.common.CdmBase;
 import eu.etaxonomy.cdm.model.common.IdentifiableEntity;
@@ -27,45 +25,32 @@ import eu.etaxonomy.cdm.model.taxon.TaxonBase;
 /**
  * The export state class.
  * Holds data needed while the export classes are running.
+ *
  * @author e.-m.lee
  * @since 12.02.2010
- *
  */
 public class PesiExportState extends DbExportStateBase<PesiExportConfigurator, PesiTransformer>{
 	@SuppressWarnings("unused")
 	private static final Logger logger = Logger.getLogger(PesiExportState.class);
 
-	private static List<Integer> processedSourceList = new ArrayList<Integer>();
+	private static List<Integer> processedSourceList = new ArrayList<>();
 
 	private IdentifiableEntity<?> currentToObject;
 	private IdentifiableEntity<?> currentFromObject;
 	private TaxonBase<?> currentTaxon;
 	private boolean sourceForAdditionalSourceCreated = false;
 
-	private final Map<UUID, MarkerType> markerTypeMap = new HashMap<UUID, MarkerType>();
-	private final Map<String,Integer> treeIndexKingdomMap = new HashMap<String,Integer>();
-	/**
-     * @return the treeIndexKingdomMap
-     */
+	private final Map<UUID, MarkerType> markerTypeMap = new HashMap<>();
+	private final Map<String,Integer> treeIndexKingdomMap = new HashMap<>();
+
+
     public Map<String,Integer> getTreeIndexKingdomMap() {
         return treeIndexKingdomMap;
     }
 
-
-    public static final UUID uuidUserDefinedMarkerTypeVocabulary = UUID.fromString("5f02a261-fd7d-4fce-bbe4-21472de8cd51");
-
-	@Autowired
-	//@Qualifier("termService")
-	private ITermService termService;
-
-
-	/**
-	 * @param config
-	 */
 	public PesiExportState(PesiExportConfigurator config) {
 		super(config);
 	}
-
 
 	/**
 	 * Stores the Datawarehouse.id to a specific CDM object originally.
@@ -90,10 +75,6 @@ public class PesiExportState extends DbExportStateBase<PesiExportConfigurator, P
 		return (Integer)getCurrentIO().getDbId(cdmBase, this);
 	}
 
-	private ITermService getTermService(){
-		return this.termService;
-	}
-
 	/**
 	 * Returns whether the given Source object was processed before or not.
 	 * @param
@@ -114,7 +95,6 @@ public class PesiExportState extends DbExportStateBase<PesiExportConfigurator, P
 		if (! processedSourceList.contains(sourceId)) {
 			processedSourceList.add(sourceId);
 		}
-
 		return true;
 	}
 
@@ -125,22 +105,16 @@ public class PesiExportState extends DbExportStateBase<PesiExportConfigurator, P
 		processedSourceList.clear();
 	}
 
-
 	public IdentifiableEntity<?> getCurrentToObject() {
 		return currentToObject;
 	}
-
-
 	public void setCurrentToObject(IdentifiableEntity<?> currentToObject) {
 		this.currentToObject = currentToObject;
 	}
 
-
 	public IdentifiableEntity<?> getCurrentFromObject() {
 		return currentFromObject;
 	}
-
-
 	public void setCurrentFromObject(IdentifiableEntity<?> currentFromObject) {
 		this.currentFromObject = currentFromObject;
 	}
@@ -149,35 +123,22 @@ public class PesiExportState extends DbExportStateBase<PesiExportConfigurator, P
 	public TaxonBase<?> getCurrentTaxon() {
 		return currentTaxon;
 	}
-
-
 	public void setCurrentTaxon(TaxonBase<?> currentTaxon) {
 		this.currentTaxon = currentTaxon;
 	}
 
-	public void putMarkerType(MarkerType markerType) {
-
-		markerTypeMap.put(markerType.getUuid(), markerType);
-
-	}
-
-
 	public MarkerType getMarkerType(UUID uuid){
-		return markerTypeMap.get(uuid);
+	    return markerTypeMap.get(uuid);
 	}
-
+	public void putMarkerType(MarkerType markerType) {
+		markerTypeMap.put(markerType.getUuid(), markerType);
+	}
 
 	public boolean isSourceForAdditionalSourceCreated() {
 		return sourceForAdditionalSourceCreated;
 	}
-
-
 	public void setSourceForAdditionalSourceCreated(
 			boolean sourceForAdditionalSourceCreated) {
 		this.sourceForAdditionalSourceCreated = sourceForAdditionalSourceCreated;
 	}
-
-
-
-
 }

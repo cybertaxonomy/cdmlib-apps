@@ -24,8 +24,6 @@ import org.apache.log4j.Logger;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.TransactionStatus;
 
-import com.microsoft.sqlserver.jdbc.SQLServerException;
-
 import eu.etaxonomy.cdm.io.berlinModel.BerlinModelTransformer;
 import eu.etaxonomy.cdm.io.common.DbExportStateBase;
 import eu.etaxonomy.cdm.io.common.Source;
@@ -375,7 +373,7 @@ public class PesiDescriptionExport extends PesiExportBase {
 					countDistribution++;
 					try{
 					    success &=occurrenceMapping.invoke(distribution);
-					}catch(SQLServerException e){
+					}catch(Exception e){
 					    System.err.println(distribution.getInDescription().getTitleCache());
 					    e.printStackTrace();
 					}

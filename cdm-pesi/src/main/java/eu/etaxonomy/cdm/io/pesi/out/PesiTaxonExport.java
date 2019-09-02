@@ -339,9 +339,7 @@ public class PesiTaxonExport extends PesiExportBase {
 			logger.info("Started new transaction. Fetching some " + pluralString + " (max: " + limit + ") ...");
 
 		}
-		if (list == null ) {
-			logger.info("No " + pluralString + " left to fetch.");
-		}
+		logger.info("No " + pluralString + " left to fetch.");
 
 		// Commit transaction
 		commitTransaction(txStatus);
@@ -502,7 +500,7 @@ public class PesiTaxonExport extends PesiExportBase {
 		logger.info("PHASE 4: Make TreeIndex ... ");
 
 		//TODO test if possible to move to phase 02
-		String sql = " UPDATE Taxon SET ParentTaxonFk = (Select TaxonId from Taxon where RankFk = 0) " +
+		String sql = " UPDATE Taxon SET ParentTaxonFk = (SELECT TaxonId FROM Taxon WHERE RankFk = 0) " +
 				" WHERE (RankFk = 10) and TaxonStatusFk = 1 ";
 		state.getConfig().getDestination().update(sql);
 
@@ -602,7 +600,7 @@ public class PesiTaxonExport extends PesiExportBase {
 								treeIndex.append("#");
 							}
 						}
-						nomenclaturalCode = newNode.getTaxon().getName().getNomenclaturalCode();
+						nomenclaturalCode = newNode.getTaxon().getName().getNameType();
 						kingdomFk = PesiTransformer.nomenclaturalCode2Kingdom(nomenclaturalCode);
 						traverseTree(newNode, parentNode, treeIndex, endRank, state);
 						parentNode =null;
@@ -664,7 +662,7 @@ public class PesiTaxonExport extends PesiExportBase {
 
 				doCount(count++, modCount, pluralString);
 				Integer typeNameFk = getTypeNameFk(taxonName, state);
-				kingdomFk = findKingdomIdFromTreeIndex(taxon, state);
+				Integer kingdomFk = findKingdomIdFromTreeIndex(taxon, state);
 				 //       PesiTransformer.nomenClaturalCode2Kingdom(nomenclaturalCode);
 
 				//TODO why are expertFks needed? (Andreas M.)
@@ -672,9 +670,6 @@ public class PesiTaxonExport extends PesiExportBase {
 					invokeRankDataAndTypeNameFkAndKingdomFk(taxonName, nomenclaturalCode, state.getDbId(taxon),
 							typeNameFk, kingdomFk, state);
 //				}
-
-				taxon = null;
-				taxonName = null;
 			}
 
 			// Commit transaction
@@ -687,9 +682,7 @@ public class PesiTaxonExport extends PesiExportBase {
 			txStatus = startTransaction(true);
 			logger.info("Started new transaction for rank, kingdom, typeName, expertFk and speciesExpertFK. Fetching some " + pluralString + " (max: " + limit + ") ...");
 		}
-		if (list == null) {
-			logger.info("No " + pluralString + " left to fetch.");
-		}
+		logger.info("No " + pluralString + " left to fetch.");
 
 		// Commit transaction
 		commitTransaction(txStatus);
@@ -1284,7 +1277,7 @@ public class PesiTaxonExport extends PesiExportBase {
 	 * @return Whether save was successful or not.
 	 */
 	private boolean invokeRankDataAndTypeNameFkAndKingdomFk(TaxonName taxonName, NomenclaturalCode nomenclaturalCode,
-			Integer taxonFk, Integer typeNameFk, Integer kingdomFkk, PesiExportState state) {
+			Integer taxonFk, Integer typeNameFk, Integer kingdomFk, PesiExportState state) {
 		try {
 			int index = 1;
 			Integer rankFk = getRankFk(taxonName, nomenclaturalCode);
@@ -1307,8 +1300,8 @@ public class PesiTaxonExport extends PesiExportBase {
 				rankTypeExpertsUpdateStmt.setObject(index++, null);
 			}
 
-			if (kingdomFkk != null) {
-				rankTypeExpertsUpdateStmt.setInt(index++, kingdomFkk);
+			if (kingdomFk != null) {
+				rankTypeExpertsUpdateStmt.setInt(index++, kingdomFk);
 			} else {
 				rankTypeExpertsUpdateStmt.setObject(index++, null);
 			}
