@@ -29,13 +29,12 @@ public class PesiExportActivatorERMS {
 	@SuppressWarnings("unused")
 	private static final Logger logger = Logger.getLogger(PesiExportActivatorERMS.class);
 
-//	static final ICdmDataSource cdmSource = CdmDestinations.cdm_test_local_mysql_erms();
-    static final ICdmDataSource cdmSource = CdmDestinations.cdm_test_local_mysql_erms2();
+	static final ICdmDataSource cdmSource = CdmDestinations.cdm_test_local_mysql_erms();
+//    static final ICdmDataSource cdmSource = CdmDestinations.cdm_test_local_mysql_erms2();
 
 	//database validation status (create, update, validate ...)
-	static final Source pesiDestination = PesiDestinations.pesi_test_local_CDM_ERMS2PESI();
-//	static final Source pesiDestination = PesiDestinations.pesi_test_local_CDM_FE2PESI();
 //	static final Source pesiDestination = PesiDestinations.pesi_test_local_CDM_ERMS2PESI();
+	static final Source pesiDestination = PesiDestinations.pesi_test_local_CDM_ERMS2PESI_2();
 
 // ****************** ALL *****************************************
 
@@ -50,7 +49,7 @@ public class PesiExportActivatorERMS {
 // ************************ NONE **************************************** //
 
 	static boolean deleteAll = false;
-	static DO_REFERENCES doReferences =  DO_REFERENCES.NONE;
+	static DO_REFERENCES doReferences =  DO_REFERENCES.ALL;
 	static boolean doTaxa = true;
 	static boolean doTreeIndex = true; //only with doTaxa
 	static boolean doInferredSynonyms = true; //only with doTaxa

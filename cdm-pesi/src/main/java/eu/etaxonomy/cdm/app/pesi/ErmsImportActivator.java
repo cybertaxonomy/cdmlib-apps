@@ -107,7 +107,7 @@ public class ErmsImportActivator {
 		config.setClassificationName(classificationName);
 
 		// invoke import
-		CdmDefaultImport<ErmsImportConfigurator> ermsImport = new CdmDefaultImport<ErmsImportConfigurator>();
+		CdmDefaultImport<ErmsImportConfigurator> ermsImport = new CdmDefaultImport<>();
 		ermsImport.invoke(config);
 
 		if (config.getCheck().equals(CHECK.CHECK_AND_IMPORT)  || config.getCheck().equals(CHECK.IMPORT_WITHOUT_CHECK)    ){

@@ -53,7 +53,9 @@ import eu.etaxonomy.cdm.strategy.parser.TimePeriodParser;
  * @since 27.02.2012
  */
 public abstract class IndexFungorumImportBase extends CdmImportBase<IndexFungorumImportConfigurator, IndexFungorumImportState> implements ICdmIO<IndexFungorumImportState>, IPartitionedIO<IndexFungorumImportState> {
-	private static final Logger logger = Logger.getLogger(IndexFungorumImportBase.class);
+
+    private static final long serialVersionUID = -729872543287390949L;
+    private static final Logger logger = Logger.getLogger(IndexFungorumImportBase.class);
 
 	//NAMESPACES
 	protected static final String NAMESPACE_REFERENCE = "reference";
@@ -62,30 +64,18 @@ public abstract class IndexFungorumImportBase extends CdmImportBase<IndexFungoru
 	protected static final String NAMESPACE_GENERA = "Genera";
 	protected static final String NAMESPACE_SPECIES = "Species";
 
-
 	protected static final String INCERTAE_SEDIS = "Incertae sedis";
 	protected static final String FOSSIL_FUNGI = "Fossil Fungi";
 
 	protected static final String SOURCE_REFERENCE = "SOURCE_REFERENCE";
 
-
-
-
 	private final String pluralString;
 	private final String dbTableName;
-	//TODO needed?
-	private final Class cdmTargetClass;
 
 
-
-	/**
-	 * @param dbTableName
-	 * @param dbTableName2
-	 */
 	public IndexFungorumImportBase(String pluralString, String dbTableName, Class cdmTargetClass) {
 		this.pluralString = pluralString;
 		this.dbTableName = dbTableName;
-		this.cdmTargetClass = cdmTargetClass;
 	}
 
 	@Override
@@ -94,14 +84,12 @@ public abstract class IndexFungorumImportBase extends CdmImportBase<IndexFungoru
 		IndexFungorumImportConfigurator config = state.getConfig();
 		Source source = config.getSource();
 
-
 		String strIdQuery = getIdQuery();
-
 		String strRecordQuery = getRecordQuery(config);
 
 		int recordsPerTransaction = config.getRecordsPerTransaction();
 		try{
-			ResultSetPartitioner partitioner = ResultSetPartitioner.NewInstance(source, strIdQuery, strRecordQuery, recordsPerTransaction);
+			ResultSetPartitioner<IndexFungorumImportState> partitioner = ResultSetPartitioner.NewInstance(source, strIdQuery, strRecordQuery, recordsPerTransaction);
 			while (partitioner.nextPartition()){
 				partitioner.doPartition(this, state);
 			}
@@ -115,16 +103,11 @@ public abstract class IndexFungorumImportBase extends CdmImportBase<IndexFungoru
 		return;
 	}
 
-
-
-
-
-
-
     @Override
     public boolean doPartition(ResultSetPartitioner partitioner, IndexFungorumImportState state) {
-		boolean success = true ;
-		Set objectsToSave = new HashSet<CdmBase>();
+
+        boolean success = true ;
+		Set<CdmBase> objectsToSave = new HashSet<>();
 
 // 		DbImportMapping<?, ?> mapping = getMapping();
 //		mapping.initialize(state, cdmTargetClass);
@@ -144,36 +127,21 @@ public abstract class IndexFungorumImportBase extends CdmImportBase<IndexFungoru
 		return success;
 	}
 
-
-	/**
-	 * @return
-	 */
 	protected abstract String getRecordQuery(IndexFungorumImportConfigurator config);
 
-
-	/**
-	 * @return
-	 */
 	protected String getIdQuery(){
 		String result = " SELECT id FROM " + getTableName();
 		return result;
 	}
 
-	/* (non-Javadoc)
-	 * @see eu.etaxonomy.cdm.io.berlinModel.in.IPartitionedIO#getPluralString()
-	 */
 	@Override
     public String getPluralString(){
 		return pluralString;
 	}
 
-	/**
-	 * @return
-	 */
 	protected String getTableName(){
 		return this.dbTableName;
 	}
-
 
 	protected boolean resultSetHasColumn(ResultSet rs, String columnName){
 		try {
@@ -219,7 +187,7 @@ public abstract class IndexFungorumImportBase extends CdmImportBase<IndexFungoru
 	 */
 	protected Map<String, Object> getValueMap(ResultSet rs) throws SQLException{
 		try{
-			Map<String, Object> valueMap = new HashMap<String, Object>();
+			Map<String, Object> valueMap = new HashMap<>();
 			int colCount = rs.getMetaData().getColumnCount();
 			for (int c = 0; c < colCount ; c++){
 				Object value = rs.getObject(c+1);
@@ -265,7 +233,6 @@ public abstract class IndexFungorumImportBase extends CdmImportBase<IndexFungoru
 		if ((count % recordsPerLog ) == 0 && count!= 0 ){ logger.info(pluralString + " handled: " + (count));}
 	}
 
-
 	protected void makeAuthorAndPublication(IndexFungorumImportState state, ResultSet rs, INonViralName name) throws SQLException {
 		//authors
 		NonViralNameParserImpl parser = NonViralNameParserImpl.NewInstance();
@@ -294,7 +261,7 @@ public abstract class IndexFungorumImportBase extends CdmImportBase<IndexFungoru
 		if (StringUtils.isNotBlank(pubAuthorStr)){
 			if (StringUtils.isNotBlank(authorStr)){
 				if (! pubAuthorStr.equals(authorStr)){
-					pubAuthor = Team.NewTitledInstance(pubAuthorStr,pubAuthorStr);
+					pubAuthor = Team.NewTitledInstance(pubAuthorStr, pubAuthorStr);
 				}
 			}else{
 				logger.warn("'AUTHORS' is blank for not empty PUBLISHING_AUTHORS. This is not yet handled.");
@@ -310,7 +277,7 @@ public abstract class IndexFungorumImportBase extends CdmImportBase<IndexFungoru
 		}
 
 		//refAuthor
-		TeamOrPersonBase<?> refAuthor = CdmBase.deproxy(name.getCombinationAuthorship(), TeamOrPersonBase.class);
+		TeamOrPersonBase<?> refAuthor = CdmBase.deproxy(name.getCombinationAuthorship());
 		if (refAuthor == null){
 			refAuthor = Team.NewTitledInstance(authorStr, authorStr);
 		}
@@ -351,7 +318,7 @@ public abstract class IndexFungorumImportBase extends CdmImportBase<IndexFungoru
 		}
 		ref.setVolume(volume);
 
-		//year
+		//year   //TODO why yearOfPubl 2x exact same value
 		String yearOfPubl = rs.getString("YEAR OF PUBLICATION");
 		String yearOnPubl = rs.getString("YEAR ON PUBLICATION");
 		String year = null;
@@ -362,7 +329,7 @@ public abstract class IndexFungorumImportBase extends CdmImportBase<IndexFungoru
 			year = CdmUtils.concat(" ", year, "[" + yearOnPubl + "]");
 		}
 		if (year != null){
-			ref.setDatePublished(TimePeriodParser.parseString(year));
+			ref.setDatePublished(TimePeriodParser.parseStringVerbatim(year));
 		}
 
 		//preliminary, set protected titlecache as Generic Cache Generation with in references currently doesn't fully work yet
@@ -381,12 +348,10 @@ public abstract class IndexFungorumImportBase extends CdmImportBase<IndexFungoru
 		}
 	}
 
-
 	protected MarkerType getNoLastActionMarkerType(IndexFungorumImportState state) {
 		return getMarkerType(state, DbLastActionMapper.uuidMarkerTypeHasNoLastAction,
 				"has no last action", "No last action information available", "no last action");
 	}
-
 
 	protected void makeSource(IndexFungorumImportState state, Taxon taxon, Integer id, String namespace) {
 		//source reference
@@ -423,7 +388,6 @@ public abstract class IndexFungorumImportBase extends CdmImportBase<IndexFungoru
 		return missingGUID;
 	}
 
-
 	protected Classification getClassification(IndexFungorumImportState state) {
 		Classification result;
 		UUID classificationUuid = state.getTreeUuid(state.getConfig().getSourceReference());
@@ -435,9 +399,4 @@ public abstract class IndexFungorumImportBase extends CdmImportBase<IndexFungoru
 		}
 		return result;
 	}
-
-
-
-
-
 }

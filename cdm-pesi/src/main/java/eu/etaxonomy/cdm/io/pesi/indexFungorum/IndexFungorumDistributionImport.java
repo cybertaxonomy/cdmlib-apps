@@ -33,14 +33,15 @@ import eu.etaxonomy.cdm.model.reference.Reference;
 import eu.etaxonomy.cdm.model.taxon.Taxon;
 import eu.etaxonomy.cdm.model.taxon.TaxonBase;
 
-
 /**
  * @author a.mueller
  * @since 27.02.2012
  */
 @Component
 public class IndexFungorumDistributionImport  extends IndexFungorumImportBase {
-	private static final Logger logger = Logger.getLogger(IndexFungorumDistributionImport.class);
+
+    private static final long serialVersionUID = -815842161276543719L;
+    private static final Logger logger = Logger.getLogger(IndexFungorumDistributionImport.class);
 
 	private static final String pluralString = "distributions";
 	private static final String dbTableName = "[tblPESIfungi]";
@@ -49,9 +50,6 @@ public class IndexFungorumDistributionImport  extends IndexFungorumImportBase {
 		super(pluralString, dbTableName, null);
 	}
 
-
-
-
 	@Override
 	protected String getIdQuery() {
 		String result = " SELECT PreferredNameIFnumber FROM " + getTableName() +
@@ -59,12 +57,6 @@ public class IndexFungorumDistributionImport  extends IndexFungorumImportBase {
 		return result;
 	}
 
-
-
-
-	/* (non-Javadoc)
-	 * @see eu.etaxonomy.cdm.io.berlinModel.in.BerlinModelImportBase#getRecordQuery(eu.etaxonomy.cdm.io.berlinModel.in.BerlinModelImportConfigurator)
-	 */
 	@Override
 	protected String getRecordQuery(IndexFungorumImportConfigurator config) {
 		String strRecordQuery =
@@ -75,7 +67,6 @@ public class IndexFungorumDistributionImport  extends IndexFungorumImportBase {
 		return strRecordQuery;
 	}
 
-
 	@Override
 	public boolean doPartition(ResultSetPartitioner partitioner, IndexFungorumImportState state) {
 		boolean success = true;
@@ -84,7 +75,7 @@ public class IndexFungorumDistributionImport  extends IndexFungorumImportBase {
 
 		try {
 			//column names that do not hold distribution information
-			Set<String> excludedColumns = new HashSet<String>();
+			Set<String> excludedColumns = new HashSet<>();
 			excludedColumns.add("PreferredName");
 			excludedColumns.add("PreferredNameIFnumber");
 			excludedColumns.add("PreferredNameFDCnumber");
@@ -120,17 +111,12 @@ public class IndexFungorumDistributionImport  extends IndexFungorumImportBase {
 								//no last action
 								distribution.addMarker(Marker.NewInstance(noLastActionMarkerType, true));
 							}
-
 						}
 					}
 					getTaxonService().saveOrUpdate(taxon);
 				}
-
 				//save
-
 			}
-
-
 		} catch (Exception e) {
 			e.printStackTrace();
 			logger.error(e.getMessage());
@@ -139,7 +125,6 @@ public class IndexFungorumDistributionImport  extends IndexFungorumImportBase {
 		}
 		return success;
 	}
-
 
 	private Taxon getParentTaxon(IndexFungorumImportState state, ResultSet rs) throws SQLException {
 		Integer genusId = rs.getInt("PreferredNameFDCnumber");
@@ -151,16 +136,15 @@ public class IndexFungorumDistributionImport  extends IndexFungorumImportBase {
 		return taxon;
 	}
 
-
 	@Override
 	public Map<Object, Map<String, ? extends CdmBase>> getRelatedObjectsForPartition(ResultSet rs, IndexFungorumImportState state) {
 		String nameSpace;
 		Class<?> cdmClass;
 		Set<String> idSet;
-		Map<Object, Map<String, ? extends CdmBase>> result = new HashMap<Object, Map<String, ? extends CdmBase>>();
+		Map<Object, Map<String, ? extends CdmBase>> result = new HashMap<>();
 
 		try{
-			Set<String> taxonIdSet = new HashSet<String>();
+			Set<String> taxonIdSet = new HashSet<>();
 			while (rs.next()){
 				handleForeignKey(rs, taxonIdSet, "PreferredNameIFnumber" );
 			}
@@ -184,7 +168,6 @@ public class IndexFungorumDistributionImport  extends IndexFungorumImportBase {
 		return result;
 	}
 
-
 	@Override
 	protected boolean doCheck(IndexFungorumImportState state){
 		return true;
@@ -194,9 +177,4 @@ public class IndexFungorumDistributionImport  extends IndexFungorumImportBase {
 	protected boolean isIgnore(IndexFungorumImportState state){
 		return ! state.getConfig().isDoOccurrence();
 	}
-
-
-
-
-
 }

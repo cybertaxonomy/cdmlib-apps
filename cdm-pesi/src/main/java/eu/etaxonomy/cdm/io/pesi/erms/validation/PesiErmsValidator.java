@@ -109,7 +109,7 @@ public class PesiErmsValidator {
 
     private boolean compareKingdom(String messageStart, String strSrc, Integer strDest, int id) {
         if (strDest == null){
-            logger.warn(id +":" + messageStart + " must never be null for destination. Biota needs to be 0, all the rest needs to have >0 int value.");
+            logger.warn(id +": " + messageStart + " must never be null for destination. Biota needs to be 0, all the rest needs to have >0 int value.");
             return false;
         }else if (strSrc == null){
             //TODO

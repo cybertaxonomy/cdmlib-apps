@@ -137,14 +137,8 @@ public abstract class ErmsImportBase<CDM_BASE extends CdmBase>
 		return success;
 	}
 
-	/**
-	 * @return
-	 */
 	protected abstract DbImportMapping<?, ?> getMapping();
 
-	/**
-	 * @return
-	 */
 	protected abstract String getRecordQuery(ErmsImportConfigurator config);
 
 	protected String getIdQuery(){
@@ -324,7 +318,6 @@ public abstract class ErmsImportBase<CDM_BASE extends CdmBase>
 			e.printStackTrace();
 			return false;
 		}
-
 	}
 
 	/**
