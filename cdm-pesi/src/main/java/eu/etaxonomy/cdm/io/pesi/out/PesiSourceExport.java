@@ -21,10 +21,10 @@ import org.springframework.transaction.TransactionStatus;
 
 import eu.etaxonomy.cdm.io.common.IExportConfigurator.DO_REFERENCES;
 import eu.etaxonomy.cdm.io.common.Source;
+import eu.etaxonomy.cdm.io.common.mapping.out.DbAnnotationMapper;
 import eu.etaxonomy.cdm.io.common.mapping.out.DbExtensionMapper;
 import eu.etaxonomy.cdm.io.common.mapping.out.DbStringMapper;
 import eu.etaxonomy.cdm.io.common.mapping.out.DbTimePeriodMapper;
-import eu.etaxonomy.cdm.io.common.mapping.out.DbUriMapper;
 import eu.etaxonomy.cdm.io.common.mapping.out.IdMapper;
 import eu.etaxonomy.cdm.io.common.mapping.out.MethodMapper;
 import eu.etaxonomy.cdm.io.pesi.erms.ErmsTransformer;
@@ -292,18 +292,6 @@ public class PesiSourceExport extends PesiExportBase {
 	}
 
 	/**
-	 * Returns the <code>Notes</code> attribute.
-	 * @param reference The {@link Reference Reference}.
-	 * @return The <code>Notes</code> attribute.
-	 * @see MethodMapper
-	 */
-	@SuppressWarnings("unused")
-	private static String getNotes(Reference reference) {
-		// TODO
-		return null;
-	}
-
-	/**
 	 * Returns the <code>RefIdInSource</code> attribute.
 	 * @param reference The {@link Reference Reference}.
 	 * @return The <code>RefIdInSource</code> attribute.
@@ -436,8 +424,8 @@ public class PesiSourceExport extends PesiExportBase {
 		mapping.addMapper(MethodMapper.NewInstance("AuthorString", this));
 		mapping.addMapper(DbTimePeriodMapper.NewInstance("datePublished", "RefYear"));
 		mapping.addMapper(MethodMapper.NewInstance("NomRefCache", this));
-		mapping.addMapper(DbUriMapper.NewInstance("uri", "Link"));
-		mapping.addMapper(MethodMapper.NewInstance("Notes", this));
+		mapping.addMapper(DbExtensionMapper.NewInstance(ExtensionType.URL(), "Link"));
+		mapping.addMapper(DbAnnotationMapper.NewInstance(null, "Notes"));
 		mapping.addMapper(MethodMapper.NewInstance("RefIdInSource", this));
 		mapping.addMapper(MethodMapper.NewInstance("OriginalDB", this));
 
