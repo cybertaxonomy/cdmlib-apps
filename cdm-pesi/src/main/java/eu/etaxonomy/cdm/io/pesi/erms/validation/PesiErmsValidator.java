@@ -51,26 +51,75 @@ public class PesiErmsValidator {
     }
 
     private boolean testTaxa() {
-        boolean success = testTaxaCount();
-        return success;
+        try {
+            boolean success = testTaxaCount();
+            if (success){
+                success &= testSingleTaxa();
+            }
+            return success;
+        } catch (Exception e) {
+            e.printStackTrace();
+            return false;
+        }
     }
 
-    private boolean testTaxaCount() {
+   private boolean testTaxaCount() {
         int countSrc = source.getUniqueInteger("SELECT count(*) FROM tu ");
         int countDest = destination.getUniqueInteger("SELECT count(*) FROM Taxon ");
         return equals("Taxon count ", countSrc, countDest);
     }
 
     private boolean testReferences() {
-        boolean success = testReferenceCount();
-        if (success){
-            try {
+        try {
+            boolean success = testReferenceCount();
+            if (success){
                 success &= testSingleReferences();
-            } catch (SQLException e) {
-                e.printStackTrace();
             }
+            return success;
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
+
+    private boolean testSingleTaxa() throws SQLException {
+        boolean success = true;
+        ResultSet srcRS = source.getResultSet("SELECT t.* FROM tu t ORDER BY CAST(t.id as nvarchar(20)) ");
+        ResultSet destRS = destination.getResultSet("SELECT t.* FROM Taxon t "
+                + " WHERE t.OriginalDB = 'erms' ORDER BY t.IdInSource");
+        while (srcRS.next() && destRS.next()){
+            success &= testSingleTaxon(srcRS, destRS);
         }
         return success;
+    }
+
+    private boolean testSingleTaxon(ResultSet srcRS, ResultSet destRS) throws SQLException {
+        //id, IdInSource
+        int id = srcRS.getInt("id");
+        boolean success = equals("Taxon ID", "tu_id: " + srcRS.getInt("id"), destRS.getString("IdInSource"), id);
+        success &= equals("Taxon authority", srcRS.getString("tu_authority"), destRS.getString("AuthorString"), id);
+        success &= equals("Taxon GUID", srcRS.getString("GUID"), destRS.getString("GUID"), id);
+        success &= compareKingdom("Taxon kingdom", srcRS.getString("tu_sp"), nullSafeInt(destRS, "KingdomFk"), id);
+
+//      success &= equals("Taxon websearchname", srcRS.getString("tu_displayname"), destRS.getString("WebSearchName"), id);
+
+        //TODO TBC
+        return success;
+    }
+
+    private boolean compareKingdom(String messageStart, String strSrc, Integer strDest, int id) {
+        if (strDest == null){
+            logger.warn(id +":" + messageStart + " must never be null for destination. Biota needs to be 0, all the rest needs to have >0 int value.");
+            return false;
+        }else if (strSrc == null){
+            //TODO
+            logger.warn("Computation of source kingdom not yet implemented for top level taxa. ID= " + id);
+            return true;
+        }else{
+            strSrc = strSrc.substring(1);
+            String strSrcKingdom = strSrc.substring(0, strSrc.indexOf("#"));
+            return equals(messageStart, strSrcKingdom, String.valueOf(strDest), id);
+        }
     }
 
     private boolean testSingleReferences() throws SQLException {
@@ -79,18 +128,19 @@ public class PesiErmsValidator {
         ResultSet destRS = destination.getResultSet("SELECT s.* FROM Source s "
                 + " WHERE s.OriginalDB = 'erms' ORDER BY s.RefIdInSource");  // +1 for the source reference "erms" but this has no OriginalDB
         while (srcRS.next() && destRS.next()){
-            success &= testSingleReference(srcRS, destRS);
+//            success &= testSingleReference(srcRS, destRS);
         }
         return success;
     }
 
     private boolean testSingleReference(ResultSet srcRS, ResultSet destRS) throws SQLException {
         //id, RefIdInSource
+        int id = srcRS.getInt("id");
         boolean success = equals("Reference ID ", srcRS.getInt("id"), destRS.getInt("RefIdInSource"));
-        success &= equals("Reference name ", srcRS.getString("source_name"), destRS.getString("Name"));
-        success &= equals("Reference note ", srcRS.getString("source_note"), destRS.getString("Notes"));
-        success &= equals("Reference link ", srcRS.getString("source_link"), destRS.getString("Link"));
-        success &= equals("Reference year ", srcRS.getString("source_year"), destRS.getString("RefYear"));
+        success &= equals("Reference name ", srcRS.getString("source_name"), destRS.getString("Name"), id);
+        success &= equals("Reference note ", srcRS.getString("source_note"), destRS.getString("Notes"), id);
+        success &= equals("Reference link ", srcRS.getString("source_link"), destRS.getString("Link"), id);
+        success &= equals("Reference year ", srcRS.getString("source_year"), destRS.getString("RefYear"), id);
         //TODO TBC
         return success;
     }
@@ -113,14 +163,14 @@ public class PesiErmsValidator {
         }
     }
 
-    private boolean equals(String messageStart, String strSrc, String strDest) {
+    private boolean equals(String messageStart, String strSrc, String strDest, int id) {
         if (!CdmUtils.nullSafeEqual(strSrc, strDest)){
             int index = diffIndex(strSrc, strDest);
-            String message = messageStart + " must be equal, but was not at "+index+".\n  Source:      "+  strSrc + "\n  Destination: " + strDest;
+            String message = id+ ": " + messageStart + " must be equal, but was not at "+index+".\n  Source:      "+  strSrc + "\n  Destination: " + strDest;
             logger.warn(message);
             return false;
         }else{
-            logger.info(messageStart + " were equal: " + strSrc);
+            logger.info(id+ ": " + messageStart + " were equal: " + strSrc);
             return true;
         }
     }
@@ -143,6 +193,15 @@ public class PesiErmsValidator {
             return Math.max(strSrc.length(), strDest.length());
         }
         return i;
+    }
+
+    protected Integer nullSafeInt(ResultSet rs, String columnName) throws SQLException {
+        Object intObject = rs.getObject(columnName);
+        if (intObject == null){
+            return null;
+        }else{
+            return Integer.valueOf(intObject.toString());
+        }
     }
 
 //** ************* MAIN ********************************************/
