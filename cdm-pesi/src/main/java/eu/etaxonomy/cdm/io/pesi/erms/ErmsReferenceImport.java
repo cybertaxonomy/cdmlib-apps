@@ -21,6 +21,7 @@ import eu.etaxonomy.cdm.io.common.IImportConfigurator;
 import eu.etaxonomy.cdm.io.common.IOValidator;
 import eu.etaxonomy.cdm.io.common.mapping.DbIgnoreMapper;
 import eu.etaxonomy.cdm.io.common.mapping.DbImportAnnotationMapper;
+import eu.etaxonomy.cdm.io.common.mapping.DbImportDoiMapper;
 import eu.etaxonomy.cdm.io.common.mapping.DbImportExtensionMapper;
 import eu.etaxonomy.cdm.io.common.mapping.DbImportMapping;
 import eu.etaxonomy.cdm.io.common.mapping.DbImportObjectCreationMapper;
@@ -76,18 +77,20 @@ public class ErmsReferenceImport  extends ErmsImportBase<Reference> implements I
 			mapping.addMapper(DbImportExtensionMapper.NewInstance("imis_id", imisExtType));
 
 			ExtensionType truncatedExtType = getExtensionType( ErmsTransformer.uuidExtTruncatedCache, "truncated cache", "truncated cache", "truncated cache");
-//            mapping.addMapper(DbImportTruncatedStringMapper.NewInstance("source_name", "titleCache", "title"));
             mapping.addMapper(DbImportTruncatedStringMapper.NewInstance("source_name", "titleCache", truncatedExtType, 800, true));
             mapping.addMapper(DbImportStringMapper.NewInstance("source_abstract", "referenceAbstract"));
-			mapping.addMapper(DbImportAnnotationMapper.NewInstance("source_note", AnnotationType.EDITORIAL(), Language.DEFAULT()));
+            mapping.addMapper(DbImportStringMapper.NewInstance("source_title", "title"));
+            mapping.addMapper(DbImportAnnotationMapper.NewInstance("source_note", AnnotationType.EDITORIAL(), Language.DEFAULT()));
 			mapping.addMapper(DbImportTimePeriodMapper.NewVerbatimInstance("source_year", "datePublished"));
+			mapping.addMapper(DbImportDoiMapper.NewInstance("source_doi", "doi"));
 
 			//TODO handle as External Link once they are available for Reference
 			logger.warn("Handle source_link as ExternalLink once available for class Reference");
 			mapping.addMapper(DbImportExtensionMapper.NewInstance("source_link", ExtensionType.URL()));
 
 			//not yet implemented
-			mapping.addMapper(DbNotYetImplementedMapper.NewInstance("source_doi", "Requires according mapper. See LSID or TimePeriod mapper as example"));
+			mapping.addMapper(DbNotYetImplementedMapper.NewInstance("source_author", "Still missing but exists in destination. Implement either as real author or as extension"));
+
 
 			mapping.addMapper(DbIgnoreMapper.NewInstance("source_type", "Handled by ObjectCreateMapper - but mapping not yet fully correct. See comments there."));
 			mapping.addMapper(DbIgnoreMapper.NewInstance("source_orig_fn", "Currently not needed. Holds information about pdf files."));

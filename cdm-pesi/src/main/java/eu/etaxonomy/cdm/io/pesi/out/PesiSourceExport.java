@@ -22,6 +22,7 @@ import org.springframework.transaction.TransactionStatus;
 import eu.etaxonomy.cdm.io.common.IExportConfigurator.DO_REFERENCES;
 import eu.etaxonomy.cdm.io.common.Source;
 import eu.etaxonomy.cdm.io.common.mapping.out.DbAnnotationMapper;
+import eu.etaxonomy.cdm.io.common.mapping.out.DbDoiMapper;
 import eu.etaxonomy.cdm.io.common.mapping.out.DbExtensionMapper;
 import eu.etaxonomy.cdm.io.common.mapping.out.DbStringMapper;
 import eu.etaxonomy.cdm.io.common.mapping.out.DbTimePeriodMapper;
@@ -423,6 +424,8 @@ public class PesiSourceExport extends PesiExportBase {
 		mapping.addMapper(DbStringMapper.NewInstance("title", "Title"));
 		mapping.addMapper(MethodMapper.NewInstance("AuthorString", this));
 		mapping.addMapper(DbTimePeriodMapper.NewInstance("datePublished", "RefYear"));
+		mapping.addMapper(DbDoiMapper.NewInstance("doi", "Doi"));
+
 		mapping.addMapper(MethodMapper.NewInstance("NomRefCache", this));
 		mapping.addMapper(DbExtensionMapper.NewInstance(ExtensionType.URL(), "Link"));
 		mapping.addMapper(DbAnnotationMapper.NewInstance(null, "Notes"));
