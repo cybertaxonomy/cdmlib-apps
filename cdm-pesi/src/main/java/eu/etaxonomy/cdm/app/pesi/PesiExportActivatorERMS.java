@@ -33,28 +33,28 @@ public class PesiExportActivatorERMS {
 //    static final ICdmDataSource cdmSource = CdmDestinations.cdm_test_local_mysql_erms2();
 
 	//database validation status (create, update, validate ...)
-//	static final Source pesiDestination = PesiDestinations.pesi_test_local_CDM_ERMS2PESI();
-	static final Source pesiDestination = PesiDestinations.pesi_test_local_CDM_ERMS2PESI_2();
+	static final Source pesiDestination = PesiDestinations.pesi_test_local_CDM_ERMS2PESI();
+//	static final Source pesiDestination = PesiDestinations.pesi_test_local_CDM_ERMS2PESI_2();
 
 // ****************** ALL *****************************************
 
-//	static boolean deleteAll = true;
-//	static DO_REFERENCES doReferences =  DO_REFERENCES.ALL;
-//	static boolean doTaxa = true;
-//	static boolean doTreeIndex = true;
-//	static boolean doInferredSynonyms = true;
-//	static boolean doRelTaxa = true;
-//	static boolean doDescriptions = true;
+	boolean deleteAll = true;
+	DO_REFERENCES doReferences =  DO_REFERENCES.ALL;
+	boolean doTaxa = true;
+	boolean doTreeIndex = true;
+	boolean doInferredSynonyms = true;
+	boolean doRelTaxa = true;
+	boolean doDescriptions = false;
 
 // ************************ NONE **************************************** //
 
-	static boolean deleteAll = false;
-	static DO_REFERENCES doReferences =  DO_REFERENCES.ALL;
-	static boolean doTaxa = true;
-	static boolean doTreeIndex = true; //only with doTaxa
-	static boolean doInferredSynonyms = true; //only with doTaxa
-	static boolean doRelTaxa = true;
-	static boolean doDescriptions = false;
+//	boolean deleteAll = false;
+//	static DO_REFERENCES doReferences =  DO_REFERENCES.NONE;
+//	boolean doTaxa = true;
+//	boolean doTreeIndex = doTaxa; //only with doTaxa
+//	boolean doInferredSynonyms = false; //only with doTaxa
+//	boolean doRelTaxa = false;
+//	boolean doDescriptions = false;
 
 //	static final boolean doNotes = false;
 //	static final boolean doNoteSources = false;
@@ -74,11 +74,9 @@ public class PesiExportActivatorERMS {
 
 	static final int partitionSize = 1000;
 
-	public boolean 	doExport(ICdmDataSource source){
+	public boolean 	doExport(ICdmDataSource source, Source destination){
 		System.out.println("Start export to PESI ("+ pesiDestination.getDatabase() + ") ...");
 
-		//make PESI Source
-		Source destination = pesiDestination;
 		PesiTransformer transformer = new PesiTransformer(destination);
 
 		PesiExportConfigurator config = PesiExportConfigurator.NewInstance(destination, source, transformer);
@@ -86,9 +84,9 @@ public class PesiExportActivatorERMS {
 		config.setDoTreeIndex(doTreeIndex); //only with doTaxa
 		config.setDoInferredSynonyms(doInferredSynonyms); //only with doTaxa
 
+		config.setDoReferences(doReferences);
 		config.setDoTaxa(doTaxa);
 		config.setDoRelTaxa(doRelTaxa);
-		config.setDoReferences(doReferences);
 		config.setDoDescription(doDescriptions);
 
 //		config.setDoOccurrence(doOccurrence);
@@ -120,7 +118,7 @@ public class PesiExportActivatorERMS {
 		PesiExportActivatorERMS ex = new PesiExportActivatorERMS();
 		ICdmDataSource source = CdmDestinations.chooseDestination(args) != null ? CdmDestinations.chooseDestination(args) : cdmSource;
 
-		ex.doExport(source);
+		ex.doExport(source, pesiDestination);
 		System.exit(0);
 	}
 }
