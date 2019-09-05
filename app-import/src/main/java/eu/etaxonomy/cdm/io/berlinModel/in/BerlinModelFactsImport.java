@@ -9,6 +9,7 @@
 
 package eu.etaxonomy.cdm.io.berlinModel.in;
 
+import java.io.File;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -850,7 +851,7 @@ public class BerlinModelFactsImport  extends BerlinModelImportBase {
         if (salvadorImages == null){
             salvadorImages = new HashMap<>();
             try {
-                CSVReader reader = new CSVReader(CdmUtils.getUtf8ResourceReader("salvador" + CdmUtils.getFolderSeperator() + "SalvadorImages.csv"),';');
+                CSVReader reader = new CSVReader(CdmUtils.getUtf8ResourceReader("salvador" + File.separator + "SalvadorImages.csv"),';');
                 List<String[]> lines = reader.readAll();
                 for (String[] line : lines){
                     String first = line[0];

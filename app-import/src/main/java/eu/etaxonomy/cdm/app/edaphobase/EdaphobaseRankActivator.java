@@ -8,6 +8,7 @@
 */
 package eu.etaxonomy.cdm.app.edaphobase;
 
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStreamReader;
 
@@ -58,7 +59,7 @@ public class EdaphobaseRankActivator {
 
     private InputStreamReader getGermanRanks() {
         String filename = "Rank_de.csv";
-        String path = "terms" + CdmUtils.getFolderSeperator() + filename;
+        String path = "terms" + File.separator + filename;
         try {
             InputStreamReader input = CdmUtils.getUtf8ResourceReader(path);
             return input;
@@ -71,7 +72,7 @@ public class EdaphobaseRankActivator {
 
     private InputStreamReader getLatinRanks() {
         String filename = "Rank_la.csv";
-        String path = "terms" + CdmUtils.getFolderSeperator() + filename;
+        String path = "terms" + File.separator + filename;
         try {
             InputStreamReader input = CdmUtils.getUtf8ResourceReader(path);
             return input;

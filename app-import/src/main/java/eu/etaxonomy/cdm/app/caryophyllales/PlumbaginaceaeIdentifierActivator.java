@@ -17,7 +17,6 @@ import java.util.UUID;
 import org.apache.log4j.Logger;
 
 import eu.etaxonomy.cdm.app.common.CdmDestinations;
-import eu.etaxonomy.cdm.common.CdmUtils;
 import eu.etaxonomy.cdm.database.DbSchemaValidation;
 import eu.etaxonomy.cdm.database.ICdmDataSource;
 import eu.etaxonomy.cdm.io.common.CdmDefaultImport;
@@ -68,7 +67,7 @@ public class PlumbaginaceaeIdentifierActivator {
 
 //        URI.create("file:////BGBM-PESIHPC/FloraMalesianaXml/fmvol14_final2.xml")
         String path = "C://opt//data//Caryophyllales";
-        File file = new File(path + CdmUtils.getFolderSeperator() + filename);
+        File file = new File(path + File.separator + filename);
         if (!file.exists()){
             System.exit(-1);
             return null;
@@ -87,7 +86,7 @@ public class PlumbaginaceaeIdentifierActivator {
         String filename = "WFONamesInCDM_Plumbaginaceae_IPNI.csv";
 
         String path = "C://opt//data//Caryophyllales";
-        File file = new File(path + CdmUtils.getFolderSeperator() + filename);
+        File file = new File(path + File.separator + filename);
         if (!file.exists()){
             System.exit(-1);
             return null;
