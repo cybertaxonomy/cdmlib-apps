@@ -273,6 +273,7 @@ public class ErmsTaxonImport
 			taxonName.setNameCache(displayName);
 			logger.warn("Set name cache: " +  displayName + "; id =" + meId);
 		}
+		taxonName.getTitleCache();
 
 		//add original source for taxon name (taxon original source is added in mapper
 		Reference citation = state.getTransactionalSourceReference();
