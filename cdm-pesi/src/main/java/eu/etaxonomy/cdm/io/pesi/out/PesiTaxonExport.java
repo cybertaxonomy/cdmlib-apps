@@ -1564,15 +1564,14 @@ public class PesiTaxonExport extends PesiExportBase {
 		if (taxonName == null) {
 			return null;
 		}else{
+		    TaxonName nvn = CdmBase.deproxy(taxonName);
 			INonViralNameCacheStrategy cacheStrategy = getCacheStrategy(taxonName);
 			HTMLTagRules tagRules = new HTMLTagRules().
 					addRule(TagEnum.name, "i").
 					addRule(TagEnum.nomStatus, "@status@");
 
-			TaxonName nvn = CdmBase.deproxy(taxonName);
 			String result = cacheStrategy.getFullTitleCache(nvn, tagRules);
 			cacheStrategy = null;
-			nvn = null;
 			return result.replaceAll(",?\\<@status@\\>.*\\</@status@\\>", "");
 		}
 	}
@@ -1669,6 +1668,7 @@ public class PesiTaxonExport extends PesiExportBase {
 		if (taxonName != null){
 			Reference nomRef = taxonName.getNomenclaturalReference();
 			if (nomRef != null){
+			    //#5388 is definetely not the correct ticket number
 			    logger.warn("Semantics of getAbbrevTitleCache has changed. Please check if output is still correct. See #5388");
 				return nomRef.getAbbrevTitleCache();
 			}
@@ -2509,8 +2509,6 @@ public class PesiTaxonExport extends PesiExportBase {
 		mapping.addMapper(DbStringMapper.NewInstance("AuthorshipCache", "AuthorString").setBlankToNull(true));
 		mapping.addMapper(MethodMapper.NewInstance("WebShowName", this, TaxonName.class));
 		mapping.addMapper(MethodMapper.NewInstance("GUID", this, TaxonName.class));
-
-
 
 		// DisplayName
 		mapping.addMapper(MethodMapper.NewInstance("DisplayName", this, TaxonName.class));
