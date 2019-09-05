@@ -23,6 +23,7 @@ import org.springframework.stereotype.Component;
 
 import eu.etaxonomy.cdm.io.common.IOValidator;
 import eu.etaxonomy.cdm.io.common.mapping.DbIgnoreMapper;
+import eu.etaxonomy.cdm.io.common.mapping.DbImportAnnotationMapper;
 import eu.etaxonomy.cdm.io.common.mapping.DbImportExtensionMapper;
 import eu.etaxonomy.cdm.io.common.mapping.DbImportLsidMapper;
 import eu.etaxonomy.cdm.io.common.mapping.DbImportMapping;
@@ -31,10 +32,13 @@ import eu.etaxonomy.cdm.io.common.mapping.DbImportObjectCreationMapper;
 import eu.etaxonomy.cdm.io.common.mapping.DbImportStringMapper;
 import eu.etaxonomy.cdm.io.common.mapping.DbNotYetImplementedMapper;
 import eu.etaxonomy.cdm.io.common.mapping.IMappingImport;
+import eu.etaxonomy.cdm.io.common.mapping.out.DbLastActionMapper;
 import eu.etaxonomy.cdm.io.pesi.erms.validation.ErmsTaxonImportValidator;
 import eu.etaxonomy.cdm.io.pesi.out.PesiTaxonExport;
+import eu.etaxonomy.cdm.model.common.AnnotationType;
 import eu.etaxonomy.cdm.model.common.CdmBase;
 import eu.etaxonomy.cdm.model.common.ExtensionType;
+import eu.etaxonomy.cdm.model.common.MarkerType;
 import eu.etaxonomy.cdm.model.name.NomenclaturalCode;
 import eu.etaxonomy.cdm.model.name.Rank;
 import eu.etaxonomy.cdm.model.name.TaxonName;
@@ -95,7 +99,6 @@ public class ErmsTaxonImport
 
 			ExtensionType fossilStatusExtType = getExtensionType(ErmsTransformer.uuidExtFossilStatus, "fossil status", "fossil status", "fos. stat.");
 			mapping.addMapper(DbImportExtensionMapper.NewInstance("fossil_name", fossilStatusExtType));
-//			mapping.addMapper(DbImportExtensionTypeCreationMapper.NewInstance("fossil_name", EXTENSION_TYPE_NAMESPACE, "fossil_name", "fossil_name", "fossil_name"));
 
 			ExtensionType unacceptExtType = getExtensionType(ErmsTransformer.uuidExtUnacceptReason, "unaccept reason", "unaccept reason", "reason");
 			mapping.addMapper(DbImportExtensionMapper.NewInstance("tu_unacceptreason", unacceptExtType));
@@ -107,6 +110,11 @@ public class ErmsTaxonImport
 			mapping.addMapper(DbImportMarkerMapper.NewInstance("tu_brackish", ErmsTransformer.uuidMarkerBrackish, "brackish", "brackish", "brackish", null));
 			mapping.addMapper(DbImportMarkerMapper.NewInstance("tu_fresh", ErmsTransformer.uuidMarkerFreshwater, "freshwater", "fresh", "fresh", null));
 			mapping.addMapper(DbImportMarkerMapper.NewInstance("tu_terrestrial", ErmsTransformer.uuidMarkerTerrestrial, "terrestrial", "terrestrial", "terrestrial", null));
+			AnnotationType lastActionDateType = getAnnotationType(DbLastActionMapper.uuidAnnotationTypeLastActionDate, "Last action date", "Last action date", null);
+			mapping.addMapper(DbImportAnnotationMapper.NewInstance("lastActionDate", lastActionDateType));
+            AnnotationType lastActionType = getAnnotationType(DbLastActionMapper.uuidAnnotationTypeLastAction, "Last action", "Last action", null);
+            MarkerType hasNoLastActionMarkerType = getMarkerType(DbLastActionMapper.uuidMarkerTypeHasNoLastAction, "has no last action", "No last action information available", "no last action");
+            mapping.addMapper(DbImportAnnotationMapper.NewInstance("lastAction", lastActionType, hasNoLastActionMarkerType));
 
 //			UUID hiddenUuid = ErmsTransformer.uuidHidden;
 //			mapping.addMapper(DbImportMarkerCreationMapper.Mapper.NewInstance("qualitystatus_name", qualityUuid, "quality status", "quality status", "quality status")); //checked by Tax Editor ERMS1.1, Added by db management team (2x), checked by Tax Editor
@@ -126,13 +134,19 @@ public class ErmsTaxonImport
 	protected String getRecordQuery(ErmsImportConfigurator config) {
 		String strSelect = " SELECT tu.*, parent1.tu_name AS parent1name, parent2.tu_name AS parent2name, parent3.tu_name AS parent3name, "
 			+ " parent1.tu_rank AS parent1rank, parent2.tu_rank AS parent2rank, parent3.tu_rank AS parent3rank, " +
-			" status.status_id as status_id, status.status_name, fossil.fossil_name, qualitystatus.qualitystatus_name";
+			" status.status_id as status_id, status.status_name, fossil.fossil_name, qualitystatus.qualitystatus_name,"
+			+ " gr.date lastActionDate, a.action_name lastAction";
 		String strFrom = " FROM tu  LEFT OUTER JOIN  tu AS parent1 ON parent1.id = tu.tu_parent " +
 				" LEFT OUTER JOIN   tu AS parent2  ON parent2.id = parent1.tu_parent " +
 				" LEFT OUTER JOIN tu AS parent3 ON parent2.tu_parent = parent3.id " +
 				" LEFT OUTER JOIN status ON tu.tu_status = status.status_id " +
 				" LEFT OUTER JOIN fossil ON tu.tu_fossil = fossil.fossil_id " +
-				" LEFT OUTER JOIN qualitystatus ON tu.tu_qualitystatus = qualitystatus.id ";
+				" LEFT OUTER JOIN qualitystatus ON tu.tu_qualitystatus = qualitystatus.id " +
+				" LEFT JOIN ( SELECT maxDate.tu_id, maxDate.date, max(action_id) action_id " +
+				   " FROM (SELECT tu_id, max(s.sessiondate) date FROM  tu_sessions MN INNER JOIN sessions s ON s.id = MN.session_id GROUP BY tu_id) maxDate " +
+				   " INNER JOIN (SELECT MN2.tu_id, MN2.action_id, s2.sessiondate FROM tu_sessions MN2  INNER JOIN sessions s2 ON s2.id = MN2.session_id) as a ON a.tu_id = maxDate.tu_id AND a.sessiondate = maxDate.date " +
+				   " GROUP BY maxDate.tu_id,  maxDate.date) as gr ON tu.id = gr.tu_id " +
+				" LEFT JOIN actions a ON a.id = gr.action_id ";
 		String strWhere = " WHERE ( tu.id IN (" + ID_LIST_TOKEN + ") )";
 		String strRecordQuery = strSelect + strFrom + strWhere;
 		return strRecordQuery;

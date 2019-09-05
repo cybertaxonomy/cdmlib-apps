@@ -364,6 +364,15 @@ public abstract class ErmsImportBase<CDM_BASE extends CdmBase>
 		return markerType;
 	}
 
+    protected AnnotationType getAnnotationType(UUID uuid, String label, String text, String labelAbbrev){
+        AnnotationType annotationType = (AnnotationType)getTermService().find(uuid);
+        if (annotationType == null){
+            annotationType = AnnotationType.NewInstance(label, text, labelAbbrev);
+            annotationType.setUuid(uuid);
+            getTermService().save(annotationType);
+        }
+        return annotationType;
+    }
 
 	/**
 	 * Reads a foreign key field from the result set and adds its value to the idSet.
