@@ -889,7 +889,7 @@ public class CubaExcelImport
             newCombination = TaxonName.castAndDeproxy(name1);
         }
         if (matchAuthor(basionymName.getCombinationAuthorship(), newCombination.getBasionymAuthorship())
-                && BasionymRelationCreator.matchFamilyNamePart(basionymName, newCombination)){
+                && BasionymRelationCreator.matchLastNamePart(basionymName, newCombination)){
             newCombination.addBasionym(basionymName);
         }else{
             if ( (newCombination.getBasionyms().isEmpty() || ! onlyIfNotYetExists)
@@ -1347,26 +1347,6 @@ public class CubaExcelImport
         }
         return rootNode;
     }
-
-
-    /**
-     * @param record
-     * @param originalKey
-     * @return
-     */
-    @Override
-    public String getValue(Map<String, String> record, String originalKey) {
-        String value = record.get(originalKey);
-        if (! StringUtils.isBlank(value)) {
-        	if (logger.isDebugEnabled()) { logger.debug(originalKey + ": " + value); }
-        	value = CdmUtils.removeDuplicateWhitespace(value.trim()).toString();
-        	return value;
-        }else{
-        	return null;
-        }
-    }
-
-
 
 	/**
 	 *  Stores taxa records in DB
