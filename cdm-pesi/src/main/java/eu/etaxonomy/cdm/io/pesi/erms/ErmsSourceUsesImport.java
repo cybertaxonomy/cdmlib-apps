@@ -48,7 +48,6 @@ import eu.etaxonomy.cdm.model.reference.Reference;
 import eu.etaxonomy.cdm.model.taxon.Synonym;
 import eu.etaxonomy.cdm.model.taxon.Taxon;
 import eu.etaxonomy.cdm.model.taxon.TaxonBase;
-import eu.etaxonomy.cdm.model.taxon.TaxonRelationship;
 
 /**
  * @author a.mueller
@@ -222,22 +221,26 @@ public class ErmsSourceUsesImport  extends ErmsImportBase<CommonTaxonName> {
 			String warning = "taxonBase (id = " + strTaxonId + ") could not be found ";
 			logger.warn(warning);
 			return null;
-		}else if (! taxonBase.isInstanceOf(Synonym.class)){
-			String message = "TaxonBase is not of class Synonym but " + taxonBase.getClass().getSimpleName();
-			logger.info(message);
+		}else if (taxonBase.isInstanceOf(Taxon.class)){
 			Taxon taxon =CdmBase.deproxy(taxonBase, Taxon.class);
-			Set<TaxonRelationship> synRels = taxon.getTaxonRelations();
-			if (synRels.size() != 1){
-				logger.warn("TaxonSynonym (" + strTaxonId + ") has not 1 but " + synRels.size() + " relations!");
-			}else{
-				TaxonRelationship synRel = synRels.iterator().next();
-				synRel.setCitation(ref);
-				synRel.setCitationMicroReference(strPageNr);
-			}
-		}else{
+			Feature sourceOfSynonymyFeature = getFeature(state, ErmsTransformer.uuidSourceOfSynonymy, "Source of synonymy", "Source of synonymy", null, null);
+			TextData element = TextData.NewInstance(sourceOfSynonymyFeature);
+			getTaxonDescription(taxon, false, true).addElement(element);
+			element.addPrimaryTaxonomicSource(ref, strPageNr);
+		}else if (taxonBase.isInstanceOf(Taxon.class)){
 			Synonym synonym =CdmBase.deproxy(taxonBase, Synonym.class);
-			synonym.setSec(ref);
-			synonym.setSecMicroReference(strPageNr);
+			if (synonym.getSec()!= null){
+			    logger.warn("Synonym has sec reference already. Source of synonym can not be set: " + strTaxonId);
+			}else{
+			    synonym.setSec(ref);
+			}
+			if (synonym.getSecMicroReference()!= null){
+                logger.warn("Synonym has sec micro reference already. Source of synonym detail can not be set: " + strTaxonId);
+            }else{
+                synonym.setSecMicroReference(strPageNr);
+            }
+		}else{
+		    throw new RuntimeException("Unsupported taxonbase class");
 		}
 
 		return taxonBase;
