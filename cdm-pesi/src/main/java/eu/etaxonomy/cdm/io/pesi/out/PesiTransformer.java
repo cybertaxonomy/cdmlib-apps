@@ -237,12 +237,15 @@ public final class PesiTransformer extends ExportTransformerBase{
 	public static int Animalia_Class = 60;
 	public static int Animalia_Subclass = 70;
 	public static int Animalia_Infraclass = 80;
+	public static int Animalia_Subterclass = 85;
+
 	public static int Animalia_Superorder = 90;
 	public static int Animalia_Order = 100;
 	public static int Animalia_Suborder = 110;
 	public static int Animalia_Infraorder = 120;
-	public static int Animalia_Section = 121;
-	public static int Animalia_Subsection = 122;
+	public static int Animalia_Parvorder = 122;
+    public static int Animalia_Section = 125;
+	public static int Animalia_Subsection = 127;
 	public static int Animalia_Superfamily = 130;
 	public static int Animalia_Family = 140;
 	public static int Animalia_Subfamily = 150;
@@ -260,10 +263,11 @@ public final class PesiTransformer extends ExportTransformerBase{
 	// Plantae Ranks
 	public static int Plantae_Kingdom = 10;
 	public static int Plantae_Subkingdom = 20;
-	public static int Plantae_Phylum = 20;
-	public static int Plantae_Subphylum = 20;
+	public static int Plantae_Infrakingdom = 25;
+	public static int Plantae_Phylum = 30;  //Phylum and Division is same (#8541)
 	public static int Plantae_Division = 30;
-	public static int Plantae_Subdivision = 40;
+	public static int Plantae_Subphylum = 40;
+    public static int Plantae_Subdivision = 40;
 	public static int Plantae_Class = 60;
 	public static int Plantae_Subclass = 70;
 	public static int Plantae_Superorder = 90;
@@ -1622,10 +1626,16 @@ public final class PesiTransformer extends ExportTransformerBase{
 	 * @return
 	 */
 	public String getCacheByRankAndKingdom(Rank rank, Integer pesiKingdomId) {
-		if (rank == null){
+		if (rank == null || pesiKingdomId == null){
 			return null;
 		}else{
-			return this.rankCacheMap.get(pesiKingdomId).get(rank2RankId(rank, pesiKingdomId));
+		    Map<Integer, String> rankMap = this.rankCacheMap.get(pesiKingdomId);
+		    if (rankMap != null){
+		        return rankMap.get(rank2RankId(rank, pesiKingdomId));
+		    }else{
+		        logger.warn("RankCacheMap is null for " + pesiKingdomId);
+		        return null;
+		    }
 		}
 	}
 
@@ -1681,7 +1691,7 @@ public final class PesiTransformer extends ExportTransformerBase{
 		if (pesiKingdomId != null && pesiKingdomId.intValue() == KINGDOM_ANIMALIA) {
 			if (rank.equals(Rank.KINGDOM())) {
 				result = Animalia_Kingdom;
-			} else if (rank.equals(Rank.SUBKINGDOM())) {
+            } else if (rank.equals(Rank.SUBKINGDOM())) {
 				result = Animalia_Subkingdom;
 			} else if (rank.equals(Rank.SUPERPHYLUM())) {
 				result = Animalia_Superphylum;
@@ -1697,8 +1707,10 @@ public final class PesiTransformer extends ExportTransformerBase{
 				result = Animalia_Class;
 			} else if (rank.equals(Rank.SUBCLASS())) {
 				result = Animalia_Subclass;
-			} else if (rank.equals(Rank.INFRACLASS())) {
+            } else if (rank.equals(Rank.INFRACLASS())) {
 				result = Animalia_Infraclass;
+            } else if (rank.getUuid().equals(ErmsTransformer.uuidRankSubterclass)) {
+                result = Animalia_Subterclass;
 			} else if (rank.equals(Rank.SUPERORDER())) {
 				result = Animalia_Superorder;
 			} else if (rank.equals(Rank.ORDER())) {
@@ -1707,7 +1719,9 @@ public final class PesiTransformer extends ExportTransformerBase{
 				result = Animalia_Suborder;
 			} else if (rank.equals(Rank.INFRAORDER())) {
 				result = Animalia_Infraorder;
-			} else if (rank.equals(Rank.SECTION_ZOOLOGY())) {
+			} else if (rank.getUuid().equals(ErmsTransformer.uuidRankParvorder)) {
+                result = Animalia_Parvorder;
+            } else if (rank.equals(Rank.SECTION_ZOOLOGY())) {
 				result = Animalia_Section;
 			} else if (rank.equals(Rank.SUBSECTION_ZOOLOGY())) {
 				result = Animalia_Subsection;
@@ -1745,14 +1759,16 @@ public final class PesiTransformer extends ExportTransformerBase{
 		} else if (pesiKingdomId != null && pesiKingdomId.intValue() == KINGDOM_PLANTAE) {
 			if (rank.equals(Rank.KINGDOM())) {
 				result = Plantae_Kingdom;
-			} else if (rank.equals(Rank.SUBKINGDOM())) {
+			} else if (rank.equals(Rank.INFRAKINGDOM())) {
+                result = Plantae_Infrakingdom;
+            } else if (rank.equals(Rank.SUBKINGDOM())) {
 				result = Plantae_Subkingdom;
-			}else if (rank.equals(Rank.PHYLUM())) {
-				result = Plantae_Phylum;
-			}else if (rank.equals(Rank.SUBPHYLUM())) {
-				result = Plantae_Subphylum;
-			}else if (rank.equals(Rank.DIVISION())) {
+            }else if (rank.equals(Rank.PHYLUM())) {   //is same as Division  (#8541)
+                result = Plantae_Phylum;
+            }else if (rank.equals(Rank.DIVISION())) {
 				result = Plantae_Division;
+            } else if (rank.equals(Rank.SUBPHYLUM())) {
+                result = Plantae_Subphylum;
 			} else if (rank.equals(Rank.SUBDIVISION())) {
 				result = Plantae_Subdivision;
 			} else if (rank.equals(Rank.CLASS())) {
