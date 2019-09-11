@@ -28,7 +28,6 @@ import eu.etaxonomy.cdm.io.common.mapping.DbImportObjectCreationMapper;
 import eu.etaxonomy.cdm.io.common.mapping.DbImportStringMapper;
 import eu.etaxonomy.cdm.io.common.mapping.DbImportTimePeriodMapper;
 import eu.etaxonomy.cdm.io.common.mapping.DbImportTruncatedStringMapper;
-import eu.etaxonomy.cdm.io.common.mapping.DbNotYetImplementedMapper;
 import eu.etaxonomy.cdm.io.common.mapping.IMappingImport;
 import eu.etaxonomy.cdm.io.pesi.erms.validation.ErmsReferenceImportValidator;
 import eu.etaxonomy.cdm.model.common.AnnotationType;
@@ -87,10 +86,11 @@ public class ErmsReferenceImport  extends ErmsImportBase<Reference> implements I
 			//TODO handle as External Link once they are available for Reference
 			logger.warn("Handle source_link as ExternalLink once available for class Reference");
 			mapping.addMapper(DbImportExtensionMapper.NewInstance("source_link", ExtensionType.URL()));
+			//TODO parse  authors
+			ExtensionType extTypeAuthor = getExtensionType(ErmsTransformer.uuidExtAuthor, "Reference author", "Reference author", null);
+			mapping.addMapper(DbImportExtensionMapper.NewInstance("source_author", extTypeAuthor));
 
 			//not yet implemented
-			mapping.addMapper(DbNotYetImplementedMapper.NewInstance("source_author", "Still missing but exists in destination. Implement either as real author or as extension"));
-
 
 			mapping.addMapper(DbIgnoreMapper.NewInstance("source_type", "Handled by ObjectCreateMapper - but mapping not yet fully correct. See comments there."));
 			mapping.addMapper(DbIgnoreMapper.NewInstance("source_orig_fn", "Currently not needed. Holds information about pdf files."));
