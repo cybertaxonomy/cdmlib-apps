@@ -28,10 +28,12 @@ import eu.etaxonomy.cdm.io.common.mapping.DbImportObjectMapper;
 import eu.etaxonomy.cdm.io.common.mapping.DbImportStringMapper;
 import eu.etaxonomy.cdm.io.common.mapping.IInputTransformer;
 import eu.etaxonomy.cdm.io.common.mapping.UndefinedTransformerMethodException;
+import eu.etaxonomy.cdm.io.common.mapping.out.DbLastActionMapper;
 import eu.etaxonomy.cdm.io.pesi.erms.validation.ErmsVernacularImportValidator;
 import eu.etaxonomy.cdm.model.common.AnnotationType;
 import eu.etaxonomy.cdm.model.common.CdmBase;
 import eu.etaxonomy.cdm.model.common.Language;
+import eu.etaxonomy.cdm.model.common.MarkerType;
 import eu.etaxonomy.cdm.model.description.CommonTaxonName;
 import eu.etaxonomy.cdm.model.taxon.TaxonBase;
 
@@ -60,9 +62,15 @@ public class ErmsVernacularImport  extends ErmsImportBase<CommonTaxonName> {
 	@Override
 	protected String getRecordQuery(ErmsImportConfigurator config) {
 		String strRecordQuery =
-			" SELECT v.*, tu.tu_acctaxon, tu.id, l.*  " +
+			" SELECT v.*, tu.tu_acctaxon, tu.id, l.*, gr.date lastActionDate, a.action_name lastAction  " +
 			" FROM vernaculars v INNER JOIN tu ON v.tu_id = tu.id "
-			+ "   LEFT OUTER JOIN languages l ON l.LanID = v.lan_id " +
+			+ "   LEFT OUTER JOIN languages l ON l.LanID = v.lan_id "
+			+ " LEFT JOIN ( " +
+			        " SELECT maxDate.vernacular_id, maxDate.date, max(action_id) action_id " +
+			        " FROM (SELECT vernacular_id, max(s.sessiondate) date FROM  vernaculars_sessions MN INNER JOIN sessions s ON s.id = MN.session_id GROUP BY vernacular_id) maxDate " +
+			            " INNER JOIN (SELECT MN2.vernacular_id, MN2.action_id, s2.sessiondate FROM vernaculars_sessions MN2  INNER JOIN sessions s2 ON s2.id = MN2.session_id) as a ON a.vernacular_id = maxDate.vernacular_id AND a.sessiondate = maxDate.date " +
+			            " GROUP BY maxDate.vernacular_id,  maxDate.date) as gr ON v.id = gr.vernacular_id " +
+			            " LEFT JOIN actions a ON a.id = gr.action_id " +
 			" WHERE ( v.id IN (" + ID_LIST_TOKEN + ") )";
 		return strRecordQuery;
 	}
@@ -77,6 +85,12 @@ public class ErmsVernacularImport  extends ErmsImportBase<CommonTaxonName> {
 			mapping.addMapper(DbImportObjectMapper.NewInstance("lan_id", "language", LANGUAGE_NAMESPACE));
 			mapping.addMapper(DbImportStringMapper.NewInstance("vername", "name"));
 			mapping.addMapper(DbImportAnnotationMapper.NewInstance("note", AnnotationType.EDITORIAL(), Language.DEFAULT()));
+			//last action
+			AnnotationType lastActionDateType = getAnnotationType(DbLastActionMapper.uuidAnnotationTypeLastActionDate, "Last action date", "Last action date", null);
+            mapping.addMapper(DbImportAnnotationMapper.NewInstance("lastActionDate", lastActionDateType));
+            AnnotationType lastActionType = getAnnotationType(DbLastActionMapper.uuidAnnotationTypeLastAction, "Last action", "Last action", null);
+            MarkerType hasNoLastActionMarkerType = getMarkerType(DbLastActionMapper.uuidMarkerTypeHasNoLastAction, "has no last action", "No last action information available", "no last action");
+            mapping.addMapper(DbImportAnnotationMapper.NewInstance("lastAction", lastActionType, hasNoLastActionMarkerType));
 		}
 		return mapping;
 	}

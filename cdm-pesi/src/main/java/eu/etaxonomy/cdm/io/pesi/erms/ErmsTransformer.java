@@ -219,7 +219,13 @@ public final class ErmsTransformer extends InputTransformerBase {
 		    return null;
 		}else if (iso639_3_languages.get(ermsAbbrev)!= null){
 		    return iso639_3_languages.get(ermsAbbrev);
-		}else{
+		}else if ("fra".equals(ermsAbbrev)){
+		    return Language.FRENCH();
+		}else if ("deu".equals(ermsAbbrev)){
+            return Language.GERMAN();
+		}else if ("eng".equals(ermsAbbrev)){
+            return Language.ENGLISH();
+        }else{
 		    //unhandledLanguage.add(xxx);
 			if (unhandledLanguages.contains(ermsAbbrev)){
 				logger.warn("Unhandled language '" + ermsAbbrev + "' replaced by 'UNDETERMINED'" );
@@ -227,7 +233,12 @@ public final class ErmsTransformer extends InputTransformerBase {
 			}
 			String warning = "New language abbreviation " + ermsAbbrev;
 			logger.warn(warning);
-			throw new IllegalArgumentException(warning);
+			try {
+                throw new IllegalArgumentException(warning);
+            } catch (Exception e) {
+                e.printStackTrace();
+                throw e;
+            }
 		}
 	}
 
@@ -251,6 +262,7 @@ public final class ErmsTransformer extends InputTransformerBase {
         addIso639_3_language(voc639_3, "aeb", Language.uuidLangTunisianArabic, "Tunisian Arabic");
         addIso639_3_language(voc639_3, "auq", Language.uuidLangAnusKorur, "Anus, Korur");
         addIso639_3_language(voc639_3, "kca", Language.uuidLangKhanty, "Khanty");
+        addIso639_3_language(voc639_3, "vls", Language.uuidLangVlaams, "Vlaams");
     }
 
     private void addIso639_3_language(TermVocabulary<Language> voc, String abbrev, UUID uuid, String label) {
