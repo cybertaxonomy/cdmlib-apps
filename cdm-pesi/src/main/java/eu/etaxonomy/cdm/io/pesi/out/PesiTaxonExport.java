@@ -13,7 +13,6 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Types;
-import java.util.ArrayList;
 import java.util.BitSet;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -109,11 +108,7 @@ public class PesiTaxonExport extends PesiExportBase {
 	private PreparedStatement parentTaxonFkStmt;
 	private PreparedStatement rankTypeExpertsUpdateStmt;
 	private PreparedStatement rankUpdateStmt;
-	private NomenclaturalCode nomenclaturalCode;
 	private Integer kingdomFk;
-	private final HashMap<Rank, Rank> rank2endRankMap = new HashMap<>();
-	private final List<Rank> rankList = new ArrayList<>();
-	private static final UUID uuidTreeIndex = UUID.fromString("28f4e205-1d02-4d3a-8288-775ea8413009");
 	private AnnotationType treeIndexAnnotationType;
 	private static ExtensionType lastActionExtensionType;
 	private static ExtensionType lastActionDateExtensionType;
@@ -124,17 +119,10 @@ public class PesiTaxonExport extends PesiExportBase {
 	public static TaxonNameDefaultCacheStrategy nonViralNameStrategy = TaxonNameDefaultCacheStrategy.NewInstance();
 	private static int currentTaxonId;
 
-
-	/**
-	 * @return the treeIndexAnnotationType
-	 */
 	protected AnnotationType getTreeIndexAnnotationType() {
 		return treeIndexAnnotationType;
 	}
 
-	/**
-	 * @param treeIndexAnnotationType the treeIndexAnnotationType to set
-	 */
 	protected void setTreeIndexAnnotationType(AnnotationType treeIndexAnnotationType) {
 		this.treeIndexAnnotationType = treeIndexAnnotationType;
 	}
@@ -356,7 +344,7 @@ public class PesiTaxonExport extends PesiExportBase {
 	private void validatePhaseOne(TaxonBase<?> taxon, TaxonName taxonName) {
 
 	    // Check whether some rules are violated
-		nomenclaturalCode = taxonName.getNameType();
+		NomenclaturalCode nomenclaturalCode = taxonName.getNameType();
 		String genusOrUninomial = taxonName.getGenusOrUninomial();
 		String specificEpithet = taxonName.getSpecificEpithet();
 		String infraSpecificEpithet = taxonName.getInfraSpecificEpithet();
@@ -667,7 +655,9 @@ public class PesiTaxonExport extends PesiExportBase {
 
 				//TODO why are expertFks needed? (Andreas M.)
 //				if (expertFk != null || speciesExpertFk != null) {
-					invokeRankDataAndTypeNameFkAndKingdomFk(taxonName, nomenclaturalCode, state.getDbId(taxon),
+				    NomenclaturalCode nomCode = taxonName.getNameType();
+				    //is there a reason why we do pass nomCode separately? Before nomCode was class variable, but not clear why and when it was set
+					invokeRankDataAndTypeNameFkAndKingdomFk(taxonName, nomCode, state.getDbId(taxon),
 							typeNameFk, kingdomFk, state);
 //				}
 			}
@@ -727,10 +717,12 @@ public class PesiTaxonExport extends PesiExportBase {
                 }
                 return kingdomID;
             } else {
+                NomenclaturalCode nomenclaturalCode = taxon.getName().getNameType();
                 logger.warn("The taxon has no nodes: " + taxon.getTitleCache() + ". The kingdom is taken from the nomenclatural code: " + PesiTransformer.nomenclaturalCode2Kingdom(nomenclaturalCode));
                 return PesiTransformer.nomenclaturalCode2Kingdom(nomenclaturalCode);
             }
         } else{
+            NomenclaturalCode nomenclaturalCode = taxonBase.getName().getNameType();
             logger.warn("Taxon is synonym with no accepted taxon attached: " + taxonBase.getTitleCache() + ". The kingdom is taken from the nomenclatural code: " + PesiTransformer.nomenclaturalCode2Kingdom(nomenclaturalCode) );
             return PesiTransformer.nomenclaturalCode2Kingdom(nomenclaturalCode);
         }
@@ -783,7 +775,9 @@ public class PesiTaxonExport extends PesiExportBase {
 
 			// Save Rank Data and KingdomFk for inferred synonyms
 			for (Integer taxonFk : inferredSynonymsDataToBeSaved.keySet()) {
-				invokeRankDataAndKingdomFk(inferredSynonymsDataToBeSaved.get(taxonFk), nomenclaturalCode, taxonFk, kingdomFk, state);
+			    TaxonName taxonName = inferredSynonymsDataToBeSaved.get(taxonFk);
+                NomenclaturalCode nomCode = taxonName.getNameType(); //nomCode was class variable before, not sure if this was important
+                invokeRankDataAndKingdomFk(inferredSynonymsDataToBeSaved.get(taxonFk), nomCode, taxonFk, kingdomFk, state);
 			}
 
 			// Start transaction
@@ -810,7 +804,9 @@ public class PesiTaxonExport extends PesiExportBase {
 
 			// Save Rank Data and KingdomFk for inferred synonyms
 			for (Integer taxonFk : inferredSynonymsDataToBeSaved.keySet()) {
-				invokeRankDataAndKingdomFk(inferredSynonymsDataToBeSaved.get(taxonFk), nomenclaturalCode, taxonFk, kingdomFk, state);
+			    TaxonName taxonName = inferredSynonymsDataToBeSaved.get(taxonFk);
+			    NomenclaturalCode nomCode = taxonName.getNameType(); //nomCode was class variable before, not sure if this was important
+				invokeRankDataAndKingdomFk(inferredSynonymsDataToBeSaved.get(taxonFk), nomCode, taxonFk, kingdomFk, state);
 			}
 
 			// Start transaction
@@ -864,7 +860,7 @@ public class PesiTaxonExport extends PesiExportBase {
 				TaxonName taxonName = acceptedTaxon.getName();
 
 				if (taxonName.isZoological()) {
-					nomenclaturalCode  = taxonName.getNameType();
+					NomenclaturalCode nomenclaturalCode  = taxonName.getNameType();
 					kingdomFk = PesiTransformer.nomenclaturalCode2Kingdom(nomenclaturalCode);
 
 					Set<TaxonNode> taxonNodes = acceptedTaxon.getTaxonNodes();
