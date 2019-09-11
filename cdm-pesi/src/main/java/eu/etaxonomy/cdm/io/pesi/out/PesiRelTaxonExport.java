@@ -123,7 +123,7 @@ public class PesiRelTaxonExport extends PesiExportBase {
 		//taxon relations
 		int partitionCount = 0;
 		int totalCount = 0;
-		while ((list = getNextTaxonRelationshipPartition( limit, partitionCount++, null)) != null ) {
+		while (!(list = getNextTaxonRelationshipPartition( limit, partitionCount++, null)).isEmpty()) {
 			totalCount = totalCount + list.size();
 			logger.info("Read " + list.size() + " PESI relations. Limit: " + limit + ". Total: " + totalCount );
 //			if (list.size() > 0){
