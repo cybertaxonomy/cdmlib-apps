@@ -45,9 +45,9 @@ import eu.etaxonomy.cdm.strategy.cache.name.ZooNameNoMarkerCacheStrategy;
 /**
  * @author e.-m.lee
  * @since 12.02.2010
- *
  */
-public abstract class PesiExportBase extends DbExportBase<PesiExportConfigurator, PesiExportState, PesiTransformer> {
+public abstract class PesiExportBase
+              extends DbExportBase<PesiExportConfigurator, PesiExportState, PesiTransformer> {
 
     private static final long serialVersionUID = 6226747017958138156L;
     private static final Logger logger = Logger.getLogger(PesiExportBase.class);
@@ -69,8 +69,6 @@ public abstract class PesiExportBase extends DbExportBase<PesiExportConfigurator
 		orderHints.add(new OrderHint("id", OrderHint.SortOrder.ASCENDING ));
 
 		List<CLASS> list = getTaxonService().list(clazz, limit, partitionCount * limit, orderHints, propertyPath);
-
-
 
 		if (list.isEmpty()){
 			return null;
@@ -119,7 +117,6 @@ public abstract class PesiExportBase extends DbExportBase<PesiExportConfigurator
 					return true;
 				}
 			}
-
 		}
 		return false;
 	}
@@ -127,10 +124,6 @@ public abstract class PesiExportBase extends DbExportBase<PesiExportConfigurator
 
 	/**
 	 * Returns the next list of pure names. If finished result will be null. If list is empty there may be result in further partitions.
-	 * @param clazz
-	 * @param limit
-	 * @param partitionCount
-	 * @return
 	 */
 	protected List<TaxonName> getNextPureNamePartition(Class<TaxonName> clazz,int limit, int partitionCount) {
 		List<OrderHint> orderHints = new ArrayList<>();
@@ -152,7 +145,7 @@ public abstract class PesiExportBase extends DbExportBase<PesiExportConfigurator
 	}
 
 	protected <CLASS extends RelationshipBase> List<CLASS> getNextNameRelationshipPartition(Class<CLASS> clazz, int limit, int partitionCount, List<String> propertyPath) {
-		List<CLASS> result = new ArrayList<CLASS>();
+		List<CLASS> result = new ArrayList<>();
 		String[] propertyPaths = null;
 		String orderHints = null;
 		List<CLASS> list = (List<CLASS>)getNameService().getAllRelationships(limit, partitionCount * limit);
@@ -169,6 +162,7 @@ public abstract class PesiExportBase extends DbExportBase<PesiExportConfigurator
 
 	protected <CLASS extends RelationshipBase> List<CLASS> getNextTaxonRelationshipPartition( int limit, int partitionCount, List<String> propertyPath) {
 		List<CLASS> result = new ArrayList<>();
+		logger.warn("getNextTaxonRelationshipPartition not yet implemented");
 		String[] propertyPaths = null;
 		String orderHints = null;
 		//TODO: fix!!!!
@@ -203,7 +197,6 @@ public abstract class PesiExportBase extends DbExportBase<PesiExportConfigurator
 			return false;
 		}
 		return (isPesiName(name1) && isPesiName(name2));
-
 	}
 
 	private boolean isPesiName(TaxonName name) {
@@ -230,10 +223,7 @@ public abstract class PesiExportBase extends DbExportBase<PesiExportConfigurator
 			return false;
 		}
 		return (isPesiTaxon(fromTaxon, false) && isPesiTaxon(toTaxon, true));
-
 	}
-
-
 
 	/**
 	 * Decides if a name is not used as the name part of a PESI taxon (and therefore is
@@ -328,16 +318,13 @@ public abstract class PesiExportBase extends DbExportBase<PesiExportConfigurator
 		return result;
 	}
 
-
 	/**
 	 * @see #isPesiTaxon(TaxonBase, boolean)
-	 * @param taxonBase
 	 * @return
 	 */
 	protected static boolean isPesiTaxon(TaxonBase taxonBase) {
 		return isPesiTaxon(taxonBase, false);
 	}
-
 
 	/**
 	 * Checks if this taxon base is a taxon that is to be exported to PESI. This is generally the case
@@ -370,7 +357,6 @@ public abstract class PesiExportBase extends DbExportBase<PesiExportConfigurator
 					taxon = null;
 					return false;
 				}
-
 			}
 
 			//handle PESI accepted taxa
@@ -443,8 +429,6 @@ public abstract class PesiExportBase extends DbExportBase<PesiExportConfigurator
 		}
 	}
 
-
-
 	private boolean isAdditionalSource(CdmBase cdmBase) {
 		if (cdmBase.isInstanceOf(TextData.class)){
 			TextData textData = CdmBase.deproxy(cdmBase, TextData.class);
@@ -456,28 +440,25 @@ public abstract class PesiExportBase extends DbExportBase<PesiExportConfigurator
 		return false;
 	}
 
-
 	protected MarkerType getUuidMarkerType(UUID uuid, PesiExportState state){
 		if (uuid == null){
 			uuid = UUID.randomUUID();
 		}
 
 		MarkerType markerType = state.getMarkerType(uuid);
-			if (markerType == null){
-				if (uuid.equals(PesiTransformer.uuidMarkerGuidIsMissing)){
-					markerType = MarkerType.NewInstance("Uuid is Missing", "Uuid is missing", null);
-					markerType.setUuid(uuid);
-				} else if (uuid.equals(PesiTransformer.uuidMarkerTypeHasNoLastAction)){
-					markerType = MarkerType.NewInstance("Has no last Action", "Has no last action", null);
-					markerType.setUuid(uuid);
-				}
+		if (markerType == null){
+			if (uuid.equals(PesiTransformer.uuidMarkerGuidIsMissing)){
+				markerType = MarkerType.NewInstance("Uuid is Missing", "Uuid is missing", null);
+				markerType.setUuid(uuid);
+			} else if (uuid.equals(PesiTransformer.uuidMarkerTypeHasNoLastAction)){
+				markerType = MarkerType.NewInstance("Has no last Action", "Has no last action", null);
+				markerType.setUuid(uuid);
 			}
-
-			state.putMarkerType(markerType);
-			return markerType;
 		}
 
-
+		state.putMarkerType(markerType);
+		return markerType;
+	}
 
 	protected static TaxonNameDefaultCacheStrategy getCacheStrategy(TaxonName taxonName) {
 	    TaxonNameDefaultCacheStrategy cacheStrategy;
@@ -492,9 +473,6 @@ public abstract class PesiExportBase extends DbExportBase<PesiExportConfigurator
 		return cacheStrategy;
 	}
 
-
-
-
 	/**
 	 * Checks whether a given taxon is a misapplied name.
 	 * @param taxon The {@link TaxonBase Taxon}.
@@ -502,9 +480,7 @@ public abstract class PesiExportBase extends DbExportBase<PesiExportConfigurator
 	 */
 	protected static boolean isMisappliedName(TaxonBase<?> taxon) {
 		return getAcceptedTaxonForMisappliedName(taxon) != null;
-
 	}
-
 
 	/**
 	 * Returns the first accepted taxon for this misapplied name.
@@ -524,26 +500,5 @@ public abstract class PesiExportBase extends DbExportBase<PesiExportConfigurator
 		}
 		return null;
 	}
-
-
-
-
-
-
-
-
-
-//	protected List<TaxonBase> getNextDescriptionPartition(Class<? extends DescriptionElementBase> clazz,int limit, int partitionCount) {
-//		List<DescriptionElementBase> list = getDescriptionService().listDescriptionElements(null, null, pageSize, pageNumber, propPath);
-//
-//		Iterator<TaxonBase> it = list.iterator();
-//		while (it.hasNext()){
-//			TaxonBase<?> taxonBase = it.next();
-//			if (! isPesiTaxon(taxonBase)){
-//				it.remove();
-//			}
-//		}
-//		return list;
-//	}
 
 }

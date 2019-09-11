@@ -174,13 +174,6 @@ public class ErmsSourceUsesImport  extends ErmsImportBase<CommonTaxonName> {
 		return null;
 	}
 
-	/**
-	 * @param partitioner
-	 * @param state
-	 * @param ref
-	 * @param strTaxonId
-	 * @param strPageNr
-	 */
 	private IdentifiableEntity<?> makeAdditionalSource(ResultSetPartitioner<?> partitioner,
 	        ErmsImportState state, Reference ref, String strTaxonId, String strPageNr) {
 
@@ -221,7 +214,7 @@ public class ErmsSourceUsesImport  extends ErmsImportBase<CommonTaxonName> {
 		return taxon;
 	}
 
-	private IdentifiableEntity<?> makeSourceOfSynonymy(ResultSetPartitioner<?> partitioner,
+	private IdentifiableEntity<?> makeSourceOfSynonymy(@SuppressWarnings("unused") ResultSetPartitioner<?> partitioner,
 	        ErmsImportState state, Reference ref, String strTaxonId, String strPageNr) {
 
 		TaxonBase<?> taxonBase = (TaxonBase<?>)state.getRelatedObject(ErmsImportBase.TAXON_NAMESPACE, strTaxonId);

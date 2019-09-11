@@ -511,123 +511,123 @@ public class PesiTaxonExport extends PesiExportBase {
 	}
 
 
-	// 2nd Round: Add ParentTaxonFk, TreeIndex to each Taxon
-	private boolean doPhase02_OLD(PesiExportState state) {
-		boolean success = true;
-		boolean includeUnpublished = false;
-		if (! state.getConfig().isDoTreeIndex()){
-			logger.info ("Ignore PHASE 2: ParentTaxonFk and TreeIndex");
-			return success;
-		}
-
-		List<Classification> classificationList = null;
-		logger.info("PHASE 2: Add ParenTaxonFk and TreeIndex...");
-
-		// Specify starting ranks for tree traversing
-		rankList.add(Rank.KINGDOM());
-		rankList.add(Rank.GENUS());
-
-		// Specify where to stop traversing (value) when starting at a specific Rank (key)
-		rank2endRankMap.put(Rank.GENUS(), null); // Since NULL does not match an existing Rank, traverse all the way down to the leaves
-		rank2endRankMap.put(Rank.KINGDOM(), Rank.GENUS()); // excludes rank genus
-
-		StringBuffer treeIndex = new StringBuffer();
-
-		// Retrieve list of classifications
-		TransactionStatus txStatus = startTransaction(true);
-		logger.info("Started transaction for parentFk and treeIndex. Fetching all classifications...");
-		classificationList = getClassificationService().listClassifications(null, 0, null, null);
-		commitTransaction(txStatus);
-		logger.debug("Committed transaction.");
-
-		logger.info("Fetched " + classificationList.size() + " classification(s).");
-
-		setTreeIndexAnnotationType(getAnnotationType(uuidTreeIndex, "TreeIndex", "TreeIndex", "TI"));
-		List<TaxonNode> rankSpecificRootNodes;
-		for (Classification classification : classificationList) {
-			for (Rank rank : rankList) {
-
-				txStatus = startTransaction(true);
-				logger.info("Started transaction to fetch all rootNodes specific to Rank " + rank.getLabel() + " ...");
-
-				rankSpecificRootNodes = getClassificationService().listRankSpecificRootNodes(classification,
-				        null, rank, includeUnpublished, null, null, null);
-				logger.info("Fetched " + rankSpecificRootNodes.size() + " RootNodes for Rank " + rank.getLabel());
-
-				commitTransaction(txStatus);
-				logger.debug("Committed transaction.");
-
-				for (TaxonNode rootNode : rankSpecificRootNodes) {
-					txStatus = startTransaction(false);
-					Rank endRank = rank2endRankMap.get(rank);
-					if (endRank != null) {
-						logger.debug("Started transaction to traverse childNodes of rootNode (" + rootNode.getUuid() + ") till Rank " + endRank.getLabel() + " ...");
-					} else {
-						logger.debug("Started transaction to traverse childNodes of rootNode (" + rootNode.getUuid() + ") till leaves are reached ...");
-					}
-
-					TaxonNode newNode = getTaxonNodeService().load(rootNode.getUuid());
-
-					if (isPesiTaxon(newNode.getTaxon())){
-						TaxonNode parentNode = newNode.getParent();
-						if (rank.equals(Rank.KINGDOM())) {
-							treeIndex = new StringBuffer();
-							treeIndex.append("#");
-						} else {
-							// Get treeIndex from parentNode
-							if (parentNode != null) {
-								boolean annotationFound = false;
-								Set<Annotation> annotations = parentNode.getAnnotations();
-								for (Annotation annotation : annotations) {
-									AnnotationType annotationType = annotation.getAnnotationType();
-									if (annotationType != null && annotationType.equals(getTreeIndexAnnotationType())) {
-										treeIndex = new StringBuffer(CdmUtils.Nz(annotation.getText()));
-										annotationFound = true;
-	//									logger.error("treeIndex: " + treeIndex);
-										break;
-									}
-								}
-								if (!annotationFound) {
-									// This should not happen because it means that the treeIndex was not set correctly as an annotation to parentNode
-									logger.error("TreeIndex could not be read from annotation of TaxonNode: " + parentNode.getUuid() + ", Taxon: " + parentNode.getTaxon().getUuid());
-									treeIndex = new StringBuffer();
-									treeIndex.append("#");
-								}
-							} else {
-								// TreeIndex could not be determined, but it's unclear how to proceed to generate a correct treeIndex if the parentNode is NULL
-								logger.error("ParentNode for RootNode is NULL. TreeIndex could not be determined: " + newNode.getUuid());
-								treeIndex = new StringBuffer(); // This just prevents growing of the treeIndex in a wrong manner
-								treeIndex.append("#");
-							}
-						}
-						nomenclaturalCode = newNode.getTaxon().getName().getNameType();
-						kingdomFk = PesiTransformer.nomenclaturalCode2Kingdom(nomenclaturalCode);
-						traverseTree(newNode, parentNode, treeIndex, endRank, state);
-						parentNode =null;
-					}else{
-						logger.debug("Taxon is not a PESI taxon: " + newNode.getTaxon().getUuid());
-					}
-
-					newNode = null;
-
-					try {
-						commitTransaction(txStatus);
-						logger.debug("Committed transaction.");
-					} catch (Exception e) {
-						logger.error(e.getMessage());
-						e.printStackTrace();
-					}
-
-				}
-				rankSpecificRootNodes = null;
-			}
-
-		}
-
-		logger.warn("Taking snapshot at the end of phase 2 of taxonExport");
-		//ProfilerController.memorySnapshot();
-		return success;
-	}
+//	// 2nd Round: Add ParentTaxonFk, TreeIndex to each Taxon
+//	private boolean doPhase02_OLD(PesiExportState state) {
+//		boolean success = true;
+//		boolean includeUnpublished = false;
+//		if (! state.getConfig().isDoTreeIndex()){
+//			logger.info ("Ignore PHASE 2: ParentTaxonFk and TreeIndex");
+//			return success;
+//		}
+//
+//		List<Classification> classificationList = null;
+//		logger.info("PHASE 2: Add ParenTaxonFk and TreeIndex...");
+//
+//		// Specify starting ranks for tree traversing
+//		rankList.add(Rank.KINGDOM());
+//		rankList.add(Rank.GENUS());
+//
+//		// Specify where to stop traversing (value) when starting at a specific Rank (key)
+//		rank2endRankMap.put(Rank.GENUS(), null); // Since NULL does not match an existing Rank, traverse all the way down to the leaves
+//		rank2endRankMap.put(Rank.KINGDOM(), Rank.GENUS()); // excludes rank genus
+//
+//		StringBuffer treeIndex = new StringBuffer();
+//
+//		// Retrieve list of classifications
+//		TransactionStatus txStatus = startTransaction(true);
+//		logger.info("Started transaction for parentFk and treeIndex. Fetching all classifications...");
+//		classificationList = getClassificationService().listClassifications(null, 0, null, null);
+//		commitTransaction(txStatus);
+//		logger.debug("Committed transaction.");
+//
+//		logger.info("Fetched " + classificationList.size() + " classification(s).");
+//
+//		setTreeIndexAnnotationType(getAnnotationType(uuidTreeIndex, "TreeIndex", "TreeIndex", "TI"));
+//		List<TaxonNode> rankSpecificRootNodes;
+//		for (Classification classification : classificationList) {
+//			for (Rank rank : rankList) {
+//
+//				txStatus = startTransaction(true);
+//				logger.info("Started transaction to fetch all rootNodes specific to Rank " + rank.getLabel() + " ...");
+//
+//				rankSpecificRootNodes = getClassificationService().listRankSpecificRootNodes(classification,
+//				        null, rank, includeUnpublished, null, null, null);
+//				logger.info("Fetched " + rankSpecificRootNodes.size() + " RootNodes for Rank " + rank.getLabel());
+//
+//				commitTransaction(txStatus);
+//				logger.debug("Committed transaction.");
+//
+//				for (TaxonNode rootNode : rankSpecificRootNodes) {
+//					txStatus = startTransaction(false);
+//					Rank endRank = rank2endRankMap.get(rank);
+//					if (endRank != null) {
+//						logger.debug("Started transaction to traverse childNodes of rootNode (" + rootNode.getUuid() + ") till Rank " + endRank.getLabel() + " ...");
+//					} else {
+//						logger.debug("Started transaction to traverse childNodes of rootNode (" + rootNode.getUuid() + ") till leaves are reached ...");
+//					}
+//
+//					TaxonNode newNode = getTaxonNodeService().load(rootNode.getUuid());
+//
+//					if (isPesiTaxon(newNode.getTaxon())){
+//						TaxonNode parentNode = newNode.getParent();
+//						if (rank.equals(Rank.KINGDOM())) {
+//							treeIndex = new StringBuffer();
+//							treeIndex.append("#");
+//						} else {
+//							// Get treeIndex from parentNode
+//							if (parentNode != null) {
+//								boolean annotationFound = false;
+//								Set<Annotation> annotations = parentNode.getAnnotations();
+//								for (Annotation annotation : annotations) {
+//									AnnotationType annotationType = annotation.getAnnotationType();
+//									if (annotationType != null && annotationType.equals(getTreeIndexAnnotationType())) {
+//										treeIndex = new StringBuffer(CdmUtils.Nz(annotation.getText()));
+//										annotationFound = true;
+//	//									logger.error("treeIndex: " + treeIndex);
+//										break;
+//									}
+//								}
+//								if (!annotationFound) {
+//									// This should not happen because it means that the treeIndex was not set correctly as an annotation to parentNode
+//									logger.error("TreeIndex could not be read from annotation of TaxonNode: " + parentNode.getUuid() + ", Taxon: " + parentNode.getTaxon().getUuid());
+//									treeIndex = new StringBuffer();
+//									treeIndex.append("#");
+//								}
+//							} else {
+//								// TreeIndex could not be determined, but it's unclear how to proceed to generate a correct treeIndex if the parentNode is NULL
+//								logger.error("ParentNode for RootNode is NULL. TreeIndex could not be determined: " + newNode.getUuid());
+//								treeIndex = new StringBuffer(); // This just prevents growing of the treeIndex in a wrong manner
+//								treeIndex.append("#");
+//							}
+//						}
+//						nomenclaturalCode = newNode.getTaxon().getName().getNameType();
+//						kingdomFk = PesiTransformer.nomenclaturalCode2Kingdom(nomenclaturalCode);
+//						traverseTree(newNode, parentNode, treeIndex, endRank, state);
+//						parentNode =null;
+//					}else{
+//						logger.debug("Taxon is not a PESI taxon: " + newNode.getTaxon().getUuid());
+//					}
+//
+//					newNode = null;
+//
+//					try {
+//						commitTransaction(txStatus);
+//						logger.debug("Committed transaction.");
+//					} catch (Exception e) {
+//						logger.error(e.getMessage());
+//						e.printStackTrace();
+//					}
+//
+//				}
+//				rankSpecificRootNodes = null;
+//			}
+//
+//		}
+//
+//		logger.warn("Taking snapshot at the end of phase 2 of taxonExport");
+//		//ProfilerController.memorySnapshot();
+//		return success;
+//	}
 
 	//PHASE 3: Add Rank data, KingdomFk, TypeNameFk, expertFk and speciesExpertFk...
 	private boolean doPhase03(PesiExportState state) {
@@ -653,7 +653,7 @@ public class PesiTaxonExport extends PesiExportBase {
 
 			logger.debug("Fetched " + list.size() + " " + pluralString + ". Exporting...");
 			for (TaxonBase<?> taxon : list) {
-				TaxonName taxonName = taxon.getName();
+				TaxonName taxonName = CdmBase.deproxy(taxon.getName());
 				// Determine expertFk
 //				Integer expertFk = makeExpertFk(state, taxonName);
 //
@@ -1349,11 +1349,11 @@ public class PesiTaxonExport extends PesiExportBase {
 			rankTypeExpertsUpdateStmt.executeUpdate();
 			return true;
 		} catch (SQLException e) {
-			logger.error("Data could not be inserted into database: " + e.getMessage());
+			logger.error("Data could not be inserted into database: " + e.getMessage() + "; rankFk = " + rankFk + "; kingdomFk = " + kingdomFk );
 			e.printStackTrace();
 			return false;
 		} catch (Exception e) {
-			logger.error("Some exception occurred: " + e.getMessage());
+			logger.error("Some exception occurred: " + e.getMessage() + "; rankFk = " + rankFk + "; kingdomFk = " + kingdomFk);
 			e.printStackTrace();
 			return false;
 		}
@@ -1384,7 +1384,7 @@ public class PesiTaxonExport extends PesiExportBase {
 	 */
 	@SuppressWarnings("unused")  //used by mapper
 	private static Integer getKingdomFk(TaxonName taxonName){
-		return PesiTransformer.nomenclaturalCode2Kingdom(taxonName.getNomenclaturalCode());
+		return PesiTransformer.nomenclaturalCode2Kingdom(taxonName.getNameType());
 	}
 
 	/**

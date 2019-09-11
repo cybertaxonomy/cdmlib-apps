@@ -77,10 +77,6 @@ public abstract class ErmsImportBase<CDM_BASE extends CdmBase>
 	//TODO needed?
 	private Class cdmTargetClass;
 
-	/**
-	 * @param dbTableName
-	 * @param dbTableName2
-	 */
 	public ErmsImportBase(String pluralString, String dbTableName, Class cdmTargetClass) {
 		this.pluralString = pluralString;
 		this.dbTableName = dbTableName;
@@ -323,9 +319,6 @@ public abstract class ErmsImportBase<CDM_BASE extends CdmBase>
 	/**
 	 * Returns a map that holds all values of a ResultSet. This is needed if a value needs to
 	 * be accessed twice
-	 * @param rs
-	 * @return
-	 * @throws SQLException
 	 */
 	protected Map<String, Object> getValueMap(ResultSet rs) throws SQLException{
 		try{
@@ -376,9 +369,6 @@ public abstract class ErmsImportBase<CDM_BASE extends CdmBase>
 
 	/**
 	 * Reads a foreign key field from the result set and adds its value to the idSet.
-	 * @param rs
-	 * @param teamIdSet
-	 * @throws SQLException
 	 */
 	protected void handleForeignKey(ResultSet rs, Set<String> idSet, String attributeName)
 			throws SQLException {
@@ -393,9 +383,6 @@ public abstract class ErmsImportBase<CDM_BASE extends CdmBase>
 
 	/**
 	 * Returns true if i is a multiple of recordsPerTransaction
-	 * @param i
-	 * @param recordsPerTransaction
-	 * @return
 	 */
 	protected boolean loopNeedsHandling(int i, int recordsPerLoop) {
 		startTransaction();
@@ -405,5 +392,4 @@ public abstract class ErmsImportBase<CDM_BASE extends CdmBase>
 	protected void doLogPerLoop(int count, int recordsPerLog, String pluralString){
 		if ((count % recordsPerLog ) == 0 && count!= 0 ){ logger.info(pluralString + " handled: " + (count));}
 	}
-
 }

@@ -74,7 +74,6 @@ import eu.etaxonomy.cdm.profiler.ProfilerController;
  * <li>Phase 2:	Export of TaxonName extensions <code>taxComment</code>, <code>fauComment</code> and <code>fauExtraCodes</code> as Notes.</ul>
  * @author e.-m.lee
  * @since 23.02.2010
- *
  */
 @Component
 public class PesiDescriptionExport extends PesiExportBase {
@@ -183,7 +182,7 @@ public class PesiDescriptionExport extends PesiExportBase {
 	private boolean doPhase01(PesiExportState state, PesiExportMapping notesMapping, PesiExportMapping occurrenceMapping, PesiExportMapping addSourceSourceMapping,
 			PesiExportMapping additionalSourceMapping, PesiExportMapping vernacularMapping, PesiExportMapping imageMapping) throws SQLException {
 
-	    System.out.println("PHASE 1 of occurence import");
+	    System.out.println("PHASE 1 of description import");
 	    logger.info("PHASE 1...");
 		int count = 0;
 		int pastCount = 0;
@@ -197,8 +196,10 @@ public class PesiDescriptionExport extends PesiExportBase {
 		logger.info("Started new transaction. Fetching some " + pluralString + " (max: " + limit + ") ...");
 		List<String> propPath = Arrays.asList(new String[]{"descriptions.elements.*"});
 
-		logger.debug("Start snapshot, before starting loop");
-		ProfilerController.memorySnapshot();
+		if (logger.isDebugEnabled()){
+		    logger.debug("Start snapshot, before starting loop");
+		    ProfilerController.memorySnapshot();
+		}
 		//taxon descriptions
 		int partitionCount = 0;
 		while ((taxonList = getNextTaxonPartition(Taxon.class, limit, partitionCount++, propPath )) != null   ) {
@@ -329,7 +330,7 @@ public class PesiDescriptionExport extends PesiExportBase {
 		boolean success = true;
 
 
-		Set<DescriptionBase<?>> descriptions = new HashSet<DescriptionBase<?>>();
+		Set<DescriptionBase<?>> descriptions = new HashSet<>();
 		descriptions.addAll(taxon.getDescriptions());
 
 		for (DescriptionBase<?> desc : descriptions){

@@ -73,11 +73,12 @@ public class ErmsDistributionImport
 			mapping = new DbImportMapping<>();
 
 			PresenceAbsenceTerm status = PresenceAbsenceTerm.PRESENT();
-			DbImportDistributionCreationMapper<?> distributionMapper = DbImportDistributionCreationMapper.NewFixedStatusInstance("id", DR_NAMESPACE, "tu_acctaxon", ErmsTaxonImport.TAXON_NAMESPACE, status);
+			DbImportDistributionCreationMapper<?> distributionMapper = DbImportDistributionCreationMapper
+			        .NewFixedStatusInstance("id", DR_NAMESPACE, "acctaxon", ErmsImportBase.TAXON_NAMESPACE, status);
 			distributionMapper.setSource("source_id", REFERENCE_NAMESPACE, null);
 			mapping.addMapper(distributionMapper);
 
-			mapping.addMapper(DbImportObjectMapper.NewInstance("gu_id", "area", ErmsAreaImport.AREA_NAMESPACE));
+			mapping.addMapper(DbImportObjectMapper.NewInstance("gu_id", "area", ErmsImportBase.AREA_NAMESPACE));
 			mapping.addMapper(DbImportAnnotationMapper.NewInstance("note", AnnotationType.EDITORIAL()));
 
 			mapping.addMapper(DbIgnoreMapper.NewInstance("unacceptsource_id"));
@@ -152,13 +153,8 @@ public class ErmsDistributionImport
 		return result;
 	}
 
-	/**
-	 * @param distribution
-	 * @param source_id
-	 * @param state
-	 */
 	private void addSource(Distribution distribution, Integer source_id, ErmsImportState state) {
-		Reference ref = (Reference)state.getRelatedObject(ErmsReferenceImport.REFERENCE_NAMESPACE, String.valueOf(source_id));
+		Reference ref = (Reference)state.getRelatedObject(ErmsImportBase.REFERENCE_NAMESPACE, String.valueOf(source_id));
 		distribution.addSource(OriginalSourceType.PrimaryTaxonomicSource, null, null, ref, null);
 	}
 

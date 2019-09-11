@@ -67,8 +67,6 @@ public class PesiExportState extends DbExportStateBase<PesiExportConfigurator, P
 	 * TODO -> move to PesiExportBase
 	 * Gets the Datawarehouse.id to a specific CDM object originally.
 	 * Here it just returns the CDM object's id.
-	 * @param cdmBase
-	 * @return
 	 */
 	@Override
 	public Integer getDbId(CdmBase cdmBase) {
@@ -77,8 +75,6 @@ public class PesiExportState extends DbExportStateBase<PesiExportConfigurator, P
 
 	/**
 	 * Returns whether the given Source object was processed before or not.
-	 * @param
-	 * @return
 	 */
 	public boolean alreadyProcessedSource(Integer sourceId) {
 		if (processedSourceList.contains(sourceId)) {

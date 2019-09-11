@@ -71,13 +71,9 @@ public class ErmsImportState extends DbImportStateBase<ErmsImportConfigurator, E
 		usernameMap.put(username, user);
 	}
 
-	/**
-	 * @param rankMap the rankMap to set
-	 */
 	public void setRankMap(Map<Integer, Map<Integer,Rank>> rankMap) {
 		this.rankMap = rankMap;
 	}
-
 
 	/**
 	 * Returns the CDM rank depending on the ERMS rankId and the ERMS kingdomId. Returns <code>

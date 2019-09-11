@@ -135,7 +135,7 @@ public class ErmsTaxonImport
 		String strSelect = " SELECT tu.*, parent1.tu_name AS parent1name, parent2.tu_name AS parent2name, parent3.tu_name AS parent3name, "
 			+ " parent1.tu_rank AS parent1rank, parent2.tu_rank AS parent2rank, parent3.tu_rank AS parent3rank, " +
 			" status.status_id as status_id, status.status_name, fossil.fossil_name, qualitystatus.qualitystatus_name,"
-			+ " gr.date lastActionDate, a.action_name lastAction";
+			+ " gr.date lastActionDate, a.action_name lastAction ";
 		String strFrom = " FROM tu  LEFT OUTER JOIN  tu AS parent1 ON parent1.id = tu.tu_parent " +
 				" LEFT OUTER JOIN   tu AS parent2  ON parent2.id = parent1.tu_parent " +
 				" LEFT OUTER JOIN tu AS parent3 ON parent2.tu_parent = parent3.id " +
@@ -301,21 +301,11 @@ public class ErmsTaxonImport
 		}
 	}
 
-	/**
-	 * @param parent1Rank
-	 * @param displayName
-	 * @param taxonName
-	 * @param meId
-	 */
 	private void handleException(Integer parent1Rank, TaxonName taxonName, String displayName, Integer meId) {
 		logger.warn("Parent of infra specific taxon is higher than species. Used nameCache: " + displayName +  "; id=" + meId) ;
 		taxonName.setNameCache(displayName);
 	}
 
-	/**
-	 * @param displayName
-	 * @return
-	 */
 	private boolean containsBrackets(String displayName) {
 		int index = displayName.indexOf("[");
 		return (index > -1);
@@ -333,9 +323,6 @@ public class ErmsTaxonImport
 
 	/**
 	 * Returns an empty Taxon Name instance according to the given rank and kingdom.
-	 * @param rs
-	 * @return
-	 * @throws SQLException
 	 */
 	private TaxonName getTaxonName(ResultSet rs, ErmsImportState state) throws SQLException {
 	    TaxonName result;
