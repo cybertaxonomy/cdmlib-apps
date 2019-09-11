@@ -31,6 +31,7 @@ import eu.etaxonomy.cdm.io.common.mapping.out.MethodMapper;
 import eu.etaxonomy.cdm.io.pesi.erms.ErmsTransformer;
 import eu.etaxonomy.cdm.model.agent.TeamOrPersonBase;
 import eu.etaxonomy.cdm.model.common.CdmBase;
+import eu.etaxonomy.cdm.model.common.Extension;
 import eu.etaxonomy.cdm.model.common.ExtensionType;
 import eu.etaxonomy.cdm.model.common.IdentifiableSource;
 import eu.etaxonomy.cdm.model.reference.Reference;
@@ -258,17 +259,16 @@ public class PesiSourceExport extends PesiExportBase {
 	@SuppressWarnings("unused")
 	private static String getAuthorString(Reference reference) {
 		String result = null;
-
+		Set<Extension> extensions;
 		try {
-		if (reference != null) {
-			TeamOrPersonBase team = reference.getAuthorship();
-			if (team != null) {
-				result = team.getTitleCache();
-//				result = team.getNomenclaturalTitle();
-			} else {
-				result = null;
-			}
-		}
+    		if (reference != null) {
+    			TeamOrPersonBase<?> team = reference.getAuthorship();
+    			if (team != null) {
+    				result = team.getTitleCache();
+    			}else if (!reference.getExtensions(ErmsTransformer.uuidExtAuthor).isEmpty()){
+    			    result = reference.getExtensions(ErmsTransformer.uuidExtAuthor).iterator().next();
+    			}
+    		}
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
