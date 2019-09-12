@@ -1350,8 +1350,6 @@ public final class PesiTransformer extends ExportTransformerBase{
 
 	/**
 	 * Returns the identifier of the given Language.
-	 * @param language
-	 * @return
 	 */
 	public static Integer language2LanguageId(Language language) {
 		if (language == null ) {
@@ -1487,8 +1485,6 @@ public final class PesiTransformer extends ExportTransformerBase{
 
 	/**
 	 * Returns the NodeCategoryCache for a given TextData.
-	 * @param feature
-	 * @return
 	 */
 	@Override
     public String getCacheByFeature(Feature feature) {
@@ -1501,8 +1497,6 @@ public final class PesiTransformer extends ExportTransformerBase{
 
 	/**
 	 * Returns the NodeCategoryFk for a given TextData.
-	 * @param feature
-	 * @return
 	 */
 	public static Integer feature2NoteCategoryFk(Feature feature) {
 		if (feature == null) {

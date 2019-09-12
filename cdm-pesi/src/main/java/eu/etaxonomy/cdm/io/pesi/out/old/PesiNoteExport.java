@@ -61,8 +61,11 @@ import eu.etaxonomy.cdm.model.taxon.TaxonBase;
  */
 @Component
 public class PesiNoteExport extends PesiExportBase {
-	private static final Logger logger = Logger.getLogger(PesiNoteExport.class);
-	private static final Class<? extends CdmBase> standardMethodParameter = DescriptionElementBase.class;
+
+    private static final long serialVersionUID = 2113856079824112001L;
+    private static final Logger logger = Logger.getLogger(PesiNoteExport.class);
+
+    private static final Class<? extends CdmBase> standardMethodParameter = DescriptionElementBase.class;
 
 	private static int modCount = 1000;
 	private static final String dbTableName = "Note";
@@ -73,26 +76,17 @@ public class PesiNoteExport extends PesiExportBase {
 		super();
 	}
 
-	/* (non-Javadoc)
-	 * @see eu.etaxonomy.cdm.io.common.DbExportBase#getStandardMethodParameter()
-	 */
 	@Override
 	public Class<? extends CdmBase> getStandardMethodParameter() {
 		return standardMethodParameter;
 	}
 
-	/* (non-Javadoc)
-	 * @see eu.etaxonomy.cdm.io.common.CdmIoBase#doCheck(eu.etaxonomy.cdm.io.common.IoStateBase)
-	 */
 	@Override
 	protected boolean doCheck(PesiExportState state) {
 		boolean result = true;
 		return result;
 	}
 
-	/* (non-Javadoc)
-	 * @see eu.etaxonomy.cdm.io.common.CdmIoBase#doInvoke(eu.etaxonomy.cdm.io.common.IoStateBase)
-	 */
 	@Override
 	protected void doInvoke(PesiExportState state) {
 		try {
@@ -110,10 +104,8 @@ public class PesiNoteExport extends PesiExportBase {
 			// Start transaction
 			success &= doPhase01(state);
 
-
 			logger.info("PHASE 2...");
 			doPhase02(state, limit);
-
 
 			logger.info("*** Finished Making " + pluralString + " ..." + getSuccessString(success));
 
@@ -328,9 +320,6 @@ public class PesiNoteExport extends PesiExportBase {
 		return true;
 	}
 
-	/* (non-Javadoc)
-	 * @see eu.etaxonomy.cdm.io.common.CdmIoBase#isIgnore(eu.etaxonomy.cdm.io.common.IoStateBase)
-	 */
 	@Override
 	protected boolean isIgnore(PesiExportState state) {
 		return ! state.getConfig().isDoNotes();

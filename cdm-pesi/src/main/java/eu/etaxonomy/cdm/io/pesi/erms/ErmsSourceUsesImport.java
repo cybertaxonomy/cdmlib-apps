@@ -116,32 +116,32 @@ public class ErmsSourceUsesImport  extends ErmsImportBase<CommonTaxonName> {
 				Reference ref = (Reference)state.getRelatedObject(ErmsImportBase.REFERENCE_NAMESPACE, strSourceId);
 
 				try {
-				IdentifiableEntity<?> objectToSave = null;
-				//invoke methods for each sourceUse type
-				if (sourceUseId == SOURCE_USE_ORIGINAL_DESCRIPTION){
-					objectToSave = makeOriginalDescription(partitioner, state, ref, strTaxonId, strPageNr);
-				}else if (sourceUseId == SOURCE_USE_BASIS_OF_RECORD){
-					objectToSave = makeBasisOfRecord(partitioner, state, ref, strTaxonId, strPageNr);
-				}else if (sourceUseId == SOURCE_USE_ADDITIONAL_SOURCE){
-					objectToSave = makeAdditionalSource(partitioner, state, ref, strTaxonId, strPageNr);
-				}else if (sourceUseId == SOURCE_USE_SOURCE_OF_SYNONYMY){
-					objectToSave = makeSourceOfSynonymy(partitioner, state, ref, strTaxonId, strPageNr);
-				}else if (sourceUseId == SOURCE_USE_REDESCRIPTION){
-					objectToSave = makeRedescription(partitioner, state, ref, strTaxonId, strPageNr);
-				}else if (sourceUseId == SOURCE_USE_NEW_COMBINATION_REFERENCE){
-					objectToSave = makeCombinationReference(partitioner, state, ref, strTaxonId, strPageNr);
-				}else if (sourceUseId == SOURCE_USE_STATUS_SOURCE){
-					objectToSave = makeStatusSource(partitioner, state, ref, strTaxonId, strPageNr);
-				}else if (sourceUseId == SOURCE_USE_EMENDATION){
-					objectToSave = makeEmendation(partitioner, state, ref, strTaxonId, strPageNr);
-				}
-				if(objectToSave != null){
-					objectsToSave.add(objectToSave);
-				}
+    				IdentifiableEntity<?> objectToSave = null;
+    				//invoke methods for each sourceUse type
+    				if (sourceUseId == SOURCE_USE_ORIGINAL_DESCRIPTION){
+    					objectToSave = makeOriginalDescription(partitioner, state, ref, strTaxonId, strPageNr);
+    				}else if (sourceUseId == SOURCE_USE_BASIS_OF_RECORD){
+    					objectToSave = makeBasisOfRecord(partitioner, state, ref, strTaxonId, strPageNr);
+    				}else if (sourceUseId == SOURCE_USE_ADDITIONAL_SOURCE){
+    					objectToSave = makeAdditionalSource(partitioner, state, ref, strTaxonId, strPageNr);
+    				}else if (sourceUseId == SOURCE_USE_SOURCE_OF_SYNONYMY){
+    					objectToSave = makeSourceOfSynonymy(partitioner, state, ref, strTaxonId, strPageNr);
+    				}else if (sourceUseId == SOURCE_USE_REDESCRIPTION){
+    					objectToSave = makeRedescription(partitioner, state, ref, strTaxonId, strPageNr);
+    				}else if (sourceUseId == SOURCE_USE_NEW_COMBINATION_REFERENCE){
+    					objectToSave = makeCombinationReference(partitioner, state, ref, strTaxonId, strPageNr);
+    				}else if (sourceUseId == SOURCE_USE_STATUS_SOURCE){
+    					objectToSave = makeStatusSource(partitioner, state, ref, strTaxonId, strPageNr);
+    				}else if (sourceUseId == SOURCE_USE_EMENDATION){
+    					objectToSave = makeEmendation(partitioner, state, ref, strTaxonId, strPageNr);
+    				}
+    				if(objectToSave != null){
+    					objectsToSave.add(objectToSave);
+    				}
 				} catch (Exception e) {
 					e.printStackTrace();
 					success = false;
-			}
+				}
 			}
 		} catch (SQLException e) {
 			logger.error("SQLException:" +  e);

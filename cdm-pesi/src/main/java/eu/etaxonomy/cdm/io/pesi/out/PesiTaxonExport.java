@@ -247,7 +247,7 @@ public class PesiTaxonExport extends PesiExportBase {
 		rankTypeExpertsUpdateStmt = connection.prepareStatement(sql);
 	}
 
-	private boolean doPhase01(PesiExportState state, PesiExportMapping mapping, PesiExportMapping additionalSourceMapping) throws SQLException {
+	private boolean doPhase01(PesiExportState state, PesiExportMapping mapping, PesiExportMapping additionalSourceMapping){
 		int count = 0;
 		int pastCount = 0;
 		List<TaxonBase> list;
@@ -1452,8 +1452,6 @@ public class PesiTaxonExport extends PesiExportBase {
 	/**
 	 * Returns the rank cache for the taxon name based on the names nomenclatural code.
 	 * You may not use this method for kingdoms other then Animalia, Plantae and Bacteria.
-	 * @param taxonName
-	 * @return
 	 */
 	@SuppressWarnings("unused")  //used by mapper
 	private static String getRankCache(TaxonName taxonName, PesiExportState state) {
@@ -2081,22 +2079,22 @@ public class PesiTaxonExport extends PesiExportBase {
 	 * @param taxonName The {@link TaxonNameBase TaxonName}.
 	 * @return The Sources.
 	 */
-	private static Set<IdentifiableSource> getPesiSources(IdentifiableEntity identEntity) {
-		Set<IdentifiableSource> sources = new java.util.HashSet<IdentifiableSource>();
+	private static Set<IdentifiableSource> getPesiSources(IdentifiableEntity<?> identifiableEntity) {
+		Set<IdentifiableSource> sources = new HashSet<>();
 
 		//Taxon Names
-		if (identEntity.isInstanceOf(TaxonName.class)){
+		if (identifiableEntity.isInstanceOf(TaxonName.class)){
 			// Sources from TaxonName
-		    TaxonName taxonName = CdmBase.deproxy(identEntity, TaxonName.class);
-			Set<IdentifiableSource> testSources = identEntity.getSources();
-			sources = filterPesiSources(identEntity.getSources());
+		    TaxonName taxonName = CdmBase.deproxy(identifiableEntity, TaxonName.class);
+			Set<IdentifiableSource> testSources = identifiableEntity.getSources();
+			sources = filterPesiSources(identifiableEntity.getSources());
 
 			if (sources.size() == 0 && testSources.size()>0){
 				IdentifiableSource source = testSources.iterator().next();
 				logger.warn("There are sources, but they are no pesi sources!!!" + source.getIdInSource() + " - " + source.getIdNamespace() + " - " + source.getCitation().getTitleCache());
 			}
 			if (sources.size() > 1) {
-				logger.warn("This TaxonName has more than one Source: " + identEntity.getUuid() + " (" + identEntity.getTitleCache() + ")");
+				logger.warn("This TaxonName has more than one Source: " + identifiableEntity.getUuid() + " (" + identifiableEntity.getTitleCache() + ")");
 			}
 
 			// name has no PESI source, take sources from TaxonBase
@@ -2108,8 +2106,8 @@ public class PesiTaxonExport extends PesiExportBase {
 			}
 
 		//for TaxonBases
-		}else if (identEntity.isInstanceOf(TaxonBase.class)){
-			sources = filterPesiSources(identEntity.getSources());
+		}else if (identifiableEntity.isInstanceOf(TaxonBase.class)){
+			sources = filterPesiSources(identifiableEntity.getSources());
 		}
 
 		/*TODO: deleted only for testing the inferred synonyms
@@ -2124,7 +2122,7 @@ public class PesiTaxonExport extends PesiExportBase {
 
 	// return all sources with a PESI reference
 	private static Set<IdentifiableSource> filterPesiSources(Set<? extends IdentifiableSource> sources) {
-		Set<IdentifiableSource> result = new HashSet<IdentifiableSource>();
+		Set<IdentifiableSource> result = new HashSet<>();
 		for (IdentifiableSource source : sources){
 			Reference ref = source.getCitation();
 			UUID refUuid = ref.getUuid();
@@ -2456,7 +2454,7 @@ public class PesiTaxonExport extends PesiExportBase {
 
 		mapping.addMapper(MethodMapper.NewInstance("DerivedFromGuid", this));
 		mapping.addMapper(MethodMapper.NewInstance("CacheCitation", this));
-		mapping.addMapper(MethodMapper.NewInstance("AuthorString", this));  //For Taxon because Misallied Names are handled differently
+		mapping.addMapper(MethodMapper.NewInstance("AuthorString", this));  //For Taxon because Misapllied Names are handled differently
 		mapping.addMapper(MethodMapper.NewInstance("WebShowName", this));
 
 		// DisplayName

@@ -37,7 +37,6 @@ public class ErmsVernacularSourcesImport
         extends ErmsImportBase<CommonTaxonName> {
 
     private static final long serialVersionUID = 8334548532717058431L;
-
     @SuppressWarnings("unused")
     private static final Logger logger = Logger.getLogger(ErmsVernacularSourcesImport.class);
 

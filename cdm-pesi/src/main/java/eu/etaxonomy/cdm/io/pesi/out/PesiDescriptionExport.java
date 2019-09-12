@@ -573,13 +573,6 @@ public class PesiDescriptionExport extends PesiExportBase {
 		return success;
 	}
 
-	/**
-	 * @param taxComment
-	 * @param noteCategoryFk
-	 * @param noteCategoryCache
-	 * @param object
-	 * @param object2
-	 */
 	private void invokeNotes(String note, Integer noteCategoryFk,
 			String noteCategoryCache, Integer languageFk, String languageCache,
 			Integer taxonFk, Connection connection) {
@@ -628,8 +621,6 @@ public class PesiDescriptionExport extends PesiExportBase {
 			logger.error("Note could not be created: " + note);
 			e.printStackTrace();
 		}
-
-
 	}
 
 	/**
@@ -655,14 +646,10 @@ public class PesiDescriptionExport extends PesiExportBase {
 		return true;
 	}
 
-	/* (non-Javadoc)
-	 * @see eu.etaxonomy.cdm.io.common.CdmIoBase#isIgnore(eu.etaxonomy.cdm.io.common.IoStateBase)
-	 */
 	@Override
 	protected boolean isIgnore(PesiExportState state) {
 		return ! state.getConfig().isDoDescription();
 	}
-
 
 	/**
 	 * Returns the <code>Note_2</code> attribute.
@@ -708,9 +695,6 @@ public class PesiDescriptionExport extends PesiExportBase {
 	private static String getNoteCategoryCache(DescriptionElementBase descriptionElement, PesiExportState state) {
 		return state.getTransformer().getCacheByFeature(descriptionElement.getFeature());
 	}
-
-
-
 
 	/**
 	 * Returns the <code>LanguageFk</code> attribute.

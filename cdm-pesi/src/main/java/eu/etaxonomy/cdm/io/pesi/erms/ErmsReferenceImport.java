@@ -42,9 +42,11 @@ import eu.etaxonomy.cdm.model.reference.ReferenceFactory;
  * @since 20.02.2010
  */
 @Component
-public class ErmsReferenceImport  extends ErmsImportBase<Reference> implements IMappingImport<Reference, ErmsImportState>{
-    private static final long serialVersionUID = -2345972558542643378L;
+public class ErmsReferenceImport
+            extends ErmsImportBase<Reference>
+            implements IMappingImport<Reference, ErmsImportState>{
 
+    private static final long serialVersionUID = -2345972558542643378L;
     private static final Logger logger = Logger.getLogger(ErmsReferenceImport.class);
 
 	private DbImportMapping<ErmsImportState, ErmsImportConfigurator> mapping;
@@ -140,5 +142,4 @@ public class ErmsReferenceImport  extends ErmsImportBase<Reference> implements I
     protected boolean isIgnore(ErmsImportState state){
 		return state.getConfig().getDoReferences() != IImportConfigurator.DO_REFERENCES.ALL;
 	}
-
 }
