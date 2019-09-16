@@ -216,19 +216,19 @@ public class BerlinModelTaxonNameRelationImport extends BerlinModelImportBase {
 				String microcitation, String rule, int relNameId) {
 		AnnotatableEntity nameRelationship = null;
 		if (relQualifierFk == NAME_REL_IS_BASIONYM_FOR){
-			nameRelationship = nameTo.addBasionym(nameFrom, citation, microcitation, rule);
+			nameRelationship = nameTo.addBasionym(nameFrom, citation, microcitation, rule, null);
 		}else if (relQualifierFk == NAME_REL_IS_LATER_HOMONYM_OF){
-			nameRelationship = nameFrom.addRelationshipToName(nameTo, NameRelationshipType.LATER_HOMONYM(), citation, microcitation, rule) ;
+			nameRelationship = nameFrom.addRelationshipToName(nameTo, NameRelationshipType.LATER_HOMONYM(), citation, microcitation, rule, null) ;
 		}else if (relQualifierFk == NAME_REL_IS_TREATED_AS_LATER_HOMONYM_OF){
-			nameRelationship = nameFrom.addRelationshipToName(nameTo, NameRelationshipType.LATER_HOMONYM(), citation, microcitation, rule) ;
+			nameRelationship = nameFrom.addRelationshipToName(nameTo, NameRelationshipType.LATER_HOMONYM(), citation, microcitation, rule, null) ;
 		}else if (relQualifierFk == NAME_REL_IS_REPLACED_SYNONYM_FOR){
-			nameRelationship = nameFrom.addRelationshipToName(nameTo, NameRelationshipType.REPLACED_SYNONYM(), citation, microcitation, rule) ;
+			nameRelationship = nameFrom.addRelationshipToName(nameTo, NameRelationshipType.REPLACED_SYNONYM(), citation, microcitation, rule, null) ;
 		}else if (relQualifierFk == NAME_REL_HAS_SAME_TYPE_AS){
 			nameTo.getHomotypicalGroup().merge(nameFrom.getHomotypicalGroup());
 		}else if (relQualifierFk == NAME_REL_IS_VALIDATION_OF){
-			nameRelationship = nameTo.addRelationshipToName(nameFrom, NameRelationshipType.VALIDATED_BY_NAME(), citation, microcitation, rule) ;
+			nameRelationship = nameTo.addRelationshipToName(nameFrom, NameRelationshipType.VALIDATED_BY_NAME(), citation, microcitation, rule, null) ;
 		}else if (relQualifierFk == NAME_REL_IS_LATER_VALIDATION_OF){
-			nameRelationship = nameTo.addRelationshipToName(nameFrom, NameRelationshipType.LATER_VALIDATED_BY_NAME(), citation, microcitation, rule) ;
+			nameRelationship = nameTo.addRelationshipToName(nameFrom, NameRelationshipType.LATER_VALIDATED_BY_NAME(), citation, microcitation, rule, null) ;
 		}else if (relQualifierFk == NAME_REL_IS_TYPE_OF || relQualifierFk == NAME_REL_IS_REJECTED_TYPE_OF ||  relQualifierFk == NAME_REL_IS_CONSERVED_TYPE_OF || relQualifierFk == NAME_REL_IS_LECTOTYPE_OF || relQualifierFk == NAME_REL_TYPE_NOT_DESIGNATED ){
 			boolean isRejectedType = (relQualifierFk == NAME_REL_IS_REJECTED_TYPE_OF);
 			boolean isConservedType = (relQualifierFk == NAME_REL_IS_CONSERVED_TYPE_OF);
@@ -260,9 +260,9 @@ public class BerlinModelTaxonNameRelationImport extends BerlinModelImportBase {
 			}
 
 		}else if (relQualifierFk == NAME_REL_IS_ORTHOGRAPHIC_VARIANT_OF){
-			nameRelationship = nameFrom.addRelationshipToName(nameTo, NameRelationshipType.ORTHOGRAPHIC_VARIANT(), citation, microcitation, rule) ;
+			nameRelationship = nameFrom.addRelationshipToName(nameTo, NameRelationshipType.ORTHOGRAPHIC_VARIANT(), citation, microcitation, rule, null) ;
 		}else if (relQualifierFk == NAME_REL_IS_ALTERNATIVE_NAME_FOR){
-			nameRelationship = nameFrom.addRelationshipToName(nameTo, NameRelationshipType.ALTERNATIVE_NAME(), citation, microcitation, rule) ;
+			nameRelationship = nameFrom.addRelationshipToName(nameTo, NameRelationshipType.ALTERNATIVE_NAME(), citation, microcitation, rule, null) ;
 		}else if (relQualifierFk == NAME_REL_IS_FIRST_PARENT_OF || relQualifierFk == NAME_REL_IS_SECOND_PARENT_OF || relQualifierFk == NAME_REL_IS_FEMALE_PARENT_OF || relQualifierFk == NAME_REL_IS_MALE_PARENT_OF){
 			//HybridRelationships
 			try {

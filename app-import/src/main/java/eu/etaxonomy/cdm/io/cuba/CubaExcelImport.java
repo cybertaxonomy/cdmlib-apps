@@ -779,7 +779,7 @@ public class CubaExcelImport
             if (newName.isProtectedTitleCache()){
                 logger.warn(state.getCurrentLine() + ": homonym name could not be parsed: " + split);
             }
-            homonyms.get(i).addRelationshipToName(newName, NameRelationshipType.LATER_HOMONYM(), null);
+            homonyms.get(i).addRelationshipToName(newName, NameRelationshipType.LATER_HOMONYM(), null, null);
             i++;
         }
     }
@@ -811,7 +811,7 @@ public class CubaExcelImport
             }
             if (candidates.size() == 1){
                 TaxonName blockedName = (TaxonName)candidates.iterator().next();
-                newName.addRelationshipToName(blockedName, NameRelationshipType.BLOCKING_NAME_FOR(), null);
+                newName.addRelationshipToName(blockedName, NameRelationshipType.BLOCKING_NAME_FOR(), null, null);
                 replacementNameCandidates.add(blockedName);
             }else{
                 logger.warn(state.getCurrentLine() + ": Blocking name could not be handled. " + candidates.size() + " candidates.");
@@ -842,7 +842,7 @@ public class CubaExcelImport
         if (replacedCandidates.size() == 1){
             TaxonName replacedSynonym = (TaxonName)replacedCandidates.iterator().next();
             for (IBotanicalName replacementName : replacementNameCandidates){
-                replacementName.addReplacedSynonym(replacedSynonym, null, null, null);
+                replacementName.addReplacedSynonym(replacedSynonym, null, null, null, null);
             }
         }else if (replacedCandidates.size() < 1){
             logger.warn(line + "No replaced synonym candidate found");
@@ -1049,7 +1049,7 @@ public class CubaExcelImport
             orthVarName.addSource(makeOriginalSource(state));
             //TODO
             Reference citation = null;
-            orthVarName.addRelationshipToName(result, NameRelationshipType.ORTHOGRAPHIC_VARIANT(), citation, null, null);
+            orthVarName.addRelationshipToName(result, NameRelationshipType.ORTHOGRAPHIC_VARIANT(), citation, null, null, null);
             orthVarName.setSpecificEpithet(orthVar);
         }
         normalizeAuthors(result);
@@ -1204,7 +1204,7 @@ public class CubaExcelImport
                 }
             }
             if (!hasRelation){
-                familyName.addRelationshipFromName(alternativeName, type, null);
+                familyName.addRelationshipFromName(alternativeName, type, null, null);
             }
 
         }

@@ -351,7 +351,7 @@ public class IAPTExcelImport<CONFIG extends IAPTImportConfigurator> extends Simp
             misspelledNameStr = taxonName.getTitleCache().replace(nameStr, misspelledNameStr);
 
             TaxonName misspelledName = nameParser.parseReferencedName(misspelledNameStr, NomenclaturalCode.ICNAFP, null);
-            misspelledName.addRelationshipToName(taxonName, NameRelationshipType.MISSPELLING(), null);
+            misspelledName.addRelationshipToName(taxonName, NameRelationshipType.MISSPELLING(), null, null);
             getNameService().save(misspelledName);
         }
 
@@ -359,7 +359,7 @@ public class IAPTExcelImport<CONFIG extends IAPTImportConfigurator> extends Simp
         if(!StringUtils.isEmpty(fullSynSubstStr)){
             fullSynSubstStr = fullSynSubstStr.replace("Syn. subst.: ", "");
             TaxonName replacedSynonymName = makeBotanicalName(state, regNumber, fullSynSubstStr, synSubstStr, null, null);
-            replacedSynonymName.addReplacedSynonym(taxonName, null, null, null);
+            replacedSynonymName.addReplacedSynonym(taxonName, null, null, null, null);
             getNameService().save(replacedSynonymName);
         }
 

@@ -194,14 +194,14 @@ public class FloraHellenicaSynonymImport<CONFIG extends FloraHellenicaImportConf
                 }
                 nonName = TaxonName.castAndDeproxy(this.parser.parseFullName(split));
                 nonName = replaceNameAuthorsAndReferences(state, nonName);
-                name.addRelationshipFromName(nonName, NameRelationshipType.BLOCKING_NAME_FOR(), null);
+                name.addRelationshipFromName(nonName, NameRelationshipType.BLOCKING_NAME_FOR(), null, null);
             }else{
                 String nameStr = name.getNameCache().replace(" hort.", "") + " " + split;
                 nonName = TaxonName.castAndDeproxy(this.parser.parseFullName(nameStr));
                 nonName = replaceNameAuthorsAndReferences(state, nonName);
-                name.addRelationshipToName(nonName, NameRelationshipType.LATER_HOMONYM(), null);
+                name.addRelationshipToName(nonName, NameRelationshipType.LATER_HOMONYM(), null, null);
                 if (lastHomonym != null){
-                    nonName.addRelationshipToName(lastHomonym, NameRelationshipType.LATER_HOMONYM(), null);
+                    nonName.addRelationshipToName(lastHomonym, NameRelationshipType.LATER_HOMONYM(), null, null);
                 }
                 lastHomonym = nonName;
             }

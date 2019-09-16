@@ -526,7 +526,7 @@ public class BerlinModelTaxonRelationImport  extends BerlinModelImportBase  {
                     if (status != null){
                         name.addStatus(NomenclaturalStatus.NewInstance(status));
                     }
-                    synonym.getName().addRelationshipFromName(name, NameRelationshipType.BLOCKING_NAME_FOR(), null, null, null);
+                    synonym.getName().addRelationshipFromName(name, NameRelationshipType.BLOCKING_NAME_FOR(), null, null, null, null);
 
                     getNameService().saveOrUpdate(name);
                 }
