@@ -37,20 +37,30 @@ public class PesiErmsValidator {
     private Source destination = defaultDestination;
 
     public void invoke(Source source, Source destination){
+        logger.warn("Validate destination " +  destination.getDatabase());
         boolean success = true;
         try {
             this.source = source;
             this.destination = destination;
-            success &= testReferences();
-            success &= testTaxa();
-            success &= testTaxonRelations();
-            success &= testCommonNames();
+//            success &= testReferences();
+//            success &= testTaxa();
+//            success &= testTaxonRelations();
+//            success &= testCommonNames();
+            success &= testDistributions();
         } catch (Exception e) {
             e.printStackTrace();
             success = false;
         }
         //TBC
         System.out.println("end validation " + (success? "":"NOT ") + "successful.");
+    }
+
+    private boolean testDistributions() throws SQLException {
+        boolean success = testDistributionCount();
+        if (success){
+              success &= testSingleDistributions(source.getUniqueInteger("SELECT count(*) FROM dr "));
+        }
+        return success;
     }
 
     private boolean testCommonNames() throws SQLException {
@@ -82,6 +92,12 @@ public class PesiErmsValidator {
         return success;
     }
 
+    private boolean testDistributionCount() {
+        int countSrc = source.getUniqueInteger("SELECT count(*) FROM dr ");
+        int countDest = destination.getUniqueInteger("SELECT count(*) FROM Occurrence ");
+        return equals("Occurrence count ", countSrc, countDest, String.valueOf(-1));
+    }
+
     private boolean testCommonNameCount() {
         int countSrc = source.getUniqueInteger("SELECT count(*) FROM vernaculars ");
         int countDest = destination.getUniqueInteger("SELECT count(*) FROM CommonName ");
@@ -89,7 +105,7 @@ public class PesiErmsValidator {
     }
 
     private boolean testTaxaCount() {
-         int countSrc = source.getUniqueInteger("SELECT count(*) FROM tu ");
+         int countSrc = source.getUniqueInteger("SELECT count(*) FROM tu WHERE id NOT IN (147415)");
          int countDest = destination.getUniqueInteger("SELECT count(*) FROM Taxon ");
          return equals("Taxon count ", countSrc, countDest, String.valueOf(-1));
      }
@@ -106,6 +122,7 @@ public class PesiErmsValidator {
                 + " LEFT OUTER JOIN tu type ON type.id = t.tu_typetaxon "
                 + " LEFT OUTER JOIN fossil fo ON t.tu_fossil = fo.fossil_id "
                 + " LEFT OUTER JOIN qualitystatus qs ON t.tu_qualitystatus = qs.id "
+                + " WHERE t.id NOT IN (147415) "
                 + " ORDER BY CAST(t.id as nvarchar(20)) ");
         ResultSet destRS = destination.getResultSet("SELECT t.*, type.IdInSource typeSourceId "
                 + " FROM Taxon t "
@@ -141,8 +158,9 @@ public class PesiErmsValidator {
 //        success &= equals("Taxon WebShowName", srcRS.getString("tu_displayname"), destRS.getString("WebShowName"), id);
         success &= equals("Taxon authority", srcRS.getString("tu_authority"), destRS.getString("AuthorString"), id);
         success &= equals("Taxon FullName", srcFullName(srcRS), destRS.getString("FullName"), id);
-        //TODO NomRefString
-        //TODO DisplayName
+        success &= isNull("NomRefString", destRS);
+        success &= equals("Taxon DisplayName", srcFullName(srcRS), destRS.getString("DisplayName"), id);  //according to SQL script same as FullName, no nom.ref. information attached
+
 //TODO        success &= equals("Taxon NameStatusFk", toNameStatus(nullSafeInt(srcRS, "tu_status")),nullSafeInt( destRS,"NameStatusFk"), id);
 //TODO        success &= equals("Taxon NameStatusCache", srcRS.getString("status_name"), destRS.getString("NameStatusCache"), id);
 
@@ -220,15 +238,46 @@ public class PesiErmsValidator {
         }
     }
 
+    private boolean testSingleDistributions(int n) throws SQLException {
+        boolean success = true;
+        ResultSet srcRs = source.getResultSet("SELECT CAST(ISNULL(tu.tu_accfinal, tu.id) as nvarchar(20)) tuId, gu.gazetteer_id, dr.*, gu.id guId, gu.gu_name "
+                + " FROM dr INNER JOIN tu ON dr.tu_id = tu.id "
+                + "    LEFT JOIN gu ON gu.id = dr.gu_id "
+                + " ORDER BY CAST(ISNULL(tu.tu_accfinal, tu.id) as nvarchar(20)), gu.gazetteer_id, gu.gu_name ");  //, dr.note (not possible because ntext
+        ResultSet destRs = destination.getResultSet("SELECT t.IdInSource, a.AreaERMSGazetteerId, oc.*, a.AreaName "
+                + " FROM Occurrence oc INNER JOIN Taxon t ON t.TaxonId = oc.TaxonFk "
+                + "    LEFT JOIN Area a ON a.AreaId = oc.AreaFk "
+                + " WHERE t.OriginalDB = 'erms' "
+                + " ORDER BY t.IdInSource, a.AreaERMSGazetteerId, a.AreaName, oc.Notes ");
+        int count = 0;
+        while (srcRs.next() && destRs.next()){
+            success &= testSingleDistribution(srcRs, destRs);
+            count++;
+        }
+        success &= equals("Distribution count differs", n, count, "-1");
+        return success;
+    }
+
+    private boolean testSingleDistribution(ResultSet srcRs, ResultSet destRs) throws SQLException {
+        String id = String.valueOf(srcRs.getInt("tuId") + "-" + srcRs.getString("gu_name"));
+        boolean success = equals("Distribution taxonID ", "tu_id: " + String.valueOf(srcRs.getInt("tuId")), destRs.getString("IdInSource"), id);
+        success &= equals("Distribution gazetteer_id ", srcRs.getString("gazetteer_id"), destRs.getString("AreaERMSGazetteerId"), id);
+        success &= equals("Distribution area name ", srcRs.getString("gu_name"), destRs.getString("AreaName"), id);
+        success &= equals("Distribution area name ", srcRs.getString("note"), destRs.getString("Notes"), id);
+
+        //TODO
+        return success;
+    }
+
     private boolean testSingleCommonNames(int n) throws SQLException {
         boolean success = true;
-        ResultSet srcRs = source.getResultSet("SELECT v.*, l.LanName, tu.id tuId "
+        ResultSet srcRs = source.getResultSet("SELECT v.*, ISNULL([639_3],[639_2]) iso, l.LanName, tu.id tuId "
                 + " FROM vernaculars v LEFT JOIN tu ON v.tu_id = tu.id LEFT JOIN languages l ON l.LanID = v.lan_id "
-                + " ORDER BY CAST(tu.id as nvarchar(20)), tu.id ");
-        ResultSet destRs = destination.getResultSet("SELECT cn.*, t.IdInSource, l.ISO639_2 "
-                + " FROM CommonName cn INNER JOIN Taxon t ON t.TaxonId = cn.TaxonFk INNER JOIN Language l ON l.LanguageId = cn.LanguageFk "
+                + " ORDER BY CAST(tu.id as nvarchar(20)), ISNULL([639_3],[639_2]), v.vername  ");
+        ResultSet destRs = destination.getResultSet("SELECT cn.*, t.IdInSource, l.ISO639_2, l.ISO639_3 "
+                + " FROM CommonName cn INNER JOIN Taxon t ON t.TaxonId = cn.TaxonFk LEFT JOIN Language l ON l.LanguageId = cn.LanguageFk "
                 + " WHERE t.OriginalDB = 'erms' "
-                + " ORDER BY t.IdInSource, l.ISO639_2");
+                + " ORDER BY t.IdInSource, ISNULL("+preferredISO639+", "+alternativeISO639+"), cn.CommonName");
         int count = 0;
         while (srcRs.next() && destRs.next()){
             success &= testSingleCommonName(srcRs, destRs);
@@ -238,17 +287,47 @@ public class PesiErmsValidator {
         return success;
     }
 
+    boolean prefer639_3 = true;
+    String preferredISO639 = prefer639_3? "ISO639_3":"ISO639_2";
+    String alternativeISO639 = prefer639_3? "ISO639_2":"ISO639_3";
+
     private boolean testSingleCommonName(ResultSet srcRs, ResultSet destRs) throws SQLException {
         String id = String.valueOf(srcRs.getInt("tuId") + "-" + srcRs.getString("lan_id"));
         boolean success = equals("Common name taxonID ", "tu_id: " + String.valueOf(srcRs.getInt("tuId")), destRs.getString("IdInSource"), id);
-        success &= equals("Common name languageID ", srcRs.getString("lan_id"), destRs.getString("ISO639_2"), id);
+        success &= equals("Common name languageID ", srcRs.getString("iso"), getLanguageIso(destRs), id);
         success &= equals("CommonName name ", srcRs.getString("vername"), destRs.getString("CommonName"), id);
         //TODO success = equals("CommonName language code ", srcRs.getString("lan_id"), destRs.getString("LanguageFk"), id);
-        success = equals("CommonName LanguageCache ", srcRs.getString("LanName"), destRs.getString("LanguageCache"), id);
+        success = equals("CommonName LanguageCache ", normalizeLang(srcRs.getString("LanName")), destRs.getString("LanguageCache"), id);
         success &= isNull("Region", destRs);  //region does not seem to exist in ERMS
 
         //TODO
         return success;
+    }
+
+    private String normalizeLang(String string) {
+        if ("Norwegian Nynorsk".equals(string)){
+            return "Nynorsk (Norwegian)";
+        }else if ("Norwegian Bokmål".equals(string)){
+            return "Bokmål  (Norwegian)";
+        }else if ("Spanish".equals(string)){
+            return "Spanish, Castillian";
+        }else if ("Modern Greek (1453-)".equals(string)){
+            return "Greek";
+        }else if ("Hebrew".equals(string)){
+            return "Israel (Hebrew)";
+        }else if ("Malay (individual language)".equals(string)){
+            return "Malay";
+        }
+
+        return string;
+    }
+
+    private String getLanguageIso(ResultSet destRs) throws SQLException {
+        String result = destRs.getString(preferredISO639);
+        if (result == null){
+            result = destRs.getString(alternativeISO639);
+        }
+        return result;
     }
 
     private boolean testSingleReferences() throws SQLException {
