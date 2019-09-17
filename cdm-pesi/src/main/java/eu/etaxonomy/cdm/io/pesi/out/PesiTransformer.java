@@ -461,70 +461,6 @@ public final class PesiTransformer extends ExportTransformerBase{
 	public static int NoteCategory_Use = 302;
 	public static int NoteCategory_Comments = 303;
 
-
-	// Language
-	public static int Language_Albanian = 1;
-	public static int Language_Arabic = 2;
-	public static int Language_Armenian = 3;
-	public static int Language_Azerbaijan = 4;
-	public static int Language_Belarusian = 5;
-	public static int Language_Bulgarian = 6;
-	public static int Language_Catalan = 7;
-	public static int Language_Croat = 8;
-	public static int Language_Czech = 9;
-	public static int Language_Danish = 10;
-	public static int Language_Dutch = 11;
-	public static int Language_English = 12;
-	public static int Language_Euskera = 13;
-	public static int Language_Estonian = 14;
-	public static int Language_Finnish = 15;
-	public static int Language_French = 16;
-	public static int Language_Georgian = 17;
-	public static int Language_German = 18;
-	public static int Language_Greek = 19;
-	public static int Language_Hungarian = 20;
-	public static int Language_Icelandic = 21;
-	public static int Language_Irish_Gaelic = 22;
-	public static int Language_Israel_Hebrew = 23;
-	public static int Language_Italian = 24;
-	public static int Language_Latvian = 25;
-	public static int Language_Lithuanian = 26;
-	public static int Language_Macedonian = 27;
-	public static int Language_Maltese = 28;
-	public static int Language_Moldovian = 29;
-	public static int Language_Norwegian = 30;
-	public static int Language_Polish = 31;
-	public static int Language_Portuguese = 32;
-	public static int Language_Roumanian = 33;
-	public static int Language_Russian = 34;
-	public static int Language_Russian_Caucasian = 35;
-	public static int Language_Russian_Altaic_kalmyk_oirat = 36;
-	public static int Language_Russian_Altaic_karachay_balkar = 37;
-	public static int Language_Russian_Altaic_kumyk = 38;
-	public static int Language_Russian_Altaic_nogai = 39;
-	public static int Language_Russian_Altaic_north_azerbaijani = 40;
-	public static int Language_Russian_Indo_european_russian = 41;
-	public static int Language_Russian_Indo_european_kalmyk_oirat = 42;
-	public static int Language_Russian_Indo_european_osetin = 43;
-	public static int Language_Russian_North_caucasian_abaza = 44;
-	public static int Language_Russian_North_caucasian_adyghe = 45;
-	public static int Language_Russian_North_caucasian_chechen = 46;
-	public static int Language_Russian_North_caucasian_kabardian = 47;
-	public static int Language_Russian_North_caucasian_lak = 48;
-	public static int Language_Russian_North_caucasian_avar = 49;
-	public static int Language_Russian_North_caucasian_in = 50;
-	public static int Language_Russian_Uralic_chuvash = 51;
-	public static int Language_Russian_Uralic_udmurt = 52;
-	public static int Language_Serbian = 53;
-	public static int Language_Slovak = 54;
-	public static int Language_Slovene = 55;
-	public static int Language_Spanish_Castillian = 56;
-	public static int Language_Swedish = 57;
-	public static int Language_Turkish = 58;
-	public static int Language_Ukraine = 59;
-	public static int Language_Welsh = 60;
-	public static int Language_Corsican = 61;
-
 	// FossilStatus
 	public static int FOSSILSTATUS_RECENT_ONLY = 1;
 	public static int FOSSILSTATUS_FOSSIL_ONLY = 2;
@@ -768,6 +704,7 @@ public final class PesiTransformer extends ExportTransformerBase{
 	private final Map<String, Integer> tdwgKeyMap = new HashMap<>();
 	private final Map<Integer, String> areaCacheMap = new HashMap<>();
 	private final Map<Integer, String> languageCacheMap  = new HashMap<>();
+	private static final Map<String,Integer> languageCodeToKeyMap = new HashMap<>();
 	private final Map<Integer, String> featureCacheMap  = new HashMap<>();
 	private final Map<Integer, String> nameStatusCacheMap  = new HashMap<>();
 	private final Map<Integer, String> qualityStatusCacheMap  = new HashMap<>();
@@ -884,6 +821,30 @@ public final class PesiTransformer extends ExportTransformerBase{
 					this.taxRelZooQualifierCacheMap.put(key, zoologCache);
 				}
 			}
+
+			//language code map
+			sql = " SELECT LanguageId, Language, ISO639_1, ISO639_2, ISO639_3 FROM Language";
+			rs = destination.getResultSet(sql);
+			while (rs.next()){
+                Integer id = rs.getInt("LanguageId");
+                Integer oldId;
+                String iso639_1 = rs.getString("ISO639_1");
+                if (StringUtils.isNotBlank(iso639_1)){
+                    oldId = this.languageCodeToKeyMap.put(iso639_1, id);
+                    checkOldId(id, oldId, iso639_1);
+                }
+                String iso639_2 = rs.getString("ISO639_2");
+                if (StringUtils.isNotBlank(iso639_2)){
+                    oldId = this.languageCodeToKeyMap.put(iso639_2, id);
+                    checkOldId(id, oldId, iso639_1);
+                }
+                String iso639_3 = rs.getString("ISO639_3");
+                if (StringUtils.isNotBlank(iso639_3)){
+                    oldId = this.languageCodeToKeyMap.put(iso639_3, id);
+                    checkOldId(id, oldId, iso639_1);
+                }
+
+            }
 			rs = null;
 		} catch (Exception e) {
 			logger.error("Exception when trying to read area map", e);
@@ -891,7 +852,13 @@ public final class PesiTransformer extends ExportTransformerBase{
 		}
 	}
 
-	private void fillSingleMap(Map<Integer, String> map, String tableName) throws SQLException {
+    private void checkOldId(Integer id, Integer oldId, String isoCode) {
+        if (oldId != null && !oldId.equals(id)){
+            logger.warn("Language code " + isoCode + " exists for >1 language IDs. This should not happen.");
+        }
+    }
+
+    private void fillSingleMap(Map<Integer, String> map, String tableName) throws SQLException {
 		fillSingleMap(map, tableName, tableName,  tableName + "Id");
 	}
 
@@ -1437,130 +1404,14 @@ public final class PesiTransformer extends ExportTransformerBase{
 		if (language == null ) {
 			return null;
 		}
-		if (language.equals(Language.ALBANIAN())) {
-			return Language_Albanian;
-		} else if (language.equals(Language.ARABIC())) {
-			return Language_Arabic;
-		} else if (language.equals(Language.ARMENIAN())) {
-			return Language_Armenian;
-		} else if (language.equals(Language.AZERBAIJANI())) {
-			return Language_Azerbaijan;
-		} else if (language.equals(Language.BELORUSSIAN())) {
-			return Language_Belarusian;
-		} else if (language.equals(Language.BULGARIAN())) {
-			return Language_Bulgarian;
-		} else if (language.equals(Language.CATALAN_VALENCIAN())) {
-			return Language_Catalan;
-		} else if (language.equals(Language.CROATIAN())) {
-			return Language_Croat;
-		} else if (language.equals(Language.CZECH())) {
-			return Language_Czech;
-		} else if (language.equals(Language.DANISH())) {
-			return Language_Danish;
-		} else if (language.equals(Language.DUTCH_MIDDLE())) {
-			return Language_Dutch;
-		} else if (language.equals(Language.ENGLISH())) {
-			return Language_English;
-//		} else if (language.equals(Language.)) {
-//			return Language_Euskera;
-		} else if (language.equals(Language.ESTONIAN())) {
-			return Language_Estonian;
-		} else if (language.equals(Language.FINNISH())) {
-			return Language_Finnish;
-		} else if (language.equals(Language.FRENCH())) {
-			return Language_French;
-		} else if (language.equals(Language.GEORGIAN())) {
-			return Language_Georgian;
-		} else if (language.equals(Language.GERMAN())) {
-			return Language_German;
-		} else if (language.equals(Language.GREEK_MODERN())) {
-			return Language_Greek;
-		} else if (language.equals(Language.HUNGARIAN())) {
-			return Language_Hungarian;
-		} else if (language.equals(Language.ICELANDIC())) {
-			return Language_Icelandic;
-		} else if (language.equals(Language.IRISH())) {
-			return Language_Irish_Gaelic;
-		} else if (language.equals(Language.HEBREW())) {
-			return Language_Israel_Hebrew;
-		} else if (language.equals(Language.ITALIAN())) {
-			return Language_Italian;
-		} else if (language.equals(Language.LATVIAN())) {
-			return Language_Latvian;
-		} else if (language.equals(Language.LITHUANIAN())) {
-			return Language_Lithuanian;
-		} else if (language.equals(Language.MACEDONIAN())) {
-			return Language_Macedonian;
-		} else if (language.equals(Language.MALTESE())) {
-			return Language_Maltese;
-		} else if (language.equals(Language.MOLDAVIAN())) {
-			return Language_Moldovian;
-		} else if (language.equals(Language.NORWEGIAN())) {
-			return Language_Norwegian;
-		} else if (language.equals(Language.POLISH())) {
-			return Language_Polish;
-		} else if (language.equals(Language.PORTUGUESE())) {
-			return Language_Portuguese;
-		} else if (language.equals(Language.ROMANIAN())) {
-			return Language_Roumanian;
-		} else if (language.equals(Language.RUSSIAN())) {
-			return Language_Russian;
-//		} else if (language.equals(Language.)) {
-//			return Language_Russian_Caucasian;
-//		} else if (language.equals(Language.)) {
-//			return Language_Russian_Altaic_kalmyk_oirat;
-//		} else if (language.equals(Language.)) {
-//			return Language_Russian_Altaic_karachay_balkar;
-//		} else if (language.equals(Language.)) {
-//			return Language_Russian_Altaic_kumyk;
-//		} else if (language.equals(Language.)) {
-//			return Language_Russian_Altaic_nogai;
-//		} else if (language.equals(Language.)) {
-//			return Language_Russian_Altaic_north_azerbaijani;
-//		} else if (language.equals(Language.)) {
-//			return Language_Russian_Indo_european_russian;
-//		} else if (language.equals(Language.)) {
-//			return Language_Russian_Indo_european_kalmyk_oirat;
-//		} else if (language.equals(Language.)) {
-//			return Language_Russian_Indo_european_osetin;
-//		} else if (language.equals(Language.)) {
-//			return Language_Russian_North_caucasian_abaza;
-//		} else if (language.equals(Language.)) {
-//			return Language_Russian_North_caucasian_adyghe;
-//		} else if (language.equals(Language.)) {
-//			return Language_Russian_North_caucasian_chechen;
-//		} else if (language.equals(Language.)) {
-//			return Language_Russian_North_caucasian_kabardian;
-//		} else if (language.equals(Language.)) {
-//			return Language_Russian_North_caucasian_lak;
-//		} else if (language.equals(Language.)) {
-//			return Language_Russian_North_caucasian_avar;
-//		} else if (language.equals(Language.)) {
-//			return Language_Russian_North_caucasian_in;
-//		} else if (language.equals(Language.)) {
-//			return Language_Russian_Uralic_chuvash;
-//		} else if (language.equals(Language.)) {
-//			return Language_Russian_Uralic_udmurt;
-		} else if (language.equals(Language.SERBIAN())) {
-			return Language_Serbian;
-		} else if (language.equals(Language.SLOVAK())) {
-			return Language_Slovak;
-		} else if (language.equals(Language.SLOVENIAN())) {
-			return Language_Slovene;
-		} else if (language.equals(Language.SPANISH_CASTILIAN())) {
-			return Language_Spanish_Castillian;
-		} else if (language.equals(Language.SWEDISH())) {
-			return Language_Swedish;
-		} else if (language.equals(Language.TURKISH())) {
-			return Language_Turkish;
-		} else if (language.equals(Language.UKRAINIAN())) {
-			return Language_Ukraine;
-		} else if (language.equals(Language.WELSH())) {
-			return Language_Welsh;
-		} else if (language.equals(Language.CORSICAN())) {
-			return Language_Corsican;
+		Integer result;
+		if ((result = languageCodeToKeyMap.get(language.getIso639_1())) != null){
+		    return result;
+		}else if ((result = languageCodeToKeyMap.get(language.getIdInVocabulary())) != null){
+            return result;
+
 		} else {
-			logger.debug("Unknown Language: " + language.getTitleCache());
+			logger.warn("Unknown Language: " + language.getTitleCache());
 			return null;
 		}
 	}

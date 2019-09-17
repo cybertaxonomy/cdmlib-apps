@@ -10,9 +10,7 @@
 package eu.etaxonomy.cdm.io.pesi.erms;
 
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Map;
-import java.util.Set;
 import java.util.UUID;
 
 import org.apache.commons.lang.StringUtils;
@@ -283,7 +281,7 @@ public final class ErmsTransformer extends InputTransformerBase {
 		if(iso639_3_languages == null){
 		    fillIso639_3_languages();
 		}
-	    Set<String> unhandledLanguages = new HashSet<>();
+//	    Set<String> unhandledLanguages = new HashSet<>();
 		if (StringUtils.isBlank(ermsAbbrev)){
 		    return null;
 		}else if (iso639_3_languages.get(ermsAbbrev)!= null){
@@ -296,10 +294,10 @@ public final class ErmsTransformer extends InputTransformerBase {
             return Language.ENGLISH();
         }else{
 		    //unhandledLanguage.add(xxx);
-			if (unhandledLanguages.contains(ermsAbbrev)){
-				logger.warn("Unhandled language '" + ermsAbbrev + "' replaced by 'UNDETERMINED'" );
-				return Language.UNDETERMINED();
-			}
+//			if (unhandledLanguages.contains(ermsAbbrev)){
+//				logger.warn("Unhandled language '" + ermsAbbrev + "' replaced by 'UNDETERMINED'" );
+//				return Language.UNDETERMINED();
+//			}
 			String warning = "New language abbreviation " + ermsAbbrev;
 			logger.warn(warning);
 			try {
@@ -337,6 +335,7 @@ public final class ErmsTransformer extends InputTransformerBase {
     private void addIso639_3_language(TermVocabulary<Language> voc, String abbrev, UUID uuid, String label) {
         Language lang = Language.NewInstance(uuid, label, abbrev);
         voc.addTerm(lang);
+        lang.setIdInVocabulary(abbrev);
         iso639_3_languages.put(abbrev, lang);
     }
 
