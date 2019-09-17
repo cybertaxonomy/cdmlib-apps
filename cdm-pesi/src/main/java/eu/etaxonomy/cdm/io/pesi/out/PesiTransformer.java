@@ -708,7 +708,7 @@ public final class PesiTransformer extends ExportTransformerBase{
 	public static int AREA_UNITED_KINGDOM_EXCLUSIVE_ECONOMIC_ZONE = 163;
 	public static int AREA_SPANISH_EXCLUSIVE_ECONOMIC_ZONE = 164;
 	public static int AREA_EGYPTIAN_EXCLUSIVE_ECONOMIC_ZONE = 165;
-	public static int AREA_GRECIAN_EXCLUSIVE_ECONOMIC_ZONE = 166;
+	public static int AREA_GREEK_EXCLUSIVE_ECONOMIC_ZONE = 166;
 	public static int AREA_TIRRENO_SEA = 167;
 	public static int AREA_ICELANDIC_EXCLUSIVE_ECONOMIC_ZONE = 168;
 	public static int AREA_IRISH_EXCLUSIVE_ECONOMIC_ZONE = 169;
@@ -753,6 +753,7 @@ public final class PesiTransformer extends ExportTransformerBase{
 	public static int AREA_SPAIN_COUNTRY = 206;
 	public static int AREA_GREECE_COUNTRY = 207;
 	public static int AREA_PORTUGAL_COUNTRY = 208;
+	//continues without variables
 
 	// OccurrenceStatus
 	public static int STATUS_PRESENT = 1;
@@ -1246,7 +1247,8 @@ public final class PesiTransformer extends ExportTransformerBase{
 					(namedArea.getUuid().equals(ErmsTransformer.uuidBlackSea))) { return AREA_BLACK_SEA; } // abbreviated label missing
 			else if (namedArea.getUuid().equals(ErmsTransformer.uuidBarentsSea)) { return AREA_BARENTS_SEA; }
 			else if ((namedArea.getRepresentation(Language.DEFAULT()).getAbbreviatedLabel()).equals("CAS") ||
-					(namedArea.getUuid().equals(ErmsTransformer.uuidCaspianSea))) { return AREA_CASPIAN_SEA; } // abbreviated label missingelse if (namedArea.getUuid().equals(ErmsTransformer.uuidPortugueseExclusiveEconomicZone)) { return AREA_PORTUGUESE_EXCLUSIVE_ECONOMIC_ZONE; }
+					(namedArea.getUuid().equals(ErmsTransformer.uuidCaspianSea))) { return AREA_CASPIAN_SEA; } // abbreviated label missing
+			else if (namedArea.getUuid().equals(ErmsTransformer.uuidPortugueseExclusiveEconomicZone)) { return AREA_PORTUGUESE_EXCLUSIVE_ECONOMIC_ZONE; }
 			else if (namedArea.getUuid().equals(ErmsTransformer.uuidBelgianExclusiveEconomicZone)) { return AREA_BELGIAN_EXCLUSIVE_ECONOMIC_ZONE; }
 			else if (namedArea.getUuid().equals(ErmsTransformer.uuidFrenchExclusiveEconomicZone)) { return AREA_FRENCH_EXCLUSIVE_ECONOMIC_ZONE; }
 			else if (namedArea.getUuid().equals(ErmsTransformer.uuidEnglishChannel)) { return AREA_ENGLISH_CHANNEL; }
@@ -1256,7 +1258,6 @@ public final class PesiTransformer extends ExportTransformerBase{
 			else if (namedArea.getUuid().equals(ErmsTransformer.uuidUnitedKingdomExclusiveEconomicZone)) { return AREA_UNITED_KINGDOM_EXCLUSIVE_ECONOMIC_ZONE; }
 			else if (namedArea.getUuid().equals(ErmsTransformer.uuidSpanishExclusiveEconomicZone)) { return AREA_SPANISH_EXCLUSIVE_ECONOMIC_ZONE; }
 			else if (namedArea.getUuid().equals(ErmsTransformer.uuidEgyptianExclusiveEconomicZone)) { return AREA_EGYPTIAN_EXCLUSIVE_ECONOMIC_ZONE; }
-			else if (namedArea.getUuid().equals(ErmsTransformer.uuidGrecianExclusiveEconomicZone)) { return AREA_GRECIAN_EXCLUSIVE_ECONOMIC_ZONE; }
 			else if (namedArea.getUuid().equals(ErmsTransformer.uuidTirrenoSea)) { return AREA_TIRRENO_SEA; }
 			else if (namedArea.getUuid().equals(ErmsTransformer.uuidIcelandicExclusiveEconomicZone)) { return AREA_ICELANDIC_EXCLUSIVE_ECONOMIC_ZONE; }
 			else if (namedArea.getUuid().equals(ErmsTransformer.uuidIrishExclusiveeconomicZone)) { return AREA_IRISH_EXCLUSIVE_ECONOMIC_ZONE; }
@@ -1289,6 +1290,86 @@ public final class PesiTransformer extends ExportTransformerBase{
 			else if (namedArea.getUuid().equals(ErmsTransformer.uuidBalearSea)) { return AREA_BALEAR_SEA; }
 			else if (namedArea.getUuid().equals(ErmsTransformer.uuidTurkishExclusiveEconomicZone)) { return AREA_TURKISH_EXCLUSIVE_ECONOMIC_ZONE; }
 			else if (namedArea.getUuid().equals(ErmsTransformer.uuidDanishExclusiveEconomicZone)) { return AREA_DANISH_EXCLUSIVE_ECONOMIC_ZONE; }
+
+			else if (namedArea.getUuid().equals(ErmsTransformer.uuidAlboranSea)) { return 219; }
+			else if (namedArea.getUuid().equals(ErmsTransformer.uuidAlgeria)) { return 220; }
+			else if (namedArea.getUuid().equals(ErmsTransformer.uuidAngola)) { return 221; }
+			else if (namedArea.getUuid().equals(ErmsTransformer.uuidAustralianExclusiveEconomicZone)) { return 222; }
+			else if (namedArea.getUuid().equals(ErmsTransformer.uuidBahamas)) { return 223; }
+			else if (namedArea.getUuid().equals(ErmsTransformer.uuidBalearicSea)) { return 224; }
+			else if (namedArea.getUuid().equals(ErmsTransformer.uuidBelgium)) { return 225; }
+			else if (namedArea.getUuid().equals(ErmsTransformer.uuidBelize)) { return 226; }
+			else if (namedArea.getUuid().equals(ErmsTransformer.uuidBrazil)) { return 227; }
+			else if (namedArea.getUuid().equals(ErmsTransformer.uuidBulgaria)) { return 228; }
+			else if (namedArea.getUuid().equals(ErmsTransformer.uuidCanada)) { return 229; }
+			else if (namedArea.getUuid().equals(ErmsTransformer.uuidCapeVerde)) { return 230; }
+			else if (namedArea.getUuid().equals(ErmsTransformer.uuidCapeVerdeanExclusiveEconomicZone)) { return 231; }
+			else if (namedArea.getUuid().equals(ErmsTransformer.uuidCaribbeanSea)) { return 210; }
+            else if (namedArea.getUuid().equals(ErmsTransformer.uuidChile)) { return 232; }
+			else if (namedArea.getUuid().equals(ErmsTransformer.uuidColombia)) { return 233; }
+			else if (namedArea.getUuid().equals(ErmsTransformer.uuidCostaRica)) { return 234; }
+			else if (namedArea.getUuid().equals(ErmsTransformer.uuidCroatia)) { return 235; }
+			else if (namedArea.getUuid().equals(ErmsTransformer.uuidCuba)) { return 236; }
+			else if (namedArea.getUuid().equals(ErmsTransformer.uuidDenmark)) { return 292; }
+            else if (namedArea.getUuid().equals(ErmsTransformer.uuidEgypt)) { return 237; }
+			else if (namedArea.getUuid().equals(ErmsTransformer.uuidEstonia)) { return 238; }
+			else if (namedArea.getUuid().equals(ErmsTransformer.uuidFaeroeExclusiveEconomicZone)) { return 239; }
+			else if (namedArea.getUuid().equals(ErmsTransformer.uuidFrance)) { return 240; }
+			else if (namedArea.getUuid().equals(ErmsTransformer.uuidGhana)) { return 241; }
+			else if (namedArea.getUuid().equals(ErmsTransformer.uuidGreece)) { return 242; }
+			else if (namedArea.getUuid().equals(ErmsTransformer.uuidGreekExclusiveEconomicZone)) { return AREA_GREEK_EXCLUSIVE_ECONOMIC_ZONE; }
+            else if (namedArea.getUuid().equals(ErmsTransformer.uuidGulfOfBothnia)) { return 243; }
+			else if (namedArea.getUuid().equals(ErmsTransformer.uuidGulfOfFinland)) { return 244; }
+			else if (namedArea.getUuid().equals(ErmsTransformer.uuidGulfOfGuinea)) { return 245; }
+			else if (namedArea.getUuid().equals(ErmsTransformer.uuidGulfOfMexico)) { return 246; }
+			else if (namedArea.getUuid().equals(ErmsTransformer.uuidGulfOfRiga)) { return 247; }
+			else if (namedArea.getUuid().equals(ErmsTransformer.uuidIceland)) { return 248; }
+			else if (namedArea.getUuid().equals(ErmsTransformer.uuidIonianSea)) { return 249; }
+			else if (namedArea.getUuid().equals(ErmsTransformer.uuidIreland)) { return 250; }
+            else if (namedArea.getUuid().equals(ErmsTransformer.uuidItaly)) { return 251; }
+			else if (namedArea.getUuid().equals(ErmsTransformer.uuidJamaica)) { return 252; }
+			else if (namedArea.getUuid().equals(ErmsTransformer.uuidKattegat)) { return 253; }
+			else if (namedArea.getUuid().equals(ErmsTransformer.uuidLevantineSea)) { return 254; }
+			else if (namedArea.getUuid().equals(ErmsTransformer.uuidLigurianSea)) { return 255; }
+			else if (namedArea.getUuid().equals(ErmsTransformer.uuidMalteseExclusiveEconomicZone)) { return 256; }
+			else if (namedArea.getUuid().equals(ErmsTransformer.uuidMauritanianExclusiveEconomicZone)) { return 257; }
+			else if (namedArea.getUuid().equals(ErmsTransformer.uuidMediterraneanSea_EasternBasin)) { return 258; }
+			else if (namedArea.getUuid().equals(ErmsTransformer.uuidMediterraneanSea_WesternBasin)) { return 259; }
+			else if (namedArea.getUuid().equals(ErmsTransformer.uuidMexico)) { return 260; }
+			else if (namedArea.getUuid().equals(ErmsTransformer.uuidMorocco)) { return 261; }
+			else if (namedArea.getUuid().equals(ErmsTransformer.uuidNetherlands)) { return 262; }
+			else if (namedArea.getUuid().equals(ErmsTransformer.uuidNewZealand)) { return 263; }
+			else if (namedArea.getUuid().equals(ErmsTransformer.uuidNewZealandExclusiveEconomicZone)) { return 264; }
+			else if (namedArea.getUuid().equals(ErmsTransformer.uuidNorthAtlanticOcean)) { return 265; }
+			else if (namedArea.getUuid().equals(ErmsTransformer.uuidNorway)) { return 266; }
+			else if (namedArea.getUuid().equals(ErmsTransformer.uuidPanama)) { return 267; }
+			else if (namedArea.getUuid().equals(ErmsTransformer.uuidPanamanianExclusiveEconomicZone)) { return 268; }
+			else if (namedArea.getUuid().equals(ErmsTransformer.uuidPolishExclusiveEconomicZone)) { return 216; }
+            else if (namedArea.getUuid().equals(ErmsTransformer.uuidPortugal)) { return 269; }
+			else if (namedArea.getUuid().equals(ErmsTransformer.uuidPortugueseExclusiveEconomicZone_Azores)) { return 270; }
+			else if (namedArea.getUuid().equals(ErmsTransformer.uuidPortugueseExclusiveEconomicZone_Madeira)) { return 271; }
+			else if (namedArea.getUuid().equals(ErmsTransformer.uuidRedSea)) { return 272; }
+			else if (namedArea.getUuid().equals(ErmsTransformer.uuidRussianExclusiveEconomicZone)) { return 217; }
+			else if (namedArea.getUuid().equals(ErmsTransformer.uuidSeaOfMarmara)) { return 273; }
+			else if (namedArea.getUuid().equals(ErmsTransformer.uuidSenegaleseExclusiveEconomicZone)) { return 274; }
+			else if (namedArea.getUuid().equals(ErmsTransformer.uuidSingapore)) { return 275; }
+			else if (namedArea.getUuid().equals(ErmsTransformer.uuidSlovenianExclusiveEconomicZone)) { return 276; }
+			else if (namedArea.getUuid().equals(ErmsTransformer.uuidSouthAfrica)) { return 277; }
+			else if (namedArea.getUuid().equals(ErmsTransformer.uuidSouthAfricanExclusiveEconomicZone)) { return 278; }
+			else if (namedArea.getUuid().equals(ErmsTransformer.uuidSouthChinaSea)) { return 279; }
+			else if (namedArea.getUuid().equals(ErmsTransformer.uuidSpain)) { return 280; }
+			else if (namedArea.getUuid().equals(ErmsTransformer.uuidSpanishExclusiveEconomicZone_CanaryIslands)) { return 281; }
+			else if (namedArea.getUuid().equals(ErmsTransformer.uuidSriLankanExclusiveEconomicZone)) { return 282; }
+			else if (namedArea.getUuid().equals(ErmsTransformer.uuidStraitOfGibraltar)) { return 283; }
+			else if (namedArea.getUuid().equals(ErmsTransformer.uuidSweden)) { return 284; }
+			else if (namedArea.getUuid().equals(ErmsTransformer.uuidTunisia)) { return 285; }
+			else if (namedArea.getUuid().equals(ErmsTransformer.uuidTurkey)) { return 286; }
+			else if (namedArea.getUuid().equals(ErmsTransformer.uuidTyrrhenianSea)) { return 287; }
+			else if (namedArea.getUuid().equals(ErmsTransformer.uuidUnitedKingdom)) { return 288; }
+	        else if (namedArea.getUuid().equals(ErmsTransformer.uuidUnitedStates)) { return 291; }
+			else if (namedArea.getUuid().equals(ErmsTransformer.uuidUnitedStatesExclusiveEconomicZone_Alaska)) { return 289; }
+			else if (namedArea.getUuid().equals(ErmsTransformer.uuidVenezuela)) { return 290; }
+
 			else {
 				logger.warn("Unknown NamedArea Area: " + area.getTitleCache());
 			}

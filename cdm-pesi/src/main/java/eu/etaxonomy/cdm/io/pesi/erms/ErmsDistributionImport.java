@@ -61,7 +61,7 @@ public class ErmsDistributionImport
 	@Override
 	protected String getRecordQuery(ErmsImportConfigurator config) {
 		String strRecordQuery =
-			" SELECT dr.*, tu.tu_acctaxon, tu.id " +
+			" SELECT dr.*, ISNULL(ISNULL(tu.tu_acctaxon, tu.tu_accfinal), tu.id) acctaxon" +
 			" FROM dr INNER JOIN tu ON dr.tu_id = tu.id " +
 			" WHERE ( dr.id IN (" + ID_LIST_TOKEN + ") )";
 		return strRecordQuery;
@@ -118,7 +118,7 @@ public class ErmsDistributionImport
 			Set<String> areaIdSet = new HashSet<>();
 			Set<String> sourceIdSet = new HashSet<>();
 			while (rs.next()){
-				handleForeignKey(rs, taxonIdSet,"tu_acctaxon" );
+				handleForeignKey(rs, taxonIdSet,"acctaxon" );
 				handleForeignKey(rs, areaIdSet, "gu_id");
 				handleForeignKey(rs, sourceIdSet, "source_id");
 			}
