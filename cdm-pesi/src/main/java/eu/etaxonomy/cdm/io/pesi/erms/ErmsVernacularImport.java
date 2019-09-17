@@ -138,17 +138,15 @@ public class ErmsVernacularImport  extends ErmsImportBase<CommonTaxonName> {
         IInputTransformer transformer = state.getTransformer();
         String id639_1 = rs.getString("639_1");
         String id639_2 = rs.getString("639_2");
-        String id639_3 = rs.getString("639_3");
         String lanId = rs.getString("LanID");
 
-        if (id639_1 != null && Language.getLanguageByIsoCode(id639_1)!= null){
+        if (isNotBlank(id639_1) && Language.getLanguageByIsoCode(id639_1)!= null){
             languageMap.put(lanId, Language.getLanguageByIsoCode(id639_1));
-        }else if (id639_2 != null && Language.getLanguageByIsoCode(id639_2)!= null){
+        }else if (isNotBlank(id639_2) && Language.getLanguageByIsoCode(id639_2)!= null){
             languageMap.put(lanId, Language.getLanguageByIsoCode(id639_2));
         }else{
-            Language language = null;
             try {
-                language = transformer.getLanguageByKey(lanId);
+                Language language = transformer.getLanguageByKey(lanId);
                 persistLanguage(language);
                 if (language == null || language.equals(Language.UNDETERMINED())){
                     UUID uuidLang = transformer.getLanguageUuid(lanId);
@@ -158,6 +156,8 @@ public class ErmsVernacularImport  extends ErmsImportBase<CommonTaxonName> {
                     if (language == null || language.equals(Language.UNDETERMINED() )){
                         logger.warn("Language undefined: " + lanId);
                     }
+                }if (language != null){
+                    languageMap.put(lanId, language);
                 }
             } catch (IllegalArgumentException | UndefinedTransformerMethodException e) {
                 e.printStackTrace();
