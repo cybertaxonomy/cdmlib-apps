@@ -125,6 +125,8 @@ public class PesiDescriptionExport extends PesiExportBase {
 			// Stores whether this invoke was successful or not.
 			boolean success = true;
 
+			success &= doDelete(state);
+
 			// Get specific mappings: (CDM) DescriptionElement -> (PESI) Note
 			PesiExportMapping notesMapping = getNotesMapping();
 			notesMapping.initialize(state);
@@ -606,26 +608,49 @@ public class PesiDescriptionExport extends PesiExportBase {
 	 * @return Whether the delete operation was successful or not.
 	 */
 	protected boolean doDelete(PesiExportState state) {
-		PesiExportConfigurator pesiConfig = state.getConfig();
-
-		String sql;
-		Source destination =  pesiConfig.getDestination();
+	    Source destination = state.getConfig().getDestination();
 
 		// Clear NoteSource
-		sql = "DELETE FROM NoteSource";
-		destination.setQuery(sql);
+		String sql = "DELETE FROM NoteSource";
+//		destination.setQuery(sql);
 		destination.update(sql);
 
 		// Clear Note
-		sql = "DELETE FROM " + dbNoteTableName;
-		destination.setQuery(sql);
+		sql = "DELETE FROM Note "; // + dbNoteTableName;
+//		destination.setQuery(sql);
 		destination.update(sql);
-		return true;
-	}
 
-	@Override
-	protected boolean isIgnore(PesiExportState state) {
-		return ! state.getConfig().isDoDescription();
+	    // Clear OccurrenceSource
+        sql = "DELETE FROM OccurrenceSource ";
+//        destination.setQuery(sql);
+        destination.update(sql);
+
+        // Clear Occurrence
+        sql = "DELETE FROM Occurrence ";
+//        destination.setQuery(sql);
+        destination.update(sql);
+
+        // Clear Image
+        sql = "DELETE FROM Image ";
+//        destination.setQuery(sql);
+        destination.update(sql);
+
+        // Clear CommonName
+        sql = "DELETE FROM CommonName ";
+//        destination.setQuery(sql);
+        destination.update(sql);
+
+        // Clear CommonName
+        sql = "DELETE FROM AdditionalTaxonSource WHERE SourceFk >= 2000000 ";
+//        destination.setQuery(sql);
+        destination.update(sql);
+
+        // Clear Sources for AdditionalTaxonSource
+        sql = "DELETE FROM Source WHERE SourceId >= 2000000 ";
+//        destination.setQuery(sql);
+        destination.update(sql);
+
+		return true;
 	}
 
 	/**
