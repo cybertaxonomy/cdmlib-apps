@@ -137,7 +137,9 @@ public class PesiSourceExport extends PesiExportBase {
 
 				// Start transaction
 				txStatus = startTransaction(true);
-				logger.info("Started new transaction. Fetching some " + pluralString + " (max: " + limit + ") ...");
+				if (logger.isDebugEnabled()) {
+                    logger.debug("Started new transaction. Fetching some " + pluralString + " (max: " + limit + ") ...");
+                }
 			}
 			if (list.size() == 0) {
 				logger.info("No " + pluralString + " left to fetch.");

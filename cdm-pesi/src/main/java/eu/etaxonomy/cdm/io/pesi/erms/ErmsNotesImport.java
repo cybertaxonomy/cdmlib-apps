@@ -33,7 +33,6 @@ import eu.etaxonomy.cdm.model.common.Language;
 import eu.etaxonomy.cdm.model.description.TextData;
 import eu.etaxonomy.cdm.model.taxon.TaxonBase;
 
-
 /**
  * @author a.mueller
  * @since 20.02.2010
@@ -68,7 +67,7 @@ public class ErmsNotesImport  extends ErmsImportBase<Annotation> {
 	@Override
     protected DbImportMapping<ErmsImportState, ErmsImportConfigurator> getMapping() {
 		if (mapping == null){
-			mapping = new DbImportMapping<ErmsImportState, ErmsImportConfigurator>();
+			mapping = new DbImportMapping<>();
 			mapping.addMapper(DbImportTextDataCreationMapper.NewInstance("id", NOTES_NAMESPACE, "tu_id", TAXON_NAMESPACE));
 			mapping.addMapper(DbImportMultiLanguageTextMapper.NewInstance("note", "lan_id", LANGUAGE_NAMESPACE, "Text"));
 			Language notesNoteLanguage = null;
@@ -78,24 +77,23 @@ public class ErmsNotesImport  extends ErmsImportBase<Annotation> {
 		return mapping;
 	}
 
-
 	@Override
 	public Map<Object, Map<String, ? extends CdmBase>> getRelatedObjectsForPartition(ResultSet rs, ErmsImportState state) {
 		String nameSpace;
 		Class<?> cdmClass;
 		Set<String> idSet;
-		Map<Object, Map<String, ? extends CdmBase>> result = new HashMap<Object, Map<String, ? extends CdmBase>>();
+		Map<Object, Map<String, ? extends CdmBase>> result = new HashMap<>();
 
 		try{
-			Set<String> taxonIdSet = new HashSet<String>();
-			Set<String> languageIdSet = new HashSet<String>();
+			Set<String> taxonIdSet = new HashSet<>();
+			Set<String> languageIdSet = new HashSet<>();
 			while (rs.next()){
 				handleForeignKey(rs, taxonIdSet, "tu_id");
 				handleForeignKey(rs, languageIdSet, "lan_id");
 			}
 
 			//taxon map
-			nameSpace = ErmsTaxonImport.TAXON_NAMESPACE;
+			nameSpace = ErmsImportBase.TAXON_NAMESPACE;
 			cdmClass = TaxonBase.class;
 			idSet = taxonIdSet;
 			Map<String, TaxonBase<?>> taxonMap = (Map<String, TaxonBase<?>>)getCommonService().getSourcedObjectsByIdInSource(cdmClass, idSet, nameSpace);
@@ -103,10 +101,9 @@ public class ErmsNotesImport  extends ErmsImportBase<Annotation> {
 
 			//language map
 			nameSpace = LANGUAGE_NAMESPACE;
-			Map<String, Language> languageMap = new HashMap<String, Language>();
+			Map<String, Language> languageMap = new HashMap<>();
 			ErmsTransformer transformer = new ErmsTransformer();
 			for (String lanAbbrev: languageIdSet){
-
 				Language language = transformer.getLanguageByKey(lanAbbrev);
 				languageMap.put(lanAbbrev, language);
 			}

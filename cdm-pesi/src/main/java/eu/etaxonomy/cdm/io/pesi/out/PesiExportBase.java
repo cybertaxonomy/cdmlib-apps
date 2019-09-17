@@ -63,9 +63,8 @@ public abstract class PesiExportBase
 		super();
 	}
 
-
 	protected <CLASS extends TaxonBase> List<CLASS> getNextTaxonPartition(Class<CLASS> clazz, int limit, int partitionCount, List<String> propertyPath) {
-		List<OrderHint> orderHints = new ArrayList<OrderHint>();
+		List<OrderHint> orderHints = new ArrayList<>();
 		orderHints.add(new OrderHint("id", OrderHint.SortOrder.ASCENDING ));
 
 		List<CLASS> list = getTaxonService().list(clazz, limit, partitionCount * limit, orderHints, propertyPath);
@@ -87,7 +86,7 @@ public abstract class PesiExportBase
 	}
 
 	protected List<TaxonNameDescription> getNextNameDescriptionPartition(int limit, int partitionCount, List<String> propertyPath) {
-		List<OrderHint> orderHints = new ArrayList<OrderHint>();
+		List<OrderHint> orderHints = new ArrayList<>();
 		orderHints.add(new OrderHint("id", OrderHint.SortOrder.ASCENDING ));
 		Pager<TaxonNameDescription> l = getDescriptionService().getTaxonNameDescriptions(null, limit, partitionCount, propertyPath);
 		List<TaxonNameDescription> list = l.getRecords();
@@ -105,7 +104,6 @@ public abstract class PesiExportBase
 		return list;
 	}
 
-
 	private boolean isPesiNameDescriptionTaxon(TaxonNameDescription nameDescription) {
 		TaxonName name = nameDescription.getTaxonName();
 		if (isPurePesiName(name)){
@@ -120,7 +118,6 @@ public abstract class PesiExportBase
 		}
 		return false;
 	}
-
 
 	/**
 	 * Returns the next list of pure names. If finished result will be null. If list is empty there may be result in further partitions.
@@ -144,7 +141,8 @@ public abstract class PesiExportBase
 		return list;
 	}
 
-	protected <CLASS extends RelationshipBase> List<CLASS> getNextNameRelationshipPartition(Class<CLASS> clazz, int limit, int partitionCount, List<String> propertyPath) {
+	protected <CLASS extends RelationshipBase> List<CLASS> getNextNameRelationshipPartition(
+	                Class<CLASS> clazz, int limit, int partitionCount, List<String> propertyPath) {
 		List<CLASS> result = new ArrayList<>();
 		String[] propertyPaths = null;
 		String orderHints = null;

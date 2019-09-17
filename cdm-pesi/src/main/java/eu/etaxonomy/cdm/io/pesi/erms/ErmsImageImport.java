@@ -74,11 +74,11 @@ public class ErmsImageImport  extends ErmsImportBase<TextData> {
 	@Override
 	protected DbImportMapping<ErmsImportState, ErmsImportConfigurator> getMapping() {
 		if (mapping == null){
-			mapping = new DbImportMapping<ErmsImportState, ErmsImportConfigurator>();
+			mapping = new DbImportMapping<>();
 			//TODO do we need to add to TaxonNameBase too?
 			String idAttribute = null;
 			boolean isOneTextData = true;
-			mapping.addMapper(DbImportImageCreationMapper.NewInstance(idAttribute, IMAGE_NAMESPACE, "tu_id", ErmsTaxonImport.TAXON_NAMESPACE, isOneTextData));
+			mapping.addMapper(DbImportImageCreationMapper.NewInstance(idAttribute, IMAGE_NAMESPACE, "tu_id", ErmsImportBase.TAXON_NAMESPACE, isOneTextData));
 			mapping.addMapper(DbImportMediaMapper.NewInstance("img_url", "img_thumb"));
 		}
 		return mapping;
@@ -113,7 +113,6 @@ public class ErmsImageImport  extends ErmsImportBase<TextData> {
 
 	@Override
 	protected int divideCountBy() { return devideCountBy;}
-
 
 	@Override
 	protected boolean doCheck(ErmsImportState state){

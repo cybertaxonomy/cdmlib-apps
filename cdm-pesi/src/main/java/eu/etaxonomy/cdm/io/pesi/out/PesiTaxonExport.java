@@ -91,6 +91,7 @@ import eu.etaxonomy.cdm.strategy.cache.name.ZooNameNoMarkerCacheStrategy;
  */
 @Component
 public class PesiTaxonExport extends PesiExportBase {
+
     private static final long serialVersionUID = -3412722058790200078L;
     private static final Logger logger = Logger.getLogger(PesiTaxonExport.class);
 
@@ -255,16 +256,16 @@ public class PesiTaxonExport extends PesiExportBase {
 		// Get the limit for objects to save within a single transaction.
 		int limit = state.getConfig().getLimitSave();
 
-
 		logger.info("PHASE 1: Export Taxa...limit is " + limit);
 		// Start transaction
 		TransactionStatus txStatus = startTransaction(true);
-		logger.info("Started new transaction. Fetching some " + pluralString + " (max: " + limit + ") ...");
+		if (logger.isDebugEnabled()) {
+            logger.info("Started new transaction. Fetching some " + pluralString + " (max: " + limit + ") ...");
+            logger.info("Taking snapshot at the beginning of phase 1 of taxonExport");
+            //ProfilerController.memorySnapshot();
+        }
 
 		int partitionCount = 0;
-
-		logger.info("Taking snapshot at the beginning of phase 1 of taxonExport");
-		//ProfilerController.memorySnapshot();
 		while ((list = getNextTaxonPartition(null, limit, partitionCount++, null)) != null   ) {
 
 			logger.debug("Fetched " + list.size() + " " + pluralString + ". Exporting...");
@@ -324,7 +325,9 @@ public class PesiTaxonExport extends PesiExportBase {
 			*/
 			// Start transaction
 			txStatus = startTransaction(true);
-			logger.info("Started new transaction. Fetching some " + pluralString + " (max: " + limit + ") ...");
+			if (logger.isDebugEnabled()) {
+                logger.info("Started new transaction. Fetching some " + pluralString + " (max: " + limit + ") ...");
+            }
 
 		}
 		logger.info("No " + pluralString + " left to fetch.");
@@ -401,7 +404,6 @@ public class PesiTaxonExport extends PesiExportBase {
 		}
 	}
 
-
 	/**
 	 * 2nd Round: Add ParentTaxonFk to each taxon and add Biota if not exists
 	 * @param state
@@ -431,7 +433,9 @@ public class PesiTaxonExport extends PesiExportBase {
 //		ProfilerController.memorySnapshot();
 		while ((list = getNextTaxonPartition(Taxon.class, limit, partitionCount++, null)) != null   ) {
 
-			logger.info("Fetched " + list.size() + " " + pluralString + ". Exporting...");
+			if(logger.isDebugEnabled()) {
+                logger.info("Fetched " + list.size() + " " + pluralString + ". Exporting...");
+            }
 			for (Taxon taxon : list) {
 				for (TaxonNode node : taxon.getTaxonNodes()){
 					doCount(count++, modCount, pluralString);
@@ -446,12 +450,13 @@ public class PesiTaxonExport extends PesiExportBase {
 
 			// Commit transaction
 			commitTransaction(txStatus);
-			logger.info("Exported " + (count - pastCount) + " " + pluralString + ". Total: " + count);
+			logger.info("Exported " + (count - pastCount) + " " + pluralString + ". Total: " + count + " (Phase 2)");
 			pastCount = count;
 			// Start transaction
 			txStatus = startTransaction(true);
-			logger.info("Started new transaction. Fetching some " + pluralString + " (max: " + limit + ") ...");
-
+			if (logger.isDebugEnabled()){
+			    logger.info("Started new transaction. Fetching some " + pluralString + " (max: " + limit + ") ...");
+			}
 		}
 		logger.info("No " + pluralString + " left to fetch.");
 
@@ -493,6 +498,8 @@ public class PesiTaxonExport extends PesiExportBase {
 		state.getConfig().getDestination().update(sql);
 
 		state.getConfig().getDestination().update("EXEC dbo.recalculateallstoredpaths");
+
+		logger.info("PHASE 4: Make TreeIndex DONE");
 
 		return success;
 
@@ -635,11 +642,15 @@ public class PesiTaxonExport extends PesiExportBase {
 
 		// Start transaction
 		TransactionStatus txStatus = startTransaction(true);
-		logger.info("Started new transaction for rank, kingdom, typeName, expertFk and speciesExpertFK. Fetching some " + pluralString + " (max: " + limit + ") ...");
+		if (logger.isDebugEnabled()) {
+            logger.info("Started new transaction for rank, kingdom, typeName, expertFk and speciesExpertFK. Fetching some " + pluralString + " (max: " + limit + ") ...");
+        }
 		int partitionCount = 0;
 		while ((list = getNextTaxonPartition(TaxonBase.class, limit, partitionCount++, null)) != null) {
 
-			logger.debug("Fetched " + list.size() + " " + pluralString + ". Exporting...");
+			if (logger.isDebugEnabled()) {
+                logger.debug("Fetched " + list.size() + " " + pluralString + ". Exporting...");
+            }
 			for (TaxonBase<?> taxon : list) {
 				TaxonName taxonName = CdmBase.deproxy(taxon.getName());
 				// Determine expertFk
@@ -664,22 +675,26 @@ public class PesiTaxonExport extends PesiExportBase {
 
 			// Commit transaction
 			commitTransaction(txStatus);
-			logger.debug("Committed transaction.");
-			logger.info("Exported " + (count - pastCount) + " " + pluralString + ". Total: " + count);
+			if (logger.isDebugEnabled()){logger.debug("Committed transaction.");}
+			logger.info("Exported " + (count - pastCount) + " " + pluralString + ". Total: " + count + " (Phase 3)");
 			pastCount = count;
 
 			// Start transaction
 			txStatus = startTransaction(true);
-			logger.info("Started new transaction for rank, kingdom, typeName, expertFk and speciesExpertFK. Fetching some " + pluralString + " (max: " + limit + ") ...");
+			if (logger.isDebugEnabled()) {
+                logger.info("Started new transaction for rank, kingdom, typeName, expertFk and speciesExpertFK. Fetching some " + pluralString + " (max: " + limit + ") ...");
+            }
 		}
 		logger.info("No " + pluralString + " left to fetch.");
 
 		// Commit transaction
 		commitTransaction(txStatus);
 
-		logger.debug("Committed transaction.");
-		logger.debug("Try to take snapshot at the end of phase 3 of taxonExport, number of partitions: " + partitionCount);
-		//ProfilerController.memorySnapshot();
+		if (logger.isDebugEnabled()){
+		    logger.debug("Committed transaction.");
+		    logger.debug("Try to take snapshot at the end of phase 3 of taxonExport, number of partitions: " + partitionCount);
+		    //ProfilerController.memorySnapshot();
+		}
 		return success;
 	}
 
@@ -755,21 +770,25 @@ public class PesiTaxonExport extends PesiExportBase {
 
 		// Start transaction
 		TransactionStatus txStatus = startTransaction(true);
-		logger.info("Started new transaction. Fetching some " + parentPluralString + " first (max: " + limit + ") ...");
+		if (logger.isDebugEnabled()) {
+            logger.info("Started new transaction. Fetching some " + parentPluralString + " first (max: " + limit + ") ...");
+        }
 		List<TaxonBase> taxonList = null;
 
 		while ((taxonList  = getTaxonService().listTaxaByName(Taxon.class, "*", "*", "*", "*", "*", Rank.SPECIES(), pageSize, pageNumber)).size() > 0) {
 
 		    Map<Integer, TaxonName> inferredSynonymsDataToBeSaved = new HashMap<>();
 
-			logger.info("Fetched " + taxonList.size() + " " + parentPluralString + ". Exporting...");
+			if (logger.isDebugEnabled()) {
+                logger.info("Fetched " + taxonList.size() + " " + parentPluralString + ". Exporting...");
+            }
 			inferredSynonymsDataToBeSaved.putAll(createInferredSynonymsForTaxonList(state, mapping,
 					synRelMapping, taxonList));
 
 			doCount(count += taxonList.size(), modCount, inferredSynonymPluralString);
 			// Commit transaction
 			commitTransaction(txStatus);
-			logger.debug("Committed transaction.");
+			if (logger.isDebugEnabled()){logger.debug("Committed transaction.");}
 			logger.info("Exported " + (taxonList.size()) + " " + inferredSynonymPluralString + ". Total: " + count);
 			//pastCount = count;
 
@@ -782,7 +801,9 @@ public class PesiTaxonExport extends PesiExportBase {
 
 			// Start transaction
 			txStatus = startTransaction(true);
-			logger.info("Started new transaction. Fetching some " + parentPluralString + " first (max: " + limit + ") ...");
+			if (logger.isDebugEnabled()) {
+                logger.info("Started new transaction. Fetching some " + parentPluralString + " first (max: " + limit + ") ...");
+            }
 
 			// Increment pageNumber
 			pageNumber++;
@@ -2394,7 +2415,6 @@ public class PesiTaxonExport extends PesiExportBase {
 			}
 		}
 		return bitSet;
-
 	}
 
 	protected static TaxonNameDefaultCacheStrategy getCacheStrategy(TaxonName taxonName) {
