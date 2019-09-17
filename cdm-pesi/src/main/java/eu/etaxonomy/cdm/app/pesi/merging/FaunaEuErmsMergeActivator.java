@@ -19,7 +19,6 @@ import eu.etaxonomy.cdm.api.application.CdmApplicationController;
 import eu.etaxonomy.cdm.api.service.exception.ReferencedObjectUndeletableException;
 import eu.etaxonomy.cdm.api.service.pager.Pager;
 import eu.etaxonomy.cdm.app.common.CdmDestinations;
-import eu.etaxonomy.cdm.app.common.TestDatabase;
 import eu.etaxonomy.cdm.database.DbSchemaValidation;
 import eu.etaxonomy.cdm.database.ICdmDataSource;
 import eu.etaxonomy.cdm.hibernate.HibernateProxyHelper;
@@ -324,7 +323,7 @@ public class FaunaEuErmsMergeActivator {
 				}
 				if (createNewRelationship){
 					//if relationship does not exist, create a new one with erms synonym
-					taxonErms.getName().addRelationshipFromName(relFauEu.getFromName(), relFauEu.getType(), relFauEu.getRuleConsidered());
+					taxonErms.getName().addRelationshipFromName(relFauEu.getFromName(), relFauEu.getType(), relFauEu.getRuleConsidered(), null);
 				}
 			}
 		}
