@@ -238,6 +238,7 @@ public final class ErmsTransformer extends InputTransformerBase {
 	public static final UUID uuidExtCompleteness = UUID.fromString("141f4816-78c0-4da1-8a79-5c9031e6b149");
 	public static final UUID uuidExtUnacceptReason = UUID.fromString("3883fb79-374d-4120-964b-9666307e3567");
 	public static final UUID uuidExtQualityStatus = UUID.fromString("4de84c6e-41bd-4a0e-894d-77e9ec3103d2");
+	public static final UUID uuidExtAuthor = UUID.fromString("85387300-281f-47bc-8499-7008075dc8e0");
 
 	//MarkerTypes
 	public static final UUID uuidMarkerMarine = UUID.fromString("5da78a28-5668-4ed5-b788-10c69343f91e");

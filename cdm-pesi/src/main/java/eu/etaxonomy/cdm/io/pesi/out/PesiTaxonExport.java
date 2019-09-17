@@ -13,6 +13,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Types;
+import java.util.ArrayList;
 import java.util.BitSet;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -309,10 +310,8 @@ public class PesiTaxonExport extends PesiExportBase {
 					additionalSourceMapping.invoke(taxon);
 				}
 
-				validatePhaseOne(taxon, nvn);
-				taxon = null;
-				nvn = null;
-				taxonName = null;
+				//TODO switch on again, leads to some warnings in ERMS for taxa of not correctly handled kingdoms
+//				validatePhaseOne(taxon, nvn);
 			}
 
 			// Commit transaction
@@ -1611,14 +1610,21 @@ public class PesiTaxonExport extends PesiExportBase {
 		if (taxonName == null) {
 			return null;
 		}else{
-		    TaxonName nvn = CdmBase.deproxy(taxonName);
+		    taxonName = CdmBase.deproxy(taxonName);
 			INonViralNameCacheStrategy cacheStrategy = getCacheStrategy(taxonName);
 			HTMLTagRules tagRules = new HTMLTagRules().
 					addRule(TagEnum.name, "i").
 					addRule(TagEnum.nomStatus, "@status@");
 
-			String result = cacheStrategy.getFullTitleCache(nvn, tagRules);
-			cacheStrategy = null;
+			String result;
+			if (getSources(taxonName).get(PesiTransformer.SOURCE_ERMS)){
+			    result = cacheStrategy.getTitleCache(taxonName, tagRules);  //according to SQL script (also in ERMS sources are not abbreviated)
+			}else if (getSources(taxonName).get(PesiTransformer.SOURCE_EM)){
+			    result = cacheStrategy.getFullTitleCache(taxonName, tagRules);
+			}else{
+			    //TODO define for FE + IF and for multiple sources
+			    result = cacheStrategy.getFullTitleCache(taxonName, tagRules);
+			}
 			return result.replaceAll(",?\\<@status@\\>.*\\</@status@\\>", "");
 		}
 	}
@@ -1710,14 +1716,18 @@ public class PesiTaxonExport extends PesiExportBase {
 	 * @param taxonName
 	 * @return
 	 */
+	static boolean isFirstAbbrevTitle = true;
 	@SuppressWarnings("unused")
 	private static String getSourceNameCache(TaxonName taxonName) {
 		if (taxonName != null){
 			Reference nomRef = taxonName.getNomenclaturalReference();
-			if (nomRef != null){
-			    //#5388 is definetely not the correct ticket number
-			    logger.warn("Semantics of getAbbrevTitleCache has changed. Please check if output is still correct. See #5388");
-				return nomRef.getAbbrevTitleCache();
+			if (nomRef != null ){
+			    if (isFirstAbbrevTitle){
+			        //#5388 is definetely not the correct ticket number
+			        logger.warn("Semantics of getAbbrevTitleCache has changed. Please check if output is still correct. See #5388");
+			        isFirstAbbrevTitle = false;
+			    }
+			    return nomRef.getAbbrevTitleCache();
 			}
 		}
 		return null;
@@ -1757,10 +1767,27 @@ public class PesiTaxonExport extends PesiExportBase {
 		if (ref == null){
 			return null;
 		}
-		if (! ref.isProtectedAbbrevTitleCache()){
-			ref.setAbbrevTitleCache(null, false);  //to remove a false cache
+		String result = null;
+		BitSet sources = getSources(taxonName);
+		int len = sources.length();
+		if(sources.get(PesiTransformer.SOURCE_EM)){
+		    if (! ref.isProtectedAbbrevTitleCache()){
+		        ref.setAbbrevTitleCache(null, false);  //to remove a false cache
+		    }
+		    result = ref.getNomenclaturalCitation(taxonName.getNomenclaturalMicroReference());
+		}else if(sources.get(PesiTransformer.SOURCE_FE)||sources.get(PesiTransformer.SOURCE_IF) ){
+            //TODO still need to check if correct for FE + IF
+		    if (! ref.isProtectedAbbrevTitleCache()){
+                ref.setAbbrevTitleCache(null, false);  //to remove a false cache
+            }
+            result = ref.getNomenclaturalCitation(taxonName.getNomenclaturalMicroReference());
+            return result;   // according to SQL script
+		}else if(sources.get(PesiTransformer.SOURCE_ERMS)) {
+            //result = null; //according to SQL script
+		}else{
+		    logger.warn("Source not yet supported");
 		}
-		return ref.getNomenclaturalCitation(taxonName.getNomenclaturalMicroReference());
+		return result;
 	}
 
 
