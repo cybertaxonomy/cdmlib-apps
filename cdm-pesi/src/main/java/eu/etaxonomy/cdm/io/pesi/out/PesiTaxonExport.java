@@ -698,7 +698,7 @@ public class PesiTaxonExport extends PesiExportBase {
 		return success;
 	}
 
-    private Integer findKingdomIdFromTreeIndex(TaxonBase<?> taxonBase,PesiExportState state) {
+    private static Integer findKingdomIdFromTreeIndex(TaxonBase<?> taxonBase,PesiExportState state) {
         Taxon taxon;
         if (taxonBase instanceof Synonym){
             taxon = ((Synonym) taxonBase).getAcceptedTaxon();
@@ -726,6 +726,9 @@ public class PesiTaxonExport extends PesiExportBase {
                         String treeIndexKingdom = matcher.group(0);
                         kingdomID = state.getTreeIndexKingdomMap().get(treeIndexKingdom);
                     }
+                }
+                if(Rank.DOMAIN().equals(taxon.getName().getRank())){
+                    return null;
                 }
                 if(kingdomID == null){
                     logger.warn("Kingdom could not be defined for treeindex " + treeIndex);
@@ -881,8 +884,7 @@ public class PesiTaxonExport extends PesiExportBase {
 				TaxonName taxonName = acceptedTaxon.getName();
 
 				if (taxonName.isZoological()) {
-					NomenclaturalCode nomenclaturalCode  = taxonName.getNameType();
-					kingdomFk = PesiTransformer.nomenclaturalCode2Kingdom(nomenclaturalCode);
+					kingdomFk = findKingdomIdFromTreeIndex(taxonBase, state);
 
 					Set<TaxonNode> taxonNodes = acceptedTaxon.getTaxonNodes();
 					TaxonNode singleNode = null;
@@ -1316,9 +1318,11 @@ public class PesiTaxonExport extends PesiExportBase {
 	 */
 	private boolean invokeRankDataAndTypeNameFkAndKingdomFk(TaxonName taxonName, NomenclaturalCode nomenclaturalCode,
 			Integer taxonFk, Integer typeNameFk, Integer kingdomFk, PesiExportState state) {
-		try {
+
+	    Integer rankFk = null;
+	    try {
 			int index = 1;
-			Integer rankFk = getRankFk(taxonName, nomenclaturalCode);
+			rankFk = getRankFk(taxonName, nomenclaturalCode);
 			if (rankFk != null) {
 				rankTypeExpertsUpdateStmt.setInt(index++, rankFk);
 			} else {
@@ -1488,15 +1492,43 @@ public class PesiTaxonExport extends PesiExportBase {
 	 * @see MethodMapper
 	 */
 	private static String getRankCache(TaxonName taxonName, NomenclaturalCode nomenclaturalCode, PesiExportState state) {
-		if (nomenclaturalCode != null) {
-			return state.getTransformer().getCacheByRankAndKingdom(taxonName.getRank(), PesiTransformer.nomenclaturalCode2Kingdom(nomenclaturalCode));
-		}else{
+	    List<TaxonNode> nodes = getTaxonNodes(taxonName);
+	    if (Rank.DOMAIN().equals(taxonName.getRank())){
+            return state.getTransformer().getCacheByRankAndKingdom(Rank.DOMAIN(), null);
+        }else if (!nodes.isEmpty()) {
+            return state.getTransformer().getCacheByRankAndKingdom(taxonName.getRank(), findKingdomIdFromTreeIndex(nodes.iterator().next().getTaxon(), state)); //PesiTransformer.nomenclaturalCode2Kingdom(nomenclaturalCode));
+        }else if (nomenclaturalCode != null){
+            return state.getTransformer().getCacheByRankAndKingdom(taxonName.getRank(), PesiTransformer.nomenclaturalCode2Kingdom(nomenclaturalCode));
+        }else{
 			logger.warn("No nomenclatural code defined for name " + taxonName.getUuid());
 			return null;
 		}
 	}
 
 	/**
+     * @param taxonName
+     * @return
+     */
+    private static List<TaxonNode> getTaxonNodes(TaxonName taxonName) {
+        List<TaxonNode> result = new ArrayList<>();
+        for (TaxonBase<?> tb:taxonName.getTaxonBases()){
+            Taxon taxon;
+            //TODO handle ERMS taxon relationships
+            if (tb.isInstanceOf(Taxon.class)){
+                taxon = CdmBase.deproxy(tb, Taxon.class);
+            }else{
+                taxon = CdmBase.deproxy(tb, Synonym.class).getAcceptedTaxon();
+            }
+            if (taxon != null){
+                for (TaxonNode node : taxon.getTaxonNodes()){
+                    result.add(node);
+                }
+            }
+        }
+        return result;
+    }
+
+    /**
 	 * Returns the <code>DisplayName</code> attribute.
 	 * @param taxon The {@link TaxonBase Taxon}.
 	 * @return The <code>DisplayName</code> attribute.
