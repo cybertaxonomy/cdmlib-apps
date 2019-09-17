@@ -29,7 +29,6 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.springframework.stereotype.Component;
 
-import eu.etaxonomy.cdm.io.common.IImportConfigurator;
 import eu.etaxonomy.cdm.io.common.IOValidator;
 import eu.etaxonomy.cdm.io.common.ResultSetPartitioner;
 import eu.etaxonomy.cdm.io.common.mapping.DbImportMapping;
@@ -227,7 +226,7 @@ public class ErmsSourceUsesImport  extends ErmsImportBase<CommonTaxonName> {
 			TextData element = TextData.NewInstance(sourceOfSynonymyFeature);
 			getTaxonDescription(taxon, false, true).addElement(element);
 			element.addPrimaryTaxonomicSource(ref, strPageNr);
-		}else if (taxonBase.isInstanceOf(Taxon.class)){
+		}else if (taxonBase.isInstanceOf(Synonym.class)){
 			Synonym synonym =CdmBase.deproxy(taxonBase, Synonym.class);
 			if (synonym.getSec()!= null){
 			    logger.warn("Synonym has sec reference already. Source of synonym can not be set: " + strTaxonId);
@@ -362,8 +361,10 @@ public class ErmsSourceUsesImport  extends ErmsImportBase<CommonTaxonName> {
 
 	@Override
     protected boolean isIgnore(ErmsImportState state){
-		boolean result = state.getConfig().getDoReferences() != IImportConfigurator.DO_REFERENCES.ALL;
-		result |= ! state.getConfig().isDoTaxa();
+		boolean result;
+//		result = state.getConfig().getDoReferences() != IImportConfigurator.DO_REFERENCES.ALL;
+//		result |= ! state.getConfig().isDoTaxa();
+		result = ! state.getConfig().isDoTaxa();
 		return result;
 	}
 }

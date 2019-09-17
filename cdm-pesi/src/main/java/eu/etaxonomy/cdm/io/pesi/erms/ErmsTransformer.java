@@ -214,6 +214,15 @@ public final class ErmsTransformer extends InputTransformerBase {
 	public static final UUID uuidValidity = UUID.fromString("bd066f25-935b-4b4e-a2eb-3fbfcd5e608f");
 	public static final UUID uuidIdentification = UUID.fromString("dec3cd5b-0690-4035-825d-bda9aee96bc1");
 	public static final UUID uuidSynonymy = UUID.fromString("f5c8be5f-8d33-47df-838e-55fc7999fc81");
+	public static final UUID uuidSourceOfSynonymy = UUID.fromString("cf217b3f-360a-42e4-b447-ec87db1d3806");
+	public static final UUID uuidDepthRange = UUID.fromString("e5c799a9-87ac-4171-8dfb-8c5c39f9f635");
+	public static final UUID uuidFossilRange = UUID.fromString("5c68f42a-5c66-4e2a-8754-8922be104f6e");
+    public static final UUID uuidGrammaticalGender = UUID.fromString("ec1ca718-1ef0-41de-87e7-d6b464bf0c24");
+    public static final UUID uuidIntroducedSpeciesRemark = UUID.fromString("c60327b7-3333-436f-9aea-c02acaffdf94");
+    public static final UUID uuidAlienSpecies = UUID.fromString("03cd2316-e428-45bd-b336-c67137bbcd6a");
+    public static final UUID uuidDimensions = UUID.fromString("e2ffd374-b147-4014-a3aa-05394448e59f");
+    public static final UUID uuidDiet = UUID.fromString("17e22a59-6fea-4eb2-8e0c-4578f633cd0a");
+    public static final UUID uuidReproduction = UUID.fromString("fffdc170-db89-4ef6-9d21-f9dff19b4fb4");
 
 	//extension type uuids
 	public static final UUID uuidErmsTaxonStatus = UUID.fromString("859eee7f-5240-48a0-8edc-7af63557fa6e");
@@ -585,7 +594,17 @@ public final class ErmsTransformer extends InputTransformerBase {
 		}else if (key.equalsIgnoreCase("Validity")){return uuidValidity;
 		}else if (key.equalsIgnoreCase("Identification")){return uuidIdentification;
 		}else if (key.equalsIgnoreCase("Synonymy")){return uuidSynonymy;
+		}else if (key.equalsIgnoreCase("Depth range")){return uuidDepthRange;
+	    }else if (key.equalsIgnoreCase("Fossil range")){return uuidFossilRange;
+	    }else if (key.equalsIgnoreCase("Grammatical gender")){return uuidGrammaticalGender;
+	    }else if (key.equalsIgnoreCase("Introduced species remark")){return uuidIntroducedSpeciesRemark;
+	    }else if (key.equalsIgnoreCase("Alien species")){return uuidAlienSpecies;
+	    }else if (key.equalsIgnoreCase("Dimensions")){return uuidDimensions;
+	    }else if (key.equalsIgnoreCase("Diet")){return uuidDiet;
+	    }else if (key.equalsIgnoreCase("Reproduction")){return uuidReproduction;
+
 		}else{
+			logger.warn("Feature key " + key + " not yet supported by ERMS transformer");
 			return null;
 		}
 	}

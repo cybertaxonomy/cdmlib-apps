@@ -456,6 +456,14 @@ public final class PesiTransformer extends ExportTransformerBase{
 	public static int NoteCategory_Rank = 285;
 	public static int NoteCategory_Taxonomic_Remark = 286;
 	public static int NoteCategory_Taxonomic_Remarks = 287;
+	public static int NoteCategory_Fossil_Range = 305;
+	public static int NoteCategory_Depth_Range = 290;
+	public static int NoteCategory_Grammatical_Gender = 291;
+	public static int NoteCategory_Introduced_Species_Remark = 292;
+	public static int NoteCategory_Alien_Species = 293;
+	public static int NoteCategory_Dimensions = 294;
+	public static int NoteCategory_Diet = 295;
+	public static int NoteCategory_Reproduction = 296;
 
 	public static int NoteCategory_Conservation_Status= 301;
 	public static int NoteCategory_Use = 302;
@@ -1498,6 +1506,25 @@ public final class PesiTransformer extends ExportTransformerBase{
 			return NoteCategory_Identification;
 		} else if (feature.getUuid().equals(ErmsTransformer.uuidSynonymy)) {
 			return NoteCategory_Synonymy;
+		} else if (feature.getUuid().equals(ErmsTransformer.uuidFossilRange)) {
+            return NoteCategory_Fossil_Range;
+		} else if (feature.getUuid().equals(ErmsTransformer.uuidDepthRange)) {
+            return NoteCategory_Depth_Range;
+		} else if (feature.getUuid().equals(ErmsTransformer.uuidGrammaticalGender)) {
+            return NoteCategory_Grammatical_Gender;
+        } else if (feature.getUuid().equals(ErmsTransformer.uuidIntroducedSpeciesRemark)) {
+            return NoteCategory_Introduced_Species_Remark;
+        } else if (feature.getUuid().equals(ErmsTransformer.uuidAlienSpecies)) {
+            return NoteCategory_Alien_Species;
+        } else if (feature.getUuid().equals(ErmsTransformer.uuidDimensions)) {
+            return NoteCategory_Dimensions;
+        } else if (feature.getUuid().equals(ErmsTransformer.uuidDiet)) {
+            return NoteCategory_Diet;
+        } else if (feature.getUuid().equals(ErmsTransformer.uuidReproduction)) {
+            return NoteCategory_Reproduction;
+        } else if (feature.getUuid().equals(ErmsTransformer.uuidSourceOfSynonymy)) {
+		    logger.warn("Source of synonymy not yet handled");
+		    return null;
 		} else if (feature.equals(Feature.CITATION())) {
 			return null;  //citations are handled differently
 		} else if (feature.getUuid().equals(BerlinModelTransformer.uuidFeatureMaps)){
@@ -1523,23 +1550,6 @@ public final class PesiTransformer extends ExportTransformerBase{
 			return NoteCategory_Inedited;
 		} else if (feature.getUuid().equals(BerlinModelTransformer.uuidFeatureCommentsEditing)){
 			return NoteCategory_Comments_on_editing_process;
-
-
-			// TODO: Unknown NoteCategories
-//			NoteCategory_Common_names = 12;
-//			NoteCategory_Maps =14;
-
-//			NoteCategory_Link_to_images = 21;
-//			NoteCategory_Link_to_taxonomy = 22;
-//			NoteCategory_Link_to_general_information = 23;
-//			NoteCategory_undefined_link = 24;
-//			NoteCategory_Editor_Braces = 249;
-
-//			NoteCategory_Publication_date = 254;
-//			NoteCategory_Distribution = 278;
-//			NoteCategory_Biology = 281;
-//			NoteCategory_Diagnosis	= 282;
-//			NoteCategory_Host = 283;
 
 		}else{
 			logger.warn("Unhandled Feature: " + feature.getTitleCache());
@@ -1897,11 +1907,6 @@ public final class PesiTransformer extends ExportTransformerBase{
 
 	}
 
-	/**
-	 *
-	 * @param nameTypeDesignationStatus
-	 * @return
-	 */
 	public static Integer nameTypeDesignationStatus2TypeDesignationStatusId(NameTypeDesignationStatus nameTypeDesignationStatus) {
 		if (nameTypeDesignationStatus == null) {
 			return null;
@@ -2070,11 +2075,6 @@ public final class PesiTransformer extends ExportTransformerBase{
 		}
 	}
 
-	/**
-	 *
-	 * @param status
-	 * @return
-	 */
 	public static Integer nomStatus2nomStatusFk (NomenclaturalStatusType status){
 		if (status == null){
 			return null;
