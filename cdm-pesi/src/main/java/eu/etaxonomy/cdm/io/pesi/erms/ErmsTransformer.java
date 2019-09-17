@@ -167,7 +167,6 @@ public final class ErmsTransformer extends InputTransformerBase {
 	public static final UUID uuidMarkerFreshwater = UUID.fromString("1190b182-e1d3-4986-8cc3-a6de3c115cf7");
 	public static final UUID uuidMarkerTerrestrial = UUID.fromString("5ed92edb-e2c6-48da-8367-6e82071c888f");
 
-
 	public static NomenclaturalCode kingdomId2NomCode(Integer kingdomId){
 		switch (kingdomId){
 			case 1: return null;
@@ -176,12 +175,11 @@ public final class ErmsTransformer extends InputTransformerBase {
 			case 4: return NomenclaturalCode.ICNAFP;  //Fungi
 			case 5: return NomenclaturalCode.ICZN ;  //Protozoa
 			case 6: return NomenclaturalCode.ICNB ;  //Bacteria
-			case 7: return NomenclaturalCode.ICNAFP;  //Chromista   ??
-			case 147415: return NomenclaturalCode.ICNB;  //Monera
+			case 7: return NomenclaturalCode.ICZN;  //Chromista??
+			//-> formatting of infrageneric taxa and available ranks (rank table) let me assume that ICZN is most suitable 			case 147415: return NomenclaturalCode.ICNB;  //Monera
+			//at the same time time formatting of subsp. (with marker!) behaves like ICNAFP so this is unclear
 			default: return null;
-
 		}
-
 	}
 
 	@Override
