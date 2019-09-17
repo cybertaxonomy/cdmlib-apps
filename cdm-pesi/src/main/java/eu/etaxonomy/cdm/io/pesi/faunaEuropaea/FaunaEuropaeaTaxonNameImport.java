@@ -584,7 +584,7 @@ public class FaunaEuropaeaTaxonNameImport extends FaunaEuropaeaImportBase  {
 			basionym.setPublicationYear(taxonName.getPublicationYear());
 
 
-			taxonName.addBasionym(basionym, fauEuConfig.getSourceReference(), null, null);
+			taxonName.addBasionym(basionym, fauEuConfig.getSourceReference(), null, null, null);
 			//TODO:this is a workaround for fauna europaea, this should be fixed in cdm model. this should be not a basionym but an orthographic variant (original spelling)
 			if (fauEuTaxon.isParenthesis()){
 				taxonName.setOriginalPublicationYear(taxonName.getPublicationYear());
