@@ -45,7 +45,7 @@ public class ErmsImportActivator {
 	                PesiDestinations.pesi_test_local_CDM_ERMS2PESI():
 	                PesiDestinations.pesi_test_local_CDM_ERMS2PESI_2()    ;
 
-	static final boolean includeExport2PESI = true;
+	static final boolean includeExport2PESI = false;
 
 	static final UUID classificationUuid = UUID.fromString("6fa988a9-10b7-48b0-a370-2586fbc066eb");
 	static final String classificationName = "ERMS 2019";
@@ -61,27 +61,27 @@ public class ErmsImportActivator {
 //	static final DO_REFERENCES doReferences =  DO_REFERENCES.ALL;
 //	static final boolean doTaxa = true;
 //	static final boolean doRelTaxa = doTaxa; //should always run with doTaxa because dependent on state from doTaxa
-//  static final boolean doCommonNames = true;
-//  static final boolean doNotes = false;
+//    static final boolean doCommonNames = true;
+//    static final boolean doNotes = true;
 //	static final boolean doDistributions = true;
 //	static final boolean doLinks = true;
 //	static final boolean doImages = true;
 
 //******************** NONE ***************************************//
-
-	static final DO_REFERENCES doReferences = DO_REFERENCES.ALL;
-	static final boolean doTaxa = true;
-	static final boolean doRelTaxa = doTaxa; //should always run with doTaxa because dependent on state from doTaxa
-	static final boolean doCommonNames = false;
-	static final boolean doNotes = false;
-	static final boolean doDistributions = false;
-	static final boolean doLinks = false;
-	static final boolean doImages = false;
+//
+	static final DO_REFERENCES doReferences = DO_REFERENCES.NONE;
+	static final boolean doTaxa = false;
+	static final boolean doRelTaxa = doTaxa; //should always run with doTaxa because depends on state from doTaxa
+	static final boolean doCommonNames = true;
+	static final boolean doNotes = true;
+	static final boolean doDistributions = true;
+	static final boolean doLinks =true;
+	static final boolean doImages = true;
 
 	private static DbSchemaValidation hbm2dll = (doReferences ==  DO_REFERENCES.ALL)? DbSchemaValidation.CREATE:DbSchemaValidation.VALIDATE;
 
 	private void doImport(Source source, ICdmDataSource destination, DbSchemaValidation hbm2dll){
-		System.out.println("Start import from ("+ ermsSource.getDatabase() + ") ...");
+		System.out.println("Start import from ("+ ermsSource.getDatabase() + ") to "+cdmDestination.getDatabase()+" ..." );
 
 		//make ERMS Source
 
@@ -121,7 +121,7 @@ public class ErmsImportActivator {
 //			app = ermsImport.getCdmAppController();
 //			app.getFeatureTreeService().saveOrUpdate(tree);
 		}
-		System.out.println("End import from ("+ source.getDatabase() + ")...");
+		System.out.println("End import from ("+ source.getDatabase() + ") to "+cdmDestination.getDatabase() + "...");
 	}
 
 	public static void main(String[] args) {
@@ -134,7 +134,7 @@ public class ErmsImportActivator {
 			ermsExport.doTaxa = doTaxa;
 			ermsExport.doTreeIndex = doTaxa;
 			ermsExport.doRelTaxa = doRelTaxa;
-            ermsExport.doInferredSynonyms = doRelTaxa;
+//            ermsExport.doInferredSynonyms = doRelTaxa;
             ermsExport.doDescriptions = doImages;
 
 			ermsExport.doExport(cdmDB, pesiDestination);
