@@ -38,23 +38,23 @@ public class PesiExportActivatorERMS {
 
 // ****************** ALL *****************************************
 
-	boolean deleteAll = true;
-	DO_REFERENCES doReferences =  DO_REFERENCES.ALL;
-	boolean doTaxa = true;
-	boolean doTreeIndex = true;
-	boolean doInferredSynonyms = true;
-	boolean doRelTaxa = true;
-	boolean doDescriptions = false;
+	boolean deleteAll = false;
+	DO_REFERENCES doReferences =  DO_REFERENCES.NONE;
+	boolean doTaxa = false;
+	boolean doTreeIndex = false;
+	boolean doInferredSynonyms = false;  //xx takes long, unclear what it does
+	boolean doRelTaxa = false;
+	boolean doDescriptions = true;
 
 // ************************ NONE **************************************** //
 
 //	boolean deleteAll = false;
 //	static DO_REFERENCES doReferences =  DO_REFERENCES.NONE;
-//	boolean doTaxa = true;
+//	boolean doTaxa = false;
 //	boolean doTreeIndex = doTaxa; //only with doTaxa
 //	boolean doInferredSynonyms = false; //only with doTaxa
 //	boolean doRelTaxa = false;
-//	boolean doDescriptions = false;
+//	boolean doDescriptions = true;
 
 //	static final boolean doNotes = false;
 //	static final boolean doNoteSources = false;
@@ -75,7 +75,7 @@ public class PesiExportActivatorERMS {
 	static final int partitionSize = 1000;
 
 	public boolean 	doExport(ICdmDataSource source, Source destination){
-		System.out.println("Start export to PESI ("+ pesiDestination.getDatabase() + ") ...");
+		System.out.println("Start export from " + source.getDatabase() + " to PESI ("+ pesiDestination.getDatabase() + ") ...");
 
 		PesiTransformer transformer = new PesiTransformer(destination);
 
