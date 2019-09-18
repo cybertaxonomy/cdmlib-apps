@@ -63,6 +63,9 @@ import eu.etaxonomy.cdm.model.description.TaxonInteraction;
 import eu.etaxonomy.cdm.model.description.TaxonNameDescription;
 import eu.etaxonomy.cdm.model.description.TextData;
 import eu.etaxonomy.cdm.model.location.NamedArea;
+import eu.etaxonomy.cdm.model.media.Media;
+import eu.etaxonomy.cdm.model.media.MediaRepresentation;
+import eu.etaxonomy.cdm.model.media.MediaRepresentationPart;
 import eu.etaxonomy.cdm.model.name.TaxonName;
 import eu.etaxonomy.cdm.model.taxon.Taxon;
 import eu.etaxonomy.cdm.model.taxon.TaxonBase;
@@ -825,6 +828,45 @@ public class PesiDescriptionExport extends PesiExportBase {
 		return result;
 	}
 
+    @SuppressWarnings("unused")  //used by mapper
+    private static String getMediaThumb(DescriptionElementBase deb) {
+        //FIXME does not yet support multiple images per deb
+        String startsWith = "http://images.vliz.be/thumbs/";
+        String result = null;
+        List<Media> medias = deb.getMedia();
+        for (Media media : medias){
+            for (MediaRepresentation rep : media.getRepresentations()){
+                for (MediaRepresentationPart part : rep.getParts()){
+                    String strUrl = part.getUri().toString();
+                    if (strUrl.startsWith(startsWith)){
+                        result = part.getUri().toString();
+                    }
+                }
+            }
+        }
+        return result;
+    }
+
+    @SuppressWarnings("unused")  //used by mapper
+    private static String getMediaUrl(DescriptionElementBase deb) {
+        //FIXME does not yet support multiple images per deb
+        String startsWith = "http://www.marbef.org/data/aphia.php?p=image&pic=";
+        String result = null;
+        List<Media> medias = deb.getMedia();
+        for (Media media : medias){
+            for (MediaRepresentation rep : media.getRepresentations()){
+                for (MediaRepresentationPart part : rep.getParts()){
+                    String strUrl = part.getUri().toString();
+                    if (strUrl.startsWith(startsWith)){
+                        result = part.getUri().toString();
+                    }
+                }
+            }
+        }
+        return result;
+    }
+
+//******************************* MAPPINGS ********************************************
 
 	/**
 	 * Returns the CDM to PESI specific export mappings for PESI notes.
@@ -973,11 +1015,13 @@ public class PesiDescriptionExport extends PesiExportBase {
 	}
 
 	private PesiExportMapping getImageMapping() {
-		PesiExportMapping mapping = new PesiExportMapping(dbImageTableName);
+
+	    //FIXME does not yet support multiple images per image gallery
+
+	    PesiExportMapping mapping = new PesiExportMapping(dbImageTableName);
 		mapping.addMapper(DbDescriptionElementTaxonMapper.NewInstance("taxonFk"));
-
-		//TODO xxx
-
+		mapping.addMapper(MethodMapper.NewInstance("img_thumb", this, "getMediaThumb"));
+		mapping.addMapper(MethodMapper.NewInstance("img_url", this, "getMediaUrl"));
 		return mapping;
 	}
 

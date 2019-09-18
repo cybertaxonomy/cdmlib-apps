@@ -76,6 +76,7 @@ public class ErmsImageImport  extends ErmsImportBase<TextData> {
 		if (mapping == null){
 			mapping = new DbImportMapping<>();
 			//TODO do we need to add to TaxonNameBase too?
+			//Often images are attached to synonyms
 			String idAttribute = null;
 			boolean isOneTextData = true;
 			mapping.addMapper(DbImportImageCreationMapper.NewInstance(idAttribute, IMAGE_NAMESPACE, "tu_id", ErmsImportBase.TAXON_NAMESPACE, isOneTextData));
