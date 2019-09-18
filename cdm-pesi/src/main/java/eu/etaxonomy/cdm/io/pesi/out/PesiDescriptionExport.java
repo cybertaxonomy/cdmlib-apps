@@ -46,6 +46,7 @@ import eu.etaxonomy.cdm.io.common.mapping.out.DbStringMapper;
 import eu.etaxonomy.cdm.io.common.mapping.out.DbTextDataMapper;
 import eu.etaxonomy.cdm.io.common.mapping.out.IdMapper;
 import eu.etaxonomy.cdm.io.common.mapping.out.MethodMapper;
+import eu.etaxonomy.cdm.io.pesi.erms.ErmsTransformer;
 import eu.etaxonomy.cdm.model.common.CdmBase;
 import eu.etaxonomy.cdm.model.common.Extension;
 import eu.etaxonomy.cdm.model.common.ExtensionType;
@@ -106,6 +107,7 @@ public class PesiDescriptionExport extends PesiExportBase {
 	private static int countAdditionalSources;
 	private static int countImages;
 	private static int countNotes;
+	private static int countSourceOfSynonymy;
 
 	private static int countCommonName;
 	private static int countOccurrence;
@@ -239,6 +241,7 @@ public class PesiDescriptionExport extends PesiExportBase {
 		logger.info("AddSrc: " + countAdditionalSources);
 		logger.info("Images: " + countImages);
 		logger.info("Notes: " + countNotes);
+	    logger.info("Source of Synonymy: " + countSourceOfSynonymy);
 		logger.info("Others: " + countOthers);
 
 		// Commit transaction
@@ -315,7 +318,8 @@ public class PesiDescriptionExport extends PesiExportBase {
 		logger.info("AddSrc: " + countAdditionalSources);
 		logger.info("Images: " + countImages);
 		logger.info("Notes: " + countNotes);
-		logger.info("Others: " + countOthers);
+		logger.info("Source of Synonymy: " + countSourceOfSynonymy);
+        logger.info("Others: " + countOthers);
 
 		// Commit transaction
 		commitTransaction(txStatus);
@@ -393,7 +397,12 @@ public class PesiDescriptionExport extends PesiExportBase {
 				countNotes++;
 				success &= notesMapping.invoke(element);
 
-			}else{
+			}else if (isSourceOfSynonymy(element)){
+                countSourceOfSynonymy++;
+                if(countSourceOfSynonymy < 2){
+                    logger.warn("Source of synonymy not yet implemented!");
+                }
+            }else{
 				countOthers++;
 				String featureTitle = element.getFeature() == null ? "no feature" :element.getFeature().getTitleCache();
 				logger.warn("Description element type not yet handled by PESI export: " + element.getUuid() + ", " +  element.getClass() + ", " +  featureTitle);
@@ -406,7 +415,15 @@ public class PesiDescriptionExport extends PesiExportBase {
 		}
 	}
 
-	private boolean isExcludedNote(DescriptionElementBase element) {
+    private boolean isSourceOfSynonymy(DescriptionElementBase element) {
+        if (element.getFeature() == null){
+            return false;
+        }else {
+            return element.getFeature().getUuid().equals(ErmsTransformer.uuidSourceOfSynonymy);
+        }
+    }
+
+    private boolean isExcludedNote(DescriptionElementBase element) {
 		Integer categoryFk = PesiTransformer.feature2NoteCategoryFk(element.getFeature());
 		//TODO decide where to handle them best (configurator, transformer, single method, ...)
 		return (excludedNoteCategories.contains(categoryFk));
@@ -467,11 +484,14 @@ public class PesiDescriptionExport extends PesiExportBase {
 
 	private boolean isOccurrence(DescriptionElementBase element) {
 		Feature feature = element.getFeature();
-		if (feature != null && feature.equals(Feature.DISTRIBUTION())){
-			return true;
-		}else if (element.isInstanceOf(Distribution.class)){
-			logger.warn("Description element has class 'Distribution' but has no feature 'Distribution'");
-			return true;
+		if (element.isInstanceOf(Distribution.class)){
+		    if (!Feature.DISTRIBUTION().equals(feature)){
+		        logger.warn("Description element has class 'Distribution' but has no feature 'Distribution'");
+		    }
+		    return true;
+		}else if (Feature.DISTRIBUTION().equals(feature)){
+		    logger.debug("Description element has feature Distribtuion but is not of class 'Distribution'");
+            return false;
 		}else{
 			return false;
 		}

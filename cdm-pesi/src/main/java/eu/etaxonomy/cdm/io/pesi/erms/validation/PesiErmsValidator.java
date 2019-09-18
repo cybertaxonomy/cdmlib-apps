@@ -31,7 +31,7 @@ public class PesiErmsValidator {
     private static final Logger logger = Logger.getLogger(PesiErmsValidator.class);
 
     private static final Source defaultSource = PesiSources.PESI2019_ERMS();
-    private static final Source defaultDestination = PesiDestinations.pesi_test_local_CDM_ERMS2PESI();
+    private static final Source defaultDestination = PesiDestinations.pesi_test_local_CDM_ERMS2PESI_2();
 
     private Source source = defaultSource;
     private Source destination = defaultDestination;
@@ -46,13 +46,22 @@ public class PesiErmsValidator {
 //            success &= testTaxa();
 //            success &= testTaxonRelations();
 //            success &= testCommonNames();
-            success &= testDistributions();
+//            success &= testDistributions();
+            success &= testNotes();
         } catch (Exception e) {
             e.printStackTrace();
             success = false;
         }
         //TBC
         System.out.println("end validation " + (success? "":"NOT ") + "successful.");
+    }
+
+    private boolean testNotes() throws SQLException {
+        boolean success = testNotesCount();
+        if (!success){
+              success &= testSingleNotes(source.getUniqueInteger("SELECT count(*) FROM notes "));
+        }
+        return success;
     }
 
     private boolean testDistributions() throws SQLException {
@@ -90,6 +99,12 @@ public class PesiErmsValidator {
             success &= testSingleReferences();
         }
         return success;
+    }
+
+    private boolean testNotesCount() {
+        int countSrc = source.getUniqueInteger("SELECT count(*) FROM notes ");
+        int countDest = destination.getUniqueInteger("SELECT count(*) FROM Note ");
+        return equals("Notes count ", countSrc, countDest, String.valueOf(-1));
     }
 
     private boolean testDistributionCount() {
@@ -236,6 +251,41 @@ public class PesiErmsValidator {
             String strSrcKingdom = strSrc.substring(0, strSrc.indexOf("#"));
             return equals(messageStart, strSrcKingdom, String.valueOf(intDest), id);
         }
+    }
+
+
+    private boolean testSingleNotes(int n) throws SQLException {
+        boolean success = true;
+        ResultSet srcRs = source.getResultSet("SELECT CAST(ISNULL(tu.tu_accfinal, tu.id) as nvarchar(20)) tuId, no.*, l.LanName "
+                + " FROM notes no INNER JOIN tu ON no.tu_id = tu.id "
+                + "    LEFT JOIN languages l ON l.LanID = no.lan_id "
+                + " ORDER BY CAST(tu.id as nvarchar(20)), no.type ");  //, no.note (not possible because ntext
+        ResultSet destRs = destination.getResultSet("SELECT t.IdInSource, no.*, cat.NoteCategory, l.Language "
+                + " FROM Note no INNER JOIN Taxon t ON t.TaxonId = no.TaxonFk "
+                + "    LEFT JOIN NoteCategory cat ON cat.NoteCategoryId = no.NoteCategoryFk "
+                + "    LEFT JOIN Language l ON l.LanguageId = no.LanguageFk "
+                + " WHERE t.OriginalDB = 'erms' "
+                + " ORDER BY t.IdInSource, no.NoteCategoryCache ");
+        int count = 0;
+        while (srcRs.next() && destRs.next()){
+            success &= testSingleNote(srcRs, destRs);
+            count++;
+        }
+        success &= equals("Notes count differs", n, count, "-1");
+        return success;
+    }
+
+    private boolean testSingleNote(ResultSet srcRs, ResultSet destRs) throws SQLException {
+        String id = String.valueOf(srcRs.getInt("tuId") + "-" + srcRs.getString("type"));
+        boolean success = equals("Note taxonID ", "tu_id: " + String.valueOf(srcRs.getInt("tuId")), destRs.getString("IdInSource"), id);
+        success &= equals("Note Note_1 ", srcRs.getString("note"), destRs.getString("Note_1"), id);
+        success &= isNull("Note_2", destRs);
+        success &= equals("Note category ", srcRs.getString("type"), destRs.getString("NoteCategoryCache"), id);
+        success &= equals("Note language ", srcRs.getString("LanName"), destRs.getString("Language"), id);
+
+        //TODO
+        //SpeciesExpertGUID, SpeciesExpertName, LastAction, LastActionDate
+        return success;
     }
 
     private boolean testSingleDistributions(int n) throws SQLException {

@@ -20,14 +20,12 @@ import org.apache.log4j.Logger;
 import org.springframework.stereotype.Component;
 
 import eu.etaxonomy.cdm.io.common.IOValidator;
-import eu.etaxonomy.cdm.io.common.mapping.DbImportAnnotationMapper;
 import eu.etaxonomy.cdm.io.common.mapping.DbImportFeatureCreationMapper;
 import eu.etaxonomy.cdm.io.common.mapping.DbImportMapping;
 import eu.etaxonomy.cdm.io.common.mapping.DbImportMultiLanguageTextMapper;
 import eu.etaxonomy.cdm.io.common.mapping.DbImportTextDataCreationMapper;
 import eu.etaxonomy.cdm.io.pesi.erms.validation.ErmsNoteImportValidator;
 import eu.etaxonomy.cdm.model.common.Annotation;
-import eu.etaxonomy.cdm.model.common.AnnotationType;
 import eu.etaxonomy.cdm.model.common.CdmBase;
 import eu.etaxonomy.cdm.model.common.Language;
 import eu.etaxonomy.cdm.model.description.TextData;
@@ -69,10 +67,10 @@ public class ErmsNotesImport  extends ErmsImportBase<Annotation> {
 		if (mapping == null){
 			mapping = new DbImportMapping<>();
 			mapping.addMapper(DbImportTextDataCreationMapper.NewInstance("id", NOTES_NAMESPACE, "tu_id", TAXON_NAMESPACE));
-			mapping.addMapper(DbImportMultiLanguageTextMapper.NewInstance("note", "lan_id", LANGUAGE_NAMESPACE, "Text"));
-			Language notesNoteLanguage = null;
-			mapping.addMapper(DbImportAnnotationMapper.NewInstance("note", AnnotationType.EDITORIAL(), notesNoteLanguage));
 			mapping.addMapper(DbImportFeatureCreationMapper.NewInstance("type", FEATURE_NAMESPACE, "type", "type", "type"));
+			mapping.addMapper(DbImportMultiLanguageTextMapper.NewInstance("note", "lan_id", LANGUAGE_NAMESPACE, "Text"));
+//			Language notesNoteLanguage = null;
+//			mapping.addMapper(DbImportAnnotationMapper.NewInstance("note", AnnotationType.EDITORIAL(), notesNoteLanguage));
 		}
 		return mapping;
 	}

@@ -207,7 +207,6 @@ public final class ErmsTransformer extends InputTransformerBase {
 	public static final UUID uuidNomenclature = UUID.fromString("15fe184f-4aab-4076-8bbb-3415d6f1f27f");
 	public static final UUID uuidTypespecies = UUID.fromString("cf674b0d-76e2-4628-952c-2cd06e209c6e");
 	public static final UUID uuidTaxonomicRemark = UUID.fromString("044e7c4e-aab8-4f44-bfa5-0339e7576c74");
-	public static final UUID uuidDateofPublication = UUID.fromString("2a416574-69db-4f80-b9a7-b912d5ed1816");
 	public static final UUID uuidAcknowledgments = UUID.fromString("3b2fd495-3f9a-480e-986a-7643741177da");
 	public static final UUID uuidOriginalpublication = UUID.fromString("ea9b7e53-0487-499f-a281-3d82d10e76dd");
 	public static final UUID uuidTypelocality = UUID.fromString("7c1c5779-2b4b-467b-b2ca-5ca2e029e116");
@@ -223,6 +222,16 @@ public final class ErmsTransformer extends InputTransformerBase {
     public static final UUID uuidDimensions = UUID.fromString("e2ffd374-b147-4014-a3aa-05394448e59f");
     public static final UUID uuidDiet = UUID.fromString("17e22a59-6fea-4eb2-8e0c-4578f633cd0a");
     public static final UUID uuidReproduction = UUID.fromString("fffdc170-db89-4ef6-9d21-f9dff19b4fb4");
+
+    public static final UUID uuidNewCombination = UUID.fromString("f51f71c7-4a07-491d-b04a-ac5360173ab9");
+    public static final UUID uuidTypeMaterial = UUID.fromString("5df1ad63-5f8c-43f9-812d-4448f30ddd0a");
+    public static final UUID uuidOriginalCombination = UUID.fromString("1c8e5637-1024-452f-9ebe-28058a5c6473");
+    public static final UUID uuidTypeSpecimen = UUID.fromString("0e74bee7-8a83-4f07-a6e9-05e5b1358411");
+    public static final UUID uuidOriginalDescription = UUID.fromString("bf7b3d4b-90e1-4eb2-b3ae-4f89e27b126f");
+    public static final UUID uuidSpecimen = UUID.fromString("a08e8158-d39d-4897-a6a0-ded4186d4ed0");
+    public static final UUID uuidEditorsComment = UUID.fromString("b46ad912-8c61-4c76-ad89-d38451d650e9");
+    public static final UUID uuidSyntype = UUID.fromString("6d0989a1-7467-43ec-a087-4838fa8246de");
+    public static final UUID uuidBiology = UUID.fromString("af5c6832-74f3-4b87-bac9-6fdfc68ffada");
 
 	//extension type uuids
 	public static final UUID uuidErmsTaxonStatus = UUID.fromString("859eee7f-5240-48a0-8edc-7af63557fa6e");
@@ -557,9 +566,9 @@ public final class ErmsTransformer extends InputTransformerBase {
 		}else if (key.equalsIgnoreCase("Distribution")){return Feature.DISTRIBUTION();
 		}else if (key.equalsIgnoreCase("Ecology")){return Feature.ECOLOGY();
 		}else if (key.equalsIgnoreCase("Diagnosis")){return Feature.DIAGNOSIS();
-		}else if (key.equalsIgnoreCase("Biology")){return Feature.BIOLOGY_ECOLOGY();
 		}else if (key.equalsIgnoreCase("Host")){return Feature.HOSTPLANT();
-		}else{
+		}else if (key.equalsIgnoreCase("Etymology")){return Feature.ETYMOLOGY();
+        }else{
 			return null;
 		}
 	}
@@ -588,7 +597,7 @@ public final class ErmsTransformer extends InputTransformerBase {
 		}else if (key.equalsIgnoreCase("Nomenclature")){return uuidNomenclature;
 		}else if (key.equalsIgnoreCase("Type species")){return uuidTypespecies;
 		}else if (key.equalsIgnoreCase("Taxonomic Remark")){return uuidTaxonomicRemark;
-		}else if (key.equalsIgnoreCase("Date of Publication")){return uuidDateofPublication;
+		}else if (key.equalsIgnoreCase("Date of Publication")){return uuidPublicationdate;
 		}else if (key.equalsIgnoreCase("Acknowledgments")){return uuidAcknowledgments;
 		}else if (key.equalsIgnoreCase("Original publication")){return uuidOriginalpublication;
 		}else if (key.equalsIgnoreCase("Type locality")){return uuidTypelocality;
@@ -603,6 +612,17 @@ public final class ErmsTransformer extends InputTransformerBase {
 	    }else if (key.equalsIgnoreCase("Dimensions")){return uuidDimensions;
 	    }else if (key.equalsIgnoreCase("Diet")){return uuidDiet;
 	    }else if (key.equalsIgnoreCase("Reproduction")){return uuidReproduction;
+	    }else if (key.equalsIgnoreCase("New combination")){return uuidNewCombination;
+	    }else if (key.equalsIgnoreCase("Type material")){return uuidTypeMaterial;
+	    }else if (key.equalsIgnoreCase("Original Combination")){return uuidOriginalCombination;
+	    }else if (key.equalsIgnoreCase("Type specimen")){return uuidTypeSpecimen;
+	    }else if (key.equalsIgnoreCase("Original description")){return uuidOriginalDescription;
+	    }else if (key.equalsIgnoreCase("Specimen")){return uuidSpecimen;
+	    }else if (key.equalsIgnoreCase("Original description")){return uuidOriginalDescription;
+	    }else if (key.equalsIgnoreCase("Editor's comment")){return uuidEditorsComment;
+	    }else if (key.equalsIgnoreCase("Original description")){return uuidOriginalDescription;
+	    }else if (key.equalsIgnoreCase("Syntype")){return uuidSyntype;
+	    }else if (key.equalsIgnoreCase("Biology")){return uuidBiology;
 
 		}else{
 			logger.warn("Feature key " + key + " not yet supported by ERMS transformer");

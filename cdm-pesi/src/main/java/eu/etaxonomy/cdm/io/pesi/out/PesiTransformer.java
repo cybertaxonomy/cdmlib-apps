@@ -435,7 +435,6 @@ public final class PesiTransformer extends ExportTransformerBase{
 	public static int NoteCategory_Spelling = 261;
 	public static int NoteCategory_Systematics = 262;
 	public static int NoteCategory_Remark = 263;
-	public static int NoteCategory_Date_of_publication = 264;
 	public static int NoteCategory_Additional_information = 266;
 	public static int NoteCategory_Status = 267;
 	public static int NoteCategory_Nomenclature = 268;
@@ -456,18 +455,28 @@ public final class PesiTransformer extends ExportTransformerBase{
 	public static int NoteCategory_Rank = 285;
 	public static int NoteCategory_Taxonomic_Remark = 286;
 	public static int NoteCategory_Taxonomic_Remarks = 287;
-	public static int NoteCategory_Fossil_Range = 305;
+	public static int NoteCategory_Etymology = 288;
+    public static int NoteCategory_Type_species = 289;
 	public static int NoteCategory_Depth_Range = 290;
 	public static int NoteCategory_Grammatical_Gender = 291;
 	public static int NoteCategory_Introduced_Species_Remark = 292;
 	public static int NoteCategory_Alien_Species = 293;
 	public static int NoteCategory_Dimensions = 294;
-	public static int NoteCategory_Diet = 295;
-	public static int NoteCategory_Reproduction = 296;
+    public static int NoteCategory_New_Combination = 295;
+    public static int NoteCategory_Original_Combination = 296;
 
 	public static int NoteCategory_Conservation_Status= 301;
 	public static int NoteCategory_Use = 302;
 	public static int NoteCategory_Comments = 303;
+    public static int NoteCategory_Diet = 304;
+    public static int NoteCategory_Fossil_Range = 305;
+    public static int NoteCategory_Original_Description = 306;
+    public static int NoteCategory_Reproduction = 307;
+    public static int NoteCategory_Specimen = 308;
+    public static int NoteCategory_Type_Specimen = 309;
+    public static int NoteCategory_Type_Material = 310;
+    public static int NoteCategory_Editors_Comment = 311;
+    public static int NoteCategory_Syntype = 312;
 
 	// FossilStatus
 	public static int FOSSILSTATUS_RECENT_ONLY = 1;
@@ -1450,78 +1459,104 @@ public final class PesiTransformer extends ExportTransformerBase{
 			return NoteCategory_ecology;
 		} else if (feature.equals(Feature.PHENOLOGY())) {
 			return NoteCategory_phenology;
-		} else if (feature.equals(Feature.COMMON_NAME())) {
+		} else if (feature.equals(Feature.DIAGNOSIS())) {
+            return NoteCategory_Diagnosis;
+        } else if (feature.equals(Feature.COMMON_NAME())) {
 			return NoteCategory_Common_names;
 		} else if (feature.equals(Feature.OCCURRENCE())) {
 			return NoteCategory_Occurrence;
 		} else if (feature.equals(Feature.DISTRIBUTION())) {
 			return NoteCategory_Distribution;
-		} else if (feature.getUuid().equals(ErmsTransformer.uuidRemark)) {
-			return NoteCategory_Remark;
+		} else if (feature.equals(Feature.ETYMOLOGY())) {
+            return NoteCategory_Etymology;
+        } else if (feature.getUuid().equals(ErmsTransformer.uuidAcknowledgments)){
+		    return NoteCategory_Acknowledgments;
 		} else if (feature.getUuid().equals(ErmsTransformer.uuidAdditionalinformation)) {
-			return NoteCategory_Additional_information;
-		} else if (feature.getUuid().equals(ErmsTransformer.uuidSpelling)) {
-			return NoteCategory_Spelling;
-		} else if (feature.getUuid().equals(ErmsTransformer.uuidDateofPublication)) {
-			return NoteCategory_Date_of_publication;
-		} else if (feature.getUuid().equals(ErmsTransformer.uuidSystematics)) {
-			return NoteCategory_Systematics;
-		} else if (feature.getUuid().equals(ErmsTransformer.uuidClassification)) {
-			return NoteCategory_Classification;
-		} else if (feature.getUuid().equals(ErmsTransformer.uuidEnvironment)) {
-			return NoteCategory_Environment;
-		} else if (feature.getUuid().equals(ErmsTransformer.uuidHabitat)) {
-			return NoteCategory_Habitat;
+		    return NoteCategory_Additional_information;
+		} else if (feature.getUuid().equals(ErmsTransformer.uuidAlienSpecies)) {
+		    return NoteCategory_Alien_Species;
 		} else if (feature.getUuid().equals(ErmsTransformer.uuidAuthority)) {
-			return NoteCategory_Authority;
+		    return NoteCategory_Authority;
+		} else if (feature.getUuid().equals(ErmsTransformer.uuidDepthRange)) {
+		    return NoteCategory_Depth_Range;
+		} else if (feature.getUuid().equals(ErmsTransformer.uuidBiology)) {
+		    return NoteCategory_Biology;
+		} else if (feature.getUuid().equals(ErmsTransformer.uuidClassification)) {
+		    return NoteCategory_Classification;
+		} else if (feature.getUuid().equals(ErmsTransformer.uuidDiet)) {
+		    return NoteCategory_Diet;
+		} else if (feature.getUuid().equals(ErmsTransformer.uuidDimensions)) {
+		    return NoteCategory_Dimensions;
+		} else if (feature.getUuid().equals(ErmsTransformer.uuidEditorsComment)) {
+		    return NoteCategory_Editors_Comment;
+		} else if (feature.getUuid().equals(ErmsTransformer.uuidEnvironment)) {
+		    return NoteCategory_Environment;
+		} else if (feature.getUuid().equals(ErmsTransformer.uuidFossilRange)) {
+		    return NoteCategory_Fossil_Range;
+		} else if (feature.getUuid().equals(ErmsTransformer.uuidGrammaticalGender)) {
+		    return NoteCategory_Grammatical_Gender;
+		} else if (feature.getUuid().equals(ErmsTransformer.uuidHabitat)) {
+		    return NoteCategory_Habitat;
+		} else if (feature.getUuid().equals(ErmsTransformer.uuidHomonymy)) {
+		    return NoteCategory_Homonymy;
+		} else if (feature.getUuid().equals(ErmsTransformer.uuidIdentification)) {
+		    return NoteCategory_Identification;
+		} else if (feature.getUuid().equals(ErmsTransformer.uuidIntroducedSpeciesRemark)) {
+		    return NoteCategory_Introduced_Species_Remark;
 		} else if (feature.getUuid().equals(ErmsTransformer.uuidMorphology)) {
-			return NoteCategory_Morphology;
+		    return NoteCategory_Morphology;
+		} else if (feature.getUuid().equals(ErmsTransformer.uuidNewCombination)) {
+		    return NoteCategory_New_Combination;
+		} else if (feature.getUuid().equals(ErmsTransformer.uuidNomenclature)) {
+		    return NoteCategory_Nomenclature;
+		} else if (feature.getUuid().equals(ErmsTransformer.uuidNote)){
+		    return NoteCategory_Note;
+		} else if (feature.getUuid().equals(ErmsTransformer.uuidOriginalCombination)) {
+		    return NoteCategory_Original_Combination;
+		} else if (feature.getUuid().equals(ErmsTransformer.uuidOriginalDescription)) {
+		    return NoteCategory_Original_Description;
+		} else if (feature.getUuid().equals(ErmsTransformer.uuidOriginalpublication)) {
+		    return NoteCategory_Original_publication;
+		} else if (feature.getUuid().equals(ErmsTransformer.uuidPublicationdate)) {
+            return NoteCategory_Publication_date;
+        } else if (feature.getUuid().equals(ErmsTransformer.uuidRank)) {
+		    return NoteCategory_Rank;
+		} else if (feature.getUuid().equals(ErmsTransformer.uuidRemark)) {
+		    return NoteCategory_Remark;
+		} else if (feature.getUuid().equals(ErmsTransformer.uuidReproduction)) {
+		    return NoteCategory_Reproduction;
+		} else if (feature.getUuid().equals(ErmsTransformer.uuidSpelling)) {
+		    return NoteCategory_Spelling;
+		} else if (feature.getUuid().equals(ErmsTransformer.uuidSpecimen)) {
+            return NoteCategory_Specimen;
+        } else if (feature.getUuid().equals(ErmsTransformer.uuidStatus)){
+		    return NoteCategory_Status;
+		} else if (feature.getUuid().equals(ErmsTransformer.uuidSynonymy)) {
+		    return NoteCategory_Synonymy;
+		} else if (feature.getUuid().equals(ErmsTransformer.uuidSyntype)) {
+		    return NoteCategory_Syntype;
+		} else if (feature.getUuid().equals(ErmsTransformer.uuidSystematics)) {
+		    return NoteCategory_Systematics;
 		} else if (feature.getUuid().equals(ErmsTransformer.uuidTaxonomicRemarks)) {
 			return NoteCategory_Taxonomic_Remarks;
-		} else if (feature.getUuid().equals(ErmsTransformer.uuidNote)){
-			return NoteCategory_Note;
 		} else if (feature.getUuid().equals(ErmsTransformer.uuidTaxonomy)) {
 			return NoteCategory_Taxonomy;
 		} else if (feature.getUuid().equals(ErmsTransformer.uuidTaxonomicstatus)) {
 			return NoteCategory_Taxonomic_status;
-		} else if (feature.getUuid().equals(ErmsTransformer.uuidStatus)){
-			return NoteCategory_Status;
-		} else if (feature.getUuid().equals(ErmsTransformer.uuidRank)) {
-			return NoteCategory_Rank;
-		} else if (feature.getUuid().equals(ErmsTransformer.uuidHomonymy)) {
-			return NoteCategory_Homonymy;
-		} else if (feature.getUuid().equals(ErmsTransformer.uuidNomenclature)) {
-			return NoteCategory_Nomenclature;
+		} else if (feature.getUuid().equals(ErmsTransformer.uuidTypelocality)) {
+		    return NoteCategory_Type_locality;
+		} else if (feature.getUuid().equals(ErmsTransformer.uuidTypeMaterial)) {
+		    return NoteCategory_Type_Material;
+		} else if (feature.getUuid().equals(ErmsTransformer.uuidTypeSpecimen)) {
+		    return NoteCategory_Type_Specimen;
+        } else if (feature.getUuid().equals(ErmsTransformer.uuidTypespecies)) {
+            return NoteCategory_Type_species;
 		} else if (feature.getUuid().equals(ErmsTransformer.uuidTaxonomicRemark)) {
 			return NoteCategory_Taxonomic_Remark;
-		} else if (feature.getUuid().equals(ErmsTransformer.uuidAcknowledgments)){
-			return NoteCategory_Acknowledgments;
-		} else if (feature.getUuid().equals(ErmsTransformer.uuidOriginalpublication)) {
-			return NoteCategory_Original_publication;
-		} else if (feature.getUuid().equals(ErmsTransformer.uuidTypelocality)) {
-			return NoteCategory_Type_locality;
 		} else if (feature.getUuid().equals(ErmsTransformer.uuidValidity)) {
 			return NoteCategory_Validity;
-		} else if (feature.getUuid().equals(ErmsTransformer.uuidIdentification)) {
-			return NoteCategory_Identification;
-		} else if (feature.getUuid().equals(ErmsTransformer.uuidSynonymy)) {
-			return NoteCategory_Synonymy;
-		} else if (feature.getUuid().equals(ErmsTransformer.uuidFossilRange)) {
-            return NoteCategory_Fossil_Range;
-		} else if (feature.getUuid().equals(ErmsTransformer.uuidDepthRange)) {
-            return NoteCategory_Depth_Range;
-		} else if (feature.getUuid().equals(ErmsTransformer.uuidGrammaticalGender)) {
-            return NoteCategory_Grammatical_Gender;
-        } else if (feature.getUuid().equals(ErmsTransformer.uuidIntroducedSpeciesRemark)) {
-            return NoteCategory_Introduced_Species_Remark;
-        } else if (feature.getUuid().equals(ErmsTransformer.uuidAlienSpecies)) {
-            return NoteCategory_Alien_Species;
-        } else if (feature.getUuid().equals(ErmsTransformer.uuidDimensions)) {
-            return NoteCategory_Dimensions;
-        } else if (feature.getUuid().equals(ErmsTransformer.uuidDiet)) {
-            return NoteCategory_Diet;
-        } else if (feature.getUuid().equals(ErmsTransformer.uuidReproduction)) {
-            return NoteCategory_Reproduction;
+
+
         } else if (feature.getUuid().equals(ErmsTransformer.uuidSourceOfSynonymy)) {
 		    logger.debug("Source of synonymy not yet handled");
 		    return null;
