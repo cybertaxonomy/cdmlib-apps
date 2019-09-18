@@ -182,7 +182,7 @@ public class PesiDescriptionExport extends PesiExportBase {
 		int pastCount = 0;
 		boolean success = true;
 		//int limit = state.getConfig().getLimitSave();
-		int limit = 500;
+		int limit = 1000;
 
 		List<Taxon> taxonList = null;
 
@@ -198,7 +198,9 @@ public class PesiDescriptionExport extends PesiExportBase {
 		int partitionCount = 0;
 		while ((taxonList = getNextTaxonPartition(Taxon.class, limit, partitionCount++, propPath )) != null   ) {
 
-			logger.info("Fetched " + taxonList.size() + " " + pluralString + ". Exporting...");
+			if (logger.isDebugEnabled()) {
+                logger.info("Fetched " + taxonList.size() + " " + pluralString + ". Exporting...");
+            }
 
 			for (Taxon taxon : taxonList) {
 				countTaxa++;
@@ -250,7 +252,7 @@ public class PesiDescriptionExport extends PesiExportBase {
 		int pastCount = 0;
 		boolean success = true;
 		//int limit = state.getConfig().getLimitSave();
-		int limit = 100;
+		int limit = 2000;
 		List<TaxonNameDescription> nameDescList = null;
 
 		TransactionStatus txStatus = startTransaction(true);
@@ -487,7 +489,7 @@ public class PesiDescriptionExport extends PesiExportBase {
 
 		// Get the limit for objects to save within a single transaction.
 		//int limit = state.getConfig().getLimitSave();
-		int limit = 100;
+		int limit = 2000;
 		txStatus = startTransaction(true);
 		ExtensionType taxCommentExtensionType = (ExtensionType)getTermService().find(PesiTransformer.taxCommentUuid);
 		ExtensionType fauCommentExtensionType = (ExtensionType)getTermService().find(PesiTransformer.fauCommentUuid);

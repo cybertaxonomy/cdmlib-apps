@@ -1523,7 +1523,7 @@ public final class PesiTransformer extends ExportTransformerBase{
         } else if (feature.getUuid().equals(ErmsTransformer.uuidReproduction)) {
             return NoteCategory_Reproduction;
         } else if (feature.getUuid().equals(ErmsTransformer.uuidSourceOfSynonymy)) {
-		    logger.warn("Source of synonymy not yet handled");
+		    logger.debug("Source of synonymy not yet handled");
 		    return null;
 		} else if (feature.equals(Feature.CITATION())) {
 			return null;  //citations are handled differently
