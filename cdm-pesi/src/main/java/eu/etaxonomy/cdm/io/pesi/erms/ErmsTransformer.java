@@ -257,6 +257,11 @@ public final class ErmsTransformer extends InputTransformerBase {
 	public static final UUID uuidMarkerFreshwater = UUID.fromString("1190b182-e1d3-4986-8cc3-a6de3c115cf7");
 	public static final UUID uuidMarkerTerrestrial = UUID.fromString("5ed92edb-e2c6-48da-8367-6e82071c888f");
 
+	public static final UUID uuidMarkerRefPublication = UUID.fromString("cdc1e38a-7b80-450a-8eb9-78035a51f33c");
+	public static final UUID uuidMarkerRefInformal = UUID.fromString("296a10f1-596d-4799-9624-34f9c5f54dc6");
+    public static final UUID uuidMarkerRefTypeI = UUID.fromString("1632d9e4-d921-4835-8915-d0d6ad298c7e");
+
+
 	public static NomenclaturalCode kingdomId2NomCode(Integer kingdomId){
 		switch (kingdomId){
 			case 1: return null;

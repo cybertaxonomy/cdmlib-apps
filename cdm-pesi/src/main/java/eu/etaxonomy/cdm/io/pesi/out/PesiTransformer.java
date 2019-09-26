@@ -2066,8 +2066,6 @@ public final class PesiTransformer extends ExportTransformerBase{
 			return REF_NOT_APPLICABLE;
 		} else if (reference.getType().equals(ReferenceType.Journal)) {
 			return REF_JOURNAL;
-		} else if (reference.getType().equals(ReferenceType.Generic)) {
-			return REF_UNRESOLVED;
 		} else if (reference.getType().equals(ReferenceType.PrintSeries)) {
 			return REF_PUBLISHED;
 		} else if (reference.getType().equals(ReferenceType.Proceedings)) {
@@ -2080,7 +2078,18 @@ public final class PesiTransformer extends ExportTransformerBase{
 			return REF_NOT_APPLICABLE;
 		} else if (reference.getType().equals(ReferenceType.Thesis)) {
 			return REF_NOT_APPLICABLE;
-		} else {
+		} else if (reference.getType().equals(ReferenceType.Generic)) {
+            if(reference.hasMarker(ErmsTransformer.uuidMarkerRefPublication, true)){
+                return REF_PUBLICATION;
+            }else if(reference.hasMarker(ErmsTransformer.uuidMarkerRefInformal, true)){
+                return REF_INFORMAL;
+            }else if(reference.hasMarker(ErmsTransformer.uuidMarkerRefTypeI, true)){
+                logger.warn("ERMS ref type 'i' is not yet correctly matched to PESI");
+                return REF_INFORMAL;
+            }else{
+                return REF_UNRESOLVED;
+            }
+        } else {
 			logger.warn("Reference type not yet supported in PESI: "+ reference.getType());
 			return null;
 		}

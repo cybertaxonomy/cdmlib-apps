@@ -34,6 +34,7 @@ import eu.etaxonomy.cdm.model.common.AnnotationType;
 import eu.etaxonomy.cdm.model.common.CdmBase;
 import eu.etaxonomy.cdm.model.common.ExtensionType;
 import eu.etaxonomy.cdm.model.common.Language;
+import eu.etaxonomy.cdm.model.common.MarkerType;
 import eu.etaxonomy.cdm.model.reference.Reference;
 import eu.etaxonomy.cdm.model.reference.ReferenceFactory;
 
@@ -110,6 +111,8 @@ public class ErmsReferenceImport
 		if (type.equalsIgnoreCase("p")){
 			//TDOO is this correct? maybe mark as 'publication'
 			ref = ReferenceFactory.newGeneric();
+			MarkerType markerType = getMarkerType(state, ErmsTransformer.uuidMarkerRefPublication, "Publication", "Publication", "p");
+			ref.addMarker(markerType, true);
 		}else if (type.equalsIgnoreCase("d")){
 			ref = ReferenceFactory.newDatabase();
 		}else if (type.equalsIgnoreCase("e")){
