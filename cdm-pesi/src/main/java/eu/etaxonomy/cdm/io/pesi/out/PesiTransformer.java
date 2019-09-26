@@ -2451,6 +2451,20 @@ public final class PesiTransformer extends ExportTransformerBase{
 		}
 	}
 
+	//TODO create a reverse map
+	public Integer getSourceUseKeyCacheByCache(String sourceUseCache) {
+        if (sourceUseCache == null){
+            return null;
+        }else{
+            for (Integer key: sourceUseCacheMap.keySet()){
+                if (sourceUseCacheMap.get(key).equalsIgnoreCase(sourceUseCache)){
+                    return key;
+                }
+            }
+        }
+        return null;
+    }
+
 	@Override
 	public String getTaxonStatusCacheByKey(Integer taxonStatusId) throws UndefinedTransformerMethodException {
 		if (taxonStatusId == null){

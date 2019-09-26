@@ -44,6 +44,8 @@ public final class ErmsTransformer extends InputTransformerBase {
 	public static final int SOURCE_USE_STATUS_SOURCE = 7;
 	public static final int SOURCE_USE_EMENDATION = 8;
 
+	public static final String SOURCE_USE_STR_BASIS_OF_RECORD = "basis of record";
+
 	//taxon relationship type uuids
 	public static final UUID uuidTaxRelTypeIsTaxonSynonymOf = UUID.fromString("cc648276-0823-47b1-9deb-fa7c046e4afd");
 
