@@ -95,7 +95,9 @@ public class BerlinModelNameRelationExport extends BerlinModelExportBase<Relatio
 
 			TransactionStatus txStatus = startTransaction(true);
 
-			List<RelationshipBase> list = getNameService().getAllRelationships(100000000, 0);
+			@SuppressWarnings({ "unchecked", "rawtypes" })
+            List<RelationshipBase<?,?,?>> list = (List)getNameService().listNameRelationships(null, null, null, null, null);
+			list.addAll(getNameService().listHybridRelationships(null, null, null, null, null));
 
 			CdmDbExportMapping<BerlinModelExportState, BerlinModelExportConfigurator, IExportTransformer> mapping = getMapping();
 			mapping.initialize(state);
