@@ -72,6 +72,7 @@ public class ErmsImportActivator {
 	static final DO_REFERENCES doReferences = DO_REFERENCES.NONE;
 	static final boolean doTaxa = false;
 	static final boolean doRelTaxa = doTaxa; //should always run with doTaxa because depends on state from doTaxa
+    static final boolean doSourceUse = true;
 	static final boolean doCommonNames = true;
 	static final boolean doNotes = true;
 	static final boolean doDistributions = true;
@@ -94,6 +95,7 @@ public class ErmsImportActivator {
 
 		config.setDoTaxa(doTaxa);
 		config.setDoRelTaxa(doRelTaxa);
+		config.setDoSourceUse(doSourceUse);
 		config.setDoLinks(doLinks);
 		config.setDoDistributions(doDistributions);
 		config.setDoVernaculars(doCommonNames);

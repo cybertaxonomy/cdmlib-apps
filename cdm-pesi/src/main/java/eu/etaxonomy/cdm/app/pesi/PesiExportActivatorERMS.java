@@ -87,6 +87,7 @@ public class PesiExportActivatorERMS {
 		config.setDoReferences(doReferences);
 		config.setDoTaxa(doTaxa);
 		config.setDoRelTaxa(doRelTaxa);
+		config.setDoAdditionalTaxonSource(doAdditionalTaxonSource);
 		config.setDoDescription(doDescriptions);
 
 //		config.setDoOccurrence(doOccurrence);
@@ -94,7 +95,6 @@ public class PesiExportActivatorERMS {
 //		config.setDoNotes(doNotes);
 //		config.setDoNoteSources(doNoteSources);
 //		config.setDoImages(doImage);
-//		config.setDoAdditionalTaxonSource(doAdditionalTaxonSource);
 
 		config.setDoPureNames(doPureNames);
 

@@ -53,6 +53,7 @@ public class ErmsImportConfigurator
 	private DO_REFERENCES doReferences = DO_REFERENCES.ALL;
 	private boolean doTaxa = true;
 	private boolean doRelTaxa = true;
+	private boolean doSourceUse = true;
 
 
 	private static IInputTransformer defaultTransformer = new ErmsTransformer();
@@ -193,4 +194,11 @@ public class ErmsImportConfigurator
 	public void setDoRelTaxa(boolean doRelTaxa) {
 		this.doRelTaxa = doRelTaxa;
 	}
+
+	public boolean isDoSourceUse() {
+        return doSourceUse;
+    }
+    public void setDoSourceUse(boolean doSourceUse) {
+        this.doSourceUse = doSourceUse;
+    }
 }

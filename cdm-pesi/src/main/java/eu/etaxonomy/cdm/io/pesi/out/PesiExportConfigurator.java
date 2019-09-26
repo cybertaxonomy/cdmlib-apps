@@ -60,12 +60,13 @@ public class PesiExportConfigurator
 				PesiSourceExport.class,
 				PesiTaxonExport.class,
 				PesiRelTaxonExport.class, // RelTaxonId's could be deleted from state hashmap
+				PesiAdditionalSourceExport.class,
 				PesiDescriptionExport.class,
 				PesiFinalUpdateExport.class
 
 //				PesiNoteExport.class,
 //				PesiNoteSourceExport.class, // NoteId's could be deleted from state hashmap
-//				PesiAdditionalTaxonSourceExport.class,
+//				PesiAdditionalTaxonSourceExport_OLD.class,
 //				PesiOccurrenceExport.class,
 //				PesiOccurrenceSourceExport.class,
 //				PesiImageExport.class,
