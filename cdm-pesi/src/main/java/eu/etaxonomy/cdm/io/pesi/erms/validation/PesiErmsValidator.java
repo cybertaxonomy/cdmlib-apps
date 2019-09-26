@@ -19,6 +19,7 @@ import eu.etaxonomy.cdm.app.pesi.PesiDestinations;
 import eu.etaxonomy.cdm.app.pesi.PesiSources;
 import eu.etaxonomy.cdm.common.CdmUtils;
 import eu.etaxonomy.cdm.io.common.Source;
+import eu.etaxonomy.cdm.io.pesi.out.PesiTransformer;
 
 /**
  * Tests the ERMS -> PESI pipeline by comparing the source DB with destination PESI DB.
@@ -43,11 +44,12 @@ public class PesiErmsValidator {
             this.source = source;
             this.destination = destination;
 //            success &= testReferences();
-//            success &= testTaxa();
-//            success &= testTaxonRelations();
+            success &= testTaxa();
+            success &= testTaxonRelations();
 //            success &= testCommonNames();
 //            success &= testDistributions();
-            success &= testNotes();
+//            success &= testNotes();
+//            success &= testAdditionalTaxonSources();
         } catch (Exception e) {
             e.printStackTrace();
             success = false;
@@ -56,15 +58,26 @@ public class PesiErmsValidator {
         System.out.println("end validation " + (success? "":"NOT ") + "successful.");
     }
 
+    private boolean testAdditionalTaxonSources() throws SQLException {
+        System.out.println("Start validate additional taxon sources");
+        boolean success = testAdditionalTaxonSourcesCount();
+        if (success){
+              success &= testSingleAdditionalTaxonSources(source.getUniqueInteger(countAddtionalTaxonSource));
+        }
+        return success;
+    }
+
     private boolean testNotes() throws SQLException {
+        System.out.println("Start validate notes");
         boolean success = testNotesCount();
-        if (!success){
+        if (success){
               success &= testSingleNotes(source.getUniqueInteger("SELECT count(*) FROM notes "));
         }
         return success;
     }
 
     private boolean testDistributions() throws SQLException {
+        System.out.println("Start validate distributions");
         boolean success = testDistributionCount();
         if (success){
               success &= testSingleDistributions(source.getUniqueInteger("SELECT count(*) FROM dr "));
@@ -73,6 +86,7 @@ public class PesiErmsValidator {
     }
 
     private boolean testCommonNames() throws SQLException {
+        System.out.println("Start validate common names");
         boolean success = testCommonNameCount();
         if (success){
             success &= testSingleCommonNames(source.getUniqueInteger("SELECT count(*) FROM vernaculars "));
@@ -80,25 +94,38 @@ public class PesiErmsValidator {
         return success;
     }
 
-    private boolean testTaxonRelations() {
-        boolean success = true;
+    private boolean testTaxonRelations() throws SQLException {
+        System.out.println("Start validate taxon relations");
+        boolean success = testTaxonRelationCount();
+        if (success){
+            success &= testSingleTaxonRelations(source.getUniqueInteger(countTaxonRelation));
+        }
         return success;
     }
 
     private boolean testTaxa() throws SQLException {
-            boolean success = testTaxaCount();
-            if (success){
-                success &= testSingleTaxa(source.getUniqueInteger("SELECT count(*) FROM tu "));
-            }
-            return success;
+        System.out.println("Start validate taxa");
+        boolean success = testTaxaCount();
+        if (success){
+            success &= testSingleTaxa(source.getUniqueInteger(countTaxon));
+        }
+        return success;
     }
 
     private boolean testReferences() throws SQLException {
+        System.out.println("Start validate references");
         boolean success = testReferenceCount();
         if (success){
             success &= testSingleReferences();
         }
         return success;
+    }
+
+    private final String countAddtionalTaxonSource = "SELECT count(*) FROM tu_sources ts WHERE ts.tu_id <>  147415 ";
+    private boolean testAdditionalTaxonSourcesCount() {
+        int countSrc = source.getUniqueInteger(countAddtionalTaxonSource);
+        int countDest = destination.getUniqueInteger("SELECT count(*) FROM AdditionalTaxonSource ");
+        return equals("AdditionalTaxonSource count ", countSrc, countDest, String.valueOf(-1));
     }
 
     private boolean testNotesCount() {
@@ -119,8 +146,17 @@ public class PesiErmsValidator {
         return equals("CommonName count ", countSrc, countDest, String.valueOf(-1));
     }
 
+    private final String countTaxonRelation = "SELECT count(*) FROM tu WHERE  tu_acctaxon <> id AND id NOT IN (147415) ";
+    private boolean testTaxonRelationCount() {
+         int countSrc = source.getUniqueInteger(countTaxonRelation);
+         int countDest = destination.getUniqueInteger("SELECT count(*) FROM RelTaxon ");
+         return equals("Taxon count ", countSrc, countDest, String.valueOf(-1));
+     }
+
+
+    private final String countTaxon = "SELECT count(*) FROM tu WHERE id NOT IN (147415)";
     private boolean testTaxaCount() {
-         int countSrc = source.getUniqueInteger("SELECT count(*) FROM tu WHERE id NOT IN (147415)");
+         int countSrc = source.getUniqueInteger(countTaxon);
          int countDest = destination.getUniqueInteger("SELECT count(*) FROM Taxon ");
          return equals("Taxon count ", countSrc, countDest, String.valueOf(-1));
      }
@@ -128,20 +164,23 @@ public class PesiErmsValidator {
     private boolean testSingleTaxa(int n) throws SQLException {
         boolean success = true;
         ResultSet srcRS = source.getResultSet(""
-                + " SELECT t.*, acc.tu_sp as acc_sp, st.status_name, "
+                + " SELECT t.*, r.rank_name, acc.tu_sp as acc_sp, st.status_name, "
                 + "        type.tu_displayname typename, type.tu_authority typeauthor, "
                 + "        fo.fossil_name, qs.qualitystatus_name "
                 + " FROM tu t "
-                + " LEFT OUTER JOIN tu acc ON acc.id = t.tu_acctaxon "
-                + " LEFT OUTER JOIN status st ON st.status_id = t.tu_status "
-                + " LEFT OUTER JOIN tu type ON type.id = t.tu_typetaxon "
-                + " LEFT OUTER JOIN fossil fo ON t.tu_fossil = fo.fossil_id "
-                + " LEFT OUTER JOIN qualitystatus qs ON t.tu_qualitystatus = qs.id "
+                + " LEFT JOIN (SELECT DISTINCT rank_id, rank_name FROM ranks WHERE NOT(rank_id = 40 AND rank_name = 'Subphylum' OR rank_id = 122 AND rank_name='Parvorder')) as r ON t.tu_rank = r.rank_id "
+                + " LEFT JOIN tu acc ON acc.id = t.tu_acctaxon "
+                + " LEFT JOIN status st ON st.status_id = t.tu_status "
+                + " LEFT JOIN tu type ON type.id = t.tu_typetaxon "
+                + " LEFT JOIN fossil fo ON t.tu_fossil = fo.fossil_id "
+                + " LEFT JOIN qualitystatus qs ON t.tu_qualitystatus = qs.id "
                 + " WHERE t.id NOT IN (147415) "
                 + " ORDER BY CAST(t.id as nvarchar(20)) ");
-        ResultSet destRS = destination.getResultSet("SELECT t.*, type.IdInSource typeSourceId "
+        ResultSet destRS = destination.getResultSet("SELECT t.*, s.Name as sourceName, type.IdInSource typeSourceId, r.Rank "
                 + " FROM Taxon t "
-                + "    LEFT JOIN Taxon type ON type.TaxonId = t.TypeNameFk"
+                + "    LEFT JOIN Taxon type ON type.TaxonId = t.TypeNameFk "
+                + "    LEFT JOIN Rank r ON r.RankId = t.RankFk AND r.KingdomId = t.KingdomFk "
+                + "    LEFT JOIN Source s ON s.SourceId = t.SourceFk "
                 + " WHERE t.OriginalDB = 'erms' "
                 + " ORDER BY t.IdInSource");
         ResultSet srcRsLastAction = source.getResultSet(""
@@ -165,16 +204,17 @@ public class PesiErmsValidator {
     private boolean testSingleTaxon(ResultSet srcRS, ResultSet destRS) throws SQLException {
         String id = String.valueOf(srcRS.getInt("id"));
         boolean success = equals("Taxon ID", "tu_id: " + srcRS.getInt("id"), destRS.getString("IdInSource"), id);
-        //TODO SourceFk
+        success &= equals("Taxon source", "ERMS export for PESI", destRS.getString("sourceName"), id);
 //      success &= compareKingdom("Taxon kingdom", srcRS, destRS, id);
-        //TODO RankFk, RankCache
+        success &= equals("Taxon rank fk", srcRS.getString("tu_rank"), destRS.getString("RankFk"), id);
+//      success &= equals("Taxon rank cache", normalizeRank(srcRS.getString("rank_name")), destRS.getString("Rank"), id);
         //TODO GenusOrUninomial, InfraGenericEpithet, SpecificEpithet, InfraSpecificEpithet
 //      success &= equals("Taxon websearchname", srcRS.getString("tu_displayname"), destRS.getString("WebSearchName"), id);
 //        success &= equals("Taxon WebShowName", srcRS.getString("tu_displayname"), destRS.getString("WebShowName"), id);
         success &= equals("Taxon authority", srcRS.getString("tu_authority"), destRS.getString("AuthorString"), id);
-        success &= equals("Taxon FullName", srcFullName(srcRS), destRS.getString("FullName"), id);
+//        success &= equals("Taxon FullName", srcFullName(srcRS), destRS.getString("FullName"), id);
         success &= isNull("NomRefString", destRS);
-        success &= equals("Taxon DisplayName", srcFullName(srcRS), destRS.getString("DisplayName"), id);  //according to SQL script same as FullName, no nom.ref. information attached
+//        success &= equals("Taxon DisplayName", srcDisplayName(srcRS), destRS.getString("DisplayName"), id);  //according to SQL script same as FullName, no nom.ref. information attached
 
 //TODO        success &= equals("Taxon NameStatusFk", toNameStatus(nullSafeInt(srcRS, "tu_status")),nullSafeInt( destRS,"NameStatusFk"), id);
 //TODO        success &= equals("Taxon NameStatusCache", srcRS.getString("status_name"), destRS.getString("NameStatusCache"), id);
@@ -205,6 +245,18 @@ public class PesiErmsValidator {
         return success;
     }
 
+    /**
+     * @param string
+     * @return
+     */
+    private String normalizeRank(String string) {
+        String result = string.replace("Subforma", "Subform")
+                .replace("Forma", "Form")
+// --               .replace("Subdivision", "Subphylum")
+         ;
+        return result;
+    }
+
     private String srcFullName(ResultSet srcRs) throws SQLException {
         String result = null;
         String epi = srcRs.getString("tu_name");
@@ -215,6 +267,21 @@ public class PesiErmsValidator {
             result = srcRs.getString("tu_displayname").replaceFirst(epi+" ", CdmUtils.concat(" ", " "+epi, srcRs.getString("tu_authority")))+" ";
         }else{
             result = CdmUtils.concat(" ", srcRs.getString("tu_displayname"), srcRs.getString("tu_authority"));
+        }
+        return result;
+    }
+
+    private String srcDisplayName(ResultSet srcRs) throws SQLException {
+        String result = null;
+        String epi = srcRs.getString("tu_name");
+        epi = " a" + epi;
+        String display = "<i>"+srcRs.getString("tu_displayname")+"</i>";
+        display = display.replace(" var. ", "</i> var. <i>").replace(" f. ", "</i> f. <i>");
+        String sp = srcRs.getString("tu_sp");
+        if (display.indexOf(epi) != display.lastIndexOf(epi) && !sp.startsWith("#2#")){ //homonym, animal
+            result = display.replaceFirst(epi+" ", CdmUtils.concat(" ", " "+epi, srcRs.getString("tu_authority")))+" ";
+        }else{
+            result = CdmUtils.concat(" ", display, srcRs.getString("tu_authority"));
         }
         return result;
     }
@@ -253,10 +320,80 @@ public class PesiErmsValidator {
         }
     }
 
+    private boolean testSingleTaxonRelations(int n) throws SQLException {
+        boolean success = true;
+        ResultSet srcRS = source.getResultSet(""
+                + " SELECT t.* "
+                + " FROM tu t "
+                + " WHERE t.id NOT IN (147415) AND tu_acctaxon <> id "
+                + " ORDER BY CAST(t.id as nvarchar(20)) ");
+        ResultSet destRS = destination.getResultSet("SELECT rel.*, t1.IdInSource t1Id, t2.IdInSource t2Id "
+                + " FROM RelTaxon rel "
+                + "    LEFT JOIN Taxon t1 ON t1.TaxonId = rel.TaxonFk1 "
+                + "    LEFT JOIN Taxon t2 ON t2.TaxonId = rel.TaxonFk2 "
+                + " WHERE t1.OriginalDB = 'erms' AND t2.OriginalDB = 'erms' "
+                + " ORDER BY t1.IdInSource");
+        int i = 0;
+        while (srcRS.next() && destRS.next()){
+            success &= testSingleTaxonRelation(srcRS, destRS);
+            i++;
+        }
+        success &= equals("Taxon relation count for single compare", n, i, String.valueOf(-1));
+        return success;
+    }
+
+    private boolean testSingleTaxonRelation(ResultSet srcRS, ResultSet destRS) throws SQLException {
+        String id = String.valueOf(srcRS.getInt("id"));
+        boolean success = equals("Taxon relation taxon1", "tu_id: " + srcRS.getInt("id"), destRS.getString("t1Id"), id);
+        success &= equals("Taxon relation taxon2", "tu_id: " + srcRS.getInt("tu_acctaxon"), destRS.getString("t2Id"), id);
+        success &= equals("Taxon relation qualifier fk", PesiTransformer.IS_SYNONYM_OF, destRS.getInt("RelTaxonQualifierFk"), id);
+        success &= equals("Taxon relation qualifier cache", "is synonym of", destRS.getString("RelQualifierCache"), id);
+        //TODO enable after next import
+//        success &= isNull("notes", destRS);
+        //complete if no further relations need to added
+        return success;
+    }
+
+
+    private boolean testSingleAdditionalTaxonSources(int n) throws SQLException {
+        boolean success = true;
+        ResultSet srcRs = source.getResultSet("SELECT CAST(tu.id as nvarchar(20)) tuId, MN.*, s.*, su.sourceuse_name "
+                + " FROM tu_sources MN INNER JOIN tu ON MN.tu_id = tu.id "
+                + "    LEFT JOIN sources s ON s.id = MN.source_id "
+                + "    LEFT JOIN sourceuses su ON MN.sourceuse_id = su.sourceuse_id "
+                + " WHERE MN.tu_id NOT IN (147415)  "
+                + " ORDER BY CAST(tu.id as nvarchar(20)), MN.sourceuse_id, s.id ");  //, no.note (not possible because ntext
+        ResultSet destRs = destination.getResultSet("SELECT t.IdInSource, ats.*, s.*, su.* "
+                + " FROM AdditionalTaxonSource ats INNER JOIN Taxon t ON t.TaxonId = ats.TaxonFk "
+                + "    INNER JOIN Source s ON s.SourceId = ats.SourceFk "
+                + "    LEFT JOIN SourceUse su ON su.SourceUseId = ats.SourceUseFk "
+                + " WHERE t.OriginalDB = 'erms' "
+                + " ORDER BY t.IdInSource, su.SourceUseId, s.RefIdInSource ");
+        int count = 0;
+        while (srcRs.next() && destRs.next()){
+            success &= testSingleAdditionalTaxonSource(srcRs, destRs);
+            count++;
+        }
+        success &= equals("Notes count differs", n, count, "-1");
+        return success;
+    }
+
+    private boolean testSingleAdditionalTaxonSource(ResultSet srcRs, ResultSet destRs) throws SQLException {
+        String id = String.valueOf(srcRs.getInt("tuId") + "-" + srcRs.getString("sourceuse_name"));
+        boolean success = equals("Additional taxon source taxonID ", "tu_id: " + String.valueOf(srcRs.getInt("tuId")), destRs.getString("IdInSource"), id);
+        success &= equals("Additional taxon source fk ", srcRs.getString("source_id"), destRs.getString("RefIdInSource"), id);  //currently we use the same id in ERMS and PESI
+        success &= equals("Additional taxon source use fk ", srcRs.getString("sourceuse_id"), destRs.getString("SourceUseFk"), id);
+        success &= equals("Additional taxon source use cache ", srcRs.getString("sourceuse_name"), destRs.getString("SourceUseCache"), id);
+        //TODO some records are still truncated ~ >820 characters
+        //success &= equals("Additional taxon source name cache ", srcRs.getString("source_name"), destRs.getString("SourceNameCache"), id);
+        success &= equals("Additional taxon source detail ", srcRs.getString("pagenr"), destRs.getString("SourceDetail"), id);
+        //Complete
+        return success;
+    }
 
     private boolean testSingleNotes(int n) throws SQLException {
         boolean success = true;
-        ResultSet srcRs = source.getResultSet("SELECT CAST(ISNULL(tu.tu_accfinal, tu.id) as nvarchar(20)) tuId, no.*, l.LanName "
+        ResultSet srcRs = source.getResultSet("SELECT CAST(tu.id as nvarchar(20)) tuId, no.*, l.LanName "
                 + " FROM notes no INNER JOIN tu ON no.tu_id = tu.id "
                 + "    LEFT JOIN languages l ON l.LanID = no.lan_id "
                 + " ORDER BY CAST(tu.id as nvarchar(20)), no.type ");  //, no.note (not possible because ntext
