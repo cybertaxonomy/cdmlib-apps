@@ -22,6 +22,7 @@ import eu.etaxonomy.cdm.io.common.mapping.out.IdMapper;
 import eu.etaxonomy.cdm.model.common.CdmBase;
 
 /**
+ * Does not seem to be in use currently. (2019-09-22)
  * @author e.-m.lee
  * @since 24.02.2010
  */

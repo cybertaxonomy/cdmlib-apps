@@ -63,8 +63,10 @@ public abstract class PesiExportBase
 		super();
 	}
 
-	protected <CLASS extends TaxonBase> List<CLASS> getNextTaxonPartition(Class<CLASS> clazz, int limit, int partitionCount, List<String> propertyPath) {
-		List<OrderHint> orderHints = new ArrayList<>();
+	protected <CLASS extends TaxonBase> List<CLASS> getNextTaxonPartition(Class<CLASS> clazz, int limit,
+	        int partitionCount, List<String> propertyPath) {
+
+	    List<OrderHint> orderHints = new ArrayList<>();
 		orderHints.add(new OrderHint("id", OrderHint.SortOrder.ASCENDING ));
 
 		List<CLASS> list = getTaxonService().list(clazz, limit, partitionCount * limit, orderHints, propertyPath);

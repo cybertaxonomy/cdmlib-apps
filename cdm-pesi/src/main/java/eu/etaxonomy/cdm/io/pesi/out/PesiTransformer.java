@@ -847,17 +847,17 @@ public final class PesiTransformer extends ExportTransformerBase{
                 Integer oldId;
                 String iso639_1 = rs.getString("ISO639_1");
                 if (StringUtils.isNotBlank(iso639_1)){
-                    oldId = this.languageCodeToKeyMap.put(iso639_1, id);
+                    oldId = languageCodeToKeyMap.put(iso639_1, id);
                     checkOldId(id, oldId, iso639_1);
                 }
                 String iso639_2 = rs.getString("ISO639_2");
                 if (StringUtils.isNotBlank(iso639_2)){
-                    oldId = this.languageCodeToKeyMap.put(iso639_2, id);
+                    oldId = languageCodeToKeyMap.put(iso639_2, id);
                     checkOldId(id, oldId, iso639_1);
                 }
                 String iso639_3 = rs.getString("ISO639_3");
                 if (StringUtils.isNotBlank(iso639_3)){
-                    oldId = this.languageCodeToKeyMap.put(iso639_3, id);
+                    oldId = languageCodeToKeyMap.put(iso639_3, id);
                     checkOldId(id, oldId, iso639_1);
                 }
 
