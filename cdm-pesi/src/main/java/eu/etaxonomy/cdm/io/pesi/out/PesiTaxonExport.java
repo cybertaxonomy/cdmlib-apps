@@ -2639,19 +2639,6 @@ public class PesiTaxonExport extends PesiExportBase {
          return state.getDbId(synonym);
     }
 
-    @SuppressWarnings("unused")
-    private static String getSynonymTypeCache(Synonym synonym, PesiExportState state) {
-        String result = null;
-        NomenclaturalCode code = null;
-        code = CdmBase.deproxy(synonym, Synonym.class).getAcceptedTaxon().getName().getNameType();
-
-        if (code != null) {
-            result = state.getConfig().getTransformer().getCacheBySynonymType(synonym, code);
-        } else {
-            logger.error("NomenclaturalCode is NULL while creating the following synonym: " + synonym.getUuid());
-        }
-        return result;
-    }
 
 	private PesiExportMapping getSynRelMapping() {
 		PesiExportMapping mapping = new PesiExportMapping(dbTableNameSynRel);

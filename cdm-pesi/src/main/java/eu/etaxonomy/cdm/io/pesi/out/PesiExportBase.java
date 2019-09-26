@@ -144,11 +144,18 @@ public abstract class PesiExportBase
 	}
 
 	protected <CLASS extends RelationshipBase> List<CLASS> getNextNameRelationshipPartition(
-	                Class<CLASS> clazz, int limit, int partitionCount, List<String> propertyPath) {
-		List<CLASS> result = new ArrayList<>();
-		String[] propertyPaths = null;
-		String orderHints = null;
-		List<CLASS> list = (List<CLASS>)getNameService().getAllRelationships(limit, partitionCount * limit);
+	                Class<CLASS> clazz, int pageSize, int partitionCount, List<String> propertyPaths) {
+
+	    List<CLASS> result = new ArrayList<>();
+		List<OrderHint> orderHints = null;
+		List<CLASS> list;
+		if (NameRelationship.class.isAssignableFrom(clazz)){
+            list = (List<CLASS>)getNameService().listNameRelationships(null, pageSize, partitionCount, orderHints, propertyPaths);
+        }else if (HybridRelationship.class.isAssignableFrom(clazz)){
+            list = (List<CLASS>)getNameService().listHybridRelationships(null, pageSize, partitionCount, orderHints, propertyPaths);
+        }else{
+            throw new RuntimeException("Only NameRelationship or HybridRelationship allowed here");
+        }
 		if (list.isEmpty()){
 			return null;
 		}
@@ -160,28 +167,27 @@ public abstract class PesiExportBase
 		return result;
 	}
 
-	protected <CLASS extends RelationshipBase> List<CLASS> getNextTaxonRelationshipPartition( int limit, int partitionCount, List<String> propertyPath) {
-		List<CLASS> result = new ArrayList<>();
-		logger.warn("getNextTaxonRelationshipPartition not yet implemented");
-		String[] propertyPaths = null;
-		String orderHints = null;
-		//TODO: fix!!!!
+	protected <CLASS extends RelationshipBase> List<CLASS> getNextTaxonRelationshipPartition( int limit, int partitionCount, List<String> propertyPaths) {
 
-//		List<CLASS> list = (List<CLASS>)getTaxonService().getAllRelationships(limit, partitionCount * limit);
-//
-//		if (list.isEmpty()){
-//			return null;
-//		}
-//
-//		for (CLASS rel : list){
-//			if (isPesiTaxonOrSynonymRelationship(rel)){
-//				result.add(rel);
-//			}
-//		}
+	    List<CLASS> result = new ArrayList<>();
+		List<OrderHint> orderHints = null;
+
+		List<CLASS> list = (List<CLASS>)this.getTaxonService()
+		        .listTaxonRelationships(null, limit, partitionCount, orderHints, propertyPaths);
+
+		if (list.isEmpty()){
+			return null;
+		}
+
+		for (CLASS rel : list){
+			if (isPesiTaxonOrSynonymRelationship(rel)){
+				result.add(rel);
+			}
+		}
 		return result;
 	}
 
-	protected boolean isPesiNameRelationship(RelationshipBase rel){
+	protected boolean isPesiNameRelationship(RelationshipBase<?,?,?> rel){
 		TaxonName name1;
 		TaxonName name2;
 		if (rel.isInstanceOf(HybridRelationship.class)){
@@ -213,7 +219,7 @@ public abstract class PesiExportBase
 //			toTaxon = synRel.getAcceptedTaxon();
 //			synRel = null;
 //		}else
-		    if (rel.isInstanceOf(TaxonRelationship.class)){
+		if (rel.isInstanceOf(TaxonRelationship.class)){
 			TaxonRelationship taxRel = CdmBase.deproxy(rel, TaxonRelationship.class);
 			fromTaxon = taxRel.getFromTaxon();
 			toTaxon = taxRel.getToTaxon();
