@@ -37,8 +37,8 @@ public class ErmsImportActivator {
 	static final Source ermsSource = PesiSources.PESI2019_ERMS();
 
 //	static final ICdmDataSource cdmDestination = CdmDestinations.test_cdm_pesi_erms();
-//	static final ICdmDataSource cdmDestination = CdmDestinations.cdm_test_local_mysql_erms();
-	static final ICdmDataSource cdmDestination = CdmDestinations.cdm_test_local_mysql_erms2();
+	static final ICdmDataSource cdmDestination = CdmDestinations.cdm_test_local_mysql_erms();
+//	static final ICdmDataSource cdmDestination = CdmDestinations.cdm_test_local_mysql_erms2();
 
 	static final Source pesiDestination =
 	        cdmDestination == CdmDestinations.cdm_test_local_mysql_erms()?
@@ -49,6 +49,7 @@ public class ErmsImportActivator {
 
 	static final UUID classificationUuid = UUID.fromString("6fa988a9-10b7-48b0-a370-2586fbc066eb");
 	static final String classificationName = "ERMS 2019";
+	static final String sourceRefTitle = "ERMS export for PESI";
 
 	//check - import
 	static final CHECK check = CHECK.IMPORT_WITHOUT_CHECK;
@@ -58,14 +59,15 @@ public class ErmsImportActivator {
 
 // ***************** ALL ************************************************//
 
-//	static final DO_REFERENCES doReferences =  DO_REFERENCES.ALL;
+//	static final DO_REFERENCES doReferences = DO_REFERENCES.ALL;
 //	static final boolean doTaxa = true;
 //	static final boolean doRelTaxa = doTaxa; //should always run with doTaxa because dependent on state from doTaxa
-//    static final boolean doCommonNames = true;
-//    static final boolean doNotes = true;
-//	static final boolean doDistributions = true;
-//	static final boolean doLinks = true;
-//	static final boolean doImages = true;
+//	static final boolean doSourceUse = false;
+//	static final boolean doCommonNames = false;
+//    static final boolean doNotes = false;
+//	static final boolean doDistributions = false;
+//	static final boolean doLinks = false;
+//	static final boolean doImages = false;
 
 //******************** NONE ***************************************//
 //
@@ -76,13 +78,13 @@ public class ErmsImportActivator {
 	static final boolean doCommonNames = true;
 	static final boolean doNotes = true;
 	static final boolean doDistributions = true;
-	static final boolean doLinks =true;
+	static final boolean doLinks = true;
 	static final boolean doImages = true;
 
 	private static DbSchemaValidation hbm2dll = (doReferences ==  DO_REFERENCES.ALL)? DbSchemaValidation.CREATE:DbSchemaValidation.VALIDATE;
 
 	private void doImport(Source source, ICdmDataSource destination, DbSchemaValidation hbm2dll){
-		System.out.println("Start import from ("+ ermsSource.getDatabase() + ") to "+cdmDestination.getDatabase()+" ..." );
+		System.out.println("Start import from ("+ ermsSource.getDatabase() + ") to " + cdmDestination.getDatabase() + " ..." );
 
 		//make ERMS Source
 
@@ -108,6 +110,7 @@ public class ErmsImportActivator {
 		config.setRecordsPerTransaction(partitionSize);
 		config.setSourceRefUuid(PesiTransformer.uuidSourceRefErms);
 		config.setClassificationName(classificationName);
+		config.setSourceReferenceTitle(sourceRefTitle);
 
 		// invoke import
 		CdmDefaultImport<ErmsImportConfigurator> ermsImport = new CdmDefaultImport<>();
