@@ -1658,6 +1658,8 @@ public final class PesiTransformer extends ExportTransformerBase{
 		Integer result = null;
 		if (rank == null) {
 			return null;
+		}else if (rank.equals(Rank.DOMAIN())){
+		    return KINGDOM_NULL;
 		}
 
 		// We differentiate between Animalia and Plantae only for now.
