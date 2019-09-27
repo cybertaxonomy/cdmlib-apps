@@ -944,7 +944,7 @@ public class PesiDescriptionExport extends PesiExportBase {
 		mapping.addMapper(DbExportIgnoreMapper.NewInstance("SourceFk", "Use OccurrenceSource table for sources instead"));
 		mapping.addMapper(DbExportIgnoreMapper.NewInstance("SourceNameCache", "Use OccurrenceSource table for sources instead"));
 
-		mapping.addMapper(DbAnnotationMapper.NewInstance(null, "Notes"));
+		mapping.addMapper(DbAnnotationMapper.NewExludedInstance(getLastActionAnnotationTypes(), "Notes"));
 		mapping.addMapper(ExpertsAndLastActionMapper.NewInstance());
 		mapping.addCollectionMapping(getOccurrenceSourceMapping());
 

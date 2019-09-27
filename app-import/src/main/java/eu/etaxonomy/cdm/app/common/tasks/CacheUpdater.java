@@ -63,7 +63,7 @@ public class CacheUpdater {
 
 		CacheUpdaterConfigurator config;
 		try {
-			config = CacheUpdaterConfigurator.NewInstance(destination, classListStrings);
+			config = CacheUpdaterConfigurator.NewExludedInstance(destination, classListStrings);
 
 			// invoke import
 			CdmDefaultImport<CacheUpdaterConfigurator> myImport = new CdmDefaultImport<>();
