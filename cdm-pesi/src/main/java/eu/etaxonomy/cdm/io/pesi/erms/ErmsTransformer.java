@@ -237,7 +237,6 @@ public final class ErmsTransformer extends InputTransformerBase {
 
 	//extension type uuids
 	public static final UUID uuidErmsTaxonStatus = UUID.fromString("859eee7f-5240-48a0-8edc-7af63557fa6e");
-
 	public static final UUID uuidExtTruncatedCache = UUID.fromString("4839605b-b72d-493a-94fb-e8f8acb393f9");
     public static final UUID uuidExtGazetteer = UUID.fromString("dcfa124a-1028-49cd-aea5-fdf9bd396c1a");
 	public static final UUID uuidExtImis = UUID.fromString("ee2ac2ca-b60c-4e6f-9cad-720fcdb0a6ae");
@@ -250,6 +249,9 @@ public final class ErmsTransformer extends InputTransformerBase {
 	public static final UUID uuidExtUnacceptReason = UUID.fromString("3883fb79-374d-4120-964b-9666307e3567");
 	public static final UUID uuidExtQualityStatus = UUID.fromString("4de84c6e-41bd-4a0e-894d-77e9ec3103d2");
 	public static final UUID uuidExtAuthor = UUID.fromString("85387300-281f-47bc-8499-7008075dc8e0");
+
+	//AnnotationType
+	public static final UUID uuidAnnSpeciesExpertName = UUID.fromString("4d8abf02-3d92-4c65-b30b-0393a1f4818b");
 
 	//MarkerTypes
 	public static final UUID uuidMarkerMarine = UUID.fromString("5da78a28-5668-4ed5-b788-10c69343f91e");

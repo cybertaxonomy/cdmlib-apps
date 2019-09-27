@@ -25,9 +25,11 @@ import eu.etaxonomy.cdm.io.common.mapping.DbImportAnnotationMapper;
 import eu.etaxonomy.cdm.io.common.mapping.DbImportDistributionCreationMapper;
 import eu.etaxonomy.cdm.io.common.mapping.DbImportMapping;
 import eu.etaxonomy.cdm.io.common.mapping.DbImportObjectMapper;
+import eu.etaxonomy.cdm.io.common.mapping.out.DbLastActionMapper;
 import eu.etaxonomy.cdm.io.pesi.erms.validation.ErmsDistributionImportValidator;
 import eu.etaxonomy.cdm.model.common.AnnotationType;
 import eu.etaxonomy.cdm.model.common.CdmBase;
+import eu.etaxonomy.cdm.model.common.MarkerType;
 import eu.etaxonomy.cdm.model.description.Distribution;
 import eu.etaxonomy.cdm.model.description.PresenceAbsenceTerm;
 import eu.etaxonomy.cdm.model.location.NamedArea;
@@ -61,9 +63,14 @@ public class ErmsDistributionImport
 	@Override
 	protected String getRecordQuery(ErmsImportConfigurator config) {
 		String strRecordQuery =
-			" SELECT dr.*, ISNULL(ISNULL(tu.tu_acctaxon, tu.tu_accfinal), tu.id) acctaxon" +
+			" SELECT dr.*, ISNULL(ISNULL(tu.tu_acctaxon, tu.tu_accfinal), tu.id) acctaxon, " +
+	                  " s.sessiondate lastActionDate, a.action_name lastAction, s.ExpertName " +
 			" FROM dr INNER JOIN tu ON dr.tu_id = tu.id " +
-			" WHERE ( dr.id IN (" + ID_LIST_TOKEN + ") )";
+            "     LEFT OUTER JOIN dr_sessions MN ON MN.dr_id = dr.id " +
+            "     LEFT OUTER JOIN [sessions] s ON s.id = MN.session_id " +
+            "     LEFT OUTER JOIN actions a ON a.id = MN.action_id " +
+			" WHERE ( dr.id IN (" + ID_LIST_TOKEN + ") )" +
+			" ORDER BY dr.id, s.sessiondate DESC, a.id DESC ";
 		return strRecordQuery;
 	}
 
@@ -80,6 +87,14 @@ public class ErmsDistributionImport
 
 			mapping.addMapper(DbImportObjectMapper.NewInstance("gu_id", "area", ErmsImportBase.AREA_NAMESPACE));
 			mapping.addMapper(DbImportAnnotationMapper.NewInstance("note", AnnotationType.EDITORIAL()));
+            //last action
+			AnnotationType speciesExpertNameAnnType = getAnnotationType(ErmsTransformer.uuidAnnSpeciesExpertName, "species expert name", "species expert name", "species expert name");
+            mapping.addMapper(DbImportAnnotationMapper.NewInstance("ExpertName", speciesExpertNameAnnType)); //according to sql script ExpertName maps to SpeciesExpertName in ERMS
+            AnnotationType lastActionDateType = getAnnotationType(DbLastActionMapper.uuidAnnotationTypeLastActionDate, "Last action date", "Last action date", null);
+            mapping.addMapper(DbImportAnnotationMapper.NewInstance("lastActionDate", lastActionDateType));
+            AnnotationType lastActionType = getAnnotationType(DbLastActionMapper.uuidAnnotationTypeLastAction, "Last action", "Last action", null);
+            MarkerType hasNoLastActionMarkerType = getMarkerType(DbLastActionMapper.uuidMarkerTypeHasNoLastAction, "has no last action", "No last action information available", "no last action");
+            mapping.addMapper(DbImportAnnotationMapper.NewInstance("lastAction", lastActionType, hasNoLastActionMarkerType));
 
 			mapping.addMapper(DbIgnoreMapper.NewInstance("unacceptsource_id"));
 			mapping.addMapper(DbIgnoreMapper.NewInstance("unacceptreason"));
@@ -105,6 +120,15 @@ public class ErmsDistributionImport
 		}
 		return mapping;
 	}
+
+    Integer lastDistributionId = null;
+    @Override
+    protected boolean ignoreRecord(ResultSet rs) throws SQLException {
+        Integer id = rs.getInt("id");
+        boolean result = id.equals(lastDistributionId);
+        lastDistributionId = id;
+        return result;
+    }
 
 	@Override
 	public Map<Object, Map<String, ? extends CdmBase>> getRelatedObjectsForPartition(ResultSet rs, ErmsImportState state) {

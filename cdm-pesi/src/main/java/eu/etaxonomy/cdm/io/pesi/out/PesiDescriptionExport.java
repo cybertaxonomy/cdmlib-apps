@@ -37,7 +37,6 @@ import eu.etaxonomy.cdm.io.common.mapping.out.DbDescriptionElementTaxonMapper;
 import eu.etaxonomy.cdm.io.common.mapping.out.DbDistributionStatusMapper;
 import eu.etaxonomy.cdm.io.common.mapping.out.DbExportIgnoreMapper;
 import eu.etaxonomy.cdm.io.common.mapping.out.DbLanguageMapper;
-import eu.etaxonomy.cdm.io.common.mapping.out.DbLastActionMapper;
 import eu.etaxonomy.cdm.io.common.mapping.out.DbObjectMapper;
 import eu.etaxonomy.cdm.io.common.mapping.out.DbOriginalNameMapper;
 import eu.etaxonomy.cdm.io.common.mapping.out.DbSimpleFilterMapper;
@@ -907,7 +906,7 @@ public class PesiDescriptionExport extends PesiExportBase {
 
 //		mapping.addMapper(MethodMapper.NewInstance("Region", this));
 		mapping.addMapper(DbDescriptionElementTaxonMapper.NewInstance("taxonFk"));
-	//	mapping.addMapper(ExpertsAndLastActionMapper.NewInstance());
+		mapping.addMapper(ExpertsAndLastActionMapper.NewInstance());
 		mapping.addCollectionMapping(getNoteSourceMapping());
 		return mapping;
 	}
@@ -968,7 +967,7 @@ public class PesiDescriptionExport extends PesiExportBase {
 
 	/**
 	 * Returns the CDM to PESI specific export mappings for additional taxon sources to create a new
-	 * source for the additional source
+	 * source for the additional taxon source
 	 * @see #{@link PesiDescriptionExport#getAdditionalTaxonSourceMapping()}
 	 * @return The {@link PesiExportMapping PesiExportMapping}.
 	 */
@@ -1027,11 +1026,8 @@ public class PesiDescriptionExport extends PesiExportBase {
 		mapping.addMapper(DbSingleSourceMapper.NewInstance("SourceFk", of ( DbSingleSourceMapper.EXCLUDE.WITH_ID) , ! IS_CACHE));
 		mapping.addMapper(DbSingleSourceMapper.NewInstance("SourceNameCache", of ( DbSingleSourceMapper.EXCLUDE.WITH_ID) , IS_CACHE));
 
-		//		mapping.addMapper(ExpertsAndLastActionMapper.NewInstance());
-	    mapping.addMapper(DbLastActionMapper.NewInstance("LastActionDate", false));
-	    mapping.addMapper(DbLastActionMapper.NewInstance("LastAction", true));
+		mapping.addMapper(ExpertsAndLastActionMapper.NewInstance());
 		return mapping;
-
 	}
 
 	private PesiExportMapping getImageMapping() {

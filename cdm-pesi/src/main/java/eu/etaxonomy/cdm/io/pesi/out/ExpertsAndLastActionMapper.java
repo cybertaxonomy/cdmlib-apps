@@ -11,25 +11,34 @@ package eu.etaxonomy.cdm.io.pesi.out;
 
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.Set;
+import java.util.UUID;
 
 import org.apache.log4j.Logger;
 
 import eu.etaxonomy.cdm.io.common.DbExportStateBase;
 import eu.etaxonomy.cdm.io.common.mapping.MultipleAttributeMapperBase;
+import eu.etaxonomy.cdm.io.common.mapping.out.DbAnnotationMapper;
 import eu.etaxonomy.cdm.io.common.mapping.out.DbExportNotYetImplementedMapper;
 import eu.etaxonomy.cdm.io.common.mapping.out.DbLastActionMapper;
 import eu.etaxonomy.cdm.io.common.mapping.out.DbSingleAttributeExportMapperBase;
 import eu.etaxonomy.cdm.io.common.mapping.out.IDbExportMapper;
 import eu.etaxonomy.cdm.io.common.mapping.out.IExportTransformer;
 import eu.etaxonomy.cdm.io.common.mapping.out.IndexCounter;
+import eu.etaxonomy.cdm.io.pesi.erms.ErmsTransformer;
 import eu.etaxonomy.cdm.model.common.CdmBase;
 
 /**
  * @author a.mueller
  * @since 12.05.2009
  */
-public class ExpertsAndLastActionMapper extends MultipleAttributeMapperBase<DbSingleAttributeExportMapperBase<DbExportStateBase<?, IExportTransformer>>> implements IDbExportMapper<DbExportStateBase<?, IExportTransformer>, IExportTransformer>{
-	@SuppressWarnings("unused")
+public class ExpertsAndLastActionMapper
+        extends MultipleAttributeMapperBase<DbSingleAttributeExportMapperBase<DbExportStateBase<?, IExportTransformer>>>
+        implements IDbExportMapper<DbExportStateBase<?, IExportTransformer>, IExportTransformer>{
+
+    @SuppressWarnings("unused")
 	private static final Logger logger = Logger.getLogger(ExpertsAndLastActionMapper.class);
 
 	private static final boolean IS_ACTION_TYPE = true;
@@ -41,11 +50,18 @@ public class ExpertsAndLastActionMapper extends MultipleAttributeMapperBase<DbSi
 	private ExpertsAndLastActionMapper() {
 		singleMappers.add(DbLastActionMapper.NewInstance("LastActionDate", ! IS_ACTION_TYPE));
 		singleMappers.add(DbLastActionMapper.NewInstance("LastAction", IS_ACTION_TYPE));
-		singleMappers.add(DbExportNotYetImplementedMapper.NewInstance("SpeciesExpertName", "Need to better understand what the species expert name is"));
+		singleMappers.add(DbAnnotationMapper.NewIncludedInstance(getSpeciesExpertNameType(), "SpeciesExpertName"));
+		singleMappers.add(DbExportNotYetImplementedMapper.NewInstance("SpeciesExpertName", "Only implemented for ERMS until now. For other need to better understand what the species expert name is"));
 		singleMappers.add(DbExportNotYetImplementedMapper.NewInstance("SpeciesExpertGUID", "SpeciesExpertGUID derives from an external mapeing list: name to GUID from expertsDB"));
 	}
 
-	@Override
+    private Collection<UUID> getSpeciesExpertNameType() {
+        Set<UUID> result = new HashSet<>();
+        result.add(ErmsTransformer.uuidAnnSpeciesExpertName);
+        return result;
+    }
+
+    @Override
     public void initialize(PreparedStatement stmt, IndexCounter index, DbExportStateBase<?, IExportTransformer> state, String tableName) {
 		for (DbSingleAttributeExportMapperBase<DbExportStateBase<?, IExportTransformer>> mapper : singleMappers){
 			mapper.initialize(stmt, index, state, tableName);

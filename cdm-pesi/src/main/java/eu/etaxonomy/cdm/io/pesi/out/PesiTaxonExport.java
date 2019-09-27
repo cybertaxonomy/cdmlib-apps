@@ -170,7 +170,7 @@ public class PesiTaxonExport extends PesiExportBase {
 			additionalSourceMapping.initialize(state);
 
 			// Find extensionTypes
-			lastActionExtensionType = (ExtensionType)getTermService().find(PesiTransformer.lastActionUuid);
+			lastActionExtensionType = (ExtensionType)getTermService().find(PesiTransformer.uuidExtLastAction);
 			lastActionDateExtensionType = (ExtensionType)getTermService().find(PesiTransformer.uuidExtLastActionDate);
 			expertNameExtensionType = (ExtensionType)getTermService().find(PesiTransformer.uuidExtExpertName);
 			speciesExpertNameExtensionType = (ExtensionType)getTermService().find(PesiTransformer.uuidExtSpeciesExpertName);

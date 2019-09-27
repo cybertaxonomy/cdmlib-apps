@@ -22,6 +22,7 @@ import eu.etaxonomy.cdm.hibernate.HibernateProxyHelper;
 import eu.etaxonomy.cdm.io.berlinModel.BerlinModelTransformer;
 import eu.etaxonomy.cdm.io.common.DbExportBase;
 import eu.etaxonomy.cdm.io.common.mapping.out.DbLastActionMapper;
+import eu.etaxonomy.cdm.io.pesi.erms.ErmsTransformer;
 import eu.etaxonomy.cdm.model.common.AnnotationType;
 import eu.etaxonomy.cdm.model.common.CdmBase;
 import eu.etaxonomy.cdm.model.common.Marker;
@@ -521,7 +522,8 @@ public abstract class PesiExportBase
         Set<UUID> uuidSet = new HashSet<>();
         uuidSet.add(DbLastActionMapper.uuidAnnotationTypeLastActionDate);
         uuidSet.add(DbLastActionMapper.uuidAnnotationTypeLastAction);
-        @SuppressWarnings({ "unchecked", "rawtypes" })
+        uuidSet.add(ErmsTransformer.uuidAnnSpeciesExpertName);
+        @SuppressWarnings({"unchecked","rawtypes"})
         List<AnnotationType> result = (List)getTermService().find(uuidSet);
         return result;
     }

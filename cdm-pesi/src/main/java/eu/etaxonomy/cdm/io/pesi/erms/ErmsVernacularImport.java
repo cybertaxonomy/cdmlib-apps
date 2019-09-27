@@ -62,16 +62,15 @@ public class ErmsVernacularImport  extends ErmsImportBase<CommonTaxonName> {
 	@Override
 	protected String getRecordQuery(ErmsImportConfigurator config) {
 		String strRecordQuery =
-			" SELECT v.*, tu.tu_acctaxon, tu.id, l.*, gr.date lastActionDate, a.action_name lastAction  " +
-			" FROM vernaculars v INNER JOIN tu ON v.tu_id = tu.id "
-			+ "   LEFT OUTER JOIN languages l ON l.LanID = v.lan_id "
-			+ " LEFT JOIN ( " +
-			        " SELECT maxDate.vernacular_id, maxDate.date, max(action_id) action_id " +
-			        " FROM (SELECT vernacular_id, max(s.sessiondate) date FROM  vernaculars_sessions MN INNER JOIN sessions s ON s.id = MN.session_id GROUP BY vernacular_id) maxDate " +
-			            " INNER JOIN (SELECT MN2.vernacular_id, MN2.action_id, s2.sessiondate FROM vernaculars_sessions MN2  INNER JOIN sessions s2 ON s2.id = MN2.session_id) as a ON a.vernacular_id = maxDate.vernacular_id AND a.sessiondate = maxDate.date " +
-			            " GROUP BY maxDate.vernacular_id,  maxDate.date) as gr ON v.id = gr.vernacular_id " +
-			            " LEFT JOIN actions a ON a.id = gr.action_id " +
-			" WHERE ( v.id IN (" + ID_LIST_TOKEN + ") )";
+			" SELECT v.*, tu.tu_acctaxon, tu.id, l.*, " +
+			       " s.sessiondate lastActionDate, a.action_name lastAction, s.ExpertName " +
+			" FROM vernaculars v INNER JOIN tu ON v.tu_id = tu.id " +
+			"     LEFT OUTER JOIN languages l ON l.LanID = v.lan_id " +
+            "     LEFT OUTER JOIN vernaculars_sessions MN ON MN.vernacular_id = v.id " +
+            "     LEFT OUTER JOIN [sessions] s ON s.id = MN.session_id " +
+            "     LEFT OUTER JOIN actions a ON a.id = MN.action_id " +
+			" WHERE ( v.id IN (" + ID_LIST_TOKEN + ") )" +
+			" ORDER BY v.id, s.sessiondate DESC, a.id DESC ";
 		return strRecordQuery;
 	}
 
@@ -85,7 +84,9 @@ public class ErmsVernacularImport  extends ErmsImportBase<CommonTaxonName> {
 			mapping.addMapper(DbImportObjectMapper.NewInstance("lan_id", "language", LANGUAGE_NAMESPACE));
 			mapping.addMapper(DbImportStringMapper.NewInstance("vername", "name"));
 			mapping.addMapper(DbImportAnnotationMapper.NewInstance("note", AnnotationType.EDITORIAL(), Language.DEFAULT()));
-			//last action
+			//last action+expert
+	        AnnotationType speciesExpertNameAnnType = getAnnotationType(ErmsTransformer.uuidAnnSpeciesExpertName, "species expert name", "species expert name", "species expert name");
+	        mapping.addMapper(DbImportAnnotationMapper.NewInstance("ExpertName", speciesExpertNameAnnType)); //according to sql script ExpertName maps to SpeciesExpertName in ERMS
 			AnnotationType lastActionDateType = getAnnotationType(DbLastActionMapper.uuidAnnotationTypeLastActionDate, "Last action date", "Last action date", null);
             mapping.addMapper(DbImportAnnotationMapper.NewInstance("lastActionDate", lastActionDateType));
             AnnotationType lastActionType = getAnnotationType(DbLastActionMapper.uuidAnnotationTypeLastAction, "Last action", "Last action", null);
@@ -95,10 +96,14 @@ public class ErmsVernacularImport  extends ErmsImportBase<CommonTaxonName> {
 		return mapping;
 	}
 
-	@Override
-	protected void doInvoke(ErmsImportState state) {
-		super.doInvoke(state);
-	}
+    Integer lastVernacularId = null;
+    @Override
+    protected boolean ignoreRecord(ResultSet rs) throws SQLException {
+        Integer id = rs.getInt("id");
+        boolean result = id.equals(lastVernacularId);
+        lastVernacularId = id;
+        return result;
+    }
 
 	@Override
 	public Map<Object, Map<String, ? extends CdmBase>> getRelatedObjectsForPartition(ResultSet rs, ErmsImportState state) {

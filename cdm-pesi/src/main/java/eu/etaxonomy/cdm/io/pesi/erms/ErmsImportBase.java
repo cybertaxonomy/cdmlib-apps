@@ -121,7 +121,9 @@ public abstract class ErmsImportBase<CDM_BASE extends CdmBase>
 		ResultSet rs = partitioner.getResultSet();
 		try{
 			while (rs.next()){
-				success &= mapping.invoke(rs, objectsToSave);
+			    if (!ignoreRecord(rs)) {
+                    success &= mapping.invoke(rs, objectsToSave);
+                }
 			}
 		} catch (SQLException e) {
 			logger.error("SQLException:" +  e);
@@ -133,7 +135,21 @@ public abstract class ErmsImportBase<CDM_BASE extends CdmBase>
 		return success;
 	}
 
-	protected abstract DbImportMapping<?, ?> getMapping();
+
+    /**
+     * Returns <code>true</code> if the current
+     * record should be ignored. Should be overriden
+     * if a subclass does not want to handle all records.
+     * This is primarily important for those subclasses
+     * handling last action information which create multiple
+     * records per base record.
+     * @throws SQLException
+     */
+    protected boolean ignoreRecord(@SuppressWarnings("unused") ResultSet rs) throws SQLException {
+        return false;
+    }
+
+    protected abstract DbImportMapping<?, ?> getMapping();
 
 	protected abstract String getRecordQuery(ErmsImportConfigurator config);
 
