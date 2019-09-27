@@ -434,7 +434,7 @@ public class PesiRelTaxonExport extends PesiExportBase {
 		mapping.addMapper(MethodMapper.NewInstance("TaxonFk2", this.getClass(), "getTaxonFk2", standardMethodParameter, PesiExportState.class));
 		mapping.addMapper(MethodMapper.NewInstance("RelTaxonQualifierFk", this));
 		mapping.addMapper(MethodMapper.NewInstance("RelQualifierCache", this, RelationshipBase.class, PesiExportState.class));
-		mapping.addMapper(DbAnnotationMapper.NewInstance(getLastActionAnnotationTypes(), "Notes"));
+		mapping.addMapper(DbAnnotationMapper.NewExludedInstance(getLastActionAnnotationTypes(), "Notes"));
 
 		return mapping;
 	}
@@ -450,7 +450,7 @@ public class PesiRelTaxonExport extends PesiExportBase {
         mapping.addMapper(DbObjectMapper.NewInstance("acceptedTaxon", "TaxonFk2"));
         mapping.addMapper(MethodMapper.NewInstance("RelTaxonQualifierFk", this, Synonym.class));
         mapping.addMapper(MethodMapper.NewInstance("RelQualifierCache", this.getClass(), "getSynonymTypeCache", Synonym.class, PesiExportState.class));
-        mapping.addMapper(DbAnnotationMapper.NewInstance(getLastActionAnnotationTypes(), "Notes"));
+        mapping.addMapper(DbAnnotationMapper.NewExludedInstance(getLastActionAnnotationTypes(), "Notes"));
 
         return mapping;
     }
