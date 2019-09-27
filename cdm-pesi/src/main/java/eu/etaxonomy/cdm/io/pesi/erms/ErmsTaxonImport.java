@@ -115,9 +115,6 @@ public class ErmsTaxonImport
             MarkerType hasNoLastActionMarkerType = getMarkerType(DbLastActionMapper.uuidMarkerTypeHasNoLastAction, "has no last action", "No last action information available", "no last action");
             mapping.addMapper(DbImportAnnotationMapper.NewInstance("lastAction", lastActionType, hasNoLastActionMarkerType));
 
-//			UUID hiddenUuid = ErmsTransformer.uuidHidden;
-//			mapping.addMapper(DbImportMarkerCreationMapper.Mapper.NewInstance("qualitystatus_name", qualityUuid, "quality status", "quality status", "quality status")); //checked by Tax Editor ERMS1.1, Added by db management team (2x), checked by Tax Editor
-
 			//not yet implemented
 			mapping.addMapper(DbNotYetImplementedMapper.NewInstance("tu_sp", "included in rank/object creation"));
 			mapping.addMapper(DbIgnoreMapper.NewInstance("cache_citation", "Needs check if this is needed in PESI"));

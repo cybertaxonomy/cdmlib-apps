@@ -171,10 +171,10 @@ public class PesiTaxonExport extends PesiExportBase {
 
 			// Find extensionTypes
 			lastActionExtensionType = (ExtensionType)getTermService().find(PesiTransformer.lastActionUuid);
-			lastActionDateExtensionType = (ExtensionType)getTermService().find(PesiTransformer.lastActionDateUuid);
-			expertNameExtensionType = (ExtensionType)getTermService().find(PesiTransformer.expertNameUuid);
-			speciesExpertNameExtensionType = (ExtensionType)getTermService().find(PesiTransformer.speciesExpertNameUuid);
-			cacheCitationExtensionType = (ExtensionType)getTermService().find(PesiTransformer.cacheCitationUuid);
+			lastActionDateExtensionType = (ExtensionType)getTermService().find(PesiTransformer.uuidExtLastActionDate);
+			expertNameExtensionType = (ExtensionType)getTermService().find(PesiTransformer.uuidExtExpertName);
+			speciesExpertNameExtensionType = (ExtensionType)getTermService().find(PesiTransformer.uuidExtSpeciesExpertName);
+			cacheCitationExtensionType = (ExtensionType)getTermService().find(PesiTransformer.uuidExtCacheCitation);
 
 			//Export Taxa..
 			success &= doPhase01(state, mapping, additionalSourceMapping);
@@ -2548,9 +2548,9 @@ public class PesiTaxonExport extends PesiExportBase {
 		mapping.addMapper(DbLastActionMapper.NewInstance("LastAction", true));
 
 		//experts
-		ExtensionType extensionTypeSpeciesExpertName = (ExtensionType)getTermService().find(PesiTransformer.speciesExpertNameUuid);
+		ExtensionType extensionTypeSpeciesExpertName = (ExtensionType)getTermService().find(PesiTransformer.uuidExtSpeciesExpertName);
 		mapping.addMapper(DbExtensionMapper.NewInstance(extensionTypeSpeciesExpertName, "SpeciesExpertName"));
-		ExtensionType extensionTypeExpertName = (ExtensionType)getTermService().find(PesiTransformer.expertNameUuid);
+		ExtensionType extensionTypeExpertName = (ExtensionType)getTermService().find(PesiTransformer.uuidExtExpertName);
 		mapping.addMapper(DbExtensionMapper.NewInstance(extensionTypeExpertName, "ExpertName"));
 
 //		mapping.addMapper(MethodMapper.NewInstance("ParentTaxonFk", this, TaxonBase.class, PesiExportState.class));  //by AM, doesn't work, FK exception

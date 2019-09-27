@@ -54,7 +54,7 @@ public class ErmsReferenceImport
 
 	private static final String pluralString = "sources";
 	private static final String dbTableName = "sources";
-	private static final Class cdmTargetClass = Reference.class;
+	private static final Class<?> cdmTargetClass = Reference.class;
 
 	public ErmsReferenceImport(){
 		super(pluralString, dbTableName, cdmTargetClass);
@@ -105,7 +105,7 @@ public class ErmsReferenceImport
 
 	@Override
     public Reference createObject(ResultSet rs, ErmsImportState state) throws SQLException {
-		int id = rs.getInt("id");
+//		int id = rs.getInt("id");
 		String type = rs.getString("source_type");
 		Reference ref;
 		if (type.equalsIgnoreCase("p")){

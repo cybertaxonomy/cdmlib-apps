@@ -11,10 +11,7 @@ package eu.etaxonomy.cdm.io.pesi.out;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
-import java.util.UUID;
 
 import org.apache.log4j.Logger;
 import org.springframework.stereotype.Component;
@@ -22,10 +19,8 @@ import org.springframework.transaction.TransactionStatus;
 
 import eu.etaxonomy.cdm.io.common.Source;
 import eu.etaxonomy.cdm.io.common.mapping.out.DbAnnotationMapper;
-import eu.etaxonomy.cdm.io.common.mapping.out.DbLastActionMapper;
 import eu.etaxonomy.cdm.io.common.mapping.out.DbObjectMapper;
 import eu.etaxonomy.cdm.io.common.mapping.out.MethodMapper;
-import eu.etaxonomy.cdm.model.common.AnnotationType;
 import eu.etaxonomy.cdm.model.common.CdmBase;
 import eu.etaxonomy.cdm.model.common.IdentifiableEntity;
 import eu.etaxonomy.cdm.model.common.RelationshipBase;
@@ -460,14 +455,6 @@ public class PesiRelTaxonExport extends PesiExportBase {
         return mapping;
     }
 
-    private List<AnnotationType> getLastActionAnnotationTypes() {
-        Set<UUID> uuidSet = new HashSet<>();
-        uuidSet.add(DbLastActionMapper.uuidAnnotationTypeLastActionDate);
-        uuidSet.add(DbLastActionMapper.uuidAnnotationTypeLastAction);
-        @SuppressWarnings({ "unchecked", "rawtypes" })
-        List<AnnotationType> result = (List)getTermService().find(uuidSet);
-        return result;
-    }
 
     @Override
     protected boolean doCheck(PesiExportState state) {

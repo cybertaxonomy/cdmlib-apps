@@ -92,16 +92,16 @@ public final class PesiTransformer extends ExportTransformerBase{
 
 
 	//extension type uuids
-	public static final UUID cacheCitationUuid = UUID.fromString("29656168-32d6-4301-9067-d57c63be5c67");
+	public static final UUID uuidExtCacheCitation = UUID.fromString("29656168-32d6-4301-9067-d57c63be5c67");
 	//public static final UUID expertUserIdUuid = UUID.fromString("e25813d3-c67c-4585-9aa0-970fafde50b4");
 	//public static final UUID speciesExpertUserIdUuid = UUID.fromString("6d42abd8-8894-4980-ae07-e918affd4172");
-	public static final UUID expertNameUuid = BerlinModelTransformer.uuidExpertName;
-	public static final UUID speciesExpertNameUuid = BerlinModelTransformer.uuidSpeciesExpertName;
-	public static final UUID lastActionDateUuid = UUID.fromString("8d0a7d81-bb83-4576-84c3-8c906ef039b2");
-	public static final UUID lastActionUuid = UUID.fromString("bc20d5bc-6161-4279-9499-89ea26ce5f6a");
-	public static final UUID taxCommentUuid = UUID.fromString("8041a752-0479-4626-ab1b-b266b751f816");
-	public static final UUID fauCommentUuid = UUID.fromString("054f773a-41c8-4ad5-83e3-981320c1c126");
-	public static final UUID fauExtraCodesUuid = UUID.fromString("b8c7e77d-9869-4787-bed6-b4b302dbc5f5");
+	public static final UUID uuidExtExpertName = BerlinModelTransformer.uuidExpertName;
+	public static final UUID uuidExtSpeciesExpertName = BerlinModelTransformer.uuidSpeciesExpertName;
+	public static final UUID uuidExtLastActionDate = UUID.fromString("8d0a7d81-bb83-4576-84c3-8c906ef039b2");
+	public static final UUID uuidExtLastAction = UUID.fromString("bc20d5bc-6161-4279-9499-89ea26ce5f6a");
+	public static final UUID uuidExtTaxComment = UUID.fromString("8041a752-0479-4626-ab1b-b266b751f816");
+	public static final UUID uuidExtFauComment = UUID.fromString("054f773a-41c8-4ad5-83e3-981320c1c126");
+	public static final UUID uuidExtFauExtraCodes = UUID.fromString("b8c7e77d-9869-4787-bed6-b4b302dbc5f5");
 
 	// References
 	public static int REF_ARTICLE_IN_PERIODICAL = 1;
@@ -2381,11 +2381,11 @@ public final class PesiTransformer extends ExportTransformerBase{
 	 */
 	public static Integer getNoteCategoryFk(UUID uuid) {
 		Integer result = null;
-		if (uuid.equals(taxCommentUuid)) {
+		if (uuid.equals(uuidExtTaxComment)) {
 			result = 270;
-		} else if (uuid.equals(fauCommentUuid)) {
+		} else if (uuid.equals(uuidExtFauComment)) {
 			result = 281;
-		} else if (uuid.equals(fauExtraCodesUuid)) {
+		} else if (uuid.equals(uuidExtFauExtraCodes)) {
 			result = 278;
 		}
 		return result;
@@ -2398,11 +2398,11 @@ public final class PesiTransformer extends ExportTransformerBase{
 	 */
 	public static String getNoteCategoryCache(UUID uuid) {
 		String result = null;
-		if (uuid.equals(taxCommentUuid)) {
+		if (uuid.equals(uuidExtTaxComment)) {
 			result = "Taxonomy";
-		} else if (uuid.equals(fauCommentUuid)) {
+		} else if (uuid.equals(uuidExtFauComment)) {
 			result = "Biology";
-		} else if (uuid.equals(fauExtraCodesUuid)) {
+		} else if (uuid.equals(uuidExtFauExtraCodes)) {
 			result = "Distribution";
 		}
 		return result;

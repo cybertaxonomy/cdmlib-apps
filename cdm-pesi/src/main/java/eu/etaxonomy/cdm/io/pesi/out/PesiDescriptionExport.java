@@ -514,9 +514,9 @@ public class PesiDescriptionExport extends PesiExportBase {
 		//int limit = state.getConfig().getLimitSave();
 		int limit = 2000;
 		txStatus = startTransaction(true);
-		ExtensionType taxCommentExtensionType = (ExtensionType)getTermService().find(PesiTransformer.taxCommentUuid);
-		ExtensionType fauCommentExtensionType = (ExtensionType)getTermService().find(PesiTransformer.fauCommentUuid);
-		ExtensionType fauExtraCodesExtensionType = (ExtensionType)getTermService().find(PesiTransformer.fauExtraCodesUuid);
+		ExtensionType taxCommentExtensionType = (ExtensionType)getTermService().find(PesiTransformer.uuidExtTaxComment);
+		ExtensionType fauCommentExtensionType = (ExtensionType)getTermService().find(PesiTransformer.uuidExtFauComment);
+		ExtensionType fauExtraCodesExtensionType = (ExtensionType)getTermService().find(PesiTransformer.uuidExtFauExtraCodes);
 		List<TaxonName> taxonNameList;
 
 		int count = 0;
@@ -537,20 +537,20 @@ public class PesiDescriptionExport extends PesiExportBase {
 					if (extension.getType().equals(taxCommentExtensionType)) {
 						String taxComment = extension.getValue();
 						invokeNotes(taxComment,
-								PesiTransformer.getNoteCategoryFk(PesiTransformer.taxCommentUuid),
-								PesiTransformer.getNoteCategoryCache(PesiTransformer.taxCommentUuid),
+								PesiTransformer.getNoteCategoryFk(PesiTransformer.uuidExtTaxComment),
+								PesiTransformer.getNoteCategoryCache(PesiTransformer.uuidExtTaxComment),
 								null, null, getTaxonKey(taxonName, state),connection);
 					} else if (extension.getType().equals(fauCommentExtensionType)) {
 						String fauComment = extension.getValue();
 						invokeNotes(fauComment,
-								PesiTransformer.getNoteCategoryFk(PesiTransformer.fauCommentUuid),
-								PesiTransformer.getNoteCategoryCache(PesiTransformer.fauCommentUuid),
+								PesiTransformer.getNoteCategoryFk(PesiTransformer.uuidExtFauComment),
+								PesiTransformer.getNoteCategoryCache(PesiTransformer.uuidExtFauComment),
 								null, null, getTaxonKey(taxonName, state),connection);
 					} else if (extension.getType().equals(fauExtraCodesExtensionType)) {
 						String fauExtraCodes = extension.getValue();
 						invokeNotes(fauExtraCodes,
-								PesiTransformer.getNoteCategoryFk(PesiTransformer.fauExtraCodesUuid),
-								PesiTransformer.getNoteCategoryCache(PesiTransformer.fauExtraCodesUuid),
+								PesiTransformer.getNoteCategoryFk(PesiTransformer.uuidExtFauExtraCodes),
+								PesiTransformer.getNoteCategoryCache(PesiTransformer.uuidExtFauExtraCodes),
 								null, null, getTaxonKey(taxonName, state),connection);
 					}
 				}

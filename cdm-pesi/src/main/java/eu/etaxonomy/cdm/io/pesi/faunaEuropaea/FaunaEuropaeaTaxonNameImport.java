@@ -433,21 +433,21 @@ public class FaunaEuropaeaTaxonNameImport extends FaunaEuropaeaImportBase  {
 					// Add Note extensions to this taxon
 
 					if (!StringUtils.isBlank(taxComment)){
-						Extension.NewInstance(taxonBase, taxComment, getExtensionType(state, PesiTransformer.taxCommentUuid, "TaxComment", "TaxComment", "TC"));
+						Extension.NewInstance(taxonBase, taxComment, getExtensionType(state, PesiTransformer.uuidExtTaxComment, "TaxComment", "TaxComment", "TC"));
 					}
 					if (!StringUtils.isBlank(fauComment)){
-						Extension.NewInstance(taxonBase, fauComment, getExtensionType(state, PesiTransformer.fauCommentUuid, "FauComment", "FauComment", "FC"));
+						Extension.NewInstance(taxonBase, fauComment, getExtensionType(state, PesiTransformer.uuidExtFauComment, "FauComment", "FauComment", "FC"));
 					}
 					if (!StringUtils.isBlank(fauExtraCodes)){
-						Extension.NewInstance(taxonBase, fauExtraCodes, getExtensionType(state, PesiTransformer.fauExtraCodesUuid, "FauExtraCodes", "FauExtraCodes", "FEC"));
+						Extension.NewInstance(taxonBase, fauExtraCodes, getExtensionType(state, PesiTransformer.uuidExtFauExtraCodes, "FauExtraCodes", "FauExtraCodes", "FEC"));
 					}
 					// Add UserId extensions to this zooName
 					//Extension.NewInstance(zooName, expertUserId, getExtensionType(state, PesiTransformer.expertUserIdUuid, "expertUserId", "expertUserId", "EUID"));
 					//Extension.NewInstance(zooName, speciesExpertUserId, getExtensionType(state, PesiTransformer.speciesExpertUserIdUuid, "speciesExpertUserId", "speciesExpertUserId", "SEUID"));
 
 					// Add Expert extensions to this zooName
-					Extension.NewInstance(taxonBase, expertName, getExtensionType(state, PesiTransformer.expertNameUuid, "ExpertName", "ExpertName", "EN"));
-					Extension.NewInstance(taxonBase, speciesExpertName, getExtensionType(state, PesiTransformer.speciesExpertNameUuid, "SpeciesExpertName", "SpeciesExpertName", "SEN"));
+					Extension.NewInstance(taxonBase, expertName, getExtensionType(state, PesiTransformer.uuidExtExpertName, "ExpertName", "ExpertName", "EN"));
+					Extension.NewInstance(taxonBase, speciesExpertName, getExtensionType(state, PesiTransformer.uuidExtSpeciesExpertName, "SpeciesExpertName", "SpeciesExpertName", "SEN"));
 
 
 					ImportHelper.setOriginalSource(taxonBase, fauEuConfig.getSourceReference(), taxonId, OS_NAMESPACE_TAXON);

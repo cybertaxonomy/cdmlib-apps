@@ -212,7 +212,7 @@ public class PesiSourceExport extends PesiExportBase {
 	private static Integer getSourceCategoryFK(Reference reference) {
 		Integer result = null;
 		try {
-		result = PesiTransformer.reference2SourceCategoryFK(reference);
+		    result = PesiTransformer.reference2SourceCategoryFK(reference);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -430,7 +430,7 @@ public class PesiSourceExport extends PesiExportBase {
 
 		mapping.addMapper(MethodMapper.NewInstance("NomRefCache", this));
 		mapping.addMapper(DbExtensionMapper.NewInstance(ExtensionType.URL(), "Link"));
-		mapping.addMapper(DbAnnotationMapper.NewInstance(null, "Notes"));
+		mapping.addMapper(DbAnnotationMapper.NewInstance((String)null, "Notes"));
 		mapping.addMapper(MethodMapper.NewInstance("RefIdInSource", this));
 		mapping.addMapper(MethodMapper.NewInstance("OriginalDB", this));
 

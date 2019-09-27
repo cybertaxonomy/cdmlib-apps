@@ -21,6 +21,8 @@ import eu.etaxonomy.cdm.api.service.pager.Pager;
 import eu.etaxonomy.cdm.hibernate.HibernateProxyHelper;
 import eu.etaxonomy.cdm.io.berlinModel.BerlinModelTransformer;
 import eu.etaxonomy.cdm.io.common.DbExportBase;
+import eu.etaxonomy.cdm.io.common.mapping.out.DbLastActionMapper;
+import eu.etaxonomy.cdm.model.common.AnnotationType;
 import eu.etaxonomy.cdm.model.common.CdmBase;
 import eu.etaxonomy.cdm.model.common.Marker;
 import eu.etaxonomy.cdm.model.common.MarkerType;
@@ -514,5 +516,14 @@ public abstract class PesiExportBase
 		}
 		return null;
 	}
+
+    protected List<AnnotationType> getLastActionAnnotationTypes() {
+        Set<UUID> uuidSet = new HashSet<>();
+        uuidSet.add(DbLastActionMapper.uuidAnnotationTypeLastActionDate);
+        uuidSet.add(DbLastActionMapper.uuidAnnotationTypeLastAction);
+        @SuppressWarnings({ "unchecked", "rawtypes" })
+        List<AnnotationType> result = (List)getTermService().find(uuidSet);
+        return result;
+    }
 
 }
