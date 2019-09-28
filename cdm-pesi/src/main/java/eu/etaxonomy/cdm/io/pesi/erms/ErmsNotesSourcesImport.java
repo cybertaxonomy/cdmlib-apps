@@ -26,6 +26,7 @@ import eu.etaxonomy.cdm.io.pesi.erms.validation.ErmsNoteSourceImportValidator;
 import eu.etaxonomy.cdm.model.common.CdmBase;
 import eu.etaxonomy.cdm.model.description.CommonTaxonName;
 import eu.etaxonomy.cdm.model.description.DescriptionElementSource;
+import eu.etaxonomy.cdm.model.description.TextData;
 import eu.etaxonomy.cdm.model.reference.Reference;
 
 /**
@@ -58,8 +59,8 @@ public class ErmsNotesSourcesImport extends ErmsImportBase<CommonTaxonName> {
 	protected String getRecordQuery(ErmsImportConfigurator config) {
 		String strQuery =
 			" SELECT * " +
-			" FROM vernaculars_sources " +
-			" WHERE vernacular_id IN (" + ID_LIST_TOKEN + ") AND " +
+			" FROM notes_sources " +
+			" WHERE note_id IN (" + ID_LIST_TOKEN + ") AND " +
 					" source_id IN (" + ID_LIST_TOKEN + ")";
 		return strQuery;
 	}
@@ -67,8 +68,8 @@ public class ErmsNotesSourcesImport extends ErmsImportBase<CommonTaxonName> {
 	@Override
 	protected String getIdQuery() {
 		String strQuery =
-			" SELECT vernacular_id, source_id " +
-			" FROM vernaculars_sources "
+			" SELECT note_id, source_id " +
+			" FROM notes_sources "
 			;
 		return strQuery;
 	}
@@ -77,9 +78,9 @@ public class ErmsNotesSourcesImport extends ErmsImportBase<CommonTaxonName> {
 	protected DbImportMapping<ErmsImportState, ErmsImportConfigurator> getMapping() {
 		if (mapping == null){
 			mapping = new DbImportMapping<>();
-			String vernacularNamespace = ErmsImportBase.VERNACULAR_NAMESPACE;
+			String noteNamespace = ErmsImportBase.NOTES_NAMESPACE;
 			String referenceNamespace = ErmsImportBase.REFERENCE_NAMESPACE;
-			mapping.addMapper(DbImportDescriptionElementSourceCreationMapper.NewInstance("vernacular_id", vernacularNamespace, "source_id", referenceNamespace ));
+			mapping.addMapper(DbImportDescriptionElementSourceCreationMapper.NewInstance("note_id", noteNamespace, "source_id", referenceNamespace ));
 		}
 		return mapping;
 	}
@@ -92,20 +93,19 @@ public class ErmsNotesSourcesImport extends ErmsImportBase<CommonTaxonName> {
 		Map<Object, Map<String, ? extends CdmBase>> result = new HashMap<>();
 
 		try{
-			Set<String> vernacularIdSet = new HashSet<String>();
-			Set<String> sourceIdSet = new HashSet<String>();
+			Set<String> noteIdSet = new HashSet<>();
+			Set<String> sourceIdSet = new HashSet<>();
 			while (rs.next()){
-				handleForeignKey(rs, vernacularIdSet, "vernacular_id");
+				handleForeignKey(rs, noteIdSet, "note_id");
 				handleForeignKey(rs, sourceIdSet, "source_id");
 			}
 
-			//vernacular map
-			nameSpace = ErmsImportBase.VERNACULAR_NAMESPACE;
-			cdmClass = CommonTaxonName.class;
-			idSet = vernacularIdSet;
-			Map<String, CommonTaxonName> vernacularMap = (Map<String, CommonTaxonName>)getCommonService().getSourcedObjectsByIdInSource(cdmClass, idSet, nameSpace);
-			result.put(nameSpace, vernacularMap);
-
+			//note map
+			nameSpace = ErmsImportBase.NOTES_NAMESPACE;
+			cdmClass = TextData.class;
+			idSet = noteIdSet;
+			Map<String, CommonTaxonName> noteMap = (Map<String, CommonTaxonName>)getCommonService().getSourcedObjectsByIdInSource(cdmClass, idSet, nameSpace);
+			result.put(nameSpace, noteMap);
 
 			//reference map
 			nameSpace = ErmsImportBase.REFERENCE_NAMESPACE;
