@@ -109,18 +109,19 @@ public class ErmsReferenceImport
 		String type = rs.getString("source_type");
 		Reference ref;
 		if (type.equalsIgnoreCase("p")){
-			//TDOO is this correct? maybe mark as 'publication'
 			ref = ReferenceFactory.newGeneric();
 			MarkerType markerType = getMarkerType(state, ErmsTransformer.uuidMarkerRefPublication, "Publication", "Publication", "p");
 			ref.addMarker(markerType, true);
 		}else if (type.equalsIgnoreCase("d")){
 			ref = ReferenceFactory.newDatabase();
 		}else if (type.equalsIgnoreCase("e")){
-			//TODO is this correct, maybe mark as "informal"
 			ref = ReferenceFactory.newGeneric();
+	        MarkerType markerType = getMarkerType(state, ErmsTransformer.uuidMarkerRefInformal, "Informal", "Informal", "e");
+	        ref.addMarker(markerType, true);
 		}else if (type.equalsIgnoreCase("i")){
-			//TODO is this correct?
 			ref = ReferenceFactory.newGeneric();
+	        MarkerType markerType = getMarkerType(state, ErmsTransformer.uuidMarkerRefTypeI, "Ref type i", "Ref type i", "i");
+	        ref.addMarker(markerType, true);
 		}else{
 			ref = ReferenceFactory.newGeneric();
 			logger.warn("Unknown reference type: " + type + ". Created generic instead.");
