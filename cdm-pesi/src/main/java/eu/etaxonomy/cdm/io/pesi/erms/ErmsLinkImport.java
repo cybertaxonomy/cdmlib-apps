@@ -57,7 +57,7 @@ public class ErmsLinkImport  extends ErmsImportBase<TaxonBase> {
 	protected String getRecordQuery(ErmsImportConfigurator config) {
 		String strRecordQuery =
 			" SELECT l.* " +
-			        ",'%s' + link_url + '%s' + ISNULL(link_text, '')   valueAll" + //+ ' ,@Note: ' + ISNULL(CAST(note as nvarchar(max)), '')
+			        ",'%s' + link_url + '%s' + ISNULL(link_text, ' ')   valueAll" + //+ ' ,@Note: ' + ISNULL(CAST(note as nvarchar(max)), ' ')
 			" FROM links l " +
 			" WHERE ( l.id IN (" + ID_LIST_TOKEN + ") )";
 		strRecordQuery = String.format(strRecordQuery, TOKEN_URL, TOKEN_LINKTEXT);

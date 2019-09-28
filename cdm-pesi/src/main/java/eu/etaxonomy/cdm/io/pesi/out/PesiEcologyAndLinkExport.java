@@ -70,11 +70,11 @@ public class PesiEcologyAndLinkExport extends PesiExportBase {
 			boolean success = true;
 
 			// Get specific mappings: (CDM) TaxonBase.marker -> (PESI) Note (ecology)
-			PesiExportMapping mapping = getMapping();
+			PesiExportMapping mapping = getEcologyMapping();
 			mapping.initialize(state);
 
 			PesiExportMapping urlMapping = getUrlMapping();
-			mapping.initialize(state);
+			urlMapping.initialize(state);
 
 			//All
 			success &= doPhase01(state, mapping, urlMapping);
@@ -111,7 +111,7 @@ public class PesiEcologyAndLinkExport extends PesiExportBase {
 		    ProfilerController.memorySnapshot();
 		}
 
-		List<String> propPath = Arrays.asList(new String[]{"markers.*"});
+		List<String> propPath = Arrays.asList(new String[]{"markers.*","extensions.*"});
 		int partitionCount = 0;
 		while ((taxonList = getNextTaxonPartition(TaxonBase.class, limit, partitionCount++, propPath )) != null   ) {
 
@@ -217,34 +217,39 @@ public class PesiEcologyAndLinkExport extends PesiExportBase {
     }
 
     @SuppressWarnings("unused")  //used by mapper
-    private static String getUrlNote_1(Extension extension, PesiExportState state) {
+    private static String getUrlNote_1(Extension extension) {
         String value = extension.getValue();
         if (value == null){
             return null;
         }else{
             //TODO use regex grouping
             String result = value.split(ErmsLinkImport.TOKEN_LINKTEXT)[0];
-            result = result.trim();
+            result = result.replace(ErmsLinkImport.TOKEN_URL, "").trim();
             return result;
         }
     }
 
-    @SuppressWarnings("unused")  //used by mapper
-    private static String getUrlNote_2(Extension extension, PesiExportState state) {
+//  @SuppressWarnings("unused")  //used by mapper
+    private static String getUrlNote_2(Extension extension) {
         String value = extension.getValue();
         if (value == null){
             return null;
         }else{
             //TODO use regex grouping
-            String result = value.split(ErmsLinkImport.TOKEN_LINKTEXT)[1];
-            result = result.trim();
-            return result;
+            String[] split = value.split(ErmsLinkImport.TOKEN_LINKTEXT);
+            if (split.length > 1){
+                String result = split[1];
+                result = result.trim();
+                return CdmUtils.Ne(result);
+            }else{
+                return null;
+            }
         }
     }
 
-    @SuppressWarnings("unused")  //used by mapper
-    private static Integer getNoteCategoryFk(Extension extension, PesiExportState state) {
-        String linktext = getUrlNote_2(extension, state);
+//  @SuppressWarnings("unused")  //used by mapper
+    private static Integer getNoteCategoryFk(Extension extension) {
+        String linktext = getUrlNote_2(extension);
         int catFk = categoryByLinkText(linktext);
         return catFk;
     }
@@ -252,9 +257,9 @@ public class PesiEcologyAndLinkExport extends PesiExportBase {
     private static int categoryByLinkText(String linktext) {
         if (linktext == null){
             return PesiTransformer.NoteCategory_undefined_link;
-        }else if (linktext.matches("(to fishbase|marine life inf).*")){
+        }else if (linktext.matches("(?i)(to fishbase|marine life inf).*")){
             return PesiTransformer.NoteCategory_Link_to_general_information;
-        }else if (linktext.matches(".*(clemam|nemys|algaebase|fishbase).*")){
+        }else if (linktext.matches("(?i).*(clemam|nemys|algaebase|fishbase).*")){
             return PesiTransformer.NoteCategory_Link_to_taxonomy;
         }else{
             return PesiTransformer.NoteCategory_undefined_link;
@@ -262,8 +267,8 @@ public class PesiEcologyAndLinkExport extends PesiExportBase {
     }
 
     @SuppressWarnings("unused")  //used by mapper
-    private static String getNoteCategoryCache(Extension extension, PesiExportState state) {
-        int catFk = getNoteCategoryFk(extension, state);
+    private static String getNoteCategoryCache(Extension extension) {
+        int catFk = getNoteCategoryFk(extension);
         String result = categoryByLinkText(catFk);
         return result;
     }
@@ -283,10 +288,11 @@ public class PesiEcologyAndLinkExport extends PesiExportBase {
 
 //******************************* MAPPINGS ********************************************
 
-    private PesiExportMapping getMapping() {
+    private IdIncMapper idIncMapperEcology = IdIncMapper.NewComputedInstance("NoteId");
+    private PesiExportMapping getEcologyMapping() {
         PesiExportMapping mapping = new PesiExportMapping(dbTableName);
 
-        mapping.addMapper(idIncMapper);
+        mapping.addMapper(idIncMapperEcology);
         mapping.addMapper(MethodMapper.NewInstance("Note_1", this, standardMethodParameter));
 
         mapping.addMapper(DbFixedIntegerMapper.NewInstance(PesiTransformer.NoteCategory_ecology, "NoteCategoryFk"));
@@ -296,19 +302,18 @@ public class PesiEcologyAndLinkExport extends PesiExportBase {
 
         mapping.addMapper(MethodMapper.NewInstance("TaxonFk", this, standardMethodParameter, PesiExportState.class));
 
-        mapping.addMapper(DbExportIgnoreMapper.NewInstance("Note_2", "Note_2 not used for ecology fact"));
-        mapping.addMapper(DbExportIgnoreMapper.NewInstance("Region", "Region not used for ecology fact"));
-        mapping.addMapper(DbExportIgnoreMapper.NewInstance("SpeciesExpertGUID", "SpeciesExpertGUID not used for ecology fact"));
-        mapping.addMapper(DbExportIgnoreMapper.NewInstance("SpeciesExpertName", "SpeciesExpertName not used for ecology fact"));
-        mapping.addMapper(DbExportIgnoreMapper.NewInstance("LastAction", "LastAction not used for ecology fact"));
-        mapping.addMapper(DbExportIgnoreMapper.NewInstance("LastActionDate", "LastActionDate not used for ecology fact"));
+        mapping.addMapper(DbExportIgnoreMapper.NewInstance("Note_2", "not used for ecology fact"));
+        mapping.addMapper(DbExportIgnoreMapper.NewInstance("Region", "not used for ecology fact"));
+        mapping.addMapper(DbExportIgnoreMapper.NewInstance("SpeciesExpertGUID", "not used for ecology fact"));
+        mapping.addMapper(DbExportIgnoreMapper.NewInstance("SpeciesExpertName", "not used for ecology fact"));
+        mapping.addMapper(DbExportIgnoreMapper.NewInstance("LastAction", "not used for ecology fact"));
+        mapping.addMapper(DbExportIgnoreMapper.NewInstance("LastActionDate", "not used for ecology fact"));
 
         return mapping;
     }
-    private IdIncMapper idIncMapper = IdIncMapper.NewComputedInstance("NoteId");
     private PesiExportMapping getUrlMapping() {
         PesiExportMapping mapping = new PesiExportMapping(dbTableName);
-
+        IdIncMapper idIncMapper = IdIncMapper.NewDependendInstance("NoteId", idIncMapperEcology);
         mapping.addMapper(idIncMapper);
         mapping.addMapper(MethodMapper.NewInstance("Note_1", this.getClass(), "getUrlNote_1", Extension.class));
         mapping.addMapper(MethodMapper.NewInstance("Note_2", this.getClass(), "getUrlNote_2", Extension.class));
@@ -316,13 +321,13 @@ public class PesiEcologyAndLinkExport extends PesiExportBase {
         mapping.addMapper(MethodMapper.NewInstance("NoteCategoryCache", this.getClass(), Extension.class));
         mapping.addMapper(MethodMapper.NewInstance("TaxonFk", this.getClass(), "getCurrentTaxonFk", Extension.class, PesiExportState.class));
 
-        mapping.addMapper(DbExportIgnoreMapper.NewInstance("LanguageFk", "LanguageFk not used for link fact"));
-        mapping.addMapper(DbExportIgnoreMapper.NewInstance("LanguageCache", "LanguageCache not used for link fact"));
-        mapping.addMapper(DbExportIgnoreMapper.NewInstance("Region", "Region not used for link fact"));
-        mapping.addMapper(DbExportIgnoreMapper.NewInstance("SpeciesExpertGUID", "SpeciesExpertGUID not used for link fact"));
-        mapping.addMapper(DbExportIgnoreMapper.NewInstance("SpeciesExpertName", "SpeciesExpertName not used for link fact"));
-        mapping.addMapper(DbExportIgnoreMapper.NewInstance("LastAction", "LastAction not used for link fact"));
-        mapping.addMapper(DbExportIgnoreMapper.NewInstance("LastActionDate", "LastActionDate not used for link fact"));
+        mapping.addMapper(DbExportIgnoreMapper.NewInstance("LanguageFk", "not used for link fact"));
+        mapping.addMapper(DbExportIgnoreMapper.NewInstance("LanguageCache", "not used for link fact"));
+        mapping.addMapper(DbExportIgnoreMapper.NewInstance("Region", "not used for link fact"));
+        mapping.addMapper(DbExportIgnoreMapper.NewInstance("SpeciesExpertGUID", "not used for link fact"));
+        mapping.addMapper(DbExportIgnoreMapper.NewInstance("SpeciesExpertName", "not used for link fact"));
+        mapping.addMapper(DbExportIgnoreMapper.NewInstance("LastAction", "not used for link fact"));
+        mapping.addMapper(DbExportIgnoreMapper.NewInstance("LastActionDate", "not used for link fact"));
 
         return mapping;
     }
