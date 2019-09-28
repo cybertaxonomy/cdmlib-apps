@@ -102,7 +102,7 @@ public final class PesiTransformer extends ExportTransformerBase{
 	public static final UUID uuidExtTaxComment = UUID.fromString("8041a752-0479-4626-ab1b-b266b751f816");
 	public static final UUID uuidExtFauComment = UUID.fromString("054f773a-41c8-4ad5-83e3-981320c1c126");
 	public static final UUID uuidExtFauExtraCodes = UUID.fromString("b8c7e77d-9869-4787-bed6-b4b302dbc5f5");
-
+	
 	// References
 	public static int REF_ARTICLE_IN_PERIODICAL = 1;
 	public static int REF_PART_OF_OTHER = 2;

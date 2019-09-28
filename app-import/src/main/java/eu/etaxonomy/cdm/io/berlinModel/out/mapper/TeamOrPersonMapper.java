@@ -28,7 +28,6 @@ import eu.etaxonomy.cdm.model.common.CdmBase;
 
 /**
  * @author a.mueller
- *
  */
 public class TeamOrPersonMapper extends DbObjectMapper {
 
@@ -42,10 +41,8 @@ public class TeamOrPersonMapper extends DbObjectMapper {
 		return result;
 	}
 
-
 	protected TeamOrPersonMapper(String cdmAttributeString, String dbAttributeString, Object defaultValue) {
 		super(cdmAttributeString, dbAttributeString, defaultValue, false);
-
 	}
 
 	Integer lastTeamId;
@@ -69,7 +66,6 @@ public class TeamOrPersonMapper extends DbObjectMapper {
 		}
 	}
 
-
 	private int makePersonToTeam(Person agent) {
 		int teamFk = 0;
 		try {
@@ -77,7 +73,7 @@ public class TeamOrPersonMapper extends DbObjectMapper {
 
 			while (result.next()){
 				teamFk = result.getInt(1) +1;
-				System.out.println(teamFk);
+//				System.out.println(teamFk);
 				stmtInsertTeam.setInt(1, teamFk);
 				stmtInsertTeam.setString(2, agent.getTitleCache());
 				stmtInsertTeam.setString(3, agent.getNomenclaturalTitle());
@@ -96,12 +92,10 @@ public class TeamOrPersonMapper extends DbObjectMapper {
 		return teamFk;
 	}
 
-
 	@Override
 	protected Object getValue(CdmBase cdmBase) {
 		return lastTeamId;
 	}
-
 
 	@Override
 	public void initialize(PreparedStatement stmt, IndexCounter index, DbExportStateBase<?, IExportTransformer> state, String tableName) {
@@ -125,8 +119,4 @@ public class TeamOrPersonMapper extends DbObjectMapper {
 			throw new IllegalStateException("An SQLException occurred when trying to prepare insert team statements");
 		}
 	}
-
-
-
-
 }

@@ -129,7 +129,7 @@ public class ErmsNotesSourcesImport extends ErmsImportBase<CommonTaxonName> {
 
 	@Override
 	protected boolean isIgnore(ErmsImportState state) {
-		boolean isDo = state.getConfig().isDoNotes() && state.getConfig().isDoNotes();
+		boolean isDo = state.getConfig().isDoNotes();
 		return ! isDo ;
 	}
 }

@@ -9,6 +9,7 @@
 package eu.etaxonomy.cdm.io.pesi.out;
 
 import java.util.ArrayList;
+import java.util.BitSet;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
@@ -25,6 +26,8 @@ import eu.etaxonomy.cdm.io.common.mapping.out.DbLastActionMapper;
 import eu.etaxonomy.cdm.io.pesi.erms.ErmsTransformer;
 import eu.etaxonomy.cdm.model.common.AnnotationType;
 import eu.etaxonomy.cdm.model.common.CdmBase;
+import eu.etaxonomy.cdm.model.common.IdentifiableEntity;
+import eu.etaxonomy.cdm.model.common.IdentifiableSource;
 import eu.etaxonomy.cdm.model.common.Marker;
 import eu.etaxonomy.cdm.model.common.MarkerType;
 import eu.etaxonomy.cdm.model.common.RelationshipBase;
@@ -36,6 +39,7 @@ import eu.etaxonomy.cdm.model.name.INonViralName;
 import eu.etaxonomy.cdm.model.name.NameRelationship;
 import eu.etaxonomy.cdm.model.name.NameRelationshipType;
 import eu.etaxonomy.cdm.model.name.TaxonName;
+import eu.etaxonomy.cdm.model.reference.Reference;
 import eu.etaxonomy.cdm.model.taxon.Synonym;
 import eu.etaxonomy.cdm.model.taxon.Taxon;
 import eu.etaxonomy.cdm.model.taxon.TaxonBase;
@@ -525,6 +529,92 @@ public abstract class PesiExportBase
         uuidSet.add(ErmsTransformer.uuidAnnSpeciesExpertName);
         @SuppressWarnings({"unchecked","rawtypes"})
         List<AnnotationType> result = (List)getTermService().find(uuidSet);
+        return result;
+    }
+
+
+    /**
+     * Returns the source (E+M, Fauna Europaea, Index Fungorum, ERMS) of a given
+     * Identifiable Entity as a BitSet
+     * @param identEntity
+     * @return
+     */
+    protected static BitSet getSources(IdentifiableEntity<?> identEntity){
+        BitSet bitSet = new BitSet();
+        Set<IdentifiableSource> sources = getPesiSources(identEntity);
+        for (IdentifiableSource source : sources) {
+            Reference ref = source.getCitation();
+            UUID refUuid = ref.getUuid();
+            if (refUuid.equals(BerlinModelTransformer.uuidSourceRefEuroMed)){
+                bitSet.set(PesiTransformer.SOURCE_EM);
+            }else if (refUuid.equals(PesiTransformer.uuidSourceRefFaunaEuropaea)){
+                bitSet.set(PesiTransformer.SOURCE_FE);
+            }else if (refUuid.equals(PesiTransformer.uuidSourceRefErms)){
+                bitSet.set(PesiTransformer.SOURCE_ERMS);
+            }else if (refUuid.equals(PesiTransformer.uuidSourceRefIndexFungorum)){
+                bitSet.set(PesiTransformer.SOURCE_IF);
+            }else{
+                if (logger.isDebugEnabled()){logger.debug("Not a PESI source");};
+            }
+        }
+        return bitSet;
+    }
+
+    /**
+     * Returns the Sources for a given TaxonName only.
+     * @param identifiableEntity
+     * @return The Sources.
+     */
+    protected static Set<IdentifiableSource> getPesiSources(IdentifiableEntity<?> identifiableEntity) {
+        Set<IdentifiableSource> sources = new HashSet<>();
+
+        //Taxon Names
+        if (identifiableEntity.isInstanceOf(TaxonName.class)){
+            // Sources from TaxonName
+            TaxonName taxonName = CdmBase.deproxy(identifiableEntity, TaxonName.class);
+            Set<IdentifiableSource> testSources = identifiableEntity.getSources();
+            sources = filterPesiSources(identifiableEntity.getSources());
+
+            if (sources.size() == 0 && testSources.size()>0){
+                IdentifiableSource source = testSources.iterator().next();
+                logger.warn("There are sources, but they are no pesi sources!!!" + source.getIdInSource() + " - " + source.getIdNamespace() + " - " + source.getCitation().getTitleCache());
+            }
+            if (sources.size() > 1) {
+                logger.warn("This TaxonName has more than one Source: " + identifiableEntity.getUuid() + " (" + identifiableEntity.getTitleCache() + ")");
+            }
+
+            // name has no PESI source, take sources from TaxonBase
+            if (sources == null || sources.isEmpty()) {
+                Set<TaxonBase> taxa = taxonName.getTaxonBases();
+                for (TaxonBase taxonBase: taxa){
+                    sources.addAll(filterPesiSources(taxonBase.getSources()));
+                }
+            }
+
+        //for TaxonBases
+        }else if (identifiableEntity.isInstanceOf(TaxonBase.class)){
+            sources = filterPesiSources(identifiableEntity.getSources());
+        } else {
+            sources = filterPesiSources(identifiableEntity.getSources());
+        }
+
+        return sources;
+    }
+
+    // return all sources with a PESI reference
+    private static Set<IdentifiableSource> filterPesiSources(Set<? extends IdentifiableSource> sources) {
+        Set<IdentifiableSource> result = new HashSet<>();
+        for (IdentifiableSource source : sources){
+            Reference ref = source.getCitation();
+            UUID refUuid = ref.getUuid();
+            if (refUuid.equals(BerlinModelTransformer.uuidSourceRefEuroMed) ||
+                refUuid.equals(PesiTransformer.uuidSourceRefFaunaEuropaea)||
+                refUuid.equals(PesiTransformer.uuidSourceRefErms)||
+                refUuid.equals(PesiTransformer.uuidSourceRefIndexFungorum) ||
+                refUuid.equals(PesiTransformer.uuidSourceRefAuct)){
+                result.add(source);
+            }
+        }
         return result;
     }
 

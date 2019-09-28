@@ -67,14 +67,13 @@ public class ErmsImportConfigurator
 				, ErmsReferenceImport.class
 				, ErmsTaxonImport.class
 				, ErmsTaxonRelationImport.class
+				, ErmsSourceUsesImport.class
 				, ErmsVernacularImport.class
-				, ErmsNotesImport.class
 				, ErmsVernacularSourcesImport.class
+				, ErmsNotesImport.class
 				, ErmsNotesSourcesImport.class
-
 				, ErmsAreaImport.class
 				, ErmsDistributionImport.class
-				, ErmsSourceUsesImport.class
 				, ErmsLinkImport.class  //kann weiter hoch
 				, ErmsImageImport.class
 		};

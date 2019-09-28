@@ -131,7 +131,7 @@ public class ErmsVernacularSourcesImport
 
 	@Override
 	protected boolean isIgnore(ErmsImportState state) {
-		boolean isDo = state.getConfig().isDoVernaculars() && state.getConfig().isDoVernaculars();
+		boolean isDo = state.getConfig().isDoVernaculars();
 		return ! isDo ;
 	}
 }

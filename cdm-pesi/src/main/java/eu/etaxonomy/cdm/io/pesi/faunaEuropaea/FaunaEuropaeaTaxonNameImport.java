@@ -357,17 +357,16 @@ public class FaunaEuropaeaTaxonNameImport extends FaunaEuropaeaImportBase  {
 				zooName.setCombinationAuthorship(author);
 				zooName.setPublicationYear(year);
 
-
 				// Add Date extensions to this zooName
-				Extension.NewInstance(zooName, lastAction, getExtensionType(state, PesiTransformer.lastActionUuid, "LastAction", "LastAction", "LA"));
-//				Extension.NewInstance(zooName, lastActionDateStr, getExtensionType(state, PesiTransformer.lastActionDateUuid, "LastActionDate", "LastActionDate", "LAD"));
+				Extension.NewInstance(zooName, lastAction, getExtensionType(state, PesiTransformer.uuidExtLastAction, "LastAction", "LastAction", "LA"));
+//				Extension.NewInstance(zooName, lastActionDateStr, getExtensionType(state, PesiTransformer.uuidExtLastAction, "LastActionDate", "LastActionDate", "LAD"));
 				zooName.setCreated(created);
 				zooName.setUpdated(modified);
 
 				/* Add Note extensions to this zooName
-				Extension.NewInstance(zooName, taxComment, getExtensionType(PesiTransformer.taxCommentUuid, "TaxComment", "TaxComment", "TC"));
-				Extension.NewInstance(zooName, fauComment, getExtensionType(PesiTransformer.fauCommentUuid, "FauComment", "FauComment", "FC"));
-				Extension.NewInstance(zooName, fauExtraCodes, getExtensionType(PesiTransformer.fauExtraCodesUuid, "FauExtraCodes", "FauExtraCodes", "FEC"));
+				Extension.NewInstance(zooName, taxComment, getExtensionType(PesiTransformer.uuidExtTaxComment, "TaxComment", "TaxComment", "TC"));
+				Extension.NewInstance(zooName, fauComment, getExtensionType(PesiTransformer.uuidExtFauComment, "FauComment", "FauComment", "FC"));
+				Extension.NewInstance(zooName, fauExtraCodes, getExtensionType(PesiTransformer.uuidExtFauExtraCodes, "FauExtraCodes", "FauExtraCodes", "FEC"));
 				*/
 				TaxonBase<?> taxonBase;
 
@@ -383,8 +382,6 @@ public class FaunaEuropaeaTaxonNameImport extends FaunaEuropaeaImportBase  {
 					boolean auctNecFound = expressionMatches(auctWithNecRegEx, autName);
 					boolean necAuctFound = expressionMatches(necAuctRegEx, autName);
 					boolean auctWordFound = expressionMatches(auctRegEx, autName);
-
-
 
 					if (status == T_STATUS_ACCEPTED ) {
 

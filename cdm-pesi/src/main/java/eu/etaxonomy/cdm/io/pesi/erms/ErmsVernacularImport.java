@@ -115,7 +115,6 @@ public class ErmsVernacularImport  extends ErmsImportBase<CommonTaxonName> {
 		Map<String, Language> languageMap = new HashMap<>();
 		try{
 			Set<String> taxonIdSet = new HashSet<>();
-//			Set<String> languageIdSet = new HashSet<>();
 			while (rs.next()){
 				handleForeignKey(rs, taxonIdSet, "tu_id");
 				addLanguage(rs, languageMap, state);

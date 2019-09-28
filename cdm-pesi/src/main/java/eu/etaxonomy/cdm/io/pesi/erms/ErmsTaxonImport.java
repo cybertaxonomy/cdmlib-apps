@@ -93,7 +93,7 @@ public class ErmsTaxonImport
 
 			ExtensionType displayNameExtType = getExtensionType(ErmsTransformer.uuidExtDisplayName, "display name", "display name", "display name");
 			mapping.addMapper(DbImportExtensionMapper.NewInstance("tu_displayname", displayNameExtType));
-			ExtensionType fuzzyNameExtType = getExtensionType(ErmsTransformer.uuidExtFuzzyName, "fuzzy name", "fuzzy name", "fuzzy name");
+		//	ExtensionType fuzzyNameExtType = getExtensionType(ErmsTransformer.uuidExtFuzzyName, "fuzzy name", "fuzzy name", "fuzzy name");
 		//	mapping.addMapper(DbImportExtensionMapper.NewInstance("tu_fuzzyname", fuzzyNameExtType));
 			mapping.addMapper(DbImportStringMapper.NewInstance("tu_authority", "name.authorshipCache"));
 
@@ -207,26 +207,8 @@ public class ErmsTaxonImport
 
 	@Override
 	public Map<Object, Map<String, ? extends CdmBase>> getRelatedObjectsForPartition(ResultSet rs, ErmsImportState state) {
-//		String nameSpace;
-//		Class<?> cdmClass;
-//		Set<String> idSet;
-		Map<Object, Map<String, ? extends CdmBase>> result = new HashMap<>();
-
-		try{
-//				Set<String> referenceIdSet = new HashSet<>();
-				while (rs.next()){
-	//				handleForeignKey(rs, referenceIdSet, "PTRefFk");
-				}
-
-			//reference map
-//			nameSpace = "Reference";
-//			cdmClass = Reference.class;
-//			Map<String, Person> referenceMap = (Map<String, Person>)getCommonService().getSourcedObjectsByIdInSource(Person.class, teamIdSet, nameSpace);
-//			result.put(Reference.class, referenceMap);
-
-		} catch (SQLException e) {
-			throw new RuntimeException(e);
-		}
+		//currently no referencing objects needed
+	    Map<Object, Map<String, ? extends CdmBase>> result = new HashMap<>();
 		return result;
 	}
 

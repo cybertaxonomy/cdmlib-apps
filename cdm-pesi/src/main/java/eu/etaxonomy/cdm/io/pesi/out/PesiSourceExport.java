@@ -10,6 +10,7 @@ package eu.etaxonomy.cdm.io.pesi.out;
 
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.BitSet;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -169,22 +170,10 @@ public class PesiSourceExport extends PesiExportBase {
 	 */
 	protected boolean doDelete(PesiExportState state) {
 		PesiExportConfigurator pesiConfig = state.getConfig();
-
-		String sql;
 		Source destination =  pesiConfig.getDestination();
 
-		// Clear Occurrences
-		sql = "DELETE FROM Occurrence";
-		destination.setQuery(sql);
-		destination.update(sql);
-
-		// Clear Taxa
-		sql = "DELETE FROM Taxon";
-		destination.setQuery(sql);
-		destination.update(sql);
-
 		// Clear Sources
-		sql = "DELETE FROM " + dbTableName;
+		String sql = "DELETE FROM " + dbTableName;
 		destination.setQuery(sql);
 		destination.update(sql);
 
@@ -332,7 +321,7 @@ public class PesiSourceExport extends PesiExportBase {
 
 	private static Set<IdentifiableSource> filterOriginalPesiDbSources(
 			Set<IdentifiableSource> sourceAll) {
-		Set<IdentifiableSource> sourceCandidates = new HashSet<IdentifiableSource>();
+		Set<IdentifiableSource> sourceCandidates = new HashSet<>();
 		for (IdentifiableSource source : sourceAll){
 			if (isOriginalPesiDbSource(source)){
 				sourceCandidates.add(source);
@@ -347,49 +336,53 @@ public class PesiSourceExport extends PesiExportBase {
 	}
 
 	/**
-	 * Returns the <code>OriginalDB</code> attribute. The corresponding CDM attribute is the <code>titleCache</code> of a <code>citation</code>.
+	 * Returns the <code>OriginalDB</code> attribute.
 	 * @param reference The {@link Reference Reference}.
 	 * @return The <code>OriginalDB</code> attribute.
 	 * @see MethodMapper
 	 */
 	@SuppressWarnings("unused")
 	private static String getOriginalDB(Reference reference) {
-		String result = "";
+	    //TODO may not work for E+M and FauEu as they may not have import sources for all data
+	    BitSet sources  = getSources(reference);
+	    return PesiTransformer.getOriginalDbBySources(sources);
 
-		try {
-    		if (reference != null) {
-    			Set<IdentifiableSource> sourcesAll = reference.getSources();
-    			Set<IdentifiableSource> sourceCandidates = filterOriginalPesiDbSources(sourcesAll);
-
-    			if (sourceCandidates.size() == 1) {
-    				Reference citation = sourceCandidates.iterator().next().getCitation();
-    				if (citation != null) {
-    					result = PesiTransformer.databaseString2Abbreviation(citation.getTitleCache()); //or just title
-    				} else {
-    					logger.warn("OriginalDB can not be determined because the citation of this source is NULL: " + sourceCandidates.iterator().next().getUuid());
-    				}
-    			} else if (sourceCandidates.size() > 1) {
-    				logger.warn("Taxon has multiple IdentifiableSources: " + reference.getUuid() + " (" + reference.getTitleCache() + ")");
-    				int count = 1;
-    				for (IdentifiableSource source : sourceCandidates) {
-    					Reference citation = source.getCitation();
-    					if (citation != null) {
-    						result += PesiTransformer.databaseString2Abbreviation(citation.getTitleCache());
-    						if (count < sourceCandidates.size()) {
-    							result += "; ";
-    						}
-    						count++;
-    					}
-    				}
-    			} else {
-    				result = null;
-    			}
-    		}
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-
-		return result;
+//	    String result = "";
+//
+//		try {
+//    		if (reference != null) {
+//    			Set<IdentifiableSource> sourcesAll = reference.getSources();
+//    			Set<IdentifiableSource> sourceCandidates = filterOriginalPesiDbSources(sourcesAll);
+//
+//    			if (sourceCandidates.size() == 1) {
+//    				Reference citation = sourceCandidates.iterator().next().getCitation();
+//    				if (citation != null) {
+//    					result = PesiTransformer.databaseString2Abbreviation(citation.getTitleCache()); //or just title
+//    				} else {
+//    					logger.warn("OriginalDB can not be determined because the citation of this source is NULL: " + sourceCandidates.iterator().next().getUuid());
+//    				}
+//    			} else if (sourceCandidates.size() > 1) {
+//    				logger.warn("Taxon has multiple IdentifiableSources: " + reference.getUuid() + " (" + reference.getTitleCache() + ")");
+//    				int count = 1;
+//    				for (IdentifiableSource source : sourceCandidates) {
+//    					Reference citation = source.getCitation();
+//    					if (citation != null) {
+//    						result += PesiTransformer.databaseString2Abbreviation(citation.getTitleCache());
+//    						if (count < sourceCandidates.size()) {
+//    							result += "; ";
+//    						}
+//    						count++;
+//    					}
+//    				}
+//    			} else {
+//    				result = null;
+//    			}
+//    		}
+//		} catch (Exception e) {
+//			e.printStackTrace();
+//		}
+//
+//		return result;
 	}
 
     @Override

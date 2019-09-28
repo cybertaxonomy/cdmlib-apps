@@ -16,7 +16,6 @@ import java.sql.Types;
 import java.util.ArrayList;
 import java.util.BitSet;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -157,7 +156,7 @@ public class PesiTaxonExport extends PesiExportBase {
 			boolean success = true;
 
 			// PESI: Clear the database table Taxon.
-//			doDelete(state);
+			doDelete(state);
 
 			// Get specific mappings: (CDM) Taxon -> (PESI) Taxon
 			PesiExportMapping mapping = getMapping();
@@ -317,7 +316,7 @@ public class PesiTaxonExport extends PesiExportBase {
 			// Commit transaction
 			commitTransaction(txStatus);
 			logger.debug("Committed transaction.");
-			logger.info("Exported " + (count - pastCount) + " " + pluralString + ". Total: " + count);
+			logger.info("Exported " + (count - pastCount) + " " + pluralString + ". Total: " + count + " (Phase 01)");
 			pastCount = count;
 			/*logger.warn("Taking snapshot at the end of the loop of phase 1 of taxonExport");
 			//ProfilerController.memorySnapshot();
@@ -1392,7 +1391,6 @@ public class PesiTaxonExport extends PesiExportBase {
 
 		// Clear Taxon
 		sql = "DELETE FROM " + dbTableName;
-		destination.setQuery(sql);
 		destination.update(sql);
 		return true;
 	}
@@ -2155,69 +2153,6 @@ public class PesiTaxonExport extends PesiExportBase {
 	}
 
 	/**
-	 * Returns the Sources for a given TaxonName only.
-	 * @param taxonName The {@link TaxonNameBase TaxonName}.
-	 * @return The Sources.
-	 */
-	private static Set<IdentifiableSource> getPesiSources(IdentifiableEntity<?> identifiableEntity) {
-		Set<IdentifiableSource> sources = new HashSet<>();
-
-		//Taxon Names
-		if (identifiableEntity.isInstanceOf(TaxonName.class)){
-			// Sources from TaxonName
-		    TaxonName taxonName = CdmBase.deproxy(identifiableEntity, TaxonName.class);
-			Set<IdentifiableSource> testSources = identifiableEntity.getSources();
-			sources = filterPesiSources(identifiableEntity.getSources());
-
-			if (sources.size() == 0 && testSources.size()>0){
-				IdentifiableSource source = testSources.iterator().next();
-				logger.warn("There are sources, but they are no pesi sources!!!" + source.getIdInSource() + " - " + source.getIdNamespace() + " - " + source.getCitation().getTitleCache());
-			}
-			if (sources.size() > 1) {
-				logger.warn("This TaxonName has more than one Source: " + identifiableEntity.getUuid() + " (" + identifiableEntity.getTitleCache() + ")");
-			}
-
-			// name has no PESI source, take sources from TaxonBase
-			if (sources == null || sources.isEmpty()) {
-				Set<TaxonBase> taxa = taxonName.getTaxonBases();
-				for (TaxonBase taxonBase: taxa){
-					sources.addAll(filterPesiSources(taxonBase.getSources()));
-				}
-			}
-
-		//for TaxonBases
-		}else if (identifiableEntity.isInstanceOf(TaxonBase.class)){
-			sources = filterPesiSources(identifiableEntity.getSources());
-		}
-
-		/*TODO: deleted only for testing the inferred synonyms
-		if (sources == null || sources.isEmpty()) {
-			logger.warn("This TaxonName has no PESI Sources: " + identEntity.getUuid() + " (" + identEntity.getTitleCache() +")");
-		}else if (sources.size() > 1){
-			logger.warn("This Taxon(Name) has more than 1 PESI source: " + identEntity.getUuid() + " (" + identEntity.getTitleCache() +")");
-		}
-		*/
-		return sources;
-	}
-
-	// return all sources with a PESI reference
-	private static Set<IdentifiableSource> filterPesiSources(Set<? extends IdentifiableSource> sources) {
-		Set<IdentifiableSource> result = new HashSet<>();
-		for (IdentifiableSource source : sources){
-			Reference ref = source.getCitation();
-			UUID refUuid = ref.getUuid();
-			if (refUuid.equals(BerlinModelTransformer.uuidSourceRefEuroMed) ||
-				refUuid.equals(PesiTransformer.uuidSourceRefFaunaEuropaea)||
-				refUuid.equals(PesiTransformer.uuidSourceRefErms)||
-				refUuid.equals(PesiTransformer.uuidSourceRefIndexFungorum) ||
-				refUuid.equals(PesiTransformer.uuidSourceRefAuct)){
-				result.add(source);
-			}
-		}
-		return result;
-	}
-
-	/**
 	 * Returns the <code>GUID</code> attribute.
 	 * @param taxonName The {@link TaxonNameBase TaxonName}.
 	 * @return The <code>GUID</code> attribute.
@@ -2232,7 +2167,6 @@ public class PesiTaxonExport extends PesiExportBase {
 			return taxon.getUuid().toString();
 		}
 	}
-
 
 	/**
 	 * Returns the <code>DerivedFromGuid</code> attribute.
@@ -2259,7 +2193,7 @@ public class PesiTaxonExport extends PesiExportBase {
 	 * @see MethodMapper
 	 */
 	@SuppressWarnings("unused")
-	private static String getCacheCitation(TaxonBase taxon) {
+	private static String getCacheCitation(TaxonBase<?> taxon) {
 		// !!! See also doPhaseUpdates
 
 		TaxonName taxonName = taxon.getName();
@@ -2322,13 +2256,13 @@ public class PesiTaxonExport extends PesiExportBase {
 
 	/**
 	 * Returns the <code>OriginalDB</code> attribute.
-	 * @param taxonName The {@link TaxonNameBase TaxonName}.
+	 * @param identifiableEntity
 	 * @return The <code>OriginalDB</code> attribute.
 	 * @see MethodMapper
 	 */
-	private static String getOriginalDB(IdentifiableEntity identEntity) {
-		// Sources from TaxonName
-		BitSet sources  = getSources(identEntity);
+	@SuppressWarnings("unused")
+	private static String getOriginalDB(IdentifiableEntity identifiableEntity) {
+		BitSet sources  = getSources(identifiableEntity);
 		return PesiTransformer.getOriginalDbBySources(sources);
 	}
 
@@ -2448,34 +2382,6 @@ public class PesiTaxonExport extends PesiExportBase {
 		return result;
 	}
 
-
-	/**
-	 * Returns the source (E+M, Fauna Europaea, Index Fungorum, ERMS) of a given
-	 * Identifiable Entity as a BitSet
-	 * @param identEntity
-	 * @return
-	 */
-	private static BitSet getSources(IdentifiableEntity<?> identEntity){
-		BitSet bitSet = new BitSet();
-		Set<IdentifiableSource> sources = getPesiSources(identEntity);
-		for (IdentifiableSource source : sources) {
-			Reference ref = source.getCitation();
-			UUID refUuid = ref.getUuid();
-			if (refUuid.equals(BerlinModelTransformer.uuidSourceRefEuroMed)){
-				bitSet.set(PesiTransformer.SOURCE_EM);
-			}else if (refUuid.equals(PesiTransformer.uuidSourceRefFaunaEuropaea)){
-				bitSet.set(PesiTransformer.SOURCE_FE);
-			}else if (refUuid.equals(PesiTransformer.uuidSourceRefErms)){
-				bitSet.set(PesiTransformer.SOURCE_ERMS);
-			}else if (refUuid.equals(PesiTransformer.uuidSourceRefIndexFungorum)){
-				bitSet.set(PesiTransformer.SOURCE_IF);
-			}else{
-				if (logger.isDebugEnabled()){logger.debug("Not a PESI source");};
-			}
-		}
-		return bitSet;
-	}
-
 	protected static TaxonNameDefaultCacheStrategy getCacheStrategy(TaxonName taxonName) {
 		taxonName = CdmBase.deproxy(taxonName);
 		TaxonNameDefaultCacheStrategy cacheStrategy;
@@ -2504,17 +2410,19 @@ public class PesiTaxonExport extends PesiExportBase {
 	private static Integer getRelTaxonQualifierFk(RelationshipBase<?, ?, ?> relationship) {
 		return PesiTransformer.taxonRelation2RelTaxonQualifierFk(relationship);
 	}
-	/**
-	 * Returns the <code>Notes</code> attribute.
-	 * @param relationship The {@link RelationshipBase Relationship}.
-	 * @return The <code>Notes</code> attribute.
-	 * @see MethodMapper
-	 */
-	@SuppressWarnings("unused")
-	private static String getNotes(RelationshipBase<?, ?, ?> relationship) {
-		// TODO
-		return null;
-	}
+    @SuppressWarnings("unused")
+    private static String getSynonymTypeCache(Synonym synonym, PesiExportState state) {
+        String result = null;
+        NomenclaturalCode code = null;
+        code = CdmBase.deproxy(synonym, Synonym.class).getAcceptedTaxon().getName().getNameType();
+
+        if (code != null) {
+            result = state.getConfig().getTransformer().getCacheBySynonymType(synonym, code);
+        } else {
+            logger.error("NomenclaturalCode is NULL while creating the following synonym: " + synonym.getUuid());
+        }
+        return result;
+    }
 
 
 	/**

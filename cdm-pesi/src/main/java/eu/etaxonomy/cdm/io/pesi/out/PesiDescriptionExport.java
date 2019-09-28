@@ -147,7 +147,7 @@ public class PesiDescriptionExport extends PesiExportBase {
 
 			// Get specific mappings: (CDM) DescriptionElement -> (PESI) Common name
 
-			PesiExportMapping vernacularMapping = getVernacularNamesMapping();
+			PesiExportMapping vernacularMapping = getCommonNamesMapping();
 			vernacularMapping.initialize(state);
 
 			// Get specific mappings: (CDM) DescriptionElement -> (PESI) Image
@@ -220,7 +220,7 @@ public class PesiDescriptionExport extends PesiExportBase {
 
 			// Commit transaction
 			commitTransaction(txStatus);
-			logger.info("Exported " + (count - pastCount) + " " + pluralString + ". Total: " + count);
+			logger.info("Exported " + (count - pastCount) + " " + pluralString + ". Total: " + count + " (Phase 01)");
 			pastCount = count;
 			ProfilerController.memorySnapshot();
 			// Start transaction
@@ -371,7 +371,6 @@ public class PesiDescriptionExport extends PesiExportBase {
 				countOccurrence++;
 				Distribution distribution = CdmBase.deproxy(element, Distribution.class);
 				MarkerType markerType = getUuidMarkerType(PesiTransformer.uuidMarkerTypeHasNoLastAction, state);
-
 				distribution.addMarker(Marker.NewInstance(markerType, true));
 				if (isPesiDistribution(state, distribution)){
 					countDistribution++;
@@ -897,12 +896,12 @@ public class PesiDescriptionExport extends PesiExportBase {
 		mapping.addMapper(IdMapper.NewInstance("NoteId"));
 		mapping.addMapper(DbTextDataMapper.NewInstance(Language.ENGLISH(), "Note_1"));
 		//TODO
-		mapping.addMapper(MethodMapper.NewInstance("Note_2", this, DescriptionElementBase.class));
-		mapping.addMapper(MethodMapper.NewInstance("NoteCategoryFk", this, DescriptionElementBase.class ));
+		mapping.addMapper(MethodMapper.NewInstance("Note_2", this, standardMethodParameter));
+		mapping.addMapper(MethodMapper.NewInstance("NoteCategoryFk", this, standardMethodParameter ));
 
-		mapping.addMapper(MethodMapper.NewInstance("NoteCategoryCache", this, DescriptionElementBase.class, PesiExportState.class ));
+		mapping.addMapper(MethodMapper.NewInstance("NoteCategoryCache", this, standardMethodParameter, PesiExportState.class ));
 		mapping.addMapper(MethodMapper.NewInstance("LanguageFk", this));
-		mapping.addMapper(MethodMapper.NewInstance("LanguageCache", this, DescriptionElementBase.class, PesiExportState.class));
+		mapping.addMapper(MethodMapper.NewInstance("LanguageCache", this, standardMethodParameter, PesiExportState.class));
 
 //		mapping.addMapper(MethodMapper.NewInstance("Region", this));
 		mapping.addMapper(DbDescriptionElementTaxonMapper.NewInstance("taxonFk"));
@@ -915,7 +914,9 @@ public class PesiDescriptionExport extends PesiExportBase {
 		String tableName = "NoteSource";
 		String collectionAttribute = "sources";
 		IdMapper parentMapper = IdMapper.NewInstance("NoteFk");
-		CollectionExportMapping<PesiExportState, PesiExportConfigurator, PesiTransformer> mapping = CollectionExportMapping.NewInstance(tableName, collectionAttribute, parentMapper);
+		@SuppressWarnings("unchecked")
+        CollectionExportMapping<PesiExportState, PesiExportConfigurator, PesiTransformer> mapping
+                = CollectionExportMapping.NewInstance(tableName, collectionAttribute, parentMapper);
 		mapping.addMapper(DbSimpleFilterMapper.NewSingleNullAttributeInstance("idInSource", "Sources with idInSource currently handle data lineage"));
 		mapping.addMapper(DbObjectMapper.NewInstance("Citation", "SourceFk"));
 		mapping.addMapper(DbObjectMapper.NewInstance("Citation", "SourceNameCache", IS_CACHE));
@@ -939,7 +940,7 @@ public class PesiDescriptionExport extends PesiExportBase {
 		mapping.addMapper(DbDistributionStatusMapper.NewInstance("OccurrenceStatusFk", ! IS_CACHE));
 		mapping.addMapper(DbDistributionStatusMapper.NewInstance("OccurrenceStatusCache", IS_CACHE));
 
-//		Use Occurrence source instead
+//		Use OccurrenceSource table instead
 		mapping.addMapper(DbExportIgnoreMapper.NewInstance("SourceFk", "Use OccurrenceSource table for sources instead"));
 		mapping.addMapper(DbExportIgnoreMapper.NewInstance("SourceNameCache", "Use OccurrenceSource table for sources instead"));
 
@@ -954,7 +955,8 @@ public class PesiDescriptionExport extends PesiExportBase {
 		String tableName = "OccurrenceSource";
 		String collectionAttribute = "sources";
 		IdMapper parentMapper = IdMapper.NewInstance("OccurrenceFk");
-		CollectionExportMapping<PesiExportState, PesiExportConfigurator, PesiTransformer> mapping
+		@SuppressWarnings("unchecked")
+        CollectionExportMapping<PesiExportState, PesiExportConfigurator, PesiTransformer> mapping
 		        = CollectionExportMapping.NewInstance(tableName, collectionAttribute, parentMapper);
 		mapping.addMapper(DbSimpleFilterMapper.NewSingleNullAttributeInstance("idInSource",
 		        "Sources with idInSource currently handle data lineage"));
@@ -1011,7 +1013,7 @@ public class PesiDescriptionExport extends PesiExportBase {
 	 * Returns the CDM to PESI specific export mappings for common names.
 	 * @return The {@link PesiExportMapping PesiExportMapping}.
 	 */
-	private PesiExportMapping getVernacularNamesMapping() {
+	private PesiExportMapping getCommonNamesMapping() {
 		PesiExportMapping mapping = new PesiExportMapping(dbVernacularTableName);
 
 		mapping.addMapper(IdMapper.NewInstance("CommonNameId"));
