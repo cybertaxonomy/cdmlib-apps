@@ -37,19 +37,21 @@ public class PesiErmsValidator {
     private Source source = defaultSource;
     private Source destination = defaultDestination;
 
+    private String origErms = "OriginalDB = 'ERMS' ";
+
     public void invoke(Source source, Source destination){
         logger.warn("Validate destination " +  destination.getDatabase());
         boolean success = true;
         try {
             this.source = source;
             this.destination = destination;
-//            success &= testReferences();
-            success &= testTaxa();
-            success &= testTaxonRelations();
-//            success &= testCommonNames();
-//            success &= testDistributions();
-//            success &= testNotes();
-//            success &= testAdditionalTaxonSources();
+//            success &= testReferences();  //ready, few minor issues to be discussed with VLIZ
+//            success &= testTaxa();
+//            success &= testTaxonRelations();
+//            success &= testCommonNames();  //source(s) discuss VLIZ, exact duplicates (except for sources), 3 language names
+//            success &= testDistributions();  //lastAction test, sources (OccurrenceSource Tabelle), occurrenceStatus (compare with script), area spellings, 1 long note
+//            success &= testNotes();  //ecology notes test, notes on synonyms test, sources (NoteSource Tabelle)
+//            success &= testAdditionalTaxonSources();  //truncation of some references
         } catch (Exception e) {
             e.printStackTrace();
             success = false;
@@ -181,10 +183,10 @@ public class PesiErmsValidator {
                 + "    LEFT JOIN Taxon type ON type.TaxonId = t.TypeNameFk "
                 + "    LEFT JOIN Rank r ON r.RankId = t.RankFk AND r.KingdomId = t.KingdomFk "
                 + "    LEFT JOIN Source s ON s.SourceId = t.SourceFk "
-                + " WHERE t.OriginalDB = 'erms' "
+                + " WHERE t."+ origErms
                 + " ORDER BY t.IdInSource");
         ResultSet srcRsLastAction = source.getResultSet(""
-                + " SELECT t.id, s.sessiondate, a.action_name "
+                + " SELECT t.id, s.sessiondate, a.action_name, s.ExpertName "
                 + " FROM tu t "
                 + "   LEFT OUTER JOIN tu_sessions MN ON t.id = MN.tu_id "
                 + "   LEFT JOIN actions a ON a.id = MN.action_id "
@@ -193,7 +195,7 @@ public class PesiErmsValidator {
         int i = 0;
         while (srcRS.next() && destRS.next()){
             success &= testSingleTaxon(srcRS, destRS);
-            success &= testTaxonLastAction(srcRsLastAction, destRS, String.valueOf(srcRS.getInt("id")));
+            success &= testLastAction(srcRsLastAction, destRS, String.valueOf(srcRS.getInt("id")), "Taxon");
             i++;
         }
         success &= equals("Taxon count for single compare", n, i, String.valueOf(-1));
@@ -232,13 +234,12 @@ public class PesiErmsValidator {
         success &= equals("Taxon FossilStatusFk", nullSafeInt(srcRS, "tu_fossil"),nullSafeInt( destRS,"FossilStatusFk"), String.valueOf(id));
         success &= equals("Taxon FossilStatusCache", srcRS.getString("fossil_name"), destRS.getString("FossilStatusCache"), id);
         success &= equals("Taxon GUID", srcRS.getString("GUID"), destRS.getString("GUID"), id);
-        //in 2014 GUID and DerivedFromGuid was always same for ERMS
+           //according to SQL script GUID and DerivedFromGuid are always the same, according to 2014DB this is even true for all databases
         success &= equals("Taxon DerivedFromGuid", srcRS.getString("GUID"), destRS.getString("DerivedFromGuid"), id);
-        //TODO ExpertGUID
-        //TODO ExpertName
-        //TODO SpeciesExpertGUID
-        //TODO SpeciesExpertName
-        //TODO CacheCitation
+        success &= isNull("ExpertGUID", destRS);  //only relevant after merge
+        success &= isNull("ExpertName", destRS);  //only relevant after merge
+        success &= isNull("SpeciesExpertGUID", destRS);  //only relevant after merge
+        success &= equals("Taxon cache citation", srcRS.getString("cache_citation"), destRS.getString("CacheCitation"), id);
         //LastAction(Date) handled in separate method
         success &= isNull("GUID2", destRS);  //only relevant after merge
         success &= isNull("DerivedFromGuid2", destRS);  //only relevant after merge
@@ -286,18 +287,31 @@ public class PesiErmsValidator {
         return result;
     }
 
-    private boolean testTaxonLastAction(ResultSet srcRs, ResultSet destRs, String id) throws SQLException {
-        boolean success = true;
-        while (srcRs.next()){
-            int srcId = srcRs.getInt("id");
-            if (id.equals(String.valueOf(srcId))){
-                break;
+    String lastLastActionId = "-1";
+    private boolean testLastAction(ResultSet srcRsLastAction, ResultSet destRs, String id, String table) throws SQLException {
+        try {
+            boolean success = true;
+            String srcId = null;
+            while (srcRsLastAction.next()){
+                srcId = String.valueOf(srcRsLastAction.getInt("id"));
+                if (!lastLastActionId.equals(srcId)){
+                    lastLastActionId = srcId;
+                    break;
+                }
             }
+            if(!id.equals(srcId)){
+                logger.warn("SourceIDs are not equal: id1: " +id + ", id2: " + srcId);
+            }
+            String destStr = destRs.getString("LastAction");
+            success &= equals(table + " SpeciesExpertName", srcRsLastAction.getString("ExpertName"), destRs.getString("SpeciesExpertName"), id);  //mapping ExpertName => SpeciesExpertName according to SQL script
+            success &= equals(table + " Last Action", srcRsLastAction.getString("action_name"), destStr == null? null : destStr, id);
+            success &= equals(table + " Last Action Date", srcRsLastAction.getTimestamp("sessiondate"), destRs.getTimestamp("LastActionDate"), id);
+
+            return success;
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw e;
         }
-        String destStr = destRs.getString("LastAction");
-        success &= equals("Taxon Last Action", srcRs.getString("action_name"), destStr == null? null : destStr, id);
-        success &= equals("Taxon Last Action Date", srcRs.getTimestamp("sessiondate"), destRs.getTimestamp("LastActionDate"), id);
-        return success;
     }
 
     private boolean compareKingdom(String messageStart, ResultSet srcRS, ResultSet destRS, String id) throws SQLException {
@@ -331,7 +345,7 @@ public class PesiErmsValidator {
                 + " FROM RelTaxon rel "
                 + "    LEFT JOIN Taxon t1 ON t1.TaxonId = rel.TaxonFk1 "
                 + "    LEFT JOIN Taxon t2 ON t2.TaxonId = rel.TaxonFk2 "
-                + " WHERE t1.OriginalDB = 'erms' AND t2.OriginalDB = 'erms' "
+                + " WHERE t1."+origErms+" AND t2." + origErms
                 + " ORDER BY t1.IdInSource");
         int i = 0;
         while (srcRS.next() && destRS.next()){
@@ -367,7 +381,7 @@ public class PesiErmsValidator {
                 + " FROM AdditionalTaxonSource ats INNER JOIN Taxon t ON t.TaxonId = ats.TaxonFk "
                 + "    INNER JOIN Source s ON s.SourceId = ats.SourceFk "
                 + "    LEFT JOIN SourceUse su ON su.SourceUseId = ats.SourceUseFk "
-                + " WHERE t.OriginalDB = 'erms' "
+                + " WHERE t."+origErms
                 + " ORDER BY t.IdInSource, su.SourceUseId, s.RefIdInSource ");
         int count = 0;
         while (srcRs.next() && destRs.next()){
@@ -385,7 +399,7 @@ public class PesiErmsValidator {
         success &= equals("Additional taxon source use fk ", srcRs.getString("sourceuse_id"), destRs.getString("SourceUseFk"), id);
         success &= equals("Additional taxon source use cache ", srcRs.getString("sourceuse_name"), destRs.getString("SourceUseCache"), id);
         //TODO some records are still truncated ~ >820 characters
-        //success &= equals("Additional taxon source name cache ", srcRs.getString("source_name"), destRs.getString("SourceNameCache"), id);
+        success &= equals("Additional taxon source name cache ", srcRs.getString("source_name"), destRs.getString("SourceNameCache"), id);
         success &= equals("Additional taxon source detail ", srcRs.getString("pagenr"), destRs.getString("SourceDetail"), id);
         //Complete
         return success;
@@ -396,16 +410,27 @@ public class PesiErmsValidator {
         ResultSet srcRs = source.getResultSet("SELECT CAST(tu.id as nvarchar(20)) tuId, no.*, l.LanName "
                 + " FROM notes no INNER JOIN tu ON no.tu_id = tu.id "
                 + "    LEFT JOIN languages l ON l.LanID = no.lan_id "
-                + " ORDER BY CAST(tu.id as nvarchar(20)), no.type ");  //, no.note (not possible because ntext
+                + " ORDER BY CAST(tu.id as nvarchar(20)), no.type, no.noteSortable ");  //, no.note (not possible because ntext
         ResultSet destRs = destination.getResultSet("SELECT t.IdInSource, no.*, cat.NoteCategory, l.Language "
                 + " FROM Note no INNER JOIN Taxon t ON t.TaxonId = no.TaxonFk "
                 + "    LEFT JOIN NoteCategory cat ON cat.NoteCategoryId = no.NoteCategoryFk "
                 + "    LEFT JOIN Language l ON l.LanguageId = no.LanguageFk "
-                + " WHERE t.OriginalDB = 'erms' "
-                + " ORDER BY t.IdInSource, no.NoteCategoryCache ");
+                + " WHERE t." + origErms
+                + " ORDER BY t.IdInSource, no.NoteCategoryCache, Note_1  ");
         int count = 0;
+        ResultSet srcRsLastAction = source.getResultSet(""
+                + " SELECT no.id, s.sessiondate, a.action_name, s.ExpertName "
+                + " FROM notes no "
+                + "   INNER JOIN tu ON tu.id = no.tu_id "
+                + "   LEFT JOIN languages l ON l.LanID = no.lan_id"
+                + "   LEFT JOIN notes_sessions MN ON no.id = MN.note_id "
+                + "   LEFT JOIN actions a ON a.id = MN.action_id "
+                + "   LEFT JOIN sessions s ON s.id = MN.session_id  "
+                + " ORDER BY CAST(tu.id as nvarchar(20)), no.type, no.noteSortable, s.sessiondate DESC, a.id DESC ");
+
         while (srcRs.next() && destRs.next()){
             success &= testSingleNote(srcRs, destRs);
+            success &= testLastAction(srcRsLastAction, destRs, String.valueOf(srcRs.getInt("id")), "Note");
             count++;
         }
         success &= equals("Notes count differs", n, count, "-1");
@@ -430,15 +455,25 @@ public class PesiErmsValidator {
         ResultSet srcRs = source.getResultSet("SELECT CAST(ISNULL(tu.tu_accfinal, tu.id) as nvarchar(20)) tuId, gu.gazetteer_id, dr.*, gu.id guId, gu.gu_name "
                 + " FROM dr INNER JOIN tu ON dr.tu_id = tu.id "
                 + "    LEFT JOIN gu ON gu.id = dr.gu_id "
-                + " ORDER BY CAST(ISNULL(tu.tu_accfinal, tu.id) as nvarchar(20)), gu.gazetteer_id, gu.gu_name ");  //, dr.note (not possible because ntext
+                + " ORDER BY CAST(ISNULL(tu.tu_accfinal, tu.id) as nvarchar(20)), gu.gazetteer_id, gu.gu_name, dr.noteSortable ");  //, dr.note (not possible because ntext
         ResultSet destRs = destination.getResultSet("SELECT t.IdInSource, a.AreaERMSGazetteerId, oc.*, a.AreaName "
                 + " FROM Occurrence oc INNER JOIN Taxon t ON t.TaxonId = oc.TaxonFk "
                 + "    LEFT JOIN Area a ON a.AreaId = oc.AreaFk "
-                + " WHERE t.OriginalDB = 'erms' "
+                + " WHERE t." + origErms
                 + " ORDER BY t.IdInSource, a.AreaERMSGazetteerId, a.AreaName, oc.Notes ");
+        ResultSet srcRsLastAction = source.getResultSet(""
+                + " SELECT dr.id, s.sessiondate, a.action_name, s.ExpertName "
+                + " FROM dr "
+                + "   INNER JOIN tu ON tu.id = dr.tu_id "
+                + "   LEFT JOIN gu ON gu.id = dr.gu_id "
+                + "   LEFT JOIN dr_sessions MN ON dr.id = MN.dr_id "
+                + "   LEFT JOIN actions a ON a.id = MN.action_id "
+                + "   LEFT JOIN sessions s ON s.id = MN.session_id  "
+                + " ORDER BY CAST(tu.id as nvarchar(20)), gu.gazetteer_id, gu.gu_name, s.sessiondate DESC, a.id DESC ");
         int count = 0;
         while (srcRs.next() && destRs.next()){
             success &= testSingleDistribution(srcRs, destRs);
+            success &= testLastAction(srcRsLastAction, destRs, String.valueOf(srcRs.getInt("id")), "Distribution");
             count++;
         }
         success &= equals("Distribution count differs", n, count, "-1");
@@ -450,9 +485,15 @@ public class PesiErmsValidator {
         boolean success = equals("Distribution taxonID ", "tu_id: " + String.valueOf(srcRs.getInt("tuId")), destRs.getString("IdInSource"), id);
         success &= equals("Distribution gazetteer_id ", srcRs.getString("gazetteer_id"), destRs.getString("AreaERMSGazetteerId"), id);
         success &= equals("Distribution area name ", srcRs.getString("gu_name"), destRs.getString("AreaName"), id);
-        success &= equals("Distribution area name ", srcRs.getString("note"), destRs.getString("Notes"), id);
-
-        //TODO
+        success &= equals("Distribution area name cache", srcRs.getString("gu_name"), destRs.getString("AreaNameCache"), id);
+        //TODO OccurrenceStatusFk
+        //TODO OccurrenceStatusCache
+        //TODO see comments
+//      success &= isNull("SourceFk", destRs);  //sources should be moved to extra table only, check with script and PESI 2014 (=> has values for ERMS)
+//      success &= isNull("SourceNameCache", destRs);  //sources should be moved to extra table, check with script and PESI 2014 (=> has values for ERMS)
+        success &= equals("Distribution notes ", srcRs.getString("note"), destRs.getString("Notes"), id);
+        success &= isNull("SpeciesExpertGUID", destRs);  //SpeciesExpertGUID does not exist in ERMS
+        //SpeciesExpertName,LastAction,LastActionDate handled in separate method
         return success;
     }
 
@@ -460,14 +501,24 @@ public class PesiErmsValidator {
         boolean success = true;
         ResultSet srcRs = source.getResultSet("SELECT v.*, ISNULL([639_3],[639_2]) iso, l.LanName, tu.id tuId "
                 + " FROM vernaculars v LEFT JOIN tu ON v.tu_id = tu.id LEFT JOIN languages l ON l.LanID = v.lan_id "
-                + " ORDER BY CAST(tu.id as nvarchar(20)), ISNULL([639_3],[639_2]), v.vername  ");
+                + " ORDER BY CAST(tu.id as nvarchar(20)), ISNULL([639_3],[639_2]), v.vername, v.id ");
         ResultSet destRs = destination.getResultSet("SELECT cn.*, t.IdInSource, l.ISO639_2, l.ISO639_3 "
                 + " FROM CommonName cn INNER JOIN Taxon t ON t.TaxonId = cn.TaxonFk LEFT JOIN Language l ON l.LanguageId = cn.LanguageFk "
-                + " WHERE t.OriginalDB = 'erms' "
-                + " ORDER BY t.IdInSource, ISNULL("+preferredISO639+", "+alternativeISO639+"), cn.CommonName");
+                + " WHERE t." + origErms
+                + " ORDER BY t.IdInSource, ISNULL("+preferredISO639+", "+alternativeISO639+"), cn.CommonName, cn.LastActionDate ");  //sorting also lastActionDate results in a minimum of exact duplicate problems
+        ResultSet srcRsLastAction = source.getResultSet(""
+                + " SELECT v.id, s.sessiondate, a.action_name, s.ExpertName "
+                + " FROM vernaculars v "
+                + "   INNER JOIN tu ON tu.id = v.tu_id "
+                + "   LEFT JOIN languages l ON l.LanID = v.lan_id"
+                + "   LEFT JOIN vernaculars_sessions MN ON v.id = MN.vernacular_id "
+                + "   LEFT JOIN actions a ON a.id = MN.action_id "
+                + "   LEFT JOIN sessions s ON s.id = MN.session_id  "
+                + " ORDER BY CAST(tu.id as nvarchar(20)), ISNULL([639_3],[639_2]), v.vername, v.id, s.sessiondate DESC, a.id DESC ");
         int count = 0;
         while (srcRs.next() && destRs.next()){
             success &= testSingleCommonName(srcRs, destRs);
+            success &= testLastAction(srcRsLastAction, destRs, String.valueOf(srcRs.getInt("id")), "CommonName");
             count++;
         }
         success &= equals("Common name count differs", n, count, "-1");
@@ -481,13 +532,17 @@ public class PesiErmsValidator {
     private boolean testSingleCommonName(ResultSet srcRs, ResultSet destRs) throws SQLException {
         String id = String.valueOf(srcRs.getInt("tuId") + "-" + srcRs.getString("lan_id"));
         boolean success = equals("Common name taxonID ", "tu_id: " + String.valueOf(srcRs.getInt("tuId")), destRs.getString("IdInSource"), id);
-        success &= equals("Common name languageID ", srcRs.getString("iso"), getLanguageIso(destRs), id);
         success &= equals("CommonName name ", srcRs.getString("vername"), destRs.getString("CommonName"), id);
-        //TODO success = equals("CommonName language code ", srcRs.getString("lan_id"), destRs.getString("LanguageFk"), id);
+        success &= equals("Common name languageFk ", srcRs.getString("iso"), getLanguageIso(destRs), id);
         success = equals("CommonName LanguageCache ", normalizeLang(srcRs.getString("LanName")), destRs.getString("LanguageCache"), id);
+        //TODO needed? success = equals("CommonName language code ", srcRs.getString("lan_id"), destRs.getString("LanguageFk"), id);
         success &= isNull("Region", destRs);  //region does not seem to exist in ERMS
-
-        //TODO
+        //TODO see comments
+//        success &= isNull("SourceFk", destRs);  //sources should be moved to extra table, check with PESI 2014
+//        success &= isNull("SourceNameCache", destRs);  //sources should be moved to extra table, check with PESI 2014
+        success &= isNull("SpeciesExpertGUID", destRs);  //SpeciesExpertGUID does not exist in ERMS
+        //SpeciesExpertName,LastAction,LastActionDate handled in separate method
+        //complete
         return success;
     }
 
@@ -521,7 +576,8 @@ public class PesiErmsValidator {
         boolean success = true;
         ResultSet srcRS = source.getResultSet("SELECT s.* FROM sources s ORDER BY s.id ");
         ResultSet destRS = destination.getResultSet("SELECT s.* FROM Source s "
-                + " WHERE s.OriginalDB = 'erms' ORDER BY s.RefIdInSource");  // +1 for the source reference "erms" but this has no OriginalDB
+                + " WHERE s." + origErms
+                + " ORDER BY s.RefIdInSource ");  // +1 for the source reference "erms" but this has no OriginalDB
         while (srcRS.next() && destRS.next()){
             success &= testSingleReference(srcRS, destRS);
         }
@@ -532,8 +588,8 @@ public class PesiErmsValidator {
         String id = String.valueOf(srcRS.getInt("id"));
         boolean success = equals("Reference ID ", srcRS.getInt("id"), destRS.getInt("RefIdInSource"), id);
         success &= equals("Reference IMIS_id ", srcRS.getString("imis_id"), destRS.getString("IMIS_Id"), id);
-//TODO        success &= equals("Reference SourceCategoryFk ", srcRS.getString("source_type"), destRS.getInt("SourceCategoryFk"), id);
-//TODO       success &= equals("Reference SourceCategoryCache ", srcRS.getString("source_type"), destRS.getString("SourceCategoryCache"), id);
+        success &= equals("Reference SourceCategoryFk ", convertSourceTypeFk(srcRS.getString("source_type")), destRS.getInt("SourceCategoryFk"), id);
+        success &= equals("Reference SourceCategoryCache ", convertSourceTypeCache(srcRS.getString("source_type")), destRS.getString("SourceCategoryCache"), id);
         success &= equals("Reference name ", srcRS.getString("source_name"), destRS.getString("Name"), id);
         success &= equals("Reference abstract ", srcRS.getString("source_abstract"), destRS.getString("Abstract"), id);
         success &= equals("Reference title ", srcRS.getString("source_title"), destRS.getString("Title"), id);
@@ -546,10 +602,39 @@ public class PesiErmsValidator {
         return success;
     }
 
+    private Integer convertSourceTypeFk(String sourceType) {
+        if (sourceType == null){
+            return null;
+        }else if ("d".equals(sourceType)){
+            return 4;
+        }else if ("e".equals(sourceType)){
+            return 5;
+        }else if ("p".equals(sourceType)){
+            return 11;
+        }else if ("i".equals(sourceType)){
+            return 12;
+        }
+        return null;
+    }
+    private String convertSourceTypeCache(String sourceType) {
+        if (sourceType == null){
+            return null;
+        }else if ("d".equals(sourceType)){
+            return "database";
+        }else if ("e".equals(sourceType)){
+            return "informal reference";
+        }else if ("p".equals(sourceType)){
+            return "publication";
+        }else if ("i".equals(sourceType)){
+            //TODO
+            return "i";
+        }
+        return null;
+    }
 
     private boolean testReferenceCount() {
         int countSrc = source.getUniqueInteger("SELECT count(*) FROM sources ");
-        int countDest = destination.getUniqueInteger("SELECT count(*) FROM Source s WHERE s.OriginalDB = 'erms'");  // +1 for the source reference "erms" but this has no OriginalDB
+        int countDest = destination.getUniqueInteger("SELECT count(*) FROM Source s WHERE s."+ origErms);  // +1 for the source reference "erms" but this has no OriginalDB
         boolean success = equals("Reference count ", countSrc, countDest, "-1");
         return success;
     }
