@@ -182,18 +182,21 @@ public class ErmsTaxonImport
 		String taxonTable = "tu";
 		String vernacularsTable = "vernaculars";
 		String distributionTable = "dr";
+		String notesTable = "notes";
 		String sql =
 		        " SELECT DISTINCT %s FROM %s  "  //fk to parent
 		        + " UNION  SELECT %s FROM %s WHERE %s is NULL" //id of taxa not having accepted taxon
 		        + " UNION  SELECT DISTINCT %s FROM %s "  //fk to accepted taxon
 		        + " UNION  SELECT DISTINCT %s FROM %s " //vernaculars
-		        + " UNION  SELECT DISTINCT %s FROM %s ";  //distributions
+		        + " UNION  SELECT DISTINCT %s FROM %s "  //distributions
+		        + " UNION  SELECT DISTINCT %s FROM %s ";  //notes
 		sql = String.format(sql,
 				parentCol, taxonTable,
 				idCol, taxonTable, accCol,
 				accCol, taxonTable,
 				tuFk, vernacularsTable,
-				tuFk, distributionTable);
+				tuFk, distributionTable,
+				tuFk, notesTable);
 		ResultSet rs = state.getConfig().getSource().getResultSet(sql);
 		try {
 			while (rs.next()){
