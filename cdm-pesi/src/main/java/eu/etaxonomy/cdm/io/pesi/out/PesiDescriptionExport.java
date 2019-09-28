@@ -632,42 +632,32 @@ public class PesiDescriptionExport extends PesiExportBase {
 
 		// Clear NoteSource
 		String sql = "DELETE FROM NoteSource";
-//		destination.setQuery(sql);
 		destination.update(sql);
-
 		// Clear Note
 		sql = "DELETE FROM Note "; // + dbNoteTableName;
-//		destination.setQuery(sql);
 		destination.update(sql);
 
 	    // Clear OccurrenceSource
         sql = "DELETE FROM OccurrenceSource ";
-//        destination.setQuery(sql);
         destination.update(sql);
-
         // Clear Occurrence
         sql = "DELETE FROM Occurrence ";
-//        destination.setQuery(sql);
         destination.update(sql);
 
         // Clear Image
         sql = "DELETE FROM Image ";
-//        destination.setQuery(sql);
         destination.update(sql);
 
         // Clear CommonName
         sql = "DELETE FROM CommonName ";
-//        destination.setQuery(sql);
         destination.update(sql);
 
-        // Clear CommonName
+        // Clear AdditionalTaxonSource
         sql = "DELETE FROM AdditionalTaxonSource WHERE SourceFk >= 2000000 ";
-//        destination.setQuery(sql);
         destination.update(sql);
 
         // Clear Sources for AdditionalTaxonSource
         sql = "DELETE FROM Source WHERE SourceId >= 2000000 ";
-//        destination.setQuery(sql);
         destination.update(sql);
 
 		return true;
@@ -807,7 +797,6 @@ public class PesiDescriptionExport extends PesiExportBase {
 
 
 	/**
-	 * Returns the TaxonFk for a given TaxonName or Taxon.
 	 * @param state The {@link DbExportStateBase DbExportState}.
 	 * @return
 	 */

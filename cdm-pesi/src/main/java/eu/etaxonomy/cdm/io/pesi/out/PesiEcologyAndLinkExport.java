@@ -242,7 +242,6 @@ public class PesiEcologyAndLinkExport extends PesiExportBase {
         }
     }
 
-
     @SuppressWarnings("unused")  //used by mapper
     private static Integer getNoteCategoryFk(Extension extension, PesiExportState state) {
         String linktext = getUrlNote_2(extension, state);
@@ -269,12 +268,6 @@ public class PesiEcologyAndLinkExport extends PesiExportBase {
         return result;
     }
 
-//******************************* MAPPINGS ********************************************
-
-    /**
-     * @param catFk
-     * @return
-     */
     private static String categoryByLinkText(int catFk) {
         if(catFk == 22){
             return "";
@@ -287,6 +280,8 @@ public class PesiEcologyAndLinkExport extends PesiExportBase {
             return null;
         }
     }
+
+//******************************* MAPPINGS ********************************************
 
     private PesiExportMapping getMapping() {
         PesiExportMapping mapping = new PesiExportMapping(dbTableName);
