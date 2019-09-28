@@ -650,6 +650,8 @@ public class PesiDescriptionExport extends PesiExportBase {
         destination.update(sql);
 
         // Clear CommonName
+        sql = "DELETE FROM CommonNameSource ";
+        destination.update(sql);
         sql = "DELETE FROM CommonName ";
         destination.update(sql);
 
