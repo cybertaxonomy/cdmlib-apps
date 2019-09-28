@@ -354,9 +354,10 @@ public class PesiDescriptionExport extends PesiExportBase {
 	    try {
 			boolean success = true;
 			if (isImageGallery){
-				//TODO handle Images
-				countImages++;
-				success &= imageMapping.invoke(element);
+				for (Media media : element.getMedia()){
+				    countImages++;
+				    success &= imageMapping.invoke(media);
+				}
 			}else if (isCommonName(element)){
 				countCommonName++;
 				if (element.isInstanceOf(TextData.class)){
@@ -833,18 +834,19 @@ public class PesiDescriptionExport extends PesiExportBase {
 	}
 
     @SuppressWarnings("unused")  //used by mapper
-    private static String getMediaThumb(DescriptionElementBase deb) {
-        //FIXME does not yet support multiple images per deb
+    private static Integer getCurrentTaxonFk(Media media, PesiExportState state) {
+        return state.getDbId(state.getCurrentTaxon());
+    }
+
+    @SuppressWarnings("unused")  //used by mapper
+    private static String getMediaThumb(Media media) {
         String startsWith = "http://images.vliz.be/thumbs/";
         String result = null;
-        List<Media> medias = deb.getMedia();
-        for (Media media : medias){
-            for (MediaRepresentation rep : media.getRepresentations()){
-                for (MediaRepresentationPart part : rep.getParts()){
-                    String strUrl = part.getUri().toString();
-                    if (strUrl.startsWith(startsWith)){
-                        result = part.getUri().toString();
-                    }
+        for (MediaRepresentation rep : media.getRepresentations()){
+            for (MediaRepresentationPart part : rep.getParts()){
+                String strUrl = part.getUri().toString();
+                if (strUrl.startsWith(startsWith)){
+                    result = part.getUri().toString();
                 }
             }
         }
@@ -852,18 +854,14 @@ public class PesiDescriptionExport extends PesiExportBase {
     }
 
     @SuppressWarnings("unused")  //used by mapper
-    private static String getMediaUrl(DescriptionElementBase deb) {
-        //FIXME does not yet support multiple images per deb
+    private static String getMediaUrl(Media media) {
         String startsWith = "http://www.marbef.org/data/aphia.php?p=image&pic=";
         String result = null;
-        List<Media> medias = deb.getMedia();
-        for (Media media : medias){
-            for (MediaRepresentation rep : media.getRepresentations()){
-                for (MediaRepresentationPart part : rep.getParts()){
-                    String strUrl = part.getUri().toString();
-                    if (strUrl.startsWith(startsWith)){
-                        result = part.getUri().toString();
-                    }
+        for (MediaRepresentation rep : media.getRepresentations()){
+            for (MediaRepresentationPart part : rep.getParts()){
+                String strUrl = part.getUri().toString();
+                if (strUrl.startsWith(startsWith)){
+                    result = part.getUri().toString();
                 }
             }
         }
@@ -1042,13 +1040,10 @@ public class PesiDescriptionExport extends PesiExportBase {
     }
 
 	private PesiExportMapping getImageMapping() {
-
-	    //FIXME does not yet support multiple images per image gallery
-
 	    PesiExportMapping mapping = new PesiExportMapping(dbImageTableName);
-		mapping.addMapper(DbDescriptionElementTaxonMapper.NewInstance("taxonFk"));
-		mapping.addMapper(MethodMapper.NewInstance("img_thumb", this, "getMediaThumb"));
-		mapping.addMapper(MethodMapper.NewInstance("img_url", this, "getMediaUrl"));
+	    mapping.addMapper(MethodMapper.NewInstance("taxonFk", this.getClass(), "getCurrentTaxonFk", Media.class, PesiExportState.class));
+		mapping.addMapper(MethodMapper.NewInstance("img_thumb", this.getClass(), "getMediaThumb", Media.class));
+		mapping.addMapper(MethodMapper.NewInstance("img_url", this.getClass(), "getMediaUrl", Media.class));
 		return mapping;
 	}
 
