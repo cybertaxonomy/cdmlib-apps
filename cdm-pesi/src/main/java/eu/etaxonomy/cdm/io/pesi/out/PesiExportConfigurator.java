@@ -46,6 +46,7 @@ public class PesiExportConfigurator
 	private boolean doInferredSynonyms = true;
 	private boolean doPureNames = true;
 	private boolean doDescription = true;
+	private boolean doEcology = true;
 
 	private int nameIdStart = 10000000;
 
@@ -62,6 +63,7 @@ public class PesiExportConfigurator
 				PesiRelTaxonExport.class, // RelTaxonId's could be deleted from state hashmap
 				PesiAdditionalSourceExport.class,
 				PesiDescriptionExport.class,
+				PesiEcologyAndLinkExport.class,
 				PesiFinalUpdateExport.class
 		};
 	}
@@ -208,5 +210,12 @@ public class PesiExportConfigurator
 	public void setDoParentAndBiota(boolean doParentAndBiota) {
 		this.doParentAndBiota = doParentAndBiota;
 	}
+
+    public boolean isDoEcology() {
+        return doEcology;
+    }
+    public void setDoEcology(boolean doEcology) {
+        this.doEcology = doEcology;
+    }
 
 }
