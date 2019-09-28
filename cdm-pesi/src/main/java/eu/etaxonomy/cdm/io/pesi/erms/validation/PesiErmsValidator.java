@@ -49,8 +49,8 @@ public class PesiErmsValidator {
 //            success &= testTaxa();
 //            success &= testTaxonRelations();
 //            success &= testCommonNames();  //source(s) discuss VLIZ, exact duplicates (except for sources), 3 language names
-//            success &= testDistributions();  //lastAction test, sources (OccurrenceSource Tabelle), occurrenceStatus (compare with script), area spellings, 1 long note
-//            success &= testNotes();  //ecology notes test, notes on synonyms test, sources (NoteSource Tabelle)
+//            success &= testDistributions();  //>1000 duplicates in "dr", sources (OccurrenceSource table), area spellings, 1 long note
+              success &= testNotes();  //ecology notes test, link notes test, test trim, few duplicates, sources (NoteSource table)
 //            success &= testAdditionalTaxonSources();  //truncation of some references
         } catch (Exception e) {
             e.printStackTrace();
@@ -132,8 +132,23 @@ public class PesiErmsValidator {
 
     private boolean testNotesCount() {
         int countSrc = source.getUniqueInteger("SELECT count(*) FROM notes ");
-        int countDest = destination.getUniqueInteger("SELECT count(*) FROM Note ");
-        return equals("Notes count ", countSrc, countDest, String.valueOf(-1));
+        int countDest = destination.getUniqueInteger("SELECT count(*) FROM Note "
+                + " WHERE NOT (NoteCategoryFk = 4 AND LastAction IS NULL) AND NOT NoteCategoryFk IN (22,23,24) ");
+        boolean result = equals("Notes count ", countSrc, countDest, String.valueOf(-1));
+
+        countSrc = source.getUniqueInteger("SELECT count(*) FROM tu "
+                + " WHERE (tu_marine IS NOT NULL OR tu_brackish IS NOT NULL OR tu_fresh IS NOT NULL OR tu_terrestrial IS NOT NULL) "
+                + "     AND tu.id <>  147415 ");
+        countDest = destination.getUniqueInteger("SELECT count(*) FROM Note "
+                + " WHERE (NoteCategoryFk = 4 AND LastAction IS NULL) ");
+        result &= equals("Notes ecology count ", countSrc, countDest, String.valueOf(-1));
+
+        countSrc = source.getUniqueInteger("SELECT count(*) FROM links ");
+        countDest = destination.getUniqueInteger("SELECT count(*) FROM Note "
+                + " WHERE NoteCategoryFk IN (22,23,24) ");
+        result &= equals("Notes link count ", countSrc, countDest, String.valueOf(-1));
+
+        return result;
     }
 
     private boolean testDistributionCount() {
@@ -300,7 +315,7 @@ public class PesiErmsValidator {
                 }
             }
             if(!id.equals(srcId)){
-                logger.warn("SourceIDs are not equal: id1: " +id + ", id2: " + srcId);
+                logger.warn("Last Action SourceIDs are not equal: id: " +id + ", la-id: " + srcId);
             }
             String destStr = destRs.getString("LastAction");
             success &= equals(table + " SpeciesExpertName", srcRsLastAction.getString("ExpertName"), destRs.getString("SpeciesExpertName"), id);  //mapping ExpertName => SpeciesExpertName according to SQL script
@@ -368,7 +383,6 @@ public class PesiErmsValidator {
         return success;
     }
 
-
     private boolean testSingleAdditionalTaxonSources(int n) throws SQLException {
         boolean success = true;
         ResultSet srcRs = source.getResultSet("SELECT CAST(tu.id as nvarchar(20)) tuId, MN.*, s.*, su.sourceuse_name "
@@ -416,6 +430,7 @@ public class PesiErmsValidator {
                 + "    LEFT JOIN NoteCategory cat ON cat.NoteCategoryId = no.NoteCategoryFk "
                 + "    LEFT JOIN Language l ON l.LanguageId = no.LanguageFk "
                 + " WHERE t." + origErms
+                + "      AND NOT (NoteCategoryFk = 4 AND no.LastAction IS NULL) AND NOT NoteCategoryFk IN (22,23,24) "
                 + " ORDER BY t.IdInSource, no.NoteCategoryCache, Note_1  ");
         int count = 0;
         ResultSet srcRsLastAction = source.getResultSet(""
@@ -442,12 +457,19 @@ public class PesiErmsValidator {
         boolean success = equals("Note taxonID ", "tu_id: " + String.valueOf(srcRs.getInt("tuId")), destRs.getString("IdInSource"), id);
         success &= equals("Note Note_1 ", srcRs.getString("note"), destRs.getString("Note_1"), id);
         success &= isNull("Note_2", destRs);
-        success &= equals("Note category ", srcRs.getString("type"), destRs.getString("NoteCategoryCache"), id);
+        success &= equals("Note category cache", normalizeNoteCatCache(srcRs.getString("type")), destRs.getString("NoteCategoryCache"), id);
         success &= equals("Note language ", srcRs.getString("LanName"), destRs.getString("Language"), id);
-
-        //TODO
-        //SpeciesExpertGUID, SpeciesExpertName, LastAction, LastActionDate
+        success &= isNull("Region", destRs);
+        success &= isNull("SpeciesExpertGUID", destRs);
+        //SpeciesExpertName, LastAction, LastActionDate handled in separate method
+        //complete
         return success;
+    }
+
+    private String normalizeNoteCatCache(String string) {
+        return StringUtils.capitalize(string)
+                .replace("Original Combination", "Original combination")
+                .replace("Taxonomic remark", "Taxonomic Remark");
     }
 
     private boolean testSingleDistributions(int n) throws SQLException {
@@ -473,6 +495,7 @@ public class PesiErmsValidator {
         int count = 0;
         while (srcRs.next() && destRs.next()){
             success &= testSingleDistribution(srcRs, destRs);
+            //there are >1000 duplicates in dr, therefore this creates lots of warnings
             success &= testLastAction(srcRsLastAction, destRs, String.valueOf(srcRs.getInt("id")), "Distribution");
             count++;
         }
@@ -486,11 +509,11 @@ public class PesiErmsValidator {
         success &= equals("Distribution gazetteer_id ", srcRs.getString("gazetteer_id"), destRs.getString("AreaERMSGazetteerId"), id);
         success &= equals("Distribution area name ", srcRs.getString("gu_name"), destRs.getString("AreaName"), id);
         success &= equals("Distribution area name cache", srcRs.getString("gu_name"), destRs.getString("AreaNameCache"), id);
-        //TODO OccurrenceStatusFk
-        //TODO OccurrenceStatusCache
+        success &= equals("Distribution OccurrenceStatusFk", 1, destRs.getInt("OccurrenceStatusFk"), id);
+        success &= equals("Distribution OccurrenceStatusCache", "Present", destRs.getString("OccurrenceStatusCache"), id);
         //TODO see comments
-//      success &= isNull("SourceFk", destRs);  //sources should be moved to extra table only, check with script and PESI 2014 (=> has values for ERMS)
-//      success &= isNull("SourceNameCache", destRs);  //sources should be moved to extra table, check with script and PESI 2014 (=> has values for ERMS)
+        success &= isNull("SourceFk", destRs);  //sources should be moved to extra table only, check with script and PESI 2014 (=> has values for ERMS)
+        success &= isNull("SourceNameCache", destRs);  //sources should be moved to extra table, check with script and PESI 2014 (=> has values for ERMS)
         success &= equals("Distribution notes ", srcRs.getString("note"), destRs.getString("Notes"), id);
         success &= isNull("SpeciesExpertGUID", destRs);  //SpeciesExpertGUID does not exist in ERMS
         //SpeciesExpertName,LastAction,LastActionDate handled in separate method
