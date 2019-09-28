@@ -8,8 +8,6 @@
 */
 package eu.etaxonomy.cdm.io.pesi.out;
 
-import static java.util.EnumSet.of;
-
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
@@ -40,7 +38,6 @@ import eu.etaxonomy.cdm.io.common.mapping.out.DbLanguageMapper;
 import eu.etaxonomy.cdm.io.common.mapping.out.DbObjectMapper;
 import eu.etaxonomy.cdm.io.common.mapping.out.DbOriginalNameMapper;
 import eu.etaxonomy.cdm.io.common.mapping.out.DbSimpleFilterMapper;
-import eu.etaxonomy.cdm.io.common.mapping.out.DbSingleSourceMapper;
 import eu.etaxonomy.cdm.io.common.mapping.out.DbStringMapper;
 import eu.etaxonomy.cdm.io.common.mapping.out.DbTextDataMapper;
 import eu.etaxonomy.cdm.io.common.mapping.out.IdMapper;
@@ -962,7 +959,8 @@ public class PesiDescriptionExport extends PesiExportBase {
 		        "Sources with idInSource currently handle data lineage"));
 		mapping.addMapper(DbObjectMapper.NewInstance("Citation", "SourceFk"));
 		mapping.addMapper(DbObjectMapper.NewInstance("Citation", "SourceNameCache", IS_CACHE));
-		mapping.addMapper(DbOriginalNameMapper.NewInstance("OldTaxonName", IS_CACHE, null));
+		mapping.addMapper(DbStringMapper.NewInstance("CitationMicroReference", "SourceDetail"));
+        mapping.addMapper(DbOriginalNameMapper.NewInstance("OldTaxonName", IS_CACHE, null));
 
 		return mapping;
 	}
@@ -1025,12 +1023,34 @@ public class PesiDescriptionExport extends PesiExportBase {
 		mapping.addMapper(DbLanguageMapper.NewInstance(CommonTaxonName.class, "Language", "LanguageFk", ! IS_CACHE));
 		mapping.addMapper(DbLanguageMapper.NewInstance(CommonTaxonName.class, "Language", "LanguageCache", IS_CACHE));
 
-		mapping.addMapper(DbSingleSourceMapper.NewInstance("SourceFk", of ( DbSingleSourceMapper.EXCLUDE.WITH_ID) , ! IS_CACHE));
-		mapping.addMapper(DbSingleSourceMapper.NewInstance("SourceNameCache", of ( DbSingleSourceMapper.EXCLUDE.WITH_ID) , IS_CACHE));
+//      Use OccurrenceSource table instead
+        mapping.addMapper(DbExportIgnoreMapper.NewInstance("SourceFk", "Use CommonNameSource table for sources instead"));
+        mapping.addMapper(DbExportIgnoreMapper.NewInstance("SourceNameCache", "Use CommonNameSource table for sources instead"));
+        //OLD
+//		mapping.addMapper(DbSingleSourceMapper.NewInstance("SourceFk", of ( DbSingleSourceMapper.EXCLUDE.WITH_ID) , ! IS_CACHE));
+//		mapping.addMapper(DbSingleSourceMapper.NewInstance("SourceNameCache", of ( DbSingleSourceMapper.EXCLUDE.WITH_ID) , IS_CACHE));
 
 		mapping.addMapper(ExpertsAndLastActionMapper.NewInstance());
+	    mapping.addCollectionMapping(getCommonNameSourceMapping());
 		return mapping;
 	}
+
+    private CollectionExportMapping<PesiExportState, PesiExportConfigurator, PesiTransformer> getCommonNameSourceMapping() {
+        String tableName = "CommonNameSource";
+        String collectionAttribute = "sources";
+        IdMapper parentMapper = IdMapper.NewInstance("CommonNameFk");
+        @SuppressWarnings("unchecked")
+        CollectionExportMapping<PesiExportState, PesiExportConfigurator, PesiTransformer> mapping
+                = CollectionExportMapping.NewInstance(tableName, collectionAttribute, parentMapper);
+        mapping.addMapper(DbSimpleFilterMapper.NewSingleNullAttributeInstance("idInSource",
+                "Sources with idInSource currently handle data lineage"));
+        mapping.addMapper(DbObjectMapper.NewInstance("Citation", "SourceFk"));
+        mapping.addMapper(DbObjectMapper.NewInstance("Citation", "SourceNameCache", IS_CACHE));
+        mapping.addMapper(DbStringMapper.NewInstance("CitationMicroReference", "SourceDetail"));
+        mapping.addMapper(DbOriginalNameMapper.NewInstance("OldTaxonName", IS_CACHE, null));
+
+        return mapping;
+    }
 
 	private PesiExportMapping getImageMapping() {
 
