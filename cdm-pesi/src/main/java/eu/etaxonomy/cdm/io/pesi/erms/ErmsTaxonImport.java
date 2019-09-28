@@ -106,6 +106,10 @@ public class ErmsTaxonImport
 			ExtensionType qualityStatusExtType = getExtensionType(ErmsTransformer.uuidExtQualityStatus, "quality status", "quality status", "quality status");
 			mapping.addMapper(DbImportExtensionMapper.NewInstance("qualitystatus_name", qualityStatusExtType)); //checked by Tax Editor ERMS1.1, Added by db management team (2x), checked by Tax Editor
 
+			ExtensionType cacheCitationExtType = getExtensionType(PesiTransformer.uuidExtCacheCitation, "cache_citation", "quality status", "cache_citation");
+            mapping.addMapper(DbImportExtensionMapper.NewInstance("cache_citation", cacheCitationExtType));
+
+            //flags
 			mapping.addMapper(DbImportMarkerMapper.NewInstance("tu_marine", ErmsTransformer.uuidMarkerMarine, "marine", "marine", "marine", null));
 			mapping.addMapper(DbImportMarkerMapper.NewInstance("tu_brackish", ErmsTransformer.uuidMarkerBrackish, "brackish", "brackish", "brackish", null));
 			mapping.addMapper(DbImportMarkerMapper.NewInstance("tu_fresh", ErmsTransformer.uuidMarkerFreshwater, "freshwater", "fresh", "fresh", null));
@@ -122,7 +126,6 @@ public class ErmsTaxonImport
 
 			//not yet implemented
 			mapping.addMapper(DbNotYetImplementedMapper.NewInstance("tu_sp", "included in rank/object creation"));
-			mapping.addMapper(DbIgnoreMapper.NewInstance("cache_citation", "Needs check if this is needed in PESI"));
 
 			//ignore
 			mapping.addMapper(DbIgnoreMapper.NewInstance("tu_fossil", "tu_fossil implemented as foreign key"));

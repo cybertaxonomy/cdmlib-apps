@@ -2200,13 +2200,11 @@ public class PesiTaxonExport extends PesiExportBase {
 		String result = "";
 		//TODO implement anew for taxa
 		try {
-			BitSet sources = getSources(taxonName);
+			BitSet sources = getSources(taxon);
 			if (sources.isEmpty()) {
 //				logger.error("OriginalDB is NULL for this TaxonName: " + taxonName.getUuid() + " (" + taxonName.getTitleCache() + ")");
 			} else if (sources.get(PesiTransformer.SOURCE_ERMS)) {
-				// TODO: 19.08.2010: An import of CacheCitation does not exist in the ERMS import yet or it will be imported in a different way...
-				// 		 So the following code is some kind of harmless assumption.
-				Set<Extension> extensions = taxonName.getExtensions();
+				Set<Extension> extensions = taxon.getExtensions();
 				for (Extension extension : extensions) {
 					if (extension.getType().equals(cacheCitationExtensionType)) {
 						result = extension.getValue();
