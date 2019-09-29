@@ -91,6 +91,8 @@ public class ErmsImportState extends DbImportStateBase<ErmsImportConfigurator, E
 		}
 		if (kingdomId == 147415 && rankId == 10){
 			result = Rank.KINGDOM();
+		}else if (kingdomId ==1 && rankId == 0 ){
+		    return Rank.DOMAIN();  //maybe should be Superdomain
 		}else{
 			Map<Integer, Rank> kingdomMap = rankMap.get(rankId);
 			if (kingdomMap != null){

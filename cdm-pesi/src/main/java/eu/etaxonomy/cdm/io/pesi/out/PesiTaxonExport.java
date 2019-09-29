@@ -726,7 +726,7 @@ public class PesiTaxonExport extends PesiExportBase {
                     }
                 }
                 if(Rank.DOMAIN().equals(taxon.getName().getRank())){
-                    return null;
+                    return 0;
                 }
                 if(kingdomID == null){
                     logger.warn("Kingdom could not be defined for treeindex " + treeIndex);

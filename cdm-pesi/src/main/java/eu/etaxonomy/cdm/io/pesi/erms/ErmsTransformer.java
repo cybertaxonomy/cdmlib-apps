@@ -274,7 +274,8 @@ public final class ErmsTransformer extends InputTransformerBase {
 			case 5: return NomenclaturalCode.ICZN ;  //Protozoa
 			case 6: return NomenclaturalCode.ICNB ;  //Bacteria
 			case 7: return NomenclaturalCode.ICZN;  //Chromista??
-			//-> formatting of infrageneric taxa and available ranks (rank table) let me assume that ICZN is most suitable 			case 147415: return NomenclaturalCode.ICNB;  //Monera
+			case 147415: return NomenclaturalCode.ICNB;  //Monera, it is only an alternative name for Bacteria and should not be handled as separate kingdom
+			//-> formatting of infrageneric taxa and available ranks (rank table) let me assume that ICZN is most suitable
 			//at the same time time formatting of subsp. (with marker!) behaves like ICNAFP so this is unclear
 			default: return null;
 		}
