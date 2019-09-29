@@ -237,8 +237,7 @@ public final class ErmsTransformer extends InputTransformerBase {
 
 	//extension type uuids
 	public static final UUID uuidErmsTaxonStatus = UUID.fromString("859eee7f-5240-48a0-8edc-7af63557fa6e");
-	public static final UUID uuidExtTruncatedCache = UUID.fromString("4839605b-b72d-493a-94fb-e8f8acb393f9");
-    public static final UUID uuidExtGazetteer = UUID.fromString("dcfa124a-1028-49cd-aea5-fdf9bd396c1a");
+	public static final UUID uuidExtGazetteer = UUID.fromString("dcfa124a-1028-49cd-aea5-fdf9bd396c1a");
 	public static final UUID uuidExtImis = UUID.fromString("ee2ac2ca-b60c-4e6f-9cad-720fcdb0a6ae");
 	public static final UUID uuidExtFossilStatus = UUID.fromString("ec3dffbe-a0c8-4d76-845f-5fc166a33d5b");
 	public static final UUID uuidExtTsn = UUID.fromString("6b0df02b-7278-4ce0-8fc9-0e6523832eb5");

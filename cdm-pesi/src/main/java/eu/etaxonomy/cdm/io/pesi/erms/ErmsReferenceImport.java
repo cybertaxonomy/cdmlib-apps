@@ -78,7 +78,7 @@ public class ErmsReferenceImport
 			ExtensionType imisExtType = getExtensionType( ErmsTransformer.uuidExtImis, "imis", "imis", "imis");
 			mapping.addMapper(DbImportExtensionMapper.NewInstance("imis_id", imisExtType));
 
-			ExtensionType truncatedExtType = getExtensionType( ErmsTransformer.uuidExtTruncatedCache, "truncated cache", "truncated cache", "truncated cache");
+			ExtensionType truncatedExtType = getExtensionType( ExtensionType.uuidExtNonTruncatedCache, "non-truncated cache", "non-truncated cache", "non-truncated cache");
             mapping.addMapper(DbImportTruncatedStringMapper.NewInstance("source_name", "titleCache", truncatedExtType, 800, true));
             mapping.addMapper(DbImportStringMapper.NewInstance("source_abstract", "referenceAbstract"));
             mapping.addMapper(DbImportStringMapper.NewInstance("source_title", "title"));
