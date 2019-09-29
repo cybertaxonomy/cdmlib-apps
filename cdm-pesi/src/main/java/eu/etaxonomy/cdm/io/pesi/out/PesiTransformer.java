@@ -42,7 +42,6 @@ import eu.etaxonomy.cdm.model.name.NomenclaturalCode;
 import eu.etaxonomy.cdm.model.name.NomenclaturalStatusType;
 import eu.etaxonomy.cdm.model.name.Rank;
 import eu.etaxonomy.cdm.model.name.TaxonName;
-import eu.etaxonomy.cdm.model.occurrence.DerivedUnit;
 import eu.etaxonomy.cdm.model.reference.Reference;
 import eu.etaxonomy.cdm.model.reference.ReferenceType;
 import eu.etaxonomy.cdm.model.taxon.Synonym;
@@ -1375,27 +1374,6 @@ public final class PesiTransformer extends ExportTransformerBase{
 		return result;
 	}
 
-
-	/**
-	 * Returns the FossilStatusCache to a given Fossil.
-	 * @param fossil
-	 * @return
-	 */
-	public static String fossil2FossilStatusCache(DerivedUnit fossil) {
-		String result = null;
-		return result;
-	}
-
-	/**
-	 * Returns the FossilStatusId to a given Fossil.
-	 * @param fossil
-	 * @return
-	 */
-	public static Integer fossil2FossilStatusId(DerivedUnit fossil) {
-		Integer result = null;
-		return result;
-	}
-
 	@Override
 	public Object getKeyByLanguage(Language language) throws UndefinedTransformerMethodException {
 		return language2LanguageId(language);
@@ -1552,10 +1530,9 @@ public final class PesiTransformer extends ExportTransformerBase{
 		} else if (feature.getUuid().equals(ErmsTransformer.uuidValidity)) {
 			return NoteCategory_Validity;
 
-
-        } else if (feature.getUuid().equals(ErmsTransformer.uuidSourceOfSynonymy)) {
-		    logger.debug("Source of synonymy not yet handled");
-		    return null;
+//        } else if (feature.getUuid().equals(ErmsTransformer.uuidSourceOfSynonymy)) {
+//		    logger.debug("Source of synonymy not yet handled");
+//		    return null;
 		} else if (feature.equals(Feature.CITATION())) {
 			return null;  //citations are handled differently
 		} else if (feature.getUuid().equals(BerlinModelTransformer.uuidFeatureMaps)){
@@ -1607,28 +1584,13 @@ public final class PesiTransformer extends ExportTransformerBase{
 	}
 
 	/**
-	 * Returns the abbreviation for a given rank.
-	 * Currently unused.
-	 * @param rank
-	 * @param pesiKingdomId
-	 * @return
-	 */
-	public String getCacheAbbrevByRankAndKingdom(Rank rank, Integer pesiKingdomId) {
-		if (rank == null){
-			return null;
-		}else{
-			return this.rankAbbrevCacheMap.get(pesiKingdomId).get(rank2RankId(rank, pesiKingdomId));
-		}
-	}
-
-	/**
 	 * Returns the identifier of a PESI specific kingdom for a given CDM nomenclatural code.
 	 * @param nomenclaturalCode
-	 * @return KINGDOM_ANIMALIA for NomenclaturalCode.ICZN, KINGDOM_PLANTAE for NomenclaturalCode.ICBN
+	 * @return KINGDOM_ANIMALIA for NomenclaturalCode.ICZN, KINGDOM_PLANTAE for NomenclaturalCode.ICNAFP
 	 */
 	public static Integer nomenclaturalCode2Kingdom(NomenclaturalCode nomenclaturalCode) {
 		Integer result = null;
-		// TODO: This needs to be refined. For now we differentiate between Animalia and Plantae only.
+		// TODO: This needs to be refined. For now we differentiate between animalia, plantae and bacteria only.
 		if (nomenclaturalCode.equals(NomenclaturalCode.ICZN)) {
 			result = KINGDOM_ANIMALIA;
 		} else if (nomenclaturalCode.equals(NomenclaturalCode.ICNAFP)) {
@@ -1954,6 +1916,7 @@ public final class PesiTransformer extends ExportTransformerBase{
 			logger.warn("Name Type Designation Status not yet supported in PESI: "+ nameTypeDesignationStatus.getLabel());
 			return null;
 		}
+
 	}
 
 	/**
@@ -1976,7 +1939,6 @@ public final class PesiTransformer extends ExportTransformerBase{
 			logger.warn("Name Type Designation Status not yet supported in PESI: "+ nameTypeDesignationStatus.getLabel());
 			return null;
 		}
-
 	}
 
 	/**
@@ -2291,21 +2253,6 @@ public final class PesiTransformer extends ExportTransformerBase{
         if (syn.getAcceptedTaxon() == null) {
             return null;
         }
-//        if (syn.isPartial()){
-//            if (syn.getType().equals(SynonymType.HETEROTYPIC_SYNONYM_OF())){
-//                return IS_PARTIAL_AND_HETEROTYPIC_SYNONYM_OF;
-//            }else if (syn.getType().equals(SynonymType.HOMOTYPIC_SYNONYM_OF())){
-//                return IS_PARTIAL_AND_HOMOTYPIC_SYNONYM_OF;
-//            }
-//            return IS_PARTIAL_SYNONYM_OF;
-//        }else if (syn.isProParte()){
-//            if (syn.getType().equals(SynonymType.HETEROTYPIC_SYNONYM_OF())){
-//                return IS_PRO_PARTE_AND_HETEROTYPIC_SYNONYM_OF;
-//            }else if (syn.getType().equals(SynonymType.HOMOTYPIC_SYNONYM_OF())){
-//                return IS_PRO_PARTE_AND_HOMOTYPIC_SYNONYM_OF;
-//            }
-//            return IS_PRO_PARTE_SYNONYM_OF;
-//        }else
         if (syn.getType().equals(SynonymType.HETEROTYPIC_SYNONYM_OF())){
             return IS_HETEROTYPIC_SYNONYM_OF;
         } else if (syn.getType().equals(SynonymType.HOMOTYPIC_SYNONYM_OF())){
