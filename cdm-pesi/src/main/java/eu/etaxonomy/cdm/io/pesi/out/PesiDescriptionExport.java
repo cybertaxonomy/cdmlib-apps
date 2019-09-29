@@ -75,6 +75,7 @@ import eu.etaxonomy.cdm.profiler.ProfilerController;
  * <li>Phase 2:	Export of TaxonName extensions <code>taxComment</code>, <code>fauComment</code> and <code>fauExtraCodes</code> as Notes.</ul>
  * @author e.-m.lee
  * @since 23.02.2010
+ * @author a.mueller
  */
 @Component
 public class PesiDescriptionExport extends PesiExportBase {
@@ -90,7 +91,7 @@ public class PesiDescriptionExport extends PesiExportBase {
 	private static final String dbVernacularTableName = "CommonName";
 	private static final String dbImageTableName = "Image";
 	private static final String dbAdditionalSourceTableName = "AdditionalTaxonSource";
-	private static final String pluralString = "attached infos";
+	private static final String pluralString = "descriptions";
 	private static final String parentPluralString = "Taxa";
 
 	//decide where to handle them best (configurator, transformer, single method, ...)
@@ -190,7 +191,7 @@ public class PesiDescriptionExport extends PesiExportBase {
 		TransactionStatus txStatus = startTransaction(true);
 
 		if (logger.isDebugEnabled()){
-		    logger.info("Started new transaction. Fetching some " + pluralString + " (max: " + limit + ") ...");
+		    logger.info("Started new transaction. Fetching some " + parentPluralString + " (max: " + limit + ") ...");
 		    logger.debug("Start snapshot, before starting loop");
 		    ProfilerController.memorySnapshot();
 		}
@@ -200,12 +201,12 @@ public class PesiDescriptionExport extends PesiExportBase {
 		while ((taxonList = getNextTaxonPartition(Taxon.class, limit, partitionCount++, propPath )) != null   ) {
 
 			if (logger.isDebugEnabled()) {
-                logger.info("Fetched " + taxonList.size() + " " + pluralString + ". Exporting...");
+                logger.info("Fetched " + taxonList.size() + " " + parentPluralString + ". Exporting...");
             }
 
 			for (Taxon taxon : taxonList) {
 				countTaxa++;
-				doCount(count++, modCount, pluralString);
+				doCount(count++, modCount, parentPluralString);
 				state.setCurrentTaxon(taxon);
 				if (!taxon.getDescriptions().isEmpty()){
 					success &= handleSingleTaxon(taxon, state, notesMapping, occurrenceMapping, addSourceSourceMapping,
@@ -217,17 +218,17 @@ public class PesiDescriptionExport extends PesiExportBase {
 
 			// Commit transaction
 			commitTransaction(txStatus);
-			logger.info("Exported " + (count - pastCount) + " " + pluralString + ". Total: " + count + " (Phase 01)");
+			logger.info("Exported " + (count - pastCount) + " " + parentPluralString + ". Total: " + count + " (Phase 01)");
 			pastCount = count;
 			ProfilerController.memorySnapshot();
 			// Start transaction
 			txStatus = startTransaction(true);
 			if(logger.isDebugEnabled()) {
-                logger.info("Started new transaction. Fetching some " + pluralString + " (max: " + limit + ") for description import ...");
+                logger.info("Started new transaction. Fetching some " + parentPluralString + " (max: " + limit + ") for description import ...");
             }
 		}
 
-		logger.info("No " + pluralString + " left to fetch.");
+		logger.info("No " + parentPluralString + " left to fetch.");
 		logger.info("Partition: " + partitionCount);
 		logger.info("Taxa: " + countTaxa);
 		logger.info("Desc: " + countDescriptions);
@@ -304,7 +305,7 @@ public class PesiDescriptionExport extends PesiExportBase {
 			logger.info("Started new transaction. Fetching some name descriptions (max: " + limit + ") for description import ...");
 		}
 
-		logger.info("No " + pluralString + " left to fetch.");
+		logger.info("No " + parentPluralString + " left to fetch.");
 		logger.info("Partition: " + partitionCount);
 		logger.info("Taxa: " + countTaxa);
 		logger.info("Desc: " + countDescriptions);
@@ -551,7 +552,7 @@ public class PesiDescriptionExport extends PesiExportBase {
 					}
 				}
 
-				doCount(count++, modCount, pluralString);
+				doCount(count++, modCount, parentPluralString);
 			}
 
 			// Commit transaction

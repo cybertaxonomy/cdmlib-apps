@@ -84,7 +84,7 @@ public class ErmsImportState extends DbImportStateBase<ErmsImportConfigurator, E
 	 * @return
 	 * @throws RuntimeException
 	 **/
-	public Rank getRank (int rankId, int  kingdomId){
+	public Rank getRank (int rankId, int kingdomId){
 		Rank result = null;
 		if (this.rankMap == null){
 			throw new RuntimeException("rank map not initialized");

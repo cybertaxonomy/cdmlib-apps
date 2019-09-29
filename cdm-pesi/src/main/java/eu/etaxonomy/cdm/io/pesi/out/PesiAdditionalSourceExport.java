@@ -90,7 +90,7 @@ public class PesiAdditionalSourceExport extends PesiExportBase {
 	}
 
 	//PHASE 01: Sources
-	private boolean doPhase01(PesiExportState state, PesiExportMapping mapping) throws SQLException {
+	private boolean doPhase01(PesiExportState state, PesiExportMapping mapping) {
 
 //	    System.out.println("PHASE 1 of description import");
 	    logger.info("PHASE 1...");
@@ -100,12 +100,13 @@ public class PesiAdditionalSourceExport extends PesiExportBase {
 		//int limit = state.getConfig().getLimitSave();
 		int limit = 1000;
 
-		List<TaxonBase> taxonList = null;
+		@SuppressWarnings("rawtypes")
+        List<TaxonBase> taxonList = null;
 
 		TransactionStatus txStatus = startTransaction(true);
 
 		if (logger.isDebugEnabled()){
-		    logger.info("Started new transaction. Fetching some " + pluralString + " (max: " + limit + ") ...");
+		    logger.info("Started new transaction. Fetching some " + parentPluralString + " (max: " + limit + ") ...");
 		    logger.debug("Start snapshot, before starting loop");
 		    ProfilerController.memorySnapshot();
 		}
@@ -115,12 +116,12 @@ public class PesiAdditionalSourceExport extends PesiExportBase {
 		while ((taxonList = getNextTaxonPartition(TaxonBase.class, limit, partitionCount++, propPath )) != null   ) {
 
 			if (logger.isDebugEnabled()) {
-                logger.info("Fetched " + taxonList.size() + " " + pluralString + ". Exporting...");
+                logger.info("Fetched " + taxonList.size() + " " + parentPluralString + ". Exporting...");
             }
 
-			for (TaxonBase taxon : taxonList) {
+			for (TaxonBase<?> taxon : taxonList) {
 				countTaxa++;
-				doCount(count++, modCount, pluralString);
+				doCount(count++, modCount, parentPluralString);
 				state.setCurrentTaxon(taxon);
 				if (!taxon.getSources().isEmpty()){
 					success &= handleSingleTaxon(taxon, mapping);
@@ -131,7 +132,7 @@ public class PesiAdditionalSourceExport extends PesiExportBase {
 
 			// Commit transaction
 			commitTransaction(txStatus);
-			logger.info("Exported " + (count - pastCount) + " " + pluralString + ". Total taxa: " + count + ". Total sources " + countSources);
+			logger.info("Exported " + (count - pastCount) + " " + parentPluralString + ". Total taxa: " + count + ". Total sources " + countSources);
 			pastCount = count;
 			if (logger.isDebugEnabled()) {
                 ProfilerController.memorySnapshot();
@@ -139,7 +140,7 @@ public class PesiAdditionalSourceExport extends PesiExportBase {
 			// Start transaction
 			txStatus = startTransaction(true);
 			if(logger.isDebugEnabled()) {
-                logger.info("Started new transaction. Fetching some " + pluralString + " (max: " + limit + ") for description import ...");
+                logger.info("Started new transaction. Fetching some " + parentPluralString + " (max: " + limit + ") for description import ...");
             }
 		}
 
@@ -150,7 +151,7 @@ public class PesiAdditionalSourceExport extends PesiExportBase {
 		return success;
 	}
 
-	private boolean handleSingleTaxon(TaxonBase<?> taxon, PesiExportMapping mapping) throws SQLException {
+	private boolean handleSingleTaxon(TaxonBase<?> taxon, PesiExportMapping mapping) {
 
 	    boolean success = true;
 

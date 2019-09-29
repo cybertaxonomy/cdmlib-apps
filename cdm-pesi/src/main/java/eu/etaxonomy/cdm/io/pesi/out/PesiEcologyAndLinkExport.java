@@ -340,6 +340,6 @@ public class PesiEcologyAndLinkExport extends PesiExportBase {
 
     @Override
     protected boolean isIgnore(PesiExportState state) {
-        return ! state.getConfig().isDoEcology();
+        return ! state.getConfig().isDoEcologyAndLink();
     }
 }

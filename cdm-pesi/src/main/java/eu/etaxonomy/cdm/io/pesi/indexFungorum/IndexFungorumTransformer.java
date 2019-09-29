@@ -1,8 +1,8 @@
 /**
 * Copyright (C) 2007 EDIT
-* European Distributed Institute of Taxonomy 
+* European Distributed Institute of Taxonomy
 * http://www.e-taxonomy.eu
-* 
+*
 * The contents of this file are subject to the Mozilla Public License Version 1.1
 * See LICENSE.TXT at the top of this package for the full license terms.
 */
@@ -15,36 +15,20 @@ import org.apache.log4j.Logger;
 import eu.etaxonomy.cdm.io.common.TdwgAreaProvider;
 import eu.etaxonomy.cdm.io.common.mapping.InputTransformerBase;
 import eu.etaxonomy.cdm.io.common.mapping.UndefinedTransformerMethodException;
-import eu.etaxonomy.cdm.model.location.NamedArea;
 import eu.etaxonomy.cdm.model.location.Country;
-import eu.etaxonomy.cdm.model.name.NomenclaturalCode;
+import eu.etaxonomy.cdm.model.location.NamedArea;
 import eu.etaxonomy.cdm.model.name.Rank;
 
 /**
  * @author a.mueller
  * @since 01.03.2010
- * @version 1.0
  */
 public final class IndexFungorumTransformer extends InputTransformerBase {
-	private static final Logger logger = Logger.getLogger(IndexFungorumTransformer.class);
-	
+
+    private static final long serialVersionUID = 7930365658820136180L;
+    private static final Logger logger = Logger.getLogger(IndexFungorumTransformer.class);
+
 	public static final String LSID_PREFIX = "urn:lsid:indexfungorum.org:names:";
-
-	public static NomenclaturalCode kingdomId2NomCode(Integer kingdomId){
-		switch (kingdomId){
-			case 1: return null;
-			case 2: return NomenclaturalCode.ICZN;  //Animalia
-			case 3: return NomenclaturalCode.ICNAFP;  //Plantae
-			case 4: return NomenclaturalCode.ICNAFP;  //Fungi
-			case 5: return NomenclaturalCode.ICZN ;  //Protozoa
-			case 6: return NomenclaturalCode.ICNB ;  //Bacteria
-			case 7: return NomenclaturalCode.ICNAFP;  //Chromista
-			case 147415: return NomenclaturalCode.ICNB;  //Monera
-			default: return null;
-	
-		}
-	}
-
 
 
 	@Override
@@ -66,14 +50,9 @@ public final class IndexFungorumTransformer extends InputTransformerBase {
 				logger.warn("Unhandled rank: " + rankFk);
 				return null;
 		}
-		
 	}
 
 
-
-	/* (non-Javadoc)
-	 * @see eu.etaxonomy.cdm.io.common.mapping.InputTransformerBase#getNamedAreaByKey(java.lang.String)
-	 */
 	@Override
 	public NamedArea getNamedAreaByKey(String key) throws UndefinedTransformerMethodException {
 		if (StringUtils.isBlank(key)){
@@ -101,7 +80,7 @@ public final class IndexFungorumTransformer extends InputTransformerBase {
 		}else if (key.equalsIgnoreCase("SE")){return TdwgAreaProvider.getAreaByTdwgAbbreviation("SWE-OO");
 		}else if (key.equalsIgnoreCase("AM")){return TdwgAreaProvider.getAreaByTdwgAbbreviation("TCS-AR");
 		}else if (key.equalsIgnoreCase("IL")){return TdwgAreaProvider.getAreaByTdwgAbbreviation("PAL-IS");
-		
+
 		}else if (key.equalsIgnoreCase("UK")){return Country.UNITEDKINGDOMOFGREATBRITAINANDNORTHERNIRELAND();
 		}else if (key.equalsIgnoreCase("DK")){return Country.DENMARKKINGDOMOF();
 		}else if (key.equalsIgnoreCase("GR")){return Country.GREECEHELLENICREPUBLIC();
@@ -111,8 +90,7 @@ public final class IndexFungorumTransformer extends InputTransformerBase {
 		}else if (key.equalsIgnoreCase("UA")){return Country.UKRAINE();
 		}else if (key.equalsIgnoreCase("GE")){return Country.GEORGIA();
 		}else if (key.equalsIgnoreCase("TR")){return Country.TURKEYREPUBLICOF();
-		
-		
+
 		} else {
 			logger.warn("Area not yet mapped: " +  key);
 			return null;

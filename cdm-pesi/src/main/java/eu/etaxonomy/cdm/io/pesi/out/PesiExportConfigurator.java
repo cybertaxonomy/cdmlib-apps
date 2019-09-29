@@ -46,7 +46,7 @@ public class PesiExportConfigurator
 	private boolean doInferredSynonyms = true;
 	private boolean doPureNames = true;
 	private boolean doDescription = true;
-	private boolean doEcology = true;
+	private boolean doEcologyAndLink = true;
 
 	private int nameIdStart = 10000000;
 
@@ -211,11 +211,11 @@ public class PesiExportConfigurator
 		this.doParentAndBiota = doParentAndBiota;
 	}
 
-    public boolean isDoEcology() {
-        return doEcology;
+    public boolean isDoEcologyAndLink() {
+        return doEcologyAndLink;
     }
-    public void setDoEcology(boolean doEcology) {
-        this.doEcology = doEcology;
+    public void setDoEcologyAndLink(boolean doEcologyAndLink) {
+        this.doEcologyAndLink = doEcologyAndLink;
     }
 
 }

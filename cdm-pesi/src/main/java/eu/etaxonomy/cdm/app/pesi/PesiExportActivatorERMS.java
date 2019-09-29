@@ -57,8 +57,8 @@ public class PesiExportActivatorERMS {
 	boolean doInferredSynonyms = false; //only with doTaxa
 	boolean doRelTaxa = false;
 	boolean doAdditionalTaxonSource = false;
-	boolean doDescriptions = false;
-	boolean doEcology = true;
+	boolean doDescriptions = true;
+	boolean doEcologyAndLink = doDescriptions;
 
 	static boolean doPureNames = false;  //ERMS has no pure names
 
@@ -86,7 +86,7 @@ public class PesiExportActivatorERMS {
 		config.setDoRelTaxa(doRelTaxa);
 		config.setDoAdditionalTaxonSource(doAdditionalTaxonSource);
 		config.setDoDescription(doDescriptions);
-		config.setDoEcology(doEcology);
+		config.setDoEcologyAndLink(doEcologyAndLink);
 
 //		config.setDoOccurrence(doOccurrence);
 //		config.setDoOccurrenceSource(doOccurrenceSource);

@@ -102,7 +102,7 @@ public final class PesiTransformer extends ExportTransformerBase{
 	public static final UUID uuidExtTaxComment = UUID.fromString("8041a752-0479-4626-ab1b-b266b751f816");
 	public static final UUID uuidExtFauComment = UUID.fromString("054f773a-41c8-4ad5-83e3-981320c1c126");
 	public static final UUID uuidExtFauExtraCodes = UUID.fromString("b8c7e77d-9869-4787-bed6-b4b302dbc5f5");
-	
+
 	// References
 	public static int REF_ARTICLE_IN_PERIODICAL = 1;
 	public static int REF_PART_OF_OTHER = 2;
@@ -912,7 +912,6 @@ public final class PesiTransformer extends ExportTransformerBase{
 		return result;
 	}
 
-
 	/**
 	 * Returns the OccurrenceStatusId for a given PresenceAbsenceTerm.
 	 * @param term
@@ -959,7 +958,6 @@ public final class PesiTransformer extends ExportTransformerBase{
 		return result;
 	}
 
-
 	@Override
 	public String getCacheByPresenceAbsenceTerm(PresenceAbsenceTerm status) throws UndefinedTransformerMethodException {
 		if (status == null){
@@ -974,8 +972,6 @@ public final class PesiTransformer extends ExportTransformerBase{
 		return presenceAbsenceTerm2OccurrenceStatusId(status);
 	}
 
-
-
 	@Override
 	public String getCacheByNamedArea(NamedArea namedArea) throws UndefinedTransformerMethodException {
 		NamedArea area = CdmBase.deproxy(namedArea, NamedArea.class);
@@ -985,7 +981,6 @@ public final class PesiTransformer extends ExportTransformerBase{
 			return this.areaCacheMap.get(getKeyByNamedArea(area));
 		}
 	}
-
 
 	@Override
 	public Object getKeyByNamedArea(NamedArea area) throws UndefinedTransformerMethodException {
@@ -1572,7 +1567,6 @@ public final class PesiTransformer extends ExportTransformerBase{
 		} else if (feature.getUuid().equals(BerlinModelTransformer.uuidFeatureConservationStatus)){
 			return NoteCategory_Conservation_Status;
 
-
 		//E+M
 		} else if (feature.getUuid().equals(BerlinModelTransformer.uuidFeatureDistrEM)){
 			return NoteCategory_general_distribution_euromed;
@@ -1960,7 +1954,6 @@ public final class PesiTransformer extends ExportTransformerBase{
 			logger.warn("Name Type Designation Status not yet supported in PESI: "+ nameTypeDesignationStatus.getLabel());
 			return null;
 		}
-
 	}
 
 	/**
@@ -2108,11 +2101,6 @@ public final class PesiTransformer extends ExportTransformerBase{
 		}
 	}
 
-	/**
-	 *
-	 * @param status
-	 * @return
-	 */
 	@Override
     public String getCacheByNomStatus(NomenclaturalStatusType status) {
 		if (status == null){
@@ -2294,6 +2282,7 @@ public final class PesiTransformer extends ExportTransformerBase{
 		return null;
 	}
 	/**
+     * FIXME still needed?
      * Returns the RelTaxonQualifierFk for a TaxonRelation.
      * @param relation
      * @return
