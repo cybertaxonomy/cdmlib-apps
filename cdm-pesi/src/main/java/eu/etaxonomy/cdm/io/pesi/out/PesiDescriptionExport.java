@@ -881,7 +881,7 @@ public class PesiDescriptionExport extends PesiExportBase {
 		PesiExportMapping mapping = new PesiExportMapping(dbNoteTableName);
 
 		mapping.addMapper(IdMapper.NewInstance("NoteId"));
-		mapping.addMapper(DbTextDataMapper.NewInstance(Language.ENGLISH(), "Note_1"));
+		mapping.addMapper(DbTextDataMapper.NewDefaultInstance("Note_1"));
 		//TODO
 		mapping.addMapper(MethodMapper.NewInstance("Note_2", this, standardMethodParameter));
 		mapping.addMapper(MethodMapper.NewInstance("NoteCategoryFk", this, standardMethodParameter ));
@@ -970,7 +970,7 @@ public class PesiDescriptionExport extends PesiExportBase {
 
 //		sourceMapping.addMapper(MethodMapper.NewInstance("NomRefCache", PesiSourceExport.class, "getNomRefCache", Reference.class));
 
-		sourceMapping.addMapper(DbTextDataMapper.NewInstance(Language.ENGLISH(), "NomRefCache"));
+		sourceMapping.addMapper(DbTextDataMapper.NewDefaultInstance("NomRefCache"));
 
 		return sourceMapping;
 	}
@@ -987,7 +987,7 @@ public class PesiDescriptionExport extends PesiExportBase {
 		mapping.addMapper(MethodMapper.NewInstance("TaxonFk", this, DescriptionElementBase.class, PesiExportState.class));
 
 		mapping.addMapper(IdMapper.NewInstance("SourceFk"));
-		mapping.addMapper(DbTextDataMapper.NewInstance(Language.ENGLISH(), "SourceNameCache"));
+		mapping.addMapper(DbTextDataMapper.NewDefaultInstance("SourceNameCache"));
 
 		mapping.addMapper(DbConstantMapper.NewInstance("SourceUseFk", Types.INTEGER, PesiTransformer.NOMENCLATURAL_REFERENCE));
 		mapping.addMapper(DbConstantMapper.NewInstance("SourceUseCache", Types.VARCHAR, PesiTransformer.STR_NOMENCLATURAL_REFERENCE));
