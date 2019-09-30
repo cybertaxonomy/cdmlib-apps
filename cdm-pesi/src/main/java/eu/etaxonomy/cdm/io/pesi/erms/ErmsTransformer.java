@@ -31,8 +31,8 @@ import eu.etaxonomy.cdm.model.term.TermVocabulary;
  * @since 01.03.2010
  */
 public final class ErmsTransformer extends InputTransformerBase {
-    private static final long serialVersionUID = 1777919792691129468L;
 
+    private static final long serialVersionUID = 1777919792691129468L;
     private static final Logger logger = Logger.getLogger(ErmsTransformer.class);
 
 	public static final int SOURCE_USE_ORIGINAL_DESCRIPTION = 1;

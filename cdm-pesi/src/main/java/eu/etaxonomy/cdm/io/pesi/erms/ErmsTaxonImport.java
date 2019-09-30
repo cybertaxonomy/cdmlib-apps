@@ -93,8 +93,9 @@ public class ErmsTaxonImport
 
 			ExtensionType displayNameExtType = getExtensionType(ErmsTransformer.uuidExtDisplayName, "display name", "display name", "display name");
 			mapping.addMapper(DbImportExtensionMapper.NewInstance("tu_displayname", displayNameExtType));
-		//	ExtensionType fuzzyNameExtType = getExtensionType(ErmsTransformer.uuidExtFuzzyName, "fuzzy name", "fuzzy name", "fuzzy name");
-		//	mapping.addMapper(DbImportExtensionMapper.NewInstance("tu_fuzzyname", fuzzyNameExtType));
+            //Ignore fuzzyName
+            //  ExtensionType fuzzyNameExtType = getExtensionType(ErmsTransformer.uuidExtFuzzyName, "fuzzy name", "fuzzy name", "fuzzy name");
+            //  mapping.addMapper(DbImportExtensionMapper.NewInstance("tu_fuzzyname", fuzzyNameExtType));
 			mapping.addMapper(DbImportStringMapper.NewInstance("tu_authority", "name.authorshipCache"));
 
 			ExtensionType fossilStatusExtType = getExtensionType(ErmsTransformer.uuidExtFossilStatus, "fossil status", "fossil status", "fos. stat.");

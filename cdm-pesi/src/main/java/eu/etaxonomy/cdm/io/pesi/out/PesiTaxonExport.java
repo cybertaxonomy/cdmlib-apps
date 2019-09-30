@@ -181,7 +181,6 @@ public class PesiTaxonExport extends PesiExportBase {
 			//"PHASE 1b: Handle names without taxa ...
 			success &= doNames(state, additionalSourceMapping);
 
-
 			// 2nd Round: Add ParentTaxonFk to each taxon
 			success &= doPhase02(state);
 
@@ -190,7 +189,6 @@ public class PesiTaxonExport extends PesiExportBase {
 
 			// 4nd Round: Add TreeIndex to each taxon
 			success &= doPhase04(state);
-
 
 			//"PHASE 5: Creating Inferred Synonyms...
 			success &= doPhase05(state, mapping, synonymRelMapping);
@@ -1799,9 +1797,9 @@ public class PesiTaxonExport extends PesiExportBase {
 	private static Integer getNameStatusFk(TaxonName taxonName) {
 		Integer result = null;
 
-		NomenclaturalStatus state = getNameStatus(taxonName);
-		if (state != null) {
-			result = PesiTransformer.nomStatus2nomStatusFk(state.getType());
+		NomenclaturalStatus status = getNameStatus(taxonName);
+		if (status != null) {
+			result = PesiTransformer.nomStatus2nomStatusFk(status.getType());
 		}
 		return result;
 	}

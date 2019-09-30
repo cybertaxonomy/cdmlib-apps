@@ -25,8 +25,10 @@ import eu.etaxonomy.cdm.model.term.DefinedTermBase;
  * @author a.mueller
  * @since 11.05.2009
  */
-public class ErmsImportState extends DbImportStateBase<ErmsImportConfigurator, ErmsImportState>{
-	@SuppressWarnings("unused")
+public class ErmsImportState
+        extends DbImportStateBase<ErmsImportConfigurator, ErmsImportState>{
+
+    @SuppressWarnings("unused")
 	private static final Logger logger = Logger.getLogger(ErmsImportState.class);
 
 	private Map<String, DefinedTermBase> dbCdmDefTermMap = new HashMap<>();
@@ -105,10 +107,7 @@ public class ErmsImportState extends DbImportStateBase<ErmsImportConfigurator, E
 	public Set<Integer> getAcceptedTaxaKeys() {
 		return acceptedTaxaKeys;
 	}
-
 	public void setAcceptedTaxaKeys(Set<Integer> acceptedTaxaKeys) {
 		this.acceptedTaxaKeys = acceptedTaxaKeys;
 	}
-
-
 }

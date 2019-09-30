@@ -441,11 +441,6 @@ public final class FaunaEuropaeaTransformer {
 	 		languageFK2Language.put(116, Language.GAELIC_SCOTTISH_GAELIC());
 	 		languageFK2Language.put(117, Language.SWAHILI());
 	 		languageFK2Language.put(118, Language.SPANISH_CASTILIAN());
-
-
-
-
-
 	 	}
 //	public static UUID getUUIDByAreaAbbr(String abbr){
 //		return abbrToUUID.get(abbr);

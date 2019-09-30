@@ -45,8 +45,8 @@ public class PesiExportActivatorERMS {
 //	boolean doInferredSynonyms = false;  //xx takes long, unclear what it does
 //	boolean doRelTaxa = true;
 //    boolean doAdditionalTaxonSource = true;
-//	boolean doDescriptions = false;
-//	boolean doEcology = false;
+//	boolean doDescriptions = true;
+//	boolean doEcology = true;
 
 // ************************ NONE **************************************** //
 
