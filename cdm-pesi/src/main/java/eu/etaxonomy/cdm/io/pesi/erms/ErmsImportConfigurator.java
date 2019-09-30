@@ -18,7 +18,6 @@ import eu.etaxonomy.cdm.io.common.DbImportConfiguratorBase;
 import eu.etaxonomy.cdm.io.common.ImportStateBase;
 import eu.etaxonomy.cdm.io.common.Source;
 import eu.etaxonomy.cdm.io.common.mapping.IInputTransformer;
-import eu.etaxonomy.cdm.io.pesi.erms.validation.ErmsGeneralImportValidator;
 import eu.etaxonomy.cdm.model.name.NomenclaturalCode;
 import eu.etaxonomy.cdm.model.reference.Reference;
 import eu.etaxonomy.cdm.model.reference.ReferenceFactory;
@@ -62,8 +61,8 @@ public class ErmsImportConfigurator
     @Override
     protected void makeIoClassList(){
 		ioClassList = new Class[]{
-				ErmsGeneralImportValidator.class
-				, ErmsImportRankMap.class
+//				ErmsGeneralImportValidator.class,
+				ErmsImportRankMap.class
 				, ErmsReferenceImport.class
 				, ErmsTaxonImport.class
 				, ErmsTaxonRelationImport.class
