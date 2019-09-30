@@ -21,6 +21,8 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
 import org.springframework.stereotype.Component;
 
+import eu.etaxonomy.cdm.common.CdmUtils;
+import eu.etaxonomy.cdm.io.common.DbImportStateBase;
 import eu.etaxonomy.cdm.io.common.IOValidator;
 import eu.etaxonomy.cdm.io.common.mapping.DbIgnoreMapper;
 import eu.etaxonomy.cdm.io.common.mapping.DbImportAnnotationMapper;
@@ -32,6 +34,7 @@ import eu.etaxonomy.cdm.io.common.mapping.DbImportObjectCreationMapper;
 import eu.etaxonomy.cdm.io.common.mapping.DbImportStringMapper;
 import eu.etaxonomy.cdm.io.common.mapping.DbNotYetImplementedMapper;
 import eu.etaxonomy.cdm.io.common.mapping.IMappingImport;
+import eu.etaxonomy.cdm.io.common.mapping.UndefinedTransformerMethodException;
 import eu.etaxonomy.cdm.io.common.mapping.out.DbLastActionMapper;
 import eu.etaxonomy.cdm.io.pesi.erms.validation.ErmsTaxonImportValidator;
 import eu.etaxonomy.cdm.io.pesi.out.PesiTaxonExport;
@@ -39,8 +42,10 @@ import eu.etaxonomy.cdm.io.pesi.out.PesiTransformer;
 import eu.etaxonomy.cdm.model.common.AnnotationType;
 import eu.etaxonomy.cdm.model.common.CdmBase;
 import eu.etaxonomy.cdm.model.common.ExtensionType;
+import eu.etaxonomy.cdm.model.common.Language;
 import eu.etaxonomy.cdm.model.common.MarkerType;
 import eu.etaxonomy.cdm.model.name.NomenclaturalCode;
+import eu.etaxonomy.cdm.model.name.NomenclaturalStatusType;
 import eu.etaxonomy.cdm.model.name.Rank;
 import eu.etaxonomy.cdm.model.name.TaxonName;
 import eu.etaxonomy.cdm.model.name.TaxonNameFactory;
@@ -225,7 +230,62 @@ public class ErmsTaxonImport
 //		Object accTaxonId = rs.getObject("tu_acctaxon");
 		Integer meId = rs.getInt("id");
 
-		String tuName = rs.getString("tu_name");
+		TaxonName taxonName = fillTaxonName(rs, state, meId);
+
+		//add original source for taxon name (taxon original source is added in mapper)
+		Reference citation = state.getTransactionalSourceReference();
+		addOriginalSource(rs, taxonName, "id", NAME_NAMESPACE, citation);
+
+		TaxonBase<?> result;
+		//handle accepted<-> synonym, we create more accepted taxa as we need them within the tree or to attache factual data
+		if (state.getAcceptedTaxaKeys().contains(meId)){
+			Taxon taxon = Taxon.NewInstance(taxonName, citation);
+			if (statusId != 1){
+				logger.info("Taxon created as taxon but has status <> 1 ("+statusId+"): " + meId);
+				handleNotAcceptedTaxon(taxon, statusId, state, rs);
+			}
+			result = taxon;
+		}else{
+			result = Synonym.NewInstance(taxonName, citation);
+		}
+
+		handleNameStatus(result.getName(), rs, state);
+		return result;
+	}
+
+    private void handleNameStatus(TaxonName name, ResultSet rs, ErmsImportState state) throws SQLException {
+        NomenclaturalStatusType nomStatus = null;
+        int tuStatus = rs.getInt("tu_status");
+        if (tuStatus == 3){
+            //nomen nudum
+            nomStatus = NomenclaturalStatusType.NUDUM();
+        }else if (tuStatus == 5){
+            //"alternate representation"
+            nomStatus = getNomenclaturalStatusType(state, ErmsTransformer.uuidNomStatusAlternateRepresentation, "alternate representation", "alternate representation", null, Language.ENGLISH(), null);
+        }else if (tuStatus == 6){
+            //nomen dubium
+            nomStatus = NomenclaturalStatusType.DOUBTFUL();
+        }else if (tuStatus == 7){
+            //temporary name
+            nomStatus = getNomenclaturalStatusType(state, PesiTransformer.uuidNomStatusTemporaryName, "temporary name", "temporary name", null, Language.ENGLISH(), null);
+        }else if (tuStatus == 8){
+            //species inquirenda
+            nomStatus = getNomenclaturalStatusType(state, ErmsTransformer.uuidNomStatusSpeciesInquirenda, "species inquirenda", "species inquirenda", null, Language.LATIN(), null);
+        }
+        if (nomStatus == null){
+            String unacceptReason = rs.getString("tu_unacceptreason");
+            try {
+                nomStatus = state.getTransformer().getNomenclaturalStatusByKey(unacceptReason);
+            } catch (UndefinedTransformerMethodException e) {logger.warn("Unhandled method");
+            }
+        }
+        if (nomStatus != null){
+            name.addStatus(nomStatus, null, null);
+        }
+    }
+
+    private TaxonName fillTaxonName(ResultSet rs, ErmsImportState state, Integer meId) throws SQLException {
+        String tuName = rs.getString("tu_name");
 		String displayName = rs.getString("tu_displayname");
 
 		String parent1Name = rs.getString("parent1name");
@@ -273,9 +333,6 @@ public class ErmsTaxonImport
 		}
 		taxonName.getTitleCache();
 
-		//add original source for taxon name (taxon original source is added in mapper
-		Reference citation = state.getTransactionalSourceReference();
-		addOriginalSource(rs, taxonName, "id", NAME_NAMESPACE, citation);
 
 		//old: if (statusId == 1){
 		if (state.getAcceptedTaxaKeys().contains(meId)){

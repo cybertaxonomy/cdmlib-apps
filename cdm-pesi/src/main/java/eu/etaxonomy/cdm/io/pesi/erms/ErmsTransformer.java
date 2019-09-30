@@ -23,6 +23,7 @@ import eu.etaxonomy.cdm.model.common.Language;
 import eu.etaxonomy.cdm.model.description.Feature;
 import eu.etaxonomy.cdm.model.name.NameTypeDesignationStatus;
 import eu.etaxonomy.cdm.model.name.NomenclaturalCode;
+import eu.etaxonomy.cdm.model.name.NomenclaturalStatusType;
 import eu.etaxonomy.cdm.model.term.TermType;
 import eu.etaxonomy.cdm.model.term.TermVocabulary;
 
@@ -48,6 +49,10 @@ public final class ErmsTransformer extends InputTransformerBase {
 
 	//taxon relationship type uuids
 	public static final UUID uuidTaxRelTypeIsTaxonSynonymOf = UUID.fromString("cc648276-0823-47b1-9deb-fa7c046e4afd");
+
+	//nomenclatural status tpye uuids
+	public static final UUID uuidNomStatusSpeciesInquirenda = UUID.fromString("7790a4e2-d071-499c-8f25-a5ae34fd2dfb");
+	public static final UUID uuidNomStatusAlternateRepresentation = UUID.fromString("bb746f99-5c46-4b6b-963a-8aff1b04f22b");
 
 	//rank uuids
 	public static final UUID uuidRankSuperdomain = UUID.fromString("66d4d773-4946-4e02-b758-8903563eaa26");
@@ -639,4 +644,37 @@ public final class ErmsTransformer extends InputTransformerBase {
 			return null;
 		}
 	}
+
+	//handles the nomstatus type of unaccept reason
+	@Override
+    public NomenclaturalStatusType getNomenclaturalStatusByKey(String key) throws UndefinedTransformerMethodException{
+	   if (isBlank(key)){
+	       return null;
+	   }else if (key.matches(".*inval.*")){
+	       return NomenclaturalStatusType.INVALID();  //1,  test if correct for zoological names
+       }else if (key.matches(".*not val*")){
+           return NomenclaturalStatusType.INVALID();  //1,  test if correct for zoological names
+       }else if (key.matches(".*illeg.*")){
+           return NomenclaturalStatusType.ILLEGITIMATE();  //2
+       }else if (key.matches(".*nud.*")){
+           return NomenclaturalStatusType.NUDUM();   //3
+       }else if (key.matches(".*rej\\..*")){
+           return NomenclaturalStatusType.REJECTED();  //4
+       }else if (key.matches(".*superfl.*")){
+           return NomenclaturalStatusType.SUPERFLUOUS(); //12
+       }else if (key.matches(".*Comb\\. nov.*")){
+           //??
+           return NomenclaturalStatusType.NOVUM();  // 16
+       }else if (key.matches(".*New name.*")){
+           //??
+           return NomenclaturalStatusType.NOVUM();   // 16
+       }else if (key.matches(".*new combination.*")){
+           //??
+           return NomenclaturalStatusType.COMB_NOV();  //comb. ined./21
+	   }else{
+	       return null;
+	   }
+	}
+
+
 }

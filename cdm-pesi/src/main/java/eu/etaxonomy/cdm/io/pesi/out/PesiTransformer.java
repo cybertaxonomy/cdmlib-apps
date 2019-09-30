@@ -26,7 +26,6 @@ import eu.etaxonomy.cdm.io.common.Source;
 import eu.etaxonomy.cdm.io.common.mapping.UndefinedTransformerMethodException;
 import eu.etaxonomy.cdm.io.common.mapping.out.ExportTransformerBase;
 import eu.etaxonomy.cdm.io.pesi.erms.ErmsTransformer;
-import eu.etaxonomy.cdm.io.pesi.faunaEuropaea.FaunaEuropaeaTransformer;
 import eu.etaxonomy.cdm.model.common.CdmBase;
 import eu.etaxonomy.cdm.model.common.Language;
 import eu.etaxonomy.cdm.model.common.RelationshipBase;
@@ -116,7 +115,10 @@ public final class PesiTransformer extends ExportTransformerBase{
 	public static int REF_PUBLICATION = 11;
 	public static String REF_STR_UNRESOLVED = "unresolved";
 
+
 	// NameStatus
+    public static UUID uuidNomStatusTemporaryName = UUID.fromString("aa6ada5a-ca21-4fef-b76f-9ae237e9c4ae");
+
 	public static int NAME_ST_NOM_INVAL = 1;
 	public static int NAME_ST_NOM_ILLEG = 2;
 	public static int NAME_ST_NOM_NUD = 3;
@@ -2107,9 +2109,9 @@ public final class PesiTransformer extends ExportTransformerBase{
 		// The following are non-existent in CDM
 //		}else if (status.equals(NomenclaturalStatusType.)) {return NAME_ST_COMB_AND_STAT_INED;
 //		}else if (status.equals(NomenclaturalStatusType.)) {return NAME_ST_NOM_NOV_INED;
-//		}else if (status.equals(NomenclaturalStatusType.)) {return NAME_ST_ALTERNATE_REPRESENTATION;
-		}else if (status.getUuid().equals(FaunaEuropaeaTransformer.uuidNomStatusTempNamed)) {return NAME_ST_TEMPORARY_NAME;
-//		}else if (status.equals(NomenclaturalStatusType.)) {return NAME_ST_SPECIES_INQUIRENDA;
+		}else if (status.getUuid().equals(ErmsTransformer.uuidNomStatusAlternateRepresentation)) {return NAME_ST_ALTERNATE_REPRESENTATION;
+		}else if (status.getUuid().equals(uuidNomStatusTemporaryName)) {return NAME_ST_TEMPORARY_NAME;
+		}else if (status.getUuid().equals(ErmsTransformer.uuidNomStatusSpeciesInquirenda)) {return NAME_ST_SPECIES_INQUIRENDA;
 
 		//TODO
 		}else {
