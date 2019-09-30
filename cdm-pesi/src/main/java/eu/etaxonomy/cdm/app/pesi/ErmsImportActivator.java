@@ -37,8 +37,8 @@ public class ErmsImportActivator {
 	static final Source ermsSource = PesiSources.PESI2019_ERMS();
 
 //	static final ICdmDataSource cdmDestination = CdmDestinations.test_cdm_pesi_erms();
-//	static final ICdmDataSource cdmDestination = CdmDestinations.cdm_test_local_mysql_erms();
-	static final ICdmDataSource cdmDestination = CdmDestinations.cdm_test_local_mysql_erms2();
+	static final ICdmDataSource cdmDestination = CdmDestinations.cdm_test_local_mysql_erms();
+//	static final ICdmDataSource cdmDestination = CdmDestinations.cdm_test_local_mysql_erms2();
 
 	static final Source pesiDestination =
 	        cdmDestination == CdmDestinations.cdm_test_local_mysql_erms()?
@@ -59,27 +59,27 @@ public class ErmsImportActivator {
 
 // ***************** ALL ************************************************//
 
-//	static final DO_REFERENCES doReferences = DO_REFERENCES.ALL;
-//	static final boolean doTaxa = true;
-//	static final boolean doRelTaxa = doTaxa; //should always run with doTaxa because dependent on state from doTaxa
-//	static final boolean doSourceUse = true;
-//	static final boolean doCommonNames = true;
-//    static final boolean doNotes = true;
-//	static final boolean doDistributions = true;
-//	static final boolean doLinks = true;
-//	static final boolean doImages = true;
+	static final DO_REFERENCES doReferences = DO_REFERENCES.NONE;
+	static final boolean doTaxa = true;
+	static final boolean doRelTaxa = doTaxa; //should always run with doTaxa because dependent on state from doTaxa
+	static final boolean doSourceUse = true;
+	static final boolean doCommonNames = true;
+    static final boolean doNotes = true;
+    static final boolean doDistributions = true;
+	static final boolean doLinks = true;
+	static final boolean doImages = true;
 
 //******************** NONE ***************************************//
 //
-	static final DO_REFERENCES doReferences = DO_REFERENCES.NONE;
-	static final boolean doTaxa = false;
-	static final boolean doRelTaxa = doTaxa; //should always run with doTaxa because depends on state from doTaxa
-	static final boolean doSourceUse = true;
-	static final boolean doCommonNames = true;
-	static final boolean doNotes = true;
-	static final boolean doDistributions = true;
-	static final boolean doLinks = false;
-	static final boolean doImages = true;
+//	static final DO_REFERENCES doReferences = DO_REFERENCES.NONE;
+//	static final boolean doTaxa = false;
+//	static final boolean doRelTaxa = doTaxa; //should always run with doTaxa because depends on state from doTaxa
+//	static final boolean doSourceUse = false;
+//	static final boolean doCommonNames = false;
+//	static final boolean doNotes = false;
+//	static final boolean doDistributions = false;
+//	static final boolean doLinks = false;
+//	static final boolean doImages = false;
 
 	private static DbSchemaValidation hbm2dll = (doReferences ==  DO_REFERENCES.ALL)? DbSchemaValidation.CREATE:DbSchemaValidation.VALIDATE;
 

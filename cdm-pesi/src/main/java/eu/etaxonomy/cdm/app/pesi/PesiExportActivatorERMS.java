@@ -33,32 +33,32 @@ public class PesiExportActivatorERMS {
 //    static final ICdmDataSource cdmSource = CdmDestinations.cdm_test_local_mysql_erms2();
 
 	//database validation status (create, update, validate ...)
-	static final Source pesiDestination = PesiDestinations.pesi_test_local_CDM_ERMS2PESI();
-//	static final Source pesiDestination = PesiDestinations.pesi_test_local_CDM_ERMS2PESI_2();
+//	static final Source pesiDestination = PesiDestinations.pesi_test_local_CDM_ERMS2PESI();
+	static final Source pesiDestination = PesiDestinations.pesi_test_local_CDM_ERMS2PESI_2();
 
 // ****************** ALL *****************************************
 
-//	boolean deleteAll = true;
-//	DO_REFERENCES doReferences = DO_REFERENCES.ALL;
-//	boolean doTaxa = true;
-//	boolean doTreeIndex = true;
-//	boolean doInferredSynonyms = false;  //xx takes long, unclear what it does
-//	boolean doRelTaxa = true;
-//    boolean doAdditionalTaxonSource = true;
-//	boolean doDescriptions = true;
-//	boolean doEcology = true;
+	boolean deleteAll = true;
+	DO_REFERENCES doReferences = DO_REFERENCES.ALL;
+	boolean doTaxa = true;
+	boolean doTreeIndex = true;
+	boolean doInferredSynonyms = false;  //xx takes long, unclear what it does
+	boolean doRelTaxa = true;
+    boolean doAdditionalTaxonSource = true;
+	boolean doDescriptions = true;
+	boolean doEcologyAndLink = true;
 
 // ************************ NONE **************************************** //
 
-	boolean deleteAll = false;
-	static DO_REFERENCES doReferences =  DO_REFERENCES.NONE;
-	boolean doTaxa = false;
-	boolean doTreeIndex = doTaxa; //only with doTaxa
-	boolean doInferredSynonyms = false; //only with doTaxa
-	boolean doRelTaxa = false;
-	boolean doAdditionalTaxonSource = false;
-	boolean doDescriptions = true;
-	boolean doEcologyAndLink = doDescriptions;
+//	boolean deleteAll = false;
+//	static DO_REFERENCES doReferences =  DO_REFERENCES.NONE;
+//	boolean doTaxa = false;
+//	boolean doTreeIndex = doTaxa; //only with doTaxa
+//	boolean doInferredSynonyms = false; //only with doTaxa
+//	boolean doRelTaxa = false;
+//	boolean doAdditionalTaxonSource = false;
+//	boolean doDescriptions = false;
+//	boolean doEcologyAndLink = doDescriptions;
 
 	static boolean doPureNames = false;  //ERMS has no pure names
 
