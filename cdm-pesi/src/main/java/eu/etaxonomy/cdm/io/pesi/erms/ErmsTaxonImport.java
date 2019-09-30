@@ -30,6 +30,7 @@ import eu.etaxonomy.cdm.io.common.mapping.DbImportExtensionMapper;
 import eu.etaxonomy.cdm.io.common.mapping.DbImportLsidMapper;
 import eu.etaxonomy.cdm.io.common.mapping.DbImportMapping;
 import eu.etaxonomy.cdm.io.common.mapping.DbImportMarkerMapper;
+import eu.etaxonomy.cdm.io.common.mapping.DbImportMethodMapper;
 import eu.etaxonomy.cdm.io.common.mapping.DbImportObjectCreationMapper;
 import eu.etaxonomy.cdm.io.common.mapping.DbImportStringMapper;
 import eu.etaxonomy.cdm.io.common.mapping.DbNotYetImplementedMapper;
@@ -130,6 +131,9 @@ public class ErmsTaxonImport
             MarkerType hasNoLastActionMarkerType = getMarkerType(DbLastActionMapper.uuidMarkerTypeHasNoLastAction, "has no last action", "No last action information available", "no last action");
             mapping.addMapper(DbImportAnnotationMapper.NewInstance("lastAction", lastActionType, hasNoLastActionMarkerType));
 
+            //titleCache compare
+            mapping.addMapper(DbImportMethodMapper.NewDefaultInstance(this, "testTitleCache", ErmsImportState.class));
+
 			//not yet implemented
 			mapping.addMapper(DbNotYetImplementedMapper.NewInstance("tu_sp", "included in rank/object creation"));
 
@@ -142,14 +146,15 @@ public class ErmsTaxonImport
 
 	@Override
 	protected String getRecordQuery(ErmsImportConfigurator config) {
-		String strSelect = " SELECT tu.*, parent1.tu_name AS parent1name, parent2.tu_name AS parent2name, parent3.tu_name AS parent3name, " +
+		String strSelect = " SELECT tu.*, parent1.tu_name AS parent1name, parent2.tu_name AS parent2name, parent3.tu_name AS parent3name, parent4.tu_name AS parent4name, " +
 		            " parent1.tu_rank AS parent1rank, parent2.tu_rank AS parent2rank, parent3.tu_rank AS parent3rank, " +
 		            " status.status_id as status_id, status.status_name, fossil.fossil_name, qualitystatus.qualitystatus_name," +
 		            " s.sessiondate lastActionDate, a.action_name lastAction, s.ExpertName ";
 		String strFrom = " FROM tu  LEFT OUTER JOIN  tu AS parent1 ON parent1.id = tu.tu_parent " +
 				" LEFT OUTER JOIN   tu AS parent2  ON parent2.id = parent1.tu_parent " +
 				" LEFT OUTER JOIN tu AS parent3 ON parent2.tu_parent = parent3.id " +
-				" LEFT OUTER JOIN status ON tu.tu_status = status.status_id " +
+				" LEFT OUTER JOIN tu AS parent4 ON parent3.tu_parent = parent4.id " +
+                " LEFT OUTER JOIN status ON tu.tu_status = status.status_id " +
 				" LEFT OUTER JOIN fossil ON tu.tu_fossil = fossil.fossil_id " +
 				" LEFT OUTER JOIN qualitystatus ON tu.tu_qualitystatus = qualitystatus.id " +
 				" LEFT OUTER JOIN tu_sessions ts ON ts.tu_id = tu.id " +
@@ -295,7 +300,9 @@ public class ErmsTaxonImport
 		Integer parent2Rank = rs.getInt("parent2rank");
 
 		String parent3Name = rs.getString("parent3name");
-//		Integer parent3Rank = rs.getInt("parent3rank");
+		Integer parent3Rank = rs.getInt("parent3rank");
+
+	    String parent4Name = rs.getString("parent4name");
 
 		TaxonName taxonName = getTaxonName(rs, state);
 		//set epithets
@@ -312,8 +319,14 @@ public class ErmsTaxonImport
 				handleException(parent1Rank, taxonName, displayName, meId);
 			}
 			taxonName.setInfraSpecificEpithet(tuName);
-			taxonName.setSpecificEpithet(parent1Name);
-			getGenusAndInfraGenus(parent2Name, parent3Name, parent2Rank, taxonName);
+			if (parent1Rank > 220){  //parent is still infraspecific
+			    taxonName.setSpecificEpithet(parent2Name);
+			    getGenusAndInfraGenus(parent3Name, parent4Name, parent3Rank, taxonName);
+			}else{
+			    //default
+			    taxonName.setSpecificEpithet(parent1Name);
+			    getGenusAndInfraGenus(parent2Name, parent3Name, parent2Rank, taxonName);
+			}
 		}else if (taxonName.getRank()== null){
 			if ("Biota".equalsIgnoreCase(tuName)){
 				Rank rank = Rank.DOMAIN();  //should be Superdomain
@@ -331,21 +344,44 @@ public class ErmsTaxonImport
 			taxonName.setNameCache(displayName);
 			logger.warn("Set name cache: " +  displayName + "; id =" + meId);
 		}
+        if (!taxonName.getNameCache().equals(displayName)){
+            logger.warn("Computed name cache differs.\n Computed   : " + taxonName.getNameCache()+"\n DisplayName: " +displayName);
+            taxonName.setNameCache(displayName, true);
+        }
 		taxonName.getTitleCache();
+        return taxonName;
+    }
 
 
-		//old: if (statusId == 1){
-		if (state.getAcceptedTaxaKeys().contains(meId)){
-			Taxon result = Taxon.NewInstance(taxonName, citation);
-			if (statusId != 1){
-				logger.info("Taxon created as taxon but has status <> 1 ("+statusId+"): " + meId);
-				handleNotAcceptedTaxon(result, statusId, state, rs);
-			}
-			return result;
-		}else{
-			return Synonym.NewInstance(taxonName, citation);
-		}
-	}
+    @SuppressWarnings("unused")  //used by MethodMapper
+    private static TaxonBase<?> testTitleCache(ResultSet rs, ErmsImportState state) throws SQLException{
+        TaxonBase<?> taxon = (TaxonBase<?>)state.getRelatedObject(DbImportStateBase.CURRENT_OBJECT_NAMESPACE, DbImportStateBase.CURRENT_OBJECT_ID);
+        TaxonName taxonName = taxon.getName();
+         String displayName = rs.getString("tu_displayname");
+         String titleCache = taxonName.resetTitleCache(); //calling titleCache should always be kept to have a computed titleCache in the CDM DB.
+         String expectedTitleCache = getExpectedTitleCache(rs);
+         //TODO check titleCache, but beware of autonyms
+         if (!titleCache.equals(expectedTitleCache)){
+             logger.warn("Computed title cache differs.\n Computed             : " + titleCache + "\n DisplayName+Authority: " + expectedTitleCache);
+             taxonName.setNameCache(displayName, true);
+         }
+         return taxon;
+     }
+
+     //see also PesiErmsValidation.srcFullName()
+     private static String getExpectedTitleCache(ResultSet srcRs) throws SQLException {
+        String result;
+        String epi = srcRs.getString("tu_name");
+        epi = " a" + epi;
+        String display = srcRs.getString("tu_displayname");
+        String sp = srcRs.getString("tu_sp");
+        if (display.indexOf(epi) != display.lastIndexOf(epi) && !sp.startsWith("#2#")){ //homonym, animal
+            result = srcRs.getString("tu_displayname").replaceFirst(epi+" ", CdmUtils.concat(" ", " "+epi, srcRs.getString("tu_authority")))+" ";
+        }else{
+            result = CdmUtils.concat(" ", srcRs.getString("tu_displayname"), srcRs.getString("tu_authority"));
+        }
+        return result;
+    }
 
 	private void handleNotAcceptedTaxon(Taxon taxon, int statusId, ErmsImportState state, ResultSet rs) throws SQLException {
 		ExtensionType notAccExtensionType = getExtensionType(state, ErmsTransformer.uuidErmsTaxonStatus, "ERMS taxon status", "ERMS taxon status", "status", null);
