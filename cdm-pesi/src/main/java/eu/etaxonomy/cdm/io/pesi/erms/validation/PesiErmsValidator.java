@@ -36,6 +36,7 @@ public class PesiErmsValidator {
 
     private Source source = defaultSource;
     private Source destination = defaultDestination;
+    private String moneraFilter = " NOT IN (-1)"; // 147415;
 
     private String origErms = "OriginalDB = 'ERMS' ";
 
@@ -123,7 +124,7 @@ public class PesiErmsValidator {
         return success;
     }
 
-    private final String countAddtionalTaxonSource = "SELECT count(*) FROM tu_sources ts WHERE ts.tu_id <>  147415 ";
+    private final String countAddtionalTaxonSource = "SELECT count(*) FROM tu_sources ts WHERE ts.tu_id " + moneraFilter;
     private boolean testAdditionalTaxonSourcesCount() {
         int countSrc = source.getUniqueInteger(countAddtionalTaxonSource);
         int countDest = destination.getUniqueInteger("SELECT count(*) FROM AdditionalTaxonSource ");
@@ -138,7 +139,7 @@ public class PesiErmsValidator {
 
         countSrc = source.getUniqueInteger("SELECT count(*) FROM tu "
                 + " WHERE (tu_marine IS NOT NULL OR tu_brackish IS NOT NULL OR tu_fresh IS NOT NULL OR tu_terrestrial IS NOT NULL) "
-                + "     AND tu.id <>  147415 ");
+                + "     AND tu.id " + moneraFilter );
         countDest = destination.getUniqueInteger("SELECT count(*) FROM Note "
                 + " WHERE (NoteCategoryFk = 4 AND LastAction IS NULL) ");
         result &= equals("Notes ecology count ", countSrc, countDest, String.valueOf(-1));
@@ -163,7 +164,7 @@ public class PesiErmsValidator {
         return equals("CommonName count ", countSrc, countDest, String.valueOf(-1));
     }
 
-    private final String countTaxonRelation = "SELECT count(*) FROM tu WHERE  tu_acctaxon <> id AND id NOT IN (147415) ";
+    private final String countTaxonRelation = "SELECT count(*) FROM tu WHERE  tu_acctaxon <> id AND id " + moneraFilter;
     private boolean testTaxonRelationCount() {
          int countSrc = source.getUniqueInteger(countTaxonRelation);
          int countDest = destination.getUniqueInteger("SELECT count(*) FROM RelTaxon ");
@@ -171,7 +172,7 @@ public class PesiErmsValidator {
      }
 
 
-    private final String countTaxon = "SELECT count(*) FROM tu WHERE id NOT IN (147415)";
+    private final String countTaxon = "SELECT count(*) FROM tu WHERE id " + moneraFilter;
     private boolean testTaxaCount() {
          int countSrc = source.getUniqueInteger(countTaxon);
          int countDest = destination.getUniqueInteger("SELECT count(*) FROM Taxon ");
@@ -192,7 +193,7 @@ public class PesiErmsValidator {
                 + " LEFT JOIN tu type ON type.id = t.tu_typetaxon "
                 + " LEFT JOIN fossil fo ON t.tu_fossil = fo.fossil_id "
                 + " LEFT JOIN qualitystatus qs ON t.tu_qualitystatus = qs.id "
-                + " WHERE t.id NOT IN (147415) "
+                + " WHERE t.id " + moneraFilter
                 + " ORDER BY CAST(t.id as nvarchar(20)) ");
         ResultSet destRS = destination.getResultSet("SELECT t.*, "
                 + "     pt.GenusOrUninomial p_GenusOrUninomial, pt.InfraGenericEpithet p_InfraGenericEpithet, pt.SpecificEpithet p_SpecificEpithet, "
@@ -403,7 +404,7 @@ public class PesiErmsValidator {
         ResultSet srcRS = source.getResultSet(""
                 + " SELECT t.* "
                 + " FROM tu t "
-                + " WHERE t.id NOT IN (147415) AND tu_acctaxon <> id "
+                + " WHERE t.id "+ moneraFilter + " AND tu_acctaxon <> id "
                 + " ORDER BY CAST(t.id as nvarchar(20)) ");
         ResultSet destRS = destination.getResultSet("SELECT rel.*, t1.IdInSource t1Id, t2.IdInSource t2Id "
                 + " FROM RelTaxon rel "
@@ -438,7 +439,7 @@ public class PesiErmsValidator {
                 + " FROM tu_sources MN INNER JOIN tu ON MN.tu_id = tu.id "
                 + "    LEFT JOIN sources s ON s.id = MN.source_id "
                 + "    LEFT JOIN sourceuses su ON MN.sourceuse_id = su.sourceuse_id "
-                + " WHERE MN.tu_id NOT IN (147415)  "
+                + " WHERE MN.tu_id  " + moneraFilter
                 + " ORDER BY CAST(tu.id as nvarchar(20)), MN.sourceuse_id, s.id ");  //, no.note (not possible because ntext
         ResultSet destRs = destination.getResultSet("SELECT t.IdInSource, ats.*, s.*, su.* "
                 + " FROM AdditionalTaxonSource ats INNER JOIN Taxon t ON t.TaxonId = ats.TaxonFk "

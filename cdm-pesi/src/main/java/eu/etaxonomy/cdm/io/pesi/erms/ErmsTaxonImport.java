@@ -80,7 +80,7 @@ public class ErmsTaxonImport
 
 	@Override
 	protected String getIdQuery() {
-		String strQuery = " SELECT id FROM tu WHERE id NOT IN (147415) " ;  //for now we exclude Monera as it has no children and is unclear what classification it has. In ERMS it is alternative accepted name, but according to https://en.wikipedia.org/wiki/Monera it is a super taxon to bacteria.
+		String strQuery = " SELECT id FROM tu " ;  //WHERE id NOT IN (147415) for now we exclude Monera as it has no children and is unclear what classification it has. In ERMS it is alternative accepted name (in https://en.wikipedia.org/wiki/Monera it might be a super taxon to bacteria).
 		return strQuery;
 	}
 
