@@ -647,26 +647,26 @@ public final class ErmsTransformer extends InputTransformerBase {
     public NomenclaturalStatusType getNomenclaturalStatusByKey(String key) throws UndefinedTransformerMethodException{
 	   if (isBlank(key)){
 	       return null;
-	   }else if (key.matches(".*inval.*")){
+	   }else if (key.matches("(?i).*inval.*")){
 	       return NomenclaturalStatusType.INVALID();  //1,  test if correct for zoological names
-       }else if (key.matches(".*not val*")){
+       }else if (key.matches("(?i).*not val*")){
            return NomenclaturalStatusType.INVALID();  //1,  test if correct for zoological names
-       }else if (key.matches(".*illeg.*")){
+       }else if (key.matches("(?i).*illeg.*")){
            return NomenclaturalStatusType.ILLEGITIMATE();  //2
-       }else if (key.matches(".*nud.*")){
+       }else if (key.matches("(?i).*nud.*")){
            return NomenclaturalStatusType.NUDUM();   //3
-       }else if (key.matches(".*rej\\..*")){
+       }else if (key.matches("(?i).*rej\\..*")){
            return NomenclaturalStatusType.REJECTED();  //4
-       }else if (key.matches(".*superfl.*")){
+       }else if (key.matches("(?i).*superfl.*")){
            return NomenclaturalStatusType.SUPERFLUOUS(); //12
-       }else if (key.matches(".*Comb\\. nov.*")){
+       }else if (key.matches("(?i).*Comb\\. nov.*")){
            //??
            return NomenclaturalStatusType.NOVUM();  // 16
-       }else if (key.matches(".*New name.*")){
+       }else if (key.matches("(?i).*New name.*")){
            //??
            return NomenclaturalStatusType.NOVUM();   // 16
-       }else if (key.matches(".*new combination.*")){
-           //??
+       }else if (key.matches("(?i)new combination")){
+           //TODO better use BerlinModelTransformer.uuidNomStatusCombIned, see also comment on NomenclaturalStatusType.COMB_NOV()
            return NomenclaturalStatusType.COMB_NOV();  //comb. ined./21
 	   }else{
 	       return null;
