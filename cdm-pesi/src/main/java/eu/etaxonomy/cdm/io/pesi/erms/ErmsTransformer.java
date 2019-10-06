@@ -277,9 +277,9 @@ public final class ErmsTransformer extends InputTransformerBase {
 			case 2: return NomenclaturalCode.ICZN;  //Animalia
 			case 3: return NomenclaturalCode.ICNAFP;  //Plantae
 			case 4: return NomenclaturalCode.ICNAFP;  //Fungi
-			case 5: return NomenclaturalCode.ICZN ;  //Protozoa
+			case 5: return NomenclaturalCode.ICNAFP ;  //Protozoa  , not sure if correct, they have "subsp."
 			case 6: return NomenclaturalCode.ICNB ;  //Bacteria
-			case 7: return NomenclaturalCode.ICZN;  //Chromista??
+			case 7: return NomenclaturalCode.ICNAFP;  //Chromista??, not sure if correct, they have "subsp."
 			case 147415: return NomenclaturalCode.ICNB;  //Monera, it is only an alternative name for Bacteria and should not be handled as separate kingdom
 			//-> formatting of infrageneric taxa and available ranks (rank table) let me assume that ICZN is most suitable
 			//at the same time time formatting of subsp. (with marker!) behaves like ICNAFP so this is unclear
@@ -692,7 +692,7 @@ public final class ErmsTransformer extends InputTransformerBase {
         boolean handled = false;
         if (isBlank(unacceptreason)){
             handled = true;  //no change
-        }else if (unacceptreason.matches("(synonym|superseded recombination|transferred to .*)")){
+        }else if (unacceptreason.matches("(?i)(synonym|superseded recombination|transferred to .*)")){
             handled = true;  //no change
         }else{
             if (unacceptreason.matches("(?i)(.*bas[iy][no].*ny.*|.*homot.*syn.*|objective syny?onym)")){
@@ -727,8 +727,8 @@ public final class ErmsTransformer extends InputTransformerBase {
                 nameType = NameRelationshipType.BASIONYM();
             }
 
-            if(handled == true && SynonymType.SYNONYM_OF().equals(synType) ||
-                    getSynTaxonRelType(state).equals(taxonRelType) ||nameType == null){
+            if(handled == false && SynonymType.SYNONYM_OF().equals(synType) &&
+                    getSynTaxonRelType(state).equals(taxonRelType) && nameType == null){
                 logger.warn("Unaccept reason not yet handled: " + unacceptreason);
             }
         }
