@@ -187,7 +187,7 @@ public class ErmsTaxonImport
 	private Set<Integer> getAcceptedTaxaKeys(ErmsImportState state) {
 		Set<Integer> result = new HashSet<>();
 		String parentCol = "tu_parent";
-		String accCol = " tu_acctaxon";
+		String accCol = " tu_acctaxon ";
 		String idCol = " id ";
 		String tuFk = "tu_id";
 		String taxonTable = "tu";

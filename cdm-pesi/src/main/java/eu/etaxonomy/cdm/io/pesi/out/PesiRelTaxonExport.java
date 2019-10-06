@@ -152,7 +152,7 @@ public class PesiRelTaxonExport extends PesiExportBase {
 		int limit = state.getConfig().getLimitSave();
 		// Start transaction
 		TransactionStatus txStatus = startTransaction(true);
-		logger.info("Started new transaction. Fetching some " + pluralString + " (max: " + limit + ") ...");
+		logger.debug("Started new transaction. Fetching some " + pluralString + " (max: " + limit + ") ...");
 
 		List<RelationshipBase> list;
 
