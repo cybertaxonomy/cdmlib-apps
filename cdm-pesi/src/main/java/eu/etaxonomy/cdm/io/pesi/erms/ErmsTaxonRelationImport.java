@@ -28,7 +28,6 @@ import eu.etaxonomy.cdm.io.common.mapping.IDbImportMapper;
 import eu.etaxonomy.cdm.model.common.CdmBase;
 import eu.etaxonomy.cdm.model.name.TaxonName;
 import eu.etaxonomy.cdm.model.taxon.TaxonBase;
-import eu.etaxonomy.cdm.model.taxon.TaxonRelationshipType;
 
 /**
  * @author a.mueller
@@ -62,18 +61,18 @@ public class ErmsTaxonRelationImport extends ErmsImportBase<TaxonBase<?>> implem
 	protected DbImportMapping<ErmsImportState, ErmsImportConfigurator> getMapping() {
 		if (mapping == null){
 			mapping = new DbImportMapping<>();
-
-			mapping.addMapper(DbImportTaxIncludedInMapper.NewInstance("id", TAXON_NAMESPACE, "parentId", TAXON_NAMESPACE, "accParentId", TAXON_NAMESPACE, null));//there is only one tree
-
-			TaxonRelationshipType taxonRelationshipType = getTaxonRelationshipType(state, ErmsTransformer.uuidTaxRelTypeIsTaxonSynonymOf,
-			        "is taxon synonym of", "is synonym of relation used by synonym that are of class Taxon as they can not be handled differently", null, null);
-			mapping.addMapper(DbImportSynonymMapper.NewInstance("id", "tu_acctaxon", TAXON_NAMESPACE, null, taxonRelationshipType));
+			//incldued in
+			DbImportTaxIncludedInMapper<?> includedIn
+			    = DbImportTaxIncludedInMapper.NewInstance("id", TAXON_NAMESPACE, "accId", TAXON_NAMESPACE, "accParentId", TAXON_NAMESPACE, null);
+			mapping.addMapper(includedIn);//there is only one tree
+			//synonym
+			mapping.addMapper(DbImportSynonymMapper.NewInstance("id", "tu_acctaxon", TAXON_NAMESPACE,
+			        "tu_unacceptreason", null, null, true));
+			//type designations
 			mapping.addMapper(DbImportNameTypeDesignationMapper.NewInstance("id", "tu_typetaxon", ErmsImportBase.NAME_NAMESPACE, "tu_typedesignationstatus"));
-//			mapping.addMapper(DbNotYetImplementedMapper.NewInstance("tu_acctaxon"));
 		}
 		return mapping;
 	}
-
 
     @Override
     protected String getIdQuery(){
@@ -85,16 +84,19 @@ public class ErmsTaxonRelationImport extends ErmsImportBase<TaxonBase<?>> implem
     @Override
     protected String getRecordQuery(ErmsImportConfigurator config) {
 		//TODO get automatic by second path mappers
-		String selectAttributes = " myTaxon.id, myTaxon.tu_parent, myTaxon.tu_typetaxon, myTaxon.tu_typedesignation, " +
-								" myTaxon.tu_acctaxon, myTaxon.tu_status, parent.tu_status AS parentStatus, parent.id AS parentId, " +
-								" accParent.tu_status AS accParentStatus, accParent.id AS accParentId ";
+		String selectAttributes =
+		    "   myTaxon.id, myTaxon.tu_parent, myTaxon.tu_typetaxon, myTaxon.tu_typedesignation, "
+		    + " myTaxon.tu_acctaxon, myTaxon.tu_status, myTaxon.tu_unacceptreason, "
+			+ " parent.tu_status AS parentStatus, parent.id AS parentId, "
+		    + " accParent.tu_status AS accParentStatus, accParent.id AS accParentId,"
+		    + " ISNULL(accParent.id, parent.id) as accId ";
 		String strRecordQuery =
-			" SELECT  " + selectAttributes +
-			" FROM tu AS myTaxon LEFT OUTER JOIN " +
-				" tu AS accTaxon ON myTaxon.tu_acctaxon = accTaxon.id LEFT OUTER JOIN " +
-				" tu AS accParent RIGHT OUTER JOIN "  +
-				" tu AS parent ON accParent.id = parent.tu_acctaxon ON myTaxon.tu_parent = parent.id " +
-			" WHERE ( myTaxon.id IN (" + ID_LIST_TOKEN + ") )";
+			"   SELECT  " + selectAttributes
+			+ " FROM tu AS myTaxon "
+			+ "   LEFT JOIN tu AS accTaxon ON myTaxon.tu_acctaxon = accTaxon.id "
+			+ "   LEFT JOIN tu AS parent ON myTaxon.tu_parent = parent.id "
+			+ "   LEFT JOIN tu AS accParent ON accParent.id = parent.tu_acctaxon "
+			+ " WHERE ( myTaxon.id IN (" + ID_LIST_TOKEN + ") )";
 		return strRecordQuery;
 	}
 
@@ -115,8 +117,9 @@ public class ErmsTaxonRelationImport extends ErmsImportBase<TaxonBase<?>> implem
 			Set<String> taxonIdSet = new HashSet<>();
 			Set<String> nameIdSet = new HashSet<>();
 			while (rs.next()){
-				handleForeignKey(rs, taxonIdSet, "parentId");
-				handleForeignKey(rs, taxonIdSet, "accParentId");
+//				handleForeignKey(rs, taxonIdSet, "parentId");
+//				handleForeignKey(rs, taxonIdSet, "accParentId");
+			    handleForeignKey(rs, taxonIdSet, "accId");
 				handleForeignKey(rs, taxonIdSet, "tu_acctaxon");
 				handleForeignKey(rs, taxonIdSet, "id");
 				handleForeignKey(rs, nameIdSet, "tu_typetaxon");
@@ -149,36 +152,20 @@ public class ErmsTaxonRelationImport extends ErmsImportBase<TaxonBase<?>> implem
 	@Override
     public boolean checkIgnoreMapper(IDbImportMapper mapper, ResultSet rs) throws SQLException{
 		boolean result = false;
-		if (mapper instanceof DbImportTaxIncludedInMapper){
-			//old
-//			int tu_status = rs.getInt("tu_status");
-//			if (tu_status != 1){
-//				result = true;
-//			}
-
-			int id = rs.getInt("id");
-			if (state.getAcceptedTaxaKeys().contains(id)){
-				return false;
-			}else{
-				return true;
-			}
+        int id = rs.getInt("id");
+        Object accTaxonId = rs.getObject("tu_acctaxon");
+        boolean isAccepted = accTaxonId == null? false: id == Integer.valueOf(String.valueOf(accTaxonId));
+        if (mapper instanceof DbImportTaxIncludedInMapper){
+		    //here we should add the direct parent or the accepted taxon of the parent
+		    return !isAccepted;
 		}else if (mapper instanceof DbImportSynonymMapper){
-			//old
-//			int tu_status = rs.getInt("tu_status");
-//			if (tu_status == 1){
-//				result = true;
-//			}else{
-//				return false;
-//			}t.tu_acctaxon <> t.id
-
-			int id = rs.getInt("id");
-			Object accTaxonId = rs.getObject("tu_acctaxon");
-			if (accTaxonId == null){
-				return true;
-			}else{
-				int accId = Integer.valueOf(String.valueOf(accTaxonId));
-				return accId == id;
-			}
+	        //the only exact rule in ERMS is that the accepted taxon (tu_acctaxon)
+	        // of a synonym (def: id <> tu_acctaxon) never again has another
+	        // accepted taxon.
+	        //So the synonym relation is clearly defined, no matter which status
+	        //both related taxa have.
+	        //TODO: check if data were only adapted by BGBM this way
+			return isAccepted;
 		}else if (mapper instanceof DbImportNameTypeDesignationMapper){
 			Object tu_typeTaxon = rs.getObject("tu_typetaxon");
 			if (tu_typeTaxon == null){
@@ -187,7 +174,6 @@ public class ErmsTaxonRelationImport extends ErmsImportBase<TaxonBase<?>> implem
 		}
 		return result;
 	}
-
 
 	@Override
 	protected boolean doCheck(ErmsImportState state){
