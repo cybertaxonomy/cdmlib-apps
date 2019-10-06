@@ -165,11 +165,43 @@ public class PesiErmsValidator {
         return equals("CommonName count ", countSrc, countDest, String.valueOf(-1));
     }
 
-    private final String countTaxonRelation = "SELECT count(*) FROM tu WHERE  tu_acctaxon <> id AND id " + moneraFilter;
+    private final String countSynonymRelation = "SELECT count(*) FROM tu WHERE  tu_acctaxon <> id AND id " + moneraFilter;
+    private final String countParentRelation = "SELECT count(*) FROM tu WHERE  tu_parent is not null and  tu_status = 1 and id <> tu_parent AND id " + moneraFilter;
     private boolean testTaxonRelationCount() {
-         int countSrc = source.getUniqueInteger(countTaxonRelation);
-         int countDest = destination.getUniqueInteger("SELECT count(*) FROM RelTaxon ");
-         return equals("Taxon count ", countSrc, countDest, String.valueOf(-1));
+        //synonyms
+        int countSrc = source.getUniqueInteger(countSynonymRelation);
+         //TODO
+         int countDest = destination.getUniqueInteger("SELECT count(*) FROM RelTaxon WHERE RelTaxonQualifierFk > 101");
+         boolean result = equals("Synonym count ", countSrc, countDest, String.valueOf(-1));
+//         update Match_RelStat set RelTaxon  =  102 where tu_unacceptreason like 'currently placed%'
+//                 update Match_RelStat set RelTaxon   =  102 where tu_unacceptreason like 'currently held%'
+//                 update Match_RelStat set RelTaxon   =  102 where tu_unacceptreason like 'sy%' or tu_unacceptreason like '%jun%syn%'
+//                 update Match_RelStat set RelTaxon   =  102 where tu_unacceptreason = '(synonym)'
+//                 update Match_RelStat set RelTaxon   =  102 where tu_unacceptreason = 'reverted genus transfer'
+//                 update Match_RelStat set RelTaxon   =  103 where tu_unacceptreason like 'misapplied%'
+//                 update Match_RelStat set RelTaxon   =  104 where tu_unacceptreason like 'part% synonym%'
+//                 update Match_RelStat set RelTaxon   =  106 where tu_unacceptreason = 'heterotypic synonym' or tu_unacceptreason = 'subjective synonym'
+//                 update Match_RelStat set RelTaxon   =  107 where tu_unacceptreason like '%homot%syn%' or tu_unacceptreason = 'objective synonym' synyonym
+//                 update Match_RelStat set RelTaxon   =  107 where tu_unacceptreason like '%bas[iy][no]%ny%'
+
+         //Name relations
+         countSrc = source.getUniqueInteger("SELECT count(*) FROM tu WHERE id " + moneraFilter + " AND ("
+               + " tu_unacceptreason like '%bas[iy][no]%ny%' OR tu_unacceptreason = 'original combination' "
+               + " OR tu_unacceptreason = 'Subsequent combination' OR tu_unacceptreason like '%genus transfer%'  "
+               + " OR tu_unacceptreason = 'genus change' "  //1
+               + " OR tu_unacceptreason like '%homon%' "   // 2
+               + " OR tu_unacceptreason like '%spell%' OR tu_unacceptreason like 'lapsus %' " //16
+
+                 + ")");
+         countDest = destination.getUniqueInteger("SELECT count(*) FROM RelTaxon WHERE RelTaxonQualifierFk <100 ");
+         result = equals("Taxon name relation count ", countSrc, countDest, String.valueOf(-1));
+
+         //included in
+         countSrc = source.getUniqueInteger(countParentRelation);
+         //TODO
+         countDest = destination.getUniqueInteger("SELECT count(*) FROM RelTaxon WHERE RelTaxonQualifierFk = 101 ");
+         result &= equals("Tax included in count ", countSrc, countDest, String.valueOf(-1));
+         return result;
      }
 
 
@@ -177,7 +209,20 @@ public class PesiErmsValidator {
     private boolean testTaxaCount() {
          int countSrc = source.getUniqueInteger(countTaxon);
          int countDest = destination.getUniqueInteger("SELECT count(*) FROM Taxon ");
-         return equals("Taxon count ", countSrc, countDest, String.valueOf(-1));
+         boolean result = equals("Taxon count ", countSrc, countDest, String.valueOf(-1));
+
+         //NomStatus
+         countSrc = source.getUniqueInteger("SELECT count(*) FROM tu WHERE id " + moneraFilter + " AND ("
+               + " tu_unacceptreason like '%inval%' OR  tu_unacceptreason like '%not val%' "
+               + " OR tu_unacceptreason like '%illeg%' OR tu_unacceptreason like '%nud%' "
+               + " OR tu_unacceptreason like '%rej.%' OR tu_unacceptreason like '%superfl%' "
+               + " OR tu_unacceptreason like '%Comb. nov%' OR tu_unacceptreason like '%New name%' "
+               + " OR tu_unacceptreason = 'new combination'  "
+               + " OR tu_status IN (3,5,6,7,8) )");
+         countDest = destination.getUniqueInteger("SELECT count(*) FROM Taxon WHERE NameStatusFk IS NOT NULL ");
+         result = equals("Taxon name status count ", countSrc, countDest, String.valueOf(-1));
+
+         return result;
      }
 
     private boolean testSingleTaxa(int n) throws SQLException {
