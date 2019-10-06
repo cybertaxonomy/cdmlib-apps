@@ -2101,7 +2101,9 @@ public final class PesiTransformer extends ExportTransformerBase{
 		}else if (status.equals(NomenclaturalStatusType.COMBINATION_INVALID())) {return NAME_ST_COMB_INVAL;
 		}else if (status.equals(NomenclaturalStatusType.LEGITIMATE())) {return NAME_ST_LEGITIMATE;
 
-		}else if (status.getUuid().equals(BerlinModelTransformer.uuidNomStatusCombIned)) {return NAME_ST_COMB_INED;
+		}else if (status.getUuid().equals(BerlinModelTransformer.uuidNomStatusCombIned)||
+		        //FIXME deduplicate COMB_NOV
+		        status.equals(NomenclaturalStatusType.COMB_NOV())) {return NAME_ST_COMB_INED;
 		}else if (status.getUuid().equals(BerlinModelTransformer.uuidNomStatusNomOrthCons)) {return NAME_ST_NOM_AND_ORTH_CONS;
 		}else if (status.getUuid().equals(BerlinModelTransformer.uuidNomStatusSpNovIned)) {return NAME_ST_SP_NOV_INED;
 
