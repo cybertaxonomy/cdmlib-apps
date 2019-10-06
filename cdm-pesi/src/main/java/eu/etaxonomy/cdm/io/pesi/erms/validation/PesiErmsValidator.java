@@ -37,6 +37,7 @@ public class PesiErmsValidator {
     private Source source = defaultSource;
     private Source destination = defaultDestination;
     private String moneraFilter = " NOT IN (-1)"; // 147415;
+//    private String moneraFilter = " NOT IN (147415)"; // 147415;
 
     private String origErms = "OriginalDB = 'ERMS' ";
 
