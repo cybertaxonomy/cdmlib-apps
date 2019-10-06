@@ -233,7 +233,8 @@ public class ErmsTaxonImport
 //		Object accTaxonId = rs.getObject("tu_acctaxon");
 		Integer meId = rs.getInt("id");
 
-		TaxonName taxonName = fillTaxonName(rs, state, meId);
+        TaxonName taxonName = getTaxonName(rs, state);
+		fillTaxonName(taxonName, rs, state, meId);
 
 		//add original source for taxon name (taxon original source is added in mapper)
 		Reference citation = state.getTransactionalSourceReference();
@@ -287,7 +288,7 @@ public class ErmsTaxonImport
         }
     }
 
-    private TaxonName fillTaxonName(ResultSet rs, ErmsImportState state, Integer meId) throws SQLException {
+    private TaxonName fillTaxonName(TaxonName taxonName, ResultSet rs, ErmsImportState state, Integer meId) throws SQLException {
         String tuName = rs.getString("tu_name");
 		String displayName = rs.getString("tu_displayname");
 
@@ -302,7 +303,6 @@ public class ErmsTaxonImport
 
 	    String parent4Name = rs.getString("parent4name");
 
-		TaxonName taxonName = getTaxonName(rs, state);
 		//set epithets
 		if (taxonName.isGenus() || taxonName.isSupraGeneric()){
 			taxonName.setGenusOrUninomial(tuName);
