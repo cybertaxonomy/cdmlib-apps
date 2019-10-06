@@ -16,14 +16,19 @@ import java.util.UUID;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 
+import eu.etaxonomy.cdm.io.common.DbImportStateBase;
 import eu.etaxonomy.cdm.io.common.mapping.InputTransformerBase;
 import eu.etaxonomy.cdm.io.common.mapping.UndefinedTransformerMethodException;
 import eu.etaxonomy.cdm.model.common.ExtensionType;
 import eu.etaxonomy.cdm.model.common.Language;
+import eu.etaxonomy.cdm.model.common.RelationshipTermBase;
 import eu.etaxonomy.cdm.model.description.Feature;
+import eu.etaxonomy.cdm.model.name.NameRelationshipType;
 import eu.etaxonomy.cdm.model.name.NameTypeDesignationStatus;
 import eu.etaxonomy.cdm.model.name.NomenclaturalCode;
 import eu.etaxonomy.cdm.model.name.NomenclaturalStatusType;
+import eu.etaxonomy.cdm.model.taxon.SynonymType;
+import eu.etaxonomy.cdm.model.taxon.TaxonRelationshipType;
 import eu.etaxonomy.cdm.model.term.TermType;
 import eu.etaxonomy.cdm.model.term.TermVocabulary;
 
@@ -672,6 +677,121 @@ public final class ErmsTransformer extends InputTransformerBase {
 	       return null;
 	   }
 	}
+
+    @Override
+    public RelationshipTermBase<?>[] getSynonymRelationTypesByKey(String unacceptreason, DbImportStateBase<?,?> state) {
+
+        RelationshipTermBase<?>[] result = new RelationshipTermBase[4];
+        SynonymType synType = SynonymType.SYNONYM_OF();
+        TaxonRelationshipType taxonRelType = getSynTaxonRelType(state);
+        NameRelationshipType nameType = null;
+//        HybridRelationshipType hybridType = null;
+
+        //according to SQL script erms300_Match_Relation&Status.sql
+
+        boolean handled = false;
+        if (isBlank(unacceptreason)){
+            handled = true;  //no change
+        }else if (unacceptreason.matches("(synonym|superseded recombination|transferred to .*)")){
+            handled = true;  //no change
+        }else{
+            if (unacceptreason.matches("(?i)(.*bas[iy][no].*ny.*|.*homot.*syn.*|objective syny?onym)")){
+                synType = SynonymType.HOMOTYPIC_SYNONYM_OF();
+                taxonRelType = getHomoSynTaxonRelType(state);
+            }else if (unacceptreason.matches("(?i)(heterotypic|subjective) synonym")){
+                synType = SynonymType.HETEROTYPIC_SYNONYM_OF();
+//                taxonRelType = getHeteroSynTaxRelType(state);  //do nothing
+            }else if (unacceptreason.matches("(?i)part.*\\s+synonym.*")){
+                synType = null;
+                taxonRelType = TaxonRelationshipType.PRO_PARTE_SYNONYM_FOR();
+            }else if (unacceptreason.matches("(?i)misapplied.*")){
+                synType = null;
+                taxonRelType = TaxonRelationshipType.MISAPPLIED_NAME_FOR();
+            }else if (unacceptreason.matches("(?i)(.*jun.*syn.*|\\(synonym\\)|reverted genus transfer)")){
+                handled = true;  //no change
+            }else if (unacceptreason.matches("(?i)(currently (placed|held)|sy).*")){
+                handled = true;  //no change
+            }
+
+            //name relations
+            if (unacceptreason.matches("(?i)(.*spell.*|lapsus .*)")){
+                nameType = NameRelationshipType.ORTHOGRAPHIC_VARIANT();
+            }else if (unacceptreason.matches("(?i).*homon.*")){
+                nameType = NameRelationshipType.LATER_HOMONYM();
+            }else if (unacceptreason.matches("(?i)(.*genus transfer.*|genus change)")){
+                //TODO check with above (synonym relations) reverted genus transfer
+                nameType = NameRelationshipType.BASIONYM();
+            }else if (unacceptreason.matches("(?i)(original combination|Subsequent combination)")){
+                nameType = NameRelationshipType.BASIONYM();
+            }else if (unacceptreason.matches("(?i).*bas[iy][no].*ny.*")){
+                nameType = NameRelationshipType.BASIONYM();
+            }
+
+            if(handled == true && SynonymType.SYNONYM_OF().equals(synType) ||
+                    getSynTaxonRelType(state).equals(taxonRelType) ||nameType == null){
+                logger.warn("Unaccept reason not yet handled: " + unacceptreason);
+            }
+        }
+//      update Match_RelStat set RelTaxon      =  1 where tu_unacceptreason like '%bas[iy][no]%ny%'
+//              update Match_RelStat set RelTaxon   =  1 where tu_unacceptreason = 'original combination' or tu_unacceptreason = 'Subsequent combination'
+//              update Match_RelStat set RelTaxon   =  1 where tu_unacceptreason like '%genus transfer%' or tu_unacceptreason = 'genus change'
+//              update Match_RelStat set RelTaxon   =  2 where tu_unacceptreason like '%homon%'
+//              update Match_RelStat set RelTaxon   = 16 where tu_unacceptreason like '%spell%'
+//              update Match_RelStat set RelTaxon   = 16 where tu_unacceptreason like 'lapsus calami%'  --AM: lapsus% should be enough
+
+//    update Match_RelStat set RelTaxon  =  102 where tu_unacceptreason like 'currently placed%'
+//            update Match_RelStat set RelTaxon   =  102 where tu_unacceptreason like 'currently held%'
+//            update Match_RelStat set RelTaxon   =  102 where tu_unacceptreason like 'sy%' or tu_unacceptreason like '%jun%syn%'
+//            update Match_RelStat set RelTaxon   =  102 where tu_unacceptreason = '(synonym)'
+//            update Match_RelStat set RelTaxon   =  102 where tu_unacceptreason = 'reverted genus transfer'
+//            update Match_RelStat set RelTaxon   =  103 where tu_unacceptreason like 'misapplied%'
+//            update Match_RelStat set RelTaxon   =  104 where tu_unacceptreason like 'part% synonym%'
+//            update Match_RelStat set RelTaxon   =  106 where tu_unacceptreason = 'heterotypic synonym' or tu_unacceptreason = 'subjective synonym'
+//            update Match_RelStat set RelTaxon   =  107 where tu_unacceptreason like '%homot%syn%' or tu_unacceptreason = 'objective synonym'
+//            update Match_RelStat set RelTaxon   =  107 where tu_unacceptreason like '%bas[iy][no]%ny%'
+//
+
+        if (synType != null){
+            result[0]= synType;
+        }
+        if (taxonRelType != null){
+            result[1]= taxonRelType;
+        }
+        if (nameType != null){
+            result[2]= nameType;
+        }
+//        if (hybridType != null){
+//            result[3]= hybridType;
+//        }
+
+        return result;
+    }
+
+    private TaxonRelationshipType getSynTaxonRelType(DbImportStateBase<?, ?> state) {
+        @SuppressWarnings("unchecked")
+        TaxonRelationshipType result = state.getCurrentIO().getTaxonRelationshipType(state,
+                TaxonRelationshipType.uuidSynonymOfTaxonRelationship,
+                "is taxon synonym of",
+                "is synonym of relation used by synonym that are of class Taxon as they can not be handled differently",
+                null, null);
+        return result;
+    }
+
+    private TaxonRelationshipType getHomoSynTaxonRelType(DbImportStateBase<?, ?> state) {
+        String labelHomoRel = "Heterotypic synonym taxon relationship";
+        @SuppressWarnings("unchecked")
+        TaxonRelationshipType result = state.getCurrentIO().getTaxonRelationshipType(
+                state, TaxonRelationshipType.uuidHomotypicSynonymTaxonRelationship, labelHomoRel, labelHomoRel, null, null);
+        return result;
+    }
+
+    private TaxonRelationshipType getHeteroSynTaxRelType(DbImportStateBase<?, ?> state) {
+        String labelHeteroRel = "Heterotypic synonym taxon relationship";
+        @SuppressWarnings("unchecked")
+        TaxonRelationshipType result = state.getCurrentIO().getTaxonRelationshipType(
+                state, TaxonRelationshipType.uuidHeterotypicSynonymTaxonRelationship, labelHeteroRel, labelHeteroRel, null, null);
+        return result;
+    }
 
 
 }
