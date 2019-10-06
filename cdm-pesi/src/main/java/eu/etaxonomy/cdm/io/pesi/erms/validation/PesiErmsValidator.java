@@ -102,7 +102,8 @@ public class PesiErmsValidator {
         System.out.println("Start validate taxon relations");
         boolean success = testTaxonRelationCount();
         if (success){
-            success &= testSingleTaxonRelations(source.getUniqueInteger(countTaxonRelation));
+            //TODO
+            success &= testSingleTaxonRelations(source.getUniqueInteger(countSynonymRelation));
         }
         return success;
     }
