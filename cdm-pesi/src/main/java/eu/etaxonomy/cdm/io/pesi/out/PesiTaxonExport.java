@@ -703,12 +703,20 @@ public class PesiTaxonExport extends PesiExportBase {
         }else{
             taxon = checkPseudoOrRelatedTaxon((Taxon)taxonBase);
         }
-        if (taxon != null){
+        if (taxon == null){
+            NomenclaturalCode nomenclaturalCode = taxonBase.getName().getNameType();
+            logger.warn("Taxon is synonym with no accepted taxon attached: " + taxonBase.getTitleCache() + ". The kingdom is taken from the nomenclatural code: " + PesiTransformer.nomenclaturalCode2Kingdom(nomenclaturalCode) );
+            return PesiTransformer.nomenclaturalCode2Kingdom(nomenclaturalCode);
+        } else{
             Set<TaxonNode> nodes = taxon.getTaxonNodes();
-            if (nodes.size()>1){
-                logger.warn("The taxon has more then 1 taxon node: " + taxon.getTitleCache() + ". Take arbitrary one.");
-            }
-            if (!nodes.isEmpty()){
+            if (nodes.isEmpty()){
+                NomenclaturalCode nomenclaturalCode = taxon.getName().getNameType();
+                logger.warn("The taxon has no nodes: " + taxon.getTitleCache() + ". The kingdom is taken from the nomenclatural code: " + PesiTransformer.nomenclaturalCode2Kingdom(nomenclaturalCode));
+                return PesiTransformer.nomenclaturalCode2Kingdom(nomenclaturalCode);
+            } else {
+                if (nodes.size()>1){
+                    logger.warn("The taxon has more then 1 taxon node: " + taxon.getTitleCache() + ". Take arbitrary one.");
+                }
                 String treeIndex = nodes.iterator().next().treeIndex();
 
                 Pattern pattern = Pattern.compile("#t[0-9]+#([0-9]+#){3}");
@@ -732,15 +740,7 @@ public class PesiTaxonExport extends PesiExportBase {
                     logger.warn("Kingdom could not be defined for treeindex " + treeIndex);
                 }
                 return kingdomID;
-            } else {
-                NomenclaturalCode nomenclaturalCode = taxon.getName().getNameType();
-                logger.warn("The taxon has no nodes: " + taxon.getTitleCache() + ". The kingdom is taken from the nomenclatural code: " + PesiTransformer.nomenclaturalCode2Kingdom(nomenclaturalCode));
-                return PesiTransformer.nomenclaturalCode2Kingdom(nomenclaturalCode);
             }
-        } else{
-            NomenclaturalCode nomenclaturalCode = taxonBase.getName().getNameType();
-            logger.warn("Taxon is synonym with no accepted taxon attached: " + taxonBase.getTitleCache() + ". The kingdom is taken from the nomenclatural code: " + PesiTransformer.nomenclaturalCode2Kingdom(nomenclaturalCode) );
-            return PesiTransformer.nomenclaturalCode2Kingdom(nomenclaturalCode);
         }
     }
 

@@ -178,9 +178,10 @@ public abstract class PesiExportBase
 	protected <CLASS extends RelationshipBase> List<CLASS> getNextTaxonRelationshipPartition( int limit, int partitionCount, List<String> propertyPaths) {
 
 	    List<CLASS> result = new ArrayList<>();
-		List<OrderHint> orderHints = null;
 
-		List<CLASS> list = (List<CLASS>)this.getTaxonService()
+	    List<OrderHint> orderHints = null;
+		@SuppressWarnings("unchecked")
+        List<CLASS> list = (List<CLASS>)this.getTaxonService()
 		        .listTaxonRelationships(null, limit, partitionCount, orderHints, propertyPaths);
 
 		if (list.isEmpty()){

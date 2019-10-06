@@ -354,6 +354,7 @@ public class ErmsTaxonImport
         TaxonBase<?> taxon = (TaxonBase<?>)state.getRelatedObject(DbImportStateBase.CURRENT_OBJECT_NAMESPACE, DbImportStateBase.CURRENT_OBJECT_ID);
         TaxonName taxonName = taxon.getName();
          String displayName = rs.getString("tu_displayname");
+         displayName = displayName == null ? null : displayName.trim();
          String titleCache = taxonName.resetTitleCache(); //calling titleCache should always be kept to have a computed titleCache in the CDM DB.
          String expectedTitleCache = getExpectedTitleCache(rs);
          //TODO check titleCache, but beware of autonyms
