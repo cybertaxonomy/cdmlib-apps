@@ -19,6 +19,8 @@ import org.springframework.transaction.TransactionStatus;
 
 import eu.etaxonomy.cdm.io.common.Source;
 import eu.etaxonomy.cdm.io.common.mapping.out.DbAnnotationMapper;
+import eu.etaxonomy.cdm.io.common.mapping.out.DbFixedIntegerMapper;
+import eu.etaxonomy.cdm.io.common.mapping.out.DbFixedStringMapper;
 import eu.etaxonomy.cdm.io.common.mapping.out.DbObjectMapper;
 import eu.etaxonomy.cdm.io.common.mapping.out.MethodMapper;
 import eu.etaxonomy.cdm.model.common.CdmBase;
@@ -31,6 +33,7 @@ import eu.etaxonomy.cdm.model.name.TaxonName;
 import eu.etaxonomy.cdm.model.taxon.Synonym;
 import eu.etaxonomy.cdm.model.taxon.Taxon;
 import eu.etaxonomy.cdm.model.taxon.TaxonBase;
+import eu.etaxonomy.cdm.model.taxon.TaxonNode;
 import eu.etaxonomy.cdm.model.taxon.TaxonRelationship;
 
 /**
@@ -54,6 +57,7 @@ public class PesiRelTaxonExport extends PesiExportBase {
 
 	private PesiExportMapping mapping;
 	private PesiExportMapping synonymMapping;
+	private PesiExportMapping taxonNodeMapping;
 
 	public PesiRelTaxonExport() {
 		super();
@@ -89,8 +93,16 @@ public class PesiRelTaxonExport extends PesiExportBase {
             synonymMapping = getSynonymMapping();
             synonymMapping.initialize(state);
 
+            // Get specific mappings: (CDM) Synonym -> (PESI) RelTaxon
+            taxonNodeMapping = getTaxonNodeMapping();
+            taxonNodeMapping.initialize(state);
+
+
 			//Export taxon relations
 			success &= doPhase01(state, mapping);
+
+			//Export taxon nodes
+            success &= doPhase01b(state, taxonNodeMapping);
 
 			// Export name relations
 			success &= doPhase02(state, mapping);
@@ -180,6 +192,39 @@ public class PesiRelTaxonExport extends PesiExportBase {
 		commitTransaction(txStatus);
 		return success;
 	}
+
+    private boolean doPhase01b(PesiExportState state, PesiExportMapping taxonNodeMapping) {
+        logger.info("PHASE 1b: Taxonnodes ...");
+        boolean success = true;
+
+        int limit = state.getConfig().getLimitSave();
+        // Start transaction
+        TransactionStatus txStatus = startTransaction(true);
+        logger.debug("Started new transaction. Fetching some " + pluralString + " (max: " + limit + ") ...");
+
+        List<TaxonNode> list;
+
+        //taxon nodes
+        int partitionCount = 0;
+        int totalCount = 0;
+        while ((list = getNextTaxonNodePartition(limit, partitionCount++, null)) != null) {
+            totalCount = totalCount + list.size();
+            logger.info("Read " + list.size() + " PESI taxon nodes. Limit: " + limit + ". Total: " + totalCount );
+            for (TaxonNode tn : list){
+                try {
+                    taxonNodeMapping.invoke(tn);
+                } catch (Exception e) {
+                    logger.error(e.getMessage() + ". TaxonNode: " +  tn.getUuid());
+                    e.printStackTrace();
+                }
+            }
+
+            commitTransaction(txStatus);
+            txStatus = startTransaction();
+        }
+        commitTransaction(txStatus);
+        return success;
+    }
 
 	private boolean doPhase02(PesiExportState state, PesiExportMapping mapping2) {
 		logger.info("PHASE 2: Name Relationships ...");
@@ -312,6 +357,20 @@ public class PesiRelTaxonExport extends PesiExportBase {
     @SuppressWarnings("unused")
     private static Integer getSynonym(Synonym synonym, PesiExportState state) {
         return state.getDbId(synonym);
+    }
+
+    /**
+     * Returns the <code>TaxonFk1</code> attribute. It corresponds to a CDM <code>Synonym</code>.
+     * @param synonym The {@link Synonym synonym}.
+     * @param state The {@link PesiExportState PesiExportState}.
+     * @return The <code>TaxonFk1</code> attribute.
+     * @see MethodMapper
+     */
+    @SuppressWarnings("unused")
+    private static Integer getParent(TaxonNode taxonNode, PesiExportState state) {
+        TaxonNode parent = taxonNode == null? null : taxonNode.getParent();
+        Taxon parentTaxon = parent == null? null: parent.getTaxon();
+        return state.getDbId(parentTaxon);
     }
 
 	/**
@@ -454,6 +513,19 @@ public class PesiRelTaxonExport extends PesiExportBase {
 
         return mapping;
     }
+
+    PesiExportMapping getTaxonNodeMapping() {
+        PesiExportMapping mapping = new PesiExportMapping(dbTableName);
+
+        mapping.addMapper(MethodMapper.NewInstance("TaxonFk2", this.getClass(), "getParent", TaxonNode.class, PesiExportState.class));
+        mapping.addMapper(DbObjectMapper.NewInstance("taxon", "TaxonFk1"));
+        mapping.addMapper(DbFixedIntegerMapper.NewInstance(101, "RelTaxonQualifierFk"));
+        mapping.addMapper(DbFixedStringMapper.NewInstance("is taxonomically included in", "RelQualifierCache"));
+//        mapping.addMapper(DbAnnotationMapper.NewExludedInstance(getLastActionAnnotationTypes(), "Notes"));
+
+        return mapping;
+    }
+
 
 
     @Override

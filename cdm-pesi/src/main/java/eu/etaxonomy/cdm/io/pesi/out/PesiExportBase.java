@@ -43,6 +43,7 @@ import eu.etaxonomy.cdm.model.reference.Reference;
 import eu.etaxonomy.cdm.model.taxon.Synonym;
 import eu.etaxonomy.cdm.model.taxon.Taxon;
 import eu.etaxonomy.cdm.model.taxon.TaxonBase;
+import eu.etaxonomy.cdm.model.taxon.TaxonNode;
 import eu.etaxonomy.cdm.model.taxon.TaxonRelationship;
 import eu.etaxonomy.cdm.model.taxon.TaxonRelationshipType;
 import eu.etaxonomy.cdm.persistence.query.OrderHint;
@@ -193,6 +194,37 @@ public abstract class PesiExportBase
 		}
 		return result;
 	}
+
+    protected List<TaxonNode> getNextTaxonNodePartition( int limit, int partitionCount, List<String> propertyPaths) {
+
+        List<TaxonNode> result = new ArrayList<>();
+
+        List<OrderHint> orderHints = null;
+        @SuppressWarnings("unchecked")
+        List<TaxonNode> list = this.getTaxonNodeService()
+            .list(TaxonNode.class, limit, limit * partitionCount, orderHints, propertyPaths);
+
+        if (list.isEmpty()){
+            return null;
+        }
+
+        for (TaxonNode tn : list){
+            if (isPesiTaxonNode(tn)){
+                result.add(tn);
+            }
+        }
+        return result;
+    }
+
+    protected boolean isPesiTaxonNode(TaxonNode tn){
+        TaxonBase<?> fromTaxon;
+        Taxon toTaxon;
+
+        fromTaxon = tn.getTaxon();
+        toTaxon = tn.getParent()== null? null: tn.getParent().getTaxon();
+
+        return (isPesiTaxon(fromTaxon, true) && isPesiTaxon(toTaxon, true));
+    }
 
 	protected boolean isPesiNameRelationship(RelationshipBase<?,?,?> rel){
 		TaxonName name1;
