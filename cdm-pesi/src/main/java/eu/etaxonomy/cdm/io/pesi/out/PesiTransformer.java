@@ -2201,7 +2201,14 @@ public final class PesiTransformer extends ExportTransformerBase{
 		RelationshipTermBase<?> type = relation.getType();
 		if (type.equals(TaxonRelationshipType.MISAPPLIED_NAME_FOR())) {
 			return IS_MISAPPLIED_NAME_FOR;
-		} else if (type.equals(NameRelationshipType.BASIONYM())) {
+	    //TODO
+//		} else if (type.equals(TaxonRelationshipType.PRO_PARTE_MISAPPLIED_NAME_FOR())) {
+//            return IS_PRO_PARTE_MISAPPLIED_NAME_FOR;
+        } else if (type.equals(TaxonRelationshipType.PRO_PARTE_SYNONYM_FOR())) {
+		    return IS_PRO_PARTE_SYNONYM_OF;
+		} else if (type.equals(TaxonRelationshipType.PARTIAL_SYNONYM_FOR())) {
+            return IS_PARTIAL_SYNONYM_OF;
+        } else if (type.equals(NameRelationshipType.BASIONYM())) {
 			return IS_BASIONYM_FOR;
 		} else if (type.equals(NameRelationshipType.LATER_HOMONYM())) {
 			return IS_LATER_HOMONYM_OF;
@@ -2227,8 +2234,12 @@ public final class PesiTransformer extends ExportTransformerBase{
 			return IS_FIRST_PARENT_OF;
 		} else if (type.equals(HybridRelationshipType.SECOND_PARENT())) {
 			return IS_SECOND_PARENT_OF;
-		} else if (type.getUuid().equals(ErmsTransformer.uuidTaxRelTypeIsTaxonSynonymOf)) {
+		} else if (type.getUuid().equals(TaxonRelationshipType.uuidSynonymOfTaxonRelationship)) {
 			return IS_SYNONYM_OF;
+	    } else if (type.getUuid().equals(TaxonRelationshipType.uuidHeterotypicSynonymTaxonRelationship)) {
+	        return IS_HETEROTYPIC_SYNONYM_OF;
+	    } else if (type.getUuid().equals(TaxonRelationshipType.uuidHomotypicSynonymTaxonRelationship)) {
+	        return IS_HOMOTYPIC_SYNONYM_OF;
 		} else {
 			logger.warn("No equivalent RelationshipType found in datawarehouse for: " + type.getTitleCache());
 		}
