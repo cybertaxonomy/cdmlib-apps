@@ -64,9 +64,6 @@ public class FloraHellenicaImageImport<CONFIG extends FloraHellenicaImportConfig
     @SuppressWarnings("unchecked")
     private ImportDeduplicationHelper<SimpleExcelTaxonImportState<?>> deduplicationHelper = (ImportDeduplicationHelper<SimpleExcelTaxonImportState<?>>)ImportDeduplicationHelper.NewInstance(this);
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     protected void doInvoke(SimpleExcelTaxonImportState<CONFIG> state) {
         TransactionStatus tx = this.startTransaction();
@@ -81,10 +78,6 @@ public class FloraHellenicaImageImport<CONFIG extends FloraHellenicaImportConfig
         this.commitTransaction(tx);
     }
 
-    /**
-     * @param state
-     * @param plate
-     */
     private void handleSinglePlate(SimpleExcelTaxonImportState<CONFIG> state, int plate) {
         String fill = plate < 10 ? "0" : "";
         String plateStr = "Plate_" + fill + plate + "/";
@@ -103,13 +96,6 @@ public class FloraHellenicaImageImport<CONFIG extends FloraHellenicaImportConfig
         }
     }
 
-    /**
-     * @param state
-     * @param fullFolderUrl
-     * @param fullThumbUrl
-     * @param fileStr
-     * @param plate
-     */
     private void handleSingleFile(SimpleExcelTaxonImportState<CONFIG> state,
             String fullFolderUrl, String fullThumbUrl, String fileStr, int plate) {
         String[] taxonNameAndArtist = getTaxonName(fileStr);
@@ -168,7 +154,7 @@ public class FloraHellenicaImageImport<CONFIG extends FloraHellenicaImportConfig
                 }else{
                     person.setTitleCache("artistStr", true);
                 }
-                person = (Person)deduplicationHelper.getExistingAuthor(state, person);
+                person = deduplicationHelper.getExistingAuthor(state, person);
 
                 media.setArtist(person);
                 //copyright

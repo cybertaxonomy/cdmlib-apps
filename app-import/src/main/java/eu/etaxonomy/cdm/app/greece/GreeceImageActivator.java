@@ -71,8 +71,8 @@ public class GreeceImageActivator {
 //    private static final UUID sourceUuid = UUID.fromString("0fd093fe-ffdf-4ace-847b-aad6f0659678");
     private static final UUID sourceUuid = UUID.fromString("9e6a3815-fb8d-46c3-a250-6d8a350d03fc");
 
-//    private static final String fileName = "20190507_fog_images.xlsx";
-    private static final String fileName = "20190726_fog_images.xlsx";
+    private static final String fileName = "20190726_fog_images_0902.xlsx";
+//    private static final String fileName = "20190726_fog_images.xlsx";
 
 
 //    NOTE!!: Darauf achten, dass die Header case sensitiv sind und keine Leerzeichen am Ende sein sollten, trim funktioniert seltsamerweise nicht immer
