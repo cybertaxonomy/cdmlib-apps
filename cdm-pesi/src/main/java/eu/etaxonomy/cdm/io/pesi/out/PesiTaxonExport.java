@@ -71,6 +71,8 @@ import eu.etaxonomy.cdm.model.taxon.SynonymType;
 import eu.etaxonomy.cdm.model.taxon.Taxon;
 import eu.etaxonomy.cdm.model.taxon.TaxonBase;
 import eu.etaxonomy.cdm.model.taxon.TaxonNode;
+import eu.etaxonomy.cdm.model.taxon.TaxonRelationship;
+import eu.etaxonomy.cdm.model.taxon.TaxonRelationshipType;
 import eu.etaxonomy.cdm.strategy.cache.HTMLTagRules;
 import eu.etaxonomy.cdm.strategy.cache.TagEnum;
 import eu.etaxonomy.cdm.strategy.cache.name.INonViralNameCacheStrategy;
@@ -699,7 +701,7 @@ public class PesiTaxonExport extends PesiExportBase {
         if (taxonBase instanceof Synonym){
             taxon = ((Synonym) taxonBase).getAcceptedTaxon();
         }else{
-            taxon = (Taxon)taxonBase;
+            taxon = checkPseudoOrRelatedTaxon((Taxon)taxonBase);
         }
         if (taxon != null){
             Set<TaxonNode> nodes = taxon.getTaxonNodes();
@@ -740,6 +742,56 @@ public class PesiTaxonExport extends PesiExportBase {
             logger.warn("Taxon is synonym with no accepted taxon attached: " + taxonBase.getTitleCache() + ". The kingdom is taken from the nomenclatural code: " + PesiTransformer.nomenclaturalCode2Kingdom(nomenclaturalCode) );
             return PesiTransformer.nomenclaturalCode2Kingdom(nomenclaturalCode);
         }
+    }
+
+    private static Taxon checkPseudoOrRelatedTaxon(Taxon taxon) {
+        if (!taxon.getTaxonNodes().isEmpty()){
+            return taxon;
+        }else if(hasPseudoTaxonRelationship(taxon)){
+            return acceptedPseudoTaxon(taxon);
+        }else if(isMisappliedNameOrProParteSynonym(taxon)){
+            return acceptedTaxonConcept(taxon);
+        }else{
+            return taxon;
+        }
+    }
+
+    private static Taxon acceptedPseudoTaxon(Taxon taxon) {
+        for (TaxonRelationship rel : taxon.getRelationsFromThisTaxon()){
+            if (TaxonRelationshipType.pseudoTaxonUuids().contains(rel.getType().getUuid())){
+                return rel.getToTaxon();
+            }
+        }
+        return taxon;
+    }
+
+    private static Taxon acceptedTaxonConcept(Taxon taxon) {
+       for (TaxonRelationship rel : taxon.getRelationsFromThisTaxon()){
+            if (TaxonRelationshipType.misappliedNameUuids().contains(rel.getType().getUuid())||
+                    TaxonRelationshipType.proParteOrPartialSynonymUuids().contains(rel.getType().getUuid())){
+                return rel.getToTaxon();
+            }
+        }
+        return taxon;
+    }
+
+    private static boolean hasPseudoTaxonRelationship(Taxon taxon) {
+        for (TaxonRelationship rel : taxon.getRelationsFromThisTaxon()){
+            if (TaxonRelationshipType.pseudoTaxonUuids().contains(rel.getType().getUuid())){
+                return true;
+            }
+        }
+        return false;
+    }
+
+    private static boolean isMisappliedNameOrProParteSynonym(Taxon taxon) {
+        for (TaxonRelationship rel : taxon.getRelationsFromThisTaxon()){
+            if (TaxonRelationshipType.misappliedNameUuids().contains(rel.getType().getUuid())||
+                    TaxonRelationshipType.proParteOrPartialSynonymUuids().contains(rel.getType().getUuid())){
+                return true;
+            }
+        }
+        return false;
     }
 
     //	"PHASE 5: Creating Inferred Synonyms..."

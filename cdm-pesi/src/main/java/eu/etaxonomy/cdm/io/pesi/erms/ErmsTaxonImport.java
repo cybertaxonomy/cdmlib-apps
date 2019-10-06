@@ -186,24 +186,20 @@ public class ErmsTaxonImport
 
 	private Set<Integer> getAcceptedTaxaKeys(ErmsImportState state) {
 		Set<Integer> result = new HashSet<>();
-		String parentCol = "tu_parent";
-		String accCol = " tu_acctaxon ";
 		String idCol = " id ";
 		String tuFk = "tu_id";
-		String taxonTable = "tu";
 		String vernacularsTable = "vernaculars";
 		String distributionTable = "dr";
 		String notesTable = "notes";
 		String sql =
-		        " SELECT %s FROM %s WHERE %s is NULL" //id of taxa not having accepted taxon
-		        + " UNION  SELECT DISTINCT %s FROM %s "  //fk to accepted taxon (either the accepted taxon or the taxon itself, if accepted)
-		        + " UNION  SELECT DISTINCT %s FROM %s " //vernaculars
+		        "          SELECT id FROM tu WHERE tu_acctaxon is NULL" //id of taxa not having accepted taxon
+		        + " UNION  SELECT DISTINCT tu_acctaxon FROM tu "  //fk to accepted taxon (either the accepted taxon or the taxon itself, if accepted)
+		        + " UNION  SELECT syn.id FROM tu syn INNER JOIN tu acc ON syn.tu_acctaxon = acc.id WHERE syn.id = acc.tu_parent AND acc.id <> syn.id "  //see also ErmsTaxonRelationImport.isAccepted, there are some autonyms being the accepted taxon of there own parents
+                + " UNION  SELECT DISTINCT %s FROM %s " //vernaculars
 		        + " UNION  SELECT DISTINCT %s FROM %s "  //distributions
 		        + " UNION  SELECT DISTINCT %s FROM %s ";  //notes
 		sql = String.format(sql,
-				idCol, taxonTable, accCol,
-				accCol, taxonTable,
-				tuFk, vernacularsTable,
+		        tuFk, vernacularsTable,
 				tuFk, distributionTable,
 				tuFk, notesTable);
 		ResultSet rs = state.getConfig().getSource().getResultSet(sql);

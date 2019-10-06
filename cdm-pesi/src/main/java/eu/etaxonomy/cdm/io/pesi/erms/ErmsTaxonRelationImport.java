@@ -63,7 +63,7 @@ public class ErmsTaxonRelationImport extends ErmsImportBase<TaxonBase<?>> implem
 			mapping = new DbImportMapping<>();
 			//incldued in
 			DbImportTaxIncludedInMapper<?> includedIn
-			    = DbImportTaxIncludedInMapper.NewInstance("id", TAXON_NAMESPACE, "accId", TAXON_NAMESPACE, "accParentId", TAXON_NAMESPACE, null);
+			    = DbImportTaxIncludedInMapper.NewInstance("id", TAXON_NAMESPACE, "accId", TAXON_NAMESPACE, "parentAccId", TAXON_NAMESPACE, null);
 			mapping.addMapper(includedIn);//there is only one tree
 			//synonym
 			mapping.addMapper(DbImportSynonymMapper.NewInstance("id", "tu_acctaxon", TAXON_NAMESPACE,
@@ -88,14 +88,15 @@ public class ErmsTaxonRelationImport extends ErmsImportBase<TaxonBase<?>> implem
 		    "   myTaxon.id, myTaxon.tu_parent, myTaxon.tu_typetaxon, myTaxon.tu_typedesignation, "
 		    + " myTaxon.tu_acctaxon, myTaxon.tu_status, myTaxon.tu_unacceptreason, "
 			+ " parent.tu_status AS parentStatus, parent.id AS parentId, "
-		    + " accParent.tu_status AS accParentStatus, accParent.id AS accParentId,"
-		    + " ISNULL(accParent.id, parent.id) as accId ";
+		    + " parentAcc.id AS parentAccId,"
+		    + " accTaxon.tu_parent accParentId, "
+		    + " CASE WHEN myTaxon.id = parentAcc.id THEN parent.id ELSE ISNULL(parentAcc.id, parent.id) END as accId ";
 		String strRecordQuery =
 			"   SELECT  " + selectAttributes
 			+ " FROM tu AS myTaxon "
 			+ "   LEFT JOIN tu AS accTaxon ON myTaxon.tu_acctaxon = accTaxon.id "
 			+ "   LEFT JOIN tu AS parent ON myTaxon.tu_parent = parent.id "
-			+ "   LEFT JOIN tu AS accParent ON accParent.id = parent.tu_acctaxon "
+			+ "   LEFT JOIN tu AS parentAcc ON parentAcc.id = parent.tu_acctaxon "
 			+ " WHERE ( myTaxon.id IN (" + ID_LIST_TOKEN + ") )";
 		return strRecordQuery;
 	}
@@ -118,7 +119,7 @@ public class ErmsTaxonRelationImport extends ErmsImportBase<TaxonBase<?>> implem
 			Set<String> nameIdSet = new HashSet<>();
 			while (rs.next()){
 //				handleForeignKey(rs, taxonIdSet, "parentId");
-//				handleForeignKey(rs, taxonIdSet, "accParentId");
+//				handleForeignKey(rs, taxonIdSet, "parentAccId");
 			    handleForeignKey(rs, taxonIdSet, "accId");
 				handleForeignKey(rs, taxonIdSet, "tu_acctaxon");
 				handleForeignKey(rs, taxonIdSet, "id");
@@ -151,10 +152,10 @@ public class ErmsTaxonRelationImport extends ErmsImportBase<TaxonBase<?>> implem
 
 	@Override
     public boolean checkIgnoreMapper(IDbImportMapper mapper, ResultSet rs) throws SQLException{
-		boolean result = false;
-        int id = rs.getInt("id");
-        Object accTaxonId = rs.getObject("tu_acctaxon");
-        boolean isAccepted = accTaxonId == null? false: id == Integer.valueOf(String.valueOf(accTaxonId));
+
+	    boolean result = false;
+        boolean isAccepted = isAccepted(rs);
+
         if (mapper instanceof DbImportTaxIncludedInMapper){
 		    //here we should add the direct parent or the accepted taxon of the parent
 		    return !isAccepted;
@@ -174,6 +175,23 @@ public class ErmsTaxonRelationImport extends ErmsImportBase<TaxonBase<?>> implem
 		}
 		return result;
 	}
+
+    private boolean isAccepted(ResultSet rs) throws SQLException {
+        int id = rs.getInt("id");
+        Object accTaxonId = rs.getObject("tu_acctaxon");
+        Object accParentId = rs.getObject("accParentId");
+
+        boolean isAccepted = false;
+        if(accTaxonId == null){
+            isAccepted = true;  //if accTaxonId == null we can only assume this taxon is accepted as we have no other accepted taxon, though in most cases the status is not accepted
+        }else if (id == (int)accTaxonId){
+            isAccepted = true;
+        }else if (accParentId != null && id == (int)accParentId){
+            //see also ErmsTaxonImport.getAcceptedTaxaKeys, there with accepted taxon (alternate representation) being there own child. These should be fully accepted as other wise the link to the higher taxon (genus) is not given
+            isAccepted = true;
+        }
+        return isAccepted;
+    }
 
 	@Override
 	protected boolean doCheck(ErmsImportState state){
