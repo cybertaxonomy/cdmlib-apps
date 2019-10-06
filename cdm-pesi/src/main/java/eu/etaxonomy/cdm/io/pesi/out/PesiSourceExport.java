@@ -52,7 +52,7 @@ public class PesiSourceExport extends PesiExportBase {
 
     private static final Class<? extends CdmBase> standardMethodParameter = Reference.class;
 
-	private static int modCount = 1000;
+	private static int modCount = 5000;
 	public static final String dbTableName = "Source";
 	private static final String pluralString = "Sources";
 	List<Integer> storedSourceIds = new ArrayList<>();
@@ -97,7 +97,7 @@ public class PesiSourceExport extends PesiExportBase {
 			PesiExportConfigurator pesiExportConfigurator = state.getConfig();
 
 			// Get the limit for objects to save within a single transaction.
-			int limit = pesiExportConfigurator.getLimitSave();
+			int limit = modCount;//pesiExportConfigurator.getLimitSave();
 
 			// Stores whether this invoke was successful or not.
 			boolean success = true ;
