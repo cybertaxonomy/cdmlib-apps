@@ -260,23 +260,25 @@ public class ErmsTaxonImport
     private void handleNameStatus(TaxonName name, ResultSet rs, ErmsImportState state) throws SQLException {
         NomenclaturalStatusType nomStatus = null;
         int tuStatus = rs.getInt("tu_status");
-        if (tuStatus == 3){
-            //nomen nudum
-            nomStatus = NomenclaturalStatusType.NUDUM();
-        }else if (tuStatus == 5){
-            //"alternate representation"
-            nomStatus = getNomenclaturalStatusType(state, ErmsTransformer.uuidNomStatusAlternateRepresentation, "alternate representation", "alternate representation", null, Language.ENGLISH(), null);
-        }else if (tuStatus == 6){
-            //nomen dubium
-            nomStatus = NomenclaturalStatusType.DOUBTFUL();
+        //the order is bottom up from SQL script as there values are overriden from top to bottom
+        if (tuStatus == 8){
+            //species inquirenda
+            nomStatus = getNomenclaturalStatusType(state, ErmsTransformer.uuidNomStatusSpeciesInquirenda, "species inquirenda", "species inquirenda", null, Language.LATIN(), null);
         }else if (tuStatus == 7){
             //temporary name
             nomStatus = getNomenclaturalStatusType(state, PesiTransformer.uuidNomStatusTemporaryName, "temporary name", "temporary name", null, Language.ENGLISH(), null);
-        }else if (tuStatus == 8){
-            //species inquirenda
-            nomStatus = getNomenclaturalStatusType(state, ErmsTransformer.uuidNomStatusSpeciesInquirenda, "species inquirenda", "species inquirenda", null, Language.LATIN(), null);
+        }else if (tuStatus == 6){
+            //nomen dubium
+            nomStatus = NomenclaturalStatusType.DOUBTFUL();
+        }else if (tuStatus == 5){
+            //"alternate representation"
+            nomStatus = getNomenclaturalStatusType(state, ErmsTransformer.uuidNomStatusAlternateRepresentation, "alternate representation", "alternate representation", null, Language.ENGLISH(), null);
+        }else if (tuStatus == 3){
+            //nomen nudum
+            nomStatus = NomenclaturalStatusType.NUDUM();
         }
         if (nomStatus == null){
+            //IN SQL Script it is set first by unacceptreason and then overriden if above tu_status exists
             String unacceptReason = rs.getString("tu_unacceptreason");
             try {
                 nomStatus = state.getTransformer().getNomenclaturalStatusByKey(unacceptReason);
