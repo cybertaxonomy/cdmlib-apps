@@ -821,7 +821,7 @@ public class PesiErmsValidator {
         }
         //we do not trim strDest here because this should be done during import already. If not it should be shown here
         if (!CdmUtils.nullSafeEqual(strSrc, strDest)){
-            int index = diffIndex(strSrc, strDest);
+            int index = CdmUtils.diffIndex(strSrc, strDest);
             String message = id+ ": " + messageStart + " must be equal, but was not at "+index+".\n  Source:      "+  strSrc + "\n  Destination: " + strDest;
             logger.warn(message);
             return false;
@@ -829,22 +829,6 @@ public class PesiErmsValidator {
             logger.info(id+ ": " + messageStart + " were equal: " + strSrc);
             return true;
         }
-    }
-
-    private int diffIndex(String strSrc, String strDest) {
-        if (strSrc == null || strDest == null){
-            return 0;
-        }
-        int i;
-        for (i = 0; i<strSrc.length() && i<strDest.length() ;i++) {
-            if (strSrc.charAt(i)!= strDest.charAt(i)){
-                return i;
-            }
-        }
-        if(strSrc.length()!=strDest.length()){
-            return Math.max(strSrc.length(), strDest.length());
-        }
-        return i;
     }
 
     protected Integer nullSafeInt(ResultSet rs, String columnName) throws SQLException {
