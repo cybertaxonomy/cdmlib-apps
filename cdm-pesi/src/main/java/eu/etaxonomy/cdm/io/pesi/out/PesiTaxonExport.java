@@ -46,14 +46,12 @@ import eu.etaxonomy.cdm.io.common.mapping.out.IdMapper;
 import eu.etaxonomy.cdm.io.common.mapping.out.MethodMapper;
 import eu.etaxonomy.cdm.io.common.mapping.out.ObjectChangeMapper;
 import eu.etaxonomy.cdm.io.pesi.erms.ErmsTransformer;
-import eu.etaxonomy.cdm.model.common.Annotation;
 import eu.etaxonomy.cdm.model.common.AnnotationType;
 import eu.etaxonomy.cdm.model.common.CdmBase;
 import eu.etaxonomy.cdm.model.common.Extension;
 import eu.etaxonomy.cdm.model.common.ExtensionType;
 import eu.etaxonomy.cdm.model.common.IdentifiableEntity;
 import eu.etaxonomy.cdm.model.common.IdentifiableSource;
-import eu.etaxonomy.cdm.model.common.Language;
 import eu.etaxonomy.cdm.model.common.Marker;
 import eu.etaxonomy.cdm.model.common.MarkerType;
 import eu.etaxonomy.cdm.model.common.RelationshipBase;
@@ -309,7 +307,7 @@ public class PesiTaxonExport extends PesiExportBase {
 				}
 
 				//TODO switch on again, leads to some warnings in ERMS for taxa of not correctly handled kingdoms
-//				validatePhaseOne(taxon, nvn);
+				validatePhaseOne(taxon, nvn);
 			}
 
 			// Commit transaction
@@ -336,16 +334,17 @@ public class PesiTaxonExport extends PesiExportBase {
 	private void validatePhaseOne(TaxonBase<?> taxon, TaxonName taxonName) {
 
 	    // Check whether some rules are violated
-		NomenclaturalCode nomenclaturalCode = taxonName.getNameType();
 		String genusOrUninomial = taxonName.getGenusOrUninomial();
 		String specificEpithet = taxonName.getSpecificEpithet();
 		String infraSpecificEpithet = taxonName.getInfraSpecificEpithet();
 		String infraGenericEpithet = taxonName.getInfraGenericEpithet();
-		Integer rankFk = getRankFk(taxonName, nomenclaturalCode);
+		Rank rank =  taxonName.getRank();
 
-		if (rankFk == null) {
-			logger.error("Rank was not determined: " + taxon.getUuid() + " (" + taxon.getTitleCache() + ")");
-		} else {
+		//as kingdomFk can not be defined in Phase 01 the below code was switched to use the CDM rank. This may be changed if we move validation to Phase03 or later
+//		Integer rankFk = getRankFk(taxonName, taxonName.getNameType());
+//		if (rankFk == null) {
+//			logger.error("Rank was not determined: " + taxon.getUuid() + " (" + taxon.getTitleCache() + ")");
+//		} else {
 
 			// Check whether infraGenericEpithet is set correctly
 			// 1. Childs of an accepted taxon of rank subgenus that are accepted taxa of rank species have to have an infraGenericEpithet
@@ -370,21 +369,21 @@ public class PesiTaxonExport extends PesiExportBase {
 				}
 			}
 
-			if (infraGenericEpithet == null && rankFk.intValue() == 190) {
-				logger.warn("InfraGenericEpithet was not determined although it should exist for rank 190: " + taxon.getUuid() + " (" + taxon.getTitleCache() + ")");
+			if (infraGenericEpithet == null && rank.isInfraGenericButNotSpeciesGroup()) {
+				logger.warn("InfraGenericEpithet was not determined although it should exist for infra generic names: " + taxon.getUuid() + " (" + taxon.getTitleCache() + ")");
 			}
-			if (specificEpithet != null && rankFk.intValue() < 216) {
-				logger.warn("SpecificEpithet was determined for rank " + rankFk + " although it should only exist for ranks higher or equal to 220: TaxonName " + taxonName.getUuid() + " (" + taxonName.getTitleCache() + ")");
+			if (specificEpithet != null && (rank.isInfraGenericButNotSpeciesGroup()||rank.isGenus()||rank.isSupraGeneric())) {
+				logger.warn("SpecificEpithet was determined for rank " + rank.getTitleCache() + " although it should only exist for species aggregates, species or infraspecific taxa: TaxonName " + taxonName.getUuid() + " (" + taxonName.getTitleCache() + ")");
 			}
-			if (infraSpecificEpithet != null && rankFk.intValue() < 225) {
-				String message = "InfraSpecificEpithet '" +infraSpecificEpithet + "' was determined for rank " + rankFk + " although it should only exist for ranks higher or equal to 230: "  + taxonName.getUuid() + " (" + taxonName.getTitleCache() + ")";
+			if (infraSpecificEpithet != null && !rank.isInfraSpecific()) {
+				String message = "InfraSpecificEpithet '" +infraSpecificEpithet + "' was determined for rank " + rank.getTitleCache() + " although it should only exist for rank species and higher: "  + taxonName.getUuid() + " (" + taxonName.getTitleCache() + ")";
 				if (StringUtils.isNotBlank(infraSpecificEpithet)){
 					logger.warn(message);
 				}else{
 					logger.warn(message);
 				}
 			}
-		}
+//		}
 		if (infraSpecificEpithet != null && specificEpithet == null) {
 			logger.warn("An infraSpecificEpithet was determined, but a specificEpithet was not determined: "  + taxon.getUuid() + " (" + taxon.getTitleCache() + ")");
 		}
@@ -508,15 +507,9 @@ public class PesiTaxonExport extends PesiExportBase {
 				doCount(count++, modCount, pluralString);
 				Integer typeNameFk = getTypeNameFk(taxonName, state);
 				Integer kingdomFk = findKingdomIdFromTreeIndex(taxon, state);
-				 //       PesiTransformer.nomenClaturalCode2Kingdom(nomenclaturalCode);
 
-				//TODO why are expertFks needed? (Andreas M.)
-//				if (expertFk != null || speciesExpertFk != null) {
-				    NomenclaturalCode nomCode = taxonName.getNameType();
-				    //is there a reason why we do pass nomCode separately? Before nomCode was class variable, but not clear why and when it was set
-					invokeRankDataAndTypeNameFkAndKingdomFk(taxonName, nomCode, state.getDbId(taxon),
-							typeNameFk, kingdomFk, state);
-//				}
+			    invokeRankDataAndTypeNameFkAndKingdomFk(taxonName, state.getDbId(taxon),
+						typeNameFk, kingdomFk, state);
 			}
 
 			// Commit transaction
@@ -712,8 +705,7 @@ public class PesiTaxonExport extends PesiExportBase {
 			// Save Rank Data and KingdomFk for inferred synonyms
 			for (Integer taxonFk : inferredSynonymsDataToBeSaved.keySet()) {
 			    TaxonName taxonName = inferredSynonymsDataToBeSaved.get(taxonFk);
-                NomenclaturalCode nomCode = taxonName.getNameType(); //nomCode was class variable before, not sure if this was important
-                invokeRankDataAndKingdomFk(inferredSynonymsDataToBeSaved.get(taxonFk), nomCode, taxonFk, kingdomFk, state);
+                invokeRankDataAndKingdomFk(inferredSynonymsDataToBeSaved.get(taxonFk), taxonFk, kingdomFk, state);
 			}
 
 			// Start transaction
@@ -743,8 +735,7 @@ public class PesiTaxonExport extends PesiExportBase {
 			// Save Rank Data and KingdomFk for inferred synonyms
 			for (Integer taxonFk : inferredSynonymsDataToBeSaved.keySet()) {
 			    TaxonName taxonName = inferredSynonymsDataToBeSaved.get(taxonFk);
-			    NomenclaturalCode nomCode = taxonName.getNameType(); //nomCode was class variable before, not sure if this was important
-				invokeRankDataAndKingdomFk(inferredSynonymsDataToBeSaved.get(taxonFk), nomCode, taxonFk, kingdomFk, state);
+			    invokeRankDataAndKingdomFk(taxonName, taxonFk, kingdomFk, state);
 			}
 
 			// Start transaction
@@ -1057,16 +1048,18 @@ public class PesiTaxonExport extends PesiExportBase {
 	 * @param kindomFk The KingdomFk.
 	 * @return Whether save was successful or not.
 	 */
-	private boolean invokeRankDataAndKingdomFk(TaxonName taxonName, NomenclaturalCode nomenclaturalCode, Integer taxonFk, Integer kingdomFk, PesiExportState state) {
-		try {
-			Integer rankFk = getRankFk(taxonName, nomenclaturalCode);
+	private boolean invokeRankDataAndKingdomFk(TaxonName taxonName,
+	        Integer taxonFk, Integer kingdomFk, PesiExportState state) {
+
+	    try {
+			Integer rankFk = getRankFk(taxonName, kingdomFk);
 			if (rankFk != null) {
 				rankUpdateStmt.setInt(1, rankFk);
 			} else {
 				rankUpdateStmt.setObject(1, null);
 			}
 
-			String rankCache = getRankCache(taxonName, nomenclaturalCode, state);
+			String rankCache = getRankCache(taxonName, kingdomFk, state);
 			if (rankCache != null) {
 				rankUpdateStmt.setString(2, rankCache);
 			} else {
@@ -1107,20 +1100,22 @@ public class PesiTaxonExport extends PesiExportBase {
 	 * @param speciesExpertFk The SpeciesExpertFk.
 	 * @return Whether save was successful or not.
 	 */
-	private boolean invokeRankDataAndTypeNameFkAndKingdomFk(TaxonName taxonName, NomenclaturalCode nomenclaturalCode,
+	private boolean invokeRankDataAndTypeNameFkAndKingdomFk(TaxonName taxonName,
 			Integer taxonFk, Integer typeNameFk, Integer kingdomFk, PesiExportState state) {
+
+	    NomenclaturalCode nomenclaturalCodes = taxonName.getNameType();
 
 	    Integer rankFk = null;
 	    try {
 			int index = 1;
-			rankFk = getRankFk(taxonName, nomenclaturalCode);
+			rankFk = getRankFk(taxonName, kingdomFk);
 			if (rankFk != null) {
 				rankTypeExpertsUpdateStmt.setInt(index++, rankFk);
 			} else {
 				rankTypeExpertsUpdateStmt.setObject(index++, null);
 			}
 
-			String rankCache = getRankCache(taxonName, nomenclaturalCode, state);
+			String rankCache = getRankCache(taxonName, kingdomFk, state);
 			if (rankCache != null) {
 				rankTypeExpertsUpdateStmt.setString(index++, rankCache);
 			} else {
@@ -1191,15 +1186,9 @@ public class PesiTaxonExport extends PesiExportBase {
 		return true;
 	}
 
-	/**
-	 * Returns the rankFk for the taxon name based on the names nomenclatural code.
-	 * You may not use this method for kingdoms other then Animalia, Plantae and Bacteria.
-	 * @param taxonName
-	 * @return
-	 */
-	@SuppressWarnings("unused")  //used by mapper
-	private static Integer getRankFk(TaxonName taxonName) {
-		return getRankFk(taxonName, taxonName.getNameType());
+	private static Integer getRankFk(TaxonName taxonName, NomenclaturalCode nomenclaturalCode) {
+	    Integer kingdomId = PesiTransformer.nomenclaturalCode2Kingdom(nomenclaturalCode);
+	    return getRankFk(taxonName, kingdomId);
 	}
 
 	/**
@@ -1209,19 +1198,17 @@ public class PesiTaxonExport extends PesiExportBase {
 	 * @return The <code>RankFk</code> attribute.
 	 * @see MethodMapper
 	 */
-	private static Integer getRankFk(TaxonName taxonName, NomenclaturalCode nomenclaturalCode) {
+	private static Integer getRankFk(TaxonName taxonName, Integer kingdomId) {
 		Integer result = null;
 		try {
-			if (nomenclaturalCode != null) {
-				if (taxonName != null) {
-					if (taxonName.getRank() == null) {
-						logger.warn("Rank is null: " + taxonName.getUuid() + " (" + taxonName.getTitleCache() + ")");
-					} else {
-						result = PesiTransformer.rank2RankId(taxonName.getRank(), PesiTransformer.nomenclaturalCode2Kingdom(nomenclaturalCode));
-					}
-					if (result == null) {
-						logger.warn("Rank could not be determined for PESI-Kingdom-Id " + PesiTransformer.nomenclaturalCode2Kingdom(nomenclaturalCode) + " and TaxonName " + taxonName.getUuid() + " (" + taxonName.getTitleCache() + ")");
-					}
+			if (taxonName != null) {
+				if (taxonName.getRank() == null) {
+					logger.warn("Rank is null: " + taxonName.getUuid() + " (" + taxonName.getTitleCache() + ")");
+				} else {
+					result = PesiTransformer.rank2RankId(taxonName.getRank(), kingdomId);
+				}
+				if (result == null) {
+					logger.warn("Rank could not be determined for PESI-Kingdom-Id " + kingdomId + " and TaxonName " + taxonName.getUuid() + " (" + taxonName.getTitleCache() + ")");
 				}
 			}
 		} catch (Exception e) {
@@ -1231,7 +1218,9 @@ public class PesiTaxonExport extends PesiExportBase {
 	}
 
 	private static String getRankCache(TaxonName taxonName, PesiExportState state) {
-		return getRankCache(taxonName, taxonName.getNameType(), state);
+	    List<TaxonNode> nodes = getTaxonNodes(taxonName);
+        Integer kingdomId = findKingdomIdFromTreeIndex(nodes.iterator().next().getTaxon(), state);
+        return getRankCache(taxonName, kingdomId, state);
 	}
 
 
@@ -1243,16 +1232,15 @@ public class PesiTaxonExport extends PesiExportBase {
 	 * @return The <code>RankCache</code> attribute.
 	 * @see MethodMapper
 	 */
-	private static String getRankCache(TaxonName taxonName, NomenclaturalCode nomenclaturalCode, PesiExportState state) {
-	    List<TaxonNode> nodes = getTaxonNodes(taxonName);
+	private static String getRankCache(TaxonName taxonName, Integer kingdomFk, PesiExportState state) {
 	    if (Rank.DOMAIN().equals(taxonName.getRank())){
             return state.getTransformer().getCacheByRankAndKingdom(Rank.DOMAIN(), null);
-        }else if (!nodes.isEmpty()) {
-            return state.getTransformer().getCacheByRankAndKingdom(taxonName.getRank(), findKingdomIdFromTreeIndex(nodes.iterator().next().getTaxon(), state)); //PesiTransformer.nomenclaturalCode2Kingdom(nomenclaturalCode));
-        }else if (nomenclaturalCode != null){
-            return state.getTransformer().getCacheByRankAndKingdom(taxonName.getRank(), PesiTransformer.nomenclaturalCode2Kingdom(nomenclaturalCode));
+        }else if (kingdomFk != null) {
+            return state.getTransformer().getCacheByRankAndKingdom(taxonName.getRank(), kingdomFk);
+        }else if (taxonName.getNameType() != null){
+            return state.getTransformer().getCacheByRankAndKingdom(taxonName.getRank(), PesiTransformer.nomenclaturalCode2Kingdom(taxonName.getNameType()));
         }else{
-			logger.warn("No nomenclatural code defined for name " + taxonName.getUuid());
+			logger.warn("No kingdom ID could be defined for name " + taxonName.getUuid());
 			return null;
 		}
 	}
