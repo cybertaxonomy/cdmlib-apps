@@ -10,7 +10,7 @@ package eu.etaxonomy.cdm.io.pesi.out;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.BitSet;
+import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
@@ -26,6 +26,7 @@ import eu.etaxonomy.cdm.io.common.Source;
 import eu.etaxonomy.cdm.io.common.mapping.UndefinedTransformerMethodException;
 import eu.etaxonomy.cdm.io.common.mapping.out.ExportTransformerBase;
 import eu.etaxonomy.cdm.io.pesi.erms.ErmsTransformer;
+import eu.etaxonomy.cdm.io.pesi.out.PesiExportBase.PesiSource;
 import eu.etaxonomy.cdm.model.common.CdmBase;
 import eu.etaxonomy.cdm.model.common.Language;
 import eu.etaxonomy.cdm.model.common.RelationshipBase;
@@ -2097,10 +2098,10 @@ public final class PesiTransformer extends ExportTransformerBase{
 		return result;
 	}
 
-	public static Integer getQualityStatusKeyBySource(BitSet sources, TaxonName taxonName) {
-		if (sources.get(SOURCE_EM)){
+	public static Integer getQualityStatusKeyBySource(EnumSet<PesiSource> sources, TaxonName taxonName) {
+		if (sources.contains(PesiSource.EM)){
 			return QUALITY_STATUS_ADD_BY_DBMT;
-		}else if (sources.get(SOURCE_ERMS)){
+		}else if (sources.contains(PesiSource.ERMS)){
 			Set<String> statusSet = getAllQualityStatus(taxonName);
 			if (statusSet.size() > 1){
 				logger.warn("ERMS TaxonName has more than 1 quality status: " + taxonName.getTitleCache() + "; lisd=" + taxonName.getLsid());
@@ -2172,18 +2173,18 @@ public final class PesiTransformer extends ExportTransformerBase{
 		}
 	}
 
-	public static String getOriginalDbBySources(BitSet sources) {
+	public static String getOriginalDbBySources(EnumSet<PesiSource> sources) {
 		String result = "";
-		if (sources.get(SOURCE_EM)){
+		if (sources.contains(PesiSource.EM)){
 			result = CdmUtils.concat(",", result,  SOURCE_STR_EM);
 		}
-		if (sources.get(SOURCE_FE)){
+		if (sources.contains(PesiSource.FE)){
 			result = CdmUtils.concat(",", result,  SOURCE_STR_FE);
 		}
-		if (sources.get(SOURCE_IF)){
+		if (sources.contains(PesiSource.IF)){
 			result = CdmUtils.concat(",", result,  SOURCE_STR_IF);
 		}
-		if (sources.get(SOURCE_ERMS)){
+		if (sources.contains(PesiSource.ERMS)){
 			result = CdmUtils.concat(",", result,  SOURCE_STR_ERMS);
 		}
 

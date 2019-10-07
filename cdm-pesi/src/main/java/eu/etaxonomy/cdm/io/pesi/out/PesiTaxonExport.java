@@ -14,7 +14,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Types;
 import java.util.ArrayList;
-import java.util.BitSet;
+import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -1366,9 +1366,9 @@ public class PesiTaxonExport extends PesiExportBase {
 					addRule(TagEnum.nomStatus, "@status@");
 
 			String result;
-			if (getSources(taxonName).get(PesiTransformer.SOURCE_ERMS)){
+			if (getSources(taxonName).contains(PesiSource.ERMS)){
 			    result = cacheStrategy.getTitleCache(taxonName, tagRules);  //according to SQL script (also in ERMS sources are not abbreviated)
-			}else if (getSources(taxonName).get(PesiTransformer.SOURCE_EM)){
+			}else if (getSources(taxonName).contains(PesiSource.EM)){
 			    result = cacheStrategy.getFullTitleCache(taxonName, tagRules);
 			}else{
 			    //TODO define for FE + IF and for multiple sources
@@ -1493,21 +1493,20 @@ public class PesiTaxonExport extends PesiExportBase {
 			return null;
 		}
 		String result = null;
-		BitSet sources = getSources(taxonName);
-		int len = sources.length();
-		if(sources.get(PesiTransformer.SOURCE_EM)){
+		EnumSet<PesiSource> sources = getSources(taxonName);
+		if(sources.contains(PesiSource.EM)){
 		    if (! ref.isProtectedAbbrevTitleCache()){
 		        ref.setAbbrevTitleCache(null, false);  //to remove a false cache
 		    }
 		    result = ref.getNomenclaturalCitation(taxonName.getNomenclaturalMicroReference());
-		}else if(sources.get(PesiTransformer.SOURCE_FE)||sources.get(PesiTransformer.SOURCE_IF) ){
+		}else if(sources.contains(PesiSource.FE)||sources.contains(PesiSource.IF) ){
             //TODO still need to check if correct for FE + IF
 		    if (! ref.isProtectedAbbrevTitleCache()){
                 ref.setAbbrevTitleCache(null, false);  //to remove a false cache
             }
             result = ref.getNomenclaturalCitation(taxonName.getNomenclaturalMicroReference());
             return result;   // according to SQL script
-		}else if(sources.get(PesiTransformer.SOURCE_ERMS)) {
+		}else if(sources.contains(PesiSource.ERMS)) {
             //result = null; //according to SQL script
 		}else{
 		    logger.warn("Source not yet supported");
@@ -1680,10 +1679,9 @@ public class PesiTaxonExport extends PesiExportBase {
 	 * @see MethodMapper
 	 */
 	private static Integer getQualityStatusFk(TaxonName taxonName) {
-		BitSet sources = getSources(taxonName);
+	    EnumSet<PesiSource> sources = getSources(taxonName);
 		return PesiTransformer.getQualityStatusKeyBySource(sources, taxonName);
 	}
-
 
 	/**
 	 * Returns the <code>QualityStatusCache</code> attribute.
@@ -1937,10 +1935,10 @@ public class PesiTaxonExport extends PesiExportBase {
 		String result = "";
 		//TODO implement anew for taxa
 		try {
-			BitSet sources = getSources(taxon);
+			EnumSet<PesiSource> sources = getSources(taxon);
 			if (sources.isEmpty()) {
 //				logger.error("OriginalDB is NULL for this TaxonName: " + taxonName.getUuid() + " (" + taxonName.getTitleCache() + ")");
-			} else if (sources.get(PesiTransformer.SOURCE_ERMS)) {
+			} else if (sources.contains(PesiSource.ERMS)) {
 				Set<Extension> extensions = taxon.getExtensions();
 				for (Extension extension : extensions) {
 					if (extension.getType().equals(cacheCitationExtensionType)) {
@@ -1996,8 +1994,8 @@ public class PesiTaxonExport extends PesiExportBase {
 	 * @see MethodMapper
 	 */
 	@SuppressWarnings("unused")
-	private static String getOriginalDB(IdentifiableEntity identifiableEntity) {
-		BitSet sources  = getSources(identifiableEntity);
+	private static String getOriginalDB(IdentifiableEntity<?> identifiableEntity) {
+		EnumSet<PesiSource> sources  = getSources(identifiableEntity);
 		return PesiTransformer.getOriginalDbBySources(sources);
 	}
 

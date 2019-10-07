@@ -9,7 +9,7 @@
 package eu.etaxonomy.cdm.io.pesi.out;
 
 import java.util.ArrayList;
-import java.util.BitSet;
+import java.util.EnumSet;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
@@ -564,32 +564,41 @@ public abstract class PesiExportBase
         return result;
     }
 
+    protected enum PesiSource{
+        EM,
+        FE,
+        ERMS,
+        IF;
+
+        private PesiSource(){
+
+        }
+    }
 
     /**
      * Returns the source (E+M, Fauna Europaea, Index Fungorum, ERMS) of a given
-     * Identifiable Entity as a BitSet
-     * @param identEntity
-     * @return
+     * Identifiable Entity as an {@link EnumSet enum set}
      */
-    protected static BitSet getSources(IdentifiableEntity<?> identEntity){
-        BitSet bitSet = new BitSet();
-        Set<IdentifiableSource> sources = getPesiSources(identEntity);
+    protected static EnumSet<PesiSource> getSources(IdentifiableEntity<?> entity){
+        EnumSet<PesiSource> result = EnumSet.noneOf(PesiSource.class);
+
+        Set<IdentifiableSource> sources = getPesiSources(entity);
         for (IdentifiableSource source : sources) {
             Reference ref = source.getCitation();
             UUID refUuid = ref.getUuid();
             if (refUuid.equals(BerlinModelTransformer.uuidSourceRefEuroMed)){
-                bitSet.set(PesiTransformer.SOURCE_EM);
+                result.add(PesiSource.EM);
             }else if (refUuid.equals(PesiTransformer.uuidSourceRefFaunaEuropaea)){
-                bitSet.set(PesiTransformer.SOURCE_FE);
+                result.add(PesiSource.FE);
             }else if (refUuid.equals(PesiTransformer.uuidSourceRefErms)){
-                bitSet.set(PesiTransformer.SOURCE_ERMS);
+                result.add(PesiSource.ERMS);
             }else if (refUuid.equals(PesiTransformer.uuidSourceRefIndexFungorum)){
-                bitSet.set(PesiTransformer.SOURCE_IF);
+                result.add(PesiSource.IF);
             }else{
                 if (logger.isDebugEnabled()){logger.debug("Not a PESI source");};
             }
         }
-        return bitSet;
+        return result;
     }
 
     /**
