@@ -201,7 +201,6 @@ public abstract class PesiExportBase
         List<TaxonNode> result = new ArrayList<>();
 
         List<OrderHint> orderHints = null;
-        @SuppressWarnings("unchecked")
         List<TaxonNode> list = this.getTaxonNodeService()
             .list(TaxonNode.class, limit, limit * partitionCount, orderHints, propertyPaths);
 

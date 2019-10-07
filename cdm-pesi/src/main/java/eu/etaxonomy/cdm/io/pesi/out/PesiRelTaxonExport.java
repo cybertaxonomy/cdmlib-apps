@@ -128,7 +128,7 @@ public class PesiRelTaxonExport extends PesiExportBase {
         int limit = state.getConfig().getLimitSave();
         // Start transaction
         TransactionStatus txStatus = startTransaction(true);
-        logger.info("Started new transaction. Fetching some synonyms (max: " + limit + ") ...");
+        logger.debug("Started new transaction. Fetching some synonyms (max: " + limit + ") ...");
 
         List<Synonym> list;
 
@@ -166,7 +166,7 @@ public class PesiRelTaxonExport extends PesiExportBase {
 		TransactionStatus txStatus = startTransaction(true);
 		logger.debug("Started new transaction. Fetching some " + pluralString + " (max: " + limit + ") ...");
 
-		List<RelationshipBase> list;
+		List<RelationshipBase<?,?,?>> list;
 
 		//taxon relations
 		int partitionCount = 0;
@@ -233,7 +233,7 @@ public class PesiRelTaxonExport extends PesiExportBase {
 		int limit = state.getConfig().getLimitSave();
 		// Start transaction
 		TransactionStatus txStatus = startTransaction(true);
-		logger.info("Started new transaction. Fetching some " + pluralString + " (max: " + limit + ") ...");
+		logger.debug("Started new transaction. Fetching some " + pluralString + " (max: " + limit + ") ...");
 
 		//name relations
 		List<NameRelationship> list;

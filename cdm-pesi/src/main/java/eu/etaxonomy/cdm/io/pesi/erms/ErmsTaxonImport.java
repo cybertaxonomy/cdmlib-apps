@@ -359,7 +359,8 @@ public class ErmsTaxonImport
          String expectedTitleCache = getExpectedTitleCache(rs);
          //TODO check titleCache, but beware of autonyms
          if (!titleCache.equals(expectedTitleCache)){
-             logger.warn("Computed title cache differs.\n Computed             : " + titleCache + "\n DisplayName+Authority: " + expectedTitleCache);
+             int pos = CdmUtils.diffIndex(titleCache, expectedTitleCache);
+             logger.warn("Computed title cache differs at "+pos+".\n Computed             : " + titleCache + "\n DisplayName+Authority: " + expectedTitleCache);
              taxonName.setNameCache(displayName, true);
          }
          return taxon;

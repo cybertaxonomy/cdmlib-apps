@@ -1639,7 +1639,6 @@ public final class PesiTransformer extends ExportTransformerBase{
 			return null;
 		}
 		return result;
-
 	}
 
 	public static Integer nameTypeDesignationStatus2TypeDesignationStatusId(NameTypeDesignationStatus nameTypeDesignationStatus) {
