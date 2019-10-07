@@ -227,186 +227,62 @@ public final class PesiTransformer extends ExportTransformerBase{
     public static String kINGDOM_BACTERIA_STRING = "Bacteria";
     public static String KINGDOM_CHROMISTA_STRING = "Chromista";
 
-	// Animalia Ranks
-	public static int Animalia_Kingdom = 10;
-	public static int Animalia_Subkingdom = 20;
-	public static int Animalia_Infrakingdom = 25;
-	public static int Animalia_Superphylum = 28;
-	public static int Animalia_Phylum = 30;
-	public static int Animalia_Subphylum = 40;
-	public static int Animalia_Infraphylum = 45;
-	public static int Animalia_Superclass = 50;
-	public static int Animalia_Class = 60;
-	public static int Animalia_Subclass = 70;
-	public static int Animalia_Infraclass = 80;
-	public static int Animalia_Subterclass = 85;
+	//ranks all kingdoms
+    public static int Kingdom = 10;
+    public static int Subkingdom = 20;
+    public static int Phylum = 30;  //Phylum and Division is same (#8541) according to ICNAFP
+    public static int Division = 30;
+    public static int Subphylum = 40;  //See above comment
+    public static int Subdivision = 40;
+    public static int Class = 60;
+    public static int Subclass = 70;
+    public static int Order = 100;
+    public static int Suborder = 110;
+    public static int Family = 140;
+    public static int Subfamily = 150;
+    public static int Tribe = 160;
+    public static int Subtribe = 170;
+    public static int Genus = 180;
+    public static int Subgenus = 190;
+    public static int Species =220;
+    public static int Subspecies = 230;
+    public static int Variety = 240;
+    public static int Forma = 260;
 
-	public static int Animalia_Superorder = 90;
-	public static int Animalia_Order = 100;
-	public static int Animalia_Suborder = 110;
-	public static int Animalia_Infraorder = 120;
-	public static int Animalia_Parvorder = 122;
-    public static int Animalia_Section = 125;
+    //ranks some kingdoms
+    public static int Infrakingdom = 25; //2,3,5,7
+    public static int Infraphylum = 45;  //2,7
+    public static int Superclass = 50;   //2,5,6,7
+    public static int Infraclass = 80;   //2,5,6,7
+    public static int Superorder = 90;   //2,3,5,6,7
+    public static int Infraorder = 120;  //2,5,6,7
+    public static int Superfamily = 130; //2,5,6,7
+    public static int Bot_Section = 200;    //3,4,7
+    public static int Bot_Subsection = 210; //3,4,7
+    public static int Subvariety = 250;     //2,3,4,7
+    public static int Subform = 270;        //2,3,4
+    public static int Forma_spec = 275;     //3,4,5,7
+
+    // Animalia Ranks
+	public static int Superphylum = 28;
+	public static int Subterclass = 85;
+	public static int Parvorder = 122;
+	public static int Animalia_Section = 125;
 	public static int Animalia_Subsection = 127;
-	public static int Animalia_Superfamily = 130;
-	public static int Animalia_Family = 140;
-	public static int Animalia_Subfamily = 150;
-	public static int Animalia_Tribe = 160;
-	public static int Animalia_Subtribe = 170;
-	public static int Animalia_Genus = 180;
-	public static int Animalia_Subgenus = 190;
-	public static int Animalia_Species =220;
-	public static int Animalia_Subspecies = 230;
-	public static int Animalia_Natio = 235;
-	public static int Animalia_Variety = 240;
-	public static int Animalia_Subvariety = 250;
-	public static int Animalia_Forma = 260;
-	public static int Animalia_Subform = 270;
+	public static int Natio = 235;
 
 	// Plantae Ranks
-	public static int Plantae_Kingdom = 10;
-	public static int Plantae_Subkingdom = 20;
-	public static int Plantae_Infrakingdom = 25;
-	public static int Plantae_Phylum = 30;  //Phylum and Division is same (#8541)
-	public static int Plantae_Division = 30;
-	public static int Plantae_Subphylum = 40;
-    public static int Plantae_Subdivision = 40;
-	public static int Plantae_Class = 60;
-	public static int Plantae_Subclass = 70;
-	public static int Plantae_Superorder = 90;
-	public static int Plantae_Order = 100;
-	public static int Plantae_Suborder = 110;
-	public static int Plantae_Family = 140;
-	public static int Plantae_Subfamily = 150;
-	public static int Plantae_Tribe	= 160;
-	public static int Plantae_Subtribe = 170;
-	public static int Plantae_Genus = 180;
-	public static int Plantae_Subgenus = 190;
-	public static int Plantae_Section = 200;
-	public static int Plantae_Subsection = 210;
-	public static int Plantae_Series = 212;
-	public static int Plantae_Subseries	= 214;
-	public static int Plantae_Aggregate	= 216;
-	public static int Plantae_Coll_Species = 218;
-	public static int Plantae_Species = 220;
-	public static int Plantae_Grex = 225;
-	public static int Plantae_Subspecies = 230;
-	public static int Plantae_Proles = 232;
-	public static int Plantae_Race = 234;
-	public static int Plantae_Convarietas = 236;
-	public static int Plantae_Variety = 240;
-	public static int Plantae_Subvariety = 250;
-	public static int Plantae_Forma	= 260;
-	public static int Plantae_Subforma = 270;
-	public static int Plantae_Forma_spec = 275;
-	public static int Plantae_Taxa_infragen = 280;
-	public static int Plantae_Taxa_infraspec = 285;
+	public static int Series = 212;
+	public static int Subseries	= 214;
+	public static int Aggregate	= 216;
+	public static int Coll_Species = 218;
+	public static int Grex = 225;
+	public static int Proles = 232;
+	public static int Race = 234;
+	public static int Convarietas = 236;
+	public static int Taxa_infragen = 280;
+	public static int Taxa_infraspec = 285;
 
-	// Fungi Ranks
-	public static int Fungi_Kingdom = 10;
-	public static int Fungi_Subkingdom = 20;
-	public static int Fungi_Division = 30;
-	public static int Fungi_Subdivision = 40;
-	public static int Fungi_Class	= 60;
-	public static int Fungi_Subclass = 70;
-	public static int Fungi_Order	= 100;
-	public static int Fungi_Suborder = 110;
-	public static int Fungi_Family = 140;
-	public static int Fungi_Subfamily = 150;
-	public static int Fungi_Tribe = 160;
-	public static int Fungi_Subtribe = 170;
-	public static int Fungi_Genus = 180;
-	public static int Fungi_Subgenus = 190;
-	public static int Fungi_Section = 200;
-	public static int Fungi_Subsection = 210;
-	public static int Fungi_Species = 220;
-	public static int Fungi_Subspecies = 230;
-	public static int Fungi_Variety = 240;
-	public static int Fungi_Subvariety = 250;
-	public static int Fungi_Forma	= 260;
-	public static int Fungi_Subforma = 270;
-	public static int Fungi_Forma_spec = 275;
-
-	//Protozoa Ranks
-	public static int Protozoa_Kingdom = 10;
-	public static int Protozoa_Subkingdom = 20;
-	public static int Protozoa_Infrakingdom = 35;
-	public static int Protozoa_Phylum = 30;
-	public static int Protozoa_Subphylum = 40;
-	public static int Protozoa_Superclass = 50;
-	public static int Protozoa_Class	= 60;
-	public static int Protozoa_Subclass = 70;
-	public static int Protozoa_Infraclass = 80;
-	public static int Protozoa_Superorder = 90;
-	public static int Protozoa_Order	= 100;
-	public static int Protozoa_Suborder = 110;
-	public static int Protozoa_Infraorder = 120;
-	public static int Protozoa_Superfamily = 130;
-	public static int Protozoa_Family = 140;
-	public static int Protozoa_Subfamily = 150;
-	public static int Protozoa_Tribe	= 160;
-	public static int Protozoa_Subtribe = 170;
-	public static int Protozoa_Genus	= 180;
-	public static int Protozoa_Subgenus = 190;
-	public static int Protozoa_Species = 220;
-	public static int Protozoa_Subspecies = 230;
-	public static int Protozoa_Variety = 240;
-	public static int Protozoa_Forma	= 260;
-
-	//Bacteria Ranks
-	public static int Bacteria_Kingdom = 10;
-	public static int Bacteria_Subkingdom = 20;
-	public static int Bacteria_Phylum = 30;
-	public static int Bacteria_Subphylum	= 40;
-	public static int Bacteria_Superclass = 50;
-	public static int Bacteria_Class	= 60;
-	public static int Bacteria_Subclass = 70;
-	public static int Bacteria_Infraclass = 80;
-	public static int Bacteria_Superorder = 90;
-	public static int Bacteria_Order	= 100;
-	public static int Bacteria_Suborder = 110;
-	public static int Bacteria_Infraorder = 120;
-	public static int Bacteria_Superfamily = 130;
-	public static int Bacteria_Family = 140;
-	public static int Bacteria_Subfamily	= 150;
-	public static int Bacteria_Tribe	= 160;
-	public static int Bacteria_Subtribe = 170;
-	public static int Bacteria_Genus	= 180;
-	public static int Bacteria_Subgenus = 190;
-	public static int Bacteria_Species = 220;
-	public static int Bacteria_Subspecies = 230;
-	public static int Bacteria_Variety = 240;
-	public static int Bacteria_Forma	= 260;
-
-	//Chromista Ranks
-	public static int Chromista_Kingdom = 10;
-	public static int Chromista_Subkingdom = 20;
-	public static int Chromista_Infrakingdom = 25;
-	public static int Chromista_Phylum = 30;
-	public static int Chromista_Subphylum = 40;
-	public static int Chromista_Infraphylum = 45;
-	public static int Chromista_Superclass = 50;
-	public static int Chromista_Class = 60;
-	public static int Chromista_Subclass = 70;
-	public static int Chromista_Infraclass = 80;
-	public static int Chromista_Superorder = 90;
-	public static int Chromista_Order = 100;
-	public static int Chromista_Suborder = 110;
-	public static int Chromista_Infraorder = 120;
-	public static int Chromista_Superfamily	= 130;
-	public static int Chromista_Family = 140;
-	public static int Chromista_Subfamily = 150;
-	public static int Chromista_Tribe = 160;
-	public static int Chromista_Subtribe = 170;
-	public static int Chromista_Genus = 180;
-	public static int Chromista_Subgenus = 190;
-	public static int Chromista_Section = 200;
-	public static int Chromista_Subsection = 210;
-	public static int Chromista_Species	= 220;
-	public static int Chromista_Subspecies = 230;
-	public static int Chromista_Variety	= 240;
-	public static int Chromista_Subvariety = 250;
-	public static int Chromista_Forma = 260;
 
 	//NoteCategory
 	public static int NoteCategory_description = 1;
@@ -1618,277 +1494,140 @@ public final class PesiTransformer extends ExportTransformerBase{
 			return null;
 		}else if (rank.equals(Rank.DOMAIN())){
 		    return KINGDOM_NULL;
-		}
+		}else if (rank.equals(Rank.KINGDOM())) {
+            result = Kingdom;
+        }else if (rank.equals(Rank.SUBKINGDOM())) {
+            result = Subkingdom;
+        } else if (rank.equals(Rank.PHYLUM())) {
+            result = Phylum;
+        }else if (rank.equals(Rank.DIVISION())) {  //same as Phylum
+            result = Division;
+        }else if (rank.equals(Rank.SUBPHYLUM())) {
+            result = Subphylum;
+        }else if (rank.equals(Rank.SUBDIVISION())) { //same as Subphylum
+            result = Subdivision;
+        }else if (rank.equals(Rank.CLASS())) {
+            result = Class;
+        } else if (rank.equals(Rank.SUBCLASS())) {
+            result = Subclass;
+        } else if (rank.equals(Rank.ORDER())) {
+            result = Order;
+        } else if (rank.equals(Rank.SUBORDER())) {
+            result = Suborder;
+        } else if (rank.equals(Rank.FAMILY())) {
+            result = Family;
+        } else if (rank.equals(Rank.SUBFAMILY())) {
+            result = Subfamily;
+        } else if (rank.equals(Rank.TRIBE())) {
+            result = Tribe;
+        } else if (rank.equals(Rank.SUBTRIBE())) {
+            result = Subtribe;
+        } else if (rank.equals(Rank.GENUS())) {
+            result = Genus;
+        } else if (rank.equals(Rank.SUBGENUS())) {
+            result = Subgenus;
+        } else if (rank.equals(Rank.SPECIES())) {
+            result = Species;
+        } else if (rank.equals(Rank.SUBSPECIES())) {
+            result = Subspecies;
+        } else if (rank.equals(Rank.VARIETY())) {
+            result = Variety;
+        } else if (rank.equals(Rank.FORM())) {
+            result = Forma;
+        } else
 
 		// We differentiate between Animalia and Plantae only for now.
 		if (pesiKingdomId != null && pesiKingdomId.intValue() == KINGDOM_ANIMALIA) {
-			if (rank.equals(Rank.KINGDOM())) {
-				result = Animalia_Kingdom;
-            } else if (rank.equals(Rank.SUBKINGDOM())) {
-				result = Animalia_Subkingdom;
-            } else if (rank.equals(Rank.INFRAKINGDOM())) {
-                result = Animalia_Infrakingdom;
-            } else if (rank.equals(Rank.SUPERPHYLUM())) {
-				result = Animalia_Superphylum;
-			} else if (rank.equals(Rank.PHYLUM())) {
-				result = Animalia_Phylum;
-			} else if (rank.equals(Rank.SUBPHYLUM())) {
-				result = Animalia_Subphylum;
-			} else if (rank.equals(Rank.INFRAPHYLUM())) {
-				result = Animalia_Infraphylum;
-			} else if (rank.equals(Rank.SUPERCLASS())) {
-				result = Animalia_Superclass;
-			} else if (rank.equals(Rank.CLASS())) {
-				result = Animalia_Class;
-			} else if (rank.equals(Rank.SUBCLASS())) {
-				result = Animalia_Subclass;
-            } else if (rank.equals(Rank.INFRACLASS())) {
-				result = Animalia_Infraclass;
-            } else if (rank.getUuid().equals(ErmsTransformer.uuidRankSubterclass)) {
-                result = Animalia_Subterclass;
-			} else if (rank.equals(Rank.SUPERORDER())) {
-				result = Animalia_Superorder;
-			} else if (rank.equals(Rank.ORDER())) {
-				result = Animalia_Order;
-			} else if (rank.equals(Rank.SUBORDER())) {
-				result = Animalia_Suborder;
-			} else if (rank.equals(Rank.INFRAORDER())) {
-				result = Animalia_Infraorder;
-			} else if (rank.getUuid().equals(ErmsTransformer.uuidRankParvorder)) {
-                result = Animalia_Parvorder;
-            } else if (rank.equals(Rank.SECTION_ZOOLOGY())) {
-				result = Animalia_Section;
-			} else if (rank.equals(Rank.SUBSECTION_ZOOLOGY())) {
-				result = Animalia_Subsection;
-			} else if (rank.equals(Rank.SUPERFAMILY())) {
-				result = Animalia_Superfamily;
-			} else if (rank.equals(Rank.FAMILY())) {
-				result = Animalia_Family;
-			} else if (rank.equals(Rank.SUBFAMILY())) {
-				result = Animalia_Subfamily;
-			} else if (rank.equals(Rank.TRIBE())) {
-				result = Animalia_Tribe;
-			} else if (rank.equals(Rank.SUBTRIBE())) {
-				result = Animalia_Subtribe;
-			} else if (rank.equals(Rank.GENUS())) {
-				result = Animalia_Genus;
-			} else if (rank.equals(Rank.SUBGENUS())) {
-				result = Animalia_Subgenus;
-			} else if (rank.equals(Rank.SPECIES())) {
-				result = Animalia_Species;
-			} else if (rank.equals(Rank.SUBSPECIES())) {
-				result = Animalia_Subspecies;
-//			} else if (rank.equals(Rank.)) { // not yet specified
-//				result = Animalia_Natio;
-			} else if (rank.equals(Rank.VARIETY())) {
-				result = Animalia_Variety;
-			} else if (rank.equals(Rank.SUBVARIETY())) {
-				result = Animalia_Subvariety;
-			} else if (rank.equals(Rank.FORM())) {
-				result = Animalia_Forma;
-			} else if (rank.equals(Rank.SUBFORM())) {
-                result = Animalia_Subform;
+			if (rank.equals(Rank.INFRAKINGDOM())) {result = Infrakingdom;
+            } else if (rank.equals(Rank.SUPERPHYLUM())) {result = Superphylum;
+			} else if (rank.equals(Rank.INFRAPHYLUM())) {result = Infraphylum;
+			} else if (rank.equals(Rank.SUPERCLASS())) {result = Superclass;
+			} else if (rank.equals(Rank.INFRACLASS())) {result = Infraclass;
+            } else if (rank.getUuid().equals(ErmsTransformer.uuidRankSubterclass)) {result = Subterclass;
+			} else if (rank.equals(Rank.SUPERORDER())) {result = Superorder;
+			} else if (rank.equals(Rank.INFRAORDER())) {result = Infraorder;
+			} else if (rank.getUuid().equals(ErmsTransformer.uuidRankParvorder)) {result = Parvorder;
+            } else if (rank.equals(Rank.SECTION_ZOOLOGY())) {result = Animalia_Section;
+			} else if (rank.equals(Rank.SUBSECTION_ZOOLOGY())) {result = Animalia_Subsection;
+			} else if (rank.equals(Rank.SUPERFAMILY())) {result = Superfamily;
+			} else if (rank.equals(Rank.NATIO())) {result = Natio;
+			} else if (rank.equals(Rank.SUBVARIETY())) {result = Subvariety;
+			} else if (rank.equals(Rank.SUBFORM())) {result = Subform;
             } else {
 				//TODO Exception
 				logger.warn("Rank for Kingdom Animalia not yet supported in CDM: "+ rank.getLabel());
 				return null;
 			}
 		} else if (pesiKingdomId != null && pesiKingdomId.intValue() == KINGDOM_PLANTAE) {
-			if (rank.equals(Rank.KINGDOM())) {
-				result = Plantae_Kingdom;
-			} else if (rank.equals(Rank.INFRAKINGDOM())) {
-                result = Plantae_Infrakingdom;
-            } else if (rank.equals(Rank.SUBKINGDOM())) {
-				result = Plantae_Subkingdom;
-            }else if (rank.equals(Rank.PHYLUM())) {   //is same as Division  (#8541)
-                result = Plantae_Phylum;
-            }else if (rank.equals(Rank.DIVISION())) {
-				result = Plantae_Division;
-            } else if (rank.equals(Rank.SUBPHYLUM())) {
-                result = Plantae_Subphylum;
-			} else if (rank.equals(Rank.SUBDIVISION())) {
-				result = Plantae_Subdivision;
-			} else if (rank.equals(Rank.CLASS())) {
-				result = Plantae_Class;
-			} else if (rank.equals(Rank.SUBCLASS())) {
-				result = Plantae_Subclass;
-			} else if (rank.equals(Rank.SUPERORDER())) {
-				result = Plantae_Superorder;
-			} else if (rank.equals(Rank.ORDER())) {
-				result = Plantae_Order;
-			} else if (rank.equals(Rank.SUBORDER())) {
-				result = Plantae_Suborder;
-			} else if (rank.equals(Rank.FAMILY())) {
-				result = Plantae_Family;
-			} else if (rank.equals(Rank.SUBFAMILY())) {
-				result = Plantae_Subfamily;
-			} else if (rank.equals(Rank.TRIBE())) {
-				result = Plantae_Tribe;
-			} else if (rank.equals(Rank.SUBTRIBE())) {
-				result = Plantae_Subtribe;
-			} else if (rank.equals(Rank.GENUS())) {
-				result = Plantae_Genus;
-			} else if (rank.equals(Rank.SUBGENUS())) {
-				result = Plantae_Subgenus;
-			} else if (rank.equals(Rank.SECTION_BOTANY())) {
-				result = Plantae_Section;
-			} else if (rank.equals(Rank.SUBSECTION_BOTANY())) {
-				result = Plantae_Subsection;
-			} else if (rank.equals(Rank.SERIES())) {
-				result = Plantae_Series;
-			} else if (rank.equals(Rank.SUBSERIES())) {
-				result = Plantae_Subseries;
-			} else if (rank.equals(Rank.SPECIESAGGREGATE() )) {
-				result = Plantae_Aggregate;
+			if (rank.equals(Rank.INFRAKINGDOM())) {result = Infrakingdom;
+            } else if (rank.equals(Rank.SUPERORDER())) {result = Superorder;
+			} else if (rank.equals(Rank.SECTION_BOTANY())) {result = Bot_Section;
+			} else if (rank.equals(Rank.SUBSECTION_BOTANY())) {result = Bot_Subsection;
+			} else if (rank.equals(Rank.SERIES())) {result = Series;
+			} else if (rank.equals(Rank.SUBSERIES())) {result = Subseries;
+			} else if (rank.equals(Rank.SPECIESAGGREGATE() )) {result = Aggregate;
 			} else if (rank.equals(Rank.SPECIESGROUP())) {
 				logger.warn("Rank Species Group not yet implemented");
 				result = null;
-			} else if (rank.getUuid().equals(Rank.uuidCollSpecies)) {
-				result = Plantae_Coll_Species;
-			} else if (rank.equals(Rank.SPECIES())) {
-				result = Plantae_Species;
-			} else if (rank.equals(Rank.SUBSPECIES())) {
-				result = Plantae_Subspecies;
-			} else if (rank.equals(Rank.GREX())) {
-				result = Plantae_Grex;
-			} else if (rank.getUuid().equals(Rank.uuidProles) ) {
-				result = Plantae_Proles;
-			} else if (rank.getUuid().equals(Rank.uuidRace)) {
-				result = Plantae_Race;
-			} else if (rank.equals(Rank.CONVAR())) {
-				result = Plantae_Convarietas;
-			} else if (rank.equals(Rank.VARIETY())) {
-				result = Plantae_Variety;
-			} else if (rank.equals(Rank.SUBVARIETY())) {
-				result = Plantae_Subvariety;
-			} else if (rank.equals(Rank.FORM())) {
-				result = Plantae_Forma;
-			} else if (rank.equals(Rank.SUBFORM())) {
-				result = Plantae_Subforma;
-//			} else if (rank.equals(Rank.)) { // not yet specified
-//				result = Plantae_Forma_spec;
-			} else if (rank.equals(Rank.INFRAGENERICTAXON())) {
-				result = Plantae_Taxa_infragen;
-			} else if (rank.equals(Rank.INFRASPECIFICTAXON())) {
-				result = Plantae_Taxa_infraspec;
+			} else if (rank.getUuid().equals(Rank.uuidCollSpecies)) {result = Coll_Species;
+			} else if (rank.equals(Rank.GREX())) {result = Grex;
+			} else if (rank.getUuid().equals(Rank.uuidProles) ) {result = Proles;
+			} else if (rank.getUuid().equals(Rank.uuidRace)) {result = Race;
+			} else if (rank.equals(Rank.CONVAR())) {result = Convarietas;
+			} else if (rank.equals(Rank.SUBVARIETY())) {result = Subvariety;
+			} else if (rank.equals(Rank.SUBFORM())) {result = Subform;
+			} else if (rank.equals(Rank.SPECIALFORM())) {result = Forma_spec;
+			} else if (rank.equals(Rank.INFRAGENERICTAXON())) {result = Taxa_infragen;
+			} else if (rank.equals(Rank.INFRASPECIFICTAXON())) {result = Taxa_infraspec;
 			} else {
 				//TODO Exception
 				logger.warn("Rank for Kingdom Plantae not yet supported in CDM: "+ rank.getLabel());
 				return null;
 			}
+		} else if (pesiKingdomId != null && pesiKingdomId.intValue() == KINGDOM_FUNGI) {
+		    if (rank.equals(Rank.SECTION_BOTANY())) { result = Bot_Section;}
+		    else if (rank.equals(Rank.SUBSECTION_BOTANY())) { result = Bot_Subsection;}
+		    else if (rank.equals(Rank.SUBVARIETY())) { result = Subvariety; }
+		    else if (rank.equals(Rank.SUBFORM())) { result = Subform;}
+		    else {
+		        //TODO Exception
+		        logger.warn("Rank for Kingdom Fungi not yet supported in CDM: "+ rank.getLabel());
+		        return null;
+		    }
         }else if (pesiKingdomId != null && pesiKingdomId.intValue() == KINGDOM_PROTOZOA) {
-            if (rank.equals(Rank.KINGDOM())) { result = Protozoa_Kingdom; }
-            else if (rank.equals(Rank.SUBKINGDOM())) { result = Protozoa_Subkingdom; }
-            else if (rank.equals(Rank.INFRAKINGDOM())) { result = Protozoa_Infrakingdom; }
-            else if (rank.equals(Rank.PHYLUM())) { result = Protozoa_Phylum; }
-            else if (rank.equals(Rank.SUBPHYLUM())) { result = Protozoa_Subphylum; }
-            else if (rank.equals(Rank.CLASS())) { result = Protozoa_Class; }
-            else if (rank.equals(Rank.SUBCLASS())) { result = Protozoa_Subclass; }
-            else if (rank.equals(Rank.ORDER())) { result = Protozoa_Order; }
-            else if (rank.equals(Rank.SUBORDER())) { result = Protozoa_Suborder; }
-            else if (rank.equals(Rank.INFRAORDER())) { result = Protozoa_Infraorder; }
-            else if (rank.equals(Rank.SUPERFAMILY())) { result = Protozoa_Superfamily; }
-            else if (rank.equals(Rank.FAMILY())) { result = Protozoa_Family; }
-            else if (rank.equals(Rank.SUBFAMILY())) { result = Protozoa_Subfamily; }
-            else if (rank.equals(Rank.TRIBE())) { result = Protozoa_Tribe; }
-            else if (rank.equals(Rank.SUBTRIBE())) { result = Protozoa_Subtribe; }
-            else if (rank.equals(Rank.GENUS())) { result = Protozoa_Genus; }
-            else if (rank.equals(Rank.SUBGENUS())) { result = Protozoa_Subgenus; }
-            else if (rank.equals(Rank.SPECIES())) { result = Protozoa_Species; }
-            else if (rank.equals(Rank.SUBSPECIES())) { result = Protozoa_Subspecies; }
-            else if (rank.equals(Rank.VARIETY())) { result = Protozoa_Variety; }
-            else if (rank.equals(Rank.FORM())) { result = Protozoa_Forma; }
+            if (rank.equals(Rank.INFRAKINGDOM())) { result = Infrakingdom; }
+            else if (rank.equals(Rank.SUPERCLASS())) { result = Superclass; }
+            else if (rank.equals(Rank.INFRACLASS())) { result = Infraclass; }
+            else if (rank.equals(Rank.SUPERORDER())) { result = Superorder; }
+            else if (rank.equals(Rank.INFRAORDER())) { result = Infraorder; }
+            else if (rank.equals(Rank.SUPERFAMILY())) { result = Superfamily; }
             else {
                 //TODO Exception
                 logger.warn("Rank for Kingdom Protozoa not yet supported in CDM: "+ rank.getLabel());
                 return null;
             }
-		} else if (pesiKingdomId != null && pesiKingdomId.intValue() == KINGDOM_FUNGI) {
-            if (rank.equals(Rank.KINGDOM())) { result = Fungi_Kingdom; }
-            else if (rank.equals(Rank.SUBKINGDOM())) { result = Fungi_Subkingdom; }
-            else if (rank.equals(Rank.PHYLUM())) { result =  Fungi_Division;}  //Phylum and Division is same in ICNAFP
-            else if (rank.equals(Rank.DIVISION())) { result =  Fungi_Division;}
-            else if (rank.equals(Rank.SUBDIVISION())) { result =  Fungi_Subdivision;}
-            else if (rank.equals(Rank.CLASS())) { result = Fungi_Class; }
-            else if (rank.equals(Rank.SUBCLASS())) { result = Fungi_Subclass; }
-            else if (rank.equals(Rank.ORDER())) { result = Fungi_Order; }
-            else if (rank.equals(Rank.SUBORDER())) { result = Fungi_Suborder; }
-            else if (rank.equals(Rank.FAMILY())) { result = Fungi_Family; }
-            else if (rank.equals(Rank.SUBFAMILY())) { result = Fungi_Subfamily; }
-            else if (rank.equals(Rank.TRIBE())) { result = Fungi_Tribe; }
-            else if (rank.equals(Rank.SUBTRIBE())) { result = Fungi_Subtribe; }
-            else if (rank.equals(Rank.GENUS())) { result = Fungi_Genus; }
-            else if (rank.equals(Rank.SUBGENUS())) { result = Fungi_Subgenus; }
-            else if (rank.equals(Rank.SECTION_BOTANY())) { result = Fungi_Section;}
-            else if (rank.equals(Rank.SUBSECTION_BOTANY())) { result = Fungi_Subsection;}
-            else if (rank.equals(Rank.SPECIES())) { result = Fungi_Species; }
-            else if (rank.equals(Rank.SUBSPECIES())) { result = Fungi_Subspecies; }
-            else if (rank.equals(Rank.VARIETY())) { result = Fungi_Variety; }
-            else if (rank.equals(Rank.SUBVARIETY())) { result = Fungi_Subvariety; }
-            else if (rank.equals(Rank.FORM())) { result = Fungi_Forma; }
-            else if (rank.equals(Rank.SUBFORM())) { result = Fungi_Subforma;}
-            else {
-                //TODO Exception
-                logger.warn("Rank for Kingdom Fungi not yet supported in CDM: "+ rank.getLabel());
-                return null;
-            }
         } else if (pesiKingdomId != null && pesiKingdomId.intValue() == KINGDOM_BACTERIA) {
-            if (rank.equals(Rank.KINGDOM())) { result = Bacteria_Kingdom; }
-            else if (rank.equals(Rank.SUBKINGDOM())) { result = Bacteria_Subkingdom; }
-            else if (rank.equals(Rank.PHYLUM())) { result = Bacteria_Phylum; }
-            else if (rank.equals(Rank.SUBPHYLUM())) { result = Bacteria_Subphylum; }
-            else if (rank.equals(Rank.SUPERCLASS())) { result = Bacteria_Superclass; }
-            else if (rank.equals(Rank.CLASS())) { result = Bacteria_Class; }
-            else if (rank.equals(Rank.SUBCLASS())) { result = Bacteria_Subclass; }
-            else if (rank.equals(Rank.INFRACLASS())) { result = Bacteria_Infraclass; }
-            else if (rank.equals(Rank.SUPERORDER())) { result = Bacteria_Superorder; }
-            else if (rank.equals(Rank.ORDER())) { result = Bacteria_Order; }
-            else if (rank.equals(Rank.SUBORDER())) { result = Bacteria_Suborder; }
-            else if (rank.equals(Rank.INFRAORDER())) { result = Bacteria_Infraorder; }
-            else if (rank.equals(Rank.SUPERFAMILY())) { result = Bacteria_Superfamily; }
-            else if (rank.equals(Rank.FAMILY())) { result = Bacteria_Family; }
-            else if (rank.equals(Rank.SUBFAMILY())) { result = Bacteria_Subfamily; }
-            else if (rank.equals(Rank.TRIBE())) { result = Bacteria_Tribe; }
-            else if (rank.equals(Rank.SUBTRIBE())) { result = Bacteria_Subtribe; }
-            else if (rank.equals(Rank.GENUS())) { result = Bacteria_Genus; }
-            else if (rank.equals(Rank.SUBGENUS())) { result = Bacteria_Subgenus; }
-            else if (rank.equals(Rank.SPECIES())) { result = Bacteria_Species; }
-            else if (rank.equals(Rank.SUBSPECIES())) { result = Bacteria_Subspecies; }
-            else if (rank.equals(Rank.VARIETY())) { result = Bacteria_Variety; }
-            else if (rank.equals(Rank.FORM())) { result = Bacteria_Forma; }
+            if (rank.equals(Rank.SUPERCLASS())) { result = Superclass; }
+            else if (rank.equals(Rank.INFRACLASS())) { result = Infraclass; }
+            else if (rank.equals(Rank.SUPERORDER())) { result = Superorder; }
+            else if (rank.equals(Rank.INFRAORDER())) { result = Infraorder; }
+            else if (rank.equals(Rank.SUPERFAMILY())) { result = Superfamily; }
             else {
                 //TODO Exception
                 logger.warn("Rank for Kingdom Bacteria not yet supported in CDM: "+ rank.getLabel());
                 return null;
             }
         }else if (pesiKingdomId != null && pesiKingdomId.intValue() == KINGDOM_CHROMISTA) {
-            if (rank.equals(Rank.KINGDOM())) { result = Chromista_Kingdom; }
-            else if (rank.equals(Rank.SUBKINGDOM())) { result = Chromista_Subkingdom; }
-            else if (rank.equals(Rank.INFRAKINGDOM())) { result = Chromista_Infrakingdom; }
-            else if (rank.equals(Rank.PHYLUM())) { result = Chromista_Phylum; }
-            else if (rank.equals(Rank.SUBPHYLUM())) { result = Chromista_Subphylum; }
-            else if (rank.equals(Rank.INFRAPHYLUM())) { result = Chromista_Infraphylum; }
-            else if (rank.equals(Rank.SUPERCLASS())) { result = Chromista_Superclass; }
-            else if (rank.equals(Rank.CLASS())) { result = Chromista_Class; }
-            else if (rank.equals(Rank.SUBCLASS())) { result = Chromista_Subclass; }
-            else if (rank.equals(Rank.SUPERORDER())) { result = Chromista_Superorder; }
-            else if (rank.equals(Rank.ORDER())) { result = Chromista_Order; }
-            else if (rank.equals(Rank.SUBORDER())) { result = Chromista_Suborder; }
-            else if (rank.equals(Rank.INFRAORDER())) { result = Chromista_Infraorder; }
-            else if (rank.equals(Rank.SUPERFAMILY())) { result = Chromista_Superfamily; }
-            else if (rank.equals(Rank.FAMILY())) { result = Chromista_Family; }
-            else if (rank.equals(Rank.SUBFAMILY())) { result = Chromista_Subfamily; }
-            else if (rank.equals(Rank.TRIBE())) { result = Chromista_Tribe; }
-            else if (rank.equals(Rank.SUBTRIBE())) { result = Chromista_Subtribe; }
-            else if (rank.equals(Rank.GENUS())) { result = Chromista_Genus; }
-            else if (rank.equals(Rank.SUBGENUS())) { result = Chromista_Subgenus; }
-            else if (rank.equals(Rank.SECTION_BOTANY())) { result = Chromista_Section;}
-            else if (rank.equals(Rank.SUBSECTION_BOTANY())) { result = Chromista_Subsection;}
-            else if (rank.equals(Rank.SPECIES())) { result = Chromista_Species; }
-            else if (rank.equals(Rank.SUBSPECIES())) { result = Chromista_Subspecies; }
-            else if (rank.equals(Rank.VARIETY())) { result = Chromista_Variety; }
-            else if (rank.equals(Rank.SUBVARIETY())) { result = Chromista_Subvariety; }
-            else if (rank.equals(Rank.FORM())) { result = Chromista_Forma; }
+            if (rank.equals(Rank.INFRAKINGDOM())) { result = Infrakingdom; }
+            else if (rank.equals(Rank.INFRAPHYLUM())) { result = Infraphylum; }
+            else if (rank.equals(Rank.SUPERCLASS())) { result = Superclass; }
+            else if (rank.equals(Rank.INFRACLASS())) { result = Infraclass; }
+            else if (rank.equals(Rank.SUPERORDER())) { result = Superorder; }
+            else if (rank.equals(Rank.INFRAORDER())) { result = Infraorder; }
+            else if (rank.equals(Rank.SUPERFAMILY())) { result = Superfamily; }
+            else if (rank.equals(Rank.SECTION_BOTANY())) { result = Bot_Section;}
+            else if (rank.equals(Rank.SUBSECTION_BOTANY())) { result = Bot_Subsection;}
+            else if (rank.equals(Rank.SUBVARIETY())) { result = Subvariety; }
             else {
                 //TODO Exception
                 logger.warn("Rank for Kingdom Chromista not yet supported in CDM: "+ rank.getLabel());
