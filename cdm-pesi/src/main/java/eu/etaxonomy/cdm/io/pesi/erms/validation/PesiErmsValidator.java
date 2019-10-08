@@ -49,8 +49,8 @@ public class PesiErmsValidator {
             this.source = source;
             this.destination = destination;
 //            success &= testReferences();  //ready, few minor issues to be discussed with VLIZ
-//              success &= testTaxa();
-              success &= testTaxonRelations();
+            success &= testTaxa();
+//            success &= testTaxonRelations();  //name relations count!,  Implement single compare tests
 //            success &= testCommonNames();  //source(s) discuss VLIZ, exact duplicates (except for sources), Anus(Korur)
 //            success &= testDistributions();  //>1000 duplicates in "dr", sources (OccurrenceSource table), area spellings(Baelt Sea), 1 long note
 //              success &= testNotes();  //ecology & link notes test (only count tested), sources untested (NoteSource table), few duplicates,
@@ -99,19 +99,88 @@ public class PesiErmsValidator {
         return success;
     }
 
-    private boolean testTaxonRelations() throws SQLException {
+    int countSynonyms;
+    int countIncludedIns;
+    private boolean testTaxonRelations() {
         System.out.println("Start validate taxon relations");
-        boolean success = testTaxonRelationCount();
-        if (success){
-            //TODO
-            success &= testSingleTaxonRelations(source.getUniqueInteger(countSynonymRelation));
+        boolean success = testSynonymRelations();
+        success &= testIncludedInRelations();
+        success &= testTotalRelations();
+        success &= testNameRelations();
+        return success;
+    }
+
+    private boolean testTotalRelations() {
+        if (!(countSynonyms < 0 || countIncludedIns < 0)){
+            int countTotalSrc = countSynonyms + countIncludedIns;
+            int countSrc = source.getUniqueInteger("SELECT count(*) FROM tu ");
+            boolean success = equals("Taxrel count + 1 must be same as source taxon count ", countTotalSrc+1, countSrc, String.valueOf(-1));
+            int countDest = destination.getUniqueInteger("SELECT count(*) FROM Taxon t WHERE t."+ origErms);
+            success &= equals("Taxrel count + 1 must be same as destination taxon count ", countTotalSrc+1, countDest, String.valueOf(-1));
+            return success;
+        }else{
+            return false;
         }
+    }
+
+    private boolean testSynonymRelations() {
+
+        int countSrc = source.getUniqueInteger(countSynonymRelation);
+        int countDest = destination.getUniqueInteger("SELECT count(*) FROM RelTaxon WHERE RelTaxonQualifierFk > 101");
+        boolean success = equals("Synonym count ", countSrc, countDest, String.valueOf(-1));
+//         update Match_RelStat set RelTaxon  =  102 where tu_unacceptreason like 'currently placed%'
+//                 update Match_RelStat set RelTaxon   =  102 where tu_unacceptreason like 'currently held%'
+//                 update Match_RelStat set RelTaxon   =  102 where tu_unacceptreason like 'sy%' or tu_unacceptreason like '%jun%syn%'
+//                 update Match_RelStat set RelTaxon   =  102 where tu_unacceptreason = '(synonym)'
+//                 update Match_RelStat set RelTaxon   =  102 where tu_unacceptreason = 'reverted genus transfer'
+//                 update Match_RelStat set RelTaxon   =  103 where tu_unacceptreason like 'misapplied%'
+//                 update Match_RelStat set RelTaxon   =  104 where tu_unacceptreason like 'part% synonym%'
+//                 update Match_RelStat set RelTaxon   =  106 where tu_unacceptreason = 'heterotypic synonym' or tu_unacceptreason = 'subjective synonym'
+//                 update Match_RelStat set RelTaxon   =  107 where tu_unacceptreason like '%homot%syn%' or tu_unacceptreason = 'objective synonym' synyonym
+//                 update Match_RelStat set RelTaxon   =  107 where tu_unacceptreason like '%bas[iy][no]%ny%'
+        if (success){
+            //TODO test single synonym relations
+//            success &= testSingleTaxonRelations(source.getUniqueInteger(countSynonymRelation));
+        }
+        countSynonyms = (countSrc == countDest)? countSrc : -1;
+        return success;
+    }
+
+    private boolean testNameRelations() {
+        //Name relations
+        int countSrc = source.getUniqueInteger("SELECT count(*) FROM tu WHERE id " + moneraFilter + " AND ("
+               + " tu_unacceptreason like '%bas[iy][no]%ny%' OR tu_unacceptreason = 'original combination' "
+               + " OR tu_unacceptreason = 'Subsequent combination' OR tu_unacceptreason like '%genus transfer%'  "
+               + " OR tu_unacceptreason = 'genus change' "  //1
+               + " OR tu_unacceptreason like '%homon%' "   // 2
+               + " OR tu_unacceptreason like '%spell%' OR tu_unacceptreason like 'lapsus %' " //16
+
+                 + ")");
+        int countDest = destination.getUniqueInteger("SELECT count(*) FROM RelTaxon WHERE RelTaxonQualifierFk <100 ");
+        boolean success = equals("Taxon name relation count ", countSrc, countDest, String.valueOf(-1));
+        if (success){
+            //TODO test single name relation
+//            success &= testSingleTaxonRelations(source.getUniqueInteger(countSynonymRelation));
+        }
+        return success;
+    }
+
+    private boolean testIncludedInRelations() {
+        int countSrc = source.getUniqueInteger(countParentRelation);
+        int  countDest = destination.getUniqueInteger("SELECT count(*) FROM RelTaxon WHERE RelTaxonQualifierFk = 101 ");
+        boolean success = equals("Tax included in count ", countSrc, countDest, String.valueOf(-1));
+        if (success){
+            //TODO test single includedIn relations
+//            success &= testSingleTaxonRelations(source.getUniqueInteger(countSynonymRelation));
+        }
+        countIncludedIns = (countSrc == countDest)? countSrc : -1;
         return success;
     }
 
     private boolean testTaxa() throws SQLException {
         System.out.println("Start validate taxa");
         boolean success = testTaxaCount();
+        //FIXME
         if (!success){
             success &= testSingleTaxa(source.getUniqueInteger(countTaxon));
         }
@@ -169,53 +238,6 @@ public class PesiErmsValidator {
 
     private final String countSynonymRelation = "SELECT count(*) FROM tu syn LEFT JOIN tu acc ON syn.tu_acctaxon = acc.id WHERE (syn.id <> acc.id AND syn.tu_acctaxon IS NOT NULL AND syn.id <> acc.tu_parent) AND syn.id " + moneraFilter;
     private final String countParentRelation  = "SELECT count(*)-1 FROM tu syn LEFT JOIN tu acc ON syn.tu_acctaxon = acc.id WHERE (syn.id =  acc.id OR  syn.tu_acctaxon IS     NULL OR  syn.id =  acc.tu_parent) AND syn.id " + moneraFilter;
-    private boolean testTaxonRelationCount() {
-
-        //synonyms
-        int countSrc = source.getUniqueInteger(countSynonymRelation);
-        //TODO
-        int countDest = destination.getUniqueInteger("SELECT count(*) FROM RelTaxon WHERE RelTaxonQualifierFk > 101");
-        boolean result = equals("Synonym count ", countSrc, countDest, String.valueOf(-1));
-//         update Match_RelStat set RelTaxon  =  102 where tu_unacceptreason like 'currently placed%'
-//                 update Match_RelStat set RelTaxon   =  102 where tu_unacceptreason like 'currently held%'
-//                 update Match_RelStat set RelTaxon   =  102 where tu_unacceptreason like 'sy%' or tu_unacceptreason like '%jun%syn%'
-//                 update Match_RelStat set RelTaxon   =  102 where tu_unacceptreason = '(synonym)'
-//                 update Match_RelStat set RelTaxon   =  102 where tu_unacceptreason = 'reverted genus transfer'
-//                 update Match_RelStat set RelTaxon   =  103 where tu_unacceptreason like 'misapplied%'
-//                 update Match_RelStat set RelTaxon   =  104 where tu_unacceptreason like 'part% synonym%'
-//                 update Match_RelStat set RelTaxon   =  106 where tu_unacceptreason = 'heterotypic synonym' or tu_unacceptreason = 'subjective synonym'
-//                 update Match_RelStat set RelTaxon   =  107 where tu_unacceptreason like '%homot%syn%' or tu_unacceptreason = 'objective synonym' synyonym
-//                 update Match_RelStat set RelTaxon   =  107 where tu_unacceptreason like '%bas[iy][no]%ny%'
-        int countSynonyms = countSrc;
-
-        //Name relations
-        countSrc = source.getUniqueInteger("SELECT count(*) FROM tu WHERE id " + moneraFilter + " AND ("
-               + " tu_unacceptreason like '%bas[iy][no]%ny%' OR tu_unacceptreason = 'original combination' "
-               + " OR tu_unacceptreason = 'Subsequent combination' OR tu_unacceptreason like '%genus transfer%'  "
-               + " OR tu_unacceptreason = 'genus change' "  //1
-               + " OR tu_unacceptreason like '%homon%' "   // 2
-               + " OR tu_unacceptreason like '%spell%' OR tu_unacceptreason like 'lapsus %' " //16
-
-                 + ")");
-        countDest = destination.getUniqueInteger("SELECT count(*) FROM RelTaxon WHERE RelTaxonQualifierFk <100 ");
-        result = equals("Taxon name relation count ", countSrc, countDest, String.valueOf(-1));
-
-        //included in
-        countSrc = source.getUniqueInteger(countParentRelation);
-        //TODO
-        countDest = destination.getUniqueInteger("SELECT count(*) FROM RelTaxon WHERE RelTaxonQualifierFk = 101 ");
-        result &= equals("Tax included in count ", countSrc, countDest, String.valueOf(-1));
-
-        //total
-        int countTotalSrc = countSynonyms + countSrc;
-        countSrc = source.getUniqueInteger("SELECT count(*) FROM tu ");
-        result &= equals("Taxrel count + 1 must be same as source taxon count ", countTotalSrc+1, countSrc, String.valueOf(-1));
-        countDest = destination.getUniqueInteger("SELECT count(*) FROM Taxon t WHERE t."+ origErms);
-        result &= equals("Taxrel count + 1 must be same as destination taxon count ", countTotalSrc+1, countDest, String.valueOf(-1));
-
-        return result;
-    }
-
 
     private final String countTaxon = "SELECT count(*) FROM tu WHERE id " + moneraFilter;
     private boolean testTaxaCount() {
@@ -285,7 +307,8 @@ public class PesiErmsValidator {
         String id = String.valueOf(srcRS.getInt("id"));
         boolean success = equals("Taxon ID", "tu_id: " + srcRS.getInt("id"), destRS.getString("IdInSource"), id);
         success &= equals("Taxon source", "ERMS export for PESI", destRS.getString("sourceName"), id);
-//TODO some        success &= compareKingdom("Taxon kingdom", srcRS, destRS, id);
+//TODO some
+        success &= compareKingdom("Taxon kingdom", srcRS, destRS, id);
         success &= equals("Taxon rank fk", srcRS.getString("tu_rank"), destRS.getString("RankFk"), id);
         success &= equals("Taxon rank cache", normalizeRank(srcRS.getString("rank_name"), srcRS, id), destRS.getString("Rank"), id);
         success &= compareNameParts(srcRS, destRS, id);
@@ -293,7 +316,7 @@ public class PesiErmsValidator {
         success &= equals("Taxon websearchname", srcRS.getString("tu_displayname"), destRS.getString("WebSearchName"), id);
 //        success &= equals("Taxon WebShowName", srcRS.getString("tu_displayname"), destRS.getString("WebShowName"), id);
         success &= equals("Taxon authority", srcRS.getString("tu_authority"), destRS.getString("AuthorString"), id);
-        success &= equals("Taxon FullName", srcFullName(srcRS), destRS.getString("FullName"), id);
+//        success &= equals("Taxon FullName", srcFullName(srcRS), destRS.getString("FullName"), id);
         success &= isNull("NomRefString", destRS);
 //        success &= equals("Taxon DisplayName", srcDisplayName(srcRS), destRS.getString("DisplayName"), id);  //according to SQL script same as FullName, no nom.ref. information attached
 
@@ -449,7 +472,13 @@ public class PesiErmsValidator {
             strSrc = srcRS.getString("tu_sp");
         }
         if (strSrc == null){
-            strSrc = "1".equals(id)?"0":id;
+            if ("1".equals(id)){
+                strSrc = "0";  //Biota
+            }else if ("147415".equals(id)){
+                strSrc = "6";  //Monera is synonym of Bacteria
+            }else{
+                strSrc = id;
+            }
         }else{
             strSrc = strSrc.substring(1);
             strSrc = strSrc.substring(0, strSrc.indexOf("#"));
