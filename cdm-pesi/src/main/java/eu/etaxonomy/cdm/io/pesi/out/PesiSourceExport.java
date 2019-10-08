@@ -94,8 +94,6 @@ public class PesiSourceExport extends PesiExportBase {
 		try{
 			logger.info("*** Started Making " + pluralString + " ...");
 
-			PesiExportConfigurator pesiExportConfigurator = state.getConfig();
-
 			// Get the limit for objects to save within a single transaction.
 			int limit = modCount;//pesiExportConfigurator.getLimitSave();
 
@@ -117,7 +115,7 @@ public class PesiSourceExport extends PesiExportBase {
 			TransactionStatus txStatus = null;
 			List<Reference> list = null;
 
-//			logger.error("PHASE 1...");
+//			logger.warn("PHASE 1...");
 			// Start transaction
 			txStatus = startTransaction(true);
 			logger.info("Started new transaction. Fetching some " + pluralString + " (max: " + limit + ") ...");

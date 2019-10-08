@@ -62,14 +62,14 @@ public class PesiExportActivatorERMS {
 
 	static boolean doPureNames = false;  //ERMS has no pure names
 
-	//check - export
-	static final CHECK check = CHECK.EXPORT_WITHOUT_CHECK;
+    //check - export
+    static final CHECK check = CHECK.EXPORT_WITHOUT_CHECK;
 
-	//Taxon names can't be mapped to their CDM ids as PESI Taxon table mainly holds taxa and there IDs. We ad nameIdStart to the TaxonName id to get a unique id
-	static final int nameIdStart = 10000000;
-	static final IdType idType = IdType.CDM_ID_WITH_EXCEPTIONS;
+    //Taxon names can't be mapped to their CDM ids as PESI Taxon table mainly holds taxa and there IDs. We ad nameIdStart to the TaxonName id to get a unique id
+    static final int nameIdStart = 10000000;
+    static final IdType idType = IdType.CDM_ID_WITH_EXCEPTIONS;
 
-	static final int partitionSize = 1000;
+    static final int partitionSize = 1000;
 
 	public boolean 	doExport(ICdmDataSource source, Source destination){
 		System.out.println("Start export from " + source.getDatabase() + " to PESI ("+ pesiDestination.getDatabase() + ") ...");

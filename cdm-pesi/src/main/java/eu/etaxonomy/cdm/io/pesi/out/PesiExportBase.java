@@ -380,7 +380,7 @@ public abstract class PesiExportBase
 	 * @param taxonBase
 	 * @return
 	 */
-	protected static boolean isPesiTaxon(TaxonBase taxonBase, boolean excludeMisappliedNames) {
+	protected static boolean isPesiTaxon(TaxonBase<?> taxonBase, boolean excludeMisappliedNames) {
 		if (taxonBase == null){
 		    return false;
 		}
@@ -614,7 +614,7 @@ public abstract class PesiExportBase
             // Sources from TaxonName
             TaxonName taxonName = CdmBase.deproxy(identifiableEntity, TaxonName.class);
             Set<IdentifiableSource> testSources = identifiableEntity.getSources();
-            sources = filterPesiSources(identifiableEntity.getSources());
+            sources = filterPesiSources(testSources);
 
             if (sources.size() == 0 && testSources.size()>0){
                 IdentifiableSource source = testSources.iterator().next();
@@ -627,7 +627,7 @@ public abstract class PesiExportBase
             // name has no PESI source, take sources from TaxonBase
             if (sources == null || sources.isEmpty()) {
                 Set<TaxonBase> taxa = taxonName.getTaxonBases();
-                for (TaxonBase taxonBase: taxa){
+                for (TaxonBase<?> taxonBase: taxa){
                     sources.addAll(filterPesiSources(taxonBase.getSources()));
                 }
             }

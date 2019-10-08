@@ -341,13 +341,13 @@ public class ErmsTaxonImport
 			logger.warn("Set name cache: " +  displayName + "; id =" + meId);
 		}
         if (!taxonName.getNameCache().equals(displayName)){
-            logger.warn("Computed name cache differs.\n Computed   : " + taxonName.getNameCache()+"\n DisplayName: " +displayName);
+            int pos = CdmUtils.diffIndex(taxonName.getNameCache(), displayName);
+            logger.warn("Computed name cache differs at "+pos+".\n Computed   : " + taxonName.getNameCache()+"\n DisplayName: " +displayName);
             taxonName.setNameCache(displayName, true);
         }
 		taxonName.getTitleCache();
         return taxonName;
     }
-
 
     @SuppressWarnings("unused")  //used by MethodMapper
     private static TaxonBase<?> testTitleCache(ResultSet rs, ErmsImportState state) throws SQLException{

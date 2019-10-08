@@ -59,7 +59,7 @@ public class ErmsImportActivator {
 
 // ***************** ALL ************************************************//
 
-	static final DO_REFERENCES doReferences = DO_REFERENCES.NONE;
+	static final DO_REFERENCES doReferences = DO_REFERENCES.ALL;
 	static final boolean doTaxa = true;
 	static final boolean doRelTaxa = doTaxa; //should always run with doTaxa because dependent on state from doTaxa
 	static final boolean doSourceUse = true;
@@ -84,7 +84,7 @@ public class ErmsImportActivator {
 	private static DbSchemaValidation hbm2dll = (doReferences ==  DO_REFERENCES.ALL)? DbSchemaValidation.CREATE:DbSchemaValidation.VALIDATE;
 
 	private void doImport(Source source, ICdmDataSource destination, DbSchemaValidation hbm2dll){
-		System.out.println("Start import from ("+ ermsSource.getDatabase() + ") to " + cdmDestination.getDatabase() + " ..." );
+		System.out.println("Start import from ("+ ermsSource.getDatabase() + ") to " + destination.getDatabase() + " ..." );
 
 		//make ERMS Source
 
@@ -126,7 +126,7 @@ public class ErmsImportActivator {
 //			app = ermsImport.getCdmAppController();
 //			app.getFeatureTreeService().saveOrUpdate(tree);
 		}
-		System.out.println("End import from ("+ source.getDatabase() + ") to "+cdmDestination.getDatabase() + "...");
+		System.out.println("End import from ("+ source.getDatabase() + ") to " + destination.getDatabase() + "...");
 	}
 
 	public static void main(String[] args) {

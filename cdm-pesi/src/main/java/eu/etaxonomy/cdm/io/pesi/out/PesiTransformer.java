@@ -601,6 +601,7 @@ public final class PesiTransformer extends ExportTransformerBase{
 	private final Map<Integer, String> areaCacheMap = new HashMap<>();
 	private final Map<Integer, String> languageCacheMap  = new HashMap<>();
 	private static final Map<String,Integer> languageCodeToKeyMap = new HashMap<>();
+
 	private final Map<Integer, String> featureCacheMap  = new HashMap<>();
 	private final Map<Integer, String> nameStatusCacheMap  = new HashMap<>();
 	private final Map<Integer, String> qualityStatusCacheMap  = new HashMap<>();
