@@ -59,20 +59,19 @@ import eu.etaxonomy.cdm.model.reference.ReferenceFactory;
  * @since 13.12.2016
  */
 public class GreeceImageActivator {
+
     @SuppressWarnings("unused")
     private static final Logger logger = Logger.getLogger(GreeceImageActivator.class);
-
-
 
 //    static final ICdmDataSource cdmDestination = CdmDestinations.localH2();
 //  static final ICdmDataSource cdmDestination = CdmDestinations.cdm_test_local_mysql_test();
     static final ICdmDataSource cdmDestination = CdmDestinations.cdm_production_greece_checklist();
 
-//    private static final UUID sourceUuid = UUID.fromString("0fd093fe-ffdf-4ace-847b-aad6f0659678");
-    private static final UUID sourceUuid = UUID.fromString("9e6a3815-fb8d-46c3-a250-6d8a350d03fc");
+    private static final UUID sourceUuid = UUID.fromString("8ecb8445-88f2-4c2f-8d60-a47252c0891d");
+//    private static final UUID sourceUuid = UUID.fromString("9e6a3815-fb8d-46c3-a250-6d8a350d03fc");
 
-    private static final String fileName = "20190726_fog_images_0902.xlsx";
-//    private static final String fileName = "20190726_fog_images.xlsx";
+//    private static final String fileName = "20190726_fog_images_0902.xlsx";
+    private static final String fileName = "20190926_fog_images.xlsx";
 
 
 //    NOTE!!: Darauf achten, dass die Header case sensitiv sind und keine Leerzeichen am Ende sein sollten, trim funktioniert seltsamerweise nicht immer
@@ -94,14 +93,11 @@ public class GreeceImageActivator {
         CdmDefaultImport<MediaExcelImportConfigurator> myImport = new CdmDefaultImport<>();
         ImportResult result = myImport.invoke(config);
         System.out.println(result.createReport());
-
     }
-
 
     private URI greekChecklist(){
         return URI.create("file:////BGBM-PESIHPC/Greece/images/" + fileName);
     }
-
 
     private Reference getSourceReference(){
         Reference result = ReferenceFactory.newDatabase();
@@ -111,9 +107,6 @@ public class GreeceImageActivator {
         return result;
     }
 
-    /**
-     * @param args
-     */
     public static void main(String[] args) {
         GreeceImageActivator me = new GreeceImageActivator();
         me.doImport(cdmDestination);
