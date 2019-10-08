@@ -68,6 +68,7 @@ public final class PesiTransformer extends ExportTransformerBase{
 	public static final int SOURCE_ERMS = 4;
 
 	//sourceRefUUIDs
+	public static final UUID uuidSourceRefEuroMed = UUID.fromString("51b3900c-91e0-4cc5-94f3-577a352ca9c4");
 	public static final UUID uuidSourceRefFaunaEuropaea = UUID.fromString("6786d863-75d4-4796-b916-c1c3dff4cb70");
 	public static final UUID uuidSourceRefErms = UUID.fromString("7744bc26-f914-42c4-b54a-dd2a030a8bb7");
 	public static final UUID uuidSourceRefIndexFungorum = UUID.fromString("8de25d27-7d40-47f4-af3b-59d64935a843");

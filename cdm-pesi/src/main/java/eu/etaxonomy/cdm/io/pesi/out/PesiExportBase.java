@@ -586,7 +586,7 @@ public abstract class PesiExportBase
         for (IdentifiableSource source : sources) {
             Reference ref = source.getCitation();
             UUID refUuid = ref.getUuid();
-            if (refUuid.equals(BerlinModelTransformer.uuidSourceRefEuroMed)){
+            if (refUuid.equals(PesiTransformer.uuidSourceRefEuroMed)){
                 result.add(PesiSource.EM);
             }else if (refUuid.equals(PesiTransformer.uuidSourceRefFaunaEuropaea)){
                 result.add(PesiSource.FE);
@@ -647,13 +647,15 @@ public abstract class PesiExportBase
         Set<IdentifiableSource> result = new HashSet<>();
         for (IdentifiableSource source : sources){
             Reference ref = source.getCitation();
-            UUID refUuid = ref.getUuid();
-            if (refUuid.equals(BerlinModelTransformer.uuidSourceRefEuroMed) ||
-                refUuid.equals(PesiTransformer.uuidSourceRefFaunaEuropaea)||
-                refUuid.equals(PesiTransformer.uuidSourceRefErms)||
-                refUuid.equals(PesiTransformer.uuidSourceRefIndexFungorum) ||
-                refUuid.equals(PesiTransformer.uuidSourceRefAuct)){
-                result.add(source);
+            if (ref != null){
+                UUID refUuid = ref.getUuid();
+                if (refUuid.equals(PesiTransformer.uuidSourceRefEuroMed) ||
+                        refUuid.equals(PesiTransformer.uuidSourceRefFaunaEuropaea)||
+                        refUuid.equals(PesiTransformer.uuidSourceRefErms)||
+                        refUuid.equals(PesiTransformer.uuidSourceRefIndexFungorum) ||
+                        refUuid.equals(PesiTransformer.uuidSourceRefAuct)){
+                    result.add(source);
+                }
             }
         }
         return result;
