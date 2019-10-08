@@ -288,7 +288,7 @@ public class ErmsTaxonImport
 
     private TaxonName fillTaxonName(TaxonName taxonName, ResultSet rs, ErmsImportState state, Integer meId) throws SQLException {
         String tuName = rs.getString("tu_name");
-		String displayName = rs.getString("tu_displayname");
+		String displayName = rs.getString("tu_displayname").trim();
 
 		String parent1Name = rs.getString("parent1name");
 		Integer parent1Rank = rs.getInt("parent1rank");
@@ -378,7 +378,7 @@ public class ErmsTaxonImport
         }else{
             result = CdmUtils.concat(" ", srcRs.getString("tu_displayname"), srcRs.getString("tu_authority"));
         }
-        return result;
+        return result.trim();
     }
 
 	private void handleNotAcceptedTaxon(Taxon taxon, int statusId, ErmsImportState state, ResultSet rs) throws SQLException {
