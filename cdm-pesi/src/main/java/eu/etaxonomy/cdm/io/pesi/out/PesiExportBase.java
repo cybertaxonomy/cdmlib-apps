@@ -643,7 +643,7 @@ public abstract class PesiExportBase
     }
 
     // return all sources with a PESI reference
-    private static Set<IdentifiableSource> filterPesiSources(Set<? extends IdentifiableSource> sources) {
+    protected static Set<IdentifiableSource> filterPesiSources(Set<? extends IdentifiableSource> sources) {
         Set<IdentifiableSource> result = new HashSet<>();
         for (IdentifiableSource source : sources){
             Reference ref = source.getCitation();

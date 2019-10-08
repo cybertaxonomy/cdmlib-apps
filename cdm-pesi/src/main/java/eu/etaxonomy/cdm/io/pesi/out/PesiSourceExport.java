@@ -11,7 +11,6 @@ package eu.etaxonomy.cdm.io.pesi.out;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.EnumSet;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -35,7 +34,6 @@ import eu.etaxonomy.cdm.model.common.Extension;
 import eu.etaxonomy.cdm.model.common.ExtensionType;
 import eu.etaxonomy.cdm.model.common.IdentifiableSource;
 import eu.etaxonomy.cdm.model.reference.Reference;
-import eu.etaxonomy.cdm.model.reference.ReferenceType;
 
 /**
  * The export class for {@link eu.etaxonomy.cdm.model.reference.Reference References}.<p>
@@ -299,24 +297,24 @@ public class PesiSourceExport extends PesiExportBase {
 		String result = null;
 
 		try {
-		if (reference != null) {
-			Set<IdentifiableSource> sourceAll = reference.getSources();
-			Set<IdentifiableSource> sourceCandidates = filterOriginalPesiDbSources(sourceAll);
+    		if (reference != null) {
+    			Set<IdentifiableSource> sourceAll = reference.getSources();
+    			Set<IdentifiableSource> sourceCandidates = filterPesiSources(sourceAll);
 
-			if (sourceCandidates.size() == 1) {
-				result = sourceCandidates.iterator().next().getIdInSource();
-			} else if (sourceCandidates.size() > 1) {
-				logger.warn("Reference for RefIdInSource has multiple IdentifiableSources which are candidates for a PESI originalDbSource. RefIdInSource can't be determined correctly and will be left out: " + reference.getUuid() + " (" + reference.getTitleCache() + ")");
-				int count = 1;
-//				for (IdentifiableSource source : sources) {
-//					result += source.getIdInSource();
-//					if (count < sources.size()) {
-//						result += "; ";
-//					}
-//					count++;
-//				}
-			}
-		}
+    			if (sourceCandidates.size() == 1) {
+    				result = sourceCandidates.iterator().next().getIdInSource();
+    			} else if (sourceCandidates.size() > 1) {
+    				logger.warn("Reference for RefIdInSource has multiple IdentifiableSources which are candidates for a PESI originalDbSource. RefIdInSource can't be determined correctly and will be left out: " + reference.getUuid() + " (" + reference.getTitleCache() + ")");
+    				int count = 1;
+    //				for (IdentifiableSource source : sources) {
+    //					result += source.getIdInSource();
+    //					if (count < sources.size()) {
+    //						result += "; ";
+    //					}
+    //					count++;
+    //				}
+    			}
+    		}
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -324,21 +322,21 @@ public class PesiSourceExport extends PesiExportBase {
 		return result;
 	}
 
-	private static Set<IdentifiableSource> filterOriginalPesiDbSources(
-			Set<IdentifiableSource> sourceAll) {
-		Set<IdentifiableSource> sourceCandidates = new HashSet<>();
-		for (IdentifiableSource source : sourceAll){
-			if (isOriginalPesiDbSource(source)){
-				sourceCandidates.add(source);
-			}
-		}
-		return sourceCandidates;
-	}
-
-	private static boolean isOriginalPesiDbSource(IdentifiableSource source) {
-		return (source.getCitation() != null) &&
-				source.getCitation().getType().equals(ReferenceType.Database);
-	}
+//	private static Set<IdentifiableSource> filterOriginalPesiDbSources(
+//			Set<IdentifiableSource> sourceAll) {
+//		Set<IdentifiableSource> sourceCandidates = new HashSet<>();
+//		for (IdentifiableSource source : sourceAll){
+//			if (isOriginalPesiDbSource(source)){
+//				sourceCandidates.add(source);
+//			}
+//		}
+//		return sourceCandidates;
+//	}
+//
+//	private static boolean isOriginalPesiDbSource(IdentifiableSource source) {
+//		return (source.getCitation() != null) &&
+//				source.getCitation().getType().equals(ReferenceType.Database);
+//	}
 
 	/**
 	 * Returns the <code>OriginalDB</code> attribute.

@@ -45,6 +45,7 @@ public class PesiExportConfigurator
 	private boolean doParentAndBiota = true;
 	private boolean doInferredSynonyms = true;
 	private boolean doPureNames = true;
+	private boolean doTaxaPhase1 = true;
 	private boolean doDescription = true;
 	private boolean doEcologyAndLink = true;
 
@@ -197,7 +198,14 @@ public class PesiExportConfigurator
 		this.doPureNames = doPureNames;
 	}
 
-	public boolean isDoDescription() {
+	public boolean isDoTaxaPhase1() {
+        return doTaxaPhase1;
+    }
+    public void setDoTaxaPhase1(boolean doTaxaPhase1) {
+        this.doTaxaPhase1 = doTaxaPhase1;
+    }
+
+    public boolean isDoDescription() {
 		return doDescription;
 	}
 	public void setDoDescription(boolean doDescription) {

@@ -74,6 +74,8 @@ public final class PesiTransformer extends ExportTransformerBase{
 	public static final UUID uuidSourceRefIndexFungorum = UUID.fromString("8de25d27-7d40-47f4-af3b-59d64935a843");
 	public static final UUID uuidSourceRefAuct = UUID.fromString("5f79f96c-c100-4cd8-b78e-2b2dacf09a23");
 
+    public static final UUID uuidTaxonValuelessEuroMed = UUID.fromString("f0a9322b-a57e-447b-9a75-a909f2f2a994");
+
 	public static final String SOURCE_STR_EM = "E+M";
 	public static final String SOURCE_STR_FE = "FaEu";
 	public static final String SOURCE_STR_IF = "IF";

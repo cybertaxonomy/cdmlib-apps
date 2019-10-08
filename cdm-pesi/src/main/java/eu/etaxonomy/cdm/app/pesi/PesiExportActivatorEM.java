@@ -19,7 +19,6 @@ import eu.etaxonomy.cdm.io.common.IExportConfigurator.DO_REFERENCES;
 import eu.etaxonomy.cdm.io.common.Source;
 import eu.etaxonomy.cdm.io.pesi.out.PesiExportConfigurator;
 import eu.etaxonomy.cdm.io.pesi.out.PesiTransformer;
-import eu.etaxonomy.cdm.model.name.NomenclaturalCode;
 
 /**
  * @author a.mueller
@@ -30,73 +29,54 @@ public class PesiExportActivatorEM {
 	@SuppressWarnings("unused")
 	private static final Logger logger = Logger.getLogger(PesiExportActivatorEM.class);
 
-	static final ICdmDataSource cdmSource = CdmDestinations.test_cdm_pesi_euroMed();
+//	static final ICdmDataSource cdmSource = CdmDestinations.test_cdm_pesi_euroMed();
+	static final ICdmDataSource cdmSource = CdmDestinations.cdm_test_local_mysql_euromed();
 
 	//database validation status (create, update, validate ...)
 	static final Source pesiDestination = PesiDestinations.pesi_test_local_CDM_EM2PESI();
-//	static final Source pesiDestination = PesiDestinations.pesi_test_local_CDM_FE2PESI();
-//	static final Source pesiDestination = PesiDestinations.pesi_test_local_CDM_ERMS2PESI();
-
-	//Taxon names can't be mapped to their CDM ids as PESI Taxon table mainly holds taxa and there IDs. We ad nameIdStart to the TaxonName id to get a unique id
-	static final int nameIdStart = 10000000;
-	static final IdType idType = IdType.CDM_ID_WITH_EXCEPTIONS;
-
-	static final int partitionSize = 1000;
-
-	//check - export
-	static final CHECK check = CHECK.EXPORT_WITHOUT_CHECK;
-
-	//NomenclaturalCode
-	static final NomenclaturalCode nomenclaturalCode  = NomenclaturalCode.ICNAFP;
-
-	static final boolean deleteAll = true;
-
+//	static final Source pesiDestination = PesiDestinations.pesi_test_local_CDM_EM2PESI_2();
 
 // ****************** ALL *****************************************
 
-	//references
-	static final DO_REFERENCES doReferences =  DO_REFERENCES.ALL;
-
-	//taxa
-	static final boolean doTaxa = true;
-	static final boolean doPureNames = true;
-	static final boolean doTreeIndex = true;
-	static final boolean doParentAndBiota = true;
-	static final boolean doRank = true;
-	static final boolean doInferredSynonyms = false;   //no inferred synonyms in E+M
-	static final boolean doRelTaxa = true;
-	static final boolean doDescriptions = true;
-
-	static final boolean doNotes = true;
-	static final boolean doNoteSources = true;
-	static final boolean doAdditionalTaxonSource = true;
-	static final boolean doOccurrence = true;
-	static final boolean doOccurrenceSource = true;
-	static final boolean doImage = true;
-
+	boolean deleteAll = false;
+	DO_REFERENCES doReferences =  DO_REFERENCES.NONE;
+	boolean doTaxa = true;
+	boolean doTaxaPhase1 = true;   //better do not use, Phase1 is needed in Phase3
+	boolean doPureNames = true;
+	boolean doTreeIndex = true;
+	boolean doParentAndBiota = true;
+	boolean doInferredSynonyms = false;   //no inferred synonyms in E+M
+	boolean doRelTaxa = true;
+	boolean doAdditionalTaxonSource = true;
+    boolean doDescriptions = true;
+	boolean doEcologyAndLink = true;
 
 // ************************ NONE **************************************** //
 
-//	//references
-//	static final DO_REFERENCES doReferences =  DO_REFERENCES.NONE;
-//
-//	//taxa
-//	static final boolean doTaxa = false;
-//	static final boolean doPureNames = false;
-//	static final boolean doRelTaxa = false;
-//	static final boolean doNotes = false;
-//	static final boolean doNoteSources = false;
-//	static final boolean doAdditionalTaxonSource = false;
-//	static final boolean doOccurrence = false;
-//	static final boolean doOccurrenceSource = false;
-//	static final boolean doImage = false;
-//	static final boolean doTreeIndex = false;
-//	static final boolean doRank = true;
-//	static final boolean doInferredSynonyms = true;
+//    boolean deleteAll = false;
+//    DO_REFERENCES doReferences =  DO_REFERENCES.NONE;
+//    boolean doTaxa = false;
+//    boolean doPureNames = false;
+//    boolean doTreeIndex = false;
+//    boolean doParentAndBiota = false;
+//    boolean doInferredSynonyms = false;   //no inferred synonyms in E+M
+//    boolean doRelTaxa = false;
+//    boolean doAdditionalTaxonSource = false;
+//    boolean doDescriptions = false;
+//    boolean doEcologyAndLink = false;
 
+
+    //check - export
+    static final CHECK check = CHECK.EXPORT_WITHOUT_CHECK;
+
+    //Taxon names can't be mapped to their CDM ids as PESI Taxon table mainly holds taxa and there IDs. We ad nameIdStart to the TaxonName id to get a unique id
+    static final int nameIdStart = 10000000;
+    static final IdType idType = IdType.CDM_ID_WITH_EXCEPTIONS;
+
+    static final int partitionSize = 1000;
 
 	public boolean 	doExport(ICdmDataSource source){
-		System.out.println("Start export to PESI ("+ pesiDestination.getDatabase() + ") ...");
+	    System.out.println("Start export from " + source.getDatabase() + " to PESI ("+ pesiDestination.getDatabase() + ") ...");
 
 		//make PESI Source
 		Source destination = pesiDestination;
@@ -106,17 +86,15 @@ public class PesiExportActivatorEM {
 
 		config.setDoTaxa(doTaxa);
 		config.setDoPureNames(doPureNames);
+		config.setDoTaxaPhase1(doTaxaPhase1);
 		config.setDoRelTaxa(doRelTaxa);
-		config.setDoOccurrence(doOccurrence);
 		config.setDoReferences(doReferences);
-		config.setDoImages(doImage);
-		config.setDoNotes(doNotes);
-		config.setDoNoteSources(doNoteSources);
-		config.setDoOccurrenceSource(doOccurrenceSource);
 		config.setDoTreeIndex(doTreeIndex);
-		config.setDoTreeIndex(doParentAndBiota);
+		config.setDoParentAndBiota(doParentAndBiota);
 		config.setDoInferredSynonyms(doInferredSynonyms);
 		config.setDoDescription(doDescriptions);
+		config.setDoAdditionalTaxonSource(doAdditionalTaxonSource);
+		config.setDoEcologyAndLink(doEcologyAndLink);
 
 		config.setCheck(check);
 		config.setLimitSave(partitionSize);

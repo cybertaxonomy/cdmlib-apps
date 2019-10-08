@@ -23,19 +23,19 @@ public class PesiDestinations {
 
 	public static Source pesi_test_local_CDM_EM2PESI(){
 		String dbms = Source.SQL_SERVER_2008;
-		String strServer = "localhost";
+		String strServer = "pesiimport3";
 		String strDB = "CDM_EM2PESI";
 		int port = 1433;
-		String userName =  "pesiexport";// "pesiexport3";
+		String userName =  "pesi2019";// "pesiexport3";
 		return makeSource(dbms, strServer, strDB, port, userName, null);
 	}
 
-	public static Source pesi_test_local_CDM_EM2PESI_tmp(){
+	public static Source pesi_test_local_CDM_EM2PESI_2(){
 		String dbms = Source.SQL_SERVER_2008;
-		String strServer = "localhost";
-		String strDB = "CDMTMP_EM2PESI";
+		String strServer = "pesiimport3";
+		String strDB = "CDM_EM2PESI_2";
 		int port = 1433;
-		String userName = "pesiexport";
+		String userName = "pesi2019";
 		return makeSource(dbms, strServer, strDB, port, userName, null);
 	}
 
