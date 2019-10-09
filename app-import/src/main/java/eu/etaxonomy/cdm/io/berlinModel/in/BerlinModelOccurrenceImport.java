@@ -288,16 +288,6 @@ public class BerlinModelOccurrenceImport  extends BerlinModelImportBase {
         return alternativeStatusString;
     }
 
-	/**
-	 * @param state
-	 * @param partitioner
-	 * @param rs
-	 * @param occurrenceId
-	 * @param tdwgCodeString
-	 * @param emCodeString
-	 * @return
-	 * @throws SQLException
-	 */
 	//Create area list
 	private List<NamedArea> makeAreaList(BerlinModelImportState state,
 	        @SuppressWarnings("rawtypes") ResultSetPartitioner partitioner,

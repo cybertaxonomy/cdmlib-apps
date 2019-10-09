@@ -41,13 +41,12 @@ public class PesiExportActivatorEM {
 	boolean deleteAll = false;
 	DO_REFERENCES doReferences =  DO_REFERENCES.NONE;
 	boolean doTaxa = true;
-	boolean doTaxaPhase1 = true;   //better do not use, Phase1 is needed in Phase3
 	boolean doPureNames = true;
 	boolean doTreeIndex = true;
 	boolean doParentAndBiota = true;
 	boolean doInferredSynonyms = false;   //no inferred synonyms in E+M
 	boolean doRelTaxa = true;
-	boolean doAdditionalTaxonSource = true;
+	boolean doAdditionalTaxonSource = false;  //do not exist in E+M
     boolean doDescriptions = true;
 	boolean doEcologyAndLink = true;
 
@@ -86,7 +85,6 @@ public class PesiExportActivatorEM {
 
 		config.setDoTaxa(doTaxa);
 		config.setDoPureNames(doPureNames);
-		config.setDoTaxaPhase1(doTaxaPhase1);
 		config.setDoRelTaxa(doRelTaxa);
 		config.setDoReferences(doReferences);
 		config.setDoTreeIndex(doTreeIndex);
