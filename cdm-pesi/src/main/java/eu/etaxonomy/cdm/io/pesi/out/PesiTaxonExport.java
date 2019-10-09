@@ -288,10 +288,6 @@ public class PesiTaxonExport extends PesiExportBase {
     				    }else{
     				        logger.warn("Kingdom taxon is not of class Taxon but " + taxon.getClass().getSimpleName() + ": " + nvn.getGenusOrUninomial());
     				    }
-    				}else if (taxon.getUuid().equals(PesiTransformer.uuidTaxonValuelessEuroMed)){
-    				    String treeIndex = ((Taxon)taxon).getTaxonNodes().iterator().next().treeIndex();
-                        Integer kingdomId = PesiTransformer.pesiKingdomMap.get("Plantae");
-                        state.getTreeIndexKingdomMap().put(treeIndex, kingdomId);
     				}
 				}catch(NullPointerException e){
 				    logger.error(nvn.getTitleCache() + " has no Rank!");
@@ -476,6 +472,9 @@ public class PesiTaxonExport extends PesiExportBase {
 			logger.info ("Ignore PHASE 3: Add Rank data, KingdomFk, TypeNameFk, expertFk and speciesExpertFk...");
 			return success;
 		}
+
+		addValuelessTaxonToKingdomMap(state);
+
 		// Get the limit for objects to save within a single transaction.
 		int limit = state.getConfig().getLimitSave();
 
@@ -536,6 +535,17 @@ public class PesiTaxonExport extends PesiExportBase {
 		}
 		return success;
 	}
+
+    private void addValuelessTaxonToKingdomMap(PesiExportState state) {
+        TransactionStatus txStatus = startTransaction();
+        Taxon valuelessTaxon = (Taxon)getTaxonService().find(PesiTransformer.uuidTaxonValuelessEuroMed);
+        if (valuelessTaxon != null){
+            String treeIndex = valuelessTaxon.getTaxonNodes().iterator().next().treeIndex();
+            Integer kingdomId = PesiTransformer.pesiKingdomMap.get("Plantae");
+            state.getTreeIndexKingdomMap().put(treeIndex, kingdomId);
+        }
+        commitTransaction(txStatus);
+    }
 
     // 4th round: Add TreeIndex to each taxon
     private boolean doPhase04(PesiExportState state) {
