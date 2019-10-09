@@ -1132,9 +1132,9 @@ public final class PesiTransformer extends ExportTransformerBase{
 			else if (namedArea.getUuid().equals(FaunaEuropaeaTransformer.uuidAreaRU_FJL)) { return AREA_FRANZ_JOSEF_LAND; }
 			else if (namedArea.getUuid().equals(FaunaEuropaeaTransformer.uuidAreaRU_NOZ)) { return AREA_NOVAYA_ZEMLYA; }
 */
-
+        }else if (area.getVocabulary().getUuid().equals(ErmsTransformer.uuidVocErmsAreas)){
 			//ERMS
-			else if (namedArea.getUuid().equals(ErmsTransformer.uuidEuropeanMarineWaters)) { return AREA_EUROPEAN_MARINE_WATERS; }
+			if (namedArea.getUuid().equals(ErmsTransformer.uuidEuropeanMarineWaters)) { return AREA_EUROPEAN_MARINE_WATERS; }
 			else if (//(namedArea.getRepresentation(Language.DEFAULT()).getAbbreviatedLabel()).equals("MES") ||   /carefull: NPE!
 					(namedArea.getUuid().equals(ErmsTransformer.uuidMediterraneanSea))) { return AREA_MEDITERRANEAN_SEA; } // abbreviated label missing
 			else if (namedArea.getUuid().equals(ErmsTransformer.uuidWhiteSea)) { return AREA_WHITE_SEA; }
@@ -1269,10 +1269,12 @@ public final class PesiTransformer extends ExportTransformerBase{
 			else if (namedArea.getUuid().equals(ErmsTransformer.uuidVenezuela)) { return 290; }
 
 			else {
-				logger.warn("Unknown NamedArea Area: " + area.getTitleCache());
+				logger.warn("Unknown ERMS Area: " + area.getTitleCache());
 			}
 
-		}
+		} else {
+            logger.warn("Unknown NamedArea Area not in a known vocabulary: " + area.getTitleCache());
+        }
 		return null;
 	}
 
