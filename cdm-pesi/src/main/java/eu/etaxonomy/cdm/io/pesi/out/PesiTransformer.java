@@ -833,6 +833,9 @@ public final class PesiTransformer extends ExportTransformerBase{
 					presenceTerm.equals(PresenceAbsenceTerm.CULTIVATED_REPORTED_IN_ERROR()) || presenceTerm.equals(PresenceAbsenceTerm.INTRODUCED_REPORTED_IN_ERROR()) ||
 					presenceTerm.equals(PresenceAbsenceTerm.INTRODUCED_FORMERLY_INTRODUCED()) || presenceTerm.equals(PresenceAbsenceTerm.NATIVE_REPORTED_IN_ERROR() ) ) {
 				result = STATUS_ABSENT;
+			}else if (presenceTerm.getUuid().equals(BerlinModelTransformer.uuidStatusUndefined)){
+			    logger.warn("Status undefined is mapped present for now. Needs further checking. (E+M specific)");
+			    result = STATUS_PRESENT;
 			} else {
 				logger.error("PresenceAbsenceTerm could not be translated to datawarehouse occurrence status id: " + presenceTerm.getLabel());
 			}
