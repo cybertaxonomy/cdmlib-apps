@@ -231,7 +231,7 @@ public final class PesiTransformer extends ExportTransformerBase{
     public static String kINGDOM_BACTERIA_STRING = "Bacteria";
     public static String KINGDOM_CHROMISTA_STRING = "Chromista";
 
-	//ranks all kingdoms
+	//ranks of all kingdoms
     public static int Kingdom = 10;
     public static int Subkingdom = 20;
     public static int Phylum = 30;  //Phylum and Division is same (#8541) according to ICNAFP
@@ -253,7 +253,7 @@ public final class PesiTransformer extends ExportTransformerBase{
     public static int Variety = 240;
     public static int Forma = 260;
 
-    //ranks some kingdoms
+    //ranks of some kingdoms
     public static int Infrakingdom = 25; //2,3,5,7
     public static int Infraphylum = 45;  //2,7
     public static int Superclass = 50;   //2,5,6,7
@@ -836,7 +836,7 @@ public final class PesiTransformer extends ExportTransformerBase{
 					presenceTerm.equals(PresenceAbsenceTerm.INTRODUCED_FORMERLY_INTRODUCED()) || presenceTerm.equals(PresenceAbsenceTerm.NATIVE_REPORTED_IN_ERROR() ) ) {
 				result = STATUS_ABSENT;
 			}else if (presenceTerm.getUuid().equals(BerlinModelTransformer.uuidStatusUndefined)){
-			    logger.warn("Status undefined is mapped present for now. Needs further checking. (E+M specific)");
+			    logger.warn("Status 'undefined' is mapped present for now. Needs further checking. (E+M specific)");
 			    result = STATUS_PRESENT;
 			} else {
 				logger.error("PresenceAbsenceTerm could not be translated to datawarehouse occurrence status id: " + presenceTerm.getLabel());
@@ -861,7 +861,7 @@ public final class PesiTransformer extends ExportTransformerBase{
 
 	@Override
 	public String getCacheByNamedArea(NamedArea namedArea) throws UndefinedTransformerMethodException {
-		NamedArea area = CdmBase.deproxy(namedArea, NamedArea.class);
+		NamedArea area = CdmBase.deproxy(namedArea);
 		if (area == null){
 			return null;
 		}else{
@@ -871,7 +871,7 @@ public final class PesiTransformer extends ExportTransformerBase{
 
 	@Override
 	public Object getKeyByNamedArea(NamedArea area) throws UndefinedTransformerMethodException {
-		NamedArea namedArea = CdmBase.deproxy(area, NamedArea.class);
+		NamedArea namedArea = CdmBase.deproxy(area);
 
 		if (area == null) {
 			return null;
