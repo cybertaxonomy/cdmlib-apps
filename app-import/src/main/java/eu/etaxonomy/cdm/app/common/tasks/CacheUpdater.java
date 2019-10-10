@@ -14,11 +14,12 @@ import java.util.List;
 
 import org.apache.log4j.Logger;
 
+import eu.etaxonomy.cdm.api.service.config.CacheUpdaterConfigurator;
 import eu.etaxonomy.cdm.app.common.CdmDestinations;
 import eu.etaxonomy.cdm.database.ICdmDataSource;
 import eu.etaxonomy.cdm.io.common.CdmDefaultImport;
 import eu.etaxonomy.cdm.io.common.ImportResult;
-import eu.etaxonomy.cdm.io.operation.config.CacheUpdaterConfigurator;
+
 import eu.etaxonomy.cdm.model.name.TaxonName;
 import eu.etaxonomy.cdm.model.reference.Reference;
 import eu.etaxonomy.cdm.model.taxon.TaxonBase;
@@ -63,7 +64,7 @@ public class CacheUpdater {
 
 		CacheUpdaterConfigurator config;
 		try {
-			config = CacheUpdaterConfigurator.NewExludedInstance(destination, classListStrings);
+			config = CacheUpdaterConfigurator.NewInstance(destination, classListStrings);
 
 			// invoke import
 			CdmDefaultImport<CacheUpdaterConfigurator> myImport = new CdmDefaultImport<>();

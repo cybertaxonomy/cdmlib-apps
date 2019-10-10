@@ -3,12 +3,15 @@ package eu.etaxonomy.cdm.app.pesi.merging;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
+import java.util.UUID;
 
 import eu.etaxonomy.cdm.api.application.CdmApplicationController;
 import eu.etaxonomy.cdm.app.common.CdmDestinations;
+import eu.etaxonomy.cdm.app.util.TestDatabase;
 import eu.etaxonomy.cdm.database.DbSchemaValidation;
 import eu.etaxonomy.cdm.database.ICdmDataSource;
 import eu.etaxonomy.cdm.hibernate.HibernateProxyHelper;
@@ -18,13 +21,15 @@ import eu.etaxonomy.cdm.model.common.IdentifiableSource;
 import eu.etaxonomy.cdm.model.name.IZoologicalName;
 import eu.etaxonomy.cdm.model.name.Rank;
 import eu.etaxonomy.cdm.model.name.TaxonName;
+import eu.etaxonomy.cdm.model.taxon.Classification;
 import eu.etaxonomy.cdm.model.taxon.Taxon;
 import eu.etaxonomy.cdm.model.taxon.TaxonNode;
+import eu.etaxonomy.cdm.persistence.dto.TaxonNodeDto;
 
 public class FaunaEuErmsFindIdenticalNamesActivator {
 
-	static final ICdmDataSource faunaEuropaeaSource = CdmDestinations.localH2();
-	//static final ICdmDataSource ermsSource = CdmDestinations.cdm_test_andreasM();
+	//static final ICdmDataSource faunaEuropaeaSource = CdmDestinations.localH2();
+	static final ICdmDataSource faunaEuropaeaSource = CdmDestinations.cdm_test_local_faunaEu_mysql();
 
 	//TODO hole aus beiden DB alle TaxonNameBases
 
@@ -59,12 +64,12 @@ public class FaunaEuErmsFindIdenticalNamesActivator {
 		propertyPaths.add("taxonBases.taxonNodes.parent.*");
 		propertyPaths.add("taxonBases.taxonNodes.parent.taxon.name.*");
 		System.err.println("Start getIdenticalNames...");
-		List<TaxonName> namesOfIdenticalTaxa = appCtrFaunaEu.getTaxonService().findIdenticalTaxonNameIds(propertyPaths);
+		List<UUID> namesOfIdenticalTaxa = appCtrFaunaEu.getTaxonService().findIdenticalTaxonNameIds(propertyPaths);
 		//List<UUID> namesOfIdenticalTaxa = appCtrFaunaEu.getTaxonService().findIdenticalTaxonNameIds(propertyPaths);
 
 		System.err.println("first name: " + namesOfIdenticalTaxa.get(0) + " " + namesOfIdenticalTaxa.size());
-		TaxonName zooName = namesOfIdenticalTaxa.get(0);
-		System.err.println(zooName + " nr of taxa " + namesOfIdenticalTaxa.size());
+		//TaxonName zooName = namesOfIdenticalTaxa.get(0);
+		//System.err.println(zooName + " nr of taxa " + namesOfIdenticalTaxa.size());
 		//TaxonNameComparator taxComp = new TaxonNameComparator();
 
 		//Collections.sort(namesOfIdenticalTaxa,taxComp);
@@ -275,7 +280,7 @@ public class FaunaEuErmsFindIdenticalNamesActivator {
 			writer.append("synonym");
 		}
 		writer.append(';');
-		writer.append(merging.getPhylumInFaunaEu());
+		writer.append(merging.getPhylumInFaunaEu().getTaxonTitleCache());
 		writer.append(';');
 		writer.append(merging.getParentStringInFaunaEu());
 		writer.append(';');
@@ -299,7 +304,7 @@ public class FaunaEuErmsFindIdenticalNamesActivator {
 		}
 
 		writer.append(';');
-		writer.append(merging.getPhylumInErms());
+		writer.append(merging.getPhylumInErms().getTaxonTitleCache());
 		writer.append(';');
 		writer.append(merging.getParentStringInErms());
 		writer.append(';');
@@ -308,157 +313,162 @@ public class FaunaEuErmsFindIdenticalNamesActivator {
 	}
 
 
-	private List<FaunaEuErmsMerging> createMergeObjects(List<TaxonName> names, CdmApplicationController appCtr){
+	private List<FaunaEuErmsMerging> createMergeObjects(List<UUID> uuids, CdmApplicationController appCtr){
 
 		List<FaunaEuErmsMerging> merge = new ArrayList<>();
 		TaxonName zooName, zooName2;
 		FaunaEuErmsMerging mergeObject;
 		String idInSource1;
-		for (int i = 0; i<names.size()-1; i=i+2){
-			zooName = names.get(i);
-			zooName2 = names.get(i+1);
-			mergeObject = new FaunaEuErmsMerging();
-			//TODO:überprüfen, ob die beiden Namen identisch sind und aus unterschiedlichen DB kommen
-
-			//getPhylum
-			String phylum1 = null;
-			if (!zooName.getRank().isHigher(Rank.PHYLUM())){
-				phylum1 =appCtr.getTaxonService().getPhylumName(zooName);
-			}
-
-			String phylum2 = null;
-			if (!zooName2.getRank().isHigher(Rank.PHYLUM())){
-				phylum2 = appCtr.getTaxonService().getPhylumName(zooName2);
-			}
-			mergeObject.setPhylumInErms(phylum1);
-			mergeObject.setPhylumInFaunaEu(phylum2);
-
-			//getUuids
-			mergeObject.setUuidErms(zooName.getUuid().toString());
-			mergeObject.setUuidFaunaEu(zooName.getUuid().toString());
-
-			Iterator<IdentifiableSource> sources = zooName.getSources().iterator();
-			if (sources.hasNext()){
-				IdentifiableSource source = sources.next();
-				idInSource1 = source.getIdInSource();
-				mergeObject.setIdInErms(idInSource1);
-			}
-			sources = zooName2.getSources().iterator();
-			if (sources.hasNext()){
-				IdentifiableSource source = sources.next();
-				idInSource1 = source.getIdInSource();
-				mergeObject.setIdInFaunaEu(idInSource1);
-			}
-
-			mergeObject.setNameCacheInErms(zooName.getNameCache());
-			mergeObject.setNameCacheInFaunaEu(zooName2.getNameCache());
-
-			mergeObject.setAuthorInErms(zooName.getAuthorshipCache());
-			mergeObject.setAuthorInFaunaEu(zooName2.getAuthorshipCache());
-			Set<Taxon> taxa = zooName.getTaxa();
-			if (!taxa.isEmpty()){
-				mergeObject.setStatInErms(true);
-				Iterator<Taxon> taxaIterator = taxa.iterator();
-				Taxon taxon = null;
-				while (taxaIterator.hasNext()){
-					taxon = taxaIterator.next();
-					if (!taxon.isMisapplication()){
-						break;
-					}
+		for(int j = 0; j<uuids.size()-1; j = j + 500) {
+			Set<UUID> subset = new HashSet( uuids.subList(j, j+499));
+			List<TaxonName> names = appCtr.getNameService().find(subset);
+			for (int i = 0; i<names.size()-1; i=i+2){
+				zooName = names.get(i);
+				zooName2 = names.get(i+1);
+				mergeObject = new FaunaEuErmsMerging();
+				//TODO:überprüfen, ob die beiden Namen identisch sind und aus unterschiedlichen DB kommen
+				Classification faunaEuClassification = appCtr.getClassificationService().load(UUID.fromString("44d8605e-a7ce-41e1-bee9-99edfec01e7c"));
+				Classification ermsClassification = appCtr.getClassificationService().load(UUID.fromString("6fa988a9-10b7-48b0-a370-2586fbc066eb"));
+				//getPhylum
+				TaxonNodeDto phylum1 = null;
+				if (!zooName.getRank().isHigher(Rank.PHYLUM())){
+						phylum1 =appCtr.getTaxonNodeService().taxonNodeDtoParentRank(faunaEuClassification, Rank.PHYLUM(), zooName);
 				}
-				Set<TaxonNode> nodes = taxon.getTaxonNodes();
-				Iterator<TaxonNode> taxonNodeIterator = nodes.iterator();
-				TaxonNode node, parentNode = null;
-				while (taxonNodeIterator.hasNext()){
-					node = taxonNodeIterator.next();
-					if (!node.isTopmostNode()){
-						parentNode = node.getParent();
-					}
+	
+				TaxonNodeDto phylum2 = null;
+				if (!zooName2.getRank().isHigher(Rank.PHYLUM())){
+					phylum2 = appCtr.getTaxonNodeService().taxonNodeDtoParentRank(ermsClassification, Rank.PHYLUM(), zooName2);
 				}
-				//TODO: ändern mit erweitertem Initializer..
-				if (parentNode != null){
-				    TaxonName parentName = HibernateProxyHelper.deproxy(parentNode.getTaxon().getName());
-					String parentNameCache = parentName.getNameCache();
-					mergeObject.setParentStringInErms(parentNameCache);
+				mergeObject.setPhylumInErms(phylum1);
+				mergeObject.setPhylumInFaunaEu(phylum2);
+	
+				//getUuids
+				mergeObject.setUuidErms(zooName.getUuid().toString());
+				mergeObject.setUuidFaunaEu(zooName.getUuid().toString());
+	
+				Iterator<IdentifiableSource> sources = zooName.getSources().iterator();
+				if (sources.hasNext()){
+					IdentifiableSource source = sources.next();
+					idInSource1 = source.getIdInSource();
+					mergeObject.setIdInErms(idInSource1);
+				}
+				sources = zooName2.getSources().iterator();
+				if (sources.hasNext()){
+					IdentifiableSource source = sources.next();
+					idInSource1 = source.getIdInSource();
+					mergeObject.setIdInFaunaEu(idInSource1);
+				}
+	
+				mergeObject.setNameCacheInErms(zooName.getNameCache());
+				mergeObject.setNameCacheInFaunaEu(zooName2.getNameCache());
+	
+				mergeObject.setAuthorInErms(zooName.getAuthorshipCache());
+				mergeObject.setAuthorInFaunaEu(zooName2.getAuthorshipCache());
+				Set<Taxon> taxa = zooName.getTaxa();
+				if (!taxa.isEmpty()){
+					mergeObject.setStatInErms(true);
+					Iterator<Taxon> taxaIterator = taxa.iterator();
+					Taxon taxon = null;
+					while (taxaIterator.hasNext()){
+						taxon = taxaIterator.next();
+						if (!taxon.isMisapplication()){
+							break;
+						}
+					}
+					Set<TaxonNode> nodes = taxon.getTaxonNodes();
+					Iterator<TaxonNode> taxonNodeIterator = nodes.iterator();
+					TaxonNode node, parentNode = null;
+					while (taxonNodeIterator.hasNext()){
+						node = taxonNodeIterator.next();
+						if (!node.isTopmostNode()){
+							parentNode = node.getParent();
+						}
+					}
+					//TODO: ändern mit erweitertem Initializer..
+					if (parentNode != null){
+					    TaxonName parentName = HibernateProxyHelper.deproxy(parentNode.getTaxon().getName());
+						String parentNameCache = parentName.getNameCache();
+						mergeObject.setParentStringInErms(parentNameCache);
+						mergeObject.setParentRankStringInErms(parentName.getRank().getLabel());
+						//System.err.println("parentName: " + parentNameCache);
+					}
+				}else{
+					mergeObject.setStatInErms(false);
+				}
+				taxa = zooName2.getTaxa();
+				if (!taxa.isEmpty()){
+					mergeObject.setStatInFaunaEu(true);
+					Iterator<Taxon> taxaIterator = taxa.iterator();
+					Taxon taxon = null;
+					while (taxaIterator.hasNext()){
+						taxon = taxaIterator.next();
+						if (!taxon.isMisapplication()){
+							break;
+						}
+					}
+					Set<TaxonNode> nodes = taxon.getTaxonNodes();
+					Iterator<TaxonNode> taxonNodeIterator = nodes.iterator();
+					TaxonNode node, parentNode = null;
+					while (taxonNodeIterator.hasNext()){
+						node = taxonNodeIterator.next();
+						if (!node.isTopmostNode()){
+							parentNode = node.getParent();
+						}
+					}
+					//TODO: ändern mit erweitertem Initializer..
+					if (parentNode != null){
+						if (parentNode.getTaxon().getName().isZoological()){
+	
+	    					IZoologicalName parentName = CdmBase.deproxy(parentNode.getTaxon().getName());
+	    					String parentNameCache = parentName.getNameCache();
+	    					mergeObject.setParentStringInFaunaEu(parentNameCache);
+	    					mergeObject.setParentRankStringInFaunaEu(parentName.getRank().getLabel());
+	    					System.err.println("parentName: " + parentNameCache);
+						}else{
+							System.err.println("no zoologicalName: " + parentNode.getTaxon().getName().getTitleCache() +" . "+parentNode.getTaxon().getName().getUuid());
+						}
+	
+					}
+				}else{
+					mergeObject.setStatInErms(false);
+				}
+				taxa = zooName2.getTaxa();
+				if (!taxa.isEmpty()){
+					mergeObject.setStatInFaunaEu(true);
+				}else{
+					mergeObject.setStatInFaunaEu(false);
+	
+				}
+	
+				mergeObject.setRankInErms(zooName.getRank().getLabel());
+				mergeObject.setRankInFaunaEu(zooName2.getRank().getLabel());
+	
+				//set parent informations
+	
+	
+				/*
+				Set<HybridRelationship> parentRelations = zooName.getParentRelationships();
+				Iterator parentIterator = parentRelations.iterator();
+				HybridRelationship parentRel;
+				ZoologicalName parentName;
+				while (parentIterator.hasNext()){
+					parentRel = (HybridRelationship)parentIterator.next();
+					parentName = (ZoologicalName)parentRel.getParentName();
 					mergeObject.setParentRankStringInErms(parentName.getRank().getLabel());
-					//System.err.println("parentName: " + parentNameCache);
+					mergeObject.setParentStringInErms(parentName.getNameCache());
 				}
-			}else{
-				mergeObject.setStatInErms(false);
+	
+				parentRelations = zooName2.getParentRelationships();
+				parentIterator = parentRelations.iterator();
+	
+				while (parentIterator.hasNext()){
+					parentRel = (HybridRelationship)parentIterator.next();
+					parentName = (ZoologicalName)parentRel.getParentName();
+					mergeObject.setParentRankStringInFaunaEu(parentName.getRank().getLabel());
+					mergeObject.setParentStringInFaunaEu(parentName.getNameCache());
+				}*/
+				merge.add(mergeObject);
 			}
-			taxa = zooName2.getTaxa();
-			if (!taxa.isEmpty()){
-				mergeObject.setStatInFaunaEu(true);
-				Iterator<Taxon> taxaIterator = taxa.iterator();
-				Taxon taxon = null;
-				while (taxaIterator.hasNext()){
-					taxon = taxaIterator.next();
-					if (!taxon.isMisapplication()){
-						break;
-					}
-				}
-				Set<TaxonNode> nodes = taxon.getTaxonNodes();
-				Iterator<TaxonNode> taxonNodeIterator = nodes.iterator();
-				TaxonNode node, parentNode = null;
-				while (taxonNodeIterator.hasNext()){
-					node = taxonNodeIterator.next();
-					if (!node.isTopmostNode()){
-						parentNode = node.getParent();
-					}
-				}
-				//TODO: ändern mit erweitertem Initializer..
-				if (parentNode != null){
-					if (parentNode.getTaxon().getName().isZoological()){
-
-    					IZoologicalName parentName = CdmBase.deproxy(parentNode.getTaxon().getName());
-    					String parentNameCache = parentName.getNameCache();
-    					mergeObject.setParentStringInFaunaEu(parentNameCache);
-    					mergeObject.setParentRankStringInFaunaEu(parentName.getRank().getLabel());
-    					System.err.println("parentName: " + parentNameCache);
-					}else{
-						System.err.println("no zoologicalName: " + parentNode.getTaxon().getName().getTitleCache() +" . "+parentNode.getTaxon().getName().getUuid());
-					}
-
-				}
-			}else{
-				mergeObject.setStatInErms(false);
-			}
-			taxa = zooName2.getTaxa();
-			if (!taxa.isEmpty()){
-				mergeObject.setStatInFaunaEu(true);
-			}else{
-				mergeObject.setStatInFaunaEu(false);
-
-			}
-
-			mergeObject.setRankInErms(zooName.getRank().getLabel());
-			mergeObject.setRankInFaunaEu(zooName2.getRank().getLabel());
-
-			//set parent informations
-
-
-			/*
-			Set<HybridRelationship> parentRelations = zooName.getParentRelationships();
-			Iterator parentIterator = parentRelations.iterator();
-			HybridRelationship parentRel;
-			ZoologicalName parentName;
-			while (parentIterator.hasNext()){
-				parentRel = (HybridRelationship)parentIterator.next();
-				parentName = (ZoologicalName)parentRel.getParentName();
-				mergeObject.setParentRankStringInErms(parentName.getRank().getLabel());
-				mergeObject.setParentStringInErms(parentName.getNameCache());
-			}
-
-			parentRelations = zooName2.getParentRelationships();
-			parentIterator = parentRelations.iterator();
-
-			while (parentIterator.hasNext()){
-				parentRel = (HybridRelationship)parentIterator.next();
-				parentName = (ZoologicalName)parentRel.getParentName();
-				mergeObject.setParentRankStringInFaunaEu(parentName.getRank().getLabel());
-				mergeObject.setParentStringInFaunaEu(parentName.getNameCache());
-			}*/
-			merge.add(mergeObject);
 		}
 
 		return merge;

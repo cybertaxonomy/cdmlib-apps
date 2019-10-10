@@ -19,6 +19,7 @@ import eu.etaxonomy.cdm.api.application.CdmApplicationController;
 import eu.etaxonomy.cdm.api.service.exception.ReferencedObjectUndeletableException;
 import eu.etaxonomy.cdm.api.service.pager.Pager;
 import eu.etaxonomy.cdm.app.common.CdmDestinations;
+import eu.etaxonomy.cdm.app.util.TestDatabase;
 import eu.etaxonomy.cdm.database.DbSchemaValidation;
 import eu.etaxonomy.cdm.database.ICdmDataSource;
 import eu.etaxonomy.cdm.hibernate.HibernateProxyHelper;
@@ -139,7 +140,7 @@ public class FaunaEuErmsMergeActivator {
 			UUID uuidFaunaEu = UUID.fromString(row.get(faunaEuUuid));
 			UUID uuidErms = UUID.fromString(row.get(ermsUuid));
 			taxonFaunaEu = appCtrInit.getTaxonService().find(uuidFaunaEu);
-			taxonErms = appCtrInit.getTaxonService().find(uuidFaunaEu);
+			taxonErms = appCtrInit.getTaxonService().find(uuidErms);
 
 			if (Integer.parseInt(row.get(18)) == 1){
 				//isFaunaEu = 1 -> copy the author of Fauna Europaea to Erms

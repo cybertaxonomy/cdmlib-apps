@@ -1,5 +1,7 @@
 package eu.etaxonomy.cdm.io.pesi.merging;
 
+import eu.etaxonomy.cdm.persistence.dto.TaxonNodeDto;
+
 public class FaunaEuErmsMerging {
 	
 	private String uuidFaunaEu;
@@ -20,8 +22,8 @@ public class FaunaEuErmsMerging {
 	private String rankInFaunaEu;
 	private String rankInErms;
 	
-	private String phylumInFaunaEu;
-	private String phylumInErms;
+	private TaxonNodeDto phylumInFaunaEu;
+	private TaxonNodeDto phylumInErms;
 	
 	private String parentStringInFaunaEu;
 	private String parentStringInErms;
@@ -85,19 +87,19 @@ public class FaunaEuErmsMerging {
 		this.rankInFaunaEu = rankInFaunaEu;
 	}
 
-	public String getPhylumInFaunaEu() {
+	public TaxonNodeDto getPhylumInFaunaEu() {
 		return phylumInFaunaEu;
 	}
 
-	public void setPhylumInFaunaEu(String phylumInFaunaEu) {
+	public void setPhylumInFaunaEu(TaxonNodeDto phylumInFaunaEu) {
 		this.phylumInFaunaEu = phylumInFaunaEu;
 	}
 
-	public String getPhylumInErms() {
+	public TaxonNodeDto getPhylumInErms() {
 		return phylumInErms;
 	}
 
-	public void setPhylumInErms(String phylumInErms) {
+	public void setPhylumInErms(TaxonNodeDto phylumInErms) {
 		this.phylumInErms = phylumInErms;
 	}
 
