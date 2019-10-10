@@ -137,11 +137,6 @@ public class ErmsImportActivator {
 			ICdmRepository app = ermsImport.getCdmAppController();
 			ISourceable<?> obj = app.getCommonService().getSourcedObjectByIdInSource(TaxonName.class, "1000027", null);
 			logger.info(obj);
-
-//			//make feature tree
-//			FeatureTree tree = TreeCreator.flatTree(featureTreeUuid, ermsImportConfigurator.getFeatureMap(), featureKeyList);
-//			app = ermsImport.getCdmAppController();
-//			app.getFeatureTreeService().saveOrUpdate(tree);
 		}
 		System.out.println("End import from ("+ source.getDatabase() + ") to " + destination.getDatabase() + "...");
 	}
@@ -156,7 +151,6 @@ public class ErmsImportActivator {
 			ermsExport.doTaxa = doTaxa;
 			ermsExport.doTreeIndex = doTaxa;
 			ermsExport.doRelTaxa = doRelTaxa;
-//            ermsExport.doInferredSynonyms = doRelTaxa;
             ermsExport.doDescriptions = doImages;
 
 //			ermsExport.doExport(cdmDB, pesiDestination);

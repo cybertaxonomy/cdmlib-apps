@@ -283,7 +283,7 @@ public class PesiTaxonExport extends PesiExportBase {
     				if (nvn.getRank().equals(Rank.KINGDOM())){
     				    if(taxon.isInstanceOf(Taxon.class)){
     				        String treeIndex = ((Taxon)taxon).getTaxonNodes().iterator().next().treeIndex();
-    				        Integer kingdomId = PesiTransformer.pesiKingdomMap.get(nvn.getGenusOrUninomial());
+    				        Integer kingdomId = PesiTransformer.pesiKingdomId(nvn.getGenusOrUninomial());
     				        state.getTreeIndexKingdomMap().put(treeIndex, kingdomId);
     				    }else{
     				        logger.warn("Kingdom taxon is not of class Taxon but " + taxon.getClass().getSimpleName() + ": " + nvn.getGenusOrUninomial());
@@ -541,7 +541,7 @@ public class PesiTaxonExport extends PesiExportBase {
         Taxon valuelessTaxon = (Taxon)getTaxonService().find(PesiTransformer.uuidTaxonValuelessEuroMed);
         if (valuelessTaxon != null){
             String treeIndex = valuelessTaxon.getTaxonNodes().iterator().next().treeIndex();
-            Integer kingdomId = PesiTransformer.pesiKingdomMap.get("Plantae");
+            Integer kingdomId = PesiTransformer.pesiKingdomId("Plantae");
             state.getTreeIndexKingdomMap().put(treeIndex, kingdomId);
         }
         commitTransaction(txStatus);

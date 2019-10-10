@@ -284,9 +284,10 @@ public class EdaphobaseDescriptionImport extends EdaphobaseImportBase {
         }
         //TODO 84, 95  (mit Einheit)
 
-        term.addRepresentation(Representation.NewInstance(german, german, null, Language.GERMAN()));
-        term.addRepresentation(Representation.NewInstance(english, english, null, Language.ENGLISH()));
-        term.setIdInVocabulary(idInVoc);
+        logger.error("addRepresentation has been commented because 'german' and 'english' not yet handled correctly");
+//        term.addRepresentation(Representation.NewInstance(german, german, null, Language.GERMAN()));
+//        term.addRepresentation(Representation.NewInstance(english, english, null, Language.ENGLISH()));
+//        term.setIdInVocabulary(idInVoc);
     }
 
     /**

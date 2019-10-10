@@ -25,7 +25,6 @@ import org.springframework.transaction.TransactionStatus;
 import eu.etaxonomy.cdm.io.berlinModel.BerlinModelTransformer;
 import eu.etaxonomy.cdm.io.common.DbExportStateBase;
 import eu.etaxonomy.cdm.io.common.Source;
-import eu.etaxonomy.cdm.io.common.TdwgAreaProvider;
 import eu.etaxonomy.cdm.io.common.mapping.UndefinedTransformerMethodException;
 import eu.etaxonomy.cdm.io.common.mapping.out.CollectionExportMapping;
 import eu.etaxonomy.cdm.io.common.mapping.out.DbAnnotationMapper;
@@ -42,7 +41,6 @@ import eu.etaxonomy.cdm.io.common.mapping.out.DbStringMapper;
 import eu.etaxonomy.cdm.io.common.mapping.out.DbTextDataMapper;
 import eu.etaxonomy.cdm.io.common.mapping.out.IdMapper;
 import eu.etaxonomy.cdm.io.common.mapping.out.MethodMapper;
-import eu.etaxonomy.cdm.io.pesi.erms.ErmsTransformer;
 import eu.etaxonomy.cdm.model.common.CdmBase;
 import eu.etaxonomy.cdm.model.common.Extension;
 import eu.etaxonomy.cdm.model.common.ExtensionType;
@@ -104,7 +102,6 @@ public class PesiDescriptionExport extends PesiExportBase {
 	private static int countAdditionalSources;
 	private static int countImages;
 	private static int countNotes;
-	private static int countSourceOfSynonymy;
 
 	private static int countCommonName;
 	private static int countOccurrence;
@@ -238,7 +235,6 @@ public class PesiDescriptionExport extends PesiExportBase {
 		logger.info("AddSrc: " + countAdditionalSources);
 		logger.info("Images: " + countImages);
 		logger.info("Notes: " + countNotes);
-	    logger.info("Source of Synonymy: " + countSourceOfSynonymy);
 		logger.info("Others: " + countOthers);
 
 		// Commit transaction
@@ -315,7 +311,6 @@ public class PesiDescriptionExport extends PesiExportBase {
 		logger.info("AddSrc: " + countAdditionalSources);
 		logger.info("Images: " + countImages);
 		logger.info("Notes: " + countNotes);
-		logger.info("Source of Synonymy: " + countSourceOfSynonymy);
         logger.info("Others: " + countOthers);
 
 		// Commit transaction
@@ -371,7 +366,9 @@ public class PesiDescriptionExport extends PesiExportBase {
 				Distribution distribution = CdmBase.deproxy(element, Distribution.class);
 				MarkerType markerType = getUuidMarkerType(PesiTransformer.uuidMarkerTypeHasNoLastAction, state);
 				distribution.addMarker(Marker.NewInstance(markerType, true));
-				if (isPesiDistribution(state, distribution)){
+				if (!isPesiDistribution(state, distribution)){
+				    logger.debug("Distribution is not PESI distribution: " + distribution.toString());
+				}else{
 					countDistribution++;
 					try{
 					    success &=occurrenceMapping.invoke(distribution);
@@ -379,8 +376,6 @@ public class PesiDescriptionExport extends PesiExportBase {
 					    System.err.println(distribution.getInDescription().getTitleCache());
 					    e.printStackTrace();
 					}
-				}else{
-				    logger.warn("Distribution is not PESI distribution");
 				}
 			}else if (isAdditionalTaxonSource(element)){
 				countAdditionalSources++;
@@ -393,12 +388,6 @@ public class PesiDescriptionExport extends PesiExportBase {
 			}else if (isPesiNote(element)){
 				countNotes++;
 				success &= notesMapping.invoke(element);
-
-			}else if (isSourceOfSynonymy(element)){
-                countSourceOfSynonymy++;
-                if(countSourceOfSynonymy < 2){
-                    logger.warn("Source of synonymy not yet implemented!");
-                }
             }else{
 				countOthers++;
 				String featureTitle = element.getFeature() == null ? "no feature" :element.getFeature().getTitleCache();
@@ -412,28 +401,26 @@ public class PesiDescriptionExport extends PesiExportBase {
 		}
 	}
 
-    private boolean isSourceOfSynonymy(DescriptionElementBase element) {
-        if (element.getFeature() == null){
-            return false;
-        }else {
-            return element.getFeature().getUuid().equals(ErmsTransformer.uuidSourceOfSynonymy);
-        }
-    }
-
     private boolean isExcludedNote(DescriptionElementBase element) {
 		Integer categoryFk = PesiTransformer.feature2NoteCategoryFk(element.getFeature());
 		//TODO decide where to handle them best (configurator, transformer, single method, ...)
 		return (excludedNoteCategories.contains(categoryFk));
 	}
 
+    boolean isFirstUndefinedStatusWarnung = true;
 	private boolean isPesiDistribution(PesiExportState state, Distribution distribution) {
 		//currently we use the E+M summary status to decide if a distribution should be exported
 		if (distribution.getStatus() == null){
 			return false;
+		}else if (distribution.getStatus().getUuid().equals(BerlinModelTransformer.uuidStatusUndefined)){
+		    if (isFirstUndefinedStatusWarnung){
+                logger.warn("Status 'undefined' is not mapped to any status for now. Needs further checking. (E+M specific)");
+                isFirstUndefinedStatusWarnung = false;
+            }
+            return false;
 		}
 
 		//...this may change in future so we keep the following code
-		Integer key;
 		//area filter
 		NamedArea area = distribution.getArea();
 		if (area == null){
@@ -442,18 +429,18 @@ public class PesiDescriptionExport extends PesiExportBase {
 		}else if (area.getUuid().equals(BerlinModelTransformer.euroMedUuid)){
 			//E+M area only holds endemic status information and therefore is not exported to PESI
 			return false;
-		}else if (area.equals(TdwgAreaProvider.getAreaByTdwgAbbreviation("1"))){
-			//Europe area never holds status information (may probably be deleted in E+M)
-			return false;
+//		}else if (area.equals(TdwgAreaProvider.getAreaByTdwgAbbreviation("1"))){
+//			//Europe area never holds status information (may probably be deleted in E+M)
+//			return false;
 //		}else if (area.equals(TdwgArea.getAreaByTdwgAbbreviation("21"))){
 //			//Macaronesia records should not be exported to PESI
 //			return false;
-//		//TODO exclude Russion areas Rs*, and maybe ohters
+//		//TODO exclude Russion areas Rs*, and maybe others
 
 		} else {
             try {
 				if (state.getTransformer().getKeyByNamedArea(area) == null){
-					String warning = "Area (%s,%s) not available in PESI transformer for taxon %S: ";
+					String warning = "Area (%s,%s) not available in PESI transformer for taxon %s: ";
 					TaxonBase<?> taxon =  state.getCurrentTaxon();
 					warning = String.format(warning, area.getTitleCache(), area.getRepresentation(Language.ENGLISH()).getAbbreviatedLabel(),taxon ==null? "-" : taxon.getTitleCache());
 					logger.warn(warning);
