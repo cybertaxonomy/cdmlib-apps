@@ -33,22 +33,23 @@ public class PesiExportActivatorEM {
 	static final ICdmDataSource cdmSource = CdmDestinations.cdm_test_local_mysql_euromed();
 
 	//database validation status (create, update, validate ...)
-	static final Source pesiDestination = PesiDestinations.pesi_test_local_CDM_EM2PESI();
-//	static final Source pesiDestination = PesiDestinations.pesi_test_local_CDM_EM2PESI_2();
+//	static final Source pesiDestination = PesiDestinations.pesi_test_local_CDM_EM2PESI();
+	static final Source pesiDestination = PesiDestinations.pesi_test_local_CDM_EM2PESI_2();
 
 // ****************** ALL *****************************************
 
-	boolean deleteAll = false;
-	DO_REFERENCES doReferences =  DO_REFERENCES.NONE;
+	boolean deleteAll = true;
+	DO_REFERENCES doReferences =  DO_REFERENCES.ALL;
 	boolean doTaxa = true;
-	boolean doPureNames = true;
-	boolean doTreeIndex = true;
-	boolean doParentAndBiota = true;
-	boolean doInferredSynonyms = false;   //no inferred synonyms in E+M
 	boolean doRelTaxa = true;
-	boolean doAdditionalTaxonSource = false;  //do not exist in E+M
-    boolean doDescriptions = true;
-	boolean doEcologyAndLink = true;
+	boolean doDescriptions = true;
+
+	boolean doPureNames = doTaxa;
+	boolean doTreeIndex = doTaxa;
+	boolean doParentAndBiota = doTaxa;
+    boolean doAdditionalTaxonSource = false;  //do not exist in E+M
+    boolean doInferredSynonyms = false;   //no inferred synonyms in E+M
+	boolean doEcologyAndLink = false;   //do not exist in E+M
 
 // ************************ NONE **************************************** //
 

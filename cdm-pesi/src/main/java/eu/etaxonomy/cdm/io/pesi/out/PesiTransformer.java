@@ -57,15 +57,10 @@ import eu.etaxonomy.cdm.strategy.exceptions.UnknownCdmTypeException;
  * @since 16.02.2010
  */
 public final class PesiTransformer extends ExportTransformerBase{
-	private static final Logger logger = Logger.getLogger(PesiTransformer.class);
+
+    private static final Logger logger = Logger.getLogger(PesiTransformer.class);
 
 	public static final String AUCT_STRING = "auct.";
-
-	//source identifiers
-	public static final int SOURCE_EM = 1;
-	public static final int SOURCE_FE = 2;
-	public static final int SOURCE_IF = 3;
-	public static final int SOURCE_ERMS = 4;
 
 	//sourceRefUUIDs
 	public static final UUID uuidSourceRefEuroMed = UUID.fromString("51b3900c-91e0-4cc5-94f3-577a352ca9c4");
@@ -82,10 +77,10 @@ public final class PesiTransformer extends ExportTransformerBase{
 	public static final String SOURCE_STR_ERMS = "ERMS";
 
 	// status keys
-	public static int QUALITY_STATUS_CHECKED_EDITOR_ERMS_1_1 = 0;
-	public static int QUALITY_STATUS_ADD_BY_DBMT= 2;
-	public static int QUALITY_STATUS_CHECKED_EDITOR = 3;
-	public static int QUALITY_STATUS_EDITED_BY_DBMT = 4;
+	private static int QUALITY_STATUS_CHECKED_EDITOR_ERMS_1_1 = 0;
+	private static int QUALITY_STATUS_ADD_BY_DBMT= 2;
+	private static int QUALITY_STATUS_CHECKED_EDITOR = 3;
+	private static int QUALITY_STATUS_EDITED_BY_DBMT = 4;
 
 	// marker type
 	public static final UUID uuidMarkerGuidIsMissing = UUID.fromString("24e70843-05e2-44db-954b-84df0d23ea20");
@@ -106,105 +101,108 @@ public final class PesiTransformer extends ExportTransformerBase{
 	public static final UUID uuidExtFauExtraCodes = UUID.fromString("b8c7e77d-9869-4787-bed6-b4b302dbc5f5");
 
 	// References
-	public static int REF_ARTICLE_IN_PERIODICAL = 1;
-	public static int REF_PART_OF_OTHER = 2;
-	public static int REF_BOOK = 3;
-	public static int REF_DATABASE = 4;
-	public static int REF_INFORMAL = 5;
-	public static int REF_NOT_APPLICABLE = 6;
-	public static int REF_WEBSITE = 7;
-	public static int REF_PUBLISHED = 8;
-	public static int REF_JOURNAL = 9;
+	private static int REF_ARTICLE_IN_PERIODICAL = 1;
+	private static int REF_PART_OF_OTHER = 2;
+	private static int REF_BOOK = 3;
+	private static int REF_DATABASE = 4;
+	private static int REF_INFORMAL = 5;
+	private static int REF_NOT_APPLICABLE = 6;
+	private static int REF_WEBSITE = 7;
+	private static int REF_PUBLISHED = 8;
+	private static int REF_JOURNAL = 9;
 	public static int REF_UNRESOLVED = 10;
-	public static int REF_PUBLICATION = 11;
+	private static int REF_PUBLICATION = 11;
 	public static String REF_STR_UNRESOLVED = "unresolved";
 
 
 	// NameStatus
     public static UUID uuidNomStatusTemporaryName = UUID.fromString("aa6ada5a-ca21-4fef-b76f-9ae237e9c4ae");
 
-	public static int NAME_ST_NOM_INVAL = 1;
-	public static int NAME_ST_NOM_ILLEG = 2;
-	public static int NAME_ST_NOM_NUD = 3;
-	public static int NAME_ST_NOM_REJ = 4;
-	public static int NAME_ST_NOM_REJ_PROP = 5;
-	public static int NAME_ST_NOM_UTIQUE_REJ = 6;
-	public static int NAME_ST_NOM_UTIQUE_REJ_PROP = 7;
-	public static int NAME_ST_NOM_CONS = 8;
-	public static int NAME_ST_NOM_CONS_PROP = 9;
-	public static int NAME_ST_ORTH_CONS = 10;
-	public static int NAME_ST_ORTH_CONS_PROP = 11;
-	public static int NAME_ST_NOM_SUPERFL = 12;
-	public static int NAME_ST_NOM_AMBIG = 13;
-	public static int NAME_ST_NOM_PROVIS = 14;
-	public static int NAME_ST_NOM_DUB = 15;
-	public static int NAME_ST_NOM_NOV = 16;
-	public static int NAME_ST_NOM_CONFUS = 17;
-	public static int NAME_ST_NOM_ALTERN = 18;
-	public static int NAME_ST_COMB_INVAL = 19;
-	public static int NAME_ST_LEGITIMATE = 20; // PESI specific from here
-	public static int NAME_ST_COMB_INED = 21;
-	public static int NAME_ST_COMB_AND_STAT_INED = 22;
-	public static int NAME_ST_NOM_AND_ORTH_CONS = 23;
-	public static int NAME_ST_NOM_NOV_INED = 24;
-	public static int NAME_ST_SP_NOV_INED = 25;
-	public static int NAME_ST_ALTERNATE_REPRESENTATION = 26;
-	public static int NAME_ST_TEMPORARY_NAME = 27;
-	public static int NAME_ST_SPECIES_INQUIRENDA = 28;
+	private static int NAME_ST_NOM_INVAL = 1;
+	private static int NAME_ST_NOM_ILLEG = 2;
+	private static int NAME_ST_NOM_NUD = 3;
+	private static int NAME_ST_NOM_REJ = 4;
+	private static int NAME_ST_NOM_REJ_PROP = 5;
+	private static int NAME_ST_NOM_UTIQUE_REJ = 6;
+	private static int NAME_ST_NOM_UTIQUE_REJ_PROP = 7;
+	private static int NAME_ST_NOM_CONS = 8;
+	private static int NAME_ST_NOM_CONS_PROP = 9;
+	private static int NAME_ST_ORTH_CONS = 10;
+	private static int NAME_ST_ORTH_CONS_PROP = 11;
+	private static int NAME_ST_NOM_SUPERFL = 12;
+	private static int NAME_ST_NOM_AMBIG = 13;
+	private static int NAME_ST_NOM_PROVIS = 14;
+	private static int NAME_ST_NOM_DUB = 15;
+	private static int NAME_ST_NOM_NOV = 16;
+	private static int NAME_ST_NOM_CONFUS = 17;
+	private static int NAME_ST_NOM_ALTERN = 18;
+	private static int NAME_ST_COMB_INVAL = 19;
+	private static int NAME_ST_LEGITIMATE = 20; // PESI specific from here
+	private static int NAME_ST_COMB_INED = 21;
+	private static int NAME_ST_COMB_AND_STAT_INED = 22;
+	private static int NAME_ST_NOM_AND_ORTH_CONS = 23;
+	private static int NAME_ST_NOM_NOV_INED = 24;
+	private static int NAME_ST_SP_NOV_INED = 25;
+	private static int NAME_ST_ALTERNATE_REPRESENTATION = 26;
+	private static int NAME_ST_TEMPORARY_NAME = 27;
+	private static int NAME_ST_SPECIES_INQUIRENDA = 28;
 
 	// TaxonStatus
-	public static int T_STATUS_ACCEPTED = 1;
-	public static int T_STATUS_SYNONYM = 2;
-	public static int T_STATUS_PARTIAL_SYN = 3;
-	public static int T_STATUS_PRO_PARTE_SYN = 4;
-	public static int T_STATUS_UNRESOLVED = 5;
-	public static int T_STATUS_ORPHANED = 6;
+	private static int T_STATUS_ACCEPTED = 1;
+	private static int T_STATUS_SYNONYM = 2;
+	private static int T_STATUS_PARTIAL_SYN = 3;
+	private static int T_STATUS_PRO_PARTE_SYN = 4;
+	private static int T_STATUS_UNRESOLVED = 5;
+	private static int T_STATUS_ORPHANED = 6;
 	public static int T_STATUS_UNACCEPTED = 7;
-	public static int T_STATUS_NOT_ACCEPTED = 8;
+	private static int T_STATUS_NOT_ACCEPTED = 8;
 
 	// TypeDesginationStatus //	 -> not a table anymore
-	public static int TYPE_BY_ORIGINAL_DESIGNATION = 1;
-	public static int TYPE_BY_SUBSEQUENT_DESIGNATION = 2;
-	public static int TYPE_BY_MONOTYPY = 3;
-	public static String TYPE_STR_BY_ORIGINAL_DESIGNATION = "Type by original designation";
-	public static String TYPE_STR_BY_SUBSEQUENT_DESIGNATION = "Type by subsequent designation";
-	public static String TYPE_STR_BY_MONOTYPY = "Type by monotypy";
+	private static int TYPE_BY_ORIGINAL_DESIGNATION = 1;
+	private static int TYPE_BY_SUBSEQUENT_DESIGNATION = 2;
+	private static int TYPE_BY_MONOTYPY = 3;
+	private static String TYPE_STR_BY_ORIGINAL_DESIGNATION = "Type by original designation";
+	private static String TYPE_STR_BY_SUBSEQUENT_DESIGNATION = "Type by subsequent designation";
+	private static String TYPE_STR_BY_MONOTYPY = "Type by monotypy";
 
 	// RelTaxonQualifier
-	public static int IS_BASIONYM_FOR = 1;
-	public static int IS_LATER_HOMONYM_OF = 2;
-	public static int IS_REPLACED_SYNONYM_FOR = 3;
-	public static int IS_VALIDATION_OF = 4;
-	public static int IS_LATER_VALIDATION_OF = 5;
-	public static int IS_TYPE_OF = 6;
-	public static int IS_CONSERVED_TYPE_OF = 7;
-	public static int IS_REJECTED_TYPE_OF = 8;
-	public static int IS_FIRST_PARENT_OF = 9;
-	public static int IS_SECOND_PARENT_OF = 10;
-	public static int IS_FEMALE_PARENT_OF = 11;
-	public static int IS_MALE_PARENT_OF = 12;
-	public static int IS_CONSERVED_AGAINST = 13;
-	public static int IS_REJECTED_IN_FAVOUR_OF = 14;
-	public static int IS_TREATED_AS_LATER_HOMONYM_OF = 15;
-	public static int IS_ORTHOGRAPHIC_VARIANT_OF = 16;
-	public static int IS_ALTERNATIVE_NAME_FOR = 17;
-	public static int HAS_SAME_TYPE_AS = 18;
-	public static int IS_LECTOTYPE_OF = 61;
-	public static int TYPE_NOT_DESIGNATED = 62;
-	public static int IS_TAXONOMICALLY_INCLUDED_IN = 101;
+	private static int IS_BASIONYM_FOR = 1;
+	private static int IS_LATER_HOMONYM_OF = 2;
+	private static int IS_REPLACED_SYNONYM_FOR = 3;
+	private static int IS_VALIDATION_OF = 4;
+	private static int IS_LATER_VALIDATION_OF = 5;
+	private static int IS_TYPE_OF = 6;
+	private static int IS_CONSERVED_TYPE_OF = 7;
+	private static int IS_REJECTED_TYPE_OF = 8;
+	private static int IS_FIRST_PARENT_OF = 9;
+	private static int IS_SECOND_PARENT_OF = 10;
+	private static int IS_FEMALE_PARENT_OF = 11;
+	private static int IS_MALE_PARENT_OF = 12;
+	private static int IS_CONSERVED_AGAINST = 13;
+	private static int IS_REJECTED_IN_FAVOUR_OF = 14;
+	private static int IS_TREATED_AS_LATER_HOMONYM_OF = 15;
+	private static int IS_ORTHOGRAPHIC_VARIANT_OF = 16;
+	private static int IS_ALTERNATIVE_NAME_FOR = 17;
+	private static int HAS_SAME_TYPE_AS = 18;
+	private static int IS_ORIGINAL_SPELLING_FOR = 19;
+	private static int IS_BLOCKING_NAME_FOR = 20;
+	private static int IS_LECTOTYPE_OF = 61;
+	private static int TYPE_NOT_DESIGNATED = 62;
+	private static int IS_TAXONOMICALLY_INCLUDED_IN = 101;
 	public static int IS_SYNONYM_OF = 102;
-	public static int IS_MISAPPLIED_NAME_FOR = 103;
-	public static int IS_PRO_PARTE_SYNONYM_OF = 104;
-	public static int IS_PARTIAL_SYNONYM_OF = 105;
-	public static int IS_HETEROTYPIC_SYNONYM_OF = 106;
-	public static int IS_HOMOTYPIC_SYNONYM_OF = 107;
-	public static int IS_PRO_PARTE_AND_HOMOTYPIC_SYNONYM_OF = 201;
-	public static int IS_PRO_PARTE_AND_HETEROTYPIC_SYNONYM_OF = 202;
-	public static int IS_PARTIAL_AND_HOMOTYPIC_SYNONYM_OF = 203;
-	public static int IS_PARTIAL_AND_HETEROTYPIC_SYNONYM_OF = 204;
-	public static int IS_INFERRED_EPITHET_FOR = 301;
-	public static int IS_INFERRED_GENUS_FOR = 302;
-	public static int IS_POTENTIAL_COMBINATION_FOR = 303;
+	private static int IS_MISAPPLIED_NAME_FOR = 103;
+	private static int IS_PRO_PARTE_SYNONYM_OF = 104;
+	private static int IS_PARTIAL_SYNONYM_OF = 105;
+	private static int IS_HETEROTYPIC_SYNONYM_OF = 106;
+	private static int IS_HOMOTYPIC_SYNONYM_OF = 107;
+	private static int IS_PRO_PARTE_MISAPPLIED_NAME_FOR = 108;
+	private static int IS_PRO_PARTE_AND_HOMOTYPIC_SYNONYM_OF = 201;
+	private static int IS_PRO_PARTE_AND_HETEROTYPIC_SYNONYM_OF = 202;
+	private static int IS_PARTIAL_AND_HOMOTYPIC_SYNONYM_OF = 203;
+	private static int IS_PARTIAL_AND_HETEROTYPIC_SYNONYM_OF = 204;
+	private static int IS_INFERRED_EPITHET_FOR = 301;
+	private static int IS_INFERRED_GENUS_FOR = 302;
+	private static int IS_POTENTIAL_COMBINATION_FOR = 303;
 
 	//namespaces
 	public static String STR_NAMESPACE_NOMINAL_TAXON = "Nominal taxon from TAX_ID:";
@@ -213,393 +211,393 @@ public final class PesiTransformer extends ExportTransformerBase{
 	public static String STR_NAMESPACE_POTENTIAL_COMBINATION = "Potential combination from TAX_ID:";
 
 	// Kingdoms
-	public static final int KINGDOM_NULL = 0;
-	public static final int KINGDOM_ANIMALIA = 2;
-	public static final int KINGDOM_PLANTAE = 3;
-	public static final int KINGDOM_FUNGI = 4;
-	public static final int KINGDOM_PROTOZOA = 5;
-	public static final int KINGDOM_BACTERIA = 6;
-	public static final int KINGDOM_CHROMISTA = 7;
+	private static final int KINGDOM_NULL = 0;
+	private static final int KINGDOM_ANIMALIA = 2;
+	private static final int KINGDOM_PLANTAE = 3;
+	private static final int KINGDOM_FUNGI = 4;
+	private static final int KINGDOM_PROTOZOA = 5;
+	private static final int KINGDOM_BACTERIA = 6;
+	private static final int KINGDOM_CHROMISTA = 7;
 
 	// Kingdoms
-	public static Map<String, Integer> pesiKingdomMap = new HashMap<>();
+	private static Map<String, Integer> pesiKingdomMap = new HashMap<>();
 
 	//Kingdom title
-    public static String KINGDOM_PLANTAE_STRING = "Plantae";
-    public static String KINGDOM_FUNGI_STRING = "Fungi";
-    public static String KINGDOM_PROTOZOA_STRING = "Protozoa";
-    public static String kINGDOM_BACTERIA_STRING = "Bacteria";
-    public static String KINGDOM_CHROMISTA_STRING = "Chromista";
+    private static String KINGDOM_PLANTAE_STRING = "Plantae";
+    private static String KINGDOM_FUNGI_STRING = "Fungi";
+    private static String KINGDOM_PROTOZOA_STRING = "Protozoa";
+    private static String kINGDOM_BACTERIA_STRING = "Bacteria";
+    private static String KINGDOM_CHROMISTA_STRING = "Chromista";
 
 	//ranks of all kingdoms
-    public static int Kingdom = 10;
-    public static int Subkingdom = 20;
-    public static int Phylum = 30;  //Phylum and Division is same (#8541) according to ICNAFP
-    public static int Division = 30;
-    public static int Subphylum = 40;  //See above comment
-    public static int Subdivision = 40;
-    public static int Class = 60;
-    public static int Subclass = 70;
-    public static int Order = 100;
-    public static int Suborder = 110;
-    public static int Family = 140;
-    public static int Subfamily = 150;
-    public static int Tribe = 160;
-    public static int Subtribe = 170;
-    public static int Genus = 180;
-    public static int Subgenus = 190;
-    public static int Species =220;
-    public static int Subspecies = 230;
-    public static int Variety = 240;
-    public static int Forma = 260;
+    private static int Kingdom = 10;
+    private static int Subkingdom = 20;
+    private static int Phylum = 30;  //Phylum and Division is same (#8541) according to ICNAFP
+    private static int Division = 30;
+    private static int Subphylum = 40;  //See above comment
+    private static int Subdivision = 40;
+    private static int Class = 60;
+    private static int Subclass = 70;
+    private static int Order = 100;
+    private static int Suborder = 110;
+    private static int Family = 140;
+    private static int Subfamily = 150;
+    private static int Tribe = 160;
+    private static int Subtribe = 170;
+    private static int Genus = 180;
+    private static int Subgenus = 190;
+    private static int Species =220;
+    private static int Subspecies = 230;
+    private static int Variety = 240;
+    private static int Forma = 260;
 
     //ranks of some kingdoms
-    public static int Infrakingdom = 25; //2,3,5,7
-    public static int Infraphylum = 45;  //2,7
-    public static int Superclass = 50;   //2,5,6,7
-    public static int Infraclass = 80;   //2,5,6,7
-    public static int Superorder = 90;   //2,3,5,6,7
-    public static int Infraorder = 120;  //2,5,6,7
-    public static int Superfamily = 130; //2,5,6,7
-    public static int Bot_Section = 200;    //3,4,7
-    public static int Bot_Subsection = 210; //3,4,7
-    public static int Subvariety = 250;     //2,3,4,7
-    public static int Subform = 270;        //2,3,4
-    public static int Forma_spec = 275;     //3,4,5,7
+    private static int Infrakingdom = 25; //2,3,5,7
+    private static int Infraphylum = 45;  //2,7
+    private static int Superclass = 50;   //2,5,6,7
+    private static int Infraclass = 80;   //2,5,6,7
+    private static int Superorder = 90;   //2,3,5,6,7
+    private static int Infraorder = 120;  //2,5,6,7
+    private static int Superfamily = 130; //2,5,6,7
+    private static int Bot_Section = 200;    //3,4,7
+    private static int Bot_Subsection = 210; //3,4,7
+    private static int Subvariety = 250;     //2,3,4,7
+    private static int Subform = 270;        //2,3,4
+    private static int Forma_spec = 275;     //3,4,5,7
 
     // Animalia Ranks
-	public static int Superphylum = 28;
-	public static int Subterclass = 85;
-	public static int Parvorder = 122;
-	public static int Animalia_Section = 125;
-	public static int Animalia_Subsection = 127;
-	public static int Natio = 235;
+	private static int Superphylum = 28;
+	private static int Subterclass = 85;
+	private static int Parvorder = 122;
+	private static int Animalia_Section = 125;
+	private static int Animalia_Subsection = 127;
+	private static int Natio = 235;
 
 	// Plantae Ranks
-	public static int Series = 212;
-	public static int Subseries	= 214;
-	public static int Aggregate	= 216;
-	public static int Coll_Species = 218;
-	public static int Grex = 225;
-	public static int Proles = 232;
-	public static int Race = 234;
-	public static int Convarietas = 236;
-	public static int Taxa_infragen = 280;
-	public static int Taxa_infraspec = 285;
+	private static int Series = 212;
+	private static int Subseries	= 214;
+	private static int Aggregate	= 216;
+	private static int Coll_Species = 218;
+	private static int Grex = 225;
+	private static int Proles = 232;
+	private static int Race = 234;
+	private static int Convarietas = 236;
+	private static int Taxa_infragen = 280;
+	private static int Taxa_infraspec = 285;
 
 
 	//NoteCategory
-	public static int NoteCategory_description = 1;
+	private static int NoteCategory_description = 1;
 	public static int NoteCategory_ecology = 4;
-	public static int NoteCategory_phenology	= 5;
-	public static int NoteCategory_general_distribution_euromed = 10;
-	public static int NoteCategory_general_distribution_world = 11;
-	public static int NoteCategory_Common_names = 12;
-	public static int NoteCategory_Occurrence = 13;
-	public static int NoteCategory_Maps =14;
-	public static int NoteCategory_Link_to_maps = 20;
-	public static int NoteCategory_Link_to_images = 21;
+	private static int NoteCategory_phenology	= 5;
+	private static int NoteCategory_general_distribution_euromed = 10;
+	private static int NoteCategory_general_distribution_world = 11;
+	private static int NoteCategory_Common_names = 12;
+	private static int NoteCategory_Occurrence = 13;
+	private static int NoteCategory_Maps =14;
+	private static int NoteCategory_Link_to_maps = 20;
+	private static int NoteCategory_Link_to_images = 21;
 	public static int NoteCategory_Link_to_taxonomy = 22;
 	public static int NoteCategory_Link_to_general_information = 23;
 	public static int NoteCategory_undefined_link = 24;
-	public static int NoteCategory_Editor_Braces = 249;
-	public static int NoteCategory_Editor_Brackets = 250;
-	public static int NoteCategory_Editor_Parenthesis = 251;
-	public static int NoteCategory_Inedited = 252;
-	public static int NoteCategory_Comments_on_editing_process = 253;
-	public static int NoteCategory_Publication_date = 254;
-	public static int NoteCategory_Morphology = 255;
-	public static int NoteCategory_Acknowledgments = 257;
-	public static int NoteCategory_Original_publication = 258;
-	public static int NoteCategory_Type_locality	= 259;
-	public static int NoteCategory_Environment = 260;
-	public static int NoteCategory_Spelling = 261;
-	public static int NoteCategory_Systematics = 262;
-	public static int NoteCategory_Remark = 263;
-	public static int NoteCategory_Additional_information = 266;
-	public static int NoteCategory_Status = 267;
-	public static int NoteCategory_Nomenclature = 268;
-	public static int NoteCategory_Homonymy = 269;
-	public static int NoteCategory_Taxonomy = 270;
-	public static int NoteCategory_Taxonomic_status = 272;
-	public static int NoteCategory_Authority	= 273;
-	public static int NoteCategory_Identification = 274;
-	public static int NoteCategory_Validity = 275;
-	public static int NoteCategory_Classification = 276;
-	public static int NoteCategory_Distribution = 278;
-	public static int NoteCategory_Synonymy = 279;
-	public static int NoteCategory_Habitat = 280;
-	public static int NoteCategory_Biology = 281;
-	public static int NoteCategory_Diagnosis	= 282;
-	public static int NoteCategory_Host = 283;
-	public static int NoteCategory_Note = 284;
-	public static int NoteCategory_Rank = 285;
-	public static int NoteCategory_Taxonomic_Remark = 286;
-	public static int NoteCategory_Taxonomic_Remarks = 287;
-	public static int NoteCategory_Etymology = 288;
-    public static int NoteCategory_Type_species = 289;
-	public static int NoteCategory_Depth_Range = 290;
-	public static int NoteCategory_Grammatical_Gender = 291;
-	public static int NoteCategory_Introduced_Species_Remark = 292;
-	public static int NoteCategory_Alien_Species = 293;
-	public static int NoteCategory_Dimensions = 294;
-    public static int NoteCategory_New_Combination = 295;
-    public static int NoteCategory_Original_Combination = 296;
+	private static int NoteCategory_Editor_Braces = 249;
+	private static int NoteCategory_Editor_Brackets = 250;
+	private static int NoteCategory_Editor_Parenthesis = 251;
+	private static int NoteCategory_Inedited = 252;
+	private static int NoteCategory_Comments_on_editing_process = 253;
+	private static int NoteCategory_Publication_date = 254;
+	private static int NoteCategory_Morphology = 255;
+	private static int NoteCategory_Acknowledgments = 257;
+	private static int NoteCategory_Original_publication = 258;
+	private static int NoteCategory_Type_locality	= 259;
+	private static int NoteCategory_Environment = 260;
+	private static int NoteCategory_Spelling = 261;
+	private static int NoteCategory_Systematics = 262;
+	private static int NoteCategory_Remark = 263;
+	private static int NoteCategory_Additional_information = 266;
+	private static int NoteCategory_Status = 267;
+	private static int NoteCategory_Nomenclature = 268;
+	private static int NoteCategory_Homonymy = 269;
+	private static int NoteCategory_Taxonomy = 270;
+	private static int NoteCategory_Taxonomic_status = 272;
+	private static int NoteCategory_Authority	= 273;
+	private static int NoteCategory_Identification = 274;
+	private static int NoteCategory_Validity = 275;
+	private static int NoteCategory_Classification = 276;
+	private static int NoteCategory_Distribution = 278;
+	private static int NoteCategory_Synonymy = 279;
+	private static int NoteCategory_Habitat = 280;
+	private static int NoteCategory_Biology = 281;
+	private static int NoteCategory_Diagnosis	= 282;
+	private static int NoteCategory_Host = 283;
+	private static int NoteCategory_Note = 284;
+	private static int NoteCategory_Rank = 285;
+	private static int NoteCategory_Taxonomic_Remark = 286;
+	private static int NoteCategory_Taxonomic_Remarks = 287;
+	private static int NoteCategory_Etymology = 288;
+    private static int NoteCategory_Type_species = 289;
+	private static int NoteCategory_Depth_Range = 290;
+	private static int NoteCategory_Grammatical_Gender = 291;
+	private static int NoteCategory_Introduced_Species_Remark = 292;
+	private static int NoteCategory_Alien_Species = 293;
+	private static int NoteCategory_Dimensions = 294;
+    private static int NoteCategory_New_Combination = 295;
+    private static int NoteCategory_Original_Combination = 296;
 
-	public static int NoteCategory_Conservation_Status= 301;
-	public static int NoteCategory_Use = 302;
-	public static int NoteCategory_Comments = 303;
-    public static int NoteCategory_Diet = 304;
-    public static int NoteCategory_Fossil_Range = 305;
-    public static int NoteCategory_Original_Description = 306;
-    public static int NoteCategory_Reproduction = 307;
-    public static int NoteCategory_Specimen = 308;
-    public static int NoteCategory_Type_Specimen = 309;
-    public static int NoteCategory_Type_Material = 310;
-    public static int NoteCategory_Editors_Comment = 311;
-    public static int NoteCategory_Syntype = 312;
+	private static int NoteCategory_Conservation_Status= 301;
+	private static int NoteCategory_Use = 302;
+	private static int NoteCategory_Comments = 303;
+    private static int NoteCategory_Diet = 304;
+    private static int NoteCategory_Fossil_Range = 305;
+    private static int NoteCategory_Original_Description = 306;
+    private static int NoteCategory_Reproduction = 307;
+    private static int NoteCategory_Specimen = 308;
+    private static int NoteCategory_Type_Specimen = 309;
+    private static int NoteCategory_Type_Material = 310;
+    private static int NoteCategory_Editors_Comment = 311;
+    private static int NoteCategory_Syntype = 312;
 
 	// FossilStatus
-	public static int FOSSILSTATUS_RECENT_ONLY = 1;
-	public static int FOSSILSTATUS_FOSSIL_ONLY = 2;
-	public static int FOSSILSTATUS_RECENT_FOSSIL = 3;
+	private static int FOSSILSTATUS_RECENT_ONLY = 1;
+	private static int FOSSILSTATUS_FOSSIL_ONLY = 2;
+	private static int FOSSILSTATUS_RECENT_FOSSIL = 3;
 	public static String STR_FOSSIL_ONLY = "fossil only";  //still used for Index Fungorum
 
 	// SourceUse
-	public static int ORIGINAL_DESCRIPTION = 1;
-	public static int BASIS_OF_RECORD = 2;
-	public static int ADDITIONAL_SOURCE = 3;
-	public static int SOURCE_OF_SYNONYMY = 4;
-	public static int REDESCRIPTION = 5;
-	public static int NEW_COMBINATION_REFERENCE = 6;
-	public static int STATUS_SOURCE = 7;
+	private static int ORIGINAL_DESCRIPTION = 1;
+	private static int BASIS_OF_RECORD = 2;
+	private static int ADDITIONAL_SOURCE = 3;
+	private static int SOURCE_OF_SYNONYMY = 4;
+	private static int REDESCRIPTION = 5;
+	private static int NEW_COMBINATION_REFERENCE = 6;
+	private static int STATUS_SOURCE = 7;
 	public static int NOMENCLATURAL_REFERENCE = 8;
 	public static String STR_NOMENCLATURAL_REFERENCE = "nomenclatural reference";
 
 	// Area
-	public static int AREA_EAST_AEGEAN_ISLANDS = 1;
-	public static int AREA_GREEK_EAST_AEGEAN_ISLANDS = 2;
-	public static int AREA_TURKISH_EAST_AEGEAN_ISLANDS = 3;
-	public static int AREA_ALBANIA = 4;
-	public static int AREA_AUSTRIA_WITH_LIECHTENSTEIN = 5;
-	public static int AREA_AUSTRIA = 6;
-	public static int AREA_LIECHTENSTEIN = 7;
-	public static int AREA_AZORES = 8;
-	public static int AREA_CORVO = 9;
-	public static int AREA_FAIAL = 10;
-	public static int AREA_GRACIOSA = 11;
-	public static int AREA_SAO_JORGE = 12;
-	public static int AREA_FLORES = 13;
-	public static int AREA_SAO_MIGUEL = 14;
-	public static int AREA_PICO = 15;
-	public static int AREA_SANTA_MARIA = 16;
-	public static int AREA_TERCEIRA = 17;
-	public static int AREA_BELGIUM_WITH_LUXEMBOURG = 18;
-	public static int AREA_BELGIUM = 19;
-	public static int AREA_LUXEMBOURG = 20;
-	public static int AREA_BOSNIA_HERZEGOVINA = 21;
-	public static int AREA_BALEARES = 22;
-	public static int AREA_IBIZA_WITH_FORMENTERA = 23;
-	public static int AREA_MALLORCA = 24;
-	public static int AREA_MENORCA = 25;
-	public static int AREA_GREAT_BRITAIN = 26;
-	public static int AREA_BALTIC_STATES_ESTONIA_LATVIA_LITHUANIA_AND_KALININGRAD_REGION = 27;
-	public static int AREA_BULGARIA = 28;
-	public static int AREA_BELARUS = 29;
-	public static int AREA_CANARY_ISLANDS = 30;
-	public static int AREA_GRAN_CANARIA = 31;
-	public static int AREA_FUERTEVENTURA_WITH_LOBOS = 32;
-	public static int AREA_GOMERA = 33;
-	public static int AREA_HIERRO = 34;
-	public static int AREA_LANZAROTE_WITH_GRACIOSA = 35;
-	public static int AREA_LA_PALMA = 36;
-	public static int AREA_TENERIFE = 37;
-	public static int AREA_MONTENEGRO = 38;
-	public static int AREA_CORSE = 39;
-	public static int AREA_CRETE_WITH_KARPATHOS_KASOS_AND_GAVDHOS = 40;
-	public static int AREA_CZECH_REPUBLIC = 41;
-	public static int AREA_CROATIA = 42;
-	public static int AREA_CYPRUS = 43;
-	public static int AREA_FORMER_CZECHOSLOVAKIA = 44;
-	public static int AREA_DENMARK_WITH_BORNHOLM = 45;
-	public static int AREA_ESTONIA = 46;
-	public static int AREA_FAROE_ISLANDS = 47;
-	public static int AREA_FINLAND_WITH_AHVENANMAA = 48;
-	public static int AREA_FRANCE = 49;
-	public static int AREA_CHANNEL_ISLANDS = 50;
-	public static int AREA_FRENCH_MAINLAND = 51;
-	public static int AREA_MONACO = 52;
-	public static int AREA_GERMANY = 53;
-	public static int AREA_GREECE_WITH_CYCLADES_AND_MORE_ISLANDS = 54;
-	public static int AREA_IRELAND = 55;
-	public static int AREA_REPUBLIC_OF_IRELAND = 56;
-	public static int AREA_NORTHERN_IRELAND = 57;
-	public static int AREA_SWITZERLAND = 58;
-	public static int AREA_NETHERLANDS = 59;
-	public static int AREA_SPAIN = 60;
-	public static int AREA_ANDORRA = 61;
-	public static int AREA_GIBRALTAR = 62;
-	public static int AREA_KINGDOM_OF_SPAIN = 63;
-	public static int AREA_HUNGARY = 64;
-	public static int AREA_ICELAND = 65;
-	public static int AREA_ITALY = 66;
-	public static int AREA_ITALIAN_MAINLAND = 67;
-	public static int AREA_SAN_MARINO = 68;
-	public static int AREA_FORMER_JUGOSLAVIA = 69;
-	public static int AREA_LATVIA = 70;
-	public static int AREA_LITHUANIA = 71;
-	public static int AREA_PORTUGUESE_MAINLAND = 72;
-	public static int AREA_MADEIRA_ARCHIPELAGO = 73;
-	public static int AREA_DESERTAS = 74;
-	public static int AREA_MADEIRA = 75;
-	public static int AREA_PORTO_SANTO = 76;
-	public static int AREA_THE_FORMER_JUGOSLAV_REPUBLIC_OF_MAKEDONIJA = 77;
-	public static int AREA_MOLDOVA = 78;
-	public static int AREA_NORWEGIAN_MAINLAND = 79;
-	public static int AREA_POLAND = 80;
-	public static int AREA_THE_RUSSIAN_FEDERATION = 81;
-	public static int AREA_NOVAYA_ZEMLYA_AND_FRANZ_JOSEPH_LAND = 82;
-	public static int AREA_CENTRAL_EUROPEAN_RUSSIA = 83;
-	public static int AREA_EASTERN_EUROPEAN_RUSSIA = 84;
-	public static int AREA_KALININGRAD = 85;
-	public static int AREA_NORTHERN_EUROPEAN_RUSSIA = 86;
-	public static int AREA_NORTHWEST_EUROPEAN_RUSSIA = 87;
-	public static int AREA_SOUTH_EUROPEAN_RUSSIA = 88;
-	public static int AREA_ROMANIA = 89;
-	public static int AREA_FORMER_USSR = 90;
-	public static int AREA_RUSSIA_BALTIC = 91;
-	public static int AREA_RUSSIA_CENTRAL = 92;
-	public static int AREA_RUSSIA_SOUTHEAST = 93;
-	public static int AREA_RUSSIA_NORTHERN = 94;
-	public static int AREA_RUSSIA_SOUTHWEST = 95;
-	public static int AREA_SARDEGNA = 96;
-	public static int AREA_SVALBARD_WITH_BJORNOYA_AND_JAN_MAYEN = 97;
-	public static int AREA_SELVAGENS_ISLANDS = 98;
-	public static int AREA_SICILY_WITH_MALTA = 99;
-	public static int AREA_MALTA = 100;
-	public static int AREA_SICILY = 101;
-	public static int AREA_SLOVAKIA = 102;
-	public static int AREA_SLOVENIA = 103;
-	public static int AREA_SERBIA_WITH_MONTENEGRO = 104;
-	public static int AREA_SERBIA_INCLUDING_VOJVODINA_AND_WITH_KOSOVO = 105;
-	public static int AREA_SWEDEN = 106;
-	public static int AREA_EUROPEAN_TURKEY = 107;
-	public static int AREA_UKRAINE_INCLUDING_CRIMEA = 108;
-	public static int AREA_CRIMEA = 109;
-	public static int AREA_UKRAINE = 110;
-	public static int AREA_GREEK_MAINLAND = 111;
-	public static int AREA_CRETE = 112;
-	public static int AREA_DODECANESE_ISLANDS = 113;
-	public static int AREA_CYCLADES_ISLANDS = 114;
-	public static int AREA_NORTH_AEGEAN_ISLANDS = 115;
-	public static int AREA_VATICAN_CITY = 116;
-	public static int AREA_FRANZ_JOSEF_LAND = 117;
-	public static int AREA_NOVAYA_ZEMLYA = 118;
-	public static int AREA_AZERBAIJAN_INCLUDING_NAKHICHEVAN = 119;
-	public static int AREA_AZERBAIJAN = 120;
-	public static int AREA_NAKHICHEVAN = 121;
-	public static int AREA_ALGERIA = 122;
-	public static int AREA_ARMENIA = 123;
-	public static int AREA_CAUCASUS_REGION = 124;
-	public static int AREA_EGYPT = 125;
-	public static int AREA_GEORGIA = 126;
-	public static int AREA_ISRAEL_JORDAN = 127;
-	public static int AREA_ISRAEL = 128;
-	public static int AREA_JORDAN = 129;
-	public static int AREA_LEBANON = 130;
-	public static int AREA_LIBYA = 131;
-	public static int AREA_LEBANON_SYRIA = 132;
-	public static int AREA_MOROCCO = 133;
-	public static int AREA_NORTH_CAUCASUS = 134;
-	public static int AREA_SINAI = 135;
-	public static int AREA_SYRIA = 136;
-	public static int AREA_TUNISIA = 137;
-	public static int AREA_ASIATIC_TURKEY = 138;
-	public static int AREA_TURKEY = 139;
-	public static int AREA_NORTHERN_AFRICA = 140;
-	public static int AREA_AFRO_TROPICAL_REGION = 141;
-	public static int AREA_AUSTRALIAN_REGION = 142;
-	public static int AREA_EAST_PALAEARCTIC = 143;
-	public static int AREA_NEARCTIC_REGION = 144;
-	public static int AREA_NEOTROPICAL_REGION = 145;
-	public static int AREA_NEAR_EAST = 146;
-	public static int AREA_ORIENTAL_REGION = 147;
-	public static int AREA_EUROPEAN_MARINE_WATERS = 148;
-	public static int AREA_MEDITERRANEAN_SEA = 149;
-	public static int AREA_WHITE_SEA = 150;
-	public static int AREA_NORTH_SEA = 151;
-	public static int AREA_BALTIC_SEA = 152;
-	public static int AREA_BLACK_SEA = 153;
-	public static int AREA_BARENTS_SEA = 154;
-	public static int AREA_CASPIAN_SEA = 155;
-	public static int AREA_PORTUGUESE_EXCLUSIVE_ECONOMIC_ZONE = 156;
-	public static int AREA_BELGIAN_EXCLUSIVE_ECONOMIC_ZONE = 157;
-	public static int AREA_FRENCH_EXCLUSIVE_ECONOMIC_ZONE = 158;
-	public static int AREA_ENGLISH_CHANNEL = 159;
-	public static int AREA_ADRIATIC_SEA = 160;
-	public static int AREA_BISCAY_BAY = 161;
-	public static int AREA_DUTCH_EXCLUSIVE_ECONOMIC_ZONE = 162;
-	public static int AREA_UNITED_KINGDOM_EXCLUSIVE_ECONOMIC_ZONE = 163;
-	public static int AREA_SPANISH_EXCLUSIVE_ECONOMIC_ZONE = 164;
-	public static int AREA_EGYPTIAN_EXCLUSIVE_ECONOMIC_ZONE = 165;
-	public static int AREA_GREEK_EXCLUSIVE_ECONOMIC_ZONE = 166;
-	public static int AREA_TIRRENO_SEA = 167;
-	public static int AREA_ICELANDIC_EXCLUSIVE_ECONOMIC_ZONE = 168;
-	public static int AREA_IRISH_EXCLUSIVE_ECONOMIC_ZONE = 169;
-	public static int AREA_IRISH_SEA = 170;
-	public static int AREA_ITALIAN_EXCLUSIVE_ECONOMIC_ZONE = 171;
-	public static int AREA_NORWEGIAN_SEA = 172;
-	public static int AREA_MOROCCAN_EXCLUSIVE_ECONOMIC_ZONE = 173;
-	public static int AREA_NORWEGIAN_EXCLUSIVE_ECONOMIC_ZONE = 174;
-	public static int AREA_SKAGERRAK = 175;
-	public static int AREA_TUNISIAN_EXCLUSIVE_ECONOMIC_ZONE = 176;
-	public static int AREA_WADDEN_SEA = 177;
-	public static int AREA_BELT_SEA = 178;
-	public static int AREA_MARMARA_SEA = 179;
-	public static int AREA_SEA_OF_AZOV = 180;
-	public static int AREA_AEGEAN_SEA = 181;
-	public static int AREA_BULGARIAN_EXCLUSIVE_ECONOMIC_ZONE = 182;
-	public static int AREA_SOUTH_BALTIC_PROPER = 183;
-	public static int AREA_BALTIC_PROPER = 184;
-	public static int AREA_NORTH_BALTIC_PROPER = 185;
-	public static int AREA_ARCHIPELAGO_SEA = 186;
-	public static int AREA_BOTHNIAN_SEA = 187;
-	public static int AREA_GERMAN_EXCLUSIVE_ECONOMIC_ZONE = 188;
-	public static int AREA_SWEDISH_EXCLUSIVE_ECONOMIC_ZONE = 189;
-	public static int AREA_UKRAINIAN_EXCLUSIVE_ECONOMIC_ZONE = 190;
-	public static int AREA_MADEIRAN_EXCLUSIVE_ECONOMIC_ZONE = 191;
-	public static int AREA_LEBANESE_EXCLUSIVE_ECONOMIC_ZONE = 192;
-	public static int AREA_SPANISH_EXCLUSIVE_ECONOMIC_ZONE_MEDITERRANEAN_PART = 193;
-	public static int AREA_ESTONIAN_EXCLUSIVE_ECONOMIC_ZONE = 194;
-	public static int AREA_CROATIAN_EXCLUSIVE_ECONOMIC_ZONE = 195;
-	public static int AREA_BALEAR_SEA = 196;
-	public static int AREA_TURKISH_EXCLUSIVE_ECONOMIC_ZONE = 197;
-	public static int AREA_DANISH_EXCLUSIVE_ECONOMIC_ZONE = 198;
-	public static int AREA_TRANSCAUCASUS = 199;
+	private static int AREA_EAST_AEGEAN_ISLANDS = 1;
+	private static int AREA_GREEK_EAST_AEGEAN_ISLANDS = 2;
+	private static int AREA_TURKISH_EAST_AEGEAN_ISLANDS = 3;
+	private static int AREA_ALBANIA = 4;
+	private static int AREA_AUSTRIA_WITH_LIECHTENSTEIN = 5;
+	private static int AREA_AUSTRIA = 6;
+	private static int AREA_LIECHTENSTEIN = 7;
+	private static int AREA_AZORES = 8;
+	private static int AREA_CORVO = 9;
+	private static int AREA_FAIAL = 10;
+	private static int AREA_GRACIOSA = 11;
+	private static int AREA_SAO_JORGE = 12;
+	private static int AREA_FLORES = 13;
+	private static int AREA_SAO_MIGUEL = 14;
+	private static int AREA_PICO = 15;
+	private static int AREA_SANTA_MARIA = 16;
+	private static int AREA_TERCEIRA = 17;
+	private static int AREA_BELGIUM_WITH_LUXEMBOURG = 18;
+	private static int AREA_BELGIUM = 19;
+	private static int AREA_LUXEMBOURG = 20;
+	private static int AREA_BOSNIA_HERZEGOVINA = 21;
+	private static int AREA_BALEARES = 22;
+	private static int AREA_IBIZA_WITH_FORMENTERA = 23;
+	private static int AREA_MALLORCA = 24;
+	private static int AREA_MENORCA = 25;
+	private static int AREA_GREAT_BRITAIN = 26;
+	private static int AREA_BALTIC_STATES_ESTONIA_LATVIA_LITHUANIA_AND_KALININGRAD_REGION = 27;
+	private static int AREA_BULGARIA = 28;
+	private static int AREA_BELARUS = 29;
+	private static int AREA_CANARY_ISLANDS = 30;
+	private static int AREA_GRAN_CANARIA = 31;
+	private static int AREA_FUERTEVENTURA_WITH_LOBOS = 32;
+	private static int AREA_GOMERA = 33;
+	private static int AREA_HIERRO = 34;
+	private static int AREA_LANZAROTE_WITH_GRACIOSA = 35;
+	private static int AREA_LA_PALMA = 36;
+	private static int AREA_TENERIFE = 37;
+	private static int AREA_MONTENEGRO = 38;
+	private static int AREA_CORSE = 39;
+	private static int AREA_CRETE_WITH_KARPATHOS_KASOS_AND_GAVDHOS = 40;
+	private static int AREA_CZECH_REPUBLIC = 41;
+	private static int AREA_CROATIA = 42;
+	private static int AREA_CYPRUS = 43;
+	private static int AREA_FORMER_CZECHOSLOVAKIA = 44;
+	private static int AREA_DENMARK_WITH_BORNHOLM = 45;
+	private static int AREA_ESTONIA = 46;
+	private static int AREA_FAROE_ISLANDS = 47;
+	private static int AREA_FINLAND_WITH_AHVENANMAA = 48;
+	private static int AREA_FRANCE = 49;
+	private static int AREA_CHANNEL_ISLANDS = 50;
+	private static int AREA_FRENCH_MAINLAND = 51;
+	private static int AREA_MONACO = 52;
+	private static int AREA_GERMANY = 53;
+	private static int AREA_GREECE_WITH_CYCLADES_AND_MORE_ISLANDS = 54;
+	private static int AREA_IRELAND = 55;
+	private static int AREA_REPUBLIC_OF_IRELAND = 56;
+	private static int AREA_NORTHERN_IRELAND = 57;
+	private static int AREA_SWITZERLAND = 58;
+	private static int AREA_NETHERLANDS = 59;
+	private static int AREA_SPAIN = 60;
+	private static int AREA_ANDORRA = 61;
+	private static int AREA_GIBRALTAR = 62;
+	private static int AREA_KINGDOM_OF_SPAIN = 63;
+	private static int AREA_HUNGARY = 64;
+	private static int AREA_ICELAND = 65;
+	private static int AREA_ITALY = 66;
+	private static int AREA_ITALIAN_MAINLAND = 67;
+	private static int AREA_SAN_MARINO = 68;
+	private static int AREA_FORMER_JUGOSLAVIA = 69;
+	private static int AREA_LATVIA = 70;
+	private static int AREA_LITHUANIA = 71;
+	private static int AREA_PORTUGUESE_MAINLAND = 72;
+	private static int AREA_MADEIRA_ARCHIPELAGO = 73;
+	private static int AREA_DESERTAS = 74;
+	private static int AREA_MADEIRA = 75;
+	private static int AREA_PORTO_SANTO = 76;
+	private static int AREA_THE_FORMER_JUGOSLAV_REPUBLIC_OF_MAKEDONIJA = 77;
+	private static int AREA_MOLDOVA = 78;
+	private static int AREA_NORWEGIAN_MAINLAND = 79;
+	private static int AREA_POLAND = 80;
+	private static int AREA_THE_RUSSIAN_FEDERATION = 81;
+	private static int AREA_NOVAYA_ZEMLYA_AND_FRANZ_JOSEPH_LAND = 82;
+	private static int AREA_CENTRAL_EUROPEAN_RUSSIA = 83;
+	private static int AREA_EASTERN_EUROPEAN_RUSSIA = 84;
+	private static int AREA_KALININGRAD = 85;
+	private static int AREA_NORTHERN_EUROPEAN_RUSSIA = 86;
+	private static int AREA_NORTHWEST_EUROPEAN_RUSSIA = 87;
+	private static int AREA_SOUTH_EUROPEAN_RUSSIA = 88;
+	private static int AREA_ROMANIA = 89;
+	private static int AREA_FORMER_USSR = 90;
+	private static int AREA_RUSSIA_BALTIC = 91;
+	private static int AREA_RUSSIA_CENTRAL = 92;
+	private static int AREA_RUSSIA_SOUTHEAST = 93;
+	private static int AREA_RUSSIA_NORTHERN = 94;
+	private static int AREA_RUSSIA_SOUTHWEST = 95;
+	private static int AREA_SARDEGNA = 96;
+	private static int AREA_SVALBARD_WITH_BJORNOYA_AND_JAN_MAYEN = 97;
+	private static int AREA_SELVAGENS_ISLANDS = 98;
+	private static int AREA_SICILY_WITH_MALTA = 99;
+	private static int AREA_MALTA = 100;
+	private static int AREA_SICILY = 101;
+	private static int AREA_SLOVAKIA = 102;
+	private static int AREA_SLOVENIA = 103;
+	private static int AREA_SERBIA_WITH_MONTENEGRO = 104;
+	private static int AREA_SERBIA_INCLUDING_VOJVODINA_AND_WITH_KOSOVO = 105;
+	private static int AREA_SWEDEN = 106;
+	private static int AREA_EUROPEAN_TURKEY = 107;
+	private static int AREA_UKRAINE_INCLUDING_CRIMEA = 108;
+	private static int AREA_CRIMEA = 109;
+	private static int AREA_UKRAINE = 110;
+	private static int AREA_GREEK_MAINLAND = 111;
+	private static int AREA_CRETE = 112;
+	private static int AREA_DODECANESE_ISLANDS = 113;
+	private static int AREA_CYCLADES_ISLANDS = 114;
+	private static int AREA_NORTH_AEGEAN_ISLANDS = 115;
+	private static int AREA_VATICAN_CITY = 116;
+	private static int AREA_FRANZ_JOSEF_LAND = 117;
+	private static int AREA_NOVAYA_ZEMLYA = 118;
+	private static int AREA_AZERBAIJAN_INCLUDING_NAKHICHEVAN = 119;
+	private static int AREA_AZERBAIJAN = 120;
+	private static int AREA_NAKHICHEVAN = 121;
+	private static int AREA_ALGERIA = 122;
+	private static int AREA_ARMENIA = 123;
+	private static int AREA_CAUCASUS_REGION = 124;
+	private static int AREA_EGYPT = 125;
+	private static int AREA_GEORGIA = 126;
+	private static int AREA_ISRAEL_JORDAN = 127;
+	private static int AREA_ISRAEL = 128;
+	private static int AREA_JORDAN = 129;
+	private static int AREA_LEBANON = 130;
+	private static int AREA_LIBYA = 131;
+	private static int AREA_LEBANON_SYRIA = 132;
+	private static int AREA_MOROCCO = 133;
+	private static int AREA_NORTH_CAUCASUS = 134;
+	private static int AREA_SINAI = 135;
+	private static int AREA_SYRIA = 136;
+	private static int AREA_TUNISIA = 137;
+	private static int AREA_ASIATIC_TURKEY = 138;
+	private static int AREA_TURKEY = 139;
+	private static int AREA_NORTHERN_AFRICA = 140;
+	private static int AREA_AFRO_TROPICAL_REGION = 141;
+	private static int AREA_AUSTRALIAN_REGION = 142;
+	private static int AREA_EAST_PALAEARCTIC = 143;
+	private static int AREA_NEARCTIC_REGION = 144;
+	private static int AREA_NEOTROPICAL_REGION = 145;
+	private static int AREA_NEAR_EAST = 146;
+	private static int AREA_ORIENTAL_REGION = 147;
+	private static int AREA_EUROPEAN_MARINE_WATERS = 148;
+	private static int AREA_MEDITERRANEAN_SEA = 149;
+	private static int AREA_WHITE_SEA = 150;
+	private static int AREA_NORTH_SEA = 151;
+	private static int AREA_BALTIC_SEA = 152;
+	private static int AREA_BLACK_SEA = 153;
+	private static int AREA_BARENTS_SEA = 154;
+	private static int AREA_CASPIAN_SEA = 155;
+	private static int AREA_PORTUGUESE_EXCLUSIVE_ECONOMIC_ZONE = 156;
+	private static int AREA_BELGIAN_EXCLUSIVE_ECONOMIC_ZONE = 157;
+	private static int AREA_FRENCH_EXCLUSIVE_ECONOMIC_ZONE = 158;
+	private static int AREA_ENGLISH_CHANNEL = 159;
+	private static int AREA_ADRIATIC_SEA = 160;
+	private static int AREA_BISCAY_BAY = 161;
+	private static int AREA_DUTCH_EXCLUSIVE_ECONOMIC_ZONE = 162;
+	private static int AREA_UNITED_KINGDOM_EXCLUSIVE_ECONOMIC_ZONE = 163;
+	private static int AREA_SPANISH_EXCLUSIVE_ECONOMIC_ZONE = 164;
+	private static int AREA_EGYPTIAN_EXCLUSIVE_ECONOMIC_ZONE = 165;
+	private static int AREA_GREEK_EXCLUSIVE_ECONOMIC_ZONE = 166;
+	private static int AREA_TIRRENO_SEA = 167;
+	private static int AREA_ICELANDIC_EXCLUSIVE_ECONOMIC_ZONE = 168;
+	private static int AREA_IRISH_EXCLUSIVE_ECONOMIC_ZONE = 169;
+	private static int AREA_IRISH_SEA = 170;
+	private static int AREA_ITALIAN_EXCLUSIVE_ECONOMIC_ZONE = 171;
+	private static int AREA_NORWEGIAN_SEA = 172;
+	private static int AREA_MOROCCAN_EXCLUSIVE_ECONOMIC_ZONE = 173;
+	private static int AREA_NORWEGIAN_EXCLUSIVE_ECONOMIC_ZONE = 174;
+	private static int AREA_SKAGERRAK = 175;
+	private static int AREA_TUNISIAN_EXCLUSIVE_ECONOMIC_ZONE = 176;
+	private static int AREA_WADDEN_SEA = 177;
+	private static int AREA_BELT_SEA = 178;
+	private static int AREA_MARMARA_SEA = 179;
+	private static int AREA_SEA_OF_AZOV = 180;
+	private static int AREA_AEGEAN_SEA = 181;
+	private static int AREA_BULGARIAN_EXCLUSIVE_ECONOMIC_ZONE = 182;
+	private static int AREA_SOUTH_BALTIC_PROPER = 183;
+	private static int AREA_BALTIC_PROPER = 184;
+	private static int AREA_NORTH_BALTIC_PROPER = 185;
+	private static int AREA_ARCHIPELAGO_SEA = 186;
+	private static int AREA_BOTHNIAN_SEA = 187;
+	private static int AREA_GERMAN_EXCLUSIVE_ECONOMIC_ZONE = 188;
+	private static int AREA_SWEDISH_EXCLUSIVE_ECONOMIC_ZONE = 189;
+	private static int AREA_UKRAINIAN_EXCLUSIVE_ECONOMIC_ZONE = 190;
+	private static int AREA_MADEIRAN_EXCLUSIVE_ECONOMIC_ZONE = 191;
+	private static int AREA_LEBANESE_EXCLUSIVE_ECONOMIC_ZONE = 192;
+	private static int AREA_SPANISH_EXCLUSIVE_ECONOMIC_ZONE_MEDITERRANEAN_PART = 193;
+	private static int AREA_ESTONIAN_EXCLUSIVE_ECONOMIC_ZONE = 194;
+	private static int AREA_CROATIAN_EXCLUSIVE_ECONOMIC_ZONE = 195;
+	private static int AREA_BALEAR_SEA = 196;
+	private static int AREA_TURKISH_EXCLUSIVE_ECONOMIC_ZONE = 197;
+	private static int AREA_DANISH_EXCLUSIVE_ECONOMIC_ZONE = 198;
+	private static int AREA_TRANSCAUCASUS = 199;
 
-	public static int AREA_GEORGIA_G = 200;
-	public static int AREA_ABKHAZIA = 201;
-	public static int AREA_ADZARIA = 202;
+	private static int AREA_GEORGIA_G = 200;
+	private static int AREA_ABKHAZIA = 201;
+	private static int AREA_ADZARIA = 202;
 
-	public static int AREA_UNITED_KINGDOM = 203;
-	public static int AREA_DENMARK_COUNTRY = 204;
-	public static int AREA_TURKEY_COUNTRY = 205;
-	public static int AREA_SPAIN_COUNTRY = 206;
-	public static int AREA_GREECE_COUNTRY = 207;
-	public static int AREA_PORTUGAL_COUNTRY = 208;
+	private static int AREA_UNITED_KINGDOM = 203;
+	private static int AREA_DENMARK_COUNTRY = 204;
+	private static int AREA_TURKEY_COUNTRY = 205;
+	private static int AREA_SPAIN_COUNTRY = 206;
+	private static int AREA_GREECE_COUNTRY = 207;
+	private static int AREA_PORTUGAL_COUNTRY = 208;
 	//continued ERMS areas without variables
 	//...
-	public static int AREA_WALES = 293;
+	private static int AREA_WALES = 293;
 
 	// OccurrenceStatus
-	public static int STATUS_PRESENT = 1;
-	public static int STATUS_ABSENT = 2;
-	public static int STATUS_NATIVE = 3;
-	public static int STATUS_INTRODUCED = 4;
-	public static int STATUS_NATURALISED = 5;
-	public static int STATUS_INVASIVE = 6;
-	public static int STATUS_MANAGED = 7;
-	public static int STATUS_DOUBTFUL = 8;
+	private static int STATUS_PRESENT = 1;
+	private static int STATUS_ABSENT = 2;
+	private static int STATUS_NATIVE = 3;
+	private static int STATUS_INTRODUCED = 4;
+	private static int STATUS_NATURALISED = 5;
+	private static int STATUS_INVASIVE = 6;
+	private static int STATUS_MANAGED = 7;
+	private static int STATUS_DOUBTFUL = 8;
 
 	private final Map<String, Integer> tdwgKeyMap = new HashMap<>();
 	private final Map<Integer, String> areaCacheMap = new HashMap<>();
@@ -679,34 +677,34 @@ public final class PesiTransformer extends ExportTransformerBase{
 			}
 
 			//languageCache
-			fillSingleMap(languageCacheMap,"Language");
+			fillSingleMap(languageCacheMap, "Language");
 
 			//feature / note category
-			fillSingleMap(featureCacheMap,"NoteCategory");
+			fillSingleMap(featureCacheMap, "NoteCategory");
 
 			//nameStatusCache
 			fillSingleMap(nameStatusCacheMap,"NameStatus", "NomStatus");
 
 			//qualityStatusCache
-			fillSingleMap(qualityStatusCacheMap,"QualityStatus");
+			fillSingleMap(qualityStatusCacheMap, "QualityStatus");
 
 			//taxonStatusCache
 			fillSingleMap(taxonStatusCacheMap,"TaxonStatus", "Status");
 
 			//sourceUse
-			fillSingleMap(sourceUseCacheMap,"SourceUse");
+			fillSingleMap(sourceUseCacheMap, "SourceUse");
 
 			//fossil status
-			fillSingleMap(fossilStatusCacheMap,"FossilStatus");
+			fillSingleMap(fossilStatusCacheMap, "FossilStatus");
 
 			//fossil status
-			fillSingleMap(typeDesigStatusCacheMap,"FossilStatus");
+			fillSingleMap(typeDesigStatusCacheMap, "FossilStatus");
 
 			//fossil status
-			fillSingleMap(occurrenceStatusCacheMap,"OccurrenceStatus");
+			fillSingleMap(occurrenceStatusCacheMap, "OccurrenceStatus");
 
 			//source category
-			fillSingleMap(sourceCategoryCacheMap,"SourceCategory", "Category", "SourceCategoryId");
+			fillSingleMap(sourceCategoryCacheMap, "SourceCategory", "Category", "SourceCategoryId");
 
 			//RelTaxonQualifier
 			sql = " SELECT QualifierId, Qualifier, ZoologQualifier FROM RelTaxonQualifier ";
@@ -2233,7 +2231,7 @@ public final class PesiTransformer extends ExportTransformerBase{
 		return result;
 	}
 
-    public static Integer pesiKingdomId(String titleCache) {
-        return pesiKingdomMap.get(titleCache);
+    public static Integer pesiKingdomId(String str) {
+        return pesiKingdomMap.get(str);
     }
 }
