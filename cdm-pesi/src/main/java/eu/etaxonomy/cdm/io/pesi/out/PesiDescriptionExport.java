@@ -407,10 +407,17 @@ public class PesiDescriptionExport extends PesiExportBase {
 		return (excludedNoteCategories.contains(categoryFk));
 	}
 
+    boolean isFirstUndefinedStatusWarnung = true;
 	private boolean isPesiDistribution(PesiExportState state, Distribution distribution) {
 		//currently we use the E+M summary status to decide if a distribution should be exported
 		if (distribution.getStatus() == null){
 			return false;
+		}else if (distribution.getStatus().getUuid().equals(BerlinModelTransformer.uuidStatusUndefined)){
+		    if (isFirstUndefinedStatusWarnung){
+                logger.warn("Status 'undefined' is not mapped to any status for now. Needs further checking. (E+M specific)");
+                isFirstUndefinedStatusWarnung = false;
+            }
+            return false;
 		}
 
 		//...this may change in future so we keep the following code
