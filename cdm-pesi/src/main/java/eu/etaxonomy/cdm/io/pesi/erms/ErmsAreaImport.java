@@ -32,6 +32,8 @@ import eu.etaxonomy.cdm.model.common.ExtensionType;
 import eu.etaxonomy.cdm.model.location.NamedArea;
 import eu.etaxonomy.cdm.model.location.NamedAreaLevel;
 import eu.etaxonomy.cdm.model.location.NamedAreaType;
+import eu.etaxonomy.cdm.model.term.TermType;
+import eu.etaxonomy.cdm.model.term.TermVocabulary;
 
 /**
  * @author a.mueller
@@ -90,16 +92,20 @@ public class ErmsAreaImport
 
 	@Override
 	public NamedArea createObject(ResultSet rs, ErmsImportState state) throws SQLException {
-		int id = rs.getInt("id");
+	    TermVocabulary<NamedArea> voc = getVocabulary(state, TermType.NamedArea, ErmsTransformer.uuidVocErmsAreas, "User defined vocabulary for named areas",
+	            "User Defined Named Areas", null, null, true, NamedArea.NewInstance());
+
+	    int id = rs.getInt("id");
 		String strGuName = rs.getString("gu_name");
 		UUID uuid = ErmsTransformer.uuidFromGuName(strGuName);
 		String label = strGuName;
 		String text = strGuName;
-		//TODO
-		String labelAbbrev = String.valueOf(id);
+		String labelAbbrev = null;
 		NamedAreaType areaType = null;
 		NamedAreaLevel level = null;
-		NamedArea area = getNamedArea(state, uuid, label, text, labelAbbrev, areaType, level);
+
+		NamedArea area = getNamedArea(state, uuid, label, text, labelAbbrev, areaType, level, voc, null);
+		area.setIdInVocabulary(String.valueOf(id));
 		return area;
 	}
 

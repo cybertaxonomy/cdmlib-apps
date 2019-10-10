@@ -39,7 +39,7 @@ public class PesiEuroMedValidator {
     private Source source = new Source(defaultSource);
     private Source destination = defaultDestination;
 
-    private String origEuroMed = "OriginalDB = 'EM' ";
+    private String origEuroMed = "OriginalDB = 'E+M' ";
 
     public void invoke(Source source, Source destination){
         logger.warn("Validate destination " +  destination.getDatabase());
@@ -726,7 +726,7 @@ public class PesiEuroMedValidator {
 
     private boolean testSingleReferences() throws SQLException {
         boolean success = true;
-        ResultSet srcRS = source.getResultSet("SELECT s.* FROM sources s ORDER BY s.id ");
+        ResultSet srcRS = source.getResultSet("SELECT r.* FROM Reference r ORDER BY r.id ");
         ResultSet destRS = destination.getResultSet("SELECT s.* FROM Source s "
                 + " WHERE s." + origEuroMed
                 + " ORDER BY s.RefIdInSource ");  // +1 for the source reference "erms" but this has no OriginalDB
@@ -739,17 +739,19 @@ public class PesiEuroMedValidator {
     private boolean testSingleReference(ResultSet srcRS, ResultSet destRS) throws SQLException {
         String id = String.valueOf(srcRS.getInt("id"));
         boolean success = equals("Reference ID ", srcRS.getInt("id"), destRS.getInt("RefIdInSource"), id);
-        success &= equals("Reference IMIS_id ", srcRS.getString("imis_id"), destRS.getString("IMIS_Id"), id);
-        success &= equals("Reference SourceCategoryFk ", convertSourceTypeFk(srcRS.getString("source_type")), destRS.getInt("SourceCategoryFk"), id);
-        success &= equals("Reference SourceCategoryCache ", convertSourceTypeCache(srcRS.getString("source_type")), destRS.getString("SourceCategoryCache"), id);
-        success &= equals("Reference name ", srcRS.getString("source_name"), destRS.getString("Name"), id);
-        success &= equals("Reference abstract ", srcRS.getString("source_abstract"), destRS.getString("Abstract"), id);
-        success &= equals("Reference title ", srcRS.getString("source_title"), destRS.getString("Title"), id);
-        success &= equals("Reference author string ", srcRS.getString("source_author"), destRS.getString("AuthorString"), id);
-        success &= equals("Reference year ", normalizeYear(srcRS.getString("source_year")), destRS.getString("RefYear"), id);
-        success &= isNull("NomRefCache", destRS);  //for ERMS no other value was found in 2014 value
-        success &= equals("Reference link ", srcRS.getString("source_link"), destRS.getString("Link"), id);
-        success &= equals("Reference note ", srcRS.getString("source_note"), destRS.getString("Notes"), id);
+        success &= isNull("IMIS_Id", destRS);  //for E+M no IMIS id exists
+        success &= equals("Reference SourceCategoryFk ", convertSourceTypeFk(srcRS.getString("refType")), destRS.getInt("SourceCategoryFk"), id);
+        success &= equals("Reference SourceCategoryCache ", convertSourceTypeCache(srcRS.getString("refType")), destRS.getString("SourceCategoryCache"), id);
+        success &= equals("Reference name ", srcRS.getString("titleCache"), destRS.getString("Name"), id);
+        success &= equals("Reference abstract ", srcRS.getString("referenceAbstract"), destRS.getString("Abstract"), id);
+        success &= equals("Reference title ", srcRS.getString("title"), destRS.getString("Title"), id);
+//        success &= equals("Reference author string ", srcRS.getString("source_author"), destRS.getString("AuthorString"), id);
+//        success &= equals("Reference year ", normalizeYear(srcRS.getString("source_year")), destRS.getString("RefYear"), id);
+        success &= equals("Reference NomRefCache ", srcRS.getString("abbrevTitleCache"), destRS.getString("NomRefCache"), id);
+        //TODO DOI
+//        success &= equals("Reference link ", srcRS.getString("source_link"), destRS.getString("Link"), id);
+//        success &= equals("Reference note ", srcRS.getString("source_note"), destRS.getString("Notes"), id);
+        //TODO see above
         //complete
         return success;
     }

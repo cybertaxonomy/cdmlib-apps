@@ -61,7 +61,8 @@ public final class ErmsTransformer extends InputTransformerBase {
     public static final UUID uuidRankSubterclass = UUID.fromString("39257363-913b-4b3a-a536-b415360dfc8c");
     public static final UUID uuidRankParvorder = UUID.fromString("d26b8cae-96f9-4aee-81f2-98e36f1db7c3");
 
-	//language uuids
+	//area uuids
+    public static final UUID uuidVocErmsAreas = UUID.fromString("7e6daf5e-f536-4c0c-8967-1400a45f7b4a");
     public static final UUID uuidAdriaticSea = UUID.fromString("da376165-f970-4f0c-99db-773686d66591");
     public static final UUID uuidAegeanSea = UUID.fromString("65d6c443-225f-4ac0-9c86-da51502b46df");
     public static final UUID uuidArchipelagoSea = UUID.fromString("d9ea9d63-ec4d-4b01-967d-13f28b09a715");

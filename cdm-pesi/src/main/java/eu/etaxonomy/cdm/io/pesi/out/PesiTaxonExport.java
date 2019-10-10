@@ -105,7 +105,7 @@ public class PesiTaxonExport extends PesiExportBase {
 	private static final String parentPluralString = "Taxa";
 	private static final String pluralStringNames = "Names";
 
-	private PreparedStatement parentTaxonFk_TreeIndex_KingdomFkStmt;
+//	private PreparedStatement parentTaxonFk_TreeIndex_KingdomFkStmts;
 	private PreparedStatement parentTaxonFkStmt;
 	private PreparedStatement rankTypeExpertsUpdateStmt;
 	private PreparedStatement rankUpdateStmt;
@@ -201,19 +201,19 @@ public class PesiTaxonExport extends PesiExportBase {
 
 
 	private void initPreparedStatements(PesiExportState state) throws SQLException {
-		initTreeIndexStatement(state);
+//		initTreeIndexStatement(state);
 		initRankExpertsUpdateStmt(state);
 		initRankUpdateStatement(state);
 
 		initParentFkStatement(state);
 	}
 
-	// Prepare TreeIndex-And-KingdomFk-Statement
-	private void initTreeIndexStatement(PesiExportState state) throws SQLException {
-		Connection connection = state.getConfig().getDestination().getConnection();
-		String parentTaxonFk_TreeIndex_KingdomFkSql = "UPDATE Taxon SET ParentTaxonFk = ?, TreeIndex = ? WHERE TaxonId = ?";
-		parentTaxonFk_TreeIndex_KingdomFkStmt = connection.prepareStatement(parentTaxonFk_TreeIndex_KingdomFkSql);
-	}
+//	// Prepare TreeIndex-And-KingdomFk-Statement
+//	private void initTreeIndexStatement(PesiExportState state) throws SQLException {
+//		Connection connection = state.getConfig().getDestination().getConnection();
+//		String parentTaxonFk_TreeIndex_KingdomFkSql = "UPDATE Taxon SET ParentTaxonFk = ?, TreeIndex = ? WHERE TaxonId = ?";
+//		parentTaxonFk_TreeIndex_KingdomFkStmt = connection.prepareStatement(parentTaxonFk_TreeIndex_KingdomFkSql);
+//	}
 
 	// Prepare TreeIndex-And-KingdomFk-Statement
 	private void initParentFkStatement(PesiExportState state) throws SQLException {
@@ -240,9 +240,7 @@ public class PesiTaxonExport extends PesiExportBase {
 	}
 
 	private boolean doPhase01(PesiExportState state, PesiExportMapping mapping, PesiExportMapping additionalSourceMapping){
-		if (!state.getConfig().isDoTaxaPhase1()){
-		    return true;
-		}
+
 	    int count = 0;
 		int pastCount = 0;
 		boolean success = true;
@@ -290,10 +288,6 @@ public class PesiTaxonExport extends PesiExportBase {
     				    }else{
     				        logger.warn("Kingdom taxon is not of class Taxon but " + taxon.getClass().getSimpleName() + ": " + nvn.getGenusOrUninomial());
     				    }
-    				}else if (taxon.getUuid().equals(PesiTransformer.uuidTaxonValuelessEuroMed)){
-    				    String treeIndex = ((Taxon)taxon).getTaxonNodes().iterator().next().treeIndex();
-                        Integer kingdomId = PesiTransformer.pesiKingdomMap.get("Plantae");
-                        state.getTreeIndexKingdomMap().put(treeIndex, kingdomId);
     				}
 				}catch(NullPointerException e){
 				    logger.error(nvn.getTitleCache() + " has no Rank!");
@@ -478,6 +472,9 @@ public class PesiTaxonExport extends PesiExportBase {
 			logger.info ("Ignore PHASE 3: Add Rank data, KingdomFk, TypeNameFk, expertFk and speciesExpertFk...");
 			return success;
 		}
+
+		addValuelessTaxonToKingdomMap(state);
+
 		// Get the limit for objects to save within a single transaction.
 		int limit = state.getConfig().getLimitSave();
 
@@ -490,7 +487,8 @@ public class PesiTaxonExport extends PesiExportBase {
             logger.info("Started new transaction for rank, kingdom, typeName, expertFk and speciesExpertFK. Fetching some " + pluralString + " (max: " + limit + ") ...");
         }
 		int partitionCount = 0;
-		List<TaxonBase> list;
+		@SuppressWarnings("rawtypes")
+        List<TaxonBase> list;
 		while ((list = getNextTaxonPartition(TaxonBase.class, limit, partitionCount++, null)) != null) {
 
 			if (logger.isDebugEnabled()) {
@@ -507,9 +505,10 @@ public class PesiTaxonExport extends PesiExportBase {
 				doCount(count++, modCount, pluralString);
 				Integer typeNameFk = getTypeNameFk(taxonName, state);
 				Integer kingdomFk = findKingdomIdFromTreeIndex(taxon, state);
+				Integer rankFk = getRankFk(taxonName, kingdomFk);
 
 			    invokeRankDataAndTypeNameFkAndKingdomFk(taxonName, state.getDbId(taxon),
-						typeNameFk, kingdomFk, state);
+						typeNameFk, kingdomFk, rankFk, state);
 			}
 
 			// Commit transaction
@@ -536,6 +535,17 @@ public class PesiTaxonExport extends PesiExportBase {
 		}
 		return success;
 	}
+
+    private void addValuelessTaxonToKingdomMap(PesiExportState state) {
+        TransactionStatus txStatus = startTransaction();
+        Taxon valuelessTaxon = (Taxon)getTaxonService().find(PesiTransformer.uuidTaxonValuelessEuroMed);
+        if (valuelessTaxon != null){
+            String treeIndex = valuelessTaxon.getTaxonNodes().iterator().next().treeIndex();
+            Integer kingdomId = PesiTransformer.pesiKingdomMap.get("Plantae");
+            state.getTreeIndexKingdomMap().put(treeIndex, kingdomId);
+        }
+        commitTransaction(txStatus);
+    }
 
     // 4th round: Add TreeIndex to each taxon
     private boolean doPhase04(PesiExportState state) {
@@ -590,7 +600,8 @@ public class PesiTaxonExport extends PesiExportBase {
                     matcher = pattern.matcher(treeIndex);
                     if(matcher.find()) {
                         String treeIndexKingdom = matcher.group(0);
-                        kingdomID = state.getTreeIndexKingdomMap().get(treeIndexKingdom);
+                        Map<String, Integer> map = state.getTreeIndexKingdomMap();
+                        kingdomID = map.get(treeIndexKingdom);
                     }
                 }
                 if(Rank.DOMAIN().equals(taxon.getName().getRank())){
@@ -1095,6 +1106,7 @@ public class PesiTaxonExport extends PesiExportBase {
 	 * @param nomenclaturalCode The {@link NomenclaturalCode NomenclaturalCode}.
 	 * @param taxonFk The TaxonFk to store the values for.
 	 * @param typeNameFk The TypeNameFk.
+	 * @param rankFk
 	 * @param state
 	 * @param kindomFk The KingdomFk.
 	 * @param expertFk The ExpertFk.
@@ -1102,14 +1114,10 @@ public class PesiTaxonExport extends PesiExportBase {
 	 * @return Whether save was successful or not.
 	 */
 	private boolean invokeRankDataAndTypeNameFkAndKingdomFk(TaxonName taxonName,
-			Integer taxonFk, Integer typeNameFk, Integer kingdomFk, PesiExportState state) {
+			Integer taxonFk, Integer typeNameFk, Integer kingdomFk, Integer rankFk, PesiExportState state) {
 
-	    NomenclaturalCode nomenclaturalCodes = taxonName.getNameType();
-
-	    Integer rankFk = null;
 	    try {
 			int index = 1;
-			rankFk = getRankFk(taxonName, kingdomFk);
 			if (rankFk != null) {
 				rankTypeExpertsUpdateStmt.setInt(index++, rankFk);
 			} else {
@@ -1157,11 +1165,13 @@ public class PesiTaxonExport extends PesiExportBase {
 			rankTypeExpertsUpdateStmt.executeUpdate();
 			return true;
 		} catch (SQLException e) {
-			logger.error("Data could not be inserted into database: " + e.getMessage() + "; rankFk = " + rankFk + "; kingdomFk = " + kingdomFk );
+		    String name = taxonName == null? null:taxonName.getTitleCache();
+			logger.error("Data could not be inserted into database: " + e.getMessage() + "; rankFk = " + rankFk + "; kingdomFk = " + kingdomFk  + "; taxonFk = "+ taxonFk  + "; typeNameFk = "  + typeNameFk + "; name = " + name);
 			e.printStackTrace();
 			return false;
 		} catch (Exception e) {
-			logger.error("Some exception occurred: " + e.getMessage() + "; rankFk = " + rankFk + "; kingdomFk = " + kingdomFk);
+		    String name = taxonName == null? null:taxonName.getTitleCache();
+            logger.error("Some exception occurred: " + e.getMessage() + "; rankFk = " + rankFk + "; kingdomFk = " + kingdomFk  + "; taxonFk = "+ taxonFk + "; typeNameFk = " + typeNameFk + "; name = " + name);
 			e.printStackTrace();
 			return false;
 		}
@@ -1173,9 +1183,7 @@ public class PesiTaxonExport extends PesiExportBase {
 	 * @return Whether the delete operation was successful or not.
 	 */
 	protected boolean doDelete(PesiExportState state) {
-	    if (!state.getConfig().isDoTaxaPhase1()){
-	        return true;
-	    }
+
 		Source destination =  state.getConfig().getDestination();
 
 		String[] tables = new String[]{"AdditionalTaxonSource","CommonNameSource","CommonName",
@@ -1227,6 +1235,7 @@ public class PesiTaxonExport extends PesiExportBase {
 	    if (nodes == null||nodes.isEmpty()){
 	        kingdomId = getKingdomFk(taxonName);
 	    }else{
+	        //should not happen, method exists only pure names
 	        kingdomId = findKingdomIdFromTreeIndex(nodes.iterator().next().getTaxon(), state);
 	    }
         return getRankCache(taxonName, kingdomId, state);
@@ -1645,7 +1654,11 @@ public class PesiTaxonExport extends PesiExportBase {
 				if (nameTypeDesignation != null) {
 					TaxonName typeName = nameTypeDesignation.getTypeName();
 					if (typeName != null) {
-					    result = state.getDbId(typeName);
+					    if (typeName.getTaxonBases().isEmpty()){
+					        logger.warn("type name does not belong to a taxon and therefore is expected to not be a European taxon. Type name not added. Type name: " + typeName.getTitleCache() + ", typified name: " + taxonName.getTitleCache());
+					    }else{
+					        result = state.getDbId(typeName);
+					    }
 					}
 				}
 			} else if (nameTypeDesignations.size() > 1) {
@@ -2208,12 +2221,10 @@ public class PesiTaxonExport extends PesiExportBase {
 		//experts
 		ExtensionType extensionTypeSpeciesExpertName = (ExtensionType)getTermService().find(PesiTransformer.uuidExtSpeciesExpertName);
 		mapping.addMapper(DbExtensionMapper.NewInstance(extensionTypeSpeciesExpertName, "SpeciesExpertName"));
-
 		ExtensionType extensionTypeExpertName = (ExtensionType)getTermService().find(PesiTransformer.uuidExtExpertName);
 		mapping.addMapper(DbExtensionMapper.NewInstance(extensionTypeExpertName, "ExpertName"));
 
-		//handled in Phase02 now
-//		mapping.addMapper(MethodMapper.NewInstance("ParentTaxonFk", this, TaxonBase.class, PesiExportState.class));  //by AM, doesn't work, FK exception
+		//ParentTaxonFk handled in Phase02 now
 		mapping.addMapper(ObjectChangeMapper.NewInstance(TaxonBase.class, TaxonName.class, "Name"));
 
 		addNameMappers(mapping);
@@ -2248,34 +2259,38 @@ public class PesiTaxonExport extends PesiExportBase {
 		mapping.addMapper(DbLastActionMapper.NewInstance("LastAction", true));
 
 		addNameMappers(mapping);
-		//TODO add author mapper, TypeNameFk
+		//TODO add author mapper
 
 		return mapping;
 	}
 
 	private void addNameMappers(PesiExportMapping mapping) {
+
+	    //epithets
 		mapping.addMapper(DbStringMapper.NewInstance("GenusOrUninomial", "GenusOrUninomial"));
 		mapping.addMapper(DbStringMapper.NewInstance("InfraGenericEpithet", "InfraGenericEpithet"));
 		mapping.addMapper(DbStringMapper.NewInstance("SpecificEpithet", "SpecificEpithet"));
 		mapping.addMapper(DbStringMapper.NewInstance("InfraSpecificEpithet", "InfraSpecificEpithet"));
 
+		//full name
 //		mapping.addMapper(DbStringMapper.NewInstance("NameCache", "WebSearchName"));  //does not work as we need other cache strategy
 		mapping.addMapper(MethodMapper.NewInstance("WebSearchName", this, TaxonName.class));
-
 		mapping.addMapper(MethodMapper.NewInstance("FullName", this, TaxonName.class));
 
-
+		//nom ref
 		mapping.addMapper(MethodMapper.NewInstance("NomRefString", this, TaxonName.class));
 
+		//status
 		mapping.addMapper(MethodMapper.NewInstance("NameStatusFk", this, TaxonName.class));
 		mapping.addMapper(MethodMapper.NewInstance("NameStatusCache", this, TaxonName.class, PesiExportState.class));
-		mapping.addMapper(MethodMapper.NewInstance("TypeFullnameCache", this, TaxonName.class));
-		//TODO TypeNameFk
-
-		//quality status
 		mapping.addMapper(MethodMapper.NewInstance("QualityStatusFk", this, TaxonName.class));
 		mapping.addMapper(MethodMapper.NewInstance("QualityStatusCache", this, TaxonName.class, PesiExportState.class));
 
+		//types
+		mapping.addMapper(MethodMapper.NewInstance("TypeFullnameCache", this, TaxonName.class));
+		//TypeNameFk handled in Phase3
+
+		//supplemental
 		mapping.addMapper(MethodMapper.NewInstance("IdInSource", this, IdentifiableEntity.class));
 		mapping.addMapper(MethodMapper.NewInstance("OriginalDB", this, IdentifiableEntity.class) );
 
