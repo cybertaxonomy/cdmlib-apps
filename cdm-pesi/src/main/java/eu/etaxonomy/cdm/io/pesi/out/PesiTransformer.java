@@ -114,6 +114,11 @@ public final class PesiTransformer extends ExportTransformerBase{
 	private static int REF_PUBLICATION = 11;
 	public static String REF_STR_UNRESOLVED = "unresolved";
 
+	private static int LANG_VALENCIAN = 65;
+	private static int LANG_HIGH_ARAGONES = 66;
+	private static int LANG_MAJORCAN = 67;
+
+
 
 	// NameStatus
     public static UUID uuidNomStatusTemporaryName = UUID.fromString("aa6ada5a-ca21-4fef-b76f-9ae237e9c4ae");
@@ -1063,6 +1068,7 @@ public final class PesiTransformer extends ExportTransformerBase{
             else if (uuidArea.equals(BerlinModelTransformer.uuidEMAreaCommonNameEastAegeanIslands)) { return AREA_EAST_AEGEAN_ISLANDS; }
             else if (uuidArea.equals(BerlinModelTransformer.uuidEMAreaCommonNameEstonia)) { return AREA_ESTONIA; }
             else if (uuidArea.equals(BerlinModelTransformer.uuidEMAreaCommonNameEstonia)) { return AREA_ESTONIA; }
+            else if (uuidArea.equals(BerlinModelTransformer.uuidEMAreaCommonNameFaroer)) { return AREA_FAROE_ISLANDS; }
             else if (uuidArea.equals(BerlinModelTransformer.uuidEMAreaCommonNameFinland)) { return AREA_FINLAND_WITH_AHVENANMAA; }  //??
             else if (uuidArea.equals(BerlinModelTransformer.uuidEMAreaCommonNameFinlandWithAhvenanmaa)) { return AREA_FINLAND_WITH_AHVENANMAA; }
             else if (uuidArea.equals(BerlinModelTransformer.uuidEMAreaCommonNameFrance)) { return AREA_FRANCE; }
@@ -1319,7 +1325,10 @@ public final class PesiTransformer extends ExportTransformerBase{
 		    return result;
 		}else if ((result = languageCodeToKeyMap.get(language.getIdInVocabulary())) != null){
             return result;
-
+        //Languages without ISO identifier
+		}else if (language.getUuid().equals(BerlinModelTransformer.uuidLangValencian)){return LANG_VALENCIAN;
+        }else if (language.getUuid().equals(BerlinModelTransformer.uuidLangHighAragonese)){return LANG_HIGH_ARAGONES;
+        }else if (language.getUuid().equals(BerlinModelTransformer.uuidLangMajorcan)){return LANG_MAJORCAN;
 		} else {
 			logger.warn("Unknown Language: " + language.getTitleCache());
 			return null;
@@ -1982,9 +1991,8 @@ public final class PesiTransformer extends ExportTransformerBase{
 		RelationshipTermBase<?> type = relation.getType();
 		if (type.equals(TaxonRelationshipType.MISAPPLIED_NAME_FOR())) {
 			return IS_MISAPPLIED_NAME_FOR;
-	    //TODO
-//		} else if (type.equals(TaxonRelationshipType.PRO_PARTE_MISAPPLIED_NAME_FOR())) {
-//            return IS_PRO_PARTE_MISAPPLIED_NAME_FOR;
+		} else if (type.equals(TaxonRelationshipType.PRO_PARTE_MISAPPLIED_NAME_FOR())) {
+            return IS_PRO_PARTE_MISAPPLIED_NAME_FOR;
         } else if (type.equals(TaxonRelationshipType.PRO_PARTE_SYNONYM_FOR())) {
 		    return IS_PRO_PARTE_SYNONYM_OF;
 		} else if (type.equals(TaxonRelationshipType.PARTIAL_SYNONYM_FOR())) {
@@ -2005,6 +2013,10 @@ public final class PesiTransformer extends ExportTransformerBase{
 			return IS_TREATED_AS_LATER_HOMONYM_OF;
 		} else if (type.equals(NameRelationshipType.ORTHOGRAPHIC_VARIANT())) {
 			return IS_ORTHOGRAPHIC_VARIANT_OF;
+	    } else if (type.equals(NameRelationshipType.ORIGINAL_SPELLING())) {
+	        return IS_ORIGINAL_SPELLING_FOR;
+        } else if (type.equals(NameRelationshipType.BLOCKING_NAME_FOR())) {
+            return IS_BLOCKING_NAME_FOR;
 		} else if (type.equals(NameRelationshipType.ALTERNATIVE_NAME())) {
 			return IS_ALTERNATIVE_NAME_FOR;
 		} else if (type.equals(HybridRelationshipType.FEMALE_PARENT())) {
