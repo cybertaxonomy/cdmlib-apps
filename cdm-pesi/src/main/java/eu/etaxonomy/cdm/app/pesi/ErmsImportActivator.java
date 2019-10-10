@@ -37,13 +37,16 @@ public class ErmsImportActivator {
 	static final Source ermsSource = PesiSources.PESI2019_ERMS();
 
 //	static final ICdmDataSource cdmDestination = CdmDestinations.test_cdm_pesi_erms();
-	static final ICdmDataSource cdmDestination = CdmDestinations.cdm_test_local_mysql_erms();
-//	static final ICdmDataSource cdmDestination = CdmDestinations.cdm_test_local_mysql_erms2();
 
-	static final Source pesiDestination =
-	        cdmDestination == CdmDestinations.cdm_test_local_mysql_erms()?
-	                PesiDestinations.pesi_test_local_CDM_ERMS2PESI():
-	                PesiDestinations.pesi_test_local_CDM_ERMS2PESI_2()    ;
+//	static final ICdmDataSource cdmDestination = CdmDestinations.cdm_test_local_mysql_erms();
+//	static final ICdmDataSource cdmDestination = CdmDestinations.cdm_test_local_mysql_erms2();
+	static final ICdmDataSource cdmDestination = CdmDestinations.cdm_test_local_faunaEu_mysql();
+
+
+//	static final Source pesiDestination =
+//	        cdmDestination == CdmDestinations.cdm_test_local_mysql_erms()?
+//	                PesiDestinations.pesi_test_local_CDM_ERMS2PESI():
+//	                PesiDestinations.pesi_test_local_CDM_ERMS2PESI_2()    ;
 
 	static final boolean includeExport2PESI = false;
 
@@ -59,9 +62,22 @@ public class ErmsImportActivator {
 
 // ***************** ALL ************************************************//
 
+//	static final DO_REFERENCES doReferences = DO_REFERENCES.ALL;
+//	static final boolean doTaxa = true;
+//	static final boolean doRelTaxa = doTaxa; //should always run with doTaxa because dependent on state from doTaxa
+//	static final boolean doSourceUse = true;
+//	static final boolean doCommonNames = true;
+//    static final boolean doNotes = true;
+//	static final boolean doDistributions = true;
+//	static final boolean doLinks = true;
+//	static final boolean doImages = true;
+
+//******************** NONE ***************************************//
+//
 	static final DO_REFERENCES doReferences = DO_REFERENCES.ALL;
 	static final boolean doTaxa = true;
-	static final boolean doRelTaxa = doTaxa; //should always run with doTaxa because dependent on state from doTaxa
+	static final boolean doRelTaxa = doTaxa; //should always run with doTaxa because depends on state from doTaxa
+
 	static final boolean doSourceUse = true;
 	static final boolean doCommonNames = true;
     static final boolean doNotes = true;
@@ -81,7 +97,8 @@ public class ErmsImportActivator {
 //	static final boolean doLinks = false;
 //	static final boolean doImages = false;
 
-	private static DbSchemaValidation hbm2dll = (doReferences ==  DO_REFERENCES.ALL)? DbSchemaValidation.CREATE:DbSchemaValidation.VALIDATE;
+	//private static DbSchemaValidation hbm2dll = (doReferences ==  DO_REFERENCES.ALL)? DbSchemaValidation.CREATE:DbSchemaValidation.VALIDATE;
+	private static DbSchemaValidation hbm2dll = DbSchemaValidation.VALIDATE;
 
 	private void doImport(Source source, ICdmDataSource destination, DbSchemaValidation hbm2dll){
 		System.out.println("Start import from ("+ ermsSource.getDatabase() + ") to " + destination.getDatabase() + " ..." );
@@ -142,7 +159,7 @@ public class ErmsImportActivator {
 //            ermsExport.doInferredSynonyms = doRelTaxa;
             ermsExport.doDescriptions = doImages;
 
-			ermsExport.doExport(cdmDB, pesiDestination);
+//			ermsExport.doExport(cdmDB, pesiDestination);
 		}
 		System.exit(0);
 	}

@@ -1,15 +1,20 @@
 package eu.etaxonomy.cdm.app.caryophyllales;
 import java.util.Arrays;
 import java.util.List;
+import java.util.UUID;
 
 import org.apache.log4j.Logger;
 
+import eu.etaxonomy.cdm.api.application.CdmApplicationController;
 import eu.etaxonomy.cdm.api.service.config.CacheUpdaterConfigurator;
 import eu.etaxonomy.cdm.app.common.CdmDestinations;
+import eu.etaxonomy.cdm.common.monitor.IRemotingProgressMonitor;
 import eu.etaxonomy.cdm.database.DbSchemaValidation;
 import eu.etaxonomy.cdm.database.ICdmDataSource;
+import eu.etaxonomy.cdm.io.api.application.CdmIoApplicationController;
 import eu.etaxonomy.cdm.io.common.CdmDefaultImport;
 import eu.etaxonomy.cdm.io.common.ImportResult;
+import eu.etaxonomy.cdm.model.name.TaxonName;
 import eu.etaxonomy.cdm.model.taxon.TaxonBase;
 
 public class CaryophyllalesCacheUpdater {
@@ -18,14 +23,14 @@ public class CaryophyllalesCacheUpdater {
 
 		//database validation status (create, update, validate ...)
 		static DbSchemaValidation hbm2dll = DbSchemaValidation.VALIDATE;
-		static final ICdmDataSource cdmDestination = CdmDestinations.cdm_local_caryo();
+		static final ICdmDataSource cdmDestination = CdmDestinations.cdm_local_algaterranew();
 
 		static final List<String> classListStrings =  Arrays.asList(new String[]{
 				//IdentifiableEntity.class.getName(),
 //				IdentifiableEntity.class.getName(),
 				//AgentBase.class.getName(),
 				//Reference.class.getName(),
-				//TaxonName.class.getName(),
+				TaxonName.class.getName(),
 				TaxonBase.class.getName()
 
 
@@ -87,13 +92,22 @@ public class CaryophyllalesCacheUpdater {
 
 			CacheUpdaterConfigurator config;
 			try {
-				config = CacheUpdaterConfigurator.NewInstance(destination, classListStrings, true);
-
-				// invoke import
-				CdmDefaultImport<CacheUpdaterConfigurator> myImport = new CdmDefaultImport<>();
-				result=myImport.invoke(config);
-				//String successString = success ? "successful" : " with errors ";
-				//System.out.println("End updating caches for "+ destination.getDatabase() + "..." +  successString);
+				config = CacheUpdaterConfigurator.NewInstance(classListStrings, true);
+				CdmApplicationController appCtrInit = CdmIoApplicationController.NewInstance(destination, DbSchemaValidation.VALIDATE, false);
+				appCtrInit.authenticate("admin", "kups366+RU");
+				UUID monitUuid = appCtrInit.getLongRunningTasksService().monitLongRunningTask(config);
+				IRemotingProgressMonitor monitor = appCtrInit.getProgressMonitorService().getRemotingMonitor(monitUuid);
+				while(monitor != null && (!monitor.isCanceled() || !monitor.isDone() || !monitor.isFailed())) {
+					try {
+						Thread.sleep(10);
+					} catch (InterruptedException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+	                logger.info("Waiting for monitered work to start ..");
+	                monitor = appCtrInit.getProgressMonitorService().getRemotingMonitor(monitUuid);
+				}
+				
 				return result;
 			} catch (ClassNotFoundException e) {
 				logger.error(e);
