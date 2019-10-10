@@ -1021,7 +1021,7 @@ public class PesiDescriptionExport extends PesiExportBase {
                 = CollectionExportMapping.NewInstance(tableName, collectionAttribute, parentMapper);
         mapping.addMapper(DbSimpleFilterMapper.NewSingleNullAttributeInstance("idInSource",
                 "Sources with idInSource currently handle data lineage"));
-        mapping.addMapper(DbObjectMapper.NewInstance("Citation", "SourceFk"));
+        mapping.addMapper(DbObjectMapper.NewNotNullInstance("Citation", "SourceFk"));
         mapping.addMapper(DbObjectMapper.NewInstance("Citation", "SourceNameCache", IS_CACHE));
         mapping.addMapper(DbStringMapper.NewInstance("CitationMicroReference", "SourceDetail"));
         mapping.addMapper(DbOriginalNameMapper.NewInstance("OldTaxonName", IS_CACHE, null));
