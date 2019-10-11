@@ -91,8 +91,6 @@ public class BerlinModelReferenceExport extends BerlinModelExportBase<Reference>
 //		mapping.addMapper(DbStringMapper.NewInstance("title", "NomTitleAbbrev"));
 		mapping.addMapper(MethodMapper.NewInstance("NomTitleAbbrev", this));
 
-
-
 		mapping.addMapper(DbStringMapper.NewFacultativeInstance("edition", "Edition"));
 		mapping.addMapper(DbStringMapper.NewFacultativeInstance("volume", "Volume"));
 		mapping.addMapper(DbStringMapper.NewFacultativeInstance("series", "Series"));
