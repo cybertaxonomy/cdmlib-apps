@@ -114,11 +114,10 @@ public final class PesiTransformer extends ExportTransformerBase{
 	private static int REF_PUBLICATION = 11;
 	public static String REF_STR_UNRESOLVED = "unresolved";
 
+	private static int LANG_UNKNOWN = -99;
 	private static int LANG_VALENCIAN = 65;
 	private static int LANG_HIGH_ARAGONES = 66;
 	private static int LANG_MAJORCAN = 67;
-
-
 
 	// NameStatus
     public static UUID uuidNomStatusTemporaryName = UUID.fromString("aa6ada5a-ca21-4fef-b76f-9ae237e9c4ae");
@@ -994,7 +993,7 @@ public final class PesiTransformer extends ExportTransformerBase{
 			else if (namedArea.getUuid().equals(BerlinModelTransformer.uuidLt)) { return AREA_LITHUANIA; }
 			else if (namedArea.getUuid().equals(BerlinModelTransformer.uuidLu)) { return AREA_PORTUGUESE_MAINLAND; }
 			else if (namedArea.getUuid().equals(BerlinModelTransformer.uuidMa)) { return AREA_MOROCCO; }
-			else if (namedArea.getUuid().equals(BerlinModelTransformer.uuidMd)) { return AREA_MADEIRA; }
+			else if (namedArea.getUuid().equals(BerlinModelTransformer.uuidMd)) { return AREA_MADEIRA_ARCHIPELAGO; }
 			else if (namedArea.getUuid().equals(BerlinModelTransformer.uuidMd_D)) { return AREA_DESERTAS; }
 			else if (namedArea.getUuid().equals(BerlinModelTransformer.uuidMd_M)) { return AREA_MADEIRA; }
 			else if (namedArea.getUuid().equals(BerlinModelTransformer.uuidMd_P)) { return AREA_PORTO_SANTO; }
@@ -1326,7 +1325,9 @@ public final class PesiTransformer extends ExportTransformerBase{
 		}else if (language.getUuid().equals(BerlinModelTransformer.uuidLangValencian)){return LANG_VALENCIAN;
         }else if (language.getUuid().equals(BerlinModelTransformer.uuidLangHighAragonese)){return LANG_HIGH_ARAGONES;
         }else if (language.getUuid().equals(BerlinModelTransformer.uuidLangMajorcan)){return LANG_MAJORCAN;
-		} else {
+        //some common names from ILDIS have no defined language
+        }else if (language.equals(Language.UNKNOWN_LANGUAGE())){return LANG_UNKNOWN;
+        } else {
 			logger.warn("Unknown Language: " + language.getTitleCache());
 			return null;
 		}

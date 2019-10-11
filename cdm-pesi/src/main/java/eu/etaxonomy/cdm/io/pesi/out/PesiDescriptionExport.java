@@ -13,6 +13,7 @@ import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.sql.Types;
 import java.util.Arrays;
+import java.util.EnumSet;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -34,6 +35,7 @@ import eu.etaxonomy.cdm.io.common.mapping.out.DbDescriptionElementTaxonMapper;
 import eu.etaxonomy.cdm.io.common.mapping.out.DbDistributionStatusMapper;
 import eu.etaxonomy.cdm.io.common.mapping.out.DbExportIgnoreMapper;
 import eu.etaxonomy.cdm.io.common.mapping.out.DbLanguageMapper;
+import eu.etaxonomy.cdm.io.common.mapping.out.DbNullMapper;
 import eu.etaxonomy.cdm.io.common.mapping.out.DbObjectMapper;
 import eu.etaxonomy.cdm.io.common.mapping.out.DbOriginalNameMapper;
 import eu.etaxonomy.cdm.io.common.mapping.out.DbSimpleFilterMapper;
@@ -46,8 +48,6 @@ import eu.etaxonomy.cdm.model.common.Extension;
 import eu.etaxonomy.cdm.model.common.ExtensionType;
 import eu.etaxonomy.cdm.model.common.Language;
 import eu.etaxonomy.cdm.model.common.LanguageString;
-import eu.etaxonomy.cdm.model.common.Marker;
-import eu.etaxonomy.cdm.model.common.MarkerType;
 import eu.etaxonomy.cdm.model.description.CommonTaxonName;
 import eu.etaxonomy.cdm.model.description.DescriptionBase;
 import eu.etaxonomy.cdm.model.description.DescriptionElementBase;
@@ -62,6 +62,7 @@ import eu.etaxonomy.cdm.model.media.Media;
 import eu.etaxonomy.cdm.model.media.MediaRepresentation;
 import eu.etaxonomy.cdm.model.media.MediaRepresentationPart;
 import eu.etaxonomy.cdm.model.name.TaxonName;
+import eu.etaxonomy.cdm.model.reference.OriginalSourceType;
 import eu.etaxonomy.cdm.model.taxon.Taxon;
 import eu.etaxonomy.cdm.model.taxon.TaxonBase;
 import eu.etaxonomy.cdm.profiler.ProfilerController;
@@ -98,7 +99,7 @@ public class PesiDescriptionExport extends PesiExportBase {
 	//debugging
 	private static int countDescriptions;
 	private static int countTaxa;
-	private static int countDistribution;
+	private static int countDistributionFiltered;
 	private static int countAdditionalSources;
 	private static int countImages;
 	private static int countNotes;
@@ -229,8 +230,8 @@ public class PesiDescriptionExport extends PesiExportBase {
 		logger.info("Partition: " + partitionCount);
 		logger.info("Taxa: " + countTaxa);
 		logger.info("Desc: " + countDescriptions);
-		logger.info("Distr: " + countDistribution);
-		logger.info("Occur: " + countOccurrence);
+		logger.info("Distr: " + countOccurrence);
+		logger.info("Distr(Pesi): " + countDistributionFiltered);
 		logger.info("Commons: " + countCommonName);
 		logger.info("AddSrc: " + countAdditionalSources);
 		logger.info("Images: " + countImages);
@@ -305,8 +306,8 @@ public class PesiDescriptionExport extends PesiExportBase {
 		logger.info("Partition: " + partitionCount);
 		logger.info("Taxa: " + countTaxa);
 		logger.info("Desc: " + countDescriptions);
-		logger.info("Distr: " + countDistribution);
 		logger.info("Occur: " + countOccurrence);
+		logger.info("Distr(Pesi): " + countDistributionFiltered);
 		logger.info("Commons: " + countCommonName);
 		logger.info("AddSrc: " + countAdditionalSources);
 		logger.info("Images: " + countImages);
@@ -364,12 +365,12 @@ public class PesiDescriptionExport extends PesiExportBase {
 			}else if (isOccurrence(element)){
 				countOccurrence++;
 				Distribution distribution = CdmBase.deproxy(element, Distribution.class);
-				MarkerType markerType = getUuidMarkerType(PesiTransformer.uuidMarkerTypeHasNoLastAction, state);
-				distribution.addMarker(Marker.NewInstance(markerType, true));
+//				MarkerType markerType = getUuidMarkerType(PesiTransformer.uuidMarkerTypeHasNoLastAction, state);
+//				distribution.addMarker(Marker.NewInstance(markerType, true));
 				if (!isPesiDistribution(state, distribution)){
 				    logger.debug("Distribution is not PESI distribution: " + distribution.toString());
 				}else{
-					countDistribution++;
+					countDistributionFiltered++;
 					try{
 					    success &=occurrenceMapping.invoke(distribution);
 					}catch(Exception e){
@@ -872,14 +873,16 @@ public class PesiDescriptionExport extends PesiExportBase {
 		//TODO
 		mapping.addMapper(MethodMapper.NewInstance("Note_2", this, standardMethodParameter));
 		mapping.addMapper(MethodMapper.NewInstance("NoteCategoryFk", this, standardMethodParameter ));
-
 		mapping.addMapper(MethodMapper.NewInstance("NoteCategoryCache", this, standardMethodParameter, PesiExportState.class ));
+
 		mapping.addMapper(MethodMapper.NewInstance("LanguageFk", this));
 		mapping.addMapper(MethodMapper.NewInstance("LanguageCache", this, standardMethodParameter, PesiExportState.class));
 
 //		mapping.addMapper(MethodMapper.NewInstance("Region", this));
 		mapping.addMapper(DbDescriptionElementTaxonMapper.NewInstance("taxonFk"));
+
 		mapping.addMapper(ExpertsAndLastActionMapper.NewInstance());
+
 		mapping.addCollectionMapping(getNoteSourceMapping());
 		return mapping;
 	}
@@ -892,7 +895,7 @@ public class PesiDescriptionExport extends PesiExportBase {
         CollectionExportMapping<PesiExportState, PesiExportConfigurator, PesiTransformer> mapping
                 = CollectionExportMapping.NewInstance(tableName, collectionAttribute, parentMapper);
 		mapping.addMapper(DbSimpleFilterMapper.NewSingleNullAttributeInstance("idInSource", "Sources with idInSource currently handle data lineage"));
-		mapping.addMapper(DbObjectMapper.NewInstance("Citation", "SourceFk"));
+		mapping.addMapper(DbObjectMapper.NewNotNullInstance("Citation", "SourceFk"));
 		mapping.addMapper(DbObjectMapper.NewInstance("Citation", "SourceNameCache", IS_CACHE));
 		mapping.addMapper(DbStringMapper.NewInstance("CitationMicroReference", "SourceDetail"));
 		return mapping;
@@ -915,11 +918,12 @@ public class PesiDescriptionExport extends PesiExportBase {
 		mapping.addMapper(DbDistributionStatusMapper.NewInstance("OccurrenceStatusCache", IS_CACHE));
 
 //		Use OccurrenceSource table instead
-		mapping.addMapper(DbExportIgnoreMapper.NewInstance("SourceFk", "Use OccurrenceSource table for sources instead"));
-		mapping.addMapper(DbExportIgnoreMapper.NewInstance("SourceCache", "Use OccurrenceSource table for sources instead"));
+		mapping.addMapper(DbNullMapper.NewIntegerInstance("SourceFk"));
+		mapping.addMapper(DbNullMapper.NewStringInstance("SourceCache"));
 
 		mapping.addMapper(DbAnnotationMapper.NewExludedInstance(getLastActionAnnotationTypes(), "Notes"));
 		mapping.addMapper(ExpertsAndLastActionMapper.NewInstance());
+
 		mapping.addCollectionMapping(getOccurrenceSourceMapping());
 
 		return mapping;
@@ -934,7 +938,10 @@ public class PesiDescriptionExport extends PesiExportBase {
 		        = CollectionExportMapping.NewInstance(tableName, collectionAttribute, parentMapper);
 		mapping.addMapper(DbSimpleFilterMapper.NewSingleNullAttributeInstance("idInSource",
 		        "Sources with idInSource currently handle data lineage"));
-		mapping.addMapper(DbObjectMapper.NewInstance("Citation", "SourceFk"));
+        mapping.addMapper(DbSimpleFilterMapper.NewAllowedValueInstance("idInSource",
+              EnumSet.of(OriginalSourceType.PrimaryTaxonomicSource, OriginalSourceType.PrimaryMediaSource, OriginalSourceType.Aggregation),
+              null, "Only primary taxonomic sources should be exported"));
+		mapping.addMapper(DbObjectMapper.NewNotNullInstance("Citation", "SourceFk"));
 		mapping.addMapper(DbObjectMapper.NewInstance("Citation", "SourceNameCache", IS_CACHE));
 		mapping.addMapper(DbStringMapper.NewInstance("CitationMicroReference", "SourceDetail"));
         mapping.addMapper(DbOriginalNameMapper.NewInstance("OldTaxonName", IS_CACHE, null));
@@ -1000,14 +1007,16 @@ public class PesiDescriptionExport extends PesiExportBase {
 		mapping.addMapper(DbLanguageMapper.NewInstance(CommonTaxonName.class, "Language", "LanguageFk", ! IS_CACHE));
 		mapping.addMapper(DbLanguageMapper.NewInstance(CommonTaxonName.class, "Language", "LanguageCache", IS_CACHE));
 
-//      Use OccurrenceSource table instead
-        mapping.addMapper(DbExportIgnoreMapper.NewInstance("SourceFk", "Use CommonNameSource table for sources instead"));
-        mapping.addMapper(DbExportIgnoreMapper.NewInstance("SourceNameCache", "Use CommonNameSource table for sources instead"));
+//      Use CommonNameSource table instead
+        mapping.addMapper(DbNullMapper.NewIntegerInstance("SourceFk"));
+        mapping.addMapper(DbNullMapper.NewStringInstance("SourceNameCache"));
         //OLD
 //		mapping.addMapper(DbSingleSourceMapper.NewInstance("SourceFk", of ( DbSingleSourceMapper.EXCLUDE.WITH_ID) , ! IS_CACHE));
 //		mapping.addMapper(DbSingleSourceMapper.NewInstance("SourceNameCache", of ( DbSingleSourceMapper.EXCLUDE.WITH_ID) , IS_CACHE));
 
-		mapping.addMapper(ExpertsAndLastActionMapper.NewInstance());
+		//no SpeciesExpertGUID and SpeciesExpertName for E+M according to SQL
+        mapping.addMapper(ExpertsAndLastActionMapper.NewInstance());
+
 	    mapping.addCollectionMapping(getCommonNameSourceMapping());
 		return mapping;
 	}
