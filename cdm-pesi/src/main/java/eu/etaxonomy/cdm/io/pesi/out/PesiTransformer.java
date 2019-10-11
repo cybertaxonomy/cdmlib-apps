@@ -152,8 +152,8 @@ public final class PesiTransformer extends ExportTransformerBase{
 	private static int NAME_ST_SPECIES_INQUIRENDA = 28;
 
 	// TaxonStatus
-	private static int T_STATUS_ACCEPTED = 1;
-	private static int T_STATUS_SYNONYM = 2;
+	public static int T_STATUS_ACCEPTED = 1;
+	public static int T_STATUS_SYNONYM = 2;
 	private static int T_STATUS_PARTIAL_SYN = 3;
 	private static int T_STATUS_PRO_PARTE_SYN = 4;
 	private static int T_STATUS_UNRESOLVED = 5;
@@ -595,13 +595,13 @@ public final class PesiTransformer extends ExportTransformerBase{
 
 	// OccurrenceStatus
 	private static int STATUS_PRESENT = 1;
-	private static int STATUS_ABSENT = 2;
-	private static int STATUS_NATIVE = 3;
-	private static int STATUS_INTRODUCED = 4;
-	private static int STATUS_NATURALISED = 5;
+	public static int STATUS_ABSENT = 2;
+	public static int STATUS_NATIVE = 3;
+	public static int STATUS_INTRODUCED = 4;
+	public static int STATUS_NATURALISED = 5;
 	private static int STATUS_INVASIVE = 6;
-	private static int STATUS_MANAGED = 7;
-	private static int STATUS_DOUBTFUL = 8;
+	public static int STATUS_MANAGED = 7;
+	public static int STATUS_DOUBTFUL = 8;
 
 	private final Map<String, Integer> tdwgKeyMap = new HashMap<>();
 	private final Map<Integer, String> areaCacheMap = new HashMap<>();
