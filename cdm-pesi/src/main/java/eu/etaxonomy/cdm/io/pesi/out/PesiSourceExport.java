@@ -237,7 +237,7 @@ public class PesiSourceExport extends PesiExportBase {
                     }
                 }
             }
-		    return titleCache;
+		    return titleCache == null ? null : titleCache.trim();
 		} else {
 			return null;
 		}
