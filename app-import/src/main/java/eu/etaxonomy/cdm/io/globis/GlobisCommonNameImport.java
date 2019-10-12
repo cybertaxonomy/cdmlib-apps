@@ -47,7 +47,9 @@ import eu.etaxonomy.cdm.model.taxon.TaxonBase;
  */
 @Component
 public class GlobisCommonNameImport  extends GlobisImportBase<Taxon> {
-	private static final Logger logger = Logger.getLogger(GlobisCommonNameImport.class);
+
+    private static final long serialVersionUID = 2462539699442149049L;
+    private static final Logger logger = Logger.getLogger(GlobisCommonNameImport.class);
 
 	private int modCount = 10000;
 	private static final String pluralString = "common names";
@@ -80,12 +82,14 @@ public class GlobisCommonNameImport  extends GlobisImportBase<Taxon> {
 	}
 
 	@Override
-	public boolean doPartition(ResultSetPartitioner partitioner, GlobisImportState state) {
+	public boolean doPartition(@SuppressWarnings("rawtypes") ResultSetPartitioner partitioner, GlobisImportState state) {
 		boolean success = true;
 
-		Set<TaxonBase> objectsToSave = new HashSet<TaxonBase>();
+		@SuppressWarnings("rawtypes")
+        Set<TaxonBase> objectsToSave = new HashSet<>();
 
-		Map<String, Taxon> taxonMap = partitioner.getObjectMap(TAXON_NAMESPACE);
+		@SuppressWarnings("unchecked")
+        Map<String, Taxon> taxonMap = partitioner.getObjectMap(TAXON_NAMESPACE);
 
 		ResultSet rs = partitioner.getResultSet();
 
@@ -159,8 +163,7 @@ public class GlobisCommonNameImport  extends GlobisImportBase<Taxon> {
 		}
 	}
 
-
-	private Map<String,Language> languageMap = new HashMap<String,Language>();
+	private Map<String,Language> languageMap = new HashMap<>();
 	private Language getLanguage(String isoLang) {
 		Language result = languageMap.get(isoLang);
 		if (result == null){
@@ -229,11 +232,10 @@ public class GlobisCommonNameImport  extends GlobisImportBase<Taxon> {
 	@Override
 	public Map<Object, Map<String, ? extends CdmBase>> getRelatedObjectsForPartition(ResultSet rs, GlobisImportState state) {
 		String nameSpace;
-		Class<?> cdmClass;
 		Set<String> idSet;
-		Map<Object, Map<String, ? extends CdmBase>> result = new HashMap<Object, Map<String, ? extends CdmBase>>();
+		Map<Object, Map<String, ? extends CdmBase>> result = new HashMap<>();
 		try{
-			Set<String> taxonIdSet = new HashSet<String>();
+			Set<String> taxonIdSet = new HashSet<>();
 
 			while (rs.next()){
 				handleForeignKey(rs, taxonIdSet, "IDCurrentSpec");
@@ -241,9 +243,8 @@ public class GlobisCommonNameImport  extends GlobisImportBase<Taxon> {
 
 			//taxon map
 			nameSpace = TAXON_NAMESPACE;
-			cdmClass = Taxon.class;
 			idSet = taxonIdSet;
-			Map<String, Taxon> objectMap = (Map<String, Taxon>)getCommonService().getSourcedObjectsByIdInSource(cdmClass, idSet, nameSpace);
+			Map<String, Taxon> objectMap = getCommonService().getSourcedObjectsByIdInSourceC(Taxon.class, idSet, nameSpace);
 			result.put(nameSpace, objectMap);
 
 
@@ -253,9 +254,8 @@ public class GlobisCommonNameImport  extends GlobisImportBase<Taxon> {
 		return result;
 	}
 
-
 	@Override
-	protected boolean doCheck(GlobisImportState state){
+    protected boolean doCheck(GlobisImportState state){
 //		IOValidator<GlobisImportState> validator = new GlobisCurrentSpeciesImportValidator();
 		return true;
 	}
@@ -264,9 +264,4 @@ public class GlobisCommonNameImport  extends GlobisImportBase<Taxon> {
 	protected boolean isIgnore(GlobisImportState state){
 		return ! state.getConfig().isDoCommonNames();
 	}
-
-
-
-
-
 }

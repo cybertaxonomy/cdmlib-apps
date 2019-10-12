@@ -362,15 +362,12 @@ public class AlgaTerraDnaImport  extends AlgaTerraSpecimenImportBase {
 	@Override
 	public Map<Object, Map<String, ? extends CdmBase>> getRelatedObjectsForPartition(ResultSet rs, BerlinModelImportState state) {
 		String nameSpace;
-		Class<?> cdmClass;
 		Set<String> idSet;
 		Map<Object, Map<String, ? extends CdmBase>> result = new HashMap<>();
 
 		try{
 			Set<String> taxonIdSet = new HashSet<>();
-
 			Set<String> ecoFactFkSet = new HashSet<>();
-
 			while (rs.next()){
 				handleForeignKey(rs, taxonIdSet, "taxonId");
 				handleForeignKey(rs, ecoFactFkSet, "ecoFactId");
@@ -378,17 +375,15 @@ public class AlgaTerraDnaImport  extends AlgaTerraSpecimenImportBase {
 
 			//taxon map
 			nameSpace = BerlinModelTaxonImport.NAMESPACE;
-			cdmClass = TaxonBase.class;
 			idSet = taxonIdSet;
-			Map<String, TaxonBase> objectMap = (Map<String, TaxonBase>)getCommonService().getSourcedObjectsByIdInSource(cdmClass, idSet, nameSpace);
+			Map<String, TaxonBase> objectMap = getCommonService().getSourcedObjectsByIdInSourceC(TaxonBase.class, idSet, nameSpace);
 			result.put(nameSpace, objectMap);
 
 
 			//eco fact derived unit map
-			nameSpace = AlgaTerraFactEcologyImport.ECO_FACT_DERIVED_UNIT_NAMESPACE;
-			cdmClass = DerivedUnit.class;
+			nameSpace = AlgaTerraSpecimenImportBase.ECO_FACT_DERIVED_UNIT_NAMESPACE;
 			idSet = ecoFactFkSet;
-			Map<String, DerivedUnit> derivedUnitMap = (Map<String, DerivedUnit>)getCommonService().getSourcedObjectsByIdInSource(cdmClass, idSet, nameSpace);
+			Map<String, DerivedUnit> derivedUnitMap = getCommonService().getSourcedObjectsByIdInSourceC(DerivedUnit.class, idSet, nameSpace);
 			result.put(nameSpace, derivedUnitMap);
 
 		} catch (SQLException e) {

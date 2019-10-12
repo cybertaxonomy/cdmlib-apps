@@ -90,8 +90,8 @@ public class AlgaTerraCollectionImport  extends BerlinModelImportBase {
 		Set<Collection> collectionsToSave = new HashSet<Collection>();
 
 
-		Map<String, Collection> collectionMap = partitioner.getObjectMap(NAMESPACE_COLLECTION);
-
+		@SuppressWarnings("unchecked")
+        Map<String, Collection> collectionMap = partitioner.getObjectMap(NAMESPACE_COLLECTION);
 
 		ResultSet rs = partitioner.getResultSet();
 
@@ -198,12 +198,11 @@ public class AlgaTerraCollectionImport  extends BerlinModelImportBase {
 	@Override
 	public Map<Object, Map<String, ? extends CdmBase>> getRelatedObjectsForPartition(ResultSet rs, BerlinModelImportState state) {
 		String nameSpace;
-		Class cdmClass;
 		Set<String> idSet;
-		Map<Object, Map<String, ? extends CdmBase>> result = new HashMap<Object, Map<String, ? extends CdmBase>>();
+		Map<Object, Map<String, ? extends CdmBase>> result = new HashMap<>();
 
 		try{
-			Set<String> collectionIdSet = new HashSet<String>();
+			Set<String> collectionIdSet = new HashSet<>();
 
 			while (rs.next()){
 				handleForeignKey(rs, collectionIdSet, "partOfFk");
@@ -211,9 +210,8 @@ public class AlgaTerraCollectionImport  extends BerlinModelImportBase {
 
 			//type specimen map
 			nameSpace = NAMESPACE_COLLECTION;
-			cdmClass = Collection.class;
 			idSet = collectionIdSet;
-			Map<String, Collection> collectionMap = (Map<String, Collection>)getCommonService().getSourcedObjectsByIdInSource(cdmClass, idSet, nameSpace);
+			Map<String, Collection> collectionMap = getCommonService().getSourcedObjectsByIdInSourceC(Collection.class, idSet, nameSpace);
 			result.put(nameSpace, collectionMap);
 
 
@@ -224,10 +222,6 @@ public class AlgaTerraCollectionImport  extends BerlinModelImportBase {
 
 	}
 
-
-	/* (non-Javadoc)
-	 * @see eu.etaxonomy.cdm.io.common.CdmIoBase#doCheck(eu.etaxonomy.cdm.io.common.IoStateBase)
-	 */
 	@Override
 	protected boolean doCheck(BerlinModelImportState state){
 		IOValidator<BerlinModelImportState> validator = new AlgaTerraCollectionImportValidator();

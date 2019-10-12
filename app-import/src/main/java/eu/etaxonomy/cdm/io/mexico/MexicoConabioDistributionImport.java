@@ -59,11 +59,10 @@ public class MexicoConabioDistributionImport<CONFIG extends MexicoConabioImportC
         return "DistribucionEstatal";
     }
 
-    @SuppressWarnings("unchecked")
     private void initTaxa() {
         if (taxonIdMap == null){
             Set<String> existingKeys = MexicoConabioTaxonImport.taxonIdMap.keySet();
-            taxonIdMap = (Map<String, Taxon>)getCommonService().getSourcedObjectsByIdInSource(Taxon.class,
+            taxonIdMap = getCommonService().getSourcedObjectsByIdInSourceC(Taxon.class,
                     existingKeys, MexicoConabioTaxonImport.TAXON_NAMESPACE);
         }
     }

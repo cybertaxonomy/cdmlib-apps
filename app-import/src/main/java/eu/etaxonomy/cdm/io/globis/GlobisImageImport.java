@@ -51,11 +51,12 @@ import eu.etaxonomy.cdm.model.taxon.Taxon;
 /**
  * @author a.mueller
  * @since 20.02.2010
- * @version 1.0
  */
 @Component
 public class GlobisImageImport  extends GlobisImportBase<Taxon> {
-	private static final Logger logger = Logger.getLogger(GlobisImageImport.class);
+
+    private static final long serialVersionUID = 5697033145326415146L;
+    private static final Logger logger = Logger.getLogger(GlobisImageImport.class);
 
 	private int modCount = 1000;
 
@@ -70,12 +71,6 @@ public class GlobisImageImport  extends GlobisImportBase<Taxon> {
 		super(pluralString, dbTableName, cdmTargetClass);
 	}
 
-
-
-
-	/* (non-Javadoc)
-	 * @see eu.etaxonomy.cdm.io.globis.GlobisImportBase#getIdQuery()
-	 */
 	@Override
 	protected String getIdQuery() {
 		String strRecordQuery =
@@ -84,12 +79,6 @@ public class GlobisImageImport  extends GlobisImportBase<Taxon> {
 		return strRecordQuery;
 	}
 
-
-
-
-	/* (non-Javadoc)
-	 * @see eu.etaxonomy.cdm.io.berlinModel.in.BerlinModelImportBase#getRecordQuery(eu.etaxonomy.cdm.io.berlinModel.in.BerlinModelImportConfigurator)
-	 */
 	@Override
 	protected String getRecordQuery(GlobisImportConfigurator config) {
 		String strRecordQuery =
@@ -101,21 +90,19 @@ public class GlobisImageImport  extends GlobisImportBase<Taxon> {
 		return strRecordQuery;
 	}
 
-
-
-	/* (non-Javadoc)
-	 * @see eu.etaxonomy.cdm.io.globis.GlobisImportBase#doPartition(eu.etaxonomy.cdm.io.common.ResultSetPartitioner, eu.etaxonomy.cdm.io.globis.GlobisImportState)
-	 */
 	@Override
-	public boolean doPartition(ResultSetPartitioner partitioner, GlobisImportState state) {
+	public boolean doPartition(@SuppressWarnings("rawtypes") ResultSetPartitioner partitioner, GlobisImportState state) {
 		boolean success = true;
 
 		Set<Media> objectsToSave = new HashSet<>();
 
-		Map<String, DerivedUnit> typeMap = partitioner.getObjectMap(TYPE_NAMESPACE);
+		@SuppressWarnings("unchecked")
+        Map<String, DerivedUnit> typeMap = partitioner.getObjectMap(TYPE_NAMESPACE);
 
-		Map<String, Taxon> taxonMap = partitioner.getObjectMap(TAXON_NAMESPACE);
-		Map<String, TaxonName> specTaxNameMap = partitioner.getObjectMap(SPEC_TAX_NAMESPACE);
+		@SuppressWarnings("unchecked")
+        Map<String, Taxon> taxonMap = partitioner.getObjectMap(TAXON_NAMESPACE);
+		@SuppressWarnings("unchecked")
+        Map<String, TaxonName> specTaxNameMap = partitioner.getObjectMap(SPEC_TAX_NAMESPACE);
 
 		ResultSet rs = partitioner.getResultSet();
 
@@ -144,7 +131,7 @@ public class GlobisImageImport  extends GlobisImportBase<Taxon> {
         		//	[file lab2], same as Dateiname04 but less data
         		//	Dateipfad
 
-        		Set<Media> recordMedia = new HashSet<Media>();
+        		Set<Media> recordMedia = new HashSet<>();
 
         		try {
 
@@ -175,13 +162,12 @@ public class GlobisImageImport  extends GlobisImportBase<Taxon> {
         			//not type specimen
         			if (specimen == null){
 						specimen = DerivedUnit.NewPreservedSpecimenInstance();
-						specimen.setTitleCache("Specimen for " + title );
+						specimen.setTitleCache("Specimen for " + title, true);
 						String collectionCode = transformCopyright2CollectionCode(copyright);
 						//TODO
 						Collection collection = getCollection(collectionCode);
 						specimen.setCollection(collection);
 					}
-
 
 					//source
 					specimen.addSource(OriginalSourceType.Import, String.valueOf(bildID), IMAGE_NAMESPACE, state.getTransactionalSourceReference(), null);
@@ -285,9 +271,6 @@ public class GlobisImageImport  extends GlobisImportBase<Taxon> {
 		return null;
 	}
 
-
-
-
 	private String getNameFromFileOs(ResultSet rs) throws SQLException {
 		String fileOS = rs.getString("file OS");
 		Pattern pattern = Pattern.compile("(.+)(_.{4}(-.{1,3})?(_Nr\\d{3,4})?_.{2,3}\\.jpg)");
@@ -300,9 +283,6 @@ public class GlobisImageImport  extends GlobisImportBase<Taxon> {
 			return fileOS;
 		}
 	}
-
-
-
 
 	private void makeAllMedia(GlobisImportState state, ResultSet rs, Set<Media> recordMedia, Set<Media> objectsToSave) throws SQLException{
 			//make image path
@@ -413,10 +393,10 @@ public class GlobisImageImport  extends GlobisImportBase<Taxon> {
 
 	@Override
 	public Map<Object, Map<String, ? extends CdmBase>> getRelatedObjectsForPartition(ResultSet rs, GlobisImportState state) {
-		String nameSpace;
-		Class<?> cdmClass;
+
+	    String nameSpace;
 		Set<String> idSet;
-		Map<Object, Map<String, ? extends CdmBase>> result = new HashMap<Object, Map<String, ? extends CdmBase>>();
+		Map<Object, Map<String, ? extends CdmBase>> result = new HashMap<>();
 		try{
 			Set<String> currSpecIdSet = new HashSet<>();
 			Set<String> specTaxIdSet = new HashSet<>();
@@ -430,24 +410,21 @@ public class GlobisImageImport  extends GlobisImportBase<Taxon> {
 
 			//specTax map
 			nameSpace = SPEC_TAX_NAMESPACE;
-			cdmClass = TaxonName.class;
 			idSet = specTaxIdSet;
-			Map<String, TaxonName> specTaxNameMap = (Map<String, TaxonName>)getCommonService().getSourcedObjectsByIdInSource(cdmClass, idSet, nameSpace);
+			Map<String, TaxonName> specTaxNameMap = getCommonService().getSourcedObjectsByIdInSourceC(TaxonName.class, idSet, nameSpace);
 			result.put(nameSpace, specTaxNameMap);
 
 //			//taxon map
 //			nameSpace = TAXON_NAMESPACE;
-//			cdmClass = Taxon.class;
 //			idSet = currSpecIdSet;
-//			Map<String, Taxon> taxonMap = (Map<String, Taxon>)getCommonService().getSourcedObjectsByIdInSource(cdmClass, idSet, nameSpace);
+//			Map<String, Taxon> taxonMap = getCommonService().getSourcedObjectsByIdInSourceC(Taxon.class, idSet, nameSpace);
 //			result.put(nameSpace, taxonMap);
 
 
 			//type map
-			nameSpace = GlobisSpecTaxImport.TYPE_NAMESPACE;
-			cdmClass = DerivedUnit.class;
+			nameSpace = GlobisImportBase.TYPE_NAMESPACE;
 			idSet = typeIdSet;
-			Map<String, DerivedUnit> typeMap = (Map<String, DerivedUnit>)getCommonService().getSourcedObjectsByIdInSource(cdmClass, idSet, nameSpace);
+			Map<String, DerivedUnit> typeMap = getCommonService().getSourcedObjectsByIdInSourceC(DerivedUnit.class, idSet, nameSpace);
 			result.put(nameSpace, typeMap);
 
 
@@ -468,41 +445,23 @@ public class GlobisImageImport  extends GlobisImportBase<Taxon> {
 		}
 	}
 
-	/* (non-Javadoc)
-	 * @see eu.etaxonomy.cdm.io.common.CdmIoBase#doCheck(eu.etaxonomy.cdm.io.common.IImportConfigurator)
-	 */
 	@Override
 	protected boolean doCheck(GlobisImportState state){
 		IOValidator<GlobisImportState> validator = new GlobisImageImportValidator();
 		return validator.validate(state);
 	}
 
-
-	/* (non-Javadoc)
-	 * @see eu.etaxonomy.cdm.io.common.CdmIoBase#isIgnore(eu.etaxonomy.cdm.io.common.IImportConfigurator)
-	 */
 	@Override
     protected boolean isIgnore(GlobisImportState state){
 		return ! state.getConfig().isDoImages();
 	}
 
-
-
-
-	/* (non-Javadoc)
-	 * @see eu.etaxonomy.cdm.io.globis.GlobisImportBase#doInvoke(eu.etaxonomy.cdm.io.globis.GlobisImportState)
-	 */
 	@Override
 	protected void doInvoke(GlobisImportState state) {
 		Reference refGart = ReferenceFactory.newGeneric();
-		refGart.setTitleCache("GART");
+		refGart.setTitleCache("GART", true);
 		refGart.setUuid(uuidGartRef);
 		getReferenceService().saveOrUpdate(refGart);
 		super.doInvoke(state);
 	}
-
-
-
-
-
 }
