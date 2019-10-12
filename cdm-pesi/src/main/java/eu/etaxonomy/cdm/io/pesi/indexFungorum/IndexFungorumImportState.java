@@ -9,9 +9,7 @@
 
 package eu.etaxonomy.cdm.io.pesi.indexFungorum;
 
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
@@ -36,7 +34,7 @@ public class IndexFungorumImportState extends DbImportStateBase<IndexFungorumImp
 
 	private Map<String, TaxonBase> speciesMap;
 
-	private List<UUID> infraspecificTaxaUUIDs = new ArrayList<>();
+	private Map<UUID,Integer> infraspecificTaxaUUIDs = new HashMap<>();
 
 
 
@@ -49,10 +47,10 @@ public class IndexFungorumImportState extends DbImportStateBase<IndexFungorumImp
 //		super(config);
 	}
 
-    public List<UUID> getInfraspecificTaxaUUIDs() {
+    public Map<UUID,Integer> getInfraspecificTaxaUUIDs() {
         return infraspecificTaxaUUIDs;
     }
-    public void setInfraspecificTaxaUUIDs(List<UUID> infraspecificTaxaUUIDs) {
+    public void setInfraspecificTaxaUUIDs(Map<UUID, Integer> infraspecificTaxaUUIDs) {
         this.infraspecificTaxaUUIDs = infraspecificTaxaUUIDs;
     }
 

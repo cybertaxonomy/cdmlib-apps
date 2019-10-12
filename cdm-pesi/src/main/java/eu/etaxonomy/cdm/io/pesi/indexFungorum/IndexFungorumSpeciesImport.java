@@ -15,9 +15,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
-import java.util.UUID;
 
-import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.springframework.stereotype.Component;
 
@@ -91,8 +89,8 @@ public class IndexFungorumSpeciesImport  extends IndexFungorumImportBase {
 				String phylumName = rs.getString("Phylum name");
 
 				String preferredName = rs.getString("PreferredName");
-				if (StringUtils.isBlank(preferredName)){
-					logger.warn("Preferred name is blank. This case is not yet handled by IF import. RECORD UMBER" + CdmUtils.Nz(id));
+				if (isBlank(preferredName)){
+					logger.warn("Preferred name is blank. This case is not yet handled by IF import. RECORD NUMBER" + CdmUtils.Nz(id));
 				}
 
 				//Rank rank = Rank.SPECIES();
@@ -101,15 +99,18 @@ public class IndexFungorumSpeciesImport  extends IndexFungorumImportBase {
 				INonViralName name = parser.parseSimpleName(preferredName, NomenclaturalCode.ICNAFP, null);
 
 				Taxon taxon = Taxon.NewInstance(name, sourceReference);
-				//if name is infraspecific the parent should be the species not the genus
-				Taxon parent;
-				if (!name.isInfraSpecific()){
-				    parent = getParentTaxon(state, rs);
+				//if name is infra-specific the parent should be the species not the genus
+				Integer genusId = rs.getInt("PreferredNameFDCnumber");
+		        if (!name.isInfraSpecific()){
+				    Taxon parent = getParentTaxon(state, genusId);
 				    if (parent == null){
-	                    logger.warn("parent not found for name:" +preferredName);
+	                    logger.warn("parent not found for name:" + preferredName + "ID(PreferredNameIFnumber)" +id+ "; GenusId(PreferredNameFDCnumber): ");
+	                }else{
+	                    classification.addParentChild(parent, taxon, null, null);
 	                }
-				    classification.addParentChild(parent, taxon, null, null);
-				}
+				}else {
+                    state.getInfraspecificTaxaUUIDs().put(taxon.getUuid(), genusId);
+                }
 
 				//author + publication
 				makeAuthorAndPublication(state, rs, name);
@@ -121,13 +122,10 @@ public class IndexFungorumSpeciesImport  extends IndexFungorumImportBase {
 					ExtensionType fossilExtType = getExtensionType(state, ErmsTransformer.uuidExtFossilStatus, "fossil status", "fossil status", "fos. stat.");
 					Extension.NewInstance(taxon, PesiTransformer.STR_FOSSIL_ONLY, fossilExtType);
 				}
-				//save
 
-				UUID uuidTaxon = getTaxonService().saveOrUpdate(taxon);
-				//getNameService().saveOrUpdate(name);
-				if (name.isInfraSpecific()){
-                    state.getInfraspecificTaxaUUIDs().add(uuidTaxon);
-                }
+				//save
+				getTaxonService().saveOrUpdate(taxon);
+
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -138,20 +136,14 @@ public class IndexFungorumSpeciesImport  extends IndexFungorumImportBase {
 		return success;
 	}
 
-    private Taxon getParentTaxon(IndexFungorumImportState state, ResultSet rs) throws SQLException {
-		Integer genusId = rs.getInt("PreferredNameFDCnumber");
-
-		Taxon taxon = state.getRelatedObject(NAMESPACE_GENERA, String.valueOf(genusId), Taxon.class);
-		if (taxon == null){
-			logger.warn("Taxon not found for " + genusId);
-		}
-		return taxon;
+    private Taxon getParentTaxon(IndexFungorumImportState state, Integer genusId) {
+        return state.getRelatedObject(NAMESPACE_GENERA, String.valueOf(genusId), Taxon.class);
 	}
 
 	@Override
 	public Map<Object, Map<String, ? extends CdmBase>> getRelatedObjectsForPartition(ResultSet rs, IndexFungorumImportState state) {
-		String nameSpace;
-		Class<?> cdmClass;
+
+	    String nameSpace;
 		Set<String> idSet;
 		Map<Object, Map<String, ? extends CdmBase>> result = new HashMap<>();
 
