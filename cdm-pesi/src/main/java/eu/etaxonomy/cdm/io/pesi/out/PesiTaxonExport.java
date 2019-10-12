@@ -330,7 +330,8 @@ public class PesiTaxonExport extends PesiExportBase {
 		String infraGenericEpithet = taxonName.getInfraGenericEpithet();
 		Rank rank =  taxonName.getRank();
 
-		//as kingdomFk can not be defined in Phase 01 the below code was switched to use the CDM rank. This may be changed if we move validation to Phase03 or later
+		//as kingdomFk can not be defined in Phase 01 the below code was switched to use the CDM rank.
+		//This may be changed if we move validation to Phase03 or later
 //		Integer rankFk = getRankFk(taxonName, taxonName.getNameType());
 //		if (rankFk == null) {
 //			logger.error("Rank was not determined: " + taxon.getUuid() + " (" + taxon.getTitleCache() + ")");
@@ -341,11 +342,12 @@ public class PesiTaxonExport extends PesiExportBase {
 			// 2. Grandchilds of an accepted taxon of rank subgenus that are accepted taxa of rank subspecies have to have an infraGenericEpithet
 
 			int ancestorLevel = 0;
-			if (taxonName.getRank().equals(Rank.SUBSPECIES())) {
+			if (rank == null){
+			    logger.warn("PhaseOne validation: Taxon name has no rank: " + taxonName.getTitleCache());
+			}else if (rank.equals(Rank.SUBSPECIES())) {
 				// The accepted taxon two rank levels above should be of rank subgenus
 				ancestorLevel  = 2;
-			}
-			if (taxonName.getRank().equals(Rank.SPECIES())) {
+			}else if (rank.equals(Rank.SPECIES())) {
 				// The accepted taxon one rank level above should be of rank subgenus
 				ancestorLevel = 1;
 			}
@@ -359,19 +361,21 @@ public class PesiTaxonExport extends PesiExportBase {
 				}
 			}
 
-			if (infraGenericEpithet == null && rank.isInfraGenericButNotSpeciesGroup()) {
-				logger.warn("InfraGenericEpithet was not determined although it should exist for infra generic names: " + taxon.getUuid() + " (" + taxon.getTitleCache() + ")");
-			}
-			if (specificEpithet != null && (rank.isInfraGenericButNotSpeciesGroup()||rank.isGenus()||rank.isSupraGeneric())) {
-				logger.warn("SpecificEpithet was determined for rank " + rank.getTitleCache() + " although it should only exist for species aggregates, species or infraspecific taxa: TaxonName " + taxonName.getUuid() + " (" + taxonName.getTitleCache() + ")");
-			}
-			if (infraSpecificEpithet != null && !rank.isInfraSpecific()) {
-				String message = "InfraSpecificEpithet '" +infraSpecificEpithet + "' was determined for rank " + rank.getTitleCache() + " although it should only exist for rank species and higher: "  + taxonName.getUuid() + " (" + taxonName.getTitleCache() + ")";
-				if (StringUtils.isNotBlank(infraSpecificEpithet)){
-					logger.warn(message);
-				}else{
-					logger.warn(message);
-				}
+			if (rank != null){
+			    if (infraGenericEpithet == null && rank.isInfraGenericButNotSpeciesGroup()) {
+			        logger.warn("InfraGenericEpithet was not determined although it should exist for infra generic names: " + taxon.getUuid() + " (" + taxon.getTitleCache() + ")");
+			    }
+			    if (specificEpithet != null && (rank.isInfraGenericButNotSpeciesGroup()||rank.isGenus()||rank.isSupraGeneric())) {
+			        logger.warn("SpecificEpithet was determined for rank " + rank.getTitleCache() + " although it should only exist for species aggregates, species or infraspecific taxa: TaxonName " + taxonName.getUuid() + " (" + taxonName.getTitleCache() + ")");
+			    }
+			    if (infraSpecificEpithet != null && !rank.isInfraSpecific()) {
+			        String message = "InfraSpecificEpithet '" +infraSpecificEpithet + "' was determined for rank " + rank.getTitleCache() + " although it should only exist for rank species and higher: "  + taxonName.getUuid() + " (" + taxonName.getTitleCache() + ")";
+			        if (StringUtils.isNotBlank(infraSpecificEpithet)){
+			            logger.warn(message);
+			        }else{
+			            logger.warn(message);
+			        }
+			    }
 			}
 //		}
 		if (infraSpecificEpithet != null && specificEpithet == null) {
