@@ -12,10 +12,8 @@ package eu.etaxonomy.cdm.io.pesi.indexFungorum;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
@@ -80,7 +78,7 @@ public class IndexFungorumGeneraImport  extends IndexFungorumImportBase {
 
 				//Don't use (created bei Marc): DisplayName, NomRefCache
 
-				Double id = (Double)rs.getObject("RECORD NUMBER");
+				Integer id =( (Number)rs.getObject("RECORD NUMBER")).intValue();
 
 				String preferredName = rs.getString("NAME OF FUNGUS");
 				if (StringUtils.isBlank(preferredName)){
@@ -99,11 +97,11 @@ public class IndexFungorumGeneraImport  extends IndexFungorumImportBase {
 				makeAuthorAndPublication(state, rs, name);
 				//source
 				//makeSource(state, taxon, id, NAMESPACE_GENERA );
-				if (id != null){
+//				if (id != null){
 					makeSource(state, taxon, id.intValue(), NAMESPACE_GENERA );
-				} else{
-					makeSource(state, taxon, null,NAMESPACE_GENERA);
-				}
+//				} else{
+//					makeSource(state, taxon, null,NAMESPACE_GENERA);
+//				}
 				getTaxonService().saveOrUpdate(taxon);
 			}
 		} catch (Exception e) {
