@@ -24,52 +24,38 @@ import eu.etaxonomy.cdm.model.taxon.TaxonBase;
  */
 @Component
 public class IndexFungorumSubSpeciesImport extends IndexFungorumImportBase {
-	private static final Logger logger = Logger.getLogger(IndexFungorumSpeciesImport.class);
+
+    private static final long serialVersionUID = -2877755674188760685L;
+    private static final Logger logger = Logger.getLogger(IndexFungorumSpeciesImport.class);
 
 	private static final String pluralString = "subSpecies";
 
-
 	public IndexFungorumSubSpeciesImport(){
 		super(pluralString, null, null);
-
 	}
 
 	public IndexFungorumSubSpeciesImport(String pluralString,
-			String dbTableName, Class cdmTargetClass) {
+			String dbTableName, @SuppressWarnings("rawtypes") Class cdmTargetClass) {
 		super(pluralString, dbTableName, cdmTargetClass);
-
 	}
 
 	@Override
 	public Map<Object, Map<String, ? extends CdmBase>> getRelatedObjectsForPartition(
 			ResultSet rs, IndexFungorumImportState state) {
-		// TODO Auto-generated method stub
-		return null;
+		return null;  //not used here
 	}
 
 	@Override
 	protected String getRecordQuery(IndexFungorumImportConfigurator config) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	protected boolean doCheck(IndexFungorumImportState state) {
-		// TODO Auto-generated method stub
-		return false;
-	}
-
-	@Override
-	protected boolean isIgnore(IndexFungorumImportState state) {
-		// TODO Auto-generated method stub
-		return false;
+		return null;  //not used here
 	}
 
 	@Override
     protected void doInvoke(IndexFungorumImportState state){
-		System.out.println("create infraspecific - specific relationship: " + state.getInfraspecificTaxaUUIDs().size() + " taxa");
 
-		 List<String> propertyPaths = new ArrayList<String>();
+		 logger.info("create infraspecific - specific relationship: " + state.getInfraspecificTaxaUUIDs().size() + " taxa");
+
+		 List<String> propertyPaths = new ArrayList<>();
          propertyPaths.add("taxonNodes.*");
          propertyPaths.add("taxonNodes.classification");
          propertyPaths.add("taxonNodes.childNodes.*");
@@ -83,18 +69,19 @@ public class IndexFungorumSubSpeciesImport extends IndexFungorumImportBase {
             //HibernateProxyHelper.deproxy(infraspecificTaxon);
             TaxonName name = infraspecificTaxon.getName();
 
-            UUID uuid = getNameService().saveOrUpdate(name);
+            getNameService().saveOrUpdate(name);
             String parentNameString = getParentNameInfraSpecific(name);
             System.out.println("Parent name string: " + parentNameString);
             MatchingTaxonConfigurator matchingConfig = new MatchingTaxonConfigurator();
             matchingConfig.setTaxonNameTitle(parentNameString);
 
             matchingConfig.setPropertyPath(propertyPaths);
+            @SuppressWarnings("rawtypes")
             List<TaxonBase> potentialParents = getTaxonService().findTaxaByName(matchingConfig);
                     //Taxon.class, parentNameString + "sec. ", MatchMode.BEGINNING, , pageSize, pageNumber, orderHints, propertyPaths)
                     //.searchNames(String uninomial,String infraGenericEpithet, String specificEpithet, String infraspecificEpithet, Rank rank, Integer pageSize, Integer pageNumber, List<OrderHint> orderHints,
             if (potentialParents.size()>1){
-                for (TaxonBase potentialParent:potentialParents){
+                for (@SuppressWarnings("rawtypes") TaxonBase potentialParent:potentialParents){
                     if (potentialParent.getTitleCache().equals(parentNameString + " sec*")){
                         classification.addParentChild((Taxon)potentialParent, infraspecificTaxon, null, null);
                     }
@@ -110,15 +97,22 @@ public class IndexFungorumSubSpeciesImport extends IndexFungorumImportBase {
             commitTransaction(txStatus);
         }
 	}
-	/**
-     * @param taxon
-     * @return
-     */
+
     private String getParentNameInfraSpecific(TaxonName taxonName){
         TaxonName name =  HibernateProxyHelper.deproxy(taxonName);
-       String parentName = name.getGenusOrUninomial() + " " + name.getSpecificEpithet();
+        String parentName = name.getGenusOrUninomial() + " " + name.getSpecificEpithet();
 
-       return parentName;
+        return parentName;
+    }
+
+    @Override
+    protected boolean doCheck(IndexFungorumImportState state) {
+        return false;
+    }
+
+    @Override
+    protected boolean isIgnore(IndexFungorumImportState state) {
+        return false;
     }
 
 }

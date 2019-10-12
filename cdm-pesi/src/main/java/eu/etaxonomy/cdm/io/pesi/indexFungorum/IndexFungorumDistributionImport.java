@@ -68,7 +68,9 @@ public class IndexFungorumDistributionImport  extends IndexFungorumImportBase {
 	}
 
 	@Override
-	public boolean doPartition(ResultSetPartitioner partitioner, IndexFungorumImportState state) {
+	public boolean doPartition(@SuppressWarnings("rawtypes") ResultSetPartitioner partitioner,
+	            IndexFungorumImportState state) {
+
 		boolean success = true;
 //		Reference sourceReference = state.getRelatedObject(NAMESPACE_REFERENCE, SOURCE_REFERENCE, Reference.class);
 		ResultSet rs = partitioner.getResultSet();
@@ -153,7 +155,8 @@ public class IndexFungorumDistributionImport  extends IndexFungorumImportBase {
 			nameSpace = NAMESPACE_SPECIES;
 			cdmClass = TaxonBase.class;
 			idSet = taxonIdSet;
-			Map<String, TaxonBase> taxonMap = (Map<String, TaxonBase>)getCommonService().getSourcedObjectsByIdInSource(cdmClass, idSet, nameSpace);
+			@SuppressWarnings({ "unchecked", "rawtypes" })
+            Map<String, TaxonBase> taxonMap = (Map<String, TaxonBase>)getCommonService().getSourcedObjectsByIdInSource(cdmClass, idSet, nameSpace);
 			result.put(nameSpace, taxonMap);
 
 			//sourceReference

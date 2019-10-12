@@ -58,11 +58,17 @@ public class CdmDestinations {
 	public static ICdmDataSource cdm_test_local_indexFungorum(){
 		DatabaseTypeEnum dbType = DatabaseTypeEnum.MySQL;
 		String cdmServer = "127.0.0.1";
-		String cdmDB = "indexFungorum";
-		String cdmUserName = "root";
+		String cdmDB = "cdm_pesi_indexfungorum";
+		String cdmUserName = "edit";
 		return makeDestination(dbType, cdmServer, cdmDB, -1, cdmUserName, null);
 	}
-
+    public static ICdmDataSource cdm_test_local_indexFungorum2(){
+        DatabaseTypeEnum dbType = DatabaseTypeEnum.MySQL;
+        String cdmServer = "127.0.0.1";
+        String cdmDB = "cdm_pesi_indexfungorum2";
+        String cdmUserName = "edit";
+        return makeDestination(dbType, cdmServer, cdmDB, -1, cdmUserName, null);
+    }
 	public static ICdmDataSource cdm_test_local_mysql_erms(){
 		DatabaseTypeEnum dbType = DatabaseTypeEnum.MySQL;
 		String cdmServer = "127.0.0.1";

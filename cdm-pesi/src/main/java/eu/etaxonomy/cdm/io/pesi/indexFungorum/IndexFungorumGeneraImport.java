@@ -39,7 +39,9 @@ import eu.etaxonomy.cdm.model.taxon.TaxonBase;
  */
 @Component
 public class IndexFungorumGeneraImport  extends IndexFungorumImportBase {
-	private static final Logger logger = Logger.getLogger(IndexFungorumGeneraImport.class);
+
+    private static final long serialVersionUID = -265928225339065992L;
+    private static final Logger logger = Logger.getLogger(IndexFungorumGeneraImport.class);
 
 	private static final String pluralString = "genera";
 	private static final String dbTableName = "tblGenera";
@@ -48,8 +50,6 @@ public class IndexFungorumGeneraImport  extends IndexFungorumImportBase {
 		super(pluralString, dbTableName, null);
 	}
 
-
-
 	@Override
 	protected String getIdQuery() {
 		String result = " SELECT [RECORD NUMBER] FROM " + getTableName() +
@@ -57,9 +57,6 @@ public class IndexFungorumGeneraImport  extends IndexFungorumImportBase {
 		return result;
 	}
 
-	/* (non-Javadoc)
-	 * @see eu.etaxonomy.cdm.io.berlinModel.in.BerlinModelImportBase#getRecordQuery(eu.etaxonomy.cdm.io.berlinModel.in.BerlinModelImportConfigurator)
-	 */
 	@Override
 	protected String getRecordQuery(IndexFungorumImportConfigurator config) {
 		String strRecordQuery =
@@ -70,12 +67,11 @@ public class IndexFungorumGeneraImport  extends IndexFungorumImportBase {
 		return strRecordQuery;
 	}
 
-
-
-
 	@Override
-	public boolean doPartition(ResultSetPartitioner partitioner, IndexFungorumImportState state) {
-		boolean success =true;
+	public boolean doPartition(@SuppressWarnings("rawtypes") ResultSetPartitioner partitioner,
+	        IndexFungorumImportState state) {
+
+	    boolean success =true;
 		Reference sourceReference = state.getRelatedObject(NAMESPACE_REFERENCE, SOURCE_REFERENCE, Reference.class);
 		ResultSet rs = partitioner.getResultSet();
 		Classification classification = getClassification(state);
@@ -86,7 +82,6 @@ public class IndexFungorumGeneraImport  extends IndexFungorumImportBase {
 				//DisplayName, NomRefCache
 
 				Double id = (Double)rs.getObject("RECORD NUMBER");
-
 
 				String preferredName = rs.getString("NAME OF FUNGUS");
 				if (StringUtils.isBlank(preferredName)){
@@ -112,8 +107,6 @@ public class IndexFungorumGeneraImport  extends IndexFungorumImportBase {
 				}
 				getTaxonService().saveOrUpdate(taxon);
 			}
-
-
 		} catch (Exception e) {
 			e.printStackTrace();
 			logger.error(e.getMessage());
@@ -135,7 +128,6 @@ public class IndexFungorumGeneraImport  extends IndexFungorumImportBase {
 		}
 		return taxon;
 	}
-
 
 	private String getParentNameString(ResultSet rs) throws SQLException {
 		String parentName = rs.getString("Family name");
@@ -163,7 +155,6 @@ public class IndexFungorumGeneraImport  extends IndexFungorumImportBase {
 		}
 		return parentName;
 	}
-
 
 	@Override
 	public Map<Object, Map<String, ? extends CdmBase>> getRelatedObjectsForPartition(ResultSet rs, IndexFungorumImportState state) {
@@ -201,7 +192,6 @@ public class IndexFungorumGeneraImport  extends IndexFungorumImportBase {
 		return result;
 	}
 
-
 	@Override
 	protected boolean doCheck(IndexFungorumImportState state){
 		return true;
@@ -211,9 +201,4 @@ public class IndexFungorumGeneraImport  extends IndexFungorumImportBase {
 	protected boolean isIgnore(IndexFungorumImportState state){
 		return ! state.getConfig().isDoTaxa();
 	}
-
-
-
-
-
 }

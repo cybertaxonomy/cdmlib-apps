@@ -32,14 +32,15 @@ import eu.etaxonomy.cdm.model.taxon.Classification;
 import eu.etaxonomy.cdm.model.taxon.Taxon;
 import eu.etaxonomy.cdm.model.taxon.TaxonBase;
 
-
 /**
  * @author a.mueller
  * @since 27.02.2012
  */
 @Component
 public class IndexFungorumHigherClassificationImport  extends IndexFungorumImportBase {
-	private static final Logger logger = Logger.getLogger(IndexFungorumHigherClassificationImport.class);
+
+    private static final long serialVersionUID = -6841466146506309309L;
+    private static final Logger logger = Logger.getLogger(IndexFungorumHigherClassificationImport.class);
 
 	private static final String pluralString = "higher classifications";
 	private static final String dbTableName = "tblPESIfungi-Classification";
@@ -47,7 +48,6 @@ public class IndexFungorumHigherClassificationImport  extends IndexFungorumImpor
 	public IndexFungorumHigherClassificationImport(){
 		super(pluralString, dbTableName, null);
 	}
-
 
 	@Override
 	protected String getRecordQuery(IndexFungorumImportConfigurator config) {
@@ -60,12 +60,11 @@ public class IndexFungorumHigherClassificationImport  extends IndexFungorumImpor
 		return strRecordQuery;
 	}
 
-
-
-
-
 	@Override
 	protected void doInvoke(IndexFungorumImportState state) {
+
+	    logger.info("Start higher classification ...");
+
 		String sql = getRecordQuery(state.getConfig());
 		ResultSet rs = state.getConfig().getSource().getResultSet(sql);
 
@@ -92,7 +91,6 @@ public class IndexFungorumHigherClassificationImport  extends IndexFungorumImpor
 //		Taxon taxonSpecies = null;
 
 		Taxon higherTaxon = null;
-
 
 		TransactionStatus tx = startTransaction();
 		ResultSet rsRelatedObjects = state.getConfig().getSource().getResultSet(sql);
@@ -186,10 +184,7 @@ public class IndexFungorumHigherClassificationImport  extends IndexFungorumImpor
 								//TaxonNode node = getClassification(state).getNode(taxonFamily);
 								logger.warn(e.getMessage() + taxonFamily.getTitleCache() + " " + higherTaxon.getTitleCache());
 
-
-
 								}
-
 						}
 					}
 					higherTaxon = isIncertisSedis(family) ? higherTaxon : taxonFamily;
@@ -227,6 +222,8 @@ public class IndexFungorumHigherClassificationImport  extends IndexFungorumImpor
 			state.setSuccess(false);
 		}
 		commitTransaction(tx);
+		logger.info("End higher classification ...");
+
 		return;
 
 	}

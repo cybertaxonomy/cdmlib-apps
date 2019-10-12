@@ -32,7 +32,9 @@ import eu.etaxonomy.cdm.model.taxon.Taxon;
  */
 @Component
 public class IndexFungorumSupraGeneraImport  extends IndexFungorumImportBase {
-	private static final Logger logger = Logger.getLogger(IndexFungorumSupraGeneraImport.class);
+
+    private static final long serialVersionUID = -8504227175493151403L;
+    private static final Logger logger = Logger.getLogger(IndexFungorumSupraGeneraImport.class);
 
 	private static final String pluralString = "Supragenera";
 	private static final String dbTableName = "tblSupragenericNames";
@@ -40,7 +42,6 @@ public class IndexFungorumSupraGeneraImport  extends IndexFungorumImportBase {
 	public IndexFungorumSupraGeneraImport(){
 		super(pluralString, dbTableName, null);
 	}
-
 
 	@Override
 	protected String getRecordQuery(IndexFungorumImportConfigurator config) {
@@ -52,11 +53,10 @@ public class IndexFungorumSupraGeneraImport  extends IndexFungorumImportBase {
 		return strRecordQuery;
 	}
 
-
 	@Override
 	protected void doInvoke(IndexFungorumImportState state) {
 
-
+	    logger.info("Start supra genera ...");
 		//handle source reference first
 		Reference sourceReference = state.getConfig().getSourceReference();
 		getReferenceService().save(sourceReference);
@@ -111,8 +111,8 @@ public class IndexFungorumSupraGeneraImport  extends IndexFungorumImportBase {
 			state.setSuccess(false);
 		}
 		commitTransaction(tx);
+	    logger.info("End supra genera ...");
 		return;
-
 	}
 
 
