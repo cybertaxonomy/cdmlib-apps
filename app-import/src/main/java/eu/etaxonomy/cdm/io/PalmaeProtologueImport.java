@@ -71,12 +71,10 @@ public class PalmaeProtologueImport extends AbstractImageImporter {
 				species = row.get(PalmaeProtologueImport.SPECIES).trim();
 				taxonId = row.get(PalmaeProtologueImport.TAXONID);
 				linkProto= row.get(PalmaeProtologueImport.LINK_PROTO).trim();
-				taxonNameBase = (TaxonName)getCommonService().getSourcedObjectByIdInSource(TaxonName.class, "palm_tn_" + taxonId.replace(".0", ""), "TaxonName");
+				taxonNameBase = getCommonService().getSourcedObjectByIdInSource(TaxonName.class, "palm_tn_" + taxonId.replace(".0", ""), "TaxonName");
 			}catch (Exception e){
 				logger.error("The row has errors: rowNumber: " +count + ", content: "  + row, e);
 			}
-
-
 
 			if(taxonNameBase == null){
 				logger.warn("no taxon with this name found: " + species + ", idInSource: " + taxonId);
@@ -109,7 +107,6 @@ public class PalmaeProtologueImport extends AbstractImageImporter {
 				}
 			}
 		}
-
 
 		getNameService().save(taxonNameStore);
 		logger.info(count + " protologues imported to CDM store.");

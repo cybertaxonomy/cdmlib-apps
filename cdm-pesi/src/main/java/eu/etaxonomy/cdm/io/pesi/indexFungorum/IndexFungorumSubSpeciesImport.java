@@ -66,12 +66,12 @@ public class IndexFungorumSubSpeciesImport extends IndexFungorumImportBase {
         for (UUID infraspecificTaxonUUID: state.getInfraspecificTaxaUUIDs()){
         	TransactionStatus txStatus = startTransaction();
         	Taxon infraspecificTaxon = (Taxon)getTaxonService().load(infraspecificTaxonUUID, propertyPaths);
-            //HibernateProxyHelper.deproxy(infraspecificTaxon);
+
             TaxonName name = infraspecificTaxon.getName();
 
-            getNameService().saveOrUpdate(name);
+//            getNameService().saveOrUpdate(name);
             String parentNameString = getParentNameInfraSpecific(name);
-            System.out.println("Parent name string: " + parentNameString);
+//            System.out.println("Parent name string: " + parentNameString);
             MatchingTaxonConfigurator matchingConfig = new MatchingTaxonConfigurator();
             matchingConfig.setTaxonNameTitle(parentNameString);
 
@@ -81,7 +81,7 @@ public class IndexFungorumSubSpeciesImport extends IndexFungorumImportBase {
                     //Taxon.class, parentNameString + "sec. ", MatchMode.BEGINNING, , pageSize, pageNumber, orderHints, propertyPaths)
                     //.searchNames(String uninomial,String infraGenericEpithet, String specificEpithet, String infraspecificEpithet, Rank rank, Integer pageSize, Integer pageNumber, List<OrderHint> orderHints,
             if (potentialParents.size()>1){
-                for (@SuppressWarnings("rawtypes") TaxonBase potentialParent:potentialParents){
+                for (@SuppressWarnings("rawtypes") TaxonBase potentialParent : potentialParents){
                     if (potentialParent.getTitleCache().equals(parentNameString + " sec*")){
                         classification.addParentChild((Taxon)potentialParent, infraspecificTaxon, null, null);
                     }
@@ -99,9 +99,7 @@ public class IndexFungorumSubSpeciesImport extends IndexFungorumImportBase {
 	}
 
     private String getParentNameInfraSpecific(TaxonName taxonName){
-        TaxonName name =  HibernateProxyHelper.deproxy(taxonName);
-        String parentName = name.getGenusOrUninomial() + " " + name.getSpecificEpithet();
-
+        String parentName = taxonName.getGenusOrUninomial() + " " + taxonName.getSpecificEpithet();
         return parentName;
     }
 

@@ -55,26 +55,22 @@ public class IndexFungorumSpeciesImport  extends IndexFungorumImportBase {
 
 	@Override
 	protected String getIdQuery() {
-		String result = " SELECT PreferredNameIFnumber FROM " + getTableName() +
-				" ORDER BY PreferredName ";
+		String result = " SELECT PreferredNameIFnumber "
+		        + " FROM " + getTableName()
+				+ " ORDER BY PreferredName ";
 		return result;
 	}
 
 	@Override
 	protected String getRecordQuery(IndexFungorumImportConfigurator config) {
 		String strRecordQuery =
-				" SELECT DISTINCT distribution.PreferredNameFDCnumber, species.* , cl.[Phylum name]" +
-				" FROM tblPESIfungi AS distribution RIGHT OUTER JOIN  dbo.[tblPESIfungi-IFdata] AS species ON distribution.PreferredNameIFnumber = species.PreferredNameIFnumber " +
-					" LEFT OUTER JOIN [tblPESIfungi-Classification] cl ON species.PreferredName   = cl.PreferredName " +
-				" WHERE ( species.PreferredNameIFnumber IN (" + ID_LIST_TOKEN + ") )" +
+				"   SELECT DISTINCT distribution.PreferredNameFDCnumber, species.* , cl.[Phylum name]"
+				+ " FROM tblPESIfungi AS distribution "
+				+ "   RIGHT OUTER JOIN  dbo.[tblPESIfungi-IFdata] AS species ON distribution.PreferredNameIFnumber = species.PreferredNameIFnumber " +
+					" LEFT OUTER JOIN [tblPESIfungi-Classification] cl ON species.PreferredName = cl.PreferredName "
+				+ " WHERE ( species.PreferredNameIFnumber IN (" + ID_LIST_TOKEN + ") )" +
 			"";
 		return strRecordQuery;
-	}
-
-	@Override
-    protected void doInvoke(IndexFungorumImportState state){
-        System.out.println("start make " + getPluralString() + " ...");
-        super.doInvoke(state);
 	}
 
 	@Override
@@ -157,11 +153,11 @@ public class IndexFungorumSpeciesImport  extends IndexFungorumImportBase {
 		String nameSpace;
 		Class<?> cdmClass;
 		Set<String> idSet;
-		Map<Object, Map<String, ? extends CdmBase>> result = new HashMap<Object, Map<String, ? extends CdmBase>>();
+		Map<Object, Map<String, ? extends CdmBase>> result = new HashMap<>();
 
 		try{
-			Set<String> taxonIdSet = new HashSet<String>();
-			Set<String> taxonSpeciesNames = new HashSet<String>();
+			Set<String> taxonIdSet = new HashSet<>();
+			Set<String> taxonSpeciesNames = new HashSet<>();
  			while (rs.next()){
 				handleForeignKey(rs, taxonIdSet,"PreferredNameFDCnumber" );
 				handleForeignKey(rs, taxonSpeciesNames, "PreferredName");
@@ -177,7 +173,7 @@ public class IndexFungorumSpeciesImport  extends IndexFungorumImportBase {
 
 			//sourceReference
 			Reference sourceReference = getReferenceService().find(PesiTransformer.uuidSourceRefIndexFungorum);
-			Map<String, Reference> referenceMap = new HashMap<String, Reference>();
+			Map<String, Reference> referenceMap = new HashMap<>();
 			referenceMap.put(SOURCE_REFERENCE, sourceReference);
 			result.put(NAMESPACE_REFERENCE, referenceMap);
 

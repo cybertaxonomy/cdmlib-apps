@@ -35,7 +35,6 @@ import eu.etaxonomy.cdm.io.wp6.CichorieaeImageImport;
 import eu.etaxonomy.cdm.model.description.Feature;
 import eu.etaxonomy.cdm.model.name.NomenclaturalCode;
 import eu.etaxonomy.cdm.model.name.TaxonName;
-import eu.etaxonomy.cdm.model.reference.ISourceable;
 import eu.etaxonomy.cdm.model.term.TermTree;
 
 
@@ -219,7 +218,7 @@ public class CichorieaeActivator {
 
 		if (doFacts && (bmImportConfigurator.getCheck().equals(CHECK.CHECK_AND_IMPORT)  || bmImportConfigurator.getCheck().equals(CHECK.IMPORT_WITHOUT_CHECK) )   ){
 			ICdmRepository app = bmImport.getCdmAppController();
-			ISourceable obj = app.getCommonService().getSourcedObjectByIdInSource(TaxonName.class, "1000027", null);
+			TaxonName obj = app.getCommonService().getSourcedObjectByIdInSource(TaxonName.class, "1000027", null);
 			logger.info(obj);
 
 			//make feature tree

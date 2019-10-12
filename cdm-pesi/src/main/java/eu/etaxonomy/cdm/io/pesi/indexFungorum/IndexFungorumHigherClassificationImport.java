@@ -178,7 +178,8 @@ public class IndexFungorumHigherClassificationImport  extends IndexFungorumImpor
 					taxonFamily = makeTaxon(state, family, Rank.FAMILY());
 					if (taxonFamily != null){
 						try{
-							getClassification(state).addParentChild(higherTaxon, taxonFamily, null, null);
+							//if this shown a warning see single issue in #2826 about Glomerelllaceae (which has 2 different parents)
+						    getClassification(state).addParentChild(higherTaxon, taxonFamily, null, null);
 						}catch(IllegalStateException e){
 							if (e.getMessage().startsWith("The child taxon is already part of the tree")){
 								//TaxonNode node = getClassification(state).getNode(taxonFamily);

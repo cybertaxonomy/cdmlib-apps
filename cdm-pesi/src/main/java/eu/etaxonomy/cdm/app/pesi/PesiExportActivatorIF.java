@@ -29,7 +29,7 @@ public class PesiExportActivatorIF {
 	@SuppressWarnings("unused")
 	private static final Logger logger = Logger.getLogger(PesiExportActivatorIF.class);
 
-	static final ICdmDataSource cdmSource = CdmDestinations.cdm_test_local_indexFungorum();
+	static final ICdmDataSource cdmSource = CdmDestinations.cdm_test_local_indexFungorum2();
 	static final Source pesiDestination = PesiDestinations.pesi_test_local_CDM_IF2PESI();
 //	static final Source pesiDestination = PesiDestinations.pesi_test_local_CDM_IF2PESI_2();
 
@@ -109,14 +109,10 @@ public class PesiExportActivatorIF {
 		return result;
 	}
 
-	/**
-	 * @param args
-	 */
 	public static void main(String[] args) {
 		PesiExportActivatorIF ex = new PesiExportActivatorIF();
 		ICdmDataSource source = CdmDestinations.chooseDestination(args) != null ? CdmDestinations.chooseDestination(args) : cdmSource;
-
 		ex.doExport(source);
+		System.exit(0);
 	}
-
 }

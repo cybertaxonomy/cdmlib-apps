@@ -104,7 +104,7 @@ public abstract class IndexFungorumImportBase extends CdmImportBase<IndexFungoru
 	}
 
     @Override
-    public boolean doPartition(ResultSetPartitioner partitioner, IndexFungorumImportState state) {
+    public boolean doPartition(@SuppressWarnings("rawtypes") ResultSetPartitioner partitioner, IndexFungorumImportState state) {
 
         boolean success = true ;
 		Set<CdmBase> objectsToSave = new HashSet<>();
@@ -175,7 +175,6 @@ public abstract class IndexFungorumImportBase extends CdmImportBase<IndexFungoru
 			e.printStackTrace();
 			return false;
 		}
-
 	}
 
 	/**
@@ -201,7 +200,6 @@ public abstract class IndexFungorumImportBase extends CdmImportBase<IndexFungoru
 			throw e;
 		}
 	}
-
 
 	/**
 	 * Reads a foreign key field from the result set and adds its value to the idSet.

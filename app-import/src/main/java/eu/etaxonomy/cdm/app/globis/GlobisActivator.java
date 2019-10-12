@@ -28,7 +28,6 @@ import eu.etaxonomy.cdm.io.globis.GlobisImportConfigurator;
 import eu.etaxonomy.cdm.model.name.NomenclaturalCode;
 import eu.etaxonomy.cdm.model.name.TaxonName;
 import eu.etaxonomy.cdm.model.permission.User;
-import eu.etaxonomy.cdm.model.reference.ISourceable;
 
 /**
  * @author a.mueller
@@ -145,7 +144,7 @@ public class GlobisActivator {
 
 		if (config.getCheck().equals(CHECK.CHECK_AND_IMPORT)  || config.getCheck().equals(CHECK.IMPORT_WITHOUT_CHECK)    ){
 			ICdmRepository app = globisImport.getCdmAppController();
-			ISourceable<?> obj = app.getCommonService().getSourcedObjectByIdInSource(TaxonName.class, "1000027", null);
+			TaxonName obj = app.getCommonService().getSourcedObjectByIdInSource(TaxonName.class, "1000027", null);
 			logger.info(obj);
 
 //			//make feature tree

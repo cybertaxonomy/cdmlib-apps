@@ -78,8 +78,7 @@ public class IndexFungorumGeneraImport  extends IndexFungorumImportBase {
 		try {
 			while (rs.next()){
 
-				//TODO
-				//DisplayName, NomRefCache
+				//Don't use (created bei Marc): DisplayName, NomRefCache
 
 				Double id = (Double)rs.getObject("RECORD NUMBER");
 
@@ -114,7 +113,6 @@ public class IndexFungorumGeneraImport  extends IndexFungorumImportBase {
 			success = false;
 		}
 		return success;
-
 	}
 
 	private Taxon getParentTaxon(IndexFungorumImportState state, ResultSet rs) throws SQLException {
@@ -159,22 +157,23 @@ public class IndexFungorumGeneraImport  extends IndexFungorumImportBase {
 	@Override
 	public Map<Object, Map<String, ? extends CdmBase>> getRelatedObjectsForPartition(ResultSet rs, IndexFungorumImportState state) {
 		String nameSpace;
-		Class<?> cdmClass;
-		Set<String> idSet;
-		Map<Object, Map<String, ? extends CdmBase>> result = new HashMap<Object, Map<String, ? extends CdmBase>>();
+//		Class<?> cdmClass;
+//		Set<String> idSet;
+		Map<Object, Map<String, ? extends CdmBase>> result = new HashMap<>();
 
 		try{
-			Set<String> taxonNameSet = new HashSet<String>();
+//			Set<String> taxonNameSet = new HashSet<>();
 			while (rs.next()){
 //				handleForeignKey(rs, taxonIdSet,"tu_acctaxon" );
 			}
 
 			//taxon map
 			nameSpace = NAMESPACE_SUPRAGENERIC_NAMES ;
-			cdmClass = TaxonBase.class;
+//			cdmClass = Taxon.class;
 //			idSet = taxonNameSet;
-			Map<String, TaxonBase<?>> taxonMap = new HashMap<String, TaxonBase<?>>();
-			List<TaxonBase> list = getTaxonService().listTaxaByName(Taxon.class, "*", null, null, null, "*", null, 1000000, null);
+			Map<String, TaxonBase<?>> taxonMap = new HashMap<>();
+			@SuppressWarnings("rawtypes")
+            List<TaxonBase> list = getTaxonService().listTaxaByName(Taxon.class, "*", null, null, null, "*", null, 1000000, null);
 			for (TaxonBase<?> taxon : list){
 				taxonMap.put(CdmBase.deproxy(taxon.getName()).getGenusOrUninomial(), taxon);
 			}
@@ -182,7 +181,7 @@ public class IndexFungorumGeneraImport  extends IndexFungorumImportBase {
 
 			//sourceReference
 			Reference sourceReference = getReferenceService().find(PesiTransformer.uuidSourceRefIndexFungorum);
-			Map<String, Reference> referenceMap = new HashMap<String, Reference>();
+			Map<String, Reference> referenceMap = new HashMap<>();
 			referenceMap.put(SOURCE_REFERENCE, sourceReference);
 			result.put(NAMESPACE_REFERENCE, referenceMap);
 
