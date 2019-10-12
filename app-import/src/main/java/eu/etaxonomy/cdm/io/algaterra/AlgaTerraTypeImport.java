@@ -110,7 +110,7 @@ public class AlgaTerraTypeImport  extends AlgaTerraSpecimenImportBase {
 	}
 
 	@Override
-	public boolean doPartition(ResultSetPartitioner partitioner, BerlinModelImportState bmState) {
+	public boolean doPartition(@SuppressWarnings("rawtypes") ResultSetPartitioner partitioner, BerlinModelImportState bmState) {
 		boolean success = true;
 
 		AlgaTerraImportState state = (AlgaTerraImportState)bmState;
@@ -128,11 +128,16 @@ public class AlgaTerraTypeImport  extends AlgaTerraSpecimenImportBase {
 
 		Set<TaxonName> namesToSave = new HashSet<>();
 
-		Map<String, TaxonName> taxonNameMap = partitioner.getObjectMap(BerlinModelTaxonNameImport.NAMESPACE);
-		Map<String, DerivedUnit> ecoFactMap = partitioner.getObjectMap(AlgaTerraEcoFactImport.ECO_FACT_FIELD_OBSERVATION_NAMESPACE);
-		Map<String, DerivedUnit> typeSpecimenMap = partitioner.getObjectMap(TYPE_SPECIMEN_FIELD_OBSERVATION_NAMESPACE);
-		Map<String, Reference> refMap = partitioner.getObjectMap(BerlinModelReferenceImport.REFERENCE_NAMESPACE);
-		Map<String, Reference> refDetailMap = partitioner.getObjectMap(BerlinModelRefDetailImport.REFDETAIL_NAMESPACE);
+		@SuppressWarnings("unchecked")
+        Map<String, TaxonName> taxonNameMap = partitioner.getObjectMap(BerlinModelTaxonNameImport.NAMESPACE);
+		@SuppressWarnings("unchecked")
+        Map<String, DerivedUnit> ecoFactMap = partitioner.getObjectMap(AlgaTerraSpecimenImportBase.ECO_FACT_FIELD_OBSERVATION_NAMESPACE);
+		@SuppressWarnings("unchecked")
+        Map<String, DerivedUnit> typeSpecimenMap = partitioner.getObjectMap(TYPE_SPECIMEN_FIELD_OBSERVATION_NAMESPACE);
+		@SuppressWarnings("unchecked")
+        Map<String, Reference> refMap = partitioner.getObjectMap(BerlinModelReferenceImport.REFERENCE_NAMESPACE);
+		@SuppressWarnings("unchecked")
+        Map<String, Reference> refDetailMap = partitioner.getObjectMap(BerlinModelRefDetailImport.REFDETAIL_NAMESPACE);
 
 
 		ResultSet rs = partitioner.getResultSet();
@@ -330,12 +335,6 @@ public class AlgaTerraTypeImport  extends AlgaTerraSpecimenImportBase {
 		return TYPE_SPECIMEN_FIELD_OBSERVATION_NAMESPACE;
 	}
 
-	/**
-	 * @param state
-	 * @param taxonNameMap
-	 * @param nameId
-	 * @return
-	 */
 	private TaxonName getTaxonName(AlgaTerraImportState state, Map<String, TaxonName> taxonNameMap, int nameId) {
 		TaxonName result;
 		if (state.getConfig().isDoTaxonNames()){
@@ -463,19 +462,19 @@ public class AlgaTerraTypeImport  extends AlgaTerraSpecimenImportBase {
 
 	@Override
 	public Map<Object, Map<String, ? extends CdmBase>> getRelatedObjectsForPartition(ResultSet rs, BerlinModelImportState state) {
-		String nameSpace;
-		Class<?> cdmClass;
+
+	    String nameSpace;
 		Set<String> idSet;
-		Map<Object, Map<String, ? extends CdmBase>> result = new HashMap<Object, Map<String, ? extends CdmBase>>();
+		Map<Object, Map<String, ? extends CdmBase>> result = new HashMap<>();
 
 		try{
-			Set<String> nameIdSet = new HashSet<String>();
-			Set<String> ecoFieldObservationIdSet = new HashSet<String>();
-			Set<String> typeSpecimenIdSet = new HashSet<String>();
-//			Set<String> termsIdSet = new HashSet<String>();
-			Set<String> collectionIdSet = new HashSet<String>();
-			Set<String> referenceIdSet = new HashSet<String>();
-			Set<String> refDetailIdSet = new HashSet<String>();
+			Set<String> nameIdSet = new HashSet<>();
+			Set<String> ecoFieldObservationIdSet = new HashSet<>();
+			Set<String> typeSpecimenIdSet = new HashSet<>();
+//			Set<String> termsIdSet = new HashSet<>();
+			Set<String> collectionIdSet = new HashSet<>();
+			Set<String> referenceIdSet = new HashSet<>();
+			Set<String> refDetailIdSet = new HashSet<>();
 
 			while (rs.next()){
 				handleForeignKey(rs, nameIdSet, "nameFk");
@@ -489,55 +488,46 @@ public class AlgaTerraTypeImport  extends AlgaTerraSpecimenImportBase {
 
 			//name map
 			nameSpace = BerlinModelTaxonNameImport.NAMESPACE;
-			cdmClass = TaxonName.class;
 			idSet = nameIdSet;
-			Map<String, TaxonName> objectMap = (Map<String, TaxonName>)getCommonService().getSourcedObjectsByIdInSource(cdmClass, idSet, nameSpace);
+			Map<String, TaxonName> objectMap = getCommonService().getSourcedObjectsByIdInSourceC(TaxonName.class, idSet, nameSpace);
 			result.put(nameSpace, objectMap);
 
 			//eco fact field observation map
-			nameSpace = AlgaTerraTypeImport.ECO_FACT_FIELD_OBSERVATION_NAMESPACE;
-			cdmClass = FieldUnit.class;
+			nameSpace = AlgaTerraSpecimenImportBase.ECO_FACT_FIELD_OBSERVATION_NAMESPACE;
 			idSet = ecoFieldObservationIdSet;
-			Map<String, FieldUnit> fieldObservationMap = (Map<String, FieldUnit>)getCommonService().getSourcedObjectsByIdInSource(cdmClass, idSet, nameSpace);
+			Map<String, FieldUnit> fieldObservationMap = getCommonService().getSourcedObjectsByIdInSourceC(FieldUnit.class, idSet, nameSpace);
 			result.put(nameSpace, fieldObservationMap);
 
 			//type specimen map
-			nameSpace = AlgaTerraTypeImport.TYPE_SPECIMEN_FIELD_OBSERVATION_NAMESPACE;
-			cdmClass = FieldUnit.class;
+			nameSpace = AlgaTerraSpecimenImportBase.TYPE_SPECIMEN_FIELD_OBSERVATION_NAMESPACE;
 			idSet = typeSpecimenIdSet;
-			Map<String, FieldUnit> typeSpecimenMap = (Map<String, FieldUnit>)getCommonService().getSourcedObjectsByIdInSource(cdmClass, idSet, nameSpace);
+			Map<String, FieldUnit> typeSpecimenMap = getCommonService().getSourcedObjectsByIdInSourceC(FieldUnit.class, idSet, nameSpace);
 			result.put(nameSpace, typeSpecimenMap);
 
 
 			//collections
 			nameSpace = AlgaTerraCollectionImport.NAMESPACE_COLLECTION;
-			cdmClass = Collection.class;
 			idSet = collectionIdSet;
-			Map<String, Collection> collectionMap = (Map<String, Collection>)getCommonService().getSourcedObjectsByIdInSource(cdmClass, idSet, nameSpace);
+			Map<String, Collection> collectionMap = getCommonService().getSourcedObjectsByIdInSourceC(Collection.class, idSet, nameSpace);
 			result.put(nameSpace, collectionMap);
 
 			//sub-collections
 			nameSpace = AlgaTerraCollectionImport.NAMESPACE_SUBCOLLECTION;
-			cdmClass = Collection.class;
 			idSet = collectionIdSet;
-			Map<String, Collection> subCollectionMap = (Map<String, Collection>)getCommonService().getSourcedObjectsByIdInSource(cdmClass, idSet, nameSpace);
+			Map<String, Collection> subCollectionMap = getCommonService().getSourcedObjectsByIdInSourceC(Collection.class, idSet, nameSpace);
 			result.put(nameSpace, subCollectionMap);
 
 			//reference map
 			nameSpace = BerlinModelReferenceImport.REFERENCE_NAMESPACE;
-			cdmClass = Reference.class;
 			idSet = referenceIdSet;
-			Map<String, Reference> referenceMap = (Map<String, Reference>)getCommonService().getSourcedObjectsByIdInSource(cdmClass, idSet, nameSpace);
+			Map<String, Reference> referenceMap = getCommonService().getSourcedObjectsByIdInSourceC(Reference.class, idSet, nameSpace);
 			result.put(nameSpace, referenceMap);
 
 			//refDetail map
 			nameSpace = BerlinModelRefDetailImport.REFDETAIL_NAMESPACE;
-			cdmClass = Reference.class;
 			idSet = refDetailIdSet;
-			Map<String, Reference> refDetailMap= (Map<String, Reference>)getCommonService().getSourcedObjectsByIdInSource(cdmClass, idSet, nameSpace);
+			Map<String, Reference> refDetailMap= getCommonService().getSourcedObjectsByIdInSourceC(Reference.class, idSet, nameSpace);
 			result.put(nameSpace, refDetailMap);
-
-
 
 		} catch (SQLException e) {
 			throw new RuntimeException(e);
@@ -545,22 +535,14 @@ public class AlgaTerraTypeImport  extends AlgaTerraSpecimenImportBase {
 		return result;
 	}
 
-	/* (non-Javadoc)
-	 * @see eu.etaxonomy.cdm.io.common.CdmIoBase#doCheck(eu.etaxonomy.cdm.io.common.IoStateBase)
-	 */
 	@Override
 	protected boolean doCheck(BerlinModelImportState state){
 		IOValidator<BerlinModelImportState> validator = new AlgaTerraTypeImportValidator();
 		return validator.validate(state);
 	}
 
-
-	/* (non-Javadoc)
-	 * @see eu.etaxonomy.cdm.io.common.CdmIoBase#isIgnore(eu.etaxonomy.cdm.io.common.IImportConfigurator)
-	 */
 	@Override
     protected boolean isIgnore(BerlinModelImportState state){
 		return ! state.getConfig().isDoTypes();
 	}
-
 }

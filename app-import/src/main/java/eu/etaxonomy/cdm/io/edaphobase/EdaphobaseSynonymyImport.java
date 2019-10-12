@@ -32,16 +32,15 @@ import eu.etaxonomy.cdm.model.taxon.TaxonBase;
  *
  * @author a.mueller
  * @since 21.12.2015
- *
  */
 @Component
 public class EdaphobaseSynonymyImport extends EdaphobaseImportBase {
-    private static final long serialVersionUID = 6641343927320994726L;
 
+    private static final long serialVersionUID = 6641343927320994726L;
     private static final Logger logger = Logger.getLogger(EdaphobaseSynonymyImport.class);
+
     private static final String tableName = "tax_synonym";
     private static final String pluralString = "related synonyms";
-
 
     /**
      * @param tableName
@@ -70,12 +69,13 @@ public class EdaphobaseSynonymyImport extends EdaphobaseImportBase {
         return result;
     }
 
-
     @Override
-    public boolean doPartition(ResultSetPartitioner partitioner, EdaphobaseImportState state) {
+    public boolean doPartition(@SuppressWarnings("rawtypes") ResultSetPartitioner partitioner, EdaphobaseImportState state) {
+
         ResultSet rs = partitioner.getResultSet();
         Reference sourceReference = state.getTransactionalSourceReference();
 
+        @SuppressWarnings("rawtypes")
         Set<TaxonBase> taxaToSave = new HashSet<>();
         try {
             while (rs.next()){
@@ -136,13 +136,13 @@ public class EdaphobaseSynonymyImport extends EdaphobaseImportBase {
     @Override
     public Map<Object, Map<String, ? extends CdmBase>> getRelatedObjectsForPartition(ResultSet rs,
             EdaphobaseImportState state) {
+
         String nameSpace;
-        Class<?> cdmClass;
         Set<String> idSet;
         Map<Object, Map<String, ? extends CdmBase>> result = new HashMap<>();
 
         try{
-            Set<String> taxonIdSet = new HashSet<String>();
+            Set<String> taxonIdSet = new HashSet<>();
             while (rs.next()){
                 handleForeignKey(rs, taxonIdSet, "a_taxon_fk_taxon_id");
                 handleForeignKey(rs, taxonIdSet, "b_taxon_fk_taxon_id");
@@ -150,10 +150,9 @@ public class EdaphobaseSynonymyImport extends EdaphobaseImportBase {
 
             //name map
             nameSpace = TAXON_NAMESPACE;
-            cdmClass = TaxonBase.class;
             idSet = taxonIdSet;
             @SuppressWarnings("rawtypes")
-            Map<String, TaxonBase> taxonMap = (Map<String, TaxonBase>)getCommonService().getSourcedObjectsByIdInSource(cdmClass, idSet, nameSpace);
+            Map<String, TaxonBase> taxonMap = getCommonService().getSourcedObjectsByIdInSourceC(TaxonBase.class, idSet, nameSpace);
             result.put(nameSpace, taxonMap);
 
         } catch (SQLException e) {

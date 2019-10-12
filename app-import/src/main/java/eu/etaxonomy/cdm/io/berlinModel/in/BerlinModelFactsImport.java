@@ -313,9 +313,12 @@ public class BerlinModelFactsImport  extends BerlinModelImportBase {
 	@Override
 	public boolean doPartition(@SuppressWarnings("rawtypes") ResultSetPartitioner partitioner, BerlinModelImportState state) {
 		boolean success = true ;
-		Set<TaxonBase> taxaToSave = new HashSet<>();
-		Map<String, TaxonBase> taxonMap = partitioner.getObjectMap(BerlinModelTaxonImport.NAMESPACE);
-		Map<String, Reference> refMap = partitioner.getObjectMap(BerlinModelReferenceImport.REFERENCE_NAMESPACE);
+		@SuppressWarnings("rawtypes")
+        Set<TaxonBase> taxaToSave = new HashSet<>();
+		@SuppressWarnings({ "unchecked", "rawtypes" })
+        Map<String, TaxonBase> taxonMap = partitioner.getObjectMap(BerlinModelTaxonImport.NAMESPACE);
+		@SuppressWarnings("unchecked")
+        Map<String, Reference> refMap = partitioner.getObjectMap(BerlinModelReferenceImport.REFERENCE_NAMESPACE);
 
 		ResultSet rs = partitioner.getResultSet();
 
@@ -610,7 +613,7 @@ public class BerlinModelFactsImport  extends BerlinModelImportBase {
     }
 
 
-    private TaxonDescription getMyTaxonDescripion(TaxonBase taxonBase, BerlinModelImportState state, Integer categoryFk, Integer taxonId, int factId, String fact, Reference sourceRef) {
+    private TaxonDescription getMyTaxonDescripion(@SuppressWarnings("rawtypes") TaxonBase taxonBase, BerlinModelImportState state, Integer categoryFk, Integer taxonId, int factId, String fact, Reference sourceRef) {
 		Taxon taxon = null;
 		if ( taxonBase instanceof Taxon ) {
 			taxon = (Taxon) taxonBase;
@@ -694,15 +697,15 @@ public class BerlinModelFactsImport  extends BerlinModelImportBase {
 
 	@Override
 	public Map<Object, Map<String, ? extends CdmBase>> getRelatedObjectsForPartition(ResultSet rs, BerlinModelImportState state) {
-		String nameSpace;
-		Class<?> cdmClass;
+
+	    String nameSpace;
 		Set<String> idSet;
-		Map<Object, Map<String, ? extends CdmBase>> result = new HashMap<Object, Map<String, ? extends CdmBase>>();
+		Map<Object, Map<String, ? extends CdmBase>> result = new HashMap<>();
 
 		try{
-			Set<String> taxonIdSet = new HashSet<String>();
-			Set<String> referenceIdSet = new HashSet<String>();
-			Set<String> refDetailIdSet = new HashSet<String>();
+			Set<String> taxonIdSet = new HashSet<>();
+			Set<String> referenceIdSet = new HashSet<>();
+			Set<String> refDetailIdSet = new HashSet<>();
 			while (rs.next()){
 				handleForeignKey(rs, taxonIdSet, "taxonId");
 				handleForeignKey(rs, referenceIdSet, "FactRefFk");
@@ -713,23 +716,21 @@ public class BerlinModelFactsImport  extends BerlinModelImportBase {
 
 			//taxon map
 			nameSpace = BerlinModelTaxonImport.NAMESPACE;
-			cdmClass = TaxonBase.class;
 			idSet = taxonIdSet;
-			Map<String, TaxonBase> taxonMap = (Map<String, TaxonBase>)getCommonService().getSourcedObjectsByIdInSource(cdmClass, idSet, nameSpace);
+			@SuppressWarnings("rawtypes")
+            Map<String, TaxonBase> taxonMap = getCommonService().getSourcedObjectsByIdInSourceC(TaxonBase.class, idSet, nameSpace);
 			result.put(nameSpace, taxonMap);
 
 			//reference map
 			nameSpace = BerlinModelReferenceImport.REFERENCE_NAMESPACE;
-			cdmClass = Reference.class;
 			idSet = referenceIdSet;
-			Map<String, Reference> referenceMap = (Map<String, Reference>)getCommonService().getSourcedObjectsByIdInSource(cdmClass, idSet, nameSpace);
+			Map<String, Reference> referenceMap = getCommonService().getSourcedObjectsByIdInSourceC(Reference.class, idSet, nameSpace);
 			result.put(nameSpace, referenceMap);
 
 			//refDetail map
 			nameSpace = BerlinModelRefDetailImport.REFDETAIL_NAMESPACE;
-			cdmClass = Reference.class;
 			idSet = refDetailIdSet;
-			Map<String, Reference> refDetailMap= (Map<String, Reference>)getCommonService().getSourcedObjectsByIdInSource(cdmClass, idSet, nameSpace);
+			Map<String, Reference> refDetailMap= getCommonService().getSourcedObjectsByIdInSourceC(Reference.class, idSet, nameSpace);
 			result.put(nameSpace, refDetailMap);
 
 		} catch (SQLException e) {
@@ -1020,7 +1021,7 @@ public class BerlinModelFactsImport  extends BerlinModelImportBase {
         mediaRepresentation.addRepresentationPart(image);
     }
 
-	private TaxonBase<?> getTaxon(Map<String, TaxonBase> taxonMap, Integer taxonIdObj, Number taxonId){
+	private TaxonBase<?> getTaxon(@SuppressWarnings("rawtypes") Map<String, TaxonBase> taxonMap, Integer taxonIdObj, Number taxonId){
 		if (taxonIdObj != null){
 			return taxonMap.get(String.valueOf(taxonId));
 		}else{

@@ -519,6 +519,7 @@ public class EdaphobaseTaxonImport extends EdaphobaseImportBase {
     @Override
     public Map<Object, Map<String, ? extends CdmBase>> getRelatedObjectsForPartition(ResultSet rs,
             EdaphobaseImportState state) {
+
         Map<Object, Map<String, ? extends CdmBase>> result = new HashMap<>();
         Map<String, TeamOrPersonBase<?>> authorMap = new HashMap<>();
         Set<String> authorSet = new HashSet<>();
@@ -543,6 +544,7 @@ public class EdaphobaseTaxonImport extends EdaphobaseImportBase {
             UUID uuid = state.getAuthorUuid(authorStr);
             uuidSet.add(uuid);
         }
+        @SuppressWarnings("unchecked")
         List<TeamOrPersonBase<?>> authors = (List)getAgentService().find(uuidSet);
         Map<UUID, TeamOrPersonBase<?>> authorUuidMap = new HashMap<>();
         for (TeamOrPersonBase<?> author : authors){
@@ -558,9 +560,8 @@ public class EdaphobaseTaxonImport extends EdaphobaseImportBase {
 
         //reference map
         String nameSpace = REFERENCE_NAMESPACE;
-        Class<?> cdmClass = Reference.class;
         Set<String> idSet = referenceIdSet;
-        Map<String, Reference> referenceMap = (Map<String, Reference>)getCommonService().getSourcedObjectsByIdInSource(cdmClass, idSet, nameSpace);
+        Map<String, Reference> referenceMap = getCommonService().getSourcedObjectsByIdInSourceC(Reference.class, idSet, nameSpace);
         result.put(nameSpace, referenceMap);
 
         //secundum

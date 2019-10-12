@@ -556,8 +556,8 @@ public class BerlinModelTaxonNameImport extends BerlinModelImportBase {
 
 	@Override
 	public Map<Object, Map<String, ? extends CdmBase>> getRelatedObjectsForPartition(ResultSet rs, BerlinModelImportState state) {
-		String nameSpace;
-		Class<?> cdmClass;
+
+	    String nameSpace;
 		Set<String> idSet;
 
 		Map<Object, Map<String, ? extends CdmBase>> result = new HashMap<>();
@@ -566,7 +566,7 @@ public class BerlinModelTaxonNameImport extends BerlinModelImportBase {
 			Set<String> teamIdSet = new HashSet<>();
 			Set<String> referenceIdSet = new HashSet<>();
 			Set<String> refDetailIdSet = new HashSet<>();
-			Set<Integer> prelimRefDetailCandidateIdSet = new HashSet<>();
+			List<Integer> prelimRefDetailCandidateIdSet = new ArrayList<>();
 			while (rs.next()){
 				handleForeignKey(rs, teamIdSet, "AuthorTeamFk");
 				handleForeignKey(rs, teamIdSet, "ExAuthorTeamFk");
@@ -579,32 +579,26 @@ public class BerlinModelTaxonNameImport extends BerlinModelImportBase {
 
 			//team map
 			nameSpace = BerlinModelAuthorTeamImport.NAMESPACE;
-			cdmClass = TeamOrPersonBase.class;
 			idSet = teamIdSet;
-			@SuppressWarnings("unchecked")
-            Map<String, TeamOrPersonBase<?>> teamMap = (Map<String, TeamOrPersonBase<?>>)getCommonService().getSourcedObjectsByIdInSource(cdmClass, idSet, nameSpace);
+            @SuppressWarnings("rawtypes")
+            Map<String, TeamOrPersonBase> teamMap = getCommonService().getSourcedObjectsByIdInSourceC(TeamOrPersonBase.class, idSet, nameSpace);
 			result.put(nameSpace, teamMap);
 
 			//reference map
 			nameSpace = BerlinModelReferenceImport.REFERENCE_NAMESPACE;
-			cdmClass = Reference.class;
 			idSet = referenceIdSet;
-			@SuppressWarnings("unchecked")
-            Map<String, Reference> referenceMap = (Map<String, Reference>)getCommonService().getSourcedObjectsByIdInSource(cdmClass, idSet, nameSpace);
+            Map<String, Reference> referenceMap = getCommonService().getSourcedObjectsByIdInSourceC(Reference.class, idSet, nameSpace);
 			result.put(nameSpace, referenceMap);
 
 			//refDetail map
 			nameSpace = BerlinModelRefDetailImport.REFDETAIL_NAMESPACE;
-			cdmClass = Reference.class;
 			idSet = refDetailIdSet;
-			@SuppressWarnings("unchecked")
-            Map<String, Reference> refDetailMap= (Map<String, Reference>)getCommonService().getSourcedObjectsByIdInSource(cdmClass, idSet, nameSpace);
+            Map<String, Reference> refDetailMap= getCommonService().getSourcedObjectsByIdInSourceC(Reference.class, idSet, nameSpace);
 			result.put(nameSpace, refDetailMap);
 
 	         //prelim map
             nameSpace = NAMESPACE_PRELIM;
-            cdmClass = Reference.class;
-            List<Reference> list = getReferenceService().findById(prelimRefDetailCandidateIdSet);
+            List<Reference> list = getReferenceService().loadByIds(prelimRefDetailCandidateIdSet, null);
             Map<String, Reference> prelimMap = new HashMap<>();
             for (Reference ref : list){
                 prelimMap.put(String.valueOf(ref.getId()), ref);

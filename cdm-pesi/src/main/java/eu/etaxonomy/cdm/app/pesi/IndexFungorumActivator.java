@@ -36,8 +36,9 @@ public class IndexFungorumActivator {
 
 	static final Source indexFungorumSource = PesiSources.PESI3_IF();
 
-//	static final ICdmDataSource cdmDestination = CdmDestinations.cdm_test_local_indexFungorum2();
+//	static final ICdmDataSource cdmDestination = CdmDestinations.cdm_test_local_indexFungorum();
 	static final ICdmDataSource cdmDestination = CdmDestinations.cdm_test_local_indexFungorum2();
+//	static final ICdmDataSource cdmDestination = CdmDestinations.cdm_test_local_mysql_test();
 
 	static final UUID classificationUuid = UUID.fromString("4bea48c3-eb10-41d1-b708-b5ee625ed243");
 
@@ -93,8 +94,6 @@ public class IndexFungorumActivator {
 			PesiExportActivatorIF ifExportActivator = new PesiExportActivatorIF();
 			ifExportActivator.doExport(destination);
 		}
+		System.exit(0);
 	}
-
-
-
 }

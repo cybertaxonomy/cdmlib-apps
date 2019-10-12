@@ -165,10 +165,9 @@ public class IndexFungorumSpeciesImport  extends IndexFungorumImportBase {
 
 			//taxon map
 			nameSpace = NAMESPACE_GENERA;
-			cdmClass = TaxonBase.class;
 			idSet = taxonIdSet;
-			@SuppressWarnings({ "unchecked", "rawtypes" })
-            Map<String, TaxonBase> taxonMap = (Map<String, TaxonBase>)getCommonService().getSourcedObjectsByIdInSource(cdmClass, idSet, nameSpace);
+			@SuppressWarnings({ "rawtypes" })
+            Map<String, TaxonBase> taxonMap = getCommonService().getSourcedObjectsByIdInSourceC(TaxonBase.class, idSet, nameSpace);
 			result.put(nameSpace, taxonMap);
 
 			//sourceReference

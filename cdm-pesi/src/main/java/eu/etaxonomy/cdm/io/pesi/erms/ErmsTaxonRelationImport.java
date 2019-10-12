@@ -48,8 +48,6 @@ public class ErmsTaxonRelationImport extends ErmsImportBase<TaxonBase<?>> implem
 
 	private static final Class<?> cdmTargetClass = TaxonBase.class;
 
-	private ErmsImportState state;  //ERMS import will never run in more then one instance
-
 	@Override
     protected int divideCountBy() { return 5;}  //use only 1000 records
 
@@ -103,14 +101,13 @@ public class ErmsTaxonRelationImport extends ErmsImportBase<TaxonBase<?>> implem
 
 	@Override
 	protected void doInvoke(ErmsImportState state) {
-		this.state = state;
 		super.doInvoke(state);
 	}
 
 	@Override
 	public Map<Object, Map<String, ? extends CdmBase>> getRelatedObjectsForPartition(ResultSet rs, ErmsImportState state) {
-		String nameSpace;
-		Class<?> cdmClass;
+
+	    String nameSpace;
 		Set<String> idSet;
 		Map<Object, Map<String, ? extends CdmBase>> result = new HashMap<>();
 
@@ -118,8 +115,6 @@ public class ErmsTaxonRelationImport extends ErmsImportBase<TaxonBase<?>> implem
 			Set<String> taxonIdSet = new HashSet<>();
 			Set<String> nameIdSet = new HashSet<>();
 			while (rs.next()){
-//				handleForeignKey(rs, taxonIdSet, "parentId");
-//				handleForeignKey(rs, taxonIdSet, "parentAccId");
 			    handleForeignKey(rs, taxonIdSet, "accId");
 				handleForeignKey(rs, taxonIdSet, "tu_acctaxon");
 				handleForeignKey(rs, taxonIdSet, "id");
@@ -129,18 +124,15 @@ public class ErmsTaxonRelationImport extends ErmsImportBase<TaxonBase<?>> implem
 
 			//name map
 			nameSpace = ErmsImportBase.NAME_NAMESPACE;
-			cdmClass = TaxonName.class;
 			idSet = nameIdSet;
-			@SuppressWarnings("unchecked")
-            Map<String, TaxonName> nameMap = (Map<String, TaxonName>)getCommonService().getSourcedObjectsByIdInSource(cdmClass, idSet, nameSpace);
+			Map<String, TaxonName> nameMap = getCommonService().getSourcedObjectsByIdInSourceC(TaxonName.class, idSet, nameSpace);
 			result.put(nameSpace, nameMap);
 
 			//taxon map
 			nameSpace = ErmsImportBase.TAXON_NAMESPACE;
-			cdmClass = TaxonBase.class;
 			idSet = taxonIdSet;
-			@SuppressWarnings("unchecked")
-            Map<String, TaxonBase<?>> taxonMap = (Map<String, TaxonBase<?>>)getCommonService().getSourcedObjectsByIdInSource(cdmClass, idSet, nameSpace);
+			@SuppressWarnings("rawtypes")
+            Map<String, TaxonBase> taxonMap = getCommonService().getSourcedObjectsByIdInSourceC(TaxonBase.class, idSet, nameSpace);
 			result.put(nameSpace, taxonMap);
 
 			return result;
@@ -151,7 +143,7 @@ public class ErmsTaxonRelationImport extends ErmsImportBase<TaxonBase<?>> implem
 	}
 
 	@Override
-    public boolean checkIgnoreMapper(IDbImportMapper mapper, ResultSet rs) throws SQLException{
+    public boolean checkIgnoreMapper(@SuppressWarnings("rawtypes") IDbImportMapper mapper, ResultSet rs) throws SQLException{
 
 	    boolean result = false;
         boolean isAccepted = isAccepted(rs);

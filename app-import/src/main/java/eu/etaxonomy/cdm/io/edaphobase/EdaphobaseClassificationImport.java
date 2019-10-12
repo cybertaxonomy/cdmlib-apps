@@ -76,11 +76,13 @@ public class EdaphobaseClassificationImport extends EdaphobaseImportBase {
 
 
     @Override
-    public boolean doPartition(ResultSetPartitioner partitioner, EdaphobaseImportState state) {
+    public boolean doPartition(@SuppressWarnings("rawtypes") ResultSetPartitioner partitioner, EdaphobaseImportState state) {
         ResultSet rs = partitioner.getResultSet();
+        @SuppressWarnings("unchecked")
         Map<String, Classification> map = partitioner.getObjectMap(CLASSIFICATION_NAMESPACE);
         Classification classification = map.get(state.getConfig().getClassificationUuid().toString());
 
+        @SuppressWarnings("rawtypes")
         Set<TaxonBase> taxaToSave = new HashSet<>();
         try {
             while (rs.next()){
@@ -94,14 +96,8 @@ public class EdaphobaseClassificationImport extends EdaphobaseImportBase {
         return true;
     }
 
-/**
-     * @param state
-     * @param rs
- * @param taxaToSave
- * @param classification
- * @throws SQLException
-     */
-    private void handleSingleRecord(EdaphobaseImportState state, ResultSet rs, Classification classification, Set<TaxonBase> taxaToSave) throws SQLException {
+    private void handleSingleRecord(EdaphobaseImportState state, ResultSet rs, Classification classification,
+            @SuppressWarnings("rawtypes") Set<TaxonBase> taxaToSave) throws SQLException {
         Reference sourceReference = state.getTransactionalSourceReference();
 
         int id = rs.getInt("taxon_id");
@@ -176,13 +172,13 @@ public class EdaphobaseClassificationImport extends EdaphobaseImportBase {
     @Override
     public Map<Object, Map<String, ? extends CdmBase>> getRelatedObjectsForPartition(ResultSet rs,
             EdaphobaseImportState state) {
+
         String nameSpace;
-        Class<?> cdmClass;
         Set<String> idSet;
         Map<Object, Map<String, ? extends CdmBase>> result = new HashMap<>();
 
         try{
-            Set<String> taxonIdSet = new HashSet<String>();
+            Set<String> taxonIdSet = new HashSet<>();
             while (rs.next()){
                 handleForeignKey(rs, taxonIdSet, "taxon_id");
                 handleForeignKey(rs, taxonIdSet, "parent_taxon_fk");
@@ -190,9 +186,9 @@ public class EdaphobaseClassificationImport extends EdaphobaseImportBase {
 
             //name map
             nameSpace = TAXON_NAMESPACE;
-            cdmClass = TaxonBase.class;
             idSet = taxonIdSet;
-            Map<String, TaxonBase> taxonMap = (Map<String, TaxonBase>)getCommonService().getSourcedObjectsByIdInSource(cdmClass, idSet, nameSpace);
+            @SuppressWarnings("rawtypes")
+            Map<String, TaxonBase> taxonMap = getCommonService().getSourcedObjectsByIdInSourceC(TaxonBase.class, idSet, nameSpace);
             result.put(nameSpace, taxonMap);
 
             //Classification

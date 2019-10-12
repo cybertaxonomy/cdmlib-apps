@@ -140,8 +140,8 @@ public class IndexFungorumDistributionImport  extends IndexFungorumImportBase {
 
 	@Override
 	public Map<Object, Map<String, ? extends CdmBase>> getRelatedObjectsForPartition(ResultSet rs, IndexFungorumImportState state) {
-		String nameSpace;
-		Class<?> cdmClass;
+
+	    String nameSpace;
 		Set<String> idSet;
 		Map<Object, Map<String, ? extends CdmBase>> result = new HashMap<>();
 
@@ -153,15 +153,14 @@ public class IndexFungorumDistributionImport  extends IndexFungorumImportBase {
 
 			//taxon map
 			nameSpace = NAMESPACE_SPECIES;
-			cdmClass = TaxonBase.class;
 			idSet = taxonIdSet;
-			@SuppressWarnings({ "unchecked", "rawtypes" })
-            Map<String, TaxonBase> taxonMap = (Map<String, TaxonBase>)getCommonService().getSourcedObjectsByIdInSource(cdmClass, idSet, nameSpace);
+			@SuppressWarnings({ "rawtypes" })
+            Map<String, TaxonBase> taxonMap = getCommonService().getSourcedObjectsByIdInSourceC(TaxonBase.class, idSet, nameSpace);
 			result.put(nameSpace, taxonMap);
 
 			//sourceReference
 			Reference sourceReference = getReferenceService().find(PesiTransformer.uuidSourceRefIndexFungorum);
-			Map<String, Reference> referenceMap = new HashMap<String, Reference>();
+			Map<String, Reference> referenceMap = new HashMap<>();
 			referenceMap.put(SOURCE_REFERENCE, sourceReference);
 			result.put(NAMESPACE_REFERENCE, referenceMap);
 

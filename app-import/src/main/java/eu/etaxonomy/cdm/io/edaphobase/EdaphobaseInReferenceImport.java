@@ -26,12 +26,11 @@ import eu.etaxonomy.cdm.model.reference.Reference;
 /**
  * @author a.mueller
  * @since 18.12.2015
- *
  */
 @Component
 public class EdaphobaseInReferenceImport extends EdaphobaseImportBase {
-    private static final long serialVersionUID = 6895687693249076160L;
 
+    private static final long serialVersionUID = 6895687693249076160L;
     private static final Logger logger = Logger.getLogger(EdaphobaseInReferenceImport.class);
 
     private static final String tableName = "lit_document";
@@ -64,7 +63,7 @@ public class EdaphobaseInReferenceImport extends EdaphobaseImportBase {
     }
 
     @Override
-    public boolean doPartition(ResultSetPartitioner partitioner, EdaphobaseImportState state) {
+    public boolean doPartition(@SuppressWarnings("rawtypes") ResultSetPartitioner partitioner, EdaphobaseImportState state) {
         ResultSet rs = partitioner.getResultSet();
         Set<Reference> referencesToSave = new HashSet<>();
         try {
@@ -78,12 +77,6 @@ public class EdaphobaseInReferenceImport extends EdaphobaseImportBase {
         return true;
     }
 
-    /**
-     * @param state
-     * @param rs
-     * @param referencesToSave
-     * @throws SQLException
-     */
     private void handleSingleReference(EdaphobaseImportState state, ResultSet rs, Set<Reference> referencesToSave) throws SQLException {
         Integer id = rs.getInt("document_id");
         Integer parentId = rs.getInt("parent_document_fk_document_id");
@@ -104,8 +97,9 @@ public class EdaphobaseInReferenceImport extends EdaphobaseImportBase {
     @Override
     public Map<Object, Map<String, ? extends CdmBase>> getRelatedObjectsForPartition(ResultSet rs,
             EdaphobaseImportState state) {
+
         Map<Object, Map<String, ? extends CdmBase>> result = new HashMap<>();
-        Set<String> referenceIdSet = new HashSet<String>();
+        Set<String> referenceIdSet = new HashSet<>();
 
         try {
             while (rs.next()){
@@ -118,15 +112,12 @@ public class EdaphobaseInReferenceImport extends EdaphobaseImportBase {
 
         //reference map
         String nameSpace = REFERENCE_NAMESPACE;
-        Class<?> cdmClass = Reference.class;
         Set<String> idSet = referenceIdSet;
-        Map<String, Reference> referenceMap = (Map<String, Reference>)getCommonService().getSourcedObjectsByIdInSource(cdmClass, idSet, nameSpace);
+        Map<String, Reference> referenceMap = getCommonService().getSourcedObjectsByIdInSourceC(Reference.class, idSet, nameSpace);
         result.put(nameSpace, referenceMap);
 
         return result;
     }
-
-
 
     @Override
     protected boolean doCheck(EdaphobaseImportState state) {
@@ -137,5 +128,4 @@ public class EdaphobaseInReferenceImport extends EdaphobaseImportBase {
     protected boolean isIgnore(EdaphobaseImportState state) {
         return ! state.getConfig().isDoReferences();
     }
-
 }

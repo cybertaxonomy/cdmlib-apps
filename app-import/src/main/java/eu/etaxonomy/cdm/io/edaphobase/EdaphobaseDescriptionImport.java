@@ -24,7 +24,6 @@ import org.springframework.stereotype.Component;
 import eu.etaxonomy.cdm.common.CdmUtils;
 import eu.etaxonomy.cdm.io.common.IPartitionedIO;
 import eu.etaxonomy.cdm.io.common.ResultSetPartitioner;
-import eu.etaxonomy.cdm.io.common.mapping.UndefinedTransformerMethodException;
 import eu.etaxonomy.cdm.model.common.CdmBase;
 import eu.etaxonomy.cdm.model.common.Language;
 import eu.etaxonomy.cdm.model.description.Feature;
@@ -108,14 +107,11 @@ public class EdaphobaseDescriptionImport extends EdaphobaseImportBase {
                    + ")";
         ResultSet rs = state.getConfig().getSource().getResultSet(sql);
         try {
-            @SuppressWarnings("unchecked")
             TermVocabulary<Feature> vocQuant = TermVocabulary.NewInstance(TermType.Feature, Feature.class,
                     "Edaphobase quantitative features", "Quantitative features", "quant.", null);
             vocQuant.setUuid(EdaphobaseImportTransformer.uuidVocFeatureQuantitative);
-            @SuppressWarnings("unchecked")
             TermVocabulary<Feature> vocBiology = TermVocabulary.NewInstance(TermType.Feature, Feature.class, "Edaphobase biological features", "Biological features", "biol.", null);
             vocBiology.setUuid(EdaphobaseImportTransformer.uuidVocFeatureBiological);
-            @SuppressWarnings("unchecked")
             TermVocabulary<Feature> vocMorphology = TermVocabulary.NewInstance(TermType.Feature, Feature.class, "Edaphobase morphological features", "Morphological features", "morph.", null);
             vocBiology.setUuid(EdaphobaseImportTransformer.uuidVocFeatureMorpho);
 
@@ -307,7 +303,7 @@ public class EdaphobaseDescriptionImport extends EdaphobaseImportBase {
     }
 
     @Override
-    public boolean doPartition(ResultSetPartitioner partitioner, EdaphobaseImportState state) {
+    public boolean doPartition(@SuppressWarnings("rawtypes") ResultSetPartitioner partitioner, EdaphobaseImportState state) {
         ResultSet rs = partitioner.getResultSet();
         @SuppressWarnings("rawtypes")
         Set<TaxonBase> taxaToSave = new HashSet<>();
@@ -315,7 +311,7 @@ public class EdaphobaseDescriptionImport extends EdaphobaseImportBase {
             while (rs.next()){
                 makeSingleTaxon(state, rs, taxaToSave);
             }
-        } catch (SQLException | UndefinedTransformerMethodException e) {
+        } catch (SQLException e) {
              e.printStackTrace();
         }
 
@@ -323,15 +319,8 @@ public class EdaphobaseDescriptionImport extends EdaphobaseImportBase {
         return true;
     }
 
-    /**
-     * @param state
-     * @param rs
-     * @param taxaToSave
-     * @throws SQLException
-     * @throws UndefinedTransformerMethodException
-     */
-    private void makeSingleTaxon(EdaphobaseImportState state, ResultSet rs, Set<TaxonBase> taxaToSave)
-            throws SQLException, UndefinedTransformerMethodException {
+    private void makeSingleTaxon(EdaphobaseImportState state, ResultSet rs, @SuppressWarnings("rawtypes") Set<TaxonBase> taxaToSave)
+            throws SQLException {
         Integer id = nullSafeInt(rs, "description_detail_id");
         Integer taxonFk = nullSafeInt(rs, "taxon_fk");
         TaxonBase<?> taxonBase = state.getRelatedObject(TAXON_NAMESPACE, String.valueOf(taxonFk), TaxonBase.class);
@@ -349,7 +338,6 @@ public class EdaphobaseDescriptionImport extends EdaphobaseImportBase {
             EdaphobaseImportState state) {
 
         Map<Object, Map<String, ? extends CdmBase>> result = new HashMap<>();
-
         Set<String> taxonIdSet = new HashSet<>();
 
         try {
@@ -362,14 +350,13 @@ public class EdaphobaseDescriptionImport extends EdaphobaseImportBase {
 
         //reference map
         String nameSpace = TAXON_NAMESPACE;
-        Class<?> cdmClass = TaxonBase.class;
         Set<String> idSet = taxonIdSet;
-        Map<String, TaxonBase<?>> taxonMap = (Map<String, TaxonBase<?>>)getCommonService().getSourcedObjectsByIdInSource(cdmClass, idSet, nameSpace);
+        @SuppressWarnings("rawtypes")
+        Map<String, TaxonBase> taxonMap = getCommonService().getSourcedObjectsByIdInSourceC(TaxonBase.class, idSet, nameSpace);
         result.put(nameSpace, taxonMap);
 
         return result;
     }
-
 
     @Override
     protected boolean doCheck(EdaphobaseImportState state) {
@@ -380,5 +367,4 @@ public class EdaphobaseDescriptionImport extends EdaphobaseImportBase {
     protected boolean isIgnore(EdaphobaseImportState state) {
         return ! state.getConfig().isDoDescriptions();
     }
-
 }
