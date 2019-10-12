@@ -48,6 +48,8 @@ import eu.etaxonomy.cdm.model.taxon.Synonym;
 import eu.etaxonomy.cdm.model.taxon.SynonymType;
 import eu.etaxonomy.cdm.model.taxon.Taxon;
 import eu.etaxonomy.cdm.model.taxon.TaxonBase;
+import eu.etaxonomy.cdm.model.taxon.TaxonNode;
+import eu.etaxonomy.cdm.model.taxon.TaxonRelationship;
 import eu.etaxonomy.cdm.model.taxon.TaxonRelationshipType;
 import eu.etaxonomy.cdm.strategy.exceptions.UnknownCdmTypeException;
 
@@ -103,15 +105,15 @@ public final class PesiTransformer extends ExportTransformerBase{
 	// References
 	private static int REF_ARTICLE_IN_PERIODICAL = 1;
 	private static int REF_PART_OF_OTHER = 2;
-	private static int REF_BOOK = 3;
-	private static int REF_DATABASE = 4;
+	public static int REF_BOOK = 3;
+	public static int REF_DATABASE = 4;
 	private static int REF_INFORMAL = 5;
 	private static int REF_NOT_APPLICABLE = 6;
 	private static int REF_WEBSITE = 7;
-	private static int REF_PUBLISHED = 8;
-	private static int REF_JOURNAL = 9;
+	public static int REF_PUBLISHED_CD = 8;
+	public static int REF_JOURNAL = 9;
 	public static int REF_UNRESOLVED = 10;
-	private static int REF_PUBLICATION = 11;
+	public static int REF_PUBLICATION = 11;
 	public static String REF_STR_UNRESOLVED = "unresolved";
 
 	private static int LANG_UNKNOWN = -99;
@@ -154,12 +156,12 @@ public final class PesiTransformer extends ExportTransformerBase{
 	// TaxonStatus
 	public static int T_STATUS_ACCEPTED = 1;
 	public static int T_STATUS_SYNONYM = 2;
-	private static int T_STATUS_PARTIAL_SYN = 3;
-	private static int T_STATUS_PRO_PARTE_SYN = 4;
+	public static int T_STATUS_PARTIAL_SYN = 3;
+	public static int T_STATUS_PRO_PARTE_SYN = 4;
 	private static int T_STATUS_UNRESOLVED = 5;
 	private static int T_STATUS_ORPHANED = 6;
 	public static int T_STATUS_UNACCEPTED = 7;
-	private static int T_STATUS_NOT_ACCEPTED = 8;
+	private static int T_STATUS_NOT_ACCEPTED_VALUELESS = 8;
 
 	// TypeDesginationStatus //	 -> not a table anymore
 	private static int TYPE_BY_ORIGINAL_DESIGNATION = 1;
@@ -192,7 +194,7 @@ public final class PesiTransformer extends ExportTransformerBase{
 	private static int IS_BLOCKING_NAME_FOR = 20;
 	private static int IS_LECTOTYPE_OF = 61;
 	private static int TYPE_NOT_DESIGNATED = 62;
-	private static int IS_TAXONOMICALLY_INCLUDED_IN = 101;
+	public static int IS_TAXONOMICALLY_INCLUDED_IN = 101;
 	public static int IS_SYNONYM_OF = 102;
 	private static int IS_MISAPPLIED_NAME_FOR = 103;
 	private static int IS_PRO_PARTE_SYNONYM_OF = 104;
@@ -1740,20 +1742,48 @@ public final class PesiTransformer extends ExportTransformerBase{
 		}
 		if (taxonBase.isInstanceOf(Taxon.class)){
 			Taxon taxon = CdmBase.deproxy(taxonBase, Taxon.class);
-			if (taxon.getTaxonNodes().size() == 0){
-				return T_STATUS_NOT_ACCEPTED;
-			}else{
-				return T_STATUS_ACCEPTED;
+			Set<TaxonRelationship> rels = taxon.getRelationsFromThisTaxon();
+			Set<TaxonNode> nodes = taxon.getTaxonNodes();
+			if (!rels.isEmpty() && !nodes.isEmpty()){
+			    logger.warn("Taxon has relations and parent. This is not expected in E+M, but maybe possible in ERMS. Check if taxon status is correct.");
+			}else if (rels.isEmpty() && nodes.isEmpty()){
+                logger.warn("Taxon has neither relations nor parent. This is not expected. Check if taxon status is correct.");
+            }
+			if (!rels.isEmpty()){
+			    //we expect all rels to have same type, maybe not true
+			    UUID relTypeUuid = rels.iterator().next().getType().getUuid();
+			    if (TaxonRelationshipType.proParteUuids().contains(relTypeUuid)){
+	                return T_STATUS_PRO_PARTE_SYN;
+	            }else if (TaxonRelationshipType.partialUuids().contains(relTypeUuid)){
+	                return T_STATUS_PARTIAL_SYN;
+	            }else if (TaxonRelationshipType.misappliedNameUuids().contains(relTypeUuid)){
+	                return T_STATUS_SYNONYM;  //no explicit MAN status exists in PESI
+	            }
 			}
+			if (!nodes.isEmpty()){
+			    TaxonNode parentNode = nodes.iterator().next().getParent();
+			    if (parentNode.getTaxon() != null && !parentNode.getTaxon().isPublish()){
+			        if (parentNode.getTaxon().getUuid().equals(uuidTaxonValuelessEuroMed) ){
+			            return T_STATUS_NOT_ACCEPTED_VALUELESS;
+			        }
+			    }else{
+			        return T_STATUS_ACCEPTED;
+			    }
+	        }
+			logger.error("Taxon status could not be defined. This should not happen: " + taxonBase.getTitleCache() );
+			return T_STATUS_UNRESOLVED;
 		}else if (taxonBase.isInstanceOf(Synonym.class)){
-			return T_STATUS_SYNONYM;
+			Synonym synonym = CdmBase.deproxy(taxonBase, Synonym.class);
+			if (taxonBase2statusFk(synonym.getAcceptedTaxon())== T_STATUS_NOT_ACCEPTED_VALUELESS ){
+			    return T_STATUS_NOT_ACCEPTED_VALUELESS;
+			}else{
+			    return T_STATUS_SYNONYM;
+			}
 		}else{
-			logger.warn("Unknown ");
+			logger.warn("Unresolved taxon status.");
 			return T_STATUS_UNRESOLVED;
 		}
 		//TODO
-//		public static int T_STATUS_PARTIAL_SYN = 3;
-//		public static int T_STATUS_PRO_PARTE_SYN = 4;
 //		public static int T_STATUS_UNRESOLVED = 5;
 //		public static int T_STATUS_ORPHANED = 6;
 	}
@@ -1810,9 +1840,9 @@ public final class PesiTransformer extends ExportTransformerBase{
 		} else if (reference.getType().equals(ReferenceType.Journal)) {
 			return REF_JOURNAL;
 		} else if (reference.getType().equals(ReferenceType.PrintSeries)) {
-			return REF_PUBLISHED;
+			return REF_PUBLICATION;  //?
 		} else if (reference.getType().equals(ReferenceType.Proceedings)) {
-			return REF_PUBLISHED;
+			return REF_PUBLICATION;  //?
 		} else if (reference.getType().equals(ReferenceType.Patent)) {
 			return REF_NOT_APPLICABLE;
 		} else if (reference.getType().equals(ReferenceType.PersonalCommunication)) {
