@@ -53,18 +53,18 @@ public class PesiExportActivatorEM {
 
 // ************************ NONE **************************************** //
 
-//    boolean deleteAll = false;
-//    DO_REFERENCES doReferences =  DO_REFERENCES.NONE;
-//    boolean doTaxa = false;
-//    boolean doPureNames = false;
-//    boolean doTreeIndex = false;
-//    boolean doParentAndBiota = false;
+//	boolean deleteAll = false;
+//	DO_REFERENCES doReferences =  DO_REFERENCES.NONE;
+//	boolean doTaxa = false;
+//	boolean doRelTaxa = false;
+//	boolean doDescriptions = true;
+//
+//    boolean doPureNames = doTaxa;
+//    boolean doTreeIndex = doTaxa;
+//    boolean doParentAndBiota = doTaxa;
+//    boolean doAdditionalTaxonSource = false;  //do not exist in E+M
 //    boolean doInferredSynonyms = false;   //no inferred synonyms in E+M
-//    boolean doRelTaxa = false;
-//    boolean doAdditionalTaxonSource = false;
-//    boolean doDescriptions = false;
-//    boolean doEcologyAndLink = false;
-
+//    boolean doEcologyAndLink = false;   //do not exist in E+M
 
     //check - export
     static final CHECK check = CHECK.EXPORT_WITHOUT_CHECK;

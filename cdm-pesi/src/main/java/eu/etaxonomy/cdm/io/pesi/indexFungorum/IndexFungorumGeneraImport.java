@@ -12,10 +12,8 @@ package eu.etaxonomy.cdm.io.pesi.indexFungorum;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
@@ -39,7 +37,9 @@ import eu.etaxonomy.cdm.model.taxon.TaxonBase;
  */
 @Component
 public class IndexFungorumGeneraImport  extends IndexFungorumImportBase {
-	private static final Logger logger = Logger.getLogger(IndexFungorumGeneraImport.class);
+
+    private static final long serialVersionUID = -265928225339065992L;
+    private static final Logger logger = Logger.getLogger(IndexFungorumGeneraImport.class);
 
 	private static final String pluralString = "genera";
 	private static final String dbTableName = "tblGenera";
@@ -48,8 +48,6 @@ public class IndexFungorumGeneraImport  extends IndexFungorumImportBase {
 		super(pluralString, dbTableName, null);
 	}
 
-
-
 	@Override
 	protected String getIdQuery() {
 		String result = " SELECT [RECORD NUMBER] FROM " + getTableName() +
@@ -57,9 +55,6 @@ public class IndexFungorumGeneraImport  extends IndexFungorumImportBase {
 		return result;
 	}
 
-	/* (non-Javadoc)
-	 * @see eu.etaxonomy.cdm.io.berlinModel.in.BerlinModelImportBase#getRecordQuery(eu.etaxonomy.cdm.io.berlinModel.in.BerlinModelImportConfigurator)
-	 */
 	@Override
 	protected String getRecordQuery(IndexFungorumImportConfigurator config) {
 		String strRecordQuery =
@@ -70,23 +65,20 @@ public class IndexFungorumGeneraImport  extends IndexFungorumImportBase {
 		return strRecordQuery;
 	}
 
-
-
-
 	@Override
-	public boolean doPartition(ResultSetPartitioner partitioner, IndexFungorumImportState state) {
-		boolean success =true;
+	public boolean doPartition(@SuppressWarnings("rawtypes") ResultSetPartitioner partitioner,
+	        IndexFungorumImportState state) {
+
+	    boolean success =true;
 		Reference sourceReference = state.getRelatedObject(NAMESPACE_REFERENCE, SOURCE_REFERENCE, Reference.class);
 		ResultSet rs = partitioner.getResultSet();
 		Classification classification = getClassification(state);
 		try {
 			while (rs.next()){
 
-				//TODO
-				//DisplayName, NomRefCache
+				//Don't use (created bei Marc): DisplayName, NomRefCache
 
-				Double id = (Double)rs.getObject("RECORD NUMBER");
-
+				Integer id =( (Number)rs.getObject("RECORD NUMBER")).intValue();
 
 				String preferredName = rs.getString("NAME OF FUNGUS");
 				if (StringUtils.isBlank(preferredName)){
@@ -105,15 +97,13 @@ public class IndexFungorumGeneraImport  extends IndexFungorumImportBase {
 				makeAuthorAndPublication(state, rs, name);
 				//source
 				//makeSource(state, taxon, id, NAMESPACE_GENERA );
-				if (id != null){
+//				if (id != null){
 					makeSource(state, taxon, id.intValue(), NAMESPACE_GENERA );
-				} else{
-					makeSource(state, taxon, null,NAMESPACE_GENERA);
-				}
+//				} else{
+//					makeSource(state, taxon, null,NAMESPACE_GENERA);
+//				}
 				getTaxonService().saveOrUpdate(taxon);
 			}
-
-
 		} catch (Exception e) {
 			e.printStackTrace();
 			logger.error(e.getMessage());
@@ -121,7 +111,6 @@ public class IndexFungorumGeneraImport  extends IndexFungorumImportBase {
 			success = false;
 		}
 		return success;
-
 	}
 
 	private Taxon getParentTaxon(IndexFungorumImportState state, ResultSet rs) throws SQLException {
@@ -135,7 +124,6 @@ public class IndexFungorumGeneraImport  extends IndexFungorumImportBase {
 		}
 		return taxon;
 	}
-
 
 	private String getParentNameString(ResultSet rs) throws SQLException {
 		String parentName = rs.getString("Family name");
@@ -164,26 +152,26 @@ public class IndexFungorumGeneraImport  extends IndexFungorumImportBase {
 		return parentName;
 	}
 
-
 	@Override
 	public Map<Object, Map<String, ? extends CdmBase>> getRelatedObjectsForPartition(ResultSet rs, IndexFungorumImportState state) {
 		String nameSpace;
-		Class<?> cdmClass;
-		Set<String> idSet;
-		Map<Object, Map<String, ? extends CdmBase>> result = new HashMap<Object, Map<String, ? extends CdmBase>>();
+//		Class<?> cdmClass;
+//		Set<String> idSet;
+		Map<Object, Map<String, ? extends CdmBase>> result = new HashMap<>();
 
 		try{
-			Set<String> taxonNameSet = new HashSet<String>();
+//			Set<String> taxonNameSet = new HashSet<>();
 			while (rs.next()){
 //				handleForeignKey(rs, taxonIdSet,"tu_acctaxon" );
 			}
 
 			//taxon map
 			nameSpace = NAMESPACE_SUPRAGENERIC_NAMES ;
-			cdmClass = TaxonBase.class;
+//			cdmClass = Taxon.class;
 //			idSet = taxonNameSet;
-			Map<String, TaxonBase<?>> taxonMap = new HashMap<String, TaxonBase<?>>();
-			List<TaxonBase> list = getTaxonService().listTaxaByName(Taxon.class, "*", null, null, null, "*", null, 1000000, null);
+			Map<String, TaxonBase<?>> taxonMap = new HashMap<>();
+			@SuppressWarnings("rawtypes")
+            List<TaxonBase> list = getTaxonService().listTaxaByName(Taxon.class, "*", null, null, null, "*", null, 1000000, null);
 			for (TaxonBase<?> taxon : list){
 				taxonMap.put(CdmBase.deproxy(taxon.getName()).getGenusOrUninomial(), taxon);
 			}
@@ -191,7 +179,7 @@ public class IndexFungorumGeneraImport  extends IndexFungorumImportBase {
 
 			//sourceReference
 			Reference sourceReference = getReferenceService().find(PesiTransformer.uuidSourceRefIndexFungorum);
-			Map<String, Reference> referenceMap = new HashMap<String, Reference>();
+			Map<String, Reference> referenceMap = new HashMap<>();
 			referenceMap.put(SOURCE_REFERENCE, sourceReference);
 			result.put(NAMESPACE_REFERENCE, referenceMap);
 
@@ -200,7 +188,6 @@ public class IndexFungorumGeneraImport  extends IndexFungorumImportBase {
 		}
 		return result;
 	}
-
 
 	@Override
 	protected boolean doCheck(IndexFungorumImportState state){
@@ -211,9 +198,4 @@ public class IndexFungorumGeneraImport  extends IndexFungorumImportBase {
 	protected boolean isIgnore(IndexFungorumImportState state){
 		return ! state.getConfig().isDoTaxa();
 	}
-
-
-
-
-
 }

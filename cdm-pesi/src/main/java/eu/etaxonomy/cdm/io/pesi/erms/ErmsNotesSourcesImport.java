@@ -87,8 +87,8 @@ public class ErmsNotesSourcesImport extends ErmsImportBase<CommonTaxonName> {
 
 	@Override
 	public Map<Object, Map<String, ? extends CdmBase>> getRelatedObjectsForPartition(ResultSet rs, ErmsImportState state) {
-		String nameSpace;
-		Class<?> cdmClass;
+
+	    String nameSpace;
 		Set<String> idSet;
 		Map<Object, Map<String, ? extends CdmBase>> result = new HashMap<>();
 
@@ -102,17 +102,14 @@ public class ErmsNotesSourcesImport extends ErmsImportBase<CommonTaxonName> {
 
 			//note map
 			nameSpace = ErmsImportBase.NOTES_NAMESPACE;
-			cdmClass = TextData.class;
 			idSet = noteIdSet;
-			Map<String, CommonTaxonName> noteMap = (Map<String, CommonTaxonName>)getCommonService().getSourcedObjectsByIdInSource(cdmClass, idSet, nameSpace);
+			Map<String, TextData> noteMap = getCommonService().getSourcedObjectsByIdInSourceC(TextData.class, idSet, nameSpace);
 			result.put(nameSpace, noteMap);
 
 			//reference map
 			nameSpace = ErmsImportBase.REFERENCE_NAMESPACE;
-			cdmClass = Reference.class;
 			idSet = sourceIdSet;
-			@SuppressWarnings("unchecked")
-            Map<String, Reference> referenceMap = (Map<String, Reference>)getCommonService().getSourcedObjectsByIdInSource(cdmClass, idSet, nameSpace);
+			Map<String, Reference> referenceMap = getCommonService().getSourcedObjectsByIdInSourceC(Reference.class, idSet, nameSpace);
 			result.put(nameSpace, referenceMap);
 
 		} catch (SQLException e) {

@@ -274,8 +274,8 @@ public class ErmsSourceUsesImport  extends ErmsImportBase<CommonTaxonName> {
 	@Override
 	public Map<Object, Map<String, ? extends CdmBase>> getRelatedObjectsForPartition(ResultSet rs,
 	        ErmsImportState state) {
-		String nameSpace;
-		Class<?> cdmClass;
+
+	    String nameSpace;
 		Set<String> idSet;
 		Map<Object, Map<String, ? extends CdmBase>> result = new HashMap<>();
 
@@ -291,26 +291,21 @@ public class ErmsSourceUsesImport  extends ErmsImportBase<CommonTaxonName> {
 
 			//name map
 			nameSpace = ErmsImportBase.NAME_NAMESPACE;
-			cdmClass = TaxonName.class;
 			idSet = nameIdSet;
-			@SuppressWarnings("unchecked")
-            Map<String, TaxonName> nameMap = (Map<String, TaxonName>)getCommonService().getSourcedObjectsByIdInSource(cdmClass, idSet, nameSpace);
+			Map<String, TaxonName> nameMap = getCommonService().getSourcedObjectsByIdInSourceC(TaxonName.class, idSet, nameSpace);
 			result.put(nameSpace, nameMap);
 
 			//taxon map
 			nameSpace = ErmsImportBase.TAXON_NAMESPACE;
-			cdmClass = TaxonBase.class;
 			idSet = taxonIdSet;
-			@SuppressWarnings("unchecked")
-            Map<String, TaxonBase<?>> taxonMap = (Map<String, TaxonBase<?>>)getCommonService().getSourcedObjectsByIdInSource(cdmClass, idSet, nameSpace);
+			@SuppressWarnings("rawtypes")
+            Map<String, TaxonBase> taxonMap = getCommonService().getSourcedObjectsByIdInSourceC(TaxonBase.class, idSet, nameSpace);
 			result.put(nameSpace, taxonMap);
 
 			//reference map
 			nameSpace = ErmsImportBase.REFERENCE_NAMESPACE;
-			cdmClass = Reference.class;
 			idSet = referenceIdSet;
-			@SuppressWarnings("unchecked")
-            Map<String, Reference> referenceMap = (Map<String, Reference>)getCommonService().getSourcedObjectsByIdInSource(Reference.class, idSet, nameSpace);
+			Map<String, Reference> referenceMap = getCommonService().getSourcedObjectsByIdInSourceC(Reference.class, idSet, nameSpace);
 			result.put(nameSpace, referenceMap);
 
 

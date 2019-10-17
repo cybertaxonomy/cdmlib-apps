@@ -390,8 +390,8 @@ public class BerlinModelReferenceImport extends BerlinModelImportBase {
 
 	@Override
 	public Map<Object, Map<String, ? extends CdmBase>> getRelatedObjectsForPartition(ResultSet rs, BerlinModelImportState state) {
-		String nameSpace;
-		Class<?> cdmClass;
+
+	    String nameSpace;
 		Set<String> idSet;
 
 		Map<Object, Map<String, ? extends CdmBase>> result = new HashMap<>();
@@ -416,25 +416,22 @@ public class BerlinModelReferenceImport extends BerlinModelImportBase {
 
 			//team map
 			nameSpace = BerlinModelAuthorTeamImport.NAMESPACE;
-			cdmClass = TeamOrPersonBase.class;
 			idSet = teamIdSet;
-			@SuppressWarnings("unchecked")
-            Map<String, Team> teamMap = (Map<String, Team>)getCommonService().getSourcedObjectsByIdInSource(cdmClass, idSet, nameSpace);
+            @SuppressWarnings("rawtypes")
+            Map<String, TeamOrPersonBase> teamMap = getCommonService().getSourcedObjectsByIdInSourceC(TeamOrPersonBase.class, idSet, nameSpace);
 			result.put(nameSpace, teamMap);
 
             //refAuthor map
             nameSpace = REF_AUTHOR_NAMESPACE;
-            cdmClass = TeamOrPersonBase.class;
             idSet = teamStringSet2;
             @SuppressWarnings("unchecked")
-            Map<String, Team> refAuthorMap = (Map<String, Team>)getCommonService().getSourcedObjectsByIdInSource(cdmClass, idSet, nameSpace);
+            Map<String, TeamOrPersonBase> refAuthorMap = getCommonService().getSourcedObjectsByIdInSourceC(TeamOrPersonBase.class, idSet, nameSpace);
             result.put(nameSpace, refAuthorMap);
 
 			//reference map
 			nameSpace = BerlinModelReferenceImport.REFERENCE_NAMESPACE;
-			cdmClass = Reference.class;
 			idSet = referenceIdSet;
-			Map<String, Reference> referenceMap = (Map<String, Reference>)getCommonService().getSourcedObjectsByIdInSource(cdmClass, idSet, nameSpace);
+			Map<String, Reference> referenceMap = getCommonService().getSourcedObjectsByIdInSourceC(Reference.class, idSet, nameSpace);
 			result.put(nameSpace, referenceMap);
 
 		} catch (SQLException e) {

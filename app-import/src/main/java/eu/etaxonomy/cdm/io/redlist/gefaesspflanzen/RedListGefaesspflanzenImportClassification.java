@@ -348,15 +348,15 @@ public class RedListGefaesspflanzenImportClassification extends DbImportBase<Red
             e.printStackTrace();
         }
         //add taxa and their parent taxa
-        result.put(RedListUtil.TAXON_GESAMTLISTE_NAMESPACE, (Map<String, TaxonBase>) getCommonService().getSourcedObjectsByIdInSource(TaxonBase.class, idSet, RedListUtil.TAXON_GESAMTLISTE_NAMESPACE));
-        result.put(RedListUtil.CLASSIFICATION_NAMESPACE_E, (Map<String, TaxonBase>) getCommonService().getSourcedObjectsByIdInSource(TaxonBase.class, idSet, RedListUtil.CLASSIFICATION_NAMESPACE_E));
-        result.put(RedListUtil.CLASSIFICATION_NAMESPACE_W, (Map<String, TaxonBase>) getCommonService().getSourcedObjectsByIdInSource(TaxonBase.class, idSet, RedListUtil.CLASSIFICATION_NAMESPACE_W));
-        result.put(RedListUtil.CLASSIFICATION_NAMESPACE_K, (Map<String, TaxonBase>) getCommonService().getSourcedObjectsByIdInSource(TaxonBase.class, idSet, RedListUtil.CLASSIFICATION_NAMESPACE_K));
-        result.put(RedListUtil.CLASSIFICATION_NAMESPACE_AW, (Map<String, TaxonBase>) getCommonService().getSourcedObjectsByIdInSource(TaxonBase.class, idSet, RedListUtil.CLASSIFICATION_NAMESPACE_AW));
-        result.put(RedListUtil.CLASSIFICATION_NAMESPACE_AO, (Map<String, TaxonBase>) getCommonService().getSourcedObjectsByIdInSource(TaxonBase.class, idSet, RedListUtil.CLASSIFICATION_NAMESPACE_AO));
-        result.put(RedListUtil.CLASSIFICATION_NAMESPACE_R, (Map<String, TaxonBase>) getCommonService().getSourcedObjectsByIdInSource(TaxonBase.class, idSet, RedListUtil.CLASSIFICATION_NAMESPACE_R));
-        result.put(RedListUtil.CLASSIFICATION_NAMESPACE_O, (Map<String, TaxonBase>) getCommonService().getSourcedObjectsByIdInSource(TaxonBase.class, idSet, RedListUtil.CLASSIFICATION_NAMESPACE_O));
-        result.put(RedListUtil.CLASSIFICATION_NAMESPACE_S, (Map<String, TaxonBase>) getCommonService().getSourcedObjectsByIdInSource(TaxonBase.class, idSet, RedListUtil.CLASSIFICATION_NAMESPACE_S));
+        result.put(RedListUtil.TAXON_GESAMTLISTE_NAMESPACE, getCommonService().getSourcedObjectsByIdInSourceC(TaxonBase.class, idSet, RedListUtil.TAXON_GESAMTLISTE_NAMESPACE));
+        result.put(RedListUtil.CLASSIFICATION_NAMESPACE_E, getCommonService().getSourcedObjectsByIdInSourceC(TaxonBase.class, idSet, RedListUtil.CLASSIFICATION_NAMESPACE_E));
+        result.put(RedListUtil.CLASSIFICATION_NAMESPACE_W, getCommonService().getSourcedObjectsByIdInSourceC(TaxonBase.class, idSet, RedListUtil.CLASSIFICATION_NAMESPACE_W));
+        result.put(RedListUtil.CLASSIFICATION_NAMESPACE_K, getCommonService().getSourcedObjectsByIdInSourceC(TaxonBase.class, idSet, RedListUtil.CLASSIFICATION_NAMESPACE_K));
+        result.put(RedListUtil.CLASSIFICATION_NAMESPACE_AW, getCommonService().getSourcedObjectsByIdInSourceC(TaxonBase.class, idSet, RedListUtil.CLASSIFICATION_NAMESPACE_AW));
+        result.put(RedListUtil.CLASSIFICATION_NAMESPACE_AO, getCommonService().getSourcedObjectsByIdInSourceC(TaxonBase.class, idSet, RedListUtil.CLASSIFICATION_NAMESPACE_AO));
+        result.put(RedListUtil.CLASSIFICATION_NAMESPACE_R, getCommonService().getSourcedObjectsByIdInSourceC(TaxonBase.class, idSet, RedListUtil.CLASSIFICATION_NAMESPACE_R));
+        result.put(RedListUtil.CLASSIFICATION_NAMESPACE_O, getCommonService().getSourcedObjectsByIdInSourceC(TaxonBase.class, idSet, RedListUtil.CLASSIFICATION_NAMESPACE_O));
+        result.put(RedListUtil.CLASSIFICATION_NAMESPACE_S, getCommonService().getSourcedObjectsByIdInSourceC(TaxonBase.class, idSet, RedListUtil.CLASSIFICATION_NAMESPACE_S));
 
         //add families
         //gesamtliste

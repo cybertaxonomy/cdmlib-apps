@@ -399,27 +399,24 @@ public abstract class PesiExportBase
 
     private static boolean isPesiSynonym(Synonym synonym) {
         boolean hasAcceptedPesiTaxon = false;
-        hasAcceptedPesiTaxon = isPesiTaxon(synonym.getAcceptedTaxon());
 
+        hasAcceptedPesiTaxon = isPesiTaxon(synonym.getAcceptedTaxon());
         if (!hasAcceptedPesiTaxon) {if (logger.isDebugEnabled()){logger.debug("Synonym has no accepted PESI taxon: " +  synonym.getUuid() + ", (" +  synonym.getTitleCache() + ")");}}
-        synonym = null;
-        return hasAcceptedPesiTaxon;
+
+        return hasAcceptedPesiTaxon && synonym.isPublish();
     }
 
     private static boolean isPesiAcceptedTaxon(boolean excludeMisappliedNames, Taxon taxon) {
         if (! taxon.isPublish()){
-        	taxon = null;
         	return false;
         }
         for (Marker marker : taxon.getMarkers()){
         	//probably not needed anymore after #1780 was fixed, also #4046 interesting
         	if (marker.getValue() == false && marker.getMarkerType().equals(MarkerType.PUBLISH())){
-        		taxon = null;
         		return false;
         	//probably not needed any more after #2786 was fixed
         	}else if (marker.getValue() == true && marker.getMarkerType().getUuid().equals(BerlinModelTransformer.uuidMisappliedCommonName)){
         		logger.warn("Misapplied common name still exists");
-        		taxon = null;
         		return false;
         	}
         }
@@ -428,7 +425,6 @@ public abstract class PesiExportBase
         if (! taxon.isMisapplication()){
         	for (Marker marker : taxon.getMarkers()){
         		if (marker.getValue() == false && marker.getMarkerType().equals(MarkerType.PUBLISH())){
-        			taxon = null;
         			return false;
         		}
         	}
@@ -436,28 +432,24 @@ public abstract class PesiExportBase
         //handle misapplied names
         }else{
         	if (excludeMisappliedNames){
-        		taxon = null;
         		return false;
         	}
         	for (Marker marker : taxon.getMarkers()){
         		//probably not needed any more after #2786 was fixed
         		if (marker.getValue() == true && marker.getMarkerType().getUuid().equals(BerlinModelTransformer.uuidMisappliedCommonName)){
         			logger.warn("Misapplied common name still exists");
-        			taxon = null;
         			return false;
         		}
         	}
         	for (TaxonRelationship taxRel : taxon.getRelationsFromThisTaxon()){
-        		if (taxRel.getType().equals(TaxonRelationshipType.MISAPPLIED_NAME_FOR())){
+        		if (taxRel.getType().isAnyMisappliedName()){
 //						logger.warn(taxRel.getUuid() + "; " + taxRel.getToTaxon().getUuid() + " + " + taxRel.getToTaxon().getTitleCache());
         			if (isPesiTaxon(taxRel.getToTaxon(), true)){
-        				taxon = null;
         				return true;
         			}
         		}
         	}
         	if (logger.isDebugEnabled()){ logger.debug("Misapplied name has no accepted PESI taxon: " +  taxon.getUuid() + ", (" +  taxon.getTitleCache() + ")");}
-        	taxon = null;
         	return false;
         }
     }

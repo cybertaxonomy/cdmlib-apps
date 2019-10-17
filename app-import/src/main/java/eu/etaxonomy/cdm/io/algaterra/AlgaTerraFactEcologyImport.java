@@ -283,14 +283,13 @@ public class AlgaTerraFactEcologyImport  extends AlgaTerraSpecimenImportBase {
 	@Override
 	public Map<Object, Map<String, ? extends CdmBase>> getRelatedObjectsForPartition(ResultSet rs, BerlinModelImportState state) {
 		String nameSpace;
-		Class<?> cdmClass;
 		Set<String> idSet;
-		Map<Object, Map<String, ? extends CdmBase>> result = new HashMap<Object, Map<String, ? extends CdmBase>>();
+		Map<Object, Map<String, ? extends CdmBase>> result = new HashMap<>();
 
 		try{
-			Set<String> taxonIdSet = new HashSet<String>();
-			Set<String> extensionFkSet = new HashSet<String>();
-			Set<String> referenceIdSet = new HashSet<String>();
+			Set<String> taxonIdSet = new HashSet<>();
+			Set<String> extensionFkSet = new HashSet<>();
+			Set<String> referenceIdSet = new HashSet<>();
 
 			while (rs.next()){
 				handleForeignKey(rs, taxonIdSet, "taxonId");
@@ -300,23 +299,21 @@ public class AlgaTerraFactEcologyImport  extends AlgaTerraSpecimenImportBase {
 
 			//taxon map
 			nameSpace = BerlinModelTaxonImport.NAMESPACE;
-			cdmClass = TaxonBase.class;
 			idSet = taxonIdSet;
-			Map<String, TaxonBase> objectMap = (Map<String, TaxonBase>)getCommonService().getSourcedObjectsByIdInSource(cdmClass, idSet, nameSpace);
+			@SuppressWarnings("rawtypes")
+            Map<String, TaxonBase> objectMap = getCommonService().getSourcedObjectsByIdInSourceC(TaxonBase.class, idSet, nameSpace);
 			result.put(nameSpace, objectMap);
 
 			//derived unit map
-			nameSpace = AlgaTerraFactEcologyImport.ECO_FACT_DERIVED_UNIT_NAMESPACE;
-			cdmClass = DerivedUnit.class;
+			nameSpace = AlgaTerraSpecimenImportBase.ECO_FACT_DERIVED_UNIT_NAMESPACE;
 			idSet = extensionFkSet;
-			Map<String, DerivedUnit> derivedUnitMap = (Map<String, DerivedUnit>)getCommonService().getSourcedObjectsByIdInSource(cdmClass, idSet, nameSpace);
+			Map<String, DerivedUnit> derivedUnitMap = getCommonService().getSourcedObjectsByIdInSourceC(DerivedUnit.class, idSet, nameSpace);
 			result.put(nameSpace, derivedUnitMap);
 
 			//reference map
 			nameSpace = BerlinModelReferenceImport.REFERENCE_NAMESPACE;
-			cdmClass = Reference.class;
 			idSet = referenceIdSet;
-			Map<String, Reference> referenceMap = (Map<String, Reference>)getCommonService().getSourcedObjectsByIdInSource(cdmClass, idSet, nameSpace);
+			Map<String, Reference> referenceMap = getCommonService().getSourcedObjectsByIdInSourceC(Reference.class, idSet, nameSpace);
 			result.put(nameSpace, referenceMap);
 
 

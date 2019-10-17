@@ -758,13 +758,6 @@ public class GlobisSpecTaxImport  extends GlobisImportBase<Reference> implements
 		return specTypeDepositoryStr;
 	}
 
-
-
-
-	/**
-	 * @param fieldObservation
-	 * @return
-	 */
 	protected DerivedUnit makeSingleTypeSpecimen(FieldUnit fieldObservation) {
 		DerivationEvent derivEvent = DerivationEvent.NewInstance();
 //			derivEvent.setType(DerivationEventType.ACCESSIONING());
@@ -774,14 +767,6 @@ public class GlobisSpecTaxImport  extends GlobisImportBase<Reference> implements
 		return specimen;
 	}
 
-
-
-
-	/**
-	 * @param state
-	 * @return
-	 * @throws SQLException
-	 */
 	protected FieldUnit makeTypeFieldObservation(GlobisImportState state,
 			ResultSet rs) throws SQLException {
 
@@ -797,16 +782,6 @@ public class GlobisSpecTaxImport  extends GlobisImportBase<Reference> implements
 	}
 
 
-
-
-	/**
-	 * @param name
-	 * @param rs
-	 * @param status
-	 * @param specimen
-	 * @param specTaxId
-	 * @throws SQLException
-	 */
 	protected void makeTypeDesignation(IZoologicalName name, ResultSet rs, DerivedUnit specimen, Integer specTaxId) throws SQLException {
 		//type
 		String specType = rs.getString("SpecType");
@@ -818,9 +793,6 @@ public class GlobisSpecTaxImport  extends GlobisImportBase<Reference> implements
 
 		name.addTypeDesignation(typeDesignation, true);
 	}
-
-
-
 
 	private SpecimenTypeDesignationStatus getTypeDesigType(String specType, Integer specTaxId) {
 		if (isBlank(specType) ){
@@ -841,18 +813,6 @@ public class GlobisSpecTaxImport  extends GlobisImportBase<Reference> implements
 		}
 	}
 
-
-
-
-	/**
-	 * @param state
-	 * @param referenceMap
-	 * @param rs
-	 * @param name
-	 * @param specTaxId
-	 * @return
-	 * @throws SQLException
-	 */
 	private Reference handleNomRef(GlobisImportState state, Map<String, Reference> referenceMap, ResultSet rs,
 			IZoologicalName name, Integer specTaxId) throws SQLException {
 		//ref
@@ -875,9 +835,6 @@ public class GlobisSpecTaxImport  extends GlobisImportBase<Reference> implements
 		return nomRef;
 	}
 
-
-
-
 	private void validateAcceptedTaxon(Taxon acceptedTaxon, ResultSet rs, Integer specTaxId, Integer acceptedTaxonId) throws SQLException {
 		if (acceptedTaxon == null){
 			logger.warn("Accepted taxon is null for taxon taxon to validate. SpecTaxId " + specTaxId + ", accTaxonId: " + acceptedTaxonId);
@@ -894,9 +851,6 @@ public class GlobisSpecTaxImport  extends GlobisImportBase<Reference> implements
 		//TODO
 	}
 
-
-
-
 	private Synonym getSynonym(GlobisImportState state, ResultSet rs, Integer specTaxId) throws SQLException {
 		TaxonName name = (TaxonName)makeName(state, rs, specTaxId);
 
@@ -904,9 +858,6 @@ public class GlobisSpecTaxImport  extends GlobisImportBase<Reference> implements
 
 		return synonym;
 	}
-
-
-
 
 	/**
 	 * @param state
@@ -942,9 +893,6 @@ public class GlobisSpecTaxImport  extends GlobisImportBase<Reference> implements
 		return name;
 	}
 
-
-
-
 	private void makeNamePartsAndCache(GlobisImportState state, ResultSet rs, String rank, IZoologicalName name) throws SQLException {
 		String citedFamily = rs.getString("SpecCitedFamily");
 		String citedGenus = rs.getString("SpecCitedGenus");
@@ -971,17 +919,18 @@ public class GlobisSpecTaxImport  extends GlobisImportBase<Reference> implements
 
 	@Override
 	public Map<Object, Map<String, ? extends CdmBase>> getRelatedObjectsForPartition(ResultSet rs, GlobisImportState state) {
-		String nameSpace;
-		Class<?> cdmClass;
+
+	    String nameSpace;
 		Set<String> idSet;
 
-		Set<AgentBase> agents = state.getAgents();
+		@SuppressWarnings("rawtypes")
+        Set<AgentBase> agents = state.getAgents();
 		getAgentService().saveOrUpdate(agents);
 
-		Map<Object, Map<String, ? extends CdmBase>> result = new HashMap<Object, Map<String, ? extends CdmBase>>();
+		Map<Object, Map<String, ? extends CdmBase>> result = new HashMap<>();
 		try{
-			Set<String> taxonIdSet = new HashSet<String>();
-			Set<String> referenceIdSet = new HashSet<String>();
+			Set<String> taxonIdSet = new HashSet<>();
+			Set<String> referenceIdSet = new HashSet<>();
 
 			while (rs.next()){
 				handleForeignKey(rs, taxonIdSet, "SpecCurrspecID");
@@ -990,22 +939,20 @@ public class GlobisSpecTaxImport  extends GlobisImportBase<Reference> implements
 
 			//taxon map
 			nameSpace = TAXON_NAMESPACE;
-			cdmClass = Taxon.class;
 			idSet = taxonIdSet;
-			Map<String, Taxon> objectMap = (Map<String, Taxon>)getCommonService().getSourcedObjectsByIdInSource(cdmClass, idSet, nameSpace);
+			Map<String, Taxon> objectMap = getCommonService().getSourcedObjectsByIdInSourceC(Taxon.class, idSet, nameSpace);
 			result.put(nameSpace, objectMap);
 
 			//reference map
 			nameSpace = REFERENCE_NAMESPACE;
-			cdmClass = Reference.class;
 			idSet = referenceIdSet;
-			Map<String, Reference> referenceMap = (Map<String, Reference>)getCommonService().getSourcedObjectsByIdInSource(cdmClass, idSet, nameSpace);
+			Map<String, Reference> referenceMap = getCommonService().getSourcedObjectsByIdInSourceC(Reference.class, idSet, nameSpace);
 			result.put(nameSpace, referenceMap);
 
 			//collection map
 			nameSpace = COLLECTION_NAMESPACE;
 			List<Collection> listCollection = getCollectionService().list(Collection.class, null, null, null, null);
-			Map<String, Collection> collectionMap = new HashMap<String, Collection>();
+			Map<String, Collection> collectionMap = new HashMap<>();
 			for (Collection collection : listCollection){
 				if (isNotBlank(collection.getCode())){
 					collectionMap.put(collection.getCode(), collection);
@@ -1023,26 +970,16 @@ public class GlobisSpecTaxImport  extends GlobisImportBase<Reference> implements
 		return result;
 	}
 
-	/* (non-Javadoc)
-	 * @see eu.etaxonomy.cdm.io.common.CdmIoBase#doCheck(eu.etaxonomy.cdm.io.common.IImportConfigurator)
-	 */
 	@Override
 	protected boolean doCheck(GlobisImportState state){
 		IOValidator<GlobisImportState> validator = new GlobisSpecTaxaImportValidator();
 		return validator.validate(state);
 	}
 
-
-	/* (non-Javadoc)
-	 * @see eu.etaxonomy.cdm.io.common.CdmIoBase#isIgnore(eu.etaxonomy.cdm.io.common.IImportConfigurator)
-	 */
 	@Override
     protected boolean isIgnore(GlobisImportState state){
 		return ! state.getConfig().isDoSpecTaxa();
 	}
-
-
-
 
 	@Override
 	public Reference createObject(ResultSet rs, GlobisImportState state)

@@ -133,7 +133,7 @@ public class ProtologueImport
 	private TaxonNameDescription getNameDescription(TaxonName taxonName) {
 		TaxonNameDescription result;
 		if (taxonName.getDescriptions().size()> 0){
-			result = (TaxonNameDescription)taxonName.getDescriptions().iterator().next();
+			result = taxonName.getDescriptions().iterator().next();
 		}else{
 			result = TaxonNameDescription.NewInstance();
 			taxonName.addDescription(result);
@@ -166,30 +166,24 @@ public class ProtologueImport
 			logger.error(e.getMessage());
 			return null;
 		}
-
  	}
 
 	private TaxonName getTaxonName(String originalSourceId, String namespace){
 		TaxonName result;
 		ICommonService commonService = getCommonService();
 
-		result = (TaxonName)commonService.getSourcedObjectByIdInSource(TaxonName.class, originalSourceId , namespace);
+		result = commonService.getSourcedObjectByIdInSource(TaxonName.class, originalSourceId , namespace);
 		if (result == null){
 			logger.warn("Taxon (id: " + originalSourceId + ", namespace: " + namespace + ") could not be found");
 		}
 		return result;
 	}
 
-
 	@Override
-    public boolean doCheck(DefaultImportState state){
-		boolean result = true;
-		return result;
+    public boolean doCheck(@SuppressWarnings("rawtypes") DefaultImportState state){
+		return true;
 	}
 
-	/* (non-Javadoc)
-	 * @see eu.etaxonomy.cdm.io.common.CdmIoBase#isIgnore(eu.etaxonomy.cdm.io.common.IImportConfigurator)
-	 */
 	@Override
     protected boolean isIgnore(DefaultImportState state){
 		return false; // ! state.getConfig();
@@ -198,6 +192,4 @@ public class ProtologueImport
 	protected void doCount(int count, int modCount, String pluralString){
 		if ((count % modCount ) == 0 && count!= 0 ){ logger.info(pluralString + " handled: " + (count));}
 	}
-
-
 }

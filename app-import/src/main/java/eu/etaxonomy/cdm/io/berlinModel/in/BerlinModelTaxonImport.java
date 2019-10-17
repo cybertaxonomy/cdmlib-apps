@@ -36,7 +36,6 @@ import eu.etaxonomy.cdm.io.berlinModel.BerlinModelTransformer;
 import eu.etaxonomy.cdm.io.berlinModel.in.validation.BerlinModelTaxonImportValidator;
 import eu.etaxonomy.cdm.io.common.IOValidator;
 import eu.etaxonomy.cdm.io.common.ResultSetPartitioner;
-import eu.etaxonomy.cdm.model.agent.Person;
 import eu.etaxonomy.cdm.model.common.CdmBase;
 import eu.etaxonomy.cdm.model.common.Extension;
 import eu.etaxonomy.cdm.model.common.ExtensionType;
@@ -144,13 +143,16 @@ public class BerlinModelTaxonImport  extends BerlinModelImportBase {
 	}
 
 	@Override
-	public boolean doPartition(ResultSetPartitioner partitioner, BerlinModelImportState state) {
-		boolean success = true ;
+	public boolean doPartition(@SuppressWarnings("rawtypes") ResultSetPartitioner partitioner, BerlinModelImportState state) {
 
+	    boolean success = true ;
 		BerlinModelImportConfigurator config = state.getConfig();
-		Set<TaxonBase> taxaToSave = new HashSet<>();
-		Map<String, TaxonName> taxonNameMap = partitioner.getObjectMap(BerlinModelTaxonNameImport.NAMESPACE);
-		Map<String, Reference> refMap = partitioner.getObjectMap(BerlinModelReferenceImport.REFERENCE_NAMESPACE);
+		@SuppressWarnings("rawtypes")
+        Set<TaxonBase> taxaToSave = new HashSet<>();
+		@SuppressWarnings("unchecked")
+        Map<String, TaxonName> taxonNameMap = partitioner.getObjectMap(BerlinModelTaxonNameImport.NAMESPACE);
+		@SuppressWarnings("unchecked")
+        Map<String, Reference> refMap = partitioner.getObjectMap(BerlinModelReferenceImport.REFERENCE_NAMESPACE);
 
 		ResultSet rs = partitioner.getResultSet();
 		try{
@@ -428,8 +430,8 @@ public class BerlinModelTaxonImport  extends BerlinModelImportBase {
 
     @Override
 	public Map<Object, Map<String, ? extends CdmBase>> getRelatedObjectsForPartition(ResultSet rs, BerlinModelImportState state) {
-		String nameSpace;
-		Class<?> cdmClass;
+
+        String nameSpace;
 		Set<String> idSet;
 		Map<Object, Map<String, ? extends CdmBase>> result = new HashMap<>();
 
@@ -446,16 +448,14 @@ public class BerlinModelTaxonImport  extends BerlinModelImportBase {
 
 			//name map
 			nameSpace = BerlinModelTaxonNameImport.NAMESPACE;
-			cdmClass = TaxonName.class;
 			idSet = nameIdSet;
-			Map<String, Person> nameMap = (Map<String, Person>)getCommonService().getSourcedObjectsByIdInSource(cdmClass, idSet, nameSpace);
+			Map<String, TaxonName> nameMap = getCommonService().getSourcedObjectsByIdInSourceC(TaxonName.class, idSet, nameSpace);
 			result.put(nameSpace, nameMap);
 
 			//reference map
 			nameSpace = BerlinModelReferenceImport.REFERENCE_NAMESPACE;
-			cdmClass = Reference.class;
 			idSet = referenceIdSet;
-			Map<String, Reference> referenceMap = (Map<String, Reference>)getCommonService().getSourcedObjectsByIdInSource(cdmClass, idSet, nameSpace);
+			Map<String, Reference> referenceMap = getCommonService().getSourcedObjectsByIdInSourceC(Reference.class, idSet, nameSpace);
 			result.put(nameSpace, referenceMap);
 
 		} catch (SQLException e) {

@@ -15,9 +15,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
-import java.util.UUID;
 
-import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.springframework.stereotype.Component;
 
@@ -36,62 +34,47 @@ import eu.etaxonomy.cdm.model.taxon.Taxon;
 import eu.etaxonomy.cdm.model.taxon.TaxonBase;
 import eu.etaxonomy.cdm.strategy.parser.NonViralNameParserImpl;
 
-
 /**
  * @author a.mueller
  * @since 27.02.2012
  */
 @Component
 public class IndexFungorumSpeciesImport  extends IndexFungorumImportBase {
-	private static final Logger logger = Logger.getLogger(IndexFungorumSpeciesImport.class);
+
+    private static final long serialVersionUID = -1148034079632876980L;
+    private static final Logger logger = Logger.getLogger(IndexFungorumSpeciesImport.class);
 
 	private static final String pluralString = "species";
 	private static final String dbTableName = "[tblPESIfungi-IFdata]";
 
-
 	public IndexFungorumSpeciesImport(){
 		super(pluralString, dbTableName, null);
-
 	}
-
-
-
 
 	@Override
 	protected String getIdQuery() {
-		String result = " SELECT PreferredNameIFnumber FROM " + getTableName() +
-				" ORDER BY PreferredName ";
+		String result = " SELECT PreferredNameIFnumber "
+		        + " FROM " + getTableName()
+				+ " ORDER BY PreferredName ";
 		return result;
 	}
 
-
-
-
-	/* (non-Javadoc)
-	 * @see eu.etaxonomy.cdm.io.berlinModel.in.BerlinModelImportBase#getRecordQuery(eu.etaxonomy.cdm.io.berlinModel.in.BerlinModelImportConfigurator)
-	 */
 	@Override
 	protected String getRecordQuery(IndexFungorumImportConfigurator config) {
 		String strRecordQuery =
-				" SELECT DISTINCT distribution.PreferredNameFDCnumber, species.* , cl.[Phylum name]" +
-				" FROM tblPESIfungi AS distribution RIGHT OUTER JOIN  dbo.[tblPESIfungi-IFdata] AS species ON distribution.PreferredNameIFnumber = species.PreferredNameIFnumber " +
-					" LEFT OUTER JOIN [tblPESIfungi-Classification] cl ON species.PreferredName   = cl.PreferredName " +
-				" WHERE ( species.PreferredNameIFnumber IN (" + ID_LIST_TOKEN + ") )" +
+				"   SELECT DISTINCT distribution.PreferredNameFDCnumber, species.* , cl.[Phylum name]"
+				+ " FROM tblPESIfungi AS distribution "
+				+ "   RIGHT OUTER JOIN  dbo.[tblPESIfungi-IFdata] AS species ON distribution.PreferredNameIFnumber = species.PreferredNameIFnumber " +
+					" LEFT OUTER JOIN [tblPESIfungi-Classification] cl ON species.PreferredName = cl.PreferredName "
+				+ " WHERE ( species.PreferredNameIFnumber IN (" + ID_LIST_TOKEN + ") )" +
 			"";
 		return strRecordQuery;
 	}
-	@Override
-    protected void doInvoke(IndexFungorumImportState state){
-        System.out.println("start make " + getPluralString() + " ...");
-        super.doInvoke(state);
-
-
-
-
-	}
 
 	@Override
-	public boolean doPartition(ResultSetPartitioner partitioner, IndexFungorumImportState state) {
+	public boolean doPartition(@SuppressWarnings("rawtypes") ResultSetPartitioner partitioner,
+	        IndexFungorumImportState state) {
+
 		boolean success = true;
 		Reference sourceReference = state.getRelatedObject(NAMESPACE_REFERENCE, SOURCE_REFERENCE, Reference.class);
 		ResultSet rs = partitioner.getResultSet();
@@ -106,8 +89,8 @@ public class IndexFungorumSpeciesImport  extends IndexFungorumImportBase {
 				String phylumName = rs.getString("Phylum name");
 
 				String preferredName = rs.getString("PreferredName");
-				if (StringUtils.isBlank(preferredName)){
-					logger.warn("Preferred name is blank. This case is not yet handled by IF import. RECORD UMBER" + CdmUtils.Nz(id));
+				if (isBlank(preferredName)){
+					logger.warn("Preferred name is blank. This case is not yet handled by IF import. RECORD NUMBER" + CdmUtils.Nz(id));
 				}
 
 				//Rank rank = Rank.SPECIES();
@@ -116,15 +99,18 @@ public class IndexFungorumSpeciesImport  extends IndexFungorumImportBase {
 				INonViralName name = parser.parseSimpleName(preferredName, NomenclaturalCode.ICNAFP, null);
 
 				Taxon taxon = Taxon.NewInstance(name, sourceReference);
-				//if name is infraspecific the parent should be the species not the genus
-				Taxon parent;
-				if (!name.isInfraSpecific()){
-				    parent = getParentTaxon(state, rs);
+				//if name is infra-specific the parent should be the species not the genus
+				Integer genusId = rs.getInt("PreferredNameFDCnumber");
+		        if (!name.isInfraSpecific()){
+				    Taxon parent = getParentTaxon(state, genusId);
 				    if (parent == null){
-	                    logger.warn("parent not found for name:" +preferredName);
+	                    logger.warn("parent not found for name:" + preferredName + "ID(PreferredNameIFnumber)" +id+ "; GenusId(PreferredNameFDCnumber): ");
+	                }else{
+	                    classification.addParentChild(parent, taxon, null, null);
 	                }
-				    classification.addParentChild(parent, taxon, null, null);
-				}
+				}else {
+                    state.getInfraspecificTaxaUUIDs().put(taxon.getUuid(), genusId);
+                }
 
 				//author + publication
 				makeAuthorAndPublication(state, rs, name);
@@ -136,17 +122,11 @@ public class IndexFungorumSpeciesImport  extends IndexFungorumImportBase {
 					ExtensionType fossilExtType = getExtensionType(state, ErmsTransformer.uuidExtFossilStatus, "fossil status", "fossil status", "fos. stat.");
 					Extension.NewInstance(taxon, PesiTransformer.STR_FOSSIL_ONLY, fossilExtType);
 				}
-				//save
 
-				UUID uuidTaxon = getTaxonService().saveOrUpdate(taxon);
-				//getNameService().saveOrUpdate(name);
-				if (name.isInfraSpecific()){
-                    state.getInfraspecificTaxaUUIDs().add(uuidTaxon);
-                }
+				//save
+				getTaxonService().saveOrUpdate(taxon);
 
 			}
-
-
 		} catch (Exception e) {
 			e.printStackTrace();
 			logger.error(e.getMessage());
@@ -156,33 +136,20 @@ public class IndexFungorumSpeciesImport  extends IndexFungorumImportBase {
 		return success;
 	}
 
-
-
-
-
-
-
-    private Taxon getParentTaxon(IndexFungorumImportState state, ResultSet rs) throws SQLException {
-		Integer genusId = rs.getInt("PreferredNameFDCnumber");
-
-		Taxon taxon = state.getRelatedObject(NAMESPACE_GENERA, String.valueOf(genusId), Taxon.class);
-		if (taxon == null){
-			logger.warn("Taxon not found for " + genusId);
-		}
-		return taxon;
+    private Taxon getParentTaxon(IndexFungorumImportState state, Integer genusId) {
+        return state.getRelatedObject(NAMESPACE_GENERA, String.valueOf(genusId), Taxon.class);
 	}
-
 
 	@Override
 	public Map<Object, Map<String, ? extends CdmBase>> getRelatedObjectsForPartition(ResultSet rs, IndexFungorumImportState state) {
-		String nameSpace;
-		Class<?> cdmClass;
+
+	    String nameSpace;
 		Set<String> idSet;
-		Map<Object, Map<String, ? extends CdmBase>> result = new HashMap<Object, Map<String, ? extends CdmBase>>();
+		Map<Object, Map<String, ? extends CdmBase>> result = new HashMap<>();
 
 		try{
-			Set<String> taxonIdSet = new HashSet<String>();
-			Set<String> taxonSpeciesNames = new HashSet<String>();
+			Set<String> taxonIdSet = new HashSet<>();
+			Set<String> taxonSpeciesNames = new HashSet<>();
  			while (rs.next()){
 				handleForeignKey(rs, taxonIdSet,"PreferredNameFDCnumber" );
 				handleForeignKey(rs, taxonSpeciesNames, "PreferredName");
@@ -190,15 +157,14 @@ public class IndexFungorumSpeciesImport  extends IndexFungorumImportBase {
 
 			//taxon map
 			nameSpace = NAMESPACE_GENERA;
-			cdmClass = TaxonBase.class;
 			idSet = taxonIdSet;
-			Map<String, TaxonBase> taxonMap = (Map<String, TaxonBase>)getCommonService().getSourcedObjectsByIdInSource(cdmClass, idSet, nameSpace);
+			@SuppressWarnings({ "rawtypes" })
+            Map<String, TaxonBase> taxonMap = getCommonService().getSourcedObjectsByIdInSourceC(TaxonBase.class, idSet, nameSpace);
 			result.put(nameSpace, taxonMap);
-
 
 			//sourceReference
 			Reference sourceReference = getReferenceService().find(PesiTransformer.uuidSourceRefIndexFungorum);
-			Map<String, Reference> referenceMap = new HashMap<String, Reference>();
+			Map<String, Reference> referenceMap = new HashMap<>();
 			referenceMap.put(SOURCE_REFERENCE, sourceReference);
 			result.put(NAMESPACE_REFERENCE, referenceMap);
 
@@ -217,9 +183,4 @@ public class IndexFungorumSpeciesImport  extends IndexFungorumImportBase {
 	protected boolean isIgnore(IndexFungorumImportState state){
 		return ! state.getConfig().isDoTaxa();
 	}
-
-
-
-
-
 }

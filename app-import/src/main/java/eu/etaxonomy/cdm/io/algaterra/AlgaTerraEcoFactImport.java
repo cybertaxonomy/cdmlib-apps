@@ -355,15 +355,15 @@ public class AlgaTerraEcoFactImport  extends AlgaTerraSpecimenImportBase {
 
 	@Override
 	public Map<Object, Map<String, ? extends CdmBase>> getRelatedObjectsForPartition(ResultSet rs, BerlinModelImportState state) {
-		String nameSpace;
-		Class<?> cdmClass;
+
+	    String nameSpace;
 		Set<String> idSet;
-		Map<Object, Map<String, ? extends CdmBase>> result = new HashMap<Object, Map<String, ? extends CdmBase>>();
+		Map<Object, Map<String, ? extends CdmBase>> result = new HashMap<>();
 
 		try{
-			Set<String> fieldObservationIdSet = new HashSet<String>();
-			Set<String> termsIdSet = new HashSet<String>();
-			Set<String> collectionIdSet = new HashSet<String>();
+			Set<String> fieldObservationIdSet = new HashSet<>();
+			Set<String> termsIdSet = new HashSet<>();
+			Set<String> collectionIdSet = new HashSet<>();
 
 			while (rs.next()){
 				handleForeignKey(rs, fieldObservationIdSet, "DuplicateFk");
@@ -374,31 +374,29 @@ public class AlgaTerraEcoFactImport  extends AlgaTerraSpecimenImportBase {
 			}
 
 			//field observation map for duplicates
-			nameSpace = AlgaTerraEcoFactImport.ECO_FACT_FIELD_OBSERVATION_NAMESPACE;
-			cdmClass = FieldUnit.class;
+			nameSpace = AlgaTerraSpecimenImportBase.ECO_FACT_FIELD_OBSERVATION_NAMESPACE;
 			idSet = fieldObservationIdSet;
-			Map<String, FieldUnit> fieldObservationMap = (Map<String, FieldUnit>)getCommonService().getSourcedObjectsByIdInSource(cdmClass, idSet, nameSpace);
+			Map<String, FieldUnit> fieldObservationMap = getCommonService().getSourcedObjectsByIdInSourceC(FieldUnit.class, idSet, nameSpace);
 			result.put(nameSpace, fieldObservationMap);
 
 			//collections
 			nameSpace = AlgaTerraCollectionImport.NAMESPACE_COLLECTION;
-			cdmClass = Collection.class;
 			idSet = collectionIdSet;
-			Map<String, Collection> collectionMap = (Map<String, Collection>)getCommonService().getSourcedObjectsByIdInSource(cdmClass, idSet, nameSpace);
+			Map<String, Collection> collectionMap = getCommonService().getSourcedObjectsByIdInSourceC(Collection.class, idSet, nameSpace);
 			result.put(nameSpace, collectionMap);
 
 			//sub-collections
 			nameSpace = AlgaTerraCollectionImport.NAMESPACE_SUBCOLLECTION;
-			cdmClass = Collection.class;
 			idSet = collectionIdSet;
-			Map<String, Collection> subCollectionMap = (Map<String, Collection>)getCommonService().getSourcedObjectsByIdInSource(cdmClass, idSet, nameSpace);
+			Map<String, Collection> subCollectionMap = getCommonService().getSourcedObjectsByIdInSourceC(Collection.class, idSet, nameSpace);
 			result.put(nameSpace, subCollectionMap);
 
 			//terms
-			nameSpace = AlgaTerraEcoFactImport.TERMS_NAMESPACE;
-			cdmClass = FieldUnit.class;  //????????
+			nameSpace = AlgaTerraSpecimenImportBase.TERMS_NAMESPACE;
+			Class<FieldUnit> cdmClass = FieldUnit.class;  //????????
 			idSet = termsIdSet;
-			Map<String, DefinedTermBase> termMap = (Map<String, DefinedTermBase>)getCommonService().getSourcedObjectsByIdInSource(cdmClass, idSet, nameSpace);
+			//FIXME something not correct here with the classes
+			Map<String, DefinedTermBase> termMap = (Map)getCommonService().getSourcedObjectsByIdInSourceC(cdmClass, idSet, nameSpace);
 			result.put(nameSpace, termMap);
 
 		} catch (SQLException e) {

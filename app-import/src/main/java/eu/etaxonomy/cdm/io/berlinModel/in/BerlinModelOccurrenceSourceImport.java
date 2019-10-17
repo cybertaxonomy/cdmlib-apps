@@ -177,8 +177,8 @@ public class BerlinModelOccurrenceSourceImport  extends BerlinModelImportBase {
 
 	@Override
 	public Map<Object, Map<String, ? extends CdmBase>> getRelatedObjectsForPartition(ResultSet rs, BerlinModelImportState state) {
-		String nameSpace;
-		Class<?> cdmClass;
+
+	    String nameSpace;
 		Set<String> idSet;
 		Map<Object, Map<String, ? extends CdmBase>> result = new HashMap<>();
 
@@ -204,26 +204,19 @@ public class BerlinModelOccurrenceSourceImport  extends BerlinModelImportBase {
 
 			//occurrence map
 			nameSpace = BerlinModelOccurrenceImport.NAMESPACE;
-			cdmClass = Distribution.class;
 			idSet = occurrenceIdSet;
-			@SuppressWarnings("unchecked")
-            Map<String, Distribution> occurrenceMap = (Map<String, Distribution>)getCommonService().getSourcedObjectsByIdInSource(cdmClass, idSet, nameSpace);
+            Map<String, Distribution> occurrenceMap = getCommonService().getSourcedObjectsByIdInSourceC(Distribution.class, idSet, nameSpace);
 			result.put(nameSpace, occurrenceMap);
 
 			//name map
 			nameSpace = BerlinModelTaxonNameImport.NAMESPACE;
-			cdmClass = TaxonName.class;
 			idSet =nameIdSet;
-			@SuppressWarnings("unchecked")
-            Map<String, TaxonName> nameMap = (Map<String, TaxonName>)getCommonService().getSourcedObjectsByIdInSource(cdmClass, idSet, nameSpace);
+            Map<String, TaxonName> nameMap = getCommonService().getSourcedObjectsByIdInSourceC(TaxonName.class, idSet, nameSpace);
 			result.put(nameSpace, nameMap);
 
 			//reference map
 			nameSpace = BerlinModelReferenceImport.REFERENCE_NAMESPACE;
-			cdmClass = Reference.class;
-			idSet = referenceIdSet;
-			@SuppressWarnings("unchecked")
-            Map<String, Reference> referenceMap = (Map<String, Reference>)getCommonService().getSourcedObjectsByIdInSource(cdmClass, idSet, nameSpace);
+            Map<String, Reference> referenceMap = getCommonService().getSourcedObjectsByIdInSourceC(Reference.class, idSet, nameSpace);
 			result.put(nameSpace, referenceMap);
 
 		} catch (SQLException e) {
@@ -264,15 +257,8 @@ public class BerlinModelOccurrenceSourceImport  extends BerlinModelImportBase {
         return oldNameIdSet;
     }
 
-
-
-	/**
-	 * @param state
-	 * @param oldNameStr
-	 * @param oldNameFk
-	 * @return
-	 */
-	private TaxonName getName(BerlinModelImportState state, String oldNameStr, Integer oldNameFk, String oldNameFkFullCache, String oldNameFkCache,
+	private TaxonName getName(BerlinModelImportState state, String oldNameStr, Integer oldNameFk,
+	        String oldNameFkFullCache, String oldNameFkCache,
 	        Integer occSourceId, Distribution distribution) {
 		if (oldNameStr == null && oldNameFk == null){
 		    return null;

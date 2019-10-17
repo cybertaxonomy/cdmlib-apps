@@ -88,8 +88,8 @@ public class ErmsVernacularSourcesImport
 
 	@Override
 	public Map<Object, Map<String, ? extends CdmBase>> getRelatedObjectsForPartition(ResultSet rs, ErmsImportState state) {
-		String nameSpace;
-		Class<?> cdmClass;
+
+	    String nameSpace;
 		Set<String> idSet;
 		Map<Object, Map<String, ? extends CdmBase>> result = new HashMap<>();
 
@@ -103,18 +103,14 @@ public class ErmsVernacularSourcesImport
 
 			//vernacular map
 			nameSpace = ErmsImportBase.VERNACULAR_NAMESPACE;
-			cdmClass = CommonTaxonName.class;
 			idSet = vernacularIdSet;
-			@SuppressWarnings("unchecked")
-            Map<String, CommonTaxonName> vernacularMap = (Map<String, CommonTaxonName>)getCommonService().getSourcedObjectsByIdInSource(cdmClass, idSet, nameSpace);
+            Map<String, CommonTaxonName> vernacularMap = getCommonService().getSourcedObjectsByIdInSourceC(CommonTaxonName.class, idSet, nameSpace);
 			result.put(nameSpace, vernacularMap);
 
 			//reference map
 			nameSpace = ErmsImportBase.REFERENCE_NAMESPACE;
-			cdmClass = Reference.class;
 			idSet = sourceIdSet;
-			@SuppressWarnings("unchecked")
-            Map<String, Reference> referenceMap = (Map<String, Reference>)getCommonService().getSourcedObjectsByIdInSource(cdmClass, idSet, nameSpace);
+            Map<String, Reference> referenceMap = getCommonService().getSourcedObjectsByIdInSourceC(Reference.class, idSet, nameSpace);
 			result.put(nameSpace, referenceMap);
 
 		} catch (SQLException e) {

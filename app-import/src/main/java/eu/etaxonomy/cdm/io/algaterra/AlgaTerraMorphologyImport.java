@@ -56,8 +56,9 @@ import eu.etaxonomy.cdm.model.term.TermVocabulary;
  */
 @Component
 public class AlgaTerraMorphologyImport  extends AlgaTerraSpecimenImportBase {
-	private static final Logger logger = Logger.getLogger(AlgaTerraMorphologyImport.class);
 
+    private static final long serialVersionUID = 5978046406702163690L;
+    private static final Logger logger = Logger.getLogger(AlgaTerraMorphologyImport.class);
 
 	private static int modCount = 5000;
 	private static final String pluralString = "morpho facts";
@@ -245,8 +246,6 @@ public class AlgaTerraMorphologyImport  extends AlgaTerraSpecimenImportBase {
 	}
 
 
-
-
 	private void makeValveFeatures(AlgaTerraImportState state,
 			Map<String, Feature> featureMap2,
 			TermVocabulary<Feature> algaTerraMorphoFeatures2) {
@@ -258,7 +257,6 @@ public class AlgaTerraMorphologyImport  extends AlgaTerraSpecimenImportBase {
 		handleSingleValve(state, featureMap, algaTerraMorphoFeatures, baseName);
 
 	}
-
 
 	private void handleSingleValve(AlgaTerraImportState state,
 			Map<String, Feature> featureMap2,
@@ -307,11 +305,12 @@ public class AlgaTerraMorphologyImport  extends AlgaTerraSpecimenImportBase {
 
 
 	@Override
-	public boolean doPartition(ResultSetPartitioner partitioner, BerlinModelImportState bmState) {
+	public boolean doPartition(@SuppressWarnings("rawtypes") ResultSetPartitioner partitioner, BerlinModelImportState bmState) {
 		boolean success = true;
 
 		AlgaTerraImportState state = (AlgaTerraImportState)bmState;
-		Set<SpecimenOrObservationBase> objectsToSave = new HashSet<SpecimenOrObservationBase>();
+		@SuppressWarnings("rawtypes")
+        Set<SpecimenOrObservationBase> objectsToSave = new HashSet<>();
 
 		ResultSet rs = partitioner.getResultSet();
 
@@ -483,8 +482,6 @@ public class AlgaTerraMorphologyImport  extends AlgaTerraSpecimenImportBase {
 		return ECO_FACT_FIELD_OBSERVATION_NAMESPACE;
 	}
 
-
-
 	private void makeParameter(AlgaTerraImportState state, ResultSet rs, DescriptionBase<?> descriptionBase) throws SQLException {
 		for (int i = 1; i <= 10; i++){
 			String valueStr = rs.getString(String.format("P%dValue", i));
@@ -524,10 +521,7 @@ public class AlgaTerraMorphologyImport  extends AlgaTerraSpecimenImportBase {
 			}else if (isNotBlank(valueStr) || isNotBlank(unitStr) ){
 				logger.warn("There is value or unit without parameter: " + i);
 			}
-
-
 		}
-
 	}
 
 	private String normalizeAndModifyValue(AlgaTerraImportState state, String valueStr, Set<DefinedTerm> valueModifier) {
@@ -575,26 +569,24 @@ public class AlgaTerraMorphologyImport  extends AlgaTerraSpecimenImportBase {
 		}
 	}
 
-
 	@Override
 	public Map<Object, Map<String, ? extends CdmBase>> getRelatedObjectsForPartition(ResultSet rs, BerlinModelImportState state) {
-		String nameSpace;
-		Class<?> cdmClass;
+
+	    String nameSpace;
 		Set<String> idSet;
-		Map<Object, Map<String, ? extends CdmBase>> result = new HashMap<Object, Map<String, ? extends CdmBase>>();
+		Map<Object, Map<String, ? extends CdmBase>> result = new HashMap<>();
 
 		try{
-			Set<String> ecoFactFkSet = new HashSet<String>();
+			Set<String> ecoFactFkSet = new HashSet<>();
 
 			while (rs.next()){
 				handleForeignKey(rs, ecoFactFkSet, "ecoFactId");
 			}
 
 			//eco fact derived unit map
-			nameSpace = AlgaTerraFactEcologyImport.ECO_FACT_DERIVED_UNIT_NAMESPACE;
-			cdmClass = DerivedUnit.class;
+			nameSpace = AlgaTerraSpecimenImportBase.ECO_FACT_DERIVED_UNIT_NAMESPACE;
 			idSet = ecoFactFkSet;
-			Map<String, DerivedUnit> derivedUnitMap = (Map<String, DerivedUnit>)getCommonService().getSourcedObjectsByIdInSource(cdmClass, idSet, nameSpace);
+			Map<String, DerivedUnit> derivedUnitMap = getCommonService().getSourcedObjectsByIdInSourceC(DerivedUnit.class, idSet, nameSpace);
 			result.put(nameSpace, derivedUnitMap);
 
 		} catch (SQLException e) {

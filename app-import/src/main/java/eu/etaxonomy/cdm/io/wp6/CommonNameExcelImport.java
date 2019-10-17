@@ -154,7 +154,7 @@ public class CommonNameExcelImport
 		String reference = taxonLight.getReference();
 		Reference result = referenceStore.get(reference);
 		if (result == null){
-			result = (Reference)getCommonService().getSourcedObjectByIdInSource(Reference.class, reference, "import to Berlin Model");
+			result = getCommonService().getSourcedObjectByIdInSource(Reference.class, reference, "import to Berlin Model");
 			if (result == null){
 				logger.warn("Reference not found: " + reference + " for taxon " + taxonLight.getSpecies());
 //				result = ReferenceFactory.newGeneric();

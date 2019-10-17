@@ -48,6 +48,8 @@ import eu.etaxonomy.cdm.model.taxon.Synonym;
 import eu.etaxonomy.cdm.model.taxon.SynonymType;
 import eu.etaxonomy.cdm.model.taxon.Taxon;
 import eu.etaxonomy.cdm.model.taxon.TaxonBase;
+import eu.etaxonomy.cdm.model.taxon.TaxonNode;
+import eu.etaxonomy.cdm.model.taxon.TaxonRelationship;
 import eu.etaxonomy.cdm.model.taxon.TaxonRelationshipType;
 import eu.etaxonomy.cdm.strategy.exceptions.UnknownCdmTypeException;
 
@@ -103,22 +105,21 @@ public final class PesiTransformer extends ExportTransformerBase{
 	// References
 	private static int REF_ARTICLE_IN_PERIODICAL = 1;
 	private static int REF_PART_OF_OTHER = 2;
-	private static int REF_BOOK = 3;
-	private static int REF_DATABASE = 4;
+	public static int REF_BOOK = 3;
+	public static int REF_DATABASE = 4;
 	private static int REF_INFORMAL = 5;
 	private static int REF_NOT_APPLICABLE = 6;
 	private static int REF_WEBSITE = 7;
-	private static int REF_PUBLISHED = 8;
-	private static int REF_JOURNAL = 9;
+	public static int REF_PUBLISHED_CD = 8;
+	public static int REF_JOURNAL = 9;
 	public static int REF_UNRESOLVED = 10;
-	private static int REF_PUBLICATION = 11;
+	public static int REF_PUBLICATION = 11;
 	public static String REF_STR_UNRESOLVED = "unresolved";
 
+	private static int LANG_UNKNOWN = -99;
 	private static int LANG_VALENCIAN = 65;
 	private static int LANG_HIGH_ARAGONES = 66;
 	private static int LANG_MAJORCAN = 67;
-
-
 
 	// NameStatus
     public static UUID uuidNomStatusTemporaryName = UUID.fromString("aa6ada5a-ca21-4fef-b76f-9ae237e9c4ae");
@@ -153,14 +154,14 @@ public final class PesiTransformer extends ExportTransformerBase{
 	private static int NAME_ST_SPECIES_INQUIRENDA = 28;
 
 	// TaxonStatus
-	private static int T_STATUS_ACCEPTED = 1;
-	private static int T_STATUS_SYNONYM = 2;
-	private static int T_STATUS_PARTIAL_SYN = 3;
-	private static int T_STATUS_PRO_PARTE_SYN = 4;
+	public static int T_STATUS_ACCEPTED = 1;
+	public static int T_STATUS_SYNONYM = 2;
+	public static int T_STATUS_PARTIAL_SYN = 3;
+	public static int T_STATUS_PRO_PARTE_SYN = 4;
 	private static int T_STATUS_UNRESOLVED = 5;
 	private static int T_STATUS_ORPHANED = 6;
 	public static int T_STATUS_UNACCEPTED = 7;
-	private static int T_STATUS_NOT_ACCEPTED = 8;
+	private static int T_STATUS_NOT_ACCEPTED_VALUELESS = 8;
 
 	// TypeDesginationStatus //	 -> not a table anymore
 	private static int TYPE_BY_ORIGINAL_DESIGNATION = 1;
@@ -193,7 +194,7 @@ public final class PesiTransformer extends ExportTransformerBase{
 	private static int IS_BLOCKING_NAME_FOR = 20;
 	private static int IS_LECTOTYPE_OF = 61;
 	private static int TYPE_NOT_DESIGNATED = 62;
-	private static int IS_TAXONOMICALLY_INCLUDED_IN = 101;
+	public static int IS_TAXONOMICALLY_INCLUDED_IN = 101;
 	public static int IS_SYNONYM_OF = 102;
 	private static int IS_MISAPPLIED_NAME_FOR = 103;
 	private static int IS_PRO_PARTE_SYNONYM_OF = 104;
@@ -596,13 +597,13 @@ public final class PesiTransformer extends ExportTransformerBase{
 
 	// OccurrenceStatus
 	private static int STATUS_PRESENT = 1;
-	private static int STATUS_ABSENT = 2;
-	private static int STATUS_NATIVE = 3;
-	private static int STATUS_INTRODUCED = 4;
-	private static int STATUS_NATURALISED = 5;
+	public static int STATUS_ABSENT = 2;
+	public static int STATUS_NATIVE = 3;
+	public static int STATUS_INTRODUCED = 4;
+	public static int STATUS_NATURALISED = 5;
 	private static int STATUS_INVASIVE = 6;
-	private static int STATUS_MANAGED = 7;
-	private static int STATUS_DOUBTFUL = 8;
+	public static int STATUS_MANAGED = 7;
+	public static int STATUS_DOUBTFUL = 8;
 
 	private final Map<String, Integer> tdwgKeyMap = new HashMap<>();
 	private final Map<Integer, String> areaCacheMap = new HashMap<>();
@@ -994,7 +995,7 @@ public final class PesiTransformer extends ExportTransformerBase{
 			else if (namedArea.getUuid().equals(BerlinModelTransformer.uuidLt)) { return AREA_LITHUANIA; }
 			else if (namedArea.getUuid().equals(BerlinModelTransformer.uuidLu)) { return AREA_PORTUGUESE_MAINLAND; }
 			else if (namedArea.getUuid().equals(BerlinModelTransformer.uuidMa)) { return AREA_MOROCCO; }
-			else if (namedArea.getUuid().equals(BerlinModelTransformer.uuidMd)) { return AREA_MADEIRA; }
+			else if (namedArea.getUuid().equals(BerlinModelTransformer.uuidMd)) { return AREA_MADEIRA_ARCHIPELAGO; }
 			else if (namedArea.getUuid().equals(BerlinModelTransformer.uuidMd_D)) { return AREA_DESERTAS; }
 			else if (namedArea.getUuid().equals(BerlinModelTransformer.uuidMd_M)) { return AREA_MADEIRA; }
 			else if (namedArea.getUuid().equals(BerlinModelTransformer.uuidMd_P)) { return AREA_PORTO_SANTO; }
@@ -1326,7 +1327,9 @@ public final class PesiTransformer extends ExportTransformerBase{
 		}else if (language.getUuid().equals(BerlinModelTransformer.uuidLangValencian)){return LANG_VALENCIAN;
         }else if (language.getUuid().equals(BerlinModelTransformer.uuidLangHighAragonese)){return LANG_HIGH_ARAGONES;
         }else if (language.getUuid().equals(BerlinModelTransformer.uuidLangMajorcan)){return LANG_MAJORCAN;
-		} else {
+        //some common names from ILDIS have no defined language
+        }else if (language.equals(Language.UNKNOWN_LANGUAGE())){return LANG_UNKNOWN;
+        } else {
 			logger.warn("Unknown Language: " + language.getTitleCache());
 			return null;
 		}
@@ -1739,20 +1742,48 @@ public final class PesiTransformer extends ExportTransformerBase{
 		}
 		if (taxonBase.isInstanceOf(Taxon.class)){
 			Taxon taxon = CdmBase.deproxy(taxonBase, Taxon.class);
-			if (taxon.getTaxonNodes().size() == 0){
-				return T_STATUS_NOT_ACCEPTED;
-			}else{
-				return T_STATUS_ACCEPTED;
+			Set<TaxonRelationship> rels = taxon.getRelationsFromThisTaxon();
+			Set<TaxonNode> nodes = taxon.getTaxonNodes();
+			if (!rels.isEmpty() && !nodes.isEmpty()){
+			    logger.warn("Taxon has relations and parent. This is not expected in E+M, but maybe possible in ERMS. Check if taxon status is correct.");
+			}else if (rels.isEmpty() && nodes.isEmpty()){
+                logger.warn("Taxon has neither relations nor parent. This is not expected. Check if taxon status is correct.");
+            }
+			if (!rels.isEmpty()){
+			    //we expect all rels to have same type, maybe not true
+			    UUID relTypeUuid = rels.iterator().next().getType().getUuid();
+			    if (TaxonRelationshipType.proParteUuids().contains(relTypeUuid)){
+	                return T_STATUS_PRO_PARTE_SYN;
+	            }else if (TaxonRelationshipType.partialUuids().contains(relTypeUuid)){
+	                return T_STATUS_PARTIAL_SYN;
+	            }else if (TaxonRelationshipType.misappliedNameUuids().contains(relTypeUuid)){
+	                return T_STATUS_SYNONYM;  //no explicit MAN status exists in PESI
+	            }
 			}
+			if (!nodes.isEmpty()){
+			    TaxonNode parentNode = nodes.iterator().next().getParent();
+			    if (parentNode.getTaxon() != null && !parentNode.getTaxon().isPublish()){
+			        if (parentNode.getTaxon().getUuid().equals(uuidTaxonValuelessEuroMed) ){
+			            return T_STATUS_NOT_ACCEPTED_VALUELESS;
+			        }
+			    }else{
+			        return T_STATUS_ACCEPTED;
+			    }
+	        }
+			logger.error("Taxon status could not be defined. This should not happen: " + taxonBase.getTitleCache() );
+			return T_STATUS_UNRESOLVED;
 		}else if (taxonBase.isInstanceOf(Synonym.class)){
-			return T_STATUS_SYNONYM;
+			Synonym synonym = CdmBase.deproxy(taxonBase, Synonym.class);
+			if (taxonBase2statusFk(synonym.getAcceptedTaxon())== T_STATUS_NOT_ACCEPTED_VALUELESS ){
+			    return T_STATUS_NOT_ACCEPTED_VALUELESS;
+			}else{
+			    return T_STATUS_SYNONYM;
+			}
 		}else{
-			logger.warn("Unknown ");
+			logger.warn("Unresolved taxon status.");
 			return T_STATUS_UNRESOLVED;
 		}
 		//TODO
-//		public static int T_STATUS_PARTIAL_SYN = 3;
-//		public static int T_STATUS_PRO_PARTE_SYN = 4;
 //		public static int T_STATUS_UNRESOLVED = 5;
 //		public static int T_STATUS_ORPHANED = 6;
 	}
@@ -1809,9 +1840,9 @@ public final class PesiTransformer extends ExportTransformerBase{
 		} else if (reference.getType().equals(ReferenceType.Journal)) {
 			return REF_JOURNAL;
 		} else if (reference.getType().equals(ReferenceType.PrintSeries)) {
-			return REF_PUBLISHED;
+			return REF_PUBLICATION;  //?
 		} else if (reference.getType().equals(ReferenceType.Proceedings)) {
-			return REF_PUBLISHED;
+			return REF_PUBLICATION;  //?
 		} else if (reference.getType().equals(ReferenceType.Patent)) {
 			return REF_NOT_APPLICABLE;
 		} else if (reference.getType().equals(ReferenceType.PersonalCommunication)) {

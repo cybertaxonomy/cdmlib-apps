@@ -26,9 +26,6 @@ import java.util.regex.Pattern;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
-import org.joda.time.DateTime;
-import org.joda.time.format.DateTimeFormat;
-import org.joda.time.format.DateTimeFormatter;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.TransactionStatus;
 
@@ -37,7 +34,6 @@ import eu.etaxonomy.cdm.common.CdmUtils;
 import eu.etaxonomy.cdm.io.common.Source;
 import eu.etaxonomy.cdm.io.common.mapping.UndefinedTransformerMethodException;
 import eu.etaxonomy.cdm.io.common.mapping.out.DbConstantMapper;
-import eu.etaxonomy.cdm.io.common.mapping.out.DbExtensionMapper;
 import eu.etaxonomy.cdm.io.common.mapping.out.DbLastActionMapper;
 import eu.etaxonomy.cdm.io.common.mapping.out.DbObjectMapper;
 import eu.etaxonomy.cdm.io.common.mapping.out.DbStringMapper;
@@ -172,7 +168,7 @@ public class PesiTaxonExport extends PesiExportBase {
 			success &= doPhase01(state, mapping, additionalSourceMapping);
 
 			//"PHASE 1b: Handle names without taxa ...
-			success &= doNames(state, additionalSourceMapping);
+			success &= doPhase01b_Names(state, additionalSourceMapping);
 
 			// 2nd Round: Add ParentTaxonFk to each taxon
 			success &= doPhase02(state);
@@ -334,7 +330,8 @@ public class PesiTaxonExport extends PesiExportBase {
 		String infraGenericEpithet = taxonName.getInfraGenericEpithet();
 		Rank rank =  taxonName.getRank();
 
-		//as kingdomFk can not be defined in Phase 01 the below code was switched to use the CDM rank. This may be changed if we move validation to Phase03 or later
+		//as kingdomFk can not be defined in Phase 01 the below code was switched to use the CDM rank.
+		//This may be changed if we move validation to Phase03 or later
 //		Integer rankFk = getRankFk(taxonName, taxonName.getNameType());
 //		if (rankFk == null) {
 //			logger.error("Rank was not determined: " + taxon.getUuid() + " (" + taxon.getTitleCache() + ")");
@@ -345,11 +342,12 @@ public class PesiTaxonExport extends PesiExportBase {
 			// 2. Grandchilds of an accepted taxon of rank subgenus that are accepted taxa of rank subspecies have to have an infraGenericEpithet
 
 			int ancestorLevel = 0;
-			if (taxonName.getRank().equals(Rank.SUBSPECIES())) {
+			if (rank == null){
+			    logger.warn("PhaseOne validation: Taxon name has no rank: " + taxonName.getTitleCache());
+			}else if (rank.equals(Rank.SUBSPECIES())) {
 				// The accepted taxon two rank levels above should be of rank subgenus
 				ancestorLevel  = 2;
-			}
-			if (taxonName.getRank().equals(Rank.SPECIES())) {
+			}else if (rank.equals(Rank.SPECIES())) {
 				// The accepted taxon one rank level above should be of rank subgenus
 				ancestorLevel = 1;
 			}
@@ -363,19 +361,21 @@ public class PesiTaxonExport extends PesiExportBase {
 				}
 			}
 
-			if (infraGenericEpithet == null && rank.isInfraGenericButNotSpeciesGroup()) {
-				logger.warn("InfraGenericEpithet was not determined although it should exist for infra generic names: " + taxon.getUuid() + " (" + taxon.getTitleCache() + ")");
-			}
-			if (specificEpithet != null && (rank.isInfraGenericButNotSpeciesGroup()||rank.isGenus()||rank.isSupraGeneric())) {
-				logger.warn("SpecificEpithet was determined for rank " + rank.getTitleCache() + " although it should only exist for species aggregates, species or infraspecific taxa: TaxonName " + taxonName.getUuid() + " (" + taxonName.getTitleCache() + ")");
-			}
-			if (infraSpecificEpithet != null && !rank.isInfraSpecific()) {
-				String message = "InfraSpecificEpithet '" +infraSpecificEpithet + "' was determined for rank " + rank.getTitleCache() + " although it should only exist for rank species and higher: "  + taxonName.getUuid() + " (" + taxonName.getTitleCache() + ")";
-				if (StringUtils.isNotBlank(infraSpecificEpithet)){
-					logger.warn(message);
-				}else{
-					logger.warn(message);
-				}
+			if (rank != null){
+			    if (infraGenericEpithet == null && rank.isInfraGenericButNotSpeciesGroup()) {
+			        logger.warn("InfraGenericEpithet was not determined although it should exist for infra generic names: " + taxon.getUuid() + " (" + taxon.getTitleCache() + ")");
+			    }
+			    if (specificEpithet != null && (rank.isInfraGenericButNotSpeciesGroup()||rank.isGenus()||rank.isSupraGeneric())) {
+			        logger.warn("SpecificEpithet was determined for rank " + rank.getTitleCache() + " although it should only exist for species aggregates, species or infraspecific taxa: TaxonName " + taxonName.getUuid() + " (" + taxonName.getTitleCache() + ")");
+			    }
+			    if (infraSpecificEpithet != null && !rank.isInfraSpecific()) {
+			        String message = "InfraSpecificEpithet '" +infraSpecificEpithet + "' was determined for rank " + rank.getTitleCache() + " although it should only exist for rank species and higher: "  + taxonName.getUuid() + " (" + taxonName.getTitleCache() + ")";
+			        if (StringUtils.isNotBlank(infraSpecificEpithet)){
+			            logger.warn(message);
+			        }else{
+			            logger.warn(message);
+			        }
+			    }
 			}
 //		}
 		if (infraSpecificEpithet != null && specificEpithet == null) {
@@ -881,13 +881,12 @@ public class PesiTaxonExport extends PesiExportBase {
 		return inferredSynonymsDataToBeSaved;
 	}
 
-
 	/**
 	 * Handles names that do not appear in taxa
 	 * @param state
 	 * @param mapping
 	 */
-	private boolean doNames(PesiExportState state, PesiExportMapping additionalSourceMapping)  throws SQLException {
+	private boolean doPhase01b_Names(PesiExportState state, PesiExportMapping additionalSourceMapping) {
 
 		boolean success = true;
 		if (! state.getConfig().isDoPureNames()){
@@ -1399,7 +1398,7 @@ public class PesiTaxonExport extends PesiExportBase {
 			    //TODO define for FE + IF and for multiple sources
 			    result = cacheStrategy.getFullTitleCache(taxonName, tagRules);
 			}
-			return result.replaceAll(",?\\<@status@\\>.*\\</@status@\\>", "");
+			return result.replaceAll("(, ?)?\\<@status@\\>.*\\</@status@\\>", "").trim();
 		}
 	}
 
@@ -1599,14 +1598,15 @@ public class PesiTaxonExport extends PesiExportBase {
 		Integer result = null;
 
 		try {
-			if (isMisappliedName(taxon)) {
-				Synonym synonym = Synonym.NewInstance(null, null);
-
-				// This works as long as only the instance is important to differentiate between TaxonStatus.
-				result = PesiTransformer.taxonBase2statusFk(synonym); // Auct References are treated as Synonyms in Datawarehouse now.
-			} else {
+//			if (isMisappliedName(taxon)) {
+//				Synonym synonym = Synonym.NewInstance(null, null);
+//
+//				// This works as long as only the instance is important to differentiate between TaxonStatus.
+//				result = PesiTransformer.taxonBase2statusFk(synonym); // Auct References are treated as Synonyms in datawarehouse now.
+//			} else {
+		    //this should work now, the method itself distinguishes MAN etc.
 				result = PesiTransformer.taxonBase2statusFk(taxon);
-			}
+//			}
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -2019,58 +2019,10 @@ public class PesiTaxonExport extends PesiExportBase {
 	 * @return The <code>OriginalDB</code> attribute.
 	 * @see MethodMapper
 	 */
-	@SuppressWarnings("unused")
+//	@SuppressWarnings("unused")
 	private static String getOriginalDB(IdentifiableEntity<?> identifiableEntity) {
 		EnumSet<PesiSource> sources  = getSources(identifiableEntity);
 		return PesiTransformer.getOriginalDbBySources(sources);
-	}
-
-	/**
-	 * Returns the <code>LastAction</code> attribute.
-	 * @param taxonName The {@link TaxonNameBase TaxonName}.
-	 * @return The <code>LastAction</code> attribute.
-	 * @see MethodMapper
-	 */
-	//TODO still in use?
-	private static String getLastAction(IdentifiableEntity<?> identEntity) {
-		String result = null;
-		try {
-    		Set<Extension> extensions = identEntity.getExtensions();
-    		for (Extension extension : extensions) {
-    			if (extension.getType().equals(lastActionExtensionType)) {
-    				result = extension.getValue();
-    			}
-    		}
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-		return result;
-	}
-
-	/**
-	 * Returns the <code>LastActionDate</code> attribute.
-	 * @param taxonName The {@link TaxonNameBase TaxonName}.
-	 * @return The <code>LastActionDate</code> attribute.
-	 * @see MethodMapper
-	 */
-	//TODO still in use?
-	private static DateTime getLastActionDate(IdentifiableEntity<?> identEntity) {
-		DateTime result = null;
-		try {
-			Set<Extension> extensions = identEntity.getExtensions();
-			for (Extension extension : extensions) {
-				if (extension.getType().equals(lastActionDateExtensionType)) {
-					String dateTime = extension.getValue();
-					if (dateTime != null) {
-						DateTimeFormatter formatter = DateTimeFormat.forPattern("yyyy-MM-dd HH:mm:ss.S");
-						result = formatter.parseDateTime(dateTime);
-					}
-				}
-			}
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-		return result;
 	}
 
 	/**
@@ -2080,30 +2032,28 @@ public class PesiTaxonExport extends PesiExportBase {
 	 * @see MethodMapper
 	 */
 	@SuppressWarnings("unused")  //for some reason it is also called by getCacheCitation
-	private static String getExpertName(TaxonBase<?> taxonName) {
-	    String result = null;
+	private static String getExpertName(TaxonBase<?> taxon) {
 		try {
+		    String result = null;
     		if(expertNameExtensionType!=null){  //some databases do not have this extension type
-    		    Set<Extension> extensions = taxonName.getExtensions();
+    		    Set<Extension> extensions = taxon.getExtensions();
     		    for (Extension extension : extensions) {
     		        if (extension.getType().equals(expertNameExtensionType)) {
     		            result = extension.getValue();
     		        }
     		    }
     		}
+    		if (getPesiSources(taxon).contains(PesiSource.EM)){
+                return taxon.getSec().getTitleCache();
+            }
+            return null;
 		} catch (Exception e) {
 			e.printStackTrace();
+			return null;
 		}
-		return result;
 	}
 
-	/**
-	 * Returns the <code>ExpertFk</code> attribute.
-	 * @param taxonName The {@link TaxonNameBase TaxonName}.
-	 * @param state The {@link PesiExportState PesiExportState}.
-	 * @return The <code>ExpertFk</code> attribute.
-	 * @see MethodMapper
-	 */
+	//TODO change to ExpertGUID
 	private static Integer getExpertFk(Reference reference, PesiExportState state) {
 		Integer result = state.getDbId(reference);
 		return result;
@@ -2115,20 +2065,25 @@ public class PesiTaxonExport extends PesiExportBase {
 	 * @return The <code>SpeciesExpertName</code> attribute.
 	 * @see MethodMapper
 	 */
-	//TODO still in use?
-	private static String getSpeciesExpertName(TaxonBase<?> taxonName) {
-		String result = null;
+	@SuppressWarnings("unused")
+	private static String getSpeciesExpertName(TaxonBase<?> taxon) {
 		try {
-    		Set<Extension> extensions = taxonName.getExtensions();
-    		for (Extension extension : extensions) {
-    			if (extension.getType().equals(speciesExpertNameExtensionType)) {
-    				result = extension.getValue();
-    			}
+    		Set<Extension> extensions = taxon.getExtensions();
+    		if(speciesExpertNameExtensionType!=null){  //some databases do not have this extension type
+                for (Extension extension : extensions) {
+        			if (extension.getType().equals(speciesExpertNameExtensionType)) {
+        				return extension.getValue();
+        			}
+        		}
     		}
+    		if (getPesiSources(taxon).contains(PesiSource.EM)){
+    		    return taxon.getSec().getTitleCache();
+            }
+    		return null;
 		} catch (Exception e) {
 			e.printStackTrace();
+			return null;
 		}
-		return result;
 	}
 
 	/**
@@ -2138,6 +2093,7 @@ public class PesiTaxonExport extends PesiExportBase {
 	 * @return The <code>SpeciesExpertFk</code> attribute.
 	 * @see MethodMapper
 	 */
+	//TODO should be changed to SpeciesExpertGUID
 	private static Integer getSpeciesExpertFk(Reference reference, PesiExportState state) {
 		Integer result = state.getDbId(reference);
 		return result;
@@ -2219,10 +2175,11 @@ public class PesiTaxonExport extends PesiExportBase {
 		mapping.addMapper(DbLastActionMapper.NewInstance("LastAction", true));
 
 		//experts
-		ExtensionType extensionTypeSpeciesExpertName = (ExtensionType)getTermService().find(PesiTransformer.uuidExtSpeciesExpertName);
-		mapping.addMapper(DbExtensionMapper.NewInstance(extensionTypeSpeciesExpertName, "SpeciesExpertName"));
-		ExtensionType extensionTypeExpertName = (ExtensionType)getTermService().find(PesiTransformer.uuidExtExpertName);
-		mapping.addMapper(DbExtensionMapper.NewInstance(extensionTypeExpertName, "ExpertName"));
+//		mapping.addMapper(DbExtensionMapper.NewInstance(extensionTypeSpeciesExpertName, "SpeciesExpertName"));
+		mapping.addMapper(MethodMapper.NewInstance("SpeciesExpertName", this, TaxonBase.class));
+//		ExtensionType extensionTypeExpertName = (ExtensionType)getTermService().find(PesiTransformer.uuidExtExpertName);
+//		mapping.addMapper(DbExtensionMapper.NewInstance(extensionTypeExpertName, "ExpertName"));
+		mapping.addMapper(MethodMapper.NewInstance("ExpertName", this, TaxonBase.class));
 
 		//ParentTaxonFk handled in Phase02 now
 		mapping.addMapper(ObjectChangeMapper.NewInstance(TaxonBase.class, TaxonName.class, "Name"));
@@ -2259,8 +2216,6 @@ public class PesiTaxonExport extends PesiExportBase {
 		mapping.addMapper(DbLastActionMapper.NewInstance("LastAction", true));
 
 		addNameMappers(mapping);
-		//TODO add author mapper
-
 		return mapping;
 	}
 

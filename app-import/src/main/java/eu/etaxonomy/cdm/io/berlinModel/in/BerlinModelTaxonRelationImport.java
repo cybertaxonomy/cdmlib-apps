@@ -98,9 +98,8 @@ public class BerlinModelTaxonRelationImport  extends BerlinModelImportBase  {
 
 		//reference map
 		String nameSpace = BerlinModelReferenceImport.REFERENCE_NAMESPACE;
-		Class<?> cdmClass = Reference.class;
-		@SuppressWarnings("unchecked")
-        Map<String, Reference> refMap = (Map<String, Reference>)getCommonService().getSourcedObjectsByIdInSource(cdmClass, idSet, nameSpace);
+		Class<Reference> cdmClass = Reference.class;
+        Map<String, Reference> refMap = getCommonService().getSourcedObjectsByIdInSourceC(cdmClass, idSet, nameSpace);
 
 		String classificationName = "Classification - No Name";
 
@@ -243,12 +242,15 @@ public class BerlinModelTaxonRelationImport  extends BerlinModelImportBase  {
 	}
 
 	@Override
-	public boolean doPartition(ResultSetPartitioner partitioner, BerlinModelImportState state) {
+	public boolean doPartition(@SuppressWarnings("rawtypes") ResultSetPartitioner partitioner, BerlinModelImportState state) {
 		boolean success = true ;
-		Set<TaxonBase> taxaToSave = new HashSet<>();
-		Map<String, TaxonBase> taxonMap = partitioner.getObjectMap(BerlinModelTaxonImport.NAMESPACE);
+		@SuppressWarnings("rawtypes")
+        Set<TaxonBase> taxaToSave = new HashSet<>();
+		@SuppressWarnings({ "unchecked", "rawtypes" })
+        Map<String, TaxonBase> taxonMap = partitioner.getObjectMap(BerlinModelTaxonImport.NAMESPACE);
 		Map<Integer, Classification> classificationMap = new HashMap<>();
-		Map<String, Reference> refMap = partitioner.getObjectMap(BerlinModelReferenceImport.REFERENCE_NAMESPACE);
+		@SuppressWarnings("unchecked")
+        Map<String, Reference> refMap = partitioner.getObjectMap(BerlinModelReferenceImport.REFERENCE_NAMESPACE);
 
 		ResultSet rs = partitioner.getResultSet();
 
@@ -618,8 +620,8 @@ public class BerlinModelTaxonRelationImport  extends BerlinModelImportBase  {
 
 	@Override
 	public Map<Object, Map<String, ? extends CdmBase>> getRelatedObjectsForPartition(ResultSet rs, BerlinModelImportState state) {
-		String nameSpace;
-		Class<?> cdmClass;
+
+	    String nameSpace;
 		Set<String> idSet;
 		Map<Object, Map<String, ? extends CdmBase>> result = new HashMap<>();
 
@@ -636,25 +638,23 @@ public class BerlinModelTaxonRelationImport  extends BerlinModelImportBase  {
 
 			//taxon map
 			nameSpace = BerlinModelTaxonImport.NAMESPACE;
-			cdmClass = TaxonBase.class;
 			idSet = taxonIdSet;
-			Map<String, TaxonBase> taxonMap = (Map<String, TaxonBase>)getCommonService().getSourcedObjectsByIdInSource(cdmClass, idSet, nameSpace);
+			@SuppressWarnings("rawtypes")
+            Map<String, TaxonBase> taxonMap = getCommonService().getSourcedObjectsByIdInSourceC(TaxonBase.class, idSet, nameSpace);
 			result.put(nameSpace, taxonMap);
 
 //			//tree map
 //			nameSpace = "Classification";
-//			cdmClass = Classification.class;
 //			idSet = classificationIdSet;
-//			Map<String, Classification> treeMap = (Map<String, Classification>)getCommonService().getSourcedObjectsByIdInSource(cdmClass, idSet, nameSpace);
+//			Map<String, Classification> treeMap = getCommonService().getSourcedObjectsByIdInSourceC(Classification.class, idSet, nameSpace);
 //			result.put(cdmClass, treeMap);
 //			Set<UUID> treeUuidSet = state
 //			getClassificationService().find(uuidSet);
 //
 			//reference map
 			nameSpace = BerlinModelReferenceImport.REFERENCE_NAMESPACE;
-			cdmClass = Reference.class;
 			idSet = referenceIdSet;
-			Map<String, Reference> referenceMap = (Map<String, Reference>)getCommonService().getSourcedObjectsByIdInSource(cdmClass, idSet, nameSpace);
+			Map<String, Reference> referenceMap = getCommonService().getSourcedObjectsByIdInSourceC(Reference.class, idSet, nameSpace);
 			result.put(nameSpace, referenceMap);
 
 		} catch (SQLException e) {
@@ -666,13 +666,11 @@ public class BerlinModelTaxonRelationImport  extends BerlinModelImportBase  {
 
 	private Map<Object, Map<String, ? extends CdmBase>> getRelatedObjectsForFlatPartition( ResultSet rs) {
 		String nameSpace;
-		Class cdmClass;
 		Set<String> idSet;
 		Map<Object, Map<String, ? extends CdmBase>> result = new HashMap<>();
 
 		try{
 			Set<String> taxonIdSet = new HashSet<>();
-			Set<String> referenceIdSet = new HashSet<>();
 //			Set<String> classificationIdSet = new HashSet<>();
 			while (rs.next()){
 				handleForeignKey(rs, taxonIdSet, "RIdentifier");
@@ -681,9 +679,9 @@ public class BerlinModelTaxonRelationImport  extends BerlinModelImportBase  {
 
 			//taxon map
 			nameSpace = BerlinModelTaxonImport.NAMESPACE;
-			cdmClass = TaxonBase.class;
 			idSet = taxonIdSet;
-			Map<String, TaxonBase> taxonMap = (Map<String, TaxonBase>)getCommonService().getSourcedObjectsByIdInSource(cdmClass, idSet, nameSpace);
+			@SuppressWarnings("rawtypes")
+            Map<String, TaxonBase> taxonMap = getCommonService().getSourcedObjectsByIdInSourceC(TaxonBase.class, idSet, nameSpace);
 			result.put(nameSpace, taxonMap);
 
 //			//tree map
@@ -806,6 +804,4 @@ public class BerlinModelTaxonRelationImport  extends BerlinModelImportBase  {
 	protected boolean isIgnore(BerlinModelImportState state){
 		return ! state.getConfig().isDoRelTaxa();
 	}
-
-
 }

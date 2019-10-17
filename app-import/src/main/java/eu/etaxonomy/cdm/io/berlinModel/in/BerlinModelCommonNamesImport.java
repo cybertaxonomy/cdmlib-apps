@@ -612,6 +612,7 @@ public class BerlinModelCommonNamesImport  extends BerlinModelImportBase {
    private void fillRegionMap(BerlinModelImportState state, String sqlWhere,
             Map<String, NamedArea> emCodeToAreaMap) throws SQLException {
 
+        @SuppressWarnings("unchecked")
         OrderedTermVocabulary<NamedArea> voc = areaVoc = OrderedTermVocabulary.NewInstance(TermType.NamedArea, "Euro+Med common name areas", "E+M Common Name Areas", null, null);
         getVocabularyService().save(areaVoc);
 
@@ -827,8 +828,8 @@ public class BerlinModelCommonNamesImport  extends BerlinModelImportBase {
 
 	@Override
 	public Map<Object, Map<String, ? extends CdmBase>> getRelatedObjectsForPartition(ResultSet rs, BerlinModelImportState state) {
-		String nameSpace;
-		Class<?> cdmClass;
+
+	    String nameSpace;
 		Set<String> idSet;
 		Map<Object, Map<String, ? extends CdmBase>> result = new HashMap<>();
 
@@ -850,26 +851,22 @@ public class BerlinModelCommonNamesImport  extends BerlinModelImportBase {
 
 			//name map
 			nameSpace = BerlinModelTaxonNameImport.NAMESPACE;
-			cdmClass = TaxonName.class;
 			idSet = nameIdSet;
-			@SuppressWarnings("unchecked")
-            Map<String, TaxonName> nameMap = (Map<String, TaxonName>)getCommonService().getSourcedObjectsByIdInSource(cdmClass, idSet, nameSpace);
+			Map<String, TaxonName> nameMap = getCommonService().getSourcedObjectsByIdInSourceC(TaxonName.class, idSet, nameSpace);
 			result.put(nameSpace, nameMap);
 
 			//taxon map
 			nameSpace = BerlinModelTaxonImport.NAMESPACE;
-			cdmClass = TaxonBase.class;
 			idSet = taxonIdSet;
-			@SuppressWarnings("unchecked")
-            Map<String, TaxonBase<?>> taxonMap = (Map<String, TaxonBase<?>>)getCommonService().getSourcedObjectsByIdInSource(cdmClass, idSet, nameSpace);
+			@SuppressWarnings("rawtypes")
+            Map<String, TaxonBase> taxonMap = getCommonService().getSourcedObjectsByIdInSourceC(TaxonBase.class, idSet, nameSpace);
 			result.put(nameSpace, taxonMap);
 
 			//reference map
 			nameSpace = BerlinModelReferenceImport.REFERENCE_NAMESPACE;
-			cdmClass = Reference.class;
 			idSet = referenceIdSet;
 			@SuppressWarnings("unchecked")
-            Map<String, Reference> referenceMap = (Map<String, Reference>)getCommonService().getSourcedObjectsByIdInSource(cdmClass, idSet, nameSpace);
+            Map<String, Reference> referenceMap = getCommonService().getSourcedObjectsByIdInSourceC(Reference.class, idSet, nameSpace);
 			result.put(nameSpace, referenceMap);
 			// TODO remove if problem with duplicate DescElement_Annot id is solved
 		} catch (SQLException e) {

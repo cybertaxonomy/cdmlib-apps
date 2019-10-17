@@ -237,7 +237,7 @@ public class PesiSourceExport extends PesiExportBase {
                     }
                 }
             }
-		    return titleCache;
+		    return titleCache == null ? null : titleCache.trim();
 		} else {
 			return null;
 		}
@@ -425,6 +425,8 @@ public class PesiSourceExport extends PesiExportBase {
 		mapping.addMapper(DbDoiMapper.NewInstance("doi", "Doi"));
 
 		mapping.addMapper(MethodMapper.NewInstance("NomRefCache", this));
+		logger.warn("URI mapping needs to be combined");
+//		mapping.addMapper(DbUriMapper.NewInstance("uri", "Link"));
 		mapping.addMapper(DbExtensionMapper.NewInstance(ExtensionType.URL(), "Link"));
 		mapping.addMapper(DbAnnotationMapper.NewInstance((String)null, "Notes"));
 		mapping.addMapper(MethodMapper.NewInstance("RefIdInSource", this));

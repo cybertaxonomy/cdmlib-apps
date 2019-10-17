@@ -34,7 +34,8 @@ import eu.etaxonomy.cdm.model.taxon.TaxonBase;
  * @since 20.02.2010
  */
 @Component
-public class ErmsLinkImport  extends ErmsImportBase<TaxonBase> {
+public class ErmsLinkImport
+        extends ErmsImportBase<TaxonBase> {
 
     private static final long serialVersionUID = 1270264097223862441L;
     @SuppressWarnings("unused")
@@ -86,8 +87,8 @@ public class ErmsLinkImport  extends ErmsImportBase<TaxonBase> {
 
 	@Override
 	public Map<Object, Map<String, ? extends CdmBase>> getRelatedObjectsForPartition(ResultSet rs, ErmsImportState state) {
-		String nameSpace;
-		Class<?> cdmClass;
+
+	    String nameSpace;
 		Set<String> idSet;
 		Map<Object, Map<String, ? extends CdmBase>> result = new HashMap<>();
 
@@ -99,9 +100,9 @@ public class ErmsLinkImport  extends ErmsImportBase<TaxonBase> {
 
 			//taxon map
 			nameSpace = TAXON_NAMESPACE;
-			cdmClass = TaxonBase.class;
 			idSet = taxonIdSet;
-			Map<String, TaxonBase> taxonMap = (Map<String, TaxonBase>)getCommonService().getSourcedObjectsByIdInSource(cdmClass, idSet, nameSpace);
+			@SuppressWarnings("rawtypes")
+            Map<String, TaxonBase> taxonMap = getCommonService().getSourcedObjectsByIdInSourceC(TaxonBase.class, idSet, nameSpace);
 			result.put(nameSpace, taxonMap);
 
 		} catch (SQLException e) {

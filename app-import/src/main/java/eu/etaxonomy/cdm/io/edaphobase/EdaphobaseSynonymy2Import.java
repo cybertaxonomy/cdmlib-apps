@@ -41,6 +41,7 @@ import eu.etaxonomy.cdm.model.taxon.TaxonRelationshipType;
  */
 @Component
 public class EdaphobaseSynonymy2Import extends EdaphobaseImportBase {
+
     private static final long serialVersionUID = 8968205268798472136L;
     private static final Logger logger = Logger.getLogger(EdaphobaseSynonymy2Import.class);
 
@@ -83,10 +84,10 @@ public class EdaphobaseSynonymy2Import extends EdaphobaseImportBase {
         return result;
     }
 
-
     @Override
-    public boolean doPartition(ResultSetPartitioner partitioner, EdaphobaseImportState state) {
+    public boolean doPartition(@SuppressWarnings("rawtypes") ResultSetPartitioner partitioner, EdaphobaseImportState state) {
         ResultSet rs = partitioner.getResultSet();
+        @SuppressWarnings({ "unchecked" })
         Map<String, TaxonBase> map = partitioner.getObjectMap(TAXON_NAMESPACE);
         Reference sourceReference = state.getTransactionalSourceReference();
 
@@ -136,17 +137,10 @@ public class EdaphobaseSynonymy2Import extends EdaphobaseImportBase {
         return true;
     }
 
-    /**
-     * @param state
-     * @param taxaToSave
-     * @param id
-     * @param accId
-     * @param role
-     * @param synonymCandidate
-     */
-    private void handleConceptRelationship(EdaphobaseImportState state, Set<TaxonBase> taxaToSave, int id,
+    private void handleConceptRelationship(EdaphobaseImportState state, @SuppressWarnings("rawtypes") Set<TaxonBase> taxaToSave, int id,
                 Integer accId, Integer role, TaxonBase<?> fromTaxonBase) {
-           if (!role.equals(11613)){
+
+        if (!role.equals(11613)){
                String message = "Concept relation is not of type is included in ('11613'). This is not expected here. tax_synonym: " + id;
                logger.warn(message);
            }else{
@@ -167,15 +161,7 @@ public class EdaphobaseSynonymy2Import extends EdaphobaseImportBase {
            }
     }
 
-    /**
-     * @param state
-     * @param taxaToSave
-     * @param synId
-     * @param accId
-     * @param synonymCandidate
-     * @throws SQLException
-     */
-    private void handleSynonymToInvalid(EdaphobaseImportState state, ResultSet rs, Set<TaxonBase> taxaToSave, Integer synId,
+    private void handleSynonymToInvalid(EdaphobaseImportState state, ResultSet rs, @SuppressWarnings("rawtypes") Set<TaxonBase> taxaToSave, Integer synId,
             Integer accId, TaxonBase<?> synonymCandidate) throws SQLException {
         Synonym synonym = CdmBase.deproxy(synonymCandidate, Synonym.class);
         if (state.hasAcceptedTaxon(synId)){
@@ -212,8 +198,8 @@ public class EdaphobaseSynonymy2Import extends EdaphobaseImportBase {
     @Override
     public Map<Object, Map<String, ? extends CdmBase>> getRelatedObjectsForPartition(ResultSet rs,
             EdaphobaseImportState state) {
+
         String nameSpace;
-        Class<?> cdmClass;
         Set<String> idSet;
         Map<Object, Map<String, ? extends CdmBase>> result = new HashMap<>();
 
@@ -228,10 +214,9 @@ public class EdaphobaseSynonymy2Import extends EdaphobaseImportBase {
 
             //name map
             nameSpace = TAXON_NAMESPACE;
-            cdmClass = TaxonBase.class;
             idSet = taxonIdSet;
             @SuppressWarnings("rawtypes")
-            Map<String, TaxonBase> taxonMap = (Map<String, TaxonBase>)getCommonService().getSourcedObjectsByIdInSource(cdmClass, idSet, nameSpace);
+            Map<String, TaxonBase> taxonMap = getCommonService().getSourcedObjectsByIdInSourceC(TaxonBase.class, idSet, nameSpace);
             result.put(nameSpace, taxonMap);
 
         } catch (SQLException e) {
@@ -240,7 +225,6 @@ public class EdaphobaseSynonymy2Import extends EdaphobaseImportBase {
 
         return result;
     }
-
 
     @Override
     protected boolean doCheck(EdaphobaseImportState state) {
@@ -251,5 +235,4 @@ public class EdaphobaseSynonymy2Import extends EdaphobaseImportBase {
     protected boolean isIgnore(EdaphobaseImportState state) {
         return ! state.getConfig().isDoSynonyms();
     }
-
 }

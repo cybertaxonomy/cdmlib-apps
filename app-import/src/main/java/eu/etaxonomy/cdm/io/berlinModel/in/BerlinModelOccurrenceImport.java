@@ -342,7 +342,6 @@ public class BerlinModelOccurrenceImport  extends BerlinModelImportBase {
 	public Map<Object, Map<String, ? extends CdmBase>> getRelatedObjectsForPartition(ResultSet rs, BerlinModelImportState state) {
 
 		try{
-
 		    Map<Object, Map<String, ? extends CdmBase>> result = new HashMap<>();
 			Set<String> taxonIdSet = new HashSet<String>();
 			while (rs.next()){
@@ -351,10 +350,9 @@ public class BerlinModelOccurrenceImport  extends BerlinModelImportBase {
 
 			//taxon map
 			String nameSpace = BerlinModelTaxonImport.NAMESPACE;
-			Class<?> cdmClass = TaxonBase.class;
 			Set<String> idSet = taxonIdSet;
-			@SuppressWarnings("unchecked")
-            Map<String, ? extends CdmBase> objectMap = (Map<String, TaxonBase<?>>)getCommonService().getSourcedObjectsByIdInSource(cdmClass, idSet, nameSpace);
+            @SuppressWarnings("rawtypes")
+            Map<String, TaxonBase> objectMap = getCommonService().getSourcedObjectsByIdInSourceC(TaxonBase.class, idSet, nameSpace);
 			result.put(nameSpace, objectMap);
 
 			return result;
@@ -430,7 +428,6 @@ public class BerlinModelOccurrenceImport  extends BerlinModelImportBase {
 		return validator.validate(state);
 	}
 
-
 	@Override
 	protected boolean isIgnore(BerlinModelImportState state){
 		if (! state.getConfig().isDoOccurrence()){
@@ -444,5 +441,4 @@ public class BerlinModelOccurrenceImport  extends BerlinModelImportBase {
 			}
 		}
 	}
-
 }

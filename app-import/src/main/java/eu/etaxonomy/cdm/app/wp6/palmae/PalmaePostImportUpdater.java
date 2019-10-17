@@ -55,7 +55,8 @@ public class PalmaePostImportUpdater {
 
 			TransactionStatus tx = cdmApp.startTransaction();
 
-			TermTree<Feature> tree = cdmApp.getFeatureTreeService().find(featureTreeUuid);
+			@SuppressWarnings("unchecked")
+            TermTree<Feature> tree = cdmApp.getFeatureTreeService().find(featureTreeUuid);
 			TermNode<Feature> root = tree.getRoot();
 
 			List<Feature> featureList = cdmApp.getTermService().list(Feature.class, null, null, null, null);
@@ -96,16 +97,17 @@ public class PalmaePostImportUpdater {
 
 			int page = 0;
 			int count = cdmApp.getTaxonService().count(Taxon.class);
-			List<TaxonBase> taxonList = cdmApp.getTaxonService().list(TaxonBase.class, 100000, page, null, null);
+			@SuppressWarnings("rawtypes")
+            List<TaxonBase> taxonList = cdmApp.getTaxonService().list(TaxonBase.class, 100000, page, null, null);
 			int i = 0;
 
-			IReference treatmentReference = (IReference) cdmApp.getCommonService().getSourcedObjectByIdInSource(Reference.class, "palm_pub_ed_999999", "PublicationCitation");
+			IReference treatmentReference = cdmApp.getCommonService().getSourcedObjectByIdInSource(Reference.class, "palm_pub_ed_999999", "PublicationCitation");
 			if (treatmentReference == null){
 				logger.error("Treatment reference could not be found");
 				result = false;
 			}else{
-				for (TaxonBase nameUsage : taxonList){
-					if ((i++ % 100) == 0){System.out.println(i);};
+				for (TaxonBase<?> nameUsage : taxonList){
+					if ((i++ % 100) == 0){System.out.println(i);}
 
 					try {
 						//if not in treatment
@@ -128,7 +130,8 @@ public class PalmaePostImportUpdater {
 			}
 			//add citation feature to feature tree
 			UUID featureTreeUuid = PalmaeActivator.featureTreeUuid;
-			TermTree<Feature> tree = cdmApp.getFeatureTreeService().find(featureTreeUuid);
+			@SuppressWarnings("unchecked")
+            TermTree<Feature> tree = cdmApp.getFeatureTreeService().find(featureTreeUuid);
 			TermNode<Feature> root = tree.getRoot();
 			List<Feature> featureList = cdmApp.getTermService().list(Feature.class, null, null, null, null);
 			count = 0;
@@ -158,11 +161,12 @@ public class PalmaePostImportUpdater {
 	 * @param nameUsage
 	 * @return
 	 */
-	private Taxon getAcceptedTreatmentTaxon(TaxonBase nameUsage, IReference treatmentReference) {
+	private Taxon getAcceptedTreatmentTaxon(TaxonBase<?> nameUsage, IReference treatmentReference) {
 		boolean hasSynonymInTreatment = false;
 		TaxonName name = nameUsage.getName();
-		Set<TaxonBase> candidateList = name.getTaxonBases();
-		for (TaxonBase candidate : candidateList){
+		@SuppressWarnings("rawtypes")
+        Set<TaxonBase> candidateList = name.getTaxonBases();
+		for (TaxonBase<?> candidate : candidateList){
 			if (candidate instanceof Taxon){
 				if (isInTreatment(candidate, treatmentReference, false)){
 					return (Taxon)candidate;
@@ -188,12 +192,7 @@ public class PalmaePostImportUpdater {
 		return null;
 	}
 
-	/**
-	 * @param taxonBase
-	 * @param treatmentReference
-	 * @return
-	 */
-	private boolean isInTreatment(TaxonBase taxonBase, IReference treatmentReference, boolean silent) {
+	private boolean isInTreatment(TaxonBase<?> taxonBase, IReference treatmentReference, boolean silent) {
 		if (taxonBase.getSec().equals(treatmentReference)){
 			//treatment taxa
 			if (! silent){
@@ -241,11 +240,7 @@ public class PalmaePostImportUpdater {
 		}
 	}
 
-	/**
-	 * @param taxonCandidate
-	 * @param taxon
-	 */
-	private boolean addNameUsage(Taxon taxon, TaxonBase nameUsageTaxon) {
+	private boolean addNameUsage(Taxon taxon, TaxonBase<?> nameUsageTaxon) {
 		TaxonDescription myDescription = null;
 		for (TaxonDescription desc : taxon.getDescriptions()){
 			if (! desc.isImageGallery()){
@@ -264,10 +259,6 @@ public class PalmaePostImportUpdater {
 		return true;
 	}
 
-
-	/**
-	 * @param args
-	 */
 	public static void main(String[] args) {
 		PalmaePostImportUpdater updater = new PalmaePostImportUpdater();
 		try {

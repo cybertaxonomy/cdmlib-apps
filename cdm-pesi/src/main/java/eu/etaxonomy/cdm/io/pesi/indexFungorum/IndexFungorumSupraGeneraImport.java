@@ -25,22 +25,25 @@ import eu.etaxonomy.cdm.model.name.TaxonNameFactory;
 import eu.etaxonomy.cdm.model.reference.Reference;
 import eu.etaxonomy.cdm.model.taxon.Taxon;
 
-
 /**
  * @author a.mueller
  * @since 27.02.2012
  */
 @Component
 public class IndexFungorumSupraGeneraImport  extends IndexFungorumImportBase {
-	private static final Logger logger = Logger.getLogger(IndexFungorumSupraGeneraImport.class);
+
+    private static final long serialVersionUID = -8504227175493151403L;
+    private static final Logger logger = Logger.getLogger(IndexFungorumSupraGeneraImport.class);
 
 	private static final String pluralString = "Supragenera";
 	private static final String dbTableName = "tblSupragenericNames";
 
+	private static final String SUPRAGENERIC_NAMES = "Suprageneric names";
+	private static final String COL_RECORD_NUMBER = "RECORD NUMBER";
+
 	public IndexFungorumSupraGeneraImport(){
 		super(pluralString, dbTableName, null);
 	}
-
 
 	@Override
 	protected String getRecordQuery(IndexFungorumImportConfigurator config) {
@@ -52,11 +55,10 @@ public class IndexFungorumSupraGeneraImport  extends IndexFungorumImportBase {
 		return strRecordQuery;
 	}
 
-
 	@Override
 	protected void doInvoke(IndexFungorumImportState state) {
 
-
+	    logger.info("Start supra genera ...");
 		//handle source reference first
 		Reference sourceReference = state.getConfig().getSourceReference();
 		getReferenceService().save(sourceReference);
@@ -73,12 +75,11 @@ public class IndexFungorumSupraGeneraImport  extends IndexFungorumImportBase {
 		try {
 			while (rs.next()){
 
-				//TODO
-				//DisplayName, NomRefCache
+				//Don't use (created by Marc): DisplayName, NomRefCache
 
-				Double id = (Double)rs.getObject("RECORD NUMBER");
+				Integer id = ((Number)rs.getObject(COL_RECORD_NUMBER)).intValue();
 
-				String supragenericNames = rs.getString("Suprageneric names");
+				String supragenericNames = rs.getString(SUPRAGENERIC_NAMES);
 				//String preferredName = rs.getString("PreferredName");
 				Integer rankFk = rs.getInt("PESI_RankFk");
 
@@ -95,15 +96,13 @@ public class IndexFungorumSupraGeneraImport  extends IndexFungorumImportBase {
 				//author + nom.ref.
 				makeAuthorAndPublication(state, rs, name);
 				//source
-				if (id != null){
+//				if (id != null){
 					makeSource(state, taxon, id.intValue(), NAMESPACE_SUPRAGENERIC_NAMES );
-				} else{
-					makeSource(state, taxon, null,NAMESPACE_SUPRAGENERIC_NAMES);
-				}
+//				} else{
+//					makeSource(state, taxon, null, NAMESPACE_SUPRAGENERIC_NAMES);
+//				}
 				getTaxonService().saveOrUpdate(taxon);
 			}
-
-
 		} catch (Exception e) {
 			e.printStackTrace();
 			logger.error(e.getMessage());
@@ -111,10 +110,9 @@ public class IndexFungorumSupraGeneraImport  extends IndexFungorumImportBase {
 			state.setSuccess(false);
 		}
 		commitTransaction(tx);
+	    logger.info("End supra genera ...");
 		return;
-
 	}
-
 
 	private Taxon makeTaxon(IndexFungorumImportState state, String uninomial, Rank rank) {
 	    TaxonName name = TaxonNameFactory.NewBotanicalInstance(rank);
@@ -122,14 +120,13 @@ public class IndexFungorumSupraGeneraImport  extends IndexFungorumImportBase {
 		return Taxon.NewInstance(name, state.getConfig().getSourceReference());
 	}
 
-
 	@Override
 	public Map<Object, Map<String, ? extends CdmBase>> getRelatedObjectsForPartition(ResultSet rs, IndexFungorumImportState state) {
-		HashMap<Object, Map<String, ? extends CdmBase>> result = new HashMap<Object, Map<String,? extends CdmBase>>();  //not needed here
+		HashMap<Object, Map<String, ? extends CdmBase>> result = new HashMap<>();  //not needed here
 
 		//sourceReference
 		Reference sourceReference = getReferenceService().find(PesiTransformer.uuidSourceRefIndexFungorum);
-		Map<String, Reference> referenceMap = new HashMap<String, Reference>();
+		Map<String, Reference> referenceMap = new HashMap<>();
 		referenceMap.put(SOURCE_REFERENCE, sourceReference);
 		result.put(NAMESPACE_REFERENCE, referenceMap);
 
@@ -145,9 +142,4 @@ public class IndexFungorumSupraGeneraImport  extends IndexFungorumImportBase {
 	protected boolean isIgnore(IndexFungorumImportState state){
 		return ! state.getConfig().isDoTaxa();
 	}
-
-
-
-
-
 }

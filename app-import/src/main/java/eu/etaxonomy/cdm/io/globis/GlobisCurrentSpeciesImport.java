@@ -41,14 +41,15 @@ import eu.etaxonomy.cdm.model.taxon.Taxon;
 import eu.etaxonomy.cdm.model.taxon.TaxonBase;
 import eu.etaxonomy.cdm.model.taxon.TaxonNode;
 
-
 /**
  * @author a.mueller
  * @since 20.02.2010
  */
 @Component
 public class GlobisCurrentSpeciesImport  extends GlobisImportBase<Taxon> {
-	private static final Logger logger = Logger.getLogger(GlobisCurrentSpeciesImport.class);
+
+    private static final long serialVersionUID = -4392659482520384118L;
+    private static final Logger logger = Logger.getLogger(GlobisCurrentSpeciesImport.class);
 
 	private int modCount = 10000;
 	private static final String pluralString = "current taxa";
@@ -78,11 +79,13 @@ public class GlobisCurrentSpeciesImport  extends GlobisImportBase<Taxon> {
 	}
 
 	@Override
-	public boolean doPartition(ResultSetPartitioner partitioner, GlobisImportState state) {
+	public boolean doPartition(@SuppressWarnings("rawtypes") ResultSetPartitioner partitioner, GlobisImportState state) {
 		boolean success = true;
 
-		Set<TaxonBase> objectsToSave = new HashSet<TaxonBase>();
-		Map<String, Taxon> taxonMap = partitioner.getObjectMap(TAXON_NAMESPACE);
+		@SuppressWarnings("rawtypes")
+        Set<TaxonBase> objectsToSave = new HashSet<>();
+		@SuppressWarnings("unchecked")
+        Map<String, Taxon> taxonMap = partitioner.getObjectMap(TAXON_NAMESPACE);
 		ResultSet rs = partitioner.getResultSet();
 
 		Classification classification = getClassification(state);
@@ -230,8 +233,6 @@ public class GlobisCurrentSpeciesImport  extends GlobisImportBase<Taxon> {
 				countryStr = countryStr.substring(1).trim();
 			}
 
-
-
 			countryStr = normalizeCountry(countryStr);
 
 			NamedArea country = getCountry(state, countryStr);
@@ -255,12 +256,6 @@ public class GlobisCurrentSpeciesImport  extends GlobisImportBase<Taxon> {
 		}
 	}
 
-
-
-	/**
-	 * @param countryStr
-	 * @return
-	 */
 	private String normalizeCountry(String countryStr) {
 		String result = countryStr.trim();
 		if (result.endsWith(".")){
@@ -294,9 +289,6 @@ public class GlobisCurrentSpeciesImport  extends GlobisImportBase<Taxon> {
 //		}
 	}
 
-
-
-
 	/**
 	 * Compares 2 taxa, returns true of both taxa look similar
 	 * @param genus
@@ -315,9 +307,6 @@ public class GlobisCurrentSpeciesImport  extends GlobisImportBase<Taxon> {
 		return true;
 	}
 
-
-
-
 	private Taxon getParent(Taxon child, Classification classification) {
 		if (child == null){
 			logger.warn("Child is null");
@@ -334,9 +323,6 @@ public class GlobisCurrentSpeciesImport  extends GlobisImportBase<Taxon> {
 		}
 		return null;
 	}
-
-
-
 
 	private Taxon getTaxon(GlobisImportState state, ResultSet rs, String uninomial, String infraGenericEpi, Rank rank, String author, Map<String, Taxon> taxonMap, Integer taxonId) {
 		if (isBlank(uninomial)){
@@ -379,9 +365,6 @@ public class GlobisCurrentSpeciesImport  extends GlobisImportBase<Taxon> {
 
 	}
 
-	/* (non-Javadoc)
-	 * @see eu.etaxonomy.cdm.io.common.mapping.IMappingImport#createObject(java.sql.ResultSet, eu.etaxonomy.cdm.io.common.ImportStateBase)
-	 */
 	public Taxon createObject(ResultSet rs, GlobisImportState state, Integer taxonId)
 			throws SQLException {
 		String speciesEpi = rs.getString("dtSpcSpcakt");
@@ -403,17 +386,14 @@ public class GlobisCurrentSpeciesImport  extends GlobisImportBase<Taxon> {
 		return taxon;
 	}
 
-
-
-
 	@Override
 	public Map<Object, Map<String, ? extends CdmBase>> getRelatedObjectsForPartition(ResultSet rs, GlobisImportState state) {
-		String nameSpace;
-		Class cdmClass;
+
+	    String nameSpace;
 		Set<String> idSet;
-		Map<Object, Map<String, ? extends CdmBase>> result = new HashMap<Object, Map<String, ? extends CdmBase>>();
+		Map<Object, Map<String, ? extends CdmBase>> result = new HashMap<>();
 		try{
-			Set<String> taxonIdSet = new HashSet<String>();
+			Set<String> taxonIdSet = new HashSet<>();
 
 			while (rs.next()){
 //				handleForeignKey(rs, taxonIdSet, "taxonId");
@@ -421,9 +401,8 @@ public class GlobisCurrentSpeciesImport  extends GlobisImportBase<Taxon> {
 
 			//taxon map
 			nameSpace = TAXON_NAMESPACE;
-			cdmClass = Taxon.class;
 			idSet = taxonIdSet;
-			Map<String, Taxon> objectMap = (Map<String, Taxon>)getCommonService().getSourcedObjectsByIdInSource(cdmClass, idSet, nameSpace);
+			Map<String, Taxon> objectMap = getCommonService().getSourcedObjectsByIdInSourceC(Taxon.class, idSet, nameSpace);
 			result.put(nameSpace, objectMap);
 
 
@@ -433,19 +412,12 @@ public class GlobisCurrentSpeciesImport  extends GlobisImportBase<Taxon> {
 		return result;
 	}
 
-	/* (non-Javadoc)
-	 * @see eu.etaxonomy.cdm.io.common.CdmIoBase#doCheck(eu.etaxonomy.cdm.io.common.IImportConfigurator)
-	 */
 	@Override
 	protected boolean doCheck(GlobisImportState state){
 		IOValidator<GlobisImportState> validator = new GlobisCurrentSpeciesImportValidator();
 		return validator.validate(state);
 	}
 
-
-	/* (non-Javadoc)
-	 * @see eu.etaxonomy.cdm.io.common.CdmIoBase#isIgnore(eu.etaxonomy.cdm.io.common.IImportConfigurator)
-	 */
 	@Override
     protected boolean isIgnore(GlobisImportState state){
 		return ! state.getConfig().isDoCurrentTaxa();

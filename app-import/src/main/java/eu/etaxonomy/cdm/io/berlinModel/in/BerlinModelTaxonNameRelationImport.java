@@ -43,7 +43,6 @@ import eu.etaxonomy.cdm.io.berlinModel.BerlinModelTransformer;
 import eu.etaxonomy.cdm.io.berlinModel.in.validation.BerlinModelTaxonNameRelationImportValidator;
 import eu.etaxonomy.cdm.io.common.IOValidator;
 import eu.etaxonomy.cdm.io.common.ResultSetPartitioner;
-import eu.etaxonomy.cdm.model.agent.Person;
 import eu.etaxonomy.cdm.model.common.AnnotatableEntity;
 import eu.etaxonomy.cdm.model.common.Annotation;
 import eu.etaxonomy.cdm.model.common.AnnotationType;
@@ -309,8 +308,8 @@ public class BerlinModelTaxonNameRelationImport extends BerlinModelImportBase {
 
 	@Override
 	public Map<Object, Map<String, ? extends CdmBase>> getRelatedObjectsForPartition(ResultSet rs, BerlinModelImportState state) {
-		String nameSpace;
-		Class<?> cdmClass;
+
+	    String nameSpace;
 		Set<String> idSet;
 		Map<Object, Map<String, ? extends CdmBase>> result = new HashMap<>();
 
@@ -327,23 +326,20 @@ public class BerlinModelTaxonNameRelationImport extends BerlinModelImportBase {
 
 			//name map
 			nameSpace = BerlinModelTaxonNameImport.NAMESPACE;
-			cdmClass = TaxonName.class;
 			idSet = nameIdSet;
-			Map<String, Person> objectMap = (Map<String, Person>)getCommonService().getSourcedObjectsByIdInSource(cdmClass, idSet, nameSpace);
+			Map<String, TaxonName> objectMap = getCommonService().getSourcedObjectsByIdInSourceC(TaxonName.class, idSet, nameSpace);
 			result.put(nameSpace, objectMap);
 
 			//reference map
 			nameSpace = BerlinModelReferenceImport.REFERENCE_NAMESPACE;
-			cdmClass = Reference.class;
 			idSet = referenceIdSet;
-			Map<String, Reference> referenceMap = (Map<String, Reference>)getCommonService().getSourcedObjectsByIdInSource(cdmClass, idSet, nameSpace);
+			Map<String, Reference> referenceMap = getCommonService().getSourcedObjectsByIdInSourceC(Reference.class, idSet, nameSpace);
 			result.put(nameSpace, referenceMap);
 
 			//refDetail map
 			nameSpace = BerlinModelRefDetailImport.REFDETAIL_NAMESPACE;
-			cdmClass = Reference.class;
 			idSet = refDetailIdSet;
-			Map<String, Reference> refDetailMap= (Map<String, Reference>)getCommonService().getSourcedObjectsByIdInSource(cdmClass, idSet, nameSpace);
+			Map<String, Reference> refDetailMap= getCommonService().getSourcedObjectsByIdInSourceC(Reference.class, idSet, nameSpace);
 			result.put(nameSpace, refDetailMap);
 
 		} catch (SQLException e) {
@@ -362,6 +358,4 @@ public class BerlinModelTaxonNameRelationImport extends BerlinModelImportBase {
     protected boolean isIgnore(BerlinModelImportState state){
 		return ! state.getConfig().isDoRelNames();
 		}
-
-
 }

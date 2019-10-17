@@ -162,13 +162,13 @@ public class AlgaTerraTypeImagesImport  extends AlgaTerraImageImportBase {
 
 	@Override
 	public Map<Object, Map<String, ? extends CdmBase>> getRelatedObjectsForPartition(ResultSet rs, BerlinModelImportState state) {
-		String nameSpace;
-		Class<?> cdmClass;
+
+	    String nameSpace;
 		Set<String> idSet;
-		Map<Object, Map<String, ? extends CdmBase>> result = new HashMap<Object, Map<String, ? extends CdmBase>>();
+		Map<Object, Map<String, ? extends CdmBase>> result = new HashMap<>();
 
 		try{
-			Set<String> typeSpecimenIdSet = new HashSet<String>();
+			Set<String> typeSpecimenIdSet = new HashSet<>();
 
 			while (rs.next()){
 				handleForeignKey(rs, typeSpecimenIdSet, "TypeSpecimenFk");
@@ -176,9 +176,8 @@ public class AlgaTerraTypeImagesImport  extends AlgaTerraImageImportBase {
 
 			//type specimen map
 			nameSpace = AlgaTerraSpecimenImportBase.TYPE_SPECIMEN_DERIVED_UNIT_NAMESPACE;
-			cdmClass = SpecimenOrObservationBase.class;
 			idSet = typeSpecimenIdSet;
-			Map<String, DerivedUnit> typeSpecimenMap = (Map<String, DerivedUnit>)getCommonService().getSourcedObjectsByIdInSource(cdmClass, idSet, nameSpace);
+			Map<String, DerivedUnit> typeSpecimenMap = getCommonService().getSourcedObjectsByIdInSourceC(DerivedUnit.class, idSet, nameSpace);
 			result.put(nameSpace, typeSpecimenMap);
 
 

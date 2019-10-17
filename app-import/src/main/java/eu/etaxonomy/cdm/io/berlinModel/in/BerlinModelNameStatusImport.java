@@ -26,7 +26,6 @@ import eu.etaxonomy.cdm.io.common.IImportConfigurator;
 import eu.etaxonomy.cdm.io.common.IOValidator;
 import eu.etaxonomy.cdm.io.common.ImportHelper;
 import eu.etaxonomy.cdm.io.common.ResultSetPartitioner;
-import eu.etaxonomy.cdm.model.agent.Person;
 import eu.etaxonomy.cdm.model.common.CdmBase;
 import eu.etaxonomy.cdm.model.common.Marker;
 import eu.etaxonomy.cdm.model.common.MarkerType;
@@ -43,7 +42,6 @@ import eu.etaxonomy.cdm.strategy.exceptions.UnknownCdmTypeException;
 public class BerlinModelNameStatusImport extends BerlinModelImportBase {
 
     private static final long serialVersionUID = 6984893930082868489L;
-
     private static final Logger logger = Logger.getLogger(BerlinModelNameStatusImport.class);
 
 	private int modCount = 5000;
@@ -55,11 +53,6 @@ public class BerlinModelNameStatusImport extends BerlinModelImportBase {
 		super(dbTableName, pluralString);
 	}
 
-
-
-	/* (non-Javadoc)
-	 * @see eu.etaxonomy.cdm.io.berlinModel.in.BerlinModelImportBase#getIdQuery()
-	 */
 	@Override
 	protected String getIdQuery(BerlinModelImportState state) {
 		String result =  " SELECT RIdentifier FROM " + getTableName();
@@ -70,11 +63,6 @@ public class BerlinModelNameStatusImport extends BerlinModelImportBase {
 		return result;
 	}
 
-
-
-	/* (non-Javadoc)
-	 * @see eu.etaxonomy.cdm.io.berlinModel.in.BerlinModelImportBase#getRecordQuery(eu.etaxonomy.cdm.io.berlinModel.in.BerlinModelImportConfigurator)
-	 */
 	@Override
 	protected String getRecordQuery(BerlinModelImportConfigurator config) {
 		String strQuery =
@@ -88,14 +76,15 @@ public class BerlinModelNameStatusImport extends BerlinModelImportBase {
 	}
 
 	@Override
-    public boolean doPartition(ResultSetPartitioner partitioner,BerlinModelImportState state) {
+    public boolean doPartition(@SuppressWarnings("rawtypes") ResultSetPartitioner partitioner,BerlinModelImportState state) {
 		boolean success = true;
 		String dbAttrName;
 		String cdmAttrName;
 
 		Set<TaxonName> namesToSave = new HashSet<>();
 		BerlinModelImportConfigurator config = state.getConfig();
-		Map<String, TaxonName> nameMap = partitioner.getObjectMap(BerlinModelTaxonNameImport.NAMESPACE);
+		@SuppressWarnings("unchecked")
+        Map<String, TaxonName> nameMap = partitioner.getObjectMap(BerlinModelTaxonNameImport.NAMESPACE);
 
 		ResultSet rs = partitioner.getResultSet();
 		try {
@@ -182,15 +171,15 @@ public class BerlinModelNameStatusImport extends BerlinModelImportBase {
 
 	@Override
 	public Map<Object, Map<String, ? extends CdmBase>> getRelatedObjectsForPartition(ResultSet rs, BerlinModelImportState state) {
-		String nameSpace;
-		Class<?> cdmClass;
+
+	    String nameSpace;
 		Set<String> idSet;
-		Map<Object, Map<String, ? extends CdmBase>> result = new HashMap<Object, Map<String, ? extends CdmBase>>();
+		Map<Object, Map<String, ? extends CdmBase>> result = new HashMap<>();
 
 		try{
-			Set<String> nameIdSet = new HashSet<String>();
-			Set<String> referenceIdSet = new HashSet<String>();
-			Set<String> refDetailIdSet = new HashSet<String>();
+			Set<String> nameIdSet = new HashSet<>();
+			Set<String> referenceIdSet = new HashSet<>();
+			Set<String> refDetailIdSet = new HashSet<>();
 			while (rs.next()){
 				handleForeignKey(rs, nameIdSet, "nameFk");
 				handleForeignKey(rs, referenceIdSet, "NomStatusRefFk");
@@ -199,23 +188,20 @@ public class BerlinModelNameStatusImport extends BerlinModelImportBase {
 
 			//name map
 			nameSpace = BerlinModelTaxonNameImport.NAMESPACE;
-			cdmClass = TaxonName.class;
 			idSet = nameIdSet;
-			Map<String, Person> nameMap = (Map<String, Person>)getCommonService().getSourcedObjectsByIdInSource(cdmClass, idSet, nameSpace);
+			Map<String, TaxonName> nameMap = getCommonService().getSourcedObjectsByIdInSourceC(TaxonName.class, idSet, nameSpace);
 			result.put(nameSpace, nameMap);
 
 			//reference map
 			nameSpace = BerlinModelReferenceImport.REFERENCE_NAMESPACE;
-			cdmClass = Reference.class;
 			idSet = referenceIdSet;
-			Map<String, Reference> referenceMap = (Map<String, Reference>)getCommonService().getSourcedObjectsByIdInSource(cdmClass, idSet, nameSpace);
+			Map<String, Reference> referenceMap = getCommonService().getSourcedObjectsByIdInSourceC(Reference.class, idSet, nameSpace);
 			result.put(nameSpace, referenceMap);
 
 			//refDetail map
 			nameSpace = BerlinModelRefDetailImport.REFDETAIL_NAMESPACE;
-			cdmClass = Reference.class;
 			idSet = refDetailIdSet;
-			Map<String, Reference> refDetailMap= (Map<String, Reference>)getCommonService().getSourcedObjectsByIdInSource(cdmClass, idSet, nameSpace);
+			Map<String, Reference> refDetailMap= getCommonService().getSourcedObjectsByIdInSourceC(Reference.class, idSet, nameSpace);
 			result.put(nameSpace, refDetailMap);
 
 		} catch (SQLException e) {
@@ -225,11 +211,13 @@ public class BerlinModelNameStatusImport extends BerlinModelImportBase {
 	}
 
 	private boolean makeReference(IImportConfigurator config, NomenclaturalStatus nomStatus,
-			int nameId, ResultSet rs, ResultSetPartitioner partitioner)
+			int nameId, ResultSet rs, @SuppressWarnings("rawtypes") ResultSetPartitioner partitioner)
 			throws SQLException{
 
-		Map<String, Reference> refMap = partitioner.getObjectMap(BerlinModelReferenceImport.REFERENCE_NAMESPACE);
-		Map<String, Reference> refDetailMap = partitioner.getObjectMap(BerlinModelRefDetailImport.REFDETAIL_NAMESPACE);
+		@SuppressWarnings("unchecked")
+        Map<String, Reference> refMap = partitioner.getObjectMap(BerlinModelReferenceImport.REFERENCE_NAMESPACE);
+		@SuppressWarnings("unchecked")
+        Map<String, Reference> refDetailMap = partitioner.getObjectMap(BerlinModelRefDetailImport.REFDETAIL_NAMESPACE);
 
 		Object nomRefFkObj = rs.getObject("NomStatusRefFk");
 		Object nomRefDetailFkObj = rs.getObject("NomStatusRefDetailFk");
@@ -257,23 +245,14 @@ public class BerlinModelNameStatusImport extends BerlinModelImportBase {
 		return success;
 	}
 
-	/* (non-Javadoc)
-	 * @see eu.etaxonomy.cdm.io.common.CdmIoBase#doCheck(eu.etaxonomy.cdm.io.common.IoStateBase)
-	 */
 	@Override
 	protected boolean doCheck(BerlinModelImportState state){
 		IOValidator<BerlinModelImportState> validator = new BerlinModelNameStatusImportValidator();
 		return validator.validate(state);
 	}
 
-
-	/* (non-Javadoc)
-	 * @see eu.etaxonomy.cdm.io.common.CdmIoBase#isIgnore(eu.etaxonomy.cdm.io.common.IImportConfigurator)
-	 */
 	@Override
     protected boolean isIgnore(BerlinModelImportState state){
 		return ! state.getConfig().isDoNameStatus();
 	}
-
-
 }

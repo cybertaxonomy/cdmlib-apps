@@ -352,11 +352,6 @@ public class BerlinModelAuthorTeamImport extends BerlinModelImportBase {
         }
     }
 
-
-    /**
-     * @param member
-     * @return
-     */
     private Person deduplicatePerson(BerlinModelImportState state, Person person) {
         Person result = deduplicationHelper.getExistingAuthor(state, person);
         return result;
@@ -367,11 +362,6 @@ public class BerlinModelAuthorTeamImport extends BerlinModelImportBase {
         return result;
     }
 
-
-    /**
-     * @param member
-     * @return
-     */
     protected static boolean isEtAl(Person member) {
         if (member != null && isEtAl(member.getTitleCache()) && isEtAl(member.getNomenclaturalTitle())){
             return true;
@@ -408,9 +398,6 @@ public class BerlinModelAuthorTeamImport extends BerlinModelImportBase {
         return person;
     }
 
-    /**
-     * @param person
-     */
     private void parsePerson(Person person, String str, boolean preliminary) {
         String capWord = "\\p{javaUpperCase}\\p{javaLowerCase}{2,}";
         String famStart = "(Le |D'|'t |Mc|Mac|Des |d'|Du |De )";
@@ -471,15 +458,14 @@ public class BerlinModelAuthorTeamImport extends BerlinModelImportBase {
 
     @Override
 	public Map<Object, Map<String, ? extends CdmBase>> getRelatedObjectsForPartition(ResultSet rs, BerlinModelImportState state)  {
-		String nameSpace;
-		Class<?> cdmClass;
-		Map<Object, Map<String, ? extends CdmBase>> result = new HashMap<Object, Map<String, ? extends CdmBase>>();
+
+        String nameSpace;
+		Map<Object, Map<String, ? extends CdmBase>> result = new HashMap<>();
 
 		//person map
 		Set<String> idInSourceList = makeAuthorIdList(rs);
 		nameSpace = BerlinModelAuthorImport.NAMESPACE;
-		cdmClass = Person.class;
-		Map<String, Person> personMap = (Map<String, Person>)getCommonService().getSourcedObjectsByIdInSource(cdmClass, idInSourceList, nameSpace);
+		Map<String, Person> personMap = getCommonService().getSourcedObjectsByIdInSourceC(Person.class, idInSourceList, nameSpace);
 		result.put(nameSpace, personMap);
 
 		return result;
@@ -564,19 +550,14 @@ public class BerlinModelAuthorTeamImport extends BerlinModelImportBase {
 		}
 	}
 
-
 	@Override
 	protected boolean doCheck(BerlinModelImportState state){
 		IOValidator<BerlinModelImportState> validator = new BerlinModelAuthorTeamImportValidator();
 		return validator.validate(state);
 	}
 
-
 	@Override
     protected boolean isIgnore(BerlinModelImportState state){
 		return ! state.getConfig().isDoAuthors();
 	}
-
-
-
 }
