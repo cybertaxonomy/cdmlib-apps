@@ -23,6 +23,7 @@ import eu.etaxonomy.cdm.app.util.TestDatabase;
 import eu.etaxonomy.cdm.database.DbSchemaValidation;
 import eu.etaxonomy.cdm.database.ICdmDataSource;
 import eu.etaxonomy.cdm.hibernate.HibernateProxyHelper;
+import eu.etaxonomy.cdm.io.api.application.CdmIoApplicationController;
 import eu.etaxonomy.cdm.model.common.Annotation;
 import eu.etaxonomy.cdm.model.common.Credit;
 import eu.etaxonomy.cdm.model.common.Extension;
@@ -58,9 +59,9 @@ public class FaunaEuErmsMergeActivator {
 	static String sFileName = "c:\\test";
 
 	private void initDb(ICdmDataSource db) {
-
+		
 		// Init source DB
-		appCtrInit = TestDatabase.initDb(db, DbSchemaValidation.VALIDATE, false);
+		appCtrInit = CdmIoApplicationController.NewInstance(db, DbSchemaValidation.VALIDATE, false);
 
 
 	}
