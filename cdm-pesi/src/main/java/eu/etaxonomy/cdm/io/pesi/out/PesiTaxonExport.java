@@ -2069,7 +2069,7 @@ public class PesiTaxonExport extends PesiExportBase {
 	private static String getSpeciesExpertName(TaxonBase<?> taxon) {
 		try {
     		Set<Extension> extensions = taxon.getExtensions();
-    		if(speciesExpertNameExtensionType!=null){  //some databases do not have this extension type
+    		if(speciesExpertNameExtensionType != null){  //some databases do not have this extension type
                 for (Extension extension : extensions) {
         			if (extension.getType().equals(speciesExpertNameExtensionType)) {
         				return extension.getValue();
