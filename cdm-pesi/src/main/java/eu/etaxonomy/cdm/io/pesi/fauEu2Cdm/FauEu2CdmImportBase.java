@@ -747,7 +747,12 @@ public abstract class FauEu2CdmImportBase
     }
 
     protected <T extends SourcedEntityBase> T  handlePersisted(SourcedEntityBase sourcedEntity) throws IllegalAccessException, InvocationTargetException, NoSuchFieldException, SecurityException, IllegalArgumentException, NoSuchMethodException {
+        int originalId = sourcedEntity.getId();
         T result = handlePersisted((AnnotatableEntity)sourcedEntity);
+        if (!result.isPersited() && getState().getConfig().isAddSources()){
+            result.addImportSource(String.valueOf(originalId), sourcedEntity.getClass().getSimpleName(),
+                    getSourceReference(getState()), null);
+        }
         //complete
         handleCollection(result, SourcedEntityBase.class, "sources", OriginalSourceBase.class);
         return result;
@@ -1008,6 +1013,27 @@ public abstract class FauEu2CdmImportBase
 
     protected void clearCache() {
         sessionCache.clear();
+    }
+
+    private Reference getSourceReference(FauEu2CdmImportState state) {
+        UUID uuid = state.getConfig().getSourceRefUuid();
+        if (uuid == null){
+            uuid = state.getConfig().getSourceReference().getUuid();
+            state.getConfig().setSourceRefUuid(uuid);
+        }
+        Reference result = (Reference)sessionCache.get(uuid);
+        if (result == null){
+            result = (Reference)getState().getPermanent(uuid);
+        }
+        if (result == null){
+            result = getReferenceService().find(uuid);
+        }
+        if (result == null){
+            result = state.getConfig().getSourceReference();
+            getReferenceService().save(result);
+            sessionCache.put(result.getUuid(), result);
+        }
+        return result;
     }
 
     public FauEu2CdmImportState getState() {
