@@ -8,6 +8,7 @@
 */
 package eu.etaxonomy.cdm.app.pesi;
 
+import java.util.Calendar;
 import java.util.UUID;
 
 import org.apache.log4j.Logger;
@@ -23,6 +24,9 @@ import eu.etaxonomy.cdm.io.common.ITaxonNodeOutStreamPartitioner;
 import eu.etaxonomy.cdm.io.common.TaxonNodeOutStreamPartitioner;
 import eu.etaxonomy.cdm.io.common.TaxonNodeOutStreamPartitionerConcurrent;
 import eu.etaxonomy.cdm.io.pesi.fauEu2Cdm.FauEu2CdmImportConfigurator;
+import eu.etaxonomy.cdm.model.common.VerbatimTimePeriod;
+import eu.etaxonomy.cdm.model.reference.Reference;
+import eu.etaxonomy.cdm.model.reference.ReferenceFactory;
 
 /**
  * @author a.mueller
@@ -34,7 +38,10 @@ public class FauEu2CdmActivator {
     private static final Logger logger = Logger.getLogger(FauEu2CdmActivator.class);
 
     static final ICdmDataSource fauEuSource = CdmDestinations.test_cdm_pesi_fauna_europaea();
-    static final ICdmDataSource cdmDestination = CdmDestinations.cdm_test_local_pesi_leer2();
+    static final ICdmDataSource cdmDestination = CdmDestinations.cdm_test_local_pesi_leer();
+
+    static final String sourceRefTitle = "Fauna Europaea PESI import.";
+    static final UUID sourceRefUuid = UUID.fromString("f27a5e67-d065-4b79-8d41-eabd3ae0edd0");
 
     //check - import
     static final CHECK check = CHECK.IMPORT_WITHOUT_CHECK;
@@ -67,6 +74,7 @@ public class FauEu2CdmActivator {
         config.setConcurrent(doConcurrent);
         config.setDoTaxa(doTaxa);
         config.setDoDescriptions(doDescriptions);
+        config.setSourceReference(getSourceRef());
 
         IProgressMonitor monitor = config.getProgressMonitor();
 
@@ -91,6 +99,14 @@ public class FauEu2CdmActivator {
         myImport.invoke(config);
 
         System.out.println("End" + importFrom);
+    }
+
+    private Reference getSourceRef() {
+        Reference ref = ReferenceFactory.newDatabase();
+        ref.setTitle(sourceRefTitle);
+        ref.setDatePublished(VerbatimTimePeriod.NewVerbatimInstance(Calendar.getInstance()));
+        ref.setUuid(sourceRefUuid);
+        return ref;
     }
 
     public static void main(String[] args) {

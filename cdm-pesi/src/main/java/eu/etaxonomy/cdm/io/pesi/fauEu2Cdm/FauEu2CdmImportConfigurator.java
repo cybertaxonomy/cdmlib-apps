@@ -32,6 +32,7 @@ public class FauEu2CdmImportConfigurator
 
     private boolean doTaxa = true;
     private boolean doDescriptions = true;
+    private boolean addSources = true;
 
     public static FauEu2CdmImportConfigurator NewInstance(ICdmDataSource source, ICdmDataSource destination) {
         return new FauEu2CdmImportConfigurator(source, destination);
@@ -60,7 +61,7 @@ public class FauEu2CdmImportConfigurator
     @Override
     @Deprecated
     public Reference getSourceReference() {
-        return null;
+        return sourceReference;
     }
 
 
@@ -99,5 +100,10 @@ public class FauEu2CdmImportConfigurator
         this.doTaxa = doTaxa;
     }
 
-
+    public boolean isAddSources() {
+        return addSources;
+    }
+    public void setAddSources(boolean addSources) {
+        this.addSources = addSources;
+    }
 }

@@ -28,11 +28,9 @@ public class FauEu2CdmImportState
 
     private Map<UUID, CdmBase> permanentCache = new HashMap<>();
 
-
     protected FauEu2CdmImportState(FauEu2CdmImportConfigurator config) {
         super(config);
     }
-
 
     public ICdmRepository getSourceRepository() {
         return sourceRepository;
@@ -41,14 +39,10 @@ public class FauEu2CdmImportState
         this.sourceRepository = sourceRepository;
     }
 
-
-    public void putPermanent(UUID uuid, CdmBase cdmBase) {
-        permanentCache.put(uuid, cdmBase);
-    }
-
     public CdmBase getPermanent(UUID uuid) {
         return permanentCache.get(uuid);
     }
-
-
+    public void putPermanent(UUID uuid, CdmBase cdmBase) {
+        permanentCache.put(uuid, cdmBase);
+    }
 }
