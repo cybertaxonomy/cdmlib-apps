@@ -71,7 +71,7 @@ public class FaunaEuErmsMergeActivator {
 		FaunaEuErmsMergeActivator sc = new FaunaEuErmsMergeActivator();
 
 		sc.initDb(faunaEuropaeaSource);
-
+//we also need to merge names completely identical!
 		sc.mergeAuthors();
 
 		//set the ranks of Agnatha and Gnathostomata to 50 instead of 45
@@ -142,7 +142,7 @@ public class FaunaEuErmsMergeActivator {
 			UUID uuidErms = UUID.fromString(row.get(ermsUuid));
 			taxonFaunaEu = appCtrInit.getTaxonService().find(uuidFaunaEu);
 			taxonErms = appCtrInit.getTaxonService().find(uuidErms);
-
+// which information should be used can be found in last row -> needs to be done manually
 			if (Integer.parseInt(row.get(18)) == 1){
 				//isFaunaEu = 1 -> copy the author of Fauna Europaea to Erms
 				if (((IZoologicalName)taxonFaunaEu.getName()).getBasionymAuthorship()!= null){
@@ -219,11 +219,12 @@ public class FaunaEuErmsMergeActivator {
 		// update nameRelationships -> if the nameRelationship does not exist, then create a new one with ermsAcc as relatedTo TaxonName
 		updateNameRelationships(ermsAccFaEuSyn);
 
-		//delete all synonyms of FaunaEu Syn
+		//delete all synonyms of FaunaEu Syn TODO: move sources and additional informations to erms taxon
 		for (List<String> rowList: ermsAccFaEuSyn){
 			UUID faunaUUID = UUID.fromString(rowList.get(faunaEuUuid));
 			//UUID ermsUUID = UUID.fromString(rowList.get(ermsUuid));
 			Synonym syn = (Synonym)appCtrInit.getTaxonService().find(faunaUUID);
+			// remove synonym from taxon then delete
 			appCtrInit.getTaxonService().deleteSynonym(syn, null);
 		}
 
@@ -231,8 +232,8 @@ public class FaunaEuErmsMergeActivator {
 	}
 
 	private  void mergeErmsSynFaunaEuAcc (List<List<String>> ermsAccFaEuSyn){
-		//occurence: verknÃ¼pfe statt dem Fauna Europaea Taxon das akzeptierte Taxon, des Synonyms mit der Occurence (CDM -> distribution)
-		//suche distribution (Ã¼ber das Taxon der TaxonDescription), dessen Taxon, das entsprechende Fauna Eu Taxon ist und verknï¿½pfe es mit dem akzeptieren Taxon des Erms Syn
+		//occurence: verknüpfe statt dem Fauna Europaea Taxon das akzeptierte Taxon, des Synonyms mit der Occurence (CDM -> distribution)
+		//suche distribution (über das Taxon der TaxonDescription), dessen Taxon, das entsprechende Fauna Eu Taxon ist und verknüpfe es mit dem akzeptieren Taxon des Erms Syn
 		for (List<String> row: ermsAccFaEuSyn){
 		    Taxon taxonFaunaEu = (Taxon)appCtrInit.getTaxonService().find(UUID.fromString(row.get(faunaEuUuid)));
 			Synonym synErms = (Synonym)appCtrInit.getTaxonService().find(UUID.fromString(row.get(ermsUuid)));
@@ -284,6 +285,7 @@ public class FaunaEuErmsMergeActivator {
 				}
 
 			}
+			//the fauna eu taxon should now only contain synonyms not existing in erms
 			moveFaunaEuSynonymsToErmsTaxon(taxonFaunaEu, taxonErms);
 			moveAllInformationsFromFaunaEuToErms(taxonFaunaEu, taxonErms);
 			moveOriginalDbToErmsTaxon(taxonFaunaEu, taxonErms);
@@ -302,7 +304,7 @@ public class FaunaEuErmsMergeActivator {
 	private void updateNameRelationships(List<List<String>> ermsAccFaEuSyn){
 		//suche alle NameRelationships aus FaunaEu und Erms, wo (faunaEu)relatedFrom.name.titleCache = (erms)relatedFrom.name.titleCache und ersetze in der faunaEu Relationship den relatedTo.name durch den relatedTo.name der erms-relationship
 		//wenn es diese relationship noch nicht gibt und der typ der gleiche ist!!
-		//wenn der relatedTo Name zu einem Erms Taxon und einem FaunaEu Synonym gehÃ¶rt
+		//wenn der relatedTo Name zu einem Erms Taxon und einem FaunaEu Synonym gehört
 
 		Synonym synFaunaEu;
 		Taxon taxonErms;
