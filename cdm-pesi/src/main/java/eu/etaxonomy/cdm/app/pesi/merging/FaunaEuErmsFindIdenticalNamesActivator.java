@@ -95,7 +95,8 @@ public class FaunaEuErmsFindIdenticalNamesActivator {
 		resultOK = resultOK && sc.writeSameNamesdifferentAuthorToCsv(mergingObjects, sFileName + "_authors.csv");
 		resultOK = resultOK &&sc.writeSameNamesdifferentStatusToCsv(mergingObjects, sFileName + "_status.csv");
 		resultOK = resultOK &&sc.writeSameNamesToCsVFile(mergingObjects, sFileName + "_names.csv");
-		resultOK = resultOK &&sc.writeSameNamesdifferentPhylumToCsv(mergingObjects, sFileName + "_phylum.csv");
+		//do not create the phylum file, explanation inside the method writeSameNamesdifferentPhylumToCsv
+		//resultOK = resultOK &&sc.writeSameNamesdifferentPhylumToCsv(mergingObjects, sFileName + "_phylum.csv");
 		resultOK = resultOK &&sc.writeSameNamesDifferentParentToCsv(mergingObjects, sFileName + "parent.csv");
 
 		System.err.println("End merging Fauna Europaea and Erms" + resultOK);
@@ -125,6 +126,7 @@ public class FaunaEuErmsFindIdenticalNamesActivator {
 	private boolean writeSameNamesdifferentPhylumToCsv(List<FaunaEuErmsMerging> mergingObjects, String sfileName){
 		try
 		{
+			//do we really need this?? it is a taxon needed merged like all others? for erms only one taxon has different phylum. (Valencia, but these are not the same taxa -> fish and ribbon worms)
 		    FileWriter writer = new FileWriter(sfileName);
 
 		    //create Header
@@ -133,11 +135,11 @@ public class FaunaEuErmsFindIdenticalNamesActivator {
 
 			//write data
 			for (FaunaEuErmsMerging merging : mergingObjects){
-		    	//TODO
+		    	//TODO the phyllum is always different doing it this way, maybe we need to merge the phylum taxa first and then 
 				if ((merging.getPhylumInErms()== null )^ (merging.getPhylumInFaunaEu()== null)){
 					writeCsvLine(writer, merging) ;
 				}else if(!((merging.getPhylumInErms()==null) && (merging.getPhylumInFaunaEu()==null))){
-					if(!merging.getPhylumInErms().equals(merging.getPhylumInFaunaEu())){
+					if(!merging.getPhylumInErms().getNameTitleCache().equals(merging.getPhylumInFaunaEu().getNameTitleCache())){
 						writeCsvLine(writer, merging) ;
 					}
 				}
@@ -214,38 +216,38 @@ public class FaunaEuErmsFindIdenticalNamesActivator {
 			writer.append(';');
 			writer.append("id in Fauna Europaea");
 			writer.append(';');
-			writer.append("name");
+			writer.append("name in FE");
 			writer.append(';');
-			writer.append("author");
+			writer.append("author in FE");
 			writer.append(';');
-			writer.append("rank");
+			writer.append("rank in FE");
 			writer.append(';');
-			writer.append("state");
+			writer.append("state in FE");
 			writer.append(';');
-			writer.append("phylum");
+			writer.append("phylum in FE");
 			writer.append(';');
-			writer.append("parent");
+			writer.append("parent in FE");
 			writer.append(';');
-			writer.append("parent rank");
+			writer.append("parent rank in FE");
 			writer.append(';');
 
 			writer.append("uuid in Erms");
 			writer.append(';');
 			writer.append("id in Erms");
 			writer.append(';');
-			writer.append("name");
+			writer.append("name in Erms");
 			writer.append(';');
-			writer.append("author");
+			writer.append("author in Erms");
 			writer.append(';');
-			writer.append("rank");
+			writer.append("rank in Erms");
 			writer.append(';');
-			writer.append("state");
+			writer.append("state in Erms");
 			writer.append(';');
-			writer.append("phylum");
+			writer.append("phylum in Erms");
 			writer.append(';');
-			writer.append("parent");
+			writer.append("parent in Erms");
 			writer.append(';');
-			writer.append("parent rank");
+			writer.append("parent rank in Erms");
 			writer.append('\n');
 	}
 
@@ -348,7 +350,7 @@ public class FaunaEuErmsFindIdenticalNamesActivator {
 		}
 
 		writer.append(';');
-		writer.append(merging.getPhylumInErms() != null? merging.getPhylumInErms().getTaxonTitleCache():"");
+		writer.append(merging.getPhylumInErms() != null? merging.getPhylumInErms().getTitleCache():"");
 		writer.append(';');
 		writer.append(merging.getParentStringInErms());
 		writer.append(';');
@@ -537,33 +539,10 @@ public class FaunaEuErmsFindIdenticalNamesActivator {
 			mergeObject.setRankInErms(ermsName.getRank().getLabel());
 			mergeObject.setRankInFaunaEu(faunaEuName.getRank().getLabel());
 
-			//set parent informations
-
-
-			/*
-			Set<HybridRelationship> parentRelations = zooName.getParentRelationships();
-			Iterator parentIterator = parentRelations.iterator();
-			HybridRelationship parentRel;
-			ZoologicalName parentName;
-			while (parentIterator.hasNext()){
-				parentRel = (HybridRelationship)parentIterator.next();
-				parentName = (ZoologicalName)parentRel.getParentName();
-				mergeObject.setParentRankStringInErms(parentName.getRank().getLabel());
-				mergeObject.setParentStringInErms(parentName.getNameCache());
-			}
-
-			parentRelations = zooName2.getParentRelationships();
-			parentIterator = parentRelations.iterator();
-
-			while (parentIterator.hasNext()){
-				parentRel = (HybridRelationship)parentIterator.next();
-				parentName = (ZoologicalName)parentRel.getParentName();
-				mergeObject.setParentRankStringInFaunaEu(parentName.getRank().getLabel());
-				mergeObject.setParentStringInFaunaEu(parentName.getNameCache());
-			}*/
+		
 			merge.add(mergeObject);
 		}
-//		}
+
 
 		return merge;
 

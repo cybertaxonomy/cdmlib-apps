@@ -19,7 +19,6 @@ import eu.etaxonomy.cdm.api.application.CdmApplicationController;
 import eu.etaxonomy.cdm.api.service.exception.ReferencedObjectUndeletableException;
 import eu.etaxonomy.cdm.api.service.pager.Pager;
 import eu.etaxonomy.cdm.app.common.CdmDestinations;
-
 import eu.etaxonomy.cdm.database.DbSchemaValidation;
 import eu.etaxonomy.cdm.database.ICdmDataSource;
 import eu.etaxonomy.cdm.hibernate.HibernateProxyHelper;
@@ -36,6 +35,7 @@ import eu.etaxonomy.cdm.model.name.IZoologicalName;
 import eu.etaxonomy.cdm.model.name.NameRelationship;
 import eu.etaxonomy.cdm.model.name.Rank;
 import eu.etaxonomy.cdm.model.reference.Reference;
+import eu.etaxonomy.cdm.model.taxon.Classification;
 import eu.etaxonomy.cdm.model.taxon.Synonym;
 import eu.etaxonomy.cdm.model.taxon.Taxon;
 import eu.etaxonomy.cdm.model.taxon.TaxonBase;
@@ -50,6 +50,8 @@ public class FaunaEuErmsMergeActivator {
 	static final int ermsUuid = 9;
 	static final int rankFaunaEu = 4;
 	static final int rankErms = 13;
+	Classification faunaEuClassification;
+	Classification ermsClassification;
 
 	CdmApplicationController appCtrInit;
 
@@ -71,7 +73,7 @@ public class FaunaEuErmsMergeActivator {
 		FaunaEuErmsMergeActivator sc = new FaunaEuErmsMergeActivator();
 
 		sc.initDb(faunaEuropaeaSource);
-//we also need to merge names completely identical!
+		//we also need to merge names completely identical!
 		sc.mergeAuthors();
 
 		//set the ranks of Agnatha and Gnathostomata to 50 instead of 45
@@ -203,10 +205,11 @@ public class FaunaEuErmsMergeActivator {
 
 		TaxonBase<?> taxonFaunaEu;
 		TaxonBase<?> taxonErms;
-
+		List<String> propertyPaths = new ArrayList<>();
+		propertyPaths.add("taxonBases.nodes.*");
 		for (List<String> row: sameStatus){
-			taxonFaunaEu = appCtrInit.getTaxonService().find(UUID.fromString(row.get(faunaEuUuid)));
-			taxonErms = appCtrInit.getTaxonService().find(UUID.fromString(row.get(ermsUuid)));
+			taxonFaunaEu = appCtrInit.getTaxonService().load(UUID.fromString(row.get(faunaEuUuid)), propertyPaths);
+			taxonErms = appCtrInit.getTaxonService().load(UUID.fromString(row.get(ermsUuid)), propertyPaths);
 			moveAllInformationsFromFaunaEuToErms(taxonFaunaEu, taxonErms);
 			if (taxonErms instanceof Taxon){
 				moveFaunaEuSynonymsToErmsTaxon((Taxon)taxonFaunaEu, (Taxon)taxonErms);
@@ -450,6 +453,20 @@ public class FaunaEuErmsMergeActivator {
 		for (Credit credit: credits){
 			erms.addCredit(credit);
 		}
+		//move children to erms taxon
+		if (faunaEu instanceof Taxon && ((Taxon)faunaEu).getTaxonNode(faunaEuClassification).hasChildNodes()) {
+			Taxon acceptedErmsTaxon;
+			if (erms instanceof Synonym) {
+				acceptedErmsTaxon = ((Synonym)erms).getAcceptedTaxon();
+			}else {
+				acceptedErmsTaxon = (Taxon)erms;
+			}
+			TaxonNode node = ((Taxon)acceptedErmsTaxon).getTaxonNode(ermsClassification);
+			for (TaxonNode child:((Taxon)faunaEu).getTaxonNode(faunaEuClassification).getChildNodes()) {
+				//add pesi reference as reference??
+				node.addChildNode(child, null, null);
+			}
+		}
 	}
 
 	//if name, rank, and status (accepted) are the same, then move the synonyms of faunaEu taxon to the erms taxon
@@ -474,7 +491,8 @@ public class FaunaEuErmsMergeActivator {
 	//merged taxon should have a new sec reference
 	private void addNewSecForMergedTaxon(Taxon taxon, Reference sec){
 		taxon.setSec(sec);
-		taxon.setUuid(UUID.randomUUID());
+		//this does not work!!
+		//taxon.setUuid(UUID.randomUUID());
 	}
 
 	// ----------- methods for merging Erms synonyms and Fauna Europaea Taxon
