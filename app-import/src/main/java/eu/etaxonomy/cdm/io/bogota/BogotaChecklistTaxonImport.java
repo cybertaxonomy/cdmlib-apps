@@ -38,7 +38,6 @@ import eu.etaxonomy.cdm.strategy.parser.NonViralNameParserImpl;
 /**
  * @author a.mueller
  * @since 21.04.2017
- *
  */
 @Component
 public class BogotaChecklistTaxonImport<CONFIG extends BogotaChecklistImportConfigurator>
@@ -75,9 +74,6 @@ public class BogotaChecklistTaxonImport<CONFIG extends BogotaChecklistImportConf
     private boolean isFirst = true;
     private TransactionStatus tx = null;
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     protected void firstPass(SimpleExcelTaxonImportState<CONFIG> state) {
         if (isFirst){
