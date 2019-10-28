@@ -36,25 +36,16 @@ public class BogotaChecklistImportConfigurator extends ExcelImportConfiguratorBa
         return new BogotaChecklistImportConfigurator(source, destination);
     }
 
-    /**
-     * @param uri
-     * @param destination
-     */
     private BogotaChecklistImportConfigurator(URI uri, ICdmDataSource destination) {
         super(uri, destination);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public ImportStateBase getNewState() {
         return new SimpleExcelTaxonImportState<>(this);
     }
 
-    /**
-     * {@inheritDoc}
-     */
+    @SuppressWarnings("unchecked")
     @Override
     protected void makeIoClassList() {
         ioClassList = new Class[]{
@@ -62,17 +53,9 @@ public class BogotaChecklistImportConfigurator extends ExcelImportConfiguratorBa
         };
     }
 
-    /**
-     * @return the secReference
-     */
     public Reference getSecReference() {
         return secReference;
     }
-
-
-    /**
-     * @param secReference
-     */
     public void setSecReference(Reference secReference) {
         this.secReference = secReference;
     }

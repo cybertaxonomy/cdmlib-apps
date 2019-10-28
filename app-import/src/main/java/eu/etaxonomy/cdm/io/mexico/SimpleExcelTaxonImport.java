@@ -65,11 +65,6 @@ public abstract class SimpleExcelTaxonImport<CONFIG extends ExcelImportConfigura
 
 //***************************** METHODS *********************************/
 
-
-    /**
-     * @param state
-     * @return
-     */
     protected IdentifiableSource makeOriginalSource(SimpleExcelTaxonImportState<CONFIG> state) {
         return IdentifiableSource.NewDataImportInstance("line: " + state.getCurrentLine(), null, state.getConfig().getSourceReference());
     }
@@ -109,11 +104,6 @@ public abstract class SimpleExcelTaxonImport<CONFIG extends ExcelImportConfigura
         higherNode.addChildTaxon(taxon, null, null);
     }
 
-    /**
-     * @param line
-     * @param keys
-     * @param expectedKeys
-     */
     protected void checkAllKeysExist(String line, Set<String> keys, List<String> expectedKeys) {
         for (String key: keys) {
             if (! expectedKeys.contains(key)){
@@ -122,11 +112,6 @@ public abstract class SimpleExcelTaxonImport<CONFIG extends ExcelImportConfigura
         }
     }
 
-
-    /**
-     * @param state
-     * @param name
-     */
     protected void replaceAuthorNamesAndNomRef(SimpleExcelTaxonImportState<CONFIG> state,
             IBotanicalName name) {
         TeamOrPersonBase<?> combAuthor = name.getCombinationAuthorship();
@@ -153,10 +138,6 @@ public abstract class SimpleExcelTaxonImport<CONFIG extends ExcelImportConfigura
         }
     }
 
-     /**
-     * @param state
-     * @param nomRef
-     */
     private Reference getExistingReference(SimpleExcelTaxonImportState<CONFIG> state, Reference ref) {
         if (ref == null){
             return null;
@@ -177,9 +158,6 @@ public abstract class SimpleExcelTaxonImport<CONFIG extends ExcelImportConfigura
 
     boolean referenceMapIsInitialized;
 
-    /**
-     * @param state
-     */
     private void initRerenceMap(SimpleExcelTaxonImportState<CONFIG> state) {
         if (!referenceMapIsInitialized){
             List<String> propertyPaths = Arrays.asList("");
@@ -194,10 +172,6 @@ public abstract class SimpleExcelTaxonImport<CONFIG extends ExcelImportConfigura
 
     boolean agentMapIsInitialized = false;
 
-    /**
-     * @param state
-     *
-     */
     @SuppressWarnings("rawtypes")
     private void initAgentMap(SimpleExcelTaxonImportState<CONFIG> state) {
         if (!agentMapIsInitialized){
@@ -210,11 +184,6 @@ public abstract class SimpleExcelTaxonImport<CONFIG extends ExcelImportConfigura
         }
     }
 
-    /**
-     * @param state
-     * @param combAuthor
-     * @return
-     */
     protected TeamOrPersonBase<?> getExistingAuthor(SimpleExcelTaxonImportState<CONFIG> state,
             TeamOrPersonBase<?> author) {
         if (author == null){
@@ -233,11 +202,6 @@ public abstract class SimpleExcelTaxonImport<CONFIG extends ExcelImportConfigura
         }
     }
 
-
-    /**
-     * @param state
-     * @param author
-     */
     private void handleTeam(SimpleExcelTaxonImportState<CONFIG> state, Team team) {
         List<Person> members = team.getTeamMembers();
         for (int i =0; i< members.size(); i++){
@@ -250,8 +214,5 @@ public abstract class SimpleExcelTaxonImport<CONFIG extends ExcelImportConfigura
                 state.putAgentBase(person.getTitleCache(), person);
             }
         }
-
     }
-
-
 }
