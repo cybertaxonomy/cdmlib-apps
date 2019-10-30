@@ -27,8 +27,7 @@ import eu.etaxonomy.cdm.model.reference.ReferenceFactory;
 
 /**
  * @author a.mueller
- * @since 18.10.2017
- *
+ * @since 18.10.2019
  */
 public class EuroMedIpniImportActivator {
 

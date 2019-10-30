@@ -8,7 +8,10 @@
 */
 package eu.etaxonomy.cdm.io.euromed;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
@@ -23,7 +26,10 @@ import eu.etaxonomy.cdm.io.berlinModel.BerlinModelTransformer;
 import eu.etaxonomy.cdm.io.common.utils.ImportDeduplicationHelper;
 import eu.etaxonomy.cdm.io.mexico.SimpleExcelTaxonImport;
 import eu.etaxonomy.cdm.io.mexico.SimpleExcelTaxonImportState;
+import eu.etaxonomy.cdm.model.agent.Person;
+import eu.etaxonomy.cdm.model.agent.Team;
 import eu.etaxonomy.cdm.model.agent.TeamOrPersonBase;
+import eu.etaxonomy.cdm.model.common.CdmBase;
 import eu.etaxonomy.cdm.model.common.Language;
 import eu.etaxonomy.cdm.model.common.Marker;
 import eu.etaxonomy.cdm.model.common.MarkerType;
@@ -39,14 +45,15 @@ import eu.etaxonomy.cdm.model.name.Rank;
 import eu.etaxonomy.cdm.model.name.TaxonName;
 import eu.etaxonomy.cdm.model.name.TaxonNameFactory;
 import eu.etaxonomy.cdm.model.reference.IArticle;
-import eu.etaxonomy.cdm.model.reference.IBook;
 import eu.etaxonomy.cdm.model.reference.IBookSection;
+import eu.etaxonomy.cdm.model.reference.IReference;
 import eu.etaxonomy.cdm.model.reference.ISourceable;
 import eu.etaxonomy.cdm.model.reference.Reference;
 import eu.etaxonomy.cdm.model.reference.ReferenceFactory;
 import eu.etaxonomy.cdm.model.taxon.Taxon;
 import eu.etaxonomy.cdm.model.taxon.TaxonNode;
 import eu.etaxonomy.cdm.model.term.TermVocabulary;
+import eu.etaxonomy.cdm.persistence.query.MatchMode;
 import eu.etaxonomy.cdm.strategy.parser.NonViralNameParserImpl;
 import eu.etaxonomy.cdm.strategy.parser.TimePeriodParser;
 
@@ -116,14 +123,37 @@ public class IpniImport<CONFIG extends IpniImportConfigurator>
 
         Rank rank = getRank(state);
         TaxonName taxonName = makeName(state, line, rank);
+        if (0 < getNameService().countByTitle(TaxonName.class, taxonName.getTitleCache(), MatchMode.EXACT, null)){
+            logger.warn(line + "Possbile name duplicate: " + taxonName.getTitleCache());
+        }
+//        getNameService().findByTitle(TaxonName.class, taxonName.getTitleCache(), MatchMode.EXACT, null, null, null, null, null);
         TaxonNode parent = getParent(state, line, genusNode, taxonName, rank);
-        Reference sec = parent.getTaxon().getSec();
+        Reference sec = getSec(parent);
         Taxon taxon = Taxon.NewInstance(taxonName, sec);
         TaxonNode childNode = parent.addChildTaxon(taxon, null, null); //E+M taxon nodes usually do not have a citation
         getTaxonNodeService().saveOrUpdate(childNode);
 
         makeDistribution(state, line, taxon);
         addImportSource(state, taxon);
+    }
+
+    private Reference refEuroMed;
+    private Reference getSec(TaxonNode parent) {
+        Reference parentSec = parent.getTaxon().getSec();
+        UUID ILDIS_UUID = UUID.fromString("23dbdf0b-00c3-4ca9-93f4-cefbae63bea1");
+        UUID KEW_WORLD_CHECKLIST_UUID = UUID.fromString("ad2037fa-4a30-423b-a9f5-049e52e0e367");
+        UUID EURO_MED_PLANTBASE = UUID.fromString("4b478ccf-12b2-495f-829d-4fb631d1fc5e");
+        if(parentSec.getUuid().equals(KEW_WORLD_CHECKLIST_UUID)||
+                parentSec.getUuid().equals(ILDIS_UUID)){
+            if(refEuroMed == null){
+                refEuroMed = getReferenceService().find(EURO_MED_PLANTBASE);
+                if(refEuroMed == null){
+                    logger.warn("refEuroMed not found!");
+                }
+            }
+            return refEuroMed;
+        }
+        return parent.getTaxon().getSec();
     }
 
     private void addImportSource(SimpleExcelTaxonImportState<CONFIG> state, ISourceable<?> sourceable) {
@@ -284,41 +314,91 @@ public class IpniImport<CONFIG extends IpniImportConfigurator>
         String pTypeStr = getValue(record, PTYPE);
         Reference result;
         if("AR".equals(pTypeStr)){
-            result = ReferenceFactory.newArticle();
-            IArticle article = result;
-            Reference journal = getJournal(state, line);
-            article.setInJournal(journal);
+            IArticle example = ReferenceFactory.newArticle();
+            example.setAuthorship(authors);
             String[] collSplit = getCollationSplit(state, line);
-            article.setVolume(collSplit[0]);
-            article.setDatePublished(getYear(state, line));
-            makeReferenceRemarks(state, line, article);
+            example.setVolume(collSplit[0]);
+            example.setDatePublished(getYear(state, line));
+            Reference journal = getExistingJournal(state, line);
+            example.setInJournal(journal);
+            result = getExistingArticle(state, line, example);
+            if(result != example){
+                logger.debug(line+ "article existed");
+            }else{
+                makeReferenceRemarks(state, line, example);
+            }
         }else if ("BS".equals(pTypeStr)){
-            result = ReferenceFactory.newBookSection();
-            IBookSection section = result;
-            Reference book = getBook(state, line);
-            section.setInBook(book);
-            String[] collSplit = getCollationSplit(state, line);
-            book.setVolume(collSplit[0]);
-            book.setDatePublished(getYear(state, line));
-            //TODO in-authors (woher nehmen?)
+            IBookSection example = ReferenceFactory.newBookSection();
+            String publicationStr = getValue(record, PUBLICATION);
+            String authorsForFlIber = getValue(record, AUTHORS);
+            TeamOrPersonBase<?> bookAuthor = getBookSectionBookAuthors(state, line, publicationStr, authorsForFlIber);
+            if (bookAuthor == null){
+                logger.warn(line + "No author found for booksection of " + publicationStr);
+            }
+            Reference book = getExistingBook(state, line, bookAuthor);
+            example.setInBook(book);
+            example.setAuthorship(authors);
+            result = getExistingBookSection(state, line, example);
+            if (result != example){
+                logger.debug(line+ "book section existed");
+            }else{
+                makeReferenceRemarks(state, line, example);
+            }
+            //TODO after import BookSection authors need to be checked for correct in-authors
         }else if ("BO".equals(pTypeStr)){
-            result = getBook(state, line);
-            IBook book = result;
-            String[] collSplit = getCollationSplit(state, line);
-            book.setVolume(collSplit[0]);
-            book.setDatePublished(getYear(state, line));
+            result = getExistingBook(state, line, authors);
         }else{
             logger.warn(line + "Reference type not recognized: " +  pTypeStr);
             return null;
         }
-        result.setAuthorship(authors);
-        //TODO deduplicate references
-        //TODO add source to references
-//        addImportSource(state, result);
         return result;
     }
 
-    private void makeReferenceRemarks(SimpleExcelTaxonImportState<CONFIG> state, String line, IArticle article) {
+    private TeamOrPersonBase<?> getBookSectionBookAuthors(SimpleExcelTaxonImportState<CONFIG> state, String line,
+            String publicationStr, String authorsForFlIber) {
+        if ("Fl. Gr. Brit. Ireland".equals(publicationStr)){
+            return CdmBase.deproxy(getAgentService().find(UUID.fromString("009cda5a-f6a7-41bf-a323-dc72f83e6066")),Team.class);
+        }else if ("Div. Veg. Yeseras Ibér.".equals(publicationStr)){
+            return CdmBase.deproxy(getAgentService().find(UUID.fromString("94c79bdf-1eb8-4094-94bc-686ce55e00f1")),Team.class);
+        }else if ("Durum Wheat Breeding".equals(publicationStr)){
+            Team team = Team.NewInstance();
+            team.setHasMoreMembers(true);
+            Person person1 = Person.NewInstance();
+            person1.setFamilyName("Roya");
+            Person person2 = Person.NewInstance();
+            person2.setFamilyName("Conxita");
+            team.addTeamMember(person1);
+            team.addTeamMember(person2);
+            getAgentService().save(team);
+            return team;
+        }else if ("Fl. Iber.".equals(publicationStr)){
+            if(authorsForFlIber.equals("Pedrol, J. J. Regalado & López Encina")){
+                //20
+                return CdmBase.deproxy(getAgentService().find(UUID.fromString("fbac0541-0876-4cc1-86c5-6e0c34ad90c1")), Person.class);
+            }else if(authorsForFlIber.equals("L. Sáez, Juan, M. B. Crespo, F. B. Navarro, J. Peñas & Roquet")){
+                //13
+                return CdmBase.deproxy(getAgentService().find(UUID.fromString("85db9f56-cf58-4655-8775-69bf097e560c")), Person.class);
+            }else{
+                logger.warn(line+"Author for Fl. Iber not found: " + authorsForFlIber);
+            }
+        }else if ("Fl. Valentina".equals(publicationStr)){
+            return CdmBase.deproxy(getAgentService().find(UUID.fromString("64cc172a-912b-49f3-ad52-2ce95083668d")),Team.class);
+        }else if ("Fl. Reipubl. Popularis Bulg.".equals(publicationStr)){
+//            return (Team)getAgentService().find(UUID.fromString("64cc172a-912b-49f3-ad52-2ce95083668d"));
+        }else if ("Ill. Fl. Turkey Vol. 2.".equals(publicationStr)){
+            logger.warn("Hanlde volume for Ill. Fl. Turkey Vol. 2. correctly");
+            return CdmBase.deproxy(getAgentService().find(UUID.fromString("14a81430-18c6-418c-90c4-a08774f4955a")),Person.class);
+        }else if ("Türk. Geofitleri".equals(publicationStr)){
+            return CdmBase.deproxy(getAgentService().find(UUID.fromString("fe73ca78-3e75-42aa-93cf-b767ae3600ab")),Person.class);
+        }else if ("Türk. Bitkileri List.".equals(publicationStr)){
+            return CdmBase.deproxy(getAgentService().find(UUID.fromString("87008d44-7923-41e2-942c-bc1b284a2e3b")),Team.class);
+
+
+        }
+        return null;
+    }
+
+    private void makeReferenceRemarks(SimpleExcelTaxonImportState<CONFIG> state, String line, IReference ref) {
         Map<String, String> record = state.getOriginalRecord();
         String remarksStr = getValue(record, REFERENCE_REMARKS);
         if (isBlank(remarksStr)){
@@ -326,9 +406,8 @@ public class IpniImport<CONFIG extends IpniImportConfigurator>
         }
         if (remarksStr.contains("epublished")){
             MarkerType epublished = getMarkerType(state, MarkerType.uuidEpublished, "epublished", "epublished", null);
-            article.addMarker(Marker.NewInstance(epublished, true));
+            ref.addMarker(Marker.NewInstance(epublished, true));
         }
-
     }
 
     private String[] getCollationSplit(SimpleExcelTaxonImportState<CONFIG> state, String line) {
@@ -350,20 +429,107 @@ public class IpniImport<CONFIG extends IpniImportConfigurator>
         }
     }
 
-    private Reference getBook(SimpleExcelTaxonImportState<CONFIG> state, String line) {
+    private Map<String,Reference> bookMap = new HashMap<>();
+    private Map<String,Reference> bookSectionMap = new HashMap<>();
+    private Map<String,Reference> journalMap = new HashMap<>();
+    private Map<String,Reference> articleMap = new HashMap<>();
+
+
+    private Reference getExistingBookSection(SimpleExcelTaxonImportState<CONFIG> state, String line, IBookSection example) {
+        Set<String> includeProperties = new HashSet<>();
+        includeProperties.add("abbrevTitleCache");
+        includeProperties.add("datePublished");
+        includeProperties.add("type");
+        return getExistingMainRef(state, line, bookSectionMap, (Reference)example, example.getAbbrevTitleCache(), "book section", includeProperties);
+    }
+
+    private Reference getExistingArticle(SimpleExcelTaxonImportState<CONFIG> state, String line, IArticle example) {
+        Set<String> includeProperties = new HashSet<>();
+        includeProperties.add("abbrevTitleCache");
+        includeProperties.add("volume");
+        includeProperties.add("datePublished");
+        includeProperties.add("type");
+        return getExistingMainRef(state, line, articleMap, (Reference)example, example.getAbbrevTitleCache(), "article", includeProperties);
+    }
+
+    private Reference getExistingJournal(SimpleExcelTaxonImportState<CONFIG> state, String line) {
+        Reference example = ReferenceFactory.newJournal();
         Map<String, String> record = state.getOriginalRecord();
         String publicationStr = getValue(record, PUBLICATION);
-        Reference result = ReferenceFactory.newBook();
-        result.setAbbrevTitle(publicationStr);
+        example.setAbbrevTitle(publicationStr);
+        Set<String> includeProperties = new HashSet<>();
+        includeProperties.add("abbrevTitle");
+        includeProperties.add("type");
+        return getExistingMainRef(state, line, journalMap, example, publicationStr, "journal", includeProperties);
+    }
+
+    private Reference getExistingBook(SimpleExcelTaxonImportState<CONFIG> state, String line, TeamOrPersonBase<?> author) {
+        Reference example = ReferenceFactory.newBook();
+        Map<String, String> record = state.getOriginalRecord();
+        String publicationStr = getValue(record, PUBLICATION);
+        example.setAbbrevTitle(publicationStr);
+        String[] collSplit = getCollationSplit(state, line);
+        example.setVolume(collSplit[0]);
+        example.setDatePublished(getYear(state, line));
+        example.setAuthorship(author);
+
+        Set<String> includeProperties = new HashSet<>();
+        includeProperties.add("abbrevTitleCache");
+        includeProperties.add("volume");
+        includeProperties.add("datePublished");
+        includeProperties.add("authorship");
+        includeProperties.add("type");
+        Reference result = getExistingMainRef(state, line, bookMap, example, example.getAbbrevTitleCache(), "book", includeProperties);
+        if (result != example){
+            logger.debug("book existed");
+        }else{
+            makeReferenceRemarks(state, line, example);
+        }
         return result;
     }
 
-    private Reference getJournal(SimpleExcelTaxonImportState<CONFIG> state, String line) {
-        Map<String, String> record = state.getOriginalRecord();
-        String publicationStr = getValue(record, PUBLICATION);
-        Reference result = ReferenceFactory.newJournal();
-        result.setAbbrevTitle(publicationStr);
-        return result;
+    private Reference getExistingMainRef(SimpleExcelTaxonImportState<CONFIG> state, String line, Map<String,Reference> map, Reference example, String publicationStr, String type, Set<String> includeProperties) {
+        if (map.get(publicationStr)!= null){
+            return map.get(publicationStr);
+        }else{
+            List<Reference> existingRefs = getReferenceService().list(example, includeProperties, null, null, null, null);
+            if (existingRefs.isEmpty()){
+                logger.warn(line + "New " + type + ": " + publicationStr);
+                map.put(publicationStr, example);
+                addImportSource(state, example);
+                return example;
+            }else{
+                existingRefs = findBestMatchingRef(state, line, existingRefs, publicationStr);
+                if(existingRefs.size()>1){
+                    logger.warn(line+"More than 1 reference found for " + publicationStr + ". Use arbitrary one.");
+                }
+                Reference result = existingRefs.get(0);
+                map.put(publicationStr, result);
+                return result;
+            }
+        }
+    }
+
+    private List<Reference> findBestMatchingRef(SimpleExcelTaxonImportState<CONFIG> state, String line,
+            List<Reference> existingRefs, String publicationStr) {
+        Set<Reference> noTitleCandidates = new HashSet<>();
+        Set<Reference> sameTitleCandidates = new HashSet<>();
+        for(Reference ref : existingRefs){
+            if (ref.getTitleCache().equals(publicationStr)){
+                if(ref.getTitle() == null){
+                    noTitleCandidates.add(ref);
+                }else{
+                    sameTitleCandidates.add(ref);
+                }
+            }
+        }
+        if(!noTitleCandidates.isEmpty()){
+            return new ArrayList<>(noTitleCandidates);
+        }else if(!sameTitleCandidates.isEmpty()){
+            return new ArrayList<>(sameTitleCandidates);
+        }else{
+            return existingRefs;
+        }
     }
 
     private VerbatimTimePeriod getYear(SimpleExcelTaxonImportState<CONFIG> state, String line) {
@@ -373,21 +539,121 @@ public class IpniImport<CONFIG extends IpniImportConfigurator>
         return result;
     }
 
+    private Map<String,TeamOrPersonBase> authorMap = new HashMap<>();
     private TeamOrPersonBase<?> getAuthors(SimpleExcelTaxonImportState<CONFIG> state, String line) {
         Map<String, String> record = state.getOriginalRecord();
         String authorsStr = getValue(record, AUTHORS);
-        TeamOrPersonBase<?> newAuthor = parser.author(authorsStr);
-        TeamOrPersonBase<?> author = newAuthor; //deduplicationHelper().getExistingAuthor(state, newAuthor);
-        //TODO check parsing + deduplication of authors
-        return author;
+        if (authorMap.get(authorsStr)!= null){
+            return authorMap.get(authorsStr);
+        }else{
+            TeamOrPersonBase<?> example = parser.author(authorsStr);
+            String testStr = example.getNomenclaturalTitle();
+            if(!authorsStr.equals(testStr)){
+               logger.warn("nom title is not equal");
+            }
+            Set<String> includeProperties = new HashSet<>();
+            includeProperties.add("nomenclaturalTitle");
+            List<TeamOrPersonBase<?>> existingAuthors = getAgentService().list(example, includeProperties, null, null, null, null);
+            if (existingAuthors.isEmpty()){
+                logger.info(line+"New author: " + authorsStr);
+                authorMap.put(authorsStr, example);
+                if (example instanceof Team){
+                    List<Person> members = ((Team)example).getTeamMembers();
+                    for (int i = 0; i < members.size();i++){
+                        Person newPerson = members.get(i);
+                        Person existingPerson = getExistingPerson(state, line, newPerson);
+                        if (newPerson != existingPerson){
+                            members.set(i, existingPerson);
+                        }
+
+                    }
+                }
+                addImportSource(state, example);
+                return example;
+            }else{
+                if(existingAuthors.size()>1){
+                    existingAuthors = findBestMatchingAuthor(state, line, existingAuthors, authorsStr);
+                    if(existingAuthors.size()>1){
+                        logger.warn(line+"More than 1 author with same matching found for '" + authorsStr + "'. Use arbitrary one.");
+                    }else{
+                        logger.debug(line+"Found exactly 1 author with same matching for " +authorsStr);
+                    }
+                }else{
+                    logger.debug(line+"Found exactly 1 author");
+                }
+                TeamOrPersonBase<?> result = existingAuthors.get(0);
+                authorMap.put(authorsStr, result);
+                return result;
+            }
+        }
     }
 
-    @SuppressWarnings("unchecked")
-    private ImportDeduplicationHelper<SimpleExcelTaxonImportState<?>> deduplicationHelper() {
-        if (deduplicationHelper == null){
-            deduplicationHelper = (ImportDeduplicationHelper<SimpleExcelTaxonImportState<?>>)ImportDeduplicationHelper.NewInstance(this);
+    private Person getExistingPerson(SimpleExcelTaxonImportState<CONFIG> state, String line, Person newPerson) {
+        String authorsStr = newPerson.getNomenclaturalTitle();
+        if (authorMap.get(authorsStr)!= null){
+            return (Person)authorMap.get(authorsStr);
+        }else{
+            Set<String> includeProperties = new HashSet<>();
+            includeProperties.add("nomenclaturalTitle");
+            List<Person> existingPersons = getAgentService().list(newPerson, includeProperties, null, null, null, null);
+            if (existingPersons.isEmpty()){
+                logger.warn(line+"New person: " + authorsStr);
+                authorMap.put(authorsStr, newPerson);
+                addImportSource(state, newPerson);
+                return newPerson;
+            }else{
+                if(existingPersons.size()>1){
+                    existingPersons = findBestMatchingPerson(state, line, existingPersons, authorsStr);
+                    if(existingPersons.size()>1){
+                        existingPersons = findBestMatchingPerson(state, line, existingPersons, authorsStr);
+                        logger.warn(line+"More than 1 person with same matching found for '" + authorsStr + "'. Use arbitrary one.");
+                    }else{
+                        logger.debug(line+"Found exactly 1 person with same matching for " +authorsStr);
+                    }
+                }else{
+                    logger.debug(line+"Found exactly 1 person");
+                }
+                Person result = existingPersons.get(0);
+                authorMap.put(authorsStr, result);
+                return result;
+            }
         }
-        return deduplicationHelper;
+    }
+
+    private List<TeamOrPersonBase<?>> findBestMatchingAuthor(SimpleExcelTaxonImportState<CONFIG> state, String line,
+            List<TeamOrPersonBase<?>> existingAuthors, String authorsStr) {
+        Set<TeamOrPersonBase<?>> noTitleCandidates = new HashSet<>();
+        Set<TeamOrPersonBase<?>> sameTitleCandidates = new HashSet<>();
+        for(TeamOrPersonBase<?> author : existingAuthors){
+            if (author.getTitleCache().equals(authorsStr)){
+                sameTitleCandidates.add(author);
+            }
+        }
+        if(!noTitleCandidates.isEmpty()){
+            return new ArrayList<>(noTitleCandidates);
+        }else if(!sameTitleCandidates.isEmpty()){
+            return new ArrayList<>(sameTitleCandidates);
+        }else{
+            return existingAuthors;
+        }
+    }
+
+    private List<Person> findBestMatchingPerson(SimpleExcelTaxonImportState<CONFIG> state, String line,
+            List<Person> existingPersons, String authorsStr) {
+        Set<Person> noTitleCandidates = new HashSet<>();
+        Set<Person> sameTitleCandidates = new HashSet<>();
+        for(Person person : existingPersons){
+            if (person.getTitleCache().equals(authorsStr)){
+                sameTitleCandidates.add(person);
+            }
+        }
+        if(!noTitleCandidates.isEmpty()){
+            return new ArrayList<>(noTitleCandidates);
+        }else if(!sameTitleCandidates.isEmpty()){
+            return new ArrayList<>(sameTitleCandidates);
+        }else{
+            return existingPersons;
+        }
     }
 
     private Rank getRank(SimpleExcelTaxonImportState<CONFIG> state) {
