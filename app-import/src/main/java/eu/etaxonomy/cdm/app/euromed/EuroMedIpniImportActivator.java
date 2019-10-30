@@ -37,13 +37,10 @@ public class EuroMedIpniImportActivator {
     //database validation status (create, update, validate ...)
     static DbSchemaValidation dbSchemaValidation = DbSchemaValidation.VALIDATE;
 
-//   static final ICdmDataSource cdmDestination = CdmDestinations.localH2();
     static final ICdmDataSource cdmDestination = CdmDestinations.cdm_local_mysql_pesi_euromed();
-//   static final ICdmDataSource cdmDestination = CdmDestinations.cdm_local_euromed2();
+//   static final ICdmDataSource cdmDestination = CdmDestinations.cdm_local_mysql_tmpTest();
 //   static final ICdmDataSource cdmDestination = CdmDestinations.cdm_test_euroMed();
 //   static final ICdmDataSource cdmDestination = CdmDestinations.cdm_production_euromed();
-
-    private static boolean addAuthorsToReferences = true;
 
     //check - import
     static CHECK check = CHECK.IMPORT_WITHOUT_CHECK;

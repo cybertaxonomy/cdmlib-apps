@@ -22,8 +22,8 @@ import org.apache.log4j.Logger;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.TransactionStatus;
 
+import eu.etaxonomy.cdm.api.service.pager.Pager;
 import eu.etaxonomy.cdm.io.berlinModel.BerlinModelTransformer;
-import eu.etaxonomy.cdm.io.common.utils.ImportDeduplicationHelper;
 import eu.etaxonomy.cdm.io.mexico.SimpleExcelTaxonImport;
 import eu.etaxonomy.cdm.io.mexico.SimpleExcelTaxonImportState;
 import eu.etaxonomy.cdm.model.agent.Person;
@@ -86,7 +86,6 @@ public class IpniImport<CONFIG extends IpniImportConfigurator>
 
     private Map<String,NamedArea> areaMap;
 
-    private ImportDeduplicationHelper<SimpleExcelTaxonImportState<?>> deduplicationHelper;
     private NonViralNameParserImpl parser = NonViralNameParserImpl.NewInstance();
 
 
@@ -123,10 +122,20 @@ public class IpniImport<CONFIG extends IpniImportConfigurator>
 
         Rank rank = getRank(state);
         TaxonName taxonName = makeName(state, line, rank);
-        if (0 < getNameService().countByTitle(TaxonName.class, taxonName.getTitleCache(), MatchMode.EXACT, null)){
-            logger.warn(line + "Possbile name duplicate: " + taxonName.getTitleCache());
+        getNameService().saveOrUpdate(taxonName);
+        if (1 < getNameService().countByTitle(TaxonName.class, taxonName.getTitleCache(), MatchMode.EXACT, null)){
+            Pager<TaxonName> candidates = getNameService().findByTitle(TaxonName.class, taxonName.getTitleCache(), MatchMode.EXACT, null, null, null, null, null);
+            boolean fullMatchExists = false;
+            for (TaxonName candidate : candidates.getRecords()){
+                if (candidate.getId() != taxonName.getId() && candidate.getFullTitleCache().equals(taxonName.getFullTitleCache())){
+                    logger.warn(line + "Possbile referenced name duplicate: " + taxonName.getFullTitleCache());
+                    fullMatchExists = true;
+                }
+            }
+            if (!fullMatchExists){
+                logger.warn(line + "Possbile name duplicate: " + taxonName.getTitleCache());
+            }
         }
-//        getNameService().findByTitle(TaxonName.class, taxonName.getTitleCache(), MatchMode.EXACT, null, null, null, null, null);
         TaxonNode parent = getParent(state, line, genusNode, taxonName, rank);
         Reference sec = getSec(parent);
         Taxon taxon = Taxon.NewInstance(taxonName, sec);
@@ -175,7 +184,7 @@ public class IpniImport<CONFIG extends IpniImportConfigurator>
         Map<String, String> record = state.getOriginalRecord();
         String allAreaStr = getValue(record, EM_GEO);
         if(isBlank(allAreaStr)){
-            logger.warn(line+"No distribution data exists.");
+            logger.warn(line+"No distribution data exists: " + taxon.getName().getTitleCache());
         }else{
             String[] areaSplit = allAreaStr.split(",");
             for (String areaStr: areaSplit){
@@ -255,21 +264,23 @@ public class IpniImport<CONFIG extends IpniImportConfigurator>
         if (!nameCache.equals(name.getNameCache())){
             logger.warn(line + "Namecache not equal: " + nameCache +" <-> " + name.getNameCache());
         }
-        TeamOrPersonBase<?> authors = getAuthors(state, line);
+        TeamOrPersonBase<?>[] authors = getAuthors(state, line);
         //all authors are combination authors, no basionym authors exist, according to ERS 2019-10-24
-        name.setCombinationAuthorship(authors);
-        Reference ref = getReference(state, line, authors);
+        name.setCombinationAuthorship(authors[0]);
+        name.setExCombinationAuthorship(authors[1]);
+
+        Reference ref = getReference(state, line, authors[0]);
         name.setNomenclaturalReference(ref);
         String[] collSplit = getCollationSplit(state, line);
         name.setNomenclaturalMicroReference(collSplit[1]);
-        makeNameRemarks(state, line, name);
+        makeNameRemarks(state, name);
 
         addImportSource(state, name);
         return name;
     }
 
     @SuppressWarnings("deprecation")
-    private void makeNameRemarks(SimpleExcelTaxonImportState<CONFIG> state, String line, TaxonName name) {
+    private void makeNameRemarks(SimpleExcelTaxonImportState<CONFIG> state, TaxonName name) {
         Map<String, String> record = state.getOriginalRecord();
         String remarksStr = getValue(record, REFERENCE_REMARKS);
         if (isBlank(remarksStr) || remarksStr.equals("[epublished]")||remarksStr.equals("(epublished)")){
@@ -318,20 +329,20 @@ public class IpniImport<CONFIG extends IpniImportConfigurator>
             example.setAuthorship(authors);
             String[] collSplit = getCollationSplit(state, line);
             example.setVolume(collSplit[0]);
-            example.setDatePublished(getYear(state, line));
+            example.setDatePublished(getYear(state));
             Reference journal = getExistingJournal(state, line);
             example.setInJournal(journal);
             result = getExistingArticle(state, line, example);
             if(result != example){
                 logger.debug(line+ "article existed");
             }else{
-                makeReferenceRemarks(state, line, example);
+                makeReferenceRemarks(state, example);
             }
         }else if ("BS".equals(pTypeStr)){
             IBookSection example = ReferenceFactory.newBookSection();
             String publicationStr = getValue(record, PUBLICATION);
             String authorsForFlIber = getValue(record, AUTHORS);
-            TeamOrPersonBase<?> bookAuthor = getBookSectionBookAuthors(state, line, publicationStr, authorsForFlIber);
+            TeamOrPersonBase<?> bookAuthor = getBookSectionBookAuthors(line, publicationStr, authorsForFlIber);
             if (bookAuthor == null){
                 logger.warn(line + "No author found for booksection of " + publicationStr);
             }
@@ -342,9 +353,8 @@ public class IpniImport<CONFIG extends IpniImportConfigurator>
             if (result != example){
                 logger.debug(line+ "book section existed");
             }else{
-                makeReferenceRemarks(state, line, example);
+                makeReferenceRemarks(state, example);
             }
-            //TODO after import BookSection authors need to be checked for correct in-authors
         }else if ("BO".equals(pTypeStr)){
             result = getExistingBook(state, line, authors);
         }else{
@@ -354,7 +364,7 @@ public class IpniImport<CONFIG extends IpniImportConfigurator>
         return result;
     }
 
-    private TeamOrPersonBase<?> getBookSectionBookAuthors(SimpleExcelTaxonImportState<CONFIG> state, String line,
+    private TeamOrPersonBase<?> getBookSectionBookAuthors(String line,
             String publicationStr, String authorsForFlIber) {
         if ("Fl. Gr. Brit. Ireland".equals(publicationStr)){
             return CdmBase.deproxy(getAgentService().find(UUID.fromString("009cda5a-f6a7-41bf-a323-dc72f83e6066")),Team.class);
@@ -398,7 +408,7 @@ public class IpniImport<CONFIG extends IpniImportConfigurator>
         return null;
     }
 
-    private void makeReferenceRemarks(SimpleExcelTaxonImportState<CONFIG> state, String line, IReference ref) {
+    private void makeReferenceRemarks(SimpleExcelTaxonImportState<CONFIG> state, IReference ref) {
         Map<String, String> record = state.getOriginalRecord();
         String remarksStr = getValue(record, REFERENCE_REMARKS);
         if (isBlank(remarksStr)){
@@ -470,7 +480,7 @@ public class IpniImport<CONFIG extends IpniImportConfigurator>
         example.setAbbrevTitle(publicationStr);
         String[] collSplit = getCollationSplit(state, line);
         example.setVolume(collSplit[0]);
-        example.setDatePublished(getYear(state, line));
+        example.setDatePublished(getYear(state));
         example.setAuthorship(author);
 
         Set<String> includeProperties = new HashSet<>();
@@ -483,7 +493,7 @@ public class IpniImport<CONFIG extends IpniImportConfigurator>
         if (result != example){
             logger.debug("book existed");
         }else{
-            makeReferenceRemarks(state, line, example);
+            makeReferenceRemarks(state, example);
         }
         return result;
     }
@@ -499,7 +509,7 @@ public class IpniImport<CONFIG extends IpniImportConfigurator>
                 addImportSource(state, example);
                 return example;
             }else{
-                existingRefs = findBestMatchingRef(state, line, existingRefs, publicationStr);
+                existingRefs = findBestMatchingRef(existingRefs, publicationStr);
                 if(existingRefs.size()>1){
                     logger.warn(line+"More than 1 reference found for " + publicationStr + ". Use arbitrary one.");
                 }
@@ -510,8 +520,7 @@ public class IpniImport<CONFIG extends IpniImportConfigurator>
         }
     }
 
-    private List<Reference> findBestMatchingRef(SimpleExcelTaxonImportState<CONFIG> state, String line,
-            List<Reference> existingRefs, String publicationStr) {
+    private List<Reference> findBestMatchingRef(List<Reference> existingRefs, String publicationStr) {
         Set<Reference> noTitleCandidates = new HashSet<>();
         Set<Reference> sameTitleCandidates = new HashSet<>();
         for(Reference ref : existingRefs){
@@ -532,17 +541,29 @@ public class IpniImport<CONFIG extends IpniImportConfigurator>
         }
     }
 
-    private VerbatimTimePeriod getYear(SimpleExcelTaxonImportState<CONFIG> state, String line) {
+    private VerbatimTimePeriod getYear(SimpleExcelTaxonImportState<CONFIG> state) {
         Map<String, String> record = state.getOriginalRecord();
         String yearStr = getValue(record, YEAR);
         VerbatimTimePeriod result = TimePeriodParser.parseStringVerbatim(yearStr);
         return result;
     }
 
-    private Map<String,TeamOrPersonBase> authorMap = new HashMap<>();
-    private TeamOrPersonBase<?> getAuthors(SimpleExcelTaxonImportState<CONFIG> state, String line) {
+    private TeamOrPersonBase<?>[] getAuthors(SimpleExcelTaxonImportState<CONFIG> state, String line) {
         Map<String, String> record = state.getOriginalRecord();
         String authorsStr = getValue(record, AUTHORS);
+        String[] split = authorsStr.split(" ex ");
+        TeamOrPersonBase<?>[] result = new TeamOrPersonBase<?>[2];
+        if (split.length == 1){
+            result[0] = getAuthor(state, line, split[0]);
+        }else{
+            result[0] = getAuthor(state, line, split[1]);
+            result[1] = getAuthor(state, line, split[0]);
+        }
+        return result;
+    }
+
+    private Map<String,TeamOrPersonBase<?>> authorMap = new HashMap<>();
+    private TeamOrPersonBase<?> getAuthor(SimpleExcelTaxonImportState<CONFIG> state, String line, String authorsStr) {
         if (authorMap.get(authorsStr)!= null){
             return authorMap.get(authorsStr);
         }else{
@@ -572,7 +593,7 @@ public class IpniImport<CONFIG extends IpniImportConfigurator>
                 return example;
             }else{
                 if(existingAuthors.size()>1){
-                    existingAuthors = findBestMatchingAuthor(state, line, existingAuthors, authorsStr);
+                    existingAuthors = findBestMatchingAuthor(existingAuthors, authorsStr);
                     if(existingAuthors.size()>1){
                         logger.warn(line+"More than 1 author with same matching found for '" + authorsStr + "'. Use arbitrary one.");
                     }else{
@@ -603,9 +624,9 @@ public class IpniImport<CONFIG extends IpniImportConfigurator>
                 return newPerson;
             }else{
                 if(existingPersons.size()>1){
-                    existingPersons = findBestMatchingPerson(state, line, existingPersons, authorsStr);
+                    existingPersons = findBestMatchingPerson(existingPersons, authorsStr);
                     if(existingPersons.size()>1){
-                        existingPersons = findBestMatchingPerson(state, line, existingPersons, authorsStr);
+                        existingPersons = findBestMatchingPerson(existingPersons, authorsStr);
                         logger.warn(line+"More than 1 person with same matching found for '" + authorsStr + "'. Use arbitrary one.");
                     }else{
                         logger.debug(line+"Found exactly 1 person with same matching for " +authorsStr);
@@ -620,8 +641,8 @@ public class IpniImport<CONFIG extends IpniImportConfigurator>
         }
     }
 
-    private List<TeamOrPersonBase<?>> findBestMatchingAuthor(SimpleExcelTaxonImportState<CONFIG> state, String line,
-            List<TeamOrPersonBase<?>> existingAuthors, String authorsStr) {
+    private List<TeamOrPersonBase<?>> findBestMatchingAuthor(List<TeamOrPersonBase<?>> existingAuthors,
+            String authorsStr) {
         Set<TeamOrPersonBase<?>> noTitleCandidates = new HashSet<>();
         Set<TeamOrPersonBase<?>> sameTitleCandidates = new HashSet<>();
         for(TeamOrPersonBase<?> author : existingAuthors){
@@ -638,8 +659,9 @@ public class IpniImport<CONFIG extends IpniImportConfigurator>
         }
     }
 
-    private List<Person> findBestMatchingPerson(SimpleExcelTaxonImportState<CONFIG> state, String line,
+    private List<Person> findBestMatchingPerson(
             List<Person> existingPersons, String authorsStr) {
+
         Set<Person> noTitleCandidates = new HashSet<>();
         Set<Person> sameTitleCandidates = new HashSet<>();
         for(Person person : existingPersons){
