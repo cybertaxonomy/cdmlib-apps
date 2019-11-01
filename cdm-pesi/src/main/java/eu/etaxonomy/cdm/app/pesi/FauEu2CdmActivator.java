@@ -78,7 +78,6 @@ public class FauEu2CdmActivator {
 
         IProgressMonitor monitor = config.getProgressMonitor();
 
-//        config.setDoTaxa(doTaxa);
         config.setDbSchemaValidation(hbm2dll);
         config.getTaxonNodeFilter().orSubtree(uuidTaxonNodeFilter);
         config.getTaxonNodeFilter().setOrder(ORDER.TREEINDEX);

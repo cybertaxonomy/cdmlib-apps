@@ -12,7 +12,6 @@ import eu.etaxonomy.cdm.common.monitor.IRemotingProgressMonitor;
 import eu.etaxonomy.cdm.database.DbSchemaValidation;
 import eu.etaxonomy.cdm.database.ICdmDataSource;
 import eu.etaxonomy.cdm.io.api.application.CdmIoApplicationController;
-import eu.etaxonomy.cdm.io.common.CdmDefaultImport;
 import eu.etaxonomy.cdm.io.common.ImportResult;
 import eu.etaxonomy.cdm.model.name.TaxonName;
 import eu.etaxonomy.cdm.model.taxon.TaxonBase;
@@ -107,7 +106,7 @@ public class CaryophyllalesCacheUpdater {
 	                logger.info("Waiting for monitered work to start ..");
 	                monitor = appCtrInit.getProgressMonitorService().getRemotingMonitor(monitUuid);
 				}
-				
+
 				return result;
 			} catch (ClassNotFoundException e) {
 				logger.error(e);
@@ -116,9 +115,6 @@ public class CaryophyllalesCacheUpdater {
 			}
 		}
 
-		/**
-		 * @param args
-		 */
 		public static void main(String[] args) {
 			ICdmDataSource destination = CdmDestinations.chooseDestination(args) != null ? CdmDestinations.chooseDestination(args) : cdmDestination;
 
@@ -127,7 +123,4 @@ public class CaryophyllalesCacheUpdater {
 			me.doInvoke(destination);
 
 		}
-
 	}
-
-
