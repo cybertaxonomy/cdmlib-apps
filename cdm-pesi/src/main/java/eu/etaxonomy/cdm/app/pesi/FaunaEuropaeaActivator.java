@@ -115,7 +115,7 @@ public class FaunaEuropaeaActivator {
 		fauEuImportConfigurator.setDoMisappliedNames(doMisappliedNames);
 		fauEuImportConfigurator.setDoHeterotypicSynonyms(doHeterotypicSynonyms);
 		fauEuImportConfigurator.setDoHeterotypicSynonymsForBasionyms(doHeterotypicSynonymsForBasionyms);
-		fauEuImportConfigurator.setSourceRefUuid(PesiTransformer.uuidSourceRefFaunaEuropaea);
+		fauEuImportConfigurator.setSourceRefUuid(PesiTransformer.uuidSourceRefFaunaEuropaea_fromSql);
 		fauEuImportConfigurator.setDoAssociatedSpecialists(doAssociatedSpecialists);
 		fauEuImportConfigurator.setDoVernacularNames(doVernacularNames);
 		fauEuImportConfigurator.setDoInferredSynonyms(doInferredSynonyms);

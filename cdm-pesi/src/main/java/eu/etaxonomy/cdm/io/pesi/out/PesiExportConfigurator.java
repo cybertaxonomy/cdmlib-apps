@@ -28,9 +28,9 @@ public class PesiExportConfigurator
 	private static Logger logger = Logger.getLogger(PesiExportConfigurator.class);
 
     private int limitSave = 2000;
+    private int limitSaveDescription = 500;
 
 	private Reference auctReference;
-
 
 	private DO_REFERENCES doReferences = DO_REFERENCES.ALL;
 	private boolean doTaxa = true;
@@ -85,6 +85,13 @@ public class PesiExportConfigurator
 	public void setLimitSave(int limitSave) {
 		this.limitSave = limitSave;
 	}
+
+    public int getLimitSaveDescription() {
+        return limitSaveDescription;
+    }
+    public void setLimitSaveDescription(int limitSaveDescription) {
+        this.limitSaveDescription = limitSaveDescription;
+    }
 
 	/**
 	 * Returns the Reference for a Misapplied Name.

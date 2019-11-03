@@ -41,12 +41,21 @@ public class PesiDestinations {
 
 	public static Source pesi_test_local_CDM_FE2PESI(){
 		String dbms = Source.SQL_SERVER_2008;
-		String strServer = "pesiimport3"; //192.168.1.223
+		String strServer = "pesiimport3"; //130.133.70.48
 		String strDB = "CDM_FE2PESI";
 		int port = 1433;
-		String userName = "pesiExportFaunaEu";
+		String userName = "pesi2019"; //"pesiExportFaunaEu";
 		return makeSource(dbms, strServer, strDB, port, userName, null);
 	}
+
+    public static Source pesi_test_local_CDM_FE2PESI_2(){
+        String dbms = Source.SQL_SERVER_2008;
+        String strServer = "pesiimport3"; //130.133.70.48
+        String strDB = "CDM_FE2PESI";
+        int port = 1433;
+        String userName = "pesi2019";
+        return makeSource(dbms, strServer, strDB, port, userName, null);
+    }
 
 	public static Source pesi_test_local_CDM_IF2PESI(){
 		String dbms = Source.SQL_SERVER_2008;

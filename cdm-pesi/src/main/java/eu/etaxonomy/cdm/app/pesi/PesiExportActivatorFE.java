@@ -26,12 +26,12 @@ import eu.etaxonomy.cdm.io.pesi.out.PesiTransformer;
  * @since 16.02.2010
  */
 public class PesiExportActivatorFE {
-	@SuppressWarnings("unused")
+
 	private static final Logger logger = Logger.getLogger(PesiExportActivatorFE.class);
 
 	//database validation status (create, update, validate ...)
-	static final Source pesiDestination = PesiDestinations.pesi_test_local_CDM_FE2PESI();
-//	static final Source pesiDestination = PesiDestinations.pesi_test_local_CDM_ERMS2PESI();
+//	static final Source pesiDestination = PesiDestinations.pesi_test_local_CDM_FE2PESI();
+	static final Source pesiDestination = PesiDestinations.pesi_test_local_CDM_FE2PESI_2();
 
 //	static final ICdmDataSource cdmSource = CdmDestinations.cdm_test_local_faunaEu_mysql();
 	static final ICdmDataSource cdmSource = CdmDestinations.cdm_test_local_pesi_leer();
@@ -41,26 +41,26 @@ public class PesiExportActivatorFE {
     boolean deleteAll = true;
     DO_REFERENCES doReferences = DO_REFERENCES.ALL;
     boolean doTaxa = true;
+    static boolean doPureNames = true;  //TODO does FE have pure names? => there is an exception during nameRel import
     boolean doTreeIndex = true;
     boolean doInferredSynonyms = false;  //xx takes long, unclear what it does
     boolean doRelTaxa = true;
     boolean doAdditionalTaxonSource = true;
     boolean doDescriptions = true;
-    boolean doEcologyAndLink = true;
 
 // ************************ NONE **************************************** //
 
 //  boolean deleteAll = false;
 //  static DO_REFERENCES doReferences =  DO_REFERENCES.NONE;
 //  boolean doTaxa = false;
+//  static boolean doPureNames = false;  //TODO does FE have pure names? => there is an exception during nameRel import
 //  boolean doTreeIndex = doTaxa; //only with doTaxa
 //  boolean doInferredSynonyms = false; //only with doTaxa
 //  boolean doRelTaxa = false;
 //  boolean doAdditionalTaxonSource = false;
-//  boolean doDescriptions = false;
-//  boolean doEcologyAndLink = doDescriptions;
+//  boolean doDescriptions = true;
 
-    static boolean doPureNames = false;  //FE has no pure names; TODO test if true
+  boolean doEcologyAndLink = false; //FE does not have ecology and link data
 
     //check - export
     static final CHECK check = CHECK.EXPORT_WITHOUT_CHECK;
@@ -69,9 +69,12 @@ public class PesiExportActivatorFE {
     static final int nameIdStart = 10000000;
     static final IdType idType = IdType.CDM_ID_WITH_EXCEPTIONS;
 
-    static final int partitionSize = 1000;
+    static final int partitionSize = 2000;
+    static final int partitionSizeDescription = 200;
+
 
     public boolean  doExport(ICdmDataSource source, Source destination){
+        logger.trace("Bind logger to pesi module");
         System.out.println("Start export from " + source.getDatabase() + " to PESI ("+ pesiDestination.getDatabase() + ") ...");
 
         PesiTransformer transformer = new PesiTransformer(destination);
@@ -98,6 +101,7 @@ public class PesiExportActivatorFE {
 
         config.setCheck(check);
         config.setLimitSave(partitionSize);
+        config.setLimitSaveDescription(partitionSizeDescription);
         config.setIdType(idType);
         config.setNameIdStart(nameIdStart);
         if (deleteAll){
@@ -116,5 +120,6 @@ public class PesiExportActivatorFE {
 		PesiExportActivatorFE ex = new PesiExportActivatorFE();
 		ICdmDataSource source = CdmDestinations.chooseDestination(args) != null ? CdmDestinations.chooseDestination(args) : cdmSource;
 		ex.doExport(source, pesiDestination);
+		System.exit(0);
 	}
 }
