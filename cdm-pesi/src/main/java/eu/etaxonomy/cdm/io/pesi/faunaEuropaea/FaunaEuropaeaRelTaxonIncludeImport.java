@@ -1151,7 +1151,7 @@ public class FaunaEuropaeaRelTaxonIncludeImport extends FaunaEuropaeaImportBase 
 	        Set<TaxonBase> synonymList = new HashSet<TaxonBase>();
 
 
-	        while ((taxonList  = getTaxonService().listTaxaByName(Taxon.class, "*", "*", "*", "*", "*", Rank.SPECIES(), pageSize, pageNumber)).size() > 0) {
+	        while ((taxonList  = getTaxonService().listTaxaByName(Taxon.class, "*", "*", "*", "*", "*", Rank.SPECIES(), pageSize, pageNumber, null)).size() > 0) {
 	            HashMap<Integer, TaxonName> inferredSynonymsDataToBeSaved = new HashMap<>();
 
 	            logger.info("Fetched " + taxonList.size() + " " + parentPluralString + ". Importing...");
@@ -1175,7 +1175,7 @@ public class FaunaEuropaeaRelTaxonIncludeImport extends FaunaEuropaeaImportBase 
 	            pageNumber++;
 	        }
 	        taxonList = null;
-	        while ((taxonList  = getTaxonService().listTaxaByName(Taxon.class, "*", "*", "*", "*", "*", Rank.SUBSPECIES(), pageSize, pageNumber)).size() > 0) {
+	        while ((taxonList  = getTaxonService().listTaxaByName(Taxon.class, "*", "*", "*", "*", "*", Rank.SUBSPECIES(), pageSize, pageNumber, null)).size() > 0) {
 	            HashMap<Integer, TaxonName> inferredSynonymsDataToBeSaved = new HashMap<>();
 
 	            logger.info("Fetched " + taxonList.size() + " " + parentPluralString  + ". Exporting...");

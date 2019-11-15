@@ -697,7 +697,7 @@ public class PesiTaxonExport extends PesiExportBase {
         }
 
 		List<TaxonBase> taxonList = null;
-		while ((taxonList  = getTaxonService().listTaxaByName(Taxon.class, "*", "*", "*", "*", "*", Rank.SPECIES(), pageSize, pageNumber)).size() > 0) {
+		while ((taxonList  = getTaxonService().listTaxaByName(Taxon.class, "*", "*", "*", "*", "*", Rank.SPECIES(), pageSize, pageNumber, null)).size() > 0) {
 
 		    Map<Integer, TaxonName> inferredSynonymsDataToBeSaved = new HashMap<>();
 
@@ -730,7 +730,7 @@ public class PesiTaxonExport extends PesiExportBase {
 			pageNumber++;
 		}
 		taxonList = null;
-		while ((taxonList  = getTaxonService().listTaxaByName(Taxon.class, "*", "*", "*", "*", "*", Rank.SUBSPECIES(), pageSize, pageNumber)).size() > 0) {
+		while ((taxonList  = getTaxonService().listTaxaByName(Taxon.class, "*", "*", "*", "*", "*", Rank.SUBSPECIES(), pageSize, pageNumber, null)).size() > 0) {
 			Map<Integer, TaxonName> inferredSynonymsDataToBeSaved = new HashMap<>();
 
 			logger.info("Fetched " + taxonList.size() + " " + parentPluralString + ". Exporting...");
