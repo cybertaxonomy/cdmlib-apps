@@ -38,7 +38,9 @@ public class BupleurumExportActivator {
     private static final Logger logger = Logger.getLogger(BupleurumExportActivator.class);
 
     static final ICdmDataSource greeceSource = CdmDestinations.cdm_production_greece_checklist();
-    static final ICdmDataSource cdmDestination = CdmDestinations.cdm_local_test_mysql();
+//    static final ICdmDataSource cdmDestination = CdmDestinations.cdm_local_test_mysql();
+    static final ICdmDataSource cdmDestination = CdmDestinations.cdm_local_cdmtest_mysql();
+//    static final ICdmDataSource cdmDestination = CdmDestinations.cdm_test_bupleurum
 
     static final String sourceRefTitle = "Flora of Greece";
     static final UUID sourceRefUuid = UUID.fromString("f88e33e5-1f6a-463e-b6fd-220d5e93d810");
