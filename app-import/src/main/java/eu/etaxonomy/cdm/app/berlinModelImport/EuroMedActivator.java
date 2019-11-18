@@ -28,8 +28,8 @@ import org.springframework.transaction.TransactionStatus;
 import eu.etaxonomy.cdm.api.application.FirstDataInserter;
 import eu.etaxonomy.cdm.api.application.ICdmRepository;
 import eu.etaxonomy.cdm.api.service.IGroupService;
+import eu.etaxonomy.cdm.api.service.description.DescriptionAggregationConfigurationBase.AggregationMode;
 import eu.etaxonomy.cdm.api.service.description.DistributionAggregation;
-import eu.etaxonomy.cdm.api.service.description.DistributionAggregation.AggregationMode;
 import eu.etaxonomy.cdm.api.service.description.DistributionAggregationConfiguration;
 import eu.etaxonomy.cdm.api.service.pager.Pager;
 import eu.etaxonomy.cdm.app.common.CdmDestinations;
@@ -474,7 +474,7 @@ public class EuroMedActivator {
 
                 DistributionAggregationConfiguration aggregationConfig = DistributionAggregationConfiguration
                         .NewInstance(
-                        AggregationMode.byAreasAndRanks,
+                        AggregationMode.byAreasAndRanks(),
                         areaPager.getRecords(),
                         filter,
                         DefaultProgressMonitor.NewInstance());
