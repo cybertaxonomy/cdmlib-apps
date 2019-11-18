@@ -6,7 +6,7 @@
 * The contents of this file are subject to the Mozilla Public License Version 1.1
 * See LICENSE.TXT at the top of this package for the full license terms.
 */
-package eu.etaxonomy.cdm.app.pesi;
+package eu.etaxonomy.cdm.app.greece;
 
 import java.util.Calendar;
 import java.util.UUID;
@@ -32,38 +32,34 @@ import eu.etaxonomy.cdm.model.reference.ReferenceFactory;
  * @author a.mueller
  * @since 17.08.2019
  */
-public class FauEu2CdmActivator {
+public class BupleurumExportActivator {
 
     @SuppressWarnings("unused")
-    private static final Logger logger = Logger.getLogger(FauEu2CdmActivator.class);
+    private static final Logger logger = Logger.getLogger(BupleurumExportActivator.class);
 
-    static final ICdmDataSource fauEuSource = CdmDestinations.test_cdm_pesi_fauna_europaea();
-    static final ICdmDataSource cdmDestination = CdmDestinations.cdm_test_local_pesi_leer();
+    static final ICdmDataSource greeceSource = CdmDestinations.cdm_production_greece_checklist();
+    static final ICdmDataSource cdmDestination = CdmDestinations.cdm_local_test_mysql();
 
-    static final String sourceRefTitle = "Fauna Europaea PESI import.";
-    static final UUID sourceRefUuid = UUID.fromString("f27a5e67-d065-4b79-8d41-eabd3ae0edd0");
+    static final String sourceRefTitle = "Flora of Greece";
+    static final UUID sourceRefUuid = UUID.fromString("f88e33e5-1f6a-463e-b6fd-220d5e93d810");
+
+    static final DbSchemaValidation schemaValidation = DbSchemaValidation.CREATE;
 
     //check - import
     static final CHECK check = CHECK.IMPORT_WITHOUT_CHECK;
 
     static final int partitionSize = 5000;
 
-    static final boolean doTaxa = false;
-    static final boolean doDescriptions = true;
+    static final boolean doTaxa = true;
+    static final boolean doDescriptions = false;
 
     static final boolean doConcurrent = false;
     //auditing
-    static final boolean registerAuditing = false;
+    static final boolean registerAuditing = true;
 
 // ***************** ALL ************************************************//
 
-//    >50 records
-//    UUID uuidTaxonNodeFilter = UUID.fromString("0e8bc793-f434-47c4-ba82-650c3bbd83bf");
-    //>17000 records
-//    UUID uuidTaxonNodeFilter = UUID.fromString("7ee4983b-78a3-44c5-9af2-beb0494b5fc8");
-    //complete
-    UUID uuidTaxonNodeFilter = UUID.fromString("feaa3025-a4a9-499a-b62f-15b3b96e5c55");
-
+    UUID uuidBupleurumTaxonNodeFilter = UUID.fromString("51e768cf-321b-4108-8bee-46143996b033");
 
     private void doImport(ICdmDataSource source, ICdmDataSource destination, DbSchemaValidation hbm2dll){
 
@@ -79,7 +75,7 @@ public class FauEu2CdmActivator {
         IProgressMonitor monitor = config.getProgressMonitor();
 
         config.setDbSchemaValidation(hbm2dll);
-        config.getTaxonNodeFilter().orSubtree(uuidTaxonNodeFilter);
+        config.getTaxonNodeFilter().orSubtree(uuidBupleurumTaxonNodeFilter);
         config.getTaxonNodeFilter().setOrder(ORDER.TREEINDEX);
         if (doConcurrent){
             ITaxonNodeOutStreamPartitioner partitioner = TaxonNodeOutStreamPartitionerConcurrent
@@ -110,8 +106,8 @@ public class FauEu2CdmActivator {
 
     public static void main(String[] args) {
         ICdmDataSource cdmDB = CdmDestinations.chooseDestination(args) != null ? CdmDestinations.chooseDestination(args) : cdmDestination;
-        FauEu2CdmActivator myImport = new FauEu2CdmActivator();
-        myImport.doImport(fauEuSource, cdmDB, DbSchemaValidation.VALIDATE);
+        BupleurumExportActivator myImport = new BupleurumExportActivator();
+        myImport.doImport(greeceSource, cdmDB, schemaValidation);
         System.exit(0);
     }
 }
