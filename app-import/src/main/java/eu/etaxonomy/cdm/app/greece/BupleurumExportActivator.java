@@ -39,8 +39,8 @@ public class BupleurumExportActivator {
 
     static final ICdmDataSource greeceSource = CdmDestinations.cdm_production_greece_checklist();
 //    static final ICdmDataSource cdmDestination = CdmDestinations.cdm_local_test_mysql();
-    static final ICdmDataSource cdmDestination = CdmDestinations.cdm_local_cdmtest_mysql();
-//    static final ICdmDataSource cdmDestination = CdmDestinations.cdm_test_bupleurum
+//    static final ICdmDataSource cdmDestination = CdmDestinations.cdm_local_cdmtest_mysql();
+    static final ICdmDataSource cdmDestination = CdmDestinations.cdm_test_bupleurum();
 
     static final String sourceRefTitle = "Flora of Greece";
     static final UUID sourceRefUuid = UUID.fromString("f88e33e5-1f6a-463e-b6fd-220d5e93d810");
@@ -54,6 +54,7 @@ public class BupleurumExportActivator {
 
     static final boolean doTaxa = true;
     static final boolean doDescriptions = false;
+    static final boolean removeImportSources = true;
 
     static final boolean doConcurrent = false;
     //auditing
@@ -73,6 +74,7 @@ public class BupleurumExportActivator {
         config.setDoTaxa(doTaxa);
         config.setDoDescriptions(doDescriptions);
         config.setSourceReference(getSourceRef());
+        config.setRemoveImportSources(removeImportSources);
 
         IProgressMonitor monitor = config.getProgressMonitor();
 
