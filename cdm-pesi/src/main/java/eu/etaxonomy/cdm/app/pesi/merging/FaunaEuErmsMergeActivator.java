@@ -19,7 +19,6 @@ import eu.etaxonomy.cdm.api.application.CdmApplicationController;
 import eu.etaxonomy.cdm.api.service.exception.ReferencedObjectUndeletableException;
 import eu.etaxonomy.cdm.api.service.pager.Pager;
 import eu.etaxonomy.cdm.app.common.CdmDestinations;
-
 import eu.etaxonomy.cdm.database.DbSchemaValidation;
 import eu.etaxonomy.cdm.database.ICdmDataSource;
 import eu.etaxonomy.cdm.hibernate.HibernateProxyHelper;
@@ -59,7 +58,7 @@ public class FaunaEuErmsMergeActivator {
 	static String sFileName = "c:\\test";
 
 	private void initDb(ICdmDataSource db) {
-		
+
 		// Init source DB
 		appCtrInit = CdmIoApplicationController.NewInstance(db, DbSchemaValidation.VALIDATE, false);
 
