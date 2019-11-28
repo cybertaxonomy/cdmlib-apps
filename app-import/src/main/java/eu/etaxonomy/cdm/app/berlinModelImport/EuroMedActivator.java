@@ -20,6 +20,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 import org.apache.log4j.Logger;
 import org.springframework.security.core.GrantedAuthority;
@@ -475,7 +476,7 @@ public class EuroMedActivator {
                 DistributionAggregationConfiguration aggregationConfig = DistributionAggregationConfiguration
                         .NewInstance(
                         AggregationMode.byAreasAndRanks(),
-                        areaPager.getRecords(),
+                        areaPager.getRecords().stream().map(area->area.getUuid()).collect(Collectors.toList()),
                         filter,
                         DefaultProgressMonitor.NewInstance());
                 distributionAggregation.invoke(aggregationConfig, app);
