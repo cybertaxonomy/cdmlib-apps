@@ -6,7 +6,7 @@
 * The contents of this file are subject to the Mozilla Public License Version 1.1
 * See LICENSE.TXT at the top of this package for the full license terms.
 */
-package eu.etaxonomy.cdm.io.pesi.erms.validation;
+package eu.etaxonomy.cdm.app.pesi.validate;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -15,8 +15,8 @@ import java.sql.Timestamp;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 
-import eu.etaxonomy.cdm.app.pesi.PesiDestinations;
-import eu.etaxonomy.cdm.app.pesi.PesiSources;
+import eu.etaxonomy.cdm.app.common.PesiDestinations;
+import eu.etaxonomy.cdm.app.common.PesiSources;
 import eu.etaxonomy.cdm.common.CdmUtils;
 import eu.etaxonomy.cdm.io.common.Source;
 import eu.etaxonomy.cdm.io.pesi.out.PesiTransformer;

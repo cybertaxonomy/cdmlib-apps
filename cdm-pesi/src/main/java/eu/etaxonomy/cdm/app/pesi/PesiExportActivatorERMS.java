@@ -11,6 +11,7 @@ package eu.etaxonomy.cdm.app.pesi;
 import org.apache.log4j.Logger;
 
 import eu.etaxonomy.cdm.app.common.CdmDestinations;
+import eu.etaxonomy.cdm.app.common.PesiDestinations;
 import eu.etaxonomy.cdm.database.ICdmDataSource;
 import eu.etaxonomy.cdm.io.common.CdmDefaultExport;
 import eu.etaxonomy.cdm.io.common.DbExportConfiguratorBase.IdType;
@@ -26,15 +27,16 @@ import eu.etaxonomy.cdm.io.pesi.out.PesiTransformer;
  * @since 16.02.2010
  */
 public class PesiExportActivatorERMS {
-	@SuppressWarnings("unused")
+
+    @SuppressWarnings("unused")
 	private static final Logger logger = Logger.getLogger(PesiExportActivatorERMS.class);
 
 	static final ICdmDataSource cdmSource = CdmDestinations.cdm_test_local_mysql_erms();
 //    static final ICdmDataSource cdmSource = CdmDestinations.cdm_test_local_mysql_erms2();
 
 	//database validation status (create, update, validate ...)
-//	static final Source pesiDestination = PesiDestinations.pesi_test_local_CDM_ERMS2PESI();
-	static final Source pesiDestination = PesiDestinations.pesi_test_local_CDM_ERMS2PESI_2();
+	static final Source pesiDestination = PesiDestinations.pesi_test_local_CDM_ERMS2PESI();
+//	static final Source pesiDestination = PesiDestinations.pesi_test_local_CDM_ERMS2PESI_2();
 
 // ****************** ALL *****************************************
 

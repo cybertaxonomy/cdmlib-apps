@@ -75,10 +75,10 @@ public class FaunaEuErmsMergeActivator {
 
 		//set the ranks of Agnatha and Gnathostomata to 50 instead of 45
 		List<TaxonBase> taxaToChangeRank = new ArrayList<>();
-		Pager<TaxonBase> agnatha = sc.appCtrInit.getTaxonService().findTaxaByName(TaxonBase.class, "Agnatha", null, null, null, "*", Rank.INFRAPHYLUM(), 10, 0);
+		Pager<TaxonBase> agnatha = sc.appCtrInit.getTaxonService().findTaxaByName(TaxonBase.class, "Agnatha", null, null, null, "*", Rank.INFRAPHYLUM(), 10, 0, null);
 		List<TaxonBase> agnathaList = agnatha.getRecords();
 		taxaToChangeRank.addAll(agnathaList);
-		Pager<TaxonBase> gnathostomata = sc.appCtrInit.getTaxonService().findTaxaByName(TaxonBase.class, "Gnathostomata", null, null, null, "*", Rank.INFRAPHYLUM(), 10, 0);
+		Pager<TaxonBase> gnathostomata = sc.appCtrInit.getTaxonService().findTaxaByName(TaxonBase.class, "Gnathostomata", null, null, null, "*", Rank.INFRAPHYLUM(), 10, 0, null);
 		List<TaxonBase> gnathostomataList = gnathostomata.getRecords();
 		taxaToChangeRank.addAll(gnathostomataList);
 
@@ -231,8 +231,8 @@ public class FaunaEuErmsMergeActivator {
 	}
 
 	private  void mergeErmsSynFaunaEuAcc (List<List<String>> ermsAccFaEuSyn){
-		//occurence: verknüpfe statt dem Fauna Europaea Taxon das akzeptierte Taxon, des Synonyms mit der Occurence (CDM -> distribution)
-		//suche distribution (über das Taxon der TaxonDescription), dessen Taxon, das entsprechende Fauna Eu Taxon ist und verknüpfe es mit dem akzeptieren Taxon des Erms Syn
+		//occurence: connect instead of Fauna Europaea taxon the accepted taxon of the synonym with the occurrence (CDM -> distribution)
+		//search distribution (via taxon of the taxon description), of which the taxon is the according Fauna Eu taxon and connect it with the accepted taxon of the ERMS syn
 		for (List<String> row: ermsAccFaEuSyn){
 		    Taxon taxonFaunaEu = (Taxon)appCtrInit.getTaxonService().find(UUID.fromString(row.get(faunaEuUuid)));
 			Synonym synErms = (Synonym)appCtrInit.getTaxonService().find(UUID.fromString(row.get(ermsUuid)));
@@ -298,12 +298,10 @@ public class FaunaEuErmsMergeActivator {
 
 	}
 
-
-
 	private void updateNameRelationships(List<List<String>> ermsAccFaEuSyn){
-		//suche alle NameRelationships aus FaunaEu und Erms, wo (faunaEu)relatedFrom.name.titleCache = (erms)relatedFrom.name.titleCache und ersetze in der faunaEu Relationship den relatedTo.name durch den relatedTo.name der erms-relationship
-		//wenn es diese relationship noch nicht gibt und der typ der gleiche ist!!
-		//wenn der relatedTo Name zu einem Erms Taxon und einem FaunaEu Synonym gehört
+		//search all NameRelationships of FaunaEu and Erms, where (faunaEu)relatedFrom.name.titleCache = (erms)relatedFrom.name.titleCache and replace in faunaEu relationship the relatedTo.name by the relatedTo.name of the erms-relationship
+		//if this relationship does not yet exist and the type is the same!!
+		//if the relatedTo name belongs to an Erms taxon and to an FaunaEu synonym
 
 		Synonym synFaunaEu;
 		Taxon taxonErms;

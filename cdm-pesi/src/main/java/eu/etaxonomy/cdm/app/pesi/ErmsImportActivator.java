@@ -15,6 +15,8 @@ import org.apache.log4j.Logger;
 
 import eu.etaxonomy.cdm.api.application.ICdmRepository;
 import eu.etaxonomy.cdm.app.common.CdmDestinations;
+import eu.etaxonomy.cdm.app.common.PesiDestinations;
+import eu.etaxonomy.cdm.app.common.PesiSources;
 import eu.etaxonomy.cdm.database.DbSchemaValidation;
 import eu.etaxonomy.cdm.database.ICdmDataSource;
 import eu.etaxonomy.cdm.io.common.CdmDefaultImport;
@@ -24,7 +26,6 @@ import eu.etaxonomy.cdm.io.common.Source;
 import eu.etaxonomy.cdm.io.pesi.erms.ErmsImportConfigurator;
 import eu.etaxonomy.cdm.io.pesi.out.PesiTransformer;
 import eu.etaxonomy.cdm.model.name.TaxonName;
-import eu.etaxonomy.cdm.model.reference.ISourceable;
 
 /**
  * @author a.mueller
@@ -38,17 +39,16 @@ public class ErmsImportActivator {
 
 //	static final ICdmDataSource cdmDestination = CdmDestinations.test_cdm_pesi_erms();
 
-//	static final ICdmDataSource cdmDestination = CdmDestinations.cdm_test_local_mysql_erms();
+	static final ICdmDataSource cdmDestination = CdmDestinations.cdm_test_local_mysql_erms();
 //	static final ICdmDataSource cdmDestination = CdmDestinations.cdm_test_local_mysql_erms2();
-	static final ICdmDataSource cdmDestination = CdmDestinations.cdm_test_local_faunaEu_mysql();
+//	static final ICdmDataSource cdmDestination = CdmDestinations.cdm_test_local_faunaEu_mysql();
 
-
-//	static final Source pesiDestination =
-//	        cdmDestination == CdmDestinations.cdm_test_local_mysql_erms()?
-//	                PesiDestinations.pesi_test_local_CDM_ERMS2PESI():
-//	                PesiDestinations.pesi_test_local_CDM_ERMS2PESI_2()    ;
 
 	static final boolean includeExport2PESI = false;
+	static final Source pesiDestination = !includeExport2PESI ? null :
+	        cdmDestination == CdmDestinations.cdm_test_local_mysql_erms()?
+	                PesiDestinations.pesi_test_local_CDM_ERMS2PESI():
+	                PesiDestinations.pesi_test_local_CDM_ERMS2PESI_2()    ;
 
 	static final UUID classificationUuid = UUID.fromString("6fa988a9-10b7-48b0-a370-2586fbc066eb");
 	static final String classificationName = "ERMS 2019";
@@ -62,26 +62,13 @@ public class ErmsImportActivator {
 
 // ***************** ALL ************************************************//
 
-//	static final DO_REFERENCES doReferences = DO_REFERENCES.ALL;
-//	static final boolean doTaxa = true;
-//	static final boolean doRelTaxa = doTaxa; //should always run with doTaxa because dependent on state from doTaxa
-//	static final boolean doSourceUse = true;
-//	static final boolean doCommonNames = true;
-//    static final boolean doNotes = true;
-//	static final boolean doDistributions = true;
-//	static final boolean doLinks = true;
-//	static final boolean doImages = true;
-
-//******************** NONE ***************************************//
-//
 	static final DO_REFERENCES doReferences = DO_REFERENCES.ALL;
 	static final boolean doTaxa = true;
-	static final boolean doRelTaxa = doTaxa; //should always run with doTaxa because depends on state from doTaxa
-
+	static final boolean doRelTaxa = doTaxa; //should always run with doTaxa because dependent on state from doTaxa
 	static final boolean doSourceUse = true;
 	static final boolean doCommonNames = true;
     static final boolean doNotes = true;
-    static final boolean doDistributions = true;
+	static final boolean doDistributions = true;
 	static final boolean doLinks = true;
 	static final boolean doImages = true;
 
@@ -90,10 +77,11 @@ public class ErmsImportActivator {
 //	static final DO_REFERENCES doReferences = DO_REFERENCES.NONE;
 //	static final boolean doTaxa = false;
 //	static final boolean doRelTaxa = doTaxa; //should always run with doTaxa because depends on state from doTaxa
+//
 //	static final boolean doSourceUse = false;
 //	static final boolean doCommonNames = false;
-//	static final boolean doNotes = false;
-//	static final boolean doDistributions = false;
+//    static final boolean doNotes = false;
+//    static final boolean doDistributions = false;
 //	static final boolean doLinks = false;
 //	static final boolean doImages = false;
 
@@ -135,7 +123,7 @@ public class ErmsImportActivator {
 
 		if (config.getCheck().equals(CHECK.CHECK_AND_IMPORT)  || config.getCheck().equals(CHECK.IMPORT_WITHOUT_CHECK)    ){
 			ICdmRepository app = ermsImport.getCdmAppController();
-			ISourceable<?> obj = app.getCommonService().getSourcedObjectByIdInSource(TaxonName.class, "1000027", null);
+			TaxonName obj = app.getCommonService().getSourcedObjectByIdInSource(TaxonName.class, "1000027", null);
 			logger.info(obj);
 		}
 		System.out.println("End import from ("+ source.getDatabase() + ") to " + destination.getDatabase() + "...");
@@ -153,7 +141,7 @@ public class ErmsImportActivator {
 			ermsExport.doRelTaxa = doRelTaxa;
             ermsExport.doDescriptions = doImages;
 
-//			ermsExport.doExport(cdmDB, pesiDestination);
+			ermsExport.doExport(cdmDB, pesiDestination);
 		}
 		System.exit(0);
 	}
