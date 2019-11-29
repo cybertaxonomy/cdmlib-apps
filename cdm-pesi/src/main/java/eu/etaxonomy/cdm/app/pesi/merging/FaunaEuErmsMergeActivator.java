@@ -2,7 +2,6 @@ package eu.etaxonomy.cdm.app.pesi.merging;
 
 import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -58,11 +57,8 @@ public class FaunaEuErmsMergeActivator {
 	static String sFileName = "c:\\test";
 
 	private void initDb(ICdmDataSource db) {
-
 		// Init source DB
 		appCtrInit = CdmIoApplicationController.NewInstance(db, DbSchemaValidation.VALIDATE, false);
-
-
 	}
 
 	public static void main(String[] args) {
@@ -115,11 +111,7 @@ public class FaunaEuErmsMergeActivator {
 			}
 			//close the file
 			bufRdr.close();
-		} catch (FileNotFoundException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		return result;
@@ -261,7 +253,6 @@ public class FaunaEuErmsMergeActivator {
 				}
 			}
 
-
 			//Child-Parent Relationship aktualisieren -> dem Child des Fauna Europaea Taxons als parent das akzeptierte Taxon von synErms
 			Set<TaxonNode> nodesErms = taxonErms.getTaxonNodes();
 			Set<TaxonNode> nodesFaunaEu =taxonFaunaEu.getTaxonNodes();
@@ -311,7 +302,7 @@ public class FaunaEuErmsMergeActivator {
 			List<NameRelationship> relSynFaunaEu = appCtrInit.getNameService().listToNameRelationships(synFaunaEu.getName(), null, 100, 0, null, null);
 			List<NameRelationship> relTaxonErms = appCtrInit.getNameService().listToNameRelationships(taxonErms.getName(), null, 100, 0, null, null);
 
-			List<NameRelationship> deleteRel = new ArrayList<NameRelationship>();
+			List<NameRelationship> deleteRel = new ArrayList<>();
 			for (NameRelationship relFauEu: relSynFaunaEu){
 				boolean createNewRelationship = true;
 				for (NameRelationship relErms: relTaxonErms){
@@ -345,7 +336,7 @@ public class FaunaEuErmsMergeActivator {
 		Taxon taxonFaunaEu;
 		Synonym synErms;
 		Taxon taxonErms;
-		Set<Taxon> acceptedTaxa = new HashSet<Taxon>();
+		Set<Taxon> acceptedTaxa = new HashSet<>();
 		for (List<String> row: ermsSynFaEuAcc){
 			taxonFaunaEu = (Taxon)appCtrInit.getTaxonService().find(UUID.fromString(row.get(faunaEuUuid)));
 			synErms = (Synonym)appCtrInit.getTaxonService().find(UUID.fromString(row.get(ermsUuid)));
@@ -462,10 +453,10 @@ public class FaunaEuErmsMergeActivator {
 	}
 
 	//after merging faunaEu taxon and erms taxon, the originalSource of the faunaEu taxon has to be moved to the erms taxon
-	private void moveOriginalDbToErmsTaxon(TaxonBase faunaEu, TaxonBase erms){
-		Set<IdentifiableSource> sourcesFaunaEu = faunaEu.getSources();
+	private void moveOriginalDbToErmsTaxon(TaxonBase<?> faunaEuTaxon, TaxonBase<?> ermsTaxon){
+		Set<IdentifiableSource> sourcesFaunaEu = faunaEuTaxon.getSources();
 		IdentifiableSource sourceFaunaEu = sourcesFaunaEu.iterator().next();
-		erms.addSource(sourceFaunaEu);
+		ermsTaxon.addSource(sourceFaunaEu);
 	}
 
 	//merged taxon should have a new sec reference
