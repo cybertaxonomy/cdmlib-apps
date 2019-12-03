@@ -20,6 +20,11 @@ import eu.etaxonomy.cdm.io.pesi.euromed.EuroMedSourcesImportConfigurator;
 import eu.etaxonomy.cdm.io.pesi.out.PesiTransformer;
 
 /**
+ * Adds the Euro+Med Source to all relevant objects.
+ * This is required before running the PESI export.
+ * It should never run on E+M production but
+ * always on a copy.
+ *
  * @author a.mueller
  * @since 08.10.2019
  */

@@ -1655,7 +1655,7 @@ public class PesiTaxonExport extends PesiExportBase {
 					TaxonName typeName = nameTypeDesignation.getTypeName();
 					if (typeName != null) {
 					    if (typeName.getTaxonBases().isEmpty()){
-					        logger.warn("type name does not belong to a taxon and therefore is expected to not be a European taxon. Type name not added. Type name: " + typeName.getTitleCache() + ", typified name: " + taxonName.getTitleCache());
+					        logger.warn("Type name does not belong to a taxon and therefore is not expected to be a European taxon. Type name not added. Type name: " + typeName.getTitleCache() + ", typified name: " + taxonName.getTitleCache());
 					    }else{
 					        result = state.getDbId(typeName);
 					    }

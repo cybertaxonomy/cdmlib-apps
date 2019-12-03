@@ -28,10 +28,10 @@ import eu.etaxonomy.cdm.model.description.PresenceAbsenceTerm;
 import eu.etaxonomy.cdm.model.taxon.TaxonRelationshipType;
 
 /**
- * Tests the ERMS -> PESI pipeline by comparing the source DB with destination PESI DB.
+ * Tests the E+M -> PESI pipeline by comparing the source DB with destination PESI DB.
  *
  * @author a.mueller
- * @since 01.09.2019
+ * @since 08.10.2019
  */
 public class PesiEuroMedValidator {
 
@@ -310,7 +310,7 @@ public class PesiEuroMedValidator {
         boolean success = true;
         ResultSet srcRS = source.getResultSet("SELECT CAST(tn.id as char(20)) tid, tb.uuid as GUID, pt.id parentId, "
                 + "      tn.rank_id, rank.titleCache rank_name, "
-                + "      sec.titleCache secTitle,"
+                + "      sec.titleCache secTitle, "
                 + "      tn.genusOrUninomial, tn.infraGenericEpithet, tn.specificEpithet, tn.infraSpecificEpithet, "
                 + "      tn.nameCache, tn.authorshipCache, tn.titleCache nameTitleCache, tn.fullTitleCache nameFullTitleCache, "
                 + "      tb.DTYPE taxStatus, taxRelType.uuid taxRelTypeUuid, nsType.id nsId, nsType.idInVocabulary nsTitle, "
@@ -412,7 +412,8 @@ public class PesiEuroMedValidator {
 
     private String makeNomRefString(ResultSet srcRS) throws SQLException {
         //there is no pure nomRefString field in CDM and also computing is only possible
-        //with cache strategy which requires a running CDM instance. So this is a workaround that maybe needs to be adapted
+        //with cache strategy which requires a running CDM instance. So this is a workaround
+        //that maybe needs to be adapted
         String result = null;
         String fullTitle = srcRS.getString("nameFullTitleCache");
         String nameTitleCache = srcRS.getString("nameTitleCache");
