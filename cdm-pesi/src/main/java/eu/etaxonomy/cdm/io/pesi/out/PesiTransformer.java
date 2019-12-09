@@ -598,7 +598,11 @@ public final class PesiTransformer extends ExportTransformerBase{
 	//continued ERMS areas without variables
 	//...
 	private static int AREA_WALES = 293;
-	private static int AREA_NORTH_AMERICA = 294; //FE common names
+
+	//new E+M areas
+	private static int AREA_SERBIA = 294;
+	private static int AREA_KOSOVO = 295;
+
 
 	//FauEu area UUIDs
     private static UUID uuidAreaAD = UUID.fromString("38dd31d2-8275-4b05-8b85-eb71a390d67f");
@@ -981,9 +985,6 @@ public final class PesiTransformer extends ExportTransformerBase{
 			else {
 				logger.warn("Unknown Country: " + area.getTitleCache());
 			}
-		     //countries
-        }else if (area.getVocabulary().getUuid().equals(NamedArea.uuidContinentVocabulary)){
-            if (namedArea.equals(NamedArea.NORTH_AMERICA())) { return AREA_NORTH_AMERICA; }
 
 		}else if (area.getVocabulary().getUuid().equals(BerlinModelTransformer.uuidVocEuroMedAreas)){
 			if (namedArea.getUuid().equals(BerlinModelTransformer.uuidEM)) {
@@ -1077,6 +1078,7 @@ public final class PesiTransformer extends ExportTransformerBase{
 			else if (namedArea.getUuid().equals(BerlinModelTransformer.uuidIt_S)) { return AREA_SAN_MARINO; }
 			else if (namedArea.getUuid().equals(BerlinModelTransformer.uuidJo)) { return AREA_JORDAN; }
 			else if (namedArea.getUuid().equals(BerlinModelTransformer.uuidJu)) { return AREA_FORMER_JUGOSLAVIA; }
+            else if (namedArea.getUuid().equals(BerlinModelTransformer.uuidKo)) { return AREA_KOSOVO; }
 			else if (namedArea.getUuid().equals(BerlinModelTransformer.uuidLa)) { return AREA_LATVIA; }
 			else if (namedArea.getUuid().equals(BerlinModelTransformer.uuidLe)) { return AREA_LEBANON; }
 			else if (namedArea.getUuid().equals(BerlinModelTransformer.uuidLi)) { return AREA_LIBYA; }
@@ -1111,6 +1113,7 @@ public final class PesiTransformer extends ExportTransformerBase{
 			else if (namedArea.getUuid().equals(BerlinModelTransformer.uuidRs_W)) { return AREA_RUSSIA_SOUTHWEST; }
 			else if (namedArea.getUuid().equals(BerlinModelTransformer.uuidSa)) { return AREA_SARDEGNA; }
 			else if (namedArea.getUuid().equals(BerlinModelTransformer.uuidSb)) { return AREA_SVALBARD_WITH_BJORNOYA_AND_JAN_MAYEN; }
+			else if (namedArea.getUuid().equals(BerlinModelTransformer.uuidSe)) { return AREA_SERBIA; }
 			else if (namedArea.getUuid().equals(BerlinModelTransformer.uuidSg)) { return AREA_SELVAGENS_ISLANDS; }
 			else if (namedArea.getUuid().equals(BerlinModelTransformer.uuidSi)) { return AREA_SICILY_WITH_MALTA; }
 			else if (namedArea.getUuid().equals(BerlinModelTransformer.uuidSi_M)) { return AREA_MALTA; }
