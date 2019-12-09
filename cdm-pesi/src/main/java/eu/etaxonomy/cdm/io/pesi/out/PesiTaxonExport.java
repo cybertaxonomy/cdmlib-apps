@@ -1300,22 +1300,6 @@ public class PesiTaxonExport extends PesiExportBase {
         }
     }
 
-    /**
-	 * Returns the <code>DisplayName</code> attribute.
-	 * @param taxon The {@link TaxonBase Taxon}.
-	 * @return The <code>DisplayName</code> attribute.
-	 * @see MethodMapper
-	 */
-	@SuppressWarnings("unused")  //used by Mapper
-	private static String getDisplayName(TaxonBase<?> taxon) {
-		TaxonName taxonName = taxon.getName();
-		String result = getDisplayName(taxonName);
-		if (isMisappliedName(taxon)){
-			result = result + " " + getAuthorString(taxon);
-		}
-		return result;
-	}
-
 	/**
 	 * Returns the <code>AuthorString</code> attribute.
 	 * @param taxonName The {@link TaxonNameBase TaxonName}.
@@ -1325,7 +1309,10 @@ public class PesiTaxonExport extends PesiExportBase {
 	//used by mapper
 	protected static String getAuthorString(TaxonBase<?> taxon) {
 		try {
-			String result = null;
+		    // For misapplied names there are special rules
+            if (isMisappliedName(taxon)){
+                return getMisappliedNameAuthorship(taxon);
+            }
 			boolean isNonViralName = false;
 			String authorshipCache = null;
 			TaxonName taxonName = taxon.getName();
@@ -1333,26 +1320,7 @@ public class PesiTaxonExport extends PesiExportBase {
 				authorshipCache = taxonName.getAuthorshipCache();
 				isNonViralName = true;
 			}
-			result = authorshipCache;
-
-			// For a misapplied names there are special rules
-			if (isMisappliedName(taxon)){
-				if (taxon.getSec() != null){
-					String secTitle = taxon.getSec().getTitleCache();
-					if (! secTitle.startsWith("auct")){
-						secTitle = "sensu " + secTitle;
-					}else if (secTitle.equals("auct")){  //may be removed once the title cache is generated correctly for references with title auct. #
-						secTitle = "auct.";
-					}
-					return secTitle;
-				}else if (StringUtils.isBlank(authorshipCache)) {
-					// Set authorshipCache to "auct."
-					result = PesiTransformer.AUCT_STRING;
-				}else{
-					result = PesiTransformer.AUCT_STRING;
-//					result = authorshipCache;
-				}
-			}
+			String result = authorshipCache;
 
 			if (taxonName == null){
 				logger.warn("TaxonName does not exist for taxon: " + taxon.getUuid() + " (" + taxon.getTitleCache() + ")");
@@ -1371,14 +1339,56 @@ public class PesiTaxonExport extends PesiExportBase {
 		}
 	}
 
-	/**
-	 * Returns the <code>DisplayName</code> attribute.
-	 * @param taxonName The {@link TaxonNameBase TaxonName}.
-	 * @return The <code>DisplayName</code> attribute.
-	 * @see MethodMapper
-	 */
-	 //used by Mapper
-	private static String getDisplayName(TaxonName taxonName) {
+	private static String getMisappliedNameAuthorship(TaxonBase<?> taxon){
+        String result;
+	    String relAppendedPhrase = taxon.getAppendedPhrase();
+        Reference sec = taxon.getSec();
+        String secTitle = sec != null ? sec.getTitleCache(): null;
+        if(relAppendedPhrase == null && sec == null) {
+            result = "auct.";
+        }else if (relAppendedPhrase != null && sec == null){
+            result = relAppendedPhrase;
+        }else if (relAppendedPhrase == null && sec != null){
+            result = "sensu " + secTitle;
+        }else{  //append!=null && sec!=null
+            result = relAppendedPhrase + " " + secTitle;
+        }
+        String authorship = taxon.getName().getAuthorshipCache();
+        if (isNotBlank(authorship)){
+            result += ", non " + authorship;
+        }
+        return result;
+	}
+
+    /**
+     * Returns the <code>DisplayName</code> attribute.
+     * @param taxon The {@link TaxonBase Taxon}.
+     * @return The <code>DisplayName</code> attribute.
+     * @see MethodMapper
+     */
+    //used by Mapper
+    private static String getDisplayName(TaxonBase<?> taxon) {
+        boolean isMisapplied = isMisappliedName(taxon);
+        TaxonName taxonName = taxon.getName();
+        String result = getDisplayName(taxonName, isMisapplied);
+        if (isMisapplied){
+            result = result + " " + getMisappliedNameAuthorship(taxon);
+        }
+        return result;
+    }
+
+    /**
+     * Returns the <code>DisplayName</code> attribute.
+     * @param taxonName The {@link TaxonNameBase TaxonName}.
+     * @return The <code>DisplayName</code> attribute.
+     * @see MethodMapper
+     */
+    @SuppressWarnings("unused")  //used by Mapper
+    private static String getDisplayName(TaxonName taxonName) {
+        return getDisplayName(taxonName, false);
+    }
+
+	private static String getDisplayName(TaxonName taxonName, boolean useNameCache) {
 		// TODO: extension?
 		if (taxonName == null) {
 			return null;
@@ -1393,10 +1403,18 @@ public class PesiTaxonExport extends PesiExportBase {
 			if (getSources(taxonName).contains(PesiSource.ERMS)){
 			    result = cacheStrategy.getTitleCache(taxonName, tagRules);  //according to SQL script (also in ERMS sources are not abbreviated)
 			}else if (getSources(taxonName).contains(PesiSource.EM)){
-			    result = cacheStrategy.getFullTitleCache(taxonName, tagRules);
+			    if (useNameCache){
+			        result = cacheStrategy.getNameCache(taxonName, tagRules);
+			    }{
+			        result = cacheStrategy.getFullTitleCache(taxonName, tagRules);
+			    }
 			}else{
 			    //TODO define for FE + IF and for multiple sources
-			    result = cacheStrategy.getFullTitleCache(taxonName, tagRules);
+	             if (useNameCache){
+                    result = cacheStrategy.getNameCache(taxonName, tagRules);
+                }{
+                    result = cacheStrategy.getFullTitleCache(taxonName, tagRules);
+                }
 			}
 			return result.replaceAll("(, ?)?\\<@status@\\>.*\\</@status@\\>", "").trim();
 		}
@@ -1411,24 +1429,37 @@ public class PesiTaxonExport extends PesiExportBase {
 
 	/**
 	 * Returns the <code>WebShowName</code> attribute for a taxon.
-	 * @param taxonName The {@link TaxonNameBase TaxonName}.
+	 * See {@link #getWebShowName(TaxonName)} for further explanations.
+	 * @param taxon The {@link TaxonBase taxon}.
 	 * @return The <code>WebShowName</code> attribute.
+	 * @see #getWebShowName(TaxonName)
+	 * @see #getDisplayName(TaxonBase)
+	 * @see #getFullName(TaxonBase)
 	 * @see MethodMapper
 	*/
 	@SuppressWarnings("unused")
 	private static String getWebShowName(TaxonBase<?> taxon) {
-		TaxonName taxonName = taxon.getName();
-		String result = getWebShowName(taxonName);
-		if (isMisappliedName(taxon)){
-			result = result + " " + getAuthorString(taxon);
-		}
-		return result;
+	    if (isMisappliedName(taxon)){
+	        //for misapplications the webshowname is the same as the displayname as they do not show the nom.ref. in displayname
+	        return getDisplayName(taxon);
+	    }else{
+	        TaxonName taxonName = taxon.getName();
+	        return getWebShowName(taxonName);
+	    }
 	}
 
 	/**
-	 * Returns the <code>WebShowName</code> attribute.
+	 * Returns the <code>WebShowName</code> attribute for a name. The
+	 * <code>WebShowName</code> is like fullName but with
+	 * tagged (<i>) name part. It is also similar to
+	 * <code>DisplayName</code> but for titleCache not fullTitleCache.
+	 * For misapplications it slightly differs (see {@link #getWebShowName(TaxonBase)} )
+	 *
 	 * @param taxonName The {@link TaxonNameBase TaxonName}.
 	 * @return The <code>WebShowName</code> attribute.
+	 * @see #getDisplayName(TaxonName)
+	 * @see #getFullName(TaxonName)
+	 * @see #getWebShowName(TaxonBase)
 	 * @see MethodMapper
 	 */
 	private static String getWebShowName(TaxonName taxonName) {
@@ -1458,13 +1489,25 @@ public class PesiTaxonExport extends PesiExportBase {
 		return result;
 	}
 
+    @SuppressWarnings("unused")     //used by mapper
+    private static String getFullName(TaxonBase<?> taxon) {
+        if (isMisappliedName(taxon)){
+            String result = getCacheStrategy(taxon.getName()).getTitleCache(taxon.getName());
+            result = result + " " + getMisappliedNameAuthorship(taxon);
+            return result;
+        }else{
+            return getFullName(taxon.getName());
+        }
+    }
+
+
 	/**
 	 * Returns the <code>FullName</code> attribute.
 	 * @param taxonName The {@link NonViralName NonViralName}.
 	 * @return The <code>FullName</code> attribute.
 	 * @see MethodMapper
 	 */
-	@SuppressWarnings("unused")
+    //used by mapper
 	private static String getFullName(TaxonName taxonName) {
 		//TODO extensions?
 		String result = getCacheStrategy(taxonName).getTitleCache(taxonName);
@@ -1475,7 +1518,6 @@ public class PesiTaxonExport extends PesiExportBase {
 				if (isMisappliedName(taxon)){
 					result = result + " " + getAuthorString(taxon);
 				}
-				taxon = null;
 			}
 		}
 		return result;
@@ -1575,11 +1617,17 @@ public class PesiTaxonExport extends PesiExportBase {
 		try {
 			if (taxonName != null) {
 			    Set<NomenclaturalStatus> states = taxonName.getStatus();
-				if (states.size() == 1) {
-					NomenclaturalStatus status = states.iterator().next();
+				if (states.size() >= 1) {
+				    if (states.size() > 1) {
+				        String statusStr = null;
+				        for (NomenclaturalStatus status: states){
+				            statusStr = CdmUtils.concat(",", statusStr, status.getType()== null? null:status.getType().getTitleCache());
+				        }
+				        //a known case is ad43508a-8a10-480a-8519-2a76de2c0a0f (Labiatae Juss.) from E+M
+	                    logger.warn("This TaxonName has more than one nomenclatural status. This may happen in very rare cases but is not handled by the PESI data warehouse. Taxon name: " + taxonName.getUuid() + " (" + taxonName.getTitleCache() + ")Status:" + statusStr);
+	                }
+				    NomenclaturalStatus status = states.iterator().next();
 					return status;
-				} else if (states.size() > 1) {
-					logger.error("This TaxonName has more than one Nomenclatural Status: " + taxonName.getUuid() + " (" + taxonName.getTitleCache() + ")");
 				}
 			}
 		} catch (Exception e) {
@@ -2160,7 +2208,8 @@ public class PesiTaxonExport extends PesiExportBase {
 
 		mapping.addMapper(MethodMapper.NewInstance("DerivedFromGuid", this));
 		mapping.addMapper(MethodMapper.NewInstance("CacheCitation", this));
-		mapping.addMapper(MethodMapper.NewInstance("AuthorString", this));  //For Taxon because Misapllied Names are handled differently
+		mapping.addMapper(MethodMapper.NewInstance("AuthorString", this));  //For Taxon because misapplied names are handled differently
+		mapping.addMapper(MethodMapper.NewInstance("FullName", this));    //For Taxon because misapplied names are handled differently
 		mapping.addMapper(MethodMapper.NewInstance("WebShowName", this));
 
 		// DisplayName
@@ -2206,6 +2255,7 @@ public class PesiTaxonExport extends PesiExportBase {
 		mapping.addMapper(DbConstantMapper.NewInstance("TaxonStatusFk", Types.INTEGER, PesiTransformer.T_STATUS_UNACCEPTED));
 		mapping.addMapper(DbConstantMapper.NewInstance("TaxonStatusCache", Types.VARCHAR, state.getTransformer().getTaxonStatusCacheByKey( PesiTransformer.T_STATUS_UNACCEPTED)));
 		mapping.addMapper(DbStringMapper.NewInstance("AuthorshipCache", "AuthorString").setBlankToNull(true));
+		mapping.addMapper(MethodMapper.NewInstance("FullName", this, TaxonName.class));
 		mapping.addMapper(MethodMapper.NewInstance("WebShowName", this, TaxonName.class));
 		mapping.addMapper(MethodMapper.NewInstance("GUID", this, TaxonName.class));
 
@@ -2230,7 +2280,6 @@ public class PesiTaxonExport extends PesiExportBase {
 		//full name
 //		mapping.addMapper(DbStringMapper.NewInstance("NameCache", "WebSearchName"));  //does not work as we need other cache strategy
 		mapping.addMapper(MethodMapper.NewInstance("WebSearchName", this, TaxonName.class));
-		mapping.addMapper(MethodMapper.NewInstance("FullName", this, TaxonName.class));
 
 		//nom ref
 		mapping.addMapper(MethodMapper.NewInstance("NomRefString", this, TaxonName.class));
