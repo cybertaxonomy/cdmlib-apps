@@ -778,13 +778,13 @@ public final class PesiTransformer extends ExportTransformerBase{
 			fillSingleMap(featureCacheMap, "NoteCategory");
 
 			//nameStatusCache
-			fillSingleMap(nameStatusCacheMap,"NameStatus", "NomStatus");
+			fillSingleMap(nameStatusCacheMap, "NameStatus", "NomStatus");
 
 			//qualityStatusCache
 			fillSingleMap(qualityStatusCacheMap, "QualityStatus");
 
 			//taxonStatusCache
-			fillSingleMap(taxonStatusCacheMap,"TaxonStatus", "Status");
+			fillSingleMap(taxonStatusCacheMap, "TaxonStatus", "Status");
 
 			//sourceUse
 			fillSingleMap(sourceUseCacheMap, "SourceUse");
