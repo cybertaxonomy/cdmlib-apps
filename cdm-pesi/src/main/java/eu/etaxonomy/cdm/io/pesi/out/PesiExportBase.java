@@ -528,23 +528,46 @@ public abstract class PesiExportBase
 	}
 
 	/**
+     * Checks whether a given taxon is a pro parte or partial synonym.
+     * @param taxon The {@link TaxonBase Taxon}.
+     * @return <code>true</code> if the the given taxon is a pp or partial synonym
+     */
+    protected static boolean isProParteOrPartialSynonym(TaxonBase<?> taxon) {
+        return getAcceptedTaxonForProParteSynonym(taxon) != null;
+    }
+
+	/**
 	 * Returns the first accepted taxon for this misapplied name.
 	 * If this misapplied name is not a misapplied name, <code>null</code> is returned.
 	 * @param taxon The {@link TaxonBase Taxon}.
 	 */
-	private static Taxon getAcceptedTaxonForMisappliedName(TaxonBase<?> taxon) {
+	protected static Taxon getAcceptedTaxonForMisappliedName(TaxonBase<?> taxon) {
 		if (! taxon.isInstanceOf(Taxon.class)){
 			return null;
 		}
 		Set<TaxonRelationship> taxonRelations = CdmBase.deproxy(taxon, Taxon.class).getRelationsFromThisTaxon();
 		for (TaxonRelationship taxonRelationship : taxonRelations) {
 			TaxonRelationshipType taxonRelationshipType = taxonRelationship.getType();
-			if (taxonRelationshipType.equals(TaxonRelationshipType.MISAPPLIED_NAME_FOR())) {
+			if (taxonRelationshipType.isAnyMisappliedName()) {
 				return taxonRelationship.getToTaxon();
 			}
 		}
 		return null;
 	}
+
+    protected static Taxon getAcceptedTaxonForProParteSynonym(TaxonBase<?> taxon) {
+        if (! taxon.isInstanceOf(Taxon.class)){
+            return null;
+        }
+        Set<TaxonRelationship> taxonRelations = CdmBase.deproxy(taxon, Taxon.class).getRelationsFromThisTaxon();
+        for (TaxonRelationship taxonRelationship : taxonRelations) {
+            TaxonRelationshipType taxonRelationshipType = taxonRelationship.getType();
+            if (taxonRelationshipType.isAnySynonym()) {
+                return taxonRelationship.getToTaxon();
+            }
+        }
+        return null;
+    }
 
     protected List<AnnotationType> getLastActionAnnotationTypes() {
         Set<UUID> uuidSet = new HashSet<>();

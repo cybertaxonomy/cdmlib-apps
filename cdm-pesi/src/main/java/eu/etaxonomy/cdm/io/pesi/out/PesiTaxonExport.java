@@ -16,7 +16,6 @@ import java.sql.Types;
 import java.util.ArrayList;
 import java.util.EnumSet;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -882,9 +881,7 @@ public class PesiTaxonExport extends PesiExportBase {
 	}
 
 	/**
-	 * Handles names that do not appear in taxa
-	 * @param state
-	 * @param mapping
+	 * Handles names that do not appear in taxa.
 	 */
 	private boolean doPhase01b_Names(PesiExportState state, PesiExportMapping additionalSourceMapping) {
 
@@ -1227,7 +1224,7 @@ public class PesiTaxonExport extends PesiExportBase {
 		return result;
 	}
 
-	@SuppressWarnings("unused")
+	@SuppressWarnings("unused")  //used by mapper
     private static String getRankCache(TaxonName taxonName, PesiExportState state) {
 	    List<TaxonNode> nodes = getTaxonNodes(taxonName);
 	    Integer kingdomId;
@@ -1312,27 +1309,28 @@ public class PesiTaxonExport extends PesiExportBase {
 		    // For misapplied names there are special rules
             if (isMisappliedName(taxon)){
                 return getMisappliedNameAuthorship(taxon);
+            }else{
+                boolean isNonViralName = false;
+                String authorshipCache = null;
+                TaxonName taxonName = taxon.getName();
+                if (taxonName != null && taxonName.isNonViral()){
+                    authorshipCache = taxonName.getAuthorshipCache();
+                    isNonViralName = true;
+                }
+                String result = authorshipCache;
+
+                if (taxonName == null){
+                    logger.warn("TaxonName does not exist for taxon: " + taxon.getUuid() + " (" + taxon.getTitleCache() + ")");
+                }else if (! isNonViralName){
+                    logger.warn("TaxonName is not of instance NonViralName: " + taxonName.getUuid() + " (" + taxonName.getTitleCache() + ")");
+                }
+
+                if (StringUtils.isBlank(result)) {
+                    return null;
+                } else {
+                    return result;
+                }
             }
-			boolean isNonViralName = false;
-			String authorshipCache = null;
-			TaxonName taxonName = taxon.getName();
-			if (taxonName != null && taxonName.isNonViral()){
-				authorshipCache = taxonName.getAuthorshipCache();
-				isNonViralName = true;
-			}
-			String result = authorshipCache;
-
-			if (taxonName == null){
-				logger.warn("TaxonName does not exist for taxon: " + taxon.getUuid() + " (" + taxon.getTitleCache() + ")");
-			}else if (! isNonViralName){
-				logger.warn("TaxonName is not of instance NonViralName: " + taxonName.getUuid() + " (" + taxonName.getTitleCache() + ")");
-			}
-
-			if (StringUtils.isBlank(result)) {
-				return null;
-			} else {
-				return result;
-			}
 		} catch (Exception e) {
 			e.printStackTrace();
 			return null;
@@ -1405,14 +1403,14 @@ public class PesiTaxonExport extends PesiExportBase {
 			}else if (getSources(taxonName).contains(PesiSource.EM)){
 			    if (useNameCache){
 			        result = cacheStrategy.getNameCache(taxonName, tagRules);
-			    }{
+			    }else{
 			        result = cacheStrategy.getFullTitleCache(taxonName, tagRules);
 			    }
 			}else{
 			    //TODO define for FE + IF and for multiple sources
 	             if (useNameCache){
                     result = cacheStrategy.getNameCache(taxonName, tagRules);
-                }{
+                }else{
                     result = cacheStrategy.getFullTitleCache(taxonName, tagRules);
                 }
 			}
@@ -1492,14 +1490,13 @@ public class PesiTaxonExport extends PesiExportBase {
     @SuppressWarnings("unused")     //used by mapper
     private static String getFullName(TaxonBase<?> taxon) {
         if (isMisappliedName(taxon)){
-            String result = getCacheStrategy(taxon.getName()).getTitleCache(taxon.getName());
+            String result = getCacheStrategy(taxon.getName()).getNameCache(taxon.getName());
             result = result + " " + getMisappliedNameAuthorship(taxon);
             return result;
         }else{
             return getFullName(taxon.getName());
         }
     }
-
 
 	/**
 	 * Returns the <code>FullName</code> attribute.
@@ -1511,15 +1508,16 @@ public class PesiTaxonExport extends PesiExportBase {
 	private static String getFullName(TaxonName taxonName) {
 		//TODO extensions?
 		String result = getCacheStrategy(taxonName).getTitleCache(taxonName);
-		Iterator<Taxon> taxa = taxonName.getTaxa().iterator();
-		if (taxonName.getTaxa().size() >0){
-			if (taxonName.getTaxa().size() == 1){
-				Taxon taxon = taxa.next();
-				if (isMisappliedName(taxon)){
-					result = result + " " + getAuthorString(taxon);
-				}
-			}
-		}
+		//misapplied names are now handled differently in getFullName(TaxonBase)
+//		Iterator<Taxon> taxa = taxonName.getTaxa().iterator();
+//		if (taxonName.getTaxa().size() >0){
+//			if (taxonName.getTaxa().size() == 1){
+//				Taxon taxon = taxa.next();
+//				if (isMisappliedName(taxon)){
+//					result = result + " " + getAuthorString(taxon);
+//				}
+//			}
+//		}
 		return result;
 	}
 
@@ -2010,17 +2008,43 @@ public class PesiTaxonExport extends PesiExportBase {
 		//TODO implement anew for taxa
 		try {
 			EnumSet<PesiSource> sources = getSources(taxon);
+			//TODO what if 2 sources? In PESI 2014 they were pipe separated
+			//TODO why does ERMS use accessed through eu-nomen, while E+M uses accessed through E+M
 			if (sources.isEmpty()) {
 //				logger.error("OriginalDB is NULL for this TaxonName: " + taxonName.getUuid() + " (" + taxonName.getTitleCache() + ")");
 			} else if (sources.contains(PesiSource.ERMS)) {
-				Set<Extension> extensions = taxon.getExtensions();
+				//TODO check if correct, compare with PESI 2014
+			    Set<Extension> extensions = taxon.getExtensions();
 				for (Extension extension : extensions) {
 					if (extension.getType().equals(cacheCitationExtensionType)) {
 						result = extension.getValue();
 					}
 				}
+			} else if (sources.contains(PesiSource.EM)) {
+			    //TODO
+			    boolean isMisapplied = isMisappliedName(taxon);
+			    boolean isProParteSyn = isProParteOrPartialSynonym(taxon);
+			    Reference sec = null;
+			    if(!isMisapplied && !isProParteSyn){
+			        sec = taxon.getSec();
+			    }else if (isMisapplied){
+			        sec = getAcceptedTaxonForMisappliedName(taxon).getSec();
+			    }else if (isProParteSyn){
+                    sec = getAcceptedTaxonForProParteSynonym(taxon).getSec();
+                }
+			    if (sec == null){
+			        logger.warn("Sec could not be defined for taxon " + taxon.getTitleCache()+ "; " + taxon.getUuid());
+			    }
+			    String author = sec == null? "" : sec.getTitleCache();
+			    String webShowName = isMisapplied? getDisplayName(taxon):getWebShowName(taxonName);  //for misapplied we need also the sensu and non author part, for ordinary names name + author is enough
+			    String accessed = ". Accessed through: Euro+Med PlantBase at https://www.europlusmed.org/cdm_dataportal/taxon/";
+			    result = CdmUtils.removeTrailingDot(author)
+			            + ". " + CdmUtils.removeTrailingDot(webShowName)
+			            + accessed + taxon.getUuid();
 			} else {
-				String expertName = getExpertName(taxon);
+				//TODO check for IF + FE
+
+			    String expertName = getExpertName(taxon);
 				String webShowName = getWebShowName(taxonName);
 
 				// idInSource only
