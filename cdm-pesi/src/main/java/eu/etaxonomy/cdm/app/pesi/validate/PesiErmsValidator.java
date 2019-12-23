@@ -31,7 +31,7 @@ public class PesiErmsValidator {
 
     private static final Logger logger = Logger.getLogger(PesiErmsValidator.class);
 
-    private static final Source defaultSource = PesiSources.PESI2019_ERMS();
+    private static final Source defaultSource = PesiSources.PESI2019_ERMS_2018();
 //    private static final Source defaultDestination = PesiDestinations.pesi_test_local_CDM_ERMS2PESI();
     private static final Source defaultDestination = PesiDestinations.pesi_test_local_CDM_ERMS2PESI_2();
 

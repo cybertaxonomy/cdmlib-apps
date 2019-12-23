@@ -34,8 +34,8 @@ public class ErmsImportActivator {
 
     private static final Logger logger = Logger.getLogger(ErmsImportActivator.class);
 
-//	static final Source ermsSource = PesiSources.PESI3_ERMS();
-	static final Source ermsSource = PesiSources.PESI2019_ERMS();
+//	static final Source ermsSource = PesiSources.PESI2019_ERMS_2018();
+	static final Source ermsSource = PesiSources.PESI2019_ERMS_2019();
 
 //	static final ICdmDataSource cdmDestination = CdmDestinations.test_cdm_pesi_erms();
 
