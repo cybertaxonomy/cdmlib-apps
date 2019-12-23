@@ -20,7 +20,6 @@ import org.apache.log4j.Logger;
 
 import eu.etaxonomy.cdm.api.service.pager.Pager;
 import eu.etaxonomy.cdm.hibernate.HibernateProxyHelper;
-import eu.etaxonomy.cdm.io.berlinModel.BerlinModelTransformer;
 import eu.etaxonomy.cdm.io.common.DbExportBase;
 import eu.etaxonomy.cdm.io.common.mapping.out.DbLastActionMapper;
 import eu.etaxonomy.cdm.io.pesi.erms.ErmsTransformer;
@@ -410,16 +409,6 @@ public abstract class PesiExportBase
         if (! taxon.isPublish()){
         	return false;
         }
-        for (Marker marker : taxon.getMarkers()){
-        	//probably not needed anymore after #1780 was fixed, also #4046 interesting
-        	if (marker.getValue() == false && marker.getMarkerType().equals(MarkerType.PUBLISH())){
-        		return false;
-        	//probably not needed any more after #2786 was fixed
-        	}else if (marker.getValue() == true && marker.getMarkerType().getUuid().equals(BerlinModelTransformer.uuidMisappliedCommonName)){
-        		logger.warn("Misapplied common name still exists");
-        		return false;
-        	}
-        }
 
         //handle PESI accepted taxa
         if (! taxon.isMisapplication()){
@@ -433,13 +422,6 @@ public abstract class PesiExportBase
         }else{
         	if (excludeMisappliedNames){
         		return false;
-        	}
-        	for (Marker marker : taxon.getMarkers()){
-        		//probably not needed any more after #2786 was fixed
-        		if (marker.getValue() == true && marker.getMarkerType().getUuid().equals(BerlinModelTransformer.uuidMisappliedCommonName)){
-        			logger.warn("Misapplied common name still exists");
-        			return false;
-        		}
         	}
         	for (TaxonRelationship taxRel : taxon.getRelationsFromThisTaxon()){
         		if (taxRel.getType().isAnyMisappliedName()){
