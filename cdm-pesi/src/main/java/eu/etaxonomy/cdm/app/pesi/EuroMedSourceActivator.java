@@ -32,7 +32,8 @@ public class EuroMedSourceActivator {
 
     private static final Logger logger = Logger.getLogger(EuroMedSourceActivator.class);
 
-    static final ICdmDataSource cdmDestination = CdmDestinations.cdm_pesi2019_final();
+//    static final ICdmDataSource cdmDestination = CdmDestinations.cdm_pesi2019_final();
+    static final ICdmDataSource cdmDestination = CdmDestinations.cdm_test_local_mysql_euromed();
 
     UUID sourceRefUuid = PesiTransformer.uuidSourceRefEuroMed;
     String sourceReferenceTitle = "Euro+Med CDM database";
