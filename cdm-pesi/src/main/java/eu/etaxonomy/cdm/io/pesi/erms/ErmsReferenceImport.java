@@ -118,10 +118,6 @@ public class ErmsReferenceImport
 			ref = ReferenceFactory.newGeneric();
 	        MarkerType markerType = getMarkerType(state, ErmsTransformer.uuidMarkerRefInformal, "Informal", "Informal", "e");
 	        ref.addMarker(markerType, true);
-		}else if (type.equalsIgnoreCase("i")){
-			ref = ReferenceFactory.newGeneric();
-	        MarkerType markerType = getMarkerType(state, ErmsTransformer.uuidMarkerRefTypeI, "Ref type i", "Ref type i", "i");
-	        ref.addMarker(markerType, true);
 		}else{
 			ref = ReferenceFactory.newGeneric();
 			logger.warn("Unknown reference type: " + type + ". Created generic instead.");

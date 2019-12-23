@@ -538,7 +538,7 @@ public final class PesiTransformer extends ExportTransformerBase{
 	private static int AREA_NORTH_SEA = 151;
 	private static int AREA_BALTIC_SEA = 152;
 	private static int AREA_BLACK_SEA = 153;
-	private static int AREA_BARENTS_SEA = 154;
+	private static int AREA_BARENTSZ_SEA = 154;
 	private static int AREA_CASPIAN_SEA = 155;
 	private static int AREA_PORTUGUESE_EXCLUSIVE_ECONOMIC_ZONE = 156;
 	private static int AREA_BELGIAN_EXCLUSIVE_ECONOMIC_ZONE = 157;
@@ -1298,7 +1298,7 @@ public final class PesiTransformer extends ExportTransformerBase{
 			else if (uuidArea.equals(ErmsTransformer.uuidBalticSea)) { return AREA_BALTIC_SEA; }
 			else if (//(namedArea.getRepresentation(Language.DEFAULT()).getAbbreviatedLabel()).equals("BLS") ||   /carefull: NPE!
 					(uuidArea.equals(ErmsTransformer.uuidBlackSea))) { return AREA_BLACK_SEA; } // abbreviated label missing
-			else if (uuidArea.equals(ErmsTransformer.uuidBarentsSea)) { return AREA_BARENTS_SEA; }
+			else if (uuidArea.equals(ErmsTransformer.uuidBarentszSea)) { return AREA_BARENTSZ_SEA; }
 			else if (//(namedArea.getRepresentation(Language.DEFAULT()).getAbbreviatedLabel()).equals("CAS") ||   /carefull: NPE!
 					(uuidArea.equals(ErmsTransformer.uuidCaspianSea))) { return AREA_CASPIAN_SEA; } // abbreviated label missing
 			else if (uuidArea.equals(ErmsTransformer.uuidPortugueseExclusiveEconomicZone)) { return AREA_PORTUGUESE_EXCLUSIVE_ECONOMIC_ZONE; }
@@ -1323,7 +1323,7 @@ public final class PesiTransformer extends ExportTransformerBase{
 			else if (uuidArea.equals(ErmsTransformer.uuidSkagerrak)) { return AREA_SKAGERRAK; }
 			else if (uuidArea.equals(ErmsTransformer.uuidTunisianExclusiveEconomicZone)) { return AREA_TUNISIAN_EXCLUSIVE_ECONOMIC_ZONE; }
 			else if (uuidArea.equals(ErmsTransformer.uuidWaddenSea)) { return AREA_WADDEN_SEA; }
-			else if (uuidArea.equals(ErmsTransformer.uuidBeltSea)) { return AREA_BELT_SEA; }
+			else if (uuidArea.equals(ErmsTransformer.uuidBaeltSea)) { return AREA_BELT_SEA; }
 			else if (uuidArea.equals(ErmsTransformer.uuidMarmaraSea)) { return AREA_MARMARA_SEA; }
 			else if (uuidArea.equals(ErmsTransformer.uuidSeaofAzov)) { return AREA_SEA_OF_AZOV; }
 			else if (uuidArea.equals(ErmsTransformer.uuidAegeanSea)) { return AREA_AEGEAN_SEA; }
@@ -1345,10 +1345,12 @@ public final class PesiTransformer extends ExportTransformerBase{
 			else if (uuidArea.equals(ErmsTransformer.uuidTurkishExclusiveEconomicZone)) { return AREA_TURKISH_EXCLUSIVE_ECONOMIC_ZONE; }
 			else if (uuidArea.equals(ErmsTransformer.uuidDanishExclusiveEconomicZone)) { return AREA_DANISH_EXCLUSIVE_ECONOMIC_ZONE; }
 
-			else if (uuidArea.equals(ErmsTransformer.uuidAlboranSea)) { return 219; }
+			else if (uuidArea.equals(ErmsTransformer.uuidAfghanistan)) { return 297; }
+            else if (uuidArea.equals(ErmsTransformer.uuidAlboranSea)) { return 219; }
 			else if (uuidArea.equals(ErmsTransformer.uuidAlgeria)) { return 220; }
 			else if (uuidArea.equals(ErmsTransformer.uuidAngola)) { return 221; }
-			else if (uuidArea.equals(ErmsTransformer.uuidAustralianExclusiveEconomicZone)) { return 222; }
+			else if (uuidArea.equals(ErmsTransformer.uuidArcticOcean)) { return 296; }
+            else if (uuidArea.equals(ErmsTransformer.uuidAustralianExclusiveEconomicZone)) { return 222; }
 			else if (uuidArea.equals(ErmsTransformer.uuidBahamas)) { return 223; }
 			else if (uuidArea.equals(ErmsTransformer.uuidBalearicSea)) { return 224; }
 			else if (uuidArea.equals(ErmsTransformer.uuidBelgium)) { return 225; }
@@ -1371,7 +1373,8 @@ public final class PesiTransformer extends ExportTransformerBase{
 			else if (uuidArea.equals(ErmsTransformer.uuidFrance)) { return 240; }
 			else if (uuidArea.equals(ErmsTransformer.uuidGhana)) { return 241; }
 			else if (uuidArea.equals(ErmsTransformer.uuidGreece)) { return 242; }
-			else if (uuidArea.equals(ErmsTransformer.uuidGreekExclusiveEconomicZone)) { return AREA_GREEK_EXCLUSIVE_ECONOMIC_ZONE; }
+			else if (uuidArea.equals(ErmsTransformer.uuidGermany)) { return 298; }
+            else if (uuidArea.equals(ErmsTransformer.uuidGreekExclusiveEconomicZone)) { return AREA_GREEK_EXCLUSIVE_ECONOMIC_ZONE; }
             else if (uuidArea.equals(ErmsTransformer.uuidGulfOfBothnia)) { return 243; }
 			else if (uuidArea.equals(ErmsTransformer.uuidGulfOfFinland)) { return 244; }
 			else if (uuidArea.equals(ErmsTransformer.uuidGulfOfGuinea)) { return 245; }
@@ -1390,7 +1393,8 @@ public final class PesiTransformer extends ExportTransformerBase{
 			else if (uuidArea.equals(ErmsTransformer.uuidMediterraneanSea_EasternBasin)) { return 258; }
 			else if (uuidArea.equals(ErmsTransformer.uuidMediterraneanSea_WesternBasin)) { return 259; }
 			else if (uuidArea.equals(ErmsTransformer.uuidMexico)) { return 260; }
-			else if (uuidArea.equals(ErmsTransformer.uuidMorocco)) { return 261; }
+			else if (uuidArea.equals(ErmsTransformer.uuidMongolia)) { return 299; }
+            else if (uuidArea.equals(ErmsTransformer.uuidMorocco)) { return 261; }
 			else if (uuidArea.equals(ErmsTransformer.uuidNetherlands)) { return 262; }
 			else if (uuidArea.equals(ErmsTransformer.uuidNewZealand)) { return 263; }
 			else if (uuidArea.equals(ErmsTransformer.uuidNewZealandExclusiveEconomicZone)) { return 264; }
