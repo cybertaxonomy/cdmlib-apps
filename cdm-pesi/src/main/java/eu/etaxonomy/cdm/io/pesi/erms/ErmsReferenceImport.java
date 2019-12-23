@@ -95,7 +95,7 @@ public class ErmsReferenceImport
 
 			//not yet implemented
 
-			mapping.addMapper(DbIgnoreMapper.NewInstance("source_type", "Handled by ObjectCreateMapper - but mapping not yet fully correct. See comments there."));
+			mapping.addMapper(DbIgnoreMapper.NewInstance("source_type", "Handled by ObjectCreateMapper"));
 			mapping.addMapper(DbIgnoreMapper.NewInstance("source_orig_fn", "Currently not needed. Holds information about pdf files."));
 			mapping.addMapper(DbIgnoreMapper.NewInstance("source_openaccess", "Currently not needed. Holds information about open access of the source."));
 
@@ -105,7 +105,6 @@ public class ErmsReferenceImport
 
 	@Override
     public Reference createObject(ResultSet rs, ErmsImportState state) throws SQLException {
-//		int id = rs.getInt("id");
 		String type = rs.getString("source_type");
 		Reference ref;
 		if (type.equalsIgnoreCase("p")){

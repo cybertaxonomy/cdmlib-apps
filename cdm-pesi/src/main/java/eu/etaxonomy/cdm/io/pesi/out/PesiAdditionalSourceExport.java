@@ -32,7 +32,7 @@ import eu.etaxonomy.cdm.profiler.ProfilerController;
 /**
  * The export class for PESI additional sources stored as taxon sources in the CDM (mostly coming from ERMS)<p>
  * @author a.mueller
- * @since 22.09.2019
+ * @since 2019-09-22
  */
 @Component
 public class PesiAdditionalSourceExport extends PesiExportBase {
@@ -143,7 +143,6 @@ public class PesiAdditionalSourceExport extends PesiExportBase {
                 logger.info("Started new transaction. Fetching some " + parentPluralString + " (max: " + limit + ") for description import ...");
             }
 		}
-
 
 		// Commit transaction
 		commitTransaction(txStatus);

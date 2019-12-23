@@ -80,7 +80,7 @@ public class ErmsLinkImport
 			mapping.addMapper(DbIgnoreMapper.NewInstance("link_fn", "Seems to be an internal VLIZ file name. Not used in SQL script "));
 			mapping.addMapper(DbIgnoreMapper.NewInstance("link_thumbnail", "Some data (>1000) but not used in SQL script."));
 			mapping.addMapper(DbIgnoreMapper.NewInstance("link_qualitystatus_id", "Not used in SQL script."));
-			mapping.addMapper(DbIgnoreMapper.NewInstance("link_order", "Not used in SQL script. Until 2019 only 'null' and '0' existed."));
+			mapping.addMapper(DbIgnoreMapper.NewInstance("link_order", "Not used in SQL script. Did not exist in versions prior to 2018"));
 		}
 		return mapping;
 	}
