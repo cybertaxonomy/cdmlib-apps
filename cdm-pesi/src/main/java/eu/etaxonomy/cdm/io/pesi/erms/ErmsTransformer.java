@@ -312,7 +312,7 @@ public final class ErmsTransformer extends InputTransformerBase {
 
 	@Override
 	public UUID getNameTypeDesignationStatusUuid(String key) throws UndefinedTransformerMethodException {
-		//nott needed
+		//not needed
 		return super.getNameTypeDesignationStatusUuid(key);
 	}
 
