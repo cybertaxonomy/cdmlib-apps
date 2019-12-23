@@ -29,7 +29,9 @@ import eu.etaxonomy.cdm.model.name.NomenclaturalCode;
  * @author a.mueller
  * @since 20.03.2008
  */
-public class BerlinModelImportConfigurator extends DbImportConfiguratorBase<BerlinModelImportState>{
+public class BerlinModelImportConfigurator
+        extends DbImportConfiguratorBase<BerlinModelImportState>{
+
     private static final long serialVersionUID = 70300913255425256L;
 
     private static Logger logger = Logger.getLogger(BerlinModelImportConfigurator.class);
@@ -74,6 +76,9 @@ public class BerlinModelImportConfigurator extends DbImportConfiguratorBase<Berl
 
 	//references
 	private boolean doSourceNumber = false;
+
+    //nullValues
+    private boolean ignoreNull = false;
 
 	//occurrences
 	private boolean isSplitTdwgCodes = true;
@@ -162,31 +167,17 @@ public class BerlinModelImportConfigurator extends DbImportConfiguratorBase<Berl
 		};
 	}
 
-
-
-	/* (non-Javadoc)
-	 * @see eu.etaxonomy.cdm.io.common.IImportConfigurator#getNewState()
-	 */
 	@Override
     public BerlinModelImportState getNewState() {
 		return new BerlinModelImportState(this);
 	}
 
-
-
-	/**
-	 * @param berlinModelSource
-	 * @param sourceReference
-	 * @param destination
-	 */
 	protected BerlinModelImportConfigurator(Source berlinModelSource, ICdmDataSource destination) {
 	   super(berlinModelSource, destination, NomenclaturalCode.ICNAFP, defaultTransformer); //default for Berlin Model
 	}
 
-
 	/**
 	 * Import name relationships yes/no?.
-	 * @return
 	 */
 	public boolean isDoRelNames() {
 		return doRelNames;
@@ -195,30 +186,16 @@ public class BerlinModelImportConfigurator extends DbImportConfiguratorBase<Berl
 		this.doRelNames = doRelNames;
 	}
 
-	/**
-	 * @return the mediaUrl
-	 */
 	public URL getMediaUrl() {
 		return mediaUrl;
 	}
-
-	/**
-	 * @param mediaUrl the mediaUrl to set
-	 */
 	public void setMediaUrl(URL mediaUrl) {
 		this.mediaUrl = mediaUrl;
 	}
 
-	/**
-	 * @return the mediaPath
-	 */
 	public File getMediaPath() {
 		return mediaPath;
 	}
-
-	/**
-	 * @param mediaPath the mediaPath to set
-	 */
 	public void setMediaPath(File mediaPath) {
 		this.mediaPath = mediaPath;
 	}
@@ -250,6 +227,19 @@ public class BerlinModelImportConfigurator extends DbImportConfiguratorBase<Berl
 	public void setMaximumNumberOfNameFacts(int maximumNumberOfNameFacts) {
 		this.maximumNumberOfNameFacts = maximumNumberOfNameFacts;
 	}
+
+    /**
+     * If true, no errors occur if objects are not found that should exist. This may
+     * be needed e.g. when only subsets of the data are imported.
+     * Default value is <cod>false</code>.
+     * @return the ignoreNull
+     */
+    public boolean isIgnoreNull() {
+        return ignoreNull;
+    }
+    public void setIgnoreNull(boolean ignoreNull) {
+        this.ignoreNull = ignoreNull;
+    }
 
 	/**
 	 * If true, an authorTeam with authorTeamId = 0 is not imported (casus Salvador)

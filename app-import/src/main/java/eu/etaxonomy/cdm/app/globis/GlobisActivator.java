@@ -45,7 +45,6 @@ public class GlobisActivator {
 //	static final ICdmDataSource cdmDestination = CdmDestinations.cdm_production_globis();
 
 
-
 	static final UUID classificationUuid = UUID.fromString("8bd27d84-fd4f-4bfa-bde0-3e6b7311b334");
 	static final UUID featureTreeUuid = UUID.fromString("33cbf7a8-0c47-4d47-bd11-b7d77a38d0f6");
 	//static final Object[] featureKeyList = new Integer[]{1,4,5,10,11,12,13,14, 249, 250, 251, 252, 253};
@@ -62,15 +61,10 @@ public class GlobisActivator {
 
 	static final int partitionSize = 3000;
 
-
 	//NomenclaturalCode
 	static final NomenclaturalCode nomenclaturalCode = NomenclaturalCode.ICZN;
 
-
 	static final boolean doReadMediaData = false;
-
-//	//ignore null
-	static final boolean ignoreNull = true;
 
 // ***************** ALL ************************************************//
 
@@ -86,7 +80,6 @@ public class GlobisActivator {
 	static final boolean doImages = true;
 	static final boolean doCommonNames = true;
 
-
 //******************** NONE ***************************************//
 
 //	//authors
@@ -101,8 +94,6 @@ public class GlobisActivator {
 //	static final boolean doImages = false;
 //	static final boolean doCommonNames = false;
 
-//
-
 	public void doImport(Source source, ICdmDataSource destination){
 		System.out.println("Start import from ("+ globisSource.getDatabase() + ") ...");
 
@@ -111,7 +102,6 @@ public class GlobisActivator {
 		config.setClassificationUuid(classificationUuid);
 		config.setNomenclaturalCode(nomenclaturalCode);
 
-		config.setIgnoreNull(ignoreNull);
 		config.setDoReadMediaData(doReadMediaData);
 		config.setDoReferences(doReferences);
 		config.setDoAuthors(doAuthors);
@@ -130,7 +120,7 @@ public class GlobisActivator {
 		config.setEditor(editor);
 
 		// invoke import
-		CdmDefaultImport<GlobisImportConfigurator> globisImport = new CdmDefaultImport<GlobisImportConfigurator>();
+		CdmDefaultImport<GlobisImportConfigurator> globisImport = new CdmDefaultImport<>();
 		globisImport.invoke(config);
 
 		if (config.isDoNewUser()){
@@ -155,10 +145,6 @@ public class GlobisActivator {
 		System.out.println("End import from ("+ source.getDatabase() + ")...");
 	}
 
-
-	/**
-	 * @param args
-	 */
 	public static void main(String[] args) {
 
 		//make Globis Source
@@ -166,8 +152,5 @@ public class GlobisActivator {
 		ICdmDataSource destination = CdmDestinations.chooseDestination(args) != null ? CdmDestinations.chooseDestination(args) : cdmDestination;
 		GlobisActivator me = new GlobisActivator();
 		me.doImport(source, destination);
-
 	}
-
-
 }

@@ -41,7 +41,6 @@ public class ErmsImportActivator {
 
 	static final ICdmDataSource cdmDestination = CdmDestinations.cdm_test_local_mysql_erms();
 //	static final ICdmDataSource cdmDestination = CdmDestinations.cdm_test_local_mysql_erms2();
-//	static final ICdmDataSource cdmDestination = CdmDestinations.cdm_test_local_faunaEu_mysql();
 
 
 	static final boolean includeExport2PESI = false;
@@ -57,8 +56,6 @@ public class ErmsImportActivator {
 	//check - import
 	static final CHECK check = CHECK.IMPORT_WITHOUT_CHECK;
 	static final int partitionSize = 5000;
-	//ignore null
-	static final boolean ignoreNull = true;
 
 // ***************** ALL ************************************************//
 
@@ -97,7 +94,6 @@ public class ErmsImportActivator {
 
 		config.setClassificationUuid(classificationUuid);
 
-		config.setIgnoreNull(ignoreNull);
 		config.setDoReferences(doReferences);
 
 		config.setDoTaxa(doTaxa);
