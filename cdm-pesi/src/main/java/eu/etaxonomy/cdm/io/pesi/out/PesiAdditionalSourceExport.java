@@ -198,7 +198,11 @@ public class PesiAdditionalSourceExport extends PesiExportBase {
 
 	@SuppressWarnings("unused")  //used by mapper
     private static Integer getSourceUseFk(IdentifiableSource source, PesiExportState state) {
-        return state.getTransformer().getSourceUseKeyCacheByCache(source.getOriginalNameString());
+        Integer result = state.getTransformer().getSourceUseKeyCacheByCache(source.getOriginalNameString());
+        if (result == null){
+            logger.error("Source use for " + source.getOriginalNameString() + " does not exist. Please check if all source uses of erms.sourceuses exist exist in PESI.SourceUse" );
+        }
+        return result;
     }
 
     @SuppressWarnings("unused")  //used by mapper
