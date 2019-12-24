@@ -1910,12 +1910,17 @@ public final class PesiTransformer extends ExportTransformerBase{
 			if (!rels.isEmpty()){
 			    //we expect all rels to have same type, maybe not true
 			    UUID relTypeUuid = rels.iterator().next().getType().getUuid();
+			    //E+M
 			    if (TaxonRelationshipType.proParteUuids().contains(relTypeUuid)){
 	                return T_STATUS_PRO_PARTE_SYN;
 	            }else if (TaxonRelationshipType.partialUuids().contains(relTypeUuid)){
 	                return T_STATUS_PARTIAL_SYN;
 	            }else if (TaxonRelationshipType.misappliedNameUuids().contains(relTypeUuid)){
 	                return T_STATUS_SYNONYM;  //no explicit MAN status exists in PESI
+	            }
+			    //ERMS
+	            else if (TaxonRelationshipType.pseudoTaxonUuids().contains(relTypeUuid)){
+	                return T_STATUS_SYNONYM;
 	            }
 			}
 			if (!nodes.isEmpty()){
