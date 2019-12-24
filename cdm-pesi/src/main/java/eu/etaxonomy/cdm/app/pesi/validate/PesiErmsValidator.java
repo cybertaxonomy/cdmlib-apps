@@ -31,7 +31,7 @@ public class PesiErmsValidator {
 
     private static final Logger logger = Logger.getLogger(PesiErmsValidator.class);
 
-    private static final Source defaultSource = PesiSources.PESI2019_ERMS_2018();
+    private static final Source defaultSource = PesiSources.PESI2019_ERMS_2019();
 //    private static final Source defaultDestination = PesiDestinations.pesi_test_local_CDM_ERMS2PESI();
     private static final Source defaultDestination = PesiDestinations.pesi_test_local_CDM_ERMS2PESI_2();
 
@@ -50,11 +50,11 @@ public class PesiErmsValidator {
             this.destination = destination;
 //            success &= testReferences();  //ready, few minor issues to be discussed with VLIZ
             success &= testTaxa();
-//            success &= testTaxonRelations();  //name relations count!,  Implement single compare tests
+            success &= testTaxonRelations();  //name relations count!,  Implement single compare tests
 //            success &= testCommonNames();  //source(s) discuss VLIZ, exact duplicates (except for sources), Anus(Korur)
 //            success &= testDistributions();  //>1000 duplicates in "dr", sources (OccurrenceSource table), area spellings(Baelt Sea), 1 long note
-//              success &= testNotes();  //ecology & link notes test (only count tested), sources untested (NoteSource table), few duplicates,
-            success &= testAdditionalTaxonSources();  //ready
+//            success &= testNotes();  //ecology & link notes test (only count tested), sources untested (NoteSource table)
+//            success &= testAdditionalTaxonSources();  //ready
         } catch (Exception e) {
             e.printStackTrace();
             success = false;
@@ -266,8 +266,8 @@ public class PesiErmsValidator {
                 + "        type.tu_displayname typename, type.tu_authority typeauthor, "
                 + "        fo.fossil_name, qs.qualitystatus_name "
                 + " FROM tu t "
-                + " LEFT JOIN tu as tu1 on t.tu_parent = tu1.id"
-                + " LEFT JOIN (SELECT DISTINCT rank_id, rank_name FROM ranks WHERE NOT(rank_id = 40 AND rank_name = 'Subdivision' OR rank_id = 122 AND rank_name='Subsection')) as r ON t.tu_rank = r.rank_id "
+                + " LEFT JOIN tu as tu1 on t.tu_parent = tu1.id "
+                + " LEFT JOIN (SELECT DISTINCT rank_id, rank_name FROM ranks WHERE NOT(rank_id = 30 AND rank_name = 'Phylum (Division)' OR rank_id = 40 AND rank_name = 'Subphylum (Subdivision)' OR rank_id = 122 AND rank_name='Subsection')) as r ON t.tu_rank = r.rank_id "
                 + " LEFT JOIN tu acc ON acc.id = t.tu_acctaxon "
                 + " LEFT JOIN status st ON st.status_id = t.tu_status "
                 + " LEFT JOIN tu type ON type.id = t.tu_typetaxon "
@@ -295,7 +295,7 @@ public class PesiErmsValidator {
         int i = 0;
         while (srcRS.next() && destRS.next()){
             success &= testSingleTaxon(srcRS, destRS);
-//TODO       success &= testLastAction(srcRsLastAction, destRS, String.valueOf(srcRS.getInt("id")), "Taxon");
+            success &= testLastAction(srcRsLastAction, destRS, String.valueOf(srcRS.getInt("id")), "Taxon");
             i++;
         }
         success &= equals("Taxon count for single compare", n, i, String.valueOf(-1));
@@ -314,9 +314,9 @@ public class PesiErmsValidator {
         success &= compareNameParts(srcRS, destRS, id);
 
         success &= equals("Taxon websearchname", srcRS.getString("tu_displayname"), destRS.getString("WebSearchName"), id);
-//        success &= equals("Taxon WebShowName", srcRS.getString("tu_displayname"), destRS.getString("WebShowName"), id);
+//TODO        success &= equals("Taxon WebShowName", srcRS.getString("tu_displayname"), destRS.getString("WebShowName"), id);
         success &= equals("Taxon authority", srcRS.getString("tu_authority"), destRS.getString("AuthorString"), id);
-//        success &= equals("Taxon FullName", srcFullName(srcRS), destRS.getString("FullName"), id);
+        success &= equals("Taxon FullName", srcFullName(srcRS), destRS.getString("FullName"), id);
         success &= isNull("NomRefString", destRS);
 //        success &= equals("Taxon DisplayName", srcDisplayName(srcRS), destRS.getString("DisplayName"), id);  //according to SQL script same as FullName, no nom.ref. information attached
 
@@ -402,11 +402,11 @@ public class PesiErmsValidator {
     private String srcFullName(ResultSet srcRs) throws SQLException {
         String result = null;
         String epi = srcRs.getString("tu_name");
-        epi = " a" + epi;
         String display = srcRs.getString("tu_displayname");
         String sp = srcRs.getString("tu_sp");
-        if (display.indexOf(epi) != display.lastIndexOf(epi) && !sp.startsWith("#2#")){ //homonym, animal
-            result = srcRs.getString("tu_displayname").replaceFirst(epi+" ", CdmUtils.concat(" ", " "+epi, srcRs.getString("tu_authority")))+" ";
+        if (display.indexOf(epi) != display.lastIndexOf(epi) && !sp.startsWith("#2#")){ //autonym, !animal
+            String authority = srcRs.getString("tu_authority");
+            result = srcRs.getString("tu_displayname").replaceFirst(epi+" ", CdmUtils.concat(" ", epi, authority)+" ");
         }else{
             result = CdmUtils.concat(" ", srcRs.getString("tu_displayname"), srcRs.getString("tu_authority"));
         }
@@ -796,6 +796,7 @@ public class PesiErmsValidator {
         return success;
     }
 
+    //NOTE: there could be better parsing of source_year during import, this may also need better normalizing in the database
     private String normalizeYear(String yearStr) {
         if (StringUtils.isBlank(yearStr)){
             return yearStr;
@@ -803,6 +804,12 @@ public class PesiErmsValidator {
         yearStr = yearStr.trim();
         if (yearStr.matches("\\d{4}-\\d{2}")){
             yearStr = yearStr.substring(0, 5)+yearStr.substring(0, 2)+yearStr.substring(5);
+        }
+        if (yearStr.equals("20 Mar 1891")){
+            yearStr = "20.3.1891";
+        }
+        if (yearStr.equals("July 1900")){
+            yearStr = "7.1900";
         }
         return yearStr;
     }
