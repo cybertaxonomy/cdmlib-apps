@@ -70,7 +70,7 @@ public class ErmsImportActivator {
 	static final boolean doImages = true;
 
 //******************** NONE ***************************************//
-//
+
 //	static final DO_REFERENCES doReferences = DO_REFERENCES.NONE;
 //	static final boolean doTaxa = false;
 //	static final boolean doRelTaxa = doTaxa; //should always run with doTaxa because depends on state from doTaxa
@@ -82,7 +82,7 @@ public class ErmsImportActivator {
 //	static final boolean doLinks = false;
 //	static final boolean doImages = false;
 
-	//private static DbSchemaValidation hbm2dll = (doReferences ==  DO_REFERENCES.ALL)? DbSchemaValidation.CREATE:DbSchemaValidation.VALIDATE;
+//	private static DbSchemaValidation hbm2dll = (doReferences ==  DO_REFERENCES.ALL)? DbSchemaValidation.CREATE:DbSchemaValidation.VALIDATE;
 	private static DbSchemaValidation hbm2dll = DbSchemaValidation.VALIDATE;
 
 	private void doImport(Source source, ICdmDataSource destination, DbSchemaValidation hbm2dll){

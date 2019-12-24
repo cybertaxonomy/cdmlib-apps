@@ -1633,6 +1633,7 @@ public class PesiTaxonExport extends PesiExportBase {
 		}
 		return null;
 	}
+
 	/**
 	 * Returns the <code>TaxonStatusFk</code> attribute.
 	 * @param taxonName The {@link TaxonNameBase TaxonName}.
@@ -1641,22 +1642,12 @@ public class PesiTaxonExport extends PesiExportBase {
 	 * @see MethodMapper
 	 */
 	private static Integer getTaxonStatusFk(TaxonBase<?> taxon, PesiExportState state) {
-		Integer result = null;
-
 		try {
-//			if (isMisappliedName(taxon)) {
-//				Synonym synonym = Synonym.NewInstance(null, null);
-//
-//				// This works as long as only the instance is important to differentiate between TaxonStatus.
-//				result = PesiTransformer.taxonBase2statusFk(synonym); // Auct References are treated as Synonyms in datawarehouse now.
-//			} else {
-		    //this should work now, the method itself distinguishes MAN etc.
-				result = PesiTransformer.taxonBase2statusFk(taxon);
-//			}
+			return PesiTransformer.taxonBase2statusFk(taxon);
 		} catch (Exception e) {
 			e.printStackTrace();
+			return null;
 		}
-		return result;
 	}
 
 	/**
