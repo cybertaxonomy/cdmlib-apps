@@ -85,6 +85,7 @@ public final class PesiTransformer extends ExportTransformerBase{
 	private static int QUALITY_STATUS_ADD_BY_DBMT= 2;
 	private static int QUALITY_STATUS_CHECKED_EDITOR = 3;
 	private static int QUALITY_STATUS_EDITED_BY_DBMT = 4;
+	private static int QUALITY_STATUS_THEMATIC_EDITOR = 5;
 
 	// marker type
 	public static final UUID uuidMarkerGuidIsMissing = UUID.fromString("24e70843-05e2-44db-954b-84df0d23ea20");
@@ -2357,7 +2358,9 @@ public final class PesiTransformer extends ExportTransformerBase{
 				return QUALITY_STATUS_CHECKED_EDITOR;
 			}else if (statusSet.contains("Edited by Database Management Team")){
 				return QUALITY_STATUS_EDITED_BY_DBMT;
-			}else{
+			}else if (statusSet.contains("Added/edited by Thematic Editor")){
+                return QUALITY_STATUS_THEMATIC_EDITOR;
+            }else{
 				logger.warn("Unknown ERMS quality status: " + statusSet.iterator().next() + " for taxon name " + taxonName.getTitleCache());
 				return null;
 			}
