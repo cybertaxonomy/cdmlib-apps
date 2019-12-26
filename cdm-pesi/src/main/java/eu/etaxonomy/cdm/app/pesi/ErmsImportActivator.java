@@ -45,7 +45,7 @@ public class ErmsImportActivator {
 
 	static final boolean includeExport2PESI = false;
 	static final Source pesiDestination = !includeExport2PESI ? null :
-	        cdmDestination == CdmDestinations.cdm_test_local_mysql_erms()?
+	        cdmDestination.equals(CdmDestinations.cdm_test_local_mysql_erms())?
 	                PesiDestinations.pesi_test_local_CDM_ERMS2PESI():
 	                PesiDestinations.pesi_test_local_CDM_ERMS2PESI_2()    ;
 
