@@ -192,12 +192,12 @@ public class ErmsTaxonImport
 		String distributionTable = "dr";
 		String notesTable = "notes";
 		String sql =
-		        "          SELECT id FROM tu WHERE tu_accfinal is NULL" //id of taxa not having accepted taxon
+                "          SELECT id FROM tu WHERE tu_accfinal is NULL" //id of taxa not having accepted taxon
                 + " UNION  SELECT DISTINCT tu_accfinal FROM tu "  //fk to accepted taxon (either the accepted taxon or the taxon itself, if accepted)
                 + " UNION  SELECT syn.id FROM tu syn INNER JOIN tu acc ON syn.tu_accfinal = acc.id WHERE syn.id = acc.tu_parent AND acc.id <> syn.id "  //see also ErmsTaxonRelationImport.isAccepted, there are some autonyms being the accepted taxon of there own parents
                 + " UNION  SELECT DISTINCT %s FROM %s " //vernaculars
-		        + " UNION  SELECT DISTINCT %s FROM %s "  //distributions
-		        + " UNION  SELECT DISTINCT %s FROM %s ";  //notes
+                + " UNION  SELECT DISTINCT %s FROM %s "  //distributions
+                + " UNION  SELECT DISTINCT %s FROM %s ";  //notes
 		sql = String.format(sql,
 		        tuFk, vernacularsTable,
 				tuFk, distributionTable,
@@ -390,8 +390,8 @@ public class ErmsTaxonImport
 		}
 	}
 
-	private void handleException(Integer parent1Rank, TaxonName taxonName, String displayName, Integer meId) {
-		logger.warn("Parent of infra specific taxon is higher than species. Used nameCache: " + displayName +  "; id=" + meId) ;
+	private void handleException(Integer parentRank, TaxonName taxonName, String displayName, Integer meId) {
+		logger.warn("Parent of infra specific taxon is of higher rank ("+parentRank+") than species. Used nameCache: " + displayName +  "; id=" + meId) ;
 		taxonName.setNameCache(displayName);
 	}
 

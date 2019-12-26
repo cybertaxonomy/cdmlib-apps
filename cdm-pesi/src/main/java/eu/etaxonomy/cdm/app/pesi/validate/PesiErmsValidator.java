@@ -59,7 +59,6 @@ public class PesiErmsValidator {
             e.printStackTrace();
             success = false;
         }
-        //TBC
         System.out.println("end validation " + (success? "":"NOT ") + "successful.");
     }
 
@@ -363,13 +362,13 @@ public class PesiErmsValidator {
         }else if (rankFk == 190){
             genusOrUninomial = srcRS.getString("tu1_name");
             infraGenericEpithet =  srcRS.getString("tu_name");
-            //TODO does not work this way
+            //TODO compareNameParts does not work this way
 //        }else if (rankFk == 220){
 //            genusOrUninomial = destRS.getString("p_GenusOrUninomial");
 //            infraGenericEpithet = destRS.getString("p_InfraGenericEpithet");
 //            specificEpithet = srcRS.getString("tu_name");
         }else{
-            //TODO exception
+            //TODO exception (compare name parts)
             return false;
         }
         boolean result = testEpis(destRS, genusOrUninomial, infraGenericEpithet,
@@ -514,9 +513,8 @@ public class PesiErmsValidator {
         success &= equals("Taxon relation taxon2", "tu_id: " + srcRS.getInt("tu_accfinal"), destRS.getString("t2Id"), id);
         success &= equals("Taxon relation qualifier fk", PesiTransformer.IS_SYNONYM_OF, destRS.getInt("RelTaxonQualifierFk"), id);
         success &= equals("Taxon relation qualifier cache", "is synonym of", destRS.getString("RelQualifierCache"), id);
-        //TODO enable after next import
-//        success &= isNull("notes", destRS);
-        //complete if no further relations need to added
+        success &= isNull("notes", destRS);
+        //complete if no further relations need to be added
         return success;
     }
 
