@@ -61,7 +61,8 @@ public class ErmsTaxonRelationImport extends ErmsImportBase<TaxonBase<?>> implem
 			mapping = new DbImportMapping<>();
 			//incldued in
 			DbImportTaxIncludedInMapper<?> includedIn
-			    = DbImportTaxIncludedInMapper.NewInstance("id", TAXON_NAMESPACE, "accId", TAXON_NAMESPACE, "parentAccId", TAXON_NAMESPACE, null);
+			    = DbImportTaxIncludedInMapper.NewInstance("id", TAXON_NAMESPACE, "accId", TAXON_NAMESPACE,
+			            "parentAccId", TAXON_NAMESPACE, null);
 			mapping.addMapper(includedIn);//there is only one tree
 			//synonym
 			mapping.addMapper(DbImportSynonymMapper.NewInstance("id", "tu_accfinal", TAXON_NAMESPACE,

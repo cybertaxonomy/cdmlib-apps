@@ -33,7 +33,6 @@ import eu.etaxonomy.cdm.io.common.mapping.DbImportMarkerMapper;
 import eu.etaxonomy.cdm.io.common.mapping.DbImportMethodMapper;
 import eu.etaxonomy.cdm.io.common.mapping.DbImportObjectCreationMapper;
 import eu.etaxonomy.cdm.io.common.mapping.DbImportStringMapper;
-import eu.etaxonomy.cdm.io.common.mapping.DbNotYetImplementedMapper;
 import eu.etaxonomy.cdm.io.common.mapping.IMappingImport;
 import eu.etaxonomy.cdm.io.common.mapping.UndefinedTransformerMethodException;
 import eu.etaxonomy.cdm.io.common.mapping.out.DbLastActionMapper;
@@ -134,10 +133,8 @@ public class ErmsTaxonImport
             //titleCache compare
             mapping.addMapper(DbImportMethodMapper.NewDefaultInstance(this, "testTitleCache", ErmsImportState.class));
 
-			//not yet implemented
-			mapping.addMapper(DbNotYetImplementedMapper.NewInstance("tu_sp", "included in rank/object creation"));
-
 			//ignore
+            mapping.addMapper(DbIgnoreMapper.NewInstance("tu_sp", "included in rank/object creation, only needed for defining kingdom"));
 			mapping.addMapper(DbIgnoreMapper.NewInstance("tu_fossil", "tu_fossil implemented as foreign key"));
 
 		}
