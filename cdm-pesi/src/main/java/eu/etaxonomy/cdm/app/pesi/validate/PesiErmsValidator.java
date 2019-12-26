@@ -50,9 +50,9 @@ public class PesiErmsValidator {
             this.destination = destination;
 //            success &= testReferences();  //ready, few minor issues to be discussed with VLIZ
             success &= testTaxa();
-            success &= testTaxonRelations();  //name relations count!,  Implement single compare tests
+//            success &= testTaxonRelations();  //name relations count!,  single record compare tests for synonyms and included in
 //            success &= testCommonNames();  //source(s) discuss VLIZ, exact duplicates (except for sources), Anus(Korur)
-//            success &= testDistributions();  //>1000 duplicates in "dr", sources (OccurrenceSource table), area spellings(Baelt Sea), 1 long note
+//            success &= testDistributions();  //>1000 duplicates in "dr", sources (OccurrenceSource table), 1 long note
 //            success &= testNotes();  //ecology & link notes test (only count tested), sources untested (NoteSource table)
 //            success &= testAdditionalTaxonSources();  //ready
         } catch (Exception e) {
@@ -100,10 +100,10 @@ public class PesiErmsValidator {
 
     int countSynonyms;
     int countIncludedIns;
-    private boolean testTaxonRelations() {
+    private boolean testTaxonRelations() throws SQLException {
         System.out.println("Start validate taxon relations");
-        boolean success = testSynonymRelations();
-        success &= testIncludedInRelations();
+        boolean success = testSynonymRelations();  //only count, single record test still missing
+        success &= testIncludedInRelations();  //only count, single record test still missing
         success &= testTotalRelations();
         success &= testNameRelations();
         return success;
@@ -122,7 +122,7 @@ public class PesiErmsValidator {
         }
     }
 
-    private boolean testSynonymRelations() {
+    private boolean testSynonymRelations() throws SQLException {
 
         int countSrc = source.getUniqueInteger(countSynonymRelation);
         int countDest = destination.getUniqueInteger("SELECT count(*) FROM RelTaxon WHERE RelTaxonQualifierFk > 101");
@@ -276,6 +276,7 @@ public class PesiErmsValidator {
                 + " ORDER BY CAST(t.id as nvarchar(20)) ");
         ResultSet destRS = destination.getResultSet("SELECT t.*, "
                 + "     pt.GenusOrUninomial p_GenusOrUninomial, pt.InfraGenericEpithet p_InfraGenericEpithet, pt.SpecificEpithet p_SpecificEpithet, "
+                + "     pt.treeIndex pTreeIndex, "
                 + "     s.Name as sourceName, type.IdInSource typeSourceId, r.Rank "
                 + " FROM Taxon t "
                 + "    LEFT JOIN Taxon pt ON pt.TaxonId = t.ParentTaxonFk "
@@ -301,37 +302,37 @@ public class PesiErmsValidator {
         return success;
     }
 
-
     private boolean testSingleTaxon(ResultSet srcRS, ResultSet destRS) throws SQLException {
         String id = String.valueOf(srcRS.getInt("id"));
+        //not complete yet
         boolean success = equals("Taxon ID", "tu_id: " + srcRS.getInt("id"), destRS.getString("IdInSource"), id);
         success &= equals("Taxon source", "ERMS export for PESI", destRS.getString("sourceName"), id);
-//TODO some
+
         success &= compareKingdom("Taxon kingdom", srcRS, destRS, id);
         success &= equals("Taxon rank fk", srcRS.getString("tu_rank"), destRS.getString("RankFk"), id);
         success &= equals("Taxon rank cache", normalizeRank(srcRS.getString("rank_name"), srcRS, id), destRS.getString("Rank"), id);
         success &= compareNameParts(srcRS, destRS, id);
 
         success &= equals("Taxon websearchname", srcRS.getString("tu_displayname"), destRS.getString("WebSearchName"), id);
-//TODO        success &= equals("Taxon WebShowName", srcRS.getString("tu_displayname"), destRS.getString("WebShowName"), id);
+//TODO webShowName  success &= equals("Taxon WebShowName", srcRS.getString("tu_displayname"), destRS.getString("WebShowName"), id);
         success &= equals("Taxon authority", srcRS.getString("tu_authority"), destRS.getString("AuthorString"), id);
-        success &= equals("Taxon FullName", srcFullName(srcRS), destRS.getString("FullName"), id);
+//        success &= equals("Taxon FullName", srcFullName(srcRS), destRS.getString("FullName"), id);
         success &= isNull("NomRefString", destRS);
 //        success &= equals("Taxon DisplayName", srcDisplayName(srcRS), destRS.getString("DisplayName"), id);  //according to SQL script same as FullName, no nom.ref. information attached
 
-//TODO        success &= equals("Taxon NameStatusFk", toNameStatus(nullSafeInt(srcRS, "tu_status")),nullSafeInt( destRS,"NameStatusFk"), id);
-//TODO        success &= equals("Taxon NameStatusCache", srcRS.getString("status_name"), destRS.getString("NameStatusCache"), id);
+//TODO nameStatusFk       success &= equals("Taxon NameStatusFk", toNameStatus(nullSafeInt(srcRS, "tu_status")),nullSafeInt( destRS,"NameStatusFk"), id);
+//TODO nameStatusCache    success &= equals("Taxon NameStatusCache", srcRS.getString("status_name"), destRS.getString("NameStatusCache"), id);
 
-//TODO        success &= equals("Taxon TaxonStatusFk", nullSafeInt(srcRS, "tu_status"),nullSafeInt( destRS,"TaxonStatusFk"), id);
-//TODO        success &= equals("Taxon TaxonStatusCache", srcRS.getString("status_name"), destRS.getString("TaxonStatusCache"), id);
-
+       success &= equals("Taxon TaxonStatusFk", makePesiTaxonStatus(srcRS, "tu_status"),nullSafeInt( destRS,"TaxonStatusFk"), id);
+/*//TODO taxonStatusCache  success &= equals("Taxon TaxonStatusCache", srcRS.getString("status_name"), destRS.getString("TaxonStatusCache"), id);
+*/
         //TODO ParentTaxonFk
         Integer orgigTypeNameFk = nullSafeInt(srcRS, "tu_typetaxon");
         success &= equals("Taxon TypeNameFk", orgigTypeNameFk == null? null : "tu_id: " + orgigTypeNameFk, destRS.getString("typeSourceId"), id);
 //TODO  success &= equals("Taxon TypeFullNameCache", CdmUtils.concat(" ", srcRS.getString("typename"), srcRS.getString("typeauthor")), destRS.getString("TypeFullNameCache"), id);
         success &= equals("Taxon QualityStatusFK", nullSafeInt(srcRS, "tu_qualitystatus"),nullSafeInt( destRS,"QualityStatusFk"), String.valueOf(id));
         success &= equals("Taxon QualityStatusCache", srcRS.getString("qualitystatus_name"), destRS.getString("QualityStatusCache"), id);
-        //TODO TreeIndex
+        success &= checkTreeIndex(destRS, ("TreeIndex"), ("pTreeIndex"), id);
         success &= equals("Taxon FossilStatusFk", nullSafeInt(srcRS, "tu_fossil"),nullSafeInt( destRS,"FossilStatusFk"), String.valueOf(id));
         success &= equals("Taxon FossilStatusCache", srcRS.getString("fossil_name"), destRS.getString("FossilStatusCache"), id);
         success &= equals("Taxon GUID", srcRS.getString("GUID"), destRS.getString("GUID"), id);
@@ -344,6 +345,32 @@ public class PesiErmsValidator {
         success &= isNull("GUID2", destRS);  //only relevant after merge
         success &= isNull("DerivedFromGuid2", destRS);  //only relevant after merge
         return success;
+    }
+
+    private Integer makePesiTaxonStatus(ResultSet srcRS, String string) throws SQLException {
+        Integer status = nullSafeInt(srcRS, "tu_status");
+        if(status == 1 || status == 2){   //accepted, unaccepted
+            return status;
+        }else if (status == 3 || status == 6 || status == 7){  //nomen nudum, nomen dubium, temporary name
+            return 2;
+        }
+        return -1;
+    }
+
+    private boolean checkTreeIndex(ResultSet destRS, String childIndexAttr, String parentIndexAttr, String id) throws SQLException {
+        boolean result;
+        int taxonStatusFk = destRS.getInt("TaxonStatusFk");
+        String parentTaxonId = destRS.getString("parentTaxonFk");
+        int rankFk = destRS.getInt("RankFk");
+        if (taxonStatusFk == 2 || rankFk <= 10){  //synonyms, Kingdom and higher
+            result = isNull(childIndexAttr, destRS);
+        }else{
+            String childIndex = destRS.getString(childIndexAttr);
+            String parentIndex = destRS.getString(parentIndexAttr);
+            parentIndex = parentIndex == null? "#": parentIndex;
+            result = equals("Tree index", childIndex, parentIndex + parentTaxonId + "#", id);
+        }
+        return result;
     }
 
     boolean namePartsFirst = true;
