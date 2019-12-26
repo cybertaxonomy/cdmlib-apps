@@ -698,8 +698,9 @@ public final class ErmsTransformer extends InputTransformerBase {
 
         //according to SQL script erms300_Match_Relation&Status.sql
 
+        unacceptreason = unacceptreason == null? null: unacceptreason.trim();
         boolean handled = false;
-        if (isBlank(unacceptreason)){
+        if (unacceptreason == null || isBlank(unacceptreason)){
             handled = true;  //no change
         }else if (unacceptreason.matches("(?i)(synonym|superseded recombination|transferred to .*)")){
             handled = true;  //no change
@@ -713,7 +714,8 @@ public final class ErmsTransformer extends InputTransformerBase {
             }else if (unacceptreason.matches("(?i)part.*\\s+synonym.*")){
                 synType = null;
                 taxonRelType = TaxonRelationshipType.PRO_PARTE_SYNONYM_FOR();
-            }else if (unacceptreason.matches("(?i)misapplied.*")){
+            }else if (unacceptreason.matches("(?i)(misidentifications?|misapplied .*name|.*misapplication.*|incorrect identification)")){
+                //see ErmsTaxonImport.getAcceptedTaxaKeys()
                 synType = null;
                 taxonRelType = TaxonRelationshipType.MISAPPLIED_NAME_FOR();
             }else if (unacceptreason.matches("(?i)(.*jun.*syn.*|\\(synonym\\)|reverted genus transfer)")){
