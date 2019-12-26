@@ -195,7 +195,7 @@ public class PesiEuroMedValidator {
     private boolean testSingleSynonymRelation(ResultSet srcRS, ResultSet destRS) throws SQLException {
         String id = String.valueOf(srcRS.getInt("id"));
         boolean success = equals("Taxon relation taxon1", "NameId: " + srcRS.getInt("id"), destRS.getString("t1Id"), id);
-        success &= equals("Taxon relation taxon2", "NameId: " + srcRS.getInt("tu_acctaxon"), destRS.getString("t2Id"), id);
+        success &= equals("Taxon relation taxon2", "NameId: " + srcRS.getInt("tu_accfinal"), destRS.getString("t2Id"), id);
         success &= equals("Taxon relation qualifier fk", PesiTransformer.IS_SYNONYM_OF, destRS.getInt("RelTaxonQualifierFk"), id);
         success &= equals("Taxon relation qualifier cache", "is synonym of", destRS.getString("RelQualifierCache"), id);
         //TODO enable after next import

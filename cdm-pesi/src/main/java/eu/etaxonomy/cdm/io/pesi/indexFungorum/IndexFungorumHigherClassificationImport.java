@@ -273,7 +273,7 @@ public class IndexFungorumHigherClassificationImport  extends IndexFungorumImpor
 		try{
 			Set<String> taxonNameSet = new HashSet<String>();
 //			while (rs.next()){
-//				handleForeignKey(rs, taxonIdSet,"tu_acctaxon" );
+//				handleForeignKey(rs, taxonIdSet,"tu_accfinal" );
 //			}
 
 			//taxon map

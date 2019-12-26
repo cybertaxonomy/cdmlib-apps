@@ -162,7 +162,7 @@ public class IndexFungorumGeneraImport  extends IndexFungorumImportBase {
 		try{
 //			Set<String> taxonNameSet = new HashSet<>();
 			while (rs.next()){
-//				handleForeignKey(rs, taxonIdSet,"tu_acctaxon" );
+//				handleForeignKey(rs, taxonIdSet,"tu_accfinal" );
 			}
 
 			//taxon map

@@ -192,9 +192,9 @@ public class ErmsTaxonImport
 		String distributionTable = "dr";
 		String notesTable = "notes";
 		String sql =
-		        "          SELECT id FROM tu WHERE tu_acctaxon is NULL" //id of taxa not having accepted taxon
-		        + " UNION  SELECT DISTINCT tu_acctaxon FROM tu "  //fk to accepted taxon (either the accepted taxon or the taxon itself, if accepted)
-		        + " UNION  SELECT syn.id FROM tu syn INNER JOIN tu acc ON syn.tu_acctaxon = acc.id WHERE syn.id = acc.tu_parent AND acc.id <> syn.id "  //see also ErmsTaxonRelationImport.isAccepted, there are some autonyms being the accepted taxon of there own parents
+		        "          SELECT id FROM tu WHERE tu_accfinal is NULL" //id of taxa not having accepted taxon
+                + " UNION  SELECT DISTINCT tu_accfinal FROM tu "  //fk to accepted taxon (either the accepted taxon or the taxon itself, if accepted)
+                + " UNION  SELECT syn.id FROM tu syn INNER JOIN tu acc ON syn.tu_accfinal = acc.id WHERE syn.id = acc.tu_parent AND acc.id <> syn.id "  //see also ErmsTaxonRelationImport.isAccepted, there are some autonyms being the accepted taxon of there own parents
                 + " UNION  SELECT DISTINCT %s FROM %s " //vernaculars
 		        + " UNION  SELECT DISTINCT %s FROM %s "  //distributions
 		        + " UNION  SELECT DISTINCT %s FROM %s ";  //notes
@@ -226,7 +226,7 @@ public class ErmsTaxonImport
 	@Override
 	public TaxonBase<?> createObject(ResultSet rs, ErmsImportState state) throws SQLException {
 		int statusId = rs.getInt("status_id");
-//		Object accTaxonId = rs.getObject("tu_acctaxon");
+//		Object accTaxonId = rs.getObject("tu_accfinal");
 		Integer meId = rs.getInt("id");
 
         TaxonName taxonName = getTaxonName(rs, state);

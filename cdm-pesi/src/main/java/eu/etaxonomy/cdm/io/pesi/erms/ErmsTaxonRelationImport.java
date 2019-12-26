@@ -64,7 +64,7 @@ public class ErmsTaxonRelationImport extends ErmsImportBase<TaxonBase<?>> implem
 			    = DbImportTaxIncludedInMapper.NewInstance("id", TAXON_NAMESPACE, "accId", TAXON_NAMESPACE, "parentAccId", TAXON_NAMESPACE, null);
 			mapping.addMapper(includedIn);//there is only one tree
 			//synonym
-			mapping.addMapper(DbImportSynonymMapper.NewInstance("id", "tu_acctaxon", TAXON_NAMESPACE,
+			mapping.addMapper(DbImportSynonymMapper.NewInstance("id", "tu_accfinal", TAXON_NAMESPACE,
 			        "tu_unacceptreason", null, null, true));
 			//type designations
 			mapping.addMapper(DbImportNameTypeDesignationMapper.NewInstance("id", "tu_typetaxon", ErmsImportBase.NAME_NAMESPACE, "tu_typedesignationstatus"));
@@ -84,7 +84,7 @@ public class ErmsTaxonRelationImport extends ErmsImportBase<TaxonBase<?>> implem
 		//TODO get automatic by second path mappers
 		String selectAttributes =
 		    "   myTaxon.id, myTaxon.tu_parent, myTaxon.tu_typetaxon, myTaxon.tu_typedesignation, "
-		    + " myTaxon.tu_acctaxon, myTaxon.tu_status, myTaxon.tu_unacceptreason, "
+		    + " myTaxon.tu_accfinal, myTaxon.tu_status, myTaxon.tu_unacceptreason, "
 			+ " parent.tu_status AS parentStatus, parent.id AS parentId, "
 		    + " parentAcc.id AS parentAccId,"
 		    + " accTaxon.tu_parent accParentId, "
@@ -92,9 +92,9 @@ public class ErmsTaxonRelationImport extends ErmsImportBase<TaxonBase<?>> implem
 		String strRecordQuery =
 			"   SELECT  " + selectAttributes
 			+ " FROM tu AS myTaxon "
-			+ "   LEFT JOIN tu AS accTaxon ON myTaxon.tu_acctaxon = accTaxon.id "
+			+ "   LEFT JOIN tu AS accTaxon ON myTaxon.tu_accfinal = accTaxon.id "
 			+ "   LEFT JOIN tu AS parent ON myTaxon.tu_parent = parent.id "
-			+ "   LEFT JOIN tu AS parentAcc ON parentAcc.id = parent.tu_acctaxon "
+			+ "   LEFT JOIN tu AS parentAcc ON parentAcc.id = parent.tu_accfinal "
 			+ " WHERE ( myTaxon.id IN (" + ID_LIST_TOKEN + ") )";
 		return strRecordQuery;
 	}
@@ -116,7 +116,7 @@ public class ErmsTaxonRelationImport extends ErmsImportBase<TaxonBase<?>> implem
 			Set<String> nameIdSet = new HashSet<>();
 			while (rs.next()){
 			    handleForeignKey(rs, taxonIdSet, "accId");
-				handleForeignKey(rs, taxonIdSet, "tu_acctaxon");
+				handleForeignKey(rs, taxonIdSet, "tu_accfinal");
 				handleForeignKey(rs, taxonIdSet, "id");
 				handleForeignKey(rs, nameIdSet, "tu_typetaxon");
 				handleForeignKey(rs, nameIdSet, "id");
@@ -152,8 +152,8 @@ public class ErmsTaxonRelationImport extends ErmsImportBase<TaxonBase<?>> implem
 		    //here we should add the direct parent or the accepted taxon of the parent
 		    return !isAccepted;
 		}else if (mapper instanceof DbImportSynonymMapper){
-	        //the only exact rule in ERMS is that the accepted taxon (tu_acctaxon)
-	        // of a synonym (def: id <> tu_acctaxon) never again has another
+	        //the only exact rule in ERMS is that the accepted taxon (tu_accfinal)
+	        // of a synonym (def: id <> tu_accfinal) never again has another
 	        // accepted taxon.
 	        //So the synonym relation is clearly defined, no matter which status
 	        //both related taxa have.
@@ -170,7 +170,7 @@ public class ErmsTaxonRelationImport extends ErmsImportBase<TaxonBase<?>> implem
 
     private boolean isAccepted(ResultSet rs) throws SQLException {
         int id = rs.getInt("id");
-        Object accTaxonId = rs.getObject("tu_acctaxon");
+        Object accTaxonId = rs.getObject("tu_accfinal");
         Object accParentId = rs.getObject("accParentId");
 
         boolean isAccepted = false;

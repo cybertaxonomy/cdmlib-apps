@@ -236,8 +236,8 @@ public class PesiErmsValidator {
         return equals("CommonName count ", countSrc, countDest, String.valueOf(-1));
     }
 
-    private final String countSynonymRelation = "SELECT count(*) FROM tu syn LEFT JOIN tu acc ON syn.tu_acctaxon = acc.id WHERE (syn.id <> acc.id AND syn.tu_acctaxon IS NOT NULL AND syn.id <> acc.tu_parent) AND syn.id " + moneraFilter;
-    private final String countParentRelation  = "SELECT count(*)-1 FROM tu syn LEFT JOIN tu acc ON syn.tu_acctaxon = acc.id WHERE (syn.id =  acc.id OR  syn.tu_acctaxon IS     NULL OR  syn.id =  acc.tu_parent) AND syn.id " + moneraFilter;
+    private final String countSynonymRelation = "SELECT count(*) FROM tu syn LEFT JOIN tu acc ON syn.tu_accfinal = acc.id WHERE (syn.id <> acc.id AND syn.tu_accfinal IS NOT NULL AND syn.id <> acc.tu_parent) AND syn.id " + moneraFilter;
+    private final String countParentRelation  = "SELECT count(*)-1 FROM tu syn LEFT JOIN tu acc ON syn.tu_accfinal = acc.id WHERE (syn.id =  acc.id OR  syn.tu_accfinal IS  NULL OR  syn.id =  acc.tu_parent) AND syn.id " + moneraFilter;
 
     private final String countTaxon = "SELECT count(*) FROM tu WHERE id " + moneraFilter;
     private boolean testTaxaCount() {
@@ -268,7 +268,7 @@ public class PesiErmsValidator {
                 + " FROM tu t "
                 + " LEFT JOIN tu as tu1 on t.tu_parent = tu1.id "
                 + " LEFT JOIN (SELECT DISTINCT rank_id, rank_name FROM ranks WHERE NOT(rank_id = 30 AND rank_name = 'Phylum (Division)' OR rank_id = 40 AND rank_name = 'Subphylum (Subdivision)' OR rank_id = 122 AND rank_name='Subsection')) as r ON t.tu_rank = r.rank_id "
-                + " LEFT JOIN tu acc ON acc.id = t.tu_acctaxon "
+                + " LEFT JOIN tu acc ON acc.id = t.tu_accfinal "
                 + " LEFT JOIN status st ON st.status_id = t.tu_status "
                 + " LEFT JOIN tu type ON type.id = t.tu_typetaxon "
                 + " LEFT JOIN fossil fo ON t.tu_fossil = fo.fossil_id "
@@ -491,7 +491,7 @@ public class PesiErmsValidator {
         ResultSet srcRS = source.getResultSet(""
                 + " SELECT t.* "
                 + " FROM tu t "
-                + " WHERE t.id "+ moneraFilter + " AND tu_acctaxon <> id "
+                + " WHERE t.id "+ moneraFilter + " AND tu_accfinal <> id "
                 + " ORDER BY CAST(t.id as nvarchar(20)) ");
         ResultSet destRS = destination.getResultSet("SELECT rel.*, t1.IdInSource t1Id, t2.IdInSource t2Id "
                 + " FROM RelTaxon rel "
@@ -511,7 +511,7 @@ public class PesiErmsValidator {
     private boolean testSingleTaxonRelation(ResultSet srcRS, ResultSet destRS) throws SQLException {
         String id = String.valueOf(srcRS.getInt("id"));
         boolean success = equals("Taxon relation taxon1", "tu_id: " + srcRS.getInt("id"), destRS.getString("t1Id"), id);
-        success &= equals("Taxon relation taxon2", "tu_id: " + srcRS.getInt("tu_acctaxon"), destRS.getString("t2Id"), id);
+        success &= equals("Taxon relation taxon2", "tu_id: " + srcRS.getInt("tu_accfinal"), destRS.getString("t2Id"), id);
         success &= equals("Taxon relation qualifier fk", PesiTransformer.IS_SYNONYM_OF, destRS.getInt("RelTaxonQualifierFk"), id);
         success &= equals("Taxon relation qualifier cache", "is synonym of", destRS.getString("RelQualifierCache"), id);
         //TODO enable after next import
