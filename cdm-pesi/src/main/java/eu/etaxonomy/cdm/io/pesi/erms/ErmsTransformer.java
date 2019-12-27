@@ -695,6 +695,7 @@ public final class ErmsTransformer extends InputTransformerBase {
         TaxonRelationshipType taxonRelType = getSynTaxonRelType(state);
         NameRelationshipType nameType = null;
 //        HybridRelationshipType hybridType = null;
+        ((ErmsImportState)state).setUnhandledUnacceptReason(null);  //see below for unhandledAcceptReason handling
 
         //according to SQL script erms300_Match_Relation&Status.sql
 
@@ -740,7 +741,8 @@ public final class ErmsTransformer extends InputTransformerBase {
 
             if(handled == false && SynonymType.SYNONYM_OF().equals(synType) &&
                     getSynTaxonRelType(state).equals(taxonRelType) && nameType == null){
-                logger.warn("Unaccept reason not yet handled: " + unacceptreason);
+                ((ErmsImportState)state).setUnhandledUnacceptReason(unacceptreason);
+                logger.debug("Unaccept reason not yet handled: " + unacceptreason);
             }
         }
 //      update Match_RelStat set RelTaxon      =  1 where tu_unacceptreason like '%bas[iy][no]%ny%'

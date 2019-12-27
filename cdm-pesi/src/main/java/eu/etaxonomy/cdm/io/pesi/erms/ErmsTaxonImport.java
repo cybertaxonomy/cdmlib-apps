@@ -11,14 +11,17 @@ package eu.etaxonomy.cdm.io.pesi.erms;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
+import org.hsqldb.lib.StringComparator;
 import org.springframework.stereotype.Component;
 
 import eu.etaxonomy.cdm.common.CdmUtils;
@@ -74,6 +77,8 @@ public class ErmsTaxonImport
 	private static final String pluralString = "taxa";
 	private static final String dbTableName = "tu";
 	private static final Class<?> cdmTargetClass = TaxonBase.class;
+
+	private static Map<String, Integer> unacceptReasons = new HashMap<>();
 
 	public ErmsTaxonImport(){
 		super(pluralString, dbTableName, cdmTargetClass);
@@ -174,6 +179,9 @@ public class ErmsTaxonImport
 
 		//first path
 		super.doInvoke(state);
+		if(true){
+		    logUnacceptReasons();
+		}
 		return;
 	}
 
@@ -359,16 +367,29 @@ public class ErmsTaxonImport
     private static TaxonBase<?> appendedPhraseForMisapplications(ResultSet rs, ErmsImportState state) throws SQLException{
         TaxonBase<?> taxon = (TaxonBase<?>)state.getRelatedObject(DbImportStateBase.CURRENT_OBJECT_NAMESPACE, DbImportStateBase.CURRENT_OBJECT_ID);
         TaxonName taxonName = taxon.getName();
-         String unacceptreason = rs.getString("tu_unacceptreason");
-         RelationshipTermBase<?>[] rels = state.getTransformer().getSynonymRelationTypesByKey(unacceptreason, state);
-         if (rels[1]!= null && rels[1].equals(TaxonRelationshipType.MISAPPLIED_NAME_FOR())){
-             taxon.setAppendedPhrase(taxonName.getAuthorshipCache());
-             taxon.setSec(null);
-             taxonName.setAuthorshipCache(null, taxonName.isProtectedAuthorshipCache());
-             //TODO maybe some further authorship handling is needed if authors get parsed, but not very likely for MAN authorship
-         }
-         return taxon;
-     }
+        String unacceptreason = rs.getString("tu_unacceptreason");
+        RelationshipTermBase<?>[] rels = state.getTransformer().getSynonymRelationTypesByKey(unacceptreason, state);
+        if (rels[1]!= null && rels[1].equals(TaxonRelationshipType.MISAPPLIED_NAME_FOR())){
+            taxon.setAppendedPhrase(taxonName.getAuthorshipCache());
+            taxon.setSec(null);
+            taxonName.setAuthorshipCache(null, taxonName.isProtectedAuthorshipCache());
+            //TODO maybe some further authorship handling is needed if authors get parsed, but not very likely for MAN authorship
+        }
+        if(state.getUnhandledUnacceptReason() != null){
+            //to handle it hear is a workaround, as the real place where it is handled is DbImportSynonymMapper which is called ErmsTaxonRelationImport but where it is diffcult to aggregate logging data
+            addUnacceptReason(state.getUnhandledUnacceptReason());
+        }
+        return taxon;
+    }
+
+    private static void addUnacceptReason(String unhandledUnacceptReason) {
+        unhandledUnacceptReason = unhandledUnacceptReason.toLowerCase();
+        if (!unacceptReasons.keySet().contains(unhandledUnacceptReason)){
+            unacceptReasons.put(unhandledUnacceptReason, 1);
+        }else{
+            unacceptReasons.put(unhandledUnacceptReason, unacceptReasons.get(unhandledUnacceptReason)+1);
+        }
+    }
 
     @SuppressWarnings("unused")  //used by MethodMapper
     private static TaxonBase<?> testTitleCache(ResultSet rs, ErmsImportState state) throws SQLException{
@@ -497,6 +518,34 @@ public class ErmsTaxonImport
 			return tu_id;
 		}
 	}
+
+    private void logUnacceptReasons() {
+        String logStr = "\n Unhandled unaccept reasons:\n===================";
+
+        while (!unacceptReasons.isEmpty()) {
+            int n = 0;
+            List<String> mostUsedStrings = new ArrayList<>();
+            for (Map.Entry<String, Integer> entry : unacceptReasons.entrySet()) {
+                if (entry.getValue() > n) {
+                    mostUsedStrings = new ArrayList<>();
+                    mostUsedStrings.add(entry.getKey());
+                    n = entry.getValue();
+                } else if (entry.getValue() == n) {
+                    mostUsedStrings.add(entry.getKey());
+                } else {
+                    //neglect
+                }
+            }
+            mostUsedStrings.sort(new StringComparator());
+            logStr += "\n   " + String.valueOf(n);
+            for (String str : mostUsedStrings) {
+                logStr += "\n   "+ str;
+                unacceptReasons.remove(str);
+            }
+        }
+        logger.warn(logStr);
+
+    }
 
 	@Override
 	protected boolean doCheck(ErmsImportState state){
