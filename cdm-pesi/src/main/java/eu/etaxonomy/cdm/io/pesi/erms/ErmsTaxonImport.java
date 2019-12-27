@@ -44,6 +44,7 @@ import eu.etaxonomy.cdm.model.common.CdmBase;
 import eu.etaxonomy.cdm.model.common.ExtensionType;
 import eu.etaxonomy.cdm.model.common.Language;
 import eu.etaxonomy.cdm.model.common.MarkerType;
+import eu.etaxonomy.cdm.model.common.RelationshipTermBase;
 import eu.etaxonomy.cdm.model.name.NomenclaturalCode;
 import eu.etaxonomy.cdm.model.name.NomenclaturalStatusType;
 import eu.etaxonomy.cdm.model.name.Rank;
@@ -53,6 +54,7 @@ import eu.etaxonomy.cdm.model.reference.Reference;
 import eu.etaxonomy.cdm.model.taxon.Synonym;
 import eu.etaxonomy.cdm.model.taxon.Taxon;
 import eu.etaxonomy.cdm.model.taxon.TaxonBase;
+import eu.etaxonomy.cdm.model.taxon.TaxonRelationshipType;
 import eu.etaxonomy.cdm.strategy.cache.name.TaxonNameDefaultCacheStrategy;
 
 /**
@@ -129,6 +131,9 @@ public class ErmsTaxonImport
             AnnotationType lastActionType = getAnnotationType(DbLastActionMapper.uuidAnnotationTypeLastAction, "Last action", "Last action", null);
             MarkerType hasNoLastActionMarkerType = getMarkerType(DbLastActionMapper.uuidMarkerTypeHasNoLastAction, "has no last action", "No last action information available", "no last action");
             mapping.addMapper(DbImportAnnotationMapper.NewInstance("lastAction", lastActionType, hasNoLastActionMarkerType));
+
+            //MAN authorshipCache => appendedPhrase
+            mapping.addMapper(DbImportMethodMapper.NewDefaultInstance(this, "appendedPhraseForMisapplications", ErmsImportState.class));
 
             //titleCache compare
             mapping.addMapper(DbImportMethodMapper.NewDefaultInstance(this, "testTitleCache", ErmsImportState.class));
@@ -351,24 +356,39 @@ public class ErmsTaxonImport
     }
 
     @SuppressWarnings("unused")  //used by MethodMapper
-    private static TaxonBase<?> testTitleCache(ResultSet rs, ErmsImportState state) throws SQLException{
+    private static TaxonBase<?> appendedPhraseForMisapplications(ResultSet rs, ErmsImportState state) throws SQLException{
         TaxonBase<?> taxon = (TaxonBase<?>)state.getRelatedObject(DbImportStateBase.CURRENT_OBJECT_NAMESPACE, DbImportStateBase.CURRENT_OBJECT_ID);
         TaxonName taxonName = taxon.getName();
-         String displayName = rs.getString("tu_displayname");
-         displayName = displayName == null ? null : displayName.trim();
-         String titleCache = taxonName.resetTitleCache(); //calling titleCache should always be kept to have a computed titleCache in the CDM DB.
-         String expectedTitleCache = getExpectedTitleCache(rs);
-         //TODO check titleCache, but beware of autonyms
-         if (!titleCache.equals(expectedTitleCache)){
-             int pos = CdmUtils.diffIndex(titleCache, expectedTitleCache);
-             logger.warn("Computed title cache differs at "+pos+".\n Computed             : " + titleCache + "\n DisplayName+Authority: " + expectedTitleCache);
-             taxonName.setNameCache(displayName, true);
+         String unacceptreason = rs.getString("tu_unacceptreason");
+         RelationshipTermBase<?>[] rels = state.getTransformer().getSynonymRelationTypesByKey(unacceptreason, state);
+         if (rels[1]!= null && rels[1].equals(TaxonRelationshipType.MISAPPLIED_NAME_FOR())){
+             taxon.setAppendedPhrase(taxonName.getAuthorshipCache());
+             taxon.setSec(null);
+             taxonName.setAuthorshipCache(null, taxonName.isProtectedAuthorshipCache());
+             //TODO maybe some further authorship handling is needed if authors get parsed, but not very likely for MAN authorship
          }
          return taxon;
      }
 
-     //see also PesiErmsValidation.srcFullName()
-     private static String getExpectedTitleCache(ResultSet srcRs) throws SQLException {
+    @SuppressWarnings("unused")  //used by MethodMapper
+    private static TaxonBase<?> testTitleCache(ResultSet rs, ErmsImportState state) throws SQLException{
+        TaxonBase<?> taxon = (TaxonBase<?>)state.getRelatedObject(DbImportStateBase.CURRENT_OBJECT_NAMESPACE, DbImportStateBase.CURRENT_OBJECT_ID);
+        TaxonName taxonName = taxon.getName();
+        String displayName = rs.getString("tu_displayname");
+        displayName = displayName == null ? null : displayName.trim();
+        String titleCache = taxonName.resetTitleCache(); //calling titleCache should always be kept to have a computed titleCache in the CDM DB.
+        String expectedTitleCache = getExpectedTitleCache(rs);
+        //TODO check titleCache, but beware of autonyms
+        if (!titleCache.equals(expectedTitleCache)){
+            int pos = CdmUtils.diffIndex(titleCache, expectedTitleCache);
+            logger.warn("Computed title cache differs at "+pos+".\n Computed             : " + titleCache + "\n DisplayName+Authority: " + expectedTitleCache);
+            taxonName.setNameCache(displayName, true);
+        }
+        return taxon;
+    }
+
+    //see also PesiErmsValidation.srcFullName()
+    private static String getExpectedTitleCache(ResultSet srcRs) throws SQLException {
         String result;
         String epi = srcRs.getString("tu_name");
         epi = " a" + epi;
@@ -382,7 +402,7 @@ public class ErmsTaxonImport
         return result.trim();
     }
 
-	private void handleNotAcceptedTaxon(Taxon taxon, int statusId, ErmsImportState state, ResultSet rs) throws SQLException {
+    private void handleNotAcceptedTaxon(Taxon taxon, int statusId, ErmsImportState state, ResultSet rs) throws SQLException {
 		ExtensionType notAccExtensionType = getExtensionType(state, ErmsTransformer.uuidErmsTaxonStatus, "ERMS taxon status", "ERMS taxon status", "status", null);
 		String statusName = rs.getString("status_name");
 
