@@ -32,8 +32,8 @@ public class ErmsTaxonImportValidator implements IOValidator<ErmsImportState>{
 		ErmsImportConfigurator config = state.getConfig();
 		logger.info("Checking for Taxa not yet fully implemented");
 //		result &= checkParentTaxonStatus(config);
-		result &= checkAccParentTaxonStatus(config);
-		result &= checkSynonymsAcceptedTaxonStatus(config);
+//		result &= checkAccParentTaxonStatus(config);
+//		result &= checkSynonymsAcceptedTaxonStatus(config);
 		return result;
 	}
 
@@ -61,7 +61,7 @@ public class ErmsTaxonImportValidator implements IOValidator<ErmsImportState>{
 				i++;
 				if (firstRow){
 					System.out.println("========================================================");
-					logger.warn("There are accepted taxa that have an unaccepted parent and also the parents accepted taxon (tu_accfinal) is not accepted. ");
+					System.out.println("There are accepted taxa that have an unaccepted parent and also the parents accepted taxon (tu_accfinal) is not accepted. ");
 					System.out.println("========================================================");
 				}
 				int childId = rs.getInt("childId");
@@ -112,7 +112,7 @@ public class ErmsTaxonImportValidator implements IOValidator<ErmsImportState>{
 				i++;
 				if (firstRow){
 					System.out.println("========================================================");
-					logger.warn("There are accepted synonyms that have an unaccepted taxon that has no status 'accepted'. ");
+					System.out.println("There are accepted synonyms that have an unaccepted taxon that has no status 'accepted'. ");
 					System.out.println("========================================================");
 				}
 				int synonymId = rs.getInt("synonymId");
