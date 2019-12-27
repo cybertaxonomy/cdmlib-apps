@@ -304,7 +304,7 @@ public class PesiErmsValidator {
 
     private boolean testSingleTaxon(ResultSet srcRS, ResultSet destRS) throws SQLException {
         String id = String.valueOf(srcRS.getInt("id"));
-        //not complete yet
+        //complete
         boolean success = equals("Taxon ID", "tu_id: " + srcRS.getInt("id"), destRS.getString("IdInSource"), id);
         success &= equals("Taxon source", "ERMS export for PESI", destRS.getString("sourceName"), id);
 

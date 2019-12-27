@@ -177,7 +177,7 @@ public class ErmsTaxonImport
 		return;
 	}
 
-	Integer lastTaxonId = null;
+    Integer lastTaxonId = null;
     @Override
     protected boolean ignoreRecord(ResultSet rs) throws SQLException {
         Integer id = rs.getInt("id");
@@ -262,7 +262,7 @@ public class ErmsTaxonImport
     private void handleNameStatus(TaxonName name, ResultSet rs, ErmsImportState state) throws SQLException {
         NomenclaturalStatusType nomStatus = null;
         int tuStatus = rs.getInt("tu_status");
-        //the order is bottom up from SQL script as there values are overriden from top to bottom
+        //the order is bottom up from SQL script as their values are overridden from top to bottom
         if (tuStatus == 8){
             //species inquirenda
             nomStatus = getNomenclaturalStatusType(state, ErmsTransformer.uuidNomStatusSpeciesInquirenda, "species inquirenda", "species inquirenda", null, Language.LATIN(), null);

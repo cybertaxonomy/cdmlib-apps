@@ -11,7 +11,6 @@ package eu.etaxonomy.cdm.io.pesi.faunaEuropaea;
 import org.apache.log4j.Logger;
 
 import eu.etaxonomy.cdm.database.ICdmDataSource;
-import eu.etaxonomy.cdm.io.common.IImportConfigurator;
 import eu.etaxonomy.cdm.io.common.ImportConfiguratorBase;
 import eu.etaxonomy.cdm.io.common.Source;
 import eu.etaxonomy.cdm.io.common.mapping.IInputTransformer;
@@ -24,12 +23,12 @@ import eu.etaxonomy.cdm.model.reference.ReferenceFactory;
  * @author a.babadshanjan
  * @since 08.05.2009
  */
-public class FaunaEuropaeaImportConfigurator extends ImportConfiguratorBase<FaunaEuropaeaImportState, Source> implements IImportConfigurator {
+public class FaunaEuropaeaImportConfigurator
+            extends ImportConfiguratorBase<FaunaEuropaeaImportState, Source>{
 
     private static final long serialVersionUID = 3218446329444903409L;
     private static final Logger logger = Logger.getLogger(FaunaEuropaeaImportConfigurator.class);
 
-	//TODO
 	private static IInputTransformer defaultTransformer = null;
 
 	private boolean doBasionyms = true;
@@ -54,9 +53,6 @@ public class FaunaEuropaeaImportConfigurator extends ImportConfiguratorBase<Faun
 		return doTypes;
 	}
 
-
-
-
 	/* Max number of taxa to be saved with one service call */
 	private int limitSave = 5000;
 	private Reference auctReference;
@@ -75,11 +71,11 @@ public class FaunaEuropaeaImportConfigurator extends ImportConfiguratorBase<Faun
 				FaunaEuropaeaAdditionalTaxonDataImport.class,
 				FaunaEuropaeaVernacularNamesImport.class
 		};
-	};
+	}
 
 	public static FaunaEuropaeaImportConfigurator NewInstance(Source source, ICdmDataSource destination){
 		return new FaunaEuropaeaImportConfigurator(source, destination);
-}
+	}
 
 	private FaunaEuropaeaImportConfigurator(Source source, ICdmDataSource destination) {
 		super(defaultTransformer);
@@ -100,9 +96,6 @@ public class FaunaEuropaeaImportConfigurator extends ImportConfiguratorBase<Faun
 //	}
 
 
-	/* (non-Javadoc)
-	 * @see eu.etaxonomy.cdm.io.common.ImportConfiguratorBase#getSourceReference()
-	 */
 	@Override
 	public Reference getSourceReference() {
 		//TODO
@@ -119,10 +112,6 @@ public class FaunaEuropaeaImportConfigurator extends ImportConfiguratorBase<Faun
 		return sourceReference;
 	}
 
-
-	/* (non-Javadoc)
-	 * @see eu.etaxonomy.cdm.io.common.ImportConfiguratorBase#getSourceReference()
-	 */
 	public Reference getAuctReference() {
 		//TODO
 		if (auctReference == null){
@@ -134,9 +123,6 @@ public class FaunaEuropaeaImportConfigurator extends ImportConfiguratorBase<Faun
 		return auctReference;
 	}
 
-	/* (non-Javadoc)
-	 * @see eu.etaxonomy.cdm.io.common.IImportConfigurator#getSourceNameString()
-	 */
 	@Override
     public String getSourceNameString() {
 		if (this.getSource() == null) {
@@ -146,116 +132,62 @@ public class FaunaEuropaeaImportConfigurator extends ImportConfiguratorBase<Faun
 		}
 	}
 
-	/* (non-Javadoc)
-	 * @see eu.etaxonomy.cdm.io.common.IImportConfigurator#getNewState()
-	 */
-	@Override
+	@SuppressWarnings("unchecked")
+    @Override
     public FaunaEuropaeaImportState getNewState() {
 		return new FaunaEuropaeaImportState(this);
 	}
 
-	/**
-	 * @return the doBasionyms
-	 */
 	public boolean isDoBasionyms() {
 		return doBasionyms;
 	}
-
-	/**
-	 * @param doBasionyms the doBasionyms to set
-	 */
 	public void setDoBasionyms(boolean doBasionyms) {
 		this.doBasionyms = doBasionyms;
 	}
 
-	/**
-	 * @return the doTaxonomicallyIncluded
-	 */
 	public boolean isDoTaxonomicallyIncluded() {
 		return doTaxonomicallyIncluded;
 	}
-
-	/**
-	 * @param doTaxonomicallyIncluded the doTaxonomicallyIncluded to set
-	 */
 	public void setDoTaxonomicallyIncluded(boolean doTaxonomicallyIncluded) {
 		this.doTaxonomicallyIncluded = doTaxonomicallyIncluded;
 	}
 
-	/**
-	 * @return the doMisappliedNames
-	 */
 	public boolean isDoMisappliedNames() {
 		return doMisappliedNames;
 	}
-
-	/**
-	 * @param doMisappliedNames the doMisappliedNames to set
-	 */
 	public void setDoMisappliedNames(boolean doMisappliedNames) {
 		this.doMisappliedNames = doMisappliedNames;
 	}
 
-	/**
-	 * @return the doHeterotypicSynonyms
-	 */
 	public boolean isDoHeterotypicSynonyms() {
 		return doHeterotypicSynonyms;
 	}
-
-	/**
-	 * @param doHeterotypicSynonyms the doHeterotypicSynonyms to set
-	 */
 	public void setDoHeterotypicSynonyms(boolean doHeterotypicSynonyms) {
 		this.doHeterotypicSynonyms = doHeterotypicSynonyms;
 	}
 
-	/**
-	 * @param auctReference the auctReference to set
-	 */
 	public void setAuctReference(Reference auctReference) {
 		this.auctReference = auctReference;
 	}
 
-	/**
-	 * @return the limitSave
-	 */
 	public int getLimitSave() {
 		return limitSave;
 	}
-
-	/**
-	 * @param limitSave the limitSave to set
-	 */
 	public void setLimitSave(int limitSave) {
 		this.limitSave = limitSave;
 	}
 
-	/**
-	 * @param doHeterotypicSynonymsForBasionyms the doHeterotypicSynonymsForBasionyms to set
-	 */
 	public void setDoHeterotypicSynonymsForBasionyms(
 			boolean doHeterotypicSynonymsForBasionyms) {
 		this.doHeterotypicSynonymsForBasionyms = doHeterotypicSynonymsForBasionyms;
 	}
-
-	/**
-	 * @return the doHeterotypicSynonymsForBasionyms
-	 */
 	public boolean isDoHeterotypicSynonymsForBasionyms() {
 		return doHeterotypicSynonymsForBasionyms;
 	}
 
-
-	/* (non-Javadoc)
-	 * @see eu.etaxonomy.cdm.io.tcsrdf.IImportConfigurator#isDoOccurrence()
-	 */
 	public boolean isDoOccurrence() {
 		return doOccurrence;
 	}
-	/* (non-Javadoc)
-	 * @see eu.etaxonomy.cdm.io.tcsrdf.IImportConfigurator#setDoOccurrence(boolean)
-	 */
 	public void setDoOccurrence(boolean doOccurrence) {
 		this.doOccurrence = doOccurrence;
 	}
@@ -285,13 +217,6 @@ public class FaunaEuropaeaImportConfigurator extends ImportConfiguratorBase<Faun
 		this.doReferences = doReferences;
 	}
 
-//	public boolean isDoTypes() {
-//		return doTypes;
-//	}
-//	public void setDoTypes(boolean doTypes) {
-//		this.doTypes = doTypes;
-//	}
-
 	public boolean isDoTaxa() {
 		return doTaxa;
 	}
@@ -315,15 +240,10 @@ public class FaunaEuropaeaImportConfigurator extends ImportConfiguratorBase<Faun
 		this.doAssociatedSpecialists = doAssociatedSpecialists;
 	}
 
-    /**
-     * @return the doInferredSynonyms
-     */
     public boolean isDoInferredSynonyms() {
         return doInferredSynonyms;
     }
-
     public void setDoInferredSynonyms(boolean doInferredSynonyms){
         this.doInferredSynonyms = doInferredSynonyms;
     }
-
 }

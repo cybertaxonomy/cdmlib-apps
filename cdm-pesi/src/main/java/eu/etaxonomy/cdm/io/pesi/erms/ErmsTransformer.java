@@ -715,7 +715,7 @@ public final class ErmsTransformer extends InputTransformerBase {
                 synType = null;
                 taxonRelType = TaxonRelationshipType.PRO_PARTE_SYNONYM_FOR();
             }else if (unacceptreason.matches("(?i)(misidentifications?|misapplied .*name|.*misapplication.*|incorrect identification)")){
-                //see ErmsTaxonImport.getAcceptedTaxaKeys()
+                //see ErmsTaxonImport.getAcceptedTaxaKeys(); this differs from SQL script
                 synType = null;
                 taxonRelType = TaxonRelationshipType.MISAPPLIED_NAME_FOR();
             }else if (unacceptreason.matches("(?i)(.*jun.*syn.*|\\(synonym\\)|reverted genus transfer)")){

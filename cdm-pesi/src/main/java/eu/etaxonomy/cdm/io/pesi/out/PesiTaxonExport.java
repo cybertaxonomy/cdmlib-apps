@@ -418,7 +418,7 @@ public class PesiTaxonExport extends PesiExportBase {
 				for (TaxonNode node : taxon.getTaxonNodes()){
 					doCount(count++, modCount, pluralString);
 					TaxonNode parentNode = node.getParent();
-					if (parentNode != null && isPesiTaxon(parentNode.getTaxon())){//exclude root taxa and unpublished parents (relevant for "Valueless" parent for E+M Rubus taxa). Usually a parent should not be unpublished
+					if (parentNode != null && isPesiTaxon(parentNode.getTaxon())){ //exclude root taxa and unpublished parents (relevant for "Valueless" parent for E+M Rubus taxa). Usually a parent should not be unpublished
 						int childId = state.getDbId( taxon);
 						int parentId = state.getDbId(parentNode.getTaxon());
 						success &= invokeParentTaxonFk(parentId, childId);
@@ -1387,7 +1387,6 @@ public class PesiTaxonExport extends PesiExportBase {
     }
 
 	private static String getDisplayName(TaxonName taxonName, boolean useNameCache) {
-		// TODO: extension?
 		if (taxonName == null) {
 			return null;
 		}else{
@@ -1416,13 +1415,6 @@ public class PesiTaxonExport extends PesiExportBase {
 			}
 			return result.replaceAll("(, ?)?\\<@status@\\>.*\\</@status@\\>", "").trim();
 		}
-	}
-
-	@SuppressWarnings("unused")
-	private static String getGUID(TaxonName taxonName) {
-		UUID uuid = taxonName.getUuid();
-		String result = "NameUUID:" + uuid.toString();
-		return result;
 	}
 
 	/**
@@ -1461,11 +1453,11 @@ public class PesiTaxonExport extends PesiExportBase {
 	 * @see MethodMapper
 	 */
 	private static String getWebShowName(TaxonName taxonName) {
-		//TODO extensions?
 		if (taxonName == null) {
 			return null;
 		}else{
-			INonViralNameCacheStrategy cacheStrategy = getCacheStrategy(taxonName);
+		    taxonName = CdmBase.deproxy(taxonName);
+            INonViralNameCacheStrategy cacheStrategy = getCacheStrategy(taxonName);
 
 			HTMLTagRules tagRules = new HTMLTagRules().addRule(TagEnum.name, "i");
 			String result = cacheStrategy.getTitleCache(taxonName, tagRules);
@@ -1521,12 +1513,17 @@ public class PesiTaxonExport extends PesiExportBase {
 		return result;
 	}
 
+    @SuppressWarnings("unused")
+    private static String getGUID(TaxonName taxonName) {
+        UUID uuid = taxonName.getUuid();
+        String result = "NameUUID:" + uuid.toString();
+        return result;
+    }
+
+    static boolean isFirstAbbrevTitle = true;
 	/**
 	 * Returns the SourceNameCache for the AdditionalSource table
-	 * @param taxonName
-	 * @return
 	 */
-	static boolean isFirstAbbrevTitle = true;
 	@SuppressWarnings("unused")
 	private static String getSourceNameCache(TaxonName taxonName) {
 		if (taxonName != null){
