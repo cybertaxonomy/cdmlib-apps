@@ -1397,23 +1397,25 @@ public class PesiTaxonExport extends PesiExportBase {
 					addRule(TagEnum.nomStatus, "@status@");
 
 			String result;
-			if (getSources(taxonName).contains(PesiSource.ERMS)){
-			    result = cacheStrategy.getTitleCache(taxonName, tagRules);  //according to SQL script (also in ERMS sources are not abbreviated)
-			}else if (getSources(taxonName).contains(PesiSource.EM)){
-			    if (useNameCache){
-			        result = cacheStrategy.getNameCache(taxonName, tagRules);
-			    }else{
-			        result = cacheStrategy.getFullTitleCache(taxonName, tagRules);
-			    }
+			if (useNameCache){
+                result = cacheStrategy.getNameCache(taxonName, tagRules);
 			}else{
-			    //TODO define for FE + IF and for multiple sources
-	             if (useNameCache){
-                    result = cacheStrategy.getNameCache(taxonName, tagRules);
-                }else{
-                    result = cacheStrategy.getFullTitleCache(taxonName, tagRules);
-                }
+			    EnumSet<PesiSource> sources = getSources(taxonName);
+			    if (sources.contains(PesiSource.ERMS)){
+			        result = cacheStrategy.getTitleCache(taxonName, tagRules);  //according to SQL script (also in ERMS sources are not abbreviated)
+			    }else if (sources.contains(PesiSource.FE) || sources.contains(PesiSource.IF)){
+			        //TODO define for FE + IF and for multiple sources
+			        result = cacheStrategy.getFullTitleCache(taxonName, tagRules);
+			    }else if (sources.contains(PesiSource.EM)){
+			        result = cacheStrategy.getFullTitleCache(taxonName, tagRules);
+			    }else{
+			        logger.warn("Source not yet handled");
+			        result = cacheStrategy.getTitleCache(taxonName, tagRules);
+			    }
+			    result = replaceTagForInfraSpecificMarkerForProtectedTitleCache(taxonName, result);
+			    result = result.replaceAll("(, ?)?\\<@status@\\>.*\\</@status@\\>", "").trim();
 			}
-			return result.replaceAll("(, ?)?\\<@status@\\>.*\\</@status@\\>", "").trim();
+            return result;
 		}
 	}
 
@@ -1461,11 +1463,27 @@ public class PesiTaxonExport extends PesiExportBase {
 
 			HTMLTagRules tagRules = new HTMLTagRules().addRule(TagEnum.name, "i");
 			String result = cacheStrategy.getTitleCache(taxonName, tagRules);
+			result = replaceTagForInfraSpecificMarkerForProtectedTitleCache(taxonName, result);
 			return result;
 		}
 	}
 
-	/**
+    private static String replaceTagForInfraSpecificMarkerForProtectedTitleCache(TaxonName taxonName, String result) {
+        if (taxonName.isProtectedTitleCache()||taxonName.isProtectedNameCache()){
+            if (!taxonName.isAutonym()){
+                result = result
+                        .replace(" subsp. ", "</i> subsp. <i>")
+                        .replace(" var. ", "</i> var. <i>")
+                        .replace(" subvar. ", "</i> subvar. <i>")
+                        .replace(" f. ", "</i> f. <i>")
+                        .replace(" subf. ", "</i> subf. <i>")  //does this exist?
+                        ;
+            }
+        }
+        return result;
+    }
+
+    /**
 	 * Returns the <code>WebSearchName</code> attribute.
 	 * @param taxonName The {@link NonViralName NonViralName}.
 	 * @return The <code>WebSearchName</code> attribute.
