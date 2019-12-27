@@ -332,7 +332,7 @@ public class PesiErmsValidator {
 //TODO  success &= equals("Taxon TypeFullNameCache", CdmUtils.concat(" ", srcRS.getString("typename"), srcRS.getString("typeauthor")), destRS.getString("TypeFullNameCache"), id);
         success &= equals("Taxon QualityStatusFK", nullSafeInt(srcRS, "tu_qualitystatus"),nullSafeInt( destRS,"QualityStatusFk"), String.valueOf(id));
         success &= equals("Taxon QualityStatusCache", srcRS.getString("qualitystatus_name"), destRS.getString("QualityStatusCache"), id);
-        success &= checkTreeIndex(destRS, ("TreeIndex"), ("pTreeIndex"), id);
+        success &= testTreeIndex(destRS, ("TreeIndex"), ("pTreeIndex"), id);
         success &= equals("Taxon FossilStatusFk", nullSafeInt(srcRS, "tu_fossil"),nullSafeInt( destRS,"FossilStatusFk"), String.valueOf(id));
         success &= equals("Taxon FossilStatusCache", srcRS.getString("fossil_name"), destRS.getString("FossilStatusCache"), id);
         success &= equals("Taxon GUID", srcRS.getString("GUID"), destRS.getString("GUID"), id);
@@ -357,12 +357,12 @@ public class PesiErmsValidator {
         return -1;
     }
 
-    private boolean checkTreeIndex(ResultSet destRS, String childIndexAttr, String parentIndexAttr, String id) throws SQLException {
+    private boolean testTreeIndex(ResultSet destRS, String childIndexAttr, String parentIndexAttr, String id) throws SQLException {
         boolean result;
         int taxonStatusFk = destRS.getInt("TaxonStatusFk");
         String parentTaxonId = destRS.getString("parentTaxonFk");
         int rankFk = destRS.getInt("RankFk");
-        if (taxonStatusFk == 2 || rankFk <= 10){  //synonyms, Kingdom and higher
+        if (taxonStatusFk == 2 || taxonStatusFk == 4 || rankFk <= 10){  //synonym; pro parte syn; kingdom and higher
             result = isNull(childIndexAttr, destRS);
         }else{
             String childIndex = destRS.getString(childIndexAttr);
@@ -807,9 +807,6 @@ public class PesiErmsValidator {
             return "informal reference";
         }else if ("p".equals(sourceType)){
             return "publication";
-        }else if ("i".equals(sourceType)){
-            //TODO
-            return "i";
         }
         return null;
     }
