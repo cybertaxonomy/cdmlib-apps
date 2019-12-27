@@ -1872,6 +1872,45 @@ public class PesiTaxonExport extends PesiExportBase {
 	}
 
 	/**
+     * Returns the <code>sourceFk</code> attribute which is
+     * a link to a reference.
+     * @see #8796
+     * @return The <code>sourceFk</code> attribute.
+     * @see MethodMapper
+     */
+    @SuppressWarnings("unused")  //used by methodmapper
+    private static Integer getSourceFk(TaxonBase<?> taxonBase, PesiExportState state) {
+        if (taxonBase.getSec() != null){
+            return state.getDbId(taxonBase.getSec());
+        }else{
+            Set<IdentifiableSource> sources = getPesiSources(taxonBase);
+            for (IdentifiableSource source : sources){
+                Reference ref = source.getCitation();
+                if (ref != null){
+                    return state.getDbId(ref);
+                }
+            }
+        }
+        logger.warn("No source found for " + taxonBase.getTitleCache());
+        return null;
+    }
+
+    /**
+     * Returns the <code>sourceFk</code> attribute which is
+     * a link to a reference.
+     *
+     * @return The <code>sourceFk</code> attribute.
+     * @see MethodMapper
+     * @see #8796
+     */
+    @SuppressWarnings("unused")  //used by methodmapper
+    private static Integer getSourceFk(TaxonName taxonName) {
+        //for now pure names (only coming from E+M) have no source
+        //according to SQL scripts (#8796)
+        return null;
+    }
+
+	/**
 	 * Returns the <code>IdInSource</code> attribute.
 	 * @param taxonName The {@link TaxonNameBase TaxonName}.
 	 * @return The <code>IdInSource</code> attribute.
@@ -2230,7 +2269,7 @@ public class PesiTaxonExport extends PesiExportBase {
 		PesiExportMapping mapping = new PesiExportMapping(dbTableName);
 
 		mapping.addMapper(IdMapper.NewInstance("TaxonId"));
-		mapping.addMapper(DbObjectMapper.NewInstance("sec", "sourceFk")); //OLD:mapping.addMapper(MethodMapper.NewInstance("SourceFK", this.getClass(), "getSourceFk", standardMethodParameter, PesiExportState.class));
+		mapping.addMapper(MethodMapper.NewInstance("SourceFk", this.getClass(), "getSourceFk", standardMethodParameter, PesiExportState.class));
 		mapping.addMapper(MethodMapper.NewInstance("TaxonStatusFk", this.getClass(), "getTaxonStatusFk", standardMethodParameter, PesiExportState.class));
 		mapping.addMapper(MethodMapper.NewInstance("TaxonStatusCache", this.getClass(), "getTaxonStatusCache", standardMethodParameter, PesiExportState.class));
 
@@ -2279,7 +2318,8 @@ public class PesiTaxonExport extends PesiExportBase {
 
 		mapping.addMapper(IdMapper.NewInstance("TaxonId"));
 
-		mapping.addMapper(MethodMapper.NewInstance("KingdomFk", this, TaxonName.class));
+		mapping.addMapper(MethodMapper.NewInstance("SourceFk", this, TaxonName.class, PesiExportState.class));  //for now is only null
+        mapping.addMapper(MethodMapper.NewInstance("KingdomFk", this, TaxonName.class));
 		mapping.addMapper(MethodMapper.NewInstance("RankFk", this, TaxonName.class));
 		mapping.addMapper(MethodMapper.NewInstance("RankCache", this, TaxonName.class, PesiExportState.class));
 		mapping.addMapper(DbConstantMapper.NewInstance("TaxonStatusFk", Types.INTEGER, PesiTransformer.T_STATUS_UNACCEPTED));
