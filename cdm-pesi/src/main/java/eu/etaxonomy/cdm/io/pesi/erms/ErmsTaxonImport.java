@@ -354,13 +354,18 @@ public class ErmsTaxonImport
 			taxonName.setNameCache(displayName);
 			logger.warn("Set name cache: " +  displayName + "; id =" + meId);
 		}
-        if (!taxonName.getNameCache().equals(displayName)){
+        if (!taxonName.getNameCache().equals(displayName) && !isErroneousSubgenus(taxonName, displayName)){
             int pos = CdmUtils.diffIndex(taxonName.getNameCache(), displayName);
             logger.warn("Computed name cache differs at "+pos+".\n Computed   : " + taxonName.getNameCache()+"\n DisplayName: " +displayName);
             taxonName.setNameCache(displayName, true);
         }
 		taxonName.getTitleCache();
         return taxonName;
+    }
+
+    private static boolean isErroneousSubgenus(TaxonName taxonName, String displayName) {
+        //this is an error in ERMS formatting in v2019 for ICNafp names, that hopefully soon will be corrected
+        return (Rank.SPECIES().equals(taxonName.getRank()) && displayName.contains(" subg. "));
     }
 
     @SuppressWarnings("unused")  //used by MethodMapper
@@ -398,9 +403,10 @@ public class ErmsTaxonImport
         String displayName = rs.getString("tu_displayname");
         displayName = displayName == null ? null : displayName.trim();
         String titleCache = taxonName.resetTitleCache(); //calling titleCache should always be kept to have a computed titleCache in the CDM DB.
+        titleCache = CdmUtils.concat(" ", titleCache, taxon.getAppendedPhrase());
         String expectedTitleCache = getExpectedTitleCache(rs);
         //TODO check titleCache, but beware of autonyms
-        if (!titleCache.equals(expectedTitleCache)){
+        if (!titleCache.equals(expectedTitleCache) && !isErroneousSubgenus(taxonName, displayName)){
             int pos = CdmUtils.diffIndex(titleCache, expectedTitleCache);
             logger.warn("Computed title cache differs at "+pos+".\n Computed             : " + titleCache + "\n DisplayName+Authority: " + expectedTitleCache);
             taxonName.setNameCache(displayName, true);
