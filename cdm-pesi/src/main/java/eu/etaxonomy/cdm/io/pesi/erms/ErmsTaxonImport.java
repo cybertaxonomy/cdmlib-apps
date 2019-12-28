@@ -72,13 +72,13 @@ public class ErmsTaxonImport
     private static final long serialVersionUID = -7111568277264140051L;
     private static final Logger logger = Logger.getLogger(ErmsTaxonImport.class);
 
-	private DbImportMapping<ErmsImportState, ErmsImportConfigurator> mapping;
-
 	private static final String pluralString = "taxa";
 	private static final String dbTableName = "tu";
 	private static final Class<?> cdmTargetClass = TaxonBase.class;
 
 	private static Map<String, Integer> unacceptReasons = new HashMap<>();
+
+	private DbImportMapping<ErmsImportState, ErmsImportConfigurator> mapping;
 
 	public ErmsTaxonImport(){
 		super(pluralString, dbTableName, cdmTargetClass);
@@ -240,8 +240,8 @@ public class ErmsTaxonImport
 	@Override
 	public TaxonBase<?> createObject(ResultSet rs, ErmsImportState state) throws SQLException {
 		int statusId = rs.getInt("status_id");
-//		Object accTaxonId = rs.getObject("tu_accfinal");
 		Integer meId = rs.getInt("id");
+		Integer accFinal = nullSafeInt(rs, "tu_accfinal");
 
         TaxonName taxonName = getTaxonName(rs, state);
 		fillTaxonName(taxonName, rs, state, meId);
@@ -256,11 +256,14 @@ public class ErmsTaxonImport
 			Taxon taxon = Taxon.NewInstance(taxonName, citation);
 			if (statusId != 1){
 				logger.info("Taxon created as taxon but has status <> 1 ("+statusId+"): " + meId);
-				handleNotAcceptedTaxon(taxon, statusId, state, rs);
+				boolean idsDiffer = accFinal != null && !meId.equals(accFinal);
+				handleNotAcceptedTaxonStatus(taxon, statusId, idsDiffer, accFinal == null, state, rs);
 			}
 			result = taxon;
 		}else{
 			result = Synonym.NewInstance(taxonName, citation);
+			//real synonyms (id <> tu_accfinal) are always handled as "synonym" or "pro parte synonym"
+//			handleNotAcceptedTaxonStatus(result, statusId, state, rs);
 		}
 
 		handleNameStatus(result.getName(), rs, state);
@@ -429,16 +432,33 @@ public class ErmsTaxonImport
         return result.trim();
     }
 
-    private void handleNotAcceptedTaxon(Taxon taxon, int statusId, ErmsImportState state, ResultSet rs) throws SQLException {
-		ExtensionType notAccExtensionType = getExtensionType(state, ErmsTransformer.uuidErmsTaxonStatus, "ERMS taxon status", "ERMS taxon status", "status", null);
-		String statusName = rs.getString("status_name");
+    private void handleNotAcceptedTaxonStatus(Taxon taxon, int statusId, boolean idsDiffer, boolean accIdNull, ErmsImportState state, ResultSet rs) throws SQLException {
+		ExtensionType pesiStatusType = getExtensionType(state, ErmsTransformer.uuidPesiTaxonStatus, "PESI taxon status", "PESI taxon status", "status", null);
 
-		if (statusId > 1){
-			taxon.addExtension(statusName, notAccExtensionType);
-		}
+		if(idsDiffer){
+		    //if ids differ the taxon should always be an ordinary synonym, some synonyms need to be imported to CDM as Taxon because they have factual data attached, they use a concept relationship as synonym relationship
+		    addPesiStatus(taxon, PesiTransformer.T_STATUS_SYNONYM, pesiStatusType);
+		}else if(statusId == 1){
+            //nothing to do, not expected to happen
+		}else if (statusId > 1 && statusId < 6 || statusId == 7){ //unaccepted, nomen nudum, alternate representation, temporary name       they have sometimes no tu_accfinal or are handled incorrect
+		    //TODO discuss alternate representations, at the very end of the PESI export unaccepted taxa with relationship "is alternative name for" are set to status "accepted". Need to check if this is true for the PESI taxa too (do they have such a relationship?)
+		    //Note: in SQL script, also the tu_unacceptreason was checked to be NOT LIKE '%syno%', this is not always correct and the few real synonyms should better data cleaned
+		    addPesiStatus(taxon, PesiTransformer.T_STATUS_UNACCEPTED, pesiStatusType);
+        }else if (statusId == 6 || statusId == 8 || statusId == 10){
+            taxon.setDoubtful(true);  //nomen dubium, taxon inquirendum, uncertain
+        }else if (statusId == 9){
+            addPesiStatus(taxon, PesiTransformer.T_STATUS_UNACCEPTED, pesiStatusType);         //interim unpublished, we should better not yet publish, but will be probably accepted in future
+        }else{
+            logger.error("Unhandled statusId "+ statusId);
+        }
 	}
 
-	private void handleException(Integer parentRank, TaxonName taxonName, String displayName, Integer meId) {
+    private void addPesiStatus(Taxon taxon, int status, ExtensionType pesiStatusType) {
+        taxon.addExtension(String.valueOf(status), pesiStatusType);
+
+    }
+
+    private void handleException(Integer parentRank, TaxonName taxonName, String displayName, Integer meId) {
 		logger.warn("Parent of infra specific taxon is of higher rank ("+parentRank+") than species. Used nameCache: " + displayName +  "; id=" + meId) ;
 		taxonName.setNameCache(displayName);
 	}

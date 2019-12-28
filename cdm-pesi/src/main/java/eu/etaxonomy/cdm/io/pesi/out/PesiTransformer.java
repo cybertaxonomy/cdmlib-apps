@@ -1898,88 +1898,79 @@ public final class PesiTransformer extends ExportTransformerBase{
 	public static Integer taxonBase2statusFk (TaxonBase<?> taxonBase){
 		if (taxonBase == null){
 			return null;
-		}
-		if (taxonBase.isInstanceOf(Taxon.class)){
-			Taxon taxon = CdmBase.deproxy(taxonBase, Taxon.class);
-			Set<TaxonRelationship> rels = taxon.getRelationsFromThisTaxon();
-			Set<TaxonNode> nodes = taxon.getTaxonNodes();
-			if (!rels.isEmpty() && !nodes.isEmpty()){
-			    logger.warn("Taxon has relations and parent. This is not expected in E+M, but maybe possible in ERMS. Check if taxon status is correct.");
-			}else if (rels.isEmpty() && nodes.isEmpty()){
-                logger.warn("Taxon has neither relations nor parent. This is not expected. Check if taxon status is correct.");
-            }
-			if (!rels.isEmpty()){
-			    //we expect all rels to have same type, maybe not true
-			    UUID relTypeUuid = rels.iterator().next().getType().getUuid();
-			    //E+M
-			    if (TaxonRelationshipType.proParteUuids().contains(relTypeUuid)){
-	                return T_STATUS_PRO_PARTE_SYN;
-	            }else if (TaxonRelationshipType.partialUuids().contains(relTypeUuid)){
-	                return T_STATUS_PARTIAL_SYN;
-	            }else if (TaxonRelationshipType.misappliedNameUuids().contains(relTypeUuid)){
-	                return T_STATUS_SYNONYM;  //no explicit MAN status exists in PESI
-	            }
-			    //ERMS
-	            else if (TaxonRelationshipType.pseudoTaxonUuids().contains(relTypeUuid)){
-	                return T_STATUS_SYNONYM;
-	            }
-			}
-			if (!nodes.isEmpty()){
-			    TaxonNode parentNode = nodes.iterator().next().getParent();
-			    if (parentNode.getTaxon() != null && !parentNode.getTaxon().isPublish()){
-			        if (parentNode.getTaxon().getUuid().equals(uuidTaxonValuelessEuroMed) ){
-			            return T_STATUS_NOT_ACCEPTED_VALUELESS;
-			        }
-			    }else{
-			        return T_STATUS_ACCEPTED;
-			    }
-	        }
-			logger.error("Taxon status could not be defined. This should not happen: " + taxonBase.getTitleCache() );
-			return T_STATUS_UNRESOLVED;
-		}else if (taxonBase.isInstanceOf(Synonym.class)){
-			Synonym synonym = CdmBase.deproxy(taxonBase, Synonym.class);
-			if (taxonBase2statusFk(synonym.getAcceptedTaxon())== T_STATUS_NOT_ACCEPTED_VALUELESS ){
-			    return T_STATUS_NOT_ACCEPTED_VALUELESS;
-			}else{
-			    return T_STATUS_SYNONYM;
-			}
+		}else if(!taxonBase.getExtensions(ErmsTransformer.uuidPesiTaxonStatus).isEmpty()){
+		    return taxonStatusByErmsStatus(taxonBase.getExtensions(ErmsTransformer.uuidPesiTaxonStatus));
 		}else{
-			logger.warn("Unresolved taxon status.");
-			return T_STATUS_UNRESOLVED;
+		    if (taxonBase.isInstanceOf(Synonym.class)){
+    		    Synonym synonym = CdmBase.deproxy(taxonBase, Synonym.class);
+    		    if (taxonBase2statusFk(synonym.getAcceptedTaxon())== T_STATUS_NOT_ACCEPTED_VALUELESS ){
+    		        return T_STATUS_NOT_ACCEPTED_VALUELESS;
+    		    }else{
+    		        return T_STATUS_SYNONYM;
+    		    }
+		    }else if (taxonBase.isInstanceOf(Taxon.class)){
+    			Taxon taxon = CdmBase.deproxy(taxonBase, Taxon.class);
+    			Set<TaxonRelationship> rels = taxon.getRelationsFromThisTaxon();
+    			Set<TaxonNode> nodes = taxon.getTaxonNodes();
+    			if (!rels.isEmpty() && !nodes.isEmpty()){
+    			    logger.warn("Taxon has relations and parent. This is not expected in E+M, but maybe possible in ERMS. Check if taxon status is correct.");
+    			}else if (rels.isEmpty() && nodes.isEmpty()){
+                    logger.warn("Taxon has neither relations nor parent. This is not expected. Check if taxon status is correct.");
+                }
+    			if (!rels.isEmpty()){
+    			    //we expect all rels to have same type, maybe not true
+    			    UUID relTypeUuid = rels.iterator().next().getType().getUuid();
+    			    //E+M
+    			    if (TaxonRelationshipType.proParteUuids().contains(relTypeUuid)){
+    	                return T_STATUS_PRO_PARTE_SYN;
+    	            }else if (TaxonRelationshipType.partialUuids().contains(relTypeUuid)){
+    	                return T_STATUS_PARTIAL_SYN;
+    	            }else if (TaxonRelationshipType.misappliedNameUuids().contains(relTypeUuid)){
+    	                return T_STATUS_SYNONYM;  //no explicit MAN status exists in PESI
+    	            }
+    			    //ERMS
+    	            else if (TaxonRelationshipType.pseudoTaxonUuids().contains(relTypeUuid)){
+    	                return T_STATUS_SYNONYM;
+    	            }
+    			}
+    			if (!nodes.isEmpty()){
+    			    TaxonNode parentNode = nodes.iterator().next().getParent();
+    			    if (parentNode.getTaxon() != null && !parentNode.getTaxon().isPublish()){
+    			        if (parentNode.getTaxon().getUuid().equals(uuidTaxonValuelessEuroMed) ){
+    			            return T_STATUS_NOT_ACCEPTED_VALUELESS;
+    			        }
+    			    }else{
+    			        if (taxon.isDoubtful()){
+    			            return T_STATUS_UNRESOLVED;
+    			        }else{
+    			            return T_STATUS_ACCEPTED;
+    			        }
+    			    }
+    	        }
+    			logger.error("Taxon status could not be defined. This should not happen: " + taxonBase.getTitleCache() );
+    			return T_STATUS_UNRESOLVED;
+    		}else{
+    		    logger.warn("Unresolved taxon status, neither taxon nor synonym, this should not happen");
+    			return T_STATUS_UNRESOLVED;
+    		}
+    		//TODO
+    //		public static int T_STATUS_ORPHANED = 6;  //never used in SQL import
 		}
-		//TODO
-//		public static int T_STATUS_UNRESOLVED = 5;
-//		public static int T_STATUS_ORPHANED = 6;
 	}
 
-//	/**
-//	 *
-//	 * @param taxonBase
-//	 * @return
-//	 */
-//	public static String taxonBase2statusCache (TaxonBase<?> taxonBase){
-//		if (taxonBase == null){return null;}
-//		if (taxonBase.isInstanceOf(Taxon.class)){
-//			Taxon taxon = CdmBase.deproxy(taxonBase, Taxon.class);
-//			if (taxon.getTaxonNodes().size() == 0){
-//				return T_STATUS_STR_NOT_ACCEPTED;
-//			}else{
-//				return T_STATUS_STR_ACCEPTED;
-//			}
-//		}else if (taxonBase.isInstanceOf(Synonym.class)){
-//			return T_STATUS_STR_SYNONYM;
-//		}else{
-//			logger.warn("Unknown ");
-//			return T_STATUS_STR_UNRESOLVED;
-//		}
-//		//TODO
-//		public static int T_STATUS_STR_PARTIAL_SYN = 3;
-//		public static int T_STATUS_STR_PRO_PARTE_SYN = 4;
-//		public static int T_STATUS_STR_UNRESOLVED = 5;
-//		public static int T_STATUS_STR_ORPHANED = 6;
-//	}
+    private static Integer taxonStatusByErmsStatus(Set<String> extensions) {
+        //Note: status extensions should only be used during ERMS import
+        //      if the status can not be derived from ordinary CDM status handling (Taxon, Synonym, ProParte, doubtful, ...)
+        // see ErmsTaxonImport.handleNotAcceptedTaxonStatus
+        if (extensions.size()>1){
+            logger.warn("More than 1 ERMS status available. This should not happen.");
+        }
+        String statusStr = extensions.iterator().next();
+        Integer status = Integer.valueOf(statusStr);
+        return status;
+    }
 
-	/**
+    /**
 	 * Returns the {@link SourceCategory SourceCategory} representation of the given {@link ReferenceType ReferenceType} in PESI.
 	 * @param reference The {@link Reference Reference}.
 	 * @return The {@link SourceCategory SourceCategory} representation in PESI.

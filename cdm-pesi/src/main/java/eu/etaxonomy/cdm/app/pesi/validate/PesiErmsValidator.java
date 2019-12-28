@@ -419,7 +419,7 @@ public class PesiErmsValidator {
         int taxonStatusFk = destRS.getInt("TaxonStatusFk");
         String parentTaxonId = destRS.getString("parentTaxonFk");
         int rankFk = destRS.getInt("RankFk");
-        if (taxonStatusFk == 2 || taxonStatusFk == 4 || taxonStatusFk == 7|| rankFk <= 10){  //synonym; pro parte syn; kingdom and higher
+        if (taxonStatusFk == 2 || taxonStatusFk == 4 || rankFk <= 10){  //synonym; pro parte syn; kingdom and higher
             result = isNull(childIndexAttr, destRS, id);
         }else{
             String childIndex = destRS.getString(childIndexAttr);
@@ -850,8 +850,6 @@ public class PesiErmsValidator {
             return 5;
         }else if ("p".equals(sourceType)){
             return 11;
-        }else if ("i".equals(sourceType)){
-            return 12;
         }
         return null;
     }
