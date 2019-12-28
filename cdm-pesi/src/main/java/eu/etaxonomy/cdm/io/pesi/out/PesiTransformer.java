@@ -163,7 +163,7 @@ public final class PesiTransformer extends ExportTransformerBase{
 	public static int T_STATUS_SYNONYM = 2;
 	public static int T_STATUS_PARTIAL_SYN = 3;
 	public static int T_STATUS_PRO_PARTE_SYN = 4;
-	private static int T_STATUS_UNRESOLVED = 5;
+	public static int T_STATUS_UNRESOLVED = 5;
 	private static int T_STATUS_ORPHANED = 6;
 	public static int T_STATUS_UNACCEPTED = 7;
 	private static int T_STATUS_NOT_ACCEPTED_VALUELESS = 8;
