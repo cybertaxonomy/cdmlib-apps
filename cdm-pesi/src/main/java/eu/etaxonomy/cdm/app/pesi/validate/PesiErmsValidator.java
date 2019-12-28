@@ -32,8 +32,8 @@ public class PesiErmsValidator {
     private static final Logger logger = Logger.getLogger(PesiErmsValidator.class);
 
     private static final Source defaultSource = PesiSources.PESI2019_ERMS_2019();
-//    private static final Source defaultDestination = PesiDestinations.pesi_test_local_CDM_ERMS2PESI();
-    private static final Source defaultDestination = PesiDestinations.pesi_test_local_CDM_ERMS2PESI_2();
+    private static final Source defaultDestination = PesiDestinations.pesi_test_local_CDM_ERMS2PESI();
+//    private static final Source defaultDestination = PesiDestinations.pesi_test_local_CDM_ERMS2PESI_2();
 
     private Source source = defaultSource;
     private Source destination = defaultDestination;
@@ -261,13 +261,16 @@ public class PesiErmsValidator {
     private boolean testSingleTaxa(int n) throws SQLException {
         boolean success = true;
         ResultSet srcRS = source.getResultSet(""
-                + " SELECT t.*, tu1.tu_name tu1_name, r.rank_name, acc.tu_sp as acc_sp, st.status_name, "
+                + " SELECT t.*, pt.tu_name pt_name, pt.id pId, pt.tu_accfinal pAccId, "
+                + "        acc.tu_sp as acc_sp, accP.id accPId, "
+                + "        r.rank_name, st.status_name, "
                 + "        type.tu_displayname typename, type.tu_authority typeauthor, "
                 + "        fo.fossil_name, qs.qualitystatus_name "
                 + " FROM tu t "
-                + " LEFT JOIN tu as tu1 on t.tu_parent = tu1.id "
+                + " LEFT JOIN tu as pt on t.tu_parent = pt.id "
                 + " LEFT JOIN (SELECT DISTINCT rank_id, rank_name FROM ranks WHERE NOT(rank_id = 30 AND rank_name = 'Phylum (Division)' OR rank_id = 40 AND rank_name = 'Subphylum (Subdivision)' OR rank_id = 122 AND rank_name='Subsection')) as r ON t.tu_rank = r.rank_id "
                 + " LEFT JOIN tu acc ON acc.id = t.tu_accfinal "
+                + " LEFT JOIN tu accP ON acc.tu_parent = accP.id "
                 + " LEFT JOIN status st ON st.status_id = t.tu_status "
                 + " LEFT JOIN tu type ON type.id = t.tu_typetaxon "
                 + " LEFT JOIN fossil fo ON t.tu_fossil = fo.fossil_id "
@@ -276,7 +279,7 @@ public class PesiErmsValidator {
                 + " ORDER BY CAST(t.id as nvarchar(20)) ");
         ResultSet destRS = destination.getResultSet("SELECT t.*, "
                 + "     pt.GenusOrUninomial p_GenusOrUninomial, pt.InfraGenericEpithet p_InfraGenericEpithet, pt.SpecificEpithet p_SpecificEpithet, "
-                + "     pt.treeIndex pTreeIndex, "
+                + "     pt.treeIndex pTreeIndex, pt.IdInSource pIdInSource, "
                 + "     s.Name as sourceName, type.IdInSource typeSourceId, r.Rank "
                 + " FROM Taxon t "
                 + "    LEFT JOIN Taxon pt ON pt.TaxonId = t.ParentTaxonFk "
@@ -314,47 +317,101 @@ public class PesiErmsValidator {
         success &= compareNameParts(srcRS, destRS, id);
 
         success &= equals("Taxon websearchname", srcRS.getString("tu_displayname"), destRS.getString("WebSearchName"), id);
-//TODO webShowName  success &= equals("Taxon WebShowName", srcRS.getString("tu_displayname"), destRS.getString("WebShowName"), id);
+        //in ERMS displayName and webShowName should be equal as we do not have a correctly formatted nom. ref.
+//        success &= equals("Taxon WebShowName", srcDisplayName(srcRS), destRS.getString("WebShowName"), id);
         success &= equals("Taxon authority", srcRS.getString("tu_authority"), destRS.getString("AuthorString"), id);
 //        success &= equals("Taxon FullName", srcFullName(srcRS), destRS.getString("FullName"), id);
-        success &= isNull("NomRefString", destRS);
+        success &= isNull("NomRefString", destRS, id);
 //        success &= equals("Taxon DisplayName", srcDisplayName(srcRS), destRS.getString("DisplayName"), id);  //according to SQL script same as FullName, no nom.ref. information attached
 
 //TODO nameStatusFk       success &= equals("Taxon NameStatusFk", toNameStatus(nullSafeInt(srcRS, "tu_status")),nullSafeInt( destRS,"NameStatusFk"), id);
 //TODO nameStatusCache    success &= equals("Taxon NameStatusCache", srcRS.getString("status_name"), destRS.getString("NameStatusCache"), id);
 
-       success &= equals("Taxon TaxonStatusFk", makePesiTaxonStatus(srcRS, "tu_status"),nullSafeInt( destRS,"TaxonStatusFk"), id);
-/*//TODO taxonStatusCache  success &= equals("Taxon TaxonStatusCache", srcRS.getString("status_name"), destRS.getString("TaxonStatusCache"), id);
-*/
-        //TODO ParentTaxonFk
+//      success &= equals("Taxon TaxonStatusFk", normalizeTaxonStatusFk(srcRS),nullSafeInt( destRS,"TaxonStatusFk"), id);
+//      success &= equals("Taxon TaxonStatusCache", normalizeTaxonStatusCache(srcRS), destRS.getString("TaxonStatusCache"), id);
+
+        success &= equals("Taxon ParentTaxonFk", srcParentTaxonFk(srcRS), destParentIdInSource(destRS), id);
         Integer orgigTypeNameFk = nullSafeInt(srcRS, "tu_typetaxon");
         success &= equals("Taxon TypeNameFk", orgigTypeNameFk == null? null : "tu_id: " + orgigTypeNameFk, destRS.getString("typeSourceId"), id);
 //TODO  success &= equals("Taxon TypeFullNameCache", CdmUtils.concat(" ", srcRS.getString("typename"), srcRS.getString("typeauthor")), destRS.getString("TypeFullNameCache"), id);
         success &= equals("Taxon QualityStatusFK", nullSafeInt(srcRS, "tu_qualitystatus"),nullSafeInt( destRS,"QualityStatusFk"), String.valueOf(id));
         success &= equals("Taxon QualityStatusCache", srcRS.getString("qualitystatus_name"), destRS.getString("QualityStatusCache"), id);
-        success &= testTreeIndex(destRS, ("TreeIndex"), ("pTreeIndex"), id);
+        success &= testTreeIndex(destRS, "TreeIndex", "pTreeIndex", id);
         success &= equals("Taxon FossilStatusFk", nullSafeInt(srcRS, "tu_fossil"),nullSafeInt( destRS,"FossilStatusFk"), String.valueOf(id));
         success &= equals("Taxon FossilStatusCache", srcRS.getString("fossil_name"), destRS.getString("FossilStatusCache"), id);
         success &= equals("Taxon GUID", srcRS.getString("GUID"), destRS.getString("GUID"), id);
         success &= equals("Taxon DerivedFromGuid", srcRS.getString("GUID"), destRS.getString("DerivedFromGuid"), id); //according to SQL script GUID and DerivedFromGuid are always the same, according to 2014DB this is even true for all databases
-        success &= isNull("ExpertGUID", destRS);  //only relevant after merge
-        success &= isNull("ExpertName", destRS);  //only relevant after merge
-        success &= isNull("SpeciesExpertGUID", destRS);  //only relevant after merge
+        success &= isNull("ExpertGUID", destRS, id);  //only relevant after merge
+        success &= isNull("ExpertName", destRS, id);  //only relevant after merge
+        success &= isNull("SpeciesExpertGUID", destRS, id);  //only relevant after merge
         success &= equals("Taxon cache citation", srcRS.getString("cache_citation"), destRS.getString("CacheCitation"), id);
         //LastAction(Date) handled in separate method
-        success &= isNull("GUID2", destRS);  //only relevant after merge
-        success &= isNull("DerivedFromGuid2", destRS);  //only relevant after merge
+        success &= isNull("GUID2", destRS, id);  //only relevant after merge
+        success &= isNull("DerivedFromGuid2", destRS, id);  //only relevant after merge
         return success;
     }
 
-    private Integer makePesiTaxonStatus(ResultSet srcRS, String string) throws SQLException {
+    private Integer destParentIdInSource(ResultSet destRS) throws SQLException {
+        String parentIdInSource = destRS.getString("pIdInSource");
+        if (parentIdInSource == null){
+            return null;
+        }else{
+            String idStr = parentIdInSource.replace("tu_id:", "").trim();
+            Integer result = Integer.valueOf(idStr);
+            return result;
+        }
+    }
+
+    private Integer srcParentTaxonFk(ResultSet srcRS) throws SQLException {
+        Integer id = nullSafeInt(srcRS,"id");
+        Integer accId = nullSafeInt(srcRS, "tu_accfinal");
+        Integer pId = nullSafeInt(srcRS, "pId");
+        Integer pAccId = nullSafeInt(srcRS, "pAccId");
+        Integer accPId = nullSafeInt(srcRS, "accPId");  //parent of accepted taxon
+
+        if (accId != null && !id.equals(accId)){
+            if (id.equals(accPId)){
+                return pId;    //exceptional handling to avoid recursion mostly for some autonyms and alternate representations
+            }else{
+                return null;  //taxon is not accepted
+            }
+        }else{
+            if (id == 1){
+                return null;  //Biota
+            }else if (pAccId == null){
+                return pId;  //handle parent preliminary as accepted
+            }else if (id.equals(pAccId)){
+                return pId;  //exceptional handling to avoid recursion mostly for some autonyms and alternate representations
+            }else{
+                return pAccId;
+            }
+        }
+    }
+
+    private Integer normalizeTaxonStatusFk(ResultSet srcRS) throws SQLException {
         Integer status = nullSafeInt(srcRS, "tu_status");
-        if(status == 1 || status == 2){   //accepted, unaccepted
-            return status;
-        }else if (status == 3 || status == 6 || status == 7){  //nomen nudum, nomen dubium, temporary name
+        if(status == 1 || status == 6 || status == 7 || status == 8 || status == 9 || status == 10 ){   //accepted, nomen dubium, temporary name, taxon inquirendum (status uncertain), interim unpublished, uncertain
+            return 1;
+        }else if (status == 2 || status == 3 || status == 5){  //unaccepted, nomen nudum, alternate representation
             return 2;
         }
+        //4 does not exist and should not happen
         return -1;
+    }
+
+    private String normalizeTaxonStatusCache(ResultSet srcRS) throws SQLException {
+        Integer status = normalizeTaxonStatusFk(srcRS);
+        if (status == 1){
+            return "accepted";
+        }else if (status == 2){
+            return "synonym";
+        }else if (status == 4){
+            return "pro parte synonym";
+        }else if (status == 7){
+            return "unaccepted";
+        }else{
+            return "xxx - not yet handled";
+        }
     }
 
     private boolean testTreeIndex(ResultSet destRS, String childIndexAttr, String parentIndexAttr, String id) throws SQLException {
@@ -362,8 +419,8 @@ public class PesiErmsValidator {
         int taxonStatusFk = destRS.getInt("TaxonStatusFk");
         String parentTaxonId = destRS.getString("parentTaxonFk");
         int rankFk = destRS.getInt("RankFk");
-        if (taxonStatusFk == 2 || taxonStatusFk == 4 || rankFk <= 10){  //synonym; pro parte syn; kingdom and higher
-            result = isNull(childIndexAttr, destRS);
+        if (taxonStatusFk == 2 || taxonStatusFk == 4 || taxonStatusFk == 7|| rankFk <= 10){  //synonym; pro parte syn; kingdom and higher
+            result = isNull(childIndexAttr, destRS, id);
         }else{
             String childIndex = destRS.getString(childIndexAttr);
             String parentIndex = destRS.getString(parentIndexAttr);
@@ -387,7 +444,7 @@ public class PesiErmsValidator {
         if (rankFk <= 180){
             genusOrUninomial = srcRS.getString("tu_name");
         }else if (rankFk == 190){
-            genusOrUninomial = srcRS.getString("tu1_name");
+            genusOrUninomial = srcRS.getString("pt_name");
             infraGenericEpithet =  srcRS.getString("tu_name");
             //TODO compareNameParts does not work this way
 //        }else if (rankFk == 220){
@@ -540,7 +597,7 @@ public class PesiErmsValidator {
         success &= equals("Taxon relation taxon2", "tu_id: " + srcRS.getInt("tu_accfinal"), destRS.getString("t2Id"), id);
         success &= equals("Taxon relation qualifier fk", PesiTransformer.IS_SYNONYM_OF, destRS.getInt("RelTaxonQualifierFk"), id);
         success &= equals("Taxon relation qualifier cache", "is synonym of", destRS.getString("RelQualifierCache"), id);
-        success &= isNull("notes", destRS);
+        success &= isNull("notes", destRS, id);
         //complete if no further relations need to be added
         return success;
     }
@@ -618,11 +675,11 @@ public class PesiErmsValidator {
         String id = String.valueOf(srcRs.getInt("tuId") + "-" + srcRs.getString("type"));
         boolean success = equals("Note taxonID ", "tu_id: " + String.valueOf(srcRs.getInt("tuId")), destRs.getString("IdInSource"), id);
         success &= equals("Note Note_1 ", srcRs.getString("note"), destRs.getString("Note_1"), id);
-        success &= isNull("Note_2", destRs);
+        success &= isNull("Note_2", destRs, id);
         success &= equals("Note category cache", normalizeNoteCatCache(srcRs.getString("type")), destRs.getString("NoteCategoryCache"), id);
         success &= equals("Note language ", srcRs.getString("LanName"), destRs.getString("Language"), id);
-        success &= isNull("Region", destRs);
-        success &= isNull("SpeciesExpertGUID", destRs);
+        success &= isNull("Region", destRs, id);
+        success &= isNull("SpeciesExpertGUID", destRs, id);
         //SpeciesExpertName, LastAction, LastActionDate handled in separate method
         //complete
         return success;
@@ -675,10 +732,10 @@ public class PesiErmsValidator {
         success &= equals("Distribution OccurrenceStatusFk", 1, destRs.getInt("OccurrenceStatusFk"), id);
         success &= equals("Distribution OccurrenceStatusCache", "Present", destRs.getString("OccurrenceStatusCache"), id);
         //TODO see comments
-        success &= isNull("SourceFk", destRs);  //sources should be moved to extra table only, check with script and PESI 2014 (=> has values for ERMS)
-        success &= isNull("SourceCache", destRs);  //sources should be moved to extra table, check with script and PESI 2014 (=> has values for ERMS)
+        success &= isNull("SourceFk", destRs, id);  //sources should be moved to extra table only, check with script and PESI 2014 (=> has values for ERMS)
+        success &= isNull("SourceCache", destRs, id);  //sources should be moved to extra table, check with script and PESI 2014 (=> has values for ERMS)
         success &= equals("Distribution notes ", srcRs.getString("note"), destRs.getString("Notes"), id);
-        success &= isNull("SpeciesExpertGUID", destRs);  //SpeciesExpertGUID does not exist in ERMS
+        success &= isNull("SpeciesExpertGUID", destRs, id);  //SpeciesExpertGUID does not exist in ERMS
         //SpeciesExpertName,LastAction,LastActionDate handled in separate method
         return success;
     }
@@ -722,11 +779,11 @@ public class PesiErmsValidator {
         success &= equals("Common name languageFk ", srcRs.getString("iso"), getLanguageIso(destRs), id);
         success = equals("CommonName LanguageCache ", normalizeLang(srcRs.getString("LanName")), destRs.getString("LanguageCache"), id);
         //TODO needed? success = equals("CommonName language code ", srcRs.getString("lan_id"), destRs.getString("LanguageFk"), id);
-        success &= isNull("Region", destRs);  //region does not seem to exist in ERMS
+        success &= isNull("Region", destRs, id);  //region does not seem to exist in ERMS
         //TODO see comments
 //        success &= isNull("SourceFk", destRs);  //sources should be moved to extra table, check with PESI 2014
 //        success &= isNull("SourceNameCache", destRs);  //sources should be moved to extra table, check with PESI 2014
-        success &= isNull("SpeciesExpertGUID", destRs);  //SpeciesExpertGUID does not exist in ERMS
+        success &= isNull("SpeciesExpertGUID", destRs, id);  //SpeciesExpertGUID does not exist in ERMS
         //SpeciesExpertName,LastAction,LastActionDate handled in separate method
         //complete
         return success;
@@ -777,7 +834,7 @@ public class PesiErmsValidator {
         success &= equals("Reference title ", srcRS.getString("source_title"), destRS.getString("Title"), id);
         success &= equals("Reference author string ", srcRS.getString("source_author"), destRS.getString("AuthorString"), id);
         success &= equals("Reference year ", normalizeYear(srcRS.getString("source_year")), destRS.getString("RefYear"), id);
-        success &= isNull("NomRefCache", destRS);  //for ERMS no other value was found in 2014 value
+        success &= isNull("NomRefCache", destRS, id);  //for ERMS no other value was found in 2014 value
         success &= equals("Reference link ", srcRS.getString("source_link"), destRS.getString("Link"), id);
         success &= equals("Reference note ", srcRS.getString("source_note"), destRS.getString("Notes"), id);
         //complete
@@ -836,14 +893,14 @@ public class PesiErmsValidator {
         return yearStr;
     }
 
-    private boolean isNull(String attrName, ResultSet destRS) throws SQLException {
+    private boolean isNull(String attrName, ResultSet destRS, String id) throws SQLException {
         Object value = destRS.getObject(attrName);
         if (value != null){
-            String message = attrName + " was expected to be null but was: " + value.toString();
+            String message = attrName + " was expected to be null but was: " + value.toString() + "; id = " + id;
             logger.warn(message);
             return false;
         }else{
-            logger.info(attrName + " was null as expected");
+            logger.info(attrName + " was null as expected; id = " + id);
             return true;
         }
     }
