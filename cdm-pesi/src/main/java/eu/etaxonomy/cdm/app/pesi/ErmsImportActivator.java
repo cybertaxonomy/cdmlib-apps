@@ -45,7 +45,7 @@ public class ErmsImportActivator {
 
 	static final boolean includeExport2PESI = false;
 	static final Source pesiDestination = !includeExport2PESI ? null :
-	        cdmDestination.equals(CdmDestinations.cdm_test_local_mysql_erms())?
+	        cdmDestination.getDatabase().equals(CdmDestinations.cdm_test_local_mysql_erms().getDatabase())?
 	                PesiDestinations.pesi_test_local_CDM_ERMS2PESI():
 	                PesiDestinations.pesi_test_local_CDM_ERMS2PESI_2()    ;
 
@@ -64,7 +64,7 @@ public class ErmsImportActivator {
 	static final boolean doRelTaxa = doTaxa; //should always run with doTaxa because dependent on state from doTaxa
 	static final boolean doSourceUse = true;
 	static final boolean doCommonNames = true;
-    static final boolean doNotes = true;
+	static final boolean doNotes = true;
 	static final boolean doDistributions = true;
 	static final boolean doLinks = true;
 	static final boolean doImages = true;
@@ -77,8 +77,8 @@ public class ErmsImportActivator {
 //
 //	static final boolean doSourceUse = false;
 //	static final boolean doCommonNames = false;
-//    static final boolean doNotes = false;
-//    static final boolean doDistributions = false;
+//  static final boolean doNotes = false;
+//  static final boolean doDistributions = false;
 //	static final boolean doLinks = false;
 //	static final boolean doImages = false;
 
@@ -130,7 +130,7 @@ public class ErmsImportActivator {
 		ErmsImportActivator ermsImport = new ErmsImportActivator();
 		ermsImport.doImport(ermsSource, cdmDB, hbm2dll);
 
-		if (includeExport2PESI){
+		if (includeExport2PESI && check != CHECK.CHECK_ONLY){
 			PesiExportActivatorERMS ermsExport = new PesiExportActivatorERMS();
 			ermsExport.doTaxa = doTaxa;
 			ermsExport.doTreeIndex = doTaxa;
