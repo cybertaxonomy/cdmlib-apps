@@ -27,13 +27,13 @@ import eu.etaxonomy.cdm.io.pesi.out.PesiTransformer;
  * @author a.mueller
  * @since 01.09.2019
  */
-public class PesiErmsValidator {
+public class PesiErmsValidator extends PesiValidatorBase {
 
     private static final Logger logger = Logger.getLogger(PesiErmsValidator.class);
 
     private static final Source defaultSource = PesiSources.PESI2019_ERMS_2019();
-    private static final Source defaultDestination = PesiDestinations.pesi_test_local_CDM_ERMS2PESI();
-//    private static final Source defaultDestination = PesiDestinations.pesi_test_local_CDM_ERMS2PESI_2();
+//    private static final Source defaultDestination = PesiDestinations.pesi_test_local_CDM_ERMS2PESI();
+    private static final Source defaultDestination = PesiDestinations.pesi_test_local_CDM_ERMS2PESI_2();
 
     private Source source = defaultSource;
     private Source destination = defaultDestination;
@@ -425,22 +425,6 @@ public class PesiErmsValidator {
         }else{
             return "xxx - not yet handled";
         }
-    }
-
-    private boolean testTreeIndex(ResultSet destRS, String childIndexAttr, String parentIndexAttr, String id) throws SQLException {
-        boolean result;
-        int taxonStatusFk = destRS.getInt("TaxonStatusFk");
-        String parentTaxonId = destRS.getString("parentTaxonFk");
-        int rankFk = destRS.getInt("RankFk");
-        if (taxonStatusFk == 2 || taxonStatusFk == 4 || rankFk <= 10){  //synonym; pro parte syn; kingdom and higher
-            result = isNull(childIndexAttr, destRS, id);
-        }else{
-            String childIndex = destRS.getString(childIndexAttr);
-            String parentIndex = destRS.getString(parentIndexAttr);
-            parentIndex = parentIndex == null? "#": parentIndex;
-            result = equals("Tree index", childIndex, parentIndex + parentTaxonId + "#", id);
-        }
-        return result;
     }
 
     boolean namePartsFirst = true;
@@ -904,18 +888,6 @@ public class PesiErmsValidator {
         return yearStr;
     }
 
-    private boolean isNull(String attrName, ResultSet destRS, String id) throws SQLException {
-        Object value = destRS.getObject(attrName);
-        if (value != null){
-            String message = attrName + " was expected to be null but was: " + value.toString() + "; id = " + id;
-            logger.warn(message);
-            return false;
-        }else{
-            logger.info(attrName + " was null as expected; id = " + id);
-            return true;
-        }
-    }
-
     private boolean equals(String messageStart, Timestamp srcDate, Timestamp destDate, String id) {
         if (!CdmUtils.nullSafeEqual(srcDate, destDate)){
             String message = id + ": " + messageStart + " must be equal, but was not.\n Source: "+  srcDate + "; Destination: " + destDate;
@@ -939,36 +911,7 @@ public class PesiErmsValidator {
         }
     }
 
-    private boolean equals(String messageStart, String strSrc, String strDest, String id) {
-        if (StringUtils.isBlank(strSrc)){
-            strSrc = null;
-        }else{
-            strSrc = strSrc.trim();
-        }
-        //we do not trim strDest here because this should be done during import already. If not it should be shown here
-        if (!CdmUtils.nullSafeEqual(strSrc, strDest)){
-            int index = CdmUtils.diffIndex(strSrc, strDest);
-            String message = id+ ": " + messageStart + " must be equal, but was not at "+index+".\n  Source:      "+  strSrc + "\n  Destination: " + strDest;
-            logger.warn(message);
-            return false;
-        }else{
-            logger.info(id+ ": " + messageStart + " were equal: " + strSrc);
-            return true;
-        }
-    }
-
-    protected Integer nullSafeInt(ResultSet rs, String columnName) throws SQLException {
-        Object intObject = rs.getObject(columnName);
-        if (intObject == null){
-            return null;
-        }else{
-            return Integer.valueOf(intObject.toString());
-        }
-    }
-
 //** ************* MAIN ********************************************/
-
-
 
     public static void main(String[] args){
         PesiErmsValidator validator = new PesiErmsValidator();

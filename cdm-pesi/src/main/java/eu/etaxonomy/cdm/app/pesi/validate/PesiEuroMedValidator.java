@@ -19,6 +19,7 @@ import org.apache.log4j.Logger;
 
 import eu.etaxonomy.cdm.app.common.CdmDestinations;
 import eu.etaxonomy.cdm.app.common.PesiDestinations;
+import eu.etaxonomy.cdm.app.pesi.EuroMedSourceActivator;
 import eu.etaxonomy.cdm.common.CdmUtils;
 import eu.etaxonomy.cdm.common.UTF8;
 import eu.etaxonomy.cdm.database.ICdmDataSource;
@@ -34,7 +35,7 @@ import eu.etaxonomy.cdm.model.taxon.TaxonRelationshipType;
  * @author a.mueller
  * @since 08.10.2019
  */
-public class PesiEuroMedValidator {
+public class PesiEuroMedValidator extends PesiValidatorBase {
 
     private static final Logger logger = Logger.getLogger(PesiEuroMedValidator.class);
 
@@ -79,6 +80,7 @@ public class PesiEuroMedValidator {
 
     private boolean testAdditionalTaxonSources() throws SQLException {
         if (!doAdditionalTaxonSources){
+            System.out.println("Ignore validate additional taxon sources");
             return true;
         }
         System.out.println("Start validate additional taxon sources");
@@ -91,6 +93,7 @@ public class PesiEuroMedValidator {
 
     private boolean testNotes() throws SQLException {
         if (!doNotes){
+            System.out.println("Ignore validate notes");
             return true;
         }
         System.out.println("Start validate notes");
@@ -103,6 +106,7 @@ public class PesiEuroMedValidator {
 
     private boolean testDistributions() throws SQLException {
         if (!doDistributions){
+            System.out.println("Ignore validate distributions");
             return true;
         }
         System.out.println("Start validate distributions");
@@ -115,6 +119,7 @@ public class PesiEuroMedValidator {
 
     private boolean testCommonNames() throws SQLException {
         if (!doCommonNames){
+            System.out.println("Ignore validate common names");
             return true;
         }
         System.out.println("Start validate common names");
@@ -129,6 +134,7 @@ public class PesiEuroMedValidator {
     int countIncludedIns;
     private boolean testTaxonRelations() throws SQLException {
         if (!doTaxRels){
+            System.out.println("Ignore validate taxon relations");
             return true;
         }
         System.out.println("Start validate taxon relations");
@@ -238,6 +244,7 @@ public class PesiEuroMedValidator {
 
     private boolean testTaxa() throws SQLException {
         if (!doTaxa){
+            System.out.println("Ignore validate taxa");
             return true;
         }
         System.out.println("Start validate taxa");
@@ -251,6 +258,7 @@ public class PesiEuroMedValidator {
     String countReferencesStr = "SELECT count(*) FROM reference ";
     private boolean testReferences() throws SQLException {
         if (!doReferences){
+            System.out.println("Ignore validate references");
             return true;
         }
         System.out.println("Start validate references");
@@ -307,7 +315,7 @@ public class PesiEuroMedValidator {
          int countDest = destination.getUniqueInteger("SELECT count(*) FROM Taxon t WHERE "+ destTaxonFilter);
          boolean result = equals("Taxon count ", countSrc, countDest, String.valueOf(-1));
          return result;
-     }
+    }
 
     private boolean testSingleTaxa(int n) throws SQLException {
         boolean success = true;
@@ -345,7 +353,7 @@ public class PesiEuroMedValidator {
                 + "      tb.DTYPE, tb.updated, tb.created "    //for duplicates caused by >1 name status
                 + " ORDER BY tid, GUID, lastActionDate ");
         ResultSet destRS = destination.getResultSet("SELECT t.*, "
-                + "     pt.IdInSource parentSourceId, "  //not needed
+                + "     pt.treeIndex pTreeIndex, pt.IdInSource parentSourceId, "  //not needed
                 + "     s.Name as sourceName, type.IdInSource typeSourceId, r.Rank "
                 + " FROM Taxon t "
                 + "    LEFT JOIN Taxon pt ON pt.TaxonId = t.ParentTaxonFk "
@@ -368,7 +376,7 @@ public class PesiEuroMedValidator {
         String id = String.valueOf(srcRS.getInt("tid"));
         //TODO decide, according to SQL it also contains the taxon UUID, but in PESI2014 backup I can't find this
         boolean success = equals("Taxon ID", "NameId: " + srcRS.getInt("tid"), destRS.getString("IdInSource"), id);
-        success &= equals("Taxon source", srcRS.getString("secTitle"), destRS.getString("sourceName"), id);
+        success &= equals("Taxon source", makeSource(srcRS), destRS.getString("sourceName"), id);
 
         success &= equals("Taxon kingdomFk", "3", destRS.getString("KingdomFk"), id);
 //difficult to test        success &= equals("Taxon rank fk", srcRS.getString("rank_id"), destRS.getString("RankFk"), id);
@@ -399,22 +407,31 @@ public class PesiEuroMedValidator {
         //according to SQL always constant, could be changed in future
         success &= equals("Taxon QualityStatusFK", 2, nullSafeInt( destRS,"QualityStatusFk"), String.valueOf(id));
         success &= equals("Taxon QualityStatusCache", "Added by Database Management Team", destRS.getString("QualityStatusCache"), id);
-//TODO TreeIndex
-        success &= isNull("FossilStatusFk", destRS);
-        success &= isNull("FossilStatusCache", destRS);
+        success &= testTreeIndex(destRS, "TreeIndex", "pTreeIndex", id);
+        success &= isNull("FossilStatusFk", destRS, id);
+        success &= isNull("FossilStatusCache", destRS, id);
         success &= equals("Taxon GUID", srcRS.getString("GUID"), destRS.getString("GUID"), id);
         success &= equals("Taxon DerivedFromGuid", srcRS.getString("GUID"), destRS.getString("DerivedFromGuid"), id); //according to SQL script GUID and DerivedFromGuid are always the same, according to 2014DB this is even true for all databases
-        success &= isNull("ExpertGUID", destRS);  //according to SQL + PESI2014
+        success &= isNull("ExpertGUID", destRS, id);  //according to SQL + PESI2014
 //FIXME        success &= equals("Taxon ExpertName", srcRS.getString("secTitle"), destRS.getString("ExpertName"), id);
 //FIXME        success &= isNull("SpeciesExpertGUID", destRS);
-        success &= equals("Taxon SpeciesExpertName", srcRS.getString("secTitle"), destRS.getString("SpeciesExpertName"), id);
+//FIXME        success &= equals("Taxon SpeciesExpertName", srcRS.getString("secTitle"), destRS.getString("SpeciesExpertName"), id);
 //FIXME !!        success &= equals("Taxon cache citation", srcRS.getString("secTitle"), destRS.getString("CacheCitation"), id);
         success &= equals("Taxon Last Action", srcRS.getString("lastAction"),  destRS.getString("LastAction"), id);
         success &= equals("Taxon Last Action Date", srcRS.getTimestamp("lastActionDate"),  destRS.getTimestamp("LastActionDate"), id);
 
-        success &= isNull("GUID2", destRS);  //only relevant after merge
-        success &= isNull("DerivedFromGuid2", destRS);  //only relevant after merge
+        success &= isNull("GUID2", destRS, id);  //only relevant after merge
+        success &= isNull("DerivedFromGuid2", destRS, id);  //only relevant after merge
         return success;
+    }
+
+    private String makeSource(ResultSet srcRs) throws SQLException {
+        String secStr = srcRs.getString("secTitle");
+        if (secStr == null){
+            return EuroMedSourceActivator.sourceReferenceTitle;
+        }else{
+            return secStr;
+        }
     }
 
     private String makeAuthorship(ResultSet srcRs) throws SQLException {
@@ -451,6 +468,7 @@ public class PesiEuroMedValidator {
                     .replaceAll("^, ", "")
                     .replaceAll("(, |^)"+nameStatus+"$", "")
                     .replaceAll("\\[as \".*\"\\]", "")
+                    .replaceAll(", nom\\. cons\\., nom\\. altern\\.$", "")  //single case with 2 nom. status
                     .trim();
         }
         return result;
@@ -640,7 +658,7 @@ public class PesiEuroMedValidator {
         success &= equals("Taxon relation qualifier fk", PesiTransformer.IS_TAXONOMICALLY_INCLUDED_IN, destRS.getInt("RelTaxonQualifierFk"), id);
         success &= equals("Taxon relation qualifier cache", "is taxonomically included in", destRS.getString("RelQualifierCache"), id);
         //TODO enable after next import
-        success &= isNull("notes", destRS);
+        success &= isNull("notes", destRS, id);
         //complete if no further relations need to added
         return success;
     }
@@ -706,11 +724,11 @@ public class PesiEuroMedValidator {
         String id = String.valueOf(srcRs.getInt("tuId") + "-" + srcRs.getString("type"));
         boolean success = equals("Note taxonID ", "tu_id: " + String.valueOf(srcRs.getInt("tuId")), destRs.getString("IdInSource"), id);
         success &= equals("Note Note_1 ", srcRs.getString("note"), destRs.getString("Note_1"), id);
-        success &= isNull("Note_2", destRs);
+        success &= isNull("Note_2", destRs, id);
         success &= equals("Note category cache", normalizeNoteCatCache(srcRs.getString("type")), destRs.getString("NoteCategoryCache"), id);
         success &= equals("Note language ", srcRs.getString("LanName"), destRs.getString("Language"), id);
-        success &= isNull("Region", destRs);
-        success &= isNull("SpeciesExpertGUID", destRs);
+        success &= isNull("Region", destRs, id);
+        success &= isNull("SpeciesExpertGUID", destRs, id);
         //SpeciesExpertName, LastAction, LastActionDate handled in separate method
         //complete
         return success;
@@ -756,11 +774,11 @@ public class PesiEuroMedValidator {
         success &= equals("Distribution area name cache", normalizeDistrArea(srcRs.getString("area")), destRs.getString("AreaNameCache"), id);
         success &= equals("Distribution OccurrenceStatusFk", mapStatus(srcRs.getString("statusUuid")), destRs.getInt("OccurrenceStatusFk"), id);
 //TODO        success &= equals("Distribution OccurrenceStatusCache", "Present", destRs.getString("OccurrenceStatusCache"), id);
-        success &= isNull("SourceFk", destRs);  //sources should be moved to extra table only, according to script there were values, but in PESI 2014 values existed only in OccurrenceSource table (for all only E+M records)
-        success &= isNull("SourceCache", destRs);  //sources should be moved to extra table, see above
+        success &= isNull("SourceFk", destRs, id);  //sources should be moved to extra table only, according to script there were values, but in PESI 2014 values existed only in OccurrenceSource table (for all only E+M records)
+        success &= isNull("SourceCache", destRs, id);  //sources should be moved to extra table, see above
 //TODO        success &= equals("Distribution notes ", srcRs.getString("note"), destRs.getString("Notes"), id);
-        success &= isNull("SpeciesExpertGUID", destRs);  //SpeciesExpertGUID does not exist in EM and according to script
-        success &= isNull("SpeciesExpertName", destRs);  //SpeciesExpertName does not exist in EM and according to script
+        success &= isNull("SpeciesExpertGUID", destRs, id);  //SpeciesExpertGUID does not exist in EM and according to script
+        success &= isNull("SpeciesExpertName", destRs, id);  //SpeciesExpertName does not exist in EM and according to script
         success &= equals("Distribution Last Action", srcRs.getString("lastAction"),  destRs.getString("LastAction"), id);
         success &= equals("Distribution Last Action Date", srcRs.getTimestamp("lastActionDate"),  destRs.getTimestamp("LastActionDate"), id);
         return success;
@@ -850,11 +868,11 @@ public class PesiEuroMedValidator {
         success &= equals("Common name languageFk ", srcRs.getString("iso"), getLanguageIso(destRs), id);
         success = equals("CommonName LanguageCache ", normalizeLang(srcRs.getString("LanName")), destRs.getString("LanguageCache"), id);
         //TODO needed? success = equals("CommonName language code ", srcRs.getString("lan_id"), destRs.getString("LanguageFk"), id);
-        success &= isNull("Region", destRs);  //region does not seem to exist in ERMS
+        success &= isNull("Region", destRs, id);  //region does not seem to exist in ERMS
         //TODO see comments
 //        success &= isNull("SourceFk", destRs);  //sources should be moved to extra table, check with PESI 2014
 //        success &= isNull("SourceNameCache", destRs);  //sources should be moved to extra table, check with PESI 2014
-        success &= isNull("SpeciesExpertGUID", destRs);  //SpeciesExpertGUID does not exist in ERMS
+        success &= isNull("SpeciesExpertGUID", destRs, id);  //SpeciesExpertGUID does not exist in ERMS
         //SpeciesExpertName,LastAction,LastActionDate handled in separate method
         //complete
         return success;
@@ -902,7 +920,7 @@ public class PesiEuroMedValidator {
     private boolean testSingleReference(ResultSet srcRS, ResultSet destRS) throws SQLException {
         String id = String.valueOf(srcRS.getInt("id"));
         boolean success = equals("Reference ID ", srcRS.getInt("id"), destRS.getInt("RefIdInSource"), id);
-        success &= isNull("IMIS_Id", destRS);  //for E+M no IMIS id exists
+        success &= isNull("IMIS_Id", destRS, id);  //for E+M no IMIS id exists
         success &= equals("Reference SourceCategoryFk ", convertSourceTypeFk(srcRS.getString("refType")), destRS.getInt("SourceCategoryFk"), id);
         success &= equals("Reference SourceCategoryCache ", convertSourceTypeCache(srcRS.getString("refType")), destRS.getString("SourceCategoryCache"), id);
         success &= equals("Reference name ", srcRS.getString("titleCache"), destRS.getString("Name"), id);
@@ -935,8 +953,6 @@ public class PesiEuroMedValidator {
         }else if ("SER".equals(sourceType)){
 //            TODO correct?
             return PesiTransformer.REF_UNRESOLVED;
-        }else if ("i".equals(sourceType)){
-            return 12;
         }
         return null;
     }
@@ -955,9 +971,6 @@ public class PesiEuroMedValidator {
             return "book";
         }else if ("GEN".equals(sourceType)){
             return "unresolved";
-        }else if ("i".equals(sourceType)){
-            //TODO
-            return "i";
         }
         return null;
     }
@@ -984,18 +997,6 @@ public class PesiEuroMedValidator {
         }
         String result = start == null? null: start + (end==null? "": "-"+ end);
         return result;
-    }
-
-    private boolean isNull(String attrName, ResultSet destRS) throws SQLException {
-        Object value = destRS.getObject(attrName);
-        if (value != null){
-            String message = attrName + " was expected to be null but was: " + value.toString();
-            logger.warn(message);
-            return false;
-        }else{
-            logger.info(attrName + " was null as expected");
-            return true;
-        }
     }
 
     private boolean equals(String messageStart, Timestamp srcDate, Timestamp destDate, String id) {
@@ -1028,40 +1029,7 @@ public class PesiEuroMedValidator {
         }
     }
 
-    private boolean equals(String messageStart, String strSrc, String strDest, String id) {
-        if (StringUtils.isBlank(strSrc)){
-            strSrc = null;
-        }else{
-            strSrc = strSrc.trim();
-        }
-        //we do not trim strDest here because this should be done during import already. If not it should be shown here
-        if (!CdmUtils.nullSafeEqual(strSrc, strDest)){
-            int index = CdmUtils.diffIndex(strSrc, strDest);
-            String message = id+ ": " + messageStart + " must be equal, but was not at "+index+".\n  Source:      "+  strSrc + "\n  Destination: " + strDest;
-            logger.warn(message);
-            return false;
-        }else{
-            logger.info(id+ ": " + messageStart + " were equal: " + strSrc);
-            return true;
-        }
-    }
-
-    protected Integer nullSafeInt(ResultSet rs, String columnName) throws SQLException {
-        Object intObject = rs.getObject(columnName);
-        if (intObject == null){
-            return null;
-        }else{
-            return Integer.valueOf(intObject.toString());
-        }
-    }
-
-    private boolean isNotBlank(String str) {
-        return StringUtils.isNotBlank(str);
-    }
-
 //** ************* MAIN ********************************************/
-
-
 
     public static void main(String[] args){
         PesiEuroMedValidator validator = new PesiEuroMedValidator();
