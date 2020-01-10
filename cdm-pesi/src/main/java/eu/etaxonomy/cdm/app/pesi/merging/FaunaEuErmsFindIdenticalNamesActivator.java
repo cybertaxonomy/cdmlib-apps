@@ -85,61 +85,6 @@ public class FaunaEuErmsFindIdenticalNamesActivator {
 	private boolean writeSameNamesToCsvFile(
 			List<PesiMergeObject> mergingObjects, String string) {
 
-<<<<<<< HEAD
-	/**
-	 * @param args
-	 */
-	public static void main(String[] args) {
-
-		FaunaEuErmsFindIdenticalNamesActivator sc = new FaunaEuErmsFindIdenticalNamesActivator();
-
-		CdmApplicationController appCtrFaunaEu = sc.initDb(faunaEuropaeaSource);
-		String sFileName = "C:\\Users\\k.luther\\test";
-		//CdmApplicationController appCtrErms = sc.initDb(ermsSource);
-		List<String> propertyPaths = new ArrayList<>();
-		propertyPaths.add("sources.*");
-		propertyPaths.add("sources.idInSource");
-		propertyPaths.add("sources.idNamespace");
-		propertyPaths.add("taxonBases.*");
-		propertyPaths.add("taxonBases.relationsFromThisTaxon");
-		propertyPaths.add("taxonBases.taxonNodes.*");
-		propertyPaths.add("taxonBases.taxonNodes.parent.*");
-		propertyPaths.add("taxonBases.taxonNodes.childNodes.*");
-		propertyPaths.add("taxonBases.taxonNodes.childNodes.classification.rootNode.childNodes.*");
-		propertyPaths.add("taxonBases.taxonNodes.parent.taxon.name.*");
-		propertyPaths.add("taxonBases.acceptedTaxon.taxonNodes.*");
-		propertyPaths.add("taxonBases.acceptedTaxon.taxonNodes.childNodes.*");
-		propertyPaths.add("taxonBases.acceptedTaxon.taxonNodes.childNodes.classification.rootNode.childNodes.*");
-		System.err.println("Start getIdenticalNames...");
-		
-		faunaSec = appCtrFaunaEu.getReferenceService().load(UUID.fromString("6786d863-75d4-4796-b916-c1c3dff4cb70"));
-		ermsSec = appCtrFaunaEu.getReferenceService().load(UUID.fromString("7744bc26-f914-42c4-b54a-dd2a030a8bb7"));
-		Map<String, List<TaxonName>> namesOfIdenticalTaxa = appCtrFaunaEu.getTaxonService().findIdenticalTaxonNameIds(ermsSec, faunaSec, propertyPaths);
-			
-		List<FaunaEuErmsMerging> mergingObjects = new ArrayList<>();
-		FaunaEuErmsMerging mergeObject;
-		TaxonName faunaEuTaxName;
-		TaxonName ermsTaxName;
-		System.err.println("Start creating merging objects");
-		mergingObjects= sc.createMergeObjects(namesOfIdenticalTaxa, appCtrFaunaEu);
-		boolean resultOK = true;
-		System.err.println("Start creating csv files");
-		resultOK = resultOK && sc.writeSameNamesdifferentAuthorToCsv(mergingObjects, sFileName + "_authors.csv");
-		resultOK = resultOK &&sc.writeSameNamesdifferentStatusToCsv(mergingObjects, sFileName + "_status.csv");
-		resultOK = resultOK &&sc.writeSameNamesToCsVFile(mergingObjects, sFileName + "_names.csv");
-		//do not create the phylum file, explanation inside the method writeSameNamesdifferentPhylumToCsv
-		//resultOK = resultOK &&sc.writeSameNamesdifferentPhylumToCsv(mergingObjects, sFileName + "_phylum.csv");
-		resultOK = resultOK &&sc.writeSameNamesDifferentParentToCsv(mergingObjects, sFileName + "parent.csv");
-
-		System.err.println("End merging Fauna Europaea and Erms" + resultOK);
-		System.exit(0);
-
-	}
-
-	private boolean writeSameNamesToCsVFile(
-			List<FaunaEuErmsMerging> mergingObjects, String string) {
-=======
->>>>>>> 34743ac779cc3f8570bd9eae6109207adda534ea
 	    try{
     		FileWriter writer = new FileWriter(string);
 
@@ -158,17 +103,10 @@ public class FaunaEuErmsFindIdenticalNamesActivator {
     	}
 	}
 
-<<<<<<< HEAD
-	private boolean writeSameNamesdifferentPhylumToCsv(List<FaunaEuErmsMerging> mergingObjects, String sfileName){
-		try
-		{
-			//do we really need this?? it is a taxon needed merged like all others? for erms only one taxon has different phylum. (Valencia, but these are not the same taxa -> fish and ribbon worms)
-=======
 	private boolean writeSameNamesDifferentPhylumToCsv(
 	        List<PesiMergeObject> mergingObjects, String sfileName){
 
 	    try{
->>>>>>> 34743ac779cc3f8570bd9eae6109207adda534ea
 		    FileWriter writer = new FileWriter(sfileName);
 
 		    //create Header
@@ -176,17 +114,12 @@ public class FaunaEuErmsFindIdenticalNamesActivator {
 		   createHeader(writer, firstLine);
 
 			//write data
-<<<<<<< HEAD
-			for (FaunaEuErmsMerging merging : mergingObjects){
-		    	//TODO the phyllum is always different doing it this way, maybe we need to merge the phylum taxa first and then 
-=======
 			for (PesiMergeObject merging : mergingObjects){
 		    	//TODO
->>>>>>> 34743ac779cc3f8570bd9eae6109207adda534ea
 				if ((merging.getPhylumInErms()== null )^ (merging.getPhylumInFaunaEu()== null)){
 					writeCsvLine(writer, merging) ;
 				}else if(!((merging.getPhylumInErms()==null) && (merging.getPhylumInFaunaEu()==null))){
-					if(!merging.getPhylumInErms().getNameTitleCache().equals(merging.getPhylumInFaunaEu().getNameTitleCache())){
+					if(!merging.getPhylumInErms().equals(merging.getPhylumInFaunaEu())){
 						writeCsvLine(writer, merging) ;
 					}
 				}
@@ -260,38 +193,38 @@ public class FaunaEuErmsFindIdenticalNamesActivator {
 			writer.append(';');
 			writer.append("id in Fauna Europaea");
 			writer.append(';');
-			writer.append("name in FE");
+			writer.append("name");
 			writer.append(';');
-			writer.append("author in FE");
+			writer.append("author");
 			writer.append(';');
-			writer.append("rank in FE");
+			writer.append("rank");
 			writer.append(';');
-			writer.append("state in FE");
+			writer.append("state");
 			writer.append(';');
-			writer.append("phylum in FE");
+			writer.append("phylum");
 			writer.append(';');
-			writer.append("parent in FE");
+			writer.append("parent");
 			writer.append(';');
-			writer.append("parent rank in FE");
+			writer.append("parent rank");
 			writer.append(';');
 
 			writer.append("uuid in Erms");
 			writer.append(';');
 			writer.append("id in Erms");
 			writer.append(';');
-			writer.append("name in Erms");
+			writer.append("name");
 			writer.append(';');
-			writer.append("author in Erms");
+			writer.append("author");
 			writer.append(';');
-			writer.append("rank in Erms");
+			writer.append("rank");
 			writer.append(';');
-			writer.append("state in Erms");
+			writer.append("state");
 			writer.append(';');
-			writer.append("phylum in Erms");
+			writer.append("phylum");
 			writer.append(';');
-			writer.append("parent in Erms");
+			writer.append("parent");
 			writer.append(';');
-			writer.append("parent rank in Erms");
+			writer.append("parent rank");
 			writer.append('\n');
 	}
 
@@ -390,7 +323,7 @@ public class FaunaEuErmsFindIdenticalNamesActivator {
 		}
 
 		writer.append(';');
-		writer.append(merging.getPhylumInErms() != null? merging.getPhylumInErms().getTitleCache():"");
+		writer.append(merging.getPhylumInErms() != null? merging.getPhylumInErms().getTaxonTitleCache():"");
 		writer.append(';');
 		writer.append(merging.getParentStringInErms());
 		writer.append(';');
@@ -406,36 +339,11 @@ public class FaunaEuErmsFindIdenticalNamesActivator {
 	    Classification classification1 = appCtr.getClassificationService().load(uuidClassification1);
 		Classification classification2 = appCtr.getClassificationService().load(uuidClassification2);
 
-<<<<<<< HEAD
-				}
-			}else{
-				mergeObject.setStatInFaunaEu(false);
-				TaxonNode parentNode = getAcceptedNode(faunaEuName);
-				//TODO: ändern mit erweitertem Initializer..
-				if (parentNode != null){
-				    TaxonName parentName = HibernateProxyHelper.deproxy(parentNode.getTaxon().getName());
-					String parentNameCache = parentName.getNameCache();
-					mergeObject.setParentStringInFaunaEu(parentNameCache);
-					mergeObject.setParentRankStringInFaunaEu(parentName.getRank().getLabel());
-					
-				}
-			}
-			
-
-			mergeObject.setRankInErms(ermsName.getRank().getLabel());
-			mergeObject.setRankInFaunaEu(faunaEuName.getRank().getLabel());
-
-		
-			merge.add(mergeObject);
-		}
-
-=======
 		List<PesiMergeObject> merge = new ArrayList<>();
 
 		for (String nameCache: names.keySet()){
 		    createSingleMergeObject(appCtr, merge, nameCache, names.get(nameCache),classification1, classification2);
 		}
->>>>>>> 34743ac779cc3f8570bd9eae6109207adda534ea
 
 		return merge;
 	}
