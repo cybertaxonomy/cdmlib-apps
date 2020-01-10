@@ -162,7 +162,7 @@ public class IndexFungorumGeneraImport  extends IndexFungorumImportBase {
 		try{
 //			Set<String> taxonNameSet = new HashSet<>();
 			while (rs.next()){
-//				handleForeignKey(rs, taxonIdSet,"tu_acctaxon" );
+//				handleForeignKey(rs, taxonIdSet,"tu_accfinal" );
 			}
 
 			//taxon map
@@ -171,7 +171,7 @@ public class IndexFungorumGeneraImport  extends IndexFungorumImportBase {
 //			idSet = taxonNameSet;
 			Map<String, TaxonBase<?>> taxonMap = new HashMap<>();
 			@SuppressWarnings("rawtypes")
-            List<TaxonBase> list = getTaxonService().listTaxaByName(Taxon.class, "*", null, null, null, "*", null, 1000000, null);
+            List<TaxonBase> list = getTaxonService().listTaxaByName(Taxon.class, "*", null, null, null, "*", null, 1000000, null, null);
 			for (TaxonBase<?> taxon : list){
 				taxonMap.put(CdmBase.deproxy(taxon.getName()).getGenusOrUninomial(), taxon);
 			}

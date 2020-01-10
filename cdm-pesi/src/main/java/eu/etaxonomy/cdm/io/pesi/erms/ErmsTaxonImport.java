@@ -11,14 +11,17 @@ package eu.etaxonomy.cdm.io.pesi.erms;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
+import org.hsqldb.lib.StringComparator;
 import org.springframework.stereotype.Component;
 
 import eu.etaxonomy.cdm.common.CdmUtils;
@@ -33,7 +36,6 @@ import eu.etaxonomy.cdm.io.common.mapping.DbImportMarkerMapper;
 import eu.etaxonomy.cdm.io.common.mapping.DbImportMethodMapper;
 import eu.etaxonomy.cdm.io.common.mapping.DbImportObjectCreationMapper;
 import eu.etaxonomy.cdm.io.common.mapping.DbImportStringMapper;
-import eu.etaxonomy.cdm.io.common.mapping.DbNotYetImplementedMapper;
 import eu.etaxonomy.cdm.io.common.mapping.IMappingImport;
 import eu.etaxonomy.cdm.io.common.mapping.UndefinedTransformerMethodException;
 import eu.etaxonomy.cdm.io.common.mapping.out.DbLastActionMapper;
@@ -45,6 +47,7 @@ import eu.etaxonomy.cdm.model.common.CdmBase;
 import eu.etaxonomy.cdm.model.common.ExtensionType;
 import eu.etaxonomy.cdm.model.common.Language;
 import eu.etaxonomy.cdm.model.common.MarkerType;
+import eu.etaxonomy.cdm.model.common.RelationshipTermBase;
 import eu.etaxonomy.cdm.model.name.NomenclaturalCode;
 import eu.etaxonomy.cdm.model.name.NomenclaturalStatusType;
 import eu.etaxonomy.cdm.model.name.Rank;
@@ -54,6 +57,7 @@ import eu.etaxonomy.cdm.model.reference.Reference;
 import eu.etaxonomy.cdm.model.taxon.Synonym;
 import eu.etaxonomy.cdm.model.taxon.Taxon;
 import eu.etaxonomy.cdm.model.taxon.TaxonBase;
+import eu.etaxonomy.cdm.model.taxon.TaxonRelationshipType;
 import eu.etaxonomy.cdm.strategy.cache.name.TaxonNameDefaultCacheStrategy;
 
 /**
@@ -68,11 +72,13 @@ public class ErmsTaxonImport
     private static final long serialVersionUID = -7111568277264140051L;
     private static final Logger logger = Logger.getLogger(ErmsTaxonImport.class);
 
-	private DbImportMapping<ErmsImportState, ErmsImportConfigurator> mapping;
-
 	private static final String pluralString = "taxa";
 	private static final String dbTableName = "tu";
 	private static final Class<?> cdmTargetClass = TaxonBase.class;
+
+	private static Map<String, Integer> unacceptReasons = new HashMap<>();
+
+	private DbImportMapping<ErmsImportState, ErmsImportConfigurator> mapping;
 
 	public ErmsTaxonImport(){
 		super(pluralString, dbTableName, cdmTargetClass);
@@ -131,13 +137,14 @@ public class ErmsTaxonImport
             MarkerType hasNoLastActionMarkerType = getMarkerType(DbLastActionMapper.uuidMarkerTypeHasNoLastAction, "has no last action", "No last action information available", "no last action");
             mapping.addMapper(DbImportAnnotationMapper.NewInstance("lastAction", lastActionType, hasNoLastActionMarkerType));
 
+            //MAN authorshipCache => appendedPhrase
+            mapping.addMapper(DbImportMethodMapper.NewDefaultInstance(this, "appendedPhraseForMisapplications", ErmsImportState.class));
+
             //titleCache compare
             mapping.addMapper(DbImportMethodMapper.NewDefaultInstance(this, "testTitleCache", ErmsImportState.class));
 
-			//not yet implemented
-			mapping.addMapper(DbNotYetImplementedMapper.NewInstance("tu_sp", "included in rank/object creation"));
-
 			//ignore
+            mapping.addMapper(DbIgnoreMapper.NewInstance("tu_sp", "included in rank/object creation, only needed for defining kingdom"));
 			mapping.addMapper(DbIgnoreMapper.NewInstance("tu_fossil", "tu_fossil implemented as foreign key"));
 
 		}
@@ -172,10 +179,13 @@ public class ErmsTaxonImport
 
 		//first path
 		super.doInvoke(state);
+		if(true){
+		    logUnacceptReasons();
+		}
 		return;
 	}
 
-	Integer lastTaxonId = null;
+    Integer lastTaxonId = null;
     @Override
     protected boolean ignoreRecord(ResultSet rs) throws SQLException {
         Integer id = rs.getInt("id");
@@ -192,12 +202,16 @@ public class ErmsTaxonImport
 		String distributionTable = "dr";
 		String notesTable = "notes";
 		String sql =
-		        "          SELECT id FROM tu WHERE tu_acctaxon is NULL" //id of taxa not having accepted taxon
-		        + " UNION  SELECT DISTINCT tu_acctaxon FROM tu "  //fk to accepted taxon (either the accepted taxon or the taxon itself, if accepted)
-		        + " UNION  SELECT syn.id FROM tu syn INNER JOIN tu acc ON syn.tu_acctaxon = acc.id WHERE syn.id = acc.tu_parent AND acc.id <> syn.id "  //see also ErmsTaxonRelationImport.isAccepted, there are some autonyms being the accepted taxon of there own parents
+                "          SELECT id FROM tu WHERE tu_accfinal is NULL" //id of taxa not having accepted taxon
+                + " UNION  SELECT DISTINCT tu_accfinal FROM tu "  //fk to accepted taxon (either the accepted taxon or the taxon itself, if accepted)
+                + " UNION  SELECT id FROM tu WHERE trim(tu.tu_unacceptreason) like 'misidentification' OR trim(tu.tu_unacceptreason) like 'misidentifications' OR "
+                            + " tu.tu_unacceptreason like 'misapplied %%name' OR "
+                            + " tu.tu_unacceptreason like '%%misapplication%%' OR "
+                            + " tu.tu_unacceptreason like 'incorrect identification%%'" //Misapplications, see ErmsTransformer.getSynonymRelationTypesByKey
+                + " UNION  SELECT syn.id FROM tu syn INNER JOIN tu acc ON syn.tu_accfinal = acc.id WHERE syn.id = acc.tu_parent AND acc.id <> syn.id "  //see also ErmsTaxonRelationImport.isAccepted, there are some autonyms being the accepted taxon of there own parents
                 + " UNION  SELECT DISTINCT %s FROM %s " //vernaculars
-		        + " UNION  SELECT DISTINCT %s FROM %s "  //distributions
-		        + " UNION  SELECT DISTINCT %s FROM %s ";  //notes
+                + " UNION  SELECT DISTINCT %s FROM %s "  //distributions
+                + " UNION  SELECT DISTINCT %s FROM %s ";  //notes
 		sql = String.format(sql,
 		        tuFk, vernacularsTable,
 				tuFk, distributionTable,
@@ -226,8 +240,8 @@ public class ErmsTaxonImport
 	@Override
 	public TaxonBase<?> createObject(ResultSet rs, ErmsImportState state) throws SQLException {
 		int statusId = rs.getInt("status_id");
-//		Object accTaxonId = rs.getObject("tu_acctaxon");
 		Integer meId = rs.getInt("id");
+		Integer accFinal = nullSafeInt(rs, "tu_accfinal");
 
         TaxonName taxonName = getTaxonName(rs, state);
 		fillTaxonName(taxonName, rs, state, meId);
@@ -242,11 +256,14 @@ public class ErmsTaxonImport
 			Taxon taxon = Taxon.NewInstance(taxonName, citation);
 			if (statusId != 1){
 				logger.info("Taxon created as taxon but has status <> 1 ("+statusId+"): " + meId);
-				handleNotAcceptedTaxon(taxon, statusId, state, rs);
+				boolean idsDiffer = accFinal != null && !meId.equals(accFinal);
+				handleNotAcceptedTaxonStatus(taxon, statusId, idsDiffer, accFinal == null, state, rs);
 			}
 			result = taxon;
 		}else{
 			result = Synonym.NewInstance(taxonName, citation);
+			//real synonyms (id <> tu_accfinal) are always handled as "synonym" or "pro parte synonym"
+//			handleNotAcceptedTaxonStatus(result, statusId, state, rs);
 		}
 
 		handleNameStatus(result.getName(), rs, state);
@@ -256,7 +273,7 @@ public class ErmsTaxonImport
     private void handleNameStatus(TaxonName name, ResultSet rs, ErmsImportState state) throws SQLException {
         NomenclaturalStatusType nomStatus = null;
         int tuStatus = rs.getInt("tu_status");
-        //the order is bottom up from SQL script as there values are overriden from top to bottom
+        //the order is bottom up from SQL script as their values are overridden from top to bottom
         if (tuStatus == 8){
             //species inquirenda
             nomStatus = getNomenclaturalStatusType(state, ErmsTransformer.uuidNomStatusSpeciesInquirenda, "species inquirenda", "species inquirenda", null, Language.LATIN(), null);
@@ -340,7 +357,7 @@ public class ErmsTaxonImport
 			taxonName.setNameCache(displayName);
 			logger.warn("Set name cache: " +  displayName + "; id =" + meId);
 		}
-        if (!taxonName.getNameCache().equals(displayName)){
+        if (!taxonName.getNameCache().equals(displayName) && !isErroneousSubgenus(taxonName, displayName)){
             int pos = CdmUtils.diffIndex(taxonName.getNameCache(), displayName);
             logger.warn("Computed name cache differs at "+pos+".\n Computed   : " + taxonName.getNameCache()+"\n DisplayName: " +displayName);
             taxonName.setNameCache(displayName, true);
@@ -349,25 +366,59 @@ public class ErmsTaxonImport
         return taxonName;
     }
 
+    private static boolean isErroneousSubgenus(TaxonName taxonName, String displayName) {
+        //this is an error in ERMS formatting in v2019 for ICNafp names, that hopefully soon will be corrected
+        return (Rank.SPECIES().equals(taxonName.getRank()) && displayName.contains(" subg. "));
+    }
+
+    @SuppressWarnings("unused")  //used by MethodMapper
+    private static TaxonBase<?> appendedPhraseForMisapplications(ResultSet rs, ErmsImportState state) throws SQLException{
+        TaxonBase<?> taxon = (TaxonBase<?>)state.getRelatedObject(DbImportStateBase.CURRENT_OBJECT_NAMESPACE, DbImportStateBase.CURRENT_OBJECT_ID);
+        TaxonName taxonName = taxon.getName();
+        String unacceptreason = rs.getString("tu_unacceptreason");
+        RelationshipTermBase<?>[] rels = state.getTransformer().getSynonymRelationTypesByKey(unacceptreason, state);
+        if (rels[1]!= null && rels[1].equals(TaxonRelationshipType.MISAPPLIED_NAME_FOR())){
+            taxon.setAppendedPhrase(taxonName.getAuthorshipCache());
+            taxon.setSec(null);
+            taxonName.setAuthorshipCache(null, taxonName.isProtectedAuthorshipCache());
+            //TODO maybe some further authorship handling is needed if authors get parsed, but not very likely for MAN authorship
+        }
+        if(state.getUnhandledUnacceptReason() != null){
+            //to handle it hear is a workaround, as the real place where it is handled is DbImportSynonymMapper which is called ErmsTaxonRelationImport but where it is diffcult to aggregate logging data
+            addUnacceptReason(state.getUnhandledUnacceptReason());
+        }
+        return taxon;
+    }
+
+    private static void addUnacceptReason(String unhandledUnacceptReason) {
+        unhandledUnacceptReason = unhandledUnacceptReason.toLowerCase();
+        if (!unacceptReasons.keySet().contains(unhandledUnacceptReason)){
+            unacceptReasons.put(unhandledUnacceptReason, 1);
+        }else{
+            unacceptReasons.put(unhandledUnacceptReason, unacceptReasons.get(unhandledUnacceptReason)+1);
+        }
+    }
+
     @SuppressWarnings("unused")  //used by MethodMapper
     private static TaxonBase<?> testTitleCache(ResultSet rs, ErmsImportState state) throws SQLException{
         TaxonBase<?> taxon = (TaxonBase<?>)state.getRelatedObject(DbImportStateBase.CURRENT_OBJECT_NAMESPACE, DbImportStateBase.CURRENT_OBJECT_ID);
         TaxonName taxonName = taxon.getName();
-         String displayName = rs.getString("tu_displayname");
-         displayName = displayName == null ? null : displayName.trim();
-         String titleCache = taxonName.resetTitleCache(); //calling titleCache should always be kept to have a computed titleCache in the CDM DB.
-         String expectedTitleCache = getExpectedTitleCache(rs);
-         //TODO check titleCache, but beware of autonyms
-         if (!titleCache.equals(expectedTitleCache)){
-             int pos = CdmUtils.diffIndex(titleCache, expectedTitleCache);
-             logger.warn("Computed title cache differs at "+pos+".\n Computed             : " + titleCache + "\n DisplayName+Authority: " + expectedTitleCache);
-             taxonName.setNameCache(displayName, true);
-         }
-         return taxon;
-     }
+        String displayName = rs.getString("tu_displayname");
+        displayName = displayName == null ? null : displayName.trim();
+        String titleCache = taxonName.resetTitleCache(); //calling titleCache should always be kept to have a computed titleCache in the CDM DB.
+        titleCache = CdmUtils.concat(" ", titleCache, taxon.getAppendedPhrase());
+        String expectedTitleCache = getExpectedTitleCache(rs);
+        //TODO check titleCache, but beware of autonyms
+        if (!titleCache.equals(expectedTitleCache) && !isErroneousSubgenus(taxonName, displayName)){
+            int pos = CdmUtils.diffIndex(titleCache, expectedTitleCache);
+            logger.warn("Computed title cache differs at "+pos+".\n Computed             : " + titleCache + "\n DisplayName+Authority: " + expectedTitleCache);
+            taxonName.setNameCache(displayName, true);
+        }
+        return taxon;
+    }
 
-     //see also PesiErmsValidation.srcFullName()
-     private static String getExpectedTitleCache(ResultSet srcRs) throws SQLException {
+    //see also PesiErmsValidation.srcFullName()
+    private static String getExpectedTitleCache(ResultSet srcRs) throws SQLException {
         String result;
         String epi = srcRs.getString("tu_name");
         epi = " a" + epi;
@@ -381,17 +432,34 @@ public class ErmsTaxonImport
         return result.trim();
     }
 
-	private void handleNotAcceptedTaxon(Taxon taxon, int statusId, ErmsImportState state, ResultSet rs) throws SQLException {
-		ExtensionType notAccExtensionType = getExtensionType(state, ErmsTransformer.uuidErmsTaxonStatus, "ERMS taxon status", "ERMS taxon status", "status", null);
-		String statusName = rs.getString("status_name");
+    private void handleNotAcceptedTaxonStatus(Taxon taxon, int statusId, boolean idsDiffer, boolean accIdNull, ErmsImportState state, ResultSet rs) throws SQLException {
+		ExtensionType pesiStatusType = getExtensionType(state, ErmsTransformer.uuidPesiTaxonStatus, "PESI taxon status", "PESI taxon status", "status", null);
 
-		if (statusId > 1){
-			taxon.addExtension(statusName, notAccExtensionType);
-		}
+		if(idsDiffer){
+		    //if ids differ the taxon should always be an ordinary synonym, some synonyms need to be imported to CDM as Taxon because they have factual data attached, they use a concept relationship as synonym relationship
+		    addPesiStatus(taxon, PesiTransformer.T_STATUS_SYNONYM, pesiStatusType);
+		}else if(statusId == 1){
+            //nothing to do, not expected to happen
+		}else if (statusId > 1 && statusId < 6 || statusId == 7){ //unaccepted, nomen nudum, alternate representation, temporary name       they have sometimes no tu_accfinal or are handled incorrect
+		    //TODO discuss alternate representations, at the very end of the PESI export unaccepted taxa with relationship "is alternative name for" are set to status "accepted". Need to check if this is true for the PESI taxa too (do they have such a relationship?)
+		    //Note: in SQL script, also the tu_unacceptreason was checked to be NOT LIKE '%syno%', this is not always correct and the few real synonyms should better data cleaned
+		    addPesiStatus(taxon, PesiTransformer.T_STATUS_UNACCEPTED, pesiStatusType);
+        }else if (statusId == 6 || statusId == 8 || statusId == 10){
+            taxon.setDoubtful(true);  //nomen dubium, taxon inquirendum, uncertain
+        }else if (statusId == 9){
+            addPesiStatus(taxon, PesiTransformer.T_STATUS_UNACCEPTED, pesiStatusType);         //interim unpublished, we should better not yet publish, but will be probably accepted in future
+        }else{
+            logger.error("Unhandled statusId "+ statusId);
+        }
 	}
 
-	private void handleException(Integer parent1Rank, TaxonName taxonName, String displayName, Integer meId) {
-		logger.warn("Parent of infra specific taxon is higher than species. Used nameCache: " + displayName +  "; id=" + meId) ;
+    private void addPesiStatus(Taxon taxon, int status, ExtensionType pesiStatusType) {
+        taxon.addExtension(String.valueOf(status), pesiStatusType);
+
+    }
+
+    private void handleException(Integer parentRank, TaxonName taxonName, String displayName, Integer meId) {
+		logger.warn("Parent of infra specific taxon is of higher rank ("+parentRank+") than species. Used nameCache: " + displayName +  "; id=" + meId) ;
 		taxonName.setNameCache(displayName);
 	}
 
@@ -476,6 +544,34 @@ public class ErmsTaxonImport
 			return tu_id;
 		}
 	}
+
+    private void logUnacceptReasons() {
+        String logStr = "\n Unhandled unaccept reasons:\n===================";
+
+        while (!unacceptReasons.isEmpty()) {
+            int n = 0;
+            List<String> mostUsedStrings = new ArrayList<>();
+            for (Map.Entry<String, Integer> entry : unacceptReasons.entrySet()) {
+                if (entry.getValue() > n) {
+                    mostUsedStrings = new ArrayList<>();
+                    mostUsedStrings.add(entry.getKey());
+                    n = entry.getValue();
+                } else if (entry.getValue() == n) {
+                    mostUsedStrings.add(entry.getKey());
+                } else {
+                    //neglect
+                }
+            }
+            mostUsedStrings.sort(new StringComparator());
+            logStr += "\n   " + String.valueOf(n);
+            for (String str : mostUsedStrings) {
+                logStr += "\n   "+ str;
+                unacceptReasons.remove(str);
+            }
+        }
+        logger.warn(logStr);
+
+    }
 
 	@Override
 	protected boolean doCheck(ErmsImportState state){

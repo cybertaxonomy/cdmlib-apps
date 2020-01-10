@@ -39,6 +39,8 @@ public class ErmsImportState
 
 	private Set<Integer> acceptedTaxaKeys;
 
+	private String unacceptReason;
+
 	@Override
 	public void initialize(ErmsImportConfigurator config) {
 //		super(config);
@@ -110,4 +112,11 @@ public class ErmsImportState
 	public void setAcceptedTaxaKeys(Set<Integer> acceptedTaxaKeys) {
 		this.acceptedTaxaKeys = acceptedTaxaKeys;
 	}
+
+	public String getUnhandledUnacceptReason() {
+        return this.unacceptReason;
+    }
+    public void setUnhandledUnacceptReason(String unacceptReason) {
+        this.unacceptReason = unacceptReason;
+    }
 }

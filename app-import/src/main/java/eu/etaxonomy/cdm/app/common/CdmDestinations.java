@@ -19,6 +19,7 @@ import eu.etaxonomy.cdm.database.DatabaseTypeEnum;
 import eu.etaxonomy.cdm.database.ICdmDataSource;
 
 public class CdmDestinations {
+
 	@SuppressWarnings("unused")
 	private static Logger logger = Logger.getLogger(CdmDestinations.class);
 
@@ -149,6 +150,15 @@ public class CdmDestinations {
         DatabaseTypeEnum dbType = DatabaseTypeEnum.MySQL;
         String cdmServer = "127.0.0.1";
         String cdmDB = "cdm_pesi_euromed";
+        String cdmUserName = "edit";
+        int port = 3306;
+        return CdmDestinations.makeDestination(dbType, cdmServer, cdmDB, port, cdmUserName, null);
+    }
+
+    public static ICdmDataSource cdm_local_mysql_tmpTest(){
+        DatabaseTypeEnum dbType = DatabaseTypeEnum.MySQL;
+        String cdmServer = "127.0.0.1";
+        String cdmDB = "tmpTest";
         String cdmUserName = "edit";
         int port = 3306;
         return CdmDestinations.makeDestination(dbType, cdmServer, cdmDB, port, cdmUserName, null);
@@ -316,6 +326,14 @@ public class CdmDestinations {
 		String cdmUserName = "edit";
 		return makeDestination(dbType, cdmServer, cdmDB, -1, cdmUserName, null);
 	}
+
+    public static ICdmDataSource cdm_test_bupleurum(){
+        DatabaseTypeEnum dbType = DatabaseTypeEnum.MySQL;
+        String cdmServer = "160.45.63.175";
+        String cdmDB = "cdm_test_bupleurum";
+        String cdmUserName = "edit";
+        return makeDestination(dbType, cdmServer, cdmDB, -1, cdmUserName, null);
+    }
 
 	public static ICdmDataSource cdm_production_cyprus(){
 		DatabaseTypeEnum dbType = DatabaseTypeEnum.MySQL;

@@ -63,7 +63,7 @@ public class ErmsDistributionImport
 	@Override
 	protected String getRecordQuery(ErmsImportConfigurator config) {
 		String strRecordQuery =
-			" SELECT dr.*, ISNULL(ISNULL(tu.tu_acctaxon, tu.tu_accfinal), tu.id) acctaxon, " +
+			" SELECT dr.*, ISNULL(ISNULL(tu.tu_accfinal, tu.tu_accfinal), tu.id) acctaxon, " +
 	                  " s.sessiondate lastActionDate, a.action_name lastAction, s.ExpertName " +
 			" FROM dr INNER JOIN tu ON dr.tu_id = tu.id " +
             "     LEFT OUTER JOIN dr_sessions MN ON MN.dr_id = dr.id " +

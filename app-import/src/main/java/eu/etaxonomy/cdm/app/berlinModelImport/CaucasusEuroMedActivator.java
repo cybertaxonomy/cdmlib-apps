@@ -9,14 +9,7 @@
 
 package eu.etaxonomy.cdm.app.berlinModelImport;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.Reader;
-import java.util.Arrays;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
 
@@ -27,14 +20,9 @@ import org.springframework.transaction.TransactionStatus;
 import eu.etaxonomy.cdm.api.application.FirstDataInserter;
 import eu.etaxonomy.cdm.api.application.ICdmRepository;
 import eu.etaxonomy.cdm.api.service.IGroupService;
-import eu.etaxonomy.cdm.api.service.description.TransmissionEngineDistribution;
-import eu.etaxonomy.cdm.api.service.description.TransmissionEngineDistribution.AggregationMode;
-import eu.etaxonomy.cdm.api.service.pager.Pager;
 import eu.etaxonomy.cdm.app.common.CdmDestinations;
-import eu.etaxonomy.cdm.common.monitor.DefaultProgressMonitor;
 import eu.etaxonomy.cdm.database.DbSchemaValidation;
 import eu.etaxonomy.cdm.database.ICdmDataSource;
-import eu.etaxonomy.cdm.ext.geo.IEditGeoService;
 import eu.etaxonomy.cdm.io.berlinModel.BerlinModelTransformer;
 import eu.etaxonomy.cdm.io.berlinModel.in.BerlinModelImportConfigurator;
 import eu.etaxonomy.cdm.io.common.CdmDefaultImport;
@@ -45,9 +33,6 @@ import eu.etaxonomy.cdm.io.common.Source;
 import eu.etaxonomy.cdm.model.agent.Person;
 import eu.etaxonomy.cdm.model.common.Language;
 import eu.etaxonomy.cdm.model.description.Feature;
-import eu.etaxonomy.cdm.model.location.NamedArea;
-import eu.etaxonomy.cdm.model.location.NamedAreaLevel;
-import eu.etaxonomy.cdm.model.location.NamedAreaType;
 import eu.etaxonomy.cdm.model.metadata.CdmPreference;
 import eu.etaxonomy.cdm.model.metadata.PreferencePredicate;
 import eu.etaxonomy.cdm.model.name.NomenclaturalCode;
@@ -62,7 +47,6 @@ import eu.etaxonomy.cdm.model.term.Representation;
 import eu.etaxonomy.cdm.model.term.TermTree;
 import eu.etaxonomy.cdm.persistence.hibernate.permission.Role;
 import eu.etaxonomy.cdm.persistence.query.MatchMode;
-import eu.etaxonomy.cdm.persistence.query.OrderHint;
 
 
 /**
@@ -404,7 +388,7 @@ public class CaucasusEuroMedActivator {
                 tree.getRoot().addChild(Feature.IMAGE());
                 tree.getRoot().addChild(Feature.DISTRIBUTION(), 1);
                 tree.getRoot().addChild(Feature.COMMON_NAME(), 2);
-                app.getFeatureTreeService().saveOrUpdate(tree);
+                app.getTermTreeService().saveOrUpdate(tree);
 
                 app.commitTransaction(tx);
             } catch (Exception e) {
@@ -435,42 +419,6 @@ public class CaucasusEuroMedActivator {
 	    }
     }
 
-    //1. run transmission engine #3979
-    private void runTransmissionEngine(BerlinModelImportConfigurator config,
-            CdmDefaultImport<BerlinModelImportConfigurator> bmImport) {
-
-        if (doRunTransmissionEngine && (config.getCheck().isImport()  )  ){
-            try {
-                ICdmRepository app = bmImport.getCdmAppController();
-
-                final List<String> term_init_strategy = Arrays.asList(new String []{
-                        "representations"
-                });
-
-                UUID uuidSuperAreaLevel = BerlinModelTransformer.uuidEuroMedAreaLevelFirst;
-                NamedAreaLevel euroMedLevel1 = (NamedAreaLevel)app.getTermService().find(uuidSuperAreaLevel);
-
-                Pager<NamedArea> areaPager = app.getTermService().list(
-                        euroMedLevel1,
-                        (NamedAreaType) null,
-                        null,
-                        null,
-                        (List<OrderHint>) null,
-                        term_init_strategy);
-                TransmissionEngineDistribution transmissionEngineDistribution = (TransmissionEngineDistribution)app.getBean("transmissionEngineDistribution");
-                transmissionEngineDistribution.accumulate(
-                        AggregationMode.byAreasAndRanks,
-                        areaPager.getRecords(),
-                        Rank.UNRANKED_INFRASPECIFIC(),   //or do we even want to start from lower (UNKNOWN?)
-                        Rank.GENUS(),
-                        null,
-                        DefaultProgressMonitor.NewInstance());
-            } catch (Exception e) {
-                e.printStackTrace();
-                logger.error("Exception in markAreasAsHidden: " + e.getMessage());
-            }
-        }
-    }
 
 //    //5.Mark areas to be hidden #3979 .5
 //    private void markAreasAsHidden(BerlinModelImportConfigurator config,
@@ -516,43 +464,6 @@ public class CaucasusEuroMedActivator {
 //        app.getTermService().saveOrUpdate(area);
 //    }
 
-    //2. import shapefile attributes #3979 .2
-    private void importShapefile(BerlinModelImportConfigurator config,
-            CdmDefaultImport<BerlinModelImportConfigurator> bmImport) {
-
-        if (config.isDoOccurrence() && (config.getCheck().isImport())){
-
-	       try {
-	           UUID areaVocabularyUuid = BerlinModelTransformer.uuidVocEuroMedAreas;
-               List<String> idSearchFields = Arrays.asList(new String[]{"EMAREA","PARENT"});
-               String wmsLayerName = "euromed_2013";
-               Set<UUID> areaUuidSet = null;
-
-               ICdmRepository app = bmImport.getCdmAppController();
-               IEditGeoService geoService = (IEditGeoService)app.getBean("editGeoService");
-
-               Map<NamedArea, String> resultMap;
-               try {
-                   InputStream in = CaucasusEuroMedActivator.class.getResourceAsStream("/euromed/euromed_2013.csv");
-                   Reader reader = new InputStreamReader(in, "UTF-8");
-
-                   resultMap = geoService.mapShapeFileToNamedAreas(
-                               reader, idSearchFields , wmsLayerName , areaVocabularyUuid, areaUuidSet);
-                   Map<String, String> flatResultMap = new HashMap<>(resultMap.size());
-                   for(NamedArea area : resultMap.keySet()){
-                       flatResultMap.put(area.getTitleCache() + " [" + area.getUuid() + "]", resultMap.get(area));
-                   }
-               } catch (IOException e) {
-                    String message = "IOException when reading from mapping file or creating result map.";
-                    logger.error(message);
-                    System.out.println(message);
-               }
-            } catch (Exception e) {
-                e.printStackTrace();
-                logger.error("Exception in importShapefile: " + e.getMessage());
-            }
-	    }
-    }
 
     //4. Create users and assign roles  #3979
     private void createUsersAndRoles(BerlinModelImportConfigurator config,

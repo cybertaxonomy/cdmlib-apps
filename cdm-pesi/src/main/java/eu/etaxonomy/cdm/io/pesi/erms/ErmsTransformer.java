@@ -69,9 +69,9 @@ public final class ErmsTransformer extends InputTransformerBase {
     public static final UUID uuidBalticProper = UUID.fromString("12ddfcad-bf8f-43d8-a772-15ae69d37b20");
     public static final UUID uuidBalearSea = UUID.fromString("478f30f0-01b1-4772-9d01-3a0a571f41c3");
     public static final UUID uuidBalticSea = UUID.fromString("0031cda2-4b27-49de-afa3-fdec75ee5060");
-    public static final UUID uuidBarentsSea = UUID.fromString("b6fd9a4d-0ad0-4481-a0b4-5dd71c8fda8b");
+    public static final UUID uuidBarentszSea = UUID.fromString("b6fd9a4d-0ad0-4481-a0b4-5dd71c8fda8b");
     public static final UUID uuidBelgianExclusiveEconomicZone = UUID.fromString("02138b0f-cee1-4c56-ae12-72a5b36839af");
-    public static final UUID uuidBeltSea = UUID.fromString("780f4144-f157-45e8-ae42-cacb3ec369ba");
+    public static final UUID uuidBaeltSea = UUID.fromString("780f4144-f157-45e8-ae42-cacb3ec369ba");
     public static final UUID uuidBiscayBay = UUID.fromString("36ffc01e-85a2-4f71-91fd-012d0b1eeff5");
     public static final UUID uuidBlackSea = UUID.fromString("1f110909-7462-4ee8-a7ff-9f976701dd1d");
     public static final UUID uuidBothnianSea = UUID.fromString("926f7fa3-b0a4-4763-85eb-4c3804a72333");
@@ -114,9 +114,12 @@ public final class ErmsTransformer extends InputTransformerBase {
 	public static final UUID uuidWaddenSea = UUID.fromString("ae0c4555-8e19-479d-8a4f-e1b62939c09b");
 	public static final UUID uuidWhiteSea = UUID.fromString("bf14bfb6-8925-4696-911c-56d3e90d4491");
 
+
+	public static final UUID uuidAfghanistan = UUID.fromString("9ecbc81b-9150-45b5-953d-1051cd519dd0");
 	public static final UUID uuidAlboranSea = UUID.fromString("a4f1ef1e-0bda-4be0-95f9-59ed4f536fb6");
 	public static final UUID uuidAlgeria = UUID.fromString("d254b5bb-e24c-4f79-88dd-80a75cd935db");
 	public static final UUID uuidAngola = UUID.fromString("fdb74fd7-e6a1-48ff-8721-f1db6e0d93ee");
+	public static final UUID uuidArcticOcean = UUID.fromString("4e68ddce-4472-4ae0-b6c3-406f39bf86ec");
 	public static final UUID uuidAustralianExclusiveEconomicZone = UUID.fromString("de8f70b9-3cac-48d5-b456-5cd489df5c26");
 	public static final UUID uuidAzoresExclusiveEconomicZone = UUID.fromString("e0297e2c-d28a-46aa-8b30-694148b0640d");
 	public static final UUID uuidBahamas = UUID.fromString("3e7eb2e5-975b-433c-9dc0-106ba16fd6e4");
@@ -142,7 +145,8 @@ public final class ErmsTransformer extends InputTransformerBase {
 	public static final UUID uuidFrance = UUID.fromString("b7876595-230d-4ac8-bbcf-0a271221aeb0");
 	public static final UUID uuidGhana = UUID.fromString("b550ba30-41b8-485a-a1de-ba79b4b6e152");
 	public static final UUID uuidGreece = UUID.fromString("c004a689-048b-4541-9371-063bca1ab20e");
-	public static final UUID uuidGreekExclusiveEconomicZone = UUID.fromString("6e587a2b-d681-46d3-bede-30411b0707a9");
+	public static final UUID uuidGermany = UUID.fromString("55d23f99-c517-49ef-936b-3815c10b6303");
+    public static final UUID uuidGreekExclusiveEconomicZone = UUID.fromString("6e587a2b-d681-46d3-bede-30411b0707a9");
 	public static final UUID uuidGulfOfBothnia = UUID.fromString("e0126fd6-a163-4483-92e4-abe1a96ed025");
 	public static final UUID uuidGulfOfFinland = UUID.fromString("d312ff30-18d0-4f8a-9c80-3a06772cefbb");
 	public static final UUID uuidGulfOfGuinea = UUID.fromString("ea6f3983-64ad-46c4-832a-51bed6507d95");
@@ -162,6 +166,7 @@ public final class ErmsTransformer extends InputTransformerBase {
 	public static final UUID uuidMediterraneanSea_EasternBasin = UUID.fromString("a67dfa4d-4a96-403b-a64c-1e294826c2ed");
 	public static final UUID uuidMediterraneanSea_WesternBasin = UUID.fromString("b3e81fa7-ee7a-45d2-965c-88020f9ee1ea");
 	public static final UUID uuidMexico = UUID.fromString("a9be5a5c-99ec-4627-9892-104a0c175118");
+	public static final UUID uuidMongolia = UUID.fromString("0385e6b1-4796-4e9f-8656-b6092c97c58f");
 	public static final UUID uuidMorocco = UUID.fromString("4948e1ef-f61e-462f-9920-ab44c71ca2ae");
 	public static final UUID uuidNetherlands = UUID.fromString("8d4152fb-bf29-4a24-a772-62ccb4a8c02f");
 	public static final UUID uuidNewZealand = UUID.fromString("f3ff8497-00e0-4d45-9d14-eb80fea0fee0");
@@ -244,7 +249,7 @@ public final class ErmsTransformer extends InputTransformerBase {
     public static final UUID uuidBiology = UUID.fromString("af5c6832-74f3-4b87-bac9-6fdfc68ffada");
 
 	//extension type uuids
-	public static final UUID uuidErmsTaxonStatus = UUID.fromString("859eee7f-5240-48a0-8edc-7af63557fa6e");
+	public static final UUID uuidPesiTaxonStatus = UUID.fromString("859eee7f-5240-48a0-8edc-7af63557fa6e");
 	public static final UUID uuidExtGazetteer = UUID.fromString("dcfa124a-1028-49cd-aea5-fdf9bd396c1a");
 	public static final UUID uuidExtImis = UUID.fromString("ee2ac2ca-b60c-4e6f-9cad-720fcdb0a6ae");
 	public static final UUID uuidExtFossilStatus = UUID.fromString("ec3dffbe-a0c8-4d76-845f-5fc166a33d5b");
@@ -278,12 +283,12 @@ public final class ErmsTransformer extends InputTransformerBase {
 			case 2: return NomenclaturalCode.ICZN;  //Animalia
 			case 3: return NomenclaturalCode.ICNAFP;  //Plantae
 			case 4: return NomenclaturalCode.ICNAFP;  //Fungi
-			case 5: return NomenclaturalCode.ICNAFP ;  //Protozoa  , not sure if correct, they have "subsp."
+			case 5: return NomenclaturalCode.ICNAFP ;  //Protozoa, not sure if correct, they have "subsp."
 			case 6: return NomenclaturalCode.ICNB ;  //Bacteria
 			case 7: return NomenclaturalCode.ICNAFP;  //Chromista??, not sure if correct, they have "subsp."
 			case 147415: return NomenclaturalCode.ICNB;  //Monera, it is only an alternative name for Bacteria and should not be handled as separate kingdom
 			//-> formatting of infrageneric taxa and available ranks (rank table) let me assume that ICZN is most suitable
-			//at the same time time formatting of subsp. (with marker!) behaves like ICNAFP so this is unclear
+			//at the same time formatting of subsp. (with marker!) behaves like ICNAFP so this is unclear
 			default: return null;
 		}
 	}
@@ -307,7 +312,7 @@ public final class ErmsTransformer extends InputTransformerBase {
 
 	@Override
 	public UUID getNameTypeDesignationStatusUuid(String key) throws UndefinedTransformerMethodException {
-		//nott needed
+		//not needed
 		return super.getNameTypeDesignationStatusUuid(key);
 	}
 
@@ -402,10 +407,9 @@ public final class ErmsTransformer extends InputTransformerBase {
 		}else if (guName.equalsIgnoreCase("Balear Sea")){ return uuidBalearSea;
 		}else if (guName.equalsIgnoreCase("Baltic Proper")){ return uuidBalticProper;
 		}else if (guName.equalsIgnoreCase("Baltic Sea")){ return uuidBalticSea;
-		}else if (guName.equalsIgnoreCase("Barents Sea")){ return uuidBarentsSea;
+		}else if (guName.equalsIgnoreCase("Barentsz Sea")){ return uuidBarentszSea;
 		}else if (guName.equalsIgnoreCase("Belgian Exclusive Economic Zone")){ return uuidBelgianExclusiveEconomicZone;
-		}else if (guName.equalsIgnoreCase("Belt Sea")
-		        || guName.equalsIgnoreCase("Baelt Sea")){ return uuidBeltSea;
+		}else if (guName.equalsIgnoreCase("Baelt Sea")){ return uuidBaeltSea;
 		}else if (guName.equalsIgnoreCase("Biscay Bay")){ return uuidBiscayBay;
 		}else if (guName.equalsIgnoreCase("Black Sea")){ return uuidBlackSea;
 		}else if (guName.equalsIgnoreCase("Bothnian Sea")){ return uuidBothnianSea;
@@ -456,10 +460,12 @@ public final class ErmsTransformer extends InputTransformerBase {
 		}else if (guName.equalsIgnoreCase("Polish Exclusive Economic Zone")){ return uuidPolishExclusiveEconomicZone;
 		}else if (guName.equalsIgnoreCase("Tyrrhenian Sea")){ return uuidTyrrhenianSea;
 
+        }else if (guName.equalsIgnoreCase("Afghanistan")){ return uuidAfghanistan;
 		}else if (guName.equalsIgnoreCase("Alboran Sea")){ return uuidAlboranSea;
 		}else if (guName.equalsIgnoreCase("Algeria")){ return uuidAlgeria;
 		}else if (guName.equalsIgnoreCase("Angola")){ return uuidAngola;
-		}else if (guName.equalsIgnoreCase("Australian Exclusive Economic Zone")){ return uuidAustralianExclusiveEconomicZone;
+		}else if (guName.equalsIgnoreCase("Arctic Ocean")){ return uuidArcticOcean;
+        }else if (guName.equalsIgnoreCase("Australian Exclusive Economic Zone")){ return uuidAustralianExclusiveEconomicZone;
 		}else if (guName.equalsIgnoreCase("Bahamas")){ return uuidBahamas;
 		}else if (guName.equalsIgnoreCase("Balearic Sea")){ return uuidBalearicSea;
 		}else if (guName.equalsIgnoreCase("Belgium")){ return uuidBelgium;
@@ -482,7 +488,8 @@ public final class ErmsTransformer extends InputTransformerBase {
 		}else if (guName.equalsIgnoreCase("France")){ return uuidFrance;
 		}else if (guName.equalsIgnoreCase("Ghana")){ return uuidGhana;
 		}else if (guName.equalsIgnoreCase("Greece")){ return uuidGreece;
-		}else if (guName.equalsIgnoreCase("Gulf of Bothnia")){ return uuidGulfOfBothnia;
+		}else if (guName.equalsIgnoreCase("Germany")){ return uuidGermany;
+        }else if (guName.equalsIgnoreCase("Gulf of Bothnia")){ return uuidGulfOfBothnia;
 		}else if (guName.equalsIgnoreCase("Gulf of Finland")){ return uuidGulfOfFinland;
 		}else if (guName.equalsIgnoreCase("Gulf of Guinea")){ return uuidGulfOfGuinea;
 		}else if (guName.equalsIgnoreCase("Gulf of Mexico")){ return uuidGulfOfMexico;
@@ -501,7 +508,8 @@ public final class ErmsTransformer extends InputTransformerBase {
 		}else if (guName.equalsIgnoreCase("Mediterranean Sea - Eastern Basin")){ return uuidMediterraneanSea_EasternBasin;
 		}else if (guName.equalsIgnoreCase("Mediterranean Sea - Western Basin")){ return uuidMediterraneanSea_WesternBasin;
 		}else if (guName.equalsIgnoreCase("Mexico")){ return uuidMexico;
-		}else if (guName.equalsIgnoreCase("Morocco")){ return uuidMorocco;
+		}else if (guName.equalsIgnoreCase("Mongolia")){ return uuidMongolia;
+        }else if (guName.equalsIgnoreCase("Morocco")){ return uuidMorocco;
 		}else if (guName.equalsIgnoreCase("Netherlands")){ return uuidNetherlands;
 		}else if (guName.equalsIgnoreCase("New Zealand")){ return uuidNewZealand;
 		}else if (guName.equalsIgnoreCase("New Zealand Exclusive Economic Zone")){ return uuidNewZealandExclusiveEconomicZone;
@@ -687,11 +695,13 @@ public final class ErmsTransformer extends InputTransformerBase {
         TaxonRelationshipType taxonRelType = getSynTaxonRelType(state);
         NameRelationshipType nameType = null;
 //        HybridRelationshipType hybridType = null;
+        ((ErmsImportState)state).setUnhandledUnacceptReason(null);  //see below for unhandledAcceptReason handling
 
         //according to SQL script erms300_Match_Relation&Status.sql
 
+        unacceptreason = unacceptreason == null? null: unacceptreason.trim();
         boolean handled = false;
-        if (isBlank(unacceptreason)){
+        if (unacceptreason == null || isBlank(unacceptreason)){
             handled = true;  //no change
         }else if (unacceptreason.matches("(?i)(synonym|superseded recombination|transferred to .*)")){
             handled = true;  //no change
@@ -705,7 +715,8 @@ public final class ErmsTransformer extends InputTransformerBase {
             }else if (unacceptreason.matches("(?i)part.*\\s+synonym.*")){
                 synType = null;
                 taxonRelType = TaxonRelationshipType.PRO_PARTE_SYNONYM_FOR();
-            }else if (unacceptreason.matches("(?i)misapplied.*")){
+            }else if (unacceptreason.matches("(?i)(misidentifications?|misapplied .*name|.*misapplication.*|incorrect identification)")){
+                //see ErmsTaxonImport.getAcceptedTaxaKeys(); this differs from SQL script
                 synType = null;
                 taxonRelType = TaxonRelationshipType.MISAPPLIED_NAME_FOR();
             }else if (unacceptreason.matches("(?i)(.*jun.*syn.*|\\(synonym\\)|reverted genus transfer)")){
@@ -730,7 +741,8 @@ public final class ErmsTransformer extends InputTransformerBase {
 
             if(handled == false && SynonymType.SYNONYM_OF().equals(synType) &&
                     getSynTaxonRelType(state).equals(taxonRelType) && nameType == null){
-                logger.warn("Unaccept reason not yet handled: " + unacceptreason);
+                ((ErmsImportState)state).setUnhandledUnacceptReason(unacceptreason);
+                logger.debug("Unaccept reason not yet handled: " + unacceptreason);
             }
         }
 //      update Match_RelStat set RelTaxon      =  1 where tu_unacceptreason like '%bas[iy][no]%ny%'

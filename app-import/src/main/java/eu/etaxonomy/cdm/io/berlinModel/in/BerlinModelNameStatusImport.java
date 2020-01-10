@@ -22,7 +22,6 @@ import org.springframework.stereotype.Component;
 
 import eu.etaxonomy.cdm.io.berlinModel.BerlinModelTransformer;
 import eu.etaxonomy.cdm.io.berlinModel.in.validation.BerlinModelNameStatusImportValidator;
-import eu.etaxonomy.cdm.io.common.IImportConfigurator;
 import eu.etaxonomy.cdm.io.common.IOValidator;
 import eu.etaxonomy.cdm.io.common.ImportHelper;
 import eu.etaxonomy.cdm.io.common.ResultSetPartitioner;
@@ -210,7 +209,7 @@ public class BerlinModelNameStatusImport extends BerlinModelImportBase {
 		return result;
 	}
 
-	private boolean makeReference(IImportConfigurator config, NomenclaturalStatus nomStatus,
+	private boolean makeReference(BerlinModelImportConfigurator config, NomenclaturalStatus nomStatus,
 			int nameId, ResultSet rs, @SuppressWarnings("rawtypes") ResultSetPartitioner partitioner)
 			throws SQLException{
 

@@ -15,10 +15,12 @@ import java.io.InputStreamReader;
 import java.io.Reader;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 import org.apache.log4j.Logger;
 import org.springframework.security.core.GrantedAuthority;
@@ -27,14 +29,16 @@ import org.springframework.transaction.TransactionStatus;
 import eu.etaxonomy.cdm.api.application.FirstDataInserter;
 import eu.etaxonomy.cdm.api.application.ICdmRepository;
 import eu.etaxonomy.cdm.api.service.IGroupService;
-import eu.etaxonomy.cdm.api.service.description.TransmissionEngineDistribution;
-import eu.etaxonomy.cdm.api.service.description.TransmissionEngineDistribution.AggregationMode;
+import eu.etaxonomy.cdm.api.service.description.AggregationMode;
+import eu.etaxonomy.cdm.api.service.description.DistributionAggregation;
+import eu.etaxonomy.cdm.api.service.description.DistributionAggregationConfiguration;
 import eu.etaxonomy.cdm.api.service.pager.Pager;
 import eu.etaxonomy.cdm.app.common.CdmDestinations;
 import eu.etaxonomy.cdm.common.monitor.DefaultProgressMonitor;
 import eu.etaxonomy.cdm.database.DbSchemaValidation;
 import eu.etaxonomy.cdm.database.ICdmDataSource;
 import eu.etaxonomy.cdm.ext.geo.IEditGeoService;
+import eu.etaxonomy.cdm.filter.TaxonNodeFilter;
 import eu.etaxonomy.cdm.io.berlinModel.BerlinModelTransformer;
 import eu.etaxonomy.cdm.io.berlinModel.in.BerlinModelImportConfigurator;
 import eu.etaxonomy.cdm.io.common.CdmDefaultImport;
@@ -463,14 +467,19 @@ public class EuroMedActivator {
                         null,
                         (List<OrderHint>) null,
                         term_init_strategy);
-                TransmissionEngineDistribution transmissionEngineDistribution = (TransmissionEngineDistribution)app.getBean("transmissionEngineDistribution");
-                transmissionEngineDistribution.accumulate(
-                        AggregationMode.byAreasAndRanks,
-                        areaPager.getRecords(),
-                        Rank.UNRANKED_INFRASPECIFIC(),   //or do we even want to start from lower (UNKNOWN?)
-                        Rank.GENUS(),
-                        null,
+                DistributionAggregation distributionAggregation = new DistributionAggregation();
+
+                Set<UUID> classificationUuids = new HashSet<>();
+                TaxonNodeFilter filter = TaxonNodeFilter.NewInstance(classificationUuids, null, null, null, null,
+                        null, Rank.uuidGenus);
+
+                DistributionAggregationConfiguration aggregationConfig = DistributionAggregationConfiguration
+                        .NewInstance(
+                        AggregationMode.byAreasAndRanks(),
+                        areaPager.getRecords().stream().map(area->area.getUuid()).collect(Collectors.toList()),
+                        filter,
                         DefaultProgressMonitor.NewInstance());
+                distributionAggregation.invoke(aggregationConfig, app);
             } catch (Exception e) {
                 e.printStackTrace();
                 logger.error("Exception in markAreasAsHidden: " + e.getMessage());

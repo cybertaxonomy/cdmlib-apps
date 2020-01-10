@@ -61,7 +61,9 @@ public class ErmsImportRankMap extends ErmsImportBase<Rank>{
 				NomenclaturalCode nc = ErmsTransformer.kingdomId2NomCode(kingdomId);
 
 				Map<Integer, Rank> kingdomMap = makeKingdomMap(rankMap, rankId);
-				rankName = rankName.replace("Forma", "Form").replace("Subforma", "Subform");
+				rankName = rankName.replace("Forma", "Form").replace("Subforma", "Subform")
+				        .replace("Phylum (Division)", "Phylum").replace("Subphylum (Subdivision)", "Subphylum");
+
 				Rank rank = null;
 				@SuppressWarnings("unchecked")
 				OrderedTermVocabulary<Rank> voc = CdmBase.deproxy(Rank.GENUS().getVocabulary(), OrderedTermVocabulary.class);
@@ -90,7 +92,7 @@ public class ErmsImportRankMap extends ErmsImportBase<Rank>{
                         }
                     }
 					if (rank == null){
-	                      logger.warn("Rank could not be defined: " + rankName + "; nomcode = " + nc + ", kingdom_id = " + kingdomId);
+	                      logger.warn("Rank could not be defined: " + rankName + "; nomcode = " + nc + ", kingdom_id = " + kingdomId + ", rank_id = " + rankId);
 					}
 					kingdomMap.put(kingdomId, rank);
 				}

@@ -20,18 +20,23 @@ import eu.etaxonomy.cdm.io.pesi.euromed.EuroMedSourcesImportConfigurator;
 import eu.etaxonomy.cdm.io.pesi.out.PesiTransformer;
 
 /**
+ * Adds the Euro+Med Source to all relevant objects.
+ * This is required before running the PESI export.
+ * It should never run on E+M production but
+ * always on a copy.
+ *
  * @author a.mueller
  * @since 08.10.2019
  */
 public class EuroMedSourceActivator {
 
-    @SuppressWarnings("unused")
     private static final Logger logger = Logger.getLogger(EuroMedSourceActivator.class);
 
+//    static final ICdmDataSource cdmDestination = CdmDestinations.cdm_pesi2019_final();
     static final ICdmDataSource cdmDestination = CdmDestinations.cdm_test_local_mysql_euromed();
 
-    UUID sourceRefUuid = PesiTransformer.uuidSourceRefEuroMed;
-    String sourceReferenceTitle = "Euro+Med CDM database";
+    static UUID sourceRefUuid = PesiTransformer.uuidSourceRefEuroMed;
+    public static String sourceReferenceTitle = "Euro+Med CDM database";
 
     private void doImport(ICdmDataSource cdmDB) {
         System.out.println("Start adding EuroMed sources to " + cdmDB.getDatabase() + " ..." );

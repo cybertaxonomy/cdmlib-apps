@@ -32,7 +32,7 @@ import eu.etaxonomy.cdm.profiler.ProfilerController;
 /**
  * The export class for PESI additional sources stored as taxon sources in the CDM (mostly coming from ERMS)<p>
  * @author a.mueller
- * @since 22.09.2019
+ * @since 2019-09-22
  */
 @Component
 public class PesiAdditionalSourceExport extends PesiExportBase {
@@ -144,7 +144,6 @@ public class PesiAdditionalSourceExport extends PesiExportBase {
             }
 		}
 
-
 		// Commit transaction
 		commitTransaction(txStatus);
 		logger.debug("Committed transaction.");
@@ -199,7 +198,11 @@ public class PesiAdditionalSourceExport extends PesiExportBase {
 
 	@SuppressWarnings("unused")  //used by mapper
     private static Integer getSourceUseFk(IdentifiableSource source, PesiExportState state) {
-        return state.getTransformer().getSourceUseKeyCacheByCache(source.getOriginalNameString());
+        Integer result = state.getTransformer().getSourceUseKeyCacheByCache(source.getOriginalNameString());
+        if (result == null){
+            logger.error("Source use for " + source.getOriginalNameString() + " does not exist. Please check if all source uses of erms.sourceuses exist exist in PESI.SourceUse" );
+        }
+        return result;
     }
 
     @SuppressWarnings("unused")  //used by mapper

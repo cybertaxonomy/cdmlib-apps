@@ -6,7 +6,7 @@
 * The contents of this file are subject to the Mozilla Public License Version 1.1
 * See LICENSE.TXT at the top of this package for the full license terms.
 */
-package eu.etaxonomy.cdm.io.pesi.euromed;
+package eu.etaxonomy.cdm.app.pesi.validate;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -18,8 +18,10 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 
 import eu.etaxonomy.cdm.app.common.CdmDestinations;
-import eu.etaxonomy.cdm.app.pesi.PesiDestinations;
+import eu.etaxonomy.cdm.app.common.PesiDestinations;
+import eu.etaxonomy.cdm.app.pesi.EuroMedSourceActivator;
 import eu.etaxonomy.cdm.common.CdmUtils;
+import eu.etaxonomy.cdm.common.UTF8;
 import eu.etaxonomy.cdm.database.ICdmDataSource;
 import eu.etaxonomy.cdm.io.berlinModel.BerlinModelTransformer;
 import eu.etaxonomy.cdm.io.common.Source;
@@ -28,16 +30,17 @@ import eu.etaxonomy.cdm.model.description.PresenceAbsenceTerm;
 import eu.etaxonomy.cdm.model.taxon.TaxonRelationshipType;
 
 /**
- * Tests the ERMS -> PESI pipeline by comparing the source DB with destination PESI DB.
+ * Tests the E+M -> PESI pipeline by comparing the source DB with destination PESI DB.
  *
  * @author a.mueller
- * @since 01.09.2019
+ * @since 08.10.2019
  */
-public class PesiEuroMedValidator {
+public class PesiEuroMedValidator extends PesiValidatorBase {
 
     private static final Logger logger = Logger.getLogger(PesiEuroMedValidator.class);
 
     private static final ICdmDataSource defaultSource = CdmDestinations.cdm_test_local_mysql_euromed();
+//    private static final ICdmDataSource defaultSource = CdmDestinations.cdm_pesi2019_final();
 //    private static final Source defaultDestination = PesiDestinations.pesi_test_local_CDM_EM2PESI();
     private static final Source defaultDestination = PesiDestinations.pesi_test_local_CDM_EM2PESI_2();
 
@@ -77,6 +80,7 @@ public class PesiEuroMedValidator {
 
     private boolean testAdditionalTaxonSources() throws SQLException {
         if (!doAdditionalTaxonSources){
+            System.out.println("Ignore validate additional taxon sources");
             return true;
         }
         System.out.println("Start validate additional taxon sources");
@@ -89,6 +93,7 @@ public class PesiEuroMedValidator {
 
     private boolean testNotes() throws SQLException {
         if (!doNotes){
+            System.out.println("Ignore validate notes");
             return true;
         }
         System.out.println("Start validate notes");
@@ -101,6 +106,7 @@ public class PesiEuroMedValidator {
 
     private boolean testDistributions() throws SQLException {
         if (!doDistributions){
+            System.out.println("Ignore validate distributions");
             return true;
         }
         System.out.println("Start validate distributions");
@@ -113,6 +119,7 @@ public class PesiEuroMedValidator {
 
     private boolean testCommonNames() throws SQLException {
         if (!doCommonNames){
+            System.out.println("Ignore validate common names");
             return true;
         }
         System.out.println("Start validate common names");
@@ -127,6 +134,7 @@ public class PesiEuroMedValidator {
     int countIncludedIns;
     private boolean testTaxonRelations() throws SQLException {
         if (!doTaxRels){
+            System.out.println("Ignore validate taxon relations");
             return true;
         }
         System.out.println("Start validate taxon relations");
@@ -193,7 +201,7 @@ public class PesiEuroMedValidator {
     private boolean testSingleSynonymRelation(ResultSet srcRS, ResultSet destRS) throws SQLException {
         String id = String.valueOf(srcRS.getInt("id"));
         boolean success = equals("Taxon relation taxon1", "NameId: " + srcRS.getInt("id"), destRS.getString("t1Id"), id);
-        success &= equals("Taxon relation taxon2", "NameId: " + srcRS.getInt("tu_acctaxon"), destRS.getString("t2Id"), id);
+        success &= equals("Taxon relation taxon2", "NameId: " + srcRS.getInt("tu_accfinal"), destRS.getString("t2Id"), id);
         success &= equals("Taxon relation qualifier fk", PesiTransformer.IS_SYNONYM_OF, destRS.getInt("RelTaxonQualifierFk"), id);
         success &= equals("Taxon relation qualifier cache", "is synonym of", destRS.getString("RelQualifierCache"), id);
         //TODO enable after next import
@@ -236,6 +244,7 @@ public class PesiEuroMedValidator {
 
     private boolean testTaxa() throws SQLException {
         if (!doTaxa){
+            System.out.println("Ignore validate taxa");
             return true;
         }
         System.out.println("Start validate taxa");
@@ -249,6 +258,7 @@ public class PesiEuroMedValidator {
     String countReferencesStr = "SELECT count(*) FROM reference ";
     private boolean testReferences() throws SQLException {
         if (!doReferences){
+            System.out.println("Ignore validate references");
             return true;
         }
         System.out.println("Start validate references");
@@ -299,21 +309,24 @@ public class PesiEuroMedValidator {
     }
 
     private final String countTaxon = "SELECT count(*) FROM TaxonBase tb WHERE tb.publish = 1 ";
+    private final String destTaxonFilter = "(t.SourceFk IS NOT NULL OR t.AuthorString like 'auct.%' OR t.AuthorString like 'sensu %')";
     private boolean testTaxaCount() {
          int countSrc = source.getUniqueInteger(countTaxon);
-         int countDest = destination.getUniqueInteger("SELECT count(*) FROM Taxon t WHERE t.SourceFk IS NOT NULL OR t.AuthorString = 'auct.' ");
+         int countDest = destination.getUniqueInteger("SELECT count(*) FROM Taxon t WHERE "+ destTaxonFilter);
          boolean result = equals("Taxon count ", countSrc, countDest, String.valueOf(-1));
          return result;
-     }
+    }
 
     private boolean testSingleTaxa(int n) throws SQLException {
         boolean success = true;
         ResultSet srcRS = source.getResultSet("SELECT CAST(tn.id as char(20)) tid, tb.uuid as GUID, pt.id parentId, "
                 + "      tn.rank_id, rank.titleCache rank_name, "
-                + "      sec.titleCache secTitle,"
+                + "      sec.titleCache secTitle, "
                 + "      tn.genusOrUninomial, tn.infraGenericEpithet, tn.specificEpithet, tn.infraSpecificEpithet, "
                 + "      tn.nameCache, tn.authorshipCache, tn.titleCache nameTitleCache, tn.fullTitleCache nameFullTitleCache, "
-                + "      tb.DTYPE taxStatus, taxRelType.uuid taxRelTypeUuid, nsType.id nsId, nsType.idInVocabulary nsTitle, "
+                + "      tb.DTYPE taxStatus, tb.titleCache, tb.appendedPhrase tbAppendedPhrase, tb.sec_id secId, "
+                + "      taxRelType.uuid taxRelTypeUuid, tr.relatedTo_id relToTaxonId, "
+                + "      nsType.id nsId, nsType.idInVocabulary nsTitle, "
                 + "      typeName_id, typeName.titleCache typeFullNameCache, "
                 + "      CASE WHEN tb.updated IS NOT NULL THEN tb.updated ELSE tb.created END as lastActionDate, "
                 + "      CASE WHEN tb.updated IS NOT NULL THEN 'changed' ELSE 'created' END as lastAction "
@@ -331,6 +344,7 @@ public class PesiEuroMedValidator {
                 + "     LEFT JOIN TaxonNode ptn ON n.parent_id = ptn.id "
                 + "     LEFT JOIN TaxonBase pt ON pt.id = ptn.taxon_id AND pt.publish = 1 "
                 + "     LEFT JOIN TaxonRelationship tr ON tr.relatedFrom_id = tb.id "
+                + "     LEFT JOIN TaxonBase tbRelTo ON tr.relatedTo_id = tbRelTo.id "
                 + "     LEFT JOIN DefinedTermBase taxRelType ON taxRelType.id = tr.type_id"
                 + " WHERE tb.publish = 1 "
                 + " GROUP BY tid, GUID, tn.rank_id, rank.titleCache, secTitle,"
@@ -339,14 +353,14 @@ public class PesiEuroMedValidator {
                 + "      tb.DTYPE, tb.updated, tb.created "    //for duplicates caused by >1 name status
                 + " ORDER BY tid, GUID, lastActionDate ");
         ResultSet destRS = destination.getResultSet("SELECT t.*, "
-                + "     pt.IdInSource parentSourceId, "  //not needed
+                + "     pt.treeIndex pTreeIndex, pt.IdInSource parentSourceId, "  //not needed
                 + "     s.Name as sourceName, type.IdInSource typeSourceId, r.Rank "
                 + " FROM Taxon t "
                 + "    LEFT JOIN Taxon pt ON pt.TaxonId = t.ParentTaxonFk "
                 + "    LEFT JOIN Taxon type ON type.TaxonId = t.TypeNameFk "
                 + "    LEFT JOIN Rank r ON r.RankId = t.RankFk AND r.KingdomId = t.KingdomFk "
                 + "    LEFT JOIN Source s ON s.SourceId = t.SourceFk "
-                + " WHERE t."+ origEuroMed + " AND (t.SourceFk IS NOT NULL  OR t.AuthorString = 'auct.') "   //FIXME remove SourceFk filter is only preliminary for first check
+                + " WHERE t."+ origEuroMed + " AND " + destTaxonFilter   //FIXME remove SourceFk filter is only preliminary for first check
                 + " ORDER BY t.IdInSource, t.GUID, t.LastActionDate, AuthorString ");
         int i = 0;
         logger.error("remove SourceFk filter is only preliminary for first check");
@@ -362,7 +376,7 @@ public class PesiEuroMedValidator {
         String id = String.valueOf(srcRS.getInt("tid"));
         //TODO decide, according to SQL it also contains the taxon UUID, but in PESI2014 backup I can't find this
         boolean success = equals("Taxon ID", "NameId: " + srcRS.getInt("tid"), destRS.getString("IdInSource"), id);
-        success &= equals("Taxon source", srcRS.getString("secTitle"), destRS.getString("sourceName"), id);
+        success &= equals("Taxon source", makeSource(srcRS), destRS.getString("sourceName"), id);
 
         success &= equals("Taxon kingdomFk", "3", destRS.getString("KingdomFk"), id);
 //difficult to test        success &= equals("Taxon rank fk", srcRS.getString("rank_id"), destRS.getString("RankFk"), id);
@@ -373,16 +387,17 @@ public class PesiEuroMedValidator {
         success &= equals("Taxon infraSpecificEpithet", srcRS.getString("infraSpecificEpithet"), destRS.getString("InfraSpecificEpithet"), id) ;
 
         success &= equals("Taxon websearchname", srcRS.getString("nameCache"), destRS.getString("WebSearchName"), id);
-//TODO        success &= equals("Taxon WebShowName", srcRS.getString("tu_displayname"), destRS.getString("WebShowName"), id);
-//FIXME sensu+auct. autoren       success &= equals("Taxon authority", srcRS.getString("authorshipCache"), destRS.getString("AuthorString"), id);
-//FIXME sensu+auct. autoren        success &= equals("Taxon FullName", srcRS.getString("nameTitleCache"), destRS.getString("FullName"), id);
+//TODO     success &= equals("Taxon WebShowName", srcRS.getString("tu_displayname"), destRS.getString("WebShowName"), id);
+        success &= equals("Taxon authority", makeAuthorship(srcRS), destRS.getString("AuthorString"), id);
+        success &= equals("Taxon FullName", makeFullName(srcRS), destRS.getString("FullName"), id);
         success &= equals("Taxon NomRefString", makeNomRefString(srcRS), destRS.getString("NomRefString"), id);
-        success &= equals("Taxon DisplayName", makeDisplayName(srcRS), destRS.getString("DisplayName"), id);  //in ERMS according to SQL script same as FullName, no nom.ref. information attached
+//      success &= equals("Taxon DisplayName", makeDisplayName(srcRS), destRS.getString("DisplayName"), id);  //in ERMS according to SQL script same as FullName, no nom.ref. information attached
 //difficult to test   success &= equals("Taxon NameStatusFk", nullSafeInt(srcRS, "nsId"),nullSafeInt( destRS,"NameStatusFk"), id);
         success &= equals("Taxon NameStatusCache", srcRS.getString("nsTitle"), destRS.getString("NameStatusCache"), id);
 
-//reimport        success &= equals("Taxon TaxonStatusFk", mapTaxStatusFk(srcRS.getString("taxStatus"), srcRS.getString("taxRelTypeUuid")), nullSafeInt( destRS,"TaxonStatusFk"), id);
-//reimport        success &= equals("Taxon TaxonStatusCache", mapTaxStatus(srcRS.getString("taxStatus"), srcRS.getString("taxRelTypeUuid")), destRS.getString("TaxonStatusCache"), id);
+        //TODO mostly Taxonomically Valueless
+//        success &= equals("Taxon TaxonStatusFk", mapTaxStatusFk(srcRS.getString("taxStatus"), srcRS.getString("taxRelTypeUuid")), nullSafeInt( destRS,"TaxonStatusFk"), id);
+//        success &= equals("Taxon TaxonStatusCache", mapTaxStatus(srcRS.getString("taxStatus"), srcRS.getString("taxRelTypeUuid")), destRS.getString("TaxonStatusCache"), id);
 
         success &= equals("Taxon ParentTaxonFk", nullSafeInt(srcRS, "parentId"), nullSafeInt(destRS, "ParentTaxonFk"), id);
 
@@ -392,27 +407,58 @@ public class PesiEuroMedValidator {
         //according to SQL always constant, could be changed in future
         success &= equals("Taxon QualityStatusFK", 2, nullSafeInt( destRS,"QualityStatusFk"), String.valueOf(id));
         success &= equals("Taxon QualityStatusCache", "Added by Database Management Team", destRS.getString("QualityStatusCache"), id);
-//TODO TreeIndex
-        success &= isNull("FossilStatusFk", destRS);
-        success &= isNull("FossilStatusCache", destRS);
+        success &= testTreeIndex(destRS, "TreeIndex", "pTreeIndex", id);
+        success &= isNull("FossilStatusFk", destRS, id);
+        success &= isNull("FossilStatusCache", destRS, id);
         success &= equals("Taxon GUID", srcRS.getString("GUID"), destRS.getString("GUID"), id);
         success &= equals("Taxon DerivedFromGuid", srcRS.getString("GUID"), destRS.getString("DerivedFromGuid"), id); //according to SQL script GUID and DerivedFromGuid are always the same, according to 2014DB this is even true for all databases
-        success &= isNull("ExpertGUID", destRS);  //according to SQL + PESI2014
-//reimport        success &= equals("Taxon ExpertName", srcRS.getString("secTitle"), destRS.getString("ExpertName"), id);
-        success &= isNull("SpeciesExpertGUID", destRS);
-//reimport        success &= equals("Taxon SpeciesExpertName", srcRS.getString("secTitle"), destRS.getString("SpeciesExpertName"), id);
+        success &= isNull("ExpertGUID", destRS, id);  //according to SQL + PESI2014
+//FIXME        success &= equals("Taxon ExpertName", srcRS.getString("secTitle"), destRS.getString("ExpertName"), id);
+//FIXME        success &= isNull("SpeciesExpertGUID", destRS);
+//FIXME        success &= equals("Taxon SpeciesExpertName", srcRS.getString("secTitle"), destRS.getString("SpeciesExpertName"), id);
 //FIXME !!        success &= equals("Taxon cache citation", srcRS.getString("secTitle"), destRS.getString("CacheCitation"), id);
         success &= equals("Taxon Last Action", srcRS.getString("lastAction"),  destRS.getString("LastAction"), id);
         success &= equals("Taxon Last Action Date", srcRS.getTimestamp("lastActionDate"),  destRS.getTimestamp("LastActionDate"), id);
 
-        success &= isNull("GUID2", destRS);  //only relevant after merge
-        success &= isNull("DerivedFromGuid2", destRS);  //only relevant after merge
+        success &= isNull("GUID2", destRS, id);  //only relevant after merge
+        success &= isNull("DerivedFromGuid2", destRS, id);  //only relevant after merge
         return success;
+    }
+
+    private String makeSource(ResultSet srcRs) throws SQLException {
+        String secStr = srcRs.getString("secTitle");
+        if (secStr == null){
+            return EuroMedSourceActivator.sourceReferenceTitle;
+        }else{
+            return secStr;
+        }
+    }
+
+    private String makeAuthorship(ResultSet srcRs) throws SQLException {
+        boolean isMisapplied = isMisapplied(srcRs);
+        if (isMisapplied){
+            String result = getMisappliedAuthor(srcRs).trim();
+            return result;
+        }else{
+            return srcRs.getString("authorshipCache");
+        }
+    }
+
+    private String makeFullName(ResultSet srcRs) throws SQLException {
+        boolean isMisapplied = isMisapplied(srcRs);
+        if (isMisapplied){
+            String result = srcRs.getString("nameCache");
+            result += getMisappliedAuthor(srcRs);
+            return result;
+        }else{
+            return srcRs.getString("nameTitleCache");
+        }
     }
 
     private String makeNomRefString(ResultSet srcRS) throws SQLException {
         //there is no pure nomRefString field in CDM and also computing is only possible
-        //with cache strategy which requires a running CDM instance. So this is a workaround that maybe needs to be adapted
+        //with cache strategy which requires a running CDM instance. So this is a workaround
+        //that maybe needs to be adapted
         String result = null;
         String fullTitle = srcRS.getString("nameFullTitleCache");
         String nameTitleCache = srcRS.getString("nameTitleCache");
@@ -420,7 +466,10 @@ public class PesiEuroMedValidator {
         if (fullTitle != null && nameTitleCache != null){
             result = fullTitle.substring(nameTitleCache.length())
                     .replaceAll("^, ", "")
-                    .replaceAll("(, |^)"+nameStatus+"$", "");
+                    .replaceAll("(, |^)"+nameStatus+"$", "")
+                    .replaceAll("\\[as \".*\"\\]", "")
+                    .replaceAll(", nom\\. cons\\., nom\\. altern\\.$", "")  //single case with 2 nom. status
+                    .trim();
         }
         return result;
     }
@@ -473,12 +522,57 @@ public class PesiEuroMedValidator {
     }
 
     private String makeDisplayName(ResultSet srcRs) throws SQLException {
-        String nameCache = srcRs.getString("nameCache");
+        boolean isMisapplied = isMisapplied(srcRs);
+
+        String result;
         String nameTitle = srcRs.getString("nameTitleCache");
-        String taggedName = getTaggedNameTitle(nameCache, nameTitle);
-        String fullNameTitle = srcRs.getString("nameFullTitleCache");
-        String result = fullNameTitle
-                .replace(nameTitle, taggedName);
+        String nameCache = srcRs.getString("nameCache");
+        if(!isMisapplied){
+            result = srcRs.getString("nameFullTitleCache");
+            String taggedName = getTaggedNameTitle(nameCache, nameTitle);
+            result = result.replace(nameTitle, taggedName);
+            result = result.replaceAll("^<i>"+ UTF8.HYBRID , UTF8.HYBRID+ "<i>").replaceAll(" "+ UTF8.HYBRID, "</i> "+UTF8.HYBRID+"<i>");
+        }else{
+            result = srcRs.getString("nameCache");
+            String taggedName = getTaggedNameTitle(nameCache, nameCache);
+            result = result.replace(nameCache, taggedName);
+            //misapplied
+            result += getMisappliedAuthor(srcRs);
+        }
+        String nameStatus = CdmUtils.Nz(srcRs.getString("nsTitle"));
+        result = result.replaceAll("(, |^)"+nameStatus+"$", "");
+        return result;
+    }
+
+    private boolean isMisapplied(ResultSet srcRs) throws SQLException {
+        String relTypeUuid = srcRs.getString("taxRelTypeUuid");
+        boolean isMisapplied = relTypeUuid!=null
+                && (relTypeUuid.equals(TaxonRelationshipType.uuidMisappliedNameFor.toString())
+                   || relTypeUuid.equals(TaxonRelationshipType.uuidProParteMisappliedNameFor.toString())
+                   || relTypeUuid.equals(TaxonRelationshipType.uuidPartialMisappliedNameFor.toString()))
+                //TODO formatting of ppMANs not yet implemented
+                && nullSafeInt(srcRs, "relToTaxonId") != null;
+        return isMisapplied;
+    }
+
+    private String getMisappliedAuthor(ResultSet srcRs) throws SQLException {
+        String result;
+        String relAppendedPhrase = srcRs.getString("tbAppendedPhrase");
+        String secId = srcRs.getString("secId");
+        String secTitle = srcRs.getString("secTitle");
+        if(relAppendedPhrase == null && secId == null) {
+            result = " auct.";
+        }else if (relAppendedPhrase != null && secId == null){
+            result = " " + relAppendedPhrase;
+        }else if (relAppendedPhrase == null && secId != null){
+            result = " sensu " + secTitle;
+        }else{
+            result = " " + relAppendedPhrase + " " + secTitle;
+        }
+        String authorship = srcRs.getString("authorshipCache");
+        if (isNotBlank(authorship)){
+            result += ", non " + authorship;
+        }
         return result;
     }
 
@@ -526,7 +620,9 @@ public class PesiEuroMedValidator {
     }
 
     private boolean isMarker(String nameCacheSplit) {
-        return nameCacheSplit.endsWith(".") || nameCacheSplit.equals("[unranked]") ;
+        return nameCacheSplit.endsWith(".") || nameCacheSplit.equals("[unranked]")
+                || nameCacheSplit.equals("grex")|| nameCacheSplit.equals("proles")
+                || nameCacheSplit.equals("race");
     }
 
     private boolean testSingleTaxonRelations(int n) throws SQLException {
@@ -562,7 +658,7 @@ public class PesiEuroMedValidator {
         success &= equals("Taxon relation qualifier fk", PesiTransformer.IS_TAXONOMICALLY_INCLUDED_IN, destRS.getInt("RelTaxonQualifierFk"), id);
         success &= equals("Taxon relation qualifier cache", "is taxonomically included in", destRS.getString("RelQualifierCache"), id);
         //TODO enable after next import
-        success &= isNull("notes", destRS);
+        success &= isNull("notes", destRS, id);
         //complete if no further relations need to added
         return success;
     }
@@ -628,11 +724,11 @@ public class PesiEuroMedValidator {
         String id = String.valueOf(srcRs.getInt("tuId") + "-" + srcRs.getString("type"));
         boolean success = equals("Note taxonID ", "tu_id: " + String.valueOf(srcRs.getInt("tuId")), destRs.getString("IdInSource"), id);
         success &= equals("Note Note_1 ", srcRs.getString("note"), destRs.getString("Note_1"), id);
-        success &= isNull("Note_2", destRs);
+        success &= isNull("Note_2", destRs, id);
         success &= equals("Note category cache", normalizeNoteCatCache(srcRs.getString("type")), destRs.getString("NoteCategoryCache"), id);
         success &= equals("Note language ", srcRs.getString("LanName"), destRs.getString("Language"), id);
-        success &= isNull("Region", destRs);
-        success &= isNull("SpeciesExpertGUID", destRs);
+        success &= isNull("Region", destRs, id);
+        success &= isNull("SpeciesExpertGUID", destRs, id);
         //SpeciesExpertName, LastAction, LastActionDate handled in separate method
         //complete
         return success;
@@ -678,11 +774,11 @@ public class PesiEuroMedValidator {
         success &= equals("Distribution area name cache", normalizeDistrArea(srcRs.getString("area")), destRs.getString("AreaNameCache"), id);
         success &= equals("Distribution OccurrenceStatusFk", mapStatus(srcRs.getString("statusUuid")), destRs.getInt("OccurrenceStatusFk"), id);
 //TODO        success &= equals("Distribution OccurrenceStatusCache", "Present", destRs.getString("OccurrenceStatusCache"), id);
-        success &= isNull("SourceFk", destRs);  //sources should be moved to extra table only, according to script there were values, but in PESI 2014 values existed only in OccurrenceSource table (for all only E+M records)
-        success &= isNull("SourceCache", destRs);  //sources should be moved to extra table, see above
+        success &= isNull("SourceFk", destRs, id);  //sources should be moved to extra table only, according to script there were values, but in PESI 2014 values existed only in OccurrenceSource table (for all only E+M records)
+        success &= isNull("SourceCache", destRs, id);  //sources should be moved to extra table, see above
 //TODO        success &= equals("Distribution notes ", srcRs.getString("note"), destRs.getString("Notes"), id);
-        success &= isNull("SpeciesExpertGUID", destRs);  //SpeciesExpertGUID does not exist in EM and according to script
-        success &= isNull("SpeciesExpertName", destRs);  //SpeciesExpertName does not exist in EM and according to script
+        success &= isNull("SpeciesExpertGUID", destRs, id);  //SpeciesExpertGUID does not exist in EM and according to script
+        success &= isNull("SpeciesExpertName", destRs, id);  //SpeciesExpertName does not exist in EM and according to script
         success &= equals("Distribution Last Action", srcRs.getString("lastAction"),  destRs.getString("LastAction"), id);
         success &= equals("Distribution Last Action Date", srcRs.getTimestamp("lastActionDate"),  destRs.getTimestamp("LastActionDate"), id);
         return success;
@@ -772,11 +868,11 @@ public class PesiEuroMedValidator {
         success &= equals("Common name languageFk ", srcRs.getString("iso"), getLanguageIso(destRs), id);
         success = equals("CommonName LanguageCache ", normalizeLang(srcRs.getString("LanName")), destRs.getString("LanguageCache"), id);
         //TODO needed? success = equals("CommonName language code ", srcRs.getString("lan_id"), destRs.getString("LanguageFk"), id);
-        success &= isNull("Region", destRs);  //region does not seem to exist in ERMS
+        success &= isNull("Region", destRs, id);  //region does not seem to exist in ERMS
         //TODO see comments
 //        success &= isNull("SourceFk", destRs);  //sources should be moved to extra table, check with PESI 2014
 //        success &= isNull("SourceNameCache", destRs);  //sources should be moved to extra table, check with PESI 2014
-        success &= isNull("SpeciesExpertGUID", destRs);  //SpeciesExpertGUID does not exist in ERMS
+        success &= isNull("SpeciesExpertGUID", destRs, id);  //SpeciesExpertGUID does not exist in ERMS
         //SpeciesExpertName,LastAction,LastActionDate handled in separate method
         //complete
         return success;
@@ -824,7 +920,7 @@ public class PesiEuroMedValidator {
     private boolean testSingleReference(ResultSet srcRS, ResultSet destRS) throws SQLException {
         String id = String.valueOf(srcRS.getInt("id"));
         boolean success = equals("Reference ID ", srcRS.getInt("id"), destRS.getInt("RefIdInSource"), id);
-        success &= isNull("IMIS_Id", destRS);  //for E+M no IMIS id exists
+        success &= isNull("IMIS_Id", destRS, id);  //for E+M no IMIS id exists
         success &= equals("Reference SourceCategoryFk ", convertSourceTypeFk(srcRS.getString("refType")), destRS.getInt("SourceCategoryFk"), id);
         success &= equals("Reference SourceCategoryCache ", convertSourceTypeCache(srcRS.getString("refType")), destRS.getString("SourceCategoryCache"), id);
         success &= equals("Reference name ", srcRS.getString("titleCache"), destRS.getString("Name"), id);
@@ -857,8 +953,6 @@ public class PesiEuroMedValidator {
         }else if ("SER".equals(sourceType)){
 //            TODO correct?
             return PesiTransformer.REF_UNRESOLVED;
-        }else if ("i".equals(sourceType)){
-            return 12;
         }
         return null;
     }
@@ -877,9 +971,6 @@ public class PesiEuroMedValidator {
             return "book";
         }else if ("GEN".equals(sourceType)){
             return "unresolved";
-        }else if ("i".equals(sourceType)){
-            //TODO
-            return "i";
         }
         return null;
     }
@@ -906,18 +997,6 @@ public class PesiEuroMedValidator {
         }
         String result = start == null? null: start + (end==null? "": "-"+ end);
         return result;
-    }
-
-    private boolean isNull(String attrName, ResultSet destRS) throws SQLException {
-        Object value = destRS.getObject(attrName);
-        if (value != null){
-            String message = attrName + " was expected to be null but was: " + value.toString();
-            logger.warn(message);
-            return false;
-        }else{
-            logger.info(attrName + " was null as expected");
-            return true;
-        }
     }
 
     private boolean equals(String messageStart, Timestamp srcDate, Timestamp destDate, String id) {
@@ -950,36 +1029,7 @@ public class PesiEuroMedValidator {
         }
     }
 
-    private boolean equals(String messageStart, String strSrc, String strDest, String id) {
-        if (StringUtils.isBlank(strSrc)){
-            strSrc = null;
-        }else{
-            strSrc = strSrc.trim();
-        }
-        //we do not trim strDest here because this should be done during import already. If not it should be shown here
-        if (!CdmUtils.nullSafeEqual(strSrc, strDest)){
-            int index = CdmUtils.diffIndex(strSrc, strDest);
-            String message = id+ ": " + messageStart + " must be equal, but was not at "+index+".\n  Source:      "+  strSrc + "\n  Destination: " + strDest;
-            logger.warn(message);
-            return false;
-        }else{
-            logger.info(id+ ": " + messageStart + " were equal: " + strSrc);
-            return true;
-        }
-    }
-
-    protected Integer nullSafeInt(ResultSet rs, String columnName) throws SQLException {
-        Object intObject = rs.getObject(columnName);
-        if (intObject == null){
-            return null;
-        }else{
-            return Integer.valueOf(intObject.toString());
-        }
-    }
-
 //** ************* MAIN ********************************************/
-
-
 
     public static void main(String[] args){
         PesiEuroMedValidator validator = new PesiEuroMedValidator();

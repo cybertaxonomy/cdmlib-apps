@@ -20,7 +20,6 @@ import org.apache.log4j.Logger;
 
 import eu.etaxonomy.cdm.api.service.pager.Pager;
 import eu.etaxonomy.cdm.hibernate.HibernateProxyHelper;
-import eu.etaxonomy.cdm.io.berlinModel.BerlinModelTransformer;
 import eu.etaxonomy.cdm.io.common.DbExportBase;
 import eu.etaxonomy.cdm.io.common.mapping.out.DbLastActionMapper;
 import eu.etaxonomy.cdm.io.pesi.erms.ErmsTransformer;
@@ -410,16 +409,6 @@ public abstract class PesiExportBase
         if (! taxon.isPublish()){
         	return false;
         }
-        for (Marker marker : taxon.getMarkers()){
-        	//probably not needed anymore after #1780 was fixed, also #4046 interesting
-        	if (marker.getValue() == false && marker.getMarkerType().equals(MarkerType.PUBLISH())){
-        		return false;
-        	//probably not needed any more after #2786 was fixed
-        	}else if (marker.getValue() == true && marker.getMarkerType().getUuid().equals(BerlinModelTransformer.uuidMisappliedCommonName)){
-        		logger.warn("Misapplied common name still exists");
-        		return false;
-        	}
-        }
 
         //handle PESI accepted taxa
         if (! taxon.isMisapplication()){
@@ -433,13 +422,6 @@ public abstract class PesiExportBase
         }else{
         	if (excludeMisappliedNames){
         		return false;
-        	}
-        	for (Marker marker : taxon.getMarkers()){
-        		//probably not needed any more after #2786 was fixed
-        		if (marker.getValue() == true && marker.getMarkerType().getUuid().equals(BerlinModelTransformer.uuidMisappliedCommonName)){
-        			logger.warn("Misapplied common name still exists");
-        			return false;
-        		}
         	}
         	for (TaxonRelationship taxRel : taxon.getRelationsFromThisTaxon()){
         		if (taxRel.getType().isAnyMisappliedName()){
@@ -528,23 +510,46 @@ public abstract class PesiExportBase
 	}
 
 	/**
+     * Checks whether a given taxon is a pro parte or partial synonym.
+     * @param taxon The {@link TaxonBase Taxon}.
+     * @return <code>true</code> if the the given taxon is a pp or partial synonym
+     */
+    protected static boolean isProParteOrPartialSynonym(TaxonBase<?> taxon) {
+        return getAcceptedTaxonForProParteSynonym(taxon) != null;
+    }
+
+	/**
 	 * Returns the first accepted taxon for this misapplied name.
 	 * If this misapplied name is not a misapplied name, <code>null</code> is returned.
 	 * @param taxon The {@link TaxonBase Taxon}.
 	 */
-	private static Taxon getAcceptedTaxonForMisappliedName(TaxonBase<?> taxon) {
+	protected static Taxon getAcceptedTaxonForMisappliedName(TaxonBase<?> taxon) {
 		if (! taxon.isInstanceOf(Taxon.class)){
 			return null;
 		}
 		Set<TaxonRelationship> taxonRelations = CdmBase.deproxy(taxon, Taxon.class).getRelationsFromThisTaxon();
 		for (TaxonRelationship taxonRelationship : taxonRelations) {
 			TaxonRelationshipType taxonRelationshipType = taxonRelationship.getType();
-			if (taxonRelationshipType.equals(TaxonRelationshipType.MISAPPLIED_NAME_FOR())) {
+			if (taxonRelationshipType.isAnyMisappliedName()) {
 				return taxonRelationship.getToTaxon();
 			}
 		}
 		return null;
 	}
+
+    protected static Taxon getAcceptedTaxonForProParteSynonym(TaxonBase<?> taxon) {
+        if (! taxon.isInstanceOf(Taxon.class)){
+            return null;
+        }
+        Set<TaxonRelationship> taxonRelations = CdmBase.deproxy(taxon, Taxon.class).getRelationsFromThisTaxon();
+        for (TaxonRelationship taxonRelationship : taxonRelations) {
+            TaxonRelationshipType taxonRelationshipType = taxonRelationship.getType();
+            if (taxonRelationshipType.isAnySynonym()) {
+                return taxonRelationship.getToTaxon();
+            }
+        }
+        return null;
+    }
 
     protected List<AnnotationType> getLastActionAnnotationTypes() {
         Set<UUID> uuidSet = new HashSet<>();
@@ -587,7 +592,7 @@ public abstract class PesiExportBase
             }else if (refUuid.equals(PesiTransformer.uuidSourceRefIndexFungorum)){
                 result.add(PesiSource.IF);
             }else{
-                if (logger.isDebugEnabled()){logger.debug("Not a PESI source");};
+                if (logger.isDebugEnabled()){logger.debug("Not a PESI source");}
             }
         }
         return result;
@@ -610,7 +615,7 @@ public abstract class PesiExportBase
 
             if (sources.size() == 0 && testSources.size()>0){
                 IdentifiableSource source = testSources.iterator().next();
-                logger.warn("There are sources, but they are no pesi sources!!!" + source.getIdInSource() + " - " + source.getIdNamespace() + " - " + source.getCitation().getTitleCache());
+                logger.warn("There are sources, but they are no pesi sources!!!" + source.getIdInSource() + " - " + source.getIdNamespace() + " - " + (source.getCitation()== null? "no reference" : source.getCitation().getTitleCache()));
             }
             if (sources.size() > 1) {
                 logger.warn("This TaxonName has more than one Source: " + identifiableEntity.getUuid() + " (" + identifiableEntity.getTitleCache() + ")");

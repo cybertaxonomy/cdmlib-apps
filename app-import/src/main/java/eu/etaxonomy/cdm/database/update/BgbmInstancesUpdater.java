@@ -28,29 +28,31 @@ public class BgbmInstancesUpdater {
 
 	private static String[] integrationDatabases = new String[]{
 	    "cdm_integration_cichorieae",
-		"cdm_integration_cyprus", "cdm_integration_diptera",
+		"cdm_integration_cyprus",
+		"cdm_integration_diptera",
 	    "cdm_integration_flora_malesiana",
-		"cdm_integration_palmae","cdm_integration_reference"
+		"cdm_integration_palmae",
+		"cdm_integration_reference"
 	};
 
 	private static String[] testDatabases = new String[]{
-//	    "cdm_col",
 	    "cdm_Test_Caryophyllales",
 	    "cdm_additivity_test",
         "cdm_bgbm_edit_usergroup",
 	    "cdm_campanulaceae","cdm_caryo_nepenthes",
 	    "cdm_caryo_spp","cdm_causcasus_workshop",
         "cdm_corvidae", "cdm_cyprus","cdm_edaphobase_test",
-		"cdm_edit_algaterra", "cdm_edit_algaterranew","cdm_edit_cichorieae",
+		"cdm_edit_algaterra", "cdm_edit_algaterra_","cdm_edit_cichorieae",
 		"cdm_edit_flora_central_africa", "cdm_edit_flora_malesiana",
 		"cdm_edit_globis", "cdm_edit_palmae",
 		"cdm_flora_cuba", "cdm_flora_guianas",
 		"cdm_flore_gabon",
-	    "cdm_iapt",
 		"cdm_mt_moose",
 		"cdm_mt_standardliste",
+//	    "cdm_pesi_all",
 		"cdm_pesi_erms", "cdm_pesi_euromed", "cdm_pesi_fauna_europaea",
 		"cdm_phycobank",
+	    "cdm_production_additivity_ontology",
 		"cdm_proibiosphere_chenopodium_pilot",
 		"cdm_rem_conf_ak", "cdm_rem_conf_am", "cdm_rem_conf_kl", "cdm_rem_conf_pp",
 		"cdm_rl_animalia","cdm_rl_german_sl","cdm_rl_mammalia", "cdm_rl_plantae",
@@ -113,18 +115,10 @@ public class BgbmInstancesUpdater {
 		"cdm_production_vibrant_index"
 	};
 
-
-	static BgbmServer bgbmServer = BgbmServer.TEST;
-
+    static BgbmServer bgbmServer = BgbmServer.TEST;
 
 	static String username = "edit";
 
-
-
-
-    /**
-     *
-     */
     private static void updateToCurrentVersion() {
         DbSchemaValidation schema = DbSchemaValidation.VALIDATE;
     	String server = bgbmServer.server;
@@ -152,10 +146,6 @@ public class BgbmInstancesUpdater {
     	}
     }
 
-
-    /**
-     *
-     */
     private static void singleUpdateStep(boolean startApp) {
         DbSchemaValidation schema = DbSchemaValidation.VALIDATE;
         String server = bgbmServer.server;
@@ -193,16 +183,11 @@ public class BgbmInstancesUpdater {
 
     }
 
-
-    /**
-     * @param args
-     */
     public static void  main(String[] args) {
         updateToCurrentVersion();
 //        singleUpdateStep(false);
         System.exit(0);
     }
-
 
     private enum BgbmServer{
 		INTEGRATION (integrationServer, integrationDatabases),
@@ -214,6 +199,5 @@ public class BgbmInstancesUpdater {
 			this.server = server;
 			this.databases = databases;
 		}
-
 	}
 }

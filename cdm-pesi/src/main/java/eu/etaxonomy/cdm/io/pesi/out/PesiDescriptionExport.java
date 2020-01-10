@@ -181,8 +181,7 @@ public class PesiDescriptionExport extends PesiExportBase {
 		int count = 0;
 		int pastCount = 0;
 		boolean success = true;
-		//int limit = state.getConfig().getLimitSave();
-		int limit = 1000;
+		int limit = state.getConfig().getLimitSaveDescription();
 
 		List<Taxon> taxonList = null;
 

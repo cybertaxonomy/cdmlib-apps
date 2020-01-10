@@ -2,7 +2,6 @@ package eu.etaxonomy.cdm.app.pesi.merging;
 
 import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -61,11 +60,8 @@ public class FaunaEuErmsMergeActivator {
 	static String sFileName = "c:\\test";
 
 	private void initDb(ICdmDataSource db) {
-		
 		// Init source DB
 		appCtrInit = CdmIoApplicationController.NewInstance(db, DbSchemaValidation.VALIDATE, false);
-
-
 	}
 
 	public static void main(String[] args) {
@@ -78,10 +74,10 @@ public class FaunaEuErmsMergeActivator {
 
 		//set the ranks of Agnatha and Gnathostomata to 50 instead of 45
 		List<TaxonBase> taxaToChangeRank = new ArrayList<>();
-		Pager<TaxonBase> agnatha = sc.appCtrInit.getTaxonService().findTaxaByName(TaxonBase.class, "Agnatha", null, null, null, "*", Rank.INFRAPHYLUM(), 10, 0);
+		Pager<TaxonBase> agnatha = sc.appCtrInit.getTaxonService().findTaxaByName(TaxonBase.class, "Agnatha", null, null, null, "*", Rank.INFRAPHYLUM(), 10, 0, null);
 		List<TaxonBase> agnathaList = agnatha.getRecords();
 		taxaToChangeRank.addAll(agnathaList);
-		Pager<TaxonBase> gnathostomata = sc.appCtrInit.getTaxonService().findTaxaByName(TaxonBase.class, "Gnathostomata", null, null, null, "*", Rank.INFRAPHYLUM(), 10, 0);
+		Pager<TaxonBase> gnathostomata = sc.appCtrInit.getTaxonService().findTaxaByName(TaxonBase.class, "Gnathostomata", null, null, null, "*", Rank.INFRAPHYLUM(), 10, 0, null);
 		List<TaxonBase> gnathostomataList = gnathostomata.getRecords();
 		taxaToChangeRank.addAll(gnathostomataList);
 
@@ -118,11 +114,7 @@ public class FaunaEuErmsMergeActivator {
 			}
 			//close the file
 			bufRdr.close();
-		} catch (FileNotFoundException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		return result;
@@ -235,8 +227,8 @@ public class FaunaEuErmsMergeActivator {
 	}
 
 	private  void mergeErmsSynFaunaEuAcc (List<List<String>> ermsAccFaEuSyn){
-		//occurence: verknüpfe statt dem Fauna Europaea Taxon das akzeptierte Taxon, des Synonyms mit der Occurence (CDM -> distribution)
-		//suche distribution (über das Taxon der TaxonDescription), dessen Taxon, das entsprechende Fauna Eu Taxon ist und verknüpfe es mit dem akzeptieren Taxon des Erms Syn
+		//occurence: connect instead of Fauna Europaea taxon the accepted taxon of the synonym with the occurrence (CDM -> distribution)
+		//search distribution (via taxon of the taxon description), of which the taxon is the according Fauna Eu taxon and connect it with the accepted taxon of the ERMS syn
 		for (List<String> row: ermsAccFaEuSyn){
 		    Taxon taxonFaunaEu = (Taxon)appCtrInit.getTaxonService().find(UUID.fromString(row.get(faunaEuUuid)));
 			Synonym synErms = (Synonym)appCtrInit.getTaxonService().find(UUID.fromString(row.get(ermsUuid)));
@@ -264,7 +256,6 @@ public class FaunaEuErmsMergeActivator {
 					logger.debug("The description of" + description.getTaxon().getTitleCache() + description.getTitleCache() + "can't be deleted because it is referenced.");
 				}
 			}
-
 
 			//Child-Parent Relationship aktualisieren -> dem Child des Fauna Europaea Taxons als parent das akzeptierte Taxon von synErms
 			Set<TaxonNode> nodesErms = taxonErms.getTaxonNodes();
@@ -302,12 +293,10 @@ public class FaunaEuErmsMergeActivator {
 
 	}
 
-
-
 	private void updateNameRelationships(List<List<String>> ermsAccFaEuSyn){
-		//suche alle NameRelationships aus FaunaEu und Erms, wo (faunaEu)relatedFrom.name.titleCache = (erms)relatedFrom.name.titleCache und ersetze in der faunaEu Relationship den relatedTo.name durch den relatedTo.name der erms-relationship
-		//wenn es diese relationship noch nicht gibt und der typ der gleiche ist!!
-		//wenn der relatedTo Name zu einem Erms Taxon und einem FaunaEu Synonym gehört
+		//search all NameRelationships of FaunaEu and Erms, where (faunaEu)relatedFrom.name.titleCache = (erms)relatedFrom.name.titleCache and replace in faunaEu relationship the relatedTo.name by the relatedTo.name of the erms-relationship
+		//if this relationship does not yet exist and the type is the same!!
+		//if the relatedTo name belongs to an Erms taxon and to an FaunaEu synonym
 
 		Synonym synFaunaEu;
 		Taxon taxonErms;
@@ -317,7 +306,7 @@ public class FaunaEuErmsMergeActivator {
 			List<NameRelationship> relSynFaunaEu = appCtrInit.getNameService().listToNameRelationships(synFaunaEu.getName(), null, 100, 0, null, null);
 			List<NameRelationship> relTaxonErms = appCtrInit.getNameService().listToNameRelationships(taxonErms.getName(), null, 100, 0, null, null);
 
-			List<NameRelationship> deleteRel = new ArrayList<NameRelationship>();
+			List<NameRelationship> deleteRel = new ArrayList<>();
 			for (NameRelationship relFauEu: relSynFaunaEu){
 				boolean createNewRelationship = true;
 				for (NameRelationship relErms: relTaxonErms){
@@ -351,7 +340,7 @@ public class FaunaEuErmsMergeActivator {
 		Taxon taxonFaunaEu;
 		Synonym synErms;
 		Taxon taxonErms;
-		Set<Taxon> acceptedTaxa = new HashSet<Taxon>();
+		Set<Taxon> acceptedTaxa = new HashSet<>();
 		for (List<String> row: ermsSynFaEuAcc){
 			taxonFaunaEu = (Taxon)appCtrInit.getTaxonService().find(UUID.fromString(row.get(faunaEuUuid)));
 			synErms = (Synonym)appCtrInit.getTaxonService().find(UUID.fromString(row.get(ermsUuid)));
@@ -482,10 +471,10 @@ public class FaunaEuErmsMergeActivator {
 	}
 
 	//after merging faunaEu taxon and erms taxon, the originalSource of the faunaEu taxon has to be moved to the erms taxon
-	private void moveOriginalDbToErmsTaxon(TaxonBase faunaEu, TaxonBase erms){
-		Set<IdentifiableSource> sourcesFaunaEu = faunaEu.getSources();
+	private void moveOriginalDbToErmsTaxon(TaxonBase<?> faunaEuTaxon, TaxonBase<?> ermsTaxon){
+		Set<IdentifiableSource> sourcesFaunaEu = faunaEuTaxon.getSources();
 		IdentifiableSource sourceFaunaEu = sourcesFaunaEu.iterator().next();
-		erms.addSource(sourceFaunaEu);
+		ermsTaxon.addSource(sourceFaunaEu);
 	}
 
 	//merged taxon should have a new sec reference

@@ -40,7 +40,7 @@ public class ErmsSourceUsesImportValidator implements IOValidator<ErmsImportStat
 		try {
 			boolean result = true;
 			Source source = bmiConfig.getSource();
-			String strSQL = " SELECT tu_sources.sourceuse_id, sourceuses.sourceuse_name, tu.tu_acctaxon, tu.tu_parent, tu.id, tu.tu_name, " +
+			String strSQL = " SELECT tu_sources.sourceuse_id, sourceuses.sourceuse_name, tu.tu_accfinal, tu.tu_parent, tu.id, tu.tu_name, " +
 						" tu.tu_authority, tu.tu_displayname, status.status_name "  +
 				" FROM  tu_sources " +
 					" INNER JOIN sourceuses ON tu_sources.sourceuse_id = sourceuses.sourceuse_id " +
@@ -54,7 +54,7 @@ public class ErmsSourceUsesImportValidator implements IOValidator<ErmsImportStat
 				i++;
 				if (firstRow){
 					System.out.println("========================================================");
-					logger.warn("There are source uses of typ 'source of synonymy' having equal 'id' and 'tu_acctaxon'");
+					logger.warn("There are source uses of typ 'source of synonymy' having equal 'id' and 'tu_accfinal'");
 					System.out.println("========================================================");
 				}
 				int id = rs.getInt("id");
