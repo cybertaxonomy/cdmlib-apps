@@ -4,168 +4,94 @@ import eu.etaxonomy.cdm.persistence.dto.TaxonNodeDto;
 
 public class PesiMergeObject {
 
-	private String uuidFaunaEu;
-	private String uuidErms;
+	private String uuidName;
 
-	private String idInFaunaEu;
-	private String idInErms;
+	private String idInSource;
 
-	private String nameCacheInFaunaEu;
-	private String nameCacheInErms;
+	private String nameCache;
 
-	private boolean statInFaunaEu;
-	private boolean statInErms;
+	private boolean status;
 
-	private String authorInFaunaEu;
-	private String authorInErms;
+	private String author;
 
-	private String rankInFaunaEu;
-	private String rankInErms;
+	private String rank;
 
-	private TaxonNodeDto phylumInFaunaEu;
-	private TaxonNodeDto phylumInErms;
+	private TaxonNodeDto phylum;
 
-	private String parentStringInFaunaEu;
-	private String parentStringInErms;
+	private String parentString;
 
-	private String parentRankStringInFaunaEu;
-	private String parentRankStringInErms;
+	private String parentRankString;
 
 
-	public String getUuidFaunaEu() {
-		return uuidFaunaEu;
+//************************ FACTORY *******************/
+
+    public static PesiMergeObject newInstance(){
+        return new PesiMergeObject();
+
+    }
+
+//************************* GETTER/SETTER **********************/
+
+	public String getUuidName() {
+		return uuidName;
 	}
-	public void setUuidFaunaEu(String uuidFaunaEu) {
-		this.uuidFaunaEu = uuidFaunaEu;
+	public void setUuidName(String uuidName) {
+		this.uuidName = uuidName;
 	}
 
-	public String getUuidErms() {
-		return uuidErms;
+	public String getParentRankString() {
+		return parentRankString;
+	}
+	public void setParentRankString(String parentRankString) {
+		this.parentRankString = parentRankString;
 	}
 
-	public void setUuidErms(String uuidErms) {
-		this.uuidErms = uuidErms;
+	public String getParentString() {
+		return parentString;
+	}
+	public void setParentString(String parentString) {
+		this.parentString = parentString;
 	}
 
-	public String getParentRankStringInFaunaEu() {
-		return parentRankStringInFaunaEu;
+	public String getRank() {
+		return rank;
+	}
+	public void setRank(String rank) {
+		this.rank = rank;
 	}
 
-	public void setParentRankStringInFaunaEu(String parentRankStringInFaunaEu) {
-		this.parentRankStringInFaunaEu = parentRankStringInFaunaEu;
+	public TaxonNodeDto getPhylum() {
+		return phylum;
+	}
+	public void setPhylum(TaxonNodeDto phylum) {
+		this.phylum = phylum;
 	}
 
-	public String getParentRankStringInErms() {
-		return parentRankStringInErms;
+	public boolean isStatus() {
+		return status;
+	}
+	public void setStatus(boolean status) {
+		this.status = status;
 	}
 
-	public void setParentRankStringInErms(String parentRankStringInErms) {
-		this.parentRankStringInErms = parentRankStringInErms;
+	public String getAuthor() {
+		return author;
+	}
+	public void setAuthor(String author) {
+		this.author = author;
 	}
 
-	public String getParentStringInFaunaEu() {
-		return parentStringInFaunaEu;
+	public String getIdInSource() {
+		return idInSource;
+	}
+	public void setIdInSource(String idInSource) {
+		this.idInSource = idInSource;
 	}
 
-	public void setParentStringInFaunaEu(String parentStringInFaunaEu) {
-		this.parentStringInFaunaEu = parentStringInFaunaEu;
+	public String getNameCache() {
+		return nameCache;
 	}
-
-	public String getParentStringInErms() {
-		return parentStringInErms;
+	public void setNameCache(String nameCache) {
+		this.nameCache = nameCache;
 	}
-
-	public void setParentStringInErms(String parentStringInErms) {
-		this.parentStringInErms = parentStringInErms;
-	}
-
-	public String getRankInFaunaEu() {
-		return rankInFaunaEu;
-	}
-
-	public void setRankInFaunaEu(String rankInFaunaEu) {
-		this.rankInFaunaEu = rankInFaunaEu;
-	}
-
-	public TaxonNodeDto getPhylumInFaunaEu() {
-		return phylumInFaunaEu;
-	}
-
-	public void setPhylumInFaunaEu(TaxonNodeDto phylumInFaunaEu) {
-		this.phylumInFaunaEu = phylumInFaunaEu;
-	}
-
-	public TaxonNodeDto getPhylumInErms() {
-		return phylumInErms;
-	}
-
-	public void setPhylumInErms(TaxonNodeDto phylumInErms) {
-		this.phylumInErms = phylumInErms;
-	}
-
-	public String getRankInErms() {
-		return rankInErms;
-	}
-
-	public void setRankInErms(String rankInErms) {
-		this.rankInErms = rankInErms;
-	}
-
-
-	public static PesiMergeObject newInstance(){
-		return new PesiMergeObject();
-
-	}
-
-	public boolean isStatInFaunaEu() {
-		return statInFaunaEu;
-	}
-	public void setStatInFaunaEu(boolean statInFaunaEu) {
-		this.statInFaunaEu = statInFaunaEu;
-	}
-	public boolean isStatInErms() {
-		return statInErms;
-	}
-	public void setStatInErms(boolean statInErms) {
-		this.statInErms = statInErms;
-	}
-	public String getAuthorInFaunaEu() {
-		return authorInFaunaEu;
-	}
-	public void setAuthorInFaunaEu(String authorInFaunaEu) {
-		this.authorInFaunaEu = authorInFaunaEu;
-	}
-	public String getAuthorInErms() {
-		return authorInErms;
-	}
-	public void setAuthorInErms(String authorInErms) {
-		this.authorInErms = authorInErms;
-	}
-	public String getIdInFaunaEu() {
-		return idInFaunaEu;
-	}
-	public void setIdInFaunaEu(String idInFaunaEu) {
-		this.idInFaunaEu = idInFaunaEu;
-	}
-	public String getIdInErms() {
-		return idInErms;
-	}
-	public void setIdInErms(String idInErms) {
-		this.idInErms = idInErms;
-	}
-	public String getNameCacheInFaunaEu() {
-		return nameCacheInFaunaEu;
-	}
-	public void setNameCacheInFaunaEu(String nameCacheInFaunaEu) {
-		this.nameCacheInFaunaEu = nameCacheInFaunaEu;
-	}
-	public String getNameCacheInErms() {
-		return nameCacheInErms;
-	}
-	public void setNameCacheInErms(String nameCacheInErms) {
-		this.nameCacheInErms = nameCacheInErms;
-	}
-
-
-
 }
