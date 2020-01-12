@@ -51,7 +51,7 @@ public class PesiDestinations {
     public static Source pesi_test_local_CDM_FE2PESI_2(){
         String dbms = Source.SQL_SERVER_2008;
         String strServer = "pesiimport3"; //130.133.70.48
-        String strDB = "CDM_FE2PESI";
+        String strDB = "CDM_FE2PESI_2";
         int port = 1433;
         String userName = "pesi2019";
         return makeSource(dbms, strServer, strDB, port, userName, null);
