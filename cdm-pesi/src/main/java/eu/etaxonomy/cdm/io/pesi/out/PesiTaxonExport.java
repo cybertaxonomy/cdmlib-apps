@@ -75,7 +75,8 @@ import eu.etaxonomy.cdm.strategy.cache.name.ZooNameNoMarkerCacheStrategy;
  * The export class for {@link eu.etaxonomy.cdm.model.name.TaxonNameBase TaxonNames}.<p>
  * Inserts into DataWarehouse database table <code>Taxon</code>.
  * It is divided into four phases:<p><ul>
- * <li>Phase 1:	Export of all {@link eu.etaxonomy.cdm.model.name.TaxonName TaxonNames} except some data exported in the following phases.
+ * <li>Phase 1:	Export of all taxon and taxon name data
+ *                     except for some data exported in the following phases.
  * <li>Phase 2:	Export of additional data: ParentTaxonFk and TreeIndex.
  * <li>Phase 3:	Export of additional data: Rank data, KingdomFk, TypeNameFk, expertFk and speciesExpertFk.
  * <li>Phase 4:	Export of Inferred Synonyms.</ul>
@@ -478,7 +479,6 @@ public class PesiTaxonExport extends PesiExportBase {
 		int limit = state.getConfig().getLimitSave();
 
 		logger.info("PHASE 3: Add Rank data, KingdomFk, TypeNameFk, expertFk and speciesExpertFk...");
-		// Be sure to add rank information, KingdomFk, TypeNameFk, expertFk and speciesExpertFk to every taxonName
 
 		// Start transaction
 		TransactionStatus txStatus = startTransaction(true);
@@ -2148,7 +2148,7 @@ public class PesiTaxonExport extends PesiExportBase {
 	 * @return The <code>ExpertName</code> attribute.
 	 * @see MethodMapper
 	 */
-	@SuppressWarnings("unused")  //for some reason it is also called by getCacheCitation
+	//@SuppressWarnings("unused")  //for some reason it is also called by getCacheCitation
 	private static String getExpertName(TaxonBase<?> taxon) {
 		try {
 		    String result = null;

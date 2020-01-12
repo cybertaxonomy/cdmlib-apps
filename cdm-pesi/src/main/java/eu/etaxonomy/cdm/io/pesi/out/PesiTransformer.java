@@ -52,7 +52,6 @@ import eu.etaxonomy.cdm.model.taxon.TaxonBase;
 import eu.etaxonomy.cdm.model.taxon.TaxonNode;
 import eu.etaxonomy.cdm.model.taxon.TaxonRelationship;
 import eu.etaxonomy.cdm.model.taxon.TaxonRelationshipType;
-import eu.etaxonomy.cdm.strategy.exceptions.UnknownCdmTypeException;
 
 /**
  * @author e.-m.lee
@@ -295,7 +294,6 @@ public final class PesiTransformer extends ExportTransformerBase{
 	private static int Convarietas = 236;
 	private static int Taxa_infragen = 280;
 	private static int Taxa_infraspec = 285;
-
 
 	//NoteCategory
 	private static int NoteCategory_description = 1;
@@ -604,7 +602,6 @@ public final class PesiTransformer extends ExportTransformerBase{
 	private static int AREA_SERBIA = 294;
 	private static int AREA_KOSOVO = 295;
 
-
 	//FauEu area UUIDs
     private static UUID uuidAreaAD = UUID.fromString("38dd31d2-8275-4b05-8b85-eb71a390d67f");
     private static UUID uuidAreaAFR = UUID.fromString("c3123386-51a4-42a4-9ff4-b3905b18a83c");//x
@@ -714,15 +711,12 @@ public final class PesiTransformer extends ExportTransformerBase{
 	private final Map<Integer, Map<Integer, String>> rankCacheMap  = new  HashMap<>();
 	private final Map<Integer, Map<Integer, String>> rankAbbrevCacheMap  = new  HashMap<>();
 
+    private final Source destination;
 
-	private final Source destination;
-
-	public PesiTransformer(Source destination) {
-		super();
-		this.destination = destination;
-		fillMaps();
-	}
-
+    public PesiTransformer(Source destination) {
+        this.destination = destination;
+        fillMaps();
+    }
 	private void fillMaps() {
 		try {
 		    //TDWG
@@ -838,7 +832,6 @@ public final class PesiTransformer extends ExportTransformerBase{
                     oldId = languageCodeToKeyMap.put(iso639_3, id);
                     checkOldId(id, oldId, iso639_1);
                 }
-
             }
 			rs = null;
 		} catch (Exception e) {
@@ -879,8 +872,6 @@ public final class PesiTransformer extends ExportTransformerBase{
 	/**
 	 * Converts the databaseString to its abbreviation if its known.
 	 * Otherwise the databaseString is returned.
-	 * @param databaseString
-	 * @return
 	 */
 	public static String databaseString2Abbreviation(String databaseString) {
 		String result = databaseString;
@@ -892,9 +883,6 @@ public final class PesiTransformer extends ExportTransformerBase{
 
 	/**
 	 * Returns the OccurrenceStatusId for a given PresenceAbsenceTerm.
-	 * @param term
-	 * @return
-	 * @throws UnknownCdmTypeException
 	 */
 	public static Integer presenceAbsenceTerm2OccurrenceStatusId(PresenceAbsenceTerm term) {
 		Integer result = null;
@@ -2301,8 +2289,6 @@ public final class PesiTransformer extends ExportTransformerBase{
 
 	/**
 	 * Returns the NoteCategoryFk for a given UUID representing an ExtensionType.
-	 * @param uuid
-	 * @return
 	 */
 	public static Integer getNoteCategoryFk(UUID uuid) {
 		Integer result = null;
@@ -2318,8 +2304,6 @@ public final class PesiTransformer extends ExportTransformerBase{
 
 	/**
 	 * Returns the NoteCategoryCache for a given UUID representing an ExtensionType.
-	 * @param uuid
-	 * @return
 	 */
 	public static String getNoteCategoryCache(UUID uuid) {
 		String result = null;
@@ -2378,7 +2362,6 @@ public final class PesiTransformer extends ExportTransformerBase{
 		}
 	}
 
-
 	public Object getSourceUseCacheByKey(Integer sourceUseFk) {
 		if (sourceUseFk == null){
 			return null;
@@ -2424,7 +2407,6 @@ public final class PesiTransformer extends ExportTransformerBase{
 		if (sources.contains(PesiSource.ERMS)){
 			result = CdmUtils.concat(",", result,  SOURCE_STR_ERMS);
 		}
-
 		return result;
 	}
 

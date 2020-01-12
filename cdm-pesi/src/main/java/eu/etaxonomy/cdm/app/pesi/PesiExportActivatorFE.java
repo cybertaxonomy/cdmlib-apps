@@ -30,12 +30,12 @@ public class PesiExportActivatorFE {
 
 	private static final Logger logger = Logger.getLogger(PesiExportActivatorFE.class);
 
-	//database validation status (create, update, validate ...)
-//	static final Source pesiDestination = PesiDestinations.pesi_test_local_CDM_FE2PESI();
-	static final Source pesiDestination = PesiDestinations.pesi_test_local_CDM_FE2PESI_2();
 
 //	static final ICdmDataSource cdmSource = CdmDestinations.cdm_test_local_faunaEu_mysql();
 	static final ICdmDataSource cdmSource = CdmDestinations.cdm_test_local_pesi_leer();
+
+	static final Source pesiDestination = PesiDestinations.pesi_test_local_CDM_FE2PESI();
+//	static final Source pesiDestination = PesiDestinations.pesi_test_local_CDM_FE2PESI_2();
 
 	// ****************** ALL *****************************************
 
@@ -91,12 +91,6 @@ public class PesiExportActivatorFE {
         config.setDoAdditionalTaxonSource(doAdditionalTaxonSource);
         config.setDoDescription(doDescriptions);
         config.setDoEcologyAndLink(doEcologyAndLink);
-
-//      config.setDoOccurrence(doOccurrence);
-//      config.setDoOccurrenceSource(doOccurrenceSource);
-//      config.setDoNotes(doNotes);
-//      config.setDoNoteSources(doNoteSources);
-//      config.setDoImages(doImage);
 
         config.setDoPureNames(doPureNames);
 

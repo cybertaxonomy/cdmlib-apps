@@ -346,7 +346,7 @@ public class PesiErmsValidator extends PesiValidatorBase {
         success &= isNull("ExpertName", destRS, id);  //only relevant after merge
         success &= isNull("SpeciesExpertGUID", destRS, id);  //only relevant after merge
         success &= equals("Taxon cache citation", srcRS.getString("cache_citation"), destRS.getString("CacheCitation"), id);
-        //LastAction(Date) handled in separate method
+        //SpeciesExpertName, LastAction and LastActionDate handled in separate method
         success &= isNull("GUID2", destRS, id);  //only relevant after merge
         success &= isNull("DerivedFromGuid2", destRS, id);  //only relevant after merge
         return success;
