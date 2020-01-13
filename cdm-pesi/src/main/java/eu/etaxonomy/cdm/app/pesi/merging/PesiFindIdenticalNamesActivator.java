@@ -1,10 +1,13 @@
 package eu.etaxonomy.cdm.app.pesi.merging;
 
 import java.io.File;
-import java.io.FileWriter;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.OutputStreamWriter;
+import java.io.Writer;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -156,7 +159,8 @@ public class PesiFindIdenticalNamesActivator {
         try{
             Method method = methodName == null? null : PesiMergeObject.class.getMethod(methodName);
 
-            FileWriter writer = new FileWriter(sFileName);
+//            FileWriter writer = new FileWriter(sFileName);
+            Writer writer = new OutputStreamWriter(new FileOutputStream(new File(sFileName)), StandardCharsets.UTF_8);
 
             //create Header
             createHeader(writer, header);
@@ -197,7 +201,7 @@ public class PesiFindIdenticalNamesActivator {
         return false;
     }
 
-	private void createHeader(FileWriter writer, String firstLine) throws IOException{
+	private void createHeader(Writer writer, String firstLine) throws IOException{
 		 	writer.append(firstLine);
 		    writer.append('\n');
 
@@ -226,7 +230,7 @@ public class PesiFindIdenticalNamesActivator {
 			writer.append('\n');
 	}
 
-	private void writeCsvLine(FileWriter writer, Map<UUID,PesiMergeObject> mergeObjects, Map<UUID,String> sources) throws IOException{
+	private void writeCsvLine(Writer writer, Map<UUID,PesiMergeObject> mergeObjects, Map<UUID,String> sources) throws IOException{
 
         for (UUID uuid : sourceRefUuids){
 	        PesiMergeObject merging = mergeObjects.get(uuid);
