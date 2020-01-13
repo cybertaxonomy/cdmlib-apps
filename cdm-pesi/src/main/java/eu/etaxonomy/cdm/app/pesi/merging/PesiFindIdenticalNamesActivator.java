@@ -99,7 +99,7 @@ public class PesiFindIdenticalNamesActivator {
         resultOK &= writeSameNamesDifferentStatusToCsv(mergingObjects, sources, path + "_status.csv");
         resultOK &= writeSameNamesToCsvFile(mergingObjects, sources, path + "_names.csv");
         resultOK &= writeSameNamesDifferentPhylumToCsv(mergingObjects, sources, path + "_phylum.csv");
-        resultOK &= writeSameNamesDifferentParentToCsv(mergingObjects, sources, path + "parent.csv");
+        resultOK &= writeSameNamesDifferentParentToCsv(mergingObjects, sources, path + "_parent.csv");
         resultOK &= writeSameNamesDifferentRankToCsv(mergingObjects, sources, path + "_rank.csv");
 
         System.out.println("End find identical names for PESI: " + resultOK + ". Results written to " + path);
