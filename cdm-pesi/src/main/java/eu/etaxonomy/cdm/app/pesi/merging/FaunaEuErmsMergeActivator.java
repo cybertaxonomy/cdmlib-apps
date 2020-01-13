@@ -30,7 +30,6 @@ import eu.etaxonomy.cdm.model.common.Marker;
 import eu.etaxonomy.cdm.model.description.Distribution;
 import eu.etaxonomy.cdm.model.description.Feature;
 import eu.etaxonomy.cdm.model.description.TaxonDescription;
-import eu.etaxonomy.cdm.model.name.IZoologicalName;
 import eu.etaxonomy.cdm.model.name.NameRelationship;
 import eu.etaxonomy.cdm.model.name.Rank;
 import eu.etaxonomy.cdm.model.reference.Reference;
@@ -139,22 +138,22 @@ public class FaunaEuErmsMergeActivator {
 // which information should be used can be found in last row -> needs to be done manually
 			if (Integer.parseInt(row.get(18)) == 1){
 				//isFaunaEu = 1 -> copy the author of Fauna Europaea to Erms
-				if (((IZoologicalName)taxonFaunaEu.getName()).getBasionymAuthorship()!= null){
-					((IZoologicalName)taxonErms.getName()).setBasionymAuthorship(((IZoologicalName)taxonFaunaEu.getName()).getBasionymAuthorship());
+				if (taxonFaunaEu.getName().getBasionymAuthorship()!= null){
+					taxonErms.getName().setBasionymAuthorship(taxonFaunaEu.getName().getBasionymAuthorship());
 				}
-				if (((IZoologicalName)taxonFaunaEu.getName()).getCombinationAuthorship()!= null){
-					((IZoologicalName)taxonErms.getName()).setCombinationAuthorship(((IZoologicalName)taxonFaunaEu.getName()).getCombinationAuthorship());
+				if (taxonFaunaEu.getName().getCombinationAuthorship()!= null){
+					taxonErms.getName().setCombinationAuthorship(taxonFaunaEu.getName().getCombinationAuthorship());
 				}
-				((IZoologicalName)taxonErms.getName()).generateAuthorship();
+				taxonErms.getName().generateAuthorship();
 				taxaToSave.add(taxonErms);
 			}else{
-				if (((IZoologicalName)taxonErms.getName()).getBasionymAuthorship()!= null){
-					((IZoologicalName)taxonFaunaEu.getName()).setBasionymAuthorship(((IZoologicalName)taxonErms.getName()).getBasionymAuthorship());
+				if (taxonErms.getName().getBasionymAuthorship()!= null){
+					taxonFaunaEu.getName().setBasionymAuthorship(taxonErms.getName().getBasionymAuthorship());
 				}
-				if (((IZoologicalName)taxonErms.getName()).getCombinationAuthorship()!= null){
-					((IZoologicalName)taxonFaunaEu.getName()).setCombinationAuthorship(((IZoologicalName)taxonErms.getName()).getCombinationAuthorship());
+				if (taxonErms.getName().getCombinationAuthorship()!= null){
+					taxonFaunaEu.getName().setCombinationAuthorship(taxonErms.getName().getCombinationAuthorship());
 				}
-				((IZoologicalName)taxonFaunaEu.getName()).generateAuthorship();
+				taxonFaunaEu.getName().generateAuthorship();
 				taxaToSave.add(taxonFaunaEu);
 			}
 		}
@@ -180,7 +179,7 @@ public class FaunaEuErmsMergeActivator {
 		mergeErmsAccFaunaEuSyn(accErmsSynFaunaEu);
 
 		//find all taxa accepted in faunaEu, but synonyms in Erms and the same rank
-		List<List<String>> synErmsAccFaunaEu = new ArrayList<List<String>>();
+		List<List<String>> synErmsAccFaunaEu = new ArrayList<>();
 		for (List<String> rowList: diffStatus){
 			if ((rowList.get(5).equals("accepted")) && (rowList.get(rankFaunaEu).equals(rowList.get(rankErms)))){
 				//both conditions are true
@@ -188,8 +187,6 @@ public class FaunaEuErmsMergeActivator {
 			}
 		}
 		mergeErmsSynFaunaEuAcc(synErmsAccFaunaEu);
-
-
 	}
 
 	private void mergeSameStatus(){
@@ -450,7 +447,7 @@ public class FaunaEuErmsMergeActivator {
 			}else {
 				acceptedErmsTaxon = (Taxon)erms;
 			}
-			TaxonNode node = ((Taxon)acceptedErmsTaxon).getTaxonNode(ermsClassification);
+			TaxonNode node = acceptedErmsTaxon.getTaxonNode(ermsClassification);
 			for (TaxonNode child:((Taxon)faunaEu).getTaxonNode(faunaEuClassification).getChildNodes()) {
 				//add pesi reference as reference??
 				node.addChildNode(child, null, null);
