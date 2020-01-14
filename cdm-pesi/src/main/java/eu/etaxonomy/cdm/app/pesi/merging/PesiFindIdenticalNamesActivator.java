@@ -11,6 +11,7 @@ import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -18,6 +19,7 @@ import java.util.Set;
 import java.util.UUID;
 
 import org.apache.log4j.Logger;
+import org.springframework.transaction.TransactionStatus;
 
 import eu.etaxonomy.cdm.api.application.CdmApplicationController;
 import eu.etaxonomy.cdm.app.common.CdmDestinations;
@@ -36,6 +38,8 @@ import eu.etaxonomy.cdm.model.taxon.Synonym;
 import eu.etaxonomy.cdm.model.taxon.Taxon;
 import eu.etaxonomy.cdm.model.taxon.TaxonBase;
 import eu.etaxonomy.cdm.model.taxon.TaxonNode;
+import eu.etaxonomy.cdm.model.taxon.TaxonRelationship;
+import eu.etaxonomy.cdm.model.taxon.TaxonRelationshipType;
 import eu.etaxonomy.cdm.persistence.dto.TaxonNodeDto;
 
 public class PesiFindIdenticalNamesActivator {
@@ -85,6 +89,7 @@ public class PesiFindIdenticalNamesActivator {
         System.out.println("Start getIdenticalNames...");
 
         Map<String, Map<UUID, Set<TaxonName>>> namesOfIdenticalTaxa;
+        TransactionStatus tx = app.startTransaction(true);
         try {
             namesOfIdenticalTaxa = app.getTaxonService().findIdenticalTaxonNames(sourceRefUuids, propertyPaths);
         } catch (Exception e) {
@@ -93,6 +98,8 @@ public class PesiFindIdenticalNamesActivator {
         }
         System.out.println("Start creating merging objects");
         List<Map<UUID, PesiMergeObject>> mergingObjects = createMergeObjects(namesOfIdenticalTaxa, app);
+        app.commitTransaction(tx);
+
         boolean resultOK = true;
         System.out.println("Start creating csv files");
         resultOK &= writeSameNamesDifferentAuthorToCsv(mergingObjects, sources, path + "_authors.csv");
@@ -180,7 +187,8 @@ public class PesiFindIdenticalNamesActivator {
         }
     }
 
-    private boolean isDifferent(Map<UUID, PesiMergeObject> merging, Method method) throws IllegalAccessException, IllegalArgumentException, InvocationTargetException {
+    private boolean isDifferent(Map<UUID, PesiMergeObject> merging, Method method)
+            throws IllegalAccessException, IllegalArgumentException, InvocationTargetException {
 
         if (method == null){
             return true;
@@ -218,7 +226,7 @@ public class PesiFindIdenticalNamesActivator {
 		        writer.append(';');
 		        writer.append("rank"+i);
 		        writer.append(';');
-		        writer.append("state"+i);
+		        writer.append("status"+i);
 		        writer.append(';');
 		        writer.append("phylum"+i);
 		        writer.append(';');
@@ -237,25 +245,25 @@ public class PesiFindIdenticalNamesActivator {
 	        if(merging == null){
 	            continue;
 	        }
-	        writer.append(sources.get(uuid)).append(";");
-            writer.append(merging.getUuidName()).append(";");
-	        writer.append(merging.getIdInSource()).append(";");
-	        writer.append(merging.getNameCache()).append(";");
-	        writer.append(merging.getAuthor()).append(";");
-	        writer.append(merging.getRank()).append(";");
+	        writer.append(Nz(sources.get(uuid))).append(";");
+            writer.append(Nz(merging.getUuidName())).append(";");
+	        writer.append(Nz(merging.getIdInSource())).append(";");
+	        writer.append(Nz(merging.getNameCache())).append(";");
+	        writer.append(Nz(merging.getAuthor())).append(";");
+	        writer.append(Nz(merging.getRank())).append(";");
 	        if (merging.isStatus()){
-	            writer.append("accepted").append(";");;
+	            writer.append("accepted").append(";");
 	        }else{
-	            writer.append("synonym").append(";");;
+	            writer.append("synonym").append(";");
 	        }
-	        writer.append(merging.getPhylum() != null? merging.getPhylum().getTitleCache(): "").append(";");
-	        writer.append(merging.getParentString()).append(";");
-	        writer.append(merging.getParentRankString()).append(";");;
+	        writer.append(Nz(merging.getPhylum() != null? merging.getPhylum().getTitleCache(): "")).append(";");
+	        writer.append(Nz(merging.getParentString())).append(";");
+	        writer.append(Nz(merging.getParentRankString())).append(";");
 	    }
         writer.append('\n');
 	}
 
-	private List<Map<UUID,PesiMergeObject>> createMergeObjects(Map<String, Map<UUID, Set<TaxonName>>> names,
+    private List<Map<UUID,PesiMergeObject>> createMergeObjects(Map<String, Map<UUID, Set<TaxonName>>> names,
 	        CdmApplicationController appCtr){
 
 		List<Map<UUID,PesiMergeObject>> merge = new ArrayList<>();
@@ -298,7 +306,6 @@ public class PesiFindIdenticalNamesActivator {
                 //TODO: find the two correct names
                 logger.warn("Name has not exact 1 but " + taxonBases.size() + " taxon base attached. This is not yet handled. Take arbitrary one.");
             }
-            TaxonBase<?> taxonBase = taxonBases.iterator().next();
 
             //uuid
             mergeObject.setUuidName(name.getUuid().toString());
@@ -313,28 +320,7 @@ public class PesiFindIdenticalNamesActivator {
             mergeObject.setRank(name.getRank().getLabel());
 
             //Phylum
-            TaxonNodeDto phylum = null;
-            if (name.getRank().equals(Rank.PHYLUM())) {
-                Taxon taxon = getAcceptedTaxon(name);
-                if (taxon != null) {
-                    if (taxon.getTaxonNodes().size()>1){
-                        logger.warn("More than 1 node not yet handled for getPhylum. Take arbitrary one.");
-                    }
-                    TaxonNode node = taxon.getTaxonNodes().iterator().next();
-                    phylum = new TaxonNodeDto(node);
-                }
-
-            }
-            if (phylum == null && !name.getRank().isHigher(Rank.PHYLUM())){
-                Taxon taxon = getAcceptedTaxon(name);
-                if (!taxon.getTaxonNodes().isEmpty()){
-                    if (taxon.getTaxonNodes().size()>1){
-                        logger.warn("More than 1 node not yet handled for getPhylum. Take arbitrary one.");
-                    }
-                    TaxonNode node = taxon.getTaxonNodes().iterator().next();
-                    phylum = appCtr.getTaxonNodeService().taxonNodeDtoParentRank(node.getClassification(), Rank.PHYLUM(), name);
-                }
-            }
+            TaxonNodeDto phylum = getPhylum(appCtr, name);
             mergeObject.setPhylum(phylum);
 
             //idInSource
@@ -348,6 +334,7 @@ public class PesiFindIdenticalNamesActivator {
 
             //status and parent
             Set<Taxon> taxa = name.getTaxa();
+            taxa = getReallyAcceptedTaxa(taxa);
             if (!taxa.isEmpty()){
                 mergeObject.setStatus(true);
                 Iterator<Taxon> taxaIterator = taxa.iterator();
@@ -416,22 +403,49 @@ public class PesiFindIdenticalNamesActivator {
         merge.add(mergeMap);
     }
 
+    private TaxonNodeDto getPhylum(CdmApplicationController appCtr, TaxonName name) {
+        TaxonNodeDto phylum = null;
+        if (name.getRank().equals(Rank.PHYLUM())) {
+            Taxon taxon = getAcceptedTaxon(name);
+            if (taxon != null) {
+                if (taxon.getTaxonNodes().size()>1){
+                    logger.warn("More than 1 node not yet handled for getPhylum. Take arbitrary one.");
+                }
+                TaxonNode node = taxon.getTaxonNodes().iterator().next();
+                phylum = new TaxonNodeDto(node);
+            }
+
+        }
+        if (phylum == null && !name.getRank().isHigher(Rank.PHYLUM())){
+            Taxon taxon = getAcceptedTaxon(name);
+            if (!taxon.getTaxonNodes().isEmpty()){
+                if (taxon.getTaxonNodes().size()>1){
+                    logger.warn("More than 1 node not yet handled for getPhylum. Take arbitrary one.");
+                }
+                TaxonNode node = taxon.getTaxonNodes().iterator().next();
+                phylum = appCtr.getTaxonNodeService().taxonNodeDtoParentRank(node.getClassification(), Rank.PHYLUM(), name);
+            }
+        }
+        return phylum;
+    }
+
 	private TaxonNode getAcceptedNode(TaxonName ermsName) {
+	    TaxonNode parentNode = null;
 		Set<TaxonBase> taxonBases = ermsName.getTaxonBases();
-		Taxon taxon = null;
-		if (taxonBases != null && !taxonBases.isEmpty()) {
+		if (!taxonBases.isEmpty()) {
+		    Taxon taxon = null;
 			TaxonBase<?> taxonBase = taxonBases.iterator().next();
 			if (taxonBase instanceof Synonym) {
 				taxon = ((Synonym)taxonBase).getAcceptedTaxon();
+			}else{
+			    taxon = getAccTaxonForTaxonSynonym((Taxon)taxonBase);
+			}
+			Set<TaxonNode> nodes = taxon.getTaxonNodes();
+			if (!nodes.isEmpty()) {
+			    parentNode = nodes.iterator().next();
 			}
 		}
 
-		Set<TaxonNode> nodes = taxon.getTaxonNodes();
-
-		TaxonNode parentNode = null;
-		if (nodes != null && !nodes.isEmpty()) {
-			parentNode = nodes.iterator().next();
-		}
 		return parentNode;
 	}
 
@@ -440,6 +454,7 @@ public class PesiFindIdenticalNamesActivator {
 		//prefer accepted taxon
 		if (name.getTaxa() != null && !name.getTaxa().isEmpty()){
 			taxon = name.getTaxa().iterator().next();
+			taxon = getAccTaxonForTaxonSynonym(taxon);
 		//else take synonym
 		}else if (name.getTaxonBases() != null && !name.getTaxonBases().isEmpty()){
 			TaxonBase<?> taxonBase = name.getTaxonBases().iterator().next();
@@ -450,6 +465,38 @@ public class PesiFindIdenticalNamesActivator {
 		}
 		return taxon;
 	}
+
+    private Taxon getAccTaxonForTaxonSynonym(Taxon taxon) {
+        if (!taxon.getRelationsFromThisTaxon().isEmpty()){
+            for (TaxonRelationship rel: taxon.getRelationsFromThisTaxon()){
+                UUID uuidType = rel.getType().getUuid();
+                if (uuidType.equals(TaxonRelationshipType.uuidSynonymOfTaxonRelationship)
+                        || uuidType.equals(TaxonRelationshipType.uuidHeterotypicSynonymTaxonRelationship)
+                        || uuidType.equals(TaxonRelationshipType.uuidHomotypicSynonymTaxonRelationship)){
+                    taxon = rel.getToTaxon();
+                }
+            }
+        }
+        return taxon;
+    }
+
+    /**
+     * Filters out the ERMS taxon synonyms
+     */
+    private Set<Taxon> getReallyAcceptedTaxa(Set<Taxon> taxa) {
+        Set<Taxon> result = new HashSet<>();
+        for (Taxon taxon : taxa){
+            Taxon accTaxon = getAccTaxonForTaxonSynonym(taxon);
+            if(taxon.equals(accTaxon)) {
+                result.add(taxon);
+            }
+        }
+        return result;
+    }
+
+    private CharSequence Nz(String str) {
+        return CdmUtils.Nz(str);
+    }
 
     public static void main(String[] args) {
         PesiFindIdenticalNamesActivator activator = new PesiFindIdenticalNamesActivator();
