@@ -25,7 +25,6 @@ import eu.etaxonomy.cdm.model.reference.Reference;
  *
  * @author a.mueller
  * @since 24.11.2017
- *
  */
 public class Deduplicator {
     @SuppressWarnings("unused")
@@ -35,10 +34,9 @@ public class Deduplicator {
 //  static DbSchemaValidation hbm2dll = DbSchemaValidation.VALIDATE;
 //  static final ICdmDataSource cdmDestination = CdmDestinations.cdm_production_cichorieae();
 //  static final ICdmDataSource cdmDestination = CdmDestinations.localH2();
-//    static final ICdmDataSource cdmDestination = CdmDestinations.cdm_production_caryophyllales_spp();
-    static final ICdmDataSource cdmDestination = CdmDestinations.cdm_production_flora_cuba();
+    static final ICdmDataSource cdmDestination = CdmDestinations.cdm_production_caryophyllales_spp();
+//    static final ICdmDataSource cdmDestination = CdmDestinations.cdm_production_flora_cuba();
     //  static final ICdmDataSource cdmDestination = CdmDestinations.cdm_local_caryo_spp();
-
 
 
    static boolean doPersons = true;
@@ -63,13 +61,8 @@ public class Deduplicator {
         } catch (Exception e) {
             e.printStackTrace();
         }
-
-
     }
 
-    /**
-     * @param args
-     */
     public static void main(String[] args) {
         ICdmDataSource destination = CdmDestinations.chooseDestination(args) != null ? CdmDestinations.chooseDestination(args) : cdmDestination;
 
@@ -77,6 +70,5 @@ public class Deduplicator {
         Deduplicator me = new Deduplicator();
         me.doInvoke(destination);
         System.exit(0);
-
     }
 }
