@@ -39,8 +39,9 @@ public class ErmsImportActivator {
 
 //	static final ICdmDataSource cdmDestination = CdmDestinations.test_cdm_pesi_erms();
 
-	static final ICdmDataSource cdmDestination = CdmDestinations.cdm_test_local_mysql_erms();
+//	static final ICdmDataSource cdmDestination = CdmDestinations.cdm_test_local_mysql_erms();
 //	static final ICdmDataSource cdmDestination = CdmDestinations.cdm_test_local_mysql_erms2();
+	static final ICdmDataSource cdmDestination = CdmDestinations.cdm_pesi2019_final();
 
 
 	static final boolean includeExport2PESI = false;

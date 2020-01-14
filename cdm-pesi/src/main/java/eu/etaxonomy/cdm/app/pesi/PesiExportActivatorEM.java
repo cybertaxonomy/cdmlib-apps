@@ -32,8 +32,8 @@ public class PesiExportActivatorEM {
 	private static final Logger logger = Logger.getLogger(PesiExportActivatorEM.class);
 
 //	static final ICdmDataSource cdmSource = CdmDestinations.test_cdm_pesi_euroMed();
-//	static final ICdmDataSource cdmSource = CdmDestinations.cdm_test_local_mysql_euromed();
-	static final ICdmDataSource cdmSource = CdmDestinations.cdm_pesi2019_final();
+	static final ICdmDataSource cdmSource = CdmDestinations.cdm_test_local_mysql_euromed();
+//	static final ICdmDataSource cdmSource = CdmDestinations.cdm_pesi2019_final();
 
 	//database validation status (create, update, validate ...)
 	static final Source pesiDestination = PesiDestinations.pesi_test_local_CDM_EM2PESI();

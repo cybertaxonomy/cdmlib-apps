@@ -24,6 +24,7 @@ import eu.etaxonomy.cdm.io.common.IImportConfigurator.CHECK;
 import eu.etaxonomy.cdm.io.common.ITaxonNodeOutStreamPartitioner;
 import eu.etaxonomy.cdm.io.common.TaxonNodeOutStreamPartitioner;
 import eu.etaxonomy.cdm.io.common.TaxonNodeOutStreamPartitionerConcurrent;
+import eu.etaxonomy.cdm.io.pesi.out.PesiTransformer;
 import eu.etaxonomy.cdm.model.common.VerbatimTimePeriod;
 import eu.etaxonomy.cdm.model.reference.Reference;
 import eu.etaxonomy.cdm.model.reference.ReferenceFactory;
@@ -38,18 +39,20 @@ public class FauEu2CdmActivator {
     private static final Logger logger = Logger.getLogger(FauEu2CdmActivator.class);
 
     static final ICdmDataSource fauEuSource = CdmDestinations.test_cdm_pesi_fauna_europaea();
-    static final ICdmDataSource cdmDestination = CdmDestinations.cdm_test_local_pesi_leer();
+//    static final ICdmDataSource cdmDestination = CdmDestinations.cdm_test_local_pesi_leer();
+    static final ICdmDataSource cdmDestination = CdmDestinations.cdm_pesi2019_final();
+
+    static final boolean doTaxa = true;
+    static final boolean doDescriptions = false;
+
 
     static final String sourceRefTitle = "Fauna Europaea PESI import.";
-    static final UUID sourceRefUuid = UUID.fromString("f27a5e67-d065-4b79-8d41-eabd3ae0edd0");
+    public static final UUID sourceRefUuid = PesiTransformer.uuidSourceRefFaunaEuropaea;
 
     //check - import
     static final CHECK check = CHECK.IMPORT_WITHOUT_CHECK;
 
     static final int partitionSize = 5000;
-
-    static final boolean doTaxa = false;
-    static final boolean doDescriptions = true;
 
     static final boolean doConcurrent = false;
     //auditing
