@@ -73,7 +73,7 @@ public abstract class IndexFungorumImportBase extends CdmImportBase<IndexFungoru
 	private final String dbTableName;
 
 
-	public IndexFungorumImportBase(String pluralString, String dbTableName, Class cdmTargetClass) {
+	public IndexFungorumImportBase(String pluralString, String dbTableName) {
 		this.pluralString = pluralString;
 		this.dbTableName = dbTableName;
 	}

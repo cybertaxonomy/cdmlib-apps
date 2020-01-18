@@ -42,7 +42,7 @@ public class IndexFungorumSupraGeneraImport  extends IndexFungorumImportBase {
 	private static final String COL_RECORD_NUMBER = "RECORD NUMBER";
 
 	public IndexFungorumSupraGeneraImport(){
-		super(pluralString, dbTableName, null);
+		super(pluralString, dbTableName);
 	}
 
 	@Override

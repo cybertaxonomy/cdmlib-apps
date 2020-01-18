@@ -45,7 +45,7 @@ public class IndexFungorumHigherClassificationImport  extends IndexFungorumImpor
 	private static final String dbTableName = "tblPESIfungi-Classification";
 
 	public IndexFungorumHigherClassificationImport(){
-		super(pluralString, dbTableName, null);
+		super(pluralString, dbTableName);
 	}
 
 	@Override

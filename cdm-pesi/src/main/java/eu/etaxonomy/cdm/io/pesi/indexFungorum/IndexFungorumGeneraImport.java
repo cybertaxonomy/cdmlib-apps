@@ -45,7 +45,7 @@ public class IndexFungorumGeneraImport  extends IndexFungorumImportBase {
 	private static final String dbTableName = "tblGenera";
 
 	public IndexFungorumGeneraImport(){
-		super(pluralString, dbTableName, null);
+		super(pluralString, dbTableName);
 	}
 
 	@Override

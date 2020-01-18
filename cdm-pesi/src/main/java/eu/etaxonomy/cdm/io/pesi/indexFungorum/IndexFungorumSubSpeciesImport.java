@@ -31,12 +31,7 @@ public class IndexFungorumSubSpeciesImport extends IndexFungorumImportBase {
 	private static final String pluralString = "subSpecies";
 
 	public IndexFungorumSubSpeciesImport(){
-		super(pluralString, null, null);
-	}
-
-	public IndexFungorumSubSpeciesImport(String pluralString,
-			String dbTableName, @SuppressWarnings("rawtypes") Class cdmTargetClass) {
-		super(pluralString, dbTableName, cdmTargetClass);
+		super(pluralString, null);
 	}
 
 	@Override

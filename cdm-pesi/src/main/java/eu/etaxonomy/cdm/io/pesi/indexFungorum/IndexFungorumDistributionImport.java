@@ -47,7 +47,7 @@ public class IndexFungorumDistributionImport  extends IndexFungorumImportBase {
 	private static final String dbTableName = "[tblPESIfungi]";
 
 	public IndexFungorumDistributionImport(){
-		super(pluralString, dbTableName, null);
+		super(pluralString, dbTableName);
 	}
 
 	@Override
