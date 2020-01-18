@@ -78,7 +78,7 @@ public class IndexFungorumGeneraImport  extends IndexFungorumImportBase {
 
 				//Don't use (created bei Marc): DisplayName, NomRefCache
 
-				Integer id =( (Number)rs.getObject("RECORD NUMBER")).intValue();
+				Integer id = rs.getInt("RECORD NUMBER");
 
 				String preferredName = rs.getString("NAME OF FUNGUS");
 				if (StringUtils.isBlank(preferredName)){
@@ -96,12 +96,8 @@ public class IndexFungorumGeneraImport  extends IndexFungorumImportBase {
 				//author + publication
 				makeAuthorAndPublication(state, rs, name);
 				//source
-				//makeSource(state, taxon, id, NAMESPACE_GENERA );
-//				if (id != null){
-					makeSource(state, taxon, id.intValue(), NAMESPACE_GENERA );
-//				} else{
-//					makeSource(state, taxon, null,NAMESPACE_GENERA);
-//				}
+				makeSource(state, taxon, id.intValue(), NAMESPACE_GENERA );
+
 				getTaxonService().saveOrUpdate(taxon);
 			}
 		} catch (Exception e) {
@@ -153,22 +149,15 @@ public class IndexFungorumGeneraImport  extends IndexFungorumImportBase {
 	}
 
 	@Override
-	public Map<Object, Map<String, ? extends CdmBase>> getRelatedObjectsForPartition(ResultSet rs, IndexFungorumImportState state) {
-		String nameSpace;
-//		Class<?> cdmClass;
-//		Set<String> idSet;
-		Map<Object, Map<String, ? extends CdmBase>> result = new HashMap<>();
+	public Map<Object, Map<String, ? extends CdmBase>> getRelatedObjectsForPartition(
+	        ResultSet rs, IndexFungorumImportState state) {
+
+	    Map<Object, Map<String, ? extends CdmBase>> result = new HashMap<>();
 
 		try{
-//			Set<String> taxonNameSet = new HashSet<>();
-			while (rs.next()){
-//				handleForeignKey(rs, taxonIdSet,"tu_accfinal" );
-			}
 
 			//taxon map
-			nameSpace = NAMESPACE_SUPRAGENERIC_NAMES ;
-//			cdmClass = Taxon.class;
-//			idSet = taxonNameSet;
+		    String nameSpace = NAMESPACE_SUPRAGENERIC_NAMES ;
 			Map<String, TaxonBase<?>> taxonMap = new HashMap<>();
 			@SuppressWarnings("rawtypes")
             List<TaxonBase> list = getTaxonService().listTaxaByName(Taxon.class, "*", null, null, null, "*", null, 1000000, null, null);
@@ -183,7 +172,7 @@ public class IndexFungorumGeneraImport  extends IndexFungorumImportBase {
 			referenceMap.put(SOURCE_REFERENCE, sourceReference);
 			result.put(NAMESPACE_REFERENCE, referenceMap);
 
-		} catch (SQLException e) {
+		} catch (Exception e) {
 			throw new RuntimeException(e);
 		}
 		return result;

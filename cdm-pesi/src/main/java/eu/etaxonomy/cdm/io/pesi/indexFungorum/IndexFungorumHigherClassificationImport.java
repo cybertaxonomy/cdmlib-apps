@@ -14,7 +14,6 @@ import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 import org.apache.log4j.Logger;
 import org.springframework.stereotype.Component;
@@ -167,12 +166,11 @@ public class IndexFungorumHigherClassificationImport  extends IndexFungorumImpor
 					}
 					taxonFamily = makeTaxon(state, family, Rank.FAMILY());
 					if (taxonFamily != null){
-						try{
+					    try{
 							//if this shows a warning see single issue in #2826 about Glomerellaceae (which has 2 different parents)
 						    getClassification(state).addParentChild(higherTaxon, taxonFamily, null, null);
 						}catch(IllegalStateException e){
 							if (e.getMessage().startsWith("The child taxon is already part of the tree")){
-								//TaxonNode node = getClassification(state).getNode(taxonFamily);
 								logger.warn(e.getMessage() + taxonFamily.getTitleCache() + " " + higherTaxon.getTitleCache());
 							}
 						}
@@ -229,20 +227,11 @@ public class IndexFungorumHigherClassificationImport  extends IndexFungorumImpor
 	@Override
 	public Map<Object, Map<String, ? extends CdmBase>> getRelatedObjectsForPartition(ResultSet rs, IndexFungorumImportState state) {
 		String nameSpace;
-		Class<?> cdmClass;
-		Set<String> idSet;
 		Map<Object, Map<String, ? extends CdmBase>> result = new HashMap<>();
 
 		try{
-//			Set<String> taxonNameSet = new HashSet<>();
-//			while (rs.next()){
-//				handleForeignKey(rs, taxonIdSet,"tu_accfinal" );
-//			}
-
 			//taxon map
 			nameSpace = IndexFungorumImportBase.NAMESPACE_SUPRAGENERIC_NAMES ;
-			cdmClass = TaxonBase.class;
-//			idSet = taxonNameSet;
 			Map<String, TaxonBase<?>> taxonMap = new HashMap<>();
 			List<Taxon> list = getTaxonService().list(Taxon.class, null, null, null, null);
 			for (Taxon taxon : list){

@@ -85,7 +85,7 @@ public class IndexFungorumSpeciesImport  extends IndexFungorumImportBase {
 
 				//DisplayName, NomRefCache -> don't use, created by Marc
 
-				Integer id = (Integer)rs.getObject("PreferredNameIFnumber");
+				Integer id = rs.getInt("PreferredNameIFnumber");
 				String phylumName = rs.getString("Phylum name");
 
 				String preferredName = rs.getString("PreferredName");
@@ -125,7 +125,6 @@ public class IndexFungorumSpeciesImport  extends IndexFungorumImportBase {
 
 				//save
 				getTaxonService().saveOrUpdate(taxon);
-
 			}
 		} catch (Exception e) {
 			e.printStackTrace();

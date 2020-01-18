@@ -26,7 +26,7 @@ import eu.etaxonomy.cdm.model.taxon.TaxonBase;
 public class IndexFungorumSubSpeciesImport extends IndexFungorumImportBase {
 
     private static final long serialVersionUID = -2877755674188760685L;
-    private static final Logger logger = Logger.getLogger(IndexFungorumSpeciesImport.class);
+    private static final Logger logger = Logger.getLogger(IndexFungorumSubSpeciesImport.class);
 
 	private static final String pluralString = "subSpecies";
 
@@ -64,9 +64,7 @@ public class IndexFungorumSubSpeciesImport extends IndexFungorumImportBase {
 
             TaxonName name = infraspecificTaxon.getName();
 
-//            getNameService().saveOrUpdate(name);
             String parentNameString = getParentNameInfraSpecific(name);
-//            System.out.println("Parent name string: " + parentNameString);
             MatchingTaxonConfigurator matchingConfig = new MatchingTaxonConfigurator();
             matchingConfig.setTaxonNameTitle(parentNameString);
 

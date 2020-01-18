@@ -13,7 +13,6 @@ import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
@@ -52,7 +51,9 @@ import eu.etaxonomy.cdm.strategy.parser.TimePeriodParser;
  * @author a.mueller
  * @since 27.02.2012
  */
-public abstract class IndexFungorumImportBase extends CdmImportBase<IndexFungorumImportConfigurator, IndexFungorumImportState> implements ICdmIO<IndexFungorumImportState>, IPartitionedIO<IndexFungorumImportState> {
+public abstract class IndexFungorumImportBase
+        extends CdmImportBase<IndexFungorumImportConfigurator, IndexFungorumImportState>
+        implements ICdmIO<IndexFungorumImportState>, IPartitionedIO<IndexFungorumImportState> {
 
     private static final long serialVersionUID = -729872543287390949L;
     private static final Logger logger = Logger.getLogger(IndexFungorumImportBase.class);
@@ -105,26 +106,8 @@ public abstract class IndexFungorumImportBase extends CdmImportBase<IndexFungoru
 
     @Override
     public boolean doPartition(@SuppressWarnings("rawtypes") ResultSetPartitioner partitioner, IndexFungorumImportState state) {
-
-        boolean success = true ;
-		Set<CdmBase> objectsToSave = new HashSet<>();
-
-// 		DbImportMapping<?, ?> mapping = getMapping();
-//		mapping.initialize(state, cdmTargetClass);
-
-		ResultSet rs = partitioner.getResultSet();
-		try{
-			while (rs.next()){
-//				success &= mapping.invoke(rs,objectsToSave);
-			}
-		} catch (SQLException e) {
-			logger.error("SQLException:" +  e);
-			return false;
-		}
-
-		partitioner.startDoSave();
-		getCommonService().save(objectsToSave);
-		return success;
+        //should be overridden by subclasses if used
+		return true;
 	}
 
 	protected abstract String getRecordQuery(IndexFungorumImportConfigurator config);
@@ -218,9 +201,6 @@ public abstract class IndexFungorumImportBase extends CdmImportBase<IndexFungoru
 
 	/**
 	 * Returns true if i is a multiple of recordsPerTransaction
-	 * @param i
-	 * @param recordsPerTransaction
-	 * @return
 	 */
 	protected boolean loopNeedsHandling(int i, int recordsPerLoop) {
 		startTransaction();
@@ -316,7 +296,7 @@ public abstract class IndexFungorumImportBase extends CdmImportBase<IndexFungoru
 		}
 		ref.setVolume(volume);
 
-		//year   //TODO why yearOfPubl 2x exact same value
+		//year
 		String yearOfPubl = rs.getString("YEAR OF PUBLICATION");
 		String yearOnPubl = rs.getString("YEAR ON PUBLICATION");
 		String year = null;
@@ -330,9 +310,9 @@ public abstract class IndexFungorumImportBase extends CdmImportBase<IndexFungoru
 			ref.setDatePublished(TimePeriodParser.parseStringVerbatim(year));
 		}
 
-		//preliminary, set protected titlecache as Generic Cache Generation with in references currently doesn't fully work yet
+		//TODO preliminary, set protected titlecache as generic cache generation with in-references currently doesn't fully work yet
 		String titleCache = CdmUtils.concat(", ", pubAuthorStr, title);
-		if  ( StringUtils.isNotBlank(pubAuthorStr)){
+		if  (isNotBlank(pubAuthorStr)){
 			titleCache = "in " + titleCache;
 		}
 		titleCache = CdmUtils.concat(" ", titleCache, volume);

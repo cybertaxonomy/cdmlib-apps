@@ -50,7 +50,6 @@ public class IndexFungorumSupraGeneraImport  extends IndexFungorumImportBase {
 		String strRecordQuery =
 			" SELECT * " +
 			" FROM [tblSupragenericNames] " +
-//			" WHERE ( dr.id IN (" + ID_LIST_TOKEN + ") )";
 			"";
 		return strRecordQuery;
 	}
@@ -59,7 +58,8 @@ public class IndexFungorumSupraGeneraImport  extends IndexFungorumImportBase {
 	protected void doInvoke(IndexFungorumImportState state) {
 
 	    logger.info("Start supra genera ...");
-		//handle source reference first
+
+	    //handle source reference first
 		Reference sourceReference = state.getConfig().getSourceReference();
 		getReferenceService().save(sourceReference);
 
@@ -77,30 +77,23 @@ public class IndexFungorumSupraGeneraImport  extends IndexFungorumImportBase {
 
 				//Don't use (created by Marc): DisplayName, NomRefCache
 
-				Integer id = ((Number)rs.getObject(COL_RECORD_NUMBER)).intValue();
+				Integer id = rs.getInt(COL_RECORD_NUMBER);
 
 				String supragenericNames = rs.getString(SUPRAGENERIC_NAMES);
-				//String preferredName = rs.getString("PreferredName");
 				Integer rankFk = rs.getInt("PESI_RankFk");
 
 				//name
 				Rank rank = state.getTransformer().getRankByKey(String.valueOf(rankFk));
 				TaxonName name = TaxonNameFactory.NewBotanicalInstance(rank);
 				name.setGenusOrUninomial(supragenericNames);
-				/*if (preferredName != null && !preferredName.equals(supragenericNames)){
-					logger.warn("Suprageneric names and preferredName is not equal. This case is not yet handled by IF import. I take SupragenericNames for import. RECORD NUMBER" +id);
-				}*/
 
 				//taxon
 				Taxon taxon = Taxon.NewInstance(name, sourceReference);
 				//author + nom.ref.
 				makeAuthorAndPublication(state, rs, name);
 				//source
-//				if (id != null){
-					makeSource(state, taxon, id.intValue(), NAMESPACE_SUPRAGENERIC_NAMES );
-//				} else{
-//					makeSource(state, taxon, null, NAMESPACE_SUPRAGENERIC_NAMES);
-//				}
+				makeSource(state, taxon, id, NAMESPACE_SUPRAGENERIC_NAMES );
+
 				getTaxonService().saveOrUpdate(taxon);
 			}
 		} catch (Exception e) {
