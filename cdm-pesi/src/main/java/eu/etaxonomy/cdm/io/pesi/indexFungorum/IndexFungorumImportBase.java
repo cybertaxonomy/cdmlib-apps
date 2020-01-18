@@ -38,6 +38,7 @@ import eu.etaxonomy.cdm.model.common.LSID;
 import eu.etaxonomy.cdm.model.common.Marker;
 import eu.etaxonomy.cdm.model.common.MarkerType;
 import eu.etaxonomy.cdm.model.name.INonViralName;
+import eu.etaxonomy.cdm.model.name.NomenclaturalStatusType;
 import eu.etaxonomy.cdm.model.reference.OriginalSourceType;
 import eu.etaxonomy.cdm.model.reference.Reference;
 import eu.etaxonomy.cdm.model.reference.ReferenceFactory;
@@ -215,11 +216,15 @@ public abstract class IndexFungorumImportBase
 		//authors
 		NonViralNameParserImpl parser = NonViralNameParserImpl.NewInstance();
 		String authorStr = rs.getString("AUTHORS");
-		if (StringUtils.isNotBlank(authorStr)){
+		if (isNotBlank(authorStr)){
+		    if (authorStr.endsWith("ined.")){
+		        name.addStatus(NomenclaturalStatusType.INED(), null, null);
+		        authorStr = authorStr.substring(0, authorStr.length()-5).trim();
+		    }
 			try {
 				parser.parseAuthors(name, authorStr);
 			} catch (StringNotParsableException e){
-				//logger.warn("Authorstring not parsable: " + authorStr);
+				logger.warn("Authorstring not parsable: " + authorStr);
 				name.setAuthorshipCache(authorStr);
 			}
 		}
