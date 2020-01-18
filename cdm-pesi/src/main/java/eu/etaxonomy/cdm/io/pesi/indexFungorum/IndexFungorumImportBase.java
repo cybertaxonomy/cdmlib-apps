@@ -37,6 +37,7 @@ import eu.etaxonomy.cdm.model.common.IdentifiableSource;
 import eu.etaxonomy.cdm.model.common.LSID;
 import eu.etaxonomy.cdm.model.common.Marker;
 import eu.etaxonomy.cdm.model.common.MarkerType;
+import eu.etaxonomy.cdm.model.common.VerbatimTimePeriod;
 import eu.etaxonomy.cdm.model.name.INonViralName;
 import eu.etaxonomy.cdm.model.name.NomenclaturalStatusType;
 import eu.etaxonomy.cdm.model.reference.OriginalSourceType;
@@ -303,16 +304,20 @@ public abstract class IndexFungorumImportBase
 
 		//year
 		String yearOfPubl = rs.getString("YEAR OF PUBLICATION");
-		String yearOnPubl = rs.getString("YEAR ON PUBLICATION");
-		String year = null;
-		if (StringUtils.isNotBlank(yearOfPubl)){
-			year = yearOfPubl.trim();
+		String yearOnPubl = rs.getString("YEAR ON PUBLICATION");  //verbatim year
+		VerbatimTimePeriod datePublished = null;
+		if (isNotBlank(yearOfPubl)){
+			datePublished = TimePeriodParser.parseStringVerbatim(yearOfPubl.trim());
 		}
-		if (StringUtils.isNotBlank(yearOnPubl)){
-			year = CdmUtils.concat(" ", year, "[" + yearOnPubl + "]");
+		if (isNotBlank(yearOnPubl)){
+		    if (datePublished == null){
+		        logger.warn("Verbatim year without real year not yet supported");
+		    }else{
+		        datePublished.setVerbatimDate(yearOnPubl.trim());
+		    }
 		}
-		if (year != null){
-			ref.setDatePublished(TimePeriodParser.parseStringVerbatim(year));
+		if (datePublished != null){
+			ref.setDatePublished(datePublished);
 		}
 
 		//TODO preliminary, set protected titlecache as generic cache generation with in-references currently doesn't fully work yet
@@ -322,7 +327,7 @@ public abstract class IndexFungorumImportBase
 		}
 		titleCache = CdmUtils.concat(" ", titleCache, volume);
 		titleCache = CdmUtils.concat(": ", titleCache, page);
-		titleCache = CdmUtils.concat(". ", titleCache, year);
+		titleCache = CdmUtils.concat(". ", titleCache, datePublished == null ? null : datePublished.toString());
 		ref.setTitleCache(titleCache, true);
 
 		//set nom ref
