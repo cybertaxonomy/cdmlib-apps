@@ -12,7 +12,6 @@ package eu.etaxonomy.cdm.io.pesi.indexFungorum;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -55,7 +54,6 @@ public class IndexFungorumHigherClassificationImport  extends IndexFungorumImpor
 			" SELECT DISTINCT [Kingdom name], [Phylum name], [Subphylum name], [Class name], [Subclass name], [Order name], [Family name], g.[NAME OF FUNGUS] as GenusName, c.PreferredName as SpeciesName " +
 			" FROM [tblPESIfungi-Classification] c  LEFT OUTER JOIN " +
                       " tblGenera g ON c.PreferredNameFDCnumber = g.[RECORD NUMBER]" +
-//			" WHERE ( dr.id IN (" + ID_LIST_TOKEN + ") )";
 			" ORDER BY [Kingdom name], [Phylum name], [Subphylum name], [Class name], [Subclass name], [Order name],  [Family name], GenusName, SpeciesName ";
 		return strRecordQuery;
 	}
@@ -77,8 +75,6 @@ public class IndexFungorumHigherClassificationImport  extends IndexFungorumImpor
 		String lastSubclass = "";
 		String lastOrder = "";
 		String lastFamily = "";
-//		String lastGenus = "";
-//		String lastSpecies = "";
 
 		Taxon taxonKingdom = null;
 		Taxon taxonPhylum = null;
@@ -87,8 +83,6 @@ public class IndexFungorumHigherClassificationImport  extends IndexFungorumImpor
 		Taxon taxonSubclass = null;
 		Taxon taxonOrder = null;
 		Taxon taxonFamily = null;
-//		Taxon taxonGenus = null;
-//		Taxon taxonSpecies = null;
 
 		Taxon higherTaxon = null;
 
@@ -107,11 +101,7 @@ public class IndexFungorumHigherClassificationImport  extends IndexFungorumImpor
 				String subclass = rs.getString("Subclass name");
 				String order = rs.getString("Order name");
 				String family = rs.getString("Family name");
-//				String genus = rs.getString("GenusName");
-//				String species = rs.getString("SpeciesName");
 
-//				if (isNewTaxon(species, lastSpecies)){
-//					if (isNewTaxon(genus, lastGenus)){
 				if (isNewTaxon(family, lastFamily)){
 					if (isNewTaxon(order,lastOrder)){
 						if (isNewTaxon(subclass,lastSubclass)){
@@ -178,44 +168,21 @@ public class IndexFungorumHigherClassificationImport  extends IndexFungorumImpor
 					taxonFamily = makeTaxon(state, family, Rank.FAMILY());
 					if (taxonFamily != null){
 						try{
-							//if this shown a warning see single issue in #2826 about Glomerelllaceae (which has 2 different parents)
+							//if this shows a warning see single issue in #2826 about Glomerellaceae (which has 2 different parents)
 						    getClassification(state).addParentChild(higherTaxon, taxonFamily, null, null);
 						}catch(IllegalStateException e){
 							if (e.getMessage().startsWith("The child taxon is already part of the tree")){
 								//TaxonNode node = getClassification(state).getNode(taxonFamily);
 								logger.warn(e.getMessage() + taxonFamily.getTitleCache() + " " + higherTaxon.getTitleCache());
-
-								}
+							}
 						}
 					}
 					higherTaxon = isIncertisSedis(family) ? higherTaxon : taxonFamily;
 					lastFamily = family;
 					getTaxonService().saveOrUpdate(higherTaxon);
 				}
-//						else{
-//							higherTaxon = taxonFamily;
-//						}
-//						taxonGenus = makeTaxon(state, genus, Rank.GENUS());
-//						if (taxonGenus != null){
-//							getClassification(state).addParentChild(higherTaxon, taxonGenus, null, null);
-//						}
-//						higherTaxon = isIncertisSedis(genus) ? higherTaxon : taxonGenus;
-//						lastGenus = genus;
-//					}else{
-//						higherTaxon = taxonGenus;
-//					}
-//					taxonSpecies = makeTaxon(state, species, Rank.SPECIES());
-//					if (taxonSpecies != null){
-//						getClassification(state).addParentChild(higherTaxon, taxonSpecies, null, null);
-//					}
-//					higherTaxon = isIncertisSedis(species) ? higherTaxon : taxonSpecies;
-//					lastSpecies = species;
-//					getTaxonService().saveOrUpdate(higherTaxon);
-//				}
 				getTaxonService().saveOrUpdate(higherTaxon);
 			}
-
-
 		} catch (SQLException e) {
 			e.printStackTrace();
 			logger.error(e.getMessage());
@@ -226,14 +193,11 @@ public class IndexFungorumHigherClassificationImport  extends IndexFungorumImpor
 		logger.info("End higher classification ...");
 
 		return;
-
 	}
-
 
 	private boolean isIncertisSedis(String uninomial) {
 		return  uninomial.equalsIgnoreCase(INCERTAE_SEDIS) || uninomial.equalsIgnoreCase(FOSSIL_FUNGI);
 	}
-
 
 	private boolean isNewTaxon(String uninomial, String lastUninomial) {
 		boolean result =  !uninomial.equalsIgnoreCase(lastUninomial);
@@ -246,7 +210,7 @@ public class IndexFungorumHigherClassificationImport  extends IndexFungorumImpor
 		if (uninomial.equalsIgnoreCase(INCERTAE_SEDIS) || uninomial.equalsIgnoreCase(FOSSIL_FUNGI)){
 			return null;
 		}
-		Taxon taxon = state.getRelatedObject(IndexFungorumSupraGeneraImport.NAMESPACE_SUPRAGENERIC_NAMES, uninomial, Taxon.class);
+		Taxon taxon = state.getRelatedObject(IndexFungorumImportBase.NAMESPACE_SUPRAGENERIC_NAMES, uninomial, Taxon.class);
 		if (taxon == null){
 			if (! newRank.equals(Rank.KINGDOM())){
 				logger.warn("Taxon not found for uninomial " + uninomial);
@@ -262,25 +226,24 @@ public class IndexFungorumHigherClassificationImport  extends IndexFungorumImpor
 		return taxon;
 	}
 
-
 	@Override
 	public Map<Object, Map<String, ? extends CdmBase>> getRelatedObjectsForPartition(ResultSet rs, IndexFungorumImportState state) {
 		String nameSpace;
 		Class<?> cdmClass;
 		Set<String> idSet;
-		Map<Object, Map<String, ? extends CdmBase>> result = new HashMap<Object, Map<String, ? extends CdmBase>>();
+		Map<Object, Map<String, ? extends CdmBase>> result = new HashMap<>();
 
 		try{
-			Set<String> taxonNameSet = new HashSet<String>();
+//			Set<String> taxonNameSet = new HashSet<>();
 //			while (rs.next()){
 //				handleForeignKey(rs, taxonIdSet,"tu_accfinal" );
 //			}
 
 			//taxon map
-			nameSpace = IndexFungorumSupraGeneraImport.NAMESPACE_SUPRAGENERIC_NAMES ;
+			nameSpace = IndexFungorumImportBase.NAMESPACE_SUPRAGENERIC_NAMES ;
 			cdmClass = TaxonBase.class;
 //			idSet = taxonNameSet;
-			Map<String, TaxonBase<?>> taxonMap = new HashMap<String, TaxonBase<?>>();
+			Map<String, TaxonBase<?>> taxonMap = new HashMap<>();
 			List<Taxon> list = getTaxonService().list(Taxon.class, null, null, null, null);
 			for (Taxon taxon : list){
 				taxonMap.put(CdmBase.deproxy(taxon.getName()).getGenusOrUninomial(), taxon);
@@ -289,7 +252,7 @@ public class IndexFungorumHigherClassificationImport  extends IndexFungorumImpor
 
 			//source reference
 			Reference sourceReference = getReferenceService().find(PesiTransformer.uuidSourceRefIndexFungorum);
-			Map<String, Reference> referenceMap = new HashMap<String, Reference>();
+			Map<String, Reference> referenceMap = new HashMap<>();
 			referenceMap.put(SOURCE_REFERENCE, sourceReference);
 			result.put(NAMESPACE_REFERENCE, referenceMap);
 
@@ -308,9 +271,4 @@ public class IndexFungorumHigherClassificationImport  extends IndexFungorumImpor
 	protected boolean isIgnore(IndexFungorumImportState state){
 		return ! state.getConfig().isDoRelTaxa();
 	}
-
-
-
-
-
 }

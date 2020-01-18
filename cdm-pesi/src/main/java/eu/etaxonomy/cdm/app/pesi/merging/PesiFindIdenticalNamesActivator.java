@@ -67,7 +67,6 @@ public class PesiFindIdenticalNamesActivator {
         sources.put(ifSourceUuid, "IF");
     }
 
-
 	private void invoke(ICdmDataSource source){
 
         CdmApplicationController app = CdmIoApplicationController.NewInstance(source, DbSchemaValidation.VALIDATE, false);

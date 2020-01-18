@@ -104,7 +104,7 @@ public class IndexFungorumSpeciesImport  extends IndexFungorumImportBase {
 		        if (!name.isInfraSpecific()){
 				    Taxon parent = getParentTaxon(state, genusId);
 				    if (parent == null){
-	                    logger.warn("parent not found for name:" + preferredName + "ID(PreferredNameIFnumber)" +id+ "; GenusId(PreferredNameFDCnumber): ");
+	                    logger.warn("Parent not found for name:" + preferredName + "; ID(PreferredNameIFnumber): " +id+ "; GenusId(PreferredNameFDCnumber): ");
 	                }else{
 	                    classification.addParentChild(parent, taxon, null, null);
 	                }
