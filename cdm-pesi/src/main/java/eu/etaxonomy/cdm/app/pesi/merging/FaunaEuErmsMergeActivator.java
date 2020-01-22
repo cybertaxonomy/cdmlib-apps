@@ -1,15 +1,10 @@
 package eu.etaxonomy.cdm.app.pesi.merging;
 
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileReader;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
-import java.util.StringTokenizer;
 import java.util.UUID;
 
 import org.apache.log4j.Logger;
@@ -39,19 +34,18 @@ import eu.etaxonomy.cdm.model.taxon.Taxon;
 import eu.etaxonomy.cdm.model.taxon.TaxonBase;
 import eu.etaxonomy.cdm.model.taxon.TaxonNode;
 
-public class FaunaEuErmsMergeActivator {
+public class FaunaEuErmsMergeActivator extends PesiMergeBase{
 
-//	static final ICdmDataSource faunaEuropaeaSource = CdmDestinations.cdm_test_patricia();
 	static final ICdmDataSource faunaEuropaeaSource = CdmDestinations.localH2();
 
 	static final int faunaEuUuid = 0;
 	static final int ermsUuid = 9;
 	static final int rankFaunaEu = 4;
 	static final int rankErms = 13;
-	Classification faunaEuClassification;
-	Classification ermsClassification;
+	private Classification faunaEuClassification;
+	private Classification ermsClassification;
 
-	CdmApplicationController appCtrInit;
+	private CdmApplicationController appCtrInit;
 
 	private static final Logger logger = Logger.getLogger(FaunaEuErmsMergeActivator.class);
 
@@ -73,16 +67,18 @@ public class FaunaEuErmsMergeActivator {
 
 		//set the ranks of Agnatha and Gnathostomata to 50 instead of 45
 		List<TaxonBase> taxaToChangeRank = new ArrayList<>();
+
 		Pager<TaxonBase> agnatha = sc.appCtrInit.getTaxonService().findTaxaByName(TaxonBase.class, "Agnatha", null, null, null, "*", Rank.INFRAPHYLUM(), 10, 0, null);
 		List<TaxonBase> agnathaList = agnatha.getRecords();
 		taxaToChangeRank.addAll(agnathaList);
+
 		Pager<TaxonBase> gnathostomata = sc.appCtrInit.getTaxonService().findTaxaByName(TaxonBase.class, "Gnathostomata", null, null, null, "*", Rank.INFRAPHYLUM(), 10, 0, null);
 		List<TaxonBase> gnathostomataList = gnathostomata.getRecords();
 		taxaToChangeRank.addAll(gnathostomataList);
 
 		sc.setSpecificRank(taxaToChangeRank, Rank.SUPERCLASS());
 
-		//ermsTaxon is accepted, fauna eu taxon is synonym
+		//ermsTaxon is accepted, faunaEu taxon is synonym
 		//ermsTaxon is synonym, faunaEu is accepted
 
 		sc.mergeDiffStatus();
@@ -93,48 +89,18 @@ public class FaunaEuErmsMergeActivator {
 
 	}
 
-	private static List<List<String>> readCsvFile(String fileName){
-
-		List<List<String>> result = new ArrayList<>();
-		File file = new File(fileName);
-		BufferedReader bufRdr;
-		try {
-			bufRdr = new BufferedReader(new FileReader(file));
-			String line = null;
-			//read each line of text file
-			while((line = bufRdr.readLine()) != null){
-				StringTokenizer st = new StringTokenizer(line,",");
-				List<String> rowList = new ArrayList<>();
-				while (st.hasMoreTokens()){
-					//get next token and store it in the array
-					rowList.add(st.nextToken());
-				}
-			result.add(rowList);
-			}
-			//close the file
-			bufRdr.close();
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-		return result;
-	}
-
-
 	private void mergeAuthors(){
 		List<List<String>> authors = readCsvFile(sFileName + "_authors.csv");
 		//authors: get firstAuthor if isFauEu = 1 otherwise get secondAuthor
 
 		Iterator<List<String>> authorIterator = authors.iterator();
-		List<String> row;
-		TaxonBase<?> taxonFaunaEu;
-		TaxonBase<?> taxonErms;
-		List<TaxonBase<?>> taxaToSave = new ArrayList<>();
+		List<TaxonBase<?>> taxaToSave = new ArrayList<>();  //TODO: needed?
 		while (authorIterator.hasNext()){
-			row = authorIterator.next();
+		    List<String> row = authorIterator.next();
 			UUID uuidFaunaEu = UUID.fromString(row.get(faunaEuUuid));
 			UUID uuidErms = UUID.fromString(row.get(ermsUuid));
-			taxonFaunaEu = appCtrInit.getTaxonService().find(uuidFaunaEu);
-			taxonErms = appCtrInit.getTaxonService().find(uuidErms);
+			TaxonBase<?> taxonFaunaEu = appCtrInit.getTaxonService().find(uuidFaunaEu);
+			TaxonBase<?> taxonErms = appCtrInit.getTaxonService().find(uuidErms);
 // which information should be used can be found in last row -> needs to be done manually
 			if (Integer.parseInt(row.get(18)) == 1){
 				//isFaunaEu = 1 -> copy the author of Fauna Europaea to Erms
@@ -169,7 +135,7 @@ public class FaunaEuErmsMergeActivator {
 		List<List<String>> diffStatus = readCsvFile(sFileName + "_status.csv");
 
 		//find all taxa accepted in erms, but synonyms in FauEu  and the same rank
-		List<List<String>> accErmsSynFaunaEu = new ArrayList<List<String>>();
+		List<List<String>> accErmsSynFaunaEu = new ArrayList<>();
 		for (List<String> rowList: diffStatus){
 			if ((rowList.get(5).equals("synonym")) && (rowList.get(rankFaunaEu).equals(rowList.get(rankErms)))){
 				//both conditions are true
