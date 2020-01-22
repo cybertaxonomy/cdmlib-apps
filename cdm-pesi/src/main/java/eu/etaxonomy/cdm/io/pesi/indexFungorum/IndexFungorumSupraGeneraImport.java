@@ -93,6 +93,7 @@ public class IndexFungorumSupraGeneraImport  extends IndexFungorumImportBase {
 				makeAuthorAndPublication(state, rs, name);
 				//source
 				makeSource(state, taxon, id, NAMESPACE_SUPRAGENERIC_NAMES );
+				makeSource(state, name, id, NAMESPACE_SUPRAGENERIC_NAMES );
 
 				getTaxonService().saveOrUpdate(taxon);
 			}

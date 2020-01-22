@@ -97,6 +97,7 @@ public class IndexFungorumGeneraImport  extends IndexFungorumImportBase {
 				makeAuthorAndPublication(state, rs, name);
 				//source
 				makeSource(state, taxon, id.intValue(), NAMESPACE_GENERA );
+				makeSource(state, name, id.intValue(), NAMESPACE_GENERA );
 
 				getTaxonService().saveOrUpdate(taxon);
 			}
@@ -159,11 +160,19 @@ public class IndexFungorumGeneraImport  extends IndexFungorumImportBase {
 			//taxon map
 		    String nameSpace = NAMESPACE_SUPRAGENERIC_NAMES ;
 			Map<String, TaxonBase<?>> taxonMap = new HashMap<>();
-			@SuppressWarnings("rawtypes")
-            List<TaxonBase> list = getTaxonService().listTaxaByName(Taxon.class, "*", null, null, null, "*", null, 1000000, null, null);
-			for (TaxonBase<?> taxon : list){
-				taxonMap.put(CdmBase.deproxy(taxon.getName()).getGenusOrUninomial(), taxon);
-			}
+			@SuppressWarnings("unchecked")
+            List<Taxon> list = getCommonService().getHqlResult(
+                      " SELECT t FROM TaxonBase t "
+                    + " JOIN t.sources s "
+                    + " WHERE s.citation.uuid = ?0 AND t.name.rank.uuid <> ?1",
+                    new Object[]{ PesiTransformer.uuidSourceRefIndexFungorum, Rank.uuidGenus});  //only use index fungorum taxa not being genus (important for partitions not being first partition)
+            for (Taxon taxon : list){
+                String uninomial = CdmBase.deproxy(taxon.getName()).getGenusOrUninomial();
+                TaxonBase<?> existing = taxonMap.put(uninomial, taxon);
+                if (existing != null){
+                    logger.warn("There seem to be duplicate taxa for uninomial: " + uninomial);
+                }
+            }
 			result.put(nameSpace, taxonMap);
 
 			//sourceReference

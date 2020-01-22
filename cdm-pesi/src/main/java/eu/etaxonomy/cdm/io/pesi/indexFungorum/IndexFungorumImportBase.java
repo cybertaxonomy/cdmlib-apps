@@ -33,6 +33,7 @@ import eu.etaxonomy.cdm.io.pesi.out.PesiTransformer;
 import eu.etaxonomy.cdm.model.agent.Team;
 import eu.etaxonomy.cdm.model.agent.TeamOrPersonBase;
 import eu.etaxonomy.cdm.model.common.CdmBase;
+import eu.etaxonomy.cdm.model.common.IdentifiableEntity;
 import eu.etaxonomy.cdm.model.common.IdentifiableSource;
 import eu.etaxonomy.cdm.model.common.LSID;
 import eu.etaxonomy.cdm.model.common.Marker;
@@ -44,7 +45,6 @@ import eu.etaxonomy.cdm.model.reference.OriginalSourceType;
 import eu.etaxonomy.cdm.model.reference.Reference;
 import eu.etaxonomy.cdm.model.reference.ReferenceFactory;
 import eu.etaxonomy.cdm.model.taxon.Classification;
-import eu.etaxonomy.cdm.model.taxon.Taxon;
 import eu.etaxonomy.cdm.strategy.exceptions.StringNotParsableException;
 import eu.etaxonomy.cdm.strategy.parser.NonViralNameParserImpl;
 import eu.etaxonomy.cdm.strategy.parser.TimePeriodParser;
@@ -222,13 +222,15 @@ public abstract class IndexFungorumImportBase
 		        name.addStatus(NomenclaturalStatusType.INED(), null, null);
 		        authorStr = authorStr.substring(0, authorStr.length()-5).trim();
 		    }
-			try {
-				parser.parseAuthors(name, authorStr);
-			} catch (StringNotParsableException e){
-				logger.warn("Authorstring not parsable: " + authorStr);
-				name.setAuthorshipCache(authorStr);
-			}
 		}
+	    if (isNotBlank(authorStr)){
+	        try {
+                parser.parseAuthors(name, authorStr);
+            } catch (StringNotParsableException e){
+                logger.warn("Authorstring not parsable: " + authorStr);
+                name.setAuthorshipCache(authorStr);
+            }
+	    }
 
 		//page
 		String page = rs.getString("PAGE");
@@ -341,30 +343,30 @@ public abstract class IndexFungorumImportBase
 				"has no last action", "No last action information available", "no last action");
 	}
 
-	protected void makeSource(IndexFungorumImportState state, Taxon taxon, Integer id, String namespace) {
+	protected void makeSource(IndexFungorumImportState state, IdentifiableEntity<?> entity, Integer id, String namespace) {
 		//source reference
 		Reference sourceReference = state.getRelatedObject(NAMESPACE_REFERENCE, SOURCE_REFERENCE, Reference.class);
 		//source
 		String strId = (id == null ? null : String.valueOf(id));
 		IdentifiableSource source = IdentifiableSource.NewInstance(OriginalSourceType.Import, strId, namespace, sourceReference, null);
-		taxon.addSource(source);
+		entity.addSource(source);
 
 		//no last action
 		MarkerType hasNoLastAction = getNoLastActionMarkerType(state);
-		taxon.addMarker(Marker.NewInstance(hasNoLastAction, true));
+		entity.addMarker(Marker.NewInstance(hasNoLastAction, true));
 		//LSID
-		makeLSID(taxon, strId, state);
+		makeLSID(entity, strId, state);
 	}
 
-	private void makeLSID(Taxon taxon, String strId, IndexFungorumImportState state) {
+	private void makeLSID(IdentifiableEntity<?> entity, String strId, IndexFungorumImportState state) {
 		try {
 			if (StringUtils.isNotBlank(strId) &&  strId != null){
 				LSID lsid = new LSID(IndexFungorumTransformer.LSID_PREFIX + strId);
-				taxon.setLsid(lsid);
+				entity.setLsid(lsid);
 			}else{
-				logger.warn("No ID available for taxon " + taxon.getTitleCache() + ", " +  taxon.getUuid());
+				logger.warn("No ID available for taxon " + entity.getTitleCache() + ", " +  entity.getUuid());
 				MarkerType missingGUID = getMissingGUIDMarkerType(state);
-				taxon.addMarker(Marker.NewInstance(missingGUID, true));
+				entity.addMarker(Marker.NewInstance(missingGUID, true));
 			}
 		} catch (MalformedLSIDException e) {
 			logger.error(e.getMessage());

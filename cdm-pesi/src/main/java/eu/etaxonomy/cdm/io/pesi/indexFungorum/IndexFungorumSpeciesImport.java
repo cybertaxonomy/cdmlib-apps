@@ -26,8 +26,8 @@ import eu.etaxonomy.cdm.io.pesi.out.PesiTransformer;
 import eu.etaxonomy.cdm.model.common.CdmBase;
 import eu.etaxonomy.cdm.model.common.Extension;
 import eu.etaxonomy.cdm.model.common.ExtensionType;
-import eu.etaxonomy.cdm.model.name.INonViralName;
 import eu.etaxonomy.cdm.model.name.NomenclaturalCode;
+import eu.etaxonomy.cdm.model.name.TaxonName;
 import eu.etaxonomy.cdm.model.reference.Reference;
 import eu.etaxonomy.cdm.model.taxon.Classification;
 import eu.etaxonomy.cdm.model.taxon.Taxon;
@@ -93,10 +93,8 @@ public class IndexFungorumSpeciesImport  extends IndexFungorumImportBase {
 					logger.warn("Preferred name is blank. This case is not yet handled by IF import. RECORD NUMBER" + CdmUtils.Nz(id));
 				}
 
-				//Rank rank = Rank.SPECIES();
-
 				NonViralNameParserImpl parser = NonViralNameParserImpl.NewInstance();
-				INonViralName name = parser.parseSimpleName(preferredName, NomenclaturalCode.ICNAFP, null);
+				TaxonName name = (TaxonName)parser.parseSimpleName(preferredName, NomenclaturalCode.ICNAFP, null);
 
 				Taxon taxon = Taxon.NewInstance(name, sourceReference);
 				//if name is infra-specific the parent should be the species not the genus
@@ -116,6 +114,7 @@ public class IndexFungorumSpeciesImport  extends IndexFungorumImportBase {
 				makeAuthorAndPublication(state, rs, name);
 				//source
 				makeSource(state, taxon, id, NAMESPACE_SPECIES );
+                makeSource(state, name, id, NAMESPACE_SPECIES );
 
 				//fossil
 				if (FOSSIL_FUNGI.equalsIgnoreCase(phylumName)){

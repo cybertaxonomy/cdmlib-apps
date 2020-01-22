@@ -31,7 +31,6 @@ import eu.etaxonomy.cdm.model.description.TaxonDescription;
 import eu.etaxonomy.cdm.model.location.NamedArea;
 import eu.etaxonomy.cdm.model.reference.Reference;
 import eu.etaxonomy.cdm.model.taxon.Taxon;
-import eu.etaxonomy.cdm.model.taxon.TaxonBase;
 
 /**
  * @author a.mueller
@@ -128,16 +127,6 @@ public class IndexFungorumDistributionImport  extends IndexFungorumImportBase {
 		return success;
 	}
 
-	private Taxon getParentTaxon(IndexFungorumImportState state, ResultSet rs) throws SQLException {
-		Integer genusId = rs.getInt("PreferredNameFDCnumber");
-
-		Taxon taxon = state.getRelatedObject(NAMESPACE_GENERA, String.valueOf(genusId), Taxon.class);
-		if (taxon == null){
-			logger.warn("Taxon not found for " + genusId);
-		}
-		return taxon;
-	}
-
 	@Override
 	public Map<Object, Map<String, ? extends CdmBase>> getRelatedObjectsForPartition(ResultSet rs, IndexFungorumImportState state) {
 
@@ -154,8 +143,7 @@ public class IndexFungorumDistributionImport  extends IndexFungorumImportBase {
 			//taxon map
 			nameSpace = NAMESPACE_SPECIES;
 			idSet = taxonIdSet;
-			@SuppressWarnings({ "rawtypes" })
-            Map<String, TaxonBase> taxonMap = getCommonService().getSourcedObjectsByIdInSourceC(TaxonBase.class, idSet, nameSpace);
+            Map<String, Taxon> taxonMap = getCommonService().getSourcedObjectsByIdInSourceC(Taxon.class, idSet, nameSpace);
 			result.put(nameSpace, taxonMap);
 
 			//sourceReference

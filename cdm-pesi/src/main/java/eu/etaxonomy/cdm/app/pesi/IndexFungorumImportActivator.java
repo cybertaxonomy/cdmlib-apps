@@ -33,13 +33,14 @@ public class IndexFungorumImportActivator {
 	private static final Logger logger = Logger.getLogger(IndexFungorumImportActivator.class);
 
 	//database validation status (create, update, validate ...)
-	static DbSchemaValidation hbm2dll = DbSchemaValidation.CREATE;
+	static DbSchemaValidation hbm2dll = DbSchemaValidation.VALIDATE;
 
 	static final Source indexFungorumSource = PesiSources.PESI3_IF();
 
 //	static final ICdmDataSource cdmDestination = CdmDestinations.cdm_test_local_indexFungorum();
-	static final ICdmDataSource cdmDestination = CdmDestinations.cdm_test_local_indexFungorum2();
-//	static final ICdmDataSource cdmDestination = CdmDestinations.cdm_test_local_mysql_test();
+//	static final ICdmDataSource cdmDestination = CdmDestinations.cdm_test_local_indexFungorum2();
+//    static final ICdmDataSource cdmDestination = CdmDestinations.cdm_pesi2019_final();
+    static final ICdmDataSource cdmDestination = CdmDestinations.cdm_pesi2019_final_test();
 
 	static final UUID classificationUuid = UUID.fromString("4bea48c3-eb10-41d1-b708-b5ee625ed243");
 
