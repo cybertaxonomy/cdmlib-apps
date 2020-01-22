@@ -28,7 +28,6 @@ import eu.etaxonomy.cdm.common.StringComparator;
 import eu.etaxonomy.cdm.database.DbSchemaValidation;
 import eu.etaxonomy.cdm.database.ICdmDataSource;
 import eu.etaxonomy.cdm.io.api.application.CdmIoApplicationController;
-import eu.etaxonomy.cdm.io.pesi.merging.PesiMergeObject;
 import eu.etaxonomy.cdm.io.pesi.out.PesiTransformer;
 import eu.etaxonomy.cdm.model.common.CdmBase;
 import eu.etaxonomy.cdm.model.common.IdentifiableSource;
@@ -47,24 +46,23 @@ public class PesiFindIdenticalNamesActivator {
     private static final Logger logger = Logger.getLogger(PesiFindIdenticalNamesActivator.class);
 
     //static final ICdmDataSource faunaEuropaeaSource = CdmDestinations.localH2();
-//	static final ICdmDataSource pesiSource = CdmDestinations.cdm_test_local_faunaEu_mysql();
 	static final ICdmDataSource pesiSource = CdmDestinations.cdm_pesi2019_final();
 
 	static final String path = System.getProperty("user.home")+File.separator+".cdmLibrary"+File.separator+"pesi"+File.separator+"pesimerge";
 
-	private static UUID faunaEuSourceUuid = PesiTransformer.uuidSourceRefFaunaEuropaea;
-	private static UUID ermsSourceUuid = PesiTransformer.uuidSourceRefErms;
-	private static UUID ifSourceUuid = PesiTransformer.uuidSourceRefIndexFungorum;
 	private static UUID emSourceUuid = PesiTransformer.uuidSourceRefEuroMed;
+	private static UUID ermsSourceUuid = PesiTransformer.uuidSourceRefErms;
+	private static UUID faunaEuSourceUuid = PesiTransformer.uuidSourceRefFaunaEuropaea;
+	private static UUID ifSourceUuid = PesiTransformer.uuidSourceRefIndexFungorum;
 	private static List<UUID> sourceRefUuids = new ArrayList<>();
-	private static Map<UUID,String> sources = new HashMap<>();
+	private static Map<UUID,String> sourcesLabels = new HashMap<>();
 
     static {
         sourceRefUuids.addAll(Arrays.asList(new UUID[]{emSourceUuid, ermsSourceUuid, faunaEuSourceUuid, ifSourceUuid}));
-        sources.put(emSourceUuid, "E+M");
-        sources.put(ermsSourceUuid, "ERMS");
-        sources.put(faunaEuSourceUuid, "FauEu");
-        sources.put(ifSourceUuid, "IF");
+        sourcesLabels.put(emSourceUuid, "E+M");
+        sourcesLabels.put(ermsSourceUuid, "ERMS");
+        sourcesLabels.put(faunaEuSourceUuid, "FauEu");
+        sourcesLabels.put(ifSourceUuid, "IF");
     }
 
 	private void invoke(ICdmDataSource source){
@@ -96,96 +94,132 @@ public class PesiFindIdenticalNamesActivator {
             return;
         }
         System.out.println("Start creating merging objects");
-        List<Map<UUID, PesiMergeObject>> mergingObjects = createMergeObjects(namesOfIdenticalTaxa, app);
+        List<Map<UUID, List<PesiMergeObject>>> mergingObjects = createMergeObjects(namesOfIdenticalTaxa, app);
         app.commitTransaction(tx);
 
         boolean resultOK = true;
         System.out.println("Start creating csv files");
-        resultOK &= writeSameNamesDifferentAuthorToCsv(mergingObjects, sources, path + "_authors.csv");
-        resultOK &= writeSameNamesDifferentStatusToCsv(mergingObjects, sources, path + "_status.csv");
-        resultOK &= writeSameNamesToCsvFile(mergingObjects, sources, path + "_names.csv");
-        resultOK &= writeSameNamesDifferentPhylumToCsv(mergingObjects, sources, path + "_phylum.csv");
-        resultOK &= writeSameNamesDifferentParentToCsv(mergingObjects, sources, path + "_parent.csv");
-        resultOK &= writeSameNamesDifferentRankToCsv(mergingObjects, sources, path + "_rank.csv");
+        resultOK &= writeSameNamesToCsvFile(mergingObjects, path + "_namesAll.csv");
+        resultOK &= writeSameNamesDifferentAuthorToCsv(mergingObjects, path + "_authors.csv");
+        resultOK &= writeSameNamesDifferentStatusToCsv(mergingObjects, path + "_status.csv");
+        resultOK &= writeSameNamesDifferentPhylumToCsv(mergingObjects, path + "_phylum.csv");
+        resultOK &= writeSameNamesDifferentParentToCsv(mergingObjects, path + "_parent.csv");
+        resultOK &= writeSameNamesDifferentRankToCsv(mergingObjects, path + "_rank.csv");
 
         System.out.println("End find identical names for PESI: " + resultOK + ". Results written to " + path);
 	}
 
 	private boolean writeSameNamesToCsvFile(
-			List<Map<UUID, PesiMergeObject>> mergingObjects, Map<UUID,String> sources, String sFileName) {
+			List<Map<UUID,List<PesiMergeObject>>> mergingObjects, String sFileName) {
 
 	    String header = "same names (all)";
         String methodName = null;
-        return writeDifference(header, methodName, mergingObjects, sources, sFileName);
+        return writeDifference(header, methodName, mergingObjects, sFileName);
 	}
 
 	private boolean writeSameNamesDifferentPhylumToCsv(
-	        List<Map<UUID, PesiMergeObject>> mergingObjects, Map<UUID,String> sources, String sFileName){
+	        List<Map<UUID,List<PesiMergeObject>>> mergingObjects, String sFileName){
 
 	    String header = "same names but different phylum";
 	    String methodName = "getPhylum";
-	    return writeDifference(header, methodName, mergingObjects, sources, sFileName);
+	    return writeDifference(header, methodName, mergingObjects, sFileName);
 	}
 
     private boolean writeSameNamesDifferentParentToCsv(
-	        List<Map<UUID, PesiMergeObject>> mergingObjects, Map<UUID,String> sources, String sFileName){
+	        List<Map<UUID,List<PesiMergeObject>>> mergingObjects, String sFileName){
 
 		    String header = "same names but different parent";
 	        String methodName = "getParentString";
-	        return writeDifference(header, methodName, mergingObjects, sources, sFileName);
+	        return writeDifference(header, methodName, mergingObjects, sFileName);
 	}
 
 	private boolean writeSameNamesDifferentRankToCsv(
-	        List<Map<UUID, PesiMergeObject>> mergingObjects, Map<UUID,String> sources, String sFileName){
+	        List<Map<UUID,List<PesiMergeObject>>> mergingObjects, String sFileName){
 
         String header = "same names but different rank";
         String methodName = "getRank";
-        return writeDifference(header, methodName, mergingObjects, sources, sFileName);
+        return writeDifference(header, methodName, mergingObjects, sFileName);
 	}
 
     private boolean writeSameNamesDifferentStatusToCsv(
-            List<Map<UUID, PesiMergeObject>> mergingObjects, Map<UUID,String> sources, String sFileName){
+            List<Map<UUID,List<PesiMergeObject>>> mergingObjects, String sFileName){
 
         String header = "same names but different status";
         String methodName = "isStatus";
-        return writeDifference(header, methodName, mergingObjects, sources, sFileName);
+        return writeDifference(header, methodName, mergingObjects, sFileName);
     }
 
     private boolean writeSameNamesDifferentAuthorToCsv(
-            List<Map<UUID, PesiMergeObject>> mergingObjects, Map<UUID,String> sources, String sFileName){
+            List<Map<UUID,List<PesiMergeObject>>> mergingObjects, String sFileName){
 
         String header = "same names but different author";
         String methodName = "getAuthor";
-        return writeDifference(header, methodName, mergingObjects, sources, sFileName);
+        return writeDifference(header, methodName, mergingObjects, sFileName);
     }
 
-    private boolean writeDifference(String header, String methodName,
-            List<Map<UUID, PesiMergeObject>> mergingObjects, Map<UUID,String> sources, String sFileName) {
+    private boolean writeDifference(String header,
+            String methodName,
+            List<Map<UUID,List<PesiMergeObject>>> mergingObjects,
+            String sFileName) {
 
         try{
             Method method = methodName == null? null : PesiMergeObject.class.getMethod(methodName);
 
-//            FileWriter writer = new FileWriter(sFileName);
             Writer writer = new OutputStreamWriter(new FileOutputStream(new File(sFileName)), StandardCharsets.UTF_8);
 
             //create Header
             createHeader(writer, header);
 
             //write data
-            for (Map<UUID, PesiMergeObject> merging : mergingObjects){
-                if (isDifferent(merging, method)){
-                    writeCsvLine(writer, merging, sources) ;
+            for (Map<UUID,List<PesiMergeObject>> merging : mergingObjects){
+                boolean isNextNameCache = true;
+                List<UUID> mySources = new ArrayList<>(merging.keySet());
+                for (int i = 0; i<mySources.size()-1; i++){
+                    for (int j = i+1; j<mySources.size(); j++){
+                        boolean differenceExists = false;
+                        List<PesiMergeObject> mergeList1 = merging.get(mySources.get(i));
+                        List<PesiMergeObject> mergeList2 = merging.get(mySources.get(j));
+                        for (PesiMergeObject merge1 : mergeList1){
+                            for (PesiMergeObject merge2 : mergeList2){
+                                differenceExists |= isDifferent(merge1, merge2, method);
+                            }
+                        }
+                        if (differenceExists){
+                            for (PesiMergeObject merge1 : mergeList1){
+                                for (PesiMergeObject merge2 : mergeList2){
+                                    writeCsvLine(writer, merge1, merge2, method, isNextNameCache);
+                                    isNextNameCache = false;
+                                }
+                            }
+                        }
+                    }
                 }
             }
             writer.flush();
             writer.close();
             return true;
-        }catch(IOException | IllegalAccessException | IllegalArgumentException | InvocationTargetException | NoSuchMethodException | SecurityException e){
+        }catch(NoSuchMethodException | SecurityException | IOException e){
             logger.error(e.getMessage());
             return false;
         }
     }
 
+    private boolean isDifferent(PesiMergeObject merge1, PesiMergeObject merge2, Method method){
+
+        try {
+            if (method == null){
+                return true;
+            }
+            Object value1 = method.invoke(merge1);
+            Object value2 = method.invoke(merge2);
+            return !CdmUtils.nullSafeEqual(value1, value2);
+        } catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
+            e.printStackTrace();
+            return true;
+        }
+    }
+
+    //old method when all sources were in 1 line
     private boolean isDifferent(Map<UUID, PesiMergeObject> merging, Method method)
             throws IllegalAccessException, IllegalArgumentException, InvocationTargetException {
 
@@ -208,36 +242,104 @@ public class PesiFindIdenticalNamesActivator {
         return false;
     }
 
-	private void createHeader(Writer writer, String firstLine) throws IOException{
-		 	writer.append(firstLine);
-		    writer.append('\n');
-
-		    for (int i=1; i<=2; i++){
-		        writer.append("source"+i);
-                writer.append(';');
-                writer.append("name uuid"+i);
-		        writer.append(';');
-		        writer.append("name id"+i);
-		        writer.append(';');
-		        writer.append("name"+i);
-		        writer.append(';');
-		        writer.append("author"+i);
-		        writer.append(';');
-		        writer.append("rank"+i);
-		        writer.append(';');
-		        writer.append("status"+i);
-		        writer.append(';');
-		        writer.append("phylum"+i);
-		        writer.append(';');
-		        writer.append("parent"+i);
-		        writer.append(';');
-		        writer.append("parent rank"+i);
-		        writer.append(';');
-		    }
-			writer.append('\n');
+	private void createHeader(Writer writer, String firstLine){
+	 	try {
+            writer.append(firstLine);
+            writer.append('\n');
+            writeHeaderPair(writer, "taxon uuid");
+            writeHeaderPair(writer, "taxon id");
+            writer.append("next name cache").append(";");
+            writer.append("diff").append(";");
+            writeHeaderPair(writer, "source");
+            writeHeaderPair(writer, "name uuid");
+            writeHeaderPair(writer, "idInSource");
+            writeHeaderPair(writer, "nameCache");
+            writeHeaderPair(writer, "author");
+            writeHeaderPair(writer, "rank");
+            writeHeaderPair(writer, "kingdom");
+            writeHeaderPair(writer, "phylum");
+            writeHeaderPair(writer, "family");
+            writeHeaderPair(writer, "parentString");
+            writeHeaderPair(writer, "parentRankString");
+            writeHeaderPair(writer, "status");
+            writer.append('\n');
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
 	}
 
-	private void writeCsvLine(Writer writer, Map<UUID,PesiMergeObject> mergeObjects, Map<UUID,String> sources) throws IOException{
+    private void writeHeaderPair(Writer writer, String header) throws IOException {
+        writer.append(header+"1").append(';');
+        writer.append(header+"2").append(';');
+    }
+
+    private void writeCsvLine(Writer writer,
+           PesiMergeObject merge1, PesiMergeObject merge2,
+           Method method, boolean isNextNameCache){
+
+        writePair(writer, merge1, merge2, "UuidTaxon");
+        writePair(writer, merge1, merge2, "IdTaxon");
+        writeSingleValue(writer, isNextNameCache?"1":"0");
+        boolean different = isDifferent(merge1,  merge2, method);
+        writeSingleValue(writer, different?"1":"0");
+        writeSingleValue(writer, sourcesLabels.get(UUID.fromString(merge1.getUuidSource())));
+        writeSingleValue(writer, sourcesLabels.get(UUID.fromString(merge2.getUuidSource())));
+        writePair(writer, merge1, merge2, "UuidName");
+        writePair(writer, merge1, merge2, "IdInSource");
+        writePair(writer, merge1, merge2, "NameCache");
+        writePair(writer, merge1, merge2, "Author");
+        writePair(writer, merge1, merge2, "Rank");
+        writePairNode(writer, merge1, merge2, "Kingdom");
+        writePairNode(writer, merge1, merge2, "Phylum");
+        writePairNode(writer, merge1, merge2, "Family");
+        writePair(writer, merge1, merge2, "ParentString");
+        writePair(writer, merge1, merge2, "ParentRankString");
+        writeSingleValue(writer, merge1.isStatus()?"accepted":"synonym");
+        writeSingleValue(writer, merge2.isStatus()?"accepted":"synonym");
+        try {
+            writer.append('\n');
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void writeSingleValue(Writer writer, String value) {
+        try {
+            writer.append(value).append(";");
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void writePairNode(Writer writer, PesiMergeObject merge1, PesiMergeObject merge2, String methodName) {
+        try {
+            Method method = PesiMergeObject.class.getDeclaredMethod("get"+methodName);
+            TaxonNodeDto value = (TaxonNodeDto) method.invoke(merge1);
+            writer.append(value==null?"":value.getTitleCache()).append(";");
+            value = (TaxonNodeDto) method.invoke(merge2);
+            writer.append(value==null?"":value.getTitleCache()).append(";");
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void writePair(Writer writer, PesiMergeObject merge1, PesiMergeObject merge2, String methodName) {
+        try {
+            Method method = PesiMergeObject.class.getDeclaredMethod("get"+methodName);
+            String value1 = (String) method.invoke(merge1);
+            writer.append(normalize(value1)).append(";");
+            String value2 = (String) method.invoke(merge2);
+            writer.append(normalize(value2)).append(";");
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    private String normalize(String val) {
+        return CdmUtils.Nz(val).replace(";", "@");
+    }
+
+    private void writeCsvLine(Writer writer, Map<UUID,PesiMergeObject> mergeObjects, Map<UUID,String> sources) throws IOException{
 
         for (UUID uuid : sourceRefUuids){
 	        PesiMergeObject merging = mergeObjects.get(uuid);
@@ -262,117 +364,92 @@ public class PesiFindIdenticalNamesActivator {
         writer.append('\n');
 	}
 
-    private List<Map<UUID,PesiMergeObject>> createMergeObjects(Map<String, Map<UUID, Set<TaxonName>>> names,
+    private List<Map<UUID,List<PesiMergeObject>>> createMergeObjects(
+            Map<String, Map<UUID, Set<TaxonName>>> identicalNames,
 	        CdmApplicationController appCtr){
 
-		List<Map<UUID,PesiMergeObject>> merge = new ArrayList<>();
+		List<Map<UUID,List<PesiMergeObject>>> merge = new ArrayList<>();
 
-		List<String> nameCaches = new ArrayList<>(names.keySet());
+		List<String> nameCaches = new ArrayList<>(identicalNames.keySet());
 		nameCaches.sort(StringComparator.Instance);
 		for (String nameCache: nameCaches){
-		    createSingleMergeObject(appCtr, merge, names.get(nameCache));
+		    createSingleMergeObject(appCtr, merge, identicalNames.get(nameCache));
 		}
-
 		return merge;
 	}
 
-
-    private void createSingleMergeObject(CdmApplicationController appCtr, List<Map<UUID,PesiMergeObject>> merge,
+    private void createSingleMergeObject(CdmApplicationController appCtr,
+            List<Map<UUID,List<PesiMergeObject>>> merge,
             Map<UUID, Set<TaxonName>> identicalNames) {
 
-        Map<UUID,PesiMergeObject> mergeMap = new HashMap<>();
+        Map<UUID,List<PesiMergeObject>> mergeMap = new HashMap<>();
 
         for (UUID sourceUuid : identicalNames.keySet()){
             Set<TaxonName> names = identicalNames.get(sourceUuid);
-            if (names.isEmpty()){
-                continue;
-            }
-            TaxonName name = names.iterator().next();
-            String nameAndIdStr = name.getTitleCache() +  "; id = " + name.getId();
-            if (names.size()>1){
-                logger.warn("Multiple names per source not yet handled. Take arbitrary one: " + nameAndIdStr);
-            }
+            List<PesiMergeObject> pmoList = new ArrayList<>();
+            mergeMap.put(sourceUuid, pmoList);
 
-            PesiMergeObject mergeObject = new PesiMergeObject();
-            mergeMap.put(sourceUuid, mergeObject);
-
-            Set<TaxonBase> taxonBases = name.getTaxonBases();
-            if (taxonBases.isEmpty()){
-                logger.warn("No taxonbase attached to name. This is not yet handled: " + nameAndIdStr);
-                continue;
-            }
-            if (taxonBases.size() > 1) {
-                //TODO: find the two correct names
-                logger.warn("Name has not exact 1 but " + taxonBases.size() + " taxon base attached. This is not yet handled. Take arbitrary one.");
-            }
-
-            //uuid
-            mergeObject.setUuidName(name.getUuid().toString());
-
-            //nameCache
-            mergeObject.setNameCache(name.getNameCache());
-
-            //authorship
-            mergeObject.setAuthor(name.getAuthorshipCache());
-
-            //rank
-            mergeObject.setRank(name.getRank().getLabel());
-
-            //Phylum
-            TaxonNodeDto phylum = getPhylum(appCtr, name);
-            mergeObject.setPhylum(phylum);
-
-            //idInSource
-            Iterator<IdentifiableSource> sources = name.getSources().iterator();
-            //TODO idInSource - what if multiple sources exist?
-            if (sources.hasNext()){
-                IdentifiableSource source = sources.next();
-                String idInSource = source.getIdInSource();
-                mergeObject.setIdInSource(idInSource);
-            }
-
-            //status and parent
-            Set<Taxon> taxa = name.getTaxa();
-            taxa = getReallyAcceptedTaxa(taxa);
-            if (!taxa.isEmpty()){
-                mergeObject.setStatus(true);
-                Iterator<Taxon> taxaIterator = taxa.iterator();
-                Taxon taxon = null;
-                while (taxaIterator.hasNext()){
-                    taxon = taxaIterator.next();
-                    if (!taxon.isMisapplication()){
-                        break;
+            for (TaxonName name : names){
+                String nameAndIdStr = name.getTitleCache() +  "; id = " + name.getId();
+                @SuppressWarnings("rawtypes")
+                Set<TaxonBase> taxonBases = name.getTaxonBases();
+                if (taxonBases.isEmpty()){
+                    logger.warn("No taxonbase attached to name. This is not yet handled: " + nameAndIdStr);
+                    continue;
+                }
+                for (TaxonBase<?> taxonBase : taxonBases)                {
+                    if (!taxonBase.isPublish()){
+                        continue;
                     }
-                }
-                @SuppressWarnings("null")
-                Set<TaxonNode> nodes = taxon.getTaxonNodes();
-                Iterator<TaxonNode> taxonNodeIterator = nodes.iterator();
-                TaxonNode parentNode = null;
-                while (taxonNodeIterator.hasNext()){
-                    TaxonNode node = taxonNodeIterator.next();
-                    if (!node.isTopmostNode()){
-                        parentNode = node.getParent();
+                    PesiMergeObject mergeObject = PesiMergeObject.NewInstance();
+                    pmoList.add(mergeObject);
+
+                    //uuid
+                    mergeObject.setUuidSource(sourceUuid.toString());
+                    mergeObject.setUuidName(name.getUuid().toString());
+                    mergeObject.setUuidTaxon(taxonBase.getUuid().toString());
+                    mergeObject.setIdTaxon(String.valueOf(taxonBase.getId()));
+
+                    //nameCache
+                    mergeObject.setNameCache(name.getNameCache());
+
+                    //authorship
+                    mergeObject.setAuthor(name.getAuthorshipCache());
+
+                    //rank
+                    mergeObject.setRank(name.getRank().getLabel());
+
+                    //Kingdom
+                    TaxonNodeDto kingdom = getHigherTaxon(appCtr, name, Rank.KINGDOM());
+                    mergeObject.setKingdom(kingdom);
+
+                    //Phylum/Division
+                    TaxonNodeDto phylum = getHigherTaxon(appCtr, name, Rank.PHYLUM());
+                    if(phylum == null){
+                        phylum = getHigherTaxon(appCtr, name, Rank.DIVISION());
                     }
-                }
-                //TODO: ändern mit erweitertem Initializer..
-                if (parentNode != null){
-                    TaxonName parentName = CdmBase.deproxy(parentNode.getTaxon().getName());
-                    String parentNameCache = parentName.getNameCache();
-                    mergeObject.setParentString(parentNameCache);
-                    mergeObject.setParentRankString(parentName.getRank().getLabel());
-                }
-            }else{
-                mergeObject.setStatus(false);
-                TaxonNode parentNode = getAcceptedNode(name);
-                //TODO: ändern mit erweitertem Initializer..
-                if (parentNode != null){
-                    TaxonName parentName = CdmBase.deproxy(parentNode.getTaxon().getName());
-                    String parentNameCache = parentName.getNameCache();
-                    mergeObject.setParentString(parentNameCache);
-                    mergeObject.setParentRankString(parentName.getRank().getLabel());
+                    mergeObject.setPhylum(phylum);
+
+                    //Family
+                    TaxonNodeDto family = getHigherTaxon(appCtr, name, Rank.FAMILY());
+                    mergeObject.setFamily(family);
+
+                    //idInSource
+                    Iterator<IdentifiableSource> sources = name.getSources().iterator();
+                    //TODO idInSource - what if multiple sources exist?
+                    if (sources.hasNext()){
+                        IdentifiableSource source = sources.next();
+                        String idInSource = source.getIdInSource();
+                        mergeObject.setIdInSource(idInSource);
+                    }
+
+                    //status and parent
+                    makeStatusAndParent(name, mergeObject);
                 }
             }
         }
+
+        merge.add(mergeMap);
 
 
         //set parent informations
@@ -399,33 +476,86 @@ public class PesiFindIdenticalNamesActivator {
             mergeObject.setParentStringInFaunaEu(parentName.getNameCache());
         }*/
 
-        merge.add(mergeMap);
+
     }
 
-    private TaxonNodeDto getPhylum(CdmApplicationController appCtr, TaxonName name) {
-        TaxonNodeDto phylum = null;
-        if (name.getRank().equals(Rank.PHYLUM())) {
+    private void makeStatusAndParent(TaxonName name, PesiMergeObject mergeObject) {
+        Set<Taxon> taxa = name.getTaxa();
+        taxa = getReallyAcceptedTaxa(taxa);
+        if (!taxa.isEmpty()){
+            mergeObject.setStatus(true);
+            Iterator<Taxon> taxaIterator = taxa.iterator();
+            Taxon taxon = null;
+            while (taxaIterator.hasNext()){
+                taxon = taxaIterator.next();
+                if (!taxon.isMisapplication()){
+                    break;
+                }
+            }
+            @SuppressWarnings("null")
+            Set<TaxonNode> nodes = taxon.getTaxonNodes();
+            Iterator<TaxonNode> taxonNodeIterator = nodes.iterator();
+            TaxonNode parentNode = null;
+            while (taxonNodeIterator.hasNext()){
+                TaxonNode node = taxonNodeIterator.next();
+                if (!node.isTopmostNode()){
+                    parentNode = node.getParent();
+                }
+            }
+            if (parentNode != null){
+                TaxonName parentName = CdmBase.deproxy(parentNode.getTaxon().getName());
+                String parentNameCache = parentName.getNameCache();
+                mergeObject.setParentString(parentNameCache);
+                mergeObject.setParentRankString(parentName.getRank().getLabel());
+            }
+        }else{
+            mergeObject.setStatus(false);
+            TaxonNode parentNode = getAcceptedNode(name);
+            if (parentNode != null){
+                TaxonName parentName = CdmBase.deproxy(parentNode.getTaxon().getName());
+                String parentNameCache = parentName.getNameCache();
+                mergeObject.setParentString(parentNameCache);
+                mergeObject.setParentRankString(parentName.getRank().getLabel());
+            }
+        }
+    }
+
+    private TaxonNodeDto getHigherTaxon(CdmApplicationController appCtr, TaxonName name, Rank rank) {
+        if (name.getRank().equals(rank)) {
             Taxon taxon = getAcceptedTaxon(name);
             if (taxon != null) {
+                if (taxon.getTaxonNodes().isEmpty()){
+                    return null;  //probably MAN
+                }
                 if (taxon.getTaxonNodes().size()>1){
-                    logger.warn("More than 1 node not yet handled for getPhylum. Take arbitrary one.");
+                    logger.warn("More than 1 node not yet handled for getHigherTaxon. Take arbitrary one.");
                 }
                 TaxonNode node = taxon.getTaxonNodes().iterator().next();
-                phylum = new TaxonNodeDto(node);
+                return new TaxonNodeDto(node);
             }
-
         }
-        if (phylum == null && !name.getRank().isHigher(Rank.PHYLUM())){
+        if (name.getRank().isHigher(rank)){
+            return null;
+        }else{
             Taxon taxon = getAcceptedTaxon(name);
-            if (!taxon.getTaxonNodes().isEmpty()){
+            if (taxon.getTaxonNodes().isEmpty()){
+                return null;
+            }else{
                 if (taxon.getTaxonNodes().size()>1){
-                    logger.warn("More than 1 node not yet handled for getPhylum. Take arbitrary one.");
+                    logger.warn("More than 1 node not yet handled for getHigherTaxon. Take arbitrary one.");
                 }
                 TaxonNode node = taxon.getTaxonNodes().iterator().next();
-                phylum = appCtr.getTaxonNodeService().taxonNodeDtoParentRank(node.getClassification(), Rank.PHYLUM(), name);
+                List<TaxonNodeDto> higherDtos = appCtr.getTaxonNodeService().taxonNodeDtoParentRank(node.getClassification(), rank, taxon);
+                if (higherDtos.isEmpty()){
+                    return null;
+                }else {
+                    if (higherDtos.size() > 1){
+                        logger.warn("More than 1 higher dto. This is not yet implemented: " + taxon.getTitleCache());
+                    }
+                    return higherDtos.get(0);
+                }
             }
         }
-        return phylum;
     }
 
 	private TaxonNode getAcceptedNode(TaxonName ermsName) {

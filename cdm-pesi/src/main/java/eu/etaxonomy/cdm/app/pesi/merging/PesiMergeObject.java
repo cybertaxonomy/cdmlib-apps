@@ -1,10 +1,18 @@
-package eu.etaxonomy.cdm.io.pesi.merging;
+package eu.etaxonomy.cdm.app.pesi.merging;
 
 import eu.etaxonomy.cdm.persistence.dto.TaxonNodeDto;
 
 public class PesiMergeObject {
 
-	private String uuidName;
+    private String uuidSource;
+
+    private String uuidName;
+
+	private String uuidTaxon;
+
+	private String idTaxon;
+
+	private String uuidTaxonNode;
 
 	private String idInSource;
 
@@ -18,15 +26,21 @@ public class PesiMergeObject {
 
 	private TaxonNodeDto phylum;
 
+	private TaxonNodeDto kingdom;
+
+	private TaxonNodeDto family;
+
 	private String parentString;
 
 	private String parentRankString;
 
-
 //************************ FACTORY *******************/
 
-    public static PesiMergeObject newInstance(){
+    public static PesiMergeObject NewInstance(){
         return new PesiMergeObject();
+    }
+
+    private PesiMergeObject(){
 
     }
 
@@ -94,4 +108,42 @@ public class PesiMergeObject {
 	public void setNameCache(String nameCache) {
 		this.nameCache = nameCache;
 	}
+
+    public TaxonNodeDto getKingdom() {
+        return kingdom;
+    }
+    public void setKingdom(TaxonNodeDto kingdom) {
+        this.kingdom = kingdom;
+    }
+
+    public TaxonNodeDto getFamily() {
+        return family;
+    }
+    public void setFamily(TaxonNodeDto family) {
+        this.family = family;
+    }
+
+    public String getUuidTaxon() {
+        return uuidTaxon;
+    }
+
+    public void setUuidTaxon(String uuidTaxon) {
+        this.uuidTaxon = uuidTaxon;
+    }
+
+    public String getIdTaxon() {
+        return idTaxon;
+    }
+
+    public void setIdTaxon(String idTaxon) {
+        this.idTaxon = idTaxon;
+    }
+
+    public String getUuidSource() {
+        return uuidSource;
+    }
+
+    public void setUuidSource(String uuidSource) {
+        this.uuidSource = uuidSource;
+    }
 }
