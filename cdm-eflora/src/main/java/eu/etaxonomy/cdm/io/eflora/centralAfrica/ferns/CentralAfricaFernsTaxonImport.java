@@ -68,17 +68,17 @@ import eu.etaxonomy.cdm.model.taxon.TaxonBase;
 import eu.etaxonomy.cdm.strategy.parser.NonViralNameParserImpl;
 import eu.etaxonomy.cdm.strategy.parser.TimePeriodParser;
 
-
 /**
  * @author a.mueller
  * @since 20.02.2010
  */
 @Component
 public class CentralAfricaFernsTaxonImport  extends CentralAfricaFernsImportBase<TaxonBase> implements IMappingImport<TaxonBase, CentralAfricaFernsImportState>{
-	private static final Logger logger = Logger.getLogger(CentralAfricaFernsTaxonImport.class);
+
+    private static final long serialVersionUID = 2109721344787099118L;
+    private static final Logger logger = Logger.getLogger(CentralAfricaFernsTaxonImport.class);
 
 	public static final UUID TNS_EXT_UUID = UUID.fromString("41cb0450-ac84-4d73-905e-9c7773c23b05");
-
 
 	private DbImportMapping<?,?> mapping;
 
@@ -92,7 +92,6 @@ public class CentralAfricaFernsTaxonImport  extends CentralAfricaFernsImportBase
 	public CentralAfricaFernsTaxonImport(){
 		super(pluralString, dbTableName, cdmTargetClass);
 	}
-
 
 	@Override
     protected String getIdQuery() {
