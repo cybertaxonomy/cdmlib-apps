@@ -18,11 +18,13 @@ public class PesiMergeObject {
 
 	private String nameCache;
 
-	private boolean status;
+	private boolean isStatus;
 
 	private String author;
 
 	private String rank;
+
+	private String nomenclaturalReference;
 
 	private TaxonNodeDto phylum;
 
@@ -74,18 +76,14 @@ public class PesiMergeObject {
 		this.rank = rank;
 	}
 
-	public TaxonNodeDto getPhylum() {
-		return phylum;
-	}
-	public void setPhylum(TaxonNodeDto phylum) {
-		this.phylum = phylum;
-	}
-
 	public boolean isStatus() {
-		return status;
+		return isStatus;
 	}
+    public String getStatusStr() {
+        return isStatus? "accepted":"synonym";
+    }
 	public void setStatus(boolean status) {
-		this.status = status;
+		this.isStatus = status;
 	}
 
 	public String getAuthor() {
@@ -112,12 +110,28 @@ public class PesiMergeObject {
     public TaxonNodeDto getKingdom() {
         return kingdom;
     }
+    public String getKingdomCache() {
+        return kingdom == null? null : kingdom.getNameCache();
+    }
     public void setKingdom(TaxonNodeDto kingdom) {
         this.kingdom = kingdom;
     }
 
+    public TaxonNodeDto getPhylum() {
+        return phylum;
+    }
+    public String getPhylumCache() {
+        return phylum == null? null : phylum.getNameCache();
+    }
+    public void setPhylum(TaxonNodeDto phylum) {
+        this.phylum = phylum;
+    }
+
     public TaxonNodeDto getFamily() {
         return family;
+    }
+    public String getFamilyCache() {
+        return family == null? null : family.getNameCache();
     }
     public void setFamily(TaxonNodeDto family) {
         this.family = family;
@@ -145,5 +159,12 @@ public class PesiMergeObject {
 
     public void setUuidSource(String uuidSource) {
         this.uuidSource = uuidSource;
+    }
+
+    public String getNomenclaturalReference() {
+        return nomenclaturalReference;
+    }
+    public void setNomenclaturalReference(String nomenclaturalReference) {
+        this.nomenclaturalReference = nomenclaturalReference;
     }
 }
