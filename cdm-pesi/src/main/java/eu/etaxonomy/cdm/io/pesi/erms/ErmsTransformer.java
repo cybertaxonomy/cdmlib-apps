@@ -786,23 +786,35 @@ public final class ErmsTransformer extends InputTransformerBase {
                 TaxonRelationshipType.uuidSynonymOfTaxonRelationship,
                 "is taxon synonym of",
                 "is synonym of relation used by synonym that are of class Taxon as they can not be handled differently",
-                null, null);
+                null,
+                "has taxon synonym",
+                "is accepted taxon of synonym relation used by synonym that are of class Taxon as they can not be handled differently",
+                null,
+                null);
         return result;
     }
 
     private TaxonRelationshipType getHomoSynTaxonRelType(DbImportStateBase<?, ?> state) {
-        String labelHomoRel = "Heterotypic synonym taxon relationship";
+        String labelHomoRel = "is homotypic taxon synonym relationship";
+        String inverseLabelHomoRel = "has homotypic taxon synonym relationship";
         @SuppressWarnings("unchecked")
         TaxonRelationshipType result = state.getCurrentIO().getTaxonRelationshipType(
-                state, TaxonRelationshipType.uuidHomotypicSynonymTaxonRelationship, labelHomoRel, labelHomoRel, null, null);
+                state, TaxonRelationshipType.uuidHomotypicSynonymTaxonRelationship,
+                labelHomoRel, labelHomoRel, null,
+                inverseLabelHomoRel, inverseLabelHomoRel, null,
+                null);
         return result;
     }
 
     private TaxonRelationshipType getHeteroSynTaxRelType(DbImportStateBase<?, ?> state) {
-        String labelHeteroRel = "Heterotypic synonym taxon relationship";
+        String labelHeteroRel = "is heterotypic taxon synonym relationship";
+        String inverseLabelHeteroRel = "has heterotypic taxon synonym relationship";
         @SuppressWarnings("unchecked")
         TaxonRelationshipType result = state.getCurrentIO().getTaxonRelationshipType(
-                state, TaxonRelationshipType.uuidHeterotypicSynonymTaxonRelationship, labelHeteroRel, labelHeteroRel, null, null);
+                state, TaxonRelationshipType.uuidHeterotypicSynonymTaxonRelationship,
+                labelHeteroRel, labelHeteroRel, null,
+                inverseLabelHeteroRel, inverseLabelHeteroRel, null,
+                null);
         return result;
     }
 
