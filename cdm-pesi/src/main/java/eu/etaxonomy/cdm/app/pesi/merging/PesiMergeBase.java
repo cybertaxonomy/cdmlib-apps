@@ -29,7 +29,7 @@ public abstract class PesiMergeBase {
     protected static List<List<String>> readCsvFile(String fileName){
         List<List<String>> result = new ArrayList<>();
         try {
-            CSVReader reader = new CSVReader(new FileReader(fileName));
+            CSVReader reader = new CSVReader(new FileReader(fileName), ';');
             String[] row;
             while ((row = reader.readNext()) != null){
                 result.add(Arrays.asList(row));
@@ -37,6 +37,7 @@ public abstract class PesiMergeBase {
             reader.close();
         } catch (IOException e1) {
             e1.printStackTrace();
+            return null;
         }
         return result;
     }
