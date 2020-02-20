@@ -146,6 +146,14 @@ public class CdmDestinations {
         return makeDestination(dbType, cdmServer, cdmDB, -1, cdmUserName, null);
     }
 
+    public static ICdmDataSource cdm_local_caryo_aizoaceae(){
+        DatabaseTypeEnum dbType = DatabaseTypeEnum.MySQL;
+        String cdmServer = "127.0.0.1";
+        String cdmDB = "cdm_caryo_aizoaceae";
+        String cdmUserName = "edit";     //root on pesiimport2
+        return makeDestination(dbType, cdmServer, cdmDB, -1, cdmUserName, null);
+    }
+
     public static ICdmDataSource cdm_local_mysql_pesi_euromed(){
         DatabaseTypeEnum dbType = DatabaseTypeEnum.MySQL;
         String cdmServer = "127.0.0.1";
