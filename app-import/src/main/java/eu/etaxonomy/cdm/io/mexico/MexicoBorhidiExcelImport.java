@@ -46,7 +46,6 @@ import eu.etaxonomy.cdm.strategy.parser.TimePeriodParser;
 /**
  * @author a.mueller
  * @since 16.06.2016
- *
  */
 @Component
 public class MexicoBorhidiExcelImport<CONFIG extends MexicoBorhidiImportConfigurator>
@@ -59,7 +58,6 @@ public class MexicoBorhidiExcelImport<CONFIG extends MexicoBorhidiImportConfigur
             ,"OutputAbbreviatedTitle","OutputCollation","OutputVolume",
             "OutputIssue","OutputPage","OutputTitlePageYear","OutputYearPublished",
             "OutputBHLLink"});
-
 
     @Override
     protected void firstPass(SimpleExcelTaxonImportState<CONFIG> state) {
@@ -84,7 +82,6 @@ public class MexicoBorhidiExcelImport<CONFIG extends MexicoBorhidiImportConfigur
 
         taxon.addSource(makeOriginalSource(state));
 
-
         //make genus
         makeGenus(state, speciesName, sec, taxon, rubiaceae);
     }
@@ -92,9 +89,7 @@ public class MexicoBorhidiExcelImport<CONFIG extends MexicoBorhidiImportConfigur
 
     private Classification classification;
     private TaxonNode rubiaceaeNode;
-    /**
-     * @return
-     */
+
     private TaxonNode getHighestNode(SimpleExcelTaxonImportState<CONFIG> state) {
         if (rubiaceaeNode == null){
             MexicoBorhidiImportConfigurator config = state.getConfig();
@@ -110,11 +105,6 @@ public class MexicoBorhidiExcelImport<CONFIG extends MexicoBorhidiImportConfigur
         return rubiaceaeNode;
     }
 
-    /**
-     * @param record
-     * @param state
-     * @return
-     */
     private IBotanicalName makeName(Map<String, String> record, SimpleExcelTaxonImportState<CONFIG> state) {
         String line = state.getCurrentLine() + ": ";
 
@@ -255,10 +245,6 @@ public class MexicoBorhidiExcelImport<CONFIG extends MexicoBorhidiImportConfigur
         return name;
     }
 
-    /**
-     * @param outputCollation
-     * @return
-     */
     private String[] makeVolumeDetail(String outputCollation) {
         if (outputCollation == null){
             return new String[0];
@@ -268,10 +254,6 @@ public class MexicoBorhidiExcelImport<CONFIG extends MexicoBorhidiImportConfigur
         }
     }
 
-    /**
-     * @param state
-     * @param referencedName
-     */
     private void addNomRefExtension(SimpleExcelTaxonImportState<CONFIG> state, IBotanicalName name) {
         String newExtensionStr = name.getFullTitleCache() + " - BORHIDI";
         UUID uuidNomRefExtension = MexicoConabioTransformer.uuidNomRefExtension;
@@ -286,6 +268,4 @@ public class MexicoBorhidiExcelImport<CONFIG extends MexicoBorhidiImportConfigur
         ExtensionType extensionType = getExtensionType(state, uuidNomRefExtension, label, label, abbrev);
         Extension.NewInstance((TaxonName)name, newExtensionStr, extensionType);
     }
-
-
 }

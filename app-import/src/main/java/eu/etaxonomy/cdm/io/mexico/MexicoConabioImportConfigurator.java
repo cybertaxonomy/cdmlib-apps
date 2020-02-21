@@ -20,7 +20,6 @@ import eu.etaxonomy.cdm.model.reference.Reference;
 /**
  * @author a.mueller
  * @since 16.06.2016
- *
  */
 public class MexicoConabioImportConfigurator extends ExcelImportConfiguratorBase{
     private static final long serialVersionUID = -2795059530001736347L;
@@ -60,59 +59,30 @@ public class MexicoConabioImportConfigurator extends ExcelImportConfiguratorBase
         };
     }
 
-    /**
-     * @return the doTaxa
-     */
     public boolean isDoTaxa() {
         return doTaxa;
     }
-
-    /**
-     * @param doTaxa the doTaxa to set
-     */
     public void setDoTaxa(boolean doTaxa) {
         this.doTaxa = doTaxa;
     }
 
-    /**
-     * @return the doDistributions
-     */
     public boolean isDoDistributions() {
         return doDistributions;
     }
-
-    /**
-     * @param doDistributions the doDistributions to set
-     */
     public void setDoDistributions(boolean doDistributions) {
         this.doDistributions = doDistributions;
     }
 
-    /**
-     * @return the doCommonNames
-     */
     public boolean isDoCommonNames() {
         return doCommonNames;
     }
-
-    /**
-     * @param doCommonNames the doCommonNames to set
-     */
     public void setDoCommonNames(boolean doCommonNames) {
         this.doCommonNames = doCommonNames;
     }
 
-    /**
-     * @return the secReference
-     */
     public Reference getSecReference() {
         return secReference;
     }
-
-
-    /**
-     * @param secReference
-     */
     public void setSecReference(Reference secReference) {
         this.secReference = secReference;
     }
