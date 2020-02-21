@@ -190,10 +190,10 @@ public class CaryoAizoaceaeExcelImport extends SimpleExcelTaxonImport<CaryoAizoa
                     testParsedName(state, name, row, null);
                 }
                 name.addImportSource(sourceId, PLANT_NAME_ID, getSourceReference(state), "line " + state.getCurrentLine());
+                name = dedupliateNameParts(name);
                 getNameService().saveOrUpdate(name);
                 isNewName = true;
                 createdNames.add(name.getUuid());
-                name = dedupliateNameParts(name);
             }else{
                 testParsedName(state, name, row, fullCitation);
             }
@@ -212,8 +212,12 @@ public class CaryoAizoaceaeExcelImport extends SimpleExcelTaxonImport<CaryoAizoa
                 getTaxonService().saveOrUpdate(taxonBase);
             }
 
-            DefinedTerm ipniIdIdentifierType = DefinedTerm.IDENTIFIER_NAME_IPNI();
-            name.addIdentifier(ipniId, ipniIdIdentifierType);
+            if (!isBlank(ipniId)){
+                DefinedTerm ipniIdIdentifierType = DefinedTerm.IDENTIFIER_NAME_IPNI();
+                name.addIdentifier(ipniId, ipniIdIdentifierType);
+            }else{
+                logger.warn(row + "IPNI id is missing.");
+            }
 
             taxonMapping.put(sourceId, taxonBase.getUuid());
 //            if("Accepted".equals(status)){
@@ -229,7 +233,9 @@ public class CaryoAizoaceaeExcelImport extends SimpleExcelTaxonImport<CaryoAizoa
     }
 
     private TaxonName dedupliateNameParts(TaxonName name) {
-        getDedupHelper().replaceAuthorNamesAndNomRef(state, name);
+        if (state.getConfig().isDoDeduplicate()){
+            getDedupHelper().replaceAuthorNamesAndNomRef(state, name);
+        }
         return name;
     }
 
@@ -377,6 +383,7 @@ public class CaryoAizoaceaeExcelImport extends SimpleExcelTaxonImport<CaryoAizoa
         commitTransaction(state.getTransactionStatus());
         secRef = null;
         dedupHelper = null;
+        state.setSourceReference(null);
         System.gc();
         state.setTransactionStatus(startTransaction());
     }
@@ -472,10 +479,10 @@ public class CaryoAizoaceaeExcelImport extends SimpleExcelTaxonImport<CaryoAizoa
             if (!CdmUtils.nullSafeEqual(year, nomRef.getDatePublishedString())){
                 logger.warn(row + "Unexpected year: " + year + "<->" + nomRef.getDatePublishedString());
             }
-            if (!name.getFullTitleCache().contains(volume_and_page)){
+            if (volume_and_page != null && !name.getFullTitleCache().contains(volume_and_page)){
                 logger.warn(row + "volume_and_page not found in fullTitleCache: " + name.getFullTitleCache() +"<->"+ volume_and_page);
             }
-            if (!name.getFullTitleCache().contains(place_of_publication)){
+            if (place_of_publication != null && !name.getFullTitleCache().contains(place_of_publication)){
                 logger.warn(row + "place_of_publication not found in fullTitleCache: " + name.getFullTitleCache() +"<->"+ place_of_publication);
             }
         }
@@ -515,7 +522,7 @@ public class CaryoAizoaceaeExcelImport extends SimpleExcelTaxonImport<CaryoAizoa
 
         String row = String.valueOf(line) + "("+fullName+"): ";
         try {
-            if ((line % 100) == 0){
+            if ((line % 500) == 0){
                 newTransaction(state);
                 System.out.println(line);
             }
@@ -610,6 +617,7 @@ public class CaryoAizoaceaeExcelImport extends SimpleExcelTaxonImport<CaryoAizoa
                     }
                     if(accId != null){
                         child = Taxon.NewInstance(syn.getName(), syn.getSec());
+                        child.addImportSource(sourceId, PLANT_NAME_ID, getSourceReference(state), "line " + state.getCurrentLine());
                     }
                     addChild(unresolvedParent(), child, row);
                     getTaxonService().deleteSynonym(syn, new SynonymDeletionConfigurator());
@@ -642,7 +650,7 @@ public class CaryoAizoaceaeExcelImport extends SimpleExcelTaxonImport<CaryoAizoa
                 logger.warn(row + "Unhandled status: " +  status);
             }
 
-            if (basionymId != null){
+            if (basionymId != null && false){
                 UUID basionymUuid = taxonMapping.get(basionymId);
                 TaxonBase<?> basionymTaxon = getTaxonService().find(basionymUuid);
                 if (basionymTaxon != null){
@@ -665,12 +673,12 @@ public class CaryoAizoaceaeExcelImport extends SimpleExcelTaxonImport<CaryoAizoa
 
     private boolean hasSameAcceptedTaxon(TaxonBase<?> taxonBase, TaxonBase<?> basionymTaxon) {
         if (taxonBase.isInstanceOf(Synonym.class)){
-            taxonBase = CdmBase.deproxy(taxonBase, Synonym.class);
+            taxonBase = CdmBase.deproxy(taxonBase, Synonym.class).getAcceptedTaxon();
         }
         if (basionymTaxon.isInstanceOf(Synonym.class)){
-            basionymTaxon = CdmBase.deproxy(basionymTaxon, Synonym.class);
+            basionymTaxon = CdmBase.deproxy(basionymTaxon, Synonym.class).getAcceptedTaxon();
         }
-        return taxonBase.equals(basionymTaxon);
+        return taxonBase != null && basionymTaxon != null && taxonBase.equals(basionymTaxon);
     }
 
     private TaxonNode getParent(UUID parentUuid, String row) {

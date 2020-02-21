@@ -16,7 +16,6 @@ import eu.etaxonomy.cdm.io.common.mapping.IInputTransformer;
 import eu.etaxonomy.cdm.io.excel.common.ExcelImportConfiguratorBase;
 import eu.etaxonomy.cdm.io.mexico.SimpleExcelTaxonImportState;
 import eu.etaxonomy.cdm.model.name.NomenclaturalCode;
-import eu.etaxonomy.cdm.model.reference.Reference;
 
 /**
  * @author a.mueller
@@ -26,9 +25,7 @@ public class CaryoAizoaceaeExcelImportConfigurator extends ExcelImportConfigurat
 
     private static final long serialVersionUID = -3833210622605834032L;
 
-    private Reference secReference;
-
-    private boolean doTaxa = true;
+    private boolean doDeduplicate = true;
 
     private static IInputTransformer defaultTransformer = new CaryoAizoaceaeTransformer();
 
@@ -57,17 +54,10 @@ public class CaryoAizoaceaeExcelImportConfigurator extends ExcelImportConfigurat
         };
     }
 
-    public boolean isDoTaxa() {
-        return doTaxa;
+    public boolean isDoDeduplicate() {
+        return this.doDeduplicate;
     }
-    public void setDoTaxa(boolean doTaxa) {
-        this.doTaxa = doTaxa;
-    }
-
-    public Reference getSecReference() {
-        return secReference;
-    }
-    public void setSecReference(Reference secReference) {
-        this.secReference = secReference;
+    public void setDoDeduplicate(boolean doDeduplicate) {
+        this.doDeduplicate = doDeduplicate;
     }
 }

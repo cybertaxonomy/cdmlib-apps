@@ -27,17 +27,23 @@ public class CaryoAizoaceaeActivator {
     @SuppressWarnings("unused")
     private static final Logger logger = Logger.getLogger(CaryoAizoaceaeActivator.class);
 
-    private static final ICdmDataSource destinationDb = CdmDestinations.cdm_local_caryo_aizoaceae();
-//    private static final ICdmDataSource destinationDb = CdmDestinations.cdm_production_caryophyllales();
+//    private static final ICdmDataSource destinationDb = CdmDestinations.cdm_local_caryo_aizoaceae();
+    private static final ICdmDataSource destinationDb = CdmDestinations.cdm_production_caryophyllales_spp();
+
+    private boolean doDeduplicate = true;
 
     private static final UUID secUuid = UUID.fromString("07cbb595-8cad-494c-80ba-9969925a6f78");
+
+    private static final UUID sourceUuid = UUID.fromString("7ebf63a4-1ee8-4e85-aba2-cecfac239216");
 
     private void invoke(ICdmDataSource destination){
 
         URI source =excelFile();
         CaryoAizoaceaeExcelImportConfigurator config = CaryoAizoaceaeExcelImportConfigurator.NewInstance(source, destination);
         config.setSecUuid(secUuid);
-        config.setSourceReferenceTitle("Aizoaceae_UTF8.xlsx (export from Kew World Plant List)");
+        config.setDoDeduplicate(doDeduplicate);
+        config.setSourceReferenceTitle("Aizoaceae_UTF8.xlsx (export from WCVP)");
+        config.setSourceRefUuid(sourceUuid);
 
         CdmDefaultImport<CaryoAizoaceaeExcelImportConfigurator> myImport = new CdmDefaultImport<>();
         myImport.invoke(config);
