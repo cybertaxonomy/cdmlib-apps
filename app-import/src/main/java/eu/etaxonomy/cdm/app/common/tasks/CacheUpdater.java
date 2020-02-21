@@ -49,7 +49,7 @@ public class CacheUpdater {
 //	static final ICdmDataSource cdmDestination = CdmDestinations.localH2();
 //	static final ICdmDataSource cdmDestination = CdmDestinations.cdm_test_local_euromed3();
 //	static final ICdmDataSource cdmDestination = CdmDestinations.cdm_production_flora_deutschland();
-	static final ICdmDataSource cdmDestination = CdmDestinations.cdm_production_caryophyllales();
+	static final ICdmDataSource cdmDestination = CdmDestinations.cdm_production_caryophyllales_genus();
 
 
 	static final List<String> classListStrings =  Arrays.asList(new String[]{
