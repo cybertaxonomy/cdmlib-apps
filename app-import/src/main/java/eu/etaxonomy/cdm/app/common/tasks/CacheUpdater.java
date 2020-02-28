@@ -22,9 +22,7 @@ import eu.etaxonomy.cdm.common.monitor.IRemotingProgressMonitor;
 import eu.etaxonomy.cdm.database.DbSchemaValidation;
 import eu.etaxonomy.cdm.database.ICdmDataSource;
 import eu.etaxonomy.cdm.io.api.application.CdmIoApplicationController;
-import eu.etaxonomy.cdm.io.common.CdmDefaultImport;
 import eu.etaxonomy.cdm.io.common.ImportResult;
-
 import eu.etaxonomy.cdm.model.name.TaxonName;
 import eu.etaxonomy.cdm.model.reference.Reference;
 import eu.etaxonomy.cdm.model.taxon.TaxonBase;
@@ -69,11 +67,11 @@ public class CacheUpdater {
 
 		CacheUpdaterConfigurator config;
 		try {
-			config = CacheUpdaterConfigurator.NewInstance( classListStrings);
+			config = CacheUpdaterConfigurator.NewInstance(classListStrings);
 
 			// invoke import
 			CdmApplicationController appCtrInit = CdmIoApplicationController.NewInstance(destination, DbSchemaValidation.VALIDATE, false);
-			appCtrInit.authenticate("admin", "kups366+RU");
+			appCtrInit.authenticate("admin", "xxx");
 			UUID monitUuid = appCtrInit.getLongRunningTasksService().monitLongRunningTask(config);
 			IRemotingProgressMonitor monitor = appCtrInit.getProgressMonitorService().getRemotingMonitor(monitUuid);
 			while(monitor != null && (!monitor.isCanceled() || !monitor.isDone() || !monitor.isFailed())) {
@@ -96,9 +94,6 @@ public class CacheUpdater {
 		}
 	}
 
-	/**
-	 * @param args
-	 */
 	public static void main(String[] args) {
 		ICdmDataSource destination = CdmDestinations.chooseDestination(args) != null ? CdmDestinations.chooseDestination(args) : cdmDestination;
 
