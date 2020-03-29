@@ -32,17 +32,9 @@ public class FloraHellenicaImportConfigurator extends ExcelImportConfiguratorBas
     private boolean isDoImages = true;
     private boolean statusAsDistribution = false;
 
-
-
-    /**
-     * @param source
-     * @param cdmDestination
-     * @return
-     */
     public static FloraHellenicaImportConfigurator NewInstance(URI source, ICdmDataSource destination) {
         return new FloraHellenicaImportConfigurator(source, destination);
     }
-
 
     private FloraHellenicaImportConfigurator(URI source, ICdmDataSource destination) {
         super(source, destination, defaultTransformer);

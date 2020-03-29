@@ -63,18 +63,12 @@ public abstract class FloraHellenicaImportBase<CONFIG extends FloraHellenicaImpo
         }
     }
 
-
-    /**
-     * @param state
-     * @return
-     */
     protected Reference getSourceCitation(SimpleExcelTaxonImportState<CONFIG> state) {
         if (this.sourceReference == null){
             this.sourceReference = getPersistentReference(state.getConfig().getSourceReference());
         }
         return this.sourceReference;
     }
-
 
     protected Reference getSecReference(SimpleExcelTaxonImportState<CONFIG> state) {
         if (this.secReference == null){
@@ -90,10 +84,6 @@ public abstract class FloraHellenicaImportBase<CONFIG extends FloraHellenicaImpo
         return this.secReference2;
     }
 
-    /**
-     * @param reference
-     * @return
-     */
     private Reference getPersistentReference(Reference reference) {
         Reference result = getReferenceService().find(reference.getUuid());
         if (result == null){
@@ -102,12 +92,6 @@ public abstract class FloraHellenicaImportBase<CONFIG extends FloraHellenicaImpo
         return result;
     }
 
-
-    /**
-     * @param record
-     * @param state
-     * @return
-     */
     protected Taxon getAcceptedTaxon(Map<String, String> record,
             SimpleExcelTaxonImportState<CONFIG> state, String key) {
 
@@ -176,23 +160,12 @@ public abstract class FloraHellenicaImportBase<CONFIG extends FloraHellenicaImpo
         return name;
     }
 
-
-    /**
-     * @param state
-     * @param name
-     * @return
-     */
     protected <NAME extends INonViralName> NAME replaceNameAuthorsAndReferences(SimpleExcelTaxonImportState<CONFIG> state, NAME name) {
         NAME result = deduplicationHelper.getExistingName(state, name);
         deduplicationHelper.replaceAuthorNamesAndNomRef(state, result);
         return result;
     }
 
-
-    /**
-     * @param state
-     * @return
-     */
     @Override
     protected IdentifiableSource makeOriginalSource(SimpleExcelTaxonImportState<CONFIG> state) {
         return IdentifiableSource.NewDataImportInstance("line: " + state.getCurrentLine(), null, getSourceCitation(state));
