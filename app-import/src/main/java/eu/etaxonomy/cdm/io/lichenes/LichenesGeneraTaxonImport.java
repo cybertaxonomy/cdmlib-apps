@@ -56,7 +56,7 @@ public class LichenesGeneraTaxonImport<CONFIG extends LichenesGeneraImportConfig
 	private static final String INCERTAE_SEDIS = "Incertae sedis";
 
 	private static UUID rootUuid = UUID.fromString("61187f71-96d1-419d-958b-25ab4c01a93c");
-    
+
     private  static List<String> expectedKeys= Arrays.asList(new String[]{
             "SORT","GENUS_X","PHYLUM","SUBPHYLUM","CLASS","SUBCLASS","ORDER","SUBORDER","FAMILY",
             "FAM_SYNONYMS","SUBFAMILY","GENUS","SYNONYMS","SPECIES","REFERENCES","MOLECULAR","NOTES"
@@ -64,7 +64,7 @@ public class LichenesGeneraTaxonImport<CONFIG extends LichenesGeneraImportConfig
 
     private Reference sourceReference;
     private Reference secReference;
-  
+
     private NonViralNameParserImpl parser = NonViralNameParserImpl.NewInstance();
 
 //    @Override
@@ -108,15 +108,15 @@ public class LichenesGeneraTaxonImport<CONFIG extends LichenesGeneraImportConfig
         Taxon genusTaxon = Taxon.NewInstance(genusName, sec);
         genusName.addSource(makeOriginalSource(state));
         genusTaxon.addSource(makeOriginalSource(state));
-        
+
         makeSynonyms(state, line, record, genusTaxon, "SYNONYMS");
-        
+
         //TODO reference  => for now we don't use it
-        
+
         makeNotes(genusTaxon, record, line);
         TaxonNode genusNode = parentNode.addChildTaxon(genusTaxon, null, null);
         getTaxonNodeService().saveOrUpdate(genusNode);
-        
+
         return genusTaxon;
     }
 
@@ -145,13 +145,13 @@ public class LichenesGeneraTaxonImport<CONFIG extends LichenesGeneraImportConfig
 			nameStr = nameStr.replace(", non Tayloriella Kylin (Rhodophyta)".trim(), "");
 		}
 		if (nameStr.endsWith("[nom. illeg.]")) {
-			result[1] = "nom. illeg."; 
+			result[1] = "nom. illeg.";
 			result[0] = nameStr.replace("[nom. illeg.]".trim(), "");
 		}else if (nameStr.endsWith("[nom. inval.]")) {
-			result[1] = "nom. inval."; 
+			result[1] = "nom. inval.";
 			result[0] = nameStr.replace("[nom. inval.]".trim(), "");
 		}else if (nameStr.endsWith("[nom. cons. prop.]")) {
-			result[1] = "nom. cons. prop."; 
+			result[1] = "nom. cons. prop.";
 			result[0] = nameStr.replace("[nom. cons. prop.]".trim(), "");
 		}else{
 			result[0] = nameStr;
@@ -173,12 +173,12 @@ public class LichenesGeneraTaxonImport<CONFIG extends LichenesGeneraImportConfig
 	private void checkParsed(TaxonName name, String nameStr, String line) {
 		if (name.isProtectedTitleCache() || name.isProtectedFullTitleCache() || name.isProtectedNameCache()) {
 			logger.warn(line + "Name could not be parsed: " + nameStr);
-		}	
+		}
 	}
 
-	private void makeSynonyms(SimpleExcelTaxonImportState<CONFIG> state, 
+	private void makeSynonyms(SimpleExcelTaxonImportState<CONFIG> state,
     		String line, Map<String, String> record, Taxon accepted, String fieldName) {
-        
+
     	String synonymsStr = getValue(record, fieldName);
     	if (isBlank(synonymsStr)) {
     		return;
@@ -192,7 +192,7 @@ public class LichenesGeneraTaxonImport<CONFIG extends LichenesGeneraImportConfig
     		for (String singleSynonymStr: splits) {
     			String[] split2 = parseNomStatus(singleSynonymStr);
     	        singleSynonymStr = split2[0];
-    	        
+
     			TaxonName synonymName = (TaxonName)parser.parseFullName(singleSynonymStr, state.getConfig().getNomenclaturalCode(), null);
     			checkParsed(TaxonName.castAndDeproxy(synonymName), singleSynonymStr, line);
     			makeStatusAndHomonym(state, synonymName, split2);
@@ -201,7 +201,7 @@ public class LichenesGeneraTaxonImport<CONFIG extends LichenesGeneraImportConfig
     	        Synonym synonym = Synonym.NewInstance(synonymName, accepted.getSec());
     	        accepted.addSynonym(synonym, SynonymType.SYNONYM_OF());
     			synonymName.addSource(makeOriginalSource(state));
-    			synonym.addSource(makeOriginalSource(state));    
+    			synonym.addSource(makeOriginalSource(state));
     		}
     	}
 	}
@@ -214,7 +214,7 @@ public class LichenesGeneraTaxonImport<CONFIG extends LichenesGeneraImportConfig
 	private String lastSubOrder = "";
 	private String lastFamily = "";
 	private String lastSubFamily = "";
-	
+
 	private Taxon taxonPhylum = null;
 	private Taxon taxonSubphylum = null;
 	private Taxon taxonClass = null;
@@ -223,7 +223,7 @@ public class LichenesGeneraTaxonImport<CONFIG extends LichenesGeneraImportConfig
 	private Taxon taxonSubOrder = null;
 	private Taxon taxonFamily = null;
 	private Taxon taxonSubFamily = null;
-	
+
 	private TaxonNode getParentNode(Map<String, String> record, SimpleExcelTaxonImportState<CONFIG> state, String line) {
 
 	    Taxon higherTaxon = null;
@@ -237,7 +237,7 @@ public class LichenesGeneraTaxonImport<CONFIG extends LichenesGeneraImportConfig
 		String suborder = Nz(getValue(record, "SUBORDER"));
 		String family = Nz(getValue(record, "FAMILY"));
 		String subfamily = Nz(getValue(record, "SUBFAMILY"));
-		
+
 		if (isNewTaxon(subfamily, lastSubFamily)){
 			if (isNewTaxon(family, lastFamily)){
 				if (isNewTaxon(suborder, lastSubOrder)){
@@ -257,7 +257,7 @@ public class LichenesGeneraTaxonImport<CONFIG extends LichenesGeneraImportConfig
 									taxonSubphylum = makeHigherTaxon(state, subphylum, Rank.SUBPHYLUM());
 									if (taxonSubphylum != null){  //no null expected
 										classification.addParentChild(higherTaxon,taxonSubphylum, null, null);
-									}	
+									}
 									higherTaxon = isIncertisSedis(subphylum) ? higherTaxon : taxonSubphylum;
 									lastSubphylum = subphylum;
 								}else{
@@ -323,7 +323,7 @@ public class LichenesGeneraTaxonImport<CONFIG extends LichenesGeneraImportConfig
 		}else {
 			higherTaxon = taxonSubFamily;
 		}
-			
+
 		getTaxonService().saveOrUpdate(higherTaxon);
 
 		return higherTaxon.getTaxonNode(classification);
@@ -343,13 +343,13 @@ public class LichenesGeneraTaxonImport<CONFIG extends LichenesGeneraImportConfig
 		result |= lastUninomial.equalsIgnoreCase(INCERTAE_SEDIS);
 		return result;
 	}
-	
+
 	private Taxon makeHigherTaxon(SimpleExcelTaxonImportState<CONFIG> state, String nameStr, Rank rank) {
 		if (isBlank(nameStr) || nameStr.equalsIgnoreCase(INCERTAE_SEDIS)){
 			return null;
 		}
 		//name
-		INonViralName name = parser.parseFullName(nameStr, NomenclaturalCode.Fungi, rank); 
+		INonViralName name = parser.parseFullName(nameStr, NomenclaturalCode.Fungi, rank);
 		replaceNameAuthorsAndReferences(state, name);
 		//taxon
 		Reference secRef = getSecReference(state);
@@ -358,9 +358,9 @@ public class LichenesGeneraTaxonImport<CONFIG extends LichenesGeneraImportConfig
         taxon.addSource(makeOriginalSource(state));
 		return taxon;
 	}
-	
+
     private TaxonNode rootNode;
-    
+
     private TaxonNode getClassification(SimpleExcelTaxonImportState<CONFIG> state) {
         if (rootNode == null){
             Reference sec = getSecReference(state);
@@ -401,7 +401,7 @@ public class LichenesGeneraTaxonImport<CONFIG extends LichenesGeneraImportConfig
     private void replaceNameAuthorsAndReferences(SimpleExcelTaxonImportState<CONFIG> state, INonViralName name) {
         dedupHelper().replaceAuthorNamesAndNomRef(state, name);
     }
-    
+
     private ImportDeduplicationHelper<SimpleExcelTaxonImportState<CONFIG>> dedupHelper;
 	private ImportDeduplicationHelper<SimpleExcelTaxonImportState<CONFIG>> dedupHelper() {
     	if (dedupHelper == null) {
@@ -409,10 +409,11 @@ public class LichenesGeneraTaxonImport<CONFIG extends LichenesGeneraImportConfig
     	}
     	return dedupHelper;
     }
-	
+
+    @Override
     protected IdentifiableSource makeOriginalSource(SimpleExcelTaxonImportState<CONFIG> state) {
     	String noStr = getValue(state.getOriginalRecord(), "SORT");
         return IdentifiableSource.NewDataImportInstance(noStr, "SORT", state.getConfig().getSourceReference());
     }
-    
+
 }

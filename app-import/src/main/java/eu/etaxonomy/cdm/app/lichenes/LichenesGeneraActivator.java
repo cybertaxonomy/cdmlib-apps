@@ -53,7 +53,7 @@ public class LichenesGeneraActivator {
     //classification
     static final UUID classificationUuid = UUID.fromString("43183724-1919-4036-84ee-3e0e84938f8d");
     private static final String classificationName = "Lichenes";
-    
+
     static final UUID secRefUuid = UUID.fromString("2c4d58eb-2432-4217-8179-e3739a3d255f");
     static final UUID sourceRefUuid = UUID.fromString("db54eefe-d1cb-44c5-ada2-cfb233cc708b");
 
@@ -102,7 +102,7 @@ public class LichenesGeneraActivator {
 
         Person person = Person.NewInstance();
         person.setInitials("R.");
-        person.setFamilyName("Lücking");
+        person.setFamilyName("LÃ¼cking");
         team.addTeamMember(person);
 
         person = Person.NewInstance();
@@ -130,8 +130,8 @@ public class LichenesGeneraActivator {
     }
 
     private Reference getSourceReference(){
-        Reference result = ReferenceFactory.newDatabase();
-        result.setTitle("Excelfile (LichenesImport.xlsx) derived from ");
+        Reference result = ReferenceFactory.newGeneric();
+        result.setTitle("Excelfile (LichenesGeneraImport.xlsx) derived from ");
         result.setInReference(getSecReference());
         result.setUuid(sourceRefUuid);
 
