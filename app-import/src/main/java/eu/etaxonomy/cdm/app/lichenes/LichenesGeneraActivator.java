@@ -8,6 +8,7 @@
 */
 package eu.etaxonomy.cdm.app.lichenes;
 
+import java.io.File;
 import java.net.URI;
 import java.util.UUID;
 
@@ -39,19 +40,22 @@ public class LichenesGeneraActivator {
     private static final Logger logger = Logger.getLogger(LichenesGeneraActivator.class);
 
     //database validation status (create, update, validate ...)
-    static DbSchemaValidation hbm2dll = DbSchemaValidation.VALIDATE;
+    static DbSchemaValidation hbm2dll = DbSchemaValidation.CREATE;
 
-    static final ICdmDataSource cdmDestination = CdmDestinations.localH2();
-//  static final ICdmDataSource cdmDestination = CdmDestinations.cdm_test_local_mysql_test();
+//    static final ICdmDataSource cdmDestination = CdmDestinations.localH2();
+    static final ICdmDataSource cdmDestination = CdmDestinations.cdm_local_cdmtest_mysql();
 //    static final ICdmDataSource cdmDestination = CdmDestinations.cdm_production_lichenes();
 
     //feature tree uuid
-    public static final UUID featureTreeUuid = UUID.fromString("35cf8268-b860-4a0a-81ae-077223116c56");
+//    public static final UUID featureTreeUuid = UUID.fromString("35cf8268-b860-4a0a-81ae-077223116c56");
 //    private static final String featureTreeTitle = "Flora of Greece dataportal feature tree";
 
     //classification
     static final UUID classificationUuid = UUID.fromString("43183724-1919-4036-84ee-3e0e84938f8d");
     private static final String classificationName = "Lichenes";
+    
+    static final UUID secRefUuid = UUID.fromString("2c4d58eb-2432-4217-8179-e3739a3d255f");
+    static final UUID sourceRefUuid = UUID.fromString("db54eefe-d1cb-44c5-ada2-cfb233cc708b");
 
     //check - import
     static final CHECK check = CHECK.IMPORT_WITHOUT_CHECK;
@@ -59,7 +63,7 @@ public class LichenesGeneraActivator {
     private void doImport(ICdmDataSource cdmDestination){
 
         //make Source
-        URI source = lichenesChecklist();
+        URI source = lichenesChecklist_local();
 
         LichenesGeneraImportConfigurator config = LichenesGeneraImportConfigurator.NewInstance(source, cdmDestination);
         config.setClassificationUuid(classificationUuid);
@@ -73,12 +77,16 @@ public class LichenesGeneraActivator {
 
         CdmDefaultImport<LichenesGeneraImportConfigurator> myImport = new CdmDefaultImport<>();
         myImport.invoke(config);
-
     }
 
 
     private URI lichenesChecklist(){
-        return URI.create("file:////BGBM-PESIHPC/Lichenes/xxx.xlsx");
+        return URI.create("file:////BGBM-PESIHPC/Lichenes/LichenesGeneraImport.xlsx");
+    }
+    private URI lichenesChecklist_local(){
+//        return URI.create("file://C:\\Users\\a.mueller\\BGBM\\Data\\Lichenes\\LichenesImport.xlsx");
+        File file = new File("C:\\Users\\a.mueller\\BGBM\\Data\\Lichenes\\LichenesGeneraImport.xlsx");
+    	return file.toURI();
     }
 
     private Reference secRef;
@@ -86,71 +94,46 @@ public class LichenesGeneraActivator {
         if (secRef != null){
             return secRef;
         }
-        Reference result = ReferenceFactory.newBook();
-        result.setTitle("Lichenes publication");
+        Reference result = ReferenceFactory.newArticle();
+        result.setTitle("Corrections and amendments to the 2016 classification of lichenized fungi in the Ascomycota and Basidiomycota");
         result.setDatePublished(TimePeriodParser.parseStringVerbatim("2016"));
 
         Team team = Team.NewInstance();
 
         Person person = Person.NewInstance();
-        person.setGivenName("P.");
-        person.setFamilyName("Dimopoulos");
+        person.setInitials("R.");
+        person.setFamilyName("Lücking");
         team.addTeamMember(person);
 
         person = Person.NewInstance();
-        person.setGivenName("Th.");
-        person.setFamilyName("Raus");
+        person.setInitials("B.P.");
+        person.setFamilyName("Hodkinson");
         team.addTeamMember(person);
 
         person = Person.NewInstance();
-        person.setGivenName("E.");
-        person.setFamilyName("Bergmeier");
-        team.addTeamMember(person);
-
-        person = Person.NewInstance();
-        person.setGivenName("Th.");
-        person.setFamilyName("Constantinidis");
-        team.addTeamMember(person);
-
-        person = Person.NewInstance();
-        person.setGivenName("G.");
-        person.setFamilyName("Iatrou");
-        team.addTeamMember(person);
-
-        person = Person.NewInstance();
-        person.setGivenName("S.");
-        person.setFamilyName("Kokkini");
-        team.addTeamMember(person);
-
-        person = Person.NewInstance();
-        person.setGivenName("A.");
-        person.setFamilyName("Strid");
-        team.addTeamMember(person);
-
-        person = Person.NewInstance();
-        person.setGivenName("D.");
-        person.setFamilyName("Tzanoudakis");
+        person.setInitials("S.D.");
+        person.setFamilyName("Leavitt");
         team.addTeamMember(person);
 
         result.setAuthorship(team);
 
-        result.setPublisher("Berlin: Botanic Garden and Botanical Museum Berlin-Dahlem; Athens: Hellenic Botanical Society.");
+//        result.setPublisher("Berlin: Botanic Garden and Botanical Museum Berlin-Dahlem; Athens: Hellenic Botanical Society.");
 
-        result.setVolume("31");
-        Reference englera = ReferenceFactory.newPrintSeries();
-        englera.setTitle("Englera");
-        result.setInReference(englera);
+        result.setVolume("120(1)");
+        Reference journal = ReferenceFactory.newJournal();
+        journal.setTitle("The Bryologist");
+        result.setInReference(journal);
         secRef = result;
 
-        secRef.setUuid(UUID.fromString("761bd693-2789-4305-9a79-9e510adf2388"));
+        secRef.setUuid(secRefUuid);
         return result;
     }
 
     private Reference getSourceReference(){
         Reference result = ReferenceFactory.newDatabase();
-        result.setTitle("Excelfile (VPG_FINAL_WITH_SYNONYMS_21.01.2017.xlsx) derived from ");
+        result.setTitle("Excelfile (LichenesImport.xlsx) derived from ");
         result.setInReference(getSecReference());
-        result.setUuid(UUID.fromString("b704f8a2-bc1c-45c7-8860-68663a7a44c0"));
+        result.setUuid(sourceRefUuid);
 
         return result;
     }

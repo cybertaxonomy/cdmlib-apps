@@ -47,11 +47,11 @@ public class LichenesGeneraImportConfigurator extends ExcelImportConfiguratorBas
         return new SimpleExcelTaxonImportState<>(this);
     }
 
-    @Override
+    @SuppressWarnings("unchecked")
+	@Override
     protected void makeIoClassList() {
         ioClassList = new Class[]{
-                FloraHellenicaTermImport.class,
-
+                LichenesGeneraTaxonImport.class,
         };
     }
 
