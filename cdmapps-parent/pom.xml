@@ -3,25 +3,14 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>eu.etaxonomy.cdm</groupId>
     <artifactId>app-parent</artifactId>
-	<version>5.6.0-SNAPSHOT</version>
+	<version>5.14.0-SNAPSHOT</version>
     <name>CDM Applications Parent</name>
     <description>The Java implementation of the Common Data Model (CDM), the data model for EDIT's internet platform for cybertaxonomy.</description>
     <url>http://wp5.e-taxonomy.eu/cdmlib/</url>
     <inceptionYear>2007</inceptionYear>
     <packaging>pom</packaging>
-    <modules>
-        <module>cdmlib-commons</module>
-        <module>cdmlib-model</module>
-        <module>cdmlib-persistence</module>
-        <module>cdmlib-services</module>
-        <module>cdmlib-ext</module>
-        <module>cdmlib-io</module>
-        <module>cdmlib-remote</module>
-        <module>cdmlib-print</module>
-        <module>cdmlib-remote-webapp</module>
-    </modules>
     <properties>
-		<java.codelevel>1.7</java.codelevel>
+		<java.codelevel>1.8</java.codelevel>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     </properties>
     <licenses>
@@ -36,11 +25,11 @@
         <url>http://www.e-taxonomy.eu/</url>
     </organization>
     <issueManagement>
-        <system>Trac</system>
-        <url>http://dev.e-taxonomy.eu/trac/</url>
+        <system>Redmine</system>
+        <url>https://dev.e-taxonomy.eu/redmine/projects/edit</url>
     </issueManagement>
     <ciManagement>
-        <system>Hudson</system>
+        <system>Jenkins</system>
         <url>http://160.45.63.201/jenkins</url>
     </ciManagement>
     <!-- **** REPOSITORIES **** -->
@@ -75,11 +64,6 @@
             <id>jboss-repository</id>
             <name>JBoss Repository</name>
             <url>http://repository.jboss.com</url>
-        </repository>
-        <!-- codehaus mule repository needed for yourkit  -->
-        <repository>
-            <id>CodehausMuleRepository</id>
-            <url>http://dist.codehaus.org/mule/dependencies/maven2/</url>
         </repository>
         <!-- current spring source repositories -->
         <repository>
