@@ -163,7 +163,7 @@ public class LichenesGeneraTaxonImport<CONFIG extends LichenesGeneraImportConfig
     	String notesStr = getValue(record, "NOTES");
     	if (isNotBlank(notesStr)) {
     		if (notesStr.startsWith("Notes.")) {
-    			notesStr = notesStr.substring(6);
+    			notesStr = notesStr.substring(6).trim();
     		}
     		//TODO or handle as fact of type "Notes"
     		genusTaxon.addAnnotation(Annotation.NewInstance(notesStr, AnnotationType.EDITORIAL(), Language.ENGLISH()));
