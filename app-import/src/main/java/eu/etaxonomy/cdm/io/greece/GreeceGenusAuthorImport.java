@@ -24,22 +24,17 @@ import eu.etaxonomy.cdm.strategy.parser.NonViralNameParserImpl;
 /**
  * @author a.mueller
  * @since 08.12.2017
- *
  */
 @Component
 public class GreeceGenusAuthorImport
-    extends SimpleExcelTaxonImport<GreeceGenusAuthorImportConfigurator>{
+    	extends SimpleExcelTaxonImport<GreeceGenusAuthorImportConfigurator>{
 
+	private static final long serialVersionUID = 1173327042682886814L;
     private static final Logger logger = Logger.getLogger(GreeceGenusAuthorImport.class);
 
-    private static final long serialVersionUID = 1173327042682886814L;
-    private ImportDeduplicationHelper<SimpleExcelTaxonImportState> dedupHelper;
+    private ImportDeduplicationHelper<SimpleExcelTaxonImportState<?>> dedupHelper;
     private NonViralNameParserImpl parser = NonViralNameParserImpl.NewInstance();
 
-
-    /**
-     * {@inheritDoc}
-     */
     @Override
     protected void firstPass(SimpleExcelTaxonImportState<GreeceGenusAuthorImportConfigurator> state) {
         String genus = state.getOriginalRecord().get("Genus");
@@ -56,23 +51,15 @@ public class GreeceGenusAuthorImport
                 getDedupHelper(state).replaceAuthorNamesAndNomRef(state, name);
                 name.addImportSource(null, null, state.getConfig().getSourceReference(), String.valueOf(state.getCurrentLine()));
             } catch (StringNotParsableException e) {
-                // TODO Auto-generated catch block
                 e.printStackTrace();
-//                throw new RuntimeException(e);
             }
         }
-
     }
 
-    /**
-     * @param state
-     * @return
-     */
-    private ImportDeduplicationHelper<SimpleExcelTaxonImportState> getDedupHelper(SimpleExcelTaxonImportState<GreeceGenusAuthorImportConfigurator> state) {
+    private ImportDeduplicationHelper<SimpleExcelTaxonImportState<?>> getDedupHelper(SimpleExcelTaxonImportState<GreeceGenusAuthorImportConfigurator> state) {
         if (this.dedupHelper == null){
             dedupHelper = ImportDeduplicationHelper.NewInstance(this, state);
         }
         return this.dedupHelper;
     }
-
 }

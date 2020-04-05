@@ -28,9 +28,9 @@ import eu.etaxonomy.cdm.model.reference.ReferenceFactory;
 /**
  * @author a.mueller
  * @since 08.12.2017
- *
  */
 public class GreeceGenusAuthorActivator {
+	
     @SuppressWarnings("unused")
     private static final Logger logger = Logger.getLogger(GreeceGenusAuthorActivator.class);
 
@@ -65,11 +65,9 @@ public class GreeceGenusAuthorActivator {
 
     }
 
-
     private URI greekChecklist(){
         return URI.create("file:////BGBM-PESIHPC/Greece/" + fileName);
     }
-
 
     private Reference getSourceReference(){
         Reference result = ReferenceFactory.newDatabase();
@@ -79,14 +77,9 @@ public class GreeceGenusAuthorActivator {
         return result;
     }
 
-    /**
-     * @param args
-     */
     public static void main(String[] args) {
         GreeceGenusAuthorActivator me = new GreeceGenusAuthorActivator();
         me.doImport(cdmDestination);
         System.exit(0);
     }
-
-
 }

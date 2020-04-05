@@ -18,10 +18,9 @@ import eu.etaxonomy.cdm.io.mexico.SimpleExcelTaxonImportState;
 /**
  * @author a.mueller
  * @since 08.12.2017
- *
  */
 public class GreeceGenusAuthorImportConfigurator
-    extends ExcelImportConfiguratorBase{
+    	extends ExcelImportConfiguratorBase{
 
     private static final long serialVersionUID = 2036787279608394173L;
 
@@ -29,10 +28,6 @@ public class GreeceGenusAuthorImportConfigurator
         return new GreeceGenusAuthorImportConfigurator(source, destination);
     }
 
-    /**
-     * @param uri
-     * @param destination
-     */
     protected GreeceGenusAuthorImportConfigurator(URI uri, ICdmDataSource destination) {
         super(uri, destination);
     }
@@ -43,14 +38,11 @@ public class GreeceGenusAuthorImportConfigurator
         return new SimpleExcelTaxonImportState<>(this);
     }
 
-    /**
-     * {@inheritDoc}
-     */
-    @Override
+    @SuppressWarnings("unchecked")
+	@Override
     protected void makeIoClassList() {
         ioClassList = new Class[]{
                 GreeceGenusAuthorImport.class,
         };
     }
-
 }
