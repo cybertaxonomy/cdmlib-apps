@@ -42,8 +42,8 @@ public class LichenesGeneraActivator {
     //database validation status (create, update, validate ...)
     static DbSchemaValidation hbm2dll = DbSchemaValidation.CREATE;
 
-//    static final ICdmDataSource cdmDestination = CdmDestinations.localH2();
-    static final ICdmDataSource cdmDestination = CdmDestinations.cdm_local_cdmtest_mysql();
+    static final ICdmDataSource cdmDestination = CdmDestinations.localH2();
+//    static final ICdmDataSource cdmDestination = CdmDestinations.cdm_local_cdmtest_mysql();
 //    static final ICdmDataSource cdmDestination = CdmDestinations.cdm_production_lichenes();
 
     //feature tree uuid
@@ -63,7 +63,8 @@ public class LichenesGeneraActivator {
     private void doImport(ICdmDataSource cdmDestination){
 
         //make Source
-        URI source = lichenesChecklist_local();
+        URI source = lichenesChecklist();
+//        URI source = lichenesChecklist_local();
 
         LichenesGeneraImportConfigurator config = LichenesGeneraImportConfigurator.NewInstance(source, cdmDestination);
         config.setClassificationUuid(classificationUuid);
