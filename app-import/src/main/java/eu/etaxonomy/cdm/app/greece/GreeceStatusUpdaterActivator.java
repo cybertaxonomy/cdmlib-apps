@@ -30,16 +30,16 @@ import eu.etaxonomy.cdm.model.reference.ReferenceFactory;
  * @since 08.12.2017
  */
 public class GreeceStatusUpdaterActivator {
-	
+
     @SuppressWarnings("unused")
     private static final Logger logger = Logger.getLogger(GreeceStatusUpdaterActivator.class);
 
-    static final ICdmDataSource cdmDestination = CdmDestinations.localH2();
-//  static final ICdmDataSource cdmDestination = CdmDestinations.cdm_test_local_mysql_test();
+//    static final ICdmDataSource cdmDestination = CdmDestinations.localH2();
+  static final ICdmDataSource cdmDestination = CdmDestinations.cdm_local_greece();
 //    static final ICdmDataSource cdmDestination = CdmDestinations.cdm_production_greece_checklist();
 
     private static final UUID sourceUuid = UUID.fromString("7f898cf8-5eef-4321-ba17-64983cf7ea26");
-    private static final String fileName = "xxx.xlsx";
+    private static final String fileName = "FoG_new_fields_14.03.2020_sent.xls";
 
 
     //check - import
@@ -59,7 +59,6 @@ public class GreeceStatusUpdaterActivator {
         CdmDefaultImport<GreeceStatusUpdaterConfigurator> myImport = new CdmDefaultImport<>();
         ImportResult result = myImport.invoke(config);
         System.out.println(result.createReport());
-
     }
 
     private URI greekChecklist(){
@@ -70,7 +69,6 @@ public class GreeceStatusUpdaterActivator {
         Reference result = ReferenceFactory.newDatabase();
         result.setTitle(fileName);
         result.setUuid(sourceUuid);
-
         return result;
     }
 
