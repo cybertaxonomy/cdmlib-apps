@@ -24,8 +24,11 @@ import eu.etaxonomy.cdm.model.description.Feature;
 import eu.etaxonomy.cdm.model.description.PresenceAbsenceTerm;
 import eu.etaxonomy.cdm.model.description.State;
 import eu.etaxonomy.cdm.model.description.TaxonDescription;
+import eu.etaxonomy.cdm.model.name.NomenclaturalCode;
+import eu.etaxonomy.cdm.model.name.TaxonName;
 import eu.etaxonomy.cdm.model.taxon.Taxon;
 import eu.etaxonomy.cdm.model.taxon.TaxonBase;
+import eu.etaxonomy.cdm.strategy.parser.NonViralNameParserImpl;
 
 /**
  * @author a.mueller
@@ -71,19 +74,15 @@ public class GreeceStatusUpdaterImport
     protected void firstPass(SimpleExcelTaxonImportState<GreeceStatusUpdaterConfigurator> state) {
 
     	Map<String, String> record = state.getOriginalRecord();
-    	String line = "line" + state.getCurrentLine() + ": ";
-
-    	UUID taxonUuid = UUID.fromString(getValue(record, TAXON_UUID));
-    	TaxonBase<?> taxonBase = getTaxonService().find(taxonUuid);
-    	if (taxonBase == null) {
-    		logger.warn(line+"no taxon " + taxonUuid);
-    		return;
-    	}else if (!taxonBase.isInstanceOf(Taxon.class)) {
-    		logger.warn(line + "is not accepted " + taxonUuid);
-    		return;
+    	String line = "line " + state.getCurrentLine() + ": ";
+    	if ((state.getCurrentLine() % 50) == 0){
+    	    System.out.println(line);
     	}
-    	if(!checkTaxonName(state, taxonBase, line)) {
-    		return;
+
+    	String row = getValue(record, "line");
+    	TaxonBase<?> taxonBase = getTaxon(state, record, line);
+    	if (taxonBase == null){
+    	    return;
     	}
     	Taxon taxon = CdmBase.deproxy(taxonBase, Taxon.class);
 
@@ -91,7 +90,7 @@ public class GreeceStatusUpdaterImport
     	Set<Distribution> distributions = taxon.getDescriptionItems(Feature.DISTRIBUTION(), Distribution.class);
     	for (Distribution distribution : distributions) {
     	    if (PresenceAbsenceTerm.ABSENT().equals(distribution.getStatus())) {
-    	        logger.info("Remove distribution");
+    	        logger.info("Remove distribution "+ distribution);
     	        distribution.getInDescription().removeElement(distribution);
     	    }
     	}
@@ -100,13 +99,14 @@ public class GreeceStatusUpdaterImport
     	Set<CategoricalData> statuss = taxon.getDescriptionItems(Feature.STATUS(), CategoricalData.class);
         for (CategoricalData status : statuss) {
             if (Feature.uuidStatus.equals(status.getFeature().getUuid())) {
-                logger.info("Remove status");
+                logger.info("Remove status " + status);
                 status.getInDescription().removeElement(status);
             }
         }
 
         //new data
         TaxonDescription newDescription = TaxonDescription.NewInstance(taxon);
+        addOriginalSource(newDescription, row, "row", getSourceReference(state));
         String redListCategoryStr = getValue(record, REDLIST_CATEGORY);
         String presidentialDecreeStr = getValue(record, PRESIDENTIAL_DECREE_67_81);
         String statusStr = getValue(record, STATUS);
@@ -114,11 +114,33 @@ public class GreeceStatusUpdaterImport
         String rangeRestrictionStr = getValue(record, RANGE_RESTRICTION);
 
         CategoricalData presidentialDecree = getPresidentialDecree(state, line, presidentialDecreeStr);
+        addOriginalSource(presidentialDecree, row, "row", getSourceReference(state));
         CategoricalData redListCategory = getRedListCategory(state, line, redListCategoryStr);
+        addOriginalSource(redListCategory, row, "row", getSourceReference(state));
         CategoricalData newStatus = getNewStatus(state, line, statusStr, establishmentStr, rangeRestrictionStr);
+        addOriginalSource(newStatus, row, "row", getSourceReference(state));
         newDescription.addElement(presidentialDecree);
         newDescription.addElement(redListCategory);
         newDescription.addElement(newStatus);
+    }
+
+    private TaxonBase<?> getTaxon(SimpleExcelTaxonImportState<GreeceStatusUpdaterConfigurator> state, Map<String, String> record, String line) {
+        UUID taxonUuid = UUID.fromString(getValue(record, TAXON_UUID));
+    	TaxonBase<?> taxonBase = getTaxonService().find(taxonUuid);
+    	if (taxonBase == null) {
+    		logger.warn(line + "no taxon " + taxonUuid);
+    		String nameStr = getValue(state.getOriginalRecord(), SCIENTIFIC_NAME);
+            TaxonName taxonName = (TaxonName)NonViralNameParserImpl.NewInstance().parseFullName(nameStr, NomenclaturalCode.ICNAFP, null);
+    		taxonBase = Taxon.NewInstance(taxonName, null);
+//    		return null;
+    	}else if (!taxonBase.isInstanceOf(Taxon.class)) {
+    		logger.warn(line + "is not accepted " + taxonUuid);
+    		return null;
+    	}
+        if(!checkTaxonName(state, taxonBase, line)) {
+            return null;
+        }
+        return taxonBase;
     }
 
     private CategoricalData getNewStatus(SimpleExcelTaxonImportState<GreeceStatusUpdaterConfigurator> state,

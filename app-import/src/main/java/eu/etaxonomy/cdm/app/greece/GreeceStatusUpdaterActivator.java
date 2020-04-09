@@ -39,7 +39,7 @@ public class GreeceStatusUpdaterActivator {
 //    static final ICdmDataSource cdmDestination = CdmDestinations.cdm_production_greece_checklist();
 
     private static final UUID sourceUuid = UUID.fromString("7f898cf8-5eef-4321-ba17-64983cf7ea26");
-    private static final String fileName = "FoG_new_fields_14.03.2020_sent.xls";
+    private static final String fileName = "FoG_new_fields_14.03.2020_sent_8.xls";
 
 
     //check - import
@@ -62,7 +62,7 @@ public class GreeceStatusUpdaterActivator {
     }
 
     private URI greekChecklist(){
-        return URI.create("file:////BGBM-PESIHPC/Greece/" + fileName);
+        return URI.create("file:////BGBM-PESIHPC/Greece/newStatus/" + fileName);
     }
 
     private Reference getSourceReference(){
