@@ -9,6 +9,7 @@
 
 package eu.etaxonomy.cdm.io.algaterra;
 
+import java.math.BigDecimal;
 import java.net.URI;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -508,10 +509,10 @@ public class AlgaTerraMorphologyImport  extends AlgaTerraSpecimenImportBase {
 					Set<DefinedTerm> valueModifier = new HashSet<DefinedTerm>();
 					valueStr = normalizeAndModifyValue(state, valueStr, valueModifier);
 					//value
-					Float valueFlt = Float.valueOf(valueStr);  //TODO maybe change model to Double ??
+	                BigDecimal valueDec = new BigDecimal(valueStr);
 
 					StatisticalMeasure measureSingleValue = getStatisticalMeasure(state, uuidStatMeasureSingleValue, "Value", "Single measurement value", null, null);
-					StatisticalMeasurementValue value = StatisticalMeasurementValue.NewInstance(measureSingleValue, valueFlt);
+					StatisticalMeasurementValue value = StatisticalMeasurementValue.NewInstance(measureSingleValue, valueDec);
 					quantData.addStatisticalValue(value);
 					descriptionBase.addElement(quantData);
 

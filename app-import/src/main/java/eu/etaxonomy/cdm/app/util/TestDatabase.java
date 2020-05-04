@@ -6,6 +6,7 @@
 
 package eu.etaxonomy.cdm.app.util;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.GregorianCalendar;
 import java.util.List;
@@ -120,7 +121,7 @@ public class TestDatabase {
 	    QuantitativeData element = QuantitativeData.NewInstance();
 	    StatisticalMeasurementValue statisticalValue = StatisticalMeasurementValue.NewInstance();
 	    statisticalValue.setType(StatisticalMeasure.MAX());
-	    statisticalValue.setValue((float) 2.1);
+	    statisticalValue.setValue(new BigDecimal("2.1"));
 	    element.addStatisticalValue(statisticalValue);
 	    taxNameDescription.addElement(element);
 
