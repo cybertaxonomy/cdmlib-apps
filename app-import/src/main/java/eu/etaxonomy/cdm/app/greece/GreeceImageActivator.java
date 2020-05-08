@@ -21,13 +21,14 @@ import eu.etaxonomy.cdm.io.common.CdmDefaultImport;
 import eu.etaxonomy.cdm.io.common.IImportConfigurator.CHECK;
 import eu.etaxonomy.cdm.io.common.ImportResult;
 import eu.etaxonomy.cdm.io.media.in.MediaExcelImportConfigurator;
+import eu.etaxonomy.cdm.model.common.Language;
 import eu.etaxonomy.cdm.model.name.NomenclaturalCode;
 import eu.etaxonomy.cdm.model.reference.Reference;
 import eu.etaxonomy.cdm.model.reference.ReferenceFactory;
 
 /**
  *
- * Import for new images for the flora of greece.
+ * Import for new images for the Flora of Greece.
  *
  * https://dev.e-taxonomy.eu/redmine/issues/7075
  *
@@ -63,14 +64,14 @@ public class GreeceImageActivator {
     @SuppressWarnings("unused")
     private static final Logger logger = Logger.getLogger(GreeceImageActivator.class);
 
-    static final ICdmDataSource cdmDestination = CdmDestinations.localH2();
-//    static final ICdmDataSource cdmDestination = CdmDestinations.cdm_production_greece_checklist();
+//    static final ICdmDataSource cdmDestination = CdmDestinations.localH2();
+    static final ICdmDataSource cdmDestination = CdmDestinations.cdm_production_greece_checklist();
 
-//    private static final UUID sourceUuid = UUID.fromString("40449942-87ff-4f3a-b909-729a80001b47");
-    private static final UUID sourceUuid = UUID.fromString("48f20249-61ce-4004-b03c-f368d9e29c5c");
+    private static final UUID sourceUuid = UUID.fromString("a57e30c1-cb0b-438d-830e-f7c1c8cd1fb1");
+//    private static final UUID sourceUuid = UUID.fromString("48f20249-61ce-4004-b03c-f368d9e29c5c");
 
-//    private static final String fileName = "20191230_FoG_images.xlsx";
-    private static final String fileName = "20200204_fog_images.xlsx";
+    private static final String fileName = "20200507_fog_images.xlsx";
+//    private static final String fileName = "20200204_fog_images.xlsx";
 
 
 //    NOTE!!: Darauf achten, dass die Header case sensitiv sind und keine Leerzeichen am Ende sein sollten, trim funktioniert seltsamerweise nicht immer
@@ -87,6 +88,8 @@ public class GreeceImageActivator {
         config.setCheck(check);
         config.setDbSchemaValidation(schemaVal);
         config.setSourceReference(getSourceReference());
+        config.setDescriptionLanguage(Language.uuidEnglish);
+        config.setTitleLanguageUuid(Language.uuidEnglish);
         config.setNomenclaturalCode(NomenclaturalCode.ICNAFP);
 
         CdmDefaultImport<MediaExcelImportConfigurator> myImport = new CdmDefaultImport<>();
