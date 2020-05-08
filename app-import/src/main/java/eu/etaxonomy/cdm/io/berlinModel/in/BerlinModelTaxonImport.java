@@ -60,10 +60,6 @@ import eu.etaxonomy.cdm.model.term.DefinedTerm;
  */
 @Component
 public class BerlinModelTaxonImport  extends BerlinModelImportBase {
-    /**
-     *
-     */
-    private static final String LAST_SCRUTINY_FK = "lastScrutinyFk";
 
     private static final long serialVersionUID = -1186364983750790695L;
 
@@ -73,6 +69,8 @@ public class BerlinModelTaxonImport  extends BerlinModelImportBase {
 
 	private static final String pluralString = "Taxa";
 	private static final String dbTableName = "PTaxon";
+
+	private static final String LAST_SCRUTINY_FK = "lastScrutinyFk";
 
 	/**
 	 * How should the publish flag in table PTaxon be interpreted
