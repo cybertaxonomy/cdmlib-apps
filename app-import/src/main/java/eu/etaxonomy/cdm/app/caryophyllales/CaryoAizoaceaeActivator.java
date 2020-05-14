@@ -27,8 +27,8 @@ public class CaryoAizoaceaeActivator {
     @SuppressWarnings("unused")
     private static final Logger logger = Logger.getLogger(CaryoAizoaceaeActivator.class);
 
-//    private static final ICdmDataSource destinationDb = CdmDestinations.cdm_local_caryo_aizoaceae();
-    private static final ICdmDataSource destinationDb = CdmDestinations.cdm_production_caryophyllales_spp();
+    private static final ICdmDataSource destinationDb = CdmDestinations.cdm_local_caryo();
+//    private static final ICdmDataSource destinationDb = CdmDestinations.cdm_production_caryophyllales_spp();
 
     private boolean doDeduplicate = true;
 

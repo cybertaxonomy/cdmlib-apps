@@ -93,7 +93,7 @@ public class EdaphobaseActivator {
         myImport.invoke(config);
 
         TermTree<Feature> tree = makeFeatureNodes(myImport.getCdmAppController().getTermService());
-        myImport.getCdmAppController().getFeatureTreeService().saveOrUpdate(tree);
+        myImport.getCdmAppController().getTermTreeService().saveOrUpdate(tree);
     }
 
     private TermTree<Feature> makeFeatureNodes(ITermService service){
