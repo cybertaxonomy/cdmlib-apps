@@ -75,7 +75,7 @@ public class LichenesGeneraTaxonImport<CONFIG extends LichenesGeneraImportConfig
     @Override
     protected void firstPass(SimpleExcelTaxonImportState<CONFIG> state) {
 
-        String line = state.getCurrentLine() + ": ";
+        String line = getLine(state, 100);
         Map<String, String> record = state.getOriginalRecord();
 
         Set<String> keys = record.keySet();

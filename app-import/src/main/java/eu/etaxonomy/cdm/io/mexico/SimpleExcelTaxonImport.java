@@ -215,4 +215,15 @@ public abstract class SimpleExcelTaxonImport<CONFIG extends ExcelImportConfigura
             }
         }
     }
+
+    /**
+     * Returns the line string and prints it on syso for each count-th line
+     */
+    protected String getLine(SimpleExcelTaxonImportState<CONFIG> state, Integer count) {
+        String line = state.getCurrentLine() + ": ";
+        if (count != null && (state.getCurrentLine() % count) == 0){
+            System.out.println(line);
+        }
+        return line;
+    }
 }

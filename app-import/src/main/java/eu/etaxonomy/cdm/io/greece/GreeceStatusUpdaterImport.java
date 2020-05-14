@@ -74,10 +74,7 @@ public class GreeceStatusUpdaterImport
     protected void firstPass(SimpleExcelTaxonImportState<GreeceStatusUpdaterConfigurator> state) {
 
     	Map<String, String> record = state.getOriginalRecord();
-    	String line = "line " + state.getCurrentLine() + ": ";
-    	if ((state.getCurrentLine() % 50) == 0){
-    	    System.out.println(line);
-    	}
+        String line = getLine(state, 50);
 
     	String row = getValue(record, "line");
     	TaxonBase<?> taxonBase = getTaxon(state, record, line);
