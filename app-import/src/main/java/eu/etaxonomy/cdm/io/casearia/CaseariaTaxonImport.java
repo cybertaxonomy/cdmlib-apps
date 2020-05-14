@@ -6,12 +6,11 @@
 * The contents of this file are subject to the Mozilla Public License Version 1.1
 * See LICENSE.TXT at the top of this package for the full license terms.
 */
-package eu.etaxonomy.cdm.io.caryo;
+package eu.etaxonomy.cdm.io.casearia;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -28,12 +27,16 @@ import eu.etaxonomy.cdm.io.mexico.SimpleExcelTaxonImport;
 import eu.etaxonomy.cdm.io.mexico.SimpleExcelTaxonImportState;
 import eu.etaxonomy.cdm.model.agent.TeamOrPersonBase;
 import eu.etaxonomy.cdm.model.common.CdmBase;
+import eu.etaxonomy.cdm.model.common.Language;
 import eu.etaxonomy.cdm.model.name.NomenclaturalCode;
 import eu.etaxonomy.cdm.model.name.NomenclaturalStatusType;
 import eu.etaxonomy.cdm.model.name.Rank;
 import eu.etaxonomy.cdm.model.name.TaxonName;
+import eu.etaxonomy.cdm.model.name.TaxonNameFactory;
 import eu.etaxonomy.cdm.model.reference.Reference;
+import eu.etaxonomy.cdm.model.reference.ReferenceFactory;
 import eu.etaxonomy.cdm.model.reference.ReferenceType;
+import eu.etaxonomy.cdm.model.taxon.Classification;
 import eu.etaxonomy.cdm.model.taxon.Synonym;
 import eu.etaxonomy.cdm.model.taxon.SynonymType;
 import eu.etaxonomy.cdm.model.taxon.Taxon;
@@ -43,37 +46,55 @@ import eu.etaxonomy.cdm.model.term.DefinedTerm;
 import eu.etaxonomy.cdm.strategy.parser.NonViralNameParserImpl;
 
 /**
+ * Taxon import for Casearia from Kew world checklist of plants.
+ *
  * @author a.mueller
- * @since 17.02.2020
+ * @since 12.05.2020
  */
 @Component
-public class CaryoAizoaceaeExcelImport extends SimpleExcelTaxonImport<CaryoAizoaceaeExcelImportConfigurator>{
+public class CaseariaTaxonImport extends SimpleExcelTaxonImport<CaseariaImportConfigurator>{
 
-    private static final long serialVersionUID = -729761811965260921L;
-    private static final Logger logger = Logger.getLogger(CaryoAizoaceaeExcelImport.class);
+    private static final long serialVersionUID = 7686154384296707819L;
+    private static final Logger logger = Logger.getLogger(CaseariaTaxonImport.class);
 
-    private static final String ACCEPTED_PLANT_NAME_ID = "accepted_plant_name_id";
-    private static final String NOMENCLATURAL_REMARKS = "nomenclatural_remarks";
-    private static final String TAXON_RANK = "taxon_rank";
+    protected static final String TAXON_MAPPING = "TaxonMapping";
     private static final String NAME_CIT = "NameCit";
-    private static final String KEW_NAME4CDM_LINK = "KewName4CDMLink";
-    private static final String KEW_F_NAME4CDM_LINK = "KewFName4CDMLink";
-    private static final String TAXON_STATUS = "taxon_status";
-    private static final String PLANT_NAME_ID = "plant_name_id";
     private static final String IPNI_ID = "ipni_id";
+    private static final String PLANT_NAME_ID = "plant_name_id";
+    private static final String TAXON_RANK = "taxon_rank";
+    private static final String TAXON_STATUS = "taxon_status";
+    private static final String NOMENCLATURAL_REMARKS = "nomenclatural_remarks";
+    private static final String ACCEPTED_PLANT_NAME_ID = "accepted_plant_name_id";
+    private static final String TAXON_NAME = "taxon_name";
+    private static final String TAXON_AUTHORS = "taxon_authors";
+    private static final String FAMILY = "family";
+    private static final String FIRST_PUBLISHED = "first_published";
+    private static final String PUB_TYPE = "PubType";
+    private static final String VOLUME_AND_PAGE = "volume_and_page";
+    private static final String PLACE_OF_PUBLICATION = "place_of_publication";
+    private static final String PRIMARY_AUTHOR = "primary_author";
+    private static final String PARENTHETICAL_AUTHOR = "parenthetical_author";
+    private static final String INFRASPECIFIC_RANK = "infraspecific_rank";
+    private static final String INFRASPECIES = "infraspecies";
+    private static final String SPECIES = "species";
+    private static final String GENUS = "genus";
+
+    private static final int RECORDS_PER_TRANSACTION = 500;
+    private static boolean logMissingIpniId = false;
 
     private Map<String, UUID> taxonMapping = new HashMap<>();
     private Reference secRef = null;
-    private Set<String> neglectedRecords = new HashSet<>();
     private Set<UUID> createdNames = new HashSet<>();
 
-    private SimpleExcelTaxonImportState<CaryoAizoaceaeExcelImportConfigurator> state;
+    private SimpleExcelTaxonImportState<CaseariaImportConfigurator> state;
     private ImportDeduplicationHelper<SimpleExcelTaxonImportState<?>> dedupHelper = null;
+    private NonViralNameParserImpl parser = new NonViralNameParserImpl();
+
 
     @Override
-    protected void firstPass(SimpleExcelTaxonImportState<CaryoAizoaceaeExcelImportConfigurator> state) {
+    protected void firstPass(SimpleExcelTaxonImportState<CaseariaImportConfigurator> state) {
         int line = state.getCurrentLine();
-        if ((line % 500) == 0){
+        if ((line % RECORDS_PER_TRANSACTION) == 0){
             newTransaction(state);
             System.out.println(line);
         }
@@ -82,148 +103,69 @@ public class CaryoAizoaceaeExcelImport extends SimpleExcelTaxonImport<CaryoAizoa
         Map<String, String> record = state.getOriginalRecord();
 
         String fullCitation = getValue(record, NAME_CIT);
-        String nameCache = getValue(record, KEW_NAME4CDM_LINK);
-        String fullName = getValue(record, KEW_F_NAME4CDM_LINK);
-        String status = getValue(record, TAXON_STATUS);
-        String sourceId = getValue(record, PLANT_NAME_ID);
         String ipniId = getValue(record, IPNI_ID);
+        String sourceId = getValue(record, PLANT_NAME_ID);
         String rankStr = getValue(record, TAXON_RANK);
+        String status = getValue(record, TAXON_STATUS);
         String nomenclaturalRemarks = getValue(record, NOMENCLATURAL_REMARKS);
         String accId = getValue(record, ACCEPTED_PLANT_NAME_ID);
+        String taxonNameStr = getValue(record, TAXON_NAME);
+        String taxonAuthors = getValue(record, TAXON_AUTHORS);
 
-        String row = String.valueOf(line) + "("+fullName+"): ";
+        String fullNameStr = CdmUtils.concat(" ", taxonNameStr,taxonAuthors);
+        String row = String.valueOf(line) + "("+fullNameStr+"): ";
 
-        if("Misapplied".equals(status)){
-            neglectedRecords.add(sourceId);
-            return;
-        }
-
-        boolean isNewName = false;
+        boolean isNewName = true;
 
         try {
 
             List<NomenclaturalStatusType> statusTypes = new ArrayList<>();
-            Class<? extends CdmBase> clazz = makeStatus(status, sourceId, accId, row, statusTypes);
+            Class<? extends CdmBase> taxonClazz = makeStatus(status, sourceId, accId, row, statusTypes);
 
-            TaxonName name;
+
             Rank rank = state.getTransformer().getRankByKey(rankStr);
-            List<TaxonName> existingNames = getNameService().getNamesByNameCache(nameCache);
-            Iterator<TaxonName> it = existingNames.iterator();
-            while (it.hasNext()){
-                TaxonName next = it.next();
-                if (createdNames.contains(next.getUuid())){
-                    it.remove();
-                }
-            }
 
-            List<TaxonName> fullNameMatches = new ArrayList<>();
-
-            @SuppressWarnings("rawtypes")
-            List<TaxonBase> allFullNameTaxa = new ArrayList<>();
-            @SuppressWarnings("rawtypes")
-            List<TaxonBase> allNameCacheTaxa = new ArrayList<>();
-
-            for (TaxonName existingName : existingNames){
-                if (existingName.getTitleCache().equals(fullName)){
-                    fullNameMatches.add(existingName);
-                    allFullNameTaxa.addAll(existingName.getTaxonBases());
-                }
-                allNameCacheTaxa.addAll(existingName.getTaxonBases());
-            }
-
-            logMultipleCandidates(row, existingNames, fullNameMatches);
-
-            TaxonBase<?> existingTaxon;
-            if(allFullNameTaxa.size()>1){
-                existingTaxon = findBestMatchingTaxon(allFullNameTaxa, clazz, row);
-                name = existingTaxon.getName();
-            }else if (allFullNameTaxa.size()==1){
-                existingTaxon = allFullNameTaxa.iterator().next();
-                name = existingTaxon.getName();
+            TaxonName name = parser.parseReferencedName(fullCitation, state.getConfig().getNomenclaturalCode(), rank);
+            if (name.isProtectedFullTitleCache() || name.isProtectedTitleCache() || name.isProtectedNameCache()
+                    || name.isProtectedAuthorshipCache()){
+                logger.warn(row + "Name not parsable: " + fullCitation);
+                name.setTitleCache(fullNameStr, true);
+                name.setNameCache(taxonNameStr, true);
             }else{
-                existingTaxon = null;
-                if (!fullNameMatches.isEmpty()){
-                    logger.warn(row + "None of the existing names exists as taxon/synonym. Existing name taken as base for new taxon/synonym created.");
-                    if (fullNameMatches.size()>1){
-                        logger.warn(row + "More than 1 matching full names exist as candidats for new taxon/synonym. Arbitrary one taken.");
-                    }
-                    name = fullNameMatches.iterator().next();
-                }else if (!existingNames.isEmpty()){
-                    if (!allNameCacheTaxa.isEmpty()){
-                        logger.warn(row + "Taxa exist with matching nameCache but not matching fullname cache. New name and new taxon/synonym created. Other authors are " + getOtherAuthors(existingNames));
-                        name = null;
-                    }else{
-                        logger.warn(row + "No matching fullnames exist but namecache matches. None of the matches is used in a taxon/synonym. Other authors are " + getOtherAuthors(existingNames));
-                        name = null;
-                    }
-                }else{
-                    name = null;
-                }
+                testParsedName(state, name, row, null);
             }
-
-            if (existingTaxon == null){
-                if (rank == null){
-                    logger.warn(row + "Name has no rank " + nameCache);
-                }else if (rank.equals(Rank.GENUS())){
-                    logger.warn(row + "No name exists for genus " + nameCache + ". This is unexpected.");
-                }
-            }else{
-                if (existingTaxon.isInstanceOf(Taxon.class)){
-                    if (!CdmBase.deproxy(existingTaxon, Taxon.class).getTaxonNodes().isEmpty()){
-                        neglectedRecords.add(sourceId);
-                    }
-                }else{
-                    Taxon taxon = CdmBase.deproxy(existingTaxon, Synonym.class).getAcceptedTaxon();
-                    if (taxon != null && !taxon.getTaxonNodes().isEmpty()){
-                        neglectedRecords.add(sourceId);
-                    }
-                }
-            }
-            if (name == null){
-                NonViralNameParserImpl parser = new NonViralNameParserImpl();
-                name = parser.parseReferencedName(fullCitation, NomenclaturalCode.ICNAFP, rank);
-                if (name.isProtectedFullTitleCache() || name.isProtectedTitleCache() || name.isProtectedNameCache()
-                        || name.isProtectedAuthorshipCache()){
-                    logger.warn(row + "Name not parsable: " + fullCitation);
-                    name.setTitleCache(fullName, true);
-                    name.setNameCache(nameCache, true);
-                }else{
-                    testParsedName(state, name, row, null);
-                }
-                name.addImportSource(sourceId, PLANT_NAME_ID, getSourceReference(state), "line " + state.getCurrentLine());
-                name = dedupliateNameParts(name);
-                getNameService().saveOrUpdate(name);
-                isNewName = true;
-                createdNames.add(name.getUuid());
-            }else{
-                testParsedName(state, name, row, fullCitation);
-            }
+            name.addImportSource(sourceId, PLANT_NAME_ID, getSourceReference(state), "line " + state.getCurrentLine());
+            name = dedupliateNameParts(name);
+            getNameService().saveOrUpdate(name);
+            createdNames.add(name.getUuid());
 
             handleNomenclRemarkAndNameStatus(nomenclaturalRemarks, row, isNewName, name, statusTypes);
 
-            TaxonBase<?> taxonBase = existingTaxon;
-
-            if (taxonBase == null){
-                if (clazz == Taxon.class){
-                    taxonBase = Taxon.NewInstance(name, getSecRef());
-                }else{
-                    taxonBase = Synonym.NewInstance(name, getSecRef());
-                }
-                taxonBase.addImportSource(sourceId, PLANT_NAME_ID, getSourceReference(state), "line " + state.getCurrentLine());
-                getTaxonService().saveOrUpdate(taxonBase);
+            TaxonBase<?> taxonBase;
+            if (taxonClazz == Taxon.class){
+                taxonBase = Taxon.NewInstance(name, getSecRef());
+            }else{
+                taxonBase = Synonym.NewInstance(name, getSecRef());
             }
+            taxonBase.addImportSource(sourceId, PLANT_NAME_ID, getSourceReference(state), "line " + state.getCurrentLine());
+            getTaxonService().saveOrUpdate(taxonBase);
 
             if (!isBlank(ipniId)){
                 DefinedTerm ipniIdIdentifierType = DefinedTerm.IDENTIFIER_NAME_IPNI();
                 name.addIdentifier(ipniId, ipniIdIdentifierType);
             }else{
-                logger.warn(row + "IPNI id is missing.");
+                if(logMissingIpniId){
+                    logger.warn(row + "IPNI id is missing.");
+                }
             }
 
-            taxonMapping.put(sourceId, taxonBase.getUuid());
-//            if("Accepted".equals(status)){
+            UUID uuid = taxonMapping.put(sourceId, taxonBase.getUuid());{
+                if (uuid != null){
+                    logger.warn(row + "sourceId already existed in taxonMapping: " + sourceId);
+                }
+            }
             if(taxonBase.isInstanceOf(Taxon.class)){
-                    UUID existingUuid = taxonMapping.put(name.getNameCache(), taxonBase.getUuid());
+                UUID existingUuid = taxonMapping.put(name.getNameCache(), taxonBase.getUuid());
                 if (existingUuid != null){
                     logger.warn(row + name.getNameCache() + " has multiple instances in file");
                 }
@@ -242,79 +184,25 @@ public class CaryoAizoaceaeExcelImport extends SimpleExcelTaxonImport<CaryoAizoa
 
     private ImportDeduplicationHelper<SimpleExcelTaxonImportState<?>> getDedupHelper() {
         if (dedupHelper == null){
-            dedupHelper
-                = ImportDeduplicationHelper.NewInstance(this, state);
+            dedupHelper = ImportDeduplicationHelper.NewInstance(this, state);
         }
         return dedupHelper;
-    }
-
-    private String getOtherAuthors(List<TaxonName> otherNames) {
-        String result = "";
-        for (TaxonName name : otherNames){
-            result = CdmUtils.concat(";", result, name.getAuthorshipCache());
-        }
-        return result;
-    }
-
-    private TaxonBase<?> findBestMatchingTaxon(@SuppressWarnings("rawtypes") List<TaxonBase> allFullNameTaxa,
-            Class<? extends CdmBase> clazz, String row) {
-
-        TaxonBase<?> result = null;
-        TaxonBase<?> otherStatus = null;
-        for (TaxonBase<?> taxonBase : allFullNameTaxa) {
-            if (taxonBase.isInstanceOf(clazz)){
-                if (result != null){
-                    logger.warn(row + "More than 1 taxon with matching full name AND matching status exists. This is not further handled. Arbitrary one taken.");
-                }
-                result = taxonBase;
-            }else{
-                otherStatus = taxonBase;
-            }
-        }
-        if (result == null && allFullNameTaxa.size()>1){
-            logger.warn(row + "More than 1 taxon with matching fullname but NOT matching status exists. This is not further handled. Arbitrary one taken.");
-        }
-        return result == null? otherStatus :result ;
-    }
-
-    private void logMultipleCandidates(String row, List<TaxonName> existingNames, List<TaxonName> fullNameMatches) {
-        if(fullNameMatches.size()>1){
-            String message = row + "More than one name with matching full name exists in DB. Try to take best matching.";
-            if (existingNames.size()>fullNameMatches.size()){
-                message += " Additionally names with matching name cache exist.";
-            }
-            logger.warn(message);
-        }else if (existingNames.size()>1){
-            String message = row + "More than one name with matching nameCache exists in DB. ";
-            if(fullNameMatches.isEmpty()){
-                message += "But none matches full name.";
-            }else{
-                message += "But exactly 1 matches full name.";
-            }
-            logger.warn(message);
-        }
     }
 
     private Class<? extends CdmBase> makeStatus(String status, String sourceId,
             String accId, String row, List<NomenclaturalStatusType> statusTypes) {
 
         Class<? extends CdmBase> clazz;
-        if ("Accepted".equals(status) || "Unplaced".equals(status) || "Artificial Hybrid".equals(status) ){
+        if ("Accepted".equals(status) || "Unplaced".equals(status) || "Misapplied".equals(status)){
             clazz = Taxon.class;
-        }else if ("Synonym".equals(status) || "Orthographic".equals(status)){
+        }else if ("Synonym".equals(status)){
             clazz = (accId == null)? Taxon.class : Synonym.class;
-            if("Orthographic".equals(status)){
-                statusTypes.add(NomenclaturalStatusType.SUPERFLUOUS());
-//                addStatus(NomenclaturalStatusType.SUPERFLUOUS(), row, isNewName, statusAdded, statusTypes, null);
-            }
         }else if("Illegitimate".equals(status)){
             clazz = getIllegInvalidStatus(sourceId, accId);
             statusTypes.add(NomenclaturalStatusType.ILLEGITIMATE());
-//            addStatus(NomenclaturalStatusType.ILLEGITIMATE(), row, isNewName, statusAdded, statusTypes, getSecRef());
         }else if ("Invalid".equals(status)){
             clazz = getIllegInvalidStatus(sourceId, accId);
             statusTypes.add(NomenclaturalStatusType.INVALID());
-//            addStatus(NomenclaturalStatusType.INVALID(), row, isNewName, statusAdded, statusTypes, getSecRef());
         }else{
             logger.warn(row + "Unhandled status: " + status);
             clazz = Taxon.class;  //to do something
@@ -380,7 +268,7 @@ public class CaryoAizoaceaeExcelImport extends SimpleExcelTaxonImport<CaryoAizoa
         }
     }
 
-    private void newTransaction(SimpleExcelTaxonImportState<CaryoAizoaceaeExcelImportConfigurator> state) {
+    private void newTransaction(SimpleExcelTaxonImportState<CaseariaImportConfigurator> state) {
         commitTransaction(state.getTransactionStatus());
         secRef = null;
         dedupHelper = null;
@@ -392,6 +280,10 @@ public class CaryoAizoaceaeExcelImport extends SimpleExcelTaxonImport<CaryoAizoa
     private Reference getSecRef() {
         if (secRef == null){
             secRef = getReferenceService().find(state.getConfig().getSecUuid());
+            if (secRef == null){
+                secRef = ReferenceFactory.newDatabase();
+                secRef.setTitle("Casearia Database");
+            }
         }
         return secRef;
     }
@@ -406,26 +298,28 @@ public class CaryoAizoaceaeExcelImport extends SimpleExcelTaxonImport<CaryoAizoa
     }
 
 
-    private void testParsedName(SimpleExcelTaxonImportState<CaryoAizoaceaeExcelImportConfigurator> state, TaxonName name,
+    private void testParsedName(SimpleExcelTaxonImportState<CaseariaImportConfigurator> state, TaxonName name,
             String row, String fullCitation) throws UndefinedTransformerMethodException {
+
         Map<String, String> record = state.getOriginalRecord();
 
-        String nameCache = getValue(record, KEW_NAME4CDM_LINK);
-        String fullName = getValue(record, KEW_F_NAME4CDM_LINK);
+//      publication_author
+
         String rankStr = getValue(record, TAXON_RANK);
-        String genusHybrid = getValue(record, "genus_hybrid");
-        String genus = getValue(record, "genus");
-        String speciesHybrid = getValue(record, "species_hybrid");
-        String species = getValue(record, "species");
-        String infraSpecRank = getValue(record, "infraspecific_rank");
-        String infraspecies = getValue(record, "infraspecies");
-        String basionymAuthor = getValue(record, "parenthetical_author");
-        String combinationAuthor = getValue(record, "primary_author");
-        String authors = getValue(record, "taxon_authors");
-        String year = getValue(record, "KewYear4CDM");
-        String pubType = getValue(record, "PubType");
-        String place_of_publication = getValue(record, "place_of_publication");
-        String volume_and_page = getValue(record, "volume_and_page");
+        String nameCache = getValue(record, TAXON_NAME);
+        String authorshipCache = getValue(record, TAXON_AUTHORS);
+        String genus = getValue(record, GENUS);
+        String species = getValue(record, SPECIES);
+        String infraspecies = getValue(record, INFRASPECIES);
+        String infraSpecRank = getValue(record, INFRASPECIFIC_RANK);
+        String basionymAuthor = getValue(record, PARENTHETICAL_AUTHOR);
+        String combinationAuthor = getValue(record, PRIMARY_AUTHOR);
+        String place_of_publication = getValue(record, PLACE_OF_PUBLICATION);
+        String volume_and_page = getValue(record, VOLUME_AND_PAGE);
+        String pubType = getValue(record, PUB_TYPE);
+        String yearPublished = getValue(record, FIRST_PUBLISHED);
+
+        String fullName = CdmUtils.concat(" ", nameCache, authorshipCache);
 
         if (!CdmUtils.nullSafeEqual(name.getNameCache(), nameCache)){
             logger.warn(row + "Unexpected nameCache: " + nameCache);
@@ -433,22 +327,17 @@ public class CaryoAizoaceaeExcelImport extends SimpleExcelTaxonImport<CaryoAizoa
         if (!CdmUtils.nullSafeEqual(name.getTitleCache(), fullName)){
             logger.warn(row + "Unexpected titleCache: <->" + name.getTitleCache());
         }
-        if (isBlank(genusHybrid) == name.isMonomHybrid()){
-            logger.warn(row + "Unexpected genus hybrid: " + genusHybrid);
-        }
         if (!CdmUtils.nullSafeEqual(name.getGenusOrUninomial(),genus)){
             logger.warn(row + "Unexpected genus: " + genus);
-        }if (isBlank(speciesHybrid) == name.isBinomHybrid()){
-            logger.warn(row + "Unexpected species hybrid: " + speciesHybrid);
         }
-        if (!CdmUtils.nullSafeEqual(name.getSpecificEpithet(),species)){
+        if (!CdmUtils.nullSafeEqual(name.getSpecificEpithet(), species)){
             logger.warn(row + "Unexpected species epithet: " + name.getSpecificEpithet() +"<->"+ species);
         }
         if (!CdmUtils.nullSafeEqual(name.getInfraSpecificEpithet(), infraspecies)){
             logger.warn(row + "Unexpected infraspecific epithet: " + name.getInfraSpecificEpithet() +"<->"+ infraspecies);
         }
-        if (!CdmUtils.nullSafeEqual(name.getAuthorshipCache(),authors)){
-            logger.warn(row + "Unexpected authors: " + name.getAuthorshipCache() +"<->"+ authors);
+        if (!CdmUtils.nullSafeEqual(name.getAuthorshipCache(), authorshipCache)){
+            logger.warn(row + "Unexpected authors: " + name.getAuthorshipCache() +"<->"+ authorshipCache);
         }
         String combinationAndExAuthor = authorTitle(name.getCombinationAuthorship(), name.getExCombinationAuthorship());
         if (!CdmUtils.nullSafeEqual(combinationAndExAuthor, combinationAuthor)){
@@ -484,7 +373,7 @@ public class CaryoAizoaceaeExcelImport extends SimpleExcelTaxonImport<CaryoAizoa
             if ("B".equals(pubType) && nomRef.getType() != ReferenceType.Book){
                 logger.warn(row + "Unexpected nomref type: " + pubType + "<->" + nomRef.getType().toString());
             }
-            year = normalizeYear(year);
+            String year = normalizeYear(yearPublished);
             if (!CdmUtils.nullSafeEqual(year, nomRef.getDatePublishedString())){
                 logger.warn(row + "Unexpected year: " + year + "<->" + nomRef.getDatePublishedString());
             }
@@ -495,12 +384,28 @@ public class CaryoAizoaceaeExcelImport extends SimpleExcelTaxonImport<CaryoAizoa
                 logger.warn(row + "place_of_publication not found in fullTitleCache: " + name.getFullTitleCache() +"<->"+ place_of_publication);
             }
         }
-        if ("subsp.".equals(infraSpecRank) && !rank.equals(Rank.SUBSPECIES())){
-            logger.warn(row + "Unexpected infraspec marker: " + infraSpecRank);
-        }else if ("var.".equals(infraSpecRank) && !rank.equals(Rank.VARIETY())){
-            logger.warn(row + "Unexpected infraspec marker: " + infraSpecRank);
-        }else if ("f.".equals(infraSpecRank) && !rank.equals(Rank.FORM())){
-            logger.warn(row + "Unexpected infraspec marker: " + infraSpecRank);
+        if (isBlank(infraSpecRank)){
+            if (rank.isLower(Rank.SPECIES())){
+                logger.warn(row +  "No infraspce marker given but rank is lower than species");
+            }
+        }else if ("subsp.".equals(infraSpecRank)){
+            if(!rank.equals(Rank.SUBSPECIES())){
+                logger.warn(row + "Unexpected infraspec marker: " + infraSpecRank);
+            }
+        }else if ("var.".equals(infraSpecRank)){
+            if (!rank.equals(Rank.VARIETY())){
+                logger.warn(row + "Unexpected infraspec marker: " + infraSpecRank);
+            }
+        }else if ("subvar.".equals(infraSpecRank)){
+            if (!rank.equals(Rank.SUBVARIETY())){
+                logger.warn(row + "Unexpected infraspec marker: " + infraSpecRank);
+            }
+        }else if ("f.".equals(infraSpecRank)){
+            if (!rank.equals(Rank.FORM())){
+                logger.warn(row + "Unexpected infraspec marker: " + infraSpecRank);
+            }
+        }else{
+            logger.warn(row + "Unhandled infraspec marker: " + infraSpecRank);
         }
     }
 
@@ -513,7 +418,10 @@ public class CaryoAizoaceaeExcelImport extends SimpleExcelTaxonImport<CaryoAizoa
     private String normalizeYear(String year) {
         if (year == null){
             return null;
-        }else if (year.contains("\" [")){
+        }else{
+            year = year.substring(1, year.length() - 1);
+        }
+        if (year.contains("\" [")){
             String[] split = year.split("\" \\[");
             year = split[1].replace("]","") + " [" + split[0]+"\"]";
         }else if ("?".equals(year)){
@@ -523,29 +431,34 @@ public class CaryoAizoaceaeExcelImport extends SimpleExcelTaxonImport<CaryoAizoa
     }
 
     @Override
-    protected void secondPass(SimpleExcelTaxonImportState<CaryoAizoaceaeExcelImportConfigurator> state) {
+    protected void secondPass(SimpleExcelTaxonImportState<CaseariaImportConfigurator> state) {
+        state.putStatusItem(TAXON_MAPPING, taxonMapping);
+
+
         Map<String, String> record = state.getOriginalRecord();
         int line = state.getCurrentLine();
-        String fullName = getValue(record, KEW_F_NAME4CDM_LINK);
+//        String fullName = getValue(record, KEW_F_NAME4CDM_LINK);
         String status = getValue(record, TAXON_STATUS);
         String sourceId = getValue(record, PLANT_NAME_ID);
         String accId = getValue(record, ACCEPTED_PLANT_NAME_ID);
+        String family = getValue(record, FAMILY);
+
         String accName = getValue(record, "AcceptedName");
         String basionymId = getValue(record, "basionym_plant_name_id");
         String homotypicSynonym = getValue(record, "homotypic_synonym");
 
-        String row = String.valueOf(line) + "("+fullName+"): ";
+//      AcceptedName, Basionym, taxon_name_hybcorr, genus_hybrid, species_hybrid, homotypic_synonym,
+//      basionym_plant_name_id
+
+        String taxonNameStr = getValue(record, TAXON_NAME);
+        String taxonAuthors = getValue(record, TAXON_AUTHORS);
+        String fullNameStr = CdmUtils.concat(" ", taxonNameStr,taxonAuthors);
+        String row = String.valueOf(line) + "("+fullNameStr+"): ";
+
         try {
-            if ((line % 500) == 0){
+            if ((line % RECORDS_PER_TRANSACTION) == 0){
                 newTransaction(state);
                 System.out.println(line);
-            }
-
-            if("Misapplied".equals(status)){
-                return;
-            }else if (neglectedRecords.contains(sourceId)){
-                logger.info(row + "Record ignored.");
-                return;
             }
 
             UUID uuid = taxonMapping.get(sourceId);
@@ -567,10 +480,11 @@ public class CaryoAizoaceaeExcelImport extends SimpleExcelTaxonImport<CaryoAizoa
             if(accId == null){
                 logger.info(row + "accID is null");
                 child = CdmBase.deproxy(taxonBase, Taxon.class);
+            //synonyms
             }else if(hasAccepted){
                 TaxonBase<?> accTaxonBase = getTaxonService().find(accUuid);
                 if (accTaxonBase == null){
-                    logger.warn(row + "acctaxon not found: " + accId + "; " + accName);
+//                    logger.warn(row + "acctaxon not found: " + accId + "; " + accName);
                 }else if(!accTaxonBase.isInstanceOf(Taxon.class)){
                     logger.warn(row + "acctaxon is synonym: " + accId + "; " + accName);
                     isSynonymAccepted = true;
@@ -580,6 +494,7 @@ public class CaryoAizoaceaeExcelImport extends SimpleExcelTaxonImport<CaryoAizoa
                         logger.warn(row + "Accepted name differs: " + accName +" <-> "+ accTaxon.getName().getTitleCache());
                     }
                 }
+            //accepted taxa
             }else if (sourceId.equals(accId)){
                 if (!taxonBase.isInstanceOf(Taxon.class)){
                     logger.warn(row + "child not of class Taxon: " + sourceId);
@@ -587,7 +502,7 @@ public class CaryoAizoaceaeExcelImport extends SimpleExcelTaxonImport<CaryoAizoa
                     Rank rank = taxonBase.getName().getRank();
                     child = CdmBase.deproxy(taxonBase, Taxon.class);
                     if(rank.equals(Rank.GENUS())){
-                        parent = getFamily();
+                        parent = getFamily(row, family);
                     }else if (rank.equals(Rank.SPECIES())){
                         String genus = child.getName().getGenusOrUninomial();
                         UUID parentUuid = taxonMapping.get(genus);
@@ -625,12 +540,13 @@ public class CaryoAizoaceaeExcelImport extends SimpleExcelTaxonImport<CaryoAizoa
                     if(isSynonymAccepted){
                         logger.warn(row +  "Synonym added to 'unresolved' as accepted taxon is synonym itself.");
                     }else if (accId != null){
-                        logger.warn(row +  "Accepted taxon for synonym unexpectedly does not exist (it seems not to be a synonym itself). Synonym moved to 'unresolved'");
+                        logger.warn(row +  "Accepted taxon "+accName+" for synonym unexpectedly does not exist. Synonym was moved to 'unresolved'");
                     }else{
-                        logger.warn(row +  "No accepted taxon given for synonym. Therefore taxon moved to 'unresolved'");
+                        logger.warn(row +  "No accepted taxon given for synonym. Therefore taxon was moved to 'unresolved'");
                     }
                     if(accId != null){
                         child = Taxon.NewInstance(syn.getName(), syn.getSec());
+                        taxonMapping.put(sourceId, child.getUuid());
                         child.addImportSource(sourceId, PLANT_NAME_ID, getSourceReference(state), "line " + state.getCurrentLine());
                     }
                     addChild(unresolvedParent(), child, row);
@@ -638,22 +554,29 @@ public class CaryoAizoaceaeExcelImport extends SimpleExcelTaxonImport<CaryoAizoa
                 }else{
                     accTaxon.addSynonym(syn, SynonymType.SYNONYM_OF());
                 }
+            }else if ("Misapplied".equals(status)){
+                Taxon taxon = CdmBase.deproxy(taxonBase, Taxon.class);
+                if(accTaxon == null){
+                    if(isSynonymAccepted){
+                        logger.warn(row +  "Misapplication added to 'unresolved' as accepted taxon is synonym itself.");
+                    }else if (accId != null){
+                        logger.warn(row +  "Accepted taxon "+accName+" for misapplication unexpectedly does not exist. Misapplication was moved to 'unresolved'");
+                    }else{
+                        logger.warn(row +  "No accepted taxon given for misapplication. Therefore taxon was moved to 'unresolved'");
+                    }
+                    addChild(unresolvedParent(), taxon, row);
+                }else{
+                    accTaxon.addMisappliedName(taxon, null, null);
+                }
             }else if ("Unplaced".equals(status)){
                 parent = unresolvedParent();
                 addChild(parent, child, row);
-            }else if ("Artificial Hybrid".equals(status)){
-                parent = hybridParent();
-                addChild(parent, child, row);
-            }else if ("Orthographic".equals(status)){
-                if(accTaxon == null){
-                    logger.warn(row + "'Orthographic' taxon has no acc taxon");
-                }else{
-                    accTaxon.addSynonym(syn, SynonymType.SYNONYM_OF());
-                }
             }else if("Illegitimate".equals(status) || "Invalid".equals(status)){
                 if (hasAccepted){
                     if(accTaxon == null){
-                        logger.warn(row + "accepted taxon for illegitimate or invalid taxon not found");
+                        logger.warn(row + "accepted taxon for illegitimate or invalid taxon not found. Illeg/inval taxon was moved to 'unresolved'");
+                        child = Taxon.NewInstance(syn.getName(), syn.getSec());
+                        addChild(unresolvedParent(), child, row);
                     }else{
                         accTaxon.addSynonym(syn, SynonymType.SYNONYM_OF());
                     }
@@ -711,8 +634,10 @@ public class CaryoAizoaceaeExcelImport extends SimpleExcelTaxonImport<CaryoAizoa
         }else{
             Taxon ptax = CdmBase.deproxy(pTaxon, Taxon.class);
             if(ptax.getTaxonNodes().isEmpty()){
-                logger.warn(row + "Parent has no node yet");
-                return null;
+                logger.info(row + "Parent has no node yet");
+                TaxonNode newParent = getClassification().addChildTaxon(ptax, null, null);
+                getTaxonNodeService().saveOrUpdate(newParent);
+                return newParent;
             }else {
                 if(ptax.getTaxonNodes().size()>1){
                     logger.warn("Parent has >1 nodes. Take arbitrary one");
@@ -742,20 +667,52 @@ public class CaryoAizoaceaeExcelImport extends SimpleExcelTaxonImport<CaryoAizoa
         }
     }
 
-    private TaxonNode getFamily(){
-        UUID uuid = UUID.fromString("0334809a-aa20-447d-add9-138194f80f56");
-        TaxonNode aizoaceae = getTaxonNodeService().find(uuid);
-        return aizoaceae;
+    private TaxonNode getFamily(String line, String family){
+        UUID uuid;
+        if ("Salicaceae".equals(family)){
+            uuid = UUID.fromString("5432a4eb-2fbe-4494-925d-d01743ed435f");
+//        }else if ("Meliaceae".equals(family)){
+//            //Note: not needed, genus with family Meliaceae is synonym
+//            uuid = UUID.fromString("c8694910-bfec-45a1-8901-2a0a2a6f12b1");
+        }else{
+            logger.warn(line + "Family not yet handled: " + family);
+            return null;
+        }
+        TaxonNode familyNode = getTaxonNodeService().find(uuid);
+        if (familyNode == null){
+            familyNode = createFamily(family, uuid);
+        }
+        return familyNode;
     }
 
-    private TaxonNode hybridParent(){
-        UUID uuid = UUID.fromString("2fae0fa1-758a-4fcb-bb6c-a2bd11f40641");
-        TaxonNode hybridParent = getTaxonNodeService().find(uuid);
-        return hybridParent;
+    private TaxonNode createFamily(String family, UUID uuid) {
+        Classification classification = getClassification();
+        TaxonName name = TaxonNameFactory.NewBotanicalInstance(Rank.FAMILY());
+        name.setGenusOrUninomial(family);
+        Taxon taxon = Taxon.NewInstance(name, getSecRef());
+        TaxonNode result = classification.addChildTaxon(taxon, null, null);
+        result.setUuid(uuid);
+        getTaxonNodeService().saveOrUpdate(result);
+        return result;
     }
+
+    private Classification getClassification() {
+        Classification classification = getClassificationService().find(state.getConfig().getClassificationUuid());
+        if (classification == null){
+            classification = Classification.NewInstance(
+                    state.getConfig().getClassificationName(), getSecRef(), Language.LATIN());
+            classification.setUuid(state.getConfig().getClassificationUuid());
+            getClassificationService().save(classification);
+        }
+        return classification;
+    }
+
     private TaxonNode unresolvedParent(){
-        UUID uuid = UUID.fromString("accb1ff6-5748-4b18-b529-9368c331a38d");
+        UUID uuid = UUID.fromString("1c48b8d3-077d-4aef-9e41-d4d3e0abd4c7");
         TaxonNode unresolvedParent = getTaxonNodeService().find(uuid);
+        if (unresolvedParent == null){
+            unresolvedParent = createFamily("Unresolved", uuid);
+        }
         return unresolvedParent;
     }
 }
