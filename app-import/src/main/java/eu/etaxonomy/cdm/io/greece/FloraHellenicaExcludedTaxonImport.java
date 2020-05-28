@@ -31,6 +31,7 @@ import eu.etaxonomy.cdm.model.taxon.Classification;
 import eu.etaxonomy.cdm.model.taxon.ITaxonTreeNode;
 import eu.etaxonomy.cdm.model.taxon.Taxon;
 import eu.etaxonomy.cdm.model.taxon.TaxonNode;
+import eu.etaxonomy.cdm.model.taxon.TaxonNodeStatus;
 import eu.etaxonomy.cdm.strategy.parser.NonViralNameParserImpl;
 
 /**
@@ -91,14 +92,6 @@ public class FloraHellenicaExcludedTaxonImport<CONFIG extends FloraHellenicaImpo
         }
     }
 
-
-    /**
-     * @param state
-     * @param line
-     * @param record
-     * @param noStr
-     * @return
-     */
     private TaxonNode makeTaxon(SimpleExcelTaxonImportState<CONFIG> state, String line,
             Map<String, String> record,
             String noStr) {
@@ -133,16 +126,11 @@ public class FloraHellenicaExcludedTaxonImport<CONFIG extends FloraHellenicaImpo
         }
         taxon.addImportSource(noStr, getWorksheetName(state.getConfig()), getSourceCitation(state), null);
         TaxonNode excludedNode = familyTaxonNode.addChildTaxon(taxon, getSecReference(state), null);
-        excludedNode.setExcluded(true);
+        excludedNode.setStatus(TaxonNodeStatus.EXCLUDED);
         getTaxonNodeService().saveOrUpdate(excludedNode);
         return excludedNode;
     }
 
-
-
-   /**
-     * @return
-     */
     private Reference makeHayek1929() {
         Reference ref = ReferenceFactory.newGeneric();
         Person hayek = Person.NewInstance();
@@ -152,12 +140,6 @@ public class FloraHellenicaExcludedTaxonImport<CONFIG extends FloraHellenicaImpo
         return ref;
     }
 
-
-/**
-     * @param record
-     * @param state
-     * @return
-     */
     private TaxonNode getFamilyTaxon(Map<String, String> record,
             SimpleExcelTaxonImportState<CONFIG> state) {
 
@@ -188,7 +170,6 @@ public class FloraHellenicaExcludedTaxonImport<CONFIG extends FloraHellenicaImpo
         return familyNode;
     }
 
-
     private ITaxonTreeNode getExcludedFamilyTaxon(
             SimpleExcelTaxonImportState<CONFIG> state) {
 
@@ -202,7 +183,7 @@ public class FloraHellenicaExcludedTaxonImport<CONFIG extends FloraHellenicaImpo
         name.setTitleCache("Excluded", true);
         Taxon taxon = Taxon.NewInstance(name, getSecReference(state));
         excludedFamilyNode = plantae.addChildTaxon(taxon, getSourceCitation(state), null);
-        excludedFamilyNode.setExcluded(true);
+        excludedFamilyNode.setStatus(TaxonNodeStatus.EXCLUDED);
         getTaxonNodeService().saveOrUpdate(excludedFamilyNode);
         return excludedFamilyNode;
     }

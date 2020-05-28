@@ -61,6 +61,7 @@ import eu.etaxonomy.cdm.model.taxon.Synonym;
 import eu.etaxonomy.cdm.model.taxon.SynonymType;
 import eu.etaxonomy.cdm.model.taxon.Taxon;
 import eu.etaxonomy.cdm.model.taxon.TaxonNode;
+import eu.etaxonomy.cdm.model.taxon.TaxonNodeStatus;
 import eu.etaxonomy.cdm.model.taxon.TaxonRelationship;
 import eu.etaxonomy.cdm.model.taxon.TaxonRelationshipType;
 import eu.etaxonomy.cdm.strategy.homotypicgroup.BasionymRelationCreator;
@@ -1009,7 +1010,7 @@ public class CubaExcelImport
         getTaxonNodeService().saveOrUpdate(newNode);
         if(isAbsent){
             botanicalName.setTitleCache(taxonStrOrig, true);
-            newNode.setExcluded(true);
+            newNode.setStatus(TaxonNodeStatus.EXCLUDED);
         }
 
         return taxon;

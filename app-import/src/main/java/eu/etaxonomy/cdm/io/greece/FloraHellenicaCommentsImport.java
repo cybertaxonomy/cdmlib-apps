@@ -102,7 +102,7 @@ public class FloraHellenicaCommentsImport<CONFIG extends FloraHellenicaImportCon
 
         TaxonNode taxonNode = acceptedTaxon.getTaxonNodes().iterator().next();
         if(taxonNode.isExcluded()){
-            taxonNode.putExcludedNote(Language.ENGLISH(), commentStr);
+            taxonNode.putStatusNote(Language.ENGLISH(), commentStr);
         }
         return ;
     }

@@ -56,6 +56,7 @@ import eu.etaxonomy.cdm.model.taxon.SynonymType;
 import eu.etaxonomy.cdm.model.taxon.Taxon;
 import eu.etaxonomy.cdm.model.taxon.TaxonBase;
 import eu.etaxonomy.cdm.model.taxon.TaxonNode;
+import eu.etaxonomy.cdm.model.taxon.TaxonNodeStatus;
 import eu.etaxonomy.cdm.model.taxon.TaxonRelationship;
 import eu.etaxonomy.cdm.model.taxon.TaxonRelationshipType;
 import eu.etaxonomy.cdm.strategy.exceptions.UnknownCdmTypeException;
@@ -757,7 +758,6 @@ public class BerlinModelTaxonRelationImport  extends BerlinModelImportBase  {
 	                relQualifierFk == TAX_REL_IS_PARTIAL_HETEROTYPIC_SYNONYM_OF
                     ){
 	            return true;
-
 		}else{
 			return false;
 		}
@@ -767,7 +767,9 @@ public class BerlinModelTaxonRelationImport  extends BerlinModelImportBase  {
 	        int treeRefFk, Taxon child, Taxon parent, Reference citation, String microCitation, Boolean provisional){
 		Classification tree = getClassificationTree(state, classificationMap, treeRefFk);
 		TaxonNode result = tree.addParentChild(parent, child, citation, microCitation);
-		result.setUnplaced(provisional);
+		if (provisional){
+		    result.setStatus(TaxonNodeStatus.DOUBTFUL);
+		}
 		return result;
 	}
 
