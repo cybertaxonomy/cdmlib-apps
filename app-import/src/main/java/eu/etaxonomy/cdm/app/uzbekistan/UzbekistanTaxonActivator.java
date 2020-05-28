@@ -40,13 +40,13 @@ public class UzbekistanTaxonActivator {
     private static final Logger logger = Logger.getLogger(UzbekistanTaxonActivator.class);
 
     //database validation status (create, update, validate ...)
-    static DbSchemaValidation hbm2dll = DbSchemaValidation.CREATE;
 
     static final ICdmDataSource cdmDestination = CdmDestinations.localH2();
 //    static final ICdmDataSource cdmDestination = CdmDestinations.cdm_local_cdmtest_mysql();
 //    static final ICdmDataSource cdmDestination = CdmDestinations.cdm_local_uzbekistan();
 //    static final ICdmDataSource cdmDestination = CdmDestinations.cdm_production_uzbekistan();
 
+    static DbSchemaValidation hbm2dll = cdmDestination == CdmDestinations.localH2() ? DbSchemaValidation.CREATE : DbSchemaValidation.VALIDATE;
 
     //classification
     static final UUID classificationUuid = UUID.fromString("230ca922-bf63-4297-b631-aed87f553107");
@@ -106,16 +106,6 @@ public class UzbekistanTaxonActivator {
         person.setFamilyName("Lücking");
         team.addTeamMember(person);
 
-        person = Person.NewInstance();
-        person.setInitials("B.P.");
-        person.setFamilyName("Hodkinson");
-        team.addTeamMember(person);
-
-        person = Person.NewInstance();
-        person.setInitials("S.D.");
-        person.setFamilyName("Leavitt");
-        team.addTeamMember(person);
-
         result.setAuthorship(team);
 
 //        result.setPublisher("Berlin: Botanic Garden and Botanical Museum Berlin-Dahlem; Athens: Hellenic Botanical Society.");
@@ -133,7 +123,7 @@ public class UzbekistanTaxonActivator {
     private Reference getSourceReference(){
         Reference result = ReferenceFactory.newGeneric();
         result.setTitle("Excelfile (FoU_taxonomy_template.xlsx) derived from ");
-        result.setInReference(getSecReference());
+//        result.setInReference(getSecReference());
         result.setUuid(sourceRefUuid);
 
         return result;

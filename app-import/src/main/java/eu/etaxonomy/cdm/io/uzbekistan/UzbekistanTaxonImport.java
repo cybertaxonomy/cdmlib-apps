@@ -105,8 +105,10 @@ public class UzbekistanTaxonImport<CONFIG extends UzbekistanTaxonImportConfigura
     }
 
     private void makeTaxon(SimpleExcelTaxonImportState<CONFIG> state, String line, Map<String, String> record) {
+        state.getTransactionStatus().flush();
 
         Reference sec = getSecReference(state);
+        state.getTransactionStatus().flush();
 
         String fullTitle = getValue(record, FULL_TITLE);
         String fullName = getValue(record, FULL_NAME);
@@ -117,14 +119,8 @@ public class UzbekistanTaxonImport<CONFIG extends UzbekistanTaxonImportConfigura
 
         //TODO validation, deduplication, source, ...
 
-        //taxon
-        TaxonBase<?> taxonBase = makeTaxonBase(state, line, record, taxonName, sec);
-
         //name status
         makeNameStatus(line, record, taxonName);
-
-        //common name
-        makeCommonName(line, record, taxonBase);
 
         taxonName = TaxonName.castAndDeproxy(taxonName);
        //TODO
@@ -133,10 +129,16 @@ public class UzbekistanTaxonImport<CONFIG extends UzbekistanTaxonImportConfigura
         replaceNameAuthorsAndReferences(state, taxonName);
         taxonName.addSource(makeOriginalSource(state));
 
+        //taxon
+        TaxonBase<?> taxonBase = makeTaxonBase(state, line, record, taxonName, sec);
+        //common name
+        makeCommonName(line, record, taxonBase);
+
         getNameService().saveOrUpdate(taxonName);
         if (taxonBase != null){
             getTaxonService().saveOrUpdate(taxonBase);
         }
+        state.getTransactionStatus().flush();
 
         return;
     }
@@ -302,7 +304,10 @@ public class UzbekistanTaxonImport<CONFIG extends UzbekistanTaxonImportConfigura
         UUID acceptedUuid = getUuid(record, ACCEPTED_TAXON_UUID, false, line);
         if (acceptedUuid != null){
             TaxonBase<?> acceptedBase = getTaxonService().find(acceptedUuid);
-            if(!acceptedBase.isInstanceOf(Taxon.class)){
+            if(acceptedBase == null){
+                logger.warn(line + "Taxon for existing uuid could not be found. This should not happen");
+                return;
+            }else if(!acceptedBase.isInstanceOf(Taxon.class)){
                 logger.warn(line + "Accepted taxon is not accepted: " + acceptedUuid);
             }else if (taxonBase == null || (!taxonBase.isInstanceOf(Synonym.class))){
                 logger.warn(line + "Synonym has accepted uuid but has not status accepted");
@@ -410,6 +415,11 @@ public class UzbekistanTaxonImport<CONFIG extends UzbekistanTaxonImportConfigura
 
     private TaxonNode getClassification(SimpleExcelTaxonImportState<CONFIG> state) {
         if (rootNode == null){
+            logger.warn("Load root node");
+            rootNode = getTaxonNodeService().find(UUID.fromString("3ee689d2-17c2-4f02-9905-7092a45aa1b9"));
+        }
+        if (rootNode == null){
+            logger.warn("Create root node");
             Reference sec = getSecReference(state);
             String classificationName = state.getConfig().getClassificationName();
             Language language = Language.DEFAULT();
@@ -425,22 +435,30 @@ public class UzbekistanTaxonImport<CONFIG extends UzbekistanTaxonImportConfigura
 
     private Reference getSecReference(SimpleExcelTaxonImportState<CONFIG> state) {
         if (this.secReference == null){
+            logger.warn("Load sec ref");
             this.secReference = getPersistentReference(state.getConfig().getSecReference());
+            if (this.secReference == null){
+                logger.warn("Sec ref is null");
+            }
         }
         return this.secReference;
     }
 
-    protected Reference getSourceCitation(SimpleExcelTaxonImportState<CONFIG> state) {
+    private Reference getSourceCitation(SimpleExcelTaxonImportState<CONFIG> state) {
         if (this.sourceReference == null){
             this.sourceReference = getPersistentReference(state.getConfig().getSourceReference());
+            this.sourceReference.setInReference(getSecReference(state));  //special for Uzbekistan
         }
         return this.sourceReference;
     }
 
     private Reference getPersistentReference(Reference reference) {
         Reference result = getReferenceService().find(reference.getUuid());
+        logger.warn("Loaded persistent reference: "+ reference.getUuid());
         if (result == null){
+            logger.warn("Persistent reference is null: " + reference.getUuid());
             result = reference;
+            getReferenceService().saveOrUpdate(result);
         }
         return result;
     }
@@ -450,7 +468,8 @@ public class UzbekistanTaxonImport<CONFIG extends UzbekistanTaxonImportConfigura
     }
 
     private ImportDeduplicationHelper<SimpleExcelTaxonImportState<CONFIG>> dedupHelper;
-	private ImportDeduplicationHelper<SimpleExcelTaxonImportState<CONFIG>> dedupHelper() {
+	@SuppressWarnings({ "rawtypes", "unchecked" })
+    private ImportDeduplicationHelper<SimpleExcelTaxonImportState<CONFIG>> dedupHelper() {
     	if (dedupHelper == null) {
     		dedupHelper = (ImportDeduplicationHelper)ImportDeduplicationHelper.NewInstance(this);
     	}
@@ -460,7 +479,7 @@ public class UzbekistanTaxonImport<CONFIG extends UzbekistanTaxonImportConfigura
     @Override
     protected IdentifiableSource makeOriginalSource(SimpleExcelTaxonImportState<CONFIG> state) {
     	String noStr = getValue(state.getOriginalRecord(), "taxonUuid");
-        return IdentifiableSource.NewDataImportInstance(noStr, "taxonUuid", state.getConfig().getSourceReference());
+        return IdentifiableSource.NewDataImportInstance(noStr, "taxonUuid", getSourceCitation(state));
     }
 
 }
