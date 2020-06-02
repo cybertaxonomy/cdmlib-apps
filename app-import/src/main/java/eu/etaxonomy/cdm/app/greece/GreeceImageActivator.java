@@ -67,11 +67,11 @@ public class GreeceImageActivator {
 //    static final ICdmDataSource cdmDestination = CdmDestinations.localH2();
     static final ICdmDataSource cdmDestination = CdmDestinations.cdm_production_greece_checklist();
 
-    private static final UUID sourceUuid = UUID.fromString("a57e30c1-cb0b-438d-830e-f7c1c8cd1fb1");
-//    private static final UUID sourceUuid = UUID.fromString("48f20249-61ce-4004-b03c-f368d9e29c5c");
+//    private static final UUID sourceUuid = UUID.fromString("a57e30c1-cb0b-438d-830e-f7c1c8cd1fb1");
+    private static final UUID sourceUuid = UUID.fromString("47716558-a2c1-4108-a9f4-7da241b9c26e");
 
-    private static final String fileName = "20200507_fog_images.xlsx";
-//    private static final String fileName = "20200204_fog_images.xlsx";
+//    private static final String fileName = "20200507_fog_images.xlsx";
+    private static final String fileName = "metadata_FoG_AK_Willing_correct.xlsx";
 
 
 //    NOTE!!: Darauf achten, dass die Header case sensitiv sind und keine Leerzeichen am Ende sein sollten, trim funktioniert seltsamerweise nicht immer

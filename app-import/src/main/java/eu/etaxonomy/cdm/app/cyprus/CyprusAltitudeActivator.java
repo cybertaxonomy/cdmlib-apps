@@ -70,9 +70,7 @@ public class CyprusAltitudeActivator {
 
 	private static final String sourceReferenceTitle = "Cyprus Excel Altitude Import";
 
-
-	//TODO move to Feature vocabulary
-	private static final UUID uuidAltitudeFeature = UUID.fromString("1a28ed59-e15f-4001-b5c2-ea89f0012671");
+	private static final UUID uuidAltitudeFeature = Feature.uuidAltitude;
 
 	//check - import
 	static final CHECK check = CHECK.IMPORT_WITHOUT_CHECK;
