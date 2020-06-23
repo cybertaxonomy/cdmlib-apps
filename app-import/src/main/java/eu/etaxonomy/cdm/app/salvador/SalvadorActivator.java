@@ -33,7 +33,7 @@ import eu.etaxonomy.cdm.model.name.NomenclaturalCode;
 import eu.etaxonomy.cdm.model.permission.GrantedAuthorityImpl;
 import eu.etaxonomy.cdm.model.permission.Group;
 import eu.etaxonomy.cdm.model.permission.User;
-import eu.etaxonomy.cdm.persistence.hibernate.permission.Role;
+import eu.etaxonomy.cdm.persistence.permission.Role;
 
 
 /**

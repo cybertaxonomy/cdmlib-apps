@@ -45,7 +45,7 @@ import eu.etaxonomy.cdm.model.taxon.TaxonNode;
 import eu.etaxonomy.cdm.model.term.DefinedTermBase;
 import eu.etaxonomy.cdm.model.term.Representation;
 import eu.etaxonomy.cdm.model.term.TermTree;
-import eu.etaxonomy.cdm.persistence.hibernate.permission.Role;
+import eu.etaxonomy.cdm.persistence.permission.Role;
 import eu.etaxonomy.cdm.persistence.query.MatchMode;
 
 
