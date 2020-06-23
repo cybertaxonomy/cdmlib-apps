@@ -1497,11 +1497,6 @@ public class BerlinModelReferenceImport extends BerlinModelImportBase {
         return false;
     }
 
-    /**
-     * @param state
-     * @param string
-     * @param initialAuthor
-     */
     private static void setGivenName(BerlinModelImportState state, String givenName, Person person, int refId) {
         givenName = givenName.trim();
         if(person.getGivenName() == null || person.getGivenName().equals(givenName)){
@@ -1511,10 +1506,6 @@ public class BerlinModelReferenceImport extends BerlinModelImportBase {
         }
     }
 
-    /**
-     * @param fullGivenName
-     * @param initialsGivenName
-     */
     protected static boolean compareFamilyAndInitials(String fullFamilyName, String initialsFamilyName,
             String[] fullGivenName, String[] initialsGivenName) {
         if (!fullFamilyName.equals(initialsFamilyName)){
@@ -1540,11 +1531,6 @@ public class BerlinModelReferenceImport extends BerlinModelImportBase {
         }
     }
 
-    /**
-	 * @param lowerCase
-	 * @param config
-	 * @return
-	 */
 	public Set<String> getObligatoryAttributes(boolean lowerCase, BerlinModelImportConfigurator config){
 		Set<String> result = new HashSet<>();
 		Class<ICdmImport>[] ioClassList = config.getIoClassList();

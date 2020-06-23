@@ -87,7 +87,8 @@ public class CyprusAltitudeActivator {
 
 		CdmApplicationController app = CdmIoApplicationController.NewInstance(cdmDestination, hbm2dll);
 
-		Set<TaxonBase> taxaToSave = new HashSet<>();
+		@SuppressWarnings("rawtypes")
+        Set<TaxonBase> taxaToSave = new HashSet<>();
 
 		TransactionStatus tx = app.startTransaction();
 
@@ -225,7 +226,7 @@ public class CyprusAltitudeActivator {
 
 	private TaxonDescription getDescription(Taxon taxon, Reference sourceRef) {
 		if (taxon != null){
-			//TODO Mikle existiert derzeit nicht also Source
+			//TODO Mikle currently does not exist as Source
 
 			TaxonDescription desc = TaxonDescription.NewInstance();
 			desc.setTitleCache("Import from " + getSourceReference().getTitleCache(), true);
@@ -250,10 +251,6 @@ public class CyprusAltitudeActivator {
 		return null;
 	}
 
-	/**
-	 * @param row
-	 * @return
-	 */
 	private UUID makeUuid(Map<String, String> row, String colName) {
 		if (StringUtils.isBlank(row.get(colName))){
 			return null;
@@ -285,10 +282,6 @@ public class CyprusAltitudeActivator {
 		}
 	}
 
-
-	/**
-	 * @param args
-	 */
 	public static void main(String[] args) {
 		CyprusAltitudeActivator me = new CyprusAltitudeActivator();
 		me.doImport(cdmDestination);
