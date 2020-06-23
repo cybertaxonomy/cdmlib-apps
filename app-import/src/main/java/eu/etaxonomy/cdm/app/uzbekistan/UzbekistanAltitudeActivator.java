@@ -47,7 +47,7 @@ public class UzbekistanAltitudeActivator {
 
     static DbSchemaValidation hbm2dll = cdmDestination == CdmDestinations.localH2() ? DbSchemaValidation.CREATE : DbSchemaValidation.VALIDATE;
 
-    static final String fileName = "FoU template habitats final.xlsx";
+    static final String fileName = "FoU_template_habitats_final.xlsx";
 
     static final UUID uuidAltitude = Feature.uuidAltitude;
 
@@ -67,6 +67,8 @@ public class UzbekistanAltitudeActivator {
         config.setDbSchemaValidation(hbm2dll);
         config.setFeatureUuid(uuidAltitude);
         config.setSourceReference(getSourceReference());
+        config.setMinColumnLabel("высота мин");
+        config.setMaxColumnLabel("высота макс");
 
         CdmDefaultImport<AltitudeExcelImportConfigurator> myImport = new CdmDefaultImport<>();
         myImport.invoke(config);
