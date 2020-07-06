@@ -19,6 +19,7 @@ import eu.etaxonomy.cdm.database.DbSchemaValidation;
 import eu.etaxonomy.cdm.database.ICdmDataSource;
 import eu.etaxonomy.cdm.io.common.CdmDefaultImport;
 import eu.etaxonomy.cdm.io.common.IImportConfigurator.CHECK;
+import eu.etaxonomy.cdm.io.common.ImportResult;
 import eu.etaxonomy.cdm.io.uzbekistan.UzbekistanTaxonImportConfigurator;
 import eu.etaxonomy.cdm.model.agent.Person;
 import eu.etaxonomy.cdm.model.agent.Team;
@@ -77,7 +78,8 @@ public class UzbekistanTaxonActivator {
         config.setSourceReference(getSourceReference());
 
         CdmDefaultImport<UzbekistanTaxonImportConfigurator> myImport = new CdmDefaultImport<>();
-        myImport.invoke(config);
+        ImportResult result = myImport.invoke(config);
+        System.out.println(result.createReport());
     }
 
 

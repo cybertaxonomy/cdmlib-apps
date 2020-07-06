@@ -20,6 +20,7 @@ import eu.etaxonomy.cdm.database.DbSchemaValidation;
 import eu.etaxonomy.cdm.database.ICdmDataSource;
 import eu.etaxonomy.cdm.io.common.CdmDefaultImport;
 import eu.etaxonomy.cdm.io.common.IImportConfigurator.CHECK;
+import eu.etaxonomy.cdm.io.common.ImportResult;
 import eu.etaxonomy.cdm.io.fact.categorical.in.CategoricalDataExcelImportConfigurator;
 import eu.etaxonomy.cdm.model.description.Feature;
 import eu.etaxonomy.cdm.model.reference.Reference;
@@ -29,7 +30,7 @@ import eu.etaxonomy.cdm.model.reference.ReferenceFactory;
  *
  * Import for Flora of Uzbekistan habitats.
  *
- * https://dev.e-taxonomy.eu/redmine/issues/9041
+ * https://dev.e-taxonomy.eu/redmine/issues/9049
  *
  * @author a.mueller
  * @since 28.05.2020
@@ -41,10 +42,9 @@ public class UzbekistanHabitatActivator {
 
     //database validation status (create, update, validate ...)
 
-    static final ICdmDataSource cdmDestination = CdmDestinations.localH2();
-//    static final ICdmDataSource cdmDestination = CdmDestinations.cdm_local_cdmtest_mysql();
+//    static final ICdmDataSource cdmDestination = CdmDestinations.localH2();
 //    static final ICdmDataSource cdmDestination = CdmDestinations.cdm_local_uzbekistan();
-//    static final ICdmDataSource cdmDestination = CdmDestinations.cdm_production_uzbekistan();
+    static final ICdmDataSource cdmDestination = CdmDestinations.cdm_production_uzbekistan();
 
     static DbSchemaValidation hbm2dll = cdmDestination.getDatabaseType() == DatabaseTypeEnum.H2 ? DbSchemaValidation.CREATE : DbSchemaValidation.VALIDATE;
 
@@ -74,7 +74,8 @@ public class UzbekistanHabitatActivator {
         config.setSourceReference(getSourceReference());
 
         CdmDefaultImport<CategoricalDataExcelImportConfigurator> myImport = new CdmDefaultImport<>();
-        myImport.invoke(config);
+        ImportResult result = myImport.invoke(config);
+        System.out.println(result.createReport());
     }
 
 

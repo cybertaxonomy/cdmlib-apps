@@ -20,6 +20,7 @@ import eu.etaxonomy.cdm.database.DbSchemaValidation;
 import eu.etaxonomy.cdm.database.ICdmDataSource;
 import eu.etaxonomy.cdm.io.common.CdmDefaultImport;
 import eu.etaxonomy.cdm.io.common.IImportConfigurator.CHECK;
+import eu.etaxonomy.cdm.io.common.ImportResult;
 import eu.etaxonomy.cdm.io.fact.altitude.in.AltitudeExcelImportConfigurator;
 import eu.etaxonomy.cdm.model.description.Feature;
 import eu.etaxonomy.cdm.model.reference.Reference;
@@ -72,7 +73,8 @@ public class UzbekistanAltitudeActivator {
         config.setMaxColumnLabel("высота макс");
 
         CdmDefaultImport<AltitudeExcelImportConfigurator> myImport = new CdmDefaultImport<>();
-        myImport.invoke(config);
+        ImportResult result = myImport.invoke(config);
+        System.out.println(result.createReport());
     }
 
 
