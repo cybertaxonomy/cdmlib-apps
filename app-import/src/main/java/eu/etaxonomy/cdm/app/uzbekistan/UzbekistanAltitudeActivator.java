@@ -15,6 +15,7 @@ import java.util.UUID;
 import org.apache.log4j.Logger;
 
 import eu.etaxonomy.cdm.app.common.CdmDestinations;
+import eu.etaxonomy.cdm.database.DatabaseTypeEnum;
 import eu.etaxonomy.cdm.database.DbSchemaValidation;
 import eu.etaxonomy.cdm.database.ICdmDataSource;
 import eu.etaxonomy.cdm.io.common.CdmDefaultImport;
@@ -45,7 +46,7 @@ public class UzbekistanAltitudeActivator {
 //    static final ICdmDataSource cdmDestination = CdmDestinations.cdm_local_uzbekistan();
 //    static final ICdmDataSource cdmDestination = CdmDestinations.cdm_production_uzbekistan();
 
-    static DbSchemaValidation hbm2dll = cdmDestination == CdmDestinations.localH2() ? DbSchemaValidation.CREATE : DbSchemaValidation.VALIDATE;
+    static DbSchemaValidation hbm2dll = cdmDestination.getDatabaseType() == DatabaseTypeEnum.H2 ? DbSchemaValidation.CREATE : DbSchemaValidation.VALIDATE;
 
     static final String fileName = "FoU_template_habitats_final.xlsx";
 
