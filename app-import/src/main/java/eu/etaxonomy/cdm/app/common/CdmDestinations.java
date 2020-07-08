@@ -351,6 +351,13 @@ public class CdmDestinations {
         return makeDestination(dbType, cdmServer, cdmDB, -1, cdmUserName, null);
     }
 
+    public static ICdmDataSource local_cyprus(){
+        DatabaseTypeEnum dbType = DatabaseTypeEnum.MySQL;
+        String cdmServer = "localhost";
+        String cdmDB = "cdm_cyprus";
+        String cdmUserName = "edit";
+        return makeDestination(dbType, cdmServer, cdmDB, -1, cdmUserName, null);
+    }
 
 	public static ICdmDataSource cdm_test_cyprus(){
 		DatabaseTypeEnum dbType = DatabaseTypeEnum.MySQL;

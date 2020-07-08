@@ -66,14 +66,19 @@ import eu.etaxonomy.cdm.model.taxon.Taxon;
 import eu.etaxonomy.cdm.model.taxon.TaxonBase;
 
 /**
+ * Creates CDM Media from images stored in the given path.
+ *
+ * Note: Currently adapted to also change from Scaler IIF API to default Scaler API.
+ * Note2: updateMetadata() still needs to be adapted to support 3 MediaRepresentations
+ *
  * @author a.mueller
  * @since 05.2017
  */
 public class CyprusImagesActivator {
 	private static final Logger logger = Logger.getLogger(CyprusImagesActivator.class);
 
-
-	static final ICdmDataSource cdmDestination = CdmDestinations.cdm_test_cyprus();
+	static final ICdmDataSource cdmDestination = CdmDestinations.local_cyprus();
+//	static final ICdmDataSource cdmDestination = CdmDestinations.cdm_test_cyprus();
 //	static final ICdmDataSource cdmDestination = CdmDestinations.cdm_production_cyprus();
 
 	static boolean testOnly = false;
@@ -82,7 +87,12 @@ public class CyprusImagesActivator {
 	static boolean forceUpdate = false;
 
     private static final String path = "//media/digitalimages/EditWP6/Zypern/photos/";
-    private static final String urlPath = "http://media.bgbm.org/erez/erez?src=EditWP6/zypern/photos/";
+    private static final String oldUrlPath = "https://pictures.bgbm.org/digilib/Scaler/IIIF/Cyprus!";
+    private static final String newUrlPath = "https://pictures.bgbm.org/digilib/Scaler?fn=Cyprus/";
+    private static final String oldPostfix = "/full/full/0/default.jpg";
+    private static final String newPostfix = "&mo=file";
+    private static final String mediumPostfix ="&mo=fit&dw=400&dh=400";
+    private static final String smallPostfix ="&mo=fit&dw=200&dh=200";
 
     private ImportDeduplicationHelper<SimpleExcelTaxonImportState<?>> deduplicationHelper;
 
@@ -100,11 +110,21 @@ public class CyprusImagesActivator {
         String regEx = "([A-Z][a-z]+_[a-z\\-]{3,}(?:_s_[a-z\\-]{3,})?)_[A-F]\\d{1,2}\\.(?:jpg|JPG)";
         Pattern pattern = Pattern.compile(regEx);
 
-        for (String fileName : fileList){
+        String start = "O";  //O
+        String end = "Q";      //Q
+        String startLetter = "";
 
+        for (String fileName : fileList){
+            if(fileName.compareToIgnoreCase(start) < 0 || fileName.compareToIgnoreCase(end) >= 0){
+                continue;
+            }
             Matcher matcher = pattern.matcher(fileName);
-            if (matcher.matches()){
+            if (matcher.matches() ){
 //                System.out.println(fileName);
+                if (!fileName.substring(0,3).equals(startLetter)){
+                    startLetter = fileName.substring(0,3);
+                    System.out.println(startLetter);
+                }
                 String taxonName = matcher.group(1);
                 taxonName = taxonName.replace("_s_", " subsp. ").replace("_", " ");
                 Taxon taxon = getAcceptedTaxon(app, taxonName);
@@ -114,11 +134,18 @@ public class CyprusImagesActivator {
                         logger.warn("Taxon not found: " + taxonName);
                     }
                 }else{
-                    handleTaxon(app, taxon, fileName);
+                    try {
+                        handleTaxon(app, taxon, fileName);
+                    } catch (Exception e) {
+                        logger.error("Unhandled exception ("+e.getMessage()+") when reading file " + fileName +". File not imported: ");
+                        e.printStackTrace();
+                    }
                 }
             }else{
                 if (!fileName.matches("(?:\\.erez|Thumbs\\.db.*|zypern_.*|__Keywords_template\\.txt)")){
                     logger.warn("Incorrect filename:" + fileName);
+                }else{
+                    System.out.println("Not clear yet: " + fileName);
                 }
             }
         }
@@ -132,41 +159,77 @@ public class CyprusImagesActivator {
 	}
 
     private void handleTaxon(CdmApplicationController app, Taxon taxon, String fileName) {
-        Set<String> urlStr = getAllExistingUrls(taxon);
-        String fullName = urlPath + fileName;
-        if (urlStr.contains(fullName)){
+        Map<String, Media> existingUrls = getAllExistingUrls(taxon);
+        String pathToOldImage = oldUrlPath + fileName + oldPostfix;
+
+        String pathToFullImage = newUrlPath + fileName + newPostfix;
+        String pathToMediumImage = newUrlPath + fileName + mediumPostfix;
+        String pathToSmallImage = newUrlPath + fileName + smallPostfix;
+
+        if (containsAll(existingUrls, pathToFullImage, pathToMediumImage, pathToSmallImage)){
             return;
         }else{
-            addMedia(app, taxon, fileName);
-        }
-    }
-
-    /**
-     * @param app
-     * @param taxon
-     * @param fileName
-     */
-    private void addMedia(CdmApplicationController app, Taxon taxon, String fileName) {
-        try {
-            String fullName = urlPath + fileName;
-            Media media = getImageMedia(fullName, null, true);
-            makeMetaData(media, fileName, false);
-            makeTitle(media, fileName, false);
-            if (!testOnly){
-                makeTextData(fileName, media, taxon);
+            Media media;
+            if (containsAny(existingUrls, pathToOldImage, pathToMediumImage, pathToSmallImage)){
+                media = getExistingMedia(existingUrls, pathToOldImage, pathToMediumImage, pathToSmallImage);
+                if (media == null){
+                    return;
+                }else if (media.getAllTitles().isEmpty()){
+                    media.setTitleCache(null, false);
+                    media.putTitle(Language.LATIN(), fileName);
+                }
+            }else{
+                media = Media.NewInstance();
+                makeMetaData(media, fileName, false);
+                makeTitle(media, fileName, false);
+                if (!testOnly){
+                    makeTextData(fileName, media, taxon);
+                }
             }
+            fillMediaWithAllRepresentations(media, pathToFullImage, pathToMediumImage, pathToSmallImage, pathToOldImage);
+        }
+    }
 
-        } catch (Exception e) {
-            e.printStackTrace();
-            return;
+    private Media getExistingMedia(Map<String, Media> existingUrls, String pathToFullImage, String pathToMediumImage,
+            String pathToSmallImage) {
+        Set<Media> result = new HashSet<>();
+        for(String existingUrl : existingUrls.keySet()){
+            if (existingUrl.equals(pathToFullImage) || existingUrl.equals(pathToMediumImage) ||
+                    existingUrl.equals(pathToSmallImage)){
+                result.add(existingUrls.get(existingUrl));
+            }
+        }
+        if (result.isEmpty()){
+            logger.warn("Media for existing URL not found. This should not happen.");
+            return null;
+        }else if (result.size() > 1){
+            logger.warn("Existing URLs have more than 1 Media. This should not happen.");
+            return null;
+        }else{
+            return result.iterator().next();
         }
     }
 
     /**
-     * @param media
-     * @param fileName
-     * @param b
+     * <code>true</code> if all 3 paths exist in the URL set
      */
+    private boolean containsAll(Map<String, Media> existingUrlMap, String pathToFullImage, String pathToMediumImage,
+            String pathToSmallImage) {
+        Set<String> existingUrls = existingUrlMap.keySet();
+        return existingUrls.contains(pathToFullImage) && existingUrls.contains(pathToMediumImage)
+                && existingUrls.contains(pathToSmallImage);
+    }
+
+    /**
+     * <code>true</code> if any of the 3 paths exists in the URL set
+     */
+    private boolean containsAny(Map<String, Media> existingUrlMap, String pathToFullImage, String pathToMediumImage,
+            String pathToSmallImage) {
+        Set<String> existingUrls = existingUrlMap.keySet();
+        return existingUrls.contains(pathToFullImage) || existingUrls.contains(pathToMediumImage)
+                || existingUrls.contains(pathToSmallImage);
+    }
+
     private void makeTitle(Media media, String fileName, boolean updateOnly) {
         String title = fileName.replace("_s_"," subsp. ")
                 .replace("_"," ").replace(".jpg","").replace(".JPG","");
@@ -329,6 +392,59 @@ public class CyprusImagesActivator {
         textData.addMedia(media);
     }
 
+    private void fillMediaWithAllRepresentations(Media media, String fullPath, String mediumPath, String smallPath, String oldFullPath){
+        Set<MediaRepresentation> existingRepresentations = new HashSet<>(media.getRepresentations());
+        makeMediaRepresentation(oldFullPath, media, existingRepresentations, fullPath);
+        makeMediaRepresentation(mediumPath, media, existingRepresentations, null);
+        makeMediaRepresentation(smallPath, media, existingRepresentations, null);
+        if(!existingRepresentations.isEmpty()){
+            logger.warn("Media contains existing representations which are not contained in the 3 paths: " + media.getTitleCache());
+        }
+    }
+
+    private void makeMediaRepresentation(String uriString, Media media,
+            Set<MediaRepresentation> existingRepresentations, String replaceUri) {
+        MediaRepresentation existingMediaRep = getExistingMediaRepresentation(uriString, existingRepresentations);
+        boolean readMediaData = true;
+        MediaRepresentation newMediaRep = makeMediaRepresentation(replaceUri != null? replaceUri : uriString, readMediaData);
+        if (existingMediaRep == null){
+            media.addRepresentation(newMediaRep);
+        }else{
+            existingRepresentations.remove(existingMediaRep);
+            mergeToExistingRepresentation(existingMediaRep, newMediaRep);
+        }
+    }
+
+    private void mergeToExistingRepresentation(MediaRepresentation existingMediaRep, MediaRepresentation newMediaRep) {
+        existingMediaRep.setMimeType(newMediaRep.getMimeType());
+        existingMediaRep.setSuffix(newMediaRep.getSuffix());
+        if(!existingMediaRep.getParts().isEmpty() && !newMediaRep.getParts().isEmpty()){
+            MediaRepresentationPart existingPart = existingMediaRep.getParts().iterator().next();
+            ImageFile newPart = (ImageFile)newMediaRep.getParts().iterator().next();
+            if(existingPart.isInstanceOf(ImageFile.class)){
+                ImageFile existingImage = CdmBase.deproxy(existingPart, ImageFile.class);
+                existingImage.setHeight(newPart.getHeight());
+                existingImage.setWidth(newPart.getWidth());
+            }else{
+                logger.warn("MediaRepresentationPart was not of type ImageFile. Height and width not merged: " + existingPart.getUri());
+            }
+            existingPart.setSize(newPart.getSize());
+            existingPart.setUri(newPart.getUri());
+        }
+    }
+
+    private MediaRepresentation getExistingMediaRepresentation(String uriString,
+            Set<MediaRepresentation> existingRepresentations) {
+        for (MediaRepresentation rep : existingRepresentations){
+            for (MediaRepresentationPart part : rep.getParts()){
+                if (part.getUri() != null && part.getUri().toString().equals(uriString)){
+                    return rep;
+                }
+            }
+        }
+        return null;
+    }
+
     /**
      * Creates
      * @see #READ_MEDIA_DATA
@@ -341,27 +457,7 @@ public class CyprusImagesActivator {
         } else {
             uriString = uriString.replace(" ", "%20");  //replace whitespace
             try {
-                ImageInfo imageInfo = null;
-                URI uri = new URI(uriString);
-
-                try {
-                    if (readMediaData){
-                        logger.info("Read media data from: " + uri);
-                        imageInfo = ImageInfo.NewInstance(uri, 0);
-                    }
-                } catch (Exception e) {
-                    String message = "An error occurred when trying to read image meta data for " + uri.toString() + ": " +  e.getMessage();
-                    logger.warn(message);
-                }
-                ImageFile imageFile = ImageFile.NewInstance(uri, null, imageInfo);
-
-                MediaRepresentation representation = MediaRepresentation.NewInstance();
-
-                if(imageInfo != null){
-                    representation.setMimeType(imageInfo.getMimeType());
-                    representation.setSuffix(imageInfo.getSuffix());
-                }
-                representation.addRepresentationPart(imageFile);
+                MediaRepresentation representation = makeMediaRepresentation(uriString, readMediaData);
                 Media media = Media.NewInstance();
                 media.addRepresentation(representation);
 
@@ -398,12 +494,46 @@ public class CyprusImagesActivator {
         }
     }
 
-    /**
-     * @param taxon
-     * @return
-     */
-    private Set<String> getAllExistingUrls(Taxon taxon) {
-        Set<String> result = new HashSet<>();
+    private MediaRepresentation makeMediaRepresentation(String uriString, boolean readMediaData) {
+
+        uriString = uriString.replace(" ", "%20");  //replace whitespace
+        ImageInfo imageInfo = null;
+        URI uri;
+        try {
+            uri = new URI(uriString);
+        } catch (URISyntaxException e1) {
+            logger.error("Malformed URI. Could not create media representation: " + uriString);
+            return null;
+        }
+        try {
+            if (readMediaData){
+                logger.info("Read media data from: " + uri);
+                imageInfo = ImageInfo.NewInstance(uri, 0);
+            }
+        } catch (Exception e) {
+            try {
+                //try again
+                imageInfo = ImageInfo.NewInstance(uri, 0);
+            } catch (Exception e1) {
+                String message = "An error occurred when trying to read image meta data for " + uri.toString() + ": " +  e1.getMessage();
+                e1.printStackTrace();
+                logger.warn(message);
+            }
+        }
+        ImageFile imageFile = ImageFile.NewInstance(uri, null, imageInfo);
+
+        MediaRepresentation representation = MediaRepresentation.NewInstance();
+
+        if(imageInfo != null){
+            representation.setMimeType(imageInfo.getMimeType());
+            representation.setSuffix(imageInfo.getSuffix());
+        }
+        representation.addRepresentationPart(imageFile);
+        return representation;
+    }
+
+    private Map<String, Media> getAllExistingUrls(Taxon taxon) {
+        Map<String, Media> result = new HashMap<>();
         Set<TaxonDescription> descriptions = taxon.getDescriptions();
         for (TaxonDescription td : descriptions){
             if (td.isImageGallery()){
@@ -416,12 +546,11 @@ public class CyprusImagesActivator {
                                     URI uri = part.getUri();
                                     if (uri != null){
                                         String uriStr = uri.toString();
-                                        result.add(uriStr);
+                                        result.put(uriStr, media);
                                     }
                                 }
                             }
                         }
-
                     }
                 }
             }
@@ -513,8 +642,9 @@ public class CyprusImagesActivator {
         List<Media> list = app.getMediaService().list(Media.class, null, null, null, null);
         for (Media media : list){
             String fileName = getUrlStringForMedia(media);
-            if (fileName.startsWith(urlPath)){
-                fileName = fileName.replace(urlPath, "");
+            if (fileName.startsWith(newUrlPath)){
+                //TODO not yet adapted to new image server URLs
+                fileName = fileName.replace(newUrlPath, "");
                 if (fileName.equals("Acinos_exiguus_C1.jpg")){  //for debugging only
 //                  System.out.println(fileName);
                     makeMetaData(media, fileName, true);
@@ -538,6 +668,7 @@ public class CyprusImagesActivator {
                 URI uri = part.getUri();
                 if (uri != null){
                     if (result != null){
+                        //TODO this still needs to be adapted to the 3 representations of media
                         logger.warn("More than 1 uri exists for media "+ media.getId());
                     }else{
                         result = uri.toString();
