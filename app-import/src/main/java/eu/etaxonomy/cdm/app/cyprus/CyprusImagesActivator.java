@@ -86,8 +86,7 @@ public class CyprusImagesActivator {
 
     private ImportDeduplicationHelper<SimpleExcelTaxonImportState<?>> deduplicationHelper;
 
-
-	private void doImport(ICdmDataSource cdmDestination){
+    private void doImport(ICdmDataSource cdmDestination){
 
 		CdmApplicationController app = CdmIoApplicationController.NewInstance(cdmDestination, DbSchemaValidation.VALIDATE);
 		TransactionStatus tx = app.startTransaction();
@@ -132,11 +131,6 @@ public class CyprusImagesActivator {
 		app.commitTransaction(tx);
 	}
 
-    /**
-     * @param app
-     * @param taxon
-     * @param fileName
-     */
     private void handleTaxon(CdmApplicationController app, Taxon taxon, String fileName) {
         Set<String> urlStr = getAllExistingUrls(taxon);
         String fullName = urlPath + fileName;
@@ -181,9 +175,6 @@ public class CyprusImagesActivator {
         }
     }
 
-    /**
-     * @param media
-     */
     private void makeMetaData(Media media, String fileName, boolean updateOnly) {
 
         File file = new File(path + fileName);
@@ -229,7 +220,6 @@ public class CyprusImagesActivator {
             logger.warn("       Problem (" + e1.getMessage() + ") when reading metadata from file: " + fileName);
             e1.printStackTrace();
         }
-
 
         AgentBase<?> artistAgent = null;
         Rights right = null;
@@ -295,10 +285,6 @@ public class CyprusImagesActivator {
         }
     }
 
-    /**
-     * @param artist
-     * @return
-     */
     private Person makePerson(String artist, String fileName) {
         artist = artist.trim();
         String regEx = "((?:[A-Z]\\. ?)+)([A-Z][a-z\\-\u00E4\u00F6\u00FC]+)";
@@ -345,8 +331,6 @@ public class CyprusImagesActivator {
 
     /**
      * Creates
-     * @param uriString
-     * @param readDataFromUrl
      * @see #READ_MEDIA_DATA
      * @return
      * @throws MalformedURLException
@@ -501,10 +485,6 @@ public class CyprusImagesActivator {
         return result;
     }
 
-    /**
-     * @param taxonNameStr
-     * @return
-     */
     private String adaptName(String taxonNameStr) {
 //        if (taxonNameStr.equals("Hypericum cerastoides")){
 //            taxonNameStr = "Hypericum cerastioides";
@@ -549,13 +529,8 @@ public class CyprusImagesActivator {
             tx.setRollbackOnly();
         }
         app.commitTransaction(tx);
-
 	}
 
-	/**
-     * @param media
-	 * @return
-     */
     private String getUrlStringForMedia(Media media) {
         String result = null;
         for (MediaRepresentation rep : media.getRepresentations()){
@@ -573,9 +548,6 @@ public class CyprusImagesActivator {
         return result;
     }
 
-    /**
-	 * @param args
-	 */
 	public static void main(String[] args) {
 		CyprusImagesActivator me = new CyprusImagesActivator();
 		if (update_notCreate){
@@ -586,5 +558,4 @@ public class CyprusImagesActivator {
 //		me.test();
 		System.exit(0);
 	}
-
 }

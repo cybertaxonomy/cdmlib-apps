@@ -29,7 +29,6 @@ package eu.etaxonomy.cdm.io.redlist.bfnXml;
 /**
  * @author a.mueller
  * @since 29.01.2009
- * @version 1.0
  */
 //public class BfnXmlImportConfiguratorTest extends CdmTransactionalIntegrationTest {
 //	Logger logger = Logger.getLogger(getClass());
