@@ -188,6 +188,15 @@ public class CdmDestinations {
         return CdmDestinations.makeDestination(dbType, cdmServer, cdmDB, port, cdmUserName, null);
     }
 
+    public static ICdmDataSource cdm_local_euromed(){
+        DatabaseTypeEnum dbType = DatabaseTypeEnum.MySQL;
+        String cdmServer = "127.0.0.1";
+        String cdmDB = "cdm_euromed";
+        String cdmUserName = "edit";
+        int port = 3306;
+        return CdmDestinations.makeDestination(dbType, cdmServer, cdmDB, port, cdmUserName, null);
+    }
+
     public static ICdmDataSource cdm_local_mysql_tmpTest(){
         DatabaseTypeEnum dbType = DatabaseTypeEnum.MySQL;
         String cdmServer = "127.0.0.1";
@@ -196,14 +205,6 @@ public class CdmDestinations {
         int port = 3306;
         return CdmDestinations.makeDestination(dbType, cdmServer, cdmDB, port, cdmUserName, null);
     }
-
-	public static ICdmDataSource cdm_local_euromed(){
-		DatabaseTypeEnum dbType = DatabaseTypeEnum.MySQL;
-		String cdmServer = "127.0.0.1";
-		String cdmDB = "euroMed";
-		String cdmUserName = "edit";
-		return makeDestination(dbType, cdmServer, cdmDB, -1, cdmUserName, null);
-	}
 
 	public static ICdmDataSource cdm_local_euromed2(){
 		DatabaseTypeEnum dbType = DatabaseTypeEnum.MySQL;
