@@ -50,7 +50,6 @@ public class IpniSourcesImport<CONFIG extends IpniSourcesImportConfigurator>
     private static final String SPECIES = "species";
     private static final String INFRA_SPECIES = "infraspecies";
     private static final String RANK = "rank";
-    private static final String AUTHORS = "EMauthors";
     private static final String EM_GEO = "EM-geo";
 
     private Map<String,NamedArea> areaMap;
@@ -112,12 +111,14 @@ public class IpniSourcesImport<CONFIG extends IpniSourcesImportConfigurator>
         //single areas
         Map<String, String> record = state.getOriginalRecord();
         String allAreaStr = getValue(record, EM_GEO);
+
+        //E+M area
+        NamedArea emArea = getAreaMap().get("EM");
+        handleArea(line, taxon, distributions, emArea);
+
         if(isBlank(allAreaStr)){
             logger.warn(line + "No distribution data exists in IPNI file: " + taxon.getName().getTitleCache());
         }else{
-            NamedArea emArea = getAreaMap().get("EM");
-            handleArea(line, taxon, distributions, emArea);
-
             String[] areaSplit = allAreaStr.split(",");
             for (String areaStr: areaSplit){
                 NamedArea area = getAreaMap().get(areaStr.trim());
@@ -126,16 +127,10 @@ public class IpniSourcesImport<CONFIG extends IpniSourcesImportConfigurator>
         }
     }
 
-    /**
-     * @param line
-     * @param taxon
-     * @param distributions
-     * @param area
-     */
     private void handleArea(String line, Taxon taxon, Set<Distribution> distributions, NamedArea area) {
         Distribution distribution = findDistribution(distributions, area);
         if (distribution == null){
-            logger.warn("line + Distribution not found: " + taxon.getName().getTitleCache() + ":" + area.getTitleCache());
+            logger.warn(line + "Distribution not found: " + taxon.getName().getTitleCache() + ": " + area.getTitleCache());
         }else{
             if (distribution.getSources().isEmpty()){
                 addNomenclaturalSource(taxon, distribution, line);
@@ -147,12 +142,17 @@ public class IpniSourcesImport<CONFIG extends IpniSourcesImportConfigurator>
 
     private String getSourceString(Set<DescriptionElementSource> sources) {
         String result = "";
+        boolean isFirst = true;
         for (DescriptionElementSource source : sources){
+            if (!isFirst){
+                result += ";";
+            }
             if (source.getCitation() != null){
                 result += source.getCitation().getTitleCache();
             }else{
-                result += "--source has no citation --";
+                result += "--source has no citation--";
             }
+            isFirst = false;
         }
         return result;
     }
