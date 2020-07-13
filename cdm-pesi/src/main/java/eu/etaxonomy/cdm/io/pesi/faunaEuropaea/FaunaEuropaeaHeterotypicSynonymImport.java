@@ -20,7 +20,6 @@ import org.springframework.transaction.TransactionStatus;
 
 import eu.etaxonomy.cdm.io.common.CdmImportBase;
 import eu.etaxonomy.cdm.io.common.ICdmImport;
-import eu.etaxonomy.cdm.model.name.HomotypicalGroup;
 import eu.etaxonomy.cdm.model.name.NameRelationship;
 import eu.etaxonomy.cdm.model.name.TaxonName;
 import eu.etaxonomy.cdm.model.taxon.Synonym;
@@ -33,26 +32,21 @@ import eu.etaxonomy.cdm.model.taxon.TaxonBase;
  *
  * @author a.babadshanjan
  * @since 22.09.2009
- * @version 1.0
  */
 @Component
-public class FaunaEuropaeaHeterotypicSynonymImport extends CdmImportBase<FaunaEuropaeaImportConfigurator, FaunaEuropaeaImportState>
-implements ICdmImport<FaunaEuropaeaImportConfigurator, FaunaEuropaeaImportState> {
-	private static final Logger logger = Logger
-			.getLogger(FaunaEuropaeaHeterotypicSynonymImport.class);
+public class FaunaEuropaeaHeterotypicSynonymImport
+        extends CdmImportBase<FaunaEuropaeaImportConfigurator, FaunaEuropaeaImportState>
+        implements ICdmImport<FaunaEuropaeaImportConfigurator, FaunaEuropaeaImportState> {
 
-	/* (non-Javadoc)
-	 * @see eu.etaxonomy.cdm.io.common.CdmIoBase#doCheck(eu.etaxonomy.cdm.io.common.IoStateBase)
-	 */
+    private static final long serialVersionUID = -4195183108743873247L;
+    private static final Logger logger = Logger.getLogger(FaunaEuropaeaHeterotypicSynonymImport.class);
+
 	@Override
 	protected boolean doCheck(FaunaEuropaeaImportState state) {
 		logger.warn("Checking for heterotypic synonyms for basionyms not yet implemented");
 		return false;
 	}
 
-	/* (non-Javadoc)
-	 * @see eu.etaxonomy.cdm.io.common.CdmIoBase#doInvoke(eu.etaxonomy.cdm.io.common.IoStateBase)
-	 */
 	@Override
 	protected void doInvoke(FaunaEuropaeaImportState state) {
 
@@ -84,17 +78,14 @@ implements ICdmImport<FaunaEuropaeaImportConfigurator, FaunaEuropaeaImportState>
 
 				if (((i % limit) == 0 && i != 1 ) || i == nbrOfSynonyms) {
 
-					HomotypicalGroup homotypicalGroup = null;
-					Set<TaxonName> basionyms = null;
 					Set<NameRelationship> nameRelations = null;
-					TaxonName basionym = null;
 					Set<Taxon> taxonBases = null;
 					Taxon acceptedTaxon = null;
 					TaxonName synonymName = null;
 					NameRelationship nameRelation = null;
 					TaxonName acceptedName = null;
 
-					for (TaxonBase synonym : synonymList) {
+					for (TaxonBase<?> synonym : synonymList) {
 						synonymName = synonym.getName();
 						if (synonymName.isGroupsBasionym()) {
 							nameRelations = synonymName.getNameRelations();
@@ -138,9 +129,6 @@ implements ICdmImport<FaunaEuropaeaImportConfigurator, FaunaEuropaeaImportState>
 		return;
 	}
 
-	/* (non-Javadoc)
-	 * @see eu.etaxonomy.cdm.io.common.CdmIoBase#isIgnore(eu.etaxonomy.cdm.io.common.IoStateBase)
-	 */
 	@Override
 	protected boolean isIgnore(FaunaEuropaeaImportState state) {
 		return !(state.getConfig().isDoHeterotypicSynonymsForBasionyms());

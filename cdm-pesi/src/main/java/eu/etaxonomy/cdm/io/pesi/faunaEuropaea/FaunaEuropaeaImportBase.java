@@ -33,11 +33,12 @@ import eu.etaxonomy.cdm.model.taxon.Classification;
 /**
  * @author a.babadshanjan
  * @since 11.05.2009
- * @version 1.0
  */
-public abstract class FaunaEuropaeaImportBase extends CdmImportBase<FaunaEuropaeaImportConfigurator, FaunaEuropaeaImportState>
-implements ICdmImport<FaunaEuropaeaImportConfigurator,FaunaEuropaeaImportState> {
-	private static final Logger logger = Logger.getLogger(FaunaEuropaeaImportBase.class);
+public abstract class FaunaEuropaeaImportBase
+        extends CdmImportBase<FaunaEuropaeaImportConfigurator, FaunaEuropaeaImportState>
+        implements ICdmImport<FaunaEuropaeaImportConfigurator,FaunaEuropaeaImportState> {
+
+    private static final Logger logger = Logger.getLogger(FaunaEuropaeaImportBase.class);
 
 //	/* Max number of taxa to retrieve (for test purposes) */
 //	protected static final int maxTaxa = 1000;
@@ -107,11 +108,6 @@ implements ICdmImport<FaunaEuropaeaImportConfigurator,FaunaEuropaeaImportState> 
 		}
 	}
 
-
-	/**
-	 * @param state
-	 * @param sourceRef
-	 */
 	protected Classification getClassificationFor(FaunaEuropaeaImportState state, Reference sourceRef) {
 
 		Classification tree;
