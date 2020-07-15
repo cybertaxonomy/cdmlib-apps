@@ -19,7 +19,7 @@ import org.springframework.transaction.TransactionStatus;
 
 import eu.etaxonomy.cdm.api.application.CdmApplicationController;
 import eu.etaxonomy.cdm.app.common.CdmDestinations;
-import eu.etaxonomy.cdm.common.media.ImageInfo;
+import eu.etaxonomy.cdm.common.media.CdmImageInfo;
 import eu.etaxonomy.cdm.database.DbSchemaValidation;
 import eu.etaxonomy.cdm.database.ICdmDataSource;
 import eu.etaxonomy.cdm.io.api.application.CdmIoApplicationController;
@@ -59,9 +59,9 @@ public class GreeceImagesUpdaterActivator {
                             if (image.getSize()!= null){
                                 continue;
                             }
-                            ImageInfo imageInfo;
+                            CdmImageInfo imageInfo;
                             try {
-                                imageInfo = ImageInfo.NewInstance(uri, 0);
+                                imageInfo = CdmImageInfo.NewInstance(uri, 0);
                                 image.setWidth(imageInfo.getWidth());
                                 image.setHeight(imageInfo.getHeight());
                                 image.setSize((int)imageInfo.getLength());

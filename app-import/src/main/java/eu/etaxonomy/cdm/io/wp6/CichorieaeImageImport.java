@@ -13,6 +13,7 @@ import java.io.File;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.List;
 import java.util.UUID;
 
@@ -22,8 +23,7 @@ import org.springframework.stereotype.Component;
 
 import eu.etaxonomy.cdm.app.images.AbstractImageImporter;
 import eu.etaxonomy.cdm.app.images.ImageImportState;
-import eu.etaxonomy.cdm.common.CdmUtils;
-import eu.etaxonomy.cdm.common.media.ImageInfo;
+import eu.etaxonomy.cdm.common.media.CdmImageInfo;
 import eu.etaxonomy.cdm.model.agent.AgentBase;
 import eu.etaxonomy.cdm.model.common.Language;
 import eu.etaxonomy.cdm.model.common.LanguageString;
@@ -40,12 +40,12 @@ import eu.etaxonomy.cdm.model.taxon.TaxonBase;
 /**
  * @author n.hoffmann
  * @since 18.11.2008
- * @version 1.0
  */
 @Component
 public class CichorieaeImageImport extends AbstractImageImporter {
-	private static final Logger logger = Logger.getLogger(CichorieaeImageImport.class);
 
+    private static final long serialVersionUID = -5123899111873586729L;
+    private static final Logger logger = Logger.getLogger(CichorieaeImageImport.class);
 
 	/**
 	 * Imports images from a directory.
@@ -78,9 +78,7 @@ public class CichorieaeImageImport extends AbstractImageImporter {
 		}else{
 			logger.warn("Source is not a directory!" + source.toString());
 		}
-
 		return;
-
 	}
 
 	private String getTaxonName(String fileName){
@@ -124,16 +122,8 @@ public class CichorieaeImageImport extends AbstractImageImporter {
 		return taxonName;
 	}
 
-
-	/**
-	 * @param tree
-	 * @param sourceRef
-	 * @param name
-	 * @param taxonName
-	 * @param taxa
-	 * @param taxon
-	 */
-	private void handleTaxa(Classification tree, Reference sourceRef, String fileName, String taxonName, List<TaxonBase> taxa) {
+	private void handleTaxa(Classification tree, Reference sourceRef,
+	        String fileName, String taxonName, List<TaxonBase> taxa) {
 
 		Taxon taxon = getTaxon(tree, taxonName, taxa);
 		TaxonDescription imageGallery = taxon.getOrCreateImageGallery(sourceRef == null ? null :sourceRef.getTitleCache());
@@ -148,24 +138,17 @@ public class CichorieaeImageImport extends AbstractImageImporter {
 			logger.error("IOException when handling image url");
 		} catch (HttpException e) {
 			logger.error("HttpException when handling image url");
-		}
+		} catch (URISyntaxException e) {
+		    logger.error("URISyntaxException when handling image url");
+        }
 	}
 
-
-	/**
-	 * @param fileName
-	 * @param taxonName
-	 * @return
-	 * @throws MalformedURLException
-	 * @throws IOException
-	 * @throws HttpException
-	 */
-	private Media getMedia(String fileName, String taxonName) throws MalformedURLException, IOException, HttpException {
+	private Media getMedia(String fileName, String taxonName) throws MalformedURLException, IOException, HttpException, URISyntaxException {
 		String urlPrefix = "http://media.bgbm.org/erez/erez?src=EditWP6/photos/";
 		String urlString = urlPrefix + fileName;
 		logger.info(urlString);
-		URI uri = CdmUtils.string2Uri(urlString);
-		ImageInfo imageMetaData =ImageInfo.NewInstance(uri, 0);
+		URI uri = new URI(urlString);
+		CdmImageInfo imageMetaData = CdmImageInfo.NewInstance(uri, 0);
 
 		String mimeType = imageMetaData.getMimeType();
 		String suffix = null;
@@ -182,20 +165,16 @@ public class CichorieaeImageImport extends AbstractImageImporter {
 		return media;
 	}
 
-	/**
-	 * @param tree
-	 * @param taxonName
-	 * @param taxa
-	 * @return
-	 */
-	private Taxon getTaxon(Classification tree, String taxonName,
+	private Taxon getTaxon(Classification tree,
+	        String taxonName,
 			List<TaxonBase> taxa) {
+
 		Taxon taxon = null;
 		if(taxa.size() > 1) {
 			if (logger.isDebugEnabled()) {
 				logger.debug("multiple taxa with this name found: " + taxonName);
 			}
-			for (TaxonBase taxonBase : taxa) {
+			for (TaxonBase<?> taxonBase : taxa) {
 				Taxon tax = (Taxon)taxonBase;
 				if (tree.isTaxonInTree(tax)) {
 					taxon = tax;

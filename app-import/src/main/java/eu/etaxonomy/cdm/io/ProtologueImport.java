@@ -12,6 +12,7 @@ package eu.etaxonomy.cdm.io;
 import java.io.File;
 import java.net.MalformedURLException;
 import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -21,7 +22,6 @@ import org.springframework.transaction.TransactionStatus;
 
 import eu.etaxonomy.cdm.api.service.ICommonService;
 import eu.etaxonomy.cdm.app.wp6.palmae.config.PalmaeProtologueImportConfigurator;
-import eu.etaxonomy.cdm.common.CdmUtils;
 import eu.etaxonomy.cdm.io.common.CdmImportBase;
 import eu.etaxonomy.cdm.io.common.DefaultImportState;
 import eu.etaxonomy.cdm.model.description.Feature;
@@ -31,7 +31,6 @@ import eu.etaxonomy.cdm.model.media.Media;
 import eu.etaxonomy.cdm.model.media.MediaRepresentation;
 import eu.etaxonomy.cdm.model.media.MediaRepresentationPart;
 import eu.etaxonomy.cdm.model.name.TaxonName;
-
 
 /**
  * @author a.mueller
@@ -125,9 +124,11 @@ public class ProtologueImport
 		}catch(NullPointerException e){
 			logger.warn("MediaUrl and/or MediaPath not set. Could not get protologue.");
 			return null;
-		}
+		} catch (URISyntaxException e) {
+            logger.warn("URISyntaxException when reading URI. Could not get protologue.");
+            return null;
+        }
 		return null;
-
 	}
 
 	private TaxonNameDescription getNameDescription(TaxonName taxonName) {
@@ -142,14 +143,14 @@ public class ProtologueImport
 		return result;
 	}
 
-	private Media getMedia(DefaultImportState<PalmaeProtologueImportConfigurator> state, File file){
+	private Media getMedia(DefaultImportState<PalmaeProtologueImportConfigurator> state, File file) throws URISyntaxException{
 		try {
 			//File file = (File)state.getConfig().getSource();
 			String url = file.toURI().toURL().toString();
 			String mimeTypePdf = "application/pdf";
 			String suffixPdf = "pdf";
 			String urlStringPdf = state.getConfig().getUrlString() + file.getName();
-			URI uri = CdmUtils.string2Uri(urlStringPdf);
+			URI uri = new URI(urlStringPdf);
 			Integer size = null;
 
 			if (file.exists()){

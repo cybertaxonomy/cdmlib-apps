@@ -19,7 +19,7 @@ import org.springframework.transaction.TransactionStatus;
 
 import eu.etaxonomy.cdm.api.application.CdmApplicationController;
 import eu.etaxonomy.cdm.app.common.CdmDestinations;
-import eu.etaxonomy.cdm.common.media.ImageInfo;
+import eu.etaxonomy.cdm.common.media.CdmImageInfo;
 import eu.etaxonomy.cdm.database.DbSchemaValidation;
 import eu.etaxonomy.cdm.database.ICdmDataSource;
 import eu.etaxonomy.cdm.io.api.application.CdmIoApplicationController;
@@ -160,14 +160,11 @@ public class GreeceLargeImagesAdderActivator {
         return result;
     }
 
-    /**
-     * @param part
-     */
     private void handlePart(ImageFile part) {
-        ImageInfo imageInfo = null;
+        CdmImageInfo imageInfo = null;
         URI uri = part.getUri();
         try {
-            imageInfo = ImageInfo.NewInstance(uri, 0);
+            imageInfo = CdmImageInfo.NewInstance(uri, 0);
         } catch (Exception e) {
             String message = "An error occurred when trying to read image meta data for %s.";
             message = String.format(message, uri.toString());
@@ -189,9 +186,9 @@ public class GreeceLargeImagesAdderActivator {
      */
     private void handleUri(Media media, String uriStr) {
         URI uri = URI.create(uriStr);
-        ImageInfo imageInfo = null;
+        CdmImageInfo imageInfo = null;
         try {
-            imageInfo = ImageInfo.NewInstance(uri, 0);
+            imageInfo = CdmImageInfo.NewInstance(uri, 0);
         } catch (Exception e) {
             String message = "An error occurred when trying to read image meta data for %s.";
             message = String.format(message, uri.toString());

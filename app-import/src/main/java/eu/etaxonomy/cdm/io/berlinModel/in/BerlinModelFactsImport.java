@@ -32,7 +32,7 @@ import org.springframework.stereotype.Component;
 import au.com.bytecode.opencsv.CSVReader;
 import eu.etaxonomy.cdm.common.CdmUtils;
 import eu.etaxonomy.cdm.common.UTF8;
-import eu.etaxonomy.cdm.common.media.ImageInfo;
+import eu.etaxonomy.cdm.common.media.CdmImageInfo;
 import eu.etaxonomy.cdm.database.update.DatabaseTypeNotSupportedException;
 import eu.etaxonomy.cdm.io.berlinModel.BerlinModelTransformer;
 import eu.etaxonomy.cdm.io.berlinModel.in.validation.BerlinModelFactsImportValidator;
@@ -1006,10 +1006,10 @@ public class BerlinModelFactsImport  extends BerlinModelImportBase {
      * @param size
      */
     private void makeMediaRepresentation(Media media, URI uri) {
-        ImageInfo imageInfo = null;
+        CdmImageInfo imageInfo = null;
         Integer size = null;
         try {
-            imageInfo = ImageInfo.NewInstance(uri, 30);
+            imageInfo = CdmImageInfo.NewInstance(uri, 30);
         } catch (IOException | HttpException e) {
             logger.error("Error when reading image meta: " + e + ", "+ uri.toString());
         }

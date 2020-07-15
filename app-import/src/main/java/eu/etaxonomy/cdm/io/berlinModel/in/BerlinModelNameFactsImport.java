@@ -32,7 +32,7 @@ import org.apache.log4j.Logger;
 import org.springframework.stereotype.Component;
 
 import eu.etaxonomy.cdm.common.CdmUtils;
-import eu.etaxonomy.cdm.common.media.ImageInfo;
+import eu.etaxonomy.cdm.common.media.CdmImageInfo;
 import eu.etaxonomy.cdm.io.berlinModel.in.validation.BerlinModelNameFactsImportValidator;
 import eu.etaxonomy.cdm.io.common.IOValidator;
 import eu.etaxonomy.cdm.io.common.ResultSetPartitioner;
@@ -48,7 +48,6 @@ import eu.etaxonomy.cdm.model.media.MediaRepresentationPart;
 import eu.etaxonomy.cdm.model.name.TaxonName;
 import eu.etaxonomy.cdm.model.reference.OriginalSourceType;
 import eu.etaxonomy.cdm.model.reference.Reference;
-
 
 /**
  * @author a.mueller
@@ -252,7 +251,6 @@ public class BerlinModelNameFactsImport  extends BerlinModelImportBase  {
 		return result;
 	}
 
-
 	//FIXME gibt es da keine allgemeine Methode in common?
 	public Media getMedia(String nameFact, URL mediaUrl, File mediaPath){
 		if (mediaUrl == null){
@@ -375,14 +373,13 @@ public class BerlinModelNameFactsImport  extends BerlinModelImportBase  {
 		return media;
 	}
 
-
 	private ImageFile makeImage(String imageUri, Integer size, File file){
-		ImageInfo imageMetaData = null;
+		CdmImageInfo imageMetaData = null;
 		URI uri;
 		try {
 			uri = new URI(imageUri);
 			try {
-				imageMetaData = ImageInfo.NewInstance(uri, 0);
+				imageMetaData = CdmImageInfo.NewInstance(uri, 0);
 			} catch (IOException e) {
 				logger.error("IOError reading image metadata." , e);
 			} catch (HttpException e) {
@@ -397,26 +394,16 @@ public class BerlinModelNameFactsImport  extends BerlinModelImportBase  {
 
 	}
 
-
-	/* (non-Javadoc)
-	 * @see eu.etaxonomy.cdm.io.common.CdmIoBase#doCheck(eu.etaxonomy.cdm.io.common.IoStateBase)
-	 */
 	@Override
 	protected boolean doCheck(BerlinModelImportState state){
 		IOValidator<BerlinModelImportState> validator = new BerlinModelNameFactsImportValidator();
 		return validator.validate(state);
 	}
 
-
-	/* (non-Javadoc)
-	 * @see eu.etaxonomy.cdm.io.common.CdmIoBase#isIgnore(eu.etaxonomy.cdm.io.common.IImportConfigurator)
-	 */
 	@Override
     protected boolean isIgnore(BerlinModelImportState state){
 		return ! state.getConfig().isDoNameFacts();
 	}
-
-
 
 	//for testing only
 	public static void main(String[] args) {

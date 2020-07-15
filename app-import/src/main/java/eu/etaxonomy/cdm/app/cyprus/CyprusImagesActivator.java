@@ -39,7 +39,7 @@ import eu.etaxonomy.cdm.api.application.CdmApplicationController;
 import eu.etaxonomy.cdm.api.service.config.MatchingTaxonConfigurator;
 import eu.etaxonomy.cdm.app.common.CdmDestinations;
 import eu.etaxonomy.cdm.common.UTF8;
-import eu.etaxonomy.cdm.common.media.ImageInfo;
+import eu.etaxonomy.cdm.common.media.CdmImageInfo;
 import eu.etaxonomy.cdm.database.DbSchemaValidation;
 import eu.etaxonomy.cdm.database.ICdmDataSource;
 import eu.etaxonomy.cdm.io.api.application.CdmIoApplicationController;
@@ -462,13 +462,13 @@ public class CyprusImagesActivator {
                 media.addRepresentation(representation);
 
                 if (uriStrThumb != null){
-                    ImageInfo imageInfoThumb = null;
+                    CdmImageInfo imageInfoThumb = null;
                     uriStrThumb = uriStrThumb.replace(" ", "%20");  //replace whitespace
                     URI uriThumb = new URI(uriStrThumb);
                     try {
                         if (readMediaData){
                             logger.info("Read media data from: " + uriThumb);
-                            imageInfoThumb = ImageInfo.NewInstance(uriThumb, 0);
+                            imageInfoThumb = CdmImageInfo.NewInstance(uriThumb, 0);
                         }
                     } catch (Exception e) {
                         String message = "An error occurred when trying to read image meta data for " + uriThumb.toString() + ": " +  e.getMessage();
@@ -497,7 +497,7 @@ public class CyprusImagesActivator {
     private MediaRepresentation makeMediaRepresentation(String uriString, boolean readMediaData) {
 
         uriString = uriString.replace(" ", "%20");  //replace whitespace
-        ImageInfo imageInfo = null;
+        CdmImageInfo imageInfo = null;
         URI uri;
         try {
             uri = new URI(uriString);
@@ -508,12 +508,12 @@ public class CyprusImagesActivator {
         try {
             if (readMediaData){
                 logger.info("Read media data from: " + uri);
-                imageInfo = ImageInfo.NewInstance(uri, 0);
+                imageInfo = CdmImageInfo.NewInstance(uri, 0);
             }
         } catch (Exception e) {
             try {
                 //try again
-                imageInfo = ImageInfo.NewInstance(uri, 0);
+                imageInfo = CdmImageInfo.NewInstance(uri, 0);
             } catch (Exception e1) {
                 String message = "An error occurred when trying to read image meta data for " + uri.toString() + ": " +  e1.getMessage();
                 e1.printStackTrace();

@@ -24,7 +24,7 @@ import org.joda.time.DateTimeZone;
 import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
 
-import eu.etaxonomy.cdm.common.media.ImageInfo;
+import eu.etaxonomy.cdm.common.media.CdmImageInfo;
 import eu.etaxonomy.cdm.io.common.utils.ImportDeduplicationHelper;
 import eu.etaxonomy.cdm.model.agent.AgentBase;
 import eu.etaxonomy.cdm.model.common.TimePeriod;
@@ -37,7 +37,6 @@ import eu.etaxonomy.cdm.model.taxon.Taxon;
 /**
  * @author a.mueller
  * @since 13.05.2017
- *
  */
 public class ImageImportTest {
 
@@ -63,7 +62,6 @@ public class ImageImportTest {
                 String[] taxonNameAndArtist = getTaxonName(fileStr);
                 String taxonNameStr = taxonNameAndArtist[0];
                 String artistStr = taxonNameAndArtist[1];
-
 
                 if(false){
                     continue;
@@ -98,12 +96,9 @@ public class ImageImportTest {
                     e1.printStackTrace();
                 }
 
-
-
-
-                ImageInfo imageMetaData;
+                CdmImageInfo imageMetaData;
                 try {
-                    imageMetaData = ImageInfo.NewInstance(uri, 0);
+                    imageMetaData = CdmImageInfo.NewInstance(uri, 0);
 
                     String mimeType = imageMetaData.getMimeType();
                     String suffix = null;
@@ -121,14 +116,8 @@ public class ImageImportTest {
                     e.printStackTrace();
                 }
             }
-
         }
     }
-
-    /**
-     * @param text
-     * @return
-     */
     private String removeQuots(String text) {
         if (text.startsWith("'") && text.endsWith("'")){
             return text.substring(1, text.length() -1);
@@ -137,18 +126,10 @@ public class ImageImportTest {
         }
     }
 
-    /**
-     * @param taxonNameStr
-     * @return
-     */
     private Taxon getAcceptedTaxon(String taxonNameStr) {
         return Taxon.NewInstance(null, null);
     }
 
-    /**
-     * @param fileStr
-     * @return
-     */
     private String[] getTaxonName(String fileStr) {
         String[] result = new String[2];
         fileStr = fileStr.split("\\.")[0];
