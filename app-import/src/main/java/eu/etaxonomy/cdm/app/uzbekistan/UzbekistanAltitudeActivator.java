@@ -43,7 +43,6 @@ public class UzbekistanAltitudeActivator {
     //database validation status (create, update, validate ...)
 
     static final ICdmDataSource cdmDestination = CdmDestinations.localH2();
-//    static final ICdmDataSource cdmDestination = CdmDestinations.cdm_local_cdmtest_mysql();
 //    static final ICdmDataSource cdmDestination = CdmDestinations.cdm_local_uzbekistan();
 //    static final ICdmDataSource cdmDestination = CdmDestinations.cdm_production_uzbekistan();
 

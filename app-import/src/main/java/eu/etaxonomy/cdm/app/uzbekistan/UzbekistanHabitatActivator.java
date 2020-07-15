@@ -42,9 +42,9 @@ public class UzbekistanHabitatActivator {
 
     //database validation status (create, update, validate ...)
 
-//    static final ICdmDataSource cdmDestination = CdmDestinations.localH2();
+    static final ICdmDataSource cdmDestination = CdmDestinations.localH2();
 //    static final ICdmDataSource cdmDestination = CdmDestinations.cdm_local_uzbekistan();
-    static final ICdmDataSource cdmDestination = CdmDestinations.cdm_production_uzbekistan();
+//    static final ICdmDataSource cdmDestination = CdmDestinations.cdm_production_uzbekistan();
 
     static DbSchemaValidation hbm2dll = cdmDestination.getDatabaseType() == DatabaseTypeEnum.H2 ? DbSchemaValidation.CREATE : DbSchemaValidation.VALIDATE;
 
