@@ -91,8 +91,8 @@ public class CyprusImagesActivator {
     private static final String newUrlPath = "https://pictures.bgbm.org/digilib/Scaler?fn=Cyprus/";
     private static final String oldPostfix = "/full/full/0/default.jpg";
     private static final String newPostfix = "&mo=file";
-    private static final String mediumPostfix ="&mo=fit&dw=400&dh=400";
-    private static final String smallPostfix ="&mo=fit&dw=200&dh=200";
+    private static final String mediumPostfix ="&mo=fit&dw=400&dh=400&uvfix=1";
+    private static final String smallPostfix ="&mo=fit&dw=200&dh=200&uvfix=1";
 
     private ImportDeduplicationHelper<SimpleExcelTaxonImportState<?>> deduplicationHelper;
 
