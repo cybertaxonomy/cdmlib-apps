@@ -24,8 +24,8 @@ import eu.etaxonomy.cdm.io.common.IImportConfigurator.DO_REFERENCES;
 import eu.etaxonomy.cdm.io.tcsxml.in.TcsXmlImportConfigurator;
 
 /**
- * @author a.mueller
- * @since 20.06.2008
+ * @author k.luther
+ * @since 2014
  */
 public class CaryophyllalesTcsXmlActivator {
 	private static final Logger logger = Logger.getLogger(CaryophyllalesTcsXmlActivator.class);
@@ -57,8 +57,6 @@ public class CaryophyllalesTcsXmlActivator {
 	static final boolean doTaxa = true;
 	static final boolean doRelTaxa = true;
 
-
-
 	private void doImport(){
 		System.out.println("Start import from Tcs("+ tcsSource.toString() + ") ...");
 
@@ -86,11 +84,9 @@ public class CaryophyllalesTcsXmlActivator {
 			tcsImportConfigurator.setDoGetMissingNames(doGetMissingNames);
 
 			// invoke import
-			CdmDefaultImport<TcsXmlImportConfigurator> tcsImport = new CdmDefaultImport<TcsXmlImportConfigurator>();
+			CdmDefaultImport<TcsXmlImportConfigurator> tcsImport = new CdmDefaultImport<>();
 			//new Test().invoke(tcsImportConfigurator);
 			tcsImport.invoke(tcsImportConfigurator);
-
-
 
 //			IReferenceService refService = tcsImport.getCdmAppController().getReferenceService();
 //			IBook book = ReferenceFactory.newBook();
@@ -106,15 +102,10 @@ public class CaryophyllalesTcsXmlActivator {
 		} catch (URISyntaxException e) {
 			e.printStackTrace();
 		}
-
 	}
 
-	/**
-	 * @param args
-	 */
 	public static void main(String[] args) {
 		CaryophyllalesTcsXmlActivator me = new CaryophyllalesTcsXmlActivator();
 		me.doImport();
 	}
-
 }
