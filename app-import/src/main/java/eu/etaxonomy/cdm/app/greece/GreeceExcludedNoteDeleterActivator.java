@@ -40,8 +40,8 @@ public class GreeceExcludedNoteDeleterActivator {
 
     private static final Logger logger = Logger.getLogger(GreeceExcludedNoteDeleterActivator.class);
 
-//	static final ICdmDataSource cdmDestination = CdmDestinations.cdm_local_greece();
-	static final ICdmDataSource cdmDestination = CdmDestinations.cdm_production_greece_checklist();
+	static final ICdmDataSource cdmDestination = CdmDestinations.cdm_local_greece();
+//	static final ICdmDataSource cdmDestination = CdmDestinations.cdm_production_greece_checklist();
 
 	static boolean testOnly = false;
 

@@ -38,8 +38,8 @@ public class GreeceLargeImagesAdderActivator {
     private static final Logger logger = Logger.getLogger(GreeceLargeImagesAdderActivator.class);
 
 
-//	static final ICdmDataSource cdmDestination = CdmDestinations.localH2();
-	static final ICdmDataSource cdmDestination = CdmDestinations.cdm_production_greece_checklist();
+	static final ICdmDataSource cdmDestination = CdmDestinations.localH2();
+//	static final ICdmDataSource cdmDestination = CdmDestinations.cdm_production_greece_checklist();
 
 	static boolean testOnly = false;
 
