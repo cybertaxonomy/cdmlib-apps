@@ -172,7 +172,7 @@ public class CentralAfricaFernsTaxonRelationImport  extends CentralAfricaFernsIm
 			//taxon map
 			nameSpace = TAXON_NAMESPACE;
 			cdmClass = TaxonBase.class;
-			Map<String, TaxonBase> taxonMap = (Map<String, TaxonBase>)getCommonService().getSourcedObjectsByIdInSource(cdmClass, taxonIdSet, nameSpace);
+			Map<String, TaxonBase> taxonMap = getCommonService().getSourcedObjectsByIdInSourceC((Class<TaxonBase>) cdmClass, taxonIdSet, nameSpace);
 			result.put(nameSpace, taxonMap);
 
 

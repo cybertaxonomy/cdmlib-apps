@@ -154,7 +154,7 @@ public class CentralAfricaEricaceaeActivator {
 			if (app == null){
 				app = CdmApplicationController.NewInstance(cdmDestination, hbm2dll, false);
 			}
-			app.getAgentService().updateTitleCache(Team.class, null, null, null);
+			app.getAgentService().updateCaches(Team.class, null, null, null);
 			return;
 //			int count = app.getAgentService().deduplicate(Person.class, null, null);
 //

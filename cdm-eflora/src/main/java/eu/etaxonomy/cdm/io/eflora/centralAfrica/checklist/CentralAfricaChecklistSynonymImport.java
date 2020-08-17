@@ -29,6 +29,7 @@ import eu.etaxonomy.cdm.model.common.CdmBase;
 import eu.etaxonomy.cdm.model.name.IBotanicalName;
 import eu.etaxonomy.cdm.model.name.Rank;
 import eu.etaxonomy.cdm.model.name.TaxonNameFactory;
+import eu.etaxonomy.cdm.model.reference.ISourceable;
 import eu.etaxonomy.cdm.model.reference.Reference;
 import eu.etaxonomy.cdm.model.taxon.Synonym;
 import eu.etaxonomy.cdm.model.taxon.SynonymType;
@@ -96,7 +97,7 @@ public class CentralAfricaChecklistSynonymImport  extends CentralAfricaChecklist
 	@Override
 	public Map<Object, Map<String, ? extends CdmBase>> getRelatedObjectsForPartition(ResultSet rs, CentralAfricaChecklistImportState state) {
 		String nameSpace;
-		Class<?> cdmClass;
+		Class<? extends ISourceable> cdmClass;
 		Set<String> idSet;
 		Map<Object, Map<String, ? extends CdmBase>> result = new HashMap<Object, Map<String, ? extends CdmBase>>();
 
@@ -110,7 +111,7 @@ public class CentralAfricaChecklistSynonymImport  extends CentralAfricaChecklist
 			nameSpace = TAXON_NAMESPACE;
 			cdmClass = Taxon.class;
 			idSet = taxonIdSet;
-			Map<String, Taxon> taxonMap = (Map<String, Taxon>)getCommonService().getSourcedObjectsByIdInSource(cdmClass, idSet, nameSpace);
+			Map<String, Taxon> taxonMap = (Map<String, Taxon>)getCommonService().getSourcedObjectsByIdInSourceC(cdmClass, idSet, nameSpace);
 			result.put(nameSpace, taxonMap);
 
 		} catch (SQLException e) {

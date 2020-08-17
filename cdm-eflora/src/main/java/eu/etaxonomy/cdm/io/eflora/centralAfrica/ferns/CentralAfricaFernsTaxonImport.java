@@ -102,7 +102,7 @@ public class CentralAfricaFernsTaxonImport  extends CentralAfricaFernsImportBase
 	@Override
 	protected DbImportMapping<?,?> getMapping() {
 		if (mapping == null){
-			mapping = new DbImportMapping();
+			mapping = new DbImportMapping<>();
 
 			mapping.addMapper(DbImportObjectCreationMapper.NewInstance(this, "Taxon number", TAXON_NAMESPACE)); //id + tu_status
 

@@ -1324,9 +1324,9 @@ public class EfloraTaxonImport  extends EfloraImportBase implements ICdmIO<Eflor
 			}
 		}
 		if (homonymIsLater){
-			homonymName.addRelationshipToName(upperName, relType, null);
+			homonymName.addRelationshipToName(upperName, relType, null, null);
 		}else{
-			upperName.addRelationshipToName(homonymName, relType, null);
+			upperName.addRelationshipToName(homonymName, relType, null, null);
 		}
 	}
 
@@ -1497,7 +1497,6 @@ public class EfloraTaxonImport  extends EfloraImportBase implements ICdmIO<Eflor
 			return detail;
 		}
 
-
 		//non RE
 		String reNon = "(\\s|,)non\\s";
 		Pattern patReference = Pattern.compile(reNon);
@@ -1543,9 +1542,9 @@ public class EfloraTaxonImport  extends EfloraImportBase implements ICdmIO<Eflor
 				logger.warn("Classification name has no nomenclatural reference");
 			}
 			if (homonymIsLater){
-				homonymName.addRelationshipToName(name, relType, null);
+				homonymName.addRelationshipToName(name, relType, null, null);
 			}else{
-				name.addRelationshipToName(homonymName, relType, null);
+				name.addRelationshipToName(homonymName, relType, null, null);
 			}
 
 		}else{
@@ -1665,11 +1664,6 @@ public class EfloraTaxonImport  extends EfloraImportBase implements ICdmIO<Eflor
 		return name;
 	}
 
-
-	/**
-	 * @param element
-	 * @param taxon
-	 */
 	private void handleInfraspecificEpithet(Element element, String attrValue, INonViralName name) {
 		String value = element.getTextNormalize();
 		if (value.indexOf("subsp.") != -1){
@@ -1686,7 +1680,6 @@ public class EfloraTaxonImport  extends EfloraImportBase implements ICdmIO<Eflor
 			logger.warn("Unhandled infraspecific type: " + value);
 		}
 	}
-
 
 	/**
 	 * @param state
