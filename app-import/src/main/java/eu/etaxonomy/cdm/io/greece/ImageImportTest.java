@@ -11,14 +11,15 @@ package eu.etaxonomy.cdm.io.greece;
 import java.io.File;
 import java.io.IOException;
 import java.net.URI;
-import java.util.ArrayList;
+import java.util.List;
 
+import org.apache.commons.imaging.ImageReadException;
+import org.apache.commons.imaging.Imaging;
+import org.apache.commons.imaging.common.GenericImageMetadata.GenericImageMetadataItem;
+import org.apache.commons.imaging.common.ImageMetadata;
+import org.apache.commons.imaging.common.ImageMetadata.ImageMetadataItem;
 import org.apache.http.HttpException;
 import org.apache.log4j.Logger;
-import org.apache.sanselan.ImageReadException;
-import org.apache.sanselan.Sanselan;
-import org.apache.sanselan.common.IImageMetadata;
-import org.apache.sanselan.common.ImageMetadata.Item;
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
 import org.joda.time.format.DateTimeFormat;
@@ -74,21 +75,24 @@ public class ImageImportTest {
 
                 //image metadata
                 File imageFile = new File("");
-                IImageMetadata metadata;
+                ImageMetadata metadata;
                 try {
-                    metadata = Sanselan.getMetadata(uri.toURL().openStream(), null);
-                    ArrayList<?> items = metadata.getItems();
-                    for (Object object : items){
-                        Item item = (Item) object;
-                        System.out.println(item.getKeyword() +  ":    " + item.getText());
-                        String value = removeQuots(item.getText());
-                        if("Image Description".equalsIgnoreCase(item.getKeyword())){
-//                          media.putDescription(Language.DEFAULT(), item.getText());
-                        }else if ("date time original".equalsIgnoreCase(item.getKeyword())){
-                            DateTimeFormatter f = DateTimeFormat.forPattern("yyyy:MM:dd HH:mm:ss");
-                            DateTime created = f.withZone(DateTimeZone.forID("Europe/Athens")).parseDateTime(value);
-                            System.out.println(created);
-
+                    metadata = Imaging.getMetadata(uri.toURL().openStream(), null);
+                    List<? extends ImageMetadataItem> items = metadata.getItems();
+                    for (ImageMetadataItem metadataItem : items){
+                        if (metadataItem instanceof GenericImageMetadataItem){
+                            GenericImageMetadataItem item = (GenericImageMetadataItem) metadataItem;
+    //                      System.out.println(item.getKeyword() +  ":    " + item.getText());
+                            String value = removeQuots(item.getText());
+                            if("Image Description".equalsIgnoreCase(item.getKeyword())){
+    //                          media.putDescription(Language.DEFAULT(), item.getText());
+                            }else if ("date time original".equalsIgnoreCase(item.getKeyword())){
+                                DateTimeFormatter f = DateTimeFormat.forPattern("yyyy:MM:dd HH:mm:ss");
+                                DateTime created = f.withZone(DateTimeZone.forID("Europe/Athens")).parseDateTime(value);
+                                System.out.println(created);
+                            }
+                        }else{
+                            throw new IllegalStateException("Unsupported ImageMetadataItem type: " + metadataItem.getClass().getName());
                         }
                     }
                 } catch (ImageReadException | IOException e1) {

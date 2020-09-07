@@ -18,13 +18,14 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.imaging.ImageInfo;
+import org.apache.commons.imaging.ImageReadException;
+import org.apache.commons.imaging.Imaging;
+import org.apache.commons.imaging.common.GenericImageMetadata.GenericImageMetadataItem;
+import org.apache.commons.imaging.common.ImageMetadata;
+import org.apache.commons.imaging.common.ImageMetadata.ImageMetadataItem;
+import org.apache.commons.imaging.formats.jpeg.JpegImageMetadata;
 import org.apache.log4j.Logger;
-import org.apache.sanselan.ImageInfo;
-import org.apache.sanselan.ImageReadException;
-import org.apache.sanselan.Sanselan;
-import org.apache.sanselan.common.IImageMetadata;
-import org.apache.sanselan.common.ImageMetadata.Item;
-import org.apache.sanselan.formats.jpeg.JpegImageMetadata;
 import org.springframework.stereotype.Component;
 
 import eu.etaxonomy.cdm.app.images.AbstractImageImporter;
@@ -90,10 +91,10 @@ public class PalmaeImageImport extends AbstractImageImporter {
 	public String retrieveTaxonNameFromImageMetadata(File imageFile){
 		String name = null;
 
-		IImageMetadata metadata = null;
+		ImageMetadata metadata = null;
 
 		try {
-			metadata = Sanselan.getMetadata(imageFile);
+			metadata = Imaging.getMetadata(imageFile);
 		} catch (ImageReadException e) {
 			logger.error("Error reading image" + " in " + imageFile.getName(), e);
 		} catch (IOException e) {
@@ -103,21 +104,23 @@ public class PalmaeImageImport extends AbstractImageImporter {
 		if(metadata instanceof JpegImageMetadata){
 			JpegImageMetadata jpegMetadata = (JpegImageMetadata) metadata;
 
-			for (Object object : jpegMetadata.getItems()){
+			for (ImageMetadataItem metadataItem : jpegMetadata.getItems()){
+                if (metadataItem instanceof GenericImageMetadataItem){
+                    GenericImageMetadataItem item = (GenericImageMetadataItem) metadataItem;
+    				if(item.getKeyword().equals("ObjectName")){
+    					logger.debug("File: " + imageFile.getName() + ". ObjectName string is: " + item.getText());
+    					String[] objectNameSplit = item.getText().split(";");
 
-				Item item = (Item) object;
-
-				if(item.getKeyword().equals("ObjectName")){
-					logger.debug("File: " + imageFile.getName() + ". ObjectName string is: " + item.getText());
-					String[] objectNameSplit = item.getText().split(";");
-
-					try {
-						name = objectNameSplit[1].trim();
-					} catch (ArrayIndexOutOfBoundsException e) {
-						logger.warn("ObjectNameSplit has no second part: " + item.getText() + " in " + imageFile.getName());
-						//throw e;
-					}
-				}
+    					try {
+    						name = objectNameSplit[1].trim();
+    					} catch (ArrayIndexOutOfBoundsException e) {
+    						logger.warn("ObjectNameSplit has no second part: " + item.getText() + " in " + imageFile.getName());
+    						//throw e;
+    					}
+    				}
+                }else{
+                    throw new IllegalStateException("Unsupported ImageMetadataItem type: " +  metadataItem.getClass().getName());
+                }
 			}
 		}
 
@@ -128,34 +131,34 @@ public class PalmaeImageImport extends AbstractImageImporter {
 	private Map<MetaData, String> getMetaData(File imageFile, List<MetaData> metaData){
 		HashMap<MetaData, String> result = new HashMap<>();
 
-		IImageMetadata metadata = null;
+		ImageMetadata metadata = null;
 		List<String> metaDataStrings = new ArrayList<>();
 
 		for (MetaData data: metaData){
 			metaDataStrings.add(data.name().toLowerCase());
 		}
 
-
 		try {
-			metadata = Sanselan.getMetadata(imageFile);
+			metadata = Imaging.getMetadata(imageFile);
 		} catch (ImageReadException e) {
 			logger.error("Error reading image" + " in " + imageFile.getName(), e);
 		} catch (IOException e) {
 			logger.error("Error reading file"  + " in " + imageFile.getName(), e);
 		}
 
-
-
 		if(metadata instanceof JpegImageMetadata){
 			JpegImageMetadata jpegMetadata = (JpegImageMetadata) metadata;
 
-			for (Object object : jpegMetadata.getItems()){
-				Item item = (Item) object;
-
-				if(metaDataStrings.contains(item.getKeyword().toLowerCase())){
-					logger.debug("File: " + imageFile.getName() + ". "+ item.getKeyword() +"string is: " + item.getText());
-					result.put(MetaData.valueOf(item.getKeyword().toUpperCase()), item.getText());
-				}
+			for (ImageMetadataItem metadataItem : jpegMetadata.getItems()){
+               if (metadataItem instanceof GenericImageMetadataItem){
+                    GenericImageMetadataItem item = (GenericImageMetadataItem) metadataItem;
+    				if(metaDataStrings.contains(item.getKeyword().toLowerCase())){
+    					logger.debug("File: " + imageFile.getName() + ". "+ item.getKeyword() +"string is: " + item.getText());
+    					result.put(MetaData.valueOf(item.getKeyword().toUpperCase()), item.getText());
+    				}
+               }else{
+                   throw new IllegalStateException("Unsupported ImageMetadataItem type: " + metadataItem.getClass().getName());
+               }
 			}
 		}
 
@@ -213,7 +216,7 @@ public class PalmaeImageImport extends AbstractImageImporter {
 						//MetaDataFactory metaDataFactory = MetaDataFactory.getInstance();
 						//ImageMetaData imageMetaData = (ImageMetaData) metaDataFactory.readMediaData(file.toURI(), MimeType.IMAGE);
 						try{
-						ImageInfo imageinfo = Sanselan.getImageInfo(file);
+						ImageInfo imageinfo = Imaging.getImageInfo(file);
 
 						String mimeType = imageinfo.getMimeType();
 						String suffix = "jpg";
