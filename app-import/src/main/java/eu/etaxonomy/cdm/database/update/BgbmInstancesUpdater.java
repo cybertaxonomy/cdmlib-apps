@@ -16,7 +16,6 @@ import eu.etaxonomy.cdm.model.taxon.Classification;
 
 /**
  * @author a.mueller
- *
  */
 public class BgbmInstancesUpdater {
 	private static final Logger logger = Logger.getLogger(BgbmInstancesUpdater.class);
@@ -36,30 +35,29 @@ public class BgbmInstancesUpdater {
 	};
 
 	private static String[] testDatabases = new String[]{
-	    "cdm_Test_Caryophyllales",
-	    "cdm_additivity_test",
-        "cdm_bgbm_edit_usergroup",
-	    "cdm_campanulaceae","cdm_caryo_nepenthes",
+	    "cdm_bgbm_edit_usergroup",
+	    "cdm_caryo_nepenthes",
 	    "cdm_caryo_spp","cdm_causcasus_workshop",
-        "cdm_corvidae", "cdm_cyprus","cdm_edaphobase_test",
-		"cdm_edit_algaterra", "cdm_edit_algaterra_","cdm_edit_cichorieae",
+	    "cdm_corvidae", "cdm_cyprus","cdm_edaphobase_test",
+		"cdm_edit_algaterra", "cdm_edit_cichorieae",
 		"cdm_edit_flora_central_africa", "cdm_edit_flora_malesiana",
 		"cdm_edit_globis", "cdm_edit_palmae",
-		"cdm_flora_cuba", "cdm_flora_guianas",
+		"cdm_flora_cuba",
+		"cdm_flora_guianas",
 		"cdm_flore_gabon",
+		"cdm_greece_bupleurum","cdm_greece_bupleurum_01","cdm_greece_bupleurum_04",
 		"cdm_mt_moose",
 		"cdm_mt_standardliste",
 //	    "cdm_pesi_all",
 		"cdm_pesi_erms", "cdm_pesi_euromed", "cdm_pesi_fauna_europaea",
 		"cdm_phycobank",
 	    "cdm_production_additivity_ontology",
-		"cdm_proibiosphere_chenopodium_pilot",
-		"cdm_rem_conf_ak", "cdm_rem_conf_am", "cdm_rem_conf_kl", "cdm_rem_conf_pp",
+		"cdm_rem_conf_am",
 		"cdm_rl_animalia","cdm_rl_german_sl","cdm_rl_mammalia", "cdm_rl_plantae",
 		"cdm_salvador","cdm_test1","cdm_test2",
         "cdm_test_euromed",
         "cdm_vibrant_index"
-		};
+	};
 
 	private static String[] testDatabasesOthers = new String[]{"cdm_caryo_amaranthaceae",
 		"cdm_caryo_caryophyllales","cdm_flora_malesiana_prospective","cdm_pesi_all",
