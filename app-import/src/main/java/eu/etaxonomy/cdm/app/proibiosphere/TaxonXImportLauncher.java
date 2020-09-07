@@ -227,18 +227,18 @@ public class TaxonXImportLauncher {
 
         //System.out.println(documents);
         for (String docId : docs.keySet()){
-            List<String> treatments = new ArrayList<String>(new HashSet<String>(docs.get(docId)));
+            List<String> treatments = new ArrayList<>(new HashSet<>(docs.get(docId)));
 
-            Map<Integer, List<String>> startPages = new HashMap<Integer, List<String>>();
+            Map<Integer, List<String>> startPages = new HashMap<>();
             for (String treatment:treatments) {
                 List<String>tmplist = startPages.get(Integer.valueOf(treatment.split("---")[0]));
                 if (tmplist == null) {
-                    tmplist = new ArrayList<String>();
+                    tmplist = new ArrayList<>();
                 }
                 tmplist.add(treatment.split("---")[3]);
                 startPages.put(Integer.valueOf(treatment.split("---")[0]),tmplist);
             }
-            List<Integer> pages = new ArrayList<Integer>();
+            List<Integer> pages = new ArrayList<>();
             pages.addAll(startPages.keySet());
 
             Collections.sort(pages);
@@ -247,7 +247,7 @@ public class TaxonXImportLauncher {
             log.info("Document "+docId+" should have "+treatments.size()+" treatments");
                 List<URI> uritmp = documentMap.get(docId);
                 if (uritmp == null) {
-                    uritmp = new ArrayList<URI>();
+                    uritmp = new ArrayList<>();
                 }
                 for (int page:pages) {
                     for (String treatment: startPages.get(page)) {
@@ -264,11 +264,6 @@ public class TaxonXImportLauncher {
                 }
                 documentMap.put(docId, uritmp);
             }
-
-
-
-
-
 
         return documentMap;
 
@@ -303,7 +298,7 @@ public class TaxonXImportLauncher {
 			String[] filterList, String urlstr)
 					throws MalformedURLException, IOException {
 
-		Map<String, List<String>> documents = new HashMap<String, List<String>>();
+		Map<String, List<String>> documents = new HashMap<>();
 		List<String> docList;
 		String inputLine;
 		for(String filter : filterList){
@@ -317,7 +312,6 @@ public class TaxonXImportLauncher {
 
 		    URL plaziURL = new URL(urlstr);
 		    BufferedReader in = new BufferedReader(new InputStreamReader(plaziURL.openStream()));
-
 
 		    //TODO lastUpdate field
 		    //            if(!plaziNotServer){
@@ -345,10 +339,6 @@ public class TaxonXImportLauncher {
 		return documents;
 	}
 
-    /**
-     * @param document
-     * @return
-     */
     private static boolean doImportDocument(String document, int nbtreatments) {
 
         if (nbtreatments>400) {
@@ -390,9 +380,6 @@ public class TaxonXImportLauncher {
         */
     }
 
-    /**
-     * @return
-     */
     private static boolean askIfReuseSecundum() {
         //        logger.info("getFullReference for "+ name);
         JTextArea textArea = new JTextArea("Reuse the secundum present in the current classification? " +
@@ -412,9 +399,6 @@ public class TaxonXImportLauncher {
         }
     }
 
-    /**
-     * @return
-     */
     private static Reference askForSecundum() {
         //        logger.info("getFullReference for "+ name);
         JTextArea textArea = new JTextArea("Enter the secundum name");
@@ -437,6 +421,4 @@ public class TaxonXImportLauncher {
         ref.setTitle(s);
         return ref;
     }
-
-
 }

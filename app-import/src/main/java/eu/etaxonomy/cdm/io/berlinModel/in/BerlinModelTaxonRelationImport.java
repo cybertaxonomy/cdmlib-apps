@@ -74,7 +74,6 @@ public class BerlinModelTaxonRelationImport  extends BerlinModelImportBase  {
     private static final Logger logger = Logger.getLogger(BerlinModelTaxonRelationImport.class);
 
 	public static final String TREE_NAMESPACE = "PTRefFk";
-	private static final Integer AUCT_REF_ID = 5959;
 
 	private static int modCount = 30000;
 	private static final String pluralString = "taxon relations";
@@ -154,13 +153,9 @@ public class BerlinModelTaxonRelationImport  extends BerlinModelImportBase  {
 		return;
 	}
 
-	/**
-	 * @return
-	 * @throws SQLException
-	 */
 	private Set<String> getTreeReferenceIdSet(BerlinModelImportState state) throws SQLException {
 		Source source = state.getConfig().getSource();
-		Set<String> result = new HashSet<String>();
+		Set<String> result = new HashSet<>();
 		ResultSet rs = source.getResultSet(getClassificationQuery(state)) ;
 		while (rs.next()){
 			Object id = rs.getObject("PTRefFk");

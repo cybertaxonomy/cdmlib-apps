@@ -6,7 +6,6 @@
 * The contents of this file are subject to the Mozilla Public License Version 1.1
 * See LICENSE.TXT at the top of this package for the full license terms.
 */
-
 package eu.etaxonomy.cdm.io.algaterra;
 
 import java.sql.ResultSet;
@@ -34,7 +33,6 @@ import eu.etaxonomy.cdm.model.occurrence.SpecimenOrObservationBase;
 import eu.etaxonomy.cdm.model.taxon.Taxon;
 import eu.etaxonomy.cdm.model.taxon.TaxonBase;
 
-
 /**
  * Import for AlgaTerra images from table
  * @author a.mueller
@@ -42,8 +40,9 @@ import eu.etaxonomy.cdm.model.taxon.TaxonBase;
  */
 @Component
 public class AlgaTerraPictureImport  extends AlgaTerraImageImportBase {
-	private static final Logger logger = Logger.getLogger(AlgaTerraPictureImport.class);
 
+    private static final long serialVersionUID = 3910940848080132170L;
+    private static final Logger logger = Logger.getLogger(AlgaTerraPictureImport.class);
 
 	private static int modCount = 5000;
 	private static final String pluralString = "pictures";
@@ -53,10 +52,6 @@ public class AlgaTerraPictureImport  extends AlgaTerraImageImportBase {
 		super(dbTableName, pluralString);
 	}
 
-
-	/* (non-Javadoc)
-	 * @see eu.etaxonomy.cdm.io.berlinModel.in.BerlinModelImportBase#getIdQuery()
-	 */
 	@Override
 	protected String getIdQuery(BerlinModelImportState state) {
 		String result = " SELECT p.PictureId "
@@ -66,9 +61,6 @@ public class AlgaTerraPictureImport  extends AlgaTerraImageImportBase {
 		return result;
 	}
 
-	/* (non-Javadoc)
-	 * @see eu.etaxonomy.cdm.io.berlinModel.in.BerlinModelImportBase#getRecordQuery(eu.etaxonomy.cdm.io.berlinModel.in.BerlinModelImportConfigurator)
-	 */
 	@Override
 	protected String getRecordQuery(BerlinModelImportConfigurator config) {
 			String strQuery =
@@ -77,32 +69,24 @@ public class AlgaTerraPictureImport  extends AlgaTerraImageImportBase {
 	            " FROM Picture p INNER JOIN Fact f ON p.PictureId = f.ExtensionFk LEFT OUTER JOIN PTaxon pt ON f.PTNameFk = pt.PTNameFk AND f.PTRefFk = pt.PTRefFk "
 	            + 	" WHERE f.FactCategoryFk = 205 AND ( p.PictureID IN (" + ID_LIST_TOKEN + ")     )"
 	            + " ORDER BY p.PictureId, f.factId, pt.RIdentifier ";
-            ;
 		return strQuery;
 	}
 
-	/* (non-Javadoc)
-	 * @see eu.etaxonomy.cdm.io.berlinModel.in.IPartitionedIO#doPartition(eu.etaxonomy.cdm.io.berlinModel.in.ResultSetPartitioner, eu.etaxonomy.cdm.io.berlinModel.in.BerlinModelImportState)
-	 */
 	@Override
     public boolean doPartition(ResultSetPartitioner partitioner, BerlinModelImportState bmState) {
 		boolean success = true;
 
 		AlgaTerraImportState state = (AlgaTerraImportState)bmState;
 
-//		Set<SpecimenOrObservationBase> specimenToSave = new HashSet<SpecimenOrObservationBase>();
-		Set<TaxonBase> taxaToSave = new HashSet<TaxonBase>();
+		Set<TaxonBase> taxaToSave = new HashSet<>();
 
-//		Map<String, DerivedUnitBase> ecoFactMap = (Map<String, DerivedUnitBase>) partitioner.getObjectMap(AlgaTerraSpecimenImportBase.ECO_FACT_DERIVED_UNIT_NAMESPACE);
 		Map<String, TaxonBase> taxonMap = partitioner.getObjectMap(BerlinModelTaxonImport.NAMESPACE);
 		Map<String, DerivedUnit> specimenMap = partitioner.getObjectMap(AlgaTerraFactEcologyImport.FACT_ECOLOGY_NAMESPACE);
 
 		ResultSet rs = partitioner.getResultSet();
 
 		try {
-
 			int i = 0;
-
 			//for each reference
             while (rs.next()){
 
@@ -111,10 +95,7 @@ public class AlgaTerraPictureImport  extends AlgaTerraImageImportBase {
 				int pictureId = rs.getInt("PictureID");
 				int taxonId = rs.getInt("RIdentifier");
 				int factId = rs.getInt("FactId");
-
-
 				//TODO etc. Created, Notes, Copyright, TermsOfUse etc.
-
 				try {
 
 					TaxonBase<?> taxonBase = taxonMap.get(String.valueOf(taxonId));
@@ -132,19 +113,13 @@ public class AlgaTerraPictureImport  extends AlgaTerraImageImportBase {
 
 						taxaToSave.add(taxon);
 					}
-
-
 				} catch (Exception e) {
 					logger.warn("Exception in " + getTableName() + ": PictureId " + pictureId + ". " + e.getMessage());
 					e.printStackTrace();
 				}
-
             }
 
-//            logger.warn("Specimen: " + countSpecimen + ", Descriptions: " + countDescriptions );
-
 			logger.warn(pluralString + " to save: " + taxaToSave.size());
-//			getOccurrenceService().save(taxaToSave);
 			getTaxonService().save(taxaToSave);
 
 			return success;
@@ -153,8 +128,6 @@ public class AlgaTerraPictureImport  extends AlgaTerraImageImportBase {
 			return false;
 		}
 	}
-
-
 
 	private void handlePictureSpecificFields(ResultSet rs, Media media, AlgaTerraImportState state, Map<String, DerivedUnit> specimenMap) throws SQLException {
 		Integer specimenFactId = nullSafeInt(rs, "FactFk");
@@ -173,20 +146,18 @@ public class AlgaTerraPictureImport  extends AlgaTerraImageImportBase {
 				}
 			}
 		}
-
 	}
-
 
 	@Override
 	public Map<Object, Map<String, ? extends CdmBase>> getRelatedObjectsForPartition(ResultSet rs, BerlinModelImportState state) {
 
 	    String nameSpace;
 		Set<String> idSet;
-		Map<Object, Map<String, ? extends CdmBase>> result = new HashMap<Object, Map<String, ? extends CdmBase>>();
+		Map<Object, Map<String, ? extends CdmBase>> result = new HashMap<>();
 
 		try{
-			Set<String> taxonIdSet = new HashSet<String>();
-			Set<String> specimenIdSet = new HashSet<String>();
+			Set<String> taxonIdSet = new HashSet<>();
+			Set<String> specimenIdSet = new HashSet<>();
 
 			while (rs.next()){
 				handleForeignKey(rs, taxonIdSet, "RIdentifier");
@@ -214,7 +185,6 @@ public class AlgaTerraPictureImport  extends AlgaTerraImageImportBase {
 		return result;
 	}
 
-
 	@Override
 	protected boolean doCheck(BerlinModelImportState state){
 		IOValidator<BerlinModelImportState> validator = new AlgaTerraTypeImportValidator();
@@ -226,5 +196,4 @@ public class AlgaTerraPictureImport  extends AlgaTerraImageImportBase {
 		AlgaTerraImportConfigurator config = ((AlgaTerraImportState) bmState).getAlgaTerraConfigurator();
 		return !  ( config.isDoTypes() && config.isDoImages()) ;
 	}
-
 }

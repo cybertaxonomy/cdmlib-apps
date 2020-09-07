@@ -218,7 +218,6 @@ public class PalmaeImageImport extends AbstractImageImporter {
 						String mimeType = imageinfo.getMimeType();
 						String suffix = "jpg";
 
-
 						// URL for this image
 						URL url = null;
 						try {
@@ -227,9 +226,7 @@ public class PalmaeImageImport extends AbstractImageImporter {
 							logger.warn("URL is malformed: "+ url);
 						}
 
-
 						ImageFile imageFile = ImageFile.NewInstance(url.toURI(),null, imageinfo.getHeight(), imageinfo.getWidth());
-
 
 						MediaRepresentation representation = MediaRepresentation.NewInstance(mimeType, suffix);
 						representation.addRepresentationPart(imageFile);

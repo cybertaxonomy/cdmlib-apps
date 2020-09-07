@@ -6,7 +6,6 @@
 * The contents of this file are subject to the Mozilla Public License Version 1.1
 * See LICENSE.TXT at the top of this package for the full license terms.
 */
-
 package eu.etaxonomy.cdm.io.caryo;
 
 import java.sql.ResultSet;
@@ -52,43 +51,33 @@ import eu.etaxonomy.cdm.model.taxon.Taxon;
 import eu.etaxonomy.cdm.model.taxon.TaxonBase;
 import eu.etaxonomy.cdm.strategy.exceptions.UnknownCdmTypeException;
 
-
 /**
  * @author a.mueller
  * @since 20.02.2010
  */
 @Component
 public class CaryoTaxonImport  extends DbImportBase<CaryoImportState, CaryoImportConfigurator> {
-	private static final Logger logger = Logger.getLogger(CaryoTaxonImport.class);
+
+    private static final long serialVersionUID = 5369739490456155285L;
+    private static final Logger logger = Logger.getLogger(CaryoTaxonImport.class);
 
 	private final int modCount = 10000;
 	private static final String pluralString = "taxa";
 	private static final String dbTableName = "CARYOPHYLLALES";
 
-
-
-	private final Map<String, Taxon> familyMap = new HashMap<String, Taxon>();
-	private final Map<String, Person> personMap = new HashMap<String, Person>();
-	private final Map<String, Team> teamMap = new HashMap<String, Team>();
-	private final Map<String, TeamOrPersonBase> inAuthorMap = new HashMap<String, TeamOrPersonBase>();
-	private final Map<String, IJournal> journalMap = new HashMap<String, IJournal>();
-	private final Map<String, IBook> bookMap = new HashMap<String, IBook>();
-
+	private final Map<String, Taxon> familyMap = new HashMap<>();
+	private final Map<String, Person> personMap = new HashMap<>();
+	private final Map<String, Team> teamMap = new HashMap<>();
+	private final Map<String, TeamOrPersonBase> inAuthorMap = new HashMap<>();
+	private final Map<String, IJournal> journalMap = new HashMap<>();
+	private final Map<String, IBook> bookMap = new HashMap<>();
 
 	private Classification classification;
-
-
 
 	public CaryoTaxonImport(){
 		super(dbTableName, pluralString);
 	}
 
-
-
-
-	/* (non-Javadoc)
-	 * @see eu.etaxonomy.cdm.io.common.DbImportBase#getIdQuery(eu.etaxonomy.cdm.io.common.DbImportStateBase)
-	 */
 	@Override
 	protected String getIdQuery(CaryoImportState state) {
 		String strRecordQuery =
@@ -98,10 +87,6 @@ public class CaryoTaxonImport  extends DbImportBase<CaryoImportState, CaryoImpor
 		return strRecordQuery;
 	}
 
-
-	/* (non-Javadoc)
-	 * @see eu.etaxonomy.cdm.io.common.DbImportBase#getRecordQuery(eu.etaxonomy.cdm.io.common.DbImportConfiguratorBase)
-	 */
 	@Override
 	protected String getRecordQuery(CaryoImportConfigurator config) {
 		String strRecordQuery =
@@ -111,19 +96,11 @@ public class CaryoTaxonImport  extends DbImportBase<CaryoImportState, CaryoImpor
 		return strRecordQuery;
 	}
 
-
-
-	/* (non-Javadoc)
-	 * @see eu.etaxonomy.cdm.io.globis.GlobisImportBase#doPartition(eu.etaxonomy.cdm.io.common.ResultSetPartitioner, eu.etaxonomy.cdm.io.globis.GlobisImportState)
-	 */
 	@Override
 	public boolean doPartition(ResultSetPartitioner partitioner, CaryoImportState state) {
 		boolean success = true;
 
-		Set<TaxonBase> objectsToSave = new HashSet<TaxonBase>();
-
-//		Map<String, Taxon> taxonMap = (Map<String, Taxon>) partitioner.getObjectMap(TAXON_NAMESPACE);
-
+		Set<TaxonBase> objectsToSave = new HashSet<>();
 
 		classification = getClassification(state);
 
@@ -160,7 +137,6 @@ public class CaryoTaxonImport  extends DbImportBase<CaryoImportState, CaryoImpor
 //        	      ,[Basionym]
 //        	      ,[OriginalCitation]
 
-
 				IBotanicalName name = TaxonNameFactory.NewBotanicalInstance(Rank.GENUS());
 				name.setGenusOrUninomial(genus);
 				makeAuthors(name, autoren, id);
@@ -168,7 +144,6 @@ public class CaryoTaxonImport  extends DbImportBase<CaryoImportState, CaryoImpor
         		name.setNomenclaturalReference(nomRef);
 				name.setNomenclaturalMicroReference(pages);
 				makeStatus(name, nomStatusStr, id);
-
 
 				Taxon taxon = Taxon.NewInstance(name, state.getTransactionalSourceReference());
 				handleTypes(state, rs, taxon, typeStr, id);
@@ -179,8 +154,6 @@ public class CaryoTaxonImport  extends DbImportBase<CaryoImportState, CaryoImpor
 				classification.addParentChild(parent, taxon, sec, null);
 
 				taxon.addSource(OriginalSourceType.Import, String.valueOf(taxonId), "NCUGenID", sec, null);
-
-
 
 				objectsToSave.add(taxon);
 
@@ -208,11 +181,7 @@ public class CaryoTaxonImport  extends DbImportBase<CaryoImportState, CaryoImpor
 			taxon.addSynonym(syn, SynonymType.HOMOTYPIC_SYNONYM_OF());
 			getTaxonService().save(syn);
 		}
-
 	}
-
-
-
 
 	private void handleTypes(CaryoImportState state, ResultSet rs, Taxon taxon, String origType, Integer id) {
 		NameTypeDesignation desig = NameTypeDesignation.NewInstance();
@@ -264,12 +233,7 @@ public class CaryoTaxonImport  extends DbImportBase<CaryoImportState, CaryoImpor
 			}
 			name.addTypeDesignation(desig, true);
 		}
-
-
 	}
-
-
-
 
 	private String makeTypeNomStatus(IBotanicalName typeName, String type) {
 		if (type.endsWith(", nom. illeg.")){
@@ -279,11 +243,7 @@ public class CaryoTaxonImport  extends DbImportBase<CaryoImportState, CaryoImpor
 		return type;
 	}
 
-
-
-
 	private void makeStatus(IBotanicalName name, String nomStatusStr, Integer id) throws SQLException {
-//	      ,[NomenclaturalStatus]
 
 		if (StringUtils.isNotBlank(nomStatusStr)){
 			NomenclaturalStatusType nomStatusType;
@@ -311,11 +271,7 @@ public class CaryoTaxonImport  extends DbImportBase<CaryoImportState, CaryoImpor
 			NomenclaturalStatus status = NomenclaturalStatus.NewInstance(nomStatusType);
 			name.addStatus(status);
 		}
-
 	}
-
-
-
 
 	private INomenclaturalReference makeNomRef(CaryoImportState state, ResultSet rs, Integer id) throws SQLException {
 		INomenclaturalReference result;
@@ -387,9 +343,6 @@ public class CaryoTaxonImport  extends DbImportBase<CaryoImportState, CaryoImpor
 		ref.setDatePublished(tp);
 	}
 
-
-
-
 	private Integer[] getDay(String pre, Integer id) {
 		Integer[] result = new Integer[2];
 		if (! StringUtils.isBlank(pre)){
@@ -442,7 +395,6 @@ public class CaryoTaxonImport  extends DbImportBase<CaryoImportState, CaryoImpor
 		return result;
 	}
 
-
 	private TeamOrPersonBase<?> getInAuthor(String inAutorStr) {
 		if (StringUtils.isBlank(inAutorStr)){
 			return null;
@@ -454,15 +406,12 @@ public class CaryoTaxonImport  extends DbImportBase<CaryoImportState, CaryoImpor
 		return inAuthor;
 	}
 
-
-
 	private void makeAuthors(IBotanicalName name, String autoren, Integer id) {
 		String[] parsedAuthorTeams = getParsedAuthors(autoren);
 		name.setBasionymAuthorship(getTeam(parsedAuthorTeams[0], id));
 		name.setExBasionymAuthorship(getTeam(parsedAuthorTeams[1], id));
 		name.setCombinationAuthorship(getTeam(parsedAuthorTeams[2], id));
 		name.setExCombinationAuthorship(getTeam(parsedAuthorTeams[3], id));
-
 	}
 
 	private TeamOrPersonBase<?> getNomRefAuthor(String authorStr, Integer id) {
@@ -470,7 +419,6 @@ public class CaryoTaxonImport  extends DbImportBase<CaryoImportState, CaryoImpor
 		TeamOrPersonBase<?> team = getTeam(parsedAuthorTeams[2], id);
 		return team;
 	}
-
 
 	private TeamOrPersonBase<?> getTeam(String author, Integer id) {
 		if (StringUtils.isBlank(author)){
@@ -488,7 +436,6 @@ public class CaryoTaxonImport  extends DbImportBase<CaryoImportState, CaryoImpor
 		return result;
 	}
 
-
 	private void doInAuthors(CaryoImportState state) throws SQLException {
 		Source source = state.getConfig().getSource();
 		String sql = "SELECT DISTINCT inAutor FROM " + getTableName() + " WHERE inAutor IS NOT NULL AND inAutor <> '' ";
@@ -502,9 +449,7 @@ public class CaryoTaxonImport  extends DbImportBase<CaryoImportState, CaryoImpor
 				getAgentService().save(team);
 			}
 		}
-
 	}
-
 
 	private void doAuthors(CaryoImportState state) throws SQLException {
 		Source source = state.getConfig().getSource();
@@ -519,9 +464,6 @@ public class CaryoTaxonImport  extends DbImportBase<CaryoImportState, CaryoImpor
 			}
 		}
 	}
-
-
-
 
 	private void doTypeAuthors(CaryoImportState state) {
 		doTeam("Dinter & Derenb.");
@@ -604,16 +546,8 @@ public class CaryoTaxonImport  extends DbImportBase<CaryoImportState, CaryoImpor
 		doTeam("Maerkl.");
 		doTeam("Vierh.");
 		doTeam("Exell");
-
 	}
 
-
-
-
-	/**
-	 * @param teamStr
-	 * @return
-	 */
 	protected void doTeam(String teamStr) {
 		if (StringUtils.isBlank(teamStr)){
 			return;
@@ -655,9 +589,6 @@ public class CaryoTaxonImport  extends DbImportBase<CaryoImportState, CaryoImpor
 		return result;
 	}
 
-
-
-
 	private String[] getParsedAuthors(String autorenStr) {
 		String[] result = new String[4];
 		String basioFull = null;
@@ -680,9 +611,6 @@ public class CaryoTaxonImport  extends DbImportBase<CaryoImportState, CaryoImpor
 		return result;
 	}
 
-
-
-
 	private String[] splitExAuthors(String author) {
 		String[] result = new String[2];
 		if (author != null){
@@ -696,9 +624,6 @@ public class CaryoTaxonImport  extends DbImportBase<CaryoImportState, CaryoImpor
 		}
 		return result;
 	}
-
-
-
 
 	private void doBooks(CaryoImportState state) throws SQLException {
 		Source source = state.getConfig().getSource();
@@ -718,9 +643,6 @@ public class CaryoTaxonImport  extends DbImportBase<CaryoImportState, CaryoImpor
 		}
 	}
 
-
-
-
 	private void doJournals(CaryoImportState state) throws SQLException {
 		Source source = state.getConfig().getSource();
 		String sqlPeriodical = "SELECT DISTINCT PeriodicalTitle FROM " + getTableName() + " WHERE PeriodicalTitle IS NOT NULL AND PeriodicalTitle <> '' ";
@@ -738,9 +660,6 @@ public class CaryoTaxonImport  extends DbImportBase<CaryoImportState, CaryoImpor
 			}
 		}
 	}
-
-
-
 
 	private void doFamilies(CaryoImportState state) throws SQLException {
 		Source source = state.getConfig().getSource();
@@ -760,7 +679,6 @@ public class CaryoTaxonImport  extends DbImportBase<CaryoImportState, CaryoImpor
 				getTaxonService().save(taxon);
 			}
 		}
-
 	}
 
 	private Classification getClassification(CaryoImportState state) {
@@ -776,18 +694,14 @@ public class CaryoTaxonImport  extends DbImportBase<CaryoImportState, CaryoImpor
 		return this.classification;
 	}
 
-
-
-
-
 	@Override
 	public Map<Object, Map<String, ? extends CdmBase>> getRelatedObjectsForPartition(ResultSet rs, CaryoImportState state) {
 //		String nameSpace;
 //		Class cdmClass;
 //		Set<String> idSet;
-		Map<Object, Map<String, ? extends CdmBase>> result = new HashMap<Object, Map<String, ? extends CdmBase>>();
+		Map<Object, Map<String, ? extends CdmBase>> result = new HashMap<>();
 //		try{
-//			Set<String> taxonIdSet = new HashSet<String>();
+//			Set<String> taxonIdSet = new HashSet<>();
 //
 //			while (rs.next()){
 ////				handleForeignKey(rs, taxonIdSet, "taxonId");
@@ -807,27 +721,13 @@ public class CaryoTaxonImport  extends DbImportBase<CaryoImportState, CaryoImpor
 		return result;
 	}
 
-	/* (non-Javadoc)
-	 * @see eu.etaxonomy.cdm.io.common.CdmIoBase#doCheck(eu.etaxonomy.cdm.io.common.IImportConfigurator)
-	 */
 	@Override
 	protected boolean doCheck(CaryoImportState state){
 		return true;
 	}
 
-
-	/* (non-Javadoc)
-	 * @see eu.etaxonomy.cdm.io.common.CdmIoBase#isIgnore(eu.etaxonomy.cdm.io.common.IImportConfigurator)
-	 */
 	@Override
     protected boolean isIgnore(CaryoImportState state){
 		return ! state.getConfig().isDoTaxa();
 	}
-
-
-
-
-
-
-
 }

@@ -6,7 +6,6 @@
  * The contents of this file are subject to the Mozilla Public License Version 1.1
  * See LICENSE.TXT at the top of this package for the full license terms.
  */
-
 package eu.etaxonomy.cdm.io.redlist.gefaesspflanzen;
 
 import java.sql.ResultSet;
@@ -88,7 +87,6 @@ public class RedListGefaesspflanzenImportClassification extends DbImportBase<Red
         importFamilies(gesamtListe, checkliste, state);
         super.doInvoke(state);
     }
-
 
     private void importFamilies(Classification gesamtListe, Classification checkliste, RedListGefaesspflanzenImportState state) {
         for(UUID uuid:state.getFamilyMap().values()){
@@ -229,8 +227,6 @@ public class RedListGefaesspflanzenImportClassification extends DbImportBase<Red
         addTaxonToClassification(classificationS, RedListUtil.CLASSIFICATION_NAMESPACE_S, relationS, taxonBase, id, state);
     }
 
-
-
     private void addTaxonToClassification(Classification classification, String classificationNamespace, String relationString, final TaxonBase<?> gesamtListeTaxon, long id, RedListGefaesspflanzenImportState state){
         Taxon taxon = HibernateProxyHelper.deproxy(state.getRelatedObject(classificationNamespace, String.valueOf(id), TaxonBase.class), Taxon.class);
         //add concept relation to gesamtliste/checkliste
@@ -338,7 +334,7 @@ public class RedListGefaesspflanzenImportClassification extends DbImportBase<Red
             RedListGefaesspflanzenImportState state) {
         Map<Object, Map<String, ? extends CdmBase>> result = new HashMap<>();
 
-        Set<String> idSet = new HashSet<String>();
+        Set<String> idSet = new HashSet<>();
         try {
             while (rs.next()){
                 idSet.add(String.valueOf(rs.getLong(RedListUtil.NAMNR)));

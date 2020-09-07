@@ -47,7 +47,6 @@ import eu.etaxonomy.cdm.model.taxon.TaxonBase;
 /**
  * @author a.mueller
  * @since 17.10.2008
- * @version 1.0
  */
 public class DipteraDistributionParser {
 	private static final Logger logger = Logger.getLogger(DipteraDistributionParser.class);
@@ -90,7 +89,7 @@ public class DipteraDistributionParser {
 		app.commitTransaction(txStatus);
 	}
 
-	static Set<String> unrekognizedStrings = new HashSet<String>();
+	static Set<String> unrekognizedStrings = new HashSet<>();
 	static int countNot = 0;
 	static int countYes = 0;
 
@@ -218,9 +217,9 @@ public class DipteraDistributionParser {
 	}
 
 
-	static List<String> stopWords = new ArrayList<String>();
-	static List<String> unknownAreas = new ArrayList<String>();
-	static List<String> higherAreas = new ArrayList<String>();
+	static List<String> stopWords = new ArrayList<>();
+	static List<String> unknownAreas = new ArrayList<>();
+	static List<String> higherAreas = new ArrayList<>();
 
 	private String adaptWordsToTdwg(String word){
 		word = word.replace(",", "").replace(";", "");
@@ -409,10 +408,6 @@ public class DipteraDistributionParser {
 		higherAreas.add("NT");
 	}
 
-
-	/**
-	 * @param args
-	 */
 	public static void main(String[] args) {
 		CdmApplicationController app = null;
 		DbSchemaValidation val = DbSchemaValidation.UPDATE;

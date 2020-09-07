@@ -177,8 +177,8 @@ public class BerlinModelTypesImport extends BerlinModelImportBase /*implements I
 		Map<Object, Map<String, ? extends CdmBase>> result = new HashMap<>();
 
 		try{
-			Set<String> nameIdSet = new HashSet<String>();
-			Set<String> referenceIdSet = new HashSet<String>();
+			Set<String> nameIdSet = new HashSet<>();
+			Set<String> referenceIdSet = new HashSet<>();
 			while (rs.next()){
 				handleForeignKey(rs, nameIdSet, "NameFk");
 				handleForeignKey(rs, referenceIdSet, "RefFk");

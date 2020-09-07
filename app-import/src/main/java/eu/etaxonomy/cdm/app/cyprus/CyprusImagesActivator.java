@@ -254,8 +254,7 @@ public class CyprusImagesActivator {
 //            IImageMetadata metadata = Sanselan.getMetadata(file);
             ImageMetadata metadata = Imaging.getMetadata(file);
             List<? extends ImageMetadataItem> items = metadata.getItems();
-            for (Object object : items){
-                ImageMetadataItem metadataItem = (ImageMetadataItem) object;
+            for (ImageMetadataItem metadataItem : items){
 //                System.out.println(item.getKeyword() +  ":    " + item.getText());
                 if (metadataItem instanceof GenericImageMetadataItem){
                     GenericImageMetadataItem item = (GenericImageMetadataItem) metadataItem;

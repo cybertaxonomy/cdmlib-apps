@@ -6,7 +6,6 @@
  * The contents of this file are subject to the Mozilla Public License Version 1.1
  * See LICENSE.TXT at the top of this package for the full license terms.
  */
-
 package eu.etaxonomy.cdm.io.cyprus;
 
 import java.util.Arrays;
@@ -49,7 +48,6 @@ import eu.etaxonomy.cdm.strategy.parser.NonViralNameParserImpl;
  * @author a.babadshanjan
  * @since 08.01.2009
  */
-
 @Component
 public class CyprusExcelImport
         extends ExcelImportBase<CyprusImportState, CyprusImportConfigurator, ExcelRowBase> {
@@ -58,8 +56,8 @@ public class CyprusExcelImport
 
     private static final Logger logger = Logger.getLogger(CyprusExcelImport.class);
 
-	public static Set<String> validMarkers = new HashSet<String>(Arrays.asList(new String[]{"", "valid", "accepted", "a", "v", "t"}));
-	public static Set<String> synonymMarkers = new HashSet<String>(Arrays.asList(new String[]{"", "invalid", "synonym", "s", "i"}));
+	public static Set<String> validMarkers = new HashSet<>(Arrays.asList(new String[]{"", "valid", "accepted", "a", "v", "t"}));
+	public static Set<String> synonymMarkers = new HashSet<>(Arrays.asList(new String[]{"", "invalid", "synonym", "s", "i"}));
 
 
 	@Override
@@ -67,10 +65,6 @@ public class CyprusExcelImport
 		return ! state.getConfig().isDoTaxa();
 	}
 
-
-	/* (non-Javadoc)
-	 * @see eu.etaxonomy.cdm.io.common.CdmIoBase#doCheck(eu.etaxonomy.cdm.io.common.IoStateBase)
-	 */
 	@Override
 	protected boolean doCheck(CyprusImportState state) {
 		logger.warn("DoCheck not yet implemented for CyprusExcelImport");
@@ -90,8 +84,6 @@ public class CyprusExcelImport
 	protected static final String STATUS_COLUMN = "status";
 	protected static final String RED_DATA_BOOK_CATEGORY_COLUMN = "red data book category";
 	protected static final String SYSTEMATICS_COLUMN = "systematics";
-
-
 
 	// TODO: This enum is for future use (perhaps).
 	protected enum Columns {
@@ -121,7 +113,6 @@ public class CyprusExcelImport
 			return this.value;
 		}
 	}
-
 
 	@Override
     protected void analyzeRecord(Map<String, String> record, CyprusImportState state) {
@@ -153,7 +144,6 @@ public class CyprusExcelImport
     		}else{
     			continue;
     		}
-
 
     		if (key.equalsIgnoreCase(SPECIES_COLUMN)) {
 //    			int ivalue = floatString2IntValue(value);
@@ -231,7 +221,6 @@ public class CyprusExcelImport
 				getTermService().save(endemism);
 
 				//status
-
 				UUID indigenousUuid = transformer.getPresenceTermUuid("IN");
 				indigenous = this.getPresenceTerm(state, indigenousUuid, "indigenous", "Indigenous", "IN", false);
 				getTermService().save(indigenous);
@@ -243,14 +232,12 @@ public class CyprusExcelImport
 				cultivatedDoubtful = this.getPresenceTerm(state, cultivatedDoubtfulUuid, "cultivated?", "Cultivated?", "CU?", false);
 				getTermService().save(cultivatedDoubtful);
 
-
 				UUID casualUuid = transformer.getPresenceTermUuid("CA");
 				casual = this.getPresenceTerm(state, casualUuid, "casual", "Casual", "CA", false);
 				getTermService().save(casual);
 				UUID casualDoubtfulUuid = transformer.getPresenceTermUuid("CA?");
 				casualDoubtful = this.getPresenceTerm(state, casualDoubtfulUuid, "casual?", "Casual?", "CA?", false);
 				getTermService().save(casualDoubtful);
-
 
 				UUID nonInvasiveUuid = transformer.getPresenceTermUuid("NN");
 				nonInvasive = this.getPresenceTerm(state, nonInvasiveUuid, "naturalized  non-invasive", "Naturalized  non-invasive", "NN", false);
@@ -349,7 +336,6 @@ public class CyprusExcelImport
 		return;
     }
 
-
 	private void makeHigherTaxa(CyprusImportState state, CyprusRow taxonLight, Taxon speciesTaxon, Reference citation, String microCitation) {
 		String divisionStr = taxonLight.getDivision();
 		String genusStr = taxonLight.getGenus();
@@ -434,7 +420,6 @@ public class CyprusExcelImport
 		}
 	}
 
-
 	private void makeStatus(String statusString, Taxon mainTaxon) {
 		//status
 		if (StringUtils.isNotBlank(statusString)){
@@ -483,7 +468,6 @@ public class CyprusExcelImport
 		}
 	}
 
-
 	private void makeRedBookCategory(String redBookCategory, Taxon mainTaxon) {
 		//red data book category
 		if (StringUtils.isNotBlank(redBookCategory)){
@@ -494,9 +478,6 @@ public class CyprusExcelImport
 		}
 	}
 
-
-
-
 	/**
 	 *  Stores parent-child, synonym and common name relationships
 	 */
@@ -506,17 +487,6 @@ public class CyprusExcelImport
 		return;
 	}
 
-
-
-	/**
-	 * @param state
-	 * @param rank
-	 * @param taxonNameStr
-	 * @param authorStr
-	 * @param nameStatus
-	 * @param nc
-	 * @return
-	 */
 	private TaxonBase<?> createTaxon(CyprusImportState state, Rank rank, String taxonNameStr,
 			Class<?> statusClass, NomenclaturalCode nc) {
 		TaxonBase<?> taxonBase;
@@ -530,7 +500,6 @@ public class CyprusExcelImport
 			taxonNameBase = parser.parseFullName(taxonNameStr, nc, rank);
 
 			//taxonNameBase.setNameCache(taxonNameStr);
-
 		}
 
 		//Create the taxon
@@ -565,7 +534,4 @@ public class CyprusExcelImport
 		}
 		return success;
 	}
-
-
-
 }

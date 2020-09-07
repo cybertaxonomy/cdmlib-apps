@@ -34,7 +34,6 @@ import eu.etaxonomy.cdm.model.agent.TeamOrPersonBase;
 import eu.etaxonomy.cdm.model.common.CdmBase;
 import eu.etaxonomy.cdm.strategy.cache.agent.INomenclaturalAuthorCacheStrategy;
 
-
 /**
  * @author a.mueller
  * @since 20.03.2008
@@ -225,15 +224,6 @@ public class BerlinModelAuthorTeamImport extends BerlinModelImportBase {
 		return success;
 	}
 
-
-	/**
-     * @param state
-     * @param team
-     * @param authorTeamCache
-     * @param fullAuthorTeamCache
-     * @param preliminaryFlag
-     * @return
-     */
     private TeamOrPersonBase<?> handleTeam(BerlinModelImportState state, Team team, String authorTeamCache,
             String fullAuthorTeamCache, boolean preliminaryFlag, int authorTeamId) {
 
@@ -308,12 +298,6 @@ public class BerlinModelAuthorTeamImport extends BerlinModelImportBase {
         return result;
     }
 
-
-    /**
-     * @param team
-     * @param authorTeamCache
-     * @param authorTeamId
-     */
     protected void checkTeamNomenclaturalTitle(Team team, String authorTeamCache, int authorTeamId) {
         if (team.getCacheStrategy().getNomenclaturalTitle(team).equals(authorTeamCache)){
             team.setProtectedNomenclaturalTitleCache(false);
@@ -326,13 +310,6 @@ public class BerlinModelAuthorTeamImport extends BerlinModelImportBase {
         }
     }
 
-
-    /**
-     * @param team
-     * @param fullAuthorTeamCache
-     * @param authorTeamId
-     * @param formatter
-     */
     protected void checkTeamTitleCache(Team team, String fullAuthorTeamCache, int authorTeamId) {
         INomenclaturalAuthorCacheStrategy<Team> formatter = team.getCacheStrategy();
         if (team.generateTitle().equals(fullAuthorTeamCache)){
@@ -428,11 +405,6 @@ public class BerlinModelAuthorTeamImport extends BerlinModelImportBase {
 
     private static final String TEAM_SPLITTER = "(,|&)";
 
-    /**
-     * @param fullAuthorTeamCache
-     * @param TEAM_SPLITTER
-     * @return
-     */
     protected static String[] splitTeam(String teamCache) {
         if (teamCache == null){
             return new String[0];
@@ -440,11 +412,6 @@ public class BerlinModelAuthorTeamImport extends BerlinModelImportBase {
         return teamCache.split(TEAM_SPLITTER);
     }
 
-
-    /**
-     * @param authorTeamCache
-     * @return
-     */
     protected static boolean hasTeamSeparator(String teamCache) {
         if (isBlank(teamCache)){
             return false;
@@ -454,7 +421,6 @@ public class BerlinModelAuthorTeamImport extends BerlinModelImportBase {
             return false;
         }
     }
-
 
     @Override
 	public Map<Object, Map<String, ? extends CdmBase>> getRelatedObjectsForPartition(ResultSet rs, BerlinModelImportState state)  {
@@ -471,14 +437,8 @@ public class BerlinModelAuthorTeamImport extends BerlinModelImportBase {
 		return result;
 	}
 
-	/**
-	 * @param rs
-	 * @return
-	 * @throws SQLException
-	 * @throws SQLException
-	 */
 	private Set<String> makeAuthorIdList(ResultSet rs) {
-		Set<String> result = new HashSet<String>();
+		Set<String> result = new HashSet<>();
 
 		String authorTeamIdList = "";
 		try {

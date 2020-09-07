@@ -6,7 +6,6 @@
 * The contents of this file are subject to the Mozilla Public License Version 1.1
 * See LICENSE.TXT at the top of this package for the full license terms.
 */
-
 package eu.etaxonomy.cdm.io.berlinModel.in;
 
 import java.sql.ResultSet;
@@ -44,7 +43,6 @@ import eu.etaxonomy.cdm.model.taxon.Taxon;
 import eu.etaxonomy.cdm.model.taxon.TaxonBase;
 import eu.etaxonomy.cdm.model.term.OrderedTermVocabulary;
 import eu.etaxonomy.cdm.strategy.exceptions.UnknownCdmTypeException;
-
 
 /**
  * @author a.mueller
@@ -343,7 +341,7 @@ public class BerlinModelOccurrenceImport  extends BerlinModelImportBase {
 
 		try{
 		    Map<Object, Map<String, ? extends CdmBase>> result = new HashMap<>();
-			Set<String> taxonIdSet = new HashSet<String>();
+			Set<String> taxonIdSet = new HashSet<>();
 			while (rs.next()){
 				handleForeignKey(rs, taxonIdSet, "taxonId");
 			}

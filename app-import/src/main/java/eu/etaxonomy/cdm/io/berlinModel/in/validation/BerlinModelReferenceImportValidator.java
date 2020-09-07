@@ -6,7 +6,6 @@
 * The contents of this file are subject to the Mozilla Public License Version 1.1
 * See LICENSE.TXT at the top of this package for the full license terms.
 */
-
 package eu.etaxonomy.cdm.io.berlinModel.in.validation;
 
 import java.sql.ResultSet;
@@ -46,9 +45,7 @@ public class BerlinModelReferenceImportValidator implements IOValidator<BerlinMo
 		if (result == false ){System.out.println("========================================================");}
 
 		return result;
-
 	}
-
 
 	//******************************** CHECK *************************************************
 
@@ -110,7 +107,6 @@ public class BerlinModelReferenceImportValidator implements IOValidator<BerlinMo
 	                        " (SELECT refId FROM %s ))" , config.getReferenceIdTable()) ;
 				}
 
-
 				ResultSet rs = source.getResultSet(strQuery);
 				boolean firstRow = true;
 				while (rs.next()){
@@ -143,7 +139,6 @@ public class BerlinModelReferenceImportValidator implements IOValidator<BerlinMo
 				return false;
 			}
 		}
-
 
 		private static boolean checkPartOfUnresolved(BerlinModelImportConfigurator config){
 			try {
@@ -489,7 +484,7 @@ public class BerlinModelReferenceImportValidator implements IOValidator<BerlinMo
 				Source source = config.getSource();
 				ResultSet rs = source.getResultSet(strQuery);
 				int colCount = rs.getMetaData().getColumnCount();
-				Set<String> existingAttributes = new HashSet<String>();
+				Set<String> existingAttributes = new HashSet<>();
 				for (int c = 0; c < colCount ; c++){
 					existingAttributes.add(rs.getMetaData().getColumnLabel(c+1).toLowerCase());
 				}
@@ -557,17 +552,10 @@ public class BerlinModelReferenceImportValidator implements IOValidator<BerlinMo
 			return result;
 		}
 
-
-		/* (non-Javadoc)
-		 * @see eu.etaxonomy.cdm.io.common.IOValidator#validate(eu.etaxonomy.cdm.io.common.IoStateBase)
-		 */
 		@Override
         @Deprecated  //use validate(state, import) instead
 		public boolean validate(BerlinModelImportState state) {
 			logger.warn("BerlinModelReferenceImport uses wrong validation method");
 			return false;
 		}
-
-
-
 }
