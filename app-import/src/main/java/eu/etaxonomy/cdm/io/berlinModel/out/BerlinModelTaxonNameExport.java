@@ -119,7 +119,7 @@ public class BerlinModelTaxonNameExport extends BerlinModelExportBase<TaxonName>
 		mapping.addMapper(TeamOrPersonMapper.NewInstance("basionymAuthorship", "BasAuthorTeamFk"));
 		mapping.addMapper(TeamOrPersonMapper.NewInstance("exBasionymAuthorship", "ExBasAuthorTeamFk"));
 
-		mapping.addMapper(DbObjectMapper.NewInstance("nomenclaturalReference", "NomRefFk"));
+		mapping.addMapper(DbObjectMapper.NewInstance("nomenclaturalSource.citation", "NomRefFk"));
 		mapping.addMapper(RefDetailMapper.NewInstance("nomenclaturalMicroReference","nomenclaturalReference", "NomRefDetailFk"));
 		mapping.addMapper(CreatedAndNotesMapper.NewInstance(false));
 		ExtensionType sourceAccExtensionType = (ExtensionType)getTermService().find(BerlinModelTransformer.SOURCE_ACC_UUID);
