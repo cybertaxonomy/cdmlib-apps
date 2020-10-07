@@ -25,6 +25,7 @@ import java.util.UUID;
 import org.apache.log4j.Logger;
 import org.apache.poi.openxml4j.exceptions.InvalidFormatException;
 import org.apache.poi.ss.usermodel.Cell;
+import org.apache.poi.ss.usermodel.CellType;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
@@ -145,19 +146,21 @@ public class UseImport {
 				Row row = rows.next();
 				System.out.println("Row No.: " + row.getRowNum());
 				Iterator<Cell> cells = row.cellIterator();
-				ArrayList<String> lstTaxon = new ArrayList<String>();
+				ArrayList<String> lstTaxon = new ArrayList<>();
 				while (cells.hasNext()) {
 					Cell cell = cells.next();
 
-					int intCellType = cell.getCellType();
-					switch (intCellType) {
-						case 0:
+					CellType cellType = cell.getCellType();
+					switch (cellType) {
+						case NUMERIC:
 							int cellValue = (int) cell.getNumericCellValue();
 							lstTaxon.add(Integer.toString(cellValue));
 							break;
-						case 1:
+						case STRING:
 							lstTaxon.add(cell.getStringCellValue());
 							break;
+					    default:
+					        throw new RuntimeException("CellType not yet handled: " + cellType);
 					}
 				}
 				lstUpdates.add(lstTaxon);
@@ -518,15 +521,17 @@ public class UseImport {
 				while (cells.hasNext()) {
 					Cell cell = cells.next();
 
-					int intCellType = cell.getCellType();
-					switch (intCellType) {
-						case 0:
+					CellType cellType = cell.getCellType();
+					switch (cellType) {
+						case NUMERIC:
 							int cellValue = (int) cell.getNumericCellValue();
 							lstTerms.add(Integer.toString(cellValue));
 							break;
-						case 1:
+						case STRING:
 							lstTerms.add(cell.getStringCellValue());
 							break;
+	                    default:
+	                        throw new RuntimeException("CellType not yet handled: " + cellType);
 					}
 				}
 				lstUpdates.add(lstTerms);
@@ -660,15 +665,17 @@ public class UseImport {
 				while (cells.hasNext()) {
 					Cell cell = cells.next();
 
-					int intCellType = cell.getCellType();
-					switch (intCellType) {
-						case 0:
+					CellType cellType = cell.getCellType();
+					switch (cellType) {
+						case NUMERIC:
 							int cellValue = (int) cell.getNumericCellValue();
 							lstTerms.add(Integer.toString(cellValue));
 							break;
-						case 1:
+						case STRING:
 							lstTerms.add(cell.getStringCellValue());
 							break;
+	                    default:
+	                            throw new RuntimeException("CellType not yet handled: " + cellType);
 					}
 				}
 				lstUpdates.add(lstTerms);
