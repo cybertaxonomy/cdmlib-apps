@@ -67,10 +67,10 @@ public class GreeceImageActivator {
     static final ICdmDataSource cdmDestination = CdmDestinations.localH2();
 //    static final ICdmDataSource cdmDestination = CdmDestinations.cdm_production_greece_checklist();
 
-    private static final UUID sourceUuid = UUID.fromString("251dd9b9-c441-40ad-ac1e-a55889043c46");
+    private static final UUID sourceUuid = UUID.fromString("6fb69240-b344-484a-83c0-2befcee3e6e1");
 //    private static final UUID sourceUuid = UUID.fromString("47716558-a2c1-4108-a9f4-7da241b9c26e");
 
-    private static final String fileName = "metadata_FoG_AK_Willing_2020_02_rest.xlsx";
+    private static final String fileName = "metadata_FoG_20200512.xlsx";
 //    private static final String fileName = "metadata_FoG_AK_Willing_correct.xlsx";
 
 
