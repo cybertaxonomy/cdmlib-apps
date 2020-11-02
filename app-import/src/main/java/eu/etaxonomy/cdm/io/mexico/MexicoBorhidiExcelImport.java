@@ -24,11 +24,7 @@ import eu.etaxonomy.cdm.common.UTF8;
 import eu.etaxonomy.cdm.model.common.Extension;
 import eu.etaxonomy.cdm.model.common.ExtensionType;
 import eu.etaxonomy.cdm.model.common.Identifier;
-import eu.etaxonomy.cdm.model.description.DescriptionElementBase;
-import eu.etaxonomy.cdm.model.description.Feature;
-import eu.etaxonomy.cdm.model.description.TaxonNameDescription;
-import eu.etaxonomy.cdm.model.description.TextData;
-import eu.etaxonomy.cdm.model.media.Media;
+import eu.etaxonomy.cdm.model.media.ExternalLinkType;
 import eu.etaxonomy.cdm.model.name.IBotanicalName;
 import eu.etaxonomy.cdm.model.name.NomenclaturalCode;
 import eu.etaxonomy.cdm.model.name.Rank;
@@ -214,15 +210,9 @@ public class MexicoBorhidiExcelImport<CONFIG extends MexicoBorhidiImportConfigur
         //add protologue
         String bhlLink = record.get("OutputBHLLink");
         if (isNotBlank(bhlLink)){
-            URI uri;
             try {
-                uri = new URI(bhlLink);
-                Media media = Media.NewInstance(uri, null, null, null);
-                TaxonNameDescription desc = TaxonNameDescription.NewInstance(name);
-                desc.setTitleCache("Protologue for " + name.getNameCache(), true);
-                DescriptionElementBase elem = TextData.NewInstance(Feature.PROTOLOGUE());
-                elem.addMedia(media);
-                desc.addElement(elem);
+                URI uri = new URI(bhlLink);
+                name.addProtologue(uri, null, ExternalLinkType.WebSite);
             } catch (URISyntaxException e) {
                 logger.warn(line + "URI could not be parsed: " + e.getMessage());
             }

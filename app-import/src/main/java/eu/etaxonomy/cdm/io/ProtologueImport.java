@@ -10,7 +10,6 @@
 package eu.etaxonomy.cdm.io;
 
 import java.io.File;
-import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.HashSet;
@@ -24,12 +23,7 @@ import eu.etaxonomy.cdm.api.service.ICommonService;
 import eu.etaxonomy.cdm.app.wp6.palmae.config.PalmaeProtologueImportConfigurator;
 import eu.etaxonomy.cdm.io.common.CdmImportBase;
 import eu.etaxonomy.cdm.io.common.DefaultImportState;
-import eu.etaxonomy.cdm.model.description.Feature;
-import eu.etaxonomy.cdm.model.description.TaxonNameDescription;
-import eu.etaxonomy.cdm.model.description.TextData;
-import eu.etaxonomy.cdm.model.media.Media;
-import eu.etaxonomy.cdm.model.media.MediaRepresentation;
-import eu.etaxonomy.cdm.model.media.MediaRepresentationPart;
+import eu.etaxonomy.cdm.model.media.ExternalLinkType;
 import eu.etaxonomy.cdm.model.name.TaxonName;
 
 /**
@@ -105,69 +99,19 @@ public class ProtologueImport
 			return null;
 		}
 
-//		TaxonNameDescription nameDescription = null;
-//		if (taxonName.getDescriptions().size() > 0){
-//			nameDescription = (TaxonNameDescription)taxonName.getDescriptions().iterator().next();
-//		}else{
-//			nameDescription = new TaxonNameDescription();
-//		}
 		try{
-			Media media = getMedia(state, file);
-			if (media.getRepresentations().size() > 0){
-				TaxonNameDescription description = getNameDescription(taxonName);
-				TextData protolog = TextData.NewInstance(Feature.PROTOLOGUE());
-				protolog.addMedia(media);
-				description.addElement(protolog);
-				return taxonName;
-			}
-
+            String urlStringPdf = state.getConfig().getUrlString() + file.getName();
+            URI uri = new URI(urlStringPdf);
+            taxonName.addProtologue(uri, null, ExternalLinkType.File);
 		}catch(NullPointerException e){
 			logger.warn("MediaUrl and/or MediaPath not set. Could not get protologue.");
 			return null;
 		} catch (URISyntaxException e) {
             logger.warn("URISyntaxException when reading URI. Could not get protologue.");
             return null;
-        }
+		}
 		return null;
 	}
-
-	private TaxonNameDescription getNameDescription(TaxonName taxonName) {
-		TaxonNameDescription result;
-		if (taxonName.getDescriptions().size()> 0){
-			result = taxonName.getDescriptions().iterator().next();
-		}else{
-			result = TaxonNameDescription.NewInstance();
-			taxonName.addDescription(result);
-		}
-
-		return result;
-	}
-
-	private Media getMedia(DefaultImportState<PalmaeProtologueImportConfigurator> state, File file) throws URISyntaxException{
-		try {
-			//File file = (File)state.getConfig().getSource();
-			String url = file.toURI().toURL().toString();
-			String mimeTypePdf = "application/pdf";
-			String suffixPdf = "pdf";
-			String urlStringPdf = state.getConfig().getUrlString() + file.getName();
-			URI uri = new URI(urlStringPdf);
-			Integer size = null;
-
-			if (file.exists()){
-				Media media = Media.NewInstance();
-
-				MediaRepresentation representationPdf = MediaRepresentation.NewInstance(mimeTypePdf, suffixPdf);
-			    representationPdf.addRepresentationPart(MediaRepresentationPart.NewInstance(uri, size));
-			    media.addRepresentation(representationPdf);
-			    return media;
-			}else{
-				return null;
-			}
-		} catch (MalformedURLException e) {
-			logger.error(e.getMessage());
-			return null;
-		}
- 	}
 
 	private TaxonName getTaxonName(String originalSourceId, String namespace){
 		TaxonName result;

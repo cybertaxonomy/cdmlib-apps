@@ -6,7 +6,6 @@
 * The contents of this file are subject to the Mozilla Public License Version 1.1
 * See LICENSE.TXT at the top of this package for the full license terms.
 */
-
 package eu.etaxonomy.cdm.io;
 
 import java.net.URI;
@@ -22,12 +21,7 @@ import org.springframework.stereotype.Component;
 import eu.etaxonomy.cdm.app.images.AbstractImageImporter;
 import eu.etaxonomy.cdm.app.images.ImageImportState;
 import eu.etaxonomy.cdm.common.ExcelUtils;
-import eu.etaxonomy.cdm.model.description.Feature;
-import eu.etaxonomy.cdm.model.description.TaxonNameDescription;
-import eu.etaxonomy.cdm.model.description.TextData;
-import eu.etaxonomy.cdm.model.media.Media;
-import eu.etaxonomy.cdm.model.media.MediaRepresentation;
-import eu.etaxonomy.cdm.model.media.MediaRepresentationPart;
+import eu.etaxonomy.cdm.model.media.ExternalLinkType;
 import eu.etaxonomy.cdm.model.name.TaxonName;
 
 /**
@@ -63,7 +57,7 @@ public class PalmaeProtologueImport extends AbstractImageImporter {
 		for (Map<String, String> row : contents){
 			count++;
 
-			TaxonName taxonNameBase = null;
+			TaxonName taxonName = null;
 			String species = null;
 			String taxonId = null;
 			String linkProto = null;
@@ -71,37 +65,24 @@ public class PalmaeProtologueImport extends AbstractImageImporter {
 				species = row.get(PalmaeProtologueImport.SPECIES).trim();
 				taxonId = row.get(PalmaeProtologueImport.TAXONID);
 				linkProto= row.get(PalmaeProtologueImport.LINK_PROTO).trim();
-				taxonNameBase = getCommonService().getSourcedObjectByIdInSource(TaxonName.class, "palm_tn_" + taxonId.replace(".0", ""), "TaxonName");
+				taxonName = getCommonService().getSourcedObjectByIdInSource(TaxonName.class, "palm_tn_" + taxonId.replace(".0", ""), "TaxonName");
 			}catch (Exception e){
 				logger.error("The row has errors: rowNumber: " +count + ", content: "  + row, e);
 			}
 
-			if(taxonNameBase == null){
+			if(taxonName == null){
 				logger.warn("no taxon with this name found: " + species + ", idInSource: " + taxonId);
 			}else{
-
-				URI uri;
 				try {
-					uri = new URI(linkProto);
-					MediaRepresentationPart representationPart = MediaRepresentationPart.NewInstance(uri, 0);
-					MediaRepresentation representation = MediaRepresentation.NewInstance("text/html", null);
-					representation.addRepresentationPart(representationPart);
-
-					Media media = Media.NewInstance();
-					media.addRepresentation(representation);
-
-					TaxonNameDescription description = TaxonNameDescription.NewInstance();
-					TextData protolog = TextData.NewInstance(Feature.PROTOLOGUE());
-					protolog.addMedia(media);
-					description.addElement(protolog);
-					taxonNameBase.addDescription(description);
+					URI uri = new URI(linkProto);
+					taxonName.addProtologue(uri, null, ExternalLinkType.WebSite);
 				} catch (URISyntaxException e) {
 					String message= "URISyntaxException when trying to convert: " + linkProto;
 					logger.error(message);
 					e.printStackTrace();
 				}
 
-				taxonNameStore.add(taxonNameBase);
+				taxonNameStore.add(taxonName);
 				if(count % 50 == 0){
 					logger.info(count + " protologues processed.");
 				}
@@ -113,5 +94,4 @@ public class PalmaeProtologueImport extends AbstractImageImporter {
 
 		return;
 	}
-
 }

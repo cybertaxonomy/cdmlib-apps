@@ -41,6 +41,7 @@ import eu.etaxonomy.cdm.model.common.Language;
 import eu.etaxonomy.cdm.model.description.Feature;
 import eu.etaxonomy.cdm.model.description.TaxonNameDescription;
 import eu.etaxonomy.cdm.model.description.TextData;
+import eu.etaxonomy.cdm.model.media.ExternalLinkType;
 import eu.etaxonomy.cdm.model.media.ImageFile;
 import eu.etaxonomy.cdm.model.media.Media;
 import eu.etaxonomy.cdm.model.media.MediaRepresentation;
@@ -134,26 +135,17 @@ public class BerlinModelNameFactsImport  extends BerlinModelImportBase  {
 				if (taxonNameBase != null){
 					//PROTOLOGUE
 					if (category.equalsIgnoreCase(NAME_FACT_PROTOLOGUE)){
-						//Reference ref = (Reference)taxonNameBase.getNomenclaturalReference();
-						//ref = Book.NewInstance();
+
+					    String uriString = config.getMediaUrl() + "/" + nameFact;
 						try{
-							Media media = getMedia(nameFact, config.getMediaUrl(), config.getMediaPath());
-							if (media.getRepresentations().size() > 0){
-								TaxonNameDescription description = TaxonNameDescription.NewInstance();
-								TextData protolog = TextData.NewInstance(Feature.PROTOLOGUE());
-								protolog.addMedia(media);
-								protolog.addSource(OriginalSourceType.Import, String.valueOf(nameFactId), NAMESPACE, null, null, null, null);
-								description.addElement(protolog);
-								taxonNameBase.addDescription(description);
-								if (citation != null){
-									description.addSource(OriginalSourceType.PrimaryTaxonomicSource, null, null, citation, null);
-									protolog.addSource(OriginalSourceType.PrimaryTaxonomicSource, null, null, citation, nameFactRefDetail, null, null);
-								}
-							}//end NAME_FACT_PROTOLOGUE
-						}catch(NullPointerException e){
-							logger.warn("MediaUrl and/or MediaPath not set. Could not get protologue.");
+						    //this depends on specific project implementation, maybe also config.getMediaPath() is important
+						    URI uri = URI.create(uriString);
+							taxonNameBase.addProtologue(uri, null, ExternalLinkType.Unknown);
+						}catch(IllegalArgumentException e){
+							logger.warn("Incorrect protologue URI: " + uriString);
 							success = false;
 						}
+						//end NAME_FACT_PROTOLOGUE
 					}else if (category.equalsIgnoreCase(NAME_FACT_ALSO_PUBLISHED_IN)){
 						if (StringUtils.isNotBlank(nameFact)){
 							TaxonNameDescription description = TaxonNameDescription.NewInstance();
