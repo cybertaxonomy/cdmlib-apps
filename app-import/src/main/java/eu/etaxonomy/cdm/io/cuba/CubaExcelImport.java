@@ -279,34 +279,6 @@ public class CubaExcelImport
         return str.equals("-") || str.equals("–") || str.equals("‒");
     }
 
-
-    /**
-     * @param indigenousStr
-     * @return
-     */
-    private boolean checkPlusMinusDoubt(String str) {
-        return str.equals("+") || isMinus(str)|| str.equals("?");
-    }
-
-
-    /**
-     * @param indigenousStr
-     * @param indigenousDoubtStr
-     * @param naturalisedStr
-     * @param dudStr
-     * @param advStr
-     * @param cultStr
-     */
-    private boolean checkAllNull(String ... others) {
-        for (String other : others){
-            if (other != null){
-                return false;
-            }
-        }
-        return true;
-    }
-
-
     private static final String acceptedRegExStr = "\\(([^\\[\\]“”]{6,})\\)";
 //    String heterotypicRegExStr2 = "([^\\(]{5,}" +"(\\(.+\\))?" + "[^\\)\\(]{2,})" +
 //                    + "(\\((.{6,})\\))?";
