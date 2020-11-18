@@ -1061,7 +1061,7 @@ public class IAPTExcelImport<CONFIG extends IAPTImportConfigurator> extends Simp
     /**
      * Fixes broken characters.
      * For details see
-     * http://dev.e-taxonomy.eu/redmine/issues/6035
+     * https://dev.e-taxonomy.eu/redmine/issues/6035
      *
      * @param value
      * @return

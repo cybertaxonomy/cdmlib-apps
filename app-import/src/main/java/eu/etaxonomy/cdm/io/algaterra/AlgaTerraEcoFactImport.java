@@ -275,7 +275,7 @@ public class AlgaTerraEcoFactImport  extends AlgaTerraSpecimenImportBase {
 			//method
 			if (StringUtils.isNotBlank(method)){
 				//TODO
-				//see http://dev.e-taxonomy.eu/trac/ticket/4205
+				//see https://dev.e-taxonomy.eu/redmine/issues/4205
 				logger.warn("Methods not yet handled: " + method + ", #4205");
 			}
 			//parameter
