@@ -62,6 +62,7 @@ public class PesiCommandLineMerge extends PesiMergeBase {
         app = CdmIoApplicationController.NewInstance(source, DbSchemaValidation.VALIDATE, false);
         doInvoke();
     }
+
     private void doInvoke(){
         List<List<String>> fileData = null;
         String next = nextMerge(fileData);

@@ -6,7 +6,6 @@
 * The contents of this file are subject to the Mozilla Public License Version 1.1
 * See LICENSE.TXT at the top of this package for the full license terms.
 */
-
 package eu.etaxonomy.cdm.io.berlinModel.in;
 
 import java.sql.ResultSet;
@@ -40,7 +39,6 @@ import eu.etaxonomy.cdm.model.taxon.Taxon;
 import eu.etaxonomy.cdm.model.taxon.TaxonBase;
 import eu.etaxonomy.cdm.model.taxon.TaxonNode;
 
-
 /**
  * @author a.mueller
  * @since 20.03.2008
@@ -48,16 +46,13 @@ import eu.etaxonomy.cdm.model.taxon.TaxonNode;
 @Component
 public class BerlinModelOccurrenceSourceImport  extends BerlinModelImportBase {
 
-    private static final String EXACT = "(exact) ";
-
     private static final long serialVersionUID = 1139543760239436841L;
-
     private static final Logger logger = Logger.getLogger(BerlinModelOccurrenceSourceImport.class);
 
 	private static int modCount = 5000;
 	private static final String pluralString = "occurrence sources";
 	private static final String dbTableName = "emOccurrenceSource";  //??
-
+	private static final String EXACT = "(exact) ";
 
 	private Map<String, Integer> sourceNumberRefIdMap;
 	private Map<String, Set<Integer>> nameCache2NameIdMap;
@@ -86,8 +81,6 @@ public class BerlinModelOccurrenceSourceImport  extends BerlinModelImportBase {
              "";
 		return strQuery;
 	}
-
-
 
 	@Override
 	protected void doInvoke(BerlinModelImportState state) {
@@ -358,13 +351,6 @@ public class BerlinModelOccurrenceSourceImport  extends BerlinModelImportBase {
         }
     }
 
-    /**
-     * @param state
-     * @param oldNameFk
-     * @param occSourceId
-     * @param distribution
-     * @param taxonName
-     */
     protected TaxonName checkSynonymy(BerlinModelImportState state, Integer oldNameFk, Integer occSourceId,
             Distribution distribution, TaxonName taxonName, boolean includeMisapplications) {
 
@@ -408,13 +394,6 @@ public class BerlinModelOccurrenceSourceImport  extends BerlinModelImportBase {
         }
     }
 
-	/**
-     * @param state
-     * @param names
-	 * @param taxon
-     * @param taxon
-     * @return
-     */
     private TaxonName getFirstSynonymName(BerlinModelImportState state, Set<TaxonName> names, Distribution distribution,
             Taxon taxon, Integer occSourceId, boolean includeMisapplications) {
         TaxonName result = null;
@@ -498,12 +477,6 @@ public class BerlinModelOccurrenceSourceImport  extends BerlinModelImportBase {
         return result;
     }
 
-    /**
-     * @param state
-     * @param names
-     * @param taxon
-     * @return
-     */
     private TaxonName getFirstMisapplication(BerlinModelImportState state, Set<TaxonName> names, Distribution distribution, Integer occSourceId) {
         TaxonName result = null;
         Taxon taxon = getTaxon(distribution);
@@ -528,10 +501,6 @@ public class BerlinModelOccurrenceSourceImport  extends BerlinModelImportBase {
         return result;
     }
 
-    /**
-     * @param taxon
-     * @return
-     */
     protected Set<TaxonName> getOrthographicVariants(TaxonBase<?> taxonBase) {
         Set<TaxonName> result = taxonBase.getName().getRelatedNames(Direction.relatedTo, NameRelationshipType.ORTHOGRAPHIC_VARIANT());
         result.addAll(taxonBase.getName().getRelatedNames(Direction.relatedTo, NameRelationshipType.MISSPELLING()));
@@ -539,10 +508,6 @@ public class BerlinModelOccurrenceSourceImport  extends BerlinModelImportBase {
         return result;
     }
 
-    /**
-     * @param distribution
-     * @return
-     */
     protected String getTaxonStr(Distribution distribution) {
         Taxon taxon = CdmBase.deproxy(distribution.getInDescription(), TaxonDescription.class).getTaxon();
         String areaStr = distribution.getArea().getIdInVocabulary();
@@ -572,10 +537,6 @@ public class BerlinModelOccurrenceSourceImport  extends BerlinModelImportBase {
         return names;
     }
 
-    /**
-     * @param oldName
-     * @return
-     */
     private Set<Integer> getNameIds(String oldName) {
         Set<Integer> result = nameCache2NameIdMap.get(oldName);
         return result == null ? new HashSet<>(): result;
@@ -583,9 +544,6 @@ public class BerlinModelOccurrenceSourceImport  extends BerlinModelImportBase {
 
     /**
 	 * Creates a map which maps source numbers on references
-	 * @param state
-	 * @return
-     * @throws SQLException
 	 */
 	private Map<String, Integer> makeSourceNumberReferenceIdMap(BerlinModelImportState state) throws SQLException {
 		Map<String, Integer> result = new HashMap<>();
@@ -665,5 +623,4 @@ public class BerlinModelOccurrenceSourceImport  extends BerlinModelImportBase {
 			}
 		}
 	}
-
 }

@@ -144,7 +144,7 @@ public class CentralAfricaChecklistTaxonImport  extends CentralAfricaChecklistIm
 	@Override
 	public Map<Object, Map<String, ? extends CdmBase>> getRelatedObjectsForPartition(ResultSet rs, CentralAfricaChecklistImportState state) {
 		String nameSpace;
-		Class<?> cdmClass;
+		Class<Reference> cdmClass;
 		Set<String> idSet;
 		Set<String> referenceIdSet = new HashSet<String>();
 
@@ -159,7 +159,7 @@ public class CentralAfricaChecklistTaxonImport  extends CentralAfricaChecklistIm
 			nameSpace = REFERENCE_NAMESPACE;
 			cdmClass = Reference.class;
 			idSet = referenceIdSet;
-			Map<String, Reference> referenceMap = (Map<String, Reference>)getCommonService().getSourcedObjectsByIdInSource(cdmClass, referenceIdSet, nameSpace);
+			Map<String, Reference> referenceMap = getCommonService().getSourcedObjectsByIdInSourceC(cdmClass, referenceIdSet, nameSpace);
 			result.put(REFERENCE_NAMESPACE, referenceMap);
 
 		} catch (SQLException e) {

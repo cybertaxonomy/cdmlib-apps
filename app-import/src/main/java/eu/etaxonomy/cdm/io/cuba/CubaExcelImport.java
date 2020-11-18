@@ -6,7 +6,6 @@
  * The contents of this file are subject to the Mozilla Public License Version 1.1
  * See LICENSE.TXT at the top of this package for the full license terms.
  */
-
 package eu.etaxonomy.cdm.io.cuba;
 
 import java.util.ArrayList;
@@ -72,7 +71,6 @@ import eu.etaxonomy.cdm.strategy.parser.NonViralNameParserImpl;
  * @author a.mueller
  * @since 05.01.2016
  */
-
 @Component
 public class CubaExcelImport
         extends ExcelImportBase<CubaImportState, CubaImportConfigurator, ExcelRowBase> {
@@ -100,12 +98,6 @@ public class CubaExcelImport
     	return;
     }
 
-
-    /**
-     * @param record
-     * @param state
-     * @param taxon
-     */
     private void makeCubanDistribution(Map<String, String> record, CubaImportState state) {
         try {
             NamedArea cuba = getNamedArea(state, state.getTransformer().getNamedAreaUuid("Cu"), null, null, null, null, null);
@@ -121,13 +113,6 @@ public class CubaExcelImport
         }
     }
 
-
-    /**
-     * @param record
-     * @param state
-     * @return
-     * @throws UndefinedTransformerMethodException
-     */
     private List<PresenceAbsenceTerm> makeCubanStatuss(Map<String, String> record, CubaImportState state) throws UndefinedTransformerMethodException {
         PresenceAbsenceTerm highestStatus = null;
 
@@ -282,25 +267,14 @@ public class CubaExcelImport
         return result;
     }
 
-
-    /**
-     * @param highestStatus
-     * @param line
-     */
     private void checkAbsentHighestState(PresenceAbsenceTerm highestStatus, String line, String stateLabel, boolean doubtful) {
         //can be removed, highest status is not used anymore
         if (highestStatus == null){
             String absentStr = doubtful ? "doubtful" : "absent";
             logger.info(line + "Highest cuban state is " + absentStr + " " + stateLabel);
         }
-
     }
 
-
-    /**
-     * @param indigenousStr
-     * @return
-     */
     private boolean isMinus(String str) {
         return str.equals("-") || str.equals("–") || str.equals("‒");
     }
@@ -901,10 +875,6 @@ public class CubaExcelImport
         }
     }
 
-    /**
-     * @param basionymName
-     * @return
-     */
     private boolean isLegitimate(IBotanicalName basionymName) {
         for (NomenclaturalStatus nomStatus : basionymName.getStatus()){
             if (nomStatus.getType()!= null && nomStatus.getType().isIllegitimateType()){
@@ -919,12 +889,6 @@ public class CubaExcelImport
         return true;
     }
 
-
-    /**
-     * @param combinationAuthorship
-     * @param basi
-     * @return
-     */
     private boolean matchAuthor(TeamOrPersonBase<?> author1, TeamOrPersonBase<?> author2) {
         if (author1 == null || author2 == null){
             return false;
@@ -933,12 +897,6 @@ public class CubaExcelImport
         }
     }
 
-
-    /**
-     * @param record
-     * @param state
-     * @param taxon
-     */
     private void makeNotes(Map<String, String> record, CubaImportState state) {
         String notesStr = getValue(record, "(Notas)");
         if (notesStr == null){
@@ -951,13 +909,6 @@ public class CubaExcelImport
         }
     }
 
-
-    /**
-     * @param record
-     * @param state
-     * @param familyTaxon
-     * @return
-     */
     private Taxon makeTaxon(Map<String, String> record, CubaImportState state, TaxonNode familyNode, boolean isSynonym) {
         String taxonStrOrig = getValue(record, "Taxón");
         if (taxonStrOrig == null){
@@ -1018,10 +969,7 @@ public class CubaExcelImport
 
     private final String orthVarRegExStr = "[A-Z][a-z]+\\s[a-z]+\\s(\\(‘([a-z]){3,}’\\))\\s(\\([A-Z][a-z]+\\.?\\)\\s)?[A-Z][a-zó]+\\.?";
     private final Pattern orthVarRegEx = Pattern.compile(orthVarRegExStr);
-    /**
-     * @param taxonStr
-     * @return
-     */
+
     private IBotanicalName makeName(CubaImportState state, String nameStrOrig) {
         //normalize
         String nameStr = normalizeStatus(nameStrOrig);
@@ -1046,7 +994,7 @@ public class CubaExcelImport
             result.addStatus(NomenclaturalStatus.NewInstance(NomenclaturalStatusType.INVALID()));
         }
         if (orthVar != null){
-            TaxonName orthVarName = (TaxonName)result.clone();
+            TaxonName orthVarName = result.clone();
             orthVarName.addSource(makeOriginalSource(state));
             //TODO
             Reference citation = null;
@@ -1058,9 +1006,6 @@ public class CubaExcelImport
 
     }
 
-    /**
-     * @param result
-     */
     private void normalizeAuthors(IBotanicalName result) {
         result.setCombinationAuthorship(normalizeAuthor(result.getCombinationAuthorship()));
         result.setExCombinationAuthorship(normalizeAuthor(result.getExCombinationAuthorship()));
@@ -1069,11 +1014,6 @@ public class CubaExcelImport
 
     }
 
-
-    /**
-     * @param combinationAuthorship
-     * @return
-     */
     private TeamOrPersonBase<?> normalizeAuthor(TeamOrPersonBase<?> author) {
         if (author == null){
             return null;
@@ -1094,11 +1034,6 @@ public class CubaExcelImport
         return result;
     }
 
-
-    /**
-     * @param deproxy
-     * @return
-     */
     private Person normalizePerson(Person person) {
         String title = person.getNomenclaturalTitle();
         title = title.replaceAll("(?<=[a-zA-Z])\\.(?=[a-zA-Z])", ". ");
@@ -1115,11 +1050,6 @@ public class CubaExcelImport
         return person;
     }
 
-
-    /**
-     * @param state
-     * @return
-     */
     private Reference getSecReference(CubaImportState state) {
         Reference result = state.getSecReference();
         if (result == null){
@@ -1133,10 +1063,7 @@ public class CubaExcelImport
 
     private static final String[] nomStatusStrings = new String[]{"nom. cons.", "ined.", "nom. illeg.",
             "nom. rej.","nom. cons. prop.","nom. altern.","nom. confus.","nom. dub.", "nom. nud."};
-    /**
-     * @param taxonStr
-     * @return
-     */
+
     private String normalizeStatus(String nameStr) {
         if (nameStr == null){
             return null;
@@ -1151,16 +1078,8 @@ public class CubaExcelImport
         result = result.replaceAll(DOUBTFUL_MARKER, "").trim();
         result = result.replace("[taxon]", "[infraspec.]");
         return result;
-
-
     }
 
-
-    /**
-     * @param record
-     * @param state
-     * @return
-     */
     private TaxonNode getFamilyTaxon(Map<String, String> record, CubaImportState state) {
         String familyStr = getValue(record, "Fam. default");
         if (familyStr == null){
@@ -1189,7 +1108,6 @@ public class CubaExcelImport
             familyNode = rootNode.addChildTaxon(family, sec, null);
             this.getTaxonNodeService().saveOrUpdate(familyNode);
             state.putHigherTaxon(familyStr, family);
-
         }
 
         if (isNotBlank(alternativeFamilyStr)){
@@ -1207,17 +1125,11 @@ public class CubaExcelImport
             if (!hasRelation){
                 familyName.addRelationshipFromName(alternativeName, type, null, null);
             }
-
         }
 
         return familyNode;
     }
 
-
-    /**
-     * @param state
-     * @param taxon
-     */
     private void validateTaxonIsAbsent(CubaImportState state, Taxon taxon) {
         if (!state.isTaxonIsAbsent()){
             return;
@@ -1241,10 +1153,6 @@ public class CubaExcelImport
         }
     }
 
-    /**
-     * @param state
-     * @param taxon
-     */
     private void validateEndemic(CubaImportState state, Taxon taxon) {
 
         boolean hasExternalPresence = false;
@@ -1273,14 +1181,6 @@ public class CubaExcelImport
         }
     }
 
-
-    /**
-     * @param state
-     * @param taxon
-     * @param famStr
-     * @param famRef
-     * @return
-     */
     private Taxon makeAlternativeFamilyTaxon(CubaImportState state, String famStr, Reference famRef) {
         String key = famRef.getTitle() + ":"+ famStr;
         Taxon family = state.getHigherTaxon(key);
@@ -1293,12 +1193,6 @@ public class CubaExcelImport
         return family;
     }
 
-
-    /**
-     * @param state
-     * @param famStr
-     * @return
-     */
     private IBotanicalName makeFamilyName(CubaImportState state, String famStr) {
         IBotanicalName name = state.getFamilyName(famStr);
         if (name == null){
@@ -1310,11 +1204,6 @@ public class CubaExcelImport
         return name;
     }
 
-
-    /**
-     * @param state
-     * @return
-     */
     private TaxonNode getClassification(CubaImportState state) {
         Classification classification = state.getClassification();
         if (classification == null){
@@ -1427,28 +1316,16 @@ public class CubaExcelImport
 		return;
     }
 
-
-    /**
-     * @param state
-     * @return
-     */
     private IdentifiableSource makeOriginalSource(CubaImportState state) {
         return IdentifiableSource.NewDataImportInstance("line: " + state.getCurrentLine(), null, state.getConfig().getSourceReference());
     }
-    /**
-     * @param state
-     * @return
-     */
+
     private DescriptionElementSource makeDescriptionSource(CubaImportState state) {
         return DescriptionElementSource.NewDataImportInstance("line: " + state.getCurrentLine(), null, state.getConfig().getSourceReference());
     }
 
     private static Set<UUID> doubtfulStatus = new HashSet<>();
 
-    /**
-     * @param status
-     * @return
-     */
     private boolean isDoubtfulTerm(PresenceAbsenceTerm status) {
         if (doubtfulStatus.isEmpty()){
             doubtfulStatus.add(CubaTransformer.nonNativeDoubtfullyNaturalisedUuid);
@@ -1465,11 +1342,6 @@ public class CubaExcelImport
         return isDoubtful;
     }
 
-
-    /**
-     * @param area
-     * @return
-     */
     private boolean isCubanArea(NamedArea area) {
         if (area.getUuid().equals(CubaTransformer.uuidCuba)){
             return true;
@@ -1480,13 +1352,6 @@ public class CubaExcelImport
         }
     }
 
-
-    /**
-     * @param record
-     * @param state
-     * @param familyTaxon
-     * @param taxon
-     */
     private void makeAlternativeFamilies(Map<String, String> record,
             CubaImportState state,
             TaxonNode familyTaxon,
@@ -1520,12 +1385,6 @@ public class CubaExcelImport
         }
     }
 
-
-    /**
-     * @param state
-     * @param uuidreffrc
-     * @return
-     */
     private Reference makeReference(CubaImportState state, UUID uuidRef) {
         Reference ref = state.getReference(uuidRef);
         if (ref == null){
@@ -1535,13 +1394,6 @@ public class CubaExcelImport
         return ref;
     }
 
-
-    /**
-     * @param state
-     * @param taxon
-     * @param famString
-     * @param famRef
-     */
     private void makeSingleAlternativeFamily(CubaImportState state, Taxon taxon, String famStr, Reference famRef) {
         if (isBlank(famStr)){
             famStr = "-";
@@ -1572,8 +1424,6 @@ public class CubaExcelImport
 //        textData.addSource(OriginalSourceType.PrimaryTaxonomicSource, null,null, famRef, null, famTaxon.getName(),null);
 //        desc.addElement(textData);
 
-
-
         //TaxonInteraction
         Feature feature2 = getFeature(state, altFamUuid2, "Families in other Floras", "Families in other Floras", "Other floras", null);
         //feature should exist already
@@ -1589,15 +1439,6 @@ public class CubaExcelImport
 
     }
 
-
-
-
-
-    /**
-     * @param record
-     * @param state
-     * @param taxon
-     */
     // "CuW","PR PR*","Art","Hab(*)","May","Mat","IJ",
 //  "CuC","VC","Ci","SS","CA","Cam","LT",
 //  "CuE","Gr","Ho","SC","Gu",
@@ -1623,17 +1464,6 @@ public class CubaExcelImport
         }
     }
 
-
-
-
-    /**
-     * @param areaKey
-     * @param record
-     * @param state
-     * @param highestStatus
-     * @return
-     * @throws UndefinedTransformerMethodException
-     */
     private PresenceAbsenceTerm makeProvinceStatus(String areaKey,
             Map<String, String> record,
             CubaImportState state) throws UndefinedTransformerMethodException {
@@ -1705,12 +1535,6 @@ public class CubaExcelImport
         return result;
     }
 
-
-    /**
-     * @param string
-     * @return
-     * @throws UndefinedTransformerMethodException
-     */
     private PresenceAbsenceTerm getStatus(CubaImportState state, String key) throws UndefinedTransformerMethodException {
         PresenceAbsenceTerm status = state.getTransformer().getPresenceTermByKey(key);
         if (status == null){
@@ -1720,7 +1544,6 @@ public class CubaExcelImport
         return status;
     }
 
-
     /**
 	 *  Stores parent-child, synonym and common name relationships
 	 */
@@ -1729,7 +1552,6 @@ public class CubaExcelImport
 //		CyprusRow cyprusRow = state.getCyprusRow();
 		return;
 	}
-
 
     @Override
     protected boolean isIgnore(CubaImportState state) {
@@ -1741,5 +1563,4 @@ public class CubaExcelImport
         logger.warn("DoCheck not yet implemented for CubaExcelImport");
         return true;
     }
-
 }

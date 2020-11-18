@@ -6,7 +6,6 @@
 * The contents of this file are subject to the Mozilla Public License Version 1.1
 * See LICENSE.TXT at the top of this package for the full license terms.
 */
-
 package eu.etaxonomy.cdm.io.eflora.centralAfrica.ferns;
 
 import java.sql.ResultSet;
@@ -60,32 +59,29 @@ import eu.etaxonomy.cdm.model.taxon.Taxon;
 import eu.etaxonomy.cdm.model.taxon.TaxonBase;
 import eu.etaxonomy.cdm.model.taxon.TaxonNode;
 
-
 /**
  * @author a.mueller
  */
-
 @Component
-public class CentralAfricaFernsTaxonRelationImport  extends CentralAfricaFernsImportBase<TaxonBase> implements IMappingImport<TaxonBase, CentralAfricaFernsImportState>{
-	private static final Logger logger = Logger.getLogger(CentralAfricaFernsTaxonRelationImport.class);
+public class CentralAfricaFernsTaxonRelationImport
+        extends CentralAfricaFernsImportBase<TaxonBase>
+        implements IMappingImport<TaxonBase, CentralAfricaFernsImportState>{
+
+    private static final long serialVersionUID = 5561099127416844593L;
+    private static final Logger logger = Logger.getLogger(CentralAfricaFernsTaxonRelationImport.class);
 
 	private DbImportMapping<?,?> mapping;
-
 
 	private static final String pluralString = "taxon relations";
 	private static final String dbTableName = "[African pteridophytes]";
 	private static final Class<?> cdmTargetClass = TaxonBase.class;
 
-	private final Map<String, UUID> nameCacheTaxonMap = new HashMap<String, UUID>();
-	private final Map<String, UUID> titleCacheTaxonMap = new HashMap<String, UUID>();
-
-	private CentralAfricaFernsImportState state;
-
+	private final Map<String, UUID> nameCacheTaxonMap = new HashMap<>();
+	private final Map<String, UUID> titleCacheTaxonMap = new HashMap<>();
 
 	public CentralAfricaFernsTaxonRelationImport(){
 		super(pluralString, dbTableName, cdmTargetClass);
 	}
-
 
 	@Override
 	protected String getIdQuery() {
@@ -107,9 +103,6 @@ public class CentralAfricaFernsTaxonRelationImport  extends CentralAfricaFernsIm
 		return mapping;
 	}
 
-	/* (non-Javadoc)
-	 * @see eu.etaxonomy.cdm.io.eflora.centralAfrica.ferns.CentralAfricaFernsImportBase#getRecordQuery(eu.etaxonomy.cdm.io.eflora.centralAfrica.ferns.CentralAfricaFernsImportConfigurator)
-	 */
 	@Override
 	protected String getRecordQuery(CentralAfricaFernsImportConfigurator config) {
 		String strSelect = " SELECT * ";
@@ -120,18 +113,12 @@ public class CentralAfricaFernsTaxonRelationImport  extends CentralAfricaFernsIm
 		return strRecordQuery;
 	}
 
-
-	/* (non-Javadoc)
-	 * @see eu.etaxonomy.cdm.io.eflora.centralAfrica.ferns.CentralAfricaFernsImportBase#doInvoke(eu.etaxonomy.cdm.io.eflora.centralAfrica.ferns.CentralAfricaFernsImportState)
-	 */
 	@Override
 	protected void doInvoke(CentralAfricaFernsImportState state) {
-		this.state = state;
 		fillTaxonMap();
 		super.doInvoke(state);
 		return;
 	}
-
 
 	/**
 	 * Fills the nameCache and the titleCache maps. The maps are used to find existing taxa
@@ -151,7 +138,6 @@ public class CentralAfricaFernsTaxonRelationImport  extends CentralAfricaFernsIm
 			titleCacheTaxonMap.put(titleCache, uuid);
 		}
 	}
-
 
 	@Override
 	public Map<Object, Map<String, ? extends CdmBase>> getRelatedObjectsForPartition(ResultSet rs, CentralAfricaFernsImportState state) {
@@ -175,7 +161,6 @@ public class CentralAfricaFernsTaxonRelationImport  extends CentralAfricaFernsIm
 			Map<String, TaxonBase> taxonMap = getCommonService().getSourcedObjectsByIdInSourceC((Class<TaxonBase>) cdmClass, taxonIdSet, nameSpace);
 			result.put(nameSpace, taxonMap);
 
-
 			//reference map
 			this.sourceReference = getFernsSourceReference(state);
 //			nameSpace = "Reference";
@@ -189,10 +174,6 @@ public class CentralAfricaFernsTaxonRelationImport  extends CentralAfricaFernsIm
 		return result;
 	}
 
-
-	/* (non-Javadoc)
-	 * @see eu.etaxonomy.cdm.io.common.mapping.IMappingImport#createObject(java.sql.ResultSet, eu.etaxonomy.cdm.io.common.ImportStateBase)
-	 */
 	@Override
 	public TaxonBase createObject(ResultSet rs, CentralAfricaFernsImportState state) throws SQLException {
 		TaxonBase<?> result = null;
@@ -213,9 +194,7 @@ public class CentralAfricaFernsTaxonRelationImport  extends CentralAfricaFernsIm
 			e.printStackTrace();
 			return result;
 		}
-
 	}
-
 
 	/**
 	 * Class to store all epithets of the database record. Maybe extended with business logic.
@@ -240,14 +219,8 @@ public class CentralAfricaFernsTaxonRelationImport  extends CentralAfricaFernsIm
 		private String subFormaName;
 	}
 
-
 	/**
 	 * Handles records with status synonym. The synonym is attached to the accepted taxon.
-	 *
-	 * @param rs
-	 * @param state
-	 * @return
-	 * @throws SQLException
 	 */
 	private Synonym handleSynonym(ResultSet rs, CentralAfricaFernsImportState state) throws SQLException {
 		String accTaxonId = rs.getString("Current");
@@ -266,7 +239,7 @@ public class CentralAfricaFernsTaxonRelationImport  extends CentralAfricaFernsIm
 				Taxon taxon = CdmBase.deproxy(taxonBase, Taxon.class);
 				taxon.addSynonym(synonym, SynonymType.SYNONYM_OF());
 				if ("p.p.".equalsIgnoreCase(nomRemarksString)){
-					synonym.setProParte(true);
+					logger.error("Pro parte synonyms are currently not handled correctly anymore. Needs to be adapted also in TaxonImport");
 				}
 			}else{
 				logger.warn("Accepted taxon (" + accTaxonId + ") for synonym (" + synonymId +") is not of type 'Current'");
@@ -282,10 +255,6 @@ public class CentralAfricaFernsTaxonRelationImport  extends CentralAfricaFernsIm
 	/**
 	 * Handles all records with status 'current'. Creates parent-child relationships to the
 	 * higher taxa. Uses a complex algorithm to reuse existing higher taxa.
-	 * @param rs
-	 * @param state
-	 * @return
-	 * @throws SQLException
 	 */
 	private Taxon handleTaxon(ResultSet rs, CentralAfricaFernsImportState state) throws SQLException {
 		String taxonNumber = rs.getString("Taxon number");
@@ -348,14 +317,6 @@ public class CentralAfricaFernsTaxonRelationImport  extends CentralAfricaFernsIm
 	/**
 	 * Handles the case when the database record has data for a taxon of a higher rank
 	 * than the <code>child</code> taxon's rank.
-	 * @param state
-	 * @param rs
-	 * @param child
-	 * @param epithets
-	 * @param higherTaxon
-	 * @param citation
-	 * @param microcitation
-	 * @throws SQLException
 	 */
 	private void handleHigherTaxonMustExist(CentralAfricaFernsImportState state, ResultSet rs, Taxon child, Epithets epithets, Taxon constructedHigherTaxon, Reference citation, String microCitation) throws SQLException {
 		Taxon parentTaxon = getParent(child);
@@ -397,9 +358,6 @@ public class CentralAfricaFernsTaxonRelationImport  extends CentralAfricaFernsIm
 	/**
 	 * Merges author information of the constructed taxon into the existing taxon.
 	 * Returns the existing taxon.
-	 * @param state
-	 * @param parentTaxon
-	 * @param constructedHigherTaxon
 	 */
 	private Taxon mergeExistingAndConstructedTaxon(CentralAfricaFernsImportState state, Taxon existingTaxon, Taxon constructedTaxon) {
 		INonViralName constructedName = constructedTaxon.getName();
@@ -456,7 +414,6 @@ public class CentralAfricaFernsTaxonRelationImport  extends CentralAfricaFernsIm
 		logger.warn("handleUnequalNameCaches not yet implemented");
 		return constructedHigherTaxon;
 	}
-
 
 	/**
 	 * Handles the case that the existing parent taxon and the constructed parent taxon
@@ -521,9 +478,6 @@ public class CentralAfricaFernsTaxonRelationImport  extends CentralAfricaFernsIm
 
 	/**
 	 * Checks if a taxon is a grand parent of another taxon
-	 * @param lowerTaxon
-	 * @param higherTaxon
-	 * @return
 	 */
 	private Taxon checkIsGrandParent(Taxon childTaxon, Taxon grandParentTaxon) {
 		IBotanicalName lowerName = childTaxon.getName();
@@ -545,12 +499,8 @@ public class CentralAfricaFernsTaxonRelationImport  extends CentralAfricaFernsIm
 		}
 	}
 
-
 	/**
 	 * Checks if the name caches match.
-	 * @param name1
-	 * @param name2
-	 * @return
 	 */
 	private boolean nameCachesMatch(IBotanicalName name1, IBotanicalName name2) {
 		return CdmUtils.nullSafeEqual(name1.getNameCache(), name2.getNameCache());
@@ -558,9 +508,6 @@ public class CentralAfricaFernsTaxonRelationImport  extends CentralAfricaFernsIm
 
 	/**
 	 * Checks if the name caches of the related names match.
-	 *@param taxon1
-	 * @param taxon2
-	 * @return
 	 */
 	private boolean nameCachesMatch(Taxon taxon1, Taxon taxon2) {
 		IBotanicalName name1 = taxon1.getName();
@@ -571,9 +518,6 @@ public class CentralAfricaFernsTaxonRelationImport  extends CentralAfricaFernsIm
 
 	/**
 	 * Checks if all authors match
-	 * @param name1
-	 * @param name2
-	 * @return
 	 */
 	private boolean authorsMatch(INonViralName name1, INonViralName name2) {
 		String combinationAuthor1 = name1.computeCombinationAuthorNomenclaturalTitle();
@@ -594,9 +538,6 @@ public class CentralAfricaFernsTaxonRelationImport  extends CentralAfricaFernsIm
 
 	/**
 	 * Checks if all authors of the related names match.
-	 * @param taxon1
-	 * @param taxon2
-	 * @return
 	 */
 	private boolean authorsMatch(Taxon taxon1, Taxon taxon2) {
 		IBotanicalName name1 = taxon1.getName();
@@ -606,9 +547,6 @@ public class CentralAfricaFernsTaxonRelationImport  extends CentralAfricaFernsIm
 
 	/**
 	 * Compares ranks of 2 names.
-	 * @param parentName
-	 * @param constructedName
-	 * @return
 	 */
 	private int compareRanks(IBotanicalName name1, IBotanicalName name2) {
 		return name1.getRank().compareTo(name2.getRank());
@@ -616,9 +554,6 @@ public class CentralAfricaFernsTaxonRelationImport  extends CentralAfricaFernsIm
 
 	/**
 	 * Compares the ranks of the according names.
-	 * @param taxon1
-	 * @param taxon2
-	 * @return
 	 */
 	private int compareRanks(Taxon taxon1, Taxon taxon2) {
 		IBotanicalName name1 = taxon1.getName();
@@ -631,9 +566,6 @@ public class CentralAfricaFernsTaxonRelationImport  extends CentralAfricaFernsIm
 	/**
 	 * Checks if 2 names match.
 	 * Current strategy: true, if ranks are equal, nameCaches match and authors match
-	 * @param name1
-	 * @param name2
-	 * @return
 	 */
 	private boolean namesMatch(IBotanicalName name1, IBotanicalName name2) {
 		return compareRanks(name1, name2)==0 && nameCachesMatch(name1, name2) && authorsMatch(name1, name2);
@@ -642,9 +574,6 @@ public class CentralAfricaFernsTaxonRelationImport  extends CentralAfricaFernsIm
 	/**
 	 * Checks if the according names match.
 	 * @see #namesMatch(BotanicalName, BotanicalName)
-	 * @param taxon1
-	 * @param taxon2
-	 * @return
 	 */
 	private boolean namesMatch(Taxon taxon1, Taxon taxon2) {
 		IBotanicalName name1 = taxon1.getName();
@@ -678,7 +607,6 @@ public class CentralAfricaFernsTaxonRelationImport  extends CentralAfricaFernsIm
 		}
 	}
 
-
 	/**
 	 * Persists and saves the newly created taxon to the CDM store and to the look-up
 	 * maps.
@@ -710,13 +638,6 @@ public class CentralAfricaFernsTaxonRelationImport  extends CentralAfricaFernsIm
 	/**
 	 * Adds the parent child relationship. Creates and saves the classification if needed.
 	 * Adds parent and child to the classification.
-	 * @param state
-	 * @param treeRefFk
-	 * @param child
-	 * @param parent
-	 * @param citation
-	 * @param microCitation
-	 * @return
 	 */
 	private boolean makeTaxonomicallyIncluded(CentralAfricaFernsImportState state, Integer treeRefFk, Taxon child, Taxon parent, Reference citation, String microCitation){
 		String treeKey;
@@ -856,8 +777,6 @@ public class CentralAfricaFernsTaxonRelationImport  extends CentralAfricaFernsIm
 		return taxonName;
 	}
 
-
-
 	private IBotanicalName handleUninomial(Rank lowerTaxonRank, IBotanicalName taxonName,  Epithets epithets) {
 
 		Rank newRank = null;
@@ -887,7 +806,6 @@ public class CentralAfricaFernsTaxonRelationImport  extends CentralAfricaFernsIm
 		return taxonName;
 	}
 
-
 	/**
 	 * for internal use only, used by MethodMapper
 	 */
@@ -910,7 +828,6 @@ public class CentralAfricaFernsTaxonRelationImport  extends CentralAfricaFernsIm
 		}
 		return taxonBase;
 	}
-
 
 	/**
 	 * for internal use only, used by MethodMapper
@@ -946,7 +863,6 @@ public class CentralAfricaFernsTaxonRelationImport  extends CentralAfricaFernsIm
 		}
 	}
 
-
 	/**
 	 * for internal use only, used by MethodMapper
 	 * @param commonNames
@@ -970,9 +886,6 @@ public class CentralAfricaFernsTaxonRelationImport  extends CentralAfricaFernsIm
 		return taxonBase;
 	}
 
-
-
-
 	private void makeDistributionDetailed(Taxon taxon, String distributionDetailed) {
 		if (StringUtils.isNotBlank(distributionDetailed)){
 			TaxonDescription description = getTaxonDescription(taxon, false, true);
@@ -981,7 +894,6 @@ public class CentralAfricaFernsTaxonRelationImport  extends CentralAfricaFernsIm
 			distribution.putText(Language.ENGLISH(), distributionDetailed);
 		}
 	}
-
 
 	private void makeProvince(Taxon taxon, String province) {
 		if (StringUtils.isNotBlank(province)){
@@ -992,13 +904,6 @@ public class CentralAfricaFernsTaxonRelationImport  extends CentralAfricaFernsIm
 		}
 	}
 
-
-	/**
-	 * @param state
-	 * @param taxonNumber
-	 * @param taxonBase
-	 * @param countriesString
-	 */
 	private void makeCountries(CentralAfricaFernsImportState state, String taxonNumber, Taxon taxon, TaxonName nameUsedInSource, String countriesString, String province, String distributionDetailed) {
 		countriesString = countriesString.replaceAll("\\*", "");
 		countriesString = countriesString.replace("  ", " ");
@@ -1025,7 +930,6 @@ public class CentralAfricaFernsTaxonRelationImport  extends CentralAfricaFernsIm
 			}
 		}
 	}
-
 
 	private void makeSingleCountry(CentralAfricaFernsImportState state, String taxonNumber, Taxon taxon, TaxonName nameUsedInSource, String country) throws UndefinedTransformerMethodException {
 		boolean areaDoubtful = false;
@@ -1062,7 +966,6 @@ public class CentralAfricaFernsTaxonRelationImport  extends CentralAfricaFernsIm
 		if (country.endsWith("Islands")){
 			country = country.replace("Islands", "Is.");
 		}
-
 
 		//areas
 		if (TdwgAreaProvider.isTdwgAreaLabel(country)){
@@ -1101,12 +1004,6 @@ public class CentralAfricaFernsTaxonRelationImport  extends CentralAfricaFernsIm
 		description.addElement(distribution);
 	}
 
-
-
-	/**
-	 * @param state
-	 * @return
-	 */
 	private Reference sourceReference = null;
 	private Reference getFernsSourceReference(CentralAfricaFernsImportState state) {
 //		if (sourceReference == null || true){
@@ -1115,7 +1012,6 @@ public class CentralAfricaFernsTaxonRelationImport  extends CentralAfricaFernsIm
 //		}
 		return sourceReference;
 	}
-
 
 	private String makeCountryBrackets(CentralAfricaFernsImportState state, String taxonNumber, Taxon taxon,
 	        TaxonName nameUsedInSource, String country) {
@@ -1157,27 +1053,16 @@ public class CentralAfricaFernsTaxonRelationImport  extends CentralAfricaFernsIm
 		return country;
 	}
 
-
-
-
-	/* (non-Javadoc)
-	 * @see eu.etaxonomy.cdm.io.common.CdmIoBase#doCheck(eu.etaxonomy.cdm.io.common.IoStateBase)
-	 */
 	@Override
 	protected boolean doCheck(CentralAfricaFernsImportState state){
 		IOValidator<CentralAfricaFernsImportState> validator = new CentralAfricaFernsTaxonImportValidator();
 		return validator.validate(state);
 	}
 
-	/* (non-Javadoc)
-	 * @see eu.etaxonomy.cdm.io.common.CdmIoBase#isIgnore(eu.etaxonomy.cdm.io.common.IoStateBase)
-	 */
 	@Override
 	protected boolean isIgnore(CentralAfricaFernsImportState state){
 		return ! state.getConfig().isDoRelTaxa();
 	}
-
-
 
 //************************ OLD **********************************************************
 
@@ -1248,13 +1133,8 @@ public class CentralAfricaFernsTaxonRelationImport  extends CentralAfricaFernsIm
 		}
 	}
 
-
-
 	/**
 	 * Tests if this the child taxon already is a child of the higher taxon.
-	 * @param child
-	 * @param higherTaxon
-	 * @return
 	 */
 	private boolean includedRelationshipExists_Old(Taxon child, Taxon higherTaxon) {
 		int countNodes = higherTaxon.getTaxonNodes().size();
@@ -1268,8 +1148,6 @@ public class CentralAfricaFernsTaxonRelationImport  extends CentralAfricaFernsIm
 		}
 	}
 
-
-
 	private boolean childExists_old(Taxon child, TaxonNode higherNode) {
 		for (TaxonNode childNode : higherNode.getChildNodes()){
 			String existingChildTitle = childNode.getTaxon().getName().getTitleCache();
@@ -1280,6 +1158,4 @@ public class CentralAfricaFernsTaxonRelationImport  extends CentralAfricaFernsIm
 		}
 		return false;
 	}
-
-
 }

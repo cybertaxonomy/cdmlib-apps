@@ -128,11 +128,11 @@ public class BerlinModelNameFactsImport  extends BerlinModelImportBase  {
 				String category = CdmUtils.Nz(rs.getString("NameFactCategory"));
 				String nameFact = CdmUtils.Nz(rs.getString("nameFact"));
 
-				TaxonName taxonNameBase = nameMap.get(String.valueOf(nameId));
+				TaxonName taxonName = nameMap.get(String.valueOf(nameId));
 				String nameFactRefFk = String.valueOf(nameFactRefFkObj);
 				Reference citation = refMap.get(nameFactRefFk);
 
-				if (taxonNameBase != null){
+				if (taxonName != null){
 					//PROTOLOGUE
 					if (category.equalsIgnoreCase(NAME_FACT_PROTOLOGUE)){
 
@@ -140,7 +140,7 @@ public class BerlinModelNameFactsImport  extends BerlinModelImportBase  {
 						try{
 						    //this depends on specific project implementation, maybe also config.getMediaPath() is important
 						    URI uri = URI.create(uriString);
-							taxonNameBase.addProtologue(uri, null, ExternalLinkType.Unknown);
+							taxonName.addProtologue(uri, null, ExternalLinkType.Unknown);
 						}catch(IllegalArgumentException e){
 							logger.warn("Incorrect protologue URI: " + uriString);
 							success = false;
@@ -158,7 +158,7 @@ public class BerlinModelNameFactsImport  extends BerlinModelImportBase  {
 								additionalPublication.addSource(OriginalSourceType.PrimaryTaxonomicSource, null, null, citation, nameFactRefDetail, null, null);
 							}
 							description.addElement(additionalPublication);
-							taxonNameBase.addDescription(description);
+							taxonName.addDescription(description);
 						}
 					}else if (category.equalsIgnoreCase(NAME_FACT_BIBLIOGRAPHY)){
 						if (isNotBlank(nameFact)){
@@ -172,7 +172,7 @@ public class BerlinModelNameFactsImport  extends BerlinModelImportBase  {
 								bibliography.addSource(OriginalSourceType.PrimaryTaxonomicSource, null, null, citation, nameFactRefDetail, null, null);
 							}
 							description.addElement(bibliography);
-							taxonNameBase.addDescription(description);
+							taxonName.addDescription(description);
 						}
 					}else {
 						//TODO
@@ -189,7 +189,7 @@ public class BerlinModelNameFactsImport  extends BerlinModelImportBase  {
 //					Updated_Who  nvarchar(255)    Checked
 //					Notes      nvarchar(1000)           Checked
 
-					nameToSave.add(taxonNameBase);
+					nameToSave.add(taxonName);
 				}else{
 					//TODO
 					logger.warn("TaxonName for NameFact " + nameFactId + " does not exist in store");
