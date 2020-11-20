@@ -504,7 +504,7 @@ public class BerlinModelOccurrenceSourceImport  extends BerlinModelImportBase {
     protected Set<TaxonName> getOrthographicVariants(TaxonBase<?> taxonBase) {
         Set<TaxonName> result = taxonBase.getName().getRelatedNames(Direction.relatedTo, NameRelationshipType.ORTHOGRAPHIC_VARIANT());
         result.addAll(taxonBase.getName().getRelatedNames(Direction.relatedTo, NameRelationshipType.MISSPELLING()));
-        result.addAll(taxonBase.getName().getRelatedNames(Direction.relatedTo, NameRelationshipType.ORIGINAL_SPELLING()));
+        result.add(taxonBase.getName().getOriginalSpelling());
         return result;
     }
 

@@ -314,7 +314,7 @@ public class IpniImport<CONFIG extends IpniImportConfigurator>
                     origName.setSpecificEpithet(name.getSpecificEpithet());
                     origName.setInfraSpecificEpithet(origSpelling);
                 }
-                name.addOriginalSpelling(origName, getSourceReference(state), null);
+                name.setOriginalSpelling(origName);
             }
         }
     }
