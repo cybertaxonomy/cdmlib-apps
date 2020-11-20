@@ -849,12 +849,12 @@ public class CubaExcelImport
 
     private boolean isLegitimate(IBotanicalName basionymName) {
         for (NomenclaturalStatus nomStatus : basionymName.getStatus()){
-            if (nomStatus.getType()!= null && nomStatus.getType().isIllegitimateType()){
+            if (nomStatus.getType()!= null && nomStatus.getType().isIllegitimate()){
                     return false;
             }
         }
         for (NameRelationship nameRel : basionymName.getNameRelations()){
-            if (nameRel.getType()!= null && nameRel.getType().isIllegitimateType()){
+            if (nameRel.getType()!= null && nameRel.getType().isIllegitimate()){
                     return false;
             }
         }
