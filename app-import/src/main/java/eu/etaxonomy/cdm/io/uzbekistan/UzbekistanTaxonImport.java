@@ -158,15 +158,15 @@ public class UzbekistanTaxonImport<CONFIG extends UzbekistanTaxonImportConfigura
         }else{
             if ("A".equals(refTypeStr)){
                 if (!ref.getType().equals(ReferenceType.Article)){
-                    logger.warn(line+"RefType should be article but was not: " + ref.getType().getMessage() + ";" + fullTitle);
+                    logger.warn(line+"RefType should be article but was not: " + ref.getType().getLabel() + ";" + fullTitle);
                 }
             }else if ("B".equals(refTypeStr)){
                 if (!ref.getType().equals(ReferenceType.Book)){
-                    logger.warn(line+"RefType should be book but was not: " + ref.getType().getMessage() + ";" + fullTitle);
+                    logger.warn(line+"RefType should be book but was not: " + ref.getType().getLabel() + ";" + fullTitle);
                 }
             }else if ("BS".equals(refTypeStr)){
                 if (!ref.getType().equals(ReferenceType.BookSection)){
-                    logger.warn(line+"RefType should be book section but was not: " + ref.getType().getMessage() + ";" + fullTitle) ;
+                    logger.warn(line+"RefType should be book section but was not: " + ref.getType().getLabel() + ";" + fullTitle) ;
                 }
             }else{
                 logger.warn(line+"Name has nom. ref. but ref type could not be recognized/was empty: " + refTypeStr + ";" + fullTitle);
