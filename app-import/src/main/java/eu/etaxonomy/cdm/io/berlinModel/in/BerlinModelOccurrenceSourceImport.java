@@ -483,7 +483,6 @@ public class BerlinModelOccurrenceSourceImport  extends BerlinModelImportBase {
 
         //MAN
         Set<Taxon> misappliedTaxa = taxon.getMisappliedNames(true);
-        misappliedTaxa.addAll(taxon.getInvalidDesignations());
         Set<TaxonName> misappliedNames = new HashSet<>();
         for (Taxon misTaxon : misappliedTaxa){
             misappliedNames.add(misTaxon.getName());
