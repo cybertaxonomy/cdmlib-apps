@@ -309,7 +309,7 @@ public class SynthesysCacheActivator {
 			Country country = null;
 //			System.out.println("isocountry "+this.isocountry);
 			if (this.isocountry != null) {
-                country = app.getOccurrenceService().getCountryByIso(this.isocountry);
+                country = app.getTermService().getCountryByIso(this.isocountry);
             }
 
 //			System.out.println(country.getLabel());
