@@ -10,7 +10,7 @@
 package eu.etaxonomy.cdm.app.dwca;
 
 import java.io.File;
-import java.net.URI;
+import eu.etaxonomy.cdm.common.URI;
 import java.util.Arrays;
 import java.util.List;
 import java.util.UUID;

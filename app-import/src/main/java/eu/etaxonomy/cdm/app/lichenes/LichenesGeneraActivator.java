@@ -9,12 +9,12 @@
 package eu.etaxonomy.cdm.app.lichenes;
 
 import java.io.File;
-import java.net.URI;
 import java.util.UUID;
 
 import org.apache.log4j.Logger;
 
 import eu.etaxonomy.cdm.app.common.CdmDestinations;
+import eu.etaxonomy.cdm.common.URI;
 import eu.etaxonomy.cdm.database.DbSchemaValidation;
 import eu.etaxonomy.cdm.database.ICdmDataSource;
 import eu.etaxonomy.cdm.io.common.CdmDefaultImport;
@@ -87,7 +87,7 @@ public class LichenesGeneraActivator {
     private URI lichenesChecklist_local(){
 //        return URI.create("file://C:\\Users\\a.mueller\\BGBM\\Data\\Lichenes\\LichenesImport.xlsx");
         File file = new File("C:\\Users\\a.mueller\\BGBM\\Data\\Lichenes\\LichenesGeneraImport.xlsx");
-    	return file.toURI();
+    	return URI.fromFile(file);
     }
 
     private Reference secRef;

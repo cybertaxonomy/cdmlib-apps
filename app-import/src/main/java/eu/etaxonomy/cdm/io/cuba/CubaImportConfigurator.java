@@ -9,7 +9,7 @@
 
 package eu.etaxonomy.cdm.io.cuba;
 
-import java.net.URI;
+import eu.etaxonomy.cdm.common.URI;
 
 import org.apache.log4j.Logger;
 

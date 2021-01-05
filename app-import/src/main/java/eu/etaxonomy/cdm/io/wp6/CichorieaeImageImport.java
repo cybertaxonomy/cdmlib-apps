@@ -12,7 +12,6 @@ package eu.etaxonomy.cdm.io.wp6;
 import java.io.File;
 import java.io.IOException;
 import java.net.MalformedURLException;
-import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.List;
 import java.util.UUID;
@@ -23,6 +22,7 @@ import org.springframework.stereotype.Component;
 
 import eu.etaxonomy.cdm.app.images.AbstractImageImporter;
 import eu.etaxonomy.cdm.app.images.ImageImportState;
+import eu.etaxonomy.cdm.common.URI;
 import eu.etaxonomy.cdm.common.media.CdmImageInfo;
 import eu.etaxonomy.cdm.model.agent.AgentBase;
 import eu.etaxonomy.cdm.model.common.Language;
@@ -52,7 +52,7 @@ public class CichorieaeImageImport extends AbstractImageImporter {
 	 */
 	@Override
     protected void invokeImageImport (ImageImportState state){
-		File source = new File(state.getConfig().getSource());
+		File source = new File(state.getConfig().getSource().getJavaUri());
 		UUID treeUuid = state.getConfig().getClassificationUuid();
 		Classification tree = classificationService.find(treeUuid);
 		Reference sourceRef = state.getConfig().getSourceReference();

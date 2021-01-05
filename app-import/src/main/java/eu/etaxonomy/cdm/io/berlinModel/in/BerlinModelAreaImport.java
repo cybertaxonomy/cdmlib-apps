@@ -9,7 +9,7 @@
 
 package eu.etaxonomy.cdm.io.berlinModel.in;
 
-import java.net.URI;
+import eu.etaxonomy.cdm.common.URI;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.HashMap;

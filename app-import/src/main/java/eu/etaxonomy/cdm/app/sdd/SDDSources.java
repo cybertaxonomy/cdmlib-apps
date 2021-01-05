@@ -10,10 +10,11 @@
 package eu.etaxonomy.cdm.app.sdd;
 
 import java.io.File;
-import java.net.URI;
 import java.net.URL;
 
 import org.apache.log4j.Logger;
+
+import eu.etaxonomy.cdm.common.URI;
 
 /**
  * @author h.fradin
@@ -39,7 +40,7 @@ public class SDDSources {
 //		URL url = new SDDSources().getClass().getResource("/sdd/SDD-Test-Simple.xml");
 		String sourceUrl = "C:\\localCopy\\tdwg2010\\data\\descriptions\\sdd\\Xper-Cichorium_spinosum.sdd.xml";
 //		String sourceUrl = url.toString();
-		URI uri = new File(sourceUrl).toURI();
+		URI uri = URI.fromFile(new File(sourceUrl));
 		return uri;
 
 	}

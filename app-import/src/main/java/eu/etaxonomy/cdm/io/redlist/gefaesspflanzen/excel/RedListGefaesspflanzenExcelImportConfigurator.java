@@ -9,7 +9,7 @@
 */
 package eu.etaxonomy.cdm.io.redlist.gefaesspflanzen.excel;
 
-import java.net.URI;
+import eu.etaxonomy.cdm.common.URI;
 
 import eu.etaxonomy.cdm.database.ICdmDataSource;
 import eu.etaxonomy.cdm.io.common.ImportStateBase;

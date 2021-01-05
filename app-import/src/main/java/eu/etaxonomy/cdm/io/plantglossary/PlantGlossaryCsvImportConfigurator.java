@@ -9,7 +9,7 @@
 package eu.etaxonomy.cdm.io.plantglossary;
 
 import java.io.IOException;
-import java.net.URI;
+import eu.etaxonomy.cdm.common.URI;
 
 import eu.etaxonomy.cdm.database.ICdmDataSource;
 import eu.etaxonomy.cdm.io.csv.in.CsvImportConfiguratorBase;

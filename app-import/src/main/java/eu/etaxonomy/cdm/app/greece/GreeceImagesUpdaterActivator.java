@@ -10,7 +10,7 @@
 package eu.etaxonomy.cdm.app.greece;
 
 import java.io.IOException;
-import java.net.URI;
+import eu.etaxonomy.cdm.common.URI;
 import java.util.List;
 
 import org.apache.http.HttpException;

@@ -13,7 +13,6 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.MalformedURLException;
-import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.ArrayList;
@@ -31,6 +30,7 @@ import javax.swing.JTextArea;
 import org.apache.log4j.Logger;
 
 import eu.etaxonomy.cdm.app.common.CdmDestinations;
+import eu.etaxonomy.cdm.common.URI;
 import eu.etaxonomy.cdm.database.DbSchemaValidation;
 import eu.etaxonomy.cdm.database.ICdmDataSource;
 import eu.etaxonomy.cdm.io.common.CdmDefaultImport;
@@ -252,7 +252,7 @@ public class TaxonXImportLauncher {
                 for (int page:pages) {
                     for (String treatment: startPages.get(page)) {
                         try {
-                            uritmp.add(new URL(treatment).toURI());
+                            uritmp.add(URI.fromUrl(new URL(treatment)));
                         } catch (MalformedURLException e) {
                             // TODO Auto-generated catch block
                             e.printStackTrace();

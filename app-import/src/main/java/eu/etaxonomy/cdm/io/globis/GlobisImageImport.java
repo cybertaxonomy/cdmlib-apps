@@ -11,7 +11,7 @@ package eu.etaxonomy.cdm.io.globis;
 
 import java.io.IOException;
 import java.net.MalformedURLException;
-import java.net.URI;
+import eu.etaxonomy.cdm.common.URI;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.HashMap;

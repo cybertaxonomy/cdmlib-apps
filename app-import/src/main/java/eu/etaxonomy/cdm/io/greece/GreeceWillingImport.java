@@ -9,7 +9,7 @@
 package eu.etaxonomy.cdm.io.greece;
 
 import java.net.MalformedURLException;
-import java.net.URI;
+import eu.etaxonomy.cdm.common.URI;
 import java.text.ParseException;
 import java.util.List;
 import java.util.Map;

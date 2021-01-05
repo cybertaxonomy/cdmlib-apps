@@ -18,6 +18,7 @@ import org.apache.log4j.Logger;
 import org.springframework.transaction.TransactionStatus;
 
 import eu.etaxonomy.cdm.app.common.CdmDestinations;
+import eu.etaxonomy.cdm.common.URI;
 import eu.etaxonomy.cdm.database.DbSchemaValidation;
 import eu.etaxonomy.cdm.database.ICdmDataSource;
 import eu.etaxonomy.cdm.io.common.CdmDefaultImport;
@@ -109,7 +110,7 @@ public class PalmaeTaxonXImportActivator {
 		ImportResult success ;
 		try{
 			URL url = file.toURI().toURL();
-			config.setSource(url.toURI());
+			config.setSource(URI.fromUrl(url));
 			String originalSourceId = file.getName();
 			originalSourceId =originalSourceId.replace(".xml", "");
 			logger.debug(originalSourceId);

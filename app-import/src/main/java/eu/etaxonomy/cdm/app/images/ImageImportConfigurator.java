@@ -11,7 +11,7 @@ package eu.etaxonomy.cdm.app.images;
 
 import java.io.File;
 import java.io.FileNotFoundException;
-import java.net.URI;
+import eu.etaxonomy.cdm.common.URI;
 
 import org.apache.log4j.Logger;
 

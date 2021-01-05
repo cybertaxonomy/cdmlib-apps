@@ -8,9 +8,9 @@
 */
 package eu.etaxonomy.cdm.app.eflora;
 
-import java.net.URI;
-
 import org.apache.log4j.Logger;
+
+import eu.etaxonomy.cdm.common.URI;
 
 /**
  * @author a.mueller

@@ -8,7 +8,7 @@
 */
 package eu.etaxonomy.cdm.app.common;
 
-import java.net.URI;
+import eu.etaxonomy.cdm.common.URI;
 import java.net.URL;
 
 import org.apache.log4j.Logger;

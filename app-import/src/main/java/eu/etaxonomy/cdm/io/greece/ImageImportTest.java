@@ -10,7 +10,7 @@ package eu.etaxonomy.cdm.io.greece;
 
 import java.io.File;
 import java.io.IOException;
-import java.net.URI;
+import eu.etaxonomy.cdm.common.URI;
 import java.util.List;
 
 import org.apache.commons.imaging.ImageReadException;

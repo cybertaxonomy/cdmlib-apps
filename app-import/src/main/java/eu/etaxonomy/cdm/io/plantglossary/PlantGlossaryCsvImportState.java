@@ -8,7 +8,7 @@
 */
 package eu.etaxonomy.cdm.io.plantglossary;
 
-import java.net.URI;
+import eu.etaxonomy.cdm.common.URI;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.HashSet;

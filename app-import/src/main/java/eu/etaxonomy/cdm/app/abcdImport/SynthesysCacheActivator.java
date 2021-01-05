@@ -9,12 +9,12 @@
 package eu.etaxonomy.cdm.app.abcdImport;
 
 import java.io.File;
-import java.net.URI;
 import java.net.URISyntaxException;
 
 import org.apache.log4j.Logger;
 
 import eu.etaxonomy.cdm.app.common.CdmDestinations;
+import eu.etaxonomy.cdm.common.URI;
 import eu.etaxonomy.cdm.database.DbSchemaValidation;
 import eu.etaxonomy.cdm.database.ICdmDataSource;
 import eu.etaxonomy.cdm.io.common.CdmDefaultImport;
@@ -44,7 +44,7 @@ public class SynthesysCacheActivator {
     public static void main(String[] args) {
         URI source;
         try {
-            URI uri = new File(xmlSource).toURI();
+            URI uri = URI.fromFile(new File(xmlSource));
             source = new URI(uri.toString());
             System.out.println(source.toString());
             System.out.println("Start import from  Excel Specimen data("+ source.toString() + ") ...");

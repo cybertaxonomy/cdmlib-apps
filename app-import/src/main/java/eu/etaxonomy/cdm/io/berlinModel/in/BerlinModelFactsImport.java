@@ -11,7 +11,7 @@ package eu.etaxonomy.cdm.io.berlinModel.in;
 
 import java.io.File;
 import java.io.IOException;
-import java.net.URI;
+import eu.etaxonomy.cdm.common.URI;
 import java.net.URISyntaxException;
 import java.sql.ResultSet;
 import java.sql.SQLException;

@@ -9,7 +9,7 @@
 
 package eu.etaxonomy.cdm.app.cyprus;
 
-import java.net.URI;
+import eu.etaxonomy.cdm.common.URI;
 import java.net.URISyntaxException;
 import java.util.UUID;
 

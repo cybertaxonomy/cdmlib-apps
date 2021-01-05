@@ -8,11 +8,11 @@
 */
 package eu.etaxonomy.cdm.app.eflora;
 
-import java.net.URI;
 import java.net.URL;
 
 import org.apache.log4j.Logger;
 
+import eu.etaxonomy.cdm.common.URI;
 import eu.etaxonomy.cdm.config.AccountStore;
 import eu.etaxonomy.cdm.io.common.Source;
 

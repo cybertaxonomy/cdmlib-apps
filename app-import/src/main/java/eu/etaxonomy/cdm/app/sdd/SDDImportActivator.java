@@ -8,7 +8,6 @@
  */
 package eu.etaxonomy.cdm.app.sdd;
 
-import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.sql.SQLException;
@@ -17,6 +16,7 @@ import org.apache.log4j.Logger;
 import org.springframework.util.Assert;
 
 import eu.etaxonomy.cdm.common.CdmUtils;
+import eu.etaxonomy.cdm.common.URI;
 import eu.etaxonomy.cdm.database.CdmDataSource;
 import eu.etaxonomy.cdm.database.CdmPersistentDataSource;
 import eu.etaxonomy.cdm.database.DataSourceNotFoundException;
@@ -99,7 +99,7 @@ public class SDDImportActivator {
 	        URL url = SDDImportActivator.class.getResource("/sdd/ant.sdd.xml");
 	        //sdd/SDD-Test-Simple.xml
 	        System.out.println("url"+ url);
-	        source = url.toURI();
+	        source = URI.fromUrl(url);
 			//source = new URI("/eu/etaxonomy/cdm/app/sdd/SDDImportTest-input3.xml");
 			System.out.println("Start import from SDD("+ source.toString() + ") ...");
 

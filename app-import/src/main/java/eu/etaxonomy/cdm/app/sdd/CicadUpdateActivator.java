@@ -9,7 +9,7 @@
 
 package eu.etaxonomy.cdm.app.sdd;
 
-import java.net.URI;
+import eu.etaxonomy.cdm.common.URI;
 import java.net.URISyntaxException;
 
 import org.apache.log4j.Logger;

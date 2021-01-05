@@ -9,7 +9,7 @@
 package eu.etaxonomy.cdm.app.caryophyllales;
 
 import java.io.IOException;
-import java.net.URI;
+import eu.etaxonomy.cdm.common.URI;
 import java.util.UUID;
 
 import org.apache.log4j.Logger;

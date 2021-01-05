@@ -9,7 +9,7 @@
 package eu.etaxonomy.cdm.io.plantglossary;
 
 import java.io.File;
-import java.net.URI;
+import eu.etaxonomy.cdm.common.URI;
 import java.util.Map;
 
 import org.apache.log4j.Logger;

@@ -9,7 +9,7 @@
 
 package eu.etaxonomy.cdm.app.phycobank;
 
-import java.net.URI;
+import eu.etaxonomy.cdm.common.URI;
 import java.util.Date;
 import java.util.UUID;
 

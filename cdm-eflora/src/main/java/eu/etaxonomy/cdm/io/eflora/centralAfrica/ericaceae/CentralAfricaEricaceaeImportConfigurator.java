@@ -9,11 +9,10 @@
 
 package eu.etaxonomy.cdm.io.eflora.centralAfrica.ericaceae;
 
-import java.net.URI;
-
 import org.apache.log4j.Logger;
 import org.springframework.stereotype.Component;
 
+import eu.etaxonomy.cdm.common.URI;
 import eu.etaxonomy.cdm.database.ICdmDataSource;
 import eu.etaxonomy.cdm.io.common.mapping.IInputTransformer;
 import eu.etaxonomy.cdm.io.eflora.EfloraImportConfigurator;

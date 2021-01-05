@@ -14,13 +14,13 @@ import java.io.FileOutputStream;
 import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
 import java.io.UnsupportedEncodingException;
-import java.net.URI;
 
 import org.apache.log4j.Logger;
 
 import eu.etaxonomy.cdm.api.application.CdmApplicationController;
 import eu.etaxonomy.cdm.app.common.CdmDestinations;
 import eu.etaxonomy.cdm.app.util.TestDatabase;
+import eu.etaxonomy.cdm.common.URI;
 import eu.etaxonomy.cdm.database.DbSchemaValidation;
 import eu.etaxonomy.cdm.database.ICdmDataSource;
 import eu.etaxonomy.cdm.io.common.CdmDefaultExport;
@@ -105,7 +105,7 @@ public class JaxbExportActivator {
 		}
 		URI uri = URI.create(file);
 		try {
-			File myFile = new File(uri);
+			File myFile = new File(uri.getJavaUri());
 			PrintWriter writer = new PrintWriter(new OutputStreamWriter(new FileOutputStream(myFile), "UTF8"), true);
 			sc.initDb(source);  //does this make sense here (it starts the appControler even if it is not needed later
 

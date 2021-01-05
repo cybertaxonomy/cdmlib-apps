@@ -8,7 +8,7 @@
 */
 package eu.etaxonomy.cdm.io.salvador;
 
-import java.net.URI;
+import eu.etaxonomy.cdm.common.URI;
 import java.text.ParseException;
 import java.util.HashMap;
 import java.util.List;

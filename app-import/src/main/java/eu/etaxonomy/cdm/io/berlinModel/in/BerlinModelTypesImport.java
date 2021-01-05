@@ -9,7 +9,6 @@
 
 package eu.etaxonomy.cdm.io.berlinModel.in;
 
-import java.net.URI;
 import java.net.URISyntaxException;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -21,6 +20,7 @@ import java.util.Set;
 import org.apache.log4j.Logger;
 import org.springframework.stereotype.Component;
 
+import eu.etaxonomy.cdm.common.URI;
 import eu.etaxonomy.cdm.io.berlinModel.BerlinModelTransformer;
 import eu.etaxonomy.cdm.io.berlinModel.in.validation.BerlinModelTypesImportValidator;
 import eu.etaxonomy.cdm.io.common.IOValidator;
@@ -228,7 +228,7 @@ public class BerlinModelTypesImport extends BerlinModelImportBase /*implements I
 
 				String mimeType = null; //"image/jpg";
 				String suffix = null; //"jpg";
-				java.net.URI uri = new URI(filename);
+				URI uri = new URI(filename);
 				Media media = ImageFile.NewMediaInstance(null, null, uri, mimeType, suffix, null, null, null);
 				if (figurePhrase != null) {
 					media.addAnnotation(Annotation.NewDefaultLanguageInstance(figurePhrase));

@@ -8,8 +8,7 @@
 */
 package eu.etaxonomy.cdm.io.bogota;
 
-import java.net.URI;
-
+import eu.etaxonomy.cdm.common.URI;
 import eu.etaxonomy.cdm.database.ICdmDataSource;
 import eu.etaxonomy.cdm.io.common.ImportStateBase;
 import eu.etaxonomy.cdm.io.excel.common.ExcelImportConfiguratorBase;

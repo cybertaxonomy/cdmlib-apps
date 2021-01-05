@@ -10,7 +10,7 @@
 package eu.etaxonomy.cdm.io.algaterra;
 
 import java.math.BigDecimal;
-import java.net.URI;
+import eu.etaxonomy.cdm.common.URI;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.HashMap;

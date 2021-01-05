@@ -10,7 +10,7 @@
 package eu.etaxonomy.cdm.app.wp6.cichorieae;
 
 import java.io.File;
-import java.net.URI;
+import eu.etaxonomy.cdm.common.URI;
 import java.net.URISyntaxException;
 import java.util.UUID;
 

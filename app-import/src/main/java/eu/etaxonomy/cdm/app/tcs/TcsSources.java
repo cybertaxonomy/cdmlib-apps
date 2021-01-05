@@ -10,13 +10,13 @@ package eu.etaxonomy.cdm.app.tcs;
 
 import java.io.File;
 import java.net.MalformedURLException;
-import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
 
 import org.apache.log4j.Logger;
 
 import eu.etaxonomy.cdm.app.sdd.SDDSources;
+import eu.etaxonomy.cdm.common.URI;
 
 /**
  * @author a.mueller
@@ -36,8 +36,10 @@ public class TcsSources {
 
 //			URL url = new TcsSources().getClass().getResource("excel/NormalExplicit.xls");
 			boolean exists = new File(url.getFile()).exists();
-			if (! exists) throw new RuntimeException("File not found: " + url);
-			URI uri = url.toURI();
+			if (! exists) {
+                throw new RuntimeException("File not found: " + url);
+            }
+			URI uri = URI.fromUrl(url);
 			return uri;
 		} catch (MalformedURLException e1) {
 			// TODO Auto-generated catch block

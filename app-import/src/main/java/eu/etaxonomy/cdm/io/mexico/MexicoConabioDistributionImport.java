@@ -8,7 +8,7 @@
 */
 package eu.etaxonomy.cdm.io.mexico;
 
-import java.net.URI;
+import eu.etaxonomy.cdm.common.URI;
 import java.util.Map;
 import java.util.Set;
 import java.util.UUID;

@@ -9,11 +9,11 @@
 package eu.etaxonomy.cdm.app.wp6.cichorieae;
 
 import java.io.File;
-import java.net.URI;
 
 import org.apache.log4j.Logger;
 
 import eu.etaxonomy.cdm.app.common.CdmDestinations;
+import eu.etaxonomy.cdm.common.URI;
 import eu.etaxonomy.cdm.database.DbSchemaValidation;
 import eu.etaxonomy.cdm.database.ICdmDataSource;
 import eu.etaxonomy.cdm.io.common.CdmDefaultImport;
@@ -46,7 +46,7 @@ public class CichorieaeCommonNameActivator {
 			logger.warn("File does not exist");
 			System.exit(-1);
 		}
-		sourceUri = file.toURI();
+		sourceUri = URI.fromFile(file);
 
 		CommonNameImportConfigurator config;
 

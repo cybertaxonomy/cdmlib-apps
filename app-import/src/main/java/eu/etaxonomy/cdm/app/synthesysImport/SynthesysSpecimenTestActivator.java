@@ -9,7 +9,7 @@
 
 package eu.etaxonomy.cdm.app.synthesysImport;
 
-import java.net.URI;
+import eu.etaxonomy.cdm.common.URI;
 import java.util.UUID;
 
 import org.apache.log4j.Logger;

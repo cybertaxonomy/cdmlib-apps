@@ -9,13 +9,13 @@
 package eu.etaxonomy.cdm.app.phycobank;
 
 import java.io.File;
-import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.UUID;
 
 import org.apache.log4j.Logger;
 
 import eu.etaxonomy.cdm.app.common.CdmDestinations;
+import eu.etaxonomy.cdm.common.URI;
 import eu.etaxonomy.cdm.common.monitor.DefaultProgressMonitor;
 import eu.etaxonomy.cdm.database.DatabaseTypeEnum;
 import eu.etaxonomy.cdm.database.DbSchemaValidation;
@@ -137,8 +137,8 @@ public class IAPTActivator {
 
 
     public static URI fileURI() {
-        File f = new File(System.getProperty("user.home") + "/data/Projekte/Algea Name Registry/registry/sources/IAPT/" + DATA_FILE);
-        return f.toURI();
+        File file = new File(System.getProperty("user.home") + "/data/Projekte/Algea Name Registry/registry/sources/IAPT/" + DATA_FILE);
+        return URI.fromFile(file);
     }
 
     public static void main(String[] args) {

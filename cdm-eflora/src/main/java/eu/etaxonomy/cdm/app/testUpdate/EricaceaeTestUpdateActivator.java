@@ -8,7 +8,6 @@
 */
 package eu.etaxonomy.cdm.app.testUpdate;
 
-import java.net.URI;
 import java.util.List;
 import java.util.UUID;
 
@@ -18,6 +17,7 @@ import org.springframework.transaction.TransactionStatus;
 import eu.etaxonomy.cdm.api.application.ICdmRepository;
 import eu.etaxonomy.cdm.app.eflora.CdmDestinations;
 import eu.etaxonomy.cdm.app.eflora.EfloraSources;
+import eu.etaxonomy.cdm.common.URI;
 import eu.etaxonomy.cdm.common.monitor.DefaultProgressMonitor;
 import eu.etaxonomy.cdm.database.DbSchemaValidation;
 import eu.etaxonomy.cdm.database.ICdmDataSource;

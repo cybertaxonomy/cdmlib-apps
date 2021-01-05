@@ -1,7 +1,7 @@
 package eu.etaxonomy.cdm.io.plantglossary;
 
 import java.io.IOException;
-import java.net.URI;
+import eu.etaxonomy.cdm.common.URI;
 
 import org.apache.log4j.Logger;
 

@@ -10,13 +10,13 @@ package eu.etaxonomy.cdm.app.caryophyllales;
 
 import java.io.File;
 import java.net.MalformedURLException;
-import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
 
 import org.apache.log4j.Logger;
 
 import eu.etaxonomy.cdm.app.sdd.SDDSources;
+import eu.etaxonomy.cdm.common.URI;
 
 /**
  * @author k.luther
@@ -39,7 +39,7 @@ public class TcsSources {
 			if (! exists) {
                 throw new RuntimeException("File not found: " + url);
             }
-			URI uri = url.toURI();
+			URI uri = URI.fromUrl(url);
 			return uri;
 		} catch (MalformedURLException e1) {
 			// TODO Auto-generated catch block

@@ -30,6 +30,7 @@ import org.springframework.stereotype.Component;
 
 import eu.etaxonomy.cdm.app.images.AbstractImageImporter;
 import eu.etaxonomy.cdm.app.images.ImageImportState;
+import eu.etaxonomy.cdm.common.URI;
 import eu.etaxonomy.cdm.model.agent.AgentBase;
 import eu.etaxonomy.cdm.model.agent.Person;
 import eu.etaxonomy.cdm.model.common.CdmBase;
@@ -170,7 +171,7 @@ public class PalmaeImageImport extends AbstractImageImporter {
 
 		logger.info("Importing images from directory: " + state.getConfig().getSourceNameString());
 
-		File sourceFolder = new File(state.getConfig().getSource());
+		File sourceFolder = new File(state.getConfig().getSource().getJavaUri());
 		String taxonName;
 		if(sourceFolder.isDirectory()){
 			int count = 0;
@@ -227,7 +228,7 @@ public class PalmaeImageImport extends AbstractImageImporter {
 							logger.warn("URL is malformed: "+ url);
 						}
 
-						ImageFile imageFile = ImageFile.NewInstance(url.toURI(),null, imageinfo.getHeight(), imageinfo.getWidth());
+						ImageFile imageFile = ImageFile.NewInstance(URI.fromUrl(url),null, imageinfo.getHeight(), imageinfo.getWidth());
 
 						MediaRepresentation representation = MediaRepresentation.NewInstance(mimeType, suffix);
 						representation.addRepresentationPart(imageFile);

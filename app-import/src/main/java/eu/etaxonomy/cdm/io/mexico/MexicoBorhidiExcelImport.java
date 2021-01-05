@@ -8,7 +8,7 @@
 */
 package eu.etaxonomy.cdm.io.mexico;
 
-import java.net.URI;
+import eu.etaxonomy.cdm.common.URI;
 import java.net.URISyntaxException;
 import java.util.Arrays;
 import java.util.List;

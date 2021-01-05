@@ -9,7 +9,7 @@
 
 package eu.etaxonomy.cdm.app.viennaImport;
 
-import java.net.URI;
+import eu.etaxonomy.cdm.common.URI;
 import java.net.URISyntaxException;
 import java.sql.ResultSet;
 import java.sql.SQLException;

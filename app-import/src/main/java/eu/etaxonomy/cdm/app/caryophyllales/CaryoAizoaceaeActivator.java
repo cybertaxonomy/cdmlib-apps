@@ -8,12 +8,12 @@
 */
 package eu.etaxonomy.cdm.app.caryophyllales;
 
-import java.net.URI;
 import java.util.UUID;
 
 import org.apache.log4j.Logger;
 
 import eu.etaxonomy.cdm.app.common.CdmDestinations;
+import eu.etaxonomy.cdm.common.URI;
 import eu.etaxonomy.cdm.database.ICdmDataSource;
 import eu.etaxonomy.cdm.io.caryo.CaryoAizoaceaeExcelImportConfigurator;
 import eu.etaxonomy.cdm.io.common.CdmDefaultImport;

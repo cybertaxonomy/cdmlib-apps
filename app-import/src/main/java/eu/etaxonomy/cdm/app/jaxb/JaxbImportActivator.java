@@ -9,7 +9,6 @@
 package eu.etaxonomy.cdm.app.jaxb;
 
 import java.io.File;
-import java.net.URI;
 import java.net.URISyntaxException;
 
 import org.apache.log4j.Logger;
@@ -17,6 +16,7 @@ import org.apache.log4j.Logger;
 import eu.etaxonomy.cdm.api.application.CdmApplicationController;
 import eu.etaxonomy.cdm.app.common.CdmDestinations;
 import eu.etaxonomy.cdm.app.util.TestDatabase;
+import eu.etaxonomy.cdm.common.URI;
 import eu.etaxonomy.cdm.database.DbSchemaValidation;
 import eu.etaxonomy.cdm.database.ICdmDataSource;
 import eu.etaxonomy.cdm.io.common.CdmDefaultImport;
@@ -133,10 +133,10 @@ public class JaxbImportActivator {
 		ICdmDataSource destination = CdmDestinations.chooseDestination(args) != null ? CdmDestinations.chooseDestination(args) : cdmDestination;
 		String fileStr = chooseFile(args)!= null ? chooseFile(args) : importFileNameString;
 		File file = new File(fileStr);
-		
-		URI uri = file.toURI();
-		System.out.println(new File(uri).exists());
-		if (! new File(uri).exists()){
+
+		URI uri = URI.fromFile(file);
+		System.out.println(new File(uri.getJavaUri()).exists());
+		if (! new File(uri.getJavaUri()).exists()){
 			System.out.println("File does not exist! Exit");
 			return;
 		}

@@ -24,7 +24,7 @@ import static eu.etaxonomy.cdm.io.common.ImportHelper.NO_OVERWRITE;
 import static eu.etaxonomy.cdm.io.common.ImportHelper.OBLIGATORY;
 import static eu.etaxonomy.cdm.io.common.ImportHelper.OVERWRITE;
 
-import java.net.URI;
+import eu.etaxonomy.cdm.common.URI;
 import java.net.URISyntaxException;
 import java.sql.ResultSet;
 import java.sql.SQLException;
